@@ -66,10 +66,22 @@ void bind_mrpt_math_CMatrixFixed(std::function< pybind11::module &(std::string c
 		cl.def("data", (double * (mrpt::math::CMatrixFixed<double,3UL,3UL>::*)()) &mrpt::math::CMatrixFixed<double, 3, 3>::data, "C++: mrpt::math::CMatrixFixed<double, 3, 3>::data() --> double *", pybind11::return_value_policy::automatic);
 		cl.def("__call__", (double & (mrpt::math::CMatrixFixed<double,3UL,3UL>::*)(int, int)) &mrpt::math::CMatrixFixed<double, 3, 3>::operator(), "C++: mrpt::math::CMatrixFixed<double, 3, 3>::operator()(int, int) --> double &", pybind11::return_value_policy::reference, pybind11::arg("row"), pybind11::arg("col"));
 		cl.def("__call__", (double & (mrpt::math::CMatrixFixed<double,3UL,3UL>::*)(int)) &mrpt::math::CMatrixFixed<double, 3, 3>::operator(), "C++: mrpt::math::CMatrixFixed<double, 3, 3>::operator()(int) --> double &", pybind11::return_value_policy::reference, pybind11::arg("i"));
-		cl.def("__getitem__", (double & (mrpt::math::CMatrixFixed<double,3UL,3UL>::*)(int)) &mrpt::math::CMatrixFixed<double, 3, 3>::operator[], "C++: mrpt::math::CMatrixFixed<double, 3, 3>::operator[](int) --> double &", pybind11::return_value_policy::reference, pybind11::arg("i"));
 		cl.def("cast_float", (class mrpt::math::CMatrixFixed<float, 3, 3> (mrpt::math::CMatrixFixed<double,3UL,3UL>::*)() const) &mrpt::math::CMatrixFixed<double, 3, 3>::cast_float, "C++: mrpt::math::CMatrixFixed<double, 3, 3>::cast_float() const --> class mrpt::math::CMatrixFixed<float, 3, 3>");
 		cl.def("sum_At", (void (mrpt::math::CMatrixFixed<double,3UL,3UL>::*)(const class mrpt::math::CMatrixFixed<double, 3, 3> &)) &mrpt::math::CMatrixFixed<double, 3, 3>::sum_At, "C++: mrpt::math::CMatrixFixed<double, 3, 3>::sum_At(const class mrpt::math::CMatrixFixed<double, 3, 3> &) --> void", pybind11::arg("A"));
 		cl.def("assign", (class mrpt::math::CMatrixFixed<double, 3, 3> & (mrpt::math::CMatrixFixed<double,3UL,3UL>::*)(const class mrpt::math::CMatrixFixed<double, 3, 3> &)) &mrpt::math::CMatrixFixed<double, 3, 3>::operator=, "C++: mrpt::math::CMatrixFixed<double, 3, 3>::operator=(const class mrpt::math::CMatrixFixed<double, 3, 3> &) --> class mrpt::math::CMatrixFixed<double, 3, 3> &", pybind11::return_value_policy::automatic, pybind11::arg(""));
+
+		// Manually-added matrix methods:
+		using dat_t = double;
+		using mat_t = mrpt::math::CMatrixFixed<dat_t,3,3>;
+		cl.def("__getitem__", [](const mat_t&self, pybind11::tuple coord) -> dat_t { if (coord.size()==2) return self.coeff(coord[0].cast<size_t>(), coord[1].cast<size_t>()); else if (coord.size()==1) return self[coord[0].cast<size_t>()]; else throw std::invalid_argument("Access with [idx] or [row,col]"); });
+		cl.def("__setitem__", [](mat_t&self, pybind11::tuple coord, dat_t val) { if (coord.size()==2) self.coeffRef(coord[0].cast<size_t>(), coord[1].cast<size_t>())=val; else if (coord.size()==1) self[coord[0].cast<size_t>()]=val; else throw std::invalid_argument("Access with [idx] or [row,col]"); });
+		cl.def("__str__", [](const mat_t& o) -> std::string { return o.asString(); } );
+		cl.def("inMatlabFormat", [](const mat_t& o) -> std::string { return o.inMatlabFormat(); } );
+		cl.def("size", [](const mat_t&self) -> pybind11::tuple { return pybind11::make_tuple(self.cols(),self.rows()); });
+		cl.def_static("Identity", []() -> mat_t { return mat_t::Identity(); }, "Returns the NxN identity matrix");
+		cl.def_static("Zero", []() -> mat_t { return mat_t::Zero(); }, "Returns a matrix with zeroes");
+		cl.def(pybind11::init( [](pybind11::list vals){ auto m = new mat_t(); const auto nR = vals.size(); if (!nR) return m; const auto nC = vals[0].cast<pybind11::list>().size(); m->setSize(nR,nC); for (size_t r=0;r<nR;r++) { const auto row = vals[r].cast<pybind11::list>(); for (size_t c=0;c<nC;c++) m->coeffRef(r,c) = row[c].cast<dat_t>(); } return m; }));
+		cl.def("to_list", [](const mat_t&self) -> pybind11::list { auto l = pybind11::list(); const auto nR = self.rows(), nC = self.cols(); for (size_t r=0;r<nR;r++) { auto row = pybind11::list(); l.append(row); for (size_t c=0;c<nC;c++) row.append(self.coeff(r,c)); } return l; });
 	}
 	{ // mrpt::math::CMatrixFixed file:mrpt/math/CMatrixFixed.h line:34
 		pybind11::class_<mrpt::math::CMatrixFixed<double,4UL,4UL>, std::shared_ptr<mrpt::math::CMatrixFixed<double,4UL,4UL>>> cl(M("mrpt::math"), "CMatrixFixed_double_4UL_4UL_t", "");
@@ -93,10 +105,22 @@ void bind_mrpt_math_CMatrixFixed(std::function< pybind11::module &(std::string c
 		cl.def("data", (double * (mrpt::math::CMatrixFixed<double,4UL,4UL>::*)()) &mrpt::math::CMatrixFixed<double, 4, 4>::data, "C++: mrpt::math::CMatrixFixed<double, 4, 4>::data() --> double *", pybind11::return_value_policy::automatic);
 		cl.def("__call__", (double & (mrpt::math::CMatrixFixed<double,4UL,4UL>::*)(int, int)) &mrpt::math::CMatrixFixed<double, 4, 4>::operator(), "C++: mrpt::math::CMatrixFixed<double, 4, 4>::operator()(int, int) --> double &", pybind11::return_value_policy::reference, pybind11::arg("row"), pybind11::arg("col"));
 		cl.def("__call__", (double & (mrpt::math::CMatrixFixed<double,4UL,4UL>::*)(int)) &mrpt::math::CMatrixFixed<double, 4, 4>::operator(), "C++: mrpt::math::CMatrixFixed<double, 4, 4>::operator()(int) --> double &", pybind11::return_value_policy::reference, pybind11::arg("i"));
-		cl.def("__getitem__", (double & (mrpt::math::CMatrixFixed<double,4UL,4UL>::*)(int)) &mrpt::math::CMatrixFixed<double, 4, 4>::operator[], "C++: mrpt::math::CMatrixFixed<double, 4, 4>::operator[](int) --> double &", pybind11::return_value_policy::reference, pybind11::arg("i"));
 		cl.def("cast_float", (class mrpt::math::CMatrixFixed<float, 4, 4> (mrpt::math::CMatrixFixed<double,4UL,4UL>::*)() const) &mrpt::math::CMatrixFixed<double, 4, 4>::cast_float, "C++: mrpt::math::CMatrixFixed<double, 4, 4>::cast_float() const --> class mrpt::math::CMatrixFixed<float, 4, 4>");
 		cl.def("sum_At", (void (mrpt::math::CMatrixFixed<double,4UL,4UL>::*)(const class mrpt::math::CMatrixFixed<double, 4, 4> &)) &mrpt::math::CMatrixFixed<double, 4, 4>::sum_At, "C++: mrpt::math::CMatrixFixed<double, 4, 4>::sum_At(const class mrpt::math::CMatrixFixed<double, 4, 4> &) --> void", pybind11::arg("A"));
 		cl.def("assign", (class mrpt::math::CMatrixFixed<double, 4, 4> & (mrpt::math::CMatrixFixed<double,4UL,4UL>::*)(const class mrpt::math::CMatrixFixed<double, 4, 4> &)) &mrpt::math::CMatrixFixed<double, 4, 4>::operator=, "C++: mrpt::math::CMatrixFixed<double, 4, 4>::operator=(const class mrpt::math::CMatrixFixed<double, 4, 4> &) --> class mrpt::math::CMatrixFixed<double, 4, 4> &", pybind11::return_value_policy::automatic, pybind11::arg(""));
+
+		// Manually-added matrix methods:
+		using dat_t = double;
+		using mat_t = mrpt::math::CMatrixFixed<dat_t,4,4>;
+		cl.def("__getitem__", [](const mat_t&self, pybind11::tuple coord) -> dat_t { if (coord.size()==2) return self.coeff(coord[0].cast<size_t>(), coord[1].cast<size_t>()); else if (coord.size()==1) return self[coord[0].cast<size_t>()]; else throw std::invalid_argument("Access with [idx] or [row,col]"); });
+		cl.def("__setitem__", [](mat_t&self, pybind11::tuple coord, dat_t val) { if (coord.size()==2) self.coeffRef(coord[0].cast<size_t>(), coord[1].cast<size_t>())=val; else if (coord.size()==1) self[coord[0].cast<size_t>()]=val; else throw std::invalid_argument("Access with [idx] or [row,col]"); });
+		cl.def("__str__", [](const mat_t& o) -> std::string { return o.asString(); } );
+		cl.def("inMatlabFormat", [](const mat_t& o) -> std::string { return o.inMatlabFormat(); } );
+		cl.def("size", [](const mat_t&self) -> pybind11::tuple { return pybind11::make_tuple(self.cols(),self.rows()); });
+		cl.def_static("Identity", []() -> mat_t { return mat_t::Identity(); }, "Returns the NxN identity matrix");
+		cl.def_static("Zero", []() -> mat_t { return mat_t::Zero(); }, "Returns a matrix with zeroes");
+		cl.def(pybind11::init( [](pybind11::list vals){ auto m = new mat_t(); const auto nR = vals.size(); if (!nR) return m; const auto nC = vals[0].cast<pybind11::list>().size(); m->setSize(nR,nC); for (size_t r=0;r<nR;r++) { const auto row = vals[r].cast<pybind11::list>(); for (size_t c=0;c<nC;c++) m->coeffRef(r,c) = row[c].cast<dat_t>(); } return m; }));
+		cl.def("to_list", [](const mat_t&self) -> pybind11::list { auto l = pybind11::list(); const auto nR = self.rows(), nC = self.cols(); for (size_t r=0;r<nR;r++) { auto row = pybind11::list(); l.append(row); for (size_t c=0;c<nC;c++) row.append(self.coeff(r,c)); } return l; });
 	}
 	{ // mrpt::math::CMatrixFixed file:mrpt/math/CMatrixFixed.h line:34
 		pybind11::class_<mrpt::math::CMatrixFixed<double,6UL,6UL>, std::shared_ptr<mrpt::math::CMatrixFixed<double,6UL,6UL>>> cl(M("mrpt::math"), "CMatrixFixed_double_6UL_6UL_t", "");
@@ -120,8 +144,21 @@ void bind_mrpt_math_CMatrixFixed(std::function< pybind11::module &(std::string c
 		cl.def("data", (double * (mrpt::math::CMatrixFixed<double,6UL,6UL>::*)()) &mrpt::math::CMatrixFixed<double, 6, 6>::data, "C++: mrpt::math::CMatrixFixed<double, 6, 6>::data() --> double *", pybind11::return_value_policy::automatic);
 		cl.def("__call__", (double & (mrpt::math::CMatrixFixed<double,6UL,6UL>::*)(int, int)) &mrpt::math::CMatrixFixed<double, 6, 6>::operator(), "C++: mrpt::math::CMatrixFixed<double, 6, 6>::operator()(int, int) --> double &", pybind11::return_value_policy::reference, pybind11::arg("row"), pybind11::arg("col"));
 		cl.def("__call__", (double & (mrpt::math::CMatrixFixed<double,6UL,6UL>::*)(int)) &mrpt::math::CMatrixFixed<double, 6, 6>::operator(), "C++: mrpt::math::CMatrixFixed<double, 6, 6>::operator()(int) --> double &", pybind11::return_value_policy::reference, pybind11::arg("i"));
-		cl.def("__getitem__", (double & (mrpt::math::CMatrixFixed<double,6UL,6UL>::*)(int)) &mrpt::math::CMatrixFixed<double, 6, 6>::operator[], "C++: mrpt::math::CMatrixFixed<double, 6, 6>::operator[](int) --> double &", pybind11::return_value_policy::reference, pybind11::arg("i"));
 		cl.def("sum_At", (void (mrpt::math::CMatrixFixed<double,6UL,6UL>::*)(const class mrpt::math::CMatrixFixed<double, 6, 6> &)) &mrpt::math::CMatrixFixed<double, 6, 6>::sum_At, "C++: mrpt::math::CMatrixFixed<double, 6, 6>::sum_At(const class mrpt::math::CMatrixFixed<double, 6, 6> &) --> void", pybind11::arg("A"));
 		cl.def("assign", (class mrpt::math::CMatrixFixed<double, 6, 6> & (mrpt::math::CMatrixFixed<double,6UL,6UL>::*)(const class mrpt::math::CMatrixFixed<double, 6, 6> &)) &mrpt::math::CMatrixFixed<double, 6, 6>::operator=, "C++: mrpt::math::CMatrixFixed<double, 6, 6>::operator=(const class mrpt::math::CMatrixFixed<double, 6, 6> &) --> class mrpt::math::CMatrixFixed<double, 6, 6> &", pybind11::return_value_policy::automatic, pybind11::arg(""));
+
+		// Manually-added matrix methods:
+		using dat_t = double;
+		using mat_t = mrpt::math::CMatrixFixed<dat_t,6,6>;
+		cl.def("__getitem__", [](const mat_t&self, pybind11::tuple coord) -> dat_t { if (coord.size()==2) return self.coeff(coord[0].cast<size_t>(), coord[1].cast<size_t>()); else if (coord.size()==1) return self[coord[0].cast<size_t>()]; else throw std::invalid_argument("Access with [idx] or [row,col]"); });
+		cl.def("__setitem__", [](mat_t&self, pybind11::tuple coord, dat_t val) { if (coord.size()==2) self.coeffRef(coord[0].cast<size_t>(), coord[1].cast<size_t>())=val; else if (coord.size()==1) self[coord[0].cast<size_t>()]=val; else throw std::invalid_argument("Access with [idx] or [row,col]"); });
+		cl.def("__str__", [](const mat_t& o) -> std::string { return o.asString(); } );
+		cl.def("inMatlabFormat", [](const mat_t& o) -> std::string { return o.inMatlabFormat(); } );
+		cl.def("size", [](const mat_t&self) -> pybind11::tuple { return pybind11::make_tuple(self.cols(),self.rows()); });
+		cl.def_static("Identity", []() -> mat_t { return mat_t::Identity(); }, "Returns the NxN identity matrix");
+		cl.def_static("Zero", []() -> mat_t { return mat_t::Zero(); }, "Returns a matrix with zeroes");
+		cl.def(pybind11::init( [](pybind11::list vals){ auto m = new mat_t(); const auto nR = vals.size(); if (!nR) return m; const auto nC = vals[0].cast<pybind11::list>().size(); m->setSize(nR,nC); for (size_t r=0;r<nR;r++) { const auto row = vals[r].cast<pybind11::list>(); for (size_t c=0;c<nC;c++) m->coeffRef(r,c) = row[c].cast<dat_t>(); } return m; }));
+		cl.def("to_list", [](const mat_t&self) -> pybind11::list { auto l = pybind11::list(); const auto nR = self.rows(), nC = self.cols(); for (size_t r=0;r<nR;r++) { auto row = pybind11::list(); l.append(row); for (size_t c=0;c<nC;c++) row.append(self.coeff(r,c)); } return l; });
+
 	}
 }

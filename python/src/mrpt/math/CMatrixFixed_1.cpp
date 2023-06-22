@@ -66,10 +66,21 @@ void bind_mrpt_math_CMatrixFixed_1(std::function< pybind11::module &(std::string
 		cl.def("data", (double * (mrpt::math::CMatrixFixed<double,3UL,1UL>::*)()) &mrpt::math::CMatrixFixed<double, 3, 1>::data, "C++: mrpt::math::CMatrixFixed<double, 3, 1>::data() --> double *", pybind11::return_value_policy::automatic);
 		cl.def("__call__", (double & (mrpt::math::CMatrixFixed<double,3UL,1UL>::*)(int, int)) &mrpt::math::CMatrixFixed<double, 3, 1>::operator(), "C++: mrpt::math::CMatrixFixed<double, 3, 1>::operator()(int, int) --> double &", pybind11::return_value_policy::reference, pybind11::arg("row"), pybind11::arg("col"));
 		cl.def("__call__", (double & (mrpt::math::CMatrixFixed<double,3UL,1UL>::*)(int)) &mrpt::math::CMatrixFixed<double, 3, 1>::operator(), "C++: mrpt::math::CMatrixFixed<double, 3, 1>::operator()(int) --> double &", pybind11::return_value_policy::reference, pybind11::arg("i"));
-		cl.def("__getitem__", (double & (mrpt::math::CMatrixFixed<double,3UL,1UL>::*)(int)) &mrpt::math::CMatrixFixed<double, 3, 1>::operator[], "C++: mrpt::math::CMatrixFixed<double, 3, 1>::operator[](int) --> double &", pybind11::return_value_policy::reference, pybind11::arg("i"));
 		cl.def("cast_float", (class mrpt::math::CMatrixFixed<float, 3, 1> (mrpt::math::CMatrixFixed<double,3UL,1UL>::*)() const) &mrpt::math::CMatrixFixed<double, 3, 1>::cast_float, "C++: mrpt::math::CMatrixFixed<double, 3, 1>::cast_float() const --> class mrpt::math::CMatrixFixed<float, 3, 1>");
 		cl.def("sum_At", (void (mrpt::math::CMatrixFixed<double,3UL,1UL>::*)(const class mrpt::math::CMatrixFixed<double, 3, 1> &)) &mrpt::math::CMatrixFixed<double, 3, 1>::sum_At, "C++: mrpt::math::CMatrixFixed<double, 3, 1>::sum_At(const class mrpt::math::CMatrixFixed<double, 3, 1> &) --> void", pybind11::arg("A"));
 		cl.def("assign", (class mrpt::math::CMatrixFixed<double, 3, 1> & (mrpt::math::CMatrixFixed<double,3UL,1UL>::*)(const class mrpt::math::CMatrixFixed<double, 3, 1> &)) &mrpt::math::CMatrixFixed<double, 3, 1>::operator=, "C++: mrpt::math::CMatrixFixed<double, 3, 1>::operator=(const class mrpt::math::CMatrixFixed<double, 3, 1> &) --> class mrpt::math::CMatrixFixed<double, 3, 1> &", pybind11::return_value_policy::automatic, pybind11::arg(""));
+
+		// Manually-added matrix methods:
+		using dat_t = double;
+		using mat_t = mrpt::math::CMatrixFixed<dat_t,3,1>;
+		cl.def("__getitem__", [](const mat_t&self, pybind11::tuple coord) -> dat_t { if (coord.size()==2) return self.coeff(coord[0].cast<size_t>(), coord[1].cast<size_t>()); else if (coord.size()==1) return self[coord[0].cast<size_t>()]; else throw std::invalid_argument("Access with [idx] or [row,col]"); });
+		cl.def("__setitem__", [](mat_t&self, pybind11::tuple coord, dat_t val) { if (coord.size()==2) self.coeffRef(coord[0].cast<size_t>(), coord[1].cast<size_t>())=val; else if (coord.size()==1) self[coord[0].cast<size_t>()]=val; else throw std::invalid_argument("Access with [idx] or [row,col]"); });
+		cl.def("__str__", [](const mat_t& o) -> std::string { return o.asString(); } );
+		cl.def("inMatlabFormat", [](const mat_t& o) -> std::string { return o.inMatlabFormat(); } );
+		cl.def("size", [](const mat_t&self) -> pybind11::tuple { return pybind11::make_tuple(self.cols(),self.rows()); });
+		cl.def_static("Zero", []() -> mat_t { return mat_t::Zero(); }, "Returns a matrix with zeroes");
+		cl.def(pybind11::init( [](pybind11::list vals){ auto m = new mat_t(); const auto nR = vals.size(); if (!nR) return m; const auto nC = vals[0].cast<pybind11::list>().size(); m->setSize(nR,nC); for (size_t r=0;r<nR;r++) { const auto row = vals[r].cast<pybind11::list>(); for (size_t c=0;c<nC;c++) m->coeffRef(r,c) = row[c].cast<dat_t>(); } return m; }));
+		cl.def("to_list", [](const mat_t&self) -> pybind11::list { auto l = pybind11::list(); const auto nR = self.rows(), nC = self.cols(); for (size_t r=0;r<nR;r++) { auto row = pybind11::list(); l.append(row); for (size_t c=0;c<nC;c++) row.append(self.coeff(r,c)); } return l; });
 	}
 	{ // mrpt::math::CMatrixFixed file:mrpt/math/CMatrixFixed.h line:34
 		pybind11::class_<mrpt::math::CMatrixFixed<double,3UL,4UL>, std::shared_ptr<mrpt::math::CMatrixFixed<double,3UL,4UL>>> cl(M("mrpt::math"), "CMatrixFixed_double_3UL_4UL_t", "");
