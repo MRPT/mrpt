@@ -18,12 +18,17 @@ if (NOT CMAKE_MRPT_HAS_PYTHON_BINDINGS)
   return()
 endif()
 
-set(PY_SRCS_DIR ${CMAKE_CURRENT_LIST_DIR}/generated-sources-pybind)
+set(PY_SRCS_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
 
-file(GLOB_RECURSE PY_SRCS ${PY_SRCS_DIR}/*.cpp)
+# these "all" files can be generated like:
+#  ls -1 src/nanogui/*.cpp | xargs -I FIL echo "#include \"FIL\"" > all_nanogui.cpp
+
+#file(GLOB_RECURSE PY_ALL_SRCS ${PY_SRCS_DIR}/all_*.cpp)
+file(GLOB_RECURSE PY_ALL_SRCS all_*.cpp)
 
 pybind11_add_module(pymrpt
-  ${PY_SRCS}
+  ${PY_SRCS_DIR}/pymrpt.cpp
+  ${PY_ALL_SRCS}
   # -- manually crafted files --
   pymrpt_internals.cpp
   )
@@ -52,7 +57,7 @@ endif()
 
 target_compile_definitions(pymrpt PRIVATE MRPT_BUILDING_PYTHON_WRAPPER)
 
-  # Python files:
+# Python files:
 file(MAKE_DIRECTORY ${MRPT_PYTHON_BUILD_DIRECTORY}/mrpt/)
 add_custom_command(TARGET pymrpt POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:pymrpt>
@@ -60,6 +65,12 @@ add_custom_command(TARGET pymrpt POST_BUILD
 )
 file(WRITE ${MRPT_PYTHON_BUILD_DIRECTORY}/mrpt/__init__.py
   "from . import *")
+
+# copy ROS stuff
+file(COPY
+  ${CMAKE_CURRENT_LIST_DIR}/ros_bridge.py
+  DESTINATION ${MRPT_PYTHON_BUILD_DIRECTORY}/mrpt/
+)
 
 # Generate setup.py
 configure_file(${MRPT_SOURCE_DIR}/parse-files/setup.py.in

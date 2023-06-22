@@ -10,3 +10,8 @@ in the plane (x,y,phi):
 .. literalinclude:: ../../python-examples/se2-poses-example.py
    :language: python
    :linenos:
+
+Output:
+
+.. literalinclude:: ../../python-examples/se2-poses-example.out
+   :linenos:

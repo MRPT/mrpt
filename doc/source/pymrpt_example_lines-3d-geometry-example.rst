@@ -9,3 +9,9 @@ This example illustrates some geometry functions:
 .. literalinclude:: ../../python-examples/lines-3d-geometry-example.py
    :language: python
    :linenos:
+
+Output:
+
+.. literalinclude:: ../../python-examples/lines-3d-geometry-example.out
+   :linenos:
+

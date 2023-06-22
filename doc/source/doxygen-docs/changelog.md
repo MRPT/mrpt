@@ -1,5 +1,11 @@
 \page changelog Change Log
 
+# Version 2.9.3: Released June 22nd, 2023
+- Python:
+  - New module pymrpt.ros_bridge
+  - Matrices now have proper conversion and accessor methods in the Python API, including conversion from/to numpy.
+  - Reduce build time of pymrpt.
+
 # Version 2.9.2: Released June 20th, 2023
 - Changes in docs:
   - Update dependency in instructions from `libftdi-dev` to `libftdi1-dev`

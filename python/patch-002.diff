@@ -1,0 +1,13 @@
+diff --git a/python/src/mrpt/math/homog_matrices.cpp b/python/src/mrpt/math/homog_matrices.cpp
+index 44599e0b4..f93f9d820 100644
+--- a/python/src/mrpt/math/homog_matrices.cpp
++++ b/python/src/mrpt/math/homog_matrices.cpp
+@@ -8,6 +8,8 @@
+ #include <string>
+ #include <pybind11/stl.h>
+ 
++#include <Eigen/Dense>
++
+ 
+ #ifndef BINDER_PYBIND11_TYPE_CASTER
+ 	#define BINDER_PYBIND11_TYPE_CASTER
