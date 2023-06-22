@@ -41,11 +41,9 @@ mrpt/typemeta/TEnumType_3.cpp
 mrpt/typemeta/TEnumType_4.cpp
 mrpt/typemeta/TEnumType_5.cpp
 mrpt/typemeta/TEnumType_6.cpp
-std/variant.cpp
 mrpt/serialization/CArchive.cpp
 mrpt/serialization/CArchive_1.cpp
 mrpt/serialization/CArchive_2.cpp
-mrpt/serialization/CArchive_3.cpp
 unknown/unknown.cpp
 mrpt/config/CLoadableOptions.cpp
 mrpt/system/CTicTac.cpp
