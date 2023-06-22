@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.9.4: UNRELEASED
+(No changes yet)
+
 # Version 2.9.3: Released June 22nd, 2023
 - Python:
   - New module pymrpt.ros_bridge
