@@ -51,11 +51,9 @@ void bind_mrpt_typemeta_TEnumType_3(std::function< pybind11::module &(std::strin
 void bind_mrpt_typemeta_TEnumType_4(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_typemeta_TEnumType_5(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_typemeta_TEnumType_6(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_std_variant(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_serialization_CArchive(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_serialization_CArchive_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_serialization_CArchive_2(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_serialization_CArchive_3(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_unknown_unknown(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_config_CLoadableOptions(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_system_CTicTac(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -475,11 +473,9 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_typemeta_TEnumType_4(M);
 	bind_mrpt_typemeta_TEnumType_5(M);
 	bind_mrpt_typemeta_TEnumType_6(M);
-	bind_std_variant(M);
 	bind_mrpt_serialization_CArchive(M);
 	bind_mrpt_serialization_CArchive_1(M);
 	bind_mrpt_serialization_CArchive_2(M);
-	bind_mrpt_serialization_CArchive_3(M);
 	bind_unknown_unknown(M);
 	bind_mrpt_config_CLoadableOptions(M);
 	bind_mrpt_system_CTicTac(M);
