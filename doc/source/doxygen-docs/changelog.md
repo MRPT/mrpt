@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.9.4: UNRELEASED
-(No changes yet)
+- BUG FIXES:
+  - Fix fail to build with libftdi1 v1.4 (Ubuntu Focal).
 
 # Version 2.9.3: Released June 22nd, 2023
 - Python:
