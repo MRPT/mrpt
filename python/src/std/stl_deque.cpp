@@ -56,6 +56,11 @@ void bind_std_stl_deque(std::function< pybind11::module &(std::string const &nam
 		cl.def("pop_back", (void (std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose3D, mrpt::bayes::particle_storage_mode::VALUE>>::*)()) &std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose3D, mrpt::bayes::particle_storage_mode::VALUE>>::pop_back, "C++: std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose3D, mrpt::bayes::particle_storage_mode::VALUE>>::pop_back() --> void");
 		cl.def("swap", (void (std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose3D, mrpt::bayes::particle_storage_mode::VALUE>>::*)(class std::deque<struct mrpt::bayes::CProbabilityParticle<struct mrpt::math::TPose3D, mrpt::bayes::particle_storage_mode::VALUE> > &)) &std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose3D, mrpt::bayes::particle_storage_mode::VALUE>>::swap, "C++: std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose3D, mrpt::bayes::particle_storage_mode::VALUE>>::swap(class std::deque<struct mrpt::bayes::CProbabilityParticle<struct mrpt::math::TPose3D, mrpt::bayes::particle_storage_mode::VALUE> > &) --> void", pybind11::arg("__x"));
 		cl.def("clear", (void (std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose3D, mrpt::bayes::particle_storage_mode::VALUE>>::*)()) &std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose3D, mrpt::bayes::particle_storage_mode::VALUE>>::clear, "C++: std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose3D, mrpt::bayes::particle_storage_mode::VALUE>>::clear() --> void");
+
+		cl.def("__iter__", [](const std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose3D, mrpt::bayes::particle_storage_mode::VALUE>> &o) {
+			return pybind11::make_iterator(o.begin(), o.end());
+			}, pybind11::keep_alive<0, 1>());
+
 	}
 	{ // std::deque file:bits/stl_deque.h line:766
 		pybind11::class_<std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>>, std::shared_ptr<std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>>>> cl(M("std"), "deque_mrpt_bayes_CProbabilityParticle_mrpt_math_TPose2D_mrpt_bayes_particle_storage_mode_VALUE_t", "");
@@ -90,5 +95,10 @@ void bind_std_stl_deque(std::function< pybind11::module &(std::string const &nam
 		cl.def("pop_back", (void (std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>>::*)()) &std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>>::pop_back, "C++: std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>>::pop_back() --> void");
 		cl.def("swap", (void (std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>>::*)(class std::deque<struct mrpt::bayes::CProbabilityParticle<struct mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE> > &)) &std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>>::swap, "C++: std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>>::swap(class std::deque<struct mrpt::bayes::CProbabilityParticle<struct mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE> > &) --> void", pybind11::arg("__x"));
 		cl.def("clear", (void (std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>>::*)()) &std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>>::clear, "C++: std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>>::clear() --> void");
+
+		cl.def("__iter__", [](const std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>> &o) {
+			return pybind11::make_iterator(o.begin(), o.end());
+			}, pybind11::keep_alive<0, 1>());
+
 	}
 }

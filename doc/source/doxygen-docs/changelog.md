@@ -1,6 +1,9 @@
 \page changelog Change Log
 
 # Version 2.9.4: UNRELEASED
+- Python:
+  - maps and multimaps are iterable again (Fixes a regression in v2.9.3)
+  - timestamps now has a `__str__` operator and `to_double()` method.
 - BUG FIXES:
   - Fix fail to build with libftdi1 v1.4 (Ubuntu Focal).
 
