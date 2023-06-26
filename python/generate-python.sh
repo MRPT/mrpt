@@ -66,10 +66,6 @@ $HOME/code/binder/build/source/binder \
 	-I$HOME/code/mrpt/libs/typemeta/include \
 	-I$HOME/code/mrpt/libs/vision/include/ \
 
-# applying manual patches:
-echo "Applying manual patches..."
-find . -name "*.diff" | xargs -I FIL bash -c "git apply FIL"
-
 # Workarounds to binder limitations:
 # These are to ensure multiplatform portatbility of generated code
 # (e.g. avoid build errors in armhf)
@@ -96,4 +92,7 @@ sed -i -e 's/unsigned long/size_t/g' $WRAP_OUT_DIR/std/stl_multimap.cpp
 find $WRAP_OUT_DIR -name "*.cpp" | 	xargs -I FIL \
 	sed -i -e 's/(long)/(int64_t)/g' FIL
 
+# applying manual patches:
+echo "Applying manual patches..."
+find . -name "*.diff" | xargs -I FIL bash -c "git apply FIL"
 

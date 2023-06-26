@@ -64,6 +64,11 @@ void bind_std_stl_deque_1(std::function< pybind11::module &(std::string const &n
 		cl.def("pop_back", (void (std::deque<mrpt::math::TPose3D>::*)()) &std::deque<mrpt::math::TPose3D>::pop_back, "C++: std::deque<mrpt::math::TPose3D>::pop_back() --> void");
 		cl.def("swap", (void (std::deque<mrpt::math::TPose3D>::*)(class std::deque<struct mrpt::math::TPose3D> &)) &std::deque<mrpt::math::TPose3D>::swap, "C++: std::deque<mrpt::math::TPose3D>::swap(class std::deque<struct mrpt::math::TPose3D> &) --> void", pybind11::arg("__x"));
 		cl.def("clear", (void (std::deque<mrpt::math::TPose3D>::*)()) &std::deque<mrpt::math::TPose3D>::clear, "C++: std::deque<mrpt::math::TPose3D>::clear() --> void");
+
+		cl.def("__iter__", [](const std::deque<mrpt::math::TPose3D> &o) {
+			return pybind11::make_iterator(o.begin(), o.end());
+			}, pybind11::keep_alive<0, 1>());
+
 	}
 	{ // std::deque file:bits/stl_deque.h line:766
 		pybind11::class_<std::deque<mrpt::bayes::CProbabilityParticle<mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER>>, std::shared_ptr<std::deque<mrpt::bayes::CProbabilityParticle<mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER>>>> cl(M("std"), "deque_mrpt_bayes_CProbabilityParticle_mrpt_maps_CRBPFParticleData_mrpt_bayes_particle_storage_mode_POINTER_t", "");
@@ -91,5 +96,10 @@ void bind_std_stl_deque_1(std::function< pybind11::module &(std::string const &n
 		cl.def("pop_back", (void (std::deque<mrpt::bayes::CProbabilityParticle<mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER>>::*)()) &std::deque<mrpt::bayes::CProbabilityParticle<mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER>>::pop_back, "C++: std::deque<mrpt::bayes::CProbabilityParticle<mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER>>::pop_back() --> void");
 		cl.def("swap", (void (std::deque<mrpt::bayes::CProbabilityParticle<mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER>>::*)(class std::deque<struct mrpt::bayes::CProbabilityParticle<class mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER> > &)) &std::deque<mrpt::bayes::CProbabilityParticle<mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER>>::swap, "C++: std::deque<mrpt::bayes::CProbabilityParticle<mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER>>::swap(class std::deque<struct mrpt::bayes::CProbabilityParticle<class mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER> > &) --> void", pybind11::arg("__x"));
 		cl.def("clear", (void (std::deque<mrpt::bayes::CProbabilityParticle<mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER>>::*)()) &std::deque<mrpt::bayes::CProbabilityParticle<mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER>>::clear, "C++: std::deque<mrpt::bayes::CProbabilityParticle<mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER>>::clear() --> void");
+
+		cl.def("__iter__", [](const std::deque<mrpt::bayes::CProbabilityParticle<mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER>> &o) {
+			return pybind11::make_iterator(o.begin(), o.end());
+			}, pybind11::keep_alive<0, 1>());
+
 	}
 }

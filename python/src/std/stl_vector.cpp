@@ -62,5 +62,9 @@ void bind_std_stl_vector(std::function< pybind11::module &(std::string const &na
 		cl.def("erase", (class __gnu_cxx::__normal_iterator<std::string *, class std::vector<std::string > > (std::vector<std::string>::*)(class __gnu_cxx::__normal_iterator<const std::string *, class std::vector<std::string > >, class __gnu_cxx::__normal_iterator<const std::string *, class std::vector<std::string > >)) &std::vector<std::string>::erase, "C++: std::vector<std::string>::erase(class __gnu_cxx::__normal_iterator<const std::string *, class std::vector<std::string > >, class __gnu_cxx::__normal_iterator<const std::string *, class std::vector<std::string > >) --> class __gnu_cxx::__normal_iterator<std::string *, class std::vector<std::string > >", pybind11::arg("__first"), pybind11::arg("__last"));
 		cl.def("swap", (void (std::vector<std::string>::*)(class std::vector<std::string > &)) &std::vector<std::string>::swap, "C++: std::vector<std::string>::swap(class std::vector<std::string > &) --> void", pybind11::arg("__x"));
 		cl.def("clear", (void (std::vector<std::string>::*)()) &std::vector<std::string>::clear, "C++: std::vector<std::string>::clear() --> void");
+
+		cl.def("__iter__", [](const std::vector<std::string> &o) {
+			return pybind11::make_iterator(o.begin(), o.end());
+			}, pybind11::keep_alive<0, 1>());
 	}
 }
