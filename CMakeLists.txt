@@ -11,9 +11,22 @@
 #  2007-2021, Jose Luis Blanco <jlblanco@ual.es>
 # ----------------------------------------------------------------------------
 
-if (POLICY CMP0048)
-  # cmake warns if loaded from a min-3.x-required parent dir:
+# -------------------------
+#        Setup CMake
+# -------------------------
+# Minimum version required for:
+# - target_compile_features() => 3.8.0
+# - cmakemodules/ECMFindModuleHelpers.cmake:112  => 3.16.0  (Available in Ubuntu >=20.04)
+cmake_minimum_required(VERSION 3.16.0)
+
+if (POLICY CMP0048) # cmake warns if loaded from a min-3.x-required parent dir:
   cmake_policy(SET CMP0048 NEW)
+endif()
+if (POLICY CMP0075) # CheckIncludeFile: Yes, we will set "CMAKE_REQUIRED_LIBRARIES".
+	cmake_policy(SET CMP0075 NEW)
+endif()
+if (POLICY CMP0135)  # The DOWNLOAD_EXTRACT_TIMESTAMP option was not given
+	cmake_policy(SET CMP0135 NEW)
 endif()
 
 # Tell CMake we'll use both C & C++ for use in its tests/flags.
@@ -31,18 +44,6 @@ if (DEFINED CACHE{CMAKE_BUILD_TYPE})
 		"Debug" "Release" "MinSizeRel" "RelWithDebInfo" "Coverage" "SanitizeAddress" "SanitizeThread")
 endif()
 
-# -------------------------
-#        Setup CMake
-# -------------------------
-# Minimum version required for:
-# - target_compile_features() => 3.8.0
-# - cmakemodules/ECMFindModuleHelpers.cmake:112  => 3.16.0  (Available in Ubuntu >=20.04)
-cmake_minimum_required(VERSION 3.16.0)
-
-# CheckIncludeFile: Yes, we will set "CMAKE_REQUIRED_LIBRARIES".
-if (POLICY CMP0075)
-	cmake_policy(SET CMP0075 NEW)
-endif()
 
 if ((NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/nanogui/include")
     OR (NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/rplidar_sdk/sdk/sdk")
