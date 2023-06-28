@@ -167,13 +167,45 @@ endforeach()
 
 # Special dependencies:
 if (TARGET test_mrpt_img)
-    if(CMAKE_MRPT_HAS_OPENCV)
-	target_link_libraries(test_mrpt_img imp_opencv)
-    endif()
+	if(CMAKE_MRPT_HAS_OPENCV)
+		target_link_libraries(test_mrpt_img imp_opencv)
+	endif()
 endif()
 
 if (TARGET test_mrpt_core)
-    if (MRPT_EXCEPTIONS_WITH_CALL_STACK)
-        target_compile_definitions(test_mrpt_core PRIVATE MRPT_EXCEPTIONS_WITH_CALL_STACK)
-    endif()
+	if (MRPT_EXCEPTIONS_WITH_CALL_STACK)
+		target_compile_definitions(test_mrpt_core PRIVATE MRPT_EXCEPTIONS_WITH_CALL_STACK)
+	endif()
+endif()
+
+
+# -----------------------------
+# Python tests
+# -----------------------------
+set(MRPT_LIB_PATH ${CMAKE_BINARY_DIR}/lib/)
+set(PYTHON_EXECUTABLE ${PYBIND11_PYTHON_EXECUTABLE_LAST})
+
+function(mrpt_add_python_test NAME)
+	if (NOT PYTHON_EXECUTABLE)
+		message(FATAL_ERROR "PYTHON_EXECUTABLE seems not valid but CMAKE_MRPT_HAS_PYTHON_BINDINGS=ON")
+	endif()
+	set(cmd ${CMAKE_COMMAND}
+	-E env
+		PYTHONPATH=${CMAKE_BINARY_DIR}:$ENV{PYTHONPATH}
+		LD_LIBRARY_PATH=${MVSIM_COMMS_LIB_PATH}:${MVSIM_MSGS_LIB_PATH}:${MVSIM_SIMULATOR_LIB_PATH}:$ENV{LD_LIBRARY_PATH}
+		TESTS_DIR=${CMAKE_CURRENT_FUNCTION_LIST_DIR}
+		${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/python-tests/${NAME}.py
+	)
+	message(STATUS "pytest cmd: ${cmd}")
+	add_custom_target(run_test_python_${NAME} COMMAND ${cmd})
+	add_dependencies(test_legacy run_test_python_${NAME})
+endfunction()
+
+if (CMAKE_MRPT_HAS_PYTHON_BINDINGS)
+	# Build the pymrpt module before running the tests:
+	add_dependencies(tests_build_all pymrpt)
+
+	# Individual python tests:
+	mrpt_add_python_test(poses-se2)
+
 endif()

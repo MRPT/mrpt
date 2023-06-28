@@ -66,6 +66,12 @@ add_custom_command(TARGET pymrpt POST_BUILD
 file(WRITE ${MRPT_PYTHON_BUILD_DIRECTORY}/mrpt/__init__.py
   "from . import *")
 
+# install stub files too:
+file(COPY
+  ${CMAKE_CURRENT_LIST_DIR}/stubs-out/mrpt
+  DESTINATION ${MRPT_PYTHON_BUILD_DIRECTORY}/
+)
+
 # copy ROS stuff
 file(COPY
   ${CMAKE_CURRENT_LIST_DIR}/ros_bridge.py

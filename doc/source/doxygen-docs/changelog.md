@@ -2,6 +2,7 @@
 
 # Version 2.9.4: UNRELEASED
 - Python:
+  - pymrpt now ships stub `.pyi` files, for IDEs to autocomplete MRPT Python programs.
   - maps and multimaps are iterable again (Fixes a regression in v2.9.3)
   - timestamps now has a `__str__` operator and `to_double()` method.
 - Build system:

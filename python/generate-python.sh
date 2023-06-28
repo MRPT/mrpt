@@ -96,3 +96,5 @@ find $WRAP_OUT_DIR -name "*.cpp" | 	xargs -I FIL \
 echo "Applying manual patches..."
 find . -name "*.diff" | xargs -I FIL bash -c "git apply FIL"
 
+# Generate stub .pyi files:
+stubgen -p mrpt -p mrpt.pymrpt -o stubs-out
