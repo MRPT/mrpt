@@ -202,6 +202,10 @@ function(mrpt_add_python_test NAME)
 endfunction()
 
 if (CMAKE_MRPT_HAS_PYTHON_BINDINGS)
+	# Build the pymrpt module before running the tests:
+	add_dependencies(tests_build_all pymrpt)
+
+	# Individual python tests:
 	mrpt_add_python_test(poses-se2)
 
 endif()
