@@ -66,9 +66,12 @@ add_custom_command(TARGET pymrpt POST_BUILD
 file(WRITE ${MRPT_PYTHON_BUILD_DIRECTORY}/mrpt/__init__.py
   "from . import *")
 
+# Required if we provide the stub files: ( https://peps.python.org/pep-0561/ )
+file(WRITE ${MRPT_PYTHON_BUILD_DIRECTORY}/mrpt/py.typed "")
+
 # install stub files too:
 file(COPY
-  ${CMAKE_CURRENT_LIST_DIR}/stubs-out/mrpt
+  ${CMAKE_CURRENT_LIST_DIR}/stubs-out/
   DESTINATION ${MRPT_PYTHON_BUILD_DIRECTORY}/
 )
 
