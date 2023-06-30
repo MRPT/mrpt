@@ -32,7 +32,7 @@ endif()
 # Install .pyi files too:
 set(cmd_ ${CMAKE_COMMAND}
     -E copy_directory @MRPT_PYTHON_BUILD_DIRECTORY@/mrpt
-    ${INSTALL_ROOT_DIR}/@PYTHON_INSTALL_DIR@
+    ${INSTALL_ROOT_DIR}/@PYTHON_INSTALL_DIR@/mrpt
 )
 message(STATUS "Installing .pyi files with: ${cmd_}")
 execute_process(COMMAND ${cmd_})
