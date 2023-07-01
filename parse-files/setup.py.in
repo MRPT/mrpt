@@ -14,7 +14,13 @@ package_data = {
     '': [
         './*.so',
         './*.dll',
-        './py.typed'
+        './py.typed',
+        # Install .pyi stub files:
+        './*.pyi',
+        './pymrpt/*',
+        './pymrpt/*/*',
+        './pymrpt/*/*/*',
+        './pymrpt/*/*/*/*'
     ]
 }
 

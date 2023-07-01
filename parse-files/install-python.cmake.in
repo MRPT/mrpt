@@ -8,14 +8,10 @@ else()
 endif()
 
 set(cmd_
-    @Python3_EXECUTABLE@ @MRPT_PYTHON_BUILD_DIRECTORY@/setup.py 
-        install
-        --root=${INSTALL_ROOT_DIR}
-        --install-lib=@PYTHON_INSTALL_DIR@
-        --install-layout=deb
-        --single-version-externally-managed
+    @Python3_EXECUTABLE@ -m pip install .
+        --target=${INSTALL_ROOT_DIR}/@PYTHON_INSTALL_DIR@
+        --ignore-installed
 )
-
 
 string(REPLACE ";" " " _cmd_print "${cmd_}")
 message(STATUS "Running: ${_cmd_print}")
@@ -29,10 +25,3 @@ if(result)
     message(FATAL_ERROR "CMake step for installing python modules failed: ${result}")
 endif()
 
-# Install .pyi files too:
-set(cmd_ ${CMAKE_COMMAND}
-    -E copy_directory @MRPT_PYTHON_BUILD_DIRECTORY@/mrpt
-    ${INSTALL_ROOT_DIR}/@PYTHON_INSTALL_DIR@/mrpt
-)
-message(STATUS "Installing .pyi files with: ${cmd_}")
-execute_process(COMMAND ${cmd_})
