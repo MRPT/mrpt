@@ -30,6 +30,7 @@ while True:
             print('Time={} obs={}'.format(timestamp, obs.asString()))
 
             # You can access individual IMU readings with:
+            # o = mrpt.obs.CObservationIMU(obs)
             # angVel_z = o.get(mrpt.obs.TIMUDataIndex.IMU_WZ)
             #
             # See: https://docs.mrpt.org/reference/latest/enum_mrpt_obs_TIMUDataIndex.html
