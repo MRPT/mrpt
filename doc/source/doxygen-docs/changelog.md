@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.9.4: UNRELEASED
+# Version 2.9.4: Released July 1st, 2023
 - Python:
   - pymrpt now ships stub `.pyi` files, for IDEs to autocomplete MRPT Python programs.
   - maps and multimaps are iterable again (Fixes a regression in v2.9.3)
