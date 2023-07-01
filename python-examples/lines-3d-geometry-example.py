@@ -12,9 +12,10 @@ mrpt = pymrpt.mrpt
 TPoint3D = mrpt.math.TPoint3D_double_t
 TLine3D = mrpt.math.TLine3D
 
-l1 = TLine3D.FromTwoPoints(TPoint3D(0, 0, 0), TPoint3D(1, 0, 0))
-l2 = TLine3D.FromTwoPoints(TPoint3D(1, 1, 1), TPoint3D(2, 2, 0))
+l1: TLine3D = TLine3D.FromTwoPoints(TPoint3D(0, 0, 0), TPoint3D(1, 0, 0))
+l2: TLine3D = TLine3D.FromTwoPoints(TPoint3D(1, 1, 1), TPoint3D(2, 2, 0))
 
 print('l1             : ' + str(l1))
 print('l2             : ' + str(l2))
 print('dist(l1,l2)    : ' + str(mrpt.math.distance(l1, l2)))
+print('l1.director    : ' + l1.getDirectorVector().asString())

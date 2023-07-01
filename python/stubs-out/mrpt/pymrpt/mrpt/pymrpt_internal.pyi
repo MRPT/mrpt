@@ -1,0 +1,3 @@
+import mrpt.pymrpt.mrpt.poses
+
+def insertObs(sf, map, robotPose: mrpt.pymrpt.mrpt.poses.CPose3D) -> bool: ...

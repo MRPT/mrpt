@@ -1,5 +1,15 @@
 \page changelog Change Log
 
+# Version 2.9.4: Released July 1st, 2023
+- Python:
+  - pymrpt now ships stub `.pyi` files, for IDEs to autocomplete MRPT Python programs.
+  - maps and multimaps are iterable again (Fixes a regression in v2.9.3)
+  - timestamps now has a `__str__` operator and `to_double()` method.
+- Build system:
+  - Fix several modern cmake warnings.
+- BUG FIXES:
+  - Fix fail to build with libftdi1 v1.4 (Ubuntu Focal).
+
 # Version 2.9.3: Released June 22nd, 2023
 - Python:
   - New module pymrpt.ros_bridge
