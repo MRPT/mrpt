@@ -38,6 +38,13 @@ struct TLightParameters
 	float shadow_bias = 1e-5, shadow_bias_cam2frag = 1e-5,
 		  shadow_bias_normal = 1e-4;
 
+	/** Multiplier from eye distance to the length size of the squared area in
+	 * which to evaluate shadow casting by unidirectional light.
+	 * Unitless (meter/meter).
+	 * \note (New in MRPT 2.10.0)
+	 */
+	double eyeDistance2lightShadowExtension = 2.0;
+
 	void writeToStream(mrpt::serialization::CArchive& out) const;
 	void readFromStream(mrpt::serialization::CArchive& in);
 
