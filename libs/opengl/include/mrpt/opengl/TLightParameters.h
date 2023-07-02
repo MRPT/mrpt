@@ -45,6 +45,15 @@ struct TLightParameters
 	 */
 	double eyeDistance2lightShadowExtension = 2.0;
 
+	/** Minimum extension (in [0,1] ratio of the light distance) of the shadow
+	 * map square ortho frustum. Should be roughly the maximum area of the
+	 * largest room for indoor environments to ensure no missing shadows in
+	 * distant areas.
+	 *
+	 * \note (New in MRPT 2.10.0)
+	 */
+	float minimum_shadow_map_extension_ratio = 0.03f;
+
 	void writeToStream(mrpt::serialization::CArchive& out) const;
 	void readFromStream(mrpt::serialization::CArchive& in);
 
