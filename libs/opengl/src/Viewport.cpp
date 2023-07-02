@@ -1302,7 +1302,7 @@ void Viewport::updateMatricesFromCamera(const CCamera& myCamera) const
 
 	// Compute the directional light projection matrix (light_pv)
 	_.computeLightProjectionMatrix(
-		m_lightShadowClipMin, m_lightShadowClipMax, m_light.direction);
+		m_lightShadowClipMin, m_lightShadowClipMax, m_light);
 
 	_.initialized = true;
 }

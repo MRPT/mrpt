@@ -18,7 +18,7 @@ using namespace std;
 
 void TLightParameters::writeToStream(mrpt::serialization::CArchive& out) const
 {
-	const uint8_t version = 2;
+	const uint8_t version = 3;
 	out << version;
 
 	out << diffuse << ambient << specular << direction << color;
@@ -44,11 +44,11 @@ void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
 		break;
 		case 1:
 		case 2:
+		case 3:
 			in >> diffuse >> ambient >> specular >> direction >> color;
 			if (version >= 2)
-			{
 				in >> shadow_bias >> shadow_bias_cam2frag >> shadow_bias_normal;
-			}
+			if (version >= 3) in >> eyeDistance2lightShadowExtension;
 			break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
