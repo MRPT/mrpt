@@ -27,6 +27,8 @@
 #pragma warning(disable : 4275)	 // DLL export class derived from STL
 // Warnings are emited even if a DLL export class contains a *private* STL field
 #pragma warning(disable : 4251)
+// warning C4305: 'initializing': truncation from 'double' to 'float'
+#pragma warning(disable : 4305)
 
 #if (_MSC_VER >= 1400)
 // MS believes they have the right to deprecate functions in the C++ Standard
