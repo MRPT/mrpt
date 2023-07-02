@@ -3606,6 +3606,7 @@ class TLightParameters:
     diffuse: float
     direction: Any
     eyeDistance2lightShadowExtension: float
+    minimum_shadow_map_extension_ratio: float
     shadow_bias: float
     shadow_bias_cam2frag: float
     shadow_bias_normal: float

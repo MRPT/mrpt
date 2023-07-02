@@ -4,6 +4,7 @@
 - Changes in libraries:
   - \ref mrpt_opengl_grp
     - Move the parameter eyeDistance2lightShadowExtension from TRenderMatrices to mrpt::opengl::TLightParameters so it can be changed from user code (ABI change).
+    - New parameter mrpt::opengl::TLightParameters::minimum_shadow_map_extension_ratio
 - BUG FIXES:
   - pymrpt was not automatically built when invoking the python tests using `make test_legacy`.
 

@@ -23,7 +23,8 @@ void TLightParameters::writeToStream(mrpt::serialization::CArchive& out) const
 
 	out << diffuse << ambient << specular << direction << color;
 	out << shadow_bias << shadow_bias_cam2frag << shadow_bias_normal;  // v2
-	out << eyeDistance2lightShadowExtension;  // v3
+	out << eyeDistance2lightShadowExtension
+		<< minimum_shadow_map_extension_ratio;	// v3
 }
 
 void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
@@ -49,7 +50,9 @@ void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
 			in >> diffuse >> ambient >> specular >> direction >> color;
 			if (version >= 2)
 				in >> shadow_bias >> shadow_bias_cam2frag >> shadow_bias_normal;
-			if (version >= 3) in >> eyeDistance2lightShadowExtension;
+			if (version >= 3)
+				in >> eyeDistance2lightShadowExtension >>
+					minimum_shadow_map_extension_ratio;
 			break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};

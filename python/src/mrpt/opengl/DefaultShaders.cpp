@@ -142,6 +142,7 @@ void bind_mrpt_opengl_DefaultShaders(std::function< pybind11::module &(std::stri
 		cl.def_readwrite("shadow_bias_cam2frag", &mrpt::opengl::TLightParameters::shadow_bias_cam2frag);
 		cl.def_readwrite("shadow_bias_normal", &mrpt::opengl::TLightParameters::shadow_bias_normal);
 		cl.def_readwrite("eyeDistance2lightShadowExtension", &mrpt::opengl::TLightParameters::eyeDistance2lightShadowExtension);
+		cl.def_readwrite("minimum_shadow_map_extension_ratio", &mrpt::opengl::TLightParameters::minimum_shadow_map_extension_ratio);
 		cl.def("writeToStream", (void (mrpt::opengl::TLightParameters::*)(class mrpt::serialization::CArchive &) const) &mrpt::opengl::TLightParameters::writeToStream, "C++: mrpt::opengl::TLightParameters::writeToStream(class mrpt::serialization::CArchive &) const --> void", pybind11::arg("out"));
 		cl.def("readFromStream", (void (mrpt::opengl::TLightParameters::*)(class mrpt::serialization::CArchive &)) &mrpt::opengl::TLightParameters::readFromStream, "C++: mrpt::opengl::TLightParameters::readFromStream(class mrpt::serialization::CArchive &) --> void", pybind11::arg("in"));
 		cl.def("assign", (struct mrpt::opengl::TLightParameters & (mrpt::opengl::TLightParameters::*)(const struct mrpt::opengl::TLightParameters &)) &mrpt::opengl::TLightParameters::operator=, "C++: mrpt::opengl::TLightParameters::operator=(const struct mrpt::opengl::TLightParameters &) --> struct mrpt::opengl::TLightParameters &", pybind11::return_value_policy::automatic, pybind11::arg(""));

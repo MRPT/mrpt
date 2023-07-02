@@ -158,6 +158,10 @@ void TRenderMatrices::computeLightProjectionMatrix(
 	m_last_light_z_far = zmax;
 
 	float dist = eyeDistance * lp.eyeDistance2lightShadowExtension;
+
+	// Ensure dist is not too small:
+	mrpt::keep_max(dist, zmax * lp.minimum_shadow_map_extension_ratio);
+
 	light_p = OrthoProjectionMatrix(-dist, dist, -dist, dist, zmin, zmax);
 
 	// "up" vector from elevation:
