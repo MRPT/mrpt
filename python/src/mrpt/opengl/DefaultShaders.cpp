@@ -68,7 +68,7 @@ void bind_mrpt_opengl_DefaultShaders(std::function< pybind11::module &(std::stri
 		pybind11::class_<mrpt::opengl::DefaultShaderID, std::shared_ptr<mrpt::opengl::DefaultShaderID>> cl(M("mrpt::opengl"), "DefaultShaderID", "");
 		cl.def( pybind11::init( [](){ return new mrpt::opengl::DefaultShaderID(); } ) );
 	}
-	{ // mrpt::opengl::TRenderMatrices file:mrpt/opengl/TRenderMatrices.h line:28
+	{ // mrpt::opengl::TRenderMatrices file:mrpt/opengl/TRenderMatrices.h line:29
 		pybind11::class_<mrpt::opengl::TRenderMatrices, std::shared_ptr<mrpt::opengl::TRenderMatrices>> cl(M("mrpt::opengl"), "TRenderMatrices", "Rendering state related to the projection and model-view matrices.\n Used to store matrices that will be sent to shaders.\n\n The homogeneous coordinates of a rendered point comes from the product\n (from right to left) of MODEL, VIEW and PROJECTION matrices:\n\n  p = p_matrix * v_matrix * m_matrix * [x y z 1.0]'\n\n \n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::opengl::TRenderMatrices(); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::TRenderMatrices const &o){ return new mrpt::opengl::TRenderMatrices(o); } ) );
@@ -88,7 +88,6 @@ void bind_mrpt_opengl_DefaultShaders(std::function< pybind11::module &(std::stri
 		cl.def_readwrite("azimuth", &mrpt::opengl::TRenderMatrices::azimuth);
 		cl.def_readwrite("elev", &mrpt::opengl::TRenderMatrices::elev);
 		cl.def_readwrite("eyeDistance", &mrpt::opengl::TRenderMatrices::eyeDistance);
-		cl.def_readwrite("eyeDistance2lightShadowExtension", &mrpt::opengl::TRenderMatrices::eyeDistance2lightShadowExtension);
 		cl.def_readwrite("viewport_width", &mrpt::opengl::TRenderMatrices::viewport_width);
 		cl.def_readwrite("viewport_height", &mrpt::opengl::TRenderMatrices::viewport_height);
 		cl.def_readwrite("initialized", &mrpt::opengl::TRenderMatrices::initialized);
@@ -98,7 +97,7 @@ void bind_mrpt_opengl_DefaultShaders(std::function< pybind11::module &(std::stri
 		cl.def_readwrite("up", &mrpt::opengl::TRenderMatrices::up);
 		cl.def("matricesSetIdentity", (void (mrpt::opengl::TRenderMatrices::*)()) &mrpt::opengl::TRenderMatrices::matricesSetIdentity, "C++: mrpt::opengl::TRenderMatrices::matricesSetIdentity() --> void");
 		cl.def("computeProjectionMatrix", (void (mrpt::opengl::TRenderMatrices::*)(float, float)) &mrpt::opengl::TRenderMatrices::computeProjectionMatrix, "Uses is_projective , vw,vh, etc. and computes p_matrix from either:\n  - pinhole_model if set, or\n  - FOV, otherwise.\n Replacement for obsolete: gluPerspective() and glOrtho() \n\nC++: mrpt::opengl::TRenderMatrices::computeProjectionMatrix(float, float) --> void", pybind11::arg("zmin"), pybind11::arg("zmax"));
-		cl.def("computeLightProjectionMatrix", (void (mrpt::opengl::TRenderMatrices::*)(float, float, const struct mrpt::math::TPoint3D_<float> &)) &mrpt::opengl::TRenderMatrices::computeLightProjectionMatrix, "Updates light_pv \n\nC++: mrpt::opengl::TRenderMatrices::computeLightProjectionMatrix(float, float, const struct mrpt::math::TPoint3D_<float> &) --> void", pybind11::arg("zmin"), pybind11::arg("zmax"), pybind11::arg("direction"));
+		cl.def("computeLightProjectionMatrix", (void (mrpt::opengl::TRenderMatrices::*)(float, float, const struct mrpt::opengl::TLightParameters &)) &mrpt::opengl::TRenderMatrices::computeLightProjectionMatrix, "Updates light_pv \n\nC++: mrpt::opengl::TRenderMatrices::computeLightProjectionMatrix(float, float, const struct mrpt::opengl::TLightParameters &) --> void", pybind11::arg("zmin"), pybind11::arg("zmax"), pybind11::arg("lp"));
 		cl.def("computeOrthoProjectionMatrix", (void (mrpt::opengl::TRenderMatrices::*)(float, float, float, float, float, float)) &mrpt::opengl::TRenderMatrices::computeOrthoProjectionMatrix, "Especial case for custom parameters of Orthographic projection.\n  Equivalent to `p_matrix = ortho(...);`.\n\n Replacement for obsolete: glOrtho()\n\nC++: mrpt::opengl::TRenderMatrices::computeOrthoProjectionMatrix(float, float, float, float, float, float) --> void", pybind11::arg("left"), pybind11::arg("right"), pybind11::arg("bottom"), pybind11::arg("top"), pybind11::arg("znear"), pybind11::arg("zfar"));
 		cl.def_static("OrthoProjectionMatrix", (class mrpt::math::CMatrixFixed<float, 4, 4> (*)(float, float, float, float, float, float)) &mrpt::opengl::TRenderMatrices::OrthoProjectionMatrix, "Computes and returns an orthographic projection matrix.\n  Equivalent to obsolete glOrtho() or glm::ortho().\n\nC++: mrpt::opengl::TRenderMatrices::OrthoProjectionMatrix(float, float, float, float, float, float) --> class mrpt::math::CMatrixFixed<float, 4, 4>", pybind11::arg("left"), pybind11::arg("right"), pybind11::arg("bottom"), pybind11::arg("top"), pybind11::arg("znear"), pybind11::arg("zfar"));
 		cl.def("computeNoProjectionMatrix", (void (mrpt::opengl::TRenderMatrices::*)(float, float)) &mrpt::opengl::TRenderMatrices::computeNoProjectionMatrix, "Especial case: no projection, opengl coordinates are pixels from (0,0)\n bottom-left corner.\n\nC++: mrpt::opengl::TRenderMatrices::computeNoProjectionMatrix(float, float) --> void", pybind11::arg("znear"), pybind11::arg("zfar"));
@@ -142,6 +141,7 @@ void bind_mrpt_opengl_DefaultShaders(std::function< pybind11::module &(std::stri
 		cl.def_readwrite("shadow_bias", &mrpt::opengl::TLightParameters::shadow_bias);
 		cl.def_readwrite("shadow_bias_cam2frag", &mrpt::opengl::TLightParameters::shadow_bias_cam2frag);
 		cl.def_readwrite("shadow_bias_normal", &mrpt::opengl::TLightParameters::shadow_bias_normal);
+		cl.def_readwrite("eyeDistance2lightShadowExtension", &mrpt::opengl::TLightParameters::eyeDistance2lightShadowExtension);
 		cl.def("writeToStream", (void (mrpt::opengl::TLightParameters::*)(class mrpt::serialization::CArchive &) const) &mrpt::opengl::TLightParameters::writeToStream, "C++: mrpt::opengl::TLightParameters::writeToStream(class mrpt::serialization::CArchive &) const --> void", pybind11::arg("out"));
 		cl.def("readFromStream", (void (mrpt::opengl::TLightParameters::*)(class mrpt::serialization::CArchive &)) &mrpt::opengl::TLightParameters::readFromStream, "C++: mrpt::opengl::TLightParameters::readFromStream(class mrpt::serialization::CArchive &) --> void", pybind11::arg("in"));
 		cl.def("assign", (struct mrpt::opengl::TLightParameters & (mrpt::opengl::TLightParameters::*)(const struct mrpt::opengl::TLightParameters &)) &mrpt::opengl::TLightParameters::operator=, "C++: mrpt::opengl::TLightParameters::operator=(const struct mrpt::opengl::TLightParameters &) --> struct mrpt::opengl::TLightParameters &", pybind11::return_value_policy::automatic, pybind11::arg(""));
