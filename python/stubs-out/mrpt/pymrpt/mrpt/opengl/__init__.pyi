@@ -1,5 +1,7 @@
 from typing import Any, ClassVar, Dict, List, Optional, Tuple
 
+from . import stock_objects
+
 from typing import overload
 import mrpt.pymrpt.mrpt.containers
 import mrpt.pymrpt.mrpt.img

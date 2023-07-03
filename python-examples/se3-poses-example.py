@@ -5,9 +5,8 @@
 # export PYTHONPATH=$HOME/code/mrpt/build-Release/:$PYTHONPATH
 # ---------------------------------------------------------------------
 
+from mrpt.pymrpt import mrpt
 from math import radians
-from mrpt import pymrpt
-mrpt = pymrpt.mrpt
 
 p1 = mrpt.poses.CPose3D.FromXYZYawPitchRoll(
     1.0, 2.0, 0, radians(90), radians(0), radians(0))

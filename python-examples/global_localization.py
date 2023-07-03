@@ -10,13 +10,11 @@
 #
 # ./global_localization.py ../share/mrpt/config_files/pf-localization/localization_demo.ini
 #
-from mrpt import pymrpt
+from mrpt.pymrpt import mrpt
 import os
 import sys
 import argparse
 from time import sleep
-
-mrpt = pymrpt.mrpt  # namespace shortcut
 
 
 # args

@@ -8,9 +8,8 @@
 # More matrix classes available in the module mrpt.math.
 # See: https://mrpt.github.io/pymrpt-docs/mrpt.pymrpt.mrpt.math.html
 
-from mrpt import pymrpt
+from mrpt.pymrpt import mrpt
 import numpy as np
-mrpt = pymrpt.mrpt
 
 # Create a numpy matrix from a list:
 m1_np = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
