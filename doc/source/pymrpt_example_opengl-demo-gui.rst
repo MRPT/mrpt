@@ -9,8 +9,7 @@ and populate it with different objects, including animating them across the scen
 
 .. raw:: html
 
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/qaaP9BmZYmo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen>
-    </iframe>
+    <img src="https://mrpt.github.io/imgs/screenshot_pymrpt_example_opengl1.png" style="width: 90%;" />
 
 
 .. literalinclude:: ../../python-examples/opengl-demo-gui.py
