@@ -1,10 +1,12 @@
 \page changelog Change Log
 
-# Version 2.10.0: UNRELEASED
+# Version 2.10.0: Released July 9th, 2023
 - Changes in libraries:
   - \ref mrpt_opengl_grp
     - Move the parameter eyeDistance2lightShadowExtension from TRenderMatrices to mrpt::opengl::TLightParameters so it can be changed from user code (ABI change).
     - New parameter mrpt::opengl::TLightParameters::minimum_shadow_map_extension_ratio
+- Python:
+  - More pymrpt examples.
 - BUG FIXES:
   - pymrpt was not automatically built when invoking the python tests using `make test_legacy`.
 
