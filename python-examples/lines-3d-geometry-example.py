@@ -5,8 +5,7 @@
 # export PYTHONPATH=$HOME/code/mrpt/build-Release/:$PYTHONPATH
 # ---------------------------------------------------------------------
 
-from mrpt import pymrpt
-mrpt = pymrpt.mrpt
+from mrpt.pymrpt import mrpt
 
 # Aliases:
 TPoint3D = mrpt.math.TPoint3D_double_t

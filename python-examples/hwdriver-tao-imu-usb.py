@@ -5,8 +5,7 @@
 # export PYTHONPATH=$HOME/code/mrpt/build-Release/:$PYTHONPATH
 # ---------------------------------------------------------------------
 
-from mrpt import pymrpt
-mrpt = pymrpt.mrpt  # namespace shortcut
+from mrpt.pymrpt import mrpt
 
 imu = mrpt.hwdrivers.CTaoboticsIMU()
 

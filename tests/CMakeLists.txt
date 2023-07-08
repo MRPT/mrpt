@@ -199,6 +199,7 @@ function(mrpt_add_python_test NAME)
 	message(STATUS "pytest cmd: ${cmd}")
 	add_custom_target(run_test_python_${NAME} COMMAND ${cmd})
 	add_dependencies(test_legacy run_test_python_${NAME})
+	add_dependencies(run_test_python_${NAME} pymrpt)
 endfunction()
 
 if (CMAKE_MRPT_HAS_PYTHON_BINDINGS)
