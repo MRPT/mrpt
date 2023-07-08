@@ -1,5 +1,7 @@
 from typing import Any, ClassVar, Dict, List, Optional, Tuple
 
+from . import stock_objects
+
 from typing import overload
 import mrpt.pymrpt.mrpt.containers
 import mrpt.pymrpt.mrpt.img
@@ -3605,6 +3607,8 @@ class TLightParameters:
     color: mrpt.pymrpt.mrpt.img.TColorf
     diffuse: float
     direction: Any
+    eyeDistance2lightShadowExtension: float
+    minimum_shadow_map_extension_ratio: float
     shadow_bias: float
     shadow_bias_cam2frag: float
     shadow_bias_normal: float
@@ -3660,7 +3664,6 @@ class TRenderMatrices:
     elev: float
     eye: Any
     eyeDistance: float
-    eyeDistance2lightShadowExtension: float
     initialized: bool
     is1stShadowMapPass: bool
     is_projective: bool
@@ -3686,7 +3689,7 @@ class TRenderMatrices:
     def LookAt(self, *args, **kwargs) -> Any: ...
     def OrthoProjectionMatrix(self, *args, **kwargs) -> Any: ...
     def assign(self) -> TRenderMatrices: ...
-    def computeLightProjectionMatrix(self, zmin: float, zmax: float, direction) -> None: ...
+    def computeLightProjectionMatrix(self, zmin: float, zmax: float, lp) -> None: ...
     def computeNoProjectionMatrix(self, znear: float, zfar: float) -> None: ...
     def computeOrthoProjectionMatrix(self, *args, **kwargs) -> Any: ...
     def computeProjectionMatrix(self, *args, **kwargs) -> Any: ...

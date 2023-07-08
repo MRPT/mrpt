@@ -14,10 +14,8 @@
 # ./rbpf_slam.py -c ../share/mrpt/config_files/rbpf-slam/gridmapping_optimal_sampling.ini  ../share/mrpt/datasets/2006-01ENE-21-SENA_Telecom\ Faculty_one_loop_only.rawlog
 #
 
-from mrpt import pymrpt
+from mrpt.pymrpt import mrpt
 import argparse
-
-mrpt = pymrpt.mrpt
 
 # args
 parser = argparse.ArgumentParser()

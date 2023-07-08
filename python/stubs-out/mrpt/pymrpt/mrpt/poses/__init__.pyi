@@ -1,5 +1,7 @@
 from typing import Any, ClassVar, Dict, Tuple
 
+from . import Lie
+
 from typing import overload
 import mrpt.pymrpt.mrpt
 import mrpt.pymrpt.mrpt.bayes

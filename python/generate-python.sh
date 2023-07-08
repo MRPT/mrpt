@@ -93,8 +93,6 @@ find $WRAP_OUT_DIR -name "*.cpp" | 	xargs -I FIL \
 	sed -i -e 's/(long)/(int64_t)/g' FIL
 
 # applying manual patches:
-echo "Applying manual patches..."
-find . -name "*.diff" | xargs -I FIL bash -c "git apply FIL"
+echo "Applying manual patches to pybind11 code..."
+find . -name "patch-0*.diff" | xargs -I FIL bash -c "echo FIL && git apply FIL"
 
-# Generate stub .pyi files:
-stubgen -p mrpt -p mrpt.pymrpt -o stubs-out

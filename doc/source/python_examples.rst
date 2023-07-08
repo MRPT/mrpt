@@ -19,6 +19,7 @@ C++ examples are `here <examples.html>`_.
   pymrpt_example_hwdriver_tao_imu_usb.rst
   pymrpt_example_lines-3d-geometry-example.rst
   pymrpt_example_matrices.rst
+  pymrpt_example_opengl-demo-gui.rst
   pymrpt_example_rbpf_slam.rst
   pymrpt_example_ros-poses-convert.rst
   pymrpt_example_se2-poses-example.rst

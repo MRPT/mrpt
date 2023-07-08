@@ -8,11 +8,11 @@
 # This example shows how to convert back and forth between MRPT poses
 # and ROS 1 or ROS 2 (both are compatible with this same code) Pose
 
-from mrpt import pymrpt, ros_bridge
+from mrpt.pymrpt import mrpt
+from mrpt import ros_bridge
 from math import radians
 from geometry_msgs.msg import Pose, PoseWithCovariance
 
-mrpt = pymrpt.mrpt
 
 # Example 1: 2D pose
 # --------------------------

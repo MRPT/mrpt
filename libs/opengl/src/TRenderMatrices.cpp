@@ -12,6 +12,7 @@
 #include <mrpt/containers/yaml.h>
 #include <mrpt/math/geometry.h>	 // crossProduct3D()
 #include <mrpt/math/ops_containers.h>  // dotProduct()
+#include <mrpt/opengl/TLightParameters.h>
 #include <mrpt/opengl/TRenderMatrices.h>
 
 #include <Eigen/Dense>
@@ -151,18 +152,22 @@ static void azimuthElevationFromDirection(
 }
 
 void TRenderMatrices::computeLightProjectionMatrix(
-	float zmin, float zmax, const mrpt::math::TVector3Df& direction)
+	float zmin, float zmax, const TLightParameters& lp)
 {
 	m_last_light_z_near = zmin;
 	m_last_light_z_far = zmax;
 
-	float dist = eyeDistance * eyeDistance2lightShadowExtension;
+	float dist = eyeDistance * lp.eyeDistance2lightShadowExtension;
+
+	// Ensure dist is not too small:
+	mrpt::keep_max(dist, zmax * lp.minimum_shadow_map_extension_ratio);
+
 	light_p = OrthoProjectionMatrix(-dist, dist, -dist, dist, zmin, zmax);
 
 	// "up" vector from elevation:
 
 	float azim = 0, elevation = 0;
-	azimuthElevationFromDirection(direction, elevation, azim);
+	azimuthElevationFromDirection(lp.direction, elevation, azim);
 
 	const auto lightUp = mrpt::math::TVector3Df(
 		-cos(azim) * sin(elevation),  // x
@@ -170,7 +175,7 @@ void TRenderMatrices::computeLightProjectionMatrix(
 		cos(elevation)	// z
 	);
 
-	light_v = LookAt(pointing - direction * zmax * 0.5, pointing, lightUp);
+	light_v = LookAt(pointing - lp.direction * zmax * 0.5, pointing, lightUp);
 
 	light_pv.asEigen() = light_p.asEigen() * light_v.asEigen();
 
