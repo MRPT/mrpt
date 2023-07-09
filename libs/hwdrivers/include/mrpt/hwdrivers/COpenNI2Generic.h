@@ -13,7 +13,7 @@
 namespace mrpt::hwdrivers
 {
 /** An abstract class for accessing OpenNI2 compatible sensors.
- * This class permits to access several sensors simultaneously. The same
+ * This class permits one to access several sensors simultaneously. The same
  *options (resolution, fps, etc.) are used for every sensor.
  *
  *  More references to read:

@@ -20,8 +20,8 @@ namespace mrpt::hwdrivers
 /** This "virtual driver" encapsulates a NTRIP client (see CNTRIPClient) but
  * adds the functionality of dumping the received datastream to a given serial
  * port.
- *  Used within rawlog-grabber, along CGPSInterface, this class allows to build
- * a powerful & simple RTK-capable GPS receiver system.
+ *  Used within rawlog-grabber, along CGPSInterface, this class allows one to
+ * build a powerful & simple RTK-capable GPS receiver system.
  *
  *  Therefore, this sensor will never "collect" any observation via the
  * CGenericSensor interface.
