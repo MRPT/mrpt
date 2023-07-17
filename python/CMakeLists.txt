@@ -33,6 +33,15 @@ pybind11_add_module(pymrpt
   pymrpt_internals.cpp
   )
 
+# Remove LTO from pybind flags:
+option(MRPT_PYBIND11_WITH_LTO "If enabled, MRPT will not remove the LTO build flags added by pybind for pymrpt. Default is OFF, so disabling LTO" "OFF")
+if (NOT MRPT_PYBIND11_WITH_LTO)
+  get_target_property(_opts pymrpt LINK_LIBRARIES)
+  string(REPLACE "pybind11::lto" "" _opts "${_opts}")
+  string(REPLACE "pybind11::thin_lto" "" _opts "${_opts}")
+  set_target_properties(pymrpt PROPERTIES LINK_LIBRARIES ${_opts})
+endif()
+
 target_link_libraries(pymrpt PUBLIC 
   mrpt::apps
   mrpt::serialization
