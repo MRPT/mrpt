@@ -1,9 +1,11 @@
 \page changelog Change Log
 
 # Version 2.10.1: UNRELEASED
+- Build system:
+  - Disable LTO in pymrpt module by default. This will make compilation much faster, and avoids build errors on some architectures (mipsel).
 - BUG FIXES:
   - Fix "FTBFS when binutils-dev is installed but not libiberty-dev" (Debian bug [#1041165](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1041165))
-  - Prevent memory exhaustion on "mipsel" build farms by disabling pymrpt in this architecture.
+  - 
 
 # Version 2.10.0: Released July 9th, 2023
 - Changes in libraries:
