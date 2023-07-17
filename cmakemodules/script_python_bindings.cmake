@@ -15,12 +15,6 @@ if (NOT MRPT_DISABLE_PYTHON_BINDINGS AND (${CMAKE_CXX_COMPILER_ID} STREQUAL "Cla
     message(STATUS "*WARNING* Disabling Python wrappers: not supported if built using clang (it leads to pybind11-generated code errors)")
 endif()
 
-# Disable pymrpt in "mipsel" (fails to build due to exhausted memory in build farms)
-if (CMAKE_INSTALL_FULL_LIBDIR MATCHES "mipsel")
-    set(MRPT_DISABLE_PYTHON_BINDINGS ON CACHE BOOL "Disable python wrappers" FORCE)
-    message(STATUS "*WARNING* Disabling Python wrappers for MIPSEL to prevent out-of-memory errors.")
-endif()
-
 
 if(UNIX AND NOT MRPT_DISABLE_PYTHON_BINDINGS)
 	# Requires CMake 3.13+
