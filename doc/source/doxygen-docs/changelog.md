@@ -2,7 +2,8 @@
 
 # Version 2.10.1: UNRELEASED
 - Build system:
-  - Disable LTO in pymrpt module by default. This will make compilation much faster, and avoids build errors on some architectures (mipsel).
+  - Add cmake flag to disable LTO in pymrpt module.
+  - Add -flto=auto to pymrpt so linking is much faster.
 - BUG FIXES:
   - Fix "FTBFS when binutils-dev is installed but not libiberty-dev" (Debian bug [#1041165](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1041165))
   - 
