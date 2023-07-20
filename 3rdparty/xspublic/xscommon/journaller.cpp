@@ -155,7 +155,7 @@ static const char* gLogLevelString[] = {
 void Journaller::writeFileHeader(const std::string& appName)
 {
 	m_appName = appName;
-	XsTimeStamp now = XsTimeStamp::now();
+	[[maybe_unused]] XsTimeStamp now = XsTimeStamp::now();
 	JLWRITE(this, "Journaller logging to " << m_file->filename() << (appName.empty() ? XsString() : XsString(" for ") + appName) << " on " << now.toString());
 	//JLWRITE(this, "Current log level is " << gLogLevelString[m_level]);
 }
