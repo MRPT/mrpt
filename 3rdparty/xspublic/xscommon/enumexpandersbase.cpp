@@ -500,9 +500,10 @@ JLENUMEXPANDERHEX(XsXbusMessageId,
 	JLENUMCASE(XMID_ProductVariant)
 );
 
+[[maybe_unused]]
 static void forceEnumExpanderInclusion()
 {
-	volatile bool blah = false;
+	[[maybe_unused]] volatile bool blah = false;
 	JLWRITEG("blah" << XRV_OK << blah);
 	JLWRITEG("blah" << XMID_AcceptMtw << blah);
 }
