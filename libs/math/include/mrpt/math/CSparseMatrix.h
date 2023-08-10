@@ -19,18 +19,14 @@
 #include <stdexcept>
 
 // Include CSparse lib headers, either from the system or embedded:
-extern "C"
-{
 #if MRPT_HAS_SUITESPARSE
-#define NCOMPLEX  // In MRPT we don't need complex numbers, so avoid the
-// annoying warning: 'cs_ci_house' has C-linkage specified,
-// but returns UDT 'std::complex<double>' which is
-// incompatible with C
 #include "cs.h"
 #else
+extern "C"
+{
 #include <mrpt/3rdparty/CSparse/cs.h>
-#endif
 }
+#endif
 
 namespace mrpt::math
 {
