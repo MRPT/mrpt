@@ -17,7 +17,7 @@ namespace mrpt::hwdrivers
 {
 /** A class for grabing "range images", intensity images (either RGB or IR) and
  *other information from an OpenNI2 sensor.
- * This class permits to access several sensors simultaneously. The same
+ * This class permits one to access several sensors simultaneously. The same
  *options (resolution, fps, etc.) are used for every sensor.
  *
  *  <h2>Configuration and usage:</h2> <hr>

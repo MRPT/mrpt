@@ -9,7 +9,13 @@ MRPT is split into a set of independent libraries for the sake of modularity.
 Click on a module name on the tree view to open its documentation.
 Each MRPT library source code can be found under ``${MRPT_ROOT}/libs``.
 
-.. graphviz:: images/graph_mrpt_libs.dot
+.. <img> + rst doesn't work with clickable svg links (!!). Used <object> instead
+
+.. raw:: html
+
+    <div style="width: 100%;">
+    <object data="graph_mrpt_libs.svg" type="image/svg+xml" width="100%"></object>
+    </div>
 
 .. toctree::
   :maxdepth: 2

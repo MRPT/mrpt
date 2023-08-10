@@ -139,9 +139,9 @@ class CSetOfTriangles : public CRenderizableShaderTriangles
 	/** Polygon cache, used for ray-tracing only */
 	mutable std::vector<mrpt::math::TPolygonWithPlane> m_polygons;
 };
-/** Inserts a set of triangles into the list; note that this method allows to
- * pass another CSetOfTriangles as argument. Allows call chaining.
- * \sa mrpt::opengl::CSetOfTriangles::insertTriangle
+/** Inserts a set of triangles into the list; note that this method allows one
+ * to pass another CSetOfTriangles as argument. Allows call chaining. \sa
+ * mrpt::opengl::CSetOfTriangles::insertTriangle
  */
 template <class T>
 inline CSetOfTriangles::Ptr& operator<<(CSetOfTriangles::Ptr& s, const T& t)
