@@ -20,16 +20,16 @@ CHECK_INCLUDE_FILE("bfd.h" HAVE_BFD_H)
 find_library(BFD_LIBRARY NAMES libbfd.a)
 mark_as_advanced(BFD_LIBRARY)
 
-if ((NOT HAVE_BFD_H) OR (NOT BFD_LIBRARY))
-	# We need both, the .h and the .a to consider we have bfd available
-	return()
-endif()
-
 # Other Deps of BFD (needed since we are enforced to use static linking)
 find_library(Z_LIBRARY NAMES z libz.so libz)
 mark_as_advanced(Z_LIBRARY)
-
 find_library(IBERTY_LIBRARY NAMES iberty libiberty.a) 
+mark_as_advanced(IBERTY_LIBRARY)
+
+if (NOT (HAVE_BFD_H AND BFD_LIBRARY AND Z_LIBRARY AND IBERTY_LIBRARY))
+	# We need both, the .h and the .a to consider we have bfd available
+	return()
+endif()
 
 set(BFD_LIBRARIES ${BFD_LIBRARY} ${Z_LIBRARY} ${CMAKE_DL_LIBS} ${IBERTY_LIBRARY})
 

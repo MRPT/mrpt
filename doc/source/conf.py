@@ -42,7 +42,7 @@ extensions = [
     'sphinx.ext.graphviz',
     'doxyrest',
     'cpplexer',
-    'sphinx_panels',
+    'sphinx_design',
     'sphinxcontrib.bibtex',
     'm2r2',  # provides: mdinclude
 ]
@@ -81,7 +81,7 @@ master_doc = 'index'
 language = 'en'
 
 # Allow Sphinx to find images under the "images" path:
-figure_language_filename='images/{path}/{basename}{ext}'
+figure_language_filename = 'images/{path}/{basename}{ext}'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
