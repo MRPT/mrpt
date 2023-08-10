@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.10.2: UNRELEASED
-(No changes yet)
+- BUG FIXES:
+  - Fix CSparse "C" linkage build error (OSX Clang)
 
 # Version 2.10.1: Released August 10th, 2023
 - Build system:
