@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.10.2: UNRELEASED
+(No changes yet)
+
 # Version 2.10.1: Released August 10th, 2023
 - Build system:
   - Add cmake flag to disable LTO in pymrpt module.
