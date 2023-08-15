@@ -4,7 +4,7 @@
 # Based on https://github.com/RosettaCommons/binder
 #
 # binder config: llvm-14
-# 
+#
 
 
 PYBIND11_VERSION=$(dpkg -s pybind11-dev | grep '^Version:' | cut -d " " -f2)
@@ -94,5 +94,5 @@ find $WRAP_OUT_DIR -name "*.cpp" | 	xargs -I FIL \
 
 # applying manual patches:
 echo "Applying manual patches to pybind11 code..."
-find . -name "patch-0*.diff" | xargs -I FIL bash -c "echo FIL && git apply FIL"
+find . -name "patch-0*.diff" | xargs -I FIL bash -c "echo \"Applying patch: FIL\" && git apply FIL --ignore-whitespace"
 

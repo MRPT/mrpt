@@ -23,7 +23,7 @@ PYBIND11_MAKE_OPAQUE(std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TP
 
 void bind_std_stl_deque(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // std::deque file:bits/stl_deque.h line:766
+	{ // std::deque file:bits/stl_deque.h line:767
 		pybind11::class_<std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose3D, mrpt::bayes::particle_storage_mode::VALUE>>, std::shared_ptr<std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose3D, mrpt::bayes::particle_storage_mode::VALUE>>>> cl(M("std"), "deque_mrpt_bayes_CProbabilityParticle_mrpt_math_TPose3D_mrpt_bayes_particle_storage_mode_VALUE_t", "");
 		cl.def( pybind11::init( [](){ return new std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose3D, mrpt::bayes::particle_storage_mode::VALUE>>(); } ) );
 		cl.def( pybind11::init<const class std::allocator<struct mrpt::bayes::CProbabilityParticle<struct mrpt::math::TPose3D, mrpt::bayes::particle_storage_mode::VALUE> > &>(), pybind11::arg("__a") );
@@ -62,7 +62,7 @@ void bind_std_stl_deque(std::function< pybind11::module &(std::string const &nam
 			}, pybind11::keep_alive<0, 1>());
 
 	}
-	{ // std::deque file:bits/stl_deque.h line:766
+	{ // std::deque file:bits/stl_deque.h line:767
 		pybind11::class_<std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>>, std::shared_ptr<std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>>>> cl(M("std"), "deque_mrpt_bayes_CProbabilityParticle_mrpt_math_TPose2D_mrpt_bayes_particle_storage_mode_VALUE_t", "");
 		cl.def( pybind11::init( [](){ return new std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>>(); } ) );
 		cl.def( pybind11::init<const class std::allocator<struct mrpt::bayes::CProbabilityParticle<struct mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE> > &>(), pybind11::arg("__a") );

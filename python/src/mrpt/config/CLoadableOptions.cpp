@@ -24,7 +24,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::config::CLoadableOptions file:mrpt/config/CLoadableOptions.h line:26
+// mrpt::config::CLoadableOptions file:mrpt/config/CLoadableOptions.h line:24
 struct PyCallBack_mrpt_config_CLoadableOptions : public mrpt::config::CLoadableOptions {
 	using mrpt::config::CLoadableOptions::CLoadableOptions;
 
@@ -58,8 +58,8 @@ struct PyCallBack_mrpt_config_CLoadableOptions : public mrpt::config::CLoadableO
 
 void bind_mrpt_config_CLoadableOptions(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::config::CLoadableOptions file:mrpt/config/CLoadableOptions.h line:26
-		pybind11::class_<mrpt::config::CLoadableOptions, std::shared_ptr<mrpt::config::CLoadableOptions>, PyCallBack_mrpt_config_CLoadableOptions> cl(M("mrpt::config"), "CLoadableOptions", "This is a virtual base class for sets of options than can be loaded from\n and/or saved to configuration plain-text files.\n");
+	{ // mrpt::config::CLoadableOptions file:mrpt/config/CLoadableOptions.h line:24
+		pybind11::class_<mrpt::config::CLoadableOptions, std::shared_ptr<mrpt::config::CLoadableOptions>, PyCallBack_mrpt_config_CLoadableOptions> cl(M("mrpt::config"), "CLoadableOptions", "This is a virtual base class for sets of options than can be loaded from\n and/or saved to configuration plain-text files.\n \n\n\n ");
 		cl.def(pybind11::init<PyCallBack_mrpt_config_CLoadableOptions const &>());
 		cl.def( pybind11::init( [](){ return new PyCallBack_mrpt_config_CLoadableOptions(); } ) );
 		cl.def("loadFromConfigFile", (void (mrpt::config::CLoadableOptions::*)(const class mrpt::config::CConfigFileBase &, const std::string &)) &mrpt::config::CLoadableOptions::loadFromConfigFile, "This method load the options from a \".ini\"-like file or memory-stored\n string list.\n   Only those parameters found in the given \"section\" and having\n   the same name that the variable are loaded. Those not found in\n   the file will stay with their previous values (usually the default\n   values loaded at initialization). An example of an \".ini\" file:\n  \n\n\n\n\n\n \n loadFromConfigFileName, saveToConfigFile\n\nC++: mrpt::config::CLoadableOptions::loadFromConfigFile(const class mrpt::config::CConfigFileBase &, const std::string &) --> void", pybind11::arg("source"), pybind11::arg("section"));
