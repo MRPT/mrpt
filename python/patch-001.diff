@@ -24,7 +24,7 @@ index cabe86ec7..302018560 100644
 +
  void bind_std_stl_deque(std::function< pybind11::module &(std::string const &namespace_) > &M)
  {
- 	{ // std::deque file:bits/stl_deque.h line:766
+ 	{ // std::deque file:bits/stl_deque.h line:767
 diff --git a/python/src/std/stl_deque_1.cpp b/python/src/std/stl_deque_1.cpp
 index d974577d3..a80326114 100644
 --- a/python/src/std/stl_deque_1.cpp
@@ -38,7 +38,7 @@ index d974577d3..a80326114 100644
 +
  void bind_std_stl_deque_1(std::function< pybind11::module &(std::string const &namespace_) > &M)
  {
- 	{ // std::deque file:bits/stl_deque.h line:766
+ 	{ // std::deque file:bits/stl_deque.h line:767
 diff --git a/python/src/std/stl_deque_2.cpp b/python/src/std/stl_deque_2.cpp
 index ca96e381d..54e7eaaf4 100644
 --- a/python/src/std/stl_deque_2.cpp
@@ -51,7 +51,7 @@ index ca96e381d..54e7eaaf4 100644
 +
  void bind_std_stl_deque_2(std::function< pybind11::module &(std::string const &namespace_) > &M)
  {
- 	{ // std::deque file:bits/stl_deque.h line:766
+ 	{ // std::deque file:bits/stl_deque.h line:767
 diff --git a/python/src/std/stl_map.cpp b/python/src/std/stl_map.cpp
 index db3f49fde..793bf72f3 100644
 --- a/python/src/std/stl_map.cpp
