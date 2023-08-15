@@ -504,6 +504,9 @@ void bind_mrpt_poses_CPose3DPDFGaussianInf(std::function< pybind11::module &(std
 		cl.def("assign", (class mrpt::poses::CPose3DPDFGaussianInf & (mrpt::poses::CPose3DPDFGaussianInf::*)(const class mrpt::poses::CPose3DPDFGaussianInf &)) &mrpt::poses::CPose3DPDFGaussianInf::operator=, "C++: mrpt::poses::CPose3DPDFGaussianInf::operator=(const class mrpt::poses::CPose3DPDFGaussianInf &) --> class mrpt::poses::CPose3DPDFGaussianInf &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
 		cl.def("__str__", [](mrpt::poses::CPose3DPDFGaussianInf const &o) -> std::string { std::ostringstream s; using namespace mrpt::poses; s << o; return s.str(); } );
+
+		cl.def("__add__", [](const mrpt::poses::CPose3DPDFGaussianInf&a, const mrpt::poses::CPose3DPDFGaussianInf& b) -> mrpt::poses::CPose3DPDFGaussianInf { return a+b; });
+		cl.def("__sub__", [](const mrpt::poses::CPose3DPDFGaussianInf&a, const mrpt::poses::CPose3DPDFGaussianInf& b) -> mrpt::poses::CPose3DPDFGaussianInf { return a-b; });
 	}
 	{ // mrpt::poses::CPose3DPDFGrid file:mrpt/poses/CPose3DPDFGrid.h line:25
 		pybind11::class_<mrpt::poses::CPose3DPDFGrid, std::shared_ptr<mrpt::poses::CPose3DPDFGrid>, PyCallBack_mrpt_poses_CPose3DPDFGrid, mrpt::poses::CPose3DPDF, mrpt::poses::CPose3DGridTemplate<double>> cl(M("mrpt::poses"), "CPose3DPDFGrid", "Declares a class that represents a Probability Distribution\n  function (PDF) of a SE(3) pose (x,y,z, yaw, pitch, roll), in\n the form of a 6-dimensional grid of \"voxels\".\n\n \n CPose3D, CPose3DPDF, CPose3DGridTemplate\n \n\n\n ");
