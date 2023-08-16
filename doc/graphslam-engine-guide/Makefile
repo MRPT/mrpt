@@ -24,4 +24,5 @@ graphslam-engine-guide.ps.gz: graphslam-engine-guide.pdf
 
 clean:
 	latexmk -CA
+	rm *.bbl *.nlo
 
