@@ -70,3 +70,5 @@ print('ros PDF r3b        : ' + str(r3b))
 a = mr3
 b = mr3
 c = a+b
+
+print('r3b (+) rb3        : ' + str(c))
