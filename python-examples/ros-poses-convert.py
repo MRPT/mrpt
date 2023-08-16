@@ -66,3 +66,9 @@ print('ros PDF r3         : ' + str(r3))
 print('mrpt PDF mr3       : ' + str(mr3))
 print('mrpt PDF mr3b      : ' + str(mr3b))
 print('ros PDF r3b        : ' + str(r3b))
+
+a = mr3
+b = mr3
+c = a+b
+
+print('r3b (+) rb3        : ' + str(c))

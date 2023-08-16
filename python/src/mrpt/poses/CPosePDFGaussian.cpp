@@ -301,5 +301,8 @@ void bind_mrpt_poses_CPosePDFGaussian(std::function< pybind11::module &(std::str
 		cl.def("assign", (class mrpt::poses::CPosePDFGaussian & (mrpt::poses::CPosePDFGaussian::*)(const class mrpt::poses::CPosePDFGaussian &)) &mrpt::poses::CPosePDFGaussian::operator=, "C++: mrpt::poses::CPosePDFGaussian::operator=(const class mrpt::poses::CPosePDFGaussian &) --> class mrpt::poses::CPosePDFGaussian &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
 		cl.def("__str__", [](mrpt::poses::CPosePDFGaussian const &o) -> std::string { std::ostringstream s; using namespace mrpt::poses; s << o; return s.str(); } );
+
+		cl.def("__add__", [](const mrpt::poses::CPosePDFGaussian&a, const mrpt::poses::CPosePDFGaussian& b) -> mrpt::poses::CPosePDFGaussian { return a+b; });
+		cl.def("__sub__", [](const mrpt::poses::CPosePDFGaussian&a, const mrpt::poses::CPosePDFGaussian& b) -> mrpt::poses::CPosePDFGaussian { return a-b; });
 	}
 }

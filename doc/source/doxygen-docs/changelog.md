@@ -2,7 +2,8 @@
 
 # Version 2.10.2: UNRELEASED
 - BUG FIXES:
-  - Fix CSparse "C" linkage build error (OSX Clang)
+  - Fix CSparse "C" linkage build error (OSX Clang). PR [#1280](https://github.com/MRPT/mrpt/pull/1280)
+  - Fix missing Python wrapping of poses PDF (poses with uncertainty) composition (\oplus and \ominus) operators. (Closes [#1281](https://github.com/MRPT/mrpt/issues/1281)). PR [#1283](https://github.com/MRPT/mrpt/pull/1283)
 
 # Version 2.10.1: Released August 10th, 2023
 - Build system:
