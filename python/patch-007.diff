@@ -12,7 +12,7 @@ index 1638b4d29..4c5984034 100644
 +			}, pybind11::keep_alive<0, 1>());
 +
  	}
- 	{ // std::deque file:bits/stl_deque.h line:766
+ 	{ // std::deque file:bits/stl_deque.h line:767
  		pybind11::class_<std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>>, std::shared_ptr<std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>>>> cl(M("std"), "deque_mrpt_bayes_CProbabilityParticle_mrpt_math_TPose2D_mrpt_bayes_particle_storage_mode_VALUE_t", "");
 @@ -90,5 +95,10 @@ void bind_std_stl_deque(std::function< pybind11::module &(std::string const &nam
  		cl.def("pop_back", (void (std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>>::*)()) &std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>>::pop_back, "C++: std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>>::pop_back() --> void");
@@ -39,7 +39,7 @@ index b16449336..69668158e 100644
 +			}, pybind11::keep_alive<0, 1>());
 +
  	}
- 	{ // std::deque file:bits/stl_deque.h line:766
+ 	{ // std::deque file:bits/stl_deque.h line:767
  		pybind11::class_<std::deque<mrpt::bayes::CProbabilityParticle<mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER>>, std::shared_ptr<std::deque<mrpt::bayes::CProbabilityParticle<mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER>>>> cl(M("std"), "deque_mrpt_bayes_CProbabilityParticle_mrpt_maps_CRBPFParticleData_mrpt_bayes_particle_storage_mode_POINTER_t", "");
 @@ -91,5 +96,10 @@ void bind_std_stl_deque_1(std::function< pybind11::module &(std::string const &n
  		cl.def("pop_back", (void (std::deque<mrpt::bayes::CProbabilityParticle<mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER>>::*)()) &std::deque<mrpt::bayes::CProbabilityParticle<mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER>>::pop_back, "C++: std::deque<mrpt::bayes::CProbabilityParticle<mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER>>::pop_back() --> void");
