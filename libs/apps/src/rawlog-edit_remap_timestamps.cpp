@@ -126,7 +126,7 @@ DECLARE_OP_FUNCTION(op_remap_timestamps)
 	getArgValue<string>(cmdline, "select-label", filter_labels);
 
 	std::vector<std::string> lbs;
-	mrpt::system::tokenize(filter_labels, ";", lbs);
+	mrpt::system::tokenize(filter_labels, ",", lbs);
 
 	std::set<std::string> applyLabels;
 	for (const auto& l : lbs)
