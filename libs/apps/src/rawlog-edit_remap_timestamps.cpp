@@ -32,30 +32,67 @@ DECLARE_OP_FUNCTION(op_remap_timestamps)
 	   protected:
 		TOutputRawlogCreator outrawlog;
 		const double m_a, m_b;
+		const std::set<std::string> m_labels;  //!< empty: all sensors
+		size_t m_changes = 0;
 
 	   public:
 		CRawlogProcessor_RemapTimestamps(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool Verbose, double a, double b)
+			bool Verbose, double a, double b,
+			const std::set<std::string>& labels)
 			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose),
 			  m_a(a),
-			  m_b(b)
+			  m_b(b),
+			  m_labels(labels)
 		{
-			VERBOSE_COUT << "Applying timestamps remap a*t+b with: a=" << m_a
-						 << " b=" << m_b << endl;
+			VERBOSE_COUT
+				<< mrpt::format(
+					   "Applying timestamps remap a*t+b with: a=%f b=%f", m_a,
+					   m_b)
+				<< std::endl;
+
+			std::string sLog = "Applying to sensor labels: ";
+			if (m_labels.empty()) { sLog += " (all)\n"; }
+			else
+			{
+				for (const auto& l : m_labels)
+				{
+					sLog += "'";
+					sLog += l;
+					sLog += "', ";
+				}
+				sLog += "\n";
+			}
+			VERBOSE_COUT << sLog;
+		}
+
+		~CRawlogProcessor_RemapTimestamps()
+		{
+			VERBOSE_COUT << "Changed objects: " << m_changes << "\n";
+		}
+
+		bool checkSensorLabel(const CObservation::Ptr& obs)
+		{
+			if (m_labels.empty()) return true;
+			return m_labels.count(obs->sensorLabel) != 0;
 		}
 
 		bool processOneObservation(CObservation::Ptr& obs) override
 		{
+			// does it apply?
+			if (!checkSensorLabel(obs)) return true;
+
 			// T_NEW = a * T_OLD + b
 			const double t = mrpt::system::timestampToDouble(obs->timestamp);
 			const double t_new = m_a * t + m_b;
 			obs->timestamp = mrpt::system::time_tToTimestamp(t_new);
+
+			m_changes++;
 			return true;
 		}
 
-		// This method can be reimplemented to save the modified object to an
-		// output stream.
+		// This method can be reimplemented to save the modified object to
+		// an output stream.
 		void OnPostProcess(
 			mrpt::obs::CActionCollection::Ptr& actions,
 			mrpt::obs::CSensoryFrame::Ptr& SF,
@@ -85,9 +122,20 @@ DECLARE_OP_FUNCTION(op_remap_timestamps)
 	const double a = atof(sAB_tokens[0].c_str());
 	const double b = atof(sAB_tokens[1].c_str());
 
+	string filter_labels;
+	getArgValue<string>(cmdline, "select-label", filter_labels);
+
+	std::vector<std::string> lbs;
+	mrpt::system::tokenize(filter_labels, ";", lbs);
+
+	std::set<std::string> applyLabels;
+	for (const auto& l : lbs)
+		applyLabels.insert(l);
+
 	// Process
 	// ---------------------------------
-	CRawlogProcessor_RemapTimestamps proc(in_rawlog, cmdline, verbose, a, b);
+	CRawlogProcessor_RemapTimestamps proc(
+		in_rawlog, cmdline, verbose, a, b, applyLabels);
 	proc.doProcessRawlog();
 
 	// Dump statistics:

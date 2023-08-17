@@ -170,6 +170,13 @@ TCLAP::SwitchArg arg_overwrite(
 	"w", "overwrite", "Force overwrite target file without prompting.", cmd,
 	false);
 
+TCLAP::ValueArg<std::string> arg_select_label(
+	"", "select-label",
+	"Select one sensor label on which to apply the operation.\n"
+	"Several labels can be provided separated by commas.\n"
+	"Only for those ops that mention --select-label as optional.",
+	false, "", "label[,label...]", cmd);
+
 TCLAP::SwitchArg arg_quiet("q", "quiet", "Terse output", cmd, false);
 
 void RawlogEditApp::run(int argc, const char** argv)
@@ -232,8 +239,10 @@ void RawlogEditApp::run(int argc, const char** argv)
 		"'a*t+b'."
 		"The parameters 'a' and 'b' must be given separated with a "
 		"semicolon.\n"
+		"Optional: --select-label LABEL1[,LABEL2] to limit the operation to "
+		"those sensors only.\n"
 		"Requires: -o (or --output)",
-		false, "", "a;b", cmd));
+		false, "", "\"a;b\"", cmd));
 	ops_functors["remap-timestamps"] = &op_remap_timestamps;
 
 	arg_ops.push_back(std::make_unique<TCLAP::SwitchArg>(
