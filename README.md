@@ -27,7 +27,7 @@ and [much more](https://docs.mrpt.org/reference/latest/applications.html).
 
 ## 2. Resources
   * Download the latest unstable code with: `git clone https://github.com/MRPT/mrpt.git --recursive`
-  * Ask questions at: [this Google group](https://www.mrpt.org/forum/) or at [stackoverflow](https://stackoverflow.com/search?q=mrpt) (please, use the tag `mrpt`!)
+  * Ask questions at [stackoverflow](https://stackoverflow.com/search?q=mrpt) (use the tag `mrpt`)
   * [Main project website](https://www.mrpt.org/), including [sources and Windows installer downloads](https://www.mrpt.org/download-mrpt/)
   * [C++ API reference](https://docs.mrpt.org/reference/)
   * [ROS packages](https://docs.mrpt.org/reference/latest/wrappers.html#mrpt-ros-packages)
@@ -91,6 +91,13 @@ sudo apt install ros-$ROS_DISTRO-mrpt2
 
 ## 4. License
 MRPT is released under the [new BSD license](http://www.mrpt.org/License/).
+
+
+**Contributors**
+
+<a href="https://github.com/MRPT/mrpt/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=MRPT/mrpt" />
+</a>
 
 ## 5. Versions in repositories
 
