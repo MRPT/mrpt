@@ -33,7 +33,8 @@ using namespace std;
 
 // Was: MRPT_HAS_OPENCV_NONFREE
 #if defined(HAVE_OPENCV_XFEATURES2D) ||                                        \
-	(MRPT_OPENCV_VERSION_NUM < 0x030000 && MRPT_OPENCV_VERSION_NUM >= 0x020400)
+	(MRPT_OPENCV_VERSION_NUM < 0x030000 &&                                     \
+	 MRPT_OPENCV_VERSION_NUM >= 0x020400)
 #define HAVE_OPENCV_WITH_SURF 1
 #else
 #define HAVE_OPENCV_WITH_SURF 0
