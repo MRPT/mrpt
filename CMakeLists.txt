@@ -8,7 +8,7 @@
 #  For compiling instructions for all compilers and platforms, see
 #   https://docs.mrpt.org/reference/latest/compiling.html
 #
-#  2007-2021, Jose Luis Blanco <jlblanco@ual.es>
+#  2007-2023, Jose Luis Blanco <jlblanco@ual.es>
 # ----------------------------------------------------------------------------
 
 # -------------------------
