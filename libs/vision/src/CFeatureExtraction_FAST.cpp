@@ -39,7 +39,7 @@ void CFeatureExtraction::extractFeaturesFAST(
 	const CImage inImg_gray(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
 	const Mat theImg = inImg_gray.asCvMat<cv::Mat>(SHALLOW_COPY);
 
-#if MRPT_OPENCV_VERSION_NUM < 0x300
+#if MRPT_OPENCV_VERSION_NUM < 0x030000
 	FastFeatureDetector fastDetector(
 		options.FASTOptions.threshold, options.FASTOptions.nonmax_suppression);
 	fastDetector.detect(theImg, cv_feats);
