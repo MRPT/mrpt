@@ -54,13 +54,13 @@ void CFeatureExtraction::internal_computePolarImageDescriptors(
 		const cv::Mat& in = in_img.asCvMatRef();
 		cv::Mat& out = linpolar_frame.asCvMatRef();
 
-#if MRPT_OPENCV_VERSION_NUM < 0x300
+#if MRPT_OPENCV_VERSION_NUM < 0x030000
 		IplImage cvin, cvout;
 		in_img.getAsIplImage(&cvin);
 		linpolar_frame.getAsIplImage(&cvout);
 		cvLinearPolar(
 			&cvin, &cvout, pt, radius, CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS);
-#elif MRPT_OPENCV_VERSION_NUM < 0x342
+#elif MRPT_OPENCV_VERSION_NUM < 0x030402
 		cv::linearPolar(
 			in(cv::Rect(
 				mrpt::round(pt.x - radius), mrpt::round(pt.y - radius),

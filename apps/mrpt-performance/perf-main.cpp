@@ -269,9 +269,9 @@ int main(int argc, char** argv)
 
 			const string fil_name = PERF_DATA_DIR +
 				mrpt::format("/perf-results-%i.%i.%i%s-%s-%ibit.dat",
-							 int((MRPT_VERSION >> 8) & 0x0F),
-							 int((MRPT_VERSION >> 4) & 0x0F),
-							 int((MRPT_VERSION >> 0) & 0x0F), version_postfix,
+							 int((MRPT_VERSION >> 16) & 0xFF),
+							 int((MRPT_VERSION >> 8) & 0xFF),
+							 int((MRPT_VERSION >> 0) & 0xFF), version_postfix,
 							 compiler_name, int(MRPT_WORD_SIZE));
 			cout << "Saving perf-data to: " << fil_name << endl;
 			CFileOutputStream f(fil_name);

@@ -55,7 +55,7 @@ void CFeatureExtraction::extractFeaturesORB(
 	// The detector and descriptor
 	profiler.enter("extractFeaturesORB.openCV_detectAndCompute");
 
-#if MRPT_OPENCV_VERSION_NUM < 0x300
+#if MRPT_OPENCV_VERSION_NUM < 0x030000
 	Ptr<Feature2D> orb = Algorithm::create<Feature2D>("Feature2D.ORB");
 	orb->operator()(cvImg, Mat(), cv_feats, cv_descs, use_precomputed_feats);
 #else
@@ -250,7 +250,7 @@ void CFeatureExtraction::internal_computeORBDescriptors(
 	const Mat& cvImg = inImg_gray.asCvMatRef();
 	Mat cv_descs;
 
-#if MRPT_OPENCV_VERSION_NUM < 0x300
+#if MRPT_OPENCV_VERSION_NUM < 0x030000
 	Ptr<Feature2D> orb = Algorithm::create<Feature2D>("Feature2D.ORB");
 	orb->operator()(
 		cvImg, cv::noArray(), cv_feats, cv_descs,

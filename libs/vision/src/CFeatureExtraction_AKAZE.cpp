@@ -37,7 +37,7 @@ void CFeatureExtraction::extractFeaturesAKAZE(
 	mrpt::system::CTimeLoggerEntry tle(profiler, "extractFeaturesAKAZE");
 
 #if MRPT_HAS_OPENCV
-#if MRPT_OPENCV_VERSION_NUM < 0x300
+#if MRPT_OPENCV_VERSION_NUM < 0x030000
 	THROW_EXCEPTION("This function requires OpenCV > 3.0.0");
 #else
 
@@ -46,11 +46,11 @@ void CFeatureExtraction::extractFeaturesAKAZE(
 	// Make sure we operate on a gray-scale version of the image:
 	const CImage inImg_gray(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
 
-#if MRPT_OPENCV_VERSION_NUM >= 0x300
+#if MRPT_OPENCV_VERSION_NUM >= 0x030000
 
 	Mat theImg = inImg_gray.asCvMat<Mat>(SHALLOW_COPY);
 	Ptr<AKAZE> akaze = AKAZE::create(
-#if MRPT_OPENCV_VERSION_NUM >= 0x400
+#if MRPT_OPENCV_VERSION_NUM >= 0x040000
 		static_cast<cv::AKAZE::DescriptorType>(
 			options.AKAZEOptions.descriptor_type),
 #else
@@ -60,7 +60,7 @@ void CFeatureExtraction::extractFeaturesAKAZE(
 		options.AKAZEOptions.descriptor_channels,
 		options.AKAZEOptions.threshold, options.AKAZEOptions.nOctaves,
 		options.AKAZEOptions.nOctaveLayers,
-#if MRPT_OPENCV_VERSION_NUM >= 0x400
+#if MRPT_OPENCV_VERSION_NUM >= 0x040000
 		static_cast<cv::KAZE::DiffusivityType>(options.AKAZEOptions.diffusivity)
 #else
 		options.AKAZEOptions.diffusivity
