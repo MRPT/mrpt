@@ -18,14 +18,14 @@
 // OPENCV HEADERS
 #define CV_NO_CVV_IMAGE	 // Avoid CImage name crash
 
-#if MRPT_OPENCV_VERSION_NUM < 0x240
+#if MRPT_OPENCV_VERSION_NUM < 0x020400
 #error "MRPT requires OpenCV 2.4.0 or newer"
 #endif
 
 #include <opencv2/opencv_modules.hpp>
 
 // C++ API:
-#if MRPT_OPENCV_VERSION_NUM >= 0x300
+#if MRPT_OPENCV_VERSION_NUM >= 0x030000
 // C++ API - opencv >=3
 #include <opencv2/calib3d.hpp>
 #include <opencv2/core.hpp>
@@ -72,7 +72,7 @@
 #endif
 
 // Backwards compatible macro:
-#if MRPT_OPENCV_VERSION_NUM < 0x344
+#if MRPT_OPENCV_VERSION_NUM < 0x030404
 #define cvIplImage(X) (X)
 #endif
 

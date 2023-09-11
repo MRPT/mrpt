@@ -187,7 +187,7 @@ void MainWindow::on_button_generate_clicked()
 				xData.at<double>(i) = i;
 				yData.at<double>(i) = distances(i, 0);
 			}
-#if MRPT_OPENCV_VERSION_NUM >= 0x330
+#if MRPT_OPENCV_VERSION_NUM >= 0x030300
 			plot = plot::Plot2d::create(xData, yData);
 #else
 			plot = plot::createPlot2d(xData, yData);
@@ -384,7 +384,7 @@ void MainWindow::on_button_generate_clicked()
 					min_y = -1;
 				}
 
-#if MRPT_OPENCV_VERSION_NUM >= 0x330
+#if MRPT_OPENCV_VERSION_NUM >= 0x030300
 				plot = plot::Plot2d::create(xData, yData);
 #else
 				plot = plot::createPlot2d(xData, yData);
@@ -439,7 +439,7 @@ void MainWindow::on_button_generate_clicked()
 						else
 							yData.at<double>(i) = v2_surf.at(i);
 					}
-#if MRPT_OPENCV_VERSION_NUM >= 0x330
+#if MRPT_OPENCV_VERSION_NUM >= 0x030300
 					plot = plot::Plot2d::create(xData, yData);
 #else
 					plot = plot::createPlot2d(xData, yData);

@@ -15,7 +15,7 @@
 // Opencv 2.3 had a broken <opencv/eigen.h> in Ubuntu 14.04 Trusty => Disable
 // PNP classes
 #include <mrpt/config.h>
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM < 0x240
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM < 0x020400
 #undef MRPT_HAS_OPENCV
 #define MRPT_HAS_OPENCV 0
 #endif
