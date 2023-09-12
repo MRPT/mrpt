@@ -1,6 +1,8 @@
 \page changelog Change Log
 
 # Version 2.10.2: UNRELEASED
+- Build system:
+  - MRPT and OpenCV versions were until now exposed as macros with 3 hexadecimal digits (e.g. `2.4.0`->`0x240`), with a clear limitation of versions greater than 15. Now, both symbols `MRPT_VERSION` and `MRPT_OPENCV_VERSION_NUM` use TWO hexadecimal digits per version part, like: `2.10.2` -> `0x010A02`, which is much more general and safe for the future. For backwards compatibility, just make sure your user code only uses `MRPT_VERSION>=xxx` or `MRPT_VERSION>xxx` comparisons, instead of less-than comparisons (Fixes [issue #1285](https://github.com/MRPT/mrpt/issues/1285)).
 - Changes in apps:
   - rawlog-edit: Add `--select-label` optional filter to command `--remap-timestamps`.
 - Changes in libraries:
