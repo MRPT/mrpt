@@ -2223,7 +2223,7 @@ void CImage::getAsIplImage(IplImage* dest) const
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();
 
-#if MRPT_OPENCV_VERSION_NUM < 0x300
+#if MRPT_OPENCV_VERSION_NUM < 0x030000
 	ASSERT_(dest != nullptr);
 	*dest = cvIplImage(m_impl->img);
 #else
