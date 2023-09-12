@@ -26,6 +26,7 @@
   <depend>libxrandr</depend>
   <depend>libxxf86vm</depend>
   <depend>nav_msgs</depend>
+  <depend>opengl</depend>
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
   <depend>stereo_msgs</depend>
@@ -40,12 +41,14 @@
   <build_depend>assimp-dev</build_depend>
   <build_depend>ffmpeg</build_depend>
   <build_depend>libfreenect-dev</build_depend>
+  <build_depend>libfyaml-dev</build_depend>
   <build_depend>libjpeg</build_depend>
   <build_depend>libjsoncpp-dev</build_depend>
   <build_depend>libopenni2-dev</build_depend>
   <build_depend>libpcap</build_depend>
   <build_depend>libudev-dev</build_depend>
   <build_depend>libusb-1.0-dev</build_depend>
+  <build_depend>pkg-config</build_depend>
   <build_depend>pybind11-dev</build_depend>
   <build_depend>python3-pip</build_depend>
   <build_depend>tinyxml2</build_depend>
