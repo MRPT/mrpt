@@ -41,7 +41,7 @@
   <build_depend>assimp-dev</build_depend>
   <build_depend>ffmpeg</build_depend>
   <build_depend>libfreenect-dev</build_depend>
-  <build_depend>libfyaml-dev</build_depend>
+  <build_depend condition="$ROS_VERSION == 2">libfyaml-dev</build_depend>
   <build_depend>libjpeg</build_depend>
   <build_depend>libjsoncpp-dev</build_depend>
   <build_depend>libopenni2-dev</build_depend>
