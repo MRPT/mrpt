@@ -19,15 +19,15 @@ if (PROG_GZIP AND PROG_POD2MAN)
 	# Macro for declaring man-pages targets:
 	macro(CREATE_MANPAGE_PROJECT appname)
 		add_custom_target(man_page_${appname}
-			COMMAND 			pod2man --center="Mobile Robot Programming Toolkit - MRPT"  ${MRPT_SOURCE_DIR}/doc/man-pages/pod/${appname}.pod |gzip -c > ${MRPT_BINARY_DIR}/man-pages/${appname}.1.gz
-			WORKING_DIRECTORY	${MRPT_SOURCE_DIR}/
+			COMMAND 			pod2man --center="Mobile Robot Programming Toolkit - MRPT"  ${MRPT_SOURCE_DIR}/doc/man-pages/pod/${appname}.pod | gzip -c > ${appname}.1.gz
+			WORKING_DIRECTORY	"${MRPT_BINARY_DIR}/man-pages"
 			COMMENT 		"Generating MRPT man pages"
 			)
 		add_dependencies(man_pages_all man_page_${appname})
 		if (UNIX)
 			install(FILES "${MRPT_BINARY_DIR}/man-pages/${appname}.1.gz" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share/man/man1/ )
 		endif()
-	endmacro(CREATE_MANPAGE_PROJECT)
+	endmacro()
 
 	# The main (empty) target:
 	add_custom_target(man_pages_all ALL)
