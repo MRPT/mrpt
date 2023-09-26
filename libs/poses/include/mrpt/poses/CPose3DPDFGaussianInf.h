@@ -28,10 +28,8 @@ class CPose3DQuatPDFGaussian;
  *  Uncertainty of pose composition operations (\f$ y = x \oplus u \f$) is
  * implemented in the method "CPose3DPDFGaussianInf::operator+=".
  *
- *  For further details on implemented methods and the theory behind them,
- *  see <a
- * href="http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty"
- * >this report</a>.
+ * \note Read also: "A tutorial on SE(3) transformation parameterizations and
+ * on-manifold optimization", in \cite blanco_se3_tutorial
  *
  * \sa CPose3D, CPose3DPDF, CPose3DPDFParticles, CPose3DPDFGaussian
  * \ingroup poses_pdf_grp
