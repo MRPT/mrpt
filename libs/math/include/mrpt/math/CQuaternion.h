@@ -465,8 +465,10 @@ class CQuaternion : public CVectorFixed<T, 4>
 			if (out_dr_dq)
 			{
 				out_dr_dq->setZero();
-				(*out_dr_dq)(0, 0) = +2 / x();
-				(*out_dr_dq)(0, 2) = -2 * r() / (x() * x());
+				// d{yaw}_d{r}:
+				(*out_dr_dq)(0, 0) = +2 * x() / (r() * r() + x() * x());
+				// d{yaw}_d{x}:
+				(*out_dr_dq)(0, 1) = -2 * r() / (r() * r() + x() * x());
 			}
 		}
 		else if (discr < -0.49999)
@@ -477,8 +479,10 @@ class CQuaternion : public CVectorFixed<T, 4>
 			if (out_dr_dq)
 			{
 				out_dr_dq->setZero();
-				(*out_dr_dq)(0, 0) = -2 / x();
-				(*out_dr_dq)(0, 2) = +2 * r() / (x() * x());
+				// d{yaw}_d{r}:
+				(*out_dr_dq)(0, 0) = -2 * x() / (r() * r() + x() * x());
+				// d{yaw}_d{x}:
+				(*out_dr_dq)(0, 1) = +2 * r() / (r() * r() + x() * x());
 			}
 		}
 		else
