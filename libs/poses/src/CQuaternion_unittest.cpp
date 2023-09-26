@@ -192,3 +192,25 @@ TEST_F(QuaternionTests, ExpAndLnMatches)
 	for (const auto& i : list_test_XYZ)
 		test_ExpAndLnMatches(i[0], i[1], i[2]);
 }
+
+TEST_F(QuaternionTests, ThrowOnNotNormalized)
+{
+	EXPECT_NO_THROW(mrpt::math::CQuaternion(1.0, 0.0, 0.0, 0.0));
+	EXPECT_ANY_THROW(mrpt::math::CQuaternion(0.9, 0.0, 0.0, 0.0));
+	EXPECT_ANY_THROW(mrpt::math::CQuaternion(1.1, 0.0, 0.0, 0.0));
+	EXPECT_ANY_THROW(mrpt::math::CQuaternion(1.0, 0.1, 0.0, 0.0));
+	EXPECT_ANY_THROW(mrpt::math::CQuaternion(1.0, 0.0, -0.1, 0.0));
+	EXPECT_ANY_THROW(mrpt::math::CQuaternion(1.0, 0.0, 0.0, -0.1));
+}
+
+TEST_F(QuaternionTests, ensurePositiveRealPart)
+{
+	{
+		auto q = mrpt::math::CQuaternion(1.0, 0.0, 0.0, 0.0);
+		EXPECT_GE(q.r(), 0.0);
+	}
+	{
+		auto q = mrpt::math::CQuaternion(-1.0, 0.0, 0.0, 0.0);
+		EXPECT_GE(q.r(), 0.0);
+	}
+}
