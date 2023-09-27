@@ -62,7 +62,7 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 	const double q2y = u.quat().y();
 	const double q2z = u.quat().z();
 
-	CPose3DQuat x_plus_u = x + u;  // needed for the normalization Jacobian:
+	const CPose3DQuat x_plus_u = x + u;	 // for the normalization Jacobian
 	CMatrixDouble44 norm_jacob(UNINITIALIZED_MATRIX);
 	x_plus_u.quat().normalizationJacobian(norm_jacob);
 
