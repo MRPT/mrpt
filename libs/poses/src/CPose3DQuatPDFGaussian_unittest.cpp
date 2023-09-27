@@ -53,23 +53,54 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 		return p6pdf;
 	}
 
-	void test_toFromYPRGauss(double yaw, double pitch, double roll)
+	void test_toFromYPRGauss(
+		double yaw, double pitch, double roll, bool useGimbalLockCov = false)
 	{
+		const bool usesSUT =
+			mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION();
+
 		// Random pose:
 		CPose3DPDFGaussian p1ypr =
-			generateRandomPose3DPDF(1.0, 2.0, 3.0, yaw, pitch, roll, 0.1);
+			generateRandomPose3DPDF(1.0, 2.0, 3.0, yaw, pitch, roll, 1e-2);
+
+		// In gimbal-lock, it's impossible to recover uncertainty for
+		// pitch/roll, since both are fixed values:
+		if (useGimbalLockCov)
+		{
+			for (int i = 0; i < 6; i++)
+				for (int j = 4; j < 6; j++)
+					p1ypr.cov(i, j) = p1ypr.cov(j, i) = 0;
+		}
+
 		CPose3DQuatPDFGaussian p1quat = CPose3DQuatPDFGaussian(p1ypr);
 
 		// Convert back to a 6x6 representation:
 		CPose3DPDFGaussian p2ypr = CPose3DPDFGaussian(p1quat);
 
-		EXPECT_NEAR(0, (p2ypr.cov - p1ypr.cov).array().abs().maxCoeff(), 1e-6)
-			<< "p1ypr: " << endl
-			<< p1ypr << endl
-			<< "p1quat : " << endl
-			<< p1quat << endl
-			<< "p2ypr : " << endl
-			<< p2ypr << endl;
+		std::stringstream onFailMsg;
+		onFailMsg << "p1ypr: " << endl
+				  << p1ypr << endl
+				  << "p1quat : " << endl
+				  << p1quat << endl
+				  << "p2ypr : " << endl
+				  << p2ypr << endl
+				  << "USE_SUT_QUAT2EULER_CONVERSION: "
+				  << mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION()
+				  << endl;
+
+		EXPECT_NEAR(
+			0, (p2ypr.cov - p1ypr.cov).array().abs().maxCoeff(),
+			usesSUT ? 1e-2 : 1e-6)
+			<< onFailMsg.str();
+
+		EXPECT_NEAR(
+			0,
+			(p2ypr.mean.asVectorVal() - p1ypr.mean.asVectorVal())
+				.array()
+				.abs()
+				.maxCoeff(),
+			usesSUT ? 0.1 : 1e-4)
+			<< onFailMsg.str();
 	}
 
 	static void func_compose(
@@ -366,10 +397,16 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 
 TEST_F(Pose3DQuatPDFGaussTests, ToYPRGaussPDFAndBack)
 {
-	test_toFromYPRGauss(-30.0_deg, 10.0_deg, 60.0_deg);
-	test_toFromYPRGauss(30.0_deg, 88.0_deg, 0.0_deg);
-	test_toFromYPRGauss(30.0_deg, 89.5_deg, 0.0_deg);
-	// The formulas break at pitch=90, but this we cannot avoid...
+	for (int USE_SUT = 0; USE_SUT <= 1; USE_SUT++)
+	{
+		mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION(USE_SUT != 0);
+
+		test_toFromYPRGauss(-30.0_deg, 10.0_deg, 60.0_deg);
+		test_toFromYPRGauss(30.0_deg, 88.0_deg, 0.0_deg);
+		test_toFromYPRGauss(30.0_deg, 89.5_deg, 0.0_deg);
+		test_toFromYPRGauss(20.0_deg, 89.999_deg, 0.0_deg, true /*gimbal*/);
+		test_toFromYPRGauss(20.0_deg, -89.999_deg, 0.0_deg, true /*gimbal*/);
+	}
 }
 
 TEST_F(Pose3DQuatPDFGaussTests, CompositionJacobian)
