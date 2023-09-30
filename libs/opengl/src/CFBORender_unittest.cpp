@@ -42,6 +42,10 @@
 #if defined(__arm__) && MRPT_WORD_SIZE == 32
 #undef RUN_OFFSCREEN_RENDER_TESTS
 #endif
+// Idem with RISCV64 arch:
+#if defined(__riscv)
+#undef RUN_OFFSCREEN_RENDER_TESTS
+#endif
 
 static float imageDiff(
 	const mrpt::img::CImage& im1, const mrpt::img::CImage& im2)

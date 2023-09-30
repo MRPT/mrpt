@@ -12,6 +12,7 @@
   - Fix CSparse "C" linkage build error (OSX Clang). PR [#1280](https://github.com/MRPT/mrpt/pull/1280)
   - Fix missing Python wrapping of poses PDF (poses with uncertainty) composition (\oplus and \ominus) operators. (Closes [#1281](https://github.com/MRPT/mrpt/issues/1281)). PR [#1283](https://github.com/MRPT/mrpt/pull/1283)
   - Fix wrong Jacobian in mrpt::math::CQuaternion::rpy_and_jacobian() for the case of Gimbal Lock. Thanks @giafranchini for reporting!. PR [#1290](https://github.com/MRPT/mrpt/pull/1290) (Closes [#1289](https://github.com/MRPT/mrpt/issues/1289))
+  - Fix spurious failures in offscreen render unit tests in RISCV64 (Closes [#1287](https://github.com/MRPT/mrpt/issues/1287)).
 
 # Version 2.10.1: Released August 10th, 2023
 - Build system:
