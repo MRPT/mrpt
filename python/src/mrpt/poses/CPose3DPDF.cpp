@@ -256,7 +256,7 @@ struct PyCallBack_mrpt_poses_CPose3DPDF : public mrpt::poses::CPose3DPDF {
 	}
 };
 
-// mrpt::poses::CPose3DPDFGaussian file:mrpt/poses/CPose3DPDFGaussian.h line:40
+// mrpt::poses::CPose3DPDFGaussian file:mrpt/poses/CPose3DPDFGaussian.h line:38
 struct PyCallBack_mrpt_poses_CPose3DPDFGaussian : public mrpt::poses::CPose3DPDFGaussian {
 	using mrpt::poses::CPose3DPDFGaussian::CPose3DPDFGaussian;
 
@@ -489,8 +489,8 @@ void bind_mrpt_poses_CPose3DPDF(std::function< pybind11::module &(std::string co
 		cl.def_static("is_PDF", (bool (*)()) &mrpt::poses::CPose3DPDF::is_PDF, "C++: mrpt::poses::CPose3DPDF::is_PDF() --> bool");
 		cl.def("assign", (class mrpt::poses::CPose3DPDF & (mrpt::poses::CPose3DPDF::*)(const class mrpt::poses::CPose3DPDF &)) &mrpt::poses::CPose3DPDF::operator=, "C++: mrpt::poses::CPose3DPDF::operator=(const class mrpt::poses::CPose3DPDF &) --> class mrpt::poses::CPose3DPDF &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::poses::CPose3DPDFGaussian file:mrpt/poses/CPose3DPDFGaussian.h line:40
-		pybind11::class_<mrpt::poses::CPose3DPDFGaussian, std::shared_ptr<mrpt::poses::CPose3DPDFGaussian>, PyCallBack_mrpt_poses_CPose3DPDFGaussian, mrpt::poses::CPose3DPDF, mrpt::Stringifyable> cl(M("mrpt::poses"), "CPose3DPDFGaussian", "Declares a class that represents a Probability Density function (PDF) of a\n 3D pose \n\n.\n\n   This class implements that PDF using a mono-modal Gaussian distribution.\n See mrpt::poses::CPose3DPDF for more details.\n\n  Uncertainty of pose composition operations (\n) is\n implemented in the method \"CPose3DPDFGaussian::operator+=\".\n\n  For further details on implemented methods and the theory behind them,\n  see \n* href=\"http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty\"\n >this report.\n\n \n CPose3D, CPose3DPDF, CPose3DPDFParticles\n \n\n\n ");
+	{ // mrpt::poses::CPose3DPDFGaussian file:mrpt/poses/CPose3DPDFGaussian.h line:38
+		pybind11::class_<mrpt::poses::CPose3DPDFGaussian, std::shared_ptr<mrpt::poses::CPose3DPDFGaussian>, PyCallBack_mrpt_poses_CPose3DPDFGaussian, mrpt::poses::CPose3DPDF, mrpt::Stringifyable> cl(M("mrpt::poses"), "CPose3DPDFGaussian", "Declares a class that represents a Probability Density function (PDF) of a\n 3D pose \n\n.\n\n   This class implements that PDF using a mono-modal Gaussian distribution.\n See mrpt::poses::CPose3DPDF for more details.\n\n  Uncertainty of pose composition operations (\n) is\n implemented in the method \"CPose3DPDFGaussian::operator+=\".\n\n \n Read also: \"A tutorial on SE(3) transformation parameterizations and\n on-manifold optimization\", in \n\n \n CPose3D, CPose3DPDF, CPose3DPDFParticles\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::poses::CPose3DPDFGaussian(); }, [](){ return new PyCallBack_mrpt_poses_CPose3DPDFGaussian(); } ) );
 		cl.def( pybind11::init<const class mrpt::poses::CPose3D &>(), pybind11::arg("init_Mean") );
 
