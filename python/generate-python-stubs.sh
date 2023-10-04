@@ -16,4 +16,4 @@ stubgen -p mrpt -p mrpt.pymrpt -o stubs-out
 
 # applying manual patches to stubs:
 echo "Applying manual patches to stubs..."
-find . -name "patch-stubs*.diff" | xargs -I FIL bash -c "echo FIL && git apply FIL"
+find . -name "patch-stubs*.diff" | xargs -I FIL bash -c "echo FIL && git apply FIL --ignore-whitespace"

@@ -20,7 +20,7 @@ PYBIND11_MAKE_OPAQUE(std::deque<mrpt::system::CDirectoryExplorer::TFileInfo>)
 
 void bind_std_stl_deque_2(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // std::deque file:bits/stl_deque.h line:766
+	{ // std::deque file:bits/stl_deque.h line:767
 		pybind11::class_<std::deque<mrpt::system::CDirectoryExplorer::TFileInfo>, std::shared_ptr<std::deque<mrpt::system::CDirectoryExplorer::TFileInfo>>> cl(M("std"), "deque_mrpt_system_CDirectoryExplorer_TFileInfo_t", "");
 		cl.def( pybind11::init( [](){ return new std::deque<mrpt::system::CDirectoryExplorer::TFileInfo>(); } ) );
 		cl.def( pybind11::init<const class std::allocator<struct mrpt::system::CDirectoryExplorer::TFileInfo> &>(), pybind11::arg("__a") );

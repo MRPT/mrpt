@@ -18,7 +18,7 @@
 #include <opencv2/nonfree/nonfree.hpp>
 #endif
 #ifdef HAVE_OPENCV_FEATURES2D
-#if MRPT_OPENCV_VERSION_NUM >= 0x300
+#if MRPT_OPENCV_VERSION_NUM >= 0x030000
 #include <opencv2/features2d.hpp>
 #else
 #include <opencv2/features2d/features2d.hpp>
@@ -71,9 +71,9 @@ void CFeatureExtraction::extractFeaturesSIFT(
 
 	// in opencv 4.4 SIFT got into the main repo
 #if defined(HAVE_OPENCV_NONFREE) || defined(HAVE_OPENCV_XFEATURES2D) ||        \
-	(MRPT_OPENCV_VERSION_NUM >= 0x440)
+	(MRPT_OPENCV_VERSION_NUM >= 0x040400)
 
-#if MRPT_OPENCV_VERSION_NUM < 0x300
+#if MRPT_OPENCV_VERSION_NUM < 0x030000
 	SiftFeatureDetector SIFTDetector(
 		options.SIFTOptions.threshold, options.SIFTOptions.edgeThreshold);
 
@@ -84,11 +84,11 @@ void CFeatureExtraction::extractFeaturesSIFT(
 	Mat desc;
 	SIFTDescriptor.compute(theImg, cv_feats, desc);
 #else
-	// MRPT_OPENCV_VERSION_NUM >= 0x300
+	// MRPT_OPENCV_VERSION_NUM >= 0x030000
 	using namespace cv;
 	vector<KeyPoint> cv_feats;
 
-#if MRPT_OPENCV_VERSION_NUM >= 0x440
+#if MRPT_OPENCV_VERSION_NUM >= 0x040400
 	using sift_t = cv::SIFT;
 #else
 	using sift_t = cv::xfeatures2d::SIFT;
@@ -180,7 +180,7 @@ void CFeatureExtraction::internal_computeSiftDescriptors(
 	ASSERT_(options.SIFTOptions.implementation == OpenCV);
 
 	// in opencv 4.4 SIFT got into the main repo
-#if MRPT_OPENCV_VERSION_NUM >= 0x440
+#if MRPT_OPENCV_VERSION_NUM >= 0x040400
 	using namespace cv;
 	vector<KeyPoint> cv_feats;
 

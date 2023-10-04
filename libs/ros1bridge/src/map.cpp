@@ -188,7 +188,6 @@ bool MapHdl::loadMap(
 			if (_debug) printf("Loading '.simplemap' file...");
 			CFileGZInputStream f(_map_file);
 			mrpt::serialization::archiveFrom(f) >> simpleMap;
-			printf("Ok\n");
 
 			ASSERTMSG_(
 				simpleMap.size() > 0,
