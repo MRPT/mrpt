@@ -53,7 +53,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::poses::CPose3DQuatPDFGaussianInf file:mrpt/poses/CPose3DQuatPDFGaussianInf.h line:42
+// mrpt::poses::CPose3DQuatPDFGaussianInf file:mrpt/poses/CPose3DQuatPDFGaussianInf.h line:40
 struct PyCallBack_mrpt_poses_CPose3DQuatPDFGaussianInf : public mrpt::poses::CPose3DQuatPDFGaussianInf {
 	using mrpt::poses::CPose3DQuatPDFGaussianInf::CPose3DQuatPDFGaussianInf;
 
@@ -446,8 +446,8 @@ struct PyCallBack_mrpt_poses_CPosePDFGaussianInf : public mrpt::poses::CPosePDFG
 
 void bind_mrpt_poses_CPose3DQuatPDFGaussianInf(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::poses::CPose3DQuatPDFGaussianInf file:mrpt/poses/CPose3DQuatPDFGaussianInf.h line:42
-		pybind11::class_<mrpt::poses::CPose3DQuatPDFGaussianInf, std::shared_ptr<mrpt::poses::CPose3DQuatPDFGaussianInf>, PyCallBack_mrpt_poses_CPose3DQuatPDFGaussianInf, mrpt::poses::CPose3DQuatPDF> cl(M("mrpt::poses"), "CPose3DQuatPDFGaussianInf", "Declares a class that represents a Probability Density function (PDF) of a\n 3D pose using a quaternion \n\n\n\n.\n\n   This class implements that PDF using a mono-modal Gaussian distribution\n storing the information matrix instead of its inverse, the covariance matrix.\n     See mrpt::poses::CPose3DQuatPDF for more details, or\n     mrpt::poses::CPose3DPDF for classes based on Euler angles instead.\n\n  Uncertainty of pose composition operations (\n) is\n implemented in the methods \"CPose3DQuatPDFGaussianInf::operator+=\" and\n \"CPose3DQuatPDF::jacobiansPoseComposition\".\n\n  For further details on implemented methods and the theory behind them,\n  see \n* href=\"http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty\"\n >this report.\n\n \n CPose3DQuat, CPose3DQuatPDF, CPose3DPDF, CPose3DQuatPDFGaussian\n \n\n\n ");
+	{ // mrpt::poses::CPose3DQuatPDFGaussianInf file:mrpt/poses/CPose3DQuatPDFGaussianInf.h line:40
+		pybind11::class_<mrpt::poses::CPose3DQuatPDFGaussianInf, std::shared_ptr<mrpt::poses::CPose3DQuatPDFGaussianInf>, PyCallBack_mrpt_poses_CPose3DQuatPDFGaussianInf, mrpt::poses::CPose3DQuatPDF> cl(M("mrpt::poses"), "CPose3DQuatPDFGaussianInf", "Declares a class that represents a Probability Density function (PDF) of a\n 3D pose using a quaternion \n\n\n\n.\n\n   This class implements that PDF using a mono-modal Gaussian distribution\n storing the information matrix instead of its inverse, the covariance matrix.\n     See mrpt::poses::CPose3DQuatPDF for more details, or\n     mrpt::poses::CPose3DPDF for classes based on Euler angles instead.\n\n  Uncertainty of pose composition operations (\n) is\n implemented in the methods \"CPose3DQuatPDFGaussianInf::operator+=\" and\n \"CPose3DQuatPDF::jacobiansPoseComposition\".\n\n \n Read also: \"A tutorial on SE(3) transformation parameterizations and\n on-manifold optimization\", in \n\n \n CPose3DQuat, CPose3DQuatPDF, CPose3DPDF, CPose3DQuatPDFGaussian\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::poses::CPose3DQuatPDFGaussianInf(); }, [](){ return new PyCallBack_mrpt_poses_CPose3DQuatPDFGaussianInf(); } ) );
 		cl.def( pybind11::init<enum mrpt::math::TConstructorFlags_Quaternions>(), pybind11::arg("constructor_dummy_param") );
 
