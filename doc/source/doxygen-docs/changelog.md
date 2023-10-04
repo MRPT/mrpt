@@ -8,6 +8,8 @@
   - rawlog-edit: Add `--select-label` optional filter to command `--remap-timestamps`.
 - Changes in libraries:
   - mrpt-ros1bridge and mrpt-ros2bridge: Remove leftover printf debugging trace printing ``Ok`` to console.
+  - \ref mrpt_hwdrivers_grp
+    - New overload mrpt::hwdrivers::CFFMPEG_InputStream::retrieveFrame() returning the frame PTS (presentation timestamp).
 - BUG FIXES:
   - Fix CSparse "C" linkage build error (OSX Clang). PR [#1280](https://github.com/MRPT/mrpt/pull/1280)
   - Fix missing Python wrapping of poses PDF (poses with uncertainty) composition (\oplus and \ominus) operators. (Closes [#1281](https://github.com/MRPT/mrpt/issues/1281)). PR [#1283](https://github.com/MRPT/mrpt/pull/1283)
