@@ -50,7 +50,8 @@ void Test_FFMPEG_CaptureCamera(const std::string& video_url)
 			std::cout << "Window closed. Quitting.\n";
 			break;
 		}
-		if (!in_video.retrieveFrame(img))
+		int64_t framePTS = 0;  // frame timestamp
+		if (!in_video.retrieveFrame(img, framePTS))
 		{
 			std::cout << "Video stream ended. Quitting.\n";
 			break;
@@ -62,8 +63,13 @@ void Test_FFMPEG_CaptureCamera(const std::string& video_url)
 		while (img.getWidth() > 1024)
 			img = img.scaleHalf(mrpt::img::IMG_INTERP_LINEAR);
 
+		img.selectTextFont("10x20");
 		img.textOut(
-			5, 5, mrpt::format("%.02f fps", fps), TColor(0x80, 0x80, 0x80));
+			5, 5,
+			mrpt::format(
+				"Read: %.02f FPS | Nominal: %.02f FPS | PTS=%i", fps,
+				in_video.getVideoFPS(), static_cast<int>(framePTS)),
+			TColor(0x80, 0x80, 0x80));
 		if (nFrames > 100)
 		{
 			tictac.Tic();
