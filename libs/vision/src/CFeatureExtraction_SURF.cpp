@@ -33,7 +33,8 @@ using namespace std;
 
 // Was: MRPT_HAS_OPENCV_NONFREE
 #if defined(HAVE_OPENCV_XFEATURES2D) ||                                        \
-	(MRPT_OPENCV_VERSION_NUM < 0x300 && MRPT_OPENCV_VERSION_NUM >= 0x240)
+	(MRPT_OPENCV_VERSION_NUM < 0x030000 &&                                     \
+	 MRPT_OPENCV_VERSION_NUM >= 0x020400)
 #define HAVE_OPENCV_WITH_SURF 1
 #else
 #define HAVE_OPENCV_WITH_SURF 0
@@ -56,7 +57,7 @@ void CFeatureExtraction::extractFeaturesSURF(
 
 // gb redesign start -make sure that the Algorithm::create is used only for
 // older openCV versions
-#if MRPT_OPENCV_VERSION_NUM < 0x300 && MRPT_OPENCV_VERSION_NUM >= 0x240
+#if MRPT_OPENCV_VERSION_NUM < 0x030000 && MRPT_OPENCV_VERSION_NUM >= 0x020400
 
 	Ptr<Feature2D> surf = Algorithm::create<Feature2D>("Feature2D.SURF");
 	if (surf.empty())
@@ -181,7 +182,7 @@ void CFeatureExtraction::internal_computeSurfDescriptors(
 
 // Only computes the descriptors:
 // gb redesign
-#if MRPT_OPENCV_VERSION_NUM < 0x300 && MRPT_OPENCV_VERSION_NUM >= 0x240
+#if MRPT_OPENCV_VERSION_NUM < 0x030000 && MRPT_OPENCV_VERSION_NUM >= 0x020400
 
 	Ptr<Feature2D> surf = Algorithm::create<Feature2D>("Feature2D.SURF");
 	if (surf.empty())

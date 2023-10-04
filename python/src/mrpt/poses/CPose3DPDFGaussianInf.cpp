@@ -55,7 +55,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::poses::CPose3DPDFGaussianInf file:mrpt/poses/CPose3DPDFGaussianInf.h line:39
+// mrpt::poses::CPose3DPDFGaussianInf file:mrpt/poses/CPose3DPDFGaussianInf.h line:37
 struct PyCallBack_mrpt_poses_CPose3DPDFGaussianInf : public mrpt::poses::CPose3DPDFGaussianInf {
 	using mrpt::poses::CPose3DPDFGaussianInf::CPose3DPDFGaussianInf;
 
@@ -461,8 +461,8 @@ struct PyCallBack_mrpt_poses_CPose3DPDFGrid : public mrpt::poses::CPose3DPDFGrid
 
 void bind_mrpt_poses_CPose3DPDFGaussianInf(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::poses::CPose3DPDFGaussianInf file:mrpt/poses/CPose3DPDFGaussianInf.h line:39
-		pybind11::class_<mrpt::poses::CPose3DPDFGaussianInf, std::shared_ptr<mrpt::poses::CPose3DPDFGaussianInf>, PyCallBack_mrpt_poses_CPose3DPDFGaussianInf, mrpt::poses::CPose3DPDF> cl(M("mrpt::poses"), "CPose3DPDFGaussianInf", "Declares a class that represents a Probability Density function (PDF) of a\n 3D pose \n\n as a\n Gaussian described by its mean and its inverse covariance matrix.\n\n   This class implements that PDF using a mono-modal Gaussian distribution in\n \"information\" form (inverse covariance matrix).\n\n  Uncertainty of pose composition operations (\n) is\n implemented in the method \"CPose3DPDFGaussianInf::operator+=\".\n\n  For further details on implemented methods and the theory behind them,\n  see \n* href=\"http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty\"\n >this report.\n\n \n CPose3D, CPose3DPDF, CPose3DPDFParticles, CPose3DPDFGaussian\n \n\n\n ");
+	{ // mrpt::poses::CPose3DPDFGaussianInf file:mrpt/poses/CPose3DPDFGaussianInf.h line:37
+		pybind11::class_<mrpt::poses::CPose3DPDFGaussianInf, std::shared_ptr<mrpt::poses::CPose3DPDFGaussianInf>, PyCallBack_mrpt_poses_CPose3DPDFGaussianInf, mrpt::poses::CPose3DPDF> cl(M("mrpt::poses"), "CPose3DPDFGaussianInf", "Declares a class that represents a Probability Density function (PDF) of a\n 3D pose \n\n as a\n Gaussian described by its mean and its inverse covariance matrix.\n\n   This class implements that PDF using a mono-modal Gaussian distribution in\n \"information\" form (inverse covariance matrix).\n\n  Uncertainty of pose composition operations (\n) is\n implemented in the method \"CPose3DPDFGaussianInf::operator+=\".\n\n \n Read also: \"A tutorial on SE(3) transformation parameterizations and\n on-manifold optimization\", in \n\n \n CPose3D, CPose3DPDF, CPose3DPDFParticles, CPose3DPDFGaussian\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::poses::CPose3DPDFGaussianInf(); }, [](){ return new PyCallBack_mrpt_poses_CPose3DPDFGaussianInf(); } ) );
 		cl.def( pybind11::init<const class mrpt::poses::CPose3D &>(), pybind11::arg("init_Mean") );
 
@@ -504,6 +504,9 @@ void bind_mrpt_poses_CPose3DPDFGaussianInf(std::function< pybind11::module &(std
 		cl.def("assign", (class mrpt::poses::CPose3DPDFGaussianInf & (mrpt::poses::CPose3DPDFGaussianInf::*)(const class mrpt::poses::CPose3DPDFGaussianInf &)) &mrpt::poses::CPose3DPDFGaussianInf::operator=, "C++: mrpt::poses::CPose3DPDFGaussianInf::operator=(const class mrpt::poses::CPose3DPDFGaussianInf &) --> class mrpt::poses::CPose3DPDFGaussianInf &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
 		cl.def("__str__", [](mrpt::poses::CPose3DPDFGaussianInf const &o) -> std::string { std::ostringstream s; using namespace mrpt::poses; s << o; return s.str(); } );
+
+		cl.def("__add__", [](const mrpt::poses::CPose3DPDFGaussianInf&a, const mrpt::poses::CPose3DPDFGaussianInf& b) -> mrpt::poses::CPose3DPDFGaussianInf { return a+b; });
+		cl.def("__sub__", [](const mrpt::poses::CPose3DPDFGaussianInf&a, const mrpt::poses::CPose3DPDFGaussianInf& b) -> mrpt::poses::CPose3DPDFGaussianInf { return a-b; });
 	}
 	{ // mrpt::poses::CPose3DPDFGrid file:mrpt/poses/CPose3DPDFGrid.h line:25
 		pybind11::class_<mrpt::poses::CPose3DPDFGrid, std::shared_ptr<mrpt::poses::CPose3DPDFGrid>, PyCallBack_mrpt_poses_CPose3DPDFGrid, mrpt::poses::CPose3DPDF, mrpt::poses::CPose3DGridTemplate<double>> cl(M("mrpt::poses"), "CPose3DPDFGrid", "Declares a class that represents a Probability Distribution\n  function (PDF) of a SE(3) pose (x,y,z, yaw, pitch, roll), in\n the form of a 6-dimensional grid of \"voxels\".\n\n \n CPose3D, CPose3DPDF, CPose3DGridTemplate\n \n\n\n ");

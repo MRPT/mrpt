@@ -97,5 +97,10 @@ class CFFMPEG_InputStream
 	 *  \sa openURL, close, isOpen
 	 */
 	bool retrieveFrame(mrpt::img::CImage& out_img);
+
+	/** \overload also returning the frame PTS (frame presentation timestamp).
+	 *  Refer to docs for ffmpeg AVFrame::pts
+	 */
+	bool retrieveFrame(mrpt::img::CImage& out_img, int64_t& outPTS);
 };
 }  // namespace mrpt::hwdrivers

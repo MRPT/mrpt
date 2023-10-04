@@ -322,7 +322,16 @@ void CFFMPEG_InputStream::close()
    -------------------------------------------------------- */
 bool CFFMPEG_InputStream::retrieveFrame(mrpt::img::CImage& out_img)
 {
+	[[maybe_unused]] int64_t outPTS = 0;
+	return retrieveFrame(out_img, outPTS);
+}
+
+bool CFFMPEG_InputStream::retrieveFrame(
+	mrpt::img::CImage& out_img, int64_t& outPTS)
+{
 #if MRPT_HAS_FFMPEG
+	outPTS = 0;
+
 	if (!this->isOpen()) return false;
 
 	TFFMPEGContext* ctx = &m_impl->m_state;
@@ -409,6 +418,9 @@ bool CFFMPEG_InputStream::retrieveFrame(mrpt::img::CImage& out_img)
 
 			out_img.loadFromMemoryBuffer(
 				width, height, !m_grab_as_grayscale, ctx->pFrameRGB->data[0]);
+
+			// Output frame timestamp:
+			outPTS = ctx->pFrame->pts;
 
 			// Free the packet that was allocated by av_read_frame
 			av_packet_unref(&packet);
