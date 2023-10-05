@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.10.3: UNRELEASED
-(none)
+- BUG FIXES:
+  - Fix python wrapper FTBFS in armhf and other architectures.
 
 # Version 2.10.2: Released Oct 5th, 2023
 - Build system:
