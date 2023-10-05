@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.10.3: UNRELEASED
+(none)
+
 # Version 2.10.2: Released Oct 5th, 2023
 - Build system:
   - ROS: fix missing deps in package.xml needed for build via Nix.
