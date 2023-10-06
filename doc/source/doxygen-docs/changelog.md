@@ -3,6 +3,7 @@
 # Version 2.10.3: UNRELEASED
 - BUG FIXES:
   - Fix python wrapper FTBFS in armhf and other architectures.
+  - Fix matrices removeColumns() and removeRows() won't throw if user specified a non-existing index.
 
 # Version 2.10.2: Released Oct 5th, 2023
 - Build system:
