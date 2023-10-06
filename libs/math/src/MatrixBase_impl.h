@@ -43,6 +43,10 @@ void MatrixBase<Scalar, Derived>::removeColumns(
 	std::sort(idxs.begin(), idxs.end());
 	auto itEnd = std::unique(idxs.begin(), idxs.end());
 	idxs.resize(itEnd - idxs.begin());
+	for (const auto idx : idxs)
+	{
+		ASSERT_LT_(idx, mbDerived().cols());
+	}
 	unsafeRemoveColumns(idxs);
 }
 
@@ -70,6 +74,10 @@ void MatrixBase<Scalar, Derived>::removeRows(
 	std::sort(idxs.begin(), idxs.end());
 	auto itEnd = std::unique(idxs.begin(), idxs.end());
 	idxs.resize(itEnd - idxs.begin());
+	for (const auto idx : idxs)
+	{
+		ASSERT_LT_(idx, mbDerived().rows());
+	}
 	unsafeRemoveRows(idxs);
 }
 
