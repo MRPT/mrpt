@@ -46,6 +46,9 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 	registerClass(CLASS_ID(COctoMap));
 	registerClass(CLASS_ID(CColouredOctoMap));
 
+	registerClass(CLASS_ID(CVoxelMap));
+	// registerClass(CLASS_ID(CVoxelMapRGB));
+
 	registerClass(CLASS_ID(CAngularObservationMesh));
 	registerClass(CLASS_ID(CPlanarLaserScan));
 

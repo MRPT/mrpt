@@ -78,6 +78,7 @@ Python examples are `here <python_examples.html>`_.
   page_maps_observer_pattern_example.rst
   page_maps_octomap_simple.rst
   page_maps_ransac_data_association.rst
+  page_maps_voxelmap_simple.rst
   page_math_csparse_example.rst
   page_math_kmeans_example.rst
   page_math_leastsquares_example.rst

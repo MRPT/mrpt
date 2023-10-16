@@ -806,7 +806,7 @@ inline size_t VoxelGrid<DataT>::activeCellsCount() const
     {
       const int32_t inner_index = *inner_it;
       auto& leaf_grid = inner_grid.cell(inner_index);
-      total_size += leaf_grid->mask.countOn();
+      total_size += leaf_grid->mask().countOn();
     }
   }
   return total_size;

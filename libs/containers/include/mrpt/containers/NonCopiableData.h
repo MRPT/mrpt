@@ -31,10 +31,10 @@ class NonCopiableData
 	T data;
 
 	NonCopiableData(const NonCopiableData&) {}
-	NonCopiableData& operator=(const NonCopiableData& o) { return *this; }
+	NonCopiableData& operator=(const NonCopiableData&) { return *this; }
 
 	NonCopiableData(NonCopiableData&&) {}
-	NonCopiableData& operator=(NonCopiableData&& o) { return *this; }
+	NonCopiableData& operator=(NonCopiableData&&) { return *this; }
 };
 
 }  // namespace mrpt::containers
