@@ -33,6 +33,8 @@ namespace maps
  *  This version only stores occupancy information at each octree node. See the
  * base class mrpt::maps::COctoMapBase.
  *
+ * The octomap library was presented in \cite wurm2010octomap
+ *
  * \sa CMetricMap, the example in "MRPT/samples/octomap_simple"
  * \ingroup mrpt_maps_grp
  */
