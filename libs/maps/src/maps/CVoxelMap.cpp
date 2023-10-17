@@ -356,6 +356,8 @@ void CVoxelMap::internal_clear()
 void CVoxelMap::updateVoxel(
 	const double x, const double y, const double z, bool occupied)
 {
+	invalidateOccupiedCache();
+
 	voxel_node_t* cell = m_impl->accessor.value(
 		Bonxai::PosToCoord({x, y, z}, m_impl->grid.inv_resolution),
 		true /*create*/);
@@ -399,6 +401,8 @@ bool CVoxelMap::getPointOccupancy(
 void CVoxelMap::insertPointCloudAsRays(
 	const mrpt::maps::CPointsMap& pts, const mrpt::math::TPoint3D& sensorPt)
 {
+	invalidateOccupiedCache();
+
 	const voxel_node_t logodd_observation_occupied =
 		std::max<voxel_node_t>(1, p2l(insertionOptions.prob_hit));
 	const voxel_node_t logodd_thres_occupied =
@@ -486,6 +490,8 @@ void CVoxelMap::insertPointCloudAsRays(
 
 void CVoxelMap::insertPointCloudAsEndPoints(const mrpt::maps::CPointsMap& pts)
 {
+	invalidateOccupiedCache();
+
 	const voxel_node_t logodd_observation_occupied =
 		std::max<voxel_node_t>(1, p2l(insertionOptions.prob_hit));
 	const voxel_node_t logodd_thres_occupied =
@@ -512,4 +518,37 @@ void CVoxelMap::insertPointCloudAsEndPoints(const mrpt::maps::CPointsMap& pts)
 		updateCell_fast_occupied(
 			cell, logodd_observation_occupied, logodd_thres_occupied);
 	}
+}
+
+void CVoxelMap::updateOccupiedPointsCache() const
+{
+	if (m_cachedOccupied) return;  // done
+
+	m_cachedOccupied = mrpt::maps::CSimplePointsMap::Create();
+
+	// forEachCell() has no const version
+	auto& grid = const_cast<Bonxai::VoxelGrid<voxel_node_t>&>(m_impl->grid);
+
+	// Go thru all voxels:
+	auto lmbdPerVoxel = [this, &grid](
+							voxel_node_t& data, const Bonxai::CoordT& coord) {
+		using mrpt::img::TColor;
+
+		// log-odds to probability:
+		const double occFreeness = this->l2p(data);
+		const auto pt = Bonxai::CoordToPos(coord, grid.resolution);
+
+		if (occFreeness < 0.5)
+		{
+			m_cachedOccupied->insertPointFast(pt.x, pt.y, pt.z);
+		}
+	};	// end lambda for each voxel
+
+	grid.forEachCell(lmbdPerVoxel);
+}
+
+mrpt::maps::CSimplePointsMap::Ptr CVoxelMap::getOccupiedVoxels() const
+{
+	updateOccupiedPointsCache();
+	return m_cachedOccupied;
 }

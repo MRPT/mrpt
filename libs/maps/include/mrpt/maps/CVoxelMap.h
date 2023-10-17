@@ -11,6 +11,7 @@
 
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/maps/CLogOddsGridMapLUT.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CVoxelMapBase.h>
 #include <mrpt/maps/OccupancyGridCellType.h>
 #include <mrpt/maps/logoddscell_traits.h>
@@ -62,6 +63,14 @@ class CVoxelMap : public CVoxelMapBase<int8_t>,
 		const mrpt::math::TPoint3D& sensorPt);
 
 	void insertPointCloudAsEndPoints(const mrpt::maps::CPointsMap& pts);
+
+	/** Returns all occupied voxels as a point cloud. The shared_ptr is
+	 *  also hold and updated internally, so it is not safe to read it
+	 *  while also updating the voxel map in another thread.
+	 *
+	 *  The point cloud is cached, and invalidated upon map updates.
+	 */
+	mrpt::maps::CSimplePointsMap::Ptr getOccupiedVoxels() const;
 
 	struct TInsertionOptions : public mrpt::config::CLoadableOptions
 	{
@@ -249,6 +258,11 @@ class CVoxelMap : public CVoxelMapBase<int8_t>,
 	double internal_computeObservationLikelihood(
 		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D& takenFrom) const override;
+
+	void invalidateOccupiedCache() { m_cachedOccupied.reset(); }
+
+	void updateOccupiedPointsCache() const;
+	mutable mrpt::maps::CSimplePointsMap::Ptr m_cachedOccupied;
 };
 
 }  // namespace mrpt::maps
