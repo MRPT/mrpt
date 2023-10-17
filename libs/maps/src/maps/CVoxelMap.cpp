@@ -16,7 +16,7 @@ using namespace mrpt::maps;
 using namespace std::string_literals;  // "..."s
 
 //  =========== Begin of Map definition ============
-MAP_DEFINITION_REGISTER("mrpt::maps::CVoxelMap", mrpt::maps::CVoxelMap)
+MAP_DEFINITION_REGISTER("mrpt::maps::CVoxelMap,voxelMap", mrpt::maps::CVoxelMap)
 
 CVoxelMap::TMapDefinition::TMapDefinition() = default;
 void CVoxelMap::TMapDefinition::loadFromConfigFile_map_specific(
@@ -264,6 +264,17 @@ void CVoxelMap::TInsertionOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(ray_trace_free_space, bool, c, s);
 	MRPT_LOAD_CONFIG_VAR(decimation, uint64_t, c, s);
 }
+void CVoxelMap::TInsertionOptions::saveToConfigFile(
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
+{
+	MRPT_SAVE_CONFIG_VAR(max_range, c, s);
+	MRPT_SAVE_CONFIG_VAR(prob_miss, c, s);
+	MRPT_SAVE_CONFIG_VAR(prob_hit, c, s);
+	MRPT_SAVE_CONFIG_VAR(clamp_min, c, s);
+	MRPT_SAVE_CONFIG_VAR(clamp_max, c, s);
+	MRPT_SAVE_CONFIG_VAR(ray_trace_free_space, c, s);
+	MRPT_SAVE_CONFIG_VAR(decimation, c, s);
+}
 
 void CVoxelMap::TInsertionOptions::writeToStream(
 	mrpt::serialization::CArchive& out) const
@@ -317,6 +328,11 @@ void CVoxelMap::TLikelihoodOptions::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
 	MRPT_LOAD_CONFIG_VAR(decimation, int, c, s);
+}
+void CVoxelMap::TLikelihoodOptions::saveToConfigFile(
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
+{
+	MRPT_SAVE_CONFIG_VAR(decimation, c, s);
 }
 
 void CVoxelMap::TLikelihoodOptions::writeToStream(
