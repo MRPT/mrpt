@@ -9,6 +9,7 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/io/lazy_load_path.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CVoxelMap.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
@@ -29,7 +30,8 @@
 //				TestVoxelMapFromTUM
 // ------------------------------------------------------
 void TestVoxelMapFromTUM(
-	const std::string& datasetRawlogFile, const std::string& groundTruthFile)
+	const std::string& datasetRawlogFile, const std::string& groundTruthFile,
+	double VOXELMAP_RESOLUTION)
 {
 	// To find out external image files:
 	mrpt::io::setLazyLoadPathBase(
@@ -63,13 +65,19 @@ void TestVoxelMapFromTUM(
 					gtData(i, 1), gtData(i, 2), gtData(i, 3))));
 	}
 
-	mrpt::maps::CVoxelMap map(0.02);
+	// ----------------------
+	// Voxel map
+	// ----------------------
 
-	// map.insertionOptions.max_range = 5.0;  // [m]
+	mrpt::maps::CVoxelMap map(VOXELMAP_RESOLUTION);
 
+	map.insertionOptions.max_range = 5.0;  // [m]
+	map.insertionOptions.ray_trace_free_space = false;	// only occupied
+
+	// gui and demo app:
 	mrpt::gui::CDisplayWindow3D win("VoxelMap demo", 640, 480);
 
-	auto gl_map = mrpt::opengl::COctoMapVoxels::Create();
+	auto glVoxels = mrpt::opengl::COctoMapVoxels::Create();
 
 	auto glCamGroup = mrpt::opengl::CSetOfObjects::Create();
 	glCamGroup->insert(mrpt::opengl::stock_objects::CornerXYZSimple(0.3));
@@ -90,8 +98,6 @@ void TestVoxelMapFromTUM(
 
 		scene->insert(glCamGroup);
 
-		map.getAsOctoMapVoxels(*gl_map);
-
 		// View occupied points:
 		{
 			auto mapPts = map.getOccupiedVoxels();
@@ -99,10 +105,7 @@ void TestVoxelMapFromTUM(
 			scene->insert(mapPts->getVisualization());
 		}
 
-		gl_map->showGridLines(false);
-		gl_map->showVoxels(mrpt::opengl::VOXEL_SET_OCCUPIED, true);
-		gl_map->showVoxels(mrpt::opengl::VOXEL_SET_FREESPACE, true);
-		scene->insert(gl_map);
+		scene->insert(glVoxels);
 
 		win.unlockAccess3DScene();
 	}
@@ -143,9 +146,13 @@ void TestVoxelMapFromTUM(
 						0.0_deg, -90.0_deg, 90.0_deg);
 
 					// draw observation raw data:
+					mrpt::maps::CColouredPointsMap colPts;
+
 					mrpt::obs::T3DPointsProjectionParams pp;
 					pp.takeIntoAccountSensorPoseOnRobot = true;
-					obs->unprojectInto(*glObsPts, pp);
+					obs->unprojectInto(colPts, pp);
+
+					glObsPts->loadFromPointsMap(&colPts);
 
 					if (!glCamFrustrumDone)
 					{
@@ -158,8 +165,17 @@ void TestVoxelMapFromTUM(
 					}
 
 					// update the voxel map:
+					colPts.changeCoordinatesReference(camPose);
+					map.insertPointCloudAsEndPoints(colPts);
 
 					// Update the voxel map visualization:
+					static int decimUpdateViz = 0;
+					if (decimUpdateViz++ > 10)
+					{
+						decimUpdateViz = 0;
+						map.renderingOptions.generateFreeVoxels = false;
+						map.getAsOctoMapVoxels(*glVoxels);
+					}
 				}
 			}
 			rawlogIndex++;
@@ -173,51 +189,16 @@ void TestVoxelMapFromTUM(
 
 			switch (k)
 			{
-				case 'g':
-				case 'G':
-					gl_map->showGridLines(!gl_map->areGridLinesVisible());
-					break;
-				case 'f':
-				case 'F':
-					gl_map->showVoxels(
-						mrpt::opengl::VOXEL_SET_FREESPACE,
-						!gl_map->areVoxelsVisible(
-							mrpt::opengl::VOXEL_SET_FREESPACE));
-					break;
-				case 'o':
-				case 'O':
-					gl_map->showVoxels(
-						mrpt::opengl::VOXEL_SET_OCCUPIED,
-						!gl_map->areVoxelsVisible(
-							mrpt::opengl::VOXEL_SET_OCCUPIED));
-					break;
-				case 'l':
-				case 'L':
-					gl_map->enableLights(!gl_map->areLightsEnabled());
-					break;
+				//
 			};
 		}
 
 		win.addTextMessage(
 			5, 5,
 			mrpt::format(
-				"Commands: 'f' (freespace=%s) | 'o' (occupied=%s) | 'l' "
-				"(lights=%s)",
-				gl_map->areVoxelsVisible(mrpt::opengl::VOXEL_SET_FREESPACE)
-					? "YES"
-					: "NO",
-				gl_map->areVoxelsVisible(mrpt::opengl::VOXEL_SET_OCCUPIED)
-					? "YES"
-					: "NO",
-				gl_map->areLightsEnabled() ? "YES" : "NO"),
-			0 /*id*/);
-
-		win.addTextMessage(
-			5, 20,
-			mrpt::format(
-				"Timestamp: %s RawlogIndex: %zu",
+				"Timestamp: %s RawlogIndex: %zu ActiveVoxelCells: %zu",
 				mrpt::system::dateTimeLocalToString(lastObsTim).c_str(),
-				rawlogIndex),
+				rawlogIndex, map.grid().activeCellsCount()),
 			1 /*id*/);
 
 		win.repaint();
@@ -231,12 +212,12 @@ int main(int argc, char** argv)
 {
 	try
 	{
-		if (argc != 3)
+		if (argc != 4)
 			throw std::invalid_argument(
 				"Usage: PROGRAM <PATH_TO_TUM_DATASET.rawlog> "
-				"<GROUND_TRUTH.txt>");
+				"<GROUND_TRUTH.txt> <VOXELMAP_RESOLUTION>");
 
-		TestVoxelMapFromTUM(argv[1], argv[2]);
+		TestVoxelMapFromTUM(argv[1], argv[2], std::stod(argv[3]));
 		return 0;
 	}
 	catch (const std::exception& e)

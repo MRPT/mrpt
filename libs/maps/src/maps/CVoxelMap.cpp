@@ -144,11 +144,7 @@ double CVoxelMap::internal_computeObservationLikelihood(
 	return 0;
 }
 
-bool CVoxelMap::isEmpty() const
-{
-	THROW_EXCEPTION("TODO");
-	return false;
-}
+bool CVoxelMap::isEmpty() const { return m_impl->grid.activeCellsCount() == 0; }
 
 void CVoxelMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_obj) const
 {
@@ -188,8 +184,10 @@ void CVoxelMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_obj) const
 		const auto pt = Bonxai::CoordToPos(coord, grid.resolution);
 		bbox.updateWithPoint({pt.x, pt.y, pt.z});
 
-		if ((occ >= 0.5 && renderingOptions.generateOccupiedVoxels) ||
-			(occ < 0.5 && renderingOptions.generateFreeVoxels))
+		if ((occ >= renderingOptions.occupiedThreshold &&
+			 renderingOptions.generateOccupiedVoxels) ||
+			(occ < renderingOptions.freeThreshold &&
+			 renderingOptions.generateFreeVoxels))
 		{
 			mrpt::img::TColor vx_color;
 			double coefc, coeft;
@@ -232,8 +230,9 @@ void CVoxelMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_obj) const
 				default: THROW_EXCEPTION("Unknown coloring scheme!");
 			}
 
-			const size_t vx_set =
-				(occ > 0.5) ? VOXEL_SET_OCCUPIED : VOXEL_SET_FREESPACE;
+			const size_t vx_set = (occ > renderingOptions.occupiedThreshold)
+				? VOXEL_SET_OCCUPIED
+				: VOXEL_SET_FREESPACE;
 
 			gl_obj.push_back_Voxel(
 				vx_set,
@@ -308,6 +307,7 @@ void CVoxelMap::TRenderingOptions::writeToStream(
 
 	out << generateOccupiedVoxels << visibleOccupiedVoxels;
 	out << generateFreeVoxels << visibleFreeVoxels;
+	out << occupiedThreshold << freeThreshold;
 }
 
 void CVoxelMap::TRenderingOptions::readFromStream(
@@ -319,6 +319,7 @@ void CVoxelMap::TRenderingOptions::readFromStream(
 		case 0:
 			in >> generateOccupiedVoxels >> visibleOccupiedVoxels;
 			in >> generateFreeVoxels >> visibleFreeVoxels;
+			in >> occupiedThreshold >> freeThreshold;
 			break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
@@ -328,23 +329,25 @@ void CVoxelMap::TLikelihoodOptions::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
 	MRPT_LOAD_CONFIG_VAR(decimation, int, c, s);
+	MRPT_LOAD_CONFIG_VAR(occupiedThreshold, double, c, s);
 }
 void CVoxelMap::TLikelihoodOptions::saveToConfigFile(
 	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	MRPT_SAVE_CONFIG_VAR(decimation, c, s);
+	MRPT_SAVE_CONFIG_VAR(occupiedThreshold, c, s);
 }
 
 void CVoxelMap::TLikelihoodOptions::writeToStream(
 	mrpt::serialization::CArchive& out) const
 {
-	out << decimation;
+	out << decimation << occupiedThreshold;
 }
 
 void CVoxelMap::TLikelihoodOptions::readFromStream(
 	mrpt::serialization::CArchive& in)
 {
-	in >> decimation;
+	in >> decimation >> occupiedThreshold;
 }
 
 void CVoxelMap::internal_clear()

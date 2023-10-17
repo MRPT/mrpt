@@ -91,7 +91,8 @@ class CVoxelMap : public CVoxelMapBase<int8_t>,
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;
 		void saveToConfigFile(
-			mrpt::config::CConfigFileBase& c, const std::string& s) const;
+			mrpt::config::CConfigFileBase& c,
+			const std::string& s) const override;
 
 		void writeToStream(mrpt::serialization::CArchive& out) const;
 		void readFromStream(mrpt::serialization::CArchive& in);
@@ -113,7 +114,8 @@ class CVoxelMap : public CVoxelMapBase<int8_t>,
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;
 		void saveToConfigFile(
-			mrpt::config::CConfigFileBase& c, const std::string& s) const;
+			mrpt::config::CConfigFileBase& c,
+			const std::string& s) const override;
 
 		void writeToStream(mrpt::serialization::CArchive& out) const;
 		void readFromStream(mrpt::serialization::CArchive& in);
@@ -121,6 +123,9 @@ class CVoxelMap : public CVoxelMapBase<int8_t>,
 		/// Speed up the likelihood computation by considering only one out of N
 		/// rays (default=1)
 		uint32_t decimation = 1;
+
+		/// Minimum occupancy (0,1) for a voxel to be considered occupied.
+		double occupiedThreshold = 0.60;
 	};
 
 	TLikelihoodOptions likelihoodOptions;
@@ -132,9 +137,11 @@ class CVoxelMap : public CVoxelMapBase<int8_t>,
 		TRenderingOptions() = default;
 
 		bool generateOccupiedVoxels = true;
+		double occupiedThreshold = 0.60;
 		bool visibleOccupiedVoxels = true;
 
 		bool generateFreeVoxels = true;
+		double freeThreshold = 0.40;
 		bool visibleFreeVoxels = true;
 
 		/** Binary dump to stream */
