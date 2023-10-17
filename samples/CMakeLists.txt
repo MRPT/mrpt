@@ -288,6 +288,7 @@ if(MRPT_BUILD_EXAMPLES)
 		maps_observer_pattern_example
 		maps_octomap_simple
 		maps_voxelmap_simple
+		maps_voxelmap_from_tum_dataset
 		maps_gmrf_map_example
 		maps_ransac_data_association
 		)
