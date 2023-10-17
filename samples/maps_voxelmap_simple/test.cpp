@@ -82,6 +82,13 @@ void TestVoxelMap()
 
 		map.getAsOctoMapVoxels(*gl_map);
 
+		// View occupied points:
+		{
+			auto mapPts = map.getOccupiedVoxels();
+			mapPts->renderOptions.point_size = 5.0;
+			scene->insert(mapPts->getVisualization());
+		}
+
 		gl_map->showGridLines(false);
 		gl_map->showVoxels(mrpt::opengl::VOXEL_SET_OCCUPIED, true);
 		gl_map->showVoxels(mrpt::opengl::VOXEL_SET_FREESPACE, true);
