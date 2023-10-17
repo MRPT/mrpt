@@ -81,6 +81,8 @@ class CVoxelMap : public CVoxelMapBase<int8_t>,
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;
+		void saveToConfigFile(
+			mrpt::config::CConfigFileBase& c, const std::string& s) const;
 
 		void writeToStream(mrpt::serialization::CArchive& out) const;
 		void readFromStream(mrpt::serialization::CArchive& in);
@@ -101,6 +103,8 @@ class CVoxelMap : public CVoxelMapBase<int8_t>,
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;
+		void saveToConfigFile(
+			mrpt::config::CConfigFileBase& c, const std::string& s) const;
 
 		void writeToStream(mrpt::serialization::CArchive& out) const;
 		void readFromStream(mrpt::serialization::CArchive& in);
