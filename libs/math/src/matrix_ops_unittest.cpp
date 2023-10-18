@@ -114,3 +114,39 @@ TEST(Matrices, extractSubmatrixSymmetrical)
 		EXPECT_TRUE(E_expected == E);
 	}
 }
+
+TEST(Matrices, removeColumns)
+{
+	for (size_t i = 0; i < 6; i++)
+	{
+		auto M = mrpt::math::CMatrixDouble::Identity(6);
+		EXPECT_EQ(M.cols(), 6);
+		M.removeColumns({i});
+		EXPECT_EQ(M.cols(), 5) << "For {i}=" << i;
+	}
+
+	{
+		auto M = mrpt::math::CMatrixDouble();  // empty
+		EXPECT_EQ(M.cols(), 0);
+		EXPECT_ANY_THROW(M.removeColumns({0}));
+		EXPECT_ANY_THROW(M.removeColumns({1}));
+	}
+}
+
+TEST(Matrices, removeRows)
+{
+	for (size_t i = 0; i < 6; i++)
+	{
+		auto M = mrpt::math::CMatrixDouble::Identity(6);
+		EXPECT_EQ(M.rows(), 6);
+		M.removeRows({i});
+		EXPECT_EQ(M.rows(), 5) << "For {i}=" << i;
+	}
+
+	{
+		auto M = mrpt::math::CMatrixDouble();  // empty
+		EXPECT_EQ(M.rows(), 0);
+		EXPECT_ANY_THROW(M.removeRows({0}));
+		EXPECT_ANY_THROW(M.removeRows({1}));
+	}
+}

@@ -1,5 +1,17 @@
 \page changelog Change Log
 
+# Version 2.11.0: Released Oct 19th, 2023
+- Changes in libraries:
+  - \ref mrpt_maps_grp
+    - New voxel map containers, based on Faconti's [Bonxai](https://github.com/facontidavide/Bonxai) header-only libray (MPL-2.0 license):
+      - mrpt::maps::CVoxelMap
+      - mrpt::maps::CVoxelMapRGB
+      - Example: \ref maps_voxelmap_from_tum_dataset
+      - Example: \ref maps_voxelmap_simple
+- BUG FIXES:
+  - Fix python wrapper FTBFS in armhf and other architectures.
+  - Fix matrices removeColumns() and removeRows() won't throw if user specified a non-existing index.
+
 # Version 2.10.2: Released Oct 5th, 2023
 - Build system:
   - ROS: fix missing deps in package.xml needed for build via Nix.

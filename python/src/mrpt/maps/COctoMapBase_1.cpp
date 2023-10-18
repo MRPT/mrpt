@@ -63,7 +63,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TInsertionOptions file:mrpt/maps/COctoMapBase.h line:73
+// mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TInsertionOptions file:mrpt/maps/COctoMapBase.h line:67
 struct PyCallBack_mrpt_maps_COctoMapBase_octomap_OcTree_octomap_OcTreeNode__TInsertionOptions : public mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TInsertionOptions {
 	using mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TInsertionOptions::TInsertionOptions;
 
@@ -95,7 +95,7 @@ struct PyCallBack_mrpt_maps_COctoMapBase_octomap_OcTree_octomap_OcTreeNode__TIns
 	}
 };
 
-// mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TLikelihoodOptions file:mrpt/maps/COctoMapBase.h line:231
+// mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TLikelihoodOptions file:mrpt/maps/COctoMapBase.h line:225
 struct PyCallBack_mrpt_maps_COctoMapBase_octomap_OcTree_octomap_OcTreeNode__TLikelihoodOptions : public mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TLikelihoodOptions {
 	using mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TLikelihoodOptions::TLikelihoodOptions;
 
@@ -129,7 +129,7 @@ struct PyCallBack_mrpt_maps_COctoMapBase_octomap_OcTree_octomap_OcTreeNode__TLik
 
 void bind_mrpt_maps_COctoMapBase_1(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::maps::COctoMapBase file:mrpt/maps/COctoMapBase.h line:45
+	{ // mrpt::maps::COctoMapBase file:mrpt/maps/COctoMapBase.h line:39
 		pybind11::class_<mrpt::maps::COctoMapBase<octomap::OcTree,octomap::OcTreeNode>, std::shared_ptr<mrpt::maps::COctoMapBase<octomap::OcTree,octomap::OcTreeNode>>, mrpt::maps::CMetricMap> cl(M("mrpt::maps"), "COctoMapBase_octomap_OcTree_octomap_OcTreeNode_t", "");
 		cl.def_readwrite("insertionOptions", &mrpt::maps::COctoMapBase<octomap::OcTree,octomap::OcTreeNode>::insertionOptions);
 		cl.def_readwrite("likelihoodOptions", &mrpt::maps::COctoMapBase<octomap::OcTree,octomap::OcTreeNode>::likelihoodOptions);
@@ -183,7 +183,7 @@ void bind_mrpt_maps_COctoMapBase_1(std::function< pybind11::module &(std::string
 		cl.def("getAsSimplePointsMap", (class mrpt::maps::CSimplePointsMap * (mrpt::maps::CMetricMap::*)()) &mrpt::maps::CMetricMap::getAsSimplePointsMap, "C++: mrpt::maps::CMetricMap::getAsSimplePointsMap() --> class mrpt::maps::CSimplePointsMap *", pybind11::return_value_policy::automatic);
 		cl.def("assign", (class mrpt::maps::CMetricMap & (mrpt::maps::CMetricMap::*)(const class mrpt::maps::CMetricMap &)) &mrpt::maps::CMetricMap::operator=, "C++: mrpt::maps::CMetricMap::operator=(const class mrpt::maps::CMetricMap &) --> class mrpt::maps::CMetricMap &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TInsertionOptions file:mrpt/maps/COctoMapBase.h line:73
+		{ // mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TInsertionOptions file:mrpt/maps/COctoMapBase.h line:67
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TInsertionOptions, std::shared_ptr<mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TInsertionOptions>, PyCallBack_mrpt_maps_COctoMapBase_octomap_OcTree_octomap_OcTreeNode__TInsertionOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TInsertionOptions", "");
 			cl.def( pybind11::init<class mrpt::maps::COctoMapBase<class octomap::OcTree, class octomap::OcTreeNode> &>(), pybind11::arg("parent") );
@@ -212,7 +212,7 @@ void bind_mrpt_maps_COctoMapBase_1(std::function< pybind11::module &(std::string
 			cl.def("getClampingThresMaxLog", (float (mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TInsertionOptions::*)() const) &mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TInsertionOptions::getClampingThresMaxLog, "C++: mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TInsertionOptions::getClampingThresMaxLog() const --> float");
 		}
 
-		{ // mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TLikelihoodOptions file:mrpt/maps/COctoMapBase.h line:231
+		{ // mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TLikelihoodOptions file:mrpt/maps/COctoMapBase.h line:225
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TLikelihoodOptions, std::shared_ptr<mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TLikelihoodOptions>, PyCallBack_mrpt_maps_COctoMapBase_octomap_OcTree_octomap_OcTreeNode__TLikelihoodOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TLikelihoodOptions", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TLikelihoodOptions(); }, [](){ return new PyCallBack_mrpt_maps_COctoMapBase_octomap_OcTree_octomap_OcTreeNode__TLikelihoodOptions(); } ) );
@@ -225,7 +225,7 @@ void bind_mrpt_maps_COctoMapBase_1(std::function< pybind11::module &(std::string
 			cl.def("assign", (struct mrpt::maps::COctoMapBase<class octomap::OcTree, class octomap::OcTreeNode>::TLikelihoodOptions & (mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TLikelihoodOptions::*)(const struct mrpt::maps::COctoMapBase<class octomap::OcTree, class octomap::OcTreeNode>::TLikelihoodOptions &)) &mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TLikelihoodOptions::operator=, "C++: mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TLikelihoodOptions::operator=(const struct mrpt::maps::COctoMapBase<class octomap::OcTree, class octomap::OcTreeNode>::TLikelihoodOptions &) --> struct mrpt::maps::COctoMapBase<class octomap::OcTree, class octomap::OcTreeNode>::TLikelihoodOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TRenderingOptions file:mrpt/maps/COctoMapBase.h line:259
+		{ // mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TRenderingOptions file:mrpt/maps/COctoMapBase.h line:253
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TRenderingOptions, std::shared_ptr<mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TRenderingOptions>> cl(enclosing_class, "TRenderingOptions", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>::TRenderingOptions(); } ) );

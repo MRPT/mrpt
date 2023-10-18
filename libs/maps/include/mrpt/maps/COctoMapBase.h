@@ -30,13 +30,7 @@ namespace mrpt::maps
  * To use octomap's iterators to go through the voxels, use
  * COctoMap::getOctomap()
  *
- * The octomap library was presented in:
- *  - K. M. Wurm, A. Hornung, M. Bennewitz, C. Stachniss, and W. Burgard,
- *     <i>"OctoMap: A Probabilistic, Flexible, and Compact 3D Map Representation
- * for Robotic Systems"</i>
- *     in Proc. of the ICRA 2010 Workshop on Best Practice in 3D Perception and
- * Modeling for Mobile Manipulation, 2010. Software available at
- * http://octomap.sf.net/.
+ * The octomap library was presented in \cite wurm2010octomap
  *
  * \sa CMetricMap, the example in "MRPT/samples/octomap_simple"
  * \ingroup mrpt_maps_grp

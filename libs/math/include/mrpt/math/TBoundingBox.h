@@ -193,6 +193,11 @@ struct TBoundingBox_
 		s += max.asString();
 		return s;
 	}
+
+	bool operator==(const TBoundingBox_<T>& o) const
+	{
+		return max == o.max && min == o.min;
+	}
 };
 
 /** A bounding box defined by the 3D points at each minimum-maximum corner.
