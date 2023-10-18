@@ -128,6 +128,7 @@ void TestVoxelMapFromTUM(
 	std::cout << "Close the window to exit" << std::endl;
 
 	size_t rawlogIndex = 0;
+	bool paused = false;
 
 	mrpt::Clock::time_point lastObsTim;
 
@@ -136,7 +137,7 @@ void TestVoxelMapFromTUM(
 		win.get3DSceneAndLock();
 
 		// Get and process one observation:
-		if (rawlogIndex < dataset.size())
+		if (rawlogIndex < dataset.size() && !paused)
 		{
 			mrpt::obs::CObservation3DRangeScan::Ptr obs;
 
@@ -184,7 +185,7 @@ void TestVoxelMapFromTUM(
 
 					// Update the voxel map visualization:
 					static int decimUpdateViz = 0;
-					if (decimUpdateViz++ > 10)
+					if (decimUpdateViz++ > 20)
 					{
 						decimUpdateViz = 0;
 						map.renderingOptions.generateFreeVoxels = false;
@@ -209,7 +210,7 @@ void TestVoxelMapFromTUM(
 
 			switch (k)
 			{
-				//
+				case ' ': paused = !paused; break;
 			};
 		}
 
