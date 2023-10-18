@@ -101,7 +101,7 @@ void CVoxelMap::serializeFrom(
 			Bonxai::HeaderInfo info = Bonxai::GetHeaderInfo(header);
 
 			m_impl = std::make_unique<Impl>(
-				std::move(Bonxai::Deserialize<voxel_node_t>(ifile, info)));
+				Bonxai::Deserialize<voxel_node_t>(ifile, info));
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
