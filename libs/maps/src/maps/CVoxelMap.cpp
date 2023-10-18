@@ -12,6 +12,8 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CVoxelMap.h>
 
+#include <mrpt/maps/bonxai/serialization.hpp>
+
 using namespace mrpt::maps;
 using namespace std::string_literals;  // "..."s
 
@@ -69,8 +71,10 @@ void CVoxelMap::serializeTo(mrpt::serialization::CArchive& out) const
 	renderingOptions.writeToStream(out);  // Added in v1
 	out << genericMapParams;
 
-	THROW_EXCEPTION("TODO");
-	// const_cast<octomap::OcTree*>(&m_impl->m_octomap)->writeBinary(ss);
+	// grid data:
+	std::stringstream ss;
+	Bonxai::Serialize(ss, grid());
+	out << ss.str();
 }
 
 void CVoxelMap::serializeFrom(
@@ -87,8 +91,17 @@ void CVoxelMap::serializeFrom(
 
 			this->clear();
 
-			THROW_EXCEPTION("TODO");
-			// m_impl->m_octomap.readBinary(ss);
+			// grid data:
+			std::string msg;
+			in >> msg;
+			std::istringstream ifile(msg, std::ios::binary);
+
+			char header[256];
+			ifile.getline(header, 256);
+			Bonxai::HeaderInfo info = Bonxai::GetHeaderInfo(header);
+
+			m_impl = std::make_unique<Impl>(
+				std::move(Bonxai::Deserialize<voxel_node_t>(ifile, info)));
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);

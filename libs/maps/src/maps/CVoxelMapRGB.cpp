@@ -14,6 +14,8 @@
 #include <mrpt/maps/CVoxelMapRGB.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 
+#include <mrpt/maps/bonxai/serialization.hpp>
+
 using namespace mrpt::maps;
 using namespace std::string_literals;  // "..."s
 
@@ -72,8 +74,10 @@ void CVoxelMapRGB::serializeTo(mrpt::serialization::CArchive& out) const
 	renderingOptions.writeToStream(out);  // Added in v1
 	out << genericMapParams;
 
-	THROW_EXCEPTION("TODO");
-	// const_cast<octomap::OcTree*>(&m_impl->m_octomap)->writeBinary(ss);
+	// grid data:
+	std::stringstream ss;
+	Bonxai::Serialize(ss, grid());
+	out << ss.str();
 }
 
 void CVoxelMapRGB::serializeFrom(
@@ -90,8 +94,17 @@ void CVoxelMapRGB::serializeFrom(
 
 			this->clear();
 
-			THROW_EXCEPTION("TODO");
-			// m_impl->m_octomap.readBinary(ss);
+			// grid data:
+			std::string msg;
+			in >> msg;
+			std::istringstream ifile(msg, std::ios::binary);
+
+			char header[256];
+			ifile.getline(header, 256);
+			Bonxai::HeaderInfo info = Bonxai::GetHeaderInfo(header);
+
+			m_impl = std::make_unique<Impl>(
+				Bonxai::Deserialize<voxel_node_t>(ifile, info));
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
@@ -161,7 +174,8 @@ bool CVoxelMapRGB::internal_insertObservation_3DScan(
 		mrpt::img::TColorf colF;
 		colPts.getPointColor(i, colF.R, colF.G, colF.B);
 #if 1  // fuse colors:
-		mrpt::img::TColorf oldCol(cell->color);
+		mrpt::img::TColorf oldCol(
+			mrpt::img::TColor(cell->color.R, cell->color.G, cell->color.B));
 
 		mrpt::img::TColorf newF;
 		const float N_1 = 1.0f / (cell->numColObs + 1);
@@ -171,7 +185,10 @@ bool CVoxelMapRGB::internal_insertObservation_3DScan(
 		newF.B = N_1 * (oldCol.B * cell->numColObs + colF.B);
 
 		cell->numColObs++;
-		cell->color = newF.asTColor();
+		const auto nCol = newF.asTColor();
+		cell->color.R = nCol.R;
+		cell->color.G = nCol.G;
+		cell->color.B = nCol.B;
 #else
 		// just copy latest color:
 		cell->color = colF.asTColor();

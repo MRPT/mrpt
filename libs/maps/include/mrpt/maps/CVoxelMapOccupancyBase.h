@@ -373,7 +373,9 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::getAsOctoMapVoxels(
 				case COctoMapVoxels::COLOR_FROM_RGB_DATA:
 					if constexpr (internal::has_color<voxel_node_t>::value)
 					{
-						vx_color = data.color;
+						vx_color.R = data.color.R;
+						vx_color.G = data.color.G;
+						vx_color.B = data.color.B;
 					}
 					else
 					{
