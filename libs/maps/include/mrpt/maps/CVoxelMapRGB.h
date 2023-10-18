@@ -19,7 +19,10 @@ namespace mrpt::maps
 struct VoxelNodeOccRGB
 {
 	int8_t occupancy = 0;
-	mrpt::img::TColor color;
+	struct TColor
+	{
+		uint8_t R = 0, G = 0, B = 0;
+	} color;
 	uint32_t numColObs = 0;
 
 	// ---- API expected by CVoxelMapOccupancyBase ----

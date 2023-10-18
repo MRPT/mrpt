@@ -119,6 +119,10 @@ class CVoxelMapBase : public mrpt::maps::CMetricMap
 			  accessor(grid.createAccessor())
 		{
 		}
+		Impl(Bonxai::VoxelGrid<node_t>&& g)
+			: grid(std::move(g)), accessor(grid.createAccessor())
+		{
+		}
 		Bonxai::VoxelGrid<node_t> grid;
 		mutable typename Bonxai::VoxelGrid<node_t>::Accessor accessor;
 	};

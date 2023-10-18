@@ -7,7 +7,7 @@
 #include <exception>
 #include <type_traits>
 #include <fstream>
-#include "bonxai/bonxai.hpp"
+#include "bonxai.hpp"
 
 #ifdef __GNUG__
 #include <cstdlib>
@@ -82,7 +82,7 @@ template <typename DataT>
 inline void Serialize(std::ostream& out, const VoxelGrid<DataT>& grid)
 {
   static_assert(std::is_trivially_copyable_v<DataT>,
-                "DataT must ne trivially copyable");
+                "DataT must be trivially copyable");
 
   char header[256];
   std::string type_name = details::demangle(typeid(DataT).name());
@@ -209,18 +209,18 @@ inline VoxelGrid<DataT> Deserialize(std::istream& input, HeaderInfo info)
     {
       const uint32_t inner_index = *inner;
       using LeafGridT = typename VoxelGrid<DataT>::LeafGrid;
-      inner_grid.data[inner_index] = std::make_shared<LeafGridT>(info.leaf_bits);
-      auto& leaf_grid = inner_grid.data[inner_index];
+      inner_grid.cell(inner_index) = std::make_shared<LeafGridT>(info.leaf_bits);
+      auto& leaf_grid = inner_grid.cell(inner_index);
 
-      for (size_t w = 0; w < leaf_grid->mask.wordCount(); w++)
+      for (size_t w = 0; w < leaf_grid->mask().wordCount(); w++)
       {
         uint64_t word = Read<uint64_t>(input);
-        leaf_grid->mask.setWord(w, word);
+        leaf_grid->mask().setWord(w, word);
       }
-      for (auto leaf = leaf_grid->mask.beginOn(); leaf; ++leaf)
+      for (auto leaf = leaf_grid->mask().beginOn(); leaf; ++leaf)
       {
         const uint32_t leaf_index = *leaf;
-        leaf_grid->data[leaf_index] = Read<DataT>(input);
+        leaf_grid->cell(leaf_index) = Read<DataT>(input);
       }
     }
   }
