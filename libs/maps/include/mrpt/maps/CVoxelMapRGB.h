@@ -20,6 +20,7 @@ struct VoxelNodeOccRGB
 {
 	int8_t occupancy = 0;
 	mrpt::img::TColor color;
+	uint32_t numColObs = 0;
 
 	// ---- API expected by CVoxelMapOccupancyBase ----
 	int8_t& occupancyRef() { return occupancy; }
