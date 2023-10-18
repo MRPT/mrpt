@@ -1,4 +1,4 @@
-\page maps_octomap_simple Example: maps_octomap_simple
+\page maps_voxelmap_simple Example: maps_voxelmap_simple
 
 ![maps_voxelmap_simple screenshot](doc/source/images/maps_voxelmap_simple_screenshot.png)
 C++ example source code:
