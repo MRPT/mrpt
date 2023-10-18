@@ -98,7 +98,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::maps::COctoMap file:mrpt/maps/COctoMap.h line:39
+// mrpt::maps::COctoMap file:mrpt/maps/COctoMap.h line:41
 struct PyCallBack_mrpt_maps_COctoMap : public mrpt::maps::COctoMap {
 	using mrpt::maps::COctoMap::COctoMap;
 
@@ -1105,8 +1105,8 @@ struct PyCallBack_mrpt_maps_CSimplePointsMap_TMapDefinition : public mrpt::maps:
 
 void bind_mrpt_maps_COctoMap(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::maps::COctoMap file:mrpt/maps/COctoMap.h line:39
-		pybind11::class_<mrpt::maps::COctoMap, std::shared_ptr<mrpt::maps::COctoMap>, PyCallBack_mrpt_maps_COctoMap, mrpt::maps::COctoMapBase<octomap::OcTree,octomap::OcTreeNode>> cl(M("mrpt::maps"), "COctoMap", "A three-dimensional probabilistic occupancy grid, implemented as an\n octo-tree with the \"octomap\" C++ library.\n  This version only stores occupancy information at each octree node. See the\n base class mrpt::maps::COctoMapBase.\n\n \n CMetricMap, the example in \"MRPT/samples/octomap_simple\"\n \n\n\n ");
+	{ // mrpt::maps::COctoMap file:mrpt/maps/COctoMap.h line:41
+		pybind11::class_<mrpt::maps::COctoMap, std::shared_ptr<mrpt::maps::COctoMap>, PyCallBack_mrpt_maps_COctoMap, mrpt::maps::COctoMapBase<octomap::OcTree,octomap::OcTreeNode>> cl(M("mrpt::maps"), "COctoMap", "A three-dimensional probabilistic occupancy grid, implemented as an\n octo-tree with the \"octomap\" C++ library.\n  This version only stores occupancy information at each octree node. See the\n base class mrpt::maps::COctoMapBase.\n\n The octomap library was presented in \n\n \n CMetricMap, the example in \"MRPT/samples/octomap_simple\"\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::maps::COctoMap(); }, [](){ return new PyCallBack_mrpt_maps_COctoMap(); } ), "doc");
 		cl.def( pybind11::init<const double>(), pybind11::arg("resolution") );
 
@@ -1190,6 +1190,7 @@ void bind_mrpt_maps_COctoMap(std::function< pybind11::module &(std::string const
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_maps_CSimplePointsMap const &o){ return new PyCallBack_mrpt_maps_CSimplePointsMap(o); } ) );
 		cl.def( pybind11::init( [](mrpt::maps::CSimplePointsMap const &o){ return new mrpt::maps::CSimplePointsMap(o); } ) );
+		cl.def_static("Create", (class std::shared_ptr<class mrpt::maps::CSimplePointsMap> (*)()) &mrpt::maps::CSimplePointsMap::Create, "C++: mrpt::maps::CSimplePointsMap::Create() --> class std::shared_ptr<class mrpt::maps::CSimplePointsMap>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::maps::CSimplePointsMap::GetRuntimeClassIdStatic, "C++: mrpt::maps::CSimplePointsMap::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::maps::CSimplePointsMap::*)() const) &mrpt::maps::CSimplePointsMap::GetRuntimeClass, "C++: mrpt::maps::CSimplePointsMap::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::maps::CSimplePointsMap::*)() const) &mrpt::maps::CSimplePointsMap::clone, "C++: mrpt::maps::CSimplePointsMap::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

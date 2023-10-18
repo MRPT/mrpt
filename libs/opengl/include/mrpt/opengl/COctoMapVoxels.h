@@ -86,7 +86,9 @@ class COctoMapVoxels : public CRenderizableShaderTriangles,
 		/** Combination of COLOR_FROM_HEIGHT and TRANSPARENCY_FROM_OCCUPANCY */
 		MIXED,
 		/** All cubes are of identical color. */
-		FIXED
+		FIXED,
+		/** Color from RGB data */
+		COLOR_FROM_RGB_DATA
 	};
 
 	/** The info of each of the voxels */

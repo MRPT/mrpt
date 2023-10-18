@@ -41,6 +41,7 @@ void bind_mrpt_rtti_CObject(std::function< pybind11::module &(std::string const 
 void bind_mrpt_rtti_CObject_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_rtti_CObject_2(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_rtti_CObject_3(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_rtti_CObject_4(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_serialization_CSerializable(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_std_stl_multimap(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_std_stl_map(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -266,6 +267,11 @@ void bind_mrpt_maps_CRandomFieldGridMap3D(std::function< pybind11::module &(std:
 void bind_mrpt_maps_CReflectivityGridMap2D(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_maps_CWeightedPointsMap(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_maps_CWirelessPowerGridMap2D(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_maps_CVoxelMapBase(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_maps_CVoxelMapOccupancyBase(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_maps_CVoxelMapOccupancyBase_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_maps_CVoxelMapOccupancyBase_2(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_maps_CVoxelMap(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_obs_CObservationPointCloud(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_opengl_CBox(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_opengl_COctreePointRenderer(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -463,6 +469,7 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_rtti_CObject_1(M);
 	bind_mrpt_rtti_CObject_2(M);
 	bind_mrpt_rtti_CObject_3(M);
+	bind_mrpt_rtti_CObject_4(M);
 	bind_mrpt_serialization_CSerializable(M);
 	bind_std_stl_multimap(M);
 	bind_std_stl_map(M);
@@ -688,6 +695,11 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_maps_CReflectivityGridMap2D(M);
 	bind_mrpt_maps_CWeightedPointsMap(M);
 	bind_mrpt_maps_CWirelessPowerGridMap2D(M);
+	bind_mrpt_maps_CVoxelMapBase(M);
+	bind_mrpt_maps_CVoxelMapOccupancyBase(M);
+	bind_mrpt_maps_CVoxelMapOccupancyBase_1(M);
+	bind_mrpt_maps_CVoxelMapOccupancyBase_2(M);
+	bind_mrpt_maps_CVoxelMap(M);
 	bind_mrpt_obs_CObservationPointCloud(M);
 	bind_mrpt_opengl_CBox(M);
 	bind_mrpt_opengl_COctreePointRenderer(M);
