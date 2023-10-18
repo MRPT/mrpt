@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/img/color_maps.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/opengl/CRenderizableShaderPoints.h>
 #include <mrpt/opengl/CRenderizableShaderTriangles.h>
@@ -130,6 +131,14 @@ class COctoMapVoxels : public CRenderizableShaderTriangles,
 		TInfoPerVoxelSet() = default;
 	};
 
+	mrpt::img::TColormap colorMap() const { return m_color_map; }
+
+	/** Changing the colormap has no effect until a source object (e.g.
+	 * mrpt::maps::CVoxelMap) reads this property while generating the voxels
+	 * visualization.
+	 */
+	void colorMap(const mrpt::img::TColormap& cm) { m_color_map = cm; }
+
    protected:
 	std::deque<TInfoPerVoxelSet> m_voxel_sets;
 	std::vector<TGridCube> m_grid_cubes;
@@ -145,6 +154,7 @@ class COctoMapVoxels : public CRenderizableShaderTriangles,
 	float m_grid_width{1.0f};
 	mrpt::img::TColor m_grid_color;
 	visualization_mode_t m_visual_mode{COctoMapVoxels::COLOR_FROM_OCCUPANCY};
+	mrpt::img::TColormap m_color_map = mrpt::img::cmHOT;
 
    public:
 	/** @name Renderizable shader API virtual methods

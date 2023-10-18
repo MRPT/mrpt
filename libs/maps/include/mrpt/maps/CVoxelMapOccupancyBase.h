@@ -149,12 +149,14 @@ class CVoxelMapOccupancyBase : public CVoxelMapBase<voxel_node_t>,
 		double& prob_occupancy) const;
 
 	void insertPointCloudAsRays(
-		const mrpt::maps::CPointsMap& pts,
-		const mrpt::math::TPoint3D& sensorPt);
+		const mrpt::maps::CPointsMap& pts, const mrpt::math::TPoint3D& sensorPt,
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt);
 
 	void insertPointCloudAsEndPoints(
-		const mrpt::maps::CPointsMap& pts,
-		const mrpt::math::TPoint3D& sensorPt);
+		const mrpt::maps::CPointsMap& pts, const mrpt::math::TPoint3D& sensorPt,
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt);
 
 	/** Returns all occupied voxels as a point cloud. The shared_ptr is
 	 *  also hold and updated internally, so it is not safe to read it
@@ -163,6 +165,11 @@ class CVoxelMapOccupancyBase : public CVoxelMapBase<voxel_node_t>,
 	 *  The point cloud is cached, and invalidated upon map updates.
 	 */
 	mrpt::maps::CSimplePointsMap::Ptr getOccupiedVoxels() const;
+
+	/** This visits all cells to calculate a bounding box, caching the result
+	 *  so subsequent calls are cheap until the voxelmap is changed in some way.
+	 */
+	mrpt::math::TBoundingBox getBoundingBox() const;
 
 	/// The options used when inserting observations in the map:
 	TVoxelMap_InsertionOptions insertionOptions;
@@ -279,10 +286,11 @@ class CVoxelMapOccupancyBase : public CVoxelMapBase<voxel_node_t>,
    protected:
 	void internal_clear() override;
 
-	void invalidateOccupiedCache() { m_cachedOccupied.reset(); }
+	void markAsChanged() { m_cachedOccupied.reset(); }
 
-	void updateOccupiedPointsCache() const;
+	void updateCachedProperties() const;
 	mutable mrpt::maps::CSimplePointsMap::Ptr m_cachedOccupied;
+	mutable mrpt::math::TBoundingBox m_bbox;
 };
 
 // ============= Implementations ===============
@@ -309,23 +317,24 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::getAsOctoMapVoxels(
 	const size_t nLeafs = base_t::m_impl->grid.activeCellsCount();
 	gl_obj.reserveVoxels(VOXEL_SET_OCCUPIED, nLeafs);
 
-	mrpt::math::TBoundingBox bbox =
-		mrpt::math::TBoundingBox::PlusMinusInfinity();
-
 	// forEachCell() has no const version
 	auto& grid =
 		const_cast<Bonxai::VoxelGrid<voxel_node_t>&>(base_t::m_impl->grid);
 
+	const mrpt::math::TBoundingBox bbox = this->getBoundingBox();
+	double bbox_span_z = bbox.max.z - bbox.min.z;
+	if (bbox_span_z < 0) bbox_span_z = 1;
+	const double bbox_span_z_inv = 1.0 / bbox_span_z;
+
 	// Go thru all voxels:
-	auto lmbdPerVoxel = [this, &bbox, &grid, &gl_obj, general_color_u,
-						 general_color](
+	auto lmbdPerVoxel = [this, &grid, &gl_obj, general_color_u, general_color,
+						 bbox, bbox_span_z_inv](
 							voxel_node_t& data, const Bonxai::CoordT& coord) {
 		using mrpt::img::TColor;
 
 		// log-odds to probability:
 		const double occ = 1.0 - this->l2p(data.occupancyRef());
 		const auto pt = Bonxai::CoordToPos(coord, grid.resolution);
-		bbox.updateWithPoint({pt.x, pt.y, pt.z});
 
 		if ((occ >= renderingOptions.occupiedThreshold &&
 			 renderingOptions.generateOccupiedVoxels) ||
@@ -338,10 +347,10 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::getAsOctoMapVoxels(
 			{
 				case COctoMapVoxels::FIXED: vx_color = general_color_u; break;
 
-				case COctoMapVoxels::COLOR_FROM_HEIGHT:	 // not supported
-					THROW_EXCEPTION(
-						"COLOR_FROM_HEIGHT not supported yet for this "
-						"class");
+				case COctoMapVoxels::COLOR_FROM_HEIGHT:
+					vx_color = mrpt::img::colormap(
+						gl_obj.colorMap(),
+						(pt.z - bbox.min.z) * bbox_span_z_inv);
 					break;
 
 				case COctoMapVoxels::COLOR_FROM_OCCUPANCY:
@@ -415,13 +424,15 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::internal_clear()
 {
 	// Is this enough?
 	base_t::m_impl->grid.root_map.clear();
+
+	markAsChanged();
 }
 
 template <typename voxel_node_t, typename occupancy_t>
 void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::updateVoxel(
 	const double x, const double y, const double z, bool occupied)
 {
-	invalidateOccupiedCache();
+	markAsChanged();
 
 	voxel_node_t* cell = base_t::m_impl->accessor.value(
 		Bonxai::PosToCoord({x, y, z}, base_t::m_impl->grid.inv_resolution),
@@ -465,9 +476,10 @@ bool CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::getPointOccupancy(
 
 template <typename voxel_node_t, typename occupancy_t>
 void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::insertPointCloudAsRays(
-	const mrpt::maps::CPointsMap& pts, const mrpt::math::TPoint3D& sensorPt)
+	const mrpt::maps::CPointsMap& pts, const mrpt::math::TPoint3D& sensorPt,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
-	invalidateOccupiedCache();
+	markAsChanged();
 
 	const occupancy_t logodd_observation_occupied =
 		std::max<occupancy_t>(1, p2l(insertionOptions.prob_hit));
@@ -495,12 +507,16 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::insertPointCloudAsRays(
 	// for each ray:
 	for (size_t i = 0; i < xs.size(); i += insertionOptions.decimation)
 	{
+		const auto pt = robotPose
+			? robotPose->composePoint(mrpt::math::TPoint3D(xs[i], ys[i], zs[i]))
+			: mrpt::math::TPoint3D(xs[i], ys[i], zs[i]);
+
 		if (insertionOptions.max_range > 0 &&
-			mrpt::math::TPoint3D(xs[i], ys[i], zs[i]).sqrNorm() > maxSqrDist)
+			(pt - sensorPt).sqrNorm() > maxSqrDist)
 			continue;  // skip
 
 		const Bonxai::CoordT endCoord = Bonxai::PosToCoord(
-			{xs[i], ys[i], zs[i]}, base_t::m_impl->grid.inv_resolution);
+			{pt.x, pt.y, pt.z}, base_t::m_impl->grid.inv_resolution);
 
 		// jump in discrete steps from sensorCoord to endCoord:
 		// Use "fractional integers" to approximate float operations
@@ -557,9 +573,10 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::insertPointCloudAsRays(
 template <typename voxel_node_t, typename occupancy_t>
 void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::
 	insertPointCloudAsEndPoints(
-		const mrpt::maps::CPointsMap& pts, const mrpt::math::TPoint3D& sensorPt)
+		const mrpt::maps::CPointsMap& pts, const mrpt::math::TPoint3D& sensorPt,
+		const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
-	invalidateOccupiedCache();
+	markAsChanged();
 
 	const occupancy_t logodd_observation_occupied =
 		std::max<occupancy_t>(1, p2l(insertionOptions.prob_hit));
@@ -574,14 +591,17 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::
 
 	for (size_t i = 0; i < xs.size(); i += insertionOptions.decimation)
 	{
+		const auto pt = robotPose
+			? robotPose->composePoint(mrpt::math::TPoint3D(xs[i], ys[i], zs[i]))
+			: mrpt::math::TPoint3D(xs[i], ys[i], zs[i]);
+
 		if (insertionOptions.max_range > 0 &&
-			(mrpt::math::TPoint3D(xs[i], ys[i], zs[i]) - sensorPt).sqrNorm() >
-				maxSqrDist)
+			(pt - sensorPt).sqrNorm() > maxSqrDist)
 			continue;  // skip
 
 		voxel_node_t* cell = base_t::m_impl->accessor.value(
 			Bonxai::PosToCoord(
-				{xs[i], ys[i], zs[i]}, base_t::m_impl->grid.inv_resolution),
+				{pt.x, pt.y, pt.z}, base_t::m_impl->grid.inv_resolution),
 			true /*create*/);
 		if (!cell) continue;  // should never happen?
 
@@ -591,12 +611,13 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::
 }
 
 template <typename voxel_node_t, typename occupancy_t>
-void CVoxelMapOccupancyBase<
-	voxel_node_t, occupancy_t>::updateOccupiedPointsCache() const
+void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::updateCachedProperties()
+	const
 {
 	if (m_cachedOccupied) return;  // done
 
 	m_cachedOccupied = mrpt::maps::CSimplePointsMap::Create();
+	m_bbox = mrpt::math::TBoundingBox::PlusMinusInfinity();
 
 	// forEachCell() has no const version
 	auto& grid =
@@ -611,6 +632,8 @@ void CVoxelMapOccupancyBase<
 		const double occFreeness = this->l2p(data.occupancyRef());
 		const auto pt = Bonxai::CoordToPos(coord, grid.resolution);
 
+		m_bbox.updateWithPoint({pt.x, pt.y, pt.z});
+
 		if (occFreeness < 0.5)
 		{
 			m_cachedOccupied->insertPointFast(pt.x, pt.y, pt.z);
@@ -618,14 +641,25 @@ void CVoxelMapOccupancyBase<
 	};	// end lambda for each voxel
 
 	grid.forEachCell(lmbdPerVoxel);
+
+	// If no cell is active, use default bbox:
+	if (m_bbox == mrpt::math::TBoundingBox::PlusMinusInfinity()) m_bbox = {};
 }
 
 template <typename voxel_node_t, typename occupancy_t>
 mrpt::maps::CSimplePointsMap::Ptr
 	CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::getOccupiedVoxels() const
 {
-	updateOccupiedPointsCache();
+	updateCachedProperties();
 	return m_cachedOccupied;
+}
+
+template <typename voxel_node_t, typename occupancy_t>
+mrpt::math::TBoundingBox
+	CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::getBoundingBox() const
+{
+	updateCachedProperties();
+	return m_bbox;
 }
 
 }  // namespace mrpt::maps
