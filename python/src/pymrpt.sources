@@ -31,6 +31,7 @@ mrpt/rtti/CObject.cpp
 mrpt/rtti/CObject_1.cpp
 mrpt/rtti/CObject_2.cpp
 mrpt/rtti/CObject_3.cpp
+mrpt/rtti/CObject_4.cpp
 mrpt/serialization/CSerializable.cpp
 std/stl_multimap.cpp
 std/stl_map.cpp
@@ -256,6 +257,11 @@ mrpt/maps/CRandomFieldGridMap3D.cpp
 mrpt/maps/CReflectivityGridMap2D.cpp
 mrpt/maps/CWeightedPointsMap.cpp
 mrpt/maps/CWirelessPowerGridMap2D.cpp
+mrpt/maps/CVoxelMapBase.cpp
+mrpt/maps/CVoxelMapOccupancyBase.cpp
+mrpt/maps/CVoxelMapOccupancyBase_1.cpp
+mrpt/maps/CVoxelMapOccupancyBase_2.cpp
+mrpt/maps/CVoxelMap.cpp
 mrpt/obs/CObservationPointCloud.cpp
 mrpt/opengl/CBox.cpp
 mrpt/opengl/COctreePointRenderer.cpp

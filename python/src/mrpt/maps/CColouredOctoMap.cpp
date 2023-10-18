@@ -99,7 +99,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::maps::CColouredOctoMap file:mrpt/maps/CColouredOctoMap.h line:36
+// mrpt::maps::CColouredOctoMap file:mrpt/maps/CColouredOctoMap.h line:38
 struct PyCallBack_mrpt_maps_CColouredOctoMap : public mrpt::maps::CColouredOctoMap {
 	using mrpt::maps::CColouredOctoMap::CColouredOctoMap;
 
@@ -1106,8 +1106,8 @@ struct PyCallBack_mrpt_maps_CColouredPointsMap_TMapDefinition : public mrpt::map
 
 void bind_mrpt_maps_CColouredOctoMap(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::maps::CColouredOctoMap file:mrpt/maps/CColouredOctoMap.h line:36
-		pybind11::class_<mrpt::maps::CColouredOctoMap, std::shared_ptr<mrpt::maps::CColouredOctoMap>, PyCallBack_mrpt_maps_CColouredOctoMap, mrpt::maps::COctoMapBase<octomap::ColorOcTree,octomap::ColorOcTreeNode>> cl(M("mrpt::maps"), "CColouredOctoMap", "A three-dimensional probabilistic occupancy grid, implemented as an\n octo-tree with the \"octomap\" C++ library.\n  This version stores both, occupancy information and RGB colour data at\n each octree node. See the base class mrpt::maps::COctoMapBase.\n\n \n CMetricMap, the example in \"MRPT/samples/octomap_simple\"\n \n\n\n ");
+	{ // mrpt::maps::CColouredOctoMap file:mrpt/maps/CColouredOctoMap.h line:38
+		pybind11::class_<mrpt::maps::CColouredOctoMap, std::shared_ptr<mrpt::maps::CColouredOctoMap>, PyCallBack_mrpt_maps_CColouredOctoMap, mrpt::maps::COctoMapBase<octomap::ColorOcTree,octomap::ColorOcTreeNode>> cl(M("mrpt::maps"), "CColouredOctoMap", "A three-dimensional probabilistic occupancy grid, implemented as an\n octo-tree with the \"octomap\" C++ library.\n  This version stores both, occupancy information and RGB colour data at\n each octree node. See the base class mrpt::maps::COctoMapBase.\n\n The octomap library was presented in \n\n \n CMetricMap, the example in \"MRPT/samples/octomap_simple\"\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::maps::CColouredOctoMap(); }, [](){ return new PyCallBack_mrpt_maps_CColouredOctoMap(); } ), "doc");
 		cl.def( pybind11::init<const double>(), pybind11::arg("resolution") );
 
