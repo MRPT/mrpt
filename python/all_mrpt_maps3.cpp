@@ -8,3 +8,9 @@
 #include "src/mrpt/maps/CWeightedPointsMap.cpp"
 #include "src/mrpt/maps/CWirelessPowerGridMap2D.cpp"
 #include "src/mrpt/maps/metric_map_types.cpp"
+#include "src/mrpt/maps/CVoxelMap.cpp"
+#include "src/mrpt/maps/CVoxelMapBase.cpp"
+#include "src/mrpt/maps/CVoxelMapOccupancyBase.cpp"
+#include "src/mrpt/maps/CVoxelMapOccupancyBase_1.cpp"
+#include "src/mrpt/maps/CVoxelMapOccupancyBase_2.cpp"
+

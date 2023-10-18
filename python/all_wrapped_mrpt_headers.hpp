@@ -166,6 +166,8 @@
 #include <mrpt/maps/CWeightedPointsMap.h>
 #include <mrpt/maps/CWirelessPowerGridMap2D.h>
 #include <mrpt/maps/OccupancyGridCellType.h>
+#include <mrpt/maps/CVoxelMap.h>
+#include <mrpt/maps/CVoxelMapRGB.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/obs/customizable_obs_viz.h>
