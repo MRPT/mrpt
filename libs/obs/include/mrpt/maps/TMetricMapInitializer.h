@@ -135,6 +135,8 @@ class TSetOfMetricMapInitializers : public mrpt::config::CLoadableOptions
 	 *mrpt::maps::CColouredPointsMap map>
 	 *  weightedPointsMap_count=<0 or 1, for creating a
 	 *mrpt::maps::CWeightedPointsMap map>
+	 *  mrpt::maps::CVoxelMap_count=[0|1]
+	 *  mrpt::maps::CVoxelMapRGB_count=[0|1]
 	 *
 	 * // ====================================================
 	 * //  Creation Options for OccupancyGridMap ##:

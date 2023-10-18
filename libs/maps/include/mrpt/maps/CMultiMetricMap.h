@@ -34,6 +34,7 @@ class TSetOfMetricMapInitializers;
  *	- mrpt::maps::COccupancyGridMap3D: 3D occupancy voxel map.
  *	- mrpt::maps::COctoMap: For 3D occupancy grids of variable resolution,
  *    with octrees (based on the library `octomap`).
+ *  - mrpt::maps::CVoxelMap or mrpt::maps::CVoxelMapRGB: 3D sparse voxel maps.
  *	- mrpt::maps::CColouredOctoMap: The same than above, but nodes can store
  *    RGB data appart from occupancy.
  *	- mrpt::maps::CLandmarksMap: For visual landmarks,etc...
