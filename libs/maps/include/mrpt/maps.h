@@ -32,6 +32,8 @@ MRPT_WARNING(
 #include <mrpt/maps/CRandomFieldGridMap3D.h>
 #include <mrpt/maps/CReflectivityGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/CVoxelMap.h>
+#include <mrpt/maps/CVoxelMapRGB.h>
 #include <mrpt/maps/CWeightedPointsMap.h>
 #include <mrpt/maps/CWirelessPowerGridMap2D.h>
 

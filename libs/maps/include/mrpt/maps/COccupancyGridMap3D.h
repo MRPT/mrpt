@@ -28,6 +28,9 @@ namespace mrpt::maps
  *certainly occupied, 1 means a certainly empty voxel. Initially 0.5 means
  *uncertainty.
  *
+ * An alternative, sparse representation of a 3D map is provided
+ * via mrpt::maps::CVoxelMap and mrpt::maps::CVoxelMapRGB
+ *
  * \ingroup mrpt_maps_grp
  **/
 class COccupancyGridMap3D

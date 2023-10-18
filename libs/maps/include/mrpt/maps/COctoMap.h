@@ -33,6 +33,8 @@ namespace maps
  *  This version only stores occupancy information at each octree node. See the
  * base class mrpt::maps::COctoMapBase.
  *
+ * The octomap library was presented in \cite wurm2010octomap
+ *
  * \sa CMetricMap, the example in "MRPT/samples/octomap_simple"
  * \ingroup mrpt_maps_grp
  */
@@ -49,13 +51,11 @@ class COctoMap : public COctoMapBase<octomap::OcTree, octomap::OcTreeNode>
 		mrpt::opengl::COctoMapVoxels& gl_obj) const override;
 
 	MAP_DEFINITION_START(COctoMap)
-	double resolution{
-		0.10};	//!< The finest resolution of the octomap (default: 0.10
-	//! meters)
-	mrpt::maps::COctoMap::TInsertionOptions
-		insertionOpts;	//!< Observations insertion options
-	mrpt::maps::COctoMap::TLikelihoodOptions
-		likelihoodOpts;	 //!< Probabilistic observation likelihood options
+	/// The finest resolution of the octomap (default: 0.10 meters)
+	double resolution = 0.10;
+	mrpt::maps::COctoMap::TInsertionOptions insertionOpts;
+	/// Probabilistic observation likelihood options
+	mrpt::maps::COctoMap::TLikelihoodOptions likelihoodOpts;
 	MAP_DEFINITION_END(COctoMap)
 
 	/** Returns true if the map is empty/no observation has been inserted */
