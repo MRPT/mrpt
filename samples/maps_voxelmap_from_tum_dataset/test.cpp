@@ -10,7 +10,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/io/lazy_load_path.h>
 #include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/maps/CVoxelMap.h>
+#include <mrpt/maps/CVoxelMapRGB.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CRawlog.h>
@@ -20,6 +20,7 @@
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 
 #include <chrono>
@@ -31,7 +32,7 @@
 // ------------------------------------------------------
 void TestVoxelMapFromTUM(
 	const std::string& datasetRawlogFile, const std::string& groundTruthFile,
-	double VOXELMAP_RESOLUTION)
+	double VOXELMAP_RESOLUTION, double VOXELMAP_MAX_RANGE)
 {
 	// To find out external image files:
 	mrpt::io::setLazyLoadPathBase(
@@ -68,10 +69,9 @@ void TestVoxelMapFromTUM(
 	// ----------------------
 	// Voxel map
 	// ----------------------
+	mrpt::maps::CVoxelMapRGB map(VOXELMAP_RESOLUTION);
 
-	mrpt::maps::CVoxelMap map(VOXELMAP_RESOLUTION);
-
-	map.insertionOptions.max_range = 5.0;  // [m]
+	map.insertionOptions.max_range = VOXELMAP_MAX_RANGE;  // [m]
 	map.insertionOptions.ray_trace_free_space = false;	// only occupied
 
 	// gui and demo app:
@@ -79,14 +79,25 @@ void TestVoxelMapFromTUM(
 
 	auto glVoxels = mrpt::opengl::COctoMapVoxels::Create();
 
+	// *IMPORTANT*: Required to see RGB color in the opengl visualization:
+	glVoxels->setVisualizationMode(
+		mrpt::opengl::COctoMapVoxels::COLOR_FROM_RGB_DATA);
+
+	// create GL visual objects:
 	auto glCamGroup = mrpt::opengl::CSetOfObjects::Create();
 	glCamGroup->insert(mrpt::opengl::stock_objects::CornerXYZSimple(0.3));
 	auto glObsPts = mrpt::opengl::CPointCloudColoured::Create();
 	glCamGroup->insert(glObsPts);
 	bool glCamFrustrumDone = false;
 
+	mrpt::opengl::Viewport::Ptr glViewRGB;
+
 	{
 		mrpt::opengl::Scene::Ptr& scene = win.get3DSceneAndLock();
+
+		// Set a large near plane so we can "see thru walls" easily when
+		// approaching a point:
+		scene->getViewport()->setViewportClipDistances(2.0, 200.0);
 
 		{
 			auto gl_grid =
@@ -106,6 +117,9 @@ void TestVoxelMapFromTUM(
 		}
 
 		scene->insert(glVoxels);
+
+		glViewRGB = scene->createViewport("rgb_view");
+		glViewRGB->setViewportPosition(0, 0.7, 0.4, 0.3);
 
 		win.unlockAccess3DScene();
 	}
@@ -165,8 +179,7 @@ void TestVoxelMapFromTUM(
 					}
 
 					// update the voxel map:
-					colPts.changeCoordinatesReference(camPose);
-					map.insertPointCloudAsEndPoints(colPts);
+					map.insertObservation(*obs, camPose);
 
 					// Update the voxel map visualization:
 					static int decimUpdateViz = 0;
@@ -175,6 +188,12 @@ void TestVoxelMapFromTUM(
 						decimUpdateViz = 0;
 						map.renderingOptions.generateFreeVoxels = false;
 						map.getAsOctoMapVoxels(*glVoxels);
+					}
+
+					// RGB view:
+					if (obs->hasIntensityImage)
+					{
+						glViewRGB->setImageView(obs->intensityImage);
 					}
 				}
 			}
@@ -212,12 +231,20 @@ int main(int argc, char** argv)
 {
 	try
 	{
-		if (argc != 4)
+		if (argc != 3 && argc != 4)
 			throw std::invalid_argument(
 				"Usage: PROGRAM <PATH_TO_TUM_DATASET.rawlog> "
-				"<GROUND_TRUTH.txt> <VOXELMAP_RESOLUTION>");
+				"<VOXELMAP_RESOLUTION> [<VOXELMAP_MAX_RANGE>]");
 
-		TestVoxelMapFromTUM(argv[1], argv[2], std::stod(argv[3]));
+		const std::string gtFile = mrpt::system::pathJoin(
+			{mrpt::system::extractFileDirectory(argv[1]), "groundtruth.txt"});
+
+		double VOXELMAP_MAX_RANGE = 5.0;
+		if (argc == 4) { VOXELMAP_MAX_RANGE = std::stod(argv[3]); }
+
+		TestVoxelMapFromTUM(
+			argv[1], gtFile, std::stod(argv[2]), VOXELMAP_MAX_RANGE);
+
 		return 0;
 	}
 	catch (const std::exception& e)
