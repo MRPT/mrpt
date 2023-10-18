@@ -11,6 +11,11 @@
 
 #include <mrpt/maps/CVoxelMapOccupancyBase.h>
 
+namespace mrpt::obs
+{
+class CObservationPointCloud;
+}
+
 namespace mrpt::maps
 {
 /** Voxel contents for CVoxelMap
@@ -56,6 +61,10 @@ class CVoxelMap : public CVoxelMapOccupancyBase<VoxelNodeOccupancy>
 		const mrpt::obs::CObservation& obs,
 		const std::optional<const mrpt::poses::CPose3D>& robotPose =
 			std::nullopt) override;
+	bool internal_insertObservation_Pts(
+		const mrpt::obs::CObservationPointCloud& obs,
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt);
 	double internal_computeObservationLikelihood(
 		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D& takenFrom) const override;

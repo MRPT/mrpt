@@ -9,6 +9,7 @@
 
 #include "maps-precomp.h"  // Precomp header
 //
+#include <mrpt/maps/../obs/CObservationPointCloud.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CVoxelMap.h>
 
@@ -108,13 +109,43 @@ void CVoxelMap::serializeFrom(
 	};
 }
 
+bool CVoxelMap::internal_insertObservation_Pts(
+	const mrpt::obs::CObservationPointCloud& obs,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
+{
+	if (!obs.pointcloud || obs.pointcloud->empty()) return false;
+
+	mrpt::math::TPoint3D sensorPt;
+	mrpt::poses::CPose3D localSensorPose;
+	obs.getSensorPose(localSensorPose);
+	if (robotPose)	//
+		sensorPt = (*robotPose + localSensorPose).translation();
+	else
+		sensorPt = localSensorPose.translation();
+
+	// Insert rays:
+	if (insertionOptions.ray_trace_free_space)
+		insertPointCloudAsRays(*obs.pointcloud, sensorPt, robotPose);
+	else
+		insertPointCloudAsEndPoints(*obs.pointcloud, sensorPt, robotPose);
+
+	return true;
+}
+
 bool CVoxelMap::internal_insertObservation(
 	const mrpt::obs::CObservation& obs,
 	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
-	// Auxiliary 3D point cloud:
-	MRPT_TODO("Handle special cases and avoid duplicating pointcloud?");
+	if (auto obsPts =
+			dynamic_cast<const mrpt::obs::CObservationPointCloud*>(&obs);
+		obsPts)
+	{
+		return internal_insertObservation_Pts(*obsPts, robotPose);
+	}
 
+	// TODO: Handle more special cases and avoid duplicating pointcloud?
+
+	// Auxiliary 3D point cloud:
 	mrpt::maps::CSimplePointsMap pts;
 	pts.insertObservation(obs, robotPose);
 

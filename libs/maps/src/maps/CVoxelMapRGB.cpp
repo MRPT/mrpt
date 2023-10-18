@@ -128,7 +128,7 @@ bool CVoxelMapRGB::internal_insertObservation_3DScan(
 	if (colPts.empty()) return false;
 
 	// Insert occupancy info + RGB color:
-	invalidateOccupiedCache();
+	markAsChanged();
 
 	const occupancy_value_t logodd_observation_occupied =
 		std::max<occupancy_value_t>(1, p2l(insertionOptions.prob_hit));
