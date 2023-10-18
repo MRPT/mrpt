@@ -157,10 +157,25 @@ bool CVoxelMapRGB::internal_insertObservation_3DScan(
 		updateCell_fast_occupied(
 			cell, logodd_observation_occupied, logodd_thres_occupied);
 
-		// and copy color:
+		// and merge color:
 		mrpt::img::TColorf colF;
 		colPts.getPointColor(i, colF.R, colF.G, colF.B);
+#if 1  // fuse colors:
+		mrpt::img::TColorf oldCol(cell->color);
+
+		mrpt::img::TColorf newF;
+		const float N_1 = 1.0f / (cell->numColObs + 1);
+
+		newF.R = N_1 * (oldCol.R * cell->numColObs + colF.R);
+		newF.G = N_1 * (oldCol.G * cell->numColObs + colF.G);
+		newF.B = N_1 * (oldCol.B * cell->numColObs + colF.B);
+
+		cell->numColObs++;
+		cell->color = newF.asTColor();
+#else
+		// just copy latest color:
 		cell->color = colF.asTColor();
+#endif
 	}
 
 	return true;

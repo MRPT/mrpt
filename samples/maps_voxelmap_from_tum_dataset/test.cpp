@@ -119,7 +119,8 @@ void TestVoxelMapFromTUM(
 		scene->insert(glVoxels);
 
 		glViewRGB = scene->createViewport("rgb_view");
-		glViewRGB->setViewportPosition(0, 0.7, 0.4, 0.3);
+		glViewRGB->setViewportPosition(0, 0.7, 0.3, 0.25);
+		glViewRGB->setTransparent(true);
 
 		win.unlockAccess3DScene();
 	}
