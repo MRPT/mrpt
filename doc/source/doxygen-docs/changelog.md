@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.11.1: UNRELEASED
+(None yet)
+
 # Version 2.11.0: Released Oct 19th, 2023
 - Changes in libraries:
   - \ref mrpt_maps_grp
