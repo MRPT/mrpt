@@ -45,7 +45,7 @@ void MatrixBase<Scalar, Derived>::removeColumns(
 	idxs.resize(itEnd - idxs.begin());
 	for (const auto idx : idxs)
 	{
-		ASSERT_LT_(idx, mbDerived().cols());
+		ASSERT_LT_(idx, static_cast<std::size_t>(mbDerived().cols()));
 	}
 	unsafeRemoveColumns(idxs);
 }
@@ -76,7 +76,7 @@ void MatrixBase<Scalar, Derived>::removeRows(
 	idxs.resize(itEnd - idxs.begin());
 	for (const auto idx : idxs)
 	{
-		ASSERT_LT_(idx, mbDerived().rows());
+		ASSERT_LT_(idx, static_cast<std::size_t>(mbDerived().rows()));
 	}
 	unsafeRemoveRows(idxs);
 }
