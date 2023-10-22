@@ -4,6 +4,8 @@
 - Changes in libraries:
   - \ref mrpt_math_grp
     - Fix several build warnings introduced in the last version.
+  - \ref mrpt_maps_grp
+    - Voxel maps: A voxel is considered occupied if its occupancy is larger than `likelihoodOptions.occupiedThreshold` instead of a fixed `0.5`.
 
 # Version 2.11.0: Released Oct 19th, 2023
 - Changes in libraries:
