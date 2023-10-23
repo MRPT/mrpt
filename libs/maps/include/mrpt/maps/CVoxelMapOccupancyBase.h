@@ -163,6 +163,9 @@ class CVoxelMapOccupancyBase : public CVoxelMapBase<voxel_node_t>,
 	 *  while also updating the voxel map in another thread.
 	 *
 	 *  The point cloud is cached, and invalidated upon map updates.
+	 *
+	 *  A voxel is considered occupied if its occupancy is larger than
+	 * `likelihoodOptions.occupiedThreshold` (Range: [0,1], default: 0.6)
 	 */
 	mrpt::maps::CSimplePointsMap::Ptr getOccupiedVoxels() const;
 
@@ -623,8 +626,10 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::updateCachedProperties()
 	auto& grid =
 		const_cast<Bonxai::VoxelGrid<voxel_node_t>&>(base_t::m_impl->grid);
 
+	const double freenessThreshold = 1.0 - likelihoodOptions.occupiedThreshold;
+
 	// Go thru all voxels:
-	auto lmbdPerVoxel = [this, &grid](
+	auto lmbdPerVoxel = [this, freenessThreshold, &grid](
 							voxel_node_t& data, const Bonxai::CoordT& coord) {
 		using mrpt::img::TColor;
 
@@ -634,7 +639,7 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::updateCachedProperties()
 
 		m_bbox.updateWithPoint({pt.x, pt.y, pt.z});
 
-		if (occFreeness < 0.5)
+		if (occFreeness < freenessThreshold)
 		{
 			m_cachedOccupied->insertPointFast(pt.x, pt.y, pt.z);
 		}

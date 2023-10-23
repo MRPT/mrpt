@@ -329,7 +329,7 @@ void TestBayesianTracking()
 		printf(
 			"Real: x:%.03f  y=%.03f heading=%.03f v=%.03f w=%.03f\n", x, y, phi,
 			v, w);
-		cout << "EKF: " << EKF_xkk << endl;
+		cout << "EKF: " << EKF_xkk.transpose() << endl;
 
 		// Show PF state:
 		cout << "Particle filter ESS: " << particles.ESS() << endl;
@@ -377,7 +377,6 @@ void TestBayesianTracking()
 
 			particles.getMean(avrg_x, avrg_y, avrg_vx, avrg_vy);
 
-			vector<float> vx(2), vy(2);
 			vx[0] = avrg_x;
 			vx[1] = vx[0] + avrg_vx * 1;
 			vy[0] = avrg_y;

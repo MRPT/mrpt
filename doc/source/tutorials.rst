@@ -47,6 +47,7 @@ Note: This page is in the process of being imported from https://www.mrpt.org/tu
   :maxdepth: 2
   :caption: Maths, Geometry
 
+  tutorial-ekf
   page_tutorial_math_levenberg_marquardt
   tutorial-ransac
   tutorial-pdf-over-poses
