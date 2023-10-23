@@ -70,8 +70,8 @@ void Viewport::setViewportPosition(
 	const double x, const double y, const double width, const double height)
 {
 	MRPT_START
-	ASSERT_(m_view_width > 0);
-	ASSERT_(m_view_height > 0);
+	ASSERT_(width > 0);
+	ASSERT_(height > 0);
 
 	m_view_x = x;
 	m_view_y = y;

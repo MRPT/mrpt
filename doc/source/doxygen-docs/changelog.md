@@ -1,7 +1,11 @@
 \page changelog Change Log
 
 # Version 2.11.2: UNRELEASED
-(none yet)
+- Changes in libraries:
+  - \ref mrpt_gui_grp
+    - New function mrpt::gui::GetScaledClientSize().
+- BUG FIXES:
+  - Fix wrong rendering of all wxWidgets-based OpenGL windows when using Ubuntu's display settings to change UI to a size different than 100% (Fixes [issue #1114](https://github.com/MRPT/mrpt/issues/1114)).
 
 # Version 2.11.1: Released Oct 23rd, 2023
 - Changes in libraries:
