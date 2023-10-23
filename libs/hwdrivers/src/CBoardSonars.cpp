@@ -214,7 +214,7 @@ bool CBoardSonars::getObservation(mrpt::obs::CObservationRange& obs)
 		obs.timestamp = mrpt::system::getCurrentTime();
 		obs.minSensorDistance = 0.04f;
 		obs.maxSensorDistance = m_maxRange;
-		obs.sensorConeApperture = DEG2RAD(30.0f);
+		obs.sensorConeAperture = DEG2RAD(30.0f);
 		obs.sensedData.clear();
 		mrpt::obs::CObservationRange::TMeasurement obsRange;
 

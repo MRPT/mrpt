@@ -15,16 +15,34 @@
 
 #include <mrpt/ros2bridge/range.h>
 
+#include <cmath>
+
+template <class T, class = void>
+struct has_variance : std::false_type
+{
+};
+
+template <class T>
+struct has_variance<T, std::void_t<decltype(T::variance)>> : std::true_type
+{
+};
+
 bool mrpt::ros2bridge::fromROS(
 	const sensor_msgs::msg::Range& msg, mrpt::obs::CObservationRange& obj)
 {
 	obj.minSensorDistance = msg.min_range;
 	obj.maxSensorDistance = msg.max_range;
-	obj.sensorConeApperture = msg.field_of_view;
+	obj.sensorConeAperture = msg.field_of_view;
 
-	/// again this is amibiguous as can't be certain of number of measurement
-	/// from corresponding ROS message
+	obj.sensedData.resize(1);
 	obj.sensedData.at(0).sensedDistance = msg.range;
+
+	// See: https://github.com/MRPT/mrpt/issues/1270
+	if constexpr (has_variance<sensor_msgs::msg::Range>::value)
+	{
+		obj.sensedData.at(0).sensorNoiseStdDeviation = std::sqrt(msg.variance);
+	}
+
 	return true;
 }
 
@@ -32,24 +50,31 @@ bool mrpt::ros2bridge::toROS(
 	const mrpt::obs::CObservationRange& obj,
 	const std_msgs::msg::Header& msg_header, sensor_msgs::msg::Range* msg)
 {
-	long num_range = obj.sensedData.size();
+	const auto num_range = obj.sensedData.size();
 
 	// 1) sensor_msgs::msg::Range:: header
-	for (long i = 0; i < num_range; i++)
+	for (size_t i = 0; i < num_range; i++)
 		msg[i].header = msg_header;
 
 	// 2) sensor_msg::Range parameters
-	for (long i = 0; i < num_range; i++)
+	for (size_t i = 0; i < num_range; i++)
 	{
 		msg[i].max_range = obj.maxSensorDistance;
 		msg[i].min_range = obj.minSensorDistance;
-		msg[i].field_of_view = obj.sensorConeApperture;
+		msg[i].field_of_view = obj.sensorConeAperture;
+
+		// See: https://github.com/MRPT/mrpt/issues/1270
+		if constexpr (has_variance<sensor_msgs::msg::Range>::value)
+		{
+			msg[i].variance =
+				mrpt::square(obj.sensedData[i].sensorNoiseStdDeviation);
+		}
 	}
 
 	/// following part needs to be double checked, it looks incorrect
 	/// ROS has single number float for range, MRPT has a list of
 	/// sensedDistances
-	for (long i = 0; i < num_range; i++)
+	for (size_t i = 0; i < num_range; i++)
 		msg[i].range = obj.sensedData.at(i).sensedDistance;
 
 	/// currently the following are not available in MRPT for corresponding
