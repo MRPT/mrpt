@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.11.1: UNRELEASED
+# Version 2.11.1: Released Oct 23rd, 2023
 - Changes in libraries:
   - \ref mrpt_math_grp
     - Fix several build warnings introduced in the last version.
