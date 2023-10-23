@@ -37,15 +37,16 @@ class CObservationRange : public CObservation
 	float maxSensorDistance{5};
 
 	/** Cone aperture of each ultrasonic beam, in radians. */
-	float sensorConeApperture = mrpt::d2f(20.0_deg);
+	float sensorConeAperture = mrpt::d2f(20.0_deg);
 
 	struct TMeasurement
 	{
-		TMeasurement() : sensorPose() {}
+		TMeasurement() = default;
+
 		/** Some kind of sensor ID which identifies it on the bus (if
 		 * applicable, 0 otherwise)
 		 */
-		uint16_t sensorID{0};
+		uint16_t sensorID = 0;
 
 		/** The 6D position of the sensor on the robot.
 		 */
@@ -54,7 +55,10 @@ class CObservationRange : public CObservation
 		/** The measured range, in meters (or a value of 0 if there was no
 		 * detected echo).
 		 */
-		float sensedDistance{0};
+		float sensedDistance = 0;
+
+		/** If !=0, the nominal sensor noise, as one standard deviation */
+		float sensorNoiseStdDeviation = 0;
 	};
 
 	using TMeasurementList = std::deque<TMeasurement>;

@@ -1217,7 +1217,7 @@ class CObservationRange(CObservation):
     maxSensorDistance: float
     minSensorDistance: float
     sensedData: Any
-    sensorConeApperture: float
+    sensorConeAperture: float
     @overload
     def __init__(self) -> None: ...
     @overload

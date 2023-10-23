@@ -268,7 +268,7 @@ void CPhidgetInterfaceKitProximitySensors::getObservation(
 	obs.sensorLabel = m_sensorLabel;
 	obs.minSensorDistance = m_minOfMinRanges;
 	obs.maxSensorDistance = m_maxOfMaxRanges;
-	obs.sensorConeApperture =
+	obs.sensorConeAperture =
 		DEG2RAD(2.0f);	// TODO : Adapt to real sensor cone apperture.
 	obs.sensedData.clear();
 
