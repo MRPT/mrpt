@@ -64,9 +64,13 @@ namespace gui
 /** \addtogroup mrpt_gui_wxutils Utilities for MRPT-wxWidgets interfacing (in
   #include <mrpt/gui/WxUtils.h>)
   * \ingroup mrpt_gui_grp
-
 	* @{ */
 #if MRPT_HAS_WXWIDGETS
+
+/** Returns the size of a window, including the optional magnification scale set
+ * by users in Display->Appearance.
+ */
+wxSize GetScaledClientSize(const wxWindow* w);
 
 #ifndef WX_START_TRY
 
