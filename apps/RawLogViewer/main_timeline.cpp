@@ -143,7 +143,7 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 	auto& tl = m_timeline;
 	tl.clearStats();
 
-	const auto clsz = m_glTimeLine->GetClientSize();
+	const auto clsz = mrpt::gui::GetScaledClientSize(m_glTimeLine);
 
 	auto px2x = [clsz](int u) { return -1.0 + (2.0 / clsz.GetWidth()) * u; };
 	auto px2y = [clsz](int v) { return +1.0 - (2.0 / clsz.GetHeight()) * v; };
@@ -365,7 +365,7 @@ void xRawLogViewerFrame::bottomTimeLineUpdateCursorFromTreeScrollPos()
 		return;
 	}
 
-	const auto clsz = m_glTimeLine->GetClientSize();
+	const auto clsz = mrpt::gui::GetScaledClientSize(m_glTimeLine);
 
 	auto px2x = [clsz](int u) { return -1.0 + (2.0 / clsz.GetWidth()) * u; };
 	auto px2y = [clsz](int v) { return +1.0 - (2.0 / clsz.GetHeight()) * v; };
@@ -557,7 +557,7 @@ void xRawLogViewerFrame::OnTimeLineMouseWheel(wxMouseEvent& e)
 			mrpt::keep_max(xFocus, -1.0);
 			mrpt::keep_min(xFocus, 1.0);
 
-			const auto clsz = m_glTimeLine->GetClientSize();
+			const auto clsz = mrpt::gui::GetScaledClientSize(m_glTimeLine);
 
 			auto px2x = [clsz](int u) {
 				return -1.0 + (2.0 / clsz.GetWidth()) * u;
@@ -613,7 +613,7 @@ std::optional<std::pair<double, size_t>>
 		const std::optional<std::string>& forceThisSensorLabel,
 		const mrpt::optional_ref<std::string>& outSelectedSensorLabel) const
 {
-	const auto clsz = m_glTimeLine->GetClientSize();
+	const auto clsz = mrpt::gui::GetScaledClientSize(m_glTimeLine);
 
 	auto& tl = m_timeline;
 

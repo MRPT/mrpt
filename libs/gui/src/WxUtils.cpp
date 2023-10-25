@@ -9,6 +9,7 @@
 
 #include "gui-precomp.h"  // Precompiled headers
 //
+#include <mrpt/core/round.h>
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/filesystem.h>
@@ -931,6 +932,14 @@ mrptKeyModifier mrpt::gui::keyEventToMrptKeyModifier(const wxKeyEvent& ev)
 	if (ev.MetaDown()) mod |= MRPTKMOD_META;
 	if (ev.ShiftDown()) mod |= MRPTKMOD_SHIFT;
 	return mrptKeyModifier(mod);
+}
+
+wxSize mrpt::gui::GetScaledClientSize(const wxWindow* w)
+{
+	int width, height;
+	w->GetClientSize(&width, &height);
+	const double s = w->GetContentScaleFactor();
+	return wxSize(mrpt::round(s * width), mrpt::round(s * height));
 }
 
 #endif	// MRPT_HAS_WXWIDGETS

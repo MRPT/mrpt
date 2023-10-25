@@ -18,16 +18,17 @@ using namespace mrpt::poses;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationRange, CObservation, mrpt::obs)
 
-uint8_t CObservationRange::serializeGetVersion() const { return 3; }
+uint8_t CObservationRange::serializeGetVersion() const { return 4; }
 void CObservationRange::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// The data
-	out << minSensorDistance << maxSensorDistance << sensorConeApperture;
+	out << minSensorDistance << maxSensorDistance << sensorConeAperture;
 	const uint32_t n = sensedData.size();
 	out << n;
 	for (uint32_t i = 0; i < n; i++)
 		out << sensedData[i].sensorID << CPose3D(sensedData[i].sensorPose)
-			<< sensedData[i].sensedDistance;
+			<< sensedData[i].sensedDistance
+			<< sensedData[i].sensorNoiseStdDeviation;  // v4
 	out << sensorLabel << timestamp;
 }
 
@@ -40,13 +41,15 @@ void CObservationRange::serializeFrom(
 		case 1:
 		case 2:
 		case 3:
+		case 4:
 		{
 			uint32_t i, n;
 
 			// The data
-			in >> minSensorDistance >> maxSensorDistance >> sensorConeApperture;
+			in >> minSensorDistance >> maxSensorDistance >> sensorConeAperture;
 
 			in >> n;
+			sensedData.clear();
 			sensedData.resize(n);
 			CPose3D aux;
 			for (i = 0; i < n; i++)
@@ -57,6 +60,8 @@ void CObservationRange::serializeFrom(
 
 				in >> aux >> sensedData[i].sensedDistance;
 				sensedData[i].sensorPose = aux.asTPose();
+
+				if (version >= 4) in >> sensedData[i].sensorNoiseStdDeviation;
 			}
 
 			if (version >= 1) in >> sensorLabel;
@@ -96,18 +101,19 @@ void CObservationRange::getDescriptionAsText(std::ostream& o) const
 	using namespace std;
 	CObservation::getDescriptionAsText(o);
 
-	o << "minSensorDistance   = " << minSensorDistance << " m" << endl;
-	o << "maxSensorDistance   = " << maxSensorDistance << " m" << endl;
-	o << "sensorConeApperture = " << RAD2DEG(sensorConeApperture) << " deg"
-	  << endl;
+	o << "minSensorDistance       = " << minSensorDistance << " m\n";
+	o << "maxSensorDistance       = " << maxSensorDistance << " m\n";
+	o << "sensorConeAperture     = " << RAD2DEG(sensorConeAperture) << " deg\n";
 
 	// For each entry in this sequence:
-	o << "  SENSOR_ID    RANGE (m)    SENSOR POSE (on the robot)" << endl;
-	o << "-------------------------------------------------------" << endl;
+	o << "  SENSOR_ID    RANGE (m)   STD_DEV (m)  SENSOR POSE (on the robot) "
+		 "\n";
+	o << "-------------------------------------------------------\n";
 	for (const auto& q : sensedData)
 	{
 		o << format("     %7u", (unsigned int)q.sensorID);
 		o << format("    %4.03f   ", q.sensedDistance);
-		o << q.sensorPose << endl;
+		o << format("    %4.03f   ", q.sensorNoiseStdDeviation);
+		o << q.sensorPose << "\n";
 	}
 }

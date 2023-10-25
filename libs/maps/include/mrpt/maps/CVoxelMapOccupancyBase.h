@@ -150,12 +150,12 @@ class CVoxelMapOccupancyBase : public CVoxelMapBase<voxel_node_t>,
 
 	void insertPointCloudAsRays(
 		const mrpt::maps::CPointsMap& pts, const mrpt::math::TPoint3D& sensorPt,
-		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+		const std::optional<const mrpt::poses::CPose3D>& sensorPose =
 			std::nullopt);
 
 	void insertPointCloudAsEndPoints(
 		const mrpt::maps::CPointsMap& pts, const mrpt::math::TPoint3D& sensorPt,
-		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+		const std::optional<const mrpt::poses::CPose3D>& sensorPose =
 			std::nullopt);
 
 	/** Returns all occupied voxels as a point cloud. The shared_ptr is
@@ -480,7 +480,7 @@ bool CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::getPointOccupancy(
 template <typename voxel_node_t, typename occupancy_t>
 void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::insertPointCloudAsRays(
 	const mrpt::maps::CPointsMap& pts, const mrpt::math::TPoint3D& sensorPt,
-	const std::optional<const mrpt::poses::CPose3D>& robotPose)
+	const std::optional<const mrpt::poses::CPose3D>& sensorPose)
 {
 	markAsChanged();
 
@@ -510,8 +510,9 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::insertPointCloudAsRays(
 	// for each ray:
 	for (size_t i = 0; i < xs.size(); i += insertionOptions.decimation)
 	{
-		const auto pt = robotPose
-			? robotPose->composePoint(mrpt::math::TPoint3D(xs[i], ys[i], zs[i]))
+		const auto pt = sensorPose
+			? sensorPose->composePoint(
+				  mrpt::math::TPoint3D(xs[i], ys[i], zs[i]))
 			: mrpt::math::TPoint3D(xs[i], ys[i], zs[i]);
 
 		if (insertionOptions.max_range > 0 &&
@@ -577,7 +578,7 @@ template <typename voxel_node_t, typename occupancy_t>
 void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::
 	insertPointCloudAsEndPoints(
 		const mrpt::maps::CPointsMap& pts, const mrpt::math::TPoint3D& sensorPt,
-		const std::optional<const mrpt::poses::CPose3D>& robotPose)
+		const std::optional<const mrpt::poses::CPose3D>& sensorPose)
 {
 	markAsChanged();
 
@@ -594,8 +595,9 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::
 
 	for (size_t i = 0; i < xs.size(); i += insertionOptions.decimation)
 	{
-		const auto pt = robotPose
-			? robotPose->composePoint(mrpt::math::TPoint3D(xs[i], ys[i], zs[i]))
+		const auto pt = sensorPose
+			? sensorPose->composePoint(
+				  mrpt::math::TPoint3D(xs[i], ys[i], zs[i]))
 			: mrpt::math::TPoint3D(xs[i], ys[i], zs[i]);
 
 		if (insertionOptions.max_range > 0 &&

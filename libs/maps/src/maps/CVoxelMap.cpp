@@ -116,18 +116,21 @@ bool CVoxelMap::internal_insertObservation_Pts(
 	if (!obs.pointcloud || obs.pointcloud->empty()) return false;
 
 	mrpt::math::TPoint3D sensorPt;
-	mrpt::poses::CPose3D localSensorPose;
+	mrpt::poses::CPose3D localSensorPose, globalSensorPose;
 	obs.getSensorPose(localSensorPose);
 	if (robotPose)	//
-		sensorPt = (*robotPose + localSensorPose).translation();
+		globalSensorPose = *robotPose + localSensorPose;
 	else
-		sensorPt = localSensorPose.translation();
+		globalSensorPose = localSensorPose;
+
+	sensorPt = globalSensorPose.translation();
 
 	// Insert rays:
 	if (insertionOptions.ray_trace_free_space)
-		insertPointCloudAsRays(*obs.pointcloud, sensorPt, robotPose);
+		insertPointCloudAsRays(*obs.pointcloud, sensorPt, globalSensorPose);
 	else
-		insertPointCloudAsEndPoints(*obs.pointcloud, sensorPt, robotPose);
+		insertPointCloudAsEndPoints(
+			*obs.pointcloud, sensorPt, globalSensorPose);
 
 	return true;
 }
@@ -142,8 +145,6 @@ bool CVoxelMap::internal_insertObservation(
 	{
 		return internal_insertObservation_Pts(*obsPts, robotPose);
 	}
-
-	// TODO: Handle more special cases and avoid duplicating pointcloud?
 
 	// Auxiliary 3D point cloud:
 	mrpt::maps::CSimplePointsMap pts;

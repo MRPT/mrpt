@@ -246,7 +246,7 @@ void bind_mrpt_obs_CObservationRange(std::function< pybind11::module &(std::stri
 		cl.def( pybind11::init( [](mrpt::obs::CObservationRange const &o){ return new mrpt::obs::CObservationRange(o); } ) );
 		cl.def_readwrite("minSensorDistance", &mrpt::obs::CObservationRange::minSensorDistance);
 		cl.def_readwrite("maxSensorDistance", &mrpt::obs::CObservationRange::maxSensorDistance);
-		cl.def_readwrite("sensorConeApperture", &mrpt::obs::CObservationRange::sensorConeApperture);
+		cl.def_readwrite("sensorConeAperture", &mrpt::obs::CObservationRange::sensorConeAperture);
 		cl.def_readwrite("sensedData", &mrpt::obs::CObservationRange::sensedData);
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservationRange::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservationRange::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservationRange::*)() const) &mrpt::obs::CObservationRange::GetRuntimeClass, "C++: mrpt::obs::CObservationRange::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
