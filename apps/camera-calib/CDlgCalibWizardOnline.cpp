@@ -439,7 +439,8 @@ void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)
 
 		// Resize the display area, if needed:
 		if (std::abs(
-				(int)(this->m_realtimeview->GetClientSize().GetWidth()) -
+				(int)(mrpt::gui::GetScaledClientSize(m_realtimeview)
+						  .GetWidth()) -
 				int(img_to_show.getWidth())) > 30)
 		{
 			this->m_realtimeview->SetSize(

@@ -12,6 +12,7 @@
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/gui/CWxGLCanvasBase.h>
 #include <mrpt/gui/WxSubsystem.h>
+#include <mrpt/gui/WxUtils.h>
 #include <mrpt/system/CTicTac.h>
 
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
@@ -223,9 +224,8 @@ void CWxGLCanvasBase::Render()
 
 	lck.unlock();
 
-	int width, height;
-	GetClientSize(&width, &height);
-	double At = renderCanvas(width, height);
+	const auto sz = mrpt::gui::GetScaledClientSize(this);
+	double At = renderCanvas(sz.GetWidth(), sz.GetHeight());
 
 	OnPostRenderSwapBuffers(At, dc);
 }
@@ -241,8 +241,7 @@ void CWxGLCanvasBase::OnSize(wxSizeEvent& event)
 	if (!m_parent->IsShown()) return;
 
 	// set GL viewport (not called by wxGLCanvas::OnSize on all platforms...)
-	int w, h;
-	GetClientSize(&w, &h);
+	const auto sz = mrpt::gui::GetScaledClientSize(this);
 
 	if (this->IsShownOnScreen())
 	{
@@ -256,7 +255,7 @@ void CWxGLCanvasBase::OnSize(wxSizeEvent& event)
 			SetCurrent(*m_gl_context);
 		}
 
-		resizeViewport(w, h);
+		resizeViewport(sz.GetWidth(), sz.GetHeight());
 	}
 }
 

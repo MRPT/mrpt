@@ -1847,7 +1847,7 @@ bool CPointsMap::internal_insertObservation(
 
 		const auto& o = static_cast<const CObservationRange&>(obs);
 
-		const double aper_2 = 0.5 * o.sensorConeApperture;
+		const double aper_2 = 0.5 * o.sensorConeAperture;
 
 		this->reserve(
 			this->size() + o.sensedData.size() * 30);  // faster push_back's.
@@ -1863,9 +1863,9 @@ bool CPointsMap::internal_insertObservation(
 
 			// Insert a few points with a given maximum separation between
 			// them:
-			const double arc_len = o.sensorConeApperture * rang;
+			const double arc_len = o.sensorConeAperture * rang;
 			const unsigned int nSteps = round(1 + arc_len / 0.05);
-			const double Aa = o.sensorConeApperture / double(nSteps);
+			const double Aa = o.sensorConeAperture / double(nSteps);
 			TPoint3D loc, glob;
 
 			for (double a1 = -aper_2; a1 < aper_2; a1 += Aa)

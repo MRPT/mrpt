@@ -82,13 +82,13 @@ void COccupancyGridMap2D::sonarSimulator(
 
 		// For each sonar cone, simulate several rays and keep the shortest
 		// distance:
-		ASSERT_(inout_observation.sensorConeApperture > 0);
+		ASSERT_(inout_observation.sensorConeAperture > 0);
 		size_t nRays =
-			round(1 + inout_observation.sensorConeApperture / 1.0_deg);
+			round(1 + inout_observation.sensorConeAperture / 1.0_deg);
 
 		double direction = sensorAbsolutePose.phi() -
-			0.5 * inout_observation.sensorConeApperture;
-		const double Adir = inout_observation.sensorConeApperture / nRays;
+			0.5 * inout_observation.sensorConeAperture;
+		const double Adir = inout_observation.sensorConeAperture / nRays;
 
 		float min_detected_obs = 0;
 		for (size_t i = 0; i < nRays; i++, direction += Adir)

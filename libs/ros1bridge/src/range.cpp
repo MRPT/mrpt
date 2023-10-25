@@ -20,10 +20,9 @@ bool mrpt::ros1bridge::fromROS(
 {
 	obj.minSensorDistance = msg.min_range;
 	obj.maxSensorDistance = msg.max_range;
-	obj.sensorConeApperture = msg.field_of_view;
+	obj.sensorConeAperture = msg.field_of_view;
 
-	/// again this is amibiguous as can't be certain of number of measurement
-	/// from corresponding ROS message
+	obj.sensedData.resize(1);
 	obj.sensedData.at(0).sensedDistance = msg.range;
 	return true;
 }
@@ -43,7 +42,7 @@ bool mrpt::ros1bridge::toROS(
 	{
 		msg[i].max_range = obj.maxSensorDistance;
 		msg[i].min_range = obj.minSensorDistance;
-		msg[i].field_of_view = obj.sensorConeApperture;
+		msg[i].field_of_view = obj.sensorConeAperture;
 	}
 
 	/// following part needs to be double checked, it looks incorrect

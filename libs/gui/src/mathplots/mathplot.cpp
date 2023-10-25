@@ -90,6 +90,14 @@ double mpWindow::zoomIncrementalFactor = 1.5;
 
 IMPLEMENT_ABSTRACT_CLASS(mpLayer, wxObject)
 
+static void MyGetScaledClientSize(const wxWindow* w, int& width, int& height)
+{
+	w->GetClientSize(&width, &height);
+	const double s = w->GetContentScaleFactor();
+	width = static_cast<int>(s * width);
+	height = static_cast<int>(s * height);
+}
+
 mpLayer::mpLayer()
 {
 	SetPen((wxPen&)*wxBLACK_PEN);
@@ -1501,8 +1509,6 @@ void mpWindow::OnMouseWheel(wxMouseEvent& event)
 		return;
 	}
 
-	//     GetClientSize( &m_scrX,&m_scrY);
-
 	if (event.m_controlDown)
 	{
 		wxPoint clickPt(event.GetX(), event.GetY());
@@ -1695,7 +1701,7 @@ void mpWindow::Fit(
 	else
 	{
 		// Normal case (screen):
-		GetClientSize(&m_scrX, &m_scrY);
+		MyGetScaledClientSize(this, m_scrX, m_scrY);
 	}
 
 	double Ax, Ay;
@@ -1839,7 +1845,7 @@ void mpWindow::ZoomIn(const wxPoint& centerPoint)
 	wxPoint c(centerPoint);
 	if (c == wxDefaultPosition)
 	{
-		GetClientSize(&m_scrX, &m_scrY);
+		MyGetScaledClientSize(this, m_scrX, m_scrY);
 		c.x = (m_scrX - m_marginLeft - m_marginRight) / 2 +
 			m_marginLeft;  // c.x = m_scrX/2;
 		c.y = (m_scrY - m_marginTop - m_marginBottom) / 2 -
@@ -1882,7 +1888,7 @@ void mpWindow::ZoomOut(const wxPoint& centerPoint)
 	wxPoint c(centerPoint);
 	if (c == wxDefaultPosition)
 	{
-		GetClientSize(&m_scrX, &m_scrY);
+		MyGetScaledClientSize(this, m_scrX, m_scrY);
 		c.x = (m_scrX - m_marginLeft - m_marginRight) / 2 +
 			m_marginLeft;  // c.x = m_scrX/2;
 		c.y = (m_scrY - m_marginTop - m_marginBottom) / 2 -
@@ -2022,7 +2028,7 @@ void mpWindow::OnPrintMenu(wxCommandEvent& WXUNUSED(event))
 void mpWindow::OnFit(wxCommandEvent& WXUNUSED(event)) { Fit(); }
 void mpWindow::OnCenter(wxCommandEvent& WXUNUSED(event))
 {
-	GetClientSize(&m_scrX, &m_scrY);
+	MyGetScaledClientSize(this, m_scrX, m_scrY);
 	int centerX = (m_scrX - m_marginLeft - m_marginRight) /
 		2;	// + m_marginLeft; // c.x = m_scrX/2;
 	int centerY = (m_scrY - m_marginTop - m_marginBottom) /
@@ -2131,68 +2137,6 @@ void mpWindow::OnPaint(wxPaintEvent&)
 	if (m_enableScrollBars) {}
 }
 
-// void mpWindow::OnScroll2(wxScrollWinEvent &event)
-// {
-// #ifdef MATHPLOT_DO_LOGGING
-//     wxLogMessage(_("[mpWindow::OnScroll2] Init: m_posX=%f m_posY=%f, sc_pos =
-//     %d"),m_posX,m_posY, event.GetPosition());
-// #endif
-//     // If scrollbars are not enabled, Skip operation
-//     if (!m_enableScrollBars) {
-//         event.Skip();
-//         return;
-//     }
-// //     m_scrollX = (int) floor((m_posX - m_minX)*m_scaleX);
-// //     m_scrollY = (int) floor((m_maxY - m_posY /*- m_minY*/)*m_scaleY);
-// //     Scroll(m_scrollX, m_scrollY);
-//
-// //     GetClientSize( &m_scrX, &m_scrY);
-//     //Scroll(x2p(m_desiredXmin), y2p(m_desiredYmin));
-//     int pixelStep = 1;
-//     if (event.GetOrientation() == wxHORIZONTAL) {
-//         //m_desiredXmin -= (m_scrollX - event.GetPosition())/m_scaleX;
-//         //m_desiredXmax -= (m_scrollX - event.GetPosition())/m_scaleX;
-//         m_posX -= (m_scrollX - event.GetPosition())/m_scaleX;
-//         m_scrollX = event.GetPosition();
-//     }
-//     Fit(m_desiredXmin, m_desiredXmax, m_desiredYmin, m_desiredYmax);
-// // /*    int pixelStep = 1;
-// //     if (event.GetOrientation() == wxHORIZONTAL) {
-// //         m_posX 		-= (px -
-// event.GetPosition())/m_scaleX;//(pixelStep/m_scaleX);
-// // 	m_desiredXmax 	-= (px -
-// event.GetPosition())/m_scaleX;//(pixelStep/m_scaleX);
-// // 	m_desiredXmin 	-= (px -
-// event.GetPosition())/m_scaleX;//(pixelStep/m_scaleX);
-// //         //SetPosX( (double)px / GetScaleX() + m_minX +
-// (double)(width>>1)/GetScaleX());
-// // //         m_posX = p2x(px); //m_minX + (double)(px /*+
-// (m_scrX)*/)/GetScaleX();
-// //     } else {
-// //         m_posY 		+= (py -
-// event.GetPosition())/m_scaleY;//(pixelStep/m_scaleY);
-// // 	m_desiredYmax	+= (py -
-// event.GetPosition())/m_scaleY;//(pixelStep/m_scaleY);
-// // 	m_desiredYmax	+= (py -
-// event.GetPosition())/m_scaleY;//(pixelStep/m_scaleY);
-// //         //SetPosY( m_maxY - (double)py / GetScaleY() -
-// (double)(height>>1)/GetScaleY());
-// //         //m_posY = m_maxY - (double)py / GetScaleY() -
-// (double)(height>>1)/GetScaleY();
-// // //         m_posY = p2y(py);//m_maxY - (double)(py /*+
-// (m_scrY)*/)/GetScaleY();
-// //     }*/
-// #ifdef MATHPLOT_DO_LOGGING
-//     int px, py;
-//     GetViewStart( &px, &py);
-//     wxLogMessage(_("[mpWindow::OnScroll2] End:  m_posX = %f, m_posY = %f, px
-//     = %f, py = %f"),m_posX, m_posY, px, py);
-// #endif
-//
-//     UpdateAll();
-// //     event.Skip();
-// }
-
 void mpWindow::SetMPScrollbars(bool status)
 {
 	// Temporary behaviour: always disable scrollbars
@@ -2204,36 +2148,6 @@ void mpWindow::SetMPScrollbars(bool status)
 	}
 	// else the scroll bars will be updated in UpdateAll();
 	UpdateAll();
-
-	//     EnableScrolling(false, false);
-	//     m_enableScrollBars = status;
-	//     EnableScrolling(status, status);
-	/*    m_scrollX = (int) floor((m_posX - m_minX)*m_scaleX);
-		m_scrollY = (int) floor((m_posY - m_minY)*m_scaleY);*/
-	//     int scrollWidth = (int) floor((m_maxX - m_minX)*m_scaleX) - m_scrX;
-	//     int scrollHeight = (int) floor((m_minY - m_maxY)*m_scaleY) - m_scrY;
-
-	// /*    m_scrollX = (int) floor((m_posX - m_minX)*m_scaleX);
-	//     m_scrollY = (int) floor((m_maxY - m_posY /*- m_minY*/)*m_scaleY);
-	//     int scrollWidth = (int) floor(((m_maxX - m_minX) - (m_desiredXmax -
-	//     m_desiredXmin))*m_scaleX);
-	//     int scrollHeight = (int) floor(((m_maxY - m_minY) - (m_desiredYmax -
-	//     m_desiredYmin))*m_scaleY);
-	// #ifdef MATHPLOT_DO_LOGGING
-	//     wxLogMessage(_("mpWindow::SetMPScrollbars() scrollWidth = %d,
-	//     scrollHeight = %d"), scrollWidth, scrollHeight);
-	// #endif
-	//     if(status) {
-	//         SetScrollbars(1,
-	//                       1,
-	//                       scrollWidth,
-	//                       scrollHeight,
-	//                       m_scrollX,
-	//                       m_scrollY);
-	// //         SetVirtualSize((int) (m_maxX - m_minX), (int) (m_maxY -
-	// m_minY));
-	//     }
-	//     Refresh(true);*/
 }
 
 bool mpWindow::UpdateBBox()
@@ -2271,63 +2185,6 @@ bool mpWindow::UpdateBBox()
 	return first == FALSE;
 }
 
-// void mpWindow::UpdateAll()
-// {
-// GetClientSize( &m_scrX,&m_scrY);
-/*    if (m_enableScrollBars) {
-		// The "virtual size" of the scrolled window:
-		const int sx = (int)((m_maxX - m_minX) * GetScaleX());
-		const int sy = (int)((m_maxY - m_minY) * GetScaleY());
-	SetVirtualSize(sx, sy);
-	SetScrollRate(1, 1);*/
-//         const int px = (int)((GetPosX() - m_minX) * GetScaleX());// -
-//         m_scrX); //(cx>>1));
-
-// J.L.Blanco, Aug 2007: Formula fixed:
-//         const int py = (int)((m_maxY - GetPosY()) * GetScaleY());// -
-//         m_scrY); //(cy>>1));
-//         int px, py;
-//         GetViewStart(&px0, &py0);
-// 	px = (int)((m_posX - m_minX)*m_scaleX);
-// 	py = (int)((m_maxY - m_posY)*m_scaleY);
-
-//         SetScrollbars( 1, 1, sx - m_scrX, sy - m_scrY, px, py, TRUE);
-//     }
-
-// Working code
-// 	UpdateBBox();
-//    Refresh( FALSE );
-// end working code
-
-// Old version
-/*   bool box = UpdateBBox();
-	if (box)
-{
-		int cx, cy;
-		GetClientSize( &cx, &cy);
-
-		// The "virtual size" of the scrolled window:
-		const int sx = (int)((m_maxX - m_minX) * GetScaleX());
-		const int sy = (int)((m_maxY - m_minY) * GetScaleY());
-
-		const int px = (int)((GetPosX() - m_minX) * GetScaleX() - (cx>>1));
-
-		// J.L.Blanco, Aug 2007: Formula fixed:
-		const int py = (int)((m_maxY - GetPosY()) * GetScaleY() - (cy>>1));
-
-		SetScrollbars( 1, 1, sx, sy, px, py, TRUE);
-
-#ifdef MATHPLOT_DO_LOGGING
-		wxLogMessage(_("[mpWindow::UpdateAll] Size:%ix%i
-ScrollBars:%i,%i"),sx,sy,px,py);
-#endif
-}
-
-	FitInside();
-	Refresh( FALSE );
-*/
-// }
-
 void mpWindow::UpdateAll()
 {
 	if (UpdateBBox())
@@ -2335,7 +2192,7 @@ void mpWindow::UpdateAll()
 		if (m_enableScrollBars)
 		{
 			int cx, cy;
-			GetClientSize(&cx, &cy);
+			MyGetScaledClientSize(this, cx, cy);
 			// Do x scroll bar
 			{
 				// Convert margin sizes from pixels to coordinates
@@ -2659,66 +2516,6 @@ void mpWindow::SetColourTheme(
 		}
 	}
 }
-
-// void mpWindow::EnableCoordTooltip(bool value)
-// {
-//      m_coordTooltip = value;
-// //      if (value) GetToolTip()->SetDelay(100);
-// }
-
-/*
-double mpWindow::p2x(wxCoord pixelCoordX, bool drawOutside )
-{
-	if (drawOutside) {
-		return m_posX + pixelCoordX/m_scaleX;
-	}
-	// Draw inside margins
-	double marginScaleX = ((double)(m_scrX - m_marginLeft -
-m_marginRight))/m_scrX;
-	return m_marginLeft + (m_posX + pixelCoordX/m_scaleX)/marginScaleX;
-}
-
-double mpWindow::p2y(wxCoord pixelCoordY, bool drawOutside )
-{
-	if (drawOutside) {
-		return m_posY - pixelCoordY/m_scaleY;
-	}
-	// Draw inside margins
-	double marginScaleY = ((double)(m_scrY - m_marginTop -
-m_marginBottom))/m_scrY;
-	return m_marginTop + (m_posY - pixelCoordY/m_scaleY)/marginScaleY;
-}
-
-wxCoord mpWindow::x2p(double x, bool drawOutside)
-{
-	if (drawOutside) {
-		return (wxCoord) ((x-m_posX) * m_scaleX);
-	}
-	// Draw inside margins
-	double marginScaleX = ((double)(m_scrX - m_marginLeft -
-m_marginRight))/m_scrX;
-#ifdef MATHPLOT_DO_LOGGING
-	wxLogMessage(wxT("x2p ScrX = %d, marginRight = %d, marginLeft = %d,
-marginScaleX = %f"), m_scrX, m_marginRight, m_marginLeft,  marginScaleX);
-#endif // MATHPLOT_DO_LOGGING
-	return (wxCoord) (int)(((x-m_posX) * m_scaleX)*marginScaleX) - m_marginLeft;
-}
-
-wxCoord mpWindow::y2p(double y, bool drawOutside)
-{
-	if (drawOutside) {
-		return (wxCoord) ( (m_posY-y) * m_scaleY);
-	}
-	// Draw inside margins
-	double marginScaleY = ((double)(m_scrY - m_marginTop -
-m_marginBottom))/m_scrY;
-#ifdef MATHPLOT_DO_LOGGING
-	wxLogMessage(wxT("y2p ScrY = %d, marginTop = %d, marginBottom = %d,
-marginScaleY = %f"), m_scrY, m_marginTop, m_marginBottom, marginScaleY);
-#endif // MATHPLOT_DO_LOGGING
-	return (wxCoord) ((int)((m_posY-y) * m_scaleY)*marginScaleY) - m_marginTop;
-}
-*/
 
 //-----------------------------------------------------------------------------
 // mpFXYVector implementation - by Jose Luis Blanco (AGO-2007)
