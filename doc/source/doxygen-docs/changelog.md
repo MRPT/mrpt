@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.11.3: UNRELEASED
+(none)
+
 # Version 2.11.2: Released Oct 25th, 2023
 - Changes in libraries:
   - \ref mrpt_gui_grp
