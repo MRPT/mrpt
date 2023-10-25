@@ -146,8 +146,6 @@ bool CVoxelMap::internal_insertObservation(
 		return internal_insertObservation_Pts(*obsPts, robotPose);
 	}
 
-	// TODO: Handle more special cases and avoid duplicating pointcloud?
-
 	// Auxiliary 3D point cloud:
 	mrpt::maps::CSimplePointsMap pts;
 	pts.insertObservation(obs, robotPose);
