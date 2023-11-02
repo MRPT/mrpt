@@ -1,7 +1,9 @@
 \page changelog Change Log
 
 # Version 2.11.3: UNRELEASED
-(none)
+- Changes in libraries:
+  - \ref mrpt_maps_grp
+    - mrpt::maps::COccupancyGridMap3D::insertObservation() now also handles mrpt::obs::CObservationPointCloud
 
 # Version 2.11.2: Released Oct 25th, 2023
 - Changes in libraries:
