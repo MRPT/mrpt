@@ -17,6 +17,11 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/typemeta/TEnumType.h>
 
+namespace mrpt::obs
+{
+class CObservationPointCloud;
+}
+
 namespace mrpt::maps
 {
 /** A 3D occupancy grid map with a regular, even distribution of voxels.
@@ -78,6 +83,10 @@ class COccupancyGridMap3D
 
 	void internal_insertObservationScan3D(
 		const mrpt::obs::CObservation3DRangeScan& o,
+		const mrpt::poses::CPose3D& robotPose);
+
+	void internal_insertObservationPointCloud(
+		const mrpt::obs::CObservationPointCloud& o,
 		const mrpt::poses::CPose3D& robotPose);
 
    public:
@@ -185,7 +194,8 @@ class COccupancyGridMap3D
 	void insertPointCloud(
 		const mrpt::math::TPoint3D& sensorCenter,
 		const mrpt::maps::CPointsMap& pts,
-		const float maxValidRange = std::numeric_limits<float>::max());
+		const float maxValidRange = std::numeric_limits<float>::max(),
+		const std::optional<mrpt::poses::CPose3D>& robotPose = std::nullopt);
 
 	/** \sa renderingOptions */
 	void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_obj) const;
@@ -238,6 +248,11 @@ class COccupancyGridMap3D
 
 		/** Decimation for insertPointCloud() or 2D range scans (Default: 1) */
 		uint16_t decimation{1};
+
+		/** If true, raytrace and fill empty cells. If false, only the final
+		 * (end point) of each ray will be marked as occupied.
+		 */
+		bool raytraceEmptyCells = true;
 	};
 
 	/** With this struct options are provided to the observation insertion
