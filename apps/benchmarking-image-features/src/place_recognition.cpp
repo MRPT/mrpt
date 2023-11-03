@@ -145,7 +145,7 @@ int PlaceRecognition::predictLabel2(
 
 		}  // iterates over each key-point in the training images / dataset
 
-	}  // end of outter loop iterates over each key-point
+	}  // end of outer loop iterates over each key-point
 
 	for (int i = 0; i < feats_size; i++)
 		cout << labels[i] << " ";
@@ -207,7 +207,7 @@ int PlaceRecognition::predictLabel(
 				}
 			}
 		}  // iterates over each key-point in the training images / dataset
-	}  // end of outter loop iterates over each key-point
+	}  // end of outer loop iterates over each key-point
 
 	for (int i = 0; i < feats_size; i++)
 		cout << labels[i] << " ";
