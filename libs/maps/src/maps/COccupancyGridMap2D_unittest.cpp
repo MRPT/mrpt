@@ -37,6 +37,20 @@ TEST(COccupancyGridMap2DTests, insert2DScan)
 	}
 }
 
+TEST(COccupancyGridMap2DTests, NearestNeighborsCapable)
+{
+	// low freeness=occupied
+	const float occupied = 0.2f;
+	const std::vector<mrpt::math::TPoint2Df> occupiedPoints = {
+		{1.0f, 2.0f}, {1.1f, 2.0f}, {1.2f, 2.0f}, {2.0f, 3.0f}};
+
+	COccupancyGridMap2D grid(-10.0f, 10.0f, -10.0f, 10.0f, 0.10f);
+	for (const auto& pt : occupiedPoints)
+		grid.setCell(grid.x2idx(pt.x), grid.x2idx(pt.y), occupied);
+
+	MRPT_TODO("continue");
+}
+
 // We need OPENCV to read the image.
 #if MRPT_HAS_OPENCV && MRPT_HAS_FYAML
 
