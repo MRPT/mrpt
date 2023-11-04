@@ -15,6 +15,7 @@
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/color_maps.h>
 #include <mrpt/maps/CMetricMap.h>
+#include <mrpt/maps/NearestNeighborsCapable.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/math/TBoundingBox.h>
@@ -70,7 +71,8 @@ struct pointmap_traits;
 class CPointsMap : public CMetricMap,
 				   public mrpt::math::KDTreeCapable<CPointsMap>,
 				   public mrpt::opengl::PLY_Importer,
-				   public mrpt::opengl::PLY_Exporter
+				   public mrpt::opengl::PLY_Exporter,
+				   public mrpt::maps::NearestNeighborsCapable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CPointsMap)
 	// This must be added for declaration of MEX-related functions
@@ -1123,6 +1125,33 @@ class CPointsMap : public CMetricMap,
 			static_cast<unsigned int>(size()),
 			boundingBox().asString().c_str());
 	}
+
+	/** @name API of the NearestNeighborsCapable virtual interface
+		@{ */
+	// See docs in base class
+	[[nodiscard]] bool nn_single_search(
+		const mrpt::math::TPoint3Df& query, mrpt::math::TPoint3Df& result,
+		float& out_dist_sqr) const override;
+	[[nodiscard]] bool nn_single_search(
+		const mrpt::math::TPoint2Df& query, mrpt::math::TPoint2Df& result,
+		float& out_dist_sqr) const override;
+	void nn_multiple_search(
+		const mrpt::math::TPoint3Df& query, const size_t N,
+		std::vector<mrpt::math::TPoint3Df>& results,
+		std::vector<float>& out_dists_sqr) const override;
+	void nn_multiple_search(
+		const mrpt::math::TPoint2Df& query, const size_t N,
+		std::vector<mrpt::math::TPoint2Df>& results,
+		std::vector<float>& out_dists_sqr) const override;
+	void nn_radius_search(
+		const mrpt::math::TPoint3Df& query, const float search_radius_sqr,
+		std::vector<mrpt::math::TPoint3Df>& results,
+		std::vector<float>& out_dists_sqr) const override;
+	void nn_radius_search(
+		const mrpt::math::TPoint2Df& query, const float search_radius_sqr,
+		std::vector<mrpt::math::TPoint2Df>& results,
+		std::vector<float>& out_dists_sqr) const override;
+	/** @} */
 
    protected:
 	/** The point coordinates */
