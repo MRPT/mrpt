@@ -840,8 +840,11 @@ void COccupancyGridMap2D::nn_multiple_search(
 	{
 		int cx0 = cx_query - searchRadiusInCells;
 		int cx1 = cx_query + searchRadiusInCells;
+		if (cx1 < 0 || cx0 >= static_cast<int>(getSizeX())) continue;
+
 		int cy0 = cy_query - searchRadiusInCells;
 		int cy1 = cy_query + searchRadiusInCells;
+		if (cy1 < 0 || cy0 >= static_cast<int>(getSizeY())) continue;
 
 		mrpt::saturate<int>(cx0, 0, getSizeX() - 1);
 		mrpt::saturate<int>(cy0, 0, getSizeY() - 1);
@@ -896,9 +899,6 @@ void COccupancyGridMap2D::nn_radius_search(
 
 	int cx_query = x2idx(query.x), cy_query = y2idx(query.y);
 
-	mrpt::saturate<int>(cx_query, 0, getSizeX() - 1);
-	mrpt::saturate<int>(cy_query, 0, getSizeY() - 1);
-
 	const cellType thresholdCellValue = p2l(0.5f);
 	const float resolutionSqr = mrpt::square(m_resolution);
 	const int maxSearchRadiusInCells = static_cast<int>(
@@ -910,8 +910,11 @@ void COccupancyGridMap2D::nn_radius_search(
 	{
 		int cx0 = cx_query - searchRadiusInCells;
 		int cx1 = cx_query + searchRadiusInCells;
+		if (cx1 < 0 || cx0 >= static_cast<int>(getSizeX())) continue;
+
 		int cy0 = cy_query - searchRadiusInCells;
 		int cy1 = cy_query + searchRadiusInCells;
+		if (cy1 < 0 || cy0 >= static_cast<int>(getSizeY())) continue;
 
 		mrpt::saturate<int>(cx0, 0, getSizeX() - 1);
 		mrpt::saturate<int>(cy0, 0, getSizeY() - 1);
