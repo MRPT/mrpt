@@ -12,6 +12,7 @@
 #include <mrpt/maps/CMetricMapEvents.h>
 #include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/maps/metric_map_types.h>
+#include <mrpt/math/TBoundingBox.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/obs_frwds.h>
@@ -112,6 +113,15 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 	/** Returns true if the map is empty/no observation has been inserted.
 	 */
 	virtual bool isEmpty() const = 0;
+
+	/** Returns the bounding box of the metric map, or (0,0,0)-(0,0,0) (the
+	 * default value of mrpt::math::TBoundingBoxf() if not implemented in the
+	 * derived class or the map is empty.
+	 */
+	virtual auto boundingBox() const -> mrpt::math::TBoundingBoxf
+	{
+		return {};	// default impl: no bbox
+	}
 
 	/** Load the map contents from a CSimpleMap object, erasing all previous
 	 * content of the map. This is done invoking `insertObservation()` for each

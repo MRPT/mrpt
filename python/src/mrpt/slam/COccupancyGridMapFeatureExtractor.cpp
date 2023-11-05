@@ -16,7 +16,9 @@
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CVectorDynamic.h>
+#include <mrpt/math/TBoundingBox.h>
 #include <mrpt/math/TPoint2D.h>
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>

@@ -4,6 +4,14 @@
 - Changes in libraries:
   - \ref mrpt_maps_grp
     - mrpt::maps::COccupancyGridMap3D::insertObservation() now also handles mrpt::obs::CObservationPointCloud
+    - New virtual interface mrpt::maps::NearestNeighborsCapable, implemented in:
+      - All mrpt::maps::CPointsMap classes
+      - All classes derived from mrpt::maps::CVoxelMapOccupancyBase
+      - mrpt::maps::COccupancyGridMap2D
+      - mrpt::maps::COccupancyGridMap2D
+    - New virtual method mrpt::maps::CMetricMap::boundingBox()
+  - \ref mrpt_core_grp
+    - Add the `[[nodiscard]]` attribute to all functions returning a value in `<mrpt/core/bits_math.h>`
 
 # Version 2.11.2: Released Oct 25th, 2023
 - Changes in libraries:

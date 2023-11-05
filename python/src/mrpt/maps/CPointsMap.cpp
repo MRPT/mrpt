@@ -77,7 +77,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::maps::CPointsMap::TInsertionOptions file:mrpt/maps/CPointsMap.h line:226
+// mrpt::maps::CPointsMap::TInsertionOptions file:mrpt/maps/CPointsMap.h line:228
 struct PyCallBack_mrpt_maps_CPointsMap_TInsertionOptions : public mrpt::maps::CPointsMap::TInsertionOptions {
 	using mrpt::maps::CPointsMap::TInsertionOptions::TInsertionOptions;
 
@@ -109,7 +109,7 @@ struct PyCallBack_mrpt_maps_CPointsMap_TInsertionOptions : public mrpt::maps::CP
 	}
 };
 
-// mrpt::maps::CPointsMap::TLikelihoodOptions file:mrpt/maps/CPointsMap.h line:284
+// mrpt::maps::CPointsMap::TLikelihoodOptions file:mrpt/maps/CPointsMap.h line:286
 struct PyCallBack_mrpt_maps_CPointsMap_TLikelihoodOptions : public mrpt::maps::CPointsMap::TLikelihoodOptions {
 	using mrpt::maps::CPointsMap::TLikelihoodOptions::TLikelihoodOptions;
 
@@ -141,7 +141,7 @@ struct PyCallBack_mrpt_maps_CPointsMap_TLikelihoodOptions : public mrpt::maps::C
 	}
 };
 
-// mrpt::maps::CPointsMap::TRenderOptions file:mrpt/maps/CPointsMap.h line:318
+// mrpt::maps::CPointsMap::TRenderOptions file:mrpt/maps/CPointsMap.h line:320
 struct PyCallBack_mrpt_maps_CPointsMap_TRenderOptions : public mrpt::maps::CPointsMap::TRenderOptions {
 	using mrpt::maps::CPointsMap::TRenderOptions::TRenderOptions;
 
@@ -175,8 +175,8 @@ struct PyCallBack_mrpt_maps_CPointsMap_TRenderOptions : public mrpt::maps::CPoin
 
 void bind_mrpt_maps_CPointsMap(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::maps::CPointsMap file:mrpt/maps/CPointsMap.h line:70
-		pybind11::class_<mrpt::maps::CPointsMap, std::shared_ptr<mrpt::maps::CPointsMap>, mrpt::maps::CMetricMap, mrpt::opengl::PLY_Importer, mrpt::opengl::PLY_Exporter> cl(M("mrpt::maps"), "CPointsMap", "A cloud of points in 2D or 3D, which can be built from a sequence of laser\n scans or other sensors.\n  This is a virtual class, thus only a derived class can be instantiated by\n the user. The user most usually wants to use CSimplePointsMap.\n\n  This class implements generic version of\n mrpt::maps::CMetric::insertObservation() accepting these types of sensory\n data:\n   - mrpt::obs::CObservation2DRangeScan: 2D range scans\n   - mrpt::obs::CObservation3DRangeScan: 3D range scans (Kinect, etc...)\n   - mrpt::obs::CObservationRange: IRs, Sonars, etc.\n   - mrpt::obs::CObservationVelodyneScan\n   - mrpt::obs::CObservationPointCloud\n\n Loading and saving in the standard LAS LiDAR point cloud format is supported\n by installing `libLAS` and including the\n header `<mrpt/maps/CPointsMaps_liblas.h>` in your program. Since MRPT 1.5.0\n there is no need to build MRPT against libLAS to use this feature.\n See LAS functions in \n\n \n CMetricMap, CPoint, CSerializable\n \n\n\n ");
+	{ // mrpt::maps::CPointsMap file:mrpt/maps/CPointsMap.h line:71
+		pybind11::class_<mrpt::maps::CPointsMap, std::shared_ptr<mrpt::maps::CPointsMap>, mrpt::maps::CMetricMap, mrpt::opengl::PLY_Importer, mrpt::opengl::PLY_Exporter, mrpt::maps::NearestNeighborsCapable> cl(M("mrpt::maps"), "CPointsMap", "A cloud of points in 2D or 3D, which can be built from a sequence of laser\n scans or other sensors.\n  This is a virtual class, thus only a derived class can be instantiated by\n the user. The user most usually wants to use CSimplePointsMap.\n\n  This class implements generic version of\n mrpt::maps::CMetric::insertObservation() accepting these types of sensory\n data:\n   - mrpt::obs::CObservation2DRangeScan: 2D range scans\n   - mrpt::obs::CObservation3DRangeScan: 3D range scans (Kinect, etc...)\n   - mrpt::obs::CObservationRange: IRs, Sonars, etc.\n   - mrpt::obs::CObservationVelodyneScan\n   - mrpt::obs::CObservationPointCloud\n\n Loading and saving in the standard LAS LiDAR point cloud format is supported\n by installing `libLAS` and including the\n header `<mrpt/maps/CPointsMaps_liblas.h>` in your program. Since MRPT 1.5.0\n there is no need to build MRPT against libLAS to use this feature.\n See LAS functions in \n\n \n CMetricMap, CPoint, CSerializable\n \n\n\n ");
 		cl.def_readwrite("insertionOptions", &mrpt::maps::CPointsMap::insertionOptions);
 		cl.def_readwrite("likelihoodOptions", &mrpt::maps::CPointsMap::likelihoodOptions);
 		cl.def_readwrite("renderOptions", &mrpt::maps::CPointsMap::renderOptions);
@@ -253,8 +253,10 @@ void bind_mrpt_maps_CPointsMap(std::function< pybind11::module &(std::string con
 		cl.def("kdtree_distance", (float (mrpt::maps::CPointsMap::*)(const float *, size_t, size_t) const) &mrpt::maps::CPointsMap::kdtree_distance, "Returns the distance between the vector \"p1[0:size-1]\" and the data\n point with index \"idx_p2\" stored in the class:\n\nC++: mrpt::maps::CPointsMap::kdtree_distance(const float *, size_t, size_t) const --> float", pybind11::arg("p1"), pybind11::arg("idx_p2"), pybind11::arg("size"));
 		cl.def("mark_as_modified", (void (mrpt::maps::CPointsMap::*)() const) &mrpt::maps::CPointsMap::mark_as_modified, "Users normally don't need to call this. Called by this class or children\n classes, set m_largestDistanceFromOriginIsUpdated=false, invalidates the\n kd-tree cache, and such. \n\nC++: mrpt::maps::CPointsMap::mark_as_modified() const --> void");
 		cl.def("asString", (std::string (mrpt::maps::CPointsMap::*)() const) &mrpt::maps::CPointsMap::asString, "Returns a short description of the map. \n\nC++: mrpt::maps::CPointsMap::asString() const --> std::string");
+		cl.def("nn_single_search", (bool (mrpt::maps::CPointsMap::*)(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &) const) &mrpt::maps::CPointsMap::nn_single_search, "		@{ \n\nC++: mrpt::maps::CPointsMap::nn_single_search(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"));
+		cl.def("nn_single_search", (bool (mrpt::maps::CPointsMap::*)(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &) const) &mrpt::maps::CPointsMap::nn_single_search, "C++: mrpt::maps::CPointsMap::nn_single_search(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"));
 
-		{ // mrpt::maps::CPointsMap::TInsertionOptions file:mrpt/maps/CPointsMap.h line:226
+		{ // mrpt::maps::CPointsMap::TInsertionOptions file:mrpt/maps/CPointsMap.h line:228
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CPointsMap::TInsertionOptions, std::shared_ptr<mrpt::maps::CPointsMap::TInsertionOptions>, PyCallBack_mrpt_maps_CPointsMap_TInsertionOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TInsertionOptions", "With this struct options are provided to the observation insertion\n process.\n \n\n CObservation::insertIntoPointsMap");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CPointsMap::TInsertionOptions(); }, [](){ return new PyCallBack_mrpt_maps_CPointsMap_TInsertionOptions(); } ) );
@@ -275,7 +277,7 @@ void bind_mrpt_maps_CPointsMap(std::function< pybind11::module &(std::string con
 			cl.def("assign", (struct mrpt::maps::CPointsMap::TInsertionOptions & (mrpt::maps::CPointsMap::TInsertionOptions::*)(const struct mrpt::maps::CPointsMap::TInsertionOptions &)) &mrpt::maps::CPointsMap::TInsertionOptions::operator=, "C++: mrpt::maps::CPointsMap::TInsertionOptions::operator=(const struct mrpt::maps::CPointsMap::TInsertionOptions &) --> struct mrpt::maps::CPointsMap::TInsertionOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CPointsMap::TLikelihoodOptions file:mrpt/maps/CPointsMap.h line:284
+		{ // mrpt::maps::CPointsMap::TLikelihoodOptions file:mrpt/maps/CPointsMap.h line:286
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CPointsMap::TLikelihoodOptions, std::shared_ptr<mrpt::maps::CPointsMap::TLikelihoodOptions>, PyCallBack_mrpt_maps_CPointsMap_TLikelihoodOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TLikelihoodOptions", "Options used when evaluating \"computeObservationLikelihood\" in the\n derived classes.\n \n\n CObservation::computeObservationLikelihood");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CPointsMap::TLikelihoodOptions(); }, [](){ return new PyCallBack_mrpt_maps_CPointsMap_TLikelihoodOptions(); } ) );
@@ -290,7 +292,7 @@ void bind_mrpt_maps_CPointsMap(std::function< pybind11::module &(std::string con
 			cl.def("assign", (struct mrpt::maps::CPointsMap::TLikelihoodOptions & (mrpt::maps::CPointsMap::TLikelihoodOptions::*)(const struct mrpt::maps::CPointsMap::TLikelihoodOptions &)) &mrpt::maps::CPointsMap::TLikelihoodOptions::operator=, "C++: mrpt::maps::CPointsMap::TLikelihoodOptions::operator=(const struct mrpt::maps::CPointsMap::TLikelihoodOptions &) --> struct mrpt::maps::CPointsMap::TLikelihoodOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CPointsMap::TRenderOptions file:mrpt/maps/CPointsMap.h line:318
+		{ // mrpt::maps::CPointsMap::TRenderOptions file:mrpt/maps/CPointsMap.h line:320
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CPointsMap::TRenderOptions, std::shared_ptr<mrpt::maps::CPointsMap::TRenderOptions>, PyCallBack_mrpt_maps_CPointsMap_TRenderOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TRenderOptions", "Rendering options, used in getAs3DObject()");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CPointsMap::TRenderOptions(); }, [](){ return new PyCallBack_mrpt_maps_CPointsMap_TRenderOptions(); } ) );

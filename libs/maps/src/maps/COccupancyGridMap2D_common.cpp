@@ -639,8 +639,7 @@ void COccupancyGridMap2D::determineMatching2D(
 			for (int cy = cy_min; cy <= cy_max; cy++)
 			{
 				// Is an occupied cell?
-				if (m_map[cx + cy * m_size_x] <
-					thresholdCellValue)	 //  getCell(cx,cy)<0.49)
+				if (m_map[cx + cy * m_size_x] < thresholdCellValue)
 				{
 					const float residual_x = idx2x(cx) - x_local;
 					const float residual_y = idx2y(cy) - y_local;
@@ -767,4 +766,186 @@ float COccupancyGridMap2D::compute3DMatchingRatio(
 	[[maybe_unused]] const TMatchingRatioParams& params) const
 {
 	return 0;
+}
+
+bool COccupancyGridMap2D::nn_single_search(
+	const mrpt::math::TPoint3Df& query, mrpt::math::TPoint3Df& result,
+	float& out_dist_sqr) const
+{
+	// delegate to the 2D version:
+	mrpt::math::TPoint2Df r;
+	bool res = nn_single_search({query.x, query.y}, r, out_dist_sqr);
+	result = {r.x, r.y, .0f};
+	return res;
+}
+void COccupancyGridMap2D::nn_multiple_search(
+	const mrpt::math::TPoint3Df& query, const size_t N,
+	std::vector<mrpt::math::TPoint3Df>& results,
+	std::vector<float>& out_dists_sqr) const
+{
+	// delegate to the 2D version:
+	std::vector<mrpt::math::TPoint2Df> r;
+	nn_multiple_search({query.x, query.y}, N, r, out_dists_sqr);
+	results.resize(r.size());
+	for (size_t i = 0; i < r.size(); i++)
+		results[i] = {r[i].x, r[i].y, .0f};
+}
+void COccupancyGridMap2D::nn_radius_search(
+	const mrpt::math::TPoint3Df& query, const float search_radius_sqr,
+	std::vector<mrpt::math::TPoint3Df>& results,
+	std::vector<float>& out_dists_sqr) const
+{
+	// delegate to the 2D version:
+	std::vector<mrpt::math::TPoint2Df> r;
+	nn_radius_search({query.x, query.y}, search_radius_sqr, r, out_dists_sqr);
+	results.resize(r.size());
+	for (size_t i = 0; i < r.size(); i++)
+		results[i] = {r[i].x, r[i].y, .0f};
+}
+
+bool COccupancyGridMap2D::nn_single_search(
+	const mrpt::math::TPoint2Df& query, mrpt::math::TPoint2Df& result,
+	float& out_dist_sqr) const
+{
+	std::vector<mrpt::math::TPoint2Df> r;
+	std::vector<float> dist_sqr;
+	nn_multiple_search(query, 1, r, dist_sqr);
+	if (r.empty()) return false;  // none found
+	result = r[0];
+	out_dist_sqr = dist_sqr[0];
+	return true;
+}
+
+void COccupancyGridMap2D::nn_multiple_search(
+	const mrpt::math::TPoint2Df& query, const size_t N,
+	std::vector<mrpt::math::TPoint2Df>& results,
+	std::vector<float>& out_dists_sqr) const
+{
+	results.clear();
+	results.reserve(N);
+	out_dists_sqr.clear();
+	out_dists_sqr.reserve(N);
+
+	int cx_query = x2idx(query.x), cy_query = y2idx(query.y);
+
+	mrpt::saturate<int>(cx_query, 0, getSizeX() - 1);
+	mrpt::saturate<int>(cy_query, 0, getSizeY() - 1);
+
+	const cellType thresholdCellValue = p2l(0.5f);
+	const float resolutionSqr = mrpt::square(m_resolution);
+
+	for (int searchRadiusInCells = 0; results.size() < N &&
+		 searchRadiusInCells < std::max<int>(getSizeX(), getSizeY());
+		 searchRadiusInCells++)
+	{
+		int cx0 = cx_query - searchRadiusInCells;
+		int cx1 = cx_query + searchRadiusInCells;
+		if (cx1 < 0 || cx0 >= static_cast<int>(getSizeX())) continue;
+
+		int cy0 = cy_query - searchRadiusInCells;
+		int cy1 = cy_query + searchRadiusInCells;
+		if (cy1 < 0 || cy0 >= static_cast<int>(getSizeY())) continue;
+
+		mrpt::saturate<int>(cx0, 0, getSizeX() - 1);
+		mrpt::saturate<int>(cy0, 0, getSizeY() - 1);
+		mrpt::saturate<int>(cx1, 0, getSizeX() - 1);
+		mrpt::saturate<int>(cy1, 0, getSizeY() - 1);
+
+		std::map<int, std::pair<int, int>> dists2cells;
+
+		auto lambdaAddCell = [&dists2cells, cx_query, cy_query](
+								 int cx, int cy) {
+			int distSqr =
+				mrpt::square(cx - cx_query) + mrpt::square(cy - cy_query);
+			dists2cells[distSqr] = {cx, cy};
+		};
+
+		for (int cx = cx0; cx <= cx1; cx++)
+		{
+			if (int cy = cy0; m_map[cx + cy * m_size_x] < thresholdCellValue)
+				lambdaAddCell(cx, cy);
+			if (int cy = cy1;
+				cy1 != cy0 && m_map[cx + cy * m_size_x] < thresholdCellValue)
+				lambdaAddCell(cx, cy);
+		}
+		for (int cy = cy0 + 1; cy < cy1; cy++)
+		{
+			if (int cx = cx0; m_map[cx + cy * m_size_x] < thresholdCellValue)
+				lambdaAddCell(cx, cy);
+			if (int cx = cx1; m_map[cx + cy * m_size_x] < thresholdCellValue)
+				lambdaAddCell(cx, cy);
+		}
+
+		// Add the top best "N" neighbors:
+		for (auto it = dists2cells.begin();
+			 it != dists2cells.end() && results.size() < N; ++it)
+		{
+			out_dists_sqr.push_back(it->first * resolutionSqr);
+			results.push_back(
+				{idx2x(it->second.first), idx2y(it->second.second)});
+		}
+	}
+}
+
+void COccupancyGridMap2D::nn_radius_search(
+	const mrpt::math::TPoint2Df& query, const float search_radius_sqr,
+	std::vector<mrpt::math::TPoint2Df>& results,
+	std::vector<float>& out_dists_sqr) const
+{
+	results.clear();
+	out_dists_sqr.clear();
+
+	if (search_radius_sqr == 0) return;
+
+	int cx_query = x2idx(query.x), cy_query = y2idx(query.y);
+
+	const cellType thresholdCellValue = p2l(0.5f);
+	const float resolutionSqr = mrpt::square(m_resolution);
+	const int maxSearchRadiusInCells = static_cast<int>(
+		std::ceil(std::sqrt(search_radius_sqr) / m_resolution));
+	const int maxSearchRadiusSqrInCells = mrpt::square(maxSearchRadiusInCells);
+
+	for (int searchRadiusInCells = 0;
+		 searchRadiusInCells <= maxSearchRadiusInCells; searchRadiusInCells++)
+	{
+		int cx0 = cx_query - searchRadiusInCells;
+		int cx1 = cx_query + searchRadiusInCells;
+		if (cx1 < 0 || cx0 >= static_cast<int>(getSizeX())) continue;
+
+		int cy0 = cy_query - searchRadiusInCells;
+		int cy1 = cy_query + searchRadiusInCells;
+		if (cy1 < 0 || cy0 >= static_cast<int>(getSizeY())) continue;
+
+		mrpt::saturate<int>(cx0, 0, getSizeX() - 1);
+		mrpt::saturate<int>(cy0, 0, getSizeY() - 1);
+		mrpt::saturate<int>(cx1, 0, getSizeX() - 1);
+		mrpt::saturate<int>(cy1, 0, getSizeY() - 1);
+
+		auto lambdaAddCell = [maxSearchRadiusSqrInCells, cx_query, cy_query,
+							  &out_dists_sqr, &results, resolutionSqr,
+							  this](int cx, int cy) {
+			int distSqr =
+				mrpt::square(cx - cx_query) + mrpt::square(cy - cy_query);
+			if (distSqr > maxSearchRadiusSqrInCells) return;
+
+			out_dists_sqr.push_back(distSqr * resolutionSqr);
+			results.push_back({idx2x(cx), idx2y(cy)});
+		};
+
+		for (int cx = cx0; cx <= cx1; cx++)
+		{
+			if (int cy = cy0; m_map[cx + cy * m_size_x] < thresholdCellValue)
+				lambdaAddCell(cx, cy);
+			if (int cy = cy1;
+				cy1 != cy0 && m_map[cx + cy * m_size_x] < thresholdCellValue)
+				lambdaAddCell(cx, cy);
+		}
+		for (int cy = cy0 + 1; cy < cy1; cy++)
+		{
+			if (int cx = cx0; m_map[cx + cy * m_size_x] < thresholdCellValue)
+				lambdaAddCell(cx, cy);
+			if (int cx = cx1; m_map[cx + cy * m_size_x] < thresholdCellValue)
+				lambdaAddCell(cx, cy);
+		}
+	}
 }
