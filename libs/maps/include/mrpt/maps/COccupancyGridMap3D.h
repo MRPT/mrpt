@@ -400,34 +400,34 @@ class COccupancyGridMap3D
 
 	/** @name API of the NearestNeighborsCapable virtual interface
 		@{ */
-	[[nodiscard]] bool nn_supports_indices() const override { return false; }
+	[[nodiscard]] bool nn_has_indices_or_ids() const override { return false; }
 	[[nodiscard]] size_t nn_index_count() const override { return 0; }
 	[[nodiscard]] bool nn_single_search(
 		const mrpt::math::TPoint3Df& query, mrpt::math::TPoint3Df& result,
-		float& out_dist_sqr, std::optional<size_t>& resultIndex) const override;
+		float& out_dist_sqr, uint64_t& resultIndexOrID) const override;
 	[[nodiscard]] bool nn_single_search(
 		const mrpt::math::TPoint2Df& query, mrpt::math::TPoint2Df& result,
-		float& out_dist_sqr, std::optional<size_t>& resultIndex) const override;
+		float& out_dist_sqr, uint64_t& resultIndexOrID) const override;
 	void nn_multiple_search(
 		const mrpt::math::TPoint3Df& query, const size_t N,
 		std::vector<mrpt::math::TPoint3Df>& results,
 		std::vector<float>& out_dists_sqr,
-		std::optional<std::vector<size_t>>& resultIndices) const override;
+		std::vector<uint64_t>& resultIndicesOrIDs) const override;
 	void nn_multiple_search(
 		const mrpt::math::TPoint2Df& query, const size_t N,
 		std::vector<mrpt::math::TPoint2Df>& results,
 		std::vector<float>& out_dists_sqr,
-		std::optional<std::vector<size_t>>& resultIndices) const override;
+		std::vector<uint64_t>& resultIndicesOrIDs) const override;
 	void nn_radius_search(
 		const mrpt::math::TPoint3Df& query, const float search_radius_sqr,
 		std::vector<mrpt::math::TPoint3Df>& results,
 		std::vector<float>& out_dists_sqr,
-		std::optional<std::vector<size_t>>& resultIndices) const override;
+		std::vector<uint64_t>& resultIndicesOrIDs) const override;
 	void nn_radius_search(
 		const mrpt::math::TPoint2Df& query, const float search_radius_sqr,
 		std::vector<mrpt::math::TPoint2Df>& results,
 		std::vector<float>& out_dists_sqr,
-		std::optional<std::vector<size_t>>& resultIndices) const override;
+		std::vector<uint64_t>& resultIndicesOrIDs) const override;
 	/** @} */
 
    private:
