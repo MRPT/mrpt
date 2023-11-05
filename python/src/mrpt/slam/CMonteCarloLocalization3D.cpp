@@ -16,6 +16,7 @@
 #include <mrpt/math/CProbabilityDensityFunction.h>
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/math/CVectorDynamic.h>
+#include <mrpt/math/TBoundingBox.h>
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TPose2D.h>

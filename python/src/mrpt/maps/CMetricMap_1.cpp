@@ -12,6 +12,7 @@
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CQuaternion.h>
+#include <mrpt/math/TBoundingBox.h>
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TPose2D.h>
@@ -54,13 +55,14 @@
 
 void bind_mrpt_maps_CMetricMap_1(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::maps::CMetricMap file:mrpt/maps/CMetricMap.h line:71
+	{ // mrpt::maps::CMetricMap file:mrpt/maps/CMetricMap.h line:72
 		pybind11::class_<mrpt::maps::CMetricMap, std::shared_ptr<mrpt::maps::CMetricMap>, mrpt::serialization::CSerializable, mrpt::system::CObservable, mrpt::Stringifyable, mrpt::opengl::Visualizable> cl(M("mrpt::maps"), "CMetricMap", "Declares a virtual base class for all metric maps storage classes.\n  In this class virtual methods are provided to allow the insertion\n  of any type of \"CObservation\" objects into the metric map, thus\n  updating the map (doesn't matter if it is a 2D/3D grid, a point map, etc.).\n\n  Observations don't include any information about the\n  robot pose, just the raw observation and information about\n  the sensor pose relative to the robot mobile base coordinates origin.\n\n  Note that all metric maps implement this mrpt::system::CObservable\ninterface,\n   emitting the following events:\n	  - mrpt::obs::mrptEventMetricMapClear: Upon call of the ::clear() method.\n    - mrpt::obs::mrptEventMetricMapInsert: Upon insertion of an observation\nthat effectively modifies the map (e.g. inserting an image into a grid map\nwill NOT raise an event, inserting a laser scan will).\n\n To check what observations are supported by each metric map, see\n \n\n \n All derived class must implement a static class factory\n`<metric_map_class>::MapDefinition()` that builds a default\nTMetricMapInitializer\n\n \n CObservation, CSensoryFrame, CMultiMetricMap\n \n\n\n ");
 		cl.def_readwrite("genericMapParams", &mrpt::maps::CMetricMap::genericMapParams);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::maps::CMetricMap::*)() const) &mrpt::maps::CMetricMap::GetRuntimeClass, "C++: mrpt::maps::CMetricMap::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::maps::CMetricMap::GetRuntimeClassIdStatic, "C++: mrpt::maps::CMetricMap::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("clear", (void (mrpt::maps::CMetricMap::*)()) &mrpt::maps::CMetricMap::clear, "Erase all the contents of the map \n\nC++: mrpt::maps::CMetricMap::clear() --> void");
 		cl.def("isEmpty", (bool (mrpt::maps::CMetricMap::*)() const) &mrpt::maps::CMetricMap::isEmpty, "Returns true if the map is empty/no observation has been inserted.\n\nC++: mrpt::maps::CMetricMap::isEmpty() const --> bool");
+		cl.def("boundingBox", (struct mrpt::math::TBoundingBox_<float> (mrpt::maps::CMetricMap::*)() const) &mrpt::maps::CMetricMap::boundingBox, "Returns the bounding box of the metric map, or (0,0,0)-(0,0,0) (the\n default value of mrpt::math::TBoundingBoxf() if not implemented in the\n derived class or the map is empty.\n\nC++: mrpt::maps::CMetricMap::boundingBox() const --> struct mrpt::math::TBoundingBox_<float>");
 		cl.def("loadFromProbabilisticPosesAndObservations", (void (mrpt::maps::CMetricMap::*)(const class mrpt::maps::CSimpleMap &)) &mrpt::maps::CMetricMap::loadFromProbabilisticPosesAndObservations, "Load the map contents from a CSimpleMap object, erasing all previous\n content of the map. This is done invoking `insertObservation()` for each\n observation at the mean 3D robot pose of each pose-observations pair in\n the CSimpleMap object.\n\n \n insertObservation, CSimpleMap\n \n\n std::exception Some internal steps in invoked methods can\n raise exceptions on invalid parameters, etc...\n\nC++: mrpt::maps::CMetricMap::loadFromProbabilisticPosesAndObservations(const class mrpt::maps::CSimpleMap &) --> void", pybind11::arg("Map"));
 		cl.def("loadFromSimpleMap", (void (mrpt::maps::CMetricMap::*)(const class mrpt::maps::CSimpleMap &)) &mrpt::maps::CMetricMap::loadFromSimpleMap, "! \n\nC++: mrpt::maps::CMetricMap::loadFromSimpleMap(const class mrpt::maps::CSimpleMap &) --> void", pybind11::arg("Map"));
 		cl.def("insertObs", [](mrpt::maps::CMetricMap &o, const class mrpt::obs::CObservation & a0) -> bool { return o.insertObs(a0); }, "", pybind11::arg("obs"));
