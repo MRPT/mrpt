@@ -347,7 +347,7 @@ class CVoxelMapOccupancyBase : public CVoxelMapBase<voxel_node_t>,
 
 	void updateCachedProperties() const;
 	mutable mrpt::maps::CSimplePointsMap::Ptr m_cachedOccupied;
-	mutable mrpt::math::TBoundingBoxf m_bbox;
+	mutable mrpt::math::TBoundingBox m_bbox;
 };
 
 // ============= Implementations ===============
@@ -676,7 +676,7 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::updateCachedProperties()
 	if (m_cachedOccupied) return;  // done
 
 	m_cachedOccupied = mrpt::maps::CSimplePointsMap::Create();
-	m_bbox = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
+	m_bbox = mrpt::math::TBoundingBox::PlusMinusInfinity();
 
 	// forEachCell() has no const version
 	auto& grid =
@@ -704,7 +704,7 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::updateCachedProperties()
 	grid.forEachCell(lmbdPerVoxel);
 
 	// If no cell is active, use default bbox:
-	if (m_bbox == mrpt::math::TBoundingBoxf::PlusMinusInfinity()) m_bbox = {};
+	if (m_bbox == mrpt::math::TBoundingBox::PlusMinusInfinity()) m_bbox = {};
 }
 
 template <typename voxel_node_t, typename occupancy_t>
@@ -720,7 +720,7 @@ mrpt::math::TBoundingBoxf
 	CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::boundingBox() const
 {
 	updateCachedProperties();
-	return m_bbox;
+	return {m_bbox.min.cast<float>(), m_bbox.max.cast<float>()};
 }
 
 }  // namespace mrpt::maps
