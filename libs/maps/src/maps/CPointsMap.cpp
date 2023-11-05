@@ -2102,7 +2102,7 @@ void CPointsMap::loadFromVelodyneScan(
 // See docs in base class
 bool CPointsMap::nn_single_search(
 	const mrpt::math::TPoint3Df& query, mrpt::math::TPoint3Df& result,
-	float& out_dist_sqr) const
+	float& out_dist_sqr, std::optional<size_t>& resultIndex) const
 {
 	try
 	{
@@ -2119,7 +2119,7 @@ bool CPointsMap::nn_single_search(
 }
 bool CPointsMap::nn_single_search(
 	const mrpt::math::TPoint2Df& query, mrpt::math::TPoint2Df& result,
-	float& out_dist_sqr) const
+	float& out_dist_sqr, std::optional<size_t>& resultIndex) const
 {
 	try
 	{
@@ -2136,7 +2136,8 @@ bool CPointsMap::nn_single_search(
 void CPointsMap::nn_multiple_search(
 	const mrpt::math::TPoint3Df& query, const size_t N,
 	std::vector<mrpt::math::TPoint3Df>& results,
-	std::vector<float>& out_dists_sqr) const
+	std::vector<float>& out_dists_sqr,
+	std::optional<std::vector<size_t>>& resultIndices) const
 {
 	std::vector<size_t> idxs;
 	kdTreeNClosestPoint3DIdx(query.x, query.y, query.z, N, idxs, out_dists_sqr);
@@ -2147,7 +2148,8 @@ void CPointsMap::nn_multiple_search(
 void CPointsMap::nn_multiple_search(
 	const mrpt::math::TPoint2Df& query, const size_t N,
 	std::vector<mrpt::math::TPoint2Df>& results,
-	std::vector<float>& out_dists_sqr) const
+	std::vector<float>& out_dists_sqr,
+	std::optional<std::vector<size_t>>& resultIndices) const
 {
 	std::vector<size_t> idxs;
 	kdTreeNClosestPoint2DIdx(query.x, query.y, N, idxs, out_dists_sqr);
@@ -2159,7 +2161,8 @@ void CPointsMap::nn_multiple_search(
 void CPointsMap::nn_radius_search(
 	const mrpt::math::TPoint3Df& query, const float search_radius_sqr,
 	std::vector<mrpt::math::TPoint3Df>& results,
-	std::vector<float>& out_dists_sqr) const
+	std::vector<float>& out_dists_sqr,
+	std::optional<std::vector<size_t>>& resultIndices) const
 {
 	std::vector<nanoflann::ResultItem<size_t, float>> indices_dist;
 	kdTreeRadiusSearch3D(
@@ -2177,7 +2180,8 @@ void CPointsMap::nn_radius_search(
 void CPointsMap::nn_radius_search(
 	const mrpt::math::TPoint2Df& query, const float search_radius_sqr,
 	std::vector<mrpt::math::TPoint2Df>& results,
-	std::vector<float>& out_dists_sqr) const
+	std::vector<float>& out_dists_sqr,
+	std::optional<std::vector<size_t>>& resultIndices) const
 {
 	std::vector<nanoflann::ResultItem<size_t, float>> indices_dist;
 	kdTreeRadiusSearch2D(query.x, query.y, search_radius_sqr, indices_dist);

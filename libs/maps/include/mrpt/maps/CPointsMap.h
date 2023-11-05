@@ -1128,29 +1128,36 @@ class CPointsMap : public CMetricMap,
 
 	/** @name API of the NearestNeighborsCapable virtual interface
 		@{ */
-	// See docs in base class
+	[[nodiscard]] virtual bool nn_supports_indices() const override
+	{
+		return true;
+	}
 	[[nodiscard]] bool nn_single_search(
 		const mrpt::math::TPoint3Df& query, mrpt::math::TPoint3Df& result,
-		float& out_dist_sqr) const override;
+		float& out_dist_sqr, std::optional<size_t>& resultIndex) const override;
 	[[nodiscard]] bool nn_single_search(
 		const mrpt::math::TPoint2Df& query, mrpt::math::TPoint2Df& result,
-		float& out_dist_sqr) const override;
+		float& out_dist_sqr, std::optional<size_t>& resultIndex) const override;
 	void nn_multiple_search(
 		const mrpt::math::TPoint3Df& query, const size_t N,
 		std::vector<mrpt::math::TPoint3Df>& results,
-		std::vector<float>& out_dists_sqr) const override;
+		std::vector<float>& out_dists_sqr,
+		std::optional<std::vector<size_t>>& resultIndices) const override;
 	void nn_multiple_search(
 		const mrpt::math::TPoint2Df& query, const size_t N,
 		std::vector<mrpt::math::TPoint2Df>& results,
-		std::vector<float>& out_dists_sqr) const override;
+		std::vector<float>& out_dists_sqr,
+		std::optional<std::vector<size_t>>& resultIndices) const override;
 	void nn_radius_search(
 		const mrpt::math::TPoint3Df& query, const float search_radius_sqr,
 		std::vector<mrpt::math::TPoint3Df>& results,
-		std::vector<float>& out_dists_sqr) const override;
+		std::vector<float>& out_dists_sqr,
+		std::optional<std::vector<size_t>>& resultIndices) const override;
 	void nn_radius_search(
 		const mrpt::math::TPoint2Df& query, const float search_radius_sqr,
 		std::vector<mrpt::math::TPoint2Df>& results,
-		std::vector<float>& out_dists_sqr) const override;
+		std::vector<float>& out_dists_sqr,
+		std::optional<std::vector<size_t>>& resultIndices) const override;
 	/** @} */
 
    protected:
