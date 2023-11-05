@@ -11,8 +11,6 @@
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoint3D.h>
 
-#include <optional>
-
 namespace mrpt::maps
 {
 /** Virtual interface for maps having the capability of searching the closest
@@ -34,13 +32,16 @@ class NearestNeighborsCapable
 	/** @name API of the NearestNeighborsCapable virtual interface
 		@{ */
 
-	/** Returns true if the rest of `nn_*` methods will populate the indices
-	 * std::optional<> return variables, false otherwise. */
-	[[nodiscard]] virtual bool nn_supports_indices() const = 0;
+	/** Returns true if the rest of `nn_*` methods will populate the output
+	 * indices values with 0-based contiguous **indices**.
+	 * Returns false if indices are actually sparse **ID numbers** without any
+	 * expectation of they be contiguous or start near zero.
+	 */
+	[[nodiscard]] virtual bool nn_has_indices_or_ids() const = 0;
 
-	/** If nn_supports_indices() returns `true`, this must return the number of
-	 * "points" (or whatever entity) the indices correspond to. Otherwise, the
-	 * return value should be ignored.
+	/** If nn_has_indices_or_ids() returns `true`, this must return the number
+	 * of "points" (or whatever entity) the indices correspond to. Otherwise,
+	 * the return value should be ignored.
 	 */
 	[[nodiscard]] virtual size_t nn_index_count() const = 0;
 
@@ -50,20 +51,19 @@ class NearestNeighborsCapable
 	 * \param[out] result The found closest point.
 	 * \param[out] out_dist_sqr The square Euclidean distance between the query
 	 * and the returned point.
-	 * \param[out] resultIndex Depending on the implementation, here it will be
-	 * returned the index of the result point in the map, or std::nullopt if
-	 * indices are not available.
+	 * \param[out] resultIndexOrID The index or ID of the result point in the
+	 * map.
 	 *
 	 * \return True if successful, false if no point was found.
 	 */
 	[[nodiscard]] virtual bool nn_single_search(
 		const mrpt::math::TPoint3Df& query, mrpt::math::TPoint3Df& result,
-		float& out_dist_sqr, std::optional<size_t>& resultIndex) const = 0;
+		float& out_dist_sqr, uint64_t& resultIndexOrIDOrID) const = 0;
 
 	/// \overload for 2D points
 	[[nodiscard]] virtual bool nn_single_search(
 		const mrpt::math::TPoint2Df& query, mrpt::math::TPoint2Df& result,
-		float& out_dist_sqr, std::optional<size_t>& resultIndex) const = 0;
+		float& out_dist_sqr, uint64_t& resultIndexOrIDOrID) const = 0;
 
 	/** Search for the `N` closest 3D points to a given one.
 	 *
@@ -71,23 +71,21 @@ class NearestNeighborsCapable
 	 * \param[out] results The found closest points.
 	 * \param[out] out_dists_sqr The square Euclidean distances between the
 	 * query and the returned point.
-	 * \param[out] resultIndices Depending on the implementation, here it will
-	 * be returned the indices of the result points in the map, or std::nullopt
-	 * if indices are not available.
+	 * \param[out] resultIndicesOrIDs The indices or IDs of the result points.
 	 *
 	 */
 	virtual void nn_multiple_search(
 		const mrpt::math::TPoint3Df& query, const size_t N,
 		std::vector<mrpt::math::TPoint3Df>& results,
 		std::vector<float>& out_dists_sqr,
-		std::optional<std::vector<size_t>>& resultIndices) const = 0;
+		std::vector<uint64_t>& resultIndicesOrIDs) const = 0;
 
 	/// \overload for 2D points
 	virtual void nn_multiple_search(
 		const mrpt::math::TPoint2Df& query, const size_t N,
 		std::vector<mrpt::math::TPoint2Df>& results,
 		std::vector<float>& out_dists_sqr,
-		std::optional<std::vector<size_t>>& resultIndices) const = 0;
+		std::vector<uint64_t>& resultIndicesOrIDs) const = 0;
 
 	/** Radius search for closest 3D points to a given one.
 	 *
@@ -96,22 +94,20 @@ class NearestNeighborsCapable
 	 * \param[out] results The found closest points.
 	 * \param[out] out_dists_sqr The square Euclidean distances between the
 	 * query and the returned point.
-	 * \param[out] resultIndices Depending on the implementation, here it will
-	 * be returned the indices of the result points in the map, or std::nullopt
-	 * if indices are not available.
+	 * \param[out] resultIndicesOrIDs The indices or IDs of the result points.
 	 */
 	virtual void nn_radius_search(
 		const mrpt::math::TPoint3Df& query, const float search_radius_sqr,
 		std::vector<mrpt::math::TPoint3Df>& results,
 		std::vector<float>& out_dists_sqr,
-		std::optional<std::vector<size_t>>& resultIndices) const = 0;
+		std::vector<uint64_t>& resultIndicesOrIDs) const = 0;
 
 	/// \overload for 2D points
 	virtual void nn_radius_search(
 		const mrpt::math::TPoint2Df& query, const float search_radius_sqr,
 		std::vector<mrpt::math::TPoint2Df>& results,
 		std::vector<float>& out_dists_sqr,
-		std::optional<std::vector<size_t>>& resultIndices) const = 0;
+		std::vector<uint64_t>& resultIndicesOrIDs) const = 0;
 
 	/** @} */
 };

@@ -53,7 +53,7 @@ TEST(COccupancyGridMap2DTests, NearestNeighborsCapable)
 
 	{
 		mrpt::math::TPoint2Df result;
-		std::optional<size_t> resultIndex;
+		uint64_t resultIndex;
 		float out_dist_sqr = 0;
 		bool found = nn.nn_single_search(
 			{0.90f, 1.95f}, result, out_dist_sqr, resultIndex);
@@ -61,12 +61,11 @@ TEST(COccupancyGridMap2DTests, NearestNeighborsCapable)
 		EXPECT_NEAR(result.x, 1.0f, resolution);
 		EXPECT_NEAR(result.y, 2.0f, resolution);
 		EXPECT_NEAR(std::sqrt(out_dist_sqr), 0.15f, resolution);
-		EXPECT_EQ(resultIndex.has_value(), nn.nn_supports_indices());
 	}
 	{
 		mrpt::math::TPoint2Df result;
 		float out_dist_sqr = 0;
-		std::optional<size_t> resultIndex;
+		uint64_t resultIndex;
 		bool found = nn.nn_single_search(
 			{-4.0f, 2.1f}, result, out_dist_sqr, resultIndex);
 		EXPECT_TRUE(found);
@@ -78,12 +77,13 @@ TEST(COccupancyGridMap2DTests, NearestNeighborsCapable)
 	{
 		std::vector<mrpt::math::TPoint2Df> results;
 		std::vector<float> out_dists_sqr;
-		std::optional<std::vector<size_t>> resultIndices;
+		std::vector<uint64_t> resultIndices;
 		nn.nn_multiple_search(
 			{-2.0f, 5.0f}, 2, results, out_dists_sqr, resultIndices);
 
 		EXPECT_EQ(results.size(), 2UL);
 		EXPECT_EQ(out_dists_sqr.size(), results.size());
+		EXPECT_EQ(resultIndices.size(), results.size());
 
 		EXPECT_NEAR(results.at(0).x, 1.0f, resolution);
 		EXPECT_NEAR(results.at(0).y, 2.0f, resolution);
@@ -100,7 +100,7 @@ TEST(COccupancyGridMap2DTests, NearestNeighborsCapable)
 	{
 		std::vector<mrpt::math::TPoint2Df> results;
 		std::vector<float> out_dists_sqr;
-		std::optional<std::vector<size_t>> resultIndices;
+		std::vector<uint64_t> resultIndices;
 		nn.nn_radius_search(
 			{-2.0f, 5.0f}, mrpt::square(10.0f), results, out_dists_sqr,
 			resultIndices);
@@ -117,7 +117,7 @@ TEST(COccupancyGridMap2DTests, NearestNeighborsCapable)
 	{
 		std::vector<mrpt::math::TPoint2Df> results;
 		std::vector<float> out_dists_sqr;
-		std::optional<std::vector<size_t>> resultIndices;
+		std::vector<uint64_t> resultIndices;
 		nn.nn_radius_search(
 			{0.9f, 1.9f}, mrpt::square(1.0f), results, out_dists_sqr,
 			resultIndices);
@@ -128,7 +128,7 @@ TEST(COccupancyGridMap2DTests, NearestNeighborsCapable)
 	{
 		std::vector<mrpt::math::TPoint2Df> results;
 		std::vector<float> out_dists_sqr;
-		std::optional<std::vector<size_t>> resultIndices;
+		std::vector<uint64_t> resultIndices;
 		nn.nn_radius_search(
 			{0.5f, 1.5f}, mrpt::square(0.5f), results, out_dists_sqr,
 			resultIndices);

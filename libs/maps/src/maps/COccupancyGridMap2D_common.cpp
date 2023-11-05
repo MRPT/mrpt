@@ -770,12 +770,12 @@ float COccupancyGridMap2D::compute3DMatchingRatio(
 
 bool COccupancyGridMap2D::nn_single_search(
 	const mrpt::math::TPoint3Df& query, mrpt::math::TPoint3Df& result,
-	float& out_dist_sqr, std::optional<size_t>& resultIndex) const
+	float& out_dist_sqr, uint64_t& resultIndexOrID) const
 {
 	// delegate to the 2D version:
 	mrpt::math::TPoint2Df r;
 	bool res =
-		nn_single_search({query.x, query.y}, r, out_dist_sqr, resultIndex);
+		nn_single_search({query.x, query.y}, r, out_dist_sqr, resultIndexOrID);
 	result = {r.x, r.y, .0f};
 	return res;
 }
@@ -783,11 +783,12 @@ void COccupancyGridMap2D::nn_multiple_search(
 	const mrpt::math::TPoint3Df& query, const size_t N,
 	std::vector<mrpt::math::TPoint3Df>& results,
 	std::vector<float>& out_dists_sqr,
-	std::optional<std::vector<size_t>>& resultIndices) const
+	std::vector<uint64_t>& resultIndicesOrIDs) const
 {
 	// delegate to the 2D version:
 	std::vector<mrpt::math::TPoint2Df> r;
-	nn_multiple_search({query.x, query.y}, N, r, out_dists_sqr, resultIndices);
+	nn_multiple_search(
+		{query.x, query.y}, N, r, out_dists_sqr, resultIndicesOrIDs);
 	results.resize(r.size());
 	for (size_t i = 0; i < r.size(); i++)
 		results[i] = {r[i].x, r[i].y, .0f};
@@ -796,12 +797,13 @@ void COccupancyGridMap2D::nn_radius_search(
 	const mrpt::math::TPoint3Df& query, const float search_radius_sqr,
 	std::vector<mrpt::math::TPoint3Df>& results,
 	std::vector<float>& out_dists_sqr,
-	std::optional<std::vector<size_t>>& resultIndices) const
+	std::vector<uint64_t>& resultIndicesOrIDs) const
 {
 	// delegate to the 2D version:
 	std::vector<mrpt::math::TPoint2Df> r;
 	nn_radius_search(
-		{query.x, query.y}, search_radius_sqr, r, out_dists_sqr, resultIndices);
+		{query.x, query.y}, search_radius_sqr, r, out_dists_sqr,
+		resultIndicesOrIDs);
 	results.resize(r.size());
 	for (size_t i = 0; i < r.size(); i++)
 		results[i] = {r[i].x, r[i].y, .0f};
@@ -809,16 +811,16 @@ void COccupancyGridMap2D::nn_radius_search(
 
 bool COccupancyGridMap2D::nn_single_search(
 	const mrpt::math::TPoint2Df& query, mrpt::math::TPoint2Df& result,
-	float& out_dist_sqr, std::optional<size_t>& resultIndex) const
+	float& out_dist_sqr, uint64_t& resultIndexOrID) const
 {
 	std::vector<mrpt::math::TPoint2Df> r;
 	std::vector<float> dist_sqr;
-	std::optional<std::vector<size_t>> resultIndices;
-	resultIndex.reset();  // not supported in gridmaps
+	std::vector<uint64_t> resultIndices;
 	nn_multiple_search(query, 1, r, dist_sqr, resultIndices);
 	if (r.empty()) return false;  // none found
 	result = r[0];
 	out_dist_sqr = dist_sqr[0];
+	resultIndexOrID = resultIndices[0];
 	return true;
 }
 
@@ -826,12 +828,14 @@ void COccupancyGridMap2D::nn_multiple_search(
 	const mrpt::math::TPoint2Df& query, const size_t N,
 	std::vector<mrpt::math::TPoint2Df>& results,
 	std::vector<float>& out_dists_sqr,
-	std::optional<std::vector<size_t>>& resultIndices) const
+	std::vector<uint64_t>& resultIndicesOrIDs) const
 {
 	results.clear();
 	results.reserve(N);
 	out_dists_sqr.clear();
 	out_dists_sqr.reserve(N);
+	resultIndicesOrIDs.clear();
+	resultIndicesOrIDs.reserve(N);
 
 	int cx_query = x2idx(query.x), cy_query = y2idx(query.y);
 
@@ -887,9 +891,11 @@ void COccupancyGridMap2D::nn_multiple_search(
 		for (auto it = dists2cells.begin();
 			 it != dists2cells.end() && results.size() < N; ++it)
 		{
+			const int cx = it->second.first;
+			const int cy = it->second.second;
 			out_dists_sqr.push_back(it->first * resolutionSqr);
-			results.push_back(
-				{idx2x(it->second.first), idx2y(it->second.second)});
+			results.push_back({idx2x(cx), idx2y(cy)});
+			resultIndicesOrIDs.push_back(cx + cy * m_size_x);
 		}
 	}
 }
@@ -898,10 +904,11 @@ void COccupancyGridMap2D::nn_radius_search(
 	const mrpt::math::TPoint2Df& query, const float search_radius_sqr,
 	std::vector<mrpt::math::TPoint2Df>& results,
 	std::vector<float>& out_dists_sqr,
-	std::optional<std::vector<size_t>>& resultIndices) const
+	std::vector<uint64_t>& resultIndicesOrIDs) const
 {
 	results.clear();
 	out_dists_sqr.clear();
+	resultIndicesOrIDs.clear();
 
 	if (search_radius_sqr == 0) return;
 
@@ -931,13 +938,14 @@ void COccupancyGridMap2D::nn_radius_search(
 
 		auto lambdaAddCell = [maxSearchRadiusSqrInCells, cx_query, cy_query,
 							  &out_dists_sqr, &results, resolutionSqr,
-							  this](int cx, int cy) {
+							  &resultIndicesOrIDs, this](int cx, int cy) {
 			int distSqr =
 				mrpt::square(cx - cx_query) + mrpt::square(cy - cy_query);
 			if (distSqr > maxSearchRadiusSqrInCells) return;
 
 			out_dists_sqr.push_back(distSqr * resolutionSqr);
 			results.push_back({idx2x(cx), idx2y(cy)});
+			resultIndicesOrIDs.push_back(cx + cy * m_size_x);
 		};
 
 		for (int cx = cx0; cx <= cx1; cx++)
