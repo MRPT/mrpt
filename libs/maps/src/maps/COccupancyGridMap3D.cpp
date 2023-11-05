@@ -490,3 +490,226 @@ void COccupancyGridMap3D::saveMetricMapRepresentationToFile(
 	const auto fil = filNamePrefix + ".txt";
 	// todo
 }
+
+bool COccupancyGridMap3D::nn_single_search(
+	const mrpt::math::TPoint2Df& query, mrpt::math::TPoint2Df& result,
+	float& out_dist_sqr) const
+{
+	THROW_EXCEPTION("Cannot run a 2D search on a 3D gridmap");
+}
+void COccupancyGridMap3D::nn_multiple_search(
+	const mrpt::math::TPoint2Df& query, const size_t N,
+	std::vector<mrpt::math::TPoint2Df>& results,
+	std::vector<float>& out_dists_sqr) const
+{
+	THROW_EXCEPTION("Cannot run a 2D search on a 3D gridmap");
+}
+void COccupancyGridMap3D::nn_radius_search(
+	const mrpt::math::TPoint2Df& query, const float search_radius_sqr,
+	std::vector<mrpt::math::TPoint2Df>& results,
+	std::vector<float>& out_dists_sqr) const
+{
+	THROW_EXCEPTION("Cannot run a 2D search on a 3D gridmap");
+}
+
+bool COccupancyGridMap3D::nn_single_search(
+	const mrpt::math::TPoint3Df& query, mrpt::math::TPoint3Df& result,
+	float& out_dist_sqr) const
+{
+	std::vector<mrpt::math::TPoint3Df> r;
+	std::vector<float> dist_sqr;
+	nn_multiple_search(query, 1, r, dist_sqr);
+	if (r.empty()) return false;  // none found
+	result = r[0];
+	out_dist_sqr = dist_sqr[0];
+	return true;
+}
+
+void COccupancyGridMap3D::nn_multiple_search(
+	const mrpt::math::TPoint3Df& query, const size_t N,
+	std::vector<mrpt::math::TPoint3Df>& results,
+	std::vector<float>& out_dists_sqr) const
+{
+	results.clear();
+	results.reserve(N);
+	out_dists_sqr.clear();
+	out_dists_sqr.reserve(N);
+
+	int cx_query = m_grid.x2idx(query.x), cy_query = m_grid.y2idx(query.y),
+		cz_query = m_grid.z2idx(query.z);
+
+	const int sizeX = static_cast<int>(m_grid.getSizeX());
+	const int sizeY = static_cast<int>(m_grid.getSizeY());
+	const int sizeZ = static_cast<int>(m_grid.getSizeZ());
+
+	mrpt::saturate<int>(cx_query, 0, sizeX - 1);
+	mrpt::saturate<int>(cy_query, 0, sizeY - 1);
+	mrpt::saturate<int>(cz_query, 0, sizeZ - 1);
+
+	const voxelType thresholdCellValue = p2l(0.5f);
+	const float resolutionSqr = mrpt::square(m_grid.getResolutionXY());
+
+	for (int searchRadiusInCells = 0;
+		 results.size() < N && searchRadiusInCells < std::max(sizeX, sizeY);
+		 searchRadiusInCells++)
+	{
+		int cx0 = cx_query - searchRadiusInCells;
+		int cx1 = cx_query + searchRadiusInCells;
+		if (cx1 < 0 || cx0 >= sizeX) continue;
+
+		int cy0 = cy_query - searchRadiusInCells;
+		int cy1 = cy_query + searchRadiusInCells;
+		if (cy1 < 0 || cy0 >= sizeY) continue;
+
+		int cz0 = cz_query - searchRadiusInCells;
+		int cz1 = cz_query + searchRadiusInCells;
+		if (cz1 < 0 || cz0 >= sizeZ) continue;
+
+		mrpt::saturate<int>(cx0, 0, sizeX - 1);
+		mrpt::saturate<int>(cy0, 0, sizeY - 1);
+		mrpt::saturate<int>(cz0, 0, sizeZ - 1);
+		mrpt::saturate<int>(cx1, 0, sizeX - 1);
+		mrpt::saturate<int>(cy1, 0, sizeY - 1);
+		mrpt::saturate<int>(cz1, 0, sizeZ - 1);
+
+		std::map<int, std::array<int, 3>> dists2cells;
+
+		auto lambdaAddCell = [&dists2cells, cx_query, cy_query, cz_query](
+								 int cx, int cy, int cz) {
+			int distSqr = mrpt::square(cx - cx_query) +
+				mrpt::square(cy - cy_query) + mrpt::square(cz - cz_query);
+			dists2cells[distSqr] = {cx, cy, cz};
+		};
+
+		for (int cx = cx0; cx <= cx1; cx++)
+		{
+			for (int cz = cz0; cz <= cz1; cz++)
+			{
+				int cy = cy0;
+				if (auto* c = m_grid.cellByIndex(cx, cy, cz);
+					c && *c < thresholdCellValue)
+					lambdaAddCell(cx, cy, cz);
+				cy = cy1;
+				if (auto* c = m_grid.cellByIndex(cx, cy, cz);
+					c && *c < thresholdCellValue)
+					lambdaAddCell(cx, cy, cz);
+			}
+		}
+		for (int cy = cy0 + 1; cy < cy1; cy++)
+		{
+			for (int cz = cz0; cz <= cz1; cz++)
+			{
+				int cx = cx0;
+				if (auto* c = m_grid.cellByIndex(cx, cy, cz);
+					c && *c < thresholdCellValue)
+					lambdaAddCell(cx, cy, cz);
+				cx = cx1;
+				if (auto* c = m_grid.cellByIndex(cx, cy, cz);
+					c && *c < thresholdCellValue)
+					lambdaAddCell(cx, cy, cz);
+			}
+		}
+
+		// Add the top best "N" neighbors:
+		for (auto it = dists2cells.begin();
+			 it != dists2cells.end() && results.size() < N; ++it)
+		{
+			out_dists_sqr.push_back(it->first * resolutionSqr);
+			results.push_back(mrpt::math::TPoint3Df(
+				m_grid.idx2x(it->second[0]), m_grid.idx2y(it->second[1]),
+				m_grid.idx2z(it->second[2])));
+		}
+	}
+}
+
+void COccupancyGridMap3D::nn_radius_search(
+	const mrpt::math::TPoint3Df& query, const float search_radius_sqr,
+	std::vector<mrpt::math::TPoint3Df>& results,
+	std::vector<float>& out_dists_sqr) const
+{
+	results.clear();
+	out_dists_sqr.clear();
+
+	if (search_radius_sqr == 0) return;
+
+	int cx_query = m_grid.x2idx(query.x), cy_query = m_grid.y2idx(query.y),
+		cz_query = m_grid.z2idx(query.z);
+
+	const int sizeX = static_cast<int>(m_grid.getSizeX());
+	const int sizeY = static_cast<int>(m_grid.getSizeY());
+	const int sizeZ = static_cast<int>(m_grid.getSizeZ());
+
+	mrpt::saturate<int>(cx_query, 0, sizeX - 1);
+	mrpt::saturate<int>(cy_query, 0, sizeY - 1);
+	mrpt::saturate<int>(cz_query, 0, sizeZ - 1);
+
+	const voxelType thresholdCellValue = p2l(0.5f);
+	const float resolutionSqr = mrpt::square(m_grid.getResolutionXY());
+	const int maxSearchRadiusInCells = static_cast<int>(
+		std::ceil(std::sqrt(search_radius_sqr) / m_grid.getResolutionXY()));
+	const int maxSearchRadiusSqrInCells = mrpt::square(maxSearchRadiusInCells);
+
+	for (int searchRadiusInCells = 0;
+		 searchRadiusInCells <= maxSearchRadiusInCells; searchRadiusInCells++)
+	{
+		int cx0 = cx_query - searchRadiusInCells;
+		int cx1 = cx_query + searchRadiusInCells;
+		if (cx1 < 0 || cx0 >= sizeX) continue;
+
+		int cy0 = cy_query - searchRadiusInCells;
+		int cy1 = cy_query + searchRadiusInCells;
+		if (cy1 < 0 || cy0 >= sizeY) continue;
+
+		int cz0 = cz_query - searchRadiusInCells;
+		int cz1 = cz_query + searchRadiusInCells;
+		if (cz1 < 0 || cz0 >= sizeZ) continue;
+
+		mrpt::saturate<int>(cx0, 0, sizeX - 1);
+		mrpt::saturate<int>(cy0, 0, sizeY - 1);
+		mrpt::saturate<int>(cz0, 0, sizeZ - 1);
+		mrpt::saturate<int>(cx1, 0, sizeX - 1);
+		mrpt::saturate<int>(cy1, 0, sizeY - 1);
+		mrpt::saturate<int>(cz1, 0, sizeZ - 1);
+
+		auto lambdaAddCell = [maxSearchRadiusSqrInCells, cx_query, cy_query,
+							  cz_query, &out_dists_sqr, &results, resolutionSqr,
+							  this](int cx, int cy, int cz) {
+			int distSqr = mrpt::square(cx - cx_query) +
+				mrpt::square(cy - cy_query) + mrpt::square(cz - cz_query);
+			if (distSqr > maxSearchRadiusSqrInCells) return;
+
+			out_dists_sqr.push_back(distSqr * resolutionSqr);
+			results.emplace_back(
+				m_grid.idx2x(cx), m_grid.idx2y(cy), m_grid.idx2z(cz));
+		};
+
+		for (int cx = cx0; cx <= cx1; cx++)
+		{
+			for (int cz = cz0; cz <= cz1; cz++)
+			{
+				int cy = cy0;
+				if (auto* c = m_grid.cellByIndex(cx, cy, cz);
+					c && *c < thresholdCellValue)
+					lambdaAddCell(cx, cy, cz);
+				cy = cy1;
+				if (auto* c = m_grid.cellByIndex(cx, cy, cz);
+					c && *c < thresholdCellValue)
+					lambdaAddCell(cx, cy, cz);
+			}
+		}
+		for (int cy = cy0 + 1; cy < cy1; cy++)
+		{
+			for (int cz = cz0; cz <= cz1; cz++)
+			{
+				int cx = cx0;
+				if (auto* c = m_grid.cellByIndex(cx, cy, cz);
+					c && *c < thresholdCellValue)
+					lambdaAddCell(cx, cy, cz);
+				cx = cx1;
+				if (auto* c = m_grid.cellByIndex(cx, cy, cz);
+					c && *c < thresholdCellValue)
+					lambdaAddCell(cx, cy, cz);
+			}
+		}
+	}
+}
