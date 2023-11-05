@@ -328,6 +328,13 @@ class COccupancyGridMap2D
 		return static_cast<int>((y - ymin) / m_resolution);
 	}
 
+	mrpt::math::TBoundingBoxf boundingBox() const override
+	{
+		return {
+			{m_xMin, m_yMin, insertionOptions.mapAltitude},
+			{m_xMax, m_yMax, insertionOptions.mapAltitude}};
+	}
+
 	/** Scales an integer representation of the log-odd into a real valued
 	 * probability in [0,1], using p=exp(l)/(1+exp(l))  */
 	static inline float l2p(const cellType l)

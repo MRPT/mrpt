@@ -16,6 +16,7 @@
 #include <mrpt/maps/NearestNeighborsCapable.h>
 #include <mrpt/maps/OccupancyGridCellType.h>
 #include <mrpt/maps/logoddscell_traits.h>
+#include <mrpt/math/TBoundingBox.h>
 #include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt::maps
@@ -174,7 +175,7 @@ class CVoxelMapOccupancyBase : public CVoxelMapBase<voxel_node_t>,
 	/** This visits all cells to calculate a bounding box, caching the result
 	 *  so subsequent calls are cheap until the voxelmap is changed in some way.
 	 */
-	mrpt::math::TBoundingBox getBoundingBox() const;
+	mrpt::math::TBoundingBoxf boundingBox() const override;
 
 	/// The options used when inserting observations in the map:
 	TVoxelMap_InsertionOptions insertionOptions;
@@ -346,7 +347,7 @@ class CVoxelMapOccupancyBase : public CVoxelMapBase<voxel_node_t>,
 
 	void updateCachedProperties() const;
 	mutable mrpt::maps::CSimplePointsMap::Ptr m_cachedOccupied;
-	mutable mrpt::math::TBoundingBox m_bbox;
+	mutable mrpt::math::TBoundingBoxf m_bbox;
 };
 
 // ============= Implementations ===============
@@ -377,7 +378,7 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::getAsOctoMapVoxels(
 	auto& grid =
 		const_cast<Bonxai::VoxelGrid<voxel_node_t>&>(base_t::m_impl->grid);
 
-	const mrpt::math::TBoundingBox bbox = this->getBoundingBox();
+	const mrpt::math::TBoundingBoxf bbox = this->boundingBox();
 	double bbox_span_z = bbox.max.z - bbox.min.z;
 	if (bbox_span_z < 0) bbox_span_z = 1;
 	const double bbox_span_z_inv = 1.0 / bbox_span_z;
@@ -675,7 +676,7 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::updateCachedProperties()
 	if (m_cachedOccupied) return;  // done
 
 	m_cachedOccupied = mrpt::maps::CSimplePointsMap::Create();
-	m_bbox = mrpt::math::TBoundingBox::PlusMinusInfinity();
+	m_bbox = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
 
 	// forEachCell() has no const version
 	auto& grid =
@@ -703,7 +704,7 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::updateCachedProperties()
 	grid.forEachCell(lmbdPerVoxel);
 
 	// If no cell is active, use default bbox:
-	if (m_bbox == mrpt::math::TBoundingBox::PlusMinusInfinity()) m_bbox = {};
+	if (m_bbox == mrpt::math::TBoundingBoxf::PlusMinusInfinity()) m_bbox = {};
 }
 
 template <typename voxel_node_t, typename occupancy_t>
@@ -715,8 +716,8 @@ mrpt::maps::CSimplePointsMap::Ptr
 }
 
 template <typename voxel_node_t, typename occupancy_t>
-mrpt::math::TBoundingBox
-	CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::getBoundingBox() const
+mrpt::math::TBoundingBoxf
+	CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::boundingBox() const
 {
 	updateCachedProperties();
 	return m_bbox;
