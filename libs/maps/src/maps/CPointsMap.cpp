@@ -2106,7 +2106,7 @@ bool CPointsMap::nn_single_search(
 {
 	try
 	{
-		kdTreeClosestPoint3D(
+		resultIndexOrID = kdTreeClosestPoint3D(
 			query.x, query.y, query.z, result.x, result.y, result.z,
 			out_dist_sqr);
 		return true;
@@ -2123,7 +2123,7 @@ bool CPointsMap::nn_single_search(
 {
 	try
 	{
-		kdTreeClosestPoint2D(
+		resultIndexOrID = kdTreeClosestPoint2D(
 			query.x, query.y, result.x, result.y, out_dist_sqr);
 		return true;
 	}
@@ -2142,8 +2142,12 @@ void CPointsMap::nn_multiple_search(
 	std::vector<size_t> idxs;
 	kdTreeNClosestPoint3DIdx(query.x, query.y, query.z, N, idxs, out_dists_sqr);
 	results.resize(idxs.size());
+	resultIndicesOrIDs.resize(idxs.size());
 	for (size_t i = 0; i < idxs.size(); i++)
+	{
 		getPointFast(idxs[i], results[i].x, results[i].y, results[i].z);
+		resultIndicesOrIDs[i] = idxs[i];
+	}
 }
 void CPointsMap::nn_multiple_search(
 	const mrpt::math::TPoint2Df& query, const size_t N,
@@ -2154,9 +2158,13 @@ void CPointsMap::nn_multiple_search(
 	std::vector<size_t> idxs;
 	kdTreeNClosestPoint2DIdx(query.x, query.y, N, idxs, out_dists_sqr);
 	results.resize(idxs.size());
+	resultIndicesOrIDs.resize(idxs.size());
 	float dummyZ = 0;
 	for (size_t i = 0; i < idxs.size(); i++)
+	{
 		getPointFast(idxs[i], results[i].x, results[i].y, dummyZ);
+		resultIndicesOrIDs[i] = idxs[i];
+	}
 }
 void CPointsMap::nn_radius_search(
 	const mrpt::math::TPoint3Df& query, const float search_radius_sqr,
@@ -2170,11 +2178,13 @@ void CPointsMap::nn_radius_search(
 	const size_t nResults = indices_dist.size();
 	results.resize(nResults);
 	out_dists_sqr.resize(nResults);
+	resultIndicesOrIDs.resize(nResults);
 	for (size_t i = 0; i < nResults; i++)
 	{
 		getPointFast(
 			indices_dist[i].first, results[i].x, results[i].y, results[i].z);
 		out_dists_sqr[i] = indices_dist[i].second;
+		resultIndicesOrIDs[i] = indices_dist[i].first;
 	}
 }
 void CPointsMap::nn_radius_search(
@@ -2188,10 +2198,12 @@ void CPointsMap::nn_radius_search(
 	const size_t nResults = indices_dist.size();
 	results.resize(nResults);
 	out_dists_sqr.resize(nResults);
+	resultIndicesOrIDs.resize(nResults);
 	float dummyZ = 0;
 	for (size_t i = 0; i < nResults; i++)
 	{
 		getPointFast(indices_dist[i].first, results[i].x, results[i].y, dummyZ);
 		out_dists_sqr[i] = indices_dist[i].second;
+		resultIndicesOrIDs[i] = indices_dist[i].first;
 	}
 }
