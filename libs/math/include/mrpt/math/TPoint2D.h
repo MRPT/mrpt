@@ -25,8 +25,8 @@ namespace mrpt::math
 template <typename T>
 struct TPoint2D_data
 {
-	TPoint2D_data() = default;
-	TPoint2D_data(T X, T Y) : x(X), y(Y) {}
+	constexpr TPoint2D_data() = default;
+	constexpr TPoint2D_data(T X, T Y) : x(X), y(Y) {}
 
 	/** X,Y coordinates */
 	T x, y;
