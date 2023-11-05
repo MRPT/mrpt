@@ -9,6 +9,7 @@
       - All classes derived from mrpt::maps::CVoxelMapOccupancyBase
       - mrpt::maps::COccupancyGridMap2D
       - mrpt::maps::COccupancyGridMap2D
+    - New virtual method mrpt::maps::CMetricMap::boundingBox()
   - \ref mrpt_core_grp
     - Add the `[[nodiscard]]` attribute to all functions returning a value in `<mrpt/core/bits_math.h>`
 

@@ -931,7 +931,7 @@ class CPointsMap : public CMetricMap,
 	 *  Results are cached unless the map is somehow modified to avoid repeated
 	 * calculations.
 	 */
-	mrpt::math::TBoundingBoxf boundingBox() const;
+	mrpt::math::TBoundingBoxf boundingBox() const override;
 
 	/** Extracts the points in the map within a cylinder in 3D defined the
 	 * provided radius and zmin/zmax values.

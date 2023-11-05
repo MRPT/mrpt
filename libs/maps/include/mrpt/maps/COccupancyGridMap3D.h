@@ -206,6 +206,15 @@ class COccupancyGridMap3D
 	void getVisualizationInto(
 		mrpt::opengl::CSetOfObjects& outObj) const override;
 
+	mrpt::math::TBoundingBoxf boundingBox() const override
+	{
+		return {
+			mrpt::math::TPoint3Df(
+				m_grid.getXMin(), m_grid.getYMin(), m_grid.getZMin()),
+			mrpt::math::TPoint3Df(
+				m_grid.getXMax(), m_grid.getYMax(), m_grid.getZMax())};
+	}
+
 	/** With this struct options are provided to the observation insertion
 	 * process.
 	 * \sa CObservation::insertIntoGridMap */

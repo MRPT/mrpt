@@ -491,5 +491,4 @@ void CPointCloud::toYAMLMap(mrpt::containers::yaml& propertiesMap) const
 {
 	CRenderizable::toYAMLMap(propertiesMap);
 	propertiesMap["point_count"] = m_points.size();
-	propertiesMap["bounding_box"] = this->getBoundingBox().asString();
 }
