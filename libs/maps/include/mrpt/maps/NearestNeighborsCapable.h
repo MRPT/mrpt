@@ -38,6 +38,12 @@ class NearestNeighborsCapable
 	 * std::optional<> return variables, false otherwise. */
 	[[nodiscard]] virtual bool nn_supports_indices() const = 0;
 
+	/** If nn_supports_indices() returns `true`, this must return the number of
+	 * "points" (or whatever entity) the indices correspond to. Otherwise, the
+	 * return value should be ignored.
+	 */
+	[[nodiscard]] virtual size_t nn_index_count() const = 0;
+
 	/** Search for the closest 3D point to a given one.
 	 *
 	 * \param[in]  query The query input point.

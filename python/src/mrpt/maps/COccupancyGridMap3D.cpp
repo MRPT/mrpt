@@ -289,6 +289,19 @@ struct PyCallBack_mrpt_maps_COccupancyGridMap3D : public mrpt::maps::COccupancyG
 		}
 		return COccupancyGridMap3D::nn_supports_indices();
 	}
+	size_t nn_index_count() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::COccupancyGridMap3D *>(this), "nn_index_count");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
+		}
+		return COccupancyGridMap3D::nn_index_count();
+	}
 	bool canComputeObservationLikelihood(const class mrpt::obs::CObservation & a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::COccupancyGridMap3D *>(this), "canComputeObservationLikelihood");
@@ -501,6 +514,7 @@ void bind_mrpt_maps_COccupancyGridMap3D(std::function< pybind11::module &(std::s
 		cl.def("saveMetricMapRepresentationToFile", (void (mrpt::maps::COccupancyGridMap3D::*)(const std::string &) const) &mrpt::maps::COccupancyGridMap3D::saveMetricMapRepresentationToFile, "C++: mrpt::maps::COccupancyGridMap3D::saveMetricMapRepresentationToFile(const std::string &) const --> void", pybind11::arg("f"));
 		cl.def("asString", (std::string (mrpt::maps::COccupancyGridMap3D::*)() const) &mrpt::maps::COccupancyGridMap3D::asString, "Returns a short description of the map. \n\nC++: mrpt::maps::COccupancyGridMap3D::asString() const --> std::string");
 		cl.def("nn_supports_indices", (bool (mrpt::maps::COccupancyGridMap3D::*)() const) &mrpt::maps::COccupancyGridMap3D::nn_supports_indices, "		@{ \n\nC++: mrpt::maps::COccupancyGridMap3D::nn_supports_indices() const --> bool");
+		cl.def("nn_index_count", (size_t (mrpt::maps::COccupancyGridMap3D::*)() const) &mrpt::maps::COccupancyGridMap3D::nn_index_count, "C++: mrpt::maps::COccupancyGridMap3D::nn_index_count() const --> size_t");
 		cl.def("assign", (class mrpt::maps::COccupancyGridMap3D & (mrpt::maps::COccupancyGridMap3D::*)(const class mrpt::maps::COccupancyGridMap3D &)) &mrpt::maps::COccupancyGridMap3D::operator=, "C++: mrpt::maps::COccupancyGridMap3D::operator=(const class mrpt::maps::COccupancyGridMap3D &) --> class mrpt::maps::COccupancyGridMap3D &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
 		{ // mrpt::maps::COccupancyGridMap3D::TInsertionOptions file:mrpt/maps/COccupancyGridMap3D.h line:221

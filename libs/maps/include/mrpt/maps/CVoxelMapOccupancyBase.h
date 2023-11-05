@@ -292,9 +292,13 @@ class CVoxelMapOccupancyBase : public CVoxelMapBase<voxel_node_t>,
 	/** @name API of the NearestNeighborsCapable virtual interface
 		@{ */
 	// See docs in base class
-	[[nodiscard]] virtual bool nn_supports_indices() const override
+	[[nodiscard]] bool nn_supports_indices() const override
 	{
 		return getOccupiedVoxels()->nn_supports_indices();
+	}
+	[[nodiscard]] size_t nn_index_count() const override
+	{
+		return getOccupiedVoxels()->nn_index_count();
 	}
 	[[nodiscard]] bool nn_single_search(
 		const mrpt::math::TPoint3Df& query, mrpt::math::TPoint3Df& result,
