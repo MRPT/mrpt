@@ -493,32 +493,36 @@ void COccupancyGridMap3D::saveMetricMapRepresentationToFile(
 
 bool COccupancyGridMap3D::nn_single_search(
 	const mrpt::math::TPoint2Df& query, mrpt::math::TPoint2Df& result,
-	float& out_dist_sqr) const
+	float& out_dist_sqr, std::optional<size_t>& resultIndex) const
 {
 	THROW_EXCEPTION("Cannot run a 2D search on a 3D gridmap");
 }
 void COccupancyGridMap3D::nn_multiple_search(
 	const mrpt::math::TPoint2Df& query, const size_t N,
 	std::vector<mrpt::math::TPoint2Df>& results,
-	std::vector<float>& out_dists_sqr) const
+	std::vector<float>& out_dists_sqr,
+	std::optional<std::vector<size_t>>& resultIndices) const
 {
 	THROW_EXCEPTION("Cannot run a 2D search on a 3D gridmap");
 }
 void COccupancyGridMap3D::nn_radius_search(
 	const mrpt::math::TPoint2Df& query, const float search_radius_sqr,
 	std::vector<mrpt::math::TPoint2Df>& results,
-	std::vector<float>& out_dists_sqr) const
+	std::vector<float>& out_dists_sqr,
+	std::optional<std::vector<size_t>>& resultIndices) const
 {
 	THROW_EXCEPTION("Cannot run a 2D search on a 3D gridmap");
 }
 
 bool COccupancyGridMap3D::nn_single_search(
 	const mrpt::math::TPoint3Df& query, mrpt::math::TPoint3Df& result,
-	float& out_dist_sqr) const
+	float& out_dist_sqr, std::optional<size_t>& resultIndex) const
 {
 	std::vector<mrpt::math::TPoint3Df> r;
 	std::vector<float> dist_sqr;
-	nn_multiple_search(query, 1, r, dist_sqr);
+	std::optional<std::vector<size_t>> resultIndices;
+	resultIndex.reset();  // not supported in gridmaps
+	nn_multiple_search(query, 1, r, dist_sqr, resultIndices);
 	if (r.empty()) return false;  // none found
 	result = r[0];
 	out_dist_sqr = dist_sqr[0];
@@ -528,7 +532,8 @@ bool COccupancyGridMap3D::nn_single_search(
 void COccupancyGridMap3D::nn_multiple_search(
 	const mrpt::math::TPoint3Df& query, const size_t N,
 	std::vector<mrpt::math::TPoint3Df>& results,
-	std::vector<float>& out_dists_sqr) const
+	std::vector<float>& out_dists_sqr,
+	std::optional<std::vector<size_t>>& resultIndices) const
 {
 	results.clear();
 	results.reserve(N);
@@ -625,7 +630,8 @@ void COccupancyGridMap3D::nn_multiple_search(
 void COccupancyGridMap3D::nn_radius_search(
 	const mrpt::math::TPoint3Df& query, const float search_radius_sqr,
 	std::vector<mrpt::math::TPoint3Df>& results,
-	std::vector<float>& out_dists_sqr) const
+	std::vector<float>& out_dists_sqr,
+	std::optional<std::vector<size_t>>& resultIndices) const
 {
 	results.clear();
 	out_dists_sqr.clear();

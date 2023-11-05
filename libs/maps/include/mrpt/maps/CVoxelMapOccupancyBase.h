@@ -292,51 +292,59 @@ class CVoxelMapOccupancyBase : public CVoxelMapBase<voxel_node_t>,
 	/** @name API of the NearestNeighborsCapable virtual interface
 		@{ */
 	// See docs in base class
+	[[nodiscard]] virtual bool nn_supports_indices() const override
+	{
+		return getOccupiedVoxels()->nn_supports_indices();
+	}
 	[[nodiscard]] bool nn_single_search(
 		const mrpt::math::TPoint3Df& query, mrpt::math::TPoint3Df& result,
-		float& out_dist_sqr) const override
+		float& out_dist_sqr, std::optional<size_t>& resultIndex) const override
 	{
 		return getOccupiedVoxels()->nn_single_search(
-			query, result, out_dist_sqr);
+			query, result, out_dist_sqr, resultIndex);
 	}
 	[[nodiscard]] bool nn_single_search(
 		const mrpt::math::TPoint2Df& query, mrpt::math::TPoint2Df& result,
-		float& out_dist_sqr) const override
+		float& out_dist_sqr, std::optional<size_t>& resultIndex) const override
 	{
 		return getOccupiedVoxels()->nn_single_search(
-			query, result, out_dist_sqr);
+			query, result, out_dist_sqr, resultIndex);
 	}
 	void nn_multiple_search(
 		const mrpt::math::TPoint3Df& query, const size_t N,
 		std::vector<mrpt::math::TPoint3Df>& results,
-		std::vector<float>& out_dists_sqr) const override
+		std::vector<float>& out_dists_sqr,
+		std::optional<std::vector<size_t>>& resultIndices) const override
 	{
 		getOccupiedVoxels()->nn_multiple_search(
-			query, N, results, out_dists_sqr);
+			query, N, results, out_dists_sqr, resultIndices);
 	}
 	void nn_multiple_search(
 		const mrpt::math::TPoint2Df& query, const size_t N,
 		std::vector<mrpt::math::TPoint2Df>& results,
-		std::vector<float>& out_dists_sqr) const override
+		std::vector<float>& out_dists_sqr,
+		std::optional<std::vector<size_t>>& resultIndices) const override
 	{
 		getOccupiedVoxels()->nn_multiple_search(
-			query, N, results, out_dists_sqr);
+			query, N, results, out_dists_sqr, resultIndices);
 	}
 	void nn_radius_search(
 		const mrpt::math::TPoint3Df& query, const float search_radius_sqr,
 		std::vector<mrpt::math::TPoint3Df>& results,
-		std::vector<float>& out_dists_sqr) const override
+		std::vector<float>& out_dists_sqr,
+		std::optional<std::vector<size_t>>& resultIndices) const override
 	{
 		getOccupiedVoxels()->nn_radius_search(
-			query, search_radius_sqr, results, out_dists_sqr);
+			query, search_radius_sqr, results, out_dists_sqr, resultIndices);
 	}
 	void nn_radius_search(
 		const mrpt::math::TPoint2Df& query, const float search_radius_sqr,
 		std::vector<mrpt::math::TPoint2Df>& results,
-		std::vector<float>& out_dists_sqr) const override
+		std::vector<float>& out_dists_sqr,
+		std::optional<std::vector<size_t>>& resultIndices) const override
 	{
 		getOccupiedVoxels()->nn_radius_search(
-			query, search_radius_sqr, results, out_dists_sqr);
+			query, search_radius_sqr, results, out_dists_sqr, resultIndices);
 	}
 	/** @} */
 
