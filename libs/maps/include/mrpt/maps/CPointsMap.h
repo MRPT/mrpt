@@ -1128,10 +1128,8 @@ class CPointsMap : public CMetricMap,
 
 	/** @name API of the NearestNeighborsCapable virtual interface
 		@{ */
-	[[nodiscard]] virtual bool nn_supports_indices() const override
-	{
-		return true;
-	}
+	[[nodiscard]] bool nn_supports_indices() const override { return true; }
+	[[nodiscard]] size_t nn_index_count() const override { return size(); }
 	[[nodiscard]] bool nn_single_search(
 		const mrpt::math::TPoint3Df& query, mrpt::math::TPoint3Df& result,
 		float& out_dist_sqr, std::optional<size_t>& resultIndex) const override;

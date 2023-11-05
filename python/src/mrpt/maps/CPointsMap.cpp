@@ -254,6 +254,7 @@ void bind_mrpt_maps_CPointsMap(std::function< pybind11::module &(std::string con
 		cl.def("mark_as_modified", (void (mrpt::maps::CPointsMap::*)() const) &mrpt::maps::CPointsMap::mark_as_modified, "Users normally don't need to call this. Called by this class or children\n classes, set m_largestDistanceFromOriginIsUpdated=false, invalidates the\n kd-tree cache, and such. \n\nC++: mrpt::maps::CPointsMap::mark_as_modified() const --> void");
 		cl.def("asString", (std::string (mrpt::maps::CPointsMap::*)() const) &mrpt::maps::CPointsMap::asString, "Returns a short description of the map. \n\nC++: mrpt::maps::CPointsMap::asString() const --> std::string");
 		cl.def("nn_supports_indices", (bool (mrpt::maps::CPointsMap::*)() const) &mrpt::maps::CPointsMap::nn_supports_indices, "		@{ \n\nC++: mrpt::maps::CPointsMap::nn_supports_indices() const --> bool");
+		cl.def("nn_index_count", (size_t (mrpt::maps::CPointsMap::*)() const) &mrpt::maps::CPointsMap::nn_index_count, "C++: mrpt::maps::CPointsMap::nn_index_count() const --> size_t");
 
 		{ // mrpt::maps::CPointsMap::TInsertionOptions file:mrpt/maps/CPointsMap.h line:228
 			auto & enclosing_class = cl;

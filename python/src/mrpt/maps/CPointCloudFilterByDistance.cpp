@@ -568,6 +568,19 @@ struct PyCallBack_mrpt_maps_CPointsMapXYZI : public mrpt::maps::CPointsMapXYZI {
 		}
 		return CPointsMap::nn_supports_indices();
 	}
+	size_t nn_index_count() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CPointsMapXYZI *>(this), "nn_index_count");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
+		}
+		return CPointsMap::nn_index_count();
+	}
 	void PLY_import_set_face_count(size_t a0) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CPointsMapXYZI *>(this), "PLY_import_set_face_count");
