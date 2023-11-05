@@ -263,6 +263,7 @@ void bind_mrpt_obs_CObservationRange(std::function< pybind11::module &(std::stri
 			cl.def_readwrite("sensorID", &mrpt::obs::CObservationRange::TMeasurement::sensorID);
 			cl.def_readwrite("sensorPose", &mrpt::obs::CObservationRange::TMeasurement::sensorPose);
 			cl.def_readwrite("sensedDistance", &mrpt::obs::CObservationRange::TMeasurement::sensedDistance);
+			cl.def_readwrite("sensorNoiseStdDeviation", &mrpt::obs::CObservationRange::TMeasurement::sensorNoiseStdDeviation);
 		}
 
 	}

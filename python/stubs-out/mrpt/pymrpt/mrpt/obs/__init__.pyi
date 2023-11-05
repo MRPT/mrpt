@@ -1212,6 +1212,7 @@ class CObservationRange(CObservation):
     class TMeasurement:
         sensedDistance: float
         sensorID: int
+        sensorNoiseStdDeviation: float
         sensorPose: mrpt.pymrpt.mrpt.math.TPose3D
         def __init__(self) -> None: ...
     maxSensorDistance: float

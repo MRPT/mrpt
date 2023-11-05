@@ -9,3 +9,4 @@
 #include "src/mrpt/maps/CLandmarksMap.cpp"
 #include "src/mrpt/maps/CLogOddsGridMap3D.cpp"
 #include "src/mrpt/maps/CLogOddsGridMapLUT.cpp"
+#include "src/mrpt/maps/NearestNeighborsCapable.cpp"
