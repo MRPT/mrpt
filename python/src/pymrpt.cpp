@@ -86,6 +86,7 @@ void bind_mrpt_obs_CObservation(std::function< pybind11::module &(std::string co
 void bind_mrpt_system_mrptEvent(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_maps_CMetricMapEvents(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_maps_metric_map_types(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_math_TBoundingBox(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_opengl_Visualizable(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_system_CObservable(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_tfest_TMatchingPair(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -110,7 +111,7 @@ void bind_mrpt_bayes_CParticleFilterData(std::function< pybind11::module &(std::
 void bind_mrpt_bayes_CParticleFilterData_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_poses_CPose3DPDFParticles(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_img_color_maps(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_math_TBoundingBox(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_maps_NearestNeighborsCapable(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_obs_T2DScanProperties(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_opengl_PLY_import_export(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_maps_CPointsMap(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -514,6 +515,7 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_system_mrptEvent(M);
 	bind_mrpt_maps_CMetricMapEvents(M);
 	bind_mrpt_maps_metric_map_types(M);
+	bind_mrpt_math_TBoundingBox(M);
 	bind_mrpt_opengl_Visualizable(M);
 	bind_mrpt_system_CObservable(M);
 	bind_mrpt_tfest_TMatchingPair(M);
@@ -538,7 +540,7 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_bayes_CParticleFilterData_1(M);
 	bind_mrpt_poses_CPose3DPDFParticles(M);
 	bind_mrpt_img_color_maps(M);
-	bind_mrpt_math_TBoundingBox(M);
+	bind_mrpt_maps_NearestNeighborsCapable(M);
 	bind_mrpt_obs_T2DScanProperties(M);
 	bind_mrpt_opengl_PLY_import_export(M);
 	bind_mrpt_maps_CPointsMap(M);

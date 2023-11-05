@@ -94,21 +94,21 @@ using namespace mrpt::literals;	 // for backwards compatib.
 
 /** Returns the sign of X as "1" or "-1" */
 template <typename T>
-inline int sign(T x)
+[[nodiscard]] inline int sign(T x)
 {
 	return x < 0 ? -1 : 1;
 }
 
 /** Returns the sign of X as "0", "1" or "-1" */
 template <typename T>
-inline int signWithZero(T x)
+[[nodiscard]] inline int signWithZero(T x)
 {
 	return (x == 0 || x == -0) ? 0 : sign(x);
 }
 
 /** Returns the smallest positive number among a and b */
 template <typename T>
-T lowestPositive(const T a, const T b)
+[[nodiscard]] T lowestPositive(const T a, const T b)
 {
 	if (a > 0 && a <= b) return a;	// a positive and smaller than b
 	else if (b > 0)
@@ -118,19 +118,19 @@ T lowestPositive(const T a, const T b)
 }
 
 template <typename T>
-inline const T min3(const T& A, const T& B, const T& C)
+[[nodiscard]] inline const T min3(const T& A, const T& B, const T& C)
 {
 	return std::min<T>(A, std::min<T>(B, C));
 }
 template <typename T>
-inline const T max3(const T& A, const T& B, const T& C)
+[[nodiscard]] inline const T max3(const T& A, const T& B, const T& C)
 {
 	return std::max<T>(A, std::max<T>(B, C));
 }
 
 /** Rounds toward zero  */
 template <typename T>
-inline int fix(T x)
+[[nodiscard]] inline int fix(T x)
 {
 	return x > 0 ? static_cast<int>(floor(static_cast<double>(x)))
 				 : static_cast<int>(ceil(static_cast<double>(x)));
@@ -161,7 +161,8 @@ inline void saturate(T& var, const T sat_min, const T sat_max)
 /** Like saturate() but it returns the value instead of modifying the variable
  */
 template <typename T>
-inline T saturate_val(const T& value, const T sat_min, const T sat_max)
+[[nodiscard]] inline T saturate_val(
+	const T& value, const T sat_min, const T sat_max)
 {
 	T var = value;
 	if (var > sat_max) var = sat_max;
@@ -171,7 +172,7 @@ inline T saturate_val(const T& value, const T sat_min, const T sat_max)
 
 /** Round up to the nearest power of two of a given number */
 template <class T>
-T round2up(T val)
+[[nodiscard]] T round2up(T val)
 {
 	T n = 1;
 	while (n < val)
@@ -183,14 +184,17 @@ T round2up(T val)
 }
 
 /** shortcut for static_cast<float>(double) */
-inline float d2f(const double d) { return static_cast<float>(d); }
+[[nodiscard]] inline float d2f(const double d) { return static_cast<float>(d); }
 
 /** converts a float [0,1] into an uint8_t [0,255] (without checking for out of
  * bounds) \sa u8tof */
-inline uint8_t f2u8(const float f) { return static_cast<uint8_t>(f * 255); }
+[[nodiscard]] inline uint8_t f2u8(const float f)
+{
+	return static_cast<uint8_t>(f * 255);
+}
 
 /** converts a uint8_t [0,255] into a float [0,1] \sa f2u8 */
-inline float u8tof(const uint8_t v) { return v / 255.0f; }
+[[nodiscard]] inline float u8tof(const uint8_t v) { return v / 255.0f; }
 
 /** @} */
 

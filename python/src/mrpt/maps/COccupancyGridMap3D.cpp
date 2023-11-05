@@ -16,6 +16,7 @@
 #include <mrpt/core/aligned_allocator.h>
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/TColor.h>
+#include <mrpt/img/color_maps.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap3D.h>
 #include <mrpt/maps/CPointsMap.h>
@@ -89,7 +90,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::maps::COccupancyGridMap3D file:mrpt/maps/COccupancyGridMap3D.h line:36
+// mrpt::maps::COccupancyGridMap3D file:mrpt/maps/COccupancyGridMap3D.h line:42
 struct PyCallBack_mrpt_maps_COccupancyGridMap3D : public mrpt::maps::COccupancyGridMap3D {
 	using mrpt::maps::COccupancyGridMap3D::COccupancyGridMap3D;
 
@@ -197,6 +198,19 @@ struct PyCallBack_mrpt_maps_COccupancyGridMap3D : public mrpt::maps::COccupancyG
 		}
 		return COccupancyGridMap3D::getVisualizationInto(a0);
 	}
+	struct mrpt::math::TBoundingBox_<float> boundingBox() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::COccupancyGridMap3D *>(this), "boundingBox");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<struct mrpt::math::TBoundingBox_<float>>::value) {
+				static pybind11::detail::override_caster_t<struct mrpt::math::TBoundingBox_<float>> caster;
+				return pybind11::detail::cast_ref<struct mrpt::math::TBoundingBox_<float>>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<struct mrpt::math::TBoundingBox_<float>>(std::move(o));
+		}
+		return COccupancyGridMap3D::boundingBox();
+	}
 	bool isEmpty() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::COccupancyGridMap3D *>(this), "isEmpty");
@@ -262,6 +276,32 @@ struct PyCallBack_mrpt_maps_COccupancyGridMap3D : public mrpt::maps::COccupancyG
 		}
 		return COccupancyGridMap3D::asString();
 	}
+	bool nn_single_search(const struct mrpt::math::TPoint3D_<float> & a0, struct mrpt::math::TPoint3D_<float> & a1, float & a2) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::COccupancyGridMap3D *>(this), "nn_single_search");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2);
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return COccupancyGridMap3D::nn_single_search(a0, a1, a2);
+	}
+	bool nn_single_search(const struct mrpt::math::TPoint2D_<float> & a0, struct mrpt::math::TPoint2D_<float> & a1, float & a2) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::COccupancyGridMap3D *>(this), "nn_single_search");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2);
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return COccupancyGridMap3D::nn_single_search(a0, a1, a2);
+	}
 	bool canComputeObservationLikelihood(const class mrpt::obs::CObservation & a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::COccupancyGridMap3D *>(this), "canComputeObservationLikelihood");
@@ -316,7 +356,7 @@ struct PyCallBack_mrpt_maps_COccupancyGridMap3D : public mrpt::maps::COccupancyG
 	}
 };
 
-// mrpt::maps::COccupancyGridMap3D::TInsertionOptions file:mrpt/maps/COccupancyGridMap3D.h line:200
+// mrpt::maps::COccupancyGridMap3D::TInsertionOptions file:mrpt/maps/COccupancyGridMap3D.h line:221
 struct PyCallBack_mrpt_maps_COccupancyGridMap3D_TInsertionOptions : public mrpt::maps::COccupancyGridMap3D::TInsertionOptions {
 	using mrpt::maps::COccupancyGridMap3D::TInsertionOptions::TInsertionOptions;
 
@@ -348,7 +388,7 @@ struct PyCallBack_mrpt_maps_COccupancyGridMap3D_TInsertionOptions : public mrpt:
 	}
 };
 
-// mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions file:mrpt/maps/COccupancyGridMap3D.h line:257
+// mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions file:mrpt/maps/COccupancyGridMap3D.h line:283
 struct PyCallBack_mrpt_maps_COccupancyGridMap3D_TLikelihoodOptions : public mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions {
 	using mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions::TLikelihoodOptions;
 
@@ -427,13 +467,15 @@ struct PyCallBack_mrpt_maps_COccupancyGridMap3D_TMapDefinition : public mrpt::ma
 
 void bind_mrpt_maps_COccupancyGridMap3D(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::maps::COccupancyGridMap3D file:mrpt/maps/COccupancyGridMap3D.h line:36
-		pybind11::class_<mrpt::maps::COccupancyGridMap3D, std::shared_ptr<mrpt::maps::COccupancyGridMap3D>, PyCallBack_mrpt_maps_COccupancyGridMap3D, mrpt::maps::CMetricMap, mrpt::maps::CLogOddsGridMap3D<signed char>> cl(M("mrpt::maps"), "COccupancyGridMap3D", "A 3D occupancy grid map with a regular, even distribution of voxels.\n\n This is a faster alternative to COctoMap, but use with caution with limited\nmap extensions, since it could easily exaust available memory.\n\n Each voxel follows a Bernoulli probability distribution: a value of 0 means\ncertainly occupied, 1 means a certainly empty voxel. Initially 0.5 means\nuncertainty.\n\n An alternative, sparse representation of a 3D map is provided\n via mrpt::maps::CVoxelMap and mrpt::maps::CVoxelMapRGB\n\n ");
+	{ // mrpt::maps::COccupancyGridMap3D file:mrpt/maps/COccupancyGridMap3D.h line:42
+		pybind11::class_<mrpt::maps::COccupancyGridMap3D, std::shared_ptr<mrpt::maps::COccupancyGridMap3D>, PyCallBack_mrpt_maps_COccupancyGridMap3D, mrpt::maps::CMetricMap, mrpt::maps::CLogOddsGridMap3D<signed char>, mrpt::maps::NearestNeighborsCapable> cl(M("mrpt::maps"), "COccupancyGridMap3D", "A 3D occupancy grid map with a regular, even distribution of voxels.\n\n This is a faster alternative to COctoMap, but use with caution with limited\nmap extensions, since it could easily exaust available memory.\n\n Each voxel follows a Bernoulli probability distribution: a value of 0 means\ncertainly occupied, 1 means a certainly empty voxel. Initially 0.5 means\nuncertainty.\n\n An alternative, sparse representation of a 3D map is provided\n via mrpt::maps::CVoxelMap and mrpt::maps::CVoxelMapRGB\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::maps::COccupancyGridMap3D(); }, [](){ return new PyCallBack_mrpt_maps_COccupancyGridMap3D(); } ), "doc");
 		cl.def( pybind11::init( [](const struct mrpt::math::TPoint3D_<double> & a0){ return new mrpt::maps::COccupancyGridMap3D(a0); }, [](const struct mrpt::math::TPoint3D_<double> & a0){ return new PyCallBack_mrpt_maps_COccupancyGridMap3D(a0); } ), "doc");
 		cl.def( pybind11::init( [](const struct mrpt::math::TPoint3D_<double> & a0, const struct mrpt::math::TPoint3D_<double> & a1){ return new mrpt::maps::COccupancyGridMap3D(a0, a1); }, [](const struct mrpt::math::TPoint3D_<double> & a0, const struct mrpt::math::TPoint3D_<double> & a1){ return new PyCallBack_mrpt_maps_COccupancyGridMap3D(a0, a1); } ), "doc");
 		cl.def( pybind11::init<const struct mrpt::math::TPoint3D_<double> &, const struct mrpt::math::TPoint3D_<double> &, float>(), pybind11::arg("corner_min"), pybind11::arg("corner_max"), pybind11::arg("resolution") );
 
+		cl.def( pybind11::init( [](PyCallBack_mrpt_maps_COccupancyGridMap3D const &o){ return new PyCallBack_mrpt_maps_COccupancyGridMap3D(o); } ) );
+		cl.def( pybind11::init( [](mrpt::maps::COccupancyGridMap3D const &o){ return new mrpt::maps::COccupancyGridMap3D(o); } ) );
 
 		pybind11::enum_<mrpt::maps::COccupancyGridMap3D::TLikelihoodMethod>(cl, "TLikelihoodMethod", pybind11::arithmetic(), "The type for selecting a likelihood computation method ")
 			.value("lmLikelihoodField_Thrun", mrpt::maps::COccupancyGridMap3D::lmLikelihoodField_Thrun)
@@ -463,18 +505,19 @@ void bind_mrpt_maps_COccupancyGridMap3D(std::function< pybind11::module &(std::s
 		cl.def("getFreenessByPos", (float (mrpt::maps::COccupancyGridMap3D::*)(float, float, float) const) &mrpt::maps::COccupancyGridMap3D::getFreenessByPos, "Read the real valued [0,1] contents of a voxel, given its coordinates \n\nC++: mrpt::maps::COccupancyGridMap3D::getFreenessByPos(float, float, float) const --> float", pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"));
 		cl.def("insertRay", [](mrpt::maps::COccupancyGridMap3D &o, const struct mrpt::math::TPoint3D_<double> & a0, const struct mrpt::math::TPoint3D_<double> & a1) -> void { return o.insertRay(a0, a1); }, "", pybind11::arg("sensor"), pybind11::arg("end"));
 		cl.def("insertRay", (void (mrpt::maps::COccupancyGridMap3D::*)(const struct mrpt::math::TPoint3D_<double> &, const struct mrpt::math::TPoint3D_<double> &, bool)) &mrpt::maps::COccupancyGridMap3D::insertRay, "Increases the freeness of a ray segment, and the occupancy of the voxel\n at its end point (unless endIsOccupied=false).\n Normally, users would prefer the higher-level method\n CMetricMap::insertObservation()\n\nC++: mrpt::maps::COccupancyGridMap3D::insertRay(const struct mrpt::math::TPoint3D_<double> &, const struct mrpt::math::TPoint3D_<double> &, bool) --> void", pybind11::arg("sensor"), pybind11::arg("end"), pybind11::arg("endIsOccupied"));
-		cl.def("insertPointCloud", [](mrpt::maps::COccupancyGridMap3D &o, const struct mrpt::math::TPoint3D_<double> & a0, const class mrpt::maps::CPointsMap & a1) -> void { return o.insertPointCloud(a0, a1); }, "", pybind11::arg("sensorCenter"), pybind11::arg("pts"));
-		cl.def("insertPointCloud", (void (mrpt::maps::COccupancyGridMap3D::*)(const struct mrpt::math::TPoint3D_<double> &, const class mrpt::maps::CPointsMap &, const float)) &mrpt::maps::COccupancyGridMap3D::insertPointCloud, "Calls insertRay() for each point in the point cloud, using as sensor\n central point (the origin of all rays), the given `sensorCenter`.\n \n\n If a point has larger distance from\n `sensorCenter` than `maxValidRange`, it will be considered a non-echo,\n and NO occupied voxel will be created at the end of the segment.\n \n\n insertionOptions parameters are observed in this method.\n\nC++: mrpt::maps::COccupancyGridMap3D::insertPointCloud(const struct mrpt::math::TPoint3D_<double> &, const class mrpt::maps::CPointsMap &, const float) --> void", pybind11::arg("sensorCenter"), pybind11::arg("pts"), pybind11::arg("maxValidRange"));
 		cl.def("getAsOctoMapVoxels", (void (mrpt::maps::COccupancyGridMap3D::*)(class mrpt::opengl::COctoMapVoxels &) const) &mrpt::maps::COccupancyGridMap3D::getAsOctoMapVoxels, "renderingOptions \n\nC++: mrpt::maps::COccupancyGridMap3D::getAsOctoMapVoxels(class mrpt::opengl::COctoMapVoxels &) const --> void", pybind11::arg("gl_obj"));
 		cl.def("getVisualizationInto", (void (mrpt::maps::COccupancyGridMap3D::*)(class mrpt::opengl::CSetOfObjects &) const) &mrpt::maps::COccupancyGridMap3D::getVisualizationInto, "Returns a 3D object representing the map. \n renderingOptions \n\nC++: mrpt::maps::COccupancyGridMap3D::getVisualizationInto(class mrpt::opengl::CSetOfObjects &) const --> void", pybind11::arg("outObj"));
+		cl.def("boundingBox", (struct mrpt::math::TBoundingBox_<float> (mrpt::maps::COccupancyGridMap3D::*)() const) &mrpt::maps::COccupancyGridMap3D::boundingBox, "C++: mrpt::maps::COccupancyGridMap3D::boundingBox() const --> struct mrpt::math::TBoundingBox_<float>");
 		cl.def("isEmpty", (bool (mrpt::maps::COccupancyGridMap3D::*)() const) &mrpt::maps::COccupancyGridMap3D::isEmpty, "Returns true upon map construction or after calling clear(), the return\n  changes to false upon successful insertObservation() or any other\n method to load data in the map.\n\nC++: mrpt::maps::COccupancyGridMap3D::isEmpty() const --> bool");
 		cl.def("determineMatching2D", (void (mrpt::maps::COccupancyGridMap3D::*)(const class mrpt::maps::CMetricMap *, const class mrpt::poses::CPose2D &, class mrpt::tfest::TMatchingPairListTempl<float> &, const struct mrpt::maps::TMatchingParams &, struct mrpt::maps::TMatchingExtraResults &) const) &mrpt::maps::COccupancyGridMap3D::determineMatching2D, "See docs in base class: in this class this always returns 0 \n\nC++: mrpt::maps::COccupancyGridMap3D::determineMatching2D(const class mrpt::maps::CMetricMap *, const class mrpt::poses::CPose2D &, class mrpt::tfest::TMatchingPairListTempl<float> &, const struct mrpt::maps::TMatchingParams &, struct mrpt::maps::TMatchingExtraResults &) const --> void", pybind11::arg("otherMap"), pybind11::arg("otherMapPose"), pybind11::arg("correspondences"), pybind11::arg("params"), pybind11::arg("extraResults"));
 		cl.def("compute3DMatchingRatio", (float (mrpt::maps::COccupancyGridMap3D::*)(const class mrpt::maps::CMetricMap *, const class mrpt::poses::CPose3D &, const struct mrpt::maps::TMatchingRatioParams &) const) &mrpt::maps::COccupancyGridMap3D::compute3DMatchingRatio, "See docs in base class: in this class this always returns 0 \n\nC++: mrpt::maps::COccupancyGridMap3D::compute3DMatchingRatio(const class mrpt::maps::CMetricMap *, const class mrpt::poses::CPose3D &, const struct mrpt::maps::TMatchingRatioParams &) const --> float", pybind11::arg("otherMap"), pybind11::arg("otherMapPose"), pybind11::arg("params"));
 		cl.def("saveMetricMapRepresentationToFile", (void (mrpt::maps::COccupancyGridMap3D::*)(const std::string &) const) &mrpt::maps::COccupancyGridMap3D::saveMetricMapRepresentationToFile, "C++: mrpt::maps::COccupancyGridMap3D::saveMetricMapRepresentationToFile(const std::string &) const --> void", pybind11::arg("f"));
 		cl.def("asString", (std::string (mrpt::maps::COccupancyGridMap3D::*)() const) &mrpt::maps::COccupancyGridMap3D::asString, "Returns a short description of the map. \n\nC++: mrpt::maps::COccupancyGridMap3D::asString() const --> std::string");
+		cl.def("nn_single_search", (bool (mrpt::maps::COccupancyGridMap3D::*)(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &) const) &mrpt::maps::COccupancyGridMap3D::nn_single_search, "		@{ \n\nC++: mrpt::maps::COccupancyGridMap3D::nn_single_search(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"));
+		cl.def("nn_single_search", (bool (mrpt::maps::COccupancyGridMap3D::*)(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &) const) &mrpt::maps::COccupancyGridMap3D::nn_single_search, "C++: mrpt::maps::COccupancyGridMap3D::nn_single_search(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"));
 		cl.def("assign", (class mrpt::maps::COccupancyGridMap3D & (mrpt::maps::COccupancyGridMap3D::*)(const class mrpt::maps::COccupancyGridMap3D &)) &mrpt::maps::COccupancyGridMap3D::operator=, "C++: mrpt::maps::COccupancyGridMap3D::operator=(const class mrpt::maps::COccupancyGridMap3D &) --> class mrpt::maps::COccupancyGridMap3D &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::maps::COccupancyGridMap3D::TInsertionOptions file:mrpt/maps/COccupancyGridMap3D.h line:200
+		{ // mrpt::maps::COccupancyGridMap3D::TInsertionOptions file:mrpt/maps/COccupancyGridMap3D.h line:221
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::COccupancyGridMap3D::TInsertionOptions, std::shared_ptr<mrpt::maps::COccupancyGridMap3D::TInsertionOptions>, PyCallBack_mrpt_maps_COccupancyGridMap3D_TInsertionOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TInsertionOptions", "With this struct options are provided to the observation insertion\n process.\n \n\n CObservation::insertIntoGridMap ");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::COccupancyGridMap3D::TInsertionOptions(); }, [](){ return new PyCallBack_mrpt_maps_COccupancyGridMap3D_TInsertionOptions(); } ) );
@@ -485,12 +528,13 @@ void bind_mrpt_maps_COccupancyGridMap3D(std::function< pybind11::module &(std::s
 			cl.def_readwrite("maxFreenessUpdateCertainty", &mrpt::maps::COccupancyGridMap3D::TInsertionOptions::maxFreenessUpdateCertainty);
 			cl.def_readwrite("decimation_3d_range", &mrpt::maps::COccupancyGridMap3D::TInsertionOptions::decimation_3d_range);
 			cl.def_readwrite("decimation", &mrpt::maps::COccupancyGridMap3D::TInsertionOptions::decimation);
+			cl.def_readwrite("raytraceEmptyCells", &mrpt::maps::COccupancyGridMap3D::TInsertionOptions::raytraceEmptyCells);
 			cl.def("loadFromConfigFile", (void (mrpt::maps::COccupancyGridMap3D::TInsertionOptions::*)(const class mrpt::config::CConfigFileBase &, const std::string &)) &mrpt::maps::COccupancyGridMap3D::TInsertionOptions::loadFromConfigFile, "This method load the options from a \".ini\" file.\n   Only those parameters found in the given \"section\" and having\n   the same name that the variable are loaded. Those not found in\n   the file will stay with their previous values (usually the default\n   values loaded at initialization). An example of an \".ini\" file:\n  \n\n\n\n\n\n		 \n\nC++: mrpt::maps::COccupancyGridMap3D::TInsertionOptions::loadFromConfigFile(const class mrpt::config::CConfigFileBase &, const std::string &) --> void", pybind11::arg("source"), pybind11::arg("section"));
 			cl.def("saveToConfigFile", (void (mrpt::maps::COccupancyGridMap3D::TInsertionOptions::*)(class mrpt::config::CConfigFileBase &, const std::string &) const) &mrpt::maps::COccupancyGridMap3D::TInsertionOptions::saveToConfigFile, "C++: mrpt::maps::COccupancyGridMap3D::TInsertionOptions::saveToConfigFile(class mrpt::config::CConfigFileBase &, const std::string &) const --> void", pybind11::arg("target"), pybind11::arg("section"));
 			cl.def("assign", (class mrpt::maps::COccupancyGridMap3D::TInsertionOptions & (mrpt::maps::COccupancyGridMap3D::TInsertionOptions::*)(const class mrpt::maps::COccupancyGridMap3D::TInsertionOptions &)) &mrpt::maps::COccupancyGridMap3D::TInsertionOptions::operator=, "C++: mrpt::maps::COccupancyGridMap3D::TInsertionOptions::operator=(const class mrpt::maps::COccupancyGridMap3D::TInsertionOptions &) --> class mrpt::maps::COccupancyGridMap3D::TInsertionOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions file:mrpt/maps/COccupancyGridMap3D.h line:257
+		{ // mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions file:mrpt/maps/COccupancyGridMap3D.h line:283
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions, std::shared_ptr<mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions>, PyCallBack_mrpt_maps_COccupancyGridMap3D_TLikelihoodOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TLikelihoodOptions", "With this struct options are provided to the observation likelihood\n computation process ");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions(); }, [](){ return new PyCallBack_mrpt_maps_COccupancyGridMap3D_TLikelihoodOptions(); } ) );
@@ -511,10 +555,11 @@ void bind_mrpt_maps_COccupancyGridMap3D(std::function< pybind11::module &(std::s
 			cl.def("assign", (class mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions & (mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions::*)(const class mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions &)) &mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions::operator=, "C++: mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions::operator=(const class mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions &) --> class mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::COccupancyGridMap3D::TRenderingOptions file:mrpt/maps/COccupancyGridMap3D.h line:311
+		{ // mrpt::maps::COccupancyGridMap3D::TRenderingOptions file:mrpt/maps/COccupancyGridMap3D.h line:337
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::COccupancyGridMap3D::TRenderingOptions, std::shared_ptr<mrpt::maps::COccupancyGridMap3D::TRenderingOptions>> cl(enclosing_class, "TRenderingOptions", "Options for the conversion of a mrpt::maps::COccupancyGridMap3D into a\n mrpt::opengl::COctoMapVoxels ");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::COccupancyGridMap3D::TRenderingOptions(); } ) );
+			cl.def( pybind11::init( [](mrpt::maps::COccupancyGridMap3D::TRenderingOptions const &o){ return new mrpt::maps::COccupancyGridMap3D::TRenderingOptions(o); } ) );
 			cl.def_readwrite("generateGridLines", &mrpt::maps::COccupancyGridMap3D::TRenderingOptions::generateGridLines);
 			cl.def_readwrite("generateOccupiedVoxels", &mrpt::maps::COccupancyGridMap3D::TRenderingOptions::generateOccupiedVoxels);
 			cl.def_readwrite("visibleOccupiedVoxels", &mrpt::maps::COccupancyGridMap3D::TRenderingOptions::visibleOccupiedVoxels);

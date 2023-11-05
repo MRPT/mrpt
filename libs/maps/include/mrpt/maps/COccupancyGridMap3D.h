@@ -12,6 +12,7 @@
 #include <mrpt/maps/CLogOddsGridMap3D.h>
 #include <mrpt/maps/CLogOddsGridMapLUT.h>
 #include <mrpt/maps/CMetricMap.h>
+#include <mrpt/maps/NearestNeighborsCapable.h>
 #include <mrpt/maps/OccupancyGridCellType.h>
 #include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/serialization/CSerializable.h>
@@ -40,7 +41,8 @@ namespace mrpt::maps
  **/
 class COccupancyGridMap3D
 	: public CMetricMap,
-	  public CLogOddsGridMap3D<OccGridCellTraits::cellType>
+	  public CLogOddsGridMap3D<OccGridCellTraits::cellType>,
+	  public mrpt::maps::NearestNeighborsCapable
 {
 	DEFINE_SERIALIZABLE(COccupancyGridMap3D, mrpt::maps)
    public:
@@ -203,6 +205,15 @@ class COccupancyGridMap3D
 	/** Returns a 3D object representing the map. \sa renderingOptions */
 	void getVisualizationInto(
 		mrpt::opengl::CSetOfObjects& outObj) const override;
+
+	mrpt::math::TBoundingBoxf boundingBox() const override
+	{
+		return {
+			mrpt::math::TPoint3Df(
+				m_grid.getXMin(), m_grid.getYMin(), m_grid.getZMin()),
+			mrpt::math::TPoint3Df(
+				m_grid.getXMax(), m_grid.getYMax(), m_grid.getZMax())};
+	}
 
 	/** With this struct options are provided to the observation insertion
 	 * process.
@@ -386,6 +397,33 @@ class COccupancyGridMap3D
 			m_grid.getXMax(), m_grid.getYMax(), m_grid.getZMax(),
 			m_grid.getResolutionXY(), m_grid.getResolutionZ());
 	}
+
+	/** @name API of the NearestNeighborsCapable virtual interface
+		@{ */
+	// See docs in base class
+	[[nodiscard]] bool nn_single_search(
+		const mrpt::math::TPoint3Df& query, mrpt::math::TPoint3Df& result,
+		float& out_dist_sqr) const override;
+	[[nodiscard]] bool nn_single_search(
+		const mrpt::math::TPoint2Df& query, mrpt::math::TPoint2Df& result,
+		float& out_dist_sqr) const override;
+	void nn_multiple_search(
+		const mrpt::math::TPoint3Df& query, const size_t N,
+		std::vector<mrpt::math::TPoint3Df>& results,
+		std::vector<float>& out_dists_sqr) const override;
+	void nn_multiple_search(
+		const mrpt::math::TPoint2Df& query, const size_t N,
+		std::vector<mrpt::math::TPoint2Df>& results,
+		std::vector<float>& out_dists_sqr) const override;
+	void nn_radius_search(
+		const mrpt::math::TPoint3Df& query, const float search_radius_sqr,
+		std::vector<mrpt::math::TPoint3Df>& results,
+		std::vector<float>& out_dists_sqr) const override;
+	void nn_radius_search(
+		const mrpt::math::TPoint2Df& query, const float search_radius_sqr,
+		std::vector<mrpt::math::TPoint2Df>& results,
+		std::vector<float>& out_dists_sqr) const override;
+	/** @} */
 
    private:
 	// See docs in base class

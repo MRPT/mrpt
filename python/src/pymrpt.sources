@@ -76,6 +76,7 @@ mrpt/obs/CObservation.cpp
 mrpt/system/mrptEvent.cpp
 mrpt/maps/CMetricMapEvents.cpp
 mrpt/maps/metric_map_types.cpp
+mrpt/math/TBoundingBox.cpp
 mrpt/opengl/Visualizable.cpp
 mrpt/system/CObservable.cpp
 mrpt/tfest/TMatchingPair.cpp
@@ -100,7 +101,7 @@ mrpt/bayes/CParticleFilterData.cpp
 mrpt/bayes/CParticleFilterData_1.cpp
 mrpt/poses/CPose3DPDFParticles.cpp
 mrpt/img/color_maps.cpp
-mrpt/math/TBoundingBox.cpp
+mrpt/maps/NearestNeighborsCapable.cpp
 mrpt/obs/T2DScanProperties.cpp
 mrpt/opengl/PLY_import_export.cpp
 mrpt/maps/CPointsMap.cpp

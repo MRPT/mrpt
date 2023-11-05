@@ -396,6 +396,19 @@ struct PyCallBack_mrpt_maps_CGasConcentrationGridMap2D : public mrpt::maps::CGas
 		}
 		return CRandomFieldGridMap2D::predictMeasurement(a0, a1, a2, a3, a4, a5);
 	}
+	struct mrpt::math::TBoundingBox_<float> boundingBox() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CGasConcentrationGridMap2D *>(this), "boundingBox");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<struct mrpt::math::TBoundingBox_<float>>::value) {
+				static pybind11::detail::override_caster_t<struct mrpt::math::TBoundingBox_<float>> caster;
+				return pybind11::detail::cast_ref<struct mrpt::math::TBoundingBox_<float>>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<struct mrpt::math::TBoundingBox_<float>>(std::move(o));
+		}
+		return CMetricMap::boundingBox();
+	}
 	bool canComputeObservationLikelihood(const class mrpt::obs::CObservation & a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CGasConcentrationGridMap2D *>(this), "canComputeObservationLikelihood");

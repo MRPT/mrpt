@@ -9,6 +9,7 @@
 #include <mrpt/containers/YamlEmitOptions.h>
 #include <mrpt/containers/yaml.h>
 #include <mrpt/img/TColor.h>
+#include <mrpt/img/color_maps.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CQuaternion.h>
@@ -60,7 +61,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::opengl::COctoMapVoxels file:mrpt/opengl/COctoMapVoxels.h line:63
+// mrpt::opengl::COctoMapVoxels file:mrpt/opengl/COctoMapVoxels.h line:64
 struct PyCallBack_mrpt_opengl_COctoMapVoxels : public mrpt::opengl::COctoMapVoxels {
 	using mrpt::opengl::COctoMapVoxels::COctoMapVoxels;
 
@@ -315,7 +316,7 @@ struct PyCallBack_mrpt_opengl_COctoMapVoxels : public mrpt::opengl::COctoMapVoxe
 
 void bind_mrpt_opengl_COctoMapVoxels(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	// mrpt::opengl::predefined_voxel_sets_t file:mrpt/opengl/COctoMapVoxels.h line:18
+	// mrpt::opengl::predefined_voxel_sets_t file:mrpt/opengl/COctoMapVoxels.h line:19
 	pybind11::enum_<mrpt::opengl::predefined_voxel_sets_t>(M("mrpt::opengl"), "predefined_voxel_sets_t", pybind11::arithmetic(), "")
 		.value("VOXEL_SET_OCCUPIED", mrpt::opengl::VOXEL_SET_OCCUPIED)
 		.value("VOXEL_SET_FREESPACE", mrpt::opengl::VOXEL_SET_FREESPACE)
@@ -323,7 +324,7 @@ void bind_mrpt_opengl_COctoMapVoxels(std::function< pybind11::module &(std::stri
 
 ;
 
-	{ // mrpt::opengl::COctoMapVoxels file:mrpt/opengl/COctoMapVoxels.h line:63
+	{ // mrpt::opengl::COctoMapVoxels file:mrpt/opengl/COctoMapVoxels.h line:64
 		pybind11::class_<mrpt::opengl::COctoMapVoxels, std::shared_ptr<mrpt::opengl::COctoMapVoxels>, PyCallBack_mrpt_opengl_COctoMapVoxels, mrpt::opengl::CRenderizableShaderTriangles, mrpt::opengl::CRenderizableShaderWireFrame, mrpt::opengl::CRenderizableShaderPoints> cl(M("mrpt::opengl"), "COctoMapVoxels", "A flexible renderer of voxels, typically from a 3D octo map (see\nmrpt::maps::COctoMap).\n  This class is sort of equivalent to octovis::OcTreeDrawer from the octomap\npackage, but\n  relying on MRPT's CRenderizable so there's no need to manually\ncache the rendering of OpenGL primitives.\n\n  Normally users call mrpt::maps::COctoMap::getAs3DObject() to obtain a\ngeneric mrpt::opengl::CSetOfObjects which insides holds an instance of\nCOctoMapVoxels.\n  You can also alternativelly call COctoMapVoxels::setFromOctoMap(), so you\ncan tune the display parameters, colors, etc.\n  As with any other mrpt::opengl class, all object coordinates refer to some\nframe of reference which is relative to the object parent and can be changed\nwith mrpt::opengl::CRenderizable::setPose()\n\n  This class draws these separate elements to represent an OctoMap:\n		- A grid representation of all cubes, as simple lines (occupied/free,\nleafs/nodes,... whatever). See:\n			- showGridLines()\n			- setGridLinesColor()\n			- setGridLinesWidth()\n			- push_back_GridCube()\n		- A number of voxel collections, drawn as cubes each having a\ndifferent color (e.g. depending on the color scheme in the original\nmrpt::maps::COctoMap object).\n       The meanning of each collection is user-defined, but you can use the\nconstants VOXEL_SET_OCCUPIED, VOXEL_SET_FREESPACE for predefined meanings.\n			- showVoxels()\n			- push_back_Voxel()\n\n Several coloring schemes can be selected with setVisualizationMode(). See\nCOctoMapVoxels::visualization_mode_t\n\n ![mrpt::opengl::COctoMapVoxels](preview_COctoMapVoxels.png)\n\n \n opengl::Scene\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::opengl::COctoMapVoxels(); }, [](){ return new PyCallBack_mrpt_opengl_COctoMapVoxels(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_COctoMapVoxels const &o){ return new PyCallBack_mrpt_opengl_COctoMapVoxels(o); } ) );
@@ -344,6 +345,8 @@ void bind_mrpt_opengl_COctoMapVoxels(std::function< pybind11::module &(std::stri
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::COctoMapVoxels::*)() const) &mrpt::opengl::COctoMapVoxels::GetRuntimeClass, "C++: mrpt::opengl::COctoMapVoxels::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::COctoMapVoxels::*)() const) &mrpt::opengl::COctoMapVoxels::clone, "C++: mrpt::opengl::COctoMapVoxels::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
 		cl.def_static("CreateObject", (class std::shared_ptr<class mrpt::rtti::CObject> (*)()) &mrpt::opengl::COctoMapVoxels::CreateObject, "C++: mrpt::opengl::COctoMapVoxels::CreateObject() --> class std::shared_ptr<class mrpt::rtti::CObject>");
+		cl.def("colorMap", (enum mrpt::img::TColormap (mrpt::opengl::COctoMapVoxels::*)() const) &mrpt::opengl::COctoMapVoxels::colorMap, "C++: mrpt::opengl::COctoMapVoxels::colorMap() const --> enum mrpt::img::TColormap");
+		cl.def("colorMap", (void (mrpt::opengl::COctoMapVoxels::*)(const enum mrpt::img::TColormap &)) &mrpt::opengl::COctoMapVoxels::colorMap, "Changing the colormap has no effect until a source object (e.g.\n mrpt::maps::CVoxelMap) reads this property while generating the voxels\n visualization.\n\nC++: mrpt::opengl::COctoMapVoxels::colorMap(const enum mrpt::img::TColormap &) --> void", pybind11::arg("cm"));
 		cl.def("renderUpdateBuffers", (void (mrpt::opengl::COctoMapVoxels::*)() const) &mrpt::opengl::COctoMapVoxels::renderUpdateBuffers, "C++: mrpt::opengl::COctoMapVoxels::renderUpdateBuffers() const --> void");
 		cl.def("onUpdateBuffers_Points", (void (mrpt::opengl::COctoMapVoxels::*)()) &mrpt::opengl::COctoMapVoxels::onUpdateBuffers_Points, "C++: mrpt::opengl::COctoMapVoxels::onUpdateBuffers_Points() --> void");
 		cl.def("onUpdateBuffers_Wireframe", (void (mrpt::opengl::COctoMapVoxels::*)()) &mrpt::opengl::COctoMapVoxels::onUpdateBuffers_Wireframe, "C++: mrpt::opengl::COctoMapVoxels::onUpdateBuffers_Wireframe() --> void");
@@ -387,7 +390,7 @@ void bind_mrpt_opengl_COctoMapVoxels(std::function< pybind11::module &(std::stri
 		cl.def("internalBoundingBoxLocal", (struct mrpt::math::TBoundingBox_<float> (mrpt::opengl::COctoMapVoxels::*)() const) &mrpt::opengl::COctoMapVoxels::internalBoundingBoxLocal, "C++: mrpt::opengl::COctoMapVoxels::internalBoundingBoxLocal() const --> struct mrpt::math::TBoundingBox_<float>");
 		cl.def("assign", (class mrpt::opengl::COctoMapVoxels & (mrpt::opengl::COctoMapVoxels::*)(const class mrpt::opengl::COctoMapVoxels &)) &mrpt::opengl::COctoMapVoxels::operator=, "C++: mrpt::opengl::COctoMapVoxels::operator=(const class mrpt::opengl::COctoMapVoxels &) --> class mrpt::opengl::COctoMapVoxels &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::opengl::COctoMapVoxels::TVoxel file:mrpt/opengl/COctoMapVoxels.h line:95
+		{ // mrpt::opengl::COctoMapVoxels::TVoxel file:mrpt/opengl/COctoMapVoxels.h line:96
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::opengl::COctoMapVoxels::TVoxel, std::shared_ptr<mrpt::opengl::COctoMapVoxels::TVoxel>> cl(enclosing_class, "TVoxel", "The info of each of the voxels ");
 			cl.def( pybind11::init( [](){ return new mrpt::opengl::COctoMapVoxels::TVoxel(); } ) );
@@ -400,7 +403,7 @@ void bind_mrpt_opengl_COctoMapVoxels(std::function< pybind11::module &(std::stri
 			cl.def("assign", (struct mrpt::opengl::COctoMapVoxels::TVoxel & (mrpt::opengl::COctoMapVoxels::TVoxel::*)(const struct mrpt::opengl::COctoMapVoxels::TVoxel &)) &mrpt::opengl::COctoMapVoxels::TVoxel::operator=, "C++: mrpt::opengl::COctoMapVoxels::TVoxel::operator=(const struct mrpt::opengl::COctoMapVoxels::TVoxel &) --> struct mrpt::opengl::COctoMapVoxels::TVoxel &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::opengl::COctoMapVoxels::TGridCube file:mrpt/opengl/COctoMapVoxels.h line:111
+		{ // mrpt::opengl::COctoMapVoxels::TGridCube file:mrpt/opengl/COctoMapVoxels.h line:112
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::opengl::COctoMapVoxels::TGridCube, std::shared_ptr<mrpt::opengl::COctoMapVoxels::TGridCube>> cl(enclosing_class, "TGridCube", "The info of each grid block ");
 			cl.def( pybind11::init( [](){ return new mrpt::opengl::COctoMapVoxels::TGridCube(); } ) );
@@ -412,7 +415,7 @@ void bind_mrpt_opengl_COctoMapVoxels(std::function< pybind11::module &(std::stri
 			cl.def("assign", (struct mrpt::opengl::COctoMapVoxels::TGridCube & (mrpt::opengl::COctoMapVoxels::TGridCube::*)(const struct mrpt::opengl::COctoMapVoxels::TGridCube &)) &mrpt::opengl::COctoMapVoxels::TGridCube::operator=, "C++: mrpt::opengl::COctoMapVoxels::TGridCube::operator=(const struct mrpt::opengl::COctoMapVoxels::TGridCube &) --> struct mrpt::opengl::COctoMapVoxels::TGridCube &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::opengl::COctoMapVoxels::TInfoPerVoxelSet file:mrpt/opengl/COctoMapVoxels.h line:125
+		{ // mrpt::opengl::COctoMapVoxels::TInfoPerVoxelSet file:mrpt/opengl/COctoMapVoxels.h line:126
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::opengl::COctoMapVoxels::TInfoPerVoxelSet, std::shared_ptr<mrpt::opengl::COctoMapVoxels::TInfoPerVoxelSet>> cl(enclosing_class, "TInfoPerVoxelSet", "");
 			cl.def( pybind11::init( [](){ return new mrpt::opengl::COctoMapVoxels::TInfoPerVoxelSet(); } ) );
