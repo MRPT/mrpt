@@ -2,6 +2,8 @@
 
 # Version 2.11.3: UNRELEASED
 - Changes in libraries:
+  - \ref mrpt_core_grp
+    - Add the `[[nodiscard]]` attribute to all functions returning a value in `<mrpt/core/bits_math.h>`
   - \ref mrpt_maps_grp
     - mrpt::maps::COccupancyGridMap3D::insertObservation() now also handles mrpt::obs::CObservationPointCloud
     - New virtual interface mrpt::maps::NearestNeighborsCapable, implemented in:
@@ -11,8 +13,7 @@
       - mrpt::maps::COccupancyGridMap2D
     - New virtual method mrpt::maps::CMetricMap::boundingBox()
     - mrpt::maps::TMetricMapInitializer now returns `shared_ptr`s instead of plain pointers.
-  - \ref mrpt_core_grp
-    - Add the `[[nodiscard]]` attribute to all functions returning a value in `<mrpt/core/bits_math.h>`
+    - mrpt::maps::TSetOfMetricMapInitializers::loadFromConfigFile() now throws if it finds a `*_count` entry with an unknown map class name.
 
 # Version 2.11.2: Released Oct 25th, 2023
 - Changes in libraries:

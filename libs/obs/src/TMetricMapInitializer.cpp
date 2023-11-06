@@ -109,6 +109,20 @@ void TSetOfMetricMapInitializers::loadFromConfigFile(
 
 	}  // end for each map kind
 
+	// Check for unknown map types and throw an error:
+	for (const auto& s : ini.keys(sectionName))
+	{
+		auto p = s.find("_count");
+		if (p == std::string::npos) continue;
+		const auto className = s.substr(0, p);
+		if (allMapKinds.count(className) != 0) continue;  // ok, it exists
+		THROW_EXCEPTION_FMT(
+			"Error: found INI section '%s' while parsing "
+			"TSetOfMetricMapInitializers, but there is no such registered "
+			"CMetricMap class '%s'",
+			s.c_str(), className.c_str());
+	}
+
 	MRPT_END
 }
 
