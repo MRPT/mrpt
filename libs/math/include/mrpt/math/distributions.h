@@ -228,10 +228,10 @@ void confidenceIntervals(
 	const auto x_max = data.maxCoeff();
 	const auto binWidth = (x_max - x_min) / histogramNumBins;
 
-	const std::vector<double> H =
+	const std::vector<double> hitsNormalized =
 		mrpt::math::histogram(data, x_min, x_max, histogramNumBins);
 	std::vector<double> Hc;
-	cumsum(H, Hc);	// CDF
+	cumsum(hitsNormalized, Hc);	 // CDF
 	Hc *= 1.0 / mrpt::math::maximum(Hc);
 
 	auto it_low = std::lower_bound(Hc.begin(), Hc.end(), confidenceInterval);
@@ -247,6 +247,41 @@ void confidenceIntervals(
 	MRPT_END
 }
 
+/** Return the mean and the 10%-90% confidence points (or with any other
+ * confidence value) of a set of samples from their histogram.
+ *  The container can be any MRPT container (CArray, matrices, vectors).
+ * \param confidenceInterval A number in the range (0,1) such as the confidence
+ * interval will be [100*confidenceInterval, 100*(1-confidenceInterval)].
+ */
+template <typename CONTAINER, typename T>
+void confidenceIntervalsFromHistogram(
+	const CONTAINER& histogramCoords, const CONTAINER& histogramNormalizedHits,
+	T& out_lower_conf_interval, T& out_upper_conf_interval,
+	const double confidenceInterval = 0.1)
+{
+	MRPT_START
+	ASSERT_(confidenceInterval > 0 && confidenceInterval < 1);
+
+	const auto x_min = *histogramCoords.begin();
+	const auto x_max = *histogramCoords.rbegin();
+	const auto binWidth = (x_max - x_min) / histogramCoords.size();
+
+	std::vector<double> Hc;
+	cumsum(histogramNormalizedHits, Hc);  // CDF
+	Hc *= 1.0 / mrpt::math::maximum(Hc);
+
+	auto it_low = std::lower_bound(Hc.begin(), Hc.end(), confidenceInterval);
+	ASSERT_(it_low != Hc.end());
+	auto it_high =
+		std::upper_bound(Hc.begin(), Hc.end(), 1 - confidenceInterval);
+	ASSERT_(it_high != Hc.end());
+	const size_t idx_low = std::distance(Hc.begin(), it_low);
+	const size_t idx_high = std::distance(Hc.begin(), it_high);
+	out_lower_conf_interval = x_min + idx_low * binWidth;
+	out_upper_conf_interval = x_min + idx_high * binWidth;
+
+	MRPT_END
+}
 /** @} */
 
 }  // namespace mrpt::math
