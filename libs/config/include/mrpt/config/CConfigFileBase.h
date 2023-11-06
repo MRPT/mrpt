@@ -74,9 +74,25 @@ class CConfigFileBase
 	/** Returns a list with all the section names. */
 	virtual void getAllSections(std::vector<std::string>& sections) const = 0;
 
+	/** Returns, by value, a list with all the section names. */
+	std::vector<std::string> sections() const
+	{
+		std::vector<std::string> ret;
+		getAllSections(ret);
+		return ret;
+	}
+
 	/** Returs a list with all the keys into a section */
 	virtual void getAllKeys(
 		const std::string& section, std::vector<std::string>& keys) const = 0;
+
+	/** Returs, by value, a list with all the keys into a section */
+	std::vector<std::string> keys(const std::string& section) const
+	{
+		std::vector<std::string> keys;
+		getAllKeys(section, keys);
+		return keys;
+	}
 
 	/** Checks if a given section exists (name is case insensitive)
 	 * \sa keyExists() */

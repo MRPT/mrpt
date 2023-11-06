@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
+#include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -21,7 +22,9 @@ TEST(CMultiMetricMapTests, isEmpty)
 	}
 }
 
-static mrpt::maps::CMultiMetricMap initializer1()
+namespace
+{
+mrpt::maps::CMultiMetricMap initializer1()
 {
 	mrpt::maps::TSetOfMetricMapInitializers map_inits;
 	{
@@ -42,13 +45,14 @@ static mrpt::maps::CMultiMetricMap initializer1()
 	}
 }
 
-static mrpt::maps::CMultiMetricMap initializer2()
+mrpt::maps::CMultiMetricMap initializer2()
 {
 	mrpt::maps::CMultiMetricMap m;
 	m.maps.push_back(mrpt::maps::COccupancyGridMap2D::Create());
 	m.maps.push_back(mrpt::maps::CSimplePointsMap::Create());
 	return m;
 }
+}  // namespace
 
 TEST(CMultiMetricMapTests, initializers)
 {
@@ -101,4 +105,43 @@ TEST(CMultiMetricMapTests, moveOp)
 	mrpt::maps::CMultiMetricMap m2 = std::move(m1);
 
 	EXPECT_EQ(m2.mapByClass<CSimplePointsMap>()->size(), 1U);
+}
+
+TEST(CMultiMetricMapTests, unknownMapType)
+{
+	{
+		const mrpt::config::CConfigFileMemory cfg(R""""(
+[map]
+// Creation of maps:
+occupancyGrid_count=1
+
+[map_occupancyGrid_00_creationOpts]
+min_x=-10
+max_x= 10
+min_y=-10
+max_y= 10
+)"""");
+
+		mrpt::maps::TSetOfMetricMapInitializers map_inits;
+		EXPECT_NO_THROW(map_inits.loadFromConfigFile(cfg, "map"));
+		EXPECT_EQ(map_inits.size(), 1UL);
+	}
+
+	{
+		const mrpt::config::CConfigFileMemory cfg(R""""(
+[map]
+// Creation of maps:
+occupancyGrid_count=1
+myUnregisteredMap_count=1
+
+[map_occupancyGrid_00_creationOpts]
+min_x=-10
+max_x= 10
+min_y=-10
+max_y= 10
+)"""");
+
+		mrpt::maps::TSetOfMetricMapInitializers map_inits;
+		EXPECT_ANY_THROW(map_inits.loadFromConfigFile(cfg, "map"));
+	}
 }
