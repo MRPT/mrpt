@@ -29,7 +29,9 @@
 #include <pthread.h>
 #endif
 
-static void SetThreadName(std::thread& thread, const char* threadName)
+namespace
+{
+void SetThreadName(std::thread& thread, const char* threadName)
 {
 #if !MRPT_IN_EMSCRIPTEN
 	auto handle = thread.native_handle();
@@ -37,7 +39,7 @@ static void SetThreadName(std::thread& thread, const char* threadName)
 #endif
 }
 
-static std::string GetThreadName(std::thread& thread)
+std::string GetThreadName(std::thread& thread)
 {
 #if !MRPT_IN_EMSCRIPTEN
 	auto handle = thread.native_handle();
@@ -50,13 +52,13 @@ static std::string GetThreadName(std::thread& thread)
 #endif
 }
 
-static void SetThreadName(const char* threadName)
+void SetThreadName(const char* threadName)
 {
 #if !MRPT_IN_EMSCRIPTEN
 	prctl(PR_SET_NAME, threadName, 0L, 0L, 0L);
 #endif
 }
-static std::string GetThreadName()
+std::string GetThreadName()
 {
 #if !MRPT_IN_EMSCRIPTEN
 	char buf[100] = {0};
@@ -66,7 +68,8 @@ static std::string GetThreadName()
 	return {};
 #endif
 }
-#endif
+}  // namespace
+#endif	// Linux
 
 void mrpt::system::thread_name(const std::string& name)
 {

@@ -160,11 +160,14 @@ string mrpt::system::formatTimeInterval(const double t)
 	return s;
 }
 
-static unsigned int calcSecFractions(const uint64_t tmp)
+namespace
+{
+unsigned int calcSecFractions(const uint64_t tmp)
 {
 	return static_cast<unsigned int>(
 		1e6 * static_cast<double>(tmp % 10000000) / 1e7);
 }
+}  // namespace
 
 /*---------------------------------------------------------------
   Convert a timestamp into this textual form: YEAR/MONTH/DAY,HH:MM:SS.MMM
@@ -306,7 +309,9 @@ string mrpt::system::dateToString(const mrpt::system::TTimeStamp tt)
 		"%u/%02u/%02u", 1900 + ptm->tm_year, ptm->tm_mon + 1, ptm->tm_mday);
 }
 
-static std::string implIntervalFormat(const double seconds)
+namespace
+{
+std::string implIntervalFormat(const double seconds)
 {
 	using namespace std::string_literals;
 
@@ -343,6 +348,7 @@ static std::string implIntervalFormat(const double seconds)
 	else
 		return format("%.2f ns", seconds * 1e9);
 }
+}  // namespace
 
 std::string mrpt::system::intervalFormat(const double seconds)
 {

@@ -429,7 +429,9 @@ bool yaml::internalPrintNodeAsYAML(
 	THROW_EXCEPTION("Should never reach here");
 }
 
-static std::string shortenComment(const std::optional<std::string>& c)
+namespace
+{
+std::string shortenComment(const std::optional<std::string>& c)
 {
 	if (!c.has_value()) return {"[none]"};
 
@@ -439,6 +441,7 @@ static std::string shortenComment(const std::optional<std::string>& c)
 	else
 		return {c.value()};
 }
+}  // namespace
 
 void yaml::internalPrintDebugStructure(
 	const node_t& p, std::ostream& o, int indent)
@@ -499,7 +502,9 @@ void yaml::internalPrintDebugStructure(
 	THROW_EXCEPTION("Should never reach here");
 }
 
-static void internalPrintRightComment(std::ostream& o, const std::string& c)
+namespace
+{
+void internalPrintRightComment(std::ostream& o, const std::string& c)
 {
 	if (c.find('\n') == std::string::npos)
 	{
@@ -511,6 +516,7 @@ static void internalPrintRightComment(std::ostream& o, const std::string& c)
 	s.erase(std::remove(s.begin(), s.end(), '\n'), s.end());
 	o << "  # " << s << "\n";
 }
+}  // namespace
 
 bool yaml::internalPrintAsYAML(
 	const std::monostate&, std::ostream& o, const InternalPrintState& ps,
@@ -637,7 +643,7 @@ bool yaml::internalPrintStringScalar(
 	const std::string sInd(ps.indent + 2, ' ');
 
 	// representation of empty *string*
-	const static std::string emptyStr = "''";
+	const thread_local std::string emptyStr = "''";
 	const std::string& s = sIn.empty() ? emptyStr : sIn;
 
 	const bool hasFinalNL = !s.empty() && s.back() == '\n';
@@ -770,7 +776,9 @@ yaml yaml::FromText(const std::string& yamlTextBlock)
 }
 
 // TODO: Allow users to add custom filters?
-static yaml::scalar_t textToScalar(const std::string& s)
+namespace
+{
+yaml::scalar_t textToScalar(const std::string& s)
 {
 	// tag:yaml.org,2002:null
 	// https://yaml.org/spec/1.2/spec.html#id2803362
@@ -780,10 +788,13 @@ static yaml::scalar_t textToScalar(const std::string& s)
 
 	return {s};
 }
+}  // namespace
 
 #if MRPT_HAS_FYAML
-static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p);
-
+namespace
+{
+std::optional<yaml::node_t> recursiveParse(struct fy_parser* p);
+}
 static bool MRPT_YAML_PARSER_VERBOSE =
 	mrpt::get_env<bool>("MRPT_YAML_PARSER_VERBOSE", false);
 
@@ -796,7 +807,9 @@ static bool MRPT_YAML_PARSER_VERBOSE =
 		}                                                                      \
 	} while (0)
 
-static std::optional<std::string> extractComment(
+namespace
+{
+std::optional<std::string> extractComment(
 	struct fy_token* t, enum fy_comment_placement cp)
 {
 	std::array<char, 2048> str;
@@ -813,7 +826,7 @@ static std::optional<std::string> extractComment(
 	return c;
 }
 
-static void parseTokenCommentsAndMarks(struct fy_token* tk, yaml::node_t& n)
+void parseTokenCommentsAndMarks(struct fy_token* tk, yaml::node_t& n)
 {
 	if (!tk) return;
 
@@ -839,7 +852,7 @@ static void parseTokenCommentsAndMarks(struct fy_token* tk, yaml::node_t& n)
 	}
 }
 
-static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
+std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
 {
 	MRPT_START
 
@@ -993,6 +1006,7 @@ static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
 #undef PARSER_DBG_OUT
 	MRPT_END
 }
+}  // namespace
 #endif
 
 void yaml::loadFromText(const std::string& yamlTextBlock)
@@ -1037,7 +1051,9 @@ yaml yaml::FromStream(std::istream& i)
 }
 
 // Replicated from mrpt::io to avoid dependency to that module:
-static std::string local_file_get_contents(const std::string& fileName)
+namespace
+{
+std::string local_file_get_contents(const std::string& fileName)
 {
 	// Credits: https://stackoverflow.com/a/2602258/1631514
 	// Note: Add "binary" to make sure the "tellg" file size matches the
@@ -1055,6 +1071,7 @@ static std::string local_file_get_contents(const std::string& fileName)
 	t.read(&buffer[0], size);
 	return buffer;
 }
+}  // namespace
 
 void yaml::loadFromFile(const std::string& fileName)
 {

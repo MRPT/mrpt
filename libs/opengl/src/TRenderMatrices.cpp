@@ -139,7 +139,9 @@ void TRenderMatrices::computeProjectionMatrix(float znear, float zfar)
 	}
 }
 
-static void azimuthElevationFromDirection(
+namespace
+{
+void azimuthElevationFromDirection(
 	const mrpt::math::TVector3Df& v, float& elevation, float& azimuth)
 {
 	// Compute the elevation angle
@@ -150,6 +152,7 @@ static void azimuthElevationFromDirection(
 	else
 		azimuth = atan2(v.y, v.x);
 }
+}  // namespace
 
 void TRenderMatrices::computeLightProjectionMatrix(
 	float zmin, float zmax, const TLightParameters& lp)

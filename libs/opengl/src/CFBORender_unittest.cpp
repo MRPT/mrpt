@@ -47,8 +47,9 @@
 #undef RUN_OFFSCREEN_RENDER_TESTS
 #endif
 
-static float imageDiff(
-	const mrpt::img::CImage& im1, const mrpt::img::CImage& im2)
+namespace
+{
+float imageDiff(const mrpt::img::CImage& im1, const mrpt::img::CImage& im2)
 {
 	mrpt::math::CMatrixFloat r1, g1, b1;
 	im1.getAsRGBMatrices(r1, g1, b1);
@@ -61,7 +62,7 @@ static float imageDiff(
 		(b1 - b2).asEigen().array().abs().sum();
 }
 
-static void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
+void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
 {
 	using namespace mrpt;  // _deg
 	using namespace std::string_literals;  // s
@@ -251,6 +252,7 @@ static void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
 		EXPECT_LT(depth_diff, 3000.0f);
 	}
 }
+}  // namespace
 
 #if defined(RUN_OFFSCREEN_RENDER_TESTS)
 TEST(OpenGL, CFBORender_camera_intrinsics)

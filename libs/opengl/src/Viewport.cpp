@@ -106,8 +106,9 @@ void Viewport::insert(const CRenderizable::Ptr& newObject)
 }
 
 // Maps [0,1] to [0,Len], wrap negative numbers, etc.
-static int sizeFromRatio(
-	const int startCoord, const double dSize, const int iLength)
+namespace
+{
+int sizeFromRatio(const int startCoord, const double dSize, const int iLength)
 {
 	if (dSize > 1)	// >1 -> absolute pixels:
 		return static_cast<int>(dSize);
@@ -122,7 +123,7 @@ static int sizeFromRatio(
 	// Otherwise: a fraction
 	return static_cast<int>(iLength * dSize);
 }
-static int startFromRatio(const double frac, const int dSize)
+int startFromRatio(const double frac, const int dSize)
 {
 	const bool doWrap = (frac < 0);
 	const auto fracAbs = std::abs(frac);
@@ -134,6 +135,7 @@ static int startFromRatio(const double frac, const int dSize)
 
 	return ret;
 }
+}  // namespace
 
 // "Image mode" rendering:
 void Viewport::renderImageMode() const
@@ -274,7 +276,9 @@ void Viewport::loadDefaultShaders() const
 // -----------------------------------------
 static unsigned int quadVAO = 0;
 static unsigned int quadVBO;
-static void debugRenderQuad()
+namespace
+{
+ void debugRenderQuad()
 {
 	if (quadVAO == 0)
 	{
@@ -308,6 +312,7 @@ static void debugRenderQuad()
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
 }
+}  // namespace
 #endif
 
 /** Render a normal scene with 3D objects */

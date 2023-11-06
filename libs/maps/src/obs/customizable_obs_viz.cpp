@@ -133,7 +133,9 @@ void mrpt::obs::recolorize3Dpc(
 	}
 }
 
-static void add_common_to_viz(
+namespace
+{
+void add_common_to_viz(
 	const CObservation& obs, const VisualizationParameters& p,
 	mrpt::opengl::CSetOfObjects& out)
 {
@@ -168,6 +170,7 @@ static void add_common_to_viz(
 		out.insert(glCorner);
 	}
 }
+}  // namespace
 
 void mrpt::obs::obs3Dscan_to_viz(
 	const CObservation3DRangeScan::Ptr& obs, const VisualizationParameters& p,

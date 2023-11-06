@@ -42,7 +42,9 @@ struct CConfigFile::Impl
 };
 
 // copied from mrpt-io to avoid lib dependency:
-static std::string local_file_get_contents(const std::string& fileName)
+namespace
+{
+std::string local_file_get_contents(const std::string& fileName)
 {
 	// Credits: https://stackoverflow.com/a/2602258/1631514
 	// Note: Add "binary" to make sure the "tellg" file size matches the actual
@@ -57,6 +59,7 @@ static std::string local_file_get_contents(const std::string& fileName)
 	t.read(&buffer[0], size);
 	return buffer;
 }
+}  // namespace
 
 /*---------------------------------------------------------------
 					Constructor

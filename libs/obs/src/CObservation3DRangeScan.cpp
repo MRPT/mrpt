@@ -263,7 +263,9 @@ using TMyRangesMemPool = mrpt::system::CGenericMemoryPool<
 	CObservation3DRangeScan_Ranges_MemPoolParams,
 	CObservation3DRangeScan_Ranges_MemPoolData>;
 
-static void mempool_donate_xyz_buffers(CObservation3DRangeScan& obs)
+namespace
+{
+void mempool_donate_xyz_buffers(CObservation3DRangeScan& obs)
 {
 	if (obs.points3D_x.empty()) return;
 	// Before dying, donate my memory to the pool for the joy of future
@@ -291,6 +293,8 @@ static void mempool_donate_xyz_buffers(CObservation3DRangeScan& obs)
 
 	pool->dump_to_pool(mem_params, mem_block);
 }
+}  // namespace
+
 void mempool_donate_range_matrix(CObservation3DRangeScan& obs)
 {
 	if (obs.rangeImage.cols() == 0 || obs.rangeImage.rows() == 0) return;
@@ -912,7 +916,9 @@ struct TLevMarData
 	}
 };
 
-static void cam2vec(const TCamera& camPar, CVectorDouble& x)
+namespace
+{
+void cam2vec(const TCamera& camPar, CVectorDouble& x)
 {
 	if (x.size() < 4 + 4) x.resize(4 + 4);
 
@@ -924,7 +930,7 @@ static void cam2vec(const TCamera& camPar, CVectorDouble& x)
 	for (size_t i = 0; i < 4; i++)
 		x[4 + i] = camPar.dist[i];
 }
-static void vec2cam(const CVectorDouble& x, TCamera& camPar)
+void vec2cam(const CVectorDouble& x, TCamera& camPar)
 {
 	camPar.intrinsicParams(0, 0) = x[0];  // fx
 	camPar.intrinsicParams(1, 1) = x[1];  // fy
@@ -934,7 +940,7 @@ static void vec2cam(const CVectorDouble& x, TCamera& camPar)
 	for (size_t i = 0; i < 4; i++)
 		camPar.dist[i] = x[4 + i];
 }
-static void cost_func(
+void cost_func(
 	const CVectorDouble& par, const TLevMarData& d, CVectorDouble& err)
 {
 	const CObservation3DRangeScan& obs = d.obs;
@@ -991,6 +997,7 @@ static void cost_func(
 		}
 	}
 }  // end error_func
+}  // namespace
 }  // namespace mrpt::obs::detail
 
 /** A Levenberg-Marquart-based optimizer to recover the calibration parameters
