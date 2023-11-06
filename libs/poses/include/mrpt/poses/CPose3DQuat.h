@@ -273,10 +273,10 @@ class CPose3DQuat : public CPose<CPose3DQuat, 7>,
 			case 0: return m_coords[0];
 			case 1: return m_coords[1];
 			case 2: return m_coords[2];
-			case 3: return m_quat[0];
-			case 4: return m_quat[1];
-			case 5: return m_quat[2];
-			case 6: return m_quat[3];
+			case 3: return m_quat[0];  // w
+			case 4: return m_quat[1];  // x
+			case 5: return m_quat[2];  // y
+			case 6: return m_quat[3];  // z
 			default:
 				throw std::runtime_error(
 					"CPose3DQuat::operator[]: Index of bounds.");
