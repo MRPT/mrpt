@@ -69,12 +69,13 @@ void COccupancyGridMap2D::TMapDefinition::dumpToTextStream_map_specific(
 	this->likelihoodOpts.dumpToTextStream(out);
 }
 
-mrpt::maps::CMetricMap* COccupancyGridMap2D::internal_CreateFromMapDefinition(
-	const mrpt::maps::TMetricMapInitializer& _def)
+mrpt::maps::CMetricMap::Ptr
+	COccupancyGridMap2D::internal_CreateFromMapDefinition(
+		const mrpt::maps::TMetricMapInitializer& _def)
 {
 	const COccupancyGridMap2D::TMapDefinition& def =
 		*dynamic_cast<const COccupancyGridMap2D::TMapDefinition*>(&_def);
-	auto* obj = new COccupancyGridMap2D(
+	auto obj = COccupancyGridMap2D::Create(
 		def.min_x, def.max_x, def.min_y, def.max_y, def.resolution);
 	obj->insertionOptions = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;

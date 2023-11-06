@@ -25,14 +25,14 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPose3DQuatPDF, CSerializable, mrpt::poses)
 /*---------------------------------------------------------------
 					copyFrom2D
   ---------------------------------------------------------------*/
-CPose3DQuatPDF* CPose3DQuatPDF::createFrom2D(const CPosePDF& o)
+CPose3DQuatPDF::Ptr CPose3DQuatPDF::createFrom2D(const CPosePDF& o)
 {
 	MRPT_START
 
 	CPose3DPDFGaussian q;
 	q.copyFrom(o);
 
-	return new CPose3DQuatPDFGaussian(q);
+	return std::make_shared<CPose3DQuatPDFGaussian>(q);
 
 	MRPT_END
 }

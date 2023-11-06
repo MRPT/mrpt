@@ -67,13 +67,13 @@ void CWirelessPowerGridMap2D::TMapDefinition::dumpToTextStream_map_specific(
 	this->insertionOpts.dumpToTextStream(out);
 }
 
-mrpt::maps::CMetricMap*
+mrpt::maps::CMetricMap::Ptr
 	CWirelessPowerGridMap2D::internal_CreateFromMapDefinition(
 		const mrpt::maps::TMetricMapInitializer& _def)
 {
 	const CWirelessPowerGridMap2D::TMapDefinition& def =
 		*dynamic_cast<const CWirelessPowerGridMap2D::TMapDefinition*>(&_def);
-	auto* obj = new CWirelessPowerGridMap2D(
+	auto obj = CWirelessPowerGridMap2D::Create(
 		def.mapType, def.min_x, def.max_x, def.min_y, def.max_y,
 		def.resolution);
 	obj->insertionOptions = def.insertionOpts;

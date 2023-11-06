@@ -123,7 +123,7 @@ void CMultiMetricMap::setListOfMaps(const TSetOfMetricMapInitializers& inits)
 	for (const auto& i : inits)
 	{
 		// Create map from the list of all params:
-		auto* theMap = mmr.factoryMapObjectFromDefinition(*i.get());
+		auto theMap = mmr.factoryMapObjectFromDefinition(*i.get());
 		ASSERT_(theMap);
 		// Add to the list of maps:
 		this->maps.emplace_back(theMap);

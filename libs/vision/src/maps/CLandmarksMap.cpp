@@ -99,12 +99,12 @@ void CLandmarksMap::TMapDefinition::dumpToTextStream_map_specific(
 	this->likelihoodOpts.dumpToTextStream(out);
 }
 
-mrpt::maps::CMetricMap* CLandmarksMap::internal_CreateFromMapDefinition(
+mrpt::maps::CMetricMap::Ptr CLandmarksMap::internal_CreateFromMapDefinition(
 	const mrpt::maps::TMetricMapInitializer& _def)
 {
 	const CLandmarksMap::TMapDefinition& def =
 		*dynamic_cast<const CLandmarksMap::TMapDefinition*>(&_def);
-	auto* obj = new CLandmarksMap();
+	auto obj = CLandmarksMap::Create();
 
 	for (const auto& initialBeacon : def.initialBeacons)
 	{

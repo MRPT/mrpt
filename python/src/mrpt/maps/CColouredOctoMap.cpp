@@ -534,7 +534,7 @@ struct PyCallBack_mrpt_maps_CColouredOctoMap : public mrpt::maps::CColouredOctoM
 	}
 };
 
-// mrpt::maps::CColouredOctoMap::TMapDefinition file: line:67
+// mrpt::maps::CColouredOctoMap::TMapDefinition file: line:85
 struct PyCallBack_mrpt_maps_CColouredOctoMap_TMapDefinition : public mrpt::maps::CColouredOctoMap::TMapDefinition {
 	using mrpt::maps::CColouredOctoMap::TMapDefinition::TMapDefinition;
 
@@ -1137,7 +1137,7 @@ struct PyCallBack_mrpt_maps_CColouredPointsMap_TColourOptions : public mrpt::map
 	}
 };
 
-// mrpt::maps::CColouredPointsMap::TMapDefinition file: line:67
+// mrpt::maps::CColouredPointsMap::TMapDefinition file: line:85
 struct PyCallBack_mrpt_maps_CColouredPointsMap_TMapDefinition : public mrpt::maps::CColouredPointsMap::TMapDefinition {
 	using mrpt::maps::CColouredPointsMap::TMapDefinition::TMapDefinition;
 
@@ -1240,12 +1240,12 @@ void bind_mrpt_maps_CColouredOctoMap(std::function< pybind11::module &(std::stri
 		cl.def("getClampingThresMaxLog", (float (mrpt::maps::CColouredOctoMap::*)() const) &mrpt::maps::CColouredOctoMap::getClampingThresMaxLog, "C++: mrpt::maps::CColouredOctoMap::getClampingThresMaxLog() const --> float");
 		cl.def("assign", (class mrpt::maps::CColouredOctoMap & (mrpt::maps::CColouredOctoMap::*)(const class mrpt::maps::CColouredOctoMap &)) &mrpt::maps::CColouredOctoMap::operator=, "C++: mrpt::maps::CColouredOctoMap::operator=(const class mrpt::maps::CColouredOctoMap &) --> class mrpt::maps::CColouredOctoMap &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::maps::CColouredOctoMap::TMapDefinitionBase file: line:62
+		{ // mrpt::maps::CColouredOctoMap::TMapDefinitionBase file: line:80
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CColouredOctoMap::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CColouredOctoMap::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CColouredOctoMap::TMapDefinition file: line:67
+		{ // mrpt::maps::CColouredOctoMap::TMapDefinition file: line:85
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CColouredOctoMap::TMapDefinition, std::shared_ptr<mrpt::maps::CColouredOctoMap::TMapDefinition>, PyCallBack_mrpt_maps_CColouredOctoMap_TMapDefinition, mrpt::maps::CColouredOctoMap::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CColouredOctoMap::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CColouredOctoMap_TMapDefinition(); } ) );
@@ -1312,12 +1312,12 @@ void bind_mrpt_maps_CColouredOctoMap(std::function< pybind11::module &(std::stri
 			cl.def("assign", (struct mrpt::maps::CColouredPointsMap::TColourOptions & (mrpt::maps::CColouredPointsMap::TColourOptions::*)(const struct mrpt::maps::CColouredPointsMap::TColourOptions &)) &mrpt::maps::CColouredPointsMap::TColourOptions::operator=, "C++: mrpt::maps::CColouredPointsMap::TColourOptions::operator=(const struct mrpt::maps::CColouredPointsMap::TColourOptions &) --> struct mrpt::maps::CColouredPointsMap::TColourOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CColouredPointsMap::TMapDefinitionBase file: line:62
+		{ // mrpt::maps::CColouredPointsMap::TMapDefinitionBase file: line:80
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CColouredPointsMap::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CColouredPointsMap::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CColouredPointsMap::TMapDefinition file: line:67
+		{ // mrpt::maps::CColouredPointsMap::TMapDefinition file: line:85
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CColouredPointsMap::TMapDefinition, std::shared_ptr<mrpt::maps::CColouredPointsMap::TMapDefinition>, PyCallBack_mrpt_maps_CColouredPointsMap_TMapDefinition, mrpt::maps::CColouredPointsMap::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CColouredPointsMap::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CColouredPointsMap_TMapDefinition(); } ) );
