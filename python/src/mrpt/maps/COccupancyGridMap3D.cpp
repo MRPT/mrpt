@@ -446,7 +446,7 @@ struct PyCallBack_mrpt_maps_COccupancyGridMap3D_TLikelihoodOptions : public mrpt
 	}
 };
 
-// mrpt::maps::COccupancyGridMap3D::TMapDefinition file: line:67
+// mrpt::maps::COccupancyGridMap3D::TMapDefinition file: line:85
 struct PyCallBack_mrpt_maps_COccupancyGridMap3D_TMapDefinition : public mrpt::maps::COccupancyGridMap3D::TMapDefinition {
 	using mrpt::maps::COccupancyGridMap3D::TMapDefinition::TMapDefinition;
 
@@ -598,12 +598,12 @@ void bind_mrpt_maps_COccupancyGridMap3D(std::function< pybind11::module &(std::s
 			cl.def("assign", (struct mrpt::maps::COccupancyGridMap3D::TRenderingOptions & (mrpt::maps::COccupancyGridMap3D::TRenderingOptions::*)(const struct mrpt::maps::COccupancyGridMap3D::TRenderingOptions &)) &mrpt::maps::COccupancyGridMap3D::TRenderingOptions::operator=, "C++: mrpt::maps::COccupancyGridMap3D::TRenderingOptions::operator=(const struct mrpt::maps::COccupancyGridMap3D::TRenderingOptions &) --> struct mrpt::maps::COccupancyGridMap3D::TRenderingOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::COccupancyGridMap3D::TMapDefinitionBase file: line:62
+		{ // mrpt::maps::COccupancyGridMap3D::TMapDefinitionBase file: line:80
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::COccupancyGridMap3D::TMapDefinitionBase, std::shared_ptr<mrpt::maps::COccupancyGridMap3D::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::COccupancyGridMap3D::TMapDefinition file: line:67
+		{ // mrpt::maps::COccupancyGridMap3D::TMapDefinition file: line:85
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::COccupancyGridMap3D::TMapDefinition, std::shared_ptr<mrpt::maps::COccupancyGridMap3D::TMapDefinition>, PyCallBack_mrpt_maps_COccupancyGridMap3D_TMapDefinition, mrpt::maps::COccupancyGridMap3D::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::COccupancyGridMap3D::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_COccupancyGridMap3D_TMapDefinition(); } ) );

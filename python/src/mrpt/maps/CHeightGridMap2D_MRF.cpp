@@ -587,7 +587,7 @@ struct PyCallBack_mrpt_maps_CHeightGridMap2D_MRF_TInsertionOptions : public mrpt
 	}
 };
 
-// mrpt::maps::CHeightGridMap2D_MRF::TMapDefinition file: line:67
+// mrpt::maps::CHeightGridMap2D_MRF::TMapDefinition file: line:85
 struct PyCallBack_mrpt_maps_CHeightGridMap2D_MRF_TMapDefinition : public mrpt::maps::CHeightGridMap2D_MRF::TMapDefinition {
 	using mrpt::maps::CHeightGridMap2D_MRF::TMapDefinition::TMapDefinition;
 
@@ -677,12 +677,12 @@ void bind_mrpt_maps_CHeightGridMap2D_MRF(std::function< pybind11::module &(std::
 			cl.def("assign", (struct mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions & (mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions::*)(const struct mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions &)) &mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions::operator=, "C++: mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions::operator=(const struct mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions &) --> struct mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CHeightGridMap2D_MRF::TMapDefinitionBase file: line:62
+		{ // mrpt::maps::CHeightGridMap2D_MRF::TMapDefinitionBase file: line:80
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CHeightGridMap2D_MRF::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CHeightGridMap2D_MRF::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CHeightGridMap2D_MRF::TMapDefinition file: line:67
+		{ // mrpt::maps::CHeightGridMap2D_MRF::TMapDefinition file: line:85
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CHeightGridMap2D_MRF::TMapDefinition, std::shared_ptr<mrpt::maps::CHeightGridMap2D_MRF::TMapDefinition>, PyCallBack_mrpt_maps_CHeightGridMap2D_MRF_TMapDefinition, mrpt::maps::CHeightGridMap2D_MRF::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CHeightGridMap2D_MRF::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CHeightGridMap2D_MRF_TMapDefinition(); } ) );

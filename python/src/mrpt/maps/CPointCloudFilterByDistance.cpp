@@ -674,7 +674,7 @@ struct PyCallBack_mrpt_maps_CPointsMapXYZI : public mrpt::maps::CPointsMapXYZI {
 	}
 };
 
-// mrpt::maps::CPointsMapXYZI::TMapDefinition file: line:67
+// mrpt::maps::CPointsMapXYZI::TMapDefinition file: line:85
 struct PyCallBack_mrpt_maps_CPointsMapXYZI_TMapDefinition : public mrpt::maps::CPointsMapXYZI::TMapDefinition {
 	using mrpt::maps::CPointsMapXYZI::TMapDefinition::TMapDefinition;
 
@@ -780,12 +780,12 @@ void bind_mrpt_maps_CPointCloudFilterByDistance(std::function< pybind11::module 
 		cl.def("hasColorPoints", (bool (mrpt::maps::CPointsMapXYZI::*)() const) &mrpt::maps::CPointsMapXYZI::hasColorPoints, "Returns true if the point map has a color field for each point \n\nC++: mrpt::maps::CPointsMapXYZI::hasColorPoints() const --> bool");
 		cl.def("getVisualizationInto", (void (mrpt::maps::CPointsMapXYZI::*)(class mrpt::opengl::CSetOfObjects &) const) &mrpt::maps::CPointsMapXYZI::getVisualizationInto, "Override of the default 3D scene builder to account for the individual\n points' color.\n\nC++: mrpt::maps::CPointsMapXYZI::getVisualizationInto(class mrpt::opengl::CSetOfObjects &) const --> void", pybind11::arg("outObj"));
 
-		{ // mrpt::maps::CPointsMapXYZI::TMapDefinitionBase file: line:62
+		{ // mrpt::maps::CPointsMapXYZI::TMapDefinitionBase file: line:80
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CPointsMapXYZI::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CPointsMapXYZI::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CPointsMapXYZI::TMapDefinition file: line:67
+		{ // mrpt::maps::CPointsMapXYZI::TMapDefinition file: line:85
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CPointsMapXYZI::TMapDefinition, std::shared_ptr<mrpt::maps::CPointsMapXYZI::TMapDefinition>, PyCallBack_mrpt_maps_CPointsMapXYZI_TMapDefinition, mrpt::maps::CPointsMapXYZI::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CPointsMapXYZI::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CPointsMapXYZI_TMapDefinition(); } ) );

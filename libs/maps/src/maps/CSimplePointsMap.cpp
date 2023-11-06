@@ -43,12 +43,12 @@ void CSimplePointsMap::TMapDefinition::dumpToTextStream_map_specific(
 	this->renderOpts.dumpToTextStream(out);
 }
 
-mrpt::maps::CMetricMap* CSimplePointsMap::internal_CreateFromMapDefinition(
+mrpt::maps::CMetricMap::Ptr CSimplePointsMap::internal_CreateFromMapDefinition(
 	const mrpt::maps::TMetricMapInitializer& _def)
 {
 	const CSimplePointsMap::TMapDefinition& def =
 		*dynamic_cast<const CSimplePointsMap::TMapDefinition*>(&_def);
-	auto* obj = new CSimplePointsMap();
+	auto obj = CSimplePointsMap::Create();
 	obj->insertionOptions = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;
 	obj->renderOptions = def.renderOpts;

@@ -211,11 +211,11 @@ TSetOfMetricMapInitializers CConfigWidget::config()
 		for (auto& map : it.second)
 		{
 			const std::string sMapName = map->getName().toStdString();
-			TMetricMapInitializer* mi = mmr.factoryMapDefinition(sMapName);
+			auto mi = mmr.factoryMapDefinition(sMapName);
 			ASSERT_(mi);
 
-			map->updateConfiguration(mi);
-			mapCfg.push_back(TMetricMapInitializer::Ptr(mi));
+			map->updateConfiguration(mi.get());
+			mapCfg.push_back(mi);
 			++index;
 		}
 	}

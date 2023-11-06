@@ -10,6 +10,7 @@
       - mrpt::maps::COccupancyGridMap2D
       - mrpt::maps::COccupancyGridMap2D
     - New virtual method mrpt::maps::CMetricMap::boundingBox()
+    - mrpt::maps::TMetricMapInitializer now returns `shared_ptr`s instead of plain pointers.
   - \ref mrpt_core_grp
     - Add the `[[nodiscard]]` attribute to all functions returning a value in `<mrpt/core/bits_math.h>`
 

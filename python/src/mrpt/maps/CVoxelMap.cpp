@@ -396,7 +396,7 @@ struct PyCallBack_mrpt_maps_CVoxelMap : public mrpt::maps::CVoxelMap {
 	}
 };
 
-// mrpt::maps::CVoxelMap::TMapDefinition file: line:67
+// mrpt::maps::CVoxelMap::TMapDefinition file: line:85
 struct PyCallBack_mrpt_maps_CVoxelMap_TMapDefinition : public mrpt::maps::CVoxelMap::TMapDefinition {
 	using mrpt::maps::CVoxelMap::TMapDefinition::TMapDefinition;
 
@@ -746,7 +746,7 @@ struct PyCallBack_mrpt_maps_CVoxelMapRGB : public mrpt::maps::CVoxelMapRGB {
 	}
 };
 
-// mrpt::maps::CVoxelMapRGB::TMapDefinition file: line:67
+// mrpt::maps::CVoxelMapRGB::TMapDefinition file: line:85
 struct PyCallBack_mrpt_maps_CVoxelMapRGB_TMapDefinition : public mrpt::maps::CVoxelMapRGB::TMapDefinition {
 	using mrpt::maps::CVoxelMapRGB::TMapDefinition::TMapDefinition;
 
@@ -814,12 +814,12 @@ void bind_mrpt_maps_CVoxelMap(std::function< pybind11::module &(std::string cons
 		cl.def_static("CreateObject", (class std::shared_ptr<class mrpt::rtti::CObject> (*)()) &mrpt::maps::CVoxelMap::CreateObject, "C++: mrpt::maps::CVoxelMap::CreateObject() --> class std::shared_ptr<class mrpt::rtti::CObject>");
 		cl.def("assign", (class mrpt::maps::CVoxelMap & (mrpt::maps::CVoxelMap::*)(const class mrpt::maps::CVoxelMap &)) &mrpt::maps::CVoxelMap::operator=, "C++: mrpt::maps::CVoxelMap::operator=(const class mrpt::maps::CVoxelMap &) --> class mrpt::maps::CVoxelMap &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::maps::CVoxelMap::TMapDefinitionBase file: line:62
+		{ // mrpt::maps::CVoxelMap::TMapDefinitionBase file: line:80
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CVoxelMap::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CVoxelMap::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CVoxelMap::TMapDefinition file: line:67
+		{ // mrpt::maps::CVoxelMap::TMapDefinition file: line:85
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CVoxelMap::TMapDefinition, std::shared_ptr<mrpt::maps::CVoxelMap::TMapDefinition>, PyCallBack_mrpt_maps_CVoxelMap_TMapDefinition, mrpt::maps::CVoxelMap::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CVoxelMap::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CVoxelMap_TMapDefinition(); } ) );
@@ -866,12 +866,12 @@ void bind_mrpt_maps_CVoxelMap(std::function< pybind11::module &(std::string cons
 		cl.def_static("CreateObject", (class std::shared_ptr<class mrpt::rtti::CObject> (*)()) &mrpt::maps::CVoxelMapRGB::CreateObject, "C++: mrpt::maps::CVoxelMapRGB::CreateObject() --> class std::shared_ptr<class mrpt::rtti::CObject>");
 		cl.def("assign", (class mrpt::maps::CVoxelMapRGB & (mrpt::maps::CVoxelMapRGB::*)(const class mrpt::maps::CVoxelMapRGB &)) &mrpt::maps::CVoxelMapRGB::operator=, "C++: mrpt::maps::CVoxelMapRGB::operator=(const class mrpt::maps::CVoxelMapRGB &) --> class mrpt::maps::CVoxelMapRGB &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::maps::CVoxelMapRGB::TMapDefinitionBase file: line:62
+		{ // mrpt::maps::CVoxelMapRGB::TMapDefinitionBase file: line:80
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CVoxelMapRGB::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CVoxelMapRGB::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CVoxelMapRGB::TMapDefinition file: line:67
+		{ // mrpt::maps::CVoxelMapRGB::TMapDefinition file: line:85
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CVoxelMapRGB::TMapDefinition, std::shared_ptr<mrpt::maps::CVoxelMapRGB::TMapDefinition>, PyCallBack_mrpt_maps_CVoxelMapRGB_TMapDefinition, mrpt::maps::CVoxelMapRGB::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CVoxelMapRGB::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CVoxelMapRGB_TMapDefinition(); } ) );

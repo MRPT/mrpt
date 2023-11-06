@@ -398,7 +398,7 @@ struct PyCallBack_mrpt_maps_CReflectivityGridMap2D_TInsertionOptions : public mr
 	}
 };
 
-// mrpt::maps::CReflectivityGridMap2D::TMapDefinition file: line:67
+// mrpt::maps::CReflectivityGridMap2D::TMapDefinition file: line:85
 struct PyCallBack_mrpt_maps_CReflectivityGridMap2D_TMapDefinition : public mrpt::maps::CReflectivityGridMap2D::TMapDefinition {
 	using mrpt::maps::CReflectivityGridMap2D::TMapDefinition::TMapDefinition;
 
@@ -969,7 +969,7 @@ struct PyCallBack_mrpt_maps_CWeightedPointsMap : public mrpt::maps::CWeightedPoi
 	}
 };
 
-// mrpt::maps::CWeightedPointsMap::TMapDefinition file: line:67
+// mrpt::maps::CWeightedPointsMap::TMapDefinition file: line:85
 struct PyCallBack_mrpt_maps_CWeightedPointsMap_TMapDefinition : public mrpt::maps::CWeightedPointsMap::TMapDefinition {
 	using mrpt::maps::CWeightedPointsMap::TMapDefinition::TMapDefinition;
 
@@ -1055,12 +1055,12 @@ void bind_mrpt_maps_CReflectivityGridMap2D(std::function< pybind11::module &(std
 			cl.def("assign", (struct mrpt::maps::CReflectivityGridMap2D::TInsertionOptions & (mrpt::maps::CReflectivityGridMap2D::TInsertionOptions::*)(const struct mrpt::maps::CReflectivityGridMap2D::TInsertionOptions &)) &mrpt::maps::CReflectivityGridMap2D::TInsertionOptions::operator=, "C++: mrpt::maps::CReflectivityGridMap2D::TInsertionOptions::operator=(const struct mrpt::maps::CReflectivityGridMap2D::TInsertionOptions &) --> struct mrpt::maps::CReflectivityGridMap2D::TInsertionOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CReflectivityGridMap2D::TMapDefinitionBase file: line:62
+		{ // mrpt::maps::CReflectivityGridMap2D::TMapDefinitionBase file: line:80
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CReflectivityGridMap2D::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CReflectivityGridMap2D::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CReflectivityGridMap2D::TMapDefinition file: line:67
+		{ // mrpt::maps::CReflectivityGridMap2D::TMapDefinition file: line:85
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CReflectivityGridMap2D::TMapDefinition, std::shared_ptr<mrpt::maps::CReflectivityGridMap2D::TMapDefinition>, PyCallBack_mrpt_maps_CReflectivityGridMap2D_TMapDefinition, mrpt::maps::CReflectivityGridMap2D::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CReflectivityGridMap2D::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CReflectivityGridMap2D_TMapDefinition(); } ) );
@@ -1094,12 +1094,12 @@ void bind_mrpt_maps_CReflectivityGridMap2D(std::function< pybind11::module &(std
 		cl.def("setPointWeight", (void (mrpt::maps::CWeightedPointsMap::*)(size_t, unsigned long)) &mrpt::maps::CWeightedPointsMap::setPointWeight, "Sets the point weight, which is ignored in all classes but those which\n actually store that field (Note: No checks are done for out-of-bounds\n index). \n\n getPointWeight\n\nC++: mrpt::maps::CWeightedPointsMap::setPointWeight(size_t, unsigned long) --> void", pybind11::arg("index"), pybind11::arg("w"));
 		cl.def("getPointWeight", (unsigned int (mrpt::maps::CWeightedPointsMap::*)(size_t) const) &mrpt::maps::CWeightedPointsMap::getPointWeight, "Gets the point weight, which is ignored in all classes (defaults to 1)\n but in those which actually store that field (Note: No checks are done\n for out-of-bounds index).  \n\n setPointWeight\n\nC++: mrpt::maps::CWeightedPointsMap::getPointWeight(size_t) const --> unsigned int", pybind11::arg("index"));
 
-		{ // mrpt::maps::CWeightedPointsMap::TMapDefinitionBase file: line:62
+		{ // mrpt::maps::CWeightedPointsMap::TMapDefinitionBase file: line:80
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CWeightedPointsMap::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CWeightedPointsMap::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CWeightedPointsMap::TMapDefinition file: line:67
+		{ // mrpt::maps::CWeightedPointsMap::TMapDefinition file: line:85
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CWeightedPointsMap::TMapDefinition, std::shared_ptr<mrpt::maps::CWeightedPointsMap::TMapDefinition>, PyCallBack_mrpt_maps_CWeightedPointsMap_TMapDefinition, mrpt::maps::CWeightedPointsMap::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CWeightedPointsMap::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CWeightedPointsMap_TMapDefinition(); } ) );

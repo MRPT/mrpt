@@ -64,7 +64,7 @@ struct TMetricMapInitializer : public mrpt::config::CLoadableOptions
 
 	/** Looks up in the registry of known map types and call the corresponding
 	 * `<metric_map_class>::MapDefinition()`. */
-	static TMetricMapInitializer* factory(const std::string& mapClassName);
+	static Ptr factory(const std::string& mapClassName);
 
    protected:
 	TMetricMapInitializer(const mrpt::rtti::TRuntimeClassId* classID);
@@ -97,7 +97,7 @@ class TSetOfMetricMapInitializers : public mrpt::config::CLoadableOptions
 	template <typename MAP_DEFINITION>
 	void push_back(const MAP_DEFINITION& o)
 	{
-		m_list.push_back(TMetricMapInitializer::Ptr(new MAP_DEFINITION(o)));
+		m_list.push_back(std::make_shared<MAP_DEFINITION>(o));
 	}
 
 	void push_back(const TMetricMapInitializer::Ptr& o) { m_list.push_back(o); }

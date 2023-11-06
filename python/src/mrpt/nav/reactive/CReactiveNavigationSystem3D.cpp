@@ -19,7 +19,6 @@
 #include <mrpt/kinematics/CVehicleVelCmd.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/CPointsMap.h>
-#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/maps/metric_map_types.h>
@@ -51,7 +50,6 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
-#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/T2DScanProperties.h>
 #include <mrpt/obs/T3DPointsTo2DScanParams.h>
 #include <mrpt/obs/TRangeImageFilter.h>

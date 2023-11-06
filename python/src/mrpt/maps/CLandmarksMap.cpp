@@ -390,7 +390,7 @@ struct PyCallBack_mrpt_maps_CLandmarksMap_TLikelihoodOptions : public mrpt::maps
 	}
 };
 
-// mrpt::maps::CLandmarksMap::TMapDefinition file: line:67
+// mrpt::maps::CLandmarksMap::TMapDefinition file: line:85
 struct PyCallBack_mrpt_maps_CLandmarksMap_TMapDefinition : public mrpt::maps::CLandmarksMap::TMapDefinition {
 	using mrpt::maps::CLandmarksMap::TMapDefinition::TMapDefinition;
 
@@ -583,12 +583,12 @@ void bind_mrpt_maps_CLandmarksMap(std::function< pybind11::module &(std::string 
 			cl.def("assign", (struct mrpt::maps::CLandmarksMap::TFuseOptions & (mrpt::maps::CLandmarksMap::TFuseOptions::*)(const struct mrpt::maps::CLandmarksMap::TFuseOptions &)) &mrpt::maps::CLandmarksMap::TFuseOptions::operator=, "C++: mrpt::maps::CLandmarksMap::TFuseOptions::operator=(const struct mrpt::maps::CLandmarksMap::TFuseOptions &) --> struct mrpt::maps::CLandmarksMap::TFuseOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CLandmarksMap::TMapDefinitionBase file: line:62
+		{ // mrpt::maps::CLandmarksMap::TMapDefinitionBase file: line:80
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CLandmarksMap::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CLandmarksMap::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CLandmarksMap::TMapDefinition file: line:67
+		{ // mrpt::maps::CLandmarksMap::TMapDefinition file: line:85
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CLandmarksMap::TMapDefinition, std::shared_ptr<mrpt::maps::CLandmarksMap::TMapDefinition>, PyCallBack_mrpt_maps_CLandmarksMap_TMapDefinition, mrpt::maps::CLandmarksMap::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CLandmarksMap::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CLandmarksMap_TMapDefinition(); } ) );

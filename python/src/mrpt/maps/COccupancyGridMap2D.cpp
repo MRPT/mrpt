@@ -453,7 +453,7 @@ struct PyCallBack_mrpt_maps_COccupancyGridMap2D_TLikelihoodOptions : public mrpt
 	}
 };
 
-// mrpt::maps::COccupancyGridMap2D::TMapDefinition file: line:67
+// mrpt::maps::COccupancyGridMap2D::TMapDefinition file: line:85
 struct PyCallBack_mrpt_maps_COccupancyGridMap2D_TMapDefinition : public mrpt::maps::COccupancyGridMap2D::TMapDefinition {
 	using mrpt::maps::COccupancyGridMap2D::TMapDefinition::TMapDefinition;
 
@@ -769,12 +769,12 @@ void bind_mrpt_maps_COccupancyGridMap2D(std::function< pybind11::module &(std::s
 			cl.def("assign", (struct mrpt::maps::COccupancyGridMap2D::TCriticalPointsList & (mrpt::maps::COccupancyGridMap2D::TCriticalPointsList::*)(const struct mrpt::maps::COccupancyGridMap2D::TCriticalPointsList &)) &mrpt::maps::COccupancyGridMap2D::TCriticalPointsList::operator=, "C++: mrpt::maps::COccupancyGridMap2D::TCriticalPointsList::operator=(const struct mrpt::maps::COccupancyGridMap2D::TCriticalPointsList &) --> struct mrpt::maps::COccupancyGridMap2D::TCriticalPointsList &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::COccupancyGridMap2D::TMapDefinitionBase file: line:62
+		{ // mrpt::maps::COccupancyGridMap2D::TMapDefinitionBase file: line:80
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::COccupancyGridMap2D::TMapDefinitionBase, std::shared_ptr<mrpt::maps::COccupancyGridMap2D::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::COccupancyGridMap2D::TMapDefinition file: line:67
+		{ // mrpt::maps::COccupancyGridMap2D::TMapDefinition file: line:85
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::COccupancyGridMap2D::TMapDefinition, std::shared_ptr<mrpt::maps::COccupancyGridMap2D::TMapDefinition>, PyCallBack_mrpt_maps_COccupancyGridMap2D_TMapDefinition, mrpt::maps::COccupancyGridMap2D::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::COccupancyGridMap2D::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_COccupancyGridMap2D_TMapDefinition(); } ) );

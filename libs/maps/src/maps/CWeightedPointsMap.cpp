@@ -45,12 +45,13 @@ void CWeightedPointsMap::TMapDefinition::dumpToTextStream_map_specific(
 	this->likelihoodOpts.dumpToTextStream(out);
 }
 
-mrpt::maps::CMetricMap* CWeightedPointsMap::internal_CreateFromMapDefinition(
-	const mrpt::maps::TMetricMapInitializer& _def)
+mrpt::maps::CMetricMap::Ptr
+	CWeightedPointsMap::internal_CreateFromMapDefinition(
+		const mrpt::maps::TMetricMapInitializer& _def)
 {
 	const CWeightedPointsMap::TMapDefinition& def =
 		*dynamic_cast<const CWeightedPointsMap::TMapDefinition*>(&_def);
-	auto* obj = new CWeightedPointsMap();
+	auto obj = CWeightedPointsMap::Create();
 	obj->insertionOptions = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;
 	return obj;

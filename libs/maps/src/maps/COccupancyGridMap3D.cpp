@@ -63,11 +63,12 @@ void COccupancyGridMap3D::TMapDefinition::dumpToTextStream_map_specific(
 	this->likelihoodOpts.dumpToTextStream(out);
 }
 
-mrpt::maps::CMetricMap* COccupancyGridMap3D::internal_CreateFromMapDefinition(
-	const mrpt::maps::TMetricMapInitializer& _def)
+mrpt::maps::CMetricMap::Ptr
+	COccupancyGridMap3D::internal_CreateFromMapDefinition(
+		const mrpt::maps::TMetricMapInitializer& _def)
 {
 	auto& def = dynamic_cast<const COccupancyGridMap3D::TMapDefinition&>(_def);
-	auto* obj = new COccupancyGridMap3D(
+	auto obj = COccupancyGridMap3D::Create(
 		mrpt::math::TPoint3D(def.min_x, def.min_y, def.min_z),
 		mrpt::math::TPoint3D(def.max_x, def.max_y, def.max_z), def.resolution);
 	obj->insertionOptions = def.insertionOpts;

@@ -56,12 +56,12 @@ void CPointsMapXYZI::TMapDefinition::dumpToTextStream_map_specific(
 	this->likelihoodOpts.dumpToTextStream(out);
 }
 
-mrpt::maps::CMetricMap* CPointsMapXYZI::internal_CreateFromMapDefinition(
+mrpt::maps::CMetricMap::Ptr CPointsMapXYZI::internal_CreateFromMapDefinition(
 	const mrpt::maps::TMetricMapInitializer& _def)
 {
 	const CPointsMapXYZI::TMapDefinition& def =
 		*dynamic_cast<const CPointsMapXYZI::TMapDefinition*>(&_def);
-	auto* obj = new CPointsMapXYZI();
+	auto obj = CPointsMapXYZI::Create();
 	obj->insertionOptions = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;
 	return obj;
