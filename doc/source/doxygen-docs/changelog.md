@@ -14,6 +14,9 @@
     - New virtual method mrpt::maps::CMetricMap::boundingBox()
     - mrpt::maps::TMetricMapInitializer now returns `shared_ptr`s instead of plain pointers.
     - mrpt::maps::TSetOfMetricMapInitializers::loadFromConfigFile() now throws if it finds a `*_count` entry with an unknown map class name.
+  - \ref mrpt_math_grp
+    - New template mrpt::math::confidenceIntervalsFromHistogram()
+
 
 # Version 2.11.2: Released Oct 25th, 2023
 - Changes in libraries:
