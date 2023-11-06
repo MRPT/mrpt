@@ -29,7 +29,9 @@ std::string exception_line_msg(
 	return s;
 }
 
-static size_t findClosingBracket(
+namespace
+{
+size_t findClosingBracket(
 	const char chClosing, const char chOpening, const std::string& str)
 {
 	const size_t N = str.size();
@@ -46,6 +48,7 @@ static size_t findClosingBracket(
 	}
 	return std::string::npos;
 }
+}  // namespace
 
 /** Recursive implementation for mrpt::exception_to_str() */
 void impl_excep_to_str(

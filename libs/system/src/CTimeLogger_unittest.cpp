@@ -14,13 +14,16 @@
 #include <mutex>
 #include <thread>
 
-static void doTimLogEntry(
+namespace
+{
+void doTimLogEntry(
 	mrpt::system::CTimeLogger& tl, const char* name, const int ms)
 {
 	tl.enter(name);
 	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 	tl.leave(name);
 }
+}  // namespace
 
 TEST(CTimeLogger, getLastTime)
 {

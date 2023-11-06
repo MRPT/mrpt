@@ -122,19 +122,20 @@ void Velo::getDescriptionAsText(std::ostream& o) const
 }
 
 /** [us] */
-static double HDL32AdjustTimeStamp(int firingblock, int dsr)
+namespace
+{
+double HDL32AdjustTimeStamp(int firingblock, int dsr)
 {
 	return (firingblock * HDR32_FIRING_TOFFSET) + (dsr * HDR32_DSR_TOFFSET);
 }
 /** [us] */
-static double VLP16AdjustTimeStamp(
-	int firingblock, int dsr, int firingwithinblock)
+double VLP16AdjustTimeStamp(int firingblock, int dsr, int firingwithinblock)
 {
 	return (firingblock * VLP16_BLOCK_TDURATION) + (dsr * VLP16_DSR_TOFFSET) +
 		(firingwithinblock * VLP16_FIRING_TOFFSET);
 }
 
-static void velodyne_scan_to_pointcloud(
+void velodyne_scan_to_pointcloud(
 	const Velo& scan, const Velo::TGeneratePointCloudParameters& params,
 	Velo::PointCloudStorageWrapper& out_pc)
 {
@@ -419,6 +420,7 @@ static void velodyne_scan_to_pointcloud(
 		}  // end for each block [0,11]
 	}  // end for each data packet
 }
+}  // namespace
 
 void Velo::generatePointCloud(
 	PointCloudStorageWrapper& dest, const TGeneratePointCloudParameters& params)

@@ -88,14 +88,19 @@ inline void from_nanoseconds(const uint64_t ns, struct timespec& ts)
 
 // Convert to TTimeStamp 100-nanoseconds representation:
 #if !defined(_WIN32)
-static uint64_t to100ns(const timespec& tim)
+namespace
+{
+uint64_t to100ns(const timespec& tim)
 {
 	return uint64_t(tim.tv_sec) * UINT64_C(10000000) +
 		UINT64_C(116444736) * UINT64_C(1000000000) + tim.tv_nsec / 100;
 }
+}  // namespace
 #endif
 
-static uint64_t getCurrentTime() noexcept
+namespace
+{
+uint64_t getCurrentTime() noexcept
 {
 	const auto& clk = mrpt::internal::ClockState::Instance();
 	switch (clk.selectedClock())
@@ -163,6 +168,7 @@ static uint64_t getCurrentTime() noexcept
 
 	return 0;  // should never reach here
 }
+}  // namespace
 
 mrpt::Clock::time_point mrpt::Clock::now() noexcept
 {

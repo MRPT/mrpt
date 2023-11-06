@@ -80,7 +80,9 @@ TEST(exception, assertException)
 		mrpt::ExceptionWithCallBackBase);
 }
 
-static std::string testFoo()
+namespace
+{
+std::string testFoo()
 {
 	try
 	{
@@ -94,6 +96,7 @@ static std::string testFoo()
 		return err;
 	}
 }
+}  // namespace
 
 TEST(exception, infiniteRecurseBug)
 {

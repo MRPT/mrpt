@@ -36,7 +36,9 @@ bool tfest::se2_l2(
 }
 
 // Non-vectorized version
-static mrpt::tfest::internal::se2_l2_impl_return_t<float> se2_l2_impl(
+namespace
+{
+mrpt::tfest::internal::se2_l2_impl_return_t<float> se2_l2_impl(
 	const TMatchingPairList& in_correspondences)
 {
 	// SSE vectorized version:
@@ -81,6 +83,7 @@ static mrpt::tfest::internal::se2_l2_impl_return_t<float> se2_l2_impl(
 
 	return ret;
 }
+}  // namespace
 
 /*---------------------------------------------------------------
 			leastSquareErrorRigidTransformation

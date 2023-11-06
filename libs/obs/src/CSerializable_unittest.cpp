@@ -129,25 +129,28 @@ TEST(Observations, WriteReadToOctectVectors)
 	}
 }
 
-static bool aux_get_sample_data(mrpt::obs::CObservation&) { return false; }
-static bool aux_get_sample_data(mrpt::obs::CAction&) { return false; }
+namespace
+{
+bool aux_get_sample_data(mrpt::obs::CObservation&) { return false; }
+bool aux_get_sample_data(mrpt::obs::CAction&) { return false; }
 
-static bool aux_get_sample_data(mrpt::obs::CObservation2DRangeScan& o)
+bool aux_get_sample_data(mrpt::obs::CObservation2DRangeScan& o)
 {
 	mrpt::obs::stock_observations::example2DRangeScan(o);
 	return true;
 }
-static bool aux_get_sample_data(mrpt::obs::CObservationImage& o)
+bool aux_get_sample_data(mrpt::obs::CObservationImage& o)
 {
 	mrpt::obs::stock_observations::exampleImage(o.image);
 	return true;
 }
-static bool aux_get_sample_data(mrpt::obs::CObservationStereoImages& o)
+bool aux_get_sample_data(mrpt::obs::CObservationStereoImages& o)
 {
 	mrpt::obs::stock_observations::exampleImage(o.imageLeft, 0);
 	mrpt::obs::stock_observations::exampleImage(o.imageRight, 1);
 	return true;
 }
+}  // namespace
 
 // Try to invoke a copy ctor and = operator:
 template <class T>

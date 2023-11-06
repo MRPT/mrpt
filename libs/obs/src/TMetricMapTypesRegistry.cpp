@@ -25,7 +25,9 @@ TMetricMapTypesRegistry& TMetricMapTypesRegistry::Instance()
 	return reg;
 }
 
-static std::string stripNamespace(const std::string& n)
+namespace
+{
+std::string stripNamespace(const std::string& n)
 {
 	std::string ret = n;
 	const auto pos = ret.rfind("::");
@@ -33,6 +35,7 @@ static std::string stripNamespace(const std::string& n)
 
 	return ret;
 }
+}  // namespace
 
 size_t TMetricMapTypesRegistry::doRegister(
 	const std::string& names, MapDefCtorFunctor func1,

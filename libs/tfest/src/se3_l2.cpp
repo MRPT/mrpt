@@ -67,7 +67,9 @@ using namespace std;
 /*---------------------------------------------------------------
 					se3_l2  (old "HornMethod()")
   ---------------------------------------------------------------*/
-static bool se3_l2_internal(
+namespace
+{
+bool se3_l2_internal(
 	std::vector<mrpt::math::TPoint3D>&
 		points_this,  // IN/OUT: It gets modified!
 	std::vector<mrpt::math::TPoint3D>&
@@ -201,6 +203,7 @@ static bool se3_l2_internal(
 
 	MRPT_END
 }  // end se3_l2_internal()
+}  // namespace
 
 bool tfest::se3_l2(
 	const std::vector<mrpt::math::TPoint3D>& in_points_this,
