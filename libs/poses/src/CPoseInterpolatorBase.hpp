@@ -16,6 +16,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
+#include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/datetime.h>
 
@@ -257,6 +258,37 @@ bool CPoseInterpolatorBase<DIM>::saveToTextFile(const std::string& s) const
 }
 
 template <int DIM>
+bool CPoseInterpolatorBase<DIM>::saveToTextFile_TUM(const std::string& s) const
+{
+	try
+	{
+		std::ofstream f;
+		f.open(s);
+		if (!f.is_open()) return false;
+		std::string str;
+		for (auto i = m_path.begin(); i != m_path.end(); ++i)
+		{
+			const double t = mrpt::system::timestampTotime_t(i->first);
+			const auto p =
+				mrpt::poses::CPose3DQuat(mrpt::poses::CPose3D(i->second));
+
+			// TUM format: timestamp x y z q_x q_y q_z q_w
+			str = mrpt::format("%.06f", t);
+			constexpr std::array<int, 7> idxs = {0, 1, 2, 4, 5, 6, 3};
+			for (unsigned int k = 0; k < 7; k++)
+				str += mrpt::format(" %.06f", p[idxs[k]]);
+			str += std::string("\n");
+			f << str;
+		}
+		return true;
+	}
+	catch (...)
+	{
+		return false;
+	}
+}
+
+template <int DIM>
 bool CPoseInterpolatorBase<DIM>::saveInterpolatedToTextFile(
 	const std::string& s, const mrpt::Clock::duration& period) const
 {
@@ -323,6 +355,43 @@ bool CPoseInterpolatorBase<DIM>::loadFromTextFile(const std::string& s)
 		for (unsigned int k = 0; k < pose_t::static_size; k++)
 			p[k] = M(i, k + 1);
 		insert(mrpt::system::time_tToTimestamp(M(i, 0)), p);
+	}
+	return true;
+	MRPT_END
+}
+
+template <int DIM>
+bool CPoseInterpolatorBase<DIM>::loadFromTextFile_TUM(const std::string& s)
+{
+	MRPT_START
+
+	clear();
+	mrpt::math::CMatrixD M;
+
+	try
+	{
+		M.loadFromTextFile(s);
+	}
+	catch (std::exception&)
+	{
+		return false;  // error loading file
+	}
+
+	// Check valid format:
+	if (M.rows() == 0) return false;
+	ASSERT_(M.cols() == 3 + 4 + 1);
+
+	// load into the path:
+	const size_t N = M.rows();
+	constexpr std::array<int, 7> idxs = {0, 1, 2, 4, 5, 6, 3};
+	mrpt::poses::CPose3DQuat p;
+	for (size_t i = 0; i < N; i++)
+	{
+		for (unsigned int k = 0; k < 7; k++)
+			p[idxs[k]] = M(i, k + 1);
+		insert(
+			mrpt::system::time_tToTimestamp(M(i, 0)),
+			pose_t(mrpt::poses::CPose3D(p).asTPose()));
 	}
 	return true;
 	MRPT_END

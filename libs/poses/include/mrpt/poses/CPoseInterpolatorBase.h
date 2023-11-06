@@ -168,6 +168,16 @@ class CPoseInterpolatorBase
 	 */
 	bool saveToTextFile(const std::string& s) const;
 
+	/** Saves the points in the interpolator to a text file in the "TUM" dataset
+	 *  format: each row contains these elements separated by spaces:
+	 *	- Timestamp: As a "double time_t" (see mrpt::system::timestampTotime_t).
+	 *	- x y z: The 3D position in meters.
+	 *	- q_x q_y q_z q_w: Quaternion
+	 * \sa loadFromTextFile, saveTextFile_TUM
+	 * \return true on success, false on any error.
+	 */
+	bool saveToTextFile_TUM(const std::string& s) const;
+
 	/** Saves the points in the interpolator to a text file, with the same
 	 * format that saveToTextFile, but interpolating the path with the given
 	 * period in seconds.
@@ -182,6 +192,13 @@ class CPoseInterpolatorBase
 	 * \exception std::exception On invalid file format
 	 */
 	bool loadFromTextFile(const std::string& s);
+
+	/** Loads from a text file, in the "TUM" dataset
+	 *  format.
+	 * \return true on success, false on any error.
+	 * \exception std::exception On invalid file format
+	 */
+	bool loadFromTextFile_TUM(const std::string& s);
 
 	/** Computes the bounding box in all Euclidean coordinates of the whole
 	 * path. \exception std::exception On empty path */
