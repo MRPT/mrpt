@@ -309,7 +309,7 @@ struct PyCallBack_mrpt_maps_COccupancyGridMap2D : public mrpt::maps::COccupancyG
 		}
 		return COccupancyGridMap2D::nn_index_count();
 	}
-	bool nn_single_search(const struct mrpt::math::TPoint3D_<float> & a0, struct mrpt::math::TPoint3D_<float> & a1, float & a2, unsigned long & a3) const override {
+	bool nn_single_search(const struct mrpt::math::TPoint3D_<float> & a0, struct mrpt::math::TPoint3D_<float> & a1, float & a2, uint64_t & a3) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::COccupancyGridMap2D *>(this), "nn_single_search");
 		if (overload) {
@@ -322,7 +322,7 @@ struct PyCallBack_mrpt_maps_COccupancyGridMap2D : public mrpt::maps::COccupancyG
 		}
 		return COccupancyGridMap2D::nn_single_search(a0, a1, a2, a3);
 	}
-	bool nn_single_search(const struct mrpt::math::TPoint2D_<float> & a0, struct mrpt::math::TPoint2D_<float> & a1, float & a2, unsigned long & a3) const override {
+	bool nn_single_search(const struct mrpt::math::TPoint2D_<float> & a0, struct mrpt::math::TPoint2D_<float> & a1, float & a2, uint64_t & a3) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::COccupancyGridMap2D *>(this), "nn_single_search");
 		if (overload) {
@@ -637,8 +637,8 @@ void bind_mrpt_maps_COccupancyGridMap2D(std::function< pybind11::module &(std::s
 		cl.def("asString", (std::string (mrpt::maps::COccupancyGridMap2D::*)() const) &mrpt::maps::COccupancyGridMap2D::asString, "Returns a short description of the map. \n\nC++: mrpt::maps::COccupancyGridMap2D::asString() const --> std::string");
 		cl.def("nn_has_indices_or_ids", (bool (mrpt::maps::COccupancyGridMap2D::*)() const) &mrpt::maps::COccupancyGridMap2D::nn_has_indices_or_ids, "		@{ \n\nC++: mrpt::maps::COccupancyGridMap2D::nn_has_indices_or_ids() const --> bool");
 		cl.def("nn_index_count", (size_t (mrpt::maps::COccupancyGridMap2D::*)() const) &mrpt::maps::COccupancyGridMap2D::nn_index_count, "C++: mrpt::maps::COccupancyGridMap2D::nn_index_count() const --> size_t");
-		cl.def("nn_single_search", (bool (mrpt::maps::COccupancyGridMap2D::*)(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &, unsigned long &) const) &mrpt::maps::COccupancyGridMap2D::nn_single_search, "C++: mrpt::maps::COccupancyGridMap2D::nn_single_search(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &, unsigned long &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"), pybind11::arg("resultIndexOrID"));
-		cl.def("nn_single_search", (bool (mrpt::maps::COccupancyGridMap2D::*)(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &, unsigned long &) const) &mrpt::maps::COccupancyGridMap2D::nn_single_search, "C++: mrpt::maps::COccupancyGridMap2D::nn_single_search(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &, unsigned long &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"), pybind11::arg("resultIndexOrID"));
+		cl.def("nn_single_search", (bool (mrpt::maps::COccupancyGridMap2D::*)(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &, unsigned long &) const) &mrpt::maps::COccupancyGridMap2D::nn_single_search, "C++: mrpt::maps::COccupancyGridMap2D::nn_single_search(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &, uint64_t &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"), pybind11::arg("resultIndexOrID"));
+		cl.def("nn_single_search", (bool (mrpt::maps::COccupancyGridMap2D::*)(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &, unsigned long &) const) &mrpt::maps::COccupancyGridMap2D::nn_single_search, "C++: mrpt::maps::COccupancyGridMap2D::nn_single_search(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &, uint64_t &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"), pybind11::arg("resultIndexOrID"));
 		cl.def("assign", (class mrpt::maps::COccupancyGridMap2D & (mrpt::maps::COccupancyGridMap2D::*)(const class mrpt::maps::COccupancyGridMap2D &)) &mrpt::maps::COccupancyGridMap2D::operator=, "C++: mrpt::maps::COccupancyGridMap2D::operator=(const class mrpt::maps::COccupancyGridMap2D &) --> class mrpt::maps::COccupancyGridMap2D &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
 		{ // mrpt::maps::COccupancyGridMap2D::TUpdateCellsInfoChangeOnly file:mrpt/maps/COccupancyGridMap2D.h line:215

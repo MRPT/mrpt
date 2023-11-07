@@ -1012,7 +1012,7 @@ struct PyCallBack_mrpt_maps_CColouredPointsMap : public mrpt::maps::CColouredPoi
 		}
 		return CPointsMap::nn_index_count();
 	}
-	bool nn_single_search(const struct mrpt::math::TPoint3D_<float> & a0, struct mrpt::math::TPoint3D_<float> & a1, float & a2, unsigned long & a3) const override {
+	bool nn_single_search(const struct mrpt::math::TPoint3D_<float> & a0, struct mrpt::math::TPoint3D_<float> & a1, float & a2, uint64_t & a3) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CColouredPointsMap *>(this), "nn_single_search");
 		if (overload) {
@@ -1025,7 +1025,7 @@ struct PyCallBack_mrpt_maps_CColouredPointsMap : public mrpt::maps::CColouredPoi
 		}
 		return CPointsMap::nn_single_search(a0, a1, a2, a3);
 	}
-	bool nn_single_search(const struct mrpt::math::TPoint2D_<float> & a0, struct mrpt::math::TPoint2D_<float> & a1, float & a2, unsigned long & a3) const override {
+	bool nn_single_search(const struct mrpt::math::TPoint2D_<float> & a0, struct mrpt::math::TPoint2D_<float> & a1, float & a2, uint64_t & a3) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CColouredPointsMap *>(this), "nn_single_search");
 		if (overload) {

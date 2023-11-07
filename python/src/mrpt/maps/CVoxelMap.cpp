@@ -238,7 +238,7 @@ struct PyCallBack_mrpt_maps_CVoxelMap : public mrpt::maps::CVoxelMap {
 		}
 		return CVoxelMapOccupancyBase::nn_index_count();
 	}
-	bool nn_single_search(const struct mrpt::math::TPoint3D_<float> & a0, struct mrpt::math::TPoint3D_<float> & a1, float & a2, unsigned long & a3) const override {
+	bool nn_single_search(const struct mrpt::math::TPoint3D_<float> & a0, struct mrpt::math::TPoint3D_<float> & a1, float & a2, uint64_t & a3) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CVoxelMap *>(this), "nn_single_search");
 		if (overload) {
@@ -251,7 +251,7 @@ struct PyCallBack_mrpt_maps_CVoxelMap : public mrpt::maps::CVoxelMap {
 		}
 		return CVoxelMapOccupancyBase::nn_single_search(a0, a1, a2, a3);
 	}
-	bool nn_single_search(const struct mrpt::math::TPoint2D_<float> & a0, struct mrpt::math::TPoint2D_<float> & a1, float & a2, unsigned long & a3) const override {
+	bool nn_single_search(const struct mrpt::math::TPoint2D_<float> & a0, struct mrpt::math::TPoint2D_<float> & a1, float & a2, uint64_t & a3) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CVoxelMap *>(this), "nn_single_search");
 		if (overload) {
@@ -588,7 +588,7 @@ struct PyCallBack_mrpt_maps_CVoxelMapRGB : public mrpt::maps::CVoxelMapRGB {
 		}
 		return CVoxelMapOccupancyBase::nn_index_count();
 	}
-	bool nn_single_search(const struct mrpt::math::TPoint3D_<float> & a0, struct mrpt::math::TPoint3D_<float> & a1, float & a2, unsigned long & a3) const override {
+	bool nn_single_search(const struct mrpt::math::TPoint3D_<float> & a0, struct mrpt::math::TPoint3D_<float> & a1, float & a2, uint64_t & a3) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CVoxelMapRGB *>(this), "nn_single_search");
 		if (overload) {
@@ -601,7 +601,7 @@ struct PyCallBack_mrpt_maps_CVoxelMapRGB : public mrpt::maps::CVoxelMapRGB {
 		}
 		return CVoxelMapOccupancyBase::nn_single_search(a0, a1, a2, a3);
 	}
-	bool nn_single_search(const struct mrpt::math::TPoint2D_<float> & a0, struct mrpt::math::TPoint2D_<float> & a1, float & a2, unsigned long & a3) const override {
+	bool nn_single_search(const struct mrpt::math::TPoint2D_<float> & a0, struct mrpt::math::TPoint2D_<float> & a1, float & a2, uint64_t & a3) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CVoxelMapRGB *>(this), "nn_single_search");
 		if (overload) {
