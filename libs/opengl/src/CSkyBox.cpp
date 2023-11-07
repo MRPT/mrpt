@@ -27,7 +27,7 @@ IMPLEMENTS_SERIALIZABLE(CSkyBox, CRenderizable, mrpt::opengl)
 void CSkyBox::renderUpdateBuffers() const
 {
 	// vertices:
-	constexpr thread_local float skyboxVertices[] = {
+	constexpr static float skyboxVertices[] = {
 		// Positions
 		-1.0f, 1.0f,  -1.0f,  //
 		-1.0f, -1.0f, -1.0f,  //
