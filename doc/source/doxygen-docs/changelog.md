@@ -16,6 +16,8 @@
     - mrpt::maps::TSetOfMetricMapInitializers::loadFromConfigFile() now throws if it finds a `*_count` entry with an unknown map class name.
   - \ref mrpt_math_grp
     - New template mrpt::math::confidenceIntervalsFromHistogram()
+- BUG FIXES:
+  - Fix compilation errors if using the `MCP_SAVE()` macro with class enum types.
 
 
 # Version 2.11.2: Released Oct 25th, 2023
