@@ -2171,7 +2171,7 @@ void CPointsMap::nn_radius_search(
 	const mrpt::math::TPoint3Df& query, const float search_radius_sqr,
 	std::vector<mrpt::math::TPoint3Df>& results,
 	std::vector<float>& out_dists_sqr,
-	std::vector<uint64_t>& resultIndicesOrIDs) const
+	std::vector<uint64_t>& resultIndicesOrIDs, size_t maxPoints) const
 {
 	std::vector<nanoflann::ResultItem<size_t, float>> indices_dist;
 	kdTreeRadiusSearch3D(
@@ -2192,11 +2192,12 @@ void CPointsMap::nn_radius_search(
 	const mrpt::math::TPoint2Df& query, const float search_radius_sqr,
 	std::vector<mrpt::math::TPoint2Df>& results,
 	std::vector<float>& out_dists_sqr,
-	std::vector<uint64_t>& resultIndicesOrIDs) const
+	std::vector<uint64_t>& resultIndicesOrIDs, size_t maxPoints) const
 {
 	std::vector<nanoflann::ResultItem<size_t, float>> indices_dist;
 	kdTreeRadiusSearch2D(query.x, query.y, search_radius_sqr, indices_dist);
-	const size_t nResults = indices_dist.size();
+	size_t nResults = indices_dist.size();
+	if (maxPoints && nResults > maxPoints) nResults = maxPoints;
 	results.resize(nResults);
 	out_dists_sqr.resize(nResults);
 	resultIndicesOrIDs.resize(nResults);
