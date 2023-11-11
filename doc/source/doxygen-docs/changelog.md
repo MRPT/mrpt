@@ -18,7 +18,7 @@
     - New template mrpt::math::confidenceIntervalsFromHistogram()
 - BUG FIXES:
   - Fix compilation errors if using the `MCP_SAVE()` macro with class enum types.
-
+  - Fix wrong cloud pose in CPointsMap::insertObservation() when inserting an mrpt::obs::CObservationPointCloud.
 
 # Version 2.11.2: Released Oct 25th, 2023
 - Changes in libraries:

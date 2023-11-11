@@ -1930,7 +1930,8 @@ bool CPointsMap::internal_insertObservation(
 		{
 			// Don't fuse: Simply add
 			insertionOptions.addToExistingPointsMap = true;
-			this->insertAnotherMap(o.pointcloud.get(), o.sensorPose);
+			this->insertAnotherMap(
+				o.pointcloud.get(), robotPose3D + o.sensorPose);
 		}
 		return true;
 	}
