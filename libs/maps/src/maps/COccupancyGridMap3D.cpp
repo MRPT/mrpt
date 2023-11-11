@@ -510,7 +510,7 @@ void COccupancyGridMap3D::nn_radius_search(
 	const mrpt::math::TPoint2Df& query, const float search_radius_sqr,
 	std::vector<mrpt::math::TPoint2Df>& results,
 	std::vector<float>& out_dists_sqr,
-	std::vector<uint64_t>& resultIndicesOrIDs) const
+	std::vector<uint64_t>& resultIndicesOrIDs, size_t maxPoints) const
 {
 	THROW_EXCEPTION("Cannot run a 2D search on a 3D gridmap");
 }
@@ -639,7 +639,7 @@ void COccupancyGridMap3D::nn_radius_search(
 	const mrpt::math::TPoint3Df& query, const float search_radius_sqr,
 	std::vector<mrpt::math::TPoint3Df>& results,
 	std::vector<float>& out_dists_sqr,
-	std::vector<uint64_t>& resultIndicesOrIDs) const
+	std::vector<uint64_t>& resultIndicesOrIDs, size_t maxPoints) const
 {
 	results.clear();
 	out_dists_sqr.clear();
@@ -729,5 +729,7 @@ void COccupancyGridMap3D::nn_radius_search(
 					lambdaAddCell(cx, cy, cz);
 			}
 		}
+
+		if (maxPoints && results.size() >= maxPoints) break;
 	}
 }

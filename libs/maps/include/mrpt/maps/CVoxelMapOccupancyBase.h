@@ -336,21 +336,23 @@ class CVoxelMapOccupancyBase : public CVoxelMapBase<voxel_node_t>,
 		const mrpt::math::TPoint3Df& query, const float search_radius_sqr,
 		std::vector<mrpt::math::TPoint3Df>& results,
 		std::vector<float>& out_dists_sqr,
-		std::vector<uint64_t>& resultIndicesOrIDs) const override
+		std::vector<uint64_t>& resultIndicesOrIDs,
+		size_t maxPoints) const override
 	{
 		getOccupiedVoxels()->nn_radius_search(
 			query, search_radius_sqr, results, out_dists_sqr,
-			resultIndicesOrIDs);
+			resultIndicesOrIDs, maxPoints);
 	}
 	void nn_radius_search(
 		const mrpt::math::TPoint2Df& query, const float search_radius_sqr,
 		std::vector<mrpt::math::TPoint2Df>& results,
 		std::vector<float>& out_dists_sqr,
-		std::vector<uint64_t>& resultIndicesOrIDs) const override
+		std::vector<uint64_t>& resultIndicesOrIDs,
+		size_t maxPoints) const override
 	{
 		getOccupiedVoxels()->nn_radius_search(
 			query, search_radius_sqr, results, out_dists_sqr,
-			resultIndicesOrIDs);
+			resultIndicesOrIDs, maxPoints);
 	}
 	/** @} */
 

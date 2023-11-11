@@ -1195,12 +1195,14 @@ class COccupancyGridMap2D
 		const mrpt::math::TPoint3Df& query, const float search_radius_sqr,
 		std::vector<mrpt::math::TPoint3Df>& results,
 		std::vector<float>& out_dists_sqr,
-		std::vector<uint64_t>& resultIndicesOrIDs) const override;
+		std::vector<uint64_t>& resultIndicesOrIDs,
+		size_t maxPoints) const override;
 	void nn_radius_search(
 		const mrpt::math::TPoint2Df& query, const float search_radius_sqr,
 		std::vector<mrpt::math::TPoint2Df>& results,
 		std::vector<float>& out_dists_sqr,
-		std::vector<uint64_t>& resultIndicesOrIDs) const override;
+		std::vector<uint64_t>& resultIndicesOrIDs,
+		size_t maxPoints) const override;
 	/** @} */
 
    private:

@@ -95,19 +95,22 @@ class NearestNeighborsCapable
 	 * \param[out] out_dists_sqr The square Euclidean distances between the
 	 * query and the returned point.
 	 * \param[out] resultIndicesOrIDs The indices or IDs of the result points.
+	 * \param[in] maxPoints If !=0, the maximum number of neigbors to return.
 	 */
 	virtual void nn_radius_search(
 		const mrpt::math::TPoint3Df& query, const float search_radius_sqr,
 		std::vector<mrpt::math::TPoint3Df>& results,
 		std::vector<float>& out_dists_sqr,
-		std::vector<uint64_t>& resultIndicesOrIDs) const = 0;
+		std::vector<uint64_t>& resultIndicesOrIDs,
+		size_t maxPoints = 0) const = 0;
 
 	/// \overload for 2D points
 	virtual void nn_radius_search(
 		const mrpt::math::TPoint2Df& query, const float search_radius_sqr,
 		std::vector<mrpt::math::TPoint2Df>& results,
 		std::vector<float>& out_dists_sqr,
-		std::vector<uint64_t>& resultIndicesOrIDs) const = 0;
+		std::vector<uint64_t>& resultIndicesOrIDs,
+		size_t maxPoints = 0) const = 0;
 
 	/** @} */
 };
