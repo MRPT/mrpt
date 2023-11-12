@@ -2173,19 +2173,43 @@ void CPointsMap::nn_radius_search(
 	std::vector<float>& out_dists_sqr,
 	std::vector<uint64_t>& resultIndicesOrIDs, size_t maxPoints) const
 {
-	std::vector<nanoflann::ResultItem<size_t, float>> indices_dist;
-	kdTreeRadiusSearch3D(
-		query.x, query.y, query.z, search_radius_sqr, indices_dist);
-	const size_t nResults = indices_dist.size();
-	results.resize(nResults);
-	out_dists_sqr.resize(nResults);
-	resultIndicesOrIDs.resize(nResults);
-	for (size_t i = 0; i < nResults; i++)
+	if (maxPoints)
 	{
-		getPointFast(
-			indices_dist[i].first, results[i].x, results[i].y, results[i].z);
-		out_dists_sqr[i] = indices_dist[i].second;
-		resultIndicesOrIDs[i] = indices_dist[i].first;
+		std::vector<size_t> idxs;
+		kdTreeNClosestPoint3DIdx(
+			query.x, query.y, query.z, maxPoints, idxs, out_dists_sqr);
+		results.resize(idxs.size());
+		resultIndicesOrIDs.resize(idxs.size());
+		for (size_t i = 0; i < idxs.size(); i++)
+		{
+			if (out_dists_sqr[i] > search_radius_sqr)  // truncate list?
+			{
+				results.resize(i);
+				out_dists_sqr.resize(i);
+				resultIndicesOrIDs.resize(i);
+				break;
+			}
+			getPointFast(idxs[i], results[i].x, results[i].y, results[i].z);
+			resultIndicesOrIDs[i] = idxs[i];
+		}
+	}
+	else
+	{
+		std::vector<nanoflann::ResultItem<size_t, float>> indices_dist;
+		kdTreeRadiusSearch3D(
+			query.x, query.y, query.z, search_radius_sqr, indices_dist);
+		const size_t nResults = indices_dist.size();
+		results.resize(nResults);
+		out_dists_sqr.resize(nResults);
+		resultIndicesOrIDs.resize(nResults);
+		for (size_t i = 0; i < nResults; i++)
+		{
+			getPointFast(
+				indices_dist[i].first, results[i].x, results[i].y,
+				results[i].z);
+			out_dists_sqr[i] = indices_dist[i].second;
+			resultIndicesOrIDs[i] = indices_dist[i].first;
+		}
 	}
 }
 void CPointsMap::nn_radius_search(
@@ -2194,18 +2218,42 @@ void CPointsMap::nn_radius_search(
 	std::vector<float>& out_dists_sqr,
 	std::vector<uint64_t>& resultIndicesOrIDs, size_t maxPoints) const
 {
-	std::vector<nanoflann::ResultItem<size_t, float>> indices_dist;
-	kdTreeRadiusSearch2D(query.x, query.y, search_radius_sqr, indices_dist);
-	size_t nResults = indices_dist.size();
-	if (maxPoints && nResults > maxPoints) nResults = maxPoints;
-	results.resize(nResults);
-	out_dists_sqr.resize(nResults);
-	resultIndicesOrIDs.resize(nResults);
-	float dummyZ = 0;
-	for (size_t i = 0; i < nResults; i++)
+	if (maxPoints)
 	{
-		getPointFast(indices_dist[i].first, results[i].x, results[i].y, dummyZ);
-		out_dists_sqr[i] = indices_dist[i].second;
-		resultIndicesOrIDs[i] = indices_dist[i].first;
+		std::vector<size_t> idxs;
+		kdTreeNClosestPoint2DIdx(
+			query.x, query.y, maxPoints, idxs, out_dists_sqr);
+		results.resize(idxs.size());
+		resultIndicesOrIDs.resize(idxs.size());
+		float dummyZ = 0;
+		for (size_t i = 0; i < idxs.size(); i++)
+		{
+			if (out_dists_sqr[i] > search_radius_sqr)  // truncate list?
+			{
+				results.resize(i);
+				out_dists_sqr.resize(i);
+				resultIndicesOrIDs.resize(i);
+				break;
+			}
+			getPointFast(idxs[i], results[i].x, results[i].y, dummyZ);
+			resultIndicesOrIDs[i] = idxs[i];
+		}
+	}
+	else
+	{
+		std::vector<nanoflann::ResultItem<size_t, float>> indices_dist;
+		kdTreeRadiusSearch2D(query.x, query.y, search_radius_sqr, indices_dist);
+		const size_t nResults = indices_dist.size();
+		results.resize(nResults);
+		out_dists_sqr.resize(nResults);
+		resultIndicesOrIDs.resize(nResults);
+		float dummyZ = 0;
+		for (size_t i = 0; i < nResults; i++)
+		{
+			getPointFast(
+				indices_dist[i].first, results[i].x, results[i].y, dummyZ);
+			out_dists_sqr[i] = indices_dist[i].second;
+			resultIndicesOrIDs[i] = indices_dist[i].first;
+		}
 	}
 }
