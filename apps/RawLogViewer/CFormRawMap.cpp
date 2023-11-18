@@ -287,7 +287,7 @@ CFormRawMap::CFormRawMap(wxWindow* parent, wxWindowID)
 		  "MULTIMETRIC MAP CONFIGURATION\n; "
 		  "====================================================\n[map]\n; "
 		  "Creation of maps:\noccupancyGrid_count = 0\ngasGrid_count = "
-		  "0\nlandmarksMap_count = 0\nbeaconMap_count = 0\npointsMap_count = "
+		  "0\nbeaconMap_count = 0\npointsMap_count = "
 		  "1\nheightMap_count = 0\ncolourPointsMap_count=0\n\n; "
 		  "====================================================\n; MULTIMETRIC "
 		  "MAP: PointsMap #00\n; "

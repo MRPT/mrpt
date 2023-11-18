@@ -124,8 +124,6 @@ class TSetOfMetricMapInitializers : public mrpt::config::CLoadableOptions
 	 *  colourOctoMap_count=<Number of mrpt::slam::CColourOctoMap maps>
 	 *  gasGrid_count=<Number of mrpt::maps::CGasConcentrationGridMap2D maps>
 	 *  wifiGrid_count=<Number of mrpt::maps::CWirelessPowerGridMap2D maps>
-	 *  landmarksMap_count=<0 or 1, for creating a mrpt::maps::CLandmarksMap
-	 *map>
 	 *  beaconMap_count=<0 or 1, for creating a mrpt::maps::CBeaconMap map>
 	 *  pointsMap_count=<Number of mrpt::maps::CSimplePointsMap map>
 	 *  heightMap_count=<Number of mrpt::maps::CHeightGridMap2D maps>
