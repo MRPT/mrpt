@@ -16,6 +16,8 @@
     - mrpt::maps::TSetOfMetricMapInitializers::loadFromConfigFile() now throws if it finds a `*_count` entry with an unknown map class name.
   - \ref mrpt_math_grp
     - New template mrpt::math::confidenceIntervalsFromHistogram()
+  - \ref mrpt_obs_grp
+    - mrpt::maps::CMetricMap::loadFromSimpleMap() now automatically calls mrpt::obs::CObservation::load() and mrpt::obs::CObservation::unload() for all observations, so it works with lazy-load datasets.
 - BUG FIXES:
   - Fix compilation errors if using the `MCP_SAVE()` macro with class enum types.
   - Fix wrong cloud pose in CPointsMap::insertObservation() when inserting an mrpt::obs::CObservationPointCloud.
