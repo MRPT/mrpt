@@ -2101,6 +2101,14 @@ void CPointsMap::loadFromVelodyneScan(
 
 // =========== API of the NearestNeighborsCapable virtual interface ======
 // See docs in base class
+void CPointsMap::nn_prepare_for_2d_queries() const
+{
+	const_cast<CPointsMap*>(this)->kdTreeEnsureIndexBuilt2D();
+}
+void CPointsMap::nn_prepare_for_3d_queries() const
+{
+	const_cast<CPointsMap*>(this)->kdTreeEnsureIndexBuilt3D();
+}
 bool CPointsMap::nn_single_search(
 	const mrpt::math::TPoint3Df& query, mrpt::math::TPoint3Df& result,
 	float& out_dist_sqr, uint64_t& resultIndexOrID) const
