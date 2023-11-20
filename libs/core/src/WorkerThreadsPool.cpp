@@ -50,6 +50,9 @@ void WorkerThreadsPool::clear()
 
 std::size_t WorkerThreadsPool::pendingTasks() const noexcept
 {
+	std::unique_lock<std::mutex> lock(
+		const_cast<WorkerThreadsPool*>(this)->queue_mutex_);
+
 	return tasks_.size();
 }
 
