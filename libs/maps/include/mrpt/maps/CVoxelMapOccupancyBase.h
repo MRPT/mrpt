@@ -292,6 +292,14 @@ class CVoxelMapOccupancyBase : public CVoxelMapBase<voxel_node_t>,
 	/** @name API of the NearestNeighborsCapable virtual interface
 		@{ */
 	// See docs in base class
+	void nn_prepare_for_2d_queries() const override
+	{
+		getOccupiedVoxels()->nn_prepare_for_2d_queries();
+	}
+	void nn_prepare_for_3d_queries() const override
+	{
+		getOccupiedVoxels()->nn_prepare_for_3d_queries();
+	}
 	[[nodiscard]] bool nn_has_indices_or_ids() const override
 	{
 		return getOccupiedVoxels()->nn_has_indices_or_ids();

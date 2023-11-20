@@ -39,6 +39,24 @@ class NearestNeighborsCapable
 	 */
 	[[nodiscard]] virtual bool nn_has_indices_or_ids() const = 0;
 
+	/** Must be called before calls to `nn_*_search()` to ensure the required
+	 *  data structures are ready for queries (e.g. KD-trees). Useful in
+	 *  multithreading applications.
+	 */
+	virtual void nn_prepare_for_2d_queries() const
+	{
+		// Default: do nothing
+	}
+
+	/** Must be called before calls to `nn_*_search()` to ensure the required
+	 *  data structures are ready for queries (e.g. KD-trees). Useful in
+	 *  multithreading applications.
+	 */
+	virtual void nn_prepare_for_3d_queries() const
+	{
+		// Default: do nothing
+	}
+
 	/** If nn_has_indices_or_ids() returns `true`, this must return the number
 	 * of "points" (or whatever entity) the indices correspond to. Otherwise,
 	 * the return value should be ignored.
