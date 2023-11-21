@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.11.3: UNRELEASED
+# Version 2.11.3: Released Nov 21st, 2023
 - Changes in libraries:
   - \ref mrpt_core_grp
     - Add the `[[nodiscard]]` attribute to all functions returning a value in `<mrpt/core/bits_math.h>`
