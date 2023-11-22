@@ -25,7 +25,7 @@
 
 void bind_mrpt_math_TPoint2D(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::math::TPoint2D_ file:mrpt/math/TPoint2D.h line:35
+	{ // mrpt::math::TPoint2D_ file:mrpt/math/TPoint2D.h line:38
 		pybind11::class_<mrpt::math::TPoint2D_<double>, std::shared_ptr<mrpt::math::TPoint2D_<double>>, mrpt::math::TPoseOrPoint, mrpt::math::TPoint2D_data<double>> cl(M("mrpt::math"), "TPoint2D_double_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::math::TPoint2D_<double>(); } ) );
 		cl.def( pybind11::init<double, double>(), pybind11::arg("xx"), pybind11::arg("yy") );
@@ -59,7 +59,7 @@ void bind_mrpt_math_TPoint2D(std::function< pybind11::module &(std::string const
 		cl.def_readwrite("y", &mrpt::math::TPoint2D_data<double>::y);
 		cl.def("assign", (struct mrpt::math::TPoint2D_data<double> & (mrpt::math::TPoint2D_data<double>::*)(const struct mrpt::math::TPoint2D_data<double> &)) &mrpt::math::TPoint2D_data<double>::operator=, "C++: mrpt::math::TPoint2D_data<double>::operator=(const struct mrpt::math::TPoint2D_data<double> &) --> struct mrpt::math::TPoint2D_data<double> &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::math::TPoint2D_ file:mrpt/math/TPoint2D.h line:35
+	{ // mrpt::math::TPoint2D_ file:mrpt/math/TPoint2D.h line:38
 		pybind11::class_<mrpt::math::TPoint2D_<float>, std::shared_ptr<mrpt::math::TPoint2D_<float>>, mrpt::math::TPoseOrPoint, mrpt::math::TPoint2D_data<float>> cl(M("mrpt::math"), "TPoint2D_float_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::math::TPoint2D_<float>(); } ) );
 		cl.def( pybind11::init<float, float>(), pybind11::arg("xx"), pybind11::arg("yy") );
@@ -93,7 +93,7 @@ void bind_mrpt_math_TPoint2D(std::function< pybind11::module &(std::string const
 		cl.def_readwrite("y", &mrpt::math::TPoint2D_data<float>::y);
 		cl.def("assign", (struct mrpt::math::TPoint2D_data<float> & (mrpt::math::TPoint2D_data<float>::*)(const struct mrpt::math::TPoint2D_data<float> &)) &mrpt::math::TPoint2D_data<float>::operator=, "C++: mrpt::math::TPoint2D_data<float>::operator=(const struct mrpt::math::TPoint2D_data<float> &) --> struct mrpt::math::TPoint2D_data<float> &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::math::TPoint3D_ file:mrpt/math/TPoint3D.h line:42
+	{ // mrpt::math::TPoint3D_ file:mrpt/math/TPoint3D.h line:45
 		pybind11::class_<mrpt::math::TPoint3D_<double>, std::shared_ptr<mrpt::math::TPoint3D_<double>>, mrpt::math::TPoseOrPoint, mrpt::math::TPoint3D_data<double>> cl(M("mrpt::math"), "TPoint3D_double_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::math::TPoint3D_<double>(); } ) );
 		cl.def( pybind11::init<double, double, double>(), pybind11::arg("xx"), pybind11::arg("yy"), pybind11::arg("zz") );

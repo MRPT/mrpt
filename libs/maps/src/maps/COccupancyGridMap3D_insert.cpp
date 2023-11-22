@@ -13,6 +13,7 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/poses/CPose3D.h>
 
 using namespace mrpt::maps;
@@ -39,6 +40,12 @@ bool COccupancyGridMap3D::internal_insertObservation(
 		o != nullptr)
 	{
 		this->internal_insertObservationScan3D(*o, robotPose3D);
+		return true;
+	}
+	if (auto* o = dynamic_cast<const mrpt::obs::CObservationPointCloud*>(&obs);
+		o != nullptr)
+	{
+		this->internal_insertObservationPointCloud(*o, robotPose3D);
 		return true;
 	}
 
@@ -73,7 +80,7 @@ void COccupancyGridMap3D::internal_insertObservationScan2D(
 
 void COccupancyGridMap3D::insertPointCloud(
 	const mrpt::math::TPoint3D& sensorPt, const mrpt::maps::CPointsMap& pts,
-	const float maxValidRange)
+	const float maxValidRange, const std::optional<poses::CPose3D>& robotPose)
 {
 	MRPT_START
 
@@ -85,7 +92,10 @@ void COccupancyGridMap3D::insertPointCloud(
 	for (std::size_t idx = 0; idx < xs.size();
 		 idx += insertionOptions.decimation)
 	{
-		insertRay(sensorPt, mrpt::math::TPoint3D(xs[idx], ys[idx], zs[idx]));
+		auto pt = mrpt::math::TPoint3D(xs[idx], ys[idx], zs[idx]);
+		if (robotPose) pt = robotPose->composePoint(pt);
+
+		insertRay(sensorPt, pt);
 	}
 
 	MRPT_END
@@ -153,6 +163,13 @@ void COccupancyGridMap3D::insertRay(
 	// Skip if totally out of bounds:
 	if (m_grid.isOutOfBounds(cx, cy, cz)) return;
 
+	// The occupied cell at the end:
+	updateCell_fast_occupied(
+		trg_cx, trg_cy, trg_cz, logodd_observation_occupied,
+		logodd_thres_occupied);
+
+	if (!insertionOptions.raytraceEmptyCells) return;  // done!
+
 	// Use "fractional integers" to approximate float operations
 	//  during the ray tracing:
 	const int Acx = trg_cx - cx;
@@ -195,10 +212,23 @@ void COccupancyGridMap3D::insertRay(
 		if (m_grid.isOutOfBounds(cx, cy, cz)) break;
 	}
 
-	// And finally, the occupied cell at the end:
-	updateCell_fast_occupied(
-		trg_cx, trg_cy, trg_cz, logodd_observation_occupied,
-		logodd_thres_occupied);
+	MRPT_END
+}
+
+void COccupancyGridMap3D::internal_insertObservationPointCloud(
+	const mrpt::obs::CObservationPointCloud& o,
+	const mrpt::poses::CPose3D& robotPose)
+{
+	MRPT_START
+
+	if (!o.pointcloud) return;
+
+	const auto sensorPose3D = robotPose + o.sensorPose;
+
+	const auto sensorPt = mrpt::math::TPoint3D(sensorPose3D.asTPose());
+	insertPointCloud(
+		sensorPt, *o.pointcloud, insertionOptions.maxDistanceInsertion,
+		sensorPose3D);
 
 	MRPT_END
 }

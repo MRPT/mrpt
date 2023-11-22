@@ -50,6 +50,9 @@ void WorkerThreadsPool::clear()
 
 std::size_t WorkerThreadsPool::pendingTasks() const noexcept
 {
+	std::unique_lock<std::mutex> lock(
+		const_cast<WorkerThreadsPool*>(this)->queue_mutex_);
+
 	return tasks_.size();
 }
 
@@ -85,7 +88,9 @@ void WorkerThreadsPool::resize(std::size_t num_threads)
 }
 
 // code partially replicated from mrpt::system for convenience (avoid dep)
-static void mySetThreadName(const std::string& name, std::thread& theThread)
+namespace
+{
+void mySetThreadName(const std::string& name, std::thread& theThread)
 {
 #if defined(MRPT_OS_WINDOWS) && !defined(__MINGW32_MAJOR_VERSION)
 	wchar_t wName[50];
@@ -96,6 +101,7 @@ static void mySetThreadName(const std::string& name, std::thread& theThread)
 	pthread_setname_np(handle, name.c_str());
 #endif
 }
+}  // namespace
 
 void WorkerThreadsPool::name(const std::string& name)
 {

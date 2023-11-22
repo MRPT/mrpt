@@ -30,6 +30,9 @@ namespace mrpt::math
 template <typename T>
 struct TPoint3D_data
 {
+	constexpr TPoint3D_data() = default;
+	constexpr TPoint3D_data(T X, T Y, T Z) : x(X), y(Y), z(Z) {}
+
 	/** X,Y,Z coordinates */
 	T x, y, z;
 };

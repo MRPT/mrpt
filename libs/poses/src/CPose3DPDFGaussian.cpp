@@ -102,7 +102,9 @@ void ffff(
 }
 #endif
 
-static void aux_posequat2poseypr(
+namespace
+{
+void aux_posequat2poseypr(
 	const CVectorFixedDouble<7>& x, [[maybe_unused]] const double& dummy,
 	CVectorFixedDouble<6>& y)
 {
@@ -113,6 +115,7 @@ static void aux_posequat2poseypr(
 	q.normalize();
 	q.rpy(y[5], y[4], y[3]);
 }
+}  // namespace
 
 /*---------------------------------------------------------------
 					CPose3DPDFGaussian

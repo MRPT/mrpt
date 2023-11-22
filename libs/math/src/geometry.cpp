@@ -1968,7 +1968,9 @@ void math::assemblePolygons(
 		if (!usedSegments[i]) remainder.push_back(tmp[i]);
 }
 
-static std::vector<TPolygon3D> getPolygons(
+namespace
+{
+std::vector<TPolygon3D> getPolygons(
 	const std::vector<TObject3D>& objs,
 	const mrpt::optional_ref<std::vector<mrpt::math::TObject3D>>& others =
 		std::nullopt)
@@ -1982,7 +1984,7 @@ static std::vector<TPolygon3D> getPolygons(
 	}
 	return r;
 }
-static std::vector<TSegment3D> getSegments(
+std::vector<TSegment3D> getSegments(
 	const std::vector<TObject3D>& objs,
 	const mrpt::optional_ref<std::vector<mrpt::math::TObject3D>>& others =
 		std::nullopt)
@@ -1997,6 +1999,7 @@ static std::vector<TSegment3D> getSegments(
 	}
 	return r;
 }
+}  // namespace
 
 void math::assemblePolygons(
 	const std::vector<TObject3D>& objs, std::vector<TPolygon3D>& polys)

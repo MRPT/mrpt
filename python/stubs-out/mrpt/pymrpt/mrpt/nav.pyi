@@ -1994,9 +1994,9 @@ class TWaypointsRenderingParams:
     inner_radius: float
     inner_radius_non_skippable: float
     inner_radius_reached: float
-    outter_radius: float
-    outter_radius_non_skippable: float
-    outter_radius_reached: float
+    outer_radius: float
+    outer_radius_non_skippable: float
+    outer_radius_reached: float
     show_labels: bool
     @overload
     def __init__(self) -> None: ...

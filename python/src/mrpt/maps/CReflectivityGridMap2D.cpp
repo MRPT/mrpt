@@ -273,6 +273,19 @@ struct PyCallBack_mrpt_maps_CReflectivityGridMap2D : public mrpt::maps::CReflect
 		}
 		return CReflectivityGridMap2D::internal_computeObservationLikelihood(a0, a1);
 	}
+	struct mrpt::math::TBoundingBox_<float> boundingBox() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CReflectivityGridMap2D *>(this), "boundingBox");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<struct mrpt::math::TBoundingBox_<float>>::value) {
+				static pybind11::detail::override_caster_t<struct mrpt::math::TBoundingBox_<float>> caster;
+				return pybind11::detail::cast_ref<struct mrpt::math::TBoundingBox_<float>>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<struct mrpt::math::TBoundingBox_<float>>(std::move(o));
+		}
+		return CMetricMap::boundingBox();
+	}
 	bool canComputeObservationLikelihood(const class mrpt::obs::CObservation & a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CReflectivityGridMap2D *>(this), "canComputeObservationLikelihood");
@@ -385,7 +398,7 @@ struct PyCallBack_mrpt_maps_CReflectivityGridMap2D_TInsertionOptions : public mr
 	}
 };
 
-// mrpt::maps::CReflectivityGridMap2D::TMapDefinition file: line:67
+// mrpt::maps::CReflectivityGridMap2D::TMapDefinition file: line:85
 struct PyCallBack_mrpt_maps_CReflectivityGridMap2D_TMapDefinition : public mrpt::maps::CReflectivityGridMap2D::TMapDefinition {
 	using mrpt::maps::CReflectivityGridMap2D::TMapDefinition::TMapDefinition;
 
@@ -772,6 +785,19 @@ struct PyCallBack_mrpt_maps_CWeightedPointsMap : public mrpt::maps::CWeightedPoi
 		}
 		return CPointsMap::getVisualizationInto(a0);
 	}
+	struct mrpt::math::TBoundingBox_<float> boundingBox() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CWeightedPointsMap *>(this), "boundingBox");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<struct mrpt::math::TBoundingBox_<float>>::value) {
+				static pybind11::detail::override_caster_t<struct mrpt::math::TBoundingBox_<float>> caster;
+				return pybind11::detail::cast_ref<struct mrpt::math::TBoundingBox_<float>>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<struct mrpt::math::TBoundingBox_<float>>(std::move(o));
+		}
+		return CPointsMap::boundingBox();
+	}
 	double internal_computeObservationLikelihood(const class mrpt::obs::CObservation & a0, const class mrpt::poses::CPose3D & a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CWeightedPointsMap *>(this), "internal_computeObservationLikelihood");
@@ -797,6 +823,58 @@ struct PyCallBack_mrpt_maps_CWeightedPointsMap : public mrpt::maps::CWeightedPoi
 			else return pybind11::detail::cast_safe<std::string>(std::move(o));
 		}
 		return CPointsMap::asString();
+	}
+	bool nn_has_indices_or_ids() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CWeightedPointsMap *>(this), "nn_has_indices_or_ids");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return CPointsMap::nn_has_indices_or_ids();
+	}
+	size_t nn_index_count() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CWeightedPointsMap *>(this), "nn_index_count");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
+		}
+		return CPointsMap::nn_index_count();
+	}
+	bool nn_single_search(const struct mrpt::math::TPoint3D_<float> & a0, struct mrpt::math::TPoint3D_<float> & a1, float & a2, uint64_t & a3) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CWeightedPointsMap *>(this), "nn_single_search");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2, a3);
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return CPointsMap::nn_single_search(a0, a1, a2, a3);
+	}
+	bool nn_single_search(const struct mrpt::math::TPoint2D_<float> & a0, struct mrpt::math::TPoint2D_<float> & a1, float & a2, uint64_t & a3) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CWeightedPointsMap *>(this), "nn_single_search");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2, a3);
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return CPointsMap::nn_single_search(a0, a1, a2, a3);
 	}
 	void PLY_import_set_face_count(size_t a0) override {
 		pybind11::gil_scoped_acquire gil;
@@ -891,7 +969,7 @@ struct PyCallBack_mrpt_maps_CWeightedPointsMap : public mrpt::maps::CWeightedPoi
 	}
 };
 
-// mrpt::maps::CWeightedPointsMap::TMapDefinition file: line:67
+// mrpt::maps::CWeightedPointsMap::TMapDefinition file: line:85
 struct PyCallBack_mrpt_maps_CWeightedPointsMap_TMapDefinition : public mrpt::maps::CWeightedPointsMap::TMapDefinition {
 	using mrpt::maps::CWeightedPointsMap::TMapDefinition::TMapDefinition;
 
@@ -977,12 +1055,12 @@ void bind_mrpt_maps_CReflectivityGridMap2D(std::function< pybind11::module &(std
 			cl.def("assign", (struct mrpt::maps::CReflectivityGridMap2D::TInsertionOptions & (mrpt::maps::CReflectivityGridMap2D::TInsertionOptions::*)(const struct mrpt::maps::CReflectivityGridMap2D::TInsertionOptions &)) &mrpt::maps::CReflectivityGridMap2D::TInsertionOptions::operator=, "C++: mrpt::maps::CReflectivityGridMap2D::TInsertionOptions::operator=(const struct mrpt::maps::CReflectivityGridMap2D::TInsertionOptions &) --> struct mrpt::maps::CReflectivityGridMap2D::TInsertionOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CReflectivityGridMap2D::TMapDefinitionBase file: line:62
+		{ // mrpt::maps::CReflectivityGridMap2D::TMapDefinitionBase file: line:80
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CReflectivityGridMap2D::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CReflectivityGridMap2D::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CReflectivityGridMap2D::TMapDefinition file: line:67
+		{ // mrpt::maps::CReflectivityGridMap2D::TMapDefinition file: line:85
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CReflectivityGridMap2D::TMapDefinition, std::shared_ptr<mrpt::maps::CReflectivityGridMap2D::TMapDefinition>, PyCallBack_mrpt_maps_CReflectivityGridMap2D_TMapDefinition, mrpt::maps::CReflectivityGridMap2D::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CReflectivityGridMap2D::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CReflectivityGridMap2D_TMapDefinition(); } ) );
@@ -1016,12 +1094,12 @@ void bind_mrpt_maps_CReflectivityGridMap2D(std::function< pybind11::module &(std
 		cl.def("setPointWeight", (void (mrpt::maps::CWeightedPointsMap::*)(size_t, unsigned long)) &mrpt::maps::CWeightedPointsMap::setPointWeight, "Sets the point weight, which is ignored in all classes but those which\n actually store that field (Note: No checks are done for out-of-bounds\n index). \n\n getPointWeight\n\nC++: mrpt::maps::CWeightedPointsMap::setPointWeight(size_t, unsigned long) --> void", pybind11::arg("index"), pybind11::arg("w"));
 		cl.def("getPointWeight", (unsigned int (mrpt::maps::CWeightedPointsMap::*)(size_t) const) &mrpt::maps::CWeightedPointsMap::getPointWeight, "Gets the point weight, which is ignored in all classes (defaults to 1)\n but in those which actually store that field (Note: No checks are done\n for out-of-bounds index).  \n\n setPointWeight\n\nC++: mrpt::maps::CWeightedPointsMap::getPointWeight(size_t) const --> unsigned int", pybind11::arg("index"));
 
-		{ // mrpt::maps::CWeightedPointsMap::TMapDefinitionBase file: line:62
+		{ // mrpt::maps::CWeightedPointsMap::TMapDefinitionBase file: line:80
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CWeightedPointsMap::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CWeightedPointsMap::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CWeightedPointsMap::TMapDefinition file: line:67
+		{ // mrpt::maps::CWeightedPointsMap::TMapDefinition file: line:85
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CWeightedPointsMap::TMapDefinition, std::shared_ptr<mrpt::maps::CWeightedPointsMap::TMapDefinition>, PyCallBack_mrpt_maps_CWeightedPointsMap_TMapDefinition, mrpt::maps::CWeightedPointsMap::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CWeightedPointsMap::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CWeightedPointsMap_TMapDefinition(); } ) );

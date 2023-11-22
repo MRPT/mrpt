@@ -13,6 +13,7 @@
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/math/CVectorDynamic.h>
+#include <mrpt/math/TBoundingBox.h>
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TPose2D.h>
@@ -57,7 +58,7 @@
 
 void bind_mrpt_maps_CMetricMap(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	// mrpt::pymrpt_internal::insertObs(const class mrpt::obs::CSensoryFrame &, class mrpt::maps::CMetricMap *, const class mrpt::poses::CPose3D *) file:mrpt/maps/CMetricMap.h line:36
+	// mrpt::pymrpt_internal::insertObs(const class mrpt::obs::CSensoryFrame &, class mrpt::maps::CMetricMap *, const class mrpt::poses::CPose3D *) file:mrpt/maps/CMetricMap.h line:37
 	M("mrpt::pymrpt_internal").def("insertObs", (bool (*)(const class mrpt::obs::CSensoryFrame &, class mrpt::maps::CMetricMap *, const class mrpt::poses::CPose3D *)) &mrpt::pymrpt_internal::insertObs, "C++: mrpt::pymrpt_internal::insertObs(const class mrpt::obs::CSensoryFrame &, class mrpt::maps::CMetricMap *, const class mrpt::poses::CPose3D *) --> bool", pybind11::arg("sf"), pybind11::arg("map"), pybind11::arg("robotPose"));
 
 }

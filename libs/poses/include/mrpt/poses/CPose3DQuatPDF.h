@@ -59,7 +59,7 @@ class CPose3DQuatPDF
 	 * anymore.
 	 *  \sa copyFrom
 	 */
-	static CPose3DQuatPDF* createFrom2D(const CPosePDF& o);
+	static CPose3DQuatPDF::Ptr createFrom2D(const CPosePDF& o);
 
 	/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
 	virtual void inverse(CPose3DQuatPDF& o) const = 0;

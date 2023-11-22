@@ -516,6 +516,19 @@ struct PyCallBack_mrpt_maps_CPointsMapXYZI : public mrpt::maps::CPointsMapXYZI {
 		}
 		return CPointsMap::isEmpty();
 	}
+	struct mrpt::math::TBoundingBox_<float> boundingBox() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CPointsMapXYZI *>(this), "boundingBox");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<struct mrpt::math::TBoundingBox_<float>>::value) {
+				static pybind11::detail::override_caster_t<struct mrpt::math::TBoundingBox_<float>> caster;
+				return pybind11::detail::cast_ref<struct mrpt::math::TBoundingBox_<float>>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<struct mrpt::math::TBoundingBox_<float>>(std::move(o));
+		}
+		return CPointsMap::boundingBox();
+	}
 	double internal_computeObservationLikelihood(const class mrpt::obs::CObservation & a0, const class mrpt::poses::CPose3D & a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CPointsMapXYZI *>(this), "internal_computeObservationLikelihood");
@@ -541,6 +554,58 @@ struct PyCallBack_mrpt_maps_CPointsMapXYZI : public mrpt::maps::CPointsMapXYZI {
 			else return pybind11::detail::cast_safe<std::string>(std::move(o));
 		}
 		return CPointsMap::asString();
+	}
+	bool nn_has_indices_or_ids() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CPointsMapXYZI *>(this), "nn_has_indices_or_ids");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return CPointsMap::nn_has_indices_or_ids();
+	}
+	size_t nn_index_count() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CPointsMapXYZI *>(this), "nn_index_count");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
+		}
+		return CPointsMap::nn_index_count();
+	}
+	bool nn_single_search(const struct mrpt::math::TPoint3D_<float> & a0, struct mrpt::math::TPoint3D_<float> & a1, float & a2, uint64_t & a3) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CPointsMapXYZI *>(this), "nn_single_search");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2, a3);
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return CPointsMap::nn_single_search(a0, a1, a2, a3);
+	}
+	bool nn_single_search(const struct mrpt::math::TPoint2D_<float> & a0, struct mrpt::math::TPoint2D_<float> & a1, float & a2, uint64_t & a3) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CPointsMapXYZI *>(this), "nn_single_search");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2, a3);
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return CPointsMap::nn_single_search(a0, a1, a2, a3);
 	}
 	void PLY_import_set_face_count(size_t a0) override {
 		pybind11::gil_scoped_acquire gil;
@@ -609,7 +674,7 @@ struct PyCallBack_mrpt_maps_CPointsMapXYZI : public mrpt::maps::CPointsMapXYZI {
 	}
 };
 
-// mrpt::maps::CPointsMapXYZI::TMapDefinition file: line:67
+// mrpt::maps::CPointsMapXYZI::TMapDefinition file: line:85
 struct PyCallBack_mrpt_maps_CPointsMapXYZI_TMapDefinition : public mrpt::maps::CPointsMapXYZI::TMapDefinition {
 	using mrpt::maps::CPointsMapXYZI::TMapDefinition::TMapDefinition;
 
@@ -715,12 +780,12 @@ void bind_mrpt_maps_CPointCloudFilterByDistance(std::function< pybind11::module 
 		cl.def("hasColorPoints", (bool (mrpt::maps::CPointsMapXYZI::*)() const) &mrpt::maps::CPointsMapXYZI::hasColorPoints, "Returns true if the point map has a color field for each point \n\nC++: mrpt::maps::CPointsMapXYZI::hasColorPoints() const --> bool");
 		cl.def("getVisualizationInto", (void (mrpt::maps::CPointsMapXYZI::*)(class mrpt::opengl::CSetOfObjects &) const) &mrpt::maps::CPointsMapXYZI::getVisualizationInto, "Override of the default 3D scene builder to account for the individual\n points' color.\n\nC++: mrpt::maps::CPointsMapXYZI::getVisualizationInto(class mrpt::opengl::CSetOfObjects &) const --> void", pybind11::arg("outObj"));
 
-		{ // mrpt::maps::CPointsMapXYZI::TMapDefinitionBase file: line:62
+		{ // mrpt::maps::CPointsMapXYZI::TMapDefinitionBase file: line:80
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CPointsMapXYZI::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CPointsMapXYZI::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CPointsMapXYZI::TMapDefinition file: line:67
+		{ // mrpt::maps::CPointsMapXYZI::TMapDefinition file: line:85
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CPointsMapXYZI::TMapDefinition, std::shared_ptr<mrpt::maps::CPointsMapXYZI::TMapDefinition>, PyCallBack_mrpt_maps_CPointsMapXYZI_TMapDefinition, mrpt::maps::CPointsMapXYZI::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CPointsMapXYZI::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CPointsMapXYZI_TMapDefinition(); } ) );

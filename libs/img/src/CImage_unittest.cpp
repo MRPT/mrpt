@@ -29,7 +29,9 @@ const auto tstImgFileColor =
 	mrpt::UNITTEST_BASEDIR() + "/samples/img_basic_example/frame_color.jpg"s;
 
 // Generate random img:
-static void fillImagePseudoRandom(uint32_t seed, mrpt::img::CImage& img)
+namespace
+{
+void fillImagePseudoRandom(uint32_t seed, mrpt::img::CImage& img)
 {
 	mrpt::random::Randomize(seed);
 	auto& rnd = mrpt::random::getRandomGenerator();
@@ -45,7 +47,7 @@ static void fillImagePseudoRandom(uint32_t seed, mrpt::img::CImage& img)
 }
 
 // Expect images to be identical:
-static bool expect_identical(
+bool expect_identical(
 	const mrpt::img::CImage& a, const mrpt::img::CImage& b,
 	const std::string& s = std::string())
 {
@@ -59,6 +61,7 @@ static bool expect_identical(
 		}
 	return true;
 }
+}  // namespace
 
 TEST(CImage, CtorDefault)
 {
@@ -72,7 +75,9 @@ TEST(CImage, CtorDefault)
 
 #if MRPT_HAS_OPENCV
 
-static void CtorSized_gray(unsigned int w, unsigned int h)
+namespace
+{
+void CtorSized_gray(unsigned int w, unsigned int h)
 {
 	using namespace mrpt::img;
 	CImage img(w, h, CH_GRAY);
@@ -82,6 +87,7 @@ static void CtorSized_gray(unsigned int w, unsigned int h)
 	EXPECT_EQ(img.getPixelDepth(), PixelDepth::D8U);
 	EXPECT_FALSE(img.isColor());
 }
+}  // namespace
 
 TEST(CImage, CtorSized)
 {

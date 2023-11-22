@@ -45,12 +45,12 @@ void CVoxelMap::TMapDefinition::dumpToTextStream_map_specific(
 	this->likelihoodOpts.dumpToTextStream(out);
 }
 
-mrpt::maps::CMetricMap* CVoxelMap::internal_CreateFromMapDefinition(
+mrpt::maps::CMetricMap::Ptr CVoxelMap::internal_CreateFromMapDefinition(
 	const mrpt::maps::TMetricMapInitializer& _def)
 {
 	const CVoxelMap::TMapDefinition& def =
 		*dynamic_cast<const CVoxelMap::TMapDefinition*>(&_def);
-	auto* obj = new CVoxelMap(def.resolution);
+	auto obj = CVoxelMap::Create(def.resolution);
 	obj->insertionOptions = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;
 	return obj;

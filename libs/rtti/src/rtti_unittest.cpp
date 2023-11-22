@@ -64,7 +64,7 @@ TEST(rtti, MyDerived1_CLASSID)
 
 	// RTTI IS_DERIVED(*)
 	{
-		auto p = mrpt::rtti::CObject::Ptr(new MyNS::MyDerived1);
+		auto p = mrpt::rtti::CObject::Ptr(std::make_shared<MyNS::MyDerived1>());
 		EXPECT_TRUE(IS_DERIVED(*p, MyNS::MyDerived1));
 		EXPECT_TRUE(IS_DERIVED(*p, mrpt::rtti::CObject));
 	}

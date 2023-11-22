@@ -25,7 +25,9 @@ TMetricMapTypesRegistry& TMetricMapTypesRegistry::Instance()
 	return reg;
 }
 
-static std::string stripNamespace(const std::string& n)
+namespace
+{
+std::string stripNamespace(const std::string& n)
 {
 	std::string ret = n;
 	const auto pos = ret.rfind("::");
@@ -33,6 +35,7 @@ static std::string stripNamespace(const std::string& n)
 
 	return ret;
 }
+}  // namespace
 
 size_t TMetricMapTypesRegistry::doRegister(
 	const std::string& names, MapDefCtorFunctor func1,
@@ -42,16 +45,15 @@ size_t TMetricMapTypesRegistry::doRegister(
 	mrpt::system::tokenize(names, " \t\r\n,", lstNames);
 	for (const auto& lstName : lstNames)
 	{
-		const auto p = std::make_pair(func1, func2);
-		m_registry[lstName] = p;
+		m_registry[lstName] = {func1, func2};
 		// register also the version without the "mrpt::NS::" prefix, for
 		// backwards compatibility:
-		m_registry[stripNamespace(lstName)] = p;
+		m_registry[stripNamespace(lstName)] = {func1, func2};
 	}
 	return m_registry.size();
 }
 
-mrpt::maps::TMetricMapInitializer*
+mrpt::maps::TMetricMapInitializer::Ptr
 	TMetricMapTypesRegistry::factoryMapDefinition(
 		const std::string& className) const
 {
@@ -61,12 +63,13 @@ mrpt::maps::TMetricMapInitializer*
 	if (it == m_registry.end()) it = m_registry.find(stripNamespace(className));
 
 	if (it == m_registry.end()) return nullptr;
-	ASSERT_(it->second.first);
-	return (it->second.first)();
+	ASSERT_(it->second.defCtor);
+	return (it->second.defCtor)();
 }
 
-mrpt::maps::CMetricMap* TMetricMapTypesRegistry::factoryMapObjectFromDefinition(
-	const mrpt::maps::TMetricMapInitializer& mi) const
+mrpt::maps::CMetricMap::Ptr
+	TMetricMapTypesRegistry::factoryMapObjectFromDefinition(
+		const mrpt::maps::TMetricMapInitializer& mi) const
 {
 	auto it = m_registry.find(mi.getMetricMapClassType()->className);
 	if (it == m_registry.end())
@@ -77,8 +80,8 @@ mrpt::maps::CMetricMap* TMetricMapTypesRegistry::factoryMapObjectFromDefinition(
 			mi.getMetricMapClassType()->className);
 	}
 
-	ASSERT_(it->second.second);
-	mrpt::maps::CMetricMap* theMap = (it->second.second)(mi);
+	ASSERT_(it->second.mapCtor);
+	mrpt::maps::CMetricMap::Ptr theMap = (it->second.mapCtor)(mi);
 
 	// Common params for all maps:
 	theMap->genericMapParams = mi.genericMapParams;

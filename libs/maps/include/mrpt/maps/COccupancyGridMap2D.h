@@ -15,6 +15,7 @@
 #include <mrpt/maps/CLogOddsGridMap2D.h>
 #include <mrpt/maps/CLogOddsGridMapLUT.h>
 #include <mrpt/maps/CMetricMap.h>
+#include <mrpt/maps/NearestNeighborsCapable.h>
 #include <mrpt/maps/OccupancyGridCellType.h>
 #include <mrpt/obs/CObservation2DRangeScanWithUncertainty.h>
 #include <mrpt/obs/obs_frwds.h>
@@ -52,7 +53,8 @@ namespace mrpt::maps
  **/
 class COccupancyGridMap2D
 	: public CMetricMap,
-	  public CLogOddsGridMap2D<OccGridCellTraits::cellType>
+	  public CLogOddsGridMap2D<OccGridCellTraits::cellType>,
+	  public mrpt::maps::NearestNeighborsCapable
 {
 	DEFINE_SERIALIZABLE(COccupancyGridMap2D, mrpt::maps)
    public:
@@ -324,6 +326,13 @@ class COccupancyGridMap2D
 	inline int y2idx(float y, float ymin) const
 	{
 		return static_cast<int>((y - ymin) / m_resolution);
+	}
+
+	mrpt::math::TBoundingBoxf boundingBox() const override
+	{
+		return {
+			{m_xMin, m_yMin, insertionOptions.mapAltitude},
+			{m_xMax, m_yMax, insertionOptions.mapAltitude}};
 	}
 
 	/** Scales an integer representation of the log-odd into a real valued
@@ -1160,6 +1169,41 @@ class COccupancyGridMap2D
 			"2D gridmap, extending from (%f,%f) to (%f,%f), cell size=%f",
 			getXMin(), getYMin(), getXMax(), getYMax(), getResolution());
 	}
+
+	/** @name API of the NearestNeighborsCapable virtual interface
+		@{ */
+	// See docs in base class
+	[[nodiscard]] bool nn_has_indices_or_ids() const override { return false; }
+	[[nodiscard]] size_t nn_index_count() const override { return 0; }
+	[[nodiscard]] bool nn_single_search(
+		const mrpt::math::TPoint3Df& query, mrpt::math::TPoint3Df& result,
+		float& out_dist_sqr, uint64_t& resultIndexOrID) const override;
+	[[nodiscard]] bool nn_single_search(
+		const mrpt::math::TPoint2Df& query, mrpt::math::TPoint2Df& result,
+		float& out_dist_sqr, uint64_t& resultIndexOrID) const override;
+	void nn_multiple_search(
+		const mrpt::math::TPoint3Df& query, const size_t N,
+		std::vector<mrpt::math::TPoint3Df>& results,
+		std::vector<float>& out_dists_sqr,
+		std::vector<uint64_t>& resultIndicesOrIDs) const override;
+	void nn_multiple_search(
+		const mrpt::math::TPoint2Df& query, const size_t N,
+		std::vector<mrpt::math::TPoint2Df>& results,
+		std::vector<float>& out_dists_sqr,
+		std::vector<uint64_t>& resultIndicesOrIDs) const override;
+	void nn_radius_search(
+		const mrpt::math::TPoint3Df& query, const float search_radius_sqr,
+		std::vector<mrpt::math::TPoint3Df>& results,
+		std::vector<float>& out_dists_sqr,
+		std::vector<uint64_t>& resultIndicesOrIDs,
+		size_t maxPoints) const override;
+	void nn_radius_search(
+		const mrpt::math::TPoint2Df& query, const float search_radius_sqr,
+		std::vector<mrpt::math::TPoint2Df>& results,
+		std::vector<float>& out_dists_sqr,
+		std::vector<uint64_t>& resultIndicesOrIDs,
+		size_t maxPoints) const override;
+	/** @} */
 
    private:
 	// See docs in base class

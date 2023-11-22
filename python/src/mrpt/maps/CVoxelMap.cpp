@@ -15,6 +15,7 @@
 #include <mrpt/core/Clock.h>
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/TColor.h>
+#include <mrpt/img/color_maps.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/CSimpleMap.h>
@@ -90,7 +91,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::maps::CVoxelMap file:mrpt/maps/CVoxelMap.h line:33
+// mrpt::maps::CVoxelMap file:mrpt/maps/CVoxelMap.h line:38
 struct PyCallBack_mrpt_maps_CVoxelMap : public mrpt::maps::CVoxelMap {
 	using mrpt::maps::CVoxelMap::CVoxelMap;
 
@@ -197,6 +198,71 @@ struct PyCallBack_mrpt_maps_CVoxelMap : public mrpt::maps::CVoxelMap {
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
 		return CVoxelMapOccupancyBase::getAsOctoMapVoxels(a0);
+	}
+	struct mrpt::math::TBoundingBox_<float> boundingBox() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CVoxelMap *>(this), "boundingBox");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<struct mrpt::math::TBoundingBox_<float>>::value) {
+				static pybind11::detail::override_caster_t<struct mrpt::math::TBoundingBox_<float>> caster;
+				return pybind11::detail::cast_ref<struct mrpt::math::TBoundingBox_<float>>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<struct mrpt::math::TBoundingBox_<float>>(std::move(o));
+		}
+		return CVoxelMapOccupancyBase::boundingBox();
+	}
+	bool nn_has_indices_or_ids() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CVoxelMap *>(this), "nn_has_indices_or_ids");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return CVoxelMapOccupancyBase::nn_has_indices_or_ids();
+	}
+	size_t nn_index_count() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CVoxelMap *>(this), "nn_index_count");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
+		}
+		return CVoxelMapOccupancyBase::nn_index_count();
+	}
+	bool nn_single_search(const struct mrpt::math::TPoint3D_<float> & a0, struct mrpt::math::TPoint3D_<float> & a1, float & a2, uint64_t & a3) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CVoxelMap *>(this), "nn_single_search");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2, a3);
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return CVoxelMapOccupancyBase::nn_single_search(a0, a1, a2, a3);
+	}
+	bool nn_single_search(const struct mrpt::math::TPoint2D_<float> & a0, struct mrpt::math::TPoint2D_<float> & a1, float & a2, uint64_t & a3) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CVoxelMap *>(this), "nn_single_search");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2, a3);
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return CVoxelMapOccupancyBase::nn_single_search(a0, a1, a2, a3);
 	}
 	void internal_clear() override {
 		pybind11::gil_scoped_acquire gil;
@@ -330,7 +396,7 @@ struct PyCallBack_mrpt_maps_CVoxelMap : public mrpt::maps::CVoxelMap {
 	}
 };
 
-// mrpt::maps::CVoxelMap::TMapDefinition file: line:67
+// mrpt::maps::CVoxelMap::TMapDefinition file: line:85
 struct PyCallBack_mrpt_maps_CVoxelMap_TMapDefinition : public mrpt::maps::CVoxelMap::TMapDefinition {
 	using mrpt::maps::CVoxelMap::TMapDefinition::TMapDefinition;
 
@@ -483,6 +549,71 @@ struct PyCallBack_mrpt_maps_CVoxelMapRGB : public mrpt::maps::CVoxelMapRGB {
 		}
 		return CVoxelMapOccupancyBase::getAsOctoMapVoxels(a0);
 	}
+	struct mrpt::math::TBoundingBox_<float> boundingBox() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CVoxelMapRGB *>(this), "boundingBox");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<struct mrpt::math::TBoundingBox_<float>>::value) {
+				static pybind11::detail::override_caster_t<struct mrpt::math::TBoundingBox_<float>> caster;
+				return pybind11::detail::cast_ref<struct mrpt::math::TBoundingBox_<float>>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<struct mrpt::math::TBoundingBox_<float>>(std::move(o));
+		}
+		return CVoxelMapOccupancyBase::boundingBox();
+	}
+	bool nn_has_indices_or_ids() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CVoxelMapRGB *>(this), "nn_has_indices_or_ids");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return CVoxelMapOccupancyBase::nn_has_indices_or_ids();
+	}
+	size_t nn_index_count() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CVoxelMapRGB *>(this), "nn_index_count");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
+		}
+		return CVoxelMapOccupancyBase::nn_index_count();
+	}
+	bool nn_single_search(const struct mrpt::math::TPoint3D_<float> & a0, struct mrpt::math::TPoint3D_<float> & a1, float & a2, uint64_t & a3) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CVoxelMapRGB *>(this), "nn_single_search");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2, a3);
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return CVoxelMapOccupancyBase::nn_single_search(a0, a1, a2, a3);
+	}
+	bool nn_single_search(const struct mrpt::math::TPoint2D_<float> & a0, struct mrpt::math::TPoint2D_<float> & a1, float & a2, uint64_t & a3) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CVoxelMapRGB *>(this), "nn_single_search");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2, a3);
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return CVoxelMapOccupancyBase::nn_single_search(a0, a1, a2, a3);
+	}
 	void internal_clear() override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CVoxelMapRGB *>(this), "internal_clear");
@@ -615,7 +746,7 @@ struct PyCallBack_mrpt_maps_CVoxelMapRGB : public mrpt::maps::CVoxelMapRGB {
 	}
 };
 
-// mrpt::maps::CVoxelMapRGB::TMapDefinition file: line:67
+// mrpt::maps::CVoxelMapRGB::TMapDefinition file: line:85
 struct PyCallBack_mrpt_maps_CVoxelMapRGB_TMapDefinition : public mrpt::maps::CVoxelMapRGB::TMapDefinition {
 	using mrpt::maps::CVoxelMapRGB::TMapDefinition::TMapDefinition;
 
@@ -662,13 +793,13 @@ struct PyCallBack_mrpt_maps_CVoxelMapRGB_TMapDefinition : public mrpt::maps::CVo
 
 void bind_mrpt_maps_CVoxelMap(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::maps::VoxelNodeOccupancy file:mrpt/maps/CVoxelMap.h line:18
+	{ // mrpt::maps::VoxelNodeOccupancy file:mrpt/maps/CVoxelMap.h line:23
 		pybind11::class_<mrpt::maps::VoxelNodeOccupancy, std::shared_ptr<mrpt::maps::VoxelNodeOccupancy>> cl(M("mrpt::maps"), "VoxelNodeOccupancy", "Voxel contents for CVoxelMap");
 		cl.def( pybind11::init( [](){ return new mrpt::maps::VoxelNodeOccupancy(); } ) );
 		cl.def_readwrite("occupancy", &mrpt::maps::VoxelNodeOccupancy::occupancy);
 		cl.def("occupancyRef", (signed char & (mrpt::maps::VoxelNodeOccupancy::*)()) &mrpt::maps::VoxelNodeOccupancy::occupancyRef, "C++: mrpt::maps::VoxelNodeOccupancy::occupancyRef() --> signed char &", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::maps::CVoxelMap file:mrpt/maps/CVoxelMap.h line:33
+	{ // mrpt::maps::CVoxelMap file:mrpt/maps/CVoxelMap.h line:38
 		pybind11::class_<mrpt::maps::CVoxelMap, std::shared_ptr<mrpt::maps::CVoxelMap>, PyCallBack_mrpt_maps_CVoxelMap, mrpt::maps::CVoxelMapOccupancyBase<mrpt::maps::VoxelNodeOccupancy,signed char>> cl(M("mrpt::maps"), "CVoxelMap", "Log-odds sparse voxel map for cells containing only the *occupancy* of each\n voxel.\n\n \n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::maps::CVoxelMap(); }, [](){ return new PyCallBack_mrpt_maps_CVoxelMap(); } ), "doc");
 		cl.def( pybind11::init( [](double const & a0){ return new mrpt::maps::CVoxelMap(a0); }, [](double const & a0){ return new PyCallBack_mrpt_maps_CVoxelMap(a0); } ), "doc");
@@ -683,12 +814,12 @@ void bind_mrpt_maps_CVoxelMap(std::function< pybind11::module &(std::string cons
 		cl.def_static("CreateObject", (class std::shared_ptr<class mrpt::rtti::CObject> (*)()) &mrpt::maps::CVoxelMap::CreateObject, "C++: mrpt::maps::CVoxelMap::CreateObject() --> class std::shared_ptr<class mrpt::rtti::CObject>");
 		cl.def("assign", (class mrpt::maps::CVoxelMap & (mrpt::maps::CVoxelMap::*)(const class mrpt::maps::CVoxelMap &)) &mrpt::maps::CVoxelMap::operator=, "C++: mrpt::maps::CVoxelMap::operator=(const class mrpt::maps::CVoxelMap &) --> class mrpt::maps::CVoxelMap &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::maps::CVoxelMap::TMapDefinitionBase file: line:62
+		{ // mrpt::maps::CVoxelMap::TMapDefinitionBase file: line:80
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CVoxelMap::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CVoxelMap::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CVoxelMap::TMapDefinition file: line:67
+		{ // mrpt::maps::CVoxelMap::TMapDefinition file: line:85
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CVoxelMap::TMapDefinition, std::shared_ptr<mrpt::maps::CVoxelMap::TMapDefinition>, PyCallBack_mrpt_maps_CVoxelMap_TMapDefinition, mrpt::maps::CVoxelMap::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CVoxelMap::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CVoxelMap_TMapDefinition(); } ) );
@@ -735,12 +866,12 @@ void bind_mrpt_maps_CVoxelMap(std::function< pybind11::module &(std::string cons
 		cl.def_static("CreateObject", (class std::shared_ptr<class mrpt::rtti::CObject> (*)()) &mrpt::maps::CVoxelMapRGB::CreateObject, "C++: mrpt::maps::CVoxelMapRGB::CreateObject() --> class std::shared_ptr<class mrpt::rtti::CObject>");
 		cl.def("assign", (class mrpt::maps::CVoxelMapRGB & (mrpt::maps::CVoxelMapRGB::*)(const class mrpt::maps::CVoxelMapRGB &)) &mrpt::maps::CVoxelMapRGB::operator=, "C++: mrpt::maps::CVoxelMapRGB::operator=(const class mrpt::maps::CVoxelMapRGB &) --> class mrpt::maps::CVoxelMapRGB &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::maps::CVoxelMapRGB::TMapDefinitionBase file: line:62
+		{ // mrpt::maps::CVoxelMapRGB::TMapDefinitionBase file: line:80
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CVoxelMapRGB::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CVoxelMapRGB::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CVoxelMapRGB::TMapDefinition file: line:67
+		{ // mrpt::maps::CVoxelMapRGB::TMapDefinition file: line:85
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CVoxelMapRGB::TMapDefinition, std::shared_ptr<mrpt::maps::CVoxelMapRGB::TMapDefinition>, PyCallBack_mrpt_maps_CVoxelMapRGB_TMapDefinition, mrpt::maps::CVoxelMapRGB::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CVoxelMapRGB::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CVoxelMapRGB_TMapDefinition(); } ) );

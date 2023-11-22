@@ -454,6 +454,19 @@ struct PyCallBack_mrpt_maps_CBeaconMap : public mrpt::maps::CBeaconMap {
 		}
 		return CBeaconMap::getVisualizationInto(a0);
 	}
+	struct mrpt::math::TBoundingBox_<float> boundingBox() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CBeaconMap *>(this), "boundingBox");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<struct mrpt::math::TBoundingBox_<float>>::value) {
+				static pybind11::detail::override_caster_t<struct mrpt::math::TBoundingBox_<float>> caster;
+				return pybind11::detail::cast_ref<struct mrpt::math::TBoundingBox_<float>>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<struct mrpt::math::TBoundingBox_<float>>(std::move(o));
+		}
+		return CMetricMap::boundingBox();
+	}
 	bool canComputeObservationLikelihood(const class mrpt::obs::CObservation & a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CBeaconMap *>(this), "canComputeObservationLikelihood");
@@ -572,7 +585,7 @@ struct PyCallBack_mrpt_maps_CBeaconMap_TInsertionOptions : public mrpt::maps::CB
 	}
 };
 
-// mrpt::maps::CBeaconMap::TMapDefinition file: line:67
+// mrpt::maps::CBeaconMap::TMapDefinition file: line:85
 struct PyCallBack_mrpt_maps_CBeaconMap_TMapDefinition : public mrpt::maps::CBeaconMap::TMapDefinition {
 	using mrpt::maps::CBeaconMap::TMapDefinition::TMapDefinition;
 
@@ -724,12 +737,12 @@ void bind_mrpt_maps_CBeacon(std::function< pybind11::module &(std::string const 
 			cl.def("assign", (struct mrpt::maps::CBeaconMap::TInsertionOptions & (mrpt::maps::CBeaconMap::TInsertionOptions::*)(const struct mrpt::maps::CBeaconMap::TInsertionOptions &)) &mrpt::maps::CBeaconMap::TInsertionOptions::operator=, "C++: mrpt::maps::CBeaconMap::TInsertionOptions::operator=(const struct mrpt::maps::CBeaconMap::TInsertionOptions &) --> struct mrpt::maps::CBeaconMap::TInsertionOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CBeaconMap::TMapDefinitionBase file: line:62
+		{ // mrpt::maps::CBeaconMap::TMapDefinitionBase file: line:80
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CBeaconMap::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CBeaconMap::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CBeaconMap::TMapDefinition file: line:67
+		{ // mrpt::maps::CBeaconMap::TMapDefinition file: line:85
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CBeaconMap::TMapDefinition, std::shared_ptr<mrpt::maps::CBeaconMap::TMapDefinition>, PyCallBack_mrpt_maps_CBeaconMap_TMapDefinition, mrpt::maps::CBeaconMap::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CBeaconMap::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CBeaconMap_TMapDefinition(); } ) );

@@ -69,12 +69,12 @@ void CBeaconMap::TMapDefinition::dumpToTextStream_map_specific(
 	this->likelihoodOpts.dumpToTextStream(out);
 }
 
-mrpt::maps::CMetricMap* CBeaconMap::internal_CreateFromMapDefinition(
+mrpt::maps::CMetricMap::Ptr CBeaconMap::internal_CreateFromMapDefinition(
 	const mrpt::maps::TMetricMapInitializer& _def)
 {
 	const CBeaconMap::TMapDefinition& def =
 		*dynamic_cast<const CBeaconMap::TMapDefinition*>(&_def);
-	auto* obj = new CBeaconMap();
+	auto obj = CBeaconMap::Create();
 	obj->insertionOptions = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;
 	return obj;

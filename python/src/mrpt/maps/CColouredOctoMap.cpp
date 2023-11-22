@@ -441,6 +441,19 @@ struct PyCallBack_mrpt_maps_CColouredOctoMap : public mrpt::maps::CColouredOctoM
 		}
 		return COctoMapBase::getVisualizationInto(a0);
 	}
+	struct mrpt::math::TBoundingBox_<float> boundingBox() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CColouredOctoMap *>(this), "boundingBox");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<struct mrpt::math::TBoundingBox_<float>>::value) {
+				static pybind11::detail::override_caster_t<struct mrpt::math::TBoundingBox_<float>> caster;
+				return pybind11::detail::cast_ref<struct mrpt::math::TBoundingBox_<float>>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<struct mrpt::math::TBoundingBox_<float>>(std::move(o));
+		}
+		return CMetricMap::boundingBox();
+	}
 	bool canComputeObservationLikelihood(const class mrpt::obs::CObservation & a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CColouredOctoMap *>(this), "canComputeObservationLikelihood");
@@ -521,7 +534,7 @@ struct PyCallBack_mrpt_maps_CColouredOctoMap : public mrpt::maps::CColouredOctoM
 	}
 };
 
-// mrpt::maps::CColouredOctoMap::TMapDefinition file: line:67
+// mrpt::maps::CColouredOctoMap::TMapDefinition file: line:85
 struct PyCallBack_mrpt_maps_CColouredOctoMap_TMapDefinition : public mrpt::maps::CColouredOctoMap::TMapDefinition {
 	using mrpt::maps::CColouredOctoMap::TMapDefinition::TMapDefinition;
 
@@ -934,6 +947,19 @@ struct PyCallBack_mrpt_maps_CColouredPointsMap : public mrpt::maps::CColouredPoi
 		}
 		return CPointsMap::isEmpty();
 	}
+	struct mrpt::math::TBoundingBox_<float> boundingBox() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CColouredPointsMap *>(this), "boundingBox");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<struct mrpt::math::TBoundingBox_<float>>::value) {
+				static pybind11::detail::override_caster_t<struct mrpt::math::TBoundingBox_<float>> caster;
+				return pybind11::detail::cast_ref<struct mrpt::math::TBoundingBox_<float>>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<struct mrpt::math::TBoundingBox_<float>>(std::move(o));
+		}
+		return CPointsMap::boundingBox();
+	}
 	double internal_computeObservationLikelihood(const class mrpt::obs::CObservation & a0, const class mrpt::poses::CPose3D & a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CColouredPointsMap *>(this), "internal_computeObservationLikelihood");
@@ -959,6 +985,58 @@ struct PyCallBack_mrpt_maps_CColouredPointsMap : public mrpt::maps::CColouredPoi
 			else return pybind11::detail::cast_safe<std::string>(std::move(o));
 		}
 		return CPointsMap::asString();
+	}
+	bool nn_has_indices_or_ids() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CColouredPointsMap *>(this), "nn_has_indices_or_ids");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return CPointsMap::nn_has_indices_or_ids();
+	}
+	size_t nn_index_count() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CColouredPointsMap *>(this), "nn_index_count");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
+		}
+		return CPointsMap::nn_index_count();
+	}
+	bool nn_single_search(const struct mrpt::math::TPoint3D_<float> & a0, struct mrpt::math::TPoint3D_<float> & a1, float & a2, uint64_t & a3) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CColouredPointsMap *>(this), "nn_single_search");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2, a3);
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return CPointsMap::nn_single_search(a0, a1, a2, a3);
+	}
+	bool nn_single_search(const struct mrpt::math::TPoint2D_<float> & a0, struct mrpt::math::TPoint2D_<float> & a1, float & a2, uint64_t & a3) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CColouredPointsMap *>(this), "nn_single_search");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2, a3);
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return CPointsMap::nn_single_search(a0, a1, a2, a3);
 	}
 	void PLY_import_set_face_count(size_t a0) override {
 		pybind11::gil_scoped_acquire gil;
@@ -1059,7 +1137,7 @@ struct PyCallBack_mrpt_maps_CColouredPointsMap_TColourOptions : public mrpt::map
 	}
 };
 
-// mrpt::maps::CColouredPointsMap::TMapDefinition file: line:67
+// mrpt::maps::CColouredPointsMap::TMapDefinition file: line:85
 struct PyCallBack_mrpt_maps_CColouredPointsMap_TMapDefinition : public mrpt::maps::CColouredPointsMap::TMapDefinition {
 	using mrpt::maps::CColouredPointsMap::TMapDefinition::TMapDefinition;
 
@@ -1162,12 +1240,12 @@ void bind_mrpt_maps_CColouredOctoMap(std::function< pybind11::module &(std::stri
 		cl.def("getClampingThresMaxLog", (float (mrpt::maps::CColouredOctoMap::*)() const) &mrpt::maps::CColouredOctoMap::getClampingThresMaxLog, "C++: mrpt::maps::CColouredOctoMap::getClampingThresMaxLog() const --> float");
 		cl.def("assign", (class mrpt::maps::CColouredOctoMap & (mrpt::maps::CColouredOctoMap::*)(const class mrpt::maps::CColouredOctoMap &)) &mrpt::maps::CColouredOctoMap::operator=, "C++: mrpt::maps::CColouredOctoMap::operator=(const class mrpt::maps::CColouredOctoMap &) --> class mrpt::maps::CColouredOctoMap &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::maps::CColouredOctoMap::TMapDefinitionBase file: line:62
+		{ // mrpt::maps::CColouredOctoMap::TMapDefinitionBase file: line:80
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CColouredOctoMap::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CColouredOctoMap::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CColouredOctoMap::TMapDefinition file: line:67
+		{ // mrpt::maps::CColouredOctoMap::TMapDefinition file: line:85
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CColouredOctoMap::TMapDefinition, std::shared_ptr<mrpt::maps::CColouredOctoMap::TMapDefinition>, PyCallBack_mrpt_maps_CColouredOctoMap_TMapDefinition, mrpt::maps::CColouredOctoMap::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CColouredOctoMap::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CColouredOctoMap_TMapDefinition(); } ) );
@@ -1234,12 +1312,12 @@ void bind_mrpt_maps_CColouredOctoMap(std::function< pybind11::module &(std::stri
 			cl.def("assign", (struct mrpt::maps::CColouredPointsMap::TColourOptions & (mrpt::maps::CColouredPointsMap::TColourOptions::*)(const struct mrpt::maps::CColouredPointsMap::TColourOptions &)) &mrpt::maps::CColouredPointsMap::TColourOptions::operator=, "C++: mrpt::maps::CColouredPointsMap::TColourOptions::operator=(const struct mrpt::maps::CColouredPointsMap::TColourOptions &) --> struct mrpt::maps::CColouredPointsMap::TColourOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CColouredPointsMap::TMapDefinitionBase file: line:62
+		{ // mrpt::maps::CColouredPointsMap::TMapDefinitionBase file: line:80
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CColouredPointsMap::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CColouredPointsMap::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CColouredPointsMap::TMapDefinition file: line:67
+		{ // mrpt::maps::CColouredPointsMap::TMapDefinition file: line:85
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CColouredPointsMap::TMapDefinition, std::shared_ptr<mrpt::maps::CColouredPointsMap::TMapDefinition>, PyCallBack_mrpt_maps_CColouredPointsMap_TMapDefinition, mrpt::maps::CColouredPointsMap::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CColouredPointsMap::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CColouredPointsMap_TMapDefinition(); } ) );

@@ -396,6 +396,19 @@ struct PyCallBack_mrpt_maps_CGasConcentrationGridMap2D : public mrpt::maps::CGas
 		}
 		return CRandomFieldGridMap2D::predictMeasurement(a0, a1, a2, a3, a4, a5);
 	}
+	struct mrpt::math::TBoundingBox_<float> boundingBox() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CGasConcentrationGridMap2D *>(this), "boundingBox");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<struct mrpt::math::TBoundingBox_<float>>::value) {
+				static pybind11::detail::override_caster_t<struct mrpt::math::TBoundingBox_<float>> caster;
+				return pybind11::detail::cast_ref<struct mrpt::math::TBoundingBox_<float>>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<struct mrpt::math::TBoundingBox_<float>>(std::move(o));
+		}
+		return CMetricMap::boundingBox();
+	}
 	bool canComputeObservationLikelihood(const class mrpt::obs::CObservation & a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CGasConcentrationGridMap2D *>(this), "canComputeObservationLikelihood");
@@ -495,7 +508,7 @@ struct PyCallBack_mrpt_maps_CGasConcentrationGridMap2D_TInsertionOptions : publi
 	}
 };
 
-// mrpt::maps::CGasConcentrationGridMap2D::TMapDefinition file: line:67
+// mrpt::maps::CGasConcentrationGridMap2D::TMapDefinition file: line:85
 struct PyCallBack_mrpt_maps_CGasConcentrationGridMap2D_TMapDefinition : public mrpt::maps::CGasConcentrationGridMap2D::TMapDefinition {
 	using mrpt::maps::CGasConcentrationGridMap2D::TMapDefinition::TMapDefinition;
 
@@ -612,12 +625,12 @@ void bind_mrpt_maps_CGasConcentrationGridMap2D(std::function< pybind11::module &
 			cl.def("assign", (struct mrpt::maps::CGasConcentrationGridMap2D::TGaussianWindTable & (mrpt::maps::CGasConcentrationGridMap2D::TGaussianWindTable::*)(const struct mrpt::maps::CGasConcentrationGridMap2D::TGaussianWindTable &)) &mrpt::maps::CGasConcentrationGridMap2D::TGaussianWindTable::operator=, "C++: mrpt::maps::CGasConcentrationGridMap2D::TGaussianWindTable::operator=(const struct mrpt::maps::CGasConcentrationGridMap2D::TGaussianWindTable &) --> struct mrpt::maps::CGasConcentrationGridMap2D::TGaussianWindTable &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CGasConcentrationGridMap2D::TMapDefinitionBase file: line:62
+		{ // mrpt::maps::CGasConcentrationGridMap2D::TMapDefinitionBase file: line:80
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CGasConcentrationGridMap2D::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CGasConcentrationGridMap2D::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CGasConcentrationGridMap2D::TMapDefinition file: line:67
+		{ // mrpt::maps::CGasConcentrationGridMap2D::TMapDefinition file: line:85
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CGasConcentrationGridMap2D::TMapDefinition, std::shared_ptr<mrpt::maps::CGasConcentrationGridMap2D::TMapDefinition>, PyCallBack_mrpt_maps_CGasConcentrationGridMap2D_TMapDefinition, mrpt::maps::CGasConcentrationGridMap2D::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CGasConcentrationGridMap2D::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CGasConcentrationGridMap2D_TMapDefinition(); } ) );

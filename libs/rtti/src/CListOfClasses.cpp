@@ -40,7 +40,9 @@ std::string CListOfClasses::asString() const
 }
 
 // trim from start
-static inline std::string& ltrim(std::string& s)
+namespace
+{
+inline std::string& ltrim(std::string& s)
 {
 	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](const char c) {
 				return !std::isspace(c);
@@ -49,7 +51,7 @@ static inline std::string& ltrim(std::string& s)
 }
 
 // trim from end
-static inline std::string& rtrim(std::string& s)
+inline std::string& rtrim(std::string& s)
 {
 	s.erase(
 		std::find_if(
@@ -60,7 +62,9 @@ static inline std::string& rtrim(std::string& s)
 }
 
 // trim from both ends
-static inline std::string& trim(std::string& s) { return ltrim(rtrim(s)); }
+inline std::string& trim(std::string& s) { return ltrim(rtrim(s)); }
+}  // namespace
+
 void CListOfClasses::fromString(const std::string& s)
 {
 	MRPT_TRY_START

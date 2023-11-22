@@ -15,7 +15,9 @@
 #include <mrpt/serialization/CArchive.h>
 #include <test_mrpt_common.h>
 
-static void checkExpectedValues(const mrpt::obs::CObservationIMU& o)
+namespace
+{
+void checkExpectedValues(const mrpt::obs::CObservationIMU& o)
 {
 	EXPECT_FALSE(o.has(mrpt::obs::IMU_X));
 
@@ -27,6 +29,7 @@ static void checkExpectedValues(const mrpt::obs::CObservationIMU& o)
 	EXPECT_NEAR(o.get(mrpt::obs::IMU_WY), 0.0, 1e-4);
 	EXPECT_NEAR(o.get(mrpt::obs::IMU_WZ), 0.00222222, 1e-4);
 }
+}  // namespace
 
 TEST(CObservationIMU, Deserialize_v3)
 {

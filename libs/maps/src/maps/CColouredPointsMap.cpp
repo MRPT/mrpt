@@ -55,12 +55,13 @@ void CColouredPointsMap::TMapDefinition::dumpToTextStream_map_specific(
 	this->colourOpts.dumpToTextStream(out);
 }
 
-mrpt::maps::CMetricMap* CColouredPointsMap::internal_CreateFromMapDefinition(
-	const mrpt::maps::TMetricMapInitializer& _def)
+mrpt::maps::CMetricMap::Ptr
+	CColouredPointsMap::internal_CreateFromMapDefinition(
+		const mrpt::maps::TMetricMapInitializer& _def)
 {
 	const CColouredPointsMap::TMapDefinition& def =
 		*dynamic_cast<const CColouredPointsMap::TMapDefinition*>(&_def);
-	auto* obj = new CColouredPointsMap();
+	auto obj = CColouredPointsMap::Create();
 	obj->insertionOptions = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;
 	obj->colorScheme = def.colourOpts;

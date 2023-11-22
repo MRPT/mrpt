@@ -36,7 +36,9 @@ using namespace mrpt::opengl;
 // |(-1,-1)        (+1,-1)|
 // +----------------------+
 //
-static std::tuple<mrpt::math::TPoint2Df, float> projectToScreenCoordsAndDepth(
+namespace
+{
+std::tuple<mrpt::math::TPoint2Df, float> projectToScreenCoordsAndDepth(
 	const mrpt::math::TPoint3Df& localPt,
 	const mrpt::opengl::TRenderMatrices& objState)
 {
@@ -64,6 +66,7 @@ static std::tuple<mrpt::math::TPoint2Df, float> projectToScreenCoordsAndDepth(
 
 	return {uv, depth};
 }
+}  // namespace
 
 // See docs in .h
 std::tuple<double, bool, bool> mrpt::opengl::depthAndVisibleInView(

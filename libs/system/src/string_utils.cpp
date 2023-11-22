@@ -320,8 +320,10 @@ bool mrpt::system::strStartsI(const std::string& s1, const std::string& s2)
 		s2.size());	 // if s1 is shorter it's not a problem
 }
 
+namespace
+{
 template <typename STRING_LIST>
-static void impl_stringListAsString(
+void impl_stringListAsString(
 	const STRING_LIST& lst, std::string& outText, const std::string& newline)
 {
 	const size_t lenNL = newline.size();
@@ -344,6 +346,7 @@ static void impl_stringListAsString(
 			outText[curPos++] = sNL;
 	}
 }
+}  // namespace
 
 void mrpt::system::stringListAsString(
 	const std::vector<std::string>& lst, std::string& outText,
