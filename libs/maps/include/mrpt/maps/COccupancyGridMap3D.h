@@ -12,10 +12,16 @@
 #include <mrpt/maps/CLogOddsGridMap3D.h>
 #include <mrpt/maps/CLogOddsGridMapLUT.h>
 #include <mrpt/maps/CMetricMap.h>
+#include <mrpt/maps/NearestNeighborsCapable.h>
 #include <mrpt/maps/OccupancyGridCellType.h>
 #include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/typemeta/TEnumType.h>
+
+namespace mrpt::obs
+{
+class CObservationPointCloud;
+}
 
 namespace mrpt::maps
 {
@@ -35,7 +41,8 @@ namespace mrpt::maps
  **/
 class COccupancyGridMap3D
 	: public CMetricMap,
-	  public CLogOddsGridMap3D<OccGridCellTraits::cellType>
+	  public CLogOddsGridMap3D<OccGridCellTraits::cellType>,
+	  public mrpt::maps::NearestNeighborsCapable
 {
 	DEFINE_SERIALIZABLE(COccupancyGridMap3D, mrpt::maps)
    public:
@@ -78,6 +85,10 @@ class COccupancyGridMap3D
 
 	void internal_insertObservationScan3D(
 		const mrpt::obs::CObservation3DRangeScan& o,
+		const mrpt::poses::CPose3D& robotPose);
+
+	void internal_insertObservationPointCloud(
+		const mrpt::obs::CObservationPointCloud& o,
 		const mrpt::poses::CPose3D& robotPose);
 
    public:
@@ -185,7 +196,8 @@ class COccupancyGridMap3D
 	void insertPointCloud(
 		const mrpt::math::TPoint3D& sensorCenter,
 		const mrpt::maps::CPointsMap& pts,
-		const float maxValidRange = std::numeric_limits<float>::max());
+		const float maxValidRange = std::numeric_limits<float>::max(),
+		const std::optional<mrpt::poses::CPose3D>& robotPose = std::nullopt);
 
 	/** \sa renderingOptions */
 	void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_obj) const;
@@ -193,6 +205,15 @@ class COccupancyGridMap3D
 	/** Returns a 3D object representing the map. \sa renderingOptions */
 	void getVisualizationInto(
 		mrpt::opengl::CSetOfObjects& outObj) const override;
+
+	mrpt::math::TBoundingBoxf boundingBox() const override
+	{
+		return {
+			mrpt::math::TPoint3Df(
+				m_grid.getXMin(), m_grid.getYMin(), m_grid.getZMin()),
+			mrpt::math::TPoint3Df(
+				m_grid.getXMax(), m_grid.getYMax(), m_grid.getZMax())};
+	}
 
 	/** With this struct options are provided to the observation insertion
 	 * process.
@@ -238,6 +259,11 @@ class COccupancyGridMap3D
 
 		/** Decimation for insertPointCloud() or 2D range scans (Default: 1) */
 		uint16_t decimation{1};
+
+		/** If true, raytrace and fill empty cells. If false, only the final
+		 * (end point) of each ray will be marked as occupied.
+		 */
+		bool raytraceEmptyCells = true;
 	};
 
 	/** With this struct options are provided to the observation insertion
@@ -371,6 +397,40 @@ class COccupancyGridMap3D
 			m_grid.getXMax(), m_grid.getYMax(), m_grid.getZMax(),
 			m_grid.getResolutionXY(), m_grid.getResolutionZ());
 	}
+
+	/** @name API of the NearestNeighborsCapable virtual interface
+		@{ */
+	[[nodiscard]] bool nn_has_indices_or_ids() const override { return false; }
+	[[nodiscard]] size_t nn_index_count() const override { return 0; }
+	[[nodiscard]] bool nn_single_search(
+		const mrpt::math::TPoint3Df& query, mrpt::math::TPoint3Df& result,
+		float& out_dist_sqr, uint64_t& resultIndexOrID) const override;
+	[[nodiscard]] bool nn_single_search(
+		const mrpt::math::TPoint2Df& query, mrpt::math::TPoint2Df& result,
+		float& out_dist_sqr, uint64_t& resultIndexOrID) const override;
+	void nn_multiple_search(
+		const mrpt::math::TPoint3Df& query, const size_t N,
+		std::vector<mrpt::math::TPoint3Df>& results,
+		std::vector<float>& out_dists_sqr,
+		std::vector<uint64_t>& resultIndicesOrIDs) const override;
+	void nn_multiple_search(
+		const mrpt::math::TPoint2Df& query, const size_t N,
+		std::vector<mrpt::math::TPoint2Df>& results,
+		std::vector<float>& out_dists_sqr,
+		std::vector<uint64_t>& resultIndicesOrIDs) const override;
+	void nn_radius_search(
+		const mrpt::math::TPoint3Df& query, const float search_radius_sqr,
+		std::vector<mrpt::math::TPoint3Df>& results,
+		std::vector<float>& out_dists_sqr,
+		std::vector<uint64_t>& resultIndicesOrIDs,
+		size_t maxPoints) const override;
+	void nn_radius_search(
+		const mrpt::math::TPoint2Df& query, const float search_radius_sqr,
+		std::vector<mrpt::math::TPoint2Df>& results,
+		std::vector<float>& out_dists_sqr,
+		std::vector<uint64_t>& resultIndicesOrIDs,
+		size_t maxPoints) const override;
+	/** @} */
 
    private:
 	// See docs in base class

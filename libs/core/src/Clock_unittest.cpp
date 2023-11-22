@@ -14,7 +14,9 @@
 #include <chrono>
 #include <thread>
 
-static void test_delay()
+namespace
+{
+void test_delay()
 {
 	const double t0 = mrpt::Clock::nowDouble();
 	std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -23,6 +25,7 @@ static void test_delay()
 	EXPECT_GT(t1 - t0, 0.008);	// ideally, near 0.010
 	EXPECT_LT(t1 - t0, 5.0);  // just detect it's not a crazy number
 }
+}  // namespace
 
 TEST(clock, delay_Realtime)
 {

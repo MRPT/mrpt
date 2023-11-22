@@ -13,6 +13,7 @@
 
 #include <functional>
 #include <map>
+#include <memory>
 #include <string>
 
 namespace mrpt
@@ -23,9 +24,10 @@ struct TMetricMapInitializer;
 namespace internal
 {
 using MapDefCtorFunctor =
-	std::function<mrpt::maps::TMetricMapInitializer*(void)>;
-using MapCtorFromDefFunctor = std::function<mrpt::maps::CMetricMap*(
-	const mrpt::maps::TMetricMapInitializer&)>;
+	std::function<std::shared_ptr<mrpt::maps::TMetricMapInitializer>(void)>;
+using MapCtorFromDefFunctor =
+	std::function<std::shared_ptr<mrpt::maps::CMetricMap>(
+		const mrpt::maps::TMetricMapInitializer&)>;
 
 /** Class factory & registry for map classes. Used from
  * mrpt::maps::TMetricMapInitializer */
@@ -38,14 +40,30 @@ struct TMetricMapTypesRegistry
 	size_t doRegister(
 		const std::string& name, MapDefCtorFunctor func1,
 		MapCtorFromDefFunctor func2);
+
 	/** Return nullptr if not found */
-	mrpt::maps::TMetricMapInitializer* factoryMapDefinition(
+	std::shared_ptr<mrpt::maps::TMetricMapInitializer> factoryMapDefinition(
 		const std::string& className) const;
+
 	/** Return nullptr if not found */
-	mrpt::maps::CMetricMap* factoryMapObjectFromDefinition(
+	std::shared_ptr<mrpt::maps::CMetricMap> factoryMapObjectFromDefinition(
 		const mrpt::maps::TMetricMapInitializer& mi) const;
-	using TListRegisteredMaps = std::map<
-		std::string, std::pair<MapDefCtorFunctor, MapCtorFromDefFunctor>>;
+
+	struct InfoPerMapClass
+	{
+		InfoPerMapClass() = default;
+		InfoPerMapClass(
+			const MapDefCtorFunctor& DefCtor,
+			const MapCtorFromDefFunctor& MapCtor)
+			: defCtor(DefCtor), mapCtor(MapCtor)
+		{
+		}
+
+		MapDefCtorFunctor defCtor;
+		MapCtorFromDefFunctor mapCtor;
+	};
+
+	using TListRegisteredMaps = std::map<std::string, InfoPerMapClass>;
 	const TListRegisteredMaps& getAllRegistered() const { return m_registry; }
 
    private:
@@ -78,13 +96,14 @@ struct TMetricMapTypesRegistry
 	;                                                                          \
 	/** Returns default map definition initializer. See                        \
 	 * mrpt::maps::TMetricMapInitializer */                                    \
-	static mrpt::maps::TMetricMapInitializer* MapDefinition();                 \
+	static std::shared_ptr<mrpt::maps::TMetricMapInitializer> MapDefinition(); \
 	/** Constructor from a map definition structure: initializes the map and   \
 	 * its parameters accordingly */                                           \
-	static _CLASS_NAME_* CreateFromMapDefinition(                              \
+	static std::shared_ptr<_CLASS_NAME_> CreateFromMapDefinition(              \
 		const mrpt::maps::TMetricMapInitializer& def);                         \
-	static mrpt::maps::CMetricMap* internal_CreateFromMapDefinition(           \
-		const mrpt::maps::TMetricMapInitializer& def);                         \
+	static std::shared_ptr<mrpt::maps::CMetricMap>                             \
+		internal_CreateFromMapDefinition(                                      \
+			const mrpt::maps::TMetricMapInitializer& def);                     \
 	/** ID used to initialize class registration (just ignore it) */           \
 	static const size_t m_private_map_register_id;                             \
 /** @} */
@@ -97,17 +116,18 @@ struct TMetricMapTypesRegistry
 		mrpt::maps::internal::TMetricMapTypesRegistry::Instance().doRegister(  \
 			_CLASSNAME_STRINGS, &_CLASSNAME_WITH_NS::MapDefinition,            \
 			&_CLASSNAME_WITH_NS::internal_CreateFromMapDefinition);            \
-	mrpt::maps::TMetricMapInitializer* _CLASSNAME_WITH_NS::MapDefinition()     \
+	std::shared_ptr<mrpt::maps::TMetricMapInitializer>                         \
+		_CLASSNAME_WITH_NS::MapDefinition()                                    \
 	{                                                                          \
-		return new _CLASSNAME_WITH_NS::TMapDefinition;                         \
+		return std::make_shared<_CLASSNAME_WITH_NS::TMapDefinition>();         \
 	}                                                                          \
-	_CLASSNAME_WITH_NS* _CLASSNAME_WITH_NS::CreateFromMapDefinition(           \
-		const mrpt::maps::TMetricMapInitializer& def)                          \
+	std::shared_ptr<_CLASSNAME_WITH_NS>                                        \
+		_CLASSNAME_WITH_NS::CreateFromMapDefinition(                           \
+			const mrpt::maps::TMetricMapInitializer& def)                      \
 	{                                                                          \
-		return dynamic_cast<_CLASSNAME_WITH_NS*>(                              \
+		return std::dynamic_pointer_cast<_CLASSNAME_WITH_NS>(                  \
 			_CLASSNAME_WITH_NS::internal_CreateFromMapDefinition(def));        \
 	}
-
 }  // namespace internal
 }  // namespace maps
 }  // namespace mrpt

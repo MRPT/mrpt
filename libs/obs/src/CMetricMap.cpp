@@ -40,12 +40,18 @@ void CMetricMap::loadFromProbabilisticPosesAndObservations(
 	this->clear();
 
 	// Insert new content:
-	for (const auto& pair : sfSeq)
+	for (const auto& [pose, sf] : sfSeq)
 	{
-		ASSERTMSG_(pair.pose, "Input map has an empty `CPose3DPDF` ptr");
-		ASSERTMSG_(pair.sf, "Input map has an empty `CSensoryFrame` ptr");
+		ASSERTMSG_(pose, "Input map has an empty `CPose3DPDF` ptr");
+		ASSERTMSG_(sf, "Input map has an empty `CSensoryFrame` ptr");
 
-		pair.sf->insertObservationsInto(*this, pair.pose->getMeanVal());
+		for (auto& o : *sf)
+			o->load();
+
+		sf->insertObservationsInto(*this, pose->getMeanVal());
+
+		for (auto& o : *sf)
+			o->unload();
 	}
 }
 

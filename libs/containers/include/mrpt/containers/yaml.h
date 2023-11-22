@@ -912,6 +912,22 @@ std::ostream& operator<<(std::ostream& o, const yaml& p);
 	MCP_LOAD_OPT(Yaml__, Var__);                                               \
 	Var__ = mrpt::DEG2RAD(Var__)
 
+namespace internal
+{
+// We need to implement this as a template for the "if constexpr()" false branch
+// not to be evaluated for enums, which would lead to build errors.
+template <typename T, typename YAML_T>
+void impl_mcp_save(YAML_T& y, const T& var, const char* varName)
+{
+	using enum_t = std::remove_cv_t<T>;
+
+	if constexpr (std::is_enum_v<enum_t>)
+		y[varName] = mrpt::typemeta::TEnumType<enum_t>::value2name(var);
+	else
+		y[varName] = var;
+}
+}  // namespace internal
+
 /** Macro to store a variable into a mrpt::containers::yaml (initials MCP)
  * dictionary, using as "key" the name of the variable.
  *
@@ -931,11 +947,7 @@ std::ostream& operator<<(std::ostream& o, const yaml& p);
  * values. Note that this requires enums to implement mrpt::typemeta::TEnumType.
  */
 #define MCP_SAVE(Yaml__, Var__)                                                \
-	if constexpr (std::is_enum_v<decltype(Var__)>)                             \
-		Yaml__[#Var__] = mrpt::typemeta::TEnumType<                            \
-			std::remove_cv_t<decltype(Var__)>>::value2name(Var__);             \
-	else                                                                       \
-		Yaml__[#Var__] = Var__;
+	mrpt::containers::internal::impl_mcp_save(Yaml__, Var__, #Var__);
 
 #define MCP_SAVE_DEG(Yaml__, Var__) Yaml__[#Var__] = mrpt::RAD2DEG(Var__);
 

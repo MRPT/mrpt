@@ -154,14 +154,16 @@ struct CAssimpModel::Impl
 #if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL) && MRPT_HAS_ASSIMP
 
 // Just return the diffuse color:
-static mrpt::img::TColor apply_material(
+namespace
+{
+mrpt::img::TColor apply_material(
 	const aiMaterial* mtl, const img::TColor& defaultColor,
 	const bool ignoreMaterialColor);
-static void get_bounding_box(
-	const aiScene* sc, aiVector3D* min, aiVector3D* max);
-static void get_bounding_box_for_node(
+void get_bounding_box(const aiScene* sc, aiVector3D* min, aiVector3D* max);
+void get_bounding_box_for_node(
 	const aiScene* sc, const aiNode* nd, aiVector3D* min, aiVector3D* max,
 	aiMatrix4x4* trafo);
+}  // namespace
 #endif	// MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 
 void CAssimpModel::render(const RenderContext& rc) const
@@ -438,7 +440,9 @@ bool CAssimpModel::traceRay(
 
 #if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL) && MRPT_HAS_ASSIMP
 
-static void get_bounding_box_for_node(
+namespace
+{
+void get_bounding_box_for_node(
 	const aiScene* scene, const aiNode* nd, aiVector3D* min, aiVector3D* max,
 	aiMatrix4x4* trafo)
 {
@@ -473,8 +477,7 @@ static void get_bounding_box_for_node(
 	*trafo = prev;
 }
 
-static void get_bounding_box(
-	const aiScene* scene, aiVector3D* min, aiVector3D* max)
+void get_bounding_box(const aiScene* scene, aiVector3D* min, aiVector3D* max)
 {
 	aiMatrix4x4 trafo;
 	aiIdentityMatrix4(&trafo);
@@ -484,12 +487,12 @@ static void get_bounding_box(
 	get_bounding_box_for_node(scene, scene->mRootNode, min, max, &trafo);
 }
 
-static mrpt::img::TColor color4_to_TColor(const aiColor4D& c)
+mrpt::img::TColor color4_to_TColor(const aiColor4D& c)
 {
 	return mrpt::img::TColorf(c.r, c.g, c.b, c.a).asTColor();
 }
 
-static mrpt::img::TColor apply_material(
+mrpt::img::TColor apply_material(
 	const aiMaterial* mtl, const mrpt::img::TColor& defaultColor,
 	const bool ignoreMaterialColor)
 {
@@ -506,7 +509,7 @@ static mrpt::img::TColor apply_material(
 	}
 }
 
-static mrpt::math::CMatrixDouble44 aiMatrix_to_mrpt(const aiMatrix4x4& m)
+mrpt::math::CMatrixDouble44 aiMatrix_to_mrpt(const aiMatrix4x4& m)
 {
 	mrpt::math::CMatrixDouble44 M;
 	M(0, 0) = m.a1;
@@ -531,10 +534,8 @@ static mrpt::math::CMatrixDouble44 aiMatrix_to_mrpt(const aiMatrix4x4& m)
 	return M;
 }
 
-static mrpt::math::TPoint3Df to_mrpt(const aiVector3D& v)
-{
-	return {v.x, v.y, v.z};
-}
+mrpt::math::TPoint3Df to_mrpt(const aiVector3D& v) { return {v.x, v.y, v.z}; }
+}  // namespace
 
 void CAssimpModel::recursive_render(
 	const aiScene* sc, const aiNode* nd, const mrpt::poses::CPose3D& transf,

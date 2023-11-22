@@ -134,8 +134,8 @@ void TWaypointSequence::getAsOpenglVisualization(
 	for (const auto& p : waypoints)
 	{
 		auto gl_pt = mrpt::opengl::CDisk::Create(
-			p.allow_skip ? params.outter_radius
-						 : params.outter_radius_non_skippable,
+			p.allow_skip ? params.outer_radius
+						 : params.outer_radius_non_skippable,
 			p.allow_skip ? params.inner_radius
 						 : params.inner_radius_non_skippable,
 			15);
@@ -172,9 +172,9 @@ void TWaypointStatusSequence::getAsOpenglVisualization(
 			const bool is_cur_goal = (int(idx) == waypoint_index_current_goal);
 
 			mrpt::opengl::CDisk::Ptr gl_pt = mrpt::opengl::CDisk::Create(
-				p.reached ? params.outter_radius_reached
-						  : (p.allow_skip ? params.outter_radius
-										  : params.outter_radius_non_skippable),
+				p.reached ? params.outer_radius_reached
+						  : (p.allow_skip ? params.outer_radius
+										  : params.outer_radius_non_skippable),
 				p.reached ? params.inner_radius_reached
 						  : (p.allow_skip ? params.inner_radius
 										  : params.inner_radius_non_skippable),

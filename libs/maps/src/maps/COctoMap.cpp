@@ -60,12 +60,12 @@ void COctoMap::TMapDefinition::dumpToTextStream_map_specific(
 	this->likelihoodOpts.dumpToTextStream(out);
 }
 
-mrpt::maps::CMetricMap* COctoMap::internal_CreateFromMapDefinition(
+mrpt::maps::CMetricMap::Ptr COctoMap::internal_CreateFromMapDefinition(
 	const mrpt::maps::TMetricMapInitializer& _def)
 {
 	const COctoMap::TMapDefinition& def =
 		*dynamic_cast<const COctoMap::TMapDefinition*>(&_def);
-	auto* obj = new COctoMap(def.resolution);
+	auto obj = COctoMap::Create(def.resolution);
 	obj->insertionOptions = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;
 	return obj;

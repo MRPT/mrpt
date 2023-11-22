@@ -19,7 +19,7 @@ using namespace mrpt::maps;
 
 /** Looks up in the registry of known map types and call the corresponding
  * `<metric_map_class>::MapDefinition()`. */
-TMetricMapInitializer* TMetricMapInitializer::factory(
+TMetricMapInitializer::Ptr TMetricMapInitializer::factory(
 	const std::string& mapClassName)
 {
 	using mrpt::maps::internal::TMetricMapTypesRegistry;
@@ -72,6 +72,7 @@ void TSetOfMetricMapInitializers::loadFromConfigFile(
 	MRPT_START
 
 	using mrpt::maps::internal::TMetricMapTypesRegistry;
+	using namespace std::string_literals;
 
 	// Delete previous contents:
 	clear();
@@ -86,10 +87,10 @@ void TSetOfMetricMapInitializers::loadFromConfigFile(
 		const std::string sMapName = allMapKind.first;
 
 		unsigned int n =
-			ini.read_uint64_t(sectionName, sMapName + string("_count"), 0);
+			ini.read_uint64_t(sectionName, sMapName + "_count"s, 0);
 		for (unsigned int i = 0; i < n; i++)
 		{
-			TMetricMapInitializer* mi = mmr.factoryMapDefinition(sMapName);
+			TMetricMapInitializer::Ptr mi = mmr.factoryMapDefinition(sMapName);
 			ASSERT_(mi);
 
 			// Load from sections formatted like this:
@@ -103,10 +104,24 @@ void TSetOfMetricMapInitializers::loadFromConfigFile(
 			mi->loadFromConfigFile(ini, sMapSectionsPrefix);
 
 			// Add the params to the list:
-			this->push_back(TMetricMapInitializer::Ptr(mi));
+			this->push_back(mi);
 		}
 
 	}  // end for each map kind
+
+	// Check for unknown map types and throw an error:
+	for (const auto& s : ini.keys(sectionName))
+	{
+		auto p = s.find("_count");
+		if (p == std::string::npos) continue;
+		const auto className = s.substr(0, p);
+		if (allMapKinds.count(className) != 0) continue;  // ok, it exists
+		THROW_EXCEPTION_FMT(
+			"Error: found INI section '%s' while parsing "
+			"TSetOfMetricMapInitializers, but there is no such registered "
+			"CMetricMap class '%s'",
+			s.c_str(), className.c_str());
+	}
 
 	MRPT_END
 }

@@ -70,12 +70,12 @@ void CHeightGridMap2D::TMapDefinition::dumpToTextStream_map_specific(
 	this->insertionOpts.dumpToTextStream(out);
 }
 
-mrpt::maps::CMetricMap* CHeightGridMap2D::internal_CreateFromMapDefinition(
+mrpt::maps::CMetricMap::Ptr CHeightGridMap2D::internal_CreateFromMapDefinition(
 	const mrpt::maps::TMetricMapInitializer& _def)
 {
 	const CHeightGridMap2D::TMapDefinition& def =
 		*dynamic_cast<const CHeightGridMap2D::TMapDefinition*>(&_def);
-	auto* obj = new CHeightGridMap2D(
+	auto obj = CHeightGridMap2D::Create(
 		def.mapType, def.min_x, def.max_x, def.min_y, def.max_y,
 		def.resolution);
 	obj->insertionOptions = def.insertionOpts;

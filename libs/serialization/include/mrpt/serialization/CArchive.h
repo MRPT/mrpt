@@ -568,7 +568,7 @@ CArchive& operator>>(CArchive& in, std::shared_ptr<T>& pObj)
 	else
 	{
 		ASSERT_EQUAL_(expected_name, stored_name);
-		pObj.reset(new T);
+		pObj = std::make_shared<T>();
 		in >> *pObj;
 	}
 	return in;

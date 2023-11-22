@@ -36,7 +36,9 @@ using namespace mrpt::obs;
 VelodyneCalibration::PerLaserCalib::PerLaserCalib() = default;
 
 #if MRPT_HAS_TINYXML2
-static const tinyxml2::XMLElement* get_xml_children(
+namespace
+{
+const tinyxml2::XMLElement* get_xml_children(
 	const tinyxml2::XMLNode* e, const char* name)
 {
 	ASSERT_(e != nullptr);
@@ -48,7 +50,7 @@ static const tinyxml2::XMLElement* get_xml_children(
 			mrpt::format("Cannot find XML tag `%s`", name));
 	return ret;
 }
-static const char* get_xml_children_as_str(
+const char* get_xml_children_as_str(
 	const tinyxml2::XMLNode* e, const char* name)
 {
 	auto n = get_xml_children(e, name);
@@ -58,15 +60,15 @@ static const char* get_xml_children_as_str(
 		txt, mrpt::format("Cannot convert XML tag `%s` to string", name));
 	return txt;
 }
-static double get_xml_children_as_double(
-	const tinyxml2::XMLNode* e, const char* name)
+double get_xml_children_as_double(const tinyxml2::XMLNode* e, const char* name)
 {
 	return ::atof(get_xml_children_as_str(e, name));
 }
-static int get_xml_children_as_int(const tinyxml2::XMLNode* e, const char* name)
+int get_xml_children_as_int(const tinyxml2::XMLNode* e, const char* name)
 {
 	return ::atoi(get_xml_children_as_str(e, name));
 }
+}  // namespace
 #endif
 
 VelodyneCalibration::VelodyneCalibration() : laser_corrections(0) {}

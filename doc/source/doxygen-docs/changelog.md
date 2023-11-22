@@ -1,5 +1,28 @@
 \page changelog Change Log
 
+# Version 2.11.3: Released Nov 21st, 2023
+- Changes in libraries:
+  - \ref mrpt_core_grp
+    - Add the `[[nodiscard]]` attribute to all functions returning a value in `<mrpt/core/bits_math.h>`
+  - \ref mrpt_maps_grp
+    - mrpt::maps::COccupancyGridMap3D::insertObservation() now also handles mrpt::obs::CObservationPointCloud
+    - New virtual interface mrpt::maps::NearestNeighborsCapable, implemented in:
+      - All mrpt::maps::CPointsMap classes
+      - All classes derived from mrpt::maps::CVoxelMapOccupancyBase
+      - mrpt::maps::COccupancyGridMap2D
+      - mrpt::maps::COccupancyGridMap2D
+    - New virtual method mrpt::maps::CMetricMap::boundingBox()
+    - mrpt::maps::TMetricMapInitializer now returns `shared_ptr`s instead of plain pointers.
+    - mrpt::maps::TSetOfMetricMapInitializers::loadFromConfigFile() now throws if it finds a `*_count` entry with an unknown map class name.
+  - \ref mrpt_math_grp
+    - New template mrpt::math::confidenceIntervalsFromHistogram()
+  - \ref mrpt_obs_grp
+    - mrpt::maps::CMetricMap::loadFromSimpleMap() now automatically calls mrpt::obs::CObservation::load() and mrpt::obs::CObservation::unload() for all observations, so it works with lazy-load datasets.
+- BUG FIXES:
+  - Fix compilation errors if using the `MCP_SAVE()` macro with class enum types.
+  - Fix wrong cloud pose in CPointsMap::insertObservation() when inserting an mrpt::obs::CObservationPointCloud.
+  - Fix potential data race in mrpt::WorkerThreadsPool::pendingTasks()
+
 # Version 2.11.2: Released Oct 25th, 2023
 - Changes in libraries:
   - \ref mrpt_gui_grp

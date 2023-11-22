@@ -68,12 +68,12 @@ void CColouredOctoMap::TMapDefinition::dumpToTextStream_map_specific(
 	this->likelihoodOpts.dumpToTextStream(out);
 }
 
-mrpt::maps::CMetricMap* CColouredOctoMap::internal_CreateFromMapDefinition(
+mrpt::maps::CMetricMap::Ptr CColouredOctoMap::internal_CreateFromMapDefinition(
 	const mrpt::maps::TMetricMapInitializer& _def)
 {
 	const CColouredOctoMap::TMapDefinition& def =
 		*dynamic_cast<const CColouredOctoMap::TMapDefinition*>(&_def);
-	auto* obj = new CColouredOctoMap(def.resolution);
+	auto obj = CColouredOctoMap::Create(def.resolution);
 	obj->insertionOptions = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;
 	return obj;

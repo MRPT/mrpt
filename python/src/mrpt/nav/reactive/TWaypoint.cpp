@@ -425,11 +425,11 @@ void bind_mrpt_nav_reactive_TWaypoint(std::function< pybind11::module &(std::str
 		pybind11::class_<mrpt::nav::TWaypointsRenderingParams, std::shared_ptr<mrpt::nav::TWaypointsRenderingParams>> cl(M("mrpt::nav"), "TWaypointsRenderingParams", "used in getAsOpenglVisualization() ");
 		cl.def( pybind11::init( [](){ return new mrpt::nav::TWaypointsRenderingParams(); } ) );
 		cl.def( pybind11::init( [](mrpt::nav::TWaypointsRenderingParams const &o){ return new mrpt::nav::TWaypointsRenderingParams(o); } ) );
-		cl.def_readwrite("outter_radius", &mrpt::nav::TWaypointsRenderingParams::outter_radius);
+		cl.def_readwrite("outer_radius", &mrpt::nav::TWaypointsRenderingParams::outer_radius);
 		cl.def_readwrite("inner_radius", &mrpt::nav::TWaypointsRenderingParams::inner_radius);
-		cl.def_readwrite("outter_radius_non_skippable", &mrpt::nav::TWaypointsRenderingParams::outter_radius_non_skippable);
+		cl.def_readwrite("outer_radius_non_skippable", &mrpt::nav::TWaypointsRenderingParams::outer_radius_non_skippable);
 		cl.def_readwrite("inner_radius_non_skippable", &mrpt::nav::TWaypointsRenderingParams::inner_radius_non_skippable);
-		cl.def_readwrite("outter_radius_reached", &mrpt::nav::TWaypointsRenderingParams::outter_radius_reached);
+		cl.def_readwrite("outer_radius_reached", &mrpt::nav::TWaypointsRenderingParams::outer_radius_reached);
 		cl.def_readwrite("inner_radius_reached", &mrpt::nav::TWaypointsRenderingParams::inner_radius_reached);
 		cl.def_readwrite("heading_arrow_len", &mrpt::nav::TWaypointsRenderingParams::heading_arrow_len);
 		cl.def_readwrite("color_regular", &mrpt::nav::TWaypointsRenderingParams::color_regular);

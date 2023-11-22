@@ -27,7 +27,7 @@
 
 void bind_mrpt_math_TPoint3D_1(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::math::TPoint3D_ file:mrpt/math/TPoint3D.h line:42
+	{ // mrpt::math::TPoint3D_ file:mrpt/math/TPoint3D.h line:45
 		pybind11::class_<mrpt::math::TPoint3D_<float>, std::shared_ptr<mrpt::math::TPoint3D_<float>>, mrpt::math::TPoseOrPoint, mrpt::math::TPoint3D_data<float>> cl(M("mrpt::math"), "TPoint3D_float_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::math::TPoint3D_<float>(); } ) );
 		cl.def( pybind11::init<float, float, float>(), pybind11::arg("xx"), pybind11::arg("yy"), pybind11::arg("zz") );

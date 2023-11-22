@@ -13,8 +13,10 @@
 #include <mrpt/maps/CLogOddsGridMapLUT.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CVoxelMapBase.h>
+#include <mrpt/maps/NearestNeighborsCapable.h>
 #include <mrpt/maps/OccupancyGridCellType.h>
 #include <mrpt/maps/logoddscell_traits.h>
+#include <mrpt/math/TBoundingBox.h>
 #include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt::maps
@@ -112,7 +114,8 @@ struct has_color<T, std::void_t<decltype(T::color)>> : std::true_type
  */
 template <typename voxel_node_t, typename occupancy_t = int8_t>
 class CVoxelMapOccupancyBase : public CVoxelMapBase<voxel_node_t>,
-							   public detail::logoddscell_traits<occupancy_t>
+							   public detail::logoddscell_traits<occupancy_t>,
+							   public mrpt::maps::NearestNeighborsCapable
 {
    protected:
 	using occupancy_value_t = occupancy_t;
@@ -172,7 +175,7 @@ class CVoxelMapOccupancyBase : public CVoxelMapBase<voxel_node_t>,
 	/** This visits all cells to calculate a bounding box, caching the result
 	 *  so subsequent calls are cheap until the voxelmap is changed in some way.
 	 */
-	mrpt::math::TBoundingBox getBoundingBox() const;
+	mrpt::math::TBoundingBoxf boundingBox() const override;
 
 	/// The options used when inserting observations in the map:
 	TVoxelMap_InsertionOptions insertionOptions;
@@ -286,6 +289,81 @@ class CVoxelMapOccupancyBase : public CVoxelMapBase<voxel_node_t>,
 		return get_logodd_lut().p2l(p);
 	}
 
+	/** @name API of the NearestNeighborsCapable virtual interface
+		@{ */
+	// See docs in base class
+	void nn_prepare_for_2d_queries() const override
+	{
+		getOccupiedVoxels()->nn_prepare_for_2d_queries();
+	}
+	void nn_prepare_for_3d_queries() const override
+	{
+		getOccupiedVoxels()->nn_prepare_for_3d_queries();
+	}
+	[[nodiscard]] bool nn_has_indices_or_ids() const override
+	{
+		return getOccupiedVoxels()->nn_has_indices_or_ids();
+	}
+	[[nodiscard]] size_t nn_index_count() const override
+	{
+		return getOccupiedVoxels()->nn_index_count();
+	}
+	[[nodiscard]] bool nn_single_search(
+		const mrpt::math::TPoint3Df& query, mrpt::math::TPoint3Df& result,
+		float& out_dist_sqr, uint64_t& resultIndexOrID) const override
+	{
+		return getOccupiedVoxels()->nn_single_search(
+			query, result, out_dist_sqr, resultIndexOrID);
+	}
+	[[nodiscard]] bool nn_single_search(
+		const mrpt::math::TPoint2Df& query, mrpt::math::TPoint2Df& result,
+		float& out_dist_sqr, uint64_t& resultIndexOrID) const override
+	{
+		return getOccupiedVoxels()->nn_single_search(
+			query, result, out_dist_sqr, resultIndexOrID);
+	}
+	void nn_multiple_search(
+		const mrpt::math::TPoint3Df& query, const size_t N,
+		std::vector<mrpt::math::TPoint3Df>& results,
+		std::vector<float>& out_dists_sqr,
+		std::vector<uint64_t>& resultIndicesOrIDs) const override
+	{
+		getOccupiedVoxels()->nn_multiple_search(
+			query, N, results, out_dists_sqr, resultIndicesOrIDs);
+	}
+	void nn_multiple_search(
+		const mrpt::math::TPoint2Df& query, const size_t N,
+		std::vector<mrpt::math::TPoint2Df>& results,
+		std::vector<float>& out_dists_sqr,
+		std::vector<uint64_t>& resultIndicesOrIDs) const override
+	{
+		getOccupiedVoxels()->nn_multiple_search(
+			query, N, results, out_dists_sqr, resultIndicesOrIDs);
+	}
+	void nn_radius_search(
+		const mrpt::math::TPoint3Df& query, const float search_radius_sqr,
+		std::vector<mrpt::math::TPoint3Df>& results,
+		std::vector<float>& out_dists_sqr,
+		std::vector<uint64_t>& resultIndicesOrIDs,
+		size_t maxPoints) const override
+	{
+		getOccupiedVoxels()->nn_radius_search(
+			query, search_radius_sqr, results, out_dists_sqr,
+			resultIndicesOrIDs, maxPoints);
+	}
+	void nn_radius_search(
+		const mrpt::math::TPoint2Df& query, const float search_radius_sqr,
+		std::vector<mrpt::math::TPoint2Df>& results,
+		std::vector<float>& out_dists_sqr,
+		std::vector<uint64_t>& resultIndicesOrIDs,
+		size_t maxPoints) const override
+	{
+		getOccupiedVoxels()->nn_radius_search(
+			query, search_radius_sqr, results, out_dists_sqr,
+			resultIndicesOrIDs, maxPoints);
+	}
+	/** @} */
+
    protected:
 	void internal_clear() override;
 
@@ -324,7 +402,7 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::getAsOctoMapVoxels(
 	auto& grid =
 		const_cast<Bonxai::VoxelGrid<voxel_node_t>&>(base_t::m_impl->grid);
 
-	const mrpt::math::TBoundingBox bbox = this->getBoundingBox();
+	const mrpt::math::TBoundingBoxf bbox = this->boundingBox();
 	double bbox_span_z = bbox.max.z - bbox.min.z;
 	if (bbox_span_z < 0) bbox_span_z = 1;
 	const double bbox_span_z_inv = 1.0 / bbox_span_z;
@@ -662,11 +740,11 @@ mrpt::maps::CSimplePointsMap::Ptr
 }
 
 template <typename voxel_node_t, typename occupancy_t>
-mrpt::math::TBoundingBox
-	CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::getBoundingBox() const
+mrpt::math::TBoundingBoxf
+	CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::boundingBox() const
 {
 	updateCachedProperties();
-	return m_bbox;
+	return {m_bbox.min.cast<float>(), m_bbox.max.cast<float>()};
 }
 
 }  // namespace mrpt::maps
