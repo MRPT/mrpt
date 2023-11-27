@@ -857,41 +857,7 @@ void CPointsMap::getAllPoints(
 float CPointsMap::squareDistanceToClosestCorrespondence(
 	float x0, float y0) const
 {
-	// Just the closest point:
-
-#if 1
 	return kdTreeClosestPoint2DsqrError(x0, y0);
-#else
-	// The distance to the line that interpolates the TWO closest points:
-	float x1, y1, x2, y2, d1, d2;
-	kdTreeTwoClosestPoint2D(
-		x0, y0,	 // The query
-		x1, y1,	 // Closest point #1
-		x2, y2,	 // Closest point #2
-		d1, d2);
-
-	ASSERT_(d2 >= d1);
-
-	// If the two points are too far, do not interpolate:
-	float d12 = square(x1 - x2) + square(y1 - y2);
-	if (d12 > 0.20f * 0.20f || d12 < 0.03f * 0.03f)
-	{
-		return square(x1 - x0) + square(y1 - y0);
-	}
-	else
-	{  // Interpolate
-		double interp_x, interp_y;
-
-		// math::closestFromPointToSegment(
-		math::closestFromPointToLine(
-			x0, y0,	 // the point
-			x1, y1, x2, y2,	 // The segment
-			interp_x, interp_y	// out
-		);
-
-		return square(interp_x - x0) + square(interp_y - y0);
-	}
-#endif
 }
 
 mrpt::math::TBoundingBoxf CPointsMap::boundingBox() const
