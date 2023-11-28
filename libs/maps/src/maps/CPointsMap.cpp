@@ -2151,18 +2151,12 @@ void CPointsMap::nn_radius_search(
 	{
 		std::vector<size_t> idxs;
 		kdTreeNClosestPoint3DIdx(
-			query.x, query.y, query.z, maxPoints, idxs, out_dists_sqr);
+			query.x, query.y, query.z, maxPoints, idxs, out_dists_sqr,
+			search_radius_sqr);
 		results.resize(idxs.size());
 		resultIndicesOrIDs.resize(idxs.size());
 		for (size_t i = 0; i < idxs.size(); i++)
 		{
-			if (out_dists_sqr[i] > search_radius_sqr)  // truncate list?
-			{
-				results.resize(i);
-				out_dists_sqr.resize(i);
-				resultIndicesOrIDs.resize(i);
-				break;
-			}
 			getPointFast(idxs[i], results[i].x, results[i].y, results[i].z);
 			resultIndicesOrIDs[i] = idxs[i];
 		}
@@ -2196,19 +2190,13 @@ void CPointsMap::nn_radius_search(
 	{
 		std::vector<size_t> idxs;
 		kdTreeNClosestPoint2DIdx(
-			query.x, query.y, maxPoints, idxs, out_dists_sqr);
+			query.x, query.y, maxPoints, idxs, out_dists_sqr,
+			search_radius_sqr);
 		results.resize(idxs.size());
 		resultIndicesOrIDs.resize(idxs.size());
 		float dummyZ = 0;
 		for (size_t i = 0; i < idxs.size(); i++)
 		{
-			if (out_dists_sqr[i] > search_radius_sqr)  // truncate list?
-			{
-				results.resize(i);
-				out_dists_sqr.resize(i);
-				resultIndicesOrIDs.resize(i);
-				break;
-			}
 			getPointFast(idxs[i], results[i].x, results[i].y, dummyZ);
 			resultIndicesOrIDs[i] = idxs[i];
 		}

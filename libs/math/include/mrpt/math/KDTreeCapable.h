@@ -19,6 +19,7 @@
 #include <memory>  // unique_ptr
 #include <mutex>
 #include <nanoflann.hpp>
+#include <optional>
 
 // Smooth transition to nanoflann>=1.5.0 for older versions:
 namespace nanoflann
@@ -291,6 +292,8 @@ class KDTreeCapable
 	 *correspondences.
 	 * \param out_dist_sqr The vector containing the square distance between
 	 *the query and the returned points.
+	 * \param maximumSearchDistanceSqr If provided, only NN up to that given
+	 *squared distance will be returned.
 	 *
 	 * \return The list of indices
 	 *  \sa kdTreeClosestPoint2D
@@ -298,7 +301,9 @@ class KDTreeCapable
 	 */
 	inline std::vector<size_t> kdTreeNClosestPoint2D(
 		float x0, float y0, size_t knn, std::vector<float>& out_x,
-		std::vector<float>& out_y, std::vector<float>& out_dist_sqr) const
+		std::vector<float>& out_y, std::vector<float>& out_dist_sqr,
+		const std::optional<float>& maximumSearchDistanceSqr =
+			std::nullopt) const
 	{
 		MRPT_START
 		rebuild_kdTree_2D();  // First: Create the 2D KD-Tree if required
@@ -310,11 +315,29 @@ class KDTreeCapable
 		out_y.resize(knn);
 		out_dist_sqr.resize(knn);
 
-		nanoflann::KNNResultSet<num_t> resultSet(knn);
-		resultSet.init(&ret_indexes[0], &out_dist_sqr[0]);
-
 		const std::array<num_t, 2> query_point{{x0, y0}};
-		m_kdtree2d_data.index->findNeighbors(resultSet, &query_point[0], {});
+
+		if (!maximumSearchDistanceSqr.has_value())
+		{
+			nanoflann::KNNResultSet<num_t> resultSet(knn);
+			resultSet.init(&ret_indexes[0], &out_dist_sqr[0]);
+
+			m_kdtree2d_data.index->findNeighbors(
+				resultSet, &query_point[0], {});
+		}
+		else
+		{
+#if NANOFLANN_VERSION >= 0x151
+			nanoflann::RKNNResultSet<num_t> resultSet(
+				knn, *maximumSearchDistanceSqr);
+			resultSet.init(&ret_indexes[0], &out_dist_sqr[0]);
+
+			m_kdtree2d_data.index->findNeighbors(
+				resultSet, &query_point[0], {});
+#else
+			THROW_EXCEPTION("RKNN search requires nanoflann>=1.5.1");
+#endif
+		}
 
 		for (size_t i = 0; i < knn; i++)
 		{
@@ -327,11 +350,14 @@ class KDTreeCapable
 
 	inline std::vector<size_t> kdTreeNClosestPoint2D(
 		const TPoint2D& p0, size_t N, std::vector<TPoint2D>& pOut,
-		std::vector<float>& outDistSqr) const
+		std::vector<float>& outDistSqr,
+		const std::optional<float>& maximumSearchDistanceSqr =
+			std::nullopt) const
 	{
 		std::vector<float> dmy1, dmy2;
 		std::vector<size_t> res = kdTreeNClosestPoint2D(
-			d2f(p0.x), d2f(p0.y), N, dmy1, dmy2, outDistSqr);
+			d2f(p0.x), d2f(p0.y), N, dmy1, dmy2, outDistSqr,
+			maximumSearchDistanceSqr);
 		pOut.resize(dmy1.size());
 		for (size_t i = 0; i < dmy1.size(); i++)
 		{
@@ -354,12 +380,16 @@ class KDTreeCapable
 	 * \param out_idx The indexes of the found closest correspondence.
 	 * \param out_dist_sqr The square distance between the query and the
 	 *returned point.
+	 * \param maximumSearchDistanceSqr If provided, only NN up to that given
+	 *squared distance will be returned.
 	 *
 	 *  \sa kdTreeClosestPoint2D
 	 */
 	inline void kdTreeNClosestPoint2DIdx(
 		float x0, float y0, size_t knn, std::vector<size_t>& out_idx,
-		std::vector<float>& out_dist_sqr) const
+		std::vector<float>& out_dist_sqr,
+		const std::optional<float>& maximumSearchDistanceSqr =
+			std::nullopt) const
 	{
 		MRPT_START
 		rebuild_kdTree_2D();  // First: Create the 2D KD-Tree if required
@@ -368,11 +398,30 @@ class KDTreeCapable
 
 		out_idx.resize(knn);
 		out_dist_sqr.resize(knn);
-		nanoflann::KNNResultSet<num_t> resultSet(knn);
-		resultSet.init(&out_idx[0], &out_dist_sqr[0]);
-
 		const std::array<num_t, 2> query_point{{x0, y0}};
-		m_kdtree2d_data.index->findNeighbors(resultSet, &query_point[0], {});
+
+		if (!maximumSearchDistanceSqr.has_value())
+		{
+			nanoflann::KNNResultSet<num_t> resultSet(knn);
+			resultSet.init(&out_idx[0], &out_dist_sqr[0]);
+
+			m_kdtree2d_data.index->findNeighbors(
+				resultSet, &query_point[0], {});
+		}
+		else
+		{
+#if NANOFLANN_VERSION >= 0x151
+			nanoflann::RKNNResultSet<num_t> resultSet(
+				knn, *maximumSearchDistanceSqr);
+			resultSet.init(&out_idx[0], &out_dist_sqr[0]);
+
+			m_kdtree2d_data.index->findNeighbors(
+				resultSet, &query_point[0], {});
+#else
+			THROW_EXCEPTION("RKNN search requires nanoflann>=1.5.1");
+#endif
+		}
+
 		MRPT_END
 	}
 
@@ -482,13 +531,17 @@ class KDTreeCapable
 	 *correspondences.
 	 * \param out_dist_sqr The vector containing the square distance between
 	 *the query and the returned points.
+	 * \param maximumSearchDistanceSqr If provided, only NN up to that given
+	 *squared distance will be returned.
 	 *
 	 *  \sa kdTreeNClosestPoint2D
 	 */
 	inline void kdTreeNClosestPoint3D(
 		float x0, float y0, float z0, size_t knn, std::vector<float>& out_x,
 		std::vector<float>& out_y, std::vector<float>& out_z,
-		std::vector<float>& out_dist_sqr) const
+		std::vector<float>& out_dist_sqr,
+		const std::optional<float>& maximumSearchDistanceSqr =
+			std::nullopt) const
 	{
 		MRPT_START
 		rebuild_kdTree_3D();  // First: Create the 3D KD-Tree if required
@@ -500,12 +553,27 @@ class KDTreeCapable
 		out_y.resize(knn);
 		out_z.resize(knn);
 		out_dist_sqr.resize(knn);
-
-		nanoflann::KNNResultSet<num_t> resultSet(knn);
-		resultSet.init(&ret_indexes[0], &out_dist_sqr[0]);
-
 		const std::array<num_t, 3> query_point{{x0, y0, z0}};
-		m_kdtree3d_data.index->findNeighbors(resultSet, &query_point[0], {});
+
+		if (!maximumSearchDistanceSqr.has_value())
+		{
+			nanoflann::KNNResultSet<num_t> resultSet(knn);
+			resultSet.init(&ret_indexes[0], &out_dist_sqr[0]);
+			m_kdtree3d_data.index->findNeighbors(
+				resultSet, &query_point[0], {});
+		}
+		else
+		{
+#if NANOFLANN_VERSION >= 0x151
+			nanoflann::RKNNResultSet<num_t> resultSet(
+				knn, *maximumSearchDistanceSqr);
+			resultSet.init(&ret_indexes[0], &out_dist_sqr[0]);
+			m_kdtree3d_data.index->findNeighbors(
+				resultSet, &query_point[0], {});
+#else
+			THROW_EXCEPTION("RKNN search requires nanoflann>=1.5.1");
+#endif
+		}
 
 		for (size_t i = 0; i < knn; i++)
 		{
@@ -542,7 +610,9 @@ class KDTreeCapable
 	inline void kdTreeNClosestPoint3DWithIdx(
 		float x0, float y0, float z0, size_t knn, std::vector<float>& out_x,
 		std::vector<float>& out_y, std::vector<float>& out_z,
-		std::vector<size_t>& out_idx, std::vector<float>& out_dist_sqr) const
+		std::vector<size_t>& out_idx, std::vector<float>& out_dist_sqr,
+		const std::optional<float>& maximumSearchDistanceSqr =
+			std::nullopt) const
 	{
 		MRPT_START
 		rebuild_kdTree_3D();  // First: Create the 3D KD-Tree if required
@@ -554,12 +624,28 @@ class KDTreeCapable
 		out_z.resize(knn);
 		out_idx.resize(knn);
 		out_dist_sqr.resize(knn);
-
-		nanoflann::KNNResultSet<num_t> resultSet(knn);
-		resultSet.init(&out_idx[0], &out_dist_sqr[0]);
-
 		const std::array<num_t, 3> query_point{{x0, y0, z0}};
-		m_kdtree3d_data.index->findNeighbors(resultSet, &query_point[0], {});
+
+		if (!maximumSearchDistanceSqr.has_value())
+		{
+			nanoflann::KNNResultSet<num_t> resultSet(knn);
+			resultSet.init(&out_idx[0], &out_dist_sqr[0]);
+
+			m_kdtree3d_data.index->findNeighbors(
+				resultSet, &query_point[0], {});
+		}
+		else
+		{
+#if NANOFLANN_VERSION >= 0x151
+			nanoflann::RKNNResultSet<num_t> resultSet(
+				knn, *maximumSearchDistanceSqr);
+			resultSet.init(&out_idx[0], &out_dist_sqr[0]);
+			m_kdtree3d_data.index->findNeighbors(
+				resultSet, &query_point[0], {});
+#else
+			THROW_EXCEPTION("RKNN search requires nanoflann>=1.5.1");
+#endif
+		}
 
 		for (size_t i = 0; i < knn; i++)
 		{
@@ -572,11 +658,14 @@ class KDTreeCapable
 
 	inline void kdTreeNClosestPoint3D(
 		const TPoint3D& p0, size_t N, std::vector<TPoint3D>& pOut,
-		std::vector<float>& outDistSqr) const
+		std::vector<float>& outDistSqr,
+		const std::optional<float>& maximumSearchDistanceSqr =
+			std::nullopt) const
 	{
 		std::vector<float> dmy1, dmy2, dmy3;
 		kdTreeNClosestPoint3D(
-			d2f(p0.x), d2f(p0.y), d2f(p0.z), N, dmy1, dmy2, dmy3, outDistSqr);
+			d2f(p0.x), d2f(p0.y), d2f(p0.z), N, dmy1, dmy2, dmy3, outDistSqr,
+			maximumSearchDistanceSqr);
 		pOut.resize(dmy1.size());
 		for (size_t i = 0; i < dmy1.size(); i++)
 		{
@@ -675,7 +764,9 @@ class KDTreeCapable
 	 */
 	inline void kdTreeNClosestPoint3DIdx(
 		float x0, float y0, float z0, size_t knn, std::vector<size_t>& out_idx,
-		std::vector<float>& out_dist_sqr) const
+		std::vector<float>& out_dist_sqr,
+		const std::optional<float>& maximumSearchDistanceSqr =
+			std::nullopt) const
 	{
 		MRPT_START
 		rebuild_kdTree_3D();  // First: Create the 3D KD-Tree if required
@@ -684,20 +775,40 @@ class KDTreeCapable
 
 		out_idx.resize(knn);
 		out_dist_sqr.resize(knn);
-		nanoflann::KNNResultSet<num_t> resultSet(knn);
-		resultSet.init(&out_idx[0], &out_dist_sqr[0]);
-
 		const std::array<num_t, 3> query_point{{x0, y0, z0}};
-		m_kdtree3d_data.index->findNeighbors(resultSet, &query_point[0], {});
+
+		if (!maximumSearchDistanceSqr.has_value())
+		{
+			nanoflann::KNNResultSet<num_t> resultSet(knn);
+			resultSet.init(&out_idx[0], &out_dist_sqr[0]);
+			m_kdtree3d_data.index->findNeighbors(
+				resultSet, &query_point[0], {});
+		}
+		else
+		{
+#if NANOFLANN_VERSION >= 0x151
+			nanoflann::RKNNResultSet<num_t> resultSet(
+				knn, *maximumSearchDistanceSqr);
+			resultSet.init(&out_idx[0], &out_dist_sqr[0]);
+			m_kdtree3d_data.index->findNeighbors(
+				resultSet, &query_point[0], {});
+#else
+			THROW_EXCEPTION("RKNN search requires nanoflann>=1.5.1");
+#endif
+		}
+
 		MRPT_END
 	}
 
 	inline void kdTreeNClosestPoint3DIdx(
 		const TPoint3D& p0, size_t N, std::vector<size_t>& outIdx,
-		std::vector<float>& outDistSqr) const
+		std::vector<float>& outDistSqr,
+		const std::optional<float>& maximumSearchDistanceSqr =
+			std::nullopt) const
 	{
 		kdTreeNClosestPoint3DIdx(
-			d2f(p0.x), d2f(p0.y), d2f(p0.z), N, outIdx, outDistSqr);
+			d2f(p0.x), d2f(p0.y), d2f(p0.z), N, outIdx, outDistSqr,
+			maximumSearchDistanceSqr);
 	}
 
 	inline void kdTreeEnsureIndexBuilt3D() { rebuild_kdTree_3D(); }
