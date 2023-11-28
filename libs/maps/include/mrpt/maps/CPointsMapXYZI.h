@@ -271,6 +271,14 @@ class CPointsMapXYZI : public CPointsMap
 		const mrpt::img::TColorf* pt_color = nullptr) override;
 
 	void PLY_import_set_vertex_count(size_t N) override;
+
+	void PLY_import_set_vertex_timestamp(
+		[[maybe_unused]] size_t idx,
+		[[maybe_unused]] const double unixTimestamp) override
+	{
+		// do nothing, this class ignores timestamps
+	}
+
 	/** @} */
 
 	/** @name Redefinition of PLY Export virtual methods from CPointsMap

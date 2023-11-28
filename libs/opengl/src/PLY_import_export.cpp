@@ -52,7 +52,9 @@ WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 #include <mrpt/opengl/PLY_import_export.h>
 #include <mrpt/system/string_utils.h>
 
+#include <array>
 #include <cstdio>
+#include <map>
 
 using namespace std;
 using namespace mrpt;
@@ -69,9 +71,10 @@ using namespace mrpt::img;
 
 /* scalar data types supported by PLY format */
 
-enum
+enum PLY_DATA_TYPE
 {
 	PLY_START_TYPE = 0,
+	PLY_INVALID = 0,
 	PLY_CHAR = 1,
 	PLY_SHORT = 2,
 	PLY_INT = 3,
@@ -94,32 +97,51 @@ const char STORE_PROP = 1;
 const char OTHER_PROP = 0;
 const char NAMED_PROP = 1;
 
-typedef struct PlyProperty
+struct PlyProperty
 { /* description of a property */
 
+	PlyProperty() = default;
+
+	PlyProperty(
+		const char* Name, PLY_DATA_TYPE External_type,
+		PLY_DATA_TYPE Internal_type, size_t Offset, bool Is_list = false,
+		PLY_DATA_TYPE Count_external = PLY_INVALID,
+		PLY_DATA_TYPE Count_internal = PLY_INVALID, size_t Count_offset = 0)
+		: name(Name),
+		  external_type(External_type),
+		  internal_type(Internal_type),
+		  offset(Offset),
+		  count_external(Count_external),
+		  count_internal(Count_internal),
+		  count_offset(Count_offset)
+	{
+	}
+
 	std::string name; /* property name */
-	int external_type = 0; /* file's data type */
-	int internal_type = 0; /* program's data type */
-	int offset = 0; /* offset bytes of prop in a struct */
+	PLY_DATA_TYPE external_type = PLY_INVALID; /* file's data type */
+	PLY_DATA_TYPE internal_type = PLY_INVALID; /* program's data type */
 
-	int is_list = 0; /* 1 = list, 0 = scalar */
-	int count_external = 0; /* file's count type */
-	int count_internal = 0; /* program's count type */
-	int count_offset = 0; /* offset byte for list count */
+	size_t offset = 0; /* offset bytes of prop in a struct */
 
-} PlyProperty;
+	bool is_list = false;
+	PLY_DATA_TYPE count_external = PLY_INVALID; /* file's count type */
+	PLY_DATA_TYPE count_internal = PLY_INVALID; /* program's count type */
+	size_t count_offset = 0; /* offset byte for list count */
+};
 
-typedef struct PlyElement
+struct PlyElement
 { /* description of an element */
-	PlyElement() : other_offset(NO_OTHER_PROPS) {}
+	PlyElement() {}
+
 	string name; /* element name */
-	int num{0}; /* number of elements in this object */
-	int size{0}; /* size of element (bytes) or -1 if variable */
+	int num = 0; /* number of elements in this object */
+	int size = 0; /* size of element (bytes) or -1 if variable */
 	vector<PlyProperty> props; /* list of properties in the file */
 	vector<char> store_prop; /* flags: property wanted by user? */
-	int other_offset = 0; /* offset to un-asked-for props, or -1 if none*/
+	int other_offset =
+		NO_OTHER_PROPS; /* offset to un-asked-for props, or -1 if none*/
 	int other_size = 0; /* size of other_props structure */
-} PlyElement;
+};
 
 struct PlyFile
 { /* description of PLY file */
@@ -133,12 +155,52 @@ struct PlyFile
 	PlyElement* which_elem{nullptr}; /* which element we're currently writing */
 };
 
-const std::string type_names[] = {
-	string("invalid"), string("char"),	string("short"),
-	string("int"),	   string("uchar"), string("ushort"),
-	string("uint"),	   string("float"), string("double"),
+using namespace std::string_literals;
+const std::map<std::string, PLY_DATA_TYPE> type_names = {
+	{"char"s, PLY_CHAR},  //
+
+	{"short"s, PLY_SHORT},	//
+	{"int16"s, PLY_SHORT},	//
+
+	{"int"s, PLY_INT},	//
+	{"int32"s, PLY_INT},  //
+
+	{"uchar"s, PLY_UCHAR},	//
+	{"uint8"s, PLY_UCHAR},	//
+
+	{"ushort"s, PLY_USHORT},  //
+	{"uint16"s, PLY_USHORT},  //
+
+	{"uint"s, PLY_UINT},  //
+	{"uint32"s, PLY_UINT},	//
+
+	{"float"s, PLY_FLOAT},	//
+	{"float32"s, PLY_FLOAT},  //
+
+	{"double"s, PLY_DOUBLE},  //
+	{"float64"s, PLY_DOUBLE},  //
 };
+
+const std::map<PLY_DATA_TYPE, std::string> type_names_inv = {
+	{PLY_CHAR, "char"},	 //
+	{PLY_SHORT, "short"},  //
+	{PLY_INT, "int"},  //
+	{PLY_UCHAR, "uchar"},  //
+	{PLY_USHORT, "ushort"},	 //
+	{PLY_UINT, "uint"},	 //
+	{PLY_FLOAT, "float"s},	//
+	{PLY_DOUBLE, "double"},	 //
+};
+
 const int ply_type_size[] = {0, 1, 2, 4, 1, 2, 4, 4, 8};
+//	PLY_CHAR = 1,
+//	PLY_SHORT = 2,
+//	PLY_INT = 3,
+//	PLY_UCHAR = 4,
+//	PLY_USHORT = 5,
+//	PLY_UINT = 6,
+//	PLY_FLOAT = 7,
+//	PLY_DOUBLE = 8,
 
 /* find an element in a plyfile's list */
 PlyElement* find_element(PlyFile*, const std::string& s);
@@ -147,7 +209,7 @@ PlyElement* find_element(PlyFile*, const std::string& s);
 PlyProperty* find_property(PlyElement*, const std::string& s, int*);
 
 /* write to a file the word describing a PLY file data type */
-void write_scalar_type(FILE*, int);
+void write_scalar_type(FILE*, PLY_DATA_TYPE);
 
 /* read a line from a file and break it up into separate words */
 vector<string> get_words(FILE*, string&);
@@ -759,8 +821,8 @@ Entry:
 void ply_get_property(
 	PlyFile* plyfile, const string& elem_name, const PlyProperty* prop)
 {
-	PlyElement* elem;
-	PlyProperty* prop_ptr;
+	PlyElement* elem = nullptr;
+	PlyProperty* prop_ptr = nullptr;
 	int index;
 
 	/* find information about the element */
@@ -772,9 +834,8 @@ void ply_get_property(
 	prop_ptr = find_property(elem, prop->name, &index);
 	if (prop_ptr == nullptr)
 	{
-		fprintf(
-			stderr, "Warning:  Can't find property '%s' in element '%s'\n",
-			prop->name.c_str(), elem_name.c_str());
+		// "Warning:  Can't find property '%s' in element '%s'\n",
+		// prop->name.c_str(), elem_name.c_str()
 		return;
 	}
 	prop_ptr->internal_type = prop->internal_type;
@@ -1198,7 +1259,7 @@ Entry:
   code - code for type
 ******************************************************************************/
 
-void write_scalar_type(FILE* fp, int code)
+void write_scalar_type(FILE* fp, PLY_DATA_TYPE code)
 {
 	/* make sure this is a valid code */
 
@@ -1208,7 +1269,7 @@ void write_scalar_type(FILE* fp, int code)
 
 	/* write the code to a file */
 
-	fprintf(fp, "%s", type_names[code].c_str());
+	fprintf(fp, "%s", type_names_inv.at(code).c_str());
 }
 
 /******************************************************************************
@@ -1702,15 +1763,12 @@ Exit:
   returns integer code for property, or 0 if not found
 ******************************************************************************/
 
-int get_prop_type(const string& type_name)
+PLY_DATA_TYPE get_prop_type(const string& type_name)
 {
-	int i;
+	auto it = type_names.find(type_name);
+	if (it != type_names.end()) return it->second;
 
-	for (i = PLY_START_TYPE + 1; i < PLY_END_TYPE; i++)
-		if (type_name == type_names[i]) return (i);
-
-	/* if we get here, we didn't find the type */
-	return (0);
+	THROW_EXCEPTION_FMT("Unknown PLY data type: '%s'", type_name.c_str());
 }
 
 /******************************************************************************
@@ -1727,24 +1785,22 @@ void add_property(PlyFile* plyfile, const vector<string>& words)
 	/* add this property to the list of properties of the current element */
 	PlyElement* elem = &(*plyfile->elems.rbegin());
 
-	elem->props.emplace_back();
-
-	PlyProperty* prop = &(*elem->props.rbegin());
+	PlyProperty& prop = elem->props.emplace_back();
 
 	/* create the new property */
 
 	if (words[1] == "list")
 	{ /* is a list */
-		prop->count_external = get_prop_type(words[2]);
-		prop->external_type = get_prop_type(words[3]);
-		prop->name = words[4];
-		prop->is_list = 1;
+		prop.count_external = get_prop_type(words[2]);
+		prop.external_type = get_prop_type(words[3]);
+		prop.name = words[4];
+		prop.is_list = true;
 	}
 	else
 	{ /* not a list */
-		prop->external_type = get_prop_type(words[1]);
-		prop->name = words[2];
-		prop->is_list = 0;
+		prop.external_type = get_prop_type(words[1]);
+		prop.name = words[2];
+		prop.is_list = false;
 	}
 }
 
@@ -1785,20 +1841,31 @@ const float VAL_NOT_SET = -1e10;
 
 struct TVertex
 {
-	float x{0}, y{0}, z{0};
-	float r{0}, g{0}, b{0};
-	float intensity{0};
+	float x = 0, y = 0, z = 0;
+	float r = 0, g = 0, b = 0;
+	float intensity = 0;
+	float timestamp = 0;
+
+	void markAsNotSet()
+	{
+		x = y = z = VAL_NOT_SET;
+		r = g = b = VAL_NOT_SET;
+		intensity = VAL_NOT_SET;
+		timestamp = VAL_NOT_SET;
+	}
 };
 
-const PlyProperty vert_props[] =
-	{/* list of property information for a vertex */
-	 //                                             is_list   count_external
-	 //                                             count_internal count_offset
-	 {"x", PLY_FLOAT, PLY_FLOAT, offsetof(TVertex, x), 0, 0, 0, 0},
-	 {"y", PLY_FLOAT, PLY_FLOAT, offsetof(TVertex, y), 0, 0, 0, 0},
-	 {"z", PLY_FLOAT, PLY_FLOAT, offsetof(TVertex, z), 0, 0, 0, 0},
-	 {"intensity", PLY_FLOAT, PLY_FLOAT, offsetof(TVertex, intensity), 0, 0, 0,
-	  0}};
+const std::array<PlyProperty, 5> vert_props = {
+	/* list of property information for a vertex */
+	// ... is_list   count_external count_internal count_offset
+	PlyProperty("x", PLY_FLOAT, PLY_FLOAT, offsetof(TVertex, x)),
+	PlyProperty("y", PLY_FLOAT, PLY_FLOAT, offsetof(TVertex, y)),
+	PlyProperty("z", PLY_FLOAT, PLY_FLOAT, offsetof(TVertex, z)),
+	PlyProperty(
+		"intensity", PLY_FLOAT, PLY_FLOAT, offsetof(TVertex, intensity)),
+	PlyProperty(
+		"timestamp", PLY_FLOAT, PLY_FLOAT, offsetof(TVertex, timestamp)),
+};
 
 struct TFace
 {
@@ -1809,10 +1876,9 @@ struct TFace
 
 const PlyProperty face_props[] =
 	{/* list of property information for a vertex */
-	 {"intensity", PLY_FLOAT, PLY_FLOAT, offsetof(TFace, intensity), 0, 0, 0,
-	  0},
-	 {"vertex_indices", PLY_INT, PLY_INT, offsetof(TFace, verts), 1, PLY_UCHAR,
-	  PLY_UCHAR, offsetof(TFace, nverts)}};
+	 {"intensity", PLY_FLOAT, PLY_FLOAT, offsetof(TFace, intensity)},
+	 {"vertex_indices", PLY_INT, PLY_INT, offsetof(TFace, verts), true,
+	  PLY_UCHAR, PLY_UCHAR, offsetof(TFace, nverts)}};
 
 /*
 		Loads from a PLY file.
@@ -1845,46 +1911,42 @@ bool PLY_Importer::loadFromPlyFile(
 			// printf ("element %s %d\n", elem_name, num_elems);
 
 			/* if we're on vertex elements, read them in */
-			if ("vertex" == elem_name)
+			if ("vertex" != elem_name) continue;
+
+			/* set up for getting vertex elements */
+			for (const auto& vert_prop : vert_props)
+				ply_get_property(ply, elem_name, &vert_prop);
+
+			/* grab all the vertex elements */
+			this->PLY_import_set_vertex_count(num_elems);
+			for (int j = 0; j < num_elems; j++)
 			{
-				/* set up for getting vertex elements */
-				for (const auto& vert_prop : vert_props)
-					ply_get_property(ply, elem_name, &vert_prop);
+				TVertex pt;
+				pt.markAsNotSet();
 
-				/* grab all the vertex elements */
-				this->PLY_import_set_vertex_count(num_elems);
-				for (int j = 0; j < num_elems; j++)
-				{
-					TVertex pt;
-					pt.x = pt.y = pt.z = pt.r = pt.g = pt.b = pt.intensity =
-						VAL_NOT_SET;
-
-					/* grab an element from the file */
-					ply_get_element(ply, reinterpret_cast<void*>(&pt));
-					const TPoint3Df xyz(pt.x, pt.y, pt.z);
-					if (pt.intensity != VAL_NOT_SET)
-					{  // Grayscale
-						const TColorf col(
-							pt.intensity, pt.intensity, pt.intensity);
-						this->PLY_import_set_vertex(j, xyz, &col);
-					}
-					else if (
-						pt.r != VAL_NOT_SET && pt.g != VAL_NOT_SET &&
-						pt.b != VAL_NOT_SET)
-					{  // RGB
-						const TColorf col(pt.r, pt.g, pt.b);
-						this->PLY_import_set_vertex(j, xyz, &col);
-					}
-					else
-					{  // No color
-						this->PLY_import_set_vertex(j, xyz);
-					}
+				/* grab an element from the file */
+				ply_get_element(ply, reinterpret_cast<void*>(&pt));
+				const TPoint3Df xyz(pt.x, pt.y, pt.z);
+				if (pt.intensity != VAL_NOT_SET)
+				{  // Grayscale
+					const TColorf col(pt.intensity, pt.intensity, pt.intensity);
+					this->PLY_import_set_vertex(j, xyz, &col);
 				}
+				else if (
+					pt.r != VAL_NOT_SET && pt.g != VAL_NOT_SET &&
+					pt.b != VAL_NOT_SET)
+				{  // RGB
+					const TColorf col(pt.r, pt.g, pt.b);
+					this->PLY_import_set_vertex(j, xyz, &col);
+				}
+				else
+				{  // No color
+					this->PLY_import_set_vertex(j, xyz);
+				}
+				// timestamp?
+				if (pt.timestamp != VAL_NOT_SET)
+					this->PLY_import_set_vertex_timestamp(j, pt.timestamp);
 			}
-
-			// print out the properties we got, for debugging
-			// for (int j = 0; j < nprops; j++)
-			//	printf ("property %s\n", plist[j]->name);
 		}
 
 		// grab and print out the comments in the file

@@ -337,6 +337,14 @@ class CColouredPointsMap : public CPointsMap
 	/** In a base class, reserve memory to prepare subsequent calls to
 	 * PLY_import_set_vertex */
 	void PLY_import_set_vertex_count(size_t N) override;
+
+	void PLY_import_set_vertex_timestamp(
+		[[maybe_unused]] size_t idx,
+		[[maybe_unused]] const double unixTimestamp) override
+	{
+		// do nothing, this class ignores timestamps
+	}
+
 	/** @} */
 
 	/** @name Redefinition of PLY Export virtual methods from CPointsMap
