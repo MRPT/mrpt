@@ -5,6 +5,7 @@ define_mrpt_lib(
 	# Lib name
 	core
 	# Dependencies
+	Threads  # invoke find_dependency(Threads) in "*-config.cmake"
 	)
 
 if(BUILD_mrpt-core)

@@ -1,7 +1,14 @@
 \page changelog Change Log
 
 # Version 2.11.4: UNRELEASED
-(None yet)
+- Changes in libraries:
+  - \ref mrpt_maps_grp
+    - Use nanoflann RKNN search in mrpt::maps::CPointsMap::nn_radius_search()
+  - \ref mrpt_math_grp
+    - mrpt::math::KDTreeCapable: Add optional argument maximumSearchDistanceSqr in many API methods to exploit the new nanoflann RKNN search method.
+- BUG FIXES:
+  - Fix missing Threads::Threads downstream due to missing `find_dependency(Threads)` in MRPT cmake config files.
+
 
 # Version 2.11.3: Released Nov 21st, 2023
 - Changes in libraries:
