@@ -6,6 +6,8 @@
     - Use nanoflann RKNN search in mrpt::maps::CPointsMap::nn_radius_search()
   - \ref mrpt_math_grp
     - mrpt::math::KDTreeCapable: Add optional argument maximumSearchDistanceSqr in many API methods to exploit the new nanoflann RKNN search method.
+  - \ref mrpt_opengl_grp
+    - mrpt::opengl::PLY_Importer: Add support for importing point clouds with the `timestamp` property per point.
 - BUG FIXES:
   - Fix missing Threads::Threads downstream due to missing `find_dependency(Threads)` in MRPT cmake config files.
   - Fix broken import of PLY files in SceneViewer3D (empty scene even if correctly imported).

@@ -1210,6 +1210,12 @@ class CPointsMap : public CMetricMap,
 	void PLY_import_set_vertex(
 		size_t idx, const mrpt::math::TPoint3Df& pt,
 		const mrpt::img::TColorf* pt_color = nullptr) override;
+	void PLY_import_set_vertex_timestamp(
+		[[maybe_unused]] size_t idx,
+		[[maybe_unused]] const double unixTimestamp) override
+	{
+		// do nothing, this class ignores timestamps
+	}
 	/** @} */
 
 	/** @name PLY Export virtual methods to implement in base classes
