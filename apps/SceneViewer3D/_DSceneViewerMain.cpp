@@ -1698,12 +1698,12 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 		if (!res)
 		{
 			wxMessageBox(
-				_("Error loading or parsing the PLY file"), _("Exception"),
-				wxOK, this);
+				ply_obj->getLoadPLYErrorString(),
+				"Error loading or parsing the PLY file", wxOK, this);
 		}
 		else
 		{
-			auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
+			auto& openGLSceneRef = m_canvas->getOpenGLSceneRef();
 			// Set the point cloud as the only object in scene:
 			openGLSceneRef = std::make_shared<opengl::Scene>();
 

@@ -8,6 +8,7 @@
     - mrpt::math::KDTreeCapable: Add optional argument maximumSearchDistanceSqr in many API methods to exploit the new nanoflann RKNN search method.
 - BUG FIXES:
   - Fix missing Threads::Threads downstream due to missing `find_dependency(Threads)` in MRPT cmake config files.
+  - Fix broken import of PLY files in SceneViewer3D (empty scene even if correctly imported).
 
 
 # Version 2.11.3: Released Nov 21st, 2023
