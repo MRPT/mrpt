@@ -94,5 +94,5 @@ find $WRAP_OUT_DIR -name "*.cpp" | 	xargs -I FIL \
 
 # applying manual patches:
 echo "Applying manual patches to pybind11 code..."
-find . -name "patch-0*.diff" | xargs -I FIL bash -c "echo \"Applying patch: FIL\" && git apply FIL --ignore-whitespace"
+find . -name "patch-0*.diff" | sort | xargs -I FIL bash -c "echo \"Applying patch: FIL\" && git apply FIL --ignore-whitespace"
 

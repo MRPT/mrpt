@@ -293,7 +293,7 @@ struct PyCallBack_mrpt_opengl_CText3D : public mrpt::opengl::CText3D {
 
 void bind_mrpt_opengl_CPointCloud(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::opengl::PointCloudAdapter file:mrpt/opengl/CPointCloud.h line:344
+	{ // mrpt::opengl::PointCloudAdapter file:mrpt/opengl/CPointCloud.h line:351
 		pybind11::class_<mrpt::opengl::PointCloudAdapter<mrpt::opengl::CPointCloud>, std::shared_ptr<mrpt::opengl::PointCloudAdapter<mrpt::opengl::CPointCloud>>> cl(M("mrpt::opengl"), "PointCloudAdapter_mrpt_opengl_CPointCloud_t", "Specialization mrpt::opengl::PointCloudAdapter<mrpt::opengl::CPointCloud>\n \n");
 		cl.def( pybind11::init<const class mrpt::opengl::CPointCloud &>(), pybind11::arg("obj") );
 
