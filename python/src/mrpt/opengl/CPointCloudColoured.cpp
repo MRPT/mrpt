@@ -196,6 +196,19 @@ struct PyCallBack_mrpt_opengl_CPointCloudColoured : public mrpt::opengl::CPointC
 		}
 		return CPointCloudColoured::PLY_import_set_face_count(a0);
 	}
+	void PLY_import_set_vertex_timestamp(size_t a0, const double a1) override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CPointCloudColoured *>(this), "PLY_import_set_vertex_timestamp");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CPointCloudColoured::PLY_import_set_vertex_timestamp(a0, a1);
+	}
 	void PLY_import_set_vertex(size_t a0, const struct mrpt::math::TPoint3D_<float> & a1, const struct mrpt::img::TColorf * a2) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CPointCloudColoured *>(this), "PLY_import_set_vertex");
@@ -407,7 +420,7 @@ void bind_mrpt_opengl_CPointCloudColoured(std::function< pybind11::module &(std:
 		cl.def("recolorizeByCoordinate", (void (mrpt::opengl::CPointCloudColoured::*)(const float, const float, const int, const enum mrpt::img::TColormap)) &mrpt::opengl::CPointCloudColoured::recolorizeByCoordinate, "Regenerates the color of each point according the one coordinate\n (coord_index:0,1,2 for X,Y,Z) and the given color map. \n\nC++: mrpt::opengl::CPointCloudColoured::recolorizeByCoordinate(const float, const float, const int, const enum mrpt::img::TColormap) --> void", pybind11::arg("coord_min"), pybind11::arg("coord_max"), pybind11::arg("coord_index"), pybind11::arg("color_map"));
 		cl.def("toYAMLMap", (void (mrpt::opengl::CPointCloudColoured::*)(class mrpt::containers::yaml &) const) &mrpt::opengl::CPointCloudColoured::toYAMLMap, "C++: mrpt::opengl::CPointCloudColoured::toYAMLMap(class mrpt::containers::yaml &) const --> void", pybind11::arg("propertiesMap"));
 	}
-	{ // mrpt::opengl::PointCloudAdapter file:mrpt/opengl/CPointCloudColoured.h line:275
+	{ // mrpt::opengl::PointCloudAdapter file:mrpt/opengl/CPointCloudColoured.h line:281
 		pybind11::class_<mrpt::opengl::PointCloudAdapter<mrpt::opengl::CPointCloudColoured>, std::shared_ptr<mrpt::opengl::PointCloudAdapter<mrpt::opengl::CPointCloudColoured>>> cl(M("mrpt::opengl"), "PointCloudAdapter_mrpt_opengl_CPointCloudColoured_t", "Specialization\n mrpt::opengl::PointCloudAdapter<mrpt::opengl::CPointCloudColoured>  \n\n\n mrpt_adapters_grp");
 		cl.def( pybind11::init<const class mrpt::opengl::CPointCloudColoured &>(), pybind11::arg("obj") );
 

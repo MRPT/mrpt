@@ -28,7 +28,7 @@
 
 void bind_mrpt_maps_CSimplePointsMap(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::opengl::PointCloudAdapter file:mrpt/maps/CSimplePointsMap.h line:154
+	{ // mrpt::opengl::PointCloudAdapter file:mrpt/maps/CSimplePointsMap.h line:160
 		pybind11::class_<mrpt::opengl::PointCloudAdapter<mrpt::maps::CSimplePointsMap>, std::shared_ptr<mrpt::opengl::PointCloudAdapter<mrpt::maps::CSimplePointsMap>>> cl(M("mrpt::opengl"), "PointCloudAdapter_mrpt_maps_CSimplePointsMap_t", "Specialization mrpt::opengl::PointCloudAdapter<mrpt::maps::CSimplePointsMap>\n \n");
 		cl.def( pybind11::init<const class mrpt::maps::CSimplePointsMap &>(), pybind11::arg("obj") );
 
