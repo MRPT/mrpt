@@ -150,7 +150,10 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 	/** Constructors */
 	CMatrixDynamic(const CMatrixDynamic& m) { (*this) = m; }
 
-	CMatrixDynamic(size_t row = 0, size_t col = 0) { realloc(row, col); }
+	explicit CMatrixDynamic(size_t row = 0, size_t col = 0)
+	{
+		realloc(row, col);
+	}
 
 	/** Copy (casting from if needed) from another matrix  */
 	template <typename U>
