@@ -11,6 +11,7 @@
 - BUG FIXES:
   - Fix missing Threads::Threads downstream due to missing `find_dependency(Threads)` in MRPT cmake config files.
   - Fix broken import of PLY files in SceneViewer3D (empty scene even if correctly imported).
+  - mrpt::math::CMatrixDynamic constructor from (row,col) was not marked explicit, leading to potential problems.
 
 
 # Version 2.11.3: Released Nov 21st, 2023
