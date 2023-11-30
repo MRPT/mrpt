@@ -30,7 +30,9 @@ class CObservationPointCloud;
  * rotating scanner. This class is the preferred alternative to
  * CObservationVelodyneScan and CObservation2DRangeScan in MRPT 2.x, since it
  * exposes range data as an organized matrix, more convenient for feature
- * detection directly on "range images".
+ * detection directly on "range images" and on points stored as a matrix in the
+ * member organizedPoints.
+ *
  * This class can also import data from KITTI dataset-like binary files
  * containing unorganized (non "undistorted", i.e. without compensation for
  * lidar motion) point clouds, which get organized into a 2D range image for
@@ -85,8 +87,15 @@ class CObservationRotatingScan : public CObservation
 	 * (i.e. invalid range). This member must be always provided, containing the
 	 * ranges for the STRONGEST ray returns.
 	 * To obtain ranges in meters, multiply this matrix by `rangeResolution`.
+	 *
+	 * \sa organizedPoints
 	 */
 	mrpt::math::CMatrix_u16 rangeImage{0, 0};
+
+	/** If present, it contains all 3D points, in local coordinates wrt the
+	 * sensor, for all !=0 entries in \a rangeImage.
+	 */
+	mrpt::math::CMatrixDynamic<mrpt::math::TPoint3Df> organizedPoints{0, 0};
 
 	/** Optionally, an intensity channel. Matrix with a 0x0 size if not
 	 * provided. */
@@ -109,7 +118,8 @@ class CObservationRotatingScan : public CObservation
 	 */
 	double startAzimuth{-M_PI}, azimuthSpan{2 * M_PI};
 
-	/** Time(in seconds) that passed since `startAzimuth` to* `endAzimuth`. */
+	/** Time (in seconds) that passed since `startAzimuth` (first column) to
+	 * `endAzimuth` (last column). */
 	double sweepDuration{.0};
 
 	/** The driver should fill in this observation */
@@ -123,8 +133,6 @@ class CObservationRotatingScan : public CObservation
 	/** The SE(3) pose of the sensor on the robot/vehicle frame
 	 * of reference */
 	mrpt::poses::CPose3D sensorPose;
-
-	// TODO: Calibration!!
 
 	/** The local computer-based timestamp based on the
 	 * reception of the message in the computer. \sa
@@ -146,7 +154,6 @@ class CObservationRotatingScan : public CObservation
 
 	void fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o);
 	void fromScan2D(const mrpt::obs::CObservation2DRangeScan& o);
-	void fromPointCloud(const mrpt::obs::CObservationPointCloud& o);
 
 	/** Will convert from another observation if it's any of the supported
 	 * source types (see fromVelodyne(), fromScan2D(), fromPointCloud()) and

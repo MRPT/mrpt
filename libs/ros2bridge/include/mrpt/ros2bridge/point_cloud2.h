@@ -44,13 +44,19 @@ bool fromROS(
 	const sensor_msgs::msg::PointCloud2& msg, mrpt::maps::CPointsMapXYZI& obj);
 
 /** Convert sensor_msgs/PointCloud2 -> mrpt::obs::CObservationRotatingScan.
- * Requires point cloud fields: x,y,z,intensity,ring
+ * Requires point cloud fields: x,y,z,ring[,intensity][,time]
+ *
+ * If num_azimuth_divisions=0, it will be taken from the point cloud "width"
+ * field.
+ *
+ * Points are supposed to be given in the sensor frame of reference.
+ *
  */
 bool fromROS(
 	const sensor_msgs::msg::PointCloud2& m,
 	mrpt::obs::CObservationRotatingScan& o,
 	const mrpt::poses::CPose3D& sensorPoseOnRobot,
-	unsigned int num_azimuth_divisions = 360);
+	unsigned int num_azimuth_divisions = 0, float max_intensity = 1000.0f);
 
 /** Extract a list of fields found in the point cloud.
  * Typically: {"x","y","z","intensity"}

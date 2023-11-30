@@ -471,15 +471,34 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 
 		// Get range image as bitmap:
 		// ---------------------------
-		mrpt::img::CImage img_range;
-		img_range.setFromMatrix(obs->rangeImage, false);
+		{
+			mrpt::img::CImage img_range;
 
-		showImageInGLView(*bmpObsStereoLeft, img_range);
+			float maxActualRange = obs->rangeImage.maxCoeff();
+			if (maxActualRange == 0) maxActualRange = 1.0f;
 
-		mrpt::img::CImage img_intensity;
-		img_intensity.setFromMatrix(obs->intensityImage, false);
+			img_range.setFromMatrix(
+				obs->rangeImage.asEigen().cast<float>() *
+					(1.0f / maxActualRange),
+				true /*already in [0,1]*/);
 
-		showImageInGLView(*bmpObsStereoRight, img_intensity);
+			showImageInGLView(*bmpObsStereoLeft, img_range);
+		}
+
+		if (!obs->intensityImage.empty())
+		{
+			mrpt::img::CImage img_intensity;
+
+			float maxActualInt = obs->intensityImage.maxCoeff();
+			if (maxActualInt == 0) maxActualInt = 1.0f;
+
+			img_intensity.setFromMatrix(
+				obs->intensityImage.asEigen().cast<float>() *
+					(1.0f / maxActualInt),
+				true /*already in [0,1]*/);
+
+			showImageInGLView(*bmpObsStereoRight, img_intensity);
+		}
 	}
 
 	if (classID->derivedFrom(CLASS_ID(CObservation)))
