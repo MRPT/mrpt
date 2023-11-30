@@ -24,8 +24,6 @@ using namespace mrpt::obs;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationRotatingScan, CObservation, mrpt::obs)
 
-// static CSinCosLookUpTableFor2DScans velodyne_sincos_tables;
-
 using RotScan = CObservationRotatingScan;
 
 mrpt::system::TTimeStamp RotScan::getOriginalReceivedTimeStamp() const
@@ -33,7 +31,7 @@ mrpt::system::TTimeStamp RotScan::getOriginalReceivedTimeStamp() const
 	return originalReceivedTimestamp;
 }
 
-uint8_t RotScan::serializeGetVersion() const { return 0; }
+uint8_t RotScan::serializeGetVersion() const { return 1; }
 void RotScan::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << timestamp << sensorLabel << rowCount << columnCount
@@ -60,6 +58,12 @@ void RotScan::serializeTo(mrpt::serialization::CArchive& out) const
 		ASSERT_EQUAL_(ly.second.rows(), rowCount);
 		out.WriteBufferFixEndianness(&ly.second(0, 0), ly.second.size());
 	}
+
+	// v1:
+	out.WriteAs<uint16_t>(organizedPoints.cols());
+	out.WriteAs<uint16_t>(organizedPoints.rows());
+	for (const auto& pt : organizedPoints)
+		out << pt;
 }
 
 void RotScan::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -67,6 +71,7 @@ void RotScan::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	switch (version)
 	{
 		case 0:
+		case 1:
 		{
 			in >> timestamp >> sensorLabel >> rowCount >> columnCount >>
 				rangeResolution >> startAzimuth >> azimuthSpan >>
@@ -100,6 +105,15 @@ void RotScan::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 				im.resize(nRows, nCols);
 				in.ReadBufferFixEndianness(&im(0, 0), im.size());
 			}
+
+			if (version >= 1)
+			{  // v1
+				const auto nIntCols = in.ReadAs<uint16_t>(),
+						   nIntRows = in.ReadAs<uint16_t>();
+				organizedPoints.resize(nIntRows, nIntCols);
+				for (auto& pt : organizedPoints)
+					in >> pt;
+			}
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
@@ -118,6 +132,8 @@ void RotScan::getDescriptionAsText(std::ostream& o) const
 	o << "lidarModel: " << lidarModel << "\n";
 	o << "Range rows=" << rowCount << " cols=" << columnCount << "\n";
 	o << "Range resolution=" << rangeResolution << " [meter]\n";
+	o << "Has organized points=" << (!organizedPoints.empty() ? "YES" : "NO")
+	  << "\n";
 	o << "Scan azimuth: start=" << mrpt::RAD2DEG(startAzimuth)
 	  << " span=" << mrpt::RAD2DEG(azimuthSpan) << "\n";
 	o << "Sweep duration: " << sweepDuration << " [s]\n";
@@ -129,8 +145,6 @@ void RotScan::getDescriptionAsText(std::ostream& o) const
 	  << mrpt::system::dateTimeToString(originalReceivedTimestamp)
 	  << " (UTC)\n";
 }
-
-MRPT_TODO("toPointCloud / calibration");
 
 void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 {
@@ -338,6 +352,8 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 	sweepDuration = 1e-6 * (microsecs_last_pkt - microsecs_1st_pkt) +
 		timeBetweenLastTwoBlocks;
 
+	MRPT_TODO("populate organizedPoints");
+
 	// Decode model byte:
 	switch (model)
 	{
@@ -392,17 +408,10 @@ void RotScan::fromScan2D(const mrpt::obs::CObservation2DRangeScan& o)
 
 		if (o.hasIntensity()) intensity_out = o.getScanIntensity(i);
 	}
+	MRPT_TODO("populate organizedPoints");
 
 	this->lidarModel = std::string("2D_SCAN_") + this->sensorLabel;
 
-	MRPT_END
-}
-
-void RotScan::fromPointCloud(const mrpt::obs::CObservationPointCloud& o)
-{
-	MRPT_START
-	MRPT_TODO("fromPointCloud");
-	THROW_EXCEPTION("fromPointCloud() not implemented yet");
 	MRPT_END
 }
 
@@ -418,11 +427,6 @@ bool RotScan::fromGeneric(const mrpt::obs::CObservation& o)
 	if (auto o2D = dynamic_cast<const CObservation2DRangeScan*>(&o); o2D)
 	{
 		fromScan2D(*o2D);
-		return true;
-	}
-	if (auto oPc = dynamic_cast<const CObservationPointCloud*>(&o); oPc)
-	{
-		fromPointCloud(*oPc);
 		return true;
 	}
 	return false;
