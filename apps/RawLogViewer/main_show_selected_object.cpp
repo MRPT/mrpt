@@ -42,7 +42,7 @@ namespace
 void showImageInGLView(
 	mrpt::opengl::Viewport& view, const mrpt::img::CImage& im)
 {
-	view.setImageView(im);
+	view.setImageView(im, true);
 }
 
 void showImageInGLView(CMyGLCanvas& canvas, const mrpt::img::CImage& im)
@@ -356,15 +356,6 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 
 		obs3Dscan_to_viz(obs, p, *glPts);
 
-// Update 3D view ==========
-#if RAWLOGVIEWER_HAS_3D
-		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
-		openGLSceneRef->getViewport()->clear();
-		openGLSceneRef->getViewport()->insert(glPts);
-
-		m_gl3DRangeScan->Refresh();
-#endif
-
 		// Update intensity image ======
 		{
 			CImage im;
@@ -396,6 +387,15 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 
 			obs->confidenceImage.unload();	// For externally-stored datasets
 		}
+
+// Update 3D view ==========
+#if RAWLOGVIEWER_HAS_3D
+		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
+		openGLSceneRef->getViewport()->clear();
+		openGLSceneRef->getViewport()->insert(glPts);
+
+		m_gl3DRangeScan->Refresh();
+#endif
 		obs->unload();
 	}
 
@@ -480,6 +480,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 
 		// Get range image as bitmap:
 		// ---------------------------
+		int rangeHeight = 30;
 		{
 			mrpt::img::CImage img_range;
 
@@ -492,7 +493,13 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 				true /*already in [0,1]*/);
 
 			showImageInGLView(*bmp3Dobs_depth, img_range);
+
+			rangeHeight = img_range.getHeight();
+			bmp3Dobs_depth->setViewportPosition(
+				30, -2 - rangeHeight, -30, rangeHeight);
 		}
+
+		int intensityHeight = 30;
 
 		if (!obs->intensityImage.empty())
 		{
@@ -507,9 +514,25 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 				true /*already in [0,1]*/);
 
 			showImageInGLView(*bmp3Dobs_int, img_intensity);
+
+			intensityHeight = img_intensity.getHeight();
+			bmp3Dobs_int->setViewportPosition(
+				30, -2 - rangeHeight - 2 - intensityHeight, -30,
+				intensityHeight);
 		}
 
-		MRPT_TODO("Show 3D points");
+		bmp3Dobs_3dcloud->addTextMessage(2, -2 - rangeHeight / 2, "Range", 0);
+		bmp3Dobs_3dcloud->addTextMessage(
+			2, -2 - rangeHeight - 2 - intensityHeight / 2, "Intensity", 1);
+
+		// 3D points:
+		const auto& p = pnViewOptions->m_params;
+
+		auto glPts = mrpt::opengl::CSetOfObjects::Create();
+		obsRotatingScan_to_viz(obs, p, *glPts);
+
+		bmp3Dobs_3dcloud->clear();
+		bmp3Dobs_3dcloud->insert(glPts);
 	}
 
 	if (classID->derivedFrom(CLASS_ID(CObservation)))

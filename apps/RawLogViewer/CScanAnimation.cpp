@@ -464,9 +464,6 @@ bool CScanAnimation::update_opengl_viz(const CSensoryFrame& sf)
 
 			CSetOfObjects::Ptr gl_objs;
 
-			CColouredPointsMap pointMap;
-			pointMap.loadFromVelodyneScan(*obs);
-
 			// Already in the map with the same sensor label?
 			auto it_gl = m_gl_objects.find(sNameInMap);
 			if (it_gl != m_gl_objects.end())
@@ -494,6 +491,46 @@ bool CScanAnimation::update_opengl_viz(const CSensoryFrame& sf)
 			obsVelodyne_to_viz(obs, p, *gl_objs);
 
 			obs->point_cloud.clear_deep();
+			obs->unload();
+		}
+		else if (IS_CLASS(*it, CObservationRotatingScan))
+		{
+			CObservationRotatingScan::Ptr obs =
+				std::dynamic_pointer_cast<CObservationRotatingScan>(it);
+			obs->load();
+
+			hasToRefreshViz = true;
+			if (tim_last == INVALID_TIMESTAMP || tim_last < obs->timestamp)
+				tim_last = obs->timestamp;
+
+			CSetOfObjects::Ptr gl_objs;
+
+			// Already in the map with the same sensor label?
+			auto it_gl = m_gl_objects.find(sNameInMap);
+			if (it_gl != m_gl_objects.end())
+			{
+				// Update existing object:
+				TRenderObject& ro = it_gl->second;
+				gl_objs = std::dynamic_pointer_cast<CSetOfObjects>(ro.obj);
+				ro.timestamp = obs->timestamp;
+			}
+			else
+			{
+				// Create object:
+				gl_objs = CSetOfObjects::Create();
+
+				TRenderObject ro;
+				ro.obj = gl_objs;
+				ro.timestamp = obs->timestamp;
+				m_gl_objects[sNameInMap] = ro;
+				m_plot3D->getOpenGLSceneRef()->insert(gl_objs);
+			}
+
+			auto& p = theMainWindow->getViewOptions()->m_params;
+
+			// convert to viz object:
+			obsRotatingScan_to_viz(obs, p, *gl_objs);
+
 			obs->unload();
 		}
 		else if (IS_CLASS(*it, CObservationPointCloud))

@@ -14,6 +14,7 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationPointCloud.h>
+#include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CSetOfObjects.h>
@@ -100,6 +101,10 @@ void obsVelodyne_to_viz(
 /// Clears `out` and creates a visualization of the given observation.
 void obsPointCloud_to_viz(
 	const mrpt::obs::CObservationPointCloud::Ptr& obs,
+	const VisualizationParameters& p, mrpt::opengl::CSetOfObjects& out);
+
+void obsRotatingScan_to_viz(
+	const mrpt::obs::CObservationRotatingScan::Ptr& obs,
 	const VisualizationParameters& p, mrpt::opengl::CSetOfObjects& out);
 
 /// Clears `out` and creates a visualization of the given observation.

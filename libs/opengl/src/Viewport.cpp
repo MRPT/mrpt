@@ -70,8 +70,6 @@ void Viewport::setViewportPosition(
 	const double x, const double y, const double width, const double height)
 {
 	MRPT_START
-	ASSERT_(width > 0);
-	ASSERT_(height > 0);
 
 	m_view_x = x;
 	m_view_y = y;
@@ -118,7 +116,7 @@ int sizeFromRatio(const int startCoord, const double dSize, const int iLength)
 		if (dSize >= -1)
 			return static_cast<int>(-iLength * dSize - startCoord + 1);
 		else
-			return static_cast<int>(-dSize - startCoord + 1);
+			return static_cast<int>(iLength + dSize - startCoord + 1);
 	}
 	// Otherwise: a fraction
 	return static_cast<int>(iLength * dSize);
@@ -640,7 +638,9 @@ void Viewport::render(
 
 	if (!m_isTransparent)
 	{  // Clear color & depth buffers:
-		// Save?
+		// Save:
+		GLfloat prevBkCol[4];
+		glGetFloatv(GL_COLOR_CLEAR_VALUE, prevBkCol);
 
 		glClearColor(
 			m_background_color.R, m_background_color.G, m_background_color.B,
@@ -650,6 +650,8 @@ void Viewport::render(
 		glClear(
 			GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		CHECK_OPENGL_ERROR_IN_DEBUG();
+
+		glClearColor(prevBkCol[0], prevBkCol[1], prevBkCol[2], prevBkCol[3]);
 	}
 	else
 	{  // Clear depth buffer only:
@@ -1146,18 +1148,19 @@ void Viewport::setNormalMode()
 	m_isClonedCamera = false;
 }
 
-void Viewport::setImageView(const mrpt::img::CImage& img)
+void Viewport::setImageView(
+	const mrpt::img::CImage& img, bool transparentBackground)
 {
-	internal_enableImageView();
+	internal_enableImageView(transparentBackground);
 	m_imageViewPlane->assignImage(img);
 }
-void Viewport::setImageView(mrpt::img::CImage&& img)
+void Viewport::setImageView(mrpt::img::CImage&& img, bool transparentBackground)
 {
-	internal_enableImageView();
+	internal_enableImageView(transparentBackground);
 	m_imageViewPlane->assignImage(img);
 }
 
-void Viewport::internal_enableImageView()
+void Viewport::internal_enableImageView(bool transparentBackground)
 {
 	// If this is the first time, we have to create the quad object:
 	if (!m_imageViewPlane)
@@ -1166,6 +1169,7 @@ void Viewport::internal_enableImageView()
 		// Flip vertically:
 		m_imageViewPlane->setPlaneCorners(-1, 1, 1, -1);
 	}
+	setTransparent(transparentBackground);
 }
 
 /** Evaluates the bounding box of this object (including possible children) in
