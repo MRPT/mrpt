@@ -37,11 +37,20 @@ using namespace mrpt::poses;
 using namespace mrpt::rtti;
 using namespace std;
 
-static void showImageInGLView(CMyGLCanvas& canvas, const mrpt::img::CImage& im)
+namespace
+{
+void showImageInGLView(
+	mrpt::opengl::Viewport& view, const mrpt::img::CImage& im)
+{
+	view.setImageView(im);
+}
+
+void showImageInGLView(CMyGLCanvas& canvas, const mrpt::img::CImage& im)
 {
 	auto scene = canvas.getOpenGLSceneRef();
-	scene->getViewport()->setImageView(im);
+	showImageInGLView(*scene->getViewport(), im);
 	canvas.Refresh();
+}
 }
 
 // Update selected item display:
@@ -184,8 +193,8 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 // Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
 		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
-		openGLSceneRef->clear();
-		openGLSceneRef->insert(glPts);
+		openGLSceneRef->getViewport()->clear();
+		openGLSceneRef->getViewport()->insert(glPts);
 
 		m_gl3DRangeScan->Refresh();
 #endif
@@ -350,8 +359,8 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 // Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
 		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
-		openGLSceneRef->clear();
-		openGLSceneRef->insert(glPts);
+		openGLSceneRef->getViewport()->clear();
+		openGLSceneRef->getViewport()->insert(glPts);
 
 		m_gl3DRangeScan->Refresh();
 #endif
@@ -407,8 +416,8 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 // Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
 		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
-		openGLSceneRef->clear();
-		openGLSceneRef->insert(glPts);
+		openGLSceneRef->getViewport()->clear();
+		openGLSceneRef->getViewport()->insert(glPts);
 
 		this->m_gl3DRangeScan->Refresh();
 
@@ -433,8 +442,8 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 // Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
 		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
-		openGLSceneRef->clear();
-		openGLSceneRef->insert(glPts);
+		openGLSceneRef->getViewport()->clear();
+		openGLSceneRef->getViewport()->insert(glPts);
 
 		this->m_gl3DRangeScan->Refresh();
 #endif
@@ -454,8 +463,8 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 #if RAWLOGVIEWER_HAS_3D
 		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
 
-		openGLSceneRef->clear();
-		openGLSceneRef->insert(viz->getVisualization());
+		openGLSceneRef->getViewport()->clear();
+		openGLSceneRef->getViewport()->insert(viz->getVisualization());
 
 		this->m_gl3DRangeScan->Refresh();
 #endif
@@ -466,7 +475,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		//              CObservationRotatingScan
 		// ----------------------------------------------------------------------
-		Notebook1->ChangeSelection(3);
+		Notebook1->ChangeSelection(8);
 		auto obs = std::dynamic_pointer_cast<CObservationRotatingScan>(sel_obj);
 
 		// Get range image as bitmap:
@@ -482,7 +491,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 					(1.0f / maxActualRange),
 				true /*already in [0,1]*/);
 
-			showImageInGLView(*bmpObsStereoLeft, img_range);
+			showImageInGLView(*bmp3Dobs_depth, img_range);
 		}
 
 		if (!obs->intensityImage.empty())
@@ -497,8 +506,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 					(1.0f / maxActualInt),
 				true /*already in [0,1]*/);
 
-			showImageInGLView(*bmpObsStereoRight, img_intensity);
+			showImageInGLView(*bmp3Dobs_int, img_intensity);
 		}
+
+		MRPT_TODO("Show 3D points");
 	}
 
 	if (classID->derivedFrom(CLASS_ID(CObservation)))

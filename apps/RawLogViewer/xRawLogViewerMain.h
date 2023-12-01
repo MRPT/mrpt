@@ -282,7 +282,6 @@ class xRawLogViewerFrame : public wxFrame
 	wxMenuItem* MenuItem50;
 	wxMenuItem* MenuItem68;
 	wxMenu* Menu14;
-	CMyGLCanvas* bmp3Dobs_depth;
 	wxMenu* Menu3;
 	wxCustomButton* Button6;
 	wxMenu* Menu20;
@@ -343,14 +342,12 @@ class xRawLogViewerFrame : public wxFrame
 	wxCustomButton* Button3;
 	CRawlogTreeView* m_treeView;
 	wxMenuItem* MenuItem64;
-	CMyGLCanvas* bmp3Dobs_int;
 	wxTextCtrl* memo;
 	wxMenuItem* MenuItem28;
 	wxMenuItem* MenuItem63;
 	CMyGLCanvas* m_gl3DRangeScan;
 	wxPanel* Panel7;
 	wxMenuItem* MenuItem78;
-	wxPanel* pn3Dobs_Depth;
 	wxMenuItem* mnuCreateAVI;
 	wxMenuItem* MenuItem83;
 	wxMenu* MenuItem45;
@@ -365,7 +362,6 @@ class xRawLogViewerFrame : public wxFrame
 	wxBoxSizer* BoxSizer1;
 	CMyGLCanvas* bmp3Dobs_conf;
 	wxMenuItem* MenuItem58;
-	wxPanel* pn3Dobs_Int;
 	wxTextCtrl* memStats;
 	wxPanel* pn_CObservationStereoImage;
 	wxPanel* Panel2;
@@ -399,6 +395,9 @@ class xRawLogViewerFrame : public wxFrame
 	wxScrolledWindow* ScrolledWindow2 = nullptr;
 	wxTextCtrl* edSelectedTimeInfo = nullptr;
 	CMyGLCanvas* m_glTimeLine = nullptr;
+
+	mrpt::opengl::Viewport::Ptr bmp3Dobs_depth;
+	mrpt::opengl::Viewport::Ptr bmp3Dobs_int;
 
 	void OnComboImageDirsChange(wxCommandEvent& event);
 	void On3DObsPagesChange(wxBookCtrlEvent& event);
