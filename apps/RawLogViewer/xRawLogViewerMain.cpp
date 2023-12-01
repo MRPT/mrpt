@@ -837,10 +837,17 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	// OpenGL Views:
 	bmp3Dobs_depth =
 		m_gl3DRangeScan->getOpenGLSceneRef()->createViewport("depth");
-	bmp3Dobs_depth->setViewportPosition(2, -50 - 2, 1.0, 50);
+	bmp3Dobs_depth->setCustomBackgroundColor({.0f, .0f, .0f});
 
 	bmp3Dobs_int =
-		m_gl3DRangeScan->getOpenGLSceneRef()->createViewport("depth");
+		m_gl3DRangeScan->getOpenGLSceneRef()->createViewport("intensity");
+	bmp3Dobs_int->setCustomBackgroundColor({.0f, .0f, .0f});
+
+	bmp3Dobs_3dcloud =
+		m_gl3DRangeScan->getOpenGLSceneRef()->getViewport("main");
+
+	// The correct sizes will be updated anyway in SelectObjectInTreeView()
+	bmp3Dobs_depth->setViewportPosition(2, -50 - 2, 1.0, 50);
 	bmp3Dobs_int->setViewportPosition(2, -100 - 2 * 2, 1.0, 50);
 
 	// panel done:

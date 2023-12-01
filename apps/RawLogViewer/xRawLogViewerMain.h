@@ -398,6 +398,7 @@ class xRawLogViewerFrame : public wxFrame
 
 	mrpt::opengl::Viewport::Ptr bmp3Dobs_depth;
 	mrpt::opengl::Viewport::Ptr bmp3Dobs_int;
+	mrpt::opengl::Viewport::Ptr bmp3Dobs_3dcloud;
 
 	void OnComboImageDirsChange(wxCommandEvent& event);
 	void On3DObsPagesChange(wxBookCtrlEvent& event);
