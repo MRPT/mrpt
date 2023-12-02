@@ -126,6 +126,9 @@ class Viewport : public mrpt::serialization::CSerializable,
 	 * setImageView */
 	void setNormalMode();
 
+	void setViewportVisibility(bool visible) { m_isViewportVisible = visible; }
+	bool getViewportVisibility() const { return m_isViewportVisible; }
+
 	/** @} */
 	// end of Set the "viewport mode"
 
@@ -439,6 +442,8 @@ class Viewport : public mrpt::serialization::CSerializable,
 
 	/** Set by setCloneCamera */
 	bool m_isClonedCamera{false};
+
+	bool m_isViewportVisible = true;
 
 	/** Only if m_isCloned=true */
 	std::string m_clonedViewport;

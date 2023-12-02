@@ -166,6 +166,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		Notebook1->ChangeSelection(8);
 		auto obs = std::dynamic_pointer_cast<CObservation2DRangeScan>(sel_obj);
 
+		// Hide unused viewports:
+		bmp3Dobs_depth->setViewportVisibility(false);
+		bmp3Dobs_int->setViewportVisibility(false);
+
 		// Additional text description: This is not within
 		// getDescriptionAsTextValue() because mrpt-maps is not available within
 		// mrpt-obs:
@@ -348,6 +352,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		obs->load();  // Make sure the 3D point cloud, etc... are all
 		// loaded in memory.
 
+		// Hide unused viewports:
+		bmp3Dobs_depth->setViewportVisibility(false);
+		bmp3Dobs_int->setViewportVisibility(false);
+
 		// Render options
 		// --------------------------------
 		const auto& p = pnViewOptions->m_params;
@@ -407,6 +415,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		Notebook1->ChangeSelection(8);
 		auto obs = std::dynamic_pointer_cast<CObservationVelodyneScan>(sel_obj);
 
+		// Hide unused viewports:
+		bmp3Dobs_depth->setViewportVisibility(false);
+		bmp3Dobs_int->setViewportVisibility(false);
+
 		obs->generatePointCloud();
 		const auto& p = pnViewOptions->m_params;
 
@@ -434,6 +446,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		Notebook1->ChangeSelection(8);
 		auto obs = std::dynamic_pointer_cast<CObservationPointCloud>(sel_obj);
 
+		// Hide unused viewports:
+		bmp3Dobs_depth->setViewportVisibility(false);
+		bmp3Dobs_int->setViewportVisibility(false);
+
 		const auto& p = pnViewOptions->m_params;
 
 		auto glPts = mrpt::opengl::CSetOfObjects::Create();
@@ -459,6 +475,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		Notebook1->ChangeSelection(8);
 
+		// Hide unused viewports:
+		bmp3Dobs_depth->setViewportVisibility(false);
+		bmp3Dobs_int->setViewportVisibility(false);
+
 // Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
 		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
@@ -477,6 +497,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		Notebook1->ChangeSelection(8);
 		auto obs = std::dynamic_pointer_cast<CObservationRotatingScan>(sel_obj);
+
+		// Show viewports:
+		bmp3Dobs_depth->setViewportVisibility(true);
+		bmp3Dobs_int->setViewportVisibility(true);
 
 		// Get range image as bitmap:
 		// ---------------------------

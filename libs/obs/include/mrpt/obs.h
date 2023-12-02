@@ -39,6 +39,7 @@ MRPT_WARNING(
 #include <mrpt/obs/CObservationRawDAQ.h>
 #include <mrpt/obs/CObservationReflectivity.h>
 #include <mrpt/obs/CObservationRobotPose.h>
+#include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/obs/CObservationSkeleton.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CObservationStereoImagesFeatures.h>

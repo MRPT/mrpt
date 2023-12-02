@@ -167,11 +167,8 @@ mrpt/obs/CObservationStereoImages.cpp
 mrpt/vision/CStereoRectifyMap.cpp
 mrpt/hwdrivers/CDUO3DCamera.cpp
 mrpt/math/CMatrixDynamic.cpp
-mrpt/math/CMatrixFixed.cpp
-mrpt/math/CMatrixFixed_1.cpp
-mrpt/math/CMatrixFixed_2.cpp
-mrpt/math/CMatrixFixed_3.cpp
-mrpt/math/CMatrixFixed_4.cpp
+mrpt/math/MatrixVectorBase.cpp
+mrpt/math/MatrixBase.cpp
 mrpt/math/math_frwds.cpp
 mrpt/bayes/CProbabilityParticle_1.cpp
 mrpt/math/CMatrixF.cpp
@@ -224,6 +221,11 @@ mrpt/kinematics/CVehicleVelCmd.cpp
 mrpt/kinematics/CVehicleVelCmd_DiffDriven.cpp
 mrpt/poses/CPointPDF.cpp
 mrpt/math/CMatrixDynamic_1.cpp
+mrpt/math/CMatrixFixed.cpp
+mrpt/math/CMatrixFixed_1.cpp
+mrpt/math/CMatrixFixed_2.cpp
+mrpt/math/CMatrixFixed_3.cpp
+mrpt/math/CMatrixFixed_4.cpp
 mrpt/poses/CPointPDFSOG.cpp
 mrpt/maps/CBeacon.cpp
 mrpt/opengl/COctoMapVoxels.cpp

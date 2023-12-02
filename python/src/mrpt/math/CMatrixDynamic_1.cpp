@@ -1,20 +1,17 @@
 #include <iterator>
 #include <memory>
-#include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/MatrixVectorBase.h>
+#include <mrpt/math/TPoint2D.h>
+#include <mrpt/math/TPoint3D.h>
+#include <mrpt/math/TPose2D.h>
+#include <mrpt/math/TPose3D.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/matrix_size_t.h>
-#include <mrpt/rtti/CObject.h>
-#include <mrpt/serialization/CArchive.h>
-#include <mrpt/serialization/CMessage.h>
-#include <mrpt/serialization/CSerializable.h>
-#include <mrpt/typemeta/static_string.h>
 #include <sstream> // __str__
 #include <string>
-#include <variant>
 
 #include <functional>
 #include <pybind11/pybind11.h>
@@ -28,77 +25,6 @@
 	PYBIND11_DECLARE_HOLDER_TYPE(T, T*)
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
-
-// mrpt::math::CMatrixD file:mrpt/math/CMatrixD.h line:23
-struct PyCallBack_mrpt_math_CMatrixD : public mrpt::math::CMatrixD {
-	using mrpt::math::CMatrixD::CMatrixD;
-
-	const struct mrpt::rtti::TRuntimeClassId * GetRuntimeClass() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::math::CMatrixD *>(this), "GetRuntimeClass");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<const struct mrpt::rtti::TRuntimeClassId *>::value) {
-				static pybind11::detail::override_caster_t<const struct mrpt::rtti::TRuntimeClassId *> caster;
-				return pybind11::detail::cast_ref<const struct mrpt::rtti::TRuntimeClassId *>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<const struct mrpt::rtti::TRuntimeClassId *>(std::move(o));
-		}
-		return CMatrixD::GetRuntimeClass();
-	}
-	class mrpt::rtti::CObject * clone() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::math::CMatrixD *>(this), "clone");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<class mrpt::rtti::CObject *>::value) {
-				static pybind11::detail::override_caster_t<class mrpt::rtti::CObject *> caster;
-				return pybind11::detail::cast_ref<class mrpt::rtti::CObject *>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<class mrpt::rtti::CObject *>(std::move(o));
-		}
-		return CMatrixD::clone();
-	}
-	uint8_t serializeGetVersion() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::math::CMatrixD *>(this), "serializeGetVersion");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
-				static pybind11::detail::override_caster_t<uint8_t> caster;
-				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
-		}
-		return CMatrixD::serializeGetVersion();
-	}
-	void serializeTo(class mrpt::serialization::CArchive & a0) const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::math::CMatrixD *>(this), "serializeTo");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CMatrixD::serializeTo(a0);
-	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::math::CMatrixD *>(this), "serializeFrom");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CMatrixD::serializeFrom(a0, a1);
-	}
-};
 
 void bind_mrpt_math_CMatrixDynamic_1(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
@@ -146,23 +72,44 @@ void bind_mrpt_math_CMatrixDynamic_1(std::function< pybind11::module &(std::stri
 		cl.def(pybind11::init( [](pybind11::list vals){ auto m = new mat_t(); const auto nR = vals.size(); if (!nR) return m; const auto nC = vals[0].cast<pybind11::list>().size(); m->setSize(nR,nC); for (size_t r=0;r<nR;r++) { const auto row = vals[r].cast<pybind11::list>(); for (size_t c=0;c<nC;c++) m->coeffRef(r,c) = row[c].cast<dat_t>(); } return m; }));
 		cl.def("to_list", [](const mat_t&self) -> pybind11::list { auto l = pybind11::list(); const auto nR = self.rows(), nC = self.cols(); for (size_t r=0;r<nR;r++) { auto row = pybind11::list(); l.append(row); for (size_t c=0;c<nC;c++) row.append(self.coeff(r,c)); } return l; });
 	}
-	{ // mrpt::math::CMatrixD file:mrpt/math/CMatrixD.h line:23
-		pybind11::class_<mrpt::math::CMatrixD, std::shared_ptr<mrpt::math::CMatrixD>, PyCallBack_mrpt_math_CMatrixD, mrpt::serialization::CSerializable, mrpt::math::CMatrixDynamic<double>> cl(M("mrpt::math"), "CMatrixD", "This class is a \"CSerializable\" wrapper for\n \"CMatrixDynamic<double>\".\n \n\n For a complete introduction to Matrices and vectors in MRPT, see:\n https://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes\n \n\n\n ");
-		cl.def( pybind11::init( [](){ return new mrpt::math::CMatrixD(); }, [](){ return new PyCallBack_mrpt_math_CMatrixD(); } ) );
+	{ // mrpt::math::CMatrixDynamic file:mrpt/math/CMatrixDynamic.h line:41
+		pybind11::class_<mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>, std::shared_ptr<mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>, mrpt::math::MatrixBase<mrpt::math::TPoint3D_<float>,mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float> >>> cl(M("mrpt::math"), "CMatrixDynamic_mrpt_math_TPoint3D_float_t", "");
+		cl.def( pybind11::init( [](mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>> const &o){ return new mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>(o); } ) );
+		cl.def( pybind11::init( [](){ return new mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>(); } ), "doc" );
+		cl.def( pybind11::init( [](size_t const & a0){ return new mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>(a0); } ), "doc" , pybind11::arg("row"));
 		cl.def( pybind11::init<size_t, size_t>(), pybind11::arg("row"), pybind11::arg("col") );
 
-		cl.def( pybind11::init<const class mrpt::math::CMatrixDynamic<double> &>(), pybind11::arg("m") );
+		cl.def( pybind11::init<const class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > &, size_t, size_t>(), pybind11::arg("m"), pybind11::arg("cropRowCount"), pybind11::arg("cropColCount") );
 
-		cl.def( pybind11::init<const class mrpt::math::CMatrixDynamic<float> &>(), pybind11::arg("m") );
-
-		cl.def( pybind11::init( [](PyCallBack_mrpt_math_CMatrixD const &o){ return new PyCallBack_mrpt_math_CMatrixD(o); } ) );
-		cl.def( pybind11::init( [](mrpt::math::CMatrixD const &o){ return new mrpt::math::CMatrixD(o); } ) );
-		cl.def("assign", (class mrpt::math::CMatrixD & (mrpt::math::CMatrixD::*)(const class mrpt::math::CMatrixDynamic<float> &)) &mrpt::math::CMatrixD::operator=<mrpt::math::CMatrixDynamic<float>>, "C++: mrpt::math::CMatrixD::operator=(const class mrpt::math::CMatrixDynamic<float> &) --> class mrpt::math::CMatrixD &", pybind11::return_value_policy::automatic, pybind11::arg("other"));
-		cl.def("assign", (class mrpt::math::CMatrixD & (mrpt::math::CMatrixD::*)(const class mrpt::math::CMatrixD &)) &mrpt::math::CMatrixD::operator=<mrpt::math::CMatrixD>, "C++: mrpt::math::CMatrixD::operator=(const class mrpt::math::CMatrixD &) --> class mrpt::math::CMatrixD &", pybind11::return_value_policy::automatic, pybind11::arg("other"));
-		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::math::CMatrixD::GetRuntimeClassIdStatic, "C++: mrpt::math::CMatrixD::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
-		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::math::CMatrixD::*)() const) &mrpt::math::CMatrixD::GetRuntimeClass, "C++: mrpt::math::CMatrixD::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
-		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::math::CMatrixD::*)() const) &mrpt::math::CMatrixD::clone, "C++: mrpt::math::CMatrixD::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
-		cl.def_static("CreateObject", (class std::shared_ptr<class mrpt::rtti::CObject> (*)()) &mrpt::math::CMatrixD::CreateObject, "C++: mrpt::math::CMatrixD::CreateObject() --> class std::shared_ptr<class mrpt::rtti::CObject>");
-		cl.def("assign", (class mrpt::math::CMatrixD & (mrpt::math::CMatrixD::*)(const class mrpt::math::CMatrixD &)) &mrpt::math::CMatrixD::operator=, "C++: mrpt::math::CMatrixD::operator=(const class mrpt::math::CMatrixD &) --> class mrpt::math::CMatrixD &", pybind11::return_value_policy::automatic, pybind11::arg(""));
+		cl.def("assign", (class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > & (mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::*)(const class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > &)) &mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::operator=<mrpt::math::TPoint3D_<float>>, "C++: mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::operator=(const class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > &) --> class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > &", pybind11::return_value_policy::automatic, pybind11::arg("m"));
+		cl.def("swap", (void (mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::*)(class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > &)) &mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::swap, "C++: mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::swap(class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > &) --> void", pybind11::arg("o"));
+		cl.def("assign", (class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > & (mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::*)(const class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > &)) &mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::operator=, "C++: mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::operator=(const class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > &) --> class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > &", pybind11::return_value_policy::automatic, pybind11::arg("m"));
+		cl.def("rows", (int (mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::*)() const) &mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::rows, "C++: mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::rows() const --> int");
+		cl.def("cols", (int (mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::*)() const) &mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::cols, "C++: mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::cols() const --> int");
+		cl.def("setSize", [](mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>> &o, size_t const & a0, size_t const & a1) -> void { return o.setSize(a0, a1); }, "", pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("setSize", (void (mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::*)(size_t, size_t, bool)) &mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::setSize, "C++: mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::setSize(size_t, size_t, bool) --> void", pybind11::arg("row"), pybind11::arg("col"), pybind11::arg("zeroNewElements"));
+		cl.def("resize", (void (mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::*)(size_t, size_t)) &mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::resize, "C++: mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::resize(size_t, size_t) --> void", pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("resize", (void (mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::*)(size_t)) &mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::resize, "C++: mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::resize(size_t) --> void", pybind11::arg("vectorLen"));
+		cl.def("derived", (class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > & (mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::*)()) &mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::derived, "C++: mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::derived() --> class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > &", pybind11::return_value_policy::automatic);
+		cl.def("conservativeResize", (void (mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::*)(size_t, size_t)) &mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::conservativeResize, "C++: mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::conservativeResize(size_t, size_t) --> void", pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("data", (struct mrpt::math::TPoint3D_<float> * (mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::*)()) &mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::data, "C++: mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::data() --> struct mrpt::math::TPoint3D_<float> *", pybind11::return_value_policy::automatic);
+		cl.def("__call__", (struct mrpt::math::TPoint3D_<float> & (mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::*)(size_t, size_t)) &mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::operator(), "C++: mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::operator()(size_t, size_t) --> struct mrpt::math::TPoint3D_<float> &", pybind11::return_value_policy::automatic, pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("__getitem__", (struct mrpt::math::TPoint3D_<float> & (mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::*)(size_t)) &mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::operator[], "C++: mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>::operator[](size_t) --> struct mrpt::math::TPoint3D_<float> &", pybind11::return_value_policy::automatic, pybind11::arg("ith"));
+		cl.def("mbDerived", (class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > & (mrpt::math::MatrixBase<mrpt::math::TPoint3D_<float>,mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float> >>::*)()) &mrpt::math::MatrixBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::mbDerived, "C++: mrpt::math::MatrixBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::mbDerived() --> class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > &", pybind11::return_value_policy::automatic);
+		cl.def("assign", (class mrpt::math::MatrixBase<struct mrpt::math::TPoint3D_<float>, class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > > & (mrpt::math::MatrixBase<mrpt::math::TPoint3D_<float>,mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float> >>::*)(const class mrpt::math::MatrixBase<struct mrpt::math::TPoint3D_<float>, class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > > &)) &mrpt::math::MatrixBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::operator=, "C++: mrpt::math::MatrixBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::operator=(const class mrpt::math::MatrixBase<struct mrpt::math::TPoint3D_<float>, class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > > &) --> class mrpt::math::MatrixBase<struct mrpt::math::TPoint3D_<float>, class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > > &", pybind11::return_value_policy::automatic, pybind11::arg(""));
+		cl.def("setConstant", (void (mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>,mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float> >>::*)(const struct mrpt::math::TPoint3D_<float>)) &mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::setConstant, "C++: mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::setConstant(const struct mrpt::math::TPoint3D_<float>) --> void", pybind11::arg("value"));
+		cl.def("setConstant", (void (mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>,mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float> >>::*)(size_t, size_t, const struct mrpt::math::TPoint3D_<float>)) &mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::setConstant, "C++: mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::setConstant(size_t, size_t, const struct mrpt::math::TPoint3D_<float>) --> void", pybind11::arg("nrows"), pybind11::arg("ncols"), pybind11::arg("value"));
+		cl.def("setConstant", (void (mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>,mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float> >>::*)(size_t, const struct mrpt::math::TPoint3D_<float>)) &mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::setConstant, "C++: mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::setConstant(size_t, const struct mrpt::math::TPoint3D_<float>) --> void", pybind11::arg("nrows"), pybind11::arg("value"));
+		cl.def_static("Constant", (class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > (*)(const struct mrpt::math::TPoint3D_<float>)) &mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::Constant, "C++: mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::Constant(const struct mrpt::math::TPoint3D_<float>) --> class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> >", pybind11::arg("value"));
+		cl.def_static("Constant", (class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > (*)(size_t, size_t, const struct mrpt::math::TPoint3D_<float>)) &mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::Constant, "C++: mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::Constant(size_t, size_t, const struct mrpt::math::TPoint3D_<float>) --> class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> >", pybind11::arg("nrows"), pybind11::arg("ncols"), pybind11::arg("value"));
+		cl.def("assign", (void (mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>,mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float> >>::*)(const unsigned long, const struct mrpt::math::TPoint3D_<float>)) &mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::assign, "C++: mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::assign(const unsigned long, const struct mrpt::math::TPoint3D_<float>) --> void", pybind11::arg("N"), pybind11::arg("value"));
+		cl.def("coeffRef", (struct mrpt::math::TPoint3D_<float> & (mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>,mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float> >>::*)(int, int)) &mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::coeffRef, "C++: mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::coeffRef(int, int) --> struct mrpt::math::TPoint3D_<float> &", pybind11::return_value_policy::automatic, pybind11::arg("r"), pybind11::arg("c"));
+		cl.def("coeff", (const struct mrpt::math::TPoint3D_<float> & (mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>,mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float> >>::*)(int, int) const) &mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::coeff, "C++: mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::coeff(int, int) const --> const struct mrpt::math::TPoint3D_<float> &", pybind11::return_value_policy::automatic, pybind11::arg("r"), pybind11::arg("c"));
+		cl.def("isSquare", (bool (mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>,mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float> >>::*)() const) &mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::isSquare, "C++: mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::isSquare() const --> bool");
+		cl.def("empty", (bool (mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>,mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float> >>::*)() const) &mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::empty, "C++: mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::empty() const --> bool");
+		cl.def("norm_inf", (struct mrpt::math::TPoint3D_<float> (mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>,mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float> >>::*)() const) &mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::norm_inf, "C++: mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::norm_inf() const --> struct mrpt::math::TPoint3D_<float>");
+		cl.def("norm", (struct mrpt::math::TPoint3D_<float> (mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>,mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float> >>::*)() const) &mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::norm, "C++: mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::norm() const --> struct mrpt::math::TPoint3D_<float>");
+		cl.def("asString", (std::string (mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>,mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float> >>::*)() const) &mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::asString, "C++: mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::asString() const --> std::string");
+		cl.def("assign", (class mrpt::math::MatrixVectorBase<struct mrpt::math::TPoint3D_<float>, class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > > & (mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>,mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float> >>::*)(const class mrpt::math::MatrixVectorBase<struct mrpt::math::TPoint3D_<float>, class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > > &)) &mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::operator=, "C++: mrpt::math::MatrixVectorBase<mrpt::math::TPoint3D_<float>, mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_<float>>>::operator=(const class mrpt::math::MatrixVectorBase<struct mrpt::math::TPoint3D_<float>, class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > > &) --> class mrpt::math::MatrixVectorBase<struct mrpt::math::TPoint3D_<float>, class mrpt::math::CMatrixDynamic<struct mrpt::math::TPoint3D_<float> > > &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
 }
