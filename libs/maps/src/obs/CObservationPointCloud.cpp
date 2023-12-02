@@ -200,49 +200,49 @@ void CObservationPointCloud::load() const
 void CObservationPointCloud::unload() const
 {
 	MRPT_START
-	if (isExternallyStored() && pointcloud)
+	if (!isExternallyStored() || !pointcloud) return;
+
+	// Free memory, saving to the file if it doesn't exist:
+	const auto abs_filename =
+		mrpt::io::lazy_load_absolute_path(m_external_file);
+
+	if (!mrpt::system::fileExists(abs_filename))
 	{
-		// Free memory, saving to the file if it doesn't exist:
-		const auto abs_filename =
-			mrpt::io::lazy_load_absolute_path(m_external_file);
-
-		if (!mrpt::system::fileExists(abs_filename))
+		switch (m_externally_stored)
 		{
-			switch (m_externally_stored)
+			case ExternalStorageFormat::None: break;
+			case ExternalStorageFormat::KittiBinFile:
 			{
-				case ExternalStorageFormat::None: break;
-				case ExternalStorageFormat::KittiBinFile:
+				THROW_EXCEPTION("Saving to kitti format not supported.");
+			}
+			case ExternalStorageFormat::PlainTextFile:
+			{
+				std::ofstream f(abs_filename);
+				ASSERT_(f.is_open());
+				std::vector<float> row;
+				for (size_t i = 0; i < pointcloud->size(); i++)
 				{
-					THROW_EXCEPTION("Saving to kitti format not supported.");
+					pointcloud->getPointAllFieldsFast(i, row);
+					for (const float v : row)
+						f << v << " ";
+					f << "\n";
 				}
-				case ExternalStorageFormat::PlainTextFile:
-				{
-					std::ofstream f(abs_filename);
-					ASSERT_(f.is_open());
-					std::vector<float> row;
-					for (size_t i = 0; i < pointcloud->size(); i++)
-					{
-						pointcloud->getPointAllFieldsFast(i, row);
-						for (const float v : row)
-							f << v << " ";
-						f << "\n";
-					}
-				}
-				break;
-				case ExternalStorageFormat::MRPT_Serialization:
-				{
-					mrpt::io::CFileGZOutputStream f(abs_filename);
-					auto ar = mrpt::serialization::archiveFrom(f);
-					ar << *pointcloud;
-				}
-				break;
-			};
-		}
-
-		// Now we can safely free the mem:
-		auto& me = const_cast<CObservationPointCloud&>(*this);
-		me.pointcloud.reset();
+			}
+			break;
+			case ExternalStorageFormat::MRPT_Serialization:
+			{
+				mrpt::io::CFileGZOutputStream f(abs_filename);
+				auto ar = mrpt::serialization::archiveFrom(f);
+				ar << *pointcloud;
+			}
+			break;
+		};
 	}
+
+	// Now we can safely free the mem:
+	auto& me = const_cast<CObservationPointCloud&>(*this);
+	me.pointcloud.reset();
+
 	MRPT_END
 }
 

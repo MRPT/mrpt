@@ -68,6 +68,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_obs)
 	registerClass(CLASS_ID(CActionRobotMovement3D));
 
 	registerClass(CLASS_ID(CObservationSkeleton));
+	registerClass(CLASS_ID(CObservationRotatingScan));
 
 	registerClass(CLASS_ID(TMapGenericParams));
 #endif

@@ -7,16 +7,21 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "maps-precomp.h"  // Precomp header
+#include "obs-precomp.h"  // Precomp header
 //
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/lazy_load_path.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/system/filesystem.h>
+
+#include <fstream>
 
 using namespace std;
 using namespace mrpt::obs;
@@ -31,7 +36,74 @@ mrpt::system::TTimeStamp RotScan::getOriginalReceivedTimeStamp() const
 	return originalReceivedTimestamp;
 }
 
-uint8_t RotScan::serializeGetVersion() const { return 1; }
+namespace
+{
+void writeMatricesTo(const RotScan& me, mrpt::serialization::CArchive& out)
+{
+	out.WriteAs<uint16_t>(me.rangeImage.cols());
+	out.WriteAs<uint16_t>(me.rangeImage.rows());
+	if (!me.rangeImage.empty())
+		out.WriteBufferFixEndianness(
+			&me.rangeImage(0, 0), me.rangeImage.size());
+
+	out.WriteAs<uint16_t>(me.intensityImage.cols());
+	out.WriteAs<uint16_t>(me.intensityImage.rows());
+	if (!me.intensityImage.empty())
+		out.WriteBufferFixEndianness(
+			&me.intensityImage(0, 0), me.intensityImage.size());
+
+	out.WriteAs<uint16_t>(me.rangeOtherLayers.size());
+	for (const auto& ly : me.rangeOtherLayers)
+	{
+		out << ly.first;
+		ASSERT_EQUAL_(ly.second.cols(), me.columnCount);
+		ASSERT_EQUAL_(ly.second.rows(), me.rowCount);
+		out.WriteBufferFixEndianness(&ly.second(0, 0), ly.second.size());
+	}
+
+	out.WriteAs<uint16_t>(me.organizedPoints.cols());
+	out.WriteAs<uint16_t>(me.organizedPoints.rows());
+	for (const auto& pt : me.organizedPoints)
+		out << pt;
+}
+
+void readMatricesFrom(RotScan& me, mrpt::serialization::CArchive& in)
+{
+	const auto nCols = in.ReadAs<uint16_t>(), nRows = in.ReadAs<uint16_t>();
+	me.rangeImage.resize(nRows, nCols);
+	if (!me.rangeImage.empty())
+		in.ReadBufferFixEndianness(&me.rangeImage(0, 0), me.rangeImage.size());
+
+	{
+		const auto nIntCols = in.ReadAs<uint16_t>(),
+				   nIntRows = in.ReadAs<uint16_t>();
+		me.intensityImage.resize(nIntRows, nIntCols);
+		if (!me.intensityImage.empty())
+			in.ReadBufferFixEndianness(
+				&me.intensityImage(0, 0), me.intensityImage.size());
+	}
+
+	const auto nOtherLayers = in.ReadAs<uint16_t>();
+	me.rangeOtherLayers.clear();
+	for (size_t i = 0; i < nOtherLayers; i++)
+	{
+		std::string name;
+		in >> name;
+		auto& im = me.rangeOtherLayers[name];
+		im.resize(nRows, nCols);
+		in.ReadBufferFixEndianness(&im(0, 0), im.size());
+	}
+
+	const auto nIntCols = in.ReadAs<uint16_t>(),
+			   nIntRows = in.ReadAs<uint16_t>();
+	me.organizedPoints.resize(nIntRows, nIntCols);
+	for (auto& pt : me.organizedPoints)
+		in >> pt;
+}
+
+}  // namespace
+
+uint8_t RotScan::serializeGetVersion() const { return 0; }
 void RotScan::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << timestamp << sensorLabel << rowCount << columnCount
@@ -39,31 +111,16 @@ void RotScan::serializeTo(mrpt::serialization::CArchive& out) const
 		<< lidarModel << minRange << maxRange << sensorPose
 		<< originalReceivedTimestamp << has_satellite_timestamp;
 
-	out.WriteAs<uint16_t>(rangeImage.cols());
-	out.WriteAs<uint16_t>(rangeImage.rows());
-	if (!rangeImage.empty())
-		out.WriteBufferFixEndianness(&rangeImage(0, 0), rangeImage.size());
+	out.WriteAs<uint8_t>(m_externally_stored);
 
-	out.WriteAs<uint16_t>(intensityImage.cols());
-	out.WriteAs<uint16_t>(intensityImage.rows());
-	if (!intensityImage.empty())
-		out.WriteBufferFixEndianness(
-			&intensityImage(0, 0), intensityImage.size());
-
-	out.WriteAs<uint16_t>(rangeOtherLayers.size());
-	for (const auto& ly : rangeOtherLayers)
-	{
-		out << ly.first;
-		ASSERT_EQUAL_(ly.second.cols(), columnCount);
-		ASSERT_EQUAL_(ly.second.rows(), rowCount);
-		out.WriteBufferFixEndianness(&ly.second(0, 0), ly.second.size());
+	if (isExternallyStored())
+	{  //
+		out << m_external_file;
 	}
-
-	// v1:
-	out.WriteAs<uint16_t>(organizedPoints.cols());
-	out.WriteAs<uint16_t>(organizedPoints.rows());
-	for (const auto& pt : organizedPoints)
-		out << pt;
+	else
+	{
+		writeMatricesTo(*this, out);
+	}
 }
 
 void RotScan::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -71,7 +128,6 @@ void RotScan::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	switch (version)
 	{
 		case 0:
-		case 1:
 		{
 			in >> timestamp >> sensorLabel >> rowCount >> columnCount >>
 				rangeResolution >> startAzimuth >> azimuthSpan >>
@@ -79,40 +135,21 @@ void RotScan::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 				sensorPose >> originalReceivedTimestamp >>
 				has_satellite_timestamp;
 
-			const auto nCols = in.ReadAs<uint16_t>(),
-					   nRows = in.ReadAs<uint16_t>();
-			rangeImage.resize(nRows, nCols);
-			if (!rangeImage.empty())
-				in.ReadBufferFixEndianness(
-					&rangeImage(0, 0), rangeImage.size());
+			m_externally_stored =
+				static_cast<ExternalStorageFormat>(in.ReadPOD<uint8_t>());
 
-			{
-				const auto nIntCols = in.ReadAs<uint16_t>(),
-						   nIntRows = in.ReadAs<uint16_t>();
-				intensityImage.resize(nIntRows, nIntCols);
-				if (!intensityImage.empty())
-					in.ReadBufferFixEndianness(
-						&intensityImage(0, 0), intensityImage.size());
+			if (isExternallyStored())
+			{  // just read the file name
+				in >> m_external_file;
+				rangeImage.resize(0, 0);
+				intensityImage.resize(0, 0);
+				organizedPoints.resize(0, 0);
+				rangeOtherLayers.clear();
 			}
-
-			const auto nOtherLayers = in.ReadAs<uint16_t>();
-			rangeOtherLayers.clear();
-			for (size_t i = 0; i < nOtherLayers; i++)
+			else
 			{
-				std::string name;
-				in >> name;
-				auto& im = rangeOtherLayers[name];
-				im.resize(nRows, nCols);
-				in.ReadBufferFixEndianness(&im(0, 0), im.size());
-			}
-
-			if (version >= 1)
-			{  // v1
-				const auto nIntCols = in.ReadAs<uint16_t>(),
-						   nIntRows = in.ReadAs<uint16_t>();
-				organizedPoints.resize(nIntRows, nIntCols);
-				for (auto& pt : organizedPoints)
-					in >> pt;
+				m_external_file.clear();
+				readMatricesFrom(*this, in);
 			}
 		}
 		break;
@@ -385,12 +422,16 @@ void RotScan::fromScan2D(const mrpt::obs::CObservation2DRangeScan& o)
 
 	this->rangeImage.setZero(rowCount, columnCount);
 	this->intensityImage.setZero(rowCount, columnCount);
+	this->organizedPoints.resize(rowCount, columnCount);
 	this->rangeOtherLayers.clear();
 	this->rangeResolution = 0.01;
 	this->azimuthSpan = o.aperture * (o.rightToLeft ? +1.0 : -1.0);
 	this->startAzimuth = o.aperture * (o.rightToLeft ? -0.5 : +0.5);
 
-	for (size_t i = 0; i < o.getScanSize(); i++)
+	double a = startAzimuth;
+	const double Aa = azimuthSpan / o.getScanSize();
+
+	for (size_t i = 0; i < o.getScanSize(); i++, a += Aa)
 	{
 		uint16_t& range_out = rangeImage(0, i);
 		uint8_t& intensity_out = intensityImage(0, i);
@@ -407,8 +448,15 @@ void RotScan::fromScan2D(const mrpt::obs::CObservation2DRangeScan& o)
 		range_out = r_discr;
 
 		if (o.hasIntensity()) intensity_out = o.getScanIntensity(i);
+
+		if (r > 0)
+		{
+			const auto ptLocal = mrpt::math::TPoint3Df(
+				cos(a) * range_out, sin(a) * range_out, 0);
+
+			organizedPoints(0, i) = sensorPose.composePoint(ptLocal);
+		}
 	}
-	MRPT_TODO("populate organizedPoints");
 
 	this->lidarModel = std::string("2D_SCAN_") + this->sensorLabel;
 
@@ -432,4 +480,148 @@ bool RotScan::fromGeneric(const mrpt::obs::CObservation& o)
 	return false;
 
 	MRPT_END
+}
+
+void RotScan::load() const
+{
+	// Already loaded?
+	if (!isExternallyStored() || (isExternallyStored() && !rangeImage.empty()))
+		return;
+
+	const auto abs_filename =
+		mrpt::io::lazy_load_absolute_path(m_external_file);
+	ASSERT_FILE_EXISTS_(abs_filename);
+
+	auto& me = const_cast<RotScan&>(*this);
+
+	switch (m_externally_stored)
+	{
+		case ExternalStorageFormat::None: break;
+		case ExternalStorageFormat::PlainTextFile:
+		{
+			me.loadFromTextFile(abs_filename);
+		}
+		break;
+		case ExternalStorageFormat::MRPT_Serialization:
+		{
+			mrpt::io::CFileGZInputStream f(abs_filename);
+			auto ar = mrpt::serialization::archiveFrom(f);
+			readMatricesFrom(me, ar);
+		}
+		break;
+	};
+}
+
+void RotScan::unload() const
+{
+	MRPT_START
+	if (!isExternallyStored() || organizedPoints.empty()) return;
+
+	// Free memory, saving to the file if it doesn't exist:
+	const auto abs_filename =
+		mrpt::io::lazy_load_absolute_path(m_external_file);
+
+	if (!mrpt::system::fileExists(abs_filename))
+	{
+		switch (m_externally_stored)
+		{
+			case ExternalStorageFormat::None: break;
+			case ExternalStorageFormat::PlainTextFile:
+			{
+				this->saveToTextFile(abs_filename);
+			}
+			break;
+			case ExternalStorageFormat::MRPT_Serialization:
+			{
+				mrpt::io::CFileGZOutputStream f(abs_filename);
+				auto ar = mrpt::serialization::archiveFrom(f);
+				writeMatricesTo(*this, ar);
+			}
+			break;
+		};
+	}
+
+	// Now we can safely free the mem:
+	auto& me = const_cast<RotScan&>(*this);
+
+	me.organizedPoints.resize(0, 0);
+	me.rangeImage.resize(0, 0);
+	me.intensityImage.resize(0, 0);
+	me.rangeOtherLayers.clear();
+
+	MRPT_END
+}
+
+void RotScan::setAsExternalStorage(
+	const std::string& fileName, const ExternalStorageFormat fmt)
+{
+	MRPT_START
+	ASSERTMSG_(!isExternallyStored(), "Already marked as externally-stored.");
+	m_external_file = fileName;
+	m_externally_stored = fmt;
+
+	MRPT_END
+}
+
+// Write scan data to a plain text, each line has:
+// `x y z intensity range row_idx col_idx`
+bool RotScan::saveToTextFile(const std::string& filename) const
+{
+	ASSERT_(!organizedPoints.empty());
+	ASSERT_EQUAL_(organizedPoints.size(), rangeImage.size());
+	if (!intensityImage.empty())
+	{
+		ASSERT_EQUAL_(organizedPoints.size(), intensityImage.size());
+	}
+
+	std::ofstream f(filename);
+	if (!f.is_open()) return false;
+
+	for (size_t r = 0; r < rowCount; r++)
+	{
+		for (size_t c = 0; c < columnCount; c++)
+		{
+			const auto& pt = organizedPoints(r, c);
+
+			const int valInt = intensityImage.empty()
+				? 0
+				: static_cast<int>(intensityImage(r, c));
+
+			f << mrpt::format(
+				"%g %g %g %f %i %zu %zu\n", pt.x, pt.y, pt.z,
+				rangeResolution * rangeImage(r, c), valInt, r, c);
+		}
+	}
+	return true;
+}
+
+bool RotScan::loadFromTextFile(const std::string& filename)
+{
+	mrpt::math::CMatrixFloat data;
+	data.loadFromTextFile(filename);
+	if (data.rows() == 0)
+		THROW_EXCEPTION_FMT(
+			"Empty point cloud plain text file? `%s`", filename.c_str());
+
+	//  `x y z intensity range row_idx col_idx`
+	ASSERT_EQUAL_(data.cols(), 7UL);
+
+	ASSERT_GT_(rowCount, 0);
+	ASSERT_GT_(columnCount, 0);
+
+	organizedPoints.resize(rowCount, columnCount);
+	rangeImage.resize(rowCount, columnCount);
+	intensityImage.resize(rowCount, columnCount);
+
+	for (int i = 0; i < data.rows(); i++)
+	{
+		const size_t r = static_cast<size_t>(data(i, 5));
+		const size_t c = static_cast<size_t>(data(i, 6));
+
+		organizedPoints(r, c) = {data(i, 0), data(i, 1), data(i, 2)};
+		intensityImage(r, c) = data(i, 3);
+		rangeImage(r, c) = data(i, 4);
+	}
+
+	return true;
 }

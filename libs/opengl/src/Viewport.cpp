@@ -568,6 +568,8 @@ void Viewport::render(
 	mrpt::system::CTimeLoggerEntry tle(opengl_profiler(), "Viewport.render");
 #endif
 
+	if (!m_isViewportVisible) return;
+
 	// Prepare shaders upon first invokation:
 	if (m_threadedData.get().shaders.empty()) loadDefaultShaders();
 
@@ -703,7 +705,7 @@ void Viewport::render(
 #endif
 }
 
-uint8_t Viewport::serializeGetVersion() const { return 9; }
+uint8_t Viewport::serializeGetVersion() const { return 10; }
 void Viewport::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// Save data:
@@ -758,6 +760,9 @@ void Viewport::serializeTo(mrpt::serialization::CArchive& out) const
 	// Added in v9:
 	out << m_clip_max << m_clip_min << m_lightShadowClipMin
 		<< m_lightShadowClipMax;
+
+	// v10:
+	out << m_isViewportVisible;
 }
 
 void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -774,6 +779,7 @@ void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		case 7:
 		case 8:
 		case 9:
+		case 10:
 		{
 			// Load data:
 			in >> m_camera >> m_isCloned >> m_isClonedCamera >>
@@ -867,6 +873,8 @@ void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 				in >> m_clip_max >> m_clip_min >> m_lightShadowClipMin >>
 					m_lightShadowClipMax;
 			}
+
+			if (version >= 10) { in >> m_isViewportVisible; }
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
