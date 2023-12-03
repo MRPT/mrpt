@@ -20,6 +20,7 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationRange.h>
+#include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
@@ -1443,6 +1444,22 @@ double CPointsMap::internal_computeObservationLikelihood(
 		return internal_computeObservationLikelihoodPointCloud3D(
 			sensorAbsPose, xs, ys, zs, N);
 	}
+	else if (IS_CLASS(obs, CObservationRotatingScan))
+	{
+		const auto& o = dynamic_cast<const CObservationRotatingScan&>(obs);
+
+		if (!o.rowCount || !this->size()) return -100;
+
+		mrpt::maps::CSimplePointsMap auxPts;
+		auxPts.insertObservation(o, takenFrom);
+
+		const auto& xs = auxPts.getPointsBufferRef_x();
+		const auto& ys = auxPts.getPointsBufferRef_y();
+		const auto& zs = auxPts.getPointsBufferRef_z();
+
+		return internal_computeObservationLikelihoodPointCloud3D(
+			takenFrom, xs.data(), ys.data(), zs.data(), xs.size());
+	}
 	else if (IS_CLASS(obs, CObservationPointCloud))
 	{
 		const auto& o = dynamic_cast<const CObservationPointCloud&>(obs);
@@ -1898,6 +1915,61 @@ bool CPointsMap::internal_insertObservation(
 			insertionOptions.addToExistingPointsMap = true;
 			this->insertAnotherMap(
 				o.pointcloud.get(), robotPose3D + o.sensorPose);
+		}
+		return true;
+	}
+	else if (IS_CLASS(obs, CObservationRotatingScan))
+	{
+		mark_as_modified();
+
+		const auto& o = static_cast<const CObservationRotatingScan&>(obs);
+		ASSERT_(o.rowCount > 0);
+		ASSERT_(o.columnCount > 0);
+
+		if (insertionOptions.fuseWithExisting)
+		{
+			THROW_EXCEPTION(
+				"Fuse point cloud not implemented yet for "
+				"CObservationRotatingScan");
+		}
+		else
+		{
+			// Don't fuse: Simply add
+
+			const auto sensorGlobalPose = robotPose3D + o.sensorPose;
+
+			const size_t N_this = size();
+			const size_t N_otherMax = o.rowCount * o.columnCount;
+
+			// Set the new size:
+			this->reserve(N_this + N_otherMax);
+
+			// Optimization: detect the case of no transformation needed and
+			// avoid the matrix multiplications:
+			const bool identity_tf = (sensorGlobalPose == CPose3D::Identity());
+
+			for (size_t r = 0; r < o.rowCount; r++)
+			{
+				for (size_t c = 0; c < o.columnCount; c++)
+				{
+					if (!o.rangeImage(r, c)) continue;	// invalid range
+
+					// Translation:
+					const auto pt = o.organizedPoints(r, c);
+
+					mrpt::math::TPoint3Df g;
+					if (!identity_tf)
+						sensorGlobalPose.composePoint(
+							pt.x, pt.y, pt.z, g.x, g.y, g.z);
+					else
+						g = pt;
+
+					// Add to this map:
+					this->insertPointFast(g.x, g.y, g.z);
+				}
+			}
+
+			mark_as_modified();
 		}
 		return true;
 	}

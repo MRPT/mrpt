@@ -282,10 +282,11 @@ bool mrpt::ros2bridge::fromROS(
 	const sensor_msgs::msg::PointCloud2& msg,
 	mrpt::obs::CObservationRotatingScan& obj,
 	const mrpt::poses::CPose3D& sensorPoseOnRobot,
-	unsigned int num_azimuth_divisions)
+	unsigned int num_azimuth_divisions, float max_intensity)
 {
 	// Copy point data
 	obj.timestamp = mrpt::ros2bridge::fromROS(msg.header.stamp);
+	obj.originalReceivedTimestamp = obj.timestamp;
 
 	bool incompatible = false;
 	const sensor_msgs::msg::PointField *x_field = nullptr, *y_field = nullptr,
@@ -323,13 +324,33 @@ bool mrpt::ros2bridge::fromROS(
 	ASSERT_NOT_EQUAL_(ring_min, ring_max);
 
 	obj.rowCount = ring_max - ring_min + 1;
+
+	const bool inputCloudIsOrganized = msg.height != 1;
+
+	if (!num_azimuth_divisions)
+	{
+		if (inputCloudIsOrganized)
+		{
+			ASSERT_GT_(msg.width, 0U);
+			num_azimuth_divisions = msg.width;
+		}
+		else
+		{
+			THROW_EXCEPTION(
+				"An explicit value for num_azimuth_divisions must be given if "
+				"the input cloud is not 'organized'");
+		}
+	}
+
 	obj.columnCount = num_azimuth_divisions;
 
 	obj.rangeImage.resize(obj.rowCount, obj.columnCount);
 	obj.rangeImage.fill(0);
 
-	// Default unit: 1cm
-	if (obj.rangeResolution == 0) obj.rangeResolution = 1e-2;
+	obj.sensorPose = sensorPoseOnRobot;
+
+	// Default unit: 5mm
+	if (obj.rangeResolution == 0) obj.rangeResolution = 5e-3;
 
 	if (i_field)
 	{
@@ -338,6 +359,11 @@ bool mrpt::ros2bridge::fromROS(
 	}
 	else
 		obj.intensityImage.resize(0, 0);
+
+	if (inputCloudIsOrganized)
+	{
+		obj.organizedPoints.resize(obj.rowCount, obj.columnCount);
+	}
 
 	// If not, memcpy each group of contiguous fields separately
 	for (unsigned int row = 0; row < msg.height; ++row)
@@ -354,15 +380,24 @@ bool mrpt::ros2bridge::fromROS(
 			get_float_from_field(z_field, msg_data, z);
 			get_uint16_from_field(ring_field, msg_data, ring_id);
 
-			const mrpt::math::TPoint3D localPt =
-				sensorPoseOnRobot.inverseComposePoint(
-					mrpt::math::TPoint3D(x, y, z));
-			const double azimuth = std::atan2(localPt.y, localPt.x);
+			const mrpt::math::TPoint3D localPt = {x, y, z};
 
-			const auto az_idx = lround(
-				(num_azimuth_divisions - 1) * (azimuth + M_PI) / (2 * M_PI));
-			ASSERT_GE_(az_idx, 0);
-			ASSERT_LE_(az_idx, num_azimuth_divisions - 1);
+			unsigned int az_idx;
+			if (inputCloudIsOrganized)
+			{
+				// "azimuth index" is just the "column":
+				az_idx = col;
+			}
+			else
+			{
+				// Recover "azimuth index" from trigonometry:
+				const double azimuth = std::atan2(localPt.y, localPt.x);
+
+				az_idx = lround(
+					(num_azimuth_divisions - 1) * (azimuth + M_PI) /
+					(2 * M_PI));
+				ASSERT_LE_(az_idx, num_azimuth_divisions - 1);
+			}
 
 			// Store in matrix form:
 			obj.rangeImage(ring_id, az_idx) =
@@ -372,10 +407,14 @@ bool mrpt::ros2bridge::fromROS(
 			{
 				float intensity;
 				get_float_from_field(i_field, msg_data, intensity);
-				ASSERT_LE_(intensity, 255.0f);
-				obj.intensityImage(ring_id, az_idx) = lround(intensity);
+				obj.intensityImage(ring_id, az_idx) =
+					lround(255 * intensity / max_intensity);
 			}
+
+			if (inputCloudIsOrganized)
+				obj.organizedPoints(ring_id, az_idx) = localPt;
 		}
 	}
+
 	return true;
 }

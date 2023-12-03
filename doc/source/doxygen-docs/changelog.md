@@ -8,9 +8,15 @@
     - mrpt::math::KDTreeCapable: Add optional argument maximumSearchDistanceSqr in many API methods to exploit the new nanoflann RKNN search method.
   - \ref mrpt_opengl_grp
     - mrpt::opengl::PLY_Importer: Add support for importing point clouds with the `timestamp` property per point.
+  - \ref mrpt_obs_grp
+    - mrpt::obs::CObservationRotatingScan:
+      - Moved from the library mrpt-maps to mrpt-obs, since it no longer requires any mrpt::maps class.
+      - Complete its implementation: insertion into point cloud, observation likelihood, visualization in RawLogViewer, etc.
 - BUG FIXES:
   - Fix missing Threads::Threads downstream due to missing `find_dependency(Threads)` in MRPT cmake config files.
   - Fix broken import of PLY files in SceneViewer3D (empty scene even if correctly imported).
+  - mrpt::math::CMatrixDynamic constructor from (row,col) was not marked explicit, leading to potential problems.
+  - mrpt::opengl::Viewport::setViewportPosition() did not handle negative width values as expected (i.e. pixel distances from the opposite corner).
 
 
 # Version 2.11.3: Released Nov 21st, 2023

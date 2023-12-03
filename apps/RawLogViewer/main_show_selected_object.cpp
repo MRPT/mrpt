@@ -37,11 +37,20 @@ using namespace mrpt::poses;
 using namespace mrpt::rtti;
 using namespace std;
 
-static void showImageInGLView(CMyGLCanvas& canvas, const mrpt::img::CImage& im)
+namespace
+{
+void showImageInGLView(
+	mrpt::opengl::Viewport& view, const mrpt::img::CImage& im)
+{
+	view.setImageView(im, true);
+}
+
+void showImageInGLView(CMyGLCanvas& canvas, const mrpt::img::CImage& im)
 {
 	auto scene = canvas.getOpenGLSceneRef();
-	scene->getViewport()->setImageView(im);
+	showImageInGLView(*scene->getViewport(), im);
 	canvas.Refresh();
+}
 }
 
 // Update selected item display:
@@ -157,6 +166,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		Notebook1->ChangeSelection(8);
 		auto obs = std::dynamic_pointer_cast<CObservation2DRangeScan>(sel_obj);
 
+		// Hide unused viewports:
+		bmp3Dobs_depth->setViewportVisibility(false);
+		bmp3Dobs_int->setViewportVisibility(false);
+
 		// Additional text description: This is not within
 		// getDescriptionAsTextValue() because mrpt-maps is not available within
 		// mrpt-obs:
@@ -184,8 +197,8 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 // Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
 		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
-		openGLSceneRef->clear();
-		openGLSceneRef->insert(glPts);
+		openGLSceneRef->getViewport()->clear();
+		openGLSceneRef->getViewport()->insert(glPts);
 
 		m_gl3DRangeScan->Refresh();
 #endif
@@ -339,6 +352,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		obs->load();  // Make sure the 3D point cloud, etc... are all
 		// loaded in memory.
 
+		// Hide unused viewports:
+		bmp3Dobs_depth->setViewportVisibility(false);
+		bmp3Dobs_int->setViewportVisibility(false);
+
 		// Render options
 		// --------------------------------
 		const auto& p = pnViewOptions->m_params;
@@ -346,15 +363,6 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		auto glPts = mrpt::opengl::CSetOfObjects::Create();
 
 		obs3Dscan_to_viz(obs, p, *glPts);
-
-// Update 3D view ==========
-#if RAWLOGVIEWER_HAS_3D
-		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
-		openGLSceneRef->clear();
-		openGLSceneRef->insert(glPts);
-
-		m_gl3DRangeScan->Refresh();
-#endif
 
 		// Update intensity image ======
 		{
@@ -387,6 +395,15 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 
 			obs->confidenceImage.unload();	// For externally-stored datasets
 		}
+
+// Update 3D view ==========
+#if RAWLOGVIEWER_HAS_3D
+		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
+		openGLSceneRef->getViewport()->clear();
+		openGLSceneRef->getViewport()->insert(glPts);
+
+		m_gl3DRangeScan->Refresh();
+#endif
 		obs->unload();
 	}
 
@@ -398,6 +415,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		Notebook1->ChangeSelection(8);
 		auto obs = std::dynamic_pointer_cast<CObservationVelodyneScan>(sel_obj);
 
+		// Hide unused viewports:
+		bmp3Dobs_depth->setViewportVisibility(false);
+		bmp3Dobs_int->setViewportVisibility(false);
+
 		obs->generatePointCloud();
 		const auto& p = pnViewOptions->m_params;
 
@@ -407,8 +428,8 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 // Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
 		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
-		openGLSceneRef->clear();
-		openGLSceneRef->insert(glPts);
+		openGLSceneRef->getViewport()->clear();
+		openGLSceneRef->getViewport()->insert(glPts);
 
 		this->m_gl3DRangeScan->Refresh();
 
@@ -425,6 +446,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		Notebook1->ChangeSelection(8);
 		auto obs = std::dynamic_pointer_cast<CObservationPointCloud>(sel_obj);
 
+		// Hide unused viewports:
+		bmp3Dobs_depth->setViewportVisibility(false);
+		bmp3Dobs_int->setViewportVisibility(false);
+
 		const auto& p = pnViewOptions->m_params;
 
 		auto glPts = mrpt::opengl::CSetOfObjects::Create();
@@ -433,8 +458,8 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 // Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
 		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
-		openGLSceneRef->clear();
-		openGLSceneRef->insert(glPts);
+		openGLSceneRef->getViewport()->clear();
+		openGLSceneRef->getViewport()->insert(glPts);
 
 		this->m_gl3DRangeScan->Refresh();
 #endif
@@ -450,12 +475,16 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		Notebook1->ChangeSelection(8);
 
+		// Hide unused viewports:
+		bmp3Dobs_depth->setViewportVisibility(false);
+		bmp3Dobs_int->setViewportVisibility(false);
+
 // Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
 		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
 
-		openGLSceneRef->clear();
-		openGLSceneRef->insert(viz->getVisualization());
+		openGLSceneRef->getViewport()->clear();
+		openGLSceneRef->getViewport()->insert(viz->getVisualization());
 
 		this->m_gl3DRangeScan->Refresh();
 #endif
@@ -466,20 +495,68 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		//              CObservationRotatingScan
 		// ----------------------------------------------------------------------
-		Notebook1->ChangeSelection(3);
+		Notebook1->ChangeSelection(8);
 		auto obs = std::dynamic_pointer_cast<CObservationRotatingScan>(sel_obj);
+
+		// Show viewports:
+		bmp3Dobs_depth->setViewportVisibility(true);
+		bmp3Dobs_int->setViewportVisibility(true);
 
 		// Get range image as bitmap:
 		// ---------------------------
-		mrpt::img::CImage img_range;
-		img_range.setFromMatrix(obs->rangeImage, false);
+		int rangeHeight = 30;
+		{
+			mrpt::img::CImage img_range;
 
-		showImageInGLView(*bmpObsStereoLeft, img_range);
+			float maxActualRange = obs->rangeImage.maxCoeff();
+			if (maxActualRange == 0) maxActualRange = 1.0f;
 
-		mrpt::img::CImage img_intensity;
-		img_intensity.setFromMatrix(obs->intensityImage, false);
+			img_range.setFromMatrix(
+				obs->rangeImage.asEigen().cast<float>() *
+					(1.0f / maxActualRange),
+				true /*already in [0,1]*/);
 
-		showImageInGLView(*bmpObsStereoRight, img_intensity);
+			showImageInGLView(*bmp3Dobs_depth, img_range);
+
+			rangeHeight = img_range.getHeight();
+			bmp3Dobs_depth->setViewportPosition(
+				30, -2 - rangeHeight, -30, rangeHeight);
+		}
+
+		int intensityHeight = 30;
+
+		if (!obs->intensityImage.empty())
+		{
+			mrpt::img::CImage img_intensity;
+
+			float maxActualInt = obs->intensityImage.maxCoeff();
+			if (maxActualInt == 0) maxActualInt = 1.0f;
+
+			img_intensity.setFromMatrix(
+				obs->intensityImage.asEigen().cast<float>() *
+					(1.0f / maxActualInt),
+				true /*already in [0,1]*/);
+
+			showImageInGLView(*bmp3Dobs_int, img_intensity);
+
+			intensityHeight = img_intensity.getHeight();
+			bmp3Dobs_int->setViewportPosition(
+				30, -2 - rangeHeight - 2 - intensityHeight, -30,
+				intensityHeight);
+		}
+
+		bmp3Dobs_3dcloud->addTextMessage(2, -2 - rangeHeight / 2, "Range", 0);
+		bmp3Dobs_3dcloud->addTextMessage(
+			2, -2 - rangeHeight - 2 - intensityHeight / 2, "Intensity", 1);
+
+		// 3D points:
+		const auto& p = pnViewOptions->m_params;
+
+		auto glPts = mrpt::opengl::CSetOfObjects::Create();
+		obsRotatingScan_to_viz(obs, p, *glPts);
+
+		bmp3Dobs_3dcloud->clear();
+		bmp3Dobs_3dcloud->insert(glPts);
 	}
 
 	if (classID->derivedFrom(CLASS_ID(CObservation)))

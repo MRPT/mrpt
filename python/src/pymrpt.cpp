@@ -177,11 +177,12 @@ void bind_mrpt_obs_CObservationStereoImages(std::function< pybind11::module &(st
 void bind_mrpt_vision_CStereoRectifyMap(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_hwdrivers_CDUO3DCamera(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_CMatrixDynamic(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_math_CMatrixDynamic_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_CMatrixFixed(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_CMatrixFixed_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_CMatrixFixed_2(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_CMatrixFixed_3(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_math_CMatrixFixed_4(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_math_MatrixVectorBase(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_math_frwds(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_bayes_CProbabilityParticle_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_CMatrixF(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -233,7 +234,7 @@ void bind_mrpt_kinematics_CKinematicChain(std::function< pybind11::module &(std:
 void bind_mrpt_kinematics_CVehicleVelCmd(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_kinematics_CVehicleVelCmd_DiffDriven(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_poses_CPointPDF(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_math_CMatrixDynamic_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_math_CMatrixDynamic_2(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_poses_CPointPDFSOG(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_maps_CBeacon(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_opengl_COctoMapVoxels(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -606,11 +607,12 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_vision_CStereoRectifyMap(M);
 	bind_mrpt_hwdrivers_CDUO3DCamera(M);
 	bind_mrpt_math_CMatrixDynamic(M);
+	bind_mrpt_math_CMatrixDynamic_1(M);
 	bind_mrpt_math_CMatrixFixed(M);
 	bind_mrpt_math_CMatrixFixed_1(M);
 	bind_mrpt_math_CMatrixFixed_2(M);
 	bind_mrpt_math_CMatrixFixed_3(M);
-	bind_mrpt_math_CMatrixFixed_4(M);
+	bind_mrpt_math_MatrixVectorBase(M);
 	bind_mrpt_math_math_frwds(M);
 	bind_mrpt_bayes_CProbabilityParticle_1(M);
 	bind_mrpt_math_CMatrixF(M);
@@ -662,7 +664,7 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_kinematics_CVehicleVelCmd(M);
 	bind_mrpt_kinematics_CVehicleVelCmd_DiffDriven(M);
 	bind_mrpt_poses_CPointPDF(M);
-	bind_mrpt_math_CMatrixDynamic_1(M);
+	bind_mrpt_math_CMatrixDynamic_2(M);
 	bind_mrpt_poses_CPointPDFSOG(M);
 	bind_mrpt_maps_CBeacon(M);
 	bind_mrpt_opengl_COctoMapVoxels(M);
