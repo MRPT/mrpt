@@ -250,7 +250,7 @@ struct PyCallBack_mrpt_obs_CObservationPointCloud : public mrpt::obs::CObservati
 	}
 };
 
-// mrpt::obs::CObservationRotatingScan file:mrpt/obs/CObservationRotatingScan.h line:61
+// mrpt::obs::CObservationRotatingScan file:mrpt/obs/CObservationRotatingScan.h line:53
 struct PyCallBack_mrpt_obs_CObservationRotatingScan : public mrpt::obs::CObservationRotatingScan {
 	using mrpt::obs::CObservationRotatingScan::CObservationRotatingScan;
 
@@ -318,6 +318,32 @@ struct PyCallBack_mrpt_obs_CObservationRotatingScan : public mrpt::obs::CObserva
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
 		return CObservationRotatingScan::serializeFrom(a0, a1);
+	}
+	void load() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationRotatingScan *>(this), "load");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CObservationRotatingScan::load();
+	}
+	void unload() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationRotatingScan *>(this), "unload");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CObservationRotatingScan::unload();
 	}
 	using _binder_ret_0 = mrpt::Clock::time_point;
 	_binder_ret_0 getOriginalReceivedTimeStamp() const override {
@@ -411,32 +437,6 @@ struct PyCallBack_mrpt_obs_CObservationRotatingScan : public mrpt::obs::CObserva
 		}
 		return CObservation::exportTxtDataRow();
 	}
-	void load() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationRotatingScan *>(this), "load");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CObservation::load();
-	}
-	void unload() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationRotatingScan *>(this), "unload");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CObservation::unload();
-	}
 };
 
 void bind_mrpt_obs_CObservationPointCloud(std::function< pybind11::module &(std::string const &namespace_) > &M)
@@ -471,14 +471,21 @@ void bind_mrpt_obs_CObservationPointCloud(std::function< pybind11::module &(std:
 		cl.def("overrideExternalStorageFormatFlag", (void (mrpt::obs::CObservationPointCloud::*)(const enum mrpt::obs::CObservationPointCloud::ExternalStorageFormat)) &mrpt::obs::CObservationPointCloud::overrideExternalStorageFormatFlag, "C++: mrpt::obs::CObservationPointCloud::overrideExternalStorageFormatFlag(const enum mrpt::obs::CObservationPointCloud::ExternalStorageFormat) --> void", pybind11::arg("fmt"));
 		cl.def("assign", (class mrpt::obs::CObservationPointCloud & (mrpt::obs::CObservationPointCloud::*)(const class mrpt::obs::CObservationPointCloud &)) &mrpt::obs::CObservationPointCloud::operator=, "C++: mrpt::obs::CObservationPointCloud::operator=(const class mrpt::obs::CObservationPointCloud &) --> class mrpt::obs::CObservationPointCloud &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::obs::CObservationRotatingScan file:mrpt/obs/CObservationRotatingScan.h line:61
-		pybind11::class_<mrpt::obs::CObservationRotatingScan, std::shared_ptr<mrpt::obs::CObservationRotatingScan>, PyCallBack_mrpt_obs_CObservationRotatingScan, mrpt::obs::CObservation> cl(M("mrpt::obs"), "CObservationRotatingScan", "A `CObservation`-derived class for raw range data from a 2D or 3D\n rotating scanner. This class is the preferred alternative to\n CObservationVelodyneScan and CObservation2DRangeScan in MRPT 2.x, since it\n exposes range data as an organized matrix, more convenient for feature\n detection directly on \"range images\".\n This class can also import data from KITTI dataset-like binary files\n containing unorganized (non \"undistorted\", i.e. without compensation for\n lidar motion) point clouds, which get organized into a 2D range image for\n easier filtering and postprocessing.\n\n Check out the main data fields in the list of members below.\n\n  Note that this object has  timestamp fields:\n  - The standard `CObservation::timestamp` field in the base class, which\n should contain the accurate satellite-based UTC timestamp if available,\n and\n  - the field originalReceivedTimestamp, with the\n local computer-based timestamp based on the reception of the message in\n the computer.\n\n  Both timestamps correspond to the firing of the first laser in\n the first CObservationRotatingScan::scan_packets packet.\n\n    \n\n API for accurate reconstruction of point clouds from raw range images:\n  - generatePointCloud()\n  - generatePointCloudAlongSE3Trajectory()\n\n \n New in MRPT 2.0.0\n \n\n CObservation, mrpt::hwdrivers::CVelodyneScanner");
+	{ // mrpt::obs::CObservationRotatingScan file:mrpt/obs/CObservationRotatingScan.h line:53
+		pybind11::class_<mrpt::obs::CObservationRotatingScan, std::shared_ptr<mrpt::obs::CObservationRotatingScan>, PyCallBack_mrpt_obs_CObservationRotatingScan, mrpt::obs::CObservation> cl(M("mrpt::obs"), "CObservationRotatingScan", "A `CObservation`-derived class for raw range data from a 2D or 3D\n rotating scanner. This class is the preferred alternative to\n CObservationVelodyneScan and CObservation2DRangeScan in MRPT 2.x, since it\n exposes range data as an organized matrix, more convenient for feature\n detection directly on \"range images\" and on points stored as a matrix in the\n member organizedPoints.\n\n Check out the main data fields in the list of members below.\n\n  Note that this object has  timestamp fields:\n  - The standard `CObservation::timestamp` field in the base class, which\n should contain the accurate satellite-based UTC timestamp if available,\n and\n  - the field originalReceivedTimestamp, with the\n local computer-based timestamp based on the reception of the message in\n the computer.\n\n Both timestamps correspond to the firing of the **first** laser in\n the scan, i.e. the first column in organizedPoints.\n\n The reference frame for the 3D LIDAR is with +X pointing forward, +Z up.\n\n \n New in MRPT 2.0.0\n \n\n CObservation, mrpt::hwdrivers::CVelodyneScanner");
 		cl.def( pybind11::init( [](){ return new mrpt::obs::CObservationRotatingScan(); }, [](){ return new PyCallBack_mrpt_obs_CObservationRotatingScan(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_CObservationRotatingScan const &o){ return new PyCallBack_mrpt_obs_CObservationRotatingScan(o); } ) );
 		cl.def( pybind11::init( [](mrpt::obs::CObservationRotatingScan const &o){ return new mrpt::obs::CObservationRotatingScan(o); } ) );
+
+		pybind11::enum_<mrpt::obs::CObservationRotatingScan::ExternalStorageFormat>(cl, "ExternalStorageFormat", "")
+			.value("None", mrpt::obs::CObservationRotatingScan::ExternalStorageFormat::None)
+			.value("MRPT_Serialization", mrpt::obs::CObservationRotatingScan::ExternalStorageFormat::MRPT_Serialization)
+			.value("PlainTextFile", mrpt::obs::CObservationRotatingScan::ExternalStorageFormat::PlainTextFile);
+
 		cl.def_readwrite("rowCount", &mrpt::obs::CObservationRotatingScan::rowCount);
 		cl.def_readwrite("columnCount", &mrpt::obs::CObservationRotatingScan::columnCount);
 		cl.def_readwrite("rangeImage", &mrpt::obs::CObservationRotatingScan::rangeImage);
+		cl.def_readwrite("organizedPoints", &mrpt::obs::CObservationRotatingScan::organizedPoints);
 		cl.def_readwrite("intensityImage", &mrpt::obs::CObservationRotatingScan::intensityImage);
 		cl.def_readwrite("rangeOtherLayers", &mrpt::obs::CObservationRotatingScan::rangeOtherLayers);
 		cl.def_readwrite("rangeResolution", &mrpt::obs::CObservationRotatingScan::rangeResolution);
@@ -497,8 +504,15 @@ void bind_mrpt_obs_CObservationPointCloud(std::function< pybind11::module &(std:
 		cl.def_static("CreateObject", (class std::shared_ptr<class mrpt::rtti::CObject> (*)()) &mrpt::obs::CObservationRotatingScan::CreateObject, "C++: mrpt::obs::CObservationRotatingScan::CreateObject() --> class std::shared_ptr<class mrpt::rtti::CObject>");
 		cl.def("fromVelodyne", (void (mrpt::obs::CObservationRotatingScan::*)(const class mrpt::obs::CObservationVelodyneScan &)) &mrpt::obs::CObservationRotatingScan::fromVelodyne, "@{ \n\nC++: mrpt::obs::CObservationRotatingScan::fromVelodyne(const class mrpt::obs::CObservationVelodyneScan &) --> void", pybind11::arg("o"));
 		cl.def("fromScan2D", (void (mrpt::obs::CObservationRotatingScan::*)(const class mrpt::obs::CObservation2DRangeScan &)) &mrpt::obs::CObservationRotatingScan::fromScan2D, "C++: mrpt::obs::CObservationRotatingScan::fromScan2D(const class mrpt::obs::CObservation2DRangeScan &) --> void", pybind11::arg("o"));
-		cl.def("fromPointCloud", (void (mrpt::obs::CObservationRotatingScan::*)(const class mrpt::obs::CObservationPointCloud &)) &mrpt::obs::CObservationRotatingScan::fromPointCloud, "C++: mrpt::obs::CObservationRotatingScan::fromPointCloud(const class mrpt::obs::CObservationPointCloud &) --> void", pybind11::arg("o"));
-		cl.def("fromGeneric", (bool (mrpt::obs::CObservationRotatingScan::*)(const class mrpt::obs::CObservation &)) &mrpt::obs::CObservationRotatingScan::fromGeneric, "Will convert from another observation if it's any of the supported\n source types (see fromVelodyne(), fromScan2D(), fromPointCloud()) and\n return true, or will return false otherwise if there is no known way to\n convert from the passed object. \n\nC++: mrpt::obs::CObservationRotatingScan::fromGeneric(const class mrpt::obs::CObservation &) --> bool", pybind11::arg("o"));
+		cl.def("fromGeneric", (bool (mrpt::obs::CObservationRotatingScan::*)(const class mrpt::obs::CObservation &)) &mrpt::obs::CObservationRotatingScan::fromGeneric, "Will convert from another observation if it's any of the supported\n source types (see fromVelodyne(), fromScan2D()) and\n return true, or will return false otherwise if there is no known way to\n convert from the passed object. \n\nC++: mrpt::obs::CObservationRotatingScan::fromGeneric(const class mrpt::obs::CObservation &) --> bool", pybind11::arg("o"));
+		cl.def("load", (void (mrpt::obs::CObservationRotatingScan::*)() const) &mrpt::obs::CObservationRotatingScan::load, "		@{ \n\nC++: mrpt::obs::CObservationRotatingScan::load() const --> void");
+		cl.def("unload", (void (mrpt::obs::CObservationRotatingScan::*)() const) &mrpt::obs::CObservationRotatingScan::unload, "C++: mrpt::obs::CObservationRotatingScan::unload() const --> void");
+		cl.def("isExternallyStored", (bool (mrpt::obs::CObservationRotatingScan::*)() const) &mrpt::obs::CObservationRotatingScan::isExternallyStored, "@{ \n\nC++: mrpt::obs::CObservationRotatingScan::isExternallyStored() const --> bool");
+		cl.def("getExternalStorageFile", (const std::string & (mrpt::obs::CObservationRotatingScan::*)() const) &mrpt::obs::CObservationRotatingScan::getExternalStorageFile, "C++: mrpt::obs::CObservationRotatingScan::getExternalStorageFile() const --> const std::string &", pybind11::return_value_policy::automatic);
+		cl.def("setAsExternalStorage", (void (mrpt::obs::CObservationRotatingScan::*)(const std::string &, const enum mrpt::obs::CObservationRotatingScan::ExternalStorageFormat)) &mrpt::obs::CObservationRotatingScan::setAsExternalStorage, "C++: mrpt::obs::CObservationRotatingScan::setAsExternalStorage(const std::string &, const enum mrpt::obs::CObservationRotatingScan::ExternalStorageFormat) --> void", pybind11::arg("fileName"), pybind11::arg("fmt"));
+		cl.def("overrideExternalStorageFormatFlag", (void (mrpt::obs::CObservationRotatingScan::*)(const enum mrpt::obs::CObservationRotatingScan::ExternalStorageFormat)) &mrpt::obs::CObservationRotatingScan::overrideExternalStorageFormatFlag, "C++: mrpt::obs::CObservationRotatingScan::overrideExternalStorageFormatFlag(const enum mrpt::obs::CObservationRotatingScan::ExternalStorageFormat) --> void", pybind11::arg("fmt"));
+		cl.def("saveToTextFile", (bool (mrpt::obs::CObservationRotatingScan::*)(const std::string &) const) &mrpt::obs::CObservationRotatingScan::saveToTextFile, "Write scan data to a plain text, each line has:\n   `x y z intensity range row_idx col_idx`\n\n For each point in the organized point cloud.\n Invalid points (e.g. no lidar return) are stored as (x,y,z)=(0,0,0) and\n range=0.\n\n \n true on success\n\nC++: mrpt::obs::CObservationRotatingScan::saveToTextFile(const std::string &) const --> bool", pybind11::arg("filename"));
+		cl.def("loadFromTextFile", (bool (mrpt::obs::CObservationRotatingScan::*)(const std::string &)) &mrpt::obs::CObservationRotatingScan::loadFromTextFile, "Loads the range, intensity, and organizedPoints members from a plain\n text file in the format describd in saveToTextFile()\n\nC++: mrpt::obs::CObservationRotatingScan::loadFromTextFile(const std::string &) --> bool", pybind11::arg("filename"));
 		cl.def("getOriginalReceivedTimeStamp", (mrpt::Clock::time_point (mrpt::obs::CObservationRotatingScan::*)() const) &mrpt::obs::CObservationRotatingScan::getOriginalReceivedTimeStamp, "@} \n\nC++: mrpt::obs::CObservationRotatingScan::getOriginalReceivedTimeStamp() const --> mrpt::Clock::time_point");
 		cl.def("getSensorPose", (void (mrpt::obs::CObservationRotatingScan::*)(class mrpt::poses::CPose3D &) const) &mrpt::obs::CObservationRotatingScan::getSensorPose, "C++: mrpt::obs::CObservationRotatingScan::getSensorPose(class mrpt::poses::CPose3D &) const --> void", pybind11::arg("out_sensorPose"));
 		cl.def("setSensorPose", (void (mrpt::obs::CObservationRotatingScan::*)(const class mrpt::poses::CPose3D &)) &mrpt::obs::CObservationRotatingScan::setSensorPose, "C++: mrpt::obs::CObservationRotatingScan::setSensorPose(const class mrpt::poses::CPose3D &) --> void", pybind11::arg("newSensorPose"));

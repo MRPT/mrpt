@@ -87,14 +87,17 @@ class Viewport : public mrpt::serialization::CSerializable,
 	 *  Internally, the texture is drawn using a mrpt::opengl::CTexturedPlane
 	 *  The viewport can be reverted to behave like a normal viewport by
 	 * calling setNormalMode()
+	 *
+	 * \param[in] transparentBackground This method can also make the viewport
+	 * transparent (default), so the area not filled with the image still allows
+	 * seeing an underlying viewport.
 	 */
-	void setImageView(const mrpt::img::CImage& img);
+	void setImageView(
+		const mrpt::img::CImage& img, bool transparentBackground = true);
 
-	/** Just like \a setImageView but moves the internal image memory instead of
-	 * making a copy, so it's faster but empties the input image.
-	 * \sa setImageView
-	 */
-	void setImageView(mrpt::img::CImage&& img);
+	/** \overload With move semantics */
+	void setImageView(
+		mrpt::img::CImage&& img, bool transparentBackground = true);
 
 	/** Returns true if setImageView() has been called on this viewport */
 	bool isImageViewMode() const { return !!m_imageViewPlane; }
@@ -102,7 +105,7 @@ class Viewport : public mrpt::serialization::CSerializable,
 	/** Reset the viewport to normal mode: rendering its own objects.
 	 * \sa setCloneView, setNormalMode
 	 */
-	inline void resetCloneView() { setNormalMode(); }
+	void resetCloneView() { setNormalMode(); }
 
 	/** If set to true, and setCloneView() has been called, this viewport will
 	 * be rendered using the camera of the cloned viewport.
@@ -113,7 +116,7 @@ class Viewport : public mrpt::serialization::CSerializable,
 	 *  Note this works even for viewports not in "clone" mode, so you can
 	 *  render different scenes but using the same camera.
 	 */
-	inline void setClonedCameraFrom(const std::string& viewPortName)
+	void setClonedCameraFrom(const std::string& viewPortName)
 	{
 		m_isClonedCamera = true;
 		m_clonedCameraViewport = viewPortName;
@@ -122,6 +125,9 @@ class Viewport : public mrpt::serialization::CSerializable,
 	/** Resets the viewport to a normal 3D viewport \sa setCloneView,
 	 * setImageView */
 	void setNormalMode();
+
+	void setViewportVisibility(bool visible) { m_isViewportVisible = visible; }
+	bool getViewportVisibility() const { return m_isViewportVisible; }
 
 	/** @} */
 	// end of Set the "viewport mode"
@@ -147,7 +153,7 @@ class Viewport : public mrpt::serialization::CSerializable,
 		@{ */
 
 	/** Returns the name of the viewport */
-	inline std::string getName() { return m_name; }
+	std::string getName() { return m_name; }
 	/** Change the viewport position and dimension on the rendering window.
 	 *  X & Y coordinates here can have two interpretations:
 	 *    - If in the range [0,1], they are factors with respect to the actual
@@ -205,11 +211,8 @@ class Viewport : public mrpt::serialization::CSerializable,
 	void getLightShadowClipDistances(float& clip_min, float& clip_max) const;
 
 	/** Set the border size ("frame") of the viewport (default=0) */
-	inline void setBorderSize(unsigned int lineWidth)
-	{
-		m_borderWidth = lineWidth;
-	}
-	inline unsigned int getBorderSize() const { return m_borderWidth; }
+	void setBorderSize(unsigned int lineWidth) { m_borderWidth = lineWidth; }
+	unsigned int getBorderSize() const { return m_borderWidth; }
 
 	void setBorderColor(const mrpt::img::TColor& c) { m_borderColor = c; }
 	const mrpt::img::TColor& getBorderColor() const { return m_borderColor; }
@@ -217,20 +220,20 @@ class Viewport : public mrpt::serialization::CSerializable,
 	/** Return whether the viewport will be rendered transparent over previous
 	 * viewports.
 	 */
-	inline bool isTransparent() { return m_isTransparent; }
+	bool isTransparent() { return m_isTransparent; }
 
 	/** Set the transparency, that is, whether the viewport will be rendered
 	 * transparent over previous viewports (default=false).
 	 */
-	inline void setTransparent(bool trans) { m_isTransparent = trans; }
+	void setTransparent(bool trans) { m_isTransparent = trans; }
 
 	/** Defines the viewport background color */
-	inline void setCustomBackgroundColor(const mrpt::img::TColorf& color)
+	void setCustomBackgroundColor(const mrpt::img::TColorf& color)
 	{
 		m_background_color = color;
 	}
 
-	inline mrpt::img::TColorf getCustomBackgroundColor() const
+	mrpt::img::TColorf getCustomBackgroundColor() const
 	{
 		return m_background_color;
 	}
@@ -280,10 +283,10 @@ class Viewport : public mrpt::serialization::CSerializable,
 	using const_iterator = CListOpenGLObjects::const_iterator;
 	using iterator = CListOpenGLObjects::iterator;
 
-	inline const_iterator begin() const { return m_objects.begin(); }
-	inline const_iterator end() const { return m_objects.end(); }
-	inline iterator begin() { return m_objects.begin(); }
-	inline iterator end() { return m_objects.end(); }
+	const_iterator begin() const { return m_objects.begin(); }
+	const_iterator end() const { return m_objects.end(); }
+	iterator begin() { return m_objects.begin(); }
+	iterator end() { return m_objects.end(); }
 	/** Delete all internal obejcts
 	 * \sa insert */
 	void clear();
@@ -355,8 +358,8 @@ class Viewport : public mrpt::serialization::CSerializable,
 	void removeObject(const CRenderizable::Ptr& obj);
 
 	/** Number of objects contained. */
-	inline size_t size() const { return m_objects.size(); }
-	inline bool empty() const { return m_objects.empty(); }
+	size_t size() const { return m_objects.size(); }
+	bool empty() const { return m_objects.empty(); }
 	/** Get a reference to the camera associated with this viewport. */
 	opengl::CCamera& getCamera() { return m_camera; }
 	/** Get a reference to the camera associated with this viewport. */
@@ -440,6 +443,8 @@ class Viewport : public mrpt::serialization::CSerializable,
 	/** Set by setCloneCamera */
 	bool m_isClonedCamera{false};
 
+	bool m_isViewportVisible = true;
+
 	/** Only if m_isCloned=true */
 	std::string m_clonedViewport;
 
@@ -506,7 +511,7 @@ class Viewport : public mrpt::serialization::CSerializable,
 	 */
 	opengl::CListOpenGLObjects m_objects;
 
-	void internal_enableImageView();
+	void internal_enableImageView(bool transparentBackground);
 
 	// OpenGL global settings:
 	bool m_OpenGL_enablePolygonNicest{true};
@@ -563,7 +568,7 @@ class mrptEventGLPreRender : public mrpt::system::mrptEvent
 	void do_nothing() override {}
 
    public:
-	inline mrptEventGLPreRender(const Viewport* obj) : source_viewport(obj) {}
+	mrptEventGLPreRender(const Viewport* obj) : source_viewport(obj) {}
 	const Viewport* const source_viewport;
 };	// End of class def.
 
@@ -586,7 +591,7 @@ class mrptEventGLPostRender : public mrpt::system::mrptEvent
 	void do_nothing() override {}
 
    public:
-	inline mrptEventGLPostRender(const Viewport* obj) : source_viewport(obj) {}
+	mrptEventGLPostRender(const Viewport* obj) : source_viewport(obj) {}
 	const Viewport* const source_viewport;
 };	// End of class def.
 

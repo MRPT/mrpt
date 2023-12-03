@@ -79,9 +79,12 @@ int main(int argc, char** argv)
 		cout << "done: " << simplemap.size() << " observations." << endl;
 
 		// Create metric maps:
+		CConfigFile cfg(configFile);
+
+		ASSERT_(cfg.sectionExists(METRIC_MAP_CONFIG_SECTION));
+
 		TSetOfMetricMapInitializers mapCfg;
-		mapCfg.loadFromConfigFile(
-			CConfigFile(configFile), METRIC_MAP_CONFIG_SECTION);
+		mapCfg.loadFromConfigFile(cfg, METRIC_MAP_CONFIG_SECTION);
 
 		CMultiMetricMap metricMap;
 		metricMap.setListOfMaps(mapCfg);

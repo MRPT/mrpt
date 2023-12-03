@@ -13,6 +13,7 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationPointCloud.h>
+#include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 
 #include "rawlog-edit-declarations.h"
@@ -156,6 +157,29 @@ DECLARE_OP_FUNCTION(op_externalize)
 								  MRPT_Serialization);
 
 					obsPc->unload();  // this actually saves the data to disk
+					entries_converted++;
+				}
+				else
+					entries_skipped++;
+			}
+			else if (IS_CLASS(*obs, CObservationRotatingScan))
+			{
+				auto o =
+					std::dynamic_pointer_cast<CObservationRotatingScan>(obs);
+
+				if (!o->organizedPoints.empty() && !o->isExternallyStored())
+				{
+					const string fileName = "scan_"s + label_time +
+						(m_external_txt ? ".txt"s : ".bin"s);
+					o->setAsExternalStorage(
+						fileName,
+						m_external_txt
+							? CObservationRotatingScan::ExternalStorageFormat::
+								  PlainTextFile
+							: CObservationRotatingScan::ExternalStorageFormat::
+								  MRPT_Serialization);
+
+					o->unload();  // this actually saves the data to disk
 					entries_converted++;
 				}
 				else

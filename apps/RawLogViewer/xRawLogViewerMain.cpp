@@ -363,7 +363,6 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	wxMenuItem* MenuItem26;
 	wxMenuItem* MenuItem25;
 	wxMenuItem* MenuItem2;
-	wxFlexGridSizer* FlexGridSizer10;
 	wxFlexGridSizer* FlexGridSizer3;
 	wxMenuItem* MenuItem55;
 	wxMenuItem* MenuItem1;
@@ -394,7 +393,6 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	wxMenuBar* MenuBar1;
 	wxFlexGridSizer* FlexGridSizer6;
 	wxFlexGridSizer* fgzMain;
-	wxFlexGridSizer* FlexGridSizer11;
 	wxMenuItem* MenuItem43;
 	wxMenu* Menu2;
 	wxMenuItem* MenuItem18;
@@ -809,51 +807,54 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	pn_CObservationBearingRange->SetSizer(BoxSizer4);
 	BoxSizer4->Fit(pn_CObservationBearingRange);
 	BoxSizer4->SetSizeHints(pn_CObservationBearingRange);
+
+	// Panel[8]: pn_CObservation3DRangeScan
 	pn_CObservation3DRangeScan = new wxPanel(
 		Notebook1, ID_PANEL19, wxDefaultPosition, wxDefaultSize,
 		wxTAB_TRAVERSAL, _T("ID_PANEL19"));
 	FlexGridSizer8 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer8->AddGrowableCol(0);
 	FlexGridSizer8->AddGrowableRow(0);
+
+	// Tabs for 3D observations channels & options:
 	nb_3DObsChannels = new wxNotebook(
 		pn_CObservation3DRangeScan, ID_NOTEBOOK_3DOBS, wxDefaultPosition,
 		wxDefaultSize, 0, _T("ID_NOTEBOOK_3DOBS"));
 
+	// Tab: 3D view + range + intensity:
 	pn3Dobs_3D = new wxPanel(
 		nb_3DObsChannels, ID_PANEL20, wxDefaultPosition, wxDefaultSize,
 		wxTAB_TRAVERSAL, _T("ID_PANEL20"));
 	FlexGridSizer9 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer9->AddGrowableCol(0);
 	FlexGridSizer9->AddGrowableRow(0);
+
 	m_gl3DRangeScan = new CMyGLCanvas(
 		pn3Dobs_3D, ID_XY_GLCANVAS, wxDefaultPosition, wxDefaultSize,
 		wxTAB_TRAVERSAL, _T("ID_XY_GLCANVAS"));
-	FlexGridSizer9->Add(m_gl3DRangeScan, 1, wxEXPAND, 0);
+	FlexGridSizer9->Add(m_gl3DRangeScan, 1, wxEXPAND, 2);
+
+	// OpenGL Views:
+	bmp3Dobs_depth =
+		m_gl3DRangeScan->getOpenGLSceneRef()->createViewport("depth");
+	bmp3Dobs_depth->setCustomBackgroundColor({.0f, .0f, .0f});
+
+	bmp3Dobs_int =
+		m_gl3DRangeScan->getOpenGLSceneRef()->createViewport("intensity");
+	bmp3Dobs_int->setCustomBackgroundColor({.0f, .0f, .0f});
+
+	bmp3Dobs_3dcloud =
+		m_gl3DRangeScan->getOpenGLSceneRef()->getViewport("main");
+
+	// The correct sizes will be updated anyway in SelectObjectInTreeView()
+	bmp3Dobs_depth->setViewportPosition(2, -50 - 2, 1.0, 50);
+	bmp3Dobs_int->setViewportPosition(2, -100 - 2 * 2, 1.0, 50);
+
+	// panel done:
 	pn3Dobs_3D->SetSizer(FlexGridSizer9);
 	FlexGridSizer9->Fit(pn3Dobs_3D);
 	FlexGridSizer9->SetSizeHints(pn3Dobs_3D);
-	pn3Dobs_Depth = new wxPanel(
-		nb_3DObsChannels, ID_PANEL21, wxDefaultPosition, wxDefaultSize,
-		wxTAB_TRAVERSAL, _T("ID_PANEL21"));
-	FlexGridSizer10 = new wxFlexGridSizer(1, 1, 0, 0);
-	FlexGridSizer10->AddGrowableCol(0);
-	FlexGridSizer10->AddGrowableRow(0);
-	bmp3Dobs_depth = new CMyGLCanvas(pn3Dobs_Depth, ID_STATICBITMAP4);
-	FlexGridSizer10->Add(bmp3Dobs_depth, 1, wxEXPAND, 0);
-	pn3Dobs_Depth->SetSizer(FlexGridSizer10);
-	FlexGridSizer10->Fit(pn3Dobs_Depth);
-	FlexGridSizer10->SetSizeHints(pn3Dobs_Depth);
-	pn3Dobs_Int = new wxPanel(
-		nb_3DObsChannels, ID_PANEL22, wxDefaultPosition, wxDefaultSize,
-		wxTAB_TRAVERSAL, _T("ID_PANEL22"));
-	FlexGridSizer11 = new wxFlexGridSizer(1, 1, 0, 0);
-	FlexGridSizer11->AddGrowableCol(0);
-	FlexGridSizer11->AddGrowableRow(0);
-	bmp3Dobs_int = new CMyGLCanvas(pn3Dobs_Int, ID_STATICBITMAP5);
-	FlexGridSizer11->Add(bmp3Dobs_int, 1, wxEXPAND, 0);
-	pn3Dobs_Int->SetSizer(FlexGridSizer11);
-	FlexGridSizer11->Fit(pn3Dobs_Int);
-	FlexGridSizer11->SetSizeHints(pn3Dobs_Int);
+
 	pn3Dobs_Conf = new wxPanel(
 		nb_3DObsChannels, ID_PANEL23, wxDefaultPosition, wxDefaultSize,
 		wxTAB_TRAVERSAL, _T("ID_PANEL23"));
@@ -869,9 +870,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	pnViewOptions = new ViewOptions3DPoints(
 		nb_3DObsChannels, ID_PANEL_VIEW_3D_POINT_OPTIONS);
 
-	nb_3DObsChannels->AddPage(pn3Dobs_3D, _("3D view"), false);
-	nb_3DObsChannels->AddPage(pn3Dobs_Depth, _("Depth"), false);
-	nb_3DObsChannels->AddPage(pn3Dobs_Int, _("Intensity"), false);
+	nb_3DObsChannels->AddPage(pn3Dobs_3D, _("3D/Range/Intensity"), true);
 	nb_3DObsChannels->AddPage(pn3Dobs_Conf, _("Confidence"), false);
 	nb_3DObsChannels->AddPage(pnViewOptions, _("Visualization options"), false);
 
