@@ -159,23 +159,19 @@ DECLARE_OP_FUNCTION(op_info)
 	}
 	cout << "\n";
 
-	for (auto it = proc.infoPerSensorLabel.begin();
-		 it != proc.infoPerSensorLabel.end(); ++it)
+	for (auto& [label, ips] : proc.infoPerSensorLabel)
 	{
-		const TTimeStamp tf = it->second.tim_first;
-		const TTimeStamp tl = it->second.tim_last;
+		const TTimeStamp tf = ips.tim_first;
+		const TTimeStamp tl = ips.tim_last;
 		double Hz = 0, dur = 0;
 		if (tf != INVALID_TIMESTAMP && tl != INVALID_TIMESTAMP)
 		{
 			dur = mrpt::system::timeDifference(tf, tl);
-			Hz = double(
-					 it->second.occurrences > 1 ? it->second.occurrences - 1
-												: 1) /
-				dur;
+			Hz = double(ips.occurrences > 1 ? ips.occurrences - 1 : 1) / dur;
 		}
 		cout << "Sensor (Label/Occurs/Rate/Durat.) : "
 			 << format(
-					"%15s /%7u /%5.03f /%.03f\n", it->first.c_str(),
-					(unsigned)it->second.occurrences, Hz, dur);
+					"%15s /%7u /%7.03f /%6.03f  (%s)\n", label.c_str(),
+					(unsigned)ips.occurrences, Hz, dur, ips.className.c_str());
 	}
 }
