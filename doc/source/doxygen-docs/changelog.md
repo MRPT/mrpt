@@ -1,6 +1,9 @@
 \page changelog Change Log
 
 # Version 2.11.4: UNRELEASED
+- Changes in apps:
+  - RawLogViewer: visualize mrpt::obs::CObservationRotatingScan as point cloud  + range image + intensity image.
+  - rawlog-edit: `--info` command now also shows the type of each sensor label.
 - Changes in libraries:
   - \ref mrpt_maps_grp
     - Use nanoflann RKNN search in mrpt::maps::CPointsMap::nn_radius_search()
