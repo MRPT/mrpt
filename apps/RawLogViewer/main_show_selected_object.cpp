@@ -514,7 +514,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 			img_range.setFromMatrix(
 				obs->rangeImage.asEigen().cast<float>() *
 					(1.0f / maxActualRange),
-				true /*already in [0,1]*/);
+				true /*already in [0,1]*/, true /*flip_vertical*/);
 
 			showImageInGLView(*bmp3Dobs_depth, img_range);
 
@@ -535,7 +535,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 			img_intensity.setFromMatrix(
 				obs->intensityImage.asEigen().cast<float>() *
 					(1.0f / maxActualInt),
-				true /*already in [0,1]*/);
+				true /*already in [0,1]*/, true /*flip_vertical*/);
 
 			showImageInGLView(*bmp3Dobs_int, img_intensity);
 

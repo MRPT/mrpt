@@ -830,7 +830,9 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 * \sa getAsMatrix
 	 */
 	template <typename MAT>
-	void setFromMatrix(const MAT& m, bool matrix_is_normalized = true)
+	void setFromMatrix(
+		const MAT& m, bool matrix_is_normalized = true,
+		bool flip_vertically = false)
 	{
 		MRPT_START
 		const unsigned int lx = m.cols();
@@ -840,7 +842,8 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 		{  // Matrix: [0,1]
 			for (unsigned int y = 0; y < ly; y++)
 			{
-				auto* pixels = ptrLine<uint8_t>(y);
+				auto* pixels =
+					ptrLine<uint8_t>(flip_vertically ? (ly - 1 - y) : y);
 				for (unsigned int x = 0; x < lx; x++)
 					(*pixels++) = static_cast<uint8_t>(m.coeff(y, x) * 255);
 			}
@@ -849,7 +852,8 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 		{  // Matrix: [0,255]
 			for (unsigned int y = 0; y < ly; y++)
 			{
-				auto* pixels = ptrLine<uint8_t>(y);
+				auto* pixels =
+					ptrLine<uint8_t>(flip_vertically ? (ly - 1 - y) : y);
 				for (unsigned int x = 0; x < lx; x++)
 					(*pixels++) = static_cast<uint8_t>(m.coeff(y, x));
 			}
