@@ -191,7 +191,7 @@ class CObservationRotatingScan : public CObservation
 	}
 
 	/** Write scan data to a plain text, each line has:
-	 *   `x y z intensity range row_idx col_idx`
+	 *   `x y z range intensity row_idx col_idx`
 	 *
 	 * For each point in the organized point cloud.
 	 * Invalid points (e.g. no lidar return) are stored as (x,y,z)=(0,0,0) and

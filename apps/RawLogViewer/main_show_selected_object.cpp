@@ -504,7 +504,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 
 		// Get range image as bitmap:
 		// ---------------------------
-		int rangeHeight = 30;
+		int rangeHeight = 40;
 		{
 			mrpt::img::CImage img_range;
 
@@ -520,10 +520,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 
 			rangeHeight = img_range.getHeight();
 			bmp3Dobs_depth->setViewportPosition(
-				30, -2 - rangeHeight, -30, rangeHeight);
+				50, -2 - rangeHeight, -30, rangeHeight);
 		}
 
-		int intensityHeight = 30;
+		int intensityHeight = 40;
 
 		if (!obs->intensityImage.empty())
 		{
@@ -541,7 +541,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 
 			intensityHeight = img_intensity.getHeight();
 			bmp3Dobs_int->setViewportPosition(
-				30, -2 - rangeHeight - 2 - intensityHeight, -30,
+				50, -2 - rangeHeight - 2 - intensityHeight, -30,
 				intensityHeight);
 		}
 

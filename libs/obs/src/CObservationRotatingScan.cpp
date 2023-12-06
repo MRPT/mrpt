@@ -603,7 +603,7 @@ bool RotScan::loadFromTextFile(const std::string& filename)
 		THROW_EXCEPTION_FMT(
 			"Empty point cloud plain text file? `%s`", filename.c_str());
 
-	//  `x y z intensity range row_idx col_idx`
+	//  `x y z range intensity row_idx col_idx`
 	ASSERT_EQUAL_(data.cols(), 7UL);
 
 	ASSERT_GT_(rowCount, 0);
@@ -619,8 +619,8 @@ bool RotScan::loadFromTextFile(const std::string& filename)
 		const size_t c = static_cast<size_t>(data(i, 6));
 
 		organizedPoints(r, c) = {data(i, 0), data(i, 1), data(i, 2)};
-		intensityImage(r, c) = data(i, 3);
-		rangeImage(r, c) = data(i, 4);
+		rangeImage(r, c) = data(i, 3);
+		intensityImage(r, c) = data(i, 4);
 	}
 
 	return true;
