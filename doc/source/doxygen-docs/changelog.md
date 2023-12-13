@@ -7,6 +7,7 @@
 - Changes in libraries:
   - \ref mrpt_maps_grp
     - Use nanoflann RKNN search in mrpt::maps::CPointsMap::nn_radius_search()
+    - Added a new point cloud class mrpt::maps::CPointsMapXYZIRT, including its Python and ROS wrappers.
   - \ref mrpt_math_grp
     - mrpt::math::KDTreeCapable: Add optional argument maximumSearchDistanceSqr in many API methods to exploit the new nanoflann RKNN search method.
   - \ref mrpt_opengl_grp
