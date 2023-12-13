@@ -404,7 +404,7 @@ bool mrpt::ros2bridge::toROS(
 	const auto& zs = obj.getPointsBufferRef_z();
 	const auto& Is = obj.getPointsBufferRef_intensity();
 	const auto& Rs = obj.getPointsBufferRef_ring();
-	const auto& Ts = obj.getPointsBufferRef_time();
+	const auto& Ts = obj.getPointsBufferRef_timestamp();
 
 	uint8_t* pointDest = msg.data.data();
 	for (size_t i = 0; i < xs.size(); i++)
