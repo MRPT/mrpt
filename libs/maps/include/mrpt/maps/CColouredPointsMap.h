@@ -12,6 +12,7 @@
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/obs_frwds.h>
+#include <mrpt/opengl/pointcloud_adapters.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/typemeta/TEnumType.h>
 
@@ -364,7 +365,6 @@ class CColouredPointsMap : public CPointsMap
 
 }  // namespace maps
 
-#include <mrpt/opengl/pointcloud_adapters.h>
 namespace opengl
 {
 /** Specialization
