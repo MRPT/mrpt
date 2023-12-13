@@ -575,6 +575,43 @@ class CPointsMap : public CMetricMap,
 	{
 		return m_z;
 	}
+
+	virtual auto getPointsBufferRef_intensity() const
+		-> const mrpt::aligned_std_vector<float>*
+	{
+		return nullptr;
+	}
+
+	virtual auto getPointsBufferRef_ring() const
+		-> const mrpt::aligned_std_vector<uint16_t>*
+	{
+		return nullptr;
+	}
+
+	virtual auto getPointsBufferRef_timestamp() const
+		-> const mrpt::aligned_std_vector<float>*
+	{
+		return nullptr;
+	}
+
+	virtual auto getPointsBufferRef_intensity()
+		-> mrpt::aligned_std_vector<float>*
+	{
+		return nullptr;
+	}
+
+	virtual auto getPointsBufferRef_ring()
+		-> mrpt::aligned_std_vector<uint16_t>*
+	{
+		return nullptr;
+	}
+
+	virtual auto getPointsBufferRef_timestamp()
+		-> mrpt::aligned_std_vector<float>*
+	{
+		return nullptr;
+	}
+
 	/** Returns a copy of the 2D/3D points as a std::vector of float
 	 * coordinates.
 	 * If decimation is greater than 1, only 1 point out of that number will be
