@@ -29,6 +29,7 @@ MRPT_WARNING(
 #include <mrpt/maps/COctoMap.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/CPointsMapXYZI.h>
+#include <mrpt/maps/CPointsMapXYZIRT.h>
 #include <mrpt/maps/CRandomFieldGridMap3D.h>
 #include <mrpt/maps/CReflectivityGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>

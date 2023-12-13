@@ -10,16 +10,15 @@
 #include "maps-precomp.h"  // Precomp header
 //
 #include <mrpt/core/bits_mem.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/io/CFileInputStream.h>
 #include <mrpt/maps/CPointsMapXYZI.h>
+#include <mrpt/maps/CPointsMapXYZIRT.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/serialization/aligned_serialization.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 
+#include <fstream>
 #include <iostream>
 
 #include "CPointsMap_crtp_common.h"
@@ -36,11 +35,11 @@ using namespace mrpt::config;
 
 //  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER(
-	"mrpt::maps::CPointsMapXYZI", mrpt::maps::CPointsMapXYZI)
+	"mrpt::maps::CPointsMapXYZIRT", mrpt::maps::CPointsMapXYZIRT)
 
-CPointsMapXYZI::TMapDefinition::TMapDefinition() = default;
+CPointsMapXYZIRT::TMapDefinition::TMapDefinition() = default;
 
-void CPointsMapXYZI::TMapDefinition::loadFromConfigFile_map_specific(
+void CPointsMapXYZIRT::TMapDefinition::loadFromConfigFile_map_specific(
 	const CConfigFileBase& source, const std::string& sectionNamePrefix)
 {
 	insertionOpts.loadFromConfigFile(
@@ -49,88 +48,154 @@ void CPointsMapXYZI::TMapDefinition::loadFromConfigFile_map_specific(
 		source, sectionNamePrefix + string("_likelihoodOpts"));
 }
 
-void CPointsMapXYZI::TMapDefinition::dumpToTextStream_map_specific(
+void CPointsMapXYZIRT::TMapDefinition::dumpToTextStream_map_specific(
 	std::ostream& out) const
 {
 	this->insertionOpts.dumpToTextStream(out);
 	this->likelihoodOpts.dumpToTextStream(out);
 }
 
-mrpt::maps::CMetricMap::Ptr CPointsMapXYZI::internal_CreateFromMapDefinition(
+mrpt::maps::CMetricMap::Ptr CPointsMapXYZIRT::internal_CreateFromMapDefinition(
 	const mrpt::maps::TMetricMapInitializer& _def)
 {
-	const CPointsMapXYZI::TMapDefinition& def =
-		*dynamic_cast<const CPointsMapXYZI::TMapDefinition*>(&_def);
-	auto obj = CPointsMapXYZI::Create();
+	const CPointsMapXYZIRT::TMapDefinition& def =
+		*dynamic_cast<const CPointsMapXYZIRT::TMapDefinition*>(&_def);
+	auto obj = CPointsMapXYZIRT::Create();
 	obj->insertionOptions = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;
 	return obj;
 }
 //  =========== End of Map definition Block =========
 
-IMPLEMENTS_SERIALIZABLE(CPointsMapXYZI, CPointsMap, mrpt::maps)
+IMPLEMENTS_SERIALIZABLE(CPointsMapXYZIRT, CPointsMap, mrpt::maps)
 
-void CPointsMapXYZI::reserve(size_t newLength)
+CPointsMapXYZIRT::CPointsMapXYZIRT(const CPointsMapXYZIRT& o) : CPointsMap()
+{
+	impl_copyFrom(o);
+}
+CPointsMapXYZIRT::CPointsMapXYZIRT(const CPointsMapXYZI& o) : CPointsMap()
+{
+	impl_copyFrom(o);
+}
+CPointsMapXYZIRT& CPointsMapXYZIRT::operator=(const CPointsMap& o)
+{
+	impl_copyFrom(o);
+	return *this;
+}
+CPointsMapXYZIRT& CPointsMapXYZIRT::operator=(const CPointsMapXYZIRT& o)
+{
+	impl_copyFrom(o);
+	return *this;
+}
+CPointsMapXYZIRT& CPointsMapXYZIRT::operator=(const CPointsMapXYZI& o)
+{
+	impl_copyFrom(o);
+	return *this;
+}
+
+void CPointsMapXYZIRT::reserve(size_t newLength)
 {
 	m_x.reserve(newLength);
 	m_y.reserve(newLength);
 	m_z.reserve(newLength);
 	m_intensity.reserve(newLength);
+	m_ring.reserve(newLength);
+	m_time.reserve(newLength);
 }
 
 // Resizes all point buffers so they can hold the given number of points: newly
 // created points are set to default values,
 //  and old contents are not changed.
-void CPointsMapXYZI::resize(size_t newLength)
+void CPointsMapXYZIRT::resize(size_t newLength)
 {
 	m_x.resize(newLength, 0);
 	m_y.resize(newLength, 0);
 	m_z.resize(newLength, 0);
 	m_intensity.resize(newLength, 0);
+	m_ring.resize(newLength, 0);
+	m_time.resize(newLength, 0);
 	mark_as_modified();
+}
+
+void CPointsMapXYZIRT::resize_XYZIRT(
+	size_t newLength, bool hasIntensity, bool hasRing, bool hasTime)
+{
+	m_x.resize(newLength, 0);
+	m_y.resize(newLength, 0);
+	m_z.resize(newLength, 0);
+	m_intensity.resize(hasIntensity ? newLength : 0, 0);
+	m_ring.resize(hasRing ? newLength : 0, 0);
+	m_time.resize(hasTime ? newLength : 0, 0);
+	mark_as_modified();
+}
+
+void CPointsMapXYZIRT::reserve_XYZIRT(
+	size_t n, bool hasIntensity, bool hasRing, bool hasTime)
+{
+	m_x.reserve(n);
+	m_y.reserve(n);
+	m_z.reserve(n);
+	if (hasIntensity) m_intensity.reserve(n);
+	if (hasRing) m_ring.reserve(n);
+	if (hasTime) m_time.reserve(n);
 }
 
 // Resizes all point buffers so they can hold the given number of points,
 // *erasing* all previous contents
 //  and leaving all points to default values.
-void CPointsMapXYZI::setSize(size_t newLength)
+void CPointsMapXYZIRT::setSize(size_t newLength)
 {
 	m_x.assign(newLength, 0);
 	m_y.assign(newLength, 0);
 	m_z.assign(newLength, 0);
 	m_intensity.assign(newLength, 0);
+	m_ring.assign(newLength, 0);
+	m_time.assign(newLength, 0);
 	mark_as_modified();
 }
 
-void CPointsMapXYZI::impl_copyFrom(const CPointsMap& obj)
+void CPointsMapXYZIRT::impl_copyFrom(const CPointsMap& obj)
 {
 	// This also does a ::resize(N) of all data fields.
 	CPointsMap::base_copyFrom(obj);
 
-	const auto* pXYZI = dynamic_cast<const CPointsMapXYZI*>(&obj);
+	const auto* pXYZI = dynamic_cast<const CPointsMapXYZIRT*>(&obj);
 	if (pXYZI) m_intensity = pXYZI->m_intensity;
 }
 
-uint8_t CPointsMapXYZI::serializeGetVersion() const { return 0; }
-void CPointsMapXYZI::serializeTo(mrpt::serialization::CArchive& out) const
+uint8_t CPointsMapXYZIRT::serializeGetVersion() const { return 0; }
+void CPointsMapXYZIRT::serializeTo(mrpt::serialization::CArchive& out) const
 {
+	// XYZ
 	uint32_t n = m_x.size();
-
-	// First, write the number of points:
 	out << n;
-
 	if (n > 0)
 	{
-		out.WriteBufferFixEndianness(&m_x[0], n);
-		out.WriteBufferFixEndianness(&m_y[0], n);
-		out.WriteBufferFixEndianness(&m_z[0], n);
-		out.WriteBufferFixEndianness(&m_intensity[0], n);
+		out.WriteBufferFixEndianness(m_x.data(), n);
+		out.WriteBufferFixEndianness(m_y.data(), n);
+		out.WriteBufferFixEndianness(m_z.data(), n);
 	}
+
+	// I
+	n = m_intensity.size();
+	out << n;
+	if (n > 0) out.WriteBufferFixEndianness(m_intensity.data(), n);
+
+	// R
+	n = m_ring.size();
+	out << n;
+	if (n > 0) out.WriteBufferFixEndianness(m_ring.data(), n);
+
+	// T
+	n = m_time.size();
+	out << n;
+	if (n > 0) out.WriteBufferFixEndianness(m_time.data(), n);
+
 	insertionOptions.writeToStream(out);
 	likelihoodOptions.writeToStream(out);
 }
 
-void CPointsMapXYZI::serializeFrom(
+void CPointsMapXYZIRT::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
@@ -139,17 +204,33 @@ void CPointsMapXYZI::serializeFrom(
 		{
 			mark_as_modified();
 
-			// Read the number of points:
+			// XYZ
 			uint32_t n;
 			in >> n;
-			this->resize(n);
+			m_x.resize(n);
+			m_y.resize(n);
+			m_z.resize(n);
 			if (n > 0)
 			{
-				in.ReadBufferFixEndianness(&m_x[0], n);
-				in.ReadBufferFixEndianness(&m_y[0], n);
-				in.ReadBufferFixEndianness(&m_z[0], n);
-				in.ReadBufferFixEndianness(&m_intensity[0], n);
+				in.ReadBufferFixEndianness(m_x.data(), n);
+				in.ReadBufferFixEndianness(m_y.data(), n);
+				in.ReadBufferFixEndianness(m_z.data(), n);
 			}
+			// I:
+			in >> n;
+			m_intensity.resize(n);
+			if (n > 0) in.ReadBufferFixEndianness(m_intensity.data(), n);
+
+			// R:
+			in >> n;
+			m_ring.resize(n);
+			if (n > 0) in.ReadBufferFixEndianness(m_ring.data(), n);
+
+			// T:
+			in >> n;
+			m_time.resize(n);
+			if (n > 0) in.ReadBufferFixEndianness(m_time.data(), n);
+
 			insertionOptions.readFromStream(in);
 			likelihoodOptions.readFromStream(in);
 		}
@@ -158,16 +239,18 @@ void CPointsMapXYZI::serializeFrom(
 	};
 }
 
-void CPointsMapXYZI::internal_clear()
+void CPointsMapXYZIRT::internal_clear()
 {
 	vector_strong_clear(m_x);
 	vector_strong_clear(m_y);
 	vector_strong_clear(m_z);
 	vector_strong_clear(m_intensity);
+	vector_strong_clear(m_ring);
+	vector_strong_clear(m_time);
 	mark_as_modified();
 }
 
-void CPointsMapXYZI::setPointRGB(
+void CPointsMapXYZIRT::setPointRGB(
 	size_t index, float x, float y, float z, float R, float G, float B)
 {
 	if (index >= m_x.size()) THROW_EXCEPTION("Index out of bounds");
@@ -178,23 +261,22 @@ void CPointsMapXYZI::setPointRGB(
 	mark_as_modified();
 }
 
-void CPointsMapXYZI::setPointIntensity(size_t index, float I)
+void CPointsMapXYZIRT::setPointIntensity(size_t index, float I)
 {
 	if (index >= m_x.size()) THROW_EXCEPTION("Index out of bounds");
 	this->m_intensity[index] = I;
 	// mark_as_modified();  // No need to rebuild KD-trees, etc...
 }
 
-void CPointsMapXYZI::insertPointFast(float x, float y, float z)
+void CPointsMapXYZIRT::insertPointFast(float x, float y, float z)
 {
 	m_x.push_back(x);
 	m_y.push_back(y);
 	m_z.push_back(z);
-	m_intensity.push_back(0);
 	// mark_as_modified(); Don't, this is the "XXXFast()" method
 }
 
-void CPointsMapXYZI::insertPointRGB(
+void CPointsMapXYZIRT::insertPointRGB(
 	float x, float y, float z, float R_intensity, float G_ignored,
 	float B_ignored)
 {
@@ -205,7 +287,8 @@ void CPointsMapXYZI::insertPointRGB(
 	mark_as_modified();
 }
 
-void CPointsMapXYZI::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
+void CPointsMapXYZIRT::getVisualizationInto(
+	mrpt::opengl::CSetOfObjects& o) const
 {
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
@@ -218,7 +301,7 @@ void CPointsMapXYZI::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
 	o.insert(obj);
 }
 
-void CPointsMapXYZI::getPointRGB(
+void CPointsMapXYZIRT::getPointRGB(
 	size_t index, float& x, float& y, float& z, float& R, float& G,
 	float& B) const
 {
@@ -230,23 +313,20 @@ void CPointsMapXYZI::getPointRGB(
 	R = G = B = m_intensity[index];
 }
 
-float CPointsMapXYZI::getPointIntensity(size_t index) const
-{
-	if (index >= m_x.size()) THROW_EXCEPTION("Index out of bounds");
-	return m_intensity[index];
-}
-
-bool CPointsMapXYZI::saveXYZI_to_text_file(const std::string& file) const
+bool CPointsMapXYZIRT::saveXYZIRT_to_text_file(const std::string& file) const
 {
 	FILE* f = os::fopen(file.c_str(), "wt");
 	if (!f) return false;
 	for (unsigned int i = 0; i < m_x.size(); i++)
-		os::fprintf(f, "%f %f %f %f\n", m_x[i], m_y[i], m_z[i], m_intensity[i]);
+		os::fprintf(
+			f, "%f %f %f %f %i %f\n", m_x[i], m_y[i], m_z[i],
+			getPointIntensity(i), static_cast<int>(getPointRing(i)),
+			getPointTime(i));
 	os::fclose(f);
 	return true;
 }
 
-bool CPointsMapXYZI::loadXYZI_from_text_file(const std::string& file)
+bool CPointsMapXYZIRT::loadXYZIRT_from_text_file(const std::string& file)
 {
 	MRPT_START
 
@@ -265,11 +345,14 @@ bool CPointsMapXYZI::loadXYZI_from_text_file(const std::string& file)
 
 		std::stringstream ss(line);
 
-		float x, y, z, i;
-		if (!(ss >> x >> y >> z >> i)) { break; }
+		float x, y, z, i, t;
+		uint16_t r;
+		if (!(ss >> x >> y >> z >> i >> r >> t)) { break; }
 
 		insertPointFast(x, y, z);
 		m_intensity.push_back(i);
+		m_ring.push_back(r);
+		m_time.push_back(t);
 	}
 
 	return true;
@@ -280,27 +363,39 @@ bool CPointsMapXYZI::loadXYZI_from_text_file(const std::string& file)
 /*---------------------------------------------------------------
 addFrom_classSpecific
 ---------------------------------------------------------------*/
-void CPointsMapXYZI::addFrom_classSpecific(
+void CPointsMapXYZIRT::addFrom_classSpecific(
 	const CPointsMap& anotherMap, size_t nPreviousPoints,
 	const bool filterOutPointsAtZero)
 {
 	const size_t nOther = anotherMap.size();
 
 	// Specific data for this class:
-	const auto* anotheMap_col =
-		dynamic_cast<const CPointsMapXYZI*>(&anotherMap);
-
-	if (anotheMap_col)
+	if (const auto* o = dynamic_cast<const CPointsMapXYZIRT*>(&anotherMap); o)
 	{
 		for (size_t i = 0, j = nPreviousPoints; i < nOther; i++)
 		{
-			if (filterOutPointsAtZero &&
-				anotheMap_col->getPointsBufferRef_x()[i] == 0 &&
-				anotheMap_col->getPointsBufferRef_y()[i] == 0 &&
-				anotheMap_col->getPointsBufferRef_z()[i] == 0)
+			if (filterOutPointsAtZero && o->getPointsBufferRef_x()[i] == 0 &&
+				o->getPointsBufferRef_y()[i] == 0 &&
+				o->getPointsBufferRef_z()[i] == 0)
 				continue;
 
-			m_intensity[j] = anotheMap_col->m_intensity[i];
+			m_intensity[j] = o->m_intensity[i];
+			m_ring[j] = o->m_ring[i];
+			m_time[j] = o->m_time[i];
+			j++;
+		}
+	}
+	else if (const auto* oi = dynamic_cast<const CPointsMapXYZI*>(&anotherMap);
+			 oi)
+	{
+		for (size_t i = 0, j = nPreviousPoints; i < nOther; i++)
+		{
+			if (filterOutPointsAtZero && oi->getPointsBufferRef_x()[i] == 0 &&
+				oi->getPointsBufferRef_y()[i] == 0 &&
+				oi->getPointsBufferRef_z()[i] == 0)
+				continue;
+
+			m_intensity[j] = oi->getPointIntensity_fast(i);
 			j++;
 		}
 	}
@@ -308,17 +403,17 @@ void CPointsMapXYZI::addFrom_classSpecific(
 
 namespace mrpt::maps::detail
 {
-using mrpt::maps::CPointsMapXYZI;
+using mrpt::maps::CPointsMapXYZIRT;
 
 template <>
-struct pointmap_traits<CPointsMapXYZI>
+struct pointmap_traits<CPointsMapXYZIRT>
 {
 	/** Helper method fot the generic implementation of
 	 * CPointsMap::loadFromRangeScan(), to be called only once before inserting
 	 * points - this is the place to reserve memory in lric for extra working
 	 * variables. */
 	inline static void internal_loadFromRangeScan2D_init(
-		CPointsMapXYZI& me,
+		CPointsMapXYZIRT& me,
 		mrpt::maps::CPointsMap::TLaserRange2DInsertContext& lric)
 	{
 		// lric.fVars: not needed
@@ -327,7 +422,7 @@ struct pointmap_traits<CPointsMapXYZI>
 	/** Helper method fot the generic implementation of
 	 * CPointsMap::loadFromRangeScan(), to be called once per range data */
 	inline static void internal_loadFromRangeScan2D_prepareOneRange(
-		CPointsMapXYZI& me, [[maybe_unused]] const float gx,
+		CPointsMapXYZIRT& me, [[maybe_unused]] const float gx,
 		[[maybe_unused]] const float gy, [[maybe_unused]] const float gz,
 		mrpt::maps::CPointsMap::TLaserRange2DInsertContext& lric)
 	{
@@ -336,7 +431,7 @@ struct pointmap_traits<CPointsMapXYZI>
 	 * CPointsMap::loadFromRangeScan(), to be called after each
 	 * "{x,y,z}.push_back(...);" */
 	inline static void internal_loadFromRangeScan2D_postPushBack(
-		CPointsMapXYZI& me,
+		CPointsMapXYZIRT& me,
 		mrpt::maps::CPointsMap::TLaserRange2DInsertContext& lric)
 	{
 		float pI = 1.0f;
@@ -348,7 +443,7 @@ struct pointmap_traits<CPointsMapXYZI>
 	 * points - this is the place to reserve memory in lric for extra working
 	 * variables. */
 	inline static void internal_loadFromRangeScan3D_init(
-		CPointsMapXYZI& me,
+		CPointsMapXYZIRT& me,
 		mrpt::maps::CPointsMap::TLaserRange3DInsertContext& lric)
 	{
 		// Not used.
@@ -357,7 +452,7 @@ struct pointmap_traits<CPointsMapXYZI>
 	/** Helper method fot the generic implementation of
 	 * CPointsMap::loadFromRangeScan(), to be called once per range data */
 	inline static void internal_loadFromRangeScan3D_prepareOneRange(
-		CPointsMapXYZI& me, [[maybe_unused]] const float gx,
+		CPointsMapXYZIRT& me, [[maybe_unused]] const float gx,
 		[[maybe_unused]] const float gy, [[maybe_unused]] const float gz,
 		mrpt::maps::CPointsMap::TLaserRange3DInsertContext& lric)
 	{
@@ -367,7 +462,7 @@ struct pointmap_traits<CPointsMapXYZI>
 	 * CPointsMap::loadFromRangeScan(), to be called after each
 	 * "{x,y,z}.push_back(...);" */
 	inline static void internal_loadFromRangeScan3D_postPushBack(
-		CPointsMapXYZI& me,
+		CPointsMapXYZIRT& me,
 		mrpt::maps::CPointsMap::TLaserRange3DInsertContext& lric)
 	{
 		const float pI = 1.0f;
@@ -378,34 +473,37 @@ struct pointmap_traits<CPointsMapXYZI>
 	 * CPointsMap::loadFromRangeScan(), to be called once per range data, at the
 	 * end */
 	inline static void internal_loadFromRangeScan3D_postOneRange(
-		CPointsMapXYZI& me,
+		CPointsMapXYZIRT& me,
 		mrpt::maps::CPointsMap::TLaserRange3DInsertContext& lric)
 	{
 	}
 };
 }  // namespace mrpt::maps::detail
 /** See CPointsMap::loadFromRangeScan() */
-void CPointsMapXYZI::loadFromRangeScan(
+void CPointsMapXYZIRT::loadFromRangeScan(
 	const CObservation2DRangeScan& rangeScan,
 	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	mrpt::maps::detail::loadFromRangeImpl<
-		CPointsMapXYZI>::templ_loadFromRangeScan(*this, rangeScan, robotPose);
+		CPointsMapXYZIRT>::templ_loadFromRangeScan(*this, rangeScan, robotPose);
 }
 
 /** See CPointsMap::loadFromRangeScan() */
-void CPointsMapXYZI::loadFromRangeScan(
+void CPointsMapXYZIRT::loadFromRangeScan(
 	const CObservation3DRangeScan& rangeScan,
 	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	mrpt::maps::detail::loadFromRangeImpl<
-		CPointsMapXYZI>::templ_loadFromRangeScan(*this, rangeScan, robotPose);
+		CPointsMapXYZIRT>::templ_loadFromRangeScan(*this, rangeScan, robotPose);
 }
 
 // ====PLY files import & export virtual methods
-void CPointsMapXYZI::PLY_import_set_vertex_count(size_t N) { this->setSize(N); }
+void CPointsMapXYZIRT::PLY_import_set_vertex_count(size_t N)
+{
+	this->setSize(N);
+}
 
-void CPointsMapXYZI::PLY_import_set_vertex(
+void CPointsMapXYZIRT::PLY_import_set_vertex(
 	size_t idx, const mrpt::math::TPoint3Df& pt, const TColorf* pt_color)
 {
 	if (pt_color)
@@ -415,7 +513,7 @@ void CPointsMapXYZI::PLY_import_set_vertex(
 		this->setPoint(idx, pt.x, pt.y, pt.z);
 }
 
-void CPointsMapXYZI::PLY_export_get_vertex(
+void CPointsMapXYZIRT::PLY_export_get_vertex(
 	size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
 	TColorf& pt_color) const
 {
@@ -425,77 +523,4 @@ void CPointsMapXYZI::PLY_export_get_vertex(
 	pt.y = m_y[idx];
 	pt.z = m_z[idx];
 	pt_color.R = pt_color.G = pt_color.B = m_intensity[idx];
-}
-
-bool CPointsMapXYZI::loadFromKittiVelodyneFile(const std::string& filename)
-{
-	try
-	{
-		mrpt::io::CFileGZInputStream f_gz;
-		mrpt::io::CFileInputStream f_normal;
-		mrpt::io::CStream* f = nullptr;
-
-		if (std::string("gz") == mrpt::system::extractFileExtension(filename))
-		{
-			if (f_gz.open(filename)) f = &f_gz;
-		}
-		else
-		{
-			if (f_normal.open(filename)) f = &f_normal;
-		}
-		if (!f)
-			THROW_EXCEPTION_FMT(
-				"Could not open thefile: `%s`", filename.c_str());
-
-		this->clear();
-		this->reserve(10000);
-
-		for (;;)
-		{
-			constexpr std::size_t nToRead = sizeof(float) * 4;
-			float xyzi[4];
-			std::size_t nRead = f->Read(&xyzi, nToRead);
-			if (nRead == 0) break;	// EOF
-			else if (nRead == nToRead)
-			{
-				m_x.push_back(xyzi[0]);
-				m_y.push_back(xyzi[1]);
-				m_z.push_back(xyzi[2]);
-				m_intensity.push_back(xyzi[3]);
-			}
-			else
-				throw std::runtime_error(
-					"Unexpected EOF at the middle of a XYZI record "
-					"(truncated or corrupted file?)");
-		}
-		this->mark_as_modified();
-		return true;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "[loadFromKittiVelodyneFile] " << e.what() << std::endl;
-		return false;
-	}
-}
-
-bool CPointsMapXYZI::saveToKittiVelodyneFile(const std::string& filename) const
-{
-	try
-	{
-		mrpt::io::CFileGZOutputStream f(filename);
-
-		for (size_t i = 0; i < m_x.size(); i++)
-		{
-			const float xyzi[4] = {m_x[i], m_y[i], m_z[i], m_intensity[i]};
-			const auto toWrite = sizeof(float) * 4;
-			std::size_t nWr = f.Write(&xyzi, toWrite);
-			ASSERT_EQUAL_(nWr, toWrite);
-		}
-		return true;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "[saveToKittiVelodyneFile] " << e.what() << std::endl;
-		return false;
-	}
 }
