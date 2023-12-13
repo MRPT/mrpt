@@ -326,7 +326,7 @@ bool mrpt::ros2bridge::toROS(
 	const auto& xs = obj.getPointsBufferRef_x();
 	const auto& ys = obj.getPointsBufferRef_y();
 	const auto& zs = obj.getPointsBufferRef_z();
-	const auto& Is = obj.getPointsBufferRef_intensity();
+	const auto* Is = obj.getPointsBufferRef_intensity();
 
 	float* pointDest = reinterpret_cast<float*>(msg.data.data());
 	for (size_t i = 0; i < xs.size(); i++)
@@ -334,7 +334,7 @@ bool mrpt::ros2bridge::toROS(
 		*pointDest++ = xs[i];
 		*pointDest++ = ys[i];
 		*pointDest++ = zs[i];
-		*pointDest++ = Is[i];
+		*pointDest++ = (*Is)[i];
 	}
 
 	return true;

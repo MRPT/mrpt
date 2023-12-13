@@ -362,34 +362,58 @@ void CPointsMapXYZIRT::addFrom_classSpecific(
 {
 	const size_t nOther = anotherMap.size();
 
+	const auto& oxs = anotherMap.getPointsBufferRef_x();
+	const auto& oys = anotherMap.getPointsBufferRef_y();
+	const auto& ozs = anotherMap.getPointsBufferRef_z();
+
 	// Specific data for this class:
 	if (const auto* o = dynamic_cast<const CPointsMapXYZIRT*>(&anotherMap); o)
 	{
-		for (size_t i = 0, j = nPreviousPoints; i < nOther; i++)
+		bool any = false;
+		if (o->hasIntensityField())
 		{
-			if (filterOutPointsAtZero && o->getPointsBufferRef_x()[i] == 0 &&
-				o->getPointsBufferRef_y()[i] == 0 &&
-				o->getPointsBufferRef_z()[i] == 0)
+			m_intensity.reserve(nPreviousPoints + nOther);
+			any = true;
+		}
+		if (o->hasRingField())
+		{
+			m_ring.reserve(nPreviousPoints + nOther);
+			any = true;
+		}
+		if (o->hasTimeField())
+		{
+			m_time.reserve(nPreviousPoints + nOther);
+			any = true;
+		}
+		ASSERTMSG_(
+			any,
+			"Cannot insert a CPointsMapXYZIRT map without any of IRT fields "
+			"present.");
+
+		for (size_t i = 0; i < nOther; i++)
+		{
+			if (filterOutPointsAtZero && oxs[i] == 0 && oys[i] == 0 &&
+				ozs[i] == 0)
 				continue;
 
-			m_intensity[j] = o->m_intensity[i];
-			m_ring[j] = o->m_ring[i];
-			m_time[j] = o->m_time[i];
-			j++;
+			if (o->hasIntensityField())
+				m_intensity.push_back(o->m_intensity[i]);
+			if (o->hasRingField()) m_ring.push_back(o->m_ring[i]);
+			if (o->hasTimeField()) m_time.push_back(o->m_time[i]);
 		}
 	}
 	else if (const auto* oi = dynamic_cast<const CPointsMapXYZI*>(&anotherMap);
 			 oi)
 	{
-		for (size_t i = 0, j = nPreviousPoints; i < nOther; i++)
+		m_intensity.reserve(nPreviousPoints + nOther);
+
+		for (size_t i = 0; i < nOther; i++)
 		{
-			if (filterOutPointsAtZero && oi->getPointsBufferRef_x()[i] == 0 &&
-				oi->getPointsBufferRef_y()[i] == 0 &&
-				oi->getPointsBufferRef_z()[i] == 0)
+			if (filterOutPointsAtZero && oxs[i] == 0 && oys[i] == 0 &&
+				ozs[i] == 0)
 				continue;
 
-			m_intensity[j] = oi->getPointIntensity_fast(i);
-			j++;
+			m_intensity.push_back(oi->getPointIntensity_fast(i));
 		}
 	}
 }
