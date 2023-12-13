@@ -261,13 +261,6 @@ void CPointsMapXYZIRT::setPointRGB(
 	mark_as_modified();
 }
 
-void CPointsMapXYZIRT::setPointIntensity(size_t index, float I)
-{
-	if (index >= m_x.size()) THROW_EXCEPTION("Index out of bounds");
-	this->m_intensity[index] = I;
-	// mark_as_modified();  // No need to rebuild KD-trees, etc...
-}
-
 void CPointsMapXYZIRT::insertPointFast(float x, float y, float z)
 {
 	m_x.push_back(x);
