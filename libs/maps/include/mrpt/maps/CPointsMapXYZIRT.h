@@ -13,41 +13,63 @@
 #include <mrpt/opengl/pointcloud_adapters.h>
 #include <mrpt/serialization/CSerializable.h>
 
-namespace mrpt
+namespace mrpt::maps
 {
-namespace maps
-{
-/** A map of 3D points with reflectance/intensity (float).
+class CPointsMapXYZI;
+
+/** A map of 3D points with channels: X,Y,Z,I (intensity), R (ring), T (time).
+ *
+ * - `ring` (`uint16_t`) holds the "ring number", or the "row index" for
+ * organized point clouds.
+ * - `time` (`float`) uses the convention of time offset **in seconds** since
+ * the first firing of the cloud. So, for example a 10 Hz LIDAR will produce
+ * clouds with XYZIRT points with `time` in the range [0, 0.1] seconds.
+ *
+ * All three fields I,R,T are optional. Empty vectors are used to represent that
+ * any of these fields is empty, and trying to read them will silently read
+ * zeros, but you can check their validity with:
+ *  - `hasIntensityField()`
+ *  - `hasRingField()`
+ *  - `hasTimeField()`
+ *
  * \sa mrpt::maps::CPointsMap, mrpt::maps::CMetricMap
  * \ingroup mrpt_maps_grp
  */
-class CPointsMapXYZI : public CPointsMap
+class CPointsMapXYZIRT : public CPointsMap
 {
-	DEFINE_SERIALIZABLE(CPointsMapXYZI, mrpt::maps)
+	DEFINE_SERIALIZABLE(CPointsMapXYZIRT, mrpt::maps)
 
    public:
-	CPointsMapXYZI() = default;
+	CPointsMapXYZIRT() = default;
 
-	CPointsMapXYZI(const CPointsMap& o) { CPointsMap::operator=(o); }
-	CPointsMapXYZI(const CPointsMapXYZI& o) : CPointsMap() { impl_copyFrom(o); }
-	CPointsMapXYZI& operator=(const CPointsMap& o)
-	{
-		impl_copyFrom(o);
-		return *this;
-	}
-	CPointsMapXYZI& operator=(const CPointsMapXYZI& o)
-	{
-		impl_copyFrom(o);
-		return *this;
-	}
+	CPointsMapXYZIRT(const CPointsMap& o) { CPointsMap::operator=(o); }
+	CPointsMapXYZIRT(const CPointsMapXYZIRT& o);
+	explicit CPointsMapXYZIRT(const CPointsMapXYZI& o);
+	CPointsMapXYZIRT& operator=(const CPointsMap& o);
+	CPointsMapXYZIRT& operator=(const CPointsMapXYZIRT& o);
+	CPointsMapXYZIRT& operator=(const CPointsMapXYZI& o);
 
 	/** @name Pure virtual interfaces to be implemented by any class derived
    from CPointsMap
 	@{ */
 
+	// By default, these method will grow all fields XYZIRT. See other methods
+	// below.
 	void reserve(size_t newLength) override;  // See base class docs
 	void resize(size_t newLength) override;	 // See base class docs
 	void setSize(size_t newLength) override;  // See base class docs
+
+	/// Like reserve(), but allows selecting which fields are present or not:
+	void reserve_XYZIRT(
+		size_t n, bool hasIntensity, bool hasRing, bool hasTime);
+
+	/// Like resize(), but allows selecting which fields are present or not:
+	void resize_XYZIRT(
+		size_t newLength, bool hasIntensity, bool hasRing, bool hasTime);
+
+	bool hasIntensityField() const { return !m_intensity.empty(); }
+	bool hasRingField() const { return !m_ring.empty(); }
+	bool hasTimeField() const { return !m_time.empty(); }
 
 	/** The virtual method for \a insertPoint() *without* calling
 	 * mark_as_modified()   */
@@ -61,14 +83,16 @@ class CPointsMapXYZI : public CPointsMap
 	void getPointAllFieldsFast(
 		size_t index, std::vector<float>& point_data) const override
 	{
-		point_data.resize(4);
+		point_data.resize(6);
 		point_data[0] = m_x[index];
 		point_data[1] = m_y[index];
 		point_data[2] = m_z[index];
-		point_data[3] = m_intensity[index];
+		point_data[3] = hasIntensityField() ? m_intensity[index] : 0;
+		point_data[4] = hasRingField() ? m_ring[index] : 0;
+		point_data[5] = hasTimeField() ? m_time[index] : 0;
 	}
 
-	/** Set all the data fields for one point as a vector: [X Y Z I]
+	/** Set all the data fields for one point as a vector: [X Y Z I R T]
 	 *  Unlike setPointAllFields(), this method does not check for index out of
 	 * bounds
 	 * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
@@ -76,20 +100,14 @@ class CPointsMapXYZI : public CPointsMap
 	void setPointAllFieldsFast(
 		size_t index, const std::vector<float>& point_data) override
 	{
-		ASSERT_(point_data.size() == 4);
+		ASSERT_(point_data.size() == 6);
 		m_x[index] = point_data[0];
 		m_y[index] = point_data[1];
 		m_z[index] = point_data[2];
-		m_intensity[index] = point_data[3];
+		if (hasIntensityField()) m_intensity[index] = point_data[3];
+		if (hasRingField()) m_ring[index] = point_data[4];
+		if (hasTimeField()) m_time[index] = point_data[5];
 	}
-
-	/** Loads from a Kitti dataset Velodyne scan binary file.
-	 * The file can be gz compressed (only enabled if the filename ends in ".gz"
-	 * to prevent spurious false autodetection of gzip files).
-	 * \return true on success */
-	bool loadFromKittiVelodyneFile(const std::string& filename);
-
-	bool saveToKittiVelodyneFile(const std::string& filename) const;
 
 	/** See CPointsMap::loadFromRangeScan() */
 	void loadFromRangeScan(
@@ -119,14 +137,14 @@ class CPointsMapXYZI : public CPointsMap
    public:
 	/** @} */
 
-	/** Save to a text file. In each line contains X Y Z (meters) I (intensity)
+	/** Save to a text file. In each line contains `X Y Z I R T`
 	 * Returns false if any error occured, true elsewere.
 	 */
-	bool saveXYZI_to_text_file(const std::string& file) const;
+	bool saveXYZIRT_to_text_file(const std::string& file) const;
 
 	/** Loads from a text file, each line having "X Y Z I", I in [0,1].
 	 * Returns false if any error occured, true elsewere. */
-	bool loadXYZI_from_text_file(const std::string& file);
+	bool loadXYZIRT_from_text_file(const std::string& file);
 
 	/** Changes a given point from map. First index is 0.
 	 * \exception Throws std::exception on index out of bound.
@@ -144,7 +162,32 @@ class CPointsMapXYZI : public CPointsMap
 	/** Changes the intensity of a given point from the map. First index is 0.
 	 * \exception Throws std::exception on index out of bound.
 	 */
-	void setPointIntensity(size_t index, float intensity);
+	void setPointIntensity(size_t index, float intensity)
+	{
+		ASSERT_LT_(index, m_intensity.size());
+		m_intensity[index] = intensity;
+		// mark_as_modified();  // No need to rebuild KD-trees, etc...
+	}
+
+	/** Changes the ring of a given point from the map.
+	 * \exception Throws std::exception on index out of bound.
+	 */
+	void setPointRing(size_t index, uint16_t ring)
+	{
+		ASSERT_LT_(index, m_ring.size());
+		m_ring[index] = ring;
+		// mark_as_modified();  // No need to rebuild KD-trees, etc...
+	}
+
+	/** Changes the time of a given point from the map. First index is 0.
+	 * \exception Throws std::exception on index out of bound.
+	 */
+	void setPointTime(size_t index, float time)
+	{
+		ASSERT_LT_(index, m_time.size());
+		m_time[index] = time;
+		// mark_as_modified();  // No need to rebuild KD-trees, etc...
+	}
 
 	/** Like \c setPointColor but without checking for out-of-index erors */
 	inline void setPointColor_fast(size_t index, float R, float G, float B)
@@ -158,8 +201,27 @@ class CPointsMapXYZI : public CPointsMap
 		size_t index, float& x, float& y, float& z, float& R_intensity,
 		float& G_intensity, float& B_intensity) const override;
 
-	/** Retrieves a point intensity (range [0,1]) */
-	float getPointIntensity(size_t index) const;
+	/** Gets point intensity ([0,1]), or 0 if field is not present */
+	float getPointIntensity(size_t index) const
+	{
+		if (m_intensity.empty()) return 0;
+		ASSERT_LT_(index, m_intensity.size());
+		return m_intensity[index];
+	}
+	/** Gets point ring number, or 0 if field is not present */
+	uint16_t getPointRing(size_t index) const
+	{
+		if (m_ring.empty()) return 0;
+		ASSERT_LT_(index, m_ring.size());
+		return m_ring[index];
+	}
+	/** Gets point time, or 0 if field is not present */
+	float getPointTime(size_t index) const
+	{
+		if (m_time.empty()) return 0;
+		ASSERT_LT_(index, m_time.size());
+		return m_time[index];
+	}
 
 	/** Like \c getPointColor but without checking for out-of-index erors */
 	inline float getPointIntensity_fast(size_t index) const
@@ -175,6 +237,22 @@ class CPointsMapXYZI : public CPointsMap
 		return m_intensity;
 	}
 
+	/** Provides a direct access to a read-only reference of the internal
+	 * ring point buffer. \sa getPointsBufferRef_x() */
+	auto getPointsBufferRef_ring() const
+		-> const mrpt::aligned_std_vector<uint16_t>&
+	{
+		return m_ring;
+	}
+
+	/** Provides a direct access to a read-only reference of the internal
+	 * time point buffer. \sa getPointsBufferRef_x() */
+	auto getPointsBufferRef_time() const
+		-> const mrpt::aligned_std_vector<float>&
+	{
+		return m_time;
+	}
+
 	/** Returns true if the point map has a color field for each point */
 	bool hasColorPoints() const override { return true; }
 
@@ -184,80 +262,15 @@ class CPointsMapXYZI : public CPointsMap
 	void getVisualizationInto(
 		mrpt::opengl::CSetOfObjects& outObj) const override;
 
-	/** @name PCL library support
-		@{ */
-
-	/** Save the point cloud as a PCL PCD file, in either ASCII or binary format
-	 * \note This method requires user code to include PCL before MRPT headers.
-	 * \return false on any error */
-#if defined(PCL_LINEAR_VERSION)
-	inline bool savePCDFile(
-		const std::string& filename, bool save_as_binary) const
-	{
-		pcl::PointCloud<pcl::PointXYZI> cloud;
-
-		const size_t nThis = this->size();
-
-		// Fill in the cloud data
-		cloud.width = nThis;
-		cloud.height = 1;
-		cloud.is_dense = false;
-		cloud.points.resize(cloud.width * cloud.height);
-
-		for (size_t i = 0; i < nThis; ++i)
-		{
-			cloud.points[i].x = m_x[i];
-			cloud.points[i].y = m_y[i];
-			cloud.points[i].z = m_z[i];
-			cloud.points[i].intensity = this->m_intensity[i];
-		}
-
-		return 0 == pcl::io::savePCDFile(filename, cloud, save_as_binary);
-	}
-#endif
-
-	/** Loads a PCL point cloud (WITH XYZI information) into this MRPT class.
-	 *  Usage example:
-	 *  \code
-	 *    pcl::PointCloud<pcl::PointXYZI> cloud;
-	 *    mrpt::maps::CPointsMapXYZI       pc;
-	 *
-	 *    pc.setFromPCLPointCloudXYZI(cloud);
-	 *  \endcode
-	 * \sa CPointsMap::setFromPCLPointCloud()
-	 */
-	template <class POINTCLOUD>
-	void setFromPCLPointCloudXYZI(const POINTCLOUD& cloud)
-	{
-		const size_t N = cloud.points.size();
-		clear();
-		reserve(N);
-		for (size_t i = 0; i < N; ++i)
-		{
-			const auto& pt = cloud.points[i];
-			m_x.push_back(pt.x);
-			m_y.push_back(pt.y);
-			m_z.push_back(pt.z);
-			m_intensity.push_back(pt.intensity);
-		}
-		mark_as_modified();
-	}
-
-	/** Like CPointsMap::getPCLPointCloud() but for PointCloud<PointXYZI> */
-	template <class POINTCLOUD>
-	void getPCLPointCloudXYZI(POINTCLOUD& cloud) const
-	{
-		const size_t nThis = this->size();
-		this->getPCLPointCloud(cloud);	// 1st: xyz data
-		// 2nd: I data
-		for (size_t i = 0; i < nThis; ++i)
-			cloud.points[i].intensity = m_intensity[i];
-	}
-	/** @} */
-
    protected:
 	/** The intensity/reflectance data */
 	mrpt::aligned_std_vector<float> m_intensity;
+
+	/** The ring data */
+	mrpt::aligned_std_vector<uint16_t> m_ring;
+
+	/** The time data (see description at the beginning of the class) */
+	mrpt::aligned_std_vector<float> m_time;
 
 	/** Clear the map, erasing all the points */
 	void internal_clear() override;
@@ -271,10 +284,9 @@ class CPointsMapXYZI : public CPointsMap
 	void PLY_import_set_vertex_count(size_t N) override;
 
 	void PLY_import_set_vertex_timestamp(
-		[[maybe_unused]] size_t idx,
-		[[maybe_unused]] const double unixTimestamp) override
+		size_t idx, const double unixTimestamp) override
 	{
-		// do nothing, this class ignores timestamps
+		m_time.at(idx) = unixTimestamp;
 	}
 
 	/** @} */
@@ -286,25 +298,25 @@ class CPointsMapXYZI : public CPointsMap
 		mrpt::img::TColorf& pt_color) const override;
 	/** @} */
 
-	MAP_DEFINITION_START(CPointsMapXYZI)
+	MAP_DEFINITION_START(CPointsMapXYZIRT)
 	mrpt::maps::CPointsMap::TInsertionOptions insertionOpts;
 	mrpt::maps::CPointsMap::TLikelihoodOptions likelihoodOpts;
-	MAP_DEFINITION_END(CPointsMapXYZI)
+	MAP_DEFINITION_END(CPointsMapXYZIRT)
 
 };	// End of class def.
 
-}  // namespace maps
+}  // namespace mrpt::maps
 
-namespace opengl
+namespace mrpt::opengl
 {
 /** Specialization
- * mrpt::opengl::PointCloudAdapter<mrpt::maps::CPointsMapXYZI>
+ * mrpt::opengl::PointCloudAdapter<mrpt::maps::CPointsMapXYZIRT>
  * \ingroup mrpt_adapters_grp */
 template <>
-class PointCloudAdapter<mrpt::maps::CPointsMapXYZI>
+class PointCloudAdapter<mrpt::maps::CPointsMapXYZIRT>
 {
    private:
-	mrpt::maps::CPointsMapXYZI& m_obj;
+	mrpt::maps::CPointsMapXYZIRT& m_obj;
 
    public:
 	/** The type of each point XYZ coordinates */
@@ -317,8 +329,8 @@ class PointCloudAdapter<mrpt::maps::CPointsMapXYZI>
 	static constexpr bool HAS_RGBu8 = false;
 
 	/** Constructor (accept a const ref for convenience) */
-	inline PointCloudAdapter(const mrpt::maps::CPointsMapXYZI& obj)
-		: m_obj(*const_cast<mrpt::maps::CPointsMapXYZI*>(&obj))
+	inline PointCloudAdapter(const mrpt::maps::CPointsMapXYZIRT& obj)
+		: m_obj(*const_cast<mrpt::maps::CPointsMapXYZIRT*>(&obj))
 	{
 	}
 	/** Get number of points */
@@ -401,6 +413,5 @@ class PointCloudAdapter<mrpt::maps::CPointsMapXYZI>
 		m_obj.setPointColor_fast(idx, r / 255.f, g / 255.f, b / 255.f);
 	}
 
-};	// end of PointCloudAdapter<mrpt::maps::CPointsMapXYZI>
-}  // namespace opengl
-}  // namespace mrpt
+};	// end of PointCloudAdapter<mrpt::maps::CPointsMapXYZIRT>
+}  // namespace mrpt::opengl
