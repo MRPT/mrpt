@@ -229,28 +229,40 @@ class CPointsMapXYZIRT : public CPointsMap
 		return m_intensity[index];
 	}
 
-	/** Provides a direct access to a read-only reference of the internal
-	 * intensity point buffer. \sa getPointsBufferRef_x() */
 	auto getPointsBufferRef_intensity() const
-		-> const mrpt::aligned_std_vector<float>&
+		-> const mrpt::aligned_std_vector<float>* override
 	{
-		return m_intensity;
+		return &m_intensity;
 	}
 
-	/** Provides a direct access to a read-only reference of the internal
-	 * ring point buffer. \sa getPointsBufferRef_x() */
 	auto getPointsBufferRef_ring() const
-		-> const mrpt::aligned_std_vector<uint16_t>&
+		-> const mrpt::aligned_std_vector<uint16_t>* override
 	{
-		return m_ring;
+		return &m_ring;
 	}
 
-	/** Provides a direct access to a read-only reference of the internal
-	 * time point buffer. \sa getPointsBufferRef_x() */
-	auto getPointsBufferRef_time() const
-		-> const mrpt::aligned_std_vector<float>&
+	auto getPointsBufferRef_timestamp() const
+		-> const mrpt::aligned_std_vector<float>* override
 	{
-		return m_time;
+		return &m_time;
+	}
+
+	auto getPointsBufferRef_intensity()
+		-> mrpt::aligned_std_vector<float>* override
+	{
+		return &m_intensity;
+	}
+
+	auto getPointsBufferRef_ring()
+		-> mrpt::aligned_std_vector<uint16_t>* override
+	{
+		return &m_ring;
+	}
+
+	auto getPointsBufferRef_timestamp()
+		-> mrpt::aligned_std_vector<float>* override
+	{
+		return &m_time;
 	}
 
 	/** Returns true if the point map has a color field for each point */
