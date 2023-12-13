@@ -162,7 +162,32 @@ class CPointsMapXYZIRT : public CPointsMap
 	/** Changes the intensity of a given point from the map. First index is 0.
 	 * \exception Throws std::exception on index out of bound.
 	 */
-	void setPointIntensity(size_t index, float intensity);
+	void setPointIntensity(size_t index, float intensity)
+	{
+		ASSERT_LT_(index, m_intensity.size());
+		m_intensity[index] = intensity;
+		// mark_as_modified();  // No need to rebuild KD-trees, etc...
+	}
+
+	/** Changes the ring of a given point from the map.
+	 * \exception Throws std::exception on index out of bound.
+	 */
+	void setPointRing(size_t index, uint16_t ring)
+	{
+		ASSERT_LT_(index, m_ring.size());
+		m_ring[index] = ring;
+		// mark_as_modified();  // No need to rebuild KD-trees, etc...
+	}
+
+	/** Changes the time of a given point from the map. First index is 0.
+	 * \exception Throws std::exception on index out of bound.
+	 */
+	void setPointTime(size_t index, float time)
+	{
+		ASSERT_LT_(index, m_time.size());
+		m_time[index] = time;
+		// mark_as_modified();  // No need to rebuild KD-trees, etc...
+	}
 
 	/** Like \c setPointColor but without checking for out-of-index erors */
 	inline void setPointColor_fast(size_t index, float R, float G, float B)
