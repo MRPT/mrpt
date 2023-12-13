@@ -148,7 +148,7 @@ struct PyCallBack_mrpt_maps_CPointCloudFilterByDistance_TOptions : public mrpt::
 	}
 };
 
-// mrpt::maps::CPointsMapXYZI file:mrpt/maps/CPointsMapXYZI.h line:26
+// mrpt::maps::CPointsMapXYZI file:mrpt/maps/CPointsMapXYZI.h line:24
 struct PyCallBack_mrpt_maps_CPointsMapXYZI : public mrpt::maps::CPointsMapXYZI {
 	using mrpt::maps::CPointsMapXYZI::CPointsMapXYZI;
 
@@ -787,7 +787,7 @@ void bind_mrpt_maps_CPointCloudFilterByDistance(std::function< pybind11::module 
 		}
 
 	}
-	{ // mrpt::maps::CPointsMapXYZI file:mrpt/maps/CPointsMapXYZI.h line:26
+	{ // mrpt::maps::CPointsMapXYZI file:mrpt/maps/CPointsMapXYZI.h line:24
 		pybind11::class_<mrpt::maps::CPointsMapXYZI, std::shared_ptr<mrpt::maps::CPointsMapXYZI>, PyCallBack_mrpt_maps_CPointsMapXYZI, mrpt::maps::CPointsMap> cl(M("mrpt::maps"), "CPointsMapXYZI", "A map of 3D points with reflectance/intensity (float).\n \n\n mrpt::maps::CPointsMap, mrpt::maps::CMetricMap\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::maps::CPointsMapXYZI(); }, [](){ return new PyCallBack_mrpt_maps_CPointsMapXYZI(); } ) );
 		cl.def( pybind11::init<const class mrpt::maps::CPointsMap &>(), pybind11::arg("o") );
