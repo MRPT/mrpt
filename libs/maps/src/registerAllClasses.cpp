@@ -14,7 +14,6 @@
 #include <mrpt/maps.h>
 #include <mrpt/maps/registerAllClasses.h>
 #include <mrpt/obs/CObservationPointCloud.h>
-#include <mrpt/obs/CObservationRotatingScan.h>
 // deps:
 #include <mrpt/graphs/registerAllClasses.h>
 #include <mrpt/obs/registerAllClasses.h>
@@ -34,6 +33,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 	registerClass(CLASS_ID(CColouredPointsMap));
 	registerClass(CLASS_ID(CWeightedPointsMap));
 	registerClass(CLASS_ID(CPointsMapXYZI));
+	registerClass(CLASS_ID(CPointsMapXYZIRT));
 	registerClass(CLASS_ID(COccupancyGridMap2D));
 	registerClass(CLASS_ID(COccupancyGridMap3D));
 	registerClass(CLASS_ID(CGasConcentrationGridMap2D));
@@ -53,7 +53,6 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 	registerClass(CLASS_ID(CPlanarLaserScan));
 
 	registerClass(CLASS_ID(CObservationPointCloud));
-	registerClass(CLASS_ID(CObservationRotatingScan));
 
 	registerClass(CLASS_ID(CMultiMetricMap));
 

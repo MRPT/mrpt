@@ -20,6 +20,7 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationRange.h>
+#include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
@@ -857,41 +858,7 @@ void CPointsMap::getAllPoints(
 float CPointsMap::squareDistanceToClosestCorrespondence(
 	float x0, float y0) const
 {
-	// Just the closest point:
-
-#if 1
 	return kdTreeClosestPoint2DsqrError(x0, y0);
-#else
-	// The distance to the line that interpolates the TWO closest points:
-	float x1, y1, x2, y2, d1, d2;
-	kdTreeTwoClosestPoint2D(
-		x0, y0,	 // The query
-		x1, y1,	 // Closest point #1
-		x2, y2,	 // Closest point #2
-		d1, d2);
-
-	ASSERT_(d2 >= d1);
-
-	// If the two points are too far, do not interpolate:
-	float d12 = square(x1 - x2) + square(y1 - y2);
-	if (d12 > 0.20f * 0.20f || d12 < 0.03f * 0.03f)
-	{
-		return square(x1 - x0) + square(y1 - y0);
-	}
-	else
-	{  // Interpolate
-		double interp_x, interp_y;
-
-		// math::closestFromPointToSegment(
-		math::closestFromPointToLine(
-			x0, y0,	 // the point
-			x1, y1, x2, y2,	 // The segment
-			interp_x, interp_y	// out
-		);
-
-		return square(interp_x - x0) + square(interp_y - y0);
-	}
-#endif
 }
 
 mrpt::math::TBoundingBoxf CPointsMap::boundingBox() const
@@ -1477,6 +1444,22 @@ double CPointsMap::internal_computeObservationLikelihood(
 		return internal_computeObservationLikelihoodPointCloud3D(
 			sensorAbsPose, xs, ys, zs, N);
 	}
+	else if (IS_CLASS(obs, CObservationRotatingScan))
+	{
+		const auto& o = dynamic_cast<const CObservationRotatingScan&>(obs);
+
+		if (!o.rowCount || !this->size()) return -100;
+
+		mrpt::maps::CSimplePointsMap auxPts;
+		auxPts.insertObservation(o, takenFrom);
+
+		const auto& xs = auxPts.getPointsBufferRef_x();
+		const auto& ys = auxPts.getPointsBufferRef_y();
+		const auto& zs = auxPts.getPointsBufferRef_z();
+
+		return internal_computeObservationLikelihoodPointCloud3D(
+			takenFrom, xs.data(), ys.data(), zs.data(), xs.size());
+	}
 	else if (IS_CLASS(obs, CObservationPointCloud))
 	{
 		const auto& o = dynamic_cast<const CObservationPointCloud&>(obs);
@@ -1935,6 +1918,61 @@ bool CPointsMap::internal_insertObservation(
 		}
 		return true;
 	}
+	else if (IS_CLASS(obs, CObservationRotatingScan))
+	{
+		mark_as_modified();
+
+		const auto& o = static_cast<const CObservationRotatingScan&>(obs);
+		ASSERT_(o.rowCount > 0);
+		ASSERT_(o.columnCount > 0);
+
+		if (insertionOptions.fuseWithExisting)
+		{
+			THROW_EXCEPTION(
+				"Fuse point cloud not implemented yet for "
+				"CObservationRotatingScan");
+		}
+		else
+		{
+			// Don't fuse: Simply add
+
+			const auto sensorGlobalPose = robotPose3D + o.sensorPose;
+
+			const size_t N_this = size();
+			const size_t N_otherMax = o.rowCount * o.columnCount;
+
+			// Set the new size:
+			this->reserve(N_this + N_otherMax);
+
+			// Optimization: detect the case of no transformation needed and
+			// avoid the matrix multiplications:
+			const bool identity_tf = (sensorGlobalPose == CPose3D::Identity());
+
+			for (size_t r = 0; r < o.rowCount; r++)
+			{
+				for (size_t c = 0; c < o.columnCount; c++)
+				{
+					if (!o.rangeImage(r, c)) continue;	// invalid range
+
+					// Translation:
+					const auto pt = o.organizedPoints(r, c);
+
+					mrpt::math::TPoint3Df g;
+					if (!identity_tf)
+						sensorGlobalPose.composePoint(
+							pt.x, pt.y, pt.z, g.x, g.y, g.z);
+					else
+						g = pt;
+
+					// Add to this map:
+					this->insertPointFast(g.x, g.y, g.z);
+				}
+			}
+
+			mark_as_modified();
+		}
+		return true;
+	}
 	else
 	{
 		/********************************************************************
@@ -2185,18 +2223,12 @@ void CPointsMap::nn_radius_search(
 	{
 		std::vector<size_t> idxs;
 		kdTreeNClosestPoint3DIdx(
-			query.x, query.y, query.z, maxPoints, idxs, out_dists_sqr);
+			query.x, query.y, query.z, maxPoints, idxs, out_dists_sqr,
+			search_radius_sqr);
 		results.resize(idxs.size());
 		resultIndicesOrIDs.resize(idxs.size());
 		for (size_t i = 0; i < idxs.size(); i++)
 		{
-			if (out_dists_sqr[i] > search_radius_sqr)  // truncate list?
-			{
-				results.resize(i);
-				out_dists_sqr.resize(i);
-				resultIndicesOrIDs.resize(i);
-				break;
-			}
 			getPointFast(idxs[i], results[i].x, results[i].y, results[i].z);
 			resultIndicesOrIDs[i] = idxs[i];
 		}
@@ -2230,19 +2262,13 @@ void CPointsMap::nn_radius_search(
 	{
 		std::vector<size_t> idxs;
 		kdTreeNClosestPoint2DIdx(
-			query.x, query.y, maxPoints, idxs, out_dists_sqr);
+			query.x, query.y, maxPoints, idxs, out_dists_sqr,
+			search_radius_sqr);
 		results.resize(idxs.size());
 		resultIndicesOrIDs.resize(idxs.size());
 		float dummyZ = 0;
 		for (size_t i = 0; i < idxs.size(); i++)
 		{
-			if (out_dists_sqr[i] > search_radius_sqr)  // truncate list?
-			{
-				results.resize(i);
-				out_dists_sqr.resize(i);
-				resultIndicesOrIDs.resize(i);
-				break;
-			}
 			getPointFast(idxs[i], results[i].x, results[i].y, dummyZ);
 			resultIndicesOrIDs[i] = idxs[i];
 		}

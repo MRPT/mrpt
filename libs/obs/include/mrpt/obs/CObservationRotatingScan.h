@@ -21,7 +21,6 @@ namespace mrpt::obs
 {
 class CObservationVelodyneScan;
 class CObservation2DRangeScan;
-class CObservationPointCloud;
 
 /** \addtogroup mrpt_obs_grp
  * @{ */
@@ -30,11 +29,8 @@ class CObservationPointCloud;
  * rotating scanner. This class is the preferred alternative to
  * CObservationVelodyneScan and CObservation2DRangeScan in MRPT 2.x, since it
  * exposes range data as an organized matrix, more convenient for feature
- * detection directly on "range images".
- * This class can also import data from KITTI dataset-like binary files
- * containing unorganized (non "undistorted", i.e. without compensation for
- * lidar motion) point clouds, which get organized into a 2D range image for
- * easier filtering and postprocessing.
+ * detection directly on "range images" and on points stored as a matrix in the
+ * member organizedPoints.
  *
  * Check out the main data fields in the list of members below.
  *
@@ -46,14 +42,10 @@ class CObservationPointCloud;
  * local computer-based timestamp based on the reception of the message in
  * the computer.
  *
- *  Both timestamps correspond to the firing of the <b>first</b> laser in
- * the <b>first</b> CObservationRotatingScan::scan_packets packet.
+ * Both timestamps correspond to the firing of the **first** laser in
+ * the scan, i.e. the first column in organizedPoints.
  *
- *  <div align=center> <img src="velodyne_axes.jpg"> </div>
- *
- * API for accurate reconstruction of point clouds from raw range images:
- *  - generatePointCloud()
- *  - generatePointCloudAlongSE3Trajectory()
+ * The reference frame for the 3D LIDAR is with +X pointing forward, +Z up.
  *
  * \note New in MRPT 2.0.0
  * \sa CObservation, mrpt::hwdrivers::CVelodyneScanner
@@ -63,12 +55,25 @@ class CObservationRotatingScan : public CObservation
 	DEFINE_SERIALIZABLE(CObservationRotatingScan, mrpt::obs)
 
    public:
+	enum class ExternalStorageFormat : uint8_t
+	{
+		None = 0,  //!< is always stored in memory
+		MRPT_Serialization,	 //!< Uses mrpt-serialization binary file
+		/// Plain text, format explained in saveToTextFile()
+		PlainTextFile
+	};
+
+   protected:
+	ExternalStorageFormat m_externally_stored = ExternalStorageFormat::None;
+	std::string m_external_file;
+
+   public:
 	/** @name Scan range data
 		@{ */
 
 	/** Number of "Lidar rings" (e.g. 16 for a Velodyne VLP16, etc.). This
 	 * should be constant for a given LiDAR scanner.
-	 * All matrices in `imageLayer_*` have this number of rows.
+	 * All matrices defined below have this number of rows.
 	 */
 	uint16_t rowCount{0};
 
@@ -85,8 +90,15 @@ class CObservationRotatingScan : public CObservation
 	 * (i.e. invalid range). This member must be always provided, containing the
 	 * ranges for the STRONGEST ray returns.
 	 * To obtain ranges in meters, multiply this matrix by `rangeResolution`.
+	 *
+	 * \sa organizedPoints
 	 */
 	mrpt::math::CMatrix_u16 rangeImage{0, 0};
+
+	/** If present, it contains all 3D points, in local coordinates wrt the
+	 * sensor, for all !=0 entries in \a rangeImage.
+	 */
+	mrpt::math::CMatrixDynamic<mrpt::math::TPoint3Df> organizedPoints{0, 0};
 
 	/** Optionally, an intensity channel. Matrix with a 0x0 size if not
 	 * provided. */
@@ -109,7 +121,8 @@ class CObservationRotatingScan : public CObservation
 	 */
 	double startAzimuth{-M_PI}, azimuthSpan{2 * M_PI};
 
-	/** Time(in seconds) that passed since `startAzimuth` to* `endAzimuth`. */
+	/** Time (in seconds) that passed since `startAzimuth` (first column) to
+	 * `endAzimuth` (last column). */
 	double sweepDuration{.0};
 
 	/** The driver should fill in this observation */
@@ -123,8 +136,6 @@ class CObservationRotatingScan : public CObservation
 	/** The SE(3) pose of the sensor on the robot/vehicle frame
 	 * of reference */
 	mrpt::poses::CPose3D sensorPose;
-
-	// TODO: Calibration!!
 
 	/** The local computer-based timestamp based on the
 	 * reception of the message in the computer. \sa
@@ -146,21 +157,56 @@ class CObservationRotatingScan : public CObservation
 
 	void fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o);
 	void fromScan2D(const mrpt::obs::CObservation2DRangeScan& o);
-	void fromPointCloud(const mrpt::obs::CObservationPointCloud& o);
 
 	/** Will convert from another observation if it's any of the supported
-	 * source types (see fromVelodyne(), fromScan2D(), fromPointCloud()) and
+	 * source types (see fromVelodyne(), fromScan2D()) and
 	 * return true, or will return false otherwise if there is no known way to
 	 * convert from the passed object. */
 	bool fromGeneric(const mrpt::obs::CObservation& o);
-
 	/** @} */
 
-	/** @name "Convert to" API
+	/** @name Delayed-load manual control methods.
+		@{ */
+	// See base class docs.
+	void load() const override;
+	void unload() const override;
+	/** @} */
+
+	/** \name Point cloud external storage functions
 	 * @{ */
+	inline bool isExternallyStored() const
+	{
+		return m_externally_stored != ExternalStorageFormat::None;
+	}
+	inline const std::string& getExternalStorageFile() const
+	{
+		return m_external_file;
+	}
+	void setAsExternalStorage(
+		const std::string& fileName, const ExternalStorageFormat fmt);
+
+	void overrideExternalStorageFormatFlag(const ExternalStorageFormat fmt)
+	{
+		m_externally_stored = fmt;
+	}
+
+	/** Write scan data to a plain text, each line has:
+	 *   `x y z range intensity row_idx col_idx`
+	 *
+	 * For each point in the organized point cloud.
+	 * Invalid points (e.g. no lidar return) are stored as (x,y,z)=(0,0,0) and
+	 * range=0.
+	 *
+	 * \return true on success
+	 */
+	bool saveToTextFile(const std::string& filename) const;
+
+	/** Loads the range, intensity, and organizedPoints members from a plain
+	 * text file in the format describd in saveToTextFile()
+	 */
+	bool loadFromTextFile(const std::string& filename);
 
 	/** @} */
-
 	// See base class docs
 	mrpt::system::TTimeStamp getOriginalReceivedTimeStamp() const override;
 

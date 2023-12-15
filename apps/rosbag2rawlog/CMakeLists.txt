@@ -6,7 +6,7 @@ endif()
 project(rosbag2rawlog)
 
 # ================================================
-# TARGET: gps2rawlog
+# TARGET: rosbag2rawlog
 # ================================================
 # Define the executable target:
 add_executable(${PROJECT_NAME}
