@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.11.5: UNRELEASED
+(none yet)
+
 # Version 2.11.4: Released Dec 15th, 2023
 - Changes in apps:
   - RawLogViewer: visualize mrpt::obs::CObservationRotatingScan as point cloud  + range image + intensity image.
