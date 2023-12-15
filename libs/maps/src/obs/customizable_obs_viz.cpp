@@ -268,6 +268,29 @@ void mrpt::obs::obsPointCloud_to_viz(
 	if (!p.colorFromRGBimage) recolorize3Dpc(pnts, p);
 }
 
+void mrpt::obs::obsRotatingScan_to_viz(
+	const mrpt::obs::CObservationRotatingScan::Ptr& obs,
+	const VisualizationParameters& p, mrpt::opengl::CSetOfObjects& out)
+{
+	out.clear();
+
+	add_common_to_viz(*obs, p, out);
+
+	auto pnts = mrpt::opengl::CPointCloudColoured::Create();
+	out.insert(pnts);
+
+	if (!obs->organizedPoints.empty())
+	{
+		for (const auto& pt : obs->organizedPoints)
+			pnts->insertPoint({pt.x, pt.y, pt.z, 0, 0, 0, 0});
+	}
+	pnts->setPose(obs->sensorPose);
+
+	pnts->setPointSize(p.pointSize);
+
+	if (!p.colorFromRGBimage) recolorize3Dpc(pnts, p);
+}
+
 void mrpt::obs::obs2Dscan_to_viz(
 	const CObservation2DRangeScan::Ptr& obs, const VisualizationParameters& p,
 	mrpt::opengl::CSetOfObjects& out)
@@ -321,6 +344,13 @@ bool mrpt::obs::obs_to_viz(
 			 oPC)
 	{
 		obsPointCloud_to_viz(oPC, p, out);
+		return true;
+	}
+	else if (const auto oRS =
+				 std::dynamic_pointer_cast<CObservationRotatingScan>(obs);
+			 oRS)
+	{
+		obsRotatingScan_to_viz(oRS, p, out);
 		return true;
 	}
 	else if (const auto o2D =

@@ -247,6 +247,9 @@ void CPointCloudColoured::PLY_export_get_vertex(
 	size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
 	mrpt::img::TColorf& pt_color) const
 {
+	std::shared_lock<std::shared_mutex> wfReadLock(
+		CRenderizableShaderPoints::m_pointsMtx.data);
+
 	auto& p = m_points[idx];
 	auto& p_color = m_point_colors[idx];
 	p = pt;

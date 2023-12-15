@@ -59,7 +59,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::opengl::mrptEventGLPreRender file:mrpt/opengl/Viewport.h line:559
+// mrpt::opengl::mrptEventGLPreRender file:mrpt/opengl/Viewport.h line:564
 struct PyCallBack_mrpt_opengl_mrptEventGLPreRender : public mrpt::opengl::mrptEventGLPreRender {
 	using mrpt::opengl::mrptEventGLPreRender::mrptEventGLPreRender;
 
@@ -78,7 +78,7 @@ struct PyCallBack_mrpt_opengl_mrptEventGLPreRender : public mrpt::opengl::mrptEv
 	}
 };
 
-// mrpt::opengl::mrptEventGLPostRender file:mrpt/opengl/Viewport.h line:582
+// mrpt::opengl::mrptEventGLPostRender file:mrpt/opengl/Viewport.h line:587
 struct PyCallBack_mrpt_opengl_mrptEventGLPostRender : public mrpt::opengl::mrptEventGLPostRender {
 	using mrpt::opengl::mrptEventGLPostRender::mrptEventGLPostRender;
 
@@ -170,12 +170,12 @@ struct PyCallBack_mrpt_opengl_Scene : public mrpt::opengl::Scene {
 
 void bind_mrpt_opengl_Viewport(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::opengl::mrptEventGLPreRender file:mrpt/opengl/Viewport.h line:559
+	{ // mrpt::opengl::mrptEventGLPreRender file:mrpt/opengl/Viewport.h line:564
 		pybind11::class_<mrpt::opengl::mrptEventGLPreRender, std::shared_ptr<mrpt::opengl::mrptEventGLPreRender>, PyCallBack_mrpt_opengl_mrptEventGLPreRender, mrpt::system::mrptEvent> cl(M("mrpt::opengl"), "mrptEventGLPreRender", "An event sent by an mrpt::opengl::Viewport just after clearing the\n viewport and setting the GL_PROJECTION matrix, and before calling the scene\n OpenGL drawing primitives.\n\n While handling this event you can call OpenGL glDraw(), etc.\n\n IMPORTANTE NOTICE: Event handlers in your observer class will most likely be\n invoked from an internal GUI thread of MRPT, so all your code in the handler\n must be thread safe.");
 		cl.def( pybind11::init<const class mrpt::opengl::Viewport *>(), pybind11::arg("obj") );
 
 	}
-	{ // mrpt::opengl::mrptEventGLPostRender file:mrpt/opengl/Viewport.h line:582
+	{ // mrpt::opengl::mrptEventGLPostRender file:mrpt/opengl/Viewport.h line:587
 		pybind11::class_<mrpt::opengl::mrptEventGLPostRender, std::shared_ptr<mrpt::opengl::mrptEventGLPostRender>, PyCallBack_mrpt_opengl_mrptEventGLPostRender, mrpt::system::mrptEvent> cl(M("mrpt::opengl"), "mrptEventGLPostRender", "An event sent by an mrpt::opengl::Viewport after calling the scene\n OpenGL drawing primitives and before doing a glSwapBuffers\n\n  While handling this event you can call OpenGL glBegin(),glEnd(),gl*\n functions or those in mrpt::opengl::gl_utils to draw stuff *on the top* of\n the normal\n   objects contained in the Scene.\n\n  IMPORTANTE NOTICE: Event handlers in your observer class will most likely\n be invoked from an internal GUI thread of MRPT,\n    so all your code in the handler must be thread safe.");
 		cl.def( pybind11::init<const class mrpt::opengl::Viewport *>(), pybind11::arg("obj") );
 

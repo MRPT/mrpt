@@ -68,6 +68,9 @@ class PLY_Importer
 		size_t idx, const mrpt::math::TPoint3Df& pt,
 		const mrpt::img::TColorf* pt_color = nullptr) = 0;
 
+	virtual void PLY_import_set_vertex_timestamp(
+		size_t idx, const double unixTimestamp) = 0;
+
 	/** @} */
 
    private:
