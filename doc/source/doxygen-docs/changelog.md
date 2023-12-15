@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.11.4: UNRELEASED
+# Version 2.11.4: Released Dec 15th, 2023
 - Changes in apps:
   - RawLogViewer: visualize mrpt::obs::CObservationRotatingScan as point cloud  + range image + intensity image.
   - rawlog-edit: `--info` command now also shows the type of each sensor label.
