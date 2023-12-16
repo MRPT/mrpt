@@ -17,8 +17,8 @@
 #include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDF.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/slam/CRangeBearingKFSLAM2D.h>
 #include <mrpt/slam/data_association.h>
 #include <mrpt/system/CTicTac.h>
@@ -153,8 +153,10 @@ void CRangeBearingKFSLAM2D::processActionObservation(
 	// =============================================================
 	if (options.create_simplemap)
 	{
-		CPosePDFGaussian::Ptr auxPosePDF = std::make_shared<CPosePDFGaussian>();
-		getCurrentRobotPose(*auxPosePDF);
+		auto auxPosePDF = std::make_shared<CPose3DPDFGaussian>();
+		CPosePDFGaussian p;
+		getCurrentRobotPose(p);
+		auxPosePDF->copyFrom(p);
 		m_SFs.insert(auxPosePDF, SF);
 	}
 
@@ -1039,7 +1041,8 @@ void CRangeBearingKFSLAM2D::saveMapAndPath2DRepresentationAsMATLABFile(
 		os::fprintf(f, "\nROB_PATH=[");
 		for (i = 0; i < m_SFs.size(); i++)
 		{
-			const CPose3D p = m_SFs.getAsPair(i).pose->getMeanVal();
+			const auto& kf = m_SFs.get(i);
+			const CPose3D p = kf.pose->getMeanVal();
 			CPoint3D pnt3D(p);	// 6D -> 3D only
 
 			os::fprintf(f, "%.04f %.04f", pnt3D.x(), pnt3D.y());
