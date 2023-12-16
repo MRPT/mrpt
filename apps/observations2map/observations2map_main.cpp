@@ -92,7 +92,7 @@ int main(int argc, char** argv)
 		// Build metric maps:
 		cout << "Building metric maps..." << std::endl;
 
-		metricMap.loadFromProbabilisticPosesAndObservations(simplemap);
+		metricMap.loadFromSimpleMap(simplemap);
 
 		cout << "done." << endl;
 

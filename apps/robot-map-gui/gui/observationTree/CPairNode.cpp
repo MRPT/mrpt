@@ -16,7 +16,7 @@ using namespace mrpt;
 using namespace mrpt::maps;
 
 CPairNode::CPairNode(
-	CNode* parent, const CSimpleMap::Pair& poseSensFramePair,
+	CNode* parent, const CSimpleMap::Keyframe& poseSensFramePair,
 	size_t indexInSimpleMap)
 	: CNode(parent), m_indexInSimpleMap(indexInSimpleMap)
 {

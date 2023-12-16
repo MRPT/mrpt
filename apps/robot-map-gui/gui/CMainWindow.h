@@ -36,7 +36,7 @@ class CMainWindow : public QMainWindow
 
 	void addRobotPosesFromMap(
 		std::vector<size_t> idx,
-		mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs);
+		mrpt::maps::CSimpleMap::KeyframeList posesObsPairs);
 	void deleteRobotPosesFromMap(const std::vector<size_t>& idx);
 	void moveRobotPosesOnMap(
 		const std::vector<size_t>& idx, const QPointF& dist);

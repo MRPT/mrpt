@@ -124,7 +124,7 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 			mrpt::serialization::archiveFrom(f) >> simpleMap;
 			ASSERT_(simpleMap.size() > 0);
 			// Build metric map:
-			metricMap->loadFromProbabilisticPosesAndObservations(simpleMap);
+			metricMap->loadFromSimpleMap(simpleMap);
 		}
 		else
 		{

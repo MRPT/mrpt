@@ -30,11 +30,8 @@ TEST(CIncrementalMapPartitioner, test_dataset)
 	mrpt::maps::CSimpleMap in_map, out_map;
 	in_map.loadFromFile(map_file);
 
-	for (const auto& pair : in_map)
-	{
-		const auto& [posePDF, sf] = pair;
+	for (const auto& [posePDF, sf, twist] : in_map)
 		imp.addMapFrame(*sf, *posePDF);
-	}
 
 	std::vector<std::vector<uint32_t>> parts;
 	imp.updatePartitions(parts);

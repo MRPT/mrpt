@@ -64,22 +64,29 @@ class CDocument
 
 	void move(
 		const std::vector<size_t>& indexes,
-		const mrpt::maps::CSimpleMap::TPosePDFSensFramePairList& posesObsPairs);
+		const mrpt::maps::CSimpleMap::KeyframeList& posesObsPairs);
 	void move(
-		size_t index, const mrpt::maps::CSimpleMap::Pair& posesObsPair,
+		size_t index, const mrpt::maps::CSimpleMap::Keyframe& posesObsPair,
 		bool disableUpdateMetricMap = false);
 
 	void insert(
 		const std::vector<size_t>& idx,
-		mrpt::maps::CSimpleMap::TPosePDFSensFramePairList& posesObsPairs);
-
-	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList get(
+		mrpt::maps::CSimpleMap::KeyframeList& posesObsPairs);
+	
+	mrpt::maps::CSimpleMap::KeyframeList get(
 		const std::vector<size_t>& idx);
 
-	mrpt::maps::CSimpleMap::ConstPair get(size_t idx) const;
-	mrpt::maps::CSimpleMap::Pair get(size_t idx);
-
-	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList getReverse(
+	const mrpt::maps::CSimpleMap::Keyframe & get(size_t idx) const
+	{
+	return m_simplemap.get(idx);
+	}
+	
+	mrpt::maps::CSimpleMap::Keyframe& get(size_t idx)
+	{
+	return m_simplemap.get(idx);
+	}
+	
+	mrpt::maps::CSimpleMap::KeyframeList getReverse(
 		const std::vector<size_t>& idx);
 
    private:
