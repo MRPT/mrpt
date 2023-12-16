@@ -4,6 +4,7 @@
 #include "src/mrpt/maps/CRandomFieldGridMap2D.cpp"
 #include "src/mrpt/maps/CRandomFieldGridMap3D.cpp"
 #include "src/mrpt/maps/CReflectivityGridMap2D.cpp"
+#include "src/mrpt/maps/CSimpleMap.cpp"
 #include "src/mrpt/maps/CSimplePointsMap.cpp"
 #include "src/mrpt/maps/CWeightedPointsMap.cpp"
 #include "src/mrpt/maps/CWirelessPowerGridMap2D.cpp"
