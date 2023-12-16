@@ -96,6 +96,8 @@ mrpt/apps/MonteCarloLocalization_App.cpp
 mrpt/img/TColor.cpp
 mrpt/img/CCanvas.cpp
 mrpt/maps/CMultiMetricMap.cpp
+mrpt/math/TTwist3D.cpp
+mrpt/maps/CSimpleMap.cpp
 mrpt/bayes/CProbabilityParticle.cpp
 mrpt/bayes/CParticleFilterData.cpp
 mrpt/bayes/CParticleFilterData_1.cpp
@@ -278,7 +280,6 @@ mrpt/opengl/CSetOfTriangles.cpp
 mrpt/opengl/CPlanarLaserScan.cpp
 mrpt/math/CAtan2LookUpTable.cpp
 mrpt/math/ops_containers.cpp
-mrpt/math/TTwist3D.cpp
 mrpt/math/data_utils.cpp
 mrpt/math/fresnel.cpp
 mrpt/nav/holonomic/ClearanceDiagram.cpp
