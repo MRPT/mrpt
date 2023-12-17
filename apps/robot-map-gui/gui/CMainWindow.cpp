@@ -339,8 +339,7 @@ void CMainWindow::selectedChanged(const std::vector<size_t>& idx)
 }
 
 void CMainWindow::addRobotPosesFromMap(
-	std::vector<size_t> idx,
-	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs)
+	std::vector<size_t> idx, mrpt::maps::CSimpleMap::KeyframeList posesObsPairs)
 {
 	if (!m_document || idx.empty()) return;
 
@@ -363,8 +362,7 @@ void CMainWindow::moveRobotPosesOnMap(
 {
 	if (!m_document || idx.empty()) return;
 
-	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs =
-		m_document->get(idx);
+	mrpt::maps::CSimpleMap::KeyframeList posesObsPairs = m_document->get(idx);
 	for (auto& poseSf : posesObsPairs)
 	{
 		mrpt::poses::CPose3DPDF::Ptr& posePDF = poseSf.pose;
@@ -398,7 +396,7 @@ void CMainWindow::deleteRobotPoses(const std::vector<size_t>& idx)
 {
 	if (!m_document || idx.empty()) return;
 
-	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs =
+	mrpt::maps::CSimpleMap::KeyframeList posesObsPairs =
 		m_document->getReverse(idx);
 
 	auto reverseInd = m_document->remove(idx);
@@ -469,7 +467,7 @@ void CMainWindow::updateDirection(
 {
 	if (!m_document) return;
 
-	mrpt::maps::CSimpleMap::Pair posesObsPair = m_document->get(index);
+	auto posesObsPair = m_document->get(index);
 
 	auto posePDF = posesObsPair.pose;
 	auto pose = posePDF->getMeanVal();

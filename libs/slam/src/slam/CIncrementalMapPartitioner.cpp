@@ -16,6 +16,7 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CSimpleLine.h>
 #include <mrpt/opengl/CSphere.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/serialization/stl_serialization.h>
@@ -136,7 +137,9 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 	frame.insertObservationsInto(*newMetricMap);
 
 	// Add tuple (pose,SF) to "simplemap":
-	m_individualFrames.insert(robotPose, frame);
+	auto pose = mrpt::poses::CPose3DPDFGaussian::Create();
+	pose->copyFrom(robotPose);
+	m_individualFrames.insert(pose, mrpt::obs::CSensoryFrame::Create(frame));
 
 	// Expand the adjacency matrix (pads with 0)
 	m_A.setSize(n, n);
@@ -170,8 +173,10 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 		map_keyframe_t map_i;
 		map_i.kf_id = i;
 		map_i.metric_map = m_individualMaps[i];
-		CPose3DPDF::Ptr posePDF_i;
-		m_individualFrames.get(i, posePDF_i, map_i.raw_observations);
+
+		const auto& kf = m_individualFrames.get(i);
+		map_i.raw_observations = kf.sf;
+		const CPose3DPDF::Ptr posePDF_i = kf.pose;
 		auto pose_i = posePDF_i->getMeanVal();
 
 		for (uint32_t j = 0; j < new_id; j++)
@@ -187,9 +192,10 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 			{
 				// KF "j":
 				map_keyframe_t map_j;
-				CPose3DPDF::Ptr posePDF_j;
 				map_j.kf_id = j;
-				m_individualFrames.get(j, posePDF_j, map_j.raw_observations);
+				const auto& kf_j = m_individualFrames.get(j);
+				map_j.raw_observations = kf_j.sf;
+				const CPose3DPDF::Ptr posePDF_j = kf_j.pose;
 				auto pose_j = posePDF_j->getMeanVal();
 				map_j.metric_map = m_individualMaps[j];
 
@@ -318,16 +324,12 @@ void CIncrementalMapPartitioner::removeSetOfNodes(
 		m_individualFrames.remove(*it);
 
 	// Change coordinates reference of frames:
-	CSensoryFrame::Ptr SF;
-	CPose3DPDF::Ptr posePDF;
-
 	if (changeCoordsRef)
 	{
 		ASSERT_(m_individualFrames.size() > 0);
-		m_individualFrames.get(0, posePDF, SF);
+		const auto& kf = m_individualFrames.get(0);
 
-		CPose3D p;
-		posePDF->getMean(p);
+		const CPose3D p = kf.pose->getMeanVal();
 		m_individualFrames.changeCoordinatesOrigin(p);
 	}
 
@@ -346,12 +348,9 @@ void CIncrementalMapPartitioner::changeCoordinatesOriginPoseIndex(
 {
 	MRPT_START
 
-	CPose3DPDF::Ptr pdf;
-	CSensoryFrame::Ptr sf;
-	m_individualFrames.get(newOriginPose, pdf, sf);
+	const auto& kf = m_individualFrames.get(newOriginPose);
 
-	CPose3D p;
-	pdf->getMean(p);
+	const CPose3D p = kf.pose->getMeanVal();
 	changeCoordinatesOrigin(-p);
 
 	MRPT_END
@@ -372,8 +371,9 @@ void CIncrementalMapPartitioner::getAs3DScene(
 
 	for (size_t i = 0; i < m_individualFrames.size(); i++)
 	{
-		const auto [i_pdf, i_sf] = m_individualFrames.get(i);
+		const auto [i_pdf, i_sf, twist] = m_individualFrames.get(i);
 		(void)i_sf;	 // unused
+		(void)twist;
 
 		CPose3D i_mean;
 		i_pdf->getMean(i_mean);
@@ -405,8 +405,9 @@ void CIncrementalMapPartitioner::getAs3DScene(
 		// Arcs:
 		for (size_t j = i + 1; j < m_individualFrames.size(); j++)
 		{
-			const auto [j_pdf, j_sf] = m_individualFrames.get(j);
+			const auto [j_pdf, j_sf, twist] = m_individualFrames.get(j);
 			(void)j_sf;	 // unused
+			(void)twist;
 
 			CPose3D j_mean;
 			j_pdf->getMean(j_mean);

@@ -1,7 +1,11 @@
 \page changelog Change Log
 
 # Version 2.11.5: UNRELEASED
-(none yet)
+- Changes in libraries:
+  - \ref mrpt_obs_grp
+    - mrpt::maps::CSimpleMap changes:
+      - Added an optional twist field.
+      - Simplified API for preferred usage with structured binding tuples.
 
 # Version 2.11.4: Released Dec 15th, 2023
 - Changes in apps:

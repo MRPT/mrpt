@@ -106,6 +106,8 @@ void bind_mrpt_apps_MonteCarloLocalization_App(std::function< pybind11::module &
 void bind_mrpt_img_TColor(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_img_CCanvas(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_maps_CMultiMetricMap(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_math_TTwist3D(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_maps_CSimpleMap(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_bayes_CProbabilityParticle(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_bayes_CParticleFilterData(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_bayes_CParticleFilterData_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -288,7 +290,6 @@ void bind_mrpt_opengl_CSetOfTriangles(std::function< pybind11::module &(std::str
 void bind_mrpt_opengl_CPlanarLaserScan(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_CAtan2LookUpTable(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_ops_containers(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_math_TTwist3D(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_data_utils(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_fresnel(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_nav_holonomic_ClearanceDiagram(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -536,6 +537,8 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_img_TColor(M);
 	bind_mrpt_img_CCanvas(M);
 	bind_mrpt_maps_CMultiMetricMap(M);
+	bind_mrpt_math_TTwist3D(M);
+	bind_mrpt_maps_CSimpleMap(M);
 	bind_mrpt_bayes_CProbabilityParticle(M);
 	bind_mrpt_bayes_CParticleFilterData(M);
 	bind_mrpt_bayes_CParticleFilterData_1(M);
@@ -718,7 +721,6 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_opengl_CPlanarLaserScan(M);
 	bind_mrpt_math_CAtan2LookUpTable(M);
 	bind_mrpt_math_ops_containers(M);
-	bind_mrpt_math_TTwist3D(M);
 	bind_mrpt_math_data_utils(M);
 	bind_mrpt_math_fresnel(M);
 	bind_mrpt_nav_holonomic_ClearanceDiagram(M);

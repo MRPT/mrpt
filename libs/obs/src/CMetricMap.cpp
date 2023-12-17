@@ -33,14 +33,13 @@ void CMetricMap::clear()
 	publishEvent(mrptEventMetricMapClear(this));
 }
 
-void CMetricMap::loadFromProbabilisticPosesAndObservations(
-	const mrpt::maps::CSimpleMap& sfSeq)
+void CMetricMap::loadFromSimpleMap(const mrpt::maps::CSimpleMap& sfSeq)
 {
 	// Erase previous contents:
 	this->clear();
 
 	// Insert new content:
-	for (const auto& [pose, sf] : sfSeq)
+	for (const auto& [pose, sf, twist] : sfSeq)
 	{
 		ASSERTMSG_(pose, "Input map has an empty `CPose3DPDF` ptr");
 		ASSERTMSG_(sf, "Input map has an empty `CSensoryFrame` ptr");

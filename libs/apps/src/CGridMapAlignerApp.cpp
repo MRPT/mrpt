@@ -27,7 +27,7 @@
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/Scene.h>
 #include <mrpt/poses/CPoint2D.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
@@ -348,7 +348,7 @@ void CGridMapAlignerApp::run()
 	}
 
 	// Generate the_map1 now:
-	the_map1.loadFromProbabilisticPosesAndObservations(map1);
+	the_map1.loadFromSimpleMap(map1);
 
 	size_t N1 = max(
 		40,
@@ -389,10 +389,7 @@ void CGridMapAlignerApp::run()
 
 			for (unsigned int q = 0; q < map2noisy.size(); q++)
 			{
-				CPose3DPDF::Ptr PDF;
-				CSensoryFrame::Ptr SF;
-
-				map2noisy.get(q, PDF, SF);
+				const auto [PDF, SF, twist] = map2noisy.get(q);
 
 				// If it's detect_test, translate the map2 by a fixed, known
 				// quantity:
@@ -421,8 +418,8 @@ void CGridMapAlignerApp::run()
 
 				if (NOISE_IN_POSE)
 				{
-					CPosePDFGaussian::Ptr newPDF =
-						std::make_shared<CPosePDFGaussian>();
+					auto& kf = map2noisy.get(q);
+					auto newPDF = std::make_shared<CPose3DPDFGaussian>();
 					newPDF->copyFrom(*PDF);
 
 					// Change the pose:
@@ -430,17 +427,19 @@ void CGridMapAlignerApp::run()
 						getRandomGenerator().drawGaussian1D(0, STD_NOISE_XY));
 					newPDF->mean.y_incr(
 						getRandomGenerator().drawGaussian1D(0, STD_NOISE_XY));
-					newPDF->mean.phi_incr(getRandomGenerator().drawGaussian1D(
-						0, DEG2RAD(STD_NOISE_PHI)));
-					newPDF->mean.normalizePhi();
+
+					double yaw, pitch, roll;
+					newPDF->mean.getYawPitchRoll(yaw, pitch, roll);
+					yaw += getRandomGenerator().drawGaussian1D(
+						0, DEG2RAD(STD_NOISE_PHI));
+					newPDF->mean.setYawPitchRoll(yaw, pitch, roll);
 
 					// Change into the map:
-					map2noisy.set(q, newPDF, CSensoryFrame::Ptr());
-
-				}  // end of NOISE_IN_POSE
+					kf.pose = newPDF;
+				}
 			}
 
-			the_map2.loadFromProbabilisticPosesAndObservations(map2noisy);
+			the_map2.loadFromSimpleMap(map2noisy);
 
 			size_t N2 = max(
 				40,

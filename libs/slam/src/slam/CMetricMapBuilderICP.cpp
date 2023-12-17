@@ -551,17 +551,13 @@ void CMetricMapBuilderICP::initialize(
 
 	for (size_t i = 0; i < SF_Poses_seq.size(); i++)
 	{
-		CPose3DPDF::Ptr posePDF;
-		CSensoryFrame::Ptr SF;
-
 		// Get the SF and its pose:
-		SF_Poses_seq.get(i, posePDF, SF);
+		const auto& kf = SF_Poses_seq.get(i);
 
-		CPose3D estimatedPose3D;
-		posePDF->getMean(estimatedPose3D);
+		const CPose3D estimatedPose3D = kf.pose->getMeanVal();
 
 		// Insert observations into the map:
-		SF->insertObservationsInto(metricMap, estimatedPose3D);
+		kf.sf->insertObservationsInto(metricMap, estimatedPose3D);
 	}
 
 	MRPT_END
