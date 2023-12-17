@@ -100,14 +100,11 @@ void Test()
 	const size_t n = in_map.size();
 	for (size_t i = 0; i < n; i++)
 	{
-		CSensoryFrame::Ptr sf;
-		CPose3DPDF::Ptr posePDF;
-
-		in_map.get(i, posePDF, sf);
+		const auto& [posePDF, sf, twist] = in_map.get(i);
 
 		imp.addMapFrame(*sf, *posePDF);
 
-		printf("[%u/%u]...", (unsigned int)i, (unsigned int)n);
+		printf("[%zu/%zu]...", i, n);
 
 		//		if ((i%1)==0)
 		if (i == n - 1)
@@ -154,11 +151,7 @@ void Test()
 		out_map.clear();
 		for (unsigned int j : parts[i])
 		{
-			CSensoryFrame::Ptr sf;
-			CPose3DPDF::Ptr posePDF;
-
-			in_map.get(j, posePDF, sf);
-
+			const auto& [posePDF, sf, twist] = in_map.get(j);
 			out_map.insert(posePDF, sf);
 		}
 
@@ -262,11 +255,8 @@ void Test()
 		CPose2D meanPose;
 		for (size_t j = 0; j < parts[i].size(); j++)
 		{
-			CSensoryFrame::Ptr sf;
-			CPose3DPDF::Ptr posePDF;
-
 			// Get the pose:
-			in_map.get(parts[i][j], posePDF, sf);
+			const auto& [posePDF, sf, twist] = in_map.get(parts[i][j]);
 
 			meanPose = CPose2D(posePDF->getMeanVal());
 
