@@ -72,20 +72,19 @@ class CDocument
 	void insert(
 		const std::vector<size_t>& idx,
 		mrpt::maps::CSimpleMap::KeyframeList& posesObsPairs);
-	
-	mrpt::maps::CSimpleMap::KeyframeList get(
-		const std::vector<size_t>& idx);
 
-	const mrpt::maps::CSimpleMap::Keyframe & get(size_t idx) const
+	mrpt::maps::CSimpleMap::KeyframeList get(const std::vector<size_t>& idx);
+
+	const mrpt::maps::CSimpleMap::Keyframe& get(size_t idx) const
 	{
-	return m_simplemap.get(idx);
+		return m_simplemap.get(idx);
 	}
-	
+
 	mrpt::maps::CSimpleMap::Keyframe& get(size_t idx)
 	{
-	return m_simplemap.get(idx);
+		return m_simplemap.get(idx);
 	}
-	
+
 	mrpt::maps::CSimpleMap::KeyframeList getReverse(
 		const std::vector<size_t>& idx);
 

@@ -20,7 +20,8 @@ class CPairNode : public CNode
 {
    public:
 	CPairNode(
-		CNode* parent, const mrpt::maps::CSimpleMap::Keyframe& poseSensFramePair,
+		CNode* parent,
+		const mrpt::maps::CSimpleMap::Keyframe& poseSensFramePair,
 		size_t indexInSimpleMap);
 	~CPairNode() override;
 
