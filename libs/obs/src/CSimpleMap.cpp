@@ -31,21 +31,11 @@ const auto fn_pair_make_unique = [](auto& ptr) {
 	ptr.sf.reset(dynamic_cast<mrpt::obs::CSensoryFrame*>(ptr.sf->clone()));
 };
 
-CSimpleMap::CSimpleMap(const CSimpleMap& o) : m_keyframes(o.m_keyframes)
+CSimpleMap CSimpleMap::makeDeepCopy()
 {
-	for_each(m_keyframes.begin(), m_keyframes.end(), fn_pair_make_unique);
-}
-
-CSimpleMap& CSimpleMap::operator=(const CSimpleMap& o)
-{
-	MRPT_START
-	if (this == &o) return *this;  // It may be used sometimes
-
-	m_keyframes = o.m_keyframes;
-	for_each(m_keyframes.begin(), m_keyframes.end(), fn_pair_make_unique);
-
-	return *this;
-	MRPT_END
+	CSimpleMap o = *this;
+	for_each(o.m_keyframes.begin(), o.m_keyframes.end(), fn_pair_make_unique);
+	return o;
 }
 
 void CSimpleMap::remove(size_t index)
@@ -67,7 +57,7 @@ void CSimpleMap::serializeTo(mrpt::serialization::CArchive& out) const
 		ASSERT_(p.pose);
 		ASSERT_(p.sf);
 		out << *p.pose << *p.sf;
-		out << p.localTwist;
+		out << p.localTwist;  // v2
 	}
 }
 

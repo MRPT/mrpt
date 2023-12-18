@@ -45,6 +45,10 @@ namespace mrpt::maps
  * To programatically change an existing simplemap, use the non-const get()
  * method and modify the returned reference.
  *
+ * Copy constructor and copy operator makes shallow copies of all data.
+ * A makeDeepCopy() method is also provided which duplicates all internal data,
+ * if really needed.
+ *
  * \note Objects of this class are serialized into GZ-compressed files with
  *       the extension `.simplemap`.
  *       See [Robotics file formats](robotics_file_formats.html).
@@ -61,11 +65,8 @@ class CSimpleMap : public mrpt::serialization::CSerializable
 	CSimpleMap() = default;	 //!< Default ctor: empty map
 	~CSimpleMap() = default;
 
-	/** Copy constructor, makes a deep copy of all data. */
-	explicit CSimpleMap(const CSimpleMap& o);
-
-	/** Copy, making a deep copy of all data. */
-	CSimpleMap& operator=(const CSimpleMap& o);
+	/** makes a deep copy of all data  */
+	[[nodiscard]] CSimpleMap makeDeepCopy();
 
 	struct Keyframe
 	{
