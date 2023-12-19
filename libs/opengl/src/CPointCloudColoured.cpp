@@ -153,7 +153,7 @@ void CPointCloudColoured::setPoint(size_t i, const TPointXYZfRGBAu8& p)
 		CRenderizableShaderPoints::m_pointsMtx.data);
 
 #ifdef _DEBUG
-	ASSERT_LT_(i, size());
+	ASSERT_LT_(i, size_unprotected());
 #endif
 	m_points[i] = p.pt;
 	auto& c = m_point_colors[i];
