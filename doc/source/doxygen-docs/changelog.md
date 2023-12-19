@@ -2,6 +2,8 @@
 
 # Version 2.11.5: UNRELEASED
 - Changes in libraries:
+  - \ref mrpt_maps_grp
+    - New method mrpt::maps::CPointsMap::insertPointFrom() (and associated auxiliary methods) to easily copy points between different point clouds with different fields (timestamp, ring, RGB, etc.).
   - \ref mrpt_obs_grp
     - mrpt::maps::CSimpleMap changes:
       - Added an optional twist field.
