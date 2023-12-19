@@ -298,7 +298,8 @@ void CPointsMapXYZIRT::getPointRGB(
 	size_t index, float& x, float& y, float& z, float& R, float& G,
 	float& B) const
 {
-	if (index >= m_x.size()) THROW_EXCEPTION("Index out of bounds");
+	ASSERT_LT_(index, m_x.size());
+	ASSERT_LT_(index, m_intensity.size());
 
 	x = m_x[index];
 	y = m_y[index];
