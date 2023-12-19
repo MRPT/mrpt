@@ -6,6 +6,8 @@
     - mrpt::maps::CSimpleMap changes:
       - Added an optional twist field.
       - Simplified API for preferred usage with structured binding tuples.
+  - \ref mrpt_system_grp
+    - More readable results in mrpt::system::unitsFormat() for the special case of exactly `0`.
 - BUG FIXES:
   - Fix filtering of NANs input point clouds in mrpt::maps::CPointsMap::insertAnotherMap().
 
