@@ -138,6 +138,9 @@ std::string mrpt::system::unitsFormat(
 	double mult;
 	const double aVal = std::abs(val);
 
+	// special case for 0:
+	if (val == 0) return middle_space ? "0 " : "0";
+
 	if (aVal >= 1e12)
 	{
 		mult = 1e-12;
