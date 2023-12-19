@@ -167,19 +167,6 @@ class CPointsMapXYZI : public CPointsMap
 		return m_intensity[index];
 	}
 
-	/** Provides a direct access to a read-only reference of the internal
-	 * intensity point buffer. \sa getPointsBufferRef_x() */
-	auto getPointsBufferRef_intensity() const
-		-> const mrpt::aligned_std_vector<float>* override
-	{
-		return &m_intensity;
-	}
-	auto getPointsBufferRef_intensity()
-		-> mrpt::aligned_std_vector<float>* override
-	{
-		return &m_intensity;
-	}
-
 	/** Returns true if the point map has a color field for each point */
 	bool hasColorPoints() const override { return true; }
 
@@ -188,6 +175,12 @@ class CPointsMapXYZI : public CPointsMap
 	 */
 	void getVisualizationInto(
 		mrpt::opengl::CSetOfObjects& outObj) const override;
+
+	// clang-format off
+	auto getPointsBufferRef_intensity() const  -> const mrpt::aligned_std_vector<float>* override { return &m_intensity; }
+	auto getPointsBufferRef_intensity()        -> mrpt::aligned_std_vector<float>* override { return &m_intensity; }
+	void insertPointField_Intensity(float i) override { m_intensity.push_back(i); }
+	/// clang-format on
 
 	/** @name PCL library support
 		@{ */
