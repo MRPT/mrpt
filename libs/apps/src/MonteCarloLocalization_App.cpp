@@ -299,7 +299,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 			// Build metric map:
 			// ------------------------------
 			MRPT_LOG_INFO("Building metric map(s) from '.simplemap'...");
-			metricMap->loadFromProbabilisticPosesAndObservations(simpleMap);
+			metricMap->loadFromSimpleMap(simpleMap);
 			MRPT_LOG_INFO("Done.");
 		}
 		else if (!mapExt.compare("gridmap"))

@@ -159,8 +159,18 @@ void CPointsMapXYZIRT::impl_copyFrom(const CPointsMap& obj)
 	// This also does a ::resize(N) of all data fields.
 	CPointsMap::base_copyFrom(obj);
 
-	const auto* pXYZI = dynamic_cast<const CPointsMapXYZIRT*>(&obj);
-	if (pXYZI) m_intensity = pXYZI->m_intensity;
+	if (const auto* Is = obj.getPointsBufferRef_intensity(); Is)
+		m_intensity = *Is;
+	else
+		m_intensity.clear();
+
+	if (const auto* Rs = obj.getPointsBufferRef_ring(); Rs) m_ring = *Rs;
+	else
+		m_ring.clear();
+
+	if (const auto* Ts = obj.getPointsBufferRef_timestamp(); Ts) m_time = *Ts;
+	else
+		m_time.clear();
 }
 
 uint8_t CPointsMapXYZIRT::serializeGetVersion() const { return 0; }
@@ -298,7 +308,8 @@ void CPointsMapXYZIRT::getPointRGB(
 	size_t index, float& x, float& y, float& z, float& R, float& G,
 	float& B) const
 {
-	if (index >= m_x.size()) THROW_EXCEPTION("Index out of bounds");
+	ASSERT_LT_(index, m_x.size());
+	ASSERT_LT_(index, m_intensity.size());
 
 	x = m_x[index];
 	y = m_y[index];

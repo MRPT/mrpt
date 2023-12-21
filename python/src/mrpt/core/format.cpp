@@ -21,11 +21,11 @@ void bind_mrpt_core_format(std::function< pybind11::module &(std::string const &
 	// mrpt::to_string(double) file:mrpt/core/format.h line:31
 	M("mrpt").def("to_string", (std::string (*)(double)) &mrpt::to_string<double>, "C++: mrpt::to_string(double) --> std::string", pybind11::arg("v"));
 
-	// mrpt::to_string(unsigned long) file:mrpt/core/format.h line:31
-	M("mrpt").def("to_string", (std::string (*)(unsigned long)) &mrpt::to_string<unsigned long>, "C++: mrpt::to_string(unsigned long) --> std::string", pybind11::arg("v"));
-
 	// mrpt::to_string(int) file:mrpt/core/format.h line:31
 	M("mrpt").def("to_string", (std::string (*)(int)) &mrpt::to_string<int>, "C++: mrpt::to_string(int) --> std::string", pybind11::arg("v"));
+
+	// mrpt::to_string(unsigned long) file:mrpt/core/format.h line:31
+	M("mrpt").def("to_string", (std::string (*)(unsigned long)) &mrpt::to_string<unsigned long>, "C++: mrpt::to_string(unsigned long) --> std::string", pybind11::arg("v"));
 
 	// mrpt::to_string(unsigned int) file:mrpt/core/format.h line:31
 	M("mrpt").def("to_string", (std::string (*)(unsigned int)) &mrpt::to_string<unsigned int>, "C++: mrpt::to_string(unsigned int) --> std::string", pybind11::arg("v"));

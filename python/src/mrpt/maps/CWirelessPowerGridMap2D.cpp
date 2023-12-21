@@ -39,6 +39,7 @@
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/math/TPose3DQuat.h>
+#include <mrpt/math/TTwist3D.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/matrix_size_t.h>
 #include <mrpt/obs/CObservation.h>
@@ -73,7 +74,6 @@
 #include <streambuf>
 #include <string>
 #include <string_view>
-#include <tuple>
 #include <type_traits>
 #include <typeinfo>
 #include <utility>

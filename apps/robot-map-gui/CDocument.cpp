@@ -158,7 +158,7 @@ std::vector<size_t> CDocument::remove(const std::vector<size_t>& indexes)
 
 void CDocument::move(
 	const std::vector<size_t>& indexes,
-	const CSimpleMap::TPosePDFSensFramePairList& posesObsPairs)
+	const CSimpleMap::KeyframeList& posesObsPairs)
 {
 	for (size_t i = 0; i < indexes.size(); ++i)
 		move(indexes[i], posesObsPairs[i], true);
@@ -168,18 +168,18 @@ void CDocument::move(
 }
 
 void CDocument::move(
-	size_t index, const CSimpleMap::Pair& posesObsPair,
+	size_t index, const CSimpleMap::Keyframe& posesObsPair,
 	bool disableUpdateMetricMap)
 {
-	m_simplemap.set(index, posesObsPair);
+	auto& kf = m_simplemap.get(index);
+	kf = posesObsPair;
 
 	m_changedFile = true;
 	if (!disableUpdateMetricMap) updateMetricMap();
 }
 
 void CDocument::insert(
-	const std::vector<size_t>& idx,
-	CSimpleMap::TPosePDFSensFramePairList& posesObsPairs)
+	const std::vector<size_t>& idx, CSimpleMap::KeyframeList& posesObsPairs)
 {
 	for (size_t i = 0; i < idx.size(); ++i)
 		m_simplemap.insert(posesObsPairs[i]);
@@ -187,10 +187,9 @@ void CDocument::insert(
 	updateMetricMap();
 }
 
-CSimpleMap::TPosePDFSensFramePairList CDocument::get(
-	const std::vector<size_t>& idxs)
+CSimpleMap::KeyframeList CDocument::get(const std::vector<size_t>& idxs)
 {
-	CSimpleMap::TPosePDFSensFramePairList posesObsPairs;
+	CSimpleMap::KeyframeList posesObsPairs;
 	for (auto& idx : idxs)
 	{
 		auto pair = get(idx);
@@ -199,21 +198,11 @@ CSimpleMap::TPosePDFSensFramePairList CDocument::get(
 	return posesObsPairs;
 }
 
-CSimpleMap::ConstPair CDocument::get(size_t idx) const
+CSimpleMap::KeyframeList CDocument::getReverse(const std::vector<size_t>& idx)
 {
-	return m_simplemap.getAsPair(idx);
-}
-mrpt::maps::CSimpleMap::Pair CDocument::get(size_t idx)
-{
-	return m_simplemap.getAsPair(idx);
-}
-
-CSimpleMap::TPosePDFSensFramePairList CDocument::getReverse(
-	const std::vector<size_t>& idx)
-{
-	CSimpleMap::TPosePDFSensFramePairList posesObsPairs;
+	CSimpleMap::KeyframeList posesObsPairs;
 	for (int i = idx.size() - 1; i >= 0; --i)
-		posesObsPairs.emplace_back(m_simplemap.getAsPair(idx[i]));
+		posesObsPairs.emplace_back(m_simplemap.get(idx[i]));
 
 	return posesObsPairs;
 }
@@ -236,7 +225,7 @@ void CDocument::addMapToRenderizableMaps(
 
 void CDocument::updateMetricMap()
 {
-	m_metricmap.loadFromProbabilisticPosesAndObservations(m_simplemap);
+	m_metricmap.loadFromSimpleMap(m_simplemap);
 
 	m_typeConfigs.clear();
 	m_typeConfigs.emplace(TypeOfConfig::PointsMap, std::vector<MetricPtr>());

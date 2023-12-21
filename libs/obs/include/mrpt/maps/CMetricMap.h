@@ -132,14 +132,7 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 	 * \exception std::exception Some internal steps in invoked methods can
 	 * raise exceptions on invalid parameters, etc...
 	 */
-	void loadFromProbabilisticPosesAndObservations(
-		const mrpt::maps::CSimpleMap& Map);
-
-	///! \overload
-	inline void loadFromSimpleMap(const mrpt::maps::CSimpleMap& Map)
-	{
-		loadFromProbabilisticPosesAndObservations(Map);
-	}
+	void loadFromSimpleMap(const mrpt::maps::CSimpleMap& Map);
 
 	/** Insert the observation information into this map. This method must be
 	 * implemented in derived classes.

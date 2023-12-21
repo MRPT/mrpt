@@ -14,6 +14,7 @@
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TPose3D.h>
+#include <mrpt/math/TTwist3D.h>
 #include <mrpt/math/matrix_size_t.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -36,7 +37,6 @@
 #include <optional>
 #include <sstream> // __str__
 #include <string>
-#include <tuple>
 #include <utility>
 #include <variant>
 #include <vector>
