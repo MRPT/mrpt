@@ -252,6 +252,13 @@ class CPointsMapXYZIRT : public CPointsMap
 	void insertPointField_Timestamp(float t) override { m_time.push_back(t); }
 	/// clang-format on
 
+	void saveMetricMapRepresentationToFile(
+		const std::string& filNamePrefix) const override
+	{
+		std::string fil(filNamePrefix + std::string(".txt"));
+		saveXYZIRT_to_text_file(fil);
+	}
+
    protected:
 	/** The intensity/reflectance data */
 	mrpt::aligned_std_vector<float> m_intensity;

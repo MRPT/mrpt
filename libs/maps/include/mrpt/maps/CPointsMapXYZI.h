@@ -182,6 +182,13 @@ class CPointsMapXYZI : public CPointsMap
 	void insertPointField_Intensity(float i) override { m_intensity.push_back(i); }
 	/// clang-format on
 
+	void saveMetricMapRepresentationToFile(
+		const std::string& filNamePrefix) const override
+	{
+		std::string fil(filNamePrefix + std::string(".txt"));
+		saveXYZI_to_text_file(fil);
+	}
+
 	/** @name PCL library support
 		@{ */
 
