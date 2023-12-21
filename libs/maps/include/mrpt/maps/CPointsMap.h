@@ -575,42 +575,35 @@ class CPointsMap : public CMetricMap,
 	{
 		return m_z;
 	}
+	// clang-format off
+	virtual auto getPointsBufferRef_intensity() const  -> const mrpt::aligned_std_vector<float>* { return nullptr; }
+	virtual auto getPointsBufferRef_ring() const       -> const mrpt::aligned_std_vector<uint16_t>* { return nullptr; }
+	virtual auto getPointsBufferRef_timestamp() const  -> const mrpt::aligned_std_vector<float>* { return nullptr; }
+	virtual auto getPointsBufferRef_color_R() const    -> const mrpt::aligned_std_vector<float>* { return nullptr;}
+	virtual auto getPointsBufferRef_color_G() const    -> const mrpt::aligned_std_vector<float>* { return nullptr; }
+	virtual auto getPointsBufferRef_color_B() const    -> const mrpt::aligned_std_vector<float>* { return nullptr; }
 
-	virtual auto getPointsBufferRef_intensity() const
-		-> const mrpt::aligned_std_vector<float>*
-	{
-		return nullptr;
-	}
-
-	virtual auto getPointsBufferRef_ring() const
-		-> const mrpt::aligned_std_vector<uint16_t>*
-	{
-		return nullptr;
-	}
-
-	virtual auto getPointsBufferRef_timestamp() const
-		-> const mrpt::aligned_std_vector<float>*
-	{
-		return nullptr;
-	}
-
-	virtual auto getPointsBufferRef_intensity()
-		-> mrpt::aligned_std_vector<float>*
-	{
-		return nullptr;
-	}
-
-	virtual auto getPointsBufferRef_ring()
-		-> mrpt::aligned_std_vector<uint16_t>*
-	{
-		return nullptr;
-	}
-
-	virtual auto getPointsBufferRef_timestamp()
-		-> mrpt::aligned_std_vector<float>*
-	{
-		return nullptr;
-	}
+	virtual auto getPointsBufferRef_intensity()        -> mrpt::aligned_std_vector<float>* { return nullptr; }
+	virtual auto getPointsBufferRef_ring()             -> mrpt::aligned_std_vector<uint16_t>* { return nullptr; }
+	virtual auto getPointsBufferRef_timestamp()        -> mrpt::aligned_std_vector<float>* { return nullptr; }
+	virtual auto getPointsBufferRef_color_R()          -> mrpt::aligned_std_vector<float>* { return nullptr; }
+	virtual auto getPointsBufferRef_color_G()          -> mrpt::aligned_std_vector<float>* { return nullptr; }
+	virtual auto getPointsBufferRef_color_B()          -> mrpt::aligned_std_vector<float>* { return nullptr; }
+	
+	bool hasField_Intensity() const  { return getPointsBufferRef_intensity() != nullptr; }
+	bool hasField_Ring() const       { return getPointsBufferRef_ring() != nullptr; }
+	bool hasField_Timestamp() const  { return getPointsBufferRef_timestamp() != nullptr; }
+	bool hasField_color_R() const    { return getPointsBufferRef_color_R() != nullptr; }
+	bool hasField_color_G() const    { return getPointsBufferRef_color_G() != nullptr; }
+	bool hasField_color_B() const    { return getPointsBufferRef_color_B() != nullptr; }
+	
+	virtual void insertPointField_Intensity([[maybe_unused]] float i) { /* default: none*/ }
+	virtual void insertPointField_Ring([[maybe_unused]] uint16_t r)   { /* default: none*/ }
+	virtual void insertPointField_Timestamp([[maybe_unused]] float t) { /* default: none*/ }
+	virtual void insertPointField_color_R([[maybe_unused]] float v)   { /* default: none*/ }
+	virtual void insertPointField_color_G([[maybe_unused]] float v)   { /* default: none*/ }
+	virtual void insertPointField_color_B([[maybe_unused]] float v)   { /* default: none*/ }
+	/// clang-format on
 
 	/** Returns a copy of the 2D/3D points as a std::vector of float
 	 * coordinates.
@@ -706,6 +699,37 @@ class CPointsMap : public CMetricMap,
 		[[maybe_unused]] float G, [[maybe_unused]] float B)
 	{
 		insertPoint(x, y, z);
+	}
+
+	/** Generic method to copy *all* applicable point properties from
+	 *  one map to another, e.g. timestamp, intensity, etc.
+	 */
+	void insertPointFrom(
+		const mrpt::maps::CPointsMap& source, size_t sourcePointIndex)
+	{
+		const auto i = sourcePointIndex;  // shortcut
+		// mandatory fields:
+		const auto& xs = source.getPointsBufferRef_x();
+		const auto& ys = source.getPointsBufferRef_y();
+		const auto& zs = source.getPointsBufferRef_z();
+		// optional fields:
+		const auto* Is = source.getPointsBufferRef_intensity();
+		const auto* Rs = source.getPointsBufferRef_ring();
+		const auto* Ts = source.getPointsBufferRef_timestamp();
+		const auto* cR = source.getPointsBufferRef_color_R();
+		const auto* cG = source.getPointsBufferRef_color_G();
+		const auto* cB = source.getPointsBufferRef_color_B();
+
+		// XYZ:
+		insertPointFast(xs[i], ys[i], zs[i]);
+		if (Is && hasField_Intensity()) insertPointField_Intensity((*Is)[i]);
+		if (Rs && hasField_Ring()) insertPointField_Ring((*Rs)[i]);
+		if (Ts && hasField_Timestamp()) insertPointField_Timestamp((*Ts)[i]);
+		if (cR && hasField_color_R()) insertPointField_color_R((*cR)[i]);
+		if (cG && hasField_color_G()) insertPointField_color_G((*cG)[i]);
+		if (cB && hasField_color_B()) insertPointField_color_B((*cB)[i]);
+
+		mark_as_modified();
 	}
 
 	/** Set all the points at once from vectors with X,Y and Z coordinates (if Z

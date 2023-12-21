@@ -19,6 +19,7 @@
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/math/TPose3DQuat.h>
+#include <mrpt/math/TTwist3D.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/matrix_size_t.h>
 #include <mrpt/obs/CObservation.h>
@@ -32,7 +33,6 @@
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/CPoseOrPoint.h>
-#include <mrpt/poses/CPosePDF.h>
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/typemeta/static_string.h>
@@ -40,7 +40,6 @@
 #include <ostream>
 #include <ratio>
 #include <string>
-#include <tuple>
 #include <vector>
 
 #include <functional>

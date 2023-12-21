@@ -14,6 +14,7 @@
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/metaprogramming_serialization.h>
+#include <mrpt/serialization/optional_serialization.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::maps;
@@ -30,119 +31,33 @@ const auto fn_pair_make_unique = [](auto& ptr) {
 	ptr.sf.reset(dynamic_cast<mrpt::obs::CSensoryFrame*>(ptr.sf->clone()));
 };
 
-CSimpleMap::CSimpleMap(const CSimpleMap& o) : m_posesObsPairs(o.m_posesObsPairs)
+CSimpleMap CSimpleMap::makeDeepCopy()
 {
-	for_each(
-		m_posesObsPairs.begin(), m_posesObsPairs.end(), fn_pair_make_unique);
-}
-
-CSimpleMap& CSimpleMap::operator=(const CSimpleMap& o)
-{
-	MRPT_START
-	if (this == &o) return *this;  // It may be used sometimes
-
-	m_posesObsPairs = o.m_posesObsPairs;
-	for_each(
-		m_posesObsPairs.begin(), m_posesObsPairs.end(), fn_pair_make_unique);
-
-	return *this;
-	MRPT_END
+	CSimpleMap o = *this;
+	for_each(o.m_keyframes.begin(), o.m_keyframes.end(), fn_pair_make_unique);
+	return o;
 }
 
 void CSimpleMap::remove(size_t index)
 {
 	MRPT_START
-	ASSERTMSG_(index < m_posesObsPairs.size(), "Index out of bounds");
-	m_posesObsPairs.erase(m_posesObsPairs.begin() + index);
+	ASSERT_LT_(index, m_keyframes.size());
+	m_keyframes.erase(m_keyframes.begin() + index);
 	MRPT_END
 }
 
-void CSimpleMap::set(
-	size_t index, const CPose3DPDF::Ptr& in_posePDF,
-	const CSensoryFrame::Ptr& in_SF)
-{
-	MRPT_START
-	ASSERTMSG_(index < m_posesObsPairs.size(), "Index out of bounds");
-	if (in_posePDF) m_posesObsPairs[index].pose = in_posePDF;
-	if (in_SF) m_posesObsPairs[index].sf = in_SF;
-	MRPT_END
-}
+void CSimpleMap::insert(const Keyframe& kf) { m_keyframes.emplace_back(kf); }
 
-void CSimpleMap::set(
-	size_t index, const CPosePDF::Ptr& in_posePDF,
-	const CSensoryFrame::Ptr& in_SF)
-{
-	MRPT_START
-	ASSERTMSG_(index < m_posesObsPairs.size(), "Index out of bounds");
-	if (in_posePDF)
-		m_posesObsPairs[index].pose =
-			CPose3DPDF::Ptr(CPose3DPDF::createFrom2D(*in_posePDF));
-	if (in_SF) m_posesObsPairs[index].sf = in_SF;
-
-	MRPT_END
-}
-
-void CSimpleMap::insert(
-	const CPose3DPDF::Ptr& in_posePDF, const CSensoryFrame::Ptr& in_SF)
-{
-	MRPT_START
-
-	Pair pair;
-
-	pair.sf = in_SF;
-	pair.pose = in_posePDF;
-
-	m_posesObsPairs.push_back(pair);
-
-	MRPT_END
-}
-
-void CSimpleMap::insert(
-	const CPose3DPDF& in_posePDF, const CSensoryFrame& in_SF)
-{
-	MRPT_START
-
-	Pair pair;
-
-	pair.sf = CSensoryFrame::Create(in_SF);
-	pair.pose = CPose3DPDF::Ptr(dynamic_cast<CPose3DPDF*>(in_posePDF.clone()));
-	ASSERT_(pair.pose);
-
-	m_posesObsPairs.push_back(pair);
-
-	MRPT_END
-}
-
-void CSimpleMap::insert(const CPosePDF& in_posePDF, const CSensoryFrame& in_SF)
-{
-	MRPT_START
-
-	Pair pair;
-
-	pair.sf = CSensoryFrame::Create(in_SF);
-	pair.pose = CPose3DPDF::Ptr(dynamic_cast<CPose3DPDF*>(in_posePDF.clone()));
-	ASSERT_(pair.pose);
-
-	m_posesObsPairs.push_back(pair);
-
-	MRPT_END
-}
-
-void CSimpleMap::insert(
-	const CPosePDF::Ptr& in_posePDF, const CSensoryFrame::Ptr& in_SF)
-{
-	insert(CPose3DPDF::Ptr(CPose3DPDF::createFrom2D(*in_posePDF)), in_SF);
-}
-
-uint8_t CSimpleMap::serializeGetVersion() const { return 1; }
+uint8_t CSimpleMap::serializeGetVersion() const { return 2; }
 void CSimpleMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	out.WriteAs<uint32_t>(m_posesObsPairs.size());
-	for (const auto& p : m_posesObsPairs)
+	out.WriteAs<uint32_t>(m_keyframes.size());
+	for (const auto& p : m_keyframes)
 	{
 		ASSERT_(p.pose);
 		ASSERT_(p.sf);
 		out << *p.pose << *p.sf;
+		out << p.localTwist;  // v2
 	}
 }
 
@@ -151,14 +66,18 @@ void CSimpleMap::serializeFrom(
 {
 	switch (version)
 	{
+		case 2:
 		case 1:
 		{
 			uint32_t i, n;
 			clear();
 			in >> n;
-			m_posesObsPairs.resize(n);
+			m_keyframes.resize(n);
 			for (i = 0; i < n; i++)
-				in >> m_posesObsPairs[i].pose >> m_posesObsPairs[i].sf;
+			{
+				in >> m_keyframes[i].pose >> m_keyframes[i].sf;
+				if (version >= 2) in >> m_keyframes[i].localTwist;
+			}
 		}
 		break;
 		case 0:
@@ -167,12 +86,12 @@ void CSimpleMap::serializeFrom(
 			uint32_t i, n;
 			clear();
 			in >> n;
-			m_posesObsPairs.resize(n);
+			m_keyframes.resize(n);
 			for (i = 0; i < n; i++)
 			{
 				CPosePDF::Ptr aux2Dpose;
-				in >> aux2Dpose >> m_posesObsPairs[i].sf;
-				m_posesObsPairs[i].pose =
+				in >> aux2Dpose >> m_keyframes[i].sf;
+				m_keyframes[i].pose =
 					CPose3DPDF::Ptr(CPose3DPDF::createFrom2D(*aux2Dpose));
 			}
 		}
@@ -183,7 +102,7 @@ void CSimpleMap::serializeFrom(
 
 void CSimpleMap::changeCoordinatesOrigin(const CPose3D& newOrigin)
 {
-	for (auto& m_posesObsPair : m_posesObsPairs)
+	for (auto& m_posesObsPair : m_keyframes)
 	{
 		ASSERT_(m_posesObsPair.pose);
 		m_posesObsPair.pose->changeCoordinatesReference(newOrigin);

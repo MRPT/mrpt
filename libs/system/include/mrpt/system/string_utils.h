@@ -95,7 +95,15 @@ bool decodeBase64(const std::string& inString, std::vector<uint8_t>& outData);
 
 /** This function implements formatting with the appropriate SI metric unit
  * prefix: 1e-12->'p', 1e-9->'n', 1e-6->'u', 1e-3->'m', 1->'', 1e3->'K',
- * 1e6->'M', 1e9->'G', 1e12->'T' \sa intervalFormat */
+ * 1e6->'M', 1e9->'G', 1e12->'T'
+ * If the input is exactly 0, it will return the string `"0"`, so the overall
+ * result looks like that (e.g. using meter units on the caller side):
+ * \code
+ *  13445.0  => 13.44 km
+ *  0.0      =>     0 m
+ * \endcode
+ * \sa
+ * intervalFormat */
 std::string unitsFormat(
 	const double val, int nDecimalDigits = 2, bool middle_space = true);
 

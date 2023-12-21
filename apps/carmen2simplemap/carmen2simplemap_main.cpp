@@ -27,7 +27,7 @@
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/carmen_log_tools.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
@@ -153,9 +153,8 @@ int main(int argc, char** argv)
 				}
 
 				// Insert (observations, pose) pair:
-				CPosePDFGaussian::Ptr pos =
-					std::make_shared<CPosePDFGaussian>();
-				pos->mean = gt_pose;
+				auto pos = CPose3DPDFGaussian::Create();
+				pos->mean = mrpt::poses::CPose3D(gt_pose);
 				theSimpleMap.insert(pos, SF);
 			}
 

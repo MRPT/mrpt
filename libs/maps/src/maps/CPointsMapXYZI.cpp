@@ -107,8 +107,11 @@ void CPointsMapXYZI::impl_copyFrom(const CPointsMap& obj)
 	// This also does a ::resize(N) of all data fields.
 	CPointsMap::base_copyFrom(obj);
 
-	const auto* pXYZI = dynamic_cast<const CPointsMapXYZI*>(&obj);
-	if (pXYZI) m_intensity = pXYZI->m_intensity;
+	ASSERT_EQUAL_(m_x.size(), m_intensity.size());
+
+	if (const auto* Is = obj.getPointsBufferRef_intensity(); Is)
+		m_intensity = *Is;
+	// else: leave with default values in this class
 }
 
 uint8_t CPointsMapXYZI::serializeGetVersion() const { return 0; }
@@ -222,7 +225,8 @@ void CPointsMapXYZI::getPointRGB(
 	size_t index, float& x, float& y, float& z, float& R, float& G,
 	float& B) const
 {
-	if (index >= m_x.size()) THROW_EXCEPTION("Index out of bounds");
+	ASSERT_LT_(index, m_x.size());
+	ASSERT_LT_(index, m_intensity.size());
 
 	x = m_x[index];
 	y = m_y[index];
@@ -232,7 +236,7 @@ void CPointsMapXYZI::getPointRGB(
 
 float CPointsMapXYZI::getPointIntensity(size_t index) const
 {
-	if (index >= m_x.size()) THROW_EXCEPTION("Index out of bounds");
+	ASSERT_LT_(index, m_intensity.size());
 	return m_intensity[index];
 }
 

@@ -1603,6 +1603,8 @@ void CPointsMap::insertAnotherMap(
 
 		if (filterOutPointsAtZero && pt.x == 0 && pt.y == 0 && pt.z == 0)
 			continue;  // Skip
+		// filter NANs:
+		if (pt.x != pt.x) continue;
 
 		// Translation:
 		mrpt::math::TPoint3D g;
@@ -2033,6 +2035,9 @@ void CPointsMap::fuseWith(
 	for (size_t i = 0; i < nOther; i++)
 	{
 		otherMap->getPoint(i, a);  // Get "local" point into "a"
+		// filter NANs:
+		if (a.x != a.x) continue;
+
 		const unsigned long w_a = otherMap->getPointWeight(i);
 
 		// Find closest correspondence of "a":

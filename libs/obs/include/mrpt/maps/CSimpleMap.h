@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/math/TTwist3D.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/poses/CPose3DPDF.h>
@@ -18,25 +19,42 @@
 
 namespace mrpt::maps
 {
-/** A view-based representation of a metric map.
+/** A view-based map: a set of poses and what the robot saw from those poses.
  *
- *  This comprises a list of `<ProbabilisticPose,SensoryFrame>` pairs, that is,
- *  the **poses** (keyframes) from which a set of **observations** where
- * gathered:
- *  - Poses, in the global `map` frame of reference, are stored as probabilistic
- * PDFs over SE(3) as instances of mrpt::poses::CPose3DPDF
- *  - Observations are stored as mrpt::obs::CSensoryFrame.
+ * A simplemap comprises a sequence of tuples, each containing:
+ * - The **keyframe SE(3) pose** of the robot, including (optionally) its
+ *   uncertainty, as instances of mrpt::poses::CPose3DPDF
+ * - The **raw observations** from that keyframe, in a mrpt::obs::CSensoryFrame
+ * - Optionally, the **twist** (linear and angular velocity) of the robot in the
+ *   local frame of reference, at that moment. It can be used to undistort data
+ *   from a rotatory lidar, for example.
  *
- * Note that in order to generate an actual metric map (occupancy grid, point
- * cloud, octomap, etc.) from a "simple map", you must instantiate the desired
- * metric map class and invoke its virtual method
- * mrpt::maps::CMetricMap::loadFromProbabilisticPosesAndObservations().
+ * To generate an actual metric map (occupancy grid, point cloud, octomap, etc.)
+ * from a "simple map", the user must instantiate the desired metric map
+ * class(es) and invoke its virtual method
+ * mrpt::maps::CMetricMap::loadFromSimpleMap().
  *
- * \note Objects of this class are serialized into GZ-compressed
- *       files with the extension `.simplemap`.
+ * Users can also use the new top-level [library
+ * mp2p_icp_filters](https://github.com/MOLAorg/mp2p_icp/) and its CLI
+ * application
+ * [sm2mm](https://github.com/MOLAorg/mp2p_icp/tree/master/apps/sm2mm)
+ * (simple-map to metric-map)
+ * to generate metric maps including pre-processing of raw data in a flexible
+ * way.
+ *
+ * To programatically change an existing simplemap, use the non-const get()
+ * method and modify the returned reference.
+ *
+ * Copy constructor and copy operator makes shallow copies of all data.
+ * A makeDeepCopy() method is also provided which duplicates all internal data,
+ * if really needed.
+ *
+ * \note Objects of this class are serialized into GZ-compressed files with
+ *       the extension `.simplemap`.
  *       See [Robotics file formats](robotics_file_formats.html).
  *
- * \sa mrpt::obs::CSensoryFrame, mrpt::poses::CPose3DPDF, mrpt::maps::CMetricMap
+ * \sa mrpt::obs::CSensoryFrame, mrpt::poses::CPose3DPDF,
+ *     mrpt::maps::CMetricMap, https://github.com/MOLAorg/mp2p_icp/
  *
  * \ingroup mrpt_obs_grp
  */
@@ -47,30 +65,26 @@ class CSimpleMap : public mrpt::serialization::CSerializable
 	CSimpleMap() = default;	 //!< Default ctor: empty map
 	~CSimpleMap() = default;
 
-	/** Copy constructor, makes a deep copy of all data. */
-	CSimpleMap(const CSimpleMap& o);
+	/** makes a deep copy of all data  */
+	[[nodiscard]] CSimpleMap makeDeepCopy();
 
-	/** Copy, making a deep copy of all data. */
-	CSimpleMap& operator=(const CSimpleMap& o);
-
-	struct Pair
+	struct Keyframe
 	{
-		Pair() = default;
-		~Pair() = default;
+		Keyframe() = default;
+		~Keyframe() = default;
+
+		Keyframe(
+			const mrpt::poses::CPose3DPDF::Ptr& kfPose,
+			const mrpt::obs::CSensoryFrame::Ptr& kfSf,
+			const std::optional<mrpt::math::TTwist3D>& kflocalTwist =
+				std::nullopt)
+			: pose(kfPose), sf(kfSf), localTwist(kflocalTwist)
+		{
+		}
 
 		mrpt::poses::CPose3DPDF::Ptr pose;
-		mrpt::obs::CSensoryFrame::Ptr sf;
-	};
-
-	struct ConstPair
-	{
-		ConstPair() = default;
-		~ConstPair() = default;
-
-		ConstPair(const Pair& p) : pose(p.pose), sf(p.sf) {}
-
-		mrpt::poses::CPose3DPDF::ConstPtr pose;
-		mrpt::obs::CSensoryFrame::ConstPtr sf;
+		mrpt::obs::CSensoryFrame::Ptr sf;  //!< raw observations
+		std::optional<mrpt::math::TTwist3D> localTwist;
 	};
 
 	/** \name Map access and modification
@@ -89,124 +103,54 @@ class CSimpleMap : public mrpt::serialization::CSerializable
 	 * \return false on any error. */
 	bool loadFromFile(const std::string& filName);
 
-	/** Returns the count of (pose,sensoryFrame) pairs */
-	size_t size() const { return m_posesObsPairs.size(); }
+	/** Returns the number of keyframes in the map */
+	size_t size() const { return m_keyframes.size(); }
 
 	/** Returns size()!=0 */
-	bool empty() const { return m_posesObsPairs.empty(); }
+	bool empty() const { return m_keyframes.empty(); }
 
-	/** Access to the 0-based index i'th pair.
-	 * \exception std::exception On index out of bounds.
-	 */
-	void get(
-		size_t index, mrpt::poses::CPose3DPDF::ConstPtr& out_posePDF,
-		mrpt::obs::CSensoryFrame::ConstPtr& out_SF) const
+	/// const accessor
+	const Keyframe& get(size_t index) const
 	{
-		ASSERTMSG_(index < m_posesObsPairs.size(), "Index out of bounds");
-		out_posePDF = m_posesObsPairs[index].pose;
-		out_SF = m_posesObsPairs[index].sf;
-	}
-	/// \overload
-	std::tuple<
-		mrpt::poses::CPose3DPDF::ConstPtr, mrpt::obs::CSensoryFrame::ConstPtr>
-		get(size_t index) const
-	{
-		ASSERTMSG_(index < m_posesObsPairs.size(), "Index out of bounds");
-		return {m_posesObsPairs[index].pose, m_posesObsPairs[index].sf};
+		ASSERT_LT_(index, m_keyframes.size());
+		return m_keyframes[index];
 	}
 
-	ConstPair getAsPair(size_t index) const
+	/// non-const accessor, returning a reference suitable for modification
+	Keyframe& get(size_t index)
 	{
-		ASSERTMSG_(index < m_posesObsPairs.size(), "Index out of bounds");
-		return m_posesObsPairs.at(index);
-	}
-	Pair& getAsPair(size_t index)
-	{
-		ASSERTMSG_(index < m_posesObsPairs.size(), "Index out of bounds");
-		return m_posesObsPairs.at(index);
+		ASSERT_LT_(index, m_keyframes.size());
+		return m_keyframes[index];
 	}
 
-	/// \overload
-	void get(
-		size_t index, mrpt::poses::CPose3DPDF::Ptr& out_posePDF,
-		mrpt::obs::CSensoryFrame::Ptr& out_SF)
-	{
-		ASSERTMSG_(index < m_posesObsPairs.size(), "Index out of bounds");
-		out_posePDF = m_posesObsPairs[index].pose;
-		out_SF = m_posesObsPairs[index].sf;
-	}
-
-	/// \overload
-	std::tuple<mrpt::poses::CPose3DPDF::Ptr, mrpt::obs::CSensoryFrame::Ptr> get(
-		size_t index)
-	{
-		ASSERTMSG_(index < m_posesObsPairs.size(), "Index out of bounds");
-		return {m_posesObsPairs[index].pose, m_posesObsPairs[index].sf};
-	}
-
-	/** Changes the 0-based index i'th pair.
-	 *  If one of either `in_posePDF` or `in_SF` are empty `shared_ptr`s, the
-	 * corresponding field in the map is not modified.
-	 *
-	 * \exception std::exception On index out of bounds.
-	 * \sa insert, get, remove
-	 */
-	void set(
-		size_t index, const mrpt::poses::CPose3DPDF::Ptr& in_posePDF,
-		const mrpt::obs::CSensoryFrame::Ptr& in_SF);
-
-	/// \overload
-	void set(size_t index, const Pair& poseSF)
-	{
-		set(index, poseSF.pose, poseSF.sf);
-	}
-
-	/// \overload For SE(2) pose PDF, internally converted to SE(3).
-	void set(
-		size_t index, const mrpt::poses::CPosePDF::Ptr& in_posePDF,
-		const mrpt::obs::CSensoryFrame::Ptr& in_SF);
-
-	/** Deletes the 0-based index i'th pair.
+	/** Deletes the 0-based index i'th keyframe.
 	 * \exception std::exception On index out of bounds.
 	 * \sa insert, get, set
 	 */
 	void remove(size_t index);
 
-	/** Adds a new keyframe (SE(3) pose) to the view-based map, making a deep
-	 * copy of the pose PDF (observations within the SF are always copied as
-	 * `shared_ptr`s).
+	/** Adds a new keyframe (SE(3) pose) to the view-based map.
+	 *  Both shared pointers are copied (shallow object copies).
 	 */
-	void insert(
-		const mrpt::poses::CPose3DPDF& in_posePDF,
-		const mrpt::obs::CSensoryFrame& in_SF);
+	void insert(const Keyframe& kf);
 
 	/** Adds a new keyframe (SE(3) pose) to the view-based map.
 	 *  Both shared pointers are copied (shallow object copies).
 	 */
 	void insert(
 		const mrpt::poses::CPose3DPDF::Ptr& in_posePDF,
-		const mrpt::obs::CSensoryFrame::Ptr& in_SF);
+		const mrpt::obs::CSensoryFrame::Ptr& in_SF,
+		const std::optional<mrpt::math::TTwist3D>& twist = std::nullopt)
+	{
+		Keyframe kf;
+		kf.pose = in_posePDF;
+		kf.sf = in_SF;
+		kf.localTwist = twist;
+		insert(kf);
+	}
 
-	/// \overload
-	void insert(const Pair& poseSF) { insert(poseSF.pose, poseSF.sf); }
-
-	/** Adds a new keyframe (SE(2) pose) to the view-based map, making a deep
-	 * copy of the pose PDF (observations within the SF are always copied as
-	 * `shared_ptr`s).
-	 */
-	void insert(
-		const mrpt::poses::CPosePDF& in_posePDF,
-		const mrpt::obs::CSensoryFrame& in_SF);
-
-	/** Adds a new keyframe (SE(2) pose) to the view-based map.
-	 *  Both shared pointers are copied (shallow object copies).
-	 */
-	void insert(
-		const mrpt::poses::CPosePDF::Ptr& in_posePDF,
-		const mrpt::obs::CSensoryFrame::Ptr& in_SF);
-
-	/** Remove all stored pairs.  \sa remove */
-	void clear() { m_posesObsPairs.clear(); }
+	/** Remove all stored keyframes.  \sa remove */
+	void clear() { m_keyframes.clear(); }
 
 	/** Change the coordinate origin of all stored poses, that is, translates
 	 * and rotates the map such that the old SE(3) origin (identity
@@ -218,31 +162,30 @@ class CSimpleMap : public mrpt::serialization::CSerializable
 
 	/** \name Iterators API
 	 * @{ */
-	using TPosePDFSensFramePairList = std::deque<Pair>;
+	using KeyframeList = std::deque<Keyframe>;
 
-	using const_iterator = TPosePDFSensFramePairList::const_iterator;
-	using iterator = TPosePDFSensFramePairList::iterator;
-	using reverse_iterator = TPosePDFSensFramePairList::reverse_iterator;
-	using const_reverse_iterator =
-		TPosePDFSensFramePairList::const_reverse_iterator;
+	using const_iterator = KeyframeList::const_iterator;
+	using iterator = KeyframeList::iterator;
+	using reverse_iterator = KeyframeList::reverse_iterator;
+	using const_reverse_iterator = KeyframeList::const_reverse_iterator;
 
-	const_iterator begin() const { return m_posesObsPairs.begin(); }
-	const_iterator end() const { return m_posesObsPairs.end(); }
-	const_iterator cbegin() const { return m_posesObsPairs.cbegin(); }
-	const_iterator cend() const { return m_posesObsPairs.cend(); }
-	iterator begin() { return m_posesObsPairs.begin(); }
-	iterator end() { return m_posesObsPairs.end(); }
-	const_reverse_iterator rbegin() const { return m_posesObsPairs.rbegin(); }
-	const_reverse_iterator rend() const { return m_posesObsPairs.rend(); }
-	const_reverse_iterator crbegin() const { return m_posesObsPairs.crbegin(); }
-	const_reverse_iterator crend() const { return m_posesObsPairs.crend(); }
-	reverse_iterator rbegin() { return m_posesObsPairs.rbegin(); }
-	reverse_iterator rend() { return m_posesObsPairs.rend(); }
+	const_iterator begin() const { return m_keyframes.begin(); }
+	const_iterator end() const { return m_keyframes.end(); }
+	const_iterator cbegin() const { return m_keyframes.cbegin(); }
+	const_iterator cend() const { return m_keyframes.cend(); }
+	iterator begin() { return m_keyframes.begin(); }
+	iterator end() { return m_keyframes.end(); }
+	const_reverse_iterator rbegin() const { return m_keyframes.rbegin(); }
+	const_reverse_iterator rend() const { return m_keyframes.rend(); }
+	const_reverse_iterator crbegin() const { return m_keyframes.crbegin(); }
+	const_reverse_iterator crend() const { return m_keyframes.crend(); }
+	reverse_iterator rbegin() { return m_keyframes.rbegin(); }
+	reverse_iterator rend() { return m_keyframes.rend(); }
 	/** @} */
 
    private:
 	/** The stored data */
-	TPosePDFSensFramePairList m_posesObsPairs;
+	KeyframeList m_keyframes;
 
 };	// End of class def.
 

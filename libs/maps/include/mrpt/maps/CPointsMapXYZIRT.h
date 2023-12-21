@@ -229,42 +229,6 @@ class CPointsMapXYZIRT : public CPointsMap
 		return m_intensity[index];
 	}
 
-	auto getPointsBufferRef_intensity() const
-		-> const mrpt::aligned_std_vector<float>* override
-	{
-		return &m_intensity;
-	}
-
-	auto getPointsBufferRef_ring() const
-		-> const mrpt::aligned_std_vector<uint16_t>* override
-	{
-		return &m_ring;
-	}
-
-	auto getPointsBufferRef_timestamp() const
-		-> const mrpt::aligned_std_vector<float>* override
-	{
-		return &m_time;
-	}
-
-	auto getPointsBufferRef_intensity()
-		-> mrpt::aligned_std_vector<float>* override
-	{
-		return &m_intensity;
-	}
-
-	auto getPointsBufferRef_ring()
-		-> mrpt::aligned_std_vector<uint16_t>* override
-	{
-		return &m_ring;
-	}
-
-	auto getPointsBufferRef_timestamp()
-		-> mrpt::aligned_std_vector<float>* override
-	{
-		return &m_time;
-	}
-
 	/** Returns true if the point map has a color field for each point */
 	bool hasColorPoints() const override { return true; }
 
@@ -273,6 +237,27 @@ class CPointsMapXYZIRT : public CPointsMap
 	 */
 	void getVisualizationInto(
 		mrpt::opengl::CSetOfObjects& outObj) const override;
+
+	// clang-format off
+	auto getPointsBufferRef_intensity() const  -> const mrpt::aligned_std_vector<float>* override { return &m_intensity; }
+	auto getPointsBufferRef_ring() const       -> const mrpt::aligned_std_vector<uint16_t>* override { return &m_ring; }
+	auto getPointsBufferRef_timestamp() const  -> const mrpt::aligned_std_vector<float>* override { return &m_time; }
+
+	auto getPointsBufferRef_intensity()        -> mrpt::aligned_std_vector<float>* override { return &m_intensity; }
+	auto getPointsBufferRef_ring()             -> mrpt::aligned_std_vector<uint16_t>* override { return &m_ring; }
+	auto getPointsBufferRef_timestamp()        -> mrpt::aligned_std_vector<float>* override { return  &m_time; }
+
+	void insertPointField_Intensity(float i) override { m_intensity.push_back(i); }
+	void insertPointField_Ring(uint16_t r)   override { m_ring.push_back(r); }
+	void insertPointField_Timestamp(float t) override { m_time.push_back(t); }
+	/// clang-format on
+
+	void saveMetricMapRepresentationToFile(
+		const std::string& filNamePrefix) const override
+	{
+		std::string fil(filNamePrefix + std::string(".txt"));
+		saveXYZIRT_to_text_file(fil);
+	}
 
    protected:
 	/** The intensity/reflectance data */
