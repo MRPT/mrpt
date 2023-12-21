@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.11.5: UNRELEASED
+# Version 2.11.5: Released Dec 21st, 2023
 - Changes in libraries:
   - \ref mrpt_maps_grp
     - New method mrpt::maps::CPointsMap::insertPointFrom() (and associated auxiliary methods) to easily copy points between different point clouds with different fields (timestamp, ring, RGB, etc.).
