@@ -78,7 +78,7 @@ class CObservationImage : public CObservation
 	/** Makes sure the image, which may be externally stored, are loaded in
 	 * memory. \sa unload
 	 */
-	void load() const override;
+	void load_impl() const override;
 
 	/** Unload image, for the case of it being stored in lazy-load mode
 	 *  (othewise, the method has no effect).

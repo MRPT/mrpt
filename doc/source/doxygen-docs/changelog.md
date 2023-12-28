@@ -1,7 +1,9 @@
 \page changelog Change Log
 
 # Version 2.11.6: UNRELEASED
-(none yet)
+- Changes in libraries:
+  - \ref mrpt_obs_grp
+    - mrpt::obs::CObservation::load() is now protected with a std::mutex for safe multi-threading usage.
 
 
 # Version 2.11.5: Released Dec 21st, 2023

@@ -482,7 +482,7 @@ bool RotScan::fromGeneric(const mrpt::obs::CObservation& o)
 	MRPT_END
 }
 
-void RotScan::load() const
+void RotScan::load_impl() const
 {
 	// Already loaded?
 	if (!isExternallyStored() || (isExternallyStored() && !rangeImage.empty()))

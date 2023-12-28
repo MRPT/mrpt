@@ -9,6 +9,7 @@
 
 #include "maps-precomp.h"  // Precomp header
 //
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/lazy_load_path.h>
@@ -106,7 +107,7 @@ void CObservationPointCloud::serializeFrom(
 	};
 }
 
-void CObservationPointCloud::load() const
+void CObservationPointCloud::load_impl() const
 {
 	MRPT_START
 

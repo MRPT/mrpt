@@ -39,7 +39,7 @@
 
 void bind_mrpt_maps_CPointsMap_1(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::opengl::PointCloudAdapter file:mrpt/maps/CPointsMap.h line:1291
+	{ // mrpt::opengl::PointCloudAdapter file:mrpt/maps/CPointsMap.h line:1315
 		pybind11::class_<mrpt::opengl::PointCloudAdapter<mrpt::maps::CPointsMap>, std::shared_ptr<mrpt::opengl::PointCloudAdapter<mrpt::maps::CPointsMap>>> cl(M("mrpt::opengl"), "PointCloudAdapter_mrpt_maps_CPointsMap_t", "Specialization mrpt::opengl::PointCloudAdapter<mrpt::maps::CPointsMap>\n \n");
 		cl.def( pybind11::init<const class mrpt::maps::CPointsMap &>(), pybind11::arg("obj") );
 

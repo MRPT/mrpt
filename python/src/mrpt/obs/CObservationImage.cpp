@@ -150,9 +150,9 @@ struct PyCallBack_mrpt_obs_CObservationImage : public mrpt::obs::CObservationIma
 		}
 		return CObservationImage::setSensorPose(a0);
 	}
-	void load() const override {
+	void load_impl() const override {
 		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationImage *>(this), "load");
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationImage *>(this), "load_impl");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
 			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
@@ -161,7 +161,7 @@ struct PyCallBack_mrpt_obs_CObservationImage : public mrpt::obs::CObservationIma
 			}
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
-		return CObservationImage::load();
+		return CObservationImage::load_impl();
 	}
 	void unload() const override {
 		pybind11::gil_scoped_acquire gil;
@@ -259,7 +259,7 @@ void bind_mrpt_obs_CObservationImage(std::function< pybind11::module &(std::stri
 		cl.def("getUndistortedImage", (void (mrpt::obs::CObservationImage::*)(class mrpt::img::CImage &) const) &mrpt::obs::CObservationImage::getUndistortedImage, "Computes the un-distorted image, using the embeded camera\n intrinsic & distortion parameters.\n\nC++: mrpt::obs::CObservationImage::getUndistortedImage(class mrpt::img::CImage &) const --> void", pybind11::arg("out_img"));
 		cl.def("getSensorPose", (void (mrpt::obs::CObservationImage::*)(class mrpt::poses::CPose3D &) const) &mrpt::obs::CObservationImage::getSensorPose, "C++: mrpt::obs::CObservationImage::getSensorPose(class mrpt::poses::CPose3D &) const --> void", pybind11::arg("out_sensorPose"));
 		cl.def("setSensorPose", (void (mrpt::obs::CObservationImage::*)(const class mrpt::poses::CPose3D &)) &mrpt::obs::CObservationImage::setSensorPose, "C++: mrpt::obs::CObservationImage::setSensorPose(const class mrpt::poses::CPose3D &) --> void", pybind11::arg("newSensorPose"));
-		cl.def("load", (void (mrpt::obs::CObservationImage::*)() const) &mrpt::obs::CObservationImage::load, "Makes sure the image, which may be externally stored, are loaded in\n memory. \n\n unload\n\nC++: mrpt::obs::CObservationImage::load() const --> void");
+		cl.def("load_impl", (void (mrpt::obs::CObservationImage::*)() const) &mrpt::obs::CObservationImage::load_impl, "Makes sure the image, which may be externally stored, are loaded in\n memory. \n\n unload\n\nC++: mrpt::obs::CObservationImage::load_impl() const --> void");
 		cl.def("unload", (void (mrpt::obs::CObservationImage::*)() const) &mrpt::obs::CObservationImage::unload, "Unload image, for the case of it being stored in lazy-load mode\n  (othewise, the method has no effect).\n \n\n load\n\nC++: mrpt::obs::CObservationImage::unload() const --> void");
 		cl.def("assign", (class mrpt::obs::CObservationImage & (mrpt::obs::CObservationImage::*)(const class mrpt::obs::CObservationImage &)) &mrpt::obs::CObservationImage::operator=, "C++: mrpt::obs::CObservationImage::operator=(const class mrpt::obs::CObservationImage &) --> class mrpt::obs::CObservationImage &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}

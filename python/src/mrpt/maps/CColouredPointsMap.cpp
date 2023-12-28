@@ -1,5 +1,6 @@
 #include <iterator>
 #include <memory>
+#include <mrpt/core/aligned_allocator.h>
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/CPointsMap.h>
@@ -32,7 +33,7 @@
 
 void bind_mrpt_maps_CColouredPointsMap(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::opengl::PointCloudAdapter file:mrpt/maps/CColouredPointsMap.h line:374
+	{ // mrpt::opengl::PointCloudAdapter file:mrpt/maps/CColouredPointsMap.h line:388
 		pybind11::class_<mrpt::opengl::PointCloudAdapter<mrpt::maps::CColouredPointsMap>, std::shared_ptr<mrpt::opengl::PointCloudAdapter<mrpt::maps::CColouredPointsMap>>> cl(M("mrpt::opengl"), "PointCloudAdapter_mrpt_maps_CColouredPointsMap_t", "Specialization\n mrpt::opengl::PointCloudAdapter<mrpt::maps::CColouredPointsMap> \n\n\n mrpt_adapters_grp ");
 		cl.def( pybind11::init<const class mrpt::maps::CColouredPointsMap &>(), pybind11::arg("obj") );
 

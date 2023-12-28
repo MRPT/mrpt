@@ -154,7 +154,7 @@ void CObservationImage::getDescriptionAsText(std::ostream& o) const
 	o << cameraParams.asYAML();
 }
 
-void CObservationImage::load() const
+void CObservationImage::load_impl() const
 {
 	const thread_local bool MRPT_DEBUG_OBSIMG_LAZY_LOAD =
 		mrpt::get_env<bool>("MRPT_DEBUG_OBSIMG_LAZY_LOAD", false);
