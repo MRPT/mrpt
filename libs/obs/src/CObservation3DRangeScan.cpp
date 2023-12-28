@@ -650,7 +650,7 @@ void CObservation3DRangeScan::swap(CObservation3DRangeScan& o)
 	rangeImageOtherLayers.swap(o.rangeImageOtherLayers);
 }
 
-void CObservation3DRangeScan::load() const
+void CObservation3DRangeScan::load_impl() const
 {
 	if (hasPoints3D && m_points3D_external_stored)
 	{

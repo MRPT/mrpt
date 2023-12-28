@@ -168,7 +168,7 @@ class CObservationRotatingScan : public CObservation
 	/** @name Delayed-load manual control methods.
 		@{ */
 	// See base class docs.
-	void load() const override;
+	void load_impl() const override;
 	void unload() const override;
 	/** @} */
 

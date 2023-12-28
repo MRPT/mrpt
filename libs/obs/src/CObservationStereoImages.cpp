@@ -275,7 +275,7 @@ void CObservationStereoImages::getDescriptionAsText(std::ostream& o) const
 	o << "\n# Right camera calibration:\n" << stParams.rightCamera.asYAML();
 }
 
-void CObservationStereoImages::load() const
+void CObservationStereoImages::load_impl() const
 {
 	imageLeft.forceLoad();
 	imageRight.forceLoad();

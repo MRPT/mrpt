@@ -219,19 +219,6 @@ struct PyCallBack_mrpt_obs_CObservationOdometry : public mrpt::obs::CObservation
 		}
 		return CObservation::asString();
 	}
-	void load() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationOdometry *>(this), "load");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CObservation::load();
-	}
 	void unload() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationOdometry *>(this), "unload");
@@ -244,6 +231,19 @@ struct PyCallBack_mrpt_obs_CObservationOdometry : public mrpt::obs::CObservation
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
 		return CObservation::unload();
+	}
+	void load_impl() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationOdometry *>(this), "load_impl");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CObservation::load_impl();
 	}
 };
 
@@ -408,19 +408,6 @@ struct PyCallBack_mrpt_obs_CObservationReflectivity : public mrpt::obs::CObserva
 		}
 		return CObservation::asString();
 	}
-	void load() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationReflectivity *>(this), "load");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CObservation::load();
-	}
 	void unload() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationReflectivity *>(this), "unload");
@@ -433,6 +420,19 @@ struct PyCallBack_mrpt_obs_CObservationReflectivity : public mrpt::obs::CObserva
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
 		return CObservation::unload();
+	}
+	void load_impl() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationReflectivity *>(this), "load_impl");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CObservation::load_impl();
 	}
 };
 
@@ -597,19 +597,6 @@ struct PyCallBack_mrpt_obs_CObservationRobotPose : public mrpt::obs::CObservatio
 		}
 		return CObservation::asString();
 	}
-	void load() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationRobotPose *>(this), "load");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CObservation::load();
-	}
 	void unload() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationRobotPose *>(this), "unload");
@@ -622,6 +609,19 @@ struct PyCallBack_mrpt_obs_CObservationRobotPose : public mrpt::obs::CObservatio
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
 		return CObservation::unload();
+	}
+	void load_impl() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationRobotPose *>(this), "load_impl");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CObservation::load_impl();
 	}
 };
 
@@ -786,19 +786,6 @@ struct PyCallBack_mrpt_obs_CObservationStereoImagesFeatures : public mrpt::obs::
 		}
 		return CObservation::exportTxtDataRow();
 	}
-	void load() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationStereoImagesFeatures *>(this), "load");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CObservation::load();
-	}
 	void unload() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationStereoImagesFeatures *>(this), "unload");
@@ -811,6 +798,19 @@ struct PyCallBack_mrpt_obs_CObservationStereoImagesFeatures : public mrpt::obs::
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
 		return CObservation::unload();
+	}
+	void load_impl() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationStereoImagesFeatures *>(this), "load_impl");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CObservation::load_impl();
 	}
 };
 

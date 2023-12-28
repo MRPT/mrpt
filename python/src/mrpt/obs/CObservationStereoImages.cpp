@@ -147,9 +147,9 @@ struct PyCallBack_mrpt_obs_CObservationStereoImages : public mrpt::obs::CObserva
 		}
 		return CObservationStereoImages::setSensorPose(a0);
 	}
-	void load() const override {
+	void load_impl() const override {
 		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationStereoImages *>(this), "load");
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationStereoImages *>(this), "load_impl");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
 			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
@@ -158,7 +158,7 @@ struct PyCallBack_mrpt_obs_CObservationStereoImages : public mrpt::obs::CObserva
 			}
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
-		return CObservationStereoImages::load();
+		return CObservationStereoImages::load_impl();
 	}
 	using _binder_ret_0 = mrpt::Clock::time_point;
 	_binder_ret_0 getOriginalReceivedTimeStamp() const override {
@@ -268,7 +268,7 @@ void bind_mrpt_obs_CObservationStereoImages(std::function< pybind11::module &(st
 		cl.def("getSensorPose", (void (mrpt::obs::CObservationStereoImages::*)(class mrpt::poses::CPose3D &) const) &mrpt::obs::CObservationStereoImages::getSensorPose, "@} \n\nC++: mrpt::obs::CObservationStereoImages::getSensorPose(class mrpt::poses::CPose3D &) const --> void", pybind11::arg("out_sensorPose"));
 		cl.def("setSensorPose", (void (mrpt::obs::CObservationStereoImages::*)(const class mrpt::poses::CPose3D &)) &mrpt::obs::CObservationStereoImages::setSensorPose, "C++: mrpt::obs::CObservationStereoImages::setSensorPose(const class mrpt::poses::CPose3D &) --> void", pybind11::arg("newSensorPose"));
 		cl.def("swap", (void (mrpt::obs::CObservationStereoImages::*)(class mrpt::obs::CObservationStereoImages &)) &mrpt::obs::CObservationStereoImages::swap, "Do an efficient swap of all data members of this object with \"o\". \n\nC++: mrpt::obs::CObservationStereoImages::swap(class mrpt::obs::CObservationStereoImages &) --> void", pybind11::arg("o"));
-		cl.def("load", (void (mrpt::obs::CObservationStereoImages::*)() const) &mrpt::obs::CObservationStereoImages::load, "C++: mrpt::obs::CObservationStereoImages::load() const --> void");
+		cl.def("load_impl", (void (mrpt::obs::CObservationStereoImages::*)() const) &mrpt::obs::CObservationStereoImages::load_impl, "C++: mrpt::obs::CObservationStereoImages::load_impl() const --> void");
 		cl.def("assign", (class mrpt::obs::CObservationStereoImages & (mrpt::obs::CObservationStereoImages::*)(const class mrpt::obs::CObservationStereoImages &)) &mrpt::obs::CObservationStereoImages::operator=, "C++: mrpt::obs::CObservationStereoImages::operator=(const class mrpt::obs::CObservationStereoImages &) --> class mrpt::obs::CObservationStereoImages &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
 }

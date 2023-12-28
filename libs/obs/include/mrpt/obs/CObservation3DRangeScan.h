@@ -165,7 +165,7 @@ class CObservation3DRangeScan : public CObservation
 	 * stored data fields, calling this method has no effects.
 	 * \sa unload
 	 */
-	void load() const override;
+	void load_impl() const override;
 	/** Unload all images, for the case they being delayed-load images stored in
 	 * external files (othewise, has no effect).
 	 * \sa load

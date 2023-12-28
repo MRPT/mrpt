@@ -47,7 +47,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::obs::CObservation file:mrpt/obs/CObservation.h line:46
+// mrpt::obs::CObservation file:mrpt/obs/CObservation.h line:50
 struct PyCallBack_mrpt_obs_CObservation : public mrpt::obs::CObservation {
 	using mrpt::obs::CObservation::CObservation;
 
@@ -156,19 +156,6 @@ struct PyCallBack_mrpt_obs_CObservation : public mrpt::obs::CObservation {
 		}
 		return CObservation::exportTxtDataRow();
 	}
-	void load() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservation *>(this), "load");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CObservation::load();
-	}
 	void unload() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservation *>(this), "unload");
@@ -181,6 +168,19 @@ struct PyCallBack_mrpt_obs_CObservation : public mrpt::obs::CObservation {
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
 		return CObservation::unload();
+	}
+	void load_impl() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservation *>(this), "load_impl");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CObservation::load_impl();
 	}
 	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
@@ -238,7 +238,7 @@ struct PyCallBack_mrpt_obs_CObservation : public mrpt::obs::CObservation {
 
 void bind_mrpt_obs_CObservation(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::obs::CObservation file:mrpt/obs/CObservation.h line:46
+	{ // mrpt::obs::CObservation file:mrpt/obs/CObservation.h line:50
 		pybind11::class_<mrpt::obs::CObservation, std::shared_ptr<mrpt::obs::CObservation>, PyCallBack_mrpt_obs_CObservation, mrpt::serialization::CSerializable, mrpt::Stringifyable> cl(M("mrpt::obs"), "CObservation", "Generic sensor observation.\n\n  This is a base virtual class for all types of sensor observations.\n  Users can add new observation types creating a new class deriving from this\n one, or reuse those provided in MRPT modules. Most observations are defined\n in \n\n\n Observations do not include any information about the robot localization,\n but just raw sensory data and, where aplicable, information about the\n sensor position and orientation in the **local frame** (vehicle frame).\n\n Datasets with large number of observations can be managed with\n mrpt::obs::CRawLog.\n\n \n CSensoryFrame, CMetricMap, mrpt::obs::CRawLog\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new PyCallBack_mrpt_obs_CObservation(); } ) );
 		cl.def(pybind11::init<PyCallBack_mrpt_obs_CObservation const &>());
