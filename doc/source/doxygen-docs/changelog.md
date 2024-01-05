@@ -4,7 +4,8 @@
 - Changes in libraries:
   - \ref mrpt_obs_grp
     - mrpt::obs::CObservation::load() is now protected with a std::mutex for safe multi-threading usage.
-
+- BUG FIXES:
+  - Fix wrong filenames in `rawlog-edit --externalize` when sensor labels contain the `/` character (e.g. mimicking ROS topic names).
 
 # Version 2.11.5: Released Dec 21st, 2023
 - Changes in libraries:
