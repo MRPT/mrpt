@@ -94,7 +94,9 @@ DECLARE_OP_FUNCTION(op_externalize)
 			using namespace std::string_literals;
 
 			const string label_time = format(
-				"%s_%.09f", obs->sensorLabel.c_str(),
+				"%s_%.09f",
+				mrpt::system::fileNameStripInvalidChars(obs->sensorLabel)
+					.c_str(),
 				timestampTotime_t(obs->timestamp));
 			if (IS_CLASS(*obs, CObservationStereoImages))
 			{
