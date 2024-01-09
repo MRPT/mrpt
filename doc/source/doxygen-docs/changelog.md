@@ -6,6 +6,7 @@
     - mrpt::obs::CObservation::load() is now protected with a std::mutex for safe multi-threading usage.
 - BUG FIXES:
   - Fix wrong filenames in `rawlog-edit --externalize` when sensor labels contain the `/` character (e.g. mimicking ROS topic names).
+  - Fix crash in mrpt::ros2bridge::toROS() for XYZIRT point clouds.
 
 # Version 2.11.5: Released Dec 21st, 2023
 - Changes in libraries:
