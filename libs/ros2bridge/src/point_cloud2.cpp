@@ -358,18 +358,21 @@ bool mrpt::ros2bridge::toROS(
 
 	if (obj.hasIntensityField())
 	{
+		ASSERT_EQUAL_(obj.getPointsBufferRef_intensity()->size(), obj.size());
 		names.push_back("intensity");
 		offsets.push_back(msg.point_step);
 		msg.point_step += sizeof(float);
 	}
 	if (obj.hasTimeField())
 	{
+		ASSERT_EQUAL_(obj.getPointsBufferRef_timestamp()->size(), obj.size());
 		names.push_back("time");
 		offsets.push_back(msg.point_step);
 		msg.point_step += sizeof(float);
 	}
 	if (obj.hasRingField())
 	{
+		ASSERT_EQUAL_(obj.getPointsBufferRef_ring()->size(), obj.size());
 		names.push_back("ring");
 		offsets.push_back(msg.point_step);
 		msg.point_step += sizeof(uint16_t);
@@ -402,9 +405,9 @@ bool mrpt::ros2bridge::toROS(
 	const auto& xs = obj.getPointsBufferRef_x();
 	const auto& ys = obj.getPointsBufferRef_y();
 	const auto& zs = obj.getPointsBufferRef_z();
-	const auto& Is = obj.getPointsBufferRef_intensity();
-	const auto& Rs = obj.getPointsBufferRef_ring();
-	const auto& Ts = obj.getPointsBufferRef_timestamp();
+	const auto& Is = *obj.getPointsBufferRef_intensity();
+	const auto& Rs = *obj.getPointsBufferRef_ring();
+	const auto& Ts = *obj.getPointsBufferRef_timestamp();
 
 	uint8_t* pointDest = msg.data.data();
 	for (size_t i = 0; i < xs.size(); i++)
