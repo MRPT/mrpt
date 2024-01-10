@@ -56,6 +56,6 @@ class CPTG_DiffDrive_alpha : public CPTG_DiffDrive_CollisionGridBased
 	void loadDefaultParams() override;
 
    protected:
-	double cte_a0v{0}, cte_a0w{0};
+	double cte_a0v = 0, cte_a0w = 0, K = 1.0;
 };
 }  // namespace mrpt::nav
