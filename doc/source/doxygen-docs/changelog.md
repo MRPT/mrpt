@@ -4,6 +4,8 @@
 - Changes in libraries:
   - \ref mrpt_obs_grp
     - mrpt::obs::CObservation::load() is now protected with a std::mutex for safe multi-threading usage.
+  - \ref mrpt_nav_grp
+    - mrpt::nav::CPTG_DiffDrive_alpha now has a "K" parameter for generating backwards trajectories too.
 - BUG FIXES:
   - Fix wrong filenames in `rawlog-edit --externalize` when sensor labels contain the `/` character (e.g. mimicking ROS topic names).
   - Fix crash in mrpt::ros2bridge::toROS() for XYZIRT point clouds.
