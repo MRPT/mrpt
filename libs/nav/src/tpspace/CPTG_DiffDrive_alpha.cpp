@@ -9,6 +9,7 @@
 
 #include "nav-precomp.h"  // Precomp header
 //
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_alpha.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
@@ -88,12 +89,8 @@ void CPTG_DiffDrive_alpha::ptgDiffDriveSteeringFunction(
 	float alpha, [[maybe_unused]] float t, [[maybe_unused]] float x,
 	[[maybe_unused]] float y, float phi, float& v, float& w) const
 {
-	float At_a = alpha - phi;
-
-	while (At_a > M_PI)
-		At_a -= (float)M_2PI;
-	while (At_a < -M_PI)
-		At_a += (float)M_2PI;
+	const float correctedPhi = sign(K) * phi;
+	float At_a = mrpt::math::wrapToPi(alpha - correctedPhi);
 
 	v = sign(K) * V_MAX * exp(-square(At_a / cte_a0v));
 	w = sign(K) * W_MAX * (-0.5f + (1 / (1 + exp(-At_a / cte_a0w))));
