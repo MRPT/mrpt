@@ -28,11 +28,6 @@ if(UNIX AND NOT MRPT_DISABLE_PYTHON_BINDINGS)
     endif()
 
     if (Python3_FOUND)
-        string(REGEX MATCHALL "[0-9]+" MY_PYTHON3_VERSION_PARTS "${Python3_VERSION}")
-
-        list(GET MY_PYTHON3_VERSION_PARTS 0 MY_PYTHON3_MAJOR_VERSION)
-        list(GET MY_PYTHON3_VERSION_PARTS 1 MY_PYTHON3_MINOR_VERSION)
-
         if ("${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}" VERSION_LESS "3.8")
             message(ERROR "Disable Python wrappers: requires Python version >=3.8, but found: ${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}")
         endif()
