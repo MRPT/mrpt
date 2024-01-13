@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2023, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2024, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -94,7 +94,9 @@ DECLARE_OP_FUNCTION(op_externalize)
 			using namespace std::string_literals;
 
 			const string label_time = format(
-				"%s_%.09f", obs->sensorLabel.c_str(),
+				"%s_%.09f",
+				mrpt::system::fileNameStripInvalidChars(obs->sensorLabel)
+					.c_str(),
 				timestampTotime_t(obs->timestamp));
 			if (IS_CLASS(*obs, CObservationStereoImages))
 			{

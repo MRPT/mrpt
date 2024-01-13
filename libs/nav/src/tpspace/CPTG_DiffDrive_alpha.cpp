@@ -2,13 +2,14 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2023, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2024, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
 //
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_alpha.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
@@ -29,6 +30,7 @@ void CPTG_DiffDrive_alpha::loadFromConfigFile(
 		cte_a0v_deg, double, cte_a0v, cfg, sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(
 		cte_a0w_deg, double, cte_a0w, cfg, sSection);
+	MRPT_LOAD_HERE_CONFIG_VAR(K, double, K, cfg, sSection);
 }
 void CPTG_DiffDrive_alpha::saveToConfigFile(
 	mrpt::config::CConfigFileBase& cfg, const std::string& sSection) const
@@ -43,6 +45,7 @@ void CPTG_DiffDrive_alpha::saveToConfigFile(
 	cfg.write(
 		sSection, "cte_a0w_deg", mrpt::RAD2DEG(cte_a0v), WN, WV,
 		"Contant for omega profile [deg].");
+	cfg.write(sSection, "K", K, WN, WV, "1: forward, -1: backwards");
 
 	MRPT_END
 }
@@ -51,8 +54,8 @@ std::string CPTG_DiffDrive_alpha::getDescription() const
 {
 	char str[100];
 	os::sprintf(
-		str, 100, "CPTG_DiffDrive_alpha,av=%udeg,aw=%udeg",
-		(int)RAD2DEG(cte_a0v), (int)RAD2DEG(cte_a0w));
+		str, 100, "CPTG_DiffDrive_alpha,av=%udeg,aw=%udeg,K=%i",
+		(int)RAD2DEG(cte_a0v), (int)RAD2DEG(cte_a0w), (int)K);
 	return std::string(str);
 }
 
@@ -63,16 +66,21 @@ void CPTG_DiffDrive_alpha::serializeFrom(
 
 	switch (version)
 	{
-		case 0: in >> cte_a0v >> cte_a0w; break;
+		case 0:
+		case 1:
+			in >> cte_a0v >> cte_a0w;
+			if (version >= 1) in >> K;
+			break;
+
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
-uint8_t CPTG_DiffDrive_alpha::serializeGetVersion() const { return 0; }
+uint8_t CPTG_DiffDrive_alpha::serializeGetVersion() const { return 1; }
 void CPTG_DiffDrive_alpha::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(out);
-	out << cte_a0v << cte_a0w;
+	out << cte_a0v << cte_a0w << K;
 }
 /*---------------------------------------------------------------
 						ptgDiffDriveSteeringFunction
@@ -81,15 +89,11 @@ void CPTG_DiffDrive_alpha::ptgDiffDriveSteeringFunction(
 	float alpha, [[maybe_unused]] float t, [[maybe_unused]] float x,
 	[[maybe_unused]] float y, float phi, float& v, float& w) const
 {
-	float At_a = alpha - phi;
+	const float correctedPhi = sign(K) * phi;
+	float At_a = mrpt::math::wrapToPi(alpha - correctedPhi);
 
-	while (At_a > M_PI)
-		At_a -= (float)M_2PI;
-	while (At_a < -M_PI)
-		At_a += (float)M_2PI;
-
-	v = V_MAX * exp(-square(At_a / cte_a0v));
-	w = W_MAX * (-0.5f + (1 / (1 + exp(-At_a / cte_a0w))));
+	v = sign(K) * V_MAX * exp(-square(At_a / cte_a0v));
+	w = sign(K) * W_MAX * (-0.5f + (1 / (1 + exp(-At_a / cte_a0w))));
 }
 
 void CPTG_DiffDrive_alpha::loadDefaultParams()

@@ -2,18 +2,22 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2023, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2024, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/containers/NonCopiableData.h>
 #include <mrpt/core/Stringifyable.h>
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/datetime.h>
+
+#include <mutex>
 
 /** This namespace contains representation of robot actions and observations
  * \ingroup mrpt_obs_grp */
@@ -191,9 +195,12 @@ class CObservation : public mrpt::serialization::CSerializable,
 	 * stored data fields, calling this method has no effects.
 	 * \sa unload
 	 */
-	virtual void load() const
-	{ /* Default implementation: do nothing */
+	void load() const
+	{
+		auto lck = mrpt::lockHelper(m_load_mtx.data);
+		load_impl();
 	}
+
 	/** Unload all images, for the case they being delayed-load images stored in
 	 * external files (othewise, has no effect).
 	 * \sa load
@@ -201,6 +208,14 @@ class CObservation : public mrpt::serialization::CSerializable,
 	virtual void unload() const
 	{ /* Default implementation: do nothing */
 	}
+
+   protected:
+	virtual void load_impl() const
+	{ /* Default implementation: do nothing */
+	}
+
+   private:
+	mutable mrpt::containers::NonCopiableData<std::mutex> m_load_mtx;
 
 	/** @} */
 

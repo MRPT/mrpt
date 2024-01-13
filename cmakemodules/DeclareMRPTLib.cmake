@@ -53,12 +53,14 @@ endfunction()
 # From: https://github.com/ament/ament_cmake/blob/rolling/ament_cmake_python/ament_cmake_python-extras.cmake
 macro(mrpt_ament_cmake_python_get_python_install_dir)
   if(NOT DEFINED PYTHON_INSTALL_DIR)
-	# avoid storing backslash in cached variable since CMake will interpret it as escape character
-	
 	# (JLBC,June 2023): *Hack* to comply with ROS conventions of storing python pkgs differently than Debian/Ubuntu standards.
+	# (JLBC,Jan 2024): 
+	# - ROS 1:  lib/python3/dist-packages/
+	# - ROS 2:  lib/pythonX.Y/site-packages/
+	# - Debian: lib/pythonX.Y/
 	if(NOT DEFINED ENV{ROS_VERSION})
 		# Regular Debian package.
-		set(_output "lib/python3/dist-packages/")  # this is prefixed with "/usr/"
+		set(_output "lib/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/")  # this is prefixed with "/usr/"
 	elseif("$ENV{ROS_VERSION}" STREQUAL "1")
 		# ROS 1
 		set(_output "lib/python3/dist-packages/")  # this is prefixed with "/opt/ros/xxx/"

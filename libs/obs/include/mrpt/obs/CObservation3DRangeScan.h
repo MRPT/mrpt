@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2023, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2024, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -165,7 +165,7 @@ class CObservation3DRangeScan : public CObservation
 	 * stored data fields, calling this method has no effects.
 	 * \sa unload
 	 */
-	void load() const override;
+	void load_impl() const override;
 	/** Unload all images, for the case they being delayed-load images stored in
 	 * external files (othewise, has no effect).
 	 * \sa load

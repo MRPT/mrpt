@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2023, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2024, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -108,11 +108,15 @@ int main(int argc, char** argv)
 		if (initONI2Stream(
 				device, openni::SENSOR_COLOR, rgb, width, height, fps,
 				openni::PIXEL_FORMAT_RGB888) == false)
-		{ return 1; }
+		{
+			return 1;
+		}
 		if (initONI2Stream(
 				device, openni::SENSOR_DEPTH, depth, width, height, fps,
 				openni::PIXEL_FORMAT_DEPTH_1_MM) == false)
-		{ return 1; }
+		{
+			return 1;
+		}
 		bool isMirror;
 		if (synchONI2MirrorMode(rgb, depth, isMirror) == false) { return 1; }
 		if (startONI2Streams(rgb, depth) == false) { return 1; }
@@ -266,7 +270,9 @@ int main(int argc, char** argv)
 
 			if ((framed.getWidth() != framergb.getWidth()) ||
 				(framed.getHeight() != framergb.getHeight()))
-			{ cout << "\nBoth frames don't have the same size."; }
+			{
+				cout << "\nBoth frames don't have the same size.";
+			}
 			else
 			{
 				// Read one frame
@@ -433,7 +439,9 @@ bool initONI2Stream(
 	openni::Status rc = openni::STATUS_OK;
 	const char* strSensor;
 	if (sensorType == openni::SENSOR_COLOR)
-	{ strSensor = "openni::SENSOR_COLOR"; }
+	{
+		strSensor = "openni::SENSOR_COLOR";
+	}
 	else if (sensorType == openni::SENSOR_DEPTH)
 	{
 		strSensor = "openni::SENSOR_DEPTH";
@@ -499,7 +507,9 @@ bool synchONI2MirrorMode(
 	{
 		if (streams[i]->isPropertySupported(
 				openni::STREAM_PROPERTY_MIRRORING) == false)
-		{ break; }
+		{
+			break;
+		}
 		if (streams[i]->setMirroringEnabled(isMirrorMode) != openni::STATUS_OK)
 		{
 			printf(
