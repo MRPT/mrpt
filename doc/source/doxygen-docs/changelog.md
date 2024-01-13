@@ -10,6 +10,7 @@
   - Fix wrong filenames in `rawlog-edit --externalize` when sensor labels contain the `/` character (e.g. mimicking ROS topic names).
   - Fix crash in mrpt::ros2bridge::toROS() for XYZIRT point clouds.
   - Fix exception while rendering paths in the `ptg-configurator` application.
+  - Fix potential race condition in mrpt::obs::CObservation3DRangeScan.
 
 # Version 2.11.5: Released Dec 21st, 2023
 - Changes in libraries:
