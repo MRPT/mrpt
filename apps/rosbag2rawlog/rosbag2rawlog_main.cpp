@@ -547,7 +547,7 @@ int main(int argc, char** argv)
 {
 	try
 	{
-		printf(" rosbag2rawlog - Part of the MRPT\n");
+		printf(" rosbag2rawlog (ROS 1) - Part of the MRPT\n");
 		printf(
 			" MRPT C++ Library: %s - Sources timestamp: %s\n",
 			MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());

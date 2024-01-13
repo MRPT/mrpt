@@ -2,13 +2,14 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2023, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2024, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
 //
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/lazy_load_path.h>
@@ -106,7 +107,7 @@ void CObservationPointCloud::serializeFrom(
 	};
 }
 
-void CObservationPointCloud::load() const
+void CObservationPointCloud::load_impl() const
 {
 	MRPT_START
 

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2023, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2024, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -56,6 +56,6 @@ class CPTG_DiffDrive_alpha : public CPTG_DiffDrive_CollisionGridBased
 	void loadDefaultParams() override;
 
    protected:
-	double cte_a0v{0}, cte_a0w{0};
+	double cte_a0v = 0, cte_a0w = 0, K = 1.0;
 };
 }  // namespace mrpt::nav

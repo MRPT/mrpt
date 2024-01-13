@@ -1,5 +1,17 @@
 \page changelog Change Log
 
+# Version 2.11.6: Released Jan 13th, 2024
+- Changes in libraries:
+  - \ref mrpt_obs_grp
+    - mrpt::obs::CObservation::load() is now protected with a std::mutex for safe multi-threading usage.
+  - \ref mrpt_nav_grp
+    - mrpt::nav::CPTG_DiffDrive_alpha now has a "K" parameter for generating backwards trajectories too.
+- BUG FIXES:
+  - Fix wrong filenames in `rawlog-edit --externalize` when sensor labels contain the `/` character (e.g. mimicking ROS topic names).
+  - Fix crash in mrpt::ros2bridge::toROS() for XYZIRT point clouds.
+  - Fix exception while rendering paths in the `ptg-configurator` application.
+  - Fix potential race condition in mrpt::obs::CObservation3DRangeScan.
+
 # Version 2.11.5: Released Dec 21st, 2023
 - Changes in libraries:
   - \ref mrpt_maps_grp

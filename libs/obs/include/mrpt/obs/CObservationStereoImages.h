@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2023, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2024, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -126,7 +126,7 @@ class CObservationStereoImages : public mrpt::obs::CObservation
 	/** Do an efficient swap of all data members of this object with "o". */
 	void swap(CObservationStereoImages& o);
 
-	void load() const override;
+	void load_impl() const override;
 
 };	// End of class def.
 

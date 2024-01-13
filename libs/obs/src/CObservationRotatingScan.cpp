@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2023, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2024, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -482,7 +482,7 @@ bool RotScan::fromGeneric(const mrpt::obs::CObservation& o)
 	MRPT_END
 }
 
-void RotScan::load() const
+void RotScan::load_impl() const
 {
 	// Already loaded?
 	if (!isExternallyStored() || (isExternallyStored() && !rangeImage.empty()))

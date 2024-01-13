@@ -31,67 +31,65 @@
    | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
    | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
    | POSSIBILITY OF SUCH DAMAGE.                                               |
-   +---------------------------------------------------------------------------+ */
+   +---------------------------------------------------------------------------+
+ */
 
-#include <cstdlib>
 #include <cstdio>
-
-#include <iostream>
+#include <cstdlib>
 #include <fstream>
+#include <iostream>
 
 using namespace std;
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
-	if (argc!=2)
+	if (argc != 2)
 	{
-		printf("usage: %s <C++ source file>\n",argv[0]);
+		printf("usage: %s <C++ source file>\n", argv[0]);
 		return 1;
 	}
 
-	const char *in_file_name  = argv[1];
+	const char* in_file_name = argv[1];
 
-	
-	const char *out_file_name = "replace-header.tmp";
+	const char* out_file_name = "replace-header.tmp";
 
 	printf("replace-header: working on %s...", in_file_name);
-	
-	ifstream	f( in_file_name );
+
+	ifstream f(in_file_name);
 	if (f.fail())
 	{
 		cerr << "ERROR: cannot open " << in_file_name << endl;
 		return 1;
 	}
 
-	ofstream	of( out_file_name );
+	ofstream of(out_file_name);
 	if (of.fail())
 	{
 		cerr << "ERROR: cannot create " << out_file_name << endl;
 		return 1;
 	}
-	
 
-	int  		nLines = 0;
-	string	 	inLine;
-	bool		copyThisLine, insertMyHeading, lookingForHeadEnd = false;
-	while ( !f.eof() && !f.fail() )
+	int nLines = 0;
+	string inLine;
+	bool copyThisLine, insertMyHeading, lookingForHeadEnd = false;
+	while (!f.eof() && !f.fail())
 	{
 		copyThisLine = true;
 		insertMyHeading = false;
 
-		std::getline(f,inLine);
+		std::getline(f, inLine);
 		if (!f.fail())
 		{
 			// Still looking for header start?
-			if (nLines==0)
+			if (nLines == 0)
 			{
 				// Started??
-				if ( inLine.find("/*")!= string::npos )
+				if (inLine.find("/*") != string::npos)
 				{
 					lookingForHeadEnd = true;
 					copyThisLine = false;
 				}
-				else 
+				else
 				{
 					// Seems there is no heading: add ours:
 					insertMyHeading = true;
@@ -103,9 +101,9 @@ int main(int argc, char **argv)
 			{
 				copyThisLine = false;
 
-				if ( inLine.find("*/")!= string::npos )
+				if (inLine.find("*/") != string::npos)
 				{
-					lookingForHeadEnd=false;
+					lookingForHeadEnd = false;
 					insertMyHeading = true;
 				}
 			}
@@ -113,36 +111,37 @@ int main(int argc, char **argv)
 			// Insert comment block:
 			if (insertMyHeading)
 			{
-				of << "/* +------------------------------------------------------------------------+\n";
-				of << "   |                Mobile Robot Programming Toolkit (MRPT)                 |\n";
-				of << "   |                         https://www.mrpt.org/                           |\n";
-				of << "   |                                                                        |\n";
-				of << "   | Copyright (c) 2005-2023, Individual contributors, see AUTHORS file     |\n";
-				of << "   | See: https://www.mrpt.org/Authors - All rights reserved.               |\n";
-				of << "   | Released under BSD License. See: https://www.mrpt.org/License          |\n";
-				of << "   +------------------------------------------------------------------------+ */\n";
-
+				of << "/* "
+					  "+-------------------------------------------------------"
+					  "-----------------+\n";
+				of << "   |                Mobile Robot Programming Toolkit "
+					  "(MRPT)                 |\n";
+				of << "   |                         https://www.mrpt.org/      "
+					  "                     |\n";
+				of << "   |                                                    "
+					  "                    |\n";
+				of << "   | Copyright (c) 2005-2024, Individual contributors, "
+					  "see AUTHORS file     |\n";
+				of << "   | See: https://www.mrpt.org/Authors - All rights "
+					  "reserved.               |\n";
+				of << "   | Released under BSD License. See: "
+					  "https://www.mrpt.org/License          |\n";
+				of << "   "
+					  "+-------------------------------------------------------"
+					  "-----------------+ */\n";
 			}
 
 			// Normal copy:
-			if (copyThisLine)
-			{
-				of << inLine << "\n";				
-			}		
-
+			if (copyThisLine) { of << inLine << "\n"; }
 		}
-		nLines ++;
+		nLines++;
 	}
 
-	
 	f.close();
 	of.close();
 
-	
-	system( (string("mv replace-header.tmp ")+ string(in_file_name)).c_str() );
+	system((string("mv replace-header.tmp ") + string(in_file_name)).c_str());
 	printf("done (%i lines)\n", nLines);
 
 	return 0;
 }
-
-

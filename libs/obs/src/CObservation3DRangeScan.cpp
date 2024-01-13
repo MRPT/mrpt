@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2023, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2024, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -74,29 +74,44 @@ struct hash<LUT_info>
 };
 }  // namespace std
 
-static std::unordered_map<LUT_info, CObservation3DRangeScan::unproject_LUT_t>
-	LUTs;
-static std::mutex LUTs_mtx;
+namespace
+{
+struct LUT_Storage
+{
+	static LUT_Storage& Instance()
+	{
+		static LUT_Storage lut;
+		return lut;
+	}
+	std::unordered_map<LUT_info, CObservation3DRangeScan::unproject_LUT_t> LUTs;
+	std::mutex LUTs_mtx;
+};
+
+}  // namespace
 
 const CObservation3DRangeScan::unproject_LUT_t&
 	CObservation3DRangeScan::get_unproj_lut() const
 {
 #if MRPT_HAS_OPENCV
+
+	LUT_Storage& ls = LUT_Storage::Instance();
+
 	// Access to, or create upon first usage:
 	LUT_info linfo;
 	linfo.calib = this->cameraParams;
 	linfo.sensorPose = this->sensorPose;
 	linfo.range_is_depth = this->range_is_depth;
 
-	LUTs_mtx.lock();
+	// Important: keep lock until we return since this function modifies its
+	// contents:
+	auto lck = mrpt::lockHelper(ls.LUTs_mtx);
+
 	// Protect against infinite memory growth: imagine sensorPose gets changed
 	// every time for a sweeping sensor, etc.
 	// Unlikely, but "just in case" (TM)
-	if (LUTs.size() > 100) LUTs.clear();
+	if (ls.LUTs.size() > 100) ls.LUTs.clear();
 
-	const unproject_LUT_t& ret = LUTs[linfo];
-
-	LUTs_mtx.unlock();
+	const unproject_LUT_t& ret = ls.LUTs[linfo];
 
 	ASSERT_EQUAL_(rangeImage.cols(), static_cast<int>(cameraParams.ncols));
 	ASSERT_EQUAL_(rangeImage.rows(), static_cast<int>(cameraParams.nrows));
@@ -650,7 +665,7 @@ void CObservation3DRangeScan::swap(CObservation3DRangeScan& o)
 	rangeImageOtherLayers.swap(o.rangeImageOtherLayers);
 }
 
-void CObservation3DRangeScan::load() const
+void CObservation3DRangeScan::load_impl() const
 {
 	if (hasPoints3D && m_points3D_external_stored)
 	{

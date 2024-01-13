@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2023, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2024, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -154,7 +154,7 @@ void CObservationImage::getDescriptionAsText(std::ostream& o) const
 	o << cameraParams.asYAML();
 }
 
-void CObservationImage::load() const
+void CObservationImage::load_impl() const
 {
 	const thread_local bool MRPT_DEBUG_OBSIMG_LAZY_LOAD =
 		mrpt::get_env<bool>("MRPT_DEBUG_OBSIMG_LAZY_LOAD", false);
