@@ -189,8 +189,6 @@ void Program::clear()
 {
 	if (!m_data || !m_data->program) return;
 
-	MRPT_TODO("Remove this??");
-
 	// If we are in the same thread that created us, ok, clean up.
 	// Otherwise, postpone it for later on:
 	if (m_data->linkedThread == std::this_thread::get_id())

@@ -80,67 +80,65 @@ using namespace std;
 // JL: Refactored code from within cvFindChessboardCorners3() and alternative
 // algorithm:
 bool do_special_dilation(
-	CImage& thresh_img, const int dilations, IplConvKernel* kernel_cross,
-	IplConvKernel* kernel_rect, IplConvKernel* kernel_diag1,
-	IplConvKernel* kernel_diag2, IplConvKernel* kernel_horz,
-	IplConvKernel* kernel_vert)
+	CImage& thresh_img, const int dilations, const cv::Mat& kernel_cross,
+	const cv::Mat& kernel_rect, const cv::Mat& kernel_diag1,
+	const cv::Mat& kernel_diag2, const cv::Mat& kernel_horz,
+	const cv::Mat& kernel_vert)
 {
-	cv::Mat m = thresh_img.asCvMat<cv::Mat>(SHALLOW_COPY);
-	IplImage i = cvIplImage(m);
-	IplImage* ipl = &i;
+	cv::Mat im = thresh_img.asCvMat<cv::Mat>(SHALLOW_COPY);
 
 	bool isLast = false;
 
 	switch (dilations)
 	{
 		case 37:
-			cvDilate(ipl, ipl, kernel_cross, 1);
+			cv::dilate(im, im, kernel_cross);
 			isLast = true;
 			[[fallthrough]];
-		case 36: cvErode(ipl, ipl, kernel_rect, 1); [[fallthrough]];
-		case 35: cvDilate(ipl, ipl, kernel_vert, 1); [[fallthrough]];
-		case 34: cvDilate(ipl, ipl, kernel_vert, 1); [[fallthrough]];
-		case 33: cvDilate(ipl, ipl, kernel_vert, 1); [[fallthrough]];
-		case 32: cvDilate(ipl, ipl, kernel_vert, 1); [[fallthrough]];
-		case 31: cvDilate(ipl, ipl, kernel_vert, 1); break;
+		case 36: cv::erode(im, im, kernel_rect); [[fallthrough]];
+		case 35: cv::dilate(im, im, kernel_vert); [[fallthrough]];
+		case 34: cv::dilate(im, im, kernel_vert); [[fallthrough]];
+		case 33: cv::dilate(im, im, kernel_vert); [[fallthrough]];
+		case 32: cv::dilate(im, im, kernel_vert); [[fallthrough]];
+		case 31: cv::dilate(im, im, kernel_vert); break;
 
-		case 30: cvDilate(ipl, ipl, kernel_cross, 1); [[fallthrough]];
-		case 29: cvErode(ipl, ipl, kernel_rect, 1); [[fallthrough]];
-		case 28: cvDilate(ipl, ipl, kernel_horz, 1); [[fallthrough]];
-		case 27: cvDilate(ipl, ipl, kernel_horz, 1); [[fallthrough]];
-		case 26: cvDilate(ipl, ipl, kernel_horz, 1); [[fallthrough]];
-		case 25: cvDilate(ipl, ipl, kernel_horz, 1); [[fallthrough]];
-		case 24: cvDilate(ipl, ipl, kernel_horz, 1); break;
+		case 30: cv::dilate(im, im, kernel_cross); [[fallthrough]];
+		case 29: cv::erode(im, im, kernel_rect); [[fallthrough]];
+		case 28: cv::dilate(im, im, kernel_horz); [[fallthrough]];
+		case 27: cv::dilate(im, im, kernel_horz); [[fallthrough]];
+		case 26: cv::dilate(im, im, kernel_horz); [[fallthrough]];
+		case 25: cv::dilate(im, im, kernel_horz); [[fallthrough]];
+		case 24: cv::dilate(im, im, kernel_horz); break;
 
-		case 23: cvDilate(ipl, ipl, kernel_diag2, 1); [[fallthrough]];
-		case 22: cvDilate(ipl, ipl, kernel_diag1, 1); [[fallthrough]];
-		case 21: cvDilate(ipl, ipl, kernel_diag2, 1); [[fallthrough]];
-		case 20: cvDilate(ipl, ipl, kernel_diag1, 1); [[fallthrough]];
-		case 19: cvDilate(ipl, ipl, kernel_diag2, 1); [[fallthrough]];
-		case 18: cvDilate(ipl, ipl, kernel_diag1, 1); break;
+		case 23: cv::dilate(im, im, kernel_diag2); [[fallthrough]];
+		case 22: cv::dilate(im, im, kernel_diag1); [[fallthrough]];
+		case 21: cv::dilate(im, im, kernel_diag2); [[fallthrough]];
+		case 20: cv::dilate(im, im, kernel_diag1); [[fallthrough]];
+		case 19: cv::dilate(im, im, kernel_diag2); [[fallthrough]];
+		case 18: cv::dilate(im, im, kernel_diag1); break;
 
-		case 17: cvDilate(ipl, ipl, kernel_diag2, 1); [[fallthrough]];
-		case 16: cvDilate(ipl, ipl, kernel_diag2, 1); [[fallthrough]];
-		case 15: cvDilate(ipl, ipl, kernel_diag2, 1); [[fallthrough]];
-		case 14: cvDilate(ipl, ipl, kernel_diag2, 1); break;
+		case 17: cv::dilate(im, im, kernel_diag2); [[fallthrough]];
+		case 16: cv::dilate(im, im, kernel_diag2); [[fallthrough]];
+		case 15: cv::dilate(im, im, kernel_diag2); [[fallthrough]];
+		case 14: cv::dilate(im, im, kernel_diag2); break;
 
-		case 13: cvDilate(ipl, ipl, kernel_diag1, 1); [[fallthrough]];
-		case 12: cvDilate(ipl, ipl, kernel_diag1, 1); [[fallthrough]];
-		case 11: cvDilate(ipl, ipl, kernel_diag1, 1); [[fallthrough]];
-		case 10: cvDilate(ipl, ipl, kernel_diag1, 1); break;
+		case 13: cv::dilate(im, im, kernel_diag1); [[fallthrough]];
+		case 12: cv::dilate(im, im, kernel_diag1); [[fallthrough]];
+		case 11: cv::dilate(im, im, kernel_diag1); [[fallthrough]];
+		case 10: cv::dilate(im, im, kernel_diag1); break;
 
-		case 9: cvDilate(ipl, ipl, kernel_cross, 1); [[fallthrough]];
-		case 8: cvErode(ipl, ipl, kernel_rect, 1); [[fallthrough]];
-		case 7: cvDilate(ipl, ipl, kernel_cross, 1); [[fallthrough]];
+		case 9: cv::dilate(im, im, kernel_cross); [[fallthrough]];
+		case 8: cv::erode(im, im, kernel_rect); [[fallthrough]];
+		case 7: cv::dilate(im, im, kernel_cross); [[fallthrough]];
 		case 6:
-			cvDilate(ipl, ipl, kernel_diag2, 1);
+			cv::dilate(im, im, kernel_diag2);
 			isLast = true;
 			[[fallthrough]];
-		case 5: cvDilate(ipl, ipl, kernel_diag1, 1); [[fallthrough]];
-		case 4: cvDilate(ipl, ipl, kernel_rect, 1); [[fallthrough]];
-		case 3: cvErode(ipl, ipl, kernel_cross, 1); [[fallthrough]];
-		case 2: cvDilate(ipl, ipl, kernel_rect, 1); [[fallthrough]];
-		case 1: cvDilate(ipl, ipl, kernel_cross, 1); [[fallthrough]];
+		case 5: cv::dilate(im, im, kernel_diag1); [[fallthrough]];
+		case 4: cv::dilate(im, im, kernel_rect); [[fallthrough]];
+		case 3: cv::erode(im, im, kernel_cross); [[fallthrough]];
+		case 2: cv::dilate(im, im, kernel_rect); [[fallthrough]];
+		case 1: cv::dilate(im, im, kernel_cross); [[fallthrough]];
 		case 0: /* first try: do nothing to the image */ break;
 	};
 
@@ -153,7 +151,7 @@ bool do_special_dilation(
 // Return: -1: errors, 0: not found, 1: found OK
 int cvFindChessboardCorners3(
 	const CImage& img_, CvSize pattern_size,
-	std::vector<CvPoint2D32f>& out_corners)
+	std::vector<cv::Point2f>& out_corners)
 {
 	// PART 0: INITIALIZATION
 	//-----------------------------------------------------------------------
@@ -200,23 +198,28 @@ int cvFindChessboardCorners3(
 		CH_GRAY);  //  = cvCreateMat( img->rows, img->cols, CV_8UC1 );
 
 	// JL: Move these constructors out of the loops:
-	IplConvKernel* kernel_cross =
-		cvCreateStructuringElementEx(3, 3, 1, 1, CV_SHAPE_CROSS, nullptr);
-	IplConvKernel* kernel_rect =
-		cvCreateStructuringElementEx(3, 3, 1, 1, CV_SHAPE_RECT, nullptr);
+	const auto kernel_cross =
+		cv::getStructuringElement(cv::MORPH_CROSS, {3, 3});
+	const auto kernel_rect = cv::getStructuringElement(cv::MORPH_RECT, {3, 3});
 
-	static int kernel_diag1_vals[9] = {1, 0, 0, 0, 1, 0, 0, 0, 1};
-	IplConvKernel* kernel_diag1 = cvCreateStructuringElementEx(
-		3, 3, 1, 1, CV_SHAPE_CUSTOM, kernel_diag1_vals);
-	static int kernel_diag2_vals[9] = {0, 0, 1, 0, 1, 0, 1, 0, 0};
-	IplConvKernel* kernel_diag2 = cvCreateStructuringElementEx(
-		3, 3, 1, 1, CV_SHAPE_CUSTOM, kernel_diag2_vals);
-	static int kernel_horz_vals[9] = {0, 0, 0, 1, 1, 1, 0, 0, 0};
-	IplConvKernel* kernel_horz = cvCreateStructuringElementEx(
-		3, 3, 1, 1, CV_SHAPE_CUSTOM, kernel_horz_vals);
-	static int kernel_vert_vals[9] = {0, 1, 0, 0, 1, 0, 0, 1, 0};
-	IplConvKernel* kernel_vert = cvCreateStructuringElementEx(
-		3, 3, 1, 1, CV_SHAPE_CUSTOM, kernel_vert_vals);
+	// clang-format off
+	const cv::Mat kernel_diag1 = (cv::Mat_<uchar>(3,3) << 
+		1, 0, 0,
+		0, 1, 0,
+		0, 0, 1 );
+	const cv::Mat kernel_diag2 = (cv::Mat_<uchar>(3,3) << 
+		0, 0, 1,
+		0, 1, 0,
+		1, 0, 0 );
+	const cv::Mat kernel_horz = (cv::Mat_<uchar>(3,3) << 
+		0, 0, 0,
+		1, 1, 1,
+		0, 0, 0 );
+	const cv::Mat kernel_vert = (cv::Mat_<uchar>(3,3) << 
+		0, 1, 0,
+		0, 1, 0,
+		0, 1, 0 );
+	// clang-format on
 
 	// For image binarization (thresholding)
 	// we use an adaptive threshold with a gaussian mask
@@ -227,7 +230,7 @@ int cvFindChessboardCorners3(
 	cv::adaptiveThreshold(
 		img.asCvMat<cv::Mat>(SHALLOW_COPY),
 		thresh_img.asCvMat<cv::Mat>(SHALLOW_COPY), 255,
-		CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY, block_size, 0);
+		cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, block_size, 0);
 
 	thresh_img_save = thresh_img.makeDeepCopy();
 
@@ -334,7 +337,7 @@ int cvFindChessboardCorners3(
 	// If enough corners have been found already, then there is no need for PART
 	// 2 ->EXIT
 	// JLBC for MRPT: Don't save to Matlab files (mrWriteCorners), but to
-	// "CvPoint2D32f *out_corners":
+	// "cv::Point2f *out_corners":
 	// Return true on success in finding all the quads.
 	found = myQuads2Points(output_quad_group, pattern_size, out_corners);
 
@@ -421,14 +424,6 @@ int cvFindChessboardCorners3(
 
 	}  // JL: Was label "exit:", but again, http://xkcd.com/292/ ;-)
 
-	// Free mem:
-	cvReleaseStructuringElement(&kernel_cross);
-	cvReleaseStructuringElement(&kernel_rect);
-	cvReleaseStructuringElement(&kernel_diag1);
-	cvReleaseStructuringElement(&kernel_diag2);
-	cvReleaseStructuringElement(&kernel_horz);
-	cvReleaseStructuringElement(&kernel_vert);
-
 	/*
 	// MARTIN:
 	found = mrWriteCorners( output_quad_group, max_count, pattern_size,
@@ -476,7 +471,7 @@ void icvCleanFoundConnectedQuads(
 {
 	cv::MemStorage temp_storage;  // JL: "Modernized" to use C++ STL stuff.
 
-	CvPoint2D32f center = cvPoint2D32f(0, 0);
+	cv::Point2f center = cv::Point2f(0, 0);
 
 	// Number of quads this pattern should contain
 	const size_t expected_quads_count =
@@ -489,7 +484,7 @@ void icvCleanFoundConnectedQuads(
 	if (nQuads <= expected_quads_count) return;	 // Nothing to be done.
 
 	// Create an array of quadrangle centers
-	vector<CvPoint2D32f> centers(nQuads);
+	vector<cv::Point2f> centers(nQuads);
 	temp_storage = cv::MemStorage(cvCreateMemStorage(0));
 
 	// make also the list of squares areas, so we can discriminate by
@@ -500,12 +495,12 @@ void icvCleanFoundConnectedQuads(
 
 	for (size_t i = 0; i < nQuads; i++)
 	{
-		CvPoint2D32f ci = cvPoint2D32f(0, 0);
+		cv::Point2f ci = cv::Point2f(0, 0);
 		CvCBQuad::Ptr& q = quad_group[i];
 
 		for (size_t j = 0; j < 4; j++)
 		{
-			CvPoint2D32f pt = q->corners[j]->pt;
+			cv::Point2f pt = q->corners[j]->pt;
 			ci.x += pt.x;
 			ci.y += pt.y;
 		}
@@ -585,7 +580,7 @@ void icvCleanFoundConnectedQuads(
 			for (size_t skip = 0; skip < quad_group.size(); skip++)
 			{
 				// get bounding rectangle
-				CvPoint2D32f temp = centers[skip];
+				cv::Point2f temp = centers[skip];
 				centers[skip] = center;
 				CvMat pointMat =
 					cvMat(1, quad_group.size(), CV_32FC2, &centers[0]);
@@ -1173,7 +1168,7 @@ void mrFindQuadNeighbors2(std::vector<CvCBQuad::Ptr>& quads, int dilation)
 		// For each corner of this quadrangle
 		for (size_t i = 0; i < 4; i++)
 		{
-			CvPoint2D32f pt;
+			cv::Point2f pt;
 			float min_dist = FLT_MAX;
 			int closest_corner_idx = -1;
 			CvCBQuad::Ptr closest_quad;
@@ -1434,7 +1429,7 @@ int mrAugmentBestRun(
 		// For each corner of this quadrangle
 		for (int i = 0; i < 4; i++)
 		{
-			CvPoint2D32f pt;
+			cv::Point2f pt;
 			float min_dist = FLT_MAX;
 			int closest_corner_idx = -1;
 			CvCBQuad::Ptr closest_quad;
@@ -1805,34 +1800,25 @@ int icvGenerateQuads(
 	// Initializations
 	int quad_count = 0;
 
-	// Create temporary storage for contours and the sequence of pointers to
-	// found quadrangles
-	cv::MemStorage temp_storage = cv::MemStorage(cvCreateMemStorage(0));
-
-	CvSeq* src_contour = nullptr;
-	CvSeq* root;  // cv::Seq<> root;  //
-	CvContourEx* board = nullptr;
-	CvContourScanner scanner;
-
 	// Empiric sower bound for the size of allowable quadrangles.
 	// MARTIN, modified: Added "*0.1" in order to find smaller quads.
 	const int min_size =
 		cvRound(image.getWidth() * image.getHeight() * .03 * 0.01 * 0.92 * 0.1);
 
-	root = cvCreateSeq(0, sizeof(CvSeq), sizeof(CvSeq*), temp_storage);
-
 	// Initialize contour retrieving routine
 	cv::Mat im_mat = image.asCvMat<cv::Mat>(SHALLOW_COPY);
-	IplImage im_ipl = cvIplImage(im_mat);
-	scanner = cvStartFindContours(
-		&im_ipl, temp_storage, sizeof(CvContourEx), CV_RETR_CCOMP,
-		CV_CHAIN_APPROX_SIMPLE);
+	std::vector<std::vector<cv::Point>> contours;
+	std::vector<cv::Vec4i> hierarchy;
+
+	cv::findContours(
+		im_mat, contours, hierarchy, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 
 	// Get all the contours one by one
-	while ((src_contour = cvFindNextContour(scanner)) != nullptr)
+	for (const auto& contour : contours)
 	{
-		CvSeq* dst_contour = nullptr;
-		CvRect rect = ((CvContour*)src_contour)->rect;
+		contour.
+
+			CvRect rect = ((CvContour*)src_contour)->rect;
 
 		// Reject contours with a too small perimeter and contours which are
 		// completely surrounded by another contour
@@ -1913,7 +1899,7 @@ int icvGenerateQuads(
 	}
 
 	// Finish contour retrieving
-	cvEndFindContours(&scanner);
+	// cvEndFindContours(&scanner);
 
 	// Allocate quad & corner buffers
 	out_quads.clear();
@@ -1939,7 +1925,7 @@ int icvGenerateQuads(
 		assert(src_contour->total == 4);
 		for (int i = 0; i < 4; i++)
 		{
-			CvPoint2D32f pt =
+			cv::Point2f pt =
 				cvPointTo32f(*(CvPoint*)cvGetSeqElem(src_contour, i));
 			CvCBCorner::Ptr& corner = out_corners
 				[quad_count * 4 + i];  // &(*out_corners)[quad_count*4
@@ -1976,7 +1962,7 @@ int icvGenerateQuads(
 // Return 1 on success in finding all the quads, 0 on didn't, -1 on error.
 int myQuads2Points(
 	const std::vector<CvCBQuad::Ptr>& output_quads, const CvSize& pattern_size,
-	std::vector<CvPoint2D32f>& out_corners)
+	std::vector<cv::Point2f>& out_corners)
 {
 	// Initialize
 	out_corners.clear();

@@ -36,7 +36,7 @@ using namespace std;
 // Return: true: found OK
 bool find_chessboard_corners_multiple(
 	const CImage& img_, CvSize pattern_size,
-	std::vector<std::vector<CvPoint2D32f>>& out_corners)
+	std::vector<std::vector<cv::Point2f>>& out_corners)
 {
 	// Assure it's a grayscale image:
 	const CImage img(img_, FAST_REF_OR_CONVERT_TO_GRAY);
@@ -73,23 +73,28 @@ bool find_chessboard_corners_multiple(
 	}
 
 	// JL: Move these constructors out of the loops:
-	IplConvKernel* kernel_cross =
-		cvCreateStructuringElementEx(3, 3, 1, 1, CV_SHAPE_CROSS, nullptr);
-	IplConvKernel* kernel_rect =
-		cvCreateStructuringElementEx(3, 3, 1, 1, CV_SHAPE_RECT, nullptr);
+	const auto kernel_cross =
+		cv::getStructuringElement(cv::MORPH_CROSS, {3, 3});
+	const auto kernel_rect = cv::getStructuringElement(cv::MORPH_RECT, {3, 3});
 
-	static int kernel_diag1_vals[9] = {1, 0, 0, 0, 1, 0, 0, 0, 1};
-	IplConvKernel* kernel_diag1 = cvCreateStructuringElementEx(
-		3, 3, 1, 1, CV_SHAPE_CUSTOM, kernel_diag1_vals);
-	static int kernel_diag2_vals[9] = {0, 0, 1, 0, 1, 0, 1, 0, 0};
-	IplConvKernel* kernel_diag2 = cvCreateStructuringElementEx(
-		3, 3, 1, 1, CV_SHAPE_CUSTOM, kernel_diag2_vals);
-	static int kernel_horz_vals[9] = {0, 0, 0, 1, 1, 1, 0, 0, 0};
-	IplConvKernel* kernel_horz = cvCreateStructuringElementEx(
-		3, 3, 1, 1, CV_SHAPE_CUSTOM, kernel_horz_vals);
-	static int kernel_vert_vals[9] = {0, 1, 0, 0, 1, 0, 0, 1, 0};
-	IplConvKernel* kernel_vert = cvCreateStructuringElementEx(
-		3, 3, 1, 1, CV_SHAPE_CUSTOM, kernel_vert_vals);
+	// clang-format off
+	const cv::Mat kernel_diag1 = (cv::Mat_<uchar>(3,3) << 
+		1, 0, 0,
+		0, 1, 0,
+		0, 0, 1 );
+	const cv::Mat kernel_diag2 = (cv::Mat_<uchar>(3,3) << 
+		0, 0, 1,
+		0, 1, 0,
+		1, 0, 0 );
+	const cv::Mat kernel_horz = (cv::Mat_<uchar>(3,3) << 
+		0, 0, 0,
+		1, 1, 1,
+		0, 0, 0 );
+	const cv::Mat kernel_vert = (cv::Mat_<uchar>(3,3) << 
+		0, 1, 0,
+		0, 1, 0,
+		0, 1, 0 );
+	// clang-format on
 
 	// For image binarization (thresholding)
 	// we use an adaptive threshold with a gaussian mask
@@ -100,7 +105,7 @@ bool find_chessboard_corners_multiple(
 	cv::adaptiveThreshold(
 		img.asCvMat<cv::Mat>(SHALLOW_COPY),
 		thresh_img.asCvMat<cv::Mat>(SHALLOW_COPY), 255,
-		CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY, block_size, 0);
+		cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, block_size, 0);
 
 	thresh_img_save = thresh_img.makeDeepCopy();
 
@@ -269,7 +274,7 @@ bool find_chessboard_corners_multiple(
 
 		if (out_corners.empty() || min_dist > 80)
 		{
-			vector<CvPoint2D32f> pts;
+			vector<cv::Point2f> pts;
 			if (1 ==
 				myQuads2Points(*it, pattern_size, pts))	 // and populate it now.
 			{
@@ -280,14 +285,6 @@ bool find_chessboard_corners_multiple(
 			}
 		}
 	}
-
-	// Free mem:
-	cvReleaseStructuringElement(&kernel_cross);
-	cvReleaseStructuringElement(&kernel_rect);
-	cvReleaseStructuringElement(&kernel_diag1);
-	cvReleaseStructuringElement(&kernel_diag2);
-	cvReleaseStructuringElement(&kernel_horz);
-	cvReleaseStructuringElement(&kernel_vert);
 
 	return !out_corners.empty();
 }
