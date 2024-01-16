@@ -55,7 +55,7 @@ bool mrpt::vision::findChessboardCorners(
 
 	const int CORNERS_COUNT = check_size_x * check_size_y;
 
-	vector<CvPoint2D32f> corners_list;
+	vector<cv::Point2f> corners_list;
 	corners_count = CORNERS_COUNT;
 	corners_list.resize(CORNERS_COUNT);
 
@@ -93,12 +93,12 @@ bool mrpt::vision::findChessboardCorners(
 
 	if (corners_found)
 	{
-		IplImage iplImg = cvIplImage(cvImg);
 		// Refine corners:
-		cvFindCornerSubPix(
-			&iplImg, &corners_list[0], corners_count, cvSize(5, 5),	 // window
-			cvSize(-1, -1),
-			cvTermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 10, 0.01f));
+		cv::cornerSubPix(
+			cvImg, corners_list, cv::Size(5, 5),  // window
+			cv::Size(-1, -1),
+			cv::TermCriteria(
+				cv::TermCriteria::MAX_ITER | cv::TermCriteria::EPS, 10, 0.01f));
 
 		// save the corners in the data structure:
 		int y;
@@ -141,9 +141,8 @@ void mrpt::vision::findMultipleChessboardsCorners(
 	// Grayscale version:
 	const CImage img(in_img, FAST_REF_OR_CONVERT_TO_GRAY);
 	const cv::Mat img_m = img.asCvMat<cv::Mat>(SHALLOW_COPY);
-	const IplImage img_ipl = cvIplImage(img_m);
 
-	std::vector<std::vector<CvPoint2D32f>> corners_list;
+	std::vector<std::vector<cv::Point2f>> corners_list;
 
 	// Return: -1: errors, 0: not found, 1: found OK
 	bool corners_found = find_chessboard_corners_multiple(
@@ -159,11 +158,12 @@ void mrpt::vision::findMultipleChessboardsCorners(
 		{
 			ASSERT_(corners_list[i].size() == check_size_x * check_size_y);
 
-			cvFindCornerSubPix(
-				&img_ipl, &corners_list[i][0], check_size_x * check_size_y,
-				cvSize(5, 5),  // window
-				cvSize(-1, -1),
-				cvTermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 10, 0.01f));
+			cv::cornerSubPix(
+				img_m, corners_list, cv::Size(5, 5),  // window
+				cv::Size(-1, -1),
+				cv::TermCriteria(
+					cv::TermCriteria::MAX_ITER | cv::TermCriteria::EPS, 10,
+					0.01f));
 
 			// save the corners in the data structure:
 			for (unsigned int y = 0, k = 0; y < check_size_y; y++)

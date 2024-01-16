@@ -1007,7 +1007,7 @@ bool my_img_to_grayscale(const cv::Mat& src, cv::Mat& dest)
 #endif
 
 	// OpenCV Method:
-	cv::cvtColor(src, dest, CV_BGR2GRAY);
+	cv::cvtColor(src, dest, cv::COLOR_BGR2GRAY);
 	return false;
 }
 }  // namespace

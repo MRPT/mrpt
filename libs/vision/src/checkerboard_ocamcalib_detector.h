@@ -37,7 +37,7 @@ struct CvCBCorner
 {
 	using Ptr = std::shared_ptr<CvCBCorner>;
 	CvCBCorner() = default;
-	CvPoint2D32f pt;  // X and y coordinates
+	cv::Point2f pt;	 // X and y coordinates
 	int row{-1000};	 // Row and column of the corner
 	int column{-1000};	// in the found pattern
 	bool needsNeighbor;	 // Does the corner require a neighbor?
@@ -70,12 +70,12 @@ struct CvCBQuad
 // Return: -1: errors, 0: not found, 1: found OK
 int cvFindChessboardCorners3(
 	const mrpt::img::CImage& img_, CvSize pattern_size,
-	std::vector<CvPoint2D32f>& out_corners);
+	std::vector<cv::Point2f>& out_corners);
 
 // Return: true: found OK
 bool find_chessboard_corners_multiple(
 	const mrpt::img::CImage& img_, CvSize pattern_size,
-	std::vector<std::vector<CvPoint2D32f>>& out_corners);
+	std::vector<std::vector<cv::Point2f>>& out_corners);
 
 //===========================================================================
 // INTERNAL FUNCTION PROTOTYPES
@@ -106,7 +106,7 @@ void icvCleanFoundConnectedQuads(
 // JL: Return 1 on success in finding all the quads, 0 on didn't, -1 on error.
 int myQuads2Points(
 	const std::vector<CvCBQuad::Ptr>& output_quads, const CvSize& pattern_size,
-	std::vector<CvPoint2D32f>& out_corners);
+	std::vector<cv::Point2f>& out_corners);
 
 // JL: Make unique all the (smart pointers-pointed) objects in the list and
 // neighbors lists.
@@ -116,8 +116,8 @@ void quadListMakeUnique(std::vector<CvCBQuad::Ptr>& quads);
 // algorithm:
 bool do_special_dilation(
 	mrpt::img::CImage& thresh_img, const int dilations,
-	IplConvKernel* kernel_cross, IplConvKernel* kernel_rect,
-	IplConvKernel* kernel_diag1, IplConvKernel* kernel_diag2,
-	IplConvKernel* kernel_horz, IplConvKernel* kernel_vert);
+	const cv::Mat& kernel_cross, const cv::Mat& kernel_rect,
+	const cv::Mat& kernel_diag1, const cv::Mat& kernel_diag2,
+	const cv::Mat& kernel_horz, const cv::Mat& kernel_vert);
 
 #endif	// MRPT_HAS_OPENCV
