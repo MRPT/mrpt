@@ -1281,7 +1281,7 @@ void CLoopCloserERD<GRAPH_T>::execDijkstraProjection(
 	// ending_node is either INVALID_NODEID or one of the already registered
 	// nodeIDs
 	ASSERTDEB_(
-		ending_node == INVALID_NODEID ||
+		ending_node == mrpt::graphs::INVALID_NODEID ||
 		(ending_node >= 0 && ending_node < this->m_graph->nodeCount()));
 	ASSERTDEBMSG_(
 		starting_node != ending_node, "Starting and Ending nodes coincede");
