@@ -3,6 +3,8 @@
 # Version 2.11.7: UNRELEASED
 - Changes in apps:
   - carmen2rawlog: Generate valid timestamps.
+- Changes in libraries:
+  - rosbag2rawlog: Add support for `sensor_msgs/CompressedImage` topics.
 
 # Version 2.11.6: Released Jan 13th, 2024
 - Changes in libraries:
