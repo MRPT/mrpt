@@ -46,6 +46,10 @@
 #if defined(__riscv)
 #undef RUN_OFFSCREEN_RENDER_TESTS
 #endif
+// Idem with Loongarch arch:
+#if defined(__loongarch__)
+#undef RUN_OFFSCREEN_RENDER_TESTS
+#endif
 
 namespace
 {
