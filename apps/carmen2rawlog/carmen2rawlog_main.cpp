@@ -57,6 +57,10 @@ TCLAP::ValueArg<int> arg_gz_level(
 	"z", "compress-level", "Output GZ-compress level (optional)", false, 5,
 	"0: none, 1-9: min-max", cmd);
 
+TCLAP::ValueArg<double> arg_obs_period(
+	"p", "period", "Observation recording period in seconds (optional)", false,
+	0.1, "period [s]", cmd);
+
 // Declarations:
 #define VERBOSE_COUT                                                           \
 	if (verbose) cout << "[carmen2rawlog] "
@@ -110,6 +114,8 @@ int main(int argc, char** argv)
 		vector<CObservation::Ptr> importedObservations;
 		map<TTimeStamp, TPose2D> groundTruthPoses;	// If found...
 		unsigned int nSavedObs = 0;
+		const double dt = arg_obs_period.getValue();
+		double tim = mrpt::Clock::nowDouble();
 
 		const mrpt::system::TTimeStamp base_timestamp = mrpt::system::now();
 
@@ -119,6 +125,13 @@ int main(int argc, char** argv)
 		while (carmen_log_parse_line(
 			input_stream, importedObservations, base_timestamp))
 		{
+			// fix timestamps. Carmen logs did not store timing information:
+			for (auto& o : importedObservations)
+				o->timestamp = mrpt::Clock::fromDouble(tim);
+
+			tim += dt;	// for the next carmen line
+
+			// save them:
 			for (size_t i = 0; i < importedObservations.size(); i++)
 			{
 				mrpt::serialization::archiveFrom(out_rawlog)
