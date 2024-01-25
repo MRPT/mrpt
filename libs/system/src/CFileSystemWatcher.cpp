@@ -188,13 +188,13 @@ void CFileSystemWatcher::getChanges(TFileSystemChangeList& out_list)
 	}
 	else if (FD_ISSET(m_fd, &rfds))
 	{
-// inotify events are available! : Read them!
+		// inotify events are available! : Read them!
 
-/* size of the event structure, not counting name */
-#define EVENT_SIZE (sizeof(struct inotify_event))
+		/* size of the event structure, not counting name */
+		constexpr size_t EVENT_SIZE = (sizeof(struct inotify_event));
 
-/* reasonable guess as to size of 1024 events */
-#define BUF_LEN (1024 * (EVENT_SIZE + 16))
+		/* reasonable guess as to size of 1024 events */
+		constexpr size_t BUF_LEN = (1024 * (EVENT_SIZE + 16));
 
 		char buf[BUF_LEN];
 		ssize_t i = 0;
@@ -215,17 +215,12 @@ void CFileSystemWatcher::getChanges(TFileSystemChangeList& out_list)
 
 		while (i < len)
 		{
-			struct inotify_event event_val
-			{
-			};
-			std::memcpy(
-				&event_val, &buf[i],
-				sizeof(event_val));	 // Was: event = (struct inotify_event *) ;
-			struct inotify_event* event = &event_val;
+			const inotify_event* event =
+				reinterpret_cast<const inotify_event*>(&buf[i]);
 
 			i += EVENT_SIZE + event->len;
 
-			//			printf ("wd=%d mask=%u cookie=%u len=%u\n",event->wd,
+			// printf ("wd=%d mask=%u cookie=%u len=%u\n",event->wd,
 			// event->mask,event->cookie, event->len);
 
 			string eventName;

@@ -43,6 +43,7 @@
 #include <rosbag/bag.h>	 // rosbag_storage C++ lib
 #include <rosbag/view.h>
 #include <sensor_msgs/CameraInfo.h>
+#include <sensor_msgs/CompressedImage.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/LaserScan.h>
@@ -379,14 +380,31 @@ Obs toRangeImage(
 
 Obs toImage(std::string_view msg, const rosbag::MessageInstance& rosmsg)
 {
-	auto image = rosmsg.instantiate<sensor_msgs::Image>();
+	cv_bridge::CvImagePtr cv_ptr;
+	mrpt::Clock::time_point timeStamp;
 
-	auto cv_ptr = cv_bridge::toCvShare(image);
+	if (auto image = rosmsg.instantiate<sensor_msgs::Image>(); image)
+	{
+		cv_ptr = cv_bridge::toCvCopy(image);
+		timeStamp = mrpt::ros1bridge::fromROS(image->header.stamp);
+	}
+	else if (auto imC = rosmsg.instantiate<sensor_msgs::CompressedImage>(); imC)
+	{
+		cv_ptr = cv_bridge::toCvCopy(imC);
+		timeStamp = mrpt::ros1bridge::fromROS(imC->header.stamp);
+	}
+	else
+	{
+		THROW_EXCEPTION_FMT(
+			"Unhandled ROS topic '%s' type: images are expected to be either "
+			"sensor_msgs::Image or sensor_msgs::CompressedImage",
+			std::string(msg).c_str());
+	}
 
 	auto imgObs = mrpt::obs::CObservationImage::Create();
 
 	imgObs->sensorLabel = msg;
-	imgObs->timestamp = mrpt::ros1bridge::fromROS(image->header.stamp);
+	imgObs->timestamp = timeStamp;
 
 	imgObs->image = mrpt::img::CImage(cv_ptr->image, mrpt::img::SHALLOW_COPY);
 
@@ -462,6 +480,7 @@ class Transcriber
 				auto callback = [=](const rosbag::MessageInstance& m) {
 					return toImage(sensorName, m);
 				};
+				ASSERT_(sensor.count("image_topic") != 0);
 				m_lookup[sensor.at("image_topic").as<std::string>()]
 					.emplace_back(callback);
 			}
