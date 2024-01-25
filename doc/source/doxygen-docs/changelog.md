@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.11.7: UNRELEASED
+# Version 2.11.7: Released Jan 25th, 2024
 - Changes in apps:
   - carmen2rawlog: Generate valid timestamps.
 - Changes in libraries:
