@@ -605,6 +605,7 @@ bool CImageGrabber_dc1394::getObservation(
 			return false;
 		}
 
+		out_observation.hasImageRight = true;
 		out_observation.imageLeft.loadFromMemoryBuffer(
 			width, height, true, imageBufRGB);	// Left cam.
 		out_observation.imageRight.loadFromMemoryBuffer(
