@@ -815,7 +815,11 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
 
 			}  // n
 
-			if (verbose) cout << k << "/" << Ki << ",";
+			if (verbose)
+			{
+				cout << k << "/" << Ki << ",";
+				cout.flush();
+			}
 		}  // k
 
 		if (verbose) cout << format("Done! [%.03f sec]\n", tictac.Tac());

@@ -1,5 +1,14 @@
 \page changelog Change Log
 
+# Version 2.11.7: Released Jan 25th, 2024
+- Changes in apps:
+  - carmen2rawlog: Generate valid timestamps.
+- Changes in libraries:
+  - rosbag2rawlog: Add support for `sensor_msgs/CompressedImage` topics.
+- BUG FIXES:
+  - mrpt::hwdrivers::CImageGrabber_dc1394 did not mark the right image as present in stereo cameras.
+  - kinect-stereo-calib: Fix exception un-distorting images.
+
 # Version 2.11.6: Released Jan 13th, 2024
 - Changes in libraries:
   - \ref mrpt_obs_grp
