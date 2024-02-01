@@ -89,24 +89,24 @@ void TVoxelMap_RenderingOptions::readFromStream(
 void TVoxelMap_LikelihoodOptions::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
-	MRPT_LOAD_CONFIG_VAR(decimation, int, c, s);
+	MRPT_LOAD_CONFIG_VAR(decimate_up_to, int, c, s);
 	MRPT_LOAD_CONFIG_VAR(occupiedThreshold, double, c, s);
 }
 void TVoxelMap_LikelihoodOptions::saveToConfigFile(
 	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
-	MRPT_SAVE_CONFIG_VAR(decimation, c, s);
+	MRPT_SAVE_CONFIG_VAR(decimate_up_to, c, s);
 	MRPT_SAVE_CONFIG_VAR(occupiedThreshold, c, s);
 }
 
 void TVoxelMap_LikelihoodOptions::writeToStream(
 	mrpt::serialization::CArchive& out) const
 {
-	out << decimation << occupiedThreshold;
+	out << decimate_up_to << occupiedThreshold;
 }
 
 void TVoxelMap_LikelihoodOptions::readFromStream(
 	mrpt::serialization::CArchive& in)
 {
-	in >> decimation >> occupiedThreshold;
+	in >> decimate_up_to >> occupiedThreshold;
 }
