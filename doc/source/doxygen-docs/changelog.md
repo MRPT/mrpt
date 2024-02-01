@@ -2,6 +2,8 @@
 
 # Version 2.11.8: UNRELEASED
 - Changes in libraries:
+  - \ref mrpt_maps_grp:
+    - Implement missing probabilistic observation models in mrpt::maps::CVoxelMap and mrpt::maps::CVoxelMapRGB
   - \ref mrpt_ros2bridge_grp:
     - Fix wrong macros leading to including obsolete header `<cv_bridge/cv_bridge.h>`.
 

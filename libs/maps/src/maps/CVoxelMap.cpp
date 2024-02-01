@@ -177,6 +177,41 @@ double CVoxelMap::internal_computeObservationLikelihood(
 	const mrpt::obs::CObservation& obs,
 	const mrpt::poses::CPose3D& takenFrom) const
 {
-	THROW_EXCEPTION("TODO");
-	return 0;
+	// build aux 3D pointcloud:
+	mrpt::maps::CSimplePointsMap pts;
+	pts.insertObservation(obs, takenFrom);
+
+	if (pts.empty()) return 0;
+
+	double log_lik = .0;  // cummulative log likelihoo
+
+	auto lambdaPointLikelihood = [&](float x, float y, float z) {
+		double probOcc = 0;
+		const bool voxelExists = getPointOccupancy(x, y, z, probOcc);
+		if (!voxelExists) return;
+		log_lik += probOcc;
+	};
+
+	const auto& xs = pts.getPointsBufferRef_x();
+	const auto& ys = pts.getPointsBufferRef_y();
+	const auto& zs = pts.getPointsBufferRef_z();
+
+	if (pts.size() <= likelihoodOptions.decimate_up_to)
+	{
+		for (size_t i = 0; i < pts.size(); ++i)
+			lambdaPointLikelihood(xs[i], ys[i], zs[i]);
+	}
+	else
+	{
+		const double delta =
+			static_cast<double>(pts.size()) / likelihoodOptions.decimate_up_to;
+
+		for (size_t i = 0; i < likelihoodOptions.decimate_up_to; ++i)
+		{
+			const auto idx = static_cast<size_t>(i * delta);
+			lambdaPointLikelihood(xs[idx], ys[idx], zs[idx]);
+		}
+	}
+
+	return log_lik;
 }

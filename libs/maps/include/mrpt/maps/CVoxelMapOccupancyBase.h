@@ -64,9 +64,10 @@ struct TVoxelMap_LikelihoodOptions : public mrpt::config::CLoadableOptions
 	void writeToStream(mrpt::serialization::CArchive& out) const;
 	void readFromStream(mrpt::serialization::CArchive& in);
 
-	/// Speed up the likelihood computation by considering only one out of N
-	/// rays (default=1)
-	uint32_t decimation = 1;
+	/// Speed up the likelihood computation by considering only a maximum of
+	/// `decimate_up_to` rays. Values <=1 mean use all measurements without
+	/// decimation.
+	uint32_t decimate_up_to = 0;
 
 	/// Minimum occupancy (0,1) for a voxel to be considered occupied.
 	double occupiedThreshold = 0.60;
