@@ -4,6 +4,7 @@
 - Changes in libraries:
   - \ref mrpt_maps_grp:
     - Implement missing probabilistic observation models in mrpt::maps::CVoxelMap and mrpt::maps::CVoxelMapRGB
+    - Add debug env variable `MRPT_DEBUG_OBSPTS_LAZY_LOAD` to debug lazy-load point cloud observations.
   - \ref mrpt_ros2bridge_grp:
     - Fix wrong macros leading to including obsolete header `<cv_bridge/cv_bridge.h>`.
 

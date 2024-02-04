@@ -24,6 +24,8 @@ numerical value (e.g. ``1``) will be interpreted as "true".
 
 - ``MRPT_DEBUG_OBSIMG_LAZY_LOAD``: Shows `std::cout` traces whenever an mrpt::obs::CObservationImage with delay-load content is loaded or unloaded.
 
+- ``MRPT_DEBUG_OBSPTS_LAZY_LOAD``: Shows `std::cout` traces whenever an mrpt::obs::CObservationPointCloud with delay-load content is loaded or unloaded.
+
 - ``MRPT_EXPR_VERBOSE``: Set to ``1`` to enable extra verbose debug traces for
   `mrpt::expr::CRuntimeCompiledExpression::eval() <class_mrpt_expr_CRuntimeCompiledExpression.html>`_.
 
