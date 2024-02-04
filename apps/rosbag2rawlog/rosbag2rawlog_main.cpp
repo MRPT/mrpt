@@ -211,6 +211,23 @@ Obs toPointCloud2(std::string_view msg, const rosbag::MessageInstance& rosmsg)
 	if (!fields.count("x") || !fields.count("y") || !fields.count("z"))
 		return {};
 
+	if (fields.count("ring") || fields.count("time"))
+	{
+		// XYZIRT
+		auto mrptPts = mrpt::maps::CPointsMapXYZIRT::Create();
+		ptsObs->pointcloud = mrptPts;
+
+		if (!mrpt::ros2bridge::fromROS(pts, *mrptPts))
+		{
+			THROW_EXCEPTION(
+				"Could not convert pointcloud from ROS to CPointsMapXYZIRT");
+		}
+		else
+		{  // converted ok:
+			return {ptsObs};
+		}
+	}
+
 	if (fields.count("intensity"))
 	{
 		// XYZI
