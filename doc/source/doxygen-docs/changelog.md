@@ -1,6 +1,9 @@
 \page changelog Change Log
 
 # Version 2.11.8: UNRELEASED
+- Changes in apps:
+  - rosbag2rawlog (ROS 1):
+    - Added support for XYZIRT point clouds.
 - Changes in libraries:
   - \ref mrpt_maps_grp:
     - Implement missing probabilistic observation models in mrpt::maps::CVoxelMap and mrpt::maps::CVoxelMapRGB
