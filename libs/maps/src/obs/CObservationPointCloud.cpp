@@ -9,6 +9,7 @@
 
 #include "maps-precomp.h"  // Precomp header
 //
+#include <mrpt/core/get_env.h>
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
@@ -111,6 +112,12 @@ void CObservationPointCloud::load_impl() const
 {
 	MRPT_START
 
+	const thread_local bool MRPT_DEBUG_OBSPTS_LAZY_LOAD =
+		mrpt::get_env<bool>("MRPT_DEBUG_OBSPTS_LAZY_LOAD", false);
+	if (MRPT_DEBUG_OBSPTS_LAZY_LOAD)
+		std::cout << "[CObservationPointCloud::load()] Called on this="
+				  << reinterpret_cast<const void*>(this) << std::endl;
+
 	// Already loaded?
 	if (!isExternallyStored() || (isExternallyStored() && pointcloud)) return;
 
@@ -201,6 +208,13 @@ void CObservationPointCloud::load_impl() const
 void CObservationPointCloud::unload() const
 {
 	MRPT_START
+
+	const thread_local bool MRPT_DEBUG_OBSPTS_LAZY_LOAD =
+		mrpt::get_env<bool>("MRPT_DEBUG_OBSPTS_LAZY_LOAD", false);
+	if (MRPT_DEBUG_OBSPTS_LAZY_LOAD)
+		std::cout << "[CObservationPointCloud::unload()] Called on this="
+				  << reinterpret_cast<const void*>(this) << std::endl;
+
 	if (!isExternallyStored() || !pointcloud) return;
 
 	// Free memory, saving to the file if it doesn't exist:
