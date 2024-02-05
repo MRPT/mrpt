@@ -2,6 +2,8 @@
 
 # Version 2.11.8: UNRELEASED
 - Changes in apps:
+  - RawLogViewer: Show pointcloud ring, intensity, and time min/max ranges.
+  - rawlog-edit: Show dataset duration as formatted time interval.
   - rosbag2rawlog (ROS 1):
     - Added support for XYZIRT point clouds.
     - Finally, implemented automatic detection of sensor poses wrt `base_link` from `tf` messages, with an option to manually override sensor poses from YAML config.
