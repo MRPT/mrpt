@@ -168,6 +168,68 @@ bool mrpt::ros1bridge::fromROS(
 	return true;
 }
 
+bool mrpt::ros1bridge::fromROS(
+	const sensor_msgs::PointCloud2& msg, CPointsMapXYZIRT& obj)
+{
+	// Copy point data
+	unsigned int num_points = msg.width * msg.height;
+
+	bool incompatible = false;
+	const sensor_msgs::PointField *x_field = nullptr, *y_field = nullptr,
+								  *z_field = nullptr, *i_field = nullptr,
+								  *r_field = nullptr, *t_field = nullptr;
+
+	for (unsigned int i = 0; i < msg.fields.size() && !incompatible; i++)
+	{
+		incompatible |= check_field(msg.fields[i], "x", &x_field);
+		incompatible |= check_field(msg.fields[i], "y", &y_field);
+		incompatible |= check_field(msg.fields[i], "z", &z_field);
+		incompatible |= check_field(msg.fields[i], "intensity", &i_field);
+		incompatible |= check_field(msg.fields[i], "ring", &r_field);
+		incompatible |= check_field(msg.fields[i], "time", &t_field);
+	}
+
+	if (incompatible || (!x_field || !y_field || !z_field)) return false;
+
+	obj.resize_XYZIRT(num_points, !!i_field, !!r_field, !!t_field);
+
+	unsigned int idx = 0;
+	for (unsigned int row = 0; row < msg.height; ++row)
+	{
+		const unsigned char* row_data = &msg.data[row * msg.row_step];
+		for (uint32_t col = 0; col < msg.width; ++col, ++idx)
+		{
+			const unsigned char* msg_data = row_data + col * msg.point_step;
+
+			float x, y, z;
+			get_float_from_field(x_field, msg_data, x);
+			get_float_from_field(y_field, msg_data, y);
+			get_float_from_field(z_field, msg_data, z);
+			obj.setPointFast(idx, x, y, z);
+
+			if (i_field)
+			{
+				float i;
+				get_float_from_field(i_field, msg_data, i);
+				obj.setPointIntensity(idx, i);
+			}
+			if (r_field)
+			{
+				uint16_t ring_id = 0;
+				get_uint16_from_field(r_field, msg_data, ring_id);
+				obj.setPointRing(idx, ring_id);
+			}
+			if (t_field)
+			{
+				float t;
+				get_float_from_field(t_field, msg_data, t);
+				obj.setPointTime(idx, t);
+			}
+		}
+	}
+	return true;
+}
+
 bool mrpt::ros1bridge::toROS(
 	const CSimplePointsMap& obj, const std_msgs::Header& msg_header,
 	sensor_msgs::PointCloud2& msg)

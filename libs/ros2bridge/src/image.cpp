@@ -15,7 +15,7 @@
 
 #include <mrpt/ros2bridge/image.h>
 
-#if CV_BRIDGE_VERSION <= 0x030400
+#if CV_BRIDGE_VERSION < 0x030400
 #include <cv_bridge/cv_bridge.h>
 #else
 #include <cv_bridge/cv_bridge.hpp>
