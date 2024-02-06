@@ -15,6 +15,8 @@
     - Add missing mrpt::ros1bridge::fromROS() for `PointCloud2` => mrpt::maps::CPointsMapXYZIRT conversions.
   - \ref mrpt_ros2bridge_grp:
     - Fix wrong macros leading to including obsolete header `<cv_bridge/cv_bridge.h>`.
+  - \ref mrpt_system_grp:
+    - New function mrpt::system::hyperlink() to generate clickable links in terminal messages.
 
 # Version 2.11.7: Released Jan 25th, 2024
 - Changes in apps:
