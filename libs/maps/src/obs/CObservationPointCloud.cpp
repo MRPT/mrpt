@@ -9,6 +9,7 @@
 
 #include "maps-precomp.h"  // Precomp header
 //
+#include <mrpt/core/get_env.h>
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
@@ -16,6 +17,7 @@
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CPointsMapXYZI.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/math/ops_containers.h>  // minimum_maximum()
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/serialization/CArchive.h>
@@ -57,6 +59,31 @@ void CObservationPointCloud::getDescriptionAsText(std::ostream& o) const
 	{
 		o << pointcloud->GetRuntimeClass()->className << "\n";
 		o << "Number of points: " << pointcloud->size() << "\n";
+
+		// Special cases: show IRT stats:
+		if (auto* ptrIs = pointcloud->getPointsBufferRef_intensity();
+			ptrIs && !ptrIs->empty())
+		{
+			float Imin, Imax;
+			mrpt::math::minimum_maximum(*ptrIs, Imin, Imax);
+			o << "Intensity channel values: min=" << Imin << " max=" << Imax
+			  << "\n";
+		}
+		if (auto* ptrTs = pointcloud->getPointsBufferRef_timestamp();
+			ptrTs && !ptrTs->empty())
+		{
+			float Tmin, Tmax;
+			mrpt::math::minimum_maximum(*ptrTs, Tmin, Tmax);
+			o << "Timestamp channel values: min=" << Tmin << " max=" << Tmax
+			  << "\n";
+		}
+		if (auto* ptrRs = pointcloud->getPointsBufferRef_ring();
+			ptrRs && !ptrRs->empty())
+		{
+			uint16_t Rmin, Rmax;
+			mrpt::math::minimum_maximum(*ptrRs, Rmin, Rmax);
+			o << "Ring channel values: min=" << Rmin << " max=" << Rmax << "\n";
+		}
 	}
 
 	if (m_externally_stored != ExternalStorageFormat::None)
@@ -110,6 +137,12 @@ void CObservationPointCloud::serializeFrom(
 void CObservationPointCloud::load_impl() const
 {
 	MRPT_START
+
+	const thread_local bool MRPT_DEBUG_OBSPTS_LAZY_LOAD =
+		mrpt::get_env<bool>("MRPT_DEBUG_OBSPTS_LAZY_LOAD", false);
+	if (MRPT_DEBUG_OBSPTS_LAZY_LOAD)
+		std::cout << "[CObservationPointCloud::load()] Called on this="
+				  << reinterpret_cast<const void*>(this) << std::endl;
 
 	// Already loaded?
 	if (!isExternallyStored() || (isExternallyStored() && pointcloud)) return;
@@ -201,6 +234,13 @@ void CObservationPointCloud::load_impl() const
 void CObservationPointCloud::unload() const
 {
 	MRPT_START
+
+	const thread_local bool MRPT_DEBUG_OBSPTS_LAZY_LOAD =
+		mrpt::get_env<bool>("MRPT_DEBUG_OBSPTS_LAZY_LOAD", false);
+	if (MRPT_DEBUG_OBSPTS_LAZY_LOAD)
+		std::cout << "[CObservationPointCloud::unload()] Called on this="
+				  << reinterpret_cast<const void*>(this) << std::endl;
+
 	if (!isExternallyStored() || !pointcloud) return;
 
 	// Free memory, saving to the file if it doesn't exist:

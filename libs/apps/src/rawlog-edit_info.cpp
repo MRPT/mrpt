@@ -149,6 +149,11 @@ DECLARE_OP_FUNCTION(op_info)
 				mrpt::Clock::fromDouble(proc.lastTimestamp))
 		 << " UTC)\n";
 
+	cout << "Duration                          : "
+		 << mrpt::system::intervalFormat(
+				proc.lastTimestamp - proc.firstTimestamp)
+		 << "\n";
+
 	// By sensor labels:
 	cout << "All sensor labels                 : ";
 	for (auto it = proc.infoPerSensorLabel.begin();

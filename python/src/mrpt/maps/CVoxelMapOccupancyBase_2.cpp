@@ -50,7 +50,7 @@
 
 void bind_mrpt_maps_CVoxelMapOccupancyBase_2(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::maps::CVoxelMapOccupancyBase file:mrpt/maps/CVoxelMapOccupancyBase.h line:116
+	{ // mrpt::maps::CVoxelMapOccupancyBase file:mrpt/maps/CVoxelMapOccupancyBase.h line:117
 		pybind11::class_<mrpt::maps::CVoxelMapOccupancyBase<mrpt::maps::VoxelNodeOccRGB,signed char>, std::shared_ptr<mrpt::maps::CVoxelMapOccupancyBase<mrpt::maps::VoxelNodeOccRGB,signed char>>, mrpt::maps::CVoxelMapBase<mrpt::maps::VoxelNodeOccRGB>, mrpt::maps::NearestNeighborsCapable> cl(M("mrpt::maps"), "CVoxelMapOccupancyBase_mrpt_maps_VoxelNodeOccRGB_signed_char_t", "");
 		cl.def_readwrite("insertionOptions", &mrpt::maps::CVoxelMapOccupancyBase<mrpt::maps::VoxelNodeOccRGB,signed char>::insertionOptions);
 		cl.def_readwrite("likelihoodOptions", &mrpt::maps::CVoxelMapOccupancyBase<mrpt::maps::VoxelNodeOccRGB,signed char>::likelihoodOptions);

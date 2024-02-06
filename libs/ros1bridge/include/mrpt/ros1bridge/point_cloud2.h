@@ -11,6 +11,7 @@
 
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CPointsMapXYZI.h>
+#include <mrpt/maps/CPointsMapXYZIRT.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
 #include <sensor_msgs/PointCloud2.h>
@@ -41,6 +42,12 @@ bool fromROS(
  */
 bool fromROS(
 	const sensor_msgs::PointCloud2& msg, mrpt::maps::CPointsMapXYZI& obj);
+
+/** \overload For (x,y,z,intensity,ring,time) channels.
+ * Requires point cloud fields: x,y,z,intensity,ring,time
+ */
+bool fromROS(
+	const sensor_msgs::PointCloud2& msg, mrpt::maps::CPointsMapXYZIRT& obj);
 
 /** Convert sensor_msgs/PointCloud2 -> mrpt::obs::CObservationRotatingScan.
  * Requires point cloud fields: x,y,z,intensity,ring
