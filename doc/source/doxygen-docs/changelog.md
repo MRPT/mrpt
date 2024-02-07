@@ -6,6 +6,8 @@
     - mrpt::vision::TStereoCalibParams::use_robust_kernel now defaults to `true`.
   - \ref mrpt_img_grp:
     - Fix const-correctness of arguments in mrpt::img::CImage::drawChessboardCorners()
+  - \ref mrpt_obs_grp:
+    - Added support for mrpt::typemeta::TEnumType to mrpt::obs::CActionRobotMovement3D::TDrawSampleMotionModel and mrpt::obs::CActionRobotMovement2D::TDrawSampleMotionModel.
 - BUG FIXES:
   - Fix missing build dep on tf2_geometry_msgs for ROS 1 only.
   - Application kinect-stereo-calib: fix exceptions when selecting images without a good chessboard detection on the left list box.
