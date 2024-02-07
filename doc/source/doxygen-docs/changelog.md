@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.11.9: UNRELEASED
-(none yet)
+- BUG FIXES:
+  - Fix missing build dep on tf2_geometry_msgs for ROS 1 only.
 
 # Version 2.11.8: Released Feb 7th, 2024
 - Changes in apps:
