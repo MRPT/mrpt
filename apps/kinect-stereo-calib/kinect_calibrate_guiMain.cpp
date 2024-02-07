@@ -780,7 +780,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(
 	cbOptK3 = new wxCheckBox(
 		Panel12, ID_CHECKBOX6, _("k3 (r^6 dist.)"), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX6"));
-	cbOptK3->SetValue(false);
+	cbOptK3->SetValue(true);
 	FlexGridSizer35->Add(
 		cbOptK3, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 1);
 	FlexGridSizer35->Add(
@@ -789,13 +789,13 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(
 	cbOptT1 = new wxCheckBox(
 		Panel12, ID_CHECKBOX7, _("t1 (tang. dist.)"), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX7"));
-	cbOptT1->SetValue(false);
+	cbOptT1->SetValue(true);
 	FlexGridSizer35->Add(
 		cbOptT1, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 1);
 	cbOptT2 = new wxCheckBox(
 		Panel12, ID_CHECKBOX8, _("t2 (tang. dist.)"), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX8"));
-	cbOptT2->SetValue(false);
+	cbOptT2->SetValue(true);
 	FlexGridSizer35->Add(
 		cbOptT2, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 1);
 	Panel12->SetSizer(FlexGridSizer35);
@@ -826,7 +826,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(
 		Panel13, ID_CHECKBOX3, _("Pseudo-Huber robust kernel"),
 		wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
 		_T("ID_CHECKBOX3"));
-	cbCalibUseRobust->SetValue(false);
+	cbCalibUseRobust->SetValue(true);
 	FlexGridSizer34->Add(
 		cbCalibUseRobust, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
@@ -1752,16 +1752,20 @@ void kinect_calibrate_guiDialog::ProcessNewSelectedImageListBox()
 {
 	try
 	{
+		static std::optional<mrpt::img::CImage> noImg;
+		if (!noImg)
+		{
+			noImg.emplace(320, 240, CH_RGB);
+			noImg->filledRectangle(0, 0, 319, 239, TColor(200, 200, 200));
+			noImg->textOut(100, 110, "(No image selected)", TColor::white());
+		}
+
 		const int sel = lbImagePairs->GetSelection();
 
 		if (sel == wxNOT_FOUND || sel >= (int)m_calib_images.size())
 		{
-			mrpt::img::CImage img(320, 240, CH_RGB);
-			img.filledRectangle(0, 0, 319, 239, TColor(200, 200, 200));
-			img.textOut(100, 110, "(No image selected)", TColor::white());
-
-			this->m_view_left->AssignImage(img);
-			this->m_view_right->AssignImage(img);
+			this->m_view_left->AssignImage(*noImg);
+			this->m_view_right->AssignImage(*noImg);
 		}
 		else
 		{
@@ -1769,11 +1773,13 @@ void kinect_calibrate_guiDialog::ProcessNewSelectedImageListBox()
 
 			CImage il, ir;
 
+			const auto& selPair = m_calib_images[sel];
+
 			// Common part to all (but one) modes:
 			if (image_mode != 1)
 			{
-				il = m_calib_images[sel].left.img_original;
-				ir = m_calib_images[sel].right.img_original;
+				il = selPair.left.img_original;
+				ir = selPair.right.img_original;
 
 				if (cbCalibNormalize->IsChecked())
 				{
@@ -1792,8 +1798,15 @@ void kinect_calibrate_guiDialog::ProcessNewSelectedImageListBox()
 				// ======= Detected chessboard =======
 				case 1:
 				{
-					il = m_calib_images[sel].left.img_checkboard;
-					ir = m_calib_images[sel].right.img_checkboard;
+					if (!selPair.left.img_checkboard.isEmpty())
+						il = selPair.left.img_checkboard;
+					else
+						il = *noImg;
+
+					if (!selPair.right.img_checkboard.isEmpty())
+						ir = selPair.right.img_checkboard;
+					else
+						ir = *noImg;
 				}
 				break;
 
@@ -1804,11 +1817,11 @@ void kinect_calibrate_guiDialog::ProcessNewSelectedImageListBox()
 					ir = ir.colorImage();
 
 					il.drawChessboardCorners(
-						m_calib_images[sel].left.projectedPoints_distorted,
+						selPair.left.projectedPoints_distorted,
 						m_calib_params.check_size_x,
 						m_calib_params.check_size_y);
 					ir.drawChessboardCorners(
-						m_calib_images[sel].right.projectedPoints_distorted,
+						selPair.right.projectedPoints_distorted,
 						m_calib_params.check_size_x,
 						m_calib_params.check_size_y);
 				}
@@ -2133,7 +2146,7 @@ void kinect_calibrate_guiDialog::OnbtnSaveCalibClick(wxCommandEvent& event)
 		c["right_camera_pose"] =
 			m_calib_result.cam_params.rightCameraPose.asString();
 
-		auto& r = c["calibration_results"] = mrpt::containers::yaml::Map();
+		auto r = c["calibration_results"] = mrpt::containers::yaml::Map();
 		r["iters"] = m_calib_result.final_iters;
 		r["good_image_pairs"] = m_calib_result.final_number_good_image_pairs;
 		r["final_rmse"] = m_calib_result.final_rmse;

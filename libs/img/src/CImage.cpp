@@ -1847,7 +1847,7 @@ void CImage::rotateImage(
 }
 
 bool CImage::drawChessboardCorners(
-	std::vector<TPixelCoordf>& cornerCoords, unsigned int check_size_x,
+	const std::vector<TPixelCoordf>& cornerCoords, unsigned int check_size_x,
 	unsigned int check_size_y, unsigned int lines_width, unsigned int r)
 {
 #if MRPT_HAS_OPENCV
