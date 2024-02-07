@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.11.9: UNRELEASED
+(none yet)
+
 # Version 2.11.8: Released Feb 7th, 2024
 - Changes in apps:
   - RawLogViewer: Show pointcloud ring, intensity, and time min/max ranges.
