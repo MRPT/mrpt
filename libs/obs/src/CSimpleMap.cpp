@@ -16,6 +16,8 @@
 #include <mrpt/serialization/metaprogramming_serialization.h>
 #include <mrpt/serialization/optional_serialization.h>
 
+#include <iostream>
+
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::poses;
@@ -131,8 +133,9 @@ bool CSimpleMap::loadFromFile(const std::string& filName)
 		archiveFrom(fi) >> *this;
 		return true;
 	}
-	catch (...)
+	catch (const std::exception& e)
 	{
+		std::cerr << "[CSimpleMap::loadFromFile]" << e.what() << std::endl;
 		return false;
 	}
 }
