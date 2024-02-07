@@ -80,11 +80,11 @@ struct TStereoCalibParams
 	bool optimize_k1{true}, optimize_k2{true}, optimize_k3{false},
 		optimize_t1{false}, optimize_t2{false};
 
-	/** Employ a Pseudo-Huber robustifier kernel (Default: false) */
-	bool use_robust_kernel{false};
+	/** Employ a Pseudo-Huber robustifier kernel (Default: true) */
+	bool use_robust_kernel = true;
 	/** The parameter of the robust kernel, in pixels (only if
-	 * use_robust_kernel=true) (Default=10) */
-	double robust_kernel_param{10};
+	 * use_robust_kernel=true) (Default=5) */
+	double robust_kernel_param = 5;
 
 	/** If set to !=NULL, this function will be called within each Lev-Marq.
 	 * iteration (don't do heavy stuff here since performance will degrade) */
