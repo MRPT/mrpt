@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.11.9: UNRELEASED
+# Version 2.11.9: Released Feb 11th, 2024
 - Changes in libraries:
   - \ref mrpt_vision_grp:
     - mrpt::vision::TStereoCalibParams::use_robust_kernel now defaults to `true`.
