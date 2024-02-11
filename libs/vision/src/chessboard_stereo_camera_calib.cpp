@@ -149,7 +149,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 					if (!dat.img_original.isExternallyStored())
 					{
 						// Checkboad as color image:
-						dat.img_original.colorImage(dat.img_checkboard);
+						dat.img_checkboard = dat.img_original.colorImage();
 						dat.img_checkboard.drawChessboardCorners(
 							dat.detected_corners, check_size.x, check_size.y);
 					}
@@ -199,8 +199,8 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 				if (has_to_redraw_corners)
 				{
 					// Checkboad as color image:
-					images[i].right.img_original.colorImage(
-						images[i].right.img_checkboard);
+					images[i].right.img_checkboard =
+						images[i].right.img_original.colorImage();
 					images[i].right.img_checkboard.drawChessboardCorners(
 						images[i].right.detected_corners, check_size.x,
 						check_size.y);
@@ -276,7 +276,6 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		//   Run stereo calibration in two stages:
 		//   (0) Estimate all parameters except distortion
 		//   (1) Estimate all parameters, using as starting point the guess from
-		//   (0)
 		// ===============================================================================
 		size_t nUnknownsCamParams = 0;
 		size_t iter = 0;
