@@ -78,8 +78,6 @@ using TCalibrationImageList = std::map<std::string, TImageCalibData>;
  * reprojection will be stored here (in pixel units).
  * \param skipDrawDetectedImgs [IN] Whether to skip the generation of the
  * undistorted and detected images in each TImageCalibData
- * \param useScaramuzzaAlternativeDetector [IN] Whether to use an alternative
- * detector. See CImage::findChessboardCorners for more deatails and references.
  * \sa The <a href="http://www.mrpt.org/Application:camera-calib-gui"
  * >camera-calib-gui application</a> is a user-friendly GUI to this class.
  * \return false on any error (more info will be dumped to cout), or true on
@@ -91,8 +89,7 @@ bool checkerBoardCameraCalibration(
 	unsigned int check_size_y, double check_squares_length_X_meters,
 	double check_squares_length_Y_meters, mrpt::img::TCamera& out_camera_params,
 	bool normalize_image = true, double* out_MSE = nullptr,
-	bool skipDrawDetectedImgs = false,
-	bool useScaramuzzaAlternativeDetector = false);
+	bool skipDrawDetectedImgs = false);
 
 /** \overload with matrix of intrinsic params instead of mrpt::img::TCamera
  */
@@ -102,8 +99,7 @@ bool checkerBoardCameraCalibration(
 	double check_squares_length_Y_meters,
 	mrpt::math::CMatrixDouble33& intrinsicParams,
 	std::vector<double>& distortionParams, bool normalize_image = true,
-	double* out_MSE = nullptr, bool skipDrawDetectedImgs = false,
-	bool useScaramuzzaAlternativeDetector = false);
+	double* out_MSE = nullptr, bool skipDrawDetectedImgs = false);
 
 /** @}  */	// end of grouping
 }  // namespace mrpt::vision

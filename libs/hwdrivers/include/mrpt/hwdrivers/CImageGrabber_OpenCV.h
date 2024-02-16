@@ -20,11 +20,11 @@ namespace mrpt::hwdrivers
 enum TCameraType
 {
 	CAMERA_CV_AUTODETECT = 0,
-	CAMERA_CV_DC1394,
-	CAMERA_CV_VFL,
-	CAMERA_CV_VFW,
-	CAMERA_CV_MIL,
-	CAMERA_CV_DSHOW
+	CAMERA_CV_DC1394 = 1,
+	CAMERA_CV_VFL = 2,
+	// CAMERA_CV_VFW = 3, // removed feb-2024
+	// CAMERA_CV_MIL = 4, // removed feb-2024
+	CAMERA_CV_DSHOW = 5
 };
 
 /** Options used when creating an OpenCV capture object
@@ -109,7 +109,5 @@ MRPT_ENUM_TYPE_BEGIN(mrpt::hwdrivers::TCameraType)
 MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_AUTODETECT);
 MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_DC1394);
 MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_VFL);
-MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_VFW);
-MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_MIL);
 MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_DSHOW);
 MRPT_ENUM_TYPE_END()

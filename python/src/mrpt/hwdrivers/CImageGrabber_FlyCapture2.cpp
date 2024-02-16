@@ -91,8 +91,6 @@ void bind_mrpt_hwdrivers_CImageGrabber_FlyCapture2(std::function< pybind11::modu
 		.value("CAMERA_CV_AUTODETECT", mrpt::hwdrivers::CAMERA_CV_AUTODETECT)
 		.value("CAMERA_CV_DC1394", mrpt::hwdrivers::CAMERA_CV_DC1394)
 		.value("CAMERA_CV_VFL", mrpt::hwdrivers::CAMERA_CV_VFL)
-		.value("CAMERA_CV_VFW", mrpt::hwdrivers::CAMERA_CV_VFW)
-		.value("CAMERA_CV_MIL", mrpt::hwdrivers::CAMERA_CV_MIL)
 		.value("CAMERA_CV_DSHOW", mrpt::hwdrivers::CAMERA_CV_DSHOW)
 		.export_values();
 

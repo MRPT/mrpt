@@ -111,7 +111,7 @@ void vision::openCV_cross_correlation(
 	// Compute cross correlation:
 	cv::matchTemplate(
 		img_region_to_search.asCvMat<cv::Mat>(SHALLOW_COPY),
-		patch_im.asCvMat<cv::Mat>(SHALLOW_COPY), result, CV_TM_CCORR_NORMED);
+		patch_im.asCvMat<cv::Mat>(SHALLOW_COPY), result, cv::TM_CCORR_NORMED);
 
 	// Find the max point:
 	double mini;

@@ -45,12 +45,10 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(
 	int cv_cap_indx = 0;
 	switch (cameraType)
 	{
-		case CAMERA_CV_AUTODETECT: cv_cap_indx = CV_CAP_ANY; break;
-		case CAMERA_CV_DC1394: cv_cap_indx = CV_CAP_DC1394; break;
-		case CAMERA_CV_VFL: cv_cap_indx = CV_CAP_V4L; break;
-		case CAMERA_CV_VFW: cv_cap_indx = CV_CAP_VFW; break;
-		case CAMERA_CV_MIL: cv_cap_indx = CV_CAP_MIL; break;
-		case CAMERA_CV_DSHOW: cv_cap_indx = CV_CAP_DSHOW; break;
+		case CAMERA_CV_AUTODETECT: cv_cap_indx = cv::CAP_ANY; break;
+		case CAMERA_CV_DC1394: cv_cap_indx = cv::CAP_DC1394; break;
+		case CAMERA_CV_VFL: cv_cap_indx = cv::CAP_V4L; break;
+		case CAMERA_CV_DSHOW: cv_cap_indx = cv::CAP_DSHOW; break;
 		default: THROW_EXCEPTION_FMT("Invalid camera type: %i", cameraType);
 	}
 
@@ -71,7 +69,7 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(
 	// Global settings
 	if (options.gain != 0)
 	{
-		if (!m_capture->cap.set(CV_CAP_PROP_GAIN, options.gain))
+		if (!m_capture->cap.set(cv::CAP_PROP_GAIN, options.gain))
 			cerr << "[CImageGrabber_OpenCV] Warning: Could not set the "
 					"capturing gain property!"
 				 << endl;
@@ -109,7 +107,7 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(
 
 			if (cvMode1394 > 0)
 			{
-				if (!m_capture->cap.set(CV_CAP_PROP_MODE, cvMode1394))
+				if (!m_capture->cap.set(cv::CAP_PROP_MODE, cvMode1394))
 					cerr << "[CImageGrabber_OpenCV] Warning: Could not set the "
 							"capturing mode "
 						 << cvMode1394 << " property!" << endl;
@@ -126,7 +124,7 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(
 		//	cerr << "[CImageGrabber_OpenCV] Warning: Could not set the RGB
 		// conversion property!" << endl;
 
-		if (!m_capture->cap.set(CV_CAP_PROP_FPS, options.ieee1394_fps))
+		if (!m_capture->cap.set(cv::CAP_PROP_FPS, options.ieee1394_fps))
 			cerr << "[CImageGrabber_OpenCV] Warning: Could not set the fps "
 					"property!"
 				 << endl;
@@ -134,15 +132,15 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(
 
 	// Settings only for V4L
 	if (cameraType == CAMERA_CV_AUTODETECT || cameraType == CAMERA_CV_VFL ||
-		cameraType == CAMERA_CV_VFW || cameraType == CAMERA_CV_DSHOW)
+		cameraType == CAMERA_CV_DSHOW)
 	{
 		if (options.frame_width != 0 && options.frame_height != 0)
 		{
 			// First set width then height. The first command always returns a
 			// error!
-			m_capture->cap.set(CV_CAP_PROP_FRAME_WIDTH, options.frame_width);
+			m_capture->cap.set(cv::CAP_PROP_FRAME_WIDTH, options.frame_width);
 			if (!m_capture->cap.set(
-					CV_CAP_PROP_FRAME_HEIGHT, options.frame_height))
+					cv::CAP_PROP_FRAME_HEIGHT, options.frame_height))
 				cerr << "[CImageGrabber_OpenCV] Warning: Could not set the "
 						"frame width & height property!"
 					 << endl;
