@@ -49,11 +49,12 @@ bool CVideoFileWriter::open(
 
 	if (fourcc.empty())
 	{
-		cc = CV_FOURCC('I', 'Y', 'U', 'V');	 // Default
+		cc = cv::VideoWriter::fourcc('I', 'Y', 'U', 'V');  // Default
 	}
 	else if (fourcc.size() == 4)
 	{
-		cc = CV_FOURCC(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
+		cc =
+			cv::VideoWriter::fourcc(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
 	}
 	else
 	{

@@ -205,7 +205,7 @@ void MainWindow::on_button_generate_clicked()
 			plot->setPlotGridColor(Scalar(255, 255, 0));
 
 			cv::Mat temp1(display.cols, display.rows, display.type());
-			cvtColor(display, temp1, CV_RGB2BGR);
+			cvtColor(display, temp1, cv::COLOR_RGB2BGR);
 
 			QImage dest1 = QImage(
 				(uchar*)temp1.data, temp1.cols, temp1.rows, temp1.step,
@@ -301,9 +301,9 @@ void MainWindow::on_button_generate_clicked()
 							auxImg2.getHeight() * 2, IMG_INTERP_NN);
 				}
 
-				cv::Mat cvImg1 = auxImg1.asCvMatRef();
-				cv::Mat temp1(cvImg1.cols, cvImg1.rows, cvImg1.type());
-				cvtColor(cvImg1, temp1, CV_GRAY2RGB);
+				cv::Mat cvImg_1 = auxImg1.asCvMatRef();
+				cv::Mat temp1(cvImg_1.cols, cvImg_1.rows, cvImg_1.type());
+				cvtColor(cvImg_1, temp1, cv::COLOR_GRAY2RGB);
 				QImage dest1 = QImage(
 					(uchar*)temp1.data, temp1.cols, temp1.rows, temp1.step,
 					QImage::Format_RGB888);
@@ -318,7 +318,7 @@ void MainWindow::on_button_generate_clicked()
 				{
 					cv::Mat& cvImg2 = auxImg2.asCvMatRef();
 					cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
-					cvtColor(cvImg2, temp2, CV_GRAY2RGB);
+					cvtColor(cvImg2, temp2, cv::COLOR_GRAY2RGB);
 					QImage dest2 = QImage(
 						(uchar*)temp2.data, temp2.cols, temp2.rows, temp2.step,
 						QImage::Format_RGB888);
@@ -352,23 +352,23 @@ void MainWindow::on_button_generate_clicked()
 					v1 = *ft1.descriptors.LATCH;
 
 #ifdef HAVE_OPENCV_PLOT
-				Mat xData, yData, display;
-				Ptr<plot::Plot2d> plot;
-				int len;
-				if (descriptor_selected != 1) len = v1.size();
+				Mat xdata, ydata, Display;
+				Ptr<plot::Plot2d> Plot;
+				int Len;
+				if (descriptor_selected != 1) Len = v1.size();
 				else
-					len = v1_surf.size();
+					Len = v1_surf.size();
 
-				xData.create(1, len, CV_64F);  // 1 Row, len columns, Double
-				yData.create(1, len, CV_64F);
+				xdata.create(1, Len, CV_64F);  // 1 Row, len columns, Double
+				ydata.create(1, Len, CV_64F);
 
-				for (int i = 0; i < len; ++i)
+				for (int i = 0; i < Len; ++i)
 				{
-					xData.at<double>(i) = i;
+					xdata.at<double>(i) = i;
 					if (descriptor_selected != 1)
-						yData.at<double>(i) = v1.at(i);
+						ydata.at<double>(i) = v1.at(i);
 					else
-						yData.at<double>(i) = v1_surf.at(i);
+						ydata.at<double>(i) = v1_surf.at(i);
 				}
 				int max_y, min_y;
 				/// assigned values of the lower and upper limits in the graph
@@ -385,18 +385,18 @@ void MainWindow::on_button_generate_clicked()
 				}
 
 #if MRPT_OPENCV_VERSION_NUM >= 0x030300
-				plot = plot::Plot2d::create(xData, yData);
+				Plot = plot::Plot2d::create(xdata, ydata);
 #else
 				plot = plot::createPlot2d(xData, yData);
 #endif
-				plot->setPlotSize(len, 1);
-				plot->setMaxX(len);
-				plot->setMinX(0);
-				plot->setMaxY(max_y);
-				plot->setMinY(min_y);
-				plot->render(display);
-				cv::Mat temp1(display.cols, display.rows, display.type());
-				cvtColor(display, temp1, CV_RGB2BGR);
+				Plot->setPlotSize(Len, 1);
+				Plot->setMaxX(Len);
+				Plot->setMinX(0);
+				Plot->setMaxY(max_y);
+				Plot->setMinY(min_y);
+				Plot->render(Display);
+				cv::Mat temp1(Display.cols, Display.rows, Display.type());
+				cvtColor(Display, temp1, cv::COLOR_RGB2BGR);
 
 				QImage dest1 = QImage(
 					(uchar*)temp1.data, temp1.cols, temp1.rows, temp1.step,
@@ -423,15 +423,16 @@ void MainWindow::on_button_generate_clicked()
 
 					Mat xData, yData, display;
 					Ptr<plot::Plot2d> plot;
-					int len;
-					if (descriptor_selected != 1) len = v2.size();
+					int len2;
+					if (descriptor_selected != 1) len2 = v2.size();
 					else
-						len = v2_surf.size();
+						len2 = v2_surf.size();
 
-					xData.create(1, len, CV_64F);  // 1 Row, len columns, Double
-					yData.create(1, len, CV_64F);
+					xData.create(
+						1, len2, CV_64F);  // 1 Row, len columns, Double
+					yData.create(1, len2, CV_64F);
 
-					for (int i = 0; i < len; ++i)
+					for (int i = 0; i < len2; ++i)
 					{
 						xData.at<double>(i) = i;
 						if (descriptor_selected != 1)
@@ -444,14 +445,14 @@ void MainWindow::on_button_generate_clicked()
 #else
 					plot = plot::createPlot2d(xData, yData);
 #endif
-					plot->setPlotSize(len, 1);
-					plot->setMaxX(len);
+					plot->setPlotSize(len2, 1);
+					plot->setMaxX(len2);
 					plot->setMinX(0);
 					plot->setMaxY(max_y);
 					plot->setMinY(min_y);
 					plot->render(display);
 					cv::Mat temp2(display.cols, display.rows, display.type());
-					cvtColor(display, temp2, CV_RGB2BGR);
+					cvtColor(display, temp2, cv::COLOR_RGB2BGR);
 
 					QImage dest2 = QImage(
 						(uchar*)temp2.data, temp2.cols, temp2.rows, temp2.step,
@@ -1491,9 +1492,9 @@ void MainWindow::on_detector_button_clicked()
 
 	/// converting to color images to draw markers in correct color
 	cv::Mat temp1(cvImg1.cols, cvImg1.rows, cvImg1.type());
-	if (temp1.channels() == 3) cvtColor(cvImg1, temp1, CV_BGR2RGB);
+	if (temp1.channels() == 3) cvtColor(cvImg1, temp1, cv::COLOR_BGR2RGB);
 	else
-		cvtColor(cvImg1, temp1, CV_GRAY2RGB);
+		cvtColor(cvImg1, temp1, cv::COLOR_GRAY2RGB);
 
 	/// Drawing a marker around key-points for image 1
 	for (unsigned int i = 0; i < featsImage1.size(); i++)
@@ -1529,9 +1530,9 @@ void MainWindow::on_detector_button_clicked()
 		/// converting to color to draw coloured markers
 		cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
 
-		if (temp2.channels() == 3) cvtColor(cvImg2, temp2, CV_BGR2RGB);
+		if (temp2.channels() == 3) cvtColor(cvImg2, temp2, cv::COLOR_BGR2RGB);
 		else
-			cvtColor(cvImg2, temp2, CV_GRAY2RGB);
+			cvtColor(cvImg2, temp2, cv::COLOR_GRAY2RGB);
 
 		/// Drawing a marker around key-points for image 2
 		for (unsigned int i = 0; i < featsImage2.size(); i++)
@@ -2051,7 +2052,7 @@ void MainWindow::displayImagesWithoutDetector()
 	resolution_x = img1.getWidth();
 	resolution_y = img1.getHeight();
 
-	cv::Mat cvImg1 = img1.asCvMatRef();
+	cv::Mat cvImg_1 = img1.asCvMatRef();
 
 	// fillDetectorInfo(); no need to call
 	/// clearing this is important
@@ -2060,11 +2061,11 @@ void MainWindow::displayImagesWithoutDetector()
 
 	/// converting to color to draw markers in color for both color and
 	/// grayscale images
-	cv::Mat temp1(cvImg1.cols, cvImg1.rows, cvImg1.type());
+	cv::Mat temp1(cvImg_1.cols, cvImg_1.rows, cvImg_1.type());
 	// cout << "dimensions " << temp1.dims << endl;
-	if (temp1.channels() == 3) cvtColor(cvImg1, temp1, CV_BGR2RGB);
+	if (temp1.channels() == 3) cvtColor(cvImg_1, temp1, cv::COLOR_BGR2RGB);
 	else
-		cvtColor(cvImg1, temp1, CV_GRAY2RGB);
+		cvtColor(cvImg_1, temp1, cv::COLOR_GRAY2RGB);
 
 	/// draw a marker for key-points in image 1
 	for (unsigned int i = 0; i < featsImage1.size(); i++)
@@ -2100,9 +2101,9 @@ void MainWindow::displayImagesWithoutDetector()
 		/// grayscale images
 		cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
 
-		if (temp2.channels() == 3) cvtColor(cvImg2, temp2, CV_BGR2RGB);
+		if (temp2.channels() == 3) cvtColor(cvImg2, temp2, cv::COLOR_BGR2RGB);
 		else
-			cvtColor(cvImg2, temp2, CV_GRAY2RGB);
+			cvtColor(cvImg2, temp2, cv::COLOR_GRAY2RGB);
 
 		/// draw a marker for key-points in image 2
 		for (unsigned int i = 0; i < featsImage2.size(); i++)
@@ -2159,12 +2160,12 @@ void MainWindow::on_sample_clicked()
 	ReadInputFormat();
 
 	img1.loadFromFile(file_path1);
-	cv::Mat cvImg1 = img1.asCvMatRef();
+	cv::Mat cvImg_1 = img1.asCvMatRef();
 
-	cv::Mat temp1(cvImg1.cols, cvImg1.rows, cvImg1.type());
-	if (temp1.channels() == 3) cvtColor(cvImg1, temp1, CV_BGR2RGB);
+	cv::Mat temp1(cvImg_1.cols, cvImg_1.rows, cvImg_1.type());
+	if (temp1.channels() == 3) cvtColor(cvImg_1, temp1, cv::COLOR_BGR2RGB);
 	else
-		cvtColor(cvImg1, temp1, CV_GRAY2RGB);
+		cvtColor(cvImg_1, temp1, cv::COLOR_GRAY2RGB);
 
 	QImage disp1 = QImage(
 		(uchar*)temp1.data, temp1.cols, temp1.rows, temp1.step,
@@ -2181,9 +2182,9 @@ void MainWindow::on_sample_clicked()
 		cv::Mat cvImg2 = img2.asCvMatRef();
 		cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
 
-		if (temp2.channels() == 3) cvtColor(cvImg2, temp2, CV_BGR2RGB);
+		if (temp2.channels() == 3) cvtColor(cvImg2, temp2, cv::COLOR_BGR2RGB);
 		else
-			cvtColor(cvImg2, temp2, CV_GRAY2RGB);
+			cvtColor(cvImg2, temp2, cv::COLOR_GRAY2RGB);
 		QImage disp2 = QImage(
 			(uchar*)temp2.data, temp2.cols, temp2.rows, temp2.step,
 			QImage::Format_RGB888);
@@ -2364,7 +2365,7 @@ void MainWindow::on_generateVisualOdometry_clicked()
 	// waitKey(0);
 
 	cv::Mat temp2(display_VO.cols, display_VO.rows, display_VO.type());
-	cvtColor(display_VO, temp2, CV_BGR2RGB);
+	cvtColor(display_VO, temp2, cv::COLOR_BGR2RGB);
 	QImage dest2 = QImage(
 		(uchar*)temp2.data, temp2.cols, temp2.rows, temp2.step,
 		QImage::Format_RGB888);
@@ -2509,11 +2510,11 @@ Point MainWindow::trackKeyPoint(
 	cv::Mat cvImg_test = img_test.asCvMatRef();
 
 	Mat cvImg_org_gray, cvImg_test_gray;
-	cvtColor(cvImg_org, cvImg_org_gray, CV_RGB2GRAY);
-	cvtColor(cvImg_test, cvImg_test_gray, CV_RGB2GRAY);
+	cvtColor(cvImg_org, cvImg_org_gray, cv::COLOR_RGB2GRAY);
+	cvtColor(cvImg_test, cvImg_test_gray, cv::COLOR_RGB2GRAY);
 
-	int resolution_x = cvImg_org.rows;
-	int resolution_y = cvImg_org.cols;
+	int resolutionX = cvImg_org.rows;
+	int resolutionY = cvImg_org.cols;
 
 	/// org_x,org_y belong to the key-point in image_org and the corresponding
 	/// key-point in img_test needs to be computed
@@ -2537,8 +2538,8 @@ Point MainWindow::trackKeyPoint(
 				int temp_test_x = temp_x + j;
 				int temp_test_y = temp_y + k;
 
-				if (temp_org_x > resolution_x || temp_org_y > resolution_y ||
-					temp_test_x > resolution_x || temp_test_y > resolution_y)
+				if (temp_org_x > resolutionX || temp_org_y > resolutionY ||
+					temp_test_x > resolutionX || temp_test_y > resolutionY)
 					break;
 
 				response = response +
@@ -2574,14 +2575,14 @@ void MainWindow::on_trackIt_clicked()
 	window_width = tracker_param5_edit->text().toInt();
 	window_height = tracker_param6_edit->text().toInt();
 
-	cv::Mat cvImg1 = tracker_obj.trackThemAll(
+	cv::Mat cvImg_1 = tracker_obj.trackThemAll(
 		files_fullpath_tracking, tracking_image_counter, remove_lost_feats,
 		add_new_feats, max_feats, patch_size, window_width, window_height);
 
 	/// temp1 is always in color due to tracker marks so no need to convert to
 	/// grayscale
-	cv::Mat temp1(cvImg1.cols, cvImg1.rows, cvImg1.type());
-	cvtColor(cvImg1, temp1, CV_BGR2RGB);
+	cv::Mat temp1(cvImg_1.cols, cvImg_1.rows, cvImg_1.type());
+	cvtColor(cvImg_1, temp1, cv::COLOR_BGR2RGB);
 
 	QImage dest1 = QImage(
 		(uchar*)temp1.data, temp1.cols, temp1.rows, temp1.step,
@@ -2799,7 +2800,7 @@ void MainWindow::store_Training_TestingSets()
 				dir = opendir(file_path_temp.c_str());
 				while ((pdir = readdir(dir)))
 					files.emplace_back(pdir->d_name);
-				for (unsigned int i = 0, j = 0; i < files.size(); i++)
+				for (unsigned int i = 0 /*, j = 0*/; i < files.size(); i++)
 				{
 					if (files.at(i).size() > 4)	 // this removes the . and .. in
 					// linux as all files will have
@@ -2809,7 +2810,7 @@ void MainWindow::store_Training_TestingSets()
 						training_files_paths.push_back(
 							file_path_temp + "/" + files.at(i));
 						// cout << files_fullpath_tracking.at(j) << endl;
-						j++;
+						// j++;
 					}
 				}  // end of for
 			}
@@ -4021,9 +4022,9 @@ void MainWindow::Mouse_Pressed()
 	cv::Mat temp_desc_ref(
 		desc_Ref_img.cols, desc_Ref_img.rows, desc_Ref_img.type());
 	if (temp_desc_ref.channels() == 3)
-		cvtColor(desc_Ref_img, temp_desc_ref, CV_BGR2RGB);
+		cvtColor(desc_Ref_img, temp_desc_ref, cv::COLOR_BGR2RGB);
 	else
-		cvtColor(desc_Ref_img, temp_desc_ref, CV_GRAY2RGB);
+		cvtColor(desc_Ref_img, temp_desc_ref, cv::COLOR_GRAY2RGB);
 
 	/// images1 have all the descriptors
 	if (images_static_sift_surf != nullptr)
@@ -4114,9 +4115,10 @@ void MainWindow::Mouse_Pressed()
 			// featsImage2.saveToTextFile("./KeyPoints2.txt");
 			cv::Mat cvImg2 = img2.asCvMatRef();
 			cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
-			if (temp2.channels() == 3) cvtColor(cvImg2, temp2, CV_BGR2RGB);
+			if (temp2.channels() == 3)
+				cvtColor(cvImg2, temp2, cv::COLOR_BGR2RGB);
 			else
-				cvtColor(cvImg2, temp2, CV_GRAY2RGB);
+				cvtColor(cvImg2, temp2, cv::COLOR_GRAY2RGB);
 
 			/// draw a marker around image 1 keypoints
 			for (unsigned int i = 0; i < featsImage2.size(); i++)
@@ -4226,9 +4228,10 @@ void MainWindow::Mouse_Pressed()
 			/// converting to colour image to show markers in color for
 			/// grayscale images too
 			cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
-			if (temp2.channels() == 3) cvtColor(cvImg2, temp2, CV_BGR2RGB);
+			if (temp2.channels() == 3)
+				cvtColor(cvImg2, temp2, cv::COLOR_BGR2RGB);
 			else
-				cvtColor(cvImg2, temp2, CV_GRAY2RGB);
+				cvtColor(cvImg2, temp2, cv::COLOR_GRAY2RGB);
 
 			/// draw a marker around image 2 keypoints
 			for (unsigned int i = 0; i < featsImage2.size(); i++)
