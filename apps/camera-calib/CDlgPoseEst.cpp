@@ -146,13 +146,6 @@ CDlgPoseEst::CDlgPoseEst(
 	StaticBoxSizer4->Add(FlexGridSizer17, 1, wxEXPAND, 0);
 	FlexGridSizer6->Add(
 		StaticBoxSizer4, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 2);
-	wxString __wxRadioBoxChoices_1[2] = {
-		_("OpenCV\'s default"), _("Scaramuzza et al.\'s")};
-	rbMethod = new wxRadioBox(
-		this, ID_RADIOBOX1, _(" Detector method: "), wxDefaultPosition,
-		wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, 0, wxDefaultValidator,
-		_T("ID_RADIOBOX1"));
-	FlexGridSizer6->Add(rbMethod, 1, wxEXPAND, 2);
 	StaticBoxSizer5 =
 		new wxStaticBoxSizer(wxHORIZONTAL, this, _(" Size of quads (in mm): "));
 	FlexGridSizer18 = new wxFlexGridSizer(1, 4, 0, 0);
@@ -411,8 +404,6 @@ void CDlgPoseEst::OntimCaptureTrigger(wxTimerEvent& event)
 		m_check_size_y = this->edSizeY->GetValue();
 
 		m_normalize_image = this->cbNormalize->GetValue();
-		m_useScaramuzzaAlternativeDetector =
-			this->rbMethod->GetSelection() == 1;
 
 		CObservation::Ptr obs = m_video->getNextFrame();
 		ASSERT_(obs);
@@ -531,8 +522,7 @@ void CDlgPoseEst::threadProcessCorners()
 					bool foundCorners = mrpt::vision::findChessboardCorners(
 						obj->m_threadImgToProcess->image, obj->m_threadResults,
 						obj->m_check_size_x, obj->m_check_size_y,
-						obj->m_normalize_image,
-						obj->m_useScaramuzzaAlternativeDetector);
+						obj->m_normalize_image);
 
 					if (!foundCorners) obj->m_threadResults.clear();
 					else
