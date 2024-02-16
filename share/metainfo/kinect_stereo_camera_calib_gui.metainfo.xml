@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>org.mrpt.navlog-viewer.desktop</id>
+  <id>org.mrpt.kinect_stereo_camera_calib_gui.desktop</id>
   <metadata_license>MIT</metadata_license>
-  <name>navlog-viewer</name>
-  <summary>Navigation log viewer</summary>
+  <name>kinect-stereo-calib</name>
+  <summary>Stereo Camera and Kinect Calibration GUI</summary>
   <description>
-    <p>Navigation log viewer.</p>
+    <p>Stereo Camera and Kinect Calibration GUI.</p>
   </description>
-  <launchable type="desktop-id">navlog-viewer.desktop</launchable>
+  <launchable type="desktop-id">kinect_stereo_camera_calib_gui.desktop</launchable>
   <screenshots>
     <screenshot type="default">
         <caption>Application screenshot</caption>
-        <image>https://static.mrpt.org/screenshots/navlog-viewer.png</image>
+        <image>https://static.mrpt.org/screenshots/kinect-stereo-camera-calib-gui.png</image>
     </screenshot>
   </screenshots>
   <url type="homepage">https://www.mrpt.org/</url>
