@@ -95,7 +95,6 @@ class camera_calib_guiDialog : public wxDialog
 	wxTextCtrl* edLengthX;
 	CMyGLCanvas* m_3Dview;
 	wxNotebook* Notebook1;
-	wxRadioBox* rbMethod;
 	wxButton* btnSave;
 	wxButton* btnAbout;
 	wxStaticText* StaticText2;
