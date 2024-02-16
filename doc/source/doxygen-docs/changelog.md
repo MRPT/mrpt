@@ -4,6 +4,8 @@
 - Changes in libraries:
   - \ref mrpt_maps_grp:
     - mrpt::maps::CHeightGridMap2D: now supports integrating any point-cloud observation.
+- Others:
+  - Fix Debian appstream warnings on mrpt-apps.
 
 # Version 2.11.9: Released Feb 11th, 2024
 - Changes in libraries:
