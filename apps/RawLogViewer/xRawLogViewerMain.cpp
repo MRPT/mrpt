@@ -1871,7 +1871,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 				progDia.Fit();
 				wxTheApp->Yield();	// Let the app. process messages
 
-				if (memUsg_Mb > 4000 && !alreadyWarnedTooLargeFile)
+				if (memUsg_Mb > 8000 && !alreadyWarnedTooLargeFile)
 				{
 					alreadyWarnedTooLargeFile = true;
 					string msg;
