@@ -44,52 +44,30 @@ void TestCheckerboardDetectors()
 	const unsigned int checkerboard_size_y = 9;
 
 	// Detect:
-	timlog.enter("findChessboardCorners [OpenCV]");
+	timlog.enter("findChessboardCorners");
 
 	// bool detectOk1 =
 	mrpt::vision::findChessboardCorners(
 		img, cornerCoords, checkerboard_size_x, checkerboard_size_y,
-		true,  // normalize_image
-		false  // useScaramuzzaMethod
+		true  // normalize_image
 	);
 
-	timlog.leave("findChessboardCorners [OpenCV]");
+	timlog.leave("findChessboardCorners");
 
 	// Draw:
 	CImage img_detect1 = img;
 	img_detect1.drawChessboardCorners(
 		cornerCoords, checkerboard_size_x, checkerboard_size_y);
 
-	timlog.enter("findChessboardCorners [Scaramuzza]");
-
-	// bool detectOk2 =
-	mrpt::vision::findChessboardCorners(
-		img, cornerCoords, checkerboard_size_x, checkerboard_size_y,
-		true,  // normalize_image
-		true  // useScaramuzzaMethod
-	);
-
-	timlog.leave("findChessboardCorners [Scaramuzza]");
-
-	// Draw:
-	CImage img_detect2 = img;
-	img_detect2.drawChessboardCorners(
-		cornerCoords, checkerboard_size_x, checkerboard_size_y);
-
-	// ASSERT_(detectOk1 && detectOk2);
-
 	// Show results:
-	CDisplayWindow win1("Detected checkerboard (OpenCV)");
+	CDisplayWindow win1("Detected checkerboard");
 	win1.showImage(img_detect1);
-
-	CDisplayWindow win2("Detected checkerboard (Scaramuzza)");
-	win2.showImage(img_detect2);
 
 	timlog.dumpAllStats();
 	timlog.clear();
 
 	// wait till user closes any window:
-	while (win1.isOpen() && win2.isOpen())
+	while (win1.isOpen())
 	{
 		std::this_thread::sleep_for(10ms);
 	}

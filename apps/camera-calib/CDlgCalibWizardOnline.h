@@ -45,7 +45,6 @@ class CDlgCalibWizardOnline : public wxDialog
 	wxTextCtrl* edLengthY;
 	wxButton* btnClose;
 	wxCheckBox* cbNormalize;
-	wxRadioBox* rbMethod;
 	mrpt::gui::wxMRPTImageControl* m_realtimeview;
 	wxSpinCtrl* edSizeY;
 	wxStaticText* StaticText1;
@@ -118,7 +117,6 @@ class CDlgCalibWizardOnline : public wxDialog
 	unsigned int m_check_size_x;
 	unsigned int m_check_size_y;
 	bool m_normalize_image;
-	bool m_useScaramuzzaAlternativeDetector;
 
 	mrpt::hwdrivers::CCameraSensor::Ptr m_video;
 

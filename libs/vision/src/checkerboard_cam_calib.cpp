@@ -38,15 +38,14 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 	unsigned int check_size_y, double check_squares_length_X_meters,
 	double check_squares_length_Y_meters, CMatrixDouble33& intrinsicParams,
 	std::vector<double>& distortionParams, bool normalize_image,
-	double* out_MSE, bool skipDrawDetectedImgs,
-	bool useScaramuzzaAlternativeDetector)
+	double* out_MSE, bool skipDrawDetectedImgs)
 {
 	// Just a wrapper for the newer version of the function which uses TCamera:
 	TCamera cam;
 	bool ret = checkerBoardCameraCalibration(
 		images, check_size_x, check_size_y, check_squares_length_X_meters,
 		check_squares_length_Y_meters, cam, normalize_image, out_MSE,
-		skipDrawDetectedImgs, useScaramuzzaAlternativeDetector);
+		skipDrawDetectedImgs);
 
 	intrinsicParams = cam.intrinsicParams;
 	distortionParams = cam.getDistortionParamsAsVector();
@@ -61,8 +60,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 	unsigned int check_size_y, double check_squares_length_X_meters,
 	double check_squares_length_Y_meters, mrpt::img::TCamera& out_camera_params,
 	bool normalize_image, double* out_MSE,
-	[[maybe_unused]] bool skipDrawDetectedImgs,
-	bool useScaramuzzaAlternativeDetector)
+	[[maybe_unused]] bool skipDrawDetectedImgs)
 {
 #if MRPT_HAS_OPENCV
 	try
@@ -176,8 +174,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 			vector<TPixelCoordf> detectedCoords;
 			corners_found = mrpt::vision::findChessboardCorners(
 				img_gray, detectedCoords, check_size_x, check_size_y,
-				normalize_image,  // normalize_image
-				useScaramuzzaAlternativeDetector);
+				normalize_image);
 
 			corners_count = detectedCoords.size();
 

@@ -405,9 +405,9 @@ void CIncrementalMapPartitioner::getAs3DScene(
 		// Arcs:
 		for (size_t j = i + 1; j < m_individualFrames.size(); j++)
 		{
-			const auto [j_pdf, j_sf, twist] = m_individualFrames.get(j);
+			const auto [j_pdf, j_sf, kfTwist] = m_individualFrames.get(j);
 			(void)j_sf;	 // unused
-			(void)twist;
+			(void)kfTwist;
 
 			CPose3D j_mean;
 			j_pdf->getMean(j_mean);
