@@ -256,7 +256,6 @@ if(MRPT_BUILD_EXAMPLES)
 		vision_checkerboard_detectors
 		vision_feature_extraction
 		vision_keypoint_matching_example
-		vision_multiple_checkerboards
 		vision_stereo_calib_example
 		)
 	set(CMAKE_EXAMPLE_DEPS mrpt::vision mrpt::gui)

@@ -11,4 +11,4 @@ Categories=Science;Robotics;ArtificialIntelligence;
 StartupNotify=true
 Keywords=mrpt;camera;vision;computer vision;calibration;
 
-Name[en_US]=kinect-stereo-camera-calib-gui.desktop
+Name[en_US]=kinect_stereo_camera_calib_gui.desktop

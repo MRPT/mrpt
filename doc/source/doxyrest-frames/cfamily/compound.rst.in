@@ -24,8 +24,8 @@ if compound.compoundKind == "namespace" or compound.compoundKind == "group" then
 	functionSectionName = "Global Functions"
 	indent = ""
 else
-	variableSectionName = "\nFields"
-	functionSectionName = "\nMethods"
+	variableSectionName = "Fields"
+	functionSectionName = "Methods"
 	indent = "\t"
 end
 
@@ -40,18 +40,12 @@ local compoundStats = prepareCompound(compound)
 }
 $(getCompoundTocTree(compound))
 
-%{
-local hasDetails =
-	compoundStats.hasDocumentedItems or
-	compoundStats.hasBriefDocumentation and compoundStats.hasDetailedDocumentation
-
-if hasDetails then
-}
+Overview
+~~~~~~~~
 
 $(getItemDetailedDocumentation(compound))
 
 %{
-end -- if
 
 if #compound.groupArray > 0 or compound.hasGlobalNamespace then
 	local groupTree = ""
