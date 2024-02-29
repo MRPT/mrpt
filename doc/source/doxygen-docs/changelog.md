@@ -1,6 +1,9 @@
 \page changelog Change Log
 
-# Version 2.11.10: Relased Feb 19th, 2024
+# Version 2.11.11: UNRELEASED
+(none)
+
+# Version 2.11.10: Released Feb 19th, 2024
 - Changes in libraries:
   - \ref mrpt_maps_grp:
     - mrpt::maps::CHeightGridMap2D: now supports integrating any point-cloud observation.
