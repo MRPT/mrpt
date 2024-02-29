@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.11.11: UNRELEASED
-(none)
+- BUG FIXES:
+  - mrpt::nav::CPTG_DiffDrive_CollisionGridBased: Fix wrongly discarding of WS points out of the refDistance radius as invalid instead of returnin its closest extrapolated path pose.
 
 # Version 2.11.10: Released Feb 19th, 2024
 - Changes in libraries:
