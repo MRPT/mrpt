@@ -55,7 +55,7 @@ bool fromROS(
 bool fromROS(
 	const sensor_msgs::PointCloud2& m, mrpt::obs::CObservationRotatingScan& o,
 	const mrpt::poses::CPose3D& sensorPoseOnRobot,
-	unsigned int num_azimuth_divisions = 360);
+	unsigned int num_azimuth_divisions = 360, float max_intensity = 1000.0f);
 
 /** Extract a list of fields found in the point cloud.
  * Typically: {"x","y","z","intensity"}
@@ -75,17 +75,20 @@ bool toROS(
 	const mrpt::maps::CSimplePointsMap& obj, const std_msgs::Header& msg_header,
 	sensor_msgs::PointCloud2& msg);
 
-/** Convert mrpt::slam::CPointsMapXYZI -> sensor_msgs/PointCloud2
- * The user must supply the "msg_header" field to be copied into the output
- * message object, since that part does not appear in MRPT classes.
- *
- * Generated sensor_msgs::PointCloud2::channels: `x`, `y`, `z`, `intensity`
- *
+/** \overload With these fields: `x`, `y`, `z`, `intensity`
  * \return true on sucessful conversion, false on any error.
  * \sa fromROS
  */
 bool toROS(
 	const mrpt::maps::CPointsMapXYZI& obj, const std_msgs::Header& msg_header,
+	sensor_msgs::PointCloud2& msg);
+
+/** \overload With these fields: `x`, `y`, `z`, `intensity`, `ring`, `timestamp`
+ * \return true on successful conversion, false on any error.
+ * \sa fromROS
+ */
+bool toROS(
+	const mrpt::maps::CPointsMapXYZIRT& obj, const std_msgs::Header& msg_header,
 	sensor_msgs::PointCloud2& msg);
 
 /** @} */
