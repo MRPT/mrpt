@@ -94,7 +94,7 @@ bool toROS(
 	const std_msgs::msg::Header& msg_header,
 	sensor_msgs::msg::PointCloud2& msg);
 
-/** \overload With these fields: `x`, `y`, `z`, `intensity`
+/** \overload With these fields: `x`, `y`, `z`, `intensity`, `ring`, `timestamp`
  * \return true on successful conversion, false on any error.
  * \sa fromROS
  */
