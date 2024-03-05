@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.11.11: UNRELEASED
+# Version 2.11.11: Released March 5th, 2024
 - Changes in libraries:
   - \ref mrpt_ros1bridge_grp:
     - Add missing mrpt::ros1bridge::toROS() for mrpt::maps::CPointsMapXYZIRT => `PointCloud2` conversions.
