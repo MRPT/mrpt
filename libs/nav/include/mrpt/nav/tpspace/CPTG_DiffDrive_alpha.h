@@ -40,7 +40,7 @@ class CPTG_DiffDrive_alpha : public CPTG_DiffDrive_CollisionGridBased
 	CPTG_DiffDrive_alpha(
 		const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 	{
-		loadFromConfigFile(cfg, sSection);
+		CPTG_DiffDrive_alpha::loadFromConfigFile(cfg, sSection);
 	}
 	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& cfg,

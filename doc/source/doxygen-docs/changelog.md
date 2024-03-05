@@ -1,6 +1,13 @@
 \page changelog Change Log
 
-# Version 2.11.10: Relased Feb 19th, 2024
+# Version 2.11.11: Released March 5th, 2024
+- Changes in libraries:
+  - \ref mrpt_ros1bridge_grp:
+    - Add missing mrpt::ros1bridge::toROS() for mrpt::maps::CPointsMapXYZIRT => `PointCloud2` conversions.
+- BUG FIXES:
+  - mrpt::nav::CPTG_DiffDrive_CollisionGridBased: Fix wrongly discarding of WS points out of the refDistance radius as invalid instead of returnin its closest extrapolated path pose.
+
+# Version 2.11.10: Released Feb 19th, 2024
 - Changes in libraries:
   - \ref mrpt_maps_grp:
     - mrpt::maps::CHeightGridMap2D: now supports integrating any point-cloud observation.
