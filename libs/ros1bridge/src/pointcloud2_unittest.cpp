@@ -62,9 +62,7 @@ TEST(PointCloud2, basicTest)
 
 		i_f += 1.0;
 	}
-	//;
 }
-
 #endif	// HAVE_PCL
 
 TEST(PointCloud2, toROS)

@@ -504,8 +504,8 @@ bool mrpt::ros2bridge::fromROS(
 
 	obj.sensorPose = sensorPoseOnRobot;
 
-	// Default unit: 5mm
-	if (obj.rangeResolution == 0) obj.rangeResolution = 5e-3;
+	// Default unit: 1cm
+	if (obj.rangeResolution == 0) obj.rangeResolution = 1e-2;
 
 	if (i_field)
 	{

@@ -45,7 +45,7 @@ class CPTG_DiffDrive_C : public CPTG_DiffDrive_CollisionGridBased
 	CPTG_DiffDrive_C(
 		const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 	{
-		loadFromConfigFile(cfg, sSection);
+		CPTG_DiffDrive_C::loadFromConfigFile(cfg, sSection);
 	}
 	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& cfg,
