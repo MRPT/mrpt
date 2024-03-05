@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.12.0: UNRELEASED
+(none)
+
 # Version 2.11.11: Released March 5th, 2024
 - Changes in libraries:
   - \ref mrpt_ros1bridge_grp:
