@@ -189,8 +189,8 @@ class CObservationGPS : public CObservation
 		auto it = messages.find(
 			static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
 		return it == messages.end()
-			? dynamic_cast<MSG_CLASS*>(nullptr)
-			: dynamic_cast<MSG_CLASS*>(it->second.get());
+			? static_cast<const MSG_CLASS*>(nullptr)
+			: dynamic_cast<const MSG_CLASS*>(it->second.get());
 	}
 
 	/** Dumps the contents of the observation in a human-readable form to a
