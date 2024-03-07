@@ -1,7 +1,9 @@
 \page changelog Change Log
 
 # Version 2.12.0: UNRELEASED
-(none)
+- Changes in libraries:
+  - \ref mrpt_obs_grp:
+    - Fix compiler error on invocation of template mrpt::obs::CObservationGPS::getMsgByClassPtr() 
 
 # Version 2.11.11: Released March 5th, 2024
 - Changes in libraries:
