@@ -3,7 +3,9 @@
 # Version 2.12.0: UNRELEASED
 - Changes in libraries:
   - \ref mrpt_obs_grp:
-    - Fix compiler error on invocation of template mrpt::obs::CObservationGPS::getMsgByClassPtr() 
+    - Fix compiler error on invocation of template mrpt::obs::CObservationGPS::getMsgByClassPtr()
+- BUG FIXES:
+  - Fix wrong encoding of grayscale images in mrpt::ros1bridge::toROS() and mrpt::ros2bridge::toROS().
 
 # Version 2.11.11: Released March 5th, 2024
 - Changes in libraries:
