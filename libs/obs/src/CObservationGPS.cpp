@@ -12,6 +12,7 @@
 #include <mrpt/math/matrix_serialization.h>	 // for << of matrices
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/optional_serialization.h>
 
 #include <iomanip>
 
@@ -23,21 +24,12 @@ using namespace mrpt::math;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationGPS, CObservation, mrpt::obs)
 
-void CObservationGPS::swap(CObservationGPS& o)
-{
-	std::swap(timestamp, o.timestamp);
-	std::swap(originalReceivedTimestamp, o.originalReceivedTimestamp);
-	std::swap(has_satellite_timestamp, o.has_satellite_timestamp);
-	std::swap(sensorLabel, o.sensorLabel);
-	std::swap(sensorPose, o.sensorPose);
-	messages.swap(o.messages);
-}
-
-uint8_t CObservationGPS::serializeGetVersion() const { return 11; }
+uint8_t CObservationGPS::serializeGetVersion() const { return 12; }
 void CObservationGPS::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << timestamp << originalReceivedTimestamp << sensorLabel << sensorPose;
 	out << has_satellite_timestamp;	 // v11
+	out << covariance_enu;	// v12
 
 	const uint32_t nMsgs = messages.size();
 	out << nMsgs;
@@ -54,6 +46,7 @@ void CObservationGPS::serializeFrom(
 	{
 		case 10:
 		case 11:
+		case 12:
 		{
 			in >> timestamp >> originalReceivedTimestamp >> sensorLabel >>
 				sensorPose;
@@ -61,6 +54,8 @@ void CObservationGPS::serializeFrom(
 			else
 				has_satellite_timestamp =
 					(this->timestamp != this->originalReceivedTimestamp);
+
+			if (version >= 12) in >> covariance_enu;
 
 			uint32_t nMsgs;
 			in >> nMsgs;
@@ -252,6 +247,22 @@ void CObservationGPS::dumpToStream(std::ostream& out) const
 		<< " messages --------------------\n";
 	for (const auto& m : messages)
 		m.second->dumpToStream(out);
+
+	if (covariance_enu)
+	{
+		out << "ENU covariance:\n" << *covariance_enu << "\n";
+		// clang-format off
+		out << "ENU sigmas:"
+		   "std_x=" << std::sqrt((*covariance_enu)(0,0)) << "\n"
+		   "std_y=" << std::sqrt((*covariance_enu)(1,1)) << "\n"
+		   "std_z=" << std::sqrt((*covariance_enu)(2,2)) << "\n";
+		// clang-format on
+	}
+	else
+	{
+		out << "ENU covariance: (none)\n";
+	}
+
 	out << "-------------- [CObservationGPS] End of dump -----------------\n\n";
 }
 
@@ -265,12 +276,8 @@ mrpt::system::TTimeStamp CObservationGPS::getOriginalReceivedTimeStamp() const
 	return originalReceivedTimestamp;
 }
 
-void CObservationGPS::clear()
-{
-	messages.clear();
-	timestamp = INVALID_TIMESTAMP;
-	originalReceivedTimestamp = INVALID_TIMESTAMP;
-}
+void CObservationGPS::clear() { *this = CObservationGPS(); }
+
 void CObservationGPS::getDescriptionAsText(std::ostream& o) const
 {
 	using namespace mrpt::system;  // for the TTimeStamp << operator

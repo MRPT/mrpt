@@ -1,9 +1,10 @@
 \page changelog Change Log
 
-# Version 2.12.0: UNRELEASED
+# Version 2.11.12: UNRELEASED
 - Changes in libraries:
   - \ref mrpt_obs_grp:
     - Fix compiler error on invocation of template mrpt::obs::CObservationGPS::getMsgByClassPtr()
+    - Add field mrpt::obs::CObservationGPS::covariance_enu for easier interoperability with ROS.
 - BUG FIXES:
   - Fix wrong encoding of grayscale images in mrpt::ros1bridge::toROS() and mrpt::ros2bridge::toROS().
 
