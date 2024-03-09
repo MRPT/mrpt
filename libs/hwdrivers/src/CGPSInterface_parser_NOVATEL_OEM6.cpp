@@ -127,7 +127,7 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(
 			m_parsed_messages->timestamp = mrpt::system::now();
 		else
 			m_parsed_messages->has_satellite_timestamp = true;
-		
+
 		m_parsed_messages->sensorLabel = msg->getMessageTypeAsString();
 
 		flushParsedMessagesNow();
@@ -212,7 +212,7 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(
 			m_parsed_messages->timestamp = mrpt::system::now();
 		else
 			m_parsed_messages->has_satellite_timestamp = true;
-		
+
 		m_parsed_messages->sensorLabel = msg->getMessageTypeAsString();
 		flushParsedMessagesNow();
 		return true;
