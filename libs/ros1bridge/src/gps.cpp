@@ -14,6 +14,7 @@
   ---------------------------------------------------------------*/
 
 #include <mrpt/ros1bridge/gps.h>
+#include <mrpt/ros1bridge/time.h>
 
 bool mrpt::ros1bridge::fromROS(
 	const sensor_msgs::NavSatFix& msg, mrpt::obs::CObservationGPS& obj)
@@ -32,6 +33,18 @@ bool mrpt::ros1bridge::fromROS(
 		default: gga.fields.fix_quality = 0;  // never going to execute default
 	}
 	obj.setMsg(gga);
+
+	obj.timestamp = mrpt::ros1bridge::fromROS(msg.header.stamp);
+
+	if (msg.position_covariance_type !=
+		sensor_msgs::msg::NavSatFix::COVARIANCE_TYPE_UNKNOWN)
+	{
+		auto& cov = obj.covariance_enu.emplace();
+		for (int r = 0, i = 0; r < 3; r++)
+			for (int c = 0; c < 3; c++)
+				cov(r, c) = msg.position_covariance.at(i++);
+	}
+
 	return true;
 }
 
@@ -70,8 +83,18 @@ bool mrpt::ros1bridge::toROS(
 		// message type
 		msg.status.service = 1;
 	}
-	/// position_covariance is not available in mrpt
-	/// position_covariance type is not available in mrpt
+
+	// cov:
+	if (obj.covariance_enu.has_value())
+	{
+		msg.position_covariance_type =
+			sensor_msgs::msg::NavSatFix::COVARIANCE_TYPE_KNOWN;
+
+		for (int r = 0, i = 0; r < 3; r++)
+			for (int c = 0; c < 3; c++)
+				msg.position_covariance.at(i++) = (*obj.covariance_enu)(r, c);
+	}
+
 	return true;
 }
 

@@ -439,7 +439,8 @@ void CGPSInterface::flushParsedMessagesNow()
 		m_just_parsed_messages.sensorLabel = m_sensorLabel;
 	// Add observation to the output queue:
 	CObservationGPS::Ptr newObs = std::make_shared<CObservationGPS>();
-	m_just_parsed_messages.swap(*newObs);
+	std::swap(*newObs, m_just_parsed_messages);
+
 	CGenericSensor::appendObservation(newObs);
 	m_just_parsed_messages.clear();
 	m_last_timestamp = m_just_parsed_messages.timestamp;
