@@ -97,42 +97,7 @@ struct gnss_message
 
 /** A smart pointer to a GNSS message. \sa gnss_message,
  * mrpt::obs::CObservationGPS  */
-struct gnss_message_ptr
-{
-   protected:
-	gnss_message* ptr{nullptr};
-
-   public:
-	/** Ctor (default: nullptr pointer) */
-	gnss_message_ptr();
-	/** Makes a copy of the pointee */
-	gnss_message_ptr(const gnss_message_ptr& o);
-	/** Assigns a pointer. Memory now belongs to this class. */
-	explicit gnss_message_ptr(const gnss_message* p);
-	gnss_message_ptr& operator=(
-		const gnss_message_ptr& o);	 // Makes a copy of the pointee
-	/** Dtor: it frees the pointee memory */
-	virtual ~gnss_message_ptr();
-	bool operator==(const gnss_message* o) const { return o == ptr; }
-	bool operator==(const gnss_message_ptr& o) const { return o.ptr == ptr; }
-	bool operator!=(const gnss_message* o) const { return o != ptr; }
-	bool operator!=(const gnss_message_ptr& o) const { return o.ptr != ptr; }
-	gnss_message*& get() { return ptr; }
-	const gnss_message* get() const { return ptr; }
-	gnss_message*& operator->()
-	{
-		ASSERT_(ptr);
-		return ptr;
-	}
-	const gnss_message* operator->() const
-	{
-		ASSERT_(ptr);
-		return ptr;
-	}
-	/** Replaces the pointee with a new pointer. Its memory now belongs to this
-	 * object, do not free manually. */
-	void set(gnss_message* p);
-};
+using gnss_message_ptr = std::shared_ptr<gnss_message>;
 
 #define GNSS_MESSAGE_BINARY_BLOCK(DATA_PTR, DATA_LEN)                          \
    protected:                                                                  \

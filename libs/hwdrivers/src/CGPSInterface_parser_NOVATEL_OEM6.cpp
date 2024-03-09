@@ -119,16 +119,16 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(
 					  << hdr.msg_id << "\n";
 			return true;
 		}
-		m_just_parsed_messages.messages[msg->message_type] = msg;
-		m_just_parsed_messages.originalReceivedTimestamp = mrpt::system::now();
+		m_parsed_messages->messages[msg->message_type] = msg;
+		m_parsed_messages->originalReceivedTimestamp = mrpt::system::now();
 		if (!CObservationGPS::GPS_time_to_UTC(
 				hdr.week, hdr.ms_in_week * 1e-3, num_leap_seconds,
-				m_just_parsed_messages.timestamp))
-			m_just_parsed_messages.timestamp = mrpt::system::now();
+				m_parsed_messages->timestamp))
+			m_parsed_messages->timestamp = mrpt::system::now();
 		else
-			m_just_parsed_messages.has_satellite_timestamp = true;
-
-		m_just_parsed_messages.sensorLabel = msg->getMessageTypeAsString();
+			m_parsed_messages->has_satellite_timestamp = true;
+		
+		m_parsed_messages->sensorLabel = msg->getMessageTypeAsString();
 
 		flushParsedMessagesNow();
 		return true;
@@ -197,8 +197,8 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(
 					  << hdr.msg_id << "\n";
 			return true;
 		}
-		m_just_parsed_messages.messages[msg->message_type] = msg;
-		m_just_parsed_messages.originalReceivedTimestamp = mrpt::system::now();
+		m_parsed_messages->messages[msg->message_type] = msg;
+		m_parsed_messages->originalReceivedTimestamp = mrpt::system::now();
 		{
 			// Detect NV_OEM6_IONUTC msgs to learn about the current leap
 			// seconds:
@@ -208,12 +208,12 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(
 		}
 		if (!CObservationGPS::GPS_time_to_UTC(
 				hdr.week, hdr.ms_in_week * 1e-3, num_leap_seconds,
-				m_just_parsed_messages.timestamp))
-			m_just_parsed_messages.timestamp = mrpt::system::now();
+				m_parsed_messages->timestamp))
+			m_parsed_messages->timestamp = mrpt::system::now();
 		else
-			m_just_parsed_messages.has_satellite_timestamp = true;
-
-		m_just_parsed_messages.sensorLabel = msg->getMessageTypeAsString();
+			m_parsed_messages->has_satellite_timestamp = true;
+		
+		m_parsed_messages->sensorLabel = msg->getMessageTypeAsString();
 		flushParsedMessagesNow();
 		return true;
 	}  // end regular hdr

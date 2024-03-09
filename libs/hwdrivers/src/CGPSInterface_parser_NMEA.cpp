@@ -74,15 +74,15 @@ bool CGPSInterface::implement_parser_NMEA(size_t& out_minimum_rx_buf_to_decide)
 			m_rx_buffer.pop();
 
 		// Parse:
-		const bool did_have_gga = m_just_parsed_messages.has_GGA_datum();
+		const bool did_have_gga = m_parsed_messages->has_GGA_datum();
 		if (CGPSInterface::parse_NMEA(
-				line, m_just_parsed_messages, false /*verbose*/))
+				line, *m_parsed_messages, false /*verbose*/))
 		{
 			// Parsers must set only the part of the msg type:
-			m_just_parsed_messages.sensorLabel = "NMEA";
+			m_parsed_messages->sensorLabel = "NMEA";
 
 			// Save GGA cache (useful for NTRIP,...)
-			const bool now_has_gga = m_just_parsed_messages.has_GGA_datum();
+			const bool now_has_gga = m_parsed_messages->has_GGA_datum();
 			if (now_has_gga && !did_have_gga) { m_last_GGA = line; }
 		}
 		else

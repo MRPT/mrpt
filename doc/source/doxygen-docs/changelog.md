@@ -5,6 +5,7 @@
   - \ref mrpt_obs_grp:
     - Fix compiler error on invocation of template mrpt::obs::CObservationGPS::getMsgByClassPtr()
     - Add field mrpt::obs::CObservationGPS::covariance_enu for easier interoperability with ROS.
+    - API simplified: replace custom `mrpt::obs::gnss::gnss_message_ptr` with a `std::shared_ptr<>`.
 - BUG FIXES:
   - Fix wrong encoding of grayscale images in mrpt::ros1bridge::toROS() and mrpt::ros2bridge::toROS().
 
