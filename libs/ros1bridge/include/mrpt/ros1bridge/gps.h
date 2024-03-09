@@ -40,10 +40,8 @@ bool fromROS(
  *  The user must supply the "msg_header" field to be copied into the output
  * message object, since that part does not appear in MRPT classes.
  *
- *  Since COnservationGPS does not contain "position_covariance" and
- * "position_covariance_type" sensor_msgs::NavSatFix::position_covariance_type
- * and sensor_msgs::NavSatFix::position_covariance will be empty. \return true
- * on sucessful conversion, false on any error.
+ * \return true on sucessful conversion, only if the input observation has a GGA
+ * message.
  */
 bool toROS(
 	const mrpt::obs::CObservationGPS& obj, const std_msgs::Header& msg_header,

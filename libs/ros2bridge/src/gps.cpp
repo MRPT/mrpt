@@ -52,6 +52,8 @@ bool mrpt::ros2bridge::toROS(
 	const mrpt::obs::CObservationGPS& obj,
 	const std_msgs::msg::Header& msg_header, sensor_msgs::msg::NavSatFix& msg)
 {
+	bool valid = false;
+
 	// 1) sensor_msgs::NavSatFix:: header
 	msg.header = msg_header;
 
@@ -82,6 +84,8 @@ bool mrpt::ros2bridge::toROS(
 		// this might be incorrect as there is not matching field in mrpt
 		// message type
 		msg.status.service = 1;
+
+		valid = true;
 	}
 
 	// cov:
@@ -94,7 +98,13 @@ bool mrpt::ros2bridge::toROS(
 			for (int c = 0; c < 3; c++)
 				msg.position_covariance.at(i++) = (*obj.covariance_enu)(r, c);
 	}
-	return true;
+	else
+	{
+		msg.position_covariance_type =
+			sensor_msgs::msg::NavSatFix::COVARIANCE_TYPE_UNKNOWN;
+	}
+
+	return valid;
 }
 
 /// NavSatFix ROS message

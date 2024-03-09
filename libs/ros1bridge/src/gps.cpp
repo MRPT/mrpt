@@ -37,7 +37,7 @@ bool mrpt::ros1bridge::fromROS(
 	obj.timestamp = mrpt::ros1bridge::fromROS(msg.header.stamp);
 
 	if (msg.position_covariance_type !=
-		sensor_msgs::msg::NavSatFix::COVARIANCE_TYPE_UNKNOWN)
+		sensor_msgs::NavSatFix::COVARIANCE_TYPE_UNKNOWN)
 	{
 		auto& cov = obj.covariance_enu.emplace();
 		for (int r = 0, i = 0; r < 3; r++)
@@ -52,6 +52,8 @@ bool mrpt::ros1bridge::toROS(
 	const mrpt::obs::CObservationGPS& obj, const std_msgs::Header& msg_header,
 	sensor_msgs::NavSatFix& msg)
 {
+	bool valid = false;
+
 	// 1) sensor_msgs::NavSatFix:: header
 	msg.header = msg_header;
 
@@ -82,20 +84,27 @@ bool mrpt::ros1bridge::toROS(
 		// this might be incorrect as there is not matching field in mrpt
 		// message type
 		msg.status.service = 1;
+
+		valid = true;
 	}
 
 	// cov:
 	if (obj.covariance_enu.has_value())
 	{
 		msg.position_covariance_type =
-			sensor_msgs::msg::NavSatFix::COVARIANCE_TYPE_KNOWN;
+			sensor_msgs::NavSatFix::COVARIANCE_TYPE_KNOWN;
 
 		for (int r = 0, i = 0; r < 3; r++)
 			for (int c = 0; c < 3; c++)
 				msg.position_covariance.at(i++) = (*obj.covariance_enu)(r, c);
 	}
+	else
+	{
+		msg.position_covariance_type =
+			sensor_msgs::NavSatFix::COVARIANCE_TYPE_UNKNOWN;
+	}
 
-	return true;
+	return valid;
 }
 
 /// NavSatFix ROS message
