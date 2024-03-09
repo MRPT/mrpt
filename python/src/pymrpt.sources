@@ -42,6 +42,7 @@ mrpt/typemeta/TEnumType_3.cpp
 mrpt/typemeta/TEnumType_4.cpp
 mrpt/typemeta/TEnumType_5.cpp
 mrpt/typemeta/TEnumType_6.cpp
+mrpt/typemeta/TEnumType_7.cpp
 mrpt/serialization/CArchive.cpp
 mrpt/serialization/CArchive_1.cpp
 mrpt/serialization/CArchive_2.cpp
@@ -197,7 +198,6 @@ unknown/unknown_4.cpp
 unknown/unknown_5.cpp
 unknown/unknown_6.cpp
 unknown/unknown_7.cpp
-unknown/unknown_8.cpp
 mrpt/obs/CObservationGPS.cpp
 mrpt/hwdrivers/CGPSInterface.cpp
 mrpt/containers/MT_buffer.cpp
@@ -303,9 +303,9 @@ mrpt/nav/reactive/CReactiveNavigationSystem3D.cpp
 mrpt/nav/tpspace/CPTG_DiffDrive_C.cpp
 mrpt/nav/tpspace/CPTG_DiffDrive_alpha.cpp
 mrpt/obs/CActionRobotMovement3D.cpp
-mrpt/obs/CObservationBatteryState.cpp
-mrpt/obs/CObservationOdometry.cpp
-mrpt/obs/CRawlog.cpp
+mrpt/obs/CObservation3DScene.cpp
+mrpt/obs/CObservationBearingRange.cpp
+mrpt/obs/CObservationRobotPose.cpp
 mrpt/obs/format_externals_filename.cpp
 mrpt/obs/stock_observations.cpp
 mrpt/opengl/CArrow.cpp

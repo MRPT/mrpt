@@ -1,7 +1,6 @@
 #include "src/mrpt/obs/CObservationGPS.cpp"
 #include "src/mrpt/obs/CObservationImage.cpp"
 #include "src/mrpt/obs/CObservationIMU.cpp"
-#include "src/mrpt/obs/CObservationOdometry.cpp"
 #include "src/mrpt/obs/CObservationPointCloud.cpp"
 #include "src/mrpt/obs/CObservationRange.cpp"
 #include "src/mrpt/obs/CObservationRawDAQ.cpp"
@@ -9,3 +8,5 @@
 #include "src/mrpt/obs/CObservationRGBD360.cpp"
 #include "src/mrpt/obs/CObservationSkeleton.cpp"
 #include "src/mrpt/obs/CObservationStereoImages.cpp"
+#include "src/mrpt/obs/CObservation3DScene.cpp"
+#include "src/mrpt/obs/CObservationBearingRange.cpp"
