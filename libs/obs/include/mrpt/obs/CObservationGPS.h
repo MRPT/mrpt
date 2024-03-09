@@ -111,7 +111,7 @@ class CObservationGPS : public CObservation
 	void setMsg(const MSG_CLASS& msg)
 	{
 		messages[static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type)]
-			.set(new MSG_CLASS(msg));
+			.reset(new MSG_CLASS(msg));
 	}
 	/** Returns true if the list \a CObservationGPS::messages contains one of
 	 * the requested type. \sa mrpt::obs::gnss::gnss_message_type_t,

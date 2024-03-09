@@ -375,15 +375,14 @@ void CGPSInterface::doProcess()
 		{
 			if (m_verbose)
 				cout << "[CGPSInterface] Initial timestamp: "
-					 << mrpt::system::timeToString(
-							m_just_parsed_messages.timestamp)
+					 << mrpt::system::timeToString(m_parsed_messages->timestamp)
 					 << endl;
 			// Check if the initial timestamp seems to be OK (not a spurio one)
 			TTimeStamp tmNow = mrpt::system::now();
 			const double tdif = mrpt::system::timeDifference(
-				m_just_parsed_messages.timestamp, tmNow);
+				m_parsed_messages->timestamp, tmNow);
 			if (tdif >= 0 && tdif < 7500 /*Up to two hours*/)
-				m_last_timestamp = m_just_parsed_messages.timestamp;
+				m_last_timestamp = m_parsed_messages->timestamp;
 			else
 			{
 				if (m_verbose)
@@ -395,7 +394,7 @@ void CGPSInterface::doProcess()
 		else
 		{
 			const double time_diff = mrpt::system::timeDifference(
-				m_last_timestamp, m_just_parsed_messages.timestamp);
+				m_last_timestamp, m_parsed_messages->timestamp);
 			if (time_diff < 0 || time_diff > 300)  // Assert that the current
 			// timestamp is after the
 			// previous one and not more
@@ -418,8 +417,8 @@ void CGPSInterface::doProcess()
 			// a. These GPS data have both synched RMC and GGA data
 			// don't append observation until we have both data
 			do_append_obs =
-				(m_just_parsed_messages.has_GGA_datum() &&
-				 m_just_parsed_messages.has_RMC_datum());
+				(m_parsed_messages->has_GGA_datum() &&
+				 m_parsed_messages->has_RMC_datum());
 		}  // end-else
 
 		if (do_append_obs) flushParsedMessagesNow();
@@ -431,19 +430,19 @@ void CGPSInterface::doProcess()
 void CGPSInterface::flushParsedMessagesNow()
 {
 	// Generic observation data:
-	m_just_parsed_messages.sensorPose = m_sensorPose;
+	m_parsed_messages->sensorPose = m_sensorPose;
 	if (m_sensorLabelAppendMsgType)
-		m_just_parsed_messages.sensorLabel =
-			m_sensorLabel + string("_") + m_just_parsed_messages.sensorLabel;
+		m_parsed_messages->sensorLabel =
+			m_sensorLabel + string("_") + m_parsed_messages->sensorLabel;
 	else
-		m_just_parsed_messages.sensorLabel = m_sensorLabel;
-	// Add observation to the output queue:
-	CObservationGPS::Ptr newObs = std::make_shared<CObservationGPS>();
-	std::swap(*newObs, m_just_parsed_messages);
+		m_parsed_messages->sensorLabel = m_sensorLabel;
 
-	CGenericSensor::appendObservation(newObs);
-	m_just_parsed_messages.clear();
-	m_last_timestamp = m_just_parsed_messages.timestamp;
+	m_last_timestamp = m_parsed_messages->timestamp;
+
+	// Add observation to the output queue:
+	CGenericSensor::appendObservation(m_parsed_messages);
+
+	m_parsed_messages = mrpt::obs::CObservationGPS::Create();
 
 	// And this means the comms works:
 	m_GPS_comsWork = true;
@@ -482,7 +481,7 @@ void CGPSInterface::parseBuffer()
 					m_rx_buffer.pop();	// Not the start of a frame, skip 1 byte
 			}
 			if (m_customInit.empty() /* If we are not in old legacy mode */ &&
-				!m_just_parsed_messages.messages.empty())
+				!m_parsed_messages->messages.empty())
 				flushParsedMessagesNow();
 		} while (m_rx_buffer.size() >= min_bytes);
 	}  // end one parser mode ----------
@@ -509,8 +508,9 @@ void CGPSInterface::parseBuffer()
 				m_rx_buffer.pop();	// Not the start of a frame, skip 1 byte
 
 			if (m_customInit.empty() /* If we are not in old legacy mode */ &&
-				!m_just_parsed_messages.messages.empty())
+				!m_parsed_messages->messages.empty())
 				flushParsedMessagesNow();
+
 		} while (m_rx_buffer.size() >= global_min_bytes_max);
 	}  // end AUTO mode ----
 }
@@ -606,7 +606,7 @@ bool CGPSInterface::OnConnectionShutdown()
 bool CGPSInterface::OnConnectionEstablished()
 {
 	m_last_GGA.clear();	 // On comms reset, empty this cache
-	m_just_parsed_messages.clear();
+	m_parsed_messages->clear();
 
 	// Legacy behavior:
 	if (!os::_strcmpi(m_customInit.c_str(), "JAVAD") ||

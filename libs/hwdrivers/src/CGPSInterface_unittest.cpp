@@ -370,19 +370,19 @@ TEST(CGPSInterface, parse_NMEA_stream)
 	EXPECT_TRUE(obsGPS2);
 	EXPECT_TRUE(obsGPS3);
 
-	const auto* msg1 = obsGPS1->getMsgByClassPtr<gnss::Message_NMEA_GSA>();
-	EXPECT_TRUE(msg1 != nullptr);
-	if (!msg1) return;
-	EXPECT_EQ(msg1->fields.PRNs[0][0], '1');
-	EXPECT_EQ(msg1->fields.PRNs[0][1], '5');
-	EXPECT_NEAR(msg1->fields.HDOP, 2.31, 0.1);
+	const auto* msgRMC = obsGPS1->getMsgByClassPtr<gnss::Message_NMEA_RMC>();
+	EXPECT_TRUE(msgRMC != nullptr);
+	if (!msgRMC) return;
+	EXPECT_NEAR(msgRMC->fields.longitude_degrees, -2.407810500, 0.0001);
+	EXPECT_NEAR(msgRMC->fields.latitude_degrees, 36.829821500, 0.0001);
 
-	const auto* msg2 = obsGPS2->getMsgByClassPtr<gnss::Message_NMEA_GSA>();
-	EXPECT_TRUE(msg2 != nullptr);
+	const auto* msgGSA1 = obsGPS2->getMsgByClassPtr<gnss::Message_NMEA_GSA>();
+	EXPECT_TRUE(msgGSA1 != nullptr);
+	if (!msgGSA1) return;
+	EXPECT_EQ(msgGSA1->fields.PRNs[0][0], '1');
+	EXPECT_EQ(msgGSA1->fields.PRNs[0][1], '5');
+	EXPECT_NEAR(msgGSA1->fields.HDOP, 2.31, 0.1);
 
-	const auto* msg3 = obsGPS3->getMsgByClassPtr<gnss::Message_NMEA_RMC>();
-	EXPECT_TRUE(msg3 != nullptr);
-	if (!msg3) return;
-	EXPECT_NEAR(msg3->fields.longitude_degrees, -2.407810500, 0.0001);
-	EXPECT_NEAR(msg3->fields.latitude_degrees, 36.829821500, 0.0001);
+	const auto* msgGSA2 = obsGPS3->getMsgByClassPtr<gnss::Message_NMEA_GSA>();
+	EXPECT_TRUE(msgGSA2 != nullptr);
 }

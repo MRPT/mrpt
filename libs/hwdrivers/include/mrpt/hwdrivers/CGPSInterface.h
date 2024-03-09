@@ -355,8 +355,11 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 	/** Queue out now the messages in \a m_just_parsed_messages, leaving it
 	 * empty */
 	void flushParsedMessagesNow();
+
 	/** A private copy of the last received gps datum */
-	mrpt::obs::CObservationGPS m_just_parsed_messages;
+	mrpt::obs::CObservationGPS::Ptr m_parsed_messages =
+		mrpt::obs::CObservationGPS::Create();
+
 	/** Used in getLastGGA() */
 	std::string m_last_GGA;
 };	// end class
