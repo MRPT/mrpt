@@ -243,16 +243,11 @@ void CObservationGPS::serializeFrom(
 
 void CObservationGPS::dumpToStream(std::ostream& out) const
 {
-	out << "\n------------- [CObservationGPS] Dump of " << messages.size()
-		<< " messages --------------------\n";
-	for (const auto& m : messages)
-		m.second->dumpToStream(out);
-
 	if (covariance_enu)
 	{
 		out << "ENU covariance:\n" << *covariance_enu << "\n";
 		// clang-format off
-		out << "ENU sigmas:"
+		out << "ENU sigmas:\n"
 		   "std_x=" << std::sqrt((*covariance_enu)(0,0)) << "\n"
 		   "std_y=" << std::sqrt((*covariance_enu)(1,1)) << "\n"
 		   "std_z=" << std::sqrt((*covariance_enu)(2,2)) << "\n";
@@ -263,7 +258,12 @@ void CObservationGPS::dumpToStream(std::ostream& out) const
 		out << "ENU covariance: (none)\n";
 	}
 
-	out << "-------------- [CObservationGPS] End of dump -----------------\n\n";
+	out << "\n------------- [CObservationGPS] Dump of " << messages.size()
+		<< " messages --------------------\n";
+	for (const auto& m : messages)
+		m.second->dumpToStream(out);
+	out << "-------------- [CObservationGPS] End of message dump "
+		   "-----------------\n\n";
 }
 
 void CObservationGPS::dumpToConsole(std::ostream& o) const
