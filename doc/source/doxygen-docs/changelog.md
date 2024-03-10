@@ -10,6 +10,7 @@
 - BUG FIXES:
   - Fix wrong encoding of grayscale images in mrpt::ros1bridge::toROS() and mrpt::ros2bridge::toROS().
   - Correctly return true/false in conversion of GPS observation in mrpt::ros1bridge::toROS() and mrpt::ros2bridge::toROS() depending on whether there is a valid GGA message.
+  - mrpt::obs::CObservationComment: Missing serialization of sensorLabel.
 
 # Version 2.11.11: Released March 5th, 2024
 - Changes in libraries:
