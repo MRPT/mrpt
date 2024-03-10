@@ -5,7 +5,6 @@
 #include "src/mrpt/obs/CObservation2DRangeScan.cpp"
 #include "src/mrpt/obs/CObservation2DRangeScanWithUncertainty.cpp"
 #include "src/mrpt/obs/CObservation3DRangeScan.cpp"
-#include "src/mrpt/obs/CObservationBatteryState.cpp"
 #include "src/mrpt/obs/CObservationCANBusJ1939.cpp"
 #include "src/mrpt/obs/CObservation.cpp"
 #include "src/mrpt/obs/CObservationGasSensors.cpp"

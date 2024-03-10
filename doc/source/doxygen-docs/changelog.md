@@ -1,5 +1,17 @@
 \page changelog Change Log
 
+# Version 2.11.12: Released March 10th, 2024
+- Changes in libraries:
+  - \ref mrpt_obs_grp:
+    - Fix compiler error on invocation of template mrpt::obs::CObservationGPS::getMsgByClassPtr()
+    - Add field mrpt::obs::CObservationGPS::covariance_enu for easier interoperability with ROS.
+    - API simplified: replace custom `mrpt::obs::gnss::gnss_message_ptr` with a `std::shared_ptr<>`.
+    - mrpt::obs::CObservationRobotPose::getDescriptionAsText(): add human-readable pose uncertainties.
+- BUG FIXES:
+  - Fix wrong encoding of grayscale images in mrpt::ros1bridge::toROS() and mrpt::ros2bridge::toROS().
+  - Correctly return true/false in conversion of GPS observation in mrpt::ros1bridge::toROS() and mrpt::ros2bridge::toROS() depending on whether there is a valid GGA message.
+  - mrpt::obs::CObservationComment: Missing serialization of sensorLabel.
+
 # Version 2.11.11: Released March 5th, 2024
 - Changes in libraries:
   - \ref mrpt_ros1bridge_grp:

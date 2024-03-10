@@ -74,6 +74,96 @@ struct PyCallBack_mrpt_obs_gnss_Message_NMEA_GGA : public mrpt::obs::gnss::Messa
 	}
 };
 
+// mrpt::obs::gnss::Message_NMEA_GLL file: line:104
+struct PyCallBack_mrpt_obs_gnss_Message_NMEA_GLL : public mrpt::obs::gnss::Message_NMEA_GLL {
+	using mrpt::obs::gnss::Message_NMEA_GLL::Message_NMEA_GLL;
+
+	void internal_writeToStream(class mrpt::serialization::CArchive & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::gnss::Message_NMEA_GLL *>(this), "internal_writeToStream");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return Message_NMEA_GLL::internal_writeToStream(a0);
+	}
+	void internal_readFromStream(class mrpt::serialization::CArchive & a0) override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::gnss::Message_NMEA_GLL *>(this), "internal_readFromStream");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return Message_NMEA_GLL::internal_readFromStream(a0);
+	}
+	void fixEndianness() override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::gnss::Message_NMEA_GLL *>(this), "fixEndianness");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return gnss_message::fixEndianness();
+	}
+};
+
+// mrpt::obs::gnss::Message_NMEA_RMC file: line:133
+struct PyCallBack_mrpt_obs_gnss_Message_NMEA_RMC : public mrpt::obs::gnss::Message_NMEA_RMC {
+	using mrpt::obs::gnss::Message_NMEA_RMC::Message_NMEA_RMC;
+
+	void internal_writeToStream(class mrpt::serialization::CArchive & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::gnss::Message_NMEA_RMC *>(this), "internal_writeToStream");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return Message_NMEA_RMC::internal_writeToStream(a0);
+	}
+	void internal_readFromStream(class mrpt::serialization::CArchive & a0) override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::gnss::Message_NMEA_RMC *>(this), "internal_readFromStream");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return Message_NMEA_RMC::internal_readFromStream(a0);
+	}
+	void fixEndianness() override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::gnss::Message_NMEA_RMC *>(this), "fixEndianness");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return gnss_message::fixEndianness();
+	}
+};
+
 void bind_mrpt_obs_gnss_messages_type_list(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
 	// mrpt::obs::gnss::gnss_message_type_t file:mrpt/obs/gnss_messages_type_list.h line:22
@@ -141,22 +231,7 @@ void bind_mrpt_obs_gnss_messages_type_list(std::function< pybind11::module &(std
 		cl.def("getMessageTypeAsString", (const std::string & (mrpt::obs::gnss::gnss_message::*)() const) &mrpt::obs::gnss::gnss_message::getMessageTypeAsString, "Returns \"NMEA_GGA\", etc. \n\nC++: mrpt::obs::gnss::gnss_message::getMessageTypeAsString() const --> const std::string &", pybind11::return_value_policy::automatic);
 		cl.def("assign", (struct mrpt::obs::gnss::gnss_message & (mrpt::obs::gnss::gnss_message::*)(const struct mrpt::obs::gnss::gnss_message &)) &mrpt::obs::gnss::gnss_message::operator=, "C++: mrpt::obs::gnss::gnss_message::operator=(const struct mrpt::obs::gnss::gnss_message &) --> struct mrpt::obs::gnss::gnss_message &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::obs::gnss::gnss_message_ptr file: line:100
-		pybind11::class_<mrpt::obs::gnss::gnss_message_ptr, std::shared_ptr<mrpt::obs::gnss::gnss_message_ptr>> cl(M("mrpt::obs::gnss"), "gnss_message_ptr", "A smart pointer to a GNSS message. \n gnss_message,\n mrpt::obs::CObservationGPS  ");
-		cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::gnss_message_ptr(); } ) );
-		cl.def( pybind11::init( [](mrpt::obs::gnss::gnss_message_ptr const &o){ return new mrpt::obs::gnss::gnss_message_ptr(o); } ) );
-		cl.def( pybind11::init<const struct mrpt::obs::gnss::gnss_message *>(), pybind11::arg("p") );
-
-		cl.def("assign", (struct mrpt::obs::gnss::gnss_message_ptr & (mrpt::obs::gnss::gnss_message_ptr::*)(const struct mrpt::obs::gnss::gnss_message_ptr &)) &mrpt::obs::gnss::gnss_message_ptr::operator=, "C++: mrpt::obs::gnss::gnss_message_ptr::operator=(const struct mrpt::obs::gnss::gnss_message_ptr &) --> struct mrpt::obs::gnss::gnss_message_ptr &", pybind11::return_value_policy::automatic, pybind11::arg("o"));
-		cl.def("__eq__", (bool (mrpt::obs::gnss::gnss_message_ptr::*)(const struct mrpt::obs::gnss::gnss_message *) const) &mrpt::obs::gnss::gnss_message_ptr::operator==, "C++: mrpt::obs::gnss::gnss_message_ptr::operator==(const struct mrpt::obs::gnss::gnss_message *) const --> bool", pybind11::arg("o"));
-		cl.def("__eq__", (bool (mrpt::obs::gnss::gnss_message_ptr::*)(const struct mrpt::obs::gnss::gnss_message_ptr &) const) &mrpt::obs::gnss::gnss_message_ptr::operator==, "C++: mrpt::obs::gnss::gnss_message_ptr::operator==(const struct mrpt::obs::gnss::gnss_message_ptr &) const --> bool", pybind11::arg("o"));
-		cl.def("__ne__", (bool (mrpt::obs::gnss::gnss_message_ptr::*)(const struct mrpt::obs::gnss::gnss_message *) const) &mrpt::obs::gnss::gnss_message_ptr::operator!=, "C++: mrpt::obs::gnss::gnss_message_ptr::operator!=(const struct mrpt::obs::gnss::gnss_message *) const --> bool", pybind11::arg("o"));
-		cl.def("__ne__", (bool (mrpt::obs::gnss::gnss_message_ptr::*)(const struct mrpt::obs::gnss::gnss_message_ptr &) const) &mrpt::obs::gnss::gnss_message_ptr::operator!=, "C++: mrpt::obs::gnss::gnss_message_ptr::operator!=(const struct mrpt::obs::gnss::gnss_message_ptr &) const --> bool", pybind11::arg("o"));
-		cl.def("get", (struct mrpt::obs::gnss::gnss_message *& (mrpt::obs::gnss::gnss_message_ptr::*)()) &mrpt::obs::gnss::gnss_message_ptr::get, "C++: mrpt::obs::gnss::gnss_message_ptr::get() --> struct mrpt::obs::gnss::gnss_message *&", pybind11::return_value_policy::automatic);
-		cl.def("arrow", (struct mrpt::obs::gnss::gnss_message *& (mrpt::obs::gnss::gnss_message_ptr::*)()) &mrpt::obs::gnss::gnss_message_ptr::operator->, "C++: mrpt::obs::gnss::gnss_message_ptr::operator->() --> struct mrpt::obs::gnss::gnss_message *&", pybind11::return_value_policy::automatic);
-		cl.def("set", (void (mrpt::obs::gnss::gnss_message_ptr::*)(struct mrpt::obs::gnss::gnss_message *)) &mrpt::obs::gnss::gnss_message_ptr::set, "Replaces the pointee with a new pointer. Its memory now belongs to this\n object, do not free manually. \n\nC++: mrpt::obs::gnss::gnss_message_ptr::set(struct mrpt::obs::gnss::gnss_message *) --> void", pybind11::arg("p"));
-	}
-	{ // mrpt::obs::gnss::UTC_time file: line:194
+	{ // mrpt::obs::gnss::UTC_time file: line:159
 		pybind11::class_<mrpt::obs::gnss::UTC_time, std::shared_ptr<mrpt::obs::gnss::UTC_time>> cl(M("mrpt::obs::gnss"), "UTC_time", "UTC (Coordinated Universal Time) time-stamp structure for GPS messages. \n\n mrpt::obs::CObservationGPS ");
 		cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::UTC_time(); } ) );
 		cl.def( pybind11::init( [](mrpt::obs::gnss::UTC_time const &o){ return new mrpt::obs::gnss::UTC_time(o); } ) );
@@ -195,6 +270,56 @@ void bind_mrpt_obs_gnss_messages_type_list(std::function< pybind11::module &(std
 			cl.def_readwrite("thereis_HDOP", &mrpt::obs::gnss::Message_NMEA_GGA::content_t::thereis_HDOP);
 			cl.def_readwrite("HDOP", &mrpt::obs::gnss::Message_NMEA_GGA::content_t::HDOP);
 			cl.def("assign", (struct mrpt::obs::gnss::Message_NMEA_GGA::content_t & (mrpt::obs::gnss::Message_NMEA_GGA::content_t::*)(const struct mrpt::obs::gnss::Message_NMEA_GGA::content_t &)) &mrpt::obs::gnss::Message_NMEA_GGA::content_t::operator=, "C++: mrpt::obs::gnss::Message_NMEA_GGA::content_t::operator=(const struct mrpt::obs::gnss::Message_NMEA_GGA::content_t &) --> struct mrpt::obs::gnss::Message_NMEA_GGA::content_t &", pybind11::return_value_policy::automatic, pybind11::arg(""));
+		}
+
+	}
+	{ // mrpt::obs::gnss::Message_NMEA_GLL file: line:104
+		pybind11::class_<mrpt::obs::gnss::Message_NMEA_GLL, std::shared_ptr<mrpt::obs::gnss::Message_NMEA_GLL>, PyCallBack_mrpt_obs_gnss_Message_NMEA_GLL, mrpt::obs::gnss::gnss_message> cl(M("mrpt::obs::gnss"), "Message_NMEA_GLL", "NMEA datum: GLL. \n mrpt::obs::CObservationGPS  ");
+		cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NMEA_GLL(); }, [](){ return new PyCallBack_mrpt_obs_gnss_Message_NMEA_GLL(); } ) );
+		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_gnss_Message_NMEA_GLL const &o){ return new PyCallBack_mrpt_obs_gnss_Message_NMEA_GLL(o); } ) );
+		cl.def( pybind11::init( [](mrpt::obs::gnss::Message_NMEA_GLL const &o){ return new mrpt::obs::gnss::Message_NMEA_GLL(o); } ) );
+		cl.def_readwrite("fields", &mrpt::obs::gnss::Message_NMEA_GLL::fields);
+		cl.def("assign", (struct mrpt::obs::gnss::Message_NMEA_GLL & (mrpt::obs::gnss::Message_NMEA_GLL::*)(const struct mrpt::obs::gnss::Message_NMEA_GLL &)) &mrpt::obs::gnss::Message_NMEA_GLL::operator=, "C++: mrpt::obs::gnss::Message_NMEA_GLL::operator=(const struct mrpt::obs::gnss::Message_NMEA_GLL &) --> struct mrpt::obs::gnss::Message_NMEA_GLL &", pybind11::return_value_policy::automatic, pybind11::arg(""));
+
+		{ // mrpt::obs::gnss::Message_NMEA_GLL::content_t file: line:113
+			auto & enclosing_class = cl;
+			pybind11::class_<mrpt::obs::gnss::Message_NMEA_GLL::content_t, std::shared_ptr<mrpt::obs::gnss::Message_NMEA_GLL::content_t>> cl(enclosing_class, "content_t", "");
+			cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NMEA_GLL::content_t(); } ) );
+			cl.def( pybind11::init( [](mrpt::obs::gnss::Message_NMEA_GLL::content_t const &o){ return new mrpt::obs::gnss::Message_NMEA_GLL::content_t(o); } ) );
+			cl.def_readwrite("UTCTime", &mrpt::obs::gnss::Message_NMEA_GLL::content_t::UTCTime);
+			cl.def_readwrite("latitude_degrees", &mrpt::obs::gnss::Message_NMEA_GLL::content_t::latitude_degrees);
+			cl.def_readwrite("longitude_degrees", &mrpt::obs::gnss::Message_NMEA_GLL::content_t::longitude_degrees);
+			cl.def_readwrite("validity_char", &mrpt::obs::gnss::Message_NMEA_GLL::content_t::validity_char);
+			cl.def("assign", (struct mrpt::obs::gnss::Message_NMEA_GLL::content_t & (mrpt::obs::gnss::Message_NMEA_GLL::content_t::*)(const struct mrpt::obs::gnss::Message_NMEA_GLL::content_t &)) &mrpt::obs::gnss::Message_NMEA_GLL::content_t::operator=, "C++: mrpt::obs::gnss::Message_NMEA_GLL::content_t::operator=(const struct mrpt::obs::gnss::Message_NMEA_GLL::content_t &) --> struct mrpt::obs::gnss::Message_NMEA_GLL::content_t &", pybind11::return_value_policy::automatic, pybind11::arg(""));
+		}
+
+	}
+	{ // mrpt::obs::gnss::Message_NMEA_RMC file: line:133
+		pybind11::class_<mrpt::obs::gnss::Message_NMEA_RMC, std::shared_ptr<mrpt::obs::gnss::Message_NMEA_RMC>, PyCallBack_mrpt_obs_gnss_Message_NMEA_RMC, mrpt::obs::gnss::gnss_message> cl(M("mrpt::obs::gnss"), "Message_NMEA_RMC", "NMEA datum: RMC. \n mrpt::obs::CObservationGPS   ");
+		cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NMEA_RMC(); }, [](){ return new PyCallBack_mrpt_obs_gnss_Message_NMEA_RMC(); } ) );
+		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_gnss_Message_NMEA_RMC const &o){ return new PyCallBack_mrpt_obs_gnss_Message_NMEA_RMC(o); } ) );
+		cl.def( pybind11::init( [](mrpt::obs::gnss::Message_NMEA_RMC const &o){ return new mrpt::obs::gnss::Message_NMEA_RMC(o); } ) );
+		cl.def_readwrite("fields", &mrpt::obs::gnss::Message_NMEA_RMC::fields);
+		cl.def("getDateAsTimestamp", (mrpt::Clock::time_point (mrpt::obs::gnss::Message_NMEA_RMC::*)() const) &mrpt::obs::gnss::Message_NMEA_RMC::getDateAsTimestamp, "Build an MRPT timestamp with the year/month/day of this observation. \n\nC++: mrpt::obs::gnss::Message_NMEA_RMC::getDateAsTimestamp() const --> mrpt::Clock::time_point");
+		cl.def("assign", (struct mrpt::obs::gnss::Message_NMEA_RMC & (mrpt::obs::gnss::Message_NMEA_RMC::*)(const struct mrpt::obs::gnss::Message_NMEA_RMC &)) &mrpt::obs::gnss::Message_NMEA_RMC::operator=, "C++: mrpt::obs::gnss::Message_NMEA_RMC::operator=(const struct mrpt::obs::gnss::Message_NMEA_RMC &) --> struct mrpt::obs::gnss::Message_NMEA_RMC &", pybind11::return_value_policy::automatic, pybind11::arg(""));
+
+		{ // mrpt::obs::gnss::Message_NMEA_RMC::content_t file: line:142
+			auto & enclosing_class = cl;
+			pybind11::class_<mrpt::obs::gnss::Message_NMEA_RMC::content_t, std::shared_ptr<mrpt::obs::gnss::Message_NMEA_RMC::content_t>> cl(enclosing_class, "content_t", "");
+			cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NMEA_RMC::content_t(); } ) );
+			cl.def( pybind11::init( [](mrpt::obs::gnss::Message_NMEA_RMC::content_t const &o){ return new mrpt::obs::gnss::Message_NMEA_RMC::content_t(o); } ) );
+			cl.def_readwrite("UTCTime", &mrpt::obs::gnss::Message_NMEA_RMC::content_t::UTCTime);
+			cl.def_readwrite("validity_char", &mrpt::obs::gnss::Message_NMEA_RMC::content_t::validity_char);
+			cl.def_readwrite("latitude_degrees", &mrpt::obs::gnss::Message_NMEA_RMC::content_t::latitude_degrees);
+			cl.def_readwrite("longitude_degrees", &mrpt::obs::gnss::Message_NMEA_RMC::content_t::longitude_degrees);
+			cl.def_readwrite("speed_knots", &mrpt::obs::gnss::Message_NMEA_RMC::content_t::speed_knots);
+			cl.def_readwrite("direction_degrees", &mrpt::obs::gnss::Message_NMEA_RMC::content_t::direction_degrees);
+			cl.def_readwrite("date_day", &mrpt::obs::gnss::Message_NMEA_RMC::content_t::date_day);
+			cl.def_readwrite("date_month", &mrpt::obs::gnss::Message_NMEA_RMC::content_t::date_month);
+			cl.def_readwrite("date_year", &mrpt::obs::gnss::Message_NMEA_RMC::content_t::date_year);
+			cl.def_readwrite("magnetic_dir", &mrpt::obs::gnss::Message_NMEA_RMC::content_t::magnetic_dir);
+			cl.def_readwrite("positioning_mode", &mrpt::obs::gnss::Message_NMEA_RMC::content_t::positioning_mode);
+			cl.def("assign", (struct mrpt::obs::gnss::Message_NMEA_RMC::content_t & (mrpt::obs::gnss::Message_NMEA_RMC::content_t::*)(const struct mrpt::obs::gnss::Message_NMEA_RMC::content_t &)) &mrpt::obs::gnss::Message_NMEA_RMC::content_t::operator=, "C++: mrpt::obs::gnss::Message_NMEA_RMC::content_t::operator=(const struct mrpt::obs::gnss::Message_NMEA_RMC::content_t &) --> struct mrpt::obs::gnss::Message_NMEA_RMC::content_t &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
 	}

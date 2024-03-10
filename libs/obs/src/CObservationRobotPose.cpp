@@ -57,11 +57,23 @@ void CObservationRobotPose::setSensorPose(const CPose3D& newSensorPose)
 
 void CObservationRobotPose::getDescriptionAsText(std::ostream& o) const
 {
-	using namespace std;
 	CObservation::getDescriptionAsText(o);
 
-	o << "Sensor pose: " << sensorPose << endl;
-	o << "Pose: " << pose.asString() << endl;
+	o << "Sensor pose: " << sensorPose << "\n";
+	o << "Pose: " << pose.asString() << "\n";
+	o << mrpt::format(
+		"\n"
+		"Human-readable pose uncertainty:\n"
+		"sigma_x = %.03f m\n"
+		"sigma_y = %.03f m\n"
+		"sigma_z = %.03f m\n"
+		"sigma_yaw = %.03f deg\n"
+		"sigma_pitch = %.03f deg\n"
+		"sigma_roll = %.03f deg\n",
+		std::sqrt(pose.cov(0, 0)), std::sqrt(pose.cov(1, 1)),
+		std::sqrt(pose.cov(2, 2)), mrpt::RAD2DEG(std::sqrt(pose.cov(3, 3))),
+		mrpt::RAD2DEG(std::sqrt(pose.cov(4, 4))),
+		mrpt::RAD2DEG(std::sqrt(pose.cov(5, 5))));
 }
 
 // See base class docs:

@@ -43,11 +43,15 @@ sensor_msgs::Image mrpt::ros1bridge::toROS(
 	cv_bridge::CvImage img_bridge;
 
 	sensor_msgs::Image msg;
-	img_bridge = CvImage(msg.header, sensor_msgs::image_encodings::BGR8, cvImg);
+	img_bridge = CvImage(
+		msg.header,
+		i.isColor() ? sensor_msgs::image_encodings::BGR8
+					: sensor_msgs::image_encodings::MONO8,
+		cvImg);
 
 	img_bridge.toImageMsg(msg);
 
-	msg.encoding = "bgr8";
+	msg.encoding = i.isColor() ? "bgr8" : "mono8";
 	msg.header = msg_header;
 	msg.height = i.getHeight();
 	msg.width = i.getWidth();

@@ -1,6 +1,5 @@
 #include "src/mrpt/obs/CObservationWindSensor.cpp"
 #include "src/mrpt/obs/CObservationWirelessPower.cpp"
-#include "src/mrpt/obs/CRawlog.cpp"
 #include "src/mrpt/obs/CSensoryFrame.cpp"
 #include "src/mrpt/obs/customizable_obs_viz.cpp"
 #include "src/mrpt/obs/format_externals_filename.cpp"
@@ -10,3 +9,4 @@
 #include "src/mrpt/obs/T3DPointsProjectionParams.cpp"
 #include "src/mrpt/obs/TPixelLabelInfo.cpp"
 #include "src/mrpt/obs/VelodyneCalibration.cpp"
+#include "src/mrpt/obs/CObservationRobotPose.cpp"

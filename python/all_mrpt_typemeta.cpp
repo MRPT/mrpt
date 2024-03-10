@@ -5,4 +5,5 @@
 #include "src/mrpt/typemeta/TEnumType_4.cpp"
 #include "src/mrpt/typemeta/TEnumType_5.cpp"
 #include "src/mrpt/typemeta/TEnumType_6.cpp"
+#include "src/mrpt/typemeta/TEnumType_7.cpp"
 #include "src/mrpt/typemeta/TEnumType.cpp"
