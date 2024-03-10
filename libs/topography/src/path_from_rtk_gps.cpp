@@ -61,8 +61,8 @@ void mrpt::topography::path_from_rtk_gps(
 	TPathFromRTKInfo outInfoTemp;
 	if (outInfo) *outInfo = outInfoTemp;
 
-	map<string, map<Clock::time_point, TPoint3D>>
-		gps_paths;	// label -> (time -> 3D local coords)
+	// label -> (time -> 3D local coords)
+	map<string, map<Clock::time_point, TPoint3D>> gps_paths;
 
 	bool abort = false;
 	bool ref_valid = false;

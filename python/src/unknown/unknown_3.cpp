@@ -18,41 +18,32 @@
 
 void bind_unknown_unknown_3(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	// mrpt::obs::gnss::nv_oem6_position_type::nv_position_type_t file: line:88
-	pybind11::enum_<mrpt::obs::gnss::nv_oem6_position_type::nv_position_type_t>(M("mrpt::obs::gnss::nv_oem6_position_type"), "nv_position_type_t", pybind11::arithmetic(), "Novatel OEM6 firmware reference, table 84; Novatel SPAN on OEM6 firmware\n manual, table 26. ")
-		.value("NONE", mrpt::obs::gnss::nv_oem6_position_type::NONE)
-		.value("FIXEDPOS", mrpt::obs::gnss::nv_oem6_position_type::FIXEDPOS)
-		.value("FIXEDHEIGHT", mrpt::obs::gnss::nv_oem6_position_type::FIXEDHEIGHT)
-		.value("Reserved", mrpt::obs::gnss::nv_oem6_position_type::Reserved)
-		.value("FLOATCONV", mrpt::obs::gnss::nv_oem6_position_type::FLOATCONV)
-		.value("WIDELANE", mrpt::obs::gnss::nv_oem6_position_type::WIDELANE)
-		.value("NARROWLANE", mrpt::obs::gnss::nv_oem6_position_type::NARROWLANE)
-		.value("DOPPLER_VELOCITY", mrpt::obs::gnss::nv_oem6_position_type::DOPPLER_VELOCITY)
-		.value("SINGLE", mrpt::obs::gnss::nv_oem6_position_type::SINGLE)
-		.value("PSRDIFF", mrpt::obs::gnss::nv_oem6_position_type::PSRDIFF)
-		.value("WAAS", mrpt::obs::gnss::nv_oem6_position_type::WAAS)
-		.value("PROPAGATED", mrpt::obs::gnss::nv_oem6_position_type::PROPAGATED)
-		.value("OMNISTAR", mrpt::obs::gnss::nv_oem6_position_type::OMNISTAR)
-		.value("L1_FLOAT", mrpt::obs::gnss::nv_oem6_position_type::L1_FLOAT)
-		.value("IONOFREE_FLOAT", mrpt::obs::gnss::nv_oem6_position_type::IONOFREE_FLOAT)
-		.value("NARROW_FLOAT", mrpt::obs::gnss::nv_oem6_position_type::NARROW_FLOAT)
-		.value("L1_INT", mrpt::obs::gnss::nv_oem6_position_type::L1_INT)
-		.value("WIDE_INT", mrpt::obs::gnss::nv_oem6_position_type::WIDE_INT)
-		.value("NARROW_INT", mrpt::obs::gnss::nv_oem6_position_type::NARROW_INT)
-		.value("RTK_DIRECT_INS", mrpt::obs::gnss::nv_oem6_position_type::RTK_DIRECT_INS)
-		.value("INS", mrpt::obs::gnss::nv_oem6_position_type::INS)
-		.value("INS_PSRSP", mrpt::obs::gnss::nv_oem6_position_type::INS_PSRSP)
-		.value("INS_PSRDIFF", mrpt::obs::gnss::nv_oem6_position_type::INS_PSRDIFF)
-		.value("INS_RTKFLOAT", mrpt::obs::gnss::nv_oem6_position_type::INS_RTKFLOAT)
-		.value("INS_RTKFIXED", mrpt::obs::gnss::nv_oem6_position_type::INS_RTKFIXED)
-		.value("OMNISTAR_HP", mrpt::obs::gnss::nv_oem6_position_type::OMNISTAR_HP)
-		.value("OMNISTAR_XP", mrpt::obs::gnss::nv_oem6_position_type::OMNISTAR_XP)
-		.value("CDGPS", mrpt::obs::gnss::nv_oem6_position_type::CDGPS)
+	// mrpt::obs::gnss::nv_oem6_solution_status::nv_solution_status_t file: line:126
+	pybind11::enum_<mrpt::obs::gnss::nv_oem6_solution_status::nv_solution_status_t>(M("mrpt::obs::gnss::nv_oem6_solution_status"), "nv_solution_status_t", pybind11::arithmetic(), "Novatel OEM6 firmware reference, table 85 ")
+		.value("SOL_COMPUTED", mrpt::obs::gnss::nv_oem6_solution_status::SOL_COMPUTED)
+		.value("INSUFFICIENT_OBS", mrpt::obs::gnss::nv_oem6_solution_status::INSUFFICIENT_OBS)
+		.value("NO_CONVERGENCE", mrpt::obs::gnss::nv_oem6_solution_status::NO_CONVERGENCE)
+		.value("SINGULARITY", mrpt::obs::gnss::nv_oem6_solution_status::SINGULARITY)
+		.value("COV_TRACE", mrpt::obs::gnss::nv_oem6_solution_status::COV_TRACE)
+		.value("TEST_DIST", mrpt::obs::gnss::nv_oem6_solution_status::TEST_DIST)
+		.value("COLD_START", mrpt::obs::gnss::nv_oem6_solution_status::COLD_START)
+		.value("V_H_LIMIT", mrpt::obs::gnss::nv_oem6_solution_status::V_H_LIMIT)
+		.value("VARIANCE", mrpt::obs::gnss::nv_oem6_solution_status::VARIANCE)
+		.value("RESIDUALS", mrpt::obs::gnss::nv_oem6_solution_status::RESIDUALS)
+		.value("DELTA_POS", mrpt::obs::gnss::nv_oem6_solution_status::DELTA_POS)
+		.value("NEGATIVE_VAR", mrpt::obs::gnss::nv_oem6_solution_status::NEGATIVE_VAR)
+		.value("INTEGRITY_WARNING", mrpt::obs::gnss::nv_oem6_solution_status::INTEGRITY_WARNING)
+		.value("INS_INACTIVE", mrpt::obs::gnss::nv_oem6_solution_status::INS_INACTIVE)
+		.value("INS_ALIGNING", mrpt::obs::gnss::nv_oem6_solution_status::INS_ALIGNING)
+		.value("INS_BAD", mrpt::obs::gnss::nv_oem6_solution_status::INS_BAD)
+		.value("IMU_UNPLUGGED", mrpt::obs::gnss::nv_oem6_solution_status::IMU_UNPLUGGED)
+		.value("PENDING", mrpt::obs::gnss::nv_oem6_solution_status::PENDING)
+		.value("INVALID_FIX", mrpt::obs::gnss::nv_oem6_solution_status::INVALID_FIX)
 		.export_values();
 
 ;
 
-	// mrpt::obs::gnss::nv_oem6_position_type::enum2str(int) file: line:120
-	M("mrpt::obs::gnss::nv_oem6_position_type").def("enum2str", (const std::string & (*)(int)) &mrpt::obs::gnss::nv_oem6_position_type::enum2str, "for nv_position_type_t \n\nC++: mrpt::obs::gnss::nv_oem6_position_type::enum2str(int) --> const std::string &", pybind11::return_value_policy::automatic, pybind11::arg("val"));
+	// mrpt::obs::gnss::nv_oem6_solution_status::enum2str(int) file: line:170
+	M("mrpt::obs::gnss::nv_oem6_solution_status").def("enum2str", (const std::string & (*)(int)) &mrpt::obs::gnss::nv_oem6_solution_status::enum2str, "for nv_solution_status_t \n\nC++: mrpt::obs::gnss::nv_oem6_solution_status::enum2str(int) --> const std::string &", pybind11::return_value_policy::automatic, pybind11::arg("val"));
 
 }

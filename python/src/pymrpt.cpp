@@ -52,6 +52,7 @@ void bind_mrpt_typemeta_TEnumType_3(std::function< pybind11::module &(std::strin
 void bind_mrpt_typemeta_TEnumType_4(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_typemeta_TEnumType_5(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_typemeta_TEnumType_6(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_typemeta_TEnumType_7(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_serialization_CArchive(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_serialization_CArchive_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_serialization_CArchive_2(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -207,7 +208,6 @@ void bind_unknown_unknown_4(std::function< pybind11::module &(std::string const 
 void bind_unknown_unknown_5(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_unknown_unknown_6(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_unknown_unknown_7(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_unknown_unknown_8(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_obs_CObservationGPS(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_hwdrivers_CGPSInterface(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_containers_MT_buffer(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -313,9 +313,9 @@ void bind_mrpt_nav_reactive_CReactiveNavigationSystem3D(std::function< pybind11:
 void bind_mrpt_nav_tpspace_CPTG_DiffDrive_C(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_nav_tpspace_CPTG_DiffDrive_alpha(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_obs_CActionRobotMovement3D(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_obs_CObservationBatteryState(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_obs_CObservationOdometry(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_obs_CRawlog(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_obs_CObservation3DScene(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_obs_CObservationBearingRange(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_obs_CObservationRobotPose(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_obs_format_externals_filename(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_obs_stock_observations(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_opengl_CArrow(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -483,6 +483,7 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_typemeta_TEnumType_4(M);
 	bind_mrpt_typemeta_TEnumType_5(M);
 	bind_mrpt_typemeta_TEnumType_6(M);
+	bind_mrpt_typemeta_TEnumType_7(M);
 	bind_mrpt_serialization_CArchive(M);
 	bind_mrpt_serialization_CArchive_1(M);
 	bind_mrpt_serialization_CArchive_2(M);
@@ -638,7 +639,6 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_unknown_unknown_5(M);
 	bind_unknown_unknown_6(M);
 	bind_unknown_unknown_7(M);
-	bind_unknown_unknown_8(M);
 	bind_mrpt_obs_CObservationGPS(M);
 	bind_mrpt_hwdrivers_CGPSInterface(M);
 	bind_mrpt_containers_MT_buffer(M);
@@ -744,9 +744,9 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_nav_tpspace_CPTG_DiffDrive_C(M);
 	bind_mrpt_nav_tpspace_CPTG_DiffDrive_alpha(M);
 	bind_mrpt_obs_CActionRobotMovement3D(M);
-	bind_mrpt_obs_CObservationBatteryState(M);
-	bind_mrpt_obs_CObservationOdometry(M);
-	bind_mrpt_obs_CRawlog(M);
+	bind_mrpt_obs_CObservation3DScene(M);
+	bind_mrpt_obs_CObservationBearingRange(M);
+	bind_mrpt_obs_CObservationRobotPose(M);
 	bind_mrpt_obs_format_externals_filename(M);
 	bind_mrpt_obs_stock_observations(M);
 	bind_mrpt_opengl_CArrow(M);

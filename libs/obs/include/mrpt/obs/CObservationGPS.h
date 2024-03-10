@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/gnss_messages.h>
 #include <mrpt/poses/CPose2D.h>
@@ -15,6 +16,7 @@
 #include <mrpt/serialization/CSerializable.h>
 
 #include <map>
+#include <optional>
 #include <typeinfo>
 
 namespace mrpt::obs
@@ -28,7 +30,7 @@ namespace mrpt::obs
  *  indivual messages \b stored in mrpt::obs::CObservationGPS objects.
  *
  *  Supported message types are:
- *  - NMEA 0183 (ASCII): GGA, RMC
+ *  - NMEA 0183 (ASCII): GGA, RMC, etc.
  *  - Topcon GRIL (Binary): PZS, SATS
  *  - Novatel GNSS/SPAN OEM6 (Binary): See list of log packets under namespace
  * mrpt::obs::gnss and in enum type mrpt::obs::gnss::gnss_message_type_t
@@ -57,11 +59,9 @@ namespace mrpt::obs
  * }
  * \endcode
  *
- * \note <b>[API changed in MRPT 1.4.0]</b> mrpt::obs::CObservationGPS now
- * stores message objects in a more flexible way. API clean-up and extended so
- * the number of GNSS message types is larger and more scalable.
- * \note Porting old code: For example, replace `observation.GGA_datum.XXX` with
- * `observation.getMsgByClass<gnss::Message_NMEA_GGA>().fields.XXX`, etc.
+ * \note Since MRPT 2.11.12 there is an optional field for ENU covariance for
+ * easier compatibility with ROS messages.
+ *
  * \sa CObservation
  * \ingroup mrpt_obs_grp
  */
@@ -77,20 +77,27 @@ class CObservationGPS : public CObservation
 	 * @{ */
 	/** The sensor pose on the robot/vehicle */
 	mrpt::poses::CPose3D sensorPose{};
+
 	/** The local computer-based timestamp based on the reception of the message
 	 * in the computer. \sa CObservation::timestamp in the base class, which
 	 * should contain the accurate satellite-based UTC timestamp. */
 	mrpt::system::TTimeStamp originalReceivedTimestamp{INVALID_TIMESTAMP};
+
 	/** If true, CObservation::timestamp has been generated from accurate
 	 * satellite clock. Otherwise, no GPS data is available and timestamps are
 	 * based on the local computer clock. */
 	bool has_satellite_timestamp{false};
+
 	/** The main piece of data in this class: a list of GNNS messages.
 	 * Normally users might prefer to access the list via the methods
 	 * CObservationGPS::getMsgByClass() and CObservationGPS::setMsg()
 	 * Typically only one message, may be multiple if all have the same
 	 * timestamp. */
 	message_list_t messages;
+
+	/** If present, it defines the ENU position uncertainty.
+	 */
+	std::optional<mrpt::math::CMatrixDouble33> covariance_enu;
 	/** @} */
 
 	/** @name Main API to access to the data fields
@@ -104,7 +111,7 @@ class CObservationGPS : public CObservation
 	void setMsg(const MSG_CLASS& msg)
 	{
 		messages[static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type)]
-			.set(new MSG_CLASS(msg));
+			.reset(new MSG_CLASS(msg));
 	}
 	/** Returns true if the list \a CObservationGPS::messages contains one of
 	 * the requested type. \sa mrpt::obs::gnss::gnss_message_type_t,
@@ -189,8 +196,8 @@ class CObservationGPS : public CObservation
 		auto it = messages.find(
 			static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
 		return it == messages.end()
-			? dynamic_cast<MSG_CLASS*>(nullptr)
-			: dynamic_cast<MSG_CLASS*>(it->second.get());
+			? static_cast<const MSG_CLASS*>(nullptr)
+			: dynamic_cast<const MSG_CLASS*>(it->second.get());
 	}
 
 	/** Dumps the contents of the observation in a human-readable form to a
@@ -201,7 +208,6 @@ class CObservationGPS : public CObservation
 	void dumpToConsole(std::ostream& o) const;
 	/** Empties this observation, clearing the container \a messages */
 	void clear();
-	void swap(CObservationGPS& o);
 
 	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
 	{

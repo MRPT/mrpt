@@ -20,10 +20,11 @@ using namespace mrpt::poses;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationComment, CObservation, mrpt::obs)
 
-uint8_t CObservationComment::serializeGetVersion() const { return 0; }
+uint8_t CObservationComment::serializeGetVersion() const { return 1; }
 void CObservationComment::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << text << timestamp;
+	out << sensorLabel;	 // v1
 }
 
 void CObservationComment::serializeFrom(
@@ -31,7 +32,11 @@ void CObservationComment::serializeFrom(
 {
 	switch (version)
 	{
-		case 0: in >> text >> timestamp; break;
+		case 0:
+		case 1:
+			in >> text >> timestamp;
+			if (version >= 1) in >> sensorLabel;
+			break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
