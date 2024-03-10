@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.11.13: UNRELEASED
+(none)
+
 # Version 2.11.12: Released March 10th, 2024
 - Changes in libraries:
   - \ref mrpt_obs_grp:
