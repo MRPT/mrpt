@@ -4,6 +4,8 @@
 - Changes in libraries:
   - \ref mrpt_obs_grp:
     - mrpt::math::TBoundingBox: Mark all relevant methods with ``[nodiscard]`` to avoid mistakes.
+- BUG FIXES:
+  - Fix Debian bug #1066207: FTBFS in latest sid due to undefined declarations in mrpt_xsens C library.
 
 # Version 2.11.12: Released March 10th, 2024
 - Changes in libraries:
