@@ -187,7 +187,15 @@ if(CMAKE_MRPT_HAS_xSENS)
 
 	if (MSVC)
 		target_compile_definitions(mrpt_xsens PRIVATE XDA_STATIC_LIB)
+	else()
+		# Needed for <time.h> to define timegm()
+		target_compile_definitions(mrpt_xsens PRIVATE 
+			_GNU_SOURCE
+			_BSD_SOURCE
+			_DEFAULT_SOURCE
+			)
 	endif()
+	
 
 	# needs to be exported, even if private, to make cmake happy since it wants
 	# libraries to be statically-linkable:
