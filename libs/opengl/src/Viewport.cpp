@@ -1195,7 +1195,7 @@ auto Viewport::getBoundingBox() const -> mrpt::math::TBoundingBox
 			first = false;
 		}
 		else
-			bb.unionWith(o->getBoundingBox());
+			bb = bb.unionWith(o->getBoundingBox());
 	}
 
 	return bb;
