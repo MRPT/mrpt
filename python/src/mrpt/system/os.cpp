@@ -33,13 +33,13 @@ void bind_mrpt_system_os(std::function< pybind11::module &(std::string const &na
 	// mrpt::system::os::_strnicmp(const char *, const char *, size_t) file:mrpt/system/os.h line:100
 	M("mrpt::system::os").def("_strnicmp", (int (*)(const char *, const char *, size_t)) &mrpt::system::os::_strnicmp, "An OS-independent version of strnicmp.\n \n\n It will return 0 when both strings are equal, casi insensitive.\n\nC++: mrpt::system::os::_strnicmp(const char *, const char *, size_t) --> int", pybind11::arg("str"), pybind11::arg("subStr"), pybind11::arg("count"));
 
-	// mrpt::system::os::memcpy(void *, size_t, const void *, size_t) file:mrpt/system/os.h line:116
+	// mrpt::system::os::memcpy(void *, size_t, const void *, size_t) file:mrpt/system/os.h line:112
 	M("mrpt::system::os").def("memcpy", (void (*)(void *, size_t, const void *, size_t)) &mrpt::system::os::memcpy, "An OS and compiler independent version of \"memcpy\"\n\nC++: mrpt::system::os::memcpy(void *, size_t, const void *, size_t) --> void", pybind11::arg("dest"), pybind11::arg("destSize"), pybind11::arg("src"), pybind11::arg("copyCount"));
 
-	// mrpt::system::os::getch() file:mrpt/system/os.h line:122
+	// mrpt::system::os::getch() file:mrpt/system/os.h line:118
 	M("mrpt::system::os").def("getch", (int (*)()) &mrpt::system::os::getch, "An OS-independent version of getch, which waits until a key is pushed.\n \n\n The pushed key code\n\nC++: mrpt::system::os::getch() --> int");
 
-	// mrpt::system::os::kbhit() file:mrpt/system/os.h line:127
+	// mrpt::system::os::kbhit() file:mrpt/system/os.h line:123
 	M("mrpt::system::os").def("kbhit", (bool (*)()) &mrpt::system::os::kbhit, "An OS-independent version of kbhit, which returns true if a key has been\n pushed.\n\nC++: mrpt::system::os::kbhit() --> bool");
 
 }

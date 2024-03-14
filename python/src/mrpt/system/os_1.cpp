@@ -25,26 +25,26 @@
 
 void bind_mrpt_system_os_1(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	// mrpt::system::pause(const std::string &) file:mrpt/system/os.h line:138
+	// mrpt::system::pause(const std::string &) file:mrpt/system/os.h line:134
 	M("mrpt::system").def("pause", []() -> void { return mrpt::system::pause(); }, "");
 	M("mrpt::system").def("pause", (void (*)(const std::string &)) &mrpt::system::pause, "Shows the message \"Press any key to continue\" (or other custom message) to\n the current standard output and returns when a key is pressed \n\nC++: mrpt::system::pause(const std::string &) --> void", pybind11::arg("msg"));
 
-	// mrpt::system::clearConsole() file:mrpt/system/os.h line:143
+	// mrpt::system::clearConsole() file:mrpt/system/os.h line:139
 	M("mrpt::system").def("clearConsole", (void (*)()) &mrpt::system::clearConsole, "Clears the console window \n\nC++: mrpt::system::clearConsole() --> void");
 
-	// mrpt::system::MRPT_getCompilationDate() file:mrpt/system/os.h line:147
+	// mrpt::system::MRPT_getCompilationDate() file:mrpt/system/os.h line:143
 	M("mrpt::system").def("MRPT_getCompilationDate", (std::string (*)()) &mrpt::system::MRPT_getCompilationDate, "Returns the MRPT source code timestamp, according to the Reproducible-Builds\n specifications: https://reproducible-builds.org/specs/source-date-epoch/  \n\nC++: mrpt::system::MRPT_getCompilationDate() --> std::string");
 
-	// mrpt::system::MRPT_getVersion() file:mrpt/system/os.h line:150
+	// mrpt::system::MRPT_getVersion() file:mrpt/system/os.h line:146
 	M("mrpt::system").def("MRPT_getVersion", (std::string (*)()) &mrpt::system::MRPT_getVersion, "Returns a string describing the MRPT version \n\nC++: mrpt::system::MRPT_getVersion() --> std::string");
 
-	// mrpt::system::getMRPTLicense() file:mrpt/system/os.h line:155
+	// mrpt::system::getMRPTLicense() file:mrpt/system/os.h line:151
 	M("mrpt::system").def("getMRPTLicense", (const std::string & (*)()) &mrpt::system::getMRPTLicense, "Returns a const ref to a text with the same text that appears at the\n beginning of each MRPT file (useful for displaying the License text in GUIs)\n\nC++: mrpt::system::getMRPTLicense() --> const std::string &", pybind11::return_value_policy::automatic);
 
-	// mrpt::system::find_mrpt_shared_dir() file:mrpt/system/os.h line:159
+	// mrpt::system::find_mrpt_shared_dir() file:mrpt/system/os.h line:155
 	M("mrpt::system").def("find_mrpt_shared_dir", (std::string (*)()) &mrpt::system::find_mrpt_shared_dir, "Finds the \"[MRPT]/share/mrpt/\" directory, if available in the system. This\n searches in (1) source code tree, (2) install target paths. \n\nC++: mrpt::system::find_mrpt_shared_dir() --> std::string");
 
-	// mrpt::system::ConsoleForegroundColor file:mrpt/system/os.h line:164
+	// mrpt::system::ConsoleForegroundColor file:mrpt/system/os.h line:160
 	pybind11::enum_<mrpt::system::ConsoleForegroundColor>(M("mrpt::system"), "ConsoleForegroundColor", "For use in consoleColorAndStyle().\n  \n\n Numerical values from vt100-console escape codes.")
 		.value("DEFAULT", mrpt::system::ConsoleForegroundColor::DEFAULT)
 		.value("BLACK", mrpt::system::ConsoleForegroundColor::BLACK)
@@ -66,7 +66,7 @@ void bind_mrpt_system_os_1(std::function< pybind11::module &(std::string const &
 
 ;
 
-	// mrpt::system::ConsoleBackgroundColor file:mrpt/system/os.h line:188
+	// mrpt::system::ConsoleBackgroundColor file:mrpt/system/os.h line:184
 	pybind11::enum_<mrpt::system::ConsoleBackgroundColor>(M("mrpt::system"), "ConsoleBackgroundColor", "For use in consoleColorAndStyle().\n  \n\n Numerical values from vt100-console escape codes.")
 		.value("DEFAULT", mrpt::system::ConsoleBackgroundColor::DEFAULT)
 		.value("BLACK", mrpt::system::ConsoleBackgroundColor::BLACK)
@@ -88,7 +88,7 @@ void bind_mrpt_system_os_1(std::function< pybind11::module &(std::string const &
 
 ;
 
-	// mrpt::system::ConsoleTextStyle file:mrpt/system/os.h line:212
+	// mrpt::system::ConsoleTextStyle file:mrpt/system/os.h line:208
 	pybind11::enum_<mrpt::system::ConsoleTextStyle>(M("mrpt::system"), "ConsoleTextStyle", "For use in consoleColorAndStyle().\n  \n\n Numerical values from vt100-console escape codes.")
 		.value("REGULAR", mrpt::system::ConsoleTextStyle::REGULAR)
 		.value("BOLD", mrpt::system::ConsoleTextStyle::BOLD)
@@ -101,18 +101,18 @@ void bind_mrpt_system_os_1(std::function< pybind11::module &(std::string const &
 
 ;
 
-	// mrpt::system::consoleColorAndStyle(enum mrpt::system::ConsoleForegroundColor, enum mrpt::system::ConsoleBackgroundColor, enum mrpt::system::ConsoleTextStyle, bool) file:mrpt/system/os.h line:240
+	// mrpt::system::consoleColorAndStyle(enum mrpt::system::ConsoleForegroundColor, enum mrpt::system::ConsoleBackgroundColor, enum mrpt::system::ConsoleTextStyle, bool) file:mrpt/system/os.h line:236
 	M("mrpt::system").def("consoleColorAndStyle", [](enum mrpt::system::ConsoleForegroundColor const & a0) -> void { return mrpt::system::consoleColorAndStyle(a0); }, "", pybind11::arg("fg"));
 	M("mrpt::system").def("consoleColorAndStyle", [](enum mrpt::system::ConsoleForegroundColor const & a0, enum mrpt::system::ConsoleBackgroundColor const & a1) -> void { return mrpt::system::consoleColorAndStyle(a0, a1); }, "", pybind11::arg("fg"), pybind11::arg("bg"));
 	M("mrpt::system").def("consoleColorAndStyle", [](enum mrpt::system::ConsoleForegroundColor const & a0, enum mrpt::system::ConsoleBackgroundColor const & a1, enum mrpt::system::ConsoleTextStyle const & a2) -> void { return mrpt::system::consoleColorAndStyle(a0, a1, a2); }, "", pybind11::arg("fg"), pybind11::arg("bg"), pybind11::arg("style"));
 	M("mrpt::system").def("consoleColorAndStyle", (void (*)(enum mrpt::system::ConsoleForegroundColor, enum mrpt::system::ConsoleBackgroundColor, enum mrpt::system::ConsoleTextStyle, bool)) &mrpt::system::consoleColorAndStyle, "Changes the text color and style in the console for the text written from\n now on. See available colors in ConsoleForegroundColor and\n ConsoleBackgroundColor.\n\n By default the color of \"cout\" is changed, unless changeStdErr=true, in\n which case \"cerr\" is changed.\n\n \n GNU/Linux: If stdout/stderr is not a real terminal with color support,\n calling this function will have no effect (i.e. no escape characters will be\n emitted).\n\n \n The current implementation only supports a subset of all colors for\n Windows terminals.\n\n \n (New in MRPT 2.3.3)\n\nC++: mrpt::system::consoleColorAndStyle(enum mrpt::system::ConsoleForegroundColor, enum mrpt::system::ConsoleBackgroundColor, enum mrpt::system::ConsoleTextStyle, bool) --> void", pybind11::arg("fg"), pybind11::arg("bg"), pybind11::arg("style"), pybind11::arg("applyToStdErr"));
 
-	// mrpt::system::executeCommand(const std::string &, std::string *, const std::string &) file:mrpt/system/os.h line:256
+	// mrpt::system::executeCommand(const std::string &, std::string *, const std::string &) file:mrpt/system/os.h line:252
 	M("mrpt::system").def("executeCommand", [](const std::string & a0) -> int { return mrpt::system::executeCommand(a0); }, "", pybind11::arg("command"));
 	M("mrpt::system").def("executeCommand", [](const std::string & a0, std::string * a1) -> int { return mrpt::system::executeCommand(a0, a1); }, "", pybind11::arg("command"), pybind11::arg("output"));
 	M("mrpt::system").def("executeCommand", (int (*)(const std::string &, std::string *, const std::string &)) &mrpt::system::executeCommand, "Execute Generic Shell Command\n\n \n Command to execute\n \n\n  Pointer to string containing the shell output\n \n\n read/write access\n\n \n 0 for success, -1 otherwise.\n\n \n Original code snippet found in http://stackoverflow.com/a/30357710\n\nC++: mrpt::system::executeCommand(const std::string &, std::string *, const std::string &) --> int", pybind11::arg("command"), pybind11::arg("output"), pybind11::arg("mode"));
 
-	// mrpt::system::launchProcess(const std::string &) file:mrpt/system/os.h line:266
+	// mrpt::system::launchProcess(const std::string &) file:mrpt/system/os.h line:262
 	M("mrpt::system").def("launchProcess", (bool (*)(const std::string &)) &mrpt::system::launchProcess, "Executes the given command (which may contain a program + arguments), and\nwaits until it finishes.\n\n \n false on any error, true otherwise\n\nC++: mrpt::system::launchProcess(const std::string &) --> bool", pybind11::arg("command"));
 
 	// mrpt::system::VerbosityLevel file:mrpt/system/COutputLogger.h line:32
