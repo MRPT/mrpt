@@ -55,7 +55,7 @@ DECLARE_OP_FUNCTION(op_deexternalize)
 
 			const string label_time = format(
 				"%s_%f", obs->sensorLabel.c_str(),
-				timestampTotime_t(obs->timestamp));
+				mrpt::Clock::toDouble(obs->timestamp));
 			if (IS_CLASS(*obs, CObservationStereoImages))
 			{
 				auto obsSt =

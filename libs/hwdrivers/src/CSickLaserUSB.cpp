@@ -74,7 +74,7 @@ void CSickLaserUSB::doProcessSimple(
 	if (m_timeStartUI == 0)
 	{
 		m_timeStartUI = board_timestamp;
-		m_timeStartTT = mrpt::system::now();
+		m_timeStartTT = mrpt::Clock::now();
 	}
 	else
 		AtUI = board_timestamp - m_timeStartUI;

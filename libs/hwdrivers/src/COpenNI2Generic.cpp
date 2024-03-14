@@ -834,7 +834,7 @@ bool COpenNI2Generic::CDevice::getNextFrameRGBD(
 	obs.hasRangeImage = true;
 	obs.range_is_depth = true;
 	obs.hasPoints3D = false;
-	obs.timestamp = mrpt::system::getCurrentTime();
+	obs.timestamp = mrpt::Clock::now();
 	resize(obs, width, height);
 
 	const char* data[STREAM_TYPE_SIZE] = {
@@ -1106,7 +1106,7 @@ bool COpenNI2Generic::CDevice::CStream::getFrame(
 		THROW_EXCEPTION(message);
 	}
 	there_is_obs = true;
-	timestamp = mrpt::system::getCurrentTime();
+	timestamp = mrpt::Clock::now();
 	return true;
 }
 

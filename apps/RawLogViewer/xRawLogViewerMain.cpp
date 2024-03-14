@@ -2657,7 +2657,7 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent&)
 						// t =
 						// mrpt::system::timeDifference(rawlog_first_timestamp,
 						// action->timestamp);
-						t = timestampTotime_t(action->timestamp);
+						t = mrpt::Clock::toDouble(action->timestamp);
 
 					::fprintf(f_odo_times, "%f\n", t);
 				}
@@ -2726,7 +2726,7 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent&)
 								// t =
 								// mrpt::system::timeDifference(rawlog_first_timestamp,
 								// obs->timestamp);
-								t = timestampTotime_t(obs->timestamp);
+								t = mrpt::Clock::toDouble(obs->timestamp);
 							::fprintf(files->second.first, "%f\n", t);
 						}
 
@@ -2795,7 +2795,7 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent&)
 							// t =
 							// mrpt::system::timeDifference(rawlog_first_timestamp,
 							// obs->timestamp);
-							t = timestampTotime_t(obs->timestamp);
+							t = mrpt::Clock::toDouble(obs->timestamp);
 
 						::fprintf(files->second.first, "%f\n", t);
 					}
@@ -2830,7 +2830,7 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent&)
 							// t =
 							// mrpt::system::timeDifference(rawlog_first_timestamp,
 							// odo->timestamp);
-							t = timestampTotime_t(odo->timestamp);
+							t = mrpt::Clock::toDouble(odo->timestamp);
 						::fprintf(f_odo_times, "%f\n", t);
 					}
 				}

@@ -86,48 +86,6 @@ mrpt::system::TTimeStamp buildTimestampFromPartsLocalTime(
  */
 void timestampToParts(TTimeStamp t, TTimeParts& p, bool localTime = false);
 
-/** Returns the current (UTC) system time.
- * \sa now
- */
-inline mrpt::system::TTimeStamp getCurrentTime() { return mrpt::Clock::now(); }
-/** A shortcut for system::getCurrentTime
- * \sa getCurrentTime
- */
-inline mrpt::system::TTimeStamp now() { return mrpt::Clock::now(); }
-/** Transform from standard "time_t" (actually a double number, it can contain
- * fractions of seconds) to TTimeStamp.
- * \sa timestampTotime_t
- */
-inline mrpt::system::TTimeStamp time_tToTimestamp(const double t)
-{
-	return mrpt::Clock::fromDouble(t);
-}
-
-/** Transform from standard "time_t" to TTimeStamp.
- * \sa timestampTotime_t
- */
-mrpt::system::TTimeStamp time_tToTimestamp(const time_t& t);
-
-/** Transform from TTimeStamp to standard "time_t" (actually a double number, it
- * can contain fractions of seconds).
- * \sa time_tToTimestamp
- */
-inline double timestampTotime_t(const mrpt::system::TTimeStamp t) noexcept
-{
-	return mrpt::Clock::toDouble(t);
-}
-
-/** Transform from TTimeStamp to standard "time_t" (actually a double number, it
- * can contain fractions of seconds).
- * This function is just an (inline) alias of timestampTotime_t(), with a more
- * significant name.
- * \sa time_tToTimestamp
- */
-inline double timestampToDouble(const mrpt::system::TTimeStamp t) noexcept
-{
-	return timestampTotime_t(t);
-}
-
 /** Returns the time difference from t1 to t2 (positive if t2 is posterior to
  * t1), in seconds  */
 inline double timeDifference(
@@ -141,14 +99,6 @@ inline double timeDifference(
 		std::chrono::duration_cast<std::chrono::microseconds>(t_later - t_first)
 			.count();
 	MRPT_END
-}
-
-/** Returns the current time, as a `double` (fractional version of time_t)
- * instead of a `TTimeStamp`.
- * \sa now(), timestampTotime_t() */
-inline double now_double()
-{
-	return mrpt::system::timestampTotime_t(mrpt::system::getCurrentTime());
 }
 
 /** Shifts a timestamp the given amount of seconds (>0: forwards in time, <0:

@@ -379,7 +379,7 @@ void CDifodoDatasets::loadFrame()
 		}
 
 	double timestamp_gt;
-	timestamp_obs = mrpt::system::timestampTotime_t(obs3D->timestamp);
+	timestamp_obs = mrpt::Clock::toDouble(obs3D->timestamp);
 
 	// Exit if there is no groundtruth at this time
 	if (last_groundtruth > timestamp_obs)

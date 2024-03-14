@@ -65,7 +65,7 @@ class CObservation : public mrpt::serialization::CSerializable,
 	/** The associated UTC time-stamp. Where available, this should contain the
 	 * accurate satellite-based timestamp of the sensor reading. \sa
 	 * getOriginalReceivedTimeStamp(), getTimeStamp() */
-	mrpt::system::TTimeStamp timestamp{mrpt::system::now()};
+	mrpt::system::TTimeStamp timestamp{mrpt::Clock::now()};
 	/** An arbitrary label that can be used to identify the sensor. */
 	std::string sensorLabel;
 

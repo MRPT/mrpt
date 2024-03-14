@@ -521,7 +521,7 @@ bool CWirelessPower::getObservation(
 		//	outObservation.m_readings.clear();
 		outObservation.power = (float)GetPower();
 
-		outObservation.timestamp = mrpt::system::getCurrentTime();
+		outObservation.timestamp = mrpt::Clock::now();
 
 		outObservation.sensorLabel = m_sensorLabel;
 		//	std::cout << "mrpt::hwdrivers::CWirelessPower::getObservation() " <<

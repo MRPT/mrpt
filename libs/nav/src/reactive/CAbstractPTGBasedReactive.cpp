@@ -281,8 +281,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 	{
 		totalExecutionTime.Tic();  // Start timer
 
-		const mrpt::system::TTimeStamp tim_start_iteration =
-			mrpt::system::now();
+		const mrpt::system::TTimeStamp tim_start_iteration = mrpt::Clock::now();
 
 		// Compute target location relative to current robot pose:
 		// ---------------------------------------------------------------------
@@ -815,7 +814,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				{
 					mrpt::system::CTimeLoggerEntry tle2(
 						m_timlog_delays, "changeSpeeds()");
-					tim_send_cmd_vel = mrpt::system::now();
+					tim_send_cmd_vel = mrpt::Clock::now();
 					newLogRec.timestamps["tim_send_cmd_vel"] = tim_send_cmd_vel;
 					if (!this->changeSpeeds(*new_vel_cmd))
 					{
@@ -1200,8 +1199,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 				WS_point_is_unique = cm.PTG->isBijectiveAt(cur_k, cur_ptg_step);
 				const uint32_t predicted_step =
 					mrpt::system::timeDifference(
-						m_lastSentVelCmd.tim_send_cmd_vel,
-						mrpt::system::now()) /
+						m_lastSentVelCmd.tim_send_cmd_vel, mrpt::Clock::now()) /
 					cm.PTG->getPathStepDuration();
 				WS_point_is_unique = WS_point_is_unique &&
 					cm.PTG->isBijectiveAt(move_k, predicted_step);
@@ -1468,7 +1466,7 @@ bool CAbstractPTGBasedReactive::impl_waypoint_is_reachable(
 	if (m_infoPerPTG.size() < N ||
 		m_infoPerPTG_timestamp == INVALID_TIMESTAMP ||
 		mrpt::system::timeDifference(
-			m_infoPerPTG_timestamp, mrpt::system::now()) > 0.5)
+			m_infoPerPTG_timestamp, mrpt::Clock::now()) > 0.5)
 		return false;  // We didn't run yet or obstacle info is old
 
 	for (size_t i = 0; i < N; i++)

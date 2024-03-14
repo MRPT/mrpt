@@ -148,7 +148,7 @@ mrpt::system::TTimeStamp Message_NMEA_RMC::getDateAsTimestamp() const
 	uint16_t years_century;
 	{
 		TTimeParts dec_parts;
-		timestampToParts(now(), dec_parts);
+		timestampToParts(mrpt::Clock::now(), dec_parts);
 		years_century = (dec_parts.year / 100) * 100;
 	}
 

@@ -1,11 +1,20 @@
 \page changelog Change Log
 
-# Version 2.11.13: UNRELEASED
+# Version 2.12.0: UNRELEASED
 - Changes in libraries:
   - \ref mrpt_obs_grp:
     - mrpt::math::TBoundingBox: Mark all relevant methods with ``[nodiscard]`` to avoid mistakes.
+  - \ref mrpt_system_grp:
+    - Removed explicit references to `time_t` and redundant functions. Removed functions:
+      - mrpt::system::getCurrentTime()    -> replaced by mrpt::Clock::now()
+      - mrpt::system::now()               -> replaced by mrpt::Clock::now()
+      - mrpt::system::now_double()        -> replaced by mrpt::Clock::nowDouble()
+      - mrpt::system::time_tToTimestamp() -> replaced by mrpt::Clock::fromDouble()
+      - mrpt::system::timestampTotime_t() -> replaced by mrpt::Clock::toDouble()
+      - mrpt::system::timestampToDouble() -> replaced by mrpt::Clock::toDouble()
 - BUG FIXES:
   - Fix Debian bug #1066207: FTBFS in latest sid due to undefined declarations in mrpt_xsens C library.
+  - Fix wrong computation of bounding boxes for mrpt::opengl::CSetOfObjects.
 
 # Version 2.11.12: Released March 10th, 2024
 - Changes in libraries:

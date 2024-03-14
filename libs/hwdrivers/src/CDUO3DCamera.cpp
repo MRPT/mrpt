@@ -495,7 +495,7 @@ void CDUO3DCamera::getObservations(
 	//   Extract the observation:
 	// -----------------------------------------------
 	outObservation_img.timestamp = outObservation_imu.timestamp =
-		mrpt::system::now();
+		mrpt::Clock::now();
 
 	outObservation_img.setStereoCameraParams(m_options.m_stereo_camera);
 	outObservation_img.imageLeft.loadFromMemoryBuffer(

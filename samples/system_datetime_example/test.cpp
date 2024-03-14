@@ -27,7 +27,7 @@ void TestTimes()
 	TTimeStamp t;
 	for (size_t i = 0; i < 20; i++)
 	{
-		t = mrpt::system::getCurrentTime();
+		t = mrpt::Clock::now();
 		std::cout << mrpt::system::dateTimeToString(t) << std::endl;
 	}
 }

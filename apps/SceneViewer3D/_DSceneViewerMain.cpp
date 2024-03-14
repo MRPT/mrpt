@@ -264,7 +264,7 @@ void CMyGLCanvas::OnCharCustom(wxKeyEvent& event)
 			// First, build a list of files in the directory:
 			static CDirectoryExplorer::TFileInfoList lstFiles;
 			static TTimeStamp lastUpdateOfList = INVALID_TIMESTAMP;
-			TTimeStamp curTime = getCurrentTime();
+			TTimeStamp curTime = mrpt::Clock::now();
 
 			if (lastUpdateOfList == INVALID_TIMESTAMP ||
 				timeDifference(lastUpdateOfList, curTime) > 2)

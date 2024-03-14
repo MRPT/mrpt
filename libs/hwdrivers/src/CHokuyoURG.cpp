@@ -132,7 +132,7 @@ void CHokuyoURG::doProcessSimple(
 	// -----------------------------------------------
 	//   Extract the observation:
 	// -----------------------------------------------
-	outObservation.timestamp = mrpt::system::now();
+	outObservation.timestamp = mrpt::Clock::now();
 
 	if ((size_t)expectedSize != m_rcv_data.size())
 	{
@@ -164,7 +164,7 @@ void CHokuyoURG::doProcessSimple(
 		if (m_timeStartUI == 0)
 		{
 			m_timeStartUI = nowUI;
-			m_timeStartTT = mrpt::system::now();
+			m_timeStartTT = mrpt::Clock::now();
 		}
 		else
 			AtUI = nowUI - m_timeStartUI;

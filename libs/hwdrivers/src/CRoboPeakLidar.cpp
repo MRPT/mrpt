@@ -71,10 +71,10 @@ void CRoboPeakLidar::doProcessSimple(
 	size_t count = sizeof(nodes) / sizeof(nodes[0]);
 
 	// Scan:
-	const mrpt::system::TTimeStamp tim_scan_start = mrpt::system::now();
+	const mrpt::system::TTimeStamp tim_scan_start = mrpt::Clock::now();
 	u_result op_result = RPLIDAR_DRV->grabScanDataHq(nodes, count);
 
-	// const mrpt::system::TTimeStamp tim_scan_end = mrpt::system::now();
+	// const mrpt::system::TTimeStamp tim_scan_end = mrpt::Clock::now();
 	// const double scan_duration =
 	// mrpt::system::timeDifference(tim_scan_start,tim_scan_end);
 
