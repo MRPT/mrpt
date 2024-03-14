@@ -178,7 +178,7 @@ void COpenNI2_RGBD360::getNextObservation(
 	// Set range image --------------------------
 	if (m_grab_depth || m_grab_3D_points) newObs.hasRangeImage = true;
 
-	newObs.timestamp = mrpt::system::getCurrentTime();
+	newObs.timestamp = mrpt::Clock::now();
 
 	for (unsigned sensor_id = 0; sensor_id < (unsigned int)NUM_SENSORS;
 		 sensor_id++)

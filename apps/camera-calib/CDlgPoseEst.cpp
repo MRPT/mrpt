@@ -434,11 +434,11 @@ void CDlgPoseEst::OntimCaptureTrigger(wxTimerEvent& event)
 			std::dynamic_pointer_cast<CObservationImage>(obs);
 
 		bool blankTime = (last_valid != INVALID_TIMESTAMP) &&
-			mrpt::system::timeDifference(last_valid, mrpt::system::now()) < 0.5;
+			mrpt::system::timeDifference(last_valid, mrpt::Clock::now()) < 0.5;
 		if (!blankTime && m_threadResultsComputed && !m_threadResults.empty())
 		{
 			// Update last valid
-			last_valid = mrpt::system::now();
+			last_valid = mrpt::Clock::now();
 
 			// Display now:
 			m_threadImgToProcess->image.colorImage(img_to_show);

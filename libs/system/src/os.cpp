@@ -16,9 +16,6 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
 
-#ifndef HAVE_TIMEGM
-#endif	// HAVE_TIMEGM
-
 #include <algorithm>
 #include <cctype>
 #include <cfloat>
@@ -108,49 +105,6 @@ int myKbhit()
 }
 
 #endif
-
-/*---------------------------------------------------------------
-					timegm
-  ---------------------------------------------------------------*/
-#ifdef HAVE_TIMEGM
-time_t mrpt::system::os::timegm(struct tm* tm) { return ::timegm(tm); }
-#else
-// Version for MSVC>=2005, which lacks "timegm"
-#ifdef HAVE_MKGMTIME
-time_t mrpt::system::os::timegm(struct tm* tm) { return ::_mkgmtime(tm); }
-#else
-// generic version, slower but probably not used in any modern compiler!
-time_t mrpt::system::os::timegm(struct tm* tm)
-{
-	static std::mutex cs;
-	std::lock_guard<std::mutex> lock(cs);
-
-	time_t ret;
-	char tz[256];
-
-	/* save current timezone and set UTC */
-	char* org_tz = getenv("TZ");
-	if (org_tz) os::strcpy(tz, sizeof(tz), org_tz);
-
-	putenv("TZ=UTC"); /* use Coordinated Universal Time (i.e. zero offset) */
-	tzset();
-
-	ret = mktime(tm);
-	if (org_tz)
-	{
-		char buf[256];
-		mrpt::system::os::sprintf(buf, sizeof(buf), "TZ=%s", tz);
-		putenv(buf);
-	}
-	else
-		putenv("TZ=");
-	tzset();
-
-	return ret;
-}
-
-#endif
-#endif	// HAVE_TIMEGM
 
 /*---------------------------------------------------------------
 					mrpt::system::MRPT_getCompilationDate

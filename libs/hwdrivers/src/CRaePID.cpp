@@ -144,7 +144,7 @@ void CRaePID::doProcess()
 	mrpt::obs::CObservationGasSensors obsG;
 	obsG.sensorLabel = this->getSensorLabel();
 	obsG.m_readings.push_back(obs);
-	obsG.timestamp = mrpt::system::now();
+	obsG.timestamp = mrpt::Clock::now();
 
 	appendObservation(mrpt::obs::CObservationGasSensors::Create(obsG));
 }
@@ -245,7 +245,7 @@ mrpt::obs::CObservationGasSensors CRaePID::getFullInfo()
 	}
 
 	obsG.sensorLabel = this->getSensorLabel();
-	obsG.timestamp = mrpt::system::now();
+	obsG.timestamp = mrpt::Clock::now();
 
 	return obsG;
 }

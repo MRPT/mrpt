@@ -224,7 +224,7 @@ void display()
 int main()
 {
 	srand((unsigned int)mrpt::system::extractDayTimeFromTimestamp(
-		mrpt::system::now()));
+		mrpt::Clock::now()));
 	try
 	{
 		display();

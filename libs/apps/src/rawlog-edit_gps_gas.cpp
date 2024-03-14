@@ -156,8 +156,7 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 				"    <name>GPS-GAS Paths</name>\n"
 				"    <description>GPS-GAS paths from dataset "
 				"'%s'</description>\n",
-				mrpt::system::dateTimeLocalToString(mrpt::system::now())
-					.c_str(),
+				mrpt::system::dateTimeLocalToString(mrpt::Clock::now()).c_str(),
 				m_inFile.c_str(), m_inFile.c_str());
 
 			// For each GPS sensor label:

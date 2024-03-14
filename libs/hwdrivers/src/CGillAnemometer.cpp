@@ -163,7 +163,7 @@ void CGillAnemometer::doProcess()
 
 				// Prepare observation
 				obsPtr->sensorLabel = m_sensorLabel;
-				obsPtr->timestamp = mrpt::system::getCurrentTime();
+				obsPtr->timestamp = mrpt::Clock::now();
 				obsPtr->sensorPoseOnRobot = mrpt::poses::CPose3D(
 					pose_x, pose_y, pose_z, pose_yaw, pose_pitch, pose_roll);
 				appendObservation(obsPtr);
@@ -198,7 +198,7 @@ void CGillAnemometer::doProcess()
 
 				// Prepare observation
 				obsPtr->sensorLabel = m_sensorLabel;
-				obsPtr->timestamp = mrpt::system::getCurrentTime();
+				obsPtr->timestamp = mrpt::Clock::now();
 				obsPtr->sensorPoseOnRobot = mrpt::poses::CPose3D(
 					pose_x, pose_y, pose_z, pose_yaw, pose_pitch, pose_roll);
 				appendObservation(obsPtr);

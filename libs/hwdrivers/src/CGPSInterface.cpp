@@ -322,7 +322,7 @@ void CGPSInterface::doProcess()
 		{
 			// 1st time open:
 			mrpt::system::TTimeParts parts;
-			mrpt::system::timestampToParts(now(), parts, true);
+			mrpt::system::timestampToParts(mrpt::Clock::now(), parts, true);
 			string sFilePostfix = "_";
 			sFilePostfix += format(
 				"%04u-%02u-%02u_%02uh%02um%02us", (unsigned int)parts.year,
@@ -378,7 +378,7 @@ void CGPSInterface::doProcess()
 					 << mrpt::system::timeToString(m_parsed_messages->timestamp)
 					 << endl;
 			// Check if the initial timestamp seems to be OK (not a spurio one)
-			TTimeStamp tmNow = mrpt::system::now();
+			TTimeStamp tmNow = mrpt::Clock::now();
 			const double tdif = mrpt::system::timeDifference(
 				m_parsed_messages->timestamp, tmNow);
 			if (tdif >= 0 && tdif < 7500 /*Up to two hours*/)

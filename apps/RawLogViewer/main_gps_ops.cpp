@@ -821,8 +821,8 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 									geo);
 
 								// Save file:
-								double tim = mrpt::system::timestampTotime_t(
-									obs->timestamp);
+								double tim =
+									mrpt::Clock::toDouble(obs->timestamp);
 								/*  obs->GGA_datum.UTCTime.hour * 3600 +
 											  obs->GGA_datum.UTCTime.minute * 60
 								   +
@@ -977,8 +977,8 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 									geo);
 
 								// Save file:
-								double tim = mrpt::system::timestampTotime_t(
-									obs->timestamp);
+								double tim =
+									mrpt::Clock::toDouble(obs->timestamp);
 
 								// If available, Cartessian X Y Z, VX VY VZ, as
 								// supplied by the GPS itself:
@@ -1056,7 +1056,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 									cart_pos.z, cart_vel.x, cart_vel.y,
 									cart_vel.z, cart_vel_local.x,
 									cart_vel_local.y, cart_vel_local.z,
-									mrpt::system::timestampTotime_t(
+									mrpt::Clock::toDouble(
 										obs->getMsgByClass<
 											   gnss::Message_NMEA_GGA>()
 											.fields.UTCTime.getAsTimestamp(
@@ -1110,7 +1110,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 		for (auto a = lstXYZallGPS.begin(); a != lstXYZallGPS.end();
 			 ++a, nLabels++)
 		{
-			MAT(nLabels, 0) = timestampTotime_t(a->first);
+			MAT(nLabels, 0) = mrpt::Clock::toDouble(a->first);
 			map<string, CPoint3D>& m = a->second;
 			int k = 0;
 			for (auto it = lstAllGPSlabels.begin(); it != lstAllGPSlabels.end();

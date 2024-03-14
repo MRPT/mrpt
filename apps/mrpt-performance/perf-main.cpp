@@ -225,7 +225,7 @@ int main(int argc, char** argv)
 			fo.printf(
 				"<hr><small>Automated test run at %s with %s using program "
 				"'mrpt-performance'.<br>Overall run took %s</small>\n",
-				mrpt::system::dateTimeLocalToString(now()).c_str(),
+				mrpt::system::dateTimeLocalToString(mrpt::Clock::now()).c_str(),
 				MRPT_getVersion().c_str(),
 				mrpt::system::intervalFormat(globalTime.Tac()).c_str());
 

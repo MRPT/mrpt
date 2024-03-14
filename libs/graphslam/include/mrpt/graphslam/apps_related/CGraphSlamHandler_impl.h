@@ -102,7 +102,7 @@ void CGraphSlamHandler<GRAPH_T>::initOutputDir(
 		output_dir_fname.c_str());
 
 	// current time vars - handy in the rest of the function.
-	mrpt::system::TTimeStamp cur_date(getCurrentTime());
+	mrpt::system::TTimeStamp cur_date(mrpt::Clock::now());
 	string cur_date_str(timeToString(cur_date));
 	string cur_date_validstr(fileNameStripInvalidChars(cur_date_str));
 

@@ -376,7 +376,7 @@ void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)
 
 		// Is there a detection??
 		bool blankTime = (last_valid != INVALID_TIMESTAMP) &&
-			mrpt::system::timeDifference(last_valid, mrpt::system::now()) < 2.0;
+			mrpt::system::timeDifference(last_valid, mrpt::Clock::now()) < 2.0;
 
 		if (!blankTime && m_threadResultsComputed && !m_threadResults.empty())
 		{
@@ -392,7 +392,7 @@ void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)
 			lbProgress->SetLabel(
 				format("%u", (unsigned int)m_calibFrames.size()).c_str());
 
-			last_valid = mrpt::system::now();
+			last_valid = mrpt::Clock::now();
 
 			// Display now:
 			m_threadImgToProcess->image.colorImage(img_to_show);

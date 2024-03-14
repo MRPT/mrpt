@@ -126,7 +126,7 @@ void stereo2rawlog(
 		mrpt::system::createDirectory(out_imgs_dir);
 	}
 
-	mrpt::system::TTimeStamp tim0 = mrpt::system::now();
+	mrpt::system::TTimeStamp tim0 = mrpt::Clock::now();
 
 	// For each image:
 	for (int i = 0;; i++)
@@ -178,8 +178,8 @@ void stereo2rawlog(
 		}
 
 		CObservationStereoImages obs;
-		obs.timestamp = mrpt::system::time_tToTimestamp(
-			mrpt::system::timestampTotime_t(tim0) + i / STEREO_FPS);
+		obs.timestamp = mrpt::Clock::fromDouble(
+			mrpt::Clock::toDouble(tim0) + i / STEREO_FPS);
 		obs.cameraPose = mrpt::poses::CPose3DQuat(mrpt::poses::CPose3D(
 			0, 0, 0, -90.0_deg, 0.0_deg, DEG2RAD(-90.0 - 4.6)));
 

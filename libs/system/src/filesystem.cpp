@@ -339,14 +339,18 @@ std::string mrpt::system::filePathSeparatorsToNative(
 	return p2s(fs::path(ret).native());
 }
 
-time_t mrpt::system::getFileModificationTime(const std::string& filename)
+mrpt::Clock::time_point mrpt::system::getFileModificationTime(
+	const std::string& filename)
 {
 	struct stat fS
 	{
 	};
-	if (0 != stat(filename.c_str(), &fS)) return 0;
+	if (0 != stat(filename.c_str(), &fS))
+		THROW_EXCEPTION_FMT(
+			"Could not access modification time of file '%s'",
+			filename.c_str());
 	else
-		return fS.st_mtime;
+		return mrpt::Clock::fromDouble(static_cast<double>(fS.st_mtime));
 }
 
 #include <mrpt/version.h>

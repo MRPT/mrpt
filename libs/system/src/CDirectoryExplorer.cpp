@@ -118,8 +118,10 @@ CDirectoryExplorer::TFileInfoList CDirectoryExplorer::explore(
 					newEntry.wholePath.c_str());
 			}
 
-			newEntry.modTime = statDat.st_mtime;
-			newEntry.accessTime = statDat.st_atime;
+			newEntry.modTime =
+				mrpt::Clock::fromDouble(static_cast<double>(statDat.st_mtime));
+			newEntry.accessTime =
+				mrpt::Clock::fromDouble(static_cast<double>(statDat.st_atime));
 
 			// Flags:
 			newEntry.isDir = 0 != (statDat.st_mode & _S_IFDIR);
@@ -170,8 +172,10 @@ CDirectoryExplorer::TFileInfoList CDirectoryExplorer::explore(
 					newEntry.wholePath.c_str());
 			}
 
-			newEntry.modTime = statDat.st_mtime;
-			newEntry.accessTime = statDat.st_atime;
+			newEntry.modTime =
+				mrpt::Clock::fromDouble(static_cast<double>(statDat.st_mtime));
+			newEntry.accessTime =
+				mrpt::Clock::fromDouble(static_cast<double>(statDat.st_atime));
 
 			// Flags:
 			newEntry.isDir = S_ISDIR(statDat.st_mode);

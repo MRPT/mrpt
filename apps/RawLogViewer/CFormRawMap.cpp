@@ -1169,7 +1169,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 		std::ofstream f(string(dialog.GetPath().mb_str()));
 		for (const auto& rp : robot_path)
 		{
-			const double t = timestampTotime_t(rp.first);
+			const double t = mrpt::Clock::toDouble(rp.first);
 			const auto& p = rp.second;
 			f << mrpt::format(
 				"%.06f %.06f %.06f %.06f %.06f %.06f %.06f ", t, p.x, p.y, p.z,
@@ -1255,7 +1255,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 
 		for (const auto& pi : rtk_path_info.mahalabis_quality_measure)
 			f << mrpt::format(
-				"%.06f %.06e\n", timestampTotime_t(pi.first), pi.second);
+				"%.06f %.06e\n", mrpt::Clock::toDouble(pi.first), pi.second);
 	}
 
 	// ---------------------------------------------
@@ -1357,8 +1357,8 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 							mrpt::system::os::fprintf(
 								*itOutFiles,
 								"%.06f %.06f %.06f %.06f %.06f %.06f %.06f ",
-								timestampTotime_t(obs->timestamp), p.x(), p.y(),
-								p.z(), p.yaw(), p.pitch(), p.roll());
+								mrpt::Clock::toDouble(obs->timestamp), p.x(),
+								p.y(), p.z(), p.yaw(), p.pitch(), p.roll());
 
 							CMatrixDouble66& C = global_sensor_pose.cov;
 							mrpt::system::os::fprintf(
