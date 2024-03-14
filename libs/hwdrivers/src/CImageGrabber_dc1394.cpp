@@ -465,7 +465,7 @@ bool CImageGrabber_dc1394::getObservation(
 		return false;
 	}
 
-	out_observation.timestamp = mrpt::system::now();
+	out_observation.timestamp = mrpt::Clock::now();
 
 	const unsigned int width = frame->size[0];
 	const unsigned int height = frame->size[1];
@@ -567,7 +567,7 @@ bool CImageGrabber_dc1394::getObservation(
 		return false;
 	}
 
-	out_observation.timestamp = mrpt::system::now();
+	out_observation.timestamp = mrpt::Clock::now();
 
 	const unsigned int width = frame->size[0];
 	const unsigned int height = frame->size[1];

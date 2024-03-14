@@ -797,7 +797,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 
 		// Specially at start-up, there may be a delay grabbing so a few calls
 		// return false: add a timeout.
-		const mrpt::system::TTimeStamp t0 = mrpt::system::now();
+		const mrpt::system::TTimeStamp t0 = mrpt::Clock::now();
 		double max_timeout = 3.0;  // seconds
 
 		// If we have an "MRPT_CCAMERA_KINECT_TIMEOUT_MS" environment variable,
@@ -812,7 +812,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 				*obs3D, there_is_obs, hardware_error);
 			if (!there_is_obs) std::this_thread::sleep_for(1ms);
 		} while (!there_is_obs &&
-				 mrpt::system::timeDifference(t0, mrpt::system::now()) <
+				 mrpt::system::timeDifference(t0, mrpt::Clock::now()) <
 					 max_timeout);
 
 		if (!there_is_obs || hardware_error)
@@ -828,7 +828,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 		obs3D = std::make_shared<CObservation3DRangeScan>();
 		// Specially at start-up, there may be a delay grabbing so a few calls
 		// return false: add a timeout.
-		const mrpt::system::TTimeStamp t0 = mrpt::system::now();
+		const mrpt::system::TTimeStamp t0 = mrpt::Clock::now();
 		double max_timeout = 3.0;  // seconds
 		bool there_is_obs, hardware_error;
 		do
@@ -837,7 +837,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 				*obs3D, there_is_obs, hardware_error);
 			if (!there_is_obs) std::this_thread::sleep_for(1ms);
 		} while (!there_is_obs &&
-				 mrpt::system::timeDifference(t0, mrpt::system::now()) <
+				 mrpt::system::timeDifference(t0, mrpt::Clock::now()) <
 					 max_timeout);
 
 		if (!there_is_obs || hardware_error)
@@ -1096,7 +1096,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 			// driver?
 			stObs->timestamp = (obsL.timestamp != INVALID_TIMESTAMP)
 				? obsL.timestamp
-				: mrpt::system::now();
+				: mrpt::Clock::now();
 			stObs->imageLeft = std::move(obsL.image);
 			stObs->imageRight = std::move(obsR.image);
 			capture_ok = true;
@@ -1256,21 +1256,21 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 			}
 			else
 			{
-				const string filNameL =
-					fileNameStripInvalidChars(trim(m_sensorLabel)) +
-					format(
-						"_L_%f.%s", (double)timestampTotime_t(stObs->timestamp),
-						m_external_images_format.c_str());
-				const string filNameR =
-					fileNameStripInvalidChars(trim(m_sensorLabel)) +
-					format(
-						"_R_%f.%s", (double)timestampTotime_t(stObs->timestamp),
-						m_external_images_format.c_str());
-				const string filNameD =
-					fileNameStripInvalidChars(trim(m_sensorLabel)) +
-					format(
-						"_D_%f.%s", (double)timestampTotime_t(stObs->timestamp),
-						m_external_images_format.c_str());
+				const string filNameL = fileNameStripInvalidChars(
+											trim(m_sensorLabel)) +
+					format("_L_%f.%s",
+						   (double)mrpt::Clock::toDouble(stObs->timestamp),
+						   m_external_images_format.c_str());
+				const string filNameR = fileNameStripInvalidChars(
+											trim(m_sensorLabel)) +
+					format("_R_%f.%s",
+						   (double)mrpt::Clock::toDouble(stObs->timestamp),
+						   m_external_images_format.c_str());
+				const string filNameD = fileNameStripInvalidChars(
+											trim(m_sensorLabel)) +
+					format("_D_%f.%s",
+						   (double)mrpt::Clock::toDouble(stObs->timestamp),
+						   m_external_images_format.c_str());
 				// cout << "[CCameraSensor] Saving " << filName << endl;
 				stObs->imageLeft.saveToFile(
 					m_path_for_external_images + string("/") + filNameL,
@@ -1313,10 +1313,11 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 			}
 			else
 			{
-				string filName = fileNameStripInvalidChars(
-									 trim(m_sensorLabel)) +
-					format("_%f.%s", (double)timestampTotime_t(obs->timestamp),
-						   m_external_images_format.c_str());
+				string filName =
+					fileNameStripInvalidChars(trim(m_sensorLabel)) +
+					format(
+						"_%f.%s", (double)mrpt::Clock::toDouble(obs->timestamp),
+						m_external_images_format.c_str());
 				// cout << "[CCameraSensor] Saving " << filName << endl;
 				obs->image.saveToFile(
 					m_path_for_external_images + string("/") + filName,
@@ -1650,10 +1651,11 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
 				CObservationImage::Ptr obs =
 					std::dynamic_pointer_cast<CObservationImage>(i->second);
 
-				string filName = fileNameStripInvalidChars(
-									 trim(m_sensorLabel)) +
-					format("_%f.%s", (double)timestampTotime_t(obs->timestamp),
-						   m_external_images_format.c_str());
+				string filName =
+					fileNameStripInvalidChars(trim(m_sensorLabel)) +
+					format(
+						"_%f.%s", (double)mrpt::Clock::toDouble(obs->timestamp),
+						m_external_images_format.c_str());
 
 				obs->image.saveToFile(
 					m_path_for_external_images + string("/") + filName,
@@ -1666,21 +1668,21 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
 					std::dynamic_pointer_cast<CObservationStereoImages>(
 						i->second);
 
-				const string filNameL =
-					fileNameStripInvalidChars(trim(m_sensorLabel)) +
-					format(
-						"_L_%f.%s", (double)timestampTotime_t(stObs->timestamp),
-						m_external_images_format.c_str());
-				const string filNameR =
-					fileNameStripInvalidChars(trim(m_sensorLabel)) +
-					format(
-						"_R_%f.%s", (double)timestampTotime_t(stObs->timestamp),
-						m_external_images_format.c_str());
-				const string filNameD =
-					fileNameStripInvalidChars(trim(m_sensorLabel)) +
-					format(
-						"_D_%f.%s", (double)timestampTotime_t(stObs->timestamp),
-						m_external_images_format.c_str());
+				const string filNameL = fileNameStripInvalidChars(
+											trim(m_sensorLabel)) +
+					format("_L_%f.%s",
+						   (double)mrpt::Clock::toDouble(stObs->timestamp),
+						   m_external_images_format.c_str());
+				const string filNameR = fileNameStripInvalidChars(
+											trim(m_sensorLabel)) +
+					format("_R_%f.%s",
+						   (double)mrpt::Clock::toDouble(stObs->timestamp),
+						   m_external_images_format.c_str());
+				const string filNameD = fileNameStripInvalidChars(
+											trim(m_sensorLabel)) +
+					format("_D_%f.%s",
+						   (double)mrpt::Clock::toDouble(stObs->timestamp),
+						   m_external_images_format.c_str());
 
 				stObs->imageLeft.saveToFile(
 					m_path_for_external_images + string("/") + filNameL,

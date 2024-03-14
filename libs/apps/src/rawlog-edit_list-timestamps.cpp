@@ -49,8 +49,7 @@ DECLARE_OP_FUNCTION(op_list_timestamps)
 
 		bool processOneObservation(CObservation::Ptr& obs) override
 		{
-			m_out << std::fixed
-				  << mrpt::system::timestampToDouble(obs->timestamp) << " "
+			m_out << std::fixed << mrpt::Clock::toDouble(obs->timestamp) << " "
 				  << obs->sensorLabel << " "
 				  << obs->GetRuntimeClass()->className << std::endl;
 			return true;

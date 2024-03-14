@@ -54,7 +54,7 @@ DECLARE_OP_FUNCTION(op_list_images)
 		{
 			const string label_time = format(
 				"%s_%f", obs->sensorLabel.c_str(),
-				timestampTotime_t(obs->timestamp));
+				mrpt::Clock::toDouble(obs->timestamp));
 			if (IS_CLASS(*obs, CObservationStereoImages))
 			{
 				CObservationStereoImages::Ptr obsSt =

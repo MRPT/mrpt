@@ -328,7 +328,7 @@ void CObservationGasSensors::CMOSmodel::save_log_map(
 	// function to save in a log file the information of the generated gas
 	// distribution estimation
 
-	double time = mrpt::system::timestampTotime_t(timestamp);
+	double time = mrpt::Clock::toDouble(timestamp);
 	char buffer[50];
 	sprintf(buffer, "./log_MOSmodel_GasDistribution.txt");
 

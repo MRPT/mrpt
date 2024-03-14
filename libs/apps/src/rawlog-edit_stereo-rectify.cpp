@@ -165,7 +165,7 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 
 						const string label_time = format(
 							"%s_%f", o->sensorLabel.c_str(),
-							timestampTotime_t(o->timestamp));
+							mrpt::Clock::toDouble(o->timestamp));
 						{
 							const string fileName = string("img_") +
 								label_time + string("_left.") +

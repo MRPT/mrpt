@@ -787,7 +787,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask& ipt)
 			obs = clean_obs;  // Start with an empty observation
 
 			// Common stuff:
-			obs.timestamp = mrpt::system::now();
+			obs.timestamp = mrpt::Clock::now();
 			obs.sample_rate = ipt.task.samplesPerSecond;
 			obs.sensorLabel = m_sensorLabel + string(".") + ipt.task.taskLabel;
 

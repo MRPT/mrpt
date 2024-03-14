@@ -264,7 +264,7 @@ void CPhidgetInterfaceKitProximitySensors::getObservation(
 	[[maybe_unused]] mrpt::obs::CObservationRange& obs)
 {
 #if MRPT_HAS_PHIDGET
-	obs.timestamp = mrpt::system::getCurrentTime();
+	obs.timestamp = mrpt::Clock::now();
 	obs.sensorLabel = m_sensorLabel;
 	obs.minSensorDistance = m_minOfMinRanges;
 	obs.maxSensorDistance = m_maxOfMaxRanges;

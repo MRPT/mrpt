@@ -457,7 +457,7 @@ void CSkeletonTracker::doProcess()
 			if (m_timeStartUI == 0)
 			{
 				m_timeStartUI = nowUI;
-				m_timeStartTT = mrpt::system::now();
+				m_timeStartTT = mrpt::Clock::now();
 			}
 			else
 				AtUI = nowUI - m_timeStartUI;

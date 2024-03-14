@@ -19,7 +19,7 @@ void run_pc_filter_test(
 		{1, 0, 0}, {1.03, 0, 0},	 {1, 1, 0},	 {1.01, 1.02, 0},
 		{0, 1, 0}, {-0.01, 1.01, 0}, {-1, 0, 0}, {-1.01, 0.02, 0}};
 	const mrpt::poses::CPose3D pts1_pose(0, 0, 0, 0, 0, 0);
-	const mrpt::system::TTimeStamp pts1_tim = mrpt::system::now();
+	const mrpt::system::TTimeStamp pts1_tim = mrpt::Clock::now();
 
 	const mrpt::poses::CPose3D pts2_pose(0.5, 0, 0, 0, 0, 0);
 	const mrpt::system::TTimeStamp pts2_tim =

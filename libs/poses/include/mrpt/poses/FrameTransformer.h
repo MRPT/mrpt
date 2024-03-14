@@ -63,7 +63,7 @@ class FrameTransformerInterface
 	virtual void sendTransform(
 		const std::string& parent_frame, const std::string& child_frame,
 		const pose_t& child_wrt_parent,
-		const mrpt::system::TTimeStamp& timestamp = mrpt::system::now()) = 0;
+		const mrpt::system::TTimeStamp& timestamp = mrpt::Clock::now()) = 0;
 
 	/** Queries the current pose of `target_frame` wrt ("as seen from")
 	 * `source_frame`.
@@ -99,7 +99,7 @@ class FrameTransformer : public FrameTransformerInterface<DIM>
 		const std::string& parent_frame, const std::string& child_frame,
 		const typename base_t::pose_t& child_wrt_parent,
 		const mrpt::system::TTimeStamp& timestamp =
-			mrpt::system::now()) override;
+			mrpt::Clock::now()) override;
 	// See base docs
 	FrameLookUpStatus lookupTransform(
 		const std::string& target_frame, const std::string& source_frame,

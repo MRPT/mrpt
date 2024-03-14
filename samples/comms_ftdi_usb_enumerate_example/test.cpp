@@ -39,8 +39,7 @@ void Test_EnumerateDevices()
 		nConectedDevices = (unsigned long)lstDevs.size();
 
 		cout << "There are " << nConectedDevices << " USB devices - "
-			 << mrpt::system::dateTimeToString(mrpt::system::getCurrentTime())
-			 << endl;
+			 << mrpt::system::dateTimeToString(mrpt::Clock::now()) << endl;
 
 		for (size_t i = 0; i < nConectedDevices; i++)
 			cout << lstDevs[i] << endl;

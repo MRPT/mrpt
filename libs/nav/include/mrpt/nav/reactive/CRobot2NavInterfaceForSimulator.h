@@ -43,7 +43,7 @@ class CRobot2NavInterfaceForSimulator_Holo : public CRobot2NavInterface
 	{
 		curPose = m_simul.getCurrentGTPose();
 		curVel = m_simul.getCurrentGTVel();
-		timestamp = mrpt::system::now();
+		timestamp = mrpt::Clock::now();
 		curOdometry = m_simul.getCurrentOdometricPose();
 		return true;  // ok
 	}
@@ -129,7 +129,7 @@ class CRobot2NavInterfaceForSimulator_DiffDriven : public CRobot2NavInterface
 	{
 		curPose = m_simul.getCurrentGTPose();
 		curVel = m_simul.getCurrentGTVel();
-		timestamp = mrpt::system::now();
+		timestamp = mrpt::Clock::now();
 		curOdometry = m_simul.getCurrentOdometricPose();
 		return true;  // ok
 	}

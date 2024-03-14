@@ -110,9 +110,9 @@ bool CGPSInterface::parse_NMEA(
 	const bool verbose)
 {
 	static mrpt::system::TTimeStamp last_known_date =
-		mrpt::system::now();  // For building complete date+time in msgs without
+		mrpt::Clock::now();	 // For building complete date+time in msgs without
 	// a date.
-	static mrpt::system::TTimeStamp last_known_time = mrpt::system::now();
+	static mrpt::system::TTimeStamp last_known_time = mrpt::Clock::now();
 
 	if (verbose) cout << "[CGPSInterface] GPS raw string: " << s << endl;
 
@@ -236,7 +236,7 @@ bool CGPSInterface::parse_NMEA(
 		if (all_fields_ok)
 		{
 			out_obs.setMsg(gga);
-			out_obs.originalReceivedTimestamp = mrpt::system::now();
+			out_obs.originalReceivedTimestamp = mrpt::Clock::now();
 			out_obs.timestamp =
 				gga.fields.UTCTime.getAsTimestamp(last_known_date);
 			out_obs.has_satellite_timestamp = true;
@@ -352,7 +352,7 @@ bool CGPSInterface::parse_NMEA(
 		if (all_fields_ok)
 		{
 			out_obs.setMsg(rmc);
-			out_obs.originalReceivedTimestamp = mrpt::system::now();
+			out_obs.originalReceivedTimestamp = mrpt::Clock::now();
 			out_obs.timestamp =
 				rmc.fields.UTCTime.getAsTimestamp(rmc.getDateAsTimestamp());
 			last_known_date = rmc.getDateAsTimestamp();
@@ -431,7 +431,7 @@ bool CGPSInterface::parse_NMEA(
 		if (all_fields_ok)
 		{
 			out_obs.setMsg(gll);
-			out_obs.originalReceivedTimestamp = mrpt::system::now();
+			out_obs.originalReceivedTimestamp = mrpt::Clock::now();
 			out_obs.timestamp =
 				gll.fields.UTCTime.getAsTimestamp(last_known_date);
 			last_known_time = out_obs.timestamp;
@@ -462,7 +462,7 @@ bool CGPSInterface::parse_NMEA(
 		if (all_fields_ok)
 		{
 			out_obs.setMsg(vtg);
-			out_obs.originalReceivedTimestamp = mrpt::system::now();
+			out_obs.originalReceivedTimestamp = mrpt::Clock::now();
 			out_obs.timestamp = last_known_time;
 			out_obs.has_satellite_timestamp = false;
 		}
@@ -510,7 +510,7 @@ bool CGPSInterface::parse_NMEA(
 		if (all_fields_ok)
 		{
 			out_obs.setMsg(zda);
-			out_obs.originalReceivedTimestamp = mrpt::system::now();
+			out_obs.originalReceivedTimestamp = mrpt::Clock::now();
 			try
 			{
 				out_obs.timestamp = zda.getDateTimeAsTimestamp();
@@ -572,7 +572,7 @@ bool CGPSInterface::parse_NMEA(
 		if (all_fields_ok)
 		{
 			out_obs.setMsg(gsa);
-			out_obs.originalReceivedTimestamp = mrpt::system::now();
+			out_obs.originalReceivedTimestamp = mrpt::Clock::now();
 		}
 		parsed_ok = all_fields_ok;
 	}

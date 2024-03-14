@@ -110,7 +110,7 @@ DECLARE_OP_FUNCTION(op_export_enose_txt)
 			ASSERT_(obs->timestamp != INVALID_TIMESTAMP);
 			TTimeStamp t = obs->timestamp;
 
-			double sampleTime = timestampTotime_t(t);
+			double sampleTime = mrpt::Clock::toDouble(t);
 
 			// Time:
 			::fprintf(f_this, "%14.4f ", sampleTime);

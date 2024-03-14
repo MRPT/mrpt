@@ -88,7 +88,7 @@ void run_rnav_test_impl(
 			mrpt::system::TTimeStamp& timestamp) override
 		{
 			obstacles.clear();
-			timestamp = mrpt::system::now();
+			timestamp = mrpt::Clock::now();
 
 			mrpt::math::TPose2D curPose, odomPose;
 			std::string pose_frame_id;
