@@ -84,7 +84,7 @@ void renameDirContents()
 	stringstream ss_tmp;
 
 	// get the current datetime as a string - add it to the renamed fnames
-	TTimeStamp cur_time(getCurrentTime());
+	TTimeStamp cur_time(mrpt::Clock::now());
 	string cur_time_str = dateTimeToString(cur_time);
 	string cur_time_validstr(fileNameStripInvalidChars(cur_time_str));
 	string string_to_add = "_renamed_" + cur_time_validstr;

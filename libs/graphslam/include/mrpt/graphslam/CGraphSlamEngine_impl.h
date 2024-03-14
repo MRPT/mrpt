@@ -718,8 +718,7 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 			m_win_manager->addTextMessage(
 				m_offset_x_left, -m_offset_y_timestamp,
 				format(
-					"Wall time: %s",
-					timeToString(mrpt::system::getCurrentTime()).c_str()),
+					"Wall time: %s", timeToString(mrpt::Clock::now()).c_str()),
 				mrpt::img::TColorf(1.0, 1.0, 1.0),
 				/* unique_index = */ m_text_index_timestamp);
 		}
@@ -922,7 +921,7 @@ inline void CGraphSlamEngine<GRAPH_T>::computeMap() const
 		}
 
 		m_map_is_cached = true;
-		m_map_acq_time = mrpt::system::now();
+		m_map_acq_time = mrpt::Clock::now();
 	}
 	else
 	{  // 3D Pose
@@ -1075,7 +1074,7 @@ void CGraphSlamEngine<GRAPH_T>::initResultsFile(const std::string& fname)
 	MRPT_LOG_INFO_STREAM("Setting up file: " << fname);
 
 	// current time vars
-	mrpt::system::TTimeStamp cur_date(getCurrentTime());
+	mrpt::system::TTimeStamp cur_date(mrpt::Clock::now());
 	std::string time_spec = "UTC Time";
 	string cur_date_str(dateTimeToString(cur_date));
 	string cur_date_validstr(fileNameStripInvalidChars(cur_date_str));

@@ -49,7 +49,7 @@ namespace mrpt::obs
  *		- "laser_rear_laser_resolution"
  *
  *  \param time_start_log The real timestamp that corresponds to a "0" in the
- *CARMEN log (you can get a mrpt::system::now() once and pass that same value
+ *CARMEN log (you can get a mrpt::Clock::now() once and pass that same value
  *with each call).
  *
  * References: http://carmen.sourceforge.net/doc/binary__loggerplayback.html

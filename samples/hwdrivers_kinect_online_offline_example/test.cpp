@@ -187,7 +187,7 @@ void thread_grabbing(TThreadParam& p)
 
 				// Do we have to wait to emulate real-time behavior?
 				const mrpt::system::TTimeStamp cur_tim = obs3D->timestamp;
-				const mrpt::system::TTimeStamp now_tim = mrpt::system::now();
+				const mrpt::system::TTimeStamp now_tim = mrpt::Clock::now();
 
 				if (dataset_prev_tim != INVALID_TIMESTAMP &&
 					my_last_read_obs_tim != INVALID_TIMESTAMP)
@@ -215,7 +215,7 @@ void thread_grabbing(TThreadParam& p)
 				std::atomic_store(&p.new_obs, obs3D);
 
 				dataset_prev_tim = cur_tim;
-				my_last_read_obs_tim = mrpt::system::now();
+				my_last_read_obs_tim = mrpt::Clock::now();
 			}
 
 			// Update Hz rate estimate

@@ -120,11 +120,11 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(
 			return true;
 		}
 		m_parsed_messages->messages[msg->message_type] = msg;
-		m_parsed_messages->originalReceivedTimestamp = mrpt::system::now();
+		m_parsed_messages->originalReceivedTimestamp = mrpt::Clock::now();
 		if (!CObservationGPS::GPS_time_to_UTC(
 				hdr.week, hdr.ms_in_week * 1e-3, num_leap_seconds,
 				m_parsed_messages->timestamp))
-			m_parsed_messages->timestamp = mrpt::system::now();
+			m_parsed_messages->timestamp = mrpt::Clock::now();
 		else
 			m_parsed_messages->has_satellite_timestamp = true;
 
@@ -198,7 +198,7 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(
 			return true;
 		}
 		m_parsed_messages->messages[msg->message_type] = msg;
-		m_parsed_messages->originalReceivedTimestamp = mrpt::system::now();
+		m_parsed_messages->originalReceivedTimestamp = mrpt::Clock::now();
 		{
 			// Detect NV_OEM6_IONUTC msgs to learn about the current leap
 			// seconds:
@@ -209,7 +209,7 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(
 		if (!CObservationGPS::GPS_time_to_UTC(
 				hdr.week, hdr.ms_in_week * 1e-3, num_leap_seconds,
 				m_parsed_messages->timestamp))
-			m_parsed_messages->timestamp = mrpt::system::now();
+			m_parsed_messages->timestamp = mrpt::Clock::now();
 		else
 			m_parsed_messages->has_satellite_timestamp = true;
 

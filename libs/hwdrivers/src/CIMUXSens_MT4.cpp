@@ -155,7 +155,7 @@ class MyXSensCallback : public XsCallback
 			if (m_timeStartUI == 0)
 			{
 				m_timeStartUI = nowUI;
-				m_timeStartTT = mrpt::system::now();
+				m_timeStartTT = mrpt::Clock::now();
 			}
 			else
 				AtUI = nowUI - m_timeStartUI;  // ms
@@ -182,7 +182,7 @@ class MyXSensCallback : public XsCallback
 		}
 		else
 #endif
-		obs->timestamp = mrpt::system::now();
+		obs->timestamp = mrpt::Clock::now();
 
 		obs->sensorPose = me->m_sensorPose;
 		obs->sensorLabel = me->m_sensorLabel;

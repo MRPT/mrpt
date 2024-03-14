@@ -239,7 +239,7 @@ bool CPoseInterpolatorBase<DIM>::saveToTextFile(const std::string& s) const
 		std::string str;
 		for (auto i = m_path.begin(); i != m_path.end(); ++i)
 		{
-			const double t = mrpt::system::timestampTotime_t(i->first);
+			const double t = mrpt::Clock::toDouble(i->first);
 			const auto& p = i->second;
 
 			str = mrpt::format("%.06f ", t);
@@ -268,7 +268,7 @@ bool CPoseInterpolatorBase<DIM>::saveToTextFile_TUM(const std::string& s) const
 		std::string str;
 		for (auto i = m_path.begin(); i != m_path.end(); ++i)
 		{
-			const double t = mrpt::system::timestampTotime_t(i->first);
+			const double t = mrpt::Clock::toDouble(i->first);
 			const auto p =
 				mrpt::poses::CPose3DQuat(mrpt::poses::CPose3D(i->second));
 
@@ -312,7 +312,7 @@ bool CPoseInterpolatorBase<DIM>::saveInterpolatedToTextFile(
 			this->interpolate(t, p, valid);
 			if (!valid) continue;
 
-			str = mrpt::format("%.06f ", mrpt::system::timestampTotime_t(t));
+			str = mrpt::format("%.06f ", mrpt::Clock::toDouble(t));
 			for (unsigned int k = 0; k < p.size(); k++)
 				str += mrpt::format("%.06f ", p[k]);
 			str += std::string("\n");
@@ -354,7 +354,7 @@ bool CPoseInterpolatorBase<DIM>::loadFromTextFile(const std::string& s)
 	{
 		for (unsigned int k = 0; k < pose_t::static_size; k++)
 			p[k] = M(i, k + 1);
-		insert(mrpt::system::time_tToTimestamp(M(i, 0)), p);
+		insert(mrpt::Clock::fromDouble(M(i, 0)), p);
 	}
 	return true;
 	MRPT_END
@@ -390,7 +390,7 @@ bool CPoseInterpolatorBase<DIM>::loadFromTextFile_TUM(const std::string& s)
 		for (unsigned int k = 0; k < 7; k++)
 			p[idxs[k]] = M(i, k + 1);
 		insert(
-			mrpt::system::time_tToTimestamp(M(i, 0)),
+			mrpt::Clock::fromDouble(M(i, 0)),
 			pose_t(mrpt::poses::CPose3D(p).asTPose()));
 	}
 	return true;

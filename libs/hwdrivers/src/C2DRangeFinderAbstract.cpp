@@ -86,7 +86,7 @@ void C2DRangeFinderAbstract::doProcess()
 
 void C2DRangeFinderAbstract::internal_notifyGoodScanNow()
 {
-	const auto new_t = mrpt::system::now();
+	const auto new_t = mrpt::Clock::now();
 
 	if (m_last_good_scan != INVALID_TIMESTAMP)
 	{
@@ -103,7 +103,7 @@ bool C2DRangeFinderAbstract::internal_notifyNoScanReceived()
 	if (m_last_good_scan == INVALID_TIMESTAMP) return true;
 
 	const double dt =
-		mrpt::system::timeDifference(m_last_good_scan, mrpt::system::now());
+		mrpt::system::timeDifference(m_last_good_scan, mrpt::Clock::now());
 
 	if (dt > 1.50 * m_estimated_scan_period)
 		if (++m_failure_waiting_scan_counter >= m_max_missed_scan_failures)

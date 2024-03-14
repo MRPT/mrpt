@@ -67,11 +67,12 @@ DECLARE_OP_FUNCTION(op_cut)
 				if (has_from_time)
 					cout << "Using cut filter: from-time ="
 						 << dateTimeLocalToString(
-								time_tToTimestamp(m_from_time))
+								mrpt::Clock::fromDouble(m_from_time))
 						 << endl;
 				if (has_to_time)
 					cout << "Using cut filter:   to-time ="
-						 << dateTimeLocalToString(time_tToTimestamp(m_to_time))
+						 << dateTimeLocalToString(
+								mrpt::Clock::fromDouble(m_to_time))
 						 << endl;
 			}
 		}
@@ -100,7 +101,7 @@ DECLARE_OP_FUNCTION(op_cut)
 			if (has_from_time)
 			{
 				ASSERT_(t != INVALID_TIMESTAMP);
-				if (timestampToDouble(t) < m_from_time) return false;
+				if (mrpt::Clock::toDouble(t) < m_from_time) return false;
 			}
 			if (has_to_index && m_rawlogEntry > m_to_index)
 			{
@@ -112,7 +113,7 @@ DECLARE_OP_FUNCTION(op_cut)
 			if (has_to_time)
 			{
 				ASSERT_(t != INVALID_TIMESTAMP);
-				if (timestampToDouble(t) > m_to_time)
+				if (mrpt::Clock::toDouble(t) > m_to_time)
 				{
 					// say not to read anymore...
 					m_we_are_done_with_this_rawlog = true;

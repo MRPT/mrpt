@@ -63,8 +63,7 @@ DECLARE_OP_FUNCTION(op_list_rangebearing)
 					std::dynamic_pointer_cast<CObservationBearingRange>(obs);
 				const CObservationBearingRange* obsRB = obsRB_.get();
 
-				const double tim =
-					mrpt::system::timestampToDouble(obsRB->timestamp);
+				const double tim = mrpt::Clock::toDouble(obsRB->timestamp);
 
 				for (size_t i = 0; i < obsRB->sensedData.size(); i++)
 					m_out << format(

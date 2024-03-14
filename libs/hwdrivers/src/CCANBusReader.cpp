@@ -129,7 +129,7 @@ void CCANBusReader::doProcessSimple(
 	// -----------------------------------------------
 	//   Extract the observation:
 	// -----------------------------------------------
-	outObservation.timestamp = mrpt::system::now();
+	outObservation.timestamp = mrpt::Clock::now();
 	outObservation.sensorLabel = m_sensorLabel;	 // Set label
 
 	// And the scan ranges:

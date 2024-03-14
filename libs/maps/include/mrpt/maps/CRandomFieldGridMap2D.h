@@ -41,7 +41,7 @@ struct TRandomFieldCell
 	TRandomFieldCell(double kfmean_dm_mean = 1e-20, double kfstd_dmmeanw = 0)
 		: param1_(kfmean_dm_mean),
 		  param2_(kfstd_dmmeanw),
-		  last_updated(mrpt::system::now()),
+		  last_updated(mrpt::Clock::now()),
 		  updated_std(kfstd_dmmeanw)
 	{
 	}

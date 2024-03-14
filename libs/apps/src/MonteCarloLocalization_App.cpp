@@ -1158,7 +1158,7 @@ void MonteCarloLocalization_Base::getGroundTruth(
 				/*
 				cerr << format(
 					"GT time not found: %f\n",
-					mrpt::system::timestampTotime_t(cur_time));
+					mrpt::Clock::toDouble(cur_time));
 					*/
 			}
 		}

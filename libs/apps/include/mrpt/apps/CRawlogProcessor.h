@@ -53,7 +53,7 @@ class CRawlogProcessor
 		: m_in_rawlog(_in_rawlog),
 		  m_cmdline(_cmdline),
 		  verbose(_verbose),
-		  m_last_console_update(mrpt::system::now()),
+		  m_last_console_update(mrpt::Clock::now()),
 		  m_rawlogEntry(0)
 	{
 		m_filSize = _in_rawlog.getTotalBytesCount();
@@ -87,7 +87,7 @@ class CRawlogProcessor
 				}
 
 			// Update status to the console?
-			const mrpt::system::TTimeStamp tNow = mrpt::system::now();
+			const mrpt::system::TTimeStamp tNow = mrpt::Clock::now();
 			if (mrpt::system::timeDifference(m_last_console_update, tNow) >
 				0.25)
 			{

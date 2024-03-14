@@ -107,7 +107,7 @@ int main(int argc, char** argv)
 		// --------------------------------
 		vector<CObservation::Ptr> importedObservations;
 		mrpt::maps::CSimpleMap theSimpleMap;
-		const mrpt::system::TTimeStamp base_timestamp = mrpt::system::now();
+		const mrpt::system::TTimeStamp base_timestamp = mrpt::Clock::now();
 
 		const uint64_t totalInFileSize = mrpt::system::getFileSize(input_log);
 		int decimateUpdateConsole = 0;
