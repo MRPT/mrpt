@@ -86,14 +86,14 @@ class CHistogram
 	 * is 0.
 	 * \exception std::exception On invalid index
 	 */
-	size_t getBinCount(size_t index) const;
+	[[nodiscard]] size_t getBinCount(size_t index) const;
 
 	/** Retuns the ratio in [0,1] range for the selected bin index, where first
 	 * one is 0.
 	 *  It returns 0 if no elements have been added.
 	 * \exception std::exception On invalid index.
 	 */
-	double getBinRatio(size_t index) const;
+	[[nodiscard]] double getBinRatio(size_t index) const;
 
 	/** Returns the list of bin centers & hit counts
 	 * \sa getHistogramNormalized

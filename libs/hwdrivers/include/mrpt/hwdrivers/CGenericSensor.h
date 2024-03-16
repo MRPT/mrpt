@@ -91,10 +91,10 @@ class CGenericSensor
 	};
 
 	/** The current state of the sensor  */
-	inline TSensorState getState() const { return m_state; }
-	inline double getProcessRate() const { return m_process_rate; }
-	inline std::string getSensorLabel() const { return m_sensorLabel; }
-	inline void setSensorLabel(const std::string& sensorLabel)
+	[[nodiscard]] TSensorState getState() const { return m_state; }
+	[[nodiscard]] double getProcessRate() const { return m_process_rate; }
+	[[nodiscard]] std::string getSensorLabel() const { return m_sensorLabel; }
+	void setSensorLabel(const std::string& sensorLabel)
 	{
 		m_sensorLabel = sensorLabel;
 	}
@@ -104,8 +104,9 @@ class CGenericSensor
 	 * Default: disabled unless the environment variable
 	 * "MRPT_HWDRIVERS_VERBOSE" is set to "1" during object creation.
 	 */
-	inline void enableVerbose(bool enabled = true) { m_verbose = enabled; }
-	inline bool isVerboseEnabled() const { return m_verbose; }
+	void enableVerbose(bool enabled = true) { m_verbose = enabled; }
+
+	[[nodiscard]] bool isVerboseEnabled() const { return m_verbose; }
 	/** Register a class into the internal list of "CGenericSensor" descendents.
 	 *  Used internally in the macros DEFINE_GENERIC_SENSOR, etc...
 	 *
@@ -204,11 +205,12 @@ class CGenericSensor
 	 *  \endcode
 	 * \return A pointer to a new class, or nullptr if class name is unknown.
 	 */
-	static CGenericSensor* createSensor(const std::string& className);
+	[[nodiscard]] static CGenericSensor* createSensor(
+		const std::string& className);
 
 	/** Just like createSensor, but returning a smart pointer to the newly
 	 * created sensor object. */
-	static inline Ptr createSensorPtr(const std::string& className)
+	[[nodiscard]] static Ptr createSensorPtr(const std::string& className)
 	{
 		return Ptr(createSensor(className));
 	}
@@ -245,7 +247,7 @@ class CGenericSensor
 
 	/** Returns a list of enqueued objects, emptying it (thread-safe).
 	 */
-	virtual TListObservations getObservations();
+	[[nodiscard]] virtual TListObservations getObservations();
 
 	/**  Set the path where to save off-rawlog image files (will be ignored in
 	 * those sensors where this is not applicable).

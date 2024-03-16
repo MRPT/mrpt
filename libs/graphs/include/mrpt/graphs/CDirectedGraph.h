@@ -319,7 +319,7 @@ class CDirectedGraph
 	/** Save the graph in a Graphviz (.dot files) text format; useful for
 	 * quickly rendering the graph with "dot"
 	 * \return false on any error */
-	bool saveAsDot(
+	[[nodiscard]] bool saveAsDot(
 		std::ostream& o,
 		const TGraphvizExportParams& p = TGraphvizExportParams()) const
 	{

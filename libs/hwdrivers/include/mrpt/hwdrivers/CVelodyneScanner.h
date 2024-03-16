@@ -317,27 +317,28 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 	}
 	/** Returns false on error. \sa
 	 * mrpt::obs::VelodyneCalibration::loadFromXMLFile() */
-	bool loadCalibrationFile(const std::string& velodyne_xml_calib_file_path);
+	[[nodiscard]] bool loadCalibrationFile(
+		const std::string& velodyne_xml_calib_file_path);
 
 	/** Changes among STRONGEST, LAST, DUAL return types (via HTTP post
 	 * interface).
 	 * Can be called at any instant, before or after initialize().
 	 * Requires setting a device IP address.
 	 * \return false on error */
-	bool setLidarReturnType(return_type_t ret_type);
+	[[nodiscard]] bool setLidarReturnType(return_type_t ret_type);
 
 	/** Changes Lidar RPM (valid range: 300-600) (via HTTP post interface).
 	 * Can be called at any instant, before or after initialize().
 	 * Requires setting a device IP address.
 	 * \return false on error*/
-	bool setLidarRPM(int rpm);
+	[[nodiscard]] bool setLidarRPM(int rpm);
 
 	/** Switches the LASER on/off (saves energy when not measuring) (via HTTP
 	 * post interface).
 	 * Can be called at any instant, before or after initialize().
 	 * Requires setting a device IP address.
 	 * \return false on error*/
-	bool setLidarOnOff(bool on);
+	[[nodiscard]] bool setLidarOnOff(bool on);
 
 	/** Switches whole frame (points in a single revolution) on/off publication
 	 * to data packet publication. When on, getNextObservation() will return
@@ -362,7 +363,7 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 	 * \return true if no error ocurred (even if there was no new observation).
 	 * false if any communication error occurred.
 	 */
-	bool getNextObservation(
+	[[nodiscard]] bool getNextObservation(
 		mrpt::obs::CObservationVelodyneScan::Ptr& outScan,
 		mrpt::obs::CObservationGPS::Ptr& outGPS);
 
@@ -413,11 +414,11 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 
 	platform_socket_t m_hDataSock, m_hPositionSock;
 
-	static mrpt::system::TTimeStamp internal_receive_UDP_packet(
+	[[nodiscard]] static mrpt::system::TTimeStamp internal_receive_UDP_packet(
 		platform_socket_t hSocket, uint8_t* out_buffer,
 		size_t expected_packet_size, const std::string& filter_only_from_IP);
 
-	bool internal_read_PCAP_packet(
+	[[nodiscard]] bool internal_read_PCAP_packet(
 		mrpt::system::TTimeStamp& data_pkt_time, uint8_t* out_data_buffer,
 		mrpt::system::TTimeStamp& pos_pkt_time, uint8_t* out_pos_buffer);
 

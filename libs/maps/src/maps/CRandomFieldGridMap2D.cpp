@@ -790,7 +790,8 @@ void CRandomFieldGridMap2D::saveAsBitmapFile(const std::string& filName) const
 
 	mrpt::img::CImage img;
 	getAsBitmapFile(img);
-	img.saveToFile(filName);
+	bool savedOk = img.saveToFile(filName);
+	ASSERT_(savedOk);
 
 	MRPT_END
 }
@@ -1378,9 +1379,10 @@ void CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
 			// And also as bitmap:
 			CImage img_cov;
 			img_cov.setFromMatrix(STDs, false /*it's not normalized*/);
-			img_cov.saveToFile(
+			bool savedOk = img_cov.saveToFile(
 				filNamePrefix + std::string("_cells_std.png"),
 				true /* vertical flip */);
+			ASSERT_(savedOk);
 
 			// Save the 3D graphs:
 			saveAsMatlab3DGraph(filNamePrefix + std::string("_3D.m"));

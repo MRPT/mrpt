@@ -365,7 +365,7 @@ class CNetworkOfPoses
 	 *
 	 * \return Overall number of removed edges.
 	 */
-	inline size_t collapseDuplicatedEdges()
+	[[nodiscard]] size_t collapseDuplicatedEdges()
 	{
 		return detail::graph_ops<self_t>::graph_of_poses_collapse_dup_edges(
 			this);
@@ -373,14 +373,16 @@ class CNetworkOfPoses
 
 	/** Returns the total chi-squared error of the graph. Shortcut for
 	 * getGlobalSquareError(false). */
-	double chi2() const { return getGlobalSquareError(false); }
+	[[nodiscard]] double chi2() const { return getGlobalSquareError(false); }
+
 	/** Evaluates the graph total square error (ignoreCovariances=true) or
 	 * chi2 (ignoreCovariances=false) from all the pose constraints (edges)
 	 * with respect to the global poses in \a nodes.
 	 * \sa getEdgeSquareError
 	 * \exception std::exception On global poses not in \a nodes
 	 */
-	double getGlobalSquareError(bool ignoreCovariances = true) const
+	[[nodiscard]] double getGlobalSquareError(
+		bool ignoreCovariances = true) const
 	{
 		double sqErr = 0;
 		for (auto it = BASE::edges.begin(); it != BASE::edges.end(); ++it)
