@@ -1010,29 +1010,44 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 				CImage::setImagesPathBase(m_rawlog_detected_images_dir);
 
 				if (obs && obs->image.isExternallyStored())
-					obs->image.loadFromFile(
+				{
+					bool loadOk = obs->image.loadFromFile(
 						obs->image.getExternalStorageFileAbsolutePath());
+					ASSERT_(loadOk);
+				}
 
 				if (obs3D && obs3D->hasIntensityImage &&
 					obs3D->intensityImage.isExternallyStored())
-					obs3D->intensityImage.loadFromFile(
+				{
+					bool loadOk = obs3D->intensityImage.loadFromFile(
 						obs3D->intensityImage
 							.getExternalStorageFileAbsolutePath());
+					ASSERT_(loadOk);
+				}
 
 				if (stObs && stObs->imageLeft.isExternallyStored())
-					stObs->imageLeft.loadFromFile(
+				{
+					bool loadOk = stObs->imageLeft.loadFromFile(
 						stObs->imageLeft.getExternalStorageFileAbsolutePath());
+					ASSERT_(loadOk);
+				}
 
 				if (stObs && stObs->hasImageRight &&
 					stObs->imageRight.isExternallyStored())
-					stObs->imageRight.loadFromFile(
+				{
+					bool loadOk = stObs->imageRight.loadFromFile(
 						stObs->imageRight.getExternalStorageFileAbsolutePath());
+					ASSERT_(loadOk);
+				}
 
 				if (stObs && stObs->hasImageDisparity &&
 					stObs->imageDisparity.isExternallyStored())
-					stObs->imageDisparity.loadFromFile(
+				{
+					bool loadOk = stObs->imageDisparity.loadFromFile(
 						stObs->imageDisparity
 							.getExternalStorageFileAbsolutePath());
+					ASSERT_(loadOk);
+				}
 
 				CImage::setImagesPathBase(old_dir);	 // Restore
 			}
@@ -1272,23 +1287,36 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 						   (double)mrpt::Clock::toDouble(stObs->timestamp),
 						   m_external_images_format.c_str());
 				// cout << "[CCameraSensor] Saving " << filName << endl;
-				stObs->imageLeft.saveToFile(
-					m_path_for_external_images + string("/") + filNameL,
-					m_external_images_jpeg_quality);
+				if (!stObs->imageLeft.saveToFile(
+						m_path_for_external_images + string("/") + filNameL,
+						m_external_images_jpeg_quality))
+				{
+					THROW_EXCEPTION("Error saving externally-stored images");
+				}
 				stObs->imageLeft.setExternalStorage(filNameL);
 
 				if (stObs->hasImageRight)
 				{
-					stObs->imageRight.saveToFile(
-						m_path_for_external_images + string("/") + filNameR,
-						m_external_images_jpeg_quality);
+					if (!stObs->imageRight.saveToFile(
+							m_path_for_external_images + string("/") + filNameR,
+							m_external_images_jpeg_quality))
+					{
+						THROW_EXCEPTION(
+							"Error saving externally-stored images");
+					}
+
 					stObs->imageRight.setExternalStorage(filNameR);
 				}
 				if (stObs->hasImageDisparity)
 				{
-					stObs->imageDisparity.saveToFile(
-						m_path_for_external_images + string("/") + filNameD,
-						m_external_images_jpeg_quality);
+					if (!stObs->imageDisparity.saveToFile(
+							m_path_for_external_images + string("/") + filNameD,
+							m_external_images_jpeg_quality))
+					{
+						THROW_EXCEPTION(
+							"Error saving externally-stored images");
+					}
+
 					stObs->imageDisparity.setExternalStorage(filNameD);
 				}
 			}
@@ -1319,9 +1347,13 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 						"_%f.%s", (double)mrpt::Clock::toDouble(obs->timestamp),
 						m_external_images_format.c_str());
 				// cout << "[CCameraSensor] Saving " << filName << endl;
-				obs->image.saveToFile(
-					m_path_for_external_images + string("/") + filName,
-					m_external_images_jpeg_quality);
+				if (!obs->image.saveToFile(
+						m_path_for_external_images + string("/") + filName,
+						m_external_images_jpeg_quality))
+				{
+					THROW_EXCEPTION("Error saving externally-stored images");
+				}
+
 				obs->image.setExternalStorage(filName);
 			}
 		}  // end else
@@ -1657,9 +1689,13 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
 						"_%f.%s", (double)mrpt::Clock::toDouble(obs->timestamp),
 						m_external_images_format.c_str());
 
-				obs->image.saveToFile(
-					m_path_for_external_images + string("/") + filName,
-					m_external_images_jpeg_quality);
+				if (!obs->image.saveToFile(
+						m_path_for_external_images + string("/") + filName,
+						m_external_images_jpeg_quality))
+				{
+					THROW_EXCEPTION("Error saving externally-stored images");
+				}
+
 				obs->image.setExternalStorage(filName);
 			}
 			else if (IS_CLASS(*i->second, CObservationStereoImages))
@@ -1684,23 +1720,37 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
 						   (double)mrpt::Clock::toDouble(stObs->timestamp),
 						   m_external_images_format.c_str());
 
-				stObs->imageLeft.saveToFile(
-					m_path_for_external_images + string("/") + filNameL,
-					m_external_images_jpeg_quality);
+				if (!stObs->imageLeft.saveToFile(
+						m_path_for_external_images + string("/") + filNameL,
+						m_external_images_jpeg_quality))
+				{
+					THROW_EXCEPTION("Error saving externally-stored images");
+				}
+
 				stObs->imageLeft.setExternalStorage(filNameL);
 
 				if (stObs->hasImageRight)
 				{
-					stObs->imageRight.saveToFile(
-						m_path_for_external_images + string("/") + filNameR,
-						m_external_images_jpeg_quality);
+					if (!stObs->imageRight.saveToFile(
+							m_path_for_external_images + string("/") + filNameR,
+							m_external_images_jpeg_quality))
+					{
+						THROW_EXCEPTION(
+							"Error saving externally-stored images");
+					}
+
 					stObs->imageRight.setExternalStorage(filNameR);
 				}
 				if (stObs->hasImageDisparity)
 				{
-					stObs->imageDisparity.saveToFile(
-						m_path_for_external_images + string("/") + filNameD,
-						m_external_images_jpeg_quality);
+					if (!stObs->imageDisparity.saveToFile(
+							m_path_for_external_images + string("/") + filNameD,
+							m_external_images_jpeg_quality))
+					{
+						THROW_EXCEPTION(
+							"Error saving externally-stored images");
+					}
+
 					stObs->imageDisparity.setExternalStorage(filNameD);
 				}
 			}

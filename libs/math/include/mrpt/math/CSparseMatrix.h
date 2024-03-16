@@ -370,7 +370,7 @@ class CSparseMatrix
 	 *   \endcode
 	 * \return False on any error.
 	 */
-	bool saveToTextFile_sparse(const std::string& filName);
+	[[nodiscard]] bool saveToTextFile_sparse(const std::string& filName);
 
 	// Very basic, standard methods that MRPT methods expect for any matrix:
 	inline size_t rows() const { return sparse_matrix.m; }

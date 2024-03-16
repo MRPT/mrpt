@@ -30,12 +30,11 @@ CMappedImage::CMappedImage(
 	  m_pixel_size(0),
 	  m_method(method)
 {
-	m_img->grayscale();
 	if (m_img->isColor())
 	{
-		auto* new_img = new CImage();
+		auto new_img = CImage::Create();
 		m_img->grayscale(*new_img);
-		m_img = CImage::Ptr(new_img);
+		m_img = new_img;
 	}
 	changeCoordinates(x0, x1, y0, y1);
 }

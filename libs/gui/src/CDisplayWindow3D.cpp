@@ -232,7 +232,12 @@ void CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers(
 
 		if (!grabFile.empty())
 		{
-			frame->saveToFile(grabFile);
+			bool savedOk = frame->saveToFile(grabFile);
+			if (!savedOk)
+				std::cerr << "[CMyGLCanvas_DisplayWindow3D] Error saving "
+							 "screenshot to "
+						  << grabFile << std::endl;
+
 			m_win3D->internal_emitGrabImageEvent(grabFile);
 		}
 
