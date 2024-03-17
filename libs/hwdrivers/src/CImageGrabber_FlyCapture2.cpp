@@ -728,10 +728,10 @@ bool CImageGrabber_FlyCapture2::getObservation(
 		// It seems timestamp is not always correctly filled in the incoming
 		// imgs:
 		if (timestamp.seconds != 0)
-			out_observation.timestamp = mrpt::system::time_tToTimestamp(
+			out_observation.timestamp = mrpt::Clock::fromDouble(
 				timestamp.seconds + 1e-6 * timestamp.microSeconds);
 		else
-			out_observation.timestamp = mrpt::system::now();
+			out_observation.timestamp = mrpt::Clock::now();
 		return true;
 	}
 	catch (const std::exception& e)
@@ -769,7 +769,7 @@ bool CImageGrabber_FlyCapture2::getObservation(
 		FlyCapture2::Image image;
 		ferr = FC2_CAM->RetrieveBuffer(&image);
 		CHECK_FC2_ERROR(ferr)
-		mrpt::system::TTimeStamp ts_retrieved = mrpt::system::now();
+		mrpt::system::TTimeStamp ts_retrieved = mrpt::Clock::now();
 		FlyCapture2::TimeStamp timestamp = image.GetTimeStamp();
 
 		// White balance, etc.
@@ -822,7 +822,7 @@ bool CImageGrabber_FlyCapture2::getObservation(
 		// It seems timestamp is not always correctly filled in the incoming
 		// imgs:
 		if (timestamp.seconds != 0)
-			out_observation.timestamp = mrpt::system::time_tToTimestamp(
+			out_observation.timestamp = mrpt::Clock::fromDouble(
 				timestamp.seconds + 1e-6 * timestamp.microSeconds);
 		else
 			out_observation.timestamp = ts_retrieved;

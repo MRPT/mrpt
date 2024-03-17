@@ -107,10 +107,6 @@ int64_t _strtoll(const char* nptr, char** endptr, int base);
  */
 uint64_t _strtoull(const char* nptr, char** endptr, int base);
 
-/** An OS-independent version of timegm (which is not present in all compilers):
- * converts a time structure into an UTM time_t */
-time_t timegm(struct tm* tm);
-
 /** An OS and compiler independent version of "memcpy"
  */
 void memcpy(

@@ -14,12 +14,13 @@
 #include <mrpt/system/filesystem.h>
 
 #include <algorithm>
+#include <iostream>
 
 struct TPerfField
 {
-	string config_name;
-	string file_path;
-	vector<pair<string, double>> all_perf_data;
+	std::string config_name;
+	std::string file_path;
+	std::vector<std::pair<std::string, double>> all_perf_data;
 };
 
 bool func_comp_entries(const TPerfField& a, const TPerfField& b)
@@ -171,7 +172,7 @@ int run_build_tables()
 	fo.printf(
 		"<hr><small>Page generated automatically at %s with %s by "
 		"'mrpt-performance'.</small>\n",
-		mrpt::system::dateTimeLocalToString(now()).c_str(),
+		mrpt::system::dateTimeLocalToString(mrpt::Clock::now()).c_str(),
 		MRPT_getVersion().c_str());
 	fo.printf("</body></html>\n");
 	fo.close();
@@ -219,7 +220,7 @@ int run_build_tables()
 		f.printf(
 			"<hr><small>Page generated automatically at %s with %s by "
 			"'mrpt-performance'.</small>\n",
-			mrpt::system::dateTimeLocalToString(now()).c_str(),
+			mrpt::system::dateTimeLocalToString(mrpt::Clock::now()).c_str(),
 			MRPT_getVersion().c_str());
 		f.printf("</body></html>\n");
 
@@ -340,7 +341,7 @@ int run_build_tables()
 			f.printf(
 				"<hr><small>Page generated automatically at %s with %s by "
 				"'mrpt-performance'.</small>\n",
-				mrpt::system::dateTimeLocalToString(now()).c_str(),
+				mrpt::system::dateTimeLocalToString(mrpt::Clock::now()).c_str(),
 				MRPT_getVersion().c_str());
 			f.printf("</body></html>\n");
 		}

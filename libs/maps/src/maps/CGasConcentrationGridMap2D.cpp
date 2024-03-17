@@ -124,7 +124,7 @@ CGasConcentrationGridMap2D::CGasConcentrationGridMap2D(
 	windGrid_direction.setSize(x_min, x_max, y_min, y_max, resolution);
 
 	// initialize counter for advection simulation
-	timeLastSimulated = mrpt::system::now();
+	timeLastSimulated = mrpt::Clock::now();
 }
 
 CGasConcentrationGridMap2D::~CGasConcentrationGridMap2D() = default;
@@ -645,10 +645,10 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
 
 	// Get time since last simulation
 	double At =
-		mrpt::system::timeDifference(timeLastSimulated, mrpt::system::now());
+		mrpt::system::timeDifference(timeLastSimulated, mrpt::Clock::now());
 	cout << endl << " - At since last simulation = " << At << "seconds" << endl;
 	// update time of last updated.
-	timeLastSimulated = mrpt::system::now();
+	timeLastSimulated = mrpt::Clock::now();
 
 	/* 3- Build Transition Matrix (SA)
 	  This Matrix contains the probabilities of each cell

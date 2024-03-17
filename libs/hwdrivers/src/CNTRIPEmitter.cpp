@@ -57,8 +57,7 @@ void CNTRIPEmitter::doProcess()
 				const double estim_rate_Bps = m_rate_count / At;
 				cout << format(
 					"[NTRIP %s] Rate: %.02f B/s\n",
-					mrpt::system::timeLocalToString(mrpt::system::now())
-						.c_str(),
+					mrpt::system::timeLocalToString(mrpt::Clock::now()).c_str(),
 					estim_rate_Bps);
 				m_rate_timer.Tic();
 				m_rate_count = 0;
@@ -66,7 +65,7 @@ void CNTRIPEmitter::doProcess()
 
 			cout << format(
 				"[NTRIP %s] RX (%u bytes)\n",
-				mrpt::system::timeLocalToString(mrpt::system::now()).c_str(),
+				mrpt::system::timeLocalToString(mrpt::Clock::now()).c_str(),
 				(unsigned int)buf.size());
 		}
 		if (m_out_COM.isOpen())
@@ -74,7 +73,7 @@ void CNTRIPEmitter::doProcess()
 			// Send through the serial port:
 			cout << format(
 				"[NTRIP %s] RX: %u bytes\n",
-				mrpt::system::timeLocalToString(mrpt::system::now()).c_str(),
+				mrpt::system::timeLocalToString(mrpt::Clock::now()).c_str(),
 				(unsigned)buf.size());
 			m_out_COM.Write(&buf[0], buf.size());
 		}
@@ -97,8 +96,7 @@ void CNTRIPEmitter::doProcess()
 			if (m_verbose)
 				cout << format(
 					"[NTRIP %s] TX (%u bytes)\n",
-					mrpt::system::timeLocalToString(mrpt::system::now())
-						.c_str(),
+					mrpt::system::timeLocalToString(mrpt::Clock::now()).c_str(),
 					(unsigned int)nReadActual);
 		}
 	}
@@ -132,7 +130,7 @@ void CNTRIPEmitter::initialize()
 	{
 		const string fil = mrpt::system::fileNameStripInvalidChars(
 			m_raw_output_file_prefix +
-			mrpt::system::dateTimeLocalToString(mrpt::system::now()) +
+			mrpt::system::dateTimeLocalToString(mrpt::Clock::now()) +
 			string(".bin"));
 		m_raw_output_file_stream.open(
 			fil.c_str(), std::ofstream::out | std::ofstream::binary);

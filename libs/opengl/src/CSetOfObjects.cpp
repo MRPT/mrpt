@@ -251,7 +251,7 @@ auto CSetOfObjects::internalBoundingBoxLocal() const
 			first = false;
 		}
 		else
-			bb.unionWith(o->getBoundingBoxLocalf());
+			bb = bb.unionWith(o->getBoundingBoxLocalf());
 	}
 
 	return bb;

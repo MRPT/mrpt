@@ -183,7 +183,7 @@ void xRawLogViewerFrame::OnImportCARMEN(wxCommandEvent& event)
 			thisTimestamp = atof(str);
 			// Insert timestamp from Carmen logfile, adds UNIX 1970-01-01 offset
 			obsScan->timestamp =
-				time_tToTimestamp(static_cast<double>(thisTimestamp));
+				mrpt::Clock::fromDouble(static_cast<double>(thisTimestamp));
 
 			// thisOdoReading
 			if (isTheFirstOdo)
@@ -298,7 +298,7 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
 	string errorMsg;
 	rawlog.clear();
 
-	TTimeStamp fakeTimeStamp = getCurrentTime();
+	TTimeStamp fakeTimeStamp = mrpt::Clock::now();
 
 	for (int countLoop = 0; countLoop < nEntries; countLoop++)
 	{
@@ -588,7 +588,7 @@ void xRawLogViewerFrame::OnImportRTL(wxCommandEvent& event)
 		ifstream f(fil.c_str());
 		string strLine;
 
-		double init_timestamp = timestampTotime_t(getCurrentTime());
+		double init_timestamp = mrpt::Clock::toDouble(mrpt::Clock::now());
 		// float	max_laser_range=49.5f;
 
 		while (!f.eof())
@@ -1104,7 +1104,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 			wxTheApp->Yield();	// Let the app. process messages
 		}
 
-		TTimeStamp tim = time_tToTimestamp(it->first);
+		TTimeStamp tim = mrpt::Clock::fromDouble(it->first);
 
 		if (it->second.type != 0)
 		{
@@ -1684,7 +1684,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 	mrpt::io::CTextFileLinesParser fileParser(import_filename);
 	std::string line;
 
-	mrpt::system::TTimeStamp cur_timestamp = mrpt::system::now();
+	mrpt::system::TTimeStamp cur_timestamp = mrpt::Clock::now();
 	using namespace std::chrono_literals;
 	const auto time_steps = 250ms;
 
@@ -1997,7 +1997,7 @@ void xRawLogViewerFrame::OnGenerateIMUTextFile(wxCommandEvent& event)
 
 								// double 	sampleTime = timeDifference(
 								// rawlog_first_timestamp ,t);
-								double sampleTime = timestampTotime_t(t);
+								double sampleTime = mrpt::Clock::toDouble(t);
 
 								// Time:
 								::fprintf(f, "%f ", sampleTime);
@@ -2039,7 +2039,7 @@ void xRawLogViewerFrame::OnGenerateIMUTextFile(wxCommandEvent& event)
 							ASSERT_(obs->timestamp != INVALID_TIMESTAMP);
 							TTimeStamp t = obs->timestamp;
 
-							double sampleTime = timestampTotime_t(
+							double sampleTime = mrpt::Clock::toDouble(
 								t);	 // timeDifference(rawlog_first_timestamp,t);
 
 							// Time:

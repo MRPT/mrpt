@@ -160,7 +160,7 @@ class CPoseInterpolatorBase
 
 	/** Saves the points in the interpolator to a text file, with this format:
 	 *  Each row contains these elements separated by spaces:
-	 *	- Timestamp: As a "double time_t" (see mrpt::system::timestampTotime_t).
+	 *	- Timestamp: As a "double time_t"
 	 *	- x y z: The 3D position in meters.
 	 *	- yaw pitch roll: The angles, in radians
 	 * \sa loadFromTextFile
@@ -170,7 +170,7 @@ class CPoseInterpolatorBase
 
 	/** Saves the points in the interpolator to a text file in the "TUM" dataset
 	 *  format: each row contains these elements separated by spaces:
-	 *	- Timestamp: As a "double time_t" (see mrpt::system::timestampTotime_t).
+	 *	- Timestamp: As a "double time_t"
 	 *	- x y z: The 3D position in meters.
 	 *	- q_x q_y q_z q_w: Quaternion
 	 * \sa loadFromTextFile, saveTextFile_TUM

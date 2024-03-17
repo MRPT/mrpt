@@ -218,7 +218,7 @@ std::vector<mrpt::obs::CObservation::Ptr> CTaoboticsIMU::parser_hfi_b6(
 					// get euler angle:
 
 					// send out:
-					obs->timestamp = mrpt::system::now();
+					obs->timestamp = mrpt::Clock::now();
 
 					obs->sensorPose = m_sensorPose;
 					obs->sensorLabel = m_sensorLabel;
@@ -308,7 +308,7 @@ std::vector<mrpt::obs::CObservation::Ptr> CTaoboticsIMU::parser_hfi_a9(
 			const float mx = data[6], my = data[7], mz = data[8];
 
 			// send out:
-			obs->timestamp = mrpt::system::now();
+			obs->timestamp = mrpt::Clock::now();
 
 			obs->set(IMU_X_ACC, -9.8f * ax);
 			obs->set(IMU_Y_ACC, -9.8f * ay);
@@ -367,7 +367,7 @@ std::vector<mrpt::obs::CObservation::Ptr> CTaoboticsIMU::parser_hfi_a9(
 						yaw = mrpt::DEG2RAD(-data[2]);
 
 			// send out:
-			obs->timestamp = mrpt::system::now();
+			obs->timestamp = mrpt::Clock::now();
 
 			mrpt::math::CQuaternionDouble q;
 			mrpt::poses::CPose3D::FromYawPitchRoll(yaw, pitch, roll)

@@ -520,7 +520,7 @@ void CKinect::getNextObservation(
 	m_latest_obs.hasIntensityImage = false;
 	m_latest_obs.hasConfidenceImage = false;
 
-	const TTimeStamp tim0 = mrpt::system::now();
+	const TTimeStamp tim0 = mrpt::Clock::now();
 
 	// Reset these timestamp flags so if they are !=0 in the next call we're
 	// sure they're new frames.
@@ -530,7 +530,7 @@ void CKinect::getNextObservation(
 	m_latest_obs_cs.unlock();
 
 	while (freenect_process_events(f_ctx) >= 0 &&
-		   mrpt::system::now() < (tim0 + max_wait))
+		   mrpt::Clock::now() < (tim0 + max_wait))
 	{
 		// Got a new frame?
 		if ((!m_grab_image ||
@@ -582,7 +582,7 @@ void CKinect::getNextObservation(
 	// Set common data into observation:
 	// --------------------------------------
 	m_out_obs.sensorLabel = m_sensorLabel;
-	m_out_obs.timestamp = mrpt::system::now();
+	m_out_obs.timestamp = mrpt::Clock::now();
 	m_out_obs.sensorPose = m_sensorPoseOnRobot;
 	m_out_obs.relativePoseIntensityWRTDepth = m_relativePoseIntensityWRTDepth;
 

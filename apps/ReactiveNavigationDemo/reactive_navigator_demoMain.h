@@ -285,7 +285,7 @@ class reactive_navigator_demoframe : public wxFrame
 			mrpt::system::TTimeStamp& timestamp) override
 		{
 			obstacles = latest_obstacles;
-			timestamp = mrpt::system::now();
+			timestamp = mrpt::Clock::now();
 			return true;
 		}
 		bool changeSpeedsNOP() override { return true; }
@@ -307,7 +307,7 @@ class reactive_navigator_demoframe : public wxFrame
 			mrpt::system::TTimeStamp& timestamp) override
 		{
 			obstacles = latest_obstacles;
-			timestamp = mrpt::system::now();
+			timestamp = mrpt::Clock::now();
 			return true;
 		}
 		bool changeSpeedsNOP() override { return true; }

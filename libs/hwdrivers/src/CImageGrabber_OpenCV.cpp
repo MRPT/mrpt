@@ -212,7 +212,7 @@ bool CImageGrabber_OpenCV::getObservation(
 		if (m_capture->cap.retrieve(capImg))
 		{
 			// Fill the output class:
-			out_observation.timestamp = mrpt::system::now();
+			out_observation.timestamp = mrpt::Clock::now();
 			out_observation.image =
 				mrpt::img::CImage(capImg, mrpt::img::SHALLOW_COPY);
 			return true;

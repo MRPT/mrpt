@@ -10,11 +10,11 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/math/MatrixVectorBase.h>
+#include <mrpt/system/datetime.h>
 
 #include <Eigen/Dense>
 #include <cstdint>
 #include <cstdio>  // fopen(),...
-#include <ctime>  // time(),...
 #include <fstream>	// ifstream
 #include <sstream>	// stringstream
 #include <stdexcept>
@@ -172,32 +172,11 @@ void MatrixVectorBase<Scalar, Derived>::saveToTextFile(
 
 	if (appendMRPTHeader)
 	{
-		time_t rawtime;
-		::time(&rawtime);
-		// Use a secure version in Visual Studio 2005+
-#if defined(_MSC_VER) && (_MSC_VER >= 1400)
-		struct tm timeinfo_data;
-		struct tm* timeinfo;
-		if (0 != ::localtime_s(&timeinfo_data, &rawtime)) timeinfo = nullptr;
-		else
-			timeinfo = &timeinfo_data;
-#else
-		struct tm* timeinfo = ::localtime(&rawtime);
-#endif
-
-#if defined(_MSC_VER) && (_MSC_VER >= 1400)
-		char strTimeBuf[100];
-		if (0 != asctime_s(strTimeBuf, sizeof(strTimeBuf), timeinfo))
-			strTimeBuf[0] = '\0';
-		char* strTime = &strTimeBuf[0];
-#else
-		char* strTime = asctime(timeinfo);
-#endif
 		fprintf(
 			f,
 			"%% File generated with mrpt-math at %s\n"
-			"%%------------------------------------\n",
-			strTime);
+			"%%-----------------------------------------------------------\n",
+			mrpt::system::dateTimeLocalToString(mrpt::Clock::now()).c_str());
 	}
 
 	const auto& m = mvbDerived();

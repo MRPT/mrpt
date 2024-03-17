@@ -23,7 +23,7 @@ void CObjectDetection::detectObjects(
 	const mrpt::img::CImage* img, vector_detectable_object& detected)
 {
 	mrpt::obs::CObservationImage o;
-	o.timestamp = mrpt::system::now();
+	o.timestamp = mrpt::Clock::now();
 	o.image = img->makeShallowCopy();
 	this->detectObjects_Impl(o, detected);
 }

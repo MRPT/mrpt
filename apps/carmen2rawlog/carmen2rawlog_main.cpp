@@ -117,7 +117,7 @@ int main(int argc, char** argv)
 		const double dt = arg_obs_period.getValue();
 		double tim = mrpt::Clock::nowDouble();
 
-		const mrpt::system::TTimeStamp base_timestamp = mrpt::system::now();
+		const mrpt::system::TTimeStamp base_timestamp = mrpt::Clock::now();
 
 		const uint64_t totalInFileSize = mrpt::system::getFileSize(input_log);
 		int decimateUpdateConsole = 0;
@@ -195,7 +195,7 @@ int main(int argc, char** argv)
 				 it != groundTruthPoses.end(); ++it)
 				gt_file << format(
 					"   %12.06f %9.03f %9.03f %9.04f\n",
-					mrpt::system::timestampToDouble(it->first), it->second.x,
+					mrpt::Clock::toDouble(it->first), it->second.x,
 					it->second.y, it->second.phi);
 		}
 

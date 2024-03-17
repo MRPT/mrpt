@@ -48,7 +48,7 @@ bool CWaypointsNavigator::TNavigationParamsWaypoints::isEqual(
 CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface& robot_if)
 	: CAbstractNavigator(robot_if)
 {
-	m_last_alignment_cmd = mrpt::system::now();
+	m_last_alignment_cmd = mrpt::Clock::now();
 }
 
 CWaypointsNavigator::~CWaypointsNavigator() = default;
@@ -83,7 +83,7 @@ void CWaypointsNavigator::navigateWaypoints(
 		ASSERT_(nav_request.waypoints[i].isValid());
 		m_waypoint_nav_status.waypoints[i] = nav_request.waypoints[i];
 	}
-	m_waypoint_nav_status.timestamp_nav_started = mrpt::system::now();
+	m_waypoint_nav_status.timestamp_nav_started = mrpt::Clock::now();
 
 	m_waypoint_nav_status.waypoint_index_current_goal = -1;	 // Not started yet.
 
@@ -181,7 +181,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 							m_curPoseVel.pose.phi, wp.target_heading.value());
 						const double tim_since_last_align =
 							mrpt::system::timeDifference(
-								m_last_alignment_cmd, mrpt::system::now());
+								m_last_alignment_cmd, mrpt::Clock::now());
 						const double ALIGN_WAIT_TIME = 1.5;	 // seconds
 
 						if (std::abs(ang_err) <=
@@ -257,7 +257,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 
 						wp.reached = true;
 						wp.skipped = false;
-						wp.timestamp_reach = mrpt::system::now();
+						wp.timestamp_reach = mrpt::Clock::now();
 
 						new_events.emplace_back(std::bind(
 							&CRobot2NavInterface::sendWaypointReachedEvent,
@@ -342,7 +342,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 						auto& wp = wps.waypoints[k];
 						wp.reached = true;
 						wp.skipped = true;
-						wp.timestamp_reach = mrpt::system::now();
+						wp.timestamp_reach = mrpt::Clock::now();
 
 						new_events.emplace_back(std::bind(
 							&CRobot2NavInterface::sendWaypointReachedEvent,

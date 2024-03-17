@@ -502,7 +502,7 @@ class CMyReactInterface
 	{
 		curPose = robotSim.getCurrentGTPose();
 		curVel = robotSim.getCurrentGTVel();
-		timestamp = mrpt::system::now();
+		timestamp = mrpt::Clock::now();
 		odomPose = robotSim.getCurrentOdometricPose();
 		return true;
 	}
@@ -527,7 +527,7 @@ class CMyReactInterface
 
 			obstacles.insertObservation(lasers[i].m_scan);
 		}
-		timestamp = mrpt::system::now();
+		timestamp = mrpt::Clock::now();
 
 		// Depth scans
 		for (unsigned int i = 0; i < kinects.size(); i++)

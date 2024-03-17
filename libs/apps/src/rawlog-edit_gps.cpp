@@ -102,8 +102,7 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
 				"  <Document>\n"
 				"    <name>Paths</name>\n"
 				"    <description>GPS paths from dataset '%s'</description>\n",
-				mrpt::system::dateTimeLocalToString(mrpt::system::now())
-					.c_str(),
+				mrpt::system::dateTimeLocalToString(mrpt::Clock::now()).c_str(),
 				m_inFile.c_str(), m_inFile.c_str());
 
 			// Define a few predefined colors:
@@ -316,7 +315,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 			int nLabels = 0;
 			for (auto a = lstxyz.begin(); a != lstxyz.end(); ++a, nLabels++)
 			{
-				MAT(nLabels, 0) = timestampTotime_t(a->first);
+				MAT(nLabels, 0) = mrpt::Clock::toDouble(a->first);
 				auto& m = a->second;
 				int k = 0;
 				for (auto it = lstlabels.begin(); it != lstlabels.end();
@@ -460,7 +459,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 					gga.getAsStruct<TGeodeticCoords>(), geo);
 
 				// Save file:
-				double tim = mrpt::system::timestampTotime_t(obs->timestamp);
+				double tim = mrpt::Clock::toDouble(obs->timestamp);
 
 				// If available, Cartessian X Y Z, VX VY VZ, as supplied by the
 				// GPS itself:
@@ -516,7 +515,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 					geo.x, geo.y, geo.z, cart_pos.x, cart_pos.y, cart_pos.z,
 					cart_vel.x, cart_vel.y, cart_vel.z, cart_vel_local.x,
 					cart_vel_local.y, cart_vel_local.z,
-					mrpt::system::timestampTotime_t(
+					mrpt::Clock::toDouble(
 						gga.fields.UTCTime.getAsTimestamp(obs->timestamp)));
 
 				m_GPS_entriesSaved++;
@@ -656,9 +655,8 @@ DECLARE_OP_FUNCTION(op_export_gps_all)
 				msg_ptr->getAllFieldValues(buf);
 				::fprintf(
 					f_this, "%16.06f %16.06f %s\n",
-					mrpt::system::timestampTotime_t(obs->timestamp),
-					mrpt::system::timestampTotime_t(
-						obs->originalReceivedTimestamp),
+					mrpt::Clock::toDouble(obs->timestamp),
+					mrpt::Clock::toDouble(obs->originalReceivedTimestamp),
 					buf.str().c_str());
 				m_GPS_entriesSaved++;
 

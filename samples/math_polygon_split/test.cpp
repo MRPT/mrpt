@@ -72,7 +72,7 @@ void display()
 int main(int argc, char** argv)
 {
 	srand((unsigned int)mrpt::system::extractDayTimeFromTimestamp(
-		mrpt::system::now()));
+		mrpt::Clock::now()));
 	display();
 	return 0;
 }

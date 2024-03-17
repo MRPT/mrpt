@@ -58,16 +58,16 @@ class CTextFileLinesParser
 	 * std::string
 	 * \return false on EOF.
 	 */
-	bool getNextLine(std::string& out_str);
+	[[nodiscard]] bool getNextLine(std::string& out_str);
 
 	/** Reads from the file and stores the next (non-comment) line into the
 	 * given stream buffer.
 	 * \return false on EOF.
 	 */
-	bool getNextLine(std::istringstream& buf);
+	[[nodiscard]] bool getNextLine(std::istringstream& buf);
 
 	/** Return the line number of the last line returned with \a getNextLine */
-	size_t getCurrentLineNumber() const;
+	[[nodiscard]] size_t getCurrentLineNumber() const;
 
 	/** Enable/disable filtering of lines starting with "%", "//" or "#",
 	 * respectively. */

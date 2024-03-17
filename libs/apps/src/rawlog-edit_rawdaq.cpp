@@ -142,7 +142,7 @@ DECLARE_OP_FUNCTION(op_export_rawdaq_txt)
 			else
 				f_this = it->second;
 
-			const double tim0 = mrpt::system::timestampTotime_t(obs->timestamp);
+			const double tim0 = mrpt::Clock::toDouble(obs->timestamp);
 			const double At =
 				obs->sample_rate != 0.0 ? 1.0 / obs->sample_rate : 0.0;
 			double tim;
