@@ -64,7 +64,7 @@
   <!-- Deps for ros1bridge/ros2bridge -->
   <depend>cv_bridge</depend>
   <depend>libopencv-dev</depend>
-  <depend>octomap</depend>
+  <!-- <depend>octomap</depend> -->  <!-- Temporarily removed 2024 March due to FTBFS octomap in u24.04 -->
   <!--<depend>pcl_conversions</depend> WAS: To run unit tests only -->
   
   <depend condition="$ROS_VERSION == 1">rosbag_storage</depend>
