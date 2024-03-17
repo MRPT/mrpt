@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.12.0: UNRELEASED
+# Version 2.12.0: Released March 17th, 2024
 - Changes in libraries:
   - \ref mrpt_obs_grp:
     - mrpt::math::TBoundingBox: Mark all relevant methods with ``[nodiscard]`` to avoid mistakes.
