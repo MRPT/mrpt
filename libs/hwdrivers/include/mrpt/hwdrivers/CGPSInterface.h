@@ -213,14 +213,20 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 	{
 		m_raw_dump_file_prefix = filePrefix;
 	}
-	std::string getRawDumpFilePrefix() const { return m_raw_dump_file_prefix; }
+	[[nodiscard]] std::string getRawDumpFilePrefix() const
+	{
+		return m_raw_dump_file_prefix;
+	}
+
 	/** Send a custom data block to the GNSS device right now. Can be used to
 	  change its behavior online as needed.
 	  \return false on communication error */
-	bool sendCustomCommand(const void* data, size_t datalen);
+	[[nodiscard]] bool sendCustomCommand(const void* data, size_t datalen);
+
 	/** @} */
 
-	inline bool isAIMConfigured() { return m_topcon_AIMConfigured; }
+	[[nodiscard]] bool isAIMConfigured() { return m_topcon_AIMConfigured; }
+
 	/** Parses one line of NMEA data from a GPS receiver, and writes the
 	 * recognized fields (if any) into an observation object.
 	 * Recognized frame types are those listed for the `NMEA` parser in the
@@ -228,7 +234,7 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 	 * \return true if some new data field has been correctly parsed and
 	 * inserted into out_obs
 	 */
-	static bool parse_NMEA(
+	[[nodiscard]] static bool parse_NMEA(
 		const std::string& cmd_line, mrpt::obs::CObservationGPS& out_obs,
 		const bool verbose = false);
 
@@ -237,7 +243,7 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 	 * \param[in] reset If set to true, will empty the GGA cache so next calls
 	 * will return an empty string if no new frame is received.
 	 */
-	std::string getLastGGA(bool reset = true);
+	[[nodiscard]] std::string getLastGGA(bool reset = true);
 
 	using ptr_parser_t =
 		bool (CGPSInterface::*)(size_t& out_minimum_rx_buf_to_decide);
@@ -247,8 +253,10 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 	 *  incoming buffer, and return false if the available data does not match
 	 * the expected format, so we must skip 1 byte and try again.
 	 * @{ */
-	bool implement_parser_NMEA(size_t& out_minimum_rx_buf_to_decide);
-	bool implement_parser_NOVATEL_OEM6(size_t& out_minimum_rx_buf_to_decide);
+	[[nodiscard]] bool implement_parser_NMEA(
+		size_t& out_minimum_rx_buf_to_decide);
+	[[nodiscard]] bool implement_parser_NOVATEL_OEM6(
+		size_t& out_minimum_rx_buf_to_decide);
 	/** @} */
 
    protected:

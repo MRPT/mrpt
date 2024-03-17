@@ -193,7 +193,7 @@ void do_simulation()
 
 		simulOdometry(real_pose, last_pose, Apose, odo_opts);
 		act.computeFromOdometry(CPose2D(0, 0, 0), odo_opts);
-		act.timestamp = mrpt::system::now();
+		act.timestamp = mrpt::Clock::now();
 		acts.insert(act);
 		rawlog.insert(acts);
 
@@ -208,7 +208,7 @@ void do_simulation()
 			CObservation2DRangeScan::Ptr the_scan =
 				std::make_shared<CObservation2DRangeScan>();
 			the_scan->aperture = M_PIf;
-			the_scan->timestamp = mrpt::system::now();
+			the_scan->timestamp = mrpt::Clock::now();
 			the_grid.laserScanSimulator(
 				*the_scan, real_pose, 0.5f, LASER_N_RANGES, LASER_STD_ERROR, 1,
 				LASER_BEARING_STD_ERROR);
@@ -218,7 +218,7 @@ void do_simulation()
 			// Robot moves:
 			simulOdometry(real_pose, last_pose, Apose, odo_opts);
 			act.computeFromOdometry(CPose2D(0, 0, 0), odo_opts);
-			act.timestamp = mrpt::system::now();
+			act.timestamp = mrpt::Clock::now();
 			acts.clear();
 			acts.insert(act);
 			rawlog.insert(acts);

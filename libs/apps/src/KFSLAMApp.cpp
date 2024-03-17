@@ -458,8 +458,7 @@ void KFSLAMApp::Run_KF_SLAM()
 				if (obs)
 				{
 					const CObservationBearingRange* obsRB = obs.get();
-					const double tim =
-						mrpt::system::timestampToDouble(obsRB->timestamp);
+					const double tim = mrpt::Clock::toDouble(obsRB->timestamp);
 
 					for (size_t i = 0; i < obsRB->sensedData.size(); i++)
 					{
@@ -498,8 +497,7 @@ void KFSLAMApp::Run_KF_SLAM()
 				if (obs)
 				{
 					const CObservationBearingRange* obsRB = obs.get();
-					const double tim =
-						mrpt::system::timestampToDouble(obsRB->timestamp);
+					const double tim = mrpt::Clock::toDouble(obsRB->timestamp);
 
 					auto itDA = GT_DA.find(tim);
 

@@ -83,9 +83,9 @@ DECLARE_OP_FUNCTION(op_remap_timestamps)
 			if (!checkSensorLabel(obs)) return true;
 
 			// T_NEW = a * T_OLD + b
-			const double t = mrpt::system::timestampToDouble(obs->timestamp);
+			const double t = mrpt::Clock::toDouble(obs->timestamp);
 			const double t_new = m_a * t + m_b;
-			obs->timestamp = mrpt::system::time_tToTimestamp(t_new);
+			obs->timestamp = mrpt::Clock::fromDouble(t_new);
 
 			m_changes++;
 			return true;

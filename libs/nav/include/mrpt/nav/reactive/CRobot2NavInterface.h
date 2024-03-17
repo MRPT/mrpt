@@ -63,7 +63,7 @@ class CRobot2NavInterface : public mrpt::system::COutputLogger
 		   (vx,vy: m/s, omega: rad/s) */
 		mrpt::math::TTwist2D& curVelGlobal,
 		/** (output) The timestamp for the read pose and velocity values. Use
-		   mrpt::system::now() unless you have something more accurate. */
+		   mrpt::Clock::now() unless you have something more accurate. */
 		mrpt::system::TTimeStamp& timestamp,
 		/** (output) The latest robot raw odometry pose; may have long-time
 		   drift should be more locally consistent than curPose (x,y: meters,
@@ -139,7 +139,7 @@ class CRobot2NavInterface : public mrpt::system::COutputLogger
 	 * \param[out] obstacles  A representation of obstacles in robot-centric
 	 * coordinates.
 	 * \param[out] timestamp  The timestamp for the read obstacles. Use
-	 * mrpt::system::now() unless you have something more accurate.
+	 * mrpt::Clock::now() unless you have something more accurate.
 	 */
 	virtual bool senseObstacles(
 		mrpt::maps::CSimplePointsMap& obstacles,

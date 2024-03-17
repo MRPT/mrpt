@@ -1878,8 +1878,7 @@ void NavlogViewerApp::OnmnuMatlabExportPaths()
 			const auto it = logptr->timestamps.find("tim_start_iteration");
 			if (it != logptr->timestamps.end())
 			{
-				tim_start_iteration =
-					mrpt::system::timestampToDouble(it->second);
+				tim_start_iteration = mrpt::Clock::toDouble(it->second);
 			}
 			else
 			{
@@ -1925,7 +1924,7 @@ void NavlogViewerApp::OnmnuMatlabExportPaths()
 			const auto it = logptr->timestamps.find("curPoseAndVel");
 			if (it != logptr->timestamps.end())
 			{
-				tim_pose = mrpt::system::timestampToDouble(it->second);
+				tim_pose = mrpt::Clock::toDouble(it->second);
 			}
 
 			auto& p = global_local_vel[tim_pose];
@@ -1942,7 +1941,7 @@ void NavlogViewerApp::OnmnuMatlabExportPaths()
 			const auto it = logptr->timestamps.find("tim_send_cmd_vel");
 			if (it != logptr->timestamps.end())
 			{
-				tim_send_cmd_vel = mrpt::system::timestampToDouble(it->second);
+				tim_send_cmd_vel = mrpt::Clock::toDouble(it->second);
 			}
 
 			auto& p = cmdvels[tim_send_cmd_vel];

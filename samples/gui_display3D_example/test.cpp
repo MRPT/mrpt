@@ -198,7 +198,7 @@ void TestDisplay3D()
 			// from the top instead of the bottom.
 			format(
 				"Time: %s",
-				mrpt::system::dateTimeLocalToString(mrpt::system::now())
+				mrpt::system::dateTimeLocalToString(mrpt::Clock::now())
 					.c_str()),
 			20 /* id */, fp2);
 

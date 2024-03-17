@@ -144,14 +144,14 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
 
 		mrpt::serialization::CMessage msg;
 		bool time_out = false;
-		mrpt::system::TTimeStamp t1 = mrpt::system::now();
+		mrpt::system::TTimeStamp t1 = mrpt::Clock::now();
 		double time_out_val = 1;  // seconds
 
 		auto arch = mrpt::serialization::archiveFrom(*comms);
 
 		while (!arch.receiveMessage(msg) && !time_out)
 		{
-			if (mrpt::system::timeDifference(t1, mrpt::system::now()) >
+			if (mrpt::system::timeDifference(t1, mrpt::Clock::now()) >
 				time_out_val)
 				time_out = true;
 		}
@@ -219,7 +219,7 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
 			// Add data to observation:
 			obs.m_readings.push_back(newRead);
 			obs.sensorLabel = m_sensorLabel;
-			obs.timestamp = mrpt::system::getCurrentTime();
+			obs.timestamp = mrpt::Clock::now();
 			return !obs.m_readings.empty();	 // Done OK!
 		}
 		else

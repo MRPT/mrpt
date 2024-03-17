@@ -67,9 +67,13 @@ TEST(CImage, CtorDefault)
 {
 	mrpt::img::CImage img;
 	EXPECT_TRUE(img.isEmpty());
-	EXPECT_THROW(img.isColor(), std::exception);
-	EXPECT_THROW(img.getWidth(), std::exception);
-	EXPECT_THROW(img.getHeight(), std::exception);
+
+	// clang-format off
+	EXPECT_THROW([&img]() { auto b = img.isColor();  ((void)b); }(), std::exception);
+	EXPECT_THROW([&img]() { auto b = img.getWidth(); ((void)b); }(), std::exception);
+	EXPECT_THROW([&img]() { auto b = img.getHeight(); ((void)b);}(), std::exception);
+	// clang-format on
+
 	EXPECT_THROW(img.getPixelDepth(), std::exception);
 }
 
@@ -229,7 +233,12 @@ TEST(CImage, ExternalImage)
 		CImage a;
 		a.setExternalStorage("./foo_61717181.png");
 		// Test exception on not found
-		EXPECT_THROW(a.getWidth(), mrpt::img::CExceptionExternalImageNotFound);
+		EXPECT_THROW(
+			[&a] {
+				bool w = a.getWidth();
+				((void)w);
+			}(),
+			mrpt::img::CExceptionExternalImageNotFound);
 	}
 }
 

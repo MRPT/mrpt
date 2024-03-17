@@ -106,7 +106,7 @@ class Clock
 	/** Returns the number of nanoseconds that are added to the output of the
 	 * POSIX `CLOCK_MONOTONIC` to make timestamps match the epoch of POSIX
 	 * `CLOCK_REALTIME`. */
-	static uint64_t getMonotonicToRealtimeOffset();
+	[[nodiscard]] static uint64_t getMonotonicToRealtimeOffset();
 
 	/** When setActiveClock() is set to `Simulated`, sets the simulated time
 	 * that will be returned in subsequent calls to now().

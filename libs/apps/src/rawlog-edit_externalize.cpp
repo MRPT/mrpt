@@ -97,7 +97,7 @@ DECLARE_OP_FUNCTION(op_externalize)
 				"%s_%.09f",
 				mrpt::system::fileNameStripInvalidChars(obs->sensorLabel)
 					.c_str(),
-				timestampTotime_t(obs->timestamp));
+				mrpt::Clock::toDouble(obs->timestamp));
 			if (IS_CLASS(*obs, CObservationStereoImages))
 			{
 				CObservationStereoImages::Ptr obsSt =

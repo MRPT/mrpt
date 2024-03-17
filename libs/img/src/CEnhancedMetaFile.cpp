@@ -72,7 +72,10 @@ CEnhancedMetaFile::~CEnhancedMetaFile()
 	// Finish EMF:
 	DeleteEnhMetaFile(CloseEnhMetaFile((HDC)m_hdc.get()));
 #else
-	((CImage*)m_hdc.get())->saveToFile(m_targetFile + ".png");
+	bool ok = ((CImage*)m_hdc.get())->saveToFile(m_targetFile + ".png");
+	if (!ok)
+		std::cerr << "Error saving image to file: " << m_targetFile
+				  << std::endl;
 
 	// Free objects:
 	delete ((CImage*)m_hdc.get());

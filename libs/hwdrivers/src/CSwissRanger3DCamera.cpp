@@ -446,7 +446,7 @@ void CSwissRanger3DCamera::getNextObservation(
 						const string filName = fileNameStripInvalidChars(
 												   trim(m_sensorLabel)) +
 							format("_INT_%f.%s",
-								   (double)timestampTotime_t(obs.timestamp),
+								   (double)mrpt::Clock::toDouble(obs.timestamp),
 								   m_external_images_format.c_str());
 						obs.intensityImage.saveToFile(
 							m_path_for_external_images + string("/") + filName,
@@ -483,7 +483,7 @@ void CSwissRanger3DCamera::getNextObservation(
 						const string filName = fileNameStripInvalidChars(
 												   trim(m_sensorLabel)) +
 							format("_CONF_%f.%s",
-								   (double)timestampTotime_t(obs.timestamp),
+								   (double)mrpt::Clock::toDouble(obs.timestamp),
 								   m_external_images_format.c_str());
 						obs.confidenceImage.saveToFile(
 							m_path_for_external_images + string("/") + filName,

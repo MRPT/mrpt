@@ -31,52 +31,51 @@
    | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
    | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
    | POSSIBILITY OF SUCH DAMAGE.                                               |
-   +---------------------------------------------------------------------------+ */
+   +---------------------------------------------------------------------------+
+ */
 
-#include <mrpt/obs.h>    // For loading from the rawlog
-#include <mrpt/maps.h>   // For converting into point maps
 #include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/system.h>
+#include <mrpt/maps.h>	// For converting into point maps
+#include <mrpt/obs.h>  // For loading from the rawlog
 #include <mrpt/synch.h>
-
-#include <pcl/visualization/cloud_viewer.h>
-#include <iostream>
+#include <mrpt/system.h>
 #include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/visualization/cloud_viewer.h>
 
+#include <iostream>
 
-size_t rawlogEntry=0;
-
+size_t rawlogEntry = 0;
 
 struct ThreadData
 {
-	ThreadData() : new_timestamp(INVALID_TIMESTAMP) { }
+	ThreadData() : new_timestamp(INVALID_TIMESTAMP) {}
 
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr  new_cloud;
-	mrpt::system::TTimeStamp  new_timestamp;
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud;
+	mrpt::system::TTimeStamp new_timestamp;
 };
 
-ThreadData                    td;
+ThreadData td;
 std::mutex td_cs;
-
 
 void viewerUpdate(pcl::visualization::PCLVisualizer& viewer)
 {
-    std::stringstream ss;
-    ss << "Rawlog entry: " << rawlogEntry;
-    viewer.removeShape ("text", 0);
-    viewer.addText (ss.str(), 10,50, "text", 0);
+	std::stringstream ss;
+	ss << "Rawlog entry: " << rawlogEntry;
+	viewer.removeShape("text", 0);
+	viewer.addText(ss.str(), 10, 50, "text", 0);
 
-    static mrpt::system::TTimeStamp last_time = INVALID_TIMESTAMP;
+	static mrpt::system::TTimeStamp last_time = INVALID_TIMESTAMP;
 
-    {  // Mutex protected
-    	std::lock_guard<std::mutex> lock(td_cs);
-    	if (td.new_timestamp!=last_time)
-    	{
-    		last_time = td.new_timestamp;
+	{  // Mutex protected
+		std::lock_guard<std::mutex> lock(td_cs);
+		if (td.new_timestamp != last_time)
+		{
+			last_time = td.new_timestamp;
 			viewer.removePointCloud("cloud", 0);
-			viewer.addPointCloud (td.new_cloud,"cloud",0);
-			viewer.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3.0);
+			viewer.addPointCloud(td.new_cloud, "cloud", 0);
+			viewer.setPointCloudRenderingProperties(
+				pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3.0);
 
 			const size_t N = td.new_cloud->size();
 			std::cout << "Showing new point cloud of size=" << N << std::endl;
@@ -85,7 +84,7 @@ void viewerUpdate(pcl::visualization::PCLVisualizer& viewer)
 			if (N && first)
 			{
 				first = false;
-			//viewer.resetCameraViewpoint("cloud");
+				// viewer.resetCameraViewpoint("cloud");
 			}
 
 #if 0
@@ -99,89 +98,98 @@ void viewerUpdate(pcl::visualization::PCLVisualizer& viewer)
 				viewer.camera_.pos[0],viewer.camera_.pos[1],viewer.camera_.pos[2],
 				viewer.camera_.view[0],viewer.camera_.view[1],viewer.camera_.view[2]);
 #endif
-    	}
-    }
+		}
+	}
 }
 
-void  viewerOneOff(pcl::visualization::PCLVisualizer& viewer)
+void viewerOneOff(pcl::visualization::PCLVisualizer& viewer)
 {
-    viewer.setBackgroundColor (0.3, 0.3, 0.3);
-    viewer.addCoordinateSystem(1.0, 0);
-    viewer.initCameraParameters();
-    viewer.camera_.pos[2] = 30;
+	viewer.setBackgroundColor(0.3, 0.3, 0.3);
+	viewer.addCoordinateSystem(1.0, 0);
+	viewer.initCameraParameters();
+	viewer.camera_.pos[2] = 30;
 	viewer.updateCamera();
 }
 
-int main(int argc, char**argv)
+int main(int argc, char** argv)
 {
 	try
 	{
-		if (argc!=2)
+		if (argc != 2)
 		{
 			std::cerr << "Usage: " << argv[0] << " <DATASET.rawlog>\n";
 			return 1;
 		}
 
-
 		std::cout << "Opening: " << argv[1] << std::endl;
-		mrpt::io::CFileGZInputStream  fil(argv[1]);
+		mrpt::io::CFileGZInputStream fil(argv[1]);
 		bool rawlog_eof = false;
 
-		pcl::visualization::CloudViewer viewer("Cloud Viewer from MRPT's rawlog");
+		pcl::visualization::CloudViewer viewer(
+			"Cloud Viewer from MRPT's rawlog");
 
-		//This will only get called once
-		viewer.runOnVisualizationThreadOnce (viewerOneOff);
+		// This will only get called once
+		viewer.runOnVisualizationThreadOnce(viewerOneOff);
 
-		//This will get called once per visualization iteration
-		viewer.runOnVisualizationThread (viewerUpdate);
+		// This will get called once per visualization iteration
+		viewer.runOnVisualizationThread(viewerUpdate);
 
-		while (!viewer.wasStopped ())
+		while (!viewer.wasStopped())
 		{
-			mrpt::obs::CActionCollection::Ptr	actions;
-			mrpt::obs::CSensoryFrame::Ptr		SF;
-			mrpt::obs::CObservation::Ptr			obs;
+			mrpt::obs::CActionCollection::Ptr actions;
+			mrpt::obs::CSensoryFrame::Ptr SF;
+			mrpt::obs::CObservation::Ptr obs;
 
 			if (!rawlog_eof)
 			{
-				if (!mrpt::obs::CRawlog::getActionObservationPairOrObservation(fil, actions, SF, obs,rawlogEntry))
+				if (!mrpt::obs::CRawlog::getActionObservationPairOrObservation(
+						fil, actions, SF, obs, rawlogEntry))
 				{
 					rawlog_eof = true;
-					std::cerr << "End of rawlog file!! Close the window to exit\n";
+					std::cerr
+						<< "End of rawlog file!! Close the window to exit\n";
 				}
 				else
 				{
 					// Can generate a point cloud from this data?
-					// TODO: Process Kinect observations differently to extract RGB data.
-					mrpt::maps::CPointsMap::Ptr  new_map;
+					// TODO: Process Kinect observations differently to extract
+					// RGB data.
+					mrpt::maps::CPointsMap::Ptr new_map;
 					if (SF)
 					{
-						new_map = mrpt::make_aligned_shared<mrpt::maps::CSimplePointsMap>();
-						// new_map->insertionOptions.minDistBetweenLaserPoints = 0;
+						new_map = mrpt::make_aligned_shared<
+							mrpt::maps::CSimplePointsMap>();
+						// new_map->insertionOptions.minDistBetweenLaserPoints =
+						// 0;
 						SF->insertObservationsInto(new_map);
 					}
 					else if (obs)
 					{
-						new_map = mrpt::make_aligned_shared<mrpt::maps::CSimplePointsMap>();
-						// new_map->insertionOptions.minDistBetweenLaserPoints = 0;
+						new_map = mrpt::make_aligned_shared<
+							mrpt::maps::CSimplePointsMap>();
+						// new_map->insertionOptions.minDistBetweenLaserPoints =
+						// 0;
 						new_map->insertObservation(obs.get());
 					}
 
 					if (new_map)
 					{
-						pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
+						pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(
+							new pcl::PointCloud<pcl::PointXYZRGB>);
 
 						// Convert MRPT point maps -> PCL point cloud.
 						new_map->getPCLPointCloud(*cloud);
 
 						{  // Mutex protected
 							std::lock_guard<std::mutex> lock(td_cs);
-							td.new_timestamp = mrpt::system::now();
+							td.new_timestamp = mrpt::Clock::now();
 							td.new_cloud = cloud;
 						}
 
-						std::this_thread::sleep_for(30ms);  // Delay to allow the point cloud to show up.
+						std::this_thread::sleep_for(
+							30ms);	// Delay to allow the point cloud to show
+									// up.
 					}
-
 				}
 			}
 
@@ -189,7 +197,7 @@ int main(int argc, char**argv)
 		}
 		return 0;
 	}
-	catch (std::exception &e)
+	catch (std::exception& e)
 	{
 		std::cerr << e.what() << std::endl;
 		return 1;

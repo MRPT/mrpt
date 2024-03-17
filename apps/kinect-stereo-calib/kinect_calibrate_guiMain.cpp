@@ -1557,14 +1557,14 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 
 			static std::vector<TPixelCoordf> last_valid_corners;
 			static mrpt::system::TTimeStamp last_valid_corners_tim =
-				mrpt::system::now();
+				mrpt::Clock::now();
 
 			if (m_findcorners_thread_data.detected_corners_done)
 			{
 				// We have new corners to draw:
 				if (!m_findcorners_thread_data.detected_corners.empty())
 				{
-					last_valid_corners_tim = mrpt::system::now();
+					last_valid_corners_tim = mrpt::Clock::now();
 					last_valid_corners =
 						m_findcorners_thread_data.detected_corners;
 				}
@@ -1579,7 +1579,7 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 			// Draw detected corners "persistently" during some instants:
 			static bool at_least_detected_once = false;
 			if (mrpt::system::timeDifference(
-					last_valid_corners_tim, mrpt::system::now()) < 0.5)
+					last_valid_corners_tim, mrpt::Clock::now()) < 0.5)
 			{
 				const unsigned int cx = edSizeX->GetValue(),
 								   cy = edSizeY->GetValue();

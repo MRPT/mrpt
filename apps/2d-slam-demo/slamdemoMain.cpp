@@ -1891,11 +1891,11 @@ void slamdemoFrame::executeOneStep()
 					options.uncert_overestim_odom));
 
 			actmov.computeFromOdometry(noisyPoseIncr, odo_opts);
-			actmov.timestamp = mrpt::system::now();
+			actmov.timestamp = mrpt::Clock::now();
 			act->insert(actmov);
 
 			CSensoryFrame::Ptr sf = CSensoryFrame::Create();
-			m_lastObservation.timestamp = mrpt::system::now();
+			m_lastObservation.timestamp = mrpt::Clock::now();
 			m_lastObservation.sensorLabel = "SIMUL_2D_RB";
 
 			sf->insert(CObservationBearingRange::Create(m_lastObservation));
@@ -2357,7 +2357,7 @@ void slamdemoFrame::OnmnuItemSaveRawlogSelected(wxCommandEvent& event)
 			std::string(
 					   "\n"
 					   " Creation date: ") +
-			mrpt::system::dateTimeLocalToString(mrpt::system::now()) +
+			mrpt::system::dateTimeLocalToString(mrpt::Clock::now()) +
 			std::string("\n");
 
 		mrpt::serialization::archiveFrom(m_rawlog_out_file) << obs;

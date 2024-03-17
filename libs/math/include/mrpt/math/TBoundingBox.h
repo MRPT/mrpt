@@ -56,7 +56,7 @@ struct TBoundingBox_
 	/** Initialize with min=+Infinity, max=-Infinity. This is useful as an
 	 * initial value before processing a list of points to keep their
 	 * minimum/maximum. */
-	static TBoundingBox_<T> PlusMinusInfinity()
+	[[nodiscard]] static TBoundingBox_<T> PlusMinusInfinity()
 	{
 		const T i = std::numeric_limits<T>::max();
 		return {{i, i, i}, {-i, -i, -i}, CTOR_FLAGS::AllowUnordered};
@@ -67,7 +67,7 @@ struct TBoundingBox_
 	 * already sorted by the user as one being the minimum and maximum corners.
 	 * \note (New in MRPT 2.5.6)
 	 */
-	static TBoundingBox_<T> FromUnsortedPoints(
+	[[nodiscard]] static TBoundingBox_<T> FromUnsortedPoints(
 		const mrpt::math::TPoint3D_<T>& pt1,
 		const mrpt::math::TPoint3D_<T>& pt2)
 	{
@@ -82,7 +82,7 @@ struct TBoundingBox_
 	}
 
 	/** Returns the volume of the box */
-	T volume() const
+	[[nodiscard]] T volume() const
 	{
 		return (max.x - min.x) * (max.y - min.y) * (max.z - min.z);
 	}
@@ -93,7 +93,7 @@ struct TBoundingBox_
 	 * intersection to handle numerical innacuracies, for example on planar
 	 * bounding boxes with a fixed "z".
 	 */
-	std::optional<TBoundingBox_<T>> intersection(
+	[[nodiscard]] std::optional<TBoundingBox_<T>> intersection(
 		const TBoundingBox_<T>& b, const T epsilon = static_cast<T>(1e-4)) const
 	{
 		if (b.min.x - epsilon > max.x || b.min.y - epsilon > max.y ||
@@ -111,7 +111,7 @@ struct TBoundingBox_
 
 	/** Returns the union of this bounding box with "b", i.e. a new bounding box
 	 * comprising both `this` and `b` */
-	TBoundingBox_<T> unionWith(const TBoundingBox_<T>& b) const
+	[[nodiscard]] TBoundingBox_<T> unionWith(const TBoundingBox_<T>& b) const
 	{
 		return {TBoundingBox_<T>(
 			{std::min(min.x, b.min.x), std::min(min.y, b.min.y),
@@ -136,7 +136,7 @@ struct TBoundingBox_
 	 * exact border)
 	 * \note (New in MRPT 2.3.3)
 	 */
-	bool containsPoint(const mrpt::math::TPoint3D_<T>& p) const
+	[[nodiscard]] bool containsPoint(const mrpt::math::TPoint3D_<T>& p) const
 	{
 		return p.x >= min.x && p.y >= min.y && p.z >= min.z && p.x <= max.x &&
 			p.y <= max.y && p.z <= max.z;
@@ -155,7 +155,7 @@ struct TBoundingBox_
 	 * accurate representation of the actual 3D box.
 	 */
 	template <typename POSE_T>
-	TBoundingBox_<T> compose(const POSE_T& pose) const
+	[[nodiscard]] TBoundingBox_<T> compose(const POSE_T& pose) const
 	{
 		return FromUnsortedPoints(
 			pose.composePoint(min), pose.composePoint(max));
@@ -174,7 +174,7 @@ struct TBoundingBox_
 	 * accurate representation of the actual 3D box.
 	 */
 	template <typename POSE_T>
-	TBoundingBox_<T> inverseCompose(const POSE_T& pose) const
+	[[nodiscard]] TBoundingBox_<T> inverseCompose(const POSE_T& pose) const
 	{
 		return FromUnsortedPoints(
 			pose.inverseComposePoint(min), pose.inverseComposePoint(max));
@@ -186,7 +186,7 @@ struct TBoundingBox_
 	 * \note Do not inherit from mrpt::Stringifyable to avoid virtual class
 	 * table and keeping the class trivially-copiable.
 	 */
-	std::string asString() const
+	[[nodiscard]] std::string asString() const
 	{
 		std::string s = min.asString();
 		s += "-";
@@ -194,9 +194,14 @@ struct TBoundingBox_
 		return s;
 	}
 
-	bool operator==(const TBoundingBox_<T>& o) const
+	[[nodiscard]] bool operator==(const TBoundingBox_<T>& o) const
 	{
 		return max == o.max && min == o.min;
+	}
+
+	[[nodiscard]] bool operator!=(const TBoundingBox_<T>& o) const
+	{
+		return max != o.max || min != o.min;
 	}
 };
 

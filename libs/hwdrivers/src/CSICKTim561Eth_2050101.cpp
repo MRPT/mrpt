@@ -437,7 +437,7 @@ bool CSICKTim561Eth::decodeScan(
 	outObservation.sensorPose = m_sensorPose;
 	outObservation.beamAperture = m_beamApperture;
 	outObservation.maxRange = m_maxRange;
-	outObservation.timestamp = mrpt::system::getCurrentTime();
+	outObservation.timestamp = mrpt::Clock::now();
 	outObservation.sensorLabel = m_sensorLabel;
 
 	outObservation.resizeScan(scanCount);

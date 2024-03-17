@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/Clock.h>
 #include <mrpt/core/exceptions.h>  //ASSERTMSG_
 
 #include <cstdint>
@@ -136,9 +137,9 @@ std::string fileNameChangeExtension(
  * accessing that file.  */
 uint64_t getFileSize(const std::string& fileName);
 
-/** Return the time of the file last modification, or "0" if the file doesn't
- * exist.  */
-time_t getFileModificationTime(const std::string& filename);
+/** Return the time of the file last modification, or throws if the file does
+ * not exist. */
+mrpt::Clock::time_point getFileModificationTime(const std::string& filename);
 
 /** Windows: replace all '/'->'\' , in Linux/MacOS: replace all '\'->'/' */
 std::string filePathSeparatorsToNative(const std::string& filePath);

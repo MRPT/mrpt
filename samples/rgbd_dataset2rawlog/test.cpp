@@ -191,7 +191,7 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
 				// OK, we accept this RGB-DEPTH pair:
 				const double avrg_time =
 					.5 * (it_list_rgb->first + it_list_depth->first);
-				obs.timestamp = mrpt::system::time_tToTimestamp(avrg_time);
+				obs.timestamp = mrpt::Clock::fromDouble(avrg_time);
 
 				// RGB img:
 				obs.hasIntensityImage = true;
@@ -239,8 +239,7 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
 					std::abs(it_list_rgb->first - it_list_acc->first);
 				if (At_acc < 1e-2)
 				{
-					obs_imu.timestamp =
-						mrpt::system::time_tToTimestamp(avrg_time);
+					obs_imu.timestamp = mrpt::Clock::fromDouble(avrg_time);
 
 					obs_imu.rawMeasurements[IMU_X_ACC] = it_list_acc->second[0];
 					obs_imu.rawMeasurements[IMU_Y_ACC] = it_list_acc->second[1];
@@ -262,8 +261,7 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
 			counter++;
 
 			const double avrg_time = it_list_depth->first;
-			obs.timestamp =
-				mrpt::system::time_tToTimestamp(it_list_depth->first);
+			obs.timestamp = mrpt::Clock::fromDouble(it_list_depth->first);
 
 			// Depth:
 			obs.hasRangeImage = true;
@@ -305,7 +303,7 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
 			counter++;
 
 			const double avrg_time = it_list_rgb->first;
-			obs.timestamp = mrpt::system::time_tToTimestamp(it_list_rgb->first);
+			obs.timestamp = mrpt::Clock::fromDouble(it_list_rgb->first);
 
 			// RGB img:
 			obs.hasIntensityImage = true;
