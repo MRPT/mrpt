@@ -60,6 +60,12 @@ if(CMAKE_MRPT_HAS_FREENECT AND NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 			-Wno-unused-function
 			-Wno-unused-const-variable
 		)
+		# Needed for usleep
+		target_compile_definitions(mrpt_freenect PRIVATE 
+			_GNU_SOURCE
+			_BSD_SOURCE
+			_DEFAULT_SOURCE
+			)
 	endif()
 
 	# Embedded version:
