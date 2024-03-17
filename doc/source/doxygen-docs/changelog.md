@@ -14,6 +14,8 @@
       - mrpt::system::timestampToDouble() -> replaced by mrpt::Clock::toDouble()
 - BUG FIXES:
   - Fix Debian bug #1066207: FTBFS in latest sid due to undefined declarations in mrpt_xsens C library.
+  - Fix FTBFS if using embedded libfreenect due to undefined declarations (usleep).
+  - Update embedded version of libfreenect to v0.7.0
   - Fix wrong computation of bounding boxes for mrpt::opengl::CSetOfObjects.
 
 # Version 2.11.12: Released March 10th, 2024
