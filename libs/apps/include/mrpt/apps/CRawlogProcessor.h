@@ -176,23 +176,23 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 		// within a "SF":
 		for (size_t idxObs = 0; true; idxObs++)
 		{
-			mrpt::obs::CObservation::Ptr* obs_indiv = nullptr;
+			mrpt::obs::CObservation::Ptr obs_indiv;
 			if (obs)
 			{
 				if (idxObs > 0) break;
-				obs_indiv = &obs;
+				obs_indiv = obs;
 			}
 			else if (SF)
 			{
 				if (idxObs >= SF->size()) break;
-				obs_indiv = &SF->getObservationByIndex(idxObs);
+				obs_indiv = SF->getObservationByIndex(idxObs);
 			}
 			else
 				break;	// shouldn't...
 
 			// Process "obs_indiv":
 			ASSERT_(obs_indiv);
-			if (!processOneObservation(*obs_indiv)) return false;
+			if (!processOneObservation(obs_indiv)) return false;
 		}
 
 		if (actions)
