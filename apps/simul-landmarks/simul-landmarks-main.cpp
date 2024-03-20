@@ -240,9 +240,12 @@ int main(int argc, char** argv)
 
 		const size_t N_STEPS_STOP_AT_THE_BEGINNING = 4;
 
+		double timeStamp = 0;
+		const double timeStep = 1.0;
+
 		CMatrixDouble GT_path;
 
-		for (size_t i = 0; i < nSteps; i++)
+		for (size_t i = 0; i < nSteps; i++, timeStamp += timeStep)
 		{
 			cout << "Generating step " << i << "...\n";
 			CSensoryFrame SF;
@@ -292,9 +295,9 @@ int main(int argc, char** argv)
 			}
 
 			// Simulate observations:
-			CObservationBearingRange::Ptr obs =
-				std::make_shared<CObservationBearingRange>();
+			auto obs = CObservationBearingRange::Create();
 
+			obs->sensorLabel = "sensor";
 			obs->minSensorDistance = minSensorDistance;
 			obs->maxSensorDistance = maxSensorDistance;
 			obs->fieldOfView_yaw = fieldOfView;
@@ -305,6 +308,9 @@ int main(int argc, char** argv)
 				realPose, sensorPoseOnRobot, *obs,
 				sensorDetectsIDs,  // wheter to identy landmarks
 				stdRange, stdYaw, stdPitch);
+
+			// Overwrite the time generated in the time above:
+			obs->timestamp = mrpt::Clock::fromDouble(timeStamp);
 
 			// Keep the GT of the robot pose:
 			GT_path.setSize(i + 1, 6);
