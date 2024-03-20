@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/core/exceptions.h>
+#include <mrpt/core/get_env.h>
 #include <mrpt/hwdrivers/CNTRIPClient.h>
 #include <mrpt/system/os.h>
 
@@ -20,6 +21,9 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
+
+std::string ntrip_user = mrpt::get_env<std::string>("NTRIP_USER");
+std::string ntrip_pass = mrpt::get_env<std::string>("NTRIP_PASS");
 
 // ------------------------------------------------------
 //				TestNTRIP
@@ -72,8 +76,14 @@ void TestNTRIP()
 	params.server = server;
 	params.port = server_port;
 
-	params.user = "";
-	params.password = "";
+	cout << "Using user: " << ntrip_user << endl;
+	cout << "Using pass: " << ntrip_pass << endl;
+	cout << "(You can change them with env variables NTRIP_USER and "
+			"NTRIP_PASS"
+		 << endl;
+
+	params.user = ntrip_user;
+	params.password = ntrip_pass;
 
 	string msgerr;
 
