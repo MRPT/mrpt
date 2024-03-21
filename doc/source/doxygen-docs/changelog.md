@@ -6,6 +6,8 @@
 - Changes in libraries:
   - \ref mrpt_obs_grp:
     - mrpt::obs::CObservationBearingRange now implements the `exportTxt*()` virtual interface.
+  - \ref mrpt_opengl_grp:
+    - mrpt::opengl::CAssimpModel now can read embedded textures in model files.
 
 # Version 2.12.0: Released March 17th, 2024
 - Changes in libraries:
