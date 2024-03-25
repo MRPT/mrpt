@@ -73,7 +73,12 @@ class TexturesCache
 
 	CachedTexturesInfo& get(
 		const CAssimpModel::filepath_t& texturePath, bool verboseLoad,
-		const aiScene* scene)
+#if MRPT_HAS_ASSIMP
+		const aiScene* scene
+#else
+		const void* scene
+#endif
+	)
 	{
 		using namespace std::string_literals;
 
@@ -102,12 +107,11 @@ class TexturesCache
 				std::cout << "[CAssimpModel] Loaded texture: " << texturePath
 						  << "\n";
 		}
+#if MRPT_HAS_ASSIMP && MRPT_HAS_OPENCV
 		else if (scene->HasTextures())
 		{
 			// Embedded texture?
 			auto aiTex = scene->GetEmbeddedTexture(texturePath.c_str());
-
-#if MRPT_HAS_OPENCV
 			if (aiTex)
 			{
 				const auto texW = aiTex->mWidth;
@@ -139,8 +143,8 @@ class TexturesCache
 						"implemented yet for mrpt::opengl::CAssimpModel.");
 				}
 			}
-#endif
 		}
+#endif
 
 		if (!entry.load_ok)
 		{
