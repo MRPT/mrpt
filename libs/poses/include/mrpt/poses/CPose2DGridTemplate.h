@@ -35,11 +35,12 @@ class CPose2DGridTemplate
 	 */
 	int m_idxLeftX, m_idxLeftY, m_idxLeftPhi;
 
-	/** The data:
-	 */
+	/** The data */
 	std::vector<T> m_data;
 
    public:
+	const std::vector<T>& data() const { return m_data; }
+
 	/** Returns "indexes" from coordinates:
 	 */
 	size_t x2idx(double x) const
@@ -179,7 +180,7 @@ class CPose2DGridTemplate
 	 * each row contains values for a fixed "y".
 	 */
 	template <class MATRIXLIKE>
-	void getAsMatrix(double phi, MATRIXLIKE& outMat)
+	void getAsMatrix(double phi, MATRIXLIKE& outMat) const
 	{
 		MRPT_START
 		outMat.setSize(m_sizeY, m_sizeX);

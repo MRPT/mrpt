@@ -9,6 +9,9 @@
   - \ref mrpt_opengl_grp:
     - mrpt::opengl::CAssimpModel now can read embedded textures in model files.
     - Update embedded Assimp lib version 4.1.0 -> 5.3.1 (when built as ExternalProject)
+  - \ref mrpt_poses_grp:
+    - New accessor methods mrpt::poses::CPose2DGridTemplate::data() and mrpt::poses::CPose3DGridTemplate::data()
+    - Fix const-correctness of mrpt::poses::CPose2DGridTemplate::getAsMatrix()
 
 # Version 2.12.0: Released March 17th, 2024
 - Changes in libraries:

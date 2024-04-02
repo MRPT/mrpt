@@ -64,6 +64,8 @@ class CPose3DGridTemplate
 	std::vector<T> m_data;
 
    public:
+	const std::vector<T>& data() const { return m_data; }
+
 	/** Default constructor:
 	 */
 	CPose3DGridTemplate(
