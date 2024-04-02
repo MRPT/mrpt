@@ -12,6 +12,8 @@
 #include <mrpt/core/round.h>  // for round()
 #include <mrpt/serialization/CSerializable.h>
 
+#include <tuple>
+
 namespace mrpt::poses
 {
 /** This is a template class for storing a 3D (2D+heading) grid containing any
@@ -160,12 +162,29 @@ class CPose2DGridTemplate
 		return getByIndex(x2idx(x), y2idx(y), phi2idx(phi));
 	}
 
+	/** (x,y,phi) indices to absolute index in raw data container */
+	size_t idx2absidx(size_t cx, size_t cy, size_t cPhi) const
+	{
+		return cPhi * m_sizeXY + cy * m_sizeX + cx;
+	}
+
+	/** absolute index to (x,y,phi) indices */
+	std::tuple<size_t, size_t, size_t> absidx2idx(size_t absIdx) const
+	{
+		const auto cPhi = absIdx / m_sizeXY;
+		const auto r = absIdx % m_sizeXY;
+		const auto cy = r / m_sizeX;
+		const auto cx = r % m_sizeX;
+
+		return {cx, cy, cPhi};
+	}
+
 	/** Reads the contents of a cell
 	 */
 	const T* getByIndex(size_t x, size_t y, size_t phi) const
 	{
 		ASSERT_(x < m_sizeX && y < m_sizeY && phi < m_sizePhi);
-		return &m_data[phi * m_sizeXY + y * m_sizeX + x];
+		return &m_data[idx2absidx(x, y, phi)];
 	}
 
 	/** Reads the contents of a cell
