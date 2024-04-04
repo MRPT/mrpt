@@ -15,6 +15,9 @@
       - mrpt::poses::CPose2DGridTemplate::absidx2idx(), mrpt::poses::CPose3DGridTemplate::absidx2idx()
       - mrpt::poses::CPose2DGridTemplate::idx2absidx(), mrpt::poses::CPose3DGridTemplate::idx2absidx()
     - Fix const-correctness of mrpt::poses::CPose2DGridTemplate::getAsMatrix()
+  - rplidar_skd: Update to the latest upstream version, and fix all build warnings.
+  - xsens library: Fix all build warnings.
+
 
 # Version 2.12.0: Released March 17th, 2024
 - Changes in libraries:
