@@ -58,7 +58,10 @@ double image_test_1(int w, int img_quality)
 
 	tictac.Tic();
 	for (size_t i = 0; i < N; i++)
-		img.saveToFile(fil, img_quality);
+	{
+		bool savedOk = img.saveToFile(fil, img_quality);
+		ASSERT_(savedOk);
+	}
 
 	const double T = tictac.Tac() / N;
 	mrpt::system::deleteFile(fil);
@@ -103,7 +106,8 @@ double image_saveload(int iFormat, int to_shm)
 	if (perf_load)
 	{
 		// LOAD:
-		img.saveToFile(fil);
+		bool savedOk = img.saveToFile(fil);
+		ASSERT_(savedOk);
 
 		const size_t N = 30;
 
@@ -111,7 +115,8 @@ double image_saveload(int iFormat, int to_shm)
 		for (size_t i = 0; i < N; i++)
 		{
 			CImage img_new;
-			img.loadFromFile(fil);
+			bool loadOk = img.loadFromFile(fil);
+			ASSERT_(loadOk);
 		}
 
 		T = tictac.Tac() / N;
@@ -123,7 +128,10 @@ double image_saveload(int iFormat, int to_shm)
 
 		tictac.Tic();
 		for (size_t i = 0; i < N; i++)
-			img.saveToFile(fil);
+		{
+			bool savedOk = img.saveToFile(fil);
+			ASSERT_(savedOk);
+		}
 
 		T = tictac.Tac() / N;
 	}
@@ -263,8 +271,8 @@ double image_KLTscore(int WIN, int N)
 	tictac.Tic();
 	for (int i = 0; i < N; i++)
 	{
-		// float r =
-		img.KLT_response(x | 128, y | 128, WIN);
+		float r = img.KLT_response(x | 128, y | 128, WIN);
+		(void)r;
 		x++;
 		x &= 0x1FF;
 		y++;

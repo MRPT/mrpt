@@ -297,7 +297,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 						10 + FEAT_W, 5 + j * (FEAT_H + 5), im2);
 				}
 				fil += ".png";
-				img_compose.saveToFile(fil);
+				bool savedOk = img_compose.saveToFile(fil);
+				ASSERT_(savedOk);
 			}  // end for map
 		}
 

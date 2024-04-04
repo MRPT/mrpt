@@ -276,8 +276,11 @@ void TestMatchingComparative()
 	string imgR = myDataDir + string("imR_p01.jpg");  // Right image
 
 	CImage im1, im2;
-	im1.loadFromFile(imgL);
-	im2.loadFromFile(imgR);
+	bool loadOk = im1.loadFromFile(imgL);
+	ASSERT_(loadOk);
+
+	loadOk = im2.loadFromFile(imgR);
+	ASSERT_(loadOk);
 
 	size_t imW = im1.getWidth();
 	size_t imH = im1.getHeight();

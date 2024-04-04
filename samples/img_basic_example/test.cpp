@@ -116,10 +116,12 @@ void TestImageConversion()
 	win4.waitForKey();
 
 	tictac.Tic();
-	imgGray.saveToFile("frame_out.jpg");
+	bool savedOk = imgGray.saveToFile("frame_out.jpg");
+	ASSERT_(savedOk);
 	printf("jpeg file saved in %.03fms\n", 1000.0 * tictac.Tac());
 
-	imgSmall2.saveToFile("frame_out_small.png");
+	savedOk = imgSmall2.saveToFile("frame_out_small.png");
+	ASSERT_(savedOk);
 
 	return;
 }

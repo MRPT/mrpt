@@ -99,9 +99,9 @@ void TestSLERP()
 		mrpt::math::slerp(pose_a, pose_b, t, pose_interp);
 
 		// Move the scene:
-		Scene::Ptr& theScene = win.get3DSceneAndLock();
+		Scene::Ptr& scene = win.get3DSceneAndLock();
 
-		auto obj1 = theScene->getByName("slerp_obj");
+		auto obj1 = scene->getByName("slerp_obj");
 		obj1->setPose(pose_interp);
 
 		// Show text:

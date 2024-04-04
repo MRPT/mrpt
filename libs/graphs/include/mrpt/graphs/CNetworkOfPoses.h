@@ -290,7 +290,10 @@ class CNetworkOfPoses
 	{
 		detail::graph_ops<self_t>::load_graph_of_poses_from_text_file(
 			this, fileName);
-		if (collapse_dup_edges) this->collapseDuplicatedEdges();
+		if (collapse_dup_edges)
+		{
+			[[maybe_unused]] auto n = this->collapseDuplicatedEdges();
+		}
 	}
 
 	/** Reads as text in the format used by TORO, HoG-man, G2O.
@@ -329,10 +332,7 @@ class CNetworkOfPoses
 			(std::is_base_of_v<
 				mrpt::graphs::detail::TMRSlamNodeAnnotations, global_pose_t>);
 		if (is_multirobot) { viz.reset(new visualizer_multirobot_t(*this)); }
-		else
-		{
-			viz.reset(new visualizer_t(*this));
-		}
+		else { viz.reset(new visualizer_t(*this)); }
 		viz->getAs3DObject(object, viz_params);
 	}
 
@@ -764,10 +764,7 @@ class CNetworkOfPoses
 		{
 			old_to_new_nodeID_mappings = old_to_new_nodeID_mappings_out;
 		}
-		else
-		{
-			old_to_new_nodeID_mappings = &mappings_tmp;
-		}
+		else { old_to_new_nodeID_mappings = &mappings_tmp; }
 		old_to_new_nodeID_mappings->clear();
 
 		// add all nodes of other graph - Take care of renumbering them

@@ -396,8 +396,9 @@ void RBPF_SLAM_App_Base::run()
 				{
 					mrpt::img::CImage img;
 					mapBuilder->drawCurrentEstimationToImage(&img);
-					img.saveToFile(
+					bool savedOk = img.saveToFile(
 						format("%s/mapping_%05u.png", OUT_DIR, step));
+					ASSERT_(savedOk);
 				}
 			}
 

@@ -1082,7 +1082,8 @@ void CFormPlayVideo::saveCamImage(int n)
 
 		string fil = string(dialog.GetPath().mb_str());
 
-		o->image.saveToFile(fil);
+		bool savedOk = o->image.saveToFile(fil);
+		ASSERT_(savedOk);
 	}
 	else if (IS_CLASS(*displayedImgs[n], CObservationStereoImages))
 	{
@@ -1124,7 +1125,8 @@ void CFormPlayVideo::saveCamImage(int n)
 		CImage& im =
 			(n == 2 ? o->imageDisparity
 					: (n == 1 ? o->imageRight : o->imageLeft));
-		im.saveToFile(fil);
+		bool savedOk = im.saveToFile(fil);
+		ASSERT_(savedOk);
 	}
 
 	WX_END_TRY

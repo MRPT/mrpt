@@ -191,10 +191,7 @@ void xRawLogViewerFrame::OnImportCARMEN(wxCommandEvent& event)
 				isTheFirstOdo = false;
 				Apose = CPose2D(0, 0, 0);
 			}
-			else
-			{
-				Apose = thisOdoReading - lastOdoReading;
-			}
+			else { Apose = thisOdoReading - lastOdoReading; }
 
 			// For the next step:
 			// lastTimestamp = thisTimestamp;
@@ -332,7 +329,8 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
 				CObservationImage::Ptr im =
 					std::make_shared<CObservationImage>();
 				im->cameraPose = CPose3D(0, 0, 0);
-				im->image.loadFromFile(filName);
+				bool loadOk = im->image.loadFromFile(filName);
+				ASSERT_(loadOk);
 				im->timestamp = fakeTimeStamp;
 
 				// Default camera parameters:
@@ -1214,10 +1212,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 				it->second.data[2] + M_PI / 2);
 
 			if (firstOdo) { firstOdo = false; }
-			else
-			{
-				Aodo = curOdo - lastOdometry;
-			}
+			else { Aodo = curOdo - lastOdometry; }
 
 			act.computeFromOdometry(Aodo, odoOpts);
 			act.timestamp = tim;
@@ -1863,10 +1858,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 					//  real landmarks:
 					meas.landmarkID = next_outlier_ID++;
 				}
-				else
-				{
-					meas.landmarkID = ID_in_file;
-				}
+				else { meas.landmarkID = ID_in_file; }
 			}
 			else
 			{

@@ -107,7 +107,8 @@ void TestPathPlanning()
 
 	const std::string dest = "path_planning.png";
 	cout << "Saving output to: " << dest << endl;
-	img.saveToFile(dest);
+	bool savedOk = img.saveToFile(dest);
+	ASSERT_(savedOk);
 	printf("Done\n");
 
 #if MRPT_HAS_WXWIDGETS

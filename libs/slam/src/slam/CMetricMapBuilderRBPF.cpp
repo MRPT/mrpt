@@ -129,10 +129,7 @@ void CMetricMapBuilderRBPF::processActionObservation(
 			odoIncrementSinceLastLocalization.mean +=
 				mrpt::poses::CPose3D(act2D->poseChange->getMeanVal());
 		}
-		else
-		{
-			MRPT_LOG_WARN("Action contains no odometry.\n");
-		}
+		else { MRPT_LOG_WARN("Action contains no odometry.\n"); }
 	}
 
 	// Execute particle filter:
@@ -252,10 +249,7 @@ void CMetricMapBuilderRBPF::processActionObservation(
 
 		m_statsLastIteration.observationsInserted = true;
 	}
-	else
-	{
-		m_statsLastIteration.observationsInserted = false;
-	}
+	else { m_statsLastIteration.observationsInserted = false; }
 
 	// Added 29/JUN/2007 JLBC: Tell all maps that they can now free aux.
 	// variables
@@ -470,7 +464,8 @@ void CMetricMapBuilderRBPF::saveCurrentEstimationToImage(
 	{
 		CImage img(1, 1, CH_GRAY);
 		drawCurrentEstimationToImage(&img);
-		img.saveToFile(file);
+		bool savedOk = img.saveToFile(file);
+		ASSERT_(savedOk);
 	}
 
 	MRPT_END
