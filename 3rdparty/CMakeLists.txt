@@ -93,6 +93,8 @@ if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
 	set(SRCS_LIST
 		${RPLIDAR_ROOT}/src/*.cpp
 		${RPLIDAR_ROOT}/src/hal/*.cpp
+		${RPLIDAR_ROOT}/src/dataunpacker/*.cpp
+		${RPLIDAR_ROOT}/src/dataunpacker/unpacker/*.cpp
 		${RPLIDAR_ROOT}/include/*.h
 	)
 	if (WIN32)
