@@ -1078,7 +1078,10 @@ void MainWindow::readRawlogFiles(string rawlog)
 	/// check if rawlog_type ==0 implying rawlog has single images else stereo
 	/// images
 	if (rawlog_type == 0) { image2->setVisible(false); }
-	else { image2->setVisible(true); }
+	else
+	{
+		image2->setVisible(true);
+	}
 }
 /************************************************************************************************
  *								On File Input Choose *
@@ -3615,7 +3618,10 @@ string MainWindow::findRepeatability(float mouse_x, float mouse_y)
 			}
 		}
 		if (repeatable) { repeatability++; }
-		else { flag_consecutive = false; }
+		else
+		{
+			flag_consecutive = false;
+		}
 		if (flag_consecutive)
 		{
 			consecutive++;
@@ -3737,7 +3743,10 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 			}
 			myfile.close();
 		}
-		else { cout << "Unable to open homography file"; }
+		else
+		{
+			cout << "Unable to open homography file";
+		}
 	}
 	for (int k = 0; k < 6; k++)
 	{
@@ -4031,12 +4040,17 @@ void MainWindow::Mouse_Pressed()
 
 	/// mapping to the correct x and y dimensions in the qlabel to correctly
 	/// get the clicked point in horizontal and vertical direction
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+	int pixel_width = image1->pixmap()->width();
+	double pixel_height = image1->pixmap()->height();
+#else
 	int pixel_width = image1->pixmap(Qt::ReturnByValue).width();
+	double pixel_height = image1->pixmap(Qt::ReturnByValue).height();
+#endif
 	int mapped_mouse_x = mouse_x / pixel_width * resolution_x;
 
 	// int mapped_mouse_y = mouse_y / IMAGE_HEIGHT * resolution_y;
 
-	double pixel_height = image1->pixmap(Qt::ReturnByValue).height();
 	double other_height = image1->size().height();
 	double temp_mouse_y = (mouse_y + (pixel_height - other_height) / 2);
 	int mapped_mouse_y =
