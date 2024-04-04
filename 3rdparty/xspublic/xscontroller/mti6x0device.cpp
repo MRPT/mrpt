@@ -88,9 +88,9 @@ MtiBaseDevice::BaseFrequencyResult Mti6X0Device::getBaseFrequencyInternal(XsData
 		return result;
 	}
 
-	auto baseFreq = [&](XsDataIdentifier dataType)
+	auto baseFreq = [&](XsDataIdentifier data_type)
 	{
-		switch (dataType & XDI_TypeMask)
+		switch (data_type & XDI_TypeMask)
 		{
 		case XDI_None:					return 400;
 		case XDI_TimestampGroup:		return XDI_MAX_FREQUENCY_VAL;
