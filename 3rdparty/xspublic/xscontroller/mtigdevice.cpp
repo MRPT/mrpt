@@ -108,12 +108,12 @@ MtiBaseDevice::BaseFrequencyResult MtigDevice::getBaseFrequencyInternal(XsDataId
 		return result;
 	}
 
-	auto baseFreq = [&](XsDataIdentifier dataType)
+	auto baseFreq = [&](XsDataIdentifier data_type)
 	{
 		XsVersion const legacyFwVersion(MTMK4_700_LEGACY_FW_VERSION_MAJOR, MTMK4_700_LEGACY_FW_VERSION_MINOR, MTMK4_700_LEGACY_FW_VERSION_REVISION);
 		bool const isLegacyFirmware = (firmwareVersion() <= legacyFwVersion);
 
-		switch (dataType & XDI_TypeMask)
+		switch (data_type & XDI_TypeMask)
 		{
 		case XDI_None:					return 2000;
 		case XDI_TimestampGroup:		return XDI_MAX_FREQUENCY_VAL;

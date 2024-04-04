@@ -590,10 +590,10 @@ XsResultValue SerialInterface::readData(XsFilePos maxLength, XsByteArray& data)
 	}
 	else
 	{
-		int err = errno;
+		int err2 = errno;
 
 		data.clear();
-		switch (err)
+		switch (err2)
 		{
 		case EAGAIN:
 #if defined(EWOULDBLOCK) && EWOULDBLOCK != EAGAIN

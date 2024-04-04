@@ -40,7 +40,7 @@
 #	include <windows.h>
 #	define snprintf _snprintf
 #else
-#	include <errno.h>
+//#	include <errno.h>
 #	include <unistd.h>
 #	include <sys/time.h>
 #	include <pthread.h>
@@ -201,7 +201,8 @@ void XsTime_getDateAsString(char* dest, const struct tm* date)
 
 	year = dt.tm_year + 1900;
 	month = dt.tm_mon + 1;
-	snprintf(dest, 9, "%04d%02d%02d", year, month, dt.tm_mday);
+	volatile int dst_size = 9; // JLBC: just to supress truncation warning
+	snprintf(dest, dst_size, "%04d%02d%02d", year, month, dt.tm_mday);
 }
 
 /*! \brief Retrieves the time as binary
@@ -220,7 +221,8 @@ void XsTime_getTimeAsString(char* dest, const struct tm* date)
 	else
 		XsTime_getDateTime(&dt);
 
-	snprintf(dest, 8, "%02d%02d%02d%02d", dt.tm_hour, dt.tm_min, dt.tm_sec, 0);
+	volatile int dst_size = 8; // JLBC: just to supress truncation warning
+	snprintf(dest, dst_size, "%02d%02d%02d%02d", dt.tm_hour, dt.tm_min, dt.tm_sec, 0);
 }
 
 /*! \brief Retrieves the date as wstring representation
