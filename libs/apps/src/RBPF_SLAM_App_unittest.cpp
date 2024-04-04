@@ -67,8 +67,7 @@ void generic_rbpf_slam_test(
 	}
 }
 
-static auto tester_for_2006_01_21 = [](mrpt::apps::RBPF_SLAM_App_Base& o)
-{
+static auto tester_for_2006_01_21 = [](mrpt::apps::RBPF_SLAM_App_Base& o) {
 	EXPECT_EQ(o.out_estimated_path.size(), 224U);
 	const auto p = mrpt::poses::CPose3D(o.out_estimated_path.rbegin()->second);
 	const auto p_gt = mrpt::poses::CPose3D::FromString(
@@ -79,8 +78,7 @@ static auto tester_for_2006_01_21 = [](mrpt::apps::RBPF_SLAM_App_Base& o)
 		<< "\nexpected pose=" << p_gt.asString();
 };
 
-static auto tester_for_ROSLAM_demo = [](mrpt::apps::RBPF_SLAM_App_Base& o)
-{
+static auto tester_for_ROSLAM_demo = [](mrpt::apps::RBPF_SLAM_App_Base& o) {
 	EXPECT_EQ(o.out_estimated_path.size(), 99U);
 	const auto p = mrpt::poses::CPose3D(o.out_estimated_path.rbegin()->second);
 	const auto p_gt = mrpt::poses::CPose3D::FromString(

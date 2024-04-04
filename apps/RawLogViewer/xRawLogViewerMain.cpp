@@ -2704,7 +2704,10 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent&)
 								"wt");
 							ASSERT_(files->second.second);
 						}
-						else { files = &lstFiles[obs->sensorLabel]; }
+						else
+						{
+							files = &lstFiles[obs->sensorLabel];
+						}
 
 						for (size_t j = 0; j < obs->getScanSize(); j++)
 							::fprintf(
@@ -2771,7 +2774,10 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent&)
 							"wt");
 						ASSERT_(files->second.second);
 					}
-					else { files = &lstFiles[obs->sensorLabel]; }
+					else
+					{
+						files = &lstFiles[obs->sensorLabel];
+					}
 
 					for (size_t j = 0; j < obs->getScanSize(); j++)
 						::fprintf(
