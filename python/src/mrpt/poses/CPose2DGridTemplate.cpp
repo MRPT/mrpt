@@ -11,6 +11,7 @@
 #include <optional>
 #include <sstream> // __str__
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include <functional>
@@ -28,7 +29,7 @@
 
 void bind_mrpt_poses_CPose2DGridTemplate(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::poses::CPose2DGridTemplate file:mrpt/poses/CPose2DGridTemplate.h line:22
+	{ // mrpt::poses::CPose2DGridTemplate file:mrpt/poses/CPose2DGridTemplate.h line:24
 		pybind11::class_<mrpt::poses::CPose2DGridTemplate<double>, std::shared_ptr<mrpt::poses::CPose2DGridTemplate<double>>> cl(M("mrpt::poses"), "CPose2DGridTemplate_double_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::poses::CPose2DGridTemplate<double>(); } ), "doc" );
 		cl.def( pybind11::init( [](double const & a0){ return new mrpt::poses::CPose2DGridTemplate<double>(a0); } ), "doc" , pybind11::arg("xMin"));
@@ -51,6 +52,8 @@ void bind_mrpt_poses_CPose2DGridTemplate(std::function< pybind11::module &(std::
 		cl.def("setSize", [](mrpt::poses::CPose2DGridTemplate<double> &o, double const & a0, double const & a1, double const & a2, double const & a3, double const & a4, double const & a5, double const & a6) -> void { return o.setSize(a0, a1, a2, a3, a4, a5, a6); }, "", pybind11::arg("xMin"), pybind11::arg("xMax"), pybind11::arg("yMin"), pybind11::arg("yMax"), pybind11::arg("resolutionXY"), pybind11::arg("resolutionPhi"), pybind11::arg("phiMin"));
 		cl.def("setSize", (void (mrpt::poses::CPose2DGridTemplate<double>::*)(double, double, double, double, double, double, double, double)) &mrpt::poses::CPose2DGridTemplate<double>::setSize, "C++: mrpt::poses::CPose2DGridTemplate<double>::setSize(double, double, double, double, double, double, double, double) --> void", pybind11::arg("xMin"), pybind11::arg("xMax"), pybind11::arg("yMin"), pybind11::arg("yMax"), pybind11::arg("resolutionXY"), pybind11::arg("resolutionPhi"), pybind11::arg("phiMin"), pybind11::arg("phiMax"));
 		cl.def("getByPos", (double * (mrpt::poses::CPose2DGridTemplate<double>::*)(double, double, double)) &mrpt::poses::CPose2DGridTemplate<double>::getByPos, "C++: mrpt::poses::CPose2DGridTemplate<double>::getByPos(double, double, double) --> double *", pybind11::return_value_policy::automatic, pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("phi"));
+		cl.def("idx2absidx", (size_t (mrpt::poses::CPose2DGridTemplate<double>::*)(size_t, size_t, size_t) const) &mrpt::poses::CPose2DGridTemplate<double>::idx2absidx, "C++: mrpt::poses::CPose2DGridTemplate<double>::idx2absidx(size_t, size_t, size_t) const --> size_t", pybind11::arg("cx"), pybind11::arg("cy"), pybind11::arg("cPhi"));
+		cl.def("absidx2idx", (class std::tuple<unsigned long, unsigned long, unsigned long> (mrpt::poses::CPose2DGridTemplate<double>::*)(size_t) const) &mrpt::poses::CPose2DGridTemplate<double>::absidx2idx, "C++: mrpt::poses::CPose2DGridTemplate<double>::absidx2idx(size_t) const --> class std::tuple<unsigned long, unsigned long, unsigned long>", pybind11::arg("absIdx"));
 		cl.def("getByIndex", (double * (mrpt::poses::CPose2DGridTemplate<double>::*)(size_t, size_t, size_t)) &mrpt::poses::CPose2DGridTemplate<double>::getByIndex, "C++: mrpt::poses::CPose2DGridTemplate<double>::getByIndex(size_t, size_t, size_t) --> double *", pybind11::return_value_policy::automatic, pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("phi"));
 		cl.def("getXMin", (double (mrpt::poses::CPose2DGridTemplate<double>::*)() const) &mrpt::poses::CPose2DGridTemplate<double>::getXMin, "C++: mrpt::poses::CPose2DGridTemplate<double>::getXMin() const --> double");
 		cl.def("getXMax", (double (mrpt::poses::CPose2DGridTemplate<double>::*)() const) &mrpt::poses::CPose2DGridTemplate<double>::getXMax, "C++: mrpt::poses::CPose2DGridTemplate<double>::getXMax() const --> double");
@@ -65,7 +68,7 @@ void bind_mrpt_poses_CPose2DGridTemplate(std::function< pybind11::module &(std::
 		cl.def("getSizePhi", (size_t (mrpt::poses::CPose2DGridTemplate<double>::*)() const) &mrpt::poses::CPose2DGridTemplate<double>::getSizePhi, "C++: mrpt::poses::CPose2DGridTemplate<double>::getSizePhi() const --> size_t");
 		cl.def("assign", (class mrpt::poses::CPose2DGridTemplate<double> & (mrpt::poses::CPose2DGridTemplate<double>::*)(const class mrpt::poses::CPose2DGridTemplate<double> &)) &mrpt::poses::CPose2DGridTemplate<double>::operator=, "C++: mrpt::poses::CPose2DGridTemplate<double>::operator=(const class mrpt::poses::CPose2DGridTemplate<double> &) --> class mrpt::poses::CPose2DGridTemplate<double> &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::poses::CPose3DGridTemplate file:mrpt/poses/CPose3DGridTemplate.h line:23
+	{ // mrpt::poses::CPose3DGridTemplate file:mrpt/poses/CPose3DGridTemplate.h line:25
 		pybind11::class_<mrpt::poses::CPose3DGridTemplate<double>, std::shared_ptr<mrpt::poses::CPose3DGridTemplate<double>>> cl(M("mrpt::poses"), "CPose3DGridTemplate_double_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::poses::CPose3DGridTemplate<double>(); } ), "doc" );
 		cl.def( pybind11::init( [](const struct mrpt::math::TPose3D & a0){ return new mrpt::poses::CPose3DGridTemplate<double>(a0); } ), "doc" , pybind11::arg("bb_min"));
@@ -90,6 +93,8 @@ void bind_mrpt_poses_CPose2DGridTemplate(std::function< pybind11::module &(std::
 		cl.def("getByPos", (double * (mrpt::poses::CPose3DGridTemplate<double>::*)(double, double, double, double, double, double)) &mrpt::poses::CPose3DGridTemplate<double>::getByPos, "C++: mrpt::poses::CPose3DGridTemplate<double>::getByPos(double, double, double, double, double, double) --> double *", pybind11::return_value_policy::automatic, pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"), pybind11::arg("yaw"), pybind11::arg("pitch"), pybind11::arg("roll"));
 		cl.def("getByPos", (double * (mrpt::poses::CPose3DGridTemplate<double>::*)(const struct mrpt::math::TPose3D &)) &mrpt::poses::CPose3DGridTemplate<double>::getByPos, "C++: mrpt::poses::CPose3DGridTemplate<double>::getByPos(const struct mrpt::math::TPose3D &) --> double *", pybind11::return_value_policy::automatic, pybind11::arg("p"));
 		cl.def("getByIndex", (double * (mrpt::poses::CPose3DGridTemplate<double>::*)(int, int, int, int, int, int)) &mrpt::poses::CPose3DGridTemplate<double>::getByIndex, "C++: mrpt::poses::CPose3DGridTemplate<double>::getByIndex(int, int, int, int, int, int) --> double *", pybind11::return_value_policy::automatic, pybind11::arg("cx"), pybind11::arg("cy"), pybind11::arg("cz"), pybind11::arg("cY"), pybind11::arg("cP"), pybind11::arg("cR"));
+		cl.def("idx2absidx", (size_t (mrpt::poses::CPose3DGridTemplate<double>::*)(size_t, size_t, size_t, size_t, size_t, size_t) const) &mrpt::poses::CPose3DGridTemplate<double>::idx2absidx, "C++: mrpt::poses::CPose3DGridTemplate<double>::idx2absidx(size_t, size_t, size_t, size_t, size_t, size_t) const --> size_t", pybind11::arg("cx"), pybind11::arg("cy"), pybind11::arg("cz"), pybind11::arg("cYaw"), pybind11::arg("cPitch"), pybind11::arg("cRoll"));
+		cl.def("absidx2idx", (class std::tuple<unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long> (mrpt::poses::CPose3DGridTemplate<double>::*)(size_t) const) &mrpt::poses::CPose3DGridTemplate<double>::absidx2idx, "C++: mrpt::poses::CPose3DGridTemplate<double>::absidx2idx(size_t) const --> class std::tuple<unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long>", pybind11::arg("absIdx"));
 		cl.def("getMinBoundingBox", (struct mrpt::math::TPose3D (mrpt::poses::CPose3DGridTemplate<double>::*)() const) &mrpt::poses::CPose3DGridTemplate<double>::getMinBoundingBox, "C++: mrpt::poses::CPose3DGridTemplate<double>::getMinBoundingBox() const --> struct mrpt::math::TPose3D");
 		cl.def("getMaxBoundingBox", (struct mrpt::math::TPose3D (mrpt::poses::CPose3DGridTemplate<double>::*)() const) &mrpt::poses::CPose3DGridTemplate<double>::getMaxBoundingBox, "C++: mrpt::poses::CPose3DGridTemplate<double>::getMaxBoundingBox() const --> struct mrpt::math::TPose3D");
 		cl.def("getResolutionXYZ", (double (mrpt::poses::CPose3DGridTemplate<double>::*)() const) &mrpt::poses::CPose3DGridTemplate<double>::getResolutionXYZ, "C++: mrpt::poses::CPose3DGridTemplate<double>::getResolutionXYZ() const --> double");

@@ -82,11 +82,11 @@ void TestImageConvolutionFFT()
 			{
 				float r1 = I1_R(y, x);
 				float r2 = I2_R(y, x);
-				float i1 = I1_I(y, x);
-				float i2 = I2_I(y, x);
+				float im1 = I1_I(y, x);
+				float im2 = I2_I(y, x);
 
-				I2_R(y, x) = r1 * r2 - i1 * i2;
-				I2_I(y, x) = r2 * i1 + r1 * i2;
+				I2_R(y, x) = r1 * r2 - im1 * im2;
+				I2_I(y, x) = r2 * im1 + r1 * im2;
 			}
 
 		// IFFT:

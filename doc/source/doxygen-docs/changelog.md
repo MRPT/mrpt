@@ -1,5 +1,24 @@
 \page changelog Change Log
 
+# Version 2.12.1: Released April 4th, 2024
+- Changes in apps:
+  - simul-landmarks: Fix correct generation of sensorLabel and timestamps in observations.
+- Changes in libraries:
+  - \ref mrpt_obs_grp:
+    - mrpt::obs::CObservationBearingRange now implements the `exportTxt*()` virtual interface.
+  - \ref mrpt_opengl_grp:
+    - mrpt::opengl::CAssimpModel now can read embedded textures in model files.
+    - Update embedded Assimp lib version 4.1.0 -> 5.3.1 (when built as ExternalProject)
+  - \ref mrpt_poses_grp:
+    - New methods:
+      - mrpt::poses::CPose2DGridTemplate::data(), mrpt::poses::CPose3DGridTemplate::data()
+      - mrpt::poses::CPose2DGridTemplate::absidx2idx(), mrpt::poses::CPose3DGridTemplate::absidx2idx()
+      - mrpt::poses::CPose2DGridTemplate::idx2absidx(), mrpt::poses::CPose3DGridTemplate::idx2absidx()
+    - Fix const-correctness of mrpt::poses::CPose2DGridTemplate::getAsMatrix()
+  - rplidar_skd: Update to the latest upstream version, and fix all build warnings.
+  - xsens library: Fix all build warnings.
+
+
 # Version 2.12.0: Released March 17th, 2024
 - Changes in libraries:
   - \ref mrpt_obs_grp:

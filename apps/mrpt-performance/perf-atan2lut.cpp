@@ -41,8 +41,8 @@ double atan2_lut_test_query(int, int)
 	{
 		x += dx;
 		y += dy;
-		// bool valid =
-		lut.atan2(y, x, atan2val);
+		bool valid = lut.atan2(y, x, atan2val);
+		(void)valid;
 	}
 	return tictac.Tac() / step;
 }
@@ -89,8 +89,8 @@ double atan2_lut_multires_test_query(int, int)
 	{
 		x += dx;
 		y += dy;
-		// bool valid =
-		atan2lut.atan2(y, x, atan2val);
+		bool valid = atan2lut.atan2(y, x, atan2val);
+		(void)valid;
 	}
 	return tictac.Tac() / step;
 }

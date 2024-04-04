@@ -177,7 +177,11 @@ void CVelodyneScanner::loadConfig_sensorSpecific(
 
 	std::string calibration_file;
 	MRPT_LOAD_CONFIG_VAR(calibration_file, string, cfg, sect);
-	if (!calibration_file.empty()) this->loadCalibrationFile(calibration_file);
+	if (!calibration_file.empty())
+	{
+		bool calibLoadOk = loadCalibrationFile(calibration_file);
+		ASSERT_(calibLoadOk);
+	}
 
 	// Check validity:
 	const model_properties_list_t& lstModels = TModelPropertiesFactory::get();

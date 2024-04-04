@@ -3038,18 +3038,28 @@ void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent&)
 					{
 						auto obsSt = SF->getObservationByIndexAs<
 							CObservationStereoImages::Ptr>(k);
-						obsSt->imageLeft.saveToFile(format(
+						bool savedOk = obsSt->imageLeft.saveToFile(format(
 							"%s/img_stereo_%u_left_%05u.%s", outDir.c_str(), k,
 							imgSaved, imgFileExtension.c_str()));
+
+						ASSERT_(savedOk);
+
 						if (obsSt->hasImageRight)
-							obsSt->imageRight.saveToFile(format(
+						{
+							savedOk = obsSt->imageRight.saveToFile(format(
 								"%s/img_stereo_%u_right_%05u.%s",
 								outDir.c_str(), k, imgSaved,
 								imgFileExtension.c_str()));
+							ASSERT_(savedOk);
+						}
+
 						if (obsSt->hasImageDisparity)
-							obsSt->imageDisparity.saveToFile(format(
+						{
+							savedOk = obsSt->imageDisparity.saveToFile(format(
 								"%s/img_stereo_%u_disp_%05u.%s", outDir.c_str(),
 								k, imgSaved, imgFileExtension.c_str()));
+							ASSERT_(savedOk);
+						}
 						imgSaved++;
 					}
 					if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
@@ -3059,9 +3069,10 @@ void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent&)
 							SF->getObservationByIndexAs<CObservationImage::Ptr>(
 								k);
 
-						obsIm->image.saveToFile(format(
+						bool savedOk = obsIm->image.saveToFile(format(
 							"%s/img_monocular_%u_%05u.%s", outDir.c_str(), k,
 							imgSaved, imgFileExtension.c_str()));
+						ASSERT_(savedOk);
 						imgSaved++;
 					}
 				}

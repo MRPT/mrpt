@@ -93,7 +93,8 @@ void TestCameraCaptureAsk()
 					const std::string sFile =
 						mrpt::format("frame%05i.png", cnt++);
 					cout << "Saving frame to: " << sFile << endl;
-					img->saveToFile(sFile);
+					bool savedOk = img->saveToFile(sFile);
+					ASSERT_(savedOk);
 				}
 				break;
 				default: break;

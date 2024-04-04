@@ -174,7 +174,9 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 
 			my_graph_t graph, graph_good;
 			graph.loadFromTextFile(in_f);
+
 			graph_good.loadFromTextFile(good_f);
+
 			ASSERT_(graph.nodeCount() > 1);
 			ASSERT_EQ(graph.nodeCount(), graph_good.nodeCount());
 			ASSERT_EQ(graph.edgeCount(), graph_good.edgeCount());

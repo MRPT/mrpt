@@ -598,7 +598,9 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 						string fileName = format(
 							"img_stereo_%u_left_%05u.%s", k, imgSaved,
 							imgFileExtension.c_str());
-						obsSt->imageLeft.saveToFile(outDir + fileName);
+						bool savedOk =
+							obsSt->imageLeft.saveToFile(outDir + fileName);
+						ASSERT_(savedOk);
 						obsSt->imageLeft.setExternalStorage(fileName);
 
 						imgSaved++;
@@ -607,7 +609,9 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 						fileName = format(
 							"img_stereo_%u_right_%05u.%s", k, imgSaved,
 							imgFileExtension.c_str());
-						obsSt->imageRight.saveToFile(outDir + fileName);
+						savedOk =
+							obsSt->imageRight.saveToFile(outDir + fileName);
+						ASSERT_(savedOk);
 						obsSt->imageRight.setExternalStorage(fileName);
 
 						imgSaved++;
@@ -623,7 +627,9 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 						string fileName = format(
 							"img_monocular_%u_%05u.%s", k, imgSaved,
 							imgFileExtension.c_str());
-						obsIm->image.saveToFile(outDir + fileName);
+						bool savedOk =
+							obsIm->image.saveToFile(outDir + fileName);
+						ASSERT_(savedOk);
 						obsIm->image.setExternalStorage(fileName);
 
 						imgSaved++;

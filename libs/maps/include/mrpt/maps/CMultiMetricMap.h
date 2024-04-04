@@ -220,12 +220,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	const mrpt::maps::CSimplePointsMap* getAsSimplePointsMap() const override;
 
 	/** Returns a short description of the map. */
-	std::string asString() const override
-	{
-		return mrpt::format(
-			"Multi-map with %u children.",
-			static_cast<unsigned int>(maps.size()));
-	}
+	std::string asString() const override;
 
    protected:
 	// See base class docs:

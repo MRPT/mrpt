@@ -107,7 +107,10 @@ DECLARE_OP_FUNCTION(op_externalize)
 				{
 					const string fileName =
 						"img_"s + label_time + "_left."s + imgFileExtension;
-					obsSt->imageLeft.saveToFile(outDir + fileName);
+					bool savedOk =
+						obsSt->imageLeft.saveToFile(outDir + fileName);
+					ASSERT_(savedOk);
+
 					obsSt->imageLeft.setExternalStorage(fileName);
 					entries_converted++;
 				}
@@ -118,7 +121,10 @@ DECLARE_OP_FUNCTION(op_externalize)
 				{
 					const string fileName =
 						"img_"s + label_time + "_right."s + imgFileExtension;
-					obsSt->imageRight.saveToFile(outDir + fileName);
+					bool savedOk =
+						obsSt->imageRight.saveToFile(outDir + fileName);
+					ASSERT_(savedOk);
+
 					obsSt->imageRight.setExternalStorage(fileName);
 					entries_converted++;
 				}
@@ -134,7 +140,9 @@ DECLARE_OP_FUNCTION(op_externalize)
 				{
 					const string fileName =
 						"img_"s + label_time + "."s + imgFileExtension;
-					obsIm->image.saveToFile(outDir + fileName);
+					bool savedOk = obsIm->image.saveToFile(outDir + fileName);
+					ASSERT_(savedOk);
+
 					obsIm->image.setExternalStorage(fileName);
 					entries_converted++;
 				}
@@ -199,7 +207,10 @@ DECLARE_OP_FUNCTION(op_externalize)
 				{
 					const string fileName =
 						"3DCAM_"s + label_time + "_INT."s + imgFileExtension;
-					obs3D->intensityImage.saveToFile(outDir + fileName);
+					bool savedOk =
+						obs3D->intensityImage.saveToFile(outDir + fileName);
+					ASSERT_(savedOk);
+
 					obs3D->intensityImage.setExternalStorage(fileName);
 					entries_converted++;
 				}
@@ -212,7 +223,10 @@ DECLARE_OP_FUNCTION(op_externalize)
 				{
 					const string fileName =
 						"3DCAM_"s + label_time + "_CONF."s + imgFileExtension;
-					obs3D->confidenceImage.saveToFile(outDir + fileName);
+					bool savedOk =
+						obs3D->confidenceImage.saveToFile(outDir + fileName);
+					ASSERT_(savedOk);
+
 					obs3D->confidenceImage.setExternalStorage(fileName);
 					entries_converted++;
 				}

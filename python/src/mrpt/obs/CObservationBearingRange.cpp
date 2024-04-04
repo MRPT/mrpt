@@ -146,6 +146,45 @@ struct PyCallBack_mrpt_obs_CObservationBearingRange : public mrpt::obs::CObserva
 		}
 		return CObservationBearingRange::setSensorPose(a0);
 	}
+	bool exportTxtSupported() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationBearingRange *>(this), "exportTxtSupported");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return CObservationBearingRange::exportTxtSupported();
+	}
+	std::string exportTxtHeader() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationBearingRange *>(this), "exportTxtHeader");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<std::string>::value) {
+				static pybind11::detail::override_caster_t<std::string> caster;
+				return pybind11::detail::cast_ref<std::string>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<std::string>(std::move(o));
+		}
+		return CObservationBearingRange::exportTxtHeader();
+	}
+	std::string exportTxtDataRow() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationBearingRange *>(this), "exportTxtDataRow");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<std::string>::value) {
+				static pybind11::detail::override_caster_t<std::string> caster;
+				return pybind11::detail::cast_ref<std::string>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<std::string>(std::move(o));
+		}
+		return CObservationBearingRange::exportTxtDataRow();
+	}
 	using _binder_ret_0 = mrpt::Clock::time_point;
 	_binder_ret_0 getOriginalReceivedTimeStamp() const override {
 		pybind11::gil_scoped_acquire gil;
@@ -172,45 +211,6 @@ struct PyCallBack_mrpt_obs_CObservationBearingRange : public mrpt::obs::CObserva
 			else return pybind11::detail::cast_safe<std::string>(std::move(o));
 		}
 		return CObservation::asString();
-	}
-	bool exportTxtSupported() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationBearingRange *>(this), "exportTxtSupported");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
-				static pybind11::detail::override_caster_t<bool> caster;
-				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<bool>(std::move(o));
-		}
-		return CObservation::exportTxtSupported();
-	}
-	std::string exportTxtHeader() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationBearingRange *>(this), "exportTxtHeader");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<std::string>::value) {
-				static pybind11::detail::override_caster_t<std::string> caster;
-				return pybind11::detail::cast_ref<std::string>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<std::string>(std::move(o));
-		}
-		return CObservation::exportTxtHeader();
-	}
-	std::string exportTxtDataRow() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationBearingRange *>(this), "exportTxtDataRow");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<std::string>::value) {
-				static pybind11::detail::override_caster_t<std::string> caster;
-				return pybind11::detail::cast_ref<std::string>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<std::string>(std::move(o));
-		}
-		return CObservation::exportTxtDataRow();
 	}
 	void unload() const override {
 		pybind11::gil_scoped_acquire gil;
@@ -831,6 +831,9 @@ void bind_mrpt_obs_CObservationBearingRange(std::function< pybind11::module &(st
 		cl.def("debugPrintOut", (void (mrpt::obs::CObservationBearingRange::*)()) &mrpt::obs::CObservationBearingRange::debugPrintOut, "Prints out the contents of the object.\n\nC++: mrpt::obs::CObservationBearingRange::debugPrintOut() --> void");
 		cl.def("getSensorPose", (void (mrpt::obs::CObservationBearingRange::*)(class mrpt::poses::CPose3D &) const) &mrpt::obs::CObservationBearingRange::getSensorPose, "C++: mrpt::obs::CObservationBearingRange::getSensorPose(class mrpt::poses::CPose3D &) const --> void", pybind11::arg("out_sensorPose"));
 		cl.def("setSensorPose", (void (mrpt::obs::CObservationBearingRange::*)(const class mrpt::poses::CPose3D &)) &mrpt::obs::CObservationBearingRange::setSensorPose, "C++: mrpt::obs::CObservationBearingRange::setSensorPose(const class mrpt::poses::CPose3D &) --> void", pybind11::arg("newSensorPose"));
+		cl.def("exportTxtSupported", (bool (mrpt::obs::CObservationBearingRange::*)() const) &mrpt::obs::CObservationBearingRange::exportTxtSupported, "C++: mrpt::obs::CObservationBearingRange::exportTxtSupported() const --> bool");
+		cl.def("exportTxtHeader", (std::string (mrpt::obs::CObservationBearingRange::*)() const) &mrpt::obs::CObservationBearingRange::exportTxtHeader, "C++: mrpt::obs::CObservationBearingRange::exportTxtHeader() const --> std::string");
+		cl.def("exportTxtDataRow", (std::string (mrpt::obs::CObservationBearingRange::*)() const) &mrpt::obs::CObservationBearingRange::exportTxtDataRow, "C++: mrpt::obs::CObservationBearingRange::exportTxtDataRow() const --> std::string");
 		cl.def("assign", (class mrpt::obs::CObservationBearingRange & (mrpt::obs::CObservationBearingRange::*)(const class mrpt::obs::CObservationBearingRange &)) &mrpt::obs::CObservationBearingRange::operator=, "C++: mrpt::obs::CObservationBearingRange::operator=(const class mrpt::obs::CObservationBearingRange &) --> class mrpt::obs::CObservationBearingRange &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
 		{ // mrpt::obs::CObservationBearingRange::TMeasurement file:mrpt/obs/CObservationBearingRange.h line:51

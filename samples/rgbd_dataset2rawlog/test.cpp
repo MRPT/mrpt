@@ -195,12 +195,16 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
 
 				// RGB img:
 				obs.hasIntensityImage = true;
-				obs.intensityImage.loadFromFile(
+				bool loadOk = obs.intensityImage.loadFromFile(
 					src_path + string("/") + it_list_rgb->second);
+				ASSERT_(loadOk);
+
 				const string sRGBfile =
 					mrpt::format("%.06f_rgb.png", avrg_time);
-				obs.intensityImage.saveToFile(
+				bool savedOk = obs.intensityImage.saveToFile(
 					out_img_dir + string("/") + sRGBfile);
+				ASSERT_(savedOk);
+
 				obs.intensityImage.setExternalStorage(sRGBfile);
 
 				// Depth:
@@ -307,10 +311,14 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
 
 			// RGB img:
 			obs.hasIntensityImage = true;
-			obs.intensityImage.loadFromFile(
+			bool loadOk = obs.intensityImage.loadFromFile(
 				src_path + string("/") + it_list_rgb->second);
+			ASSERT_(loadOk);
+
 			const string sRGBfile = mrpt::format("%.06f_rgb.png", avrg_time);
-			obs.intensityImage.saveToFile(out_img_dir + string("/") + sRGBfile);
+			bool savedOk = obs.intensityImage.saveToFile(
+				out_img_dir + string("/") + sRGBfile);
+			ASSERT_(savedOk);
 			obs.intensityImage.setExternalStorage(sRGBfile);
 
 			// save:

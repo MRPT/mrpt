@@ -166,7 +166,9 @@ struct kfslam_traits<CRangeBearingKFSLAM>
 			CMatrixF H2(H);
 			CImage imgF;
 			imgF.setFromMatrix(H2, false /*it's not normalized*/);
-			imgF.saveToFile(OUT_DIR + string("/information_matrix_final.png"));
+			bool savedOk = imgF.saveToFile(
+				OUT_DIR + string("/information_matrix_final.png"));
+			ASSERT_(savedOk);
 
 			// ----------------------------------------
 			// Compute the "approximation error factor" E:

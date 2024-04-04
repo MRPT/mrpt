@@ -999,8 +999,11 @@ void camera_calib_guiDialog::OnbtnSaveImagesClick(wxCommandEvent& event)
 			string dir = string(dlg.GetPath().mb_str());
 
 			for (auto& lst_image : lst_images)
-				lst_image.second.img_original.saveToFile(
+			{
+				bool savedOk = lst_image.second.img_original.saveToFile(
 					dir + string("/") + lst_image.first + string(".png"));
+				ASSERT_(savedOk);
+			}
 		}
 	}
 	catch (const std::exception& e)

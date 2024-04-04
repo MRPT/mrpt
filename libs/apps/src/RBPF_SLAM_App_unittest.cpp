@@ -9,6 +9,7 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/apps/RBPF_SLAM_App.h>
+#include <mrpt/maps/CBeaconMap.h>
 #include <mrpt/poses/Lie/SE.h>
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
@@ -81,13 +82,23 @@ static auto tester_for_ROSLAM_demo = [](mrpt::apps::RBPF_SLAM_App_Base& o) {
 	EXPECT_EQ(o.out_estimated_path.size(), 99U);
 	const auto p = mrpt::poses::CPose3D(o.out_estimated_path.rbegin()->second);
 	const auto p_gt = mrpt::poses::CPose3D::FromString(
-		"[1.938686 3.352273 0.000000 114.993417 0.000000 0.000000]");
+		"[2.009005 3.330509 0.000000 115.004460 0.000000 0.000000]");
 
 	EXPECT_LT(mrpt::poses::Lie::SE<3>::log(p - p_gt).norm(), 1.0)
 		<< "actual pose  =" << p.asString()
 		<< "\nexpected pose=" << p_gt.asString();
 
-	MRPT_TODO("Stricter unit tests: check for estimated landmark positions");
+	const auto& maps = o.mapBuilder->getCurrentlyBuiltMetricMap().maps;
+	ASSERT_EQUAL_(maps.size(), 1U);
+	auto beaconMap =
+		std::dynamic_pointer_cast<mrpt::maps::CBeaconMap>(maps.at(0));
+	ASSERT_(beaconMap);
+
+	// TODO(jlbc): check why actual LM mean positions seem not to match GT?
+	// beaconMap->saveMetricMapRepresentationToFile("beaconMap");
+
+	// there are 14 beacons:
+	EXPECT_EQ(beaconMap->size(), 14UL);
 };
 
 TEST(RBPF_SLAM_App, MapFromRawlog_Lidar2D_optimal_sampling)
