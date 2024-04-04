@@ -79,7 +79,6 @@ void CIncrementalMapPartitioner::TOptions::loadFromConfigFile(
 	mrpt::config::CConfigFilePrefixer cfp(
 		source, section + std::string("."), "");
 	metricmap.loadFromConfigFile(cfp, "metricmap");
-	MRPT_TODO("Add link to example INI file");
 
 	MRPT_END
 }

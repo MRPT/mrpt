@@ -315,6 +315,16 @@ const CSimplePointsMap* CMultiMetricMap::getAsSimplePointsMap() const
 	MRPT_END
 }
 
+std::string CMultiMetricMap::asString() const
+{
+	std::stringstream ss;
+	ss << "Multi-map with " << maps.size() << " children maps: ";
+	for (size_t i = 0; i < maps.size(); i++)
+		ss << "[" << i << "] " << maps[i]->asString() << ", ";
+
+	return ss.str();
+}
+
 mrpt::maps::CMetricMap::Ptr CMultiMetricMap::mapByIndex(size_t idx) const
 {
 	MRPT_START

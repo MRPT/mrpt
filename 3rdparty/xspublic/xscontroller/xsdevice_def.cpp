@@ -499,9 +499,9 @@ XsOutputConfiguration XsDevice::findConfiguration(XsDataIdentifier dataType) con
 
 	XsOutputConfigurationArray cfg = outputConfiguration();
 	auto item = std::find_if(cfg.begin(), cfg.end(),
-		[&](const XsOutputConfiguration &cfg)
+		[&](const XsOutputConfiguration &cfg2)
 		{
-			return (cfg.m_dataIdentifier & mask) == dataType;
+			return (cfg2.m_dataIdentifier & mask) == dataType;
 		}
 
 	);

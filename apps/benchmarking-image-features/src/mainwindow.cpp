@@ -1129,9 +1129,9 @@ void MainWindow::on_file_input_choose(int choice)
 	{
 		next_button->setVisible(true);
 		prev_button->setVisible(true);
-		if (choice != 4 || choice != 2)	 // no need of vision options for stereo
-			// datasets and rawlog formats
-			makeVisionOptionsVisible(true);
+		// no need of vision options for stereo
+		// datasets and rawlog formats
+		if (choice == 4 || choice == 2) makeVisionOptionsVisible(true);
 	}
 
 	if (choice == 3)
@@ -1178,14 +1178,19 @@ void MainWindow::fillDetectorInfo()
 {
 	numFeats = numFeaturesLineEdit->text().toInt();
 
-	img1.loadFromFile(file_path1);
+	bool loadOk = img1.loadFromFile(file_path1);
+	ASSERT_(loadOk);
+
 	resolution_x = img1.getWidth();
 	resolution_y = img1.getHeight();
 
 	if (currentInputIndex == 1 || currentInputIndex == 4 ||
 		(currentInputIndex == 2 &&
 		 rawlog_type == 1))	 // stereo image or stereo dataset
-		img2.loadFromFile(file_path2);
+	{
+		loadOk = img2.loadFromFile(file_path2);
+		ASSERT_(loadOk);
+	}
 
 	if (detector_selected == 0)	 // 0 = KLT Detector
 	{
@@ -1308,7 +1313,8 @@ void MainWindow::fillDescriptorInfo()
 	// read inputs from user
 	ReadInputFormat();
 	numFeats = numFeaturesLineEdit->text().toInt();
-	img1.loadFromFile(file_path1);
+	bool loadOk = img1.loadFromFile(file_path1);
+	ASSERT_(loadOk);
 
 	resolution_x = img1.getWidth();
 	resolution_y = img1.getHeight();
@@ -1316,7 +1322,10 @@ void MainWindow::fillDescriptorInfo()
 	if (currentInputIndex == 1 || currentInputIndex == 4 ||
 		(currentInputIndex == 2 &&
 		 rawlog_type == 1))	 // stereo image or stereo dataset
-		img2.loadFromFile(file_path2);
+	{
+		loadOk = img2.loadFromFile(file_path2);
+		ASSERT_(loadOk);
+	}
 
 	if (descriptor_selected == 0)  //!< SIFT Descriptors
 	{
@@ -1761,7 +1770,9 @@ void MainWindow::on_browse_button_clicked()
 	if (currentInputIndex == 0)
 	{
 		file_path1 = inputFilePath->text().toStdString();
-		img1.loadFromFile(file_path1);
+		bool loadOk = img1.loadFromFile(file_path1);
+		ASSERT_(loadOk);
+
 		resolution_x = img1.getWidth();
 		resolution_y = img1.getHeight();
 	}
@@ -1772,11 +1783,14 @@ void MainWindow::on_browse_button_clicked()
 		file_path1 = inputFilePath->text().toStdString();
 		file_path2 = inputFilePath2->text().toStdString();
 
-		img1.loadFromFile(file_path1);
+		bool loadOk = img1.loadFromFile(file_path1);
+		ASSERT_(loadOk);
+
 		resolution_x = img1.getWidth();
 		resolution_y = img1.getHeight();
 
-		img2.loadFromFile(file_path2);
+		loadOk = img2.loadFromFile(file_path2);
+		ASSERT_(loadOk);
 	}
 }
 
@@ -1812,7 +1826,11 @@ void MainWindow::on_browse_button_clicked2()
 
 	file_path2 = inputFilePath2->text().toStdString();
 
-	if (currentInputIndex == 1) img2.loadFromFile(file_path2);
+	if (currentInputIndex == 1)
+	{
+		bool loadOk = img2.loadFromFile(file_path2);
+		ASSERT_(loadOk);
+	}
 }
 
 /************************************************************************************************
@@ -1943,28 +1961,15 @@ void MainWindow::readFilesFromFolder(int next_prev)
 		}
 
 		/// this loop simply pushes absolute paths for the left images
-		for (unsigned int i = 0, j = 0; i < files.size(); i++)
-		{
-			if (files.at(i).size() > 4)	 // this removes the . and .. in linux
-			// as all files will have size more
-			// than 4 .png .jpg etc.
-			{
+		for (unsigned int i = 0; i < files.size(); i++)
+			if (files.at(i).size() > 4)
 				files_fullpath.push_back(file_path1 + "/" + files.at(i));
-				j++;
-			}
-		}  // end of for
 
 		/// this loop simply pushes absolute paths for the right images
-		for (unsigned int i = 0, j = 0; i < files2.size(); i++)
-		{
-			if (files2.at(i).size() > 4)  // this removes the . and .. in linux
-			// as all files will have size more
-			// than 4 .png .jpg etc.
-			{
+		for (unsigned int i = 0; i < files2.size(); i++)
+			if (files2.at(i).size() > 4)
 				files_fullpath2.push_back(file_path1 + "/" + files2.at(i));
-				j++;
-			}
-		}  // end of for
+
 		sort(
 			files_fullpath2.begin(),
 			files_fullpath2.end());	 // Use the start and end like this
@@ -1972,22 +1977,15 @@ void MainWindow::readFilesFromFolder(int next_prev)
 	}
 	else if (
 		currentInputIndex == 3 || currentInputIndex == 4 ||
-		currentInputIndex ==
-			2)	// meaning stereo dataset or single image dataset
+		currentInputIndex == 2	// stereo dataset or single image dataset
+	)
 	{
 		dir = opendir(file_path1.c_str());
 		while ((pdir = readdir(dir)))
 			files.emplace_back(pdir->d_name);
-		for (unsigned int i = 0, j = 0; i < files.size(); i++)
-		{
-			if (files.at(i).size() > 4)	 // this removes the . and .. in linux
-			// as all files will have size more
-			// than 4 .png .jpg etc.
-			{
+		for (unsigned int i = 0; i < files.size(); i++)
+			if (files.at(i).size() > 4)
 				files_fullpath.push_back(file_path1 + "/" + files.at(i));
-				j++;
-			}
-		}  // end of for
 	}
 	sort(
 		files_fullpath.begin(),
@@ -2005,16 +2003,11 @@ void MainWindow::readFilesFromFolder(int next_prev)
 		dir2 = opendir(file_path2.c_str());
 		while ((pdir2 = readdir(dir2)))
 			files2.emplace_back(pdir2->d_name);
-		for (unsigned int i = 0, j = 0; i < files2.size(); i++)
-		{
-			if (files2.at(i).size() > 4)  // this removes the . and .. in linux
-			// as all files will have size more
-			// than 4 .png .jpg etc.
-			{
+
+		for (unsigned int i = 0; i < files2.size(); i++)
+			if (files2.at(i).size() > 4)
 				files_fullpath2.push_back(file_path2 + "/" + files2.at(i));
-				j++;
-			}
-		}  // end of for
+
 		sort(
 			files_fullpath2.begin(),
 			files_fullpath2.end());	 // Use the start and end like this
@@ -2048,7 +2041,9 @@ void MainWindow::displayImagesWithoutDetector()
 	/// DISPLAYING THE NEXT IMAGE AS A QIMAGE WITHOUT DETECTOR, DETECTOR WILL
 	/// APPEAR ON THE IMAGE WHEN EVALUATE DETECTOR BUTTON IS CLICKED
 
-	img1.loadFromFile(file_path1);
+	bool loadOk = img1.loadFromFile(file_path1);
+	ASSERT_(loadOk);
+
 	resolution_x = img1.getWidth();
 	resolution_y = img1.getHeight();
 
@@ -2089,7 +2084,8 @@ void MainWindow::displayImagesWithoutDetector()
 	/// file has stereo images in the dataset
 	if (currentInputIndex == 4 || (currentInputIndex == 2 && rawlog_type == 1))
 	{
-		img2.loadFromFile(file_path2);
+		loadOk = img2.loadFromFile(file_path2);
+		ASSERT_(loadOk);
 
 		cv::Mat cvImg2 = img2.asCvMatRef();
 
@@ -2159,7 +2155,9 @@ void MainWindow::on_sample_clicked()
 	sampling_rate += factor;
 	ReadInputFormat();
 
-	img1.loadFromFile(file_path1);
+	bool loadOk = img1.loadFromFile(file_path1);
+	ASSERT_(loadOk);
+
 	cv::Mat cvImg_1 = img1.asCvMatRef();
 
 	cv::Mat temp1(cvImg_1.cols, cvImg_1.rows, cvImg_1.type());
@@ -2178,7 +2176,9 @@ void MainWindow::on_sample_clicked()
 
 	if (currentInputIndex == 1)
 	{
-		img2.loadFromFile(file_path2);
+		loadOk = img2.loadFromFile(file_path2);
+		ASSERT_(loadOk);
+
 		cv::Mat cvImg2 = img2.asCvMatRef();
 		cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
 
@@ -2469,17 +2469,10 @@ void MainWindow::onTrackingEnabled(int state)
 			while ((pdir = readdir(dir)))
 				files.emplace_back(pdir->d_name);
 
-			for (unsigned long i = 0, j = 0; i < files.size(); i++)
-			{
-				if (files.at(i).size() > 4)	 // this removes the . and .. in
-				// linux as all files will have
-				// size more than 4 .png .jpg etc.
-				{
+			for (unsigned long i = 0; i < files.size(); i++)
+				if (files.at(i).size() > 4)
 					files_fullpath_tracking.push_back(
 						file_path_temp + "/" + files.at(i));
-					j++;
-				}
-			}  // end of for
 		}
 		sort(
 			files_fullpath_tracking.begin(),
@@ -2839,22 +2832,12 @@ void MainWindow::store_Training_TestingSets()
 				dir = opendir(file_path_temp.c_str());
 				while ((pdir = readdir(dir)))
 					files.emplace_back(pdir->d_name);
-				for (unsigned int i = 0, j = 0; i < files.size(); i++)
-				{
-					if (files.at(i).size() > 4)	 // this removes the . and .. in
-					// linux as all files will have
-					// size more than 4 .png .jpg
-					// etc.
-					{
+				for (unsigned int i = 0; i < files.size(); i++)
+					if (files.at(i).size() > 4)
 						testing_files_paths.push_back(
 							file_path_temp + "/" + files.at(i));
-						j++;
-					}
-				}  // end of for
 			}
-			sort(
-				testing_files_paths.begin(),
-				testing_files_paths.end());	 // Use the start and end like this
+			sort(testing_files_paths.begin(), testing_files_paths.end());
 			// displayVector(testing_files_paths);
 		}
 	}
@@ -2872,7 +2855,8 @@ void MainWindow::on_place_recog_clicked()
 	{
 		QMessageBox::information(
 			this, "Choose Correct descriptor",
-			"For Place Recognition, Please specify only among the following "
+			"For Place Recognition, Please specify only among the "
+			"following "
 			"descriptors:\n SIFT, SURF, ORB, BLD, LATCH");
 		return;
 	}
@@ -2892,8 +2876,8 @@ void MainWindow::on_place_recog_clicked()
 		current_place_recog_index = 0;
 	}
 
-	/// return a string here to show the place recognition accuracy on different
-	/// classes
+	/// return a string here to show the place recognition accuracy on
+	/// different classes
 	string result = place_recog_obj->startPlaceRecognition(fext);
 	// int place_predicted =
 	// place_recog_obj->predictLabel(place_recog_obj->feats_testing_org,
@@ -2934,7 +2918,8 @@ void MainWindow::on_place_recog_clicked_iterate()
 	{
 		QMessageBox::information(
 			this, "Choose Correct descriptor",
-			"For Place Recognition, Please specify only among the following "
+			"For Place Recognition, Please specify only among the "
+			"following "
 			"descriptors:\n SIFT, SURF, ORB, BLD, LATCH");
 		return;
 	}
@@ -2951,8 +2936,8 @@ void MainWindow::on_place_recog_clicked_iterate()
 		current_place_recog_index = 0;
 	}
 
-	/// return a string here to show the place recognition accuracy on different
-	/// classes
+	/// return a string here to show the place recognition accuracy on
+	/// different classes
 	string result = place_recog_obj->startPlaceRecognition(fext);
 	place_recog_label->setText(QString::fromStdString(result));
 	place_recog_image = new QLabel;
@@ -2972,7 +2957,7 @@ void MainWindow::on_place_recog_clicked_iterate()
 /************************************************************************************************
  *								Main Window Constructor *
  ************************************************************************************************/
-MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
+MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
 	placeRecog_checked_flag = false;
 	current_place_recog_index = 0;
@@ -2982,7 +2967,8 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	vo_layout = new QGridLayout;
 	vo_message_running = new QLabel;
 	vo_message_running->setText(
-		"Visual Odometry is currently running on the selected dataset <br>, "
+		"Visual Odometry is currently running on the selected dataset "
+		"<br>, "
 		"Please wait till the process is finished");
 	progressBar->setMinimum(0);
 	progressBar->setMaximum(0);
@@ -3077,7 +3063,8 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	groupBox_images = new QGroupBox("Single Image");
 	image1 = new my_qlabel;
 	qimage1.load(
-		"../../apps/benchmarking-image-features/images/1.png");	 // replace this
+		"../../apps/benchmarking-image-features/images/1.png");	 // replace
+																 // this
 	// with initial
 	// image of
 	// select an
@@ -3090,7 +3077,8 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 
 	image2 = new QLabel;
 	qimage2.load(
-		"../../apps/benchmarking-image-features/images/2.png");	 // replace this
+		"../../apps/benchmarking-image-features/images/2.png");	 // replace
+																 // this
 	// with initial
 	// image of
 	// select an
@@ -3162,7 +3150,8 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 		browse_button2, SIGNAL(clicked()), this,
 		SLOT(on_browse_button_clicked2()));
 
-	/// initially have the buttons hidden as single image selected by default
+	/// initially have the buttons hidden as single image selected by
+	/// default
 	inputFilePath2->setVisible(false);
 	browse_button2->setVisible(false);
 
@@ -3201,8 +3190,8 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 		browseHomography, SIGNAL(clicked()), this,
 		SLOT(on_browse_homography_clicked3()));
 
-	/// initially have the homography widgets hidden, to be displayed when the
-	/// user selects the "Activate Homography based Reapeatability"
+	/// initially have the homography widgets hidden, to be displayed when
+	/// the user selects the "Activate Homography based Reapeatability"
 	makeHomographyParamsVisible(false);
 
 	/// tracking options
@@ -3249,8 +3238,8 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 		browseCalibration, SIGNAL(clicked()), this,
 		SLOT(on_browse_calibration_clicked()));
 
-	/// initially have the visual odometry widgets hidden, only displayed when
-	/// user selects input as single image dataset
+	/// initially have the visual odometry widgets hidden, only displayed
+	/// when user selects input as single image dataset
 	makeVisualOdomParamsVisible(false);
 
 	/// create a signal slot for displaying the progress of VO
@@ -3258,7 +3247,8 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	// connect(&visual_odom.current_frame, SIGNAL(valueChanged(int)), this,
 	// SLOT(setValue(int)));
 	// connect(
-	//	&visual_odom.cnt, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
+	//	&visual_odom.cnt, SIGNAL(valueChanged(int)), this,
+	// SLOT(setValue(int)));
 	connect(
 		&visual_odom.cnt, SIGNAL(valueChanged(int)), this,
 		SLOT(updateVOProgress()));
@@ -3305,7 +3295,8 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	place_recog_label = new QLabel;
 
 	place_recog_qimage.load(
-		"../../apps/benchmarking-image-features/images/1.png");	 // replace this
+		"../../apps/benchmarking-image-features/images/1.png");	 // replace
+																 // this
 	// with initial
 	// image of
 	// select an
@@ -3597,8 +3588,8 @@ string MainWindow::findRepeatability(float mouse_x, float mouse_y)
 
 	fillDetectorInfo();
 
-	// Clearing the features list is very important to avoid mixing subsequent
-	// button clicks output
+	// Clearing the features list is very important to avoid mixing
+	// subsequent button clicks output
 	CFeatureList temp_featsImage1;	//.clear();
 	CImage temp_img1;
 	int consecutive = 0;
@@ -3609,7 +3600,8 @@ string MainWindow::findRepeatability(float mouse_x, float mouse_y)
 	for (int i = 0; i < files_length; i++)
 	{
 		temp_featsImage1.clear();
-		temp_img1.loadFromFile(files_fullpath.at(i));
+		bool loadOk = temp_img1.loadFromFile(files_fullpath.at(i));
+		ASSERT_(loadOk);
 
 		fext.detectFeatures(temp_img1, temp_featsImage1, 0, numFeats);
 
@@ -3710,8 +3702,8 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 			// as all files will have size more
 			// than 4 .png .jpg etc.
 			{
-				/// might be a dumb way, but works. checking if the image is not
-				/// png so as to read only text files
+				/// might be a dumb way, but works. checking if the image is
+				/// not png so as to read only text files
 				// long len_file_name = files2.at(i).length();
 				// if(files2.at(i).at(len_file_name-1) != 'g')
 				files_fullpath2.push_back(file_path2_temp + "/" + files2.at(i));
@@ -3782,8 +3774,8 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 
 	fillDetectorInfo();
 
-	// Clearing the features list is very important to avoid mixing subsequent
-	// button clicks output
+	// Clearing the features list is very important to avoid mixing
+	// subsequent button clicks output
 	CFeatureList temp_featsImage1;	//.clear();
 	CImage temp_img1;
 	int consecutive = 0;
@@ -3791,22 +3783,22 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 	bool flag_consecutive = false;
 	int max_num = 0;
 
-	/// start checking the repeatability based on the homographies stored in the
-	/// homograph
+	/// start checking the repeatability based on the homographies stored in
+	/// the homograph
 	for (int i = 1; i < files_length; i++)	// i starts from 1 as we do not want
 	// to find the repeatability for the
 	// first image as that is where the
 	// key-point comes from
 	{
-		double temp_x_before =
-			mouse_x;  // (mouse_x, mouse_y) is the key-point selected in image 1
+		double temp_x_before = mouse_x;	 // (mouse_x, mouse_y) is the
+										 // key-point selected in image 1
 		double temp_y_before = mouse_y;
 
-		// temp_x_after, temp_y_after is the expected corresponding key-point in
-		// the second image after applying the homography.
-		// temp_z_after should be ideally be zero as it is a 2D image.. so its
-		// actually not required here.
-		// i-1 because 5 homographies w.r.t to the first reference frame
+		// temp_x_after, temp_y_after is the expected corresponding
+		// key-point in the second image after applying the homography.
+		// temp_z_after should be ideally be zero as it is a 2D image.. so
+		// its actually not required here. i-1 because 5 homographies w.r.t
+		// to the first reference frame
 
 		double temp_x_after = homographies[i - 1][0][0] * temp_x_before +
 			homographies[i - 1][0][1] * temp_y_before +
@@ -3816,7 +3808,8 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 			homographies[i - 1][1][2];
 
 		temp_featsImage1.clear();
-		temp_img1.loadFromFile(files_fullpath.at(i));
+		bool loadOk = temp_img1.loadFromFile(files_fullpath.at(i));
+		ASSERT_(loadOk);
 
 		fext.detectFeatures(temp_img1, temp_featsImage1, 0, numFeats);
 
@@ -3878,15 +3871,13 @@ string MainWindow::falsePositivesNegatives()
 		 rawlog_type == 1))	 // implying stereo images or stereo image dataset
 	{
 		// compute homography from img1 and img2
-		// For this case, I was thinking again in the homography approach. If
-		// the match is found outside a
-		// small area where it should be according to the homography, it is
-		// called a false positive. For the
-		// false negatives, if a keypoint in image1 should be matched to a
-		// certain keypoint in image2 according
-		// to the homography AND actually there is a keypoint in that position
-		// but the match is not found,
-		// then it's a false negative.
+		// For this case, I was thinking again in the homography approach.
+		// If the match is found outside a small area where it should be
+		// according to the homography, it is called a false positive. For
+		// the false negatives, if a keypoint in image1 should be matched to
+		// a certain keypoint in image2 according to the homography AND
+		// actually there is a keypoint in that position but the match is
+		// not found, then it's a false negative.
 
 		//"i" in featsImage1 matches with min_dist_indexes[i] in featsImage2
 		// computing false positives here
@@ -3903,7 +3894,8 @@ string MainWindow::falsePositivesNegatives()
 			if (!isInNeighborhood) { number_false_positives++; }
 
 			// now checking false negatives
-			// check if a keypoint match actually exist around the area in image
+			// check if a keypoint match actually exist around the area in
+			// image
 			// 2
 			bool flag_false_negative = false;
 			for (unsigned int j = 0; j < featsImage2.size(); j++)
@@ -3918,8 +3910,9 @@ string MainWindow::falsePositivesNegatives()
 					break;
 				}
 			}
-			// if a keypoint exists around the region in image2 but the closest
-			// match is found somewhere else instead, its a false negative
+			// if a keypoint exists around the region in image2 but the
+			// closest match is found somewhere else instead, its a false
+			// negative
 			if (flag_false_negative && !isInNeighborhood)
 				number_false_negatives++;
 
@@ -3990,21 +3983,15 @@ void MainWindow::Mouse_Pressed()
 	{
 		QMessageBox::information(
 			this, "All Buttons need to be clicked",
-			"Please click evaluate detector, evaluate descriptor and visualize "
-			"descriptor before clicking any key-Point for Visualization !!");
+			"Please click evaluate detector, evaluate descriptor and "
+			"visualize "
+			"descriptor before clicking any key-Point for Visualization "
+			"!!");
 		return;
 	}
 
-	stringstream ss;
-	ss << "x : " << image1->x << " y : " << image1->y;
-	string str = ss.str();
-
-	QString ss2 = QString::fromStdString(str);
-
-	mouse_x = image1->x;
-	mouse_y = image1->y;  // -40 as it is the padding added due to a hidden
-	// reason (hidden reason: mapping was missing from
-	// label to image actual frame size)
+	const auto mouse_x = image1->x;
+	const auto mouse_y = image1->y;
 
 	double x[numDesc1], y[numDesc1];
 	for (int i = 0; i < numDesc1; i++)
@@ -4014,7 +4001,8 @@ void MainWindow::Mouse_Pressed()
 	}
 
 	plotInfo->setText(
-		"<b>Descriptor Distances from selected descriptor<br/> in Image 1 to "
+		"<b>Descriptor Distances from selected descriptor<br/> in Image 1 "
+		"to "
 		"all other descriptors in Image 2 <b/>");
 
 	cv::Mat desc_Ref_img = imread(file_path1, IMREAD_ANYCOLOR);
@@ -4050,22 +4038,28 @@ void MainWindow::Mouse_Pressed()
 			images_static_sift_surf2->setVisible(false);
 	}
 
-	/// mapping to the correct x and y dimensions in the qlabel to correctly get
-	/// the clicked point in horizontal and vertical direction
+	/// mapping to the correct x and y dimensions in the qlabel to correctly
+	/// get the clicked point in horizontal and vertical direction
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
 	int pixel_width = image1->pixmap()->width();
+	double pixel_height = image1->pixmap()->height();
+#else
+	int pixel_width = image1->pixmap(Qt::ReturnByValue).width();
+	double pixel_height = image1->pixmap(Qt::ReturnByValue).height();
+#endif
 	int mapped_mouse_x = mouse_x / pixel_width * resolution_x;
 
 	// int mapped_mouse_y = mouse_y / IMAGE_HEIGHT * resolution_y;
 
-	double pixel_height = image1->pixmap()->height();
 	double other_height = image1->size().height();
 	double temp_mouse_y = (mouse_y + (pixel_height - other_height) / 2);
 	int mapped_mouse_y =
 		(int)((double)temp_mouse_y / (double)pixel_height * resolution_y);
 
 	int pos = findClosest(mapped_mouse_x, mapped_mouse_y, x, y, numDesc1);
-	float temp_x = featsImage1.getFeatureX(
-		pos);  // get the descriptor x coordinate corresponding to images1[cnt]
+	float temp_x =
+		featsImage1.getFeatureX(pos);  // get the descriptor x coordinate
+									   // corresponding to images1[cnt]
 	float temp_y = featsImage1.getFeatureY(pos);
 
 	// computing th repleatibility of the detector here
@@ -4097,7 +4091,8 @@ void MainWindow::Mouse_Pressed()
 			images_static2 = images2[pos];
 		}
 
-		/// this is done to fix the overlaying of labels on top of each other.
+		/// this is done to fix the overlaying of labels on top of each
+		/// other.
 		if (flag_descriptor_match) featureMatched->setVisible(false);
 
 		flag_descriptor_match = true;
@@ -4123,12 +4118,12 @@ void MainWindow::Mouse_Pressed()
 			/// draw a marker around image 1 keypoints
 			for (unsigned int i = 0; i < featsImage2.size(); i++)
 			{
-				int temp_x = (int)featsImage2.getFeatureX(i);
-				int temp_y = (int)featsImage2.getFeatureY(i);
+				int tempx = (int)featsImage2.getFeatureX(i);
+				int tempy = (int)featsImage2.getFeatureY(i);
 
 				drawMarker(
-					temp2, Point(temp_x, temp_y), Scalar(0, 255, 0),
-					MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
+					temp2, Point(tempx, tempy), Scalar(0, 255, 0), MARKER_CROSS,
+					CROSS_SIZE, CROSS_THICKNESS);
 			}
 			drawLineLSD(temp2, 1);	// 1 means right image
 			drawMarker(
@@ -4149,14 +4144,14 @@ void MainWindow::Mouse_Pressed()
 
 		/// now following lines are for computing the x and y coordinate
 
-		/// drawing marker all over the image and coloring the selected one with
-		/// a different color
+		/// drawing marker all over the image and coloring the selected one
+		/// with a different color
 		for (unsigned int i = 0; i < featsImage1.size(); i++)
 		{
-			int temp_x = (int)featsImage1.getFeatureX(i);
-			int temp_y = (int)featsImage1.getFeatureY(i);
+			int tempx = (int)featsImage1.getFeatureX(i);
+			int tempy = (int)featsImage1.getFeatureY(i);
 			drawMarker(
-				temp_desc_ref, Point(temp_x, temp_y), Scalar(0, 255, 0),
+				temp_desc_ref, Point(tempx, tempy), Scalar(0, 255, 0),
 				MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
 		}
 
@@ -4181,16 +4176,17 @@ void MainWindow::Mouse_Pressed()
 			(currentInputIndex == 2 && rawlog_type == 1))
 		{
 			desc_VisualizeGrid->addWidget(
-				images_plots_sift_surf, 0, 2, 1, 1);  // add the image distance
+				images_plots_sift_surf, 0, 2, 1,
+				1);	 // add the image distance
 			// plot with respect to
 			// other features in image
 			// 1
 			images_plots_sift_surf->setVisible(true);
 		}
 
-		QLabel* detector_info = new QLabel("");
+		QLabel* detector_info2 = new QLabel("");
 		if (currentInputIndex == 0 || currentInputIndex == 3)
-			desc_VisualizeGrid->addWidget(detector_info, 0, 1, 1, 1);
+			desc_VisualizeGrid->addWidget(detector_info2, 0, 1, 1, 1);
 
 		if (currentInputIndex == 1 || currentInputIndex == 4 ||
 			(currentInputIndex == 2 && rawlog_type == 1))
@@ -4209,7 +4205,8 @@ void MainWindow::Mouse_Pressed()
 			(currentInputIndex == 2 && rawlog_type == 1))
 			images_static_sift_surf2 = images2[pos];
 
-		/// this is done to fix the overlaying of labels on top of each other.
+		/// this is done to fix the overlaying of labels on top of each
+		/// other.
 		if (flag_descriptor_match) featureMatched->setVisible(false);
 
 		flag_descriptor_match = true;
@@ -4236,11 +4233,11 @@ void MainWindow::Mouse_Pressed()
 			/// draw a marker around image 2 keypoints
 			for (unsigned int i = 0; i < featsImage2.size(); i++)
 			{
-				int temp_x = (int)featsImage2.getFeatureX(i);
-				int temp_y = (int)featsImage2.getFeatureY(i);
+				int tempx = (int)featsImage2.getFeatureX(i);
+				int tempy = (int)featsImage2.getFeatureY(i);
 				drawMarker(
-					temp2, Point(temp_x, temp_y), Scalar(0, 255, 0),
-					MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
+					temp2, Point(tempx, tempy), Scalar(0, 255, 0), MARKER_CROSS,
+					CROSS_SIZE, CROSS_THICKNESS);
 			}
 			drawLineLSD(temp2, 1);	// 1 means draw on right image
 			drawMarker(
@@ -4263,14 +4260,14 @@ void MainWindow::Mouse_Pressed()
 		string str = ss.str();
 		// cout << str << endl;
 
-		/// drawing marker all over the image and coloring the selected one with
-		/// a different color
+		/// drawing marker all over the image and coloring the selected one
+		/// with a different color
 		for (unsigned int i = 0; i < featsImage1.size(); i++)
 		{
-			int temp_x = (int)featsImage1.getFeatureX(i);
-			int temp_y = (int)featsImage1.getFeatureY(i);
+			int tempx = (int)featsImage1.getFeatureX(i);
+			int tempy = (int)featsImage1.getFeatureY(i);
 			drawMarker(
-				temp_desc_ref, Point(temp_x, temp_y), Scalar(0, 255, 0),
+				temp_desc_ref, Point(tempx, tempy), Scalar(0, 255, 0),
 				MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
 		}
 		drawLineLSD(temp_desc_ref, 0);	// 1 means right image
@@ -4287,7 +4284,8 @@ void MainWindow::Mouse_Pressed()
 			desc_VisualizeGrid->addWidget(plotInfo, 1, 2, 1, 1);
 			plotInfo->setVisible(true);
 			desc_VisualizeGrid->addWidget(
-				images_plots_sift_surf, 0, 2, 1, 1);  // add the image distance
+				images_plots_sift_surf, 0, 2, 1,
+				1);	 // add the image distance
 			// plot with respect to
 			// other features in image
 			// 1
@@ -4296,9 +4294,9 @@ void MainWindow::Mouse_Pressed()
 
 		desc_VisualizeGrid->addWidget(images_static_sift_surf, 0, 0, 1, 1);
 
-		QLabel* detector_info = new QLabel("");
+		QLabel* detector_info2 = new QLabel("");
 		if (currentInputIndex == 0 || currentInputIndex == 3)
-			desc_VisualizeGrid->addWidget(detector_info, 0, 1, 1, 1);
+			desc_VisualizeGrid->addWidget(detector_info2, 0, 1, 1, 1);
 		if (currentInputIndex == 1 || currentInputIndex == 4 ||
 			(currentInputIndex == 2 && rawlog_type == 1))
 			desc_VisualizeGrid->addWidget(

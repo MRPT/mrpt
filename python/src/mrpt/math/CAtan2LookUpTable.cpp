@@ -40,7 +40,7 @@ void bind_mrpt_math_CAtan2LookUpTable(std::function< pybind11::module &(std::str
 		cl.def("getSizeX", (size_t (mrpt::math::CAtan2LookUpTable::*)() const) &mrpt::math::CAtan2LookUpTable::getSizeX, "C++: mrpt::math::CAtan2LookUpTable::getSizeX() const --> size_t");
 		cl.def("getSizeY", (size_t (mrpt::math::CAtan2LookUpTable::*)() const) &mrpt::math::CAtan2LookUpTable::getSizeY, "C++: mrpt::math::CAtan2LookUpTable::getSizeY() const --> size_t");
 	}
-	{ // mrpt::math::CAtan2LookUpTableMultiRes file:mrpt/math/CAtan2LookUpTable.h line:83
+	{ // mrpt::math::CAtan2LookUpTableMultiRes file:mrpt/math/CAtan2LookUpTable.h line:87
 		pybind11::class_<mrpt::math::CAtan2LookUpTableMultiRes, std::shared_ptr<mrpt::math::CAtan2LookUpTableMultiRes>> cl(M("mrpt::math"), "CAtan2LookUpTableMultiRes", "Like CAtan2LookUpTable but with a multiresolution grid for increasingly\n better accuracy in points nearer to the origin.\n Example of usage:\n \n\n\n\n\n\n\n\n\n\n\n \n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::math::CAtan2LookUpTableMultiRes(); } ) );
 		cl.def( pybind11::init<const class std::map<double, double> &>(), pybind11::arg("lst_resolutions2extensions") );

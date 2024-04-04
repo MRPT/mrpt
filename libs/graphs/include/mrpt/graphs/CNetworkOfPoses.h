@@ -290,7 +290,10 @@ class CNetworkOfPoses
 	{
 		detail::graph_ops<self_t>::load_graph_of_poses_from_text_file(
 			this, fileName);
-		if (collapse_dup_edges) this->collapseDuplicatedEdges();
+		if (collapse_dup_edges)
+		{
+			[[maybe_unused]] auto n = this->collapseDuplicatedEdges();
+		}
 	}
 
 	/** Reads as text in the format used by TORO, HoG-man, G2O.

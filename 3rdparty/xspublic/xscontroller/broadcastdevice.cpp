@@ -83,8 +83,8 @@ public:
 class ForwardConstFunc : public BroadcastForwardFunc {
 public:
 	typedef bool (XsDevice::*FuncType)() const;
-	inline ForwardConstFunc (BroadcastDevice* bc, FuncType func)
-		: BroadcastForwardFunc(bc), m_func(func) {}
+	inline ForwardConstFunc (const BroadcastDevice* bc, FuncType func)
+		: BroadcastForwardFunc(const_cast<BroadcastDevice*>(bc)), m_func(func) {}
 	virtual bool call(XsDevice* device) { return (device->*m_func)(); }
 private:
 	FuncType m_func;
@@ -95,8 +95,8 @@ template <typename Arg1>
 class ForwardConstFunc1Arg : public BroadcastForwardFunc {
 public:
 	typedef bool (XsDevice::*FuncType)(Arg1) const;
-	inline ForwardConstFunc1Arg (BroadcastDevice* bc, FuncType func, Arg1 arg1)
-		: BroadcastForwardFunc(bc), m_func(func), m_arg1(arg1) {}
+	inline ForwardConstFunc1Arg (const BroadcastDevice* bc, FuncType func, Arg1 arg1)
+		: BroadcastForwardFunc(const_cast<BroadcastDevice*>(bc)), m_func(func), m_arg1(arg1) {}
 	virtual bool call(XsDevice* device) { return (device->*m_func)(m_arg1); }
 private:
 	FuncType m_func;
@@ -321,17 +321,17 @@ bool BroadcastDevice::abortFlushing()
 
 bool BroadcastDevice::isMeasuring() const
 {
-	return ForwardConstFunc(const_cast<BroadcastDevice* const>(this), &XsDevice::isMeasuring)();
+	return ForwardConstFunc(const_cast<const BroadcastDevice*>(this), &XsDevice::isMeasuring)();
 }
 
 bool BroadcastDevice::isRecording() const
 {
-	return ForwardConstFunc(const_cast<BroadcastDevice* const>(this), &XsDevice::isRecording)();
+	return ForwardConstFunc(const_cast<const BroadcastDevice*>(this), &XsDevice::isRecording)();
 }
 
 bool BroadcastDevice::isReadingFromFile() const
 {
-	return ForwardConstFunc(const_cast<BroadcastDevice* const>(this), &XsDevice::isReadingFromFile)();
+	return ForwardConstFunc(const_cast<const BroadcastDevice*>(this), &XsDevice::isReadingFromFile)();
 }
 
 bool BroadcastDevice::gotoConfig()

@@ -130,8 +130,8 @@ XsResultValue SerialCommunicator::gotoConfig(bool detectRs485)
 		while (true)
 		{
 			std::shared_ptr<ReplyObject> reply2 = addReplyObject(XMID_GotoConfigAck);
-			XsMessage rcv = reply2->message(100);
-			if (rcv.getMessageId() != XMID_GotoConfigAck)
+			XsMessage rcv2 = reply2->message(100);
+			if (rcv2.getMessageId() != XMID_GotoConfigAck)
 				break;
 		}
 

@@ -30,7 +30,8 @@ void Test_GaussWindows()
 	CTicTac tictac;
 	CImage inImg, outImg;
 
-	inImg.loadFromFile(myDataDir + "test_in.jpg");
+	bool loadOk = inImg.loadFromFile(myDataDir + "test_in.jpg");
+	ASSERT_(loadOk);
 
 	// Smoothed image:
 	// ---------------------------

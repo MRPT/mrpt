@@ -37,6 +37,11 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 
+// Universal include for all versions of OpenCV
+#if MRPT_HAS_OPENCV
+#include <mrpt/3rdparty/do_opencv_includes.h>
+#endif
+
 #include <mutex>
 #include <optional>
 
@@ -67,7 +72,13 @@ class TexturesCache
 	};
 
 	CachedTexturesInfo& get(
-		const CAssimpModel::filepath_t& texturePath, bool verboseLoad)
+		const CAssimpModel::filepath_t& texturePath, bool verboseLoad,
+#if MRPT_HAS_ASSIMP
+		const aiScene* scene
+#else
+		const void* scene
+#endif
+	)
 	{
 		using namespace std::string_literals;
 
@@ -96,7 +107,46 @@ class TexturesCache
 				std::cout << "[CAssimpModel] Loaded texture: " << texturePath
 						  << "\n";
 		}
-		else
+#if MRPT_HAS_ASSIMP && MRPT_HAS_OPENCV
+		else if (scene->HasTextures())
+		{
+			// Embedded texture?
+			auto aiTex = scene->GetEmbeddedTexture(texturePath.c_str());
+			if (aiTex)
+			{
+				const auto texW = aiTex->mWidth;
+				const auto texH = aiTex->mHeight;
+
+				if (texH == 0)
+				{
+					// compressed format:
+					// aiTex->achFormatHint;
+
+					const cv::Mat data(texW, 1, CV_8UC1, aiTex->pcData);
+
+					const cv::Mat im = cv::imdecode(data, cv::IMREAD_UNCHANGED);
+
+					if (!im.empty())
+					{
+						// load ok:
+						entry.load_ok = true;
+
+						entry.img_rgb =
+							mrpt::img::CImage(im, mrpt::img::DEEP_COPY);
+					}
+				}
+				else
+				{
+					// uncompressed format:
+					THROW_EXCEPTION(
+						"Support for uncompressed embedded textures not "
+						"implemented yet for mrpt::opengl::CAssimpModel.");
+				}
+			}
+		}
+#endif
+
+		if (!entry.load_ok)
 		{
 			/* Error occured */
 			const std::string sError = mrpt::format(
@@ -693,12 +743,6 @@ void CAssimpModel::process_textures(const aiScene* scene)
 {
 	using namespace std::string_literals;
 
-	if (scene->HasTextures())
-		THROW_EXCEPTION(
-			"Support for meshes with *embedded* textures is not implemented. "
-			"Please, use external texture files or contribute a PR to mrpt "
-			"with this feature.");
-
 	m_textureIdMap.clear();
 	m_texturedObjects.clear();
 
@@ -746,7 +790,7 @@ void CAssimpModel::process_textures(const aiScene* scene)
 
 		// Query textureCache:
 		auto& cache = internal::TexturesCache::Instance();
-		auto& tc = cache.get(fileloc, m_verboseLoad);
+		auto& tc = cache.get(fileloc, m_verboseLoad, scene);
 
 		if (tc.load_ok)
 		{

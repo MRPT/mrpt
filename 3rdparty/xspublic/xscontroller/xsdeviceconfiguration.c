@@ -155,8 +155,8 @@ void XsDeviceConfiguration_readFromMessage(XsDeviceConfiguration* thisPtr, const
 	for (i = 0; i < nDevs; ++i)
 	{
 		thisPtr->m_deviceInfo[i].m_deviceId = XsMessage_getDataLong(msg, 98+i*20);
-		XsDeviceId deviceId = {thisPtr->m_deviceInfo[i].m_deviceId, XSDEVICEID_PRODUCT_CODE_INIT, 0, 0};
-		if (XsDeviceId_isLegacyDeviceId(&deviceId))
+		XsDeviceId deviceId2 = {thisPtr->m_deviceInfo[i].m_deviceId, XSDEVICEID_PRODUCT_CODE_INIT, 0, 0};
+		if (XsDeviceId_isLegacyDeviceId(&deviceId2))
 		{
 			thisPtr->m_deviceInfo[i].m_deviceId = (uint32_t)XsMessage_getDataLong(msg, 98+i*20);
 			memcpy(thisPtr->m_deviceInfo[i].m_reserved, XsMessage_getDataBuffer(msg, 102 + i * 20), 8);
@@ -214,8 +214,8 @@ void XsDeviceConfiguration_writeToMessage(const XsDeviceConfiguration* thisPtr, 
 
 	for (i = 0; i < thisPtr->m_numberOfDevices; ++i)
 	{
-		XsDeviceId deviceId = {thisPtr->m_deviceInfo[i].m_deviceId, XSDEVICEID_PRODUCT_CODE_INIT, 0, 0};
-		if (XsDeviceId_isLegacyDeviceId(&deviceId))
+		XsDeviceId deviceId2 = {thisPtr->m_deviceInfo[i].m_deviceId, XSDEVICEID_PRODUCT_CODE_INIT, 0, 0};
+		if (XsDeviceId_isLegacyDeviceId(&deviceId2))
 		{
 			XsMessage_setDataLong (msg, (uint32_t)thisPtr->m_deviceInfo[i].m_deviceId, 98+i*20);
 			XsMessage_setDataBuffer(msg, thisPtr->m_masterInfo.m_reserved1, 8, 102+i*20);

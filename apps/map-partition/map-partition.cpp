@@ -199,8 +199,14 @@ void Test()
 		CImage img, img2;
 		img.setFromMatrix(A, true /* normalized in range [0,1] */);
 		img2.setFromMatrix(B, true /* normalized in range [0,1] */);
-		img.saveToFile("MAP-PARTITION_RESULTS/ADJ_MATRIX_BEFORE.png");
-		img2.saveToFile("MAP-PARTITION_RESULTS/ADJ_MATRIX_AFTER.png");
+
+		bool savedOk =
+			img.saveToFile("MAP-PARTITION_RESULTS/ADJ_MATRIX_BEFORE.png");
+		ASSERT_(savedOk);
+
+		savedOk = img2.saveToFile("MAP-PARTITION_RESULTS/ADJ_MATRIX_AFTER.png");
+		ASSERT_(savedOk);
+
 		win.showImage(img);
 		win2.showImage(img2);
 		win.setPos(20, 20);

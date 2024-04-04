@@ -109,7 +109,8 @@ void TestPLS()
 		std::this_thread::sleep_for(15ms);
 	};
 
-	laser.turnOff();
+	bool ok = laser.turnOff();
+	(void)ok;
 }
 
 int main(int argc, char** argv)

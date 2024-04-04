@@ -60,7 +60,8 @@ int TestOffscreenRender(int argc, char* argv[])
 
 	// render the scene
 	render.render_RGB(scene, frame);
-	frame.saveToFile(sOut);
+	bool savedOk = frame.saveToFile(sOut);
+	ASSERT_(savedOk);
 
 	return 0;
 }

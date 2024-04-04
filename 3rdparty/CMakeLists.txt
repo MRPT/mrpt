@@ -89,10 +89,12 @@ endif()
 # Build RPLIDAR?
 # ----------------------------------
 if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
-	set(RPLIDAR_ROOT ${MRPT_SOURCE_DIR}/3rdparty/rplidar_sdk/sdk/sdk/)
+	set(RPLIDAR_ROOT ${MRPT_SOURCE_DIR}/3rdparty/rplidar_sdk/sdk/)
 	set(SRCS_LIST
 		${RPLIDAR_ROOT}/src/*.cpp
 		${RPLIDAR_ROOT}/src/hal/*.cpp
+		${RPLIDAR_ROOT}/src/dataunpacker/*.cpp
+		${RPLIDAR_ROOT}/src/dataunpacker/unpacker/*.cpp
 		${RPLIDAR_ROOT}/include/*.h
 	)
 	if (WIN32)

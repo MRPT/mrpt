@@ -470,7 +470,8 @@ void CMetricMapBuilderRBPF::saveCurrentEstimationToImage(
 	{
 		CImage img(1, 1, CH_GRAY);
 		drawCurrentEstimationToImage(&img);
-		img.saveToFile(file);
+		bool savedOk = img.saveToFile(file);
+		ASSERT_(savedOk);
 	}
 
 	MRPT_END

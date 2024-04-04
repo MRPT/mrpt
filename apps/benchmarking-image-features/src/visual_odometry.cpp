@@ -292,9 +292,11 @@ Mat VisualOdometry::generateVO(
 	cvtColor(img_2_c, img_2, COLOR_BGR2GRAY);
 
 	CImage img1, img2;
-	img1.loadFromFile(filename1);
+	bool loadOk = img1.loadFromFile(filename1);
+	ASSERT_(loadOk);
 
-	img2.loadFromFile(filename2);
+	loadOk = img2.loadFromFile(filename2);
+	ASSERT_(loadOk);
 
 	// feature detection, tracking
 	vector<Point2f> points1,
@@ -351,7 +353,8 @@ Mat VisualOdometry::generateVO(
 
 		Mat currImage_c = imread(filename);
 		CImage img3;
-		img3.loadFromFile(filename);
+		loadOk = img3.loadFromFile(filename);
+		ASSERT_(loadOk);
 
 		cvtColor(currImage_c, currImage, COLOR_BGR2GRAY);
 		vector<uchar> Status;

@@ -332,7 +332,8 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
 				CObservationImage::Ptr im =
 					std::make_shared<CObservationImage>();
 				im->cameraPose = CPose3D(0, 0, 0);
-				im->image.loadFromFile(filName);
+				bool loadOk = im->image.loadFromFile(filName);
+				ASSERT_(loadOk);
 				im->timestamp = fakeTimeStamp;
 
 				// Default camera parameters:

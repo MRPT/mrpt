@@ -116,10 +116,13 @@ void TestImageFFT()
 	CImage IM1, IM2;
 	CMatrixF imgCorr;
 
-	IM1.loadFromFile(
+	bool loadOk = IM1.loadFromFile(
 		myDataDir + string("fft2_test_image_patch.jpg"), 0);  // "Patch"
-	IM2.loadFromFile(
+	ASSERT_(loadOk);
+
+	loadOk = IM2.loadFromFile(
 		myDataDir + string("fft2_test_image.jpg"), 0);	// Ref. image
+	ASSERT_(loadOk);
 
 	printf("Computing images correlation...");
 	tictac.Tic();
