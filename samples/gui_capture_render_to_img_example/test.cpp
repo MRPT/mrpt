@@ -156,7 +156,8 @@ void TestDisplay3D()
 		{
 			static int i = 0;
 			const string s = format("GRAB_%06i.png", ++i);
-			img->saveToFile(s);
+			bool savedOk = img->saveToFile(s);
+			ASSERT_(savedOk);
 			printf("Saved frame image to: %s \r", s.c_str());  // "\ r" is to
 			// overwrite the
 			// same line over

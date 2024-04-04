@@ -492,8 +492,6 @@ class MainWindow : public QMainWindow
 	QLabel* images_plots_sift_surf;	 //!< Label which holds the image to show
 	//! the descriptor distance splot
 
-	double mouse_x, mouse_y;  //!< stores the coordinates of the mouse click
-
 	bool flag_descriptor_match;	 //!< this is used to fix the overlaying of
 	//! labels on top of each other.
 	bool flag_read_files_bug;  //!< used to get rid of a bug while reading files

@@ -371,7 +371,9 @@ void CGridMapAlignerApp::run()
 			format("%s/map1_LM.png", RESULTS_DIR.c_str()), &lm1, true);
 		CImage img;
 		grid1->getAsImageFiltered(img);
-		img.saveToFile(format("%s/map1_filt.png", RESULTS_DIR.c_str()));
+		bool savedOk =
+			img.saveToFile(format("%s/map1_filt.png", RESULTS_DIR.c_str()));
+		ASSERT_(savedOk);
 	}
 
 	{
@@ -465,9 +467,10 @@ void CGridMapAlignerApp::run()
 					&lm2, true);
 				CImage img;
 				grid2->getAsImageFiltered(img);
-				img.saveToFile(format(
+				bool savedOk = img.saveToFile(format(
 					"%s/map2_filt_noise_%f.png", RESULTS_DIR.c_str(),
 					STD_NOISE_XY));
+				ASSERT_(savedOk);
 			}
 
 			// Only if the case of "save-corr-dists" we can do NOT align the
@@ -488,10 +491,7 @@ void CGridMapAlignerApp::run()
 					pdf_SOG->getMostLikelyCovarianceAndMean(
 						estimateCOV, estimateMean);
 				}
-				else
-				{
-					parts->getCovarianceAndMean(estimateCOV, estimateMean);
-				}
+				else { parts->getCovarianceAndMean(estimateCOV, estimateMean); }
 
 				float stdPhi = sqrt(estimateCOV(2, 2));
 
@@ -635,9 +635,10 @@ void CGridMapAlignerApp::run()
 								imgGrid1LY - 1 - grid1->y2idx(pp1.y),
 								TColor::black());
 
-							imgCanvas.saveToFile(format(
+							bool savedOk = imgCanvas.saveToFile(format(
 								"%s/_OVERLAP_MAPS_SOG_MODE_%04u.png",
 								RESULTS_DIR.c_str(), (unsigned int)nNode));
+							ASSERT_(savedOk);
 
 							// Save as 3D scene:
 							Scene scene;

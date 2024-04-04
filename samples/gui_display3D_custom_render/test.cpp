@@ -123,9 +123,9 @@ void TestDisplay3D()
 	while (!end && win.isOpen())
 	{
 		// Move the scene:
-		Scene::Ptr& theScene = win.get3DSceneAndLock();
+		Scene::Ptr& scene = win.get3DSceneAndLock();
 
-		opengl::CRenderizable::Ptr obj1 = theScene->getByName("ball_1");
+		opengl::CRenderizable::Ptr obj1 = scene->getByName("ball_1");
 		const double t = timer.Tac();
 		const double R = 8;
 		const double W = 5.0, Q = 3.3;

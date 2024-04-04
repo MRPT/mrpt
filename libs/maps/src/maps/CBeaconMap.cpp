@@ -774,10 +774,7 @@ bool CBeaconMap::internal_insertObservation(
 		// Observation was successfully inserted into the map
 		return true;
 	}
-	else
-	{
-		return false;
-	}
+	else { return false; }
 
 	MRPT_END
 }
@@ -1236,6 +1233,8 @@ void CBeaconMap::saveToTextFile(const string& fil) const
 	MRPT_START
 	FILE* f = os::fopen(fil.c_str(), "wt");
 	ASSERT_(f != nullptr);
+	os::fprintf(
+		f, "%% ID X Y Z C(0,0) C(1,1) C(2,2) D2 |C| C(0,1) C(1,2) C(1,1)\n");
 
 	for (const auto& m_beacon : m_beacons)
 	{

@@ -63,8 +63,9 @@ DECLARE_OP_FUNCTION(op_deexternalize)
 
 				if (obsSt->imageLeft.isExternallyStored())
 				{
-					obsSt->imageLeft.loadFromFile(
+					bool loadOk = obsSt->imageLeft.loadFromFile(
 						obsSt->imageLeft.getExternalStorageFileAbsolutePath());
+					ASSERT_(loadOk);
 					entries_converted++;
 				}
 				else
@@ -72,8 +73,9 @@ DECLARE_OP_FUNCTION(op_deexternalize)
 
 				if (obsSt->imageRight.isExternallyStored())
 				{
-					obsSt->imageRight.loadFromFile(
+					bool loadOk = obsSt->imageRight.loadFromFile(
 						obsSt->imageRight.getExternalStorageFileAbsolutePath());
+					ASSERT_(loadOk);
 					entries_converted++;
 				}
 				else
@@ -85,8 +87,9 @@ DECLARE_OP_FUNCTION(op_deexternalize)
 
 				if (obsIm->image.isExternallyStored())
 				{
-					obsIm->image.loadFromFile(
+					bool loadOk = obsIm->image.loadFromFile(
 						obsIm->image.getExternalStorageFileAbsolutePath());
+					ASSERT_(loadOk);
 					entries_converted++;
 				}
 				else
@@ -124,18 +127,20 @@ DECLARE_OP_FUNCTION(op_deexternalize)
 				if (obs3D->hasIntensityImage &&
 					obs3D->intensityImage.isExternallyStored())
 				{
-					obs3D->intensityImage.loadFromFile(
+					bool loadOk = obs3D->intensityImage.loadFromFile(
 						obs3D->intensityImage
 							.getExternalStorageFileAbsolutePath());
+					ASSERT_(loadOk);
 				}
 
 				// Confidence channel:
 				if (obs3D->hasConfidenceImage &&
 					obs3D->confidenceImage.isExternallyStored())
 				{
-					obs3D->confidenceImage.loadFromFile(
+					bool loadOk = obs3D->confidenceImage.loadFromFile(
 						obs3D->confidenceImage
 							.getExternalStorageFileAbsolutePath());
+					ASSERT_(loadOk);
 				}
 
 				// Range image & 3D points:

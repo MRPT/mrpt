@@ -221,7 +221,8 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc)
 		string fileName(format(
 			"%s/screenshot_%07i.png", capturingDir.c_str(), captureCount++));
 
-		frame.saveToFile(fileName);
+		bool savedOk = frame.saveToFile(fileName);
+		ASSERT_(savedOk);
 	}
 
 	// Estimate FPS:
@@ -916,10 +917,7 @@ void _DSceneViewerFrame::loadFromFile(
 			// Remove the camera from the object:
 			if (camIsCCameraObj) openGLSceneRef->removeObject(cam);
 		}
-		else
-		{
-			m_canvas->setCameraParams(oldCanvasCamera);
-		}
+		else { m_canvas->setCameraParams(oldCanvasCamera); }
 
 		loadedFileName = fil;
 
@@ -1093,15 +1091,9 @@ void _DSceneViewerFrame::OnBtnRecordClicked(wxCommandEvent& event)
 			captureCount = 0;
 			btnCapture->SetValue(true);
 		}
-		else
-		{
-			btnCapture->SetValue(false);
-		}
+		else { btnCapture->SetValue(false); }
 	}
-	else
-	{
-		isCapturing = false;
-	}
+	else { isCapturing = false; }
 }
 
 void _DSceneViewerFrame::OnbtnOrthoClicked(wxCommandEvent& event)
@@ -1423,7 +1415,8 @@ void _DSceneViewerFrame::OnMenuItem14Selected(wxCommandEvent& event)
 
 	if (dialog.ShowModal() != wxID_OK) return;
 
-	frame.saveToFile(std::string(dialog.GetPath().mb_str()));
+	bool savedOk = frame.saveToFile(std::string(dialog.GetPath().mb_str()));
+	ASSERT_(savedOk);
 }
 
 void _DSceneViewerFrame::OnMenuCameraTrackingArbitrary(wxCommandEvent& event)
@@ -1894,7 +1887,8 @@ void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
 			// render the scene
 			render.render_RGB(*m_canvas->getOpenGLSceneRef(), frame);
 
-			frame.saveToFile(sTargetFil);
+			bool savedOk = frame.saveToFile(sTargetFil);
+			ASSERT_(savedOk);
 		}
 	}
 	catch (const std::exception& e)

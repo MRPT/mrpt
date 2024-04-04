@@ -117,12 +117,9 @@ void register_tests_feature_extraction()
 		"feature_extraction [640x480]: FAST (OpenCV)",
 		benchmark_detectFeatures<featFAST>, 100);
 
-	MRPT_TODO("AKAZE crashes inside OpenCV. Disabled for now (Jan 2019)");
-#if 0
 	lstTests.emplace_back(
 		"feature_extraction [640x480]: AKAZE (OpenCV)",
 		benchmark_detectFeatures<featAKAZE>, 5);
-#endif
 	lstTests.emplace_back(
 		"feature_extraction [640x480]: LSD (OpenCV)",
 		benchmark_detectFeatures<featLSD>, 5);

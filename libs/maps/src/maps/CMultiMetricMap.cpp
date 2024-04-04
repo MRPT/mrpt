@@ -133,9 +133,12 @@ void CMultiMetricMap::setListOfMaps(const TSetOfMetricMapInitializers& inits)
 
 void CMultiMetricMap::internal_clear()
 {
-	std::for_each(maps.begin(), maps.end(), [](auto ptr) {
-		if (ptr) ptr->clear();
-	});
+	std::for_each(
+		maps.begin(), maps.end(),
+		[](auto ptr)
+		{
+			if (ptr) ptr->clear();
+		});
 }
 
 uint8_t CMultiMetricMap::serializeGetVersion() const { return 12; }
@@ -182,9 +185,10 @@ double CMultiMetricMap::internal_computeObservationLikelihood(
 	MRPT_START
 	double ret_log_lik = 0;
 
-	std::for_each(maps.begin(), maps.end(), [&](auto& ptr) {
-		ret_log_lik += ptr->computeObservationLikelihood(obs, takenFrom);
-	});
+	std::for_each(
+		maps.begin(), maps.end(),
+		[&](auto& ptr)
+		{ ret_log_lik += ptr->computeObservationLikelihood(obs, takenFrom); });
 	return ret_log_lik;
 
 	MRPT_END
@@ -195,9 +199,10 @@ bool CMultiMetricMap::internal_canComputeObservationLikelihood(
 	const CObservation& obs) const
 {
 	bool can_comp = false;
-	std::for_each(maps.begin(), maps.end(), [&](auto& ptr) {
-		can_comp = can_comp || ptr->canComputeObservationLikelihood(obs);
-	});
+	std::for_each(
+		maps.begin(), maps.end(),
+		[&](auto& ptr)
+		{ can_comp = can_comp || ptr->canComputeObservationLikelihood(obs); });
 	return can_comp;  //-V614
 }
 
@@ -207,10 +212,13 @@ bool CMultiMetricMap::internal_insertObservation(
 {
 	int total_insert = 0;
 
-	std::for_each(maps.begin(), maps.end(), [&](auto& ptr) {
-		const bool ret = ptr->insertObservation(obs, robotPose);
-		if (ret) total_insert++;
-	});
+	std::for_each(
+		maps.begin(), maps.end(),
+		[&](auto& ptr)
+		{
+			const bool ret = ptr->insertObservation(obs, robotPose);
+			if (ret) total_insert++;
+		});
 	return total_insert != 0;
 }
 
@@ -263,9 +271,9 @@ void CMultiMetricMap::saveMetricMapRepresentationToFile(
 void CMultiMetricMap::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
 {
 	MRPT_START
-	std::for_each(maps.begin(), maps.end(), [&](auto& ptr) {
-		ptr->getVisualizationInto(o);
-	});
+	std::for_each(
+		maps.begin(), maps.end(),
+		[&](auto& ptr) { ptr->getVisualizationInto(o); });
 	MRPT_END
 }
 
@@ -298,9 +306,9 @@ float CMultiMetricMap::compute3DMatchingRatio(
 void CMultiMetricMap::auxParticleFilterCleanUp()
 {
 	MRPT_START
-	std::for_each(maps.begin(), maps.end(), [](auto& ptr) {
-		ptr->auxParticleFilterCleanUp();
-	});
+	std::for_each(
+		maps.begin(), maps.end(),
+		[](auto& ptr) { ptr->auxParticleFilterCleanUp(); });
 	MRPT_END
 }
 
@@ -313,6 +321,16 @@ const CSimplePointsMap* CMultiMetricMap::getAsSimplePointsMap() const
 	else
 		return this->mapByClass<CSimplePointsMap>(0).get();
 	MRPT_END
+}
+
+std::string CMultiMetricMap::asString() const
+{
+	std::stringstream ss;
+	ss << "Multi-map with " << maps.size() << " children maps: ";
+	for (size_t i = 0; i < maps.size(); i++)
+		ss << "[" << i << "] " << maps[i]->asString() << ", ";
+
+	return ss.str();
 }
 
 mrpt::maps::CMetricMap::Ptr CMultiMetricMap::mapByIndex(size_t idx) const
