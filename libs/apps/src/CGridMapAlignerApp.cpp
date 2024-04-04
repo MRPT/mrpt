@@ -491,7 +491,10 @@ void CGridMapAlignerApp::run()
 					pdf_SOG->getMostLikelyCovarianceAndMean(
 						estimateCOV, estimateMean);
 				}
-				else { parts->getCovarianceAndMean(estimateCOV, estimateMean); }
+				else
+				{
+					parts->getCovarianceAndMean(estimateCOV, estimateMean);
+				}
 
 				float stdPhi = sqrt(estimateCOV(2, 2));
 

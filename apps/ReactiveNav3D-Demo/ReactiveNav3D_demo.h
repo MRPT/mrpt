@@ -156,7 +156,10 @@ class CRobotKinects
 			{
 				deletion.push_back(1);
 			}
-			else { deletion.push_back(0); }
+			else
+			{
+				deletion.push_back(0);
+			}
 		}
 		m_points.applyDeletionMask(deletion);
 	}
@@ -748,7 +751,10 @@ class CMyReactInterface
 			for (unsigned int i = 0; i < robotShape.size(); i++)
 			{
 				if (i == 0) { h = 0; }
-				else { h = robotShape.getHeight(i - 1) + h; }
+				else
+				{
+					h = robotShape.getHeight(i - 1) + h;
+				}
 
 				robotpose3d.z(h);
 				auto obj = opengl::CPolyhedron::CreateCustomPrism(
@@ -856,7 +862,10 @@ class CMyReactInterface
 				obj = scene->getByName(format("Level%d", i + 1));
 
 				if (i == 0) { h = 0; }
-				else { h = robotShape.getHeight(i - 1) + h; }
+				else
+				{
+					h = robotShape.getHeight(i - 1) + h;
+				}
 
 				robotpose3d.z(h);
 				obj->setPose(robotpose3d);

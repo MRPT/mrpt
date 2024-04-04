@@ -43,7 +43,10 @@ void TestPLS()
 				"ttyACM0): ";
 		getline(cin, SERIAL_NAME);
 	}
-	else { cout << "Using serial port: " << SERIAL_NAME << endl; }
+	else
+	{
+		cout << "Using serial port: " << SERIAL_NAME << endl;
+	}
 
 	laser.setSerialPort(SERIAL_NAME);
 

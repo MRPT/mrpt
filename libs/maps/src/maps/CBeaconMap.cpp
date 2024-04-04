@@ -774,7 +774,10 @@ bool CBeaconMap::internal_insertObservation(
 		// Observation was successfully inserted into the map
 		return true;
 	}
-	else { return false; }
+	else
+	{
+		return false;
+	}
 
 	MRPT_END
 }

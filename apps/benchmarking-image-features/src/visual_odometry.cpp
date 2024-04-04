@@ -205,7 +205,10 @@ void VisualOdometry::storeGroundTruth(string poses_ground_truth)
 		}
 		myfile.close();
 	}
-	else { cout << "Unable to open ground truth file"; }
+	else
+	{
+		cout << "Unable to open ground truth file";
+	}
 }
 
 /************************************************************************************************
