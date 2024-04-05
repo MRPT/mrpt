@@ -1,5 +1,9 @@
 \page changelog Change Log
 
+# Version 2.12.2: UNRELEASED
+(none yet)
+
+
 # Version 2.12.1: Released April 4th, 2024
 - Changes in apps:
   - simul-landmarks: Fix correct generation of sensorLabel and timestamps in observations.
