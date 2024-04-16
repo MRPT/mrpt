@@ -38,8 +38,10 @@ class CPoint3D : public CPoint<CPoint3D, 3>,
 	mrpt::math::CVectorFixedDouble<3> m_coords;
 
    public:
+	CPoint3D() : CPoint3D(.0, .0, .0) {}
+
 	/** Constructor for initializing point coordinates. */
-	inline CPoint3D(const double x = 0, const double y = 0, const double z = 0)
+	CPoint3D(const double x, const double y, const double z)
 	{
 		m_coords[0] = x;
 		m_coords[1] = y;
@@ -62,7 +64,7 @@ class CPoint3D : public CPoint<CPoint3D, 3>,
 	explicit CPoint3D(const CPose2D& p);
 
 	/** Constructor from lightweight object. */
-	inline explicit CPoint3D(const mrpt::math::TPoint3D& p)
+	explicit CPoint3D(const mrpt::math::TPoint3D& p)
 	{
 		m_coords[0] = p.x;
 		m_coords[1] = p.y;

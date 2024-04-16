@@ -39,8 +39,10 @@ class CPoint2D : public CPoint<CPoint2D, 2>,
 	mrpt::math::CVectorFixedDouble<2> m_coords;
 
    public:
+	CPoint2D() : CPoint2D(.0, .0) {}
+
 	/** Constructor for initializing point coordinates. */
-	inline CPoint2D(double x = 0, double y = 0)
+	CPoint2D(double x, double y)
 	{
 		m_coords[0] = x;
 		m_coords[1] = y;
@@ -54,7 +56,7 @@ class CPoint2D : public CPoint<CPoint2D, 2>,
 		m_coords[1] = b.y();
 	}
 
-	/** Implicit constructor from lightweight type. */
+	/** Explicit constructor from lightweight type. */
 	explicit CPoint2D(const mrpt::math::TPoint2D& o);
 
 	/** Explicit constructor from lightweight type (loses the z coord). */
