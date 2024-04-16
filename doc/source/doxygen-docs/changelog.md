@@ -1,7 +1,11 @@
 \page changelog Change Log
 
 # Version 2.12.2: UNRELEASED
-(none yet)
+- Changes in libraries:
+  - \ref mrpt_math_grp:
+    - Remove deprecated headers:
+      - `<mrpt/math/lightweight_geom_data_frwds.h>`
+      - `<mrpt/math/lightweight_geom_data.h>`
 
 
 # Version 2.12.1: Released April 4th, 2024
