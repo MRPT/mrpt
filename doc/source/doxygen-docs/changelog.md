@@ -6,6 +6,8 @@
     - Remove deprecated headers:
       - `<mrpt/math/lightweight_geom_data_frwds.h>`
       - `<mrpt/math/lightweight_geom_data.h>`
+- BUG FIXES:
+  - rosbag2rawlog: Fix wrong sensorPose while importing ROS1 datasets.
 
 
 # Version 2.12.1: Released April 4th, 2024
