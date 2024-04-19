@@ -146,6 +146,8 @@ void CGeneralizedEllipsoidTemplate<2>::implUpdate_Triangles()
 template <>
 void CGeneralizedEllipsoidTemplate<3>::implUpdate_Triangles()
 {
+	using P3f = mrpt::math::TPoint3Df;
+
 	const auto& pts = m_render_pts;
 
 	// Render precomputed points in m_render_pts:
@@ -173,9 +175,9 @@ void CGeneralizedEllipsoidTemplate<3>::implUpdate_Triangles()
 
 		tris.emplace_back(
 			// Points
-			pts[0], pts[idxp], pts[idx],
+			P3f(pts[0]), P3f(pts[idxp]), P3f(pts[idx]),
 			// Normals:
-			pts[0], pts[idxp], pts[idx]);
+			P3f(pts[0]), P3f(pts[idxp]), P3f(pts[idx]));
 	}
 
 	// Middle slices: triangle strip (if it were solid)
@@ -192,14 +194,14 @@ void CGeneralizedEllipsoidTemplate<3>::implUpdate_Triangles()
 
 			tris.emplace_back(
 				// Points
-				pts[idx0 + i], pts[idx0 + ii], pts[idx1 + i],
+				P3f(pts[idx0 + i]), P3f(pts[idx0 + ii]), P3f(pts[idx1 + i]),
 				// Normals:
-				pts[idx0 + i], pts[idx0 + ii], pts[idx1 + i]);
+				P3f(pts[idx0 + i]), P3f(pts[idx0 + ii]), P3f(pts[idx1 + i]));
 			tris.emplace_back(
 				// Points
-				pts[idx1 + ii], pts[idx1 + i], pts[idx0 + ii],
+				P3f(pts[idx1 + ii]), P3f(pts[idx1 + i]), P3f(pts[idx0 + ii]),
 				// Normals:
-				pts[idx1 + ii], pts[idx1 + i], pts[idx0 + ii]);
+				P3f(pts[idx1 + ii]), P3f(pts[idx1 + i]), P3f(pts[idx0 + ii]));
 		}
 	}
 
@@ -215,9 +217,9 @@ void CGeneralizedEllipsoidTemplate<3>::implUpdate_Triangles()
 
 		tris.emplace_back(
 			// Points
-			pts[idx], pts[idxp], pts[idxN],
+			P3f(pts[idx]), P3f(pts[idxp]), P3f(pts[idxN]),
 			// Normals
-			pts[idx], pts[idxp], pts[idxN]);
+			P3f(pts[idx]), P3f(pts[idxp]), P3f(pts[idxN]));
 	}
 
 	// All faces, all vertices, same color:
