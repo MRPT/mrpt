@@ -57,7 +57,7 @@ struct TTriangle
 		for (size_t i = 0; i < 3; i++)
 		{
 			auto& pp = vertices[i].xyzrgba;
-			pp.pt = p[i];
+			pp.pt = p[i].cast<float>();
 			pp.r = pp.g = pp.b = 0xff;
 		}
 		computeNormals();

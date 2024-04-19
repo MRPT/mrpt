@@ -1461,7 +1461,8 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 		}
 
 		// TP Robot:
-		gl_rel_robot->setLocation(lfr.infoPerPTG[sel_PTG].TP_Robot);
+		gl_rel_robot->setLocation(
+			mrpt::math::TPoint3D(lfr.infoPerPTG[sel_PTG].TP_Robot));
 
 	}  // end valid PTG selected
 
@@ -1504,10 +1505,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 					gl_robot_ptg_prediction->setPose(
 						lfr.rel_pose_PTG_origin_wrt_sense_NOP);
 				}
-				else
-				{
-					gl_robot_ptg_prediction->setPose(CPose3D());
-				}
+				else { gl_robot_ptg_prediction->setPose(CPose3D()); }
 
 				// Overlay a sequence of robot shapes:
 				if (cbDrawShapePath->IsChecked())

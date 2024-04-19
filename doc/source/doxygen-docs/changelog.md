@@ -6,8 +6,10 @@
     - Remove deprecated headers:
       - `<mrpt/math/lightweight_geom_data_frwds.h>`
       - `<mrpt/math/lightweight_geom_data.h>`
+    - Static constructors of mrpt::math::TPoint2D and mrpt::math::TPoint3D marked as `[[nodiscard]]`.
 - BUG FIXES:
   - rosbag2rawlog: Fix wrong sensorPose while importing ROS1 datasets.
+  - mrpt::math::TPoint2D::FromVector() and mrpt::math::TPoint3D::FromVector() will silently access undefined memory if an input vector smaller than the vector dimensionality is passed.
 
 
 # Version 2.12.1: Released April 4th, 2024

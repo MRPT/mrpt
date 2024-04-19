@@ -162,10 +162,7 @@ void CBox::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 				m_wireframe >> m_lineWidth;
 			// Version 1:
 			if (version >= 1) in >> m_draw_border >> m_solidborder_color;
-			else
-			{
-				m_draw_border = false;
-			}
+			else { m_draw_border = false; }
 			if (version >= 2)
 				CRenderizableShaderTriangles::params_deserialize(in);
 
@@ -201,5 +198,5 @@ bool CBox::traceRay(
 auto CBox::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
 	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
-		m_corner_min, m_corner_max);
+		m_corner_min.cast<float>(), m_corner_max.cast<float>());
 }
