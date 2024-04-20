@@ -101,7 +101,17 @@ std::tuple<double, bool, bool> mrpt::opengl::depthAndVisibleInView(
 		mrpt::system::CTimeLoggerEntry tle2(
 			opengl_profiler(), "depthAndVisibleInView.bbox");
 	#endif*/
-	const auto bbox = obj->getBoundingBoxLocalf();
+
+	mrpt::math::TBoundingBoxf bbox;
+	try
+	{
+		bbox = obj->getBoundingBoxLocalf();
+	}
+	catch (const std::exception&)
+	{
+		// use default (0,0,0) bbox
+	}
+
 	/*#ifdef MRPT_OPENGL_PROFILER
 		tle2.stop();
 	#endif*/
@@ -115,25 +125,26 @@ std::tuple<double, bool, bool> mrpt::opengl::depthAndVisibleInView(
 
 	const auto lambdaProcessSample =
 		[&anyVisible, &allVisible, &anyGoodDepth, &quadrants](
-			const mrpt::math::TPoint2Df& uv, const float sampleDepth) {
-			// Do not check for "bboxDepth < 1.0f" since that may only mean
-			// the object is still visible, but farther away than the
-			// farPlane:
-			const bool goodDepth = sampleDepth > -1.0f;
-			anyGoodDepth = anyGoodDepth | goodDepth;
+			const mrpt::math::TPoint2Df& uv, const float sampleDepth)
+	{
+		// Do not check for "bboxDepth < 1.0f" since that may only mean
+		// the object is still visible, but farther away than the
+		// farPlane:
+		const bool goodDepth = sampleDepth > -1.0f;
+		anyGoodDepth = anyGoodDepth | goodDepth;
 
-			const bool inside = goodDepth &&
-				(uv.x >= -1 && uv.x <= 1 && uv.y >= -1 && uv.y < 1);
+		const bool inside =
+			goodDepth && (uv.x >= -1 && uv.x <= 1 && uv.y >= -1 && uv.y < 1);
 
-			if (inside) anyVisible = true;
-			else
-				allVisible = false;
+		if (inside) anyVisible = true;
+		else
+			allVisible = false;
 
-			// quadrants:
-			int qx = uv.x < -1 ? 0 : (uv.x > 1 ? 2 : 1);
-			int qy = uv.y < -1 ? 0 : (uv.y > 1 ? 2 : 1);
-			quadrants[qx + 3 * qy] = true;
-		};
+		// quadrants:
+		int qx = uv.x < -1 ? 0 : (uv.x > 1 ? 2 : 1);
+		int qy = uv.y < -1 ? 0 : (uv.y > 1 ? 2 : 1);
+		quadrants[qx + 3 * qy] = true;
+	};
 
 	// 1st) Process the local-representative-point (~body center) sample:
 	// -----------------------------------------------------------------------
