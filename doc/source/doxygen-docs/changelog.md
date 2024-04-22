@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.12.2: UNRELEASED
+# Version 2.12.2: Released April 23rd, 2024
 - Changes in libraries:
   - \ref mrpt_math_grp:
     - Remove deprecated headers:
