@@ -528,8 +528,7 @@ void bind_mrpt_poses_CPoint2D(std::function< pybind11::module &(std::string cons
 {
 	{ // mrpt::poses::CPoint2D file:mrpt/poses/CPoint2D.h line:32
 		pybind11::class_<mrpt::poses::CPoint2D, std::shared_ptr<mrpt::poses::CPoint2D>, PyCallBack_mrpt_poses_CPoint2D, mrpt::poses::CPoint<mrpt::poses::CPoint2D,2UL>, mrpt::serialization::CSerializable> cl(M("mrpt::poses"), "CPoint2D", "A class used to store a 2D point.\n\n  For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint,\n or refer\n    to the 2D/3D Geometry\n tutorial in the wiki.\n\n  \n   \n  \n\n \n CPoseOrPoint,CPose, CPoint\n \n\n\n ");
-		cl.def( pybind11::init( [](){ return new mrpt::poses::CPoint2D(); }, [](){ return new PyCallBack_mrpt_poses_CPoint2D(); } ), "doc");
-		cl.def( pybind11::init( [](double const & a0){ return new mrpt::poses::CPoint2D(a0); }, [](double const & a0){ return new PyCallBack_mrpt_poses_CPoint2D(a0); } ), "doc");
+		cl.def( pybind11::init( [](){ return new mrpt::poses::CPoint2D(); }, [](){ return new PyCallBack_mrpt_poses_CPoint2D(); } ) );
 		cl.def( pybind11::init<double, double>(), pybind11::arg("x"), pybind11::arg("y") );
 
 		cl.def( pybind11::init<const struct mrpt::math::TPoint2D_<double> &>(), pybind11::arg("o") );

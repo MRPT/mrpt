@@ -266,9 +266,7 @@ void bind_mrpt_poses_CPoint(std::function< pybind11::module &(std::string const 
 	}
 	{ // mrpt::poses::CPoint3D file:mrpt/poses/CPoint3D.h line:31
 		pybind11::class_<mrpt::poses::CPoint3D, std::shared_ptr<mrpt::poses::CPoint3D>, PyCallBack_mrpt_poses_CPoint3D, mrpt::poses::CPoint<mrpt::poses::CPoint3D,3UL>, mrpt::serialization::CSerializable> cl(M("mrpt::poses"), "CPoint3D", "A class used to store a 3D point.\n\n  For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint,\n or refer\n    to the 2D/3D Geometry\n tutorial in the wiki.\n\n  \n   \n  \n\n \n\n \n CPoseOrPoint,CPose, CPoint");
-		cl.def( pybind11::init( [](){ return new mrpt::poses::CPoint3D(); }, [](){ return new PyCallBack_mrpt_poses_CPoint3D(); } ), "doc");
-		cl.def( pybind11::init( [](const double & a0){ return new mrpt::poses::CPoint3D(a0); }, [](const double & a0){ return new PyCallBack_mrpt_poses_CPoint3D(a0); } ), "doc");
-		cl.def( pybind11::init( [](const double & a0, const double & a1){ return new mrpt::poses::CPoint3D(a0, a1); }, [](const double & a0, const double & a1){ return new PyCallBack_mrpt_poses_CPoint3D(a0, a1); } ), "doc");
+		cl.def( pybind11::init( [](){ return new mrpt::poses::CPoint3D(); }, [](){ return new PyCallBack_mrpt_poses_CPoint3D(); } ) );
 		cl.def( pybind11::init<const double, const double, const double>(), pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z") );
 
 		cl.def( pybind11::init<const class mrpt::math::CMatrixFixed<double, 3, 1> &>(), pybind11::arg("xyz") );

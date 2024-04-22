@@ -1,5 +1,19 @@
 \page changelog Change Log
 
+# Version 2.12.2: Released April 23rd, 2024
+- Changes in libraries:
+  - \ref mrpt_math_grp:
+    - Remove deprecated headers:
+      - `<mrpt/math/lightweight_geom_data_frwds.h>`
+      - `<mrpt/math/lightweight_geom_data.h>`
+    - Static constructors of mrpt::math::TPoint2D and mrpt::math::TPoint3D marked as `[[nodiscard]]`.
+  - \ref mrpt_opengl_grp:
+    - Render pipeline is now robust against exceptions thrown in the 3D entities boundingBox determination methods.
+- BUG FIXES:
+  - rosbag2rawlog: Fix wrong sensorPose while importing ROS1 datasets.
+  - mrpt::math::TPoint2D::FromVector() and mrpt::math::TPoint3D::FromVector() will silently access undefined memory if an input vector smaller than the vector dimensionality is passed.
+
+
 # Version 2.12.1: Released April 4th, 2024
 - Changes in apps:
   - simul-landmarks: Fix correct generation of sensorLabel and timestamps in observations.

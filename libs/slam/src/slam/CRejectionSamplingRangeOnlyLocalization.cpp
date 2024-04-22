@@ -106,7 +106,8 @@ double CRejectionSamplingRangeOnlyLocalization::RS_observationLikelihood(
 				exp(-0.5 *
 					square(
 						m_dataPerBeacon[i].radiusAtRobotPlane -
-						P.distanceTo(m_dataPerBeacon[i].beaconPosition)) /
+						P.distanceTo(mrpt::math::TPoint3D(
+							m_dataPerBeacon[i].beaconPosition))) /
 					m_sigmaRanges2);
 	}
 

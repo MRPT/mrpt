@@ -248,7 +248,8 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 			//		Find the matching (for a points map)
 			// ------------------------------------------------------
 			// Pivot point for angular measurements
-			matchParams.angularDistPivotPoint = gaussPdf->mean.translation();
+			matchParams.angularDistPivotPoint =
+				mrpt::math::TPoint3D(gaussPdf->mean.translation());
 
 			m1->determineMatching2D(
 				m2,	 // The other map
@@ -472,7 +473,8 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 			PY2.y_incr(+Axy);
 
 			// Pivot point for angular measurements
-			matchParams.angularDistPivotPoint = gaussPdf->mean.translation();
+			matchParams.angularDistPivotPoint =
+				mrpt::math::TPoint3D(gaussPdf->mean.translation());
 
 			m1->determineMatching2D(
 				m2,	 // The other map
@@ -623,7 +625,8 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 			//		Find the matching (for a points map)
 			// ------------------------------------------------------
 			// Pivot point for angular measurements:
-			matchParams.angularDistPivotPoint = q.translation();
+			matchParams.angularDistPivotPoint =
+				mrpt::math::TPoint3D(q.translation());
 
 			m1->determineMatching2D(
 				m2,	 // The other map
