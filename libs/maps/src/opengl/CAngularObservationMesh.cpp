@@ -410,7 +410,7 @@ void CAngularObservationMesh::getUntracedRays(
 {
 	for_each(
 		scanSet.begin(), scanSet.end(),
-		FAddUntracedLines(res, dist, pitchBounds));
+		FAddUntracedLines(res, {dist, .0, .0}, pitchBounds));
 }
 
 TPolygon3D createFromTriangle(const mrpt::opengl::TTriangle& t)

@@ -58,7 +58,7 @@ struct TPoint2D_ : public TPoseOrPoint,
 
 	/** Constructor from column vector. */
 	template <typename U>
-	TPoint2D_(const mrpt::math::CMatrixFixed<U, 2, 1>& m)
+	explicit TPoint2D_(const mrpt::math::CMatrixFixed<U, 2, 1>& m)
 	{
 		TPoint2D_data<T>::x = static_cast<T>(m[0]);
 		TPoint2D_data<T>::y = static_cast<T>(m[1]);
@@ -84,11 +84,11 @@ struct TPoint2D_ : public TPoseOrPoint,
 	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
 	 */
 	template <typename Vector>
-	static TPoint2D FromVector(const Vector& v)
+	[[nodiscard]] static TPoint2D_<T> FromVector(const Vector& v)
 	{
 		TPoint2D o;
 		for (int i = 0; i < 2; i++)
-			o[i] = v[i];
+			o[i] = v.at(i);
 		return o;
 	}
 

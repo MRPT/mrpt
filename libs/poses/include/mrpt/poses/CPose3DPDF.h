@@ -70,7 +70,7 @@ class CPose3DPDF : public mrpt::serialization::CSerializable,
 
 	/** This static method computes the pose composition Jacobians.
 	 *
-	 * See this techical report:
+	 * See this technical report:
 	 * http:///www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
 	 *
 	 * Direct equations (for the covariances) in yaw-pitch-roll are too complex.

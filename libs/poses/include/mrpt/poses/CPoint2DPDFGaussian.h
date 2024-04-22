@@ -26,7 +26,7 @@ class CPoint2DPDFGaussian : public CPoint2DPDF
 	/** Default constructor */
 	CPoint2DPDFGaussian();
 	/** Constructor */
-	CPoint2DPDFGaussian(const CPoint2D& init_Mean);
+	explicit CPoint2DPDFGaussian(const CPoint2D& init_Mean);
 	/** Constructor */
 	CPoint2DPDFGaussian(
 		const CPoint2D& init_Mean, const mrpt::math::CMatrixDouble22& init_Cov);

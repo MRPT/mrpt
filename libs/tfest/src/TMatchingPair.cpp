@@ -145,7 +145,11 @@ void TMatchingPairListTempl<T>::squareErrorVector(
 	out_sqErrs.reserve(base_t::size());
 
 	for (const auto& c : *this)
-		out_sqErrs.push_back(c.global.sqrDistanceTo(q.composePoint(c.local)));
+	{
+		const auto p = q.composePoint(mrpt::math::TPoint3D(c.local));
+		out_sqErrs.push_back(
+			c.global.sqrDistanceTo(mrpt::math::TPoint3D_<T>(p.x, p.y, p.z)));
+	}
 }
 
 template <typename T>

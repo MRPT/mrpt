@@ -31,7 +31,7 @@ class CPointPDFGaussian : public CPointPDF
 
 	/** Constructor
 	 */
-	CPointPDFGaussian(const CPoint3D& init_Mean);
+	explicit CPointPDFGaussian(const CPoint3D& init_Mean);
 
 	/** Constructor
 	 */
