@@ -7,7 +7,7 @@
 set(sampleName math_ransac_plane3d_example2)
 project(EXAMPLE_${sampleName})
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.16)
 
 # ---------------------------------------------------------------------------
 # Set the output directory of each example to its corresponding subdirectory
