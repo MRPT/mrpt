@@ -76,11 +76,13 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF(
 	MRPT_END
 }
 
-static bool myVectorOrder(
-	const pair<size_t, float>& o1, const pair<size_t, float>& o2)
+namespace
+{
+bool myVectorOrder(const pair<size_t, float>& o1, const pair<size_t, float>& o2)
 {
 	return o1.second < o2.second;
 }
+}  // namespace
 
 /*---------------------------------------------------------------
 					AlignPDF_robustMatch
@@ -182,14 +184,9 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 	if (nLM1 < 2 || nLM2 < 2) { outInfo.goodness = 0; }
 	else
 	{
-		//#define METHOD_FFT
-		//#define DEBUG_SHOW_CORRELATIONS
-
 		// Compute correlation between landmarks:
 		// ---------------------------------------------
-		CMatrixFloat CORR(lm1->size(), lm2->size()), auxCorr;
 		CImage im1, im2;  // Grayscale
-		CVectorFloat corr;
 		unsigned int corrsCount = 0;
 		std::vector<bool> hasCorr(nLM1, false);
 
@@ -198,7 +195,6 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 		for (size_t idx1 = 0; idx1 < nLM1; idx1++)
 		{
-			// CVectorFloat  	corrs_indiv;
 			vector<pair<size_t, float>> corrs_indiv;  // (index, distance);
 			// Index is used to
 			// recover the original
@@ -209,13 +205,12 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 			for (size_t idx2 = 0; idx2 < nLM2; idx2++)
 			{
-				float minDist;
-				minDist =
+				const float dist =
 					lm1->landmarks.get(idx1)->features[0].descriptorDistanceTo(
 						lm2->landmarks.get(idx2)->features[0]);
 
-				corrs_indiv.emplace_back(idx2, minDist);
-				corrs_indiv_only.push_back(minDist);
+				corrs_indiv.emplace_back(idx2, dist);
+				corrs_indiv_only.push_back(dist);
 			}  // end for idx2
 
 			const double corr_best = mrpt::math::minimum(corrs_indiv_only);
@@ -223,8 +218,6 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 			// Sort the list and keep the N best features:
 			std::sort(corrs_indiv.begin(), corrs_indiv.end(), myVectorOrder);
 
-			// const size_t nBestToKeep = std::min( (size_t)30,
-			// corrs_indiv.size() );
 			const size_t nBestToKeep = corrs_indiv.size();
 
 			for (size_t w = 0; w < nBestToKeep; w++)
@@ -845,9 +838,6 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 				for (auto s = sog_modes.begin(); s != sog_modes.end(); ++s)
 				{
-					COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
-						format("__debug_corrsGrid_%05u.emf", NN), m1, m2,
-						s->first);
 					COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 						format("__debug_corrsGrid_%05u.png", NN), m1, m2,
 						s->first);

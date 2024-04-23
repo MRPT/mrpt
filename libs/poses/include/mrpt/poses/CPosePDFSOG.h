@@ -50,8 +50,6 @@ class CPosePDFSOG : public CPosePDF
 		double log_w{0};
 
 	   public:
-		;
-
 		friend std::ostream& operator<<(
 			std::ostream& o, const TGaussianMode& mode)
 		{
