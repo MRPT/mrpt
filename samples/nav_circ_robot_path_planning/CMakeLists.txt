@@ -7,7 +7,7 @@
 set(sampleName nav_circ_robot_path_planning)
 project(EXAMPLE_${sampleName})
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.16)
 
 # ---------------------------------------------------------------------------
 # Set the output directory of each example to its corresponding subdirectory

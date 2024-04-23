@@ -1,6 +1,6 @@
 project(parse_dataset_example)
 
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.16)
 
 # --------------------------------------------------------------------------
 #   The list of "libs" which can be included can be found in:
