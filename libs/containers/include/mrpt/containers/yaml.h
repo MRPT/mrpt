@@ -424,10 +424,16 @@ class yaml
 	sequence_t& asSequence();
 	const sequence_t& asSequence() const;
 
+	/// Returns a copy of asSequence(), suitable for range-based loops
+	const sequence_t asSequenceRange() const { return asSequence(); }
+
 	/** Use: `for (auto &kv: n.asMap()) {...}`
 	 * \exception std::exception If called on a non-map node. */
 	map_t& asMap();
 	const map_t& asMap() const;
+
+	/// Returns a copy of asMap(), suitable for range-based loops
+	const map_t asMapRange() const { return asMap(); }
 
 	/** \exception std::exception If called on a non-scalar node. */
 	scalar_t& asScalar();

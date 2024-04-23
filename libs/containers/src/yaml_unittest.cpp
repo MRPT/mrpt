@@ -408,7 +408,7 @@ MRPT_TEST(yaml, iterate)
 	EXPECT_EQ(foundKeys.size(), 5U);
 
 	foundKeys.clear();
-	for (const auto& kv : testMap["myDict"].asMap())
+	for (const auto& kv : testMap["myDict"].asMapRange())
 	{
 		ss << kv.first << ":" << kv.second.typeName() << "\n";
 		foundKeys.insert(kv.first.as<std::string>());
