@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.12.3: UNRELEASED
+(None yet)
+
 # Version 2.12.2: Released April 23rd, 2024
 - Changes in libraries:
   - \ref mrpt_math_grp:
