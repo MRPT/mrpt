@@ -196,15 +196,6 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 		const double thres_max = options.threshold_max;
 		const double thres_delta = options.threshold_delta;
 
-		// CDisplayWindowPlots::Ptr	auxWin;
-		if (options.debug_show_corrs)
-		{
-			// auxWin = CDisplayWindowPlots::Ptr( new
-			// CDisplayWindowPlots("Individual corr.") );
-			std::cerr << "Warning: options.debug_show_corrs has no effect "
-						 "since MRPT 0.9.1\n";
-		}
-
 		for (size_t idx1 = 0; idx1 < nLM1; idx1++)
 		{
 			// CVectorFloat  	corrs_indiv;
@@ -1112,7 +1103,6 @@ void CGridMapAligner::TConfigParams::dumpToTextStream(std::ostream& out) const
 	LOADABLEOPTS_DUMP_VAR(ransac_prob_good_inliers, double)
 	LOADABLEOPTS_DUMP_VAR(ransac_SOG_sigma_m, float)
 	LOADABLEOPTS_DUMP_VAR(save_feat_coors, bool)
-	LOADABLEOPTS_DUMP_VAR(debug_show_corrs, bool)
 	LOADABLEOPTS_DUMP_VAR(debug_save_map_pairs, bool)
 
 	LOADABLEOPTS_DUMP_VAR(feature_descriptor, int)
@@ -1152,7 +1142,6 @@ void CGridMapAligner::TConfigParams::loadFromConfigFile(
 		ransac_prob_good_inliers, double, iniFile, section)
 
 	MRPT_LOAD_CONFIG_VAR(save_feat_coors, bool, iniFile, section)
-	MRPT_LOAD_CONFIG_VAR(debug_show_corrs, bool, iniFile, section)
 	MRPT_LOAD_CONFIG_VAR(debug_save_map_pairs, bool, iniFile, section)
 
 	feature_descriptor = iniFile.read_enum(
