@@ -1,7 +1,11 @@
 \page changelog Change Log
 
 # Version 2.12.3: UNRELEASED
-(None yet)
+- Changes in libraries:
+  - \ref mrpt_containers_grp:
+    - New methods returning safe proxy objects for range-based for loops:
+      - mrpt::containers::yaml::asMapRange()
+      - mrpt::containers::yaml::asSequenceRange()
 
 # Version 2.12.2: Released April 23rd, 2024
 - Changes in libraries:
