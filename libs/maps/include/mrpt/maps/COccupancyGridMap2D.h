@@ -959,20 +959,9 @@ class COccupancyGridMap2D
 
 	/** Saves a composite image with two gridmaps and lines representing a set
 	 * of correspondences between them.
-	 * \sa saveAsEMFTwoMapsWithCorrespondences
 	 * \return False on any error.
 	 */
 	static bool saveAsBitmapTwoMapsWithCorrespondences(
-		const std::string& fileName, const COccupancyGridMap2D* m1,
-		const COccupancyGridMap2D* m2,
-		const mrpt::tfest::TMatchingPairList& corrs);
-
-	/** Saves a composite image with two gridmaps and numbers for the
-	 * correspondences between them.
-	 * \sa saveAsBitmapTwoMapsWithCorrespondences
-	 * \return False on any error.
-	 */
-	static bool saveAsEMFTwoMapsWithCorrespondences(
 		const std::string& fileName, const COccupancyGridMap2D* m1,
 		const COccupancyGridMap2D* m2,
 		const mrpt::tfest::TMatchingPairList& corrs);
