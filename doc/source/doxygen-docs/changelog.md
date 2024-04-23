@@ -6,6 +6,8 @@
     - New methods returning safe proxy objects for range-based for loops:
       - mrpt::containers::yaml::asMapRange()
       - mrpt::containers::yaml::asSequenceRange()
+  - \ref mrpt_maps_grp
+    - Removed unused method: mrpt::maps::COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences()
 
 # Version 2.12.2: Released April 23rd, 2024
 - Changes in libraries:
