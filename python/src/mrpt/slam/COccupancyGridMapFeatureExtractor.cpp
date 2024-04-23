@@ -173,7 +173,6 @@ void bind_mrpt_slam_COccupancyGridMapFeatureExtractor(std::function< pybind11::m
 			cl.def_readwrite("max_ICP_mahadist", &mrpt::slam::CGridMapAligner::TConfigParams::max_ICP_mahadist);
 			cl.def_readwrite("maxKLd_for_merge", &mrpt::slam::CGridMapAligner::TConfigParams::maxKLd_for_merge);
 			cl.def_readwrite("save_feat_coors", &mrpt::slam::CGridMapAligner::TConfigParams::save_feat_coors);
-			cl.def_readwrite("debug_show_corrs", &mrpt::slam::CGridMapAligner::TConfigParams::debug_show_corrs);
 			cl.def_readwrite("debug_save_map_pairs", &mrpt::slam::CGridMapAligner::TConfigParams::debug_save_map_pairs);
 			cl.def("loadFromConfigFile", (void (mrpt::slam::CGridMapAligner::TConfigParams::*)(const class mrpt::config::CConfigFileBase &, const std::string &)) &mrpt::slam::CGridMapAligner::TConfigParams::loadFromConfigFile, "C++: mrpt::slam::CGridMapAligner::TConfigParams::loadFromConfigFile(const class mrpt::config::CConfigFileBase &, const std::string &) --> void", pybind11::arg("source"), pybind11::arg("section"));
 			cl.def("assign", (class mrpt::slam::CGridMapAligner::TConfigParams & (mrpt::slam::CGridMapAligner::TConfigParams::*)(const class mrpt::slam::CGridMapAligner::TConfigParams &)) &mrpt::slam::CGridMapAligner::TConfigParams::operator=, "C++: mrpt::slam::CGridMapAligner::TConfigParams::operator=(const class mrpt::slam::CGridMapAligner::TConfigParams &) --> class mrpt::slam::CGridMapAligner::TConfigParams &", pybind11::return_value_policy::automatic, pybind11::arg(""));

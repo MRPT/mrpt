@@ -29,8 +29,7 @@ namespace mrpt::slam
  * 2D+orientation grid of possible 2D poses.
  *   - amRobustMatch: Detection of features + RANSAC matching
  *   - amModifiedRANSAC: Detection of features + modified multi-hypothesis
- * RANSAC matching as described in was reported in the paper
- * https://www.mrpt.org/Paper%3AOccupancy_Grid_Matching
+ * RANSAC matching as described in \cite blanco2013robust
  *
  * See CGridMapAligner::Align for more instructions.
  *
@@ -66,7 +65,7 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 			std::ostream& out) const override;	// See base docs
 
 		/** The aligner method: */
-		TAlignerMethod methodSelection{CGridMapAligner::amModifiedRANSAC};
+		TAlignerMethod methodSelection = CGridMapAligner::amModifiedRANSAC;
 
 		/** The feature descriptor to use: 0=detector already has descriptor, 1=
 		 * SIFT, 2=SURF, 4=Spin images, 8=Polar images, 16=log-polar images */
@@ -89,22 +88,23 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		/** [amRobustMatch method only] RANSAC-step options:
 		 * \sa CICP::robustRigidTransformation
 		 */
-		float ransac_mahalanobisDistanceThreshold{6.0f};
+		float ransac_mahalanobisDistanceThreshold = 6.0f;
 
 		/** [amModifiedRANSAC method only] The quantile used for chi-square
 		 * thresholding (default=0.99) */
-		double ransac_chi2_quantile{0.99};
+		double ransac_chi2_quantile = 0.99;
 
 		/** Probability of having a good inliers (def:0,9999), used for
 		 * automatic number of iterations */
-		double ransac_prob_good_inliers{0.9999};
+		double ransac_prob_good_inliers = 0.9999999999;
+
 		/** Features extraction from grid map: How many features to extract */
 		float featsPerSquareMeter{0.015f};
 		/** Correspondences are considered if their distances are below this
 		 * threshold (in the range [0,1]) (default=0.15). */
 		float threshold_max{0.15f};
 		/** Correspondences are considered if their distances to the best match
-		 * are below this threshold (in the range [0,1]) (default=0.15). */
+		 * are below this threshold (in the range [0,1]) (default=0.10). */
 		float threshold_delta{0.10f};
 
 		/** The minimum goodness (0-1) of the post-matching ICP to accept a
@@ -119,9 +119,7 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		/** DEBUG - Dump all feature correspondences in a directory "grid_feats"
 		 */
 		bool save_feat_coors{false};
-		/** DEBUG - Show graphs with the details of each feature correspondences
-		 */
-		bool debug_show_corrs{false};
+
 		/** DEBUG - Save the pair of maps with all the pairings. */
 		bool debug_save_map_pairs{false};
 
