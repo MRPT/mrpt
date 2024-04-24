@@ -157,7 +157,6 @@ mrpt/hwdrivers/C2DRangeFinderAbstract.cpp
 mrpt/containers/circular_buffer.cpp
 mrpt/comms/CInterfaceFTDI.cpp
 mrpt/obs/CObservationGasSensors.cpp
-mrpt/hwdrivers/CBoardENoses.cpp
 mrpt/obs/CObservationRange.cpp
 mrpt/obs/CObservationCANBusJ1939.cpp
 mrpt/hwdrivers/CCANBusReader.cpp
@@ -168,7 +167,6 @@ mrpt/poses/CPoint.cpp
 mrpt/poses/CPose3DQuat.cpp
 mrpt/obs/CObservationStereoImages.cpp
 mrpt/vision/CStereoRectifyMap.cpp
-mrpt/hwdrivers/CDUO3DCamera.cpp
 mrpt/math/CMatrixDynamic.cpp
 mrpt/math/CMatrixDynamic_1.cpp
 mrpt/math/CMatrixFixed.cpp

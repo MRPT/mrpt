@@ -31,11 +31,6 @@ if(CMAKE_MRPT_HAS_LIBDC1394_2)
 endif()
 
 
-if(CMAKE_MRPT_HAS_DUO3D)
-	include_directories("${DUO3D_INCLUDE_DIR}")
-	link_directories("${DUO3D_LIB_DIR}")
-endif()
-
 if(CMAKE_MRPT_HAS_SWISSRANGE)
 	include_directories("${SWR_LIBMESASR_DIR}")
 endif()
@@ -110,10 +105,6 @@ endif()
 
 if(CMAKE_MRPT_HAS_SWISSRANGE)
 	target_link_libraries(hwdrivers PRIVATE ${MRPT_SWR_LIBS})
-endif()
-
-if(CMAKE_MRPT_HAS_DUO3D)
-	target_link_libraries(hwdrivers PRIVATE  "${DUO3D_LIB_DIR}/DUOLib.lib" "${DUO3D_LIB_DIR}/Dense3D.lib")
 endif()
 
 # Seems to be required to link against prebuilt libavcodec, etc.

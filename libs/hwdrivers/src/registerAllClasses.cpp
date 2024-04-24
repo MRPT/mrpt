@@ -29,14 +29,12 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_hwdrivers)
 	CHokuyoURG::doRegister();
 	CRoboPeakLidar::doRegister();
 	CGPSInterface::doRegister();
-	CBoardSonars::doRegister();
 	CIMUXSens_MT4::doRegister();
 	CCameraSensor::doRegister();
 	CWirelessPower::doRegister();
 	CRaePID::doRegister();
 	CImpinjRFID::doRegister();
 	CSickLaserSerial::doRegister();
-	CBoardENoses::doRegister();
 	CEnoseModular::doRegister();
 	CGillAnemometer::doRegister();
 	CNTRIPEmitter::doRegister();

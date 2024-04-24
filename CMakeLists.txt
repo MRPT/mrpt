@@ -270,7 +270,6 @@ endif()
 include(cmakemodules/script_assimp.cmake REQUIRED)      # Check for system assimp lib (3D models)
 include(cmakemodules/script_bfd.cmake REQUIRED)      # BFD library for debug symbols for stack backtraces
 include(cmakemodules/script_clang_tidy.cmake REQUIRED)  # Clang tidy
-include(cmakemodules/script_duo3d.cmake REQUIRED)       # Support for DUO3D Camera
 include(cmakemodules/script_eigen.cmake REQUIRED)       # Eigen3
 include(cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale
 include(cmakemodules/script_flycapture2.cmake REQUIRED) # Check for PointGreyResearch (PGR) FlyCapture2 library
