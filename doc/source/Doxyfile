@@ -2045,7 +2045,6 @@ INCLUDE_PATH           = \
 	../../libs/config \
 	../../libs/containers \
 	../../libs/core \
-	../../libs/detectors \
 	../../libs/expr \
 	../../libs/graphs \
 	../../libs/graphslam \
