@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.12.3: UNRELEASED
+# Version 2.13.0: UNRELEASED
 - Changes in libraries:
   - \ref mrpt_containers_grp:
     - New methods returning safe proxy objects for range-based for loops:
@@ -8,6 +8,7 @@
       - mrpt::containers::yaml::asSequenceRange()
   - \ref mrpt_maps_grp
     - Removed unused method: mrpt::maps::COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences()
+  - Removed module mrpt-detectors, which was seldom used. If needed, refer to MRPT versions <2.13.0
 
 # Version 2.12.2: Released April 23rd, 2024
 - Changes in libraries:
