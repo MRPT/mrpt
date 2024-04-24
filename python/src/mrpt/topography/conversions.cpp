@@ -21,7 +21,6 @@
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/serialization/CMessage.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/topography/conversions.h>
 #include <mrpt/topography/data_types.h>

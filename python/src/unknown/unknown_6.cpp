@@ -4,7 +4,6 @@
 #include <mrpt/obs/gnss_messages.h>
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/serialization/CMessage.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <ostream>
 #include <sstream> // __str__
@@ -25,7 +24,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS file: line:98
+// mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS file: line:96
 struct PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_RXSTATUS : public mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS {
 	using mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS::Message_NV_OEM6_RXSTATUS;
 
@@ -70,7 +69,7 @@ struct PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_RXSTATUS : public mrpt::obs::gns
 	}
 };
 
-// mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM file: line:104
+// mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM file: line:102
 struct PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_RAWEPHEM : public mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM {
 	using mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM::Message_NV_OEM6_RAWEPHEM;
 
@@ -160,7 +159,7 @@ struct PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_VERSION : public mrpt::obs::gnss
 	}
 };
 
-// mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS file: line:110
+// mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS file: line:108
 struct PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_RAWIMUS : public mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS {
 	using mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS::Message_NV_OEM6_RAWIMUS;
 
@@ -205,7 +204,7 @@ struct PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_RAWIMUS : public mrpt::obs::gnss
 	}
 };
 
-// mrpt::obs::gnss::Message_NV_OEM6_MARKPOS file: line:116
+// mrpt::obs::gnss::Message_NV_OEM6_MARKPOS file: line:114
 struct PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_MARKPOS : public mrpt::obs::gnss::Message_NV_OEM6_MARKPOS {
 	using mrpt::obs::gnss::Message_NV_OEM6_MARKPOS::Message_NV_OEM6_MARKPOS;
 
@@ -252,7 +251,7 @@ struct PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_MARKPOS : public mrpt::obs::gnss
 
 void bind_unknown_unknown_6(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS file: line:98
+	{ // mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS file: line:96
 		pybind11::class_<mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS, std::shared_ptr<mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS>, PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_RXSTATUS, mrpt::obs::gnss::gnss_message> cl(M("mrpt::obs::gnss"), "Message_NV_OEM6_RXSTATUS", "");
 		cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS(); }, [](){ return new PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_RXSTATUS(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_RXSTATUS const &o){ return new PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_RXSTATUS(o); } ) );
@@ -290,7 +289,7 @@ void bind_unknown_unknown_6(std::function< pybind11::module &(std::string const 
 		}
 
 	}
-	{ // mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM file: line:104
+	{ // mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM file: line:102
 		pybind11::class_<mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM, std::shared_ptr<mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM>, PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_RAWEPHEM, mrpt::obs::gnss::gnss_message> cl(M("mrpt::obs::gnss"), "Message_NV_OEM6_RAWEPHEM", "");
 		cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM(); }, [](){ return new PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_RAWEPHEM(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_RAWEPHEM const &o){ return new PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_RAWEPHEM(o); } ) );
@@ -333,7 +332,7 @@ void bind_unknown_unknown_6(std::function< pybind11::module &(std::string const 
 		}
 
 	}
-	{ // mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS file: line:110
+	{ // mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS file: line:108
 		pybind11::class_<mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS, std::shared_ptr<mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS>, PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_RAWIMUS, mrpt::obs::gnss::gnss_message> cl(M("mrpt::obs::gnss"), "Message_NV_OEM6_RAWIMUS", "");
 		cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS(); }, [](){ return new PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_RAWIMUS(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_RAWIMUS const &o){ return new PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_RAWIMUS(o); } ) );
@@ -362,7 +361,7 @@ void bind_unknown_unknown_6(std::function< pybind11::module &(std::string const 
 		}
 
 	}
-	{ // mrpt::obs::gnss::Message_NV_OEM6_MARKPOS file: line:116
+	{ // mrpt::obs::gnss::Message_NV_OEM6_MARKPOS file: line:114
 		pybind11::class_<mrpt::obs::gnss::Message_NV_OEM6_MARKPOS, std::shared_ptr<mrpt::obs::gnss::Message_NV_OEM6_MARKPOS>, PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_MARKPOS, mrpt::obs::gnss::gnss_message> cl(M("mrpt::obs::gnss"), "Message_NV_OEM6_MARKPOS", "");
 		cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NV_OEM6_MARKPOS(); }, [](){ return new PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_MARKPOS(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_MARKPOS const &o){ return new PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_MARKPOS(o); } ) );
