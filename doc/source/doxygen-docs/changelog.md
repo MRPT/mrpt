@@ -8,7 +8,14 @@
       - mrpt::containers::yaml::asSequenceRange()
   - \ref mrpt_maps_grp
     - Removed unused method: mrpt::maps::COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences()
-  - Removed module mrpt-detectors, which was seldom used. If needed, refer to MRPT versions <2.13.0
+  - Removed seldom used code (if needed, refer to MRPT versions <2.13.0):
+    - The whole module mrpt-detectors
+    - mrpt::hwdrivers::CBoardENoses
+    - mrpt::hwdrivers::CBoardSonars
+    - mrpt::hwdrivers::CDUO3DCamera
+    - mrpt::hwdrivers::CPtuDPerception
+    - mrpt::hwdrivers::CRoboticHeadInterface
+    - mrpt::hwdrivers::CTuMicos
 
 # Version 2.12.2: Released April 23rd, 2024
 - Changes in libraries:

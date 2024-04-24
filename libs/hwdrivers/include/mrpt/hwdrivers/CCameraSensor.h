@@ -11,7 +11,6 @@
 
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/gui/CDisplayWindow.h>
-#include <mrpt/hwdrivers/CDUO3DCamera.h>
 #include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
@@ -84,8 +83,7 @@ namespace mrpt::hwdrivers
  *   [supplied_section_name]
  *    # Select one of the grabber implementations -----------------------
  *    grabber_type       = opencv | dc1394 | bumblebee_dc1394 | ffmpeg | rawlog
- * | swissranger | svs | kinect | flycap | flycap_stereo | image_dir | duo3d |
- * myntd
+ * | swissranger | svs | kinect | flycap | flycap_stereo | image_dir | myntd
  *
  *    #  Options for any grabber_type ------------------------------------
  *    preview_decimation = 0     // N<=0 (or not present): No preview; N>0,
@@ -268,67 +266,6 @@ namespace mrpt::hwdrivers
  *    # Options for grabber_type= myntd  ------------------------------------
  *    myntd_xxx  =
  *
- *    # Options for grabber_type= duo3d
- *    Create a section like this:
- *    [DUO3DOptions]
- *    rawlog-grabber-ignore	= true // Instructs rawlog-grabber to ignore
- * this section (it is not a separate device!)
- *
- *    image_width   			= 640			// [int]	x Resolution
- *    image_height  			= 480			// [int]	y Resolution
- *    fps						= 30			// [int]	Frames per second
- * (<= 30)
- *    exposure				= 50			// [int]	Exposure value (1..100)
- *    led						= 0				// [int]	Led intensity
- * (only for some device models) (1..100).
- *    gain					= 50			// [int]	Camera gain (1..100)
- *    capture_rectified 		= false			// [bool]	Rectify
- * captured images
- *    capture_imu 			= true			// [bool]	Capture IMU data
- * from DUO3D device (if available)
- *    calibration_from_file	= true			// [bool]	Use YML
- * calibration files provided by calibration application supplied with DUO3D
- * device
- *    intrinsic_filename		= ""			// [string]	Intrinsic
- * parameters file. This filename should contain a substring _RWWWxHHH_ with WWW
- * being the image width and HHH the image height, as provided by the
- * calibration application.
- *    extrinsic_filename		= ""			// [string]	Extrinsic
- * parameters file. This filename should contain a substring _RWWWxHHH_ with WWW
- * being the image width and HHH the image height, as provided by the
- * calibration application.
- *    rectify_map_filename	= ""			// [string]	Rectification map
- * file. This filename should contain a substring _RWWWxHHH_ with WWW being the
- * image width and HHH the image height, as provided by the calibration
- * application.
- *
- *    // if 'calibration_from_file' = false, three more sections containing the
- * calibration must be provided:
- *    [DUO3D_LEFT]
- *    rawlog-grabber-ignore	= true // Instructs rawlog-grabber to ignore
- * this section (it is not a separate device!)
- *    resolution 		= [640 480]
- *    cx 				= 320
- *    cy 				= 240
- *    fx 				= 700
- *    fy 				= 700
- *    dist 			= [0 0 0 0 0]
- *
- *    [DUO3D_RIGHT]
- *    rawlog-grabber-ignore	= true // Instructs rawlog-grabber to ignore
- * this section (it is not a separate device!)
- *    resolution 		= [640 480]
- *    cx 				= 320
- *    cy 				= 240
- *    fx 				= 700
- *    fy 				= 700
- *    dist 			= [0 0 0 0 0]
- *
- *    [DUO3D_LEFT2RIGHT_POSE]
- *    rawlog-grabber-ignore	= true // Instructs rawlog-grabber to ignore
- * this section (it is not a separate device!)
- *    pose_quaternion = [0.12 0 0 1 0 0 0]
- *
  *  \endcode
  *
  *  \note The execution rate, in rawlog-grabber or the user code calling
@@ -505,9 +442,6 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
 	bool m_img_dir_is_stereo{true};
 	int m_img_dir_counter{0};
 
-	// Options for grabber type= duo3d
-	TCaptureOptions_DUO3D m_duo3d_options;
-
 	// Other options:
 	/** Whether to launch independent thread */
 	bool m_external_images_own_thread{false};
@@ -543,8 +477,6 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
 	std::unique_ptr<COpenNI2Sensor> m_cap_openni2;
 	/** Read images from directory */
 	std::unique_ptr<std::string> m_cap_image_dir;
-	/** The DUO3D capture object */
-	std::unique_ptr<CDUO3DCamera> m_cap_duo3d;
 	/** The MYNT EYE capture object */
 	std::unique_ptr<CMyntEyeCamera> m_myntd;
 	// =========================

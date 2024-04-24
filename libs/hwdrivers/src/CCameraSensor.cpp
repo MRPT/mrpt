@@ -331,22 +331,6 @@ void CCameraSensor::initialize()
 			throw;
 		}
 	}
-	else if (m_grabber_type == "duo3d")
-	{
-		// m_cap_duo3D
-		cout << "[CCameraSensor::initialize] DUO3D stereo camera ...\n";
-
-		// Open it:
-		try
-		{
-			m_cap_duo3d = std::make_unique<CDUO3DCamera>(m_duo3d_options);
-		}
-		catch (const std::exception& e)
-		{
-			m_state = CGenericSensor::ssError;
-			throw e;
-		}
-	}
 	else if (m_grabber_type == "myntd")
 	{
 		cout << "[CCameraSensor::initialize] MYNTEYE-D camera ...\n";
@@ -409,7 +393,6 @@ void CCameraSensor::close()
 	m_cap_kinect.reset();
 	m_cap_svs.reset();
 	m_cap_image_dir.reset();
-	m_cap_duo3d.reset();
 
 	m_state = CGenericSensor::ssInitializing;
 
@@ -610,9 +593,6 @@ void CCameraSensor::loadConfig_sensorSpecific(
 
 	m_img_dir_is_stereo = !m_img_dir_right_format.empty();
 	m_img_dir_counter = m_img_dir_start_index;
-
-	// DUO3D Camera options:
-	m_duo3d_options.loadOptionsFrom(configSource, "DUO3DOptions");
 
 	// SwissRanger options:
 	m_sr_open_from_usb =
@@ -856,10 +836,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 			m_state = CGenericSensor::ssError;
 			THROW_EXCEPTION("Error grabbing stereo images");
 		}
-		else
-		{
-			capture_ok = true;
-		}
+		else { capture_ok = true; }
 	}
 	else if (m_cap_svs)
 	{
@@ -1117,25 +1094,6 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 			capture_ok = true;
 		}
 	}
-	else if (m_cap_duo3d)
-	{
-		stObs = std::make_shared<CObservationStereoImages>();
-		obsIMU = std::make_shared<CObservationIMU>();
-
-		bool thereIsIMG, thereIsIMU;
-		m_cap_duo3d->getObservations(*stObs, *obsIMU, thereIsIMG, thereIsIMU);
-		if (!thereIsIMG)
-		{
-			m_state = CGenericSensor::ssError;
-			THROW_EXCEPTION("Error getting observations from DUO3D camera.");
-		}
-		else if (m_cap_duo3d->captureIMUIsSet() && !thereIsIMU)
-		{
-			cout << "[CCamera, duo3d] Warning: There are no IMU data from the "
-					"device. Only images are being grabbed.";
-		}
-		capture_ok = true;
-	}
 	else if (m_myntd)
 	{
 		obs3D = std::make_shared<CObservation3DRangeScan>();
@@ -1153,10 +1111,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 					"Error getting observations from MYNTEYE-D camera.");
 			}
 		}
-		else
-		{
-			noObsCnt = 0;
-		}
+		else { noObsCnt = 0; }
 		capture_ok = true;
 	}
 	else
@@ -1190,9 +1145,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	}
 	else if (stObs)
 	{
-		stObs->sensorLabel = (m_cap_duo3d && m_cap_duo3d->captureIMUIsSet())
-			? m_sensorLabel + "_IMG"
-			: m_sensorLabel;
+		stObs->sensorLabel = m_sensorLabel;
 		stObs->setSensorPose(m_sensorPose);
 	}
 	else if (obs3D)
@@ -1443,12 +1396,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 		}
 	}  // end show preview
 
-	if (delayed_insertion_in_obs_queue)
-	{
-		if (m_cap_duo3d && m_cap_duo3d->captureIMUIsSet() && obsIMU)
-			out_obs.push_back(CObservation::Ptr(obsIMU));
-	}
-	else
+	if (!delayed_insertion_in_obs_queue)
 	{
 		if (stObs) out_obs.push_back(CObservation::Ptr(stObs));
 		if (obs) out_obs.push_back(CObservation::Ptr(obs));
