@@ -4,7 +4,6 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/maps/CVoxelMapOccupancyBase.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/serialization/CMessage.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/COutputLogger.h>
 #include <sstream> // __str__

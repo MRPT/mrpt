@@ -67,7 +67,6 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/serialization/CMessage.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/tfest/TMatchingPair.h>
@@ -780,7 +779,7 @@ void bind_mrpt_maps_COccupancyGridMap2D(std::function< pybind11::module &(std::s
 			cl.def_readwrite("scanWithUncert", &mrpt::maps::COccupancyGridMap2D::TLaserSimulUncertaintyResult::scanWithUncert);
 		}
 
-		{ // mrpt::maps::COccupancyGridMap2D::TCriticalPointsList file:mrpt/maps/COccupancyGridMap2D.h line:1144
+		{ // mrpt::maps::COccupancyGridMap2D::TCriticalPointsList file:mrpt/maps/COccupancyGridMap2D.h line:1133
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::COccupancyGridMap2D::TCriticalPointsList, std::shared_ptr<mrpt::maps::COccupancyGridMap2D::TCriticalPointsList>> cl(enclosing_class, "TCriticalPointsList", "The structure used to store the set of Voronoi diagram\n    critical points.\n \n\n findCriticalPoints");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::COccupancyGridMap2D::TCriticalPointsList(); } ) );

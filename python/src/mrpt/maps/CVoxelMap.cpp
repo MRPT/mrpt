@@ -60,7 +60,6 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/serialization/CMessage.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/tfest/TMatchingPair.h>

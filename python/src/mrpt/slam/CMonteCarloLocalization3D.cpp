@@ -44,7 +44,6 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/serialization/CMessage.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/slam/CMonteCarloLocalization3D.h>
 #include <mrpt/slam/PF_implementations_data.h>
