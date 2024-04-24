@@ -24,7 +24,6 @@
 #if MRPT_HAS_NANOGUI
 
 using namespace mrpt;
-using namespace mrpt::vision;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::img;
 using namespace mrpt::poses;
