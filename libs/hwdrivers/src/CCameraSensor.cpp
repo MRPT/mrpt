@@ -836,7 +836,10 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 			m_state = CGenericSensor::ssError;
 			THROW_EXCEPTION("Error grabbing stereo images");
 		}
-		else { capture_ok = true; }
+		else
+		{
+			capture_ok = true;
+		}
 	}
 	else if (m_cap_svs)
 	{
@@ -1111,7 +1114,10 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 					"Error getting observations from MYNTEYE-D camera.");
 			}
 		}
-		else { noObsCnt = 0; }
+		else
+		{
+			noObsCnt = 0;
+		}
 		capture_ok = true;
 	}
 	else
