@@ -1,6 +1,8 @@
 \page changelog Change Log
 
 # Version 2.13.0: UNRELEASED
+- Changes in apps:
+  - SceneViewer3D: it now automatically guesses the min/max clip planes from the scene bounding box.
 - Changes in libraries:
   - \ref mrpt_containers_grp:
     - New methods returning safe proxy objects for range-based for loops:
