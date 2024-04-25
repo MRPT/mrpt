@@ -885,6 +885,13 @@ void _DSceneViewerFrame::loadFromFile(
 			btnAutoplay->SetValue(false);
 		}
 
+		// try to autoguess the clip distances:
+		const auto sceneBbox = openGLSceneRef->getBoundingBox();
+		const double sceneMaxScale =
+			std::max<double>(1000.0, (sceneBbox.max - sceneBbox.min).norm());
+		openGLSceneRef->getViewport()->setViewportClipDistances(
+			0.1, 5.0 * sceneMaxScale);
+
 		// Change the camera if necesary:
 		if (openGLSceneRef->followCamera())
 		{
@@ -917,10 +924,7 @@ void _DSceneViewerFrame::loadFromFile(
 			// Remove the camera from the object:
 			if (camIsCCameraObj) openGLSceneRef->removeObject(cam);
 		}
-		else
-		{
-			m_canvas->setCameraParams(oldCanvasCamera);
-		}
+		else { m_canvas->setCameraParams(oldCanvasCamera); }
 
 		loadedFileName = fil;
 
@@ -1094,15 +1098,9 @@ void _DSceneViewerFrame::OnBtnRecordClicked(wxCommandEvent& event)
 			captureCount = 0;
 			btnCapture->SetValue(true);
 		}
-		else
-		{
-			btnCapture->SetValue(false);
-		}
+		else { btnCapture->SetValue(false); }
 	}
-	else
-	{
-		isCapturing = false;
-	}
+	else { isCapturing = false; }
 }
 
 void _DSceneViewerFrame::OnbtnOrthoClicked(wxCommandEvent& event)
