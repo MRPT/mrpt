@@ -924,7 +924,10 @@ void _DSceneViewerFrame::loadFromFile(
 			// Remove the camera from the object:
 			if (camIsCCameraObj) openGLSceneRef->removeObject(cam);
 		}
-		else { m_canvas->setCameraParams(oldCanvasCamera); }
+		else
+		{
+			m_canvas->setCameraParams(oldCanvasCamera);
+		}
 
 		loadedFileName = fil;
 
@@ -1098,9 +1101,15 @@ void _DSceneViewerFrame::OnBtnRecordClicked(wxCommandEvent& event)
 			captureCount = 0;
 			btnCapture->SetValue(true);
 		}
-		else { btnCapture->SetValue(false); }
+		else
+		{
+			btnCapture->SetValue(false);
+		}
 	}
-	else { isCapturing = false; }
+	else
+	{
+		isCapturing = false;
+	}
 }
 
 void _DSceneViewerFrame::OnbtnOrthoClicked(wxCommandEvent& event)
