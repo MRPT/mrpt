@@ -19,14 +19,17 @@ namespace mrpt::hwdrivers
 {
 /** Access to joysticks and gamepads (read buttons and position), and request
  * number of joysticks in the system.
+ *
+ * \note New in MRPT 2.13.0: the API changed to support an arbitrary number of
+ *       input axes.
+ *
  * \ingroup mrpt_hwdrivers_grp
  */
 class CJoystick
 {
    private:
-	/** The axis limits:
-	 */
-	int m_x_min, m_x_max, m_y_min, m_y_max, m_z_min, m_z_max;
+	/** The axis limits for normalization. */
+	std::vector<int> m_minPerAxis, m_maxPerAxis;
 
 #if defined(MRPT_OS_LINUX)
 	/** File FD for the joystick, or -1 if not open (Linux only) */
@@ -54,6 +57,13 @@ class CJoystick
 	 */
 	static int getJoysticksCount();
 
+	struct State
+	{
+		std::vector<bool> buttons;
+		std::vector<float> axes;  ///!< Normalized position values [0,1]
+		std::vector<int> axes_raw;	///!< Raw position values
+	};
+
 	/** Gets joystick information.
 	 *
 	 *   This method will try first to open the joystick, so you can safely call
@@ -79,26 +89,22 @@ class CJoystick
 	 *
 	 * \sa setLimits
 	 */
-	bool getJoystickPosition(
-		int nJoy, float& x, float& y, float& z, std::vector<bool>& buttons,
-		int* raw_x_pos = nullptr, int* raw_y_pos = nullptr,
-		int* raw_z_pos = nullptr);
+	bool getJoystickPosition(int nJoy, State& output);
 
-/** Set the axis limit values, for computing a [-1,1] position index easily
- * (Only required to calibrate analog joystick).
- *   It seems that these values must been calibrated for each joystick model.
- *
- * \sa getJoystickPosition
- */
-#ifdef _WIN32
+	/** Set the axis limit values, for computing a [-1,1] position index easily
+	 * Only required to calibrate analog joystick.
+	 * It seems that these values must been calibrated for each joystick
+	 * model.
+	 *
+	 * Default values:
+	 * - Windows: [0, 0xFFFF]
+	 * - Linux: [-32767,32767]
+	 *
+	 * \sa getJoystickPosition
+	 */
 	void setLimits(
-		int x_min = 0, int x_max = 0xFFFF, int y_min = 0, int y_max = 0xFFFF,
-		int z_min = 0, int z_max = 0xFFFF);
-#else
-	void setLimits(
-		int x_min = -32767, int x_max = 32767, int y_min = -32767,
-		int y_max = 32767, int z_min = -32767, int z_max = 32767);
-#endif
+		const std::vector<int>& minPerAxis, const std::vector<int>& maxPerAxis);
+
 };	// End of class def.
 
 }  // namespace mrpt::hwdrivers

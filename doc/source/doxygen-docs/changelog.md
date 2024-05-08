@@ -8,6 +8,8 @@
     - New methods returning safe proxy objects for range-based for loops:
       - mrpt::containers::yaml::asMapRange()
       - mrpt::containers::yaml::asSequenceRange()
+  - \ref mrpt_hwdrivers_grp
+    - mrpt::hwdrivers::CJoystick API updated so it can handle an arbitrary number of axes.
   - \ref mrpt_maps_grp
     - Removed unused method: mrpt::maps::COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences()
   - Removed seldom used code (if needed, refer to MRPT versions <2.13.0):
