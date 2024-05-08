@@ -79,10 +79,7 @@ class MyArtProvider : public wxArtProvider
 			return wxBitmap(                                                   \
 				b.ConvertToImage().Scale(16, 16, wxIMAGE_QUALITY_HIGH));       \
 		}                                                                      \
-		else                                                                   \
-		{                                                                      \
-			return wxBitmap(xpm);                                              \
-		}                                                                      \
+		else { return wxBitmap(xpm); }                                         \
 	}
 
 // CreateBitmap function
@@ -755,39 +752,39 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 	try
 	{
 		// Use joystick:
-		if (cbJoy->GetValue())
+		mrpt::hwdrivers::CJoystick::State js;
+
+		if (cbJoy->GetValue() && joystick.getJoystickPosition(0, js) &&
+			js.axes.size() >= 2)
 		{
-			float x, y, z;
-			std::vector<bool> btns;
+			const float V_MAX_ACC = 1;
+			const float W_MAX_ACC = DEG2RAD(45.0f);
 
-			if (joystick.getJoystickPosition(0, x, y, z, btns))
+			const float x = js.axes.at(0);
+			const float y = js.axes.at(1);
+
+			const mrpt::math::TTwist2D vel_local =
+				the_robot.getCurrentGTVelLocal();
+			double v = vel_local.vx, w = vel_local.omega;
+
+			v -= y * V_MAX_ACC * At;
+			w -= x * W_MAX_ACC * At;
+
+			const auto& btns = js.buttons;
+
+			if (!btns.empty() && btns[0])
 			{
-				const float V_MAX_ACC = 1;
-				const float W_MAX_ACC = DEG2RAD(45.0f);
-
-				const mrpt::math::TTwist2D vel_local =
-					the_robot.getCurrentGTVelLocal();
-				double v = vel_local.vx, w = vel_local.omega;
-
-				v -= y * V_MAX_ACC * At;
-				w -= x * W_MAX_ACC * At;
-
-				if (!btns.empty() && btns[0])
-				{
-					v *= 0.95;
-					w *= 0.95;
-				}
-
-				if (btns.size() >= 2 && btns[1])
-					m_canvas->setZoomDistance(
-						m_canvas->getZoomDistance() * 0.99f);
-
-				if (btns.size() >= 3 && btns[2])
-					m_canvas->setZoomDistance(
-						m_canvas->getZoomDistance() * 1.01f);
-
-				the_robot.movementCommand(v, w);
+				v *= 0.95;
+				w *= 0.95;
 			}
+
+			if (btns.size() >= 2 && btns[1])
+				m_canvas->setZoomDistance(m_canvas->getZoomDistance() * 0.99f);
+
+			if (btns.size() >= 3 && btns[2])
+				m_canvas->setZoomDistance(m_canvas->getZoomDistance() * 1.01f);
+
+			the_robot.movementCommand(v, w);
 		}
 
 		// Use keyboard:
