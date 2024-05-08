@@ -32,7 +32,6 @@
 #include <unistd.h>
 
 #include <cerrno>
-#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -166,22 +165,25 @@ bool CJoystick::getJoystickPosition(
 	while (read(m_joy_fd, &js, sizeof(struct js_event)) ==
 		   sizeof(struct js_event))
 	{
+		// js.number: Button number
+		const size_t jsNum = static_cast<size_t>(js.number);
+
 		// Button?
 		if (js.type & JS_EVENT_BUTTON)
 		{
-			// js.number: Button number
-			if (m_joystate_btns.size() < (size_t)js.number + 1)
-				m_joystate_btns.resize(js.number + 1);
-			m_joystate_btns[js.number] = js.value != 0;
+			if (m_joystate_btns.size() < jsNum + 1)
+				m_joystate_btns.resize(jsNum + 1);
+
+			m_joystate_btns[jsNum] = (js.value != 0);
 		}
 
 		// Axes?
 		if (js.type & JS_EVENT_AXIS)
 		{
-			// std::cout << "joy: event axis" << std::endl;
-			if (m_joystate_axes.size() < (size_t)js.number + 1)
-				m_joystate_axes.resize(js.number + 1);
-			m_joystate_axes[js.number] = js.value;
+			if (m_joystate_axes.size() < jsNum + 1)
+				m_joystate_axes.resize(jsNum + 1);
+
+			m_joystate_axes[jsNum] = static_cast<int>(js.value);
 		}
 	}
 
