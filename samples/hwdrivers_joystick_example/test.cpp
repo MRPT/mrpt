@@ -29,10 +29,10 @@ void TestJoystick()
 {
 	// Open first joystick:
 	// ---------------------------
-	float x, y, z;
-	std::vector<bool> buttons;
 	CTicTac tictac;
+
 	CJoystick joy;
+	CJoystick::State js;
 
 	const int nJoystick = 0;  // The first one
 
@@ -41,13 +41,16 @@ void TestJoystick()
 	while (!mrpt::system::os::kbhit())
 	{
 		tictac.Tic();
-		if (joy.getJoystickPosition(nJoystick, x, y, z, buttons))
+		if (joy.getJoystickPosition(nJoystick, js))
 		{
 			double t = tictac.Tac();
 
-			printf("Joystick readings: %.03f, %.03f, %.03f  (", x, y, z);
-			for (unsigned b = 0; b < buttons.size(); b++)
-				printf("B%u:%c ", b, buttons[b] ? 'X' : '-');
+			printf("Joystick axes: ");
+			for (unsigned int i = 0; i < js.axes.size(); i++)
+				printf("[%u]=%.03f ", i, js.axes[i]);
+
+			for (unsigned b = 0; b < js.buttons.size(); b++)
+				printf("B%u:%c ", b, js.buttons[b] ? 'X' : '-');
 			printf(") [Query %uus]  \r", (unsigned)(t * 1e6));
 
 			fflush(stdout);
