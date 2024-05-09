@@ -22,6 +22,7 @@
     - mrpt::hwdrivers::CTuMicos
 - BUG FIXES:
   - mrpt::hwdrivers::CJoystick: Crash due to missing #include of OS-specific configuration in CJoystick.h
+  - mrpt::expr::CRuntimeCompiledExpression::is_compiled() did always return `true`.
 
 # Version 2.12.2: Released April 23rd, 2024
 - Changes in libraries:
