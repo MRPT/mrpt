@@ -18,9 +18,13 @@ TEST(RuntimeCompiledExpression, SimpleTest)
 	mrpt::expr::CRuntimeCompiledExpression expr;
 	std::map<std::string, double> vars;
 
+	EXPECT_FALSE(expr.is_compiled());
+
 	vars["x"] = 5.0;
 	vars["y"] = 3.0;
 	expr.compile("x^2+x*y+1", vars);
+
+	EXPECT_TRUE(expr.is_compiled());
 
 	EXPECT_NEAR(
 		expr.eval(), vars["x"] * vars["x"] + vars["x"] * vars["y"] + 1.0, 1e-9);

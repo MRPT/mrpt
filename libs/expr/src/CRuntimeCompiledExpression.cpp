@@ -63,6 +63,7 @@ struct CRuntimeCompiledExpression::Impl
 {
 	exprtk::expression<double> m_compiled_formula;
 	std::string m_original_expr_str;
+	bool m_compiled = false;
 };
 
 CRuntimeCompiledExpression::CRuntimeCompiledExpression()
@@ -78,6 +79,7 @@ void CRuntimeCompiledExpression::compile(
 	const std::string& expr_name_for_error_reporting)
 {
 	m_impl->m_original_expr_str = expression;
+	m_impl->m_compiled = false;
 
 	exprtk::symbol_table<double> symbol_table;
 	for (const auto& v : variables)
@@ -115,6 +117,8 @@ void CRuntimeCompiledExpression::compile(
 			"Error compiling expression (name=`%s`): `%s`. Error: `%s`",
 			expr_name_for_error_reporting.c_str(), expression.c_str(),
 			parser.error().c_str());
+
+	m_impl->m_compiled = true;
 }
 
 double CRuntimeCompiledExpression::eval() const
@@ -155,7 +159,7 @@ const exprtk::expression<double>&
 bool CRuntimeCompiledExpression::is_compiled() const
 {
 	ASSERT_(m_impl);
-	return m_impl->m_compiled_formula;
+	return m_impl->m_compiled;
 }
 const std::string& CRuntimeCompiledExpression::get_original_expression() const
 {

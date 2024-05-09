@@ -12,7 +12,6 @@
 
 #include <functional>
 #include <map>
-#include <memory>
 #include <string>
 
 #include "mrpt-expr_export.h"
