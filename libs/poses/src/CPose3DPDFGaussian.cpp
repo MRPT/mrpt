@@ -589,6 +589,12 @@ ostream& mrpt::poses::operator<<(ostream& out, const CPose3DPDFGaussian& obj)
 {
 	out << "Mean: " << obj.mean << "\n";
 	out << "Covariance:\n" << obj.cov << "\n";
+	const auto sigmas = obj.cov.asEigen().diagonal().array().sqrt().eval();
+	out << mrpt::format(
+		"std_x=%.03f std_y=%.03f std_z=%.03f std_yaw=%.02f deg std_pitch=%.02f "
+		"deg std_roll=%.02f deg\n",
+		sigmas(0), sigmas(1), sigmas(2), mrpt::RAD2DEG(sigmas(3)),
+		mrpt::RAD2DEG(sigmas(4)), mrpt::RAD2DEG(sigmas(5)));
 
 	return out;
 }
