@@ -125,8 +125,6 @@ bool CVoxelMap::internal_insertObservation_Pts(
 
 	sensorPt = globalSensorPose.translation();
 
-	insertionOptions.dumpToTextStream(std::cerr);
-
 	// Remove distant voxel option?
 	if (insertionOptions.remove_voxels_farther_than > 0)
 	{
