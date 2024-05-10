@@ -125,6 +125,34 @@ bool CVoxelMap::internal_insertObservation_Pts(
 
 	sensorPt = globalSensorPose.translation();
 
+	insertionOptions.dumpToTextStream(std::cerr);
+
+	// Remove distant voxel option?
+	if (insertionOptions.remove_voxels_farther_than > 0)
+	{
+		const int distInGrid = static_cast<int>(std::ceil(
+			insertionOptions.remove_voxels_farther_than *
+			m_impl->grid.inv_resolution));
+
+		const auto idxCurObs = Bonxai::PosToCoord(
+			{sensorPt.x, sensorPt.y, sensorPt.z},
+			base_t::m_impl->grid.inv_resolution);
+
+		this->m_impl->grid.forEachCell(
+			[&](voxel_node_t& v, const Bonxai::CoordT& c)
+			{
+				// manhattan distance:
+				const int dist = mrpt::max3(
+					std::abs(c.x - idxCurObs.x), std::abs(c.y - idxCurObs.y),
+					std::abs(c.z - idxCurObs.z));
+				if (dist < distInGrid) return;
+
+				// delete:
+				// Bonxai doesn't seem to have an erase()...
+				v.occupancyRef() = {};	// reset to "unseen voxel"
+			});
+	}
+
 	// Insert rays:
 	if (insertionOptions.ray_trace_free_space)
 		insertPointCloudAsRays(*obs.pointcloud, sensorPt, globalSensorPose);
@@ -160,10 +188,7 @@ bool CVoxelMap::internal_insertObservation(
 		// compose:
 		sensorPt = (*robotPose + localSensorPose).translation();
 	}
-	else
-	{
-		sensorPt = localSensorPose.translation();
-	}
+	else { sensorPt = localSensorPose.translation(); }
 
 	// Insert rays:
 	if (insertionOptions.ray_trace_free_space)
@@ -185,7 +210,8 @@ double CVoxelMap::internal_computeObservationLikelihood(
 
 	double log_lik = .0;  // cummulative log likelihoo
 
-	auto lambdaPointLikelihood = [&](float x, float y, float z) {
+	auto lambdaPointLikelihood = [&](float x, float y, float z)
+	{
 		double probOcc = 0;
 		const bool voxelExists = getPointOccupancy(x, y, z, probOcc);
 		if (!voxelExists) return;

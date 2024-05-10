@@ -11,6 +11,7 @@
   - \ref mrpt_hwdrivers_grp
     - mrpt::hwdrivers::CJoystick API updated so it can handle an arbitrary number of axes.
   - \ref mrpt_maps_grp
+    - mrpt::maps::CVoxelMap and mrpt::maps::CVoxelMapRGB: Added insertion option `remove_voxels_farther_than`.
     - Removed unused method: mrpt::maps::COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences()
   - Removed seldom used code (if needed, refer to MRPT versions <2.13.0):
     - The whole module mrpt-detectors
