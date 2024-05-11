@@ -137,8 +137,7 @@ bool CVoxelMap::internal_insertObservation_Pts(
 			base_t::m_impl->grid.inv_resolution);
 
 		this->m_impl->grid.forEachCell(
-			[&](voxel_node_t& v, const Bonxai::CoordT& c)
-			{
+			[&](voxel_node_t& v, const Bonxai::CoordT& c) {
 				// manhattan distance:
 				const int dist = mrpt::max3(
 					std::abs(c.x - idxCurObs.x), std::abs(c.y - idxCurObs.y),
@@ -186,7 +185,10 @@ bool CVoxelMap::internal_insertObservation(
 		// compose:
 		sensorPt = (*robotPose + localSensorPose).translation();
 	}
-	else { sensorPt = localSensorPose.translation(); }
+	else
+	{
+		sensorPt = localSensorPose.translation();
+	}
 
 	// Insert rays:
 	if (insertionOptions.ray_trace_free_space)
@@ -208,8 +210,7 @@ double CVoxelMap::internal_computeObservationLikelihood(
 
 	double log_lik = .0;  // cummulative log likelihoo
 
-	auto lambdaPointLikelihood = [&](float x, float y, float z)
-	{
+	auto lambdaPointLikelihood = [&](float x, float y, float z) {
 		double probOcc = 0;
 		const bool voxelExists = getPointOccupancy(x, y, z, probOcc);
 		if (!voxelExists) return;
