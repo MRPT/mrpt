@@ -79,7 +79,10 @@ class MyArtProvider : public wxArtProvider
 			return wxBitmap(                                                   \
 				b.ConvertToImage().Scale(16, 16, wxIMAGE_QUALITY_HIGH));       \
 		}                                                                      \
-		else { return wxBitmap(xpm); }                                         \
+		else                                                                   \
+		{                                                                      \
+			return wxBitmap(xpm);                                              \
+		}                                                                      \
 	}
 
 // CreateBitmap function

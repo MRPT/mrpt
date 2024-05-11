@@ -413,10 +413,9 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::getAsOctoMapVoxels(
 	const double bbox_span_z_inv = 1.0 / bbox_span_z;
 
 	// Go thru all voxels:
-	auto lmbdPerVoxel =
-		[this, &grid, &gl_obj, general_color_u, general_color, bbox,
-		 bbox_span_z_inv](voxel_node_t& data, const Bonxai::CoordT& coord)
-	{
+	auto lmbdPerVoxel = [this, &grid, &gl_obj, general_color_u, general_color,
+						 bbox, bbox_span_z_inv](
+							voxel_node_t& data, const Bonxai::CoordT& coord) {
 		using mrpt::img::TColor;
 
 		// log-odds to probability:
@@ -716,8 +715,7 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::updateCachedProperties()
 
 	// Go thru all voxels:
 	auto lmbdPerVoxel = [this, freenessThreshold, &grid](
-							voxel_node_t& data, const Bonxai::CoordT& coord)
-	{
+							voxel_node_t& data, const Bonxai::CoordT& coord) {
 		using mrpt::img::TColor;
 
 		// log-odds to probability:
