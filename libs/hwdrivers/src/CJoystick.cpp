@@ -112,10 +112,21 @@ bool CJoystick::getJoystickPosition(int nJoy, State& output)
 	// Get joy pos:
 	if (JOYERR_NOERROR != joyGetPos(ID, &jinfo)) return false;	// Error.
 
+	int calib_min[3], calib_max[3];
+
+	for (int i = 0; i < 3; i++)
+	{
+		calib_min[i] = m_minPerAxis.size() > i ? m_minPerAxis[i] : 0;
+		calib_max[i] = m_maxPerAxis.size() > i ? m_maxPerAxis[i] : 0xffff;
+	}
+
 	// Output data:
-	float x = (jinfo.wXpos - m_x_min) / (float)(m_x_max - m_x_min);
-	float y = (jinfo.wYpos - m_y_min) / (float)(m_y_max - m_y_min);
-	float z = (jinfo.wZpos - m_z_min) / (float)(m_z_max - m_z_min);
+	float x =
+		(jinfo.wXpos - calib_min[0]) / (float)(calib_max[0] - calib_min[0]);
+	float y =
+		(jinfo.wYpos - calib_min[1]) / (float)(calib_max[1] - calib_min[1]);
+	float z =
+		(jinfo.wZpos - calib_min[2]) / (float)(calib_max[2] - calib_min[2]);
 
 	x = 2 * x - 1;
 	y = 2 * y - 1;
