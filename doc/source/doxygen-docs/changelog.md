@@ -8,6 +8,7 @@
     - New methods returning safe proxy objects for range-based for loops:
       - mrpt::containers::yaml::asMapRange()
       - mrpt::containers::yaml::asSequenceRange()
+    - Upgrade embedded simpleini to v4.22 (for use when not found in the system)
   - \ref mrpt_hwdrivers_grp
     - mrpt::hwdrivers::CJoystick API updated so it can handle an arbitrary number of axes.
   - \ref mrpt_maps_grp
