@@ -134,7 +134,8 @@ class RosSynchronizer
 	CallbackFunction bind()
 	{
 		std::shared_ptr<RosSynchronizer> ptr = this->shared_from_this();
-		return [=](const rosbag::MessageInstance& rosmsg) {
+		return [=](const rosbag::MessageInstance& rosmsg)
+		{
 			if (!std::get<i>(ptr->m_cache))
 			{
 				std::get<i>(ptr->m_cache) =
@@ -149,9 +150,8 @@ class RosSynchronizer
 	CallbackFunction bindTfSync()
 	{
 		std::shared_ptr<RosSynchronizer> ptr = this->shared_from_this();
-		return [=](const rosbag::MessageInstance& rosmsg) {
-			return ptr->checkAndSignal();
-		};
+		return [=](const rosbag::MessageInstance& rosmsg)
+		{ return ptr->checkAndSignal(); };
 	}
 
    private:
@@ -238,7 +238,12 @@ Obs toPointCloud2(
 	bool sensorPoseOK = findOutSensorPose(
 		ptsObs->sensorPose, pts->header.frame_id,
 		arg_base_link_frame.getValue(), fixedSensorPose);
-	ASSERT_(sensorPoseOK);
+	if (!sensorPoseOK)
+	{
+		std::cerr << "Warning: dropping one observation of type '" << msg
+				  << "' due to missing /tf data.\n";
+		return {};
+	}
 
 	// Convert points:
 	std::set<std::string> fields = mrpt::ros1bridge::extractFields(*pts);
@@ -317,7 +322,12 @@ Obs toLidar2D(
 	bool sensorPoseOK = findOutSensorPose(
 		scanObs->sensorPose, scan->header.frame_id,
 		arg_base_link_frame.getValue(), fixedSensorPose);
-	ASSERT_(sensorPoseOK);
+	if (!sensorPoseOK)
+	{
+		std::cerr << "Warning: dropping one observation of type '" << msg
+				  << "' due to missing /tf data.\n";
+		return {};
+	}
 
 	return {scanObs};
 }
@@ -353,7 +363,12 @@ Obs toRotatingScan(
 	bool sensorPoseOK = findOutSensorPose(
 		obsRotScan->sensorPose, pts->header.frame_id,
 		arg_base_link_frame.getValue(), fixedSensorPose);
-	ASSERT_(sensorPoseOK);
+	if (!sensorPoseOK)
+	{
+		std::cerr << "Warning: dropping one observation of type '" << msg
+				  << "' due to missing /tf data.\n";
+		return {};
+	}
 
 	return {obsRotScan};
 }
@@ -375,7 +390,12 @@ Obs toIMU(
 	bool sensorPoseOK = findOutSensorPose(
 		mrptObs->sensorPose, imu->header.frame_id,
 		arg_base_link_frame.getValue(), fixedSensorPose);
-	ASSERT_(sensorPoseOK);
+	if (!sensorPoseOK)
+	{
+		std::cerr << "Warning: dropping one observation of type '" << msg
+				  << "' due to missing /tf data.\n";
+		return {};
+	}
 
 	return {mrptObs};
 }
@@ -439,7 +459,12 @@ Obs toImage(
 	bool sensorPoseOK = findOutSensorPose(
 		imgObs->cameraPose, frame_id, arg_base_link_frame.getValue(),
 		fixedSensorPose);
-	ASSERT_(sensorPoseOK);
+	if (!sensorPoseOK)
+	{
+		std::cerr << "Warning: dropping one observation of type '" << msg
+				  << "' due to missing /tf data.\n";
+		return {};
+	}
 
 	return {imgObs};
 }
@@ -488,7 +513,12 @@ Obs toRangeImage(
 		bool sensorPoseOK = findOutSensorPose(
 			rangeScan->sensorPose, image->header.frame_id,
 			arg_base_link_frame.getValue(), fixedSensorPose);
-		ASSERT_(sensorPoseOK);
+		if (!sensorPoseOK)
+		{
+			std::cerr << "Warning: dropping one observation of type '" << msg
+					  << "' due to missing /tf data.\n";
+			return {};
+		}
 
 #if 0  // JLBC: not needed anymore?
 	   // MRPT assumes the image plane is parallel to the YZ plane, so the
@@ -542,13 +572,11 @@ class Transcriber
 		tfBuffer = std::make_shared<tf2::BufferCore>();
 
 		m_lookup["/tf"].emplace_back(
-			[=](const rosbag::MessageInstance& rosmsg) {
-				return toTf<false>(*tfBuffer, rosmsg);
-			});
+			[=](const rosbag::MessageInstance& rosmsg)
+			{ return toTf<false>(*tfBuffer, rosmsg); });
 		m_lookup["/tf_static"].emplace_back(
-			[=](const rosbag::MessageInstance& rosmsg) {
-				return toTf<true>(*tfBuffer, rosmsg);
-			});
+			[=](const rosbag::MessageInstance& rosmsg)
+			{ return toTf<true>(*tfBuffer, rosmsg); });
 
 		for (auto& sensorNode : config["sensors"].asMap())
 		{
@@ -589,50 +617,44 @@ class Transcriber
 #endif
 			if (sensorType == "CObservationImage")
 			{
-				auto callback = [=](const rosbag::MessageInstance& m) {
-					return toImage(sensorName, m, fixedSensorPose);
-				};
+				auto callback = [=](const rosbag::MessageInstance& m)
+				{ return toImage(sensorName, m, fixedSensorPose); };
 				ASSERT_(sensor.count("image_topic") != 0);
 				m_lookup[sensor.at("image_topic").as<std::string>()]
 					.emplace_back(callback);
 			}
 			else if (sensorType == "CObservationPointCloud")
 			{
-				auto callback = [=](const rosbag::MessageInstance& m) {
-					return toPointCloud2(sensorName, m, fixedSensorPose);
-				};
+				auto callback = [=](const rosbag::MessageInstance& m)
+				{ return toPointCloud2(sensorName, m, fixedSensorPose); };
 				m_lookup[sensor.at("topic").as<std::string>()].emplace_back(
 					callback);
 			}
 			else if (sensorType == "CObservation2DRangeScan")
 			{
-				auto callback = [=](const rosbag::MessageInstance& m) {
-					return toLidar2D(sensorName, m, fixedSensorPose);
-				};
+				auto callback = [=](const rosbag::MessageInstance& m)
+				{ return toLidar2D(sensorName, m, fixedSensorPose); };
 				m_lookup[sensor.at("topic").as<std::string>()].emplace_back(
 					callback);
 			}
 			else if (sensorType == "CObservationRotatingScan")
 			{
-				auto callback = [=](const rosbag::MessageInstance& m) {
-					return toRotatingScan(sensorName, m, fixedSensorPose);
-				};
+				auto callback = [=](const rosbag::MessageInstance& m)
+				{ return toRotatingScan(sensorName, m, fixedSensorPose); };
 				m_lookup[sensor.at("topic").as<std::string>()].emplace_back(
 					callback);
 			}
 			else if (sensorType == "CObservationIMU")
 			{
-				auto callback = [=](const rosbag::MessageInstance& m) {
-					return toIMU(sensorName, m, fixedSensorPose);
-				};
+				auto callback = [=](const rosbag::MessageInstance& m)
+				{ return toIMU(sensorName, m, fixedSensorPose); };
 				m_lookup[sensor.at("topic").as<std::string>()].emplace_back(
 					callback);
 			}
 			else if (sensorType == "CObservationOdometry")
 			{
-				auto callback = [=](const rosbag::MessageInstance& m) {
-					return toOdometry(sensorName, m);
-				};
+				auto callback = [=](const rosbag::MessageInstance& m)
+				{ return toOdometry(sensorName, m); };
 				m_lookup[sensor.at("topic").as<std::string>()].emplace_back(
 					callback);
 			}

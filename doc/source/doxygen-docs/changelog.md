@@ -3,6 +3,7 @@
 # Version 2.13.0: UNRELEASED
 - Changes in apps:
   - SceneViewer3D: it now automatically guesses the min/max clip planes from the scene bounding box.
+  - rosbag2rawlog (ROS1): tolerate loss of some sensor observations if /tf has not been yet received instead of aborting conversion.
 - Changes in libraries:
   - \ref mrpt_containers_grp:
     - New methods returning safe proxy objects for range-based for loops:
