@@ -23,43 +23,42 @@ using namespace std;
 // ------------------------------------------------------
 void TestEnumerate_1394()
 {
-	CImageGrabber_dc1394::TCameraInfoList lstCams;
+  CImageGrabber_dc1394::TCameraInfoList lstCams;
 
-	cout << "Enumerating cameras..." << endl;
+  cout << "Enumerating cameras..." << endl;
 
-	CImageGrabber_dc1394::enumerateCameras(lstCams);
+  CImageGrabber_dc1394::enumerateCameras(lstCams);
 
-	cout << "Found " << lstCams.size() << " cameras." << endl;
+  cout << "Found " << lstCams.size() << " cameras." << endl;
 
-	for (CImageGrabber_dc1394::TCameraInfoList::const_iterator it =
-			 lstCams.begin();
-		 it != lstCams.end(); it++)
-	{
-		cout << "======= CAMERA =========" << endl;
-		cout << "   GUID : " << it->guid << endl;
-		cout << "   Unit : " << it->unit << endl;
-		cout << "  Vendor: " << it->vendor << endl;
-		cout << "  Model : " << it->model << endl;
-		cout << endl;
-	}
+  for (CImageGrabber_dc1394::TCameraInfoList::const_iterator it = lstCams.begin();
+       it != lstCams.end(); it++)
+  {
+    cout << "======= CAMERA =========" << endl;
+    cout << "   GUID : " << it->guid << endl;
+    cout << "   Unit : " << it->unit << endl;
+    cout << "  Vendor: " << it->vendor << endl;
+    cout << "  Model : " << it->model << endl;
+    cout << endl;
+  }
 }
 
 int main(int argc, char** argv)
 {
-	try
-	{
-		TestEnumerate_1394();
+  try
+  {
+    TestEnumerate_1394();
 
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
-		return -1;
-	}
-	catch (...)
-	{
-		printf("Another exception!!");
-		return -1;
-	}
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    return -1;
+  }
+  catch (...)
+  {
+    printf("Another exception!!");
+    return -1;
+  }
 }

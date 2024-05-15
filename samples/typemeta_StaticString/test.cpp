@@ -15,24 +15,24 @@
 
 void Test_StaticString()
 {
-	using namespace std;
-	using namespace mrpt::typemeta;
+  using namespace std;
+  using namespace mrpt::typemeta;
 
-	constexpr string_literal<3> s = "foo";
-	cout << "string_literal<3>=" << s << endl;
+  constexpr string_literal<3> s = "foo";
+  cout << "string_literal<3>=" << s << endl;
 
-	constexpr auto a = literal("foo");
-	constexpr auto b = literal("bar");
-	// In GCC7 this can be "constexpr", but it fails in MSVC 2017 (!)
-	auto ab = a + b;
-	cout << "a=" << a << endl;
-	cout << "b=" << b << endl;
-	cout << "a+b=" << ab << endl;
+  constexpr auto a = literal("foo");
+  constexpr auto b = literal("bar");
+  // In GCC7 this can be "constexpr", but it fails in MSVC 2017 (!)
+  auto ab = a + b;
+  cout << "a=" << a << endl;
+  cout << "b=" << b << endl;
+  cout << "a+b=" << ab << endl;
 
-	static_assert(ab.size() == 6, "***");
-	cout << "(a+b).size()=" << ab.size() << endl;
-	cout << "(a+b)[0]=" << ab[0] << endl;
-	cout << "(a+b)[5]=" << ab[5] << endl;
+  static_assert(ab.size() == 6, "***");
+  cout << "(a+b).size()=" << ab.size() << endl;
+  cout << "(a+b)[0]=" << ab[0] << endl;
+  cout << "(a+b)[5]=" << ab[5] << endl;
 }
 //! [example sstring]
 
@@ -43,26 +43,26 @@ void Test_StaticString()
 
 void Test_StaticNum2Str()
 {
-	using namespace std;
-	using namespace mrpt::typemeta;
+  using namespace std;
+  using namespace mrpt::typemeta;
 
-	constexpr auto n42 = num_to_string<42>::value;
-	constexpr auto n9999 = num_to_string<9999>::value;
-	cout << "42 as string=" << n42 << endl;
-	cout << "9999 as string=" << n9999 << endl;
+  constexpr auto n42 = num_to_string<42>::value;
+  constexpr auto n9999 = num_to_string<9999>::value;
+  cout << "42 as string=" << n42 << endl;
+  cout << "9999 as string=" << n9999 << endl;
 }
 //! [example num2str]
 
 int main(int argc, char** argv)
 {
-	try
-	{
-		Test_StaticString();
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "MRPT error: " << e.what() << std::endl;
-		return -1;
-	}
+  try
+  {
+    Test_StaticString();
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << e.what() << std::endl;
+    return -1;
+  }
 }

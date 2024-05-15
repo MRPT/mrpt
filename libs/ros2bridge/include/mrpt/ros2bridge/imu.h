@@ -8,15 +8,15 @@
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-	APPLICATION: mrpt_ros bridge
-	FILE: imu.h
-	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
+  APPLICATION: mrpt_ros bridge
+  FILE: imu.h
+  AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
   ---------------------------------------------------------------*/
 #pragma once
 
 #include <mrpt/obs/CObservationIMU.h>
 
-#include <cstring>	// size_t
+#include <cstring>  // size_t
 #include <geometry_msgs/msg/pose.hpp>
 #include <geometry_msgs/msg/quaternion.hpp>
 #include <sensor_msgs/msg/imu.hpp>
@@ -44,8 +44,9 @@ bool fromROS(const sensor_msgs::msg::Imu& msg, mrpt::obs::CObservationIMU& obj);
  * \return true on sucessful conversion, false on any error.
  */
 bool toROS(
-	const mrpt::obs::CObservationIMU& obj,
-	const std_msgs::msg::Header& msg_header, sensor_msgs::msg::Imu& msg);
+    const mrpt::obs::CObservationIMU& obj,
+    const std_msgs::msg::Header& msg_header,
+    sensor_msgs::msg::Imu& msg);
 
 /** @} */
 

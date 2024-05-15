@@ -18,20 +18,19 @@ using std::vector;
 
 TPolygonWithPlane::TPolygonWithPlane(const TPolygon3D& p) : poly(p)
 {
-	poly.getBestFittingPlane(plane);
-	plane.getAsPose3D(pose);
-	// inversePose = -pose;
-	CMatrixDouble44 P_inv;
-	pose.getInverseHomogeneousMatrix(P_inv);
-	inversePose.fromHomogeneousMatrix(P_inv);
+  poly.getBestFittingPlane(plane);
+  plane.getAsPose3D(pose);
+  // inversePose = -pose;
+  CMatrixDouble44 P_inv;
+  pose.getInverseHomogeneousMatrix(P_inv);
+  inversePose.fromHomogeneousMatrix(P_inv);
 
-	internal::unsafeProjectPolygon(poly, inversePose, poly2D);
+  internal::unsafeProjectPolygon(poly, inversePose, poly2D);
 }
 void TPolygonWithPlane::getPlanes(
-	const vector<TPolygon3D>& oldPolys, vector<TPolygonWithPlane>& newPolys)
+    const vector<TPolygon3D>& oldPolys, vector<TPolygonWithPlane>& newPolys)
 {
-	size_t N = oldPolys.size();
-	newPolys.resize(N);
-	for (size_t i = 0; i < N; i++)
-		newPolys[i] = oldPolys[i];
+  size_t N = oldPolys.size();
+  newPolys.resize(N);
+  for (size_t i = 0; i < N; i++) newPolys[i] = oldPolys[i];
 }

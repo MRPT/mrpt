@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"	// Precompiled headers
+#include "hwdrivers-precomp.h"  // Precompiled headers
 //
 #include <mrpt/hwdrivers/CGyroKVHDSP3000.h>
 #include <mrpt/obs/CObservationIMU.h>
@@ -24,152 +24,156 @@ using namespace mrpt::hwdrivers;
 using namespace std;
 
 /*-------------------------------------------------------------
-					CGyroKVHDSP3000
+          CGyroKVHDSP3000
 -------------------------------------------------------------*/
 CGyroKVHDSP3000::CGyroKVHDSP3000() : m_com_port(), m_sensorPose()
 
 {
-	m_state = ssInitializing;
-	m_sensorLabel = "KVH_DSP3000";
+  m_state = ssInitializing;
+  m_sensorLabel = "KVH_DSP3000";
 }
 
 CGyroKVHDSP3000::~CGyroKVHDSP3000() { m_serialPort->close(); }
 
 /*-------------------------------------------------------------
-					doProcess
+          doProcess
 -------------------------------------------------------------*/
 void CGyroKVHDSP3000::doProcess()
 {
-	if (m_state == ssError)
-	{
-		std::this_thread::sleep_for(200ms);
-		initialize();
-	}
+  if (m_state == ssError)
+  {
+    std::this_thread::sleep_for(200ms);
+    initialize();
+  }
 
-	if (m_state == ssError) return;
+  if (m_state == ssError) return;
 
-	string msg;
-	CObservationIMU::Ptr observationGyro = std::make_shared<CObservationIMU>();
-	observationGyro->timestamp = mrpt::Clock::now();
+  string msg;
+  CObservationIMU::Ptr observationGyro = std::make_shared<CObservationIMU>();
+  observationGyro->timestamp = mrpt::Clock::now();
 
-	msg = m_serialPort->ReadString(-1, nullptr, "\n");
+  msg = m_serialPort->ReadString(-1, nullptr, "\n");
 
-	observationGyro->sensorPose = m_sensorPose;
-	observationGyro->sensorLabel = m_sensorLabel;
-	string delimiter(" ");
-	vector<string> words;
-	mrpt::system::tokenize(msg, delimiter, words);
-	if (words.size() < 2) return;
-	if (words[1].c_str()[0] == '0') return;
-	double mesure = atof(words[0].c_str());
-	switch (m_mode)
-	{
-		case RATE:
-			observationGyro->rawMeasurements[IMU_YAW_VEL] = DEG2RAD(mesure);
-			observationGyro->dataIsPresent[IMU_YAW_VEL] = true;
-			break;
-		case INTEGRATED_ANGLE:
-		case INCREMENTAL_ANGLE:
-			observationGyro->rawMeasurements[IMU_YAW] = DEG2RAD(mesure);
-			observationGyro->dataIsPresent[IMU_YAW] = true;
-			break;
-	}
+  observationGyro->sensorPose = m_sensorPose;
+  observationGyro->sensorLabel = m_sensorLabel;
+  string delimiter(" ");
+  vector<string> words;
+  mrpt::system::tokenize(msg, delimiter, words);
+  if (words.size() < 2) return;
+  if (words[1].c_str()[0] == '0') return;
+  double mesure = atof(words[0].c_str());
+  switch (m_mode)
+  {
+    case RATE:
+      observationGyro->rawMeasurements[IMU_YAW_VEL] = DEG2RAD(mesure);
+      observationGyro->dataIsPresent[IMU_YAW_VEL] = true;
+      break;
+    case INTEGRATED_ANGLE:
+    case INCREMENTAL_ANGLE:
+      observationGyro->rawMeasurements[IMU_YAW] = DEG2RAD(mesure);
+      observationGyro->dataIsPresent[IMU_YAW] = true;
+      break;
+  }
 
-	if (!m_firstInteration) { appendObservation(observationGyro); }
-	else
-		m_firstInteration = false;
+  if (!m_firstInteration)
+  {
+    appendObservation(observationGyro);
+  }
+  else
+    m_firstInteration = false;
 }
 
 /*-------------------------------------------------------------
-					initialize
+          initialize
 -------------------------------------------------------------*/
 void CGyroKVHDSP3000::initialize()
 {
-	m_process_rate = 100;
+  m_process_rate = 100;
 
-	/*
-	  Open modem device for reading and writing and not as controlling tty
-	  because we don't want to get killed if linenoise sends CTRL-C.
-	*/
-	m_serialPort = std::make_unique<CSerialPort>(m_com_port);
-	if (!(m_serialPort->isOpen())) THROW_EXCEPTION("can't open serial port");
-	cout << "m_COMbaud " << m_COMbauds << endl;
-	m_serialPort->setConfig(m_COMbauds);
+  /*
+  Open modem device for reading and writing and not as controlling tty
+  because we don't want to get killed if linenoise sends CTRL-C.
+  */
+  m_serialPort = std::make_unique<CSerialPort>(m_com_port);
+  if (!(m_serialPort->isOpen())) THROW_EXCEPTION("can't open serial port");
+  cout << "m_COMbaud " << m_COMbauds << endl;
+  m_serialPort->setConfig(m_COMbauds);
 
-	changeMode(m_mode);
-	resetIncrementalAngle();
-	m_state = ssWorking;
+  changeMode(m_mode);
+  resetIncrementalAngle();
+  m_state = ssWorking;
 }
 
 /*-------------------------------------------------------------
-					loadConfig_sensorSpecific
+          loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CGyroKVHDSP3000::loadConfig_sensorSpecific(
-	const mrpt::config::CConfigFileBase& configSource,
-	const std::string& iniSection)
+    const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection)
 {
-	m_sensorPose.setFromValues(
-		configSource.read_float(iniSection, "pose_x", 0, false),
-		configSource.read_float(iniSection, "pose_y", 0, false),
-		configSource.read_float(iniSection, "pose_z", 0, false),
-		DEG2RAD(configSource.read_float(iniSection, "pose_yaw", 0, false)),
-		DEG2RAD(configSource.read_float(iniSection, "pose_pitch", 0, false)),
-		DEG2RAD(configSource.read_float(iniSection, "pose_roll", 0, false)));
-	string operatingMode =
-		configSource.read_string(iniSection, "operatingMode", "rate", false);
-	cout << "Operating mode : " << operatingMode << endl;
-	if (operatingMode == "incremental")
-	{
-		m_mode = INCREMENTAL_ANGLE;
-		cout << "Incremental mode" << endl;
-	}
-	else if (operatingMode == "integral")
-	{
-		m_mode = INTEGRATED_ANGLE;
-		cout << "Integrated mode" << endl;
-	}
-	else
-	{
-		m_mode = RATE;
-		cout << "Rate mode" << endl;
-	}
-	m_com_port =
-		configSource.read_string(iniSection, "COM_port_LIN", m_com_port, false);
+  m_sensorPose.setFromValues(
+      configSource.read_float(iniSection, "pose_x", 0, false),
+      configSource.read_float(iniSection, "pose_y", 0, false),
+      configSource.read_float(iniSection, "pose_z", 0, false),
+      DEG2RAD(configSource.read_float(iniSection, "pose_yaw", 0, false)),
+      DEG2RAD(configSource.read_float(iniSection, "pose_pitch", 0, false)),
+      DEG2RAD(configSource.read_float(iniSection, "pose_roll", 0, false)));
+  string operatingMode = configSource.read_string(iniSection, "operatingMode", "rate", false);
+  cout << "Operating mode : " << operatingMode << endl;
+  if (operatingMode == "incremental")
+  {
+    m_mode = INCREMENTAL_ANGLE;
+    cout << "Incremental mode" << endl;
+  }
+  else if (operatingMode == "integral")
+  {
+    m_mode = INTEGRATED_ANGLE;
+    cout << "Integrated mode" << endl;
+  }
+  else
+  {
+    m_mode = RATE;
+    cout << "Rate mode" << endl;
+  }
+  m_com_port = configSource.read_string(iniSection, "COM_port_LIN", m_com_port, false);
 }
 
 void CGyroKVHDSP3000::changeMode(GYRO_MODE _newMode)
 {
-	m_mode = _newMode;
-	char commande[3];
-	switch (m_mode)
-	{
-		case RATE: commande[0] = 'R'; break;
-		case INTEGRATED_ANGLE: commande[0] = 'P'; break;
-		case INCREMENTAL_ANGLE:
-			commande[0] = 'A';	// incremental.
-			break;
-	}
-	commande[1] = 0x0A;
-	commande[2] = 0;
-	// we send the command four times to be sure that the command will be
-	// interpreted by the sensor.
-	if (m_serialPort->Write(commande, 3 * sizeof(char)) <= 0)
-	{
-		THROW_EXCEPTION("can't write on serial port");
-	}
+  m_mode = _newMode;
+  char commande[3];
+  switch (m_mode)
+  {
+    case RATE:
+      commande[0] = 'R';
+      break;
+    case INTEGRATED_ANGLE:
+      commande[0] = 'P';
+      break;
+    case INCREMENTAL_ANGLE:
+      commande[0] = 'A';  // incremental.
+      break;
+  }
+  commande[1] = 0x0A;
+  commande[2] = 0;
+  // we send the command four times to be sure that the command will be
+  // interpreted by the sensor.
+  if (m_serialPort->Write(commande, 3 * sizeof(char)) <= 0)
+  {
+    THROW_EXCEPTION("can't write on serial port");
+  }
 }
 
 void CGyroKVHDSP3000::resetIncrementalAngle()
 {
-	if (m_mode != RATE)
-	{
-		char commande[3];
-		commande[0] = 'Z';
-		commande[1] = '\n';
-		commande[2] = 0;
-		if (m_serialPort->Write(commande, 3 * sizeof(char)) <= 0)
-		{
-			THROW_EXCEPTION("can't write on serial port");
-		}
-	}
+  if (m_mode != RATE)
+  {
+    char commande[3];
+    commande[0] = 'Z';
+    commande[1] = '\n';
+    commande[2] = 0;
+    if (m_serialPort->Write(commande, 3 * sizeof(char)) <= 0)
+    {
+      THROW_EXCEPTION("can't write on serial port");
+    }
+  }
 }

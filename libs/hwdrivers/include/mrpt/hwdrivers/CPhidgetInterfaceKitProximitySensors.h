@@ -92,88 +92,88 @@ namespace mrpt::hwdrivers
  */
 enum SensorType
 {
-	SHARP_30cm,
-	SHARP_80cm,
-	EZ1,
-	UNPLUGGED
+  SHARP_30cm,
+  SHARP_80cm,
+  EZ1,
+  UNPLUGGED
 };
 
-class CPhidgetInterfaceKitProximitySensors : public mrpt::system::COutputLogger,
-											 public CGenericSensor
+class CPhidgetInterfaceKitProximitySensors :
+    public mrpt::system::COutputLogger,
+    public CGenericSensor
 {
-	DEFINE_GENERIC_SENSOR(CPhidgetInterfaceKitProximitySensors)
+  DEFINE_GENERIC_SENSOR(CPhidgetInterfaceKitProximitySensors)
 
-   public:
-	/** Constructor
-	 * \param serialNumber The board's serial number. Set -1 to choose the
-	 * first available board
-	 */
-	CPhidgetInterfaceKitProximitySensors();
+ public:
+  /** Constructor
+   * \param serialNumber The board's serial number. Set -1 to choose the
+   * first available board
+   */
+  CPhidgetInterfaceKitProximitySensors();
 
-	/** Destructor
-	 */
-	~CPhidgetInterfaceKitProximitySensors() override;
+  /** Destructor
+   */
+  ~CPhidgetInterfaceKitProximitySensors() override;
 
-	/** This method tries to get a set of range measurements from the IR
-	 * sensors.
-	 * \param outThereIsObservation Will be true if an observation was
-	 * sucessfully received.
-	 */
-	void getObservation(mrpt::obs::CObservationRange& outObservation);
-	/** Initialize the sensor according to the parameters previously read in the
-	 * configuration file.
-	 * \exception throw an exception if the board could not be found.
-	 * \exception throw an exception if the process rate can't be set on one of
-	 * the board channel.
-	 */
-	void initialize() override;
+  /** This method tries to get a set of range measurements from the IR
+   * sensors.
+   * \param outThereIsObservation Will be true if an observation was
+   * sucessfully received.
+   */
+  void getObservation(mrpt::obs::CObservationRange& outObservation);
+  /** Initialize the sensor according to the parameters previously read in the
+   * configuration file.
+   * \exception throw an exception if the board could not be found.
+   * \exception throw an exception if the process rate can't be set on one of
+   * the board channel.
+   */
+  void initialize() override;
 
-	/** This method should be called periodically. Period depend on the
-	 * process_rate in the configuration file.
-	 */
-	void doProcess() override;
+  /** This method should be called periodically. Period depend on the
+   * process_rate in the configuration file.
+   */
+  void doProcess() override;
 
-   private:
-	/** An 8 dimension vector of boolean value wich store the presence or
-	 * abscence of a sensor on the phidget interface kit board.
-	 */
-	std::vector<bool> m_sensorIsPlugged;
-	/** The minimum range in meters, this field is automaticaly filled according
-	 * to the sensor part number read in the configuration file.
-	 * Size of this vector depend on the number of sensors described in the
-	 * configuration file.
-	 */
-	std::vector<float> m_minRange;
+ private:
+  /** An 8 dimension vector of boolean value wich store the presence or
+   * abscence of a sensor on the phidget interface kit board.
+   */
+  std::vector<bool> m_sensorIsPlugged;
+  /** The minimum range in meters, this field is automaticaly filled according
+   * to the sensor part number read in the configuration file.
+   * Size of this vector depend on the number of sensors described in the
+   * configuration file.
+   */
+  std::vector<float> m_minRange;
 
-	/** The maximum range in meters, this field is automaticaly filled according
-	 * to the sensor part number read in the configuration file.
-	 * Size of this vector depend on the number of sensors described in the
-	 * configuration file.
-	 */
-	std::vector<float> m_maxRange;
+  /** The maximum range in meters, this field is automaticaly filled according
+   * to the sensor part number read in the configuration file.
+   * Size of this vector depend on the number of sensors described in the
+   * configuration file.
+   */
+  std::vector<float> m_maxRange;
 
-	/** The sensor type.
-	 */
-	std::vector<SensorType> m_sensorType;
-	/** The poses of the 8 sensors x[m] y[m] z[m] yaw[deg] pitch[deg] roll[deg].
-	 * This field is automaticaly filled according to the sensor
-	 * described in the configuration file.
-	 */
-	std::vector<mrpt::poses::CPose3D> m_sensorPoses;
+  /** The sensor type.
+   */
+  std::vector<SensorType> m_sensorType;
+  /** The poses of the 8 sensors x[m] y[m] z[m] yaw[deg] pitch[deg] roll[deg].
+   * This field is automaticaly filled according to the sensor
+   * described in the configuration file.
+   */
+  std::vector<mrpt::poses::CPose3D> m_sensorPoses;
 
-	/** The board serial number read in the configuration file. -1 for any
-	 * board.
-	 */
-	int m_serialNumber{-1};
-	float m_minOfMinRanges;
-	float m_maxOfMaxRanges;
+  /** The board serial number read in the configuration file. -1 for any
+   * board.
+   */
+  int m_serialNumber{-1};
+  float m_minOfMinRanges;
+  float m_maxOfMaxRanges;
 
-	void* m_carteInterfaceKit;	// CPhidgetInterfaceKitHandle
+  void* m_carteInterfaceKit;  // CPhidgetInterfaceKitHandle
 
-	/** See the class documentation at the top for expected parameters */
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection) override;
-};	// end class
+  /** See the class documentation at the top for expected parameters */
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection) override;
+};  // end class
 
 }  // namespace mrpt::hwdrivers

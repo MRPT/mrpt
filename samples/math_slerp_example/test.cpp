@@ -24,7 +24,7 @@
 #include <thread>
 
 using namespace std;
-using namespace mrpt::literals;	 // _deg
+using namespace mrpt::literals;  // _deg
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
@@ -36,84 +36,85 @@ using namespace mrpt::img;
 // ------------------------------------------------------
 void TestSLERP()
 {
-	CDisplayWindow3D win("Example of SLERP animation", 640, 480);
+  CDisplayWindow3D win("Example of SLERP animation", 640, 480);
 
-	Scene::Ptr& theScene = win.get3DSceneAndLock();
+  Scene::Ptr& theScene = win.get3DSceneAndLock();
 
-	win.setCameraAzimuthDeg(-50);
-	win.setCameraElevationDeg(40);
-	win.setCameraZoom(19);
-	win.setCameraPointingToPoint(2, 2, 0);
+  win.setCameraAzimuthDeg(-50);
+  win.setCameraElevationDeg(40);
+  win.setCameraZoom(19);
+  win.setCameraPointingToPoint(2, 2, 0);
 
-	// Modify the scene:
-	// ------------------------------------------------------
-	{
-		auto obj = mrpt::opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
-		obj->setColor(0.4f, 0.4f, 0.4f);
-		theScene->insert(obj);
-	}
+  // Modify the scene:
+  // ------------------------------------------------------
+  {
+    auto obj = mrpt::opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
+    obj->setColor(0.4f, 0.4f, 0.4f);
+    theScene->insert(obj);
+  }
 
-	// Initialize the start, end pose of the animation
-	const TPose3D pose_a(0, 0, 0, 0.0_deg, 0.0_deg, 0.0_deg);
-	const TPose3D pose_b(3, 4, 1, 120.0_deg, 40.0_deg, 50.0_deg);
+  // Initialize the start, end pose of the animation
+  const TPose3D pose_a(0, 0, 0, 0.0_deg, 0.0_deg, 0.0_deg);
+  const TPose3D pose_b(3, 4, 1, 120.0_deg, 40.0_deg, 50.0_deg);
 
-	{
-		// XYZ corner at A:
-		auto obj = mrpt::opengl::stock_objects::CornerXYZSimple(1.0, 2.0);
-		obj->setPose(pose_a);
-		theScene->insert(obj);
-	}
-	{
-		// XYZ corner at B:
-		auto obj = mrpt::opengl::stock_objects::CornerXYZSimple(1.0, 2.0);
-		obj->setPose(pose_b);
-		theScene->insert(obj);
-	}
-	{
-		// SLERP animated corner:
-		auto obj = mrpt::opengl::stock_objects::CornerXYZSimple(1.0, 4.0);
-		obj->setName("slerp_obj");
-		obj->setPose(pose_a);
-		theScene->insert(obj);
-	}
+  {
+    // XYZ corner at A:
+    auto obj = mrpt::opengl::stock_objects::CornerXYZSimple(1.0, 2.0);
+    obj->setPose(pose_a);
+    theScene->insert(obj);
+  }
+  {
+    // XYZ corner at B:
+    auto obj = mrpt::opengl::stock_objects::CornerXYZSimple(1.0, 2.0);
+    obj->setPose(pose_b);
+    theScene->insert(obj);
+  }
+  {
+    // SLERP animated corner:
+    auto obj = mrpt::opengl::stock_objects::CornerXYZSimple(1.0, 4.0);
+    obj->setName("slerp_obj");
+    obj->setPose(pose_a);
+    theScene->insert(obj);
+  }
 
-	// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
-	win.unlockAccess3DScene();
+  // IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
+  win.unlockAccess3DScene();
 
-	cout << "\n Close the window to exit.\n";
+  cout << "\n Close the window to exit.\n";
 
-	mrpt::system::CTicTac tic;
-	static const double MOVE_PERIOD = 1.0;
-	static const double MOVE_PERIOD2 = 2 * MOVE_PERIOD;
+  mrpt::system::CTicTac tic;
+  static const double MOVE_PERIOD = 1.0;
+  static const double MOVE_PERIOD2 = 2 * MOVE_PERIOD;
 
-	while (win.isOpen())
-	{
-		// Compute the time:
-		double t = ::fmod(tic.Tac(), MOVE_PERIOD2);
-		if (t < MOVE_PERIOD) t /= MOVE_PERIOD;
-		else
-			t = 1 - (t - MOVE_PERIOD) / MOVE_PERIOD;
+  while (win.isOpen())
+  {
+    // Compute the time:
+    double t = ::fmod(tic.Tac(), MOVE_PERIOD2);
+    if (t < MOVE_PERIOD)
+      t /= MOVE_PERIOD;
+    else
+      t = 1 - (t - MOVE_PERIOD) / MOVE_PERIOD;
 
-		// SLERP & LERP interpolation:
-		TPose3D pose_interp;
-		mrpt::math::slerp(pose_a, pose_b, t, pose_interp);
+    // SLERP & LERP interpolation:
+    TPose3D pose_interp;
+    mrpt::math::slerp(pose_a, pose_b, t, pose_interp);
 
-		// Move the scene:
-		Scene::Ptr& scene = win.get3DSceneAndLock();
+    // Move the scene:
+    Scene::Ptr& scene = win.get3DSceneAndLock();
 
-		auto obj1 = scene->getByName("slerp_obj");
-		obj1->setPose(pose_interp);
+    auto obj1 = scene->getByName("slerp_obj");
+    obj1->setPose(pose_interp);
 
-		// Show text:
-		win.addTextMessage(5, 5, mrpt::format("t=%.03f", t), 0 /*id*/);
+    // Show text:
+    win.addTextMessage(5, 5, mrpt::format("t=%.03f", t), 0 /*id*/);
 
-		// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
-		win.unlockAccess3DScene();
+    // IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
+    win.unlockAccess3DScene();
 
-		// Update window:
-		win.forceRepaint();
-		std::this_thread::sleep_for(5ms);
-	};
+    // Update window:
+    win.forceRepaint();
+    std::this_thread::sleep_for(5ms);
+  };
 }
 
 // ------------------------------------------------------
@@ -121,14 +122,14 @@ void TestSLERP()
 // ------------------------------------------------------
 int main()
 {
-	try
-	{
-		TestSLERP();
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
-		return -1;
-	}
+  try
+  {
+    TestSLERP();
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    return -1;
+  }
 }

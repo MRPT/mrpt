@@ -31,26 +31,27 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CEllipsoidRangeBearing2D : public CGeneralizedEllipsoidTemplate<2>,
-								 virtual public CRenderizable
+class CEllipsoidRangeBearing2D :
+    public CGeneralizedEllipsoidTemplate<2>,
+    virtual public CRenderizable
 {
-	using BASE = CGeneralizedEllipsoidTemplate<2>;
-	DEFINE_SERIALIZABLE(CEllipsoidRangeBearing2D, mrpt::opengl)
-   protected:
-	/** To be implemented by derived classes: maps, using some arbitrary space
-	 * transformation, a list of points
-	 *  defining an ellipsoid in parameter space into their corresponding
-	 * points in 2D/3D space.
-	 */
-	void transformFromParameterSpace(
-		const std::vector<BASE::array_parameter_t>& in_pts,
-		std::vector<BASE::array_point_t>& out_pts) const override;
-	/** Constructor
-	 */
-   public:
-	CEllipsoidRangeBearing2D() = default;
-	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CEllipsoidRangeBearing2D() override = default;
+  using BASE = CGeneralizedEllipsoidTemplate<2>;
+  DEFINE_SERIALIZABLE(CEllipsoidRangeBearing2D, mrpt::opengl)
+ protected:
+  /** To be implemented by derived classes: maps, using some arbitrary space
+   * transformation, a list of points
+   *  defining an ellipsoid in parameter space into their corresponding
+   * points in 2D/3D space.
+   */
+  void transformFromParameterSpace(
+      const std::vector<BASE::array_parameter_t>& in_pts,
+      std::vector<BASE::array_point_t>& out_pts) const override;
+  /** Constructor
+   */
+ public:
+  CEllipsoidRangeBearing2D() = default;
+  /** Private, virtual destructor: only can be deleted from smart pointers */
+  ~CEllipsoidRangeBearing2D() override = default;
 };
 
 }  // namespace mrpt::opengl

@@ -29,44 +29,47 @@ namespace mrpt::obs::utils
  */
 template <class OBSERVATION_T>
 typename OBSERVATION_T::Ptr getObservation(
-	mrpt::obs::CSensoryFrame::Ptr& observations,
-	mrpt::obs::CObservation::Ptr& observation, bool priority_to_sf = true)
+    mrpt::obs::CSensoryFrame::Ptr& observations,
+    mrpt::obs::CObservation::Ptr& observation,
+    bool priority_to_sf = true)
 {
-	using obs_t = typename OBSERVATION_T::Ptr;
+  using obs_t = typename OBSERVATION_T::Ptr;
 
-	obs_t cobs_ptr;
-	obs_t sf_ptr;
-	obs_t obs_out;
+  obs_t cobs_ptr;
+  obs_t sf_ptr;
+  obs_t obs_out;
 
-	// CObservation
-	const mrpt::rtti::TRuntimeClassId* class_ID =
-		&OBSERVATION_T::GetRuntimeClassIdStatic();
-	if (observation && observation->GetRuntimeClass()->derivedFrom(class_ID))
-	{
-		cobs_ptr = std::dynamic_pointer_cast<OBSERVATION_T>(observation);
-	}
+  // CObservation
+  const mrpt::rtti::TRuntimeClassId* class_ID = &OBSERVATION_T::GetRuntimeClassIdStatic();
+  if (observation && observation->GetRuntimeClass()->derivedFrom(class_ID))
+  {
+    cobs_ptr = std::dynamic_pointer_cast<OBSERVATION_T>(observation);
+  }
 
-	// CSensoryFrame
-	if (observations)
-	{
-		cobs_ptr = observations->getObservationByClass<OBSERVATION_T>();
-	}
+  // CSensoryFrame
+  if (observations)
+  {
+    cobs_ptr = observations->getObservationByClass<OBSERVATION_T>();
+  }
 
-	// decide on which one to return
-	if (cobs_ptr && sf_ptr) { obs_out = priority_to_sf ? sf_ptr : cobs_ptr; }
-	else if (cobs_ptr)
-	{
-		obs_out = cobs_ptr;
-	}
-	else if (sf_ptr)
-	{
-		obs_out = sf_ptr;
-	}
-	else
-	{
-		obs_out = typename OBSERVATION_T::Ptr();
-	}
+  // decide on which one to return
+  if (cobs_ptr && sf_ptr)
+  {
+    obs_out = priority_to_sf ? sf_ptr : cobs_ptr;
+  }
+  else if (cobs_ptr)
+  {
+    obs_out = cobs_ptr;
+  }
+  else if (sf_ptr)
+  {
+    obs_out = sf_ptr;
+  }
+  else
+  {
+    obs_out = typename OBSERVATION_T::Ptr();
+  }
 
-	return obs_out;
+  return obs_out;
 }
 }  // namespace mrpt::obs::utils

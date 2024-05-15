@@ -14,7 +14,7 @@
 #include <mrpt/config.h>
 #if MRPT_HAS_NANOGUI
 
-#ifdef None	 // X11 headers conflict...
+#ifdef None  // X11 headers conflict...
 #undef None
 #endif
 #include <nanogui/nanogui.h>
@@ -28,16 +28,14 @@ namespace mrpt::gui::internal
  */
 class NanoGUICanvasHeadless : public mrpt::gui::CGlCanvasBaseHeadless
 {
-   public:
-	void mouseMotionEvent(
-		const nanogui::Vector2i& p, const nanogui::Vector2i& rel, int button,
-		int modifiers);
-	void mouseButtonEvent(
-		const nanogui::Vector2i& p, int button, bool down, int modifiers);
-	void scrollEvent(const nanogui::Vector2i& p, const nanogui::Vector2f& rel);
+ public:
+  void mouseMotionEvent(
+      const nanogui::Vector2i& p, const nanogui::Vector2i& rel, int button, int modifiers);
+  void mouseButtonEvent(const nanogui::Vector2i& p, int button, bool down, int modifiers);
+  void scrollEvent(const nanogui::Vector2i& p, const nanogui::Vector2f& rel);
 
-   private:
-	int m_lastModifiers = 0;
+ private:
+  int m_lastModifiers = 0;
 };
 }  // namespace mrpt::gui::internal
-#endif	// MRPT_HAS_NANOGUI
+#endif  // MRPT_HAS_NANOGUI

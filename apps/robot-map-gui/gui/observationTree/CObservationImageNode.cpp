@@ -10,19 +10,17 @@
 #include "CObservationImageNode.h"
 
 CObservationImageNode::CObservationImageNode(
-	CNode* parent, mrpt::obs::CObservationImage::Ptr observation,
-	const mrpt::poses::CPose3D& pose)
-	: CBaseObservationNode(parent, pose), m_observation(observation)
+    CNode* parent,
+    mrpt::obs::CObservationImage::Ptr observation,
+    const mrpt::poses::CPose3D& pose) :
+    CBaseObservationNode(parent, pose), m_observation(observation)
 {
 }
 
-CNode::ObjectType CObservationImageNode::type() const
-{
-	return ObjectType::Image;
-}
+CNode::ObjectType CObservationImageNode::type() const { return ObjectType::Image; }
 
 std::string CObservationImageNode::displayName() const { return "Image"; }
 mrpt::obs::CObservationImage::Ptr CObservationImageNode::observation() const
 {
-	return m_observation;
+  return m_observation;
 }

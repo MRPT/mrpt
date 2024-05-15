@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"	// Precompiled headers
+#include "poses-precomp.h"  // Precompiled headers
 //
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/distributions.h>
@@ -34,116 +34,113 @@ using namespace std;
 IMPLEMENTS_SERIALIZABLE(CPosePDFGaussian, CPosePDF, mrpt::poses)
 
 /*---------------------------------------------------------------
-	Constructor
+  Constructor
   ---------------------------------------------------------------*/
 CPosePDFGaussian::CPosePDFGaussian() : mean(0, 0, 0), cov() {}
 /*---------------------------------------------------------------
-	Constructor
+  Constructor
   ---------------------------------------------------------------*/
-CPosePDFGaussian::CPosePDFGaussian(
-	const CPose2D& init_Mean, const CMatrixDouble33& init_Cov)
-	: mean(init_Mean), cov(init_Cov)
+CPosePDFGaussian::CPosePDFGaussian(const CPose2D& init_Mean, const CMatrixDouble33& init_Cov) :
+    mean(init_Mean), cov(init_Cov)
 {
 }
 
 /*---------------------------------------------------------------
-	Constructor
+  Constructor
   ---------------------------------------------------------------*/
-CPosePDFGaussian::CPosePDFGaussian(const CPose2D& init_Mean)
-	: mean(init_Mean), cov()
+CPosePDFGaussian::CPosePDFGaussian(const CPose2D& init_Mean) : mean(init_Mean), cov()
 {
-	cov.setZero();
+  cov.setZero();
 }
 
 uint8_t CPosePDFGaussian::serializeGetVersion() const { return 2; }
 void CPosePDFGaussian::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	out << mean;
-	mrpt::math::serializeSymmetricMatrixTo(cov, out);
+  out << mean;
+  mrpt::math::serializeSymmetricMatrixTo(cov, out);
 }
-void CPosePDFGaussian::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void CPosePDFGaussian::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	switch (version)
-	{
-		case 2:
-		{
-			in >> mean;
-			mrpt::math::deserializeSymmetricMatrixFrom(cov, in);
-		}
-		break;
-		case 1:
-		{
-			in >> mean;
-			CMatrixFloat33 m;
-			mrpt::math::deserializeSymmetricMatrixFrom(m, in);
-			cov = m.cast_double();
-		}
-		break;
-		case 0:
-		{
-			CMatrixF auxCov;
-			in >> mean >> auxCov;
-			cov = auxCov.cast_double();
-		}
-		break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	};
+  switch (version)
+  {
+    case 2:
+    {
+      in >> mean;
+      mrpt::math::deserializeSymmetricMatrixFrom(cov, in);
+    }
+    break;
+    case 1:
+    {
+      in >> mean;
+      CMatrixFloat33 m;
+      mrpt::math::deserializeSymmetricMatrixFrom(m, in);
+      cov = m.cast_double();
+    }
+    break;
+    case 0:
+    {
+      CMatrixF auxCov;
+      in >> mean >> auxCov;
+      cov = auxCov.cast_double();
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
 }
 
-void CPosePDFGaussian::serializeTo(
-	mrpt::serialization::CSchemeArchiveBase& out) const
+void CPosePDFGaussian::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
 {
-	SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
-	out["mean"] = mean;
-	out["cov"] = CMatrixD(cov);
+  SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+  out["mean"] = mean;
+  out["cov"] = CMatrixD(cov);
 }
-void CPosePDFGaussian::serializeFrom(
-	mrpt::serialization::CSchemeArchiveBase& in)
+void CPosePDFGaussian::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 {
-	uint8_t version;
-	SCHEMA_DESERIALIZE_DATATYPE_VERSION();
-	switch (version)
-	{
-		case 1:
-		{
-			in["mean"].readTo(mean);
-			CMatrixD m;
-			in["cov"].readTo(m);
-			cov = m;
-		}
-		break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	}
+  uint8_t version;
+  SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+  switch (version)
+  {
+    case 1:
+    {
+      in["mean"].readTo(mean);
+      CMatrixD m;
+      in["cov"].readTo(m);
+      cov = m;
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  }
 }
 
 /*---------------------------------------------------------------
-						copyFrom
+            copyFrom
   ---------------------------------------------------------------*/
 void CPosePDFGaussian::copyFrom(const CPosePDF& o)
 {
-	if (this == &o) return;	 // It may be used sometimes
+  if (this == &o) return;  // It may be used sometimes
 
-	// Convert to gaussian pdf:
-	o.getMean(mean);
-	o.getCovariance(cov);
+  // Convert to gaussian pdf:
+  o.getMean(mean);
+  o.getCovariance(cov);
 }
 
 /*---------------------------------------------------------------
-						copyFrom 3D
+            copyFrom 3D
   ---------------------------------------------------------------*/
 void CPosePDFGaussian::copyFrom(const CPose3DPDF& o)
 {
-	// Convert to gaussian pdf:
-	mean = CPose2D(o.getMeanVal());
-	CMatrixDouble66 C;
-	o.getCovariance(C);
+  // Convert to gaussian pdf:
+  mean = CPose2D(o.getMeanVal());
+  CMatrixDouble66 C;
+  o.getCovariance(C);
 
-	// Clip to 3x3:
-	C(2, 0) = C(0, 2) = C(0, 3);
-	C(2, 1) = C(1, 2) = C(1, 3);
-	C(2, 2) = C(3, 3);
-	cov = C.block<3, 3>(0, 0);
+  // Clip to 3x3:
+  C(2, 0) = C(0, 2) = C(0, 3);
+  C(2, 1) = C(1, 2) = C(1, 3);
+  C(2, 2) = C(3, 3);
+  cov = C.block<3, 3>(0, 0);
 }
 
 /*---------------------------------------------------------------
@@ -151,434 +148,418 @@ void CPosePDFGaussian::copyFrom(const CPose3DPDF& o)
   ---------------------------------------------------------------*/
 bool CPosePDFGaussian::saveToTextFile(const std::string& file) const
 {
-	FILE* f = os::fopen(file.c_str(), "wt");
-	if (!f) return false;
+  FILE* f = os::fopen(file.c_str(), "wt");
+  if (!f) return false;
 
-	os::fprintf(f, "%f %f %f\n", mean.x(), mean.y(), mean.phi());
+  os::fprintf(f, "%f %f %f\n", mean.x(), mean.y(), mean.phi());
 
-	os::fprintf(f, "%f %f %f\n", cov(0, 0), cov(0, 1), cov(0, 2));
-	os::fprintf(f, "%f %f %f\n", cov(1, 0), cov(1, 1), cov(1, 2));
-	os::fprintf(f, "%f %f %f\n", cov(2, 0), cov(2, 1), cov(2, 2));
+  os::fprintf(f, "%f %f %f\n", cov(0, 0), cov(0, 1), cov(0, 2));
+  os::fprintf(f, "%f %f %f\n", cov(1, 0), cov(1, 1), cov(1, 2));
+  os::fprintf(f, "%f %f %f\n", cov(2, 0), cov(2, 1), cov(2, 2));
 
-	os::fclose(f);
-	return true;
+  os::fclose(f);
+  return true;
 }
 
 /*---------------------------------------------------------------
-						changeCoordinatesReference
+            changeCoordinatesReference
  ---------------------------------------------------------------*/
-void CPosePDFGaussian::changeCoordinatesReference(
-	const CPose3D& newReferenceBase_)
+void CPosePDFGaussian::changeCoordinatesReference(const CPose3D& newReferenceBase_)
 {
-	const CPose2D newReferenceBase = CPose2D(newReferenceBase_);
+  const CPose2D newReferenceBase = CPose2D(newReferenceBase_);
 
-	// The mean:
-	mean.composeFrom(newReferenceBase, mean);
+  // The mean:
+  mean.composeFrom(newReferenceBase, mean);
 
-	// The covariance:
-	rotateCov(newReferenceBase.phi());
+  // The covariance:
+  rotateCov(newReferenceBase.phi());
 }
 
 /*---------------------------------------------------------------
-						changeCoordinatesReference
+            changeCoordinatesReference
  ---------------------------------------------------------------*/
-void CPosePDFGaussian::changeCoordinatesReference(
-	const CPose2D& newReferenceBase)
+void CPosePDFGaussian::changeCoordinatesReference(const CPose2D& newReferenceBase)
 {
-	// The mean:
-	mean.composeFrom(newReferenceBase, mean);
-	// The covariance:
-	rotateCov(newReferenceBase.phi());
+  // The mean:
+  mean.composeFrom(newReferenceBase, mean);
+  // The covariance:
+  rotateCov(newReferenceBase.phi());
 }
 
 /*---------------------------------------------------------------
-						changeCoordinatesReference
+            changeCoordinatesReference
  ---------------------------------------------------------------*/
 void CPosePDFGaussian::rotateCov(const double ang)
 {
-	const double ccos = cos(ang);
-	const double ssin = sin(ang);
+  const double ccos = cos(ang);
+  const double ssin = sin(ang);
 
-	alignas(MRPT_MAX_STATIC_ALIGN_BYTES)
-		const double rot_vals[] = {ccos, -ssin, 0., ssin, ccos, 0., 0., 0., 1.};
+  alignas(MRPT_MAX_STATIC_ALIGN_BYTES)
+      const double rot_vals[] = {ccos, -ssin, 0., ssin, ccos, 0., 0., 0., 1.};
 
-	const CMatrixFixed<double, 3, 3> rot(rot_vals);
-	cov = (rot.asEigen() * cov.asEigen() * rot.asEigen().transpose()).eval();
+  const CMatrixFixed<double, 3, 3> rot(rot_vals);
+  cov = (rot.asEigen() * cov.asEigen() * rot.asEigen().transpose()).eval();
 }
 
 /*---------------------------------------------------------------
-					drawSingleSample
+          drawSingleSample
  ---------------------------------------------------------------*/
 void CPosePDFGaussian::drawSingleSample(CPose2D& outPart) const
 {
-	MRPT_START
+  MRPT_START
 
-	CVectorDouble v;
-	getRandomGenerator().drawGaussianMultivariate(v, cov);
+  CVectorDouble v;
+  getRandomGenerator().drawGaussianMultivariate(v, cov);
 
-	outPart.x(mean.x() + v[0]);
-	outPart.y(mean.y() + v[1]);
-	outPart.phi(mean.phi() + v[2]);
+  outPart.x(mean.x() + v[0]);
+  outPart.y(mean.y() + v[1]);
+  outPart.phi(mean.phi() + v[2]);
 
-	// Range -pi,pi
-	outPart.normalizePhi();
+  // Range -pi,pi
+  outPart.normalizePhi();
 
-	MRPT_END_WITH_CLEAN_UP(
-		cov.saveToTextFile("__DEBUG_EXC_DUMP_drawSingleSample_COV.txt"););
+  MRPT_END_WITH_CLEAN_UP(cov.saveToTextFile("__DEBUG_EXC_DUMP_drawSingleSample_COV.txt"););
 }
 
 /*---------------------------------------------------------------
-					drawManySamples
+          drawManySamples
  ---------------------------------------------------------------*/
-void CPosePDFGaussian::drawManySamples(
-	size_t N, std::vector<CVectorDouble>& outSamples) const
+void CPosePDFGaussian::drawManySamples(size_t N, std::vector<CVectorDouble>& outSamples) const
 {
-	MRPT_START
+  MRPT_START
 
-	std::vector<CVectorDouble> rndSamples;
+  std::vector<CVectorDouble> rndSamples;
 
-	getRandomGenerator().drawGaussianMultivariateMany(rndSamples, N, cov);
-	outSamples.resize(N);
-	for (size_t i = 0; i < N; i++)
-	{
-		outSamples[i].resize(3);
-		outSamples[i][0] = mean.x() + rndSamples[i][0];
-		outSamples[i][1] = mean.y() + rndSamples[i][1];
-		outSamples[i][2] = mean.phi() + rndSamples[i][2];
+  getRandomGenerator().drawGaussianMultivariateMany(rndSamples, N, cov);
+  outSamples.resize(N);
+  for (size_t i = 0; i < N; i++)
+  {
+    outSamples[i].resize(3);
+    outSamples[i][0] = mean.x() + rndSamples[i][0];
+    outSamples[i][1] = mean.y() + rndSamples[i][1];
+    outSamples[i][2] = mean.phi() + rndSamples[i][2];
 
-		wrapToPiInPlace(outSamples[i][2]);
-	}
+    wrapToPiInPlace(outSamples[i][2]);
+  }
 
-	MRPT_END
+  MRPT_END
 }
 
 /*---------------------------------------------------------------
-					bayesianFusion
+          bayesianFusion
  ---------------------------------------------------------------*/
 void CPosePDFGaussian::bayesianFusion(
-	const CPosePDF& p1_, const CPosePDF& p2_,
-	[[maybe_unused]] const double minMahalanobisDistToDrop)
+    const CPosePDF& p1_,
+    const CPosePDF& p2_,
+    [[maybe_unused]] const double minMahalanobisDistToDrop)
 {
-	MRPT_START
+  MRPT_START
 
-	ASSERT_(p1_.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian));
-	ASSERT_(p2_.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian));
+  ASSERT_(p1_.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian));
+  ASSERT_(p2_.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian));
 
-	const auto* p1 = dynamic_cast<const CPosePDFGaussian*>(&p1_);
-	const auto* p2 = dynamic_cast<const CPosePDFGaussian*>(&p2_);
+  const auto* p1 = dynamic_cast<const CPosePDFGaussian*>(&p1_);
+  const auto* p2 = dynamic_cast<const CPosePDFGaussian*>(&p2_);
 
-	const CMatrixDouble33 C1 = p1->cov;
-	const CMatrixDouble33 C2 = p2->cov;
+  const CMatrixDouble33 C1 = p1->cov;
+  const CMatrixDouble33 C2 = p2->cov;
 
-	const CMatrixDouble33 C1_inv = C1.inverse_LLt();
-	const CMatrixDouble33 C2_inv = C2.inverse_LLt();
+  const CMatrixDouble33 C1_inv = C1.inverse_LLt();
+  const CMatrixDouble33 C2_inv = C2.inverse_LLt();
 
-	auto x1 = CMatrixDouble31(p1->mean);
-	auto x2 = CMatrixDouble31(p2->mean);
+  auto x1 = CMatrixDouble31(p1->mean);
+  auto x2 = CMatrixDouble31(p2->mean);
 
-	CMatrixDouble33 auxC = C1_inv + C2_inv;
-	this->cov = auxC.inverse_LLt();
-	this->enforceCovSymmetry();
+  CMatrixDouble33 auxC = C1_inv + C2_inv;
+  this->cov = auxC.inverse_LLt();
+  this->enforceCovSymmetry();
 
-	auto x = CMatrixDouble31(this->cov.asEigen() * (C1_inv * x1 + C2_inv * x2));
+  auto x = CMatrixDouble31(this->cov.asEigen() * (C1_inv * x1 + C2_inv * x2));
 
-	this->mean.x(x(0, 0));
-	this->mean.y(x(1, 0));
-	this->mean.phi(x(2, 0));
-	this->mean.normalizePhi();
+  this->mean.x(x(0, 0));
+  this->mean.y(x(1, 0));
+  this->mean.phi(x(2, 0));
+  this->mean.normalizePhi();
 
-	MRPT_END
+  MRPT_END
 }
 
 /*---------------------------------------------------------------
-					inverse
+          inverse
  ---------------------------------------------------------------*/
 void CPosePDFGaussian::inverse(CPosePDF& o) const
 {
-	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian));
-	auto* out = dynamic_cast<CPosePDFGaussian*>(&o);
+  ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian));
+  auto* out = dynamic_cast<CPosePDFGaussian*>(&o);
 
-	// The mean:
-	out->mean = CPose2D(0, 0, 0) - mean;
+  // The mean:
+  out->mean = CPose2D(0, 0, 0) - mean;
 
-	// The covariance:
-	const double ccos = ::cos(mean.phi());
-	const double ssin = ::sin(mean.phi());
+  // The covariance:
+  const double ccos = ::cos(mean.phi());
+  const double ssin = ::sin(mean.phi());
 
-	// jacobian:
-	alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double H_values[] = {
-		-ccos, -ssin, mean.x() * ssin - mean.y() * ccos,
-		ssin,  -ccos, mean.x() * ccos + mean.y() * ssin,
-		0,	   0,	  -1};
-	const CMatrixFixed<double, 3, 3> H(H_values);
+  // jacobian:
+  alignas(MRPT_MAX_STATIC_ALIGN_BYTES)
+      const double H_values[] = {-ccos, -ssin, mean.x() * ssin - mean.y() * ccos,
+                                 ssin,  -ccos, mean.x() * ccos + mean.y() * ssin,
+                                 0,     0,     -1};
+  const CMatrixFixed<double, 3, 3> H(H_values);
 
-	out->cov.asEigen().noalias() =
-		(H.asEigen() * cov.asEigen() * H.transpose()).eval();
+  out->cov.asEigen().noalias() = (H.asEigen() * cov.asEigen() * H.transpose()).eval();
 }
 
 /*---------------------------------------------------------------
-							+=
+              +=
  ---------------------------------------------------------------*/
 void CPosePDFGaussian::operator+=(const CPose2D& Ap)
 {
-	mean = mean + Ap;
-	rotateCov(Ap.phi());
+  mean = mean + Ap;
+  rotateCov(Ap.phi());
 }
 
 /*---------------------------------------------------------------
-						evaluatePDF
+            evaluatePDF
  ---------------------------------------------------------------*/
 double CPosePDFGaussian::evaluatePDF(const CPose2D& x) const
 {
-	auto X = CMatrixDouble31(x);
-	auto MU = CMatrixDouble31(mean);
+  auto X = CMatrixDouble31(x);
+  auto MU = CMatrixDouble31(mean);
 
-	return math::normalPDF(X, MU, this->cov);
+  return math::normalPDF(X, MU, this->cov);
 }
 
 /*---------------------------------------------------------------
-						evaluateNormalizedPDF
+            evaluateNormalizedPDF
  ---------------------------------------------------------------*/
 double CPosePDFGaussian::evaluateNormalizedPDF(const CPose2D& x) const
 {
-	auto X = CMatrixDouble31(x);
-	auto MU = CMatrixDouble31(mean);
+  auto X = CMatrixDouble31(x);
+  auto MU = CMatrixDouble31(mean);
 
-	return math::normalPDF(X, MU, this->cov) /
-		math::normalPDF(MU, MU, this->cov);
+  return math::normalPDF(X, MU, this->cov) / math::normalPDF(MU, MU, this->cov);
 }
 
 /*---------------------------------------------------------------
-						enforceCovSymmetry
+            enforceCovSymmetry
  ---------------------------------------------------------------*/
 void CPosePDFGaussian::enforceCovSymmetry()
 {
-	// Differences, when they exist, appear in the ~15'th significant
-	//  digit, so... just take one of them arbitrarily!
-	cov(0, 1) = cov(1, 0);
-	cov(0, 2) = cov(2, 0);
-	cov(1, 2) = cov(2, 1);
+  // Differences, when they exist, appear in the ~15'th significant
+  //  digit, so... just take one of them arbitrarily!
+  cov(0, 1) = cov(1, 0);
+  cov(0, 2) = cov(2, 0);
+  cov(1, 2) = cov(2, 1);
 }
 
 /*---------------------------------------------------------------
-						mahalanobisDistanceTo
+            mahalanobisDistanceTo
  ---------------------------------------------------------------*/
 double CPosePDFGaussian::mahalanobisDistanceTo(const CPosePDFGaussian& theOther)
 {
-	MRPT_START
+  MRPT_START
 
-	auto MU = CVectorFixedDouble<3>(mean);
-	MU -= CVectorFixedDouble<3>(theOther.mean);
+  auto MU = CVectorFixedDouble<3>(mean);
+  MU -= CVectorFixedDouble<3>(theOther.mean);
 
-	wrapToPiInPlace(MU[2]);
+  wrapToPiInPlace(MU[2]);
 
-	if (MU[0] == 0 && MU[1] == 0 && MU[2] == 0)
-		return 0;  // This is the ONLY case where we know the result, whatever
-	// COVs are.
+  if (MU[0] == 0 && MU[1] == 0 && MU[2] == 0)
+    return 0;  // This is the ONLY case where we know the result, whatever
+  // COVs are.
 
-	CMatrixDouble33 COV_ = cov;
-	COV_ += theOther.cov;
+  CMatrixDouble33 COV_ = cov;
+  COV_ += theOther.cov;
 
-	const CMatrixDouble33 COV_inv = COV_.inverse_LLt();
+  const CMatrixDouble33 COV_inv = COV_.inverse_LLt();
 
-	// (~MU) * (!COV_) * MU
-	return std::sqrt(mrpt::math::multiply_HtCH_scalar(MU.asEigen(), COV_inv));
+  // (~MU) * (!COV_) * MU
+  return std::sqrt(mrpt::math::multiply_HtCH_scalar(MU.asEigen(), COV_inv));
 
-	MRPT_END
+  MRPT_END
 }
 
 /*---------------------------------------------------------------
-						operator <<
+            operator <<
  ---------------------------------------------------------------*/
-std::ostream& mrpt::poses::operator<<(
-	std::ostream& out, const CPosePDFGaussian& obj)
+std::ostream& mrpt::poses::operator<<(std::ostream& out, const CPosePDFGaussian& obj)
 {
-	out << "Mean: " << obj.mean << "\n";
-	out << "Covariance:\n" << obj.cov << "\n";
+  out << "Mean: " << obj.mean << "\n";
+  out << "Covariance:\n" << obj.cov << "\n";
 
-	return out;
+  return out;
 }
 
 /*---------------------------------------------------------------
-						operator +
+            operator +
  ---------------------------------------------------------------*/
 poses::CPosePDFGaussian operator+(
-	const mrpt::poses::CPose2D& A, const mrpt::poses::CPosePDFGaussian& B)
+    const mrpt::poses::CPose2D& A, const mrpt::poses::CPosePDFGaussian& B)
 {
-	poses::CPosePDFGaussian ret(B);
-	ret.changeCoordinatesReference(A);
-	return ret;
+  poses::CPosePDFGaussian ret(B);
+  ret.changeCoordinatesReference(A);
+  return ret;
 }
 
 /*---------------------------------------------------------------
-						assureMinCovariance
+            assureMinCovariance
  ---------------------------------------------------------------*/
 void CPosePDFGaussian::assureMinCovariance(double minStdXY, double minStdPhi)
 {
-	cov(0, 0) = max(cov(0, 0), square(minStdXY));
-	cov(1, 1) = max(cov(1, 1), square(minStdXY));
-	cov(2, 2) = max(cov(2, 2), square(minStdPhi));
+  cov(0, 0) = max(cov(0, 0), square(minStdXY));
+  cov(1, 1) = max(cov(1, 1), square(minStdXY));
+  cov(2, 2) = max(cov(2, 2), square(minStdPhi));
 }
 
 /*---------------------------------------------------------------
-						inverseComposition
+            inverseComposition
   Set 'this' = 'x' - 'ref', computing the mean using the "-"
-	operator and the covariances through the corresponding Jacobians.
+  operator and the covariances through the corresponding Jacobians.
  ---------------------------------------------------------------*/
-void CPosePDFGaussian::inverseComposition(
-	const CPosePDFGaussian& xv, const CPosePDFGaussian& xi)
+void CPosePDFGaussian::inverseComposition(const CPosePDFGaussian& xv, const CPosePDFGaussian& xi)
 {
-	// COV:
-	double cpi = cos(xi.mean.phi());
-	double spi = sin(xi.mean.phi());
+  // COV:
+  double cpi = cos(xi.mean.phi());
+  double spi = sin(xi.mean.phi());
 
-	// jacob: dh_xv
-	CMatrixDouble33 dh_xv;
+  // jacob: dh_xv
+  CMatrixDouble33 dh_xv;
 
-	dh_xv(0, 0) = cpi;
-	dh_xv(0, 1) = spi;
-	dh_xv(1, 0) = -spi;
-	dh_xv(1, 1) = cpi;
-	dh_xv(2, 2) = 1;
+  dh_xv(0, 0) = cpi;
+  dh_xv(0, 1) = spi;
+  dh_xv(1, 0) = -spi;
+  dh_xv(1, 1) = cpi;
+  dh_xv(2, 2) = 1;
 
-	// jacob: dh_xi
-	CMatrixDouble33 dh_xi;
+  // jacob: dh_xi
+  CMatrixDouble33 dh_xi;
 
-	double xv_xi = xv.mean.x() - xi.mean.x();
-	double yv_yi = xv.mean.y() - xi.mean.y();
+  double xv_xi = xv.mean.x() - xi.mean.x();
+  double yv_yi = xv.mean.y() - xi.mean.y();
 
-	dh_xi(0, 0) = -cpi;
-	dh_xi(0, 1) = -spi;
-	dh_xi(0, 2) = -xv_xi * spi + yv_yi * cpi;
-	dh_xi(1, 0) = spi;
-	dh_xi(1, 1) = -cpi;
-	dh_xi(1, 2) = -xv_xi * cpi - yv_yi * spi;
-	dh_xi(2, 2) = -1;
+  dh_xi(0, 0) = -cpi;
+  dh_xi(0, 1) = -spi;
+  dh_xi(0, 2) = -xv_xi * spi + yv_yi * cpi;
+  dh_xi(1, 0) = spi;
+  dh_xi(1, 1) = -cpi;
+  dh_xi(1, 2) = -xv_xi * cpi - yv_yi * spi;
+  dh_xi(2, 2) = -1;
 
-	// Build the cov:
-	//  Y = dh_xv * XV * dh_xv^T  + dh_xi * XI * dh_xi^T
-	this->cov = mrpt::math::multiply_HCHt(dh_xv, xv.cov) +
-		mrpt::math::multiply_HCHt(dh_xi, xi.cov);
+  // Build the cov:
+  //  Y = dh_xv * XV * dh_xv^T  + dh_xi * XI * dh_xi^T
+  this->cov = mrpt::math::multiply_HCHt(dh_xv, xv.cov) + mrpt::math::multiply_HCHt(dh_xi, xi.cov);
 
-	// Mean:
-	mean = xv.mean - xi.mean;
+  // Mean:
+  mean = xv.mean - xi.mean;
 }
 
 /*---------------------------------------------------------------
-						inverseComposition
+            inverseComposition
   Set \f$ this = x1 \ominus x0 \f$ , computing the mean using
    the "-" operator and the covariances through the corresponding
-	Jacobians (Given the 3x3 cross-covariance matrix of variables x0 and x0).
+  Jacobians (Given the 3x3 cross-covariance matrix of variables x0 and x0).
  ---------------------------------------------------------------*/
 void CPosePDFGaussian::inverseComposition(
-	const CPosePDFGaussian& x1, const CPosePDFGaussian& x0,
-	const CMatrixDouble33& COV_01)
+    const CPosePDFGaussian& x1, const CPosePDFGaussian& x0, const CMatrixDouble33& COV_01)
 {
-	double cp0 = cos(x0.mean.phi());
-	double sp0 = sin(x0.mean.phi());
+  double cp0 = cos(x0.mean.phi());
+  double sp0 = sin(x0.mean.phi());
 
-	// jacob: dh_x1
-	CMatrixDouble33 dh_x1;
+  // jacob: dh_x1
+  CMatrixDouble33 dh_x1;
 
-	dh_x1(0, 0) = cp0;
-	dh_x1(0, 1) = sp0;
-	dh_x1(1, 0) = -sp0;
-	dh_x1(1, 1) = cp0;
-	dh_x1(2, 2) = 1;
+  dh_x1(0, 0) = cp0;
+  dh_x1(0, 1) = sp0;
+  dh_x1(1, 0) = -sp0;
+  dh_x1(1, 1) = cp0;
+  dh_x1(2, 2) = 1;
 
-	// jacob: dh_x0
-	CMatrixDouble33 dh_x0;
+  // jacob: dh_x0
+  CMatrixDouble33 dh_x0;
 
-	double xv_xi = x1.mean.x() - x0.mean.x();
-	double yv_yi = x1.mean.y() - x0.mean.y();
+  double xv_xi = x1.mean.x() - x0.mean.x();
+  double yv_yi = x1.mean.y() - x0.mean.y();
 
-	dh_x0(0, 0) = -cp0;
-	dh_x0(0, 1) = -sp0;
-	dh_x0(0, 2) = -xv_xi * sp0 + yv_yi * cp0;
-	dh_x0(1, 0) = sp0;
-	dh_x0(1, 1) = -cp0;
-	dh_x0(1, 2) = -xv_xi * cp0 - yv_yi * sp0;
-	dh_x0(2, 2) = -1;
+  dh_x0(0, 0) = -cp0;
+  dh_x0(0, 1) = -sp0;
+  dh_x0(0, 2) = -xv_xi * sp0 + yv_yi * cp0;
+  dh_x0(1, 0) = sp0;
+  dh_x0(1, 1) = -cp0;
+  dh_x0(1, 2) = -xv_xi * cp0 - yv_yi * sp0;
+  dh_x0(2, 2) = -1;
 
-	// Build the cov:
-	//  Y = dh_xv * XV * dh_xv^T  + dh_xi * XI * dh_xi^T +  A + At
-	//     being A = dh_dx0 * COV01 * dh_dx1^t
-	this->cov = mrpt::math::multiply_HCHt(dh_x0, x0.cov) +
-		mrpt::math::multiply_HCHt(dh_x1, x1.cov);
+  // Build the cov:
+  //  Y = dh_xv * XV * dh_xv^T  + dh_xi * XI * dh_xi^T +  A + At
+  //     being A = dh_dx0 * COV01 * dh_dx1^t
+  this->cov = mrpt::math::multiply_HCHt(dh_x0, x0.cov) + mrpt::math::multiply_HCHt(dh_x1, x1.cov);
 
-	auto M =
-		CMatrixDouble33(dh_x0.asEigen() * COV_01.asEigen() * dh_x1.asEigen());
+  auto M = CMatrixDouble33(dh_x0.asEigen() * COV_01.asEigen() * dh_x1.asEigen());
 
-	this->cov.asEigen() += (M.asEigen() * M.transpose()).eval();
+  this->cov.asEigen() += (M.asEigen() * M.transpose()).eval();
 
-	// mean
-	mean = x1.mean - x0.mean;
+  // mean
+  mean = x1.mean - x0.mean;
 }
 
 /*---------------------------------------------------------------
-							+=
+              +=
  ---------------------------------------------------------------*/
 void CPosePDFGaussian::operator+=(const CPosePDFGaussian& Ap)
 {
-	// COV:
-	const CMatrixDouble33 OLD_COV = this->cov;
-	CMatrixDouble33 df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
+  // COV:
+  const CMatrixDouble33 OLD_COV = this->cov;
+  CMatrixDouble33 df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
 
-	CPosePDF::jacobiansPoseComposition(
-		this->mean,	 // x
-		Ap.mean,  // u
-		df_dx, df_du);
+  CPosePDF::jacobiansPoseComposition(
+      this->mean,  // x
+      Ap.mean,     // u
+      df_dx, df_du);
 
-	this->cov = mrpt::math::multiply_HCHt(df_dx, OLD_COV) +
-		mrpt::math::multiply_HCHt(df_du, Ap.cov);
+  this->cov = mrpt::math::multiply_HCHt(df_dx, OLD_COV) + mrpt::math::multiply_HCHt(df_du, Ap.cov);
 
-	// MEAN:
-	this->mean = this->mean + Ap.mean;
+  // MEAN:
+  this->mean = this->mean + Ap.mean;
 }
 
 /** Returns the PDF of the 2D point \f$ g = q \oplus l\f$ with "q"=this pose and
  * "l" a point without uncertainty */
-void CPosePDFGaussian::composePoint(
-	const mrpt::math::TPoint2D& l, CPoint2DPDFGaussian& g) const
+void CPosePDFGaussian::composePoint(const mrpt::math::TPoint2D& l, CPoint2DPDFGaussian& g) const
 {
-	// Mean:
-	double gx, gy;
-	mean.composePoint(l.x, l.y, gx, gy);
-	g.mean.x(gx);
-	g.mean.y(gy);
+  // Mean:
+  double gx, gy;
+  mean.composePoint(l.x, l.y, gx, gy);
+  g.mean.x(gx);
+  g.mean.y(gy);
 
-	// COV:
-	CMatrixDouble33 df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
-	CPosePDF::jacobiansPoseComposition(
-		this->mean,	 // x
-		this->mean,	 // u
-		df_dx, df_du,
-		true,  // Eval df_dx
-		false  // Eval df_du (not needed)
-	);
+  // COV:
+  CMatrixDouble33 df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
+  CPosePDF::jacobiansPoseComposition(
+      this->mean,  // x
+      this->mean,  // u
+      df_dx, df_du,
+      true,  // Eval df_dx
+      false  // Eval df_du (not needed)
+  );
 
-	const auto dp_dx = CMatrixFixed<double, 2, 3>(df_dx.block<2, 3>(0, 0));
-	g.cov = dp_dx * this->cov * dp_dx.transpose();
+  const auto dp_dx = CMatrixFixed<double, 2, 3>(df_dx.block<2, 3>(0, 0));
+  g.cov = dp_dx * this->cov * dp_dx.transpose();
 }
 
-bool mrpt::poses::operator==(
-	const CPosePDFGaussian& p1, const CPosePDFGaussian& p2)
+bool mrpt::poses::operator==(const CPosePDFGaussian& p1, const CPosePDFGaussian& p2)
 {
-	return p1.mean == p2.mean && p1.cov == p2.cov;
+  return p1.mean == p2.mean && p1.cov == p2.cov;
 }
 
-CPosePDFGaussian mrpt::poses::operator+(
-	const CPosePDFGaussian& a, const CPosePDFGaussian& b)
+CPosePDFGaussian mrpt::poses::operator+(const CPosePDFGaussian& a, const CPosePDFGaussian& b)
 {
-	CPosePDFGaussian res(a);
-	res += b;
-	return res;
+  CPosePDFGaussian res(a);
+  res += b;
+  return res;
 }
 
-CPosePDFGaussian mrpt::poses::operator-(
-	const CPosePDFGaussian& a, const CPosePDFGaussian& b)
+CPosePDFGaussian mrpt::poses::operator-(const CPosePDFGaussian& a, const CPosePDFGaussian& b)
 {
-	CPosePDFGaussian res;
-	res.inverseComposition(a, b);
-	return res;
+  CPosePDFGaussian res;
+  res.inverseComposition(a, b);
+  return res;
 }

@@ -24,55 +24,55 @@
 
 class CDlgPLYOptions : public wxDialog
 {
-   public:
-	CDlgPLYOptions(wxWindow* parent, wxWindowID id = wxID_ANY);
-	~CDlgPLYOptions() override;
+ public:
+  CDlgPLYOptions(wxWindow* parent, wxWindowID id = wxID_ANY);
+  ~CDlgPLYOptions() override;
 
-	//(*Declarations(CDlgPLYOptions)
-	wxCheckBox* cbXYZ;
-	wxCheckBox* cbXYGrid;
-	wxStaticText* StaticText2;
-	wxButton* btnCancel;
-	wxRadioBox* rbIntFromXYZ;
-	wxTextCtrl* edPitch;
-	wxPanel* Panel1;
-	wxStaticText* StaticText1;
-	wxStaticText* StaticText3;
-	wxButton* btnOK;
-	wxRadioBox* rbClass;
-	wxTextCtrl* edYaw;
-	wxChoice* cbPointSize;
-	wxStaticText* StaticText4;
-	wxTextCtrl* edRoll;
-	//*)
+  //(*Declarations(CDlgPLYOptions)
+  wxCheckBox* cbXYZ;
+  wxCheckBox* cbXYGrid;
+  wxStaticText* StaticText2;
+  wxButton* btnCancel;
+  wxRadioBox* rbIntFromXYZ;
+  wxTextCtrl* edPitch;
+  wxPanel* Panel1;
+  wxStaticText* StaticText1;
+  wxStaticText* StaticText3;
+  wxButton* btnOK;
+  wxRadioBox* rbClass;
+  wxTextCtrl* edYaw;
+  wxChoice* cbPointSize;
+  wxStaticText* StaticText4;
+  wxTextCtrl* edRoll;
+  //*)
 
-   protected:
-	//(*Identifiers(CDlgPLYOptions)
-	static const long ID_CHECKBOX1;
-	static const long ID_CHECKBOX2;
-	static const long ID_STATICTEXT1;
-	static const long ID_CHOICE1;
-	static const long ID_STATICTEXT2;
-	static const long ID_TEXTCTRL1;
-	static const long ID_STATICTEXT3;
-	static const long ID_TEXTCTRL2;
-	static const long ID_STATICTEXT4;
-	static const long ID_TEXTCTRL3;
-	static const long ID_RADIOBOX2;
-	static const long ID_RADIOBOX1;
-	static const long ID_PANEL1;
-	static const long ID_BUTTON1;
-	static const long ID_BUTTON2;
-	//*)
+ protected:
+  //(*Identifiers(CDlgPLYOptions)
+  static const long ID_CHECKBOX1;
+  static const long ID_CHECKBOX2;
+  static const long ID_STATICTEXT1;
+  static const long ID_CHOICE1;
+  static const long ID_STATICTEXT2;
+  static const long ID_TEXTCTRL1;
+  static const long ID_STATICTEXT3;
+  static const long ID_TEXTCTRL2;
+  static const long ID_STATICTEXT4;
+  static const long ID_TEXTCTRL3;
+  static const long ID_RADIOBOX2;
+  static const long ID_RADIOBOX1;
+  static const long ID_PANEL1;
+  static const long ID_BUTTON1;
+  static const long ID_BUTTON2;
+  //*)
 
-   private:
-	//(*Handlers(CDlgPLYOptions)
-	void OnbtnCancelClick(wxCommandEvent& event);
-	void OnbtnOKClick(wxCommandEvent& event);
-	void OnrbClassSelect(wxCommandEvent& event);
-	//*)
+ private:
+  //(*Handlers(CDlgPLYOptions)
+  void OnbtnCancelClick(wxCommandEvent& event);
+  void OnbtnOKClick(wxCommandEvent& event);
+  void OnrbClassSelect(wxCommandEvent& event);
+  //*)
 
-	DECLARE_EVENT_TABLE()
+  DECLARE_EVENT_TABLE()
 };
 
 #endif

@@ -22,18 +22,18 @@ namespace mrpt::comms
  */
 struct TFTDIDevice
 {
-	std::string ftdi_manufacturer;
-	std::string ftdi_description;
-	std::string ftdi_serial;
+  std::string ftdi_manufacturer;
+  std::string ftdi_description;
+  std::string ftdi_serial;
 
-	uint16_t usb_idVendor;
-	uint16_t usb_idProduct;
-	uint8_t usb_serialNumber;
+  uint16_t usb_idVendor;
+  uint16_t usb_idProduct;
+  uint8_t usb_serialNumber;
 
 #if defined(MRPT_OS_LINUX) || defined(__APPLE__)
-	/** Only for Linux: the corresponding libusb's `libusb_device*` (or
-	 * `usb_device*` for libftdi <1.2) */
-	void* usb_device_struct;
+  /** Only for Linux: the corresponding libusb's `libusb_device*` (or
+   * `usb_device*` for libftdi <1.2) */
+  void* usb_device_struct;
 #endif
 };
 
@@ -72,180 +72,165 @@ using TFTDIDeviceList = std::deque<TFTDIDevice>;
  */
 class CInterfaceFTDI : public mrpt::io::CStream
 {
-   public:
-	/** Constructor, which loads driver interface (the DLL under Windows).
-	 */
-	CInterfaceFTDI();
+ public:
+  /** Constructor, which loads driver interface (the DLL under Windows).
+   */
+  CInterfaceFTDI();
 
-	/** Destructor, which closes the connection with the chip and unloads the
-	 * driver interface.
-	 */
-	~CInterfaceFTDI() override;
+  /** Destructor, which closes the connection with the chip and unloads the
+   * driver interface.
+   */
+  ~CInterfaceFTDI() override;
 
-	/** This object cannot be copied */
-	CInterfaceFTDI(const CInterfaceFTDI& o) = delete;
+  /** This object cannot be copied */
+  CInterfaceFTDI(const CInterfaceFTDI& o) = delete;
 
-	/** This object cannot be copied */
-	CInterfaceFTDI& operator=(const CInterfaceFTDI& o) = delete;
+  /** This object cannot be copied */
+  CInterfaceFTDI& operator=(const CInterfaceFTDI& o) = delete;
 
-	/** Checks whether the chip has been successfully open.
-	 * \sa OpenBySerialNumber, OpenByDescription
-	 */
-	bool isOpen();
+  /** Checks whether the chip has been successfully open.
+   * \sa OpenBySerialNumber, OpenByDescription
+   */
+  bool isOpen();
 
-	/** Open by device serial number
-	 */
-	void OpenBySerialNumber(const std::string& serialNumber);
+  /** Open by device serial number
+   */
+  void OpenBySerialNumber(const std::string& serialNumber);
 
-	/** Open by device description
-	 */
-	void OpenByDescription(const std::string& description);
+  /** Open by device description
+   */
+  void OpenByDescription(const std::string& description);
 
-	/** Close the USB device */
-	void Close();
+  /** Close the USB device */
+  void Close();
 
-	/** Reset the USB device */
-	void ResetDevice();
+  /** Reset the USB device */
+  void ResetDevice();
 
-	/** Purge the I/O buffers */
-	void Purge();
+  /** Purge the I/O buffers */
+  void Purge();
 
-	/** Change the latency timer (in milliseconds) implemented on the FTDI chip:
-	 * for a few ms, data is not sent to the PC waiting for possible more data,
-	 * to save USB trafic. */
-	void SetLatencyTimer(unsigned char latency_ms);
+  /** Change the latency timer (in milliseconds) implemented on the FTDI chip:
+   * for a few ms, data is not sent to the PC waiting for possible more data,
+   * to save USB trafic. */
+  void SetLatencyTimer(unsigned char latency_ms);
 
-	/** Change read & write timeouts, in milliseconds. */
-	void SetTimeouts(
-		unsigned long dwReadTimeout_ms, unsigned long dwWriteTimeout_ms);
+  /** Change read & write timeouts, in milliseconds. */
+  void SetTimeouts(unsigned long dwReadTimeout_ms, unsigned long dwWriteTimeout_ms);
 
-	/** Generates a list with all FTDI devices connected right now.
-	 */
-	void ListAllDevices(TFTDIDeviceList& outList);
+  /** Generates a list with all FTDI devices connected right now.
+   */
+  void ListAllDevices(TFTDIDeviceList& outList);
 
-	/** Tries to read, raising no exception if not all the bytes are available,
-	 * but raising one if there is some communication error.
-	 */
-	size_t ReadSync(void* Buffer, size_t Count) { return Read(Buffer, Count); }
-	/** Tries to write, raising no exception if not all the bytes are available,
-	 * but raising one if there is some communication error.
-	 */
-	size_t WriteSync(const void* Buffer, size_t Count)
-	{
-		return Write(Buffer, Count);
-	}
+  /** Tries to read, raising no exception if not all the bytes are available,
+   * but raising one if there is some communication error.
+   */
+  size_t ReadSync(void* Buffer, size_t Count) { return Read(Buffer, Count); }
+  /** Tries to write, raising no exception if not all the bytes are available,
+   * but raising one if there is some communication error.
+   */
+  size_t WriteSync(const void* Buffer, size_t Count) { return Write(Buffer, Count); }
 
-	/** Reads a block of bytes from the stream into Buffer, and returns the
-	 *amound of bytes actually read, without waiting for more extra bytes to
-	 *arrive (just those already enqued in the stream).
-	 *  In this class this method actually behaves as expected and does not
-	 *fallback to ReadBuffer().
-	 *	\exception std::exception On any error, or if ZERO bytes are read.
-	 */
-	size_t ReadBufferImmediate(void* Buffer, size_t Count) override;
+  /** Reads a block of bytes from the stream into Buffer, and returns the
+   *amound of bytes actually read, without waiting for more extra bytes to
+   *arrive (just those already enqued in the stream).
+   *  In this class this method actually behaves as expected and does not
+   *fallback to ReadBuffer().
+   *	\exception std::exception On any error, or if ZERO bytes are read.
+   */
+  size_t ReadBufferImmediate(void* Buffer, size_t Count) override;
 
-	/** Introduces a pure virtual method responsible for reading from the
-	 * stream.
-	 *  It integrates a cache buffer to speed-up sequences of many, small
-	 * readings.
-	 */
-	size_t Read(void* Buffer, size_t Count) override;
+  /** Introduces a pure virtual method responsible for reading from the
+   * stream.
+   *  It integrates a cache buffer to speed-up sequences of many, small
+   * readings.
+   */
+  size_t Read(void* Buffer, size_t Count) override;
 
-	/** Introduces a pure virtual method responsible for writing to the stream.
-	 *  Write attempts to write up to Count bytes to Buffer, and returns the
-	 * number of bytes actually written.
-	 */
-	size_t Write(const void* Buffer, size_t Count) override;
+  /** Introduces a pure virtual method responsible for writing to the stream.
+   *  Write attempts to write up to Count bytes to Buffer, and returns the
+   * number of bytes actually written.
+   */
+  size_t Write(const void* Buffer, size_t Count) override;
 
-	/** This virtual method does nothing in this class.
-	 */
-	uint64_t Seek(
-		int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override;
+  /** This virtual method does nothing in this class.
+   */
+  uint64_t Seek(int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override;
 
-	/** This virtual method does nothing in this class.
-	 */
-	uint64_t getTotalBytesCount() const override;
+  /** This virtual method does nothing in this class.
+   */
+  uint64_t getTotalBytesCount() const override;
 
-	/** This virtual method does nothing in this class.
-	 */
-	uint64_t getPosition() const override;
+  /** This virtual method does nothing in this class.
+   */
+  uint64_t getPosition() const override;
 
-   protected:
-	/** Used in Read */
-	mrpt::containers::circular_buffer<uint8_t> m_readBuffer;
+ protected:
+  /** Used in Read */
+  mrpt::containers::circular_buffer<uint8_t> m_readBuffer;
 
-	void ftdi_read(
-		void* lpvBuffer, unsigned long dwBuffSize,
-		unsigned long* lpdwBytesRead);
-	void ftdi_write(
-		const void* lpvBuffer, unsigned long dwBuffSize,
-		unsigned long* lpdwBytes);
+  void ftdi_read(void* lpvBuffer, unsigned long dwBuffSize, unsigned long* lpdwBytesRead);
+  void ftdi_write(const void* lpvBuffer, unsigned long dwBuffSize, unsigned long* lpdwBytes);
 
 #if defined(_WIN32)
-   private:
-	void checkErrorAndRaise(int errorCode);
+ private:
+  void checkErrorAndRaise(int errorCode);
 
-	void ftdi_open(void* pvDevice);
-	void ftdi_openEx(void* pArg1, unsigned long dwFlags);
-	void ftdi_listDevices(void* pArg1, void* pArg2, unsigned long dwFlags);
-	void ftdi_getQueueStatus(unsigned long* lpdwAmountInRxQueue);
+  void ftdi_open(void* pvDevice);
+  void ftdi_openEx(void* pArg1, unsigned long dwFlags);
+  void ftdi_listDevices(void* pArg1, void* pArg2, unsigned long dwFlags);
+  void ftdi_getQueueStatus(unsigned long* lpdwAmountInRxQueue);
 
-	void* m_hmodule;
-	unsigned long m_ftHandle;
+  void* m_hmodule;
+  unsigned long m_ftHandle;
 
-	void loadDriver();
+  void loadDriver();
 
-	enum FT_STATUS{dummy};
+  enum FT_STATUS{dummy};
 
-	typedef FT_STATUS(__stdcall* PtrToOpen)(void*, unsigned long*);
-	PtrToOpen m_pOpen;
+  typedef FT_STATUS(__stdcall* PtrToOpen)(void*, unsigned long*);
+  PtrToOpen m_pOpen;
 
-	typedef FT_STATUS(__stdcall* PtrToOpenEx)(
-		void*, unsigned long, unsigned long*);
-	PtrToOpenEx m_pOpenEx;
+  typedef FT_STATUS(__stdcall* PtrToOpenEx)(void*, unsigned long, unsigned long*);
+  PtrToOpenEx m_pOpenEx;
 
-	typedef FT_STATUS(__stdcall* PtrToListDevices)(void*, void*, unsigned long);
-	PtrToListDevices m_pListDevices;
+  typedef FT_STATUS(__stdcall* PtrToListDevices)(void*, void*, unsigned long);
+  PtrToListDevices m_pListDevices;
 
-	typedef FT_STATUS(__stdcall* PtrToClose)(unsigned long);
-	PtrToClose m_pClose;
+  typedef FT_STATUS(__stdcall* PtrToClose)(unsigned long);
+  PtrToClose m_pClose;
 
-	typedef FT_STATUS(__stdcall* PtrToRead)(
-		unsigned long, void*, unsigned long, unsigned long*);
-	PtrToRead m_pRead;
+  typedef FT_STATUS(__stdcall* PtrToRead)(unsigned long, void*, unsigned long, unsigned long*);
+  PtrToRead m_pRead;
 
-	typedef FT_STATUS(__stdcall* PtrToWrite)(
-		unsigned long, const void*, unsigned long, unsigned long*);
-	PtrToWrite m_pWrite;
+  typedef FT_STATUS(__stdcall* PtrToWrite)(
+      unsigned long, const void*, unsigned long, unsigned long*);
+  PtrToWrite m_pWrite;
 
-	typedef FT_STATUS(__stdcall* PtrToResetDevice)(unsigned long);
-	PtrToResetDevice m_pResetDevice;
+  typedef FT_STATUS(__stdcall* PtrToResetDevice)(unsigned long);
+  PtrToResetDevice m_pResetDevice;
 
-	typedef FT_STATUS(__stdcall* PtrToPurge)(unsigned long, unsigned long);
-	PtrToPurge m_pPurge;
+  typedef FT_STATUS(__stdcall* PtrToPurge)(unsigned long, unsigned long);
+  PtrToPurge m_pPurge;
 
-	typedef FT_STATUS(__stdcall* PtrToSetTimeouts)(
-		unsigned long, unsigned long, unsigned long);
-	PtrToSetTimeouts m_pSetTimeouts;
+  typedef FT_STATUS(__stdcall* PtrToSetTimeouts)(unsigned long, unsigned long, unsigned long);
+  PtrToSetTimeouts m_pSetTimeouts;
 
-	typedef FT_STATUS(__stdcall* PtrToGetQueueStatus)(
-		unsigned long, unsigned long*);
-	PtrToGetQueueStatus m_pGetQueueStatus;
+  typedef FT_STATUS(__stdcall* PtrToGetQueueStatus)(unsigned long, unsigned long*);
+  PtrToGetQueueStatus m_pGetQueueStatus;
 
-	typedef FT_STATUS(__stdcall* PtrToSetLatencyTimer)(
-		unsigned long, unsigned char);
-	PtrToSetLatencyTimer m_pSetLatencyTimer;
+  typedef FT_STATUS(__stdcall* PtrToSetLatencyTimer)(unsigned long, unsigned char);
+  PtrToSetLatencyTimer m_pSetLatencyTimer;
 
 #else
-	// Declarations for Linux:
-	void* m_ftdi_context;
+  // Declarations for Linux:
+  void* m_ftdi_context;
 
-	/** Process recursively a USB device and its children: */
-	void recursive_fill_list_devices(
-		void* usb_device_structure, TFTDIDeviceList& outList);
+  /** Process recursively a USB device and its children: */
+  void recursive_fill_list_devices(void* usb_device_structure, TFTDIDeviceList& outList);
 
 #endif
 
-};	// end of class
+};  // end of class
 
 }  // namespace mrpt::comms

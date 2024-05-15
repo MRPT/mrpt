@@ -33,66 +33,67 @@ namespace mrpt::opengl
  */
 class CText3D : public CRenderizableShaderText
 {
-	DEFINE_SERIALIZABLE(CText3D, mrpt::opengl)
-   protected:
-	std::string m_str;
-	std::string m_fontName = "sans";
-	TOpenGLFontStyle m_text_style;
-	double m_text_spacing = 1.5;
-	double m_text_kerning = 0.1;
+  DEFINE_SERIALIZABLE(CText3D, mrpt::opengl)
+ protected:
+  std::string m_str;
+  std::string m_fontName = "sans";
+  TOpenGLFontStyle m_text_style;
+  double m_text_spacing = 1.5;
+  double m_text_kerning = 0.1;
 
-	void onUpdateBuffers_Text() override;
+  void onUpdateBuffers_Text() override;
 
-   public:
-	/** Sets the displayed string */
-	inline void setString(const std::string& s)
-	{
-		m_str = s;
-		CRenderizable::notifyChange();
-	}
-	/** Returns the currently text associated to this object */
-	inline const std::string& getString() const { return m_str; }
-	/** Changes the font name, among accepted values: "sans", "mono", "serif" */
-	inline void setFont(const std::string& font)
-	{
-		m_fontName = font;
-		CRenderizable::notifyChange();
-	}
-	/** Returns the text font  */
-	inline const std::string& getFont() const { return m_fontName; }
-	/** Change drawing style: FILL, OUTLINE, NICE */
-	void setTextStyle(const mrpt::opengl::TOpenGLFontStyle text_style)
-	{
-		m_text_style = text_style;
-		CRenderizable::notifyChange();
-	}
-	/** Gets the current drawing style */
-	mrpt::opengl::TOpenGLFontStyle getTextStyle() const { return m_text_style; }
-	void setTextSpacing(const double text_spacing)
-	{
-		m_text_spacing = text_spacing;
-		CRenderizable::notifyChange();
-	}
-	double setTextSpacing() const { return m_text_spacing; }
-	void setTextKerning(const double text_kerning)
-	{
-		m_text_kerning = text_kerning;
-		CRenderizable::notifyChange();
-	}
-	double setTextKerning() const { return m_text_kerning; }
+ public:
+  /** Sets the displayed string */
+  inline void setString(const std::string& s)
+  {
+    m_str = s;
+    CRenderizable::notifyChange();
+  }
+  /** Returns the currently text associated to this object */
+  inline const std::string& getString() const { return m_str; }
+  /** Changes the font name, among accepted values: "sans", "mono", "serif" */
+  inline void setFont(const std::string& font)
+  {
+    m_fontName = font;
+    CRenderizable::notifyChange();
+  }
+  /** Returns the text font  */
+  inline const std::string& getFont() const { return m_fontName; }
+  /** Change drawing style: FILL, OUTLINE, NICE */
+  void setTextStyle(const mrpt::opengl::TOpenGLFontStyle text_style)
+  {
+    m_text_style = text_style;
+    CRenderizable::notifyChange();
+  }
+  /** Gets the current drawing style */
+  mrpt::opengl::TOpenGLFontStyle getTextStyle() const { return m_text_style; }
+  void setTextSpacing(const double text_spacing)
+  {
+    m_text_spacing = text_spacing;
+    CRenderizable::notifyChange();
+  }
+  double setTextSpacing() const { return m_text_spacing; }
+  void setTextKerning(const double text_kerning)
+  {
+    m_text_kerning = text_kerning;
+    CRenderizable::notifyChange();
+  }
+  double setTextKerning() const { return m_text_kerning; }
 
-	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
+  mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
-	CText3D(
-		const std::string& str = std::string(""),
-		const std::string& fontName = std::string("sans"),
-		const float scale = 1.0,
-		const mrpt::opengl::TOpenGLFontStyle text_style = mrpt::opengl::NICE,
-		const double text_spacing = 1.5, const double text_kerning = 0.1);
+  CText3D(
+      const std::string& str = std::string(""),
+      const std::string& fontName = std::string("sans"),
+      const float scale = 1.0,
+      const mrpt::opengl::TOpenGLFontStyle text_style = mrpt::opengl::NICE,
+      const double text_spacing = 1.5,
+      const double text_kerning = 0.1);
 
-	~CText3D() override;
+  ~CText3D() override;
 
-	void toYAMLMap(mrpt::containers::yaml& propertiesMap) const override;
+  void toYAMLMap(mrpt::containers::yaml& propertiesMap) const override;
 };
 
 }  // namespace mrpt::opengl

@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"	// Precompiled headers
+#include "hwdrivers-precomp.h"  // Precompiled headers
 //
 #include <mrpt/hwdrivers/CSickLaserUSB.h>
 #include <mrpt/serialization/CArchive.h>
@@ -27,268 +27,261 @@ using namespace mrpt::hwdrivers;
 using namespace mrpt::poses;
 
 /*-------------------------------------------------------------
-						CSickLaserUSB
+            CSickLaserUSB
 -------------------------------------------------------------*/
 CSickLaserUSB::CSickLaserUSB() : m_serialNumber("LASER001")
 {
-	MRPT_START
-	m_sensorLabel = "SICKLMS";
-	m_usbConnection = std::make_unique<CInterfaceFTDI>();
-	MRPT_END
+  MRPT_START
+  m_sensorLabel = "SICKLMS";
+  m_usbConnection = std::make_unique<CInterfaceFTDI>();
+  MRPT_END
 }
 
 /*-------------------------------------------------------------
-						doProcessSimple
+            doProcessSimple
 -------------------------------------------------------------*/
 void CSickLaserUSB::doProcessSimple(
-	bool& outThereIsObservation,
-	mrpt::obs::CObservation2DRangeScan& outObservation, bool& hardwareError)
+    bool& outThereIsObservation,
+    mrpt::obs::CObservation2DRangeScan& outObservation,
+    bool& hardwareError)
 {
-	outThereIsObservation = false;
-	hardwareError = false;
+  outThereIsObservation = false;
+  hardwareError = false;
 
-	if (!checkControllerIsConnected())
-	{
-		hardwareError = true;
-		return;
-	}
+  if (!checkControllerIsConnected())
+  {
+    hardwareError = true;
+    return;
+  }
 
-	vector<float> ranges;
-	unsigned char LMS_stat;
-	uint32_t board_timestamp;
-	bool is_mm_mode;
+  vector<float> ranges;
+  unsigned char LMS_stat;
+  uint32_t board_timestamp;
+  bool is_mm_mode;
 
-	m_state = ssWorking;
+  m_state = ssWorking;
 
-	// Wait for a scan:
-	if (!waitContinuousSampleFrame(
-			ranges, LMS_stat, board_timestamp, is_mm_mode))
-		return;
+  // Wait for a scan:
+  if (!waitContinuousSampleFrame(ranges, LMS_stat, board_timestamp, is_mm_mode)) return;
 
-	// Yes, we have a new scan:
+  // Yes, we have a new scan:
 
-	// -----------------------------------------------
-	//   Extract the observation:
-	// -----------------------------------------------
-	uint32_t AtUI = 0;
-	if (m_timeStartUI == 0)
-	{
-		m_timeStartUI = board_timestamp;
-		m_timeStartTT = mrpt::Clock::now();
-	}
-	else
-		AtUI = board_timestamp - m_timeStartUI;
+  // -----------------------------------------------
+  //   Extract the observation:
+  // -----------------------------------------------
+  uint32_t AtUI = 0;
+  if (m_timeStartUI == 0)
+  {
+    m_timeStartUI = board_timestamp;
+    m_timeStartTT = mrpt::Clock::now();
+  }
+  else
+    AtUI = board_timestamp - m_timeStartUI;
 
-	/* Board time is ms, -50ms aprox delay for scan sending from the scanner*/
-	auto AtDO = std::chrono::milliseconds(AtUI - 50);
-	outObservation.timestamp = m_timeStartTT + AtDO;
+  /* Board time is ms, -50ms aprox delay for scan sending from the scanner*/
+  auto AtDO = std::chrono::milliseconds(AtUI - 50);
+  outObservation.timestamp = m_timeStartTT + AtDO;
 
-	outObservation.sensorLabel = m_sensorLabel;	 // Set label
+  outObservation.sensorLabel = m_sensorLabel;  // Set label
 
-	// Extract the timestamp of the sensor:
+  // Extract the timestamp of the sensor:
 
-	// And the scan ranges:
-	outObservation.rightToLeft = true;
-	outObservation.aperture = M_PIf;
-	outObservation.maxRange = is_mm_mode ? 32.7 : 81.0;
-	outObservation.stdError = 0.003f;
-	outObservation.sensorPose = m_sensorPose;
+  // And the scan ranges:
+  outObservation.rightToLeft = true;
+  outObservation.aperture = M_PIf;
+  outObservation.maxRange = is_mm_mode ? 32.7 : 81.0;
+  outObservation.stdError = 0.003f;
+  outObservation.sensorPose = m_sensorPose;
 
-	outObservation.resizeScan(ranges.size());
+  outObservation.resizeScan(ranges.size());
 
-	for (size_t i = 0; i < ranges.size(); i++)
-	{
-		outObservation.setScanRange(i, ranges[i]);
-		outObservation.setScanRangeValidity(
-			i, (ranges[i] <= outObservation.maxRange));
-	}
+  for (size_t i = 0; i < ranges.size(); i++)
+  {
+    outObservation.setScanRange(i, ranges[i]);
+    outObservation.setScanRangeValidity(i, (ranges[i] <= outObservation.maxRange));
+  }
 
-	// Do filter:
-	C2DRangeFinderAbstract::filterByExclusionAreas(outObservation);
-	C2DRangeFinderAbstract::filterByExclusionAngles(outObservation);
-	// Do show preview:
-	C2DRangeFinderAbstract::processPreview(outObservation);
+  // Do filter:
+  C2DRangeFinderAbstract::filterByExclusionAreas(outObservation);
+  C2DRangeFinderAbstract::filterByExclusionAngles(outObservation);
+  // Do show preview:
+  C2DRangeFinderAbstract::processPreview(outObservation);
 
-	outThereIsObservation = true;
+  outThereIsObservation = true;
 }
 
 /*-------------------------------------------------------------
-						loadConfig_sensorSpecific
+            loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CSickLaserUSB::loadConfig_sensorSpecific(
-	const mrpt::config::CConfigFileBase& configSource,
-	const std::string& iniSection)
+    const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection)
 {
-	m_serialNumber = configSource.read_string(
-		iniSection, "SICKUSB_serialNumber", m_serialNumber);
-	m_sensorPose = CPose3D(
-		configSource.read_float(iniSection, "pose_x", 0),
-		configSource.read_float(iniSection, "pose_y", 0),
-		configSource.read_float(iniSection, "pose_z", 0),
-		DEG2RAD(configSource.read_float(iniSection, "pose_yaw", 0)),
-		DEG2RAD(configSource.read_float(iniSection, "pose_pitch", 0)),
-		DEG2RAD(configSource.read_float(iniSection, "pose_roll", 0)));
-	// Parent options:
-	C2DRangeFinderAbstract::loadCommonParams(configSource, iniSection);
+  m_serialNumber = configSource.read_string(iniSection, "SICKUSB_serialNumber", m_serialNumber);
+  m_sensorPose = CPose3D(
+      configSource.read_float(iniSection, "pose_x", 0),
+      configSource.read_float(iniSection, "pose_y", 0),
+      configSource.read_float(iniSection, "pose_z", 0),
+      DEG2RAD(configSource.read_float(iniSection, "pose_yaw", 0)),
+      DEG2RAD(configSource.read_float(iniSection, "pose_pitch", 0)),
+      DEG2RAD(configSource.read_float(iniSection, "pose_roll", 0)));
+  // Parent options:
+  C2DRangeFinderAbstract::loadCommonParams(configSource, iniSection);
 }
 
 /*-------------------------------------------------------------
-						turnOn
+            turnOn
 -------------------------------------------------------------*/
 bool CSickLaserUSB::turnOn() { return true; }
 /*-------------------------------------------------------------
-						turnOff
+            turnOff
 -------------------------------------------------------------*/
 bool CSickLaserUSB::turnOff() { return true; }
 /*-------------------------------------------------------------
-					checkControllerIsConnected
+          checkControllerIsConnected
 -------------------------------------------------------------*/
 bool CSickLaserUSB::checkControllerIsConnected()
 {
-	// If device is already open, thats ok:
-	if (m_usbConnection->isOpen()) return true;
+  // If device is already open, thats ok:
+  if (m_usbConnection->isOpen()) return true;
 
-	// If it isn't, try to open it now:
-	try
-	{
-		m_usbConnection->OpenBySerialNumber(m_serialNumber);
-		m_usbConnection->ResetDevice();
-		std::this_thread::sleep_for(10ms);
-		m_usbConnection->SetTimeouts(10, 20);  // read, write, in milliseconds
-		std::this_thread::sleep_for(10ms);
-		m_usbConnection->SetLatencyTimer(1);  // 1ms, the minimum
-		std::this_thread::sleep_for(10ms);
+  // If it isn't, try to open it now:
+  try
+  {
+    m_usbConnection->OpenBySerialNumber(m_serialNumber);
+    m_usbConnection->ResetDevice();
+    std::this_thread::sleep_for(10ms);
+    m_usbConnection->SetTimeouts(10, 20);  // read, write, in milliseconds
+    std::this_thread::sleep_for(10ms);
+    m_usbConnection->SetLatencyTimer(1);  // 1ms, the minimum
+    std::this_thread::sleep_for(10ms);
 
-		MRPT_LOG_INFO_FMT(
-			"[CSickLaserUSB] USB DEVICE S/N:'%s' OPEN SUCCESSFULLY!!!\n",
-			m_serialNumber.c_str());
-		return true;
-	}
-	catch (const std::exception& e)
-	{
-		MRPT_LOG_ERROR_FMT(
-			"[CSickLaserUSB] ERROR TRYING TO OPEN USB DEVICE S/N:'%s'\n%s",
-			m_serialNumber.c_str(), e.what());
-		return false;
-	}
+    MRPT_LOG_INFO_FMT(
+        "[CSickLaserUSB] USB DEVICE S/N:'%s' OPEN SUCCESSFULLY!!!\n", m_serialNumber.c_str());
+    return true;
+  }
+  catch (const std::exception& e)
+  {
+    MRPT_LOG_ERROR_FMT(
+        "[CSickLaserUSB] ERROR TRYING TO OPEN USB DEVICE S/N:'%s'\n%s", m_serialNumber.c_str(),
+        e.what());
+    return false;
+  }
 }
 
 /*-------------------------------------------------------------
-					waitContinuousSampleFrame
+          waitContinuousSampleFrame
 -------------------------------------------------------------*/
 bool CSickLaserUSB::waitContinuousSampleFrame(
-	vector<float>& out_ranges_meters, unsigned char& LMS_status,
-	uint32_t& out_board_timestamp, bool& is_mm_mode)
+    vector<float>& out_ranges_meters,
+    unsigned char& LMS_status,
+    uint32_t& out_board_timestamp,
+    bool& is_mm_mode)
 {
-	size_t nRead, nBytesToRead;
-	size_t nFrameBytes = 0;
-	size_t lenghtField;
-	unsigned char buf[2000];
-	buf[2] = buf[3] = 0;
+  size_t nRead, nBytesToRead;
+  size_t nFrameBytes = 0;
+  size_t lenghtField;
+  unsigned char buf[2000];
+  buf[2] = buf[3] = 0;
 
-	while (nFrameBytes < (lenghtField = (6 + (buf[2] | (buf[3] << 8)))) +
-			   5 /* for 32bit timestamp + end-flag */)
-	{
-		if (lenghtField > 800)
-		{
-			cout << "#";
-			nFrameBytes = 0;  // No es cabecera de trama correcta
-			buf[2] = buf[3] = 0;
-		}
+  while (nFrameBytes <
+         (lenghtField = (6 + (buf[2] | (buf[3] << 8)))) + 5 /* for 32bit timestamp + end-flag */)
+  {
+    if (lenghtField > 800)
+    {
+      cout << "#";
+      nFrameBytes = 0;  // No es cabecera de trama correcta
+      buf[2] = buf[3] = 0;
+    }
 
-		if (nFrameBytes < 4) nBytesToRead = 1;
-		else
-			nBytesToRead =
-				(5 /* for 32bit timestamp + end-flag */ + lenghtField) -
-				nFrameBytes;
+    if (nFrameBytes < 4)
+      nBytesToRead = 1;
+    else
+      nBytesToRead = (5 /* for 32bit timestamp + end-flag */ + lenghtField) - nFrameBytes;
 
-		try
-		{
-			nRead = m_usbConnection->ReadSync(buf + nFrameBytes, nBytesToRead);
-		}
-		catch (const std::exception& e)
-		{
-			// Disconnected?
-			MRPT_LOG_ERROR_FMT(
-				"[CSickLaserUSB::waitContinuousSampleFrame] Disconnecting due "
-				"to comms error: %s\n",
-				e.what());
-			m_usbConnection->Close();
-			m_timeStartUI = 0;
-			return false;
-		}
+    try
+    {
+      nRead = m_usbConnection->ReadSync(buf + nFrameBytes, nBytesToRead);
+    }
+    catch (const std::exception& e)
+    {
+      // Disconnected?
+      MRPT_LOG_ERROR_FMT(
+          "[CSickLaserUSB::waitContinuousSampleFrame] Disconnecting due "
+          "to comms error: %s\n",
+          e.what());
+      m_usbConnection->Close();
+      m_timeStartUI = 0;
+      return false;
+    }
 
-		if (nRead == 0 && nFrameBytes == 0) return false;
+    if (nRead == 0 && nFrameBytes == 0) return false;
 
-		if (nRead > 0)
-		{
-			// Lectura OK:
-			// Era la primera?
-			if (nFrameBytes > 1 || (!nFrameBytes && buf[0] == 0x02) ||
-				(nFrameBytes == 1 && buf[1] == 0x80))
-				nFrameBytes += nRead;
-			else
-			{
-				nFrameBytes = 0;  // No es cabecera de trama correcta
-				buf[2] = buf[3] = 0;
-			}
-		}
-	}
+    if (nRead > 0)
+    {
+      // Lectura OK:
+      // Era la primera?
+      if (nFrameBytes > 1 || (!nFrameBytes && buf[0] == 0x02) ||
+          (nFrameBytes == 1 && buf[1] == 0x80))
+        nFrameBytes += nRead;
+      else
+      {
+        nFrameBytes = 0;  // No es cabecera de trama correcta
+        buf[2] = buf[3] = 0;
+      }
+    }
+  }
 
-	// Frame received
-	// --------------------------------------------------------------------------
-	// | STX | ADDR | L1 | L2 | COM | INF1 | INF2 |	DATA	| STA | CRC1 | CRC2
-	// |
-	// --------------------------------------------------------------------------
+  // Frame received
+  // --------------------------------------------------------------------------
+  // | STX | ADDR | L1 | L2 | COM | INF1 | INF2 |	DATA	| STA | CRC1 | CRC2
+  // |
+  // --------------------------------------------------------------------------
 
-	// Trama completa:
-	//  Checkear que el byte de comando es 0xB0:
-	if (buf[4] != 0xB0) return false;
+  // Trama completa:
+  //  Checkear que el byte de comando es 0xB0:
+  if (buf[4] != 0xB0) return false;
 
-	// GET FRAME INFO
-	int info = buf[5] | (buf[6] << 8);	// Little Endian
-	int n_points = info & 0x01FF;
-	is_mm_mode = 0 != ((info & 0xC000) >> 14);	// 0x00: cm 0x01: mm
+  // GET FRAME INFO
+  int info = buf[5] | (buf[6] << 8);  // Little Endian
+  int n_points = info & 0x01FF;
+  is_mm_mode = 0 != ((info & 0xC000) >> 14);  // 0x00: cm 0x01: mm
 
-	out_ranges_meters.resize(n_points);
+  out_ranges_meters.resize(n_points);
 
-	// Copiar rangos:
-	short mask = is_mm_mode ? 0x7FFF : 0x1FFF;
-	float meters_scale = is_mm_mode ? 0.001f : 0.01f;
+  // Copiar rangos:
+  short mask = is_mm_mode ? 0x7FFF : 0x1FFF;
+  float meters_scale = is_mm_mode ? 0.001f : 0.01f;
 
-	for (int i = 0; i < n_points; i++)
-		out_ranges_meters[i] =
-			((buf[7 + i * 2] | (buf[8 + i * 2] << 8)) & mask) * meters_scale;
+  for (int i = 0; i < n_points; i++)
+    out_ranges_meters[i] = ((buf[7 + i * 2] | (buf[8 + i * 2] << 8)) & mask) * meters_scale;
 
-	// Status
-	LMS_status = buf[lenghtField - 3];
+  // Status
+  LMS_status = buf[lenghtField - 3];
 
-	// End frame:
-	if (buf[nFrameBytes - 1] != 0x55)
-	{
-		MRPT_LOG_ERROR(
-			"[CSickLaserUSB::waitContinuousSampleFrame] bad end flag");
-		return false;  // Bad CRC
-	}
+  // End frame:
+  if (buf[nFrameBytes - 1] != 0x55)
+  {
+    MRPT_LOG_ERROR("[CSickLaserUSB::waitContinuousSampleFrame] bad end flag");
+    return false;  // Bad CRC
+  }
 
-	// CRC:
-	const uint16_t CRC = mrpt::system::compute_CRC16(buf, lenghtField - 2);
-	const uint16_t CRC_packet =
-		buf[lenghtField - 2] | (buf[lenghtField - 1] << 8);
-	if (CRC_packet != CRC)
-	{
-		MRPT_LOG_ERROR_FMT(
-			"[CSickLaserUSB::waitContinuousSampleFrame] bad CRC len=%u "
-			"nptns=%u: %i != %i\n",
-			unsigned(lenghtField), unsigned(n_points), CRC_packet, CRC);
-		return false;  // Bad CRC
-	}
+  // CRC:
+  const uint16_t CRC = mrpt::system::compute_CRC16(buf, lenghtField - 2);
+  const uint16_t CRC_packet = buf[lenghtField - 2] | (buf[lenghtField - 1] << 8);
+  if (CRC_packet != CRC)
+  {
+    MRPT_LOG_ERROR_FMT(
+        "[CSickLaserUSB::waitContinuousSampleFrame] bad CRC len=%u "
+        "nptns=%u: %i != %i\n",
+        unsigned(lenghtField), unsigned(n_points), CRC_packet, CRC);
+    return false;  // Bad CRC
+  }
 
-	// Get USB board timestamp:
-	out_board_timestamp = (uint32_t(buf[nFrameBytes - 5]) << 24) |
-		(uint32_t(buf[nFrameBytes - 4]) << 16) |
-		(uint32_t(buf[nFrameBytes - 3]) << 8) | uint32_t(buf[nFrameBytes - 2]);
+  // Get USB board timestamp:
+  out_board_timestamp = (uint32_t(buf[nFrameBytes - 5]) << 24) |
+                        (uint32_t(buf[nFrameBytes - 4]) << 16) |
+                        (uint32_t(buf[nFrameBytes - 3]) << 8) | uint32_t(buf[nFrameBytes - 2]);
 
-	// All OK
-	return true;
+  // All OK
+  return true;
 }

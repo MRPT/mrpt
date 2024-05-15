@@ -22,98 +22,90 @@ IMPLEMENTS_SERIALIZABLE(CObservationBatteryState, CObservation, mrpt::obs)
 
 /** Constructor
  */
-CObservationBatteryState::CObservationBatteryState()
-	: voltageOtherBatteries(), voltageOtherBatteriesValid()
+CObservationBatteryState::CObservationBatteryState() :
+    voltageOtherBatteries(), voltageOtherBatteriesValid()
 {
 }
 
 uint8_t CObservationBatteryState::serializeGetVersion() const { return 2; }
-void CObservationBatteryState::serializeTo(
-	mrpt::serialization::CArchive& out) const
+void CObservationBatteryState::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	// The data
-	out << voltageMainRobotBattery << voltageMainRobotComputer
-		<< voltageMainRobotBatteryIsValid << voltageMainRobotComputerIsValid
-		<< voltageOtherBatteries << voltageOtherBatteriesValid << sensorLabel
-		<< timestamp;
+  // The data
+  out << voltageMainRobotBattery << voltageMainRobotComputer << voltageMainRobotBatteryIsValid
+      << voltageMainRobotComputerIsValid << voltageOtherBatteries << voltageOtherBatteriesValid
+      << sensorLabel << timestamp;
 }
 
-void CObservationBatteryState::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationBatteryState::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	switch (version)
-	{
-		case 0:
-		case 1:
-		case 2:
-		{
-			in >> voltageMainRobotBattery >> voltageMainRobotComputer >>
-				voltageMainRobotBatteryIsValid >>
-				voltageMainRobotComputerIsValid >> voltageOtherBatteries >>
-				voltageOtherBatteriesValid;
-			if (version >= 1) in >> sensorLabel;
-			else
-				sensorLabel = "";
+  switch (version)
+  {
+    case 0:
+    case 1:
+    case 2:
+    {
+      in >> voltageMainRobotBattery >> voltageMainRobotComputer >> voltageMainRobotBatteryIsValid >>
+          voltageMainRobotComputerIsValid >> voltageOtherBatteries >> voltageOtherBatteriesValid;
+      if (version >= 1)
+        in >> sensorLabel;
+      else
+        sensorLabel = "";
 
-			if (version >= 2) in >> timestamp;
-			else
-				timestamp = INVALID_TIMESTAMP;
-		}
-		break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	};
+      if (version >= 2)
+        in >> timestamp;
+      else
+        timestamp = INVALID_TIMESTAMP;
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
 }
 
 // See base class docs
 void CObservationBatteryState::getSensorPose(CPose3D& out_sensorPose) const
 {
-	out_sensorPose = CPose3D(0, 0, 0);
+  out_sensorPose = CPose3D(0, 0, 0);
 }
 
 // See base class docs
-void CObservationBatteryState::setSensorPose(
-	[[maybe_unused]] const CPose3D& newSensorPose)
-{
-}
+void CObservationBatteryState::setSensorPose([[maybe_unused]] const CPose3D& newSensorPose) {}
 
 void CObservationBatteryState::getDescriptionAsText(std::ostream& o) const
 {
-	CObservation::getDescriptionAsText(o);
+  CObservation::getDescriptionAsText(o);
 
-	o << format(
-		"Measured VoltageMainRobotBattery: %.02fV  isValid= %s \n",
-		voltageMainRobotBattery,
-		(voltageMainRobotBatteryIsValid == true) ? "True" : "False");
+  o << format(
+      "Measured VoltageMainRobotBattery: %.02fV  isValid= %s \n", voltageMainRobotBattery,
+      (voltageMainRobotBatteryIsValid == true) ? "True" : "False");
 
-	o << format(
-		"Measured VoltageMainRobotComputer: %.02fV  isValid= %s \n",
-		voltageMainRobotComputer,
-		(voltageMainRobotComputerIsValid == true) ? "True" : "False");
+  o << format(
+      "Measured VoltageMainRobotComputer: %.02fV  isValid= %s \n", voltageMainRobotComputer,
+      (voltageMainRobotComputerIsValid == true) ? "True" : "False");
 
-	o << "VoltageOtherBatteries: \n";
-	for (CVectorDouble::Index i = 0; i < voltageOtherBatteries.size(); i++)
-	{
-		o << format(
-			"Index: %d --> %.02fV  isValid= %s \n", int(i),
-			voltageOtherBatteries[i],
-			(voltageOtherBatteriesValid[i] == true) ? "True" : "False");
-	}
+  o << "VoltageOtherBatteries: \n";
+  for (CVectorDouble::Index i = 0; i < voltageOtherBatteries.size(); i++)
+  {
+    o << format(
+        "Index: %d --> %.02fV  isValid= %s \n", int(i), voltageOtherBatteries[i],
+        (voltageOtherBatteriesValid[i] == true) ? "True" : "False");
+  }
 }
 
 std::string CObservationBatteryState::exportTxtHeader() const
 {
-	return "VoltageMainRobotBattery "
-		   "VoltageMainRobotComputer "
-		   "[other voltages...]";
+  return "VoltageMainRobotBattery "
+         "VoltageMainRobotComputer "
+         "[other voltages...]";
 }
 std::string CObservationBatteryState::exportTxtDataRow() const
 {
-	std::string s;
-	s += mrpt::format("%18.5f ", voltageMainRobotBattery);
-	s += mrpt::format("%18.5f ", voltageMainRobotComputer);
+  std::string s;
+  s += mrpt::format("%18.5f ", voltageMainRobotBattery);
+  s += mrpt::format("%18.5f ", voltageMainRobotComputer);
 
-	for (CVectorDouble::Index i = 0; i < voltageOtherBatteries.size(); i++)
-		s += mrpt::format("%18.5f ", voltageOtherBatteries[i]);
+  for (CVectorDouble::Index i = 0; i < voltageOtherBatteries.size(); i++)
+    s += mrpt::format("%18.5f ", voltageOtherBatteries[i]);
 
-	return s;
+  return s;
 }

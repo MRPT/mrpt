@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"	// Precompiled headers
+#include "hwdrivers-precomp.h"  // Precompiled headers
 //
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/core/initializer.h>
@@ -21,47 +21,47 @@
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_hwdrivers)
 {
-	using namespace mrpt::hwdrivers;
+  using namespace mrpt::hwdrivers;
 
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
-	CSickLaserUSB::doRegister();
-	CIbeoLuxETH::doRegister();
-	CHokuyoURG::doRegister();
-	CRoboPeakLidar::doRegister();
-	CGPSInterface::doRegister();
-	CIMUXSens_MT4::doRegister();
-	CCameraSensor::doRegister();
-	CWirelessPower::doRegister();
-	CRaePID::doRegister();
-	CImpinjRFID::doRegister();
-	CSickLaserSerial::doRegister();
-	CEnoseModular::doRegister();
-	CGillAnemometer::doRegister();
-	CNTRIPEmitter::doRegister();
-	CSwissRanger3DCamera::doRegister();
-	CLMS100Eth::doRegister();
-	CPhidgetInterfaceKitProximitySensors::doRegister();
-	CGyroKVHDSP3000::doRegister();
-	CKinect::doRegister();
-	COpenNI2Sensor::doRegister();
-	COpenNI2_RGBD360::doRegister();
-	CCANBusReader::doRegister();
-	CNationalInstrumentsDAQ::doRegister();
-	CGPS_NTRIP::doRegister();
-	CIMUIntersense::doRegister();
-	CSkeletonTracker::doRegister();
-	CVelodyneScanner::doRegister();
-	CSICKTim561Eth::doRegister();
-	CTaoboticsIMU::doRegister();
+  CSickLaserUSB::doRegister();
+  CIbeoLuxETH::doRegister();
+  CHokuyoURG::doRegister();
+  CRoboPeakLidar::doRegister();
+  CGPSInterface::doRegister();
+  CIMUXSens_MT4::doRegister();
+  CCameraSensor::doRegister();
+  CWirelessPower::doRegister();
+  CRaePID::doRegister();
+  CImpinjRFID::doRegister();
+  CSickLaserSerial::doRegister();
+  CEnoseModular::doRegister();
+  CGillAnemometer::doRegister();
+  CNTRIPEmitter::doRegister();
+  CSwissRanger3DCamera::doRegister();
+  CLMS100Eth::doRegister();
+  CPhidgetInterfaceKitProximitySensors::doRegister();
+  CGyroKVHDSP3000::doRegister();
+  CKinect::doRegister();
+  COpenNI2Sensor::doRegister();
+  COpenNI2_RGBD360::doRegister();
+  CCANBusReader::doRegister();
+  CNationalInstrumentsDAQ::doRegister();
+  CGPS_NTRIP::doRegister();
+  CIMUIntersense::doRegister();
+  CSkeletonTracker::doRegister();
+  CVelodyneScanner::doRegister();
+  CSICKTim561Eth::doRegister();
+  CTaoboticsIMU::doRegister();
 #endif
 }
 
 void mrpt::hwdrivers::registerAllClasses_mrpt_hwdrivers()
 {
-	::registerAllClasses_mrpt_hwdrivers();
-	// deps:
-	mrpt::comms::registerAllClasses_mrpt_comms();
-	mrpt::maps::registerAllClasses_mrpt_maps();
-	mrpt::gui::registerAllClasses_mrpt_gui();
-	mrpt::vision::registerAllClasses_mrpt_vision();
+  ::registerAllClasses_mrpt_hwdrivers();
+  // deps:
+  mrpt::comms::registerAllClasses_mrpt_comms();
+  mrpt::maps::registerAllClasses_mrpt_maps();
+  mrpt::gui::registerAllClasses_mrpt_gui();
+  mrpt::vision::registerAllClasses_mrpt_vision();
 }

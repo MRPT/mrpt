@@ -24,47 +24,46 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(CObservation, CSerializable, mrpt::obs)
 
 void CObservation::getSensorPose(mrpt::math::TPose3D& out_sensorPose) const
 {
-	CPose3D p;
-	getSensorPose(p);
-	out_sensorPose = p.asTPose();
+  CPose3D p;
+  getSensorPose(p);
+  out_sensorPose = p.asTPose();
 }
 
 void CObservation::setSensorPose(const mrpt::math::TPose3D& newSensorPose)
 {
-	setSensorPose(CPose3D(newSensorPose));
+  setSensorPose(CPose3D(newSensorPose));
 }
 
 void CObservation::swap(CObservation& o)
 {
-	std::swap(timestamp, o.timestamp);
-	std::swap(sensorLabel, o.sensorLabel);
+  std::swap(timestamp, o.timestamp);
+  std::swap(sensorLabel, o.sensorLabel);
 }
 
 void CObservation::getDescriptionAsText(std::ostream& o) const
 {
-	using namespace mrpt::system;  // for the TTimeStamp << op
+  using namespace mrpt::system;  // for the TTimeStamp << op
 
-	o << mrpt::format(
-		"Timestamp (UTC): %s\n"
-		"        (local): %s\n"
-		"    (as time_t): %.09f\n",
-		mrpt::system::dateTimeToString(timestamp).c_str(),
-		mrpt::system::dateTimeLocalToString(timestamp).c_str(),
-		mrpt::Clock::toDouble(timestamp));
+  o << mrpt::format(
+      "Timestamp (UTC): %s\n"
+      "        (local): %s\n"
+      "    (as time_t): %.09f\n",
+      mrpt::system::dateTimeToString(timestamp).c_str(),
+      mrpt::system::dateTimeLocalToString(timestamp).c_str(), mrpt::Clock::toDouble(timestamp));
 
-	o << "  (as TTimestamp): " << timestamp
-	  << "\n"
-		 "Sensor label: '"
-	  << sensorLabel << "'"
-	  << "\n\n";
+  o << "  (as TTimestamp): " << timestamp
+    << "\n"
+       "Sensor label: '"
+    << sensorLabel << "'"
+    << "\n\n";
 
-	o << "ClassName: " << this->GetRuntimeClass()->className << "\n"
-	  << "\n";
+  o << "ClassName: " << this->GetRuntimeClass()->className << "\n"
+    << "\n";
 }
 
 std::string CObservation::asString() const
 {
-	std::stringstream ss;
-	getDescriptionAsText(ss);
-	return ss.str();
+  std::stringstream ss;
+  getDescriptionAsText(ss);
+  return ss.str();
 }

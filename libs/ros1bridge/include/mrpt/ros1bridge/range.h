@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-	APPLICATION: mrpt_ros bridge
-	FILE: range.h
-	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
+  APPLICATION: mrpt_ros bridge
+  FILE: range.h
+  AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
   ---------------------------------------------------------------*/
 
 #pragma once
@@ -41,8 +41,9 @@ bool fromROS(const sensor_msgs::Range& msg, mrpt::obs::CObservationRange& obj);
  * conversion, false on any error.
  */
 bool toROS(
-	const mrpt::obs::CObservationRange& obj, const std_msgs::Header& msg_header,
-	sensor_msgs::Range* msg);
+    const mrpt::obs::CObservationRange& obj,
+    const std_msgs::Header& msg_header,
+    sensor_msgs::Range* msg);
 
 /** @} */
 

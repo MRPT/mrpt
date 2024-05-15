@@ -52,89 +52,92 @@ namespace mrpt::containers
 template <class T>
 class CThreadSafeQueue
 {
-   protected:
-	/** The queue of messages. Memory is freed at destructor or by clients
-	 * gathering messages. */
-	std::queue<T*> m_msgs;
-	/** The critical section */
-	mutable std::mutex m_csQueue;
+ protected:
+  /** The queue of messages. Memory is freed at destructor or by clients
+   * gathering messages. */
+  std::queue<T*> m_msgs;
+  /** The critical section */
+  mutable std::mutex m_csQueue;
 
-   public:
-	/** Default ctor. */
-	CThreadSafeQueue() = default;
-	virtual ~CThreadSafeQueue() { clear(); }
-	/** Clear the queue of messages, freeing memory as required. */
-	void clear()
-	{
-		std::lock_guard<std::mutex> lock(m_csQueue);
-		while (!m_msgs.empty())
-		{
-			delete m_msgs.front();
-			m_msgs.pop();
-		}
-	}
+ public:
+  /** Default ctor. */
+  CThreadSafeQueue() = default;
+  virtual ~CThreadSafeQueue() { clear(); }
+  /** Clear the queue of messages, freeing memory as required. */
+  void clear()
+  {
+    std::lock_guard<std::mutex> lock(m_csQueue);
+    while (!m_msgs.empty())
+    {
+      delete m_msgs.front();
+      m_msgs.pop();
+    }
+  }
 
-	/** Insert a new message in the queue - The object must be created with
-	 * "new", and do not delete is after calling this, it must be deleted later.
-	 */
-	inline void push(T* msg)
-	{
-		std::lock_guard<std::mutex> lock(m_csQueue);
-		m_msgs.push(msg);
-	}
+  /** Insert a new message in the queue - The object must be created with
+   * "new", and do not delete is after calling this, it must be deleted later.
+   */
+  inline void push(T* msg)
+  {
+    std::lock_guard<std::mutex> lock(m_csQueue);
+    m_msgs.push(msg);
+  }
 
-	/** Retrieve the next message in the queue, or nullptr if there is no
-	 * message.
-	 *  The user MUST call "delete" with the returned object after use.
-	 */
-	inline T* get()
-	{
-		std::lock_guard<std::mutex> lock(m_csQueue);
-		if (m_msgs.empty()) return nullptr;
-		else
-		{
-			T* ret = m_msgs.front();
-			m_msgs.pop();
-			return ret;
-		}
-	}
+  /** Retrieve the next message in the queue, or nullptr if there is no
+   * message.
+   *  The user MUST call "delete" with the returned object after use.
+   */
+  inline T* get()
+  {
+    std::lock_guard<std::mutex> lock(m_csQueue);
+    if (m_msgs.empty())
+      return nullptr;
+    else
+    {
+      T* ret = m_msgs.front();
+      m_msgs.pop();
+      return ret;
+    }
+  }
 
-	/** Skip all old messages in the queue and directly return the last one (the
-	 * most recent, at the bottom of the queue), or nullptr if there is no
-	 * message.
-	 *  \note The memory of all skipped messages is freed with "delete".
-	 *  \note The user MUST call "delete" with the returned object after use.
-	 */
-	inline T* get_lastest_purge_old()
-	{
-		std::lock_guard<std::mutex> lock(m_csQueue);
-		if (m_msgs.empty()) return nullptr;
-		else
-		{
-			for (;;)
-			{
-				T* ret = m_msgs.front();
-				m_msgs.pop();
-				if (m_msgs.empty()) return ret;
-				else
-					delete ret;
-			}
-		}
-	}
+  /** Skip all old messages in the queue and directly return the last one (the
+   * most recent, at the bottom of the queue), or nullptr if there is no
+   * message.
+   *  \note The memory of all skipped messages is freed with "delete".
+   *  \note The user MUST call "delete" with the returned object after use.
+   */
+  inline T* get_lastest_purge_old()
+  {
+    std::lock_guard<std::mutex> lock(m_csQueue);
+    if (m_msgs.empty())
+      return nullptr;
+    else
+    {
+      for (;;)
+      {
+        T* ret = m_msgs.front();
+        m_msgs.pop();
+        if (m_msgs.empty())
+          return ret;
+        else
+          delete ret;
+      }
+    }
+  }
 
-	/** Return true if there are no messages. */
-	bool empty() const
-	{
-		std::lock_guard<std::mutex> lock(m_csQueue);
-		return m_msgs.empty();
-	}
+  /** Return true if there are no messages. */
+  bool empty() const
+  {
+    std::lock_guard<std::mutex> lock(m_csQueue);
+    return m_msgs.empty();
+  }
 
-	/** Return the number of queued messages. */
-	size_t size() const
-	{
-		std::lock_guard<std::mutex> lock(m_csQueue);
-		return m_msgs.size();
-	}
+  /** Return the number of queued messages. */
+  size_t size() const
+  {
+    std::lock_guard<std::mutex> lock(m_csQueue);
+    return m_msgs.size();
+  }
 
-};	// End of class def.
+};  // End of class def.
 }  // namespace mrpt::containers

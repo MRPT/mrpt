@@ -23,26 +23,26 @@ IMPLEMENTS_SERIALIZABLE(CObservationComment, CObservation, mrpt::obs)
 uint8_t CObservationComment::serializeGetVersion() const { return 1; }
 void CObservationComment::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	out << text << timestamp;
-	out << sensorLabel;	 // v1
+  out << text << timestamp;
+  out << sensorLabel;  // v1
 }
 
-void CObservationComment::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationComment::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	switch (version)
-	{
-		case 0:
-		case 1:
-			in >> text >> timestamp;
-			if (version >= 1) in >> sensorLabel;
-			break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	};
+  switch (version)
+  {
+    case 0:
+    case 1:
+      in >> text >> timestamp;
+      if (version >= 1) in >> sensorLabel;
+      break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
 }
 
 void CObservationComment::getDescriptionAsText(std::ostream& o) const
 {
-	CObservation::getDescriptionAsText(o);
-	o << "Comment content:\n'" << text << "'\n";
+  CObservation::getDescriptionAsText(o);
+  o << "Comment content:\n'" << text << "'\n";
 }

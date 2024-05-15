@@ -24,40 +24,46 @@ using namespace mrpt::math;
 namespace mrpt::math::detail
 {
 /* -------------------------------------------
-				 internal_kmeans
+         internal_kmeans
    ------------------------------------------- */
 template <>
 double internal_kmeans<double>(
-	[[maybe_unused]] const bool use_kmeansplusplus_method, const size_t nPoints,
-	const size_t k, const size_t dims, const double* points,
-	const size_t attempts, double* out_center, int* out_assignments)
+    [[maybe_unused]] const bool use_kmeansplusplus_method,
+    const size_t nPoints,
+    const size_t k,
+    const size_t dims,
+    const double* points,
+    const size_t attempts,
+    double* out_center,
+    int* out_assignments)
 {
-	return RunKMeans(
-		nPoints, k, dims, const_cast<double*>(points), attempts, out_center,
-		out_assignments);
+  return RunKMeans(
+      nPoints, k, dims, const_cast<double*>(points), attempts, out_center, out_assignments);
 }
 
 template <>
 double internal_kmeans<float>(
-	[[maybe_unused]] const bool use_kmeansplusplus_method, const size_t nPoints,
-	const size_t k, const size_t dims, const float* points,
-	const size_t attempts, float* out_center, int* out_assignments)
+    [[maybe_unused]] const bool use_kmeansplusplus_method,
+    const size_t nPoints,
+    const size_t k,
+    const size_t dims,
+    const float* points,
+    const size_t attempts,
+    float* out_center,
+    int* out_assignments)
 {
-	std::vector<double> points_d(nPoints * dims);
-	std::vector<double> centers_d(k * dims);
-	// Convert: float -> double
-	for (size_t i = 0; i < nPoints * dims; i++)
-		points_d[i] = double(points[i]);
+  std::vector<double> points_d(nPoints * dims);
+  std::vector<double> centers_d(k * dims);
+  // Convert: float -> double
+  for (size_t i = 0; i < nPoints * dims; i++) points_d[i] = double(points[i]);
 
-	const double ret = RunKMeans(
-		nPoints, k, dims, &points_d[0], attempts, &centers_d[0],
-		out_assignments);
+  const double ret =
+      RunKMeans(nPoints, k, dims, &points_d[0], attempts, &centers_d[0], out_assignments);
 
-	// Convert: double -> float
-	if (out_center)
-		for (size_t i = 0; i < k * dims; i++)
-			out_center[i] = float(centers_d[i]);
+  // Convert: double -> float
+  if (out_center)
+    for (size_t i = 0; i < k * dims; i++) out_center[i] = float(centers_d[i]);
 
-	return ret;
+  return ret;
 }
 }  // namespace mrpt::math::detail

@@ -22,16 +22,15 @@ namespace mrpt::system
  * \ingroup mrpt_system_grp
  * @{ */
 
-#define ASSERT_FILE_EXISTS_(FIL)                                               \
-	ASSERTMSG_(                                                                \
-		mrpt::system::fileExists(FIL),                                         \
-		std::string("Assert file existence failed: ") + ::std::string(FIL))
+#define ASSERT_FILE_EXISTS_(FIL)     \
+  ASSERTMSG_(                        \
+      mrpt::system::fileExists(FIL), \
+      std::string("Assert file existence failed: ") + ::std::string(FIL))
 
-#define ASSERT_DIRECTORY_EXISTS_(DIR)                                          \
-	ASSERTMSG_(                                                                \
-		mrpt::system::directoryExists(DIR),                                    \
-		std::string("Assert directory existence failed: ") +                   \
-			::std::string(DIR))
+#define ASSERT_DIRECTORY_EXISTS_(DIR)     \
+  ASSERTMSG_(                             \
+      mrpt::system::directoryExists(DIR), \
+      std::string("Assert directory existence failed: ") + ::std::string(DIR))
 
 /** Returns the name of a proposed temporary file name */
 std::string getTempFileName();
@@ -71,16 +70,16 @@ void deleteFiles(const std::string& s);
  * is passed in error_msg, a description of the error is saved there.
  */
 bool renameFile(
-	const std::string& oldFileName, const std::string& newFileName,
-	std::string* error_msg = nullptr);
+    const std::string& oldFileName,
+    const std::string& newFileName,
+    std::string* error_msg = nullptr);
 
 /** Delete all the files in a given directory (nothing done if directory does
  * not exists, or path is a file).
  * \sa deleteFile
  * \return true on success
  */
-bool deleteFilesInDirectory(
-	const std::string& s, bool deleteDirectoryAsWell = false);
+bool deleteFilesInDirectory(const std::string& s, bool deleteDirectoryAsWell = false);
 
 /** Extract just the name (without extension) of a filename from a complete path
  * plus name plus extension.
@@ -96,8 +95,7 @@ std::string extractFileName(const std::string& filePath);
  *   ends in ".gz", for example, for "foo.map.gz", this will return "map".
  * \sa extractFileName,extractFileDirectory
  */
-std::string extractFileExtension(
-	const std::string& filePath, bool ignore_gz = false);
+std::string extractFileExtension(const std::string& filePath, bool ignore_gz = false);
 
 /** Extract the whole path (the directory) of a filename from a complete path
  * plus name plus extension.
@@ -122,7 +120,7 @@ bool directoryExists(const std::string& fileName);
  *  Invalid chars are: '<','>',':','"','/','\\','|','?','*'
  */
 std::string fileNameStripInvalidChars(
-	const std::string& filename, const char replacement_to_invalid_chars = '_');
+    const std::string& filename, const char replacement_to_invalid_chars = '_');
 
 /** Replace the filename extension by another one.
  *  Example:
@@ -130,8 +128,7 @@ std::string fileNameStripInvalidChars(
  *     fileNameChangeExtension("cool.txt","bar") // -> "cool.bar"
  *   \endcode
  */
-std::string fileNameChangeExtension(
-	const std::string& filename, const std::string& newExtension);
+std::string fileNameChangeExtension(const std::string& filename, const std::string& newExtension);
 
 /** Return the size of the given file, or size_t(-1) if some error is found
  * accessing that file.  */
@@ -153,8 +150,7 @@ std::string filePathSeparatorsToNative(const std::string& filePath);
  * \note (In MRPT 2.5.0, the copyAttributes param was removed)
  */
 bool copyFile(
-	const std::string& sourceFile, const std::string& targetFile,
-	std::string* outErrStr = nullptr);
+    const std::string& sourceFile, const std::string& targetFile, std::string* outErrStr = nullptr);
 
 /** Portable version of std::filesystem::absolute() and canonical()
  *
@@ -170,8 +166,7 @@ bool copyFile(
  *
  *  \note (New in MRPT 2.5.0)
  */
-std::string toAbsolutePath(
-	const std::string& path, bool resolveToCanonical = false);
+std::string toAbsolutePath(const std::string& path, bool resolveToCanonical = false);
 
 /** Portable version of std::filesystem::path::append(), with Python-like name.
  *

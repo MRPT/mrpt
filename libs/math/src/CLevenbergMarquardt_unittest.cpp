@@ -14,6 +14,6 @@
 
 TEST(LevMarq, optimizeTest)
 {
-	TestLevMarq();
-	EXPECT_LT(levmarq_final_error, 1e-2);
+  TestLevMarq();
+  EXPECT_LT(levmarq_final_error, 1e-2);
 }

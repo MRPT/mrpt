@@ -10,8 +10,8 @@
 
 #ifndef MRPT_NO_WARN_BIG_HDR
 MRPT_WARNING(
-	"Including <mrpt/obs.h> makes compilation much slower, consider including "
-	"only what you need (define MRPT_NO_WARN_BIG_HDR to disable this warning)")
+    "Including <mrpt/obs.h> makes compilation much slower, consider including "
+    "only what you need (define MRPT_NO_WARN_BIG_HDR to disable this warning)")
 #endif
 
 #include <mrpt/config.h>

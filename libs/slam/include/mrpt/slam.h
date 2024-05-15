@@ -10,15 +10,15 @@
 
 #ifndef MRPT_NO_WARN_BIG_HDR
 MRPT_WARNING(
-	"Including <mrpt/slam.h> makes compilation much slower, consider including "
-	"only what you need (define MRPT_NO_WARN_BIG_HDR to disable this warning)")
+    "Including <mrpt/slam.h> makes compilation much slower, consider including "
+    "only what you need (define MRPT_NO_WARN_BIG_HDR to disable this warning)")
 #endif
 
 #include <mrpt/config.h>
 
 // Maps:
 #include <mrpt/maps.h>
-#include <mrpt/maps/CMultiMetricMap.h>	// This class is in [mrpt-slam]
+#include <mrpt/maps/CMultiMetricMap.h>     // This class is in [mrpt-slam]
 #include <mrpt/maps/CMultiMetricMapPDF.h>  // This class is in [mrpt-slam]
 
 // Map Building algorithms:

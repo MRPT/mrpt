@@ -14,9 +14,9 @@
 
 class gridmapSimulApp : public wxApp
 {
-   public:
-	bool OnInit() override;
-	int OnExit() override;
+ public:
+  bool OnInit() override;
+  int OnExit() override;
 };
 
-#endif	// gridmapSimulAPP_H
+#endif  // gridmapSimulAPP_H

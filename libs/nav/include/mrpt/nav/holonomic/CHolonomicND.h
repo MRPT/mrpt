@@ -52,110 +52,113 @@ class CLogFileRecord_ND;
  */
 class CHolonomicND : public CAbstractHolonomicReactiveMethod
 {
-	DEFINE_SERIALIZABLE(CHolonomicND, mrpt::nav)
-   public:
-	/**  Initialize the parameters of the navigator, from some configuration
-	 * file, or default values if set to nullptr */
-	CHolonomicND(const mrpt::config::CConfigFileBase* INI_FILE = nullptr);
+  DEFINE_SERIALIZABLE(CHolonomicND, mrpt::nav)
+ public:
+  /**  Initialize the parameters of the navigator, from some configuration
+   * file, or default values if set to nullptr */
+  CHolonomicND(const mrpt::config::CConfigFileBase* INI_FILE = nullptr);
 
-	// See base class docs
-	void navigate(const NavInput& ni, NavOutput& no) override;
+  // See base class docs
+  void navigate(const NavInput& ni, NavOutput& no) override;
 
-	/** The structure used to store a detected gap in obstacles. */
-	struct TGap
-	{
-		unsigned int ini;
-		unsigned int end;
-		double maxDistance;
-		double minDistance;
-		unsigned int representative_sector;
-	};
+  /** The structure used to store a detected gap in obstacles. */
+  struct TGap
+  {
+    unsigned int ini;
+    unsigned int end;
+    double maxDistance;
+    double minDistance;
+    unsigned int representative_sector;
+  };
 
-	using TGapArray = std::vector<TGap>;
+  using TGapArray = std::vector<TGap>;
 
-	/** The set of posible situations for each trajectory.
-	 * (mrpt::typemeta::TEnumType works with this enum) */
-	enum TSituations
-	{
-		SITUATION_TARGET_DIRECTLY = 1,
-		SITUATION_SMALL_GAP,
-		SITUATION_WIDE_GAP,
-		SITUATION_NO_WAY_FOUND
-	};
+  /** The set of posible situations for each trajectory.
+   * (mrpt::typemeta::TEnumType works with this enum) */
+  enum TSituations
+  {
+    SITUATION_TARGET_DIRECTLY = 1,
+    SITUATION_SMALL_GAP,
+    SITUATION_WIDE_GAP,
+    SITUATION_NO_WAY_FOUND
+  };
 
-	/**  Initialize the parameters of the navigator. */
-	void initialize(const mrpt::config::CConfigFileBase& INI_FILE) override;
-	void saveConfigFile(mrpt::config::CConfigFileBase& c)
-		const override;	 // See base class docs
+  /**  Initialize the parameters of the navigator. */
+  void initialize(const mrpt::config::CConfigFileBase& INI_FILE) override;
+  void saveConfigFile(mrpt::config::CConfigFileBase& c) const override;  // See base class docs
 
-	/** Algorithm options */
-	struct TOptions : public mrpt::config::CLoadableOptions
-	{
-		double TOO_CLOSE_OBSTACLE{0.15}, WIDE_GAP_SIZE_PERCENT{0.25},
-			RISK_EVALUATION_SECTORS_PERCENT{0.10};
-		double RISK_EVALUATION_DISTANCE{0.4},
-			MAX_SECTOR_DIST_FOR_D2_PERCENT{0.25};
-		double TARGET_SLOW_APPROACHING_DISTANCE{0.60};
-		/** Vector of 4 weights: [0]=Free space, [1]=Dist. in sectors,
-		 * [2]=Closer to target (Euclidean), [3]=Hysteresis */
-		std::vector<double> factorWeights;
+  /** Algorithm options */
+  struct TOptions : public mrpt::config::CLoadableOptions
+  {
+    double TOO_CLOSE_OBSTACLE{0.15}, WIDE_GAP_SIZE_PERCENT{0.25},
+        RISK_EVALUATION_SECTORS_PERCENT{0.10};
+    double RISK_EVALUATION_DISTANCE{0.4}, MAX_SECTOR_DIST_FOR_D2_PERCENT{0.25};
+    double TARGET_SLOW_APPROACHING_DISTANCE{0.60};
+    /** Vector of 4 weights: [0]=Free space, [1]=Dist. in sectors,
+     * [2]=Closer to target (Euclidean), [3]=Hysteresis */
+    std::vector<double> factorWeights;
 
-		TOptions();
-		void loadFromConfigFile(
-			const mrpt::config::CConfigFileBase& source,
-			const std::string& section) override;  // See base docs
-		void saveToConfigFile(
-			mrpt::config::CConfigFileBase& cfg,
-			const std::string& section) const override;	 // See base docs
-	};
+    TOptions();
+    void loadFromConfigFile(
+        const mrpt::config::CConfigFileBase& source,
+        const std::string& section) override;  // See base docs
+    void saveToConfigFile(
+        mrpt::config::CConfigFileBase& cfg,
+        const std::string& section) const override;  // See base docs
+  };
 
-	/** Parameters of the algorithm (can be set manually or loaded from
-	 * CHolonomicND::initialize or options.loadFromConfigFile(), etc.) */
-	TOptions options;
+  /** Parameters of the algorithm (can be set manually or loaded from
+   * CHolonomicND::initialize or options.loadFromConfigFile(), etc.) */
+  TOptions options;
 
-	double getTargetApproachSlowDownDistance() const override
-	{
-		return options.TARGET_SLOW_APPROACHING_DISTANCE;
-	}
-	void setTargetApproachSlowDownDistance(const double dist) override
-	{
-		options.TARGET_SLOW_APPROACHING_DISTANCE = dist;
-	}
+  double getTargetApproachSlowDownDistance() const override
+  {
+    return options.TARGET_SLOW_APPROACHING_DISTANCE;
+  }
+  void setTargetApproachSlowDownDistance(const double dist) override
+  {
+    options.TARGET_SLOW_APPROACHING_DISTANCE = dist;
+  }
 
-   private:
-	unsigned int m_last_selected_sector;
+ private:
+  unsigned int m_last_selected_sector;
 
-	unsigned int direction2sector(const double a, const unsigned int N);
+  unsigned int direction2sector(const double a, const unsigned int N);
 
-	/**  Find gaps in the obtacles.
-	 */
-	void gapsEstimator(
-		const std::vector<double>& obstacles,
-		const mrpt::math::TPoint2D& in_target, TGapArray& gaps);
+  /**  Find gaps in the obtacles.
+   */
+  void gapsEstimator(
+      const std::vector<double>& obstacles, const mrpt::math::TPoint2D& in_target, TGapArray& gaps);
 
-	/** Search the best gap.
-	 */
-	void searchBestGap(
-		const std::vector<double>& in_obstacles, const double in_maxObsRange,
-		const TGapArray& in_gaps, const mrpt::math::TPoint2D& in_target,
-		unsigned int& out_selDirection, double& out_selEvaluation,
-		TSituations& out_situation, double& out_riskEvaluation,
-		CLogFileRecord_ND& log);
+  /** Search the best gap.
+   */
+  void searchBestGap(
+      const std::vector<double>& in_obstacles,
+      const double in_maxObsRange,
+      const TGapArray& in_gaps,
+      const mrpt::math::TPoint2D& in_target,
+      unsigned int& out_selDirection,
+      double& out_selEvaluation,
+      TSituations& out_situation,
+      double& out_riskEvaluation,
+      CLogFileRecord_ND& log);
 
-	/** Fills in the representative sector field in the gap structure:
-	 */
-	void calcRepresentativeSectorForGap(
-		TGap& gap, const mrpt::math::TPoint2D& target,
-		const std::vector<double>& obstacles);
+  /** Fills in the representative sector field in the gap structure:
+   */
+  void calcRepresentativeSectorForGap(
+      TGap& gap, const mrpt::math::TPoint2D& target, const std::vector<double>& obstacles);
 
-	/** Evaluate each gap:
-	 */
-	void evaluateGaps(
-		const std::vector<double>& in_obstacles, const double in_maxObsRange,
-		const TGapArray& in_gaps, const unsigned int TargetSector,
-		const float TargetDist, std::vector<double>& out_gaps_evaluation);
+  /** Evaluate each gap:
+   */
+  void evaluateGaps(
+      const std::vector<double>& in_obstacles,
+      const double in_maxObsRange,
+      const TGapArray& in_gaps,
+      const unsigned int TargetSector,
+      const float TargetDist,
+      std::vector<double>& out_gaps_evaluation);
 
-};	// end of CHolonomicND
+};  // end of CHolonomicND
 
 /** A class for storing extra information about the execution of
  *    CHolonomicND navigation.
@@ -163,17 +166,17 @@ class CHolonomicND : public CAbstractHolonomicReactiveMethod
  */
 class CLogFileRecord_ND : public CHolonomicLogFileRecord
 {
-	DEFINE_SERIALIZABLE(CLogFileRecord_ND, mrpt::nav)
+  DEFINE_SERIALIZABLE(CLogFileRecord_ND, mrpt::nav)
 
-   public:
-	/** Member data.
-	 */
-	std::vector<int> gaps_ini, gaps_end;
-	std::vector<double> gaps_eval;
-	int32_t selectedSector;
-	double evaluation;
-	double riskEvaluation;
-	CHolonomicND::TSituations situation;
+ public:
+  /** Member data.
+   */
+  std::vector<int> gaps_ini, gaps_end;
+  std::vector<double> gaps_eval;
+  int32_t selectedSector;
+  double evaluation;
+  double riskEvaluation;
+  CHolonomicND::TSituations situation;
 };
 
 /** @} */

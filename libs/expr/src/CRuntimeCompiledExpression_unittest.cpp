@@ -15,19 +15,18 @@ template class mrpt::CTraitsTest<mrpt::expr::CRuntimeCompiledExpression>;
 
 TEST(RuntimeCompiledExpression, SimpleTest)
 {
-	mrpt::expr::CRuntimeCompiledExpression expr;
-	std::map<std::string, double> vars;
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
 
-	EXPECT_FALSE(expr.is_compiled());
+  EXPECT_FALSE(expr.is_compiled());
 
-	vars["x"] = 5.0;
-	vars["y"] = 3.0;
-	expr.compile("x^2+x*y+1", vars);
+  vars["x"] = 5.0;
+  vars["y"] = 3.0;
+  expr.compile("x^2+x*y+1", vars);
 
-	EXPECT_TRUE(expr.is_compiled());
+  EXPECT_TRUE(expr.is_compiled());
 
-	EXPECT_NEAR(
-		expr.eval(), vars["x"] * vars["x"] + vars["x"] * vars["y"] + 1.0, 1e-9);
+  EXPECT_NEAR(expr.eval(), vars["x"] * vars["x"] + vars["x"] * vars["y"] + 1.0, 1e-9);
 }
 
 static double myNullary() { return 10.0; }
@@ -40,21 +39,19 @@ static double myDiff(double x, double y, double z) { return (y - x) / z; }
 
 TEST(RuntimeCompiledExpression, CustomFunctions)
 {
-	mrpt::expr::CRuntimeCompiledExpression expr;
-	std::map<std::string, double> vars;
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
 
-	expr.register_function("myNullary", myNullary);
-	expr.register_function("myNeg", myNeg);
-	expr.register_function("myAdd", myAdd);
-	expr.register_function("myDiff", myDiff);
+  expr.register_function("myNullary", myNullary);
+  expr.register_function("myNeg", myNeg);
+  expr.register_function("myAdd", myAdd);
+  expr.register_function("myDiff", myDiff);
 
-	vars["x"] = 5.0;
-	vars["y"] = 3.0;
-	expr.compile("1+myAdd(x,y) + myNullary() + myNeg(x) + myDiff(x,y,x)", vars);
+  vars["x"] = 5.0;
+  vars["y"] = 3.0;
+  expr.compile("1+myAdd(x,y) + myNullary() + myNeg(x) + myDiff(x,y,x)", vars);
 
-	EXPECT_NEAR(
-		expr.eval(),
-		1 + vars["x"] + vars["y"] + 10.0 - vars["x"] +
-			(vars["y"] - vars["x"]) / vars["x"],
-		1e-9);
+  EXPECT_NEAR(
+      expr.eval(),
+      1 + vars["x"] + vars["y"] + 10.0 - vars["x"] + (vars["y"] - vars["x"]) / vars["x"], 1e-9);
 }

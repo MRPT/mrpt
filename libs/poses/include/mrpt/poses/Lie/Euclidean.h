@@ -24,22 +24,22 @@ struct Euclidean;
 template <unsigned int N>
 struct EuclideanBase
 {
-	constexpr static size_t DOFs = N;
-	using tangent_vector = mrpt::math::CVectorFixedDouble<DOFs>;
+  constexpr static size_t DOFs = N;
+  using tangent_vector = mrpt::math::CVectorFixedDouble<DOFs>;
 };
 
 template <>
 struct Euclidean<2> : public EuclideanBase<2>
 {
-	using type = mrpt::poses::CPoint2D;
-	using light_type = mrpt::math::TPoint2D;
+  using type = mrpt::poses::CPoint2D;
+  using light_type = mrpt::math::TPoint2D;
 };
 
 template <>
 struct Euclidean<3> : public EuclideanBase<3>
 {
-	using type = mrpt::poses::CPoint3D;
-	using light_type = mrpt::math::TPoint3D;
+  using type = mrpt::poses::CPoint3D;
+  using light_type = mrpt::math::TPoint3D;
 };
 
 }  // namespace mrpt::poses::Lie

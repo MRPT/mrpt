@@ -18,6 +18,6 @@ namespace mrpt::serialization
  */
 inline void registerAllClasses_mrpt_serialization()
 {
-	// none
+  // none
 }
 }  // namespace mrpt::serialization

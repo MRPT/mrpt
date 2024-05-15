@@ -19,38 +19,38 @@ namespace mrpt
 template <class T>
 class LockHelper
 {
-	using Tnc = std::remove_const_t<T>;
+  using Tnc = std::remove_const_t<T>;
 
-   public:
-	LockHelper(const Tnc* l) : l_{const_cast<Tnc*>(l)} { l_->lock(); }
-	~LockHelper()
-	{
-		if (l_) l_->unlock();
-	}
+ public:
+  LockHelper(const Tnc* l) : l_{const_cast<Tnc*>(l)} { l_->lock(); }
+  ~LockHelper()
+  {
+    if (l_) l_->unlock();
+  }
 
-	LockHelper(const LockHelper& o) = delete;
-	LockHelper& operator=(const LockHelper& o) = delete;
+  LockHelper(const LockHelper& o) = delete;
+  LockHelper& operator=(const LockHelper& o) = delete;
 
-	LockHelper(LockHelper&& o) : l_{o.l} { o.l = nullptr; }
-	LockHelper& operator=(LockHelper&& o)
-	{
-		l_ = o.l;
-		o.l = nullptr;
-		return *this;
-	}
+  LockHelper(LockHelper&& o) : l_{o.l} { o.l = nullptr; }
+  LockHelper& operator=(LockHelper&& o)
+  {
+    l_ = o.l;
+    o.l = nullptr;
+    return *this;
+  }
 
-	/** Can be used to unlock the mutex before this object dtor
-	 * \note [New in MRPT 2.1.5]
-	 */
-	void unlock()
-	{
-		if (!l_) return;
-		l_->unlock();
-		l_ = nullptr;
-	}
+  /** Can be used to unlock the mutex before this object dtor
+   * \note [New in MRPT 2.1.5]
+   */
+  void unlock()
+  {
+    if (!l_) return;
+    l_->unlock();
+    l_ = nullptr;
+  }
 
-   private:
-	Tnc* l_{nullptr};
+ private:
+  Tnc* l_{nullptr};
 };
 
 /** Syntactic sugar to easily create a locker to any kind of std::mutex
@@ -59,6 +59,6 @@ class LockHelper
 template <class T>
 LockHelper<T> lockHelper(T& t)
 {
-	return LockHelper<T>(&t);
+  return LockHelper<T>(&t);
 }
 }  // namespace mrpt

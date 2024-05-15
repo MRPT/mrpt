@@ -13,14 +13,14 @@
 namespace mrpt::opengl
 {
 /** @name Functions to obtain a 3D representation of a pose PDF
-	@{  */
+  @{  */
 
 /** Returns a representation of a the PDF - this is just an auxiliary function,
  * it's more natural to call mrpt::poses::CPosePDF::getAs3DObject     */
 template <class POSE_PDF>
 inline CSetOfObjects::Ptr posePDF2opengl(const POSE_PDF& o)
 {
-	return CSetOfObjects::posePDF2opengl(o);
+  return CSetOfObjects::posePDF2opengl(o);
 }
 
 /**  @}  */

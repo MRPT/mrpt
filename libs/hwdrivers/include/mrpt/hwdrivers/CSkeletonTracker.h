@@ -46,88 +46,84 @@ namespace mrpt::hwdrivers
   */  // clang-format on
 class CSkeletonTracker : public hwdrivers::CGenericSensor
 {
-	enum JOINT
-	{
-		HEAD = 0,
-		NECK,
-		TORSO,
-		LEFT_SHOULDER,
-		LEFT_ELBOW,
-		LEFT_HAND,
-		LEFT_HIP,
-		LEFT_KNEE,
-		LEFT_FOOT,
-		RIGHT_SHOULDER,
-		RIGHT_ELBOW,
-		RIGHT_HAND,
-		RIGHT_HIP,
-		RIGHT_KNEE,
-		RIGHT_FOOT,
-		NONE
-	};
+  enum JOINT
+  {
+    HEAD = 0,
+    NECK,
+    TORSO,
+    LEFT_SHOULDER,
+    LEFT_ELBOW,
+    LEFT_HAND,
+    LEFT_HIP,
+    LEFT_KNEE,
+    LEFT_FOOT,
+    RIGHT_SHOULDER,
+    RIGHT_ELBOW,
+    RIGHT_HAND,
+    RIGHT_HIP,
+    RIGHT_KNEE,
+    RIGHT_FOOT,
+    NONE
+  };
 
 #define NUM_JOINTS 15  // number of joints
-#define NUM_LINES 14  // number of lines joining joints
+#define NUM_LINES  14  // number of lines joining joints
 
-	DEFINE_GENERIC_SENSOR(CSkeletonTracker)
-   protected:
-	/** Opaque pointers to specific NITE data */
-	void* /* nite::SkeletonState* */ m_skeletons_ptr{nullptr};
-	void* /* nite::userTracker* */ m_userTracker_ptr{nullptr};
+  DEFINE_GENERIC_SENSOR(CSkeletonTracker)
+ protected:
+  /** Opaque pointers to specific NITE data */
+  void* /* nite::SkeletonState* */ m_skeletons_ptr{nullptr};
+  void* /* nite::userTracker* */ m_userTracker_ptr{nullptr};
 
-	/** Timestamp management */
-	uint32_t m_timeStartUI{};
-	mrpt::system::TTimeStamp m_timeStartTT;
+  /** Timestamp management */
+  uint32_t m_timeStartUI{};
+  mrpt::system::TTimeStamp m_timeStartTT;
 
-	/** Sensor pose */
-	mrpt::poses::CPose3D m_sensorPose;
-	/** Number of detected users */
-	int m_nUsers{0};
+  /** Sensor pose */
+  mrpt::poses::CPose3D m_sensorPose;
+  /** Number of detected users */
+  int m_nUsers{0};
 
-	/** Preview window management */
-	bool m_showPreview{false};
-	mrpt::gui::CDisplayWindow3D::Ptr m_win;
-	/** Lines between joints */
-	std::vector<std::pair<JOINT, JOINT>> m_linesToPlot;
-	/** Joint angles when no skeleton has been detected */
-	std::vector<double> m_joint_theta;
+  /** Preview window management */
+  bool m_showPreview{false};
+  mrpt::gui::CDisplayWindow3D::Ptr m_win;
+  /** Lines between joints */
+  std::vector<std::pair<JOINT, JOINT>> m_linesToPlot;
+  /** Joint angles when no skeleton has been detected */
+  std::vector<double> m_joint_theta;
 
-	/** Timeout counter (for internal use only) */
-	unsigned int m_toutCounter{0};
+  /** Timeout counter (for internal use only) */
+  unsigned int m_toutCounter{0};
 
-	/** See the class documentation at the top for expected parameters */
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection) override;
+  /** See the class documentation at the top for expected parameters */
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection) override;
 
-	/** Displays real-time info for the captured skeleton */
-	void processPreview(const mrpt::obs::CObservationSkeleton::Ptr& obs);
-	void processPreviewNone();
+  /** Displays real-time info for the captured skeleton */
+  void processPreview(const mrpt::obs::CObservationSkeleton::Ptr& obs);
+  void processPreviewNone();
 
-   public:
-	/** Constructor
-	 */
-	CSkeletonTracker();
+ public:
+  /** Constructor
+   */
+  CSkeletonTracker();
 
-	/** Destructor
-	 */
-	~CSkeletonTracker() override;
+  /** Destructor
+   */
+  ~CSkeletonTracker() override;
 
-	/** This method will be invoked at a minimum rate of "process_rate" (Hz)
-	 *  \exception This method must throw an exception with a descriptive
-	 * message if some critical error is found.
-	 */
-	void doProcess() override;
+  /** This method will be invoked at a minimum rate of "process_rate" (Hz)
+   *  \exception This method must throw an exception with a descriptive
+   * message if some critical error is found.
+   */
+  void doProcess() override;
 
-	/** Connects to the PrimeSense camera and prepares it to get skeleton data
-	 */
-	void initialize() override;
+  /** Connects to the PrimeSense camera and prepares it to get skeleton data
+   */
+  void initialize() override;
 
-	/** Set/unset preview */
-	inline void setPreview(const bool setPreview = true)
-	{
-		m_showPreview = setPreview;
-	}
-};	// end of class
+  /** Set/unset preview */
+  inline void setPreview(const bool setPreview = true) { m_showPreview = setPreview; }
+};  // end of class
 
 }  // namespace mrpt::hwdrivers

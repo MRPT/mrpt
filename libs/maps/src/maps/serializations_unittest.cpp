@@ -26,8 +26,7 @@ using namespace mrpt::io;
 using namespace mrpt::serialization;
 using namespace std;
 
-#define TEST_CLASS_MOVE_COPY_CTORS(_classname)                                 \
-	template class mrpt::CTraitsTest<_classname>
+#define TEST_CLASS_MOVE_COPY_CTORS(_classname) template class mrpt::CTraitsTest<_classname>
 
 TEST_CLASS_MOVE_COPY_CTORS(CBeacon);
 TEST_CLASS_MOVE_COPY_CTORS(CBeaconMap);
@@ -58,54 +57,53 @@ TEST_CLASS_MOVE_COPY_CTORS(CPlanarLaserScan);
 // bugs:
 TEST(SerializeTestMaps, WriteReadToMem)
 {
-	const mrpt::rtti::TRuntimeClassId* lstClasses[] = {
-		CLASS_ID(CBeacon),
-		CLASS_ID(CBeaconMap),
-		CLASS_ID(CColouredPointsMap),
-		CLASS_ID(CGasConcentrationGridMap2D),
-		CLASS_ID(CWirelessPowerGridMap2D),
-		CLASS_ID(CHeightGridMap2D),
-		CLASS_ID(CReflectivityGridMap2D),
-		CLASS_ID(COccupancyGridMap2D),
-		CLASS_ID(COccupancyGridMap3D),
-		CLASS_ID(CSimplePointsMap),
-		CLASS_ID(CRandomFieldGridMap3D),
-		CLASS_ID(CWeightedPointsMap),
-		CLASS_ID(CPointsMapXYZI),
-		CLASS_ID(COctoMap),
-		CLASS_ID(CColouredOctoMap),
-		CLASS_ID(CVoxelMap),
-		CLASS_ID(CVoxelMapRGB),
-		// obs:
-		CLASS_ID(CObservationPointCloud),
-		CLASS_ID(CObservationRotatingScan),
-		// opengl:
-		CLASS_ID(CAngularObservationMesh),
-		CLASS_ID(CPlanarLaserScan),
-	};
+  const mrpt::rtti::TRuntimeClassId* lstClasses[] = {
+      CLASS_ID(CBeacon),
+      CLASS_ID(CBeaconMap),
+      CLASS_ID(CColouredPointsMap),
+      CLASS_ID(CGasConcentrationGridMap2D),
+      CLASS_ID(CWirelessPowerGridMap2D),
+      CLASS_ID(CHeightGridMap2D),
+      CLASS_ID(CReflectivityGridMap2D),
+      CLASS_ID(COccupancyGridMap2D),
+      CLASS_ID(COccupancyGridMap3D),
+      CLASS_ID(CSimplePointsMap),
+      CLASS_ID(CRandomFieldGridMap3D),
+      CLASS_ID(CWeightedPointsMap),
+      CLASS_ID(CPointsMapXYZI),
+      CLASS_ID(COctoMap),
+      CLASS_ID(CColouredOctoMap),
+      CLASS_ID(CVoxelMap),
+      CLASS_ID(CVoxelMapRGB),
+      // obs:
+      CLASS_ID(CObservationPointCloud),
+      CLASS_ID(CObservationRotatingScan),
+      // opengl:
+      CLASS_ID(CAngularObservationMesh),
+      CLASS_ID(CPlanarLaserScan),
+  };
 
-	for (auto& lstClasse : lstClasses)
-	{
-		try
-		{
-			CMemoryStream buf;
-			auto arch = mrpt::serialization::archiveFrom(buf);
-			{
-				auto o = mrpt::ptr_cast<CSerializable>::from(
-					lstClasse->createObject());
-				arch << *o;
-				o.reset();
-			}
+  for (auto& lstClasse : lstClasses)
+  {
+    try
+    {
+      CMemoryStream buf;
+      auto arch = mrpt::serialization::archiveFrom(buf);
+      {
+        auto o = mrpt::ptr_cast<CSerializable>::from(lstClasse->createObject());
+        arch << *o;
+        o.reset();
+      }
 
-			CSerializable::Ptr recons;
-			buf.Seek(0);
-			arch >> recons;
-		}
-		catch (const std::exception& e)
-		{
-			GTEST_FAIL() << "Exception during serialization test for class '"
-						 << lstClasse->className << "':\n"
-						 << e.what() << endl;
-		}
-	}
+      CSerializable::Ptr recons;
+      buf.Seek(0);
+      arch >> recons;
+    }
+    catch (const std::exception& e)
+    {
+      GTEST_FAIL() << "Exception during serialization test for class '" << lstClasse->className
+                   << "':\n"
+                   << e.what() << endl;
+    }
+  }
 }

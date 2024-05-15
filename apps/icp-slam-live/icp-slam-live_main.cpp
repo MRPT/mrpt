@@ -8,13 +8,13 @@
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-	APPLICATION: ICP-based SLAM, live version
-	FILE: icp-slam-live_main.cpp
-	AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
-	See example config files in
-	 https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files/icp-slam-live/
-	or docs in
-	 https://www.mrpt.org/list-of-mrpt-apps/application-icp-slam-live/
+  APPLICATION: ICP-based SLAM, live version
+  FILE: icp-slam-live_main.cpp
+  AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
+  See example config files in
+   https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files/icp-slam-live/
+  or docs in
+   https://www.mrpt.org/list-of-mrpt-apps/application-icp-slam-live/
   ---------------------------------------------------------------*/
 
 #include <mrpt/apps/ICP_SLAM_App.h>
@@ -23,19 +23,19 @@
 
 int main(int argc, char** argv)
 {
-	try
-	{
-		mrpt::apps::ICP_SLAM_App_Live app;
+  try
+  {
+    mrpt::apps::ICP_SLAM_App_Live app;
 
-		app.initialize(argc, argv);
-		app.run();
+    app.initialize(argc, argv);
+    app.run();
 
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << mrpt::exception_to_str(e);
-		mrpt::system::pause();
-		return -1;
-	}
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << mrpt::exception_to_str(e);
+    mrpt::system::pause();
+    return -1;
+  }
 }

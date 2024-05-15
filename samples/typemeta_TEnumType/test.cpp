@@ -17,9 +17,9 @@
 // Example declaration of "enum class"
 enum class TestColors
 {
-	Black = 0,
-	Gray = 7,
-	White = 15
+  Black = 0,
+  Gray = 7,
+  White = 15
 };
 
 MRPT_ENUM_TYPE_BEGIN(TestColors)
@@ -31,10 +31,10 @@ MRPT_ENUM_TYPE_END()
 // Example declaration of plain enum
 enum Directions
 {
-	North,
-	East,
-	South,
-	West
+  North,
+  East,
+  South,
+  West
 };
 // Example declaration of "enum class"
 MRPT_ENUM_TYPE_BEGIN(Directions)
@@ -46,31 +46,27 @@ MRPT_ENUM_TYPE_END()
 
 void Test_EnumType()
 {
-	using namespace std;
-	using namespace mrpt::typemeta;
+  using namespace std;
+  using namespace mrpt::typemeta;
 
-	cout << "White => " << (int)TEnumType<TestColors>::name2value("White")
-		 << endl;
-	cout << "Black => " << (int)TEnumType<TestColors>::name2value("Black")
-		 << endl;
-	cout << "Gray  => " << (int)TEnumType<TestColors>::name2value("Gray")
-		 << endl;
+  cout << "White => " << (int)TEnumType<TestColors>::name2value("White") << endl;
+  cout << "Black => " << (int)TEnumType<TestColors>::name2value("Black") << endl;
+  cout << "Gray  => " << (int)TEnumType<TestColors>::name2value("Gray") << endl;
 
-	cout << "7    <= " << TEnumType<TestColors>::value2name(TestColors(7))
-		 << endl;
+  cout << "7    <= " << TEnumType<TestColors>::value2name(TestColors(7)) << endl;
 }
 //! [example]
 
 int main(int argc, char** argv)
 {
-	try
-	{
-		Test_EnumType();
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "MRPT error: " << e.what() << std::endl;
-		return -1;
-	}
+  try
+  {
+    Test_EnumType();
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << e.what() << std::endl;
+    return -1;
+  }
 }

@@ -23,16 +23,16 @@ namespace mrpt::math
  */
 struct LowPassFilter_IIR1
 {
-	LowPassFilter_IIR1(double alpha = 0.5, double y_k_minus_1 = .0);
-	/** Processes one input sample, updates the filter state and return the
-	 * filtered value. */
-	double filter(double x);
-	double getLastOutput() const;
-	/** See equation in LowPassFilter_IIR1 */
-	double alpha;
+  LowPassFilter_IIR1(double alpha = 0.5, double y_k_minus_1 = .0);
+  /** Processes one input sample, updates the filter state and return the
+   * filtered value. */
+  double filter(double x);
+  double getLastOutput() const;
+  /** See equation in LowPassFilter_IIR1 */
+  double alpha;
 
-   private:
-	double m_y_km1;
+ private:
+  double m_y_km1;
 };
 
 /** @} */  // end grouping filtering_grp

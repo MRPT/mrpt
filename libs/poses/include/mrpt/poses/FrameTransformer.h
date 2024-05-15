@@ -18,10 +18,10 @@ namespace mrpt::poses
 {
 enum FrameLookUpStatus
 {
-	LKUP_GOOD = 0,
-	LKUP_UNKNOWN_FRAME,
-	LKUP_NO_CONNECTIVITY,
-	LKUP_EXTRAPOLATION_ERROR
+  LKUP_GOOD = 0,
+  LKUP_UNKNOWN_FRAME,
+  LKUP_NO_CONNECTIVITY,
+  LKUP_EXTRAPOLATION_ERROR
 };
 
 /** Virtual base class for interfaces to a [ROS
@@ -49,36 +49,38 @@ enum FrameLookUpStatus
 template <int DIM>
 class FrameTransformerInterface
 {
-   public:
-	/** This will be mapped to CPose2D (DIM=2) or CPose3D (DIM=3) */
-	using pose_t = typename Lie::SE<DIM>::type;
-	/** This will be mapped to mrpt::math::TPose2D (DIM=2) or
-	 * mrpt::math::TPose3D (DIM=3) */
-	using light_type = typename Lie::SE<DIM>::light_type;
+ public:
+  /** This will be mapped to CPose2D (DIM=2) or CPose3D (DIM=3) */
+  using pose_t = typename Lie::SE<DIM>::type;
+  /** This will be mapped to mrpt::math::TPose2D (DIM=2) or
+   * mrpt::math::TPose3D (DIM=3) */
+  using light_type = typename Lie::SE<DIM>::light_type;
 
-	FrameTransformerInterface();
-	virtual ~FrameTransformerInterface();
+  FrameTransformerInterface();
+  virtual ~FrameTransformerInterface();
 
-	/** Publish a time-stampped transform between two frames */
-	virtual void sendTransform(
-		const std::string& parent_frame, const std::string& child_frame,
-		const pose_t& child_wrt_parent,
-		const mrpt::system::TTimeStamp& timestamp = mrpt::Clock::now()) = 0;
+  /** Publish a time-stampped transform between two frames */
+  virtual void sendTransform(
+      const std::string& parent_frame,
+      const std::string& child_frame,
+      const pose_t& child_wrt_parent,
+      const mrpt::system::TTimeStamp& timestamp = mrpt::Clock::now()) = 0;
 
-	/** Queries the current pose of `target_frame` wrt ("as seen from")
-	 * `source_frame`.
-	 * It tries to return the pose at the given timepoint, unless it is
-	 * INVALID_TIMESTAMP (default),
-	 * which means returning the latest know transformation.
-	 */
-	virtual FrameLookUpStatus lookupTransform(
-		const std::string& target_frame, const std::string& source_frame,
-		light_type& child_wrt_parent,
-		const mrpt::system::TTimeStamp query_time = INVALID_TIMESTAMP,
-		/** Timeout */
-		const double timeout_secs = .0) = 0;
+  /** Queries the current pose of `target_frame` wrt ("as seen from")
+   * `source_frame`.
+   * It tries to return the pose at the given timepoint, unless it is
+   * INVALID_TIMESTAMP (default),
+   * which means returning the latest know transformation.
+   */
+  virtual FrameLookUpStatus lookupTransform(
+      const std::string& target_frame,
+      const std::string& source_frame,
+      light_type& child_wrt_parent,
+      const mrpt::system::TTimeStamp query_time = INVALID_TIMESTAMP,
+      /** Timeout */
+      const double timeout_secs = .0) = 0;
 
-};	// End of class def.
+};  // End of class def.
 
 /** See docs in FrameTransformerInterface.
  *   This class is an implementation for standalone (non ROS) applications.
@@ -88,64 +90,63 @@ class FrameTransformerInterface
 template <int DIM>
 class FrameTransformer : public FrameTransformerInterface<DIM>
 {
-   public:
-	using base_t = FrameTransformerInterface<DIM>;
+ public:
+  using base_t = FrameTransformerInterface<DIM>;
 
-	FrameTransformer();
-	~FrameTransformer() override;
+  FrameTransformer();
+  ~FrameTransformer() override;
 
-	// See base docs
-	void sendTransform(
-		const std::string& parent_frame, const std::string& child_frame,
-		const typename base_t::pose_t& child_wrt_parent,
-		const mrpt::system::TTimeStamp& timestamp =
-			mrpt::Clock::now()) override;
-	// See base docs
-	FrameLookUpStatus lookupTransform(
-		const std::string& target_frame, const std::string& source_frame,
-		typename base_t::light_type& child_wrt_parent,
-		const mrpt::system::TTimeStamp query_time = INVALID_TIMESTAMP,
-		const double timeout_secs = .0) override;
+  // See base docs
+  void sendTransform(
+      const std::string& parent_frame,
+      const std::string& child_frame,
+      const typename base_t::pose_t& child_wrt_parent,
+      const mrpt::system::TTimeStamp& timestamp = mrpt::Clock::now()) override;
+  // See base docs
+  FrameLookUpStatus lookupTransform(
+      const std::string& target_frame,
+      const std::string& source_frame,
+      typename base_t::light_type& child_wrt_parent,
+      const mrpt::system::TTimeStamp query_time = INVALID_TIMESTAMP,
+      const double timeout_secs = .0) override;
 
-	/** \overload */
-	FrameLookUpStatus lookupTransform(
-		const std::string& target_frame, const std::string& source_frame,
-		typename base_t::pose_t& child_wrt_parent,
-		const mrpt::system::TTimeStamp query_time = INVALID_TIMESTAMP,
-		/** Timeout */
-		const double timeout_secs = .0)
-	{
-		typename base_t::light_type p;
-		FrameLookUpStatus ret = lookupTransform(
-			target_frame, source_frame, p, query_time, timeout_secs);
-		child_wrt_parent = typename base_t::pose_t(p);
-		return ret;
-	}
+  /** \overload */
+  FrameLookUpStatus lookupTransform(
+      const std::string& target_frame,
+      const std::string& source_frame,
+      typename base_t::pose_t& child_wrt_parent,
+      const mrpt::system::TTimeStamp query_time = INVALID_TIMESTAMP,
+      /** Timeout */
+      const double timeout_secs = .0)
+  {
+    typename base_t::light_type p;
+    FrameLookUpStatus ret =
+        lookupTransform(target_frame, source_frame, p, query_time, timeout_secs);
+    child_wrt_parent = typename base_t::pose_t(p);
+    return ret;
+  }
 
-   protected:
-	// double m_max_extrapolation_time;  //!< for extrapolation in the past or
-	// in the future [s]
-	// double m_max_age_pose_cache;      //!< Max age of stored poses [s]
+ protected:
+  // double m_max_extrapolation_time;  //!< for extrapolation in the past or
+  // in the future [s]
+  // double m_max_age_pose_cache;      //!< Max age of stored poses [s]
 
-	struct TF_TreeEdge
-	{
-		// TODO: CPose{2,3}DInterpolator?
-		typename base_t::pose_t pose;
-		mrpt::system::TTimeStamp timestamp;
+  struct TF_TreeEdge
+  {
+    // TODO: CPose{2,3}DInterpolator?
+    typename base_t::pose_t pose;
+    mrpt::system::TTimeStamp timestamp;
 
-		TF_TreeEdge(
-			const typename base_t::pose_t& pose_,
-			const mrpt::system::TTimeStamp& timestamp_)
-			: pose(pose_), timestamp(timestamp_)
-		{
-		}
-		TF_TreeEdge() : timestamp(INVALID_TIMESTAMP) {}
-	};
+    TF_TreeEdge(const typename base_t::pose_t& pose_, const mrpt::system::TTimeStamp& timestamp_) :
+        pose(pose_), timestamp(timestamp_)
+    {
+    }
+    TF_TreeEdge() : timestamp(INVALID_TIMESTAMP) {}
+  };
 
-	// map: [parent] -> { [child] -> relPoseChildWRTParent }
-	using pose_tree_t =
-		std::map<std::string, std::map<std::string, TF_TreeEdge>>;
-	pose_tree_t m_pose_edges_buffer;
+  // map: [parent] -> { [child] -> relPoseChildWRTParent }
+  using pose_tree_t = std::map<std::string, std::map<std::string, TF_TreeEdge>>;
+  pose_tree_t m_pose_edges_buffer;
 };
 
 }  // namespace mrpt::poses

@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "kinematics-precomp.h"	 // Precompiled headers
+#include "kinematics-precomp.h"  // Precompiled headers
 //
 #include <mrpt/core/initializer.h>
 #include <mrpt/kinematics.h>
@@ -17,20 +17,20 @@
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_kinematics)
 {
-	using namespace mrpt::kinematics;
+  using namespace mrpt::kinematics;
 
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
-	registerClass(CLASS_ID(CKinematicChain));
+  registerClass(CLASS_ID(CKinematicChain));
 
-	// Vehicle vel cmds:
-	registerClass(CLASS_ID(CVehicleVelCmd_DiffDriven));
-	registerClass(CLASS_ID(CVehicleVelCmd_Holo));
+  // Vehicle vel cmds:
+  registerClass(CLASS_ID(CVehicleVelCmd_DiffDriven));
+  registerClass(CLASS_ID(CVehicleVelCmd_Holo));
 #endif
 }
 
 void mrpt::kinematics::registerAllClasses_mrpt_kinematics()
 {
-	::registerAllClasses_mrpt_kinematics();
-	// deps:
-	mrpt::opengl::registerAllClasses_mrpt_opengl();
+  ::registerAllClasses_mrpt_kinematics();
+  // deps:
+  mrpt::opengl::registerAllClasses_mrpt_opengl();
 }

@@ -16,16 +16,16 @@
 
 class CRootNode : public CNode
 {
-   public:
-	CRootNode(const mrpt::maps::CSimpleMap& simplemap);
-	~CRootNode() override = default;
+ public:
+  CRootNode(const mrpt::maps::CSimpleMap& simplemap);
+  ~CRootNode() override = default;
 
-	// INode interface
-	int childCount() const override;
-	CNode* child(int id) override;
-	ObjectType type() const override;
-	std::string displayName() const override;
+  // INode interface
+  int childCount() const override;
+  CNode* child(int id) override;
+  ObjectType type() const override;
+  std::string displayName() const override;
 
-   private:
-	std::vector<CNode*> m_posesNode;
+ private:
+  std::vector<CNode*> m_posesNode;
 };

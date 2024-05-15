@@ -47,36 +47,27 @@ using Scalar = double;
 // ===============
 
 // Point creation and deletion
-inline Scalar* PointAllocate(int d)
-{
-	return (Scalar*)malloc(d * sizeof(Scalar));
-}
+inline Scalar* PointAllocate(int d) { return (Scalar*)malloc(d * sizeof(Scalar)); }
 
 inline void PointFree(Scalar* p) { free(p); }
-inline void PointCopy(Scalar* p1, const Scalar* p2, int d)
-{
-	memcpy(p1, p2, d * sizeof(Scalar));
-}
+inline void PointCopy(Scalar* p1, const Scalar* p2, int d) { memcpy(p1, p2, d * sizeof(Scalar)); }
 
 // Point vector tools
 inline void PointAdd(Scalar* p1, const Scalar* p2, int d)
 {
-	for (int i = 0; i < d; i++)
-		p1[i] += p2[i];
+  for (int i = 0; i < d; i++) p1[i] += p2[i];
 }
 
 inline void PointScale(Scalar* p, Scalar scale, int d)
 {
-	for (int i = 0; i < d; i++)
-		p[i] *= scale;
+  for (int i = 0; i < d; i++) p[i] *= scale;
 }
 
 inline Scalar PointDistSq(const Scalar* p1, const Scalar* p2, int d)
 {
-	Scalar result = 0;
-	for (int i = 0; i < d; i++)
-		result += (p1[i] - p2[i]) * (p1[i] - p2[i]);
-	return result;
+  Scalar result = 0;
+  for (int i = 0; i < d; i++) result += (p1[i] - p2[i]) * (p1[i] - p2[i]);
+  return result;
 }
 
 // Assertions
@@ -85,10 +76,9 @@ inline Scalar PointDistSq(const Scalar* p1, const Scalar* p2, int d)
 // Comment out ENABLE_KMEANS_ASSERTS to turn off ASSERTS for added speed.
 #define ENABLE_KMEANS_ASSERTS
 #ifdef ENABLE_KMEANS_ASSERTS
-int __KMeansAssertionFailure(
-	const char* file, int line, const char* expression);
-#define KM_ASSERT(expression)                                                  \
-	(void)((expression) != 0 ? 0 : __KMeansAssertionFailure(__FILE__, __LINE__, #expression))
+int __KMeansAssertionFailure(const char* file, int line, const char* expression);
+#define KM_ASSERT(expression) \
+  (void)((expression) != 0 ? 0 : __KMeansAssertionFailure(__FILE__, __LINE__, #expression))
 #else
 #define KM_ASSERT(expression)
 #endif
@@ -103,6 +93,6 @@ int __KMeansAssertionFailure(
 // careful of overflow.
 inline int GetRandom(int n)
 {
-	int u = rand() * RAND_MAX + rand();
-	return ((u % n) + n) % n;
+  int u = rand() * RAND_MAX + rand();
+  return ((u % n) + n) % n;
 }

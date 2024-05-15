@@ -20,7 +20,7 @@ namespace mrpt::slam
  *  @{ */
 
 /** @name Data association
-	@{
+  @{
   */
 
 /** Different algorithms for data association, used in
@@ -28,10 +28,10 @@ namespace mrpt::slam
  */
 enum TDataAssociationMethod
 {
-	/** Nearest-neighbor. */
-	assocNN = 0,
-	/** JCBB: Joint Compatibility Branch & Bound \cite neira2001data */
-	assocJCBB
+  /** Nearest-neighbor. */
+  assocNN = 0,
+  /** JCBB: Joint Compatibility Branch & Bound \cite neira2001data */
+  assocJCBB
 };
 
 /** Different metrics for data association, used in mrpt::slam::data_association
@@ -39,11 +39,11 @@ enum TDataAssociationMethod
  */
 enum TDataAssociationMetric
 {
-	/** Mahalanobis distance */
-	metricMaha = 0,
-	/** Matching likelihood (See TDataAssociationMetric for a paper explaining
-	   this metric) */
-	metricML
+  /** Mahalanobis distance */
+  metricMaha = 0,
+  /** Matching likelihood (See TDataAssociationMetric for a paper explaining
+   this metric) */
+  metricML
 };
 
 /** Used in mrpt::slam::TDataAssociationResults */
@@ -55,61 +55,61 @@ using prediction_index_t = size_t;
  */
 struct TDataAssociationResults
 {
-	TDataAssociationResults()
-		: associations(),
+  TDataAssociationResults() :
+      associations(),
 
-		  indiv_distances(0, 0),
-		  indiv_compatibility(0, 0),
-		  indiv_compatibility_counts()
+      indiv_distances(0, 0),
+      indiv_compatibility(0, 0),
+      indiv_compatibility_counts()
 
-	{
-	}
+  {
+  }
 
-	void clear()
-	{
-		associations.clear();
-		distance = 0;
-		indiv_distances.setSize(0, 0);
-		indiv_compatibility.setSize(0, 0);
-		indiv_compatibility_counts.clear();
-		nNodesExploredInJCBB = 0;
-	}
+  void clear()
+  {
+    associations.clear();
+    distance = 0;
+    indiv_distances.setSize(0, 0);
+    indiv_compatibility.setSize(0, 0);
+    indiv_compatibility_counts.clear();
+    nNodesExploredInJCBB = 0;
+  }
 
-	/** For each observation (with row index IDX_obs in the input
-	 * "Z_observations"), its association in the predictions, as the row index
-	 * in the "Y_predictions_mean" input (or it's mapping to a custom ID, if it
-	 * was provided).
-	 * Note that not all observations may have an associated prediction.
-	 * An observation with index "IDX_obs" corresponds to the prediction number
-	 * "associations[IDX_obs]", or it may not correspond to anyone if it's not
-	 * present
-	 *  in the std::map (Tip: Use
-	 * associations.find(IDX_obs)!=associations.end() )
-	 * \note The types observation_index_t and prediction_index_t are just used
-	 * for clarity, use normal size_t's.
-	 */
-	std::map<observation_index_t, prediction_index_t> associations;
-	/** The Joint Mahalanobis distance or matching likelihood of the best
-	 * associations found. */
-	double distance{0};
+  /** For each observation (with row index IDX_obs in the input
+   * "Z_observations"), its association in the predictions, as the row index
+   * in the "Y_predictions_mean" input (or it's mapping to a custom ID, if it
+   * was provided).
+   * Note that not all observations may have an associated prediction.
+   * An observation with index "IDX_obs" corresponds to the prediction number
+   * "associations[IDX_obs]", or it may not correspond to anyone if it's not
+   * present
+   *  in the std::map (Tip: Use
+   * associations.find(IDX_obs)!=associations.end() )
+   * \note The types observation_index_t and prediction_index_t are just used
+   * for clarity, use normal size_t's.
+   */
+  std::map<observation_index_t, prediction_index_t> associations;
+  /** The Joint Mahalanobis distance or matching likelihood of the best
+   * associations found. */
+  double distance{0};
 
-	/** Individual mahalanobis distances (or matching likelihood, depending on
-	 * the selected metric) between predictions (row indices) & observations
-	 * (column indices).
-	 *  Indices are for the appearing order in the arguments
-	 * "Y_predictions_mean" & "Z_observations", they are NOT landmark IDs.
-	 */
-	mrpt::math::CMatrixDouble indiv_distances;
-	/** The result of a chi2 test for compatibility using mahalanobis distance -
-	 * Indices are like in "indiv_distances". */
-	mrpt::math::CMatrixBool indiv_compatibility;
-	/** The sum of each column of indiv_compatibility, that is, the number of
-	 * compatible pairings for each observation. */
-	std::vector<uint32_t> indiv_compatibility_counts;
+  /** Individual mahalanobis distances (or matching likelihood, depending on
+   * the selected metric) between predictions (row indices) & observations
+   * (column indices).
+   *  Indices are for the appearing order in the arguments
+   * "Y_predictions_mean" & "Z_observations", they are NOT landmark IDs.
+   */
+  mrpt::math::CMatrixDouble indiv_distances;
+  /** The result of a chi2 test for compatibility using mahalanobis distance -
+   * Indices are like in "indiv_distances". */
+  mrpt::math::CMatrixBool indiv_compatibility;
+  /** The sum of each column of indiv_compatibility, that is, the number of
+   * compatible pairings for each observation. */
+  std::vector<uint32_t> indiv_compatibility_counts;
 
-	/** Only for the JCBB method,the number of recursive calls expent in the
-	 * algorithm. */
-	size_t nNodesExploredInJCBB{0};
+  /** Only for the JCBB method,the number of recursive calls expent in the
+   * algorithm. */
+  size_t nNodesExploredInJCBB{0};
 };
 
 /** Computes the data-association between the prediction of a set of landmarks
@@ -146,17 +146,17 @@ struct TDataAssociationResults
  *data_association_independent_3d_points
  */
 void data_association_full_covariance(
-	const mrpt::math::CMatrixDouble& Z_observations_mean,
-	const mrpt::math::CMatrixDouble& Y_predictions_mean,
-	const mrpt::math::CMatrixDouble& Y_predictions_cov,
-	TDataAssociationResults& results,
-	const TDataAssociationMethod method = assocJCBB,
-	const TDataAssociationMetric metric = metricMaha,
-	const double chi2quantile = 0.99, const bool DAT_ASOC_USE_KDTREE = true,
-	const std::vector<prediction_index_t>& predictions_IDs =
-		std::vector<prediction_index_t>(),
-	const TDataAssociationMetric compatibilityTestMetric = metricMaha,
-	const double log_ML_compat_test_threshold = 0.0);
+    const mrpt::math::CMatrixDouble& Z_observations_mean,
+    const mrpt::math::CMatrixDouble& Y_predictions_mean,
+    const mrpt::math::CMatrixDouble& Y_predictions_cov,
+    TDataAssociationResults& results,
+    const TDataAssociationMethod method = assocJCBB,
+    const TDataAssociationMetric metric = metricMaha,
+    const double chi2quantile = 0.99,
+    const bool DAT_ASOC_USE_KDTREE = true,
+    const std::vector<prediction_index_t>& predictions_IDs = std::vector<prediction_index_t>(),
+    const TDataAssociationMetric compatibilityTestMetric = metricMaha,
+    const double log_ML_compat_test_threshold = 0.0);
 
 /** Computes the data-association between the prediction of a set of landmarks
  *and their observations, all of them with covariance matrices - Generic
@@ -192,17 +192,17 @@ void data_association_full_covariance(
  *data_association_independent_3d_points
  */
 void data_association_independent_predictions(
-	const mrpt::math::CMatrixDouble& Z_observations_mean,
-	const mrpt::math::CMatrixDouble& Y_predictions_mean,
-	const mrpt::math::CMatrixDouble& Y_predictions_cov,
-	TDataAssociationResults& results,
-	const TDataAssociationMethod method = assocJCBB,
-	const TDataAssociationMetric metric = metricMaha,
-	const double chi2quantile = 0.99, const bool DAT_ASOC_USE_KDTREE = true,
-	const std::vector<prediction_index_t>& predictions_IDs =
-		std::vector<prediction_index_t>(),
-	const TDataAssociationMetric compatibilityTestMetric = metricMaha,
-	const double log_ML_compat_test_threshold = 0.0);
+    const mrpt::math::CMatrixDouble& Z_observations_mean,
+    const mrpt::math::CMatrixDouble& Y_predictions_mean,
+    const mrpt::math::CMatrixDouble& Y_predictions_cov,
+    TDataAssociationResults& results,
+    const TDataAssociationMethod method = assocJCBB,
+    const TDataAssociationMetric metric = metricMaha,
+    const double chi2quantile = 0.99,
+    const bool DAT_ASOC_USE_KDTREE = true,
+    const std::vector<prediction_index_t>& predictions_IDs = std::vector<prediction_index_t>(),
+    const TDataAssociationMetric compatibilityTestMetric = metricMaha,
+    const double log_ML_compat_test_threshold = 0.0);
 
 /** @} */
 

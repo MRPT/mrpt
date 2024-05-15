@@ -64,7 +64,7 @@ namespace gui
 /** \addtogroup mrpt_gui_wxutils Utilities for MRPT-wxWidgets interfacing (in
   #include <mrpt/gui/WxUtils.h>)
   * \ingroup mrpt_gui_grp
-	* @{ */
+  * @{ */
 #if MRPT_HAS_WXWIDGETS
 
 /** Returns the size of a window, including the optional magnification scale set
@@ -74,23 +74,19 @@ wxSize GetScaledClientSize(const wxWindow* w);
 
 #ifndef WX_START_TRY
 
-#define WX_START_TRY                                                           \
-	try                                                                        \
-	{
-#define WX_END_TRY                                                             \
-	}                                                                          \
-	catch (std::exception & e)                                                 \
-	{                                                                          \
-		const size_t maxLines = 7;                                             \
-		const std::string sErr =                                               \
-			mrpt::system::firstNLines(mrpt::exception_to_str(e), maxLines);    \
-		std::cerr << e.what() << std::endl;                                    \
-		wxMessageBox(sErr, wxT("Exception"), wxOK, nullptr);                   \
-	}                                                                          \
-	catch (...)                                                                \
-	{                                                                          \
-		wxMessageBox(_("Untyped exception!"), _("Exception"), wxOK, nullptr);  \
-	}
+#define WX_START_TRY \
+  try                \
+  {
+#define WX_END_TRY                                                                           \
+  }                                                                                          \
+  catch (std::exception & e)                                                                 \
+  {                                                                                          \
+    const size_t maxLines = 7;                                                               \
+    const std::string sErr = mrpt::system::firstNLines(mrpt::exception_to_str(e), maxLines); \
+    std::cerr << e.what() << std::endl;                                                      \
+    wxMessageBox(sErr, wxT("Exception"), wxOK, nullptr);                                     \
+  }                                                                                          \
+  catch (...) { wxMessageBox(_("Untyped exception!"), _("Exception"), wxOK, nullptr); }
 
 #endif
 
@@ -127,156 +123,153 @@ mrptKeyModifier keyEventToMrptKeyModifier(const wxKeyEvent& ev);
  */
 class wxMRPTImageControl : public wxPanel
 {
-   protected:
-	wxBitmap* m_img;
-	std::mutex m_img_cs;
+ protected:
+  wxBitmap* m_img;
+  std::mutex m_img_cs;
 
-	wxPoint m_last_mouse_point, m_last_mouse_click;
-	std::mutex m_mouse_cs;
+  wxPoint m_last_mouse_point, m_last_mouse_click;
+  std::mutex m_mouse_cs;
 
-   public:
-	wxMRPTImageControl(
-		wxWindow* parent, wxWindowID winID, int x, int y, int width,
-		int height);
-	~wxMRPTImageControl() override;
+ public:
+  wxMRPTImageControl(wxWindow* parent, wxWindowID winID, int x, int y, int width, int height);
+  ~wxMRPTImageControl() override;
 
-	/** Assigns this image. This object has the ownship of the image and will
-	 * delete it when appropriate. Remember to call Refresh to display the
-	 * image. */
-	void AssignImage(wxBitmap* img);
-	/** Assigns this image. Remember to call Refresh to display the image. */
-	void AssignImage(const mrpt::img::CImage& img);
-	void GetBitmap(wxBitmap& bmp);
+  /** Assigns this image. This object has the ownship of the image and will
+   * delete it when appropriate. Remember to call Refresh to display the
+   * image. */
+  void AssignImage(wxBitmap* img);
+  /** Assigns this image. Remember to call Refresh to display the image. */
+  void AssignImage(const mrpt::img::CImage& img);
+  void GetBitmap(wxBitmap& bmp);
 
-	void OnPaint(wxPaintEvent& ev);
-	void OnMouseMove(wxMouseEvent& ev);
-	void OnMouseClick(wxMouseEvent& ev);
+  void OnPaint(wxPaintEvent& ev);
+  void OnMouseMove(wxMouseEvent& ev);
+  void OnMouseClick(wxMouseEvent& ev);
 
-	void OnEraseBackground(wxEraseEvent&)
-	{ /* Do nothing */
-	}
+  void OnEraseBackground(wxEraseEvent&)
+  { /* Do nothing */
+  }
 };
 // end wxMRPTImageControl  -----------
 
 /** A panel to select the camera input from all the formats supported by MRPT */
 class CPanelCameraSelection : public wxPanel
 {
-   public:
-	CPanelCameraSelection(wxWindow* parent, wxWindowID id = wxID_ANY);
-	~CPanelCameraSelection() override;
+ public:
+  CPanelCameraSelection(wxWindow* parent, wxWindowID id = wxID_ANY);
+  ~CPanelCameraSelection() override;
 
-	void readConfigIntoVideoSourcePanel(
-		const std::string& sect,
-		const mrpt::config::CConfigFileBase* cfg) const;
+  void readConfigIntoVideoSourcePanel(
+      const std::string& sect, const mrpt::config::CConfigFileBase* cfg) const;
 
-	void writeConfigFromVideoSourcePanel(
-		const std::string& sect, mrpt::config::CConfigFileBase* cfg) const;
+  void writeConfigFromVideoSourcePanel(
+      const std::string& sect, mrpt::config::CConfigFileBase* cfg) const;
 
-	//(*Declarations(CPanelCameraSelection)
-	wxTextCtrl* edRawlogLabel;
-	wxStaticText* StaticText10;
-	wxStaticText* StaticText9;
-	wxPanel* Panel5;
-	wxButton* btnBrowseRawlogDir;
-	wxRadioBox* rbBumblebeeSel;
-	wxButton* btnBrowseVideo;
-	wxStaticText* StaticText2;
-	wxPanel* Panel4;
-	wxCheckBox* cbKinect_3D;
-	wxRadioBox* rbKinect_int;
-	wxCheckBox* cbSR_chConf;
-	wxStaticText* StaticText6;
-	wxSpinCtrl* opencvCamIndex;
-	wxTextCtrl* edIPcamURL;
-	wxStaticText* StaticText8;
-	wxStaticText* StaticText11;
-	wxTextCtrl* edCustomCamConfig;
-	wxTextCtrl* edSR_IP;
-	wxPanel* Panel1;
-	wxChoice* cbOpencvCamType;
-	wxStaticText* StaticText1;
-	wxStaticText* StaticText3;
-	wxRadioBox* rbSR_usb;
-	wxPanel* Panel6;
-	wxButton* btnBrowseRawlog;
-	wxPanel* Panel3;
-	wxCheckBox* cbGrayscale;
-	wxCheckBox* cbSR_chRange;
-	wxStaticText* StaticText5;
-	wxStaticText* StaticText7;
-	wxPanel* pnKinect;
-	wxTextCtrl* edVideoFile;
-	wxCheckBox* cbBumblebeeRectif;
-	wxCheckBox* cbKinect_Int;
-	wxCheckBox* cbSR_chIntensity;
-	wxCheckBox* cbKinect_Depth;
-	wxNotebook* pagesCameras;
-	wxPanel* pnSwissRanger;
-	wxTextCtrl* edRawlogFile;
-	wxTextCtrl* edRawlogImgDir;
-	wxPanel* Panel2;
-	wxCheckBox* cbSR_ch3D;
-	wxStaticText* StaticText4;
-	wxChoice* cbOpencvResolution;
-	//*)
+  //(*Declarations(CPanelCameraSelection)
+  wxTextCtrl* edRawlogLabel;
+  wxStaticText* StaticText10;
+  wxStaticText* StaticText9;
+  wxPanel* Panel5;
+  wxButton* btnBrowseRawlogDir;
+  wxRadioBox* rbBumblebeeSel;
+  wxButton* btnBrowseVideo;
+  wxStaticText* StaticText2;
+  wxPanel* Panel4;
+  wxCheckBox* cbKinect_3D;
+  wxRadioBox* rbKinect_int;
+  wxCheckBox* cbSR_chConf;
+  wxStaticText* StaticText6;
+  wxSpinCtrl* opencvCamIndex;
+  wxTextCtrl* edIPcamURL;
+  wxStaticText* StaticText8;
+  wxStaticText* StaticText11;
+  wxTextCtrl* edCustomCamConfig;
+  wxTextCtrl* edSR_IP;
+  wxPanel* Panel1;
+  wxChoice* cbOpencvCamType;
+  wxStaticText* StaticText1;
+  wxStaticText* StaticText3;
+  wxRadioBox* rbSR_usb;
+  wxPanel* Panel6;
+  wxButton* btnBrowseRawlog;
+  wxPanel* Panel3;
+  wxCheckBox* cbGrayscale;
+  wxCheckBox* cbSR_chRange;
+  wxStaticText* StaticText5;
+  wxStaticText* StaticText7;
+  wxPanel* pnKinect;
+  wxTextCtrl* edVideoFile;
+  wxCheckBox* cbBumblebeeRectif;
+  wxCheckBox* cbKinect_Int;
+  wxCheckBox* cbSR_chIntensity;
+  wxCheckBox* cbKinect_Depth;
+  wxNotebook* pagesCameras;
+  wxPanel* pnSwissRanger;
+  wxTextCtrl* edRawlogFile;
+  wxTextCtrl* edRawlogImgDir;
+  wxPanel* Panel2;
+  wxCheckBox* cbSR_ch3D;
+  wxStaticText* StaticText4;
+  wxChoice* cbOpencvResolution;
+  //*)
 
-   protected:
-	//(*Identifiers(CPanelCameraSelection)
-	static const long ID_STATICTEXT1;
-	static const long ID_SPINCTRL1;
-	static const long ID_STATICTEXT3;
-	static const long ID_CHOICE1;
-	static const long ID_STATICTEXT6;
-	static const long ID_CHOICE2;
-	static const long ID_PANEL2;
-	static const long ID_STATICTEXT7;
-	static const long ID_TEXTCTRL1;
-	static const long ID_PANEL3;
-	static const long ID_TEXTCTRL6;
-	static const long ID_PANEL4;
-	static const long ID_STATICTEXT8;
-	static const long ID_TEXTCTRL2;
-	static const long ID_BUTTON7;
-	static const long ID_PANEL5;
-	static const long ID_STATICTEXT9;
-	static const long ID_TEXTCTRL3;
-	static const long ID_BUTTON8;
-	static const long ID_STATICTEXT5;
-	static const long ID_TEXTCTRL7;
-	static const long ID_BUTTON9;
-	static const long ID_STATICTEXT10;
-	static const long ID_TEXTCTRL8;
-	static const long ID_STATICTEXT11;
-	static const long ID_PANEL6;
-	static const long ID_RADIOBOX1;
-	static const long ID_CHECKBOX1;
-	static const long ID_STATICTEXT2;
-	static const long ID_PANEL7;
-	static const long ID_RADIOBOX2;
-	static const long ID_STATICTEXT4;
-	static const long ID_TEXTCTRL4;
-	static const long ID_CHECKBOX3;
-	static const long ID_CHECKBOX4;
-	static const long ID_CHECKBOX5;
-	static const long ID_CHECKBOX6;
-	static const long ID_PANEL1;
-	static const long ID_CHECKBOX7;
-	static const long ID_CHECKBOX8;
-	static const long ID_CHECKBOX9;
-	static const long ID_RADIOBOX3;
-	static const long ID_PANEL8;
-	static const long ID_NOTEBOOK1;
-	static const long ID_CHECKBOX2;
-	//*)
+ protected:
+  //(*Identifiers(CPanelCameraSelection)
+  static const long ID_STATICTEXT1;
+  static const long ID_SPINCTRL1;
+  static const long ID_STATICTEXT3;
+  static const long ID_CHOICE1;
+  static const long ID_STATICTEXT6;
+  static const long ID_CHOICE2;
+  static const long ID_PANEL2;
+  static const long ID_STATICTEXT7;
+  static const long ID_TEXTCTRL1;
+  static const long ID_PANEL3;
+  static const long ID_TEXTCTRL6;
+  static const long ID_PANEL4;
+  static const long ID_STATICTEXT8;
+  static const long ID_TEXTCTRL2;
+  static const long ID_BUTTON7;
+  static const long ID_PANEL5;
+  static const long ID_STATICTEXT9;
+  static const long ID_TEXTCTRL3;
+  static const long ID_BUTTON8;
+  static const long ID_STATICTEXT5;
+  static const long ID_TEXTCTRL7;
+  static const long ID_BUTTON9;
+  static const long ID_STATICTEXT10;
+  static const long ID_TEXTCTRL8;
+  static const long ID_STATICTEXT11;
+  static const long ID_PANEL6;
+  static const long ID_RADIOBOX1;
+  static const long ID_CHECKBOX1;
+  static const long ID_STATICTEXT2;
+  static const long ID_PANEL7;
+  static const long ID_RADIOBOX2;
+  static const long ID_STATICTEXT4;
+  static const long ID_TEXTCTRL4;
+  static const long ID_CHECKBOX3;
+  static const long ID_CHECKBOX4;
+  static const long ID_CHECKBOX5;
+  static const long ID_CHECKBOX6;
+  static const long ID_PANEL1;
+  static const long ID_CHECKBOX7;
+  static const long ID_CHECKBOX8;
+  static const long ID_CHECKBOX9;
+  static const long ID_RADIOBOX3;
+  static const long ID_PANEL8;
+  static const long ID_NOTEBOOK1;
+  static const long ID_CHECKBOX2;
+  //*)
 
-   private:
-	//(*Handlers(CPanelCameraSelection)
-	//*)
-	void OnbtnBrowseVideoClick(wxCommandEvent& event);
-	void OnbtnBrowseRawlogClick(wxCommandEvent& event);
-	void OnbtnBrowseRawlogDirClick(wxCommandEvent& event);
+ private:
+  //(*Handlers(CPanelCameraSelection)
+  //*)
+  void OnbtnBrowseVideoClick(wxCommandEvent& event);
+  void OnbtnBrowseRawlogClick(wxCommandEvent& event);
+  void OnbtnBrowseRawlogDirClick(wxCommandEvent& event);
 
-	DECLARE_EVENT_TABLE()
+  DECLARE_EVENT_TABLE()
 };
 // end   -----------
 
@@ -285,8 +278,8 @@ namespace detail
 {
 struct TReturnAskUserOpenCamera
 {
-	std::string selectedConfig;
-	bool accepted_by_user;
+  std::string selectedConfig;
+  bool accepted_by_user;
 };
 }  // namespace detail
 

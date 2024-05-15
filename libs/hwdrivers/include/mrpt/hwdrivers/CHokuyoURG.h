@@ -76,237 +76,236 @@ namespace mrpt::hwdrivers
  */
 class CHokuyoURG : public C2DRangeFinderAbstract
 {
-	DEFINE_GENERIC_SENSOR(CHokuyoURG)
-   public:
-	/** Used in CHokuyoURG::displayVersionInfo */
-	struct TSensorInfo
-	{
-		/** The sensor model */
-		std::string model;
-		/** Min/Max ranges, in meters. */
-		double d_min{0}, d_max{0};
-		/** Number of measuremens per 360 degrees. */
-		int scans_per_360deg{0};
-		/** First, last, and front step of the scanner angular span. */
-		int scan_first{0}, scan_last{0}, scan_front{0};
-		/** Standard motor speed, rpm. */
-		int motor_speed_rpm{0};
-	};
+  DEFINE_GENERIC_SENSOR(CHokuyoURG)
+ public:
+  /** Used in CHokuyoURG::displayVersionInfo */
+  struct TSensorInfo
+  {
+    /** The sensor model */
+    std::string model;
+    /** Min/Max ranges, in meters. */
+    double d_min{0}, d_max{0};
+    /** Number of measuremens per 360 degrees. */
+    int scans_per_360deg{0};
+    /** First, last, and front step of the scanner angular span. */
+    int scan_first{0}, scan_last{0}, scan_front{0};
+    /** Standard motor speed, rpm. */
+    int motor_speed_rpm{0};
+  };
 
-   private:
-	/** The first and last ranges to consider from the scan. */
-	int m_firstRange{44}, m_lastRange{725};
-	/** The motor speed (default=600rpm) */
-	int m_motorSpeed_rpm{0};
-	/** The sensor 6D pose: */
-	poses::CPose3D m_sensorPose{0, 0, 0, 0, 0, 0};
-	/** Auxiliary buffer for readings */
-	mrpt::containers::circular_buffer<uint8_t> m_rx_buffer;
+ private:
+  /** The first and last ranges to consider from the scan. */
+  int m_firstRange{44}, m_lastRange{725};
+  /** The motor speed (default=600rpm) */
+  int m_motorSpeed_rpm{0};
+  /** The sensor 6D pose: */
+  poses::CPose3D m_sensorPose{0, 0, 0, 0, 0, 0};
+  /** Auxiliary buffer for readings */
+  mrpt::containers::circular_buffer<uint8_t> m_rx_buffer;
 
-	/** The last sent measurement command (MDXXX), including the last 0x0A. */
-	std::string m_lastSentMeasCmd;
+  /** The last sent measurement command (MDXXX), including the last 0x0A. */
+  std::string m_lastSentMeasCmd;
 
-	/** High sensitivity [HS] mode (default: false) */
-	bool m_highSensMode{false};
-	mrpt::gui::CDisplayWindow3D::Ptr m_win;
+  /** High sensitivity [HS] mode (default: false) */
+  bool m_highSensMode{false};
+  mrpt::gui::CDisplayWindow3D::Ptr m_win;
 
-	/** Enables the SCIP2.0 protocol (this must be called at the very
-	 * begining!).
-	 * \return false on any error
-	 */
-	bool enableSCIP20();
+  /** Enables the SCIP2.0 protocol (this must be called at the very
+   * begining!).
+   * \return false on any error
+   */
+  bool enableSCIP20();
 
-	/** Passes to 115200bps bitrate.
-	 * \return false on any error
-	 */
-	bool setHighBaudrate();
+  /** Passes to 115200bps bitrate.
+   * \return false on any error
+   */
+  bool setHighBaudrate();
 
-	/** Switchs the laser on.
-	 * \return false on any error
-	 */
-	bool switchLaserOn();
+  /** Switchs the laser on.
+   * \return false on any error
+   */
+  bool switchLaserOn();
 
-	/** Switchs the laser off
-	 * \return false on any error
-	 */
-	bool switchLaserOff();
+  /** Switchs the laser off
+   * \return false on any error
+   */
+  bool switchLaserOff();
 
-	/** Changes the motor speed in rpm's (default 600rpm)
-	 * \return false on any error
-	 */
-	bool setMotorSpeed(int motoSpeed_rpm);
+  /** Changes the motor speed in rpm's (default 600rpm)
+   * \return false on any error
+   */
+  bool setMotorSpeed(int motoSpeed_rpm);
 
-	/** Ask to the device, and print to the debug stream, details about the
-	 * firmware version,serial number,...
-	 * \return false on any error
-	 */
-	bool displayVersionInfo();
+  /** Ask to the device, and print to the debug stream, details about the
+   * firmware version,serial number,...
+   * \return false on any error
+   */
+  bool displayVersionInfo();
 
-	/** Ask to the device, and print to the debug stream, details about the
-	 * sensor model.
-	 *  It also optionally saves all the information in an user supplied data
-	 * structure "out_data".
-	 * \return false on any error
-	 */
-	bool displaySensorInfo(CHokuyoURG::TSensorInfo* out_data = nullptr);
+  /** Ask to the device, and print to the debug stream, details about the
+   * sensor model.
+   *  It also optionally saves all the information in an user supplied data
+   * structure "out_data".
+   * \return false on any error
+   */
+  bool displaySensorInfo(CHokuyoURG::TSensorInfo* out_data = nullptr);
 
-	/** Start the continuous scanning mode, using parameters stored in the
-	 * object (loaded
-	 * from the .ini file). Maps to SCIP2.0 commands MD (no intensity) or ME
-	 * (intensity).
-	 * After this command the device will start to send scans until
-	 * switchLaserOff() is called.
-	 * \return false on any error
-	 */
-	bool startScanningMode();
+  /** Start the continuous scanning mode, using parameters stored in the
+   * object (loaded
+   * from the .ini file). Maps to SCIP2.0 commands MD (no intensity) or ME
+   * (intensity).
+   * After this command the device will start to send scans until
+   * switchLaserOff() is called.
+   * \return false on any error
+   */
+  bool startScanningMode();
 
-	/** Turns the laser on */
-	void initialize() override;
+  /** Turns the laser on */
+  void initialize() override;
 
-	/** Parses the response from the device from raw bytes in m_rx_buffer, and
-	 * stored the received frame in m_rcv_data. Status codes are stored in
-	 * m_rcv_status0 and m_rcv_status1.
-	 *
-	 * If additionalWaitForData is true, a minimum 100ms timeout is applied, if
-	 * m_comms_timeout_ms is smaller than that.
-	 *
-	 * \return false on any error or if received frame is incomplete and needs
-	 * more input bytes.
-	 */
-	bool parseResponse(bool additionalWaitForData = true);
+  /** Parses the response from the device from raw bytes in m_rx_buffer, and
+   * stored the received frame in m_rcv_data. Status codes are stored in
+   * m_rcv_status0 and m_rcv_status1.
+   *
+   * If additionalWaitForData is true, a minimum 100ms timeout is applied, if
+   * m_comms_timeout_ms is smaller than that.
+   *
+   * \return false on any error or if received frame is incomplete and needs
+   * more input bytes.
+   */
+  bool parseResponse(bool additionalWaitForData = true);
 
-	/** Assures a minimum number of bytes in the input buffer, reading from the
-	 * serial port or socket only if required.
-	 *
-	 * If additionalWaitForData is true, a minimum 100ms timeout is applied, if
-	 * m_comms_timeout_ms is smaller than that.
-	 *
-	 * \return false if the number of bytes are not available, even after
-	 * trying to fetch more data from the serial port.
-	 */
-	bool ensureBufferHasBytes(size_t nDesiredBytes, bool additionalWaitForData);
+  /** Assures a minimum number of bytes in the input buffer, reading from the
+   * serial port or socket only if required.
+   *
+   * If additionalWaitForData is true, a minimum 100ms timeout is applied, if
+   * m_comms_timeout_ms is smaller than that.
+   *
+   * \return false if the number of bytes are not available, even after
+   * trying to fetch more data from the serial port.
+   */
+  bool ensureBufferHasBytes(size_t nDesiredBytes, bool additionalWaitForData);
 
-   public:
-	/** Constructor
-	 */
-	CHokuyoURG();
+ public:
+  /** Constructor
+   */
+  CHokuyoURG();
 
-	/** Destructor: turns the laser off */
-	~CHokuyoURG() override;
+  /** Destructor: turns the laser off */
+  ~CHokuyoURG() override;
 
-	/** Specific laser scanner "software drivers" must process here new data
-	 * from the I/O stream, and, if a whole scan has arrived, return it.
-	 *  This method will be typically called in a different thread than other
-	 * methods, and will be called in a timely fashion.
-	 */
-	void doProcessSimple(
-		bool& outThereIsObservation,
-		mrpt::obs::CObservation2DRangeScan& outObservation,
-		bool& hardwareError) override;
+  /** Specific laser scanner "software drivers" must process here new data
+   * from the I/O stream, and, if a whole scan has arrived, return it.
+   *  This method will be typically called in a different thread than other
+   * methods, and will be called in a timely fashion.
+   */
+  void doProcessSimple(
+      bool& outThereIsObservation,
+      mrpt::obs::CObservation2DRangeScan& outObservation,
+      bool& hardwareError) override;
 
-	/** Enables the scanning mode (which may depend on the specific laser
-	 * device); this must be called before asking for observations to assure
-	 * that the protocol has been initializated.
-	 * \return If everything works "true", or "false" if there is any error.
-	 */
-	bool turnOn() override;
+  /** Enables the scanning mode (which may depend on the specific laser
+   * device); this must be called before asking for observations to assure
+   * that the protocol has been initializated.
+   * \return If everything works "true", or "false" if there is any error.
+   */
+  bool turnOn() override;
 
-	/** Disables the scanning mode (this can be used to turn the device in low
-	 * energy mode, if available)
-	 * \return If everything works "true", or "false" if there is any error.
-	 */
-	bool turnOff() override;
+  /** Disables the scanning mode (this can be used to turn the device in low
+   * energy mode, if available)
+   * \return If everything works "true", or "false" if there is any error.
+   */
+  bool turnOff() override;
 
-	/** Empties the RX buffers of the serial port */
-	void purgeBuffers();
+  /** Empties the RX buffers of the serial port */
+  void purgeBuffers();
 
-	/** If set to non-empty, the serial port will be attempted to be opened
-	 * automatically when this class is first used to request data from the
-	 * laser.  */
-	void setSerialPort(const std::string& port_name) { m_com_port = port_name; }
-	/** Set the ip direction and port to connect using Ethernet communication */
-	void setIPandPort(const std::string& ip, const unsigned int& port)
-	{
-		m_ip_dir = ip;
-		m_port_dir = port;
-	}
+  /** If set to non-empty, the serial port will be attempted to be opened
+   * automatically when this class is first used to request data from the
+   * laser.  */
+  void setSerialPort(const std::string& port_name) { m_com_port = port_name; }
+  /** Set the ip direction and port to connect using Ethernet communication */
+  void setIPandPort(const std::string& ip, const unsigned int& port)
+  {
+    m_ip_dir = ip;
+    m_port_dir = port;
+  }
 
-	/** Returns the currently set serial port \sa setSerialPort */
-	const std::string getSerialPort() { return m_com_port; }
-	/** If called (before calling "turnOn"), the field of view of the laser is
-	 * reduced to the given range (in radians), discarding the rest of measures.
-	 *  Call with "0" to disable this reduction again (the default).
-	 */
-	void setReducedFOV(const double fov) { m_reduced_fov = fov; }
-	/** Changes the high sensitivity mode (HS) (default: false)
-	 * \return false on any error
-	 */
-	bool setHighSensitivityMode(bool enabled);
+  /** Returns the currently set serial port \sa setSerialPort */
+  const std::string getSerialPort() { return m_com_port; }
+  /** If called (before calling "turnOn"), the field of view of the laser is
+   * reduced to the given range (in radians), discarding the rest of measures.
+   *  Call with "0" to disable this reduction again (the default).
+   */
+  void setReducedFOV(const double fov) { m_reduced_fov = fov; }
+  /** Changes the high sensitivity mode (HS) (default: false)
+   * \return false on any error
+   */
+  bool setHighSensitivityMode(bool enabled);
 
-	/** If true scans will capture intensity. (default: false)
-	 * Should not be called while scanning.
-	 * \return false on any error
-	 */
-	bool setIntensityMode(bool enabled);
+  /** If true scans will capture intensity. (default: false)
+   * Should not be called while scanning.
+   * \return false on any error
+   */
+  bool setIntensityMode(bool enabled);
 
-	/** Set the skip scan count (0 means send all scans).
-	 * Must be set before initialize()
-	 */
-	void setScanInterval(unsigned int skipScanCount);
-	unsigned int getScanInterval() const;
+  /** Set the skip scan count (0 means send all scans).
+   * Must be set before initialize()
+   */
+  void setScanInterval(unsigned int skipScanCount);
+  unsigned int getScanInterval() const;
 
-	void sendCmd(const char* str);
+  void sendCmd(const char* str);
 
-   protected:
-	/** temp buffer for incoming data packets */
-	std::string m_rcv_data;
-	char m_rcv_status0 = '\0', m_rcv_status1 = '\0';
+ protected:
+  /** temp buffer for incoming data packets */
+  std::string m_rcv_data;
+  char m_rcv_status0 = '\0', m_rcv_status1 = '\0';
 
-	/** Returns true if there is a valid stream bound to the laser scanner,
-	 * otherwise it first try to open the serial port "m_com_port"
-	 */
-	bool ensureStreamIsOpen();
+  /** Returns true if there is a valid stream bound to the laser scanner,
+   * otherwise it first try to open the serial port "m_com_port"
+   */
+  bool ensureStreamIsOpen();
 
-	/** Called upon dtor, or when trying to recover from a disconnected sensor
-	 */
-	void closeStreamConnection();
+  /** Called upon dtor, or when trying to recover from a disconnected sensor
+   */
+  void closeStreamConnection();
 
-	/** Used to reduce artificially the interval of scan ranges. */
-	double m_reduced_fov{0};
+  /** Used to reduce artificially the interval of scan ranges. */
+  double m_reduced_fov{0};
 
-	/** If set to non-empty, the serial port will be attempted to be opened
-	 * automatically when this class is first used to request data from the
-	 * laser. */
-	std::string m_com_port{};
+  /** If set to non-empty, the serial port will be attempted to be opened
+   * automatically when this class is first used to request data from the
+   * laser. */
+  std::string m_com_port{};
 
-	/** If set to non-empty and m_port_dir too, the program will try to connect
-	 * to a Hokuyo using Ethernet communication */
-	std::string m_ip_dir{};
-	/** If set to non-empty and m_ip_dir too, the program will try to connect to
-	 * a Hokuyo using Ethernet communication */
-	unsigned int m_port_dir{10940};
+  /** If set to non-empty and m_port_dir too, the program will try to connect
+   * to a Hokuyo using Ethernet communication */
+  std::string m_ip_dir{};
+  /** If set to non-empty and m_ip_dir too, the program will try to connect to
+   * a Hokuyo using Ethernet communication */
+  unsigned int m_port_dir{10940};
 
-	/** The information gathered when the laser is first open */
-	TSensorInfo m_sensor_info;
+  /** The information gathered when the laser is first open */
+  TSensorInfo m_sensor_info;
 
-	/** Time of the first data packet, for synchronization purposes. */
-	uint32_t m_timeStartUI{0};
-	/** Counter to discard to first few packets before setting the
-	 * correspondence between device and computer timestamps. */
-	int m_timeStartSynchDelay{0};
-	mrpt::system::TTimeStamp m_timeStartTT;
-	bool m_disable_firmware_timestamp{false};
-	/** Get intensity from lidar scan (default: false) */
-	bool m_intensity{false};
-	unsigned int m_scan_interval{0};
-	int m_comms_timeout_ms = 100;
-	int m_comms_between_timeout_ms = 1;
+  /** Time of the first data packet, for synchronization purposes. */
+  uint32_t m_timeStartUI{0};
+  /** Counter to discard to first few packets before setting the
+   * correspondence between device and computer timestamps. */
+  int m_timeStartSynchDelay{0};
+  mrpt::system::TTimeStamp m_timeStartTT;
+  bool m_disable_firmware_timestamp{false};
+  /** Get intensity from lidar scan (default: false) */
+  bool m_intensity{false};
+  unsigned int m_scan_interval{0};
+  int m_comms_timeout_ms = 100;
+  int m_comms_between_timeout_ms = 1;
 
-	/** See the class documentation at the top for expected parameters */
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection) override;
+  /** See the class documentation at the top for expected parameters */
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection) override;
 
-};	// End of class
+};  // End of class
 
 }  // namespace mrpt::hwdrivers

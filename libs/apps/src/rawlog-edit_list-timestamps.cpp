@@ -23,46 +23,41 @@ using namespace mrpt::io;
 // ======================================================================
 DECLARE_OP_FUNCTION(op_list_timestamps)
 {
-	// A class to do this operation:
-	class CRawlogProcessor_ListTimestamps
-		: public CRawlogProcessorOnEachObservation
-	{
-	   protected:
-		string m_out_file;
-		std::ofstream m_out;
+  // A class to do this operation:
+  class CRawlogProcessor_ListTimestamps : public CRawlogProcessorOnEachObservation
+  {
+   protected:
+    string m_out_file;
+    std::ofstream m_out;
 
-	   public:
-		CRawlogProcessor_ListTimestamps(
-			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool Verbose)
-			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose)
-		{
-			getArgValue<std::string>(cmdline, "text-file-output", m_out_file);
-			VERBOSE_COUT << "Writing list to: " << m_out_file << endl;
+   public:
+    CRawlogProcessor_ListTimestamps(
+        CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool Verbose) :
+        CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose)
+    {
+      getArgValue<std::string>(cmdline, "text-file-output", m_out_file);
+      VERBOSE_COUT << "Writing list to: " << m_out_file << endl;
 
-			m_out.open(m_out_file.c_str());
+      m_out.open(m_out_file.c_str());
 
-			if (!m_out.is_open())
-				throw std::runtime_error(
-					"list-timestamps: Cannot open output text file.");
-		}
+      if (!m_out.is_open())
+        throw std::runtime_error("list-timestamps: Cannot open output text file.");
+    }
 
-		bool processOneObservation(CObservation::Ptr& obs) override
-		{
-			m_out << std::fixed << mrpt::Clock::toDouble(obs->timestamp) << " "
-				  << obs->sensorLabel << " "
-				  << obs->GetRuntimeClass()->className << std::endl;
-			return true;
-		}
-	};
+    bool processOneObservation(CObservation::Ptr& obs) override
+    {
+      m_out << std::fixed << mrpt::Clock::toDouble(obs->timestamp) << " " << obs->sensorLabel << " "
+            << obs->GetRuntimeClass()->className << std::endl;
+      return true;
+    }
+  };
 
-	// Process
-	// ---------------------------------
-	CRawlogProcessor_ListTimestamps proc(in_rawlog, cmdline, verbose);
-	proc.doProcessRawlog();
+  // Process
+  // ---------------------------------
+  CRawlogProcessor_ListTimestamps proc(in_rawlog, cmdline, verbose);
+  proc.doProcessRawlog();
 
-	// Dump statistics:
-	// ---------------------------------
-	VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse
-				 << "\n";
+  // Dump statistics:
+  // ---------------------------------
+  VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse << "\n";
 }

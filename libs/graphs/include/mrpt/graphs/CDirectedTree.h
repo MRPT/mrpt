@@ -53,173 +53,163 @@ namespace mrpt::graphs
 template <class TYPE_EDGES = uint8_t>
 class CDirectedTree
 {
-   public:
-	struct TEdgeInfo
-	{
-		/** The ID of the child node. */
-		TNodeID id;
-		/** True if edge direction is child->parent, false if it's
-		 * parent->child. */
-		bool reverse;
-		/** User data for this edge. */
-		TYPE_EDGES data;
+ public:
+  struct TEdgeInfo
+  {
+    /** The ID of the child node. */
+    TNodeID id;
+    /** True if edge direction is child->parent, false if it's
+     * parent->child. */
+    bool reverse;
+    /** User data for this edge. */
+    TYPE_EDGES data;
 
-		/** Edge constructor from data */
-		TEdgeInfo(
-			TNodeID child_id_, bool direction_child_to_parent = false,
-			const TYPE_EDGES& edge_data = TYPE_EDGES())
-			: id(child_id_), reverse(direction_child_to_parent), data(edge_data)
-		{
-		}
-	};
+    /** Edge constructor from data */
+    TEdgeInfo(
+        TNodeID child_id_,
+        bool direction_child_to_parent = false,
+        const TYPE_EDGES& edge_data = TYPE_EDGES()) :
+        id(child_id_), reverse(direction_child_to_parent), data(edge_data)
+    {
+    }
+  };
 
-	using TListEdges = std::list<TEdgeInfo>;
-	using TMapNode2ListEdges = std::map<TNodeID, TListEdges>;
+  using TListEdges = std::list<TEdgeInfo>;
+  using TMapNode2ListEdges = std::map<TNodeID, TListEdges>;
 
-	/** @name Data
-		@{ */
-	/** The root of the tree */
-	TNodeID root;
-	/** The edges of each node */
-	TMapNode2ListEdges edges_to_children;
-	/** @} */
+  /** @name Data
+    @{ */
+  /** The root of the tree */
+  TNodeID root;
+  /** The edges of each node */
+  TMapNode2ListEdges edges_to_children;
+  /** @} */
 
-	/** @name Utilities
-		@{ */
+  /** @name Utilities
+    @{ */
 
-	/** Empty all edge data and set "root" to INVALID_NODEID */
-	void clear()
-	{
-		edges_to_children.clear();
-		root = INVALID_NODEID;
-	}
+  /** Empty all edge data and set "root" to INVALID_NODEID */
+  void clear()
+  {
+    edges_to_children.clear();
+    root = INVALID_NODEID;
+  }
 
-	/** Virtual method to be implemented by the user and which will be
-	 * called during the visit to a graph with visitDepthFirst or
-	 * visitBreadthFirst
-	 *  Specifically, the method will be called once for each <b>edge</b>
-	 * in the tree.
-	 * \param parent [IN] The ID of the parent node.
-	 * \param edge_to_child [IN] The edge information from the parent to
-	 * "edge_to_child.id"
-	 * \param depth_level [IN] The "depth level" of the child node
-	 * "edge_to_child.id" (root node is at 0, its children are at 1, etc.).
-	 */
-	using visitor_t = std::function<void(
-		TNodeID const parent, const TEdgeInfo& edgeToChild, size_t depthLevel)>;
+  /** Virtual method to be implemented by the user and which will be
+   * called during the visit to a graph with visitDepthFirst or
+   * visitBreadthFirst
+   *  Specifically, the method will be called once for each <b>edge</b>
+   * in the tree.
+   * \param parent [IN] The ID of the parent node.
+   * \param edge_to_child [IN] The edge information from the parent to
+   * "edge_to_child.id"
+   * \param depth_level [IN] The "depth level" of the child node
+   * "edge_to_child.id" (root node is at 0, its children are at 1, etc.).
+   */
+  using visitor_t =
+      std::function<void(TNodeID const parent, const TEdgeInfo& edgeToChild, size_t depthLevel)>;
 
-	/** Virtual base class for user-defined visitors.
-	 * Obsolete: Prefer C++11 visitor_t
-	 */
-	struct Visitor
-	{
-		using tree_t = CDirectedTree<TYPE_EDGES>;
+  /** Virtual base class for user-defined visitors.
+   * Obsolete: Prefer C++11 visitor_t
+   */
+  struct Visitor
+  {
+    using tree_t = CDirectedTree<TYPE_EDGES>;
 
-		/** Virtual method to be implemented by the user and which will be
-		 * called during the visit to a graph with visitDepthFirst or
-		 * visitBreadthFirst
-		 *  Specifically, the method will be called once for each <b>edge</b>
-		 * in the tree.
-		 * \param parent [IN] The ID of the parent node.
-		 * \param edge_to_child [IN] The edge information from the parent to
-		 * "edge_to_child.id"
-		 * \param depth_level [IN] The "depth level" of the child node
-		 * "edge_to_child.id" (root node is at 0, its children are at 1, etc.).
-		 */
-		virtual void OnVisitNode(
-			TNodeID const parent,
-			const typename tree_t::TEdgeInfo& edge_to_child,
-			size_t depth_level) = 0;
-	};
+    /** Virtual method to be implemented by the user and which will be
+     * called during the visit to a graph with visitDepthFirst or
+     * visitBreadthFirst
+     *  Specifically, the method will be called once for each <b>edge</b>
+     * in the tree.
+     * \param parent [IN] The ID of the parent node.
+     * \param edge_to_child [IN] The edge information from the parent to
+     * "edge_to_child.id"
+     * \param depth_level [IN] The "depth level" of the child node
+     * "edge_to_child.id" (root node is at 0, its children are at 1, etc.).
+     */
+    virtual void OnVisitNode(
+        TNodeID const parent,
+        const typename tree_t::TEdgeInfo& edge_to_child,
+        size_t depth_level) = 0;
+  };
 
-	/** Depth-first visit of all children nodes of a given root (itself excluded
-	 * from the visit), invoking a user-provided function for each node/edge.
-	 * \sa visitBreadthFirst */
-	void visitDepthFirst(
-		TNodeID const vroot, const visitor_t& user_visitor,
-		size_t root_depth_level = 0) const
-	{
-		const size_t next_depth_level = root_depth_level + 1;
-		auto itChildren = edges_to_children.find(vroot);
-		if (itChildren == edges_to_children.end()) return;	// No children
-		const TListEdges& children = itChildren->second;
-		for (auto itEdge = children.begin(); itEdge != children.end(); ++itEdge)
-		{
-			user_visitor(vroot, *itEdge, next_depth_level);
-			visitDepthFirst(
-				itEdge->id, user_visitor,
-				next_depth_level);	// Recursive depth-first call.
-		}
-	}
+  /** Depth-first visit of all children nodes of a given root (itself excluded
+   * from the visit), invoking a user-provided function for each node/edge.
+   * \sa visitBreadthFirst */
+  void visitDepthFirst(
+      TNodeID const vroot, const visitor_t& user_visitor, size_t root_depth_level = 0) const
+  {
+    const size_t next_depth_level = root_depth_level + 1;
+    auto itChildren = edges_to_children.find(vroot);
+    if (itChildren == edges_to_children.end()) return;  // No children
+    const TListEdges& children = itChildren->second;
+    for (auto itEdge = children.begin(); itEdge != children.end(); ++itEdge)
+    {
+      user_visitor(vroot, *itEdge, next_depth_level);
+      visitDepthFirst(itEdge->id, user_visitor,
+                      next_depth_level);  // Recursive depth-first call.
+    }
+  }
 
-	/// \overload \deprecated Prefer the visitor_t version (MRPT 2.2.1).
-	void visitDepthFirst(
-		TNodeID const vroot, Visitor& user_visitor,
-		size_t root_depth_level = 0) const
-	{
-		auto lmd = [&](TNodeID const parent, const TEdgeInfo& edgeToChild,
-					   size_t depthLevel) {
-			user_visitor.OnVisitNode(parent, edgeToChild, depthLevel);
-		};
-		visitDepthFirst(vroot, lmd, root_depth_level);
-	}
+  /// \overload \deprecated Prefer the visitor_t version (MRPT 2.2.1).
+  void visitDepthFirst(
+      TNodeID const vroot, Visitor& user_visitor, size_t root_depth_level = 0) const
+  {
+    auto lmd = [&](TNodeID const parent, const TEdgeInfo& edgeToChild, size_t depthLevel)
+    { user_visitor.OnVisitNode(parent, edgeToChild, depthLevel); };
+    visitDepthFirst(vroot, lmd, root_depth_level);
+  }
 
-	/** Breadth-first visit of all children nodes of a given root (itself
-	 * excluded from the visit), invoking a user-provided function for each
-	 * node/edge. \sa visitDepthFirst */
-	void visitBreadthFirst(
-		TNodeID const vroot, const visitor_t& user_visitor,
-		size_t root_depth_level = 0) const
-	{
-		const size_t next_depth_level = root_depth_level + 1;
-		auto itChildren = edges_to_children.find(vroot);
-		if (itChildren == edges_to_children.end()) return;	// No children
-		const TListEdges& children = itChildren->second;
-		for (auto itEdge = children.begin(); itEdge != children.end(); ++itEdge)
-			user_visitor(vroot, *itEdge, next_depth_level);
-		for (auto itEdge = children.begin(); itEdge != children.end(); ++itEdge)
-			visitDepthFirst(
-				itEdge->id, user_visitor,
-				next_depth_level);	// Recursive breath-first call.
-	}
+  /** Breadth-first visit of all children nodes of a given root (itself
+   * excluded from the visit), invoking a user-provided function for each
+   * node/edge. \sa visitDepthFirst */
+  void visitBreadthFirst(
+      TNodeID const vroot, const visitor_t& user_visitor, size_t root_depth_level = 0) const
+  {
+    const size_t next_depth_level = root_depth_level + 1;
+    auto itChildren = edges_to_children.find(vroot);
+    if (itChildren == edges_to_children.end()) return;  // No children
+    const TListEdges& children = itChildren->second;
+    for (auto itEdge = children.begin(); itEdge != children.end(); ++itEdge)
+      user_visitor(vroot, *itEdge, next_depth_level);
+    for (auto itEdge = children.begin(); itEdge != children.end(); ++itEdge)
+      visitDepthFirst(itEdge->id, user_visitor,
+                      next_depth_level);  // Recursive breath-first call.
+  }
 
-	/// \overload \deprecated Prefer the visitor_t version (MRPT 2.2.1).
-	void visitBreadthFirst(
-		TNodeID const vroot, Visitor& user_visitor,
-		size_t root_depth_level = 0) const
-	{
-		auto lmd = [&](TNodeID const parent, const TEdgeInfo& edgeToChild,
-					   size_t depthLevel) {
-			user_visitor.OnVisitNode(parent, edgeToChild, depthLevel);
-		};
-		visitBreadthFirst(vroot, lmd, root_depth_level);
-	}
+  /// \overload \deprecated Prefer the visitor_t version (MRPT 2.2.1).
+  void visitBreadthFirst(
+      TNodeID const vroot, Visitor& user_visitor, size_t root_depth_level = 0) const
+  {
+    auto lmd = [&](TNodeID const parent, const TEdgeInfo& edgeToChild, size_t depthLevel)
+    { user_visitor.OnVisitNode(parent, edgeToChild, depthLevel); };
+    visitBreadthFirst(vroot, lmd, root_depth_level);
+  }
 
-	/** Return a text representation of the tree spanned in a depth-first view,
-	 * as in this example:
-	 *  \code
-	 *    0
-	 *     -> 1
-	 *     -> 2
-	 *         -> 4
-	 *         -> 5
-	 *     -> 3
-	 *  \endcode
-	 */
-	std::string getAsTextDescription() const
-	{
-		std::stringstream s;
-		auto lmb = [&]([[maybe_unused]] TNodeID const parent,
-					   const TEdgeInfo& edge_to_child,
-					   const size_t depth_level) {
-			s << std::string(depth_level * 5, ' ')
-			  << (edge_to_child.reverse ? "<-" : "->")	//;
-			  << edge_to_child.id << std::endl;
-		};
-		s << root << std::endl;
-		visitDepthFirst(root, lmb);
-		return s.str();
-	}
+  /** Return a text representation of the tree spanned in a depth-first view,
+   * as in this example:
+   *  \code
+   *    0
+   *     -> 1
+   *     -> 2
+   *         -> 4
+   *         -> 5
+   *     -> 3
+   *  \endcode
+   */
+  std::string getAsTextDescription() const
+  {
+    std::stringstream s;
+    auto lmb = [&]([[maybe_unused]] TNodeID const parent, const TEdgeInfo& edge_to_child,
+                   const size_t depth_level)
+    {
+      s << std::string(depth_level * 5, ' ') << (edge_to_child.reverse ? "<-" : "->")  //;
+        << edge_to_child.id << std::endl;
+    };
+    s << root << std::endl;
+    visitDepthFirst(root, lmb);
+    return s.str();
+  }
 };
 
 /** @} */

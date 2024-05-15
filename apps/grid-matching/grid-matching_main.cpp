@@ -11,16 +11,16 @@
 
 int main(int argc, char** argv)
 {
-	try
-	{
-		mrpt::apps::CGridMapAlignerApp app;
+  try
+  {
+    mrpt::apps::CGridMapAlignerApp app;
 
-		app.initialize(argc, argv);
-		app.run();
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << mrpt::exception_to_str(e) << std::endl;
-		return 1;
-	}
+    app.initialize(argc, argv);
+    app.run();
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << mrpt::exception_to_str(e) << std::endl;
+    return 1;
+  }
 }

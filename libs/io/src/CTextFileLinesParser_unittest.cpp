@@ -15,33 +15,33 @@
 
 TEST(CTextFileLinesParser, parse)
 {
-	std::stringstream ss;
-	ss << "1st line\n"
-		  "2nd line\n"
-		  "# comment\n"
-		  "3rd line";
-	ss.seekg(0);  // rewind
+  std::stringstream ss;
+  ss << "1st line\n"
+        "2nd line\n"
+        "# comment\n"
+        "3rd line";
+  ss.seekg(0);  // rewind
 
-	mrpt::io::CTextFileLinesParser parser(ss);
-	parser.enableCommentFilters(true, true, true);
+  mrpt::io::CTextFileLinesParser parser(ss);
+  parser.enableCommentFilters(true, true, true);
 
-	std::string line;
-	bool ret = parser.getNextLine(line);
-	EXPECT_TRUE(ret);
-	EXPECT_EQ(parser.getCurrentLineNumber(), 1U);
-	EXPECT_EQ(line, "1st line");
+  std::string line;
+  bool ret = parser.getNextLine(line);
+  EXPECT_TRUE(ret);
+  EXPECT_EQ(parser.getCurrentLineNumber(), 1U);
+  EXPECT_EQ(line, "1st line");
 
-	ret = parser.getNextLine(line);
-	EXPECT_TRUE(ret);
-	EXPECT_EQ(parser.getCurrentLineNumber(), 2U);
-	EXPECT_EQ(line, "2nd line");
+  ret = parser.getNextLine(line);
+  EXPECT_TRUE(ret);
+  EXPECT_EQ(parser.getCurrentLineNumber(), 2U);
+  EXPECT_EQ(line, "2nd line");
 
-	ret = parser.getNextLine(line);
-	EXPECT_TRUE(ret);
-	EXPECT_EQ(parser.getCurrentLineNumber(), 4U);
+  ret = parser.getNextLine(line);
+  EXPECT_TRUE(ret);
+  EXPECT_EQ(parser.getCurrentLineNumber(), 4U);
 
-	EXPECT_EQ(line, "3rd line");
+  EXPECT_EQ(line, "3rd line");
 
-	// EOF:
-	EXPECT_FALSE(parser.getNextLine(line));
+  // EOF:
+  EXPECT_FALSE(parser.getNextLine(line));
 }

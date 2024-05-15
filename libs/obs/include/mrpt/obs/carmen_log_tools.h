@@ -59,8 +59,8 @@ namespace mrpt::obs
  * \ingroup mrpt_obs_grp
  */
 bool carmen_log_parse_line(
-	std::istream& in_stream,
-	std::vector<mrpt::obs::CObservation::Ptr>& out_imported_observations,
-	const mrpt::system::TTimeStamp& time_start_log);
+    std::istream& in_stream,
+    std::vector<mrpt::obs::CObservation::Ptr>& out_imported_observations,
+    const mrpt::system::TTimeStamp& time_start_log);
 
 }  // namespace mrpt::obs

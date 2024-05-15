@@ -19,19 +19,19 @@
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_slam)
 {
-	using namespace mrpt::slam;
-	using namespace mrpt::maps;
+  using namespace mrpt::slam;
+  using namespace mrpt::maps;
 
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
-	registerClass(CLASS_ID(CIncrementalMapPartitioner));
-	registerClass(CLASS_ID(CMultiMetricMapPDF));
+  registerClass(CLASS_ID(CIncrementalMapPartitioner));
+  registerClass(CLASS_ID(CMultiMetricMapPDF));
 #endif
 }
 
 void mrpt::slam::registerAllClasses_mrpt_slam()
 {
-	::registerAllClasses_mrpt_slam();
-	// deps:
-	mrpt::vision::registerAllClasses_mrpt_vision();
-	mrpt::maps::registerAllClasses_mrpt_maps();
+  ::registerAllClasses_mrpt_slam();
+  // deps:
+  mrpt::vision::registerAllClasses_mrpt_vision();
+  mrpt::maps::registerAllClasses_mrpt_maps();
 }

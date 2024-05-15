@@ -30,11 +30,11 @@ namespace mrpt::math
 template <typename T>
 struct TPoint3D_data
 {
-	constexpr TPoint3D_data() = default;
-	constexpr TPoint3D_data(T X, T Y, T Z) : x(X), y(Y), z(Z) {}
+  constexpr TPoint3D_data() = default;
+  constexpr TPoint3D_data(T X, T Y, T Z) : x(X), y(Y), z(Z) {}
 
-	/** X,Y,Z coordinates */
-	T x, y, z;
+  /** X,Y,Z coordinates */
+  T x, y, z;
 };
 
 /** Base template for TPoint3D and TPoint3Df.
@@ -42,250 +42,241 @@ struct TPoint3D_data
  * \ingroup geometry_grp
  */
 template <typename T>
-struct TPoint3D_ : public TPoseOrPoint,
-				   public TPoint3D_data<T>,
-				   public internal::ProvideStaticResize<TPoint3D_<T>>
+struct TPoint3D_ :
+    public TPoseOrPoint,
+    public TPoint3D_data<T>,
+    public internal::ProvideStaticResize<TPoint3D_<T>>
 {
-	enum
-	{
-		static_size = 3
-	};
+  enum
+  {
+    static_size = 3
+  };
 
-	/** Default constructor. Initializes to zeros. */
-	constexpr TPoint3D_() : TPoint3D_data<T>{0, 0, 0} {}
-	/** Constructor from coordinates.  */
-	constexpr TPoint3D_(T xx, T yy, T zz) : TPoint3D_data<T>{xx, yy, zz} {}
+  /** Default constructor. Initializes to zeros. */
+  constexpr TPoint3D_() : TPoint3D_data<T>{0, 0, 0} {}
+  /** Constructor from coordinates.  */
+  constexpr TPoint3D_(T xx, T yy, T zz) : TPoint3D_data<T>{xx, yy, zz} {}
 
-	/** Constructor from coordinates. */
-	template <typename U>
-	TPoint3D_(const TPoint3D_data<U>& p)
-	{
-		TPoint3D_data<T>::x = static_cast<T>(p.x);
-		TPoint3D_data<T>::y = static_cast<T>(p.y);
-		TPoint3D_data<T>::z = static_cast<T>(p.z);
-	}
+  /** Constructor from coordinates. */
+  template <typename U>
+  TPoint3D_(const TPoint3D_data<U>& p)
+  {
+    TPoint3D_data<T>::x = static_cast<T>(p.x);
+    TPoint3D_data<T>::y = static_cast<T>(p.y);
+    TPoint3D_data<T>::z = static_cast<T>(p.z);
+  }
 
-	/** Constructor from column vector. */
-	template <typename U>
-	explicit TPoint3D_(const mrpt::math::CMatrixFixed<U, 3, 1>& m)
-	{
-		TPoint3D_data<T>::x = static_cast<T>(m[0]);
-		TPoint3D_data<T>::y = static_cast<T>(m[1]);
-		TPoint3D_data<T>::z = static_cast<T>(m[2]);
-	}
+  /** Constructor from column vector. */
+  template <typename U>
+  explicit TPoint3D_(const mrpt::math::CMatrixFixed<U, 3, 1>& m)
+  {
+    TPoint3D_data<T>::x = static_cast<T>(m[0]);
+    TPoint3D_data<T>::y = static_cast<T>(m[1]);
+    TPoint3D_data<T>::z = static_cast<T>(m[2]);
+  }
 
-	/** Implicit constructor from TPoint2D. Zeroes the z.
-	 * \sa TPoint2D
-	 */
-	explicit TPoint3D_(const TPoint2D_<T>& p);
-	/**
-	 * Constructor from TPose2D, losing information. Zeroes the z.
-	 * \sa TPose2D
-	 */
-	explicit TPoint3D_(const TPose2D& p);
-	/**
-	 * Constructor from TPose3D, losing information.
-	 * \sa TPose3D
-	 */
-	explicit TPoint3D_(const TPose3D& p);
+  /** Implicit constructor from TPoint2D. Zeroes the z.
+   * \sa TPoint2D
+   */
+  explicit TPoint3D_(const TPoint2D_<T>& p);
+  /**
+   * Constructor from TPose2D, losing information. Zeroes the z.
+   * \sa TPose2D
+   */
+  explicit TPoint3D_(const TPose2D& p);
+  /**
+   * Constructor from TPose3D, losing information.
+   * \sa TPose3D
+   */
+  explicit TPoint3D_(const TPose3D& p);
 
-	/** Return a copy of this object using type U for coordinates */
-	template <typename U>
-	[[nodiscard]] TPoint3D_<U> cast() const
-	{
-		return TPoint3D_<U>(
-			static_cast<U>(this->x), static_cast<U>(this->y),
-			static_cast<U>(this->z));
-	}
+  /** Return a copy of this object using type U for coordinates */
+  template <typename U>
+  [[nodiscard]] TPoint3D_<U> cast() const
+  {
+    return TPoint3D_<U>(static_cast<U>(this->x), static_cast<U>(this->y), static_cast<U>(this->z));
+  }
 
-	/** Builds from the first 3 elements of a vector-like object: [x y z]
-	 *
-	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
-	 */
-	template <typename Vector>
-	[[nodiscard]] static TPoint3D_<T> FromVector(const Vector& v)
-	{
-		TPoint3D o;
-		for (int i = 0; i < 3; i++)
-			o[i] = v.at(i);
-		return o;
-	}
+  /** Builds from the first 3 elements of a vector-like object: [x y z]
+   *
+   * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
+   */
+  template <typename Vector>
+  [[nodiscard]] static TPoint3D_<T> FromVector(const Vector& v)
+  {
+    TPoint3D o;
+    for (int i = 0; i < 3; i++) o[i] = v.at(i);
+    return o;
+  }
 
-	/** Coordinate access using operator[]. Order: x,y,z */
-	T& operator[](size_t i)
-	{
-		switch (i)
-		{
-			case 0: return TPoint3D_data<T>::x;
-			case 1: return TPoint3D_data<T>::y;
-			case 2: return TPoint3D_data<T>::z;
-			default: throw std::out_of_range("index out of range");
-		}
-	}
-	/** Coordinate access using operator[]. Order: x,y,z */
-	constexpr T operator[](size_t i) const
-	{
-		switch (i)
-		{
-			case 0: return TPoint3D_data<T>::x;
-			case 1: return TPoint3D_data<T>::y;
-			case 2: return TPoint3D_data<T>::z;
-			default: throw std::out_of_range("index out of range");
-		}
-	}
-	/**
-	 * Point-to-point distance.
-	 */
-	T distanceTo(const TPoint3D_<T>& p) const
-	{
-		return std::sqrt(
-			square(p.x - TPoint3D_data<T>::x) +
-			square(p.y - TPoint3D_data<T>::y) +
-			square(p.z - TPoint3D_data<T>::z));
-	}
-	/**
-	 * Point-to-point distance, squared.
-	 */
-	T sqrDistanceTo(const TPoint3D_<T>& p) const
-	{
-		return square(p.x - TPoint3D_data<T>::x) +
-			square(p.y - TPoint3D_data<T>::y) +
-			square(p.z - TPoint3D_data<T>::z);
-	}
-	/** Squared norm: `|v|^2 = x^2+y^2+z^2` */
-	T sqrNorm() const
-	{
-		return square(TPoint3D_data<T>::x) + square(TPoint3D_data<T>::y) +
-			square(TPoint3D_data<T>::z);
-	}
+  /** Coordinate access using operator[]. Order: x,y,z */
+  T& operator[](size_t i)
+  {
+    switch (i)
+    {
+      case 0:
+        return TPoint3D_data<T>::x;
+      case 1:
+        return TPoint3D_data<T>::y;
+      case 2:
+        return TPoint3D_data<T>::z;
+      default:
+        throw std::out_of_range("index out of range");
+    }
+  }
+  /** Coordinate access using operator[]. Order: x,y,z */
+  constexpr T operator[](size_t i) const
+  {
+    switch (i)
+    {
+      case 0:
+        return TPoint3D_data<T>::x;
+      case 1:
+        return TPoint3D_data<T>::y;
+      case 2:
+        return TPoint3D_data<T>::z;
+      default:
+        throw std::out_of_range("index out of range");
+    }
+  }
+  /**
+   * Point-to-point distance.
+   */
+  T distanceTo(const TPoint3D_<T>& p) const
+  {
+    return std::sqrt(
+        square(p.x - TPoint3D_data<T>::x) + square(p.y - TPoint3D_data<T>::y) +
+        square(p.z - TPoint3D_data<T>::z));
+  }
+  /**
+   * Point-to-point distance, squared.
+   */
+  T sqrDistanceTo(const TPoint3D_<T>& p) const
+  {
+    return square(p.x - TPoint3D_data<T>::x) + square(p.y - TPoint3D_data<T>::y) +
+           square(p.z - TPoint3D_data<T>::z);
+  }
+  /** Squared norm: `|v|^2 = x^2+y^2+z^2` */
+  T sqrNorm() const
+  {
+    return square(TPoint3D_data<T>::x) + square(TPoint3D_data<T>::y) + square(TPoint3D_data<T>::z);
+  }
 
-	/** Point norm: `|v| = sqrt(x^2+y^2+z^2)` */
-	T norm() const { return std::sqrt(sqrNorm()); }
+  /** Point norm: `|v| = sqrt(x^2+y^2+z^2)` */
+  T norm() const { return std::sqrt(sqrNorm()); }
 
-	/** Returns this vector with unit length: v/norm(v) */
-	[[nodiscard]] TPoint3D_<T> unitarize() const
-	{
-		const T n = norm();
-		ASSERT_GT_(n, 0);
-		const T f = 1 / n;
-		return {
-			TPoint3D_data<T>::x * f, TPoint3D_data<T>::y * f,
-			TPoint3D_data<T>::z * f};
-	}
+  /** Returns this vector with unit length: v/norm(v) */
+  [[nodiscard]] TPoint3D_<T> unitarize() const
+  {
+    const T n = norm();
+    ASSERT_GT_(n, 0);
+    const T f = 1 / n;
+    return {TPoint3D_data<T>::x * f, TPoint3D_data<T>::y * f, TPoint3D_data<T>::z * f};
+  }
 
-	/** Scale point/vector */
-	TPoint3D_<T>& operator*=(const T f)
-	{
-		TPoint3D_data<T>::x *= f;
-		TPoint3D_data<T>::y *= f;
-		TPoint3D_data<T>::z *= f;
-		return *this;
-	}
-	/** Gets the pose as a vector of doubles.
-	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
-	 */
-	template <typename Vector>
-	void asVector(Vector& v) const
-	{
-		v.resize(3);
-		v[0] = TPoint3D_data<T>::x;
-		v[1] = TPoint3D_data<T>::y;
-		v[2] = TPoint3D_data<T>::z;
-	}
-	/// \overload
-	template <typename Vector>
-	[[nodiscard]] Vector asVector() const
-	{
-		Vector v;
-		asVector(v);
-		return v;
-	}
+  /** Scale point/vector */
+  TPoint3D_<T>& operator*=(const T f)
+  {
+    TPoint3D_data<T>::x *= f;
+    TPoint3D_data<T>::y *= f;
+    TPoint3D_data<T>::z *= f;
+    return *this;
+  }
+  /** Gets the pose as a vector of doubles.
+   * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
+   */
+  template <typename Vector>
+  void asVector(Vector& v) const
+  {
+    v.resize(3);
+    v[0] = TPoint3D_data<T>::x;
+    v[1] = TPoint3D_data<T>::y;
+    v[2] = TPoint3D_data<T>::z;
+  }
+  /// \overload
+  template <typename Vector>
+  [[nodiscard]] Vector asVector() const
+  {
+    Vector v;
+    asVector(v);
+    return v;
+  }
 
-	/**
-	 * Translation.
-	 */
-	TPoint3D_<T>& operator+=(const TPoint3D_<T>& p)
-	{
-		TPoint3D_data<T>::x += p.x;
-		TPoint3D_data<T>::y += p.y;
-		TPoint3D_data<T>::z += p.z;
-		return *this;
-	}
-	/**
-	 * Difference between points.
-	 */
-	TPoint3D_<T>& operator-=(const TPoint3D_<T>& p)
-	{
-		TPoint3D_data<T>::x -= p.x;
-		TPoint3D_data<T>::y -= p.y;
-		TPoint3D_data<T>::z -= p.z;
-		return *this;
-	}
-	/**
-	 * Points addition.
-	 */
-	[[nodiscard]] constexpr TPoint3D_<T> operator+(const TPoint3D_<T>& p) const
-	{
-		return {
-			TPoint3D_data<T>::x + p.x, TPoint3D_data<T>::y + p.y,
-			TPoint3D_data<T>::z + p.z};
-	}
-	/**
-	 * Points substraction.
-	 */
-	[[nodiscard]] constexpr TPoint3D_<T> operator-(const TPoint3D_<T>& p) const
-	{
-		return {
-			TPoint3D_data<T>::x - p.x, TPoint3D_data<T>::y - p.y,
-			TPoint3D_data<T>::z - p.z};
-	}
+  /**
+   * Translation.
+   */
+  TPoint3D_<T>& operator+=(const TPoint3D_<T>& p)
+  {
+    TPoint3D_data<T>::x += p.x;
+    TPoint3D_data<T>::y += p.y;
+    TPoint3D_data<T>::z += p.z;
+    return *this;
+  }
+  /**
+   * Difference between points.
+   */
+  TPoint3D_<T>& operator-=(const TPoint3D_<T>& p)
+  {
+    TPoint3D_data<T>::x -= p.x;
+    TPoint3D_data<T>::y -= p.y;
+    TPoint3D_data<T>::z -= p.z;
+    return *this;
+  }
+  /**
+   * Points addition.
+   */
+  [[nodiscard]] constexpr TPoint3D_<T> operator+(const TPoint3D_<T>& p) const
+  {
+    return {TPoint3D_data<T>::x + p.x, TPoint3D_data<T>::y + p.y, TPoint3D_data<T>::z + p.z};
+  }
+  /**
+   * Points substraction.
+   */
+  [[nodiscard]] constexpr TPoint3D_<T> operator-(const TPoint3D_<T>& p) const
+  {
+    return {TPoint3D_data<T>::x - p.x, TPoint3D_data<T>::y - p.y, TPoint3D_data<T>::z - p.z};
+  }
 
-	[[nodiscard]] constexpr TPoint3D_<T> operator*(T d) const
-	{
-		return {
-			TPoint3D_data<T>::x * d, TPoint3D_data<T>::y * d,
-			TPoint3D_data<T>::z * d};
-	}
+  [[nodiscard]] constexpr TPoint3D_<T> operator*(T d) const
+  {
+    return {TPoint3D_data<T>::x * d, TPoint3D_data<T>::y * d, TPoint3D_data<T>::z * d};
+  }
 
-	[[nodiscard]] constexpr TPoint3D_<T> operator/(T d) const
-	{
-		return {
-			TPoint3D_data<T>::x / d, TPoint3D_data<T>::y / d,
-			TPoint3D_data<T>::z / d};
-	}
+  [[nodiscard]] constexpr TPoint3D_<T> operator/(T d) const
+  {
+    return {TPoint3D_data<T>::x / d, TPoint3D_data<T>::y / d, TPoint3D_data<T>::z / d};
+  }
 
-	bool operator<(const TPoint3D_<T>& p) const;
+  bool operator<(const TPoint3D_<T>& p) const;
 
-	/** Returns a human-readable textual representation of the object (eg:
-	 * "[0.02 1.04 -0.8]" )
-	 * \sa fromString
-	 */
-	void asString(std::string& s) const
-	{
-		s = mrpt::format(
-			"[%f %f %f]", TPoint3D_data<T>::x, TPoint3D_data<T>::y,
-			TPoint3D_data<T>::z);
-	}
-	[[nodiscard]] std::string asString() const
-	{
-		std::string s;
-		asString(s);
-		return s;
-	}
+  /** Returns a human-readable textual representation of the object (eg:
+   * "[0.02 1.04 -0.8]" )
+   * \sa fromString
+   */
+  void asString(std::string& s) const
+  {
+    s = mrpt::format("[%f %f %f]", TPoint3D_data<T>::x, TPoint3D_data<T>::y, TPoint3D_data<T>::z);
+  }
+  [[nodiscard]] std::string asString() const
+  {
+    std::string s;
+    asString(s);
+    return s;
+  }
 
-	/** Set the current object value from a string generated by 'asString' (eg:
-	 * "[0.02 1.04 -0.8]" )
-	 * \sa asString
-	 * \exception std::exception On invalid format
-	 */
-	void fromString(const std::string& s);
+  /** Set the current object value from a string generated by 'asString' (eg:
+   * "[0.02 1.04 -0.8]" )
+   * \sa asString
+   * \exception std::exception On invalid format
+   */
+  void fromString(const std::string& s);
 
-	[[nodiscard]] static TPoint3D_<T> FromString(const std::string& s)
-	{
-		TPoint3D_<T> o;
-		o.fromString(s);
-		return o;
-	}
+  [[nodiscard]] static TPoint3D_<T> FromString(const std::string& s)
+  {
+    TPoint3D_<T> o;
+    o.fromString(s);
+    return o;
+  }
 };
 
 /** Lightweight 3D point. Allows coordinate access using [] operator.
@@ -303,89 +294,92 @@ using TVector3Df = TPoint3Df;
 /** XYZ point (double) + Intensity(u8) \sa mrpt::math::TPoint3D */
 struct TPointXYZIu8
 {
-	mrpt::math::TPoint3D pt;
-	uint8_t intensity{0};
-	TPointXYZIu8() : pt() {}
-	constexpr TPointXYZIu8(double x, double y, double z, uint8_t intensity_val)
-		: pt(x, y, z), intensity(intensity_val)
-	{
-	}
+  mrpt::math::TPoint3D pt;
+  uint8_t intensity{0};
+  TPointXYZIu8() : pt() {}
+  constexpr TPointXYZIu8(double x, double y, double z, uint8_t intensity_val) :
+      pt(x, y, z), intensity(intensity_val)
+  {
+  }
 };
 /** XYZ point (double) + RGB(u8) \sa mrpt::math::TPoint3D */
 struct TPointXYZRGBu8
 {
-	mrpt::math::TPoint3D pt;
-	uint8_t r{0}, g{0}, b{0};
-	TPointXYZRGBu8() = default;
-	constexpr TPointXYZRGBu8(
-		double x, double y, double z, uint8_t R_val, uint8_t G_val,
-		uint8_t B_val)
-		: pt(x, y, z), r(R_val), g(G_val), b(B_val)
-	{
-	}
+  mrpt::math::TPoint3D pt;
+  uint8_t r{0}, g{0}, b{0};
+  TPointXYZRGBu8() = default;
+  constexpr TPointXYZRGBu8(
+      double x, double y, double z, uint8_t R_val, uint8_t G_val, uint8_t B_val) :
+      pt(x, y, z), r(R_val), g(G_val), b(B_val)
+  {
+  }
 };
 /** XYZ point (float) + Intensity(u8) \sa mrpt::math::TPoint3D */
 struct TPointXYZfIu8
 {
-	mrpt::math::TPoint3Df pt;
-	uint8_t intensity{0};
-	TPointXYZfIu8() = default;
-	constexpr TPointXYZfIu8(float x, float y, float z, uint8_t intensity_val)
-		: pt(x, y, z), intensity(intensity_val)
-	{
-	}
+  mrpt::math::TPoint3Df pt;
+  uint8_t intensity{0};
+  TPointXYZfIu8() = default;
+  constexpr TPointXYZfIu8(float x, float y, float z, uint8_t intensity_val) :
+      pt(x, y, z), intensity(intensity_val)
+  {
+  }
 };
 /** XYZ point (float) + RGB(u8) \sa mrpt::math::TPoint3D */
 struct TPointXYZfRGBu8
 {
-	mrpt::math::TPoint3Df pt;
-	uint8_t r{0}, g{0}, b{0};
-	TPointXYZfRGBu8() : pt() {}
-	constexpr TPointXYZfRGBu8(
-		float x, float y, float z, uint8_t R_val, uint8_t G_val, uint8_t B_val)
-		: pt(x, y, z), r(R_val), g(G_val), b(B_val)
-	{
-	}
+  mrpt::math::TPoint3Df pt;
+  uint8_t r{0}, g{0}, b{0};
+  TPointXYZfRGBu8() : pt() {}
+  constexpr TPointXYZfRGBu8(
+      float x, float y, float z, uint8_t R_val, uint8_t G_val, uint8_t B_val) :
+      pt(x, y, z), r(R_val), g(G_val), b(B_val)
+  {
+  }
 };
 
 mrpt::serialization::CArchive& operator>>(
-	mrpt::serialization::CArchive& in, mrpt::math::TPointXYZfRGBu8& p);
+    mrpt::serialization::CArchive& in, mrpt::math::TPointXYZfRGBu8& p);
 mrpt::serialization::CArchive& operator<<(
-	mrpt::serialization::CArchive& out, const mrpt::math::TPointXYZfRGBu8& p);
+    mrpt::serialization::CArchive& out, const mrpt::math::TPointXYZfRGBu8& p);
 
 /** XYZ point (float) + RGBA(u8) \sa mrpt::math::TPoint3D */
 struct TPointXYZfRGBAu8
 {
-	mrpt::math::TPoint3Df pt;
-	uint8_t r{0}, g{0}, b{0}, a{0xff};
-	TPointXYZfRGBAu8() : pt() {}
-	constexpr TPointXYZfRGBAu8(
-		float x, float y, float z, uint8_t R_val, uint8_t G_val, uint8_t B_val,
-		uint8_t A_val = 0xff)
-		: pt(x, y, z), r(R_val), g(G_val), b(B_val), a(A_val)
-	{
-	}
+  mrpt::math::TPoint3Df pt;
+  uint8_t r{0}, g{0}, b{0}, a{0xff};
+  TPointXYZfRGBAu8() : pt() {}
+  constexpr TPointXYZfRGBAu8(
+      float x,
+      float y,
+      float z,
+      uint8_t R_val,
+      uint8_t G_val,
+      uint8_t B_val,
+      uint8_t A_val = 0xff) :
+      pt(x, y, z), r(R_val), g(G_val), b(B_val), a(A_val)
+  {
+  }
 };
 
 mrpt::serialization::CArchive& operator>>(
-	mrpt::serialization::CArchive& in, mrpt::math::TPointXYZfRGBAu8& p);
+    mrpt::serialization::CArchive& in, mrpt::math::TPointXYZfRGBAu8& p);
 mrpt::serialization::CArchive& operator<<(
-	mrpt::serialization::CArchive& out, const mrpt::math::TPointXYZfRGBAu8& p);
+    mrpt::serialization::CArchive& out, const mrpt::math::TPointXYZfRGBAu8& p);
 
 /** XYZ point (float) + RGBA(float) [1-byte memory packed, no padding]
  * \sa mrpt::math::TPoint3D */
 struct TPointXYZRGBAf
 {
-	mrpt::math::TPoint3Df pt;
-	float R{0}, G{0}, B{0}, A{0};
-	TPointXYZRGBAf() = default;
+  mrpt::math::TPoint3Df pt;
+  float R{0}, G{0}, B{0}, A{0};
+  TPointXYZRGBAf() = default;
 
-	constexpr TPointXYZRGBAf(
-		float x, float y, float z, float R_val, float G_val, float B_val,
-		float A_val)
-		: pt(x, y, z), R(R_val), G(G_val), B(B_val), A(A_val)
-	{
-	}
+  constexpr TPointXYZRGBAf(
+      float x, float y, float z, float R_val, float G_val, float B_val, float A_val) :
+      pt(x, y, z), R(R_val), G(G_val), B(B_val), A(A_val)
+  {
+  }
 };
 #pragma pack(pop)
 
@@ -393,29 +387,30 @@ struct TPointXYZRGBAf
 template <typename T>
 constexpr TPoint3D_<T> operator-(const TPoint3D_<T>& p1)
 {
-	return {-p1.x, -p1.y, -p1.z};
+  return {-p1.x, -p1.y, -p1.z};
 }
 
 /** scalar times vector operator. */
 template <
-	typename T, typename Scalar,
-	std::enable_if_t<std::is_convertible_v<Scalar, T>>* = nullptr>
+    typename T,
+    typename Scalar,
+    std::enable_if_t<std::is_convertible_v<Scalar, T>>* = nullptr>
 constexpr TPoint3D_<T> operator*(const Scalar scalar, const TPoint3D_<T>& p)
 {
-	return {scalar * p.x, scalar * p.y, scalar * p.z};
+  return {scalar * p.x, scalar * p.y, scalar * p.z};
 }
 
 /** Exact comparison between 3D points */
 template <typename T>
 constexpr bool operator==(const TPoint3D_<T>& p1, const TPoint3D_<T>& p2)
 {
-	return (p1.x == p2.x) && (p1.y == p2.y) && (p1.z == p2.z);	//-V550
+  return (p1.x == p2.x) && (p1.y == p2.y) && (p1.z == p2.z);  //-V550
 }
 /** Exact comparison between 3D points */
 template <typename T>
 constexpr bool operator!=(const TPoint3D_<T>& p1, const TPoint3D_<T>& p2)
 {
-	return (p1.x != p2.x) || (p1.y != p2.y) || (p1.z != p2.z);	//-V550
+  return (p1.x != p2.x) || (p1.y != p2.y) || (p1.z != p2.z);  //-V550
 }
 
 /** @} */

@@ -21,8 +21,8 @@
 
 class kinect_calibrate_guiApp : public wxApp
 {
-   public:
-	bool OnInit() override;
+ public:
+  bool OnInit() override;
 };
 
-#endif	// KINECT_CALIBRATE_GUIAPP_H
+#endif  // KINECT_CALIBRATE_GUIAPP_H

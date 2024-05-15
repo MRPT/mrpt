@@ -20,33 +20,33 @@
 
 void TestProgressBar()
 {
-	const int end = 400;
-	const size_t barWidth = 30;
+  const int end = 400;
+  const size_t barWidth = 30;
 
-	for (int i = 0; i <= end; i++)
-	{
-		double p = double(i) / end;
+  for (int i = 0; i <= end; i++)
+  {
+    double p = double(i) / end;
 
-		std::cout << "Progress: " << mrpt::system::progress(p, barWidth)
-				  << mrpt::format(" %5.02f%%", 100 * p) << "\r";
-		std::cout.flush();
-		std::this_thread::sleep_for(std::chrono::milliseconds(5));
-	}
-	std::cout << std::endl;
+    std::cout << "Progress: " << mrpt::system::progress(p, barWidth)
+              << mrpt::format(" %5.02f%%", 100 * p) << "\r";
+    std::cout.flush();
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+  }
+  std::cout << std::endl;
 }
 
 //! [example-system-progress-bar]
 
 int main()
 {
-	try
-	{
-		TestProgressBar();
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << mrpt::exception_to_str(e) << std::endl;
-		return -1;
-	}
+  try
+  {
+    TestProgressBar();
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << mrpt::exception_to_str(e) << std::endl;
+    return -1;
+  }
 }

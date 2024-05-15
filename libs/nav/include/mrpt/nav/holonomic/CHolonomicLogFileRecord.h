@@ -23,17 +23,14 @@ namespace mrpt::nav
  */
 class CHolonomicLogFileRecord : public mrpt::serialization::CSerializable
 {
-	DEFINE_VIRTUAL_SERIALIZABLE(CHolonomicLogFileRecord)
-   public:
-	/** Final [N-1] and earlier stages [0...N-1] evaluation scores for each
-	 * direction, in the same order of TP-Obstacles. May be not filled by all
-	 * methods. */
-	std::vector<std::vector<double>> dirs_eval;
+  DEFINE_VIRTUAL_SERIALIZABLE(CHolonomicLogFileRecord)
+ public:
+  /** Final [N-1] and earlier stages [0...N-1] evaluation scores for each
+   * direction, in the same order of TP-Obstacles. May be not filled by all
+   * methods. */
+  std::vector<std::vector<double>> dirs_eval;
 
-	virtual const mrpt::math::CMatrixD* getDirectionScores() const
-	{
-		return nullptr;
-	}
+  virtual const mrpt::math::CMatrixD* getDirectionScores() const { return nullptr; }
 };
 
 /** @} */

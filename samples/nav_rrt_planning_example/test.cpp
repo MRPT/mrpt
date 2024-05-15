@@ -14,7 +14,7 @@
 #include <mrpt/nav.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/system/filesystem.h>	 // directoryExists(), ...
+#include <mrpt/system/filesystem.h>  // directoryExists(), ...
 
 #include <iostream>
 
@@ -26,139 +26,131 @@ using namespace std;
 // Load example grid map
 #include <mrpt/examples_config.h>
 string mySimpleMap(
-	MRPT_EXAMPLES_BASE_DIRECTORY +
-	string("../share/mrpt/datasets/malaga-cs-fac-building.simplemap.gz"));
+    MRPT_EXAMPLES_BASE_DIRECTORY +
+    string("../share/mrpt/datasets/malaga-cs-fac-building.simplemap.gz"));
 string myCfgFileName(
-	MRPT_EXAMPLES_BASE_DIRECTORY +
-	string("../share/mrpt/config_files/navigation-ptgs/"
-		   "ptrrt_config_example1.ini"));
+    MRPT_EXAMPLES_BASE_DIRECTORY + string("../share/mrpt/config_files/navigation-ptgs/"
+                                          "ptrrt_config_example1.ini"));
 
 // ------------------------------------------------------
 //				TestRRT1
 // ------------------------------------------------------
 void TestRRT1()
 {
-	mrpt::random::Randomize();
+  mrpt::random::Randomize();
 
-	// Load the gridmap:
-	CSimpleMap simplemap;
+  // Load the gridmap:
+  CSimpleMap simplemap;
 
-	ASSERT_FILE_EXISTS_(mySimpleMap);
+  ASSERT_FILE_EXISTS_(mySimpleMap);
 
-	cout << "Loading map...";
-	{
-		mrpt::io::CFileGZInputStream f(mySimpleMap);
-		auto arch = mrpt::serialization::archiveFrom(f);
-		arch >> simplemap;
-	}
-	cout << "Done! Number of sensory frames: " << simplemap.size() << endl;
+  cout << "Loading map...";
+  {
+    mrpt::io::CFileGZInputStream f(mySimpleMap);
+    auto arch = mrpt::serialization::archiveFrom(f);
+    arch >> simplemap;
+  }
+  cout << "Done! Number of sensory frames: " << simplemap.size() << endl;
 
-	// Set planner params:
-	// ------------------------------
-	mrpt::nav::PlannerRRT_SE2_TPS planner;
+  // Set planner params:
+  // ------------------------------
+  mrpt::nav::PlannerRRT_SE2_TPS planner;
 
-	// Parameters:
-	planner.loadConfig(mrpt::config::CConfigFile(myCfgFileName));
+  // Parameters:
+  planner.loadConfig(mrpt::config::CConfigFile(myCfgFileName));
 
-	planner.params.maxLength = 2.0;
-	planner.params.minDistanceBetweenNewNodes = 0.10;
-	planner.params.minAngBetweenNewNodes = mrpt::DEG2RAD(20);
-	planner.params.goalBias = 0.05;
+  planner.params.maxLength = 2.0;
+  planner.params.minDistanceBetweenNewNodes = 0.10;
+  planner.params.minAngBetweenNewNodes = mrpt::DEG2RAD(20);
+  planner.params.goalBias = 0.05;
 
-	// Logging:
-	planner.params.save_3d_log_freq =
-		0;	// 500; // save some iterations for debugging
+  // Logging:
+  planner.params.save_3d_log_freq = 0;  // 500; // save some iterations for debugging
 
-	// End criteria:
-	planner.end_criteria.acceptedDistToTarget = 0.25;
-	planner.end_criteria.acceptedAngToTarget =
-		180.0_deg;	// 180d=Any orientation is ok
-	planner.end_criteria.maxComputationTime = 15.0;
-	planner.end_criteria.minComputationTime =
-		1.0;  // 0=accept first found acceptable solution
+  // End criteria:
+  planner.end_criteria.acceptedDistToTarget = 0.25;
+  planner.end_criteria.acceptedAngToTarget = 180.0_deg;  // 180d=Any orientation is ok
+  planner.end_criteria.maxComputationTime = 15.0;
+  planner.end_criteria.minComputationTime = 1.0;  // 0=accept first found acceptable solution
 
-	// Init planner:
-	// ------------------------------
-	planner.initialize();
+  // Init planner:
+  // ------------------------------
+  planner.initialize();
 
-	// Set up planning problem:
-	// ------------------------------
-	PlannerRRT_SE2_TPS::TPlannerResult planner_result;
-	PlannerRRT_SE2_TPS::TPlannerInput planner_input;
+  // Set up planning problem:
+  // ------------------------------
+  PlannerRRT_SE2_TPS::TPlannerResult planner_result;
+  PlannerRRT_SE2_TPS::TPlannerInput planner_input;
 
-	// Start & goal:
-	planner_input.start_pose = mrpt::math::TPose2D(0, 0, 0);
-	planner_input.goal_pose = mrpt::math::TPose2D(-20, -30, 0);
+  // Start & goal:
+  planner_input.start_pose = mrpt::math::TPose2D(0, 0, 0);
+  planner_input.goal_pose = mrpt::math::TPose2D(-20, -30, 0);
 
-	// Obstacles:
-	planner_input.obstacles_points.loadFromSimpleMap(simplemap);
-	const auto bbox = planner_input.obstacles_points.boundingBox();
-	// Convert gridmap -> obstacle points:
-	// gridmap.getAsPointCloud( planner_input.obstacles_points );
+  // Obstacles:
+  planner_input.obstacles_points.loadFromSimpleMap(simplemap);
+  const auto bbox = planner_input.obstacles_points.boundingBox();
+  // Convert gridmap -> obstacle points:
+  // gridmap.getAsPointCloud( planner_input.obstacles_points );
 
-	// Workspace bounding box:
-	planner_input.world_bbox_min = mrpt::math::TPoint2D(bbox.min.x, bbox.min.y);
-	planner_input.world_bbox_max = mrpt::math::TPoint2D(bbox.max.x, bbox.max.y);
+  // Workspace bounding box:
+  planner_input.world_bbox_min = mrpt::math::TPoint2D(bbox.min.x, bbox.min.y);
+  planner_input.world_bbox_max = mrpt::math::TPoint2D(bbox.max.x, bbox.max.y);
 
 // size_t iters=0;
 // Show results in a GUI and keep improving:
 #if MRPT_HAS_WXWIDGETS
-	mrpt::gui::CDisplayWindow3D win("Result", 1024, 800);
-	while (win.isOpen())
+  mrpt::gui::CDisplayWindow3D win("Result", 1024, 800);
+  while (win.isOpen())
 #else
-	for (size_t i = 0; i < 1; i++)
+  for (size_t i = 0; i < 1; i++)
 #endif
-	{
-		// Refine solution or start over:
-		bool refine_solution = false;  // (iters++ % 5 != 0);
+  {
+    // Refine solution or start over:
+    bool refine_solution = false;  // (iters++ % 5 != 0);
 
-		// Start from scratch:
-		if (!refine_solution)
-			planner_result = PlannerRRT_SE2_TPS::TPlannerResult();
+    // Start from scratch:
+    if (!refine_solution) planner_result = PlannerRRT_SE2_TPS::TPlannerResult();
 
-		// Do path planning:
-		planner.solve(planner_input, planner_result);
+    // Do path planning:
+    planner.solve(planner_input, planner_result);
 
-		cout << "Found goal_distance: " << planner_result.goal_distance << endl;
-		cout << "Found path_cost: " << planner_result.path_cost << endl;
-		cout << "Acceptable goal nodes: "
-			 << planner_result.acceptable_goal_node_ids.size() << endl;
+    cout << "Found goal_distance: " << planner_result.goal_distance << endl;
+    cout << "Found path_cost: " << planner_result.path_cost << endl;
+    cout << "Acceptable goal nodes: " << planner_result.acceptable_goal_node_ids.size() << endl;
 
 #if MRPT_HAS_WXWIDGETS
-		// Show result in a GUI:
-		mrpt::opengl::Scene::Ptr& scene = win.get3DSceneAndLock();
+    // Show result in a GUI:
+    mrpt::opengl::Scene::Ptr& scene = win.get3DSceneAndLock();
 
-		scene->clear();
+    scene->clear();
 
-		PlannerRRT_SE2_TPS::TRenderPlannedPathOptions render_opts;
-		render_opts.highlight_path_to_node_id =
-			planner_result.best_goal_node_id;
+    PlannerRRT_SE2_TPS::TRenderPlannedPathOptions render_opts;
+    render_opts.highlight_path_to_node_id = planner_result.best_goal_node_id;
 
-		planner.renderMoveTree(
-			*scene, planner_input, planner_result, render_opts);
+    planner.renderMoveTree(*scene, planner_input, planner_result, render_opts);
 
-		win.unlockAccess3DScene();
-		win.repaint();
-		win.waitForKey();
+    win.unlockAccess3DScene();
+    win.repaint();
+    win.waitForKey();
 #endif
-	}
+  }
 }
 
 int main(int argc, char** argv)
 {
-	try
-	{
-		TestRRT1();
-		return 0;
-	}
-	catch (exception& e)
-	{
-		cout << "MRPT exception caught: " << e.what() << endl;
-		return -1;
-	}
-	catch (...)
-	{
-		printf("Another exception!!");
-		return -1;
-	}
+  try
+  {
+    TestRRT1();
+    return 0;
+  }
+  catch (exception& e)
+  {
+    cout << "MRPT exception caught: " << e.what() << endl;
+    return -1;
+  }
+  catch (...)
+  {
+    printf("Another exception!!");
+    return -1;
+  }
 }

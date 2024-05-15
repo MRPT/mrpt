@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"	// Precompiled headers
+#include "hwdrivers-precomp.h"  // Precompiled headers
 //
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/CSerialPort.h>
@@ -29,191 +29,181 @@ using namespace mrpt::opengl;
 using namespace std;
 
 /*-------------------------------------------------------------
-						Constructor
+            Constructor
 -------------------------------------------------------------*/
 CRoboPeakLidar::CRoboPeakLidar() : m_com_port("") { m_sensorLabel = "RPLidar"; }
 /*-------------------------------------------------------------
-					~CRoboPeakLidar
+          ~CRoboPeakLidar
 -------------------------------------------------------------*/
 CRoboPeakLidar::~CRoboPeakLidar()
 {
-	turnOff();
-	disconnect();
+  turnOff();
+  disconnect();
 }
 
 void CRoboPeakLidar::disconnect()
 {
 #if MRPT_HAS_ROBOPEAK_LIDAR
-	RPlidarDriver::DisposeDriver(RPLIDAR_DRV);
-	m_rplidar_drv = nullptr;
+  RPlidarDriver::DisposeDriver(RPLIDAR_DRV);
+  m_rplidar_drv = nullptr;
 #endif
 }
 
 /*-------------------------------------------------------------
-						doProcessSimple
+            doProcessSimple
 -------------------------------------------------------------*/
 void CRoboPeakLidar::doProcessSimple(
-	bool& outThereIsObservation,
-	mrpt::obs::CObservation2DRangeScan& outObservation, bool& hardwareError)
+    bool& outThereIsObservation,
+    mrpt::obs::CObservation2DRangeScan& outObservation,
+    bool& hardwareError)
 {
 #if MRPT_HAS_ROBOPEAK_LIDAR
-	outThereIsObservation = false;
-	hardwareError = false;
+  outThereIsObservation = false;
+  hardwareError = false;
 
-	// Bound?
-	if (!checkCOMMs())
-	{
-		hardwareError = true;
-		return;
-	}
+  // Bound?
+  if (!checkCOMMs())
+  {
+    hardwareError = true;
+    return;
+  }
 
-	rplidar_response_measurement_node_hq_t nodes[360 * 2];
-	size_t count = sizeof(nodes) / sizeof(nodes[0]);
+  rplidar_response_measurement_node_hq_t nodes[360 * 2];
+  size_t count = sizeof(nodes) / sizeof(nodes[0]);
 
-	// Scan:
-	const mrpt::system::TTimeStamp tim_scan_start = mrpt::Clock::now();
-	u_result op_result = RPLIDAR_DRV->grabScanDataHq(nodes, count);
+  // Scan:
+  const mrpt::system::TTimeStamp tim_scan_start = mrpt::Clock::now();
+  u_result op_result = RPLIDAR_DRV->grabScanDataHq(nodes, count);
 
-	// const mrpt::system::TTimeStamp tim_scan_end = mrpt::Clock::now();
-	// const double scan_duration =
-	// mrpt::system::timeDifference(tim_scan_start,tim_scan_end);
+  // const mrpt::system::TTimeStamp tim_scan_end = mrpt::Clock::now();
+  // const double scan_duration =
+  // mrpt::system::timeDifference(tim_scan_start,tim_scan_end);
 
-	// Fill in scan data:
-	if (op_result == RESULT_OK)
-	{
-		op_result = RPLIDAR_DRV->ascendScanData(nodes, count);
-		if (op_result == RESULT_OK)
-		{
-			const size_t angle_compensate_nodes_count = 360;
-			const size_t angle_compensate_multiple = 1;
-			int angle_compensate_offset = 0;
-			rplidar_response_measurement_node_hq_t
-				angle_compensate_nodes[angle_compensate_nodes_count];
-			memset(
-				angle_compensate_nodes, 0,
-				angle_compensate_nodes_count *
-					sizeof(angle_compensate_nodes[0]));
+  // Fill in scan data:
+  if (op_result == RESULT_OK)
+  {
+    op_result = RPLIDAR_DRV->ascendScanData(nodes, count);
+    if (op_result == RESULT_OK)
+    {
+      const size_t angle_compensate_nodes_count = 360;
+      const size_t angle_compensate_multiple = 1;
+      int angle_compensate_offset = 0;
+      rplidar_response_measurement_node_hq_t angle_compensate_nodes[angle_compensate_nodes_count];
+      memset(
+          angle_compensate_nodes, 0,
+          angle_compensate_nodes_count * sizeof(angle_compensate_nodes[0]));
 
-			outObservation.resizeScanAndAssign(
-				angle_compensate_nodes_count, 0, false);
+      outObservation.resizeScanAndAssign(angle_compensate_nodes_count, 0, false);
 
-			for (size_t i = 0; i < count; i++)
-			{
-				if (nodes[i].dist_mm_q2 != 0)
-				{
-					auto angle =
-						(float)((nodes[i].angle_z_q14 >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) / 64.0f);
-					int angle_value = (int)(angle * angle_compensate_multiple);
-					if ((angle_value - angle_compensate_offset) < 0)
-						angle_compensate_offset = angle_value;
-					for (size_t j = 0; j < angle_compensate_multiple; j++)
-					{
-						angle_compensate_nodes
-							[angle_value - angle_compensate_offset + j] =
-								nodes[i];
-					}
-				}
-			}
+      for (size_t i = 0; i < count; i++)
+      {
+        if (nodes[i].dist_mm_q2 != 0)
+        {
+          auto angle =
+              (float)((nodes[i].angle_z_q14 >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) / 64.0f);
+          int angle_value = (int)(angle * angle_compensate_multiple);
+          if ((angle_value - angle_compensate_offset) < 0) angle_compensate_offset = angle_value;
+          for (size_t j = 0; j < angle_compensate_multiple; j++)
+          {
+            angle_compensate_nodes[angle_value - angle_compensate_offset + j] = nodes[i];
+          }
+        }
+      }
 
-			for (size_t i = 0; i < angle_compensate_nodes_count; i++)
-			{
-				const float read_value =
-					(float)angle_compensate_nodes[i].dist_mm_q2 / 4.0f / 1000;
-				outObservation.setScanRange(i, read_value);
-				outObservation.setScanRangeValidity(i, (read_value > 0));
-			}
-		}
-		else if (op_result == RESULT_OPERATION_FAIL)
-		{
-			// All the data is invalid, just publish them
-			outObservation.resizeScanAndAssign(count, 0, false);
-		}
+      for (size_t i = 0; i < angle_compensate_nodes_count; i++)
+      {
+        const float read_value = (float)angle_compensate_nodes[i].dist_mm_q2 / 4.0f / 1000;
+        outObservation.setScanRange(i, read_value);
+        outObservation.setScanRangeValidity(i, (read_value > 0));
+      }
+    }
+    else if (op_result == RESULT_OPERATION_FAIL)
+    {
+      // All the data is invalid, just publish them
+      outObservation.resizeScanAndAssign(count, 0, false);
+    }
 
-		// Fill common parts of the obs:
-		outObservation.timestamp = tim_scan_start;
-		outObservation.rightToLeft = false;
-		outObservation.aperture = 2 * M_PIf;
-		outObservation.maxRange = 6.0;
-		outObservation.stdError = 0.010f;
-		outObservation.sensorPose = m_sensorPose;
-		outObservation.sensorLabel = m_sensorLabel;
+    // Fill common parts of the obs:
+    outObservation.timestamp = tim_scan_start;
+    outObservation.rightToLeft = false;
+    outObservation.aperture = 2 * M_PIf;
+    outObservation.maxRange = 6.0;
+    outObservation.stdError = 0.010f;
+    outObservation.sensorPose = m_sensorPose;
+    outObservation.sensorLabel = m_sensorLabel;
 
-		// Do filter:
-		C2DRangeFinderAbstract::filterByExclusionAreas(outObservation);
-		C2DRangeFinderAbstract::filterByExclusionAngles(outObservation);
-		// Do show preview:
-		C2DRangeFinderAbstract::processPreview(outObservation);
+    // Do filter:
+    C2DRangeFinderAbstract::filterByExclusionAreas(outObservation);
+    C2DRangeFinderAbstract::filterByExclusionAngles(outObservation);
+    // Do show preview:
+    C2DRangeFinderAbstract::processPreview(outObservation);
 
-		outThereIsObservation = true;
-	}
-	else
-	{
-		if (op_result == RESULT_OPERATION_TIMEOUT ||
-			op_result == RESULT_OPERATION_FAIL)
-		{
-			// Error? Retry connection
-			this->disconnect();
-		}
-	}
+    outThereIsObservation = true;
+  }
+  else
+  {
+    if (op_result == RESULT_OPERATION_TIMEOUT || op_result == RESULT_OPERATION_FAIL)
+    {
+      // Error? Retry connection
+      this->disconnect();
+    }
+  }
 
 #endif
 }
 
 /*-------------------------------------------------------------
-						loadConfig_sensorSpecific
+            loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CRoboPeakLidar::loadConfig_sensorSpecific(
-	const mrpt::config::CConfigFileBase& configSource,
-	const std::string& iniSection)
+    const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection)
 {
-	m_sensorPose.setFromValues(
-		configSource.read_float(iniSection, "pose_x", 0),
-		configSource.read_float(iniSection, "pose_y", 0),
-		configSource.read_float(iniSection, "pose_z", 0),
-		DEG2RAD(configSource.read_float(iniSection, "pose_yaw", 0)),
-		DEG2RAD(configSource.read_float(iniSection, "pose_pitch", 0)),
-		DEG2RAD(configSource.read_float(iniSection, "pose_roll", 0)));
+  m_sensorPose.setFromValues(
+      configSource.read_float(iniSection, "pose_x", 0),
+      configSource.read_float(iniSection, "pose_y", 0),
+      configSource.read_float(iniSection, "pose_z", 0),
+      DEG2RAD(configSource.read_float(iniSection, "pose_yaw", 0)),
+      DEG2RAD(configSource.read_float(iniSection, "pose_pitch", 0)),
+      DEG2RAD(configSource.read_float(iniSection, "pose_roll", 0)));
 
 #ifdef _WIN32
-	m_com_port =
-		configSource.read_string(iniSection, "COM_port_WIN", m_com_port, true);
+  m_com_port = configSource.read_string(iniSection, "COM_port_WIN", m_com_port, true);
 #else
-	m_com_port =
-		configSource.read_string(iniSection, "COM_port_LIN", m_com_port, true);
+  m_com_port = configSource.read_string(iniSection, "COM_port_LIN", m_com_port, true);
 #endif
 
-	// Parent options:
-	this->loadCommonParams(configSource, iniSection);
+  // Parent options:
+  this->loadCommonParams(configSource, iniSection);
 }
 
 /*-------------------------------------------------------------
-						turnOn
+            turnOn
 -------------------------------------------------------------*/
 bool CRoboPeakLidar::turnOn()
 {
 #if MRPT_HAS_ROBOPEAK_LIDAR
-	bool ret = checkCOMMs();
-	if (ret && RPLIDAR_DRV) RPLIDAR_DRV->startMotor();
-	return ret;
+  bool ret = checkCOMMs();
+  if (ret && RPLIDAR_DRV) RPLIDAR_DRV->startMotor();
+  return ret;
 #else
-	THROW_EXCEPTION("MRPT has been compiled without RPLidar support!");
+  THROW_EXCEPTION("MRPT has been compiled without RPLidar support!");
 #endif
 }
 
 /*-------------------------------------------------------------
-						turnOff
+            turnOff
 -------------------------------------------------------------*/
 bool CRoboPeakLidar::turnOff()
 {
 #if MRPT_HAS_ROBOPEAK_LIDAR
-	if (RPLIDAR_DRV)
-	{
-		RPLIDAR_DRV->stop();
-		RPLIDAR_DRV->stopMotor();
-	}
-	return true;
+  if (RPLIDAR_DRV)
+  {
+    RPLIDAR_DRV->stop();
+    RPLIDAR_DRV->stopMotor();
+  }
+  return true;
 #else
-	THROW_EXCEPTION("MRPT has been compiled without RPLidar support!");
+  THROW_EXCEPTION("MRPT has been compiled without RPLidar support!");
 #endif
 }
 
@@ -221,132 +211,124 @@ bool CRoboPeakLidar::turnOff()
 bool CRoboPeakLidar::getDeviceHealth() const
 {
 #if MRPT_HAS_ROBOPEAK_LIDAR
-	if (!RPLIDAR_DRV) return false;
+  if (!RPLIDAR_DRV) return false;
 
-	rplidar_response_device_health_t healthinfo;
+  rplidar_response_device_health_t healthinfo;
 
-	u_result op_result = RPLIDAR_DRV->getHealth(healthinfo);
-	if (IS_OK(op_result))
-	{
-		printf(
-			"[CRoboPeakLidar] RPLidar health status : %d\n", healthinfo.status);
-		if (healthinfo.status != RPLIDAR_STATUS_OK)
-		{
-			fprintf(
-				stderr,
-				"[CRoboPeakLidar] Error, rplidar internal error detected. "
-				"Please reboot the device to retry.\n");
-			return false;
-		}
-	}
-	else
-	{
-		fprintf(
-			stderr,
-			"[CRoboPeakLidar] Error, cannot retrieve rplidar health code: %x\n",
-			op_result);
-		return false;
-	}
+  u_result op_result = RPLIDAR_DRV->getHealth(healthinfo);
+  if (IS_OK(op_result))
+  {
+    printf("[CRoboPeakLidar] RPLidar health status : %d\n", healthinfo.status);
+    if (healthinfo.status != RPLIDAR_STATUS_OK)
+    {
+      fprintf(
+          stderr,
+          "[CRoboPeakLidar] Error, rplidar internal error detected. "
+          "Please reboot the device to retry.\n");
+      return false;
+    }
+  }
+  else
+  {
+    fprintf(stderr, "[CRoboPeakLidar] Error, cannot retrieve rplidar health code: %x\n", op_result);
+    return false;
+  }
 
-	return true;
+  return true;
 #else
-	THROW_EXCEPTION("MRPT has been compiled without RPLidar support!");
+  THROW_EXCEPTION("MRPT has been compiled without RPLidar support!");
 #endif
 }
 
 /*-------------------------------------------------------------
-						checkCOMMs
+            checkCOMMs
 -------------------------------------------------------------*/
 bool CRoboPeakLidar::checkCOMMs()
 {
-	MRPT_START
+  MRPT_START
 #if MRPT_HAS_ROBOPEAK_LIDAR
-	if (RPLIDAR_DRV) return true;
+  if (RPLIDAR_DRV) return true;
 
-	// create the driver instance
-	m_rplidar_drv = RPlidarDriver::CreateDriver(DRIVER_TYPE_SERIALPORT);
-	ASSERTMSG_(m_rplidar_drv, "Create Driver failed.");
+  // create the driver instance
+  m_rplidar_drv = RPlidarDriver::CreateDriver(DRIVER_TYPE_SERIALPORT);
+  ASSERTMSG_(m_rplidar_drv, "Create Driver failed.");
 
-	// Is it COMX, X>4? ->  "\\.\COMX"
-	if (m_com_port.size() >= 3)
-	{
-		if (tolower(m_com_port[0]) == 'c' && tolower(m_com_port[1]) == 'o' &&
-			tolower(m_com_port[2]) == 'm')
-		{
-			// Need to add "\\.\"?
-			if (m_com_port.size() > 4 || m_com_port[3] > '4')
-				m_com_port = std::string("\\\\.\\") + m_com_port;
-		}
-	}
+  // Is it COMX, X>4? ->  "\\.\COMX"
+  if (m_com_port.size() >= 3)
+  {
+    if (tolower(m_com_port[0]) == 'c' && tolower(m_com_port[1]) == 'o' &&
+        tolower(m_com_port[2]) == 'm')
+    {
+      // Need to add "\\.\"?
+      if (m_com_port.size() > 4 || m_com_port[3] > '4')
+        m_com_port = std::string("\\\\.\\") + m_com_port;
+    }
+  }
 
-	// make connection...
-	if (IS_FAIL(RPLIDAR_DRV->connect(
-			m_com_port.c_str(), (_u32)m_com_port_baudrate)))
-	{
-		fprintf(
-			stderr,
-			"[CRoboPeakLidar] Error, cannot bind to the specified serial port "
-			"%s\n",
-			m_com_port.c_str());
-		return false;
-	}
+  // make connection...
+  if (IS_FAIL(RPLIDAR_DRV->connect(m_com_port.c_str(), (_u32)m_com_port_baudrate)))
+  {
+    fprintf(
+        stderr,
+        "[CRoboPeakLidar] Error, cannot bind to the specified serial port "
+        "%s\n",
+        m_com_port.c_str());
+    return false;
+  }
 
-	rplidar_response_device_info_t devinfo;
-	if (IS_FAIL(RPLIDAR_DRV->getDeviceInfo(devinfo))) { return false; }
+  rplidar_response_device_info_t devinfo;
+  if (IS_FAIL(RPLIDAR_DRV->getDeviceInfo(devinfo)))
+  {
+    return false;
+  }
 
-	if (m_verbose)
-	{
-		printf(
-			"[CRoboPeakLidar] Connection established:\n"
-			"Firmware version: %u\n"
-			"Hardware version: %u\n"
-			"Model: %u\n"
-			"Serial: ",
-			(unsigned int)devinfo.firmware_version,
-			(unsigned int)devinfo.hardware_version,
-			(unsigned int)devinfo.model);
+  if (m_verbose)
+  {
+    printf(
+        "[CRoboPeakLidar] Connection established:\n"
+        "Firmware version: %u\n"
+        "Hardware version: %u\n"
+        "Model: %u\n"
+        "Serial: ",
+        (unsigned int)devinfo.firmware_version, (unsigned int)devinfo.hardware_version,
+        (unsigned int)devinfo.model);
 
-		for (unsigned char i : devinfo.serialnum)
-			printf("%02X", i);
-		printf("\n");
-	}
+    for (unsigned char i : devinfo.serialnum) printf("%02X", i);
+    printf("\n");
+  }
 
-	// check health:
-	if (!getDeviceHealth()) return false;
+  // check health:
+  if (!getDeviceHealth()) return false;
 
-	// start scan...
-	u_result res = RPLIDAR_DRV->startScan(false, true);
-	if (IS_FAIL(res))
-	{
-		fprintf(
-			stderr, "[CRoboPeakLidar] Error starting scanning mode: %x\n", res);
-		return false;
-	}
+  // start scan...
+  u_result res = RPLIDAR_DRV->startScan(false, true);
+  if (IS_FAIL(res))
+  {
+    fprintf(stderr, "[CRoboPeakLidar] Error starting scanning mode: %x\n", res);
+    return false;
+  }
 
-	return true;
+  return true;
 #else
-	THROW_EXCEPTION("MRPT has been compiled without RPLidar support!");
+  THROW_EXCEPTION("MRPT has been compiled without RPLidar support!");
 #endif
-	MRPT_END
+  MRPT_END
 }
 
 /*-------------------------------------------------------------
-						initialize
+            initialize
 -------------------------------------------------------------*/
 void CRoboPeakLidar::initialize()
 {
-	if (!checkCOMMs())
-		throw std::runtime_error(
-			"[CRoboPeakLidar::initialize] Error initializing RPLIDAR scanner.");
-	if (!turnOn())
-		throw std::runtime_error(
-			"[CRoboPeakLidar::initialize] Error initializing RPLIDAR scanner.");
+  if (!checkCOMMs())
+    throw std::runtime_error("[CRoboPeakLidar::initialize] Error initializing RPLIDAR scanner.");
+  if (!turnOn())
+    throw std::runtime_error("[CRoboPeakLidar::initialize] Error initializing RPLIDAR scanner.");
 }
 
 void CRoboPeakLidar::setSerialPort(const std::string& port_name)
 {
-	if (m_rplidar_drv)
-		THROW_EXCEPTION("Can't change serial port while connected!");
+  if (m_rplidar_drv) THROW_EXCEPTION("Can't change serial port while connected!");
 
-	m_com_port = port_name;
+  m_com_port = port_name;
 }

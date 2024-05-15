@@ -33,33 +33,33 @@ namespace mrpt::slam
  */
 template <>
 void KLF_loadBinFromParticle(
-	mrpt::slam::detail::TPoseBin3D& outBin, const TKLDParams& opts,
-	const CMonteCarloLocalization3D::CParticleDataContent* currentParticleValue,
-	const TPose3D* newPoseToBeInserted)
+    mrpt::slam::detail::TPoseBin3D& outBin,
+    const TKLDParams& opts,
+    const CMonteCarloLocalization3D::CParticleDataContent* currentParticleValue,
+    const TPose3D* newPoseToBeInserted)
 {
-	// 3D pose approx: Use the latest pose only:
-	if (newPoseToBeInserted)
-	{
-		outBin.x = round(newPoseToBeInserted->x / opts.KLD_binSize_XY);
-		outBin.y = round(newPoseToBeInserted->y / opts.KLD_binSize_XY);
-		outBin.z = round(newPoseToBeInserted->z / opts.KLD_binSize_XY);
+  // 3D pose approx: Use the latest pose only:
+  if (newPoseToBeInserted)
+  {
+    outBin.x = round(newPoseToBeInserted->x / opts.KLD_binSize_XY);
+    outBin.y = round(newPoseToBeInserted->y / opts.KLD_binSize_XY);
+    outBin.z = round(newPoseToBeInserted->z / opts.KLD_binSize_XY);
 
-		outBin.yaw = round(newPoseToBeInserted->yaw / opts.KLD_binSize_PHI);
-		outBin.pitch = round(newPoseToBeInserted->pitch / opts.KLD_binSize_PHI);
-		outBin.roll = round(newPoseToBeInserted->roll / opts.KLD_binSize_PHI);
-	}
-	else
-	{
-		ASSERT_(currentParticleValue);
-		outBin.x = round(currentParticleValue->x / opts.KLD_binSize_XY);
-		outBin.y = round(currentParticleValue->y / opts.KLD_binSize_XY);
-		outBin.z = round(currentParticleValue->z / opts.KLD_binSize_XY);
+    outBin.yaw = round(newPoseToBeInserted->yaw / opts.KLD_binSize_PHI);
+    outBin.pitch = round(newPoseToBeInserted->pitch / opts.KLD_binSize_PHI);
+    outBin.roll = round(newPoseToBeInserted->roll / opts.KLD_binSize_PHI);
+  }
+  else
+  {
+    ASSERT_(currentParticleValue);
+    outBin.x = round(currentParticleValue->x / opts.KLD_binSize_XY);
+    outBin.y = round(currentParticleValue->y / opts.KLD_binSize_XY);
+    outBin.z = round(currentParticleValue->z / opts.KLD_binSize_XY);
 
-		outBin.yaw = round(currentParticleValue->yaw / opts.KLD_binSize_PHI);
-		outBin.pitch =
-			round(currentParticleValue->pitch / opts.KLD_binSize_PHI);
-		outBin.roll = round(currentParticleValue->roll / opts.KLD_binSize_PHI);
-	}
+    outBin.yaw = round(currentParticleValue->yaw / opts.KLD_binSize_PHI);
+    outBin.pitch = round(currentParticleValue->pitch / opts.KLD_binSize_PHI);
+    outBin.roll = round(currentParticleValue->roll / opts.KLD_binSize_PHI);
+  }
 }
 }  // namespace mrpt::slam
 
@@ -68,156 +68,145 @@ void KLF_loadBinFromParticle(
 using namespace mrpt::slam;
 
 /*---------------------------------------------------------------
-				ctor
+        ctor
  ---------------------------------------------------------------*/
 // Passing a "this" pointer at this moment is not a problem since it will be NOT
 // access until the object is fully initialized
-CMonteCarloLocalization3D::CMonteCarloLocalization3D(size_t M)
-	: CPose3DPDFParticles(M)
+CMonteCarloLocalization3D::CMonteCarloLocalization3D(size_t M) : CPose3DPDFParticles(M)
 {
-	this->setLoggerName("CMonteCarloLocalization3D");
+  this->setLoggerName("CMonteCarloLocalization3D");
 }
 
-TPose3D CMonteCarloLocalization3D::getLastPose(
-	size_t i, bool& is_valid_pose) const
+TPose3D CMonteCarloLocalization3D::getLastPose(size_t i, bool& is_valid_pose) const
 {
-	if (i >= m_particles.size())
-		THROW_EXCEPTION("Particle index out of bounds!");
-	is_valid_pose = true;
-	return m_particles[i].d;
+  if (i >= m_particles.size()) THROW_EXCEPTION("Particle index out of bounds!");
+  is_valid_pose = true;
+  return m_particles[i].d;
 }
 
 /*---------------------------------------------------------------
 
-			prediction_and_update_pfStandardProposal
+      prediction_and_update_pfStandardProposal
 
  ---------------------------------------------------------------*/
 void CMonteCarloLocalization3D::prediction_and_update_pfStandardProposal(
-	const mrpt::obs::CActionCollection* actions,
-	const mrpt::obs::CSensoryFrame* sf,
-	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
+    const mrpt::obs::CActionCollection* actions,
+    const mrpt::obs::CSensoryFrame* sf,
+    const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
 {
-	MRPT_START
+  MRPT_START
 
-	if (sf)
-	{  // A map MUST be supplied!
-		ASSERT_(options.metricMap || options.metricMaps.size() > 0);
-		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size());
-	}
+  if (sf)
+  {  // A map MUST be supplied!
+    ASSERT_(options.metricMap || options.metricMaps.size() > 0);
+    if (!options.metricMap) ASSERT_(options.metricMaps.size() == m_particles.size());
+  }
 
-	PF_SLAM_implementation_pfStandardProposal<mrpt::slam::detail::TPoseBin3D>(
-		actions, sf, PF_options, options.KLD_params);
+  PF_SLAM_implementation_pfStandardProposal<mrpt::slam::detail::TPoseBin3D>(
+      actions, sf, PF_options, options.KLD_params);
 
-	MRPT_END
+  MRPT_END
 }
 
 /*---------------------------------------------------------------
 
-			prediction_and_update_pfAuxiliaryPFStandard
+      prediction_and_update_pfAuxiliaryPFStandard
 
  ---------------------------------------------------------------*/
 void CMonteCarloLocalization3D::prediction_and_update_pfAuxiliaryPFStandard(
-	const mrpt::obs::CActionCollection* actions,
-	const mrpt::obs::CSensoryFrame* sf,
-	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
+    const mrpt::obs::CActionCollection* actions,
+    const mrpt::obs::CSensoryFrame* sf,
+    const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
 {
-	MRPT_START
+  MRPT_START
 
-	if (sf)
-	{  // A map MUST be supplied!
-		ASSERT_(options.metricMap || options.metricMaps.size() > 0);
-		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size());
-	}
+  if (sf)
+  {  // A map MUST be supplied!
+    ASSERT_(options.metricMap || options.metricMaps.size() > 0);
+    if (!options.metricMap) ASSERT_(options.metricMaps.size() == m_particles.size());
+  }
 
-	PF_SLAM_implementation_pfAuxiliaryPFStandard<
-		mrpt::slam::detail::TPoseBin3D>(
-		actions, sf, PF_options, options.KLD_params);
+  PF_SLAM_implementation_pfAuxiliaryPFStandard<mrpt::slam::detail::TPoseBin3D>(
+      actions, sf, PF_options, options.KLD_params);
 
-	MRPT_END
+  MRPT_END
 }
 
 /*---------------------------------------------------------------
 
-			prediction_and_update_pfAuxiliaryPFOptimal
+      prediction_and_update_pfAuxiliaryPFOptimal
 
  ---------------------------------------------------------------*/
 void CMonteCarloLocalization3D::prediction_and_update_pfAuxiliaryPFOptimal(
-	const mrpt::obs::CActionCollection* actions,
-	const mrpt::obs::CSensoryFrame* sf,
-	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
+    const mrpt::obs::CActionCollection* actions,
+    const mrpt::obs::CSensoryFrame* sf,
+    const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
 {
-	MRPT_START
+  MRPT_START
 
-	if (sf)
-	{  // A map MUST be supplied!
-		ASSERT_(options.metricMap || options.metricMaps.size() > 0);
-		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size());
-	}
+  if (sf)
+  {  // A map MUST be supplied!
+    ASSERT_(options.metricMap || options.metricMaps.size() > 0);
+    if (!options.metricMap) ASSERT_(options.metricMaps.size() == m_particles.size());
+  }
 
-	PF_SLAM_implementation_pfAuxiliaryPFOptimal<mrpt::slam::detail::TPoseBin3D>(
-		actions, sf, PF_options, options.KLD_params);
+  PF_SLAM_implementation_pfAuxiliaryPFOptimal<mrpt::slam::detail::TPoseBin3D>(
+      actions, sf, PF_options, options.KLD_params);
 
-	MRPT_END
+  MRPT_END
 }
 
 /*---------------------------------------------------------------
-			PF_SLAM_computeObservationLikelihoodForParticle
+      PF_SLAM_computeObservationLikelihoodForParticle
  ---------------------------------------------------------------*/
-double
-	CMonteCarloLocalization3D::PF_SLAM_computeObservationLikelihoodForParticle(
-		[[maybe_unused]] const CParticleFilter::TParticleFilterOptions&
-			PF_options,
-		size_t particleIndexForMap, const CSensoryFrame& observation,
-		const CPose3D& x) const
+double CMonteCarloLocalization3D::PF_SLAM_computeObservationLikelihoodForParticle(
+    [[maybe_unused]] const CParticleFilter::TParticleFilterOptions& PF_options,
+    size_t particleIndexForMap,
+    const CSensoryFrame& observation,
+    const CPose3D& x) const
 {
-	ASSERT_(
-		options.metricMap || particleIndexForMap < options.metricMaps.size());
+  ASSERT_(options.metricMap || particleIndexForMap < options.metricMaps.size());
 
-	// All particles, one map, or one map per particle
-	auto map = (options.metricMap) ? options.metricMap
-								   : options.metricMaps[particleIndexForMap];
+  // All particles, one map, or one map per particle
+  auto map = (options.metricMap) ? options.metricMap : options.metricMaps[particleIndexForMap];
 
-	// For each observation:
-	double ret = 1;
-	for (const auto& it : observation)
-		ret += map->computeObservationLikelihood(
-			*it, x);  // Compute the likelihood:
+  // For each observation:
+  double ret = 1;
+  for (const auto& it : observation)
+    ret += map->computeObservationLikelihood(*it, x);  // Compute the likelihood:
 
-	// Done!
-	return ret;
+  // Done!
+  return ret;
 }
 
 // Specialization for my kind of particles:
-void CMonteCarloLocalization3D::
-	PF_SLAM_implementation_custom_update_particle_with_new_pose(
-		TPose3D* particleData, const TPose3D& newPose) const
+void CMonteCarloLocalization3D::PF_SLAM_implementation_custom_update_particle_with_new_pose(
+    TPose3D* particleData, const TPose3D& newPose) const
 {
-	*particleData = newPose;
+  *particleData = newPose;
 }
 
 void CMonteCarloLocalization3D::PF_SLAM_implementation_replaceByNewParticleSet(
-	CParticleList& old_particles, const vector<TPose3D>& newParticles,
-	const vector<double>& newParticlesWeight,
-	[[maybe_unused]] const vector<size_t>& newParticlesDerivedFromIdx) const
+    CParticleList& old_particles,
+    const vector<TPose3D>& newParticles,
+    const vector<double>& newParticlesWeight,
+    [[maybe_unused]] const vector<size_t>& newParticlesDerivedFromIdx) const
 {
-	ASSERT_(size_t(newParticlesWeight.size()) == newParticles.size());
-	// ---------------------------------------------------------------------------------
-	// Substitute old by new particle set:
-	//   Old are in "m_particles"
-	//   New are in "newParticles",
-	//   "newParticlesWeight","newParticlesDerivedFromIdx"
-	// ---------------------------------------------------------------------------------
-	// Free old m_particles (automatically done via smart ptr)
+  ASSERT_(size_t(newParticlesWeight.size()) == newParticles.size());
+  // ---------------------------------------------------------------------------------
+  // Substitute old by new particle set:
+  //   Old are in "m_particles"
+  //   New are in "newParticles",
+  //   "newParticlesWeight","newParticlesDerivedFromIdx"
+  // ---------------------------------------------------------------------------------
+  // Free old m_particles (automatically done via smart ptr)
 
-	// Copy into "m_particles"
-	const size_t N = newParticles.size();
-	old_particles.resize(N);
-	for (size_t i = 0; i < N; i++)
-	{
-		old_particles[i].log_w = newParticlesWeight[i];
-		old_particles[i].d = newParticles[i];
-	}
+  // Copy into "m_particles"
+  const size_t N = newParticles.size();
+  old_particles.resize(N);
+  for (size_t i = 0; i < N; i++)
+  {
+    old_particles[i].log_w = newParticlesWeight[i];
+    old_particles[i].d = newParticles[i];
+  }
 }

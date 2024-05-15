@@ -26,129 +26,119 @@ using namespace std;
 template <typename T, size_t DIM1>
 double matrix_test_chol_dyn(int a1, int a2)
 {
-	auto A = getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDynamic<T>>(
-		DIM1, 0.2);
-	CMatrixDynamic<T> chol_U;
+  auto A = getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDynamic<T>>(DIM1, 0.2);
+  CMatrixDynamic<T> chol_U;
 
-	const long N = 100;
-	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		A.chol(chol_U);
-	}
-	return tictac.Tac() / N;
+  const long N = 100;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    A.chol(chol_U);
+  }
+  return tictac.Tac() / N;
 }
 
 double matrix_test_chol_Nx6x6_dyn(int DIM, int nReps)
 {
-	CMatrixDouble C(DIM * 6, DIM * 6);
-	for (int i = 0; i < DIM; i++)
-	{
-		auto subCov =
-			getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDouble>(
-				6, 0.2);
-		C.insertMatrix(i * 6, i * 6, subCov);
-	}
+  CMatrixDouble C(DIM * 6, DIM * 6);
+  for (int i = 0; i < DIM; i++)
+  {
+    auto subCov = getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDouble>(6, 0.2);
+    C.insertMatrix(i * 6, i * 6, subCov);
+  }
 
-	CMatrixDouble chol_U;
+  CMatrixDouble chol_U;
 
-	const long N = nReps == 0 ? 10 : nReps;
-	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		C.chol(chol_U);
-	}
-	return tictac.Tac() / N;
+  const long N = nReps == 0 ? 10 : nReps;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    C.chol(chol_U);
+  }
+  return tictac.Tac() / N;
 }
 
 template <typename T, size_t DIM1>
 double matrix_test_chol_fix(int a1, int a2)
 {
-	auto A =
-		getRandomGenerator()
-			.drawDefinitePositiveMatrix<
-				CMatrixFixed<T, DIM1, DIM1>, mrpt::math::CVectorFixed<T, DIM1>>(
-				DIM1, 0.2);
-	CMatrixFixed<T, DIM1, DIM1> chol_U;
+  auto A = getRandomGenerator()
+               .drawDefinitePositiveMatrix<
+                   CMatrixFixed<T, DIM1, DIM1>, mrpt::math::CVectorFixed<T, DIM1>>(DIM1, 0.2);
+  CMatrixFixed<T, DIM1, DIM1> chol_U;
 
-	const long N = 100;
-	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		A.chol(chol_U);
-	}
-	return tictac.Tac() / N;
+  const long N = 100;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    A.chol(chol_U);
+  }
+  return tictac.Tac() / N;
 }
 
 template <size_t DIM1, size_t DIM2>
 double matrix_test_chol_sparse(int a1, int a2)
 {
-	auto A1 = getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDouble>(
-		DIM1, 0.2);
-	auto A2 = getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDouble>(
-		DIM2, 0.2);
+  auto A1 = getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDouble>(DIM1, 0.2);
+  auto A2 = getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDouble>(DIM2, 0.2);
 
-	CMatrixDouble A(DIM1 + DIM2, DIM1 + DIM2);
-	A.insertMatrix(0, 0, A1);
-	A.insertMatrix(DIM1, DIM1, A2);
+  CMatrixDouble A(DIM1 + DIM2, DIM1 + DIM2);
+  A.insertMatrix(0, 0, A1);
+  A.insertMatrix(DIM1, DIM1, A2);
 
-	const CSparseMatrix SM(A);
+  const CSparseMatrix SM(A);
 
-	const long N = 10;
-	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		CSparseMatrix::CholeskyDecomp CHOL(SM);
-	}
-	return tictac.Tac() / N;
+  const long N = 10;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    CSparseMatrix::CholeskyDecomp CHOL(SM);
+  }
+  return tictac.Tac() / N;
 }
 
 double matrix_test_chol_Nx6x6_sparse(int DIM, int a2)
 {
-	CMatrixDouble C(DIM * 6, DIM * 6);
-	for (int i = 0; i < DIM; i++)
-	{
-		auto subCov =
-			getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDouble>(
-				6, 0.2);
-		C.insertMatrix(i * 6, i * 6, subCov);
-	}
+  CMatrixDouble C(DIM * 6, DIM * 6);
+  for (int i = 0; i < DIM; i++)
+  {
+    auto subCov = getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDouble>(6, 0.2);
+    C.insertMatrix(i * 6, i * 6, subCov);
+  }
 
-	const CSparseMatrix SM(C);
+  const CSparseMatrix SM(C);
 
-	const long N = 100;
-	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		CSparseMatrix::CholeskyDecomp CHOL(SM);
-	}
-	return tictac.Tac() / N;
+  const long N = 100;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    CSparseMatrix::CholeskyDecomp CHOL(SM);
+  }
+  return tictac.Tac() / N;
 }
 
 double matrix_test_loadFromArray(int N, int a2)
 {
-	alignas(MRPT_MAX_STATIC_ALIGN_BYTES) double nums[4 * 4] = {
-		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+  alignas(MRPT_MAX_STATIC_ALIGN_BYTES) double nums[4 * 4] = {0, 1, 2,  3,  4,  5,  6,  7,
+                                                             8, 9, 10, 11, 12, 13, 14, 15};
 
-	CMatrixFixed<double, 4, 4> M;
+  CMatrixFixed<double, 4, 4> M;
 
-	CTicTac tictac;
-	M.loadFromArray(nums);
-	return tictac.Tac();
+  CTicTac tictac;
+  M.loadFromArray(nums);
+  return tictac.Tac();
 }
 
 double matrix_test_loadWithEigenMap(int N, int a2)
 {
-	alignas(16) double nums[4 * 4] = {0, 1, 2,	3,	4,	5,	6,	7,
-									  8, 9, 10, 11, 12, 13, 14, 15};
+  alignas(16) double nums[4 * 4] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
-	CMatrixFixed<double, 4, 4> M;
+  CMatrixFixed<double, 4, 4> M;
 
-	CTicTac tictac;
-	M = Eigen::Map<CMatrixFixed<double, 4, 4>::eigen_t, Eigen::Aligned16>(nums);
-	const double t = tictac.Tac();
-	dummy_do_nothing_with_string(mrpt::format("%e", M(0, 0)));
-	return t;
+  CTicTac tictac;
+  M = Eigen::Map<CMatrixFixed<double, 4, 4>::eigen_t, Eigen::Aligned16>(nums);
+  const double t = tictac.Tac();
+  dummy_do_nothing_with_string(mrpt::format("%e", M(0, 0)));
+  return t;
 }
 
 // ------------------------------------------------------
@@ -156,55 +146,26 @@ double matrix_test_loadWithEigenMap(int N, int a2)
 // ------------------------------------------------------
 void register_tests_matrices2()
 {
-	lstTests.emplace_back(
-		"matrix: chol, dyn[double] 4x4", matrix_test_chol_dyn<double, 4>);
-	lstTests.emplace_back(
-		"matrix: chol, fix[double] 4x4", matrix_test_chol_fix<double, 4>);
-	lstTests.emplace_back(
-		"matrix: chol, dyn[double] 40x40", matrix_test_chol_dyn<double, 40>);
+  lstTests.emplace_back("matrix: chol, dyn[double] 4x4", matrix_test_chol_dyn<double, 4>);
+  lstTests.emplace_back("matrix: chol, fix[double] 4x4", matrix_test_chol_fix<double, 4>);
+  lstTests.emplace_back("matrix: chol, dyn[double] 40x40", matrix_test_chol_dyn<double, 40>);
 
-	lstTests.emplace_back(
-		"matrix: chol, sparse [2x2;2x2]", matrix_test_chol_sparse<2, 2>);
-	lstTests.emplace_back(
-		"matrix: chol, sparse [30x30;10x10]", matrix_test_chol_sparse<30, 10>);
+  lstTests.emplace_back("matrix: chol, sparse [2x2;2x2]", matrix_test_chol_sparse<2, 2>);
+  lstTests.emplace_back("matrix: chol, sparse [30x30;10x10]", matrix_test_chol_sparse<30, 10>);
 
-	lstTests.emplace_back(
-		"matrix: chol, dyn[double] 10x[6x6]", matrix_test_chol_Nx6x6_dyn, 10);
-	lstTests.emplace_back(
-		"matrix: chol, sparse      10x[6x6]", matrix_test_chol_Nx6x6_sparse,
-		10);
-	lstTests.emplace_back(
-		"matrix: chol, dyn[double] 20x[6x6]", matrix_test_chol_Nx6x6_dyn, 20);
-	lstTests.emplace_back(
-		"matrix: chol, sparse      20x[6x6]", matrix_test_chol_Nx6x6_sparse,
-		20);
-	lstTests.emplace_back(
-		"matrix: chol, dyn[double] 50x[6x6]", matrix_test_chol_Nx6x6_dyn, 50);
-	lstTests.emplace_back(
-		"matrix: chol, sparse      50x[6x6]", matrix_test_chol_Nx6x6_sparse,
-		50);
-	lstTests.emplace_back(
-		"matrix: chol, dyn[double] 100x[6x6]", matrix_test_chol_Nx6x6_dyn, 100,
-		2);
-	lstTests.emplace_back(
-		"matrix: chol, sparse      100x[6x6]", matrix_test_chol_Nx6x6_sparse,
-		100);
-	lstTests.emplace_back(
-		"matrix: chol, dyn[double] 120x[6x6]", matrix_test_chol_Nx6x6_dyn, 120,
-		2);
-	lstTests.emplace_back(
-		"matrix: chol, sparse      120x[6x6]", matrix_test_chol_Nx6x6_sparse,
-		120);
-	lstTests.emplace_back(
-		"matrix: chol, dyn[double] 140x[6x6]", matrix_test_chol_Nx6x6_dyn, 140,
-		2);
-	lstTests.emplace_back(
-		"matrix: chol, sparse      140x[6x6]", matrix_test_chol_Nx6x6_sparse,
-		140);
+  lstTests.emplace_back("matrix: chol, dyn[double] 10x[6x6]", matrix_test_chol_Nx6x6_dyn, 10);
+  lstTests.emplace_back("matrix: chol, sparse      10x[6x6]", matrix_test_chol_Nx6x6_sparse, 10);
+  lstTests.emplace_back("matrix: chol, dyn[double] 20x[6x6]", matrix_test_chol_Nx6x6_dyn, 20);
+  lstTests.emplace_back("matrix: chol, sparse      20x[6x6]", matrix_test_chol_Nx6x6_sparse, 20);
+  lstTests.emplace_back("matrix: chol, dyn[double] 50x[6x6]", matrix_test_chol_Nx6x6_dyn, 50);
+  lstTests.emplace_back("matrix: chol, sparse      50x[6x6]", matrix_test_chol_Nx6x6_sparse, 50);
+  lstTests.emplace_back("matrix: chol, dyn[double] 100x[6x6]", matrix_test_chol_Nx6x6_dyn, 100, 2);
+  lstTests.emplace_back("matrix: chol, sparse      100x[6x6]", matrix_test_chol_Nx6x6_sparse, 100);
+  lstTests.emplace_back("matrix: chol, dyn[double] 120x[6x6]", matrix_test_chol_Nx6x6_dyn, 120, 2);
+  lstTests.emplace_back("matrix: chol, sparse      120x[6x6]", matrix_test_chol_Nx6x6_sparse, 120);
+  lstTests.emplace_back("matrix: chol, dyn[double] 140x[6x6]", matrix_test_chol_Nx6x6_dyn, 140, 2);
+  lstTests.emplace_back("matrix: chol, sparse      140x[6x6]", matrix_test_chol_Nx6x6_sparse, 140);
 
-	lstTests.emplace_back(
-		"matrix: loadFromArray[double] 4x4", matrix_test_loadFromArray, 1e7);
-	lstTests.emplace_back(
-		"matrix: load Eigen::Map[double] 4x4", matrix_test_loadWithEigenMap,
-		1e7);
+  lstTests.emplace_back("matrix: loadFromArray[double] 4x4", matrix_test_loadFromArray, 1e7);
+  lstTests.emplace_back("matrix: load Eigen::Map[double] 4x4", matrix_test_loadWithEigenMap, 1e7);
 }

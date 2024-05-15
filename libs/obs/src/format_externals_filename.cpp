@@ -17,22 +17,22 @@
 #include <regex>
 
 std::string mrpt::obs::format_externals_filename(
-	const mrpt::obs::CObservation& obs, const std::string& fmt)
+    const mrpt::obs::CObservation& obs, const std::string& fmt)
 {
-	std::string sType = "other";
-	if (IS_CLASS(obs, mrpt::obs::CObservationImage)) sType = "img";
-	else if (IS_CLASS(obs, mrpt::obs::CObservationStereoImages))
-		sType = "stereo";
-	else if (IS_CLASS(obs, mrpt::obs::CObservation3DRangeScan))
-		sType = "3dcam";
+  std::string sType = "other";
+  if (IS_CLASS(obs, mrpt::obs::CObservationImage))
+    sType = "img";
+  else if (IS_CLASS(obs, mrpt::obs::CObservationStereoImages))
+    sType = "stereo";
+  else if (IS_CLASS(obs, mrpt::obs::CObservation3DRangeScan))
+    sType = "3dcam";
 
-	std::string ret = fmt;
+  std::string ret = fmt;
 
-	ret = std::regex_replace(ret, std::regex("\\$\\{type\\}"), sType);
-	ret =
-		std::regex_replace(ret, std::regex("\\$\\{label\\}"), obs.sensorLabel);
+  ret = std::regex_replace(ret, std::regex("\\$\\{type\\}"), sType);
+  ret = std::regex_replace(ret, std::regex("\\$\\{label\\}"), obs.sensorLabel);
 
-	ret = mrpt::format(ret.c_str(), mrpt::Clock::toDouble(obs.getTimeStamp()));
+  ret = mrpt::format(ret.c_str(), mrpt::Clock::toDouble(obs.getTimeStamp()));
 
-	return ret;
+  return ret;
 }

@@ -13,30 +13,30 @@
 
 #include "ui_CSelectType.h"
 
-CSelectType::CSelectType(QWidget* parent)
-	: QDialog(parent), m_ui(std::make_unique<Ui::CSelectType>())
+CSelectType::CSelectType(QWidget* parent) :
+    QDialog(parent), m_ui(std::make_unique<Ui::CSelectType>())
 {
-	m_ui->setupUi(this);
+  m_ui->setupUi(this);
 
-	addItem(tr("Points Map"), TypeOfConfig::PointsMap);
-	addItem(tr("Occupancy"), TypeOfConfig::Occupancy);
-	addItem(tr("Landmarks"), TypeOfConfig::Landmarks);
-	addItem(tr("Beacon"), TypeOfConfig::Beacon);
-	addItem(tr("GasGrid"), TypeOfConfig::GasGrid);
+  addItem(tr("Points Map"), TypeOfConfig::PointsMap);
+  addItem(tr("Occupancy"), TypeOfConfig::Occupancy);
+  addItem(tr("Landmarks"), TypeOfConfig::Landmarks);
+  addItem(tr("Beacon"), TypeOfConfig::Beacon);
+  addItem(tr("GasGrid"), TypeOfConfig::GasGrid);
 }
 
 CSelectType::~CSelectType() = default;
 int CSelectType::selectedItem() const
 {
-	QListWidgetItem* item = m_ui->m_typeList->currentItem();
-	if (!item) return -1;
+  QListWidgetItem* item = m_ui->m_typeList->currentItem();
+  if (!item) return -1;
 
-	return item->data(Qt::UserRole).toInt();
+  return item->data(Qt::UserRole).toInt();
 }
 
 void CSelectType::addItem(const QString& name, TypeOfConfig type)
 {
-	QListWidgetItem* item = new QListWidgetItem(name, m_ui->m_typeList);
-	item->setData(Qt::UserRole, type);
-	m_ui->m_typeList->addItem(item);
+  QListWidgetItem* item = new QListWidgetItem(name, m_ui->m_typeList);
+  item->setData(Qt::UserRole, type);
+  m_ui->m_typeList->addItem(item);
 }

@@ -19,30 +19,31 @@
 
 class CLogView : public wxDialog
 {
-   public:
-	CLogView(
-		wxWindow* parent, wxWindowID id = wxID_ANY,
-		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize);
-	~CLogView() override;
+ public:
+  CLogView(
+      wxWindow* parent,
+      wxWindowID id = wxID_ANY,
+      const wxPoint& pos = wxDefaultPosition,
+      const wxSize& size = wxDefaultSize);
+  ~CLogView() override;
 
-	//(*Declarations(CLogView)
-	wxButton* btnOk;
-	wxTextCtrl* edLog;
-	//*)
+  //(*Declarations(CLogView)
+  wxButton* btnOk;
+  wxTextCtrl* edLog;
+  //*)
 
-   protected:
-	//(*Identifiers(CLogView)
-	static const long ID_TEXTCTRL1;
-	static const long ID_BUTTON1;
-	//*)
+ protected:
+  //(*Identifiers(CLogView)
+  static const long ID_TEXTCTRL1;
+  static const long ID_BUTTON1;
+  //*)
 
-   private:
-	//(*Handlers(CLogView)
-	void OnbtnOkClick(wxCommandEvent& event);
-	//*)
+ private:
+  //(*Handlers(CLogView)
+  void OnbtnOkClick(wxCommandEvent& event);
+  //*)
 
-	DECLARE_EVENT_TABLE()
+  DECLARE_EVENT_TABLE()
 };
 
 #endif

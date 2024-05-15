@@ -24,48 +24,48 @@ namespace mrpt::obs
  */
 class CObservationVisualLandmarks : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationVisualLandmarks, mrpt::obs)
+  DEFINE_SERIALIZABLE(CObservationVisualLandmarks, mrpt::obs)
 
-   public:
-	/** Constructor */
-	CObservationVisualLandmarks();
+ public:
+  /** Constructor */
+  CObservationVisualLandmarks();
 
-	/** The 3D pose of the reference camera relative to robot coordinates. */
-	mrpt::poses::CPose3D refCameraPose;
-	/** The landmarks, with coordinates origin in the camera reference system.
-	 */
-	mrpt::maps::CLandmarksMap landmarks;
+  /** The 3D pose of the reference camera relative to robot coordinates. */
+  mrpt::poses::CPose3D refCameraPose;
+  /** The landmarks, with coordinates origin in the camera reference system.
+   */
+  mrpt::maps::CLandmarksMap landmarks;
 
-	/** Implements the virtual method in charge of finding the likelihood
-	 *between this
-	 *   and another observation, probably only of the same derived class. The
-	 *operator
-	 *   may be asymmetric.
-	 *
-	 * \param anotherObs The other observation to compute likelihood with.
-	 * \param anotherObsPose If known, the belief about the robot pose when the
-	 *other observation was taken can be supplied here, or nullptr if it is
-	 *unknown.
-	 *
-	 * \return Returns a likelihood measurement, in the range [0,1].
-	 *	\exception std::exception On any error, as another observation being of
-	 *an invalid class.
-	 */
-	float likelihoodWith(
-		const mrpt::obs::CObservation* anotherObs,
-		const mrpt::poses::CPosePDF* anotherObsPose = nullptr) const;
+  /** Implements the virtual method in charge of finding the likelihood
+   *between this
+   *   and another observation, probably only of the same derived class. The
+   *operator
+   *   may be asymmetric.
+   *
+   * \param anotherObs The other observation to compute likelihood with.
+   * \param anotherObsPose If known, the belief about the robot pose when the
+   *other observation was taken can be supplied here, or nullptr if it is
+   *unknown.
+   *
+   * \return Returns a likelihood measurement, in the range [0,1].
+   *	\exception std::exception On any error, as another observation being of
+   *an invalid class.
+   */
+  float likelihoodWith(
+      const mrpt::obs::CObservation* anotherObs,
+      const mrpt::poses::CPosePDF* anotherObsPose = nullptr) const;
 
-	// See base class docs
-	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
-	{
-		out_sensorPose = refCameraPose;
-	}
-	void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override
-	{
-		refCameraPose = newSensorPose;
-	}
-	void getDescriptionAsText(std::ostream& o) const override;
+  // See base class docs
+  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
+  {
+    out_sensorPose = refCameraPose;
+  }
+  void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override
+  {
+    refCameraPose = newSensorPose;
+  }
+  void getDescriptionAsText(std::ostream& o) const override;
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace mrpt::obs

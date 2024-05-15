@@ -36,50 +36,47 @@ namespace mrpt::config
  */
 class CConfigFilePrefixer : public CConfigFileBase
 {
-   private:
-	/** The object we are wrapping */
-	CConfigFileBase* m_bound_object{nullptr};
-	std::string m_prefix_sections, m_prefix_keys;
-	void ensureIsBound() const;
+ private:
+  /** The object we are wrapping */
+  CConfigFileBase* m_bound_object{nullptr};
+  std::string m_prefix_sections, m_prefix_keys;
+  void ensureIsBound() const;
 
-   protected:
-	void writeString(
-		const std::string& section, const std::string& name,
-		const std::string& str) override;
-	std::string readString(
-		const std::string& section, const std::string& name,
-		const std::string& defaultStr,
-		bool failIfNotFound = false) const override;
+ protected:
+  void writeString(
+      const std::string& section, const std::string& name, const std::string& str) override;
+  std::string readString(
+      const std::string& section,
+      const std::string& name,
+      const std::string& defaultStr,
+      bool failIfNotFound = false) const override;
 
-   public:
-	/** Unbound constructor: must bind this object to CConfigFileBase before
-	 * usage with \a bind() and \a setPrefixes() */
-	CConfigFilePrefixer();
-	/** Construct and bind to (wrap) a given object with given prefix texts */
-	CConfigFilePrefixer(
-		const CConfigFileBase& o, const std::string& prefix_sections,
-		const std::string& prefix_keys);
+ public:
+  /** Unbound constructor: must bind this object to CConfigFileBase before
+   * usage with \a bind() and \a setPrefixes() */
+  CConfigFilePrefixer();
+  /** Construct and bind to (wrap) a given object with given prefix texts */
+  CConfigFilePrefixer(
+      const CConfigFileBase& o, const std::string& prefix_sections, const std::string& prefix_keys);
 
-	/** Make this object to wrap the given existing CConfigFileBase object. Can
-	 * be changed at any moment after construction */
-	void bind(const CConfigFileBase& o);
+  /** Make this object to wrap the given existing CConfigFileBase object. Can
+   * be changed at any moment after construction */
+  void bind(const CConfigFileBase& o);
 
-	/** Change the prefix for sections and keys. Can be called at any moment. */
-	void setPrefixes(
-		const std::string& prefix_sections, const std::string& prefix_keys);
+  /** Change the prefix for sections and keys. Can be called at any moment. */
+  void setPrefixes(const std::string& prefix_sections, const std::string& prefix_keys);
 
-	std::string getSectionPrefix() const;
-	std::string getKeyPrefix() const;
-	/** Returns the currently-bounded config source, or nullptr if none. */
-	CConfigFileBase* getBoundConfigFileBase() const;
+  std::string getSectionPrefix() const;
+  std::string getKeyPrefix() const;
+  /** Returns the currently-bounded config source, or nullptr if none. */
+  CConfigFileBase* getBoundConfigFileBase() const;
 
-	~CConfigFilePrefixer() override;
+  ~CConfigFilePrefixer() override;
 
-	// See base class docs
-	void getAllSections(std::vector<std::string>& sections) const override;
-	void getAllKeys(const std::string& section, std::vector<std::string>& keys)
-		const override;
-	void clear() override;
+  // See base class docs
+  void getAllSections(std::vector<std::string>& sections) const override;
+  void getAllKeys(const std::string& section, std::vector<std::string>& keys) const override;
+  void clear() override;
 
-};	// End of class def.
+};  // End of class def.
 }  // namespace mrpt::config

@@ -26,55 +26,52 @@ namespace mrpt::math
  *    MATRIXLIKE: CMatrixDynamic, CMatrixFixed
  *  \ingroup mrpt_math_grp
  */
-template <
-	class VECTORLIKE, class VECTORLIKE2, class VECTORLIKE3, class MATRIXLIKE,
-	class USERPARAM>
+template <class VECTORLIKE, class VECTORLIKE2, class VECTORLIKE3, class MATRIXLIKE, class USERPARAM>
 void estimateJacobian(
-	const VECTORLIKE& x,
-	const std::function<void(
-		const VECTORLIKE& x, const USERPARAM& y, VECTORLIKE3& out)>& functor,
-	const VECTORLIKE2& increments, const USERPARAM& userParam,
-	MATRIXLIKE& out_Jacobian)
+    const VECTORLIKE& x,
+    const std::function<void(const VECTORLIKE& x, const USERPARAM& y, VECTORLIKE3& out)>& functor,
+    const VECTORLIKE2& increments,
+    const USERPARAM& userParam,
+    MATRIXLIKE& out_Jacobian)
 {
-	MRPT_START
-	ASSERT_(x.size() > 0 && increments.size() == x.size());
+  MRPT_START
+  ASSERT_(x.size() > 0 && increments.size() == x.size());
 
-	size_t m = 0;  // will determine automatically on the first call to "f":
-	const size_t n = x.size();
+  size_t m = 0;  // will determine automatically on the first call to "f":
+  const size_t n = x.size();
 
-	for (size_t j = 0; j < n; j++)
-	{
-		ASSERT_(increments[j] > 0);
-	}  // Who knows...
+  for (size_t j = 0; j < n; j++)
+  {
+    ASSERT_(increments[j] > 0);
+  }  // Who knows...
 
-	VECTORLIKE3 f_minus, f_plus;
-	VECTORLIKE x_mod(x);
+  VECTORLIKE3 f_minus, f_plus;
+  VECTORLIKE x_mod(x);
 
-	// Evaluate the function "i" with increments in the "j" input x variable:
-	for (size_t j = 0; j < n; j++)
-	{
-		// Create the modified "x" vector:
-		x_mod[j] = x[j] + increments[j];
-		functor(x_mod, userParam, f_plus);
+  // Evaluate the function "i" with increments in the "j" input x variable:
+  for (size_t j = 0; j < n; j++)
+  {
+    // Create the modified "x" vector:
+    x_mod[j] = x[j] + increments[j];
+    functor(x_mod, userParam, f_plus);
 
-		x_mod[j] = x[j] - increments[j];
-		functor(x_mod, userParam, f_minus);
+    x_mod[j] = x[j] - increments[j];
+    functor(x_mod, userParam, f_minus);
 
-		x_mod[j] = x[j];  // Leave as original
-		const double Ax_2_inv = 0.5 / increments[j];
+    x_mod[j] = x[j];  // Leave as original
+    const double Ax_2_inv = 0.5 / increments[j];
 
-		// The first time?
-		if (j == 0)
-		{
-			m = f_plus.size();
-			out_Jacobian.resize(m, n);
-		}
+    // The first time?
+    if (j == 0)
+    {
+      m = f_plus.size();
+      out_Jacobian.resize(m, n);
+    }
 
-		for (size_t i = 0; i < m; i++)
-			out_Jacobian(i, j) = Ax_2_inv * (f_plus[i] - f_minus[i]);
+    for (size_t i = 0; i < m; i++) out_Jacobian(i, j) = Ax_2_inv * (f_plus[i] - f_minus[i]);
 
-	}  // end for j
+  }  // end for j
 
-	MRPT_END
+  MRPT_END
 }
 }  // namespace mrpt::math

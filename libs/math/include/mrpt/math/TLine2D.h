@@ -22,105 +22,106 @@ namespace mrpt::math
  */
 struct TLine2D
 {
-   public:
-	/** Constructor from two points, through which the line will pass.
-	 * \throw logic_error if both points are the same
-	 * \sa mrpt::math::getRegressionLine()
-	 */
-	TLine2D(const TPoint2D& p1, const TPoint2D& p2);
+ public:
+  /** Constructor from two points, through which the line will pass.
+   * \throw logic_error if both points are the same
+   * \sa mrpt::math::getRegressionLine()
+   */
+  TLine2D(const TPoint2D& p1, const TPoint2D& p2);
 
-	/** Constructor from a segment */
-	explicit TLine2D(const TSegment2D& s);
+  /** Constructor from a segment */
+  explicit TLine2D(const TSegment2D& s);
 
-	/** Fast default constructor. Initializes to undefined values. */
-	TLine2D() = default;
+  /** Fast default constructor. Initializes to undefined values. */
+  TLine2D() = default;
 
-	/** Constructor from line's coefficients */
-	constexpr TLine2D(double A, double B, double C) : coefs{A, B, C} {}
+  /** Constructor from line's coefficients */
+  constexpr TLine2D(double A, double B, double C) : coefs{A, B, C} {}
 
-	/** Construction from 3D object, discarding the Z.
-	 * \throw std::logic_error if the line is normal to the XY plane.
-	 */
-	explicit TLine2D(const TLine3D& l);
+  /** Construction from 3D object, discarding the Z.
+   * \throw std::logic_error if the line is normal to the XY plane.
+   */
+  explicit TLine2D(const TLine3D& l);
 
-	/** Static constructor from Ax+By+C=0 coefficients.
-	 * \note [New in MRPT 2.0.4]
-	 */
-	static TLine2D FromCoefficientsABC(double A, double B, double C);
+  /** Static constructor from Ax+By+C=0 coefficients.
+   * \note [New in MRPT 2.0.4]
+   */
+  static TLine2D FromCoefficientsABC(double A, double B, double C);
 
-	/** Static constructor from two points.
-	 * \note [New in MRPT 2.0.4]
-	 */
-	static TLine2D FromTwoPoints(const TPoint2D& p1, const TPoint2D& p2);
+  /** Static constructor from two points.
+   * \note [New in MRPT 2.0.4]
+   */
+  static TLine2D FromTwoPoints(const TPoint2D& p1, const TPoint2D& p2);
 
-	/** Line coefficients, stored as an array: \f$\left[A,B,C\right]\f$ */
-	std::array<double, 3> coefs{{0, 0, 0}};
-	/**
-	 * Evaluate point in the line's equation.
-	 */
-	double evaluatePoint(const TPoint2D& point) const;
-	/**
-	 * Check whether a point is inside the line.
-	 */
-	bool contains(const TPoint2D& point) const;
-	/**
-	 * Absolute distance from a given point.
-	 */
-	double distance(const TPoint2D& point) const;
-	/**
-	 * Distance with sign from a given point (sign indicates side).
-	 */
-	double signedDistance(const TPoint2D& point) const;
-	/**
-	 * Get line's normal vector.
-	 */
-	void getNormalVector(double (&vector)[2]) const;
-	/**
-	 * Unitarize line's normal vector.
-	 */
-	void unitarize();
-	/**
-	 * Get line's normal vector after unitarizing line.
-	 */
-	void getUnitaryNormalVector(double (&vector)[2])
-	{
-		unitarize();
-		getNormalVector(vector);
-	}
-	/**
-	 * Get line's director vector.
-	 */
-	void getDirectorVector(double (&vector)[2]) const;
-	/**
-	 * Unitarize line and then get director vector.
-	 */
-	void getUnitaryDirectorVector(double (&vector)[2])
-	{
-		unitarize();
-		getDirectorVector(vector);
-	}
-	/**
-	 * Project into 3D space, setting the z to 0.
-	 */
-	void generate3DObject(TLine3D& l) const;
+  /** Line coefficients, stored as an array: \f$\left[A,B,C\right]\f$ */
+  std::array<double, 3> coefs{
+      {0, 0, 0}
+  };
+  /**
+   * Evaluate point in the line's equation.
+   */
+  double evaluatePoint(const TPoint2D& point) const;
+  /**
+   * Check whether a point is inside the line.
+   */
+  bool contains(const TPoint2D& point) const;
+  /**
+   * Absolute distance from a given point.
+   */
+  double distance(const TPoint2D& point) const;
+  /**
+   * Distance with sign from a given point (sign indicates side).
+   */
+  double signedDistance(const TPoint2D& point) const;
+  /**
+   * Get line's normal vector.
+   */
+  void getNormalVector(double (&vector)[2]) const;
+  /**
+   * Unitarize line's normal vector.
+   */
+  void unitarize();
+  /**
+   * Get line's normal vector after unitarizing line.
+   */
+  void getUnitaryNormalVector(double (&vector)[2])
+  {
+    unitarize();
+    getNormalVector(vector);
+  }
+  /**
+   * Get line's director vector.
+   */
+  void getDirectorVector(double (&vector)[2]) const;
+  /**
+   * Unitarize line and then get director vector.
+   */
+  void getUnitaryDirectorVector(double (&vector)[2])
+  {
+    unitarize();
+    getDirectorVector(vector);
+  }
+  /**
+   * Project into 3D space, setting the z to 0.
+   */
+  void generate3DObject(TLine3D& l) const;
 
-	void getAsPose2D(TPose2D& outPose) const;
-	void getAsPose2DForcingOrigin(
-		const TPoint2D& origin, TPose2D& outPose) const;
+  void getAsPose2D(TPose2D& outPose) const;
+  void getAsPose2DForcingOrigin(const TPoint2D& origin, TPose2D& outPose) const;
 
-	/** Returns "[A, B, C]"
-	 * \note [New in MRPT 2.1.0]
-	 *
-	 * \note Do not inherit from mrpt::Stringifyable to avoid virtual class
-	 * table and keeping the class trivially-copiable.
-	 */
-	std::string asString() const;
+  /** Returns "[A, B, C]"
+   * \note [New in MRPT 2.1.0]
+   *
+   * \note Do not inherit from mrpt::Stringifyable to avoid virtual class
+   * table and keeping the class trivially-copiable.
+   */
+  std::string asString() const;
 };
 
 mrpt::serialization::CArchive& operator>>(
-	mrpt::serialization::CArchive& in, mrpt::math::TLine2D& l);
+    mrpt::serialization::CArchive& in, mrpt::math::TLine2D& l);
 mrpt::serialization::CArchive& operator<<(
-	mrpt::serialization::CArchive& out, const mrpt::math::TLine2D& l);
+    mrpt::serialization::CArchive& out, const mrpt::math::TLine2D& l);
 
 /** Text streaming function */
 std::ostream& operator<<(std::ostream& o, const TLine2D& p);

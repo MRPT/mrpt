@@ -19,24 +19,25 @@ namespace mrpt::apps
  *
  * \ingroup mrpt_apps_grp
  */
-class DataSourceRawlog : virtual public BaseAppDataSource,
-						 virtual public mrpt::system::COutputLogger
+class DataSourceRawlog :
+    virtual public BaseAppDataSource,
+    virtual public mrpt::system::COutputLogger
 {
-   public:
-	DataSourceRawlog() = default;
-	virtual ~DataSourceRawlog() override = default;
+ public:
+  DataSourceRawlog() = default;
+  virtual ~DataSourceRawlog() override = default;
 
-   protected:
-	bool impl_get_next_observations(
-		mrpt::obs::CActionCollection::Ptr& action,
-		mrpt::obs::CSensoryFrame::Ptr& observations,
-		mrpt::obs::CObservation::Ptr& observation) override;
+ protected:
+  bool impl_get_next_observations(
+      mrpt::obs::CActionCollection::Ptr& action,
+      mrpt::obs::CSensoryFrame::Ptr& observations,
+      mrpt::obs::CObservation::Ptr& observation) override;
 
-	std::string m_rawlogFileName = "UNDEFINED.rawlog";
-	std::size_t m_rawlog_offset = 0;
-	std::size_t m_rawlogEntry = 0;
-	mrpt::io::CFileGZInputStream m_rawlog_io;
-	mrpt::serialization::CArchive::UniquePtr m_rawlog_arch;
+  std::string m_rawlogFileName = "UNDEFINED.rawlog";
+  std::size_t m_rawlog_offset = 0;
+  std::size_t m_rawlogEntry = 0;
+  mrpt::io::CFileGZInputStream m_rawlog_io;
+  mrpt::serialization::CArchive::UniquePtr m_rawlog_arch;
 };
 
 }  // namespace mrpt::apps

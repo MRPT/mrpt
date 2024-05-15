@@ -27,28 +27,28 @@ namespace mrpt::vision
  */
 struct TImageCalibData
 {
-	/** This image will be automatically loaded from the file name passed to
-	 * checkerBoardCameraCalibration */
-	mrpt::img::CImage img_original;
-	/** At output, this will contain the detected checkerboard overprinted to
-	 * the image. */
-	mrpt::img::CImage img_checkboard;
-	/** At output, this will be the rectified image */
-	mrpt::img::CImage img_rectified;
-	/** At output, the detected corners (x,y) in pixel units. */
-	std::vector<mrpt::img::TPixelCoordf> detected_corners;
-	/** At output, the reconstructed pose of the camera. */
-	mrpt::poses::CPose3D reconstructed_camera_pose;
-	/** At output, only will have an empty vector if the checkerboard was not
-	 * found in this image, or the predicted (reprojected) corners, which were
-	 * used to estimate the average square error. */
-	std::vector<mrpt::img::TPixelCoordf> projectedPoints_distorted;
-	/** At output, like projectedPoints_distorted but for the undistorted image.
-	 */
-	std::vector<mrpt::img::TPixelCoordf> projectedPoints_undistorted;
+  /** This image will be automatically loaded from the file name passed to
+   * checkerBoardCameraCalibration */
+  mrpt::img::CImage img_original;
+  /** At output, this will contain the detected checkerboard overprinted to
+   * the image. */
+  mrpt::img::CImage img_checkboard;
+  /** At output, this will be the rectified image */
+  mrpt::img::CImage img_rectified;
+  /** At output, the detected corners (x,y) in pixel units. */
+  std::vector<mrpt::img::TPixelCoordf> detected_corners;
+  /** At output, the reconstructed pose of the camera. */
+  mrpt::poses::CPose3D reconstructed_camera_pose;
+  /** At output, only will have an empty vector if the checkerboard was not
+   * found in this image, or the predicted (reprojected) corners, which were
+   * used to estimate the average square error. */
+  std::vector<mrpt::img::TPixelCoordf> projectedPoints_distorted;
+  /** At output, like projectedPoints_distorted but for the undistorted image.
+   */
+  std::vector<mrpt::img::TPixelCoordf> projectedPoints_undistorted;
 
-	/** Empty all the data */
-	void clear() { *this = TImageCalibData(); }
+  /** Empty all the data */
+  void clear() { *this = TImageCalibData(); }
 };
 
 /**  A list of images, used in checkerBoardCameraCalibration
@@ -85,21 +85,29 @@ using TCalibrationImageList = std::map<std::string, TImageCalibData>;
  * \sa CImage::findChessboardCorners, checkerBoardStereoCalibration
  */
 bool checkerBoardCameraCalibration(
-	TCalibrationImageList& images, unsigned int check_size_x,
-	unsigned int check_size_y, double check_squares_length_X_meters,
-	double check_squares_length_Y_meters, mrpt::img::TCamera& out_camera_params,
-	bool normalize_image = true, double* out_MSE = nullptr,
-	bool skipDrawDetectedImgs = false);
+    TCalibrationImageList& images,
+    unsigned int check_size_x,
+    unsigned int check_size_y,
+    double check_squares_length_X_meters,
+    double check_squares_length_Y_meters,
+    mrpt::img::TCamera& out_camera_params,
+    bool normalize_image = true,
+    double* out_MSE = nullptr,
+    bool skipDrawDetectedImgs = false);
 
 /** \overload with matrix of intrinsic params instead of mrpt::img::TCamera
  */
 bool checkerBoardCameraCalibration(
-	TCalibrationImageList& images, unsigned int check_size_x,
-	unsigned int check_size_y, double check_squares_length_X_meters,
-	double check_squares_length_Y_meters,
-	mrpt::math::CMatrixDouble33& intrinsicParams,
-	std::vector<double>& distortionParams, bool normalize_image = true,
-	double* out_MSE = nullptr, bool skipDrawDetectedImgs = false);
+    TCalibrationImageList& images,
+    unsigned int check_size_x,
+    unsigned int check_size_y,
+    double check_squares_length_X_meters,
+    double check_squares_length_Y_meters,
+    mrpt::math::CMatrixDouble33& intrinsicParams,
+    std::vector<double>& distortionParams,
+    bool normalize_image = true,
+    double* out_MSE = nullptr,
+    bool skipDrawDetectedImgs = false);
 
-/** @}  */	// end of grouping
+/** @}  */  // end of grouping
 }  // namespace mrpt::vision

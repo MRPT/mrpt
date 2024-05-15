@@ -52,110 +52,109 @@ namespace opengl
  *  \sa mrpt::opengl::CPointCloud, opengl::Scene
  * \ingroup mrpt_maps_grp
  */
-class CPlanarLaserScan : public CRenderizableShaderPoints,
-						 public CRenderizableShaderTriangles,
-						 public CRenderizableShaderWireFrame
+class CPlanarLaserScan :
+    public CRenderizableShaderPoints,
+    public CRenderizableShaderTriangles,
+    public CRenderizableShaderWireFrame
 {
-	DEFINE_SERIALIZABLE(CPlanarLaserScan, mrpt::opengl)
+  DEFINE_SERIALIZABLE(CPlanarLaserScan, mrpt::opengl)
 
-   public:
-	/** @name Renderizable shader API virtual methods
-	 * @{ */
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
-	void freeOpenGLResources() override
-	{
-		CRenderizableShaderTriangles::freeOpenGLResources();
-		CRenderizableShaderWireFrame::freeOpenGLResources();
-		CRenderizableShaderPoints::freeOpenGLResources();
-	}
+ public:
+  /** @name Renderizable shader API virtual methods
+   * @{ */
+  void render(const RenderContext& rc) const override;
+  void renderUpdateBuffers() const override;
+  void freeOpenGLResources() override
+  {
+    CRenderizableShaderTriangles::freeOpenGLResources();
+    CRenderizableShaderWireFrame::freeOpenGLResources();
+    CRenderizableShaderPoints::freeOpenGLResources();
+  }
 
-	virtual shader_list_t requiredShaders() const override
-	{
-		return {
-			DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES_NO_LIGHT,
-			DefaultShaderID::POINTS};
-	}
-	void onUpdateBuffers_Wireframe() override;
-	void onUpdateBuffers_Triangles() override;
-	void onUpdateBuffers_Points() override;
-	mrpt::math::TPoint3Df getLocalRepresentativePoint() const override;
-	/** @} */
+  virtual shader_list_t requiredShaders() const override
+  {
+    return {
+        DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES_NO_LIGHT, DefaultShaderID::POINTS};
+  }
+  void onUpdateBuffers_Wireframe() override;
+  void onUpdateBuffers_Triangles() override;
+  void onUpdateBuffers_Points() override;
+  mrpt::math::TPoint3Df getLocalRepresentativePoint() const override;
+  /** @} */
 
-	CPlanarLaserScan() = default;
-	~CPlanarLaserScan() override = default;
+  CPlanarLaserScan() = default;
+  ~CPlanarLaserScan() override = default;
 
-	/** Clear the scan */
-	void clear();
+  /** Clear the scan */
+  void clear();
 
-	/** Show or hides the scanned points \sa sePointsWidth, setPointsColor*/
-	inline void enablePoints(bool enable = true)
-	{
-		m_enable_points = enable;
-		CRenderizable::notifyChange();
-	}
+  /** Show or hides the scanned points \sa sePointsWidth, setPointsColor*/
+  inline void enablePoints(bool enable = true)
+  {
+    m_enable_points = enable;
+    CRenderizable::notifyChange();
+  }
 
-	/** Show or hides lines along all scanned points \sa setLineWidth,
-	 * setLineColor*/
-	inline void enableLine(bool enable = true)
-	{
-		m_enable_line = enable;
-		CRenderizable::notifyChange();
-	}
+  /** Show or hides lines along all scanned points \sa setLineWidth,
+   * setLineColor*/
+  inline void enableLine(bool enable = true)
+  {
+    m_enable_line = enable;
+    CRenderizable::notifyChange();
+  }
 
-	/** Show or hides the scanned area as a 2D surface \sa setSurfaceColor */
-	inline void enableSurface(bool enable = true)
-	{
-		m_enable_surface = enable;
-		CRenderizable::notifyChange();
-	}
+  /** Show or hides the scanned area as a 2D surface \sa setSurfaceColor */
+  inline void enableSurface(bool enable = true)
+  {
+    m_enable_surface = enable;
+    CRenderizable::notifyChange();
+  }
 
-	void setLineColor(float R, float G, float B, float A = 1.0f)
-	{
-		m_line_R = R;
-		m_line_G = G;
-		m_line_B = B;
-		m_line_A = A;
-	}
-	void setPointsColor(float R, float G, float B, float A = 1.0f)
-	{
-		m_points_R = R;
-		m_points_G = G;
-		m_points_B = B;
-		m_points_A = A;
-	}
-	void setSurfaceColor(float R, float G, float B, float A = 1.0f)
-	{
-		m_plane_R = R;
-		m_plane_G = G;
-		m_plane_B = B;
-		m_plane_A = A;
-	}
+  void setLineColor(float R, float G, float B, float A = 1.0f)
+  {
+    m_line_R = R;
+    m_line_G = G;
+    m_line_B = B;
+    m_line_A = A;
+  }
+  void setPointsColor(float R, float G, float B, float A = 1.0f)
+  {
+    m_points_R = R;
+    m_points_G = G;
+    m_points_B = B;
+    m_points_A = A;
+  }
+  void setSurfaceColor(float R, float G, float B, float A = 1.0f)
+  {
+    m_plane_R = R;
+    m_plane_G = G;
+    m_plane_B = B;
+    m_plane_A = A;
+  }
 
-	void setScan(const mrpt::obs::CObservation2DRangeScan& scan)
-	{
-		CRenderizable::notifyChange();
-		m_cache_valid = false;
-		m_scan = scan;
-	}
+  void setScan(const mrpt::obs::CObservation2DRangeScan& scan)
+  {
+    CRenderizable::notifyChange();
+    m_cache_valid = false;
+    m_scan = scan;
+  }
 
-	auto internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf override;
+  auto internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf override;
 
-   protected:
-	mrpt::obs::CObservation2DRangeScan m_scan;
-	mutable mrpt::maps::CSimplePointsMap m_cache_points;
-	mutable bool m_cache_valid{false};
+ protected:
+  mrpt::obs::CObservation2DRangeScan m_scan;
+  mutable mrpt::maps::CSimplePointsMap m_cache_points;
+  mutable bool m_cache_valid{false};
 
-	float m_line_R{1.f}, m_line_G{0.f}, m_line_B{0.f}, m_line_A{0.5f};
+  float m_line_R{1.f}, m_line_G{0.f}, m_line_B{0.f}, m_line_A{0.5f};
 
-	float m_points_R{1.0f}, m_points_G{0.0f}, m_points_B{0.0f},
-		m_points_A{1.0f};
+  float m_points_R{1.0f}, m_points_G{0.0f}, m_points_B{0.0f}, m_points_A{1.0f};
 
-	float m_plane_R{0.01f}, m_plane_G{0.01f}, m_plane_B{0.6f}, m_plane_A{0.6f};
+  float m_plane_R{0.01f}, m_plane_G{0.01f}, m_plane_B{0.6f}, m_plane_A{0.6f};
 
-	bool m_enable_points{true};
-	bool m_enable_line{true};
-	bool m_enable_surface{true};
+  bool m_enable_points{true};
+  bool m_enable_line{true};
+  bool m_enable_surface{true};
 };
 
 }  // namespace opengl

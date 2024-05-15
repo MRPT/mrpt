@@ -140,117 +140,112 @@ namespace mrpt::vision
  */
 struct CGenericFeatureTracker
 {
-	/** Optional list of extra parameters to the algorithm. */
-	mrpt::containers::yaml extra_params;
+  /** Optional list of extra parameters to the algorithm. */
+  mrpt::containers::yaml extra_params;
 
-	/** Default ctor */
-	inline CGenericFeatureTracker() {}
+  /** Default ctor */
+  inline CGenericFeatureTracker() {}
 
-	/** Ctor with extra parameters */
-	inline CGenericFeatureTracker(const mrpt::containers::yaml& extraParams)
-		: extra_params(extraParams)
-	{
-	}
+  /** Ctor with extra parameters */
+  inline CGenericFeatureTracker(const mrpt::containers::yaml& extraParams) :
+      extra_params(extraParams)
+  {
+  }
 
-	/** Dtor */
-	virtual ~CGenericFeatureTracker() = default;
+  /** Dtor */
+  virtual ~CGenericFeatureTracker() = default;
 
-	/** Perform feature tracking from "old_img" to "new_img", with a (possibly
-	 *empty) list of previously tracked features "inout_featureList".
-	 *  This is a list of parameters (in "extraParams") accepted by ALL
-	 *implementations of feature tracker (see each derived class for more
-	 *specific parameters).
-	 *		- "add_new_features" (Default=0). If set to "1", new features will
-	 *be
-	 *also added to the existing ones in areas of the image poor of features.
-	 * This method does:
-	 *    - Convert old and new images to grayscale, if they're in color.
-	 *    - Call the pure virtual "trackFeatures_impl" method.
-	 *    - Implement the optional detection of new features if
-	 *"add_new_features"!=0.
-	 */
-	void trackFeatures(
-		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
-		TKeyPointList& inout_featureList);
+  /** Perform feature tracking from "old_img" to "new_img", with a (possibly
+   *empty) list of previously tracked features "inout_featureList".
+   *  This is a list of parameters (in "extraParams") accepted by ALL
+   *implementations of feature tracker (see each derived class for more
+   *specific parameters).
+   *		- "add_new_features" (Default=0). If set to "1", new features will
+   *be
+   *also added to the existing ones in areas of the image poor of features.
+   * This method does:
+   *    - Convert old and new images to grayscale, if they're in color.
+   *    - Call the pure virtual "trackFeatures_impl" method.
+   *    - Implement the optional detection of new features if
+   *"add_new_features"!=0.
+   */
+  void trackFeatures(
+      const mrpt::img::CImage& old_img,
+      const mrpt::img::CImage& new_img,
+      TKeyPointList& inout_featureList);
 
-	/** overload with subpixel precision */
-	void trackFeatures(
-		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
-		TKeyPointfList& inout_featureList);
+  /** overload with subpixel precision */
+  void trackFeatures(
+      const mrpt::img::CImage& old_img,
+      const mrpt::img::CImage& new_img,
+      TKeyPointfList& inout_featureList);
 
-	/** Returns a read-only reference to the internal time logger */
-	inline const mrpt::system::CTimeLogger& getProfiler() const
-	{
-		return m_timlog;
-	}
-	/** Returns a reference to the internal time logger */
-	inline mrpt::system::CTimeLogger& getProfiler() { return m_timlog; }
-	/** Returns a read-only reference to the internal time logger */
-	inline void enableTimeLogger(bool enable = true)
-	{
-		m_timlog.enable(enable);
-	}
+  /** Returns a read-only reference to the internal time logger */
+  inline const mrpt::system::CTimeLogger& getProfiler() const { return m_timlog; }
+  /** Returns a reference to the internal time logger */
+  inline mrpt::system::CTimeLogger& getProfiler() { return m_timlog; }
+  /** Returns a read-only reference to the internal time logger */
+  inline void enableTimeLogger(bool enable = true) { m_timlog.enable(enable); }
 
-	/** Returns the current adaptive threshold used by the FAST(ER) detector to
-	 * find out new features in empty areas */
-	inline int getDetectorAdaptiveThreshold() const
-	{
-		return m_detector_adaptive_thres;
-	}
+  /** Returns the current adaptive threshold used by the FAST(ER) detector to
+   * find out new features in empty areas */
+  inline int getDetectorAdaptiveThreshold() const { return m_detector_adaptive_thres; }
 
-	struct TExtraOutputInfo
-	{
-		/** In the new_img with the last adaptive threshold */
-		size_t raw_FAST_feats_detected;
-		/** The number of features which were deleted due to OOB, bad tracking,
-		 * etc... (only if "remove_lost_features" is enabled) */
-		size_t num_deleted_feats;
-	};
+  struct TExtraOutputInfo
+  {
+    /** In the new_img with the last adaptive threshold */
+    size_t raw_FAST_feats_detected;
+    /** The number of features which were deleted due to OOB, bad tracking,
+     * etc... (only if "remove_lost_features" is enabled) */
+    size_t num_deleted_feats;
+  };
 
-	/** Updated with each call to trackFeatures() */
-	TExtraOutputInfo last_execution_extra_info;
+  /** Updated with each call to trackFeatures() */
+  TExtraOutputInfo last_execution_extra_info;
 
-   protected:
-	/** The tracking method implementation, to be implemented in children
-	 * classes. */
-	virtual void trackFeatures_impl(
-		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
-		TKeyPointfList& inout_featureList);
+ protected:
+  /** The tracking method implementation, to be implemented in children
+   * classes. */
+  virtual void trackFeatures_impl(
+      const mrpt::img::CImage& old_img,
+      const mrpt::img::CImage& new_img,
+      TKeyPointfList& inout_featureList);
 
-	/** The tracking method implementation, to be implemented in children
-	 * classes. */
-	virtual void trackFeatures_impl(
-		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
-		TKeyPointList& inout_featureList) = 0;
+  /** The tracking method implementation, to be implemented in children
+   * classes. */
+  virtual void trackFeatures_impl(
+      const mrpt::img::CImage& old_img,
+      const mrpt::img::CImage& new_img,
+      TKeyPointList& inout_featureList) = 0;
 
-	/** the internal time logger, disabled by default. */
-	mrpt::system::CTimeLogger m_timlog{false};
+  /** the internal time logger, disabled by default. */
+  mrpt::system::CTimeLogger m_timlog{false};
 
-	/** This field is clared by \a trackFeatures() before calling \a
-	 * trackFeatures_impl(), and
-	 *   can be filled out with newly defected FAST(ER) features in the latter.
-	 * If it's not the case, feats will be computed anyway if the user enabled
-	 * the "add_new_features" option.
-	 */
-	mrpt::vision::TKeyPointList m_newly_detected_feats;
+  /** This field is clared by \a trackFeatures() before calling \a
+   * trackFeatures_impl(), and
+   *   can be filled out with newly defected FAST(ER) features in the latter.
+   * If it's not the case, feats will be computed anyway if the user enabled
+   * the "add_new_features" option.
+   */
+  mrpt::vision::TKeyPointList m_newly_detected_feats;
 
-	/** Adapts the threshold \a m_detector_adaptive_thres according to the real
-	 * and desired number of features just detected */
-	void updateAdaptiveNewFeatsThreshold(
-		size_t nNewlyDetectedFeats, size_t desired_num_features);
+  /** Adapts the threshold \a m_detector_adaptive_thres according to the real
+   * and desired number of features just detected */
+  void updateAdaptiveNewFeatsThreshold(size_t nNewlyDetectedFeats, size_t desired_num_features);
 
-   private:
-	/** for use when "update_patches_every">=1 */
-	size_t m_update_patches_counter{0};
-	/** For use when "check_KLT_response_every">=1 */
-	size_t m_check_KLT_counter{0};
-	/** For use in "add_new_features" == true */
-	int m_detector_adaptive_thres{10};
+ private:
+  /** for use when "update_patches_every">=1 */
+  size_t m_update_patches_counter{0};
+  /** For use when "check_KLT_response_every">=1 */
+  size_t m_check_KLT_counter{0};
+  /** For use in "add_new_features" == true */
+  int m_detector_adaptive_thres{10};
 
-	template <typename FEATLIST>
-	void internal_trackFeatures(
-		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
-		FEATLIST& inout_featureList);
+  template <typename FEATLIST>
+  void internal_trackFeatures(
+      const mrpt::img::CImage& old_img,
+      const mrpt::img::CImage& new_img,
+      FEATLIST& inout_featureList);
 };
 
 using CGenericFeatureTrackerAutoPtr = std::unique_ptr<CGenericFeatureTracker>;
@@ -280,28 +275,31 @@ using CGenericFeatureTrackerAutoPtr = std::unique_ptr<CGenericFeatureTracker>;
  */
 struct CFeatureTracker_KL : public CGenericFeatureTracker
 {
-	/** Default ctor */
-	inline CFeatureTracker_KL() = default;
-	/** Ctor with extra parameters */
-	inline CFeatureTracker_KL(const mrpt::containers::yaml& extraParams)
-		: CGenericFeatureTracker(extraParams)
-	{
-	}
+  /** Default ctor */
+  inline CFeatureTracker_KL() = default;
+  /** Ctor with extra parameters */
+  inline CFeatureTracker_KL(const mrpt::containers::yaml& extraParams) :
+      CGenericFeatureTracker(extraParams)
+  {
+  }
 
-   protected:
-	void trackFeatures_impl(
-		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
-		TKeyPointList& inout_featureList) override;
-	void trackFeatures_impl(
-		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
-		TKeyPointfList& inout_featureList) override;
+ protected:
+  void trackFeatures_impl(
+      const mrpt::img::CImage& old_img,
+      const mrpt::img::CImage& new_img,
+      TKeyPointList& inout_featureList) override;
+  void trackFeatures_impl(
+      const mrpt::img::CImage& old_img,
+      const mrpt::img::CImage& new_img,
+      TKeyPointfList& inout_featureList) override;
 
-   private:
-	template <typename FEATLIST>
-	void trackFeatures_impl_templ(
-		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
-		FEATLIST& inout_featureList);
+ private:
+  template <typename FEATLIST>
+  void trackFeatures_impl_templ(
+      const mrpt::img::CImage& old_img,
+      const mrpt::img::CImage& new_img,
+      FEATLIST& inout_featureList);
 };
 
-/**  @}  */	 // end of grouping
+/**  @}  */  // end of grouping
 }  // namespace mrpt::vision

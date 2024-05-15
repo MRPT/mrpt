@@ -17,89 +17,84 @@ using namespace mrpt;
 using namespace mrpt::math;
 
 /*---------------------------------------------------------------
-					Constructor
+          Constructor
  ---------------------------------------------------------------*/
-CHistogram::CHistogram(const double min, const double max, size_t nBins)
-	: m_min(min), m_max(max), m_bins(nBins, 0), m_count(0)
+CHistogram::CHistogram(const double min, const double max, size_t nBins) :
+    m_min(min), m_max(max), m_bins(nBins, 0), m_count(0)
 {
-	ASSERT_(nBins > 0);
-	ASSERT_(max > min);
-	m_binSizeInv = nBins / (m_max - m_min);
+  ASSERT_(nBins > 0);
+  ASSERT_(max > min);
+  m_binSizeInv = nBins / (m_max - m_min);
 }
 
 /*---------------------------------------------------------------
-						clear
+            clear
  ---------------------------------------------------------------*/
 void CHistogram::clear()
 {
-	m_bins.assign(m_bins.size(), 0);
-	m_count = 0;
+  m_bins.assign(m_bins.size(), 0);
+  m_count = 0;
 }
 
 /*---------------------------------------------------------------
-							add
+              add
  ---------------------------------------------------------------*/
 void CHistogram::add(const double x)
 {
-	ASSERT_(!m_bins.empty());
-	if (x < m_min || x > m_max) return;
+  ASSERT_(!m_bins.empty());
+  if (x < m_min || x > m_max) return;
 
-	auto ind = static_cast<size_t>(m_binSizeInv * (x - m_min));
-	if (ind >= m_bins.size()) ind = m_bins.size() - 1;
+  auto ind = static_cast<size_t>(m_binSizeInv * (x - m_min));
+  if (ind >= m_bins.size()) ind = m_bins.size() - 1;
 
-	m_bins[ind]++;
-	m_count++;
+  m_bins[ind]++;
+  m_count++;
 }
 
 /*---------------------------------------------------------------
-					getBinCount
+          getBinCount
  ---------------------------------------------------------------*/
 size_t CHistogram::getBinCount(size_t index) const
 {
-	if (index >= m_bins.size()) THROW_EXCEPTION("Index out of bounds");
+  if (index >= m_bins.size()) THROW_EXCEPTION("Index out of bounds");
 
-	return m_bins[index];
+  return m_bins[index];
 }
 
 /*---------------------------------------------------------------
-					getBinRatio
+          getBinRatio
  ---------------------------------------------------------------*/
 double CHistogram::getBinRatio(size_t index) const
 {
-	if (index >= m_bins.size()) THROW_EXCEPTION("Index out of bounds");
+  if (index >= m_bins.size()) THROW_EXCEPTION("Index out of bounds");
 
-	if (m_count) return m_bins[index] / double(m_count);
-	else
-		return 0;
+  if (m_count)
+    return m_bins[index] / double(m_count);
+  else
+    return 0;
 }
 
-void CHistogram::getHistogram(
-	std::vector<double>& x, std::vector<double>& hits) const
+void CHistogram::getHistogram(std::vector<double>& x, std::vector<double>& hits) const
 {
-	linspace(m_min, m_max, m_bins.size(), x);
-	const size_t N = m_bins.size();
-	hits.resize(N);
-	for (size_t i = 0; i < N; i++)
-		hits[i] = static_cast<double>(m_bins[i]);
+  linspace(m_min, m_max, m_bins.size(), x);
+  const size_t N = m_bins.size();
+  hits.resize(N);
+  for (size_t i = 0; i < N; i++) hits[i] = static_cast<double>(m_bins[i]);
 }
 
-void CHistogram::getHistogramNormalized(
-	std::vector<double>& x, std::vector<double>& hits) const
+void CHistogram::getHistogramNormalized(std::vector<double>& x, std::vector<double>& hits) const
 {
-	const size_t N = m_bins.size();
-	linspace(m_min, m_max, N, x);
+  const size_t N = m_bins.size();
+  linspace(m_min, m_max, N, x);
 
-	hits.resize(N);
-	const double K = m_binSizeInv / m_count;
-	for (size_t i = 0; i < N; i++)
-		hits[i] = K * m_bins[i];
+  hits.resize(N);
+  const double K = m_binSizeInv / m_count;
+  for (size_t i = 0; i < N; i++) hits[i] = K * m_bins[i];
 }
 
-CHistogram CHistogram::createWithFixedWidth(
-	double min, double max, double binWidth)
+CHistogram CHistogram::createWithFixedWidth(double min, double max, double binWidth)
 {
-	ASSERT_(max > min);
-	ASSERT_(binWidth > 0);
-	return CHistogram(
-		min, max, static_cast<size_t>(ceil((max - min) / binWidth)));
+  ASSERT_(max > min);
+  ASSERT_(binWidth > 0);
+  return CHistogram(min, max, static_cast<size_t>(ceil((max - min) / binWidth)));
 }

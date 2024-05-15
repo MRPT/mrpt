@@ -47,242 +47,225 @@
 // MRPT -> ROS functions:
 tf2::Matrix3x3 mrpt::ros2bridge::toROS(const mrpt::math::CMatrixDouble33& src)
 {
-	tf2::Matrix3x3 des;
-	for (int r = 0; r < 3; r++)
-		for (int c = 0; c < 3; c++)
-			des[r][c] = src(r, c);
-	return des;
+  tf2::Matrix3x3 des;
+  for (int r = 0; r < 3; r++)
+    for (int c = 0; c < 3; c++) des[r][c] = src(r, c);
+  return des;
 }
 
-tf2::Transform mrpt::ros2bridge::toROS_tfTransform(
-	const mrpt::poses::CPose2D& src)
+tf2::Transform mrpt::ros2bridge::toROS_tfTransform(const mrpt::poses::CPose2D& src)
 {
-	return toROS_tfTransform(mrpt::poses::CPose3D(src));
+  return toROS_tfTransform(mrpt::poses::CPose3D(src));
 }
 
-geometry_msgs::msg::Pose mrpt::ros2bridge::toROS_Pose(
-	const mrpt::poses::CPose2D& src)
+geometry_msgs::msg::Pose mrpt::ros2bridge::toROS_Pose(const mrpt::poses::CPose2D& src)
 {
-	return toROS_Pose(mrpt::poses::CPose3D(src));
+  return toROS_Pose(mrpt::poses::CPose3D(src));
 }
 
-tf2::Transform mrpt::ros2bridge::toROS_tfTransform(
-	const mrpt::math::TPose2D& src)
+tf2::Transform mrpt::ros2bridge::toROS_tfTransform(const mrpt::math::TPose2D& src)
 {
-	return toROS_tfTransform(mrpt::poses::CPose3D(mrpt::math::TPose3D(src)));
+  return toROS_tfTransform(mrpt::poses::CPose3D(mrpt::math::TPose3D(src)));
 }
 
-geometry_msgs::msg::Pose mrpt::ros2bridge::toROS_Pose(
-	const mrpt::math::TPose2D& src)
+geometry_msgs::msg::Pose mrpt::ros2bridge::toROS_Pose(const mrpt::math::TPose2D& src)
 {
-	geometry_msgs::msg::Pose des;
+  geometry_msgs::msg::Pose des;
 
-	des.position.x = src.x;
-	des.position.y = src.y;
-	des.position.z = 0;
+  des.position.x = src.x;
+  des.position.y = src.y;
+  des.position.z = 0;
 
-	const double yaw = src.phi;
-	if (std::abs(yaw) < 1e-10)
-	{
-		des.orientation.x = 0.;
-		des.orientation.y = 0.;
-		des.orientation.z = .5 * yaw;
-		des.orientation.w = 1.;
-	}
-	else
-	{
-		const double s = ::sin(yaw * .5);
-		const double c = ::cos(yaw * .5);
-		des.orientation.x = 0.;
-		des.orientation.y = 0.;
-		des.orientation.z = s;
-		des.orientation.w = c;
-	}
+  const double yaw = src.phi;
+  if (std::abs(yaw) < 1e-10)
+  {
+    des.orientation.x = 0.;
+    des.orientation.y = 0.;
+    des.orientation.z = .5 * yaw;
+    des.orientation.w = 1.;
+  }
+  else
+  {
+    const double s = ::sin(yaw * .5);
+    const double c = ::cos(yaw * .5);
+    des.orientation.x = 0.;
+    des.orientation.y = 0.;
+    des.orientation.z = s;
+    des.orientation.w = c;
+  }
 
-	return des;
+  return des;
 }
 
-tf2::Transform mrpt::ros2bridge::toROS_tfTransform(
-	const mrpt::poses::CPose3D& src)
+tf2::Transform mrpt::ros2bridge::toROS_tfTransform(const mrpt::poses::CPose3D& src)
 {
-	tf2::Transform des;
-	des.setBasis(toROS(src.getRotationMatrix()));
-	des.setOrigin(tf2::Vector3(src.x(), src.y(), src.z()));
-	return des;
+  tf2::Transform des;
+  des.setBasis(toROS(src.getRotationMatrix()));
+  des.setOrigin(tf2::Vector3(src.x(), src.y(), src.z()));
+  return des;
 }
 
-geometry_msgs::msg::Pose mrpt::ros2bridge::toROS_Pose(
-	const mrpt::poses::CPose3D& src)
+geometry_msgs::msg::Pose mrpt::ros2bridge::toROS_Pose(const mrpt::poses::CPose3D& src)
 {
-	geometry_msgs::msg::Pose des;
-	des.position.x = src.x();
-	des.position.y = src.y();
-	des.position.z = src.z();
+  geometry_msgs::msg::Pose des;
+  des.position.x = src.x();
+  des.position.y = src.y();
+  des.position.z = src.z();
 
-	mrpt::math::CQuaternionDouble q;
-	src.getAsQuaternion(q);
+  mrpt::math::CQuaternionDouble q;
+  src.getAsQuaternion(q);
 
-	des.orientation.x = q.x();
-	des.orientation.y = q.y();
-	des.orientation.z = q.z();
-	des.orientation.w = q.r();
+  des.orientation.x = q.x();
+  des.orientation.y = q.y();
+  des.orientation.z = q.z();
+  des.orientation.w = q.r();
 
-	return des;
+  return des;
 }
 
-tf2::Transform mrpt::ros2bridge::toROS_tfTransform(
-	const mrpt::math::TPose3D& src)
+tf2::Transform mrpt::ros2bridge::toROS_tfTransform(const mrpt::math::TPose3D& src)
 {
-	return toROS_tfTransform(mrpt::poses::CPose3D(src));
+  return toROS_tfTransform(mrpt::poses::CPose3D(src));
 }
 
-geometry_msgs::msg::Pose mrpt::ros2bridge::toROS_Pose(
-	const mrpt::math::TPose3D& src)
+geometry_msgs::msg::Pose mrpt::ros2bridge::toROS_Pose(const mrpt::math::TPose3D& src)
 {
-	return toROS_Pose(mrpt::poses::CPose3D(src));
+  return toROS_Pose(mrpt::poses::CPose3D(src));
 }
 
 geometry_msgs::msg::PoseWithCovariance mrpt::ros2bridge::toROS_Pose(
-	const mrpt::poses::CPose3DPDFGaussian& src)
+    const mrpt::poses::CPose3DPDFGaussian& src)
 {
-	geometry_msgs::msg::PoseWithCovariance des;
-	des.pose = toROS_Pose(src.mean);
+  geometry_msgs::msg::PoseWithCovariance des;
+  des.pose = toROS_Pose(src.mean);
 
-	// Read REP103: http://ros.org/reps/rep-0103.html#covariance-representation
-	// # Row-major representation of the 6x6 covariance matrix
-	// # The orientation parameters use a fixed-axis representation.
-	// # In order, the parameters are:
-	// # (x, y, z, rotation about X axis, rotation about Y axis, rotation about
-	// Z axis)
-	// float64[36] covariance
-	// Old comment: "MRPT uses non-fixed axis for 6x6 covariance: should use a
-	// transform Jacobian here!"
-	//           JL ==> Nope! non-fixed z-y-x equals fixed x-y-z rotations.
+  // Read REP103: http://ros.org/reps/rep-0103.html#covariance-representation
+  // # Row-major representation of the 6x6 covariance matrix
+  // # The orientation parameters use a fixed-axis representation.
+  // # In order, the parameters are:
+  // # (x, y, z, rotation about X axis, rotation about Y axis, rotation about
+  // Z axis)
+  // float64[36] covariance
+  // Old comment: "MRPT uses non-fixed axis for 6x6 covariance: should use a
+  // transform Jacobian here!"
+  //           JL ==> Nope! non-fixed z-y-x equals fixed x-y-z rotations.
 
-	// X,Y,Z,YAW,PITCH,ROLL
-	const unsigned int indxs_map[6] = {0, 1, 2, 5, 4, 3};
-	for (int i = 0; i < 6; i++)
-		for (int j = 0; j < 6; j++)
-			des.covariance[indxs_map[i] * 6 + indxs_map[j]] = src.cov(i, j);
-	return des;
+  // X,Y,Z,YAW,PITCH,ROLL
+  const unsigned int indxs_map[6] = {0, 1, 2, 5, 4, 3};
+  for (int i = 0; i < 6; i++)
+    for (int j = 0; j < 6; j++) des.covariance[indxs_map[i] * 6 + indxs_map[j]] = src.cov(i, j);
+  return des;
 }
 
 geometry_msgs::msg::PoseWithCovariance mrpt::ros2bridge::toROS(
-	const mrpt::poses::CPose3DPDFGaussianInf& src)
+    const mrpt::poses::CPose3DPDFGaussianInf& src)
 {
-	mrpt::poses::CPose3DPDFGaussian src2;
-	src2.copyFrom(src);
-	return toROS_Pose(src2);
+  mrpt::poses::CPose3DPDFGaussian src2;
+  src2.copyFrom(src);
+  return toROS_Pose(src2);
 }
 
 geometry_msgs::msg::PoseWithCovariance mrpt::ros2bridge::toROS(
-	const mrpt::poses::CPosePDFGaussian& src)
+    const mrpt::poses::CPosePDFGaussian& src)
 {
-	geometry_msgs::msg::PoseWithCovariance des;
+  geometry_msgs::msg::PoseWithCovariance des;
 
-	des.pose = toROS_Pose(src.mean);
+  des.pose = toROS_Pose(src.mean);
 
-	// Read REP103: http://ros.org/reps/rep-0103.html#covariance-representation
-	// Old comment: "MRPT uses non-fixed axis for 6x6 covariance: should use a
-	// transform Jacobian here!"
-	//           JL ==> Nope! non-fixed z-y-x equals fixed x-y-z rotations.
+  // Read REP103: http://ros.org/reps/rep-0103.html#covariance-representation
+  // Old comment: "MRPT uses non-fixed axis for 6x6 covariance: should use a
+  // transform Jacobian here!"
+  //           JL ==> Nope! non-fixed z-y-x equals fixed x-y-z rotations.
 
-	// geometry_msgs/PoseWithCovariance msg stores the covariance matrix in
-	// row-major representation
-	// Indexes are :
-	// [ 0   1   2   3   4   5  ]
-	// [ 6   7   8   9   10  11 ]
-	// [ 12  13  14  15  16  17 ]
-	// [ 18  19  20  21  22  23 ]
-	// [ 24  25  26  27  28  29 ]
-	// [ 30  31  32  33  34  35 ]
+  // geometry_msgs/PoseWithCovariance msg stores the covariance matrix in
+  // row-major representation
+  // Indexes are :
+  // [ 0   1   2   3   4   5  ]
+  // [ 6   7   8   9   10  11 ]
+  // [ 12  13  14  15  16  17 ]
+  // [ 18  19  20  21  22  23 ]
+  // [ 24  25  26  27  28  29 ]
+  // [ 30  31  32  33  34  35 ]
 
-	des.covariance[0] = src.cov(0, 0);
-	des.covariance[1] = src.cov(0, 1);
-	des.covariance[5] = src.cov(0, 2);
-	des.covariance[6] = src.cov(1, 0);
-	des.covariance[7] = src.cov(1, 1);
-	des.covariance[11] = src.cov(1, 2);
-	des.covariance[30] = src.cov(2, 0);
-	des.covariance[31] = src.cov(2, 1);
-	des.covariance[35] = src.cov(2, 2);
+  des.covariance[0] = src.cov(0, 0);
+  des.covariance[1] = src.cov(0, 1);
+  des.covariance[5] = src.cov(0, 2);
+  des.covariance[6] = src.cov(1, 0);
+  des.covariance[7] = src.cov(1, 1);
+  des.covariance[11] = src.cov(1, 2);
+  des.covariance[30] = src.cov(2, 0);
+  des.covariance[31] = src.cov(2, 1);
+  des.covariance[35] = src.cov(2, 2);
 
-	return des;
+  return des;
 }
 
 geometry_msgs::msg::PoseWithCovariance mrpt::ros2bridge::toROS(
-	const mrpt::poses::CPosePDFGaussianInf& src)
+    const mrpt::poses::CPosePDFGaussianInf& src)
 {
-	mrpt::poses::CPosePDFGaussian src2;
-	src2.copyFrom(src);
+  mrpt::poses::CPosePDFGaussian src2;
+  src2.copyFrom(src);
 
-	return toROS(src2);
+  return toROS(src2);
 }
 
-geometry_msgs::msg::Quaternion mrpt::ros2bridge::toROS(
-	const mrpt::math::CQuaternionDouble& src)
+geometry_msgs::msg::Quaternion mrpt::ros2bridge::toROS(const mrpt::math::CQuaternionDouble& src)
 {
-	geometry_msgs::msg::Quaternion des;
-	des.x = src.x();
-	des.y = src.y();
-	des.z = src.z();
-	des.w = src.r();
-	return des;
+  geometry_msgs::msg::Quaternion des;
+  des.x = src.x();
+  des.y = src.y();
+  des.z = src.z();
+  des.w = src.r();
+  return des;
 }
 
 // ROS -> MRPT functions:
 mrpt::poses::CPose3D mrpt::ros2bridge::fromROS(const tf2::Transform& src)
 {
-	mrpt::poses::CPose3D des;
-	const tf2::Vector3& t = src.getOrigin();
-	des.x(t[0]);
-	des.y(t[1]);
-	des.z(t[2]);
-	des.setRotationMatrix(fromROS(src.getBasis()));
-	return des;
+  mrpt::poses::CPose3D des;
+  const tf2::Vector3& t = src.getOrigin();
+  des.x(t[0]);
+  des.y(t[1]);
+  des.z(t[2]);
+  des.setRotationMatrix(fromROS(src.getBasis()));
+  return des;
 }
 mrpt::math::CMatrixDouble33 mrpt::ros2bridge::fromROS(const tf2::Matrix3x3& src)
 {
-	mrpt::math::CMatrixDouble33 des;
-	for (int r = 0; r < 3; r++)
-		for (int c = 0; c < 3; c++)
-			des(r, c) = src[r][c];
-	return des;
+  mrpt::math::CMatrixDouble33 des;
+  for (int r = 0; r < 3; r++)
+    for (int c = 0; c < 3; c++) des(r, c) = src[r][c];
+  return des;
 }
 
-mrpt::poses::CPose3D mrpt::ros2bridge::fromROS(
-	const geometry_msgs::msg::Pose& src)
+mrpt::poses::CPose3D mrpt::ros2bridge::fromROS(const geometry_msgs::msg::Pose& src)
 {
-	const mrpt::math::CQuaternionDouble q(
-		src.orientation.w, src.orientation.x, src.orientation.y,
-		src.orientation.z);
-	return mrpt::poses::CPose3D(
-		q, src.position.x, src.position.y, src.position.z);
+  const mrpt::math::CQuaternionDouble q(
+      src.orientation.w, src.orientation.x, src.orientation.y, src.orientation.z);
+  return mrpt::poses::CPose3D(q, src.position.x, src.position.y, src.position.z);
 }
 
 mrpt::poses::CPose3DPDFGaussian mrpt::ros2bridge::fromROS(
-	const geometry_msgs::msg::PoseWithCovariance& src)
+    const geometry_msgs::msg::PoseWithCovariance& src)
 {
-	mrpt::poses::CPose3DPDFGaussian des;
+  mrpt::poses::CPose3DPDFGaussian des;
 
-	des.mean = fromROS(src.pose);
+  des.mean = fromROS(src.pose);
 
-	const unsigned int indxs_map[6] = {0, 1, 2, 5, 4, 3};
+  const unsigned int indxs_map[6] = {0, 1, 2, 5, 4, 3};
 
-	for (int i = 0; i < 6; i++)
-		for (int j = 0; j < 6; j++)
-			des.cov(i, j) = src.covariance[indxs_map[i] * 6 + indxs_map[j]];
+  for (int i = 0; i < 6; i++)
+    for (int j = 0; j < 6; j++) des.cov(i, j) = src.covariance[indxs_map[i] * 6 + indxs_map[j]];
 
-	return des;
+  return des;
 }
 
-mrpt::math::CQuaternionDouble mrpt::ros2bridge::fromROS(
-	const geometry_msgs::msg::Quaternion& src)
+mrpt::math::CQuaternionDouble mrpt::ros2bridge::fromROS(const geometry_msgs::msg::Quaternion& src)
 {
-	mrpt::math::CQuaternionDouble des;
-	des.x(src.x);
-	des.y(src.y);
-	des.z(src.z);
-	des.r(src.w);
-	return des;
+  mrpt::math::CQuaternionDouble des;
+  des.x(src.x);
+  des.y(src.y);
+  des.z(src.z);
+  des.r(src.w);
+  return des;
 }

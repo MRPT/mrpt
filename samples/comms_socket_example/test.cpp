@@ -17,19 +17,19 @@
 // ------------------------------------------------------
 int main()
 {
-	try
-	{
-		SocketsTest();
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "MRPT exception caught: " << e.what() << std::endl;
-		return -1;
-	}
-	catch (...)
-	{
-		std::cerr << "Untyped exception!!";
-		return -1;
-	}
+  try
+  {
+    SocketsTest();
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT exception caught: " << e.what() << std::endl;
+    return -1;
+  }
+  catch (...)
+  {
+    std::cerr << "Untyped exception!!";
+    return -1;
+  }
 }

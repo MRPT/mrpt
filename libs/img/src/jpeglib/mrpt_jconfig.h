@@ -36,14 +36,14 @@ typedef unsigned char boolean;
 
 #ifdef JPEG_CJPEG_DJPEG
 
-#define BMP_SUPPORTED /* BMP image file format */
-#define GIF_SUPPORTED /* GIF image file format */
-#define PPM_SUPPORTED /* PBMPLUS PPM/PGM image file format */
-#undef RLE_SUPPORTED /* Utah RLE image file format */
+#define BMP_SUPPORTED   /* BMP image file format */
+#define GIF_SUPPORTED   /* GIF image file format */
+#define PPM_SUPPORTED   /* PBMPLUS PPM/PGM image file format */
+#undef RLE_SUPPORTED    /* Utah RLE image file format */
 #define TARGA_SUPPORTED /* Targa image file format */
 
 #define TWO_FILE_COMMANDLINE /* optional */
-#define USE_SETMODE /* Microsoft has setmode() */
+#define USE_SETMODE          /* Microsoft has setmode() */
 #undef NEED_SIGNAL_CATCHER
 #undef DONT_USE_B_MODE
 #undef PROGRESS_REPORT /* optional */

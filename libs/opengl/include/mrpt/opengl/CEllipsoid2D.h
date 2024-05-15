@@ -32,29 +32,29 @@ namespace mrpt::opengl
  */
 class CEllipsoid2D : public CGeneralizedEllipsoidTemplate<2>
 {
-	using BASE = CGeneralizedEllipsoidTemplate<2>;
+  using BASE = CGeneralizedEllipsoidTemplate<2>;
 
-	DEFINE_SERIALIZABLE(CEllipsoid2D, mrpt::opengl)
+  DEFINE_SERIALIZABLE(CEllipsoid2D, mrpt::opengl)
 
-   public:
-	CEllipsoid2D() = default;
-	virtual ~CEllipsoid2D() override = default;
+ public:
+  CEllipsoid2D() = default;
+  virtual ~CEllipsoid2D() override = default;
 
-	/** The number of segments of a 2D ellipse (default=20) */
-	void set2DsegmentsCount(unsigned int N) { BASE::setNumberOfSegments(N); }
+  /** The number of segments of a 2D ellipse (default=20) */
+  void set2DsegmentsCount(unsigned int N) { BASE::setNumberOfSegments(N); }
 
-	/** Ray tracing */
-	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
+  /** Ray tracing */
+  bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
-   protected:
-	/** To be implemented by derived classes: maps, using some arbitrary space
-	 * transformation, a list of points
-	 *  defining an ellipsoid in parameter space into their corresponding
-	 * points in 2D/3D space.
-	 */
-	void transformFromParameterSpace(
-		const std::vector<BASE::array_parameter_t>& in_pts,
-		std::vector<BASE::array_point_t>& out_pts) const override;
+ protected:
+  /** To be implemented by derived classes: maps, using some arbitrary space
+   * transformation, a list of points
+   *  defining an ellipsoid in parameter space into their corresponding
+   * points in 2D/3D space.
+   */
+  void transformFromParameterSpace(
+      const std::vector<BASE::array_parameter_t>& in_pts,
+      std::vector<BASE::array_point_t>& out_pts) const override;
 };
 
 }  // namespace mrpt::opengl

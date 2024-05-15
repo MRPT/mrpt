@@ -23,50 +23,42 @@ namespace mrpt::math
  */
 class CAtan2LookUpTable
 {
-   public:
-	CAtan2LookUpTable() noexcept;
-	CAtan2LookUpTable(
-		double xmin, double xmax, double ymin, double ymax,
-		double resolution) noexcept;
-	void resize(
-		double xmin, double xmax, double ymin, double ymax,
-		double resolution) noexcept;
+ public:
+  CAtan2LookUpTable() noexcept;
+  CAtan2LookUpTable(double xmin, double xmax, double ymin, double ymax, double resolution) noexcept;
+  void resize(double xmin, double xmax, double ymin, double ymax, double resolution) noexcept;
 
-	/** Returns the precomputed value for atan2(y,x). \return false if out of
-	 * grid bounds. */
-	[[nodiscard]] bool atan2(
-		double y, double x, double& out_atan2) const noexcept
-	{
-		const double* cp = m_grid.cellByPos(x, y);
-		if (!cp) return false;
-		out_atan2 = *cp;
-		return true;
-	}
+  /** Returns the precomputed value for atan2(y,x). \return false if out of
+   * grid bounds. */
+  [[nodiscard]] bool atan2(double y, double x, double& out_atan2) const noexcept
+  {
+    const double* cp = m_grid.cellByPos(x, y);
+    if (!cp) return false;
+    out_atan2 = *cp;
+    return true;
+  }
 
-	/** Returns the precomputed value for atan2() of the corresponding cell
-	 * with indices (ix,iy). \return false if out of grid bounds. */
-	[[nodiscard]] bool atan2ByIndex(
-		unsigned int iy, unsigned int ix, double& out_atan2) const noexcept
-	{
-		const double* cp = m_grid.cellByIndex(ix, iy);
-		if (!cp) return false;
-		out_atan2 = *cp;
-		return true;
-	}
+  /** Returns the precomputed value for atan2() of the corresponding cell
+   * with indices (ix,iy). \return false if out of grid bounds. */
+  [[nodiscard]] bool atan2ByIndex(
+      unsigned int iy, unsigned int ix, double& out_atan2) const noexcept
+  {
+    const double* cp = m_grid.cellByIndex(ix, iy);
+    if (!cp) return false;
+    out_atan2 = *cp;
+    return true;
+  }
 
-	[[nodiscard]] double getXMin() const { return m_grid.getXMin(); }
-	[[nodiscard]] double getXMax() const { return m_grid.getXMax(); }
-	[[nodiscard]] double getYMin() const { return m_grid.getYMin(); }
-	[[nodiscard]] double getYMax() const { return m_grid.getYMax(); }
-	[[nodiscard]] double getResolution() const
-	{
-		return m_grid.getResolution();
-	}
-	[[nodiscard]] size_t getSizeX() const { return m_grid.getSizeX(); }
-	[[nodiscard]] size_t getSizeY() const { return m_grid.getSizeY(); }
+  [[nodiscard]] double getXMin() const { return m_grid.getXMin(); }
+  [[nodiscard]] double getXMax() const { return m_grid.getXMax(); }
+  [[nodiscard]] double getYMin() const { return m_grid.getYMin(); }
+  [[nodiscard]] double getYMax() const { return m_grid.getYMax(); }
+  [[nodiscard]] double getResolution() const { return m_grid.getResolution(); }
+  [[nodiscard]] size_t getSizeX() const { return m_grid.getSizeX(); }
+  [[nodiscard]] size_t getSizeY() const { return m_grid.getSizeY(); }
 
-   private:
-	mrpt::containers::CDynamicGrid<double> m_grid;
+ private:
+  mrpt::containers::CDynamicGrid<double> m_grid;
 };
 
 /** Like CAtan2LookUpTable but with a multiresolution grid for increasingly
@@ -86,24 +78,21 @@ class CAtan2LookUpTable
  */
 class CAtan2LookUpTableMultiRes
 {
-   public:
-	CAtan2LookUpTableMultiRes() = default;
-	/** See CAtan2LookUpTableMultiRes for a discussion of the parameters */
-	CAtan2LookUpTableMultiRes(
-		const std::map<double, double>& lst_resolutions2extensions) noexcept;
-	/** See CAtan2LookUpTableMultiRes for a discussion of the parameters */
-	void resize(
-		const std::map<double, double>& lst_resolutions2extensions) noexcept;
+ public:
+  CAtan2LookUpTableMultiRes() = default;
+  /** See CAtan2LookUpTableMultiRes for a discussion of the parameters */
+  CAtan2LookUpTableMultiRes(const std::map<double, double>& lst_resolutions2extensions) noexcept;
+  /** See CAtan2LookUpTableMultiRes for a discussion of the parameters */
+  void resize(const std::map<double, double>& lst_resolutions2extensions) noexcept;
 
-	/** Returns the precomputed value for atan2(y,x). \return false if out of
-	 * grid bounds. */
-	[[nodiscard]] bool atan2(
-		double y, double x, double& out_atan2) const noexcept;
+  /** Returns the precomputed value for atan2(y,x). \return false if out of
+   * grid bounds. */
+  [[nodiscard]] bool atan2(double y, double x, double& out_atan2) const noexcept;
 
-   private:
-	/** Maps from maximum (X,Y) coordinates to LUT for [-L,L]x[-L,L] square
-	 * area. */
-	std::map<double, mrpt::containers::CDynamicGrid<double>> m_grids;
+ private:
+  /** Maps from maximum (X,Y) coordinates to LUT for [-L,L]x[-L,L] square
+   * area. */
+  std::map<double, mrpt::containers::CDynamicGrid<double>> m_grids;
 };
 
 }  // namespace mrpt::math

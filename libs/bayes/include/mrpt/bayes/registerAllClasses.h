@@ -21,9 +21,9 @@ namespace mrpt::bayes
  */
 inline void registerAllClasses_mrpt_bayes()
 {
-	// None in this library
-	mrpt::config::registerAllClasses_mrpt_config();
-	mrpt::math::registerAllClasses_mrpt_math();
+  // None in this library
+  mrpt::config::registerAllClasses_mrpt_config();
+  mrpt::math::registerAllClasses_mrpt_math();
 }
 
 }  // namespace mrpt::bayes

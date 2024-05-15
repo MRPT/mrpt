@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "comms-precomp.h"	// Precompiled headers
+#include "comms-precomp.h"  // Precompiled headers
 //
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/CServerTCPSocket.h>
@@ -40,36 +40,37 @@ using namespace mrpt;
 using namespace mrpt::comms;
 
 CServerTCPSocket::CServerTCPSocket(
-	unsigned short listenPort, const std::string& IPaddress,
-	int maxConnectionsWaiting, mrpt::system::VerbosityLevel verbosityLevel)
-	: COutputLogger("CServerTCPSocket")
+    unsigned short listenPort,
+    const std::string& IPaddress,
+    int maxConnectionsWaiting,
+    mrpt::system::VerbosityLevel verbosityLevel) :
+    COutputLogger("CServerTCPSocket")
 {
-	MRPT_TRY_START;
-	setVerbosityLevel(verbosityLevel);
+  MRPT_TRY_START;
+  setVerbosityLevel(verbosityLevel);
 
 #if defined(_WIN32)
-	// Init the WinSock Library:
-	// ----------------------------
-	WORD wVersionRequested;
-	WSADATA wsaData;
+  // Init the WinSock Library:
+  // ----------------------------
+  WORD wVersionRequested;
+  WSADATA wsaData;
 
-	wVersionRequested = MAKEWORD(2, 0);
+  wVersionRequested = MAKEWORD(2, 0);
 
-	if (0 != WSAStartup(wVersionRequested, &wsaData))
-		THROW_EXCEPTION(getLastErrorStr());
+  if (0 != WSAStartup(wVersionRequested, &wsaData)) THROW_EXCEPTION(getLastErrorStr());
 #endif
 
-	setupSocket(listenPort, IPaddress, maxConnectionsWaiting);
-	MRPT_TRY_END;
+  setupSocket(listenPort, IPaddress, maxConnectionsWaiting);
+  MRPT_TRY_END;
 }
 
 CServerTCPSocket::~CServerTCPSocket()
 {
 // Delete socket:
 #if defined(_WIN32)
-	if (m_serverSock != INVALID_SOCKET) closesocket(m_serverSock);
-	WSACleanup();
+  if (m_serverSock != INVALID_SOCKET) closesocket(m_serverSock);
+  WSACleanup();
 #else
-	if (m_serverSock != -1) close(m_serverSock);
+  if (m_serverSock != -1) close(m_serverSock);
 #endif
 }

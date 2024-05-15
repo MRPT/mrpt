@@ -27,24 +27,23 @@ double SIGMA = 0.05;
 // The custom class:
 class CMyRejectionSampling : public CRejectionSamplingCapable<CPose2D>
 {
-   protected:
-	void RS_drawFromProposal(CPose2D& outSample) override
-	{
-		double ang = getRandomGenerator().drawUniform(-M_PI, M_PI);
-		double R = getRandomGenerator().drawGaussian1D(1.0, SIGMA);
-		outSample.x(1.0f - cos(ang) * R);
-		outSample.y(sin(ang) * R);
-		outSample.phi(getRandomGenerator().drawUniform(-M_PI, M_PI));
-	}
+ protected:
+  void RS_drawFromProposal(CPose2D& outSample) override
+  {
+    double ang = getRandomGenerator().drawUniform(-M_PI, M_PI);
+    double R = getRandomGenerator().drawGaussian1D(1.0, SIGMA);
+    outSample.x(1.0f - cos(ang) * R);
+    outSample.y(sin(ang) * R);
+    outSample.phi(getRandomGenerator().drawUniform(-M_PI, M_PI));
+  }
 
-	/** Returns the NORMALIZED observation likelihood at a given point of the
-	 * state space (values in the range [0,1]).
-	 */
-	double RS_observationLikelihood(const CPose2D& x) override
-	{
-		return exp(
-			-0.5 * square((x.distanceTo(CPoint2D(0, 0)) - 1.0f) / SIGMA));
-	}
+  /** Returns the NORMALIZED observation likelihood at a given point of the
+   * state space (values in the range [0,1]).
+   */
+  double RS_observationLikelihood(const CPose2D& x) override
+  {
+    return exp(-0.5 * square((x.distanceTo(CPoint2D(0, 0)) - 1.0f) / SIGMA));
+  }
 };
 
 // ------------------------------------------------------
@@ -52,25 +51,23 @@ class CMyRejectionSampling : public CRejectionSamplingCapable<CPose2D>
 // ------------------------------------------------------
 void TestRS()
 {
-	CMyRejectionSampling RS;
-	std::vector<CMyRejectionSampling::TParticle> samples;
-	CTicTac tictac;
+  CMyRejectionSampling RS;
+  std::vector<CMyRejectionSampling::TParticle> samples;
+  CTicTac tictac;
 
-	tictac.Tic();
-	printf("Computing...");
+  tictac.Tic();
+  printf("Computing...");
 
-	RS.rejectionSampling(1000, samples);
+  RS.rejectionSampling(1000, samples);
 
-	printf("Ok! %fms\n", 1000 * tictac.Tac());
+  printf("Ok! %fms\n", 1000 * tictac.Tac());
 
-	FILE* f = os::fopen("_out_samples.txt", "wt");
-	std::vector<CMyRejectionSampling::TParticle>::iterator it;
-	for (it = samples.begin(); it != samples.end(); it++)
-		os::fprintf(
-			f, "%f %f %f %e\n", it->d->x(), it->d->y(), it->d->phi(),
-			it->log_w);
+  FILE* f = os::fopen("_out_samples.txt", "wt");
+  std::vector<CMyRejectionSampling::TParticle>::iterator it;
+  for (it = samples.begin(); it != samples.end(); it++)
+    os::fprintf(f, "%f %f %f %e\n", it->d->x(), it->d->y(), it->d->phi(), it->log_w);
 
-	os::fclose(f);
+  os::fclose(f);
 }
 
 // ------------------------------------------------------
@@ -78,20 +75,20 @@ void TestRS()
 // ------------------------------------------------------
 int main()
 {
-	try
-	{
-		TestRS();
+  try
+  {
+    TestRS();
 
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
-		return -1;
-	}
-	catch (...)
-	{
-		printf("Untyped excepcion!!");
-		return -1;
-	}
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    return -1;
+  }
+  catch (...)
+  {
+    printf("Untyped excepcion!!");
+    return -1;
+  }
 }

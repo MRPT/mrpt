@@ -36,38 +36,33 @@ void* aligned_calloc(size_t bytes, size_t alignment);
 template <class T, size_t AligmentBytes = MRPT_MAX_ALIGN_BYTES>
 class aligned_allocator_cpp11 : public std::allocator<T>
 {
-   public:
-	using size_type = std::size_t;
-	using difference_type = std::ptrdiff_t;
-	using pointer = T*;
-	using const_pointer = const T*;
-	using reference = T&;
-	using const_reference = const T&;
-	using value_type = T;
+ public:
+  using size_type = std::size_t;
+  using difference_type = std::ptrdiff_t;
+  using pointer = T*;
+  using const_pointer = const T*;
+  using reference = T&;
+  using const_reference = const T&;
+  using value_type = T;
 
-	template <class U>
-	struct rebind
-	{
-		using other = aligned_allocator_cpp11<U>;
-	};
+  template <class U>
+  struct rebind
+  {
+    using other = aligned_allocator_cpp11<U>;
+  };
 
-	aligned_allocator_cpp11() : std::allocator<T>() {}
-	aligned_allocator_cpp11(const aligned_allocator_cpp11& other)
-		: std::allocator<T>(other)
-	{
-	}
-	template <class U>
-	aligned_allocator_cpp11(const aligned_allocator_cpp11<U>& other)
-		: std::allocator<T>(other)
-	{
-	}
-	~aligned_allocator_cpp11() = default;
-	pointer allocate(size_type num, const void* /*hint*/ = nullptr)
-	{
-		return static_cast<pointer>(
-			mrpt::aligned_malloc(num * sizeof(T), AligmentBytes));
-	}
-	void deallocate(pointer p, size_type /*num*/) { mrpt::aligned_free(p); }
+  aligned_allocator_cpp11() : std::allocator<T>() {}
+  aligned_allocator_cpp11(const aligned_allocator_cpp11& other) : std::allocator<T>(other) {}
+  template <class U>
+  aligned_allocator_cpp11(const aligned_allocator_cpp11<U>& other) : std::allocator<T>(other)
+  {
+  }
+  ~aligned_allocator_cpp11() = default;
+  pointer allocate(size_type num, const void* /*hint*/ = nullptr)
+  {
+    return static_cast<pointer>(mrpt::aligned_malloc(num * sizeof(T), AligmentBytes));
+  }
+  void deallocate(pointer p, size_type /*num*/) { mrpt::aligned_free(p); }
 };
 
 }  // namespace mrpt

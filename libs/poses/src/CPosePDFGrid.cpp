@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"	// Precompiled headers
+#include "poses-precomp.h"  // Precompiled headers
 //
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPosePDFGrid.h>
@@ -28,214 +28,207 @@ using namespace mrpt::system;
 IMPLEMENTS_SERIALIZABLE(CPosePDFGrid, CPosePDF, mrpt::poses)
 
 /*---------------------------------------------------------------
-	Constructor
+  Constructor
   ---------------------------------------------------------------*/
 CPosePDFGrid::CPosePDFGrid(
-	double xMin, double xMax, double yMin, double yMax, double resolutionXY,
-	double resolutionPhi, double phiMin, double phiMax)
-	: CPose2DGridTemplate<double>(
-		  xMin, xMax, yMin, yMax, resolutionXY, resolutionPhi, phiMin, phiMax)
+    double xMin,
+    double xMax,
+    double yMin,
+    double yMax,
+    double resolutionXY,
+    double resolutionPhi,
+    double phiMin,
+    double phiMax) :
+    CPose2DGridTemplate<double>(xMin, xMax, yMin, yMax, resolutionXY, resolutionPhi, phiMin, phiMax)
 {
-	uniformDistribution();
+  uniformDistribution();
 }
 
 void CPosePDFGrid::copyFrom(const CPosePDF& o)
 {
-	if (this == &o) return;	 // It may be used sometimes
+  if (this == &o) return;  // It may be used sometimes
 
-	THROW_EXCEPTION("Not implemented yet!");
+  THROW_EXCEPTION("Not implemented yet!");
 }
 
 /*---------------------------------------------------------------
-	Destructor
+  Destructor
   ---------------------------------------------------------------*/
 CPosePDFGrid::~CPosePDFGrid() = default;
 /*---------------------------------------------------------------
-						getMean
+            getMean
   Returns an estimate of the pose, (the mean, or mathematical expectation of the
  PDF), computed
-		as a weighted average over all particles.
+    as a weighted average over all particles.
  ---------------------------------------------------------------*/
 void CPosePDFGrid::getMean(CPose2D& p) const
 {
-	// Calc average on SE(2)
-	mrpt::poses::SE_average<2> se_averager;
-	for (size_t phiInd = 0; phiInd < m_sizePhi; phiInd++)
-		for (size_t y = 0; y < m_sizeY; y++)
-			for (size_t x = 0; x < m_sizeX; x++)
-			{
-				const double w = *getByIndex(x, y, phiInd);
-				se_averager.append(
-					CPose2D(idx2x(x), idx2y(y), idx2phi(phiInd)), w);
-			}
-	se_averager.get_average(p);
+  // Calc average on SE(2)
+  mrpt::poses::SE_average<2> se_averager;
+  for (size_t phiInd = 0; phiInd < m_sizePhi; phiInd++)
+    for (size_t y = 0; y < m_sizeY; y++)
+      for (size_t x = 0; x < m_sizeX; x++)
+      {
+        const double w = *getByIndex(x, y, phiInd);
+        se_averager.append(CPose2D(idx2x(x), idx2y(y), idx2phi(phiInd)), w);
+      }
+  se_averager.get_average(p);
 }
 
 std::tuple<CMatrixDouble33, CPose2D> CPosePDFGrid::getCovarianceAndMean() const
 {
-	CPosePDFParticles auxParts;
-	auxParts.resetDeterministic(
-		TPose2D(0, 0, 0), m_sizePhi * m_sizeY * m_sizeX);
-	size_t idx = 0;
-	for (size_t phiInd = 0; phiInd < m_sizePhi; phiInd++)
-	{
-		for (size_t y = 0; y < m_sizeY; y++)
-			for (size_t x = 0; x < m_sizeX; x++)
-			{
-				auxParts.m_particles[idx].log_w =
-					log(*getByIndex(x, y, phiInd));
-				auxParts.m_particles[idx].d =
-					TPose2D(idx2x(x), idx2y(y), idx2phi(phiInd));
-			}
-	}
-	return auxParts.getCovarianceAndMean();
+  CPosePDFParticles auxParts;
+  auxParts.resetDeterministic(TPose2D(0, 0, 0), m_sizePhi * m_sizeY * m_sizeX);
+  size_t idx = 0;
+  for (size_t phiInd = 0; phiInd < m_sizePhi; phiInd++)
+  {
+    for (size_t y = 0; y < m_sizeY; y++)
+      for (size_t x = 0; x < m_sizeX; x++)
+      {
+        auxParts.m_particles[idx].log_w = log(*getByIndex(x, y, phiInd));
+        auxParts.m_particles[idx].d = TPose2D(idx2x(x), idx2y(y), idx2phi(phiInd));
+      }
+  }
+  return auxParts.getCovarianceAndMean();
 }
 
 uint8_t CPosePDFGrid::serializeGetVersion() const { return 0; }
 void CPosePDFGrid::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	// The size:
-	out << m_xMin << m_xMax << m_yMin << m_yMax << m_phiMin << m_phiMax
-		<< m_resolutionXY << m_resolutionPhi << static_cast<int32_t>(m_sizeX)
-		<< static_cast<int32_t>(m_sizeY) << static_cast<int32_t>(m_sizePhi)
-		<< static_cast<int32_t>(m_sizeXY) << static_cast<int32_t>(m_idxLeftX)
-		<< static_cast<int32_t>(m_idxLeftY)
-		<< static_cast<int32_t>(m_idxLeftPhi);
+  // The size:
+  out << m_xMin << m_xMax << m_yMin << m_yMax << m_phiMin << m_phiMax << m_resolutionXY
+      << m_resolutionPhi << static_cast<int32_t>(m_sizeX) << static_cast<int32_t>(m_sizeY)
+      << static_cast<int32_t>(m_sizePhi) << static_cast<int32_t>(m_sizeXY)
+      << static_cast<int32_t>(m_idxLeftX) << static_cast<int32_t>(m_idxLeftY)
+      << static_cast<int32_t>(m_idxLeftPhi);
 
-	// The data:
-	out << m_data;
+  // The data:
+  out << m_data;
 }
-void CPosePDFGrid::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void CPosePDFGrid::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	switch (version)
-	{
-		case 0:
-		{
-			// The size:
-			in >> m_xMin >> m_xMax >> m_yMin >> m_yMax >> m_phiMin >>
-				m_phiMax >> m_resolutionXY >> m_resolutionPhi;
+  switch (version)
+  {
+    case 0:
+    {
+      // The size:
+      in >> m_xMin >> m_xMax >> m_yMin >> m_yMax >> m_phiMin >> m_phiMax >> m_resolutionXY >>
+          m_resolutionPhi;
 
-			int32_t sizeX, sizeY, sizePhi, sizeXY, idxLeftX, idxLeftY,
-				idxLeftPhi;
+      int32_t sizeX, sizeY, sizePhi, sizeXY, idxLeftX, idxLeftY, idxLeftPhi;
 
-			in >> sizeX >> sizeY >> sizePhi >> sizeXY >> idxLeftX >> idxLeftY >>
-				idxLeftPhi;
+      in >> sizeX >> sizeY >> sizePhi >> sizeXY >> idxLeftX >> idxLeftY >> idxLeftPhi;
 
-			m_sizeX = sizeX;
-			m_sizeY = sizeY;
-			m_sizePhi = sizePhi;
-			m_sizeXY = sizeXY;
-			m_idxLeftX = idxLeftX;
-			m_idxLeftY = idxLeftY;
-			m_idxLeftPhi = idxLeftPhi;
+      m_sizeX = sizeX;
+      m_sizeY = sizeY;
+      m_sizePhi = sizePhi;
+      m_sizeXY = sizeXY;
+      m_idxLeftX = idxLeftX;
+      m_idxLeftY = idxLeftY;
+      m_idxLeftPhi = idxLeftPhi;
 
-			// The data:
-			in >> m_data;
-		}
-		break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	};
+      // The data:
+      in >> m_data;
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
 }
 
 bool CPosePDFGrid::saveToTextFile(const std::string& dataFile) const
 {
-	const auto dimsFile = dataFile + std::string("_dims.txt");
+  const auto dimsFile = dataFile + std::string("_dims.txt");
 
-	std::ofstream f_d(dataFile), f_s(dimsFile);
-	if (!f_d.is_open() || !f_s.is_open()) return false;
+  std::ofstream f_d(dataFile), f_s(dimsFile);
+  if (!f_d.is_open() || !f_s.is_open()) return false;
 
-	// Save dims:
-	f_s << mrpt::format(
-		"%u %u %u %f %f %f %f %f %f\n", (unsigned)m_sizeX, (unsigned)m_sizeY,
-		(unsigned)m_sizePhi, m_xMin, m_xMax, m_yMin, m_yMax, m_phiMin,
-		m_phiMax);
+  // Save dims:
+  f_s << mrpt::format(
+      "%u %u %u %f %f %f %f %f %f\n", (unsigned)m_sizeX, (unsigned)m_sizeY, (unsigned)m_sizePhi,
+      m_xMin, m_xMax, m_yMin, m_yMax, m_phiMin, m_phiMax);
 
-	// Save one rectangular matrix each time:
-	for (unsigned int phiInd = 0; phiInd < m_sizePhi; phiInd++)
-	{
-		for (unsigned int y = 0; y < m_sizeY; y++)
-		{
-			for (unsigned int x = 0; x < m_sizeX; x++)
-				f_d << mrpt::format("%.5e ", *getByIndex(x, y, phiInd));
-			f_d << std::endl;
-		}
-	}
+  // Save one rectangular matrix each time:
+  for (unsigned int phiInd = 0; phiInd < m_sizePhi; phiInd++)
+  {
+    for (unsigned int y = 0; y < m_sizeY; y++)
+    {
+      for (unsigned int x = 0; x < m_sizeX; x++)
+        f_d << mrpt::format("%.5e ", *getByIndex(x, y, phiInd));
+      f_d << std::endl;
+    }
+  }
 
-	return true;  // Done!
+  return true;  // Done!
 }
 
 /*---------------------------------------------------------------
-						changeCoordinatesReference
+            changeCoordinatesReference
   ---------------------------------------------------------------*/
-void CPosePDFGrid::changeCoordinatesReference(
-	[[maybe_unused]] const CPose3D& newReferenceBase)
+void CPosePDFGrid::changeCoordinatesReference([[maybe_unused]] const CPose3D& newReferenceBase)
 {
-	THROW_EXCEPTION("Not implemented yet!");
+  THROW_EXCEPTION("Not implemented yet!");
 }
 
 /*---------------------------------------------------------------
-					bayesianFusion
+          bayesianFusion
  ---------------------------------------------------------------*/
 void CPosePDFGrid::bayesianFusion(
-	[[maybe_unused]] const CPosePDF& p1, [[maybe_unused]] const CPosePDF& p2,
-	[[maybe_unused]] const double minMahalanobisDistToDrop)
+    [[maybe_unused]] const CPosePDF& p1,
+    [[maybe_unused]] const CPosePDF& p2,
+    [[maybe_unused]] const double minMahalanobisDistToDrop)
 {
-	THROW_EXCEPTION("Not implemented yet!");
+  THROW_EXCEPTION("Not implemented yet!");
 }
 
 /*---------------------------------------------------------------
-					inverse
+          inverse
  ---------------------------------------------------------------*/
 void CPosePDFGrid::inverse([[maybe_unused]] CPosePDF& o) const
 {
-	THROW_EXCEPTION("Not implemented yet!");
+  THROW_EXCEPTION("Not implemented yet!");
 }
 
 /*---------------------------------------------------------------
-					drawSingleSample
+          drawSingleSample
  ---------------------------------------------------------------*/
 void CPosePDFGrid::drawSingleSample([[maybe_unused]] CPose2D& outPart) const
 {
-	THROW_EXCEPTION("Not implemented yet!");
+  THROW_EXCEPTION("Not implemented yet!");
 }
 
 /*---------------------------------------------------------------
-					drawSingleSample
+          drawSingleSample
  ---------------------------------------------------------------*/
 void CPosePDFGrid::drawManySamples(
-	[[maybe_unused]] size_t N,
-	[[maybe_unused]] std::vector<CVectorDouble>& outSamples) const
+    [[maybe_unused]] size_t N, [[maybe_unused]] std::vector<CVectorDouble>& outSamples) const
 {
-	THROW_EXCEPTION("Not implemented yet!");
+  THROW_EXCEPTION("Not implemented yet!");
 }
 
 /*---------------------------------------------------------------
-					CPosePDFGrid
+          CPosePDFGrid
  ---------------------------------------------------------------*/
 void CPosePDFGrid::normalize()
 {
-	double SUM = 0;
+  double SUM = 0;
 
-	// SUM:
-	for (auto it = m_data.begin(); it != m_data.end(); ++it)
-		SUM += *it;
+  // SUM:
+  for (auto it = m_data.begin(); it != m_data.end(); ++it) SUM += *it;
 
-	if (SUM > 0)
-	{
-		// Normalize:
-		for (double& it : m_data)
-			it /= SUM;
-	}
+  if (SUM > 0)
+  {
+    // Normalize:
+    for (double& it : m_data) it /= SUM;
+  }
 }
 
 /*---------------------------------------------------------------
-						uniformDistribution
+            uniformDistribution
   ---------------------------------------------------------------*/
 void CPosePDFGrid::uniformDistribution()
 {
-	double val = 1.0f / m_data.size();
+  double val = 1.0f / m_data.size();
 
-	for (double& it : m_data)
-		it = val;
+  for (double& it : m_data) it = val;
 }

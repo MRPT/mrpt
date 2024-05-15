@@ -12,7 +12,7 @@
 
 TEST(constexpr_for, compileTest)
 {
-	int s = 0;
-	mrpt::for_<10>([&](auto i) { s += i.value; });
-	EXPECT_EQ(s, 10 * 9 / 2);
+  int s = 0;
+  mrpt::for_<10>([&](auto i) { s += i.value; });
+  EXPECT_EQ(s, 10 * 9 / 2);
 }

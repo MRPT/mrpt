@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"	 // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 //
 
 // Stripped out version of libCVD gltext.cpp file, ported to OpenGL>=3
@@ -28,96 +28,97 @@ namespace mrpt::opengl::internal
 {
 struct Point
 {
-	float x, y;
+  float x, y;
 };
 
 struct Font
 {
-	typedef unsigned short Index;
+  typedef unsigned short Index;
 
-	struct Char
-	{
-		Index vertexOffset;
-		Index triangleOffset;
-		Index outlineOffset;
-		int numTriangles;  // was: GLsizei
-		int numOutlines;
-		float advance;
-	};
+  struct Char
+  {
+    Index vertexOffset;
+    Index triangleOffset;
+    Index outlineOffset;
+    int numTriangles;  // was: GLsizei
+    int numOutlines;
+    float advance;
+  };
 
-	Point* vertices;
-	Index* triangles;
-	Index* outlines;
-	Char* characters;
-	string glyphs;
+  Point* vertices;
+  Index* triangles;
+  Index* outlines;
+  Char* characters;
+  string glyphs;
 
-	const Char* findChar(const char c) const
-	{
-		size_t ind = glyphs.find(c);
-		if (ind == string::npos) return nullptr;
-		return characters + ind;
-	}
+  const Char* findChar(const char c) const
+  {
+    size_t ind = glyphs.find(c);
+    if (ind == string::npos) return nullptr;
+    return characters + ind;
+  }
 
-	float getAdvance(const char c) const
-	{
-		const Char* ch = findChar(c);
-		if (!ch) return 0;
-		return ch->advance;
-	}
+  float getAdvance(const char c) const
+  {
+    const Char* ch = findChar(c);
+    if (!ch) return 0;
+    return ch->advance;
+  }
 
-	void fill(
-		const char c, std::vector<mrpt::opengl::TTriangle>& tris,
-		std::vector<mrpt::math::TPoint3Df>& lines,
-		const mrpt::math::TPoint2Df& cursor) const
-	{
-		const Char* ch = findChar(c);
-		if (!ch || !ch->numTriangles) return;
-		// triangles
-		const Point* vs = vertices + ch->vertexOffset;
-		for (int i = 0; i < ch->numTriangles / 3; i++)
-		{
-			const auto idx0 = triangles[ch->triangleOffset + i * 3 + 0];
-			const auto idx1 = triangles[ch->triangleOffset + i * 3 + 1];
-			const auto idx2 = triangles[ch->triangleOffset + i * 3 + 2];
+  void fill(
+      const char c,
+      std::vector<mrpt::opengl::TTriangle>& tris,
+      std::vector<mrpt::math::TPoint3Df>& lines,
+      const mrpt::math::TPoint2Df& cursor) const
+  {
+    const Char* ch = findChar(c);
+    if (!ch || !ch->numTriangles) return;
+    // triangles
+    const Point* vs = vertices + ch->vertexOffset;
+    for (int i = 0; i < ch->numTriangles / 3; i++)
+    {
+      const auto idx0 = triangles[ch->triangleOffset + i * 3 + 0];
+      const auto idx1 = triangles[ch->triangleOffset + i * 3 + 1];
+      const auto idx2 = triangles[ch->triangleOffset + i * 3 + 2];
 
-			using P3f = mrpt::math::TPoint3Df;
+      using P3f = mrpt::math::TPoint3Df;
 
-			tris.emplace_back(
-				P3f(cursor.x + vs[idx0].x, cursor.y + vs[idx0].y, .0f),
-				P3f(cursor.x + vs[idx1].x, cursor.y + vs[idx1].y, .0f),
-				P3f(cursor.x + vs[idx2].x, cursor.y + vs[idx2].y, .0f));
-		}
-	}
+      tris.emplace_back(
+          P3f(cursor.x + vs[idx0].x, cursor.y + vs[idx0].y, .0f),
+          P3f(cursor.x + vs[idx1].x, cursor.y + vs[idx1].y, .0f),
+          P3f(cursor.x + vs[idx2].x, cursor.y + vs[idx2].y, .0f));
+    }
+  }
 
-	void outline(
-		const char c, std::vector<mrpt::opengl::TTriangle>& tris,
-		std::vector<mrpt::math::TPoint3Df>& lines,
-		const mrpt::math::TPoint2Df& cursor) const
-	{
-		const Char* ch = findChar(c);
-		if (!ch || !ch->numOutlines) return;
-		// lines
-		const Point* vs = vertices + ch->vertexOffset;
-		for (int i = 0; i < ch->numOutlines / 2; i++)
-		{
-			const auto idx0 = outlines[ch->outlineOffset + i * 2 + 0];
-			const auto idx1 = outlines[ch->outlineOffset + i * 2 + 1];
+  void outline(
+      const char c,
+      std::vector<mrpt::opengl::TTriangle>& tris,
+      std::vector<mrpt::math::TPoint3Df>& lines,
+      const mrpt::math::TPoint2Df& cursor) const
+  {
+    const Char* ch = findChar(c);
+    if (!ch || !ch->numOutlines) return;
+    // lines
+    const Point* vs = vertices + ch->vertexOffset;
+    for (int i = 0; i < ch->numOutlines / 2; i++)
+    {
+      const auto idx0 = outlines[ch->outlineOffset + i * 2 + 0];
+      const auto idx1 = outlines[ch->outlineOffset + i * 2 + 1];
 
-			lines.emplace_back(
-				cursor.x + vs[idx0].x, cursor.y + vs[idx0].y, .0f);
-			lines.emplace_back(
-				cursor.x + vs[idx1].x, cursor.y + vs[idx1].y, .0f);
-		}
-	}
+      lines.emplace_back(cursor.x + vs[idx0].x, cursor.y + vs[idx0].y, .0f);
+      lines.emplace_back(cursor.x + vs[idx1].x, cursor.y + vs[idx1].y, .0f);
+    }
+  }
 
-	void draw(
-		const char c, std::vector<mrpt::opengl::TTriangle>& tris,
-		std::vector<mrpt::math::TPoint3Df>& lines,
-		const mrpt::math::TPoint2Df& cursor) const
-	{
-		outline(c, tris, lines, cursor);
-		fill(c, tris, lines, cursor);
-	}
+  void draw(
+      const char c,
+      std::vector<mrpt::opengl::TTriangle>& tris,
+      std::vector<mrpt::math::TPoint3Df>& lines,
+      const mrpt::math::TPoint2Df& cursor) const
+  {
+    outline(c, tris, lines, cursor);
+    fill(c, tris, lines, cursor);
+  }
 };
 
 // the fonts defined in these headers are derived from Bitstream Vera fonts. See
@@ -128,174 +129,183 @@ struct Font
 
 struct FontData
 {
-	typedef map<string, Font*> FontMap;
+  typedef map<string, Font*> FontMap;
 
-	FontData()
-	{
-		fonts["sans"] = &sans_font;
-		fonts["mono"] = &mono_font;
-		fonts["serif"] = &serif_font;
-		glSetFont("sans");
-	}
-	inline Font* currentFont() { return fonts[currentFontName]; }
+  FontData()
+  {
+    fonts["sans"] = &sans_font;
+    fonts["mono"] = &mono_font;
+    fonts["serif"] = &serif_font;
+    glSetFont("sans");
+  }
+  inline Font* currentFont() { return fonts[currentFontName]; }
 
-	string currentFontName;
-	FontMap fonts;
+  string currentFontName;
+  FontMap fonts;
 };
 
 static struct FontData data;
 
 void glSetFont(const std::string& fontname)
 {
-	if (data.fonts.count(fontname) > 0) data.currentFontName = fontname;
+  if (data.fonts.count(fontname) > 0) data.currentFontName = fontname;
 }
 
 const std::string& glGetFont() { return data.currentFontName; }
 
 std::pair<double, double> glDrawText(
-	const std::string& text, std::vector<mrpt::opengl::TTriangle>& tris,
-	std::vector<mrpt::math::TPoint3Df>& render_lines, TEXT_STYLE style,
-	double spacing, double kerning)
+    const std::string& text,
+    std::vector<mrpt::opengl::TTriangle>& tris,
+    std::vector<mrpt::math::TPoint3Df>& render_lines,
+    TEXT_STYLE style,
+    double spacing,
+    double kerning)
 {
-	// Was: glPushMatrix();
-	mrpt::math::TPoint2Df cursor = {0, 0};
+  // Was: glPushMatrix();
+  mrpt::math::TPoint2Df cursor = {0, 0};
 
-	// figure out which operation to do on the Char (yes, this is a pointer to
-	// member function :)
-	void (Font::*operation)(
-		const char c, std::vector<mrpt::opengl::TTriangle>& tris,
-		std::vector<mrpt::math::TPoint3Df>& lines,
-		const mrpt::math::TPoint2Df& cursor) const;
-	switch (style)
-	{
-		case FILL: operation = &Font::fill; break;
-		case OUTLINE: operation = &Font::outline; break;
-		case NICE:
-			// operation = &Font::draw; (See comments in definition of "NICE")
-			operation = &Font::fill;
-			break;
+  // figure out which operation to do on the Char (yes, this is a pointer to
+  // member function :)
+  void (Font::*operation)(
+      const char c, std::vector<mrpt::opengl::TTriangle>& tris,
+      std::vector<mrpt::math::TPoint3Df>& lines, const mrpt::math::TPoint2Df& cursor) const;
+  switch (style)
+  {
+    case FILL:
+      operation = &Font::fill;
+      break;
+    case OUTLINE:
+      operation = &Font::outline;
+      break;
+    case NICE:
+      // operation = &Font::draw; (See comments in definition of "NICE")
+      operation = &Font::fill;
+      break;
 
-		default: THROW_EXCEPTION("Invalid style value");
-	};
+    default:
+      THROW_EXCEPTION("Invalid style value");
+  };
 
-	int lines = 0;
-	double max_total = 0;
-	double total = 0;
-	const Font* font = data.currentFont();
-	const Font::Char* space = font->findChar(' ');
-	const double tab_width = 8 * ((space) ? (space->advance) : 1);
-	for (size_t i = 0; i < text.length(); ++i)
-	{
-		char c = text[i];
-		if (c == '\n')
-		{
-			cursor.x -= total;
-			cursor.y -= spacing;
+  int lines = 0;
+  double max_total = 0;
+  double total = 0;
+  const Font* font = data.currentFont();
+  const Font::Char* space = font->findChar(' ');
+  const double tab_width = 8 * ((space) ? (space->advance) : 1);
+  for (size_t i = 0; i < text.length(); ++i)
+  {
+    char c = text[i];
+    if (c == '\n')
+    {
+      cursor.x -= total;
+      cursor.y -= spacing;
 
-			max_total = std::max(max_total, total);
-			total = 0;
-			++lines;
-			continue;
-		}
-		if (c == '\t')
-		{
-			const float advance = tab_width - std::fmod(total, tab_width);
-			total += advance;
-			cursor.x += advance;
-			continue;
-		}
-		const Font::Char* ch = font->findChar(c);
-		if (!ch)
-		{
-			c = toupper(c);
-			ch = font->findChar(c);
-			if (!ch)
-			{
-				c = '?';
-				ch = font->findChar(c);
-			}
-		}
-		if (!ch) continue;
-		(font->*operation)(c, tris, render_lines, cursor);
+      max_total = std::max(max_total, total);
+      total = 0;
+      ++lines;
+      continue;
+    }
+    if (c == '\t')
+    {
+      const float advance = tab_width - std::fmod(total, tab_width);
+      total += advance;
+      cursor.x += advance;
+      continue;
+    }
+    const Font::Char* ch = font->findChar(c);
+    if (!ch)
+    {
+      c = toupper(c);
+      ch = font->findChar(c);
+      if (!ch)
+      {
+        c = '?';
+        ch = font->findChar(c);
+      }
+    }
+    if (!ch) continue;
+    (font->*operation)(c, tris, render_lines, cursor);
 
-		double w = ch->advance + kerning;
-		cursor.x += w;
-		total += w;
-	}
+    double w = ch->advance + kerning;
+    cursor.x += w;
+    total += w;
+  }
 
-	max_total = std::max(total, max_total);
-	return std::make_pair(max_total, (lines + 1) * spacing);
+  max_total = std::max(total, max_total);
+  return std::make_pair(max_total, (lines + 1) * spacing);
 }
 
-std::pair<double, double> glGetExtends(
-	const std::string& text, double spacing, double kerning)
+std::pair<double, double> glGetExtends(const std::string& text, double spacing, double kerning)
 {
-	int lines = 0;
-	double max_total = 0;
-	double total = 0;
-	const Font* font = data.currentFont();
-	for (size_t i = 0; i < text.length(); ++i)
-	{
-		char c = text[i];
-		if (c == '\n')
-		{
-			max_total = std::max(max_total, total);
-			total = 0;
-			++lines;
-			continue;
-		}
-		const Font::Char* ch = font->findChar(c);
-		if (!ch)
-		{
-			c = toupper(c);
-			ch = font->findChar(c);
-			if (!ch)
-			{
-				c = '?';
-				ch = font->findChar(c);
-			}
-		}
-		if (!ch) continue;
-		total += ch->advance + kerning;
-	}
-	max_total = std::max(total, max_total);
-	return std::make_pair(max_total, (lines + 1) * spacing);
+  int lines = 0;
+  double max_total = 0;
+  double total = 0;
+  const Font* font = data.currentFont();
+  for (size_t i = 0; i < text.length(); ++i)
+  {
+    char c = text[i];
+    if (c == '\n')
+    {
+      max_total = std::max(max_total, total);
+      total = 0;
+      ++lines;
+      continue;
+    }
+    const Font::Char* ch = font->findChar(c);
+    if (!ch)
+    {
+      c = toupper(c);
+      ch = font->findChar(c);
+      if (!ch)
+      {
+        c = '?';
+        ch = font->findChar(c);
+      }
+    }
+    if (!ch) continue;
+    total += ch->advance + kerning;
+  }
+  max_total = std::max(total, max_total);
+  return std::make_pair(max_total, (lines + 1) * spacing);
 }
 
 void glDrawTextTransformed(
-	const std::string& text, std::vector<mrpt::opengl::TTriangle>& tris,
-	std::vector<mrpt::math::TPoint3Df>& lines,
-	std::vector<mrpt::img::TColor>& line_colors,
-	const mrpt::poses::CPose3D& text_pose, float text_scale,
-	const mrpt::img::TColor& text_color, TEXT_STYLE style, double spacing,
-	double kerning)
+    const std::string& text,
+    std::vector<mrpt::opengl::TTriangle>& tris,
+    std::vector<mrpt::math::TPoint3Df>& lines,
+    std::vector<mrpt::img::TColor>& line_colors,
+    const mrpt::poses::CPose3D& text_pose,
+    float text_scale,
+    const mrpt::img::TColor& text_color,
+    TEXT_STYLE style,
+    double spacing,
+    double kerning)
 {
-	// Raw text primitives:
-	std::vector<mrpt::opengl::TTriangle> new_tris;
-	std::vector<mrpt::math::TPoint3Df> new_lines;
-	glDrawText(text, new_tris, new_lines, style, spacing, kerning);
+  // Raw text primitives:
+  std::vector<mrpt::opengl::TTriangle> new_tris;
+  std::vector<mrpt::math::TPoint3Df> new_lines;
+  glDrawText(text, new_tris, new_lines, style, spacing, kerning);
 
-	// Transform triangles:
-	for (auto& t : new_tris)
-	{
-		t.setColor(text_color);
+  // Transform triangles:
+  for (auto& t : new_tris)
+  {
+    t.setColor(text_color);
 
-		for (int i = 0; i < 3; i++)
-		{
-			text_pose.rotateVector(t.vertices[i].normal);
-			t.vertices[i].xyzrgba.pt =
-				text_pose.composePoint(t.vertices[i].xyzrgba.pt * text_scale);
-		}
-		t.computeNormals();
-		tris.emplace_back(t);
-	}
+    for (int i = 0; i < 3; i++)
+    {
+      text_pose.rotateVector(t.vertices[i].normal);
+      t.vertices[i].xyzrgba.pt = text_pose.composePoint(t.vertices[i].xyzrgba.pt * text_scale);
+    }
+    t.computeNormals();
+    tris.emplace_back(t);
+  }
 
-	// Transform line vertices:
-	for (auto& v : new_lines)
-	{
-		lines.emplace_back(text_pose.composePoint(v * text_scale));
-		line_colors.emplace_back(text_color);
-	}
+  // Transform line vertices:
+  for (auto& v : new_lines)
+  {
+    lines.emplace_back(text_pose.composePoint(v * text_scale));
+    line_colors.emplace_back(text_color);
+  }
 }
 
 }  // namespace mrpt::opengl::internal

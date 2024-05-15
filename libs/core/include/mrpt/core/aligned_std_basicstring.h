@@ -14,5 +14,5 @@ namespace mrpt
 {
 template <class T>
 using aligned_std_basicstring =
-	std::basic_string<T, std::char_traits<T>, mrpt::aligned_allocator_cpp11<T>>;
+    std::basic_string<T, std::char_traits<T>, mrpt::aligned_allocator_cpp11<T>>;
 }

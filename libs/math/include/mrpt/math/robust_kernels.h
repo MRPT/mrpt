@@ -22,10 +22,10 @@ namespace mrpt::math
  */
 enum TRobustKernelType
 {
-	/** No robust kernel, use standard least squares: rho(r)= 1/2 * r^2 */
-	rkLeastSquares = 0,
-	/** Pseudo-huber robust kernel */
-	rkPseudoHuber
+  /** No robust kernel, use standard least squares: rho(r)= 1/2 * r^2 */
+  rkLeastSquares = 0,
+  /** Pseudo-huber robust kernel */
+  rkPseudoHuber
 };
 
 // Generic declaration.
@@ -36,19 +36,19 @@ struct RobustKernel;
 template <typename T>
 struct RobustKernel<rkLeastSquares, T>
 {
-	/** The kernel parameter (the "threshold") squared [Not used in this class,
-	 * provided for consistency with the other classes] */
-	T param_sq = 1;
+  /** The kernel parameter (the "threshold") squared [Not used in this class,
+   * provided for consistency with the other classes] */
+  T param_sq = 1;
 
-	/** Evaluates the kernel function for the squared error r2 and returns
-	 * robustified squared error and derivatives of sqrt(2*rho(r)) at this
-	 * point. */
-	inline T eval(const T r2, T& out_1st_deriv, T& out_2nd_deriv)
-	{
-		out_1st_deriv = 1;
-		out_2nd_deriv = 0;
-		return r2;	// return: 2*cost;  cost: 0.5* |r|^2
-	}
+  /** Evaluates the kernel function for the squared error r2 and returns
+   * robustified squared error and derivatives of sqrt(2*rho(r)) at this
+   * point. */
+  inline T eval(const T r2, T& out_1st_deriv, T& out_2nd_deriv)
+  {
+    out_1st_deriv = 1;
+    out_2nd_deriv = 0;
+    return r2;  // return: 2*cost;  cost: 0.5* |r|^2
+  }
 };
 
 /** Pseudo-huber robust kernel: rho(r)   = 2 * delta^2 * ( -1+sqrt( 1+
@@ -56,22 +56,22 @@ struct RobustKernel<rkLeastSquares, T>
 template <typename T>
 struct RobustKernel<rkPseudoHuber, T>
 {
-	/** The kernel parameter (the "threshold") squared. */
-	T param_sq = 1;
+  /** The kernel parameter (the "threshold") squared. */
+  T param_sq = 1;
 
-	/** Evaluates the kernel function for the squared error r2 and returns
-	 * robustified squared error and derivatives of sqrt(2*rho(r)) at this
-	 * point. */
-	inline T eval(const T r2, T& out_1st_deriv, T& out_2nd_deriv)
-	{
-		const T param_sq_inv = 1.0 / param_sq;
-		const T a = 1 + r2 * param_sq_inv;
-		const T b = std::sqrt(a);
-		out_1st_deriv = 1. / b;
-		out_2nd_deriv = -0.5 * param_sq_inv * out_1st_deriv / a;
-		return 2 * param_sq * (b - 1);
-		;  // return: 2*cost
-	}
+  /** Evaluates the kernel function for the squared error r2 and returns
+   * robustified squared error and derivatives of sqrt(2*rho(r)) at this
+   * point. */
+  inline T eval(const T r2, T& out_1st_deriv, T& out_2nd_deriv)
+  {
+    const T param_sq_inv = 1.0 / param_sq;
+    const T a = 1 + r2 * param_sq_inv;
+    const T b = std::sqrt(a);
+    out_1st_deriv = 1. / b;
+    out_2nd_deriv = -0.5 * param_sq_inv * out_1st_deriv / a;
+    return 2 * param_sq * (b - 1);
+    ;  // return: 2*cost
+  }
 };
 
 /** @} */  // end of grouping

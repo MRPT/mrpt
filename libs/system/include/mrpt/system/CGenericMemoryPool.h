@@ -10,7 +10,7 @@
 
 #include <list>
 #include <mutex>
-#include <utility>	// std::pair
+#include <utility>  // std::pair
 
 namespace mrpt::system
 {
@@ -42,98 +42,92 @@ namespace mrpt::system
 template <class DATA_PARAMS, class POOLABLE_DATA>
 class CGenericMemoryPool
 {
-   private:
-	using TList = std::list<std::pair<DATA_PARAMS, POOLABLE_DATA*>>;
-	TList m_pool;
-	std::mutex m_pool_cs;
-	size_t m_maxPoolEntries;
-	/** With this trick we get rid of the "global destruction order fiasco" ;-)
-	 */
-	bool& m_was_destroyed;
+ private:
+  using TList = std::list<std::pair<DATA_PARAMS, POOLABLE_DATA*>>;
+  TList m_pool;
+  std::mutex m_pool_cs;
+  size_t m_maxPoolEntries;
+  /** With this trick we get rid of the "global destruction order fiasco" ;-)
+   */
+  bool& m_was_destroyed;
 
-	CGenericMemoryPool(size_t max_pool_entries, bool& was_destroyed)
-		: m_maxPoolEntries(max_pool_entries), m_was_destroyed(was_destroyed)
-	{
-		m_was_destroyed = false;
-	}
+  CGenericMemoryPool(size_t max_pool_entries, bool& was_destroyed) :
+      m_maxPoolEntries(max_pool_entries), m_was_destroyed(was_destroyed)
+  {
+    m_was_destroyed = false;
+  }
 
-   public:
-	inline size_t getMemoryPoolMaxSize() const { return m_maxPoolEntries; }
-	inline void setMemoryPoolMaxSize(size_t maxNumEntries)
-	{
-		m_maxPoolEntries = maxNumEntries;
-	}
+ public:
+  inline size_t getMemoryPoolMaxSize() const { return m_maxPoolEntries; }
+  inline void setMemoryPoolMaxSize(size_t maxNumEntries) { m_maxPoolEntries = maxNumEntries; }
 
-	/** Construct-on-first-use (~singleton) pattern: Return the unique instance
-	 * of this class for a given template arguments,
-	 *  or nullptr if it was once created but it's been destroyed (which means
-	 * we're in the program global destruction phase).
-	 */
-	static CGenericMemoryPool<DATA_PARAMS, POOLABLE_DATA>* getInstance(
-		size_t max_pool_entries = 5)
-	{
-		static bool was_destroyed = false;
-		static CGenericMemoryPool<DATA_PARAMS, POOLABLE_DATA> inst(
-			max_pool_entries, was_destroyed);
-		return was_destroyed ? nullptr : &inst;
-	}
+  /** Construct-on-first-use (~singleton) pattern: Return the unique instance
+   * of this class for a given template arguments,
+   *  or nullptr if it was once created but it's been destroyed (which means
+   * we're in the program global destruction phase).
+   */
+  static CGenericMemoryPool<DATA_PARAMS, POOLABLE_DATA>* getInstance(size_t max_pool_entries = 5)
+  {
+    static bool was_destroyed = false;
+    static CGenericMemoryPool<DATA_PARAMS, POOLABLE_DATA> inst(max_pool_entries, was_destroyed);
+    return was_destroyed ? nullptr : &inst;
+  }
 
-	/** Request a block of data which fulfils the size requirements stated in \a
-	 * params.
-	 *  Notice that the decision on the suitability of each pool'ed block is
-	 * done by DATA_PARAMS::isSuitable().
-	 *  \return The block of data, or nullptr if none suitable was found in the
-	 * pool.
-	 *  \note It is a responsibility of the user to free with "delete" the
-	 * "POOLABLE_DATA" object itself once the memory has been extracted from its
-	 * elements.
-	 */
-	POOLABLE_DATA* request_memory(const DATA_PARAMS& params)
-	{
-		// A quick check first:
-		if (m_pool.empty()) return nullptr;
+  /** Request a block of data which fulfils the size requirements stated in \a
+   * params.
+   *  Notice that the decision on the suitability of each pool'ed block is
+   * done by DATA_PARAMS::isSuitable().
+   *  \return The block of data, or nullptr if none suitable was found in the
+   * pool.
+   *  \note It is a responsibility of the user to free with "delete" the
+   * "POOLABLE_DATA" object itself once the memory has been extracted from its
+   * elements.
+   */
+  POOLABLE_DATA* request_memory(const DATA_PARAMS& params)
+  {
+    // A quick check first:
+    if (m_pool.empty()) return nullptr;
 
-		std::lock_guard<std::mutex> lock(m_pool_cs);
-		for (auto it = m_pool.begin(); it != m_pool.end(); ++it)
-		{
-			if (it->first.isSuitable(params))
-			{
-				POOLABLE_DATA* ret = it->second;
-				m_pool.erase(it);
-				return ret;
-			}
-		}
-		return nullptr;
-	}
+    std::lock_guard<std::mutex> lock(m_pool_cs);
+    for (auto it = m_pool.begin(); it != m_pool.end(); ++it)
+    {
+      if (it->first.isSuitable(params))
+      {
+        POOLABLE_DATA* ret = it->second;
+        m_pool.erase(it);
+        return ret;
+      }
+    }
+    return nullptr;
+  }
 
-	/** Saves the passed data block (characterized by \a params) to the pool.
-	 *  If the overall size of the pool is above the limit, the oldest entry is
-	 * removed.
-	 *  \note It is a responsibility of the user to allocate in dynamic memory
-	 * the "POOLABLE_DATA" object with "new".
-	 */
-	void dump_to_pool(const DATA_PARAMS& params, POOLABLE_DATA* block)
-	{
-		std::lock_guard<std::mutex> lock(m_pool_cs);
+  /** Saves the passed data block (characterized by \a params) to the pool.
+   *  If the overall size of the pool is above the limit, the oldest entry is
+   * removed.
+   *  \note It is a responsibility of the user to allocate in dynamic memory
+   * the "POOLABLE_DATA" object with "new".
+   */
+  void dump_to_pool(const DATA_PARAMS& params, POOLABLE_DATA* block)
+  {
+    std::lock_guard<std::mutex> lock(m_pool_cs);
 
-		while (m_pool.size() >= m_maxPoolEntries)  // Free old data if needed
-		{
-			if (m_pool.begin()->second) delete m_pool.begin()->second;
-			m_pool.erase(m_pool.begin());
-		}
+    while (m_pool.size() >= m_maxPoolEntries)  // Free old data if needed
+    {
+      if (m_pool.begin()->second) delete m_pool.begin()->second;
+      m_pool.erase(m_pool.begin());
+    }
 
-		m_pool.push_back(typename TList::value_type(params, block));
-	}
+    m_pool.push_back(typename TList::value_type(params, block));
+  }
 
-	~CGenericMemoryPool()
-	{
-		m_was_destroyed = true;
-		// Free remaining memory blocks:
-		std::lock_guard<std::mutex> lock(m_pool_cs);
-		for (auto it = m_pool.begin(); it != m_pool.end(); ++it)
-			delete it->second;
-		m_pool.clear();
-	}
+  ~CGenericMemoryPool()
+  {
+    m_was_destroyed = true;
+    // Free remaining memory blocks:
+    std::lock_guard<std::mutex> lock(m_pool_cs);
+    for (auto it = m_pool.begin(); it != m_pool.end(); ++it) delete it->second;
+    m_pool.clear();
+  }
 };
 
 }  // namespace mrpt::system

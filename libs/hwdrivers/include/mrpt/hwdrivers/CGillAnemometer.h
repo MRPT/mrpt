@@ -26,41 +26,40 @@ namespace mrpt::hwdrivers
  */
 class CGillAnemometer : public mrpt::hwdrivers::CGenericSensor
 {
-	DEFINE_GENERIC_SENSOR(CGillAnemometer)
+  DEFINE_GENERIC_SENSOR(CGillAnemometer)
 
-   private:
-	/** COM port name
-	 */
-	std::string com_port;
-	int com_bauds;
+ private:
+  /** COM port name
+   */
+  std::string com_port;
+  int com_bauds;
 
-	/** COM port
-	 */
-	mrpt::comms::CSerialPort COM;
+  /** COM port
+   */
+  mrpt::comms::CSerialPort COM;
 
-	/** Poses
-	 */
-	float pose_x, pose_y, pose_z, pose_yaw, pose_pitch, pose_roll;
+  /** Poses
+   */
+  float pose_x, pose_y, pose_z, pose_yaw, pose_pitch, pose_roll;
 
-	/** Returns true if the COM port is already open, or try to open it in other
-	 * case.
-	 * \return true if everything goes OK, or false if there are problems
-	 * opening the port.
-	 */
-	bool tryToOpenTheCOM();
+  /** Returns true if the COM port is already open, or try to open it in other
+   * case.
+   * \return true if everything goes OK, or false if there are problems
+   * opening the port.
+   */
+  bool tryToOpenTheCOM();
 
-   public:
-	/** Default constructor.
-	 */
-	CGillAnemometer();
-	/** Default destructor.
-	 */
-	~CGillAnemometer() override { COM.close(); };
-	void doProcess() override;
+ public:
+  /** Default constructor.
+   */
+  CGillAnemometer();
+  /** Default destructor.
+   */
+  ~CGillAnemometer() override { COM.close(); };
+  void doProcess() override;
 
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& section) override;
-};	// End of class def.
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& section) override;
+};  // End of class def.
 
 }  // namespace mrpt::hwdrivers

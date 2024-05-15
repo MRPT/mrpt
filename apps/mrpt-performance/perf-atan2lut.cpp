@@ -16,105 +16,105 @@
 
 double atan2_lut_test_build(int, int)
 {
-	const unsigned int step = 100;
-	mrpt::system::CTicTac tictac;
-	mrpt::math::CAtan2LookUpTable lut;
-	tictac.Tic();
-	for (unsigned int i = 0; i < step; i++)
-	{
-		lut.resize(-10.0, 10.0, -10.0, 10.0, 0.01);
-	}
-	return tictac.Tac() / step;
+  const unsigned int step = 100;
+  mrpt::system::CTicTac tictac;
+  mrpt::math::CAtan2LookUpTable lut;
+  tictac.Tic();
+  for (unsigned int i = 0; i < step; i++)
+  {
+    lut.resize(-10.0, 10.0, -10.0, 10.0, 0.01);
+  }
+  return tictac.Tac() / step;
 }
 
 double atan2_lut_test_query(int, int)
 {
-	const unsigned int step = 1000000;
-	mrpt::system::CTicTac tictac;
-	mrpt::math::CAtan2LookUpTable lut;
-	lut.resize(-10.0, 10.0, -10.0, 10.0, 0.01);
-	tictac.Tic();
-	double atan2val;
-	double x = -9.0, y = -8.0;
-	const double dx = 18.0 / step, dy = 12.5 / step;
-	for (unsigned int i = 0; i < step; i++)
-	{
-		x += dx;
-		y += dy;
-		bool valid = lut.atan2(y, x, atan2val);
-		(void)valid;
-	}
-	return tictac.Tac() / step;
+  const unsigned int step = 1000000;
+  mrpt::system::CTicTac tictac;
+  mrpt::math::CAtan2LookUpTable lut;
+  lut.resize(-10.0, 10.0, -10.0, 10.0, 0.01);
+  tictac.Tic();
+  double atan2val;
+  double x = -9.0, y = -8.0;
+  const double dx = 18.0 / step, dy = 12.5 / step;
+  for (unsigned int i = 0; i < step; i++)
+  {
+    x += dx;
+    y += dy;
+    bool valid = lut.atan2(y, x, atan2val);
+    (void)valid;
+  }
+  return tictac.Tac() / step;
 }
 
 double atan2_lut_multires_test_build(int, int)
 {
-	const unsigned int step = 10;
+  const unsigned int step = 10;
 
-	mrpt::math::CAtan2LookUpTableMultiRes atan2lut;
+  mrpt::math::CAtan2LookUpTableMultiRes atan2lut;
 
-	std::map<double, double> res2extension;
-	res2extension[0.001] = 0.8;	 // 0.1 cm resolution
-	res2extension[0.01] = 2.0;	// 1.0 cm resolution
-	res2extension[0.02] = 5.0;	// 2.0 cm resolution
-	res2extension[0.05] = 11.0;	 // 5.0 cm resolution
+  std::map<double, double> res2extension;
+  res2extension[0.001] = 0.8;  // 0.1 cm resolution
+  res2extension[0.01] = 2.0;   // 1.0 cm resolution
+  res2extension[0.02] = 5.0;   // 2.0 cm resolution
+  res2extension[0.05] = 11.0;  // 5.0 cm resolution
 
-	mrpt::system::CTicTac tictac;
-	tictac.Tic();
-	for (unsigned int i = 0; i < step; i++)
-	{
-		atan2lut.resize(res2extension);
-	}
-	return tictac.Tac() / step;
+  mrpt::system::CTicTac tictac;
+  tictac.Tic();
+  for (unsigned int i = 0; i < step; i++)
+  {
+    atan2lut.resize(res2extension);
+  }
+  return tictac.Tac() / step;
 }
 
 double atan2_lut_multires_test_query(int, int)
 {
-	const unsigned int step = 1000000;
-	mrpt::system::CTicTac tictac;
-	mrpt::math::CAtan2LookUpTableMultiRes atan2lut;
+  const unsigned int step = 1000000;
+  mrpt::system::CTicTac tictac;
+  mrpt::math::CAtan2LookUpTableMultiRes atan2lut;
 
-	std::map<double, double> res2extension;
-	res2extension[0.001] = 0.8;	 // 0.1 cm resolution
-	res2extension[0.01] = 2.0;	// 1.0 cm resolution
-	res2extension[0.02] = 5.0;	// 2.0 cm resolution
-	res2extension[0.05] = 11.0;	 // 5.0 cm resolution
-	atan2lut.resize(res2extension);
+  std::map<double, double> res2extension;
+  res2extension[0.001] = 0.8;  // 0.1 cm resolution
+  res2extension[0.01] = 2.0;   // 1.0 cm resolution
+  res2extension[0.02] = 5.0;   // 2.0 cm resolution
+  res2extension[0.05] = 11.0;  // 5.0 cm resolution
+  atan2lut.resize(res2extension);
 
-	tictac.Tic();
-	double atan2val;
-	double x = -9.0, y = -8.0;
-	const double dx = 18.0 / step, dy = 12.5 / step;
-	for (unsigned int i = 0; i < step; i++)
-	{
-		x += dx;
-		y += dy;
-		bool valid = atan2lut.atan2(y, x, atan2val);
-		(void)valid;
-	}
-	return tictac.Tac() / step;
+  tictac.Tic();
+  double atan2val;
+  double x = -9.0, y = -8.0;
+  const double dx = 18.0 / step, dy = 12.5 / step;
+  for (unsigned int i = 0; i < step; i++)
+  {
+    x += dx;
+    y += dy;
+    bool valid = atan2lut.atan2(y, x, atan2val);
+    (void)valid;
+  }
+  return tictac.Tac() / step;
 }
 
 double atan2_raw_test_query(int, int)
 {
-	const unsigned int step = 1000000;
-	mrpt::system::CTicTac tictac;
+  const unsigned int step = 1000000;
+  mrpt::system::CTicTac tictac;
 
-	double atan2val = .0;
-	double x = -9.0, y = -8.0;
-	const double dx = 18.0 / step, dy = 12.5 / step;
-	for (unsigned int i = 0; i < step; i++)
-	{
-		x += dx;
-		y += dy;
-		atan2val += ::atan2(y, x);
-	}
-	const double t = tictac.Tac() / step;
-	{
-		std::stringstream ss;
-		ss << atan2val;
-	}
-	return t;
+  double atan2val = .0;
+  double x = -9.0, y = -8.0;
+  const double dx = 18.0 / step, dy = 12.5 / step;
+  for (unsigned int i = 0; i < step; i++)
+  {
+    x += dx;
+    y += dy;
+    atan2val += ::atan2(y, x);
+  }
+  const double t = tictac.Tac() / step;
+  {
+    std::stringstream ss;
+    ss << atan2val;
+  }
+  return t;
 }
 
 // ------------------------------------------------------
@@ -122,16 +122,11 @@ double atan2_raw_test_query(int, int)
 // ------------------------------------------------------
 void register_tests_atan2lut()
 {
-	lstTests.emplace_back(
-		"CAtan2LUT: 20x20m,1cm cells,build", atan2_lut_test_build);
-	lstTests.emplace_back(
-		"CAtan2LUT: 20x20m,1cm cells,query", atan2_lut_test_query);
+  lstTests.emplace_back("CAtan2LUT: 20x20m,1cm cells,build", atan2_lut_test_build);
+  lstTests.emplace_back("CAtan2LUT: 20x20m,1cm cells,query", atan2_lut_test_query);
 
-	lstTests.emplace_back(
-		"CAtan2LUTMultiRes: 22x22m,build", atan2_lut_multires_test_build);
-	lstTests.emplace_back(
-		"CAtan2LUTMultiRes: 22x22m,query", atan2_lut_multires_test_query);
+  lstTests.emplace_back("CAtan2LUTMultiRes: 22x22m,build", atan2_lut_multires_test_build);
+  lstTests.emplace_back("CAtan2LUTMultiRes: 22x22m,query", atan2_lut_multires_test_query);
 
-	lstTests.emplace_back(
-		"CAtan2LUT: raw ::atan2() call", atan2_raw_test_query);
+  lstTests.emplace_back("CAtan2LUT: raw ::atan2() call", atan2_raw_test_query);
 }

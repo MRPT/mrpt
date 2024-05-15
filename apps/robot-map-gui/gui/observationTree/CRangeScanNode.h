@@ -13,17 +13,18 @@
 
 class CRangeScanNode : public CBaseObservationNode
 {
-   public:
-	CRangeScanNode(
-		CNode* parent, mrpt::obs::CObservation2DRangeScan::Ptr observation,
-		const mrpt::poses::CPose3D& pose);
+ public:
+  CRangeScanNode(
+      CNode* parent,
+      mrpt::obs::CObservation2DRangeScan::Ptr observation,
+      const mrpt::poses::CPose3D& pose);
 
-	// CNode interface
-	ObjectType type() const override;
-	std::string displayName() const override;
+  // CNode interface
+  ObjectType type() const override;
+  std::string displayName() const override;
 
-	mrpt::obs::CObservation2DRangeScan::Ptr observation() const;
+  mrpt::obs::CObservation2DRangeScan::Ptr observation() const;
 
-   private:
-	mrpt::obs::CObservation2DRangeScan::Ptr m_observation;
+ private:
+  mrpt::obs::CObservation2DRangeScan::Ptr m_observation;
 };

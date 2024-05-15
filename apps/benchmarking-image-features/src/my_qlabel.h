@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-	APPLICATION: benchmarkingImageFeatures_gui
-	FILE: my_qlabel.cpp
-	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
-	See ReadMe.md for instructions.
+  APPLICATION: benchmarkingImageFeatures_gui
+  FILE: my_qlabel.cpp
+  AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
+  See ReadMe.md for instructions.
   ---------------------------------------------------------------*/
 
 #ifndef BENCHMARKINGIMAGEFEATURES_GUI_MY_QLABEL_H
@@ -24,22 +24,22 @@
 
 class my_qlabel : public QLabel
 {
-	Q_OBJECT
+  Q_OBJECT
 
-   public:
-	explicit my_qlabel(QWidget* parent = nullptr);
+ public:
+  explicit my_qlabel(QWidget* parent = nullptr);
 
-	void mousePressEvent(QMouseEvent* ev) override;
-	void leaveEvent(QEvent*) override;
-	void mouseMoveEvent(QMouseEvent* ev) override;
-	int x, y;
+  void mousePressEvent(QMouseEvent* ev) override;
+  void leaveEvent(QEvent*) override;
+  void mouseMoveEvent(QMouseEvent* ev) override;
+  int x, y;
 
-   signals:
-	void Mouse_Pressed();
-	void Mouse_Pos();
-	void Mouse_Left();
+ signals:
+  void Mouse_Pressed();
+  void Mouse_Pos();
+  void Mouse_Left();
 
-   public slots:
+ public slots:
 };
 
-#endif	// BENCHMARKINGIMAGEFEATURES_GUI_MY_QLABEL_H
+#endif  // BENCHMARKINGIMAGEFEATURES_GUI_MY_QLABEL_H

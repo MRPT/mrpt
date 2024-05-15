@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-	APPLICATION: Map partitioning based on spectral graph
-	FILE: map-partition.cpp
-	AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
+  APPLICATION: Map partitioning based on spectral graph
+  FILE: map-partition.cpp
+  AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
-	See README.txt for instructions.
+  See README.txt for instructions.
   ---------------------------------------------------------------*/
 
 #include <mrpt/config/CConfigFile.h>
@@ -52,294 +52,288 @@ float THRESHOLD_NCUT = -1;
 // ------------------------------------------------------
 void Test()
 {
-	CSimpleMap in_map, out_map;
-	CTicTac tictac;
-	CIncrementalMapPartitioner imp;
-	std::vector<std::vector<uint32_t>> parts;
+  CSimpleMap in_map, out_map;
+  CTicTac tictac;
+  CIncrementalMapPartitioner imp;
+  std::vector<std::vector<uint32_t>> parts;
 
-	deleteFilesInDirectory("./MAP-PARTITION_RESULTS");
-	createDirectory("./MAP-PARTITION_RESULTS");
-	printf("Output files will be saved in directory ./MAP-PARTITION_RESULTS\n");
+  deleteFilesInDirectory("./MAP-PARTITION_RESULTS");
+  createDirectory("./MAP-PARTITION_RESULTS");
+  printf("Output files will be saved in directory ./MAP-PARTITION_RESULTS\n");
 
-	// Options:
-	imp.options.partitionThreshold = 0.9;
-	imp.options.mrp.maxDistForCorr = 0.2f;
-	imp.options.mrp.maxMahaDistForCorr = 10.0f;
-	imp.options.simil_method = mrpt::slam::smMETRIC_MAP_MATCHING;
+  // Options:
+  imp.options.partitionThreshold = 0.9;
+  imp.options.mrp.maxDistForCorr = 0.2f;
+  imp.options.mrp.maxMahaDistForCorr = 10.0f;
+  imp.options.simil_method = mrpt::slam::smMETRIC_MAP_MATCHING;
 
-	if (fileExists("./MAP-PARTITION_CONFIG.ini"))
-	{
-		cout << "Loading params from 'MAP-PARTITION_CONFIG.ini'" << endl;
-		CConfigFile cfg("./MAP-PARTITION_CONFIG.ini");
-		imp.options.loadFromConfigFile(cfg, "PARAMS");
-	}
-	else
-	{
-		cout << "Warning: 'MAP-PARTITION_CONFIG.ini' not found. Using default "
-				"parameters"
-			 << endl;
-	}
+  if (fileExists("./MAP-PARTITION_CONFIG.ini"))
+  {
+    cout << "Loading params from 'MAP-PARTITION_CONFIG.ini'" << endl;
+    CConfigFile cfg("./MAP-PARTITION_CONFIG.ini");
+    imp.options.loadFromConfigFile(cfg, "PARAMS");
+  }
+  else
+  {
+    cout << "Warning: 'MAP-PARTITION_CONFIG.ini' not found. Using default "
+            "parameters"
+         << endl;
+  }
 
-	if (THRESHOLD_NCUT >= 0) imp.options.partitionThreshold = THRESHOLD_NCUT;
+  if (THRESHOLD_NCUT >= 0) imp.options.partitionThreshold = THRESHOLD_NCUT;
 
-	imp.options.dumpToConsole();
+  imp.options.dumpToConsole();
 
-	// Load map from the input file:
-	printf("Loading input map:\n%s\n...", MAP_FILE.c_str());
-	{
-		CFileGZInputStream f(MAP_FILE);
-		mrpt::serialization::archiveFrom(f) >> in_map;
-	}
-	printf("Ok\n");
+  // Load map from the input file:
+  printf("Loading input map:\n%s\n...", MAP_FILE.c_str());
+  {
+    CFileGZInputStream f(MAP_FILE);
+    mrpt::serialization::archiveFrom(f) >> in_map;
+  }
+  printf("Ok\n");
 
-	// Execute the method:
-	printf("\nExecuting the method...\n");
+  // Execute the method:
+  printf("\nExecuting the method...\n");
 
-	tictac.Tic();
+  tictac.Tic();
 
-	const size_t n = in_map.size();
-	for (size_t i = 0; i < n; i++)
-	{
-		const auto& [posePDF, sf, twist] = in_map.get(i);
+  const size_t n = in_map.size();
+  for (size_t i = 0; i < n; i++)
+  {
+    const auto& [posePDF, sf, twist] = in_map.get(i);
 
-		imp.addMapFrame(*sf, *posePDF);
+    imp.addMapFrame(*sf, *posePDF);
 
-		printf("[%zu/%zu]...", i, n);
+    printf("[%zu/%zu]...", i, n);
 
-		//		if ((i%1)==0)
-		if (i == n - 1)
-		{
-			imp.updatePartitions(parts);
-			printf(
-				"Map nodes:%u --- %u partitions:\n", (unsigned int)i + 1,
-				(unsigned int)parts.size());
-			for (size_t j = 0; j < parts.size(); j++)
-			{
-				printf("  Part#%u=", (unsigned int)j);
-				for (unsigned int k : parts[j])
-					printf(" %u", k);
-				printf("\n");
-			}
-		}
+    //		if ((i%1)==0)
+    if (i == n - 1)
+    {
+      imp.updatePartitions(parts);
+      printf("Map nodes:%u --- %u partitions:\n", (unsigned int)i + 1, (unsigned int)parts.size());
+      for (size_t j = 0; j < parts.size(); j++)
+      {
+        printf("  Part#%u=", (unsigned int)j);
+        for (unsigned int k : parts[j]) printf(" %u", k);
+        printf("\n");
+      }
+    }
 
-		// printf("\n");
-	}
+    // printf("\n");
+  }
 
-	printf("Done! in %.03fms\n", (float)(1000 * tictac.Tac()));
+  printf("Done! in %.03fms\n", (float)(1000 * tictac.Tac()));
 
-	// Save in different maps:
-	// ------------------------------------
-	FILE* f = os::fopen(
-		format(
-			"MAP-PARTITION_RESULTS/out_partitions_%s.txt",
-			extractFileName(MAP_FILE).c_str())
-			.c_str(),
-		"wt");
-	for (auto& part : parts)
-	{
-		for (size_t j = 0; j < part.size(); j++)
-			fprintf(f, "%u ", part[j]);
+  // Save in different maps:
+  // ------------------------------------
+  FILE* f = os::fopen(
+      format("MAP-PARTITION_RESULTS/out_partitions_%s.txt", extractFileName(MAP_FILE).c_str())
+          .c_str(),
+      "wt");
+  for (auto& part : parts)
+  {
+    for (size_t j = 0; j < part.size(); j++) fprintf(f, "%u ", part[j]);
 
-		fprintf(f, "\n");
-	}
-	fclose(f);
+    fprintf(f, "\n");
+  }
+  fclose(f);
 
-	printf("Saving output maps...");
+  printf("Saving output maps...");
 
-	for (size_t i = 0; i < parts.size(); i++)
-	{
-		out_map.clear();
-		for (unsigned int j : parts[i])
-		{
-			const auto& [posePDF, sf, twist] = in_map.get(j);
-			out_map.insert(posePDF, sf);
-		}
+  for (size_t i = 0; i < parts.size(); i++)
+  {
+    out_map.clear();
+    for (unsigned int j : parts[i])
+    {
+      const auto& [posePDF, sf, twist] = in_map.get(j);
+      out_map.insert(posePDF, sf);
+    }
 
-		{
-			CFileOutputStream ff(format(
-				"MAP-PARTITION_RESULTS/out_part#%03u.simplemap", (unsigned)i));
-			mrpt::serialization::archiveFrom(ff) << out_map;
-		}
-	}
+    {
+      CFileOutputStream ff(format("MAP-PARTITION_RESULTS/out_part#%03u.simplemap", (unsigned)i));
+      mrpt::serialization::archiveFrom(ff) << out_map;
+    }
+  }
 
-	printf("Ok\n");
+  printf("Ok\n");
 
-	CMatrixDouble A;
-	imp.getAdjacencyMatrix(A);
-	A.saveToTextFile("MAP-PARTITION_RESULTS/matrix_A.txt", MATRIX_FORMAT_FIXED);
+  CMatrixDouble A;
+  imp.getAdjacencyMatrix(A);
+  A.saveToTextFile("MAP-PARTITION_RESULTS/matrix_A.txt", MATRIX_FORMAT_FIXED);
 
-	// ------------------------------------------------------------------
-	//  Compute the rearranged matrix:
-	// ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  //  Compute the rearranged matrix:
+  // ------------------------------------------------------------------
 
-	std::sort(parts.begin(), parts.end());
+  std::sort(parts.begin(), parts.end());
 
-	CMatrixF B(A.rows(), A.cols());
-	std::vector<uint32_t> rearrIndexes;
-	std::vector<uint32_t> separations;
-	for (auto& part : parts)
-	{
-		uint32_t maxIdx = 0;
-		for (size_t j = 0; j < part.size(); j++)
-		{
-			maxIdx = max(maxIdx, part[j]);
-			rearrIndexes.push_back(part[j]);
-		}
-		separations.push_back((unsigned int)rearrIndexes.size());
-	}
+  CMatrixF B(A.rows(), A.cols());
+  std::vector<uint32_t> rearrIndexes;
+  std::vector<uint32_t> separations;
+  for (auto& part : parts)
+  {
+    uint32_t maxIdx = 0;
+    for (size_t j = 0; j < part.size(); j++)
+    {
+      maxIdx = max(maxIdx, part[j]);
+      rearrIndexes.push_back(part[j]);
+    }
+    separations.push_back((unsigned int)rearrIndexes.size());
+  }
 
-	for (size_t col = 0; col < rearrIndexes.size(); col++)
-		for (size_t row = 0; row < rearrIndexes.size(); row++)
-			B(row, col) = A(rearrIndexes[row], rearrIndexes[col]);
+  for (size_t col = 0; col < rearrIndexes.size(); col++)
+    for (size_t row = 0; row < rearrIndexes.size(); row++)
+      B(row, col) = A(rearrIndexes[row], rearrIndexes[col]);
 
-	B.saveToTextFile("MAP-PARTITION_RESULTS/matrix_B.txt", MATRIX_FORMAT_FIXED);
-	{
-		gui::CDisplayWindow win("Adjacency matrix");
-		gui::CDisplayWindow win2(" Rearranged adjacency matrix");
-		CImage img, img2;
-		img.setFromMatrix(A, true /* normalized in range [0,1] */);
-		img2.setFromMatrix(B, true /* normalized in range [0,1] */);
+  B.saveToTextFile("MAP-PARTITION_RESULTS/matrix_B.txt", MATRIX_FORMAT_FIXED);
+  {
+    gui::CDisplayWindow win("Adjacency matrix");
+    gui::CDisplayWindow win2(" Rearranged adjacency matrix");
+    CImage img, img2;
+    img.setFromMatrix(A, true /* normalized in range [0,1] */);
+    img2.setFromMatrix(B, true /* normalized in range [0,1] */);
 
-		bool savedOk =
-			img.saveToFile("MAP-PARTITION_RESULTS/ADJ_MATRIX_BEFORE.png");
-		ASSERT_(savedOk);
+    bool savedOk = img.saveToFile("MAP-PARTITION_RESULTS/ADJ_MATRIX_BEFORE.png");
+    ASSERT_(savedOk);
 
-		savedOk = img2.saveToFile("MAP-PARTITION_RESULTS/ADJ_MATRIX_AFTER.png");
-		ASSERT_(savedOk);
+    savedOk = img2.saveToFile("MAP-PARTITION_RESULTS/ADJ_MATRIX_AFTER.png");
+    ASSERT_(savedOk);
 
-		win.showImage(img);
-		win2.showImage(img2);
-		win.setPos(20, 20);
-		win2.setPos((int)(40 + A.cols()), 20);
-		cout << "Press any key to continue..." << endl;
-		win2.waitForKey();
-	}
+    win.showImage(img);
+    win2.showImage(img2);
+    win.setPos(20, 20);
+    win2.setPos((int)(40 + A.cols()), 20);
+    cout << "Press any key to continue..." << endl;
+    win2.waitForKey();
+  }
 
-	// The matlab script below will need "globalmap_grid.png":
-	{
-		COccupancyGridMap2D gridmap(-10, 10, -10, 10, 0.05f);
-		cout << "Building global gridmap needed by MATLAB script...";
-		cout.flush();
-		gridmap.loadFromSimpleMap(in_map);
-		gridmap.saveMetricMapRepresentationToFile(
-			"MAP-PARTITION_RESULTS/globalmap_grid");
-		cout << "Done.\n";
-	}
+  // The matlab script below will need "globalmap_grid.png":
+  {
+    COccupancyGridMap2D gridmap(-10, 10, -10, 10, 0.05f);
+    cout << "Building global gridmap needed by MATLAB script...";
+    cout.flush();
+    gridmap.loadFromSimpleMap(in_map);
+    gridmap.saveMetricMapRepresentationToFile("MAP-PARTITION_RESULTS/globalmap_grid");
+    cout << "Done.\n";
+  }
 
-	// ------------------------------------------------------------------
-	//			Generate MATLAB script
-	// ------------------------------------------------------------------
-	const std::string matlab_script_filename =
-		"MAP-PARTITION_RESULTS/seePartitionResults.m";
-	printf(
-		"Generating MATLAB script for visualizing results: %s ...",
-		matlab_script_filename.c_str());
+  // ------------------------------------------------------------------
+  //			Generate MATLAB script
+  // ------------------------------------------------------------------
+  const std::string matlab_script_filename = "MAP-PARTITION_RESULTS/seePartitionResults.m";
+  printf(
+      "Generating MATLAB script for visualizing results: %s ...", matlab_script_filename.c_str());
 
-	f = os::fopen(matlab_script_filename.c_str(), "wt");
+  f = os::fopen(matlab_script_filename.c_str(), "wt");
 
-	fprintf(
-		f,
-		"function []=seePartitionResults()\n"
-		"%% Script generated automatically by map-partition - Part of MRPT\n\n"
-		"R=0.20; %% Radius of robot shape\n"
-		"STEP=4;\n"
-		"figure(1); hold on;\n"
-		"\nim2=imread('globalmap_grid.png');M = size(im2,1); MM = "
-		"size(im2,2);\n"
-		"for i=1:M,im(i,:)=im2(M-i+1,:);end;\n"
-		"D=load('globalmap_grid_limits.txt');\n"
-		"imshow(im,'XData',linspace(D(1),D(2),MM),'YData',linspace(D(3),D(4),M)"
-		");\n"
-		"set(gca,'YDir','normal');\n\n"
-		"set(gca,'Position',[0 0 1 1]);\n");
+  fprintf(
+      f,
+      "function []=seePartitionResults()\n"
+      "%% Script generated automatically by map-partition - Part of MRPT\n\n"
+      "R=0.20; %% Radius of robot shape\n"
+      "STEP=4;\n"
+      "figure(1); hold on;\n"
+      "\nim2=imread('globalmap_grid.png');M = size(im2,1); MM = "
+      "size(im2,2);\n"
+      "for i=1:M,im(i,:)=im2(M-i+1,:);end;\n"
+      "D=load('globalmap_grid_limits.txt');\n"
+      "imshow(im,'XData',linspace(D(1),D(2),MM),'YData',linspace(D(3),D(4),M)"
+      ");\n"
+      "set(gca,'YDir','normal');\n\n"
+      "set(gca,'Position',[0 0 1 1]);\n");
 
-	for (size_t i = 0; i < parts.size(); i++)
-	{
-		fprintf(f, "%% Partition #%03i\n", (unsigned int)i);
-		fprintf(f, "poses=[...\n");
+  for (size_t i = 0; i < parts.size(); i++)
+  {
+    fprintf(f, "%% Partition #%03i\n", (unsigned int)i);
+    fprintf(f, "poses=[...\n");
 
-		CPose2D meanPose;
-		for (size_t j = 0; j < parts[i].size(); j++)
-		{
-			// Get the pose:
-			const auto& [posePDF, sf, twist] = in_map.get(parts[i][j]);
+    CPose2D meanPose;
+    for (size_t j = 0; j < parts[i].size(); j++)
+    {
+      // Get the pose:
+      const auto& [posePDF, sf, twist] = in_map.get(parts[i][j]);
 
-			meanPose = CPose2D(posePDF->getMeanVal());
+      meanPose = CPose2D(posePDF->getMeanVal());
 
-			fprintf(
-				f, "       %.03f,%.03f,%.03f", meanPose.x(), meanPose.y(),
-				meanPose.phi());
+      fprintf(f, "       %.03f,%.03f,%.03f", meanPose.x(), meanPose.y(), meanPose.phi());
 
-			if (j == (parts[i].size() - 1)) fprintf(f, "];\n");
-			else
-				fprintf(f, ";...\n");
-		}
-		fprintf(f, "\n");
-		fprintf(f, "figure(1); hold on;\n");
-		char color = 'k';
-		switch (i % 4)
-		{
-			case 0: color = 'k'; break;
-			case 1: color = 'r'; break;
-			case 2: color = 'b'; break;
-			case 3: color = 'g'; break;
-		}
-		fprintf(f, "drawRobot(poses(1:STEP:end,:),R,'%c');\n", color);
-	}
-	fprintf(f, "axis equal;axis tight;\n");
+      if (j == (parts[i].size() - 1))
+        fprintf(f, "];\n");
+      else
+        fprintf(f, ";...\n");
+    }
+    fprintf(f, "\n");
+    fprintf(f, "figure(1); hold on;\n");
+    char color = 'k';
+    switch (i % 4)
+    {
+      case 0:
+        color = 'k';
+        break;
+      case 1:
+        color = 'r';
+        break;
+      case 2:
+        color = 'b';
+        break;
+      case 3:
+        color = 'g';
+        break;
+    }
+    fprintf(f, "drawRobot(poses(1:STEP:end,:),R,'%c');\n", color);
+  }
+  fprintf(f, "axis equal;axis tight;\n");
 
-	fprintf(f, "A=load('matrix_A.txt'); B=load('matrix_B.txt');\n");
-	fprintf(
-		f,
-		"\n figure(2); subplot(121); imagesc(A); axis "
-		"equal;colormap(gray);axis([1 length(A) 1 length(A)]);\n");
-	fprintf(
-		f,
-		"\n subplot(122);  imagesc(B); axis equal;hold "
-		"on;colormap(gray);axis([1 length(A) 1 length(A)]);\n");
+  fprintf(f, "A=load('matrix_A.txt'); B=load('matrix_B.txt');\n");
+  fprintf(
+      f,
+      "\n figure(2); subplot(121); imagesc(A); axis "
+      "equal;colormap(gray);axis([1 length(A) 1 length(A)]);\n");
+  fprintf(
+      f,
+      "\n subplot(122);  imagesc(B); axis equal;hold "
+      "on;colormap(gray);axis([1 length(A) 1 length(A)]);\n");
 
-	// Draw separation lines:
-	const size_t N = rearrIndexes.size();
-	for (size_t i = 0; i < (separations.size() - 1); i++)
-	{
-		fprintf(
-			f, "plot([%i %i],[%i %i],'k');\n", 0, (unsigned int)N - 1,
-			separations[i], separations[i]);
-		fprintf(
-			f, "plot([%i %i],[%i %i],'k');\n", separations[i], separations[i],
-			0, (unsigned int)N - 1);
-	}
+  // Draw separation lines:
+  const size_t N = rearrIndexes.size();
+  for (size_t i = 0; i < (separations.size() - 1); i++)
+  {
+    fprintf(
+        f, "plot([%i %i],[%i %i],'k');\n", 0, (unsigned int)N - 1, separations[i], separations[i]);
+    fprintf(
+        f, "plot([%i %i],[%i %i],'k');\n", separations[i], separations[i], 0, (unsigned int)N - 1);
+  }
 
-	// Add the auxiliary function: drawRobot()
-	fprintf(
-		f,
-		"\n"
-		"end %% of the main function\n"
-		"\n"
-		"function [] = drawRobot(poses, radius, style)\n"
-		"%%  function [] = drawRobot(poses, radius, style)\n"
-		"%%   poses = Nx3, each row=(X,Y,PHI)\n"
-		"\n"
-		"n = size(poses,1);\n"
-		"if (size(poses,2)~=3),\n"
-		"    error('Poses must be a Nx3 matrix!');\n"
-		"end\n"
-		"p = linspace(0,2*pi,100);\n"
-		"x = radius*cos(p);\n"
-		"y = radius*sin(p);\n"
-		"for i=1:n,\n"
-		"    plot( poses(i,1)+x, poses(i,2)+y, style );\n"
-		"    if (i==1),\n"
-		"        hold on;\n"
-		"    end;\n"
-		"    plot( [poses(i,1) poses(i,1)+radius*cos(poses(i,3))], [poses(i,2) "
-		"poses(i,2)+radius*sin(poses(i,3))], style );\n"
-		"end\n"
-		"end  %% end of function\n"
-		"\n");
+  // Add the auxiliary function: drawRobot()
+  fprintf(
+      f,
+      "\n"
+      "end %% of the main function\n"
+      "\n"
+      "function [] = drawRobot(poses, radius, style)\n"
+      "%%  function [] = drawRobot(poses, radius, style)\n"
+      "%%   poses = Nx3, each row=(X,Y,PHI)\n"
+      "\n"
+      "n = size(poses,1);\n"
+      "if (size(poses,2)~=3),\n"
+      "    error('Poses must be a Nx3 matrix!');\n"
+      "end\n"
+      "p = linspace(0,2*pi,100);\n"
+      "x = radius*cos(p);\n"
+      "y = radius*sin(p);\n"
+      "for i=1:n,\n"
+      "    plot( poses(i,1)+x, poses(i,2)+y, style );\n"
+      "    if (i==1),\n"
+      "        hold on;\n"
+      "    end;\n"
+      "    plot( [poses(i,1) poses(i,1)+radius*cos(poses(i,3))], [poses(i,2) "
+      "poses(i,2)+radius*sin(poses(i,3))], style );\n"
+      "end\n"
+      "end  %% end of function\n"
+      "\n");
 
-	fclose(f);
-	printf("Ok\n");
+  fclose(f);
+  printf("Ok\n");
 }
 
 // ------------------------------------------------------
@@ -347,61 +341,61 @@ void Test()
 // ------------------------------------------------------
 int main(int argc, char** argv)
 {
-	try
-	{
-		printf(" map-partition - Part of the MRPT\n");
-		printf(
-			" MRPT C++ Library: %s - Sources timestamp: %s\n",
-			MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
-		printf(
-			"------------------------------------------------------------------"
-			"-\n");
+  try
+  {
+    printf(" map-partition - Part of the MRPT\n");
+    printf(
+        " MRPT C++ Library: %s - Sources timestamp: %s\n", MRPT_getVersion().c_str(),
+        MRPT_getCompilationDate().c_str());
+    printf(
+        "------------------------------------------------------------------"
+        "-\n");
 
-		// Process arguments:
-		if (argc < 2)
-		{
-			printf(
-				"Use: map-partition <file.simplemap> [nCut threshold 0-2]\n");
-			mrpt::system::pause();
-			return -1;
-		}
+    // Process arguments:
+    if (argc < 2)
+    {
+      printf("Use: map-partition <file.simplemap> [nCut threshold 0-2]\n");
+      mrpt::system::pause();
+      return -1;
+    }
 
-		MAP_FILE = std::string(argv[1]);
+    MAP_FILE = std::string(argv[1]);
 
-		if (argc == 3)
-		{
-			bool err = false;
+    if (argc == 3)
+    {
+      bool err = false;
 
-			if (!sscanf(argv[2], "%f", &THRESHOLD_NCUT)) err = true;
-			else if (THRESHOLD_NCUT < 0 || THRESHOLD_NCUT > 2)
-				err = true;
+      if (!sscanf(argv[2], "%f", &THRESHOLD_NCUT))
+        err = true;
+      else if (THRESHOLD_NCUT < 0 || THRESHOLD_NCUT > 2)
+        err = true;
 
-			if (err)
-			{
-				printf(
-					"Use: map-partition <file.simplemap> [nCut threshold "
-					"0-2]\n");
-				printf("\n\n Invalid nCut threshold: '%s'\n", argv[2]);
-				mrpt::system::pause();
-				return -1;
-			}
-		}
+      if (err)
+      {
+        printf(
+            "Use: map-partition <file.simplemap> [nCut threshold "
+            "0-2]\n");
+        printf("\n\n Invalid nCut threshold: '%s'\n", argv[2]);
+        mrpt::system::pause();
+        return -1;
+      }
+    }
 
-		Test();
+    Test();
 
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << mrpt::exception_to_str(e) << std::endl
-				  << "Program finished for an exception!!" << std::endl;
-		mrpt::system::pause();
-		return -1;
-	}
-	catch (...)
-	{
-		std::cerr << "Untyped exception!!" << std::endl;
-		mrpt::system::pause();
-		return -1;
-	}
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << mrpt::exception_to_str(e) << std::endl
+              << "Program finished for an exception!!" << std::endl;
+    mrpt::system::pause();
+    return -1;
+  }
+  catch (...)
+  {
+    std::cerr << "Untyped exception!!" << std::endl;
+    mrpt::system::pause();
+    return -1;
+  }
 }

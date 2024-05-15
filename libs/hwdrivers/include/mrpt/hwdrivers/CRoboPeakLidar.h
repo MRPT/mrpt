@@ -49,60 +49,59 @@ namespace mrpt::hwdrivers
  */
 class CRoboPeakLidar : public C2DRangeFinderAbstract
 {
-	DEFINE_GENERIC_SENSOR(CRoboPeakLidar)
-   public:
-	/** Constructor */
-	CRoboPeakLidar();
-	/** Destructor: turns the laser off. */
-	~CRoboPeakLidar() override;
+  DEFINE_GENERIC_SENSOR(CRoboPeakLidar)
+ public:
+  /** Constructor */
+  CRoboPeakLidar();
+  /** Destructor: turns the laser off. */
+  ~CRoboPeakLidar() override;
 
-	/** Attempts to connect and turns the laser on. Raises an exception on
-	 * error. */
-	void initialize() override;
+  /** Attempts to connect and turns the laser on. Raises an exception on
+   * error. */
+  void initialize() override;
 
-	// See base class docs
-	void doProcessSimple(
-		bool& outThereIsObservation,
-		mrpt::obs::CObservation2DRangeScan& outObservation,
-		bool& hardwareError) override;
+  // See base class docs
+  void doProcessSimple(
+      bool& outThereIsObservation,
+      mrpt::obs::CObservation2DRangeScan& outObservation,
+      bool& hardwareError) override;
 
-	/** If set to non-empty, the serial port will be attempted to be opened
-	 * automatically when this class is first used to request data from the
-	 * laser.  */
-	void setSerialPort(const std::string& port_name);
-	/** Returns the currently set serial port \sa setSerialPort */
-	const std::string getSerialPort() { return m_com_port; }
-	/** See base class docs */
-	bool turnOn() override;
-	/** See base class docs */
-	bool turnOff() override;
+  /** If set to non-empty, the serial port will be attempted to be opened
+   * automatically when this class is first used to request data from the
+   * laser.  */
+  void setSerialPort(const std::string& port_name);
+  /** Returns the currently set serial port \sa setSerialPort */
+  const std::string getSerialPort() { return m_com_port; }
+  /** See base class docs */
+  bool turnOn() override;
+  /** See base class docs */
+  bool turnOff() override;
 
-	/** Returns true if the device is connected & operative */
-	bool getDeviceHealth() const;
+  /** Returns true if the device is connected & operative */
+  bool getDeviceHealth() const;
 
-	/** Closes the comms with the laser. Shouldn't have to be directly needed by
-	 * the user */
-	void disconnect();
+  /** Closes the comms with the laser. Shouldn't have to be directly needed by
+   * the user */
+  void disconnect();
 
-   protected:
-	/** The sensor 6D pose: */
-	poses::CPose3D m_sensorPose;
-	std::string m_com_port;
-	int m_com_port_baudrate{115200};
-	void* m_rplidar_drv{nullptr};  // Opaque "RPlidarDriver*"
+ protected:
+  /** The sensor 6D pose: */
+  poses::CPose3D m_sensorPose;
+  std::string m_com_port;
+  int m_com_port_baudrate{115200};
+  void* m_rplidar_drv{nullptr};  // Opaque "RPlidarDriver*"
 
-	/** Returns true if communication has been established with the device. If
-	 * it's not,
-	 *  try to create a comms channel.
-	 * \return false on error.
-	 */
-	bool checkCOMMs();
+  /** Returns true if communication has been established with the device. If
+   * it's not,
+   *  try to create a comms channel.
+   * \return false on error.
+   */
+  bool checkCOMMs();
 
-	/** See the class documentation at the top for expected parameters */
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection) override;
+  /** See the class documentation at the top for expected parameters */
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection) override;
 
-};	// End of class
+};  // End of class
 
 }  // namespace mrpt::hwdrivers

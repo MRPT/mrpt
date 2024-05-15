@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "serialization-precomp.h"	// Precompiled headers
+#include "serialization-precomp.h"  // Precompiled headers
 //
 #include <mrpt/core/exceptions.h>
 #include <mrpt/serialization/CSchemeArchive.h>
@@ -23,9 +23,8 @@ using namespace mrpt::serialization;
 CSchemeArchiveBase mrpt::serialization::archiveJSON()
 {
 #if MRPT_HAS_JSONCPP
-	return mrpt::serialization::CSchemeArchiveBase(
-		std::make_unique<CSchemeArchive<Json::Value>>());
+  return mrpt::serialization::CSchemeArchiveBase(std::make_unique<CSchemeArchive<Json::Value>>());
 #else
-	THROW_EXCEPTION("archiveJSON() requires building MRPT against jsoncpp");
+  THROW_EXCEPTION("archiveJSON() requires building MRPT against jsoncpp");
 #endif
 }

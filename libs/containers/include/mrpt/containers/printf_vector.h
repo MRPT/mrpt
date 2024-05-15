@@ -25,15 +25,15 @@ namespace mrpt::containers
 template <typename VEC>
 std::string sprintf_vector(const char* fmt, const VEC& V)
 {
-	std::string ret = "[";
-	const size_t N = V.size();
-	for (size_t i = 0; i < N; i++)
-	{
-		ret += format(fmt, V[i]);
-		if (i != (N - 1)) ret += ",";
-	}
-	ret += "]";
-	return ret;
+  std::string ret = "[";
+  const size_t N = V.size();
+  for (size_t i = 0; i < N; i++)
+  {
+    ret += format(fmt, V[i]);
+    if (i != (N - 1)) ret += ",";
+  }
+  ret += "]";
+  return ret;
 }
 
 /** Prints a vector in the format [A,B,C,...] to std::cout, and the fmt string
@@ -41,7 +41,7 @@ std::string sprintf_vector(const char* fmt, const VEC& V)
 template <typename T>
 void printf_vector(const char* fmt, const std::vector<T>& V)
 {
-	::fputs(sprintf_vector(fmt, V).c_str(), stdout);
+  ::fputs(sprintf_vector(fmt, V).c_str(), stdout);
 }
 
 /** @} */  // end of grouping

@@ -19,23 +19,20 @@ namespace mrpt::apps
  */
 class RawlogEditApp
 {
-   public:
-	RawlogEditApp() = default;
+ public:
+  RawlogEditApp() = default;
 
-	/** @name Main API
-	 * @{ */
+  /** @name Main API
+   * @{ */
 
-	/** Initializes and runs the application from CLI parameters. Refer to the
-	 * manpage of rawlog-edit. Throws on errors.
-	 */
-	void run(int argc, const char** argv);
+  /** Initializes and runs the application from CLI parameters. Refer to the
+   * manpage of rawlog-edit. Throws on errors.
+   */
+  void run(int argc, const char** argv);
 
-	void run(int argc, char** argv)
-	{
-		run(argc, const_cast<const char**>(argv));
-	}
+  void run(int argc, char** argv) { run(argc, const_cast<const char**>(argv)); }
 
-	/** @} */
+  /** @} */
 };
 
 }  // namespace mrpt::apps

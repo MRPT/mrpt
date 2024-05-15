@@ -30,44 +30,43 @@ namespace mrpt::poses
  * \ingroup poses_pdf_grp
  * \sa CPoint2D, CPointPDF
  */
-class CPoint2DPDF : public mrpt::serialization::CSerializable,
-					public mrpt::math::CProbabilityDensityFunction<CPoint2D, 2>
+class CPoint2DPDF :
+    public mrpt::serialization::CSerializable,
+    public mrpt::math::CProbabilityDensityFunction<CPoint2D, 2>
 {
-	DEFINE_VIRTUAL_SERIALIZABLE(CPoint2DPDF)
+  DEFINE_VIRTUAL_SERIALIZABLE(CPoint2DPDF)
 
-   public:
-	/** Copy operator, translating if necesary (for example, between particles
-	 * and gaussian representations)
-	 */
-	virtual void copyFrom(const CPoint2DPDF& o) = 0;
+ public:
+  /** Copy operator, translating if necesary (for example, between particles
+   * and gaussian representations)
+   */
+  virtual void copyFrom(const CPoint2DPDF& o) = 0;
 
-	virtual void changeCoordinatesReference(
-		const CPose3D& newReferenceBase) = 0;
+  virtual void changeCoordinatesReference(const CPose3D& newReferenceBase) = 0;
 
-	/** Bayesian fusion of two point distributions (product of two
-	 * distributions->new distribution), then save the result in this object
-	 * (WARNING: See implementing classes to see classes that can and cannot be
-	 * mixtured!)
-	 * \param p1 The first distribution to fuse
-	 * \param p2 The second distribution to fuse
-	 * \param minMahalanobisDistToDrop If set to different of 0, the result of
-	 * very separate Gaussian modes (that will result in negligible components)
-	 * in SOGs will be dropped to reduce the number of modes in the output.
-	 */
-	virtual void bayesianFusion(
-		const CPoint2DPDF& p1, const CPoint2DPDF& p2,
-		const double minMahalanobisDistToDrop = 0) = 0;
+  /** Bayesian fusion of two point distributions (product of two
+   * distributions->new distribution), then save the result in this object
+   * (WARNING: See implementing classes to see classes that can and cannot be
+   * mixtured!)
+   * \param p1 The first distribution to fuse
+   * \param p2 The second distribution to fuse
+   * \param minMahalanobisDistToDrop If set to different of 0, the result of
+   * very separate Gaussian modes (that will result in negligible components)
+   * in SOGs will be dropped to reduce the number of modes in the output.
+   */
+  virtual void bayesianFusion(
+      const CPoint2DPDF& p1, const CPoint2DPDF& p2, const double minMahalanobisDistToDrop = 0) = 0;
 
-	enum
-	{
-		is_3D_val = 0
-	};
-	static constexpr bool is_3D() { return is_3D_val != 0; }
-	enum
-	{
-		is_PDF_val = 1
-	};
-	static constexpr bool is_PDF() { return is_PDF_val != 0; }
-};	// End of class def.
+  enum
+  {
+    is_3D_val = 0
+  };
+  static constexpr bool is_3D() { return is_3D_val != 0; }
+  enum
+  {
+    is_PDF_val = 1
+  };
+  static constexpr bool is_PDF() { return is_PDF_val != 0; }
+};  // End of class def.
 
 }  // namespace mrpt::poses

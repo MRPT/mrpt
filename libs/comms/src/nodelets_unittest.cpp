@@ -15,6 +15,6 @@
 
 TEST(NodeletsTests, pub_sub_multithread_test)
 {
-	NodeletsTest();
-	EXPECT_TRUE(nodelets_test_passed_ok);
+  NodeletsTest();
+  EXPECT_TRUE(nodelets_test_passed_ok);
 }

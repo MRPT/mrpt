@@ -8,16 +8,16 @@
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-	DEMO: track-video-features
-	Started by: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
-				@ Jun 2010
+  DEMO: track-video-features
+  Started by: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
+        @ Jun 2010
 
-	Purpose: Illustrate MRPT classes and functions for live
-			 video features detection and tracking, as well
-			 as real-time visualization of all that stuff.
+  Purpose: Illustrate MRPT classes and functions for live
+       video features detection and tracking, as well
+       as real-time visualization of all that stuff.
   ---------------------------------------------------------------*/
 
-#include <mrpt/gui/CDisplayWindow3D.h>	// For visualization windows
+#include <mrpt/gui/CDisplayWindow3D.h>     // For visualization windows
 #include <mrpt/hwdrivers/CCameraSensor.h>  // For capture of video from videos/cameras
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/serialization/CArchive.h>
@@ -46,349 +46,330 @@ mrpt::gui::CDisplayWindow3D::Ptr win;  // This is global such as an exception
 // ------------------------------------------------------
 int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 {
-	win = mrpt::gui::CDisplayWindow3D::Create("Tracked features", 800, 600);
-
-	mrpt::vision::CVideoFileWriter vidWritter;
-
-	bool hasResolution = false;
-	TCamera cameraParams;  // For now, will only hold the image resolution on
-	// the arrive of the first frame.
-
-	TKeyPointList trackedFeats;
-
-	unsigned int step_num = 0;
-
-	bool SHOW_FEAT_IDS = true;
-	bool SHOW_RESPONSES = true;
-	bool SHOW_SCALE = true;
-	bool SHOW_FEAT_TRACKS = true;
-
-	const double SAVE_VIDEO_FPS =
-		30;	 // If DO_SAVE_VIDEO=true, the FPS of the video file
-	const char* SAVE_VIDEO_CODEC = "XVID";	// "XVID", "PIM1", "MJPG"
-
-	bool DO_HIST_EQUALIZE_IN_GRAYSCALE = false;
-	string VIDEO_OUTPUT_FILE = "./tracking_video.avi";
-
-	const double MAX_FPS = 5000;  // 5.0;  // Hz (to slow down visualization).
-
-	CGenericFeatureTrackerAutoPtr tracker;
-
-	// "CFeatureTracker_KL" is by far the most robust implementation for now:
-	tracker = CGenericFeatureTrackerAutoPtr(new CFeatureTracker_KL);
-
-	tracker->enableTimeLogger(true);  // Do time profiling.
-
-	// Set of parameters common to any tracker implementation:
-	// -------------------------------------------------------------
-	// To see all the existing params and documentation, see
-	// mrpt::vision::CGenericFeatureTracker
-	// automatically remove out-of-image and badly tracked features
-	tracker->extra_params["remove_lost_features"] = 1;
-
-	// track, AND ALSO, add new features
-	tracker->extra_params["add_new_features"] = 1;
-	tracker->extra_params["desired_num_features_adapt"] = 500;
-	tracker->extra_params["add_new_feat_min_separation"] = 30;
-	tracker->extra_params["add_new_feat_max_features"] = 350;
-	// FAST9,10,12:
-	tracker->extra_params["add_new_features_FAST_version"] = 10;
-
-	// Don't use patches
-	tracker->extra_params["add_new_feat_patch_size"] = 0;
-	tracker->extra_params["update_patches_every"] = 0;
-
-	// KLT-response to ensure good features:
-	tracker->extra_params["minimum_KLT_response_to_add"] = 70;
-	tracker->extra_params["check_KLT_response_every"] = 1;
-	tracker->extra_params["minimum_KLT_response"] = 30;
-	tracker->extra_params["KLT_response_half_win"] = 8;
-
-	// Specific params for "CFeatureTracker_KL"
-	// ------------------------------------------------------
-	tracker->extra_params["window_width"] = 15;
-	tracker->extra_params["window_height"] = 15;
-	tracker->extra_params["LK_levels"] = 3;
-	// tracker->extra_params["LK_max_iters"] = 10;
-	// tracker->extra_params["LK_epsilon"] = 0.1;
-	// tracker->extra_params["LK_max_tracking_error"] = 150;
-
-	// --------------------------------
-	// The main loop
-	// --------------------------------
-	CImage previous_image;
-
-	TSequenceFeatureObservations feat_track_history;
-	bool save_tracked_history =
-		true;  // Dump feat_track_history to a file at the end
-
-	TCameraPoseID curCamPoseId = 0;
-
-	cout << endl << "TO END THE PROGRAM: Close the window.\n";
-
-	mrpt::opengl::Viewport::Ptr gl_view;
-	{
-		mrpt::opengl::Scene::Ptr scene = win->get3DSceneAndLock();
-		gl_view = scene->getViewport("main");
-		win->unlockAccess3DScene();
-	}
-
-	// Aux data for drawing the recent track of features:
-	static const size_t FEATS_TRACK_LEN = 10;
-	std::map<TFeatureID, std::list<TPixelCoord>> feat_tracks;
-
-	// infinite loop, until we close the win:
-	while (win->isOpen())
-	{
-		CObservation::Ptr obs;
-		try
-		{
-			obs = cam->getNextFrame();
-		}
-		catch (mrpt::serialization::CExceptionEOF&)
-		{  // End of a rawlog file.
-			break;
-		}
-
-		if (!obs)
-		{
-			cerr << "*Warning* getNextFrame() returned nullptr!\n";
-			std::this_thread::sleep_for(50ms);
-			continue;
-		}
-
-		CImage theImg;	// The grabbed image:
-
-		if (IS_CLASS(*obs, CObservationImage))
-		{
-			auto o = std::dynamic_pointer_cast<CObservationImage>(obs);
-			theImg = std::move(o->image);
-		}
-		else if (IS_CLASS(*obs, CObservationStereoImages))
-		{
-			auto o = std::dynamic_pointer_cast<CObservationStereoImages>(obs);
-			theImg = std::move(o->imageLeft);
-		}
-		else if (IS_CLASS(*obs, CObservation3DRangeScan))
-		{
-			auto o = std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
-			if (o->hasIntensityImage) theImg = std::move(o->intensityImage);
-		}
-		else
-		{
-			continue;  // Silently ignore non-image observations.
-		}
-
-		// Make sure the image is loaded (for the case it came from a rawlog
-		// file)
-		theImg.forceLoad();
-
-		// Take the resolution upon first valid frame.
-		if (!hasResolution)
-		{
-			hasResolution = true;
-			// cameraParams.scaleToResolution()...
-			cameraParams.ncols = theImg.getWidth();
-			cameraParams.nrows = theImg.getHeight();
-		}
-
-		// Do tracking:
-		if (step_num > 1)  // we need "previous_image" to be valid.
-		{
-			// This single call makes: detection, tracking, recalculation of
-			// KLT_response, etc.
-			tracker->trackFeatures(previous_image, theImg, trackedFeats);
-		}
-
-		// Save the image for the next step:
-		previous_image = theImg;
-
-		// Save history of feature observations:
-		tracker->getProfiler().enter("Save history");
-
-		for (auto& f : trackedFeats)
-		{
-			const TPixelCoordf pxRaw(f.pt.x, f.pt.y);
-			TPixelCoordf pxUndist;
-			// mrpt::vision::pinhole::undistort_point(pxRaw,pxUndist,
-			// cameraParams);
-			pxUndist = pxRaw;
-
-			feat_track_history.push_back(
-				TFeatureObservation(f.ID, curCamPoseId, pxUndist));
-		}
-		curCamPoseId++;
-
-		tracker->getProfiler().leave("Save history");
-
-		// now that we're done with the image, we can directly write onto it
-		//  for the display
-		// ----------------------------------------------------------------
-		if (DO_HIST_EQUALIZE_IN_GRAYSCALE && !theImg.isColor())
-			theImg.equalizeHist(theImg);
-
-		tracker->getProfiler().enter("Display");
-
-		// Convert to color so we can draw color marks, etc.
-		{
-			mrpt::system::CTimeLoggerEntry tle(
-				tracker->getProfiler(), "Display.to_color");
-
-			theImg = theImg.colorImage();
-		}
-
-		double extra_tim_to_wait = 0;
-
-		{  // FPS:
-			static CTicTac tictac;
-			const double T = tictac.Tac();
-			tictac.Tic();
-			const double fps = 1.0 / (std::max(1e-5, T));
-
-			const int current_adapt_thres =
-				tracker->getDetectorAdaptiveThreshold();
-
-			mrpt::system::CTimeLoggerEntry tle(
-				tracker->getProfiler(), "Display.textOut");
-
-			theImg.selectTextFont("6x13B");
-			theImg.textOut(
-				3, 3, format("FPS: %.03f Hz", fps), TColor(200, 200, 0));
-			theImg.textOut(
-				3, 22,
-				format(
-					"# feats: %u - Adaptive threshold: %i",
-					(unsigned int)trackedFeats.size(), current_adapt_thres),
-				TColor(200, 200, 0));
-
-			theImg.textOut(
-				3, 41,
-				format(
-					"# raw feats: %u - Removed: %u",
-					(unsigned int)tracker->last_execution_extra_info
-						.raw_FAST_feats_detected,
-					(unsigned int)
-						tracker->last_execution_extra_info.num_deleted_feats),
-				TColor(200, 200, 0));
-
-			extra_tim_to_wait = 1.0 / MAX_FPS - 1.0 / fps;
-		}
-
-		// Draw feature tracks
-		if (SHOW_FEAT_TRACKS)
-		{
-			// Update new feature coords:
-			mrpt::system::CTimeLoggerEntry tle(
-				tracker->getProfiler(), "Display.drawFeatureTracks");
-
-			std::set<TFeatureID> observed_IDs;
-
-			for (const auto& ft : trackedFeats)
-			{
-				std::list<TPixelCoord>& seq = feat_tracks[ft.ID];
-
-				observed_IDs.insert(ft.ID);
-
-				if (seq.size() >= FEATS_TRACK_LEN) seq.erase(seq.begin());
-				seq.push_back(ft.pt);
-
-				// Draw:
-				if (seq.size() > 1)
-				{
-					const auto it_end = seq.end();
-
-					auto it = seq.begin();
-					auto it_prev = it++;
-
-					for (; it != it_end; ++it)
-					{
-						theImg.line(
-							it_prev->x, it_prev->y, it->x, it->y,
-							TColor(190, 190, 190));
-						it_prev = it;
-					}
-				}
-			}
-
-			// Purge old data:
-			for (auto it = feat_tracks.begin(); it != feat_tracks.end();)
-			{
-				if (observed_IDs.find(it->first) == observed_IDs.end())
-				{
-					auto next_it = it;
-					next_it++;
-					feat_tracks.erase(it);
-					it = next_it;
-				}
-				else
-					++it;
-			}
-		}
-
-		// Draw Tracked feats:
-		{
-			mrpt::system::CTimeLoggerEntry tle(
-				tracker->getProfiler(), "Display.drawFeatures");
-
-			theImg.selectTextFont("5x7");
-			theImg.drawFeatures(
-				trackedFeats, TColor::blue(), SHOW_FEAT_IDS, SHOW_RESPONSES,
-				SHOW_SCALE, '+' /* marker */);
-		}
-
-		// Update window:
-		{
-			mrpt::system::CTimeLoggerEntry tle(
-				tracker->getProfiler(), "Display.updateView");
-
-			win->get3DSceneAndLock();
-			gl_view->setImageView(theImg);
-			win->unlockAccess3DScene();
-			win->repaint();
-		}
-
-		tracker->getProfiler().leave("Display");
-
-		// Save debug output video:
-		// ----------------------------------
-		if (DO_SAVE_VIDEO)
-		{
-			static bool first = true;
-			if (first)
-			{
-				first = false;
-				if (vidWritter.open(
-						VIDEO_OUTPUT_FILE, SAVE_VIDEO_FPS /* fps */,
-						theImg.getSize(), SAVE_VIDEO_CODEC,
-						true /* force color video */))
-				{
-					cout << "[track-video] Saving tracking video to: "
-						 << VIDEO_OUTPUT_FILE << endl;
-				}
-				else
-					cerr << "ERROR: Trying to create output video: "
-						 << VIDEO_OUTPUT_FILE << endl;
-			}
-
-			vidWritter << theImg;
-		}
-
-		if (extra_tim_to_wait > 0)
-			std::this_thread::sleep_for(
-				std::chrono::duration<double, std::milli>(
-					1000.0 * extra_tim_to_wait));
-
-		step_num++;
-	}  // end infinite loop
-
-	// Save tracked feats:
-	if (save_tracked_history)
-	{
-		cout << "Saving tracked features to: tracked_feats.txt...";
-		cout.flush();
-		feat_track_history.saveToTextFile("./tracked_feats.txt");
-		cout << "Done!\n";
-		cout.flush();
+  win = mrpt::gui::CDisplayWindow3D::Create("Tracked features", 800, 600);
+
+  mrpt::vision::CVideoFileWriter vidWritter;
+
+  bool hasResolution = false;
+  TCamera cameraParams;  // For now, will only hold the image resolution on
+  // the arrive of the first frame.
+
+  TKeyPointList trackedFeats;
+
+  unsigned int step_num = 0;
+
+  bool SHOW_FEAT_IDS = true;
+  bool SHOW_RESPONSES = true;
+  bool SHOW_SCALE = true;
+  bool SHOW_FEAT_TRACKS = true;
+
+  const double SAVE_VIDEO_FPS = 30;       // If DO_SAVE_VIDEO=true, the FPS of the video file
+  const char* SAVE_VIDEO_CODEC = "XVID";  // "XVID", "PIM1", "MJPG"
+
+  bool DO_HIST_EQUALIZE_IN_GRAYSCALE = false;
+  string VIDEO_OUTPUT_FILE = "./tracking_video.avi";
+
+  const double MAX_FPS = 5000;  // 5.0;  // Hz (to slow down visualization).
+
+  CGenericFeatureTrackerAutoPtr tracker;
+
+  // "CFeatureTracker_KL" is by far the most robust implementation for now:
+  tracker = CGenericFeatureTrackerAutoPtr(new CFeatureTracker_KL);
+
+  tracker->enableTimeLogger(true);  // Do time profiling.
+
+  // Set of parameters common to any tracker implementation:
+  // -------------------------------------------------------------
+  // To see all the existing params and documentation, see
+  // mrpt::vision::CGenericFeatureTracker
+  // automatically remove out-of-image and badly tracked features
+  tracker->extra_params["remove_lost_features"] = 1;
+
+  // track, AND ALSO, add new features
+  tracker->extra_params["add_new_features"] = 1;
+  tracker->extra_params["desired_num_features_adapt"] = 500;
+  tracker->extra_params["add_new_feat_min_separation"] = 30;
+  tracker->extra_params["add_new_feat_max_features"] = 350;
+  // FAST9,10,12:
+  tracker->extra_params["add_new_features_FAST_version"] = 10;
+
+  // Don't use patches
+  tracker->extra_params["add_new_feat_patch_size"] = 0;
+  tracker->extra_params["update_patches_every"] = 0;
+
+  // KLT-response to ensure good features:
+  tracker->extra_params["minimum_KLT_response_to_add"] = 70;
+  tracker->extra_params["check_KLT_response_every"] = 1;
+  tracker->extra_params["minimum_KLT_response"] = 30;
+  tracker->extra_params["KLT_response_half_win"] = 8;
+
+  // Specific params for "CFeatureTracker_KL"
+  // ------------------------------------------------------
+  tracker->extra_params["window_width"] = 15;
+  tracker->extra_params["window_height"] = 15;
+  tracker->extra_params["LK_levels"] = 3;
+  // tracker->extra_params["LK_max_iters"] = 10;
+  // tracker->extra_params["LK_epsilon"] = 0.1;
+  // tracker->extra_params["LK_max_tracking_error"] = 150;
+
+  // --------------------------------
+  // The main loop
+  // --------------------------------
+  CImage previous_image;
+
+  TSequenceFeatureObservations feat_track_history;
+  bool save_tracked_history = true;  // Dump feat_track_history to a file at the end
+
+  TCameraPoseID curCamPoseId = 0;
+
+  cout << endl << "TO END THE PROGRAM: Close the window.\n";
+
+  mrpt::opengl::Viewport::Ptr gl_view;
+  {
+    mrpt::opengl::Scene::Ptr scene = win->get3DSceneAndLock();
+    gl_view = scene->getViewport("main");
+    win->unlockAccess3DScene();
+  }
+
+  // Aux data for drawing the recent track of features:
+  static const size_t FEATS_TRACK_LEN = 10;
+  std::map<TFeatureID, std::list<TPixelCoord>> feat_tracks;
+
+  // infinite loop, until we close the win:
+  while (win->isOpen())
+  {
+    CObservation::Ptr obs;
+    try
+    {
+      obs = cam->getNextFrame();
+    }
+    catch (mrpt::serialization::CExceptionEOF&)
+    {  // End of a rawlog file.
+      break;
+    }
+
+    if (!obs)
+    {
+      cerr << "*Warning* getNextFrame() returned nullptr!\n";
+      std::this_thread::sleep_for(50ms);
+      continue;
+    }
+
+    CImage theImg;  // The grabbed image:
+
+    if (IS_CLASS(*obs, CObservationImage))
+    {
+      auto o = std::dynamic_pointer_cast<CObservationImage>(obs);
+      theImg = std::move(o->image);
+    }
+    else if (IS_CLASS(*obs, CObservationStereoImages))
+    {
+      auto o = std::dynamic_pointer_cast<CObservationStereoImages>(obs);
+      theImg = std::move(o->imageLeft);
+    }
+    else if (IS_CLASS(*obs, CObservation3DRangeScan))
+    {
+      auto o = std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
+      if (o->hasIntensityImage) theImg = std::move(o->intensityImage);
+    }
+    else
+    {
+      continue;  // Silently ignore non-image observations.
+    }
+
+    // Make sure the image is loaded (for the case it came from a rawlog
+    // file)
+    theImg.forceLoad();
+
+    // Take the resolution upon first valid frame.
+    if (!hasResolution)
+    {
+      hasResolution = true;
+      // cameraParams.scaleToResolution()...
+      cameraParams.ncols = theImg.getWidth();
+      cameraParams.nrows = theImg.getHeight();
+    }
+
+    // Do tracking:
+    if (step_num > 1)  // we need "previous_image" to be valid.
+    {
+      // This single call makes: detection, tracking, recalculation of
+      // KLT_response, etc.
+      tracker->trackFeatures(previous_image, theImg, trackedFeats);
+    }
+
+    // Save the image for the next step:
+    previous_image = theImg;
+
+    // Save history of feature observations:
+    tracker->getProfiler().enter("Save history");
+
+    for (auto& f : trackedFeats)
+    {
+      const TPixelCoordf pxRaw(f.pt.x, f.pt.y);
+      TPixelCoordf pxUndist;
+      // mrpt::vision::pinhole::undistort_point(pxRaw,pxUndist,
+      // cameraParams);
+      pxUndist = pxRaw;
+
+      feat_track_history.push_back(TFeatureObservation(f.ID, curCamPoseId, pxUndist));
+    }
+    curCamPoseId++;
+
+    tracker->getProfiler().leave("Save history");
+
+    // now that we're done with the image, we can directly write onto it
+    //  for the display
+    // ----------------------------------------------------------------
+    if (DO_HIST_EQUALIZE_IN_GRAYSCALE && !theImg.isColor()) theImg.equalizeHist(theImg);
+
+    tracker->getProfiler().enter("Display");
+
+    // Convert to color so we can draw color marks, etc.
+    {
+      mrpt::system::CTimeLoggerEntry tle(tracker->getProfiler(), "Display.to_color");
+
+      theImg = theImg.colorImage();
+    }
+
+    double extra_tim_to_wait = 0;
+
+    {  // FPS:
+      static CTicTac tictac;
+      const double T = tictac.Tac();
+      tictac.Tic();
+      const double fps = 1.0 / (std::max(1e-5, T));
+
+      const int current_adapt_thres = tracker->getDetectorAdaptiveThreshold();
+
+      mrpt::system::CTimeLoggerEntry tle(tracker->getProfiler(), "Display.textOut");
+
+      theImg.selectTextFont("6x13B");
+      theImg.textOut(3, 3, format("FPS: %.03f Hz", fps), TColor(200, 200, 0));
+      theImg.textOut(
+          3, 22,
+          format(
+              "# feats: %u - Adaptive threshold: %i", (unsigned int)trackedFeats.size(),
+              current_adapt_thres),
+          TColor(200, 200, 0));
+
+      theImg.textOut(
+          3, 41,
+          format(
+              "# raw feats: %u - Removed: %u",
+              (unsigned int)tracker->last_execution_extra_info.raw_FAST_feats_detected,
+              (unsigned int)tracker->last_execution_extra_info.num_deleted_feats),
+          TColor(200, 200, 0));
+
+      extra_tim_to_wait = 1.0 / MAX_FPS - 1.0 / fps;
+    }
+
+    // Draw feature tracks
+    if (SHOW_FEAT_TRACKS)
+    {
+      // Update new feature coords:
+      mrpt::system::CTimeLoggerEntry tle(tracker->getProfiler(), "Display.drawFeatureTracks");
+
+      std::set<TFeatureID> observed_IDs;
+
+      for (const auto& ft : trackedFeats)
+      {
+        std::list<TPixelCoord>& seq = feat_tracks[ft.ID];
+
+        observed_IDs.insert(ft.ID);
+
+        if (seq.size() >= FEATS_TRACK_LEN) seq.erase(seq.begin());
+        seq.push_back(ft.pt);
+
+        // Draw:
+        if (seq.size() > 1)
+        {
+          const auto it_end = seq.end();
+
+          auto it = seq.begin();
+          auto it_prev = it++;
+
+          for (; it != it_end; ++it)
+          {
+            theImg.line(it_prev->x, it_prev->y, it->x, it->y, TColor(190, 190, 190));
+            it_prev = it;
+          }
+        }
+      }
+
+      // Purge old data:
+      for (auto it = feat_tracks.begin(); it != feat_tracks.end();)
+      {
+        if (observed_IDs.find(it->first) == observed_IDs.end())
+        {
+          auto next_it = it;
+          next_it++;
+          feat_tracks.erase(it);
+          it = next_it;
+        }
+        else
+          ++it;
+      }
+    }
+
+    // Draw Tracked feats:
+    {
+      mrpt::system::CTimeLoggerEntry tle(tracker->getProfiler(), "Display.drawFeatures");
+
+      theImg.selectTextFont("5x7");
+      theImg.drawFeatures(
+          trackedFeats, TColor::blue(), SHOW_FEAT_IDS, SHOW_RESPONSES, SHOW_SCALE,
+          '+' /* marker */);
+    }
+
+    // Update window:
+    {
+      mrpt::system::CTimeLoggerEntry tle(tracker->getProfiler(), "Display.updateView");
+
+      win->get3DSceneAndLock();
+      gl_view->setImageView(theImg);
+      win->unlockAccess3DScene();
+      win->repaint();
+    }
+
+    tracker->getProfiler().leave("Display");
+
+    // Save debug output video:
+    // ----------------------------------
+    if (DO_SAVE_VIDEO)
+    {
+      static bool first = true;
+      if (first)
+      {
+        first = false;
+        if (vidWritter.open(
+                VIDEO_OUTPUT_FILE, SAVE_VIDEO_FPS /* fps */, theImg.getSize(), SAVE_VIDEO_CODEC,
+                true /* force color video */))
+        {
+          cout << "[track-video] Saving tracking video to: " << VIDEO_OUTPUT_FILE << endl;
+        }
+        else
+          cerr << "ERROR: Trying to create output video: " << VIDEO_OUTPUT_FILE << endl;
+      }
+
+      vidWritter << theImg;
+    }
+
+    if (extra_tim_to_wait > 0)
+      std::this_thread::sleep_for(
+          std::chrono::duration<double, std::milli>(1000.0 * extra_tim_to_wait));
+
+    step_num++;
+  }  // end infinite loop
+
+  // Save tracked feats:
+  if (save_tracked_history)
+  {
+    cout << "Saving tracked features to: tracked_feats.txt...";
+    cout.flush();
+    feat_track_history.saveToTextFile("./tracked_feats.txt");
+    cout << "Done!\n";
+    cout.flush();
 
 #if 0
 		// SBA:
@@ -405,9 +386,9 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 
 		cout << "Done!\n"; cout.flush();
 #endif
-	}
+  }
 
-	return 0;  // End ok.
+  return 0;  // End ok.
 }
 
 void showUsage(char* cmd);
@@ -417,136 +398,132 @@ void showUsage(char* cmd);
 // ------------------------------------------------------
 int main(int argc, char** argv)
 {
-	try
-	{
-		printf(" track-video-features - Part of MRPT\n");
-		printf(
-			" MRPT C++ Library: %s - Sources timestamp: %s\n",
-			mrpt::system::MRPT_getVersion().c_str(),
-			mrpt::system::MRPT_getCompilationDate().c_str());
-		printf(
-			"------------------------------------------------------------------"
-			"-\n");
+  try
+  {
+    printf(" track-video-features - Part of MRPT\n");
+    printf(
+        " MRPT C++ Library: %s - Sources timestamp: %s\n", mrpt::system::MRPT_getVersion().c_str(),
+        mrpt::system::MRPT_getCompilationDate().c_str());
+    printf(
+        "------------------------------------------------------------------"
+        "-\n");
 
-		// The video source:
-		CCameraSensor::Ptr cam;
+    // The video source:
+    CCameraSensor::Ptr cam;
 
-		// process cmd line arguments?
+    // process cmd line arguments?
 
-		if (argc < 1 || argc > 3)
-		{
-			cerr << "Incorrect number of arguments.\n";
-			showUsage(argv[0]);
-			return -1;
-		}
+    if (argc < 1 || argc > 3)
+    {
+      cerr << "Incorrect number of arguments.\n";
+      showUsage(argv[0]);
+      return -1;
+    }
 
-		const bool last_arg_is_save_video =
-			!strcmp("--save-video", argv[argc - 1]);
-		if (last_arg_is_save_video) argc--;	 // Discard last argument
+    const bool last_arg_is_save_video = !strcmp("--save-video", argv[argc - 1]);
+    if (last_arg_is_save_video) argc--;  // Discard last argument
 
-		if (argc == 2)
-		{
-			if (!strcmp(argv[1], "--help"))
-			{
-				showUsage(argv[0]);
-				return 0;
-			}
-			if (!mrpt::system::fileExists(argv[1]))
-			{
-				cerr << "File does not exist: " << argv[1] << endl;
-				return -1;
-			}
+    if (argc == 2)
+    {
+      if (!strcmp(argv[1], "--help"))
+      {
+        showUsage(argv[0]);
+        return 0;
+      }
+      if (!mrpt::system::fileExists(argv[1]))
+      {
+        cerr << "File does not exist: " << argv[1] << endl;
+        return -1;
+      }
 
-			const string fil = string(argv[1]);
-			const string ext = mrpt::system::lowerCase(
-				mrpt::system::extractFileExtension(fil, true));
+      const string fil = string(argv[1]);
+      const string ext = mrpt::system::lowerCase(mrpt::system::extractFileExtension(fil, true));
 
-			cam = std::make_shared<CCameraSensor>();
-			if (ext == "rawlog")
-			{
-				// It's a rawlog:
-				cout << "Interpreting '" << fil << "' as a rawlog file...\n";
+      cam = std::make_shared<CCameraSensor>();
+      if (ext == "rawlog")
+      {
+        // It's a rawlog:
+        cout << "Interpreting '" << fil << "' as a rawlog file...\n";
 
-				CConfigFileMemory cfg;
-				cfg.write("CONFIG", "grabber_type", "rawlog");
-				cfg.write("CONFIG", "rawlog_file", fil);
+        CConfigFileMemory cfg;
+        cfg.write("CONFIG", "grabber_type", "rawlog");
+        cfg.write("CONFIG", "rawlog_file", fil);
 
-				// For delayed-load images:
-				CImage::setImagesPathBase(CRawlog::detectImagesDirectory(fil));
+        // For delayed-load images:
+        CImage::setImagesPathBase(CRawlog::detectImagesDirectory(fil));
 
-				cam->loadConfig(cfg, "CONFIG");
-				cam->initialize();	// This will raise an exception if neccesary
-			}
-			else
-			{
-				// Assume it's a video:
-				cout << "Interpreting '" << fil << "' as a video file...\n";
+        cam->loadConfig(cfg, "CONFIG");
+        cam->initialize();  // This will raise an exception if neccesary
+      }
+      else
+      {
+        // Assume it's a video:
+        cout << "Interpreting '" << fil << "' as a video file...\n";
 
-				CConfigFileMemory cfg;
-				cfg.write("CONFIG", "grabber_type", "ffmpeg");
-				cfg.write("CONFIG", "ffmpeg_url", fil);
+        CConfigFileMemory cfg;
+        cfg.write("CONFIG", "grabber_type", "ffmpeg");
+        cfg.write("CONFIG", "ffmpeg_url", fil);
 
-				cam->loadConfig(cfg, "CONFIG");
-				cam->initialize();	// This will raise an exception if neccesary
-			}
-		}
+        cam->loadConfig(cfg, "CONFIG");
+        cam->initialize();  // This will raise an exception if neccesary
+      }
+    }
 
-		if (!cam)
-		{
-			cout << "You didn't specify any video source in the command line.\n"
-					"(You can run with --help to see usage).\n"
-					"Showing a GUI window to select the video source...\n";
-			// If no camera opened so far, ask the user for one:
+    if (!cam)
+    {
+      cout << "You didn't specify any video source in the command line.\n"
+              "(You can run with --help to see usage).\n"
+              "Showing a GUI window to select the video source...\n";
+      // If no camera opened so far, ask the user for one:
 
-			cam = mrpt::hwdrivers::prepareVideoSourceFromUserSelection();
-			if (!cam)
-			{
-				cerr
-					<< "No images source was correctly initialized! Exiting.\n";
-				return -1;
-			}
-		}
+      cam = mrpt::hwdrivers::prepareVideoSourceFromUserSelection();
+      if (!cam)
+      {
+        cerr << "No images source was correctly initialized! Exiting.\n";
+        return -1;
+      }
+    }
 
-		// do it:
-		const int ret = DoTrackingDemo(cam, last_arg_is_save_video);
+    // do it:
+    const int ret = DoTrackingDemo(cam, last_arg_is_save_video);
 
-		win.reset();
-		std::this_thread::sleep_for(150ms);	 // give time to close GUI threads
-		return ret;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << mrpt::exception_to_str(e) << std::endl
-				  << "Program finished for an exception!!" << std::endl;
-		mrpt::system::pause();
-		return -1;
-	}
-	catch (...)
-	{
-		std::cerr << "Untyped exception!!" << std::endl;
-		mrpt::system::pause();
-		return -1;
-	}
+    win.reset();
+    std::this_thread::sleep_for(150ms);  // give time to close GUI threads
+    return ret;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << mrpt::exception_to_str(e) << std::endl
+              << "Program finished for an exception!!" << std::endl;
+    mrpt::system::pause();
+    return -1;
+  }
+  catch (...)
+  {
+    std::cerr << "Untyped exception!!" << std::endl;
+    mrpt::system::pause();
+    return -1;
+  }
 }
 
 void showUsage(char* cmd)
 {
-	cout << "Usage:\n"
-			"  "
-		 << cmd
-		 << " [--save-video]                -> Ask the user for video source.\n"
-			"  "
-		 << cmd
-		 << " dataset.rawlog [--save-video]  -> Use a rawlog file.\n"
-			"  "
-		 << cmd
-		 << " video.{avi,mpg}[--save-video]  -> Use a video file.\n"
-			"  "
-		 << cmd
-		 << " --help          -> Show this information.\n"
-			"  "
-		 << cmd
-		 << " If added --save-video, an video file will be created with "
-			"results.\n"
-			"\n";
+  cout << "Usage:\n"
+          "  "
+       << cmd
+       << " [--save-video]                -> Ask the user for video source.\n"
+          "  "
+       << cmd
+       << " dataset.rawlog [--save-video]  -> Use a rawlog file.\n"
+          "  "
+       << cmd
+       << " video.{avi,mpg}[--save-video]  -> Use a video file.\n"
+          "  "
+       << cmd
+       << " --help          -> Show this information.\n"
+          "  "
+       << cmd
+       << " If added --save-video, an video file will be created with "
+          "results.\n"
+          "\n";
 }

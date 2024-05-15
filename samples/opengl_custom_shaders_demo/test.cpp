@@ -31,15 +31,15 @@ static void installCustomShader(mrpt::opengl::Scene& scene)
 {
 #if MRPT_HAS_OPENGL_GLUT
 
-	// Define shader program and properties
-	// ------------------------------------------
-	const char* vertex_shader = nullptr;
-	const char* fragment_shader = nullptr;
-	std::vector<std::string> attribs, uniforms;
+  // Define shader program and properties
+  // ------------------------------------------
+  const char* vertex_shader = nullptr;
+  const char* fragment_shader = nullptr;
+  std::vector<std::string> attribs, uniforms;
 
-	// For this example, use the standard vertex shader,...
-	vertex_shader =
-		R"XXX(
+  // For this example, use the standard vertex shader,...
+  vertex_shader =
+      R"XXX(
 #version 330 core
 
 // VERTEX SHADER: Default shader for MRPT CRenderizable objects
@@ -67,9 +67,9 @@ void main()
 }
 )XXX";
 
-	// ...but modify the fragment shader:
-	fragment_shader =
-		R"XXX(
+  // ...but modify the fragment shader:
+  fragment_shader =
+      R"XXX(
 #version 330 core
 
 // FRAGMENT SHADER: Demo for custom shaders. 
@@ -90,61 +90,56 @@ void main()
 }
 )XXX";
 
-	uniforms = {"p_matrix", "mv_matrix"};
-	attribs = {"position"};
+  uniforms = {"p_matrix", "mv_matrix"};
+  attribs = {"position"};
 
-	// Compile shader:
-	// ------------------------------------------
-	std::string errMsgs;
-	std::vector<mrpt::opengl::Shader> lstShaders;
-	lstShaders.resize(2);
-	if (!lstShaders[0].compile(GL_VERTEX_SHADER, {vertex_shader}, errMsgs))
-	{
-		THROW_EXCEPTION_FMT(
-			"Error compiling GL_VERTEX_SHADER:\n%s", errMsgs.c_str());
-	}
-	if (!lstShaders[1].compile(GL_FRAGMENT_SHADER, {fragment_shader}, errMsgs))
-	{
-		THROW_EXCEPTION_FMT(
-			"Error compiling GL_FRAGMENT_SHADER:\n%s", errMsgs.c_str());
-	}
+  // Compile shader:
+  // ------------------------------------------
+  std::string errMsgs;
+  std::vector<mrpt::opengl::Shader> lstShaders;
+  lstShaders.resize(2);
+  if (!lstShaders[0].compile(GL_VERTEX_SHADER, {vertex_shader}, errMsgs))
+  {
+    THROW_EXCEPTION_FMT("Error compiling GL_VERTEX_SHADER:\n%s", errMsgs.c_str());
+  }
+  if (!lstShaders[1].compile(GL_FRAGMENT_SHADER, {fragment_shader}, errMsgs))
+  {
+    THROW_EXCEPTION_FMT("Error compiling GL_FRAGMENT_SHADER:\n%s", errMsgs.c_str());
+  }
 
-	auto shader = std::make_shared<mrpt::opengl::Program>();
+  auto shader = std::make_shared<mrpt::opengl::Program>();
 
-	if (!shader->linkProgram(lstShaders, errMsgs))
-	{
-		THROW_EXCEPTION_FMT(
-			"Error linking Opengl Shader programs:\n%s", errMsgs.c_str());
-	}
+  if (!shader->linkProgram(lstShaders, errMsgs))
+  {
+    THROW_EXCEPTION_FMT("Error linking Opengl Shader programs:\n%s", errMsgs.c_str());
+  }
 
 #if 1
-	// Debug:
-	std::cout << "Built Shader program\n";
-	shader->dumpProgramDescription(std::cout);
-	std::cout << "\n";
+  // Debug:
+  std::cout << "Built Shader program\n";
+  shader->dumpProgramDescription(std::cout);
+  std::cout << "\n";
 #endif
 
-	// Uniforms:
-	for (const auto& name : uniforms)
-		shader->declareUniform(name);
+  // Uniforms:
+  for (const auto& name : uniforms) shader->declareUniform(name);
 
-	// Attributes:
-	for (const auto& name : attribs)
-		shader->declareAttribute(name);
+  // Attributes:
+  for (const auto& name : attribs) shader->declareAttribute(name);
 
-	// Store in MRPT object:
-	// ------------------------------------------
+  // Store in MRPT object:
+  // ------------------------------------------
 
-	// And store as the "TRIANGLES" shader in the MRPT viewport:
-	// In MRPT, shaders are a property of viewports:
-	auto vp = scene.getViewport();
+  // And store as the "TRIANGLES" shader in the MRPT viewport:
+  // In MRPT, shaders are a property of viewports:
+  auto vp = scene.getViewport();
 
-	// Make sure default shaders are loaded (if not already):
-	vp->loadDefaultShaders();
+  // Make sure default shaders are loaded (if not already):
+  vp->loadDefaultShaders();
 
-	// Overwrite the shaders we want to customize:
-	const auto id = mrpt::opengl::DefaultShaderID::TRIANGLES_NO_LIGHT;
-	vp->shaders()[id] = std::move(shader);
+  // Overwrite the shaders we want to customize:
+  const auto id = mrpt::opengl::DefaultShaderID::TRIANGLES_NO_LIGHT;
+  vp->shaders()[id] = std::move(shader);
 
 #endif
 }
@@ -154,66 +149,62 @@ void main()
 // ------------------------------------------------------
 void DemoCustomShaders()
 {
-	using namespace std;
-	using namespace mrpt;
-	using namespace mrpt::gui;
-	using namespace mrpt::opengl;
-	using namespace mrpt::math;
-	using namespace std::string_literals;
+  using namespace std;
+  using namespace mrpt;
+  using namespace mrpt::gui;
+  using namespace mrpt::opengl;
+  using namespace mrpt::math;
+  using namespace std::string_literals;
 
-	CDisplayWindow3D win("Demo of MRPT's custom shaders", 640, 480);
+  CDisplayWindow3D win("Demo of MRPT's custom shaders", 640, 480);
 
-	Scene::Ptr& theScene = win.get3DSceneAndLock();
+  Scene::Ptr& theScene = win.get3DSceneAndLock();
 
-	float off_x = 0;
-	// Box
-	{
-		auto obj = opengl::CBox::Create(
-			TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), true, 3.0);
-		obj->setLocation(off_x, 0, 0);
-		theScene->insert(obj);
+  float off_x = 0;
+  // Box
+  {
+    auto obj = opengl::CBox::Create(TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), true, 3.0);
+    obj->setLocation(off_x, 0, 0);
+    theScene->insert(obj);
 
-		auto obj2 =
-			opengl::CBox::Create(TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), false);
-		obj2->setLocation(off_x, 4, 0);
-		theScene->insert(obj2);
+    auto obj2 = opengl::CBox::Create(TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), false);
+    obj2->setLocation(off_x, 4, 0);
+    theScene->insert(obj2);
 
-		auto obj3 =
-			opengl::CBox::Create(TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), false);
-		obj3->enableBoxBorder(true);
-		obj3->setLineWidth(3);
-		obj3->setColor_u8(0xff, 0x00, 0x00, 0xa0);
-		obj3->setLocation(off_x, 8, 0);
-		theScene->insert(obj3);
-	}
+    auto obj3 = opengl::CBox::Create(TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), false);
+    obj3->enableBoxBorder(true);
+    obj3->setLineWidth(3);
+    obj3->setColor_u8(0xff, 0x00, 0x00, 0xa0);
+    obj3->setLocation(off_x, 8, 0);
+    theScene->insert(obj3);
+  }
 
-	win.setCameraZoom(25);
+  win.setCameraZoom(25);
 
-	// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
-	win.unlockAccess3DScene();
+  // IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
+  win.unlockAccess3DScene();
 
-	// Wait for the window to be open:
-	win.wait_for_GL_context();
+  // Wait for the window to be open:
+  win.wait_for_GL_context();
 
-	// Create the shader after the window is open, so we are sure it has a
-	// proper GL context:
-	{
-		CDisplayWindow3DLocker locker(win, theScene);
+  // Create the shader after the window is open, so we are sure it has a
+  // proper GL context:
+  {
+    CDisplayWindow3DLocker locker(win, theScene);
 
-		// Shaders must be created from the main OpenGL thread:
-		win.sendFunctionToRunOnGUIThread(
-			[theScene]() { installCustomShader(*theScene); });
-	}
+    // Shaders must be created from the main OpenGL thread:
+    win.sendFunctionToRunOnGUIThread([theScene]() { installCustomShader(*theScene); });
+  }
 
-	win.repaint();
+  win.repaint();
 
-	cout << "Close the window to end.\n";
+  cout << "Close the window to end.\n";
 
-	while (win.isOpen())
-	{
-		std::this_thread::sleep_for(50ms);
-		win.repaint();
-	}
+  while (win.isOpen())
+  {
+    std::this_thread::sleep_for(50ms);
+    win.repaint();
+  }
 }
 
 // ------------------------------------------------------
@@ -221,15 +212,15 @@ void DemoCustomShaders()
 // ------------------------------------------------------
 int main()
 {
-	try
-	{
-		DemoCustomShaders();
+  try
+  {
+    DemoCustomShaders();
 
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << mrpt::exception_to_str(e) << std::endl;
-		return 1;
-	}
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << mrpt::exception_to_str(e) << std::endl;
+    return 1;
+  }
 }

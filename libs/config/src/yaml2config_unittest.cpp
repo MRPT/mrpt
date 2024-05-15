@@ -32,43 +32,43 @@ gridmap_01:
 // clang-format on
 
 const std::string sampleCfgTxt =
-	"# example config file from std::string\n"
-	"[test]\n"
-	"key_num = 4\n"
-	"key_str = pepe\n";
+    "# example config file from std::string\n"
+    "[test]\n"
+    "key_num = 4\n"
+    "key_str = pepe\n";
 
 const std::string sampleCfgTxt_as_yaml_correct =
-	"test:\n"
-	"  key_num: 4\n"
-	"  key_str: pepe\n";
+    "test:\n"
+    "  key_num: 4\n"
+    "  key_str: pepe\n";
 
 TEST(yaml2ini, parse)
 {
-	try
-	{
-		mrpt::config::CConfigFileMemory c;
-		c.setContentFromYAML(sampleYamlTxt);
+  try
+  {
+    mrpt::config::CConfigFileMemory c;
+    c.setContentFromYAML(sampleYamlTxt);
 
-		// std::cout << "INI-liKe:\n" << c.getContent() << "\n";
+    // std::cout << "INI-liKe:\n" << c.getContent() << "\n";
 
-		EXPECT_EQ(1, c.read_int("maps", "pointMaps", 0));
-		EXPECT_EQ(2, c.read_int("maps", "gridMaps", 0));
-		EXPECT_EQ(25.0, c.read_int("gridmap_00", "max_x", 0));
-		EXPECT_EQ(42, c.read_int("", "unscoped_key1", 0));
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << mrpt::exception_to_str(e);
-		GTEST_FAIL();
-	}
+    EXPECT_EQ(1, c.read_int("maps", "pointMaps", 0));
+    EXPECT_EQ(2, c.read_int("maps", "gridMaps", 0));
+    EXPECT_EQ(25.0, c.read_int("gridmap_00", "max_x", 0));
+    EXPECT_EQ(42, c.read_int("", "unscoped_key1", 0));
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << mrpt::exception_to_str(e);
+    GTEST_FAIL();
+  }
 }
 
 TEST(ini2yaml, parse)
 {
-	mrpt::config::CConfigFileMemory c;
-	c.setContent(sampleCfgTxt);
+  mrpt::config::CConfigFileMemory c;
+  c.setContent(sampleCfgTxt);
 
-	// Note: we don't compare the exact strings since order of keys may vary (?)
-	EXPECT_EQ(sampleCfgTxt_as_yaml_correct.size(), c.getContentAsYAML().size());
+  // Note: we don't compare the exact strings since order of keys may vary (?)
+  EXPECT_EQ(sampleCfgTxt_as_yaml_correct.size(), c.getContentAsYAML().size());
 }
 #endif

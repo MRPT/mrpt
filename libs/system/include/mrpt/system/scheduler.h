@@ -21,10 +21,10 @@ namespace mrpt::system
  */
 enum TProcessPriority
 {
-	ppIdle = 0,
-	ppNormal,
-	ppHigh,
-	ppVeryHigh
+  ppIdle = 0,
+  ppNormal,
+  ppHigh,
+  ppVeryHigh
 };
 
 /**  The type for cross-platform thread priorities.
@@ -32,13 +32,13 @@ enum TProcessPriority
  */
 enum TThreadPriority
 {
-	tpLowests = -15,  //!< Win32: THREAD_PRIORITY_IDLE
-	tpLower = -2,  //!< Win32: THREAD_PRIORITY_LOWEST
-	tpLow = -1,	 //!< Win32: THREAD_PRIORITY_BELOW_NORMAL
-	tpNormal = 0,  //!< Win32: THREAD_PRIORITY_NORMAL
-	tpHigh = 1,	 //!< Win32: THREAD_PRIORITY_ABOVE_NORMAL
-	tpHigher = 2,  //!< Win32: THREAD_PRIORITY_HIGHEST
-	tpHighest = 15	//!< Win32: THREAD_PRIORITY_TIME_CRITICAL
+  tpLowests = -15,  //!< Win32: THREAD_PRIORITY_IDLE
+  tpLower = -2,     //!< Win32: THREAD_PRIORITY_LOWEST
+  tpLow = -1,       //!< Win32: THREAD_PRIORITY_BELOW_NORMAL
+  tpNormal = 0,     //!< Win32: THREAD_PRIORITY_NORMAL
+  tpHigh = 1,       //!< Win32: THREAD_PRIORITY_ABOVE_NORMAL
+  tpHigher = 2,     //!< Win32: THREAD_PRIORITY_HIGHEST
+  tpHighest = 15    //!< Win32: THREAD_PRIORITY_TIME_CRITICAL
 };
 
 /** Change the priority of the current thread - for Windows, see also

@@ -16,57 +16,62 @@
 using namespace mrpt::nav;
 
 /*---------------------------------------------------------------
-					Class factory
+          Class factory
   ---------------------------------------------------------------*/
-CParameterizedTrajectoryGenerator::Ptr
-	CParameterizedTrajectoryGenerator::CreatePTG(
-		const std::string& ptgClassName_,
-		const mrpt::config::CConfigFileBase& cfg, const std::string& sSection,
-		const std::string& sKeyPrefix)
+CParameterizedTrajectoryGenerator::Ptr CParameterizedTrajectoryGenerator::CreatePTG(
+    const std::string& ptgClassName_,
+    const mrpt::config::CConfigFileBase& cfg,
+    const std::string& sSection,
+    const std::string& sKeyPrefix)
 {
-	MRPT_START
+  MRPT_START
 
-	mrpt::rtti::registerAllPendingClasses();
+  mrpt::rtti::registerAllPendingClasses();
 
-	// Special names for backwards compatibility with MRPT < 1.5.0
-	std::string ptgClassName = mrpt::system::trim(ptgClassName_);
-	if (ptgClassName.size() == 1)
-	{
-		switch (ptgClassName[0])
-		{
-			case '1': ptgClassName = "CPTG_DiffDrive_C"; break;
-			case '2': ptgClassName = "CPTG_DiffDrive_alpha"; break;
-			case '3': ptgClassName = "CPTG_DiffDrive_CCS"; break;
-			case '4': ptgClassName = "CPTG_DiffDrive_CC"; break;
-			case '5': ptgClassName = "CPTG_DiffDrive_CS"; break;
-		};
-	}
+  // Special names for backwards compatibility with MRPT < 1.5.0
+  std::string ptgClassName = mrpt::system::trim(ptgClassName_);
+  if (ptgClassName.size() == 1)
+  {
+    switch (ptgClassName[0])
+    {
+      case '1':
+        ptgClassName = "CPTG_DiffDrive_C";
+        break;
+      case '2':
+        ptgClassName = "CPTG_DiffDrive_alpha";
+        break;
+      case '3':
+        ptgClassName = "CPTG_DiffDrive_CCS";
+        break;
+      case '4':
+        ptgClassName = "CPTG_DiffDrive_CC";
+        break;
+      case '5':
+        ptgClassName = "CPTG_DiffDrive_CS";
+        break;
+    };
+  }
 
-	// Factory:
-	const mrpt::rtti::TRuntimeClassId* classId =
-		mrpt::rtti::findRegisteredClass(ptgClassName);
-	if (!classId)
-	{
-		THROW_EXCEPTION_FMT(
-			"[CreatePTG] No PTG named `%s` is registered!",
-			ptgClassName.c_str());
-	}
+  // Factory:
+  const mrpt::rtti::TRuntimeClassId* classId = mrpt::rtti::findRegisteredClass(ptgClassName);
+  if (!classId)
+  {
+    THROW_EXCEPTION_FMT("[CreatePTG] No PTG named `%s` is registered!", ptgClassName.c_str());
+  }
 
-	auto ptg = mrpt::ptr_cast<CParameterizedTrajectoryGenerator>::from(
-		classId->createObject());
-	if (!ptg)
-	{
-		THROW_EXCEPTION_FMT(
-			"[CreatePTG] Object of type `%s` seems not to be a PTG!",
-			ptgClassName.c_str());
-	}
+  auto ptg = mrpt::ptr_cast<CParameterizedTrajectoryGenerator>::from(classId->createObject());
+  if (!ptg)
+  {
+    THROW_EXCEPTION_FMT(
+        "[CreatePTG] Object of type `%s` seems not to be a PTG!", ptgClassName.c_str());
+  }
 
-	// Wrapper to transparently add prefixes to all config keys:
-	mrpt::config::CConfigFilePrefixer cfp;
-	cfp.bind(cfg);
-	cfp.setPrefixes("", sKeyPrefix);
+  // Wrapper to transparently add prefixes to all config keys:
+  mrpt::config::CConfigFilePrefixer cfp;
+  cfp.bind(cfg);
+  cfp.setPrefixes("", sKeyPrefix);
 
-	ptg->loadFromConfigFile(cfp, sSection);
-	return ptg;
-	MRPT_END
+  ptg->loadFromConfigFile(cfp, sSection);
+  return ptg;
+  MRPT_END
 }

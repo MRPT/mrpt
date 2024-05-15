@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"	// Precompiled headers
+#include "hwdrivers-precomp.h"  // Precompiled headers
 //
 #include <mrpt/hwdrivers/CRaePID.h>
 #include <mrpt/system/datetime.h>
@@ -25,290 +25,287 @@ using namespace mrpt::hwdrivers;
 IMPLEMENTS_GENERIC_SENSOR(CRaePID, mrpt::hwdrivers)
 
 /* -----------------------------------------------------
-				Constructor
+        Constructor
    ----------------------------------------------------- */
 CRaePID::CRaePID() { m_sensorLabel = "RAE_PID"; }
 /* -----------------------------------------------------
-				loadConfig_sensorSpecific
+        loadConfig_sensorSpecific
    ----------------------------------------------------- */
 void CRaePID::loadConfig_sensorSpecific(
-	const mrpt::config::CConfigFileBase& configSource,
-	const std::string& iniSection)
+    const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection)
 {
 #ifdef _WIN32
-	com_port =
-		configSource.read_string(iniSection, "COM_port_PID", "COM1", true);
+  com_port = configSource.read_string(iniSection, "COM_port_PID", "COM1", true);
 #else
-	com_port =
-		configSource.read_string(iniSection, "COM_port_PID", "/dev/tty0", true);
+  com_port = configSource.read_string(iniSection, "COM_port_PID", "/dev/tty0", true);
 #endif
 
-	com_bauds = configSource.read_int(iniSection, "baudRate", 9600, false);
+  com_bauds = configSource.read_int(iniSection, "baudRate", 9600, false);
 
-	pose_x = configSource.read_float(iniSection, "pose_x", 0, true);
-	pose_y = configSource.read_float(iniSection, "pose_y", 0, true);
-	pose_z = configSource.read_float(iniSection, "pose_z", 0, true);
-	pose_roll = configSource.read_float(iniSection, "pose_roll", 0, true);
-	pose_pitch = configSource.read_float(iniSection, "pose_pitch", 0, true);
-	pose_yaw = configSource.read_float(iniSection, "pose_yaw", 0, true);
+  pose_x = configSource.read_float(iniSection, "pose_x", 0, true);
+  pose_y = configSource.read_float(iniSection, "pose_y", 0, true);
+  pose_z = configSource.read_float(iniSection, "pose_z", 0, true);
+  pose_roll = configSource.read_float(iniSection, "pose_roll", 0, true);
+  pose_pitch = configSource.read_float(iniSection, "pose_pitch", 0, true);
+  pose_yaw = configSource.read_float(iniSection, "pose_yaw", 0, true);
 }
 
 /* -----------------------------------------------------
-				tryToOpenTheCOM
+        tryToOpenTheCOM
 ----------------------------------------------------- */
 bool CRaePID::tryToOpenTheCOM()
 {
-	if (COM.isOpen()) return true;	// Already open
+  if (COM.isOpen()) return true;  // Already open
 
-	if (m_verbose)
-		cout << "[CRaePID] Opening " << com_port << " @ " << com_bauds << endl;
+  if (m_verbose) cout << "[CRaePID] Opening " << com_port << " @ " << com_bauds << endl;
 
-	try
-	{
-		COM.open(com_port);
-		// Config:
-		COM.setConfig(com_bauds, 0, 8, 1);
-		// COM.setTimeouts( 1, 0, 1, 1, 1 );
-		COM.setTimeouts(50, 1, 100, 1, 20);
-		// std::this_thread::sleep_for(10ms);
-		COM.purgeBuffers();
-		// std::this_thread::sleep_for(10ms);
+  try
+  {
+    COM.open(com_port);
+    // Config:
+    COM.setConfig(com_bauds, 0, 8, 1);
+    // COM.setTimeouts( 1, 0, 1, 1, 1 );
+    COM.setTimeouts(50, 1, 100, 1, 20);
+    // std::this_thread::sleep_for(10ms);
+    COM.purgeBuffers();
+    // std::this_thread::sleep_for(10ms);
 
-		return true;  // All OK!
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "[CRaePID::tryToOpenTheCOM] Error opening or configuring "
-					 "the serial port:"
-				  << std::endl
-				  << e.what();
-		COM.close();
-		return false;
-	}
-	catch (...)
-	{
-		std::cerr << "[CRaePID::tryToOpenTheCOM] Error opening or configuring "
-					 "the serial port."
-				  << std::endl;
-		COM.close();
-		return false;
-	}
+    return true;  // All OK!
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "[CRaePID::tryToOpenTheCOM] Error opening or configuring "
+                 "the serial port:"
+              << std::endl
+              << e.what();
+    COM.close();
+    return false;
+  }
+  catch (...)
+  {
+    std::cerr << "[CRaePID::tryToOpenTheCOM] Error opening or configuring "
+                 "the serial port."
+              << std::endl;
+    COM.close();
+    return false;
+  }
 }
 
 /* -----------------------------------------------------
-				doProcess
+        doProcess
 ----------------------------------------------------- */
 void CRaePID::doProcess()
 {
-	// Is the COM open?
-	if (!tryToOpenTheCOM())
-	{
-		m_state = ssError;
-		THROW_EXCEPTION("Cannot open the serial port");
-	}
+  // Is the COM open?
+  if (!tryToOpenTheCOM())
+  {
+    m_state = ssError;
+    THROW_EXCEPTION("Cannot open the serial port");
+  }
 
-	bool have_reading = false;
-	std::string power_reading;
-	bool time_out = false;
+  bool have_reading = false;
+  std::string power_reading;
+  bool time_out = false;
 
-	while (!have_reading)
-	{
-		// Send command to PID to request a measurement
-		COM.purgeBuffers();
-		COM.Write("R", 1);
+  while (!have_reading)
+  {
+    // Send command to PID to request a measurement
+    COM.purgeBuffers();
+    COM.Write("R", 1);
 
-		// Read PID response
-		power_reading = COM.ReadString(500, &time_out);
-		if (time_out)
-		{
-			// cout << "[CRaePID] " << com_port << " @ " <<com_bauds << " -
-			// measurement Timed-Out" << endl;
-			std::this_thread::sleep_for(10ms);
-		}
-		else
-			have_reading = true;
-	}
+    // Read PID response
+    power_reading = COM.ReadString(500, &time_out);
+    if (time_out)
+    {
+      // cout << "[CRaePID] " << com_port << " @ " <<com_bauds << " -
+      // measurement Timed-Out" << endl;
+      std::this_thread::sleep_for(10ms);
+    }
+    else
+      have_reading = true;
+  }
 
-	// cout << "[CRaePID] " << com_port << " @ " <<com_bauds << " - measurement
-	// -> " << power_reading << endl;
+  // cout << "[CRaePID] " << com_port << " @ " <<com_bauds << " - measurement
+  // -> " << power_reading << endl;
 
-	// Convert the text to a number (ppm)
-	const float readnum = atof(power_reading.c_str());
-	const float val_ppm = readnum / 1000;
+  // Convert the text to a number (ppm)
+  const float readnum = atof(power_reading.c_str());
+  const float val_ppm = readnum / 1000;
 
-	// Fill the observation
-	mrpt::obs::CObservationGasSensors::TObservationENose obs;
-	obs.readingsVoltage.push_back(val_ppm);
-	obs.sensorTypes.push_back(0x0001);
+  // Fill the observation
+  mrpt::obs::CObservationGasSensors::TObservationENose obs;
+  obs.readingsVoltage.push_back(val_ppm);
+  obs.sensorTypes.push_back(0x0001);
 
-	mrpt::obs::CObservationGasSensors obsG;
-	obsG.sensorLabel = this->getSensorLabel();
-	obsG.m_readings.push_back(obs);
-	obsG.timestamp = mrpt::Clock::now();
+  mrpt::obs::CObservationGasSensors obsG;
+  obsG.sensorLabel = this->getSensorLabel();
+  obsG.m_readings.push_back(obs);
+  obsG.timestamp = mrpt::Clock::now();
 
-	appendObservation(mrpt::obs::CObservationGasSensors::Create(obsG));
+  appendObservation(mrpt::obs::CObservationGasSensors::Create(obsG));
 }
 
 std::string CRaePID::getFirmware()
 {
-	// Send the command
-	cout << "Firmware version: " << endl;
-	COM.purgeBuffers();
-	size_t B_written = COM.Write("F", 1);
-	if (!B_written) return std::string("COMMS.ERROR");
+  // Send the command
+  cout << "Firmware version: " << endl;
+  COM.purgeBuffers();
+  size_t B_written = COM.Write("F", 1);
+  if (!B_written) return std::string("COMMS.ERROR");
 
-	// Read the returned text
-	bool time_out = false;
-	std::string s_read = COM.ReadString(2000, &time_out);
-	if (time_out) s_read = "Time_out";
-	return s_read;
+  // Read the returned text
+  bool time_out = false;
+  std::string s_read = COM.ReadString(2000, &time_out);
+  if (time_out) s_read = "Time_out";
+  return s_read;
 }
 
 std::string CRaePID::getModel()
 {
-	// Send the command
-	COM.purgeBuffers();
-	COM.Write("M", 1);
+  // Send the command
+  COM.purgeBuffers();
+  COM.Write("M", 1);
 
-	// Read the returned text
-	return COM.ReadString();
+  // Read the returned text
+  return COM.ReadString();
 }
 
 std::string CRaePID::getSerialNumber()
 {
-	// Send the command
-	COM.purgeBuffers();
-	COM.Write("S", 1);
+  // Send the command
+  COM.purgeBuffers();
+  COM.Write("S", 1);
 
-	// Read the returned text
-	return COM.ReadString();
+  // Read the returned text
+  return COM.ReadString();
 }
 
 std::string CRaePID::getName()
 {
-	// Send the command
-	COM.purgeBuffers();
-	COM.Write("N", 1);
+  // Send the command
+  COM.purgeBuffers();
+  COM.Write("N", 1);
 
-	// Read the returned text
-	return COM.ReadString();
+  // Read the returned text
+  return COM.ReadString();
 }
 
 bool CRaePID::switchPower()
 {
-	// Send the command
-	COM.purgeBuffers();
-	COM.Write("P", 1);
+  // Send the command
+  COM.purgeBuffers();
+  COM.Write("P", 1);
 
-	// Read the returned text
-	std::string reading;
-	reading = COM.ReadString();
+  // Read the returned text
+  std::string reading;
+  reading = COM.ReadString();
 
-	if (strcmp(reading.c_str(), "Sleep...") == 0) return true;
-	else
-		return false;
+  if (strcmp(reading.c_str(), "Sleep...") == 0)
+    return true;
+  else
+    return false;
 }
 
 mrpt::obs::CObservationGasSensors CRaePID::getFullInfo()
 {
-	// Send the command
-	COM.purgeBuffers();
-	COM.Write("C", 1);
+  // Send the command
+  COM.purgeBuffers();
+  COM.Write("C", 1);
 
-	// Read the returned text
-	std::string reading;
-	reading = COM.ReadString();
+  // Read the returned text
+  std::string reading;
+  reading = COM.ReadString();
 
-	// Iterate over each information component (tokenize first)
-	// construct a stream from the string (as seen in
-	// http://stackoverflow.com/a/53921)
-	std::stringstream readings_str(reading);
+  // Iterate over each information component (tokenize first)
+  // construct a stream from the string (as seen in
+  // http://stackoverflow.com/a/53921)
+  std::stringstream readings_str(reading);
 
-	// use stream iterators to copy the stream to the vector as whitespace
-	// separated strings
-	std::istream_iterator<std::string> it(readings_str);
-	std::istream_iterator<std::string> endit;
-	std::vector<std::string> measurements_text(it, endit);
+  // use stream iterators to copy the stream to the vector as whitespace
+  // separated strings
+  std::istream_iterator<std::string> it(readings_str);
+  std::istream_iterator<std::string> endit;
+  std::vector<std::string> measurements_text(it, endit);
 
-	// Convert the text to a number (ppm)
-	mrpt::obs::CObservationGasSensors::TObservationENose obs;
-	mrpt::obs::CObservationGasSensors obsG;
+  // Convert the text to a number (ppm)
+  mrpt::obs::CObservationGasSensors::TObservationENose obs;
+  mrpt::obs::CObservationGasSensors obsG;
 
-	for (auto& k : measurements_text)
-	{
-		const float readnum = atof(k.c_str());
-		const float val_ppm = readnum / 1000.f;
+  for (auto& k : measurements_text)
+  {
+    const float readnum = atof(k.c_str());
+    const float val_ppm = readnum / 1000.f;
 
-		// Fill the observation
-		obs.readingsVoltage.push_back(val_ppm);
-		obsG.m_readings.push_back(obs);
-	}
+    // Fill the observation
+    obs.readingsVoltage.push_back(val_ppm);
+    obsG.m_readings.push_back(obs);
+  }
 
-	obsG.sensorLabel = this->getSensorLabel();
-	obsG.timestamp = mrpt::Clock::now();
+  obsG.sensorLabel = this->getSensorLabel();
+  obsG.timestamp = mrpt::Clock::now();
 
-	return obsG;
+  return obsG;
 }
 
 bool CRaePID::errorStatus(std::string& errorString)
 {
-	// Send the command
-	COM.purgeBuffers();
-	COM.Write("E", 1);
+  // Send the command
+  COM.purgeBuffers();
+  COM.Write("E", 1);
 
-	// Read the returned text
-	std::string reading;
-	reading = COM.ReadString();
+  // Read the returned text
+  std::string reading;
+  reading = COM.ReadString();
 
-	// Tokenize to separate the two components:
-	// construct a stream from the string (as seen in
-	// http://stackoverflow.com/a/53921)
-	std::stringstream readings_str(reading);
+  // Tokenize to separate the two components:
+  // construct a stream from the string (as seen in
+  // http://stackoverflow.com/a/53921)
+  std::stringstream readings_str(reading);
 
-	// use stream iterators to copy the stream to the vector as whitespace
-	// separated strings
-	std::istream_iterator<std::string> it(readings_str);
-	std::istream_iterator<std::string> endit;
-	std::vector<std::string> errors_text(it, endit);
+  // use stream iterators to copy the stream to the vector as whitespace
+  // separated strings
+  std::istream_iterator<std::string> it(readings_str);
+  std::istream_iterator<std::string> endit;
+  std::vector<std::string> errors_text(it, endit);
 
-	// Take the first part and check the possible error condition
-	if ((strcmp(errors_text[0].c_str(), "0") == 0) &&
-		(strcmp(errors_text[1].c_str(), "0") == 0))	 // no error
-	{
-		return false;
-	}
-	else
-	{
-		// By the moment, return the raw error; note that if necessary a
-		// detailed description of the error can be obtained analyzing the two
-		// error strings separately
-		errorString = reading;
-		return true;
-	}
+  // Take the first part and check the possible error condition
+  if ((strcmp(errors_text[0].c_str(), "0") == 0) &&
+      (strcmp(errors_text[1].c_str(), "0") == 0))  // no error
+  {
+    return false;
+  }
+  else
+  {
+    // By the moment, return the raw error; note that if necessary a
+    // detailed description of the error can be obtained analyzing the two
+    // error strings separately
+    errorString = reading;
+    return true;
+  }
 }
 
 void CRaePID::getLimits(float& min, float& max)
 {
-	// Send the command
-	COM.purgeBuffers();
-	COM.Write("L", 1);
+  // Send the command
+  COM.purgeBuffers();
+  COM.Write("L", 1);
 
-	// Read the returned text
-	std::string reading;
-	reading = COM.ReadString();
+  // Read the returned text
+  std::string reading;
+  reading = COM.ReadString();
 
-	// Tokenize to separate the two components:
-	// construct a stream from the string (as seen in
-	// http://stackoverflow.com/a/53921)
-	std::stringstream readings_str(reading);
+  // Tokenize to separate the two components:
+  // construct a stream from the string (as seen in
+  // http://stackoverflow.com/a/53921)
+  std::stringstream readings_str(reading);
 
-	// use stream iterators to copy the stream to the vector as whitespace
-	// separated strings
-	std::istream_iterator<std::string> it(readings_str);
-	std::istream_iterator<std::string> endit;
-	std::vector<std::string> readings_text(it, endit);
+  // use stream iterators to copy the stream to the vector as whitespace
+  // separated strings
+  std::istream_iterator<std::string> it(readings_str);
+  std::istream_iterator<std::string> endit;
+  std::vector<std::string> readings_text(it, endit);
 
-	// read min and max
-	max = atof(readings_text[0].c_str());
-	min = atof(readings_text[1].c_str());
+  // read min and max
+  max = atof(readings_text[0].c_str());
+  min = atof(readings_text[1].c_str());
 }
