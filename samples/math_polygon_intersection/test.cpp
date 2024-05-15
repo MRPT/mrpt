@@ -18,16 +18,16 @@ static void polygonClippingExample()
 {
   // Define the polygons:
   const mrpt::math::TPolygon2D subject = {
-      {
-       {0.0, 0.0}, {5.0, 0.0}, {7.0, 3.0}, {3.0, 6.0}, {-4.0, 4.0}, {-1.0, -1.0}
- //}
-  };
+    {
+        {0.0, 0.0}, {5.0, 0.0}, {7.0, 3.0}, {3.0, 6.0}, {-4.0, 4.0}, {-1.0, -1.0}
+        //}
+    };
 
   const mrpt::math::TPolygon2D clipping = {
-      {
-       {-6.0, 0.5}, {8.0, 2.0}, {10.0, 4.0}, {-7.0, 3.0}
- //}
-  };
+    {
+        {-6.0, 0.5}, {8.0, 2.0}, {10.0, 4.0}, {-7.0, 3.0}
+        //}
+    };
 
   // Compute intersection:
   mrpt::math::TObject2D clippedObj;

@@ -647,16 +647,16 @@ TEST(Geometry, polygonIntersection)
 
   // Define the polygons:
   const mrpt::math::TPolygon2D subject = {
-      {
-       {0.0, 0.0}, {5.0, 0.0}, {7.0, 3.0}, {3.0, 6.0}, {-4.0, 4.0}, {-1.0, -1.0}
- //}
-  };
+    {
+        {0.0, 0.0}, {5.0, 0.0}, {7.0, 3.0}, {3.0, 6.0}, {-4.0, 4.0}, {-1.0, -1.0}
+        //}
+    };
 
   mrpt::math::TPolygon2D clipping = {
-      {
-       {-6.0, 0.5}, {8.0, 2.0}, {10.0, 4.0}, {-7.0, 3.0}
- //}
-  };
+    {
+        {-6.0, 0.5}, {8.0, 2.0}, {10.0, 4.0}, {-7.0, 3.0}
+        //}
+    };
 
   // Compute intersection #1 (in one winding order)
   {
@@ -669,12 +669,11 @@ TEST(Geometry, polygonIntersection)
     EXPECT_TRUE(isPoly);
 
     const auto expectedPoly = mrpt::math::TPolygon2D({
-        { 6.205128205128205, 1.807692307692308},
-        {               7.0,               3.0},
-        { 5.981818181818181, 3.763636363636364},
+        {6.205128205128205, 1.807692307692308},
+        {7.0, 3.0},
+        {5.981818181818181, 3.763636363636364},
         {-3.522727272727272, 3.204545454545455},
-        {-2.147651006711409, 0.912751677852349}
-    });
+        {-2.147651006711409, 0.912751677852349}});
 
     EXPECT_EQ(clippedPoly.size(), expectedPoly.size());
     for (size_t i = 0; i < expectedPoly.size(); i++)
@@ -688,12 +687,11 @@ TEST(Geometry, polygonIntersection)
     const mrpt::math::TPolygon2D clippedPoly = mrpt::math::intersect(subject, clipping);
 
     const auto expectedPoly = mrpt::math::TPolygon2D({
-        { 6.205128205128205, 1.807692307692308},
-        {               7.0,               3.0},
-        { 5.981818181818181, 3.763636363636364},
+        {6.205128205128205, 1.807692307692308},
+        {7.0, 3.0},
+        {5.981818181818181, 3.763636363636364},
         {-3.522727272727272, 3.204545454545455},
-        {-2.147651006711409, 0.912751677852349}
-    });
+        {-2.147651006711409, 0.912751677852349}});
 
     EXPECT_EQ(clippedPoly.size(), expectedPoly.size());
     for (size_t i = 0; i < expectedPoly.size(); i++)
@@ -705,20 +703,14 @@ TEST(Geometry, areAligned_TPoint2D)
 {
   {
     const std::vector<mrpt::math::TPoint2D> pts = {
-        {0.0, 0.0},
-        {1.0, 1.0},
-        {2.0, 2.0}
-    };
+        {0.0, 0.0}, {1.0, 1.0}, {2.0, 2.0}};
 
     EXPECT_TRUE(mrpt::math::areAligned(pts));
   }
 
   {
     const std::vector<mrpt::math::TPoint2D> pts = {
-        {0.0, 0.0},
-        {1.0, 1.0},
-        {2.0, 2.1}
-    };
+        {0.0, 0.0}, {1.0, 1.0}, {2.0, 2.1}};
 
     EXPECT_FALSE(mrpt::math::areAligned(pts));
   }
@@ -728,20 +720,14 @@ TEST(Geometry, areAligned_TPoint3D)
 {
   {
     const std::vector<mrpt::math::TPoint3D> pts = {
-        {0.0, 0.0, 0.0},
-        {1.0, 1.0, 0.0},
-        {2.0, 2.0, 0.0}
-    };
+        {0.0, 0.0, 0.0}, {1.0, 1.0, 0.0}, {2.0, 2.0, 0.0}};
 
     EXPECT_TRUE(mrpt::math::areAligned(pts));
   }
 
   {
     const std::vector<mrpt::math::TPoint3D> pts = {
-        {0.0, 0.0, 0.0},
-        {1.0, 1.0, 1.0},
-        {2.0, 2.0, 3.1}
-    };
+        {0.0, 0.0, 0.0}, {1.0, 1.0, 1.0}, {2.0, 2.0, 3.1}};
 
     EXPECT_FALSE(mrpt::math::areAligned(pts));
   }
@@ -773,10 +759,7 @@ TEST(Geometry, project2D)
   {
     const auto o = mrpt::math::project2D(
         mrpt::math::TPolygon2D({
-            {0.0, 0.0},
-            {1.0, 0.0},
-            {0.0, 1.0}
-    }),
+            {0.0, 0.0}, {1.0, 0.0}, {0.0, 1.0}}),
         pose);
     EXPECT_NEAR((o.at(0) - TPoint2D(1.0, 1.0)).norm(), 0.0, 1e-5);
     EXPECT_NEAR((o.at(1) - TPoint2D(1.0, 2.0)).norm(), 0.0, 1e-5);
@@ -808,10 +791,7 @@ TEST(Geometry, project3D)
   {
     const auto o = mrpt::math::project3D(
         mrpt::math::TPolygon3D({
-            {0.0, 0.0, 0.0},
-            {1.0, 0.0, 0.0},
-            {0.0, 1.0, 0.0}
-    }),
+            {0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}}),
         pose);
     EXPECT_NEAR((o.at(0) - TPoint3D(1.0, 1.0, 1.0)).norm(), 0.0, 1e-5);
     EXPECT_NEAR((o.at(1) - TPoint3D(1.0, 2.0, 1.0)).norm(), 0.0, 1e-5);
@@ -822,11 +802,7 @@ TEST(Geometry, project3D)
 TEST(Geometry, getRegressionLine2D)
 {
   const std::vector<mrpt::math::TPoint2D> pts = {
-      { 0.0,  0.0},
-      { 1.0,  0.5},
-      { 2.0,  1.0},
-      {-4.0, -2.0}
-  };
+      {0.0, 0.0}, {1.0, 0.5}, {2.0, 1.0}, {-4.0, -2.0}};
 
   mrpt::math::TLine2D lin;
   const double err = mrpt::math::getRegressionLine(pts, lin);
@@ -839,11 +815,7 @@ TEST(Geometry, getRegressionLine2D)
 TEST(Geometry, getRegressionLine3D)
 {
   const std::vector<mrpt::math::TPoint3D> pts = {
-      { 0.0,  0.0, 4.0},
-      { 1.0,  0.5, 4.0},
-      { 2.0,  1.0, 4.0},
-      {-4.0, -2.0, 4.0}
-  };
+      {0.0, 0.0, 4.0}, {1.0, 0.5, 4.0}, {2.0, 1.0, 4.0}, {-4.0, -2.0, 4.0}};
 
   mrpt::math::TLine3D lin;
   const double err = mrpt::math::getRegressionLine(pts, lin);
@@ -857,11 +829,7 @@ TEST(Geometry, getRegressionPlane)
 {
   {
     const std::vector<mrpt::math::TPoint3D> pts = {
-        { 0.0,   0.0, 0.0},
-        { 1.0,   0.5, 0.0},
-        {-4.4, -10.0, 0.0},
-        { 5.0,  17.0, 0.0}
-    };
+        {0.0, 0.0, 0.0}, {1.0, 0.5, 0.0}, {-4.4, -10.0, 0.0}, {5.0, 17.0, 0.0}};
 
     mrpt::math::TPlane pl;
     const double err = mrpt::math::getRegressionPlane(pts, pl);
@@ -875,11 +843,7 @@ TEST(Geometry, getRegressionPlane)
   // aligned points should throw:
   {
     const std::vector<mrpt::math::TPoint3D> pts = {
-        { 0.0,  0.0, 4.0},
-        { 1.0,  0.5, 4.0},
-        { 2.0,  1.0, 4.0},
-        {-4.0, -2.0, 4.0}
-    };
+        {0.0, 0.0, 4.0}, {1.0, 0.5, 4.0}, {2.0, 1.0, 4.0}, {-4.0, -2.0, 4.0}};
 
     mrpt::math::TPlane pl;
     EXPECT_ANY_THROW(mrpt::math::getRegressionPlane(pts, pl));
