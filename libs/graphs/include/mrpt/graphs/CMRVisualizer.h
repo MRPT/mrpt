@@ -11,9 +11,6 @@
 #include <mrpt/graphs/CVisualizer.h>
 #include <mrpt/graphs/TMRSlamNodeAnnotations.h>
 
-#include <iostream>
-#include <utility>
-
 namespace mrpt::graphs::detail
 {
 // (Dummy) standard version

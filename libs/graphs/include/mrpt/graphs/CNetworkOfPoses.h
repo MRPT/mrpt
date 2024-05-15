@@ -29,7 +29,6 @@
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/os.h>
 
-#include <algorithm>
 #include <iostream>
 #include <iterator>
 #include <memory>
@@ -62,62 +61,51 @@ template <
 class CMRVisualizer;
 }  // namespace detail
 
-/** A directed graph of pose constraints, with edges being the relative poses
- *between pairs of nodes identified by their numeric IDs (of type
- *mrpt::graphs::TNodeID).
- *  A link or edge between two nodes "i" and "j", that is, the pose \f$ p_{ij}
- *\f$, holds the relative position of "j" with respect to "i".
- *   These poses are stored in the edges in the format specified by the template
- *argument CPOSE. Users should employ the following derived classes
- *   depending on the desired representation of edges:
- *      - mrpt::graphs::CNetworkOfPoses2D    : 2D edges as a simple CPose2D (x y
- *phi)
- *      - mrpt::graphs::CNetworkOfPoses3D    : 3D edges as a simple
- *mrpt::poses::CPose3D (x y z yaw pitch roll)
- *      - mrpt::graphs::CNetworkOfPoses2DInf : 2D edges as a Gaussian PDF with
- *information matrix (CPosePDFGaussianInf)
- *      - mrpt::graphs::CNetworkOfPoses3DInf : 3D edges as a Gaussian PDF with
- *information matrix (CPose3DPDFGaussianInf)
- *      - mrpt::graphs::CNetworkOfPoses2DCov : 2D edges as a Gaussian PDF with
- *covariance matrix (CPosePDFGaussian). It's more efficient to use the
- *information matrix version instead!
- *      - mrpt::graphs::CNetworkOfPoses3DCov : 3D edges as a Gaussian PDF with
- *covariance matrix (CPose3DPDFGaussian). It's more efficient to use the
- *information matrix version instead!
+/** A directed graph of pose constraints, with edges being the relative poses between pairs of nodes
+ *identified by their numeric IDs (of type mrpt::graphs::TNodeID). A link or edge between two nodes
+ *"i" and "j", that is, the pose \f$ p_{ij} \f$, holds the relative position of "j" with respect to
+ *"i". These poses are stored in the edges in the format specified by the template argument CPOSE.
+ *Users should employ the following derived classes depending on the desired representation of
+ *edges:
  *
- *  Two main members store all the information in this class:
- *		- \a edges  (in the base class mrpt::graphs::CDirectedGraph::edges): A
- *map
- *from pairs of node ID -> pose constraints.
- *		- \a nodes : A map from node ID -> estimated pose of that node
- *(actually,
- *read below on the template argument MAPS_IMPLEMENTATION).
+ * - mrpt::graphs::CNetworkOfPoses2D: 2D edges as a simple CPose2D (x y phi)
+ * - mrpt::graphs::CNetworkOfPoses3D    : 3D edges as a simple mrpt::poses::CPose3D (x y z yaw pitch
+ *roll)
+ * - mrpt::graphs::CNetworkOfPoses2DInf : 2D edges as a Gaussian PDF with information matrix
+ *(CPosePDFGaussianInf)
+ * - mrpt::graphs::CNetworkOfPoses3DInf : 3D edges as a Gaussian PDF with information matrix
+ *(CPose3DPDFGaussianInf)
+ * - mrpt::graphs::CNetworkOfPoses2DCov : 2D edges as a Gaussian PDF with covariance matrix
+ *(CPosePDFGaussian). It's more efficient to use the information matrix version instead!
+ * - mrpt::graphs::CNetworkOfPoses3DCov : 3D edges as a Gaussian PDF with covariance matrix
+ *(CPose3DPDFGaussian). It's more efficient to use the information matrix version instead!
  *
- *  Graphs can be loaded and saved to text file in the format used by TORO &
- *HoG-man (more on the format <a
- *href="http://www.mrpt.org/Robotics_file_formats" >here</a>),
- *   using \a loadFromTextFile and \a saveToTextFile.
+ * Two main members store all the information in this class:
+ * - \a edges  (in the base class mrpt::graphs::CDirectedGraph::edges): A
+ *   map from pairs of node ID -> pose constraints.
+ * - \a nodes : A map from node ID -> estimated pose of that node
+ *    (actually, read below on the template argument MAPS_IMPLEMENTATION).
  *
- *  This class is the base for representing networks of poses, which are the
- *main data type of a series
- *   of SLAM algorithms implemented in the library mrpt-slam, in the namespace
- *mrpt::graphslam.
+ * Graphs can be loaded and saved to text file in the format used by TORO &
+ * HoG-man (more on the format <a href="http://www.mrpt.org/Robotics_file_formats" >here</a>),
+ * using \a loadFromTextFile and \a saveToTextFile.
  *
- *  The template arguments are:
- *		- CPOSE: The type of the edges, which hold a relative pose (2D/3D, just
- *a
- *value or a Gaussian, etc.)
- *		- MAPS_IMPLEMENTATION: Can be either mrpt::containers::map_traits_stdmap
- *or mrpt::containers::map_traits_map_as_vector. Determines the type of the list
- *of global poses (member \a nodes).
+ * This class is the base for representing networks of poses, which are the  main data type of a
+ * series of SLAM algorithms implemented in the library mrpt-slam, in the namespace mrpt::graphslam.
+ *
+ * The template arguments are:
+ * - CPOSE: The type of the edges, which hold a relative pose (2D/3D, just a value or a Gaussian,
+ *   etc.)
+ * - MAPS_IMPLEMENTATION: Can be either mrpt::containers::map_traits_stdmap or
+ *   mrpt::containers::map_traits_map_as_vector. Determines the type of the list of global poses
+ *   (member \a nodes).
  *
  * \sa mrpt::graphslam
  * \ingroup mrpt_graphs_grp
  */
 template <
     class CPOSE,                                                      // Type of edges
-    class MAPS_IMPLEMENTATION = mrpt::containers::map_traits_stdmap,  // Use std::map<> vs.
-    // std::vector<>
+    class MAPS_IMPLEMENTATION = mrpt::containers::map_traits_stdmap,  // std::map<> vs std::vector<>
     class NODE_ANNOTATIONS = mrpt::graphs::detail::TNodeAnnotationsEmpty,
     class EDGE_ANNOTATIONS = mrpt::graphs::detail::edge_annotations_empty>
 class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATIONS>
@@ -185,14 +173,14 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
     }
     /**\} */
 
-    inline bool operator==(const global_pose_t& other) const
+    bool operator==(const global_pose_t& other) const
     {
       return (
           static_cast<const constraint_no_pdf_t>(*this) ==
               static_cast<const constraint_no_pdf_t>(other) &&
-          static_cast<const NODE_ANNOTATIONS>(*this) == static_cast<const NODE_ANNOTATIONS>(other));
+          this->equal(other));
     }
-    inline bool operator!=(const global_pose_t& other) const { return (!(*this == other)); }
+    bool operator!=(const global_pose_t& other) const { return (!(*this == other)); }
 
     inline friend std::ostream& operator<<(std::ostream& o, const self_t& global_pose)
     {

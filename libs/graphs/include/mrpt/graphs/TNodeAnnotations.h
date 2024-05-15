@@ -13,8 +13,6 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/stl_serialization.h>
 
-#include <cstdint>
-#include <iostream>
 #include <string>
 
 namespace mrpt::graphs::detail
@@ -41,8 +39,8 @@ struct TNodeAnnotations
     return s;
   }
 
-  virtual bool operator==(const TNodeAnnotations& other) const { return true; }
-  virtual bool operator!=(const TNodeAnnotations& other) const { return (!(*this == other)); }
+  /// Used inside the operator==() of derived types:
+  virtual bool equal(const TNodeAnnotations& other) const { return true; }
 
   /**\brief Create and return a copy of the TNodeAnnotations object at hand.
    *
