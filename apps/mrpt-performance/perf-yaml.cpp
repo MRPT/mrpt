@@ -154,7 +154,7 @@ double yaml_iterate(int, int)
   for (unsigned int i = 0; i < reps; i++)
   {
     tl.enter("t");
-    for (const auto& kv : doc["repositories"].asMap())
+    for (const auto& kv : doc["repositories"].asMapRange())
     {
       visits++;
       sAllKeys += kv.first.as<std::string>();
