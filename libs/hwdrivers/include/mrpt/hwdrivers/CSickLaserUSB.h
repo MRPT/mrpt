@@ -61,63 +61,64 @@ namespace mrpt::hwdrivers
  */
 class CSickLaserUSB : public C2DRangeFinderAbstract
 {
-	DEFINE_GENERIC_SENSOR(CSickLaserUSB)
+  DEFINE_GENERIC_SENSOR(CSickLaserUSB)
 
-   private:
-	std::unique_ptr<mrpt::comms::CInterfaceFTDI> m_usbConnection{nullptr};
-	std::string m_serialNumber;
+ private:
+  std::unique_ptr<mrpt::comms::CInterfaceFTDI> m_usbConnection{nullptr};
+  std::string m_serialNumber;
 
-	/** Time of the first data packet, for synchronization purposes. */
-	uint32_t m_timeStartUI{0};
-	mrpt::system::TTimeStamp m_timeStartTT;
+  /** Time of the first data packet, for synchronization purposes. */
+  uint32_t m_timeStartUI{0};
+  mrpt::system::TTimeStamp m_timeStartTT;
 
-	/** The sensor 6D pose:
-	 */
-	poses::CPose3D m_sensorPose;
+  /** The sensor 6D pose:
+   */
+  poses::CPose3D m_sensorPose;
 
-	bool checkControllerIsConnected();
-	bool waitContinuousSampleFrame(
-		std::vector<float>& ranges, unsigned char& LMS_status,
-		uint32_t& out_board_timestamp, bool& is_mm_mode);
+  bool checkControllerIsConnected();
+  bool waitContinuousSampleFrame(
+      std::vector<float>& ranges,
+      unsigned char& LMS_status,
+      uint32_t& out_board_timestamp,
+      bool& is_mm_mode);
 
-   protected:
-	/** See the class documentation at the top for expected parameters */
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection) override;
+ protected:
+  /** See the class documentation at the top for expected parameters */
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection) override;
 
-   public:
-	CSickLaserUSB();
-	~CSickLaserUSB() override = default;
+ public:
+  CSickLaserUSB();
+  ~CSickLaserUSB() override = default;
 
-	/** Changes the serial number of the device to open (call prior to
-	 * 'doProcess')
-	 */
-	void setDeviceSerialNumber(const std::string& deviceSerialNumber)
-	{
-		m_serialNumber = deviceSerialNumber;
-	}
+  /** Changes the serial number of the device to open (call prior to
+   * 'doProcess')
+   */
+  void setDeviceSerialNumber(const std::string& deviceSerialNumber)
+  {
+    m_serialNumber = deviceSerialNumber;
+  }
 
-	/** Specific laser scanner "software drivers" must process here new data
-	 * from the I/O stream, and, if a whole scan has arrived, return it.
-	 *  This method will be typically called in a different thread than other
-	 * methods, and will be called in a timely fashion.
-	 */
-	void doProcessSimple(
-		bool& outThereIsObservation,
-		mrpt::obs::CObservation2DRangeScan& outObservation,
-		bool& hardwareError) override;
+  /** Specific laser scanner "software drivers" must process here new data
+   * from the I/O stream, and, if a whole scan has arrived, return it.
+   *  This method will be typically called in a different thread than other
+   * methods, and will be called in a timely fashion.
+   */
+  void doProcessSimple(
+      bool& outThereIsObservation,
+      mrpt::obs::CObservation2DRangeScan& outObservation,
+      bool& hardwareError) override;
 
-	/** Enables the scanning mode (in this class this has no effect).
-	 * \return If everything works "true", or "false" if there is any error.
-	 */
-	bool turnOn() override;
+  /** Enables the scanning mode (in this class this has no effect).
+   * \return If everything works "true", or "false" if there is any error.
+   */
+  bool turnOn() override;
 
-	/** Disables the scanning mode (in this class this has no effect).
-	 * \return If everything works "true", or "false" if there is any error.
-	 */
-	bool turnOff() override;
+  /** Disables the scanning mode (in this class this has no effect).
+   * \return If everything works "true", or "false" if there is any error.
+   */
+  bool turnOff() override;
 
-};	// End of class
+};  // End of class
 
 }  // namespace mrpt::hwdrivers

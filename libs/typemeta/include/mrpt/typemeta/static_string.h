@@ -24,29 +24,22 @@ namespace typemeta
 template <int N>
 class string_literal
 {
-	const char (&_lit)[N + 1];
+  const char (&_lit)[N + 1];
 
-   public:
-	/** Ctor from C string literal, with trailing zero. */
-	constexpr string_literal(const char (&lit)[N + 1])
-		: _lit((MRPT_X_ASSERT(lit[N] == '\0'), lit))
-	{
-	}
-	constexpr std::size_t size() const { return N; }
-	constexpr char operator[](int i) const
-	{
-		return MRPT_X_ASSERT(i >= 0 && i < N), _lit[i];
-	}
-	constexpr const char* c_str() const { return _lit; }
-	constexpr operator const char*() const { return _lit; }
-	operator std::string() const { return _lit; }
+ public:
+  /** Ctor from C string literal, with trailing zero. */
+  constexpr string_literal(const char (&lit)[N + 1]) : _lit((MRPT_X_ASSERT(lit[N] == '\0'), lit)) {}
+  constexpr std::size_t size() const { return N; }
+  constexpr char operator[](int i) const { return MRPT_X_ASSERT(i >= 0 && i < N), _lit[i]; }
+  constexpr const char* c_str() const { return _lit; }
+  constexpr operator const char*() const { return _lit; }
+  operator std::string() const { return _lit; }
 };
 
 template <int N_PLUS_1>
-constexpr auto literal(const char (&lit)[N_PLUS_1])
-	-> string_literal<N_PLUS_1 - 1>
+constexpr auto literal(const char (&lit)[N_PLUS_1]) -> string_literal<N_PLUS_1 - 1>
 {
-	return string_literal<N_PLUS_1 - 1>(lit);
+  return string_literal<N_PLUS_1 - 1>(lit);
 }
 
 #define REQUIRES(...) typename std::enable_if<(__VA_ARGS__), bool>::type = true
@@ -67,7 +60,7 @@ struct append;
 template <int... I>
 struct append<sequence<I...>>
 {
-	using type = sequence<I..., sizeof...(I)>;
+  using type = sequence<I..., sizeof...(I)>;
 };
 
 // recursive implementation of make_sequence
@@ -81,91 +74,76 @@ using make_sequence = typename make_sequence_<I>::type;
 template <>
 struct make_sequence_<0>  // recursion end
 {
-	using type = sequence<>;
+  using type = sequence<>;
 };
 
 template <int I>
 struct make_sequence_ : append<make_sequence<I - 1>>
 {
-	static_assert(I >= 0, "negative size");
+  static_assert(I >= 0, "negative size");
 };
 }  // namespace internal
 
 template <int N>
 class array_string
 {
-	char _array[N + 1];
+  char _array[N + 1];
 
-	template <typename S1, typename S2, int... PACK1, int... PACK2>
-	constexpr array_string(
-		const S1& s1, const S2& s2, internal::sequence<PACK1...>,
-		internal::sequence<PACK2...>)
-		: _array{s1[PACK1]..., s2[PACK2]..., '\0'}
-	{
-	}
+  template <typename S1, typename S2, int... PACK1, int... PACK2>
+  constexpr array_string(
+      const S1& s1, const S2& s2, internal::sequence<PACK1...>, internal::sequence<PACK2...>) :
+      _array{s1[PACK1]..., s2[PACK2]..., '\0'}
+  {
+  }
 
-   public:
-	/** ctor: literal + literal */
-	template <int N1, REQUIRES(N1 <= N)>
-	constexpr array_string(
-		const string_literal<N1>& s1, const string_literal<N - N1>& s2)
-		: array_string{
-			  s1, s2, internal::make_sequence<N1>{},
-			  internal::make_sequence<N - N1>{}}
-	{
-	}
+ public:
+  /** ctor: literal + literal */
+  template <int N1, REQUIRES(N1 <= N)>
+  constexpr array_string(const string_literal<N1>& s1, const string_literal<N - N1>& s2) :
+      array_string{s1, s2, internal::make_sequence<N1>{}, internal::make_sequence<N - N1>{}}
+  {
+  }
 
-	/** ctor: string + literal */
-	template <int N1, REQUIRES(N1 <= N)>
-	constexpr array_string(
-		const array_string<N1>& s1, const string_literal<N - N1>& s2)
-		: array_string{
-			  s1, s2, internal::make_sequence<N1>{},
-			  internal::make_sequence<N - N1>{}}
-	{
-	}
+  /** ctor: string + literal */
+  template <int N1, REQUIRES(N1 <= N)>
+  constexpr array_string(const array_string<N1>& s1, const string_literal<N - N1>& s2) :
+      array_string{s1, s2, internal::make_sequence<N1>{}, internal::make_sequence<N - N1>{}}
+  {
+  }
 
-	/** ctor: string + string */
-	template <int N1, REQUIRES(N1 <= N)>
-	constexpr array_string(
-		const array_string<N1>& s1, const array_string<N - N1>& s2)
-		: array_string{
-			  s1, s2, internal::make_sequence<N1>{},
-			  internal::make_sequence<N - N1>{}}
-	{
-	}
+  /** ctor: string + string */
+  template <int N1, REQUIRES(N1 <= N)>
+  constexpr array_string(const array_string<N1>& s1, const array_string<N - N1>& s2) :
+      array_string{s1, s2, internal::make_sequence<N1>{}, internal::make_sequence<N - N1>{}}
+  {
+  }
 
-	constexpr std::size_t size() const { return N; }
-	constexpr char operator[](int i) const
-	{
-		return MRPT_X_ASSERT(i >= 0 && i < N), _array[i];
-	}
-	constexpr const char* c_str() const { return _array; }
-	constexpr operator const char*() const { return c_str(); }
-	operator std::string() const { return c_str(); }
+  constexpr std::size_t size() const { return N; }
+  constexpr char operator[](int i) const { return MRPT_X_ASSERT(i >= 0 && i < N), _array[i]; }
+  constexpr const char* c_str() const { return _array; }
+  constexpr operator const char*() const { return c_str(); }
+  operator std::string() const { return c_str(); }
 };
 
 template <int N1, int N2>
-constexpr auto operator+(
-	const string_literal<N1>& s1, const string_literal<N2>& s2)
-	-> array_string<N1 + N2>
+constexpr auto operator+(const string_literal<N1>& s1, const string_literal<N2>& s2)
+    -> array_string<N1 + N2>
 {
-	return array_string<N1 + N2>(s1, s2);
+  return array_string<N1 + N2>(s1, s2);
 }
 
 template <int N1, int N2>
-constexpr auto operator+(
-	const array_string<N1>& s1, const string_literal<N2>& s2)
-	-> array_string<N1 + N2>
+constexpr auto operator+(const array_string<N1>& s1, const string_literal<N2>& s2)
+    -> array_string<N1 + N2>
 {
-	return array_string<N1 + N2>(s1, s2);
+  return array_string<N1 + N2>(s1, s2);
 }
 
 template <int N1, int N2>
 constexpr auto operator+(const array_string<N1>& s1, const array_string<N2>& s2)
-	-> array_string<N1 + N2>
+    -> array_string<N1 + N2>
 {
-	return array_string<N1 + N2>(s1, s2);
+  return array_string<N1 + N2>(s1, s2);
 }
 
 }  // namespace typemeta

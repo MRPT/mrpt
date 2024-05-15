@@ -35,134 +35,137 @@
  */
 class CMyRedirector : public std::streambuf
 {
-   protected:
-	wxTextCtrl* m_txt;
-	std::streambuf* sbOld;
-	std::streambuf* sbOldErr;
-	const bool m_yieldApplication;
-	const bool m_also_cerr;
-	const bool m_threadSafe;
-	const bool m_also_to_cout_cerr;
+ protected:
+  wxTextCtrl* m_txt;
+  std::streambuf* sbOld;
+  std::streambuf* sbOldErr;
+  const bool m_yieldApplication;
+  const bool m_also_cerr;
+  const bool m_threadSafe;
+  const bool m_also_to_cout_cerr;
 
-	wxCriticalSection m_cs;
-	std::string m_strbuf;
-	std::vector<char> m_buf;
+  wxCriticalSection m_cs;
+  std::string m_strbuf;
+  std::vector<char> m_buf;
 
-   public:
-	CMyRedirector(
-		wxTextCtrl* obj, bool yieldApplication = false, int bufferSize = 3000,
-		bool also_cerr = false, bool threadSafe = false,
-		bool also_to_cout_cerr = false)
-		: m_txt(obj),
-		  m_yieldApplication(yieldApplication),
-		  m_also_cerr(also_cerr),
-		  m_threadSafe(threadSafe),
-		  m_also_to_cout_cerr(also_to_cout_cerr)
-	{
-		if (bufferSize)
-		{
-			m_buf.resize(bufferSize);
-			setp(m_buf.data(), m_buf.data() + bufferSize);
-		}
-		else
-			setp(nullptr, nullptr);
+ public:
+  CMyRedirector(
+      wxTextCtrl* obj,
+      bool yieldApplication = false,
+      int bufferSize = 3000,
+      bool also_cerr = false,
+      bool threadSafe = false,
+      bool also_to_cout_cerr = false) :
+      m_txt(obj),
+      m_yieldApplication(yieldApplication),
+      m_also_cerr(also_cerr),
+      m_threadSafe(threadSafe),
+      m_also_to_cout_cerr(also_to_cout_cerr)
+  {
+    if (bufferSize)
+    {
+      m_buf.resize(bufferSize);
+      setp(m_buf.data(), m_buf.data() + bufferSize);
+    }
+    else
+      setp(nullptr, nullptr);
 
-		// Redirect:
-		sbOld = std::cout.rdbuf();
-		std::cout.rdbuf(this);
+    // Redirect:
+    sbOld = std::cout.rdbuf();
+    std::cout.rdbuf(this);
 
-		if (m_also_cerr)
-		{
-			sbOldErr = std::cerr.rdbuf();
-			std::cerr.rdbuf(this);
-		}
-	}
-	~CMyRedirector() override
-	{
-		sync();
+    if (m_also_cerr)
+    {
+      sbOldErr = std::cerr.rdbuf();
+      std::cerr.rdbuf(this);
+    }
+  }
+  ~CMyRedirector() override
+  {
+    sync();
 
-		// Restore normal output:
-		std::cout.rdbuf(sbOld);
+    // Restore normal output:
+    std::cout.rdbuf(sbOld);
 
-		if (m_also_cerr) std::cerr.rdbuf(sbOldErr);
-	}
+    if (m_also_cerr) std::cerr.rdbuf(sbOldErr);
+  }
 
-	void flush() { sync(); }
-	virtual void writeString(const std::string& str)
-	{
-		if (!m_threadSafe)
-		{
-			const auto s = wxString(str);
+  void flush() { sync(); }
+  virtual void writeString(const std::string& str)
+  {
+    if (!m_threadSafe)
+    {
+      const auto s = wxString(str);
 
-#if wxCHECK_VERSION(3, 0, 0) && !defined(__APPLE__)	 // OSX build error?
-			m_txt->GetEventHandler()->CallAfter(&wxTextCtrl::WriteText, s);
+#if wxCHECK_VERSION(3, 0, 0) && !defined(__APPLE__)  // OSX build error?
+      m_txt->GetEventHandler()->CallAfter(&wxTextCtrl::WriteText, s);
 #else
-			m_txt->WriteText(s);  // bad solution, but at least compiles (and
-// may work, unsafely) for old wx2.8 in Ubuntu
-// precise
+      m_txt->WriteText(s);  // bad solution, but at least compiles (and
+                            // may work, unsafely) for old wx2.8 in Ubuntu
+                            // precise
 #endif
-		}
-		else
-		{  // Critical section is already adquired.
-			m_strbuf += str;
-		}
-		if (m_also_to_cout_cerr) ::printf("%s", str.c_str());
-		if (m_yieldApplication && wxThread::IsMain())
-			wxTheApp->Yield(true);	// Let the app. process messages
-	}
+    }
+    else
+    {  // Critical section is already adquired.
+      m_strbuf += str;
+    }
+    if (m_also_to_cout_cerr) ::printf("%s", str.c_str());
+    if (m_yieldApplication && wxThread::IsMain())
+      wxTheApp->Yield(true);  // Let the app. process messages
+  }
 
-	/** Writes all the stored strings to the text control (only for threadSafe
-	   mode).
-		CALL THIS METHOD FROM THE MAIN THREAD!
-		*/
-	void dumpNow()
-	{
-		wxCriticalSectionLocker lock(m_cs);
+  /** Writes all the stored strings to the text control (only for threadSafe
+   mode).
+    CALL THIS METHOD FROM THE MAIN THREAD!
+    */
+  void dumpNow()
+  {
+    wxCriticalSectionLocker lock(m_cs);
 
-		if (!m_strbuf.empty())
-		{
-			if (m_also_to_cout_cerr) ::printf("%s", m_strbuf.c_str());
+    if (!m_strbuf.empty())
+    {
+      if (m_also_to_cout_cerr) ::printf("%s", m_strbuf.c_str());
 #ifdef wxUSE_UNICODE
-			*m_txt << wxString(m_strbuf.c_str(), wxConvUTF8);
+      *m_txt << wxString(m_strbuf.c_str(), wxConvUTF8);
 #else
-			*m_txt << m_strbuf.c_str();
+      *m_txt << m_strbuf.c_str();
 #endif
-			m_strbuf.clear();
-		}
-	}
+      m_strbuf.clear();
+    }
+  }
 
-   private:
-	int overflow(int c) override
-	{
-		sync();
+ private:
+  int overflow(int c) override
+  {
+    sync();
 
-		if (c != EOF)
-		{
-			wxCriticalSectionLocker lock(m_cs);
-			if (pbase() == epptr())
-			{
-				std::string temp;
-				temp += char(c);
-				writeString(temp);
-			}
-			else
-				sputc(c);
-		}
+    if (c != EOF)
+    {
+      wxCriticalSectionLocker lock(m_cs);
+      if (pbase() == epptr())
+      {
+        std::string temp;
+        temp += char(c);
+        writeString(temp);
+      }
+      else
+        sputc(c);
+    }
 
-		return 0;
-	}
+    return 0;
+  }
 
-	int sync() override
-	{
-		wxCriticalSectionLocker lock(m_cs);
+  int sync() override
+  {
+    wxCriticalSectionLocker lock(m_cs);
 
-		if (pbase() != pptr())
-		{
-			int len = int(pptr() - pbase());
-			std::string temp(pbase(), len);
-			writeString(temp);
-			setp(pbase(), epptr());
-		}
-		return 0;
-	}
+    if (pbase() != pptr())
+    {
+      int len = int(pptr() - pbase());
+      std::string temp(pbase(), len);
+      writeString(temp);
+      setp(pbase(), epptr());
+    }
+    return 0;
+  }
 };

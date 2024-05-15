@@ -25,7 +25,7 @@
 #include <windows.h>
 //
 #include <GL/glew.h>
-#endif	// _WIN32
+#endif  // _WIN32
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -33,8 +33,8 @@
 #include <OpenGL/gl3.h>
 #include <OpenGL/glext.h>
 // From: https://stackoverflow.com/a/22119409/1631514
-#define glGenVertexArrays glGenVertexArraysAPPLE
-#define glBindVertexArray glBindVertexArrayAPPLE
+#define glGenVertexArrays    glGenVertexArraysAPPLE
+#define glBindVertexArray    glBindVertexArrayAPPLE
 #define glDeleteVertexArrays glDeleteVertexArraysAPPLE
 #else
 #include <GL/gl.h>
@@ -92,25 +92,24 @@
 
 namespace mrpt::opengl
 {
-void checkOpenGLErr_impl(
-	unsigned int glErrorCode, const char* filename, int lineno);
+void checkOpenGLErr_impl(unsigned int glErrorCode, const char* filename, int lineno);
 }
 
 /** Checks glGetError and throws an exception if an error situation is found
  */
-#define CHECK_OPENGL_ERROR()                                                   \
-	{                                                                          \
-		auto openglErr = glGetError();                                         \
-		if (openglErr != GL_NO_ERROR)                                          \
-			mrpt::opengl::checkOpenGLErr_impl(openglErr, __FILE__, __LINE__);  \
-	}
+#define CHECK_OPENGL_ERROR()                                            \
+  {                                                                     \
+    auto openglErr = glGetError();                                      \
+    if (openglErr != GL_NO_ERROR)                                       \
+      mrpt::opengl::checkOpenGLErr_impl(openglErr, __FILE__, __LINE__); \
+  }
 
 #ifdef DEBUG_
 #define CHECK_OPENGL_ERROR_IN_DEBUG() CHECK_OPENGL_ERROR()
 #else
-#define CHECK_OPENGL_ERROR_IN_DEBUG()                                          \
-	{                                                                          \
-	}
+#define CHECK_OPENGL_ERROR_IN_DEBUG() \
+  {                                   \
+  }
 #endif
 
-#endif	// MRPT_HAS_OPENGL_GLUT
+#endif  // MRPT_HAS_OPENGL_GLUT

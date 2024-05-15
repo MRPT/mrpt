@@ -36,156 +36,146 @@ class CPose3DQuatPDFGaussian;
  */
 class CPose3DPDFGaussianInf : public CPose3DPDF
 {
-	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE(CPose3DPDFGaussianInf, mrpt::poses)
-	using self_t = CPose3DPDFGaussianInf;
+  // This must be added to any CSerializable derived class:
+  DEFINE_SERIALIZABLE(CPose3DPDFGaussianInf, mrpt::poses)
+  using self_t = CPose3DPDFGaussianInf;
 
-   protected:
-	/** Assures the symmetry of the covariance matrix (eventually certain
-	 * operations in the math-coprocessor lead to non-symmetric matrixes!)
-	 */
-	void enforceCovSymmetry();
+ protected:
+  /** Assures the symmetry of the covariance matrix (eventually certain
+   * operations in the math-coprocessor lead to non-symmetric matrixes!)
+   */
+  void enforceCovSymmetry();
 
-   public:
-	/** @name Data fields
-		@{   */
+ public:
+  /** @name Data fields
+    @{   */
 
-	/** The mean value */
-	CPose3D mean;
-	/** The inverse of the 6x6 covariance matrix */
-	mrpt::math::CMatrixDouble66 cov_inv;
+  /** The mean value */
+  CPose3D mean;
+  /** The inverse of the 6x6 covariance matrix */
+  mrpt::math::CMatrixDouble66 cov_inv;
 
-	/** @} */
+  /** @} */
 
-	inline const CPose3D& getPoseMean() const { return mean; }
-	inline CPose3D& getPoseMean() { return mean; }
-	/** Default constructor - mean: all zeros, inverse covariance=all zeros ->
-	 * so be careful! */
-	CPose3DPDFGaussianInf();
+  inline const CPose3D& getPoseMean() const { return mean; }
+  inline CPose3D& getPoseMean() { return mean; }
+  /** Default constructor - mean: all zeros, inverse covariance=all zeros ->
+   * so be careful! */
+  CPose3DPDFGaussianInf();
 
-	/** Constructor with a mean value, inverse covariance=all zeros -> so be
-	 * careful! */
-	explicit CPose3DPDFGaussianInf(const CPose3D& init_Mean);
+  /** Constructor with a mean value, inverse covariance=all zeros -> so be
+   * careful! */
+  explicit CPose3DPDFGaussianInf(const CPose3D& init_Mean);
 
-	/** Uninitialized constructor: leave all fields uninitialized - Call with
-	 * UNINITIALIZED_POSE as argument */
-	CPose3DPDFGaussianInf(TConstructorFlags_Poses constructor_dummy_param);
+  /** Uninitialized constructor: leave all fields uninitialized - Call with
+   * UNINITIALIZED_POSE as argument */
+  CPose3DPDFGaussianInf(TConstructorFlags_Poses constructor_dummy_param);
 
-	/** Constructor with mean and inv cov. */
-	CPose3DPDFGaussianInf(
-		const CPose3D& init_Mean,
-		const mrpt::math::CMatrixDouble66& init_CovInv);
+  /** Constructor with mean and inv cov. */
+  CPose3DPDFGaussianInf(const CPose3D& init_Mean, const mrpt::math::CMatrixDouble66& init_CovInv);
 
-	/** Constructor from a 6D pose PDF described as a Quaternion */
-	explicit CPose3DPDFGaussianInf(const CPose3DQuatPDFGaussian& o);
+  /** Constructor from a 6D pose PDF described as a Quaternion */
+  explicit CPose3DPDFGaussianInf(const CPose3DQuatPDFGaussian& o);
 
-	void getMean(CPose3D& mean_pose) const override { mean_pose = mean; }
+  void getMean(CPose3D& mean_pose) const override { mean_pose = mean; }
 
-	bool isInfType() const override { return true; }
+  bool isInfType() const override { return true; }
 
-	std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override
-	{
-		return {cov_inv.inverse_LLt(), this->mean};
-	}
+  std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override
+  {
+    return {cov_inv.inverse_LLt(), this->mean};
+  }
 
-	/** Returns the information (inverse covariance) matrix (a STATE_LEN x
-	 * STATE_LEN matrix) \sa getMean, getCovarianceAndMean */
-	void getInformationMatrix(mrpt::math::CMatrixDouble66& inf) const override
-	{
-		inf = cov_inv;
-	}
+  /** Returns the information (inverse covariance) matrix (a STATE_LEN x
+   * STATE_LEN matrix) \sa getMean, getCovarianceAndMean */
+  void getInformationMatrix(mrpt::math::CMatrixDouble66& inf) const override { inf = cov_inv; }
 
-	/** Copy operator, translating if necesary (for example, between particles
-	 * and gaussian representations) */
-	void copyFrom(const CPose3DPDF& o) override;
+  /** Copy operator, translating if necesary (for example, between particles
+   * and gaussian representations) */
+  void copyFrom(const CPose3DPDF& o) override;
 
-	/** Copy operator, translating if necesary (for example, between particles
-	 * and gaussian representations) */
-	void copyFrom(const CPosePDF& o);
+  /** Copy operator, translating if necesary (for example, between particles
+   * and gaussian representations) */
+  void copyFrom(const CPosePDF& o);
 
-	/** Copy from a 6D pose PDF described as a Quaternion
-	 */
-	void copyFrom(const CPose3DQuatPDFGaussian& o);
+  /** Copy from a 6D pose PDF described as a Quaternion
+   */
+  void copyFrom(const CPose3DQuatPDFGaussian& o);
 
-	/** Save the PDF to a text file, containing the 3D pose in the first line,
-	 * then the covariance matrix in next 3 lines. */
-	bool saveToTextFile(const std::string& file) const override;
+  /** Save the PDF to a text file, containing the 3D pose in the first line,
+   * then the covariance matrix in next 3 lines. */
+  bool saveToTextFile(const std::string& file) const override;
 
-	/** this = p (+) this. This can be used to convert a PDF from local
-	 * coordinates to global, providing the point (newReferenceBase) from which
-	 *   "to project" the current pdf. Result PDF substituted the currently
-	 * stored one in the object. */
-	void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
+  /** this = p (+) this. This can be used to convert a PDF from local
+   * coordinates to global, providing the point (newReferenceBase) from which
+   *   "to project" the current pdf. Result PDF substituted the currently
+   * stored one in the object. */
+  void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 
-	/** Draws a single sample from the distribution */
-	void drawSingleSample(CPose3D& outPart) const override;
+  /** Draws a single sample from the distribution */
+  void drawSingleSample(CPose3D& outPart) const override;
 
-	/** Draws a number of samples from the distribution, and saves as a list of
-	 * 1x6 vectors, where each row contains a (x,y,phi) datum. */
-	void drawManySamples(
-		size_t N,
-		std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
+  /** Draws a number of samples from the distribution, and saves as a list of
+   * 1x6 vectors, where each row contains a (x,y,phi) datum. */
+  void drawManySamples(size_t N, std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
 
-	/** Bayesian fusion of two points gauss. distributions, then save the result
-	 *in this object.
-	 *  The process is as follows:<br>
-	 *		- (x1,S1): Mean and variance of the p1 distribution.
-	 *		- (x2,S2): Mean and variance of the p2 distribution.
-	 *		- (x,S): Mean and variance of the resulting distribution.
-	 *
-	 *    \f$ S = (S_1^{-1} + S_2^{-1})^{-1} \f$
-	 *    \f$ x = S ( S_1^{-1} x_1 + S_2^{-1} x_2 ) \f$
-	 */
-	void bayesianFusion(const CPose3DPDF& p1, const CPose3DPDF& p2) override;
+  /** Bayesian fusion of two points gauss. distributions, then save the result
+   *in this object.
+   *  The process is as follows:<br>
+   *		- (x1,S1): Mean and variance of the p1 distribution.
+   *		- (x2,S2): Mean and variance of the p2 distribution.
+   *		- (x,S): Mean and variance of the resulting distribution.
+   *
+   *    \f$ S = (S_1^{-1} + S_2^{-1})^{-1} \f$
+   *    \f$ x = S ( S_1^{-1} x_1 + S_2^{-1} x_2 ) \f$
+   */
+  void bayesianFusion(const CPose3DPDF& p1, const CPose3DPDF& p2) override;
 
-	/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
-	void inverse(CPose3DPDF& o) const override;
+  /** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
+  void inverse(CPose3DPDF& o) const override;
 
-	/** Unary - operator, returns the PDF of the inverse pose.  */
-	inline CPose3DPDFGaussianInf operator-() const
-	{
-		CPose3DPDFGaussianInf p(UNINITIALIZED_POSE);
-		this->inverse(p);
-		return p;
-	}
+  /** Unary - operator, returns the PDF of the inverse pose.  */
+  inline CPose3DPDFGaussianInf operator-() const
+  {
+    CPose3DPDFGaussianInf p(UNINITIALIZED_POSE);
+    this->inverse(p);
+    return p;
+  }
 
-	/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the
-	 * mean, and the covariance matrix are updated) */
-	void operator+=(const CPose3D& Ap);
-	/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the
-	 * mean, and the covariance matrix are updated) */
-	void operator+=(const CPose3DPDFGaussianInf& Ap);
-	/** Makes: thisPDF = thisPDF - Ap, where "-" is pose inverse composition
-	 * (both the mean, and the covariance matrix are updated) */
-	void operator-=(const CPose3DPDFGaussianInf& Ap);
-	/** Evaluates the PDF at a given point */
-	double evaluatePDF(const CPose3D& x) const;
-	/** Evaluates the ratio PDF(x) / PDF(MEAN), that is, the normalized PDF in
-	 * the range [0,1] */
-	double evaluateNormalizedPDF(const CPose3D& x) const;
-	/** Returns a 3x3 matrix with submatrix of the inverse covariance for the
-	 * variables (x,y,yaw) only */
-	void getInvCovSubmatrix2D(mrpt::math::CMatrixDouble& out_cov) const;
+  /** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the
+   * mean, and the covariance matrix are updated) */
+  void operator+=(const CPose3D& Ap);
+  /** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the
+   * mean, and the covariance matrix are updated) */
+  void operator+=(const CPose3DPDFGaussianInf& Ap);
+  /** Makes: thisPDF = thisPDF - Ap, where "-" is pose inverse composition
+   * (both the mean, and the covariance matrix are updated) */
+  void operator-=(const CPose3DPDFGaussianInf& Ap);
+  /** Evaluates the PDF at a given point */
+  double evaluatePDF(const CPose3D& x) const;
+  /** Evaluates the ratio PDF(x) / PDF(MEAN), that is, the normalized PDF in
+   * the range [0,1] */
+  double evaluateNormalizedPDF(const CPose3D& x) const;
+  /** Returns a 3x3 matrix with submatrix of the inverse covariance for the
+   * variables (x,y,yaw) only */
+  void getInvCovSubmatrix2D(mrpt::math::CMatrixDouble& out_cov) const;
 
-	/** Computes the Mahalanobis distance between the centers of two Gaussians.
-	 *  The variables with a variance exactly equal to 0 are not taken into
-	 * account in the process, but
-	 *   "infinity" is returned if the corresponding elements are not exactly
-	 * equal.
-	 */
-	double mahalanobisDistanceTo(const CPose3DPDFGaussianInf& theOther);
+  /** Computes the Mahalanobis distance between the centers of two Gaussians.
+   *  The variables with a variance exactly equal to 0 are not taken into
+   * account in the process, but
+   *   "infinity" is returned if the corresponding elements are not exactly
+   * equal.
+   */
+  double mahalanobisDistanceTo(const CPose3DPDFGaussianInf& theOther);
 
-};	// End of class def.
-bool operator==(
-	const CPose3DPDFGaussianInf& p1, const CPose3DPDFGaussianInf& p2);
+};  // End of class def.
+bool operator==(const CPose3DPDFGaussianInf& p1, const CPose3DPDFGaussianInf& p2);
 /** Pose composition for two 3D pose Gaussians  \sa CPose3DPDFGaussian::operator
  * +=  */
-CPose3DPDFGaussianInf operator+(
-	const CPose3DPDFGaussianInf& x, const CPose3DPDFGaussianInf& u);
+CPose3DPDFGaussianInf operator+(const CPose3DPDFGaussianInf& x, const CPose3DPDFGaussianInf& u);
 /** Pose composition for two 3D pose Gaussians  \sa
  * CPose3DPDFGaussianInf::operator -=  */
-CPose3DPDFGaussianInf operator-(
-	const CPose3DPDFGaussianInf& x, const CPose3DPDFGaussianInf& u);
+CPose3DPDFGaussianInf operator-(const CPose3DPDFGaussianInf& x, const CPose3DPDFGaussianInf& u);
 /** Dumps the mean and covariance matrix to a text stream. */
 std::ostream& operator<<(std::ostream& out, const CPose3DPDFGaussianInf& obj);
 

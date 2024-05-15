@@ -204,106 +204,101 @@ namespace mrpt::hwdrivers
  *		- http://http://www.openni.org/
  * \ingroup mrpt_hwdrivers_grp
  */
-class COpenNI2_RGBD360 : public mrpt::hwdrivers::CGenericSensor,
-						 public mrpt::hwdrivers::COpenNI2Generic
+class COpenNI2_RGBD360 :
+    public mrpt::hwdrivers::CGenericSensor,
+    public mrpt::hwdrivers::COpenNI2Generic
 {
-	DEFINE_GENERIC_SENSOR(COpenNI2_RGBD360)
+  DEFINE_GENERIC_SENSOR(COpenNI2_RGBD360)
 
-   public:
-	/** Default ctor
-	 */
-	COpenNI2_RGBD360();
-	/** Default ctor
-	 */
-	~COpenNI2_RGBD360() override;
+ public:
+  /** Default ctor
+   */
+  COpenNI2_RGBD360();
+  /** Default ctor
+   */
+  ~COpenNI2_RGBD360() override;
 
-	/** Initializes the 3D camera - should be invoked after calling loadConfig()
-	 * or setting the different parameters with the set*() methods.
-	 *  \exception This method must throw an exception with a descriptive
-	 * message if some critical error is found.
-	 */
-	void initialize() override;
+  /** Initializes the 3D camera - should be invoked after calling loadConfig()
+   * or setting the different parameters with the set*() methods.
+   *  \exception This method must throw an exception with a descriptive
+   * message if some critical error is found.
+   */
+  void initialize() override;
 
-	/** To be called  at a high rate (>XX Hz), this method populates the
-	 * internal buffer of received observations.
-	 *  This method is mainly intended for usage within rawlog-grabber or
-	 * similar programs.
-	 *  For an alternative, see getNextObservation()
-	 *  \exception This method must throw an exception with a descriptive
-	 * message if some critical error is found.
-	 * \sa getNextObservation
-	 */
-	void doProcess() override;
+  /** To be called  at a high rate (>XX Hz), this method populates the
+   * internal buffer of received observations.
+   *  This method is mainly intended for usage within rawlog-grabber or
+   * similar programs.
+   *  For an alternative, see getNextObservation()
+   *  \exception This method must throw an exception with a descriptive
+   * message if some critical error is found.
+   * \sa getNextObservation
+   */
+  void doProcess() override;
 
-	/** The main data retrieving function, to be called after calling
-	 * loadConfig() and initialize().
-	 *  \param out_obs The output retrieved observation (only if
-	 * there_is_obs=true).
-	 *  \param there_is_obs If set to false, there was no new observation.
-	 *  \param hardware_error True on hardware/comms error.
-	 *
-	 * \sa doProcess
-	 */
-	void getNextObservation(
-		mrpt::obs::CObservationRGBD360& out_obs, bool& there_is_obs,
-		bool& hardware_error);
+  /** The main data retrieving function, to be called after calling
+   * loadConfig() and initialize().
+   *  \param out_obs The output retrieved observation (only if
+   * there_is_obs=true).
+   *  \param there_is_obs If set to false, there was no new observation.
+   *  \param hardware_error True on hardware/comms error.
+   *
+   * \sa doProcess
+   */
+  void getNextObservation(
+      mrpt::obs::CObservationRGBD360& out_obs, bool& there_is_obs, bool& hardware_error);
 
-	/**  Set the path where to save off-rawlog image files (this class DOES take
-	 * into account this path).
-	 *  An  empty string (the default value at construction) means to save
-	 * images embedded in the rawlog, instead of on separate files.
-	 * \exception std::exception If the directory doesn't exists and cannot be
-	 * created.
-	 */
-	void setPathForExternalImages(const std::string& directory) override;
+  /**  Set the path where to save off-rawlog image files (this class DOES take
+   * into account this path).
+   *  An  empty string (the default value at construction) means to save
+   * images embedded in the rawlog, instead of on separate files.
+   * \exception std::exception If the directory doesn't exists and cannot be
+   * created.
+   */
+  void setPathForExternalImages(const std::string& directory) override;
 
-	/** @name Sensor parameters (alternative to \a loadConfig ) and manual
-	   control
-		@{ */
+  /** @name Sensor parameters (alternative to \a loadConfig ) and manual
+   control
+    @{ */
 
-	/** Get the maximum range (meters) that can be read in the observation field
-	 * "rangeImage" */
-	inline double getMaxRange() const { return m_maxRange; }
-	/** Enable/disable the grabbing of the RGB channel */
-	inline void enableGrabRGB(bool enable = true) { m_grab_rgb = enable; }
-	inline bool isGrabRGBEnabled() const { return m_grab_rgb; }
-	/** Enable/disable the grabbing of the depth channel */
-	inline void enableGrabDepth(bool enable = true) { m_grab_depth = enable; }
-	inline bool isGrabDepthEnabled() const { return m_grab_depth; }
-	/** Enable/disable the grabbing of the 3D point clouds */
-	inline void enableGrab3DPoints(bool enable = true)
-	{
-		m_grab_3D_points = enable;
-	}
-	inline bool isGrab3DPointsEnabled() const { return m_grab_3D_points; }
-	/** @} */
+  /** Get the maximum range (meters) that can be read in the observation field
+   * "rangeImage" */
+  inline double getMaxRange() const { return m_maxRange; }
+  /** Enable/disable the grabbing of the RGB channel */
+  inline void enableGrabRGB(bool enable = true) { m_grab_rgb = enable; }
+  inline bool isGrabRGBEnabled() const { return m_grab_rgb; }
+  /** Enable/disable the grabbing of the depth channel */
+  inline void enableGrabDepth(bool enable = true) { m_grab_depth = enable; }
+  inline bool isGrabDepthEnabled() const { return m_grab_depth; }
+  /** Enable/disable the grabbing of the 3D point clouds */
+  inline void enableGrab3DPoints(bool enable = true) { m_grab_3D_points = enable; }
+  inline bool isGrab3DPointsEnabled() const { return m_grab_3D_points; }
+  /** @} */
 
-   protected:
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& section) override;
+ protected:
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& section) override;
 
-	mrpt::poses::CPose3D m_sensorPoseOnRobot;
+  mrpt::poses::CPose3D m_sensorPoseOnRobot;
 
-	static const int NUM_SENSORS = 2;
+  static const int NUM_SENSORS = 2;
 
-	/** Show preview window while grabbing
-	 */
-	bool m_preview_window{false};
-	/** If preview is enabled, only show 1 out of N images.
-	 */
-	size_t m_preview_window_decimation{1};
-	size_t m_preview_decim_counter_range{0}, m_preview_decim_counter_rgb{0};
-	mrpt::gui::CDisplayWindow::Ptr m_win_range[NUM_SENSORS],
-		m_win_int[NUM_SENSORS];
+  /** Show preview window while grabbing
+   */
+  bool m_preview_window{false};
+  /** If preview is enabled, only show 1 out of N images.
+   */
+  size_t m_preview_window_decimation{1};
+  size_t m_preview_decim_counter_range{0}, m_preview_decim_counter_rgb{0};
+  mrpt::gui::CDisplayWindow::Ptr m_win_range[NUM_SENSORS], m_win_int[NUM_SENSORS];
 
-	/** Sensor max range (meters)
-	 */
-	double m_maxRange;
+  /** Sensor max range (meters)
+   */
+  double m_maxRange;
 
-	/** Default: all true
-	 */
-	bool m_grab_rgb{true}, m_grab_depth{true}, m_grab_3D_points{true};
+  /** Default: all true
+   */
+  bool m_grab_rgb{true}, m_grab_depth{true}, m_grab_3D_points{true};
 
-};	// End of class
+};  // End of class
 }  // namespace mrpt::hwdrivers

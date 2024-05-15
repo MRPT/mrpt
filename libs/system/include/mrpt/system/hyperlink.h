@@ -22,7 +22,9 @@ namespace mrpt::system
  * https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda
  */
 std::string hyperlink(
-	const std::string& text, const std::string& uri,
-	bool force_use_format = false, bool show_uri_anyway = false);
+    const std::string& text,
+    const std::string& uri,
+    bool force_use_format = false,
+    bool show_uri_anyway = false);
 
 }  // namespace mrpt::system

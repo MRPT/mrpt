@@ -30,276 +30,266 @@ double COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS = 0.8;
 
 // See docs in header
 void COccupancyGridMap2D::laserScanSimulator(
-	mrpt::obs::CObservation2DRangeScan& inout_Scan, const CPose2D& robotPose,
-	float threshold, size_t N, float noiseStd, unsigned int decimation,
-	float angleNoiseStd) const
+    mrpt::obs::CObservation2DRangeScan& inout_Scan,
+    const CPose2D& robotPose,
+    float threshold,
+    size_t N,
+    float noiseStd,
+    unsigned int decimation,
+    float angleNoiseStd) const
 {
-	MRPT_START
+  MRPT_START
 
-	ASSERT_(decimation >= 1);
-	ASSERT_(N >= 2);
+  ASSERT_(decimation >= 1);
+  ASSERT_(N >= 2);
 
-	// Sensor pose in global coordinates
-	CPose3D sensorPose3D = CPose3D(robotPose) + inout_Scan.sensorPose;
-	// Aproximation: grid is 2D !!!
-	CPose2D sensorPose(sensorPose3D);
+  // Sensor pose in global coordinates
+  CPose3D sensorPose3D = CPose3D(robotPose) + inout_Scan.sensorPose;
+  // Aproximation: grid is 2D !!!
+  CPose2D sensorPose(sensorPose3D);
 
-	// Scan size:
-	inout_Scan.resizeScan(N);
+  // Scan size:
+  inout_Scan.resizeScan(N);
 
-	double A = sensorPose.phi() +
-		(inout_Scan.rightToLeft ? -0.5 : +0.5) * inout_Scan.aperture;
-	const double AA =
-		(inout_Scan.rightToLeft ? 1.0 : -1.0) * (inout_Scan.aperture / (N - 1));
+  double A = sensorPose.phi() + (inout_Scan.rightToLeft ? -0.5 : +0.5) * inout_Scan.aperture;
+  const double AA = (inout_Scan.rightToLeft ? 1.0 : -1.0) * (inout_Scan.aperture / (N - 1));
 
-	const float free_thres = 1.0f - threshold;
+  const float free_thres = 1.0f - threshold;
 
-	for (size_t i = 0; i < N; i += decimation, A += AA * decimation)
-	{
-		bool valid;
-		float out_range;
-		simulateScanRay(
-			sensorPose.x(), sensorPose.y(), A, out_range, valid,
-			inout_Scan.maxRange, free_thres, noiseStd, angleNoiseStd);
-		inout_Scan.setScanRange(i, out_range);
-		inout_Scan.setScanRangeValidity(i, valid);
-	}
+  for (size_t i = 0; i < N; i += decimation, A += AA * decimation)
+  {
+    bool valid;
+    float out_range;
+    simulateScanRay(
+        sensorPose.x(), sensorPose.y(), A, out_range, valid, inout_Scan.maxRange, free_thres,
+        noiseStd, angleNoiseStd);
+    inout_Scan.setScanRange(i, out_range);
+    inout_Scan.setScanRangeValidity(i, valid);
+  }
 
-	MRPT_END
+  MRPT_END
 }
 
 void COccupancyGridMap2D::sonarSimulator(
-	CObservationRange& inout_observation, const CPose2D& robotPose,
-	float threshold, float rangeNoiseStd, float angleNoiseStd) const
+    CObservationRange& inout_observation,
+    const CPose2D& robotPose,
+    float threshold,
+    float rangeNoiseStd,
+    float angleNoiseStd) const
 {
-	const float free_thres = 1.0f - threshold;
+  const float free_thres = 1.0f - threshold;
 
-	for (auto itR = inout_observation.begin(); itR != inout_observation.end();
-		 ++itR)
-	{
-		const CPose2D sensorAbsolutePose =
-			CPose2D(CPose3D(robotPose) + CPose3D(itR->sensorPose));
+  for (auto itR = inout_observation.begin(); itR != inout_observation.end(); ++itR)
+  {
+    const CPose2D sensorAbsolutePose = CPose2D(CPose3D(robotPose) + CPose3D(itR->sensorPose));
 
-		// For each sonar cone, simulate several rays and keep the shortest
-		// distance:
-		ASSERT_(inout_observation.sensorConeAperture > 0);
-		size_t nRays =
-			round(1 + inout_observation.sensorConeAperture / 1.0_deg);
+    // For each sonar cone, simulate several rays and keep the shortest
+    // distance:
+    ASSERT_(inout_observation.sensorConeAperture > 0);
+    size_t nRays = round(1 + inout_observation.sensorConeAperture / 1.0_deg);
 
-		double direction = sensorAbsolutePose.phi() -
-			0.5 * inout_observation.sensorConeAperture;
-		const double Adir = inout_observation.sensorConeAperture / nRays;
+    double direction = sensorAbsolutePose.phi() - 0.5 * inout_observation.sensorConeAperture;
+    const double Adir = inout_observation.sensorConeAperture / nRays;
 
-		float min_detected_obs = 0;
-		for (size_t i = 0; i < nRays; i++, direction += Adir)
-		{
-			bool valid;
-			float sim_rang;
-			simulateScanRay(
-				sensorAbsolutePose.x(), sensorAbsolutePose.y(), direction,
-				sim_rang, valid, inout_observation.maxSensorDistance,
-				free_thres, rangeNoiseStd, angleNoiseStd);
+    float min_detected_obs = 0;
+    for (size_t i = 0; i < nRays; i++, direction += Adir)
+    {
+      bool valid;
+      float sim_rang;
+      simulateScanRay(
+          sensorAbsolutePose.x(), sensorAbsolutePose.y(), direction, sim_rang, valid,
+          inout_observation.maxSensorDistance, free_thres, rangeNoiseStd, angleNoiseStd);
 
-			if (valid && (sim_rang < min_detected_obs || !i))
-				min_detected_obs = sim_rang;
-		}
-		// Save:
-		itR->sensedDistance = min_detected_obs;
-	}
+      if (valid && (sim_rang < min_detected_obs || !i)) min_detected_obs = sim_rang;
+    }
+    // Save:
+    itR->sensedDistance = min_detected_obs;
+  }
 }
 
 void COccupancyGridMap2D::simulateScanRay(
-	const double start_x, const double start_y, const double angle_direction,
-	float& out_range, bool& out_valid, const double max_range_meters,
-	const float threshold_free, const double noiseStd,
-	const double angleNoiseStd) const
+    const double start_x,
+    const double start_y,
+    const double angle_direction,
+    float& out_range,
+    bool& out_valid,
+    const double max_range_meters,
+    const float threshold_free,
+    const double noiseStd,
+    const double angleNoiseStd) const
 {
-	const double A_ = angle_direction +
-		(angleNoiseStd > .0
-			 ? getRandomGenerator().drawGaussian1D_normalized() * angleNoiseStd
-			 : .0);
+  const double A_ =
+      angle_direction +
+      (angleNoiseStd > .0 ? getRandomGenerator().drawGaussian1D_normalized() * angleNoiseStd : .0);
 
 // Unit vector in the directorion of the ray:
 #ifdef HAVE_SINCOS
-	double Arx, Ary;
-	::sincos(A_, &Ary, &Arx);
+  double Arx, Ary;
+  ::sincos(A_, &Ary, &Arx);
 #else
-	const double Arx = cos(A_);
-	const double Ary = sin(A_);
+  const double Arx = cos(A_);
+  const double Ary = sin(A_);
 #endif
 
-	// Ray tracing, until collision, out of the map or out of range:
-	const unsigned int max_ray_len =
-		mrpt::round(max_range_meters / m_resolution);
-	unsigned int ray_len = 0;
+  // Ray tracing, until collision, out of the map or out of range:
+  const unsigned int max_ray_len = mrpt::round(max_range_meters / m_resolution);
+  unsigned int ray_len = 0;
 
 // Use integers for all ray tracing for efficiency
 #define INTPRECNUMBIT 10
 #define int_x2idx(_X) (_X >> INTPRECNUMBIT)
 #define int_y2idx(_Y) (_Y >> INTPRECNUMBIT)
 
-	auto rxi = static_cast<int64_t>(
-		((start_x - m_xMin) / m_resolution) * (1L << INTPRECNUMBIT));
-	auto ryi = static_cast<int64_t>(
-		((start_y - m_yMin) / m_resolution) * (1L << INTPRECNUMBIT));
+  auto rxi = static_cast<int64_t>(((start_x - m_xMin) / m_resolution) * (1L << INTPRECNUMBIT));
+  auto ryi = static_cast<int64_t>(((start_y - m_yMin) / m_resolution) * (1L << INTPRECNUMBIT));
 
-	const auto Arxi = static_cast<int64_t>(
-		RAYTRACE_STEP_SIZE_IN_CELL_UNITS * Arx * (1L << INTPRECNUMBIT));
-	const auto Aryi = static_cast<int64_t>(
-		RAYTRACE_STEP_SIZE_IN_CELL_UNITS * Ary * (1L << INTPRECNUMBIT));
+  const auto Arxi =
+      static_cast<int64_t>(RAYTRACE_STEP_SIZE_IN_CELL_UNITS * Arx * (1L << INTPRECNUMBIT));
+  const auto Aryi =
+      static_cast<int64_t>(RAYTRACE_STEP_SIZE_IN_CELL_UNITS * Ary * (1L << INTPRECNUMBIT));
 
-	cellType hitCellOcc_int = 0;  // p2l(0.5f)
-	const cellType threshold_free_int = p2l(threshold_free);
-	int x, y = int_y2idx(ryi);
+  cellType hitCellOcc_int = 0;  // p2l(0.5f)
+  const cellType threshold_free_int = p2l(threshold_free);
+  int x, y = int_y2idx(ryi);
 
-	while ((x = int_x2idx(rxi)) >= 0 && (y = int_y2idx(ryi)) >= 0 &&
-		   x < static_cast<int>(m_size_x) && y < static_cast<int>(m_size_y) &&
-		   (hitCellOcc_int = m_map[x + y * m_size_x]) > threshold_free_int &&
-		   ray_len < max_ray_len)
-	{
-		rxi += Arxi;
-		ryi += Aryi;
-		ray_len++;
-	}
+  while ((x = int_x2idx(rxi)) >= 0 && (y = int_y2idx(ryi)) >= 0 && x < static_cast<int>(m_size_x) &&
+         y < static_cast<int>(m_size_y) &&
+         (hitCellOcc_int = m_map[x + y * m_size_x]) > threshold_free_int && ray_len < max_ray_len)
+  {
+    rxi += Arxi;
+    ryi += Aryi;
+    ray_len++;
+  }
 
-	// Store:
-	// Check out of the grid?
-	// Tip: if x<0, (unsigned)(x) will also be >>> size_x ;-)
-	if (std::abs(hitCellOcc_int) <= 1 || static_cast<unsigned>(x) >= m_size_x ||
-		static_cast<unsigned>(y) >= m_size_y)
-	{
-		out_valid = false;
-		out_range = max_range_meters;
-	}
-	else
-	{  // No: The normal case:
-		out_range = RAYTRACE_STEP_SIZE_IN_CELL_UNITS * ray_len * m_resolution;
-		out_valid = (ray_len < max_ray_len);  // out_range<max_range_meters;
-		// Add additive Gaussian noise:
-		if (noiseStd > 0 && out_valid)
-			out_range +=
-				noiseStd * getRandomGenerator().drawGaussian1D_normalized();
-	}
+  // Store:
+  // Check out of the grid?
+  // Tip: if x<0, (unsigned)(x) will also be >>> size_x ;-)
+  if (std::abs(hitCellOcc_int) <= 1 || static_cast<unsigned>(x) >= m_size_x ||
+      static_cast<unsigned>(y) >= m_size_y)
+  {
+    out_valid = false;
+    out_range = max_range_meters;
+  }
+  else
+  {  // No: The normal case:
+    out_range = RAYTRACE_STEP_SIZE_IN_CELL_UNITS * ray_len * m_resolution;
+    out_valid = (ray_len < max_ray_len);  // out_range<max_range_meters;
+    // Add additive Gaussian noise:
+    if (noiseStd > 0 && out_valid)
+      out_range += noiseStd * getRandomGenerator().drawGaussian1D_normalized();
+  }
 }
 
-COccupancyGridMap2D::TLaserSimulUncertaintyParams::
-	TLaserSimulUncertaintyParams()
+COccupancyGridMap2D::TLaserSimulUncertaintyParams::TLaserSimulUncertaintyParams()
 
-	= default;
+    = default;
 
-COccupancyGridMap2D::TLaserSimulUncertaintyResult::
-	TLaserSimulUncertaintyResult() = default;
+COccupancyGridMap2D::TLaserSimulUncertaintyResult::TLaserSimulUncertaintyResult() = default;
 
 struct TFunctorLaserSimulData
 {
-	const COccupancyGridMap2D::TLaserSimulUncertaintyParams* params;
-	const COccupancyGridMap2D* grid;
+  const COccupancyGridMap2D::TLaserSimulUncertaintyParams* params;
+  const COccupancyGridMap2D* grid;
 };
 
 static void func_laserSimul_callback(
-	const mrpt::math::CVectorFixedDouble<3>& x_pose,
-	const TFunctorLaserSimulData& fixed_param,
-	mrpt::math::CVectorDouble& y_scanRanges)
+    const mrpt::math::CVectorFixedDouble<3>& x_pose,
+    const TFunctorLaserSimulData& fixed_param,
+    mrpt::math::CVectorDouble& y_scanRanges)
 {
-	ASSERT_(fixed_param.params && fixed_param.grid);
-	ASSERT_(fixed_param.params->decimation >= 1);
-	ASSERT_(fixed_param.params->nRays >= 2);
+  ASSERT_(fixed_param.params && fixed_param.grid);
+  ASSERT_(fixed_param.params->decimation >= 1);
+  ASSERT_(fixed_param.params->nRays >= 2);
 
-	const size_t N = fixed_param.params->nRays;
+  const size_t N = fixed_param.params->nRays;
 
-	// Sensor pose in global coordinates
-	const CPose3D sensorPose3D =
-		CPose3D(x_pose[0], x_pose[1], .0, x_pose[2], .0, .0) +
-		fixed_param.params->sensorPose;
-	// Aproximation: grid is 2D !!!
-	const CPose2D sensorPose(sensorPose3D);
+  // Sensor pose in global coordinates
+  const CPose3D sensorPose3D =
+      CPose3D(x_pose[0], x_pose[1], .0, x_pose[2], .0, .0) + fixed_param.params->sensorPose;
+  // Aproximation: grid is 2D !!!
+  const CPose2D sensorPose(sensorPose3D);
 
-	// Scan size:
-	y_scanRanges.resize(N);
+  // Scan size:
+  y_scanRanges.resize(N);
 
-	double A = sensorPose.phi() +
-		(fixed_param.params->rightToLeft ? -0.5 : +0.5) *
-			fixed_param.params->aperture;
-	const double AA = (fixed_param.params->rightToLeft ? 1.0 : -1.0) *
-		(fixed_param.params->aperture / (N - 1));
+  double A = sensorPose.phi() +
+             (fixed_param.params->rightToLeft ? -0.5 : +0.5) * fixed_param.params->aperture;
+  const double AA =
+      (fixed_param.params->rightToLeft ? 1.0 : -1.0) * (fixed_param.params->aperture / (N - 1));
 
-	const float free_thres = 1.0f - fixed_param.params->threshold;
+  const float free_thres = 1.0f - fixed_param.params->threshold;
 
-	for (size_t i = 0; i < N; i += fixed_param.params->decimation,
-				A += AA * fixed_param.params->decimation)
-	{
-		bool valid;
-		float range;
+  for (size_t i = 0; i < N;
+       i += fixed_param.params->decimation, A += AA * fixed_param.params->decimation)
+  {
+    bool valid;
+    float range;
 
-		fixed_param.grid->simulateScanRay(
-			sensorPose.x(), sensorPose.y(), A, range, valid,
-			fixed_param.params->maxRange, free_thres, .0 /*noiseStd*/,
-			.0 /*angleNoiseStd*/);
-		y_scanRanges[i] = valid ? range : fixed_param.params->maxRange;
-	}
+    fixed_param.grid->simulateScanRay(
+        sensorPose.x(), sensorPose.y(), A, range, valid, fixed_param.params->maxRange, free_thres,
+        .0 /*noiseStd*/, .0 /*angleNoiseStd*/);
+    y_scanRanges[i] = valid ? range : fixed_param.params->maxRange;
+  }
 }
 
 void COccupancyGridMap2D::laserScanSimulatorWithUncertainty(
-	const COccupancyGridMap2D::TLaserSimulUncertaintyParams& in_params,
-	COccupancyGridMap2D::TLaserSimulUncertaintyResult& out_results) const
+    const COccupancyGridMap2D::TLaserSimulUncertaintyParams& in_params,
+    COccupancyGridMap2D::TLaserSimulUncertaintyResult& out_results) const
 {
-	const mrpt::math::CVectorFixedDouble<3> robPoseMean =
-		in_params.robotPose.mean.asVectorVal();
+  const mrpt::math::CVectorFixedDouble<3> robPoseMean = in_params.robotPose.mean.asVectorVal();
 
-	TFunctorLaserSimulData simulData;
-	simulData.grid = this;
-	simulData.params = &in_params;
+  TFunctorLaserSimulData simulData;
+  simulData.grid = this;
+  simulData.params = &in_params;
 
-	switch (in_params.method)
-	{
-		case sumUnscented:
-			mrpt::math::transform_gaussian_unscented(
-				robPoseMean,  // x_mean
-				in_params.robotPose.cov,  // x_cov
-				&func_laserSimul_callback,	// void  (*functor)(const
-				// VECTORLIKE1 &x,const USERPARAM
-				// &fixed_param, VECTORLIKE3 &y)
-				simulData,	// const USERPARAM &fixed_param,
-				out_results.scanWithUncert.rangesMean,
-				out_results.scanWithUncert.rangesCovar,
-				nullptr,  // elem_do_wrap2pi,
-				in_params.UT_alpha, in_params.UT_kappa,
-				in_params.UT_beta  // alpha, K, beta
-			);
-			break;
-		case sumMonteCarlo:
-			//
-			mrpt::math::transform_gaussian_montecarlo(
-				robPoseMean,  // x_mean
-				in_params.robotPose.cov,  // x_cov
-				&func_laserSimul_callback,	// void  (*functor)(const
-				// VECTORLIKE1 &x,const USERPARAM
-				// &fixed_param, VECTORLIKE3 &y)
-				simulData,	// const USERPARAM &fixed_param,
-				out_results.scanWithUncert.rangesMean,
-				out_results.scanWithUncert.rangesCovar, in_params.MC_samples);
-			break;
-		default:
-			throw std::runtime_error(
-				"[laserScanSimulatorWithUncertainty] Unknown `method` value");
-			break;
-	};
+  switch (in_params.method)
+  {
+    case sumUnscented:
+      mrpt::math::transform_gaussian_unscented(
+          robPoseMean,                // x_mean
+          in_params.robotPose.cov,    // x_cov
+          &func_laserSimul_callback,  // void  (*functor)(const
+          // VECTORLIKE1 &x,const USERPARAM
+          // &fixed_param, VECTORLIKE3 &y)
+          simulData,  // const USERPARAM &fixed_param,
+          out_results.scanWithUncert.rangesMean, out_results.scanWithUncert.rangesCovar,
+          nullptr,  // elem_do_wrap2pi,
+          in_params.UT_alpha, in_params.UT_kappa,
+          in_params.UT_beta  // alpha, K, beta
+      );
+      break;
+    case sumMonteCarlo:
+      //
+      mrpt::math::transform_gaussian_montecarlo(
+          robPoseMean,                // x_mean
+          in_params.robotPose.cov,    // x_cov
+          &func_laserSimul_callback,  // void (*functor)(const
+          // VECTORLIKE1 &x,const USERPARAM
+          // &fixed_param, VECTORLIKE3 &y)
+          simulData,  // const USERPARAM &fixed_param,
+          out_results.scanWithUncert.rangesMean, out_results.scanWithUncert.rangesCovar,
+          in_params.MC_samples);
+      break;
+    default:
+      throw std::runtime_error("[laserScanSimulatorWithUncertainty] Unknown `method` value");
+      break;
+  };
 
-	// Outputs:
-	out_results.scanWithUncert.rangeScan.aperture = in_params.aperture;
-	out_results.scanWithUncert.rangeScan.maxRange = in_params.maxRange;
-	out_results.scanWithUncert.rangeScan.rightToLeft = in_params.rightToLeft;
-	out_results.scanWithUncert.rangeScan.sensorPose = in_params.sensorPose;
+  // Outputs:
+  out_results.scanWithUncert.rangeScan.aperture = in_params.aperture;
+  out_results.scanWithUncert.rangeScan.maxRange = in_params.maxRange;
+  out_results.scanWithUncert.rangeScan.rightToLeft = in_params.rightToLeft;
+  out_results.scanWithUncert.rangeScan.sensorPose = in_params.sensorPose;
 
-	out_results.scanWithUncert.rangeScan.resizeScan(in_params.nRays);
-	for (unsigned i = 0; i < in_params.nRays; i++)
-	{
-		out_results.scanWithUncert.rangeScan.setScanRange(
-			i, (float)out_results.scanWithUncert.rangesMean[i]);
-		out_results.scanWithUncert.rangeScan.setScanRangeValidity(i, true);
-	}
+  out_results.scanWithUncert.rangeScan.resizeScan(in_params.nRays);
+  for (unsigned i = 0; i < in_params.nRays; i++)
+  {
+    out_results.scanWithUncert.rangeScan.setScanRange(
+        i, (float)out_results.scanWithUncert.rangesMean[i]);
+    out_results.scanWithUncert.rangeScan.setScanRangeValidity(i, true);
+  }
 
-	// Add minimum uncertainty: grid cell resolution:
-	out_results.scanWithUncert.rangesCovar.asEigen().diagonal().array() +=
-		0.5 * m_resolution * m_resolution;
+  // Add minimum uncertainty: grid cell resolution:
+  out_results.scanWithUncert.rangesCovar.asEigen().diagonal().array() +=
+      0.5 * m_resolution * m_resolution;
 }

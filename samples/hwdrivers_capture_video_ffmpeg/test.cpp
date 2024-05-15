@@ -10,7 +10,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/system/os.h>	 // pause()
+#include <mrpt/system/os.h>  // pause()
 
 #include <chrono>
 #include <iostream>
@@ -27,97 +27,96 @@ using namespace std;
 // ------------------------------------------------------
 void Test_FFMPEG_CaptureCamera(const std::string& video_url)
 {
-	CFFMPEG_InputStream in_video;
+  CFFMPEG_InputStream in_video;
 
-	if (!in_video.openURL(
-			video_url, false /*grayscale*/, true /* verbose */,
-			{{"rtsp_transport", "tcp"}}))
-		return;
+  if (!in_video.openURL(
+          video_url, false /*grayscale*/, true /* verbose */,
+          {
+              {"rtsp_transport", "tcp"}
+  }))
+    return;
 
-	CDisplayWindow3D win("Video");
+  CDisplayWindow3D win("Video");
 
-	CTicTac tictac;
-	tictac.Tic();
-	unsigned int nFrames = 0;
+  CTicTac tictac;
+  tictac.Tic();
+  unsigned int nFrames = 0;
 
-	std::cout << "Close the window to end program.\n";
+  std::cout << "Close the window to end program.\n";
 
-	CImage img;
-	for (;;)
-	{
-		if (!win.isOpen())
-		{
-			std::cout << "Window closed. Quitting.\n";
-			break;
-		}
-		int64_t framePTS = 0;  // frame timestamp
-		if (!in_video.retrieveFrame(img, framePTS))
-		{
-			std::cout << "Video stream ended. Quitting.\n";
-			break;
-		}
+  CImage img;
+  for (;;)
+  {
+    if (!win.isOpen())
+    {
+      std::cout << "Window closed. Quitting.\n";
+      break;
+    }
+    int64_t framePTS = 0;  // frame timestamp
+    if (!in_video.retrieveFrame(img, framePTS))
+    {
+      std::cout << "Video stream ended. Quitting.\n";
+      break;
+    }
 
-		double fps = ++nFrames / tictac.Tac();
+    double fps = ++nFrames / tictac.Tac();
 
-		// decimate for easier viewing:
-		while (img.getWidth() > 1024)
-			img = img.scaleHalf(mrpt::img::IMG_INTERP_LINEAR);
+    // decimate for easier viewing:
+    while (img.getWidth() > 1024) img = img.scaleHalf(mrpt::img::IMG_INTERP_LINEAR);
 
-		img.selectTextFont("10x20");
-		img.textOut(
-			5, 5,
-			mrpt::format(
-				"Read: %.02f FPS | Nominal: %.02f FPS | PTS=%i", fps,
-				in_video.getVideoFPS(), static_cast<int>(framePTS)),
-			TColor(0x80, 0x80, 0x80));
-		if (nFrames > 100)
-		{
-			tictac.Tic();
-			nFrames = 0;
-		}
+    img.selectTextFont("10x20");
+    img.textOut(
+        5, 5,
+        mrpt::format(
+            "Read: %.02f FPS | Nominal: %.02f FPS | PTS=%i", fps, in_video.getVideoFPS(),
+            static_cast<int>(framePTS)),
+        TColor(0x80, 0x80, 0x80));
+    if (nFrames > 100)
+    {
+      tictac.Tic();
+      nFrames = 0;
+    }
 
-		if (nFrames == 1)
-			cout << "Video FPS: " << in_video.getVideoFPS() << endl;
+    if (nFrames == 1) cout << "Video FPS: " << in_video.getVideoFPS() << endl;
 
-		{
-			auto& scene = win.get3DSceneAndLock();
-			scene->getViewport()->setImageView(std::move(img));
-			win.unlockAccess3DScene();
-			win.repaint();
-		}
-		std::this_thread::sleep_for(1ms);
-	}
+    {
+      auto& scene = win.get3DSceneAndLock();
+      scene->getViewport()->setImageView(std::move(img));
+      win.unlockAccess3DScene();
+      win.repaint();
+    }
+    std::this_thread::sleep_for(1ms);
+  }
 
-	in_video.close();
-	mrpt::system::pause();
+  in_video.close();
+  mrpt::system::pause();
 }
 
 int main(int argc, char** argv)
 {
-	try
-	{
-		if (argc != 2)
-		{
-			cout << "Usage: " << endl;
-			cout << " Open a video file: " << argv[0] << " <VIDEOFILE>" << endl;
-			cout << " Open an IP camera: " << argv[0]
-				 << " rtsp://a.b.c.d/live.sdp" << endl;
-			cout << endl;
-			return 1;
-		}
+  try
+  {
+    if (argc != 2)
+    {
+      cout << "Usage: " << endl;
+      cout << " Open a video file: " << argv[0] << " <VIDEOFILE>" << endl;
+      cout << " Open an IP camera: " << argv[0] << " rtsp://a.b.c.d/live.sdp" << endl;
+      cout << endl;
+      return 1;
+    }
 
-		Test_FFMPEG_CaptureCamera(argv[1]);
+    Test_FFMPEG_CaptureCamera(argv[1]);
 
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
-		return -1;
-	}
-	catch (...)
-	{
-		printf("Another exception!!");
-		return -1;
-	}
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    return -1;
+  }
+  catch (...)
+  {
+    printf("Another exception!!");
+    return -1;
+  }
 }

@@ -17,8 +17,8 @@ namespace mrpt::bayes
  */
 enum class particle_storage_mode
 {
-	VALUE,
-	POINTER
+  VALUE,
+  POINTER
 };
 
 /** A template class for holding a the data and the weight of a particle.
@@ -37,31 +37,28 @@ struct CProbabilityParticle;
 
 struct CProbabilityParticleBase
 {
-	CProbabilityParticleBase(double logw = 0) : log_w(logw) {}
-	/** The (logarithmic) weight value for this particle. */
-	double log_w{.0};
+  CProbabilityParticleBase(double logw = 0) : log_w(logw) {}
+  /** The (logarithmic) weight value for this particle. */
+  double log_w{.0};
 };
 
 template <class T>
-struct CProbabilityParticle<T, particle_storage_mode::POINTER>
-	: public CProbabilityParticleBase
+struct CProbabilityParticle<T, particle_storage_mode::POINTER> : public CProbabilityParticleBase
 {
-	/** The data associated with this particle. The use of copy_ptr<> allows
-	 * relying on compiler-generated copy ctor, etc. */
-	mrpt::containers::copy_ptr<T> d{};
+  /** The data associated with this particle. The use of copy_ptr<> allows
+   * relying on compiler-generated copy ctor, etc. */
+  mrpt::containers::copy_ptr<T> d{};
 };
 
 template <class T>
-struct CProbabilityParticle<T, particle_storage_mode::VALUE>
-	: public CProbabilityParticleBase
+struct CProbabilityParticle<T, particle_storage_mode::VALUE> : public CProbabilityParticleBase
 {
-	CProbabilityParticle() = default;
-	CProbabilityParticle(const T& data, const double logw)
-		: CProbabilityParticleBase(logw), d(data)
-	{
-	}
-	/** The data associated with this particle */
-	T d{};
+  CProbabilityParticle() = default;
+  CProbabilityParticle(const T& data, const double logw) : CProbabilityParticleBase(logw), d(data)
+  {
+  }
+  /** The data associated with this particle */
+  T d{};
 };
 
 }  // namespace mrpt::bayes

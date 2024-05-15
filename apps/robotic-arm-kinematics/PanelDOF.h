@@ -20,29 +20,29 @@
 
 class PanelDOF : public wxPanel
 {
-   public:
-	PanelDOF(wxWindow* parent, wxWindowID id = wxID_ANY);
-	~PanelDOF() override;
+ public:
+  PanelDOF(wxWindow* parent, wxWindowID id = wxID_ANY);
+  ~PanelDOF() override;
 
-	//(*Declarations(PanelDOF)
-	wxSimpleHtmlListBox* Label1;
-	wxTextCtrl* TextCtrl1;
-	wxSlider* Slider1;
-	//*)
+  //(*Declarations(PanelDOF)
+  wxSimpleHtmlListBox* Label1;
+  wxTextCtrl* TextCtrl1;
+  wxSlider* Slider1;
+  //*)
 
-   protected:
-	//(*Identifiers(PanelDOF)
-	static const long ID_SIMPLEHTMLLISTBOX2;
-	static const long ID_SLIDER1;
-	static const long ID_TEXTCTRL1;
-	//*)
+ protected:
+  //(*Identifiers(PanelDOF)
+  static const long ID_SIMPLEHTMLLISTBOX2;
+  static const long ID_SLIDER1;
+  static const long ID_TEXTCTRL1;
+  //*)
 
-   private:
-	//(*Handlers(PanelDOF)
-	void OnSlider1CmdScroll(wxScrollEvent& event);
-	//*)
+ private:
+  //(*Handlers(PanelDOF)
+  void OnSlider1CmdScroll(wxScrollEvent& event);
+  //*)
 
-	DECLARE_EVENT_TABLE()
+  DECLARE_EVENT_TABLE()
 };
 
 #endif

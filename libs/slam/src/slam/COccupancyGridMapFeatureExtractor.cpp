@@ -19,95 +19,91 @@ using namespace mrpt::img;
 using namespace mrpt::system;
 
 void COccupancyGridMapFeatureExtractor::uncached_extractFeatures(
-	const mrpt::maps::COccupancyGridMap2D& grid,
-	mrpt::maps::CLandmarksMap& outMap, size_t number_of_features,
-	const mrpt::vision::TDescriptorType descriptors,
-	const mrpt::vision::CFeatureExtraction::TOptions& feat_options)
+    const mrpt::maps::COccupancyGridMap2D& grid,
+    mrpt::maps::CLandmarksMap& outMap,
+    size_t number_of_features,
+    const mrpt::vision::TDescriptorType descriptors,
+    const mrpt::vision::CFeatureExtraction::TOptions& feat_options)
 {
-	MRPT_START
+  MRPT_START
 
-	// get the gridmap as an image:
-	CImage img;
-	grid.getAsImageFiltered(img, true /*vertical flip*/, false /* force RGB */);
+  // get the gridmap as an image:
+  CImage img;
+  grid.getAsImageFiltered(img, true /*vertical flip*/, false /* force RGB */);
 
-	// Detect features:
-	vision::CFeatureExtraction fExt;
-	vision::CFeatureList lstFeatures;
+  // Detect features:
+  vision::CFeatureExtraction fExt;
+  vision::CFeatureList lstFeatures;
 
-	fExt.options = feat_options;
-	fExt.options.patchSize = 0;	 // Do NOT extract patch
+  fExt.options = feat_options;
+  fExt.options.patchSize = 0;  // Do NOT extract patch
 
-	// Detect interest points:
-	fExt.detectFeatures(img, lstFeatures, 0 /* Init ID */, number_of_features);
+  // Detect interest points:
+  fExt.detectFeatures(img, lstFeatures, 0 /* Init ID */, number_of_features);
 
-	// Extract descriptors:
-	if (descriptors != mrpt::vision::descAny)
-		fExt.computeDescriptors(img, lstFeatures, descriptors);
+  // Extract descriptors:
+  if (descriptors != mrpt::vision::descAny) fExt.computeDescriptors(img, lstFeatures, descriptors);
 
-	// Copy all the features to a map of landmarks:
-	for (auto& ft : lstFeatures)
-	{
-		CLandmark lm;
-		lm.ID = ft.keypoint.ID;
-		lm.features.resize(1);
+  // Copy all the features to a map of landmarks:
+  for (auto& ft : lstFeatures)
+  {
+    CLandmark lm;
+    lm.ID = ft.keypoint.ID;
+    lm.features.resize(1);
 
-		lm.features[0] = ft;  // Insert the full feature there:
+    lm.features[0] = ft;  // Insert the full feature there:
 
-		lm.pose_mean.x =
-			grid.getXMin() + (ft.keypoint.pt.x + 0.5f) * grid.getResolution();
-		lm.pose_mean.y =
-			grid.getYMin() + (ft.keypoint.pt.y + 0.5f) * grid.getResolution();
-		lm.pose_mean.z = 0;
+    lm.pose_mean.x = grid.getXMin() + (ft.keypoint.pt.x + 0.5f) * grid.getResolution();
+    lm.pose_mean.y = grid.getYMin() + (ft.keypoint.pt.y + 0.5f) * grid.getResolution();
+    lm.pose_mean.z = 0;
 
-		lm.pose_cov_11 = lm.pose_cov_22 = lm.pose_cov_33 =
-			square(grid.getResolution());
-		lm.pose_cov_12 = lm.pose_cov_13 = lm.pose_cov_23 = 0;
+    lm.pose_cov_11 = lm.pose_cov_22 = lm.pose_cov_33 = square(grid.getResolution());
+    lm.pose_cov_12 = lm.pose_cov_13 = lm.pose_cov_23 = 0;
 
-		lm.seenTimesCount = 1;
+    lm.seenTimesCount = 1;
 
-		outMap.landmarks.push_back(lm);
-	}
+    outMap.landmarks.push_back(lm);
+  }
 
-	MRPT_END_WITH_CLEAN_UP(try {
-		grid.saveMetricMapRepresentationToFile(
-			"__DEBUG_DUMP_GRIDMAP_ON_EXCEPTION");
-	} catch (...){});
+  MRPT_END_WITH_CLEAN_UP(try {
+    grid.saveMetricMapRepresentationToFile("__DEBUG_DUMP_GRIDMAP_ON_EXCEPTION");
+  } catch (...){});
 }
 
 /*---------------------------------------------------------------
-						extractFeatures
+            extractFeatures
   ---------------------------------------------------------------*/
 void COccupancyGridMapFeatureExtractor::extractFeatures(
-	const mrpt::maps::COccupancyGridMap2D& grid,
-	mrpt::maps::CLandmarksMap& outMap, size_t number_of_features,
-	const mrpt::vision::TDescriptorType descriptors,
-	const mrpt::vision::CFeatureExtraction::TOptions& feat_options)
+    const mrpt::maps::COccupancyGridMap2D& grid,
+    mrpt::maps::CLandmarksMap& outMap,
+    size_t number_of_features,
+    const mrpt::vision::TDescriptorType descriptors,
+    const mrpt::vision::CFeatureExtraction::TOptions& feat_options)
 {
 #if 0
 	// Un-cashed version:
 	uncached_extractFeatures(grid,outMap,number_of_features,descriptors,feat_options);
 #else
-	// Use cache mechanism:
+  // Use cache mechanism:
 
-	auto it = m_cache.find(&grid);
-	if (it == m_cache.end())
-	{
-		// We have to recompute the features:
-		CLandmarksMap::Ptr theMap = std::make_shared<CLandmarksMap>();
+  auto it = m_cache.find(&grid);
+  if (it == m_cache.end())
+  {
+    // We have to recompute the features:
+    CLandmarksMap::Ptr theMap = std::make_shared<CLandmarksMap>();
 
-		uncached_extractFeatures(
-			grid, *theMap, number_of_features, descriptors, feat_options);
+    uncached_extractFeatures(grid, *theMap, number_of_features, descriptors, feat_options);
 
-		outMap = *theMap;
+    outMap = *theMap;
 
-		// Insert into the cache:
-		m_cache[&grid] = theMap;
-	}
-	else
-	{
-		// Already in the cache:
-		outMap = *(it->second);
-	}
+    // Insert into the cache:
+    m_cache[&grid] = theMap;
+  }
+  else
+  {
+    // Already in the cache:
+    outMap = *(it->second);
+  }
 
 #endif
 }
@@ -115,25 +111,25 @@ void COccupancyGridMapFeatureExtractor::extractFeatures(
 // This will receive the events from maps in order to purge the cache.
 void COccupancyGridMapFeatureExtractor::OnEvent(const mrptEvent& e)
 {
-	const COccupancyGridMap2D* src = nullptr;
+  const COccupancyGridMap2D* src = nullptr;
 
-	// Upon map change or destruction, remove from our cache:
-	if (e.isOfType<mrptEventOnDestroy>())
-		src = static_cast<const COccupancyGridMap2D*>(
-			static_cast<const mrptEventOnDestroy*>(&e)->source_object);
-	if (e.isOfType<mrptEventMetricMapClear>())
-		src = static_cast<const COccupancyGridMap2D*>(
-			static_cast<const mrptEventMetricMapClear*>(&e)->source_map);
-	if (e.isOfType<mrptEventMetricMapInsert>())
-		src = static_cast<const COccupancyGridMap2D*>(
-			static_cast<const mrptEventMetricMapClear*>(&e)->source_map);
+  // Upon map change or destruction, remove from our cache:
+  if (e.isOfType<mrptEventOnDestroy>())
+    src = static_cast<const COccupancyGridMap2D*>(
+        static_cast<const mrptEventOnDestroy*>(&e)->source_object);
+  if (e.isOfType<mrptEventMetricMapClear>())
+    src = static_cast<const COccupancyGridMap2D*>(
+        static_cast<const mrptEventMetricMapClear*>(&e)->source_map);
+  if (e.isOfType<mrptEventMetricMapInsert>())
+    src = static_cast<const COccupancyGridMap2D*>(
+        static_cast<const mrptEventMetricMapClear*>(&e)->source_map);
 
-	if (src)
-	{
-		// Remove from cache:
-		m_cache.erase(src);
+  if (src)
+  {
+    // Remove from cache:
+    m_cache.erase(src);
 
-		// Unsubscribe:
-		this->observeEnd(*const_cast<COccupancyGridMap2D*>(src));
-	}
+    // Unsubscribe:
+    this->observeEnd(*const_cast<COccupancyGridMap2D*>(src));
+  }
 }

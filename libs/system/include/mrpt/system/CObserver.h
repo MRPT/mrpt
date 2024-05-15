@@ -34,32 +34,32 @@ class CObservable;
  */
 class CObserver
 {
-	friend class CObservable;
+  friend class CObservable;
 
-   public:
-	CObserver();
-	virtual ~CObserver();
+ public:
+  CObserver();
+  virtual ~CObserver();
 
-	/** Starts the subscription of this observer to the given object.  \sa
-	 * observeEnd  */
-	void observeBegin(CObservable& obj);
+  /** Starts the subscription of this observer to the given object.  \sa
+   * observeEnd  */
+  void observeBegin(CObservable& obj);
 
-	/** Ends the subscription of this observer to the given object (note that
-	   there is no need to call this method, since the destruction of the first
-	   of observer/observed will put an end to the process
-		\sa observeBegin  */
-	void observeEnd(CObservable& obj);
+  /** Ends the subscription of this observer to the given object (note that
+   there is no need to call this method, since the destruction of the first
+   of observer/observed will put an end to the process
+    \sa observeBegin  */
+  void observeEnd(CObservable& obj);
 
-   private:
-	std::set<CObservable*> m_subscribed;
-	void internal_on_event(const mrptEvent& e);
+ private:
+  std::set<CObservable*> m_subscribed;
+  void internal_on_event(const mrptEvent& e);
 
-   protected:
-	/** This virtual function will be called upon receive of any event after
-	 * starting listening at any CObservable object.
-	 */
-	virtual void OnEvent(const mrptEvent& e) = 0;
+ protected:
+  /** This virtual function will be called upon receive of any event after
+   * starting listening at any CObservable object.
+   */
+  virtual void OnEvent(const mrptEvent& e) = 0;
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace mrpt::system

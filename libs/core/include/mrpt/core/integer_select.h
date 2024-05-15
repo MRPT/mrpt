@@ -25,34 +25,33 @@ struct int_select_by_bytecount;
 template <>
 struct int_select_by_bytecount<1>
 {
-	using type = int8_t;
+  using type = int8_t;
 };
 template <>
 struct int_select_by_bytecount<2>
 {
-	using type = int16_t;
+  using type = int16_t;
 };
 template <>
 struct int_select_by_bytecount<3>
 {
-	using type = int32_t;
+  using type = int32_t;
 };
 template <>
 struct int_select_by_bytecount<4>
 {
-	using type = int32_t;
+  using type = int32_t;
 };
 template <>
 struct int_select_by_bytecount<8>
 {
-	using type = int64_t;
+  using type = int64_t;
 };
 
 /** Usage: `int_select_by_bytecount_t<N> var;`.
  * C++14 helper type for int_select_by_bytecount<> */
 template <unsigned int num_bytes>
-using int_select_by_bytecount_t =
-	typename int_select_by_bytecount<num_bytes>::type;
+using int_select_by_bytecount_t = typename int_select_by_bytecount<num_bytes>::type;
 
 /** Usage: `uint_select_by_bytecount<N>::type  var;` allows defining var as a
  * unsigned integer with, at least, N bytes. */
@@ -61,34 +60,33 @@ struct uint_select_by_bytecount;
 template <>
 struct uint_select_by_bytecount<1>
 {
-	using type = uint8_t;
+  using type = uint8_t;
 };
 template <>
 struct uint_select_by_bytecount<2>
 {
-	using type = uint16_t;
+  using type = uint16_t;
 };
 template <>
 struct uint_select_by_bytecount<3>
 {
-	using type = uint32_t;
+  using type = uint32_t;
 };
 template <>
 struct uint_select_by_bytecount<4>
 {
-	using type = uint32_t;
+  using type = uint32_t;
 };
 template <>
 struct uint_select_by_bytecount<8>
 {
-	using type = uint64_t;
+  using type = uint64_t;
 };
 
 /** Usage: `uint_select_by_bytecount_t<N> var;`.
  * C++14 helper type for uint_select_by_bytecount<> */
 template <unsigned int num_bytes>
-using uint_select_by_bytecount_t =
-	typename uint_select_by_bytecount<num_bytes>::type;
+using uint_select_by_bytecount_t = typename uint_select_by_bytecount<num_bytes>::type;
 
 /** @} */
 }  // namespace mrpt

@@ -50,11 +50,9 @@ void AddKMeansLogging(std::ostream* out, bool verbose);
 //                  and k-1 inclusive).
 // The final cost of the clustering is also returned.
 Scalar RunKMeans(
-	int n, int k, int d, Scalar* points, int attempts, Scalar* centers,
-	int* assignments);
+    int n, int k, int d, Scalar* points, int attempts, Scalar* centers, int* assignments);
 
 // Runs k-means++ on the given set of points. Set RunKMeans for info on the
 // parameters.
 Scalar RunKMeansPlusPlus(
-	int n, int k, int d, Scalar* points, int attempts, Scalar* centers,
-	int* assignments);
+    int n, int k, int d, Scalar* points, int attempts, Scalar* centers, int* assignments);

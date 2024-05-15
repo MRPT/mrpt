@@ -13,15 +13,15 @@
 
 class CBaseObservationNode : public CNode
 {
-   public:
-	CBaseObservationNode(CNode* parent, const mrpt::poses::CPose3D& pose);
-	~CBaseObservationNode() override = default;
-	// CNode interface
-	int childCount() const override;
-	CNode* child(int id) override;
+ public:
+  CBaseObservationNode(CNode* parent, const mrpt::poses::CPose3D& pose);
+  ~CBaseObservationNode() override = default;
+  // CNode interface
+  int childCount() const override;
+  CNode* child(int id) override;
 
-	mrpt::poses::CPose3D getPose() const;
+  mrpt::poses::CPose3D getPose() const;
 
-   private:
-	mrpt::poses::CPose3D m_pose;
+ private:
+  mrpt::poses::CPose3D m_pose;
 };

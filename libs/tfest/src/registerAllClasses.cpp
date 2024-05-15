@@ -17,7 +17,7 @@
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_tfest)
 {
-	using namespace mrpt::tfest;
+  using namespace mrpt::tfest;
 
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 //	registerClass( CLASS_ID( XXXX ) );
@@ -26,7 +26,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_tfest)
 
 void mrpt::tfest::registerAllClasses_mrpt_tfest()
 {
-	::registerAllClasses_mrpt_tfest();
-	// deps:
-	mrpt::poses::registerAllClasses_mrpt_poses();
+  ::registerAllClasses_mrpt_tfest();
+  // deps:
+  mrpt::poses::registerAllClasses_mrpt_poses();
 }

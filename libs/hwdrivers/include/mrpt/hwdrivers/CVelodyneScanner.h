@@ -164,275 +164,251 @@ namespace mrpt::hwdrivers
  */
 class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 {
-	DEFINE_GENERIC_SENSOR(CVelodyneScanner)
-   public:
-	/** Default: 2368. Change it if required. */
-	static short int VELODYNE_DATA_UDP_PORT;
-	/** Default: 8308. Change it if required. */
-	static short int VELODYNE_POSITION_UDP_PORT;
+  DEFINE_GENERIC_SENSOR(CVelodyneScanner)
+ public:
+  /** Default: 2368. Change it if required. */
+  static short int VELODYNE_DATA_UDP_PORT;
+  /** Default: 8308. Change it if required. */
+  static short int VELODYNE_POSITION_UDP_PORT;
 
-	/** LIDAR model types */
-	enum model_t
-	{
-		VLP16 = 1,
-		HDL32 = 2,
-		HDL64 = 3
-	};
+  /** LIDAR model types */
+  enum model_t
+  {
+    VLP16 = 1,
+    HDL32 = 2,
+    HDL64 = 3
+  };
 
-	/** LIDAR return type */
-	enum return_type_t
-	{
-		UNCHANGED = 0,
-		STRONGEST,
-		LAST,
-		DUAL
-	};
+  /** LIDAR return type */
+  enum return_type_t
+  {
+    UNCHANGED = 0,
+    STRONGEST,
+    LAST,
+    DUAL
+  };
 
-	/** Hard-wired properties of LIDARs depending on the model */
-	struct TModelProperties
-	{
-		double maxRange;
-	};
-	using model_properties_list_t = std::map<model_t, TModelProperties>;
-	/** Access to default sets of parameters for Velodyne LIDARs */
-	struct TModelPropertiesFactory
-	{
-		/** Singleton access */
-		static const model_properties_list_t& get();
-		/** Return human-readable string: "`VLP16`,`XXX`,..." */
-		static std::string getListKnownModels();
-	};
+  /** Hard-wired properties of LIDARs depending on the model */
+  struct TModelProperties
+  {
+    double maxRange;
+  };
+  using model_properties_list_t = std::map<model_t, TModelProperties>;
+  /** Access to default sets of parameters for Velodyne LIDARs */
+  struct TModelPropertiesFactory
+  {
+    /** Singleton access */
+    static const model_properties_list_t& get();
+    /** Return human-readable string: "`VLP16`,`XXX`,..." */
+    static std::string getListKnownModels();
+  };
 
-   protected:
-	bool m_initialized;
-	/** Default: "VLP16" */
-	model_t m_model{CVelodyneScanner::VLP16};
-	/** Default: 0.5 seconds */
-	double m_pos_packets_min_period{0.5};
-	/** Default: 30 seconds */
-	double m_pos_packets_timing_timeout{30.0};
-	/** Default: "" (no IP-based filtering) */
-	std::string m_device_ip;
-	/** Default: true Output whole frames and not data packets  */
-	bool m_return_frames{true};
-	/** Default: true Output PCAP Info msgs */
-	bool m_pcap_verbose{true};
-	/** Default: "" (do not operate from an offline file) */
-	std::string m_pcap_input_file;
-	/** Default: "" (do not dump to an offline file) */
-	std::string m_pcap_output_file;
-	mrpt::poses::CPose3D m_sensorPose;
-	/** Device calibration file (supplied by vendor in an XML file) */
-	mrpt::obs::VelodyneCalibration m_velodyne_calib;
-	mrpt::system::TTimeStamp m_last_pos_packet_timestamp;
+ protected:
+  bool m_initialized;
+  /** Default: "VLP16" */
+  model_t m_model{CVelodyneScanner::VLP16};
+  /** Default: 0.5 seconds */
+  double m_pos_packets_min_period{0.5};
+  /** Default: 30 seconds */
+  double m_pos_packets_timing_timeout{30.0};
+  /** Default: "" (no IP-based filtering) */
+  std::string m_device_ip;
+  /** Default: true Output whole frames and not data packets  */
+  bool m_return_frames{true};
+  /** Default: true Output PCAP Info msgs */
+  bool m_pcap_verbose{true};
+  /** Default: "" (do not operate from an offline file) */
+  std::string m_pcap_input_file;
+  /** Default: "" (do not dump to an offline file) */
+  std::string m_pcap_output_file;
+  mrpt::poses::CPose3D m_sensorPose;
+  /** Device calibration file (supplied by vendor in an XML file) */
+  mrpt::obs::VelodyneCalibration m_velodyne_calib;
+  mrpt::system::TTimeStamp m_last_pos_packet_timestamp;
 
-	// offline operation:
-	/** opaque ptr: "pcap_t*" */
-	void* m_pcap{nullptr};
-	/** opaque ptr: "pcap_t*" */
-	void* m_pcap_out{nullptr};
-	/** opaque ptr: "pcap_dumper_t *" */
-	void* m_pcap_dumper{nullptr};
-	/** opaque ptr: bpf_program* */
-	void* m_pcap_bpf_program{nullptr};
-	bool m_pcap_file_empty{true};
-	/** number of pkts read from the file so far (for debugging) */
-	unsigned int m_pcap_read_count;
-	/** Default: false */
-	bool m_pcap_read_once{false};
-	/** (Default: false) If false, will use m_pcap_read_full_scan_delay_ms */
-	bool m_pcap_read_fast{false};
-	/** (Default:100 ms) delay after each full scan read from a PCAP log */
-	double m_pcap_read_full_scan_delay_ms{100};
-	/** Default: 0 (in seconds) */
-	double m_pcap_repeat_delay{0.0};
+  // offline operation:
+  /** opaque ptr: "pcap_t*" */
+  void* m_pcap{nullptr};
+  /** opaque ptr: "pcap_t*" */
+  void* m_pcap_out{nullptr};
+  /** opaque ptr: "pcap_dumper_t *" */
+  void* m_pcap_dumper{nullptr};
+  /** opaque ptr: bpf_program* */
+  void* m_pcap_bpf_program{nullptr};
+  bool m_pcap_file_empty{true};
+  /** number of pkts read from the file so far (for debugging) */
+  unsigned int m_pcap_read_count;
+  /** Default: false */
+  bool m_pcap_read_once{false};
+  /** (Default: false) If false, will use m_pcap_read_full_scan_delay_ms */
+  bool m_pcap_read_fast{false};
+  /** (Default:100 ms) delay after each full scan read from a PCAP log */
+  double m_pcap_read_full_scan_delay_ms{100};
+  /** Default: 0 (in seconds) */
+  double m_pcap_repeat_delay{0.0};
 
-	/** See the class documentation at the top for expected parameters */
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& section) override;
+  /** See the class documentation at the top for expected parameters */
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& section) override;
 
-   public:
-	CVelodyneScanner();
-	~CVelodyneScanner() override;
+ public:
+  CVelodyneScanner();
+  ~CVelodyneScanner() override;
 
-	/** @name Change configuration parameters; to be called BEFORE initialize();
-	 * see above for the list of parameters and their meaning
-	 * @{ */
-	/** See supported model names in the general discussion docs for
-	 * mrpt::hwdrivers::CVelodyneScanner */
-	void setModelName(const model_t model) { m_model = model; }
-	model_t getModelName() const { return m_model; }
-	/** Set the minimum period between the generation of
-	 * mrpt::obs::CObservationGPS observations from Velodyne Position RMC GPS
-	 * packets */
-	void setPosPacketsMinPeriod(double period_seconds)
-	{
-		m_pos_packets_min_period = period_seconds;
-	}
-	double getPosPacketsMinPeriod() const { return m_pos_packets_min_period; }
-	/** Set how long to wait, after loss of GPS signal, to report timestamps as
-	 * "not based on satellite time". 30 secs, with typical velodyne clock
-	 * drifts, means a ~1.7 ms typical drift. */
-	void setPosPacketsTimingTimeout(double timeout)
-	{
-		m_pos_packets_timing_timeout = timeout;
-	}
-	double getPosPacketsTimingTimeout() const
-	{
-		return m_pos_packets_timing_timeout;
-	}
+  /** @name Change configuration parameters; to be called BEFORE initialize();
+   * see above for the list of parameters and their meaning
+   * @{ */
+  /** See supported model names in the general discussion docs for
+   * mrpt::hwdrivers::CVelodyneScanner */
+  void setModelName(const model_t model) { m_model = model; }
+  model_t getModelName() const { return m_model; }
+  /** Set the minimum period between the generation of
+   * mrpt::obs::CObservationGPS observations from Velodyne Position RMC GPS
+   * packets */
+  void setPosPacketsMinPeriod(double period_seconds) { m_pos_packets_min_period = period_seconds; }
+  double getPosPacketsMinPeriod() const { return m_pos_packets_min_period; }
+  /** Set how long to wait, after loss of GPS signal, to report timestamps as
+   * "not based on satellite time". 30 secs, with typical velodyne clock
+   * drifts, means a ~1.7 ms typical drift. */
+  void setPosPacketsTimingTimeout(double timeout) { m_pos_packets_timing_timeout = timeout; }
+  double getPosPacketsTimingTimeout() const { return m_pos_packets_timing_timeout; }
 
-	/** UDP packets from other IPs will be ignored. Default: empty string, means
-	 * do not filter by IP */
-	void setDeviceIP(const std::string& ip) { m_device_ip = ip; }
-	const std::string& getDeviceIP() const { return m_device_ip; }
-	/** Enables/disables PCAP info messages to console (default: true) */
-	void setPCAPVerbosity(const bool verbose) { m_pcap_verbose = verbose; }
-	/** Enables reading from a PCAP file instead of live UDP packet listening */
-	void setPCAPInputFile(const std::string& pcap_file)
-	{
-		m_pcap_input_file = pcap_file;
-	}
-	const std::string& getPCAPInputFile() const { return m_pcap_input_file; }
-	/** Enables dumping to a PCAP file in parallel to returning regular MRPT
-	 * objects. Default="": no pcap log. */
-	void setPCAPOutputFile(const std::string& out_pcap_file)
-	{
-		m_pcap_output_file = out_pcap_file;
-	}
-	const std::string& getPCAPOutputFile() const { return m_pcap_output_file; }
-	void setPCAPInputFileReadOnce(bool read_once)
-	{
-		m_pcap_read_once = read_once;
-	}
-	bool getPCAPInputFileReadOnce() const { return m_pcap_read_once; }
-	const mrpt::obs::VelodyneCalibration& getCalibration() const
-	{
-		return m_velodyne_calib;
-	}
-	void setCalibration(const mrpt::obs::VelodyneCalibration& calib)
-	{
-		m_velodyne_calib = calib;
-	}
-	/** Returns false on error. \sa
-	 * mrpt::obs::VelodyneCalibration::loadFromXMLFile() */
-	[[nodiscard]] bool loadCalibrationFile(
-		const std::string& velodyne_xml_calib_file_path);
+  /** UDP packets from other IPs will be ignored. Default: empty string, means
+   * do not filter by IP */
+  void setDeviceIP(const std::string& ip) { m_device_ip = ip; }
+  const std::string& getDeviceIP() const { return m_device_ip; }
+  /** Enables/disables PCAP info messages to console (default: true) */
+  void setPCAPVerbosity(const bool verbose) { m_pcap_verbose = verbose; }
+  /** Enables reading from a PCAP file instead of live UDP packet listening */
+  void setPCAPInputFile(const std::string& pcap_file) { m_pcap_input_file = pcap_file; }
+  const std::string& getPCAPInputFile() const { return m_pcap_input_file; }
+  /** Enables dumping to a PCAP file in parallel to returning regular MRPT
+   * objects. Default="": no pcap log. */
+  void setPCAPOutputFile(const std::string& out_pcap_file) { m_pcap_output_file = out_pcap_file; }
+  const std::string& getPCAPOutputFile() const { return m_pcap_output_file; }
+  void setPCAPInputFileReadOnce(bool read_once) { m_pcap_read_once = read_once; }
+  bool getPCAPInputFileReadOnce() const { return m_pcap_read_once; }
+  const mrpt::obs::VelodyneCalibration& getCalibration() const { return m_velodyne_calib; }
+  void setCalibration(const mrpt::obs::VelodyneCalibration& calib) { m_velodyne_calib = calib; }
+  /** Returns false on error. \sa
+   * mrpt::obs::VelodyneCalibration::loadFromXMLFile() */
+  [[nodiscard]] bool loadCalibrationFile(const std::string& velodyne_xml_calib_file_path);
 
-	/** Changes among STRONGEST, LAST, DUAL return types (via HTTP post
-	 * interface).
-	 * Can be called at any instant, before or after initialize().
-	 * Requires setting a device IP address.
-	 * \return false on error */
-	[[nodiscard]] bool setLidarReturnType(return_type_t ret_type);
+  /** Changes among STRONGEST, LAST, DUAL return types (via HTTP post
+   * interface).
+   * Can be called at any instant, before or after initialize().
+   * Requires setting a device IP address.
+   * \return false on error */
+  [[nodiscard]] bool setLidarReturnType(return_type_t ret_type);
 
-	/** Changes Lidar RPM (valid range: 300-600) (via HTTP post interface).
-	 * Can be called at any instant, before or after initialize().
-	 * Requires setting a device IP address.
-	 * \return false on error*/
-	[[nodiscard]] bool setLidarRPM(int rpm);
+  /** Changes Lidar RPM (valid range: 300-600) (via HTTP post interface).
+   * Can be called at any instant, before or after initialize().
+   * Requires setting a device IP address.
+   * \return false on error*/
+  [[nodiscard]] bool setLidarRPM(int rpm);
 
-	/** Switches the LASER on/off (saves energy when not measuring) (via HTTP
-	 * post interface).
-	 * Can be called at any instant, before or after initialize().
-	 * Requires setting a device IP address.
-	 * \return false on error*/
-	[[nodiscard]] bool setLidarOnOff(bool on);
+  /** Switches the LASER on/off (saves energy when not measuring) (via HTTP
+   * post interface).
+   * Can be called at any instant, before or after initialize().
+   * Requires setting a device IP address.
+   * \return false on error*/
+  [[nodiscard]] bool setLidarOnOff(bool on);
 
-	/** Switches whole frame (points in a single revolution) on/off publication
-	 * to data packet publication. When on, getNextObservation() will return
-	 * true whenever a frame is avaliable, when off, getNextObservation() will
-	 * return true whenever a data packet is avaliable. The default is on. When
-	 * listening to data packets on a PCAP, pcap_read_fast is enforced.
-	 */
-	void setFramePublishing(bool on);
+  /** Switches whole frame (points in a single revolution) on/off publication
+   * to data packet publication. When on, getNextObservation() will return
+   * true whenever a frame is avaliable, when off, getNextObservation() will
+   * return true whenever a data packet is avaliable. The default is on. When
+   * listening to data packets on a PCAP, pcap_read_fast is enforced.
+   */
+  void setFramePublishing(bool on);
 
-	/** @} */
+  /** @} */
 
-	/** Polls the UDP port for incoming data packets. The user *must* call this
-	 * method in a timely fashion to grab data as it it generated by the device.
-	 *  The minimum call rate should be the expected number of data
-	 * packets/second (!=scans/second). Checkout Velodyne user manual if in
-	 * doubt.
-	 *
-	 * \param[out] outScan Upon return, an empty smart pointer will be found
-	 * here if no new data was available. Otherwise, a valid scan.
-	 * \param[out] outGPS  Upon return, an empty smart pointer will be found
-	 * here if no new GPS data was available. Otherwise, a valid GPS reading.
-	 * \return true if no error ocurred (even if there was no new observation).
-	 * false if any communication error occurred.
-	 */
-	[[nodiscard]] bool getNextObservation(
-		mrpt::obs::CObservationVelodyneScan::Ptr& outScan,
-		mrpt::obs::CObservationGPS::Ptr& outGPS);
+  /** Polls the UDP port for incoming data packets. The user *must* call this
+   * method in a timely fashion to grab data as it it generated by the device.
+   *  The minimum call rate should be the expected number of data
+   * packets/second (!=scans/second). Checkout Velodyne user manual if in
+   * doubt.
+   *
+   * \param[out] outScan Upon return, an empty smart pointer will be found
+   * here if no new data was available. Otherwise, a valid scan.
+   * \param[out] outGPS  Upon return, an empty smart pointer will be found
+   * here if no new GPS data was available. Otherwise, a valid GPS reading.
+   * \return true if no error ocurred (even if there was no new observation).
+   * false if any communication error occurred.
+   */
+  [[nodiscard]] bool getNextObservation(
+      mrpt::obs::CObservationVelodyneScan::Ptr& outScan, mrpt::obs::CObservationGPS::Ptr& outGPS);
 
-	// See docs in parent class
-	void doProcess() override;
+  // See docs in parent class
+  void doProcess() override;
 
-	/** Tries to initialize the sensor driver, after setting all the parameters
-	 * with a call to loadConfig.
-	 * Velodyne specifics: this method sets up the UDP listening sockets, so
-	 * all relevant params MUST BE SET BEFORE calling this.
-	 *  \exception This method must throw an exception with a descriptive
-	 * message if some critical error is found.
-	 */
-	void initialize() override;
+  /** Tries to initialize the sensor driver, after setting all the parameters
+   * with a call to loadConfig.
+   * Velodyne specifics: this method sets up the UDP listening sockets, so
+   * all relevant params MUST BE SET BEFORE calling this.
+   *  \exception This method must throw an exception with a descriptive
+   * message if some critical error is found.
+   */
+  void initialize() override;
 
-	/** Close the UDP sockets set-up in \a initialize(). This is called
-	 * automatically upon destruction */
-	void close();
+  /** Close the UDP sockets set-up in \a initialize(). This is called
+   * automatically upon destruction */
+  void close();
 
-	/** Users normally would prefer calling \a getNextObservation() instead.
-	 * This method polls the UDP data port and returns one Velodyne DATA packet
-	 * (1206 bytes) and/or one POSITION packet. Refer to Velodyne users manual.
-	 * Approximate timestamps (based on this computer clock) are returned for
-	 * each kind of packets, or INVALID_TIMESTAMP if timeout ocurred waiting for
-	 * a packet.
-	 * \return true on all ok. false only for pcap reading EOF
-	 */
-	bool receivePackets(
-		mrpt::system::TTimeStamp& data_pkt_timestamp,
-		mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket& out_data_pkt,
-		mrpt::system::TTimeStamp& pos_pkt_timestamp,
-		mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket&
-			out_pos_pkt);
+  /** Users normally would prefer calling \a getNextObservation() instead.
+   * This method polls the UDP data port and returns one Velodyne DATA packet
+   * (1206 bytes) and/or one POSITION packet. Refer to Velodyne users manual.
+   * Approximate timestamps (based on this computer clock) are returned for
+   * each kind of packets, or INVALID_TIMESTAMP if timeout ocurred waiting for
+   * a packet.
+   * \return true on all ok. false only for pcap reading EOF
+   */
+  bool receivePackets(
+      mrpt::system::TTimeStamp& data_pkt_timestamp,
+      mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket& out_data_pkt,
+      mrpt::system::TTimeStamp& pos_pkt_timestamp,
+      mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket& out_pos_pkt);
 
-   private:
-	/** Handles for the UDP sockets, or INVALID_SOCKET (-1) */
-	using platform_socket_t =
+ private:
+  /** Handles for the UDP sockets, or INVALID_SOCKET (-1) */
+  using platform_socket_t =
 #ifdef _WIN32
 #if MRPT_WORD_SIZE == 64
-		uint64_t
+      uint64_t
 #else
-		uint32_t
+      uint32_t
 #endif
 #else
-		int
+      int
 #endif
-		;
+      ;
 
-	platform_socket_t m_hDataSock, m_hPositionSock;
+  platform_socket_t m_hDataSock, m_hPositionSock;
 
-	[[nodiscard]] static mrpt::system::TTimeStamp internal_receive_UDP_packet(
-		platform_socket_t hSocket, uint8_t* out_buffer,
-		size_t expected_packet_size, const std::string& filter_only_from_IP);
+  [[nodiscard]] static mrpt::system::TTimeStamp internal_receive_UDP_packet(
+      platform_socket_t hSocket,
+      uint8_t* out_buffer,
+      size_t expected_packet_size,
+      const std::string& filter_only_from_IP);
 
-	[[nodiscard]] bool internal_read_PCAP_packet(
-		mrpt::system::TTimeStamp& data_pkt_time, uint8_t* out_data_buffer,
-		mrpt::system::TTimeStamp& pos_pkt_time, uint8_t* out_pos_buffer);
+  [[nodiscard]] bool internal_read_PCAP_packet(
+      mrpt::system::TTimeStamp& data_pkt_time,
+      uint8_t* out_data_buffer,
+      mrpt::system::TTimeStamp& pos_pkt_time,
+      uint8_t* out_pos_buffer);
 
-	/** In progress RX scan */
-	mrpt::obs::CObservationVelodyneScan::Ptr m_rx_scan;
+  /** In progress RX scan */
+  mrpt::obs::CObservationVelodyneScan::Ptr m_rx_scan;
 
-	mrpt::obs::gnss::Message_NMEA_RMC m_last_gps_rmc;
-	mrpt::system::TTimeStamp m_last_gps_rmc_age;
-	int m_lidar_rpm{0};
-	return_type_t m_lidar_return{UNCHANGED};
+  mrpt::obs::gnss::Message_NMEA_RMC m_last_gps_rmc;
+  mrpt::system::TTimeStamp m_last_gps_rmc_age;
+  int m_lidar_rpm{0};
+  return_type_t m_lidar_return{UNCHANGED};
 
-	bool internal_send_http_post(const std::string& post_data);
+  bool internal_send_http_post(const std::string& post_data);
 
-};	// end of class
+};  // end of class
 }  // namespace mrpt::hwdrivers
 MRPT_ENUM_TYPE_BEGIN(mrpt::hwdrivers::CVelodyneScanner::model_t)
 using namespace mrpt::hwdrivers;

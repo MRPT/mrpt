@@ -18,23 +18,24 @@ using TRegisterFunction = void (*)();  // A void(void) function
 
 struct queue_register_functions_t
 {
-	std::queue<TRegisterFunction> funcs;
-	mutable std::mutex funcs_cs;
+  std::queue<TRegisterFunction> funcs;
+  mutable std::mutex funcs_cs;
 
-	/** Retrieve the next message in the queue, or nullptr if there is no
-	 * message. The user MUST call "delete" with the returned object after use.
-	 */
-	inline bool get(TRegisterFunction& ret)
-	{
-		std::lock_guard<std::mutex> lock(funcs_cs);
-		if (funcs.empty()) return false;
-		else
-		{
-			ret = funcs.front();
-			funcs.pop();
-			return true;
-		}
-	}
+  /** Retrieve the next message in the queue, or nullptr if there is no
+   * message. The user MUST call "delete" with the returned object after use.
+   */
+  inline bool get(TRegisterFunction& ret)
+  {
+    std::lock_guard<std::mutex> lock(funcs_cs);
+    if (funcs.empty())
+      return false;
+    else
+    {
+      ret = funcs.front();
+      funcs.pop();
+      return true;
+    }
+  }
 };
 
 // Use a queue for the pending register issues, but also an atomic counter,

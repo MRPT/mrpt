@@ -82,72 +82,71 @@ namespace obs
  */
 class CObservationRGBD360 : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationRGBD360, mrpt::obs)
+  DEFINE_SERIALIZABLE(CObservationRGBD360, mrpt::obs)
 
-   protected:
-	/** If set to true, m_points3D_external_file is valid. */
-	bool m_points3D_external_stored{false};
-	/** 3D points are in CImage::getImagesPathBase()+ this_file_name */
-	std::string m_points3D_external_file;
+ protected:
+  /** If set to true, m_points3D_external_file is valid. */
+  bool m_points3D_external_stored{false};
+  /** 3D points are in CImage::getImagesPathBase()+ this_file_name */
+  std::string m_points3D_external_file;
 
-	/** If set to true, m_rangeImage_external_file is valid. */
-	bool m_rangeImage_external_stored{false};
-	/** rangeImage is in CImage::getImagesPathBase()+ this_file_name */
-	std::string m_rangeImage_external_file;
+  /** If set to true, m_rangeImage_external_file is valid. */
+  bool m_rangeImage_external_stored{false};
+  /** rangeImage is in CImage::getImagesPathBase()+ this_file_name */
+  std::string m_rangeImage_external_file;
 
-   public:
-	/** Default constructor */
-	CObservationRGBD360();
-	/** Destructor */
-	~CObservationRGBD360() override;
+ public:
+  /** Default constructor */
+  CObservationRGBD360();
+  /** Destructor */
+  ~CObservationRGBD360() override;
 
-	static const unsigned int NUM_SENSORS = 2;
+  static const unsigned int NUM_SENSORS = 2;
 
-	mrpt::system::TTimeStamp timestamps[NUM_SENSORS];
+  mrpt::system::TTimeStamp timestamps[NUM_SENSORS];
 
-	/** true means the field rangeImage contains valid data */
-	bool hasRangeImage{false};
-	/** If hasRangeImage=true, a matrix of floats with the range data as
-	 * captured by the camera (in meters) \sa range_is_depth */
-	mrpt::math::CMatrix_u16 rangeImages[NUM_SENSORS];
+  /** true means the field rangeImage contains valid data */
+  bool hasRangeImage{false};
+  /** If hasRangeImage=true, a matrix of floats with the range data as
+   * captured by the camera (in meters) \sa range_is_depth */
+  mrpt::math::CMatrix_u16 rangeImages[NUM_SENSORS];
 
-	/** Units for integer depth values in rangeImages */
-	float rangeUnits = 0.001f;
+  /** Units for integer depth values in rangeImages */
+  float rangeUnits = 0.001f;
 
-	/** Similar to calling "rangeImage.setSize(H,W)" but this method provides
-	 * memory pooling to speed-up the memory allocation. */
-	void rangeImage_setSize(
-		const int HEIGHT, const int WIDTH, const unsigned sensor_id);
+  /** Similar to calling "rangeImage.setSize(H,W)" but this method provides
+   * memory pooling to speed-up the memory allocation. */
+  void rangeImage_setSize(const int HEIGHT, const int WIDTH, const unsigned sensor_id);
 
-	/** true means the field intensityImage contains valid data */
-	bool hasIntensityImage{false};
-	/** If hasIntensityImage=true, a color or gray-level intensity image of the
-	 * same size than "rangeImage" */
-	mrpt::img::CImage intensityImages[NUM_SENSORS];
-	/** Projection parameters of the 8 RGBD sensor. */
-	mrpt::img::TCamera sensorParamss[NUM_SENSORS];
+  /** true means the field intensityImage contains valid data */
+  bool hasIntensityImage{false};
+  /** If hasIntensityImage=true, a color or gray-level intensity image of the
+   * same size than "rangeImage" */
+  mrpt::img::CImage intensityImages[NUM_SENSORS];
+  /** Projection parameters of the 8 RGBD sensor. */
+  mrpt::img::TCamera sensorParamss[NUM_SENSORS];
 
-	/** The maximum range allowed by the device, in meters (e.g. 8.0m, 5.0m,...)
-	 */
-	float maxRange{10.0f};
-	/** The 6D pose of the sensor on the robot. */
-	mrpt::poses::CPose3D sensorPose;
-	/** The "sigma" error of the device in meters, used while inserting the scan
-	 * in an occupancy grid. */
-	float stdError{0.01f};
+  /** The maximum range allowed by the device, in meters (e.g. 8.0m, 5.0m,...)
+   */
+  float maxRange{10.0f};
+  /** The 6D pose of the sensor on the robot. */
+  mrpt::poses::CPose3D sensorPose;
+  /** The "sigma" error of the device in meters, used while inserting the scan
+   * in an occupancy grid. */
+  float stdError{0.01f};
 
-	// See base class docs
-	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
-	{
-		out_sensorPose = sensorPose;
-	}
-	void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override
-	{
-		sensorPose = newSensorPose;
-	}
-	void getDescriptionAsText(std::ostream& o) const override;
+  // See base class docs
+  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
+  {
+    out_sensorPose = sensorPose;
+  }
+  void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override
+  {
+    sensorPose = newSensorPose;
+  }
+  void getDescriptionAsText(std::ostream& o) const override;
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace obs
 

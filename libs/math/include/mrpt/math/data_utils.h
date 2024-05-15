@@ -28,21 +28,20 @@ namespace mrpt::math
  */
 template <class VECTORLIKE1, class VECTORLIKE2, class MAT>
 typename MAT::Scalar mahalanobisDistance2(
-	const VECTORLIKE1& X, const VECTORLIKE2& MU, const MAT& COV)
+    const VECTORLIKE1& X, const VECTORLIKE2& MU, const MAT& COV)
 {
-	MRPT_START
+  MRPT_START
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
-	ASSERT_(!X.empty());
-	ASSERT_(X.size() == MU.size());
-	ASSERT_(X.size() == COV.rows() && COV.isSquare());
+  ASSERT_(!X.empty());
+  ASSERT_(X.size() == MU.size());
+  ASSERT_(X.size() == COV.rows() && COV.isSquare());
 #endif
-	const size_t N = X.size();
-	CVectorDynamic<typename MAT::Scalar> X_MU(N);
-	for (size_t i = 0; i < N; i++)
-		X_MU[i] = X[i] - MU[i];
-	auto z = COV.llt_solve(X_MU);
-	return z.dot(z);
-	MRPT_END
+  const size_t N = X.size();
+  CVectorDynamic<typename MAT::Scalar> X_MU(N);
+  for (size_t i = 0; i < N; i++) X_MU[i] = X[i] - MU[i];
+  auto z = COV.llt_solve(X_MU);
+  return z.dot(z);
+  MRPT_END
 }
 
 /** Computes the mahalanobis distance of a vector X given the mean MU and the
@@ -51,9 +50,9 @@ typename MAT::Scalar mahalanobisDistance2(
  */
 template <class VECTORLIKE1, class VECTORLIKE2, class MAT>
 inline typename VECTORLIKE1::Scalar mahalanobisDistance(
-	const VECTORLIKE1& X, const VECTORLIKE2& MU, const MAT& COV)
+    const VECTORLIKE1& X, const VECTORLIKE2& MU, const MAT& COV)
 {
-	return std::sqrt(mahalanobisDistance2(X, MU, COV));
+  return std::sqrt(mahalanobisDistance2(X, MU, COV));
 }
 
 /** Computes the squared mahalanobis distance between two *non-independent*
@@ -64,23 +63,22 @@ inline typename VECTORLIKE1::Scalar mahalanobisDistance(
  */
 template <class VECTORLIKE, class MAT1, class MAT2, class MAT3>
 typename MAT1::Scalar mahalanobisDistance2(
-	const VECTORLIKE& mean_diffs, const MAT1& COV1, const MAT2& COV2,
-	const MAT3& CROSS_COV12)
+    const VECTORLIKE& mean_diffs, const MAT1& COV1, const MAT2& COV2, const MAT3& CROSS_COV12)
 {
-	MRPT_START
+  MRPT_START
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
-	ASSERT_(!mean_diffs.empty());
-	ASSERT_(mean_diffs.size() == COV1.rows());
-	ASSERT_(COV1.isSquare() && COV2.isSquare());
-	ASSERT_(COV1.rows() == COV2.rows());
+  ASSERT_(!mean_diffs.empty());
+  ASSERT_(mean_diffs.size() == COV1.rows());
+  ASSERT_(COV1.isSquare() && COV2.isSquare());
+  ASSERT_(COV1.rows() == COV2.rows());
 #endif
-	MAT1 COV = COV1;
-	COV += COV2;
-	COV.substract_An(CROSS_COV12, 2);
-	MAT1 COV_inv;
-	COV.inverse_LLt(COV_inv);
-	return multiply_HCHt_scalar(mean_diffs, COV_inv);
-	MRPT_END
+  MAT1 COV = COV1;
+  COV += COV2;
+  COV.substract_An(CROSS_COV12, 2);
+  MAT1 COV_inv;
+  COV.inverse_LLt(COV_inv);
+  return multiply_HCHt_scalar(mean_diffs, COV_inv);
+  MRPT_END
 }
 
 /** Computes the mahalanobis distance between two *non-independent* Gaussians
@@ -91,10 +89,9 @@ typename MAT1::Scalar mahalanobisDistance2(
  */
 template <class VECTORLIKE, class MAT1, class MAT2, class MAT3>
 inline typename VECTORLIKE::Scalar mahalanobisDistance(
-	const VECTORLIKE& mean_diffs, const MAT1& COV1, const MAT2& COV2,
-	const MAT3& CROSS_COV12)
+    const VECTORLIKE& mean_diffs, const MAT1& COV1, const MAT2& COV2, const MAT3& CROSS_COV12)
 {
-	return std::sqrt(mahalanobisDistance(mean_diffs, COV1, COV2, CROSS_COV12));
+  return std::sqrt(mahalanobisDistance(mean_diffs, COV1, COV2, CROSS_COV12));
 }
 
 /** Computes the squared mahalanobis distance between a point and a Gaussian,
@@ -104,11 +101,11 @@ inline typename VECTORLIKE::Scalar mahalanobisDistance(
  */
 template <class VECTORLIKE, class MATRIXLIKE>
 inline typename MATRIXLIKE::Scalar mahalanobisDistance2(
-	const VECTORLIKE& delta_mu, const MATRIXLIKE& cov)
+    const VECTORLIKE& delta_mu, const MATRIXLIKE& cov)
 {
-	ASSERTDEB_(cov.isSquare());
-	ASSERTDEB_(size_t(cov.cols()) == size_t(delta_mu.size()));
-	return multiply_HtCH_scalar(delta_mu, cov.inverse());
+  ASSERTDEB_(cov.isSquare());
+  ASSERTDEB_(size_t(cov.cols()) == size_t(delta_mu.size()));
+  return multiply_HtCH_scalar(delta_mu, cov.inverse());
 }
 
 /** Computes the mahalanobis distance between a point and a Gaussian, given the
@@ -118,9 +115,9 @@ inline typename MATRIXLIKE::Scalar mahalanobisDistance2(
  */
 template <class VECTORLIKE, class MATRIXLIKE>
 inline typename MATRIXLIKE::Scalar mahalanobisDistance(
-	const VECTORLIKE& delta_mu, const MATRIXLIKE& cov)
+    const VECTORLIKE& delta_mu, const MATRIXLIKE& cov)
 {
-	return std::sqrt(mahalanobisDistance2(delta_mu, cov));
+  return std::sqrt(mahalanobisDistance2(delta_mu, cov));
 }
 
 /** Computes the integral of the product of two Gaussians, with means separated
@@ -130,20 +127,19 @@ inline typename MATRIXLIKE::Scalar mahalanobisDistance(
  */
 template <typename T>
 T productIntegralTwoGaussians(
-	const std::vector<T>& mean_diffs, const CMatrixDynamic<T>& COV1,
-	const CMatrixDynamic<T>& COV2)
+    const std::vector<T>& mean_diffs, const CMatrixDynamic<T>& COV1, const CMatrixDynamic<T>& COV2)
 {
-	const size_t vector_dim = mean_diffs.size();
-	ASSERT_(vector_dim >= 1);
+  const size_t vector_dim = mean_diffs.size();
+  ASSERT_(vector_dim >= 1);
 
-	CMatrixDynamic<T> C = COV1;
-	C += COV2;	// Sum of covs:
-	const T cov_det = C.det();
-	CMatrixDynamic<T> C_inv;
-	C.inverse_LLt(C_inv);
+  CMatrixDynamic<T> C = COV1;
+  C += COV2;  // Sum of covs:
+  const T cov_det = C.det();
+  CMatrixDynamic<T> C_inv;
+  C.inverse_LLt(C_inv);
 
-	return std::pow(M_2PI, -0.5 * vector_dim) * (1.0 / std::sqrt(cov_det)) *
-		exp(-0.5 * mean_diffs.multiply_HCHt_scalar(C_inv));
+  return std::pow(M_2PI, -0.5 * vector_dim) * (1.0 / std::sqrt(cov_det)) *
+         exp(-0.5 * mean_diffs.multiply_HCHt_scalar(C_inv));
 }
 
 /** Computes the integral of the product of two Gaussians, with means separated
@@ -153,19 +149,20 @@ T productIntegralTwoGaussians(
  */
 template <typename T, size_t DIM>
 T productIntegralTwoGaussians(
-	const std::vector<T>& mean_diffs, const CMatrixFixed<T, DIM, DIM>& COV1,
-	const CMatrixFixed<T, DIM, DIM>& COV2)
+    const std::vector<T>& mean_diffs,
+    const CMatrixFixed<T, DIM, DIM>& COV1,
+    const CMatrixFixed<T, DIM, DIM>& COV2)
 {
-	ASSERT_(mean_diffs.size() == DIM);
+  ASSERT_(mean_diffs.size() == DIM);
 
-	CMatrixFixed<T, DIM, DIM> C = COV1;
-	C += COV2;	// Sum of covs:
-	const T cov_det = C.det();
-	CMatrixFixed<T, DIM, DIM> C_inv(mrpt::math::UNINITIALIZED_MATRIX);
-	C.inverse_LLt(C_inv);
+  CMatrixFixed<T, DIM, DIM> C = COV1;
+  C += COV2;  // Sum of covs:
+  const T cov_det = C.det();
+  CMatrixFixed<T, DIM, DIM> C_inv(mrpt::math::UNINITIALIZED_MATRIX);
+  C.inverse_LLt(C_inv);
 
-	return std::pow(M_2PI, -0.5 * DIM) * (1.0 / std::sqrt(cov_det)) *
-		exp(-0.5 * mean_diffs.multiply_HCHt_scalar(C_inv));
+  return std::pow(M_2PI, -0.5 * DIM) * (1.0 / std::sqrt(cov_det)) *
+         exp(-0.5 * mean_diffs.multiply_HCHt_scalar(C_inv));
 }
 
 /** Computes both, the integral of the product of two Gaussians and their square
@@ -174,26 +171,30 @@ T productIntegralTwoGaussians(
  */
 template <typename T, class VECLIKE, class MATLIKE1, class MATLIKE2>
 void productIntegralAndMahalanobisTwoGaussians(
-	const VECLIKE& mean_diffs, const MATLIKE1& COV1, const MATLIKE2& COV2,
-	T& maha2_out, T& intprod_out, const MATLIKE1* CROSS_COV12 = nullptr)
+    const VECLIKE& mean_diffs,
+    const MATLIKE1& COV1,
+    const MATLIKE2& COV2,
+    T& maha2_out,
+    T& intprod_out,
+    const MATLIKE1* CROSS_COV12 = nullptr)
 {
-	const size_t vector_dim = mean_diffs.size();
-	ASSERT_(vector_dim >= 1);
+  const size_t vector_dim = mean_diffs.size();
+  ASSERT_(vector_dim >= 1);
 
-	MATLIKE1 C = COV1;
-	C += COV2;	// Sum of covs:
-	if (CROSS_COV12)
-	{
-		C -= *CROSS_COV12;
-		C -= *CROSS_COV12;
-	}
-	const T cov_det = C.det();
-	MATLIKE1 C_inv;
-	C.inverse_LLt(C_inv);
+  MATLIKE1 C = COV1;
+  C += COV2;  // Sum of covs:
+  if (CROSS_COV12)
+  {
+    C -= *CROSS_COV12;
+    C -= *CROSS_COV12;
+  }
+  const T cov_det = C.det();
+  MATLIKE1 C_inv;
+  C.inverse_LLt(C_inv);
 
-	maha2_out = mrpt::math::multiply_HCHt_scalar(mean_diffs, C_inv);
-	intprod_out = std::pow(M_2PI, -0.5 * vector_dim) *
-		(1.0 / std::sqrt(cov_det)) * exp(-0.5 * maha2_out);
+  maha2_out = mrpt::math::multiply_HCHt_scalar(mean_diffs, C_inv);
+  intprod_out =
+      std::pow(M_2PI, -0.5 * vector_dim) * (1.0 / std::sqrt(cov_det)) * exp(-0.5 * maha2_out);
 }
 
 /** Computes both, the logarithm of the PDF and the square Mahalanobis distance
@@ -203,20 +204,19 @@ void productIntegralAndMahalanobisTwoGaussians(
  */
 template <typename T, class VECLIKE, class MATRIXLIKE>
 void mahalanobisDistance2AndLogPDF(
-	const VECLIKE& diff_mean, const MATRIXLIKE& cov, T& maha2_out,
-	T& log_pdf_out)
+    const VECLIKE& diff_mean, const MATRIXLIKE& cov, T& maha2_out, T& log_pdf_out)
 {
-	MRPT_START
-	ASSERTDEB_(cov.isSquare());
-	ASSERTDEB_(size_t(cov.cols()) == size_t(diff_mean.size()));
-	const MATRIXLIKE C_inv = cov.inverse_LLt();
-	maha2_out = multiply_HtCH_scalar(diff_mean, C_inv);
-	log_pdf_out = static_cast<typename MATRIXLIKE::Scalar>(-0.5) *
-		(maha2_out +
-		 static_cast<typename MATRIXLIKE::Scalar>(cov.cols()) *
-			 ::log(static_cast<typename MATRIXLIKE::Scalar>(M_2PI)) +
-		 ::log(cov.det()));
-	MRPT_END
+  MRPT_START
+  ASSERTDEB_(cov.isSquare());
+  ASSERTDEB_(size_t(cov.cols()) == size_t(diff_mean.size()));
+  const MATRIXLIKE C_inv = cov.inverse_LLt();
+  maha2_out = multiply_HtCH_scalar(diff_mean, C_inv);
+  log_pdf_out = static_cast<typename MATRIXLIKE::Scalar>(-0.5) *
+                (maha2_out +
+                 static_cast<typename MATRIXLIKE::Scalar>(cov.cols()) *
+                     ::log(static_cast<typename MATRIXLIKE::Scalar>(M_2PI)) +
+                 ::log(cov.det()));
+  MRPT_END
 }
 
 /** Computes both, the PDF and the square Mahalanobis distance between a point
@@ -225,10 +225,10 @@ void mahalanobisDistance2AndLogPDF(
  */
 template <typename T, class VECLIKE, class MATRIXLIKE>
 inline void mahalanobisDistance2AndPDF(
-	const VECLIKE& diff_mean, const MATRIXLIKE& cov, T& maha2_out, T& pdf_out)
+    const VECLIKE& diff_mean, const MATRIXLIKE& cov, T& maha2_out, T& pdf_out)
 {
-	mahalanobisDistance2AndLogPDF(diff_mean, cov, maha2_out, pdf_out);
-	pdf_out = std::exp(pdf_out);  // log to linear
+  mahalanobisDistance2AndLogPDF(diff_mean, cov, maha2_out, pdf_out);
+  pdf_out = std::exp(pdf_out);  // log to linear
 }
 
 /** Computes covariances and mean of any vector of containers, given optional
@@ -251,114 +251,110 @@ inline void mahalanobisDistance2AndPDF(
  * \ingroup stats_grp
  */
 template <
-	class VECTOR_OF_VECTORS, class MATRIXLIKE, class VECTORLIKE,
-	class VECTORLIKE2, class VECTORLIKE3>
-inline void
-	covariancesAndMeanWeighted(	 // Done inline to speed-up the special case
-								 // expanded in covariancesAndMean() below.
-		const VECTOR_OF_VECTORS& elements, MATRIXLIKE& covariances,
-		VECTORLIKE& means, const VECTORLIKE2* weights_mean,
-		const VECTORLIKE3* weights_cov, const bool* elem_do_wrap2pi = nullptr)
+    class VECTOR_OF_VECTORS,
+    class MATRIXLIKE,
+    class VECTORLIKE,
+    class VECTORLIKE2,
+    class VECTORLIKE3>
+inline void covariancesAndMeanWeighted(  // Done inline to speed-up the special case
+                                         // expanded in covariancesAndMean() below.
+    const VECTOR_OF_VECTORS& elements,
+    MATRIXLIKE& covariances,
+    VECTORLIKE& means,
+    const VECTORLIKE2* weights_mean,
+    const VECTORLIKE3* weights_cov,
+    const bool* elem_do_wrap2pi = nullptr)
 {
-	ASSERTMSG_(
-		elements.size() != 0,
-		"No samples provided, so there is no way to deduce the output size.");
-	using T = typename MATRIXLIKE::Scalar;
-	const size_t DIM = elements[0].size();
-	means.resize(DIM);
-	covariances.resize(DIM, DIM);
-	const size_t nElms = elements.size();
-	const T NORM = 1.0 / nElms;
-	if (weights_mean)
-	{
-		ASSERTDEB_(size_t(weights_mean->size()) == size_t(nElms));
-	}
-	// The mean goes first:
-	for (size_t i = 0; i < DIM; i++)
-	{
-		T accum = 0;
-		if (!elem_do_wrap2pi || !elem_do_wrap2pi[i])
-		{  // i'th dimension is a "normal", real number:
-			if (weights_mean)
-			{
-				for (size_t j = 0; j < nElms; j++)
-					accum += (*weights_mean)[j] * elements[j][i];
-			}
-			else
-			{
-				for (size_t j = 0; j < nElms; j++)
-					accum += elements[j][i];
-				accum *= NORM;
-			}
-		}
-		else
-		{  // i'th dimension is a circle in [-pi,pi]: we need a little trick
-			// here:
-			double accum_L = 0, accum_R = 0;
-			double Waccum_L = 0, Waccum_R = 0;
-			for (size_t j = 0; j < nElms; j++)
-			{
-				double ang = elements[j][i];
-				const double w =
-					weights_mean != nullptr ? (*weights_mean)[j] : NORM;
-				if (fabs(ang) > 0.5 * M_PI)
-				{  // LEFT HALF: 0,2pi
-					if (ang < 0) ang = (M_2PI + ang);
-					accum_L += ang * w;
-					Waccum_L += w;
-				}
-				else
-				{  // RIGHT HALF: -pi,pi
-					accum_R += ang * w;
-					Waccum_R += w;
-				}
-			}
-			if (Waccum_L > 0) accum_L /= Waccum_L;	// [0,2pi]
-			if (Waccum_R > 0) accum_R /= Waccum_R;	// [-pi,pi]
-			if (accum_L > M_PI)
-				accum_L -= M_2PI;  // Left side to [-pi,pi] again:
-			accum =
-				(accum_L * Waccum_L +
-				 accum_R * Waccum_R);  // The overall result:
-		}
-		means[i] = accum;
-	}
-	// Now the covariance:
-	for (size_t i = 0; i < DIM; i++)
-		for (size_t j = 0; j <= i; j++)	 // Only 1/2 of the matrix
-		{
-			typename MATRIXLIKE::Scalar elem = 0;
-			if (weights_cov)
-			{
-				ASSERTDEB_(size_t(weights_cov->size()) == size_t(nElms));
-				for (size_t k = 0; k < nElms; k++)
-				{
-					const T Ai = (elements[k][i] - means[i]);
-					const T Aj = (elements[k][j] - means[j]);
-					if (!elem_do_wrap2pi || !elem_do_wrap2pi[i])
-						elem += (*weights_cov)[k] * Ai * Aj;
-					else
-						elem += (*weights_cov)[k] * mrpt::math::wrapToPi(Ai) *
-							mrpt::math::wrapToPi(Aj);
-				}
-			}
-			else
-			{
-				for (size_t k = 0; k < nElms; k++)
-				{
-					const T Ai = (elements[k][i] - means[i]);
-					const T Aj = (elements[k][j] - means[j]);
-					if (!elem_do_wrap2pi || !elem_do_wrap2pi[i])
-						elem += Ai * Aj;
-					else
-						elem +=
-							mrpt::math::wrapToPi(Ai) * mrpt::math::wrapToPi(Aj);
-				}
-				elem *= NORM;
-			}
-			covariances(i, j) = elem;
-			if (i != j) covariances(j, i) = elem;
-		}
+  ASSERTMSG_(
+      elements.size() != 0, "No samples provided, so there is no way to deduce the output size.");
+  using T = typename MATRIXLIKE::Scalar;
+  const size_t DIM = elements[0].size();
+  means.resize(DIM);
+  covariances.resize(DIM, DIM);
+  const size_t nElms = elements.size();
+  const T NORM = 1.0 / nElms;
+  if (weights_mean)
+  {
+    ASSERTDEB_(size_t(weights_mean->size()) == size_t(nElms));
+  }
+  // The mean goes first:
+  for (size_t i = 0; i < DIM; i++)
+  {
+    T accum = 0;
+    if (!elem_do_wrap2pi || !elem_do_wrap2pi[i])
+    {  // i'th dimension is a "normal", real number:
+      if (weights_mean)
+      {
+        for (size_t j = 0; j < nElms; j++) accum += (*weights_mean)[j] * elements[j][i];
+      }
+      else
+      {
+        for (size_t j = 0; j < nElms; j++) accum += elements[j][i];
+        accum *= NORM;
+      }
+    }
+    else
+    {  // i'th dimension is a circle in [-pi,pi]: we need a little trick
+      // here:
+      double accum_L = 0, accum_R = 0;
+      double Waccum_L = 0, Waccum_R = 0;
+      for (size_t j = 0; j < nElms; j++)
+      {
+        double ang = elements[j][i];
+        const double w = weights_mean != nullptr ? (*weights_mean)[j] : NORM;
+        if (fabs(ang) > 0.5 * M_PI)
+        {  // LEFT HALF: 0,2pi
+          if (ang < 0) ang = (M_2PI + ang);
+          accum_L += ang * w;
+          Waccum_L += w;
+        }
+        else
+        {  // RIGHT HALF: -pi,pi
+          accum_R += ang * w;
+          Waccum_R += w;
+        }
+      }
+      if (Waccum_L > 0) accum_L /= Waccum_L;              // [0,2pi]
+      if (Waccum_R > 0) accum_R /= Waccum_R;              // [-pi,pi]
+      if (accum_L > M_PI) accum_L -= M_2PI;               // Left side to [-pi,pi] again:
+      accum = (accum_L * Waccum_L + accum_R * Waccum_R);  // The overall result:
+    }
+    means[i] = accum;
+  }
+  // Now the covariance:
+  for (size_t i = 0; i < DIM; i++)
+    for (size_t j = 0; j <= i; j++)  // Only 1/2 of the matrix
+    {
+      typename MATRIXLIKE::Scalar elem = 0;
+      if (weights_cov)
+      {
+        ASSERTDEB_(size_t(weights_cov->size()) == size_t(nElms));
+        for (size_t k = 0; k < nElms; k++)
+        {
+          const T Ai = (elements[k][i] - means[i]);
+          const T Aj = (elements[k][j] - means[j]);
+          if (!elem_do_wrap2pi || !elem_do_wrap2pi[i])
+            elem += (*weights_cov)[k] * Ai * Aj;
+          else
+            elem += (*weights_cov)[k] * mrpt::math::wrapToPi(Ai) * mrpt::math::wrapToPi(Aj);
+        }
+      }
+      else
+      {
+        for (size_t k = 0; k < nElms; k++)
+        {
+          const T Ai = (elements[k][i] - means[i]);
+          const T Aj = (elements[k][j] - means[j]);
+          if (!elem_do_wrap2pi || !elem_do_wrap2pi[i])
+            elem += Ai * Aj;
+          else
+            elem += mrpt::math::wrapToPi(Ai) * mrpt::math::wrapToPi(Aj);
+        }
+        elem *= NORM;
+      }
+      covariances(i, j) = elem;
+      if (i != j) covariances(j, i) = elem;
+    }
 }
 
 /** Computes covariances and mean of any vector of containers.
@@ -376,13 +372,14 @@ inline void
  */
 template <class VECTOR_OF_VECTORS, class MATRIXLIKE, class VECTORLIKE>
 void covariancesAndMean(
-	const VECTOR_OF_VECTORS& elements, MATRIXLIKE& covariances,
-	VECTORLIKE& means, const bool* elem_do_wrap2pi = nullptr)
+    const VECTOR_OF_VECTORS& elements,
+    MATRIXLIKE& covariances,
+    VECTORLIKE& means,
+    const bool* elem_do_wrap2pi = nullptr)
 {  // The function below is inline-expanded here:
-	covariancesAndMeanWeighted<
-		VECTOR_OF_VECTORS, MATRIXLIKE, VECTORLIKE, CVectorDouble,
-		CVectorDouble>(
-		elements, covariances, means, nullptr, nullptr, elem_do_wrap2pi);
+  covariancesAndMeanWeighted<
+      VECTOR_OF_VECTORS, MATRIXLIKE, VECTORLIKE, CVectorDouble, CVectorDouble>(
+      elements, covariances, means, nullptr, nullptr, elem_do_wrap2pi);
 }
 
 /** Computes the weighted histogram for a vector of values and their
@@ -399,47 +396,48 @@ void covariancesAndMean(
  */
 template <class VECTORLIKE1, class VECTORLIKE2>
 void weightedHistogram(
-	const VECTORLIKE1& values, const VECTORLIKE1& weights, float binWidth,
-	VECTORLIKE2& out_binCenters, VECTORLIKE2& out_binValues)
+    const VECTORLIKE1& values,
+    const VECTORLIKE1& weights,
+    float binWidth,
+    VECTORLIKE2& out_binCenters,
+    VECTORLIKE2& out_binValues)
 {
-	MRPT_START
-	using TNum = typename mrpt::math::ContainerType<VECTORLIKE1>::element_t;
+  MRPT_START
+  using TNum = typename mrpt::math::ContainerType<VECTORLIKE1>::element_t;
 
-	ASSERT_(values.size() == weights.size());
-	ASSERT_(binWidth > 0);
-	TNum minBin = minimum(values);
-	auto nBins =
-		static_cast<unsigned>(ceil((maximum(values) - minBin) / binWidth));
+  ASSERT_(values.size() == weights.size());
+  ASSERT_(binWidth > 0);
+  TNum minBin = minimum(values);
+  auto nBins = static_cast<unsigned>(ceil((maximum(values) - minBin) / binWidth));
 
-	// Generate bin center and border values:
-	out_binCenters.resize(nBins);
-	out_binValues.clear();
-	out_binValues.resize(nBins, 0);
-	TNum halfBin = TNum(0.5) * binWidth;
-	;
-	VECTORLIKE2 binBorders(nBins + 1, minBin - halfBin);
-	for (unsigned int i = 0; i < nBins; i++)
-	{
-		binBorders[i + 1] = binBorders[i] + binWidth;
-		out_binCenters[i] = binBorders[i] + halfBin;
-	}
+  // Generate bin center and border values:
+  out_binCenters.resize(nBins);
+  out_binValues.clear();
+  out_binValues.resize(nBins, 0);
+  TNum halfBin = TNum(0.5) * binWidth;
+  ;
+  VECTORLIKE2 binBorders(nBins + 1, minBin - halfBin);
+  for (unsigned int i = 0; i < nBins; i++)
+  {
+    binBorders[i + 1] = binBorders[i] + binWidth;
+    out_binCenters[i] = binBorders[i] + halfBin;
+  }
 
-	// Compute the histogram:
-	TNum totalSum = 0;
-	typename VECTORLIKE1::const_iterator itVal, itW;
-	for (itVal = values.begin(), itW = weights.begin(); itVal != values.end();
-		 ++itVal, ++itW)
-	{
-		int idx = round(((*itVal) - minBin) / binWidth);
-		if (idx >= int(nBins)) idx = nBins - 1;
-		ASSERTDEB_(idx >= 0);
-		out_binValues[idx] += *itW;
-		totalSum += *itW;
-	}
+  // Compute the histogram:
+  TNum totalSum = 0;
+  typename VECTORLIKE1::const_iterator itVal, itW;
+  for (itVal = values.begin(), itW = weights.begin(); itVal != values.end(); ++itVal, ++itW)
+  {
+    int idx = round(((*itVal) - minBin) / binWidth);
+    if (idx >= int(nBins)) idx = nBins - 1;
+    ASSERTDEB_(idx >= 0);
+    out_binValues[idx] += *itW;
+    totalSum += *itW;
+  }
 
-	if (totalSum) out_binValues /= totalSum;
+  if (totalSum) out_binValues /= totalSum;
 
-	MRPT_END
+  MRPT_END
 }
 
 /** Computes the weighted histogram for a vector of values and their
@@ -456,49 +454,50 @@ void weightedHistogram(
  */
 template <class VECTORLIKE1, class VECTORLIKE2>
 void weightedHistogramLog(
-	const VECTORLIKE1& values, const VECTORLIKE1& log_weights, float binWidth,
-	VECTORLIKE2& out_binCenters, VECTORLIKE2& out_binValues)
+    const VECTORLIKE1& values,
+    const VECTORLIKE1& log_weights,
+    float binWidth,
+    VECTORLIKE2& out_binCenters,
+    VECTORLIKE2& out_binValues)
 {
-	MRPT_START
-	using TNum = typename mrpt::math::ContainerType<VECTORLIKE1>::element_t;
+  MRPT_START
+  using TNum = typename mrpt::math::ContainerType<VECTORLIKE1>::element_t;
 
-	ASSERT_(values.size() == log_weights.size());
-	ASSERT_(binWidth > 0);
-	TNum minBin = minimum(values);
-	auto nBins =
-		static_cast<unsigned>(ceil((maximum(values) - minBin) / binWidth));
+  ASSERT_(values.size() == log_weights.size());
+  ASSERT_(binWidth > 0);
+  TNum minBin = minimum(values);
+  auto nBins = static_cast<unsigned>(ceil((maximum(values) - minBin) / binWidth));
 
-	// Generate bin center and border values:
-	out_binCenters.resize(nBins);
-	out_binValues.clear();
-	out_binValues.resize(nBins, 0);
-	TNum halfBin = TNum(0.5) * binWidth;
-	;
-	VECTORLIKE2 binBorders(nBins + 1, minBin - halfBin);
-	for (unsigned int i = 0; i < nBins; i++)
-	{
-		binBorders[i + 1] = binBorders[i] + binWidth;
-		out_binCenters[i] = binBorders[i] + halfBin;
-	}
+  // Generate bin center and border values:
+  out_binCenters.resize(nBins);
+  out_binValues.clear();
+  out_binValues.resize(nBins, 0);
+  TNum halfBin = TNum(0.5) * binWidth;
+  ;
+  VECTORLIKE2 binBorders(nBins + 1, minBin - halfBin);
+  for (unsigned int i = 0; i < nBins; i++)
+  {
+    binBorders[i + 1] = binBorders[i] + binWidth;
+    out_binCenters[i] = binBorders[i] + halfBin;
+  }
 
-	// Compute the histogram:
-	const TNum max_log_weight = maximum(log_weights);
-	TNum totalSum = 0;
-	typename VECTORLIKE1::const_iterator itVal, itW;
-	for (itVal = values.begin(), itW = log_weights.begin();
-		 itVal != values.end(); ++itVal, ++itW)
-	{
-		int idx = round(((*itVal) - minBin) / binWidth);
-		if (idx >= int(nBins)) idx = nBins - 1;
-		ASSERTDEB_(idx >= 0);
-		const TNum w = exp(*itW - max_log_weight);
-		out_binValues[idx] += w;
-		totalSum += w;
-	}
+  // Compute the histogram:
+  const TNum max_log_weight = maximum(log_weights);
+  TNum totalSum = 0;
+  typename VECTORLIKE1::const_iterator itVal, itW;
+  for (itVal = values.begin(), itW = log_weights.begin(); itVal != values.end(); ++itVal, ++itW)
+  {
+    int idx = round(((*itVal) - minBin) / binWidth);
+    if (idx >= int(nBins)) idx = nBins - 1;
+    ASSERTDEB_(idx >= 0);
+    const TNum w = exp(*itW - max_log_weight);
+    out_binValues[idx] += w;
+    totalSum += w;
+  }
 
-	if (totalSum) out_binValues /= totalSum;
+  if (totalSum) out_binValues /= totalSum;
 
-	MRPT_END
+  MRPT_END
 }
 
 /** A numerically-stable method to compute average likelihood values with
@@ -534,9 +533,8 @@ double averageWrap2Pi(const CVectorDouble& angles);
  * page</a>.
  * \ingroup stats_grp
  */
-double averageLogLikelihood(
-	const CVectorDouble& logWeights, const CVectorDouble& logLikelihoods);
+double averageLogLikelihood(const CVectorDouble& logWeights, const CVectorDouble& logLikelihoods);
 
-/**  @} */	// end of grouping container_ops_grp
+/**  @} */  // end of grouping container_ops_grp
 
 }  // namespace mrpt::math

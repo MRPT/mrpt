@@ -13,17 +13,18 @@
 
 class CObservationStereoImagesNode : public CBaseObservationNode
 {
-   public:
-	CObservationStereoImagesNode(
-		CNode* parent, mrpt::obs::CObservationStereoImages::Ptr observation,
-		const mrpt::poses::CPose3D& pose);
+ public:
+  CObservationStereoImagesNode(
+      CNode* parent,
+      mrpt::obs::CObservationStereoImages::Ptr observation,
+      const mrpt::poses::CPose3D& pose);
 
-	// CNode interface
-	ObjectType type() const override;
-	std::string displayName() const override;
+  // CNode interface
+  ObjectType type() const override;
+  std::string displayName() const override;
 
-	mrpt::obs::CObservationStereoImages::Ptr observation() const;
+  mrpt::obs::CObservationStereoImages::Ptr observation() const;
 
-   private:
-	mrpt::obs::CObservationStereoImages::Ptr m_observation;
+ private:
+  mrpt::obs::CObservationStereoImages::Ptr m_observation;
 };

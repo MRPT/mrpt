@@ -61,71 +61,64 @@ namespace mrpt::hwdrivers
  */
 class CNTRIPEmitter : public CGenericSensor
 {
-	DEFINE_GENERIC_SENSOR(CNTRIPEmitter)
+  DEFINE_GENERIC_SENSOR(CNTRIPEmitter)
 
-   private:
-	CNTRIPClient::NTRIPArgs m_ntrip_args;
+ private:
+  CNTRIPClient::NTRIPArgs m_ntrip_args;
 
-	/** The NTRIP comms object. */
-	CNTRIPClient m_client;
-	/** The output serial port. */
-	mrpt::comms::CSerialPort m_out_COM;
+  /** The NTRIP comms object. */
+  CNTRIPClient m_client;
+  /** The output serial port. */
+  mrpt::comms::CSerialPort m_out_COM;
 
-	/** If set to non-empty, the serial port will be attempted to be opened
-	 * automatically when this class is first used to request data from the
-	 * laser. */
-	std::string m_com_port;
-	int m_com_bauds{38400};
-	bool m_transmit_to_server{true};
-	std::string m_raw_output_file_prefix;
-	std::ofstream m_raw_output_file_stream;
-	mrpt::system::CTicTac m_rate_timer;
-	size_t m_rate_count{0};
+  /** If set to non-empty, the serial port will be attempted to be opened
+   * automatically when this class is first used to request data from the
+   * laser. */
+  std::string m_com_port;
+  int m_com_bauds{38400};
+  bool m_transmit_to_server{true};
+  std::string m_raw_output_file_prefix;
+  std::ofstream m_raw_output_file_stream;
+  mrpt::system::CTicTac m_rate_timer;
+  size_t m_rate_count{0};
 
-   protected:
-	/** See the class documentation at the top for expected parameters */
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection) override;
+ protected:
+  /** See the class documentation at the top for expected parameters */
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection) override;
 
-   public:
-	/** Constructor  */
-	CNTRIPEmitter();
+ public:
+  /** Constructor  */
+  CNTRIPEmitter();
 
-	/** Destructor  */
-	~CNTRIPEmitter() override;
+  /** Destructor  */
+  ~CNTRIPEmitter() override;
 
-	/** Changes the serial port to connect to (call prior to 'doProcess'), for
-	 * example "COM1" or "ttyS0".
-	 *  This is not needed if the configuration is loaded with "loadConfig".
-	 */
-	void setOutputSerialPort(const std::string& port) { m_com_port = port; }
-	std::string getOutputSerialPort() const { return m_com_port; }
-	void setRawOutputFilePrefix(const std::string& outfile)
-	{
-		m_raw_output_file_prefix = outfile;
-	}
-	std::string getRawOutputFilePrefix() const
-	{
-		return m_raw_output_file_prefix;
-	}
+  /** Changes the serial port to connect to (call prior to 'doProcess'), for
+   * example "COM1" or "ttyS0".
+   *  This is not needed if the configuration is loaded with "loadConfig".
+   */
+  void setOutputSerialPort(const std::string& port) { m_com_port = port; }
+  std::string getOutputSerialPort() const { return m_com_port; }
+  void setRawOutputFilePrefix(const std::string& outfile) { m_raw_output_file_prefix = outfile; }
+  std::string getRawOutputFilePrefix() const { return m_raw_output_file_prefix; }
 
-	/** Set up the NTRIP communications, raising an exception on fatal errors.
-	 *  Called automatically by rawlog-grabber.
-	 *  If used manually, call after "loadConfig" and before "doProcess".
-	 */
-	void initialize() override;
+  /** Set up the NTRIP communications, raising an exception on fatal errors.
+   *  Called automatically by rawlog-grabber.
+   *  If used manually, call after "loadConfig" and before "doProcess".
+   */
+  void initialize() override;
 
-	/** The main loop, which must be called in a timely fashion in order to
-	 * process the incomming NTRIP data stream and dump it to the serial port.
-	 *  This method is called automatically when used within rawlog-grabber.
-	 */
-	void doProcess() override;
+  /** The main loop, which must be called in a timely fashion in order to
+   * process the incomming NTRIP data stream and dump it to the serial port.
+   *  This method is called automatically when used within rawlog-grabber.
+   */
+  void doProcess() override;
 
-	/** Exposes the NTRIP client object */
-	CNTRIPClient& getNTRIPClient() { return m_client; }
-	/** Exposes the NTRIP client object */
-	const CNTRIPClient& getNTRIPClient() const { return m_client; }
-};	// End of class
+  /** Exposes the NTRIP client object */
+  CNTRIPClient& getNTRIPClient() { return m_client; }
+  /** Exposes the NTRIP client object */
+  const CNTRIPClient& getNTRIPClient() const { return m_client; }
+};  // End of class
 
 }  // namespace mrpt::hwdrivers

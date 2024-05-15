@@ -59,17 +59,17 @@ namespace typemeta
 template <typename T>
 struct TTypeName
 {
-	constexpr static auto get() { return T::getClassName(); }
+  constexpr static auto get() { return T::getClassName(); }
 };
 
 /** Specialization for shared_ptr<T> */
 template <typename T>
 struct TTypeName<std::shared_ptr<T>>
 {
-	constexpr static auto get()
-	{
-		return literal("std::shared_ptr<") + TTypeName<T>::get() + literal(">");
-	}
+  constexpr static auto get()
+  {
+    return literal("std::shared_ptr<") + TTypeName<T>::get() + literal(">");
+  }
 };
 
 /** Identical to MRPT_DECLARE_TTYPENAME but intended for user code.
@@ -78,64 +78,61 @@ struct TTypeName<std::shared_ptr<T>>
  * as `_TYPE` argument here.
  * \sa TTypeName, DECLARE_TTYPENAME_CLASSNAME
  */
-#define DECLARE_CUSTOM_TTYPENAME(_TYPE)                                        \
-	namespace mrpt                                                             \
-	{                                                                          \
-	namespace typemeta                                                         \
-	{                                                                          \
-	MRPT_DECLARE_TTYPENAME(_TYPE)                                              \
-	}                                                                          \
-	}
+#define DECLARE_CUSTOM_TTYPENAME(_TYPE) \
+  namespace mrpt                        \
+  {                                     \
+  namespace typemeta                    \
+  {                                     \
+  MRPT_DECLARE_TTYPENAME(_TYPE)         \
+  }                                     \
+  }
 
 /** Like DECLARE_CUSTOM_TTYPENAME(), but for use within the class declaration
  * body. It has the advantage of not requiring macros/definitions out of the
  * original class namespace.
  * \sa TTypeName
  */
-#define DECLARE_TTYPENAME_CLASSNAME(_CLASSNAME)                                \
-   public:                                                                     \
-	static constexpr auto getClassName()                                       \
-	{                                                                          \
-		return mrpt::typemeta::literal(#_CLASSNAME);                           \
-	}
+#define DECLARE_TTYPENAME_CLASSNAME(_CLASSNAME) \
+ public:                                        \
+  static constexpr auto getClassName() { return mrpt::typemeta::literal(#_CLASSNAME); }
 
-#define MRPT_DECLARE_TTYPENAME(_TYPE)                                          \
-	template <>                                                                \
-	struct TTypeName<_TYPE>                                                    \
-	{                                                                          \
-		constexpr static auto get() { return literal(#_TYPE); }                \
-	};
+#define MRPT_DECLARE_TTYPENAME(_TYPE)                       \
+  template <>                                               \
+  struct TTypeName<_TYPE>                                   \
+  {                                                         \
+    constexpr static auto get() { return literal(#_TYPE); } \
+  };
 /** Declares a typename to be "namespace::type"
  * \sa MRPT_DECLARE_TTYPENAME_NO_NAMESPACE */
-#define MRPT_DECLARE_TTYPENAME_NAMESPACE(_TYPE, __NS)                          \
-	template <>                                                                \
-	struct TTypeName<__NS::_TYPE>                                              \
-	{                                                                          \
-		constexpr static auto get() { return literal(#__NS "::" #_TYPE); }     \
-	};
+#define MRPT_DECLARE_TTYPENAME_NAMESPACE(_TYPE, __NS)                  \
+  template <>                                                          \
+  struct TTypeName<__NS::_TYPE>                                        \
+  {                                                                    \
+    constexpr static auto get() { return literal(#__NS "::" #_TYPE); } \
+  };
 
 /** Declares a typename to be "type" (without the NS prefix)
  * \sa MRPT_DECLARE_TTYPENAME_NAMESPACE */
-#define MRPT_DECLARE_TTYPENAME_NO_NAMESPACE(_TYPE, __NS)                       \
-	template <>                                                                \
-	struct TTypeName<__NS::_TYPE>                                              \
-	{                                                                          \
-		constexpr static auto get() { return literal(#_TYPE); }                \
-	};
+#define MRPT_DECLARE_TTYPENAME_NO_NAMESPACE(_TYPE, __NS)    \
+  template <>                                               \
+  struct TTypeName<__NS::_TYPE>                             \
+  {                                                         \
+    constexpr static auto get() { return literal(#_TYPE); } \
+  };
 
-#define MRPT_DECLARE_TTYPENAME_PTR(_TYPE)                                      \
-	template <>                                                                \
-	struct TTypeName<_TYPE::Ptr>                                               \
-	{                                                                          \
-		static auto get() { return TTypeName<_TYPE>::get(); }                  \
-	};
+#define MRPT_DECLARE_TTYPENAME_PTR(_TYPE)                 \
+  template <>                                             \
+  struct TTypeName<_TYPE::Ptr>                            \
+  {                                                       \
+    static auto get() { return TTypeName<_TYPE>::get(); } \
+  };
 
-#define MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(_TYPE, __NS)                      \
-	template <>                                                                \
-	struct TTypeName<__NS::_TYPE::Ptr>                                         \
-	{                                                                          \
-		static auto get() { return TTypeName<__NS::_TYPE>::get(); }            \
-	};
+#define MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(_TYPE, __NS)       \
+  template <>                                                   \
+  struct TTypeName<__NS::_TYPE::Ptr>                            \
+  {                                                             \
+    static auto get() { return TTypeName<__NS::_TYPE>::get(); } \
+  };
 
 MRPT_DECLARE_TTYPENAME(bool)
 MRPT_DECLARE_TTYPENAME(double)

@@ -18,6 +18,6 @@ namespace mrpt::io
  */
 inline void registerAllClasses_mrpt_io()
 {
-	// none
+  // none
 }
 }  // namespace mrpt::io

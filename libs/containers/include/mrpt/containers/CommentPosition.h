@@ -20,10 +20,10 @@ namespace mrpt::containers
  */
 enum class CommentPosition : uint8_t
 {
-	TOP = 0,
-	RIGHT,
-	//
-	MAX
+  TOP = 0,
+  RIGHT,
+  //
+  MAX
 };
 
 }  // namespace mrpt::containers

@@ -20,67 +20,67 @@ namespace mrpt::apps
  */
 class CGridMapAlignerApp : public mrpt::system::COutputLogger
 {
-   public:
-	CGridMapAlignerApp();
+ public:
+  CGridMapAlignerApp();
 
-	/** @name Main API
-	 * @{ */
+  /** @name Main API
+   * @{ */
 
-	/** Initializes the application from CLI parameters. Refer to the manpage of
-	 * grid-matching. Throws on errors.
-	 */
-	void initialize(int argc, const char** argv);
+  /** Initializes the application from CLI parameters. Refer to the manpage of
+   * grid-matching. Throws on errors.
+   */
+  void initialize(int argc, const char** argv);
 
-	inline void initialize(int argc, char** argv)
-	{
-		initialize(argc, const_cast<const char**>(argv));
-	}
+  inline void initialize(int argc, char** argv)
+  {
+    initialize(argc, const_cast<const char**>(argv));
+  }
 
-	/** Runs with the current parameter set. Throws on errors. */
-	void run();
+  /** Runs with the current parameter set. Throws on errors. */
+  void run();
 
-	/** @} */
+  /** @} */
 
-	/** @name Parameters and options. See: initialize()
-	 * @{ */
+  /** @name Parameters and options. See: initialize()
+   * @{ */
 
-	bool SAVE_SOG_3DSCENE = false;
-	bool SAVE_SOG_ALL_MAPS_OVERLAP_HYPOTHESES = false;
-	bool SAVE_CORR_AND_NONCORR_DISTS = false;
-	bool IS_VERBOSE = false;
-	bool NOSAVE = false;
-	bool SKIP_ICP_STAGE = false;
-	bool MOST_LIKELY_SOG_MODE_ONLY = false;
+  bool SAVE_SOG_3DSCENE = false;
+  bool SAVE_SOG_ALL_MAPS_OVERLAP_HYPOTHESES = false;
+  bool SAVE_CORR_AND_NONCORR_DISTS = false;
+  bool IS_VERBOSE = false;
+  bool NOSAVE = false;
+  bool SKIP_ICP_STAGE = false;
+  bool MOST_LIKELY_SOG_MODE_ONLY = false;
 
-	std::string SAVE_ICP_GOODNESS_FIL = "";
+  std::string SAVE_ICP_GOODNESS_FIL = "";
 
-	// Mode of operation
-	bool is_match = false, is_detect_test = false;
+  // Mode of operation
+  bool is_match = false, is_detect_test = false;
 
-	std::string RESULTS_DIR = "GRID-MATCHING_RESULTS";
-	std::string fil_grid1, fil_grid2;
-	std::string OUTPUT_FIL;
-	std::string CONFIG_FIL;
+  std::string RESULTS_DIR = "GRID-MATCHING_RESULTS";
+  std::string fil_grid1, fil_grid2;
+  std::string OUTPUT_FIL;
+  std::string CONFIG_FIL;
 
-	double STD_NOISE_XY = 0, STD_NOISE_PHI = 0;
-	double STD_NOISE_LASER = 0;
-	double GT_Ax = 0, GT_Ay = 0, GT_Aphi_rad = 0;
+  double STD_NOISE_XY = 0, STD_NOISE_PHI = 0;
+  double STD_NOISE_LASER = 0;
+  double GT_Ax = 0, GT_Ay = 0, GT_Aphi_rad = 0;
 
-	bool NOISE_IN_LASER = false;
-	bool NOISE_IN_POSE = false;
+  bool NOISE_IN_LASER = false;
+  bool NOISE_IN_POSE = false;
 
-	unsigned int N_ITERS = 1;
+  unsigned int N_ITERS = 1;
 
-	mrpt::slam::CGridMapAligner::TAlignerMethod aligner_method =
-		mrpt::slam::CGridMapAligner::amModifiedRANSAC;
-	/** @} */
+  mrpt::slam::CGridMapAligner::TAlignerMethod aligner_method =
+      mrpt::slam::CGridMapAligner::amModifiedRANSAC;
+  /** @} */
 
-	/** @name Outputs and result variables
-	 * @{ */
-	mrpt::poses::CPose2D estimateMean;
-	mrpt::math::CMatrixDouble33 estimateCOV;
+  /** @name Outputs and result variables
+   * @{ */
+  mrpt::poses::CPose2D estimateMean;
+  mrpt::math::CMatrixDouble33 estimateCOV;
 
-	/** @} */
+  /** @} */
 };
 
 }  // namespace mrpt::apps

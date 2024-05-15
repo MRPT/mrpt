@@ -14,14 +14,13 @@ namespace mrpt::graphslam::optimizers
 template <class GRAPH_T>
 void CGraphSlamOptimizer<GRAPH_T>::loadParams(const std::string& source_fname)
 {
-	std::string section("OptimizerParameters");
-	this->setVerbosityLevelFromSection(source_fname, section);
+  std::string section("OptimizerParameters");
+  this->setVerbosityLevelFromSection(source_fname, section);
 }
 
 template <class GRAPH_T>
 void CGraphSlamOptimizer<GRAPH_T>::printParams() const
 {
-	std::cout << "GSO Verbosity: " << this->getMinLoggingLevelStr()
-			  << std::endl;
+  std::cout << "GSO Verbosity: " << this->getMinLoggingLevelStr() << std::endl;
 }
 }  // namespace mrpt::graphslam::optimizers

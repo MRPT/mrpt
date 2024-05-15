@@ -80,153 +80,150 @@ namespace mrpt::graphslam::deciders
  * \ingroup mrpt_graphslam_grp
  */
 template <class GRAPH_T>
-class CICPCriteriaNRD
-	: public virtual mrpt::graphslam::deciders::CNodeRegistrationDecider<
-		  GRAPH_T>,
-	  public mrpt::graphslam::deciders::CRangeScanOps<GRAPH_T>
+class CICPCriteriaNRD :
+    public virtual mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>,
+    public mrpt::graphslam::deciders::CRangeScanOps<GRAPH_T>
 {
+ public:
+  /**\brief Handy typedefs */
+  /**\{*/
+  /**\brief type of graph constraints */
+  using constraint_t = typename GRAPH_T::constraint_t;
+  /**\brief type of underlying poses (2D/3D). */
+  using pose_t = typename GRAPH_T::constraint_t::type_value;
+  using global_pose_t = typename GRAPH_T::global_pose_t;
+
+  using InfMat =
+      mrpt::math::CMatrixFixed<double, constraint_t::state_length, constraint_t::state_length>;
+  /**\brief Typedef for accessing methods of the RangeScanRegistrationDecider
+   * parent class.
+   */
+  using range_ops_t = mrpt::graphslam::deciders::CRangeScanOps<GRAPH_T>;
+  using decider_t = CICPCriteriaNRD<GRAPH_T>; /**< self type */
+  /**\brief Node Registration Decider */
+  using parent_t = mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>;
+  /**\}*/
+
+  CICPCriteriaNRD();
+  ~CICPCriteriaNRD() override = default;
+
+  void loadParams(const std::string& source_fname) override;
+  void printParams() const override;
+  void getDescriptiveReport(std::string* report_str) const override;
+
+  /**\brief Update the decider state using the latest dataset measurements.
+   *
+   * \note Depending on the observations at hand, update of the state is
+   * handled either by updateState2D, or by updateState3D methods. This
+   * helps in separating the 2D, 3D RangeScans handling altogether, which in
+   * turn simplifies the overall procedure
+   *
+   * Order of calls:
+   * updateState (calls) ==> updateState2D/3D ==>
+   * checkRegistrationCondition2D/3D ==> CheckRegistrationCondition
+   *
+   * \sa updateState2D, updateState3D
+   */
+  bool updateState(
+      mrpt::obs::CActionCollection::Ptr action,
+      mrpt::obs::CSensoryFrame::Ptr observations,
+      mrpt::obs::CObservation::Ptr observation) override;
+  /**\brief Specialized updateState method used solely when dealing with
+   * 2DRangeScan information.
+   * \sa updateState3D
+   */
+  bool updateState2D(mrpt::obs::CObservation2DRangeScan::Ptr observation);
+  /**\brief Specialized updateState method used solely when dealing with
+   * 3DRangeScan information.
+   * \sa updateState2D
+   */
+  bool updateState3D(mrpt::obs::CObservation3DRangeScan::Ptr observation);
+
+  struct TParams : public mrpt::config::CLoadableOptions
+  {
    public:
-	/**\brief Handy typedefs */
-	/**\{*/
-	/**\brief type of graph constraints */
-	using constraint_t = typename GRAPH_T::constraint_t;
-	/**\brief type of underlying poses (2D/3D). */
-	using pose_t = typename GRAPH_T::constraint_t::type_value;
-	using global_pose_t = typename GRAPH_T::global_pose_t;
+    TParams(decider_t& d);
+    ~TParams() override = default;
 
-	using InfMat = mrpt::math::CMatrixFixed<
-		double, constraint_t::state_length, constraint_t::state_length>;
-	/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider
-	 * parent class.
-	 */
-	using range_ops_t = mrpt::graphslam::deciders::CRangeScanOps<GRAPH_T>;
-	using decider_t = CICPCriteriaNRD<GRAPH_T>; /**< self type */
-	/**\brief Node Registration Decider */
-	using parent_t =
-		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>;
-	/**\}*/
+    decider_t& decider; /**< Reference to outer decider class */
 
-	CICPCriteriaNRD();
-	~CICPCriteriaNRD() override = default;
+    void loadFromConfigFile(
+        const mrpt::config::CConfigFileBase& source, const std::string& section) override;
+    void dumpToTextStream(std::ostream& out) const override;
+    /** Maximum distance for new node registration */
+    double registration_max_distance;
+    /** Maximum angle difference for new node registration */
+    double registration_max_angle;
+  };
 
-	void loadParams(const std::string& source_fname) override;
-	void printParams() const override;
-	void getDescriptiveReport(std::string* report_str) const override;
+  TParams params;
 
-	/**\brief Update the decider state using the latest dataset measurements.
-	 *
-	 * \note Depending on the observations at hand, update of the state is
-	 * handled either by updateState2D, or by updateState3D methods. This
-	 * helps in separating the 2D, 3D RangeScans handling altogether, which in
-	 * turn simplifies the overall procedure
-	 *
-	 * Order of calls:
-	 * updateState (calls) ==> updateState2D/3D ==>
-	 * checkRegistrationCondition2D/3D ==> CheckRegistrationCondition
-	 *
-	 * \sa updateState2D, updateState3D
-	 */
-	bool updateState(
-		mrpt::obs::CActionCollection::Ptr action,
-		mrpt::obs::CSensoryFrame::Ptr observations,
-		mrpt::obs::CObservation::Ptr observation) override;
-	/**\brief Specialized updateState method used solely when dealing with
-	 * 2DRangeScan information.
-	 * \sa updateState3D
-	 */
-	bool updateState2D(mrpt::obs::CObservation2DRangeScan::Ptr observation);
-	/**\brief Specialized updateState method used solely when dealing with
-	 * 3DRangeScan information.
-	 * \sa updateState2D
-	 */
-	bool updateState3D(mrpt::obs::CObservation3DRangeScan::Ptr observation);
+ protected:
+  bool checkRegistrationCondition() override;
+  /**\brief Specialized checkRegistrationCondtion method used solely when
+   * dealing with 2DRangeScan information
+   * \sa checkRegistrationCondition3D
+   */
+  bool checkRegistrationCondition2D();
+  /**\brief Specialized checkRegistrationCondition method used solely when
+   * dealing with 3DRangeScan information
+   * \sa checkRegistrationCondition2D
+   */
+  bool checkRegistrationCondition3D();
 
-	struct TParams : public mrpt::config::CLoadableOptions
-	{
-	   public:
-		TParams(decider_t& d);
-		~TParams() override = default;
+  bool m_is_using_3DScan;
 
-		decider_t& decider; /**< Reference to outer decider class */
+  /**\brief handy laser scans to use in the class methods
+   */
+  /**\{ */
+  /**\brief 2D LaserScan corresponding to the latest registered node in the
+   * graph */
+  mrpt::obs::CObservation2DRangeScan::Ptr m_last_laser_scan2D;
+  /**\brief Current LaserScan. Set during the new measurements acquisition in
+   * updateState method
+   */
+  mrpt::obs::CObservation2DRangeScan::Ptr m_curr_laser_scan2D;
 
-		void loadFromConfigFile(
-			const mrpt::config::CConfigFileBase& source,
-			const std::string& section) override;
-		void dumpToTextStream(std::ostream& out) const override;
-		/** Maximum distance for new node registration */
-		double registration_max_distance;
-		/** Maximum angle difference for new node registration */
-		double registration_max_angle;
-	};
+  mrpt::obs::CObservation3DRangeScan::Ptr m_last_laser_scan3D;
+  mrpt::obs::CObservation3DRangeScan::Ptr m_curr_laser_scan3D;
+  /**\} */
 
-	TParams params;
+  /**\brief Odometry rigid-body transformation since the last accepted
+   * LaserScan.
+   *
+   * Decider can use it to smoothen the trajectory in the case of high noise
+   * in the laser measurements
+   */
+  constraint_t m_latest_odometry_PDF;
+  /**\brief pose_t estimation using only odometry information.
+   * \note Utilized only in observation-only rawlogs.
+   *
+   */
+  pose_t m_curr_odometry_only_pose;
+  /**\brief pose_t estimation using only odometry information.
+   * \note Utilized only in observation-only rawlogs.
+   *
+   * Resets next time an ICP edge/Odometry measurement is utilized for
+   * updating the estimated robot position.
+   */
+  pose_t m_last_odometry_only_pose;
+  /**\brief Keeps track of the last N measurements between the ICP edge and
+   * the corresponding odometry measurements.
+   *
+   * Use the last odometry rigid body transformation instead of the
+   * ICP edge if the mahalanobis distance between them is greater than this
+   * limit.
+   */
+  TSlidingWindow m_mahal_distance_ICP_odom;
 
-   protected:
-	bool checkRegistrationCondition() override;
-	/**\brief Specialized checkRegistrationCondtion method used solely when
-	 * dealing with 2DRangeScan information
-	 * \sa checkRegistrationCondition3D
-	 */
-	bool checkRegistrationCondition2D();
-	/**\brief Specialized checkRegistrationCondition method used solely when
-	 * dealing with 3DRangeScan information
-	 * \sa checkRegistrationCondition2D
-	 */
-	bool checkRegistrationCondition3D();
+  // criteria for adding new a new node
+  bool m_use_angle_difference_node_reg;
+  bool m_use_distance_node_reg;
 
-	bool m_is_using_3DScan;
-
-	/**\brief handy laser scans to use in the class methods
-	 */
-	/**\{ */
-	/**\brief 2D LaserScan corresponding to the latest registered node in the
-	 * graph */
-	mrpt::obs::CObservation2DRangeScan::Ptr m_last_laser_scan2D;
-	/**\brief Current LaserScan. Set during the new measurements acquisition in
-	 * updateState method
-	 */
-	mrpt::obs::CObservation2DRangeScan::Ptr m_curr_laser_scan2D;
-
-	mrpt::obs::CObservation3DRangeScan::Ptr m_last_laser_scan3D;
-	mrpt::obs::CObservation3DRangeScan::Ptr m_curr_laser_scan3D;
-	/**\} */
-
-	/**\brief Odometry rigid-body transformation since the last accepted
-	 * LaserScan.
-	 *
-	 * Decider can use it to smoothen the trajectory in the case of high noise
-	 * in the laser measurements
-	 */
-	constraint_t m_latest_odometry_PDF;
-	/**\brief pose_t estimation using only odometry information.
-	 * \note Utilized only in observation-only rawlogs.
-	 *
-	 */
-	pose_t m_curr_odometry_only_pose;
-	/**\brief pose_t estimation using only odometry information.
-	 * \note Utilized only in observation-only rawlogs.
-	 *
-	 * Resets next time an ICP edge/Odometry measurement is utilized for
-	 * updating the estimated robot position.
-	 */
-	pose_t m_last_odometry_only_pose;
-	/**\brief Keeps track of the last N measurements between the ICP edge and
-	 * the corresponding odometry measurements.
-	 *
-	 * Use the last odometry rigid body transformation instead of the
-	 * ICP edge if the mahalanobis distance between them is greater than this
-	 * limit.
-	 */
-	TSlidingWindow m_mahal_distance_ICP_odom;
-
-	// criteria for adding new a new node
-	bool m_use_angle_difference_node_reg;
-	bool m_use_distance_node_reg;
-
-	/**How many times we used the ICP Edge instead of Odometry edge*/
-	int m_times_used_ICP;
-	/**How many times we used the Odometry Edge instead of the ICP edge */
-	int m_times_used_odom;
+  /**How many times we used the ICP Edge instead of Odometry edge*/
+  int m_times_used_ICP;
+  /**How many times we used the Odometry Edge instead of the ICP edge */
+  int m_times_used_odom;
 };
 }  // namespace mrpt::graphslam::deciders
 #include "CICPCriteriaNRD_impl.h"

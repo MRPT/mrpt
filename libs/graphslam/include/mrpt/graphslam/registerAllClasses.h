@@ -21,7 +21,7 @@ namespace mrpt::graphslam
  */
 inline void registerAllClasses_mrpt_graphslam()
 {
-	mrpt::gui::registerAllClasses_mrpt_gui();
-	mrpt::slam::registerAllClasses_mrpt_slam();
+  mrpt::gui::registerAllClasses_mrpt_gui();
+  mrpt::slam::registerAllClasses_mrpt_slam();
 }
 }  // namespace mrpt::graphslam

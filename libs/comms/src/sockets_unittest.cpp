@@ -15,6 +15,6 @@
 
 TEST(SocketTests, send_receive_object)
 {
-	SocketsTest();
-	EXPECT_TRUE(sockets_test_passed_ok);
+  SocketsTest();
+  EXPECT_TRUE(sockets_test_passed_ok);
 }

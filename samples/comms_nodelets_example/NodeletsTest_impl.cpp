@@ -31,117 +31,114 @@ auto dir = mrpt::comms::TopicDirectory::create();
 
 void thread_publisher()
 {
-	using namespace mrpt::comms;
-	using namespace std;
+  using namespace mrpt::comms;
+  using namespace std;
 
-	try
-	{
+  try
+  {
 #ifdef NODELETS_TEST_VERBOSE
-		printf("[publisher] Started\n");
+    printf("[publisher] Started\n");
 #endif
 
-		for (int i = 0; i < 5; i++)
-		{
-			std::this_thread::sleep_for(100ms);
-			dir->getTopic("/robot/odom")->publish(p_tx);
-		}
+    for (int i = 0; i < 5; i++)
+    {
+      std::this_thread::sleep_for(100ms);
+      dir->getTopic("/robot/odom")->publish(p_tx);
+    }
 
 #ifdef NODELETS_TEST_VERBOSE
-		printf("[publisher] Finish\n");
+    printf("[publisher] Finish\n");
 #endif
-	}
-	catch (const std::exception& e)
-	{
-		cerr << e.what() << endl;
-	}
-	catch (...)
-	{
-		printf("[thread_publisher] Runtime error!\n");
-	}
+  }
+  catch (const std::exception& e)
+  {
+    cerr << e.what() << endl;
+  }
+  catch (...)
+  {
+    printf("[thread_publisher] Runtime error!\n");
+  }
 }
 
 void onNewMsg(const mrpt::math::TPose3D& p)
 {
 #ifdef NODELETS_TEST_VERBOSE
-	std::cout << "sub2: rx TPose3D" << p.asString() << std::endl;
+  std::cout << "sub2: rx TPose3D" << p.asString() << std::endl;
 #endif
 }
 
 void onNewMsg2(int idx, const mrpt::math::TPose3D& p)
 {
 #ifdef NODELETS_TEST_VERBOSE
-	std::cout << "onNewMsg2: idx=" << idx << " rx TPose3D" << p.asString()
-			  << std::endl;
+  std::cout << "onNewMsg2: idx=" << idx << " rx TPose3D" << p.asString() << std::endl;
 #endif
 }
 
 void thread_subscriber()
 {
-	using namespace mrpt::comms;
-	using namespace std;
+  using namespace mrpt::comms;
+  using namespace std;
 
-	try
-	{
+  try
+  {
 #ifdef NODELETS_TEST_VERBOSE
-		printf("[subscriber] Connecting\n");
+    printf("[subscriber] Connecting\n");
 #endif
 
 #ifdef NODELETS_TEST_VERBOSE
-		printf("[subscriber] Connected. Waiting for a message...\n");
+    printf("[subscriber] Connected. Waiting for a message...\n");
 #endif
 
-		// Create a subscriber with a lambda:
-		Subscriber::Ptr sub1 =
-			dir->getTopic("/robot/odom")
-				->createSubscriber<mrpt::math::TPose3D>(
-					[](const mrpt::math::TPose3D& p_rx) -> void {
+    // Create a subscriber with a lambda:
+    Subscriber::Ptr sub1 = dir->getTopic("/robot/odom")
+                               ->createSubscriber<mrpt::math::TPose3D>(
+                                   [](const mrpt::math::TPose3D& p_rx) -> void
+                                   {
 #ifdef NODELETS_TEST_VERBOSE
-						std::cout << "sub1: rx TPose3D" << p_rx.asString()
-								  << std::endl;
+                                     std::cout << "sub1: rx TPose3D" << p_rx.asString()
+                                               << std::endl;
 #endif
-						nodelets_test_passed_ok = (p_rx == p_tx);
-					});
+                                     nodelets_test_passed_ok = (p_rx == p_tx);
+                                   });
 
-		// Create a subscriber with a regular function via std::function:
-		auto sub2 =
-			dir->getTopic("/robot/odom")
-				->createSubscriber<mrpt::math::TPose3D>(
-					std::function<void(const mrpt::math::TPose3D&)>(&onNewMsg));
+    // Create a subscriber with a regular function via std::function:
+    auto sub2 = dir->getTopic("/robot/odom")
+                    ->createSubscriber<mrpt::math::TPose3D>(
+                        std::function<void(const mrpt::math::TPose3D&)>(&onNewMsg));
 
-		// Create a subscriber with a regular function:
-		auto sub3 = dir->getTopic("/robot/odom")
-						->createSubscriber<mrpt::math::TPose3D>(&onNewMsg);
+    // Create a subscriber with a regular function:
+    auto sub3 = dir->getTopic("/robot/odom")->createSubscriber<mrpt::math::TPose3D>(&onNewMsg);
 
-		// Create a subscriber with std::bind:
-		using namespace std::placeholders;
-		auto sub4 = dir->getTopic("/robot/odom")
-						->createSubscriber<mrpt::math::TPose3D>(
-							[](auto&& arg1) { return onNewMsg2(123, arg1); });
+    // Create a subscriber with std::bind:
+    using namespace std::placeholders;
+    auto sub4 = dir->getTopic("/robot/odom")
+                    ->createSubscriber<mrpt::math::TPose3D>([](auto&& arg1)
+                                                            { return onNewMsg2(123, arg1); });
 
-		// wait for messages to arrive.
-		// The nodelet is up and live until "sub" gets out of scope.
-		std::this_thread::sleep_for(2000ms);
+    // wait for messages to arrive.
+    // The nodelet is up and live until "sub" gets out of scope.
+    std::this_thread::sleep_for(2000ms);
 
 #ifdef NODELETS_TEST_VERBOSE
-		printf("[subscriber] Finish\n");
+    printf("[subscriber] Finish\n");
 #endif
-	}
-	catch (const std::exception& e)
-	{
-		cerr << e.what() << endl;
-	}
-	catch (...)
-	{
-		cerr << "[thread_subscriber] Runtime error!" << endl;
-	}
+  }
+  catch (const std::exception& e)
+  {
+    cerr << e.what() << endl;
+  }
+  catch (...)
+  {
+    cerr << "[thread_subscriber] Runtime error!" << endl;
+  }
 }
 
 void NodeletsTest()
 {
-	using namespace std::chrono_literals;
+  using namespace std::chrono_literals;
 
-	std::thread(thread_publisher).detach();
-	std::thread(thread_subscriber).detach();
-	std::this_thread::sleep_for(1000ms);
+  std::thread(thread_publisher).detach();
+  std::thread(thread_subscriber).detach();
+  std::this_thread::sleep_for(1000ms);
 }
 //! [example-nodelets]

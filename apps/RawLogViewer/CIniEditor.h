@@ -18,33 +18,34 @@
 
 class CIniEditor : public wxDialog
 {
-   public:
-	CIniEditor(
-		wxWindow* parent, wxWindowID id = wxID_ANY,
-		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize);
-	~CIniEditor() override;
+ public:
+  CIniEditor(
+      wxWindow* parent,
+      wxWindowID id = wxID_ANY,
+      const wxPoint& pos = wxDefaultPosition,
+      const wxSize& size = wxDefaultSize);
+  ~CIniEditor() override;
 
-	//(*Declarations(CIniEditor)
-	wxButton* btnCancel;
-	wxTextCtrl* edText;
-	wxButton* btnOK;
-	//*)
+  //(*Declarations(CIniEditor)
+  wxButton* btnCancel;
+  wxTextCtrl* edText;
+  wxButton* btnOK;
+  //*)
 
-   protected:
-	//(*Identifiers(CIniEditor)
-	static const long ID_BUTTON1;
-	static const long ID_BUTTON2;
-	static const long ID_TEXTCTRL1;
-	//*)
+ protected:
+  //(*Identifiers(CIniEditor)
+  static const long ID_BUTTON1;
+  static const long ID_BUTTON2;
+  static const long ID_TEXTCTRL1;
+  //*)
 
-   private:
-	//(*Handlers(CIniEditor)
-	void OnbtnCancelClick(wxCommandEvent& event);
-	void OnbtnOKClick(wxCommandEvent& event);
-	//*)
+ private:
+  //(*Handlers(CIniEditor)
+  void OnbtnCancelClick(wxCommandEvent& event);
+  void OnbtnOKClick(wxCommandEvent& event);
+  //*)
 
-	DECLARE_EVENT_TABLE()
+  DECLARE_EVENT_TABLE()
 };
 
 #endif

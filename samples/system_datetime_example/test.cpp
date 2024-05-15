@@ -24,12 +24,12 @@ using namespace mrpt::system;
 // ------------------------------------------------------
 void TestTimes()
 {
-	TTimeStamp t;
-	for (size_t i = 0; i < 20; i++)
-	{
-		t = mrpt::Clock::now();
-		std::cout << mrpt::system::dateTimeToString(t) << std::endl;
-	}
+  TTimeStamp t;
+  for (size_t i = 0; i < 20; i++)
+  {
+    t = mrpt::Clock::now();
+    std::cout << mrpt::system::dateTimeToString(t) << std::endl;
+  }
 }
 
 // ------------------------------------------------------
@@ -37,15 +37,15 @@ void TestTimes()
 // ------------------------------------------------------
 int main()
 {
-	try
-	{
-		TestTimes();
+  try
+  {
+    TestTimes();
 
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
-		return -1;
-	}
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    return -1;
+  }
 }

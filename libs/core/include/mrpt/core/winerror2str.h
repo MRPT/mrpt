@@ -22,7 +22,6 @@ namespace mrpt
  * \note (New in MRPT 2.1.5)
  * \ingroup mrpt_core_grp
  */
-std::string winerror2str(
-	const char* caller = nullptr, const char* errorPrefix = " Error: ");
+std::string winerror2str(const char* caller = nullptr, const char* errorPrefix = " Error: ");
 
 }  // namespace mrpt

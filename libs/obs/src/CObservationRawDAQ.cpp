@@ -24,66 +24,60 @@ IMPLEMENTS_SERIALIZABLE(CObservationRawDAQ, CObservation, mrpt::obs)
 uint8_t CObservationRawDAQ::serializeGetVersion() const { return 0; }
 void CObservationRawDAQ::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	out << sensorLabel << timestamp << sample_rate << AIN_8bits << AIN_16bits
-		<< AIN_32bits << AIN_float << AIN_double << AIN_channel_count
-		<< AIN_interleaved << AOUT_8bits << AOUT_16bits << AOUT_float
-		<< AOUT_double << DIN << DOUT << CNTRIN_32bits << CNTRIN_double;
+  out << sensorLabel << timestamp << sample_rate << AIN_8bits << AIN_16bits << AIN_32bits
+      << AIN_float << AIN_double << AIN_channel_count << AIN_interleaved << AOUT_8bits
+      << AOUT_16bits << AOUT_float << AOUT_double << DIN << DOUT << CNTRIN_32bits << CNTRIN_double;
 }
 
-void CObservationRawDAQ::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationRawDAQ::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	switch (version)
-	{
-		case 0:
-		{
-			in >> sensorLabel >> timestamp >> sample_rate >> AIN_8bits >>
-				AIN_16bits >> AIN_32bits >> AIN_float >> AIN_double >>
-				AIN_channel_count >> AIN_interleaved >> AOUT_8bits >>
-				AOUT_16bits >> AOUT_float >> AOUT_double >> DIN >> DOUT >>
-				CNTRIN_32bits >> CNTRIN_double;
-		}
-		break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	};
+  switch (version)
+  {
+    case 0:
+    {
+      in >> sensorLabel >> timestamp >> sample_rate >> AIN_8bits >> AIN_16bits >> AIN_32bits >>
+          AIN_float >> AIN_double >> AIN_channel_count >> AIN_interleaved >> AOUT_8bits >>
+          AOUT_16bits >> AOUT_float >> AOUT_double >> DIN >> DOUT >> CNTRIN_32bits >> CNTRIN_double;
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
 }
 
 void CObservationRawDAQ::getDescriptionAsText(std::ostream& o) const
 {
-	using namespace std;
-	CObservation::getDescriptionAsText(o);
+  using namespace std;
+  CObservation::getDescriptionAsText(o);
 
-	o << "Sample rate             : " << sample_rate << " Hz"
-	  << "\n";
-	o << "Analog IN Channel count : " << AIN_channel_count << "\n";
-	o << "Analog IN interleaved?  : " << (AIN_interleaved ? "yes" : "no")
-	  << "\n";
+  o << "Sample rate             : " << sample_rate << " Hz"
+    << "\n";
+  o << "Analog IN Channel count : " << AIN_channel_count << "\n";
+  o << "Analog IN interleaved?  : " << (AIN_interleaved ? "yes" : "no") << "\n";
 
-#define RAWDAQ_SHOW_FIRSTS(_VEC)                                               \
-	o << "Raw data in " #_VEC " (" << (_VEC).size()                            \
-	  << " entries): First values [";                                          \
-	if (!(_VEC).empty())                                                       \
-	{                                                                          \
-		for (size_t i = 1;                                                     \
-			 i <= std::min((_VEC).size(), static_cast<size_t>(10)); i++)       \
-			o << (_VEC)[i - 1] << " ";                                         \
-		o << " ... ";                                                          \
-	}                                                                          \
-	o << "]\n";
+#define RAWDAQ_SHOW_FIRSTS(_VEC)                                                   \
+  o << "Raw data in " #_VEC " (" << (_VEC).size() << " entries): First values [";  \
+  if (!(_VEC).empty())                                                             \
+  {                                                                                \
+    for (size_t i = 1; i <= std::min((_VEC).size(), static_cast<size_t>(10)); i++) \
+      o << (_VEC)[i - 1] << " ";                                                   \
+    o << " ... ";                                                                  \
+  }                                                                                \
+  o << "]\n";
 
-	RAWDAQ_SHOW_FIRSTS(AIN_8bits)
-	RAWDAQ_SHOW_FIRSTS(AIN_16bits)
-	RAWDAQ_SHOW_FIRSTS(AIN_32bits)
-	RAWDAQ_SHOW_FIRSTS(AIN_float)
-	RAWDAQ_SHOW_FIRSTS(AIN_double)
-	RAWDAQ_SHOW_FIRSTS(AOUT_8bits)
-	RAWDAQ_SHOW_FIRSTS(AOUT_16bits)
-	RAWDAQ_SHOW_FIRSTS(AOUT_float)
-	RAWDAQ_SHOW_FIRSTS(AOUT_double)
-	RAWDAQ_SHOW_FIRSTS(DIN)
-	RAWDAQ_SHOW_FIRSTS(DOUT)
-	RAWDAQ_SHOW_FIRSTS(CNTRIN_32bits)
-	RAWDAQ_SHOW_FIRSTS(CNTRIN_double)
+  RAWDAQ_SHOW_FIRSTS(AIN_8bits)
+  RAWDAQ_SHOW_FIRSTS(AIN_16bits)
+  RAWDAQ_SHOW_FIRSTS(AIN_32bits)
+  RAWDAQ_SHOW_FIRSTS(AIN_float)
+  RAWDAQ_SHOW_FIRSTS(AIN_double)
+  RAWDAQ_SHOW_FIRSTS(AOUT_8bits)
+  RAWDAQ_SHOW_FIRSTS(AOUT_16bits)
+  RAWDAQ_SHOW_FIRSTS(AOUT_float)
+  RAWDAQ_SHOW_FIRSTS(AOUT_double)
+  RAWDAQ_SHOW_FIRSTS(DIN)
+  RAWDAQ_SHOW_FIRSTS(DOUT)
+  RAWDAQ_SHOW_FIRSTS(CNTRIN_32bits)
+  RAWDAQ_SHOW_FIRSTS(CNTRIN_double)
 
-	o << "\n";
+  o << "\n";
 }

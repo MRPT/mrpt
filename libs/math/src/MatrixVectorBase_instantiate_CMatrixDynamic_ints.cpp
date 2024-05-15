@@ -17,9 +17,8 @@
 #include "MatrixVectorBase_impl.h"
 
 // Template instantiation:
-#define DO_MATDYN_INSTANTIATION(T_)                                            \
-	template class mrpt::math::MatrixVectorBase<                               \
-		T_, mrpt::math::CMatrixDynamic<T_>>;
+#define DO_MATDYN_INSTANTIATION(T_) \
+  template class mrpt::math::MatrixVectorBase<T_, mrpt::math::CMatrixDynamic<T_>>;
 
 DO_MATDYN_INSTANTIATION(uint16_t)
 DO_MATDYN_INSTANTIATION(int16_t)

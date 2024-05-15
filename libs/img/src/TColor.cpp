@@ -22,54 +22,54 @@ static_assert(sizeof(TColorf) == 4 * sizeof(float));
 
 TColor mrpt::img::operator+(const TColor& first, const TColor& second)
 {
-	TColor ret;
-	ret.R = first.R + second.R;
-	ret.G = first.G + second.G;
-	ret.B = first.B + second.B;
-	ret.A = first.A + second.A;
+  TColor ret;
+  ret.R = first.R + second.R;
+  ret.G = first.G + second.G;
+  ret.B = first.B + second.B;
+  ret.A = first.A + second.A;
 
-	return ret;
+  return ret;
 }
 
 TColor mrpt::img::operator-(const TColor& first, const TColor& second)
 {
-	TColor ret;
-	ret.R = first.R - second.R;
-	ret.G = first.G - second.G;
-	ret.B = first.B - second.B;
-	ret.A = first.A - second.A;
+  TColor ret;
+  ret.R = first.R - second.R;
+  ret.G = first.G - second.G;
+  ret.B = first.B - second.B;
+  ret.A = first.A - second.A;
 
-	return ret;
+  return ret;
 }
 
 TColor& TColor::operator+=(const TColor& other)
 {
-	this->R += other.R;
-	this->G += other.G;
-	this->B += other.B;
-	this->A += other.A;
+  this->R += other.R;
+  this->G += other.G;
+  this->B += other.B;
+  this->A += other.A;
 
-	return *this;
+  return *this;
 }
 
 TColor& TColor::operator-=(const TColor& other)
 {
-	this->R -= other.R;
-	this->G -= other.G;
-	this->B -= other.B;
-	this->A -= other.A;
+  this->R -= other.R;
+  this->G -= other.G;
+  this->B -= other.B;
+  this->A -= other.A;
 
-	return *this;
+  return *this;
 }
 
 TColor& TColor::operator=(const TColor& other) = default;
 
 bool mrpt::img::operator==(const TColor& first, const TColor& second)
 {
-	bool ret = first.R == second.R && first.G == second.G &&
-		first.B == second.B && first.A == second.A;
+  bool ret =
+      first.R == second.R && first.G == second.G && first.B == second.B && first.A == second.A;
 
-	return ret;
+  return ret;
 }
 
 // bool operator!=(const TColor& first, const TColor& second) {
@@ -79,47 +79,46 @@ bool mrpt::img::operator==(const TColor& first, const TColor& second)
 // Text streaming:
 std::ostream& mrpt::img::operator<<(std::ostream& o, const TColor& c)
 {
-	char buf[200];
-	mrpt::system::os::sprintf(
-		buf, sizeof(buf), "RGBA=[%u,%u,%u,%u]", static_cast<unsigned int>(c.R),
-		static_cast<unsigned int>(c.G), static_cast<unsigned int>(c.B),
-		static_cast<unsigned int>(c.A));
-	o << buf;
-	return o;
+  char buf[200];
+  mrpt::system::os::sprintf(
+      buf, sizeof(buf), "RGBA=[%u,%u,%u,%u]", static_cast<unsigned int>(c.R),
+      static_cast<unsigned int>(c.G), static_cast<unsigned int>(c.B),
+      static_cast<unsigned int>(c.A));
+  o << buf;
+  return o;
 }
 
 // Binary streaming:
 CArchive& mrpt::img::operator<<(CArchive& o, const TColor& c)
 {
-	o << c.R << c.G << c.B << c.A;
-	return o;
+  o << c.R << c.G << c.B << c.A;
+  return o;
 }
 
 CArchive& mrpt::img::operator>>(CArchive& i, TColor& c)
 {
-	i >> c.R >> c.G >> c.B >> c.A;
-	return i;
+  i >> c.R >> c.G >> c.B >> c.A;
+  return i;
 }
 
 // Text streaming:
 std::ostream& mrpt::img::operator<<(std::ostream& o, const TColorf& c)
 {
-	char buf[200];
-	mrpt::system::os::sprintf(
-		buf, sizeof(buf), "RGBAf=[%f,%f,%f,%f]", c.R, c.G, c.B, c.A);
-	o << buf;
-	return o;
+  char buf[200];
+  mrpt::system::os::sprintf(buf, sizeof(buf), "RGBAf=[%f,%f,%f,%f]", c.R, c.G, c.B, c.A);
+  o << buf;
+  return o;
 }
 
 // Binary streaming:
 CArchive& mrpt::img::operator<<(CArchive& o, const TColorf& c)
 {
-	o << c.R << c.G << c.B << c.A;
-	return o;
+  o << c.R << c.G << c.B << c.A;
+  return o;
 }
 
 CArchive& mrpt::img::operator>>(CArchive& i, TColorf& c)
 {
-	i >> c.R >> c.G >> c.B >> c.A;
-	return i;
+  i >> c.R >> c.G >> c.B >> c.A;
+  return i;
 }

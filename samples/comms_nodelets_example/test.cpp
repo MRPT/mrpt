@@ -16,14 +16,14 @@
 
 int main()
 {
-	try
-	{
-		NodeletsTest();
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "MRPT exception caught: " << e.what() << std::endl;
-		return -1;
-	}
+  try
+  {
+    NodeletsTest();
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT exception caught: " << e.what() << std::endl;
+    return -1;
+  }
 }

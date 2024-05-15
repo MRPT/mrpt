@@ -206,238 +206,236 @@ namespace mrpt::hwdrivers
  *
  * \ingroup mrpt_hwdrivers_grp
  */
-class CNationalInstrumentsDAQ : public mrpt::system::COutputLogger,
-								public CGenericSensor
+class CNationalInstrumentsDAQ : public mrpt::system::COutputLogger, public CGenericSensor
 {
-	DEFINE_GENERIC_SENSOR(CNationalInstrumentsDAQ)
-   public:
-	/** Constructor */
-	CNationalInstrumentsDAQ();
+  DEFINE_GENERIC_SENSOR(CNationalInstrumentsDAQ)
+ public:
+  /** Constructor */
+  CNationalInstrumentsDAQ();
 
-	/** Destructor */
-	~CNationalInstrumentsDAQ() override;
+  /** Destructor */
+  ~CNationalInstrumentsDAQ() override;
 
-	/** Setup and launch the DAQ tasks, in parallel threads.
-	 * Access to grabbed data with CNationalInstrumentsDAQ::readFromDAQ() or
-	 * the standard CGenericSensor::doProcess() */
-	void initialize() override;
+  /** Setup and launch the DAQ tasks, in parallel threads.
+   * Access to grabbed data with CNationalInstrumentsDAQ::readFromDAQ() or
+   * the standard CGenericSensor::doProcess() */
+  void initialize() override;
 
-	/** Stop the grabbing threads for DAQ tasks. It is automatically called at
-	 * destruction. */
-	void stop();
+  /** Stop the grabbing threads for DAQ tasks. It is automatically called at
+   * destruction. */
+  void stop();
 
-	// See docs in parent class
-	void doProcess() override;
+  // See docs in parent class
+  void doProcess() override;
 
-	/** Receives data from the DAQ thread(s). It returns a maximum number of one
-	 * observation object per running grabber threads, that is, per each DAQmx
-	 * "task".
-	 *  This method MUST BE CALLED in a timely fashion by the user to allow the
-	 * proccessing of incoming data. It can be run in a different thread safely.
-	 *  This is internally called when using the alternative
-	 * CGenericSensor::doProcess() interface.
-	 *  No observations may be returned if there are not samples enough yet
-	 * from any task.
-	 */
-	void readFromDAQ(
-		std::vector<mrpt::obs::CObservationRawDAQ::Ptr>& outObservations,
-		bool& hardwareError);
+  /** Receives data from the DAQ thread(s). It returns a maximum number of one
+   * observation object per running grabber threads, that is, per each DAQmx
+   * "task".
+   *  This method MUST BE CALLED in a timely fashion by the user to allow the
+   * proccessing of incoming data. It can be run in a different thread safely.
+   *  This is internally called when using the alternative
+   * CGenericSensor::doProcess() interface.
+   *  No observations may be returned if there are not samples enough yet
+   * from any task.
+   */
+  void readFromDAQ(
+      std::vector<mrpt::obs::CObservationRawDAQ::Ptr>& outObservations, bool& hardwareError);
 
-	/** Set voltage outputs to all the outputs in an AOUT task
-	 * For the meaning of parameters, refere to NI DAQmx docs for
-	 * DAQmxBaseWriteAnalogF64()
-	 * \note The number of samples in \a volt_values must match the number of
-	 * channels in the task when it was initiated.
-	 */
-	void writeAnalogOutputTask(
-		size_t task_index, size_t nSamplesPerChannel, const double* volt_values,
-		double timeout, bool groupedByChannel);
+  /** Set voltage outputs to all the outputs in an AOUT task
+   * For the meaning of parameters, refere to NI DAQmx docs for
+   * DAQmxBaseWriteAnalogF64()
+   * \note The number of samples in \a volt_values must match the number of
+   * channels in the task when it was initiated.
+   */
+  void writeAnalogOutputTask(
+      size_t task_index,
+      size_t nSamplesPerChannel,
+      const double* volt_values,
+      double timeout,
+      bool groupedByChannel);
 
-	/** Changes the boolean state of one digital output line.
-	 * For the meaning of parameters, refere to NI DAQmx docs for
-	 * DAQmxBaseWriteAnalogF64()
-	 * \note The number of samples in \a volt_values must match the number of
-	 * channels in the task when it was initiated.
-	 */
-	void writeDigitalOutputTask(
-		size_t task_index, bool line_value, double timeout);
+  /** Changes the boolean state of one digital output line.
+   * For the meaning of parameters, refere to NI DAQmx docs for
+   * DAQmxBaseWriteAnalogF64()
+   * \note The number of samples in \a volt_values must match the number of
+   * channels in the task when it was initiated.
+   */
+  void writeDigitalOutputTask(size_t task_index, bool line_value, double timeout);
 
-	/** Returns true if initialize() was called and at least one task is
-	 * running. */
-	bool checkDAQIsWorking() const;
+  /** Returns true if initialize() was called and at least one task is
+   * running. */
+  bool checkDAQIsWorking() const;
 
-	/** Each of the tasks to create in CNationalInstrumentsDAQ::initialize().
-	 * Refer to the docs on config file formats of
-	 * mrpt::hwdrivers::CNationalInstrumentsDAQ to learn on the meaning
-	 * of each field. Also, see National Instruments' DAQmx API docs online.
-	 */
-	struct TaskDescription
-	{
-		TaskDescription();
+  /** Each of the tasks to create in CNationalInstrumentsDAQ::initialize().
+   * Refer to the docs on config file formats of
+   * mrpt::hwdrivers::CNationalInstrumentsDAQ to learn on the meaning
+   * of each field. Also, see National Instruments' DAQmx API docs online.
+   */
+  struct TaskDescription
+  {
+    TaskDescription();
 
-		bool has_ai{false}, has_ao{false}, has_di{false}, has_do{false};
-		bool has_ci_period{false}, has_ci_count_edges{false},
-			has_ci_pulse_width{false}, has_ci_lin_encoder{false},
-			has_ci_ang_encoder{false}, has_co_pulses{false};
+    bool has_ai{false}, has_ao{false}, has_di{false}, has_do{false};
+    bool has_ci_period{false}, has_ci_count_edges{false}, has_ci_pulse_width{false},
+        has_ci_lin_encoder{false}, has_ci_ang_encoder{false}, has_co_pulses{false};
 
-		/** Sample clock config: samples per second. Continuous (infinite)
-		 * sampling is assumed. */
-		double samplesPerSecond{1000.0};
-		/** Sample clock source: may be empty (default value) for some channels.
-		 */
-		std::string sampleClkSource;
-		/** (Default=0) From NI's docs: The number of samples the buffer can
-		 * hold for each channel in the task. Zero indicates no buffer should be
-		 * allocated. Use a buffer size of 0 to perform a hardware-timed
-		 * operation without using a buffer. */
-		uint32_t bufferSamplesPerChannel{200000};
-		/** (Default=1000) The number of samples to grab at once from each
-		 * channel. */
-		uint32_t samplesPerChannelToRead{1000};
-		/** (Default="task###") */
-		std::string taskLabel;
+    /** Sample clock config: samples per second. Continuous (infinite)
+     * sampling is assumed. */
+    double samplesPerSecond{1000.0};
+    /** Sample clock source: may be empty (default value) for some channels.
+     */
+    std::string sampleClkSource;
+    /** (Default=0) From NI's docs: The number of samples the buffer can
+     * hold for each channel in the task. Zero indicates no buffer should be
+     * allocated. Use a buffer size of 0 to perform a hardware-timed
+     * operation without using a buffer. */
+    uint32_t bufferSamplesPerChannel{200000};
+    /** (Default=1000) The number of samples to grab at once from each
+     * channel. */
+    uint32_t samplesPerChannelToRead{1000};
+    /** (Default="task###") */
+    std::string taskLabel;
 
-		/** Analog inputs */
-		struct desc_ai_t
-		{
-			desc_ai_t() = default;
+    /** Analog inputs */
+    struct desc_ai_t
+    {
+      desc_ai_t() = default;
 
-			std::string physicalChannel, terminalConfig{"DAQmx_Val_NRSE"};
-			double minVal{-10}, maxVal{10};
-			/** *IMPORTANT* This must be the total number of channels listed in
-			 * "physicalChannel" (e.g. 4 for "Dev1/ai0:3") */
-			unsigned int physicalChannelCount{0};
-		} ai;
+      std::string physicalChannel, terminalConfig{"DAQmx_Val_NRSE"};
+      double minVal{-10}, maxVal{10};
+      /** *IMPORTANT* This must be the total number of channels listed in
+       * "physicalChannel" (e.g. 4 for "Dev1/ai0:3") */
+      unsigned int physicalChannelCount{0};
+    } ai;
 
-		/** Analog outputs */
-		struct desc_ao_t
-		{
-			desc_ao_t() = default;
-			std::string physicalChannel;
-			/** *IMPORTANT* This must be the total number of channels listed in
-			 * "physicalChannel" (e.g. 1 for "Dev1/ao0") */
-			unsigned int physicalChannelCount{0};
-			double minVal{-10}, maxVal{10};
-		} ao;
+    /** Analog outputs */
+    struct desc_ao_t
+    {
+      desc_ao_t() = default;
+      std::string physicalChannel;
+      /** *IMPORTANT* This must be the total number of channels listed in
+       * "physicalChannel" (e.g. 1 for "Dev1/ao0") */
+      unsigned int physicalChannelCount{0};
+      double minVal{-10}, maxVal{10};
+    } ao;
 
-		/** Digital inputs (di) */
-		struct desc_di_t
-		{
-			/** The digital line (for example "Dev1/port0/line1") */
-			std::string line;
-		} di;
+    /** Digital inputs (di) */
+    struct desc_di_t
+    {
+      /** The digital line (for example "Dev1/port0/line1") */
+      std::string line;
+    } di;
 
-		/** Digital outs (do) */
-		struct desc_do_t
-		{
-			/** The digital line (for example "Dev1/port0/line1") */
-			std::string line;
-		} douts;
+    /** Digital outs (do) */
+    struct desc_do_t
+    {
+      /** The digital line (for example "Dev1/port0/line1") */
+      std::string line;
+    } douts;
 
-		struct desc_ci_period_t
-		{
-			desc_ci_period_t() = default;
+    struct desc_ci_period_t
+    {
+      desc_ci_period_t() = default;
 
-			std::string counter, units, edge;
-			double minVal{0}, maxVal{0};
-			double measTime{0};
-			int divisor{1};
-		}
-		/** Counter: period of a digital signal */
-		ci_period;
+      std::string counter, units, edge;
+      double minVal{0}, maxVal{0};
+      double measTime{0};
+      int divisor{1};
+    }
+    /** Counter: period of a digital signal */
+    ci_period;
 
-		/** Counter: period of a digital signal */
-		struct desc_ci_count_edges_t
-		{
-			desc_ci_count_edges_t() = default;
+    /** Counter: period of a digital signal */
+    struct desc_ci_count_edges_t
+    {
+      desc_ci_count_edges_t() = default;
 
-			std::string counter, edge, countDirection{"DAQmx_Val_CountUp"};
-			int initialCount{0};
-		} ci_count_edges;
+      std::string counter, edge, countDirection{"DAQmx_Val_CountUp"};
+      int initialCount{0};
+    } ci_count_edges;
 
-		/** Counter: measure the width of a digital pulse */
-		struct desc_ci_pulse_width_t
-		{
-			desc_ci_pulse_width_t() = default;
-			std::string counter, units, startingEdge;
-			double minVal{0}, maxVal{0};
-		} ci_pulse_width;
+    /** Counter: measure the width of a digital pulse */
+    struct desc_ci_pulse_width_t
+    {
+      desc_ci_pulse_width_t() = default;
+      std::string counter, units, startingEdge;
+      double minVal{0}, maxVal{0};
+    } ci_pulse_width;
 
-		/** Counter: uses a linear encoder to measure linear position */
-		struct desc_ci_lin_encoder_t
-		{
-			desc_ci_lin_encoder_t() = default;
+    /** Counter: uses a linear encoder to measure linear position */
+    struct desc_ci_lin_encoder_t
+    {
+      desc_ci_lin_encoder_t() = default;
 
-			std::string counter, decodingType, ZidxPhase, units;
-			bool ZidxEnable{false};
-			double ZidxVal{0};
-			double distPerPulse{0.1};
-			double initialPos{0};
-		} ci_lin_encoder;
+      std::string counter, decodingType, ZidxPhase, units;
+      bool ZidxEnable{false};
+      double ZidxVal{0};
+      double distPerPulse{0.1};
+      double initialPos{0};
+    } ci_lin_encoder;
 
-		/** Counter: uses an angular encoder to measure angular position */
-		struct desc_ci_ang_encoder_t
-		{
-			desc_ci_ang_encoder_t() = default;
+    /** Counter: uses an angular encoder to measure angular position */
+    struct desc_ci_ang_encoder_t
+    {
+      desc_ci_ang_encoder_t() = default;
 
-			std::string counter, decodingType, ZidxPhase, units;
-			bool ZidxEnable{false};
-			double ZidxVal{0};
-			int pulsesPerRev{512};
-			double initialAngle{0};
-			int decimate{1}, decimate_cnt{0};
-		} ci_ang_encoder;
+      std::string counter, decodingType, ZidxPhase, units;
+      bool ZidxEnable{false};
+      double ZidxVal{0};
+      int pulsesPerRev{512};
+      double initialAngle{0};
+      int decimate{1}, decimate_cnt{0};
+    } ci_ang_encoder;
 
-		/** Output counter: digital pulses output */
-		struct desc_co_pulses_t
-		{
-			desc_co_pulses_t() = default;
+    /** Output counter: digital pulses output */
+    struct desc_co_pulses_t
+    {
+      desc_co_pulses_t() = default;
 
-			std::string counter, idleState{"DAQmx_Val_Low"};
-			double initialDelay{0}, freq{1000}, dutyCycle{0.5};
-		} co_pulses;
+      std::string counter, idleState{"DAQmx_Val_Low"};
+      double initialDelay{0}, freq{1000}, dutyCycle{0.5};
+    } co_pulses;
 
-	};	// end of TaskDescription
+  };  // end of TaskDescription
 
-	/** Publicly accessible vector with the list of tasks to be launched upon
-	 * call to CNationalInstrumentsDAQ::initialize().
-	 * Changing these while running will have no effects.
-	 */
-	std::vector<TaskDescription> task_definitions;
+  /** Publicly accessible vector with the list of tasks to be launched upon
+   * call to CNationalInstrumentsDAQ::initialize().
+   * Changing these while running will have no effects.
+   */
+  std::vector<TaskDescription> task_definitions;
 
-   protected:
-	/** See the class documentation at the top for expected parameters */
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection) override;
+ protected:
+  /** See the class documentation at the top for expected parameters */
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection) override;
 
-   private:
-	/** A buffer for doProcess */
-	std::vector<mrpt::obs::CObservationRawDAQ::Ptr> m_nextObservations;
+ private:
+  /** A buffer for doProcess */
+  std::vector<mrpt::obs::CObservationRawDAQ::Ptr> m_nextObservations;
 
-	struct TInfoPerTask
-	{
-		TInfoPerTask();
+  struct TInfoPerTask
+  {
+    TInfoPerTask();
 
-		void* taskHandle{nullptr};
-		std::thread hThread;
+    void* taskHandle{nullptr};
+    std::thread hThread;
 
-		std::unique_ptr<mrpt::io::CPipeReadEndPoint> read_pipe;
-		std::unique_ptr<mrpt::io::CPipeWriteEndPoint> write_pipe;
+    std::unique_ptr<mrpt::io::CPipeReadEndPoint> read_pipe;
+    std::unique_ptr<mrpt::io::CPipeWriteEndPoint> write_pipe;
 
-		bool must_close{false}, is_closed{false};
-		std::atomic<int> new_obs_available;
+    bool must_close{false}, is_closed{false};
+    std::atomic<int> new_obs_available;
 
-		/** A copy of the original task description that generated this thread.
-		 */
-		TaskDescription task;
-	};
+    /** A copy of the original task description that generated this thread.
+     */
+    TaskDescription task;
+  };
 
-	std::list<TInfoPerTask> m_running_tasks;
+  std::list<TInfoPerTask> m_running_tasks;
 
-	/** Method to be executed in each parallel thread. */
-	void grabbing_thread(TInfoPerTask& ipt);
+  /** Method to be executed in each parallel thread. */
+  void grabbing_thread(TInfoPerTask& ipt);
 
-};	// end class
+};  // end class
 
 }  // namespace mrpt::hwdrivers

@@ -20,24 +20,24 @@ namespace mrpt::opengl
  */
 class Visualizable
 {
-   public:
-	Visualizable() = default;
-	~Visualizable() = default;
+ public:
+  Visualizable() = default;
+  ~Visualizable() = default;
 
-	/** Inserts 3D primitives representing this object into the provided
-	 * container.
-	 * Note that the former contents of `o` are not cleared.
-	 *
-	 * \sa getVisualization()
-	 */
-	virtual void getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const = 0;
+  /** Inserts 3D primitives representing this object into the provided
+   * container.
+   * Note that the former contents of `o` are not cleared.
+   *
+   * \sa getVisualization()
+   */
+  virtual void getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const = 0;
 
-	/** Creates 3D primitives representing this objects.
-	 * This is equivalent to getVisualizationInto() but creating, and returning
-	 * by value, a new rpt::opengl::CSetOfObjects::Ptr shared pointer.
-	 * \sa getVisualizationInto()
-	 */
-	std::shared_ptr<mrpt::opengl::CSetOfObjects> getVisualization() const;
+  /** Creates 3D primitives representing this objects.
+   * This is equivalent to getVisualizationInto() but creating, and returning
+   * by value, a new rpt::opengl::CSetOfObjects::Ptr shared pointer.
+   * \sa getVisualizationInto()
+   */
+  std::shared_ptr<mrpt::opengl::CSetOfObjects> getVisualization() const;
 };
 
 }  // namespace mrpt::opengl

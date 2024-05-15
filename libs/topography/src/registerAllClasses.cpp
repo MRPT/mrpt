@@ -24,7 +24,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_topography)
 
 void mrpt::topography::registerAllClasses_mrpt_topography()
 {
-	::registerAllClasses_mrpt_topography();
-	// deps:
-	mrpt::obs::registerAllClasses_mrpt_obs();
+  ::registerAllClasses_mrpt_topography();
+  // deps:
+  mrpt::obs::registerAllClasses_mrpt_obs();
 }

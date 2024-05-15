@@ -19,13 +19,13 @@ namespace mrpt::opengl
 /** Different style for vectorized font rendering \sa T2DTextData */
 enum TOpenGLFontStyle
 {
-	FILL = 0,  ///< renders glyphs as filled polygons
-	OUTLINE = 1,  ///< renders glyphs as outlines with GL_LINES
+  FILL = 0,     ///< renders glyphs as filled polygons
+  OUTLINE = 1,  ///< renders glyphs as outlines with GL_LINES
 
-	/** This was "renders glyphs filled with antialiased outlines", but since
-	   antialiased is not properly implemented in mrtp2 since the port to
-	   OpenGL3, NICE is for now an alias for FILL. */
-	NICE = 2
+  /** This was "renders glyphs filled with antialiased outlines", but since
+   antialiased is not properly implemented in mrtp2 since the port to
+   OpenGL3, NICE is for now an alias for FILL. */
+  NICE = 2
 };
 
 /** A description of a bitmapped or vectorized text font.
@@ -36,27 +36,27 @@ enum TOpenGLFontStyle
  */
 struct TFontParams
 {
-	TFontParams() = default;
+  TFontParams() = default;
 
-	/** Vectorized font name ("sans","mono","serif") */
-	std::string vfont_name = "mono";
+  /** Vectorized font name ("sans","mono","serif") */
+  std::string vfont_name = "mono";
 
-	/** Size of characters [pixels] */
-	float vfont_scale = 10.0f;
+  /** Size of characters [pixels] */
+  float vfont_scale = 10.0f;
 
-	mrpt::img::TColorf color = {1.0f, 1.0f, 1.0f, 1.0f};
+  mrpt::img::TColorf color = {1.0f, 1.0f, 1.0f, 1.0f};
 
-	bool draw_shadow = false;
-	mrpt::img::TColorf shadow_color = {0.0f, 0.0f, 0.0f, 1.0f};
+  bool draw_shadow = false;
+  mrpt::img::TColorf shadow_color = {0.0f, 0.0f, 0.0f, 1.0f};
 
-	/** (default: FILL) See TOpenGLFontStyle. */
-	TOpenGLFontStyle vfont_style = opengl::FILL;
+  /** (default: FILL) See TOpenGLFontStyle. */
+  TOpenGLFontStyle vfont_style = opengl::FILL;
 
-	/** (default: 1.5) Refer to mrpt::opengl::gl_utils::glDrawText */
-	double vfont_spacing = 1.5;
+  /** (default: 1.5) Refer to mrpt::opengl::gl_utils::glDrawText */
+  double vfont_spacing = 1.5;
 
-	/** (default: 0.1) Refer to mrpt::opengl::gl_utils::glDrawText */
-	double vfont_kerning = 0.1;
+  /** (default: 0.1) Refer to mrpt::opengl::gl_utils::glDrawText */
+  double vfont_kerning = 0.1;
 };
 
 /** An auxiliary struct for holding a list of text messages in some mrpt::opengl
@@ -67,8 +67,8 @@ struct TFontParams
  */
 struct T2DTextData : public TFontParams
 {
-	T2DTextData() = default;
-	std::string text;
-	double x{0}, y{0};
+  T2DTextData() = default;
+  std::string text;
+  double x{0}, y{0};
 };
 }  // namespace mrpt::opengl

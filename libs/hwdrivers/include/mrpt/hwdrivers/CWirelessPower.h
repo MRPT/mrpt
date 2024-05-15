@@ -21,73 +21,71 @@ namespace mrpt::hwdrivers
  */
 class CWirelessPower : public mrpt::hwdrivers::CGenericSensor
 {
-	DEFINE_GENERIC_SENSOR(CWirelessPower)
+  DEFINE_GENERIC_SENSOR(CWirelessPower)
 
-   private:
-	/** SSID of the WiFi network
-	 */
-	std::string m_ssid;
+ private:
+  /** SSID of the WiFi network
+   */
+  std::string m_ssid;
 
-	/** GUID of the WiFi interface
-	 */
-	std::string m_guid;
+  /** GUID of the WiFi interface
+   */
+  std::string m_guid;
 
-	/** Handle to the WLAN server (Windows)
-	 */
-	void* hClient{nullptr};
+  /** Handle to the WLAN server (Windows)
+   */
+  void* hClient{nullptr};
 
-	/** Poses
-	 */
-	float pose_x{0}, pose_y{0}, pose_z{0}, pose_yaw{0}, pose_pitch{0},
-		pose_roll{0};
+  /** Poses
+   */
+  float pose_x{0}, pose_y{0}, pose_z{0}, pose_yaw{0}, pose_pitch{0}, pose_roll{0};
 
-   public:
-	/** Default constructor.
-	 */
-	CWirelessPower();
-	~CWirelessPower() override = default;
+ public:
+  /** Default constructor.
+   */
+  CWirelessPower();
+  ~CWirelessPower() override = default;
 
-	/** Set the SSID and GUID of the target network.
-	 * \exception std::exception In case there is a failure
-	 * \param ssid SSID of the target network
-	 * \param guid GUID of the network interface
-	 */
-	void setNet(std::string ssid, std::string guid);
+  /** Set the SSID and GUID of the target network.
+   * \exception std::exception In case there is a failure
+   * \param ssid SSID of the target network
+   * \param guid GUID of the network interface
+   */
+  void setNet(std::string ssid, std::string guid);
 
-	void doProcess() override;
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& section) override;
+  void doProcess() override;
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& section) override;
 
-	/** Gets a list of the interfaces
-	 * \exception std::exception In case there is a failure
-	 * \return std::vector returns the identifiers (GUID) of the available
-	 * interfaces
-	 */
-	std::vector<std::string> ListInterfaces();
+  /** Gets a list of the interfaces
+   * \exception std::exception In case there is a failure
+   * \return std::vector returns the identifiers (GUID) of the available
+   * interfaces
+   */
+  std::vector<std::string> ListInterfaces();
 
-	/** Gets the power of a given network
-	 * \exception std::exception In case there is a failure
-	 * \return Returns the power (0-100).
-	 */
-	int GetPower();
+  /** Gets the power of a given network
+   * \exception std::exception In case there is a failure
+   * \return Returns the power (0-100).
+   */
+  int GetPower();
 
-	/** Gets the power of a given network as a timestamped observation
-	 * NOTE: Deprecated, use getObservations instead. See CGenericSensor
-	 * documentation. This function is kept for internal use of the module
-	 * \return Returns true if the observation was correct, and false otherwise
-	 * \sa mrpt::hwdrivers::CGenericSensor
-	 */
+  /** Gets the power of a given network as a timestamped observation
+   * NOTE: Deprecated, use getObservations instead. See CGenericSensor
+   * documentation. This function is kept for internal use of the module
+   * \return Returns true if the observation was correct, and false otherwise
+   * \sa mrpt::hwdrivers::CGenericSensor
+   */
 
-	bool getObservation(mrpt::obs::CObservationWirelessPower& outObservation);
+  bool getObservation(mrpt::obs::CObservationWirelessPower& outObservation);
 
-	/** Gets a list of the networks available for an interface
-	 * \exception std::exception In case there is a failure
-	 * \return std::vector returns handles to the available networks of a given
-	 * interface
-	 */
-	std::vector<std::string> ListNetworks();
+  /** Gets a list of the networks available for an interface
+   * \exception std::exception In case there is a failure
+   * \return std::vector returns handles to the available networks of a given
+   * interface
+   */
+  std::vector<std::string> ListNetworks();
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace mrpt::hwdrivers

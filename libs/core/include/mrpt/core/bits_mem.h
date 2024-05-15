@@ -17,7 +17,7 @@ namespace mrpt
 template <class VECTOR_T>
 inline void vector_strong_clear(VECTOR_T& v)
 {
-	VECTOR_T dummy;
-	dummy.swap(v);
+  VECTOR_T dummy;
+  dummy.swap(v);
 }
 }  // namespace mrpt

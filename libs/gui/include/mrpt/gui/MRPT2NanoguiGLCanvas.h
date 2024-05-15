@@ -17,7 +17,7 @@
 #include <mrpt/config.h>
 #if MRPT_HAS_NANOGUI
 
-#ifdef None	 // X11 headers conflict...
+#ifdef None  // X11 headers conflict...
 #undef None
 #endif
 #include <nanogui/nanogui.h>
@@ -34,38 +34,35 @@ namespace mrpt::gui
  */
 class MRPT2NanoguiGLCanvas : public nanogui::GLCanvas
 {
-   public:
-	MRPT2NanoguiGLCanvas(nanogui::Widget* parent);
-	~MRPT2NanoguiGLCanvas();
+ public:
+  MRPT2NanoguiGLCanvas(nanogui::Widget* parent);
+  ~MRPT2NanoguiGLCanvas();
 
-	virtual void drawGL() override;
+  virtual void drawGL() override;
 
-	/** The scene to render in this control.
-	 * \note Users must lock the mutex scene_mtx while modifying this variable.
-	 */
-	mrpt::opengl::Scene::Ptr scene;
-	std::mutex scene_mtx;
+  /** The scene to render in this control.
+   * \note Users must lock the mutex scene_mtx while modifying this variable.
+   */
+  mrpt::opengl::Scene::Ptr scene;
+  std::mutex scene_mtx;
 
-	CGlCanvasBase& camera() { return m_headless_canvas; }
-	const CGlCanvasBase& camera() const { return m_headless_canvas; }
+  CGlCanvasBase& camera() { return m_headless_canvas; }
+  const CGlCanvasBase& camera() const { return m_headless_canvas; }
 
-   protected:
-	/** @name Internal virtual functions to handle GUI events
-	 * @{ */
-	virtual bool mouseMotionEvent(
-		const nanogui::Vector2i& p, const nanogui::Vector2i& rel, int button,
-		int modifiers) override;
-	virtual bool mouseButtonEvent(
-		const nanogui::Vector2i& p, int button, bool down,
-		int modifiers) override;
-	virtual bool scrollEvent(
-		const nanogui::Vector2i& p, const nanogui::Vector2f& rel) override;
-	/** @} */
+ protected:
+  /** @name Internal virtual functions to handle GUI events
+   * @{ */
+  virtual bool mouseMotionEvent(
+      const nanogui::Vector2i& p, const nanogui::Vector2i& rel, int button, int modifiers) override;
+  virtual bool mouseButtonEvent(
+      const nanogui::Vector2i& p, int button, bool down, int modifiers) override;
+  virtual bool scrollEvent(const nanogui::Vector2i& p, const nanogui::Vector2f& rel) override;
+  /** @} */
 
-	/** Used to keep track of mouse events on the camera */
-	internal::NanoGUICanvasHeadless m_headless_canvas;
+  /** Used to keep track of mouse events on the camera */
+  internal::NanoGUICanvasHeadless m_headless_canvas;
 };
 
 }  // namespace mrpt::gui
 
-#endif	// MRPT_HAS_NANOGUI
+#endif  // MRPT_HAS_NANOGUI

@@ -31,7 +31,7 @@ namespace mrpt::math
 template <class T1, class T2>
 bool approximatelyEqual(T1 a, T1 b, T2 epsilon)
 {
-	return fabs(a - b) <= ((fabs(a) > fabs(b) ? fabs(b) : fabs(a)) * epsilon);
+  return fabs(a - b) <= ((fabs(a) > fabs(b) ? fabs(b) : fabs(a)) * epsilon);
 }
 
 /**\brief Compare 2 floats and determine whether they are equal
@@ -42,7 +42,7 @@ bool approximatelyEqual(T1 a, T1 b, T2 epsilon)
 template <class T>
 bool approximatelyEqual(T a, T b)
 {
-	return approximatelyEqual(a, b, std::numeric_limits<T>::epsilon());
+  return approximatelyEqual(a, b, std::numeric_limits<T>::epsilon());
 }
 
 /**\brief Absolute difference between two numbers.
@@ -51,7 +51,7 @@ bool approximatelyEqual(T a, T b)
 template <class T>
 T absDiff(const T& lhs, const T& rhs)
 {
-	return lhs > rhs ? lhs - rhs : rhs - lhs;
+  return lhs > rhs ? lhs - rhs : rhs - lhs;
 }
 
 /** \addtogroup container_ops_grp
@@ -70,8 +70,7 @@ bool loadVector(std::istream& f, std::vector<int>& d);
 bool loadVector(std::istream& f, std::vector<double>& d);
 
 void medianFilter(
-	const std::vector<double>& inV, std::vector<double>& outV, int winSize,
-	int numberOfSigmas = 2);
+    const std::vector<double>& inV, std::vector<double>& outV, int winSize, int numberOfSigmas = 2);
 
 /** Generates an equidistant sequence of numbers given the first one, the last
   one and the desired number of points.
@@ -79,19 +78,18 @@ void medianFilter(
 template <typename T, typename VECTOR>
 void linspace(T first, T last, size_t count, VECTOR& out_vector)
 {
-	if (count < 2)
-	{
-		out_vector.assign(count, last);
-		return;
-	}
-	else
-	{
-		out_vector.resize(count);
-		const T incr = (last - first) / T(count - 1);
-		T c = first;
-		for (size_t i = 0; i < count; i++, c += incr)
-			out_vector[i] = c;
-	}
+  if (count < 2)
+  {
+    out_vector.assign(count, last);
+    return;
+  }
+  else
+  {
+    out_vector.resize(count);
+    const T incr = (last - first) / T(count - 1);
+    T c = first;
+    for (size_t i = 0; i < count; i++, c += incr) out_vector[i] = c;
+  }
 }
 
 /** Generates an equidistant sequence of numbers given the first one, the last
@@ -101,9 +99,9 @@ void linspace(T first, T last, size_t count, VECTOR& out_vector)
 template <typename T, typename VECTOR = std::vector<T>>
 VECTOR linspace(T first, T last, size_t count)
 {
-	VECTOR v;
-	linspace(first, last, count, v);
-	return v;
+  VECTOR v;
+  linspace(first, last, count, v);
+  return v;
 }
 
 /** Generates a sequence of values [first,first+STEP,first+2*STEP,...]   \sa
@@ -111,15 +109,15 @@ VECTOR linspace(T first, T last, size_t count)
 template <class T, T STEP>
 inline std::vector<T> sequenceStdVec(T first, size_t length)
 {
-	std::vector<T> ret(length);
-	if (!length) return ret;
-	size_t i = 0;
-	while (length--)
-	{
-		ret[i++] = first;
-		first += STEP;
-	}
-	return ret;
+  std::vector<T> ret(length);
+  if (!length) return ret;
+  size_t i = 0;
+  while (length--)
+  {
+    ret[i++] = first;
+    first += STEP;
+  }
+  return ret;
 }
 
 /** Normalize a vector, such as its norm is the unity.
@@ -128,18 +126,17 @@ inline std::vector<T> sequenceStdVec(T first, size_t length)
 template <class VEC1, class VEC2>
 void normalize(const VEC1& v, VEC2& out_v)
 {
-	typename VEC1::Scalar total = 0;
-	const size_t N = v.size();
-	for (size_t i = 0; i < N; i++)
-		total += square(v[i]);
-	total = std::sqrt(total);
-	if (total)
-	{
-		out_v = v;
-		out_v *= (1.0 / total);
-	}
-	else
-		out_v.assign(v.size(), 0);
+  typename VEC1::Scalar total = 0;
+  const size_t N = v.size();
+  for (size_t i = 0; i < N; i++) total += square(v[i]);
+  total = std::sqrt(total);
+  if (total)
+  {
+    out_v = v;
+    out_v *= (1.0 / total);
+  }
+  else
+    out_v.assign(v.size(), 0);
 }
 
 /** Extract a column from a vector of vectors, and store it in another vector.
@@ -153,13 +150,11 @@ void normalize(const VEC1& v, VEC2& out_v)
  */
 template <class VECTOR_OF_VECTORS, class VECTORLIKE>
 inline void extractColumnFromVectorOfVectors(
-	const size_t colIndex, const VECTOR_OF_VECTORS& data,
-	VECTORLIKE& out_column)
+    const size_t colIndex, const VECTOR_OF_VECTORS& data, VECTORLIKE& out_column)
 {
-	const size_t N = data.size();
-	out_column.resize(N);
-	for (size_t i = 0; i < N; i++)
-		out_column[i] = data[i][colIndex];
+  const size_t N = data.size();
+  out_column.resize(N);
+  for (size_t i = 0; i < N; i++) out_column[i] = data[i][colIndex];
 }
 
 /** Computes the factorial of an integer number and returns it as a 64-bit
@@ -183,8 +178,11 @@ double factorial(unsigned int n);
  * \ingroup stats_grp
  */
 std::string MATLAB_plotCovariance2D(
-	const CMatrixFloat& cov22, const CVectorFloat& mean, float stdCount,
-	const std::string& style = std::string("b"), size_t nEllipsePoints = 30);
+    const CMatrixFloat& cov22,
+    const CVectorFloat& mean,
+    float stdCount,
+    const std::string& style = std::string("b"),
+    size_t nEllipsePoints = 30);
 
 /** Generates a string with the MATLAB commands required to plot an confidence
  * interval (ellipse) for a 2D Gaussian ('double' version).
@@ -197,8 +195,11 @@ std::string MATLAB_plotCovariance2D(
  * \ingroup stats_grp
  */
 std::string MATLAB_plotCovariance2D(
-	const CMatrixDouble& cov22, const CVectorDouble& mean, float stdCount,
-	const std::string& style = std::string("b"), size_t nEllipsePoints = 30);
+    const CMatrixDouble& cov22,
+    const CVectorDouble& mean,
+    float stdCount,
+    const std::string& style = std::string("b"),
+    size_t nEllipsePoints = 30);
 
 /** Assignment operator for initializing a std::vector from a C array (The
  *vector will be automatically set to the correct size).
@@ -212,24 +213,22 @@ std::string MATLAB_plotCovariance2D(
 template <typename VECTOR_T, typename At, size_t N>
 VECTOR_T& loadVector(VECTOR_T& v, At (&theArray)[N])
 {
-	static_assert(N != 0, "N!=0");
-	v.resize(N);
-	for (size_t i = 0; i < N; i++)
-		v[i] = static_cast<typename VECTOR_T::Scalar>(theArray[i]);
-	return v;
+  static_assert(N != 0, "N!=0");
+  v.resize(N);
+  for (size_t i = 0; i < N; i++) v[i] = static_cast<typename VECTOR_T::Scalar>(theArray[i]);
+  return v;
 }
 //! \overload
 template <typename T, typename At, size_t N>
 std::vector<T>& loadVector(std::vector<T>& v, At (&theArray)[N])
 {
-	static_assert(N != 0, "N!=0");
-	v.resize(N);
-	for (size_t i = 0; i < N; i++)
-		v[i] = static_cast<T>(theArray[i]);
-	return v;
+  static_assert(N != 0, "N!=0");
+  v.resize(N);
+  for (size_t i = 0; i < N; i++) v[i] = static_cast<T>(theArray[i]);
+  return v;
 }
 
-/**  @} */	// end of grouping container_ops_grp
+/**  @} */  // end of grouping container_ops_grp
 
 /** \defgroup mrpt_math_io Custom I/O for math containers
  * \ingroup mrpt_math_grp */
@@ -243,26 +242,22 @@ std::vector<T>& loadVector(std::vector<T>& v, At (&theArray)[N])
  * \tparam TRIPLET should be Eigen::Triplet<T>
  */
 template <class TRIPLET>
-bool saveEigenSparseTripletsToFile(
-	const std::string& sFile, std::vector<TRIPLET>& tri)
+bool saveEigenSparseTripletsToFile(const std::string& sFile, std::vector<TRIPLET>& tri)
 {
-#if defined(_MSC_VER) &&                                                       \
-	(_MSC_VER >= 1400)	// Use a secure version in Visual Studio 2005+
-	FILE* f;
-	if (0 != ::fopen_s(&f, sFile.c_str(), "wt")) f = nullptr;
+#if defined(_MSC_VER) && (_MSC_VER >= 1400)  // Use a secure version in Visual Studio 2005+
+  FILE* f;
+  if (0 != ::fopen_s(&f, sFile.c_str(), "wt")) f = nullptr;
 #else
-	FILE* f = ::fopen(sFile.c_str(), "wt");
+  FILE* f = ::fopen(sFile.c_str(), "wt");
 #endif
 
-	if (!f) return false;
+  if (!f) return false;
 
-	for (size_t i = 0; i < tri.size(); i++)
-		fprintf(
-			f, "%u %u %e\n", 1 + tri[i].row(), 1 + tri[i].col(),
-			tri[i].value());
+  for (size_t i = 0; i < tri.size(); i++)
+    fprintf(f, "%u %u %e\n", 1 + tri[i].row(), 1 + tri[i].col(), tri[i].value());
 
-	fclose(f);
-	return true;
+  fclose(f);
+  return true;
 }
 
 /** @} */  // End of mrpt_math_io

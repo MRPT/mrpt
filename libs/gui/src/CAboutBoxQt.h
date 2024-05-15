@@ -16,12 +16,11 @@ class QTabWidget;
 
 class CAboutBoxQt : public QDialog, public CAboutBoxBase
 {
-   public:
-	CAboutBoxQt(
-		const std::string& appName, const std::string& additionalInfo,
-		const bool showStandardInfo);
-	~CAboutBoxQt() override = default;
+ public:
+  CAboutBoxQt(
+      const std::string& appName, const std::string& additionalInfo, const bool showStandardInfo);
+  ~CAboutBoxQt() override = default;
 
-   private:
-	QTextEdit* widgetForTabs(const std::string& str, QTabWidget* parent) const;
+ private:
+  QTextEdit* widgetForTabs(const std::string& str, QTabWidget* parent) const;
 };

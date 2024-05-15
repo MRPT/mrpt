@@ -11,37 +11,36 @@
 
 using namespace mrpt::maps;
 
-bool mrpt::ros2bridge::fromROS(
-	const sensor_msgs::msg::PointCloud& msg, CSimplePointsMap& obj)
+bool mrpt::ros2bridge::fromROS(const sensor_msgs::msg::PointCloud& msg, CSimplePointsMap& obj)
 {
-	const size_t N = msg.points.size();
+  const size_t N = msg.points.size();
 
-	obj.clear();
-	obj.reserve(N);
-	for (size_t i = 0; i < N; i++)
-		obj.insertPoint(msg.points[i].x, msg.points[i].y, msg.points[i].z);
+  obj.clear();
+  obj.reserve(N);
+  for (size_t i = 0; i < N; i++) obj.insertPoint(msg.points[i].x, msg.points[i].y, msg.points[i].z);
 
-	return true;
+  return true;
 }
 
 bool mrpt::ros2bridge::toROS(
-	const CSimplePointsMap& obj, const std_msgs::msg::Header& msg_header,
-	sensor_msgs::msg::PointCloud& msg)
+    const CSimplePointsMap& obj,
+    const std_msgs::msg::Header& msg_header,
+    sensor_msgs::msg::PointCloud& msg)
 {
-	// 1) sensor_msgs::PointCloud:: header
-	msg.header = msg_header;
+  // 1) sensor_msgs::PointCloud:: header
+  msg.header = msg_header;
 
-	// 2) sensor_msgs::PointCloud:: points
-	const size_t N = obj.size();
-	msg.points.resize(N);
-	for (size_t i = 0; i < N; i++)
-	{
-		geometry_msgs::msg::Point32& pt = msg.points[i];
-		obj.getPoint(i, pt.x, pt.y, pt.z);
-	}
+  // 2) sensor_msgs::PointCloud:: points
+  const size_t N = obj.size();
+  msg.points.resize(N);
+  for (size_t i = 0; i < N; i++)
+  {
+    geometry_msgs::msg::Point32& pt = msg.points[i];
+    obj.getPoint(i, pt.x, pt.y, pt.z);
+  }
 
-	// 3) sensor_msgs::PointCloud:: channels
-	msg.channels.clear();
+  // 3) sensor_msgs::PointCloud:: channels
+  msg.channels.clear();
 
-	return true;
+  return true;
 }

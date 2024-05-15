@@ -20,20 +20,22 @@ using namespace mrpt::math;
 using namespace mrpt::poses;
 
 CPosePDF::Ptr CMetricMapsAlignmentAlgorithm::Align(
-	const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* m2,
-	const CPose2D& grossEst,
-	mrpt::optional_ref<TMetricMapAlignmentResult> outInfo)
+    const mrpt::maps::CMetricMap* m1,
+    const mrpt::maps::CMetricMap* m2,
+    const CPose2D& grossEst,
+    mrpt::optional_ref<TMetricMapAlignmentResult> outInfo)
 {
-	CPosePDFGaussian posePDF(grossEst, CMatrixDouble33());
-	return AlignPDF(m1, m2, posePDF, outInfo);
+  CPosePDFGaussian posePDF(grossEst, CMatrixDouble33());
+  return AlignPDF(m1, m2, posePDF, outInfo);
 }
 
 CPose3DPDF::Ptr CMetricMapsAlignmentAlgorithm::Align3D(
-	const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* m2,
-	const CPose3D& grossEst,
-	mrpt::optional_ref<TMetricMapAlignmentResult> outInfo)
+    const mrpt::maps::CMetricMap* m1,
+    const mrpt::maps::CMetricMap* m2,
+    const CPose3D& grossEst,
+    mrpt::optional_ref<TMetricMapAlignmentResult> outInfo)
 {
-	CPose3DPDFGaussian posePDF;
-	posePDF.mean = grossEst;
-	return Align3DPDF(m1, m2, posePDF, outInfo);
+  CPose3DPDFGaussian posePDF;
+  posePDF.mean = grossEst;
+  return Align3DPDF(m1, m2, posePDF, outInfo);
 }

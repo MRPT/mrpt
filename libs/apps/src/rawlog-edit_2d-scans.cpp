@@ -27,6 +27,6 @@ DECLARE_OP_FUNCTION(op_export_txt);
 // ======================================================================
 DECLARE_OP_FUNCTION(op_export_2d_scans_txt)
 {
-	// Forward:
-	op_export_txt(in_rawlog, cmdline, verbose);
+  // Forward:
+  op_export_txt(in_rawlog, cmdline, verbose);
 }

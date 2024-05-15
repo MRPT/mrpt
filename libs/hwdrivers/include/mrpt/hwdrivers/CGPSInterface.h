@@ -141,236 +141,213 @@ namespace mrpt::hwdrivers
  */
 class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 {
-	DEFINE_GENERIC_SENSOR(CGPSInterface)
+  DEFINE_GENERIC_SENSOR(CGPSInterface)
 
-   public:
-	/** Read about parser selection in the documentation for CGPSInterface */
-	enum PARSERS
-	{
-		NONE = -2,
-		AUTO = -1,
-		NMEA = 0,
-		NOVATEL_OEM6
-	};
+ public:
+  /** Read about parser selection in the documentation for CGPSInterface */
+  enum PARSERS
+  {
+    NONE = -2,
+    AUTO = -1,
+    NMEA = 0,
+    NOVATEL_OEM6
+  };
 
-	/** Default ctor */
-	CGPSInterface();
-	/** Dtor */
-	~CGPSInterface() override;
+  /** Default ctor */
+  CGPSInterface();
+  /** Dtor */
+  ~CGPSInterface() override;
 
-	void doProcess() override;	// See docs in parent class
+  void doProcess() override;  // See docs in parent class
 
-	/** Returns true if communications work, i.e. if some message has been
-	 * received. */
-	bool isGPS_connected();
+  /** Returns true if communications work, i.e. if some message has been
+   * received. */
+  bool isGPS_connected();
 
-	/** \name Set-up and configuration
-	 * @{ */
-	/** Set the serial port to use (COM1, ttyUSB0, etc). */
-	void setSerialPortName(const std::string& COM_port);
-	/** Get the serial port to use (COM1, ttyUSB0, etc). */
-	std::string getSerialPortName() const;
+  /** \name Set-up and configuration
+   * @{ */
+  /** Set the serial port to use (COM1, ttyUSB0, etc). */
+  void setSerialPortName(const std::string& COM_port);
+  /** Get the serial port to use (COM1, ttyUSB0, etc). */
+  std::string getSerialPortName() const;
 
-	/** Select the parser for incomming data, among the options enumerated in \a
-	 * CGPSInterface */
-	void setParser(PARSERS parser);
-	PARSERS getParser() const;
+  /** Select the parser for incomming data, among the options enumerated in \a
+   * CGPSInterface */
+  void setParser(PARSERS parser);
+  PARSERS getParser() const;
 
-	/** This enforces the use of a given user stream, instead of trying to open
-	 * the serial port set in this class parameters.
-	 * \param[in] csExternalStream If not NULL, read/write operations to the
-	 * stream will be guarded by this critical section.
-	 * The stream object is not deleted. It is the user responsibility to keep
-	 * that object allocated during the entire life of this object.
-	 * \note Call before CGenericSensor::initialize()
-	 */
-	void bindStream(
-		const std::shared_ptr<mrpt::io::CStream>& external_stream,
-		const std::shared_ptr<std::mutex>& csOptionalExternalStream =
-			std::shared_ptr<std::mutex>());
+  /** This enforces the use of a given user stream, instead of trying to open
+   * the serial port set in this class parameters.
+   * \param[in] csExternalStream If not NULL, read/write operations to the
+   * stream will be guarded by this critical section.
+   * The stream object is not deleted. It is the user responsibility to keep
+   * that object allocated during the entire life of this object.
+   * \note Call before CGenericSensor::initialize()
+   */
+  void bindStream(
+      const std::shared_ptr<mrpt::io::CStream>& external_stream,
+      const std::shared_ptr<std::mutex>& csOptionalExternalStream = std::shared_ptr<std::mutex>());
 
-	bool useExternalStream() const { return m_data_stream_is_external; }
-	void setSetupCommandsDelay(const double delay_secs);
-	double getSetupCommandsDelay() const;
+  bool useExternalStream() const { return m_data_stream_is_external; }
+  void setSetupCommandsDelay(const double delay_secs);
+  double getSetupCommandsDelay() const;
 
-	void setSetupCommands(const std::vector<std::string>& cmds);
-	const std::vector<std::string>& getSetupCommands() const;
+  void setSetupCommands(const std::vector<std::string>& cmds);
+  const std::vector<std::string>& getSetupCommands() const;
 
-	void setShutdownCommands(const std::vector<std::string>& cmds);
-	const std::vector<std::string>& getShutdownCommands() const;
+  void setShutdownCommands(const std::vector<std::string>& cmds);
+  const std::vector<std::string>& getShutdownCommands() const;
 
-	void enableSetupCommandsAppendCRLF(const bool enable);
-	bool isEnabledSetupCommandsAppendCRLF() const;
+  void enableSetupCommandsAppendCRLF(const bool enable);
+  bool isEnabledSetupCommandsAppendCRLF() const;
 
-	void enableAppendMsgTypeToSensorLabel(bool enable)
-	{
-		m_sensorLabelAppendMsgType = enable;
-	}
+  void enableAppendMsgTypeToSensorLabel(bool enable) { m_sensorLabelAppendMsgType = enable; }
 
-	/** If set to non-empty, RAW GPS serial data will be also dumped to a
-	 * separate file. */
-	void setRawDumpFilePrefix(const std::string& filePrefix)
-	{
-		m_raw_dump_file_prefix = filePrefix;
-	}
-	[[nodiscard]] std::string getRawDumpFilePrefix() const
-	{
-		return m_raw_dump_file_prefix;
-	}
+  /** If set to non-empty, RAW GPS serial data will be also dumped to a
+   * separate file. */
+  void setRawDumpFilePrefix(const std::string& filePrefix) { m_raw_dump_file_prefix = filePrefix; }
+  [[nodiscard]] std::string getRawDumpFilePrefix() const { return m_raw_dump_file_prefix; }
 
-	/** Send a custom data block to the GNSS device right now. Can be used to
-	  change its behavior online as needed.
-	  \return false on communication error */
-	[[nodiscard]] bool sendCustomCommand(const void* data, size_t datalen);
+  /** Send a custom data block to the GNSS device right now. Can be used to
+  change its behavior online as needed.
+  \return false on communication error */
+  [[nodiscard]] bool sendCustomCommand(const void* data, size_t datalen);
 
-	/** @} */
+  /** @} */
 
-	[[nodiscard]] bool isAIMConfigured() { return m_topcon_AIMConfigured; }
+  [[nodiscard]] bool isAIMConfigured() { return m_topcon_AIMConfigured; }
 
-	/** Parses one line of NMEA data from a GPS receiver, and writes the
-	 * recognized fields (if any) into an observation object.
-	 * Recognized frame types are those listed for the `NMEA` parser in the
-	 * documentation of CGPSInterface
-	 * \return true if some new data field has been correctly parsed and
-	 * inserted into out_obs
-	 */
-	[[nodiscard]] static bool parse_NMEA(
-		const std::string& cmd_line, mrpt::obs::CObservationGPS& out_obs,
-		const bool verbose = false);
+  /** Parses one line of NMEA data from a GPS receiver, and writes the
+   * recognized fields (if any) into an observation object.
+   * Recognized frame types are those listed for the `NMEA` parser in the
+   * documentation of CGPSInterface
+   * \return true if some new data field has been correctly parsed and
+   * inserted into out_obs
+   */
+  [[nodiscard]] static bool parse_NMEA(
+      const std::string& cmd_line, mrpt::obs::CObservationGPS& out_obs, const bool verbose = false);
 
-	/** Gets the latest GGA command or an empty string if no newer GGA command
-	 * was received since the last call to this method.
-	 * \param[in] reset If set to true, will empty the GGA cache so next calls
-	 * will return an empty string if no new frame is received.
-	 */
-	[[nodiscard]] std::string getLastGGA(bool reset = true);
+  /** Gets the latest GGA command or an empty string if no newer GGA command
+   * was received since the last call to this method.
+   * \param[in] reset If set to true, will empty the GGA cache so next calls
+   * will return an empty string if no new frame is received.
+   */
+  [[nodiscard]] std::string getLastGGA(bool reset = true);
 
-	using ptr_parser_t =
-		bool (CGPSInterface::*)(size_t& out_minimum_rx_buf_to_decide);
+  using ptr_parser_t = bool (CGPSInterface::*)(size_t& out_minimum_rx_buf_to_decide);
 
-	/** @name Parser implementations: each method must try to parse the first
-	 * bytes in the
-	 *  incoming buffer, and return false if the available data does not match
-	 * the expected format, so we must skip 1 byte and try again.
-	 * @{ */
-	[[nodiscard]] bool implement_parser_NMEA(
-		size_t& out_minimum_rx_buf_to_decide);
-	[[nodiscard]] bool implement_parser_NOVATEL_OEM6(
-		size_t& out_minimum_rx_buf_to_decide);
-	/** @} */
+  /** @name Parser implementations: each method must try to parse the first
+   * bytes in the
+   *  incoming buffer, and return false if the available data does not match
+   * the expected format, so we must skip 1 byte and try again.
+   * @{ */
+  [[nodiscard]] bool implement_parser_NMEA(size_t& out_minimum_rx_buf_to_decide);
+  [[nodiscard]] bool implement_parser_NOVATEL_OEM6(size_t& out_minimum_rx_buf_to_decide);
+  /** @} */
 
-   protected:
-	/** Implements custom messages to be sent to the GPS unit just after
-	 * connection and before normal use.
-	 *  Returns false or raise an exception if something goes wrong. */
-	bool OnConnectionEstablished();
-	/** Like OnConnectionEstablished() for sending optional shutdown commands */
-	bool OnConnectionShutdown();
+ protected:
+  /** Implements custom messages to be sent to the GPS unit just after
+   * connection and before normal use.
+   *  Returns false or raise an exception if something goes wrong. */
+  bool OnConnectionEstablished();
+  /** Like OnConnectionEstablished() for sending optional shutdown commands */
+  bool OnConnectionShutdown();
 
-	bool legacy_topcon_setup_commands();
+  bool legacy_topcon_setup_commands();
 
-	/** Typically a CSerialPort created by this class, but may be set
-	 * externally. */
-	std::shared_ptr<mrpt::io::CStream> m_data_stream;
-	std::shared_ptr<std::mutex> m_data_stream_cs;
-	std::shared_ptr<std::mutex> m_data_stream_mine_cs =
-		std::make_shared<std::mutex>();
-	bool m_data_stream_is_external{false};
+  /** Typically a CSerialPort created by this class, but may be set
+   * externally. */
+  std::shared_ptr<mrpt::io::CStream> m_data_stream;
+  std::shared_ptr<std::mutex> m_data_stream_cs;
+  std::shared_ptr<std::mutex> m_data_stream_mine_cs = std::make_shared<std::mutex>();
+  bool m_data_stream_is_external{false};
 
-	poses::CPose3D m_sensorPose;
-	std::string m_customInit;
+  poses::CPose3D m_sensorPose;
+  std::string m_customInit;
 
-	/** See the class documentation at the top for expected parameters */
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection) override;
+  /** See the class documentation at the top for expected parameters */
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection) override;
 
-	/** If not empty, will send a cmd "set,/par/pos/pd/port,...". Example value:
-	 * "/dev/ser/b" */
-	void setJAVAD_rtk_src_port(const std::string& s)
-	{
-		m_JAVAD_rtk_src_port = s;
-	}
+  /** If not empty, will send a cmd "set,/par/pos/pd/port,...". Example value:
+   * "/dev/ser/b" */
+  void setJAVAD_rtk_src_port(const std::string& s) { m_JAVAD_rtk_src_port = s; }
 
-	/** Only used when "m_JAVAD_rtk_src_port" is not empty */
-	void setJAVAD_rtk_src_baud(unsigned int baud)
-	{
-		m_JAVAD_rtk_src_baud = baud;
-	}
+  /** Only used when "m_JAVAD_rtk_src_port" is not empty */
+  void setJAVAD_rtk_src_baud(unsigned int baud) { m_JAVAD_rtk_src_baud = baud; }
 
-	/** Only used when "m_JAVAD_rtk_src_port" is not empty: format of RTK
-	 * corrections: "cmr", "rtcm", "rtcm3", etc. */
-	void setJAVAD_rtk_format(const std::string& s) { m_JAVAD_rtk_format = s; }
-	/** Set Advanced Input Mode for the primary port.
-		This can be used to send RTK corrections to the device using the same
-	   port that it's used for the commands.
-		The RTK correction stream must be re-packaged into a special frame with
-	   prefix ">>" */
-	bool setJAVAD_AIM_mode();
+  /** Only used when "m_JAVAD_rtk_src_port" is not empty: format of RTK
+   * corrections: "cmr", "rtcm", "rtcm3", etc. */
+  void setJAVAD_rtk_format(const std::string& s) { m_JAVAD_rtk_format = s; }
+  /** Set Advanced Input Mode for the primary port.
+    This can be used to send RTK corrections to the device using the same
+   port that it's used for the commands.
+    The RTK correction stream must be re-packaged into a special frame with
+   prefix ">>" */
+  bool setJAVAD_AIM_mode();
 
-	/** Unset Advanced Input Mode for the primary port and use it only as a
-	 * command port. */
-	bool unsetJAVAD_AIM_mode();
+  /** Unset Advanced Input Mode for the primary port and use it only as a
+   * command port. */
+  bool unsetJAVAD_AIM_mode();
 
-   private:
-	/** Auxiliary buffer for readings */
-	mrpt::containers::circular_buffer<uint8_t> m_rx_buffer;
-	PARSERS m_parser{CGPSInterface::AUTO};
-	std::string m_raw_dump_file_prefix;
-	std::string m_COMname;
-	int m_COMbauds{4800};
-	bool m_sensorLabelAppendMsgType{true};
-	bool m_GPS_comsWork{false};
-	mrpt::system::TTimeStamp m_last_timestamp;
-	mrpt::io::CFileOutputStream m_raw_output_file;
-	double m_custom_cmds_delay{0.1};
-	bool m_custom_cmds_append_CRLF{true};
-	std::vector<std::string> m_setup_cmds;
-	std::vector<std::string> m_shutdown_cmds;
+ private:
+  /** Auxiliary buffer for readings */
+  mrpt::containers::circular_buffer<uint8_t> m_rx_buffer;
+  PARSERS m_parser{CGPSInterface::AUTO};
+  std::string m_raw_dump_file_prefix;
+  std::string m_COMname;
+  int m_COMbauds{4800};
+  bool m_sensorLabelAppendMsgType{true};
+  bool m_GPS_comsWork{false};
+  mrpt::system::TTimeStamp m_last_timestamp;
+  mrpt::io::CFileOutputStream m_raw_output_file;
+  double m_custom_cmds_delay{0.1};
+  bool m_custom_cmds_append_CRLF{true};
+  std::vector<std::string> m_setup_cmds;
+  std::vector<std::string> m_shutdown_cmds;
 
-	/** \name Legacy support for TopCon RTK configuration
-	 * @{ */
-	/** If not empty, will send a cmd "set,/par/pos/pd/port,...". Example value:
-	 * "/dev/ser/b" */
-	std::string m_JAVAD_rtk_src_port;
-	/** Only used when "m_JAVAD_rtk_src_port" is not empty */
-	unsigned int m_JAVAD_rtk_src_baud{0};
-	/** Only used when "m_JAVAD_rtk_src_port" is not empty: format of RTK
-	 * corrections: "cmr", "rtcm", "rtcm3", etc. */
-	std::string m_JAVAD_rtk_format;
+  /** \name Legacy support for TopCon RTK configuration
+   * @{ */
+  /** If not empty, will send a cmd "set,/par/pos/pd/port,...". Example value:
+   * "/dev/ser/b" */
+  std::string m_JAVAD_rtk_src_port;
+  /** Only used when "m_JAVAD_rtk_src_port" is not empty */
+  unsigned int m_JAVAD_rtk_src_baud{0};
+  /** Only used when "m_JAVAD_rtk_src_port" is not empty: format of RTK
+   * corrections: "cmr", "rtcm", "rtcm3", etc. */
+  std::string m_JAVAD_rtk_format;
 
-	/** Use this mode for receive RTK corrections from a external source through
-	 * the primary port */
-	bool m_topcon_useAIMMode{false};
-	/** Indicates if the AIM has been properly set up. */
-	bool m_topcon_AIMConfigured{false};
-	/** The period in seconds which the data should be provided by the GPS */
-	double m_topcon_data_period{0.2};
-	/** Private auxiliary method. Raises exception on error. */
-	void JAVAD_sendMessage(const char* str, bool waitForAnswer = true);
-	/** @} */
+  /** Use this mode for receive RTK corrections from a external source through
+   * the primary port */
+  bool m_topcon_useAIMMode{false};
+  /** Indicates if the AIM has been properly set up. */
+  bool m_topcon_AIMConfigured{false};
+  /** The period in seconds which the data should be provided by the GPS */
+  double m_topcon_data_period{0.2};
+  /** Private auxiliary method. Raises exception on error. */
+  void JAVAD_sendMessage(const char* str, bool waitForAnswer = true);
+  /** @} */
 
-	/** Returns true if the COM port is already open, or try to open it in other
-	 * case.
-	 * \return true if everything goes OK, or false if there are problems
-	 * opening the port. */
-	bool tryToOpenTheCOM();
+  /** Returns true if the COM port is already open, or try to open it in other
+   * case.
+   * \return true if everything goes OK, or false if there are problems
+   * opening the port. */
+  bool tryToOpenTheCOM();
 
-	/** Process data in "m_buffer" to extract GPS messages, and remove them from
-	 * the buffer. */
-	void parseBuffer();
+  /** Process data in "m_buffer" to extract GPS messages, and remove them from
+   * the buffer. */
+  void parseBuffer();
 
-	/** Queue out now the messages in \a m_just_parsed_messages, leaving it
-	 * empty */
-	void flushParsedMessagesNow();
+  /** Queue out now the messages in \a m_just_parsed_messages, leaving it
+   * empty */
+  void flushParsedMessagesNow();
 
-	/** A private copy of the last received gps datum */
-	mrpt::obs::CObservationGPS::Ptr m_parsed_messages =
-		mrpt::obs::CObservationGPS::Create();
+  /** A private copy of the last received gps datum */
+  mrpt::obs::CObservationGPS::Ptr m_parsed_messages = mrpt::obs::CObservationGPS::Create();
 
-	/** Used in getLastGGA() */
-	std::string m_last_GGA;
-};	// end class
+  /** Used in getLastGGA() */
+  std::string m_last_GGA;
+};  // end class
 }  // namespace mrpt::hwdrivers
 MRPT_ENUM_TYPE_BEGIN(mrpt::hwdrivers::CGPSInterface::PARSERS)
 using namespace mrpt::hwdrivers;

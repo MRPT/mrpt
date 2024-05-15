@@ -16,17 +16,16 @@
 struct mrpt::img::CImage::Impl
 {
 #if MRPT_HAS_OPENCV
-	cv::Mat img;
+  cv::Mat img;
 #endif
 
-	~Impl()
-	{
-		const thread_local bool SHOW_DEBUG_MSG =
-			mrpt::get_env<bool>("MRPT_DEBUG_IMG_LAZY_LOAD", false);
-		if (SHOW_DEBUG_MSG)
-		{
-			std::cout << "[CImage::dtor] Called on this="
-					  << reinterpret_cast<const void*>(this) << std::endl;
-		}
-	}
+  ~Impl()
+  {
+    const thread_local bool SHOW_DEBUG_MSG = mrpt::get_env<bool>("MRPT_DEBUG_IMG_LAZY_LOAD", false);
+    if (SHOW_DEBUG_MSG)
+    {
+      std::cout << "[CImage::dtor] Called on this=" << reinterpret_cast<const void*>(this)
+                << std::endl;
+    }
+  }
 };

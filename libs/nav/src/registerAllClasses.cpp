@@ -19,39 +19,39 @@
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_nav)
 {
-	using namespace mrpt::nav;
+  using namespace mrpt::nav;
 
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
-	// PTGs:
-	registerClass(CLASS_ID(CParameterizedTrajectoryGenerator));
-	registerClass(CLASS_ID(CPTG_DiffDrive_C));
-	registerClass(CLASS_ID(CPTG_DiffDrive_alpha));
-	registerClass(CLASS_ID(CPTG_DiffDrive_CCS));
-	registerClass(CLASS_ID(CPTG_DiffDrive_CC));
-	registerClass(CLASS_ID(CPTG_DiffDrive_CS));
-	registerClass(CLASS_ID(CPTG_Holo_Blend));
+  // PTGs:
+  registerClass(CLASS_ID(CParameterizedTrajectoryGenerator));
+  registerClass(CLASS_ID(CPTG_DiffDrive_C));
+  registerClass(CLASS_ID(CPTG_DiffDrive_alpha));
+  registerClass(CLASS_ID(CPTG_DiffDrive_CCS));
+  registerClass(CLASS_ID(CPTG_DiffDrive_CC));
+  registerClass(CLASS_ID(CPTG_DiffDrive_CS));
+  registerClass(CLASS_ID(CPTG_Holo_Blend));
 
-	// Logs:
-	registerClass(CLASS_ID(CLogFileRecord));
-	registerClass(CLASS_ID(CLogFileRecord_ND));
-	registerClass(CLASS_ID(CLogFileRecord_VFF));
-	registerClass(CLASS_ID(CLogFileRecord_FullEval));
+  // Logs:
+  registerClass(CLASS_ID(CLogFileRecord));
+  registerClass(CLASS_ID(CLogFileRecord_ND));
+  registerClass(CLASS_ID(CLogFileRecord_VFF));
+  registerClass(CLASS_ID(CLogFileRecord_FullEval));
 
-	// Holo methods:
-	registerClass(CLASS_ID(CHolonomicVFF));
-	registerClass(CLASS_ID(CHolonomicND));
-	registerClass(CLASS_ID(CHolonomicFullEval));
+  // Holo methods:
+  registerClass(CLASS_ID(CHolonomicVFF));
+  registerClass(CLASS_ID(CHolonomicND));
+  registerClass(CLASS_ID(CHolonomicFullEval));
 
-	// Motion choosers:
-	registerClass(CLASS_ID(CMultiObjectiveMotionOptimizerBase));
-	registerClass(CLASS_ID(CMultiObjMotionOpt_Scalarization));
+  // Motion choosers:
+  registerClass(CLASS_ID(CMultiObjectiveMotionOptimizerBase));
+  registerClass(CLASS_ID(CMultiObjMotionOpt_Scalarization));
 #endif
 }
 
 void mrpt::nav::registerAllClasses_mrpt_nav()
 {
-	::registerAllClasses_mrpt_nav();
-	// deps:
-	mrpt::maps::registerAllClasses_mrpt_maps();
-	mrpt::kinematics::registerAllClasses_mrpt_kinematics();
+  ::registerAllClasses_mrpt_nav();
+  // deps:
+  mrpt::maps::registerAllClasses_mrpt_maps();
+  mrpt::kinematics::registerAllClasses_mrpt_kinematics();
 }

@@ -66,45 +66,45 @@ namespace mrpt::nav
  */
 class PlannerRRT_SE2_TPS : public PlannerTPS_VirtualBase
 {
-   public:
-	/** The type of poses at nodes */
-	using node_pose_t = mrpt::math::TPose2D;
+ public:
+  /** The type of poses at nodes */
+  using node_pose_t = mrpt::math::TPose2D;
 
-	struct TPlannerInput : public TPlannerInputTempl<node_pose_t, node_pose_t>
-	{
-		TPlannerInput()
-		{
-			start_pose = mrpt::math::TPose2D(0, 0, 0);
-			goal_pose = mrpt::math::TPose2D(0, 0, 0);
-			world_bbox_min = mrpt::math::TPose2D(-10., -10.0, -M_PI);
-			world_bbox_max = mrpt::math::TPose2D(10., 10.0, M_PI);
-		}
-	};
+  struct TPlannerInput : public TPlannerInputTempl<node_pose_t, node_pose_t>
+  {
+    TPlannerInput()
+    {
+      start_pose = mrpt::math::TPose2D(0, 0, 0);
+      goal_pose = mrpt::math::TPose2D(0, 0, 0);
+      world_bbox_min = mrpt::math::TPose2D(-10., -10.0, -M_PI);
+      world_bbox_max = mrpt::math::TPose2D(10., 10.0, M_PI);
+    }
+  };
 
-	struct TPlannerResult : public TPlannerResultTempl<TMoveTreeSE2_TP>
-	{
-	};
+  struct TPlannerResult : public TPlannerResultTempl<TMoveTreeSE2_TP>
+  {
+  };
 
-	/** Constructor */
-	PlannerRRT_SE2_TPS();
+  /** Constructor */
+  PlannerRRT_SE2_TPS();
 
-	/** Load all params from a config file source */
-	void loadConfig(
-		const mrpt::config::CConfigFileBase& cfgSource,
-		const std::string& sSectionName = std::string("PTG_CONFIG"));
+  /** Load all params from a config file source */
+  void loadConfig(
+      const mrpt::config::CConfigFileBase& cfgSource,
+      const std::string& sSectionName = std::string("PTG_CONFIG"));
 
-	/** Must be called after setting all params (see `loadConfig()`) and before
-	 * calling `solve()` */
-	void initialize();
+  /** Must be called after setting all params (see `loadConfig()`) and before
+   * calling `solve()` */
+  void initialize();
 
-	/** The main API entry point: tries to find a planned path from 'goal' to
-	 * 'target' */
-	void solve(const TPlannerInput& pi, TPlannerResult& result);
+  /** The main API entry point: tries to find a planned path from 'goal' to
+   * 'target' */
+  void solve(const TPlannerInput& pi, TPlannerResult& result);
 
-   protected:
-	bool m_initialized{false};
+ protected:
+  bool m_initialized{false};
 
-};	// end class PlannerRRT_SE2_TPS
+};  // end class PlannerRRT_SE2_TPS
 
 /** @} */
 }  // namespace mrpt::nav

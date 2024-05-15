@@ -58,27 +58,25 @@ const TTimeStamp& InvalidTimeStamp();
  */
 struct TTimeParts
 {
-	uint16_t year{0};  //!< The year (e.g. 2021)
-	uint8_t month{0};  //!< Month (1-12)
-	uint8_t day{0};	 //!<  Day (1-31)
-	uint8_t hour{0};  //!<  Hour (0-23)
-	uint8_t minute{0};	//!<  Minute (0-59)
-	double second{0};  //!<  Seconds (0.0000-59.9999)
-	uint8_t day_of_week{0};	 //!< Day of week (1:Sunday, 7:Saturday)
-	int daylight_saving{0};
+  uint16_t year{0};        //!< The year (e.g. 2021)
+  uint8_t month{0};        //!< Month (1-12)
+  uint8_t day{0};          //!<  Day (1-31)
+  uint8_t hour{0};         //!<  Hour (0-23)
+  uint8_t minute{0};       //!<  Minute (0-59)
+  double second{0};        //!<  Seconds (0.0000-59.9999)
+  uint8_t day_of_week{0};  //!< Day of week (1:Sunday, 7:Saturday)
+  int daylight_saving{0};
 };
 
 /** Builds a timestamp from the parts (Parts are in UTC)
  * \sa timestampToParts
  */
-mrpt::system::TTimeStamp buildTimestampFromParts(
-	const mrpt::system::TTimeParts& p);
+mrpt::system::TTimeStamp buildTimestampFromParts(const mrpt::system::TTimeParts& p);
 
 /** Builds a timestamp from the parts (Parts are in local time)
  * \sa timestampToParts, buildTimestampFromParts
  */
-mrpt::system::TTimeStamp buildTimestampFromPartsLocalTime(
-	const mrpt::system::TTimeParts& p);
+mrpt::system::TTimeStamp buildTimestampFromPartsLocalTime(const mrpt::system::TTimeParts& p);
 
 /** Gets the individual parts of a date/time (days, hours, minutes, seconds) -
  * UTC time or local time
@@ -89,25 +87,21 @@ void timestampToParts(TTimeStamp t, TTimeParts& p, bool localTime = false);
 /** Returns the time difference from t1 to t2 (positive if t2 is posterior to
  * t1), in seconds  */
 inline double timeDifference(
-	const mrpt::system::TTimeStamp& t_first,
-	const mrpt::system::TTimeStamp& t_later)
+    const mrpt::system::TTimeStamp& t_first, const mrpt::system::TTimeStamp& t_later)
 {
-	MRPT_START
-	ASSERT_(t_later != INVALID_TIMESTAMP);
-	ASSERT_(t_first != INVALID_TIMESTAMP);
-	return 1e-6 *
-		std::chrono::duration_cast<std::chrono::microseconds>(t_later - t_first)
-			.count();
-	MRPT_END
+  MRPT_START
+  ASSERT_(t_later != INVALID_TIMESTAMP);
+  ASSERT_(t_first != INVALID_TIMESTAMP);
+  return 1e-6 * std::chrono::duration_cast<std::chrono::microseconds>(t_later - t_first).count();
+  MRPT_END
 }
 
 /** Shifts a timestamp the given amount of seconds (>0: forwards in time, <0:
  * backwards)  */
 inline mrpt::system::TTimeStamp timestampAdd(
-	const mrpt::system::TTimeStamp tim, const double num_seconds)
+    const mrpt::system::TTimeStamp tim, const double num_seconds)
 {
-	return tim +
-		std::chrono::microseconds(static_cast<int64_t>(num_seconds * 1e6));
+  return tim + std::chrono::microseconds(static_cast<int64_t>(num_seconds * 1e6));
 }
 
 /** Returns a formated string with the given time difference (passed as the
@@ -143,7 +137,7 @@ std::string timeToString(const mrpt::system::TTimeStamp t);
 /** Convert a timestamp into this textual form (in local time): HH:MM:SS.MMMMMM
  */
 std::string timeLocalToString(
-	const mrpt::system::TTimeStamp t, unsigned int secondFractionDigits = 6);
+    const mrpt::system::TTimeStamp t, unsigned int secondFractionDigits = 6);
 
 /** This function implements time interval formatting: Given a time in seconds,
  * it will return a string describing the interval with the most appropriate

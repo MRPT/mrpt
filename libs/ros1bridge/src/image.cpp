@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-	APPLICATION: mrpt_ros bridge
-	FILE: image.cpp
-	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
+  APPLICATION: mrpt_ros bridge
+  FILE: image.cpp
+  AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
   ---------------------------------------------------------------*/
 
 #if CV_BRIDGE_VERSION < 0x030400
@@ -31,32 +31,30 @@ using namespace cv_bridge;
 
 mrpt::img::CImage mrpt::ros1bridge::fromROS(const sensor_msgs::Image& i)
 {
-	return mrpt::img::CImage(
-		cv_bridge::toCvCopy(i, "bgr8").get()->image, mrpt::img::DEEP_COPY);
+  return mrpt::img::CImage(cv_bridge::toCvCopy(i, "bgr8").get()->image, mrpt::img::DEEP_COPY);
 }
 
 sensor_msgs::Image mrpt::ros1bridge::toROS(
-	const mrpt::img::CImage& i, const std_msgs::Header& msg_header)
+    const mrpt::img::CImage& i, const std_msgs::Header& msg_header)
 {
-	const Mat& cvImg = i.asCvMatRef();
+  const Mat& cvImg = i.asCvMatRef();
 
-	cv_bridge::CvImage img_bridge;
+  cv_bridge::CvImage img_bridge;
 
-	sensor_msgs::Image msg;
-	img_bridge = CvImage(
-		msg.header,
-		i.isColor() ? sensor_msgs::image_encodings::BGR8
-					: sensor_msgs::image_encodings::MONO8,
-		cvImg);
+  sensor_msgs::Image msg;
+  img_bridge = CvImage(
+      msg.header,
+      i.isColor() ? sensor_msgs::image_encodings::BGR8 : sensor_msgs::image_encodings::MONO8,
+      cvImg);
 
-	img_bridge.toImageMsg(msg);
+  img_bridge.toImageMsg(msg);
 
-	msg.encoding = i.isColor() ? "bgr8" : "mono8";
-	msg.header = msg_header;
-	msg.height = i.getHeight();
-	msg.width = i.getWidth();
+  msg.encoding = i.isColor() ? "bgr8" : "mono8";
+  msg.header = msg_header;
+  msg.height = i.getHeight();
+  msg.width = i.getWidth();
 
-	return msg;
+  return msg;
 }
 
 //

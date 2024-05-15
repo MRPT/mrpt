@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"	// Precompiled header
+#include "hwdrivers-precomp.h"  // Precompiled header
 //
 #include <mrpt/hwdrivers/COpenNI2_RGBD360.h>
 #include <mrpt/obs/CObservationRGBD360.h>
@@ -33,8 +33,8 @@ ctor
 COpenNI2_RGBD360::COpenNI2_RGBD360() : m_sensorPoseOnRobot()
 
 {
-	// Default label:
-	m_sensorLabel = "RGBD360";
+  // Default label:
+  m_sensorLabel = "RGBD360";
 }
 
 /*-------------------------------------------------------------
@@ -43,8 +43,8 @@ dtor
 COpenNI2_RGBD360::~COpenNI2_RGBD360()
 {
 #if MRPT_HAS_OPENNI2
-	kill();
-#endif	// MRPT_HAS_OPENNI2
+  kill();
+#endif  // MRPT_HAS_OPENNI2
 }
 
 /** This method can or cannot be implemented in the derived class, depending on
@@ -55,23 +55,21 @@ COpenNI2_RGBD360::~COpenNI2_RGBD360()
 void COpenNI2_RGBD360::initialize()
 {
 #if MRPT_HAS_OPENNI2
-	// Check and list the available devices
-	getConnectedDevices();
+  // Check and list the available devices
+  getConnectedDevices();
 
-	if (getNumDevices() < NUM_SENSORS)
-	{
-		cout << "Num required sensors " << NUM_SENSORS << endl;
-		cout << "Not enough devices connected -> EXIT\n";
-		return;
-	}
-	cout << "COpenNI2_RGBD360 initializes correctly.\n";
+  if (getNumDevices() < NUM_SENSORS)
+  {
+    cout << "Num required sensors " << NUM_SENSORS << endl;
+    cout << "Not enough devices connected -> EXIT\n";
+    return;
+  }
+  cout << "COpenNI2_RGBD360 initializes correctly.\n";
 
-	for (unsigned sensor_id = 0; sensor_id < (unsigned int)NUM_SENSORS;
-		 sensor_id++)
-		open(sensor_id);
+  for (unsigned sensor_id = 0; sensor_id < (unsigned int)NUM_SENSORS; sensor_id++) open(sensor_id);
 #else
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
-#endif	// MRPT_HAS_OPENNI2
+  THROW_EXCEPTION("MRPT was built without OpenNI2 support");
+#endif  // MRPT_HAS_OPENNI2
 }
 
 /** This method will be invoked at a minimum rate of "process_rate" (Hz)
@@ -81,37 +79,36 @@ void COpenNI2_RGBD360::initialize()
 void COpenNI2_RGBD360::doProcess()
 {
 #if MRPT_HAS_OPENNI2
-	cout << "COpenNI2_RGBD360::doProcess...\n";
+  cout << "COpenNI2_RGBD360::doProcess...\n";
 
-	bool thereIs, hwError;
+  bool thereIs, hwError;
 
-	CObservationRGBD360::Ptr newObs = std::make_shared<CObservationRGBD360>();
-	//	CObservation3DRangeScan::Ptr newObs =
-	// std::make_shared<CObservation3DRangeScan>();
+  CObservationRGBD360::Ptr newObs = std::make_shared<CObservationRGBD360>();
+  //	CObservation3DRangeScan::Ptr newObs =
+  // std::make_shared<CObservation3DRangeScan>();
 
-	assert(getNumDevices() > 0);
-	//  unsigned sensor_id = COpenNI2Generic::vOpenDevices.front();
-	getNextObservation(*newObs, thereIs, hwError);
+  assert(getNumDevices() > 0);
+  //  unsigned sensor_id = COpenNI2Generic::vOpenDevices.front();
+  getNextObservation(*newObs, thereIs, hwError);
 
-	if (hwError)
-	{
-		m_state = ssError;
-		THROW_EXCEPTION("Couldn't communicate to the OpenNI2 sensor!");
-	}
+  if (hwError)
+  {
+    m_state = ssError;
+    THROW_EXCEPTION("Couldn't communicate to the OpenNI2 sensor!");
+  }
 
-	if (thereIs)
-	{
-		m_state = ssWorking;
+  if (thereIs)
+  {
+    m_state = ssWorking;
 
-		std::vector<mrpt::serialization::CSerializable::Ptr> objs;
-		if (m_grab_rgb || m_grab_depth || m_grab_3D_points)
-			objs.push_back(newObs);
+    std::vector<mrpt::serialization::CSerializable::Ptr> objs;
+    if (m_grab_rgb || m_grab_depth || m_grab_3D_points) objs.push_back(newObs);
 
-		appendObservations(objs);
-	}
+    appendObservations(objs);
+  }
 #else
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
-#endif	// MRPT_HAS_OPENNI2
+  THROW_EXCEPTION("MRPT was built without OpenNI2 support");
+#endif  // MRPT_HAS_OPENNI2
 }
 
 /** Loads specific configuration for the device from a given source of
@@ -121,35 +118,30 @@ void COpenNI2_RGBD360::doProcess()
  * some critical parameter is missing or has an invalid value.
  */
 void COpenNI2_RGBD360::loadConfig_sensorSpecific(
-	const mrpt::config::CConfigFileBase& configSource,
-	const std::string& iniSection)
+    const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection)
 {
-	cout << "COpenNI2_RGBD360::loadConfig_sensorSpecific...\n";
+  cout << "COpenNI2_RGBD360::loadConfig_sensorSpecific...\n";
 
-	m_sensorPoseOnRobot.setFromValues(
-		configSource.read_float(iniSection, "pose_x", 0),
-		configSource.read_float(iniSection, "pose_y", 0),
-		configSource.read_float(iniSection, "pose_z", 0),
-		DEG2RAD(configSource.read_float(iniSection, "pose_yaw", 0)),
-		DEG2RAD(configSource.read_float(iniSection, "pose_pitch", 0)),
-		DEG2RAD(configSource.read_float(iniSection, "pose_roll", 0)));
+  m_sensorPoseOnRobot.setFromValues(
+      configSource.read_float(iniSection, "pose_x", 0),
+      configSource.read_float(iniSection, "pose_y", 0),
+      configSource.read_float(iniSection, "pose_z", 0),
+      DEG2RAD(configSource.read_float(iniSection, "pose_yaw", 0)),
+      DEG2RAD(configSource.read_float(iniSection, "pose_pitch", 0)),
+      DEG2RAD(configSource.read_float(iniSection, "pose_roll", 0)));
 
-	m_preview_window =
-		configSource.read_bool(iniSection, "preview_window", m_preview_window);
+  m_preview_window = configSource.read_bool(iniSection, "preview_window", m_preview_window);
 
-	m_width = configSource.read_int(iniSection, "width", 0);
-	m_height = configSource.read_int(iniSection, "height", 0);
-	m_fps = configSource.read_float(iniSection, "fps", 0);
-	std::cout << "width " << m_width << " height " << m_height << " fps "
-			  << m_fps << endl;
+  m_width = configSource.read_int(iniSection, "width", 0);
+  m_height = configSource.read_int(iniSection, "height", 0);
+  m_fps = configSource.read_float(iniSection, "fps", 0);
+  std::cout << "width " << m_width << " height " << m_height << " fps " << m_fps << endl;
 
-	m_grab_rgb = configSource.read_bool(iniSection, "grab_image", m_grab_rgb);
-	m_grab_depth =
-		configSource.read_bool(iniSection, "grab_depth", m_grab_depth);
-	m_grab_3D_points =
-		configSource.read_bool(iniSection, "grab_3D_points", m_grab_3D_points);
+  m_grab_rgb = configSource.read_bool(iniSection, "grab_image", m_grab_rgb);
+  m_grab_depth = configSource.read_bool(iniSection, "grab_depth", m_grab_depth);
+  m_grab_3D_points = configSource.read_bool(iniSection, "grab_3D_points", m_grab_3D_points);
 
-	//  m_num_sensors = configSource.read_int(iniSection,"m_num_sensors",0);
+  //  m_num_sensors = configSource.read_int(iniSection,"m_num_sensors",0);
 }
 
 /** The main data retrieving function, to be called after calling loadConfig()
@@ -161,109 +153,101 @@ void COpenNI2_RGBD360::loadConfig_sensorSpecific(
  * \sa doProcess
  */
 void COpenNI2_RGBD360::getNextObservation(
-	[[maybe_unused]] CObservationRGBD360& out_obs,
-	[[maybe_unused]] bool& there_is_obs, [[maybe_unused]] bool& hardware_error)
+    [[maybe_unused]] CObservationRGBD360& out_obs,
+    [[maybe_unused]] bool& there_is_obs,
+    [[maybe_unused]] bool& hardware_error)
 {
 #if MRPT_HAS_OPENNI2
-	CTicTac tictac;
-	tictac.Tic();
-	//	cout << "COpenNI2_RGBD360::getNextObservation \n";
+  CTicTac tictac;
+  tictac.Tic();
+  //	cout << "COpenNI2_RGBD360::getNextObservation \n";
 
-	there_is_obs = false;
-	hardware_error = false;
+  there_is_obs = false;
+  hardware_error = false;
 
-	CObservationRGBD360 newObs;
-	// Set intensity image ----------------------
-	if (m_grab_rgb) newObs.hasIntensityImage = true;
-	// Set range image --------------------------
-	if (m_grab_depth || m_grab_3D_points) newObs.hasRangeImage = true;
+  CObservationRGBD360 newObs;
+  // Set intensity image ----------------------
+  if (m_grab_rgb) newObs.hasIntensityImage = true;
+  // Set range image --------------------------
+  if (m_grab_depth || m_grab_3D_points) newObs.hasRangeImage = true;
 
-	newObs.timestamp = mrpt::Clock::now();
+  newObs.timestamp = mrpt::Clock::now();
 
-	for (unsigned sensor_id = 0; sensor_id < (unsigned int)NUM_SENSORS;
-		 sensor_id++)
-	{
-		getNextFrameRGB(
-			newObs.intensityImages[sensor_id], newObs.timestamps[sensor_id],
-			there_is_obs, hardware_error, sensor_id);
-		getNextFrameD(
-			newObs.rangeImages[sensor_id], newObs.timestamps[sensor_id],
-			there_is_obs, hardware_error, sensor_id);
-	}
+  for (unsigned sensor_id = 0; sensor_id < (unsigned int)NUM_SENSORS; sensor_id++)
+  {
+    getNextFrameRGB(
+        newObs.intensityImages[sensor_id], newObs.timestamps[sensor_id], there_is_obs,
+        hardware_error, sensor_id);
+    getNextFrameD(
+        newObs.rangeImages[sensor_id], newObs.timestamps[sensor_id], there_is_obs, hardware_error,
+        sensor_id);
+  }
 
-	// preview in real-time?
-	for (unsigned sensor_id = 0; sensor_id < (unsigned int)NUM_SENSORS;
-		 sensor_id++)
-	{
-		if (m_preview_window)
-		{
-			if (out_obs.hasRangeImage)
-			{
-				if (++m_preview_decim_counter_range >
-					m_preview_window_decimation)
-				{
-					m_preview_decim_counter_range = 0;
-					if (!m_win_range[sensor_id])
-					{
-						m_win_range[sensor_id] =
-							mrpt::gui::CDisplayWindow::Create("Preview RANGE");
-						m_win_range[sensor_id]->setPos(5, 5 + 250 * sensor_id);
-					}
+  // preview in real-time?
+  for (unsigned sensor_id = 0; sensor_id < (unsigned int)NUM_SENSORS; sensor_id++)
+  {
+    if (m_preview_window)
+    {
+      if (out_obs.hasRangeImage)
+      {
+        if (++m_preview_decim_counter_range > m_preview_window_decimation)
+        {
+          m_preview_decim_counter_range = 0;
+          if (!m_win_range[sensor_id])
+          {
+            m_win_range[sensor_id] = mrpt::gui::CDisplayWindow::Create("Preview RANGE");
+            m_win_range[sensor_id]->setPos(5, 5 + 250 * sensor_id);
+          }
 
-					// Normalize the image
-					mrpt::img::CImage img;
-					const Eigen::MatrixXf r =
-						out_obs.rangeImages[sensor_id].asEigen().cast<float>() *
-						out_obs.rangeUnits * float(1.0 / this->m_maxRange);
-					img.setFromMatrix(r, true /*normalized 0-1 */);
-					m_win_range[sensor_id]->showImage(img);
-				}
-			}
-			if (out_obs.hasIntensityImage)
-			{
-				if (++m_preview_decim_counter_rgb > m_preview_window_decimation)
-				{
-					m_preview_decim_counter_rgb = 0;
-					if (!m_win_int[sensor_id])
-					{
-						m_win_int[sensor_id] =
-							mrpt::gui::CDisplayWindow::Create(
-								"Preview INTENSITY");
-						m_win_int[sensor_id]->setPos(330, 5 + 250 * sensor_id);
-					}
-					m_win_int[sensor_id]->showImage(
-						out_obs.intensityImages[sensor_id]);
-				}
-			}
-		}
-		else
-		{
-			if (m_win_range[sensor_id]) m_win_range[sensor_id].reset();
-			if (m_win_int[sensor_id]) m_win_int[sensor_id].reset();
-		}
-	}
-	cout << "getNextObservation took " << 1000 * tictac.Tac() << "ms\n";
+          // Normalize the image
+          mrpt::img::CImage img;
+          const Eigen::MatrixXf r = out_obs.rangeImages[sensor_id].asEigen().cast<float>() *
+                                    out_obs.rangeUnits * float(1.0 / this->m_maxRange);
+          img.setFromMatrix(r, true /*normalized 0-1 */);
+          m_win_range[sensor_id]->showImage(img);
+        }
+      }
+      if (out_obs.hasIntensityImage)
+      {
+        if (++m_preview_decim_counter_rgb > m_preview_window_decimation)
+        {
+          m_preview_decim_counter_rgb = 0;
+          if (!m_win_int[sensor_id])
+          {
+            m_win_int[sensor_id] = mrpt::gui::CDisplayWindow::Create("Preview INTENSITY");
+            m_win_int[sensor_id]->setPos(330, 5 + 250 * sensor_id);
+          }
+          m_win_int[sensor_id]->showImage(out_obs.intensityImages[sensor_id]);
+        }
+      }
+    }
+    else
+    {
+      if (m_win_range[sensor_id]) m_win_range[sensor_id].reset();
+      if (m_win_int[sensor_id]) m_win_int[sensor_id].reset();
+    }
+  }
+  cout << "getNextObservation took " << 1000 * tictac.Tac() << "ms\n";
 #else
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
-#endif	// MRPT_HAS_OPENNI2
+  THROW_EXCEPTION("MRPT was built without OpenNI2 support");
+#endif  // MRPT_HAS_OPENNI2
 }
 
 /* -----------------------------------------------------
 setPathForExternalImages
 ----------------------------------------------------- */
-void COpenNI2_RGBD360::setPathForExternalImages(
-	[[maybe_unused]] const std::string& directory)
+void COpenNI2_RGBD360::setPathForExternalImages([[maybe_unused]] const std::string& directory)
 {
-	// Ignore for now. It seems performance is better grabbing everything
-	// to a single big file than creating hundreds of smaller files per
-	// second...
-	return;
+  // Ignore for now. It seems performance is better grabbing everything
+  // to a single big file than creating hundreds of smaller files per
+  // second...
+  return;
 
-	//	if (!mrpt::system::createDirectory( directory ))
-	//	{
-	//		THROW_EXCEPTION_FMT("Error: Cannot create the directory for
-	// externally
-	// saved images: %s",directory.c_str() )
-	//	}
-	//	m_path_for_external_images = directory;
+  //	if (!mrpt::system::createDirectory( directory ))
+  //	{
+  //		THROW_EXCEPTION_FMT("Error: Cannot create the directory for
+  // externally
+  // saved images: %s",directory.c_str() )
+  //	}
+  //	m_path_for_external_images = directory;
 }

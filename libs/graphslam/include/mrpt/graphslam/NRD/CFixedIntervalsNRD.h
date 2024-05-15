@@ -62,104 +62,100 @@ namespace mrpt::graphslam::deciders
  * \ingroup mrpt_graphslam_grp
  */
 template <class GRAPH_T = typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CFixedIntervalsNRD
-	: public virtual mrpt::graphslam::deciders::CNodeRegistrationDecider<
-		  GRAPH_T>
+class CFixedIntervalsNRD :
+    public virtual mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>
 {
+ public:
+  // Public functions
+  //////////////////////////////////////////////////////////////
+
+  /**\brief Handy typedefs */
+  /**\{*/
+  /**\brief Node Registration Decider */
+  using node_reg = mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>;
+
+  /**\brief type of graph constraints */
+  using constraint_t = typename GRAPH_T::constraint_t;
+  /**\brief type of underlying poses (2D/3D). */
+  using pose_t = typename GRAPH_T::constraint_t::type_value;
+  using global_pose_t = typename GRAPH_T::global_pose_t;
+
+  using inf_mat_t =
+      mrpt::math::CMatrixFixed<double, constraint_t::state_length, constraint_t::state_length>;
+  /**\brief Node Registration Decider */
+  using parent_t = mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>;
+  /**\}*/
+
+  CFixedIntervalsNRD();
+  ~CFixedIntervalsNRD() override = default;
+
+  void loadParams(const std::string& source_fname) override;
+  void printParams() const override;
+  void getDescriptiveReport(std::string* report_str) const override;
+
+  /**\brief Method makes use of the CActionCollection/CObservation to update
+   * the
+   * odometry estimation from the last inserted pose
+   *
+   * \return True upon successful node registration in the graph
+   */
+  bool updateState(
+      mrpt::obs::CActionCollection::Ptr action,
+      mrpt::obs::CSensoryFrame::Ptr observations,
+      mrpt::obs::CObservation::Ptr observation) override;
+
+  /**\brief Parameters structure for managing the relevant to the decider
+   * variables in a compact manner
+   */
+  struct TParams : public mrpt::config::CLoadableOptions
+  {
    public:
-	// Public functions
-	//////////////////////////////////////////////////////////////
+    TParams() = default;
+    ~TParams() override = default;
 
-	/**\brief Handy typedefs */
-	/**\{*/
-	/**\brief Node Registration Decider */
-	using node_reg =
-		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>;
+    void loadFromConfigFile(
+        const mrpt::config::CConfigFileBase& source, const std::string& section) override;
+    void dumpToTextStream(std::ostream& out) const override;
+    /**\brief Return a string with the configuration parameters
+     */
+    void getAsString(std::string* params_out) const;
+    std::string getAsString() const;
 
-	/**\brief type of graph constraints */
-	using constraint_t = typename GRAPH_T::constraint_t;
-	/**\brief type of underlying poses (2D/3D). */
-	using pose_t = typename GRAPH_T::constraint_t::type_value;
-	using global_pose_t = typename GRAPH_T::global_pose_t;
+    // max values for new node registration
+    double registration_max_distance;
+    double registration_max_angle;
+  };
 
-	using inf_mat_t = mrpt::math::CMatrixFixed<
-		double, constraint_t::state_length, constraint_t::state_length>;
-	/**\brief Node Registration Decider */
-	using parent_t =
-		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>;
-	/**\}*/
+  TParams params;
 
-	CFixedIntervalsNRD();
-	~CFixedIntervalsNRD() override = default;
+ protected:
+  /**\name Registration Conditions Specifiers
+   */
+  /**\brief If estimated position surpasses the registration max values since
+   * the previous registered node, register a new node in the graph.
+   *
+   * \return True on successful registration.
+   */
+  /**\{ */
+  bool checkRegistrationCondition() override;
+  bool checkRegistrationCondition(
+      const mrpt::poses::CPose2D& p1, const mrpt::poses::CPose2D& p2) const;
+  bool checkRegistrationCondition(
+      const mrpt::poses::CPose3D& p1, const mrpt::poses::CPose3D& p2) const;
+  /**\} */
 
-	void loadParams(const std::string& source_fname) override;
-	void printParams() const override;
-	void getDescriptiveReport(std::string* report_str) const override;
-
-	/**\brief Method makes use of the CActionCollection/CObservation to update
-	 * the
-	 * odometry estimation from the last inserted pose
-	 *
-	 * \return True upon successful node registration in the graph
-	 */
-	bool updateState(
-		mrpt::obs::CActionCollection::Ptr action,
-		mrpt::obs::CSensoryFrame::Ptr observations,
-		mrpt::obs::CObservation::Ptr observation) override;
-
-	/**\brief Parameters structure for managing the relevant to the decider
-	 * variables in a compact manner
-	 */
-	struct TParams : public mrpt::config::CLoadableOptions
-	{
-	   public:
-		TParams() = default;
-		~TParams() override = default;
-
-		void loadFromConfigFile(
-			const mrpt::config::CConfigFileBase& source,
-			const std::string& section) override;
-		void dumpToTextStream(std::ostream& out) const override;
-		/**\brief Return a string with the configuration parameters
-		 */
-		void getAsString(std::string* params_out) const;
-		std::string getAsString() const;
-
-		// max values for new node registration
-		double registration_max_distance;
-		double registration_max_angle;
-	};
-
-	TParams params;
-
-   protected:
-	/**\name Registration Conditions Specifiers
-	 */
-	/**\brief If estimated position surpasses the registration max values since
-	 * the previous registered node, register a new node in the graph.
-	 *
-	 * \return True on successful registration.
-	 */
-	/**\{ */
-	bool checkRegistrationCondition() override;
-	bool checkRegistrationCondition(
-		const mrpt::poses::CPose2D& p1, const mrpt::poses::CPose2D& p2) const;
-	bool checkRegistrationCondition(
-		const mrpt::poses::CPose3D& p1, const mrpt::poses::CPose3D& p2) const;
-	/**\} */
-
-	/**\brief pose_t estimation using only odometry information. Handy for
-	 * observation-only rawlogs.
-	 */
-	pose_t m_curr_odometry_only_pose;
-	/**\brief pose_t estimation using only odometry information. Handy for
-	 * observation-only rawlogs.
-	 */
-	pose_t m_last_odometry_only_pose;
-	/**\brief Keep track of whether we are reading from an observation-only
-	 * rawlog file or from an action-observation rawlog
-	 */
-	bool m_observation_only_rawlog;
+  /**\brief pose_t estimation using only odometry information. Handy for
+   * observation-only rawlogs.
+   */
+  pose_t m_curr_odometry_only_pose;
+  /**\brief pose_t estimation using only odometry information. Handy for
+   * observation-only rawlogs.
+   */
+  pose_t m_last_odometry_only_pose;
+  /**\brief Keep track of whether we are reading from an observation-only
+   * rawlog file or from an action-observation rawlog
+   */
+  bool m_observation_only_rawlog;
 };
 }  // namespace mrpt::graphslam::deciders
 #include "CFixedIntervalsNRD_impl.h"

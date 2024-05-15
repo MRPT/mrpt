@@ -20,43 +20,41 @@ namespace mrpt::math
  * https://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
  * \ingroup mrpt_math_grp
  */
-class CMatrixD : public mrpt::serialization::CSerializable,
-				 public CMatrixDynamic<double>
+class CMatrixD : public mrpt::serialization::CSerializable, public CMatrixDynamic<double>
 {
-	DEFINE_SERIALIZABLE(CMatrixD, mrpt::math)
-	DEFINE_SCHEMA_SERIALIZABLE()
-   public:
-	using Base = CMatrixDynamic<double>;
+  DEFINE_SERIALIZABLE(CMatrixD, mrpt::math)
+  DEFINE_SCHEMA_SERIALIZABLE()
+ public:
+  using Base = CMatrixDynamic<double>;
 
-	/** Constructor */
-	CMatrixD() : Base(1, 1) {}
-	/** Constructor */
-	CMatrixD(size_t row, size_t col) : Base(row, col) {}
+  /** Constructor */
+  CMatrixD() : Base(1, 1) {}
+  /** Constructor */
+  CMatrixD(size_t row, size_t col) : Base(row, col) {}
 
-	/** Copy constructor */
-	explicit CMatrixD(const Base& m) : Base(m) {}
+  /** Copy constructor */
+  explicit CMatrixD(const Base& m) : Base(m) {}
 
-	/** Copy constructor  */
-	explicit CMatrixD(const CMatrixFloat& m) : Base(0, 0) { *this = m; }
+  /** Copy constructor  */
+  explicit CMatrixD(const CMatrixFloat& m) : Base(0, 0) { *this = m; }
 
-	/*! Assignment operator from any other Eigen class */
-	template <typename Other>
-	inline CMatrixD& operator=(const Other& other)
-	{
-		Base::operator=(other);
-		return *this;
-	}
-	/*! Constructor from any other Eigen class */
-	template <class Other>
-	explicit CMatrixD(const Other& other)
-	{
-		Base::operator=(other);
-	}
+  /*! Assignment operator from any other Eigen class */
+  template <typename Other>
+  inline CMatrixD& operator=(const Other& other)
+  {
+    Base::operator=(other);
+    return *this;
+  }
+  /*! Constructor from any other Eigen class */
+  template <class Other>
+  explicit CMatrixD(const Other& other)
+  {
+    Base::operator=(other);
+  }
 
-	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CMatrixD)
+  MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CMatrixD)
 
-};	// end of class definition
-mrpt::serialization::CArchive& operator>>(
-	mrpt::serialization::CArchive& in, CMatrixD::Ptr& pObj);
+};  // end of class definition
+mrpt::serialization::CArchive& operator>>(mrpt::serialization::CArchive& in, CMatrixD::Ptr& pObj);
 
 }  // namespace mrpt::math

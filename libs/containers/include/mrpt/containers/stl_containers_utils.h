@@ -25,49 +25,49 @@ namespace mrpt::containers
 template <class T, class CONTAINER>
 size_t find_in_vector(const T& value, const CONTAINER& vect)
 {
-	auto last = vect.end();
-	for (auto i = vect.begin(); i != last; ++i)
-		if (*i == value) return std::distance(vect.begin(), i);
-	return std::string::npos;
+  auto last = vect.end();
+  for (auto i = vect.begin(); i != last; ++i)
+    if (*i == value) return std::distance(vect.begin(), i);
+  return std::string::npos;
 }
 
 /** Calls the standard "erase" method of a STL container, but also returns an
  * iterator to the next element in the container (or ::end if none) */
 template <class T>
 inline typename std::list<T>::iterator erase_return_next(
-	std::list<T>& cont, typename std::list<T>::iterator& it)
+    std::list<T>& cont, typename std::list<T>::iterator& it)
 {
-	return cont.erase(it);
+  return cont.erase(it);
 }
 //! \overload
 template <class K, class V>
 inline typename std::map<K, V>::iterator erase_return_next(
-	std::map<K, V>& cont, typename std::map<K, V>::iterator& it)
+    std::map<K, V>& cont, typename std::map<K, V>::iterator& it)
 {
-	typename std::map<K, V>::iterator itRet = it;
-	++itRet;
-	cont.erase(it);
-	return itRet;
+  typename std::map<K, V>::iterator itRet = it;
+  ++itRet;
+  cont.erase(it);
+  return itRet;
 }
 //! \overload
 template <class K, class V>
 inline typename std::multimap<K, V>::iterator erase_return_next(
-	std::multimap<K, V>& cont, typename std::multimap<K, V>::iterator& it)
+    std::multimap<K, V>& cont, typename std::multimap<K, V>::iterator& it)
 {
-	typename std::multimap<K, V>::iterator itRet = it;
-	++itRet;
-	cont.erase(it);
-	return itRet;
+  typename std::multimap<K, V>::iterator itRet = it;
+  ++itRet;
+  cont.erase(it);
+  return itRet;
 }
 //! \overload
 template <class T>
 inline typename std::set<T>::iterator erase_return_next(
-	std::set<T>& cont, typename std::set<T>::iterator& it)
+    std::set<T>& cont, typename std::set<T>::iterator& it)
 {
-	auto itRet = it;
-	++itRet;
-	cont.erase(it);
-	return itRet;
+  auto itRet = it;
+  ++itRet;
+  cont.erase(it);
+  return itRet;
 }
 
 /**\brief Return a STL container in std::string form.
@@ -78,10 +78,9 @@ inline typename std::set<T>::iterator erase_return_next(
 template <class T>
 std::string getSTLContainerAsString(const T& t)
 {
-	std::stringstream ss;
-	for (auto& e : t)
-		ss << e << ", ";
-	return ss.str();
+  std::stringstream ss;
+  for (auto& e : t) ss << e << ", ";
+  return ss.str();
 }
 /**\brief Print the given vector t.
  *
@@ -90,7 +89,7 @@ std::string getSTLContainerAsString(const T& t)
 template <class T>
 void printSTLContainer(const T& t)
 {
-	std::cout << getSTLContainerAsString(t) << "\n";
+  std::cout << getSTLContainerAsString(t) << "\n";
 }
 /**\brief Print the given STL container of containers t.
  *
@@ -99,14 +98,14 @@ void printSTLContainer(const T& t)
 template <class T>
 void printSTLContainerOfContainers(const T& t)
 {
-	using namespace std;
+  using namespace std;
 
-	int i = 0;
-	for (typename T::const_iterator it = t.begin(); it != t.end(); ++i, ++it)
-	{
-		cout << "List " << i + 1 << "/" << t.size() << endl << "\t";
-		printSTLContainer(*it);
-	}
+  int i = 0;
+  for (typename T::const_iterator it = t.begin(); it != t.end(); ++i, ++it)
+  {
+    cout << "List " << i + 1 << "/" << t.size() << endl << "\t";
+    printSTLContainer(*it);
+  }
 }
 /**\brief Return contents of map in a string representation
  *
@@ -116,13 +115,11 @@ void printSTLContainerOfContainers(const T& t)
  * \return std::string representation of map
  * */
 template <class T1, class T2>
-std::string getMapAsString(
-	const std::map<T1, T2>& m, const std::string& sep = " => ")
+std::string getMapAsString(const std::map<T1, T2>& m, const std::string& sep = " => ")
 {
-	std::stringstream ss;
-	for (auto& key_val : m)
-		ss << key_val.first << " => " << key_val.second << "\n";
-	return ss.str();
+  std::stringstream ss;
+  for (auto& key_val : m) ss << key_val.first << " => " << key_val.second << "\n";
+  return ss.str();
 }
 /**\brief Print the given map m
  *
@@ -131,7 +128,7 @@ std::string getMapAsString(
 template <class T1, class T2>
 void printMap(const std::map<T1, T2>& m)
 {
-	std::cout << getMapAsString(m) << "\n";
+  std::cout << getMapAsString(m) << "\n";
 }
 
 /**\brief Deep clear for a std vector container
@@ -139,8 +136,8 @@ void printMap(const std::map<T1, T2>& m)
 template <class CONTAINER>
 void deep_clear(CONTAINER& c)
 {
-	CONTAINER empty;
-	c.swap(empty);
+  CONTAINER empty;
+  c.swap(empty);
 }
 
 /** @} */  // end of grouping

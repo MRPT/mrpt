@@ -21,18 +21,18 @@ namespace mrpt::cpu
  */
 enum class feature : unsigned int
 {
-	MMX = 0,
-	POPCNT,
-	SSE,
-	SSE2,
-	SSE3,
-	SSSE3,
-	SSE4_1,
-	SSE4_2,
-	AVX,
-	AVX2,
-	// ---- end of list ----
-	FEATURE_COUNT
+  MMX = 0,
+  POPCNT,
+  SSE,
+  SSE2,
+  SSE3,
+  SSSE3,
+  SSE4_1,
+  SSE4_2,
+  AVX,
+  AVX2,
+  // ---- end of list ----
+  FEATURE_COUNT
 };
 
 namespace internal
@@ -42,31 +42,29 @@ namespace internal
  */
 class CPU_analyzer
 {
-   public:
-	static CPU_analyzer& Instance() noexcept;
+ public:
+  static CPU_analyzer& Instance() noexcept;
 
-	std::array<
-		bool, static_cast<std::size_t>(mrpt::cpu::feature::FEATURE_COUNT)>
-		feat_detected;
+  std::array<bool, static_cast<std::size_t>(mrpt::cpu::feature::FEATURE_COUNT)> feat_detected;
 
-	inline bool& feat(mrpt::cpu::feature f) noexcept
-	{
-		return feat_detected[static_cast<std::size_t>(f)];
-	}
-	inline bool feat(mrpt::cpu::feature f) const noexcept
-	{
-		return feat_detected[static_cast<std::size_t>(f)];
-	}
+  inline bool& feat(mrpt::cpu::feature f) noexcept
+  {
+    return feat_detected[static_cast<std::size_t>(f)];
+  }
+  inline bool feat(mrpt::cpu::feature f) const noexcept
+  {
+    return feat_detected[static_cast<std::size_t>(f)];
+  }
 
-   private:
-	// Ctor: runs all the checks and fills in the vector of features:
-	CPU_analyzer() noexcept
-	{
-		// Start with all falses:
-		feat_detected.fill(false);
-		detect_impl();
-	}
-	void detect_impl() noexcept;
+ private:
+  // Ctor: runs all the checks and fills in the vector of features:
+  CPU_analyzer() noexcept
+  {
+    // Start with all falses:
+    feat_detected.fill(false);
+    detect_impl();
+  }
+  void detect_impl() noexcept;
 };
 }  // namespace internal
 
@@ -75,8 +73,8 @@ class CPU_analyzer
  */
 inline bool supports(feature f) noexcept
 {
-	const auto& o = internal::CPU_analyzer::Instance();
-	return o.feat(f);
+  const auto& o = internal::CPU_analyzer::Instance();
+  return o.feat(f);
 }
 
 /** Blindly enables/disables a CPU feature flag in the list
@@ -91,8 +89,8 @@ inline bool supports(feature f) noexcept
  */
 inline void overrideDetectedFeature(feature f, bool newValue) noexcept
 {
-	auto& o = internal::CPU_analyzer::Instance();
-	o.feat(f) = newValue;
+  auto& o = internal::CPU_analyzer::Instance();
+  o.feat(f) = newValue;
 }
 
 /** Returns a string with detected features: "MMX:1 SSE2:0 etc."

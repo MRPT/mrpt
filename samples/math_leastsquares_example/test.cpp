@@ -26,61 +26,61 @@ using namespace std;
 // ------------------------------------------------------
 void TestLeastSquares()
 {
-	CVectorDouble x, y;
-	normalize(x, y);
+  CVectorDouble x, y;
+  normalize(x, y);
 
-	/**
-	 * for convenience, first initialize the data as C arrays and then define
-	 * std;:vectors from
-	 * that data
-	 *
-	 * loadVector
-	 * Assignment operator for initializing a std::vector from a C array
-	 * refer to
-	 * https://reference.mrpt.org/stable/group__container__ops__grp.html#ga40e8e47dea9f504a28d2a70ea8ddb158
-	 */
-	const double X[] = {1, 2, 3, 4};
-	const double Y[] = {6, 5, 7, 10};
-	loadVector(x, X);
-	loadVector(y, Y);
+  /**
+   * for convenience, first initialize the data as C arrays and then define
+   * std;:vectors from
+   * that data
+   *
+   * loadVector
+   * Assignment operator for initializing a std::vector from a C array
+   * refer to
+   * https://reference.mrpt.org/stable/group__container__ops__grp.html#ga40e8e47dea9f504a28d2a70ea8ddb158
+   */
+  const double X[] = {1, 2, 3, 4};
+  const double Y[] = {6, 5, 7, 10};
+  loadVector(x, X);
+  loadVector(y, Y);
 
-	// x points for plotting the least squres line against.
-	CVectorDouble Ts;
-	linspace(-3.0, 8.0, 100, Ts);
-	CVectorDouble Is;
+  // x points for plotting the least squres line against.
+  CVectorDouble Ts;
+  linspace(-3.0, 8.0, 100, Ts);
+  CVectorDouble Is;
 
-	/**
-	 * Least squares line approximation, based on the provided x,y vectors.
-	 */
-	mrpt::math::leastSquareLinearFit(Ts, Is, x, y);
+  /**
+   * Least squares line approximation, based on the provided x,y vectors.
+   */
+  mrpt::math::leastSquareLinearFit(Ts, Is, x, y);
 
-	CDisplayWindowPlots win("Result of linear least squares");
+  CDisplayWindowPlots win("Result of linear least squares");
 
-	win.plot(Ts, Is);
-	win.axis_fit();
-	win.axis_equal();
+  win.plot(Ts, Is);
+  win.axis_fit();
+  win.axis_equal();
 
-	win.plot(x, y, ".3r", "training_points");
+  win.plot(x, y, ".3r", "training_points");
 
-	win.waitForKey();
+  win.waitForKey();
 }
 
 int main(int argc, char** argv)
 {
-	try
-	{
-		TestLeastSquares();
+  try
+  {
+    TestLeastSquares();
 
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
-		return -1;
-	}
-	catch (...)
-	{
-		printf("Another exception!!");
-		return -1;
-	}
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    return -1;
+  }
+  catch (...)
+  {
+    printf("Another exception!!");
+    return -1;
+  }
 }

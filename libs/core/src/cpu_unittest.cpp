@@ -12,16 +12,16 @@
 
 TEST(cpu, features_as_string)
 {
-	const std::string s = mrpt::cpu::features_as_string();
-	std::cout << "CPU features: " << s << "\n";
+  const std::string s = mrpt::cpu::features_as_string();
+  std::cout << "CPU features: " << s << "\n";
 
-	EXPECT_GT(s.size(), 10UL);
+  EXPECT_GT(s.size(), 10UL);
 }
 
 TEST(cpu, supports)
 {
-	// Test that, at least, it does not crash.
-	// We cannot test against any known value since the result is CPU-dependant
-	const bool r = mrpt::cpu::supports(mrpt::cpu::feature::SSE2);
-	(void)r;
+  // Test that, at least, it does not crash.
+  // We cannot test against any known value since the result is CPU-dependant
+  const bool r = mrpt::cpu::supports(mrpt::cpu::feature::SSE2);
+  (void)r;
 }

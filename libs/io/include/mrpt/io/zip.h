@@ -23,13 +23,10 @@ class CStream;
 namespace zip
 {
 /** Compress an array of bytes into another one. */
-void compress(
-	void* inData, size_t inDataSize, std::vector<unsigned char>& outData);
+void compress(void* inData, size_t inDataSize, std::vector<unsigned char>& outData);
 
 /** Compress an array of bytes into another one. */
-void compress(
-	const std::vector<unsigned char>& inData,
-	std::vector<unsigned char>& outData);
+void compress(const std::vector<unsigned char>& inData, std::vector<unsigned char>& outData);
 
 /** Compress an array of bytes and write the result into a stream. */
 void compress(void* inData, size_t inDataSize, mrpt::io::CStream& out);
@@ -41,29 +38,28 @@ void compress(const std::vector<unsigned char>& inData, mrpt::io::CStream& out);
  * \exception std::exception If the apriori estimated decompressed size is not
  * enough */
 void decompress(
-	void* inData, size_t inDataSize, std::vector<unsigned char>& outData,
-	size_t outDataEstimatedSize);
+    void* inData,
+    size_t inDataSize,
+    std::vector<unsigned char>& outData,
+    size_t outDataEstimatedSize);
 
 /** Decompress an array of bytes into another one
  * \exception std::exception If the apriori estimated decompressed size is not
  * enough.
  * \return Output uncompressed data size in bytes.
  */
-size_t decompress(
-	void* inData, size_t inDataSize, void* outData, size_t outDataBufferSize);
+size_t decompress(void* inData, size_t inDataSize, void* outData, size_t outDataBufferSize);
 
 /// \overload
 size_t decompress(
-	mrpt::io::CStream& inStream, size_t inDataSize, void* outData,
-	size_t outDataBufferSize);
+    mrpt::io::CStream& inStream, size_t inDataSize, void* outData, size_t outDataBufferSize);
 
 /** Decompress a gzip file (xxxx.gz) into a memory buffer. If the file is not a
  * .gz file, it just read the whole file unmodified.
  * \return true on success, false on error.
  * \sa compress_gz_file, decompress_gz_data_block
  */
-bool decompress_gz_file(
-	const std::string& file_path, std::vector<uint8_t>& buffer);
+bool decompress_gz_file(const std::string& file_path, std::vector<uint8_t>& buffer);
 
 /** Compress a memory buffer into a gzip file (xxxx.gz).
  *  compress_level: 0=no compression, 1=best speed, 9=maximum
@@ -71,8 +67,7 @@ bool decompress_gz_file(
  * \sa decompress_gz_file, compress_gz_data_block
  */
 bool compress_gz_file(
-	const std::string& file_path, const std::vector<uint8_t>& buffer,
-	const int compress_level = 9);
+    const std::string& file_path, const std::vector<uint8_t>& buffer, const int compress_level = 9);
 
 /** Compress a memory buffer in gz-file format and return it as a block a
  * memory.
@@ -83,8 +78,9 @@ bool compress_gz_file(
  * \sa compress_gz_file, de
  */
 bool compress_gz_data_block(
-	const std::vector<uint8_t>& in_data, std::vector<uint8_t>& out_gz_data,
-	const int compress_level = 9);
+    const std::vector<uint8_t>& in_data,
+    std::vector<uint8_t>& out_gz_data,
+    const int compress_level = 9);
 
 /** Decompress an array of bytes storing a gz-compressed stream of data into a
  * memory buffer. If the input data is not recognized as a .gz file, the output
@@ -93,7 +89,7 @@ bool compress_gz_data_block(
  * \sa decompress_gz_file, compress_gz_data_block
  */
 bool decompress_gz_data_block(
-	const std::vector<uint8_t>& in_gz_data, std::vector<uint8_t>& out_data);
+    const std::vector<uint8_t>& in_gz_data, std::vector<uint8_t>& out_data);
 
 }  // namespace zip
 }  // namespace io

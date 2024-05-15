@@ -22,44 +22,41 @@ namespace mrpt::nav
  * \sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
  * \ingroup nav_reactive
  */
-class CMultiObjMotionOpt_Scalarization
-	: public mrpt::nav::CMultiObjectiveMotionOptimizerBase
+class CMultiObjMotionOpt_Scalarization : public mrpt::nav::CMultiObjectiveMotionOptimizerBase
 {
-	DEFINE_MRPT_OBJECT(CMultiObjMotionOpt_Scalarization, mrpt::nav)
+  DEFINE_MRPT_OBJECT(CMultiObjMotionOpt_Scalarization, mrpt::nav)
 
-   public:
-	CMultiObjMotionOpt_Scalarization();
+ public:
+  CMultiObjMotionOpt_Scalarization();
 
-	void loadConfigFile(const mrpt::config::CConfigFileBase& c) override;
-	void saveConfigFile(mrpt::config::CConfigFileBase& c) const override;
+  void loadConfigFile(const mrpt::config::CConfigFileBase& c) override;
+  void saveConfigFile(mrpt::config::CConfigFileBase& c) const override;
 
-	struct TParams
-		: public mrpt::nav::CMultiObjectiveMotionOptimizerBase::TParamsBase
-	{
-		/** A formula that takes all/a subset of scores and generates a scalar
-		 * global score. */
-		std::string scalar_score_formula;
+  struct TParams : public mrpt::nav::CMultiObjectiveMotionOptimizerBase::TParamsBase
+  {
+    /** A formula that takes all/a subset of scores and generates a scalar
+     * global score. */
+    std::string scalar_score_formula;
 
-		TParams();
-		void loadFromConfigFile(
-			const mrpt::config::CConfigFileBase& source,
-			const std::string& section) override;  // See base docs
-		void saveToConfigFile(
-			mrpt::config::CConfigFileBase& cfg,
-			const std::string& section) const override;	 // See base docs
-	};
+    TParams();
+    void loadFromConfigFile(
+        const mrpt::config::CConfigFileBase& source,
+        const std::string& section) override;  // See base docs
+    void saveToConfigFile(
+        mrpt::config::CConfigFileBase& cfg,
+        const std::string& section) const override;  // See base docs
+  };
 
-	TParams parameters;
+  TParams parameters;
 
-	void clear() override;
+  void clear() override;
 
-   protected:
-	mrpt::expr::CRuntimeCompiledExpression m_expr_scalar_formula;
-	std::map<std::string, double> m_expr_scalar_vars;
+ protected:
+  mrpt::expr::CRuntimeCompiledExpression m_expr_scalar_formula;
+  std::map<std::string, double> m_expr_scalar_vars;
 
-	// This virtual method is called by decide().
-	int impl_decide(
-		const std::vector<mrpt::nav::TCandidateMovementPTG>& movs,
-		TResultInfo& extra_info) override;
+  // This virtual method is called by decide().
+  int impl_decide(
+      const std::vector<mrpt::nav::TCandidateMovementPTG>& movs, TResultInfo& extra_info) override;
 };
 }  // namespace mrpt::nav

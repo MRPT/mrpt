@@ -8,12 +8,12 @@
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-	APPLICATION: Rao-Blackwellized Particle Filter SLAM
-	FILE: rbpf-slam.cpp
-	AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
+  APPLICATION: Rao-Blackwellized Particle Filter SLAM
+  FILE: rbpf-slam.cpp
+  AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
-	See README.txt for instructions or
-		 https://www.mrpt.org/list-of-mrpt-apps/application-rbpf-slam
+  See README.txt for instructions or
+     https://www.mrpt.org/list-of-mrpt-apps/application-rbpf-slam
   ---------------------------------------------------------------*/
 
 #include <mrpt/apps/RBPF_SLAM_App.h>
@@ -22,19 +22,19 @@
 
 int main(int argc, char** argv)
 {
-	try
-	{
-		mrpt::apps::RBPF_SLAM_App_Rawlog app;
+  try
+  {
+    mrpt::apps::RBPF_SLAM_App_Rawlog app;
 
-		app.initialize(argc, argv);
-		app.run();
+    app.initialize(argc, argv);
+    app.run();
 
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << mrpt::exception_to_str(e);
-		mrpt::system::pause();
-		return -1;
-	}
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << mrpt::exception_to_str(e);
+    mrpt::system::pause();
+    return -1;
+  }
 }

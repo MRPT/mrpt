@@ -22,11 +22,10 @@ namespace mrpt::hwdrivers
  */
 struct TMyntEyeCameraParameters : public mrpt::config::CLoadableOptions
 {
-	std::uint8_t ir_intensity = 4;	//!< IR (Infrared), range [0,10], default 0.
+  std::uint8_t ir_intensity = 4;  //!< IR (Infrared), range [0,10], default 0.
 
-	void loadFromConfigFile(
-		const mrpt::config::CConfigFileBase& source,
-		const std::string& section) override;
+  void loadFromConfigFile(
+      const mrpt::config::CConfigFileBase& source, const std::string& section) override;
 };
 
 /** Wrapper on MYNT-EYE-D cameras. Requires MYNT-EYE SDK.
@@ -37,30 +36,30 @@ struct TMyntEyeCameraParameters : public mrpt::config::CLoadableOptions
  */
 class CMyntEyeCamera
 {
-   public:
-	CMyntEyeCamera(const TMyntEyeCameraParameters& params);
-	virtual ~CMyntEyeCamera();
+ public:
+  CMyntEyeCamera(const TMyntEyeCameraParameters& params);
+  virtual ~CMyntEyeCamera();
 
-	/** Check whether the camera has been open successfully. */
-	bool isOpen() const { return m_bInitialized; }
+  /** Check whether the camera has been open successfully. */
+  bool isOpen() const { return m_bInitialized; }
 
-	/** Grab an image from the opened camera.
-	 * \param out_observation The object to be filled with sensed data.
-	 *
-	 * \return false on any error, true if all go fine.
-	 */
-	bool getObservation(mrpt::obs::CObservation3DRangeScan& out);
+  /** Grab an image from the opened camera.
+   * \param out_observation The object to be filled with sensed data.
+   *
+   * \return false on any error, true if all go fine.
+   */
+  bool getObservation(mrpt::obs::CObservation3DRangeScan& out);
 
-   protected:
-	/** Set to false if we could not initialize the camera.
-	 */
-	bool m_bInitialized = false;
+ protected:
+  /** Set to false if we could not initialize the camera.
+   */
+  bool m_bInitialized = false;
 
-	struct Impl;
-	mrpt::pimpl<Impl> m_capture;
+  struct Impl;
+  mrpt::pimpl<Impl> m_capture;
 
-	mrpt::img::TCamera m_intrinsics_left, m_intrinsics_right;
+  mrpt::img::TCamera m_intrinsics_left, m_intrinsics_right;
 
-};	// End of class
+};  // End of class
 
 }  // namespace mrpt::hwdrivers

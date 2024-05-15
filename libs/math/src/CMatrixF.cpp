@@ -23,56 +23,56 @@ IMPLEMENTS_SERIALIZABLE(CMatrixF, CSerializable, mrpt::math)
 uint8_t CMatrixF::serializeGetVersion() const { return 0; }
 void CMatrixF::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	// First, write the number of rows and columns:
-	out.WriteAs<uint32_t>(rows()).WriteAs<uint32_t>(cols());
+  // First, write the number of rows and columns:
+  out.WriteAs<uint32_t>(rows()).WriteAs<uint32_t>(cols());
 
-	// Since mrpt-1.9.9, dynamic matrices are stored as a contiguous vector:
-	if (rows() > 0 && cols() > 0)
-		out.WriteBufferFixEndianness<value_type>(
-			&(*this)(0, 0), cols() * rows());
+  // Since mrpt-1.9.9, dynamic matrices are stored as a contiguous vector:
+  if (rows() > 0 && cols() > 0)
+    out.WriteBufferFixEndianness<value_type>(&(*this)(0, 0), cols() * rows());
 }
 
 void CMatrixF::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	switch (version)
-	{
-		case 0:
-		{
-			// Read the number of rows and columns:
-			const uint32_t nRows = in.ReadAs<uint32_t>();
-			const uint32_t nCols = in.ReadAs<uint32_t>();
+  switch (version)
+  {
+    case 0:
+    {
+      // Read the number of rows and columns:
+      const uint32_t nRows = in.ReadAs<uint32_t>();
+      const uint32_t nCols = in.ReadAs<uint32_t>();
 
-			setSize(nRows, nCols);
+      setSize(nRows, nCols);
 
-			if (nRows > 0 && nCols > 0)
-				in.ReadBufferFixEndianness<value_type>(
-					&(*this)(0, 0), nRows * nCols);
-		}
-		break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	};
+      if (nRows > 0 && nCols > 0)
+        in.ReadBufferFixEndianness<value_type>(&(*this)(0, 0), nRows * nCols);
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
 }
 
 /** Serialize CSerializable Object to CSchemeArchiveBase derived object*/
 void CMatrixF::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
 {
-	SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
-	out["nrows"] = static_cast<uint32_t>(this->rows());
-	out["ncols"] = static_cast<uint32_t>(this->cols());
-	out["data"] = this->inMatlabFormat();
+  SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+  out["nrows"] = static_cast<uint32_t>(this->rows());
+  out["ncols"] = static_cast<uint32_t>(this->cols());
+  out["data"] = this->inMatlabFormat();
 }
 /** Serialize CSchemeArchiveBase derived object to CSerializable Object*/
 void CMatrixF::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 {
-	uint8_t version;
-	SCHEMA_DESERIALIZE_DATATYPE_VERSION();
-	switch (version)
-	{
-		case 1:
-		{
-			this->fromMatlabStringFormat(static_cast<std::string>(in["data"]));
-		}
-		break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	}
+  uint8_t version;
+  SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+  switch (version)
+  {
+    case 1:
+    {
+      this->fromMatlabStringFormat(static_cast<std::string>(in["data"]));
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  }
 }

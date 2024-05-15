@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-	APPLICATION: mrpt_ros bridge
-	FILE: imu.h
-	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
+  APPLICATION: mrpt_ros bridge
+  FILE: imu.h
+  AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
   ---------------------------------------------------------------*/
 #pragma once
 
@@ -19,7 +19,7 @@
 #include <mrpt/obs/CObservationIMU.h>
 #include <sensor_msgs/Imu.h>
 
-#include <cstring>	// size_t
+#include <cstring>  // size_t
 
 /// ROS message:    http://docs.ros.org/api/sensor_msgs/html/msg/Imu.html
 /// MRPT message:
@@ -44,8 +44,9 @@ bool fromROS(const sensor_msgs::Imu& msg, mrpt::obs::CObservationIMU& obj);
  * \return true on sucessful conversion, false on any error.
  */
 bool toROS(
-	const mrpt::obs::CObservationIMU& obj, const std_msgs::Header& msg_header,
-	sensor_msgs::Imu& msg);
+    const mrpt::obs::CObservationIMU& obj,
+    const std_msgs::Header& msg_header,
+    sensor_msgs::Imu& msg);
 
 /** @} */
 

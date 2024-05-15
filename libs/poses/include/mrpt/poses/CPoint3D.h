@@ -28,104 +28,99 @@ namespace mrpt::poses
  * \ingroup poses_grp
  * \sa CPoseOrPoint,CPose, CPoint
  */
-class CPoint3D : public CPoint<CPoint3D, 3>,
-				 public mrpt::serialization::CSerializable
+class CPoint3D : public CPoint<CPoint3D, 3>, public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(CPoint3D, mrpt::poses)
-	DEFINE_SCHEMA_SERIALIZABLE()
-   public:
-	/** [x,y,z] */
-	mrpt::math::CVectorFixedDouble<3> m_coords;
+  DEFINE_SERIALIZABLE(CPoint3D, mrpt::poses)
+  DEFINE_SCHEMA_SERIALIZABLE()
+ public:
+  /** [x,y,z] */
+  mrpt::math::CVectorFixedDouble<3> m_coords;
 
-   public:
-	CPoint3D() : CPoint3D(.0, .0, .0) {}
+ public:
+  CPoint3D() : CPoint3D(.0, .0, .0) {}
 
-	/** Constructor for initializing point coordinates. */
-	CPoint3D(const double x, const double y, const double z)
-	{
-		m_coords[0] = x;
-		m_coords[1] = y;
-		m_coords[2] = z;
-	}
+  /** Constructor for initializing point coordinates. */
+  CPoint3D(const double x, const double y, const double z)
+  {
+    m_coords[0] = x;
+    m_coords[1] = y;
+    m_coords[2] = z;
+  }
 
-	/** Constructor from a XYZ 3-vector */
-	explicit inline CPoint3D(const mrpt::math::CVectorFixedDouble<3>& xyz)
-		: m_coords(xyz)
-	{
-	}
+  /** Constructor from a XYZ 3-vector */
+  explicit inline CPoint3D(const mrpt::math::CVectorFixedDouble<3>& xyz) : m_coords(xyz) {}
 
-	/** Constructor from an CPoint2D object. */
-	explicit CPoint3D(const CPoint2D& p);
+  /** Constructor from an CPoint2D object. */
+  explicit CPoint3D(const CPoint2D& p);
 
-	/** Constructor from an CPose3D object. */
-	explicit CPoint3D(const CPose3D& p);
+  /** Constructor from an CPose3D object. */
+  explicit CPoint3D(const CPose3D& p);
 
-	/** Constructor from an CPose2D object. */
-	explicit CPoint3D(const CPose2D& p);
+  /** Constructor from an CPose2D object. */
+  explicit CPoint3D(const CPose2D& p);
 
-	/** Constructor from lightweight object. */
-	explicit CPoint3D(const mrpt::math::TPoint3D& p)
-	{
-		m_coords[0] = p.x;
-		m_coords[1] = p.y;
-		m_coords[2] = p.z;
-	}
-	mrpt::math::TPoint3D asTPoint() const;
+  /** Constructor from lightweight object. */
+  explicit CPoint3D(const mrpt::math::TPoint3D& p)
+  {
+    m_coords[0] = p.x;
+    m_coords[1] = p.y;
+    m_coords[2] = p.z;
+  }
+  mrpt::math::TPoint3D asTPoint() const;
 
-	/** Returns this point as seen from "b", i.e. result = this - b */
-	CPoint3D operator-(const CPose3D& b) const;
+  /** Returns this point as seen from "b", i.e. result = this - b */
+  CPoint3D operator-(const CPose3D& b) const;
 
-	/** Returns this point minus point "b", i.e. result = this - b */
-	CPoint3D operator-(const CPoint3D& b) const;
+  /** Returns this point minus point "b", i.e. result = this - b */
+  CPoint3D operator-(const CPoint3D& b) const;
 
-	/** Returns this point plus point "b", i.e. result = this + b */
-	CPoint3D operator+(const CPoint3D& b) const;
+  /** Returns this point plus point "b", i.e. result = this + b */
+  CPoint3D operator+(const CPoint3D& b) const;
 
-	/** Returns this point plus pose "b", i.e. result = this + b  */
-	CPose3D operator+(const CPose3D& b) const;
+  /** Returns this point plus pose "b", i.e. result = this + b  */
+  CPose3D operator+(const CPose3D& b) const;
 
-	/** Return the pose or point as a 3x1 vector [x y z]' */
-	void asVector(vector_t& v) const { v = m_coords; }
+  /** Return the pose or point as a 3x1 vector [x y z]' */
+  void asVector(vector_t& v) const { v = m_coords; }
 
-	enum
-	{
-		is_3D_val = 1
-	};
-	static constexpr bool is_3D() { return is_3D_val != 0; }
-	enum
-	{
-		is_PDF_val = 0
-	};
-	static constexpr bool is_PDF() { return is_PDF_val != 0; }
-	/** @name STL-like methods and typedefs
-	   @{   */
-	/** The type of the elements */
-	using value_type = double;
-	using reference = double&;
-	using const_reference = double;
-	using size_type = std::size_t;
-	using difference_type = std::ptrdiff_t;
+  enum
+  {
+    is_3D_val = 1
+  };
+  static constexpr bool is_3D() { return is_3D_val != 0; }
+  enum
+  {
+    is_PDF_val = 0
+  };
+  static constexpr bool is_PDF() { return is_PDF_val != 0; }
+  /** @name STL-like methods and typedefs
+   @{   */
+  /** The type of the elements */
+  using value_type = double;
+  using reference = double&;
+  using const_reference = double;
+  using size_type = std::size_t;
+  using difference_type = std::ptrdiff_t;
 
-	// size is constant
-	enum
-	{
-		static_size = 3
-	};
-	static constexpr size_type size() { return static_size; }
-	static constexpr bool empty() { return false; }
-	static constexpr size_type max_size() { return static_size; }
-	static inline void resize(const size_t n)
-	{
-		if (n != static_size)
-			throw std::logic_error(format(
-				"Try to change the size of CPoint3D to %u.",
-				static_cast<unsigned>(n)));
-	}
-	/** @} */
+  // size is constant
+  enum
+  {
+    static_size = 3
+  };
+  static constexpr size_type size() { return static_size; }
+  static constexpr bool empty() { return false; }
+  static constexpr size_type max_size() { return static_size; }
+  static inline void resize(const size_t n)
+  {
+    if (n != static_size)
+      throw std::logic_error(
+          format("Try to change the size of CPoint3D to %u.", static_cast<unsigned>(n)));
+  }
+  /** @} */
 
-	void setToNaN() override;
+  void setToNaN() override;
 
-};	// End of class def.
+};  // End of class def.
 
 /** Dumps a point as a string (x,y,z) */
 std::ostream& operator<<(std::ostream& o, const CPoint3D& p);

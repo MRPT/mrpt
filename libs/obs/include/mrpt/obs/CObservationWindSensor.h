@@ -27,30 +27,30 @@ namespace mrpt::obs
  */
 class CObservationWindSensor : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationWindSensor, mrpt::obs)
+  DEFINE_SERIALIZABLE(CObservationWindSensor, mrpt::obs)
 
-   public:
-	/** @name The data members
-	 * @{ */
+ public:
+  /** @name The data members
+   * @{ */
 
-	double speed = 0;  //!< Wind speed [m/s]
-	double direction = 0;  //!< Wind flow direction [degrees]
+  double speed = 0;      //!< Wind speed [m/s]
+  double direction = 0;  //!< Wind flow direction [degrees]
 
-	/** The location of the sensing anemometer on the robot frame */
-	mrpt::poses::CPose3D sensorPoseOnRobot;
+  /** The location of the sensing anemometer on the robot frame */
+  mrpt::poses::CPose3D sensorPoseOnRobot;
 
-	/** @} */
+  /** @} */
 
-	// See base class docs
-	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override;
-	void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override;
-	void getDescriptionAsText(std::ostream& o) const override;
+  // See base class docs
+  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override;
+  void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override;
+  void getDescriptionAsText(std::ostream& o) const override;
 
-	// See base class docs:
-	bool exportTxtSupported() const override { return true; }
-	std::string exportTxtHeader() const override;
-	std::string exportTxtDataRow() const override;
+  // See base class docs:
+  bool exportTxtSupported() const override { return true; }
+  std::string exportTxtHeader() const override;
+  std::string exportTxtDataRow() const override;
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace mrpt::obs

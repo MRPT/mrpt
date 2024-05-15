@@ -27,7 +27,7 @@ extern "C"
 #include <pmmintrin.h>
 #include <tmmintrin.h>
 #if defined(__GNUC__)
-#include <immintrin.h>	// Meta-header
+#include <immintrin.h>  // Meta-header
 #endif
 }
 #endif
@@ -45,20 +45,20 @@ __m128i mm_load_si128(__m128i const* ptr);
 template <>
 inline __m128i mm_load_si128<true>(__m128i const* ptr)
 {
-	return _mm_load_si128(ptr);
+  return _mm_load_si128(ptr);
 }
 
 template <>
 inline __m128i mm_load_si128<false>(__m128i const* ptr)
 {
-	return _mm_loadu_si128(ptr);
+  return _mm_loadu_si128(ptr);
 }
 
 /** Use to check for 2^N multiples `is_multiple<16>(v)`, etc. */
 template <int k, typename T>
 bool is_multiple(const T val)
 {
-	return (val & (k - 1)) == 0;
+  return (val & (k - 1)) == 0;
 }
 
 #endif

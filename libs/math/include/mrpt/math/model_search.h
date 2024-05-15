@@ -64,46 +64,49 @@ namespace mrpt::math
  */
 class ModelSearch
 {
-   private:
-	//! Select random (unique) indices from the 0..p_size sequence
-	void pickRandomIndex(
-		size_t p_size, size_t p_pick, std::vector<size_t>& p_ind);
+ private:
+  //! Select random (unique) indices from the 0..p_size sequence
+  void pickRandomIndex(size_t p_size, size_t p_pick, std::vector<size_t>& p_ind);
 
-	/** Select random (unique) indices from the set.
-	 *  The set is destroyed during pick */
-	void pickRandomIndex(
-		std::set<size_t> p_set, size_t p_pick, std::vector<size_t>& p_ind);
+  /** Select random (unique) indices from the set.
+   *  The set is destroyed during pick */
+  void pickRandomIndex(std::set<size_t> p_set, size_t p_pick, std::vector<size_t>& p_ind);
 
-   public:
-	template <typename TModelFit>
-	bool ransacSingleModel(
-		const TModelFit& p_state, size_t p_kernelSize,
-		const typename TModelFit::Real& p_fitnessThreshold,
-		typename TModelFit::Model& p_bestModel, std::vector<size_t>& p_inliers);
+ public:
+  template <typename TModelFit>
+  bool ransacSingleModel(
+      const TModelFit& p_state,
+      size_t p_kernelSize,
+      const typename TModelFit::Real& p_fitnessThreshold,
+      typename TModelFit::Model& p_bestModel,
+      std::vector<size_t>& p_inliers);
 
-   private:
-	template <typename TModelFit>
-	struct TSpecies
-	{
-		typename TModelFit::Model model;
-		std::vector<size_t> sample;
-		std::vector<size_t> inliers;
-		typename TModelFit::Real fitness;
+ private:
+  template <typename TModelFit>
+  struct TSpecies
+  {
+    typename TModelFit::Model model;
+    std::vector<size_t> sample;
+    std::vector<size_t> inliers;
+    typename TModelFit::Real fitness;
 
-		static bool compare(const TSpecies* p_a, const TSpecies* p_b)
-		{
-			return p_a->fitness < p_b->fitness;
-		}
-	};
+    static bool compare(const TSpecies* p_a, const TSpecies* p_b)
+    {
+      return p_a->fitness < p_b->fitness;
+    }
+  };
 
-   public:
-	template <typename TModelFit>
-	bool geneticSingleModel(
-		const TModelFit& p_state, size_t p_kernelSize,
-		const typename TModelFit::Real& p_fitnessThreshold,
-		size_t p_populationSize, size_t p_maxIteration,
-		typename TModelFit::Model& p_bestModel, std::vector<size_t>& p_inliers);
-};	// end of class
+ public:
+  template <typename TModelFit>
+  bool geneticSingleModel(
+      const TModelFit& p_state,
+      size_t p_kernelSize,
+      const typename TModelFit::Real& p_fitnessThreshold,
+      size_t p_populationSize,
+      size_t p_maxIteration,
+      typename TModelFit::Model& p_bestModel,
+      std::vector<size_t>& p_inliers);
+};  // end of class
 
 }  // namespace mrpt::math
 // Template implementations:

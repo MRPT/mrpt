@@ -30,77 +30,75 @@ using namespace std;
 
 void TestCapture_FlyCapture2()
 {
-	cout << " FlyCapture2 version: "
-		 << CImageGrabber_FlyCapture2::getFC2version() << std::endl;
+  cout << " FlyCapture2 version: " << CImageGrabber_FlyCapture2::getFC2version() << std::endl;
 
-	// Create camera object:
-	CImageGrabber_FlyCapture2 capture;
+  // Create camera object:
+  CImageGrabber_FlyCapture2 capture;
 
-	// Open camera:
-	TCaptureOptions_FlyCapture2 cam_options;
+  // Open camera:
+  TCaptureOptions_FlyCapture2 cam_options;
 
-	cam_options.framerate = "FRAMERATE_30";
-	cam_options.videomode = "VIDEOMODE_1280x960RGB";
-	// cam_options.videomode="VIDEOMODE_1280x960Y8";
+  cam_options.framerate = "FRAMERATE_30";
+  cam_options.videomode = "VIDEOMODE_1280x960RGB";
+  // cam_options.videomode="VIDEOMODE_1280x960Y8";
 
-	capture.open(cam_options);
+  capture.open(cam_options);
 
-	CTicTac tictac;
-	cout << "Press any key to stop capture to 'capture.rawlog'..." << endl;
+  CTicTac tictac;
+  cout << "Press any key to stop capture to 'capture.rawlog'..." << endl;
 
-	CFileGZOutputStream fil("./capture.rawlog");
+  CFileGZOutputStream fil("./capture.rawlog");
 
-	CDisplayWindow win("Capturing...");
+  CDisplayWindow win("Capturing...");
 
-	int cnt = 0;
+  int cnt = 0;
 
-	CObservationImage::Ptr obs =
-		CObservationImage::Create();  // Memory will be freed
-	// by SF
-	// destructor in each loop.
+  CObservationImage::Ptr obs = CObservationImage::Create();  // Memory will be freed
+  // by SF
+  // destructor in each loop.
 
-	while (!mrpt::system::os::kbhit())
-	{
-		if ((cnt++ % 20) == 0)
-		{
-			if (cnt > 0)
-			{
-				double t = tictac.Tac();
-				double FPS = 20 / t;
-				printf("\n %f FPS\n", FPS);
-			}
-			tictac.Tic();
-		}
+  while (!mrpt::system::os::kbhit())
+  {
+    if ((cnt++ % 20) == 0)
+    {
+      if (cnt > 0)
+      {
+        double t = tictac.Tac();
+        double FPS = 20 / t;
+        printf("\n %f FPS\n", FPS);
+      }
+      tictac.Tic();
+    }
 
-		if (!capture.getObservation(*obs))
-		{
-			cerr << "Error retrieving images!" << endl;
-			break;
-		}
+    if (!capture.getObservation(*obs))
+    {
+      cerr << "Error retrieving images!" << endl;
+      break;
+    }
 
-		cout << ".";
-		cout.flush();
-		if (win.isOpen()) win.showImage(obs->image);
+    cout << ".";
+    cout.flush();
+    if (win.isOpen()) win.showImage(obs->image);
 
-		archiveFrom(fil) << obs;
-	}
+    archiveFrom(fil) << obs;
+  }
 }
 
 int main(int argc, char** argv)
 {
-	try
-	{
-		TestCapture_FlyCapture2();
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
-		return -1;
-	}
-	catch (...)
-	{
-		printf("Another exception!!");
-		return -1;
-	}
+  try
+  {
+    TestCapture_FlyCapture2();
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    return -1;
+  }
+  catch (...)
+  {
+    printf("Another exception!!");
+    return -1;
+  }
 }

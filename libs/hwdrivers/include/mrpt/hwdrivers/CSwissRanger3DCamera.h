@@ -107,187 +107,170 @@ namespace mrpt::hwdrivers
  */
 class CSwissRanger3DCamera : public mrpt::hwdrivers::CGenericSensor
 {
-	DEFINE_GENERIC_SENSOR(CSwissRanger3DCamera)
+  DEFINE_GENERIC_SENSOR(CSwissRanger3DCamera)
 
-   public:
-	/** Default ctor */
-	CSwissRanger3DCamera();
-	/** Default ctor */
-	~CSwissRanger3DCamera() override;
+ public:
+  /** Default ctor */
+  CSwissRanger3DCamera();
+  /** Default ctor */
+  ~CSwissRanger3DCamera() override;
 
-	/** Initializes the 3D camera - should be invoked after calling loadConfig()
-	 *  \exception This method must throw an exception with a descriptive
-	 * message if some critical error is found.
-	 */
-	void initialize() override;
+  /** Initializes the 3D camera - should be invoked after calling loadConfig()
+   *  \exception This method must throw an exception with a descriptive
+   * message if some critical error is found.
+   */
+  void initialize() override;
 
-	/** To be called  at a high rate (>XX Hz), this method populates the
-	 * internal buffer of received observations.
-	 *  This method is mainly intended for usage within rawlog-grabber or
-	 * similar programs.
-	 *  For an alternative, see getNextObservation()
-	 *  \exception This method must throw an exception with a descriptive
-	 * message if some critical error is found.
-	 * \sa getNextObservation
-	 */
-	void doProcess() override;
+  /** To be called  at a high rate (>XX Hz), this method populates the
+   * internal buffer of received observations.
+   *  This method is mainly intended for usage within rawlog-grabber or
+   * similar programs.
+   *  For an alternative, see getNextObservation()
+   *  \exception This method must throw an exception with a descriptive
+   * message if some critical error is found.
+   * \sa getNextObservation
+   */
+  void doProcess() override;
 
-	/** The main data retrieving function, to be called after calling
-	 * loadConfig() and initialize().
-	 *  \param out_obs The output retrieved observation (only if
-	 * there_is_obs=true).
-	 *  \param there_is_obs If set to false, there was no new observation.
-	 *  \param hardware_error True on hardware/comms error.
-	 *
-	 * \sa doProcess
-	 */
-	void getNextObservation(
-		mrpt::obs::CObservation3DRangeScan& out_obs, bool& there_is_obs,
-		bool& hardware_error);
+  /** The main data retrieving function, to be called after calling
+   * loadConfig() and initialize().
+   *  \param out_obs The output retrieved observation (only if
+   * there_is_obs=true).
+   *  \param there_is_obs If set to false, there was no new observation.
+   *  \param hardware_error True on hardware/comms error.
+   *
+   * \sa doProcess
+   */
+  void getNextObservation(
+      mrpt::obs::CObservation3DRangeScan& out_obs, bool& there_is_obs, bool& hardware_error);
 
-	/** return false on error - Called automatically from initialize(), no need
-	 * normally for the user to call this. */
-	bool open();
-	void close();
+  /** return false on error - Called automatically from initialize(), no need
+   * normally for the user to call this. */
+  bool open();
+  void close();
 
-	/** whether the camera is open and comms work ok. To be called after
-	 * initialize() */
-	bool isOpen() const;
+  /** whether the camera is open and comms work ok. To be called after
+   * initialize() */
+  bool isOpen() const;
 
-	/** Get the row count in the camera images, loaded automatically upon camera
-	 * open(). */
-	size_t rows() const { return m_rows; }
-	/** Get the col count in the camera images, loaded automatically upon camera
-	 * open(). */
-	size_t cols() const { return m_cols; }
-	/** Get the camera serial number, loaded automatically upon camera open().
-	 */
-	unsigned int getCameraSerialNumber() const { return m_cam_serial_num; }
-	/** Returns the maximum camera range, as deduced from its operating
-	 * frequency. */
-	double getMaxRange() const { return m_maxRange; }
-	/**  Set the path where to save off-rawlog image files (this class DOES take
-	 * into account this path).
-	 *  An  empty string (the default value at construction) means to save
-	 * images embedded in the rawlog, instead of on separate files.
-	 * \exception std::exception If the directory doesn't exists and cannot be
-	 * created.
-	 */
-	void setPathForExternalImages(const std::string& directory) override;
+  /** Get the row count in the camera images, loaded automatically upon camera
+   * open(). */
+  size_t rows() const { return m_rows; }
+  /** Get the col count in the camera images, loaded automatically upon camera
+   * open(). */
+  size_t cols() const { return m_cols; }
+  /** Get the camera serial number, loaded automatically upon camera open().
+   */
+  unsigned int getCameraSerialNumber() const { return m_cam_serial_num; }
+  /** Returns the maximum camera range, as deduced from its operating
+   * frequency. */
+  double getMaxRange() const { return m_maxRange; }
+  /**  Set the path where to save off-rawlog image files (this class DOES take
+   * into account this path).
+   *  An  empty string (the default value at construction) means to save
+   * images embedded in the rawlog, instead of on separate files.
+   * \exception std::exception If the directory doesn't exists and cannot be
+   * created.
+   */
+  void setPathForExternalImages(const std::string& directory) override;
 
-	/** @name Capture configuration methods (apart from loadConfig)
-		@{ */
+  /** @name Capture configuration methods (apart from loadConfig)
+    @{ */
 
-	/** true: open from USB, false: open from ethernet. */
-	inline void setOpenFromUSB(bool USB) { m_open_from_usb = USB; }
-	inline bool getOpenFromUSBMode() const { return m_open_from_usb; }
-	inline void setOpenIPAddress(const std::string& IP) { m_ip_address = IP; }
-	inline std::string getOpenIPAddress() const { return m_ip_address; }
-	inline void setSave3D(bool save) { m_save_3d = save; }
-	inline void setSaveRangeImage(bool save) { m_save_range_img = save; }
-	inline void setSaveIntensityImage(bool save)
-	{
-		m_save_intensity_img = save;
-	}
-	inline void setSaveConfidenceImage(bool save) { m_save_confidence = save; }
-	inline void enableImageHistEqualization(bool enable)
-	{
-		m_enable_img_hist_equal = enable;
-	}
-	inline bool isEnabledImageHistEqualization() const
-	{
-		return m_enable_img_hist_equal;
-	}
+  /** true: open from USB, false: open from ethernet. */
+  inline void setOpenFromUSB(bool USB) { m_open_from_usb = USB; }
+  inline bool getOpenFromUSBMode() const { return m_open_from_usb; }
+  inline void setOpenIPAddress(const std::string& IP) { m_ip_address = IP; }
+  inline std::string getOpenIPAddress() const { return m_ip_address; }
+  inline void setSave3D(bool save) { m_save_3d = save; }
+  inline void setSaveRangeImage(bool save) { m_save_range_img = save; }
+  inline void setSaveIntensityImage(bool save) { m_save_intensity_img = save; }
+  inline void setSaveConfidenceImage(bool save) { m_save_confidence = save; }
+  inline void enableImageHistEqualization(bool enable) { m_enable_img_hist_equal = enable; }
+  inline bool isEnabledImageHistEqualization() const { return m_enable_img_hist_equal; }
 
-	inline void enableMedianFilter(bool enable)
-	{
-		m_enable_median_filter = enable;
-		internal_resendParamsToCamera();
-	}
-	inline bool isEnabledMedianFilter() const { return m_enable_median_filter; }
-	inline void enableMedianCrossFilter(bool enable)
-	{
-		m_enable_mediancross_filter = enable;
-		internal_resendParamsToCamera();
-	}
-	inline bool isEnabledMedianCrossFilter() const
-	{
-		return m_enable_mediancross_filter;
-	}
+  inline void enableMedianFilter(bool enable)
+  {
+    m_enable_median_filter = enable;
+    internal_resendParamsToCamera();
+  }
+  inline bool isEnabledMedianFilter() const { return m_enable_median_filter; }
+  inline void enableMedianCrossFilter(bool enable)
+  {
+    m_enable_mediancross_filter = enable;
+    internal_resendParamsToCamera();
+  }
+  inline bool isEnabledMedianCrossFilter() const { return m_enable_mediancross_filter; }
 
-	inline void enableConvGray(bool enable)
-	{
-		m_enable_conv_gray = enable;
-		internal_resendParamsToCamera();
-	}
-	inline bool isEnabledConvGray() const { return m_enable_conv_gray; }
-	inline void enableDenoiseANF(bool enable)
-	{
-		m_enable_denoise_anf = enable;
-		internal_resendParamsToCamera();
-	}
-	inline bool isEnabledDenoiseANF() const { return m_enable_denoise_anf; }
-	inline void enablePreviewWindow(bool enable = true)
-	{
-		m_preview_window = enable;
-	}
-	inline bool isEnabledPreviewWindow() const { return m_preview_window; }
-	/** @} */
+  inline void enableConvGray(bool enable)
+  {
+    m_enable_conv_gray = enable;
+    internal_resendParamsToCamera();
+  }
+  inline bool isEnabledConvGray() const { return m_enable_conv_gray; }
+  inline void enableDenoiseANF(bool enable)
+  {
+    m_enable_denoise_anf = enable;
+    internal_resendParamsToCamera();
+  }
+  inline bool isEnabledDenoiseANF() const { return m_enable_denoise_anf; }
+  inline void enablePreviewWindow(bool enable = true) { m_preview_window = enable; }
+  inline bool isEnabledPreviewWindow() const { return m_preview_window; }
+  /** @} */
 
-	// List of small functions to be implemented differently in Win/Lin.
+  // List of small functions to be implemented differently in Win/Lin.
 
-	/** Get the version of the MESA library.
-	 * \return false on error
-	 */
-	bool getMesaLibVersion(std::string& out_version) const;
+  /** Get the version of the MESA library.
+   * \return false on error
+   */
+  bool getMesaLibVersion(std::string& out_version) const;
 
-   protected:
-	/** See the class documentation at the top for expected parameters */
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& section) override;
+ protected:
+  /** See the class documentation at the top for expected parameters */
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& section) override;
 
-	void internal_resendParamsToCamera() const;
+  void internal_resendParamsToCamera() const;
 
-	mrpt::poses::CPose3D m_sensorPoseOnRobot;
+  mrpt::poses::CPose3D m_sensorPoseOnRobot;
 
-	/** Save the 3D point cloud (default: true) */
-	bool m_save_3d{true};
-	/** Save the 2D range image (default: true) */
-	bool m_save_range_img{true};
-	/** Save the 2D intensity image (default: true) */
-	bool m_save_intensity_img{true};
-	/** Save the estimated confidence 2D image (default: false) */
-	bool m_save_confidence{false};
+  /** Save the 3D point cloud (default: true) */
+  bool m_save_3d{true};
+  /** Save the 2D range image (default: true) */
+  bool m_save_range_img{true};
+  /** Save the 2D intensity image (default: true) */
+  bool m_save_intensity_img{true};
+  /** Save the estimated confidence 2D image (default: false) */
+  bool m_save_confidence{false};
 
-	bool m_enable_img_hist_equal{false};
-	bool m_enable_median_filter{true};
-	bool m_enable_mediancross_filter{false};
-	bool m_enable_conv_gray{false};
-	bool m_enable_denoise_anf{true};
+  bool m_enable_img_hist_equal{false};
+  bool m_enable_median_filter{true};
+  bool m_enable_mediancross_filter{false};
+  bool m_enable_conv_gray{false};
+  bool m_enable_denoise_anf{true};
 
-	/** true: USB, false: ETH */
-	bool m_open_from_usb{true};
-	size_t m_usb_serial{0};
-	std::string m_ip_address;
+  /** true: USB, false: ETH */
+  bool m_open_from_usb{true};
+  size_t m_usb_serial{0};
+  std::string m_ip_address;
 
-	/** Size of camera images, set on open() */
-	size_t m_rows{0}, m_cols{0};
-	/** Serial number of the camera, set on open() */
-	unsigned int m_cam_serial_num{0};
-	/** Max range, as deducted from the camera frequency. */
-	double m_maxRange{5};
+  /** Size of camera images, set on open() */
+  size_t m_rows{0}, m_cols{0};
+  /** Serial number of the camera, set on open() */
+  unsigned int m_cam_serial_num{0};
+  /** Max range, as deducted from the camera frequency. */
+  double m_maxRange{5};
 
-	/** Show preview window while grabbing */
-	bool m_preview_window{false};
-	mrpt::gui::CDisplayWindow::Ptr m_win_range, m_win_int;
+  /** Show preview window while grabbing */
+  bool m_preview_window{false};
+  mrpt::gui::CDisplayWindow::Ptr m_win_range, m_win_int;
 
-	/** opaque handler to SRCAM. nullptr means it's not open yet. */
-	void* m_cam;
+  /** opaque handler to SRCAM. nullptr means it's not open yet. */
+  void* m_cam;
 
-	mrpt::img::TCamera m_cameraParams;
+  mrpt::img::TCamera m_cameraParams;
 
-   private:
-};	// End of class
+ private:
+};  // End of class
 
 }  // namespace mrpt::hwdrivers

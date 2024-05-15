@@ -14,18 +14,15 @@
 using namespace mrpt;
 using namespace mrpt::poses;
 
-CPosesNode::CPosesNode(CNode* parent, const CPose3D& pose)
-	: CNode(parent), m_pose(pose)
-{
-}
+CPosesNode::CPosesNode(CNode* parent, const CPose3D& pose) : CNode(parent), m_pose(pose) {}
 
 int CPosesNode::childCount() const { return 0; }
 CNode* CPosesNode::child(int id) { return nullptr; }
 CPose3D CPosesNode::getPose() const { return m_pose; }
 std::string CPosesNode::displayName() const
 {
-	using namespace std::string_literals;
-	return "Pose: "s + m_pose.asString();
+  using namespace std::string_literals;
+  return "Pose: "s + m_pose.asString();
 }
 
 CNode::ObjectType CPosesNode::type() const { return ObjectType::Pos; }

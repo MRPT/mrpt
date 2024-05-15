@@ -35,9 +35,10 @@ namespace detail
 // Implemented in CObservation3DRangeScan_project3D_impl.h
 template <class POINTMAP>
 void unprojectInto(
-	mrpt::obs::CObservation3DRangeScan& src_obs, POINTMAP& dest_pointcloud,
-	const mrpt::obs::T3DPointsProjectionParams& projectParams,
-	const mrpt::obs::TRangeImageFilterParams& filterParams);
+    mrpt::obs::CObservation3DRangeScan& src_obs,
+    POINTMAP& dest_pointcloud,
+    const mrpt::obs::T3DPointsProjectionParams& projectParams,
+    const mrpt::obs::TRangeImageFilterParams& filterParams);
 }  // namespace detail
 
 /** A depth or RGB+D image from a time-of-flight or structured-light sensor.
@@ -147,463 +148,450 @@ void unprojectInto(
  */
 class CObservation3DRangeScan : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservation3DRangeScan, mrpt::obs)
+  DEFINE_SERIALIZABLE(CObservation3DRangeScan, mrpt::obs)
 
-   public:
-	CObservation3DRangeScan() = default;
+ public:
+  CObservation3DRangeScan() = default;
 
-	~CObservation3DRangeScan() override;
+  ~CObservation3DRangeScan() override;
 
-	/** @name Delayed-load manual control methods.
-		@{ */
-	/** Makes sure all images and other fields which may be externally stored
-	 * are loaded in memory.
-	 *  Note that for all CImages, calling load() is not required since the
-	 * images will be automatically loaded upon first access, so load()
-	 * shouldn't be needed to be called in normal cases by the user.
-	 *  If all the data were alredy loaded or this object has no externally
-	 * stored data fields, calling this method has no effects.
-	 * \sa unload
-	 */
-	void load_impl() const override;
-	/** Unload all images, for the case they being delayed-load images stored in
-	 * external files (othewise, has no effect).
-	 * \sa load
-	 */
-	void unload() const override;
-	/** @} */
+  /** @name Delayed-load manual control methods.
+    @{ */
+  /** Makes sure all images and other fields which may be externally stored
+   * are loaded in memory.
+   *  Note that for all CImages, calling load() is not required since the
+   * images will be automatically loaded upon first access, so load()
+   * shouldn't be needed to be called in normal cases by the user.
+   *  If all the data were alredy loaded or this object has no externally
+   * stored data fields, calling this method has no effects.
+   * \sa unload
+   */
+  void load_impl() const override;
+  /** Unload all images, for the case they being delayed-load images stored in
+   * external files (othewise, has no effect).
+   * \sa load
+   */
+  void unload() const override;
+  /** @} */
 
-	/** Unprojects the RGB+D image pair into a 3D point cloud (with color if the
-	 * target map supports it) and optionally at a given 3D pose. The 3D point
-	 * coordinates are computed from the depth image (\a rangeImage) and the
-	 * depth camera camera parameters (\a cameraParams). There exist two set of
-	 * formulas for projecting the i'th point, depending on the value of
-	 * "range_is_depth". In all formulas below, "rangeImage" is the matrix of
-	 * ranges and the pixel coordinates are (r,c).
-	 *
-	 *  1) [range_is_depth=true] With "range equals depth" or "Kinect-like
-	 * depth mode": the range values
-	 *      are in fact distances along the "+X" axis, not real 3D ranges (this
-	 * is the way Kinect reports ranges):
-	 *
-	 * \code
-	 *   x(i) = rangeImage(r,c) * rangeUnits
-	 *   y(i) = (r_cx - c) * x(i) / r_fx
-	 *   z(i) = (r_cy - r) * x(i) / r_fy
-	 * \endcode
-	 *
-	 *
-	 *  2) [range_is_depth=false] With "normal ranges": range means distance in
-	 * 3D. This must be set when
-	 *      processing data from the SwissRange 3D camera, among others.
-	 *
-	 * \code
-	 *   Ky = (r_cx - c)/r_fx
-	 *   Kz = (r_cy - r)/r_fy
-	 *
-	 *   x(i) = rangeImage(r,c) * rangeUnits / sqrt( 1 + Ky^2 + Kz^2 )
-	 *   y(i) = Ky * x(i)
-	 *   z(i) = Kz * x(i)
-	 * \endcode
-	 *
-	 *  The color of each point is determined by projecting the 3D local point
-	 * into the RGB image using \a cameraParamsIntensity.
-	 *
-	 *  By default the local (sensor-centric) coordinates of points are
-	 * directly stored into the local map, but if indicated so in \a
-	 * takeIntoAccountSensorPoseOnRobot
-	 *  the points are transformed with \a sensorPose. Furthermore, if
-	 * provided, those coordinates are transformed with \a robotPoseInTheWorld
-	 *
-	 * \note For multi-return sensors, only the layer specified in
-	 * T3DPointsProjectionParams::layer will be unprojected.
-	 *
-	 * \tparam POINTMAP Supported maps are all those covered by
-	 * mrpt::opengl::PointCloudAdapter (mrpt::maps::CPointsMap and derived,
-	 * mrpt::opengl::CPointCloudColoured, PCL point clouds,...)
-	 */
-	template <class POINTMAP>
-	inline void unprojectInto(
-		POINTMAP& dest_pointcloud,
-		const T3DPointsProjectionParams& projectParams =
-			T3DPointsProjectionParams(),
-		const TRangeImageFilterParams& filterParams = TRangeImageFilterParams())
-	{
-		load();	 // load, if lazy-load
-		detail::unprojectInto<POINTMAP>(
-			*this, dest_pointcloud, projectParams, filterParams);
-	}
+  /** Unprojects the RGB+D image pair into a 3D point cloud (with color if the
+   * target map supports it) and optionally at a given 3D pose. The 3D point
+   * coordinates are computed from the depth image (\a rangeImage) and the
+   * depth camera camera parameters (\a cameraParams). There exist two set of
+   * formulas for projecting the i'th point, depending on the value of
+   * "range_is_depth". In all formulas below, "rangeImage" is the matrix of
+   * ranges and the pixel coordinates are (r,c).
+   *
+   *  1) [range_is_depth=true] With "range equals depth" or "Kinect-like
+   * depth mode": the range values
+   *      are in fact distances along the "+X" axis, not real 3D ranges (this
+   * is the way Kinect reports ranges):
+   *
+   * \code
+   *   x(i) = rangeImage(r,c) * rangeUnits
+   *   y(i) = (r_cx - c) * x(i) / r_fx
+   *   z(i) = (r_cy - r) * x(i) / r_fy
+   * \endcode
+   *
+   *
+   *  2) [range_is_depth=false] With "normal ranges": range means distance in
+   * 3D. This must be set when
+   *      processing data from the SwissRange 3D camera, among others.
+   *
+   * \code
+   *   Ky = (r_cx - c)/r_fx
+   *   Kz = (r_cy - r)/r_fy
+   *
+   *   x(i) = rangeImage(r,c) * rangeUnits / sqrt( 1 + Ky^2 + Kz^2 )
+   *   y(i) = Ky * x(i)
+   *   z(i) = Kz * x(i)
+   * \endcode
+   *
+   *  The color of each point is determined by projecting the 3D local point
+   * into the RGB image using \a cameraParamsIntensity.
+   *
+   *  By default the local (sensor-centric) coordinates of points are
+   * directly stored into the local map, but if indicated so in \a
+   * takeIntoAccountSensorPoseOnRobot
+   *  the points are transformed with \a sensorPose. Furthermore, if
+   * provided, those coordinates are transformed with \a robotPoseInTheWorld
+   *
+   * \note For multi-return sensors, only the layer specified in
+   * T3DPointsProjectionParams::layer will be unprojected.
+   *
+   * \tparam POINTMAP Supported maps are all those covered by
+   * mrpt::opengl::PointCloudAdapter (mrpt::maps::CPointsMap and derived,
+   * mrpt::opengl::CPointCloudColoured, PCL point clouds,...)
+   */
+  template <class POINTMAP>
+  inline void unprojectInto(
+      POINTMAP& dest_pointcloud,
+      const T3DPointsProjectionParams& projectParams = T3DPointsProjectionParams(),
+      const TRangeImageFilterParams& filterParams = TRangeImageFilterParams())
+  {
+    load();  // load, if lazy-load
+    detail::unprojectInto<POINTMAP>(*this, dest_pointcloud, projectParams, filterParams);
+  }
 
-	/** Convert this 3D observation into an "equivalent 2D fake laser scan",
-	 * with a configurable vertical FOV.
-	 *
-	 *  The result is a 2D laser scan with more "rays" (N) than columns has the
-	 * 3D observation (W), exactly: N = W * oversampling_ratio.
-	 *  This oversampling is required since laser scans sample the space at
-	 * evenly-separated angles, while
-	 *  a range camera follows a tangent-like distribution. By oversampling we
-	 * make sure we don't leave "gaps" unseen by the virtual "2D laser".
-	 *
-	 *  All obstacles within a frustum are considered and the minimum distance
-	 * is kept in each direction.
-	 *  The horizontal FOV of the frustum is automatically computed from the
-	 * intrinsic parameters, but the
-	 *  vertical FOV must be provided by the user, and can be set to be
-	 * assymetric which may be useful
-	 *  depending on the zone of interest where to look for obstacles.
-	 *
-	 *  All spatial transformations are riguorosly taken into account in this
-	 * class, using the depth camera
-	 *  intrinsic calibration parameters.
-	 *
-	 *  The timestamp of the new object is copied from the 3D object.
-	 *  Obviously, a requisite for calling this method is the 3D observation
-	 * having range data,
-	 *  i.e. hasRangeImage must be true. It's not needed to have RGB data nor
-	 * the raw 3D point clouds
-	 *  for this method to work.
-	 *
-	 *  If `scanParams.use_origin_sensor_pose` is `true`, the points will be
-	 * projected to 3D and then reprojected
-	 *  as seen from a different sensorPose at the vehicle frame origin.
-	 * Otherwise (the default), the output 2D observation will share the
-	 * sensorPose of the input 3D scan
-	 *  (using a more efficient algorithm that avoids trigonometric functions).
-	 *
-	 *  \param[out] out_scan2d The resulting 2D equivalent scan.
-	 *
-	 * \sa The example in
-	 * https://www.mrpt.org/tutorials/mrpt-examples/example-kinect-to-2d-laser-demo/
-	 */
-	void convertTo2DScan(
-		mrpt::obs::CObservation2DRangeScan& out_scan2d,
-		const T3DPointsTo2DScanParams& scanParams,
-		const TRangeImageFilterParams& filterParams =
-			TRangeImageFilterParams());
+  /** Convert this 3D observation into an "equivalent 2D fake laser scan",
+   * with a configurable vertical FOV.
+   *
+   *  The result is a 2D laser scan with more "rays" (N) than columns has the
+   * 3D observation (W), exactly: N = W * oversampling_ratio.
+   *  This oversampling is required since laser scans sample the space at
+   * evenly-separated angles, while
+   *  a range camera follows a tangent-like distribution. By oversampling we
+   * make sure we don't leave "gaps" unseen by the virtual "2D laser".
+   *
+   *  All obstacles within a frustum are considered and the minimum distance
+   * is kept in each direction.
+   *  The horizontal FOV of the frustum is automatically computed from the
+   * intrinsic parameters, but the
+   *  vertical FOV must be provided by the user, and can be set to be
+   * assymetric which may be useful
+   *  depending on the zone of interest where to look for obstacles.
+   *
+   *  All spatial transformations are riguorosly taken into account in this
+   * class, using the depth camera
+   *  intrinsic calibration parameters.
+   *
+   *  The timestamp of the new object is copied from the 3D object.
+   *  Obviously, a requisite for calling this method is the 3D observation
+   * having range data,
+   *  i.e. hasRangeImage must be true. It's not needed to have RGB data nor
+   * the raw 3D point clouds
+   *  for this method to work.
+   *
+   *  If `scanParams.use_origin_sensor_pose` is `true`, the points will be
+   * projected to 3D and then reprojected
+   *  as seen from a different sensorPose at the vehicle frame origin.
+   * Otherwise (the default), the output 2D observation will share the
+   * sensorPose of the input 3D scan
+   *  (using a more efficient algorithm that avoids trigonometric functions).
+   *
+   *  \param[out] out_scan2d The resulting 2D equivalent scan.
+   *
+   * \sa The example in
+   * https://www.mrpt.org/tutorials/mrpt-examples/example-kinect-to-2d-laser-demo/
+   */
+  void convertTo2DScan(
+      mrpt::obs::CObservation2DRangeScan& out_scan2d,
+      const T3DPointsTo2DScanParams& scanParams,
+      const TRangeImageFilterParams& filterParams = TRangeImageFilterParams());
 
-	/** Whether external files (3D points, range and confidence) are to be
-	 * saved as `.txt` text files (MATLAB compatible) or `*.bin` binary
-	 *(faster).
-	 * Loading always will determine the type by inspecting the file extension.
-	 * \note Default=false
-	 **/
-	static void EXTERNALS_AS_TEXT(bool value);
-	static bool EXTERNALS_AS_TEXT();
+  /** Whether external files (3D points, range and confidence) are to be
+   * saved as `.txt` text files (MATLAB compatible) or `*.bin` binary
+   *(faster).
+   * Loading always will determine the type by inspecting the file extension.
+   * \note Default=false
+   **/
+  static void EXTERNALS_AS_TEXT(bool value);
+  static bool EXTERNALS_AS_TEXT();
 
-	/** \name Point cloud
-	 * @{ */
-	/** true means the field points3D contains valid data. */
-	bool hasPoints3D{false};
-	/** If hasPoints3D=true, the (X,Y,Z) coordinates of the 3D point cloud
-	 * detected by the camera. \sa resizePoints3DVectors */
-	std::vector<float> points3D_x, points3D_y, points3D_z;
-	/** If hasPoints3D=true, the (x,y) pixel coordinates for each (X,Y,Z) point
-	 * in \a points3D_x, points3D_y, points3D_z */
-	std::vector<uint16_t> points3D_idxs_x, points3D_idxs_y;	 //!<
+  /** \name Point cloud
+   * @{ */
+  /** true means the field points3D contains valid data. */
+  bool hasPoints3D{false};
+  /** If hasPoints3D=true, the (X,Y,Z) coordinates of the 3D point cloud
+   * detected by the camera. \sa resizePoints3DVectors */
+  std::vector<float> points3D_x, points3D_y, points3D_z;
+  /** If hasPoints3D=true, the (x,y) pixel coordinates for each (X,Y,Z) point
+   * in \a points3D_x, points3D_y, points3D_z */
+  std::vector<uint16_t> points3D_idxs_x, points3D_idxs_y;  //!<
 
-	/** Use this method instead of resizing all three \a points3D_x, \a
-	 * points3D_y & \a points3D_z to allow the usage of the internal memory
-	 * pool. */
-	void resizePoints3DVectors(size_t nPoints);
+  /** Use this method instead of resizing all three \a points3D_x, \a
+   * points3D_y & \a points3D_z to allow the usage of the internal memory
+   * pool. */
+  void resizePoints3DVectors(size_t nPoints);
 
-	/** Get the size of the scan pointcloud. \note Method is added for
-	 * compatibility with its CObservation2DRangeScan counterpart */
-	size_t getScanSize() const;
-	/** @} */
+  /** Get the size of the scan pointcloud. \note Method is added for
+   * compatibility with its CObservation2DRangeScan counterpart */
+  size_t getScanSize() const;
+  /** @} */
 
-	/** \name Point cloud external storage functions
-	 * @{ */
-	inline bool points3D_isExternallyStored() const
-	{
-		return m_points3D_external_stored;
-	}
-	inline std::string points3D_getExternalStorageFile() const
-	{
-		return m_points3D_external_file;
-	}
-	void points3D_getExternalStorageFileAbsolutePath(
-		std::string& out_path) const;
-	inline std::string points3D_getExternalStorageFileAbsolutePath() const
-	{
-		std::string tmp;
-		points3D_getExternalStorageFileAbsolutePath(tmp);
-		return tmp;
-	}
-	/** Users won't normally want to call this, it's only used from internal
-	 * MRPT programs. \sa EXTERNALS_AS_TEXT */
-	void points3D_convertToExternalStorage(
-		const std::string& fileName, const std::string& use_this_base_dir);
-	/** Users normally won't need to use this */
-	inline void points3D_overrideExternalStoredFlag(bool isExternal)
-	{
-		m_points3D_external_stored = isExternal;
-	}
-	/** @} */
+  /** \name Point cloud external storage functions
+   * @{ */
+  inline bool points3D_isExternallyStored() const { return m_points3D_external_stored; }
+  inline std::string points3D_getExternalStorageFile() const { return m_points3D_external_file; }
+  void points3D_getExternalStorageFileAbsolutePath(std::string& out_path) const;
+  inline std::string points3D_getExternalStorageFileAbsolutePath() const
+  {
+    std::string tmp;
+    points3D_getExternalStorageFileAbsolutePath(tmp);
+    return tmp;
+  }
+  /** Users won't normally want to call this, it's only used from internal
+   * MRPT programs. \sa EXTERNALS_AS_TEXT */
+  void points3D_convertToExternalStorage(
+      const std::string& fileName, const std::string& use_this_base_dir);
+  /** Users normally won't need to use this */
+  inline void points3D_overrideExternalStoredFlag(bool isExternal)
+  {
+    m_points3D_external_stored = isExternal;
+  }
+  /** @} */
 
-	/** \name Range (depth) image
-	 * @{ */
-	/** true means the field rangeImage contains valid data */
-	bool hasRangeImage{false};
+  /** \name Range (depth) image
+   * @{ */
+  /** true means the field rangeImage contains valid data */
+  bool hasRangeImage{false};
 
-	/** If `hasRangeImage==true`, rangeImage(r,c) is a matrix of depth values as
-	 * captured by the camera, with `r` the row index and `c` column index.
-	 * Matrix element are integers for efficiency of post-processing
-	 * filters, etc. Zero means no return (i.e. invalid range, no return).
-	 * To obtain range/depth in meters, multiply this matrix by `rangeUnits`.
-	 *
-	 * For sensors with more than one return per ray, this matrix holds the
-	 * range for the "STRONGEST" (normally the closest) return.
-	 *
-	 * \sa rangeUnits, range_is_depth, rangeUnits, hasRangeImage,
-	 * rangeImageOtherLayers
-	 */
-	mrpt::math::CMatrix_u16 rangeImage;
+  /** If `hasRangeImage==true`, rangeImage(r,c) is a matrix of depth values as
+   * captured by the camera, with `r` the row index and `c` column index.
+   * Matrix element are integers for efficiency of post-processing
+   * filters, etc. Zero means no return (i.e. invalid range, no return).
+   * To obtain range/depth in meters, multiply this matrix by `rangeUnits`.
+   *
+   * For sensors with more than one return per ray, this matrix holds the
+   * range for the "STRONGEST" (normally the closest) return.
+   *
+   * \sa rangeUnits, range_is_depth, rangeUnits, hasRangeImage,
+   * rangeImageOtherLayers
+   */
+  mrpt::math::CMatrix_u16 rangeImage;
 
-	/** Additional layer range/depth images. Text labels are arbitrary and
-	 * sensor-dependent, e.g. "LAST", "SECOND", "3rd", etc. */
-	std::map<std::string, mrpt::math::CMatrix_u16> rangeImageOtherLayers;
+  /** Additional layer range/depth images. Text labels are arbitrary and
+   * sensor-dependent, e.g. "LAST", "SECOND", "3rd", etc. */
+  std::map<std::string, mrpt::math::CMatrix_u16> rangeImageOtherLayers;
 
-	/** The conversion factor from integer units in rangeImage and actual
-	 * distances in meters. Default is 0.001 m, that is 1 millimeter. \sa
-	 * rangeImage */
-	float rangeUnits = 0.001f;
+  /** The conversion factor from integer units in rangeImage and actual
+   * distances in meters. Default is 0.001 m, that is 1 millimeter. \sa
+   * rangeImage */
+  float rangeUnits = 0.001f;
 
-	/** true: Kinect-like ranges: entries of \a rangeImage are distances
-	 * along the +X axis (forward); false: Ranges in \a rangeImage are actual
-	 * distances in 3D.
-	 */
-	bool range_is_depth{true};
+  /** true: Kinect-like ranges: entries of \a rangeImage are distances
+   * along the +X axis (forward); false: Ranges in \a rangeImage are actual
+   * distances in 3D.
+   */
+  bool range_is_depth{true};
 
-	/** Similar to calling "rangeImage.setSize(H,W)" but this method provides
-	 * memory pooling to speed-up the memory allocation. */
-	void rangeImage_setSize(const int HEIGHT, const int WIDTH);
+  /** Similar to calling "rangeImage.setSize(H,W)" but this method provides
+   * memory pooling to speed-up the memory allocation. */
+  void rangeImage_setSize(const int HEIGHT, const int WIDTH);
 
-	/** Builds a visualization from the rangeImage.
-	 * The image is built with the given color map (default: grayscale) and such
-	 * that the colormap range is mapped to ranges 0 meters to the field
-	 * "maxRange" in this object, unless overriden with the optional parameters.
-	 * Note that the usage of optional<> allows any parameter to be left to its
-	 * default placing `std::nullopt`.
-	 *
-	 * \param additionalLayerName If empty string or not provided, the main
-	 * rangeImage will be used; otherwise, the given range image layer.
-	 * \sa rangeImageAsImage
-	 */
-	mrpt::img::CImage rangeImage_getAsImage(
-		const std::optional<mrpt::img::TColormap> color = std::nullopt,
-		const std::optional<float> normMinRange = std::nullopt,
-		const std::optional<float> normMaxRange = std::nullopt,
-		const std::optional<std::string> additionalLayerName =
-			std::nullopt) const;
+  /** Builds a visualization from the rangeImage.
+   * The image is built with the given color map (default: grayscale) and such
+   * that the colormap range is mapped to ranges 0 meters to the field
+   * "maxRange" in this object, unless overriden with the optional parameters.
+   * Note that the usage of optional<> allows any parameter to be left to its
+   * default placing `std::nullopt`.
+   *
+   * \param additionalLayerName If empty string or not provided, the main
+   * rangeImage will be used; otherwise, the given range image layer.
+   * \sa rangeImageAsImage
+   */
+  mrpt::img::CImage rangeImage_getAsImage(
+      const std::optional<mrpt::img::TColormap> color = std::nullopt,
+      const std::optional<float> normMinRange = std::nullopt,
+      const std::optional<float> normMaxRange = std::nullopt,
+      const std::optional<std::string> additionalLayerName = std::nullopt) const;
 
-	/** Static method to convert a range matrix into an image.
-	 * If val_max is left to zero, the maximum range in the matrix will be
-	 * automatically used. \sa rangeImage_getAsImage
-	 */
-	static mrpt::img::CImage rangeImageAsImage(
-		const mrpt::math::CMatrix_u16& ranges, float val_min, float val_max,
-		float rangeUnits,
-		const std::optional<mrpt::img::TColormap> color = std::nullopt);
+  /** Static method to convert a range matrix into an image.
+   * If val_max is left to zero, the maximum range in the matrix will be
+   * automatically used. \sa rangeImage_getAsImage
+   */
+  static mrpt::img::CImage rangeImageAsImage(
+      const mrpt::math::CMatrix_u16& ranges,
+      float val_min,
+      float val_max,
+      float rangeUnits,
+      const std::optional<mrpt::img::TColormap> color = std::nullopt);
 
-	/** @} */
+  /** @} */
 
-	/** \name Range Matrix external storage functions
-	 * @{ */
-	inline bool rangeImage_isExternallyStored() const
-	{
-		return m_rangeImage_external_stored;
-	}
-	std::string rangeImage_getExternalStorageFile(
-		const std::string& rangeImageLayer) const;
+  /** \name Range Matrix external storage functions
+   * @{ */
+  inline bool rangeImage_isExternallyStored() const { return m_rangeImage_external_stored; }
+  std::string rangeImage_getExternalStorageFile(const std::string& rangeImageLayer) const;
 
-	/** rangeImageLayer: Empty for the main rangeImage matrix, otherwise, a key
-	 * of rangeImageOtherLayers */
-	void rangeImage_getExternalStorageFileAbsolutePath(
-		std::string& out_path, const std::string& rangeImageLayer) const;
-	inline std::string rangeImage_getExternalStorageFileAbsolutePath(
-		const std::string& rangeImageLayer) const
-	{
-		std::string tmp;
-		rangeImage_getExternalStorageFileAbsolutePath(tmp, rangeImageLayer);
-		return tmp;
-	}
-	/** Users won't normally want to call this, it's only used from internal
-	 * MRPT programs. \sa EXTERNALS_AS_TEXT */
-	void rangeImage_convertToExternalStorage(
-		const std::string& fileName, const std::string& use_this_base_dir);
-	/** Forces marking this observation as non-externally stored - it doesn't
-	 * anything else apart from reseting the corresponding flag (Users won't
-	 * normally want to call this, it's only used from internal MRPT programs)
-	 */
-	void rangeImage_forceResetExternalStorage()
-	{
-		m_rangeImage_external_stored = false;
-	}
-	/** @} */
+  /** rangeImageLayer: Empty for the main rangeImage matrix, otherwise, a key
+   * of rangeImageOtherLayers */
+  void rangeImage_getExternalStorageFileAbsolutePath(
+      std::string& out_path, const std::string& rangeImageLayer) const;
+  inline std::string rangeImage_getExternalStorageFileAbsolutePath(
+      const std::string& rangeImageLayer) const
+  {
+    std::string tmp;
+    rangeImage_getExternalStorageFileAbsolutePath(tmp, rangeImageLayer);
+    return tmp;
+  }
+  /** Users won't normally want to call this, it's only used from internal
+   * MRPT programs. \sa EXTERNALS_AS_TEXT */
+  void rangeImage_convertToExternalStorage(
+      const std::string& fileName, const std::string& use_this_base_dir);
+  /** Forces marking this observation as non-externally stored - it doesn't
+   * anything else apart from reseting the corresponding flag (Users won't
+   * normally want to call this, it's only used from internal MRPT programs)
+   */
+  void rangeImage_forceResetExternalStorage() { m_rangeImage_external_stored = false; }
+  /** @} */
 
-	/** \name Intensity (RGB) channels
-	 * @{ */
-	/** Enum type for intensityImageChannel */
-	enum TIntensityChannelID
-	{
-		/** Grayscale or RGB visible channel of the camera sensor. */
-		CH_VISIBLE = 0,
-		/** Infrarred (IR) channel */
-		CH_IR = 1
-	};
+  /** \name Intensity (RGB) channels
+   * @{ */
+  /** Enum type for intensityImageChannel */
+  enum TIntensityChannelID
+  {
+    /** Grayscale or RGB visible channel of the camera sensor. */
+    CH_VISIBLE = 0,
+    /** Infrarred (IR) channel */
+    CH_IR = 1
+  };
 
-	/** true means the field intensityImage contains valid data */
-	bool hasIntensityImage{false};
+  /** true means the field intensityImage contains valid data */
+  bool hasIntensityImage{false};
 
-	/** If hasIntensityImage=true, a color or gray-level intensity image of the
-	 * same size than "rangeImage" */
-	mrpt::img::CImage intensityImage;
+  /** If hasIntensityImage=true, a color or gray-level intensity image of the
+   * same size than "rangeImage" */
+  mrpt::img::CImage intensityImage;
 
-	/** The source of the intensityImage; typically the visible channel \sa
-	 * TIntensityChannelID */
-	TIntensityChannelID intensityImageChannel{CH_VISIBLE};
-	/** @} */
+  /** The source of the intensityImage; typically the visible channel \sa
+   * TIntensityChannelID */
+  TIntensityChannelID intensityImageChannel{CH_VISIBLE};
+  /** @} */
 
-	/** \name Confidence "channel"
-	 * @{ */
-	/** true means the field confidenceImage contains valid data */
-	bool hasConfidenceImage{false};
-	/** If hasConfidenceImage=true, an image with the "confidence" value [range
-	 * 0-255] as estimated by the capture drivers. */
-	mrpt::img::CImage confidenceImage;
-	/** @} */
+  /** \name Confidence "channel"
+   * @{ */
+  /** true means the field confidenceImage contains valid data */
+  bool hasConfidenceImage{false};
+  /** If hasConfidenceImage=true, an image with the "confidence" value [range
+   * 0-255] as estimated by the capture drivers. */
+  mrpt::img::CImage confidenceImage;
+  /** @} */
 
-	/** \name Pixel-wise classification labels (for semantic labeling, etc.)
-	 * @{ */
-	/** Returns true if the field CObservation3DRangeScan::pixelLabels contains
-	 * a non-NULL smart pointer.
-	 * To enhance a 3D point cloud with labeling info, just assign an
-	 * appropiate object to \a pixelLabels
-	 */
-	bool hasPixelLabels() const { return pixelLabels ? true : false; }
+  /** \name Pixel-wise classification labels (for semantic labeling, etc.)
+   * @{ */
+  /** Returns true if the field CObservation3DRangeScan::pixelLabels contains
+   * a non-NULL smart pointer.
+   * To enhance a 3D point cloud with labeling info, just assign an
+   * appropiate object to \a pixelLabels
+   */
+  bool hasPixelLabels() const { return pixelLabels ? true : false; }
 
-	/** All information about pixel labeling is stored in this (smart pointer
-	 * to) structure; refer to TPixelLabelInfo for details on the contents
-	 * User is responsible of creating a new object of the desired data type.
-	 * It will be automatically (de)serialized no matter its specific type. */
-	TPixelLabelInfoBase::Ptr pixelLabels;
+  /** All information about pixel labeling is stored in this (smart pointer
+   * to) structure; refer to TPixelLabelInfo for details on the contents
+   * User is responsible of creating a new object of the desired data type.
+   * It will be automatically (de)serialized no matter its specific type. */
+  TPixelLabelInfoBase::Ptr pixelLabels;
 
-	/** @} */
+  /** @} */
 
-	/** \name Sensor parameters
-	 * @{ */
+  /** \name Sensor parameters
+   * @{ */
 
-	/** Projection parameters of the depth camera. */
-	mrpt::img::TCamera cameraParams;
-	/** Projection parameters of the intensity (graylevel or RGB) camera. */
-	mrpt::img::TCamera cameraParamsIntensity;
+  /** Projection parameters of the depth camera. */
+  mrpt::img::TCamera cameraParams;
+  /** Projection parameters of the intensity (graylevel or RGB) camera. */
+  mrpt::img::TCamera cameraParamsIntensity;
 
-	/** Relative pose of the intensity camera wrt the depth camera (which is the
-	 * coordinates origin for this observation).
-	 *  In a SwissRanger camera, this will be (0,0,0,-90deg,0,-90deg) since the
-	 * location of both cameras coincide and there is only a rotation due to the
-	 * different axes conventions (see picture above).
-	 *  In a Kinect, this will include a small lateral displacement and a
-	 * rotation, according to the drawing on the top of this page.
-	 *  \sa doDepthAndIntensityCamerasCoincide
-	 */
-	mrpt::poses::CPose3D relativePoseIntensityWRTDepth = {
-		0, 0, 0, -90.0_deg, 0.0_deg, -90.0_deg};
+  /** Relative pose of the intensity camera wrt the depth camera (which is the
+   * coordinates origin for this observation).
+   *  In a SwissRanger camera, this will be (0,0,0,-90deg,0,-90deg) since the
+   * location of both cameras coincide and there is only a rotation due to the
+   * different axes conventions (see picture above).
+   *  In a Kinect, this will include a small lateral displacement and a
+   * rotation, according to the drawing on the top of this page.
+   *  \sa doDepthAndIntensityCamerasCoincide
+   */
+  mrpt::poses::CPose3D relativePoseIntensityWRTDepth = {0, 0, 0, -90.0_deg, 0.0_deg, -90.0_deg};
 
-	/** Return true if \a relativePoseIntensityWRTDepth equals the pure rotation
-	 * (0,0,0,-90deg,0,-90deg) (with a small comparison epsilon)
-	 * \sa relativePoseIntensityWRTDepth
-	 */
-	bool doDepthAndIntensityCamerasCoincide() const;
+  /** Return true if \a relativePoseIntensityWRTDepth equals the pure rotation
+   * (0,0,0,-90deg,0,-90deg) (with a small comparison epsilon)
+   * \sa relativePoseIntensityWRTDepth
+   */
+  bool doDepthAndIntensityCamerasCoincide() const;
 
-	/** The maximum range allowed by the device, in meters (e.g. 8.0m, 5.0m,...)
-	 */
-	float maxRange{5.0f};
-	/** The 6D pose of the sensor on the robot. */
-	mrpt::poses::CPose3D sensorPose;
-	/** The "sigma" error of the device in meters, used while inserting the scan
-	 * in an occupancy grid. */
-	float stdError{0.01f};
+  /** The maximum range allowed by the device, in meters (e.g. 8.0m, 5.0m,...)
+   */
+  float maxRange{5.0f};
+  /** The 6D pose of the sensor on the robot. */
+  mrpt::poses::CPose3D sensorPose;
+  /** The "sigma" error of the device in meters, used while inserting the scan
+   * in an occupancy grid. */
+  float stdError{0.01f};
 
-	// See base class docs
-	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
-	{
-		out_sensorPose = sensorPose;
-	}
-	// See base class docs
-	void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override
-	{
-		sensorPose = newSensorPose;
-	}
+  // See base class docs
+  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
+  {
+    out_sensorPose = sensorPose;
+  }
+  // See base class docs
+  void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override
+  {
+    sensorPose = newSensorPose;
+  }
 
-	/** @} */  // end sensor params
+  /** @} */  // end sensor params
 
-	/** Removes the distortion in both, depth and intensity images. Intrinsics
-	 * (fx,fy,cx,cy) remains the same for each image after undistortion.
-	 */
-	void undistort();
+  /** Removes the distortion in both, depth and intensity images. Intrinsics
+   * (fx,fy,cx,cy) remains the same for each image after undistortion.
+   */
+  void undistort();
 
-	// See base class docs
-	void getDescriptionAsText(std::ostream& o) const override;
+  // See base class docs
+  void getDescriptionAsText(std::ostream& o) const override;
 
-	/** Very efficient method to swap the contents of two observations. */
-	void swap(CObservation3DRangeScan& o);
-	/** Extract a ROI of the 3D observation as a new one. \note PixelLabels are
-	 * *not* copied to the output subimage. */
-	void getZoneAsObs(
-		CObservation3DRangeScan& obs, const unsigned int& r1,
-		const unsigned int& r2, const unsigned int& c1, const unsigned int& c2);
+  /** Very efficient method to swap the contents of two observations. */
+  void swap(CObservation3DRangeScan& o);
+  /** Extract a ROI of the 3D observation as a new one. \note PixelLabels are
+   * *not* copied to the output subimage. */
+  void getZoneAsObs(
+      CObservation3DRangeScan& obs,
+      const unsigned int& r1,
+      const unsigned int& r2,
+      const unsigned int& c1,
+      const unsigned int& c2);
 
-	/** A Levenberg-Marquart-based optimizer to recover the calibration
-	 * parameters of a 3D camera given a range (depth) image and the
-	 * corresponding 3D point cloud.
-	 * \param camera_offset The offset (in meters) in the +X direction of the
-	 * point cloud.
-	 * \return The final average reprojection error per pixel (typ <0.05 px)
-	 */
-	static double recoverCameraCalibrationParameters(
-		const CObservation3DRangeScan& in_obs,
-		mrpt::img::TCamera& out_camParams, const double camera_offset = 0.01);
+  /** A Levenberg-Marquart-based optimizer to recover the calibration
+   * parameters of a 3D camera given a range (depth) image and the
+   * corresponding 3D point cloud.
+   * \param camera_offset The offset (in meters) in the +X direction of the
+   * point cloud.
+   * \return The final average reprojection error per pixel (typ <0.05 px)
+   */
+  static double recoverCameraCalibrationParameters(
+      const CObservation3DRangeScan& in_obs,
+      mrpt::img::TCamera& out_camParams,
+      const double camera_offset = 0.01);
 
-	/** Look-up-table struct for unprojectInto() */
-	struct unproject_LUT_t
-	{
-		/** x,y,z: +X pointing forward (depth), +z up
-		 * These doesn't account for the sensor pose.
-		 */
-		mrpt::aligned_std_vector<float> Kxs, Kys, Kzs;
+  /** Look-up-table struct for unprojectInto() */
+  struct unproject_LUT_t
+  {
+    /** x,y,z: +X pointing forward (depth), +z up
+     * These doesn't account for the sensor pose.
+     */
+    mrpt::aligned_std_vector<float> Kxs, Kys, Kzs;
 
-		/** x,y,z: in the rotated frame of coordinates of the sensorPose.
-		 * So, sensed points are directly measured_range(or depth) times this
-		 * vector, plus the translation (no rotation!) of the sensor pose.
-		 */
-		mrpt::aligned_std_vector<float> Kxs_rot, Kys_rot, Kzs_rot;
-	};
+    /** x,y,z: in the rotated frame of coordinates of the sensorPose.
+     * So, sensed points are directly measured_range(or depth) times this
+     * vector, plus the translation (no rotation!) of the sensor pose.
+     */
+    mrpt::aligned_std_vector<float> Kxs_rot, Kys_rot, Kzs_rot;
+  };
 
-	/** Gets (or generates upon first request) the 3D point cloud projection
-	 * look-up-table for the current depth camera intrinsics & distortion
-	 * parameters.
-	 * Returns a const reference to a global variable. Multithread safe.
-	 * \sa unprojectInto */
-	const unproject_LUT_t& get_unproj_lut() const;
+  /** Gets (or generates upon first request) the 3D point cloud projection
+   * look-up-table for the current depth camera intrinsics & distortion
+   * parameters.
+   * Returns a const reference to a global variable. Multithread safe.
+   * \sa unprojectInto */
+  const unproject_LUT_t& get_unproj_lut() const;
 
-   protected:
-	/** If set to true, m_points3D_external_file is valid. */
-	bool m_points3D_external_stored{false};
-	/** 3D points are in CImage::getImagesPathBase()+ this file name */
-	std::string m_points3D_external_file;
+ protected:
+  /** If set to true, m_points3D_external_file is valid. */
+  bool m_points3D_external_stored{false};
+  /** 3D points are in CImage::getImagesPathBase()+ this file name */
+  std::string m_points3D_external_file;
 
-	/** If set to true, m_rangeImage_external_file is valid. */
-	bool m_rangeImage_external_stored{false};
-	/** rangeImage is in CImage::getImagesPathBase()+ this file name */
-	std::string m_rangeImage_external_file;
+  /** If set to true, m_rangeImage_external_file is valid. */
+  bool m_rangeImage_external_stored{false};
+  /** rangeImage is in CImage::getImagesPathBase()+ this file name */
+  std::string m_rangeImage_external_file;
 
-   private:
-	/** Used to import from old serialized versions */
-	void internal_setRangeImageFromMatrixF(const mrpt::math::CMatrixF& ri);
-	bool m_deserializedFromVersionOlder_v9 = false;
+ private:
+  /** Used to import from old serialized versions */
+  void internal_setRangeImageFromMatrixF(const mrpt::math::CMatrixF& ri);
+  bool m_deserializedFromVersionOlder_v9 = false;
 
-};	// End of class def.
+};  // End of class def.
 }  // namespace mrpt::obs
 
 namespace mrpt::opengl
@@ -613,59 +601,58 @@ namespace mrpt::opengl
 template <>
 class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
 {
-   private:
-	mrpt::obs::CObservation3DRangeScan& m_obj;
+ private:
+  mrpt::obs::CObservation3DRangeScan& m_obj;
 
-   public:
-	/** The type of each point XYZ coordinates */
-	using coords_t = float;
-	/** Has any color RGB info? */
-	static constexpr bool HAS_RGB = false;
-	/** Has native RGB info (as floats)? */
-	static constexpr bool HAS_RGBf = false;
-	/** Has native RGB info (as uint8_t)? */
-	static constexpr bool HAS_RGBu8 = false;
+ public:
+  /** The type of each point XYZ coordinates */
+  using coords_t = float;
+  /** Has any color RGB info? */
+  static constexpr bool HAS_RGB = false;
+  /** Has native RGB info (as floats)? */
+  static constexpr bool HAS_RGBf = false;
+  /** Has native RGB info (as uint8_t)? */
+  static constexpr bool HAS_RGBu8 = false;
 
-	/** Constructor (accept a const ref for convenience) */
-	inline PointCloudAdapter(const mrpt::obs::CObservation3DRangeScan& obj)
-		: m_obj(*const_cast<mrpt::obs::CObservation3DRangeScan*>(&obj))
-	{
-	}
-	/** Get number of points */
-	inline size_t size() const { return m_obj.points3D_x.size(); }
-	/** Set number of points (to uninitialized values) */
-	inline void resize(size_t N)
-	{
-		if (N) m_obj.hasPoints3D = true;
-		m_obj.resizePoints3DVectors(N);
-	}
-	/** Does nothing as of now */
-	inline void setDimensions(size_t height, size_t width) {}
-	/** Get XYZ coordinates of i'th point */
-	template <typename T>
-	inline void getPointXYZ(size_t idx, T& x, T& y, T& z) const
-	{
-		x = m_obj.points3D_x[idx];
-		y = m_obj.points3D_y[idx];
-		z = m_obj.points3D_z[idx];
-	}
-	/** Set XYZ coordinates of i'th point */
-	inline void setPointXYZ(
-		size_t idx, const coords_t x, const coords_t y, const coords_t z)
-	{
-		m_obj.points3D_x[idx] = x;
-		m_obj.points3D_y[idx] = y;
-		m_obj.points3D_z[idx] = z;
-	}
-	/** Set XYZ coordinates of i'th point */
-	inline void setInvalidPoint(size_t idx)
-	{
-		m_obj.points3D_x[idx] = 0;
-		m_obj.points3D_y[idx] = 0;
-		m_obj.points3D_z[idx] = 0;
-	}
+  /** Constructor (accept a const ref for convenience) */
+  inline PointCloudAdapter(const mrpt::obs::CObservation3DRangeScan& obj) :
+      m_obj(*const_cast<mrpt::obs::CObservation3DRangeScan*>(&obj))
+  {
+  }
+  /** Get number of points */
+  inline size_t size() const { return m_obj.points3D_x.size(); }
+  /** Set number of points (to uninitialized values) */
+  inline void resize(size_t N)
+  {
+    if (N) m_obj.hasPoints3D = true;
+    m_obj.resizePoints3DVectors(N);
+  }
+  /** Does nothing as of now */
+  inline void setDimensions(size_t height, size_t width) {}
+  /** Get XYZ coordinates of i'th point */
+  template <typename T>
+  inline void getPointXYZ(size_t idx, T& x, T& y, T& z) const
+  {
+    x = m_obj.points3D_x[idx];
+    y = m_obj.points3D_y[idx];
+    z = m_obj.points3D_z[idx];
+  }
+  /** Set XYZ coordinates of i'th point */
+  inline void setPointXYZ(size_t idx, const coords_t x, const coords_t y, const coords_t z)
+  {
+    m_obj.points3D_x[idx] = x;
+    m_obj.points3D_y[idx] = y;
+    m_obj.points3D_z[idx] = z;
+  }
+  /** Set XYZ coordinates of i'th point */
+  inline void setInvalidPoint(size_t idx)
+  {
+    m_obj.points3D_x[idx] = 0;
+    m_obj.points3D_y[idx] = 0;
+    m_obj.points3D_z[idx] = 0;
+  }
 
-};	// end of PointCloudAdapter<CObservation3DRangeScan>
+};  // end of PointCloudAdapter<CObservation3DRangeScan>
 }  // namespace mrpt::opengl
 MRPT_ENUM_TYPE_BEGIN(mrpt::obs::CObservation3DRangeScan::TIntensityChannelID)
 MRPT_FILL_ENUM_MEMBER(mrpt::obs::CObservation3DRangeScan, CH_VISIBLE);

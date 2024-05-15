@@ -24,13 +24,14 @@ namespace vision
  */
 class CFeatureLines
 {
-   public:
-	void extractLines(
-		const mrpt::img::CImage& image,
-		std::vector<std::array<int, 4>>& segments, size_t threshold,
-		const bool display = false);
+ public:
+  void extractLines(
+      const mrpt::img::CImage& image,
+      std::vector<std::array<int, 4>>& segments,
+      size_t threshold,
+      const bool display = false);
 
-};	// end of class
+};  // end of class
 
 }  // namespace vision
 }  // namespace mrpt

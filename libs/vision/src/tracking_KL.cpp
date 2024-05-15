@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"	 // Precompiled headers
+#include "vision-precomp.h"  // Precompiled headers
 //
 #include <mrpt/system/memory.h>
 #include <mrpt/vision/CFeatureExtraction.h>
@@ -35,100 +35,93 @@ using namespace std;
  */
 template <typename FEATLIST>
 void CFeatureTracker_KL::trackFeatures_impl_templ(
-	const CImage& old_img, const CImage& new_img, FEATLIST& featureList)
+    const CImage& old_img, const CImage& new_img, FEATLIST& featureList)
 {
-	MRPT_START
+  MRPT_START
 
 #if MRPT_HAS_OPENCV
-	const int window_width = extra_params.getOrDefault<int>("window_width", 15);
-	const int window_height =
-		extra_params.getOrDefault<int>("window_height", 15);
+  const int window_width = extra_params.getOrDefault<int>("window_width", 15);
+  const int window_height = extra_params.getOrDefault<int>("window_height", 15);
 
-	const int LK_levels = extra_params.getOrDefault<int>("LK_levels", 3);
-	const int LK_max_iters = extra_params.getOrDefault<int>("LK_max_iters", 10);
-	const int LK_epsilon = extra_params.getOrDefault<int>("LK_epsilon", 0.1);
-	const float LK_max_tracking_error =
-		extra_params.getOrDefault<float>("LK_max_tracking_error", 150.0f);
+  const int LK_levels = extra_params.getOrDefault<int>("LK_levels", 3);
+  const int LK_max_iters = extra_params.getOrDefault<int>("LK_max_iters", 10);
+  const int LK_epsilon = extra_params.getOrDefault<int>("LK_epsilon", 0.1);
+  const float LK_max_tracking_error =
+      extra_params.getOrDefault<float>("LK_max_tracking_error", 150.0f);
 
-	// Both images must be of the same size
-	ASSERT_(
-		old_img.getWidth() == new_img.getWidth() &&
-		old_img.getHeight() == new_img.getHeight());
+  // Both images must be of the same size
+  ASSERT_(old_img.getWidth() == new_img.getWidth() && old_img.getHeight() == new_img.getHeight());
 
-	const size_t img_width = old_img.getWidth();
-	const size_t img_height = old_img.getHeight();
+  const size_t img_width = old_img.getWidth();
+  const size_t img_height = old_img.getHeight();
 
-	const size_t nFeatures = featureList.size();  // Number of features
+  const size_t nFeatures = featureList.size();  // Number of features
 
-	// Grayscale images
-	const CImage prev_gray(old_img, FAST_REF_OR_CONVERT_TO_GRAY);
-	const CImage cur_gray(new_img, FAST_REF_OR_CONVERT_TO_GRAY);
+  // Grayscale images
+  const CImage prev_gray(old_img, FAST_REF_OR_CONVERT_TO_GRAY);
+  const CImage cur_gray(new_img, FAST_REF_OR_CONVERT_TO_GRAY);
 
-	// Array conversion MRPT->OpenCV
-	if (nFeatures > 0)
-	{
-		std::vector<cv::Point2f> points_prev(nFeatures), points_cur;
-		std::vector<uchar> status(nFeatures);
-		std::vector<float> track_error(nFeatures);
+  // Array conversion MRPT->OpenCV
+  if (nFeatures > 0)
+  {
+    std::vector<cv::Point2f> points_prev(nFeatures), points_cur;
+    std::vector<uchar> status(nFeatures);
+    std::vector<float> track_error(nFeatures);
 
-		for (size_t i = 0; i < nFeatures; ++i)
-		{
-			points_prev[i].x = featureList.getFeatureX(i);
-			points_prev[i].y = featureList.getFeatureY(i);
-		}
+    for (size_t i = 0; i < nFeatures; ++i)
+    {
+      points_prev[i].x = featureList.getFeatureX(i);
+      points_prev[i].y = featureList.getFeatureY(i);
+    }
 
-		const cv::Mat& prev = prev_gray.asCvMatRef();
-		const cv::Mat& cur = cur_gray.asCvMatRef();
+    const cv::Mat& prev = prev_gray.asCvMatRef();
+    const cv::Mat& cur = cur_gray.asCvMatRef();
 
-		cv::calcOpticalFlowPyrLK(
-			prev, cur, points_prev, points_cur, status, track_error,
-			cv::Size(window_width, window_height), LK_levels,
-			cv::TermCriteria(
-				cv::TermCriteria::MAX_ITER | cv::TermCriteria::EPS,
-				LK_max_iters, LK_epsilon));
+    cv::calcOpticalFlowPyrLK(
+        prev, cur, points_prev, points_cur, status, track_error,
+        cv::Size(window_width, window_height), LK_levels,
+        cv::TermCriteria(
+            cv::TermCriteria::MAX_ITER | cv::TermCriteria::EPS, LK_max_iters, LK_epsilon));
 
-		for (size_t i = 0; i < nFeatures; ++i)
-		{
-			const bool trck_err_too_large =
-				track_error[i] > LK_max_tracking_error;
+    for (size_t i = 0; i < nFeatures; ++i)
+    {
+      const bool trck_err_too_large = track_error[i] > LK_max_tracking_error;
 
-			if (status[i] == 1 && !trck_err_too_large && points_cur[i].x > 0 &&
-				points_cur[i].y > 0 && points_cur[i].x < img_width &&
-				points_cur[i].y < img_height)
-			{
-				// Feature could be tracked
-				featureList.setFeatureXf(i, points_cur[i].x);
-				featureList.setFeatureYf(i, points_cur[i].y);
-				featureList.setTrackStatus(i, status_TRACKED);
-			}
-			else  // Feature could not be tracked
-			{
-				featureList.setFeatureX(i, -1);
-				featureList.setFeatureY(i, -1);
-				featureList.setTrackStatus(
-					i, trck_err_too_large ? status_LOST : status_OOB);
-			}
-		}
+      if (status[i] == 1 && !trck_err_too_large && points_cur[i].x > 0 && points_cur[i].y > 0 &&
+          points_cur[i].x < img_width && points_cur[i].y < img_height)
+      {
+        // Feature could be tracked
+        featureList.setFeatureXf(i, points_cur[i].x);
+        featureList.setFeatureYf(i, points_cur[i].y);
+        featureList.setTrackStatus(i, status_TRACKED);
+      }
+      else  // Feature could not be tracked
+      {
+        featureList.setFeatureX(i, -1);
+        featureList.setFeatureY(i, -1);
+        featureList.setTrackStatus(i, trck_err_too_large ? status_LOST : status_OOB);
+      }
+    }
 
-		// In case it needs to rebuild a kd-tree or whatever
-		featureList.mark_as_outdated();
-	}
+    // In case it needs to rebuild a kd-tree or whatever
+    featureList.mark_as_outdated();
+  }
 
 #else
-	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+  THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 
-	MRPT_END
+  MRPT_END
 }  // end trackFeatures
 
 void CFeatureTracker_KL::trackFeatures_impl(
-	const CImage& old_img, const CImage& new_img, TKeyPointList& featureList)
+    const CImage& old_img, const CImage& new_img, TKeyPointList& featureList)
 {
-	trackFeatures_impl_templ<TKeyPointList>(old_img, new_img, featureList);
+  trackFeatures_impl_templ<TKeyPointList>(old_img, new_img, featureList);
 }
 
 void CFeatureTracker_KL::trackFeatures_impl(
-	const CImage& old_img, const CImage& new_img, TKeyPointfList& featureList)
+    const CImage& old_img, const CImage& new_img, TKeyPointfList& featureList)
 {
-	trackFeatures_impl_templ<TKeyPointfList>(old_img, new_img, featureList);
+  trackFeatures_impl_templ<TKeyPointfList>(old_img, new_img, featureList);
 }

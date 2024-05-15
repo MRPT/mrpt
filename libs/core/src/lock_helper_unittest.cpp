@@ -14,18 +14,18 @@
 
 TEST(lock_helper, testCompilation)
 {
-	{
-		std::mutex mtx;
-		{
-			auto lck = mrpt::lockHelper(mtx);
-			// protected code
-		}
-	}
-	{
-		std::recursive_mutex mtx;
-		{
-			auto lck = mrpt::lockHelper(mtx);
-			// protected code
-		}
-	}
+  {
+    std::mutex mtx;
+    {
+      auto lck = mrpt::lockHelper(mtx);
+      // protected code
+    }
+  }
+  {
+    std::recursive_mutex mtx;
+    {
+      auto lck = mrpt::lockHelper(mtx);
+      // protected code
+    }
+  }
 }

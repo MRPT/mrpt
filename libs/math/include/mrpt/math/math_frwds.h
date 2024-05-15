@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <cstddef>	// std:size_t
+#include <cstddef>  // std:size_t
 
 /*! \file math_frwds.h
  * Forward declarations of all mrpt::math classes related to vectors, arrays
@@ -27,8 +27,12 @@ class InnerStride;
 template <int Outer, int Inner>
 class Stride;
 template <
-	typename _Scalar, int _Rows, int _Cols, int _Options,
-	int _MaxRows /*= _Rows*/, int _MaxCols /* = _Cols*/>
+    typename _Scalar,
+    int _Rows,
+    int _Cols,
+    int _Options,
+    int _MaxRows /*= _Rows*/,
+    int _MaxCols /* = _Cols*/>
 class Matrix;
 // For reference: _Options =
 // /*AutoAlign*/ 0 | ((_Rows == 1 && _Cols != 1) ? /*Eigen::RowMajor*/ 1
@@ -51,10 +55,10 @@ namespace mrpt::math
 {
 /** For usage in one of the constructors of CMatrixFixed or
    CMatrixDynamic (and derived classes), if it's not required
-	 to fill it with zeros at the constructor to save time. */
+   to fill it with zeros at the constructor to save time. */
 enum TConstructorFlags_Matrices
 {
-	UNINITIALIZED_MATRIX = 0
+  UNINITIALIZED_MATRIX = 0
 };
 
 template <class T>

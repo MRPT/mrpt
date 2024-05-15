@@ -29,367 +29,348 @@ using namespace std;
 
 //  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER(
-	"mrpt::maps::CReflectivityGridMap2D,reflectivityMap",
-	mrpt::maps::CReflectivityGridMap2D)
+    "mrpt::maps::CReflectivityGridMap2D,reflectivityMap", mrpt::maps::CReflectivityGridMap2D)
 
 CReflectivityGridMap2D::TMapDefinition::TMapDefinition()
 
-	= default;
+    = default;
 
 void CReflectivityGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::config::CConfigFileBase& source,
-	const std::string& sectionNamePrefix)
+    const mrpt::config::CConfigFileBase& source, const std::string& sectionNamePrefix)
 {
-	// [<sectionNamePrefix>+"_creationOpts"]
-	const std::string sSectCreation =
-		sectionNamePrefix + string("_creationOpts");
-	MRPT_LOAD_CONFIG_VAR(min_x, double, source, sSectCreation);
-	MRPT_LOAD_CONFIG_VAR(max_x, double, source, sSectCreation);
-	MRPT_LOAD_CONFIG_VAR(min_y, double, source, sSectCreation);
-	MRPT_LOAD_CONFIG_VAR(max_y, double, source, sSectCreation);
-	MRPT_LOAD_CONFIG_VAR(resolution, double, source, sSectCreation);
+  // [<sectionNamePrefix>+"_creationOpts"]
+  const std::string sSectCreation = sectionNamePrefix + string("_creationOpts");
+  MRPT_LOAD_CONFIG_VAR(min_x, double, source, sSectCreation);
+  MRPT_LOAD_CONFIG_VAR(max_x, double, source, sSectCreation);
+  MRPT_LOAD_CONFIG_VAR(min_y, double, source, sSectCreation);
+  MRPT_LOAD_CONFIG_VAR(max_y, double, source, sSectCreation);
+  MRPT_LOAD_CONFIG_VAR(resolution, double, source, sSectCreation);
 
-	insertionOpts.loadFromConfigFile(
-		source, sectionNamePrefix + string("_insertOpts"));
+  insertionOpts.loadFromConfigFile(source, sectionNamePrefix + string("_insertOpts"));
 }
 
-void CReflectivityGridMap2D::TMapDefinition::dumpToTextStream_map_specific(
-	std::ostream& out) const
+void CReflectivityGridMap2D::TMapDefinition::dumpToTextStream_map_specific(std::ostream& out) const
 {
-	LOADABLEOPTS_DUMP_VAR(min_x, double);
-	LOADABLEOPTS_DUMP_VAR(max_x, double);
-	LOADABLEOPTS_DUMP_VAR(min_y, double);
-	LOADABLEOPTS_DUMP_VAR(max_y, double);
-	LOADABLEOPTS_DUMP_VAR(resolution, double);
+  LOADABLEOPTS_DUMP_VAR(min_x, double);
+  LOADABLEOPTS_DUMP_VAR(max_x, double);
+  LOADABLEOPTS_DUMP_VAR(min_y, double);
+  LOADABLEOPTS_DUMP_VAR(max_y, double);
+  LOADABLEOPTS_DUMP_VAR(resolution, double);
 
-	this->insertionOpts.dumpToTextStream(out);
+  this->insertionOpts.dumpToTextStream(out);
 }
 
-mrpt::maps::CMetricMap::Ptr
-	CReflectivityGridMap2D::internal_CreateFromMapDefinition(
-		const mrpt::maps::TMetricMapInitializer& _def)
+mrpt::maps::CMetricMap::Ptr CReflectivityGridMap2D::internal_CreateFromMapDefinition(
+    const mrpt::maps::TMetricMapInitializer& _def)
 {
-	const CReflectivityGridMap2D::TMapDefinition& def =
-		*dynamic_cast<const CReflectivityGridMap2D::TMapDefinition*>(&_def);
-	auto obj = CReflectivityGridMap2D::Create(
-		def.min_x, def.max_x, def.min_y, def.max_y, def.resolution);
-	obj->insertionOptions = def.insertionOpts;
-	return obj;
+  const CReflectivityGridMap2D::TMapDefinition& def =
+      *dynamic_cast<const CReflectivityGridMap2D::TMapDefinition*>(&_def);
+  auto obj =
+      CReflectivityGridMap2D::Create(def.min_x, def.max_x, def.min_y, def.max_y, def.resolution);
+  obj->insertionOptions = def.insertionOpts;
+  return obj;
 }
 //  =========== End of Map definition Block =========
 
 IMPLEMENTS_SERIALIZABLE(CReflectivityGridMap2D, CMetricMap, mrpt::maps)
 
 // Lookup tables for log-odds
-CLogOddsGridMapLUT<CReflectivityGridMap2D::cell_t>
-	CReflectivityGridMap2D::m_logodd_lut;
+CLogOddsGridMapLUT<CReflectivityGridMap2D::cell_t> CReflectivityGridMap2D::m_logodd_lut;
 
 /*---------------------------------------------------------------
-						Constructor
+            Constructor
   ---------------------------------------------------------------*/
 CReflectivityGridMap2D::CReflectivityGridMap2D(
-	double x_min, double x_max, double y_min, double y_max, double resolution)
-	: CDynamicGrid<int8_t>(x_min, x_max, y_min, y_max, resolution),
-	  insertionOptions()
+    double x_min, double x_max, double y_min, double y_max, double resolution) :
+    CDynamicGrid<int8_t>(x_min, x_max, y_min, y_max, resolution), insertionOptions()
 {
-	internal_clear();
+  internal_clear();
 }
 
 /*---------------------------------------------------------------
-						clear
+            clear
   ---------------------------------------------------------------*/
 void CReflectivityGridMap2D::internal_clear() { fill(m_logodd_lut.p2l(0.5)); }
 /*---------------------------------------------------------------
-						isEmpty
+            isEmpty
   ---------------------------------------------------------------*/
 bool CReflectivityGridMap2D::isEmpty() const { return false; }
 /*---------------------------------------------------------------
-						insertObservation
+            insertObservation
   ---------------------------------------------------------------*/
 bool CReflectivityGridMap2D::internal_insertObservation(
-	const CObservation& obs,
-	const std::optional<const mrpt::poses::CPose3D>& robotPose)
+    const CObservation& obs, const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
-	MRPT_START
+  MRPT_START
 
-	CPose2D robotPose2D;
-	CPose3D robotPose3D;
+  CPose2D robotPose2D;
+  CPose3D robotPose3D;
 
-	if (robotPose)
-	{
-		robotPose2D = CPose2D(*robotPose);
-		robotPose3D = (*robotPose);
-	}
-	else
-	{
-		// Default values are (0,0,0)
-	}
+  if (robotPose)
+  {
+    robotPose2D = CPose2D(*robotPose);
+    robotPose3D = (*robotPose);
+  }
+  else
+  {
+    // Default values are (0,0,0)
+  }
 
-	if (IS_CLASS(obs, CObservationReflectivity))
-	{
-		/********************************************************************
-					OBSERVATION TYPE: CObservationReflectivity
-		********************************************************************/
-		const auto& o = dynamic_cast<const CObservationReflectivity&>(obs);
+  if (IS_CLASS(obs, CObservationReflectivity))
+  {
+    /********************************************************************
+          OBSERVATION TYPE: CObservationReflectivity
+    ********************************************************************/
+    const auto& o = dynamic_cast<const CObservationReflectivity&>(obs);
 
-		if (o.channel != -1 && insertionOptions.channel != -1 &&
-			o.channel != insertionOptions.channel)
-		{
-			return false;  // Incorrect channel
-		}
+    if (o.channel != -1 && insertionOptions.channel != -1 && o.channel != insertionOptions.channel)
+    {
+      return false;  // Incorrect channel
+    }
 
-		CPose3D sensor_pose;
-		sensor_pose.composeFrom(robotPose3D, o.sensorPose);
+    CPose3D sensor_pose;
+    sensor_pose.composeFrom(robotPose3D, o.sensorPose);
 
-		// log-odd increment due to the observation:
-		const cell_t logodd_observation = m_logodd_lut.p2l(o.reflectivityLevel);
+    // log-odd increment due to the observation:
+    const cell_t logodd_observation = m_logodd_lut.p2l(o.reflectivityLevel);
 
-		// Update cell, with saturation:
-		cell_t* cell = cellByPos(sensor_pose.x(), sensor_pose.y());
-		if (!cell)
-		{
-			// We need to resize the grid!
-			const double new_x_min = std::min(m_x_min, sensor_pose.x());
-			const double new_y_min = std::min(m_y_min, sensor_pose.y());
-			const double new_x_max = std::min(m_x_max, sensor_pose.x());
-			const double new_y_max = std::min(m_y_max, sensor_pose.y());
+    // Update cell, with saturation:
+    cell_t* cell = cellByPos(sensor_pose.x(), sensor_pose.y());
+    if (!cell)
+    {
+      // We need to resize the grid!
+      const double new_x_min = std::min(m_x_min, sensor_pose.x());
+      const double new_y_min = std::min(m_y_min, sensor_pose.y());
+      const double new_x_max = std::min(m_x_max, sensor_pose.x());
+      const double new_y_max = std::min(m_y_max, sensor_pose.y());
 
-			const int8_t default_cell = m_logodd_lut.p2l(0.5);
-			resize(
-				new_x_min, new_x_max, new_y_min, new_y_max, default_cell,
-				2.0 /* addit. margin */);
+      const int8_t default_cell = m_logodd_lut.p2l(0.5);
+      resize(new_x_min, new_x_max, new_y_min, new_y_max, default_cell, 2.0 /* addit. margin */);
 
-			// Now we should get the cell:
-			cell = cellByPos(sensor_pose.x(), sensor_pose.y());
+      // Now we should get the cell:
+      cell = cellByPos(sensor_pose.x(), sensor_pose.y());
 
-			ASSERTMSG_(
-				cell != nullptr, "cell==nullptr even after resizing grid!?");
-		}
+      ASSERTMSG_(cell != nullptr, "cell==nullptr even after resizing grid!?");
+    }
 
-		const int cell_old = static_cast<int>(*cell);
-		int cell_new = cell_old + static_cast<int>(logodd_observation);
-		keep_min(cell_new, static_cast<int>(CELLTYPE_MAX) - 1);
-		keep_max(cell_new, static_cast<int>(CELLTYPE_MIN) + 1);
+    const int cell_old = static_cast<int>(*cell);
+    int cell_new = cell_old + static_cast<int>(logodd_observation);
+    keep_min(cell_new, static_cast<int>(CELLTYPE_MAX) - 1);
+    keep_max(cell_new, static_cast<int>(CELLTYPE_MIN) + 1);
 
-		*cell = static_cast<cell_t>(cell_new);
+    *cell = static_cast<cell_t>(cell_new);
 
-		return true;  // Done!
-	}  // end if "CObservationGasSensors"
+    return true;  // Done!
+  }               // end if "CObservationGasSensors"
 
-	return false;
+  return false;
 
-	MRPT_END
+  MRPT_END
 }
 
 /*---------------------------------------------------------------
-						computeObservationLikelihood
+            computeObservationLikelihood
   ---------------------------------------------------------------*/
 double CReflectivityGridMap2D::internal_computeObservationLikelihood(
-	const CObservation& obs, const CPose3D& takenFrom) const
+    const CObservation& obs, const CPose3D& takenFrom) const
 {
-	MRPT_START
+  MRPT_START
 
-	if (IS_CLASS(obs, CObservationReflectivity))
-	{
-		/********************************************************************
-					OBSERVATION TYPE: CObservationReflectivity
-		********************************************************************/
-		const auto& o = dynamic_cast<const CObservationReflectivity&>(obs);
+  if (IS_CLASS(obs, CObservationReflectivity))
+  {
+    /********************************************************************
+          OBSERVATION TYPE: CObservationReflectivity
+    ********************************************************************/
+    const auto& o = dynamic_cast<const CObservationReflectivity&>(obs);
 
-		if (o.channel != -1 && insertionOptions.channel != -1 &&
-			o.channel != insertionOptions.channel)
-		{
-			return 0;  // Incorrect channel
-		}
+    if (o.channel != -1 && insertionOptions.channel != -1 && o.channel != insertionOptions.channel)
+    {
+      return 0;  // Incorrect channel
+    }
 
-		CPose3D sensor_pose;
-		sensor_pose.composeFrom(takenFrom, o.sensorPose);
+    CPose3D sensor_pose;
+    sensor_pose.composeFrom(takenFrom, o.sensorPose);
 
-		const cell_t* cell = cellByPos(sensor_pose.x(), sensor_pose.y());
-		if (!cell) return 0;  // out of the map..
-		else
-		{
-			ASSERT_GE_(o.reflectivityLevel, 0);
-			ASSERT_LE_(o.reflectivityLevel, 1);
-			return -0.5 *
-				square(
-					(m_logodd_lut.l2p(*cell) - o.reflectivityLevel) /
-					o.sensorStdNoise);
-		}
-	}
-	else
-		return 0;
+    const cell_t* cell = cellByPos(sensor_pose.x(), sensor_pose.y());
+    if (!cell)
+      return 0;  // out of the map..
+    else
+    {
+      ASSERT_GE_(o.reflectivityLevel, 0);
+      ASSERT_LE_(o.reflectivityLevel, 1);
+      return -0.5 * square((m_logodd_lut.l2p(*cell) - o.reflectivityLevel) / o.sensorStdNoise);
+    }
+  }
+  else
+    return 0;
 
-	MRPT_END
+  MRPT_END
 }
 
 uint8_t CReflectivityGridMap2D::serializeGetVersion() const { return 3; }
-void CReflectivityGridMap2D::serializeTo(
-	mrpt::serialization::CArchive& out) const
+void CReflectivityGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	dyngridcommon_writeToStream(out);
+  dyngridcommon_writeToStream(out);
 
-	// Map cells:
-	const auto n = static_cast<uint32_t>(m_map.size());
-	out << n;
-	if (n) out.WriteBuffer(&m_map[0], n);
+  // Map cells:
+  const auto n = static_cast<uint32_t>(m_map.size());
+  out << n;
+  if (n) out.WriteBuffer(&m_map[0], n);
 
-	// Save the insertion options
-	out << insertionOptions.channel;  // v3
+  // Save the insertion options
+  out << insertionOptions.channel;  // v3
 
-	out << genericMapParams;  // v1
+  out << genericMapParams;  // v1
 }
 
-void CReflectivityGridMap2D::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void CReflectivityGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	switch (version)
-	{
-		case 0:
-		case 1:
-		case 2:
-		case 3:
-		{
-			dyngridcommon_readFromStream(in, version < 2);
+  switch (version)
+  {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    {
+      dyngridcommon_readFromStream(in, version < 2);
 
-			// Map cells:
-			uint32_t n;
-			in >> n;
-			m_map.resize(n);
-			if (n) in.ReadBuffer(&m_map[0], n);
+      // Map cells:
+      uint32_t n;
+      in >> n;
+      m_map.resize(n);
+      if (n) in.ReadBuffer(&m_map[0], n);
 
-			// Load the insertion options:
-			if (version >= 3) in >> insertionOptions.channel;
+      // Load the insertion options:
+      if (version >= 3) in >> insertionOptions.channel;
 
-			if (version >= 1) in >> genericMapParams;
-		}
-		break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	};
+      if (version >= 1) in >> genericMapParams;
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
 }
 
 /*---------------------------------------------------------------
-					TInsertionOptions
+          TInsertionOptions
  ---------------------------------------------------------------*/
 CReflectivityGridMap2D::TInsertionOptions::TInsertionOptions() = default;
-void CReflectivityGridMap2D::TInsertionOptions::dumpToTextStream(
-	std::ostream& out) const
+void CReflectivityGridMap2D::TInsertionOptions::dumpToTextStream(std::ostream& out) const
 {
-	out << "\n----------- [CReflectivityGridMap2D::TInsertionOptions] "
-		   "------------ \n\n";
+  out << "\n----------- [CReflectivityGridMap2D::TInsertionOptions] "
+         "------------ \n\n";
 
-	LOADABLEOPTS_DUMP_VAR(channel, int);
+  LOADABLEOPTS_DUMP_VAR(channel, int);
 
-	out << "\n";
+  out << "\n";
 }
 
 /*---------------------------------------------------------------
-					loadFromConfigFile
+          loadFromConfigFile
   ---------------------------------------------------------------*/
 void CReflectivityGridMap2D::TInsertionOptions::loadFromConfigFile(
-	[[maybe_unused]] const mrpt::config::CConfigFileBase& iniFile,
-	[[maybe_unused]] const std::string& section)
+    [[maybe_unused]] const mrpt::config::CConfigFileBase& iniFile,
+    [[maybe_unused]] const std::string& section)
 {
-	MRPT_LOAD_CONFIG_VAR(channel, int, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(channel, int, iniFile, section);
 }
 
 /*---------------------------------------------------------------
-					saveMetricMapRepresentationToFile
+          saveMetricMapRepresentationToFile
   ---------------------------------------------------------------*/
 void CReflectivityGridMap2D::saveMetricMapRepresentationToFile(
-	const std::string& filNamePrefix) const
+    const std::string& filNamePrefix) const
 {
-	// Text matrix:
-	saveToTextFile(filNamePrefix + std::string("_probability.txt"));
+  // Text matrix:
+  saveToTextFile(filNamePrefix + std::string("_probability.txt"));
 }
 
 /*---------------------------------------------------------------
-					getAsImage
+          getAsImage
   ---------------------------------------------------------------*/
-void CReflectivityGridMap2D::getAsImage(
-	CImage& img, bool verticalFlip, bool forceRGB) const
+void CReflectivityGridMap2D::getAsImage(CImage& img, bool verticalFlip, bool forceRGB) const
 {
-	if (!forceRGB)
-	{  // 8bit gray-scale
-		img.resize(m_size_x, m_size_y, CH_GRAY);
-		const cell_t* srcPtr = &m_map[0];
-		unsigned char* destPtr;
-		for (unsigned int y = 0; y < m_size_y; y++)
-		{
-			if (!verticalFlip) destPtr = img(0, m_size_y - 1 - y);
-			else
-				destPtr = img(0, y);
-			for (unsigned int x = 0; x < m_size_x; x++)
-			{
-				*destPtr++ = m_logodd_lut.l2p_255(*srcPtr++);
-			}
-		}
-	}
-	else
-	{  // 24bit RGB:
-		img.resize(m_size_x, m_size_y, CH_RGB);
-		const cell_t* srcPtr = &m_map[0];
-		unsigned char* destPtr;
-		for (unsigned int y = 0; y < m_size_y; y++)
-		{
-			if (!verticalFlip) destPtr = img(0, m_size_y - 1 - y);
-			else
-				destPtr = img(0, y);
-			for (unsigned int x = 0; x < m_size_x; x++)
-			{
-				uint8_t c = m_logodd_lut.l2p_255(*srcPtr++);
-				*destPtr++ = c;
-				*destPtr++ = c;
-				*destPtr++ = c;
-			}
-		}
-	}
+  if (!forceRGB)
+  {  // 8bit gray-scale
+    img.resize(m_size_x, m_size_y, CH_GRAY);
+    const cell_t* srcPtr = &m_map[0];
+    unsigned char* destPtr;
+    for (unsigned int y = 0; y < m_size_y; y++)
+    {
+      if (!verticalFlip)
+        destPtr = img(0, m_size_y - 1 - y);
+      else
+        destPtr = img(0, y);
+      for (unsigned int x = 0; x < m_size_x; x++)
+      {
+        *destPtr++ = m_logodd_lut.l2p_255(*srcPtr++);
+      }
+    }
+  }
+  else
+  {  // 24bit RGB:
+    img.resize(m_size_x, m_size_y, CH_RGB);
+    const cell_t* srcPtr = &m_map[0];
+    unsigned char* destPtr;
+    for (unsigned int y = 0; y < m_size_y; y++)
+    {
+      if (!verticalFlip)
+        destPtr = img(0, m_size_y - 1 - y);
+      else
+        destPtr = img(0, y);
+      for (unsigned int x = 0; x < m_size_x; x++)
+      {
+        uint8_t c = m_logodd_lut.l2p_255(*srcPtr++);
+        *destPtr++ = c;
+        *destPtr++ = c;
+        *destPtr++ = c;
+      }
+    }
+  }
 }
 
-void CReflectivityGridMap2D::getVisualizationInto(
-	mrpt::opengl::CSetOfObjects& o) const
+void CReflectivityGridMap2D::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
 {
-	if (!genericMapParams.enableSaveAs3DObject) return;
+  if (!genericMapParams.enableSaveAs3DObject) return;
 
-	MRPT_START
+  MRPT_START
 
-	opengl::CTexturedPlane::Ptr outObj =
-		std::make_shared<opengl::CTexturedPlane>();
+  opengl::CTexturedPlane::Ptr outObj = std::make_shared<opengl::CTexturedPlane>();
 
-	outObj->setPlaneCorners(m_x_min, m_x_max, m_y_min, m_y_max);
+  outObj->setPlaneCorners(m_x_min, m_x_max, m_y_min, m_y_max);
 
-	// Create the color & transparecy (alpha) images:
-	CImage imgColor(m_size_x, m_size_y, CH_GRAY);
-	CImage imgTrans(m_size_x, m_size_y, CH_GRAY);
+  // Create the color & transparecy (alpha) images:
+  CImage imgColor(m_size_x, m_size_y, CH_GRAY);
+  CImage imgTrans(m_size_x, m_size_y, CH_GRAY);
 
-	const cell_t* srcPtr = &m_map[0];
-	unsigned char* destPtr_color;
-	unsigned char* destPtr_trans;
+  const cell_t* srcPtr = &m_map[0];
+  unsigned char* destPtr_color;
+  unsigned char* destPtr_trans;
 
-	for (unsigned int y = 0; y < m_size_y; y++)
-	{
-		destPtr_color = imgColor(0, y);
-		destPtr_trans = imgTrans(0, y);
-		for (unsigned int x = 0; x < m_size_x; x++)
-		{
-			uint8_t cell255 = m_logodd_lut.l2p_255(*srcPtr++);
-			*destPtr_color++ = cell255;
+  for (unsigned int y = 0; y < m_size_y; y++)
+  {
+    destPtr_color = imgColor(0, y);
+    destPtr_trans = imgTrans(0, y);
+    for (unsigned int x = 0; x < m_size_x; x++)
+    {
+      uint8_t cell255 = m_logodd_lut.l2p_255(*srcPtr++);
+      *destPtr_color++ = cell255;
 
-			int8_t auxC = (int8_t)((signed short)cell255) - 128;
-			*destPtr_trans++ = auxC > 0 ? (auxC << 1) : ((-auxC) << 1);
-		}
-	}
+      int8_t auxC = (int8_t)((signed short)cell255) - 128;
+      *destPtr_trans++ = auxC > 0 ? (auxC << 1) : ((-auxC) << 1);
+    }
+  }
 
-	outObj->assignImage(imgColor, imgTrans);
-	o.insert(outObj);
+  outObj->assignImage(imgColor, imgTrans);
+  o.insert(outObj);
 
-	MRPT_END
+  MRPT_END
 }
 
 float CReflectivityGridMap2D::compute3DMatchingRatio(
-	[[maybe_unused]] const mrpt::maps::CMetricMap* otherMap,
-	[[maybe_unused]] const mrpt::poses::CPose3D& otherMapPose,
-	[[maybe_unused]] const TMatchingRatioParams& params) const
+    [[maybe_unused]] const mrpt::maps::CMetricMap* otherMap,
+    [[maybe_unused]] const mrpt::poses::CPose3D& otherMapPose,
+    [[maybe_unused]] const TMatchingRatioParams& params) const
 {
-	return 0;
+  return 0;
 }

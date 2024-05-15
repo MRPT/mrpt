@@ -42,86 +42,86 @@ namespace mrpt::poses
  */
 class CPoseRandomSampler
 {
-   protected:
-	// Only ONE of these can be not-NULL at a time.
-	/** A local copy of the PDF */
-	CPosePDF::Ptr m_pdf2D;
-	/** A local copy of the PDF */
-	CPose3DPDF::Ptr m_pdf3D;
+ protected:
+  // Only ONE of these can be not-NULL at a time.
+  /** A local copy of the PDF */
+  CPosePDF::Ptr m_pdf2D;
+  /** A local copy of the PDF */
+  CPose3DPDF::Ptr m_pdf3D;
 
-	mrpt::math::CMatrixDouble33 m_fastdraw_gauss_Z3;
-	mrpt::math::CMatrixDouble66 m_fastdraw_gauss_Z6;
-	CPose2D m_fastdraw_gauss_M_2D;
-	CPose3D m_fastdraw_gauss_M_3D;
+  mrpt::math::CMatrixDouble33 m_fastdraw_gauss_Z3;
+  mrpt::math::CMatrixDouble66 m_fastdraw_gauss_Z6;
+  CPose2D m_fastdraw_gauss_M_2D;
+  CPose3D m_fastdraw_gauss_M_3D;
 
-	/** Clear internal pdf */
-	void clear();
+  /** Clear internal pdf */
+  void clear();
 
-	/** Used internally: sample from m_pdf2D */
-	void do_sample_2D(CPose2D& p) const;
-	/** Used internally: sample from m_pdf3D */
-	void do_sample_3D(CPose3D& p) const;
+  /** Used internally: sample from m_pdf2D */
+  void do_sample_2D(CPose2D& p) const;
+  /** Used internally: sample from m_pdf3D */
+  void do_sample_3D(CPose3D& p) const;
 
-   public:
-	/** Default constructor */
-	CPoseRandomSampler();
+ public:
+  /** Default constructor */
+  CPoseRandomSampler();
 
-	CPoseRandomSampler(const CPoseRandomSampler& o);
-	CPoseRandomSampler& operator=(const CPoseRandomSampler& o);
-	CPoseRandomSampler(CPoseRandomSampler&& o);
-	CPoseRandomSampler& operator=(CPoseRandomSampler&& o);
+  CPoseRandomSampler(const CPoseRandomSampler& o);
+  CPoseRandomSampler& operator=(const CPoseRandomSampler& o);
+  CPoseRandomSampler(CPoseRandomSampler&& o);
+  CPoseRandomSampler& operator=(CPoseRandomSampler&& o);
 
-	/** This method must be called to select the PDF from which to draw samples.
-	 * \sa drawSample
-	 */
-	void setPosePDF(const CPosePDF& pdf);
+  /** This method must be called to select the PDF from which to draw samples.
+   * \sa drawSample
+   */
+  void setPosePDF(const CPosePDF& pdf);
 
-	/** This method must be called to select the PDF from which to draw samples.
-	 * \sa drawSample
-	 */
-	void setPosePDF(const CPose3DPDF& pdf);
+  /** This method must be called to select the PDF from which to draw samples.
+   * \sa drawSample
+   */
+  void setPosePDF(const CPose3DPDF& pdf);
 
-	/** Generate a new sample from the selected PDF.
-	 * \return A reference to the same object passed as argument.
-	 * \sa setPosePDF
-	 */
-	CPose2D& drawSample(CPose2D& p) const;
+  /** Generate a new sample from the selected PDF.
+   * \return A reference to the same object passed as argument.
+   * \sa setPosePDF
+   */
+  CPose2D& drawSample(CPose2D& p) const;
 
-	/** Generate a new sample from the selected PDF.
-	 * \return A reference to the same object passed as argument.
-	 * \sa setPosePDF
-	 */
-	CPose3D& drawSample(CPose3D& p) const;
+  /** Generate a new sample from the selected PDF.
+   * \return A reference to the same object passed as argument.
+   * \sa setPosePDF
+   */
+  CPose3D& drawSample(CPose3D& p) const;
 
-	/** Return true if samples can be generated, which only requires a previous
-	 * call to setPosePDF */
-	bool isPrepared() const;
+  /** Return true if samples can be generated, which only requires a previous
+   * call to setPosePDF */
+  bool isPrepared() const;
 
-	/** If the object has been loaded with setPosePDF this method returns the 2D
-	 * pose mean samples will be drawn around. \return A reference to the
-	 * argument */
-	CPose2D& getSamplingMean2D(CPose2D& out_mean) const;
+  /** If the object has been loaded with setPosePDF this method returns the 2D
+   * pose mean samples will be drawn around. \return A reference to the
+   * argument */
+  CPose2D& getSamplingMean2D(CPose2D& out_mean) const;
 
-	/** If the object has been loaded with setPosePDF this method returns the 3D
-	 * pose mean samples will be drawn around. \return A reference to the
-	 * argument */
-	CPose3D& getSamplingMean3D(CPose3D& out_mean) const;
+  /** If the object has been loaded with setPosePDF this method returns the 3D
+   * pose mean samples will be drawn around. \return A reference to the
+   * argument */
+  CPose3D& getSamplingMean3D(CPose3D& out_mean) const;
 
-	/** Retrieves the 3x3 covariance of the original PDF in \f$ [ x ~ y ~ \phi ]
-	 * \f$. */
-	void getOriginalPDFCov2D(mrpt::math::CMatrixDouble33& cov3x3) const;
+  /** Retrieves the 3x3 covariance of the original PDF in \f$ [ x ~ y ~ \phi ]
+   * \f$. */
+  void getOriginalPDFCov2D(mrpt::math::CMatrixDouble33& cov3x3) const;
 
-	/** Retrieves the 3x3 covariance of the original PDF in \f$ [ x ~ y ~ \phi ]
-	 * \f$. */
-	void getOriginalPDFCov2D(mrpt::math::CMatrixDouble& cov3x3) const;
+  /** Retrieves the 3x3 covariance of the original PDF in \f$ [ x ~ y ~ \phi ]
+   * \f$. */
+  void getOriginalPDFCov2D(mrpt::math::CMatrixDouble& cov3x3) const;
 
-	/** Retrieves the 6x6 covariance of the original PDF in \f$ [ x ~ y ~ z ~
-	 * yaw ~ pitch ~ roll ] \f$. */
-	void getOriginalPDFCov3D(mrpt::math::CMatrixDouble66& cov6x6) const;
+  /** Retrieves the 6x6 covariance of the original PDF in \f$ [ x ~ y ~ z ~
+   * yaw ~ pitch ~ roll ] \f$. */
+  void getOriginalPDFCov3D(mrpt::math::CMatrixDouble66& cov6x6) const;
 
-	/** Retrieves the 6x6 covariance of the original PDF in \f$ [ x ~ y ~ z ~
-	 * yaw ~ pitch ~ roll ] \f$. */
-	void getOriginalPDFCov3D(mrpt::math::CMatrixDouble& cov6x6) const;
+  /** Retrieves the 6x6 covariance of the original PDF in \f$ [ x ~ y ~ z ~
+   * yaw ~ pitch ~ roll ] \f$. */
+  void getOriginalPDFCov3D(mrpt::math::CMatrixDouble& cov6x6) const;
 
-};	// End of class def.
+};  // End of class def.
 }  // namespace mrpt::poses

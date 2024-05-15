@@ -19,17 +19,17 @@ struct logoddscell_traits;
 template <>
 struct logoddscell_traits<int8_t>
 {
-	static constexpr int8_t CELLTYPE_MIN = -127;
-	static constexpr int8_t CELLTYPE_MAX = 127;
-	static constexpr int8_t P2LTABLE_SIZE = CELLTYPE_MAX;
-	static constexpr std::size_t LOGODDS_LUT_ENTRIES = 1 << 8;
+  static constexpr int8_t CELLTYPE_MIN = -127;
+  static constexpr int8_t CELLTYPE_MAX = 127;
+  static constexpr int8_t P2LTABLE_SIZE = CELLTYPE_MAX;
+  static constexpr std::size_t LOGODDS_LUT_ENTRIES = 1 << 8;
 };
 template <>
 struct logoddscell_traits<int16_t>
 {
-	static constexpr int16_t CELLTYPE_MIN = -32767;
-	static constexpr int16_t CELLTYPE_MAX = 32767;
-	static constexpr int16_t P2LTABLE_SIZE = CELLTYPE_MAX;
-	static constexpr std::size_t LOGODDS_LUT_ENTRIES = 1 << 16;
+  static constexpr int16_t CELLTYPE_MIN = -32767;
+  static constexpr int16_t CELLTYPE_MAX = 32767;
+  static constexpr int16_t P2LTABLE_SIZE = CELLTYPE_MAX;
+  static constexpr std::size_t LOGODDS_LUT_ENTRIES = 1 << 16;
 };
 }  // namespace mrpt::maps::detail

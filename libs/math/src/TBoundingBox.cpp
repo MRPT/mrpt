@@ -20,29 +20,29 @@ static_assert(std::is_trivially_copyable_v<TBoundingBox>);
 static_assert(std::is_trivially_copyable_v<TBoundingBoxf>);
 
 mrpt::serialization::CArchive& mrpt::math::operator>>(
-	mrpt::serialization::CArchive& in, mrpt::math::TBoundingBoxf& bb)
+    mrpt::serialization::CArchive& in, mrpt::math::TBoundingBoxf& bb)
 {
-	in >> bb.min >> bb.max;
-	return in;
+  in >> bb.min >> bb.max;
+  return in;
 }
 
 mrpt::serialization::CArchive& mrpt::math::operator<<(
-	mrpt::serialization::CArchive& out, const mrpt::math::TBoundingBoxf& bb)
+    mrpt::serialization::CArchive& out, const mrpt::math::TBoundingBoxf& bb)
 {
-	out << bb.min << bb.max;
-	return out;
+  out << bb.min << bb.max;
+  return out;
 }
 
 mrpt::serialization::CArchive& mrpt::math::operator>>(
-	mrpt::serialization::CArchive& in, mrpt::math::TBoundingBox& bb)
+    mrpt::serialization::CArchive& in, mrpt::math::TBoundingBox& bb)
 {
-	in >> bb.min >> bb.max;
-	return in;
+  in >> bb.min >> bb.max;
+  return in;
 }
 
 mrpt::serialization::CArchive& mrpt::math::operator<<(
-	mrpt::serialization::CArchive& out, const mrpt::math::TBoundingBox& bb)
+    mrpt::serialization::CArchive& out, const mrpt::math::TBoundingBox& bb)
 {
-	out << bb.min << bb.max;
-	return out;
+  out << bb.min << bb.max;
+  return out;
 }

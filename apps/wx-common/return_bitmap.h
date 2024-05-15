@@ -10,16 +10,15 @@
 #include <wx/bitmap.h>
 
 #define RETURN_BITMAP(artid, xpm)                                              \
-	if (id == artid)                                                           \
-	{                                                                          \
-		if (client == wxART_MENU)                                              \
-		{                                                                      \
-			wxBitmap b(xpm);                                                   \
-			return wxBitmap(                                                   \
-				b.ConvertToImage().Scale(16, 16, wxIMAGE_QUALITY_HIGH));       \
-		}                                                                      \
-		else                                                                   \
-		{                                                                      \
-			return wxBitmap(xpm);                                              \
-		}                                                                      \
-	}
+  if (id == artid)                                                             \
+  {                                                                            \
+    if (client == wxART_MENU)                                                  \
+    {                                                                          \
+      wxBitmap b(xpm);                                                         \
+      return wxBitmap(b.ConvertToImage().Scale(16, 16, wxIMAGE_QUALITY_HIGH)); \
+    }                                                                          \
+    else                                                                       \
+    {                                                                          \
+      return wxBitmap(xpm);                                                    \
+    }                                                                          \
+  }

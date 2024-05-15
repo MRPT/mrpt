@@ -31,34 +31,30 @@ namespace mrpt::containers
  * \note (New in MRPT 2.5.0)
  */
 template <typename Container>
-std::optional<
-	std::pair<typename Container::key_type, typename Container::mapped_type>>
-	find_closest_with_tolerance(
-		const Container& data, const double x, double tolerance)
+std::optional<std::pair<typename Container::key_type, typename Container::mapped_type>>
+find_closest_with_tolerance(const Container& data, const double x, double tolerance)
 {
-	const auto t_min = x - tolerance;
-	const auto t_max = x + tolerance;
+  const auto t_min = x - tolerance;
+  const auto t_max = x + tolerance;
 
-	auto it_lo = data.lower_bound(t_min);
-	auto it_hi = data.upper_bound(t_max);
+  auto it_lo = data.lower_bound(t_min);
+  auto it_hi = data.upper_bound(t_max);
 
-	double min_distance = std::numeric_limits<double>::max();
-	std::optional<std::pair<
-		typename Container::key_type, typename Container::mapped_type>>
-		best;
+  double min_distance = std::numeric_limits<double>::max();
+  std::optional<std::pair<typename Container::key_type, typename Container::mapped_type>> best;
 
-	for (auto it = it_lo; it != it_hi; ++it)
-	{
-		if (it == data.end()) continue;
-		const auto dist = std::abs(it->first - x);
-		if (dist < min_distance)
-		{
-			min_distance = dist;
-			best = {it->first, it->second};
-		}
-	}
+  for (auto it = it_lo; it != it_hi; ++it)
+  {
+    if (it == data.end()) continue;
+    const auto dist = std::abs(it->first - x);
+    if (dist < min_distance)
+    {
+      min_distance = dist;
+      best = {it->first, it->second};
+    }
+  }
 
-	return best;
+  return best;
 }
 
 /** For an associate container `Container` mapping real number keys to `T`
@@ -74,32 +70,28 @@ std::optional<
  * \note (New in MRPT 2.5.0)
  */
 template <typename Container>
-std::optional<
-	std::pair<typename Container::key_type, typename Container::mapped_type>>
-	find_closest(const Container& data, const double x)
+std::optional<std::pair<typename Container::key_type, typename Container::mapped_type>>
+find_closest(const Container& data, const double x)
 {
-	typename Container::const_iterator its[2] = {
-		data.lower_bound(x), data.upper_bound(x)};
+  typename Container::const_iterator its[2] = {data.lower_bound(x), data.upper_bound(x)};
 
-	if (!data.empty() && its[0] != data.begin()) --its[0];
+  if (!data.empty() && its[0] != data.begin()) --its[0];
 
-	double min_distance = std::numeric_limits<double>::max();
-	std::optional<std::pair<
-		typename Container::key_type, typename Container::mapped_type>>
-		best;
+  double min_distance = std::numeric_limits<double>::max();
+  std::optional<std::pair<typename Container::key_type, typename Container::mapped_type>> best;
 
-	for (const auto& it : its)
-	{
-		if (it == data.end()) continue;
-		const auto dist = std::abs(it->first - x);
-		if (dist < min_distance)
-		{
-			min_distance = dist;
-			best = {it->first, it->second};
-		}
-	}
+  for (const auto& it : its)
+  {
+    if (it == data.end()) continue;
+    const auto dist = std::abs(it->first - x);
+    if (dist < min_distance)
+    {
+      min_distance = dist;
+      best = {it->first, it->second};
+    }
+  }
 
-	return best;
+  return best;
 }
 /**  @} */
 

@@ -20,24 +20,20 @@ class CGasGridConfig;
 }
 class CGasGridConfig : public CBaseConfig
 {
-   public:
-	CGasGridConfig();
-	~CGasGridConfig() override = default;
+ public:
+  CGasGridConfig();
+  ~CGasGridConfig() override = default;
 
-	const QString getName() override;
-	void updateConfiguration(
-		mrpt::maps::TMetricMapInitializer* options) override;
-	TypeOfConfig type() const override;
+  const QString getName() override;
+  void updateConfiguration(mrpt::maps::TMetricMapInitializer* options) override;
+  TypeOfConfig type() const override;
 
-	void setCreationOpt(
-		float min_x, float max_x, float min_y, float max_y, float resolution);
-	void setInsertOpt(
-		const mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions&
-			insertOpt =
-				mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions());
-	void setMapTypeOpt(
-		const mrpt::maps::CGasConcentrationGridMap2D::TMapRepresentation&);
+  void setCreationOpt(float min_x, float max_x, float min_y, float max_y, float resolution);
+  void setInsertOpt(
+      const mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions& insertOpt =
+          mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions());
+  void setMapTypeOpt(const mrpt::maps::CGasConcentrationGridMap2D::TMapRepresentation&);
 
-   private:
-	std::unique_ptr<Ui::CGasGridConfig> m_ui;
+ private:
+  std::unique_ptr<Ui::CGasGridConfig> m_ui;
 };

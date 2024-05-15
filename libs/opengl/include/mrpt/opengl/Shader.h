@@ -38,43 +38,44 @@ using shader_list_t = std::vector<shader_id_t>;
  */
 class Shader
 {
-   public:
-	Shader() = default;
-	~Shader();
-	Shader& operator=(const Shader&) = delete;
-	Shader(const Shader&) = delete;
-	Shader& operator=(Shader&&);
-	Shader(Shader&&);
+ public:
+  Shader() = default;
+  ~Shader();
+  Shader& operator=(const Shader&) = delete;
+  Shader(const Shader&) = delete;
+  Shader& operator=(Shader&&);
+  Shader(Shader&&);
 
-	bool empty() const { return m_data->shader == 0; }
-	/** Frees the shader program in OpenGL. */
-	void clear();
+  bool empty() const { return m_data->shader == 0; }
+  /** Frees the shader program in OpenGL. */
+  void clear();
 
-	/** Build a shader from source code.
-	 * \param[in] type Any valid argument to glCreateShader()
-	 * \param[in] shaderCode The shading source code(s). One or more code blocks
-	 * are allowed, that will be merged together. Tip: users can read it from a
-	 * file with mrpt::io::file_get_contents().
-	 * \param[out] outErrorMessages If provided,
-	 * build errors will be saved here. If not, they will dumped to std::cerr
-	 * \return false on error.
-	 */
-	bool compile(
-		unsigned int type, const std::vector<std::string>& shaderCode,
-		mrpt::optional_ref<std::string> outErrorMessages = std::nullopt);
+  /** Build a shader from source code.
+   * \param[in] type Any valid argument to glCreateShader()
+   * \param[in] shaderCode The shading source code(s). One or more code blocks
+   * are allowed, that will be merged together. Tip: users can read it from a
+   * file with mrpt::io::file_get_contents().
+   * \param[out] outErrorMessages If provided,
+   * build errors will be saved here. If not, they will dumped to std::cerr
+   * \return false on error.
+   */
+  bool compile(
+      unsigned int type,
+      const std::vector<std::string>& shaderCode,
+      mrpt::optional_ref<std::string> outErrorMessages = std::nullopt);
 
-	unsigned int handle() const { return m_data->shader; }
+  unsigned int handle() const { return m_data->shader; }
 
-	struct Data
-	{
-		unsigned int shader = 0;
-		std::thread::id creationThread{};
-		bool inPostponedDestructionQueue = false;
-		void destroy();
-	};
+  struct Data
+  {
+    unsigned int shader = 0;
+    std::thread::id creationThread{};
+    bool inPostponedDestructionQueue = false;
+    void destroy();
+  };
 
-   private:
-	std::shared_ptr<Data> m_data = std::make_shared<Data>();
+ private:
+  std::shared_ptr<Data> m_data = std::make_shared<Data>();
 };
 
 /** A resource handling helper for OpenGL Shader "programs".
@@ -87,98 +88,87 @@ class Shader
  */
 class Program
 {
-   public:
-	Program() = default;
-	~Program();
+ public:
+  Program() = default;
+  ~Program();
 
-	using Ptr = std::shared_ptr<Program>;
+  using Ptr = std::shared_ptr<Program>;
 
-	bool empty() const { return m_data && m_data->program == 0; }
-	/** Frees the shader program in OpenGL. */
-	void clear();
+  bool empty() const { return m_data && m_data->program == 0; }
+  /** Frees the shader program in OpenGL. */
+  void clear();
 
-	/** Activates the program, calling glUseProgram() with this program ID. */
-	void use();
+  /** Activates the program, calling glUseProgram() with this program ID. */
+  void use();
 
-	/** Set uniform variables: */
-	void setInt(const char* uniformName, int value) const;
-	void setFloat(
-		const char* uniformName, float value,
-		bool failIfNotExists = true) const;
-	void setFloat3(const char* uniformName, float v1, float v2, float v3) const;
-	void setFloat4(
-		const char* uniformName, float v1, float v2, float v3, float v4) const;
+  /** Set uniform variables: */
+  void setInt(const char* uniformName, int value) const;
+  void setFloat(const char* uniformName, float value, bool failIfNotExists = true) const;
+  void setFloat3(const char* uniformName, float v1, float v2, float v3) const;
+  void setFloat4(const char* uniformName, float v1, float v2, float v3, float v4) const;
 
-	/** Links an OpenGL program with all shader code fragments previously
-	 * inserted into shaders.
-	 * \param[in,out] shaders The shader code fragments. Will be moved into this
-	 * Program object, who will become the owner from now on and will eventually
-	 * free its resources.
-	 * \param[out] outErrorMessages If provided, build
-	 * errors will be saved here. If not, they will dumped to std::cerr
-	 *
-	 * \return
-	 * false on error.
-	 */
-	bool linkProgram(
-		std::vector<Shader>& shaders,
-		mrpt::optional_ref<std::string> outErrorMessages = std::nullopt);
+  /** Links an OpenGL program with all shader code fragments previously
+   * inserted into shaders.
+   * \param[in,out] shaders The shader code fragments. Will be moved into this
+   * Program object, who will become the owner from now on and will eventually
+   * free its resources.
+   * \param[out] outErrorMessages If provided, build
+   * errors will be saved here. If not, they will dumped to std::cerr
+   *
+   * \return
+   * false on error.
+   */
+  bool linkProgram(
+      std::vector<Shader>& shaders,
+      mrpt::optional_ref<std::string> outErrorMessages = std::nullopt);
 
-	void declareUniform(const std::string& name);
-	void declareAttribute(const std::string& name);
+  void declareUniform(const std::string& name);
+  void declareAttribute(const std::string& name);
 
-	unsigned int programId() const
-	{
-		ASSERT_(m_data && m_data->program != 0);
-		return m_data->program;
-	}
+  unsigned int programId() const
+  {
+    ASSERT_(m_data && m_data->program != 0);
+    return m_data->program;
+  }
 
-	int uniformId(const char* name) const
-	{
+  int uniformId(const char* name) const
+  {
 #ifdef _DEBUG
-		if (!hasUniform(name))
-			THROW_EXCEPTION_FMT("Shader: No such uniform '%s'", name);
+    if (!hasUniform(name)) THROW_EXCEPTION_FMT("Shader: No such uniform '%s'", name);
 #endif
-		return m_data->uniforms.at(name);
-	}
-	int attributeId(const char* name) const
-	{
+    return m_data->uniforms.at(name);
+  }
+  int attributeId(const char* name) const
+  {
 #ifdef _DEBUG
-		if (!hasAttribute(name))
-			THROW_EXCEPTION_FMT("Shader: No such attribute '%s'", name);
+    if (!hasAttribute(name)) THROW_EXCEPTION_FMT("Shader: No such attribute '%s'", name);
 #endif
-		return m_data->attribs.at(name);
-	}
+    return m_data->attribs.at(name);
+  }
 
-	bool hasUniform(const char* name) const
-	{
-		return m_data->uniforms.count(name) != 0;
-	}
-	bool hasAttribute(const char* name) const
-	{
-		return m_data->attribs.count(name) != 0;
-	}
+  bool hasUniform(const char* name) const { return m_data->uniforms.count(name) != 0; }
+  bool hasAttribute(const char* name) const { return m_data->attribs.count(name) != 0; }
 
-	/** Prints a textual summary of the program */
-	void dumpProgramDescription(std::ostream& o) const;
+  /** Prints a textual summary of the program */
+  void dumpProgramDescription(std::ostream& o) const;
 
-	struct Data
-	{
-		std::vector<Shader> shaders;
-		unsigned int program = 0;
-		std::thread::id linkedThread{};
-		bool inPostponedDestructionQueue = false;
+  struct Data
+  {
+    std::vector<Shader> shaders;
+    unsigned int program = 0;
+    std::thread::id linkedThread{};
+    bool inPostponedDestructionQueue = false;
 
-		/** OpenGL Uniforms/attribs defined by the user as inputs/outputs in
-		 * shader code. \sa declareUniform(), declareAttribute();
-		 */
-		std::unordered_map<std::string, int> uniforms, attribs;
+    /** OpenGL Uniforms/attribs defined by the user as inputs/outputs in
+     * shader code. \sa declareUniform(), declareAttribute();
+     */
+    std::unordered_map<std::string, int> uniforms, attribs;
 
-		void destroy();
-	};
+    void destroy();
+  };
 
-   private:
-	std::shared_ptr<Data> m_data = std::make_shared<Data>();
+ private:
+  std::shared_ptr<Data> m_data = std::make_shared<Data>();
 };
 
 }  // namespace mrpt::opengl

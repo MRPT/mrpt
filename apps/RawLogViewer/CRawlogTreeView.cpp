@@ -68,593 +68,566 @@ const long ID_MNU_EXPORT_LAST_FILE = wxNewId();
 
 static std::string shortenClassName(const std::string& s)
 {
-	auto ret = std::regex_replace(
-		s, std::regex("mrpt\\:\\:obs\\:\\:CObservation"), "");
-	ret = std::regex_replace(ret, std::regex("mrpt\\:\\:obs\\:\\:"), "");
-	return ret;
+  auto ret = std::regex_replace(s, std::regex("mrpt\\:\\:obs\\:\\:CObservation"), "");
+  ret = std::regex_replace(ret, std::regex("mrpt\\:\\:obs\\:\\:"), "");
+  return ret;
 }
 
 /* ------------------------------------------------------------
-						CRawlogTreeView
+            CRawlogTreeView
    ------------------------------------------------------------ */
 CRawlogTreeView::CRawlogTreeView(
-	wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size,
-	long style, const wxString& name)
-	: wxScrolledWindow(
-		  parent, id, pos, size, style | wxVSCROLL | wxFULL_REPAINT_ON_RESIZE,
-		  name),
-	  m_rawlog_start(INVALID_TIMESTAMP),
-	  m_rawlog_last(INVALID_TIMESTAMP),
-	  m_tree_nodes()
+    wxWindow* parent,
+    wxWindowID id,
+    const wxPoint& pos,
+    const wxSize& size,
+    long style,
+    const wxString& name) :
+    wxScrolledWindow(parent, id, pos, size, style | wxVSCROLL | wxFULL_REPAINT_ON_RESIZE, name),
+    m_rawlog_start(INVALID_TIMESTAMP),
+    m_rawlog_last(INVALID_TIMESTAMP),
+    m_tree_nodes()
 {
-	m_contextMenu.Append(
-		ID_MNU_EXPORT_ANOTHER_FILE, "Export to another .rawlog file...");
+  m_contextMenu.Append(ID_MNU_EXPORT_ANOTHER_FILE, "Export to another .rawlog file...");
 
-	m_contextMenu.Append(
-		ID_MNU_EXPORT_LAST_FILE, "Append to same previous file");
+  m_contextMenu.Append(ID_MNU_EXPORT_LAST_FILE, "Append to same previous file");
 
-	Bind(
-		wxEVT_MENU, &CRawlogTreeView::onMnuExportToOtherFile, this,
-		ID_MNU_EXPORT_ANOTHER_FILE);
+  Bind(wxEVT_MENU, &CRawlogTreeView::onMnuExportToOtherFile, this, ID_MNU_EXPORT_ANOTHER_FILE);
 
-	Bind(
-		wxEVT_MENU, &CRawlogTreeView::onMnuAppendSaveFile, this,
-		ID_MNU_EXPORT_LAST_FILE);
+  Bind(wxEVT_MENU, &CRawlogTreeView::onMnuAppendSaveFile, this, ID_MNU_EXPORT_LAST_FILE);
 }
 
 /* ------------------------------------------------------------
-						setRawlogSource
+            setRawlogSource
    ------------------------------------------------------------ */
 void CRawlogTreeView::setRawlogSource(CRawlog* theRawlog)
 {
-	m_rawlog = theRawlog;
-	reloadFromRawlog();
+  m_rawlog = theRawlog;
+  reloadFromRawlog();
 }
 
 /* ------------------------------------------------------------
-						reloadFromRawlog
+            reloadFromRawlog
    ------------------------------------------------------------ */
 void CRawlogTreeView::reloadFromRawlog()
 {
-	// Recompute the total height of the scroll area:
-	//  We also compute a list for each index with:
-	//    - Pointer to data
-	//	  - level in the hierarchy (0,1,2)
-	// --------------------------------------------------------
+  // Recompute the total height of the scroll area:
+  //  We also compute a list for each index with:
+  //    - Pointer to data
+  //	  - level in the hierarchy (0,1,2)
+  // --------------------------------------------------------
 
-	// Create a "tree node" for each element in the rawlog:
-	// ---------------------------------------------------------
-	m_tree_nodes.clear();
+  // Create a "tree node" for each element in the rawlog:
+  // ---------------------------------------------------------
+  m_tree_nodes.clear();
 
-	m_rawlog_start = INVALID_TIMESTAMP;
-	m_rawlog_last = INVALID_TIMESTAMP;
+  m_rawlog_start = INVALID_TIMESTAMP;
+  m_rawlog_last = INVALID_TIMESTAMP;
 
-	// Root:
-	m_tree_nodes.emplace_back().level = 0;
+  // Root:
+  m_tree_nodes.emplace_back().level = 0;
 
-	auto lambdaCheckTimestamp = [this](const mrpt::Clock::time_point& t) {
-		if (t == INVALID_TIMESTAMP) return;
-		m_rawlog_last = t;
-		if (m_rawlog_start == INVALID_TIMESTAMP) m_rawlog_start = t;
-	};
+  auto lambdaCheckTimestamp = [this](const mrpt::Clock::time_point& t)
+  {
+    if (t == INVALID_TIMESTAMP) return;
+    m_rawlog_last = t;
+    if (m_rawlog_start == INVALID_TIMESTAMP) m_rawlog_start = t;
+  };
 
-	if (m_rawlog)
-	{
-		CRawlog::iterator end_it = m_rawlog->end();
-		size_t rawlog_index = 0;
-		for (const auto& entry : *m_rawlog)
-		{
-			TNodeData& dEntry = m_tree_nodes.emplace_back();
-			dEntry.level = 1;
-			dEntry.data = entry;
-			dEntry.index = rawlog_index;
+  if (m_rawlog)
+  {
+    CRawlog::iterator end_it = m_rawlog->end();
+    size_t rawlog_index = 0;
+    for (const auto& entry : *m_rawlog)
+    {
+      TNodeData& dEntry = m_tree_nodes.emplace_back();
+      dEntry.level = 1;
+      dEntry.data = entry;
+      dEntry.index = rawlog_index;
 
-			// For containers, go recursively:
-			if (auto sf = std::dynamic_pointer_cast<CSensoryFrame>(entry); sf)
-			{
-				for (auto& o : *sf)
-				{
-					TNodeData& dObs = m_tree_nodes.emplace_back();
-					dObs.level = 2;
-					dObs.data = o;
-					lambdaCheckTimestamp(o->timestamp);
-					dObs.timestamp = o->timestamp;
-					dObs.sensorLabel = o->sensorLabel;
+      // For containers, go recursively:
+      if (auto sf = std::dynamic_pointer_cast<CSensoryFrame>(entry); sf)
+      {
+        for (auto& o : *sf)
+        {
+          TNodeData& dObs = m_tree_nodes.emplace_back();
+          dObs.level = 2;
+          dObs.data = o;
+          lambdaCheckTimestamp(o->timestamp);
+          dObs.timestamp = o->timestamp;
+          dObs.sensorLabel = o->sensorLabel;
 
-					if (!dEntry.timestamp.has_value())
-						dEntry.timestamp = o->timestamp;
-				}
-			}
-			else if (auto acts =
-						 std::dynamic_pointer_cast<CActionCollection>(entry);
-					 acts)
-			{
-				for (auto& a : *acts)
-				{
-					TNodeData& dAC = m_tree_nodes.emplace_back();
-					dAC.level = 2;
-					dAC.data = a.get_ptr();
+          if (!dEntry.timestamp.has_value()) dEntry.timestamp = o->timestamp;
+        }
+      }
+      else if (auto acts = std::dynamic_pointer_cast<CActionCollection>(entry); acts)
+      {
+        for (auto& a : *acts)
+        {
+          TNodeData& dAC = m_tree_nodes.emplace_back();
+          dAC.level = 2;
+          dAC.data = a.get_ptr();
 
-					lambdaCheckTimestamp(a->timestamp);
-					dAC.timestamp = a->timestamp;
+          lambdaCheckTimestamp(a->timestamp);
+          dAC.timestamp = a->timestamp;
 
-					if (!dEntry.timestamp.has_value())
-						dEntry.timestamp = a->timestamp;
-				}
-			}
-			else if (auto o = std::dynamic_pointer_cast<CObservation>(entry); o)
-			{
-				lambdaCheckTimestamp(o->timestamp);
-				dEntry.timestamp = o->timestamp;
-				dEntry.sensorLabel = o->sensorLabel;
-			}
+          if (!dEntry.timestamp.has_value()) dEntry.timestamp = a->timestamp;
+        }
+      }
+      else if (auto o = std::dynamic_pointer_cast<CObservation>(entry); o)
+      {
+        lambdaCheckTimestamp(o->timestamp);
+        dEntry.timestamp = o->timestamp;
+        dEntry.sensorLabel = o->sensorLabel;
+      }
 
-			rawlog_index++;
-		}
-	}
+      rawlog_index++;
+    }
+  }
 
-	// Set new size:
-	int ly = m_tree_nodes.size();
-	SetScrollbars(ROW_HEIGHT, ROW_HEIGHT, 50, ly);
+  // Set new size:
+  int ly = m_tree_nodes.size();
+  SetScrollbars(ROW_HEIGHT, ROW_HEIGHT, 50, ly);
 }
 
 /* ------------------------------------------------------------
-						reloadFromRawlog
+            reloadFromRawlog
    ------------------------------------------------------------ */
 void CRawlogTreeView::OnDraw(wxDC& dc)
 {
-	if (RAWLOG_UNDERGOING_CHANGES) return;
-	try
-	{
-		OnDrawImpl(dc);
-		theMainWindow->bottomTimeLineUpdateCursorFromTreeScrollPos();
-	}
-	catch (...)
-	{
-	}
+  if (RAWLOG_UNDERGOING_CHANGES) return;
+  try
+  {
+    OnDrawImpl(dc);
+    theMainWindow->bottomTimeLineUpdateCursorFromTreeScrollPos();
+  }
+  catch (...)
+  {
+  }
 }
 
 bool CRawlogTreeView::isItemIndexVisible(size_t idx) const
 {
-	return idx >= m_firstVisibleItem && idx <= m_lastVisibleItem;
+  return idx >= m_firstVisibleItem && idx <= m_lastVisibleItem;
 }
 
 void CRawlogTreeView::OnDrawImpl(wxDC& dc)
 {
-	// The origin of the window:
-	int xc0, y0;
-	GetViewStart(&xc0, &y0);  // Not pixels, but **lines**
+  // The origin of the window:
+  int xc0, y0;
+  GetViewStart(&xc0, &y0);  // Not pixels, but **lines**
 
-	int w, h;
-	GetSize(&w, &h);
+  int w, h;
+  GetSize(&w, &h);
 
-	wxRect visibleArea(
-		xc0 * ROW_HEIGHT, y0 * ROW_HEIGHT, w * ROW_HEIGHT, h * ROW_HEIGHT);
+  wxRect visibleArea(xc0 * ROW_HEIGHT, y0 * ROW_HEIGHT, w * ROW_HEIGHT, h * ROW_HEIGHT);
 
-	dc.SetPen(*wxTRANSPARENT_PEN);
-	dc.SetBrush(*wxWHITE_BRUSH);
-	dc.DrawRectangle(xc0 * ROW_HEIGHT, y0 * ROW_HEIGHT, w, h);
+  dc.SetPen(*wxTRANSPARENT_PEN);
+  dc.SetBrush(*wxWHITE_BRUSH);
+  dc.DrawRectangle(xc0 * ROW_HEIGHT, y0 * ROW_HEIGHT, w, h);
 
-	// The first time only, create fonts:
-	static wxFont font_normal(
-		11, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
-	static wxFont font_bold(
-		11, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
+  // The first time only, create fonts:
+  static wxFont font_normal(11, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
+  static wxFont font_bold(11, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
 
-	static wxColor wxColorGray(40, 40, 40);
-	static wxColor brush_SELECTED_COLOR(0, 200, 200);
-	static wxPen gray_thick(brush_SELECTED_COLOR, 3);
-	static wxPen gray_thin(brush_SELECTED_COLOR, 1);
+  static wxColor wxColorGray(40, 40, 40);
+  static wxColor brush_SELECTED_COLOR(0, 200, 200);
+  static wxPen gray_thick(brush_SELECTED_COLOR, 3);
+  static wxPen gray_thin(brush_SELECTED_COLOR, 1);
 
-	size_t first_item = y0;
+  size_t first_item = y0;
 
-	size_t n_visible_items = (h / ROW_HEIGHT) + 1;
-	if (n_visible_items < 1) n_visible_items = 1;
+  size_t n_visible_items = (h / ROW_HEIGHT) + 1;
+  if (n_visible_items < 1) n_visible_items = 1;
 
-	size_t last_item = first_item + n_visible_items - 1;
+  size_t last_item = first_item + n_visible_items - 1;
 
-	last_item = min(last_item, m_tree_nodes.size());
+  last_item = min(last_item, m_tree_nodes.size());
 
-	m_firstVisibleItem = first_item;
-	m_lastVisibleItem = last_item;
+  m_firstVisibleItem = first_item;
+  m_lastVisibleItem = last_item;
 
-	// Draw icons?
-	// ----------------------------
-	int x0 = 3;
-	int Ax0_img = 0;  // Increment in x for the icons, if any.
+  // Draw icons?
+  // ----------------------------
+  int x0 = 3;
+  int Ax0_img = 0;  // Increment in x for the icons, if any.
 
-	if (m_imageList && m_imageList->GetImageCount() > 0)
-	{
-		int imgw, imgh;
-		m_imageList->GetSize(0, imgw, imgh);
-		Ax0_img = imgw + 4;
-	}
+  if (m_imageList && m_imageList->GetImageCount() > 0)
+  {
+    int imgw, imgh;
+    m_imageList->GetSize(0, imgw, imgh);
+    Ax0_img = imgw + 4;
+  }
 
-	// Draw only those elements that are visible:
-	// -----------------------------------------------
-	const int first_tim_y = ROW_HEIGHT + 1;
-	const int last_tim_y = (m_tree_nodes.size() - 1) * ROW_HEIGHT - 1;
+  // Draw only those elements that are visible:
+  // -----------------------------------------------
+  const int first_tim_y = ROW_HEIGHT + 1;
+  const int last_tim_y = (m_tree_nodes.size() - 1) * ROW_HEIGHT - 1;
 
-	for (size_t i = first_item; i < last_item; i++)
-	{
-		int y = i * ROW_HEIGHT;	 // y= bottom of that row
-		TNodeData& d = m_tree_nodes[i];
+  for (size_t i = first_item; i < last_item; i++)
+  {
+    int y = i * ROW_HEIGHT;  // y= bottom of that row
+    TNodeData& d = m_tree_nodes[i];
 
-		switch (d.level)
-		{
-			case 0:
-				dc.SetFont(font_bold);
-				dc.SetTextForeground(*wxBLACK);
-				break;
+    switch (d.level)
+    {
+      case 0:
+        dc.SetFont(font_bold);
+        dc.SetTextForeground(*wxBLACK);
+        break;
 
-			case 1:
-				dc.SetFont(font_normal);
-				dc.SetTextForeground(*wxBLACK);
-				break;
+      case 1:
+        dc.SetFont(font_normal);
+        dc.SetTextForeground(*wxBLACK);
+        break;
 
-			default:
-			case 2:
-				dc.SetFont(font_normal);
-				dc.SetTextForeground(wxColorGray);
-				break;
-		};
+      default:
+      case 2:
+        dc.SetFont(font_normal);
+        dc.SetTextForeground(wxColorGray);
+        break;
+    };
 
-		// Select icon & text according to type of object
-		// ------------------------------------------------
-		int icon = -1;
-		wxString s;
+    // Select icon & text according to type of object
+    // ------------------------------------------------
+    int icon = -1;
+    wxString s;
 
-		if (i == 0)
-		{
-			// The root node:
-			s = (format("Rawlog: %s", m_rawlog_name.c_str()).c_str());
-			icon = 3;
-		}
-		else
-		{
-			// According to class ID:
-			m_rawlog->getAsGeneric(d.index);  // Just to assure it's on memory
+    if (i == 0)
+    {
+      // The root node:
+      s = (format("Rawlog: %s", m_rawlog_name.c_str()).c_str());
+      icon = 3;
+    }
+    else
+    {
+      // According to class ID:
+      m_rawlog->getAsGeneric(d.index);  // Just to assure it's on memory
 
-			if (d.data)
-			{
-				// Icon:
-				icon = iconIndexFromClass(d.data->GetRuntimeClass());
+      if (d.data)
+      {
+        // Icon:
+        icon = iconIndexFromClass(d.data->GetRuntimeClass());
 
-				// Text:
-				if (d.level == 1) s << "[" << std::to_string(d.index) << "] ";
+        // Text:
+        if (d.level == 1) s << "[" << std::to_string(d.index) << "] ";
 
-				s << shortenClassName(d.data->GetRuntimeClass()->className);
+        s << shortenClassName(d.data->GetRuntimeClass()->className);
 
-				// Sensor label:
-				if (d.data->GetRuntimeClass()->derivedFrom(
-						CLASS_ID(CObservation)))
-				{
-					CObservation::Ptr obs =
-						std::dynamic_pointer_cast<CObservation>(d.data);
+        // Sensor label:
+        if (d.data->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+        {
+          CObservation::Ptr obs = std::dynamic_pointer_cast<CObservation>(d.data);
 
-					if (!obs->sensorLabel.empty())
-						s << wxT(" : ") << obs->sensorLabel.c_str();
-				}
-			}
-		}
+          if (!obs->sensorLabel.empty()) s << wxT(" : ") << obs->sensorLabel.c_str();
+        }
+      }
+    }
 
-		// Draw text and icon:
-		// ------------------------------------
-		if (m_selectedItem == int(i))
-		{
-			dc.SetBrush(brush_SELECTED_COLOR);
-			dc.DrawRectangle(
-				x0 + TREE_HORZ_STEPS * d.level, y, w - x0, ROW_HEIGHT);
-			dc.SetTextBackground(brush_SELECTED_COLOR);
-		}
-		else
-		{
-			dc.SetTextBackground(GetBackgroundColour());
-		}
+    // Draw text and icon:
+    // ------------------------------------
+    if (m_selectedItem == int(i))
+    {
+      dc.SetBrush(brush_SELECTED_COLOR);
+      dc.DrawRectangle(x0 + TREE_HORZ_STEPS * d.level, y, w - x0, ROW_HEIGHT);
+      dc.SetTextBackground(brush_SELECTED_COLOR);
+    }
+    else
+    {
+      dc.SetTextBackground(GetBackgroundColour());
+    }
 
-		dc.DrawText(s, Ax0_img + x0 + TREE_HORZ_STEPS * d.level, y);
-		if (m_imageList && icon >= 0)
-			m_imageList->Draw(
-				icon, dc, x0 + TREE_HORZ_STEPS * d.level + 1, y,
-				wxIMAGELIST_DRAW_TRANSPARENT);
-	}
+    dc.DrawText(s, Ax0_img + x0 + TREE_HORZ_STEPS * d.level, y);
+    if (m_imageList && icon >= 0)
+      m_imageList->Draw(
+          icon, dc, x0 + TREE_HORZ_STEPS * d.level + 1, y, wxIMAGELIST_DRAW_TRANSPARENT);
+  }
 
-	// timestamps in time-line:
-	// -----------------------------------------------
-	if (m_rawlog_start == INVALID_TIMESTAMP ||
-		m_rawlog_last == INVALID_TIMESTAMP || last_tim_y <= first_tim_y)
-		return;
+  // timestamps in time-line:
+  // -----------------------------------------------
+  if (m_rawlog_start == INVALID_TIMESTAMP || m_rawlog_last == INVALID_TIMESTAMP ||
+      last_tim_y <= first_tim_y)
+    return;
 
-	const double len_tim =
-		mrpt::system::timeDifference(m_rawlog_start, m_rawlog_last);
+  const double len_tim = mrpt::system::timeDifference(m_rawlog_start, m_rawlog_last);
 
-	std::optional<TTimeStamp> firstTim;
+  std::optional<TTimeStamp> firstTim;
 
-	for (size_t i = first_item; i < last_item; i++)
-	{
-		TNodeData& d = m_tree_nodes[i];
+  for (size_t i = first_item; i < last_item; i++)
+  {
+    TNodeData& d = m_tree_nodes[i];
 
-		if (!d.data) continue;
+    if (!d.data) continue;
 
-		TTimeStamp t_this = INVALID_TIMESTAMP;
-		if (auto obs = std::dynamic_pointer_cast<CObservation>(d.data); obs)
-			t_this = obs->timestamp;
+    TTimeStamp t_this = INVALID_TIMESTAMP;
+    if (auto obs = std::dynamic_pointer_cast<CObservation>(d.data); obs) t_this = obs->timestamp;
 
-		if (t_this == INVALID_TIMESTAMP) continue;
+    if (t_this == INVALID_TIMESTAMP) continue;
 
-		if (!firstTim)
-		{
-			firstTim = t_this;
-			break;
-		}
-	}  // end for i
+    if (!firstTim)
+    {
+      firstTim = t_this;
+      break;
+    }
+  }  // end for i
 
-	// If thumb tracking, show time as text too:
-	if (!m_is_thumb_tracking || !firstTim) return;
+  // If thumb tracking, show time as text too:
+  if (!m_is_thumb_tracking || !firstTim) return;
 
-	using namespace std::string_literals;
+  using namespace std::string_literals;
 
-	const auto t_this_d = mrpt::Clock::toDouble(*firstTim);
-	const auto yb = y0 * ROW_HEIGHT;
+  const auto t_this_d = mrpt::Clock::toDouble(*firstTim);
+  const auto yb = y0 * ROW_HEIGHT;
 
-	// White background:
-	dc.SetPen(*wxBLACK_PEN);
-	const auto colorDarkGray = wxColor(30, 30, 30);
-	dc.SetBrush(wxBrush(colorDarkGray));
-	dc.DrawRoundedRectangle(
-		xc0 * ROW_HEIGHT + 5, y0 * ROW_HEIGHT + 5, w - 30, 4 * ROW_HEIGHT, 4);
+  // White background:
+  dc.SetPen(*wxBLACK_PEN);
+  const auto colorDarkGray = wxColor(30, 30, 30);
+  dc.SetBrush(wxBrush(colorDarkGray));
+  dc.DrawRoundedRectangle(xc0 * ROW_HEIGHT + 5, y0 * ROW_HEIGHT + 5, w - 30, 4 * ROW_HEIGHT, 4);
 
-	dc.SetTextForeground(*wxWHITE);
-	dc.SetTextBackground(colorDarkGray);
-	dc.SetFont(font_normal);
+  dc.SetTextForeground(*wxWHITE);
+  dc.SetTextBackground(colorDarkGray);
+  dc.SetFont(font_normal);
 
-	dc.DrawText(wxString::Format("t=%.03f", t_this_d), 10, yb + 5);
-	dc.DrawText(
-		mrpt::system::dateTimeLocalToString(*firstTim) + " (Local)"s, 10,
-		yb + 20);
-	dc.DrawText(
-		mrpt::system::dateTimeToString(*firstTim) + " (UTC)"s, 10, yb + 35);
-	dc.DrawText(
-		wxString::Format(
-			"%.03f / %.03f [s]",
-			mrpt::system::timeDifference(m_rawlog_start, *firstTim), len_tim),
-		10, yb + 50);
+  dc.DrawText(wxString::Format("t=%.03f", t_this_d), 10, yb + 5);
+  dc.DrawText(mrpt::system::dateTimeLocalToString(*firstTim) + " (Local)"s, 10, yb + 20);
+  dc.DrawText(mrpt::system::dateTimeToString(*firstTim) + " (UTC)"s, 10, yb + 35);
+  dc.DrawText(
+      wxString::Format(
+          "%.03f / %.03f [s]", mrpt::system::timeDifference(m_rawlog_start, *firstTim), len_tim),
+      10, yb + 50);
 }
 
 // Return an icon index depending on the class of the object in the tree view:
 int CRawlogTreeView::iconIndexFromClass(const TRuntimeClassId* class_ID)
 {
-	int iconIndex = -1;
+  int iconIndex = -1;
 
-	if (class_ID == CLASS_ID(CObservation2DRangeScan)) iconIndex = 6;
-	else if (class_ID == CLASS_ID(CObservationImage))
-		iconIndex = 4;
-	else if (class_ID == CLASS_ID(CObservationStereoImages))
-		iconIndex = 5;
-	else if (class_ID == CLASS_ID(CObservationGPS))
-		iconIndex = 7;
-	else if (class_ID == CLASS_ID(CObservationGasSensors))
-		iconIndex = 8;
-	else if (class_ID == CLASS_ID(CObservationWirelessPower))
-		iconIndex = 8;
-	else if (class_ID == CLASS_ID(CObservationRFID))
-		iconIndex = 8;
-	else if (class_ID == CLASS_ID(CObservationOdometry))
-		iconIndex = 9;
-	else if (
-		class_ID == CLASS_ID(CObservation3DRangeScan) ||
-		class_ID == CLASS_ID(CObservationVelodyneScan) ||
-		class_ID == CLASS_ID(CObservationPointCloud))
-		iconIndex = 10;
-	else if (class_ID == CLASS_ID(CObservationIMU))
-		iconIndex = 11;
-	else if (class_ID->derivedFrom(CLASS_ID(CObservation)))
-		iconIndex = 2;	// Default observation
-	else if (class_ID == CLASS_ID(CActionCollection))
-		iconIndex = 0;
-	else if (class_ID == CLASS_ID(CSensoryFrame))
-		iconIndex = 1;
-	else if (class_ID->derivedFrom(CLASS_ID(CAction)))
-		iconIndex = 2;
+  if (class_ID == CLASS_ID(CObservation2DRangeScan))
+    iconIndex = 6;
+  else if (class_ID == CLASS_ID(CObservationImage))
+    iconIndex = 4;
+  else if (class_ID == CLASS_ID(CObservationStereoImages))
+    iconIndex = 5;
+  else if (class_ID == CLASS_ID(CObservationGPS))
+    iconIndex = 7;
+  else if (class_ID == CLASS_ID(CObservationGasSensors))
+    iconIndex = 8;
+  else if (class_ID == CLASS_ID(CObservationWirelessPower))
+    iconIndex = 8;
+  else if (class_ID == CLASS_ID(CObservationRFID))
+    iconIndex = 8;
+  else if (class_ID == CLASS_ID(CObservationOdometry))
+    iconIndex = 9;
+  else if (
+      class_ID == CLASS_ID(CObservation3DRangeScan) ||
+      class_ID == CLASS_ID(CObservationVelodyneScan) ||
+      class_ID == CLASS_ID(CObservationPointCloud))
+    iconIndex = 10;
+  else if (class_ID == CLASS_ID(CObservationIMU))
+    iconIndex = 11;
+  else if (class_ID->derivedFrom(CLASS_ID(CObservation)))
+    iconIndex = 2;  // Default observation
+  else if (class_ID == CLASS_ID(CActionCollection))
+    iconIndex = 0;
+  else if (class_ID == CLASS_ID(CSensoryFrame))
+    iconIndex = 1;
+  else if (class_ID->derivedFrom(CLASS_ID(CAction)))
+    iconIndex = 2;
 
-	return iconIndex;
+  return iconIndex;
 }
 
 /* ------------------------------------------------------------
-						OnLeftDown
+            OnLeftDown
    ------------------------------------------------------------ */
 void CRawlogTreeView::OnLeftDown(wxMouseEvent& e)
 {
-	// The origin of the window:
-	int xc0, y0;
-	GetViewStart(&xc0, &y0);  // Not pixels, but **lines**
+  // The origin of the window:
+  int xc0, y0;
+  GetViewStart(&xc0, &y0);  // Not pixels, but **lines**
 
-	// Determine the clicked row:
-	int nLineThisView = e.GetY() / ROW_HEIGHT;
+  // Determine the clicked row:
+  int nLineThisView = e.GetY() / ROW_HEIGHT;
 
-	size_t sel_item = y0 + nLineThisView;
+  size_t sel_item = y0 + nLineThisView;
 
-	SetSelectedItem(sel_item);
+  SetSelectedItem(sel_item);
 }
 
 void CRawlogTreeView::OnRightDown(wxMouseEvent& event)
 {
-	OnLeftDown(event);
+  OnLeftDown(event);
 
-	if (m_selectedItem < 0) return;
+  if (m_selectedItem < 0) return;
 
-	this->PopupMenu(&m_contextMenu);
+  this->PopupMenu(&m_contextMenu);
 }
 
 /* ------------------------------------------------------------
-						ConnectSelectedItemChange
+            ConnectSelectedItemChange
    ------------------------------------------------------------ */
-void CRawlogTreeView::ConnectSelectedItemChange(
-	const wxRawlogTreeEventFunction& func)
+void CRawlogTreeView::ConnectSelectedItemChange(const wxRawlogTreeEventFunction& func)
 {
-	m_event_select_change = func;
+  m_event_select_change = func;
 }
 
 /* ------------------------------------------------------------
-						SetSelectedItem
+            SetSelectedItem
    ------------------------------------------------------------ */
 void CRawlogTreeView::SetSelectedItem(int sel_item, bool force_refresh)
 {
-	if (sel_item < (int)m_tree_nodes.size())
-	{
-		if (sel_item != m_selectedItem || force_refresh)
-		{
-			m_selectedItem = sel_item;
-			Refresh();
+  if (sel_item < (int)m_tree_nodes.size())
+  {
+    if (sel_item != m_selectedItem || force_refresh)
+    {
+      m_selectedItem = sel_item;
+      Refresh();
 
-			if (m_event_select_change && m_win_parent)
-			{
-				m_event_select_change(
-					m_win_parent, this, evSelected, sel_item,
-					sel_item >= 0 ? m_tree_nodes[sel_item].data
-								  : CSerializable::Ptr());
-			}
-		}
-	}
+      if (m_event_select_change && m_win_parent)
+      {
+        m_event_select_change(
+            m_win_parent, this, evSelected, sel_item,
+            sel_item >= 0 ? m_tree_nodes[sel_item].data : CSerializable::Ptr());
+      }
+    }
+  }
 }
 
 /* ------------------------------------------------------------
-						OnMouseWheel
+            OnMouseWheel
    ------------------------------------------------------------ */
 void CRawlogTreeView::OnMouseWheel(wxMouseEvent& event)
 {
-	int x, y;
-	GetViewStart(&x, &y);
+  int x, y;
+  GetViewStart(&x, &y);
 
-	if (event.GetWheelRotation() > 0) y--;
-	else
-		y++;
+  if (event.GetWheelRotation() > 0)
+    y--;
+  else
+    y++;
 
-	int ly = m_tree_nodes.size();
+  int ly = m_tree_nodes.size();
 
-	if (y >= 0 && y < ly) SetScrollbars(ROW_HEIGHT, ROW_HEIGHT, 50, ly, x, y);
+  if (y >= 0 && y < ly) SetScrollbars(ROW_HEIGHT, ROW_HEIGHT, 50, ly, x, y);
 }
 
 void CRawlogTreeView::ScrollToPercent(double pc)
 {
-	int x, y;
-	GetViewStart(&x, &y);
+  int x, y;
+  GetViewStart(&x, &y);
 
-	int ly = m_tree_nodes.size();
+  int ly = m_tree_nodes.size();
 
-	y = mrpt::round((ly - 1) * pc);
+  y = mrpt::round((ly - 1) * pc);
 
-	if (y >= 0 && y < ly) SetScrollbars(ROW_HEIGHT, ROW_HEIGHT, 50, ly, x, y);
+  if (y >= 0 && y < ly) SetScrollbars(ROW_HEIGHT, ROW_HEIGHT, 50, ly, x, y);
 }
 
 /* ------------------------------------------------------------
-						OnKey
+            OnKey
    ------------------------------------------------------------ */
 void CRawlogTreeView::OnKey(wxKeyEvent& event)
 {
-	int x, y, y0;
-	GetViewStart(&x, &y);
+  int x, y, y0;
+  GetViewStart(&x, &y);
 
-	int w, h;
-	GetSize(&w, &h);
+  int w, h;
+  GetSize(&w, &h);
 
-	int nLinesPerPage = h / ROW_HEIGHT;
+  int nLinesPerPage = h / ROW_HEIGHT;
 
-	y0 = y;
-	int ly = m_tree_nodes.size();
+  y0 = y;
+  int ly = m_tree_nodes.size();
 
-	if (event.GetKeyCode() == WXK_UP)
-	{
-		int sel = m_selectedItem - 1;
-		if (sel >= 0) SetSelectedItem(sel);
-	}
-	else if (event.GetKeyCode() == WXK_DOWN)
-	{
-		int sel = m_selectedItem + 1;
-		SetSelectedItem(sel);
-	}
-	else if (event.GetKeyCode() == WXK_PAGEDOWN)
-	{
-		SetSelectedItem(m_selectedItem + nLinesPerPage);
-		y += nLinesPerPage;
-		if (y > ly) y = ly;
-	}
-	else if (event.GetKeyCode() == WXK_PAGEUP)
-	{
-		int sel = m_selectedItem - nLinesPerPage;
-		if (sel <= 0) sel = 0;
+  if (event.GetKeyCode() == WXK_UP)
+  {
+    int sel = m_selectedItem - 1;
+    if (sel >= 0) SetSelectedItem(sel);
+  }
+  else if (event.GetKeyCode() == WXK_DOWN)
+  {
+    int sel = m_selectedItem + 1;
+    SetSelectedItem(sel);
+  }
+  else if (event.GetKeyCode() == WXK_PAGEDOWN)
+  {
+    SetSelectedItem(m_selectedItem + nLinesPerPage);
+    y += nLinesPerPage;
+    if (y > ly) y = ly;
+  }
+  else if (event.GetKeyCode() == WXK_PAGEUP)
+  {
+    int sel = m_selectedItem - nLinesPerPage;
+    if (sel <= 0) sel = 0;
 
-		SetSelectedItem(sel);
-		y -= nLinesPerPage;
-		if (y < 0) y = 0;
-	}
-	else if (event.GetKeyCode() == WXK_END)
-	{
-		SetSelectedItem(ly - 1);
-		y = ly - 1;
-	}
-	else if (event.GetKeyCode() == WXK_HOME)
-	{
-		SetSelectedItem(0);
-		y = 0;
-	}
-	else
-		event.Skip();
+    SetSelectedItem(sel);
+    y -= nLinesPerPage;
+    if (y < 0) y = 0;
+  }
+  else if (event.GetKeyCode() == WXK_END)
+  {
+    SetSelectedItem(ly - 1);
+    y = ly - 1;
+  }
+  else if (event.GetKeyCode() == WXK_HOME)
+  {
+    SetSelectedItem(0);
+    y = 0;
+  }
+  else
+    event.Skip();
 
-	if (y >= 0 && y < ly && y != y0)
-		SetScrollbars(ROW_HEIGHT, ROW_HEIGHT, 50, ly, x, y);
+  if (y >= 0 && y < ly && y != y0) SetScrollbars(ROW_HEIGHT, ROW_HEIGHT, 50, ly, x, y);
 }
 
 void CRawlogTreeView::onScrollThumbTrack(wxScrollWinEvent& ev)
 {
-	m_is_thumb_tracking = true;
-	ev.Skip();	// keep processing in base class
+  m_is_thumb_tracking = true;
+  ev.Skip();  // keep processing in base class
 }
 void CRawlogTreeView::onScrollThumbRelease(wxScrollWinEvent& ev)
 {
-	m_is_thumb_tracking = false;
-	ev.Skip();	// keep processing in base class
+  m_is_thumb_tracking = false;
+  ev.Skip();  // keep processing in base class
 }
 
 void CRawlogTreeView::onMnuExportToOtherFile(wxCommandEvent&)
 {
-	if (m_selectedItem < 0) return;
+  if (m_selectedItem < 0) return;
 
-	const auto& obj = m_tree_nodes[m_selectedItem].data;
+  const auto& obj = m_tree_nodes[m_selectedItem].data;
 
-	const wxString wildcard =
-		"RawLog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All "
-		"files (*.*)|*.*";
+  const wxString wildcard =
+      "RawLog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All "
+      "files (*.*)|*.*";
 
-	const wxString defaultDir =
-		iniFile->read_string(iniFileSect, "LastDir", ".");
+  const wxString defaultDir = iniFile->read_string(iniFileSect, "LastDir", ".");
 
-	wxFileDialog dialog(
-		this, "Save file...", defaultDir, {}, wildcard,
-		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+  wxFileDialog dialog(
+      this, "Save file...", defaultDir, {}, wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-	if (dialog.ShowModal() != wxID_OK) return;
+  if (dialog.ShowModal() != wxID_OK) return;
 
-	mrpt::io::CFileGZOutputStream fs(dialog.GetPath().ToStdString());
-	auto a = mrpt::serialization::archiveFrom(fs);
+  mrpt::io::CFileGZOutputStream fs(dialog.GetPath().ToStdString());
+  auto a = mrpt::serialization::archiveFrom(fs);
 
-	a << obj;
+  a << obj;
 
-	m_last_exported_rawlog_file = fs.filePathAtUse();
+  m_last_exported_rawlog_file = fs.filePathAtUse();
 }
 
 void CRawlogTreeView::onMnuAppendSaveFile(wxCommandEvent&)
 {
-	if (m_selectedItem < 0) return;
-	if (m_last_exported_rawlog_file.empty()) return;
+  if (m_selectedItem < 0) return;
+  if (m_last_exported_rawlog_file.empty()) return;
 
-	const auto& obj = m_tree_nodes[m_selectedItem].data;
+  const auto& obj = m_tree_nodes[m_selectedItem].data;
 
-	// open GZ file for append:
-	mrpt::io::CFileGZOutputStream fs(
-		m_last_exported_rawlog_file, mrpt::io::OpenMode::APPEND);
+  // open GZ file for append:
+  mrpt::io::CFileGZOutputStream fs(m_last_exported_rawlog_file, mrpt::io::OpenMode::APPEND);
 
-	auto a = mrpt::serialization::archiveFrom(fs);
+  auto a = mrpt::serialization::archiveFrom(fs);
 
-	a << obj;
+  a << obj;
 }

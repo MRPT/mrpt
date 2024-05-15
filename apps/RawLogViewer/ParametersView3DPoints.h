@@ -20,8 +20,8 @@ class ViewOptions3DPoints;
 
 struct ParametersView3DPoints : public mrpt::obs::VisualizationParameters
 {
-	ParametersView3DPoints() = default;
+  ParametersView3DPoints() = default;
 
-	void to_UI(ViewOptions3DPoints& ui) const;
-	void from_UI(const ViewOptions3DPoints& ui);
+  void to_UI(ViewOptions3DPoints& ui) const;
+  void from_UI(const ViewOptions3DPoints& ui);
 };

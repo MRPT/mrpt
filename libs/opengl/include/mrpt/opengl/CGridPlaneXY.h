@@ -22,59 +22,63 @@ namespace mrpt::opengl
  */
 class CGridPlaneXY : public CRenderizableShaderWireFrame
 {
-	DEFINE_SERIALIZABLE(CGridPlaneXY, mrpt::opengl)
+  DEFINE_SERIALIZABLE(CGridPlaneXY, mrpt::opengl)
 
-   protected:
-	float m_xMin, m_xMax;
-	float m_yMin, m_yMax;
-	float m_plane_z;
-	float m_frequency;
+ protected:
+  float m_xMin, m_xMax;
+  float m_yMin, m_yMax;
+  float m_plane_z;
+  float m_frequency;
 
-   public:
-	void setPlaneLimits(float xmin, float xmax, float ymin, float ymax)
-	{
-		m_xMin = xmin;
-		m_xMax = xmax;
-		m_yMin = ymin;
-		m_yMax = ymax;
-		CRenderizable::notifyChange();
-	}
+ public:
+  void setPlaneLimits(float xmin, float xmax, float ymin, float ymax)
+  {
+    m_xMin = xmin;
+    m_xMax = xmax;
+    m_yMin = ymin;
+    m_yMax = ymax;
+    CRenderizable::notifyChange();
+  }
 
-	void getPlaneLimits(
-		float& xmin, float& xmax, float& ymin, float& ymax) const
-	{
-		xmin = m_xMin;
-		xmax = m_xMax;
-		ymin = m_yMin;
-		ymax = m_yMax;
-	}
+  void getPlaneLimits(float& xmin, float& xmax, float& ymin, float& ymax) const
+  {
+    xmin = m_xMin;
+    xmax = m_xMax;
+    ymin = m_yMin;
+    ymax = m_yMax;
+  }
 
-	void setPlaneZcoord(float z)
-	{
-		CRenderizable::notifyChange();
-		m_plane_z = z;
-	}
-	float getPlaneZcoord() const { return m_plane_z; }
-	void setGridFrequency(float freq)
-	{
-		ASSERT_(freq > 0);
-		m_frequency = freq;
-		CRenderizable::notifyChange();
-	}
-	float getGridFrequency() const { return m_frequency; }
+  void setPlaneZcoord(float z)
+  {
+    CRenderizable::notifyChange();
+    m_plane_z = z;
+  }
+  float getPlaneZcoord() const { return m_plane_z; }
+  void setGridFrequency(float freq)
+  {
+    ASSERT_(freq > 0);
+    m_frequency = freq;
+    CRenderizable::notifyChange();
+  }
+  float getGridFrequency() const { return m_frequency; }
 
-	void onUpdateBuffers_Wireframe() override;
+  void onUpdateBuffers_Wireframe() override;
 
-	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
+  mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
-	/** Constructor  */
-	CGridPlaneXY(
-		float xMin = -10, float xMax = 10, float yMin = -10, float yMax = 10,
-		float z = 0, float frequency = 1, float lineWidth = 1.3f,
-		bool antiAliasing = true);
+  /** Constructor  */
+  CGridPlaneXY(
+      float xMin = -10,
+      float xMax = 10,
+      float yMin = -10,
+      float yMax = 10,
+      float z = 0,
+      float frequency = 1,
+      float lineWidth = 1.3f,
+      bool antiAliasing = true);
 
-	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CGridPlaneXY() override = default;
+  /** Private, virtual destructor: only can be deleted from smart pointers */
+  ~CGridPlaneXY() override = default;
 };
 
 }  // namespace mrpt::opengl

@@ -93,1043 +93,928 @@ std::vector<CObservation::Ptr> displayedImgs(3);
 
 CFormPlayVideo::CFormPlayVideo(wxWindow* parent, wxWindowID id)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	m_nowPlaying = false;
-	firstFit = true;
+  m_nowPlaying = false;
+  firstFit = true;
 
-	//(*Initialize(CFormPlayVideo)
-	wxFlexGridSizer* FlexGridSizer4;
-	wxFlexGridSizer* FlexGridSizer10;
-	wxFlexGridSizer* FlexGridSizer3;
-	wxFlexGridSizer* FlexGridSizer5;
-	wxFlexGridSizer* FlexGridSizer9;
-	wxFlexGridSizer* FlexGridSizer7;
-	wxFlexGridSizer* FlexGridSizer12;
-	wxFlexGridSizer* FlexGridSizer11;
+  //(*Initialize(CFormPlayVideo)
+  wxFlexGridSizer* FlexGridSizer4;
+  wxFlexGridSizer* FlexGridSizer10;
+  wxFlexGridSizer* FlexGridSizer3;
+  wxFlexGridSizer* FlexGridSizer5;
+  wxFlexGridSizer* FlexGridSizer9;
+  wxFlexGridSizer* FlexGridSizer7;
+  wxFlexGridSizer* FlexGridSizer12;
+  wxFlexGridSizer* FlexGridSizer11;
 
-	Create(
-		parent, wxID_ANY, _("Play images in a Rawlog as a video"),
-		wxDefaultPosition, wxDefaultSize,
-		wxCAPTION | wxDEFAULT_DIALOG_STYLE | wxSYSTEM_MENU | wxRESIZE_BORDER |
-			wxCLOSE_BOX | wxMAXIMIZE_BOX,
-		_T("wxID_ANY"));
-	FlexGridSizer1 = new wxFlexGridSizer(5, 1, 0, 0);
-	FlexGridSizer1->AddGrowableCol(0);
-	FlexGridSizer1->AddGrowableRow(4);
-	StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Apply to:"));
-	BoxSizer4 = new wxBoxSizer(wxVERTICAL);
-	BoxSizer5 = new wxBoxSizer(wxHORIZONTAL);
-	FlexGridSizer6 = new wxFlexGridSizer(2, 4, 0, 0);
-	FlexGridSizer6->AddGrowableCol(2);
-	rbLoaded = new wxRadioButton(
-		this, ID_RADIOBUTTON1, _("Loaded rawlog"), wxDefaultPosition,
-		wxDefaultSize, 0, wxDefaultValidator, _T("ID_RADIOBUTTON1"));
-	rbLoaded->SetValue(true);
-	FlexGridSizer6->Add(
-		rbLoaded, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer6->Add(-1, -1, 1, wxEXPAND, 5);
-	FlexGridSizer6->Add(-1, -1, 1, wxEXPAND, 5);
-	FlexGridSizer6->Add(-1, -1, 1, wxEXPAND, 5);
-	rbFile = new wxRadioButton(
-		this, ID_RADIOBUTTON2, _("Rawlog in file:"), wxDefaultPosition,
-		wxDefaultSize, 0, wxDefaultValidator, _T("ID_RADIOBUTTON2"));
-	FlexGridSizer6->Add(
-		rbFile, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
-	StaticText22 = new wxStaticText(
-		this, ID_STATICTEXT22, _("Input file:"), wxDefaultPosition,
-		wxDefaultSize, 0, _T("ID_STATICTEXT22"));
-	FlexGridSizer6->Add(
-		StaticText22, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
-	edFile = new wxTextCtrl(
-		this, ID_TEXTCTRL11, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0,
-		wxDefaultValidator, _T("ID_TEXTCTRL11"));
-	FlexGridSizer6->Add(edFile, 1, wxEXPAND, 5);
-	btnPickInput = new wxButton(
-		this, ID_BUTTON4, _("Select..."), wxDefaultPosition, wxDefaultSize, 0,
-		wxDefaultValidator, _T("ID_BUTTON4"));
-	FlexGridSizer6->Add(
-		btnPickInput, 1,
-		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 0);
-	BoxSizer5->Add(FlexGridSizer6, 1, wxEXPAND, 0);
-	BoxSizer4->Add(BoxSizer5, 1, wxEXPAND, 0);
-	StaticBoxSizer1->Add(BoxSizer4, 1, wxEXPAND, 0);
-	FlexGridSizer1->Add(StaticBoxSizer1, 1, wxEXPAND, 0);
-	FlexGridSizer9 = new wxFlexGridSizer(3, 3, 0, 0);
-	cbOrderByYaw = new wxCheckBox(
-		this, ID_CHECKBOX1,
-		_("Order images by Yaw (<0:left,=0:middle,>0:right)"),
-		wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
-		_T("ID_CHECKBOX1"));
-	cbOrderByYaw->SetValue(false);
-	FlexGridSizer9->Add(
-		cbOrderByYaw, 1,
-		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	cbOrderByY = new wxCheckBox(
-		this, ID_CHECKBOX2, _("Order by \'y\' (<0: left, >0:right)"),
-		wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
-		_T("ID_CHECKBOX2"));
-	cbOrderByY->SetValue(false);
-	FlexGridSizer9->Add(
-		cbOrderByY, 1,
-		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	cbReduceLarge = new wxCheckBox(
-		this, ID_CHECKBOX3, _("Reduce large images (w>640px)"),
-		wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
-		_T("ID_CHECKBOX3"));
-	cbReduceLarge->SetValue(true);
-	FlexGridSizer9->Add(
-		cbReduceLarge, 1,
-		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	cbDrawStereoRules = new wxCheckBox(
-		this, ID_CHECKBOX4, _("Draw horizontal rules\?"), wxDefaultPosition,
-		wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX4"));
-	cbDrawStereoRules->SetValue(false);
-	FlexGridSizer9->Add(
-		cbDrawStereoRules, 1,
-		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	StaticText3 = new wxStaticText(
-		this, ID_STATICTEXT8, _("Rule vertical spacing (pixels):"),
-		wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT8"));
-	FlexGridSizer9->Add(
-		StaticText3, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
-	edHorzRuleSpace = new wxSpinCtrl(
-		this, ID_SPINCTRL2, _T("50"), wxDefaultPosition, wxDefaultSize, 0, 3,
-		1000, 50, _T("ID_SPINCTRL2"));
-	edHorzRuleSpace->SetValue(_T("50"));
-	FlexGridSizer9->Add(
-		edHorzRuleSpace, 1,
-		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	StaticText2 = new wxStaticText(
-		this, ID_STATICTEXT6,
-		_("Directory for delayed-load (external) images:"), wxDefaultPosition,
-		wxDefaultSize, 0, _T("ID_STATICTEXT6"));
-	FlexGridSizer9->Add(
-		StaticText2, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
-	cbImageDirs = new wxComboBox(
-		this, ID_COMBOBOX1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0,
-		nullptr, wxCB_READONLY | wxCB_DROPDOWN, wxDefaultValidator,
-		_T("ID_COMBOBOX1"));
-	FlexGridSizer9->Add(
-		cbImageDirs, 1,
-		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer1->Add(FlexGridSizer9, 1, wxEXPAND, 0);
-	FlexGridSizer8 = new wxFlexGridSizer(2, 7, 0, 0);
-	FlexGridSizer8->AddGrowableCol(5);
-	btnPlay = new wxButton(
-		this, ID_BUTTON2, _("Play"), wxDefaultPosition, wxDefaultSize, 0,
-		wxDefaultValidator, _T("ID_BUTTON2"));
-	FlexGridSizer8->Add(
-		btnPlay, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
-		5);
-	btnStop = new wxButton(
-		this, ID_BUTTON3, _("Stop"), wxDefaultPosition, wxDefaultSize, 0,
-		wxDefaultValidator, _T("ID_BUTTON3"));
-	btnStop->Disable();
-	FlexGridSizer8->Add(
-		btnStop, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer8->Add(-1, -1, 1, wxEXPAND, 5);
-	StaticText6 = new wxStaticText(
-		this, ID_STATICTEXT7, _("Additional delay (ms):"), wxDefaultPosition,
-		wxDefaultSize, 0, _T("ID_STATICTEXT7"));
-	FlexGridSizer8->Add(
-		StaticText6, 1,
-		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	edDelay = new wxTextCtrl(
-		this, ID_TEXTCTRL2, _("10"), wxDefaultPosition, wxSize(61, 21), 0,
-		wxDefaultValidator, _T("ID_TEXTCTRL2"));
-	FlexGridSizer8->Add(
-		edDelay, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
-		5);
-	FlexGridSizer8->Add(-1, -1, 1, wxEXPAND, 5);
-	btnClose = new wxButton(
-		this, ID_BUTTON5, _("CLOSE"), wxDefaultPosition, wxDefaultSize, 0,
-		wxDefaultValidator, _T("ID_BUTTON5"));
-	FlexGridSizer8->Add(
-		btnClose, 1,
-		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer1->Add(FlexGridSizer8, 1, wxEXPAND, 0);
-	FlexGridSizer4 = new wxFlexGridSizer(2, 1, 0, 0);
-	FlexGridSizer4->AddGrowableCol(0);
-	FlexGridSizer5 = new wxFlexGridSizer(1, 1, 0, 0);
-	FlexGridSizer5->AddGrowableCol(0);
-	progressBar = new wxSlider(
-		this, ID_SLIDER1, 0, 0, 100, wxDefaultPosition, wxDefaultSize, 0,
-		wxDefaultValidator, _T("ID_SLIDER1"));
-	FlexGridSizer5->Add(progressBar, 1, wxEXPAND, 5);
-	FlexGridSizer4->Add(FlexGridSizer5, 1, wxEXPAND, 0);
-	FlexGridSizer7 = new wxFlexGridSizer(1, 4, 0, 0);
-	FlexGridSizer7->AddGrowableCol(3);
-	StaticText1 = new wxStaticText(
-		this, ID_STATICTEXT1, _("Rawlog index:"), wxDefaultPosition,
-		wxDefaultSize, 0, _T("ID_STATICTEXT1"));
-	FlexGridSizer7->Add(
-		StaticText1, 1,
-		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	edIndex = new wxSpinCtrl(
-		this, ID_SPINCTRL1, _T("0"), wxDefaultPosition, wxDefaultSize, 0, 0,
-		100, 0, _T("ID_SPINCTRL1"));
-	edIndex->SetValue(_T("0"));
-	FlexGridSizer7->Add(
-		edIndex, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
-		5);
-	btnJump = new wxButton(
-		this, ID_BUTTON1, _("Jump"), wxDefaultPosition, wxDefaultSize, 0,
-		wxDefaultValidator, _T("ID_BUTTON1"));
-	FlexGridSizer7->Add(
-		btnJump, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
-		5);
-	lbProgress = new wxStaticText(
-		this, ID_STATICTEXT3, _("(Progress)"), wxDefaultPosition, wxDefaultSize,
-		0, _T("ID_STATICTEXT3"));
-	FlexGridSizer7->Add(
-		lbProgress, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer4->Add(FlexGridSizer7, 1, wxEXPAND, 0);
-	FlexGridSizer1->Add(FlexGridSizer4, 1, wxEXPAND, 0);
-	FlexGridSizer3 = new wxFlexGridSizer(2, 3, 0, 0);
-	FlexGridSizer3->AddGrowableCol(0);
-	FlexGridSizer3->AddGrowableCol(1);
-	FlexGridSizer3->AddGrowableCol(2);
-	FlexGridSizer3->AddGrowableRow(1);
-	FlexGridSizer10 = new wxFlexGridSizer(1, 2, 0, 0);
-	FlexGridSizer10->AddGrowableCol(0);
-	lbCam1 = new wxStaticText(
-		this, ID_STATICTEXT5, _("Cam1\?\?"), wxDefaultPosition, wxDefaultSize,
-		0, _T("ID_STATICTEXT5"));
-	FlexGridSizer10->Add(
-		lbCam1, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
-		5);
-	btnSaveCam1 = new wxBitmapButton(
-		this, ID_BITMAPBUTTON1,
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")), wxART_BUTTON),
-		wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW, wxDefaultValidator,
-		_T("ID_BITMAPBUTTON1"));
-	btnSaveCam1->SetDefault();
-	FlexGridSizer10->Add(btnSaveCam1, 1, wxEXPAND, 5);
-	FlexGridSizer3->Add(FlexGridSizer10, 1, wxEXPAND, 0);
-	FlexGridSizer11 = new wxFlexGridSizer(1, 2, 0, 0);
-	FlexGridSizer11->AddGrowableCol(0);
-	lbCam2 = new wxStaticText(
-		this, ID_STATICTEXT4, _("Cam2\?\?"), wxDefaultPosition, wxDefaultSize,
-		0, _T("ID_STATICTEXT4"));
-	FlexGridSizer11->Add(
-		lbCam2, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
-		5);
-	btnSaveCam2 = new wxBitmapButton(
-		this, ID_BITMAPBUTTON2,
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")), wxART_BUTTON),
-		wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW, wxDefaultValidator,
-		_T("ID_BITMAPBUTTON2"));
-	btnSaveCam2->SetDefault();
-	FlexGridSizer11->Add(btnSaveCam2, 1, wxEXPAND, 5);
-	FlexGridSizer3->Add(FlexGridSizer11, 1, wxEXPAND, 0);
-	FlexGridSizer12 = new wxFlexGridSizer(1, 2, 0, 0);
-	FlexGridSizer12->AddGrowableCol(0);
-	lbCam3 = new wxStaticText(
-		this, ID_STATICTEXT2, _("Cam3\?\?"), wxDefaultPosition, wxDefaultSize,
-		0, _T("ID_STATICTEXT2"));
-	FlexGridSizer12->Add(
-		lbCam3, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
-		5);
-	btnSaveCam3 = new wxBitmapButton(
-		this, ID_BITMAPBUTTON3,
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")), wxART_BUTTON),
-		wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW, wxDefaultValidator,
-		_T("ID_BITMAPBUTTON3"));
-	btnSaveCam3->SetDefault();
-	FlexGridSizer12->Add(btnSaveCam3, 1, wxEXPAND, 5);
-	FlexGridSizer3->Add(FlexGridSizer12, 1, wxEXPAND, 0);
-	pnLeft = new wxPanel(
-		this, ID_PANEL3, wxDefaultPosition, wxSize(320, 240),
-		wxSUNKEN_BORDER | wxTAB_TRAVERSAL, _T("ID_PANEL3"));
-	pnLeft->SetMinSize(wxSize(-1, 240));
-	FlexGridSizer3->Add(pnLeft, 1, wxEXPAND, 1);
-	pnRight = new wxPanel(
-		this, ID_PANEL4, wxDefaultPosition, wxSize(320, 240),
-		wxSUNKEN_BORDER | wxTAB_TRAVERSAL, _T("ID_PANEL4"));
-	pnRight->SetMinSize(wxSize(-1, 240));
-	FlexGridSizer3->Add(pnRight, 1, wxEXPAND, 1);
-	pnRight2 = new wxPanel(
-		this, ID_PANEL2, wxDefaultPosition, wxSize(320, 240),
-		wxSUNKEN_BORDER | wxTAB_TRAVERSAL, _T("ID_PANEL2"));
-	pnRight2->SetMinSize(wxSize(-1, 240));
-	FlexGridSizer3->Add(pnRight2, 1, wxEXPAND, 1);
-	FlexGridSizer1->Add(FlexGridSizer3, 1, wxEXPAND, 0);
-	SetSizer(FlexGridSizer1);
-	FlexGridSizer1->Fit(this);
-	FlexGridSizer1->SetSizeHints(this);
-	Center();
+  Create(
+      parent, wxID_ANY, _("Play images in a Rawlog as a video"), wxDefaultPosition, wxDefaultSize,
+      wxCAPTION | wxDEFAULT_DIALOG_STYLE | wxSYSTEM_MENU | wxRESIZE_BORDER | wxCLOSE_BOX |
+          wxMAXIMIZE_BOX,
+      _T("wxID_ANY"));
+  FlexGridSizer1 = new wxFlexGridSizer(5, 1, 0, 0);
+  FlexGridSizer1->AddGrowableCol(0);
+  FlexGridSizer1->AddGrowableRow(4);
+  StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Apply to:"));
+  BoxSizer4 = new wxBoxSizer(wxVERTICAL);
+  BoxSizer5 = new wxBoxSizer(wxHORIZONTAL);
+  FlexGridSizer6 = new wxFlexGridSizer(2, 4, 0, 0);
+  FlexGridSizer6->AddGrowableCol(2);
+  rbLoaded = new wxRadioButton(
+      this, ID_RADIOBUTTON1, _("Loaded rawlog"), wxDefaultPosition, wxDefaultSize, 0,
+      wxDefaultValidator, _T("ID_RADIOBUTTON1"));
+  rbLoaded->SetValue(true);
+  FlexGridSizer6->Add(rbLoaded, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
+  FlexGridSizer6->Add(-1, -1, 1, wxEXPAND, 5);
+  FlexGridSizer6->Add(-1, -1, 1, wxEXPAND, 5);
+  FlexGridSizer6->Add(-1, -1, 1, wxEXPAND, 5);
+  rbFile = new wxRadioButton(
+      this, ID_RADIOBUTTON2, _("Rawlog in file:"), wxDefaultPosition, wxDefaultSize, 0,
+      wxDefaultValidator, _T("ID_RADIOBUTTON2"));
+  FlexGridSizer6->Add(rbFile, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
+  StaticText22 = new wxStaticText(
+      this, ID_STATICTEXT22, _("Input file:"), wxDefaultPosition, wxDefaultSize, 0,
+      _T("ID_STATICTEXT22"));
+  FlexGridSizer6->Add(StaticText22, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
+  edFile = new wxTextCtrl(
+      this, ID_TEXTCTRL11, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
+      _T("ID_TEXTCTRL11"));
+  FlexGridSizer6->Add(edFile, 1, wxEXPAND, 5);
+  btnPickInput = new wxButton(
+      this, ID_BUTTON4, _("Select..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
+      _T("ID_BUTTON4"));
+  FlexGridSizer6->Add(
+      btnPickInput, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 0);
+  BoxSizer5->Add(FlexGridSizer6, 1, wxEXPAND, 0);
+  BoxSizer4->Add(BoxSizer5, 1, wxEXPAND, 0);
+  StaticBoxSizer1->Add(BoxSizer4, 1, wxEXPAND, 0);
+  FlexGridSizer1->Add(StaticBoxSizer1, 1, wxEXPAND, 0);
+  FlexGridSizer9 = new wxFlexGridSizer(3, 3, 0, 0);
+  cbOrderByYaw = new wxCheckBox(
+      this, ID_CHECKBOX1, _("Order images by Yaw (<0:left,=0:middle,>0:right)"), wxDefaultPosition,
+      wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
+  cbOrderByYaw->SetValue(false);
+  FlexGridSizer9->Add(
+      cbOrderByYaw, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+  cbOrderByY = new wxCheckBox(
+      this, ID_CHECKBOX2, _("Order by \'y\' (<0: left, >0:right)"), wxDefaultPosition,
+      wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
+  cbOrderByY->SetValue(false);
+  FlexGridSizer9->Add(
+      cbOrderByY, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+  cbReduceLarge = new wxCheckBox(
+      this, ID_CHECKBOX3, _("Reduce large images (w>640px)"), wxDefaultPosition, wxDefaultSize, 0,
+      wxDefaultValidator, _T("ID_CHECKBOX3"));
+  cbReduceLarge->SetValue(true);
+  FlexGridSizer9->Add(
+      cbReduceLarge, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+  cbDrawStereoRules = new wxCheckBox(
+      this, ID_CHECKBOX4, _("Draw horizontal rules\?"), wxDefaultPosition, wxDefaultSize, 0,
+      wxDefaultValidator, _T("ID_CHECKBOX4"));
+  cbDrawStereoRules->SetValue(false);
+  FlexGridSizer9->Add(
+      cbDrawStereoRules, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+  StaticText3 = new wxStaticText(
+      this, ID_STATICTEXT8, _("Rule vertical spacing (pixels):"), wxDefaultPosition, wxDefaultSize,
+      0, _T("ID_STATICTEXT8"));
+  FlexGridSizer9->Add(StaticText3, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
+  edHorzRuleSpace = new wxSpinCtrl(
+      this, ID_SPINCTRL2, _T("50"), wxDefaultPosition, wxDefaultSize, 0, 3, 1000, 50,
+      _T("ID_SPINCTRL2"));
+  edHorzRuleSpace->SetValue(_T("50"));
+  FlexGridSizer9->Add(
+      edHorzRuleSpace, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+  StaticText2 = new wxStaticText(
+      this, ID_STATICTEXT6, _("Directory for delayed-load (external) images:"), wxDefaultPosition,
+      wxDefaultSize, 0, _T("ID_STATICTEXT6"));
+  FlexGridSizer9->Add(StaticText2, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
+  cbImageDirs = new wxComboBox(
+      this, ID_COMBOBOX1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, nullptr,
+      wxCB_READONLY | wxCB_DROPDOWN, wxDefaultValidator, _T("ID_COMBOBOX1"));
+  FlexGridSizer9->Add(
+      cbImageDirs, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+  FlexGridSizer1->Add(FlexGridSizer9, 1, wxEXPAND, 0);
+  FlexGridSizer8 = new wxFlexGridSizer(2, 7, 0, 0);
+  FlexGridSizer8->AddGrowableCol(5);
+  btnPlay = new wxButton(
+      this, ID_BUTTON2, _("Play"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
+      _T("ID_BUTTON2"));
+  FlexGridSizer8->Add(btnPlay, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+  btnStop = new wxButton(
+      this, ID_BUTTON3, _("Stop"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
+      _T("ID_BUTTON3"));
+  btnStop->Disable();
+  FlexGridSizer8->Add(btnStop, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
+  FlexGridSizer8->Add(-1, -1, 1, wxEXPAND, 5);
+  StaticText6 = new wxStaticText(
+      this, ID_STATICTEXT7, _("Additional delay (ms):"), wxDefaultPosition, wxDefaultSize, 0,
+      _T("ID_STATICTEXT7"));
+  FlexGridSizer8->Add(
+      StaticText6, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+  edDelay = new wxTextCtrl(
+      this, ID_TEXTCTRL2, _("10"), wxDefaultPosition, wxSize(61, 21), 0, wxDefaultValidator,
+      _T("ID_TEXTCTRL2"));
+  FlexGridSizer8->Add(edDelay, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+  FlexGridSizer8->Add(-1, -1, 1, wxEXPAND, 5);
+  btnClose = new wxButton(
+      this, ID_BUTTON5, _("CLOSE"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
+      _T("ID_BUTTON5"));
+  FlexGridSizer8->Add(btnClose, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+  FlexGridSizer1->Add(FlexGridSizer8, 1, wxEXPAND, 0);
+  FlexGridSizer4 = new wxFlexGridSizer(2, 1, 0, 0);
+  FlexGridSizer4->AddGrowableCol(0);
+  FlexGridSizer5 = new wxFlexGridSizer(1, 1, 0, 0);
+  FlexGridSizer5->AddGrowableCol(0);
+  progressBar = new wxSlider(
+      this, ID_SLIDER1, 0, 0, 100, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
+      _T("ID_SLIDER1"));
+  FlexGridSizer5->Add(progressBar, 1, wxEXPAND, 5);
+  FlexGridSizer4->Add(FlexGridSizer5, 1, wxEXPAND, 0);
+  FlexGridSizer7 = new wxFlexGridSizer(1, 4, 0, 0);
+  FlexGridSizer7->AddGrowableCol(3);
+  StaticText1 = new wxStaticText(
+      this, ID_STATICTEXT1, _("Rawlog index:"), wxDefaultPosition, wxDefaultSize, 0,
+      _T("ID_STATICTEXT1"));
+  FlexGridSizer7->Add(
+      StaticText1, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+  edIndex = new wxSpinCtrl(
+      this, ID_SPINCTRL1, _T("0"), wxDefaultPosition, wxDefaultSize, 0, 0, 100, 0,
+      _T("ID_SPINCTRL1"));
+  edIndex->SetValue(_T("0"));
+  FlexGridSizer7->Add(edIndex, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+  btnJump = new wxButton(
+      this, ID_BUTTON1, _("Jump"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
+      _T("ID_BUTTON1"));
+  FlexGridSizer7->Add(btnJump, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+  lbProgress = new wxStaticText(
+      this, ID_STATICTEXT3, _("(Progress)"), wxDefaultPosition, wxDefaultSize, 0,
+      _T("ID_STATICTEXT3"));
+  FlexGridSizer7->Add(lbProgress, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
+  FlexGridSizer4->Add(FlexGridSizer7, 1, wxEXPAND, 0);
+  FlexGridSizer1->Add(FlexGridSizer4, 1, wxEXPAND, 0);
+  FlexGridSizer3 = new wxFlexGridSizer(2, 3, 0, 0);
+  FlexGridSizer3->AddGrowableCol(0);
+  FlexGridSizer3->AddGrowableCol(1);
+  FlexGridSizer3->AddGrowableCol(2);
+  FlexGridSizer3->AddGrowableRow(1);
+  FlexGridSizer10 = new wxFlexGridSizer(1, 2, 0, 0);
+  FlexGridSizer10->AddGrowableCol(0);
+  lbCam1 = new wxStaticText(
+      this, ID_STATICTEXT5, _("Cam1\?\?"), wxDefaultPosition, wxDefaultSize, 0,
+      _T("ID_STATICTEXT5"));
+  FlexGridSizer10->Add(lbCam1, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+  btnSaveCam1 = new wxBitmapButton(
+      this, ID_BITMAPBUTTON1,
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")), wxART_BUTTON),
+      wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW, wxDefaultValidator, _T("ID_BITMAPBUTTON1"));
+  btnSaveCam1->SetDefault();
+  FlexGridSizer10->Add(btnSaveCam1, 1, wxEXPAND, 5);
+  FlexGridSizer3->Add(FlexGridSizer10, 1, wxEXPAND, 0);
+  FlexGridSizer11 = new wxFlexGridSizer(1, 2, 0, 0);
+  FlexGridSizer11->AddGrowableCol(0);
+  lbCam2 = new wxStaticText(
+      this, ID_STATICTEXT4, _("Cam2\?\?"), wxDefaultPosition, wxDefaultSize, 0,
+      _T("ID_STATICTEXT4"));
+  FlexGridSizer11->Add(lbCam2, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+  btnSaveCam2 = new wxBitmapButton(
+      this, ID_BITMAPBUTTON2,
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")), wxART_BUTTON),
+      wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW, wxDefaultValidator, _T("ID_BITMAPBUTTON2"));
+  btnSaveCam2->SetDefault();
+  FlexGridSizer11->Add(btnSaveCam2, 1, wxEXPAND, 5);
+  FlexGridSizer3->Add(FlexGridSizer11, 1, wxEXPAND, 0);
+  FlexGridSizer12 = new wxFlexGridSizer(1, 2, 0, 0);
+  FlexGridSizer12->AddGrowableCol(0);
+  lbCam3 = new wxStaticText(
+      this, ID_STATICTEXT2, _("Cam3\?\?"), wxDefaultPosition, wxDefaultSize, 0,
+      _T("ID_STATICTEXT2"));
+  FlexGridSizer12->Add(lbCam3, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+  btnSaveCam3 = new wxBitmapButton(
+      this, ID_BITMAPBUTTON3,
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")), wxART_BUTTON),
+      wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW, wxDefaultValidator, _T("ID_BITMAPBUTTON3"));
+  btnSaveCam3->SetDefault();
+  FlexGridSizer12->Add(btnSaveCam3, 1, wxEXPAND, 5);
+  FlexGridSizer3->Add(FlexGridSizer12, 1, wxEXPAND, 0);
+  pnLeft = new wxPanel(
+      this, ID_PANEL3, wxDefaultPosition, wxSize(320, 240), wxSUNKEN_BORDER | wxTAB_TRAVERSAL,
+      _T("ID_PANEL3"));
+  pnLeft->SetMinSize(wxSize(-1, 240));
+  FlexGridSizer3->Add(pnLeft, 1, wxEXPAND, 1);
+  pnRight = new wxPanel(
+      this, ID_PANEL4, wxDefaultPosition, wxSize(320, 240), wxSUNKEN_BORDER | wxTAB_TRAVERSAL,
+      _T("ID_PANEL4"));
+  pnRight->SetMinSize(wxSize(-1, 240));
+  FlexGridSizer3->Add(pnRight, 1, wxEXPAND, 1);
+  pnRight2 = new wxPanel(
+      this, ID_PANEL2, wxDefaultPosition, wxSize(320, 240), wxSUNKEN_BORDER | wxTAB_TRAVERSAL,
+      _T("ID_PANEL2"));
+  pnRight2->SetMinSize(wxSize(-1, 240));
+  FlexGridSizer3->Add(pnRight2, 1, wxEXPAND, 1);
+  FlexGridSizer1->Add(FlexGridSizer3, 1, wxEXPAND, 0);
+  SetSizer(FlexGridSizer1);
+  FlexGridSizer1->Fit(this);
+  FlexGridSizer1->SetSizeHints(this);
+  Center();
 
-	Bind(
-		wxEVT_RADIOBUTTON, &CFormPlayVideo::OnrbLoadedSelect, this,
-		ID_RADIOBUTTON1);
-	Bind(
-		wxEVT_RADIOBUTTON, &CFormPlayVideo::OnrbFileSelect, this,
-		ID_RADIOBUTTON2);
-	Bind(wxEVT_BUTTON, &CFormPlayVideo::OnbtnPickClick, this, ID_BUTTON4);
-	Bind(
-		wxEVT_COMBOBOX, &CFormPlayVideo::OncbImageDirsSelect, this,
-		ID_COMBOBOX1);
-	Bind(wxEVT_BUTTON, &CFormPlayVideo::OnbtnPlayClick, this, ID_BUTTON2);
-	Bind(wxEVT_BUTTON, &CFormPlayVideo::OnbtnStopClick, this, ID_BUTTON3);
-	Bind(wxEVT_BUTTON, &CFormPlayVideo::OnbtnCloseClick, this, ID_BUTTON5);
-	Bind(
-		wxEVT_SCROLL_THUMBTRACK, &CFormPlayVideo::OnprogressBarCmdScrollChanged,
-		this, ID_SLIDER1);
-	Bind(
-		wxEVT_SCROLL_CHANGED, &CFormPlayVideo::OnprogressBarCmdScrollChanged,
-		this, ID_SLIDER1);
-	Bind(
-		wxEVT_BUTTON, &CFormPlayVideo::OnbtnSaveCam1Click, this,
-		ID_BITMAPBUTTON1);
-	Bind(
-		wxEVT_BUTTON, &CFormPlayVideo::OnbtnSaveCam2Click, this,
-		ID_BITMAPBUTTON2);
-	Bind(
-		wxEVT_BUTTON, &CFormPlayVideo::OnbtnSaveCam3Click, this,
-		ID_BITMAPBUTTON3);
-	Bind(wxEVT_INIT_DIALOG, &CFormPlayVideo::OnInit, this, wxID_ANY);
-	//*)
+  Bind(wxEVT_RADIOBUTTON, &CFormPlayVideo::OnrbLoadedSelect, this, ID_RADIOBUTTON1);
+  Bind(wxEVT_RADIOBUTTON, &CFormPlayVideo::OnrbFileSelect, this, ID_RADIOBUTTON2);
+  Bind(wxEVT_BUTTON, &CFormPlayVideo::OnbtnPickClick, this, ID_BUTTON4);
+  Bind(wxEVT_COMBOBOX, &CFormPlayVideo::OncbImageDirsSelect, this, ID_COMBOBOX1);
+  Bind(wxEVT_BUTTON, &CFormPlayVideo::OnbtnPlayClick, this, ID_BUTTON2);
+  Bind(wxEVT_BUTTON, &CFormPlayVideo::OnbtnStopClick, this, ID_BUTTON3);
+  Bind(wxEVT_BUTTON, &CFormPlayVideo::OnbtnCloseClick, this, ID_BUTTON5);
+  Bind(wxEVT_SCROLL_THUMBTRACK, &CFormPlayVideo::OnprogressBarCmdScrollChanged, this, ID_SLIDER1);
+  Bind(wxEVT_SCROLL_CHANGED, &CFormPlayVideo::OnprogressBarCmdScrollChanged, this, ID_SLIDER1);
+  Bind(wxEVT_BUTTON, &CFormPlayVideo::OnbtnSaveCam1Click, this, ID_BITMAPBUTTON1);
+  Bind(wxEVT_BUTTON, &CFormPlayVideo::OnbtnSaveCam2Click, this, ID_BITMAPBUTTON2);
+  Bind(wxEVT_BUTTON, &CFormPlayVideo::OnbtnSaveCam3Click, this, ID_BITMAPBUTTON3);
+  Bind(wxEVT_INIT_DIALOG, &CFormPlayVideo::OnInit, this, wxID_ANY);
+  //*)
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 CFormPlayVideo::~CFormPlayVideo()
 {
-	//(*Destroy(CFormPlayVideo)
-	//*)
+  //(*Destroy(CFormPlayVideo)
+  //*)
 }
 
 // Pick a file:
 void CFormPlayVideo::OnbtnPickClick(wxCommandEvent& event)
 {
-	wxString caption = wxT("Choose a file to open");
-	wxString wildcard =
-		wxT("RawLog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All "
-			"files (*.*)|*.*");
+  wxString caption = wxT("Choose a file to open");
+  wxString wildcard =
+      wxT("RawLog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All "
+          "files (*.*)|*.*");
 
-	wxString defaultDir(
-		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+  wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 
-	wxString defaultFilename;
-	wxFileDialog dialog(
-		this, caption, defaultDir, defaultFilename, wildcard,
-		wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+  wxString defaultFilename;
+  wxFileDialog dialog(
+      this, caption, defaultDir, defaultFilename, wildcard, wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
-	if (dialog.ShowModal() == wxID_OK)
-	{
-		wxString fileName = dialog.GetPath();
-		wxString filePath = dialog.GetDirectory();
+  if (dialog.ShowModal() == wxID_OK)
+  {
+    wxString fileName = dialog.GetPath();
+    wxString filePath = dialog.GetDirectory();
 
-		// Save the path
-		try
-		{
-			iniFile->write(
-				iniFileSect, "LastDir", std::string(filePath.mb_str()));
-		}
-		catch (const std::exception& e)
-		{
-			wxMessageBox(
-				mrpt::exception_to_str(e), wxT("Exception"), wxOK, this);
-		}
+    // Save the path
+    try
+    {
+      iniFile->write(iniFileSect, "LastDir", std::string(filePath.mb_str()));
+    }
+    catch (const std::exception& e)
+    {
+      wxMessageBox(mrpt::exception_to_str(e), wxT("Exception"), wxOK, this);
+    }
 
-		// Sets the file:
-		edFile->ChangeValue(fileName);
-	}
+    // Sets the file:
+    edFile->ChangeValue(fileName);
+  }
 }
 
 // On stop:
 void CFormPlayVideo::OnbtnStopClick(wxCommandEvent&)
 {
-	m_nowPlaying = false;
-	btnPlay->Enable(true);
-	btnStop->Enable(false);
+  m_nowPlaying = false;
+  btnPlay->Enable(true);
+  btnStop->Enable(false);
 }
 
 // On play:
 void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent&)
 {
-	btnPlay->Enable(false);
-	btnStop->Enable(true);
-	m_nowPlaying = true;
+  btnPlay->Enable(false);
+  btnStop->Enable(true);
+  m_nowPlaying = true;
 
-	try
-	{
-		long delay_ms = 0;
-		edDelay->GetValue().ToLong(&delay_ms);
+  try
+  {
+    long delay_ms = 0;
+    edDelay->GetValue().ToLong(&delay_ms);
 
-		CFileGZInputStream* fil;
+    CFileGZInputStream* fil;
 
-		if (rbFile->GetValue())
-		{
-			// Load from file:
-			fil = new CFileGZInputStream(
-				std::string(edFile->GetValue().mb_str()));
-		}
-		else
-		{
-			// Use the loaded rawlog:
-			fil = nullptr;
-		}
+    if (rbFile->GetValue())
+    {
+      // Load from file:
+      fil = new CFileGZInputStream(std::string(edFile->GetValue().mb_str()));
+    }
+    else
+    {
+      // Use the loaded rawlog:
+      fil = nullptr;
+    }
 
-		size_t nImgs = 0, count = 0;
+    size_t nImgs = 0, count = 0;
 
-		// If we are playing from memory, continue:
-		if (!fil) { count = edIndex->GetValue(); }
+    // If we are playing from memory, continue:
+    if (!fil)
+    {
+      count = edIndex->GetValue();
+    }
 
-		progressBar->SetRange(
-			0, fil ? (int)fil->getTotalBytesCount() : (int)rawlog.size());
-		progressBar->SetValue(0);
+    progressBar->SetRange(0, fil ? (int)fil->getTotalBytesCount() : (int)rawlog.size());
+    progressBar->SetValue(0);
 
-		// Repeat until EOF exception or cancel.
-		while (m_nowPlaying)
-		{
-			wxTheApp->Yield();
-			CSerializable::Ptr obj;
-			mrpt::Clock::time_point imgTimestamp = INVALID_TIMESTAMP;
+    // Repeat until EOF exception or cancel.
+    while (m_nowPlaying)
+    {
+      wxTheApp->Yield();
+      CSerializable::Ptr obj;
+      mrpt::Clock::time_point imgTimestamp = INVALID_TIMESTAMP;
 
-			if (fil) { archiveFrom(*fil) >> obj; }
-			else
-			{
-				obj = rawlog.getAsGeneric(count);
-				m_idxInRawlog = count;
-			}
+      if (fil)
+      {
+        archiveFrom(*fil) >> obj;
+      }
+      else
+      {
+        obj = rawlog.getAsGeneric(count);
+        m_idxInRawlog = count;
+      }
 
-			bool doDelay = false;
+      bool doDelay = false;
 
-			if (auto sf = std::dynamic_pointer_cast<CSensoryFrame>(obj); sf)
-			{
-				doDelay = showSensoryFrame(*sf, nImgs, imgTimestamp);
-			}
-			else if (IS_DERIVED(*obj, CObservation))
-			{
-				CSensoryFrame sf2;
-				sf2.insert(std::dynamic_pointer_cast<CObservation>(obj));
-				doDelay = showSensoryFrame(sf2, nImgs, imgTimestamp);
-			}
+      if (auto sf = std::dynamic_pointer_cast<CSensoryFrame>(obj); sf)
+      {
+        doDelay = showSensoryFrame(*sf, nImgs, imgTimestamp);
+      }
+      else if (IS_DERIVED(*obj, CObservation))
+      {
+        CSensoryFrame sf2;
+        sf2.insert(std::dynamic_pointer_cast<CObservation>(obj));
+        doDelay = showSensoryFrame(sf2, nImgs, imgTimestamp);
+      }
 
-			// Free the loaded object!
-			if (fil) obj.reset();
+      // Free the loaded object!
+      if (fil) obj.reset();
 
-			// Update UI
-			count++;
-			// if ((count) % 10 == 0)
-			{
-				progressBar->SetValue(
-					fil ? (int)fil->getPosition() : (int)count);
-				wxString str;
-				if (imgTimestamp != INVALID_TIMESTAMP)
-				{
-					str.sprintf(
-						_("Processed: %d images. Timestamp: %f [%s UTC]"),
-						static_cast<int>(nImgs),
-						mrpt::Clock::toDouble(imgTimestamp),
-						mrpt::system::dateTimeToString(imgTimestamp).c_str());
-				}
-				else
-				{
-					str.sprintf(
-						_("Processed: %d images."), static_cast<int>(nImgs));
-				}
-				lbProgress->SetLabel(str);
-				if (!doDelay) wxTheApp->Yield();
-			}
+      // Update UI
+      count++;
+      // if ((count) % 10 == 0)
+      {
+        progressBar->SetValue(fil ? (int)fil->getPosition() : (int)count);
+        wxString str;
+        if (imgTimestamp != INVALID_TIMESTAMP)
+        {
+          str.sprintf(
+              _("Processed: %d images. Timestamp: %f [%s UTC]"), static_cast<int>(nImgs),
+              mrpt::Clock::toDouble(imgTimestamp),
+              mrpt::system::dateTimeToString(imgTimestamp).c_str());
+        }
+        else
+        {
+          str.sprintf(_("Processed: %d images."), static_cast<int>(nImgs));
+        }
+        lbProgress->SetLabel(str);
+        if (!doDelay) wxTheApp->Yield();
+      }
 
-			// if (doDelay || (count % 100)==0)
-			edIndex->SetValue(count);
+      // if (doDelay || (count % 100)==0)
+      edIndex->SetValue(count);
 
-			// End?
-			if (!fil && count >= rawlog.size()) m_nowPlaying = false;
+      // End?
+      if (!fil && count >= rawlog.size()) m_nowPlaying = false;
 
-			// Time to process stop button press and redraw image.
+      // Time to process stop button press and redraw image.
 
-			if (doDelay)
-			{
-				wxTheApp->Yield();
-				wxMilliSleep(delay_ms);
-			}
-		}
-	}
-	catch (CExceptionExternalImageNotFound& e)
-	{
-		wxMessageBox(
-			mrpt::exception_to_str(e), _("Error with a delayed load image"),
-			wxOK, this);
+      if (doDelay)
+      {
+        wxTheApp->Yield();
+        wxMilliSleep(delay_ms);
+      }
+    }
+  }
+  catch (CExceptionExternalImageNotFound& e)
+  {
+    wxMessageBox(mrpt::exception_to_str(e), _("Error with a delayed load image"), wxOK, this);
 
-		if (wxYES ==
-			wxMessageBox(
-				(format(
-					 "The current directory for relative images "
-					 "is:\n%s\n\nDo you want to set it to a different one?",
-					 CImage::getImagesPathBase().c_str())
-					 .c_str()),
-				_("Error with delayed loading image"), wxYES_NO, this))
-		{
-			// Change CImage::getImagesPathBase()
-			wxDirDialog dirDialog(
-				this, _("Choose the base directory for relative image paths"),
-				CImage::getImagesPathBase().c_str(), 0, wxDefaultPosition);
-			if (dirDialog.ShowModal() == wxID_OK)
-			{
-				CImage::setImagesPathBase(string(dirDialog.GetPath().mb_str()));
-			}
-		}
-	}
-	catch (const std::exception& e)
-	{
-		wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
-	}
+    if (wxYES == wxMessageBox(
+                     (format(
+                          "The current directory for relative images "
+                          "is:\n%s\n\nDo you want to set it to a different one?",
+                          CImage::getImagesPathBase().c_str())
+                          .c_str()),
+                     _("Error with delayed loading image"), wxYES_NO, this))
+    {
+      // Change CImage::getImagesPathBase()
+      wxDirDialog dirDialog(
+          this, _("Choose the base directory for relative image paths"),
+          CImage::getImagesPathBase().c_str(), 0, wxDefaultPosition);
+      if (dirDialog.ShowModal() == wxID_OK)
+      {
+        CImage::setImagesPathBase(string(dirDialog.GetPath().mb_str()));
+      }
+    }
+  }
+  catch (const std::exception& e)
+  {
+    wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
+  }
 
-	btnPlay->Enable(true);
-	btnStop->Enable(false);
+  btnPlay->Enable(true);
+  btnStop->Enable(false);
 }
 
 void CFormPlayVideo::OnInit(wxInitDialogEvent& event)
 {
-	wxCommandEvent dumm;
-	// Is there any rawlog loaded??
-	if (!rawlog.size())
-	{
-		// NO: Disable "modify current":
-		OnrbFileSelect(dumm);
-		rbFile->SetValue(true);
-		rbLoaded->Disable();
-	}
-	else
-	{
-		// Select the loaded rawlog by default:
-		OnrbLoadedSelect(dumm);
-		rbLoaded->SetValue(true);
-	}  // end there is loaded rawlog
+  wxCommandEvent dumm;
+  // Is there any rawlog loaded??
+  if (!rawlog.size())
+  {
+    // NO: Disable "modify current":
+    OnrbFileSelect(dumm);
+    rbFile->SetValue(true);
+    rbLoaded->Disable();
+  }
+  else
+  {
+    // Select the loaded rawlog by default:
+    OnrbLoadedSelect(dumm);
+    rbLoaded->SetValue(true);
+  }  // end there is loaded rawlog
 }
 
 void CFormPlayVideo::OnrbLoadedSelect(wxCommandEvent& event)
 {
-	btnPickInput->Disable();
-	edFile->Disable();
+  btnPickInput->Disable();
+  edFile->Disable();
 
-	progressBar->SetRange(0, (int)rawlog.size());
-	edIndex->SetRange(0, (int)rawlog.size());
-	progressBar->Enable();
-	edIndex->Enable();
+  progressBar->SetRange(0, (int)rawlog.size());
+  edIndex->SetRange(0, (int)rawlog.size());
+  progressBar->Enable();
+  edIndex->Enable();
 }
 
 void CFormPlayVideo::OnrbFileSelect(wxCommandEvent& event)
 {
-	btnPickInput->Enable();
-	edFile->Enable();
-	progressBar->Disable();
-	edIndex->Disable();
+  btnPickInput->Enable();
+  edFile->Enable();
+  progressBar->Disable();
+  edIndex->Disable();
 }
 
 void CFormPlayVideo::OnbtnCloseClick(wxCommandEvent& event)
 {
-	m_nowPlaying = false;
-	Close();
+  m_nowPlaying = false;
+  Close();
 }
 
 void CFormPlayVideo::drawHorzRules(mrpt::img::CImage& img)
 {
-	if (!cbDrawStereoRules->IsChecked()) return;
+  if (!cbDrawStereoRules->IsChecked()) return;
 
-	img.forceLoad();
-	const size_t Ay = edHorzRuleSpace->GetValue();
-	const size_t h = img.getHeight();
-	const size_t w = img.getWidth();
+  img.forceLoad();
+  const size_t Ay = edHorzRuleSpace->GetValue();
+  const size_t h = img.getHeight();
+  const size_t w = img.getWidth();
 
-	for (size_t y = Ay; y < h; y += Ay)
-		img.line(0, y, w - 1, y, mrpt::img::TColor::white());
+  for (size_t y = Ay; y < h; y += Ay) img.line(0, y, w - 1, y, mrpt::img::TColor::white());
 }
 
 bool CFormPlayVideo::showSensoryFrame(
-	mrpt::obs::CSensoryFrame& SF, size_t& nImgs, Clock::time_point& timestamp)
+    mrpt::obs::CSensoryFrame& SF, size_t& nImgs, Clock::time_point& timestamp)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	try
-	{
-		return showSensoryFrameImpl(SF, nImgs, timestamp);
-	}
-	catch (const std::exception& e)
-	{
-		// Make sure playback is stopped in the event of an error:
-		wxCommandEvent ev;
-		OnbtnStopClick(ev);
-		throw;
-	}
+  try
+  {
+    return showSensoryFrameImpl(SF, nImgs, timestamp);
+  }
+  catch (const std::exception& e)
+  {
+    // Make sure playback is stopped in the event of an error:
+    wxCommandEvent ev;
+    OnbtnStopClick(ev);
+    throw;
+  }
 
-	WX_END_TRY
-	return false;
+  WX_END_TRY
+  return false;
 }
 
 bool CFormPlayVideo::showSensoryFrameImpl(
-	mrpt::obs::CSensoryFrame& SF, size_t& nImgs, Clock::time_point& timestamp)
+    mrpt::obs::CSensoryFrame& SF, size_t& nImgs, Clock::time_point& timestamp)
 {
-	auto* sf = &SF;
+  auto* sf = &SF;
 
-	bool doDelay = false;
-	bool doReduceLargeImgs = cbReduceLarge->GetValue();
-	bool orderByYaw = cbOrderByYaw->GetValue();
-	bool orderByY = cbOrderByY->GetValue();
+  bool doDelay = false;
+  bool doReduceLargeImgs = cbReduceLarge->GetValue();
+  bool orderByYaw = cbOrderByYaw->GetValue();
+  bool orderByY = cbOrderByY->GetValue();
 
-	// Find an image to show:
-	CImage* imgShow = nullptr;
+  // Find an image to show:
+  CImage* imgShow = nullptr;
 
-	// unload current imgs:
-	for (auto& displayedImg : displayedImgs)
-		if (displayedImg) displayedImg->unload();
+  // unload current imgs:
+  for (auto& displayedImg : displayedImgs)
+    if (displayedImg) displayedImg->unload();
 
-	CImage auxImgForSubSampling;
+  CImage auxImgForSubSampling;
 
-	// Monocular images:
-	{
-		wxPanel* thePanel;
-		wxStaticText* theLabel = nullptr;
+  // Monocular images:
+  {
+    wxPanel* thePanel;
+    wxStaticText* theLabel = nullptr;
 
-		for (int img_idx_sf = 0; img_idx_sf < 3;
-			 img_idx_sf++)	// Up to 3 images maximum:
-		{
-			CObservationImage::Ptr obsImg =
-				sf->getObservationByClass<CObservationImage>(img_idx_sf);
-			if (!obsImg) break;	 // No more images, go on...
+    for (int img_idx_sf = 0; img_idx_sf < 3; img_idx_sf++)  // Up to 3 images maximum:
+    {
+      CObservationImage::Ptr obsImg = sf->getObservationByClass<CObservationImage>(img_idx_sf);
+      if (!obsImg) break;  // No more images, go on...
 
-			timestamp = obsImg->timestamp;
+      timestamp = obsImg->timestamp;
 
-			// Onto which panel to draw??
-			if (!orderByYaw && !orderByY)
-			{
-				// Sequentially
-				switch (img_idx_sf)
-				{
-					case 0:
-						thePanel = pnLeft;
-						theLabel = lbCam1;
-						break;
-					case 1:
-						thePanel = pnRight;
-						theLabel = lbCam2;
-						break;
-					case 2:
-						thePanel = pnRight2;
-						theLabel = lbCam3;
-						break;
-					default: ASSERT_(false);
-				};
-			}
-			else
-			{
-				if (orderByY)
-				{
-					// By Y
-					if (obsImg->cameraPose.y() < 0)
-					{
-						thePanel = pnRight;
-						theLabel = lbCam2;
-					}
-					else if (obsImg->cameraPose.y() > 0)
-					{
-						thePanel = pnLeft;
-						theLabel = lbCam1;
-					}
-					else
-					{
-						thePanel = pnRight2;
-						theLabel = lbCam3;
-					}
-				}
-				else
-				{
-					// By yaw angle:
-					if (obsImg->cameraPose.yaw() < -3.0_deg)
-					{
-						thePanel = pnRight2;
-						theLabel = lbCam3;
-					}
-					else if (obsImg->cameraPose.yaw() > 3.0_deg)
-					{
-						thePanel = pnLeft;
-						theLabel = lbCam1;
-					}
-					else
-					{
-						thePanel = pnRight;	 // Center
-						theLabel = lbCam2;
-					}
-				}
-			}
+      // Onto which panel to draw??
+      if (!orderByYaw && !orderByY)
+      {
+        // Sequentially
+        switch (img_idx_sf)
+        {
+          case 0:
+            thePanel = pnLeft;
+            theLabel = lbCam1;
+            break;
+          case 1:
+            thePanel = pnRight;
+            theLabel = lbCam2;
+            break;
+          case 2:
+            thePanel = pnRight2;
+            theLabel = lbCam3;
+            break;
+          default:
+            ASSERT_(false);
+        };
+      }
+      else
+      {
+        if (orderByY)
+        {
+          // By Y
+          if (obsImg->cameraPose.y() < 0)
+          {
+            thePanel = pnRight;
+            theLabel = lbCam2;
+          }
+          else if (obsImg->cameraPose.y() > 0)
+          {
+            thePanel = pnLeft;
+            theLabel = lbCam1;
+          }
+          else
+          {
+            thePanel = pnRight2;
+            theLabel = lbCam3;
+          }
+        }
+        else
+        {
+          // By yaw angle:
+          if (obsImg->cameraPose.yaw() < -3.0_deg)
+          {
+            thePanel = pnRight2;
+            theLabel = lbCam3;
+          }
+          else if (obsImg->cameraPose.yaw() > 3.0_deg)
+          {
+            thePanel = pnLeft;
+            theLabel = lbCam1;
+          }
+          else
+          {
+            thePanel = pnRight;  // Center
+            theLabel = lbCam2;
+          }
+        }
+      }
 
-			nImgs++;
+      nImgs++;
 
-			imgShow = &obsImg->image;
+      imgShow = &obsImg->image;
 
-			// Subsampling?
-			if (doReduceLargeImgs && imgShow->getWidth() > 650)
-			{
-				auxImgForSubSampling =
-					imgShow->scaleHalf(mrpt::img::IMG_INTERP_NN);
-				imgShow = &auxImgForSubSampling;
-			}
+      // Subsampling?
+      if (doReduceLargeImgs && imgShow->getWidth() > 650)
+      {
+        auxImgForSubSampling = imgShow->scaleHalf(mrpt::img::IMG_INTERP_NN);
+        imgShow = &auxImgForSubSampling;
+      }
 
-			if (firstFit)
-			{
-				pnLeft->SetMinSize(
-					wxSize(imgShow->getWidth() + 2, imgShow->getHeight() + 2));
-				pnRight->SetMinSize(
-					wxSize(imgShow->getWidth() + 2, imgShow->getHeight() + 2));
-				pnRight2->SetMinSize(
-					wxSize(imgShow->getWidth() + 2, imgShow->getHeight() + 2));
-				Fit();
-				firstFit = false;
-			}
+      if (firstFit)
+      {
+        pnLeft->SetMinSize(wxSize(imgShow->getWidth() + 2, imgShow->getHeight() + 2));
+        pnRight->SetMinSize(wxSize(imgShow->getWidth() + 2, imgShow->getHeight() + 2));
+        pnRight2->SetMinSize(wxSize(imgShow->getWidth() + 2, imgShow->getHeight() + 2));
+        Fit();
+        firstFit = false;
+      }
 
-			// Draw image:
-			drawHorzRules(*imgShow);
-			wxImage* wxIMG = mrpt::gui::MRPTImage2wxImage(*imgShow);
-			imgShow->unload();	// for delayed-loaded rawlogs
+      // Draw image:
+      drawHorzRules(*imgShow);
+      wxImage* wxIMG = mrpt::gui::MRPTImage2wxImage(*imgShow);
+      imgShow->unload();  // for delayed-loaded rawlogs
 
-			wxWindowDC dc(thePanel);
-			wxMemoryDC tmpDc;
-			tmpDc.SelectObjectAsSource(wxBitmap(*wxIMG));
-			dc.Blit(0, 0, wxIMG->GetWidth(), wxIMG->GetHeight(), &tmpDc, 0, 0);
-			delete wxIMG;
+      wxWindowDC dc(thePanel);
+      wxMemoryDC tmpDc;
+      tmpDc.SelectObjectAsSource(wxBitmap(*wxIMG));
+      dc.Blit(0, 0, wxIMG->GetWidth(), wxIMG->GetHeight(), &tmpDc, 0, 0);
+      delete wxIMG;
 
-			// Set text label:
-			if (theLabel)
-			{
-				double t = 0;
-				if (obsImg->timestamp != INVALID_TIMESTAMP)
-					t = mrpt::system::timeDifference(
-						rawlog_first_timestamp, obsImg->timestamp);
+      // Set text label:
+      if (theLabel)
+      {
+        double t = 0;
+        if (obsImg->timestamp != INVALID_TIMESTAMP)
+          t = mrpt::system::timeDifference(rawlog_first_timestamp, obsImg->timestamp);
 
-				string s =
-					format("%s [t=%.03fsec]", obsImg->sensorLabel.c_str(), t);
-				theLabel->SetLabel(s.c_str());
-			}
+        string s = format("%s [t=%.03fsec]", obsImg->sensorLabel.c_str(), t);
+        theLabel->SetLabel(s.c_str());
+      }
 
-			// save:
-			displayedImgs
-				[thePanel == pnLeft ? 0 : (thePanel == pnRight ? 1 : 2)] =
-					obsImg;
+      // save:
+      displayedImgs[thePanel == pnLeft ? 0 : (thePanel == pnRight ? 1 : 2)] = obsImg;
 
-			doDelay = true;
+      doDelay = true;
 
-		}  // end for 0,1,2
-	}
+    }  // end for 0,1,2
+  }
 
-	// Stereo images:
-	{
-		CObservationStereoImages::Ptr obsImg2 =
-			sf->getObservationByClass<CObservationStereoImages>();
+  // Stereo images:
+  {
+    CObservationStereoImages::Ptr obsImg2 = sf->getObservationByClass<CObservationStereoImages>();
 
-		if (obsImg2)
-		{
-			timestamp = obsImg2->timestamp;
-			nImgs++;
+    if (obsImg2)
+    {
+      timestamp = obsImg2->timestamp;
+      nImgs++;
 
-			// Left:
-			{
-				imgShow = &obsImg2->imageLeft;
+      // Left:
+      {
+        imgShow = &obsImg2->imageLeft;
 
-				// Subsampling?
-				if (doReduceLargeImgs && imgShow->getWidth() > 650)
-				{
-					auxImgForSubSampling =
-						imgShow->scaleHalf(mrpt::img::IMG_INTERP_NN);
-					imgShow = &auxImgForSubSampling;
-				}
+        // Subsampling?
+        if (doReduceLargeImgs && imgShow->getWidth() > 650)
+        {
+          auxImgForSubSampling = imgShow->scaleHalf(mrpt::img::IMG_INTERP_NN);
+          imgShow = &auxImgForSubSampling;
+        }
 
-				if (firstFit)
-				{
-					pnLeft->SetMinSize(wxSize(
-						imgShow->getWidth() + 2, imgShow->getHeight() + 2));
-					// Fit();
-					// firstFit=false; // Done in the right pane below...
-				}
+        if (firstFit)
+        {
+          pnLeft->SetMinSize(wxSize(imgShow->getWidth() + 2, imgShow->getHeight() + 2));
+          // Fit();
+          // firstFit=false; // Done in the right pane below...
+        }
 
-				drawHorzRules(*imgShow);
-				wxImage* wxIMG = mrpt::gui::MRPTImage2wxImage(*imgShow);
-				imgShow->unload();	// for delayed-loaded rawlogs
+        drawHorzRules(*imgShow);
+        wxImage* wxIMG = mrpt::gui::MRPTImage2wxImage(*imgShow);
+        imgShow->unload();  // for delayed-loaded rawlogs
 
-				wxWindowDC dc(pnLeft);
-				wxMemoryDC tmpDc;
-				tmpDc.SelectObjectAsSource(wxBitmap(*wxIMG));
-				dc.Blit(
-					0, 0, wxIMG->GetWidth(), wxIMG->GetHeight(), &tmpDc, 0, 0);
-				delete wxIMG;
+        wxWindowDC dc(pnLeft);
+        wxMemoryDC tmpDc;
+        tmpDc.SelectObjectAsSource(wxBitmap(*wxIMG));
+        dc.Blit(0, 0, wxIMG->GetWidth(), wxIMG->GetHeight(), &tmpDc, 0, 0);
+        delete wxIMG;
 
-				lbCam1->SetLabel((
-					format("%s - left", obsImg2->sensorLabel.c_str()).c_str()));
+        lbCam1->SetLabel((format("%s - left", obsImg2->sensorLabel.c_str()).c_str()));
 
-				// save:
-				displayedImgs[0] = obsImg2;
+        // save:
+        displayedImgs[0] = obsImg2;
 
-				doDelay = true;
-			}
+        doDelay = true;
+      }
 
-			// Right, if present:
-			if (obsImg2->hasImageRight)
-			{
-				imgShow = &obsImg2->imageRight;
+      // Right, if present:
+      if (obsImg2->hasImageRight)
+      {
+        imgShow = &obsImg2->imageRight;
 
-				// Subsampling?
-				if (doReduceLargeImgs && imgShow->getWidth() > 650)
-				{
-					auxImgForSubSampling =
-						imgShow->scaleHalf(mrpt::img::IMG_INTERP_NN);
-					imgShow = &auxImgForSubSampling;
-				}
+        // Subsampling?
+        if (doReduceLargeImgs && imgShow->getWidth() > 650)
+        {
+          auxImgForSubSampling = imgShow->scaleHalf(mrpt::img::IMG_INTERP_NN);
+          imgShow = &auxImgForSubSampling;
+        }
 
-				if (firstFit)
-				{
-					pnRight->SetMinSize(wxSize(
-						imgShow->getWidth() + 2, imgShow->getHeight() + 2));
-					Fit();
-					firstFit = false;
-				}
+        if (firstFit)
+        {
+          pnRight->SetMinSize(wxSize(imgShow->getWidth() + 2, imgShow->getHeight() + 2));
+          Fit();
+          firstFit = false;
+        }
 
-				drawHorzRules(*imgShow);
-				wxImage* wxIMG = mrpt::gui::MRPTImage2wxImage(*imgShow);
-				imgShow->unload();	// for delayed-loaded rawlogs
+        drawHorzRules(*imgShow);
+        wxImage* wxIMG = mrpt::gui::MRPTImage2wxImage(*imgShow);
+        imgShow->unload();  // for delayed-loaded rawlogs
 
-				wxWindowDC dc(pnRight);
-				wxMemoryDC tmpDc;
-				tmpDc.SelectObjectAsSource(wxBitmap(*wxIMG));
-				dc.Blit(
-					0, 0, wxIMG->GetWidth(), wxIMG->GetHeight(), &tmpDc, 0, 0);
-				delete wxIMG;
+        wxWindowDC dc(pnRight);
+        wxMemoryDC tmpDc;
+        tmpDc.SelectObjectAsSource(wxBitmap(*wxIMG));
+        dc.Blit(0, 0, wxIMG->GetWidth(), wxIMG->GetHeight(), &tmpDc, 0, 0);
+        delete wxIMG;
 
-				lbCam2->SetLabel(
-					(format("%s - right", obsImg2->sensorLabel.c_str())
-						 .c_str()));
+        lbCam2->SetLabel((format("%s - right", obsImg2->sensorLabel.c_str()).c_str()));
 
-				// save:
-				displayedImgs[1] = obsImg2;
+        // save:
+        displayedImgs[1] = obsImg2;
 
-				doDelay = true;
-			}
+        doDelay = true;
+      }
 
-			// Disparity, if present:
-			if (obsImg2->hasImageDisparity)
-			{
-				imgShow = &obsImg2->imageDisparity;
+      // Disparity, if present:
+      if (obsImg2->hasImageDisparity)
+      {
+        imgShow = &obsImg2->imageDisparity;
 
-				// Subsampling?
-				if (doReduceLargeImgs && imgShow->getWidth() > 650)
-				{
-					auxImgForSubSampling =
-						imgShow->scaleHalf(mrpt::img::IMG_INTERP_NN);
-					imgShow = &auxImgForSubSampling;
-				}
+        // Subsampling?
+        if (doReduceLargeImgs && imgShow->getWidth() > 650)
+        {
+          auxImgForSubSampling = imgShow->scaleHalf(mrpt::img::IMG_INTERP_NN);
+          imgShow = &auxImgForSubSampling;
+        }
 
-				if (firstFit)
-				{
-					pnRight->SetMinSize(wxSize(
-						imgShow->getWidth() + 2, imgShow->getHeight() + 2));
-					Fit();
-					firstFit = false;
-				}
+        if (firstFit)
+        {
+          pnRight->SetMinSize(wxSize(imgShow->getWidth() + 2, imgShow->getHeight() + 2));
+          Fit();
+          firstFit = false;
+        }
 
-				drawHorzRules(*imgShow);
-				wxImage* wxIMG = mrpt::gui::MRPTImage2wxImage(*imgShow);
-				imgShow->unload();	// for delayed-loaded rawlogs
+        drawHorzRules(*imgShow);
+        wxImage* wxIMG = mrpt::gui::MRPTImage2wxImage(*imgShow);
+        imgShow->unload();  // for delayed-loaded rawlogs
 
-				wxWindowDC dc(pnRight);
-				wxMemoryDC tmpDc;
-				tmpDc.SelectObjectAsSource(wxBitmap(*wxIMG));
-				dc.Blit(
-					0, 0, wxIMG->GetWidth(), wxIMG->GetHeight(), &tmpDc, 0, 0);
-				delete wxIMG;
+        wxWindowDC dc(pnRight);
+        wxMemoryDC tmpDc;
+        tmpDc.SelectObjectAsSource(wxBitmap(*wxIMG));
+        dc.Blit(0, 0, wxIMG->GetWidth(), wxIMG->GetHeight(), &tmpDc, 0, 0);
+        delete wxIMG;
 
-				lbCam2->SetLabel(
-					(format("%s - disparity", obsImg2->sensorLabel.c_str())
-						 .c_str()));
+        lbCam2->SetLabel((format("%s - disparity", obsImg2->sensorLabel.c_str()).c_str()));
 
-				// save:
-				displayedImgs[1] = obsImg2;
+        // save:
+        displayedImgs[1] = obsImg2;
 
-				doDelay = true;
-			}
-		}
-	}
+        doDelay = true;
+      }
+    }
+  }
 
-	// 3D range images:
-	{
-		CObservation3DRangeScan::Ptr obs3D =
-			sf->getObservationByClass<CObservation3DRangeScan>();
+  // 3D range images:
+  {
+    CObservation3DRangeScan::Ptr obs3D = sf->getObservationByClass<CObservation3DRangeScan>();
 
-		if (obs3D && obs3D->hasIntensityImage)
-		{
-			timestamp = obs3D->timestamp;
-			nImgs++;
+    if (obs3D && obs3D->hasIntensityImage)
+    {
+      timestamp = obs3D->timestamp;
+      nImgs++;
 
-			// Intensity channel
-			{
-				imgShow = &obs3D->intensityImage;
+      // Intensity channel
+      {
+        imgShow = &obs3D->intensityImage;
 
-				// Subsampling?
-				if (doReduceLargeImgs && imgShow->getWidth() > 650)
-				{
-					auxImgForSubSampling =
-						imgShow->scaleHalf(mrpt::img::IMG_INTERP_NN);
-					imgShow = &auxImgForSubSampling;
-				}
+        // Subsampling?
+        if (doReduceLargeImgs && imgShow->getWidth() > 650)
+        {
+          auxImgForSubSampling = imgShow->scaleHalf(mrpt::img::IMG_INTERP_NN);
+          imgShow = &auxImgForSubSampling;
+        }
 
-				if (firstFit)
-				{
-					pnLeft->SetMinSize(wxSize(
-						imgShow->getWidth() + 2, imgShow->getHeight() + 2));
-					// Fit();
-					// firstFit=false; // Done in the right pane below...
-				}
+        if (firstFit)
+        {
+          pnLeft->SetMinSize(wxSize(imgShow->getWidth() + 2, imgShow->getHeight() + 2));
+          // Fit();
+          // firstFit=false; // Done in the right pane below...
+        }
 
-				drawHorzRules(*imgShow);
-				wxImage* wxIMG = mrpt::gui::MRPTImage2wxImage(*imgShow);
-				imgShow->unload();	// for delayed-loaded rawlogs
+        drawHorzRules(*imgShow);
+        wxImage* wxIMG = mrpt::gui::MRPTImage2wxImage(*imgShow);
+        imgShow->unload();  // for delayed-loaded rawlogs
 
-				wxWindowDC dc(pnLeft);
-				wxMemoryDC tmpDc;
-				tmpDc.SelectObjectAsSource(wxBitmap(*wxIMG));
-				dc.Blit(
-					0, 0, wxIMG->GetWidth(), wxIMG->GetHeight(), &tmpDc, 0, 0);
-				delete wxIMG;
+        wxWindowDC dc(pnLeft);
+        wxMemoryDC tmpDc;
+        tmpDc.SelectObjectAsSource(wxBitmap(*wxIMG));
+        dc.Blit(0, 0, wxIMG->GetWidth(), wxIMG->GetHeight(), &tmpDc, 0, 0);
+        delete wxIMG;
 
-				lbCam1->SetLabel(
-					(format("%s - Intensity", obs3D->sensorLabel.c_str())
-						 .c_str()));
+        lbCam1->SetLabel((format("%s - Intensity", obs3D->sensorLabel.c_str()).c_str()));
 
-				// save:
-				displayedImgs[0] = obs3D;
+        // save:
+        displayedImgs[0] = obs3D;
 
-				doDelay = true;
-			}
-		}
-	}
+        doDelay = true;
+      }
+    }
+  }
 
-	return doDelay;
+  return doDelay;
 }
 
 void CFormPlayVideo::OnprogressBarCmdScrollChanged(wxScrollEvent&)
 {
-	int idx = progressBar->GetValue();
-	m_idxInRawlog = idx;
-	mrpt::Clock::time_point imgTimestamp;
-	size_t nImgs = 0;
+  int idx = progressBar->GetValue();
+  m_idxInRawlog = idx;
+  mrpt::Clock::time_point imgTimestamp;
+  size_t nImgs = 0;
 
-	if (idx > 0 && idx < (int)rawlog.size())
-	{
-		if (rawlog.getType(idx) == CRawlog::etSensoryFrame)
-		{
-			CSensoryFrame::Ptr sf = rawlog.getAsObservations(idx);
-			showSensoryFrame(*sf.get(), nImgs, imgTimestamp);
-			edIndex->SetValue(idx);
-		}
-		else if (rawlog.getType(idx) == CRawlog::etObservation)
-		{
-			CObservation::Ptr o = rawlog.getAsObservation(idx);
+  if (idx > 0 && idx < (int)rawlog.size())
+  {
+    if (rawlog.getType(idx) == CRawlog::etSensoryFrame)
+    {
+      CSensoryFrame::Ptr sf = rawlog.getAsObservations(idx);
+      showSensoryFrame(*sf.get(), nImgs, imgTimestamp);
+      edIndex->SetValue(idx);
+    }
+    else if (rawlog.getType(idx) == CRawlog::etObservation)
+    {
+      CObservation::Ptr o = rawlog.getAsObservation(idx);
 
-			CSensoryFrame sf;
-			sf.insert(o);
-			showSensoryFrame(sf, nImgs, imgTimestamp);
+      CSensoryFrame sf;
+      sf.insert(o);
+      showSensoryFrame(sf, nImgs, imgTimestamp);
 
-			edIndex->SetValue(idx);
-		}
+      edIndex->SetValue(idx);
+    }
 
-		wxString str;
-		if (imgTimestamp != INVALID_TIMESTAMP)
-		{
-			str.sprintf(
-				_("Processed: %d images. Timestamp: %f [%s UTC]"),
-				static_cast<int>(nImgs), mrpt::Clock::toDouble(imgTimestamp),
-				mrpt::system::dateTimeToString(imgTimestamp).c_str());
-		}
-		else
-		{
-			str.sprintf(_("Processed: %d images."), static_cast<int>(nImgs));
-		}
-		lbProgress->SetLabel(str);
-	}
+    wxString str;
+    if (imgTimestamp != INVALID_TIMESTAMP)
+    {
+      str.sprintf(
+          _("Processed: %d images. Timestamp: %f [%s UTC]"), static_cast<int>(nImgs),
+          mrpt::Clock::toDouble(imgTimestamp),
+          mrpt::system::dateTimeToString(imgTimestamp).c_str());
+    }
+    else
+    {
+      str.sprintf(_("Processed: %d images."), static_cast<int>(nImgs));
+    }
+    lbProgress->SetLabel(str);
+  }
 }
 
 void CFormPlayVideo::saveCamImage(int n)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	if (n < 0 || n >= (int)displayedImgs.size() || !displayedImgs[n]) return;
+  if (n < 0 || n >= (int)displayedImgs.size() || !displayedImgs[n]) return;
 
-	wxString caption = wxT("Save image...");
-	wxString wildcard =
-		wxT("Image files (*.png,*.jpg,*.bmp)|*.jpg;*.bmp;*.png|All files "
-			"(*.*)|*.*");
-	wxString defaultDir(
-		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+  wxString caption = wxT("Save image...");
+  wxString wildcard =
+      wxT("Image files (*.png,*.jpg,*.bmp)|*.jpg;*.bmp;*.png|All files "
+          "(*.*)|*.*");
+  wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 
-	if (IS_CLASS(*displayedImgs[n], CObservationImage))
-	{
-		CObservationImage::Ptr o =
-			std::dynamic_pointer_cast<CObservationImage>(displayedImgs[n]);
+  if (IS_CLASS(*displayedImgs[n], CObservationImage))
+  {
+    CObservationImage::Ptr o = std::dynamic_pointer_cast<CObservationImage>(displayedImgs[n]);
 
-		wxString defaultFilename =
-			(format("%s_%i.jpg", o->sensorLabel.c_str(), m_idxInRawlog)
-				 .c_str());
-		wxFileDialog dialog(
-			this, caption, defaultDir, defaultFilename, wildcard,
-			wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+    wxString defaultFilename = (format("%s_%i.jpg", o->sensorLabel.c_str(), m_idxInRawlog).c_str());
+    wxFileDialog dialog(
+        this, caption, defaultDir, defaultFilename, wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-		if (dialog.ShowModal() != wxID_OK) return;
+    if (dialog.ShowModal() != wxID_OK) return;
 
-		string fil = string(dialog.GetPath().mb_str());
+    string fil = string(dialog.GetPath().mb_str());
 
-		bool savedOk = o->image.saveToFile(fil);
-		ASSERT_(savedOk);
-	}
-	else if (IS_CLASS(*displayedImgs[n], CObservationStereoImages))
-	{
-		CObservationStereoImages::Ptr o =
-			std::dynamic_pointer_cast<CObservationStereoImages>(
-				displayedImgs[n]);
+    bool savedOk = o->image.saveToFile(fil);
+    ASSERT_(savedOk);
+  }
+  else if (IS_CLASS(*displayedImgs[n], CObservationStereoImages))
+  {
+    CObservationStereoImages::Ptr o =
+        std::dynamic_pointer_cast<CObservationStereoImages>(displayedImgs[n]);
 
-		wxString defaultFilename;
-		switch (n)
-		{
-			case 0:
-				defaultFilename = (format(
-									   "%s_left_%i.jpg", o->sensorLabel.c_str(),
-									   m_idxInRawlog)
-									   .c_str());
-				break;
-			case 1:
-				defaultFilename = (format(
-									   "%s_right_%i.jpg",
-									   o->sensorLabel.c_str(), m_idxInRawlog)
-									   .c_str());
-				break;
-			case 2:
-				defaultFilename = (format(
-									   "%s_disp_%i.jpg", o->sensorLabel.c_str(),
-									   m_idxInRawlog)
-									   .c_str());
-				break;
-		}
+    wxString defaultFilename;
+    switch (n)
+    {
+      case 0:
+        defaultFilename = (format("%s_left_%i.jpg", o->sensorLabel.c_str(), m_idxInRawlog).c_str());
+        break;
+      case 1:
+        defaultFilename =
+            (format("%s_right_%i.jpg", o->sensorLabel.c_str(), m_idxInRawlog).c_str());
+        break;
+      case 2:
+        defaultFilename = (format("%s_disp_%i.jpg", o->sensorLabel.c_str(), m_idxInRawlog).c_str());
+        break;
+    }
 
-		wxFileDialog dialog(
-			this, caption, defaultDir, defaultFilename, wildcard,
-			wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+    wxFileDialog dialog(
+        this, caption, defaultDir, defaultFilename, wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-		if (dialog.ShowModal() != wxID_OK) return;
+    if (dialog.ShowModal() != wxID_OK) return;
 
-		string fil = string(dialog.GetPath().mb_str());
+    string fil = string(dialog.GetPath().mb_str());
 
-		CImage& im =
-			(n == 2 ? o->imageDisparity
-					: (n == 1 ? o->imageRight : o->imageLeft));
-		bool savedOk = im.saveToFile(fil);
-		ASSERT_(savedOk);
-	}
+    CImage& im = (n == 2 ? o->imageDisparity : (n == 1 ? o->imageRight : o->imageLeft));
+    bool savedOk = im.saveToFile(fil);
+    ASSERT_(savedOk);
+  }
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 void CFormPlayVideo::OnbtnSaveCam1Click(wxCommandEvent&) { saveCamImage(0); }
@@ -1138,14 +1023,15 @@ void CFormPlayVideo::OnbtnSaveCam3Click(wxCommandEvent&) { saveCamImage(2); }
 
 void CFormPlayVideo::OncbImageDirsSelect(wxCommandEvent&)
 {
-	wxString dir = cbImageDirs->GetValue();
-	string dirc = string(dir.mb_str());
+  wxString dir = cbImageDirs->GetValue();
+  string dirc = string(dir.mb_str());
 
-	if (mrpt::system::fileExists(dirc)) { CImage::setImagesPathBase(dirc); }
-	else
-	{
-		wxMessageBox(
-			_("The directory:\n") + dir + _("does not exist."),
-			_("External images"));
-	}
+  if (mrpt::system::fileExists(dirc))
+  {
+    CImage::setImagesPathBase(dirc);
+  }
+  else
+  {
+    wxMessageBox(_("The directory:\n") + dir + _("does not exist."), _("External images"));
+  }
 }

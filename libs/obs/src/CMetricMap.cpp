@@ -29,131 +29,126 @@ CMetricMap::CMetricMap() = default;
 /** Erase all the contents of the map */
 void CMetricMap::clear()
 {
-	internal_clear();
-	publishEvent(mrptEventMetricMapClear(this));
+  internal_clear();
+  publishEvent(mrptEventMetricMapClear(this));
 }
 
 void CMetricMap::loadFromSimpleMap(const mrpt::maps::CSimpleMap& sfSeq)
 {
-	// Erase previous contents:
-	this->clear();
+  // Erase previous contents:
+  this->clear();
 
-	// Insert new content:
-	for (const auto& [pose, sf, twist] : sfSeq)
-	{
-		ASSERTMSG_(pose, "Input map has an empty `CPose3DPDF` ptr");
-		ASSERTMSG_(sf, "Input map has an empty `CSensoryFrame` ptr");
+  // Insert new content:
+  for (const auto& [pose, sf, twist] : sfSeq)
+  {
+    ASSERTMSG_(pose, "Input map has an empty `CPose3DPDF` ptr");
+    ASSERTMSG_(sf, "Input map has an empty `CSensoryFrame` ptr");
 
-		for (auto& o : *sf)
-			o->load();
+    for (auto& o : *sf) o->load();
 
-		sf->insertObservationsInto(*this, pose->getMeanVal());
+    sf->insertObservationsInto(*this, pose->getMeanVal());
 
-		for (auto& o : *sf)
-			o->unload();
-	}
+    for (auto& o : *sf) o->unload();
+  }
 }
 
-double CMetricMap::computeObservationsLikelihood(
-	const CSensoryFrame& sf, const CPose3D& takenFrom)
+double CMetricMap::computeObservationsLikelihood(const CSensoryFrame& sf, const CPose3D& takenFrom)
 {
-	double lik = 0;
-	for (const auto& it : sf)
-		lik += computeObservationLikelihood(*it, takenFrom);
+  double lik = 0;
+  for (const auto& it : sf) lik += computeObservationLikelihood(*it, takenFrom);
 
-	return lik;
+  return lik;
 }
 
 bool CMetricMap::canComputeObservationsLikelihood(const CSensoryFrame& sf) const
 {
-	bool can = false;
-	for (auto it = sf.begin(); !can && it != sf.end(); ++it)
-		can = can || canComputeObservationLikelihood(**it);
-	return can;
+  bool can = false;
+  for (auto it = sf.begin(); !can && it != sf.end(); ++it)
+    can = can || canComputeObservationLikelihood(**it);
+  return can;
 }
 
 bool CMetricMap::insertObservation(
-	const CObservation& obs,
-	const std::optional<const mrpt::poses::CPose3D>& robotPose)
+    const CObservation& obs, const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
-	if (!genericMapParams.enableObservationInsertion) return false;
+  if (!genericMapParams.enableObservationInsertion) return false;
 
-	bool done = internal_insertObservation(obs, robotPose);
-	if (done)
-	{
-		OnPostSuccesfulInsertObs(obs);
-		publishEvent(mrptEventMetricMapInsert(this, &obs, robotPose));
-	}
-	return done;
+  bool done = internal_insertObservation(obs, robotPose);
+  if (done)
+  {
+    OnPostSuccesfulInsertObs(obs);
+    publishEvent(mrptEventMetricMapInsert(this, &obs, robotPose));
+  }
+  return done;
 }
 
 bool CMetricMap::insertObservationPtr(
-	const CObservation::Ptr& obs,
-	const std::optional<const mrpt::poses::CPose3D>& robotPose)
+    const CObservation::Ptr& obs, const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
-	MRPT_START
-	if (!obs) { THROW_EXCEPTION("Trying to pass a null pointer."); }
-	return insertObservation(*obs, robotPose);
-	MRPT_END
+  MRPT_START
+  if (!obs)
+  {
+    THROW_EXCEPTION("Trying to pass a null pointer.");
+  }
+  return insertObservation(*obs, robotPose);
+  MRPT_END
 }
 
 void CMetricMap::determineMatching2D(
-	[[maybe_unused]] const mrpt::maps::CMetricMap* otherMap,
-	[[maybe_unused]] const CPose2D& otherMapPose,
-	[[maybe_unused]] TMatchingPairList& correspondences,
-	[[maybe_unused]] const TMatchingParams& params,
-	[[maybe_unused]] TMatchingExtraResults& extraResults) const
+    [[maybe_unused]] const mrpt::maps::CMetricMap* otherMap,
+    [[maybe_unused]] const CPose2D& otherMapPose,
+    [[maybe_unused]] TMatchingPairList& correspondences,
+    [[maybe_unused]] const TMatchingParams& params,
+    [[maybe_unused]] TMatchingExtraResults& extraResults) const
 {
-	MRPT_START
-	THROW_EXCEPTION("Virtual method not implemented in derived class.");
-	MRPT_END
+  MRPT_START
+  THROW_EXCEPTION("Virtual method not implemented in derived class.");
+  MRPT_END
 }
 
 void CMetricMap::determineMatching3D(
-	[[maybe_unused]] const mrpt::maps::CMetricMap* otherMap,
-	[[maybe_unused]] const CPose3D& otherMapPose,
-	[[maybe_unused]] TMatchingPairList& correspondences,
-	[[maybe_unused]] const TMatchingParams& params,
-	[[maybe_unused]] TMatchingExtraResults& extraResults) const
+    [[maybe_unused]] const mrpt::maps::CMetricMap* otherMap,
+    [[maybe_unused]] const CPose3D& otherMapPose,
+    [[maybe_unused]] TMatchingPairList& correspondences,
+    [[maybe_unused]] const TMatchingParams& params,
+    [[maybe_unused]] TMatchingExtraResults& extraResults) const
 {
-	MRPT_START
-	THROW_EXCEPTION("Virtual method not implemented in derived class.");
-	MRPT_END
+  MRPT_START
+  THROW_EXCEPTION("Virtual method not implemented in derived class.");
+  MRPT_END
 }
 
 float CMetricMap::compute3DMatchingRatio(
-	[[maybe_unused]] const mrpt::maps::CMetricMap* otherMap,
-	[[maybe_unused]] const mrpt::poses::CPose3D& otherMapPose,
-	[[maybe_unused]] const TMatchingRatioParams& params) const
+    [[maybe_unused]] const mrpt::maps::CMetricMap* otherMap,
+    [[maybe_unused]] const mrpt::poses::CPose3D& otherMapPose,
+    [[maybe_unused]] const TMatchingRatioParams& params) const
 {
-	MRPT_START
-	THROW_EXCEPTION("Virtual method not implemented in derived class.");
-	MRPT_END
+  MRPT_START
+  THROW_EXCEPTION("Virtual method not implemented in derived class.");
+  MRPT_END
 }
 
 float CMetricMap::squareDistanceToClosestCorrespondence(
-	[[maybe_unused]] float x0, [[maybe_unused]] float y0) const
+    [[maybe_unused]] float x0, [[maybe_unused]] float y0) const
 {
-	MRPT_START
-	THROW_EXCEPTION("Virtual method not implemented in derived class.");
-	MRPT_END
+  MRPT_START
+  THROW_EXCEPTION("Virtual method not implemented in derived class.");
+  MRPT_END
 }
 
-bool CMetricMap::canComputeObservationLikelihood(
-	const mrpt::obs::CObservation& obs) const
+bool CMetricMap::canComputeObservationLikelihood(const mrpt::obs::CObservation& obs) const
 {
-	if (genericMapParams.enableObservationLikelihood)
-		return internal_canComputeObservationLikelihood(obs);
-	else
-		return false;
+  if (genericMapParams.enableObservationLikelihood)
+    return internal_canComputeObservationLikelihood(obs);
+  else
+    return false;
 }
 
 double CMetricMap::computeObservationLikelihood(
-	const mrpt::obs::CObservation& obs,
-	const mrpt::poses::CPose3D& takenFrom) const
+    const mrpt::obs::CObservation& obs, const mrpt::poses::CPose3D& takenFrom) const
 {
-	if (genericMapParams.enableObservationLikelihood)
-		return internal_computeObservationLikelihood(obs, takenFrom);
-	else
-		return false;
+  if (genericMapParams.enableObservationLikelihood)
+    return internal_computeObservationLikelihood(obs, takenFrom);
+  else
+    return false;
 }

@@ -14,9 +14,9 @@
 
 class xRawLogViewerApp : public wxApp
 {
-   public:
-	bool OnInit() override;
-	int OnExit() override;
+ public:
+  bool OnInit() override;
+  int OnExit() override;
 };
 
-#endif	// XRAWLOGVIEWERAPP_H
+#endif  // XRAWLOGVIEWERAPP_H

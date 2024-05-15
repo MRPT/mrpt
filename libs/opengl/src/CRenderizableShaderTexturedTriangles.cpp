@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"	 // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 //
 #include <mrpt/opengl/CRenderizableShaderTexturedTriangles.h>
 #include <mrpt/opengl/TLightParameters.h>
@@ -26,27 +26,25 @@ using namespace mrpt::math;
 using namespace std;
 using mrpt::img::CImage;
 
-IMPLEMENTS_VIRTUAL_SERIALIZABLE(
-	CRenderizableShaderTexturedTriangles, CRenderizable, mrpt::opengl)
+IMPLEMENTS_VIRTUAL_SERIALIZABLE(CRenderizableShaderTexturedTriangles, CRenderizable, mrpt::opengl)
 
 void CRenderizableShaderTexturedTriangles::renderUpdateBuffers() const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-	// Generate vertices & colors into m_triangles
-	const_cast<CRenderizableShaderTexturedTriangles&>(*this)
-		.onUpdateBuffers_TexturedTriangles();
+  // Generate vertices & colors into m_triangles
+  const_cast<CRenderizableShaderTexturedTriangles&>(*this).onUpdateBuffers_TexturedTriangles();
 
-	std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
+  std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
 
-	const auto n = m_triangles.size();
+  const auto n = m_triangles.size();
 
-	// Define OpenGL buffers:
-	m_vbo.createOnce();
-	m_vbo.bind();
-	m_vbo.allocate(m_triangles.data(), sizeof(m_triangles[0]) * n);
+  // Define OpenGL buffers:
+  m_vbo.createOnce();
+  m_vbo.bind();
+  m_vbo.allocate(m_triangles.data(), sizeof(m_triangles[0]) * n);
 
-	// VAO: required to use glEnableVertexAttribArray()
-	m_vao.createOnce();
+  // VAO: required to use glEnableVertexAttribArray()
+  m_vao.createOnce();
 
 #endif
 }
@@ -55,335 +53,328 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
-	// This will load and/or select our texture, only once:
-	initializeTextures();
-	ASSERT_(m_glTexture.initialized());
+  // This will load and/or select our texture, only once:
+  initializeTextures();
+  ASSERT_(m_glTexture.initialized());
 
-	std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
+  std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
 
-	// Set the texture uniform:
-	const Program& s = *rc.shader;
-	const auto texUnit = m_glTexture.textureUnit();
-	if (s.hasUniform("textureSampler") &&
-		(!rc.activeTextureUnit || *rc.activeTextureUnit != texUnit))
-	{
-		rc.activeTextureUnit = texUnit;	 // buffer it
-		// bound to GL_TEXTURE0 + "i":
-		s.setInt("textureSampler", texUnit);
-	}
+  // Set the texture uniform:
+  const Program& s = *rc.shader;
+  const auto texUnit = m_glTexture.textureUnit();
+  if (s.hasUniform("textureSampler") && (!rc.activeTextureUnit || *rc.activeTextureUnit != texUnit))
+  {
+    rc.activeTextureUnit = texUnit;  // buffer it
+    // bound to GL_TEXTURE0 + "i":
+    s.setInt("textureSampler", texUnit);
+  }
 
-	// Lights:
-	if (m_enableLight && rc.lights && rc.shader->hasUniform("light_color") &&
-		(!rc.activeLights || rc.activeLights.value() != rc.lights))
-	{
-		// buffered pointer, to prevent re-setting the opengl state with the
-		// same values, a performance killer:
-		rc.activeLights = rc.lights;
+  // Lights:
+  if (m_enableLight && rc.lights && rc.shader->hasUniform("light_color") &&
+      (!rc.activeLights || rc.activeLights.value() != rc.lights))
+  {
+    // buffered pointer, to prevent re-setting the opengl state with the
+    // same values, a performance killer:
+    rc.activeLights = rc.lights;
 
-		const auto& l = rc.lights;
+    const auto& l = rc.lights;
 
-		s.setFloat3("light_color", l->color.R, l->color.G, l->color.B);
-		s.setFloat3(
-			"light_direction", l->direction.x, l->direction.y, l->direction.z);
-		s.setFloat("light_ambient", l->ambient);
-		s.setFloat("light_diffuse", l->diffuse);
-		if (rc.shader->hasUniform("light_specular"))
-			s.setFloat("light_specular", l->specular);
+    s.setFloat3("light_color", l->color.R, l->color.G, l->color.B);
+    s.setFloat3("light_direction", l->direction.x, l->direction.y, l->direction.z);
+    s.setFloat("light_ambient", l->ambient);
+    s.setFloat("light_diffuse", l->diffuse);
+    if (rc.shader->hasUniform("light_specular")) s.setFloat("light_specular", l->specular);
 
-		if (rc.shader->hasUniform("light_zmax"))
-			s.setFloat("light_zmax", rc.state->getLastLightClipZFar());
-		if (rc.shader->hasUniform("camera_far_plane"))
-			s.setFloat("camera_far_plane", rc.state->getLastClipZFar());
+    if (rc.shader->hasUniform("light_zmax"))
+      s.setFloat("light_zmax", rc.state->getLastLightClipZFar());
+    if (rc.shader->hasUniform("camera_far_plane"))
+      s.setFloat("camera_far_plane", rc.state->getLastClipZFar());
 
-		CHECK_OPENGL_ERROR_IN_DEBUG();
-	}
+    CHECK_OPENGL_ERROR_IN_DEBUG();
+  }
 
-	// Set the texture uniform:
-	if (rc.shader->hasUniform("shadowMap"))
-	{
-		// bound to GL_TEXTURE0 + "i":
-		s.setInt("shadowMap", SHADOW_MAP_TEXTURE_UNIT);
+  // Set the texture uniform:
+  if (rc.shader->hasUniform("shadowMap"))
+  {
+    // bound to GL_TEXTURE0 + "i":
+    s.setInt("shadowMap", SHADOW_MAP_TEXTURE_UNIT);
 
-		// Shadow params:
-		if (const auto& l = rc.lights; l)
-		{
-			rc.shader->setFloat("shadow_bias", l->shadow_bias);
-			rc.shader->setFloat(
-				"shadow_bias_cam2frag", l->shadow_bias_cam2frag);
-			rc.shader->setFloat("shadow_bias_normal", l->shadow_bias_normal);
-		}
-	}
+    // Shadow params:
+    if (const auto& l = rc.lights; l)
+    {
+      rc.shader->setFloat("shadow_bias", l->shadow_bias);
+      rc.shader->setFloat("shadow_bias_cam2frag", l->shadow_bias_cam2frag);
+      rc.shader->setFloat("shadow_bias_normal", l->shadow_bias_normal);
+    }
+  }
 
-	// Set up the vertex array:
-	std::optional<GLuint> attr_position;
-	if (rc.shader->hasAttribute("position"))
-	{
-		attr_position = rc.shader->attributeId("position");
-		m_vao.bind();
-		glEnableVertexAttribArray(*attr_position);
-		m_vbo.bind();
-		glVertexAttribPointer(
-			*attr_position, /* attribute */
-			3, /* size */
-			GL_FLOAT, /* type */
-			GL_FALSE, /* normalized? */
-			sizeof(TTriangle::Vertex), /* stride */
-			BUFFER_OFFSET(offsetof(TTriangle::Vertex, xyzrgba.pt.x)));
-		CHECK_OPENGL_ERROR_IN_DEBUG();
-	}
+  // Set up the vertex array:
+  std::optional<GLuint> attr_position;
+  if (rc.shader->hasAttribute("position"))
+  {
+    attr_position = rc.shader->attributeId("position");
+    m_vao.bind();
+    glEnableVertexAttribArray(*attr_position);
+    m_vbo.bind();
+    glVertexAttribPointer(
+        *attr_position,            /* attribute */
+        3,                         /* size */
+        GL_FLOAT,                  /* type */
+        GL_FALSE,                  /* normalized? */
+        sizeof(TTriangle::Vertex), /* stride */
+        BUFFER_OFFSET(offsetof(TTriangle::Vertex, xyzrgba.pt.x)));
+    CHECK_OPENGL_ERROR_IN_DEBUG();
+  }
 
-	// Set up the normals array:
-	std::optional<GLuint> attr_normals;
-	if (rc.shader->hasAttribute("vertexNormal"))
-	{
-		attr_normals = rc.shader->attributeId("vertexNormal");
-		glEnableVertexAttribArray(*attr_normals);
-		m_vbo.bind();
-		glVertexAttribPointer(
-			*attr_normals, /* attribute */
-			3, /* size */
-			GL_FLOAT, /* type */
-			GL_FALSE, /* normalized? */
-			sizeof(TTriangle::Vertex), /* stride */
-			BUFFER_OFFSET(offsetof(TTriangle::Vertex, normal.x)));
-		CHECK_OPENGL_ERROR_IN_DEBUG();
-	}
+  // Set up the normals array:
+  std::optional<GLuint> attr_normals;
+  if (rc.shader->hasAttribute("vertexNormal"))
+  {
+    attr_normals = rc.shader->attributeId("vertexNormal");
+    glEnableVertexAttribArray(*attr_normals);
+    m_vbo.bind();
+    glVertexAttribPointer(
+        *attr_normals,             /* attribute */
+        3,                         /* size */
+        GL_FLOAT,                  /* type */
+        GL_FALSE,                  /* normalized? */
+        sizeof(TTriangle::Vertex), /* stride */
+        BUFFER_OFFSET(offsetof(TTriangle::Vertex, normal.x)));
+    CHECK_OPENGL_ERROR_IN_DEBUG();
+  }
 
-	// Set up the UV array:
-	std::optional<GLuint> attr_uv;
-	if (rc.shader->hasAttribute("vertexUV"))
-	{
-		attr_uv = rc.shader->attributeId("vertexUV");
-		glEnableVertexAttribArray(*attr_uv);
-		m_vbo.bind();
-		glVertexAttribPointer(
-			*attr_uv, /* attribute */
-			2, /* size */
-			GL_FLOAT, /* type */
-			GL_FALSE, /* normalized? */
-			sizeof(TTriangle::Vertex), /* stride */
-			BUFFER_OFFSET(offsetof(TTriangle::Vertex, uv.x)));
-		CHECK_OPENGL_ERROR_IN_DEBUG();
-	}
+  // Set up the UV array:
+  std::optional<GLuint> attr_uv;
+  if (rc.shader->hasAttribute("vertexUV"))
+  {
+    attr_uv = rc.shader->attributeId("vertexUV");
+    glEnableVertexAttribArray(*attr_uv);
+    m_vbo.bind();
+    glVertexAttribPointer(
+        *attr_uv,                  /* attribute */
+        2,                         /* size */
+        GL_FLOAT,                  /* type */
+        GL_FALSE,                  /* normalized? */
+        sizeof(TTriangle::Vertex), /* stride */
+        BUFFER_OFFSET(offsetof(TTriangle::Vertex, uv.x)));
+    CHECK_OPENGL_ERROR_IN_DEBUG();
+  }
 
-	if (m_cullface == TCullFace::NONE &&
-		(!rc.activeCullFace || *rc.activeCullFace != TCullFace::NONE))
-	{
-		rc.activeCullFace = TCullFace::NONE;
-		glDisable(GL_CULL_FACE);
-	}
-	if (m_cullface != TCullFace::NONE &&
-		(!rc.activeCullFace || *rc.activeCullFace != m_cullface))
-	{
-		glEnable(GL_CULL_FACE);
-		glCullFace(m_cullface == TCullFace::FRONT ? GL_FRONT : GL_BACK);
-		CHECK_OPENGL_ERROR_IN_DEBUG();
-		rc.activeCullFace = m_cullface;
-	}
+  if (m_cullface == TCullFace::NONE &&
+      (!rc.activeCullFace || *rc.activeCullFace != TCullFace::NONE))
+  {
+    rc.activeCullFace = TCullFace::NONE;
+    glDisable(GL_CULL_FACE);
+  }
+  if (m_cullface != TCullFace::NONE && (!rc.activeCullFace || *rc.activeCullFace != m_cullface))
+  {
+    glEnable(GL_CULL_FACE);
+    glCullFace(m_cullface == TCullFace::FRONT ? GL_FRONT : GL_BACK);
+    CHECK_OPENGL_ERROR_IN_DEBUG();
+    rc.activeCullFace = m_cullface;
+  }
 
-	// Draw:
-	glDrawArrays(GL_TRIANGLES, 0, 3 * m_triangles.size());
-	CHECK_OPENGL_ERROR_IN_DEBUG();
+  // Draw:
+  glDrawArrays(GL_TRIANGLES, 0, 3 * m_triangles.size());
+  CHECK_OPENGL_ERROR_IN_DEBUG();
 
-	if (attr_position) glDisableVertexAttribArray(*attr_position);
-	if (attr_uv) glDisableVertexAttribArray(*attr_uv);
-	if (attr_normals) glDisableVertexAttribArray(*attr_normals);
+  if (attr_position) glDisableVertexAttribArray(*attr_position);
+  if (attr_uv) glDisableVertexAttribArray(*attr_uv);
+  if (attr_normals) glDisableVertexAttribArray(*attr_normals);
 
 #endif
 }
 
-void CRenderizableShaderTexturedTriangles::assignImage(
-	const CImage& img, const CImage& imgAlpha)
+void CRenderizableShaderTexturedTriangles::assignImage(const CImage& img, const CImage& imgAlpha)
 {
-	MRPT_START
+  MRPT_START
 
-	CRenderizable::notifyChange();
+  CRenderizable::notifyChange();
 
-	m_glTexture.unloadTexture();
+  m_glTexture.unloadTexture();
 
-	// Make a copy:
-	m_textureImage = img;
-	m_textureImageAlpha = imgAlpha;
-	m_textureImageAssigned = true;
+  // Make a copy:
+  m_textureImage = img;
+  m_textureImageAlpha = imgAlpha;
+  m_textureImageAssigned = true;
 
-	m_enableTransparency = true;
+  m_enableTransparency = true;
 
-	MRPT_END
+  MRPT_END
 }
 
 void CRenderizableShaderTexturedTriangles::assignImage(const CImage& img)
 {
-	MRPT_START
+  MRPT_START
 
-	CRenderizable::notifyChange();
+  CRenderizable::notifyChange();
 
-	m_glTexture.unloadTexture();
+  m_glTexture.unloadTexture();
 
-	// Make a copy:
-	m_textureImage = img;
-	m_textureImageAssigned = true;
+  // Make a copy:
+  m_textureImage = img;
+  m_textureImageAssigned = true;
 
-	m_enableTransparency = false;
+  m_enableTransparency = false;
 
-	MRPT_END
+  MRPT_END
 }
 
-void CRenderizableShaderTexturedTriangles::assignImage(
-	CImage&& img, CImage&& imgAlpha)
+void CRenderizableShaderTexturedTriangles::assignImage(CImage&& img, CImage&& imgAlpha)
 {
-	MRPT_START
+  MRPT_START
 
-	CRenderizable::notifyChange();
+  CRenderizable::notifyChange();
 
-	m_glTexture.unloadTexture();
+  m_glTexture.unloadTexture();
 
-	m_textureImage = std::move(img);
-	m_textureImageAlpha = std::move(imgAlpha);
-	m_textureImageAssigned = true;
+  m_textureImage = std::move(img);
+  m_textureImageAlpha = std::move(imgAlpha);
+  m_textureImageAssigned = true;
 
-	m_enableTransparency = true;
+  m_enableTransparency = true;
 
-	MRPT_END
+  MRPT_END
 }
 
 void CRenderizableShaderTexturedTriangles::assignImage(CImage&& img)
 {
-	MRPT_START
+  MRPT_START
 
-	CRenderizable::notifyChange();
+  CRenderizable::notifyChange();
 
-	m_glTexture.unloadTexture();
+  m_glTexture.unloadTexture();
 
-	m_textureImage = std::move(img);
-	m_textureImageAssigned = true;
+  m_textureImage = std::move(img);
+  m_textureImageAssigned = true;
 
-	m_enableTransparency = false;
+  m_enableTransparency = false;
 
-	MRPT_END
+  MRPT_END
 }
 
 void CRenderizableShaderTexturedTriangles::initializeTextures() const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
-	// Note: if we are rendering and the user assigned us no texture image,
-	// let's create a dummy one with the uniform CRenderizable's color:
-	if (!textureImageHasBeenAssigned() || m_textureImage.isEmpty())
-	{
-		mrpt::img::CImage im_rgb(4, 4, mrpt::img::CH_RGB),
-			im_a(4, 4, mrpt::img::CH_GRAY);
-		const auto col = getColor_u8();
-		im_rgb.filledRectangle(0, 0, 3, 3, col);
-		im_a.filledRectangle(
-			0, 0, 3, 3, mrpt::img::TColor(col.A, col.A, col.A, col.A));
-		const_cast<CRenderizableShaderTexturedTriangles*>(this)->assignImage(
-			std::move(im_rgb), std::move(im_a));
-	}
+  // Note: if we are rendering and the user assigned us no texture image,
+  // let's create a dummy one with the uniform CRenderizable's color:
+  if (!textureImageHasBeenAssigned() || m_textureImage.isEmpty())
+  {
+    mrpt::img::CImage im_rgb(4, 4, mrpt::img::CH_RGB), im_a(4, 4, mrpt::img::CH_GRAY);
+    const auto col = getColor_u8();
+    im_rgb.filledRectangle(0, 0, 3, 3, col);
+    im_a.filledRectangle(0, 0, 3, 3, mrpt::img::TColor(col.A, col.A, col.A, col.A));
+    const_cast<CRenderizableShaderTexturedTriangles*>(this)->assignImage(
+        std::move(im_rgb), std::move(im_a));
+  }
 
-	if (m_glTexture.initialized())
-	{
-		m_glTexture.bindAsTexture2D();	// activate it:
-		return;
-	}
+  if (m_glTexture.initialized())
+  {
+    m_glTexture.bindAsTexture2D();  // activate it:
+    return;
+  }
 
-	// Reserve the new one --------------------------
-	mrpt::opengl::Texture::Options opts;
-	opts.enableTransparency = m_enableTransparency;
-	opts.magnifyLinearFilter = m_textureInterpolate;
-	opts.generateMipMaps = m_textureUseMipMaps;
+  // Reserve the new one --------------------------
+  mrpt::opengl::Texture::Options opts;
+  opts.enableTransparency = m_enableTransparency;
+  opts.magnifyLinearFilter = m_textureInterpolate;
+  opts.generateMipMaps = m_textureUseMipMaps;
 
-	m_glTexture.assignImage2D(m_textureImage, m_textureImageAlpha, opts);
+  m_glTexture.assignImage2D(m_textureImage, m_textureImageAlpha, opts);
 
 #endif
 }
 
 CRenderizableShaderTexturedTriangles::~CRenderizableShaderTexturedTriangles()
 {
-	try
-	{
-		m_glTexture.unloadTexture();
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr
-			<< "[~CRenderizableShaderTexturedTriangles] Ignoring exception: "
-			<< mrpt::exception_to_str(e);
-	}
+  try
+  {
+    m_glTexture.unloadTexture();
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "[~CRenderizableShaderTexturedTriangles] Ignoring exception: "
+              << mrpt::exception_to_str(e);
+  }
 }
 
 void CRenderizableShaderTexturedTriangles::writeToStreamTexturedObject(
-	mrpt::serialization::CArchive& out) const
+    mrpt::serialization::CArchive& out) const
 {
-	uint8_t ver = 3;
+  uint8_t ver = 3;
 
-	out << ver;
-	out << m_enableTransparency << m_textureInterpolate << m_textureUseMipMaps;
-	out << m_textureImage;
-	if (m_enableTransparency) out << m_textureImageAlpha;
-	out << m_textureImageAssigned;
-	out << m_enableLight << static_cast<uint8_t>(m_cullface);  // v2
+  out << ver;
+  out << m_enableTransparency << m_textureInterpolate << m_textureUseMipMaps;
+  out << m_textureImage;
+  if (m_enableTransparency) out << m_textureImageAlpha;
+  out << m_textureImageAssigned;
+  out << m_enableLight << static_cast<uint8_t>(m_cullface);  // v2
 }
 
 void CRenderizableShaderTexturedTriangles::readFromStreamTexturedObject(
-	mrpt::serialization::CArchive& in)
+    mrpt::serialization::CArchive& in)
 {
-	uint8_t version;
-	in >> version;
+  uint8_t version;
+  in >> version;
 
-	switch (version)
-	{
-		case 0:
-		case 1:
-		case 2:
-		case 3:
-		{
-			in >> m_enableTransparency >> m_textureInterpolate;
-			if (version >= 3) { in >> m_textureUseMipMaps; }
-			else
-			{
-				m_textureUseMipMaps = true;
-			}
-			in >> m_textureImage;
-			if (m_enableTransparency)
-			{
-				in >> m_textureImageAlpha;
-				assignImage(m_textureImage, m_textureImageAlpha);
-			}
-			else
-			{
-				assignImage(m_textureImage);
-			}
-			if (version >= 1) in >> m_textureImageAssigned;
-			else
-				m_textureImageAssigned = true;
+  switch (version)
+  {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    {
+      in >> m_enableTransparency >> m_textureInterpolate;
+      if (version >= 3)
+      {
+        in >> m_textureUseMipMaps;
+      }
+      else
+      {
+        m_textureUseMipMaps = true;
+      }
+      in >> m_textureImage;
+      if (m_enableTransparency)
+      {
+        in >> m_textureImageAlpha;
+        assignImage(m_textureImage, m_textureImageAlpha);
+      }
+      else
+      {
+        assignImage(m_textureImage);
+      }
+      if (version >= 1)
+        in >> m_textureImageAssigned;
+      else
+        m_textureImageAssigned = true;
 
-			if (version >= 2)
-			{
-				in >> m_enableLight;
-				m_cullface = static_cast<TCullFace>(in.ReadAs<uint8_t>());
-			}
-		}
-		break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	};
+      if (version >= 2)
+      {
+        in >> m_enableLight;
+        m_cullface = static_cast<TCullFace>(in.ReadAs<uint8_t>());
+      }
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
 
-	CRenderizable::notifyChange();
+  CRenderizable::notifyChange();
 }
 
-const mrpt::math::TBoundingBoxf
-	CRenderizableShaderTexturedTriangles::trianglesBoundingBox() const
+const mrpt::math::TBoundingBoxf CRenderizableShaderTexturedTriangles::trianglesBoundingBox() const
 {
-	mrpt::math::TBoundingBoxf bb;
+  mrpt::math::TBoundingBoxf bb;
 
-	std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
+  std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
 
-	if (m_triangles.empty()) return bb;
+  if (m_triangles.empty()) return bb;
 
-	bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
+  bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
 
-	for (const auto& t : m_triangles)
-		for (int i = 0; i < 3; i++)
-			bb.updateWithPoint(t.vertices[i].xyzrgba.pt);
+  for (const auto& t : m_triangles)
+    for (int i = 0; i < 3; i++) bb.updateWithPoint(t.vertices[i].xyzrgba.pt);
 
-	return bb;
+  return bb;
 }

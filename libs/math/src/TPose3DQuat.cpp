@@ -20,17 +20,14 @@ static_assert(std::is_trivially_copyable_v<TPose3DQuat>);
 
 void TPose3DQuat::fromString(const std::string& s)
 {
-	CMatrixDouble m;
-	if (!m.fromMatlabStringFormat(s))
-		THROW_EXCEPTION_FMT(
-			"Malformed expression in ::fromString, s=\"%s\"", s.c_str());
-	ASSERTMSG_(
-		m.rows() == 1 && m.cols() == 7, "Wrong size of vector in ::fromString");
-	for (int i = 0; i < m.cols(); i++)
-		(*this)[i] = m(0, i);
+  CMatrixDouble m;
+  if (!m.fromMatlabStringFormat(s))
+    THROW_EXCEPTION_FMT("Malformed expression in ::fromString, s=\"%s\"", s.c_str());
+  ASSERTMSG_(m.rows() == 1 && m.cols() == 7, "Wrong size of vector in ::fromString");
+  for (int i = 0; i < m.cols(); i++) (*this)[i] = m(0, i);
 }
 
 double TPose3DQuat::norm() const
 {
-	return std::sqrt(mrpt::square(x) + mrpt::square(y) + mrpt::square(z));
+  return std::sqrt(mrpt::square(x) + mrpt::square(y) + mrpt::square(z));
 }

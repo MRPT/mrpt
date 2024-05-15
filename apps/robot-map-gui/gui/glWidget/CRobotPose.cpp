@@ -13,18 +13,19 @@
 
 CRobotPose::CRobotPose(size_t id) : CSetOfObjects(), m_id(id)
 {
-	m_currentObj = mrpt::opengl::stock_objects::CornerXYZSimple();
-	insert(m_currentObj);
+  m_currentObj = mrpt::opengl::stock_objects::CornerXYZSimple();
+  insert(m_currentObj);
 }
 
 size_t CRobotPose::getId() const { return m_id; }
 void CRobotPose::setSelected(bool is)
 {
-	removeObject(m_currentObj);
+  removeObject(m_currentObj);
 
-	if (is) m_currentObj = mrpt::opengl::stock_objects::CornerXYZEye();
-	else
-		m_currentObj = mrpt::opengl::stock_objects::CornerXYZSimple();
+  if (is)
+    m_currentObj = mrpt::opengl::stock_objects::CornerXYZEye();
+  else
+    m_currentObj = mrpt::opengl::stock_objects::CornerXYZSimple();
 
-	insert(m_currentObj);
+  insert(m_currentObj);
 }

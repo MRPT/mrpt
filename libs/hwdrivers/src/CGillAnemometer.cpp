@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"	// Precompiled headers
+#include "hwdrivers-precomp.h"  // Precompiled headers
 //
 #include <mrpt/hwdrivers/CGillAnemometer.h>
 #include <mrpt/system/datetime.h>
@@ -24,202 +24,197 @@ using namespace mrpt::hwdrivers;
 IMPLEMENTS_GENERIC_SENSOR(CGillAnemometer, mrpt::hwdrivers)
 
 /* -----------------------------------------------------
-				Constructor
+        Constructor
    ----------------------------------------------------- */
 CGillAnemometer::CGillAnemometer() { m_sensorLabel = "WINDSONIC"; }
 /* -----------------------------------------------------
-				loadConfig_sensorSpecific
+        loadConfig_sensorSpecific
    ----------------------------------------------------- */
 void CGillAnemometer::loadConfig_sensorSpecific(
-	const mrpt::config::CConfigFileBase& configSource,
-	const std::string& iniSection)
+    const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection)
 {
 #ifdef _WIN32
-	com_port =
-		configSource.read_string(iniSection, "COM_port_WIN", "COM1", true);
+  com_port = configSource.read_string(iniSection, "COM_port_WIN", "COM1", true);
 #else
-	com_port =
-		configSource.read_string(iniSection, "COM_port_LIN", "/dev/tty0", true);
+  com_port = configSource.read_string(iniSection, "COM_port_LIN", "/dev/tty0", true);
 #endif
 
-	com_bauds = configSource.read_int(iniSection, "COM_baudRate", 9600, false);
+  com_bauds = configSource.read_int(iniSection, "COM_baudRate", 9600, false);
 
-	pose_x = configSource.read_float(iniSection, "pose_x", 0, true);
-	pose_y = configSource.read_float(iniSection, "pose_y", 0, true);
-	pose_z = configSource.read_float(iniSection, "pose_z", 0, true);
-	pose_roll = configSource.read_float(iniSection, "pose_roll", 0, true);
-	pose_pitch = configSource.read_float(iniSection, "pose_pitch", 0, true);
-	pose_yaw = configSource.read_float(iniSection, "pose_yaw", 0, true);
+  pose_x = configSource.read_float(iniSection, "pose_x", 0, true);
+  pose_y = configSource.read_float(iniSection, "pose_y", 0, true);
+  pose_z = configSource.read_float(iniSection, "pose_z", 0, true);
+  pose_roll = configSource.read_float(iniSection, "pose_roll", 0, true);
+  pose_pitch = configSource.read_float(iniSection, "pose_pitch", 0, true);
+  pose_yaw = configSource.read_float(iniSection, "pose_yaw", 0, true);
 }
 
 /* -----------------------------------------------------
-				tryToOpenTheCOM
+        tryToOpenTheCOM
 ----------------------------------------------------- */
 bool CGillAnemometer::tryToOpenTheCOM()
 {
-	if (COM.isOpen()) return true;	// Already open
+  if (COM.isOpen()) return true;  // Already open
 
-	if (m_verbose)
-		cout << "[CGillAnemometer] Opening " << com_port << " @ " << com_bauds
-			 << endl;
+  if (m_verbose) cout << "[CGillAnemometer] Opening " << com_port << " @ " << com_bauds << endl;
 
-	try
-	{
-		COM.open(com_port);
-		COM.setConfig(com_bauds, 0, 8, 1);
-		COM.setTimeouts(50, 1, 100, 1, 20);
-		COM.purgeBuffers();
+  try
+  {
+    COM.open(com_port);
+    COM.setConfig(com_bauds, 0, 8, 1);
+    COM.setTimeouts(50, 1, 100, 1, 20);
+    COM.purgeBuffers();
 
-		return true;  // All OK!
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "[CGillAnemometer::tryToOpenTheCOM] Error opening or "
-					 "configuring the serial port:"
-				  << std::endl
-				  << e.what();
-		COM.close();
-		return false;
-	}
-	catch (...)
-	{
-		std::cerr << "[CGillAnemometer::tryToOpenTheCOM] Error opening or "
-					 "configuring the serial port."
-				  << std::endl;
-		COM.close();
-		return false;
-	}
+    return true;  // All OK!
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "[CGillAnemometer::tryToOpenTheCOM] Error opening or "
+                 "configuring the serial port:"
+              << std::endl
+              << e.what();
+    COM.close();
+    return false;
+  }
+  catch (...)
+  {
+    std::cerr << "[CGillAnemometer::tryToOpenTheCOM] Error opening or "
+                 "configuring the serial port."
+              << std::endl;
+    COM.close();
+    return false;
+  }
 }
 
 /* -----------------------------------------------------
-				doProcess
+        doProcess
 ----------------------------------------------------- */
 void CGillAnemometer::doProcess()
 {
-	// Is the COM open?
-	if (!tryToOpenTheCOM())
-	{
-		m_state = ssError;
-		printf("ERROR: No observation received from the Anemometer!\n");
-		THROW_EXCEPTION("Cannot open the serial port");
-	}
+  // Is the COM open?
+  if (!tryToOpenTheCOM())
+  {
+    m_state = ssError;
+    printf("ERROR: No observation received from the Anemometer!\n");
+    THROW_EXCEPTION("Cannot open the serial port");
+  }
 
-	mrpt::obs::CObservationWindSensor::Ptr obsPtr =
-		mrpt::obs::CObservationWindSensor::Create();
-	bool have_reading = false;
-	std::string wind_reading;
-	bool time_out = false;
+  mrpt::obs::CObservationWindSensor::Ptr obsPtr = mrpt::obs::CObservationWindSensor::Create();
+  bool have_reading = false;
+  std::string wind_reading;
+  bool time_out = false;
 
-	try
-	{
-		while (!have_reading)
-		{
-			// Read info into string: (default is Polar continuous)
-			// format = <STX>Q, dir, speed, units, status, <ETX>
-			// Q      -> Sensor identifier
-			// dir    -> 3 digits (0-359)
-			// speed  -> %3.2f
-			// units  -> M (m/s), K (km/h)
-			// status -> 00 = ok, else is an Error Code
+  try
+  {
+    while (!have_reading)
+    {
+      // Read info into string: (default is Polar continuous)
+      // format = <STX>Q, dir, speed, units, status, <ETX>
+      // Q      -> Sensor identifier
+      // dir    -> 3 digits (0-359)
+      // speed  -> %3.2f
+      // units  -> M (m/s), K (km/h)
+      // status -> 00 = ok, else is an Error Code
 
-			wind_reading = COM.ReadString(500, &time_out);
-			if (time_out)
-			{
-				cout << "[CGillAnemometer] " << com_port << " @ " << com_bauds
-					 << " - measurement Timed-Out" << endl;
-				std::this_thread::sleep_for(10ms);
-			}
-			else
-				have_reading = true;
-		}
+      wind_reading = COM.ReadString(500, &time_out);
+      if (time_out)
+      {
+        cout << "[CGillAnemometer] " << com_port << " @ " << com_bauds << " - measurement Timed-Out"
+             << endl;
+        std::this_thread::sleep_for(10ms);
+      }
+      else
+        have_reading = true;
+    }
 
-		// parse format = <STX>Q, dir, speed, units, status, <ETX>
-		std::deque<std::string> list;
-		mrpt::system::tokenize(wind_reading, ",", list);
-		if (list.size() == 6)
-		{
-			// Status
-			int status = atoi(list.at(4).c_str());
-			if (status == 0)
-			{
-				// Units
-				std::string s_units = list.at(3);
-				// Module
-				std::string s_speed = list.at(2);
-				if (s_units == "M") obsPtr->speed = atof(s_speed.c_str());
-				else if (s_units == "K")
-					obsPtr->speed = atof(s_speed.c_str()) * 1000 / 3600;
-				else
-				{
-					printf(
-						"ERROR: WindSonic measurement units not supported: "
-						"%s\n",
-						s_units.c_str());
-					obsPtr->speed = 0.0;
-				}
-				// angle
-				std::string s_direction = list.at(1);
-				obsPtr->direction = atof(s_direction.c_str());
+    // parse format = <STX>Q, dir, speed, units, status, <ETX>
+    std::deque<std::string> list;
+    mrpt::system::tokenize(wind_reading, ",", list);
+    if (list.size() == 6)
+    {
+      // Status
+      int status = atoi(list.at(4).c_str());
+      if (status == 0)
+      {
+        // Units
+        std::string s_units = list.at(3);
+        // Module
+        std::string s_speed = list.at(2);
+        if (s_units == "M")
+          obsPtr->speed = atof(s_speed.c_str());
+        else if (s_units == "K")
+          obsPtr->speed = atof(s_speed.c_str()) * 1000 / 3600;
+        else
+        {
+          printf(
+              "ERROR: WindSonic measurement units not supported: "
+              "%s\n",
+              s_units.c_str());
+          obsPtr->speed = 0.0;
+        }
+        // angle
+        std::string s_direction = list.at(1);
+        obsPtr->direction = atof(s_direction.c_str());
 
-				// Prepare observation
-				obsPtr->sensorLabel = m_sensorLabel;
-				obsPtr->timestamp = mrpt::Clock::now();
-				obsPtr->sensorPoseOnRobot = mrpt::poses::CPose3D(
-					pose_x, pose_y, pose_z, pose_yaw, pose_pitch, pose_roll);
-				appendObservation(obsPtr);
-			}
-			else
-				printf("ERROR: WindSonic error code %u\n", status);
-		}
-		else if (list.size() == 5)	// when there is no wind, the sensor does
-		// not provide a wind direction
-		{
-			// Status
-			int status = atoi(list.at(3).c_str());
-			if (status == 0)
-			{
-				// Units
-				std::string s_units = list.at(2);
-				// module
-				std::string s_speed = list.at(1);
-				if (s_units == "M") obsPtr->speed = atof(s_speed.c_str());
-				else if (s_units == "K")
-					obsPtr->speed = atof(s_speed.c_str()) * 1000 / 3600;
-				else
-				{
-					printf(
-						"ERROR: WindSonic measurement units not supported: "
-						"%s\n",
-						s_units.c_str());
-					obsPtr->speed = 0.0;
-				}
-				// Angle
-				obsPtr->direction = 0.0;
+        // Prepare observation
+        obsPtr->sensorLabel = m_sensorLabel;
+        obsPtr->timestamp = mrpt::Clock::now();
+        obsPtr->sensorPoseOnRobot =
+            mrpt::poses::CPose3D(pose_x, pose_y, pose_z, pose_yaw, pose_pitch, pose_roll);
+        appendObservation(obsPtr);
+      }
+      else
+        printf("ERROR: WindSonic error code %u\n", status);
+    }
+    else if (list.size() == 5)  // when there is no wind, the sensor does
+    // not provide a wind direction
+    {
+      // Status
+      int status = atoi(list.at(3).c_str());
+      if (status == 0)
+      {
+        // Units
+        std::string s_units = list.at(2);
+        // module
+        std::string s_speed = list.at(1);
+        if (s_units == "M")
+          obsPtr->speed = atof(s_speed.c_str());
+        else if (s_units == "K")
+          obsPtr->speed = atof(s_speed.c_str()) * 1000 / 3600;
+        else
+        {
+          printf(
+              "ERROR: WindSonic measurement units not supported: "
+              "%s\n",
+              s_units.c_str());
+          obsPtr->speed = 0.0;
+        }
+        // Angle
+        obsPtr->direction = 0.0;
 
-				// Prepare observation
-				obsPtr->sensorLabel = m_sensorLabel;
-				obsPtr->timestamp = mrpt::Clock::now();
-				obsPtr->sensorPoseOnRobot = mrpt::poses::CPose3D(
-					pose_x, pose_y, pose_z, pose_yaw, pose_pitch, pose_roll);
-				appendObservation(obsPtr);
-			}
-			else
-				printf("ERROR: WindSonic error code %u\n", status);
-		}
-		else
-		{
-			printf(
-				"ERROR: Windsonic reading incorrect format: %s [%u]\n",
-				wind_reading.c_str(), static_cast<unsigned int>(list.size()));
-		}
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "[CGillAnemometer::doProcess] Error:" << std::endl
-				  << e.what();
-	}
-	catch (...)
-	{
-		std::cerr << "[CGillAnemometer::doProcess] Unknown Error" << std::endl;
-	}
+        // Prepare observation
+        obsPtr->sensorLabel = m_sensorLabel;
+        obsPtr->timestamp = mrpt::Clock::now();
+        obsPtr->sensorPoseOnRobot =
+            mrpt::poses::CPose3D(pose_x, pose_y, pose_z, pose_yaw, pose_pitch, pose_roll);
+        appendObservation(obsPtr);
+      }
+      else
+        printf("ERROR: WindSonic error code %u\n", status);
+    }
+    else
+    {
+      printf(
+          "ERROR: Windsonic reading incorrect format: %s [%u]\n", wind_reading.c_str(),
+          static_cast<unsigned int>(list.size()));
+    }
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "[CGillAnemometer::doProcess] Error:" << std::endl << e.what();
+  }
+  catch (...)
+  {
+    std::cerr << "[CGillAnemometer::doProcess] Unknown Error" << std::endl;
+  }
 }

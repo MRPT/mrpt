@@ -12,9 +12,9 @@
 #include <mrpt/random/portable_uniform_distribution.h>
 
 #include <cstdint>
-#include <iterator>	 // iterator_traits
-#include <random>  // uniform_int_distribution
-#include <utility>	// std::swap
+#include <iterator>  // iterator_traits
+#include <random>    // uniform_int_distribution
+#include <utility>   // std::swap
 
 namespace mrpt::random
 {
@@ -24,9 +24,9 @@ namespace mrpt::random
 template <class RandomIt, class URBG>
 void shuffle(RandomIt first, RandomIt last, URBG&& g)
 {
-	const uint64_t n = last - first;
-	for (int64_t i = static_cast<int64_t>(n) - 1; i > 0; --i)
-		std::swap(first[i], first[portable_uniform_distribution(g, 0, i)]);
+  const uint64_t n = last - first;
+  for (int64_t i = static_cast<int64_t>(n) - 1; i > 0; --i)
+    std::swap(first[i], first[portable_uniform_distribution(g, 0, i)]);
 }
 
 /** Uniform shuffle a sequence.
@@ -35,9 +35,9 @@ void shuffle(RandomIt first, RandomIt last, URBG&& g)
 template <class RandomIt>
 void shuffle(RandomIt first, RandomIt last)
 {
-	std::random_device rd;	// used for random seed
-	std::mt19937 g(rd());
-	mrpt::random::shuffle(first, last, g);
+  std::random_device rd;  // used for random seed
+  std::mt19937 g(rd());
+  mrpt::random::shuffle(first, last, g);
 }
 
 /** Shuffle the first N elements of a sequence. Note that elements at positions
@@ -49,10 +49,10 @@ void shuffle(RandomIt first, RandomIt last)
 template <class RandomIt, class URBG>
 void partial_shuffle(RandomIt first, RandomIt last, URBG&& g, size_t N)
 {
-	const int64_t n = static_cast<int64_t>(last - first);
-	const int64_t n_1 = n - 1;
-	for (int64_t i = 0; i < n && i < static_cast<int64_t>(N); ++i)
-		std::swap(first[i], first[portable_uniform_distribution(g, i, n_1)]);
+  const int64_t n = static_cast<int64_t>(last - first);
+  const int64_t n_1 = n - 1;
+  for (int64_t i = 0; i < n && i < static_cast<int64_t>(N); ++i)
+    std::swap(first[i], first[portable_uniform_distribution(g, i, n_1)]);
 }
 
 }  // namespace mrpt::random

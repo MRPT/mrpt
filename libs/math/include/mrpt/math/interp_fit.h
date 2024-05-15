@@ -34,8 +34,12 @@ T interpolate(const T& x, const VECTOR& ys, const T& x0, const T& x1);
  * \sa spline, interpolate, leastSquareLinearFit
  */
 double interpolate2points(
-	const double x, const double x0, const double y0, const double x1,
-	const double y1, bool wrap2pi = false);
+    const double x,
+    const double x0,
+    const double y0,
+    const double x1,
+    const double y1,
+    bool wrap2pi = false);
 
 /** Interpolates the value of a function in a point "t" given 4 SORTED points
  * where "t" is between the two middle points
@@ -45,9 +49,7 @@ double interpolate2points(
  * \note Implementation in `#include <mrpt/math/interp_fit.hpp>`
  */
 template <typename NUMTYPE, class VECTORLIKE>
-NUMTYPE spline(
-	const NUMTYPE t, const VECTORLIKE& x, const VECTORLIKE& y,
-	bool wrap2pi = false);
+NUMTYPE spline(const NUMTYPE t, const VECTORLIKE& x, const VECTORLIKE& y, bool wrap2pi = false);
 
 /** Interpolates or extrapolates using a least-square linear fit of the set of
  * values "x" and "y", evaluated at a single point "t".
@@ -59,11 +61,9 @@ NUMTYPE spline(
  * \sa getRegressionLine, getRegressionPlane
  * \note Implementation in `#include <mrpt/math/interp_fit.hpp>`
  */
-template <
-	typename NUMTYPE, class VECTORLIKE, int NUM_POINTS = -1 /*Eigen::Dynamic*/>
+template <typename NUMTYPE, class VECTORLIKE, int NUM_POINTS = -1 /*Eigen::Dynamic*/>
 NUMTYPE leastSquareLinearFit(
-	const NUMTYPE t, const VECTORLIKE& x, const VECTORLIKE& y,
-	bool wrap2pi = false);
+    const NUMTYPE t, const VECTORLIKE& x, const VECTORLIKE& y, bool wrap2pi = false);
 
 /** Interpolates or extrapolates using a least-square linear fit of the set of
  * values "x" and "y", evaluated at a sequence of points "ts" and returned at
@@ -75,11 +75,16 @@ NUMTYPE leastSquareLinearFit(
  * \note Requires `#include <Eigen/Dense>`
  */
 template <
-	class VECTORLIKE1, class VECTORLIKE2, class VECTORLIKE3,
-	int NUM_POINTS = -1 /*Eigen::Dynamic*/>
+    class VECTORLIKE1,
+    class VECTORLIKE2,
+    class VECTORLIKE3,
+    int NUM_POINTS = -1 /*Eigen::Dynamic*/>
 void leastSquareLinearFit(
-	const VECTORLIKE1& ts, VECTORLIKE2& outs, const VECTORLIKE3& x,
-	const VECTORLIKE3& y, bool wrap2pi = false);
+    const VECTORLIKE1& ts,
+    VECTORLIKE2& outs,
+    const VECTORLIKE3& x,
+    const VECTORLIKE3& y,
+    bool wrap2pi = false);
 
 /** @} */  // end grouping interpolation_grp
 

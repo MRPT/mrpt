@@ -17,94 +17,84 @@
 
 using namespace mrpt::nav;
 
-CNavigatorManualSequence::CNavigatorManualSequence(
-	CRobot2NavInterface& robot_interface)
-	: CAbstractNavigator(robot_interface)
+CNavigatorManualSequence::CNavigatorManualSequence(CRobot2NavInterface& robot_interface) :
+    CAbstractNavigator(robot_interface)
 {
 }
 
 // Dtor:
 CNavigatorManualSequence::~CNavigatorManualSequence() = default;
-void CNavigatorManualSequence::saveConfigFile(
-	mrpt::config::CConfigFileBase& c) const
+void CNavigatorManualSequence::saveConfigFile(mrpt::config::CConfigFileBase& c) const {}
+
+void CNavigatorManualSequence::loadConfigFile(const mrpt::config::CConfigFileBase& c)
 {
-}
+  const std::string s = "CNavigatorManualSequence";
 
-void CNavigatorManualSequence::loadConfigFile(
-	const mrpt::config::CConfigFileBase& c)
-{
-	const std::string s = "CNavigatorManualSequence";
+  programmed_orders.clear();
+  std::vector<std::string> lstKeys;
+  c.getAllKeys(s, lstKeys);
 
-	programmed_orders.clear();
-	std::vector<std::string> lstKeys;
-	c.getAllKeys(s, lstKeys);
+  for (const auto& lstKey : lstKeys)
+  {
+    std::string str = c.read_string(s, lstKey, "", true);
+    std::vector<std::string> toks;
+    mrpt::system::tokenize(str, " \t\r\n", toks);
+    ASSERTMSG_(
+        toks.size() > 2, std::string("Wrong format while parsing CNavigatorManualSequence "
+                                     "cfg file in entry: ") +
+                             lstKey);
 
-	for (const auto& lstKey : lstKeys)
-	{
-		std::string str = c.read_string(s, lstKey, "", true);
-		std::vector<std::string> toks;
-		mrpt::system::tokenize(str, " \t\r\n", toks);
-		ASSERTMSG_(
-			toks.size() > 2,
-			std::string("Wrong format while parsing CNavigatorManualSequence "
-						"cfg file in entry: ") +
-				lstKey);
+    const double t = atof(toks[0].c_str());
+    TVelCmd krc;
 
-		const double t = atof(toks[0].c_str());
-		TVelCmd krc;
+    const size_t nComps = toks.size() - 1;
+    switch (nComps)
+    {
+      case 2:
+        krc.cmd_vel = std::make_shared<mrpt::kinematics::CVehicleVelCmd_DiffDriven>();
+        break;
+      case 4:
+        krc.cmd_vel = mrpt::kinematics::CVehicleVelCmd_Holo::Create();
+        break;
+      default:
+        THROW_EXCEPTION("Expected 2 or 4 velocity components!");
+    };
 
-		const size_t nComps = toks.size() - 1;
-		switch (nComps)
-		{
-			case 2:
-				krc.cmd_vel = std::make_shared<
-					mrpt::kinematics::CVehicleVelCmd_DiffDriven>();
-				break;
-			case 4:
-				krc.cmd_vel = mrpt::kinematics::CVehicleVelCmd_Holo::Create();
-				break;
-			default: THROW_EXCEPTION("Expected 2 or 4 velocity components!");
-		};
+    for (size_t j = 0; j < nComps; j++) krc.cmd_vel->setVelCmdElement(j, atof(toks[j + 1].c_str()));
 
-		for (size_t j = 0; j < nComps; j++)
-			krc.cmd_vel->setVelCmdElement(j, atof(toks[j + 1].c_str()));
-
-		// insert:
-		programmed_orders[t] = krc;
-	}
+    // insert:
+    programmed_orders[t] = krc;
+  }
 }
 
 void CNavigatorManualSequence::initialize()
 {
-	ASSERT_(!programmed_orders.empty());
-	m_robot.resetNavigationTimer();
+  ASSERT_(!programmed_orders.empty());
+  m_robot.resetNavigationTimer();
 }
 
 /** Overriden in this class to ignore the cancel/pause/... commands */
 void CNavigatorManualSequence::navigationStep()
 {
-	if (programmed_orders.empty()) return;
+  if (programmed_orders.empty()) return;
 
-	const double t = m_robot.getNavigationTime();
+  const double t = m_robot.getNavigationTime();
 
-	if (t >= programmed_orders.begin()->first)
-	{
-		const TVelCmd& krc = programmed_orders.begin()->second;
-		// Send cmd:
-		logFmt(
-			mrpt::system::LVL_DEBUG,
-			"[CNavigatorManualSequence] Sending cmd: t=%f\n",
-			programmed_orders.begin()->first);
+  if (t >= programmed_orders.begin()->first)
+  {
+    const TVelCmd& krc = programmed_orders.begin()->second;
+    // Send cmd:
+    logFmt(
+        mrpt::system::LVL_DEBUG, "[CNavigatorManualSequence] Sending cmd: t=%f\n",
+        programmed_orders.begin()->first);
 
-		if (!this->changeSpeeds(*krc.cmd_vel))
-		{
-			this->stop(true /*not emergency*/);
-			logFmt(
-				mrpt::system::LVL_ERROR,
-				"[CNavigatorManualSequence] **ERROR** sending cmd to robot.");
-			return;
-		}
-		// remove:
-		programmed_orders.erase(programmed_orders.begin());
-	}
+    if (!this->changeSpeeds(*krc.cmd_vel))
+    {
+      this->stop(true /*not emergency*/);
+      logFmt(mrpt::system::LVL_ERROR, "[CNavigatorManualSequence] **ERROR** sending cmd to robot.");
+      return;
+    }
+    // remove:
+    programmed_orders.erase(programmed_orders.begin());
+  }
 }

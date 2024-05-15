@@ -213,171 +213,149 @@ namespace mrpt::hwdrivers
  *		- http://http://www.openni.org/
  * \ingroup mrpt_hwdrivers_grp
  */
-class COpenNI2Sensor : public mrpt::hwdrivers::CGenericSensor,
-					   public mrpt::hwdrivers::COpenNI2Generic
+class COpenNI2Sensor :
+    public mrpt::hwdrivers::CGenericSensor,
+    public mrpt::hwdrivers::COpenNI2Generic
 {
-	DEFINE_GENERIC_SENSOR(COpenNI2Sensor)
+  DEFINE_GENERIC_SENSOR(COpenNI2Sensor)
 
-   public:
-	/** Default ctor
-	 */
-	COpenNI2Sensor();
-	/** Default ctor
-	 */
-	~COpenNI2Sensor() override;
+ public:
+  /** Default ctor
+   */
+  COpenNI2Sensor();
+  /** Default ctor
+   */
+  ~COpenNI2Sensor() override;
 
-	/** Set the serial number of the device to open.
-	 *  \exception This method must throw an exception when such serial number
-	 * is not found among the connected devices.
-	 */
-	inline void setSerialToOpen(const unsigned serial)
-	{
-		m_serial_number = serial;
-	}
+  /** Set the serial number of the device to open.
+   *  \exception This method must throw an exception when such serial number
+   * is not found among the connected devices.
+   */
+  inline void setSerialToOpen(const unsigned serial) { m_serial_number = serial; }
 
-	/** Set the sensor_id of the device to open.
-	 *  \exception This method must throw an exception when such serial number
-	 * is not found among the connected devices.
-	 */
-	inline void setSensorIDToOpen(const unsigned sensor_id)
-	{
-		m_user_device_number = sensor_id;
-	}
+  /** Set the sensor_id of the device to open.
+   *  \exception This method must throw an exception when such serial number
+   * is not found among the connected devices.
+   */
+  inline void setSensorIDToOpen(const unsigned sensor_id) { m_user_device_number = sensor_id; }
 
-	/** Initializes the 3D camera - should be invoked after calling loadConfig()
-	 * or setting the different parameters with the set*() methods.
-	 *  \exception This method must throw an exception with a descriptive
-	 * message if some critical error is found.
-	 */
-	void initialize() override;
+  /** Initializes the 3D camera - should be invoked after calling loadConfig()
+   * or setting the different parameters with the set*() methods.
+   *  \exception This method must throw an exception with a descriptive
+   * message if some critical error is found.
+   */
+  void initialize() override;
 
-	/** To be called  at a high rate (>XX Hz), this method populates the
-	 * internal buffer of received observations.
-	 *  This method is mainly intended for usage within rawlog-grabber or
-	 * similar programs.
-	 *  For an alternative, see getNextObservation()
-	 *  \exception This method must throw an exception with a descriptive
-	 * message if some critical error is found.
-	 * \sa getNextObservation
-	 */
-	void doProcess() override;
+  /** To be called  at a high rate (>XX Hz), this method populates the
+   * internal buffer of received observations.
+   *  This method is mainly intended for usage within rawlog-grabber or
+   * similar programs.
+   *  For an alternative, see getNextObservation()
+   *  \exception This method must throw an exception with a descriptive
+   * message if some critical error is found.
+   * \sa getNextObservation
+   */
+  void doProcess() override;
 
-	/** The main data retrieving function, to be called after calling
-	 * loadConfig() and initialize().
-	 *  \param out_obs The output retrieved observation (only if
-	 * there_is_obs=true).
-	 *  \param there_is_obs If set to false, there was no new observation.
-	 *  \param hardware_error True on hardware/comms error.
-	 *
-	 * \sa doProcess
-	 */
-	void getNextObservation(
-		mrpt::obs::CObservation3DRangeScan& out_obs, bool& there_is_obs,
-		bool& hardware_error);
+  /** The main data retrieving function, to be called after calling
+   * loadConfig() and initialize().
+   *  \param out_obs The output retrieved observation (only if
+   * there_is_obs=true).
+   *  \param there_is_obs If set to false, there was no new observation.
+   *  \param hardware_error True on hardware/comms error.
+   *
+   * \sa doProcess
+   */
+  void getNextObservation(
+      mrpt::obs::CObservation3DRangeScan& out_obs, bool& there_is_obs, bool& hardware_error);
 
-	/**  Set the path where to save off-rawlog image files (this class DOES take
-	 * into account this path).
-	 *  An  empty string (the default value at construction) means to save
-	 * images embedded in the rawlog, instead of on separate files.
-	 * \exception std::exception If the directory doesn't exists and cannot be
-	 * created.
-	 */
-	void setPathForExternalImages(const std::string& directory) override;
+  /**  Set the path where to save off-rawlog image files (this class DOES take
+   * into account this path).
+   *  An  empty string (the default value at construction) means to save
+   * images embedded in the rawlog, instead of on separate files.
+   * \exception std::exception If the directory doesn't exists and cannot be
+   * created.
+   */
+  void setPathForExternalImages(const std::string& directory) override;
 
-	/** @name Sensor parameters (alternative to \a loadConfig ) and manual
-	   control
-		@{ */
+  /** @name Sensor parameters (alternative to \a loadConfig ) and manual
+   control
+    @{ */
 
-	/** Get the maximum range (meters) that can be read in the observation field
-	 * "rangeImage" */
-	inline double getMaxRange() const { return m_maxRange; }
-	/** Get the row count in the camera images, loaded automatically upon camera
-	 * open(). */
-	inline size_t rows() const { return m_cameraParamsRGB.nrows; }
-	/** Get the col count in the camera images, loaded automatically upon camera
-	 * open(). */
-	inline size_t cols() const { return m_cameraParamsRGB.ncols; }
-	/** Get a const reference to the depth camera calibration parameters */
-	inline const mrpt::img::TCamera& getCameraParamsIntensity() const
-	{
-		return m_cameraParamsRGB;
-	}
-	inline void setCameraParamsIntensity(const mrpt::img::TCamera& p)
-	{
-		m_cameraParamsRGB = p;
-	}
+  /** Get the maximum range (meters) that can be read in the observation field
+   * "rangeImage" */
+  inline double getMaxRange() const { return m_maxRange; }
+  /** Get the row count in the camera images, loaded automatically upon camera
+   * open(). */
+  inline size_t rows() const { return m_cameraParamsRGB.nrows; }
+  /** Get the col count in the camera images, loaded automatically upon camera
+   * open(). */
+  inline size_t cols() const { return m_cameraParamsRGB.ncols; }
+  /** Get a const reference to the depth camera calibration parameters */
+  inline const mrpt::img::TCamera& getCameraParamsIntensity() const { return m_cameraParamsRGB; }
+  inline void setCameraParamsIntensity(const mrpt::img::TCamera& p) { m_cameraParamsRGB = p; }
 
-	/** Get a const reference to the depth camera calibration parameters */
-	inline const mrpt::img::TCamera& getCameraParamsDepth() const
-	{
-		return m_cameraParamsDepth;
-	}
-	inline void setCameraParamsDepth(const mrpt::img::TCamera& p)
-	{
-		m_cameraParamsDepth = p;
-	}
+  /** Get a const reference to the depth camera calibration parameters */
+  inline const mrpt::img::TCamera& getCameraParamsDepth() const { return m_cameraParamsDepth; }
+  inline void setCameraParamsDepth(const mrpt::img::TCamera& p) { m_cameraParamsDepth = p; }
 
-	/** Set the pose of the intensity camera wrt the depth camera \sa See
-	 * mrpt::obs::CObservation3DRangeScan for a 3D diagram of this pose */
-	inline void setRelativePoseIntensityWrtDepth(const mrpt::poses::CPose3D& p)
-	{
-		m_relativePoseIntensityWRTDepth = p;
-	}
-	inline const mrpt::poses::CPose3D& getRelativePoseIntensityWrtDepth() const
-	{
-		return m_relativePoseIntensityWRTDepth;
-	}
+  /** Set the pose of the intensity camera wrt the depth camera \sa See
+   * mrpt::obs::CObservation3DRangeScan for a 3D diagram of this pose */
+  inline void setRelativePoseIntensityWrtDepth(const mrpt::poses::CPose3D& p)
+  {
+    m_relativePoseIntensityWRTDepth = p;
+  }
+  inline const mrpt::poses::CPose3D& getRelativePoseIntensityWrtDepth() const
+  {
+    return m_relativePoseIntensityWRTDepth;
+  }
 
-	/** Enable/disable the grabbing of the RGB channel */
-	inline void enableGrabRGB(bool enable = true) { m_grab_image = enable; }
-	inline bool isGrabRGBEnabled() const { return m_grab_image; }
-	/** Enable/disable the grabbing of the depth channel */
-	inline void enableGrabDepth(bool enable = true) { m_grab_depth = enable; }
-	inline bool isGrabDepthEnabled() const { return m_grab_depth; }
-	/** Enable/disable the grabbing of the 3D point clouds */
-	inline void enableGrab3DPoints(bool enable = true)
-	{
-		m_grab_3D_points = enable;
-	}
-	inline bool isGrab3DPointsEnabled() const { return m_grab_3D_points; }
-	/** @} */
+  /** Enable/disable the grabbing of the RGB channel */
+  inline void enableGrabRGB(bool enable = true) { m_grab_image = enable; }
+  inline bool isGrabRGBEnabled() const { return m_grab_image; }
+  /** Enable/disable the grabbing of the depth channel */
+  inline void enableGrabDepth(bool enable = true) { m_grab_depth = enable; }
+  inline bool isGrabDepthEnabled() const { return m_grab_depth; }
+  /** Enable/disable the grabbing of the 3D point clouds */
+  inline void enableGrab3DPoints(bool enable = true) { m_grab_3D_points = enable; }
+  inline bool isGrab3DPointsEnabled() const { return m_grab_3D_points; }
+  /** @} */
 
-   protected:
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& section) override;
+ protected:
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& section) override;
 
-	mrpt::poses::CPose3D m_sensorPoseOnRobot;
+  mrpt::poses::CPose3D m_sensorPoseOnRobot;
 
-	/** Show preview window while grabbing
-	 */
-	bool m_preview_window{false};
-	/** If preview is enabled, only show 1 out of N images.
-	 */
-	size_t m_preview_window_decimation{1};
-	size_t m_preview_decim_counter_range{0}, m_preview_decim_counter_rgb{0};
-	mrpt::gui::CDisplayWindow::Ptr m_win_range, m_win_int;
+  /** Show preview window while grabbing
+   */
+  bool m_preview_window{false};
+  /** If preview is enabled, only show 1 out of N images.
+   */
+  size_t m_preview_window_decimation{1};
+  size_t m_preview_decim_counter_range{0}, m_preview_decim_counter_rgb{0};
+  mrpt::gui::CDisplayWindow::Ptr m_win_range, m_win_int;
 
-	/** Params for the RGB camera
-	 */
-	mrpt::img::TCamera m_cameraParamsRGB;
-	/** Params for the Depth camera
-	 */
-	mrpt::img::TCamera m_cameraParamsDepth;
-	/** See mrpt::obs::CObservation3DRangeScan for a diagram of this pose
-	 */
-	mrpt::poses::CPose3D m_relativePoseIntensityWRTDepth;
+  /** Params for the RGB camera
+   */
+  mrpt::img::TCamera m_cameraParamsRGB;
+  /** Params for the Depth camera
+   */
+  mrpt::img::TCamera m_cameraParamsDepth;
+  /** See mrpt::obs::CObservation3DRangeScan for a diagram of this pose
+   */
+  mrpt::poses::CPose3D m_relativePoseIntensityWRTDepth;
 
-	/** Sensor max range (meters)
-	 */
-	double m_maxRange = 5.0;
+  /** Sensor max range (meters)
+   */
+  double m_maxRange = 5.0;
 
-	/** Number of device to open (0:first,...)
-	 */
-	int m_user_device_number{0};
-	/** Serial number of device to open
-	 */
-	int m_serial_number{0};
+  /** Number of device to open (0:first,...)
+   */
+  int m_user_device_number{0};
+  /** Serial number of device to open
+   */
+  int m_serial_number{0};
 
-};	// End of class
+};  // End of class
 }  // namespace mrpt::hwdrivers

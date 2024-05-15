@@ -19,15 +19,15 @@ namespace mrpt
  */
 class Stringifyable
 {
-   public:
-	Stringifyable() = default;
-	~Stringifyable() = default;
+ public:
+  Stringifyable() = default;
+  ~Stringifyable() = default;
 
-	/** Returns a human-friendly textual description of the object. For classes
-	 * with a large/complex internal state, only a summary should be returned
-	 * instead of the exhaustive enumeration of all data members.
-	 */
-	virtual std::string asString() const = 0;
+  /** Returns a human-friendly textual description of the object. For classes
+   * with a large/complex internal state, only a summary should be returned
+   * instead of the exhaustive enumeration of all data members.
+   */
+  virtual std::string asString() const = 0;
 };
 
 }  // namespace mrpt

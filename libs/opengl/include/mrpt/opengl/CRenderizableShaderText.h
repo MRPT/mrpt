@@ -26,46 +26,43 @@ namespace mrpt::opengl
  */
 class CRenderizableShaderText : public virtual CRenderizable
 {
-	DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderText)
+  DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderText)
 
-   public:
-	CRenderizableShaderText() = default;
-	virtual ~CRenderizableShaderText() override;
+ public:
+  CRenderizableShaderText() = default;
+  virtual ~CRenderizableShaderText() override;
 
-	virtual shader_list_t requiredShaders() const override
-	{
-		return {DefaultShaderID::TEXT};
-	}
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
+  virtual shader_list_t requiredShaders() const override { return {DefaultShaderID::TEXT}; }
+  void render(const RenderContext& rc) const override;
+  void renderUpdateBuffers() const override;
 
-	/** Must be implemented in derived classes to update the geometric entities
-	 * to be drawn in "m_*_buffer" fields. */
-	virtual void onUpdateBuffers_Text() = 0;
+  /** Must be implemented in derived classes to update the geometric entities
+   * to be drawn in "m_*_buffer" fields. */
+  virtual void onUpdateBuffers_Text() = 0;
 
-	// See base docs
-	void freeOpenGLResources() override
-	{
-		m_trianglesBuffer.destroy();
-		m_trianglesColorBuffer.destroy();
-		m_linesVertexBuffer.destroy();
-		m_linesColorBuffer.destroy();
-		m_vao.destroy();
-	}
+  // See base docs
+  void freeOpenGLResources() override
+  {
+    m_trianglesBuffer.destroy();
+    m_trianglesColorBuffer.destroy();
+    m_linesVertexBuffer.destroy();
+    m_linesColorBuffer.destroy();
+    m_vao.destroy();
+  }
 
-   protected:
-	/** List of triangles  \sa TTriangle */
-	mutable std::vector<mrpt::opengl::TTriangle> m_triangles;
-	/** List of lines */
-	mutable std::vector<mrpt::math::TPoint3Df> m_vertex_buffer_data;
-	mutable std::vector<mrpt::img::TColor> m_color_buffer_data;
+ protected:
+  /** List of triangles  \sa TTriangle */
+  mutable std::vector<mrpt::opengl::TTriangle> m_triangles;
+  /** List of lines */
+  mutable std::vector<mrpt::math::TPoint3Df> m_vertex_buffer_data;
+  mutable std::vector<mrpt::img::TColor> m_color_buffer_data;
 
-	mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_textDataMtx;
+  mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_textDataMtx;
 
-   private:
-	mutable Buffer m_trianglesBuffer, m_trianglesColorBuffer;
-	mutable Buffer m_linesVertexBuffer, m_linesColorBuffer;
-	mutable VertexArrayObject m_vao;
+ private:
+  mutable Buffer m_trianglesBuffer, m_trianglesColorBuffer;
+  mutable Buffer m_linesVertexBuffer, m_linesColorBuffer;
+  mutable VertexArrayObject m_vao;
 };
 
 }  // namespace mrpt::opengl

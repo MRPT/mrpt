@@ -35,19 +35,17 @@ namespace os
  *  \sa mrpt::format
  */
 int sprintf(char* buf, size_t bufSize, const char* format, ...) noexcept
-	MRPT_printf_format_check(3, 4);
+    MRPT_printf_format_check(3, 4);
 
 /** An OS-independent version of vsprintf (Notice the bufSize param, which may
  * be ignored in some compilers)
  */
-int vsprintf(
-	char* buf, size_t bufSize, const char* format, va_list args) noexcept;
+int vsprintf(char* buf, size_t bufSize, const char* format, va_list args) noexcept;
 
 /** An OS-independent version of vsnprintf (Notice the bufSize param, which may
  * be ignored in some compilers)
  */
-int vsnprintf(
-	char* buf, size_t bufSize, const char* format, va_list args) noexcept;
+int vsnprintf(char* buf, size_t bufSize, const char* format, va_list args) noexcept;
 
 /** An OS-independent version of fopen.
  * \return It will always return nullptr on any error.
@@ -61,8 +59,7 @@ FILE* fopen(const std::string& fileName, const char* mode) noexcept;
 
 /** An OS-independent version of fprintf
  */
-int fprintf(FILE* fil, const char* format, ...) noexcept
-	MRPT_printf_format_check(2, 3);
+int fprintf(FILE* fil, const char* format, ...) noexcept MRPT_printf_format_check(2, 3);
 
 /** An OS-independent version of fclose.
  * \exception std::exception On trying to close a nullptr file descriptor.
@@ -109,8 +106,7 @@ uint64_t _strtoull(const char* nptr, char** endptr, int base);
 
 /** An OS and compiler independent version of "memcpy"
  */
-void memcpy(
-	void* dest, size_t destSize, const void* src, size_t copyCount) noexcept;
+void memcpy(void* dest, size_t destSize, const void* src, size_t copyCount) noexcept;
 
 /** An OS-independent version of getch, which waits until a key is pushed.
  * \return The pushed key code
@@ -131,9 +127,7 @@ bool kbhit() noexcept;
 
 /** Shows the message "Press any key to continue" (or other custom message) to
  * the current standard output and returns when a key is pressed */
-void pause(
-	const std::string& msg =
-		std::string("Press any key to continue...")) noexcept;
+void pause(const std::string& msg = std::string("Press any key to continue...")) noexcept;
 
 /** Clears the console window */
 void clearConsole();
@@ -159,23 +153,23 @@ std::string find_mrpt_shared_dir();
  */
 enum class ConsoleForegroundColor : uint8_t
 {
-	DEFAULT = 0,
-	BLACK = 30,
-	RED = 31,
-	GREEN = 32,
-	YELLOW = 33,
-	BLUE = 34,
-	MAGENTA = 35,
-	CYAN = 36,
-	WHITE = 37,
-	BRIGHT_BLACK = 90,
-	BRIGHT_RED = 91,
-	BRIGHT_GREEN = 92,
-	BRIGHT_YELLOW = 93,
-	BRIGHT_BLUE = 94,
-	BRIGHT_MAGENTA = 95,
-	BRIGHT_CYAN = 96,
-	BRIGHT_WHITE = 97,
+  DEFAULT = 0,
+  BLACK = 30,
+  RED = 31,
+  GREEN = 32,
+  YELLOW = 33,
+  BLUE = 34,
+  MAGENTA = 35,
+  CYAN = 36,
+  WHITE = 37,
+  BRIGHT_BLACK = 90,
+  BRIGHT_RED = 91,
+  BRIGHT_GREEN = 92,
+  BRIGHT_YELLOW = 93,
+  BRIGHT_BLUE = 94,
+  BRIGHT_MAGENTA = 95,
+  BRIGHT_CYAN = 96,
+  BRIGHT_WHITE = 97,
 };
 
 /** For use in consoleColorAndStyle().
@@ -183,23 +177,23 @@ enum class ConsoleForegroundColor : uint8_t
  */
 enum class ConsoleBackgroundColor : uint8_t
 {
-	DEFAULT = 0,
-	BLACK = 40,
-	RED = 41,
-	GREEN = 42,
-	YELLOW = 43,
-	BLUE = 44,
-	MAGENTA = 45,
-	CYAN = 46,
-	WHITE = 34,
-	BRIGHT_BLACK = 100,
-	BRIGHT_RED = 101,
-	BRIGHT_GREEN = 102,
-	BRIGHT_YELLOW = 103,
-	BRIGHT_BLUE = 104,
-	BRIGHT_MAGENTA = 105,
-	BRIGHT_CYAN = 106,
-	BRIGHT_WHITE = 107,
+  DEFAULT = 0,
+  BLACK = 40,
+  RED = 41,
+  GREEN = 42,
+  YELLOW = 43,
+  BLUE = 44,
+  MAGENTA = 45,
+  CYAN = 46,
+  WHITE = 34,
+  BRIGHT_BLACK = 100,
+  BRIGHT_RED = 101,
+  BRIGHT_GREEN = 102,
+  BRIGHT_YELLOW = 103,
+  BRIGHT_BLUE = 104,
+  BRIGHT_MAGENTA = 105,
+  BRIGHT_CYAN = 106,
+  BRIGHT_WHITE = 107,
 };
 
 /** For use in consoleColorAndStyle().
@@ -207,14 +201,14 @@ enum class ConsoleBackgroundColor : uint8_t
  */
 enum class ConsoleTextStyle : uint8_t
 {
-	REGULAR = 0,
-	BOLD = 1,
-	DIM = 2,
-	ITALIC = 3,
-	UNDERLINED = 4,
-	BLINKING = 5,
-	REVERSE = 7,
-	INVISIBLE = 8
+  REGULAR = 0,
+  BOLD = 1,
+  DIM = 2,
+  ITALIC = 3,
+  UNDERLINED = 4,
+  BLINKING = 5,
+  REVERSE = 7,
+  INVISIBLE = 8
 };
 
 /** Changes the text color and style in the console for the text written from
@@ -234,10 +228,10 @@ enum class ConsoleTextStyle : uint8_t
  * \note (New in MRPT 2.3.3)
  */
 void consoleColorAndStyle(
-	ConsoleForegroundColor fg,
-	ConsoleBackgroundColor bg = ConsoleBackgroundColor::DEFAULT,
-	ConsoleTextStyle style = ConsoleTextStyle::REGULAR,
-	bool applyToStdErr = false);
+    ConsoleForegroundColor fg,
+    ConsoleBackgroundColor bg = ConsoleBackgroundColor::DEFAULT,
+    ConsoleTextStyle style = ConsoleTextStyle::REGULAR,
+    bool applyToStdErr = false);
 
 /** @brief Execute Generic Shell Command
  *
@@ -250,8 +244,7 @@ void consoleColorAndStyle(
  * \note Original code snippet found in http://stackoverflow.com/a/30357710
  */
 int executeCommand(
-	const std::string& command, std::string* output = nullptr,
-	const std::string& mode = "r");
+    const std::string& command, std::string* output = nullptr, const std::string& mode = "r");
 
 /** Executes the given command (which may contain a program + arguments), and
 waits until it finishes.
@@ -272,8 +265,7 @@ bool launchProcess(const std::string& command);
  * unloaded too. Manual unload is possible with \a unloadPluginModule().
  */
 bool loadPluginModule(
-	const std::string& moduleFileName,
-	mrpt::optional_ref<std::string> outErrorMsgs = std::nullopt);
+    const std::string& moduleFileName, mrpt::optional_ref<std::string> outErrorMsgs = std::nullopt);
 
 /** Unloads "plug-in" modules loaded with loadPluginModule().
  * \return true if module could be unloaded without errors.
@@ -281,8 +273,7 @@ bool loadPluginModule(
  * explicitly called.
  */
 bool unloadPluginModule(
-	const std::string& moduleFileName,
-	mrpt::optional_ref<std::string> outErrorMsgs = std::nullopt);
+    const std::string& moduleFileName, mrpt::optional_ref<std::string> outErrorMsgs = std::nullopt);
 
 /** Like loadPluginModule(), but loads a comma (`,`) separated list of "plug-in"
  * modules.
@@ -291,8 +282,8 @@ bool unloadPluginModule(
  * unloaded too. Manual unload is possible with \a unloadPluginModules().
  */
 bool loadPluginModules(
-	const std::string& moduleFileNames,
-	mrpt::optional_ref<std::string> outErrorMsgs = std::nullopt);
+    const std::string& moduleFileNames,
+    mrpt::optional_ref<std::string> outErrorMsgs = std::nullopt);
 
 /** Unloads "plug-in" modules loaded with loadPluginModules().
  * \return true if all modules could be unloaded without errors.
@@ -300,8 +291,8 @@ bool loadPluginModules(
  * explicitly called.
  */
 bool unloadPluginModules(
-	const std::string& moduleFileNames,
-	mrpt::optional_ref<std::string> outErrorMsgs = std::nullopt);
+    const std::string& moduleFileNames,
+    mrpt::optional_ref<std::string> outErrorMsgs = std::nullopt);
 
 /** @} */
 

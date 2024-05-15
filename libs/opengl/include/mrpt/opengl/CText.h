@@ -26,53 +26,50 @@ namespace mrpt::opengl
  */
 class CText : public CRenderizableShaderText
 {
-	DEFINE_SERIALIZABLE(CText, mrpt::opengl)
-   protected:
-	std::string m_str;
-	std::string m_fontName = "sans";
-	int m_fontHeight = 20;
+  DEFINE_SERIALIZABLE(CText, mrpt::opengl)
+ protected:
+  std::string m_str;
+  std::string m_fontName = "sans";
+  int m_fontHeight = 20;
 
-	void onUpdateBuffers_Text() override;
+  void onUpdateBuffers_Text() override;
 
-   public:
-	/** Sets the text to display */
-	void setString(const std::string& s)
-	{
-		if (m_str == s) return;
-		m_str = s;
-		CRenderizable::notifyChange();
-	}
-	/** Return the current text associated to this label */
-	std::string getString() const { return m_str; }
+ public:
+  /** Sets the text to display */
+  void setString(const std::string& s)
+  {
+    if (m_str == s) return;
+    m_str = s;
+    CRenderizable::notifyChange();
+  }
+  /** Return the current text associated to this label */
+  std::string getString() const { return m_str; }
 
-	/** Sets the font among "sans", "serif", "mono". */
-	void setFont(const std::string& s, int height)
-	{
-		if (m_fontName == s && m_fontHeight == height) return;
-		m_fontName = s;
-		m_fontHeight = height;
-		CRenderizable::notifyChange();
-	}
-	std::string getFont() const { return m_fontName; }
+  /** Sets the font among "sans", "serif", "mono". */
+  void setFont(const std::string& s, int height)
+  {
+    if (m_fontName == s && m_fontHeight == height) return;
+    m_fontName = s;
+    m_fontHeight = height;
+    CRenderizable::notifyChange();
+  }
+  std::string getFont() const { return m_fontName; }
 
-	shader_list_t requiredShaders() const override
-	{
-		return {DefaultShaderID::TEXT};
-	}
-	void render(const RenderContext& rc) const override;
+  shader_list_t requiredShaders() const override { return {DefaultShaderID::TEXT}; }
+  void render(const RenderContext& rc) const override;
 
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
-	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
+  /** Evaluates the bounding box of this object (including possible children)
+   * in the coordinate frame of the object parent. */
+  mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
-	/** Constructor */
-	CText(const std::string& str = std::string("")) : m_str(str) {}
+  /** Constructor */
+  CText(const std::string& str = std::string("")) : m_str(str) {}
 
-	virtual ~CText() override;
+  virtual ~CText() override;
 
-	std::pair<double, double> computeTextExtension() const;
+  std::pair<double, double> computeTextExtension() const;
 
-	void toYAMLMap(mrpt::containers::yaml& propertiesMap) const override;
+  void toYAMLMap(mrpt::containers::yaml& propertiesMap) const override;
 };
 
 }  // namespace mrpt::opengl

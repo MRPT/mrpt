@@ -9,7 +9,7 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <mrpt/system/filesystem.h>	 // for ASSERT_FILE_EXISTS_
+#include <mrpt/system/filesystem.h>  // for ASSERT_FILE_EXISTS_
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
 
 #include <iostream>
@@ -27,110 +27,105 @@ using namespace std;
 // ------------------------------------------------------
 int TestStereoCalibrate(int argc, char** argv)
 {
-	CTimeLogger timlog;
+  CTimeLogger timlog;
 
-	// Parse optional arguments:
-	if (argc == 1 || ((argc - 1) & 1) != 0)
-	{
-		cout << "Usage:\n"
-			 << argv[0] << "left_image1 right_image1 [L2 R2] [L3 R3] [...]\n";
-		return -1;
-	}
+  // Parse optional arguments:
+  if (argc == 1 || ((argc - 1) & 1) != 0)
+  {
+    cout << "Usage:\n" << argv[0] << "left_image1 right_image1 [L2 R2] [L3 R3] [...]\n";
+    return -1;
+  }
 
-	// The stereo calibration structures:
-	TCalibrationStereoImageList calib_imgs;
-	TStereoCalibResults calib_result;
-	TStereoCalibParams calib_params;
+  // The stereo calibration structures:
+  TCalibrationStereoImageList calib_imgs;
+  TStereoCalibResults calib_result;
+  TStereoCalibParams calib_params;
 
-	// ============ Set parameters ============
-	calib_params.check_size_x = 7;
-	calib_params.check_size_y = 9;
-	calib_params.check_squares_length_X_meters = 22.83e-3;
-	calib_params.check_squares_length_Y_meters = 24.31e-3;
-	// calib_params.maxIters = 300;
-	// calib_params.verbose = true;
-	calib_params.optimize_k1 = true;
-	calib_params.optimize_k2 = true;
+  // ============ Set parameters ============
+  calib_params.check_size_x = 7;
+  calib_params.check_size_y = 9;
+  calib_params.check_squares_length_X_meters = 22.83e-3;
+  calib_params.check_squares_length_Y_meters = 24.31e-3;
+  // calib_params.maxIters = 300;
+  // calib_params.verbose = true;
+  calib_params.optimize_k1 = true;
+  calib_params.optimize_k2 = true;
 
-	// Load images:
-	const size_t nPairs = (argc >> 1);
-	for (size_t i = 0; i < nPairs; i++)
-	{
-		const string sImgL = argv[1 + 2 * i + 0];
-		const string sImgR = argv[1 + 2 * i + 1];
-		ASSERT_FILE_EXISTS_(sImgL);
-		ASSERT_FILE_EXISTS_(sImgR);
+  // Load images:
+  const size_t nPairs = (argc >> 1);
+  for (size_t i = 0; i < nPairs; i++)
+  {
+    const string sImgL = argv[1 + 2 * i + 0];
+    const string sImgR = argv[1 + 2 * i + 1];
+    ASSERT_FILE_EXISTS_(sImgL);
+    ASSERT_FILE_EXISTS_(sImgR);
 
-		calib_imgs.resize(calib_imgs.size() + 1);
-		TImageStereoCalibData& stereo_dat = *calib_imgs.rbegin();
+    calib_imgs.resize(calib_imgs.size() + 1);
+    TImageStereoCalibData& stereo_dat = *calib_imgs.rbegin();
 
 #if 1
-		// Load all images in memory:
-		if (!stereo_dat.left.img_original.loadFromFile(sImgL))
-			THROW_EXCEPTION_FMT("Error loading: %s", sImgL.c_str());
-		if (!stereo_dat.right.img_original.loadFromFile(sImgR))
-			THROW_EXCEPTION_FMT("Error loading: %s", sImgR.c_str());
+    // Load all images in memory:
+    if (!stereo_dat.left.img_original.loadFromFile(sImgL))
+      THROW_EXCEPTION_FMT("Error loading: %s", sImgL.c_str());
+    if (!stereo_dat.right.img_original.loadFromFile(sImgR))
+      THROW_EXCEPTION_FMT("Error loading: %s", sImgR.c_str());
 #else
-		// Don't load images in memory until really needed.
-		stereo_dat.left.img_original.setExternalStorage(sImgL);
-		stereo_dat.right.img_original.setExternalStorage(sImgR);
+    // Don't load images in memory until really needed.
+    stereo_dat.left.img_original.setExternalStorage(sImgL);
+    stereo_dat.right.img_original.setExternalStorage(sImgR);
 #endif
-	}
+  }
 
-	// Run calibration:
-	bool res = mrpt::vision::checkerBoardStereoCalibration(
-		calib_imgs, calib_params, calib_result);
+  // Run calibration:
+  bool res = mrpt::vision::checkerBoardStereoCalibration(calib_imgs, calib_params, calib_result);
 
-	if (!res)
-	{
-		std::cout << "Calibration returned an error status.\n";
-		return -1;
-	}
-	else
-	{
-		// Calibration was OK:
+  if (!res)
+  {
+    std::cout << "Calibration returned an error status.\n";
+    return -1;
+  }
+  else
+  {
+    // Calibration was OK:
 
-		// Show detected corners:
-		if (true)
-		{
-			mrpt::gui::CDisplayWindow3D win("Calibration results", 1000, 480);
+    // Show detected corners:
+    if (true)
+    {
+      mrpt::gui::CDisplayWindow3D win("Calibration results", 1000, 480);
 
-			mrpt::opengl::Viewport::Ptr view1, view2;
-			{
-				mrpt::opengl::Scene::Ptr& scene = win.get3DSceneAndLock();
-				view1 = scene->getViewport("main");
-				view2 = scene->createViewport("right");
+      mrpt::opengl::Viewport::Ptr view1, view2;
+      {
+        mrpt::opengl::Scene::Ptr& scene = win.get3DSceneAndLock();
+        view1 = scene->getViewport("main");
+        view2 = scene->createViewport("right");
 
-				// Split viewing area into two halves:
-				view1->setViewportPosition(0, 0, 0.5, 1.0);
-				view2->setViewportPosition(0.5, 0, 0.5, 1.0);
+        // Split viewing area into two halves:
+        view1->setViewportPosition(0, 0, 0.5, 1.0);
+        view2->setViewportPosition(0.5, 0, 0.5, 1.0);
 
-				win.unlockAccess3DScene();
-			}
+        win.unlockAccess3DScene();
+      }
 
-			for (size_t i = 0; i < nPairs; i++)
-			{
-				win.get3DSceneAndLock();
+      for (size_t i = 0; i < nPairs; i++)
+      {
+        win.get3DSceneAndLock();
 
-				view1->setImageView(
-					calib_imgs[i].left.img_rectified);	// img_checkboard );
-				view2->setImageView(
-					calib_imgs[i].right.img_rectified);	 // img_checkboard );
+        view1->setImageView(calib_imgs[i].left.img_rectified);   // img_checkboard );
+        view2->setImageView(calib_imgs[i].right.img_rectified);  // img_checkboard );
 
-				win.setWindowTitle(mrpt::format(
-					"Detected corners: %u / %u",
-					static_cast<unsigned int>(i + 1),
-					static_cast<unsigned int>(nPairs)));
+        win.setWindowTitle(mrpt::format(
+            "Detected corners: %u / %u", static_cast<unsigned int>(i + 1),
+            static_cast<unsigned int>(nPairs)));
 
-				win.unlockAccess3DScene();
-				win.repaint();
+        win.unlockAccess3DScene();
+        win.repaint();
 
-				win.waitForKey();
-			}
-		}  // end show detected corners
+        win.waitForKey();
+      }
+    }  // end show detected corners
 
-		return 0;
-	}
+    return 0;
+  }
 }
 
 // ------------------------------------------------------
@@ -138,13 +133,13 @@ int TestStereoCalibrate(int argc, char** argv)
 // ------------------------------------------------------
 int main(int argc, char** argv)
 {
-	try
-	{
-		return TestStereoCalibrate(argc, argv);
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
-		return -1;
-	}
+  try
+  {
+    return TestStereoCalibrate(argc, argv);
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    return -1;
+  }
 }

@@ -15,7 +15,7 @@
 namespace mrpt::vision
 {
 /** \addtogroup chessboard_calib
-	@{ */
+  @{ */
 
 /** Look for the corners of a chessboard in the image using one of two different
  *methods.
@@ -53,10 +53,11 @@ namespace mrpt::vision
  * \sa mrpt::vision::checkerBoardCameraCalibration, drawChessboardCorners
  */
 bool findChessboardCorners(
-	const mrpt::img::CImage& img,
-	std::vector<mrpt::img::TPixelCoordf>& cornerCoords,
-	unsigned int check_size_x, unsigned int check_size_y,
-	bool normalize_image = true);
+    const mrpt::img::CImage& img,
+    std::vector<mrpt::img::TPixelCoordf>& cornerCoords,
+    unsigned int check_size_x,
+    unsigned int check_size_y,
+    bool normalize_image = true);
 
 /** @} */
 }  // namespace mrpt::vision

@@ -11,7 +11,7 @@
 #include <mrpt/comms/CServerTCPSocket.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CMessage.h>
-#include <mrpt/system/scheduler.h>	// changeCurrentThreadPriority()
+#include <mrpt/system/scheduler.h>  // changeCurrentThreadPriority()
 
 #include <chrono>
 #include <cstdio>  // printf()
@@ -27,115 +27,117 @@ using mrpt::serialization::CMessage;
 
 void thread_server()
 {
-	using namespace mrpt::comms;
-	using namespace std;
+  using namespace mrpt::comms;
+  using namespace std;
 
-	try
-	{
+  try
+  {
 #ifdef SOCKET_TEST_VERBOSE
-		printf("[Server] Started\n");
+    printf("[Server] Started\n");
 #endif
 
-		CServerTCPSocket server(
-			15000, "127.0.0.1", 10,
+    CServerTCPSocket server(
+        15000, "127.0.0.1", 10,
 #ifdef SOCKET_TEST_VERBOSE
-			mrpt::system::LVL_DEBUG
+        mrpt::system::LVL_DEBUG
 #else
-			mrpt::system::LVL_ERROR
+        mrpt::system::LVL_ERROR
 #endif
-		);
-		std::unique_ptr<CClientTCPSocket> client = server.accept(40000);
+    );
+    std::unique_ptr<CClientTCPSocket> client = server.accept(40000);
 
-		if (client)
-		{
+    if (client)
+    {
 #ifdef SOCKET_TEST_VERBOSE
-			printf("[Server] Connection accepted\n");
+      printf("[Server] Connection accepted\n");
 #endif
-			// Send a message with the payload:
-			CMessage msg;
-			msg.type = 0x10;
-			msg.serializeObject(&p_tx);
+      // Send a message with the payload:
+      CMessage msg;
+      msg.type = 0x10;
+      msg.serializeObject(&p_tx);
 
-			client->sendMessage(msg);
+      client->sendMessage(msg);
 
-			std::this_thread::sleep_for(2000ms);
-		}
+      std::this_thread::sleep_for(2000ms);
+    }
 
 #ifdef SOCKET_TEST_VERBOSE
-		printf("[Server] Finish\n");
+    printf("[Server] Finish\n");
 #endif
-	}
-	catch (const std::exception& e)
-	{
-		cerr << e.what() << endl;
-	}
-	catch (...)
-	{
-		printf("[thread_server] Runtime error!\n");
-	}
+  }
+  catch (const std::exception& e)
+  {
+    cerr << e.what() << endl;
+  }
+  catch (...)
+  {
+    printf("[thread_server] Runtime error!\n");
+  }
 }
 
 void thread_client()
 {
-	using namespace mrpt::comms;
-	using namespace std;
+  using namespace mrpt::comms;
+  using namespace std;
 
-	mrpt::system::changeCurrentThreadPriority(mrpt::system::tpLow);
+  mrpt::system::changeCurrentThreadPriority(mrpt::system::tpLow);
 
-	try
-	{
-		CClientTCPSocket sock;
-
-#ifdef SOCKET_TEST_VERBOSE
-		printf("[Client] Connecting\n");
-#endif
-
-		sock.connect("127.0.0.1", 15000);
+  try
+  {
+    CClientTCPSocket sock;
 
 #ifdef SOCKET_TEST_VERBOSE
-		printf("[Client] Connected. Waiting for a message...\n");
+    printf("[Client] Connecting\n");
 #endif
-		// cout << "pending: " << sock.getReadPendingBytes() << endl;
-		// std::this_thread::sleep_for(500ms);
-		// cout << "pending: " << sock.getReadPendingBytes() << endl;
 
-		CMessage msg;
-		bool ok = sock.receiveMessage(msg, 10000, 10000);
-
-		if (!ok) { printf("[Client] Error receiving message!!\n"); }
-		else
-		{
-#ifdef SOCKET_TEST_VERBOSE
-			printf("[Client] Message received OK!:\n");
-			printf("  MSG Type: %i\n", msg.type);
-			printf(
-				"  MSG Length: %u bytes\n", (unsigned int)msg.content.size());
-			printf("[Client] Parsing payload...\n");
-#endif
-			mrpt::poses::CPose3D p_rx;
-			msg.deserializeIntoExistingObject(&p_rx);
+    sock.connect("127.0.0.1", 15000);
 
 #ifdef SOCKET_TEST_VERBOSE
-			printf("[Client] Received payload: %s\n", p_rx.asString().c_str());
-			printf("[Client] tx payload: %s\n", p_tx.asString().c_str());
-			printf("[Client] Done!!\n");
+    printf("[Client] Connected. Waiting for a message...\n");
 #endif
+    // cout << "pending: " << sock.getReadPendingBytes() << endl;
+    // std::this_thread::sleep_for(500ms);
+    // cout << "pending: " << sock.getReadPendingBytes() << endl;
 
-			sockets_test_passed_ok = (p_rx == p_tx);
-		}
+    CMessage msg;
+    bool ok = sock.receiveMessage(msg, 10000, 10000);
+
+    if (!ok)
+    {
+      printf("[Client] Error receiving message!!\n");
+    }
+    else
+    {
+#ifdef SOCKET_TEST_VERBOSE
+      printf("[Client] Message received OK!:\n");
+      printf("  MSG Type: %i\n", msg.type);
+      printf("  MSG Length: %u bytes\n", (unsigned int)msg.content.size());
+      printf("[Client] Parsing payload...\n");
+#endif
+      mrpt::poses::CPose3D p_rx;
+      msg.deserializeIntoExistingObject(&p_rx);
 
 #ifdef SOCKET_TEST_VERBOSE
-		printf("[Client] Finish\n");
+      printf("[Client] Received payload: %s\n", p_rx.asString().c_str());
+      printf("[Client] tx payload: %s\n", p_tx.asString().c_str());
+      printf("[Client] Done!!\n");
 #endif
-	}
-	catch (const std::exception& e)
-	{
-		cerr << e.what() << endl;
-	}
-	catch (...)
-	{
-		cerr << "[thread_client] Runtime error!" << endl;
-	}
+
+      sockets_test_passed_ok = (p_rx == p_tx);
+    }
+
+#ifdef SOCKET_TEST_VERBOSE
+    printf("[Client] Finish\n");
+#endif
+  }
+  catch (const std::exception& e)
+  {
+    cerr << e.what() << endl;
+  }
+  catch (...)
+  {
+    cerr << "[thread_client] Runtime error!" << endl;
+  }
 }
 
 // ------------------------------------------------------
@@ -143,12 +145,12 @@ void thread_client()
 // ------------------------------------------------------
 void SocketsTest()
 {
-	using namespace std::chrono_literals;
+  using namespace std::chrono_literals;
 
-	std::thread(thread_server).detach();
-	std::this_thread::sleep_for(20ms);
+  std::thread(thread_server).detach();
+  std::this_thread::sleep_for(20ms);
 
-	std::thread t2(thread_client);
-	std::this_thread::sleep_for(200ms);
-	t2.join();
+  std::thread t2(thread_client);
+  std::this_thread::sleep_for(200ms);
+  t2.join();
 }

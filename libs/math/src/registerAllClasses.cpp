@@ -21,25 +21,25 @@
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_math)
 {
-	using namespace mrpt::math;
+  using namespace mrpt::math;
 
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
-	// Abstract classes are not registered since they can not be
-	//   instanciated, nor loaded from streams.
-	registerClass(CLASS_ID(CMatrixF));
-	// To support deserialization from rawlogs < mrpt 2.0.0
-	registerClassCustomName("CMatrix", CLASS_ID(CMatrixF));
+  // Abstract classes are not registered since they can not be
+  //   instanciated, nor loaded from streams.
+  registerClass(CLASS_ID(CMatrixF));
+  // To support deserialization from rawlogs < mrpt 2.0.0
+  registerClassCustomName("CMatrix", CLASS_ID(CMatrixF));
 
-	registerClass(CLASS_ID(CMatrixD));
-	registerClass(CLASS_ID(CMatrixB));
-	registerClass(CLASS_ID(CPolygon));
-	registerClass(CLASS_ID(CSplineInterpolator1D));
+  registerClass(CLASS_ID(CMatrixD));
+  registerClass(CLASS_ID(CMatrixB));
+  registerClass(CLASS_ID(CPolygon));
+  registerClass(CLASS_ID(CSplineInterpolator1D));
 #endif
 }
 
 void mrpt::math::registerAllClasses_mrpt_math()
 {
-	::registerAllClasses_mrpt_math();
-	// deps:
-	mrpt::serialization::registerAllClasses_mrpt_serialization();
+  ::registerAllClasses_mrpt_math();
+  // deps:
+  mrpt::serialization::registerAllClasses_mrpt_serialization();
 }

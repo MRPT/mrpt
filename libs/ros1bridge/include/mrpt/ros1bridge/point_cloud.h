@@ -27,8 +27,7 @@ namespace mrpt::ros1bridge
  * \return true on sucessful conversion, false on any error.
  * \sa toROS
  */
-bool fromROS(
-	const sensor_msgs::PointCloud& msg, mrpt::maps::CSimplePointsMap& obj);
+bool fromROS(const sensor_msgs::PointCloud& msg, mrpt::maps::CSimplePointsMap& obj);
 
 /** Convert mrpt::maps::CSimplePointsMap -> sensor_msgs/PointCloud
  *  The user must supply the "msg_header" field to be copied into the output
@@ -40,8 +39,9 @@ bool fromROS(
  * \sa fromROS
  */
 bool toROS(
-	const mrpt::maps::CSimplePointsMap& obj, const std_msgs::Header& msg_header,
-	sensor_msgs::PointCloud& msg);
+    const mrpt::maps::CSimplePointsMap& obj,
+    const std_msgs::Header& msg_header,
+    sensor_msgs::PointCloud& msg);
 
 /** @} @}
  */

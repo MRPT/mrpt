@@ -30,45 +30,46 @@ namespace mrpt::slam
  */
 class COccupancyGridMapFeatureExtractor : public mrpt::system::CObserver
 {
-   public:
-	/** Computes a set of distinctive landmarks from an occupancy grid, and
-	 * store them (previous content is not erased!) into the given landmarks
-	 * map.
-	 *   Landmarks type can be any declared in
-	 * mrpt::vision::CFeatureExtraction::TOptions
-	 *
-	 * \note See the paper "..."
-	 * \sa uncached_extractFeatures
-	 */
-	void extractFeatures(
-		const mrpt::maps::COccupancyGridMap2D& grid,
-		mrpt::maps::CLandmarksMap& outMap, size_t number_of_features,
-		const mrpt::vision::TDescriptorType descriptors,
-		const mrpt::vision::CFeatureExtraction::TOptions& feat_options);
+ public:
+  /** Computes a set of distinctive landmarks from an occupancy grid, and
+   * store them (previous content is not erased!) into the given landmarks
+   * map.
+   *   Landmarks type can be any declared in
+   * mrpt::vision::CFeatureExtraction::TOptions
+   *
+   * \note See the paper "..."
+   * \sa uncached_extractFeatures
+   */
+  void extractFeatures(
+      const mrpt::maps::COccupancyGridMap2D& grid,
+      mrpt::maps::CLandmarksMap& outMap,
+      size_t number_of_features,
+      const mrpt::vision::TDescriptorType descriptors,
+      const mrpt::vision::CFeatureExtraction::TOptions& feat_options);
 
-	/** Computes a set of distinctive landmarks from an occupancy grid, and
-	 * store them (previous content is not erased!) into the given landmarks
-	 * map.
-	 *   Landmarks type can be any declared in
-	 * mrpt::vision::CFeatureExtraction::TOptions
-	 *
-	 * \note See the paper "..."
-	 * \sa uncached_extractFeatures
-	 */
-	static void uncached_extractFeatures(
-		const mrpt::maps::COccupancyGridMap2D& grid,
-		mrpt::maps::CLandmarksMap& outMap, size_t number_of_features,
-		const mrpt::vision::TDescriptorType descriptors,
-		const mrpt::vision::CFeatureExtraction::TOptions& feat_options);
+  /** Computes a set of distinctive landmarks from an occupancy grid, and
+   * store them (previous content is not erased!) into the given landmarks
+   * map.
+   *   Landmarks type can be any declared in
+   * mrpt::vision::CFeatureExtraction::TOptions
+   *
+   * \note See the paper "..."
+   * \sa uncached_extractFeatures
+   */
+  static void uncached_extractFeatures(
+      const mrpt::maps::COccupancyGridMap2D& grid,
+      mrpt::maps::CLandmarksMap& outMap,
+      size_t number_of_features,
+      const mrpt::vision::TDescriptorType descriptors,
+      const mrpt::vision::CFeatureExtraction::TOptions& feat_options);
 
-   protected:
-	/** This will receive the events from maps in order to purge the cache. */
-	void OnEvent(const mrpt::system::mrptEvent& e) override;
-	using TCache = std::map<
-		const mrpt::maps::COccupancyGridMap2D*, mrpt::maps::CLandmarksMap::Ptr>;
-	/** A cache of already computed maps. */
-	TCache m_cache;
+ protected:
+  /** This will receive the events from maps in order to purge the cache. */
+  void OnEvent(const mrpt::system::mrptEvent& e) override;
+  using TCache = std::map<const mrpt::maps::COccupancyGridMap2D*, mrpt::maps::CLandmarksMap::Ptr>;
+  /** A cache of already computed maps. */
+  TCache m_cache;
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace mrpt::slam

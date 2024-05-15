@@ -25,36 +25,35 @@ namespace mrpt::obs
  * \ingroup mrpt_obs_grp
  * \note (New in MRPT 2.3.1)
  */
-class CObservation3DScene : public CObservation,
-							public mrpt::opengl::Visualizable
+class CObservation3DScene : public CObservation, public mrpt::opengl::Visualizable
 {
-	DEFINE_SERIALIZABLE(CObservation3DScene, mrpt::obs)
+  DEFINE_SERIALIZABLE(CObservation3DScene, mrpt::obs)
 
-   public:
-	CObservation3DScene() = default;
-	~CObservation3DScene() override = default;
+ public:
+  CObservation3DScene() = default;
+  ~CObservation3DScene() override = default;
 
-	/** The payload: a 3D scene smart pointer. */
-	mrpt::opengl::Scene::Ptr scene;
+  /** The payload: a 3D scene smart pointer. */
+  mrpt::opengl::Scene::Ptr scene;
 
-	/** The pose of the sensor on the robot. It does not have any predefined
-	 * meaning in this particular class. Ignore it unless you want it to have
-	 * any particular meaning related to the 3D scene. */
-	mrpt::poses::CPose3D sensorPose;
+  /** The pose of the sensor on the robot. It does not have any predefined
+   * meaning in this particular class. Ignore it unless you want it to have
+   * any particular meaning related to the 3D scene. */
+  mrpt::poses::CPose3D sensorPose;
 
-	// See base class docs
-	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
-	{
-		out_sensorPose = sensorPose;
-	}
-	void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override
-	{
-		sensorPose = newSensorPose;
-	}
-	void getDescriptionAsText(std::ostream& o) const override;
+  // See base class docs
+  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
+  {
+    out_sensorPose = sensorPose;
+  }
+  void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override
+  {
+    sensorPose = newSensorPose;
+  }
+  void getDescriptionAsText(std::ostream& o) const override;
 
-	void getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const override;
+  void getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const override;
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace mrpt::obs

@@ -24,200 +24,185 @@ IMPLEMENTS_SERIALIZABLE(CActionCollection, CSerializable, mrpt::obs)
 
 CActionCollection::CActionCollection(CAction& a) : m_actions()
 {
-	m_actions.emplace_back(CAction::Ptr(dynamic_cast<CAction*>(a.clone())));
+  m_actions.emplace_back(CAction::Ptr(dynamic_cast<CAction*>(a.clone())));
 }
 
 uint8_t CActionCollection::serializeGetVersion() const { return 0; }
 void CActionCollection::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	out.WriteAs<uint32_t>(m_actions.size());
-	for (const auto& a : *this)
-		out << *a;
+  out.WriteAs<uint32_t>(m_actions.size());
+  for (const auto& a : *this) out << *a;
 }
 
-void CActionCollection::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void CActionCollection::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	switch (version)
-	{
-		case 0:
-		{
-			clear();
-			m_actions.resize(in.ReadAs<uint32_t>());
-			for_each(
-				begin(), end(),
-				mrpt::serialization::metaprogramming::
-					ObjectReadFromStreamToPtrs<CAction::Ptr>(&in));
-		}
-		break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	};
+  switch (version)
+  {
+    case 0:
+    {
+      clear();
+      m_actions.resize(in.ReadAs<uint32_t>());
+      for_each(
+          begin(), end(),
+          mrpt::serialization::metaprogramming::ObjectReadFromStreamToPtrs<CAction::Ptr>(&in));
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
 }
 
 /*---------------------------------------------------------------
-						clear
+            clear
  ---------------------------------------------------------------*/
 void CActionCollection::clear() { m_actions.clear(); }
 /*---------------------------------------------------------------
-						get
+            get
  ---------------------------------------------------------------*/
 CAction::Ptr CActionCollection::get(size_t index)
 {
-	if (index >= m_actions.size()) THROW_EXCEPTION("Index out of bounds");
+  if (index >= m_actions.size()) THROW_EXCEPTION("Index out of bounds");
 
-	return m_actions.at(index).get_ptr();
+  return m_actions.at(index).get_ptr();
 }
 
 const CAction& CActionCollection::get(size_t index) const
 {
-	if (index >= m_actions.size()) THROW_EXCEPTION("Index out of bounds");
+  if (index >= m_actions.size()) THROW_EXCEPTION("Index out of bounds");
 
-	return *(m_actions.at(index).get_ptr());
+  return *(m_actions.at(index).get_ptr());
 }
 
 size_t CActionCollection::size() const { return m_actions.size(); }
 
 void CActionCollection::insert(const CAction& action)
 {
-	m_actions.emplace_back(
-		CAction::Ptr(dynamic_cast<CAction*>(action.clone())));
+  m_actions.emplace_back(CAction::Ptr(dynamic_cast<CAction*>(action.clone())));
 }
 
-void CActionCollection::insertPtr(const CAction::Ptr& action)
-{
-	m_actions.emplace_back(action);
-}
+void CActionCollection::insertPtr(const CAction::Ptr& action) { m_actions.emplace_back(action); }
 
 /*---------------------------------------------------------------
-						getBestMovementEstimation
+            getBestMovementEstimation
  ---------------------------------------------------------------*/
 CActionRobotMovement2D::Ptr CActionCollection::getBestMovementEstimation() const
 {
-	CActionRobotMovement2D::Ptr bestEst;
-	double bestDet = 1e3;
+  CActionRobotMovement2D::Ptr bestEst;
+  double bestDet = 1e3;
 
-	// Find the best
-	for (const auto& it : *this)
-	{
-		if (it->GetRuntimeClass()->derivedFrom(
-				CLASS_ID(CActionRobotMovement2D)))
-		{
-			CActionRobotMovement2D::Ptr temp =
-				std::dynamic_pointer_cast<CActionRobotMovement2D>(it.get_ptr());
+  // Find the best
+  for (const auto& it : *this)
+  {
+    if (it->GetRuntimeClass()->derivedFrom(CLASS_ID(CActionRobotMovement2D)))
+    {
+      CActionRobotMovement2D::Ptr temp =
+          std::dynamic_pointer_cast<CActionRobotMovement2D>(it.get_ptr());
 
-			if (temp->estimationMethod ==
-				CActionRobotMovement2D::emScan2DMatching)
-			{
-				return temp;
-			}
+      if (temp->estimationMethod == CActionRobotMovement2D::emScan2DMatching)
+      {
+        return temp;
+      }
 
-			double det = temp->poseChange->getCovariance().det();
+      double det = temp->poseChange->getCovariance().det();
 
-			// If it is the best until now, save it:
-			if (det < bestDet)
-			{
-				bestEst = temp;
-				bestDet = det;
-			}
-		}
-	}
+      // If it is the best until now, save it:
+      if (det < bestDet)
+      {
+        bestEst = temp;
+        bestDet = det;
+      }
+    }
+  }
 
-	return bestEst;
+  return bestEst;
 }
 
 /*---------------------------------------------------------------
-							eraseByIndex
+              eraseByIndex
  ---------------------------------------------------------------*/
 void CActionCollection::eraseByIndex(size_t index)
 {
-	if (index >= m_actions.size()) THROW_EXCEPTION("Index out of bounds");
+  if (index >= m_actions.size()) THROW_EXCEPTION("Index out of bounds");
 
-	auto it = m_actions.begin() + index;
-	m_actions.erase(it);
+  auto it = m_actions.begin() + index;
+  m_actions.erase(it);
 }
 
 /*---------------------------------------------------------------
-							eraseByIndex
+              eraseByIndex
  ---------------------------------------------------------------*/
 CActionRobotMovement2D::Ptr CActionCollection::getMovementEstimationByType(
-	CActionRobotMovement2D::TEstimationMethod method)
+    CActionRobotMovement2D::TEstimationMethod method)
 {
-	// Find it:
-	for (auto& it : *this)
-	{
-		if (it->GetRuntimeClass()->derivedFrom(
-				CLASS_ID(CActionRobotMovement2D)))
-		{
-			CActionRobotMovement2D::Ptr temp =
-				std::dynamic_pointer_cast<CActionRobotMovement2D>(it.get_ptr());
+  // Find it:
+  for (auto& it : *this)
+  {
+    if (it->GetRuntimeClass()->derivedFrom(CLASS_ID(CActionRobotMovement2D)))
+    {
+      CActionRobotMovement2D::Ptr temp =
+          std::dynamic_pointer_cast<CActionRobotMovement2D>(it.get_ptr());
 
-			// Is it of the required type?
-			if (temp->estimationMethod == method)
-			{
-				// Yes!:
-				return temp;
-			}
-		}
-	}
+      // Is it of the required type?
+      if (temp->estimationMethod == method)
+      {
+        // Yes!:
+        return temp;
+      }
+    }
+  }
 
-	// Not found:
-	return CActionRobotMovement2D::Ptr();
+  // Not found:
+  return CActionRobotMovement2D::Ptr();
 }
 
 /*---------------------------------------------------------------
-							erase
+              erase
  ---------------------------------------------------------------*/
 CActionCollection::iterator CActionCollection::erase(const iterator& it)
 {
-	MRPT_START
-	ASSERT_(it != end());
+  MRPT_START
+  ASSERT_(it != end());
 
-	return m_actions.erase(it);
-	MRPT_END
+  return m_actions.erase(it);
+  MRPT_END
 }
 
 /*---------------------------------------------------------------
-							getFirstMovementEstimationMean
+              getFirstMovementEstimationMean
  ---------------------------------------------------------------*/
-bool CActionCollection::getFirstMovementEstimationMean(
-	CPose3D& out_pose_increment) const
+bool CActionCollection::getFirstMovementEstimationMean(CPose3D& out_pose_increment) const
 {
-	CActionRobotMovement3D::Ptr act3D =
-		getActionByClass<CActionRobotMovement3D>();
-	if (act3D)
-	{
-		out_pose_increment = act3D->poseChange.mean;
-		return true;
-	}
-	CActionRobotMovement2D::Ptr act2D =
-		getActionByClass<CActionRobotMovement2D>();
-	if (act2D)
-	{
-		out_pose_increment = CPose3D(act2D->poseChange->getMeanVal());
-		return true;
-	}
-	return false;
+  CActionRobotMovement3D::Ptr act3D = getActionByClass<CActionRobotMovement3D>();
+  if (act3D)
+  {
+    out_pose_increment = act3D->poseChange.mean;
+    return true;
+  }
+  CActionRobotMovement2D::Ptr act2D = getActionByClass<CActionRobotMovement2D>();
+  if (act2D)
+  {
+    out_pose_increment = CPose3D(act2D->poseChange->getMeanVal());
+    return true;
+  }
+  return false;
 }
 
 /*---------------------------------------------------------------
-					getFirstMovementEstimation
+          getFirstMovementEstimation
  ---------------------------------------------------------------*/
-bool CActionCollection::getFirstMovementEstimation(
-	CPose3DPDFGaussian& out_pose_increment) const
+bool CActionCollection::getFirstMovementEstimation(CPose3DPDFGaussian& out_pose_increment) const
 {
-	CActionRobotMovement3D::Ptr act3D =
-		getActionByClass<CActionRobotMovement3D>();
-	if (act3D)
-	{
-		out_pose_increment = act3D->poseChange;
-		return true;
-	}
-	CActionRobotMovement2D::Ptr act2D =
-		getActionByClass<CActionRobotMovement2D>();
-	if (act2D)
-	{
-		out_pose_increment.copyFrom(*act2D->poseChange);
-		return true;
-	}
-	return false;
+  CActionRobotMovement3D::Ptr act3D = getActionByClass<CActionRobotMovement3D>();
+  if (act3D)
+  {
+    out_pose_increment = act3D->poseChange;
+    return true;
+  }
+  CActionRobotMovement2D::Ptr act2D = getActionByClass<CActionRobotMovement2D>();
+  if (act2D)
+  {
+    out_pose_increment.copyFrom(*act2D->poseChange);
+    return true;
+  }
+  return false;
 }

@@ -39,33 +39,28 @@ namespace mrpt::nav
  */
 class CPTG_DiffDrive_C : public CPTG_DiffDrive_CollisionGridBased
 {
-	DEFINE_SERIALIZABLE(CPTG_DiffDrive_C, mrpt::nav)
-   public:
-	CPTG_DiffDrive_C() = default;
-	CPTG_DiffDrive_C(
-		const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
-	{
-		CPTG_DiffDrive_C::loadFromConfigFile(cfg, sSection);
-	}
-	void loadFromConfigFile(
-		const mrpt::config::CConfigFileBase& cfg,
-		const std::string& sSection) override;
-	void saveToConfigFile(
-		mrpt::config::CConfigFileBase& cfg,
-		const std::string& sSection) const override;
+  DEFINE_SERIALIZABLE(CPTG_DiffDrive_C, mrpt::nav)
+ public:
+  CPTG_DiffDrive_C() = default;
+  CPTG_DiffDrive_C(const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
+  {
+    CPTG_DiffDrive_C::loadFromConfigFile(cfg, sSection);
+  }
+  void loadFromConfigFile(
+      const mrpt::config::CConfigFileBase& cfg, const std::string& sSection) override;
+  void saveToConfigFile(
+      mrpt::config::CConfigFileBase& cfg, const std::string& sSection) const override;
 
-	std::string getDescription() const override;
-	bool inverseMap_WS2TP(
-		double x, double y, int& out_k, double& out_d,
-		double tolerance_dist = 0.10) const override;
-	bool PTG_IsIntoDomain(double x, double y) const override;
-	void ptgDiffDriveSteeringFunction(
-		float alpha, float t, float x, float y, float phi, float& v,
-		float& w) const override;
-	void loadDefaultParams() override;
+  std::string getDescription() const override;
+  bool inverseMap_WS2TP(
+      double x, double y, int& out_k, double& out_d, double tolerance_dist = 0.10) const override;
+  bool PTG_IsIntoDomain(double x, double y) const override;
+  void ptgDiffDriveSteeringFunction(
+      float alpha, float t, float x, float y, float phi, float& v, float& w) const override;
+  void loadDefaultParams() override;
 
-   protected:
-	/** A generation parameter */
-	double K{0};
+ protected:
+  /** A generation parameter */
+  double K{0};
 };
 }  // namespace mrpt::nav

@@ -20,26 +20,26 @@ using UserAction = std::function<void()>;
 
 class CUndoManager
 {
-   public:
-	static CUndoManager& instance()
-	{
-		static CUndoManager s;
-		return s;
-	}
+ public:
+  static CUndoManager& instance()
+  {
+    static CUndoManager s;
+    return s;
+  }
 
-	void addAction(UserAction undo, UserAction redo);
-	UserAction undoAction();
-	bool hasUndo() const;
-	UserAction redoAction();
-	bool hasRedo() const;
+  void addAction(UserAction undo, UserAction redo);
+  UserAction undoAction();
+  bool hasUndo() const;
+  UserAction redoAction();
+  bool hasRedo() const;
 
-   private:
-	CUndoManager() = default;
-	~CUndoManager() = default;
-	CUndoManager(CUndoManager const&) = delete;
-	CUndoManager& operator=(CUndoManager const&) = delete;
+ private:
+  CUndoManager() = default;
+  ~CUndoManager() = default;
+  CUndoManager(CUndoManager const&) = delete;
+  CUndoManager& operator=(CUndoManager const&) = delete;
 
-	std::vector<UserAction> m_undo;
-	std::vector<UserAction> m_redo;
-	int m_lastAction{-1};
+  std::vector<UserAction> m_undo;
+  std::vector<UserAction> m_redo;
+  int m_lastAction{-1};
 };

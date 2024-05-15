@@ -119,122 +119,117 @@ class TSetOfMetricMapInitializers;
  */
 class CMultiMetricMap : public mrpt::maps::CMetricMap
 {
-	DEFINE_SERIALIZABLE(CMultiMetricMap, mrpt::maps)
-   public:
-	/** Default ctor: empty list of maps */
-	CMultiMetricMap() = default;
+  DEFINE_SERIALIZABLE(CMultiMetricMap, mrpt::maps)
+ public:
+  /** Default ctor: empty list of maps */
+  CMultiMetricMap() = default;
 
-	/** Constructor with a list of map initializers.
-	 * \param initializers One internal map will be created for each entry in
-	 * this "TSetOfMetricMapInitializers" struct.
-	 */
-	CMultiMetricMap(const TSetOfMetricMapInitializers& initializers);
+  /** Constructor with a list of map initializers.
+   * \param initializers One internal map will be created for each entry in
+   * this "TSetOfMetricMapInitializers" struct.
+   */
+  CMultiMetricMap(const TSetOfMetricMapInitializers& initializers);
 
-	/** Creates a deep copy */
-	CMultiMetricMap(const CMultiMetricMap& o);
-	/** Creates a deep copy */
-	CMultiMetricMap& operator=(const CMultiMetricMap& o);
+  /** Creates a deep copy */
+  CMultiMetricMap(const CMultiMetricMap& o);
+  /** Creates a deep copy */
+  CMultiMetricMap& operator=(const CMultiMetricMap& o);
 
-	/** Move ctor */
-	CMultiMetricMap(CMultiMetricMap&&) = default;
-	/** Move operator */
-	CMultiMetricMap& operator=(CMultiMetricMap&&) = default;
+  /** Move ctor */
+  CMultiMetricMap(CMultiMetricMap&&) = default;
+  /** Move operator */
+  CMultiMetricMap& operator=(CMultiMetricMap&&) = default;
 
-	/** @name Access to list of maps
-		@{ */
-	using TListMaps = std::deque<mrpt::maps::CMetricMap::Ptr>;
+  /** @name Access to list of maps
+    @{ */
+  using TListMaps = std::deque<mrpt::maps::CMetricMap::Ptr>;
 
-	/** The list of metric maps in this object. Use dynamic_cast or smart
-	 * pointer-based downcast to access maps by their actual type.
-	 * You can directly manipulate this list. Helper methods to initialize it
-	 * are described in the docs of CMultiMetricMap
-	 */
-	TListMaps maps;
+  /** The list of metric maps in this object. Use dynamic_cast or smart
+   * pointer-based downcast to access maps by their actual type.
+   * You can directly manipulate this list. Helper methods to initialize it
+   * are described in the docs of CMultiMetricMap
+   */
+  TListMaps maps;
 
-	using iterator = TListMaps::iterator;
-	using const_iterator = TListMaps::const_iterator;
-	iterator begin() { return maps.begin(); }
-	const_iterator begin() const { return maps.begin(); }
-	iterator end() { return maps.end(); }
-	const_iterator end() const { return maps.end(); }
+  using iterator = TListMaps::iterator;
+  using const_iterator = TListMaps::const_iterator;
+  iterator begin() { return maps.begin(); }
+  const_iterator begin() const { return maps.begin(); }
+  iterator end() { return maps.end(); }
+  const_iterator end() const { return maps.end(); }
 
-	/** Gets the i-th map \exception std::runtime_error On out-of-bounds */
-	mrpt::maps::CMetricMap::Ptr mapByIndex(size_t idx) const;
+  /** Gets the i-th map \exception std::runtime_error On out-of-bounds */
+  mrpt::maps::CMetricMap::Ptr mapByIndex(size_t idx) const;
 
-	/** Returns the i'th map of a given class (or of a derived
-	 * class), or empty smart pointer if there is no such map.
-	 *  Example:
-	 * \code
-	 *  COccupancyGridMap2D::Ptr obs =
-	 * multimap.mapByClass<COccupancyGridMap2D>();
-	 * \endcode
-	 * By default (ith=0), the first match is returned.
-	 */
-	template <typename T>
-	typename T::Ptr mapByClass(size_t ith = 0) const
-	{
-		size_t foundCount = 0;
-		const auto* class_ID = &T::GetRuntimeClassIdStatic();
-		for (const auto& m : maps)
-			if (m && m->GetRuntimeClass()->derivedFrom(class_ID))
-				if (foundCount++ == ith) return std::dynamic_pointer_cast<T>(m);
-		return typename T::Ptr();  // Not found: return empty smart pointer
-	}
+  /** Returns the i'th map of a given class (or of a derived
+   * class), or empty smart pointer if there is no such map.
+   *  Example:
+   * \code
+   *  COccupancyGridMap2D::Ptr obs =
+   * multimap.mapByClass<COccupancyGridMap2D>();
+   * \endcode
+   * By default (ith=0), the first match is returned.
+   */
+  template <typename T>
+  typename T::Ptr mapByClass(size_t ith = 0) const
+  {
+    size_t foundCount = 0;
+    const auto* class_ID = &T::GetRuntimeClassIdStatic();
+    for (const auto& m : maps)
+      if (m && m->GetRuntimeClass()->derivedFrom(class_ID))
+        if (foundCount++ == ith) return std::dynamic_pointer_cast<T>(m);
+    return typename T::Ptr();  // Not found: return empty smart pointer
+  }
 
-	/** Count how many maps exist of the given class (or derived class) */
-	template <typename T>
-	typename std::size_t countMapsByClass() const
-	{
-		size_t foundCount = 0;
-		const auto* class_ID = &T::GetRuntimeClassIdStatic();
-		for (const auto& m : maps)
-			if (m->GetRuntimeClass()->derivedFrom(class_ID)) foundCount++;
-		return foundCount;
-	}
-	/** @} */
+  /** Count how many maps exist of the given class (or derived class) */
+  template <typename T>
+  typename std::size_t countMapsByClass() const
+  {
+    size_t foundCount = 0;
+    const auto* class_ID = &T::GetRuntimeClassIdStatic();
+    for (const auto& m : maps)
+      if (m->GetRuntimeClass()->derivedFrom(class_ID)) foundCount++;
+    return foundCount;
+  }
+  /** @} */
 
-	/** Sets the list of internal map according to the passed list of map
-	 * initializers (current maps will be deleted) */
-	void setListOfMaps(const mrpt::maps::TSetOfMetricMapInitializers& init);
+  /** Sets the list of internal map according to the passed list of map
+   * initializers (current maps will be deleted) */
+  void setListOfMaps(const mrpt::maps::TSetOfMetricMapInitializers& init);
 
-	// Implementation of virtual CMetricMap methods.
-	// See docs in base class:
+  // Implementation of virtual CMetricMap methods.
+  // See docs in base class:
 
-	/** Returns true if **all** maps returns true in their isEmpty() method */
-	bool isEmpty() const override;
-	void determineMatching2D(
-		const mrpt::maps::CMetricMap* otherMap,
-		const mrpt::poses::CPose2D& otherMapPose,
-		mrpt::tfest::TMatchingPairList& correspondences,
-		const mrpt::maps::TMatchingParams& params,
-		mrpt::maps::TMatchingExtraResults& extraResults) const override;
-	float compute3DMatchingRatio(
-		const mrpt::maps::CMetricMap* otherMap,
-		const mrpt::poses::CPose3D& otherMapPose,
-		const TMatchingRatioParams& params) const override;
-	void saveMetricMapRepresentationToFile(
-		const std::string& filNamePrefix) const override;
-	void auxParticleFilterCleanUp() override;
-	void getVisualizationInto(
-		mrpt::opengl::CSetOfObjects& outObj) const override;
-	const mrpt::maps::CSimplePointsMap* getAsSimplePointsMap() const override;
+  /** Returns true if **all** maps returns true in their isEmpty() method */
+  bool isEmpty() const override;
+  void determineMatching2D(
+      const mrpt::maps::CMetricMap* otherMap,
+      const mrpt::poses::CPose2D& otherMapPose,
+      mrpt::tfest::TMatchingPairList& correspondences,
+      const mrpt::maps::TMatchingParams& params,
+      mrpt::maps::TMatchingExtraResults& extraResults) const override;
+  float compute3DMatchingRatio(
+      const mrpt::maps::CMetricMap* otherMap,
+      const mrpt::poses::CPose3D& otherMapPose,
+      const TMatchingRatioParams& params) const override;
+  void saveMetricMapRepresentationToFile(const std::string& filNamePrefix) const override;
+  void auxParticleFilterCleanUp() override;
+  void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
+  const mrpt::maps::CSimplePointsMap* getAsSimplePointsMap() const override;
 
-	/** Returns a short description of the map. */
-	std::string asString() const override;
+  /** Returns a short description of the map. */
+  std::string asString() const override;
 
-   protected:
-	// See base class docs:
-	void internal_clear() override;
-	bool internal_insertObservation(
-		const mrpt::obs::CObservation& obs,
-		const std::optional<const mrpt::poses::CPose3D>& robotPose =
-			std::nullopt) override;
-	bool internal_canComputeObservationLikelihood(
-		const mrpt::obs::CObservation& obs) const override;
-	double internal_computeObservationLikelihood(
-		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D& takenFrom) const override;
+ protected:
+  // See base class docs:
+  void internal_clear() override;
+  bool internal_insertObservation(
+      const mrpt::obs::CObservation& obs,
+      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
+  bool internal_canComputeObservationLikelihood(const mrpt::obs::CObservation& obs) const override;
+  double internal_computeObservationLikelihood(
+      const mrpt::obs::CObservation& obs, const mrpt::poses::CPose3D& takenFrom) const override;
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace mrpt::maps

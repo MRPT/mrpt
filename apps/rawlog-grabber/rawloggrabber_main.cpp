@@ -8,12 +8,12 @@
    +------------------------------------------------------------------------+ */
 
 /*-----------------------------------------------------------------------------
-	APPLICATION: rawlog-grabber
-	FILE: rawloggrabber_main.cpp
-	AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
+  APPLICATION: rawlog-grabber
+  FILE: rawloggrabber_main.cpp
+  AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
-	For instructions and details, see:
-	 https://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/
+  For instructions and details, see:
+   https://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/
   -----------------------------------------------------------------------------*/
 
 #include <mrpt/apps/RawlogGrabberApp.h>
@@ -22,18 +22,18 @@
 
 int main(int argc, char** argv)
 {
-	try
-	{
-		mrpt::apps::RawlogGrabberApp app;
-		app.initialize(argc, argv);
-		app.run();
+  try
+  {
+    mrpt::apps::RawlogGrabberApp app;
+    app.initialize(argc, argv);
+    app.run();
 
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << mrpt::exception_to_str(e);
-		mrpt::system::pause();
-		return -1;
-	}
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << mrpt::exception_to_str(e);
+    mrpt::system::pause();
+    return -1;
+  }
 }

@@ -21,123 +21,119 @@ namespace mrpt::opengl
  */
 class CSetOfTriangles : public CRenderizableShaderTriangles
 {
-	DEFINE_SERIALIZABLE(CSetOfTriangles, mrpt::opengl)
-   public:
-	/** @name Renderizable shader API virtual methods
-	 * @{ */
-	void onUpdateBuffers_Triangles() override;
-	/** @} */
+  DEFINE_SERIALIZABLE(CSetOfTriangles, mrpt::opengl)
+ public:
+  /** @name Renderizable shader API virtual methods
+   * @{ */
+  void onUpdateBuffers_Triangles() override;
+  /** @} */
 
-	using const_iterator = std::vector<TTriangle>::const_iterator;
-	using const_reverse_iterator =
-		std::vector<TTriangle>::const_reverse_iterator;
+  using const_iterator = std::vector<TTriangle>::const_iterator;
+  using const_reverse_iterator = std::vector<TTriangle>::const_reverse_iterator;
 
-	/** Explicitly updates the internal polygon cache, with all triangles as
-	 * polygons. \sa getPolygons() */
-	void updatePolygons() const;
+  /** Explicitly updates the internal polygon cache, with all triangles as
+   * polygons. \sa getPolygons() */
+  void updatePolygons() const;
 
-	/** Clear this object, removing all triangles. */
-	void clearTriangles();
+  /** Clear this object, removing all triangles. */
+  void clearTriangles();
 
-	/** Get triangle count */
-	size_t getTrianglesCount() const;
+  /** Get triangle count */
+  size_t getTrianglesCount() const;
 
-	/** Gets the i-th triangle */
-	void getTriangle(size_t idx, TTriangle& t) const
-	{
-		std::shared_lock<std::shared_mutex> trisReadLock(
-			CRenderizableShaderTriangles::m_trianglesMtx.data);
+  /** Gets the i-th triangle */
+  void getTriangle(size_t idx, TTriangle& t) const
+  {
+    std::shared_lock<std::shared_mutex> trisReadLock(
+        CRenderizableShaderTriangles::m_trianglesMtx.data);
 
-		ASSERT_LT_(idx, shaderTrianglesBuffer().size());
-		t = shaderTrianglesBuffer().at(idx);
-	}
-	/** Inserts a triangle into the set */
-	void insertTriangle(const TTriangle& t)
-	{
-		std::unique_lock<std::shared_mutex> trisLck(
-			CRenderizableShaderTriangles::m_trianglesMtx.data);
-		auto& tris = CRenderizableShaderTriangles::m_triangles;
+    ASSERT_LT_(idx, shaderTrianglesBuffer().size());
+    t = shaderTrianglesBuffer().at(idx);
+  }
+  /** Inserts a triangle into the set */
+  void insertTriangle(const TTriangle& t)
+  {
+    std::unique_lock<std::shared_mutex> trisLck(CRenderizableShaderTriangles::m_trianglesMtx.data);
+    auto& tris = CRenderizableShaderTriangles::m_triangles;
 
-		tris.push_back(t);
-		polygonsUpToDate = false;
-		trisLck.unlock();
-		CRenderizable::notifyChange();
-	}
+    tris.push_back(t);
+    polygonsUpToDate = false;
+    trisLck.unlock();
+    CRenderizable::notifyChange();
+  }
 
-	/** Inserts a set of triangles, bounded by iterators, into this set.
-	 * \sa insertTriangle
-	 */
-	template <class InputIterator>
-	void insertTriangles(const InputIterator& begin, const InputIterator& end)
-	{
-		std::unique_lock<std::shared_mutex> trisLck(
-			CRenderizableShaderTriangles::m_trianglesMtx.data);
-		auto& tris = CRenderizableShaderTriangles::m_triangles;
+  /** Inserts a set of triangles, bounded by iterators, into this set.
+   * \sa insertTriangle
+   */
+  template <class InputIterator>
+  void insertTriangles(const InputIterator& begin, const InputIterator& end)
+  {
+    std::unique_lock<std::shared_mutex> trisLck(CRenderizableShaderTriangles::m_trianglesMtx.data);
+    auto& tris = CRenderizableShaderTriangles::m_triangles;
 
-		tris.insert(tris.end(), begin, end);
-		polygonsUpToDate = false;
-		trisLck.unlock();
-		CRenderizable::notifyChange();
-	}
+    tris.insert(tris.end(), begin, end);
+    polygonsUpToDate = false;
+    trisLck.unlock();
+    CRenderizable::notifyChange();
+  }
 
-	/** Inserts an existing CSetOfTriangles into this one */
-	void insertTriangles(const CSetOfTriangles::Ptr& p);
+  /** Inserts an existing CSetOfTriangles into this one */
+  void insertTriangles(const CSetOfTriangles::Ptr& p);
 
-	/**
-	 * Reserves memory for certain number of triangles, avoiding multiple
-	 * memory allocation calls.
-	 */
-	inline void reserve(size_t t)
-	{
-		std::unique_lock<std::shared_mutex> trisLck(
-			CRenderizableShaderTriangles::m_trianglesMtx.data);
-		auto& tris = CRenderizableShaderTriangles::m_triangles;
+  /**
+   * Reserves memory for certain number of triangles, avoiding multiple
+   * memory allocation calls.
+   */
+  inline void reserve(size_t t)
+  {
+    std::unique_lock<std::shared_mutex> trisLck(CRenderizableShaderTriangles::m_trianglesMtx.data);
+    auto& tris = CRenderizableShaderTriangles::m_triangles;
 
-		tris.reserve(t);
-		trisLck.unlock();
-		CRenderizable::notifyChange();
-	}
+    tris.reserve(t);
+    trisLck.unlock();
+    CRenderizable::notifyChange();
+  }
 
-	/** Overwrite all triangles colors with the one provided */
-	CRenderizable& setColor_u8(const mrpt::img::TColor& c) override;
-	/** Overwrite all triangles colors with the one provided */
-	CRenderizable& setColorA_u8(const uint8_t a) override;
+  /** Overwrite all triangles colors with the one provided */
+  CRenderizable& setColor_u8(const mrpt::img::TColor& c) override;
+  /** Overwrite all triangles colors with the one provided */
+  CRenderizable& setColorA_u8(const uint8_t a) override;
 
-	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
+  bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
-	/**
-	 * Gets the polygon cache.
-	 * \sa insertTriangles
-	 */
-	void getPolygons(std::vector<mrpt::math::TPolygon3D>& polys) const;
+  /**
+   * Gets the polygon cache.
+   * \sa insertTriangles
+   */
+  void getPolygons(std::vector<mrpt::math::TPolygon3D>& polys) const;
 
-	/**
-	 * Inserts a set of triangles, given in a container of either TTriangle's
-	 * or TPolygon3D
-	 * \sa insertTriangle
-	 */
-	template <class CONTAINER>
-	inline void insertTriangles(const CONTAINER& c)
-	{
-		this->insertTriangles(c.begin(), c.end());
-		CRenderizable::notifyChange();
-	}
+  /**
+   * Inserts a set of triangles, given in a container of either TTriangle's
+   * or TPolygon3D
+   * \sa insertTriangle
+   */
+  template <class CONTAINER>
+  inline void insertTriangles(const CONTAINER& c)
+  {
+    this->insertTriangles(c.begin(), c.end());
+    CRenderizable::notifyChange();
+  }
 
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
-	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
+  /** Evaluates the bounding box of this object (including possible children)
+   * in the coordinate frame of the object parent. */
+  mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
-	CSetOfTriangles() = default;
-	virtual ~CSetOfTriangles() override = default;
+  CSetOfTriangles() = default;
+  virtual ~CSetOfTriangles() override = default;
 
-   protected:
-	/**
-	 * Mutable variable used to check whether polygons need to be recalculated.
-	 */
-	mutable bool polygonsUpToDate{false};
+ protected:
+  /**
+   * Mutable variable used to check whether polygons need to be recalculated.
+   */
+  mutable bool polygonsUpToDate{false};
 
-	/** Polygon cache, used for ray-tracing only */
-	mutable std::vector<mrpt::math::TPolygonWithPlane> m_polygons;
+  /** Polygon cache, used for ray-tracing only */
+  mutable std::vector<mrpt::math::TPolygonWithPlane> m_polygons;
 };
 /** Inserts a set of triangles into the list; note that this method allows one
  * to pass another CSetOfTriangles as argument. Allows call chaining. \sa
@@ -146,17 +142,16 @@ class CSetOfTriangles : public CRenderizableShaderTriangles
 template <class T>
 inline CSetOfTriangles::Ptr& operator<<(CSetOfTriangles::Ptr& s, const T& t)
 {
-	s->insertTriangles(t.begin(), t.end());
-	return s;
+  s->insertTriangles(t.begin(), t.end());
+  return s;
 }
 /** Inserts a triangle into the list. Allows call chaining.
  * \sa mrpt::opengl::CSetOfTriangles::insertTriangle
  */
 template <>
-inline CSetOfTriangles::Ptr& operator<<(
-	CSetOfTriangles::Ptr& s, const mrpt::opengl::TTriangle& t)
+inline CSetOfTriangles::Ptr& operator<<(CSetOfTriangles::Ptr& s, const mrpt::opengl::TTriangle& t)
 {
-	s->insertTriangle(t);
-	return s;
+  s->insertTriangle(t);
+  return s;
 }
 }  // namespace mrpt::opengl

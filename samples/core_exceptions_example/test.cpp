@@ -17,58 +17,58 @@
 
 void test_except_3rd_lvl()
 {
-	MRPT_START
-	THROW_EXCEPTION("Aw!");
-	MRPT_END
+  MRPT_START
+  THROW_EXCEPTION("Aw!");
+  MRPT_END
 }
 
 void test_except_2nd_lvl()
 {
-	MRPT_START
-	test_except_3rd_lvl();
-	MRPT_END
+  MRPT_START
+  test_except_3rd_lvl();
+  MRPT_END
 }
 
 void test_except_toplevel()
 {
-	MRPT_START
-	test_except_2nd_lvl();
-	MRPT_END
+  MRPT_START
+  test_except_2nd_lvl();
+  MRPT_END
 }
 
 void test_except_2nd_lvl_bis()
 {
-	MRPT_START
-	std::vector<int> x;
-	x.resize(2);
-	x.at(10);  // throws
-	MRPT_END
+  MRPT_START
+  std::vector<int> x;
+  x.resize(2);
+  x.at(10);  // throws
+  MRPT_END
 }
 
 void test_except_toplevel_bis() { test_except_2nd_lvl_bis(); }
 
 int main()
 {
-	try
-	{
-		test_except_toplevel();
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << e.what();
-	}
+  try
+  {
+    test_except_toplevel();
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << e.what();
+  }
 
-	try
-	{
-		test_except_toplevel_bis();
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << e.what();
-	}
+  try
+  {
+    test_except_toplevel_bis();
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << e.what();
+  }
 
-	return 0;
+  return 0;
 }
 //! [example-nested-exceptions]

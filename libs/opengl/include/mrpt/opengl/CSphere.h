@@ -21,54 +21,53 @@ namespace mrpt::opengl
  */
 class CSphere : public CGeneralizedEllipsoidTemplate<3>
 {
-	using BASE = CGeneralizedEllipsoidTemplate<3>;
-	DEFINE_SERIALIZABLE(CSphere, mrpt::opengl)
+  using BASE = CGeneralizedEllipsoidTemplate<3>;
+  DEFINE_SERIALIZABLE(CSphere, mrpt::opengl)
 
-   public:
-	void renderUpdateBuffers() const override;
+ public:
+  void renderUpdateBuffers() const override;
 
-	void setRadius(float r)
-	{
-		m_radius = r;
-		CRenderizable::notifyChange();
-	}
-	float getRadius() const { return m_radius; }
-	void setNumberDivs(int N)
-	{
-		m_nDivs = N;
-		regenerateBaseParams();
-	}
+  void setRadius(float r)
+  {
+    m_radius = r;
+    CRenderizable::notifyChange();
+  }
+  float getRadius() const { return m_radius; }
+  void setNumberDivs(int N)
+  {
+    m_nDivs = N;
+    regenerateBaseParams();
+  }
 
-	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
-	virtual mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
+  bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
+  virtual mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
-	/** Constructor */
-	CSphere(float radius = 1.0f, int nDivs = 20)
-		: m_radius(radius), m_nDivs(nDivs)
-	{
-		regenerateBaseParams();
-		BASE::enableDrawSolid3D(true);	// default
-	}
+  /** Constructor */
+  CSphere(float radius = 1.0f, int nDivs = 20) : m_radius(radius), m_nDivs(nDivs)
+  {
+    regenerateBaseParams();
+    BASE::enableDrawSolid3D(true);  // default
+  }
 
-	virtual ~CSphere() override = default;
+  virtual ~CSphere() override = default;
 
-   protected:
-	float m_radius;
-	int m_nDivs;
+ protected:
+  float m_radius;
+  int m_nDivs;
 
-	void regenerateBaseParams()
-	{
-		BASE::setCovMatrix(mrpt::math::CMatrixDouble33::Identity());
-		BASE::setQuantiles(m_radius);
-		BASE::setNumberOfSegments(m_nDivs);
-	}
+  void regenerateBaseParams()
+  {
+    BASE::setCovMatrix(mrpt::math::CMatrixDouble33::Identity());
+    BASE::setQuantiles(m_radius);
+    BASE::setNumberOfSegments(m_nDivs);
+  }
 
-	void transformFromParameterSpace(
-		const std::vector<BASE::array_parameter_t>& in_pts,
-		std::vector<BASE::array_point_t>& out_pts) const override
-	{
-		out_pts = in_pts;
-	}
+  void transformFromParameterSpace(
+      const std::vector<BASE::array_parameter_t>& in_pts,
+      std::vector<BASE::array_point_t>& out_pts) const override
+  {
+    out_pts = in_pts;
+  }
 };
 
 }  // namespace mrpt::opengl

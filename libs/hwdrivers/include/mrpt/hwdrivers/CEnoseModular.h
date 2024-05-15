@@ -53,73 +53,72 @@ namespace mrpt::hwdrivers
  */
 class CEnoseModular : public mrpt::hwdrivers::CGenericSensor
 {
-	DEFINE_GENERIC_SENSOR(CEnoseModular)
+  DEFINE_GENERIC_SENSOR(CEnoseModular)
 
-   protected:
-	/** A copy of the device serial number (to open the USB FTDI chip)
-	 */
-	std::string m_usbSerialNumber;
-	mrpt::system::TTimeStamp initial_timestamp;
-	bool first_reading;
+ protected:
+  /** A copy of the device serial number (to open the USB FTDI chip)
+   */
+  std::string m_usbSerialNumber;
+  mrpt::system::TTimeStamp initial_timestamp;
+  bool first_reading;
 
-	/** If not an empty string (default), will open that serial port, otherwise
-	 * will try to open USB FTDI device "m_usbSerialNumber" */
-	std::string m_COM_port;
-	/** Default=115200 */
-	unsigned int m_COM_baud{115200};
+  /** If not an empty string (default), will open that serial port, otherwise
+   * will try to open USB FTDI device "m_usbSerialNumber" */
+  std::string m_COM_port;
+  /** Default=115200 */
+  unsigned int m_COM_baud{115200};
 
-	// Only one of these two streams will be !=nullptr and open for each
-	// specific eNose board!
-	/** FTDI comms pipe (when not in serial port mode) */
-	std::unique_ptr<mrpt::comms::CInterfaceFTDI> m_stream_FTDI;
-	/** Serial port comms */
-	std::unique_ptr<mrpt::comms::CSerialPort> m_stream_SERIAL;
+  // Only one of these two streams will be !=nullptr and open for each
+  // specific eNose board!
+  /** FTDI comms pipe (when not in serial port mode) */
+  std::unique_ptr<mrpt::comms::CInterfaceFTDI> m_stream_FTDI;
+  /** Serial port comms */
+  std::unique_ptr<mrpt::comms::CSerialPort> m_stream_SERIAL;
 
-	/** The 3D pose of the master + N slave eNoses on the robot (meters &
-	 * radians) */
-	std::vector<float> enose_poses_x, enose_poses_y, enose_poses_z,
-		enose_poses_yaw, enose_poses_pitch, enose_poses_roll;
+  /** The 3D pose of the master + N slave eNoses on the robot (meters &
+   * radians) */
+  std::vector<float> enose_poses_x, enose_poses_y, enose_poses_z, enose_poses_yaw,
+      enose_poses_pitch, enose_poses_roll;
 
-	/** Tries to connect to the USB device (if disconnected).
-	 * \return nullptr on error, otherwise a stream to be used for comms.
-	 */
-	mrpt::io::CStream* checkConnectionAndConnect();
+  /** Tries to connect to the USB device (if disconnected).
+   * \return nullptr on error, otherwise a stream to be used for comms.
+   */
+  mrpt::io::CStream* checkConnectionAndConnect();
 
-	/** See the class documentation at the top for expected parameters */
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& section) override;
+  /** See the class documentation at the top for expected parameters */
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& section) override;
 
-	/** Purge the Serial/FTDI buffer */
-	void purgeBuffers();
+  /** Purge the Serial/FTDI buffer */
+  void purgeBuffers();
 
-   public:
-	/** Constructor
-	 * \param serialNumberUSBdevice The serial number (text) of the device to
-	 * open.
-	 *  The constructor will try to open the device. You can check if it failed
-	 * calling "isOpen()".
-	 */
-	CEnoseModular();
+ public:
+  /** Constructor
+   * \param serialNumberUSBdevice The serial number (text) of the device to
+   * open.
+   *  The constructor will try to open the device. You can check if it failed
+   * calling "isOpen()".
+   */
+  CEnoseModular();
 
-	/** Request the master eNose the latest readings from all the eNoses.
-	 *  The output observation contains a valid timestamp and 3D positions if
-	 * "loadConfig" has been called previously.
-	 * \return true if OK, false if there were any error.
-	 */
-	bool getObservation(mrpt::obs::CObservationGasSensors& outObservation);
+  /** Request the master eNose the latest readings from all the eNoses.
+   *  The output observation contains a valid timestamp and 3D positions if
+   * "loadConfig" has been called previously.
+   * \return true if OK, false if there were any error.
+   */
+  bool getObservation(mrpt::obs::CObservationGasSensors& outObservation);
 
-	// See docs in parent class
-	void doProcess() override;
+  // See docs in parent class
+  void doProcess() override;
 
-	/** If not an empty string, will open that serial port, otherwise will try
-	 * to open USB FTDI device "m_usbSerialNumber"
-	 *  The default is an empty string. Example strings: "COM1", "ttyUSB0", ...
-	 */
-	inline void setSerialPort(const std::string& port) { m_COM_port = port; }
-	inline std::string getSerialPort() const { return m_COM_port; }
-	/** Set the serial port baud rate (default: 115200) */
-	inline void setSerialPortBaud(unsigned int baud) { m_COM_baud = baud; }
-	inline unsigned int getSerialPortBaud() const { return m_COM_baud; }
-};	// end of class
+  /** If not an empty string, will open that serial port, otherwise will try
+   * to open USB FTDI device "m_usbSerialNumber"
+   *  The default is an empty string. Example strings: "COM1", "ttyUSB0", ...
+   */
+  inline void setSerialPort(const std::string& port) { m_COM_port = port; }
+  inline std::string getSerialPort() const { return m_COM_port; }
+  /** Set the serial port baud rate (default: 115200) */
+  inline void setSerialPortBaud(unsigned int baud) { m_COM_baud = baud; }
+  inline unsigned int getSerialPortBaud() const { return m_COM_baud; }
+};  // end of class
 }  // namespace mrpt::hwdrivers

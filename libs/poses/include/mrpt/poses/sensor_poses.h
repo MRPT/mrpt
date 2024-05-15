@@ -26,8 +26,7 @@ using SensorToPoseMap = std::map<std::string, mrpt::poses::CPose3D>;
  * \ingroup poses_grp
  */
 SensorToPoseMap sensor_poses_from_yaml(
-	const mrpt::containers::yaml& d,
-	const std::string& referenceFrame = "base_link");
+    const mrpt::containers::yaml& d, const std::string& referenceFrame = "base_link");
 
 /** Utility to parse a YAML file with the extrinsic calibration of sensors.
  *
@@ -68,12 +67,11 @@ SensorToPoseMap sensor_poses_from_yaml(
  * \ingroup poses_grp
  */
 inline SensorToPoseMap sensor_poses_from_yaml_file(
-	const std::string& filename,
-	const std::string& referenceFrame = "base_link")
+    const std::string& filename, const std::string& referenceFrame = "base_link")
 {
-	const auto d = mrpt::containers::yaml::FromFile(filename);
-	ASSERT_(d.has("sensors"));
-	return sensor_poses_from_yaml(d["sensors"], referenceFrame);
+  const auto d = mrpt::containers::yaml::FromFile(filename);
+  ASSERT_(d.has("sensors"));
+  return sensor_poses_from_yaml(d["sensors"], referenceFrame);
 }
 
 }  // namespace mrpt::poses

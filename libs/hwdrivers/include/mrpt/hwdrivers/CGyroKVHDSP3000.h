@@ -18,9 +18,9 @@ namespace mrpt::hwdrivers
 {
 enum GYRO_MODE
 {
-	RATE,
-	INCREMENTAL_ANGLE,
-	INTEGRATED_ANGLE
+  RATE,
+  INCREMENTAL_ANGLE,
+  INTEGRATED_ANGLE
 };
 /** A class for interfacing KVH DSP 3000 gyroscope with an assynchronous serial
  *communication (product SN : 02-1222-01).
@@ -67,58 +67,57 @@ enum GYRO_MODE
  */
 class CGyroKVHDSP3000 : public hwdrivers::CGenericSensor
 {
-	DEFINE_GENERIC_SENSOR(CGyroKVHDSP3000)
-   protected:
-	/** This serial port will be attempted to be opened automatically when this
-	 * class is first used to request data from the device.
-	 * \sa comms::CSerialPort
-	 */
-	int m_COMbauds{38400};
-	std::string m_com_port;
+  DEFINE_GENERIC_SENSOR(CGyroKVHDSP3000)
+ protected:
+  /** This serial port will be attempted to be opened automatically when this
+   * class is first used to request data from the device.
+   * \sa comms::CSerialPort
+   */
+  int m_COMbauds{38400};
+  std::string m_com_port;
 
-	mrpt::poses::CPose3D m_sensorPose;
+  mrpt::poses::CPose3D m_sensorPose;
 
-	/** Search the port where the sensor is located and connect to it
-	 */
-	// bool searchPortAndConnect();
+  /** Search the port where the sensor is located and connect to it
+   */
+  // bool searchPortAndConnect();
 
-	/** The serial port connection */
-	std::unique_ptr<mrpt::comms::CSerialPort> m_serialPort;
-	GYRO_MODE m_mode{RATE};
-	bool m_firstInteration{true};
+  /** The serial port connection */
+  std::unique_ptr<mrpt::comms::CSerialPort> m_serialPort;
+  GYRO_MODE m_mode{RATE};
+  bool m_firstInteration{true};
 
-	mrpt::obs::CObservationIMU::Ptr m_observationGyro;
+  mrpt::obs::CObservationIMU::Ptr m_observationGyro;
 
-   public:
-	/** Constructor
-	 */
-	CGyroKVHDSP3000();
+ public:
+  /** Constructor
+   */
+  CGyroKVHDSP3000();
 
-	/** See the class documentation at the top for expected parameters */
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection) override;
+  /** See the class documentation at the top for expected parameters */
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection) override;
 
-	/** Destructor
-	 */
-	~CGyroKVHDSP3000() override;
+  /** Destructor
+   */
+  ~CGyroKVHDSP3000() override;
 
-	/** This method will be invoked at a minimum rate of "process_rate" (Hz)
-	 *  \exception This method must throw an exception with a descriptive
-	 * message if some critical error is found.
-	 */
-	void doProcess() override;
+  /** This method will be invoked at a minimum rate of "process_rate" (Hz)
+   *  \exception This method must throw an exception with a descriptive
+   * message if some critical error is found.
+   */
+  void doProcess() override;
 
-	/** Turns on the KVH DSP 3000 device and configure it for getting
-	 * orientation data. you must have called loadConfig_sensorSpecific before
-	 * calling this function.
-	 */
-	void initialize() override;
-	/** Send to the sensor the command 'Z' wich reset the integrated angle. (in
-	 * both rate mode and incremental, this function has no effect) */
-	void resetIncrementalAngle();
-	void changeMode(GYRO_MODE _newMode);
+  /** Turns on the KVH DSP 3000 device and configure it for getting
+   * orientation data. you must have called loadConfig_sensorSpecific before
+   * calling this function.
+   */
+  void initialize() override;
+  /** Send to the sensor the command 'Z' wich reset the integrated angle. (in
+   * both rate mode and incremental, this function has no effect) */
+  void resetIncrementalAngle();
+  void changeMode(GYRO_MODE _newMode);
 
-};	// end of class
+};  // end of class
 
 }  // namespace mrpt::hwdrivers

@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-	APPLICATION: mrpt_ros bridge
-	FILE: stereo_image.h
-	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
+  APPLICATION: mrpt_ros bridge
+  FILE: stereo_image.h
+  AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
   ---------------------------------------------------------------*/
 
 #pragma once
@@ -25,9 +25,11 @@ namespace mrpt::ros1bridge
  * @{ */
 
 bool toROS(
-	const mrpt::obs::CObservationStereoImages& obj,
-	const std_msgs::Header& msg_header, sensor_msgs::Image& left,
-	sensor_msgs::Image& right, stereo_msgs::DisparityImage& disparity);
+    const mrpt::obs::CObservationStereoImages& obj,
+    const std_msgs::Header& msg_header,
+    sensor_msgs::Image& left,
+    sensor_msgs::Image& right,
+    stereo_msgs::DisparityImage& disparity);
 
 /** @} */
 

@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "comms-precomp.h"	// Precompiled headers
+#include "comms-precomp.h"  // Precompiled headers
 //
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/CServerTCPSocket.h>
@@ -41,134 +41,131 @@ using socklen_t = int;
 
 std::string CServerTCPSocket::getLastErrorStr()
 {
-	return mrpt::comms::net::getLastSocketErrorStr();
+  return mrpt::comms::net::getLastSocketErrorStr();
 }
 
 void CServerTCPSocket::setupSocket(
-	unsigned short listenPort, const std::string& IPaddress,
-	int maxConnectionsWaiting)
+    unsigned short listenPort, const std::string& IPaddress, int maxConnectionsWaiting)
 {
-	MRPT_START
+  MRPT_START
 
-	// Create the socket:
-	// ----------------------------
-	m_serverSock = socket(AF_INET, SOCK_STREAM, 0);
-	if (INVALID_SOCKET == m_serverSock) THROW_EXCEPTION(getLastErrorStr());
+  // Create the socket:
+  // ----------------------------
+  m_serverSock = socket(AF_INET, SOCK_STREAM, 0);
+  if (INVALID_SOCKET == m_serverSock) THROW_EXCEPTION(getLastErrorStr());
 
-	// Bind it:
-	// ----------------------------
-	sockaddr_in desiredIP;
+  // Bind it:
+  // ----------------------------
+  sockaddr_in desiredIP;
 
-	desiredIP.sin_family = AF_INET;
-	desiredIP.sin_addr.s_addr = inet_addr(IPaddress.c_str());
-	desiredIP.sin_port = htons((unsigned short)listenPort);
+  desiredIP.sin_family = AF_INET;
+  desiredIP.sin_addr.s_addr = inet_addr(IPaddress.c_str());
+  desiredIP.sin_port = htons((unsigned short)listenPort);
 
-	if (INVALID_SOCKET ==
-		::bind(m_serverSock, (struct sockaddr*)(&desiredIP), sizeof(desiredIP)))
-		THROW_EXCEPTION(getLastErrorStr());
+  if (INVALID_SOCKET == ::bind(m_serverSock, (struct sockaddr*)(&desiredIP), sizeof(desiredIP)))
+    THROW_EXCEPTION(getLastErrorStr());
 
-	// Put in listen mode:
-	// ----------------------------
-	if (INVALID_SOCKET == listen(m_serverSock, maxConnectionsWaiting))
-		THROW_EXCEPTION(getLastErrorStr());
+  // Put in listen mode:
+  // ----------------------------
+  if (INVALID_SOCKET == listen(m_serverSock, maxConnectionsWaiting))
+    THROW_EXCEPTION(getLastErrorStr());
 
-	MRPT_LOG_DEBUG(format(
-		"[CServerTCPSocket] Listening at %s:%i\n", IPaddress.c_str(),
-		listenPort));
+  MRPT_LOG_DEBUG(format("[CServerTCPSocket] Listening at %s:%i\n", IPaddress.c_str(), listenPort));
 
-	MRPT_END
+  MRPT_END
 }
 
 /*---------------------------------------------------------------
-					isListening
+          isListening
  ---------------------------------------------------------------*/
 bool CServerTCPSocket::isListening() { return INVALID_SOCKET != m_serverSock; }
 /*---------------------------------------------------------------
-					accept
+          accept
  ---------------------------------------------------------------*/
 std::unique_ptr<CClientTCPSocket> CServerTCPSocket::accept(int timeout_ms)
 {
-	MRPT_START
+  MRPT_START
 
-	if (m_serverSock == INVALID_SOCKET) return nullptr;
+  if (m_serverSock == INVALID_SOCKET) return nullptr;
 
-	struct timeval timeoutSelect;
-	struct timeval* ptrTimeout;
-	fd_set sockArr;
+  struct timeval timeoutSelect;
+  struct timeval* ptrTimeout;
+  fd_set sockArr;
 
-	// Init fd_set structure & add our socket to it:
-	FD_ZERO(&sockArr);
-	FD_SET(m_serverSock, &sockArr);
+  // Init fd_set structure & add our socket to it:
+  FD_ZERO(&sockArr);
+  FD_SET(m_serverSock, &sockArr);
 
-	// The timeout:
-	if (timeout_ms < 0) { ptrTimeout = nullptr; }
-	else
-	{
-		timeoutSelect.tv_sec = timeout_ms / 1000;
-		timeoutSelect.tv_usec = 1000 * (timeout_ms % 1000);
-		ptrTimeout = &timeoutSelect;
-	}
+  // The timeout:
+  if (timeout_ms < 0)
+  {
+    ptrTimeout = nullptr;
+  }
+  else
+  {
+    timeoutSelect.tv_sec = timeout_ms / 1000;
+    timeoutSelect.tv_usec = 1000 * (timeout_ms % 1000);
+    ptrTimeout = &timeoutSelect;
+  }
 
-	// Wait for READ flag (meaning incoming connections):
-	MRPT_LOG_DEBUG("[CServerTCPSocket::accept] Waiting incoming connections");
+  // Wait for READ flag (meaning incoming connections):
+  MRPT_LOG_DEBUG("[CServerTCPSocket::accept] Waiting incoming connections");
 
-	int selRet = ::select(
-		m_serverSock + 1,  // __nfds
-		&sockArr,  // Wait for read
-		nullptr,  // Wait for write
-		nullptr,  // Wait for except.
-		ptrTimeout);  // Timeout
+  int selRet = ::select(
+      m_serverSock + 1,  // __nfds
+      &sockArr,          // Wait for read
+      nullptr,           // Wait for write
+      nullptr,           // Wait for except.
+      ptrTimeout);       // Timeout
 
-	if (selRet == INVALID_SOCKET)
-	{
-		fprintf(stderr, "%s\n", getLastErrorStr().c_str());
-		return nullptr;
-	}
+  if (selRet == INVALID_SOCKET)
+  {
+    fprintf(stderr, "%s\n", getLastErrorStr().c_str());
+    return nullptr;
+  }
 
-	if (selRet == 0)
-	{
-		MRPT_LOG_WARN(
-			"[CServerTCPSocket::accept] Timeout waiting incoming "
-			"connections\n");
+  if (selRet == 0)
+  {
+    MRPT_LOG_WARN(
+        "[CServerTCPSocket::accept] Timeout waiting incoming "
+        "connections\n");
 
-		// Timeout:
-		return nullptr;
-	}
-	else
-	{
-		MRPT_LOG_DEBUG(
-			"[CServerTCPSocket::accept] Incoming connection accepted\n");
+    // Timeout:
+    return nullptr;
+  }
+  else
+  {
+    MRPT_LOG_DEBUG("[CServerTCPSocket::accept] Incoming connection accepted\n");
 
-		// We have a new connection:
+    // We have a new connection:
 
-		sockaddr_in otherPart;
-		socklen_t otherPartSize = sizeof(otherPart);
+    sockaddr_in otherPart;
+    socklen_t otherPartSize = sizeof(otherPart);
 
-		int aceptdSock = ::accept(
-			m_serverSock, (struct sockaddr*)&otherPart, &otherPartSize);
+    int aceptdSock = ::accept(m_serverSock, (struct sockaddr*)&otherPart, &otherPartSize);
 
-		if (aceptdSock == INVALID_SOCKET)
-		{
-			MRPT_LOG_ERROR_FMT("%s\n", getLastErrorStr().c_str());
-			return {};
-		}
+    if (aceptdSock == INVALID_SOCKET)
+    {
+      MRPT_LOG_ERROR_FMT("%s\n", getLastErrorStr().c_str());
+      return {};
+    }
 
-		auto ret = std::make_unique<CClientTCPSocket>();
+    auto ret = std::make_unique<CClientTCPSocket>();
 
-		ret->m_hSock = aceptdSock;
+    ret->m_hSock = aceptdSock;
 #if defined(MRPT_OS_LINUX)
-		ret->internal_attach_epoll_to_hsock();
+    ret->internal_attach_epoll_to_hsock();
 #endif
 
-		ret->m_remotePartIP = std::string(inet_ntoa(otherPart.sin_addr));
-		ret->m_remotePartPort = ntohs(otherPart.sin_port);
+    ret->m_remotePartIP = std::string(inet_ntoa(otherPart.sin_addr));
+    ret->m_remotePartPort = ntohs(otherPart.sin_port);
 
-		MRPT_LOG_DEBUG_FMT(
-			"[CServerTCPSocket::accept] Connection accepted from %s:%u\n",
-			ret->m_remotePartIP.c_str(), ret->m_remotePartPort);
+    MRPT_LOG_DEBUG_FMT(
+        "[CServerTCPSocket::accept] Connection accepted from %s:%u\n", ret->m_remotePartIP.c_str(),
+        ret->m_remotePartPort);
 
-		return ret;
-	}
+    return ret;
+  }
 
-	MRPT_END
+  MRPT_END
 }

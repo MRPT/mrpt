@@ -30,34 +30,34 @@ class CObservable;
  */
 class mrptEvent
 {
-   protected:
-	/** Just to allow this class to be polymorphic */
-	virtual void do_nothing() {}
+ protected:
+  /** Just to allow this class to be polymorphic */
+  virtual void do_nothing() {}
 
-   public:
-	/** Default ctor */
-	inline mrptEvent() : timestamp(mrpt::Clock::now()) {}
-	template <class EVENTTYPE>
-	inline bool isOfType() const
-	{
-		return dynamic_cast<const EVENTTYPE*>(this) != nullptr;
-	}
+ public:
+  /** Default ctor */
+  inline mrptEvent() : timestamp(mrpt::Clock::now()) {}
+  template <class EVENTTYPE>
+  inline bool isOfType() const
+  {
+    return dynamic_cast<const EVENTTYPE*>(this) != nullptr;
+  }
 
-	template <class EVENTTYPE>
-	inline const EVENTTYPE* getAs() const
-	{
-		return dynamic_cast<const EVENTTYPE*>(this);
-	}
+  template <class EVENTTYPE>
+  inline const EVENTTYPE* getAs() const
+  {
+    return dynamic_cast<const EVENTTYPE*>(this);
+  }
 
-	template <class EVENTTYPE>
-	inline EVENTTYPE* getAsNonConst() const
-	{
-		return const_cast<EVENTTYPE*>(dynamic_cast<const EVENTTYPE*>(this));
-	}
+  template <class EVENTTYPE>
+  inline EVENTTYPE* getAsNonConst() const
+  {
+    return const_cast<EVENTTYPE*>(dynamic_cast<const EVENTTYPE*>(this));
+  }
 
-	mrpt::Clock::time_point timestamp;
+  mrpt::Clock::time_point timestamp;
 
-};	// End of class def.
+};  // End of class def.
 
 /**  An event sent by any CObservable object (automatically) just before being
  * destroyed and telling its observers to unsubscribe.
@@ -65,14 +65,14 @@ class mrptEvent
  */
 class mrptEventOnDestroy : public mrptEvent
 {
-   protected:
-	/** Just to allow this class to be polymorphic */
-	void do_nothing() override {}
+ protected:
+  /** Just to allow this class to be polymorphic */
+  void do_nothing() override {}
 
-   public:
-	inline mrptEventOnDestroy(const CObservable* obj) : source_object(obj) {}
-	const CObservable* source_object;
+ public:
+  inline mrptEventOnDestroy(const CObservable* obj) : source_object(obj) {}
+  const CObservable* source_object;
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace mrpt::system

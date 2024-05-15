@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"	 // Precompiled headers
+#include "system-precomp.h"  // Precompiled headers
 //
 #include <mrpt/system/CObservable.h>
 #include <mrpt/system/CObserver.h>
@@ -18,16 +18,15 @@ using namespace std;
 CObserver::CObserver() = default;
 CObserver::~CObserver()
 {
-	while (!m_subscribed.empty())
-		this->observeEnd(**m_subscribed.begin());
+  while (!m_subscribed.empty()) this->observeEnd(**m_subscribed.begin());
 }
 
 /** Starts the subscription of this observer to the given object.  \sa
  * observeEnd  */
 void CObserver::observeBegin(CObservable& obj)
 {
-	m_subscribed.insert(&obj);
-	obj.internal_observer_begin(this);
+  m_subscribed.insert(&obj);
+  obj.internal_observer_begin(this);
 }
 
 /** Ends the subscription of this observer to the given object (note that there
@@ -36,12 +35,12 @@ observer/observed will put an end to the process
 \sa observeBegin  */
 void CObserver::observeEnd(CObservable& obj)
 {
-	auto it = m_subscribed.find(&obj);
-	if (it != m_subscribed.end())
-	{
-		(*it)->internal_observer_end(this);
-		m_subscribed.erase(it);
-	}
+  auto it = m_subscribed.find(&obj);
+  if (it != m_subscribed.end())
+  {
+    (*it)->internal_observer_end(this);
+    m_subscribed.erase(it);
+  }
 }
 
 // Redirect the notification to the user virtual method:

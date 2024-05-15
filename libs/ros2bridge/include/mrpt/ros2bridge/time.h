@@ -34,4 +34,4 @@ rclcpp::Time toROS(const mrpt::system::TTimeStamp& src);
 
 /** @} */
 
-};	// namespace mrpt::ros2bridge
+};  // namespace mrpt::ros2bridge

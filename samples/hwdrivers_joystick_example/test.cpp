@@ -27,56 +27,55 @@ using namespace mrpt::hwdrivers;
 // ------------------------------------------------------
 void TestJoystick()
 {
-	// Open first joystick:
-	// ---------------------------
-	CTicTac tictac;
+  // Open first joystick:
+  // ---------------------------
+  CTicTac tictac;
 
-	CJoystick joy;
-	CJoystick::State js;
+  CJoystick joy;
+  CJoystick::State js;
 
-	const int nJoystick = 0;  // The first one
+  const int nJoystick = 0;  // The first one
 
-	printf("Press any key to stop program...\n");
+  printf("Press any key to stop program...\n");
 
-	while (!mrpt::system::os::kbhit())
-	{
-		tictac.Tic();
-		if (joy.getJoystickPosition(nJoystick, js))
-		{
-			double t = tictac.Tac();
+  while (!mrpt::system::os::kbhit())
+  {
+    tictac.Tic();
+    if (joy.getJoystickPosition(nJoystick, js))
+    {
+      double t = tictac.Tac();
 
-			printf("Joystick axes: ");
-			for (unsigned int i = 0; i < js.axes.size(); i++)
-				printf("[%u]=%.03f ", i, js.axes[i]);
+      printf("Joystick axes: ");
+      for (unsigned int i = 0; i < js.axes.size(); i++) printf("[%u]=%.03f ", i, js.axes[i]);
 
-			for (unsigned b = 0; b < js.buttons.size(); b++)
-				printf("B%u:%c ", b, js.buttons[b] ? 'X' : '-');
-			printf(") [Query %uus]  \r", (unsigned)(t * 1e6));
+      for (unsigned b = 0; b < js.buttons.size(); b++)
+        printf("B%u:%c ", b, js.buttons[b] ? 'X' : '-');
+      printf(") [Query %uus]  \r", (unsigned)(t * 1e6));
 
-			fflush(stdout);
-		}
-		else
-		{
-			printf(
-				"Error reading from joystick, please connect one to the "
-				"system...\r");
-		}
+      fflush(stdout);
+    }
+    else
+    {
+      printf(
+          "Error reading from joystick, please connect one to the "
+          "system...\r");
+    }
 
-		std::this_thread::sleep_for(20ms);
-	}
+    std::this_thread::sleep_for(20ms);
+  }
 }
 
 int main()
 {
-	try
-	{
-		TestJoystick();
+  try
+  {
+    TestJoystick();
 
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
-		return -1;
-	}
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    return -1;
+  }
 }

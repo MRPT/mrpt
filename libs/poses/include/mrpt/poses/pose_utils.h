@@ -26,11 +26,11 @@ namespace mrpt::poses::internal
 {
 inline void getPoseFromString(const std::string& s, mrpt::poses::CPose2D& p)
 {
-	using namespace std;
-	using namespace mrpt::system;
-	using namespace mrpt::poses;
+  using namespace std;
+  using namespace mrpt::system;
+  using namespace mrpt::poses;
 
-	p.fromStringRaw(s);
+  p.fromStringRaw(s);
 
 }  // end of getPoseFromString
 
@@ -42,55 +42,53 @@ inline void getPoseFromString(const std::string& s, mrpt::poses::CPose2D& p)
 template <bool QUAT_REPR = true, bool TUM_FORMAT = true>
 void getPoseFromString(const std::string& s, mrpt::poses::CPose3D& p)
 {
-	std::vector<std::string> curr_tokens;
-	mrpt::system::tokenize(s, " ", curr_tokens);
+  std::vector<std::string> curr_tokens;
+  mrpt::system::tokenize(s, " ", curr_tokens);
 
-	ASSERTMSG_(
-		curr_tokens.size() == 7,
-		mrpt::format(
-			"Invalid number of tokens in given string\n"
-			"\tExpected:    7\n"
-			"\tTokens size: %" USIZE_STR "\n",
-			curr_tokens.size()));
+  ASSERTMSG_(
+      curr_tokens.size() == 7, mrpt::format(
+                                   "Invalid number of tokens in given string\n"
+                                   "\tExpected:    7\n"
+                                   "\tTokens size: %" USIZE_STR "\n",
+                                   curr_tokens.size()));
 
-	mrpt::math::CQuaternionDouble quat;
-	quat.r(atof(curr_tokens[6].c_str()));
-	quat.x(atof(curr_tokens[3].c_str()));
-	quat.y(atof(curr_tokens[4].c_str()));
-	quat.z(atof(curr_tokens[5].c_str()));
-	double roll, pitch, yaw;
-	quat.rpy(roll, pitch, yaw);
+  mrpt::math::CQuaternionDouble quat;
+  quat.r(atof(curr_tokens[6].c_str()));
+  quat.x(atof(curr_tokens[3].c_str()));
+  quat.y(atof(curr_tokens[4].c_str()));
+  quat.z(atof(curr_tokens[5].c_str()));
+  double roll, pitch, yaw;
+  quat.rpy(roll, pitch, yaw);
 
-	p.setFromValues(
-		atof(curr_tokens[0].c_str()),  // x
-		atof(curr_tokens[1].c_str()),  // y
-		atof(curr_tokens[2].c_str()),  // z
-		roll, pitch, yaw);
+  p.setFromValues(
+      atof(curr_tokens[0].c_str()),  // x
+      atof(curr_tokens[1].c_str()),  // y
+      atof(curr_tokens[2].c_str()),  // z
+      roll, pitch, yaw);
 }  // end of fromStringQuat
 
 template <>
 inline void getPoseFromString</*QUAT_REPR=*/false, /*TUM_FORMAT=*/false>(
-	const std::string& s, mrpt::poses::CPose3D& p)
+    const std::string& s, mrpt::poses::CPose3D& p)
 {
-	p.fromStringRaw(s);
+  p.fromStringRaw(s);
 }  // end of getPoseFromString
 
 /**Invalid form. TUM ground truth files are always in Quaternion form. */
 template <>
-inline void getPoseFromString<false, true>(
-	const std::string& s, mrpt::poses::CPose3D& p)
+inline void getPoseFromString<false, true>(const std::string& s, mrpt::poses::CPose3D& p)
 {
-	THROW_EXCEPTION("Invalid combination: QUAT_REPR=false, TUM_FORMAT=true");
+  THROW_EXCEPTION("Invalid combination: QUAT_REPR=false, TUM_FORMAT=true");
 }
 
 /**\brief Specialization for strings in Quaternion form */
 template <>
 inline void getPoseFromString</*QUAT_REPR=*/true, /*TUM_FORMAT=*/false>(
-	const std::string& s, mrpt::poses::CPose3D& p)
+    const std::string& s, mrpt::poses::CPose3D& p)
 {
-	mrpt::poses::CPose3DQuat p_quat;
-	p_quat.fromStringRaw(s);
-	p = mrpt::poses::CPose3D(p_quat);
+  mrpt::poses::CPose3DQuat p_quat;
+  p_quat.fromStringRaw(s);
+  p = mrpt::poses::CPose3D(p_quat);
 }  // end of getPoseFromString
 
 }  // namespace mrpt::poses::internal
@@ -132,83 +130,79 @@ inline void getPoseFromString</*QUAT_REPR=*/true, /*TUM_FORMAT=*/false>(
  */
 template <class POSE_T>
 void readFileWithPoses(
-	const std::string& fname, std::vector<POSE_T>* poses_vec,
-	std::vector<mrpt::system::TTimeStamp>* timestamps = NULL,
-	bool substract_init_offset = false)
+    const std::string& fname,
+    std::vector<POSE_T>* poses_vec,
+    std::vector<mrpt::system::TTimeStamp>* timestamps = NULL,
+    bool substract_init_offset = false)
 {
-	MRPT_START
+  MRPT_START
 
-	using namespace std;
-	using namespace mrpt::system;
-	using namespace mrpt::poses;
-	using namespace internal;
+  using namespace std;
+  using namespace mrpt::system;
+  using namespace mrpt::poses;
+  using namespace internal;
 
-	// make sure file exists
-	ASSERTMSG_(
-		fileExists(fname),
-		format(
-			"\nFile %s was not found.\n"
-			"Either specify a valid filename or set set the "
-			"m_visualize_GT flag to false\n",
-			fname.c_str()));
+  // make sure file exists
+  ASSERTMSG_(
+      fileExists(fname), format(
+                             "\nFile %s was not found.\n"
+                             "Either specify a valid filename or set set the "
+                             "m_visualize_GT flag to false\n",
+                             fname.c_str()));
 
-	CFileInputStream file_GT(fname);
-	ASSERTMSG_(
-		file_GT.fileOpenCorrectly(),
-		"\nreadGTFileRGBD_TUM: Couldn't openGT file\n");
-	ASSERTMSG_(poses_vec, "std::vector<POSE_T>* is not valid.");
+  CFileInputStream file_GT(fname);
+  ASSERTMSG_(file_GT.fileOpenCorrectly(), "\nreadGTFileRGBD_TUM: Couldn't openGT file\n");
+  ASSERTMSG_(poses_vec, "std::vector<POSE_T>* is not valid.");
 
-	string curr_line;
+  string curr_line;
 
-	// move to the first non-commented line
-	for (size_t i = 0; file_GT.readLine(curr_line); i++)
-	{
-		if (curr_line.at(0) != '#') { break; }
-	}
+  // move to the first non-commented line
+  for (size_t i = 0; file_GT.readLine(curr_line); i++)
+  {
+    if (curr_line.at(0) != '#')
+    {
+      break;
+    }
+  }
 
-	// handle the first pose as an offset
-	POSE_T pose_offset_opposite;
-	if (substract_init_offset)
-	{
-		POSE_T pose_offset;
-		getPoseFromString(
-			std::string(
-				curr_line.begin() + curr_line.find_first_of(" \t") + 1,
-				curr_line.end()),
-			pose_offset);
-		pose_offset_opposite = pose_offset.getOppositeScalar();
-	}
+  // handle the first pose as an offset
+  POSE_T pose_offset_opposite;
+  if (substract_init_offset)
+  {
+    POSE_T pose_offset;
+    getPoseFromString(
+        std::string(curr_line.begin() + curr_line.find_first_of(" \t") + 1, curr_line.end()),
+        pose_offset);
+    pose_offset_opposite = pose_offset.getOppositeScalar();
+  }
 
-	// parse the file - get timestamp and pose and fill in the vector
-	for (; file_GT.readLine(curr_line);)
-	{
-		// timestamp
-		if (timestamps)
-		{
-			std::string timestamp_str = std::string(
-				curr_line.begin(),
-				curr_line.begin() + curr_line.find_first_of(" \t"));
-			timestamps->push_back(atof(timestamp_str.c_str()));
-		}
+  // parse the file - get timestamp and pose and fill in the vector
+  for (; file_GT.readLine(curr_line);)
+  {
+    // timestamp
+    if (timestamps)
+    {
+      std::string timestamp_str =
+          std::string(curr_line.begin(), curr_line.begin() + curr_line.find_first_of(" \t"));
+      timestamps->push_back(atof(timestamp_str.c_str()));
+    }
 
-		POSE_T curr_pose;
-		getPoseFromString(
-			std::string(
-				curr_line.begin() + curr_line.find_first_of(" \t") + 1,
-				curr_line.end()),
-			curr_pose);
+    POSE_T curr_pose;
+    getPoseFromString(
+        std::string(curr_line.begin() + curr_line.find_first_of(" \t") + 1, curr_line.end()),
+        curr_pose);
 
-		// scalar substraction of initial offset
-		if (substract_init_offset)
-		{
-			curr_pose.addComponents(pose_offset_opposite);
-		}
+    // scalar substraction of initial offset
+    if (substract_init_offset)
+    {
+      curr_pose.addComponents(pose_offset_opposite);
+    }
 
-		// push the newly created pose
-		poses_vec->push_back(curr_pose);
-	}  // end for loop
+    // push the newly created pose
+    poses_vec->push_back(curr_pose);
+  }  // end for loop
 
-	file_GT.close();
+  file_GT.close();
 
-	MRPT_END
+  MRPT_END
 }

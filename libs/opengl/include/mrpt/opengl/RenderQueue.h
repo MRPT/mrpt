@@ -24,17 +24,16 @@ class CRenderizable;
  */
 struct RenderQueueElement
 {
-	RenderQueueElement() = default;
+  RenderQueueElement() = default;
 
-	RenderQueueElement(
-		const mrpt::opengl::CRenderizable* obj,
-		const mrpt::opengl::TRenderMatrices& state)
-		: object(obj), renderState(state)
-	{
-	}
+  RenderQueueElement(
+      const mrpt::opengl::CRenderizable* obj, const mrpt::opengl::TRenderMatrices& state) :
+      object(obj), renderState(state)
+  {
+  }
 
-	const mrpt::opengl::CRenderizable* object = nullptr;
-	mrpt::opengl::TRenderMatrices renderState = {};
+  const mrpt::opengl::CRenderizable* object = nullptr;
+  mrpt::opengl::TRenderMatrices renderState = {};
 };
 
 /** A queue for rendering, sorted by shader program to minimize changes of
@@ -43,17 +42,16 @@ struct RenderQueueElement
  * later render them from back to front to render transparencies properly Filled
  * by sortRenderObjectsByShader() \ingroup mrpt_opengl_grp
  */
-using RenderQueue =
-	std::map<shader_id_t, std::multimap<float, RenderQueueElement>>;
+using RenderQueue = std::map<shader_id_t, std::multimap<float, RenderQueueElement>>;
 
 /** Stats for the rendering queue
  * \ingroup mrpt_opengl_grp
  */
 struct RenderQueueStats
 {
-	RenderQueueStats() = default;
+  RenderQueueStats() = default;
 
-	size_t numObjTotal = 0, numObjRendered = 0;
+  size_t numObjTotal = 0, numObjRendered = 0;
 };
 
 /** Computes the eye-view depth of an object, and whether any part of its
@@ -64,7 +62,8 @@ struct RenderQueueStats
  *  - bool: the whole bbox is visible (only checked for CSetOfObjects)
  * \ingroup mrpt_opengl_grp */
 std::tuple<double, bool, bool> depthAndVisibleInView(
-	const CRenderizable* obj, const mrpt::opengl::TRenderMatrices& objState,
-	const bool skipCullChecks);
+    const CRenderizable* obj,
+    const mrpt::opengl::TRenderMatrices& objState,
+    const bool skipCullChecks);
 
 }  // namespace mrpt::opengl

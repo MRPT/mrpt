@@ -26,45 +26,39 @@ namespace mrpt::graphs::detail
  */
 struct TNodeAnnotations
 {
-	using self_t = TNodeAnnotations;
+  using self_t = TNodeAnnotations;
 
-	/**\brief Constructor */
-	TNodeAnnotations() = default;
-	/**\brief Destructor */
-	virtual ~TNodeAnnotations() = default;
+  /**\brief Constructor */
+  TNodeAnnotations() = default;
+  /**\brief Destructor */
+  virtual ~TNodeAnnotations() = default;
 
-	virtual void getAnnotsAsString(std::string* s) const { ASSERT_(s); }
-	std::string retAnnotsAsString() const
-	{
-		std::string s;
-		this->getAnnotsAsString(&s);
-		return s;
-	}
+  virtual void getAnnotsAsString(std::string* s) const { ASSERT_(s); }
+  std::string retAnnotsAsString() const
+  {
+    std::string s;
+    this->getAnnotsAsString(&s);
+    return s;
+  }
 
-	virtual bool operator==(const TNodeAnnotations& other) const
-	{
-		return true;
-	}
-	virtual bool operator!=(const TNodeAnnotations& other) const
-	{
-		return (!(*this == other));
-	}
+  virtual bool operator==(const TNodeAnnotations& other) const { return true; }
+  virtual bool operator!=(const TNodeAnnotations& other) const { return (!(*this == other)); }
 
-	/**\brief Create and return a copy of the TNodeAnnotations object at hand.
-	 *
-	 * \warning Caller is responsible of afterwards deleting the object which is
-	 * allocaed in heap
-	 */
-	TNodeAnnotations* getCopyOfAnnots() const { return new TNodeAnnotations(); }
-	/**\brief Set the properties of the current TNodeAnnotations object
-	 *
-	 * \return True if setting the annotations part is successful.
-	 */
-	bool setAnnots(const self_t& other) { return true; }
-	/**\brief Indicates if this is a dummy TNodeAnnotations struct or if it does
-	 * contain meaningful data
-	 */
-	bool is_node_annots_empty{false};
+  /**\brief Create and return a copy of the TNodeAnnotations object at hand.
+   *
+   * \warning Caller is responsible of afterwards deleting the object which is
+   * allocaed in heap
+   */
+  TNodeAnnotations* getCopyOfAnnots() const { return new TNodeAnnotations(); }
+  /**\brief Set the properties of the current TNodeAnnotations object
+   *
+   * \return True if setting the annotations part is successful.
+   */
+  bool setAnnots(const self_t& other) { return true; }
+  /**\brief Indicates if this is a dummy TNodeAnnotations struct or if it does
+   * contain meaningful data
+   */
+  bool is_node_annots_empty{false};
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -76,7 +70,7 @@ struct TNodeAnnotations
  */
 struct TNodeAnnotationsEmpty : public TNodeAnnotations
 {
-	TNodeAnnotationsEmpty() { this->is_node_annots_empty = true; }
-	DECLARE_TTYPENAME_CLASSNAME(mrpt::graphs::detail::TNodeAnnotationsEmpty)
+  TNodeAnnotationsEmpty() { this->is_node_annots_empty = true; }
+  DECLARE_TTYPENAME_CLASSNAME(mrpt::graphs::detail::TNodeAnnotationsEmpty)
 };
 }  // namespace mrpt::graphs::detail
