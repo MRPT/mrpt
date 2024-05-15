@@ -65,7 +65,7 @@ struct TMRSlamNodeAnnotations : public TNodeAnnotations
     return res;
   }
 
-  bool operator==(const TNodeAnnotations& other) const override
+  bool equal(const TNodeAnnotations& other) const override
   {
     const auto* mr_slam_annots = dynamic_cast<const TMRSlamNodeAnnotations*>(&other);
 
