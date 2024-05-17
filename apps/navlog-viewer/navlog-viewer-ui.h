@@ -29,6 +29,7 @@ class NavlogViewerApp
   nanogui::TabWidget* m_tabWidget = nullptr;
   nanogui::TextBox* txtLogEntries = nullptr;
   nanogui::TextBox* txtLogDuration = nullptr;
+  nanogui::TextBox* edPastPoses = nullptr;
   nanogui::TextBox* edShapeMinDist = nullptr;
   nanogui::Slider* slidLog = nullptr;
   nanogui::Button* m_btnPlay = nullptr;
@@ -97,4 +98,6 @@ class NavlogViewerApp
   int m_manualPickPTGIdx = -1;
   int m_manualPickTrajectoryIdx = -1;
   double m_manualPickTimestamp = .0;
+
+  std::vector<mrpt::math::TPose2D> m_pastPoses;
 };
