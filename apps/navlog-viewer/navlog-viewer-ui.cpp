@@ -207,6 +207,16 @@ NavlogViewerApp::NavlogViewerApp()
     // No need to catch callbacks: the checkbox is checked in the GUI main
     // loop.
 
+    {
+      auto* panel = layer->add<nanogui::Widget>();
+      panel->setLayout(
+          new nanogui::BoxLayout(nanogui::Orientation::Horizontal, nanogui::Alignment::Fill, 0));
+      panel->add<nanogui::Label>("Show past poses:");
+      edPastPoses = panel->add<nanogui::TextBox>("10");
+      edPastPoses->setEditable(true);
+      edPastPoses->setFormat("[0-9]*");
+    }
+
     layer->add<nanogui::Label>("Show for each PTG:");
     const auto lst =
         std::vector<std::string>({"TP-Obstacles only", "+ final scores", "+ preliminary scores"});
@@ -355,6 +365,7 @@ void NavlogViewerApp::loadLogfile(const std::string& fileName)
 
   m_logdata.clear();
   m_logdata_ptg_paths.clear();
+  m_pastPoses.clear();
 
   mrpt::rtti::CListOfClasses validClasses;
   validClasses.insert(CLASS_ID(mrpt::nav::CLogFileRecord));
@@ -608,11 +619,15 @@ void NavlogViewerApp::updateVisualization()
             log0ptr->robotPoseLocalization + (log.robotPoseOdometry - log0ptr->robotPoseOdometry);
 
         gl_robot_frame->setPose(curPose);
+        m_pastPoses.push_back(curPose);
       }
       else if (m_cbGlobalFrame->checked())
       {
         gl_robot_frame->setPose(
             mrpt::poses::CPose3D(mrpt::poses::CPose2D(log.robotPoseLocalization)));
+
+        m_pastPoses.push_back(log.robotPoseLocalization);
+
         // Move the window focus:
         auto& cam = m_win->camera();
         const float px = cam.getCameraPointingX();
@@ -625,6 +640,7 @@ void NavlogViewerApp::updateVisualization()
       else
       {
         gl_robot_frame->setPose(mrpt::poses::CPose3D());
+        m_pastPoses.clear();
       }
     }
 
@@ -686,6 +702,38 @@ void NavlogViewerApp::updateVisualization()
           gl_relposes->insert(gl_relpose_cmdvel);
         }
       }
+    }
+
+    // track of past poses:
+    if (!m_pastPoses.empty())
+    {
+      mrpt::opengl::CSetOfObjects::Ptr gl_poses;
+      mrpt::opengl::CRenderizable::Ptr gl_track =
+          scene->getByName("past_poses");  // Get or create if new
+      if (!gl_track)
+      {
+        gl_poses = mrpt::opengl::CSetOfObjects::Create();
+        gl_poses->setName("past_poses");
+        scene->insert(gl_poses);
+      }
+      else
+      {
+        gl_poses = dynamic_pointer_cast<mrpt::opengl::CSetOfObjects>(gl_track);
+      }
+      ASSERT_(gl_poses);
+      gl_poses->clear();
+      for (const auto& p : m_pastPoses)
+      {
+        auto glCorner = mrpt::opengl::stock_objects::CornerXYSimple(0.3f, 1.0f);
+        glCorner->setPose(p);
+        gl_poses->insert(glCorner);
+      }
+    }
+
+    const size_t maxPastPoses = std::stol(edPastPoses->value());
+    while (!m_pastPoses.empty() && m_pastPoses.size() > maxPastPoses)
+    {
+      m_pastPoses.erase(m_pastPoses.begin());
     }
 
     {
