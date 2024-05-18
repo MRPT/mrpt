@@ -65,13 +65,10 @@ unsigned long getMemoryUsage();
 
 /** \addtogroup mrpt_memory Memory utilities
  *  @{ */
-template <
-	std::size_t alignment, typename T,
-	typename = std::enable_if_t<std::is_pointer<T>::value>>
+template <std::size_t alignment, typename T, typename = std::enable_if_t<std::is_pointer<T>::value>>
 bool is_aligned(T ptr)
 {
-	return alignment == 0 ||
-		reinterpret_cast<std::size_t>(ptr) % alignment == 0;
+  return alignment == 0 || reinterpret_cast<std::size_t>(ptr) % alignment == 0;
 }
 /** @} */
 

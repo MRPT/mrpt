@@ -20,22 +20,21 @@ class CLandmarksConfig;
 }
 class CLandmarksConfig : public CBaseConfig
 {
-   public:
-	CLandmarksConfig();
-	~CLandmarksConfig() override = default;
+ public:
+  CLandmarksConfig();
+  ~CLandmarksConfig() override = default;
 
-	const QString getName() override;
-	void updateConfiguration(
-		mrpt::maps::TMetricMapInitializer* options) override;
-	TypeOfConfig type() const override;
+  const QString getName() override;
+  void updateConfiguration(mrpt::maps::TMetricMapInitializer* options) override;
+  TypeOfConfig type() const override;
 
-	void setInsertOpt(
-		const mrpt::maps::CLandmarksMap::TInsertionOptions& insertOpt =
-			mrpt::maps::CLandmarksMap::TInsertionOptions());
-	void setLikelihoodOpt(
-		const mrpt::maps::CLandmarksMap::TLikelihoodOptions& likelihoodOpt =
-			mrpt::maps::CLandmarksMap::TLikelihoodOptions());
+  void setInsertOpt(
+      const mrpt::maps::CLandmarksMap::TInsertionOptions& insertOpt =
+          mrpt::maps::CLandmarksMap::TInsertionOptions());
+  void setLikelihoodOpt(
+      const mrpt::maps::CLandmarksMap::TLikelihoodOptions& likelihoodOpt =
+          mrpt::maps::CLandmarksMap::TLikelihoodOptions());
 
-   private:
-	std::unique_ptr<Ui::CLandmarksConfig> m_ui;
+ private:
+  std::unique_ptr<Ui::CLandmarksConfig> m_ui;
 };

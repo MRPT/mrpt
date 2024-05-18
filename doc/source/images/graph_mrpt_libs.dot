@@ -26,10 +26,6 @@ digraph MRPT_LIBS {
 	core       [label="mrpt-core",URL="group_mrpt_core_grp.html"];
 	}
 
-	detectors  [label="mrpt-detectors",URL="group_mrpt_detectors_grp.html"];
-	detectors -> gui;
-	detectors -> slam;
-
 	expr       [label="mrpt-expr",URL="group_mrpt_expr_grp.html"];
 	expr -> system;
 

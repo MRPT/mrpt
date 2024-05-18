@@ -33,42 +33,38 @@ namespace mrpt::hwdrivers
  */
 class CStereoGrabber_Bumblebee_libdc1394
 {
-   public:
-	/** Constructor. Parameters have the same meaning as in
-	 * CImageGrabber_dc1394::CImageGrabber_dc1394() */
-	CStereoGrabber_Bumblebee_libdc1394(
-		uint64_t cameraGUID, uint16_t cameraUnit, double frameRate);
+ public:
+  /** Constructor. Parameters have the same meaning as in
+   * CImageGrabber_dc1394::CImageGrabber_dc1394() */
+  CStereoGrabber_Bumblebee_libdc1394(uint64_t cameraGUID, uint16_t cameraUnit, double frameRate);
 
-	CStereoGrabber_Bumblebee_libdc1394(
-		const CStereoGrabber_Bumblebee_libdc1394&) = delete;
-	CStereoGrabber_Bumblebee_libdc1394& operator=(
-		const CStereoGrabber_Bumblebee_libdc1394&) = delete;
+  CStereoGrabber_Bumblebee_libdc1394(const CStereoGrabber_Bumblebee_libdc1394&) = delete;
+  CStereoGrabber_Bumblebee_libdc1394& operator=(const CStereoGrabber_Bumblebee_libdc1394&) = delete;
 
-	/** Destructor */
-	virtual ~CStereoGrabber_Bumblebee_libdc1394();
+  /** Destructor */
+  virtual ~CStereoGrabber_Bumblebee_libdc1394();
 
-	/** Grab stereo images, and return the pair of rectified images.
-	 * \param out_observation The object to be filled with sensed data.
-	 *
-	 * \note The member "CObservationStereoImages::refCameraPose" must be set on
-	 * the return of
-	 *  this method by the user, since we don't know here the robot physical
-	 * structure.
-	 *
-	 * \return false on any error, true if all go fine.
-	 */
-	bool getStereoObservation(
-		mrpt::obs::CObservationStereoImages& out_observation);
+  /** Grab stereo images, and return the pair of rectified images.
+   * \param out_observation The object to be filled with sensed data.
+   *
+   * \note The member "CObservationStereoImages::refCameraPose" must be set on
+   * the return of
+   *  this method by the user, since we don't know here the robot physical
+   * structure.
+   *
+   * \return false on any error, true if all go fine.
+   */
+  bool getStereoObservation(mrpt::obs::CObservationStereoImages& out_observation);
 
-   protected:
-	/** The actual capture object used in Linux / Mac. */
-	mrpt::hwdrivers::CImageGrabber_dc1394* m_firewire_capture;
+ protected:
+  /** The actual capture object used in Linux / Mac. */
+  mrpt::hwdrivers::CImageGrabber_dc1394* m_firewire_capture;
 
-	/** If this has been correctly initiated */
-	bool m_bInitialized;
-};	// End of class
+  /** If this has been correctly initiated */
+  bool m_bInitialized;
+};  // End of class
 static_assert(
-	!std::is_copy_constructible_v<CStereoGrabber_Bumblebee_libdc1394> &&
-		!std::is_copy_assignable_v<CStereoGrabber_Bumblebee_libdc1394>,
-	"Copy Check");
+    !std::is_copy_constructible_v<CStereoGrabber_Bumblebee_libdc1394> &&
+        !std::is_copy_assignable_v<CStereoGrabber_Bumblebee_libdc1394>,
+    "Copy Check");
 }  // namespace mrpt::hwdrivers

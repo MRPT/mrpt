@@ -22,41 +22,41 @@ namespace mrpt::serialization
 template <class T>
 CArchive& operator<<(CArchive& out, const std::optional<T>& obj)
 {
-	out << std::string("std::optional") << mrpt::typemeta::TTypeName<T>::get();
-	out << obj.has_value();
-	if (obj.has_value()) out << *obj;
-	return out;
+  out << std::string("std::optional") << mrpt::typemeta::TTypeName<T>::get();
+  out << obj.has_value();
+  if (obj.has_value()) out << *obj;
+  return out;
 }
 
 /** Template to deserialize a std::optional<T> */
 template <class T>
 CArchive& operator>>(CArchive& in, std::optional<T>& obj)
 {
-	std::string pref, stored_T;
-	in >> pref;
-	if (pref != "std::optional")
-		THROW_EXCEPTION(format(
-			"Error: serialized std::optional<%s>'s preamble is wrong: '%s'",
-			mrpt::typemeta::TTypeName<T>::get().c_str(), pref.c_str()));
-	in >> stored_T;
-	if (stored_T != std::string(mrpt::typemeta::TTypeName<T>::get().c_str()))
-		THROW_EXCEPTION(format(
-			"Error: serialized std::optional type %s != %s", stored_T.c_str(),
-			mrpt::typemeta::TTypeName<T>::get().c_str()));
+  std::string pref, stored_T;
+  in >> pref;
+  if (pref != "std::optional")
+    THROW_EXCEPTION(format(
+        "Error: serialized std::optional<%s>'s preamble is wrong: '%s'",
+        mrpt::typemeta::TTypeName<T>::get().c_str(), pref.c_str()));
+  in >> stored_T;
+  if (stored_T != std::string(mrpt::typemeta::TTypeName<T>::get().c_str()))
+    THROW_EXCEPTION(format(
+        "Error: serialized std::optional type %s != %s", stored_T.c_str(),
+        mrpt::typemeta::TTypeName<T>::get().c_str()));
 
-	bool has_value;
-	in >> has_value;
-	if (has_value)
-	{
-		T val;
-		in >> val;
-		obj = std::move(val);
-	}
-	else
-	{
-		obj.reset();
-	}
-	return in;
+  bool has_value;
+  in >> has_value;
+  if (has_value)
+  {
+    T val;
+    in >> val;
+    obj = std::move(val);
+  }
+  else
+  {
+    obj.reset();
+  }
+  return in;
 }
 
 /** @} */  // end of grouping

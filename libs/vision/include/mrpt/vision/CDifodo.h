@@ -58,250 +58,237 @@ namespace mrpt::vision
 
 class CDifodo
 {
-   protected:
-	/** Matrix that stores the original depth frames with the image resolution
-	 */
-	mrpt::math::CMatrixFloat depth_wf;
+ protected:
+  /** Matrix that stores the original depth frames with the image resolution
+   */
+  mrpt::math::CMatrixFloat depth_wf;
 
-	/** Matrices that store the point coordinates after downsampling. */
-	std::vector<mrpt::math::CMatrixFloat> depth;
-	std::vector<mrpt::math::CMatrixFloat> depth_old;
-	std::vector<mrpt::math::CMatrixFloat> depth_inter;
-	std::vector<mrpt::math::CMatrixFloat> depth_warped;
-	std::vector<mrpt::math::CMatrixFloat> xx;
-	std::vector<mrpt::math::CMatrixFloat> xx_inter;
-	std::vector<mrpt::math::CMatrixFloat> xx_old;
-	std::vector<mrpt::math::CMatrixFloat> xx_warped;
-	std::vector<mrpt::math::CMatrixFloat> yy;
-	std::vector<mrpt::math::CMatrixFloat> yy_inter;
-	std::vector<mrpt::math::CMatrixFloat> yy_old;
-	std::vector<mrpt::math::CMatrixFloat> yy_warped;
+  /** Matrices that store the point coordinates after downsampling. */
+  std::vector<mrpt::math::CMatrixFloat> depth;
+  std::vector<mrpt::math::CMatrixFloat> depth_old;
+  std::vector<mrpt::math::CMatrixFloat> depth_inter;
+  std::vector<mrpt::math::CMatrixFloat> depth_warped;
+  std::vector<mrpt::math::CMatrixFloat> xx;
+  std::vector<mrpt::math::CMatrixFloat> xx_inter;
+  std::vector<mrpt::math::CMatrixFloat> xx_old;
+  std::vector<mrpt::math::CMatrixFloat> xx_warped;
+  std::vector<mrpt::math::CMatrixFloat> yy;
+  std::vector<mrpt::math::CMatrixFloat> yy_inter;
+  std::vector<mrpt::math::CMatrixFloat> yy_old;
+  std::vector<mrpt::math::CMatrixFloat> yy_warped;
 
-	/** Matrices that store the depth derivatives */
-	mrpt::math::CMatrixFloat du;
-	mrpt::math::CMatrixFloat dv;
-	mrpt::math::CMatrixFloat dt;
+  /** Matrices that store the depth derivatives */
+  mrpt::math::CMatrixFloat du;
+  mrpt::math::CMatrixFloat dv;
+  mrpt::math::CMatrixFloat dt;
 
-	/** Weights for the range flow constraint equations in the least square
-	 * solution */
-	mrpt::math::CMatrixFloat weights;
+  /** Weights for the range flow constraint equations in the least square
+   * solution */
+  mrpt::math::CMatrixFloat weights;
 
-	/** Matrix which indicates whether the depth of a pixel is zero (null = 1)
-	 * or not (null = 00).*/
-	mrpt::math::CMatrixBool null;
+  /** Matrix which indicates whether the depth of a pixel is zero (null = 1)
+   * or not (null = 00).*/
+  mrpt::math::CMatrixBool null;
 
-	/** Least squares covariance matrix */
-	mrpt::math::CMatrixFloat66 est_cov;
+  /** Least squares covariance matrix */
+  mrpt::math::CMatrixFloat66 est_cov;
 
-	/** Gaussian masks used to build the pyramid and flag to select accurate or
-	 * fast pyramid*/
-	bool fast_pyramid;
-	mrpt::math::CMatrixFloat44 f_mask;
-	float g_mask[5][5];
+  /** Gaussian masks used to build the pyramid and flag to select accurate or
+   * fast pyramid*/
+  bool fast_pyramid;
+  mrpt::math::CMatrixFloat44 f_mask;
+  float g_mask[5][5];
 
-	/** Camera properties: */
-	/**Horizontal field of view (rad) */
-	float fovh;
-	/**Vertical field of view (rad) */
-	float fovv;
+  /** Camera properties: */
+  /**Horizontal field of view (rad) */
+  float fovh;
+  /**Vertical field of view (rad) */
+  float fovv;
 
-	/** The maximum resolution that will be considered by the visual odometry
-	 * method.
-	 * As a rule, the higher the resolution the slower but more accurate the
-	 * method becomes.
-	 * They always have to be less or equal to the size of the original depth
-	 * image. */
-	unsigned int rows;
-	unsigned int cols;
+  /** The maximum resolution that will be considered by the visual odometry
+   * method.
+   * As a rule, the higher the resolution the slower but more accurate the
+   * method becomes.
+   * They always have to be less or equal to the size of the original depth
+   * image. */
+  unsigned int rows;
+  unsigned int cols;
 
-	/** Aux variables: size from which the pyramid starts to be built */
-	unsigned int m_width;
-	unsigned int m_height;
+  /** Aux variables: size from which the pyramid starts to be built */
+  unsigned int m_width;
+  unsigned int m_height;
 
-	/** Aux variables: number of rows and cols at a given level */
-	unsigned int rows_i;
-	unsigned int cols_i;
+  /** Aux variables: number of rows and cols at a given level */
+  unsigned int rows_i;
+  unsigned int cols_i;
 
-	/** Number of coarse-to-fine levels. I has to be consistent with the number
-	 * of rows and cols, because the
-	 * coarsest level cannot be smaller than 15 x 20. */
-	unsigned int ctf_levels;
+  /** Number of coarse-to-fine levels. I has to be consistent with the number
+   * of rows and cols, because the
+   * coarsest level cannot be smaller than 15 x 20. */
+  unsigned int ctf_levels;
 
-	/** Aux varibles: levels of the image pyramid and the solver, respectively
-	 */
-	unsigned int image_level;
-	unsigned int level;
+  /** Aux varibles: levels of the image pyramid and the solver, respectively
+   */
+  unsigned int image_level;
+  unsigned int level;
 
-	/** Speed filter parameters:
-	 * Previous_speed_const_weight - Directly weights the previous speed in
-	 * order to calculate the filtered velocity. Recommended range - (0, 0.5)
-	 * Previous_speed_eig_weight - Weights the product of the corresponding
-	 * eigenvalue and the previous velocity to calculate the filtered velocity*/
-	/**Default 0.05 */
-	float previous_speed_const_weight;
-	/**Default 0.5 */
-	float previous_speed_eig_weight;
+  /** Speed filter parameters:
+   * Previous_speed_const_weight - Directly weights the previous speed in
+   * order to calculate the filtered velocity. Recommended range - (0, 0.5)
+   * Previous_speed_eig_weight - Weights the product of the corresponding
+   * eigenvalue and the previous velocity to calculate the filtered velocity*/
+  /**Default 0.05 */
+  float previous_speed_const_weight;
+  /**Default 0.5 */
+  float previous_speed_eig_weight;
 
-	/** Transformations of the coarse-to-fine levels */
-	std::vector<mrpt::math::CMatrixFloat> transformations;
+  /** Transformations of the coarse-to-fine levels */
+  std::vector<mrpt::math::CMatrixFloat> transformations;
 
-	/** Solution from the solver at a given level */
-	mrpt::math::TTwist3D kai_loc_level;
+  /** Solution from the solver at a given level */
+  mrpt::math::TTwist3D kai_loc_level;
 
-	/** Last filtered velocity in absolute coordinates */
-	mrpt::math::TTwist3D kai_abs;
+  /** Last filtered velocity in absolute coordinates */
+  mrpt::math::TTwist3D kai_abs;
 
-	/** Filtered velocity in local coordinates */
-	mrpt::math::TTwist3D kai_loc;
-	mrpt::math::TTwist3D kai_loc_old;
+  /** Filtered velocity in local coordinates */
+  mrpt::math::TTwist3D kai_loc;
+  mrpt::math::TTwist3D kai_loc_old;
 
-	/** Create the gaussian image pyramid according to the number of
-	 * coarse-to-fine levels */
-	void buildCoordinatesPyramid();
-	void buildCoordinatesPyramidFast();
+  /** Create the gaussian image pyramid according to the number of
+   * coarse-to-fine levels */
+  void buildCoordinatesPyramid();
+  void buildCoordinatesPyramidFast();
 
-	/** Warp the second depth image against the first one according to the 3D
-	 * transformations accumulated up to a given level */
-	void performWarping();
+  /** Warp the second depth image against the first one according to the 3D
+   * transformations accumulated up to a given level */
+  void performWarping();
 
-	/** Calculate the "average" coordinates of the points observed by the camera
-	 * between two consecutive frames and find the Null measurements */
-	void calculateCoord();
+  /** Calculate the "average" coordinates of the points observed by the camera
+   * between two consecutive frames and find the Null measurements */
+  void calculateCoord();
 
-	/** Calculates the depth derivatives respect to u,v (rows and cols) and t
-	 * (time) */
-	void calculateDepthDerivatives();
+  /** Calculates the depth derivatives respect to u,v (rows and cols) and t
+   * (time) */
+  void calculateDepthDerivatives();
 
-	/** This method computes the weighting fuction associated to measurement and
-	 * linearization errors */
-	void computeWeights();
+  /** This method computes the weighting fuction associated to measurement and
+   * linearization errors */
+  void computeWeights();
 
-	/** The Solver. It buils the overdetermined system and gets the least-square
-	 * solution.
-	 * It also calculates the least-square covariance matrix */
-	void solveOneLevel();
+  /** The Solver. It buils the overdetermined system and gets the least-square
+   * solution.
+   * It also calculates the least-square covariance matrix */
+  void solveOneLevel();
 
-	/** Method to filter the velocity at each level of the pyramid. */
-	void filterLevelSolution();
+  /** Method to filter the velocity at each level of the pyramid. */
+  void filterLevelSolution();
 
-	/** Update camera pose and the velocities for the filter */
-	void poseUpdate();
+  /** Update camera pose and the velocities for the filter */
+  void poseUpdate();
 
-   public:
-	/** Frames per second (Hz) */
-	double fps;
+ public:
+  /** Frames per second (Hz) */
+  double fps;
 
-	/** Resolution of the images taken by the range camera */
-	unsigned int cam_mode;	// (1 - 640 x 480, 2 - 320 x 240, 4 - 160 x 120)
+  /** Resolution of the images taken by the range camera */
+  unsigned int cam_mode;  // (1 - 640 x 480, 2 - 320 x 240, 4 - 160 x 120)
 
-	/** Downsample the image taken by the range camera. Useful to reduce the
-	  computational burden,
-	  * as this downsampling is applied before the gaussian pyramid is built. It
-	  must be used when
-		the virtual method "loadFrame()" is implemented */
-	unsigned int downsample;  // (1 - original size, 2 - res/2, 4 - res/4)
+  /** Downsample the image taken by the range camera. Useful to reduce the
+  computational burden,
+  * as this downsampling is applied before the gaussian pyramid is built. It
+  must be used when
+    the virtual method "loadFrame()" is implemented */
+  unsigned int downsample;  // (1 - original size, 2 - res/2, 4 - res/4)
 
-	/** Num of valid points after removing null pixels*/
-	unsigned int num_valid_points;
+  /** Num of valid points after removing null pixels*/
+  unsigned int num_valid_points;
 
-	/** Execution time (ms) */
-	float execution_time;
+  /** Execution time (ms) */
+  float execution_time;
 
-	/** Camera poses */
-	/** Last camera pose */
-	mrpt::poses::CPose3D cam_pose;
-	/** Previous camera pose */
-	mrpt::poses::CPose3D cam_oldpose;
+  /** Camera poses */
+  /** Last camera pose */
+  mrpt::poses::CPose3D cam_pose;
+  /** Previous camera pose */
+  mrpt::poses::CPose3D cam_oldpose;
 
-	/** This method performs all the necessary steps to estimate the camera
-	   velocity once the new image is read,
-		and updates the camera pose */
-	void odometryCalculation();
+  /** This method performs all the necessary steps to estimate the camera
+   velocity once the new image is read,
+    and updates the camera pose */
+  void odometryCalculation();
 
-	/** Get the rows and cols of the depth image that are considered by the
-	 * visual odometry method. */
-	inline void getRowsAndCols(
-		unsigned int& num_rows, unsigned int& num_cols) const
-	{
-		num_rows = rows;
-		num_cols = cols;
-	}
+  /** Get the rows and cols of the depth image that are considered by the
+   * visual odometry method. */
+  inline void getRowsAndCols(unsigned int& num_rows, unsigned int& num_cols) const
+  {
+    num_rows = rows;
+    num_cols = cols;
+  }
 
-	/** Get the number of coarse-to-fine levels that are considered by the
-	 * visual odometry method. */
-	inline void getCTFLevels(unsigned int& levels) const
-	{
-		levels = ctf_levels;
-	}
+  /** Get the number of coarse-to-fine levels that are considered by the
+   * visual odometry method. */
+  inline void getCTFLevels(unsigned int& levels) const { levels = ctf_levels; }
 
-	/** Set the horizontal and vertical field of vision (in degrees) */
-	inline void setFOV(float new_fovh, float new_fovv);
+  /** Set the horizontal and vertical field of vision (in degrees) */
+  inline void setFOV(float new_fovh, float new_fovv);
 
-	/** Get the horizontal and vertical field of vision (in degrees) */
-	inline void getFOV(float& cur_fovh, float& cur_fovv) const
-	{
-		cur_fovh = 57.296f * fovh;
-		cur_fovv = 57.296f * fovv;
-	}
+  /** Get the horizontal and vertical field of vision (in degrees) */
+  inline void getFOV(float& cur_fovh, float& cur_fovv) const
+  {
+    cur_fovh = 57.296f * fovh;
+    cur_fovv = 57.296f * fovv;
+  }
 
-	/** Get the filter constant-weight of the velocity filter. */
-	inline float getSpeedFilterConstWeight() const
-	{
-		return previous_speed_const_weight;
-	}
+  /** Get the filter constant-weight of the velocity filter. */
+  inline float getSpeedFilterConstWeight() const { return previous_speed_const_weight; }
 
-	/** Get the filter eigen-weight of the velocity filter. */
-	inline float getSpeedFilterEigWeight() const
-	{
-		return previous_speed_eig_weight;
-	}
+  /** Get the filter eigen-weight of the velocity filter. */
+  inline float getSpeedFilterEigWeight() const { return previous_speed_eig_weight; }
 
-	/** Set the filter constant-weight of the velocity filter. */
-	inline void setSpeedFilterConstWeight(float new_cweight)
-	{
-		previous_speed_const_weight = new_cweight;
-	}
+  /** Set the filter constant-weight of the velocity filter. */
+  inline void setSpeedFilterConstWeight(float new_cweight)
+  {
+    previous_speed_const_weight = new_cweight;
+  }
 
-	/** Set the filter eigen-weight of the velocity filter. */
-	inline void setSpeedFilterEigWeight(float new_eweight)
-	{
-		previous_speed_eig_weight = new_eweight;
-	}
+  /** Set the filter eigen-weight of the velocity filter. */
+  inline void setSpeedFilterEigWeight(float new_eweight)
+  {
+    previous_speed_eig_weight = new_eweight;
+  }
 
-	/** Get the coordinates of the points considered by the visual odometry
-	 * method */
-	inline void getPointsCoord(
-		mrpt::math::CMatrixFloat& x, mrpt::math::CMatrixFloat& y,
-		mrpt::math::CMatrixFloat& z);
+  /** Get the coordinates of the points considered by the visual odometry
+   * method */
+  inline void getPointsCoord(
+      mrpt::math::CMatrixFloat& x, mrpt::math::CMatrixFloat& y, mrpt::math::CMatrixFloat& z);
 
-	/** Get the depth derivatives (last level) respect to u,v and t respectively
-	 */
-	inline void getDepthDerivatives(
-		mrpt::math::CMatrixFloat& cur_du, mrpt::math::CMatrixFloat& cur_dv,
-		mrpt::math::CMatrixFloat& cur_dt);
+  /** Get the depth derivatives (last level) respect to u,v and t respectively
+   */
+  inline void getDepthDerivatives(
+      mrpt::math::CMatrixFloat& cur_du,
+      mrpt::math::CMatrixFloat& cur_dv,
+      mrpt::math::CMatrixFloat& cur_dt);
 
-	/** Get the camera velocity (vx, vy, vz, wx, wy, wz) expressed in local
-	 * reference frame estimated by the solver (before filtering) */
-	inline mrpt::math::TTwist3D getSolverSolution() const
-	{
-		return kai_loc_level;
-	}
+  /** Get the camera velocity (vx, vy, vz, wx, wy, wz) expressed in local
+   * reference frame estimated by the solver (before filtering) */
+  inline mrpt::math::TTwist3D getSolverSolution() const { return kai_loc_level; }
 
-	/** Get the last camera velocity (vx, vy, vz, wx, wy, wz) expressed in the
-	 * world reference frame, obtained after filtering */
-	inline mrpt::math::TTwist3D getLastSpeedAbs() const { return kai_abs; }
+  /** Get the last camera velocity (vx, vy, vz, wx, wy, wz) expressed in the
+   * world reference frame, obtained after filtering */
+  inline mrpt::math::TTwist3D getLastSpeedAbs() const { return kai_abs; }
 
-	/** Get the least-square covariance matrix */
-	inline mrpt::math::CMatrixFloat66 getCovariance() const { return est_cov; }
-	/** Get the matrix of weights */
-	inline void getWeights(mrpt::math::CMatrixFloat& we);
+  /** Get the least-square covariance matrix */
+  inline mrpt::math::CMatrixFloat66 getCovariance() const { return est_cov; }
+  /** Get the matrix of weights */
+  inline void getWeights(mrpt::math::CMatrixFloat& we);
 
-	/** Virtual method to be implemented in derived classes.
-	 * It should be used to load a new depth image into the variable depth_wf
-	 */
-	virtual void loadFrame() = 0;
+  /** Virtual method to be implemented in derived classes.
+   * It should be used to load a new depth image into the variable depth_wf
+   */
+  virtual void loadFrame() = 0;
 
-	// Constructor. Initialize variables and matrix sizes
-	CDifodo();
+  // Constructor. Initialize variables and matrix sizes
+  CDifodo();
 };
 }  // namespace mrpt::vision

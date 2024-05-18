@@ -44,8 +44,8 @@ const double MAP_SIZE_Y = 15;
 
 struct TObs
 {
-	size_t ID;	// Ground truth ID
-	double x, y;
+  size_t ID;  // Ground truth ID
+  double x, y;
 };
 
 // Return true if test succeds.
@@ -53,132 +53,125 @@ struct TObs
 // tests even if the algorithm is ok.
 bool ransac_data_assoc_run()
 {
-	getRandomGenerator().randomize();  // randomize with time
-	// --------------------------------
-	// Load feature map:
-	// --------------------------------
-	CSimplePointsMap the_map;
-	// Generate random MAP:
-	the_map.resize(NUM_MAP_FEATS);
-	for (size_t i = 0; i < NUM_MAP_FEATS; i++)
-	{
-		the_map.setPoint(
-			i, getRandomGenerator().drawUniform(0, MAP_SIZE_X),
-			getRandomGenerator().drawUniform(0, MAP_SIZE_Y));
-	}
-	const size_t nMapPts = the_map.size();
-	const size_t nObs = NUM_OBSERVATIONS_TO_SIMUL;
+  getRandomGenerator().randomize();  // randomize with time
+  // --------------------------------
+  // Load feature map:
+  // --------------------------------
+  CSimplePointsMap the_map;
+  // Generate random MAP:
+  the_map.resize(NUM_MAP_FEATS);
+  for (size_t i = 0; i < NUM_MAP_FEATS; i++)
+  {
+    the_map.setPoint(
+        i, getRandomGenerator().drawUniform(0, MAP_SIZE_X),
+        getRandomGenerator().drawUniform(0, MAP_SIZE_Y));
+  }
+  const size_t nMapPts = the_map.size();
+  const size_t nObs = NUM_OBSERVATIONS_TO_SIMUL;
 
-	// Read the observations themselves:
-	vector<TObs> observations;
-	observations.resize(nObs);
+  // Read the observations themselves:
+  vector<TObs> observations;
+  observations.resize(nObs);
 
-	const mrpt::poses::CPose2D GT_pose(
-		mrpt::random::getRandomGenerator().drawUniform(-10, 10 + MAP_SIZE_X),
-		mrpt::random::getRandomGenerator().drawUniform(-10, 10 + MAP_SIZE_Y),
-		mrpt::random::getRandomGenerator().drawUniform(-M_PI, M_PI));
+  const mrpt::poses::CPose2D GT_pose(
+      mrpt::random::getRandomGenerator().drawUniform(-10, 10 + MAP_SIZE_X),
+      mrpt::random::getRandomGenerator().drawUniform(-10, 10 + MAP_SIZE_Y),
+      mrpt::random::getRandomGenerator().drawUniform(-M_PI, M_PI));
 
-	const mrpt::poses::CPose2D GT_pose_inv = -GT_pose;
+  const mrpt::poses::CPose2D GT_pose_inv = -GT_pose;
 
-	std::vector<nanoflann::ResultItem<size_t, float>> idxs;
-	the_map.kdTreeRadiusSearch2D(GT_pose.x(), GT_pose.y(), 1000, idxs);
-	ASSERT_(idxs.size() >= nObs);
+  std::vector<nanoflann::ResultItem<size_t, float>> idxs;
+  the_map.kdTreeRadiusSearch2D(GT_pose.x(), GT_pose.y(), 1000, idxs);
+  ASSERT_(idxs.size() >= nObs);
 
-	for (size_t i = 0; i < nObs; i++)
-	{
-		double gx, gy;
-		the_map.getPoint(idxs[i].first, gx, gy);
+  for (size_t i = 0; i < nObs; i++)
+  {
+    double gx, gy;
+    the_map.getPoint(idxs[i].first, gx, gy);
 
-		double lx, ly;
-		GT_pose_inv.composePoint(gx, gy, lx, ly);
+    double lx, ly;
+    GT_pose_inv.composePoint(gx, gy, lx, ly);
 
-		observations[i].ID = idxs[i].first;
-		observations[i].x = lx +
-			mrpt::random::getRandomGenerator().drawGaussian1D(
-				0, normalizationStd);
-		observations[i].y = ly +
-			mrpt::random::getRandomGenerator().drawGaussian1D(
-				0, normalizationStd);
-	}
+    observations[i].ID = idxs[i].first;
+    observations[i].x = lx + mrpt::random::getRandomGenerator().drawGaussian1D(0, normalizationStd);
+    observations[i].y = ly + mrpt::random::getRandomGenerator().drawGaussian1D(0, normalizationStd);
+  }
 
-	// ----------------------------------------------------
-	// Generate list of individual-compatible pairings
-	// ----------------------------------------------------
-	TMatchingPairList all_correspondences;
+  // ----------------------------------------------------
+  // Generate list of individual-compatible pairings
+  // ----------------------------------------------------
+  TMatchingPairList all_correspondences;
 
-	all_correspondences.reserve(nMapPts * nObs);
+  all_correspondences.reserve(nMapPts * nObs);
 
-	// ALL possibilities:
-	for (size_t j = 0; j < nObs; j++)
-	{
-		TMatchingPair match;
-		match.localIdx = j;
-		match.local.x = observations[j].x;
-		match.local.y = observations[j].y;
+  // ALL possibilities:
+  for (size_t j = 0; j < nObs; j++)
+  {
+    TMatchingPair match;
+    match.localIdx = j;
+    match.local.x = observations[j].x;
+    match.local.y = observations[j].y;
 
-		for (size_t i = 0; i < nMapPts; i++)
-		{
-			match.globalIdx = i;
-			the_map.getPoint(i, match.global.x, match.global.y);
-			all_correspondences.push_back(match);
-		}
-	}
+    for (size_t i = 0; i < nMapPts; i++)
+    {
+      match.globalIdx = i;
+      the_map.getPoint(i, match.global.x, match.global.y);
+      all_correspondences.push_back(match);
+    }
+  }
 
-	// ----------------------------------------------------
-	//  Run RANSAC-based D-A
-	// ----------------------------------------------------
-	mrpt::tfest::TSE2RobustParams params;
-	mrpt::tfest::TSE2RobustResult results;
+  // ----------------------------------------------------
+  //  Run RANSAC-based D-A
+  // ----------------------------------------------------
+  mrpt::tfest::TSE2RobustParams params;
+  mrpt::tfest::TSE2RobustResult results;
 
-	params.ransac_minSetSize = RANSAC_MINIMUM_INLIERS;	// ransac_minSetSize (to
-	// add the solution to
-	// the SOG)
-	params.ransac_maxSetSize =
-		all_correspondences
-			.size();  // ransac_maxSetSize: Test with all data points
-	params.ransac_mahalanobisDistanceThreshold =
-		ransac_mahalanobisDistanceThreshold;
-	params.ransac_nSimulations = 0;	 // 0=auto
-	params.ransac_fuseByCorrsMatch = true;
-	params.ransac_fuseMaxDiffXY = 0.01f;
-	params.ransac_fuseMaxDiffPhi = 0.1_deg;
-	params.ransac_algorithmForLandmarks = true;
-	params.probability_find_good_model = 0.999999;
-	params.ransac_min_nSimulations =
-		MINIMUM_RANSAC_ITERS;  // (a lower limit to the auto-detected value of
-	// ransac_nSimulations)
-	params.verbose = false;
+  params.ransac_minSetSize = RANSAC_MINIMUM_INLIERS;  // ransac_minSetSize (to
+  // add the solution to
+  // the SOG)
+  params.ransac_maxSetSize =
+      all_correspondences.size();  // ransac_maxSetSize: Test with all data points
+  params.ransac_mahalanobisDistanceThreshold = ransac_mahalanobisDistanceThreshold;
+  params.ransac_nSimulations = 0;  // 0=auto
+  params.ransac_fuseByCorrsMatch = true;
+  params.ransac_fuseMaxDiffXY = 0.01f;
+  params.ransac_fuseMaxDiffPhi = 0.1_deg;
+  params.ransac_algorithmForLandmarks = true;
+  params.probability_find_good_model = 0.999999;
+  params.ransac_min_nSimulations =
+      MINIMUM_RANSAC_ITERS;  // (a lower limit to the auto-detected value of
+  // ransac_nSimulations)
+  params.verbose = false;
 
-	// Run ransac data-association:
-	mrpt::tfest::se2_l2_robust(
-		all_correspondences, normalizationStd, params, results);
+  // Run ransac data-association:
+  mrpt::tfest::se2_l2_robust(all_correspondences, normalizationStd, params, results);
 
-	// mrpt::poses::CPosePDFSOG  & best_poses  = results.transformation;
-	TMatchingPairList& out_best_pairings = results.largestSubSet;
+  // mrpt::poses::CPosePDFSOG  & best_poses  = results.transformation;
+  TMatchingPairList& out_best_pairings = results.largestSubSet;
 
-	// Reconstruct the SE(2) transformation for these pairings:
-	mrpt::poses::CPosePDFGaussian solution_pose;
-	mrpt::tfest::se2_l2(out_best_pairings, solution_pose);
+  // Reconstruct the SE(2) transformation for these pairings:
+  mrpt::poses::CPosePDFGaussian solution_pose;
+  mrpt::tfest::se2_l2(out_best_pairings, solution_pose);
 
-	// Normalized covariance: scale!
-	solution_pose.cov *= square(normalizationStd);
+  // Normalized covariance: scale!
+  solution_pose.cov *= square(normalizationStd);
 
-	if (!(solution_pose.mean.distanceTo(GT_pose) < 0.9 &&
-		  std::abs(solution_pose.mean.phi() - GT_pose.phi()) < 10.0_deg))
-	{
-		std::cerr << "Solution pose: " << solution_pose.mean << endl
-				  << "Ground truth pose: " << GT_pose << endl;
-		return false;
-	}
-	return true;
+  if (!(solution_pose.mean.distanceTo(GT_pose) < 0.9 &&
+        std::abs(solution_pose.mean.phi() - GT_pose.phi()) < 10.0_deg))
+  {
+    std::cerr << "Solution pose: " << solution_pose.mean << endl
+              << "Ground truth pose: " << GT_pose << endl;
+    return false;
+  }
+  return true;
 }
 
 TEST(tfest, ransac_data_assoc)
 {
-	// Run randomized experiments:
-	bool any_ok = false;
-	for (int i = 0; i < 3; i++)
-		if (ransac_data_assoc_run()) any_ok = true;
+  // Run randomized experiments:
+  bool any_ok = false;
+  for (int i = 0; i < 3; i++)
+    if (ransac_data_assoc_run()) any_ok = true;
 
-	EXPECT_TRUE(any_ok);
+  EXPECT_TRUE(any_ok);
 }

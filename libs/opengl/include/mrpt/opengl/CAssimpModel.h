@@ -41,125 +41,127 @@ namespace mrpt::opengl
  * \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
-class CAssimpModel : public CRenderizableShaderTriangles,
-					 public CRenderizableShaderWireFrame,
-					 public CRenderizableShaderPoints
+class CAssimpModel :
+    public CRenderizableShaderTriangles,
+    public CRenderizableShaderWireFrame,
+    public CRenderizableShaderPoints
 {
-	DEFINE_SERIALIZABLE(CAssimpModel, mrpt::opengl)
+  DEFINE_SERIALIZABLE(CAssimpModel, mrpt::opengl)
 
-   public:
-	/** @name Renderizable shader API virtual methods
-	 * @{ */
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
+ public:
+  /** @name Renderizable shader API virtual methods
+   * @{ */
+  void render(const RenderContext& rc) const override;
+  void renderUpdateBuffers() const override;
 
-	virtual shader_list_t requiredShaders() const override
-	{
-		// May use up to two shaders (triangles and lines):
-		return {
-			DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES_LIGHT,
-			DefaultShaderID::POINTS};
-	}
-	void onUpdateBuffers_Wireframe() override;
-	void onUpdateBuffers_Triangles() override;
-	void onUpdateBuffers_Points() override;
-	void onUpdateBuffers_all();	 // special case for assimp
-	void freeOpenGLResources() override
-	{
-		CRenderizableShaderTriangles::freeOpenGLResources();
-		CRenderizableShaderWireFrame::freeOpenGLResources();
-		CRenderizableShaderPoints::freeOpenGLResources();
-	}
-	void enqueueForRenderRecursive(
-		const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
-		bool wholeInView, bool is1stShadowMapPass) const override;
-	bool isCompositeObject() const override { return true; }
-	/** @} */
+  virtual shader_list_t requiredShaders() const override
+  {
+    // May use up to two shaders (triangles and lines):
+    return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES_LIGHT, DefaultShaderID::POINTS};
+  }
+  void onUpdateBuffers_Wireframe() override;
+  void onUpdateBuffers_Triangles() override;
+  void onUpdateBuffers_Points() override;
+  void onUpdateBuffers_all();  // special case for assimp
+  void freeOpenGLResources() override
+  {
+    CRenderizableShaderTriangles::freeOpenGLResources();
+    CRenderizableShaderWireFrame::freeOpenGLResources();
+    CRenderizableShaderPoints::freeOpenGLResources();
+  }
+  void enqueueForRenderRecursive(
+      const mrpt::opengl::TRenderMatrices& state,
+      RenderQueue& rq,
+      bool wholeInView,
+      bool is1stShadowMapPass) const override;
+  bool isCompositeObject() const override { return true; }
+  /** @} */
 
-	CAssimpModel();
-	virtual ~CAssimpModel() override;
+  CAssimpModel();
+  virtual ~CAssimpModel() override;
 
-	/** Import flags for loadScene */
-	struct LoadFlags
-	{
-		enum flags_t : uint32_t
-		{
-			/** See: aiProcessPreset_TargetRealtime_Fast */
-			RealTimeFast = 0x0001,
-			/** See: aiProcessPreset_TargetRealtime_Quality */
-			RealTimeQuality = 0x0002,
-			/** See: aiProcessPreset_TargetRealtime_MaxQuality */
-			RealTimeMaxQuality = 0x0004,
-			/** See: aiProcess_FlipUVs */
-			FlipUVs = 0x0010,
-			/** MRPT-specific: ignore materials and replace by the base class
-			   CRenderizable uniform color that was defined before calling
-			   loadScene(). \note (New in MRPT 2.5.0) */
-			IgnoreMaterialColor = 0x0100,
-			/** Displays messages on loaded textures, etc. */
-			Verbose = 0x1000
-		};
-	};
+  /** Import flags for loadScene */
+  struct LoadFlags
+  {
+    enum flags_t : uint32_t
+    {
+      /** See: aiProcessPreset_TargetRealtime_Fast */
+      RealTimeFast = 0x0001,
+      /** See: aiProcessPreset_TargetRealtime_Quality */
+      RealTimeQuality = 0x0002,
+      /** See: aiProcessPreset_TargetRealtime_MaxQuality */
+      RealTimeMaxQuality = 0x0004,
+      /** See: aiProcess_FlipUVs */
+      FlipUVs = 0x0010,
+      /** MRPT-specific: ignore materials and replace by the base class
+       CRenderizable uniform color that was defined before calling
+       loadScene(). \note (New in MRPT 2.5.0) */
+      IgnoreMaterialColor = 0x0100,
+      /** Displays messages on loaded textures, etc. */
+      Verbose = 0x1000
+    };
+  };
 
-	using filepath_t = std::string;
+  using filepath_t = std::string;
 
-	/**  Loads a scene from a file in any supported file.
-	 * \exception std::runtime_error On any error during loading or importing
-	 * the file.
-	 */
-	void loadScene(
-		const std::string& file_name,
-		const int flags = LoadFlags::RealTimeMaxQuality | LoadFlags::FlipUVs |
-			LoadFlags::Verbose);
+  /**  Loads a scene from a file in any supported file.
+   * \exception std::runtime_error On any error during loading or importing
+   * the file.
+   */
+  void loadScene(
+      const std::string& file_name,
+      const int flags = LoadFlags::RealTimeMaxQuality | LoadFlags::FlipUVs | LoadFlags::Verbose);
 
-	/** Empty the object */
-	void clear();
+  /** Empty the object */
+  void clear();
 
-	/* Simulation of ray-trace. */
-	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
+  /* Simulation of ray-trace. */
+  bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
-	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
+  mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
-	struct TInfoPerTexture
-	{
-		// indices in \a m_texturedObjects. string::npos for non-initialized
-		// ones
-		size_t id_idx = std::string::npos;
-		mrpt::img::CImage img_rgb;
-		std::optional<mrpt::img::CImage> img_alpha;
-	};
+  struct TInfoPerTexture
+  {
+    // indices in \a m_texturedObjects. string::npos for non-initialized
+    // ones
+    size_t id_idx = std::string::npos;
+    mrpt::img::CImage img_rgb;
+    std::optional<mrpt::img::CImage> img_alpha;
+  };
 
-	/** Read-only access to textured objects \note [New in MRPT 2.6.0] */
-	auto texturedObjects() -> const std::vector<CSetOfTexturedTriangles::Ptr>&
-	{
-		return m_texturedObjects;
-	}
+  /** Read-only access to textured objects \note [New in MRPT 2.6.0] */
+  auto texturedObjects() -> const std::vector<CSetOfTexturedTriangles::Ptr>&
+  {
+    return m_texturedObjects;
+  }
 
-   private:
-	/** The interface to the file: */
-	struct Impl;
-	mrpt::pimpl<Impl> m_assimp_scene;
+ private:
+  /** The interface to the file: */
+  struct Impl;
+  mrpt::pimpl<Impl> m_assimp_scene;
 
-	/** Bounding box */
-	mrpt::math::TPoint3D m_bbox_min{0, 0, 0}, m_bbox_max{0, 0, 0};
+  /** Bounding box */
+  mrpt::math::TPoint3D m_bbox_min{0, 0, 0}, m_bbox_max{0, 0, 0};
 
-	filepath_t m_modelPath;
+  filepath_t m_modelPath;
 
-	mutable std::map<filepath_t, TInfoPerTexture> m_textureIdMap;
+  mutable std::map<filepath_t, TInfoPerTexture> m_textureIdMap;
 
-	// We define a textured object per texture image, and delegate texture
-	// handling to that class:
-	mutable std::vector<CSetOfTexturedTriangles::Ptr> m_texturedObjects;
-	bool m_verboseLoad = false;
-	bool m_ignoreMaterialColor = false;
+  // We define a textured object per texture image, and delegate texture
+  // handling to that class:
+  mutable std::vector<CSetOfTexturedTriangles::Ptr> m_texturedObjects;
+  bool m_verboseLoad = false;
+  bool m_ignoreMaterialColor = false;
 
-	void recursive_render(
-		const aiScene* sc, const aiNode* nd, const mrpt::poses::CPose3D& transf,
-		mrpt::opengl::internal::RenderElements& re);
-	void process_textures(const aiScene* scene);
+  void recursive_render(
+      const aiScene* sc,
+      const aiNode* nd,
+      const mrpt::poses::CPose3D& transf,
+      mrpt::opengl::internal::RenderElements& re);
+  void process_textures(const aiScene* scene);
 
-	void after_load_model();
+  void after_load_model();
 
-};	// namespace mrpt::opengl
+};  // namespace mrpt::opengl
 
 }  // namespace mrpt::opengl

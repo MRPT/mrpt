@@ -65,50 +65,43 @@ namespace internal
 template <typename Derived>
 struct ProvideStaticResize
 {
-	constexpr std::size_t rows() const { return Derived::static_size; }
-	constexpr std::size_t cols() const { return 1; }
-	constexpr std::size_t size() const { return Derived::static_size; }
+  constexpr std::size_t rows() const { return Derived::static_size; }
+  constexpr std::size_t cols() const { return 1; }
+  constexpr std::size_t size() const { return Derived::static_size; }
 
-	/** throws if attempted to resize to incorrect length */
-	void resize(std::size_t n) { ASSERT_EQUAL_(n, Derived::static_size); }
+  /** throws if attempted to resize to incorrect length */
+  void resize(std::size_t n) { ASSERT_EQUAL_(n, Derived::static_size); }
 };
 }  // namespace internal
 
 /** Text streaming function */
 template <
-	class PoseOrPoint,
-	typename = std::enable_if_t<
-		std::is_base_of_v<mrpt::math::TPoseOrPoint, PoseOrPoint>>>
+    class PoseOrPoint,
+    typename = std::enable_if_t<std::is_base_of_v<mrpt::math::TPoseOrPoint, PoseOrPoint>>>
 std::ostream& operator<<(std::ostream& o, const PoseOrPoint& p)
 {
-	o << p.asString();
-	return o;
+  o << p.asString();
+  return o;
 }
 
 /** Binary streaming function */
 template <
-	class PoseOrPoint,
-	typename = std::enable_if_t<
-		std::is_base_of_v<mrpt::math::TPoseOrPoint, PoseOrPoint>>>
-mrpt::serialization::CArchive& operator>>(
-	mrpt::serialization::CArchive& in, PoseOrPoint& o)
+    class PoseOrPoint,
+    typename = std::enable_if_t<std::is_base_of_v<mrpt::math::TPoseOrPoint, PoseOrPoint>>>
+mrpt::serialization::CArchive& operator>>(mrpt::serialization::CArchive& in, PoseOrPoint& o)
 {
-	for (int i = 0; i < o.static_size; i++)
-		in >> o[i];
-	return in;
+  for (int i = 0; i < o.static_size; i++) in >> o[i];
+  return in;
 }
 
 /** Binary streaming function */
 template <
-	class PoseOrPoint,
-	typename = std::enable_if_t<
-		std::is_base_of_v<mrpt::math::TPoseOrPoint, PoseOrPoint>>>
-mrpt::serialization::CArchive& operator<<(
-	mrpt::serialization::CArchive& out, const PoseOrPoint& o)
+    class PoseOrPoint,
+    typename = std::enable_if_t<std::is_base_of_v<mrpt::math::TPoseOrPoint, PoseOrPoint>>>
+mrpt::serialization::CArchive& operator<<(mrpt::serialization::CArchive& out, const PoseOrPoint& o)
 {
-	for (int i = 0; i < o.static_size; i++)
-		out << o[i];
-	return out;
+  for (int i = 0; i < o.static_size; i++) out << o[i];
+  return out;
 }
 
 /**

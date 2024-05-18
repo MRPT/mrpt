@@ -26,7 +26,7 @@
 namespace mrpt::opengl::internal
 {
 /** @name OpenGL vector 3D fonts
-	@{ */
+  @{ */
 
 /// sets the font to use for future font rendering commands.
 /// Options are:  "sans", "serif", "mono".
@@ -51,26 +51,33 @@ using TEXT_STYLE = TOpenGLFontStyle;
 /// @param spacing distance between individual text lines
 /// @param kerning distance between characters
 std::pair<double, double> glDrawText(
-	const std::string& text, std::vector<mrpt::opengl::TTriangle>& tris,
-	std::vector<mrpt::math::TPoint3Df>& lines, TEXT_STYLE style = NICE,
-	double spacing = 1.5, double kerning = 0.1);
+    const std::string& text,
+    std::vector<mrpt::opengl::TTriangle>& tris,
+    std::vector<mrpt::math::TPoint3Df>& lines,
+    TEXT_STYLE style = NICE,
+    double spacing = 1.5,
+    double kerning = 0.1);
 
 /// Appends to {tris,lines} the entities representing a given text including a
 /// pose and scale transformation.
 ///
 /// It calls glDrawText() and appends its results to the provided buffers.
 void glDrawTextTransformed(
-	const std::string& text, std::vector<mrpt::opengl::TTriangle>& tris,
-	std::vector<mrpt::math::TPoint3Df>& lines,
-	std::vector<mrpt::img::TColor>& line_colors,
-	const mrpt::poses::CPose3D& text_pose, float text_scale,
-	const mrpt::img::TColor& text_color, TEXT_STYLE style = NICE,
-	double spacing = 1.5, double kerning = 0.1);
+    const std::string& text,
+    std::vector<mrpt::opengl::TTriangle>& tris,
+    std::vector<mrpt::math::TPoint3Df>& lines,
+    std::vector<mrpt::img::TColor>& line_colors,
+    const mrpt::poses::CPose3D& text_pose,
+    float text_scale,
+    const mrpt::img::TColor& text_color,
+    TEXT_STYLE style = NICE,
+    double spacing = 1.5,
+    double kerning = 0.1);
 
 /// returns the size of the bounding box of a text to be rendered, similar to
 /// @ref glDrawText but without any visual output
 std::pair<double, double> glGetExtends(
-	const std::string& text, double spacing = 1.5, double kerning = 0.1);
+    const std::string& text, double spacing = 1.5, double kerning = 0.1);
 
 /** @} */
 

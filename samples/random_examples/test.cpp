@@ -28,15 +28,14 @@ using namespace std;
 // not run by default. Uncomment corresponding line in the main function.
 void TestHist()
 {
-	CHistogram hist(0.0, 100.0, 10u);
-	hist.add(86);
-	hist.add(7);
-	hist.add(45);
+  CHistogram hist(0.0, 100.0, 10u);
+  hist.add(86);
+  hist.add(7);
+  hist.add(45);
 
-	cout << "Histogram test:" << endl;
-	cout << "Should be 1: " << hist.getBinCount(0) << endl;	 // Result: "1"
-	cout << "Should be 0.33: " << hist.getBinRatio(0)
-		 << endl;  // Result: "0.33"
+  cout << "Histogram test:" << endl;
+  cout << "Should be 1: " << hist.getBinCount(0) << endl;     // Result: "1"
+  cout << "Should be 0.33: " << hist.getBinRatio(0) << endl;  // Result: "0.33"
 }
 
 // ------------------------------------------------------
@@ -44,87 +43,86 @@ void TestHist()
 // ------------------------------------------------------
 void TestRandomGenerators()
 {
-	vector<double> x, y;
+  vector<double> x, y;
 
-	getRandomGenerator().randomize();
+  getRandomGenerator().randomize();
 
-	// Uniform numbers integers:
-	CDisplayWindowPlots win1("Unif(0,5) (integers)");
-	win1.setPos(10, 10);
-	win1.resize(400, 400);
-	{
-		// CVectorDouble v1(100000);
-		std::vector<size_t> v1(100000);
-		getRandomGenerator().drawUniformVector(v1, 0, 5.999);
+  // Uniform numbers integers:
+  CDisplayWindowPlots win1("Unif(0,5) (integers)");
+  win1.setPos(10, 10);
+  win1.resize(400, 400);
+  {
+    // CVectorDouble v1(100000);
+    std::vector<size_t> v1(100000);
+    getRandomGenerator().drawUniformVector(v1, 0, 5.999);
 
-		CHistogram hist(-2, 15, 100);
-		hist.add(v1);
-		hist.getHistogramNormalized(x, y);
+    CHistogram hist(-2, 15, 100);
+    hist.add(v1);
+    hist.getHistogramNormalized(x, y);
 
-		win1.plot(x, y, "b");
+    win1.plot(x, y, "b");
 
-		win1.axis_fit();
-	}
+    win1.axis_fit();
+  }
 
-	// Normalized Gauss:
-	CDisplayWindowPlots win2("N(mean=0,std=1)");
-	win2.setPos(420, 10);
-	win2.resize(400, 400);
-	{
-		CVectorDouble v1(100000);
-		getRandomGenerator().drawGaussian1DVector(v1, 0, 1);
+  // Normalized Gauss:
+  CDisplayWindowPlots win2("N(mean=0,std=1)");
+  win2.setPos(420, 10);
+  win2.resize(400, 400);
+  {
+    CVectorDouble v1(100000);
+    getRandomGenerator().drawGaussian1DVector(v1, 0, 1);
 
-		CHistogram hist(-5, 5, 100);
-		hist.add(v1);
-		hist.getHistogramNormalized(x, y);
+    CHistogram hist(-5, 5, 100);
+    hist.add(v1);
+    hist.getHistogramNormalized(x, y);
 
-		win2.plot(x, y, "b");
+    win2.plot(x, y, "b");
 
-		CVectorDouble y_real(y.size());
-		for (CVectorDouble::Index k = 0; k < y_real.size(); k++)
-			y_real[k] = mrpt::math::normalPDF(x[k], 0, 1);
-		win2.plot(x, y_real, "k-", "real");
+    CVectorDouble y_real(y.size());
+    for (CVectorDouble::Index k = 0; k < y_real.size(); k++)
+      y_real[k] = mrpt::math::normalPDF(x[k], 0, 1);
+    win2.plot(x, y_real, "k-", "real");
 
-		win2.axis_fit();
-	}
+    win2.axis_fit();
+  }
 
-	// Example Gauss:
-	CDisplayWindowPlots win3("N(mean=3,std=2)");
-	win3.setPos(10, 430);
-	win3.resize(400, 400);
-	{
-		CVectorDouble v1(100000);
-		getRandomGenerator().drawGaussian1DVector(v1, 3, 2);
+  // Example Gauss:
+  CDisplayWindowPlots win3("N(mean=3,std=2)");
+  win3.setPos(10, 430);
+  win3.resize(400, 400);
+  {
+    CVectorDouble v1(100000);
+    getRandomGenerator().drawGaussian1DVector(v1, 3, 2);
 
-		CHistogram hist(-5, 15, 100);
-		hist.add(v1);
-		hist.getHistogramNormalized(x, y);
+    CHistogram hist(-5, 15, 100);
+    hist.add(v1);
+    hist.getHistogramNormalized(x, y);
 
-		win3.plot(x, y, "b");
+    win3.plot(x, y, "b");
 
-		CVectorDouble y_real(y.size());
-		for (CVectorDouble::Index k = 0; k < y_real.size(); k++)
-			y_real[k] = mrpt::math::normalPDF(x[k], 3, 2);
-		win3.plot(x, y_real, "k-", "real");
+    CVectorDouble y_real(y.size());
+    for (CVectorDouble::Index k = 0; k < y_real.size(); k++)
+      y_real[k] = mrpt::math::normalPDF(x[k], 3, 2);
+    win3.plot(x, y_real, "k-", "real");
 
-		win3.axis_fit();
-	}
+    win3.axis_fit();
+  }
 
-	// Example multi-variate Gauss:
-	CDisplayWindowPlots win4("N(mean=[3 4],var=[4 -2;-2 4])");
-	win4.setPos(420, 430);
-	win4.resize(400, 400);
-	{
-		vector<CVectorDouble> v1;
-		CVectorDouble Mean(2);
-		Mean[0] = 3;
-		Mean[1] = 2;
+  // Example multi-variate Gauss:
+  CDisplayWindowPlots win4("N(mean=[3 4],var=[4 -2;-2 4])");
+  win4.setPos(420, 430);
+  win4.resize(400, 400);
+  {
+    vector<CVectorDouble> v1;
+    CVectorDouble Mean(2);
+    Mean[0] = 3;
+    Mean[1] = 2;
 
-		CMatrixDouble22 cov;
-		cov.fromMatlabStringFormat("[7.5 -7;-7 8]");
+    CMatrixDouble22 cov;
+    cov.fromMatlabStringFormat("[7.5 -7;-7 8]");
 
-		getRandomGenerator().drawGaussianMultivariateMany(
-			v1, 10000, cov, &Mean);
+    getRandomGenerator().drawGaussianMultivariateMany(v1, 10000, cov, &Mean);
 
 #if 0
 		CVectorDouble m;
@@ -134,23 +132,22 @@ void TestRandomGenerators()
 		cout << "Std: " << endl << c << endl;
 #endif
 
-		// pass to (x,y) vectors:
-		CVectorDouble vx(v1.size()), vy(v1.size());
-		for (size_t i = 0; i < v1.size(); i++)
-		{
-			vx[i] = v1[i][0];
-			vy[i] = v1[i][1];
-		}
+    // pass to (x,y) vectors:
+    CVectorDouble vx(v1.size()), vy(v1.size());
+    for (size_t i = 0; i < v1.size(); i++)
+    {
+      vx[i] = v1[i][0];
+      vy[i] = v1[i][1];
+    }
 
-		win4.plot(vx, vy, "b.3");
+    win4.plot(vx, vy, "b.3");
 
-		win4.plotEllipse(
-			Mean[0], Mean[1], cov, 3.0, "k-2", "99% ellipse", true);
+    win4.plotEllipse(Mean[0], Mean[1], cov, 3.0, "k-2", "99% ellipse", true);
 
-		win4.axis_fit();
-	}
+    win4.axis_fit();
+  }
 
-	win4.waitForKey();
+  win4.waitForKey();
 }
 
 // ------------------------------------------------------
@@ -158,16 +155,16 @@ void TestRandomGenerators()
 // ------------------------------------------------------
 int main()
 {
-	try
-	{
-		// TestHist();
-		TestRandomGenerators();
+  try
+  {
+    // TestHist();
+    TestRandomGenerators();
 
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
-		return -1;
-	}
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    return -1;
+  }
 }

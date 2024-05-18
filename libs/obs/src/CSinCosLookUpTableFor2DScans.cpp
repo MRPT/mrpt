@@ -20,66 +20,63 @@ using namespace mrpt::obs;
  * rays in a scan, computing them only the first time and returning a cached
  * copy the rest.
  */
-const CSinCosLookUpTableFor2DScans::TSinCosValues&
-	CSinCosLookUpTableFor2DScans::getSinCosForScan(
-		const CObservation2DRangeScan& scan) const
+const CSinCosLookUpTableFor2DScans::TSinCosValues& CSinCosLookUpTableFor2DScans::getSinCosForScan(
+    const CObservation2DRangeScan& scan) const
 {
-	T2DScanProperties scan_prop;
-	scan.getScanProperties(scan_prop);
-	return getSinCosForScan(scan_prop);
+  T2DScanProperties scan_prop;
+  scan.getScanProperties(scan_prop);
+  return getSinCosForScan(scan_prop);
 }
 
 /** Return two vectors with the cos and the sin of the angles for each of the
  * rays in a scan, computing them only the first time and returning a cached
  * copy the rest.
  */
-const CSinCosLookUpTableFor2DScans::TSinCosValues&
-	CSinCosLookUpTableFor2DScans::getSinCosForScan(
-		const T2DScanProperties& scan_prop) const
+const CSinCosLookUpTableFor2DScans::TSinCosValues& CSinCosLookUpTableFor2DScans::getSinCosForScan(
+    const T2DScanProperties& scan_prop) const
 {
-	auto lck = mrpt::lockHelper(m_cache_mtx);
+  auto lck = mrpt::lockHelper(m_cache_mtx);
 
-	auto it = m_cache.find(scan_prop);
-	if (it != m_cache.end())
-	{  // Found in the cache:
-		return it->second;
-	}
-	else
-	{
-		// If there're too many LUTs, something is wrong, so just free the
-		// memory:
-		// (If you someday find someone with TWENTY *different* laser scanner
-		// models,
-		//   please, accept my apologies... but send me a photo of them all!!
-		//   ;-)
-		if (m_cache.size() > 20) m_cache.clear();
+  auto it = m_cache.find(scan_prop);
+  if (it != m_cache.end())
+  {  // Found in the cache:
+    return it->second;
+  }
+  else
+  {
+    // If there're too many LUTs, something is wrong, so just free the
+    // memory:
+    // (If you someday find someone with TWENTY *different* laser scanner
+    // models,
+    //   please, accept my apologies... but send me a photo of them all!!
+    //   ;-)
+    if (m_cache.size() > 20) m_cache.clear();
 
-		// Compute and insert in the cache:
-		TSinCosValues& new_entry = m_cache[scan_prop];
+    // Compute and insert in the cache:
+    TSinCosValues& new_entry = m_cache[scan_prop];
 
-		// Make sure the allocated memory at least have room for 4 extra
-		// double's at the end,
-		//  for the case we use these buffers for SSE2 optimized code. If the
-		//  final values are uninitialized it doesn't matter.
-		new_entry.ccos.resize(scan_prop.nRays + 4);
-		new_entry.csin.resize(scan_prop.nRays + 4);
+    // Make sure the allocated memory at least have room for 4 extra
+    // double's at the end,
+    //  for the case we use these buffers for SSE2 optimized code. If the
+    //  final values are uninitialized it doesn't matter.
+    new_entry.ccos.resize(scan_prop.nRays + 4);
+    new_entry.csin.resize(scan_prop.nRays + 4);
 
-		ASSERT_(scan_prop.nRays >= 2);
-		if (scan_prop.nRays > 0)
-		{
-			double Ang =
-				(scan_prop.rightToLeft ? -0.5 : +0.5) * scan_prop.aperture;
-			const double dA = (scan_prop.rightToLeft ? 1.0 : -1.0) *
-				(scan_prop.aperture / (scan_prop.nRays - 1));
+    ASSERT_(scan_prop.nRays >= 2);
+    if (scan_prop.nRays > 0)
+    {
+      double Ang = (scan_prop.rightToLeft ? -0.5 : +0.5) * scan_prop.aperture;
+      const double dA =
+          (scan_prop.rightToLeft ? 1.0 : -1.0) * (scan_prop.aperture / (scan_prop.nRays - 1));
 
-			for (size_t i = 0; i < scan_prop.nRays; i++)
-			{
-				new_entry.ccos[i] = d2f(cos(Ang));
-				new_entry.csin[i] = d2f(sin(Ang));
-				Ang += dA;
-			}
-		}
-		// return them:
-		return new_entry;
-	}
+      for (size_t i = 0; i < scan_prop.nRays; i++)
+      {
+        new_entry.ccos[i] = d2f(cos(Ang));
+        new_entry.csin[i] = d2f(sin(Ang));
+        Ang += dA;
+      }
+    }
+    // return them:
+    return new_entry;
+  }
 }

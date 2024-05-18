@@ -17,17 +17,17 @@
 
 class CPosesNode : public CNode
 {
-   public:
-	CPosesNode(CNode* parent, const mrpt::poses::CPose3D& pose);
-	~CPosesNode() override = default;
+ public:
+  CPosesNode(CNode* parent, const mrpt::poses::CPose3D& pose);
+  ~CPosesNode() override = default;
 
-	int childCount() const override;
-	CNode* child(int id) override;
-	std::string displayName() const override;
-	ObjectType type() const override;
+  int childCount() const override;
+  CNode* child(int id) override;
+  std::string displayName() const override;
+  ObjectType type() const override;
 
-	mrpt::poses::CPose3D getPose() const;
+  mrpt::poses::CPose3D getPose() const;
 
-   private:
-	mrpt::poses::CPose3D m_pose;
+ private:
+  mrpt::poses::CPose3D m_pose;
 };

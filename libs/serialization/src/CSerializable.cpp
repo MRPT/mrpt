@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "serialization-precomp.h"	// Precompiled headers
+#include "serialization-precomp.h"  // Precompiled headers
 //
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/archiveFrom_std_vector.h>
@@ -20,19 +20,19 @@ using namespace mrpt::serialization;
 IMPLEMENTS_VIRTUAL_MRPT_OBJECT(CSerializable, CObject, mrpt::serialization)
 
 void mrpt::serialization::ObjectToOctetVector(
-	const CSerializable* o, std::vector<uint8_t>& out_vector)
+    const CSerializable* o, std::vector<uint8_t>& out_vector)
 {
-	out_vector.clear();
-	auto arch = archiveFrom(out_vector);
-	arch << *o;
+  out_vector.clear();
+  auto arch = archiveFrom(out_vector);
+  arch << *o;
 }
 
 void mrpt::serialization::OctetVectorToObject(
-	const std::vector<uint8_t>& in_data, CSerializable::Ptr& obj)
+    const std::vector<uint8_t>& in_data, CSerializable::Ptr& obj)
 {
-	obj.reset();
+  obj.reset();
 
-	if (in_data.empty()) return;
-	auto arch = archiveFrom(in_data);
-	obj = arch.ReadObject();
+  if (in_data.empty()) return;
+  auto arch = archiveFrom(in_data);
+  obj = arch.ReadObject();
 }

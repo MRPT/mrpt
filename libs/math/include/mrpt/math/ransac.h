@@ -26,7 +26,7 @@ namespace mrpt::math
 template <typename T>
 size_t ransacDatasetSize(const CMatrixDynamic<T>& dataset)
 {
-	return dataset.cols();
+  return dataset.cols();
 }
 
 /** A generic RANSAC implementation. By default, the input "dataset" and output
@@ -43,55 +43,61 @@ size_t ransacDatasetSize(const CMatrixDynamic<T>& dataset)
  * \note New in MRPT 2.0.2: The second and third template arguments.
  */
 template <
-	typename NUMTYPE = double, typename DATASET = CMatrixDynamic<NUMTYPE>,
-	typename MODEL = CMatrixDynamic<NUMTYPE>>
+    typename NUMTYPE = double,
+    typename DATASET = CMatrixDynamic<NUMTYPE>,
+    typename MODEL = CMatrixDynamic<NUMTYPE>>
 class RANSAC_Template : public mrpt::system::COutputLogger
 {
-   public:
-	RANSAC_Template() : mrpt::system::COutputLogger("RANSAC_Template") {}
+ public:
+  RANSAC_Template() : mrpt::system::COutputLogger("RANSAC_Template") {}
 
-	/** The type of the function passed to mrpt::math::ransac - See the
-	 * documentation for that method for more info. */
-	using TRansacFitFunctor = std::function<void(
-		const DATASET& allData, const std::vector<size_t>& useIndices,
-		std::vector<MODEL>& fitModels)>;
+  /** The type of the function passed to mrpt::math::ransac - See the
+   * documentation for that method for more info. */
+  using TRansacFitFunctor = std::function<void(
+      const DATASET& allData,
+      const std::vector<size_t>& useIndices,
+      std::vector<MODEL>& fitModels)>;
 
-	/** The type of the function passed to mrpt::math::ransac  - See the
-	 * documentation for that method for more info. */
-	using TRansacDistanceFunctor = std::function<void(
-		const DATASET& allData, const std::vector<MODEL>& testModels,
-		const NUMTYPE distanceThreshold, unsigned int& out_bestModelIndex,
-		std::vector<size_t>& out_inlierIndices)>;
+  /** The type of the function passed to mrpt::math::ransac  - See the
+   * documentation for that method for more info. */
+  using TRansacDistanceFunctor = std::function<void(
+      const DATASET& allData,
+      const std::vector<MODEL>& testModels,
+      const NUMTYPE distanceThreshold,
+      unsigned int& out_bestModelIndex,
+      std::vector<size_t>& out_inlierIndices)>;
 
-	/** The type of the function passed to mrpt::math::ransac  - See the
-	 * documentation for that method for more info. */
-	using TRansacDegenerateFunctor = std::function<bool(
-		const DATASET& allData, const std::vector<size_t>& useIndices)>;
+  /** The type of the function passed to mrpt::math::ransac  - See the
+   * documentation for that method for more info. */
+  using TRansacDegenerateFunctor =
+      std::function<bool(const DATASET& allData, const std::vector<size_t>& useIndices)>;
 
-	/** An implementation of the RANSAC algorithm for robust fitting of models
-	 * to data.
-	 *
-	 *  \param data A DxN matrix with all the observed data. D is the
-	 * dimensionality of data points and N the number of points.
-	 *  \param
-	 *
-	 *  This implementation is highly inspired on Peter Kovesi's MATLAB scripts
-	 * (http://www.csse.uwa.edu.au/~pk).
-	 * \return false if no good solution can be found, true on success.
-	 * \note [MRPT 1.5.0] `verbose` parameter has been removed, supersedded by
-	 * COutputLogger settings.
-	 */
-	bool execute(
-		const DATASET& data, const TRansacFitFunctor& fit_func,
-		const TRansacDistanceFunctor& dist_func,
-		const TRansacDegenerateFunctor& degen_func,
-		const double distanceThreshold,
-		const unsigned int minimumSizeSamplesToFit,
-		std::vector<size_t>& out_best_inliers, MODEL& out_best_model,
-		const double prob_good_sample = 0.999,
-		const size_t maxIter = 2000) const;
+  /** An implementation of the RANSAC algorithm for robust fitting of models
+   * to data.
+   *
+   *  \param data A DxN matrix with all the observed data. D is the
+   * dimensionality of data points and N the number of points.
+   *  \param
+   *
+   *  This implementation is highly inspired on Peter Kovesi's MATLAB scripts
+   * (http://www.csse.uwa.edu.au/~pk).
+   * \return false if no good solution can be found, true on success.
+   * \note [MRPT 1.5.0] `verbose` parameter has been removed, supersedded by
+   * COutputLogger settings.
+   */
+  bool execute(
+      const DATASET& data,
+      const TRansacFitFunctor& fit_func,
+      const TRansacDistanceFunctor& dist_func,
+      const TRansacDegenerateFunctor& degen_func,
+      const double distanceThreshold,
+      const unsigned int minimumSizeSamplesToFit,
+      std::vector<size_t>& out_best_inliers,
+      MODEL& out_best_model,
+      const double prob_good_sample = 0.999,
+      const size_t maxIter = 2000) const;
 
-};	// end class
+};  // end class
 
 /** The default instance of RANSAC, for double type */
 using RANSAC = RANSAC_Template<double>;

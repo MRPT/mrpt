@@ -23,23 +23,23 @@ namespace mrpt::obs
  */
 class CObservationComment : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationComment, mrpt::obs)
+  DEFINE_SERIALIZABLE(CObservationComment, mrpt::obs)
 
-   public:
-	/** Constructor.
-	 */
-	CObservationComment() : text() {}
-	/** Destructor
-	 */
-	~CObservationComment() override = default;
-	/** The text block. */
-	std::string text;
+ public:
+  /** Constructor.
+   */
+  CObservationComment() : text() {}
+  /** Destructor
+   */
+  ~CObservationComment() override = default;
+  /** The text block. */
+  std::string text;
 
-	// See base class docs
-	void getSensorPose(mrpt::poses::CPose3D&) const override {}
-	void setSensorPose(const mrpt::poses::CPose3D&) override {}
-	void getDescriptionAsText(std::ostream& o) const override;
+  // See base class docs
+  void getSensorPose(mrpt::poses::CPose3D&) const override {}
+  void setSensorPose(const mrpt::poses::CPose3D&) override {}
+  void getDescriptionAsText(std::ostream& o) const override;
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace mrpt::obs

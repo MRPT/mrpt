@@ -19,13 +19,13 @@ namespace mrpt::math
 template <class Derived>
 const Derived& mat2eig(const Eigen::EigenBase<Derived>& m)
 {
-	return m.derived();
+  return m.derived();
 }
 
 template <class MAT>
 auto mat2eig(const MAT& m, typename MAT::eigen_t* = nullptr)
 {
-	return m.asEigen();
+  return m.asEigen();
 }
 
 }  // namespace mrpt::math

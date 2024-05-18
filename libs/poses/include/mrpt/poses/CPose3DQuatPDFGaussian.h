@@ -40,154 +40,143 @@ class CPose3DPDFGaussian;
  */
 class CPose3DQuatPDFGaussian : public CPose3DQuatPDF
 {
-	DEFINE_SERIALIZABLE(CPose3DQuatPDFGaussian, mrpt::poses)
+  DEFINE_SERIALIZABLE(CPose3DQuatPDFGaussian, mrpt::poses)
 
-   protected:
-	/** Assures the symmetry of the covariance matrix (eventually certain
-	 * operations in the math-coprocessor lead to non-symmetric matrixes!)
-	 */
-	void enforceCovSymmetry();
+ protected:
+  /** Assures the symmetry of the covariance matrix (eventually certain
+   * operations in the math-coprocessor lead to non-symmetric matrixes!)
+   */
+  void enforceCovSymmetry();
 
-   public:
-	/** Default constructor - set all values to zero. */
-	CPose3DQuatPDFGaussian();
+ public:
+  /** Default constructor - set all values to zero. */
+  CPose3DQuatPDFGaussian();
 
-	/** Constructor which left all the member uninitialized, for using when
-	 * speed is critical - as argument, use UNINITIALIZED_QUATERNION. */
-	CPose3DQuatPDFGaussian(
-		mrpt::math::TConstructorFlags_Quaternions constructor_dummy_param);
+  /** Constructor which left all the member uninitialized, for using when
+   * speed is critical - as argument, use UNINITIALIZED_QUATERNION. */
+  CPose3DQuatPDFGaussian(mrpt::math::TConstructorFlags_Quaternions constructor_dummy_param);
 
-	/** Constructor from a default mean value, covariance equals to zero. */
-	explicit CPose3DQuatPDFGaussian(const CPose3DQuat& init_Mean);
+  /** Constructor from a default mean value, covariance equals to zero. */
+  explicit CPose3DQuatPDFGaussian(const CPose3DQuat& init_Mean);
 
-	/** Constructor with mean and covariance. */
-	CPose3DQuatPDFGaussian(
-		const CPose3DQuat& init_Mean,
-		const mrpt::math::CMatrixDouble77& init_Cov);
+  /** Constructor with mean and covariance. */
+  CPose3DQuatPDFGaussian(const CPose3DQuat& init_Mean, const mrpt::math::CMatrixDouble77& init_Cov);
 
-	/** Constructor from a Gaussian 2D pose PDF (sets to 0 the missing
-	 * variables). */
-	explicit CPose3DQuatPDFGaussian(const CPosePDFGaussian& o);
+  /** Constructor from a Gaussian 2D pose PDF (sets to 0 the missing
+   * variables). */
+  explicit CPose3DQuatPDFGaussian(const CPosePDFGaussian& o);
 
-	/** Constructor from an equivalent Gaussian in Euler angles representation.
-	 */
-	explicit CPose3DQuatPDFGaussian(const CPose3DPDFGaussian& o);
+  /** Constructor from an equivalent Gaussian in Euler angles representation.
+   */
+  explicit CPose3DQuatPDFGaussian(const CPose3DPDFGaussian& o);
 
-	/** The mean value */
-	CPose3DQuat mean;
-	/** The 7x7 covariance matrix */
-	mrpt::math::CMatrixDouble77 cov;
+  /** The mean value */
+  CPose3DQuat mean;
+  /** The 7x7 covariance matrix */
+  mrpt::math::CMatrixDouble77 cov;
 
-	inline const CPose3DQuat& getPoseMean() const { return mean; }
-	inline CPose3DQuat& getPoseMean() { return mean; }
+  inline const CPose3DQuat& getPoseMean() const { return mean; }
+  inline CPose3DQuat& getPoseMean() { return mean; }
 
-	void getMean(CPose3DQuat& mean_pose) const override;
+  void getMean(CPose3DQuat& mean_pose) const override;
 
-	std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override
-	{
-		return {cov, mean};
-	}
+  std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override { return {cov, mean}; }
 
-	/** Copy operator, translating if necesary (for example, between particles
-	 * and gaussian representations) */
-	void copyFrom(const CPose3DQuatPDF& o) override;
-	/** Copy operator, translating if necesary (for example, between particles
-	 * and gaussian representations) */
-	void copyFrom(const CPosePDF& o);
-	/** Copy operator, translating if necesary (for example, between particles
-	 * and gaussian representations) */
-	void copyFrom(const CPose3DPDFGaussian& o);
-	/** Save the PDF to a text file, containing the 3D pose in the first line (x
-	 * y z qr qx qy qz), then the covariance matrix in the next 7 lines. */
-	bool saveToTextFile(const std::string& file) const override;
+  /** Copy operator, translating if necesary (for example, between particles
+   * and gaussian representations) */
+  void copyFrom(const CPose3DQuatPDF& o) override;
+  /** Copy operator, translating if necesary (for example, between particles
+   * and gaussian representations) */
+  void copyFrom(const CPosePDF& o);
+  /** Copy operator, translating if necesary (for example, between particles
+   * and gaussian representations) */
+  void copyFrom(const CPose3DPDFGaussian& o);
+  /** Save the PDF to a text file, containing the 3D pose in the first line (x
+   * y z qr qx qy qz), then the covariance matrix in the next 7 lines. */
+  bool saveToTextFile(const std::string& file) const override;
 
-	/** this = p (+) this. This can be used to convert a PDF from local
-	 * coordinates to global, providing the point (newReferenceBase) from which
-	 *   "to project" the current pdf. Result PDF substituted the currently
-	 * stored one in the object. */
-	void changeCoordinatesReference(const CPose3DQuat& newReferenceBase);
+  /** this = p (+) this. This can be used to convert a PDF from local
+   * coordinates to global, providing the point (newReferenceBase) from which
+   *   "to project" the current pdf. Result PDF substituted the currently
+   * stored one in the object. */
+  void changeCoordinatesReference(const CPose3DQuat& newReferenceBase);
 
-	/** this = p (+) this. This can be used to convert a PDF from local
-	 * coordinates to global, providing the point (newReferenceBase) from which
-	 *   "to project" the current pdf. Result PDF substituted the currently
-	 * stored one in the object.
-	 */
-	void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
+  /** this = p (+) this. This can be used to convert a PDF from local
+   * coordinates to global, providing the point (newReferenceBase) from which
+   *   "to project" the current pdf. Result PDF substituted the currently
+   * stored one in the object.
+   */
+  void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 
-	/** Draws a single sample from the distribution */
-	void drawSingleSample(CPose3DQuat& outPart) const override;
-	/** Draws a number of samples from the distribution, and saves as a list of
-	 * 1x7 vectors, where each row contains a (x,y,z,qr,qx,qy,qz) datum. */
-	void drawManySamples(
-		size_t N,
-		std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
-	/** Compute the inverse Jacobian */
-	mrpt::math::CMatrixDouble77 inverseJacobian() const;
-	/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
-	void inverse(CPose3DQuatPDF& o) const override;
-	/** Returns the displacement from the current pose (pose_from) to pose_to:
-	 * displacement = - pose_from + pose_to
-	 * It assumes that both poses are correlated via
-	 * the direct generative model:
-	 * pose_to = pose_from + displacement
-	 * For a deeper explanation, check https://github.com/MRPT/mrpt/pull/1243
-	 * */
-	mrpt::poses::CPose3DQuatPDFGaussian inverseCompositionCrossCorrelation(
-		const mrpt::poses::CPose3DQuatPDFGaussian& pose_to) const;
+  /** Draws a single sample from the distribution */
+  void drawSingleSample(CPose3DQuat& outPart) const override;
+  /** Draws a number of samples from the distribution, and saves as a list of
+   * 1x7 vectors, where each row contains a (x,y,z,qr,qx,qy,qz) datum. */
+  void drawManySamples(size_t N, std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
+  /** Compute the inverse Jacobian */
+  mrpt::math::CMatrixDouble77 inverseJacobian() const;
+  /** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
+  void inverse(CPose3DQuatPDF& o) const override;
+  /** Returns the displacement from the current pose (pose_from) to pose_to:
+   * displacement = - pose_from + pose_to
+   * It assumes that both poses are correlated via
+   * the direct generative model:
+   * pose_to = pose_from + displacement
+   * For a deeper explanation, check https://github.com/MRPT/mrpt/pull/1243
+   * */
+  mrpt::poses::CPose3DQuatPDFGaussian inverseCompositionCrossCorrelation(
+      const mrpt::poses::CPose3DQuatPDFGaussian& pose_to) const;
 
-	/** Unary - operator, returns the PDF of the inverse pose.  */
-	inline CPose3DQuatPDFGaussian operator-() const
-	{
-		CPose3DQuatPDFGaussian p(mrpt::math::UNINITIALIZED_QUATERNION);
-		this->inverse(p);
-		return p;
-	}
+  /** Unary - operator, returns the PDF of the inverse pose.  */
+  inline CPose3DQuatPDFGaussian operator-() const
+  {
+    CPose3DQuatPDFGaussian p(mrpt::math::UNINITIALIZED_QUATERNION);
+    this->inverse(p);
+    return p;
+  }
 
-	/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the
-	 * mean, and the covariance matrix are updated). */
-	void operator+=(const CPose3DQuat& Ap);
-	/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the
-	 * mean, and the covariance matrix are updated) (see formulas in
-	 * jacobiansPoseComposition ). */
-	void operator+=(const CPose3DQuatPDFGaussian& Ap);
-	/** Makes: thisPDF = thisPDF - Ap, where "-" is pose inverse composition
-	 * (both the mean, and the covariance matrix are updated).
-	 * This operation assumes statistical independence between the two
-	 * variables. If you want to take into account the cross-correlation between
-	 * pose_1 and pose_2, use:
-	 * displacement = pose_1.inverseCompositionCrossCorrelation(pose_2)
-	 * Note: Both poses are correlated if the direct generative model is
-	 * pose_2 = pose_1 + displacement
-	 * \sa inverseCompositionCrossCorrelation
-	 * */
-	void operator-=(const CPose3DQuatPDFGaussian& Ap);
+  /** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the
+   * mean, and the covariance matrix are updated). */
+  void operator+=(const CPose3DQuat& Ap);
+  /** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the
+   * mean, and the covariance matrix are updated) (see formulas in
+   * jacobiansPoseComposition ). */
+  void operator+=(const CPose3DQuatPDFGaussian& Ap);
+  /** Makes: thisPDF = thisPDF - Ap, where "-" is pose inverse composition
+   * (both the mean, and the covariance matrix are updated).
+   * This operation assumes statistical independence between the two
+   * variables. If you want to take into account the cross-correlation between
+   * pose_1 and pose_2, use:
+   * displacement = pose_1.inverseCompositionCrossCorrelation(pose_2)
+   * Note: Both poses are correlated if the direct generative model is
+   * pose_2 = pose_1 + displacement
+   * \sa inverseCompositionCrossCorrelation
+   * */
+  void operator-=(const CPose3DQuatPDFGaussian& Ap);
 
-	/** Evaluates the PDF at a given point. */
-	double evaluatePDF(const CPose3DQuat& x) const;
+  /** Evaluates the PDF at a given point. */
+  double evaluatePDF(const CPose3DQuat& x) const;
 
-	/** Evaluates the ratio PDF(x) / PDF(MEAN), that is, the normalized PDF in
-	 * the range [0,1]. */
-	double evaluateNormalizedPDF(const CPose3DQuat& x) const;
+  /** Evaluates the ratio PDF(x) / PDF(MEAN), that is, the normalized PDF in
+   * the range [0,1]. */
+  double evaluateNormalizedPDF(const CPose3DQuat& x) const;
 
-	/** Computes the Mahalanobis distance between the centers of two Gaussians.
-	 *  The variables with a variance exactly equal to 0 are not taken into
-	 * account in the process, but
-	 *   "infinity" is returned if the corresponding elements are not exactly
-	 * equal. */
-	double mahalanobisDistanceTo(const CPose3DQuatPDFGaussian& theOther);
+  /** Computes the Mahalanobis distance between the centers of two Gaussians.
+   *  The variables with a variance exactly equal to 0 are not taken into
+   * account in the process, but
+   *   "infinity" is returned if the corresponding elements are not exactly
+   * equal. */
+  double mahalanobisDistanceTo(const CPose3DQuatPDFGaussian& theOther);
 
-};	// End of class def.
+};  // End of class def.
 
-bool operator==(
-	const CPose3DQuatPDFGaussian& p1, const CPose3DQuatPDFGaussian& p2);
+bool operator==(const CPose3DQuatPDFGaussian& p1, const CPose3DQuatPDFGaussian& p2);
 /** Pose composition for two 3D pose Gaussians  \sa
  * CPose3DQuatPDFGaussian::operator += */
-CPose3DQuatPDFGaussian operator+(
-	const CPose3DQuatPDFGaussian& x, const CPose3DQuatPDFGaussian& u);
+CPose3DQuatPDFGaussian operator+(const CPose3DQuatPDFGaussian& x, const CPose3DQuatPDFGaussian& u);
 /** Inverse pose composition for two 3D pose Gaussians  \sa
  * CPose3DQuatPDFGaussian::operator -= */
-CPose3DQuatPDFGaussian operator-(
-	const CPose3DQuatPDFGaussian& x, const CPose3DQuatPDFGaussian& u);
+CPose3DQuatPDFGaussian operator-(const CPose3DQuatPDFGaussian& x, const CPose3DQuatPDFGaussian& u);
 
 /** Dumps the mean and covariance matrix to a text stream. */
 std::ostream& operator<<(std::ostream& out, const CPose3DQuatPDFGaussian& obj);

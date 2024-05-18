@@ -27,7 +27,6 @@
 #include <mrpt/poses/CPoseOrPoint.h>
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/serialization/CMessage.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/typemeta/static_string.h>
@@ -246,8 +245,6 @@ void bind_mrpt_obs_CObservationStereoImages(std::function< pybind11::module &(st
 	{ // mrpt::obs::CObservationStereoImages file:mrpt/obs/CObservationStereoImages.h line:38
 		pybind11::class_<mrpt::obs::CObservationStereoImages, std::shared_ptr<mrpt::obs::CObservationStereoImages>, PyCallBack_mrpt_obs_CObservationStereoImages, mrpt::obs::CObservation> cl(M("mrpt::obs"), "CObservationStereoImages", "Observation class for either a pair of left+right or left+disparity images\nfrom a stereo camera.\n\n  To find whether the observation contains a right image and/or a disparity\nimage, see the fields hasImageDisparity and hasImageRight, respectively.\n   This figure illustrates the coordinate frames involved in this class:\n\n	 <center>\n   \n  </center>\n\n \n The images stored in this class can be raw or undistorted images. In\nthe latter case, the \"distortion\" params of the corresponding \"leftCamera\" and\n\"rightCamera\" fields should be all zeros.\n \n\n CObservation\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::obs::CObservationStereoImages(); }, [](){ return new PyCallBack_mrpt_obs_CObservationStereoImages(); } ) );
-		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_CObservationStereoImages const &o){ return new PyCallBack_mrpt_obs_CObservationStereoImages(o); } ) );
-		cl.def( pybind11::init( [](mrpt::obs::CObservationStereoImages const &o){ return new mrpt::obs::CObservationStereoImages(o); } ) );
 		cl.def_readwrite("imageLeft", &mrpt::obs::CObservationStereoImages::imageLeft);
 		cl.def_readwrite("imageRight", &mrpt::obs::CObservationStereoImages::imageRight);
 		cl.def_readwrite("imageDisparity", &mrpt::obs::CObservationStereoImages::imageDisparity);

@@ -20,16 +20,16 @@ namespace mrpt::apps
  */
 class BaseAppDataSource
 {
-   public:
-	BaseAppDataSource() = default;
-	virtual ~BaseAppDataSource() = default;
+ public:
+  BaseAppDataSource() = default;
+  virtual ~BaseAppDataSource() = default;
 
-   protected:
-	/** Get next sensory data. Return false on any error, true if success. */
-	virtual bool impl_get_next_observations(
-		mrpt::obs::CActionCollection::Ptr& action,
-		mrpt::obs::CSensoryFrame::Ptr& observations,
-		mrpt::obs::CObservation::Ptr& observation) = 0;
+ protected:
+  /** Get next sensory data. Return false on any error, true if success. */
+  virtual bool impl_get_next_observations(
+      mrpt::obs::CActionCollection::Ptr& action,
+      mrpt::obs::CSensoryFrame::Ptr& observations,
+      mrpt::obs::CObservation::Ptr& observation) = 0;
 };
 
 }  // namespace mrpt::apps

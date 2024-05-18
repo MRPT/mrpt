@@ -51,8 +51,7 @@ int solve_poly4(double* x, double a, double b, double c, double d) noexcept;
  * \note Based on `poly34.h`, by Khashin S.I.
  * http://math.ivanovo.ac.ru/dalgebra/Khashin/index.html - khash2 (at) gmail.com
  */
-int solve_poly5(
-	double* x, double a, double b, double c, double d, double e) noexcept;
+int solve_poly5(double* x, double a, double b, double c, double d, double e) noexcept;
 
 /** Solves equation `a*x^2 + b*x + c = 0`.
  * Returns the number of real roots: either 0 or 2; or 1 if a=0 (in this case

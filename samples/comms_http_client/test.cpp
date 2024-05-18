@@ -24,42 +24,40 @@ std::string url = "http://www.google.es/";
 
 void Test_HTTP_get()
 {
-	std::string content;
+  std::string content;
 
-	mrpt::comms::net::HttpRequestOptions httpOptions;
-	mrpt::comms::net::HttpRequestOutput httpOut;
+  mrpt::comms::net::HttpRequestOptions httpOptions;
+  mrpt::comms::net::HttpRequestOutput httpOut;
 
-	std::cout << "Retrieving " << url << "..." << std::endl;
+  std::cout << "Retrieving " << url << "..." << std::endl;
 
-	http_errorcode ret = http_get(url, content, httpOptions, httpOut);
+  http_errorcode ret = http_get(url, content, httpOptions, httpOut);
 
-	if (ret != net::http_errorcode::Ok)
-	{
-		std::cout << " Error: " << httpOut.errormsg << std::endl;
-		return;
-	}
+  if (ret != net::http_errorcode::Ok)
+  {
+    std::cout << " Error: " << httpOut.errormsg << std::endl;
+    return;
+  }
 
-	string typ = httpOut.out_headers.count("Content-Type")
-		? httpOut.out_headers.at("Content-Type")
-		: string("???");
+  string typ = httpOut.out_headers.count("Content-Type") ? httpOut.out_headers.at("Content-Type")
+                                                         : string("???");
 
-	std::cout << "Ok: " << content.size() << " bytes of type: " << typ
-			  << std::endl;
+  std::cout << "Ok: " << content.size() << " bytes of type: " << typ << std::endl;
 }
 //! [example-http-get]
 
 int main(int argc, char** argv)
 {
-	try
-	{
-		if (argc > 1) url = string(argv[1]);
+  try
+  {
+    if (argc > 1) url = string(argv[1]);
 
-		Test_HTTP_get();
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
-		return -1;
-	}
+    Test_HTTP_get();
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    return -1;
+  }
 }

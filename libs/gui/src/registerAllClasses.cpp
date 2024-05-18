@@ -20,6 +20,6 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_gui) {}
 
 void mrpt::gui::registerAllClasses_mrpt_gui()
 {
-	::registerAllClasses_mrpt_gui();
-	mrpt::opengl::registerAllClasses_mrpt_opengl();
+  ::registerAllClasses_mrpt_gui();
+  mrpt::opengl::registerAllClasses_mrpt_opengl();
 }

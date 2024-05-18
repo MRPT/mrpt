@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 /* Can be loaded with:
-	CImage img;
-	CMemoryStream buf;
-	buf.assignMemoryNotOwn(sample_image1,sizeof(sample_image1));
-	buf >> img;
+  CImage img;
+  CMemoryStream buf;
+  buf.assignMemoryNotOwn(sample_image1,sizeof(sample_image1));
+  buf >> img;
 */
 // clang-format off
 static const unsigned char sample_image1[] = {

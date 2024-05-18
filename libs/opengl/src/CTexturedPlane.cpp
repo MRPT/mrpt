@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"	 // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 //
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include <mrpt/opengl/CTexturedPlane.h>
@@ -21,178 +21,174 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CTexturedPlane, CRenderizable, mrpt::opengl)
 
-CTexturedPlane::CTexturedPlane(
-	float x_min, float x_max, float y_min, float y_max)
+CTexturedPlane::CTexturedPlane(float x_min, float x_max, float y_min, float y_max)
 {
-	CRenderizableShaderTriangles::enableLight(false);
-	CRenderizableShaderTexturedTriangles::enableLight(false);
+  CRenderizableShaderTriangles::enableLight(false);
+  CRenderizableShaderTexturedTriangles::enableLight(false);
 
-	setPlaneCorners(x_min, x_max, y_min, y_max);
+  setPlaneCorners(x_min, x_max, y_min, y_max);
 }
 
 void CTexturedPlane::render(const RenderContext& rc) const
 {
-	const bool hasTexture =
-		textureImageHasBeenAssigned() && !getTextureImage().isEmpty();
+  const bool hasTexture = textureImageHasBeenAssigned() && !getTextureImage().isEmpty();
 
-	switch (rc.shader_id)
-	{
-		case DefaultShaderID::TRIANGLES_NO_LIGHT:
-		case DefaultShaderID::TRIANGLES_LIGHT:
-			if (!hasTexture) CRenderizableShaderTriangles::render(rc);
-			break;
-		case DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT:
-		case DefaultShaderID::TEXTURED_TRIANGLES_LIGHT:
-			if (hasTexture) CRenderizableShaderTexturedTriangles::render(rc);
-			break;
-	};
+  switch (rc.shader_id)
+  {
+    case DefaultShaderID::TRIANGLES_NO_LIGHT:
+    case DefaultShaderID::TRIANGLES_LIGHT:
+      if (!hasTexture) CRenderizableShaderTriangles::render(rc);
+      break;
+    case DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT:
+    case DefaultShaderID::TEXTURED_TRIANGLES_LIGHT:
+      if (hasTexture) CRenderizableShaderTexturedTriangles::render(rc);
+      break;
+  };
 }
 
 void CTexturedPlane::renderUpdateBuffers() const
 {
-	const bool hasTexture =
-		textureImageHasBeenAssigned() && !getTextureImage().isEmpty();
+  const bool hasTexture = textureImageHasBeenAssigned() && !getTextureImage().isEmpty();
 
-	if (!hasTexture) CRenderizableShaderTriangles::renderUpdateBuffers();
-	else
-		CRenderizableShaderTexturedTriangles::renderUpdateBuffers();
+  if (!hasTexture)
+    CRenderizableShaderTriangles::renderUpdateBuffers();
+  else
+    CRenderizableShaderTexturedTriangles::renderUpdateBuffers();
 }
 
 void CTexturedPlane::onUpdateBuffers_TexturedTriangles()
 {
-	MRPT_START
-	using P2f = mrpt::math::TPoint2Df;
-	using P3f = mrpt::math::TPoint3Df;
+  MRPT_START
+  using P2f = mrpt::math::TPoint2Df;
+  using P3f = mrpt::math::TPoint3Df;
 
-	auto& tris = CRenderizableShaderTexturedTriangles::m_triangles;
-	std::unique_lock<std::shared_mutex> writeLock(
-		CRenderizableShaderTexturedTriangles::m_trianglesMtx.data);
+  auto& tris = CRenderizableShaderTexturedTriangles::m_triangles;
+  std::unique_lock<std::shared_mutex> writeLock(
+      CRenderizableShaderTexturedTriangles::m_trianglesMtx.data);
 
-	tris.clear();
+  tris.clear();
 
-	{
-		TTriangle t;
-		t.vertices[0].xyzrgba.pt = P3f(m_xMin, m_yMin, 0);
-		t.vertices[1].xyzrgba.pt = P3f(m_xMax, m_yMin, 0);
-		t.vertices[2].xyzrgba.pt = P3f(m_xMax, m_yMax, 0);
+  {
+    TTriangle t;
+    t.vertices[0].xyzrgba.pt = P3f(m_xMin, m_yMin, 0);
+    t.vertices[1].xyzrgba.pt = P3f(m_xMax, m_yMin, 0);
+    t.vertices[2].xyzrgba.pt = P3f(m_xMax, m_yMax, 0);
 
-		t.vertices[0].uv = P2f(0, 0);
-		t.vertices[1].uv = P2f(1, 0);
-		t.vertices[2].uv = P2f(1, 1);
+    t.vertices[0].uv = P2f(0, 0);
+    t.vertices[1].uv = P2f(1, 0);
+    t.vertices[2].uv = P2f(1, 1);
 
-		t.computeNormals();
-		tris.emplace_back(t);
-	}
-	{
-		TTriangle t;
-		t.vertices[0].xyzrgba.pt = P3f(m_xMin, m_yMin, 0);
-		t.vertices[1].xyzrgba.pt = P3f(m_xMax, m_yMax, 0);
-		t.vertices[2].xyzrgba.pt = P3f(m_xMin, m_yMax, 0);
+    t.computeNormals();
+    tris.emplace_back(t);
+  }
+  {
+    TTriangle t;
+    t.vertices[0].xyzrgba.pt = P3f(m_xMin, m_yMin, 0);
+    t.vertices[1].xyzrgba.pt = P3f(m_xMax, m_yMax, 0);
+    t.vertices[2].xyzrgba.pt = P3f(m_xMin, m_yMax, 0);
 
-		t.vertices[0].uv = P2f(0, 0);
-		t.vertices[1].uv = P2f(1, 1);
-		t.vertices[2].uv = P2f(0, 1);
+    t.vertices[0].uv = P2f(0, 0);
+    t.vertices[1].uv = P2f(1, 1);
+    t.vertices[2].uv = P2f(0, 1);
 
-		t.computeNormals();
-		tris.emplace_back(t);
-	}
+    t.computeNormals();
+    tris.emplace_back(t);
+  }
 
-	MRPT_END
+  MRPT_END
 }
 
 void CTexturedPlane::onUpdateBuffers_Triangles()
 {
-	MRPT_START
-	using P3f = mrpt::math::TPoint3Df;
+  MRPT_START
+  using P3f = mrpt::math::TPoint3Df;
 
-	std::unique_lock<std::shared_mutex> trisWriteLock(
-		CRenderizableShaderTriangles::m_trianglesMtx.data);
-	auto& tris = CRenderizableShaderTriangles::m_triangles;
-	tris.clear();
+  std::unique_lock<std::shared_mutex> trisWriteLock(
+      CRenderizableShaderTriangles::m_trianglesMtx.data);
+  auto& tris = CRenderizableShaderTriangles::m_triangles;
+  tris.clear();
 
-	const auto col = getColor_u8();
-	TTriangle t;
-	for (int i = 0; i < 3; i++)
-	{
-		t.vertices[i].xyzrgba.r = col.R;
-		t.vertices[i].xyzrgba.g = col.G;
-		t.vertices[i].xyzrgba.b = col.B;
-		t.vertices[i].xyzrgba.a = col.A;
-	}
+  const auto col = getColor_u8();
+  TTriangle t;
+  for (int i = 0; i < 3; i++)
+  {
+    t.vertices[i].xyzrgba.r = col.R;
+    t.vertices[i].xyzrgba.g = col.G;
+    t.vertices[i].xyzrgba.b = col.B;
+    t.vertices[i].xyzrgba.a = col.A;
+  }
 
-	t.vertices[0].xyzrgba.pt = P3f(m_xMin, m_yMin, 0);
-	t.vertices[1].xyzrgba.pt = P3f(m_xMax, m_yMin, 0);
-	t.vertices[2].xyzrgba.pt = P3f(m_xMax, m_yMax, 0);
+  t.vertices[0].xyzrgba.pt = P3f(m_xMin, m_yMin, 0);
+  t.vertices[1].xyzrgba.pt = P3f(m_xMax, m_yMin, 0);
+  t.vertices[2].xyzrgba.pt = P3f(m_xMax, m_yMax, 0);
 
-	t.computeNormals();
-	tris.emplace_back(t);
+  t.computeNormals();
+  tris.emplace_back(t);
 
-	t.vertices[0].xyzrgba.pt = P3f(m_xMin, m_yMin, 0);
-	t.vertices[1].xyzrgba.pt = P3f(m_xMax, m_yMax, 0);
-	t.vertices[2].xyzrgba.pt = P3f(m_xMin, m_yMax, 0);
+  t.vertices[0].xyzrgba.pt = P3f(m_xMin, m_yMin, 0);
+  t.vertices[1].xyzrgba.pt = P3f(m_xMax, m_yMax, 0);
+  t.vertices[2].xyzrgba.pt = P3f(m_xMin, m_yMax, 0);
 
-	t.computeNormals();
-	tris.emplace_back(t);
+  t.computeNormals();
+  tris.emplace_back(t);
 
-	MRPT_END
+  MRPT_END
 }
 
 uint8_t CTexturedPlane::serializeGetVersion() const { return 2; }
 void CTexturedPlane::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	writeToStreamRender(out);
+  writeToStreamRender(out);
 
-	out << m_xMin << m_xMax;
-	out << m_yMin << m_yMax;
+  out << m_xMin << m_xMax;
+  out << m_yMin << m_yMax;
 
-	writeToStreamTexturedObject(out);
+  writeToStreamTexturedObject(out);
 }
 
-void CTexturedPlane::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void CTexturedPlane::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	switch (version)
-	{
-		case 0:
-		case 1:
-			THROW_EXCEPTION("Deserialization of old formats not supported.");
-			break;
-		case 2:
-		{
-			readFromStreamRender(in);
-			in >> m_xMin >> m_xMax;
-			in >> m_yMin >> m_yMax;
-			readFromStreamTexturedObject(in);
-		}
-		break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	};
-	CRenderizable::notifyChange();
+  switch (version)
+  {
+    case 0:
+    case 1:
+      THROW_EXCEPTION("Deserialization of old formats not supported.");
+      break;
+    case 2:
+    {
+      readFromStreamRender(in);
+      in >> m_xMin >> m_xMax;
+      in >> m_yMin >> m_yMax;
+      readFromStreamTexturedObject(in);
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
+  CRenderizable::notifyChange();
 }
 
 bool CTexturedPlane::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
-	if (!polygonUpToDate) updatePoly();
-	return math::traceRay(tmpPoly, (o - getCPose()).asTPose(), dist);
+  if (!polygonUpToDate) updatePoly();
+  return math::traceRay(tmpPoly, (o - getCPose()).asTPose(), dist);
 }
 
 void CTexturedPlane::updatePoly() const
 {
-	TPolygon3D poly(4);
-	poly[0].x = poly[1].x = m_xMin;
-	poly[2].x = poly[3].x = m_xMax;
-	poly[0].y = poly[3].y = m_yMin;
-	poly[1].y = poly[2].y = m_yMax;
-	for (size_t i = 0; i < 4; i++)
-		poly[i].z = 0;
-	tmpPoly.resize(1);
-	tmpPoly[0] = poly;
-	polygonUpToDate = true;
+  TPolygon3D poly(4);
+  poly[0].x = poly[1].x = m_xMin;
+  poly[2].x = poly[3].x = m_xMax;
+  poly[0].y = poly[3].y = m_yMin;
+  poly[1].y = poly[2].y = m_yMax;
+  for (size_t i = 0; i < 4; i++) poly[i].z = 0;
+  tmpPoly.resize(1);
+  tmpPoly[0] = poly;
+  polygonUpToDate = true;
 }
 
-auto CTexturedPlane::internalBoundingBoxLocal() const
-	-> mrpt::math::TBoundingBoxf
+auto CTexturedPlane::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
-		{m_xMin, m_yMin, 0.f}, {m_xMax, m_yMax, 0.f});
+  return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
+      {m_xMin, m_yMin, 0.f}, {m_xMax, m_yMax, 0.f});
 }

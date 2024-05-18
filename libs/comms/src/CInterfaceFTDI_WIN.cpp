@@ -7,16 +7,16 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "comms-precomp.h"	// Precompiled headers
+#include "comms-precomp.h"  // Precompiled headers
 //
 #include <iostream>
 
 #ifdef _WIN32
 
 /*===========================================================================
-	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-								START OF FTD2XX.H
-	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                START OF FTD2XX.H
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ===========================================================================*/
 namespace comms
 {
@@ -44,15 +44,15 @@ using FT_HANDLE = unsigned long;
 //
 
 #define FT_OPEN_BY_SERIAL_NUMBER 1
-#define FT_OPEN_BY_DESCRIPTION 2
+#define FT_OPEN_BY_DESCRIPTION   2
 
 //
 // FT_ListDevices Flags (used in conjunction with FT_OpenEx Flags
 //
 
 #define FT_LIST_NUMBER_ONLY 0x80000000
-#define FT_LIST_BY_INDEX 0x40000000
-#define FT_LIST_ALL 0x20000000
+#define FT_LIST_BY_INDEX    0x40000000
+#define FT_LIST_ALL         0x20000000
 
 #define FT_LIST_MASK (FT_LIST_NUMBER_ONLY | FT_LIST_BY_INDEX | FT_LIST_ALL)
 
@@ -60,16 +60,16 @@ using FT_HANDLE = unsigned long;
 // Baud Rates
 //
 
-#define FT_BAUD_300 300
-#define FT_BAUD_600 600
-#define FT_BAUD_1200 1200
-#define FT_BAUD_2400 2400
-#define FT_BAUD_4800 4800
-#define FT_BAUD_9600 9600
-#define FT_BAUD_14400 14400
-#define FT_BAUD_19200 19200
-#define FT_BAUD_38400 38400
-#define FT_BAUD_57600 57600
+#define FT_BAUD_300    300
+#define FT_BAUD_600    600
+#define FT_BAUD_1200   1200
+#define FT_BAUD_2400   2400
+#define FT_BAUD_4800   4800
+#define FT_BAUD_9600   9600
+#define FT_BAUD_14400  14400
+#define FT_BAUD_19200  19200
+#define FT_BAUD_38400  38400
+#define FT_BAUD_57600  57600
 #define FT_BAUD_115200 115200
 #define FT_BAUD_230400 230400
 #define FT_BAUD_460800 460800
@@ -88,27 +88,27 @@ using FT_HANDLE = unsigned long;
 // Stop Bits
 //
 
-#define FT_STOP_BITS_1 (unsigned char)0
+#define FT_STOP_BITS_1   (unsigned char)0
 #define FT_STOP_BITS_1_5 (unsigned char)1
-#define FT_STOP_BITS_2 (unsigned char)2
+#define FT_STOP_BITS_2   (unsigned char)2
 
 //
 // Parity
 //
 
-#define FT_PARITY_NONE (unsigned char)0
-#define FT_PARITY_ODD (unsigned char)1
-#define FT_PARITY_EVEN (unsigned char)2
-#define FT_PARITY_MARK (unsigned char)3
+#define FT_PARITY_NONE  (unsigned char)0
+#define FT_PARITY_ODD   (unsigned char)1
+#define FT_PARITY_EVEN  (unsigned char)2
+#define FT_PARITY_MARK  (unsigned char)3
 #define FT_PARITY_SPACE (unsigned char)4
 
 //
 // Flow Control
 //
 
-#define FT_FLOW_NONE 0x0000
-#define FT_FLOW_RTS_CTS 0x0100
-#define FT_FLOW_DTR_DSR 0x0200
+#define FT_FLOW_NONE     0x0000
+#define FT_FLOW_RTS_CTS  0x0100
+#define FT_FLOW_DTR_DSR  0x0200
 #define FT_FLOW_XON_XOFF 0x0400
 
 //
@@ -123,7 +123,7 @@ using FT_HANDLE = unsigned long;
 
 using PFT_EVENT_HANDLER = void (*)(unsigned long, unsigned, long);
 
-#define FT_EVENT_RXCHAR 1
+#define FT_EVENT_RXCHAR       1
 #define FT_EVENT_MODEM_STATUS 2
 
 //
@@ -135,9 +135,9 @@ using PFT_EVENT_HANDLER = void (*)(unsigned long, unsigned, long);
 
 }  // end namespace comms
 /*===========================================================================
-	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-								END OF FTD2XX.H
-	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                END OF FTD2XX.H
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ===========================================================================*/
 
 #include <mrpt/comms/CInterfaceFTDI.h>
@@ -151,310 +151,302 @@ using namespace mrpt::comms;
 using namespace std;
 
 /*-------------------------------------------------------------
-					CInterfaceFTDI
+          CInterfaceFTDI
 -------------------------------------------------------------*/
 CInterfaceFTDI::CInterfaceFTDI() : m_readBuffer(4096)
 {
-	MRPT_START
+  MRPT_START
 
-	m_ftHandle = 0;
-	loadDriver();
+  m_ftHandle = 0;
+  loadDriver();
 
-	MRPT_END
+  MRPT_END
 }
 
 /*-------------------------------------------------------------
-					~CInterfaceFTDI
+          ~CInterfaceFTDI
 -------------------------------------------------------------*/
 CInterfaceFTDI::~CInterfaceFTDI()
 {
-	if (m_hmodule != nullptr)
-	{
-		// Close USB connection:
-		this->Close();
+  if (m_hmodule != nullptr)
+  {
+    // Close USB connection:
+    this->Close();
 
-		// Unload FT2XX DLL:
-		FreeLibrary((HMODULE)m_hmodule);
-		m_hmodule = nullptr;
-	}
+    // Unload FT2XX DLL:
+    FreeLibrary((HMODULE)m_hmodule);
+    m_hmodule = nullptr;
+  }
 }
 
 bool CInterfaceFTDI::isOpen() { return m_ftHandle != 0; }
 void CInterfaceFTDI::loadDriver()
 {
-	MRPT_START
-	// ------------------------------------------------------
-	//				Windoze version
-	// ------------------------------------------------------
-	m_hmodule = ::LoadLibraryA("Ftd2xx.dll");
-	if (m_hmodule == nullptr) THROW_EXCEPTION("Error: Cannot load Ftd2xx.dll");
+  MRPT_START
+  // ------------------------------------------------------
+  //				Windoze version
+  // ------------------------------------------------------
+  m_hmodule = ::LoadLibraryA("Ftd2xx.dll");
+  if (m_hmodule == nullptr) THROW_EXCEPTION("Error: Cannot load Ftd2xx.dll");
 
-	m_pWrite = (PtrToWrite)GetProcAddress((HMODULE)m_hmodule, "FT_Write");
-	m_pRead = (PtrToRead)GetProcAddress((HMODULE)m_hmodule, "FT_Read");
-	m_pOpen = (PtrToOpen)GetProcAddress((HMODULE)m_hmodule, "FT_Open");
-	m_pOpenEx = (PtrToOpenEx)GetProcAddress((HMODULE)m_hmodule, "FT_OpenEx");
-	m_pListDevices =
-		(PtrToListDevices)GetProcAddress((HMODULE)m_hmodule, "FT_ListDevices");
-	m_pClose = (PtrToClose)GetProcAddress((HMODULE)m_hmodule, "FT_Close");
-	m_pResetDevice =
-		(PtrToResetDevice)GetProcAddress((HMODULE)m_hmodule, "FT_ResetDevice");
-	m_pPurge = (PtrToPurge)GetProcAddress((HMODULE)m_hmodule, "FT_Purge");
-	m_pSetTimeouts =
-		(PtrToSetTimeouts)GetProcAddress((HMODULE)m_hmodule, "FT_SetTimeouts");
-	m_pGetQueueStatus = (PtrToGetQueueStatus)GetProcAddress(
-		(HMODULE)m_hmodule, "FT_GetQueueStatus");
-	m_pSetLatencyTimer = (PtrToSetLatencyTimer)GetProcAddress(
-		(HMODULE)m_hmodule, "FT_SetLatencyTimer");
+  m_pWrite = (PtrToWrite)GetProcAddress((HMODULE)m_hmodule, "FT_Write");
+  m_pRead = (PtrToRead)GetProcAddress((HMODULE)m_hmodule, "FT_Read");
+  m_pOpen = (PtrToOpen)GetProcAddress((HMODULE)m_hmodule, "FT_Open");
+  m_pOpenEx = (PtrToOpenEx)GetProcAddress((HMODULE)m_hmodule, "FT_OpenEx");
+  m_pListDevices = (PtrToListDevices)GetProcAddress((HMODULE)m_hmodule, "FT_ListDevices");
+  m_pClose = (PtrToClose)GetProcAddress((HMODULE)m_hmodule, "FT_Close");
+  m_pResetDevice = (PtrToResetDevice)GetProcAddress((HMODULE)m_hmodule, "FT_ResetDevice");
+  m_pPurge = (PtrToPurge)GetProcAddress((HMODULE)m_hmodule, "FT_Purge");
+  m_pSetTimeouts = (PtrToSetTimeouts)GetProcAddress((HMODULE)m_hmodule, "FT_SetTimeouts");
+  m_pGetQueueStatus = (PtrToGetQueueStatus)GetProcAddress((HMODULE)m_hmodule, "FT_GetQueueStatus");
+  m_pSetLatencyTimer =
+      (PtrToSetLatencyTimer)GetProcAddress((HMODULE)m_hmodule, "FT_SetLatencyTimer");
 
-	if (!m_pWrite || !m_pRead || !m_pOpen || !m_pOpenEx || !m_pListDevices ||
-		!m_pClose || !m_pResetDevice || !m_pPurge || !m_pSetTimeouts ||
-		!m_pGetQueueStatus || !m_pSetLatencyTimer)
-		THROW_EXCEPTION("Error loading FTD2XX.DLL");
+  if (!m_pWrite || !m_pRead || !m_pOpen || !m_pOpenEx || !m_pListDevices || !m_pClose ||
+      !m_pResetDevice || !m_pPurge || !m_pSetTimeouts || !m_pGetQueueStatus || !m_pSetLatencyTimer)
+    THROW_EXCEPTION("Error loading FTD2XX.DLL");
 
-	MRPT_END
+  MRPT_END
 }
 
 /*-------------------------------------------------------------
-				FTD2XX.DLL INTERFACE FUNCTIONS
+        FTD2XX.DLL INTERFACE FUNCTIONS
 -------------------------------------------------------------*/
 void CInterfaceFTDI::ftdi_open(void* pvDevice)
 {
-	MRPT_START
-	if (isOpen()) Close();
+  MRPT_START
+  if (isOpen()) Close();
 
-	ASSERT_(m_pOpen);
-	checkErrorAndRaise((*m_pOpen)(pvDevice, &m_ftHandle));
+  ASSERT_(m_pOpen);
+  checkErrorAndRaise((*m_pOpen)(pvDevice, &m_ftHandle));
 
-	MRPT_END
+  MRPT_END
 }
 
 void CInterfaceFTDI::ftdi_openEx(void* pArg1, unsigned long dwFlags)
 {
-	MRPT_START
-	if (isOpen()) Close();
+  MRPT_START
+  if (isOpen()) Close();
 
-	ASSERT_(m_pOpenEx);
-	checkErrorAndRaise((*m_pOpenEx)(pArg1, dwFlags, &m_ftHandle));
+  ASSERT_(m_pOpenEx);
+  checkErrorAndRaise((*m_pOpenEx)(pArg1, dwFlags, &m_ftHandle));
 
-	MRPT_END
+  MRPT_END
 }
 
 /*-------------------------------------------------------------
-					ListAllDevices
+          ListAllDevices
 -------------------------------------------------------------*/
 void CInterfaceFTDI::ListAllDevices(TFTDIDeviceList& outList)
 {
-	MRPT_START
+  MRPT_START
 
-	outList.clear();
+  outList.clear();
 
-	unsigned long nConectedDevices;
-	char str[100];
+  unsigned long nConectedDevices;
+  char str[100];
 
-	// Get the number of devices:
-	ftdi_listDevices(&nConectedDevices, nullptr, 0x80000000);
+  // Get the number of devices:
+  ftdi_listDevices(&nConectedDevices, nullptr, 0x80000000);
 
-	for (size_t i = 0; i < nConectedDevices; i++)
-	{
-		TFTDIDevice newEntry;
+  for (size_t i = 0; i < nConectedDevices; i++)
+  {
+    TFTDIDevice newEntry;
 
-		// Serial number:
-		ftdi_listDevices(
-			(void*)(i), (void*)str, (unsigned long)(0x40000000 | 1));
-		newEntry.ftdi_serial = str;
+    // Serial number:
+    ftdi_listDevices((void*)(i), (void*)str, (unsigned long)(0x40000000 | 1));
+    newEntry.ftdi_serial = str;
 
-		// Description:
-		ftdi_listDevices(
-			(void*)(i), (void*)str, (unsigned long)(0x40000000 | 2));
-		newEntry.ftdi_description = str;
+    // Description:
+    ftdi_listDevices((void*)(i), (void*)str, (unsigned long)(0x40000000 | 2));
+    newEntry.ftdi_description = str;
 
-		outList.push_back(newEntry);
-	}
+    outList.push_back(newEntry);
+  }
 
-	MRPT_END
+  MRPT_END
 }
 
-void CInterfaceFTDI::ftdi_listDevices(
-	void* pArg1, void* pArg2, unsigned long dwFlags)
+void CInterfaceFTDI::ftdi_listDevices(void* pArg1, void* pArg2, unsigned long dwFlags)
 {
-	MRPT_START
+  MRPT_START
 
-	ASSERT_(m_pListDevices);
-	checkErrorAndRaise((*m_pListDevices)(pArg1, pArg2, dwFlags));
+  ASSERT_(m_pListDevices);
+  checkErrorAndRaise((*m_pListDevices)(pArg1, pArg2, dwFlags));
 
-	MRPT_END
+  MRPT_END
 }
 
 void CInterfaceFTDI::Close()
 {
-	MRPT_START
+  MRPT_START
 
-	if (m_ftHandle)
-	{
-		ASSERT_(m_pClose);
-		(*m_pClose)(m_ftHandle);
-		m_ftHandle = 0;
-	}
+  if (m_ftHandle)
+  {
+    ASSERT_(m_pClose);
+    (*m_pClose)(m_ftHandle);
+    m_ftHandle = 0;
+  }
 
-	m_readBuffer.clear();
+  m_readBuffer.clear();
 
-	MRPT_END
+  MRPT_END
 }
 
 void CInterfaceFTDI::ftdi_read(
-	void* lpvBuffer, unsigned long dwBuffSize, unsigned long* lpdwBytesRead)
+    void* lpvBuffer, unsigned long dwBuffSize, unsigned long* lpdwBytesRead)
 {
-	MRPT_START
+  MRPT_START
 
-	ASSERT_(m_pRead);
-	checkErrorAndRaise(
-		(*m_pRead)(m_ftHandle, lpvBuffer, dwBuffSize, lpdwBytesRead));
+  ASSERT_(m_pRead);
+  checkErrorAndRaise((*m_pRead)(m_ftHandle, lpvBuffer, dwBuffSize, lpdwBytesRead));
 
-	MRPT_END
+  MRPT_END
 }
 
 void CInterfaceFTDI::ftdi_write(
-	const void* lpvBuffer, unsigned long dwBuffSize, unsigned long* lpdwBytes)
+    const void* lpvBuffer, unsigned long dwBuffSize, unsigned long* lpdwBytes)
 {
-	MRPT_START
+  MRPT_START
 
-	ASSERT_(m_pWrite);
-	checkErrorAndRaise(
-		(*m_pWrite)(m_ftHandle, lpvBuffer, dwBuffSize, lpdwBytes));
+  ASSERT_(m_pWrite);
+  checkErrorAndRaise((*m_pWrite)(m_ftHandle, lpvBuffer, dwBuffSize, lpdwBytes));
 
-	MRPT_END
+  MRPT_END
 }
 
 void CInterfaceFTDI::ResetDevice()
 {
-	MRPT_START
+  MRPT_START
 
-	ASSERT_(m_pResetDevice);
-	checkErrorAndRaise((*m_pResetDevice)(m_ftHandle));
+  ASSERT_(m_pResetDevice);
+  checkErrorAndRaise((*m_pResetDevice)(m_ftHandle));
 
-	m_readBuffer.clear();
+  m_readBuffer.clear();
 
-	MRPT_END
+  MRPT_END
 }
 
 void CInterfaceFTDI::Purge()
 {
-	MRPT_START
+  MRPT_START
 
-	ASSERT_(m_pPurge);
-	unsigned long dwMask = FT_PURGE_RX | FT_PURGE_TX;
-	checkErrorAndRaise((*m_pPurge)(m_ftHandle, dwMask));
+  ASSERT_(m_pPurge);
+  unsigned long dwMask = FT_PURGE_RX | FT_PURGE_TX;
+  checkErrorAndRaise((*m_pPurge)(m_ftHandle, dwMask));
 
-	m_readBuffer.clear();
-	MRPT_END
+  m_readBuffer.clear();
+  MRPT_END
 }
 
-void CInterfaceFTDI::SetTimeouts(
-	unsigned long dwReadTimeout_ms, unsigned long dwWriteTimeout_ms)
+void CInterfaceFTDI::SetTimeouts(unsigned long dwReadTimeout_ms, unsigned long dwWriteTimeout_ms)
 {
-	MRPT_START
+  MRPT_START
 
-	ASSERT_(m_pSetTimeouts);
-	checkErrorAndRaise(
-		(*m_pSetTimeouts)(m_ftHandle, dwReadTimeout_ms, dwWriteTimeout_ms));
+  ASSERT_(m_pSetTimeouts);
+  checkErrorAndRaise((*m_pSetTimeouts)(m_ftHandle, dwReadTimeout_ms, dwWriteTimeout_ms));
 
-	MRPT_END
+  MRPT_END
 }
 
 void CInterfaceFTDI::ftdi_getQueueStatus(unsigned long* lpdwAmountInRxQueue)
 {
-	MRPT_START
+  MRPT_START
 
-	ASSERT_(m_pGetQueueStatus);
-	checkErrorAndRaise((*m_pGetQueueStatus)(m_ftHandle, lpdwAmountInRxQueue));
+  ASSERT_(m_pGetQueueStatus);
+  checkErrorAndRaise((*m_pGetQueueStatus)(m_ftHandle, lpdwAmountInRxQueue));
 
-	MRPT_END
+  MRPT_END
 }
 
 void CInterfaceFTDI::SetLatencyTimer(unsigned char latency_ms)
 {
-	MRPT_START
+  MRPT_START
 
-	ASSERT_(m_pSetLatencyTimer);
-	checkErrorAndRaise((*m_pSetLatencyTimer)(m_ftHandle, latency_ms));
+  ASSERT_(m_pSetLatencyTimer);
+  checkErrorAndRaise((*m_pSetLatencyTimer)(m_ftHandle, latency_ms));
 
-	MRPT_END
+  MRPT_END
 }
 
 /*-------------------------------------------------------------
-					checkErrorAndRaise
+          checkErrorAndRaise
 -------------------------------------------------------------*/
 void CInterfaceFTDI::checkErrorAndRaise(int errorCode)
 {
-	/** Possible responses from the driver
-	enum FT_STATUS
-	{
-		FT_OK = 0,
-		FT_INVALID_HANDLE,
-		FT_DEVICE_NOT_FOUND,
-		FT_DEVICE_NOT_OPENED,
-		FT_IO_ERROR,
-		FT_INSUFFICIENT_RESOURCES,
-		FT_INVALID_PARAMETER
-	};  */
-	switch (errorCode)
-	{
-		case 0: return;
-		case 1:
-			Close();
-			THROW_EXCEPTION("*** FTD2XX ERROR ***: FT_INVALID_HANDLE");
-		case 2:
-			Close();
-			THROW_EXCEPTION("*** FTD2XX ERROR ***: FT_DEVICE_NOT_FOUND");
-		case 3:
-			Close();
-			THROW_EXCEPTION("*** FTD2XX ERROR ***: FT_DEVICE_NOT_OPENED");
-		case 4: Close(); THROW_EXCEPTION("*** FTD2XX ERROR ***: FT_IO_ERROR");
-		case 5:
-			THROW_EXCEPTION("*** FTD2XX ERROR ***: FT_INSUFFICIENT_RESOURCES");
-		case 6: THROW_EXCEPTION("*** FTD2XX ERROR ***: FT_INVALID_PARAMETER");
-		default:
-			THROW_EXCEPTION("*** FTD2XX ERROR ***: Invalid error code!?!?!?");
-	};
+  /** Possible responses from the driver
+  enum FT_STATUS
+  {
+    FT_OK = 0,
+    FT_INVALID_HANDLE,
+    FT_DEVICE_NOT_FOUND,
+    FT_DEVICE_NOT_OPENED,
+    FT_IO_ERROR,
+    FT_INSUFFICIENT_RESOURCES,
+    FT_INVALID_PARAMETER
+  };  */
+  switch (errorCode)
+  {
+    case 0:
+      return;
+    case 1:
+      Close();
+      THROW_EXCEPTION("*** FTD2XX ERROR ***: FT_INVALID_HANDLE");
+    case 2:
+      Close();
+      THROW_EXCEPTION("*** FTD2XX ERROR ***: FT_DEVICE_NOT_FOUND");
+    case 3:
+      Close();
+      THROW_EXCEPTION("*** FTD2XX ERROR ***: FT_DEVICE_NOT_OPENED");
+    case 4:
+      Close();
+      THROW_EXCEPTION("*** FTD2XX ERROR ***: FT_IO_ERROR");
+    case 5:
+      THROW_EXCEPTION("*** FTD2XX ERROR ***: FT_INSUFFICIENT_RESOURCES");
+    case 6:
+      THROW_EXCEPTION("*** FTD2XX ERROR ***: FT_INVALID_PARAMETER");
+    default:
+      THROW_EXCEPTION("*** FTD2XX ERROR ***: Invalid error code!?!?!?");
+  };
 }
 
 /*-------------------------------------------------------------
-					OpenBySerialNumber
+          OpenBySerialNumber
 -------------------------------------------------------------*/
 void CInterfaceFTDI::OpenBySerialNumber(const std::string& serialNumber)
 {
-	MRPT_START
-	m_readBuffer.clear();
+  MRPT_START
+  m_readBuffer.clear();
 
-	ftdi_openEx((void*)serialNumber.c_str(), FT_OPEN_BY_SERIAL_NUMBER);
-	MRPT_END
+  ftdi_openEx((void*)serialNumber.c_str(), FT_OPEN_BY_SERIAL_NUMBER);
+  MRPT_END
 }
 
 /*-------------------------------------------------------------
-					OpenByDescription
+          OpenByDescription
 -------------------------------------------------------------*/
 void CInterfaceFTDI::OpenByDescription(const std::string& description)
 {
-	MRPT_START
-	m_readBuffer.clear();
+  MRPT_START
+  m_readBuffer.clear();
 
-	ftdi_openEx((void*)description.c_str(), FT_OPEN_BY_DESCRIPTION);
-	MRPT_END
+  ftdi_openEx((void*)description.c_str(), FT_OPEN_BY_DESCRIPTION);
+  MRPT_END
 }
 
 /*-------------------------------------------------------------
-					OpenByDescription
+          OpenByDescription
 -------------------------------------------------------------*/
 std::ostream& mrpt::comms::operator<<(std::ostream& o, const TFTDIDevice& d)
 {
-	o << "Manufacturer            : " << d.ftdi_manufacturer << endl
-	  << "Description             : " << d.ftdi_description << endl
-	  << "FTDI serial             : " << d.ftdi_serial << endl
-	  << "USB ID (Vendor/Product) : "
-	  << format("%04X / %04X", d.usb_idVendor, d.usb_idProduct) << endl
-	  << "USB serial              : " << d.usb_serialNumber << endl;
+  o << "Manufacturer            : " << d.ftdi_manufacturer << endl
+    << "Description             : " << d.ftdi_description << endl
+    << "FTDI serial             : " << d.ftdi_serial << endl
+    << "USB ID (Vendor/Product) : " << format("%04X / %04X", d.usb_idVendor, d.usb_idProduct)
+    << endl
+    << "USB serial              : " << d.usb_serialNumber << endl;
 
-	return o;
+  return o;
 }
 
 #endif

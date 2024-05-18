@@ -27,7 +27,8 @@ namespace mrpt::system
  * \note (New in MRPT 2.3.0)
  */
 std::string progress(
-	const double progressRatio0to1, const std::size_t barLength,
-	bool encloseInSquareBrackets = true);
+    const double progressRatio0to1,
+    const std::size_t barLength,
+    bool encloseInSquareBrackets = true);
 
 }  // namespace mrpt::system

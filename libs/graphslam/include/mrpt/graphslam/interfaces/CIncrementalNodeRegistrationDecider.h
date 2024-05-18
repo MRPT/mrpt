@@ -43,67 +43,64 @@ namespace mrpt::graphslam::deciders
  *
  */
 template <class GRAPH_T>
-class CIncrementalNodeRegistrationDecider
-	: public virtual mrpt::graphslam::deciders::CNodeRegistrationDecider<
-		  GRAPH_T>
+class CIncrementalNodeRegistrationDecider :
+    public virtual mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>
 {
+ public:
+  using constraint_t = typename GRAPH_T::constraint_t;
+  using pose_t = typename GRAPH_T::constraint_t::type_value;
+  using global_pose_t = typename GRAPH_T::global_pose_t;
+  using decider_t = CIncrementalNodeRegistrationDecider<GRAPH_T>;
+  using parent_t = mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>;
+
+  CIncrementalNodeRegistrationDecider() = default;
+  virtual ~CIncrementalNodeRegistrationDecider() = default;
+
+  /**\name Registration Conditions Specifiers
+   */
+  /**\{ */
+  /**\brief If estimated position surpasses the registration max values since
+   * the previous registered node, register a new node in the graph.
+   *
+   * \return True on successful registration.
+   */
+  virtual bool checkRegistrationCondition();
+  virtual bool checkRegistrationConditionPose(
+      const mrpt::poses::CPose2D& p1, const mrpt::poses::CPose2D& p2) const;
+  virtual bool checkRegistrationConditionPose(
+      const mrpt::poses::CPose3D& p1, const mrpt::poses::CPose3D& p2) const;
+  /**\} */
+
+  virtual void loadParams(const std::string& source_fname);
+  virtual void printParams() const;
+  virtual void getDescriptiveReport(std::string* report_str) const;
+
+ protected:
+  /**\brief Parameters structure for managing the relevant to the decider
+   * variables in a compact manner
+   */
+  struct TParams : public mrpt::config::CLoadableOptions
+  {
    public:
-	using constraint_t = typename GRAPH_T::constraint_t;
-	using pose_t = typename GRAPH_T::constraint_t::type_value;
-	using global_pose_t = typename GRAPH_T::global_pose_t;
-	using decider_t = CIncrementalNodeRegistrationDecider<GRAPH_T>;
-	using parent_t =
-		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>;
+    TParams() = default;
+    ~TParams() = default;
 
-	CIncrementalNodeRegistrationDecider() = default;
-	virtual ~CIncrementalNodeRegistrationDecider() = default;
+    void loadFromConfigFile(
+        const mrpt::config::CConfigFileBase& source, const std::string& section);
+    void dumpToTextStream(std::ostream& out) const;
+    /**\brief Return a string with the configuration parameters
+     */
+    void getAsString(std::string* params_out) const;
+    std::string getAsString() const;
 
-	/**\name Registration Conditions Specifiers
-	 */
-	/**\{ */
-	/**\brief If estimated position surpasses the registration max values since
-	 * the previous registered node, register a new node in the graph.
-	 *
-	 * \return True on successful registration.
-	 */
-	virtual bool checkRegistrationCondition();
-	virtual bool checkRegistrationConditionPose(
-		const mrpt::poses::CPose2D& p1, const mrpt::poses::CPose2D& p2) const;
-	virtual bool checkRegistrationConditionPose(
-		const mrpt::poses::CPose3D& p1, const mrpt::poses::CPose3D& p2) const;
-	/**\} */
+    // max values for new node registration
+    double registration_max_distance;
+    double registration_max_angle;
+  };
 
-	virtual void loadParams(const std::string& source_fname);
-	virtual void printParams() const;
-	virtual void getDescriptiveReport(std::string* report_str) const;
+  TParams params;
 
-   protected:
-	/**\brief Parameters structure for managing the relevant to the decider
-	 * variables in a compact manner
-	 */
-	struct TParams : public mrpt::config::CLoadableOptions
-	{
-	   public:
-		TParams() = default;
-		~TParams() = default;
-
-		void loadFromConfigFile(
-			const mrpt::config::CConfigFileBase& source,
-			const std::string& section);
-		void dumpToTextStream(std::ostream& out) const;
-		/**\brief Return a string with the configuration parameters
-		 */
-		void getAsString(std::string* params_out) const;
-		std::string getAsString() const;
-
-		// max values for new node registration
-		double registration_max_distance;
-		double registration_max_angle;
-	};
-
-	TParams params;
-
-   private:
+ private:
 };
 }  // namespace mrpt::graphslam::deciders
 #include "CIncrementalNodeRegistrationDecider_impl.h"

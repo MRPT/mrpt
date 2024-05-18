@@ -34,185 +34,182 @@ namespace mrpt::poses
  */
 class CPosePDFSOG : public CPosePDF
 {
-	DEFINE_SERIALIZABLE(CPosePDFSOG, mrpt::poses)
+  DEFINE_SERIALIZABLE(CPosePDFSOG, mrpt::poses)
+
+ public:
+  /** The struct for each mode:
+   */
+  struct TGaussianMode
+  {
+    TGaussianMode() : mean(), cov() {}
+    CPose2D mean;
+    mrpt::math::CMatrixDouble33 cov;
+
+    /** The log-weight
+     */
+    double log_w{0};
 
    public:
-	/** The struct for each mode:
-	 */
-	struct TGaussianMode
-	{
-		TGaussianMode() : mean(), cov() {}
-		CPose2D mean;
-		mrpt::math::CMatrixDouble33 cov;
+    friend std::ostream& operator<<(std::ostream& o, const TGaussianMode& mode)
+    {
+      o << "Mean: " << mode.mean << std::endl
+        << "Covariance: " << std::endl
+        << mode.cov << std::endl
+        << "Log-weight: " << mode.log_w << std::endl;
+      return o;
+    }
+  };
 
-		/** The log-weight
-		 */
-		double log_w{0};
+  using CListGaussianModes = std::vector<TGaussianMode>;
+  using const_iterator = CListGaussianModes::const_iterator;
+  using iterator = CListGaussianModes::iterator;
 
-	   public:
-		;
+  const CListGaussianModes& getSOGModes() const { return m_modes; }
 
-		friend std::ostream& operator<<(
-			std::ostream& o, const TGaussianMode& mode)
-		{
-			o << "Mean: " << mode.mean << std::endl
-			  << "Covariance: " << std::endl
-			  << mode.cov << std::endl
-			  << "Log-weight: " << mode.log_w << std::endl;
-			return o;
-		}
-	};
+ protected:
+  /** Ensures the symmetry of the covariance matrix (eventually certain
+   * operations in the math-coprocessor lead to non-symmetric matrixes!) */
+  void enforceCovSymmetry();
 
-	using CListGaussianModes = std::vector<TGaussianMode>;
-	using const_iterator = CListGaussianModes::const_iterator;
-	using iterator = CListGaussianModes::iterator;
+  /** The list of SOG modes */
+  CListGaussianModes m_modes;
 
-	const CListGaussianModes& getSOGModes() const { return m_modes; }
+ public:
+  /** Default constructor
+   * \param nModes The initial size of CPosePDFSOG::m_modes */
+  CPosePDFSOG(size_t nModes = 1);
 
-   protected:
-	/** Ensures the symmetry of the covariance matrix (eventually certain
-	 * operations in the math-coprocessor lead to non-symmetric matrixes!) */
-	void enforceCovSymmetry();
+  /** Return the number of Gaussian modes. */
+  size_t size() const { return m_modes.size(); }
+  /** Return whether there is any Gaussian mode. */
+  bool empty() const { return m_modes.empty(); }
+  /** Clear the list of modes */
+  void clear();
 
-	/** The list of SOG modes */
-	CListGaussianModes m_modes;
+  /** Access to individual beacons */
+  const TGaussianMode& operator[](size_t i) const
+  {
+    ASSERT_(i < m_modes.size());
+    return m_modes[i];
+  }
+  /** Access to individual beacons */
+  TGaussianMode& operator[](size_t i)
+  {
+    ASSERT_(i < m_modes.size());
+    return m_modes[i];
+  }
 
-   public:
-	/** Default constructor
-	 * \param nModes The initial size of CPosePDFSOG::m_modes */
-	CPosePDFSOG(size_t nModes = 1);
+  /** Access to individual beacons */
+  const TGaussianMode& get(size_t i) const
+  {
+    ASSERT_(i < m_modes.size());
+    return m_modes[i];
+  }
+  /** Access to individual beacons */
+  TGaussianMode& get(size_t i)
+  {
+    ASSERT_(i < m_modes.size());
+    return m_modes[i];
+  }
 
-	/** Return the number of Gaussian modes. */
-	size_t size() const { return m_modes.size(); }
-	/** Return whether there is any Gaussian mode. */
-	bool empty() const { return m_modes.empty(); }
-	/** Clear the list of modes */
-	void clear();
+  /** Inserts a copy of the given mode into the SOG */
+  void push_back(const TGaussianMode& m) { m_modes.push_back(m); }
+  iterator begin() { return m_modes.begin(); }
+  iterator end() { return m_modes.end(); }
+  const_iterator begin() const { return m_modes.begin(); }
+  const_iterator end() const { return m_modes.end(); }
+  iterator erase(iterator i) { return m_modes.erase(i); }
+  /** Resize the number of SOG modes */
+  void resize(size_t N);
 
-	/** Access to individual beacons */
-	const TGaussianMode& operator[](size_t i) const
-	{
-		ASSERT_(i < m_modes.size());
-		return m_modes[i];
-	}
-	/** Access to individual beacons */
-	TGaussianMode& operator[](size_t i)
-	{
-		ASSERT_(i < m_modes.size());
-		return m_modes[i];
-	}
+  /** Merge very close modes so the overall number of modes is reduced while
+   * preserving the total distribution.
+   *  This method uses the approach described in the paper:
+   *  - "Kullback-Leibler Approach to Gaussian Mixture Reduction" AR
+   * Runnalls. IEEE Transactions on Aerospace and Electronic Systems, 2007.
+   *
+   *  \param max_KLd The maximum KL-divergence to consider the merge of two
+   * nodes (and then stops the process).
+   */
+  void mergeModes(double max_KLd = 0.5, bool verbose = false);
 
-	/** Access to individual beacons */
-	const TGaussianMode& get(size_t i) const
-	{
-		ASSERT_(i < m_modes.size());
-		return m_modes[i];
-	}
-	/** Access to individual beacons */
-	TGaussianMode& get(size_t i)
-	{
-		ASSERT_(i < m_modes.size());
-		return m_modes[i];
-	}
+  void getMean(CPose2D& mean_pose) const override;
 
-	/** Inserts a copy of the given mode into the SOG */
-	void push_back(const TGaussianMode& m) { m_modes.push_back(m); }
-	iterator begin() { return m_modes.begin(); }
-	iterator end() { return m_modes.end(); }
-	const_iterator begin() const { return m_modes.begin(); }
-	const_iterator end() const { return m_modes.end(); }
-	iterator erase(iterator i) { return m_modes.erase(i); }
-	/** Resize the number of SOG modes */
-	void resize(size_t N);
+  std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override;
 
-	/** Merge very close modes so the overall number of modes is reduced while
-	 * preserving the total distribution.
-	 *  This method uses the approach described in the paper:
-	 *  - "Kullback-Leibler Approach to Gaussian Mixture Reduction" AR
-	 * Runnalls. IEEE Transactions on Aerospace and Electronic Systems, 2007.
-	 *
-	 *  \param max_KLd The maximum KL-divergence to consider the merge of two
-	 * nodes (and then stops the process).
-	 */
-	void mergeModes(double max_KLd = 0.5, bool verbose = false);
+  /** For the most likely Gaussian mode in the SOG, returns the pose
+   * covariance matrix (3x3 cov matrix) and the mean. \sa getMean */
+  void getMostLikelyCovarianceAndMean(mrpt::math::CMatrixDouble33& cov, CPose2D& mean_point) const;
+  /** Normalize the weights in m_modes such as the maximum log-weight is 0 */
+  void normalizeWeights();
 
-	void getMean(CPose2D& mean_pose) const override;
+  /** Copy operator, translating if necesary (for example, between particles
+   * and gaussian representations) */
+  void copyFrom(const CPosePDF& o) override;
 
-	std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override;
+  /** Save the density to a text file, with the following format:
+   *  There is one row per Gaussian "mode", and each row contains 10
+   * elements:
+   *   - w (The weight)
+   *   - x_mean (gaussian mean value)
+   *   - y_mean (gaussian mean value)
+   *   - phi_mean (gaussian mean value)
+   *   - C11 (Covariance elements)
+   *   - C22 (Covariance elements)
+   *   - C33 (Covariance elements)
+   *   - C12 (Covariance elements)
+   *   - C13 (Covariance elements)
+   *   - C23 (Covariance elements)
+   */
+  bool saveToTextFile(const std::string& file) const override;
 
-	/** For the most likely Gaussian mode in the SOG, returns the pose
-	 * covariance matrix (3x3 cov matrix) and the mean. \sa getMean */
-	void getMostLikelyCovarianceAndMean(
-		mrpt::math::CMatrixDouble33& cov, CPose2D& mean_point) const;
-	/** Normalize the weights in m_modes such as the maximum log-weight is 0 */
-	void normalizeWeights();
+  /** this = p (+) this. This can be used to convert a PDF from local
+   * coordinates to global, providing the point (newReferenceBase) from which
+   *   "to project" the current pdf. Result PDF substituted the currently
+   * stored one in the object. */
+  void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 
-	/** Copy operator, translating if necesary (for example, between particles
-	 * and gaussian representations) */
-	void copyFrom(const CPosePDF& o) override;
+  /** Rotate all the covariance matrixes by replacing them by \f$
+   * \mathbf{R}~\mathbf{COV}~\mathbf{R}^t \f$, where \f$ \mathbf{R} = \left[
+   * \begin{array}{ccc} \cos\alpha & -\sin\alpha & 0 \\ \sin\alpha &
+   * \cos\alpha & 0 \\ 0 & 0 & 1 \end{array}\right] \f$ */
+  void rotateAllCovariances(double ang);
+  /** Draws a single sample from the distribution */
+  void drawSingleSample(CPose2D& outPart) const override;
+  /** Draws a number of samples from the distribution, and saves as a list of
+   * 1x3 vectors, where each row contains a (x,y,phi) datum. */
+  void drawManySamples(size_t N, std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
+  /** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
+  void inverse(CPosePDF& o) const override;
 
-	/** Save the density to a text file, with the following format:
-	 *  There is one row per Gaussian "mode", and each row contains 10
-	 * elements:
-	 *   - w (The weight)
-	 *   - x_mean (gaussian mean value)
-	 *   - y_mean (gaussian mean value)
-	 *   - phi_mean (gaussian mean value)
-	 *   - C11 (Covariance elements)
-	 *   - C22 (Covariance elements)
-	 *   - C33 (Covariance elements)
-	 *   - C12 (Covariance elements)
-	 *   - C13 (Covariance elements)
-	 *   - C23 (Covariance elements)
-	 */
-	bool saveToTextFile(const std::string& file) const override;
+  /** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the
+   * mean, and the covariance matrix are updated). */
+  void operator+=(const mrpt::poses::CPose2D& Ap);
 
-	/** this = p (+) this. This can be used to convert a PDF from local
-	 * coordinates to global, providing the point (newReferenceBase) from which
-	 *   "to project" the current pdf. Result PDF substituted the currently
-	 * stored one in the object. */
-	void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
+  /** Evaluates the PDF at a given point. */
+  double evaluatePDF(const mrpt::poses::CPose2D& x, bool sumOverAllPhis = false) const;
+  /** Evaluates the ratio PDF(x) / max_PDF(x*), that is, the normalized PDF in
+   * the range [0,1]. */
+  double evaluateNormalizedPDF(const mrpt::poses::CPose2D& x) const;
 
-	/** Rotate all the covariance matrixes by replacing them by \f$
-	 * \mathbf{R}~\mathbf{COV}~\mathbf{R}^t \f$, where \f$ \mathbf{R} = \left[
-	 * \begin{array}{ccc} \cos\alpha & -\sin\alpha & 0 \\ \sin\alpha &
-	 * \cos\alpha & 0 \\ 0 & 0 & 1 \end{array}\right] \f$ */
-	void rotateAllCovariances(double ang);
-	/** Draws a single sample from the distribution */
-	void drawSingleSample(CPose2D& outPart) const override;
-	/** Draws a number of samples from the distribution, and saves as a list of
-	 * 1x3 vectors, where each row contains a (x,y,phi) datum. */
-	void drawManySamples(
-		size_t N,
-		std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
-	/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
-	void inverse(CPosePDF& o) const override;
+  /** Evaluates the PDF within a rectangular grid (and a fixed orientation)
+   * and saves the result in a matrix (each row contains values for a fixed
+   * y-coordinate value). */
+  void evaluatePDFInArea(
+      double x_min,
+      double x_max,
+      double y_min,
+      double y_max,
+      double resolutionXY,
+      double phi,
+      mrpt::math::CMatrixDouble& outMatrix,
+      bool sumOverAllPhis = false);
 
-	/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the
-	 * mean, and the covariance matrix are updated). */
-	void operator+=(const mrpt::poses::CPose2D& Ap);
+  /** Bayesian fusion of two pose distributions, then save the result in this
+   * object (WARNING: Currently p1 must be a mrpt::poses::CPosePDFSOG object
+   * and p2 a mrpt::poses::CPosePDFGaussian object) */
+  void bayesianFusion(
+      const CPosePDF& p1, const CPosePDF& p2, const double minMahalanobisDistToDrop = 0) override;
 
-	/** Evaluates the PDF at a given point. */
-	double evaluatePDF(
-		const mrpt::poses::CPose2D& x, bool sumOverAllPhis = false) const;
-	/** Evaluates the ratio PDF(x) / max_PDF(x*), that is, the normalized PDF in
-	 * the range [0,1]. */
-	double evaluateNormalizedPDF(const mrpt::poses::CPose2D& x) const;
-
-	/** Evaluates the PDF within a rectangular grid (and a fixed orientation)
-	 * and saves the result in a matrix (each row contains values for a fixed
-	 * y-coordinate value). */
-	void evaluatePDFInArea(
-		double x_min, double x_max, double y_min, double y_max,
-		double resolutionXY, double phi, mrpt::math::CMatrixDouble& outMatrix,
-		bool sumOverAllPhis = false);
-
-	/** Bayesian fusion of two pose distributions, then save the result in this
-	 * object (WARNING: Currently p1 must be a mrpt::poses::CPosePDFSOG object
-	 * and p2 a mrpt::poses::CPosePDFGaussian object) */
-	void bayesianFusion(
-		const CPosePDF& p1, const CPosePDF& p2,
-		const double minMahalanobisDistToDrop = 0) override;
-
-};	// End of class def.
+};  // End of class def.
 }  // namespace mrpt::poses

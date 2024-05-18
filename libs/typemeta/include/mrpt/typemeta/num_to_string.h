@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <cstddef>	//size_t
+#include <cstddef>  //size_t
 
 namespace mrpt
 {
@@ -19,12 +19,11 @@ namespace detail
 template <unsigned... digits>
 struct to_chars
 {
-	static const char value[sizeof...(digits) + 1];
+  static const char value[sizeof...(digits) + 1];
 };
 
 template <unsigned... digits>
-constexpr char to_chars<digits...>::value[sizeof...(digits) + 1] = {
-	('0' + digits)..., 0};
+constexpr char to_chars<digits...>::value[sizeof...(digits) + 1] = {('0' + digits)..., 0};
 
 template <unsigned rem, unsigned... digits>
 struct explode : explode<rem / 10, rem % 10, digits...>

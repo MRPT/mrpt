@@ -44,50 +44,50 @@
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_poses)
 {
-	using namespace mrpt::poses;
+  using namespace mrpt::poses;
 
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
-	registerClass(CLASS_ID(CPoint2D));
-	registerClass(CLASS_ID(CPoint3D));
-	registerClass(CLASS_ID(CPose2D));
-	registerClass(CLASS_ID(CPose3D));
-	registerClass(CLASS_ID(CPose3DQuat));
-	registerClass(CLASS_ID(CPoses2DSequence));
-	registerClass(CLASS_ID(CPoses3DSequence));
+  registerClass(CLASS_ID(CPoint2D));
+  registerClass(CLASS_ID(CPoint3D));
+  registerClass(CLASS_ID(CPose2D));
+  registerClass(CLASS_ID(CPose3D));
+  registerClass(CLASS_ID(CPose3DQuat));
+  registerClass(CLASS_ID(CPoses2DSequence));
+  registerClass(CLASS_ID(CPoses3DSequence));
 
-	registerClass(CLASS_ID(CPosePDF));
-	registerClass(CLASS_ID(CPosePDFGaussian));
-	registerClass(CLASS_ID(CPosePDFGaussianInf));
-	registerClass(CLASS_ID(CPosePDFParticles));
-	registerClass(CLASS_ID(CPosePDFGrid));
-	registerClass(CLASS_ID(CPosePDFSOG));
+  registerClass(CLASS_ID(CPosePDF));
+  registerClass(CLASS_ID(CPosePDFGaussian));
+  registerClass(CLASS_ID(CPosePDFGaussianInf));
+  registerClass(CLASS_ID(CPosePDFParticles));
+  registerClass(CLASS_ID(CPosePDFGrid));
+  registerClass(CLASS_ID(CPosePDFSOG));
 
-	registerClass(CLASS_ID(CPointPDF));
-	registerClass(CLASS_ID(CPointPDFGaussian));
-	registerClass(CLASS_ID(CPointPDFParticles));
-	registerClass(CLASS_ID(CPointPDFSOG));
+  registerClass(CLASS_ID(CPointPDF));
+  registerClass(CLASS_ID(CPointPDFGaussian));
+  registerClass(CLASS_ID(CPointPDFParticles));
+  registerClass(CLASS_ID(CPointPDFSOG));
 
-	registerClass(CLASS_ID(CPosePDF));
-	registerClass(CLASS_ID(CPose3DPDF));
-	registerClass(CLASS_ID(CPose3DQuatPDF));
-	registerClass(CLASS_ID(CPose3DPDFGaussian));
-	registerClass(CLASS_ID(CPose3DPDFGaussianInf));
-	registerClass(CLASS_ID(CPose3DPDFParticles));
-	registerClass(CLASS_ID(CPose3DPDFSOG));
-	registerClass(CLASS_ID(CPose3DPDFGrid));
+  registerClass(CLASS_ID(CPosePDF));
+  registerClass(CLASS_ID(CPose3DPDF));
+  registerClass(CLASS_ID(CPose3DQuatPDF));
+  registerClass(CLASS_ID(CPose3DPDFGaussian));
+  registerClass(CLASS_ID(CPose3DPDFGaussianInf));
+  registerClass(CLASS_ID(CPose3DPDFParticles));
+  registerClass(CLASS_ID(CPose3DPDFSOG));
+  registerClass(CLASS_ID(CPose3DPDFGrid));
 
-	registerClass(CLASS_ID(CPose3DQuatPDF));
-	registerClass(CLASS_ID(CPose3DQuatPDFGaussian));
-	registerClass(CLASS_ID(CPose3DQuatPDFGaussianInf));
+  registerClass(CLASS_ID(CPose3DQuatPDF));
+  registerClass(CLASS_ID(CPose3DQuatPDFGaussian));
+  registerClass(CLASS_ID(CPose3DQuatPDFGaussianInf));
 
-	registerClass(CLASS_ID(CPose2DInterpolator));
-	registerClass(CLASS_ID(CPose3DInterpolator));
+  registerClass(CLASS_ID(CPose2DInterpolator));
+  registerClass(CLASS_ID(CPose3DInterpolator));
 #endif
 }
 
 void mrpt::poses::registerAllClasses_mrpt_poses()
 {
-	::registerAllClasses_mrpt_poses();
-	// deps:
-	mrpt::bayes::registerAllClasses_mrpt_bayes();
+  ::registerAllClasses_mrpt_poses();
+  // deps:
+  mrpt::bayes::registerAllClasses_mrpt_bayes();
 }

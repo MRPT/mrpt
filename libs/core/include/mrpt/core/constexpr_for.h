@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <utility>	// make_index_sequence
+#include <utility>  // make_index_sequence
 
 namespace mrpt
 {
@@ -18,12 +18,12 @@ namespace internal
 template <std::size_t N>
 struct num
 {
-	static const constexpr auto value = N;
+  static const constexpr auto value = N;
 };
 template <class F, std::size_t... Is>
 void for_(F func, std::index_sequence<Is...>)
 {
-	(func(num<Is>{}), ...);
+  (func(num<Is>{}), ...);
 }
 }  // namespace internal
 
@@ -38,6 +38,6 @@ void for_(F func, std::index_sequence<Is...>)
 template <std::size_t N, typename F>
 void for_(F func)
 {
-	internal::for_(func, std::make_index_sequence<N>());
+  internal::for_(func, std::make_index_sequence<N>());
 }
 }  // namespace mrpt

@@ -53,43 +53,47 @@ namespace mrpt::vision
  */
 class CImagePyramid
 {
-   public:
-	CImagePyramid() = default;
-	~CImagePyramid() = default;
+ public:
+  CImagePyramid() = default;
+  ~CImagePyramid() = default;
 
-	/** Fills the vector \a images with the different octaves built from the
-	 * input image.
-	 *  \param[in] img The input image. Can be either color or grayscale.
-	 *  \param[in] nOctaves Number of octaves to build. 1 means just the
-	 * original image, 2 means the original plus the 1/2 image, etc.
-	 *  \param[in] smooth_halves If true, use an arithmetic mean of every 2x2
-	 * pixel block when downsampling.
-	 *  \param[in] convert_grayscale If true, the pyramid is built in grayscale
-	 * even for color input images.
-	 * \return true if SSE2-optimized versions of CImage::scaleHalf() was used
-	 * to build **all** the scales in the pyramid.
-	 * \sa buildPyramidFast
-	 */
-	bool buildPyramid(
-		const mrpt::img::CImage& img, size_t nOctaves,
-		const bool smooth_halves = true, const bool convert_grayscale = false);
+  /** Fills the vector \a images with the different octaves built from the
+   * input image.
+   *  \param[in] img The input image. Can be either color or grayscale.
+   *  \param[in] nOctaves Number of octaves to build. 1 means just the
+   * original image, 2 means the original plus the 1/2 image, etc.
+   *  \param[in] smooth_halves If true, use an arithmetic mean of every 2x2
+   * pixel block when downsampling.
+   *  \param[in] convert_grayscale If true, the pyramid is built in grayscale
+   * even for color input images.
+   * \return true if SSE2-optimized versions of CImage::scaleHalf() was used
+   * to build **all** the scales in the pyramid.
+   * \sa buildPyramidFast
+   */
+  bool buildPyramid(
+      const mrpt::img::CImage& img,
+      size_t nOctaves,
+      const bool smooth_halves = true,
+      const bool convert_grayscale = false);
 
-	/**  Exactly like \a buildPyramid(), but if the input image has not to be
-	 * converted from RGB to grayscale, the image data buffer is *reutilized*
-	 *   for the 1st octave in \a images[0], emptying the input image.
-	 * \sa buildPyramid
-	 */
-	bool buildPyramidFast(
-		mrpt::img::CImage& img, size_t nOctaves,
-		const bool smooth_halves = true, const bool convert_grayscale = false);
+  /**  Exactly like \a buildPyramid(), but if the input image has not to be
+   * converted from RGB to grayscale, the image data buffer is *reutilized*
+   *   for the 1st octave in \a images[0], emptying the input image.
+   * \sa buildPyramid
+   */
+  bool buildPyramidFast(
+      mrpt::img::CImage& img,
+      size_t nOctaves,
+      const bool smooth_halves = true,
+      const bool convert_grayscale = false);
 
-	/** The individual images:
-	 *  - images[0]: 1st octave (full-size)
-	 *  - images[1]: 2nd octave (1/2 size)
-	 *  - images[2]: 3rd octave (1/4 size)
-	 *  - ...
-	 *  - images[i]: (i+1)-th octave (1/2^i size)
-	 */
-	std::vector<mrpt::img::CImage> images;
+  /** The individual images:
+   *  - images[0]: 1st octave (full-size)
+   *  - images[1]: 2nd octave (1/2 size)
+   *  - images[2]: 3rd octave (1/4 size)
+   *  - ...
+   *  - images[i]: (i+1)-th octave (1/2^i size)
+   */
+  std::vector<mrpt::img::CImage> images;
 };
 }  // namespace mrpt::vision

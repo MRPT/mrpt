@@ -26,116 +26,116 @@ namespace mrpt::opengl
  */
 class Buffer
 {
-   public:
-	enum class Type : unsigned int
-	{
-		Vertex = 0x8892,  // GL_ARRAY_BUFFER (Default)
-		ElementIndex = 0x8893,	// GL_ELEMENT_ARRAY_BUFFER
-		PixelPack = 0x88EB,	 // GL_PIXEL_PACK_BUFFER
-		PixelUnpack = 0x88EC  // GL_PIXEL_UNPACK_BUFFER
-	};
+ public:
+  enum class Type : unsigned int
+  {
+    Vertex = 0x8892,        // GL_ARRAY_BUFFER (Default)
+    ElementIndex = 0x8893,  // GL_ELEMENT_ARRAY_BUFFER
+    PixelPack = 0x88EB,     // GL_PIXEL_PACK_BUFFER
+    PixelUnpack = 0x88EC    // GL_PIXEL_UNPACK_BUFFER
+  };
 
-	enum class Usage : unsigned int
-	{
-		StreamDraw = 0x88E0,  // GL_STREAM_DRAW
-		StreamRead = 0x88E1,  // GL_STREAM_READ
-		StreamCopy = 0x88E2,  // GL_STREAM_COPY
-		StaticDraw = 0x88E4,  // GL_STATIC_DRAW (Default)
-		StaticRead = 0x88E5,  // GL_STATIC_READ
-		StaticCopy = 0x88E6,  // GL_STATIC_COPY
-		DynamicDraw = 0x88E8,  // GL_DYNAMIC_DRAW
-		DynamicRead = 0x88E9,  // GL_DYNAMIC_READ
-		DynamicCopy = 0x88EA  // GL_DYNAMIC_COPY
-	};
+  enum class Usage : unsigned int
+  {
+    StreamDraw = 0x88E0,   // GL_STREAM_DRAW
+    StreamRead = 0x88E1,   // GL_STREAM_READ
+    StreamCopy = 0x88E2,   // GL_STREAM_COPY
+    StaticDraw = 0x88E4,   // GL_STATIC_DRAW (Default)
+    StaticRead = 0x88E5,   // GL_STATIC_READ
+    StaticCopy = 0x88E6,   // GL_STATIC_COPY
+    DynamicDraw = 0x88E8,  // GL_DYNAMIC_DRAW
+    DynamicRead = 0x88E9,  // GL_DYNAMIC_READ
+    DynamicCopy = 0x88EA   // GL_DYNAMIC_COPY
+  };
 
-	explicit Buffer(const Type type);
-	Buffer() : Buffer(Type::Vertex) {}
-	~Buffer() = default;
+  explicit Buffer(const Type type);
+  Buffer() : Buffer(Type::Vertex) {}
+  ~Buffer() = default;
 
-	Type type() const
-	{
-		auto lck = mrpt::lockHelper(m_implMtx.data);
-		return m_impl.type;
-	}
+  Type type() const
+  {
+    auto lck = mrpt::lockHelper(m_implMtx.data);
+    return m_impl.type;
+  }
 
-	Usage usage() const
-	{
-		auto lck = mrpt::lockHelper(m_implMtx.data);
-		return m_impl.usage;
-	}
-	void setUsage(const Usage u)
-	{
-		auto lck = mrpt::lockHelper(m_implMtx.data);
-		m_impl.usage = u;
-	}
+  Usage usage() const
+  {
+    auto lck = mrpt::lockHelper(m_implMtx.data);
+    return m_impl.usage;
+  }
+  void setUsage(const Usage u)
+  {
+    auto lck = mrpt::lockHelper(m_implMtx.data);
+    m_impl.usage = u;
+  }
 
-	/** Calls create() only if the buffer has not been created yet. */
-	void createOnce()
-	{
-		auto lck = mrpt::lockHelper(m_implMtx.data);
-		if (!m_impl.created) m_impl.create();
-	}
-	bool initialized() const
-	{
-		auto lck = mrpt::lockHelper(m_implMtx.data);
-		return m_impl.created;
-	}
+  /** Calls create() only if the buffer has not been created yet. */
+  void createOnce()
+  {
+    auto lck = mrpt::lockHelper(m_implMtx.data);
+    if (!m_impl.created) m_impl.create();
+  }
+  bool initialized() const
+  {
+    auto lck = mrpt::lockHelper(m_implMtx.data);
+    return m_impl.created;
+  }
 
-	/** Automatically called upon destructor, no need for the user to call it in
-	 * normal situations. */
-	void destroy()
-	{
-		auto lck = mrpt::lockHelper(m_implMtx.data);
-		m_impl.destroy();
-	}
+  /** Automatically called upon destructor, no need for the user to call it in
+   * normal situations. */
+  void destroy()
+  {
+    auto lck = mrpt::lockHelper(m_implMtx.data);
+    m_impl.destroy();
+  }
 
-	void bind()
-	{
-		auto lck = mrpt::lockHelper(m_implMtx.data);
-		m_impl.bind();
-	}
-	void unbind()
-	{
-		auto lck = mrpt::lockHelper(m_implMtx.data);
-		m_impl.unbind();
-	}
+  void bind()
+  {
+    auto lck = mrpt::lockHelper(m_implMtx.data);
+    m_impl.bind();
+  }
+  void unbind()
+  {
+    auto lck = mrpt::lockHelper(m_implMtx.data);
+    m_impl.unbind();
+  }
 
-	unsigned int bufferId() const
-	{
-		auto lck = mrpt::lockHelper(m_implMtx.data);
-		return m_impl.buffer_id;
-	}
+  unsigned int bufferId() const
+  {
+    auto lck = mrpt::lockHelper(m_implMtx.data);
+    return m_impl.buffer_id;
+  }
 
-	/** Reserves byteCount bytes in the buffer and copy to it the provided data.
-	 * create() and bind() must be called before using this method.
-	 */
-	void allocate(const void* data, int byteCount)
-	{
-		auto lck = mrpt::lockHelper(m_implMtx.data);
-		m_impl.allocate(data, byteCount);
-	}
+  /** Reserves byteCount bytes in the buffer and copy to it the provided data.
+   * create() and bind() must be called before using this method.
+   */
+  void allocate(const void* data, int byteCount)
+  {
+    auto lck = mrpt::lockHelper(m_implMtx.data);
+    m_impl.allocate(data, byteCount);
+  }
 
-   private:
-	struct RAII_Impl
-	{
-		RAII_Impl(Buffer::Type t);
-		~RAII_Impl();
+ private:
+  struct RAII_Impl
+  {
+    RAII_Impl(Buffer::Type t);
+    ~RAII_Impl();
 
-		Buffer::Type type;
-		Buffer::Usage usage = Buffer::Usage::StaticDraw;
+    Buffer::Type type;
+    Buffer::Usage usage = Buffer::Usage::StaticDraw;
 
-		void create();
-		void destroy();
-		void bind();
-		void unbind();
-		void allocate(const void* data, int byteCount);
+    void create();
+    void destroy();
+    void bind();
+    void unbind();
+    void allocate(const void* data, int byteCount);
 
-		bool created = false;
-		unsigned int buffer_id = 0;
-		std::thread::id created_from;
-	};
-	RAII_Impl m_impl;
-	mrpt::containers::NonCopiableData<std::mutex> m_implMtx;
+    bool created = false;
+    unsigned int buffer_id = 0;
+    std::thread::id created_from;
+  };
+  RAII_Impl m_impl;
+  mrpt::containers::NonCopiableData<std::mutex> m_implMtx;
 };
 
 // For use in glVertexAttribPointer()

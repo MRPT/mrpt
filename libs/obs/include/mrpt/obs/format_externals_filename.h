@@ -29,7 +29,6 @@ namespace mrpt::obs
  * \ingroup mrpt_obs_grp
  * \note (new in MRPT 2.4.1)
  */
-std::string format_externals_filename(
-	const mrpt::obs::CObservation& obs, const std::string& fmt);
+std::string format_externals_filename(const mrpt::obs::CObservation& obs, const std::string& fmt);
 
-};	// namespace mrpt::obs
+};  // namespace mrpt::obs

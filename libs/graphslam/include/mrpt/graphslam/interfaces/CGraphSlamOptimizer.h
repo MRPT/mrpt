@@ -31,23 +31,22 @@ namespace mrpt::graphslam::optimizers
  * \ingroup mrpt_graphslam_grp
  */
 template <class GRAPH_t = typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CGraphSlamOptimizer
-	: public virtual mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t>
+class CGraphSlamOptimizer : public virtual mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t>
 {
-   public:
-	using constraint_t = typename GRAPH_t::constraint_t;
-	using pose_t = typename GRAPH_t::constraint_t::type_value;
+ public:
+  using constraint_t = typename GRAPH_t::constraint_t;
+  using pose_t = typename GRAPH_t::constraint_t::type_value;
 
-	CGraphSlamOptimizer() = default;
-	~CGraphSlamOptimizer() override = default;
-	/**\brief Used by the caller to query for possible full graph optimization
-	 * on the latest optimizer run
-	 */
-	virtual bool justFullyOptimizedGraph() const { return false; }
+  CGraphSlamOptimizer() = default;
+  ~CGraphSlamOptimizer() override = default;
+  /**\brief Used by the caller to query for possible full graph optimization
+   * on the latest optimizer run
+   */
+  virtual bool justFullyOptimizedGraph() const { return false; }
 
-   protected:
-	/**\brief method called for optimizing the underlying graph.
-	 */
-	virtual void optimizeGraph() = 0;
+ protected:
+  /**\brief method called for optimizing the underlying graph.
+   */
+  virtual void optimizeGraph() = 0;
 };
 }  // namespace mrpt::graphslam::optimizers

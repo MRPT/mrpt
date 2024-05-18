@@ -25,7 +25,7 @@ namespace topography
  *  @{ */
 
 /** @name Topography coordinate conversion functions
-	@{ */
+  @{ */
 
 /** Coordinates transformation from longitude/latitude/height to ENU
  * (East-North-Up)  X/Y/Z coordinates
@@ -41,27 +41,29 @@ namespace topography
  * coincides with the direction of an increasing geodetic height.
  */
 void geodeticToENU_WGS84(
-	const TGeodeticCoords& in_coords, mrpt::math::TPoint3D& out_ENU_point,
-	const TGeodeticCoords& in_coords_origin);
+    const TGeodeticCoords& in_coords,
+    mrpt::math::TPoint3D& out_ENU_point,
+    const TGeodeticCoords& in_coords_origin);
 
 /** ENU to geocentric coordinates. \sa geodeticToENU_WGS84 */
 void ENUToGeocentric(
-	const mrpt::math::TPoint3D& in_ENU_point,
-	const TGeodeticCoords& in_coords_origin, TGeocentricCoords& out_coords,
-	const TEllipsoid& ellip);
+    const mrpt::math::TPoint3D& in_ENU_point,
+    const TGeodeticCoords& in_coords_origin,
+    TGeocentricCoords& out_coords,
+    const TEllipsoid& ellip);
 
 /** ENU to EFEC (Geocentric) coordinates \sa ENUToGeocentric,
  * geodeticToENU_WGS84 */
 void geocentricToENU_WGS84(
-	const mrpt::math::TPoint3D& in_geocentric_point,
-	mrpt::math::TPoint3D& out_ENU_point,
-	const TGeodeticCoords& in_coords_origin);
+    const mrpt::math::TPoint3D& in_geocentric_point,
+    mrpt::math::TPoint3D& out_ENU_point,
+    const TGeodeticCoords& in_coords_origin);
 
 /** \overload More efficient for converting a pointcloud */
 void geocentricToENU_WGS84(
-	const std::vector<mrpt::math::TPoint3D>& in_geocentric_points,
-	std::vector<mrpt::math::TPoint3D>& out_ENU_points,
-	const TGeodeticCoords& in_coords_origin);
+    const std::vector<mrpt::math::TPoint3D>& in_geocentric_points,
+    std::vector<mrpt::math::TPoint3D>& out_ENU_points,
+    const TGeodeticCoords& in_coords_origin);
 
 /** Coordinates transformation from longitude/latitude/height to geocentric
  * X/Y/Z coordinates (with a WGS84 geoid).
@@ -72,24 +74,23 @@ void geocentricToENU_WGS84(
  * http://en.wikipedia.org/wiki/Reference_ellipsoid
  * \sa geodeticToENU_WGS84
  */
-void geodeticToGeocentric_WGS84(
-	const TGeodeticCoords& in_coords, mrpt::math::TPoint3D& out_point);
+void geodeticToGeocentric_WGS84(const TGeodeticCoords& in_coords, mrpt::math::TPoint3D& out_point);
 
 /** Coordinates transformation from longitude/latitude/height to geocentric
  * X/Y/Z coordinates (with an specified geoid).
  * \sa geocentricToGeodetic
  */
 void geodeticToGeocentric(
-	const TGeodeticCoords& in_coords, TGeocentricCoords& out_point,
-	const TEllipsoid& ellip);
+    const TGeodeticCoords& in_coords, TGeocentricCoords& out_point, const TEllipsoid& ellip);
 
 /** Coordinates transformation from geocentric X/Y/Z coordinates to
  * longitude/latitude/height.
  * \sa geodeticToGeocentric
  */
 void geocentricToGeodetic(
-	const TGeocentricCoords& in_point, TGeodeticCoords& out_coords,
-	const TEllipsoid& ellip = TEllipsoid::Ellipsoid_WGS84());
+    const TGeocentricCoords& in_point,
+    TGeodeticCoords& out_coords,
+    const TEllipsoid& ellip = TEllipsoid::Ellipsoid_WGS84());
 
 /**  7-parameter Bursa-Wolf transformation:
  *   [ X Y Z ]_WGS84 = [ dX dY dZ ] + ( 1 + dS ) [ 1 RZ -RY; -RZ 1 RX; RY -RX 1
@@ -97,12 +98,14 @@ void geocentricToGeodetic(
  * \sa transform10params
  */
 void transform7params(
-	const mrpt::math::TPoint3D& in_point, const TDatum7Params& in_datum,
-	mrpt::math::TPoint3D& out_point);
+    const mrpt::math::TPoint3D& in_point,
+    const TDatum7Params& in_datum,
+    mrpt::math::TPoint3D& out_point);
 
 void transform7params_TOPCON(
-	const mrpt::math::TPoint3D& in_point, const TDatum7Params_TOPCON& in_datum,
-	mrpt::math::TPoint3D& out_point);
+    const mrpt::math::TPoint3D& in_point,
+    const TDatum7Params_TOPCON& in_datum,
+    mrpt::math::TPoint3D& out_point);
 
 /**  10-parameter Molodensky-Badekas transformation:
  *   [ X Y Z ]_WGS84 = [ dX dY dZ ] + ( 1 + dS ) [ 1 RZ -RY; -RZ 1 RX; RY -RX 1
@@ -110,8 +113,9 @@ void transform7params_TOPCON(
  * \sa transform7params
  */
 void transform10params(
-	const mrpt::math::TPoint3D& in_point, const TDatum10Params& in_datum,
-	mrpt::math::TPoint3D& out_point);
+    const mrpt::math::TPoint3D& in_point,
+    const TDatum10Params& in_datum,
+    mrpt::math::TPoint3D& out_point);
 
 /**  Helmert 2D transformation:
  *   [ X Y ]_WGS84 = [ dX dY ] + ( 1 + dS ) [ cos(alpha) -sin(alpha);
@@ -119,12 +123,10 @@ void transform10params(
  * \sa transformHelmert3D
  */
 void transformHelmert2D(
-	const mrpt::math::TPoint2D& p, const TDatumHelmert2D& d,
-	mrpt::math::TPoint2D& o);
+    const mrpt::math::TPoint2D& p, const TDatumHelmert2D& d, mrpt::math::TPoint2D& o);
 
 void transformHelmert2D_TOPCON(
-	const mrpt::math::TPoint2D& p, const TDatumHelmert2D_TOPCON& d,
-	mrpt::math::TPoint2D& o);
+    const mrpt::math::TPoint2D& p, const TDatumHelmert2D_TOPCON& d, mrpt::math::TPoint2D& o);
 
 /**  Helmert3D transformation:
  *   [ X Y Z ]_WGS84 = [ dX dY dZ ] + ( 1 + dS ) [ 1 -RZ RY; RZ 1 -RX; -RY RX 1
@@ -132,26 +134,21 @@ void transformHelmert2D_TOPCON(
  * \sa transformHelmert2D
  */
 void transformHelmert3D(
-	const mrpt::math::TPoint3D& p, const TDatumHelmert3D& d,
-	mrpt::math::TPoint3D& o);
+    const mrpt::math::TPoint3D& p, const TDatumHelmert3D& d, mrpt::math::TPoint3D& o);
 
 void transformHelmert3D_TOPCON(
-	const mrpt::math::TPoint3D& p, const TDatumHelmert3D_TOPCON& d,
-	mrpt::math::TPoint3D& o);
+    const mrpt::math::TPoint3D& p, const TDatumHelmert3D_TOPCON& d, mrpt::math::TPoint3D& o);
 
 /**  1D transformation:
  *   [ Z ]_WGS84 = (dy * X - dx * Y + Z)*(1+e)+DZ
  */
-void transform1D(
-	const mrpt::math::TPoint3D& p, const TDatum1DTransf& d,
-	mrpt::math::TPoint3D& o);
+void transform1D(const mrpt::math::TPoint3D& p, const TDatum1DTransf& d, mrpt::math::TPoint3D& o);
 
 /**  Interpolation:
  *   [ Z ]_WGS84 = (dy * X - dx * Y + Z)*(1+e)+DZ
  */
 void transfInterpolation(
-	const mrpt::math::TPoint3D& p, const TDatumTransfInterpolation& d,
-	mrpt::math::TPoint3D& o);
+    const mrpt::math::TPoint3D& p, const TDatumTransfInterpolation& d, mrpt::math::TPoint3D& o);
 
 /** Returns the Geodetic coordinates of the UTM input point.
  * \param X: East coordinate of the input point.
@@ -165,9 +162,13 @@ void transfInterpolation(
  * \param out_lon  Out longitude, in degrees.
  */
 void UTMToGeodetic(
-	double X, double Y, int zone, char hem, double& out_lon /*degrees*/,
-	double& out_lat /*degrees*/,
-	const TEllipsoid& ellip = TEllipsoid::Ellipsoid_WGS84());
+    double X,
+    double Y,
+    int zone,
+    char hem,
+    double& out_lon /*degrees*/,
+    double& out_lat /*degrees*/,
+    const TEllipsoid& ellip = TEllipsoid::Ellipsoid_WGS84());
 
 /** Returns the Geodetic coordinates of the UTM input point.
  * \param UTMCoords: UTM input coordinates.
@@ -179,14 +180,16 @@ void UTMToGeodetic(
  * WGS84)
  */
 inline void UTMToGeodetic(
-	const TUTMCoords& UTMCoords, int zone, char hem,
-	TGeodeticCoords& GeodeticCoords,
-	const TEllipsoid& ellip = TEllipsoid::Ellipsoid_WGS84())
+    const TUTMCoords& UTMCoords,
+    int zone,
+    char hem,
+    TGeodeticCoords& GeodeticCoords,
+    const TEllipsoid& ellip = TEllipsoid::Ellipsoid_WGS84())
 {
-	UTMToGeodetic(
-		UTMCoords.x, UTMCoords.y, zone, hem, GeodeticCoords.lon.decimal_value,
-		GeodeticCoords.lat.decimal_value, ellip);
-	GeodeticCoords.height = UTMCoords.z;
+  UTMToGeodetic(
+      UTMCoords.x, UTMCoords.y, zone, hem, GeodeticCoords.lon.decimal_value,
+      GeodeticCoords.lat.decimal_value, ellip);
+  GeodeticCoords.height = UTMCoords.z;
 }
 
 /** Convert latitude and longitude coordinates into UTM coordinates, computing
@@ -206,14 +209,20 @@ inline void UTMToGeodetic(
  *   \sa http://www.mathworks.com/matlabcentral/fileexchange/10915
  */
 void GeodeticToUTM(
-	double in_latitude_degrees, double in_longitude_degrees, double& out_UTM_x,
-	double& out_UTM_y, int& out_UTM_zone, char& out_UTM_latitude_band,
-	const TEllipsoid& ellip = TEllipsoid::Ellipsoid_WGS84());
+    double in_latitude_degrees,
+    double in_longitude_degrees,
+    double& out_UTM_x,
+    double& out_UTM_y,
+    int& out_UTM_zone,
+    char& out_UTM_latitude_band,
+    const TEllipsoid& ellip = TEllipsoid::Ellipsoid_WGS84());
 
 void geodeticToUTM(
-	const TGeodeticCoords& GeodeticCoords, TUTMCoords& UTMCoords, int& UTMZone,
-	char& UTMLatitudeBand,
-	const TEllipsoid& ellip = TEllipsoid::Ellipsoid_WGS84());
+    const TGeodeticCoords& GeodeticCoords,
+    TUTMCoords& UTMCoords,
+    int& UTMZone,
+    char& UTMLatitudeBand,
+    const TEllipsoid& ellip = TEllipsoid::Ellipsoid_WGS84());
 
 /** Convert latitude and longitude coordinates into UTM coordinates, computing
  * the corresponding UTM zone and latitude band.
@@ -232,18 +241,20 @@ void geodeticToUTM(
  *   \sa http://www.mathworks.com/matlabcentral/fileexchange/10915
  */
 inline void GeodeticToUTM(
-	const TGeodeticCoords& GeodeticCoords, TUTMCoords& UTMCoords, int& UTMZone,
-	char& UTMLatitudeBand,
-	const TEllipsoid& ellip = TEllipsoid::Ellipsoid_WGS84())
+    const TGeodeticCoords& GeodeticCoords,
+    TUTMCoords& UTMCoords,
+    int& UTMZone,
+    char& UTMLatitudeBand,
+    const TEllipsoid& ellip = TEllipsoid::Ellipsoid_WGS84())
 {
-	GeodeticToUTM(
-		GeodeticCoords.lat, GeodeticCoords.lon, UTMCoords.x, UTMCoords.y,
-		UTMZone, UTMLatitudeBand, ellip);
-	UTMCoords.z = GeodeticCoords.height;
+  GeodeticToUTM(
+      GeodeticCoords.lat, GeodeticCoords.lon, UTMCoords.x, UTMCoords.y, UTMZone, UTMLatitudeBand,
+      ellip);
+  UTMCoords.z = GeodeticCoords.height;
 }
 
 /** @}
-	======================================================================= */
+  ======================================================================= */
 
 /** =======================================================================
    @name Miscellaneous
@@ -258,23 +269,23 @@ inline void GeodeticToUTM(
  * \sa geodeticToENU_WGS84
  */
 void ENU_axes_from_WGS84(
-	double in_longitude_reference_degrees, double in_latitude_reference_degrees,
-	double in_height_reference_meters, mrpt::math::TPose3D& out_ENU,
-	bool only_angles = false);
+    double in_longitude_reference_degrees,
+    double in_latitude_reference_degrees,
+    double in_height_reference_meters,
+    mrpt::math::TPose3D& out_ENU,
+    bool only_angles = false);
 
 /** \overload */
 inline void ENU_axes_from_WGS84(
-	const TGeodeticCoords& in_coords, mrpt::math::TPose3D& out_ENU,
-	bool only_angles = false)
+    const TGeodeticCoords& in_coords, mrpt::math::TPose3D& out_ENU, bool only_angles = false)
 {
-	ENU_axes_from_WGS84(
-		in_coords.lon, in_coords.lat, in_coords.height, out_ENU, only_angles);
+  ENU_axes_from_WGS84(in_coords.lon, in_coords.lat, in_coords.height, out_ENU, only_angles);
 }
 
 /** @}
-	======================================================================= */
+  ======================================================================= */
 
-/**  @} */	// end of grouping
+/**  @} */  // end of grouping
 
 }  // namespace topography
 

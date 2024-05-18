@@ -14,9 +14,9 @@
 
 class _DSceneViewerApp : public wxApp
 {
-   public:
-	bool OnInit() override;
-	int OnExit() override;
+ public:
+  bool OnInit() override;
+  int OnExit() override;
 };
 
-#endif	// _DSCENEVIEWERAPP_H
+#endif  // _DSCENEVIEWERAPP_H

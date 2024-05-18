@@ -17,8 +17,8 @@
 //
 #include <DbgHelp.h>
 #else
-#include <cxxabi.h>	 // __cxa_demangle()
-#include <dlfcn.h>	// dladdr()
+#include <cxxabi.h>  // __cxa_demangle()
+#include <dlfcn.h>   // dladdr()
 #ifndef __EMSCRIPTEN__
 #include <execinfo.h>
 #endif
@@ -30,31 +30,29 @@
 
 std::string mrpt::demangle(const std::string& symbolName)
 {
-	if (symbolName.empty()) return {};
+  if (symbolName.empty()) return {};
 
 #ifdef __EMSCRIPTEN__
-	return symbolName;
+  return symbolName;
 #endif
 
 #if defined(_WIN32)
-	char undecorated_name[1024];
-	if (!UnDecorateSymbolName(
-			symbolName.c_str(), undecorated_name, sizeof(undecorated_name),
-			UNDNAME_COMPLETE))
-	{
-		return symbolName;
-	}
-	else
-	{
-		return std::string(undecorated_name);
-	}
+  char undecorated_name[1024];
+  if (!UnDecorateSymbolName(
+          symbolName.c_str(), undecorated_name, sizeof(undecorated_name), UNDNAME_COMPLETE))
+  {
+    return symbolName;
+  }
+  else
+  {
+    return std::string(undecorated_name);
+  }
 #else
-	char* demangled = nullptr;
-	int status = -1;
-	demangled =
-		abi::__cxa_demangle(symbolName.c_str(), nullptr, nullptr, &status);
-	std::string ret = status == 0 ? std::string(demangled) : symbolName;
-	free(demangled);
-	return ret;
+  char* demangled = nullptr;
+  int status = -1;
+  demangled = abi::__cxa_demangle(symbolName.c_str(), nullptr, nullptr, &status);
+  std::string ret = status == 0 ? std::string(demangled) : symbolName;
+  free(demangled);
+  return ret;
 #endif
 }

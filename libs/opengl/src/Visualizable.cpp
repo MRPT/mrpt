@@ -7,17 +7,16 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"	 // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 //
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/Visualizable.h>
 
 // Note: This method cannot be defined into the .h to avoid including the
 // full CSetOfObjects.h header.
-mrpt::opengl::CSetOfObjects::Ptr mrpt::opengl::Visualizable::getVisualization()
-	const
+mrpt::opengl::CSetOfObjects::Ptr mrpt::opengl::Visualizable::getVisualization() const
 {
-	auto o = mrpt::opengl::CSetOfObjects::Create();
-	getVisualizationInto(*o);
-	return o;
+  auto o = mrpt::opengl::CSetOfObjects::Create();
+  getVisualizationInto(*o);
+  return o;
 }

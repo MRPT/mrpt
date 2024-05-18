@@ -29,7 +29,6 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/serialization/CMessage.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/system/COutputLogger.h>

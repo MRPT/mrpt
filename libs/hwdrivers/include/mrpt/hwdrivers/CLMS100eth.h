@@ -71,87 +71,83 @@ namespace mrpt::hwdrivers
  */
 class CLMS100Eth : public C2DRangeFinderAbstract
 {
-	DEFINE_GENERIC_SENSOR(CLMS100Eth)
-   public:
-	/** Constructor.
-	 * Note that there is default arguments, here you can customize IP Adress
-	 * and TCP Port of your device.
-	 */
-	CLMS100Eth(
-		std::string _ip = std::string("192.168.0.1"),
-		unsigned int _port = 2111);
-	/** Destructor.
-	 * Close communcation with the device, and free memory.
-	 */
-	~CLMS100Eth() override;
-	/** This function acquire a laser scan from the device. If an error occured,
-	 * hardwareError will be set to true.
-	 * The new laser scan will be stored in the outObservation argument.
-	 *
-	 * \exception This method throw exception if the frame received from the
-	 * LMS 100 contain the following bad parameters :
-	 *  * Status is not OK
-	 *  * Data in the scan aren't DIST1 (may be RSSIx or DIST2).
-	 */
-	void doProcessSimple(
-		bool& outThereIsObservation,
-		mrpt::obs::CObservation2DRangeScan& outObservation,
-		bool& hardwareError) override;
+  DEFINE_GENERIC_SENSOR(CLMS100Eth)
+ public:
+  /** Constructor.
+   * Note that there is default arguments, here you can customize IP Adress
+   * and TCP Port of your device.
+   */
+  CLMS100Eth(std::string _ip = std::string("192.168.0.1"), unsigned int _port = 2111);
+  /** Destructor.
+   * Close communcation with the device, and free memory.
+   */
+  ~CLMS100Eth() override;
+  /** This function acquire a laser scan from the device. If an error occured,
+   * hardwareError will be set to true.
+   * The new laser scan will be stored in the outObservation argument.
+   *
+   * \exception This method throw exception if the frame received from the
+   * LMS 100 contain the following bad parameters :
+   *  * Status is not OK
+   *  * Data in the scan aren't DIST1 (may be RSSIx or DIST2).
+   */
+  void doProcessSimple(
+      bool& outThereIsObservation,
+      mrpt::obs::CObservation2DRangeScan& outObservation,
+      bool& hardwareError) override;
 
-	/** This method must be called before trying to get a laser scan.
-	 */
-	bool turnOn() override;
-	/** This method could be called manually to stop communication with the
-	 * device. Method is also called by destructor.
-	 */
-	bool turnOff() override;
+  /** This method must be called before trying to get a laser scan.
+   */
+  bool turnOn() override;
+  /** This method could be called manually to stop communication with the
+   * device. Method is also called by destructor.
+   */
+  bool turnOff() override;
 
-	/** A method to set the sensor pose on the robot.
-	 * Equivalent to setting the sensor pose via loading it from a config
-	 * file.
-	 */
-	void setSensorPose(const mrpt::poses::CPose3D& _pose);
+  /** A method to set the sensor pose on the robot.
+   * Equivalent to setting the sensor pose via loading it from a config
+   * file.
+   */
+  void setSensorPose(const mrpt::poses::CPose3D& _pose);
 
-	/** This method should be called periodically. Period depend on the
-	 * process_rate in the configuration file.
-	 */
-	void doProcess() override;
+  /** This method should be called periodically. Period depend on the
+   * process_rate in the configuration file.
+   */
+  void doProcess() override;
 
-	/** Initialize the sensor according to the parameters previously read in the
-	 * configuration file.
-	 */
-	void initialize() override;
+  /** Initialize the sensor according to the parameters previously read in the
+   * configuration file.
+   */
+  void initialize() override;
 
-   private:
-	std::string m_ip;
-	unsigned int m_port = 0;
-	mrpt::comms::CClientTCPSocket m_client;
-	bool m_turnedOn{false};
-	std::string m_cmd;
-	bool m_connected{false};
-	unsigned int m_scanFrequency = 0;  // hertz
-	double m_angleResolution = 0;  // degrees
-	double m_startAngle = 0;  // degrees
-	double m_stopAngle = 0;	 // degrees
-	mrpt::poses::CPose3D m_sensorPose;
-	double m_maxRange{20.0};
-	double m_beamApperture = 0;
+ private:
+  std::string m_ip;
+  unsigned int m_port = 0;
+  mrpt::comms::CClientTCPSocket m_client;
+  bool m_turnedOn{false};
+  std::string m_cmd;
+  bool m_connected{false};
+  unsigned int m_scanFrequency = 0;  // hertz
+  double m_angleResolution = 0;      // degrees
+  double m_startAngle = 0;           // degrees
+  double m_stopAngle = 0;            // degrees
+  mrpt::poses::CPose3D m_sensorPose;
+  double m_maxRange{20.0};
+  double m_beamApperture = 0;
 
-	void generateCmd(const char* cmd);
-	bool checkIsConnected();
-	bool decodeLogIn(char* msg);
-	bool decodeScanCfg(std::istringstream& stream);
-	bool decodeScanDataCfg(std::istringstream& stream);
-	bool decodeScan(
-		char* buf, mrpt::obs::CObservation2DRangeScan& outObservation);
-	void sendCommand(const char* cmd);
-	void roughPrint(char* msg);
+  void generateCmd(const char* cmd);
+  bool checkIsConnected();
+  bool decodeLogIn(char* msg);
+  bool decodeScanCfg(std::istringstream& stream);
+  bool decodeScanDataCfg(std::istringstream& stream);
+  bool decodeScan(char* buf, mrpt::obs::CObservation2DRangeScan& outObservation);
+  void sendCommand(const char* cmd);
+  void roughPrint(char* msg);
 
-   protected:
-	/** Load sensor pose on the robot, or keep the default sensor pose.
-	 */
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection) override;
+ protected:
+  /** Load sensor pose on the robot, or keep the default sensor pose.
+   */
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection) override;
 };
 }  // namespace mrpt::hwdrivers

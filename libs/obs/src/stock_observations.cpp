@@ -21,13 +21,12 @@
 
 using namespace mrpt::obs;
 
-void stock_observations::example2DRangeScan(
-	mrpt::obs::CObservation2DRangeScan& s, int i)
+void stock_observations::example2DRangeScan(mrpt::obs::CObservation2DRangeScan& s, int i)
 {
-	using scan_data_t = std::array<float, 361>;
-	using scan_valid_data_t = std::array<char, 361>;
+  using scan_data_t = std::array<float, 361>;
+  using scan_valid_data_t = std::array<char, 361>;
 
-	// clang-format off
+  // clang-format off
 	const std::array<scan_data_t, 2> SCAN_RANGES = {
 		{{0.910f,  0.900f,  0.910f,  0.900f,  0.900f,  0.890f,  0.890f,
 		  0.880f,  0.890f,  0.880f,  0.880f,  0.880f,  0.880f,  0.880f,
@@ -166,27 +165,26 @@ void stock_observations::example2DRangeScan(
 		  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}}};
-	// clang-format on
+  // clang-format on
 
-	s.aperture = M_PIf;
-	s.rightToLeft = true;
-	s.loadFromVectors(
-		SCAN_RANGES.at(i).size(), &SCAN_RANGES.at(i).at(0),
-		&SCAN_VALID.at(i).at(0));
+  s.aperture = M_PIf;
+  s.rightToLeft = true;
+  s.loadFromVectors(SCAN_RANGES.at(i).size(), &SCAN_RANGES.at(i).at(0), &SCAN_VALID.at(i).at(0));
 }
 
 void stock_observations::exampleImage(mrpt::img::CImage& im, int i)
 {
-	mrpt::io::CMemoryStream buf;
-	switch (i)
-	{
-		case 0:
-			buf.assignMemoryNotOwn(sample_image1, sizeof(sample_image1));
-			break;
-		case 1:
-			buf.assignMemoryNotOwn(sample_image2, sizeof(sample_image2));
-			break;
-		default: THROW_EXCEPTION("Out of bound index in exampleImage()");
-	}
-	mrpt::serialization::archiveFrom(buf) >> im;
+  mrpt::io::CMemoryStream buf;
+  switch (i)
+  {
+    case 0:
+      buf.assignMemoryNotOwn(sample_image1, sizeof(sample_image1));
+      break;
+    case 1:
+      buf.assignMemoryNotOwn(sample_image2, sizeof(sample_image2));
+      break;
+    default:
+      THROW_EXCEPTION("Out of bound index in exampleImage()");
+  }
+  mrpt::serialization::archiveFrom(buf) >> im;
 }

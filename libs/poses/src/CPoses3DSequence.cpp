@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"	// Precompiled headers
+#include "poses-precomp.h"  // Precompiled headers
 //
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/poses/CPoses3DSequence.h>
@@ -23,24 +23,22 @@ size_t CPoses3DSequence::posesCount() { return m_poses.size(); }
 uint8_t CPoses3DSequence::serializeGetVersion() const { return 0; }
 void CPoses3DSequence::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	out.WriteAs<uint32_t>(m_poses.size());
-	for (const auto& p : m_poses)
-		out << p;
+  out.WriteAs<uint32_t>(m_poses.size());
+  for (const auto& p : m_poses) out << p;
 }
-void CPoses3DSequence::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void CPoses3DSequence::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	switch (version)
-	{
-		case 0:
-		{
-			m_poses.resize(in.ReadAs<uint32_t>());
-			for (auto& p : m_poses)
-				in >> p;
-		}
-		break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	};
+  switch (version)
+  {
+    case 0:
+    {
+      m_poses.resize(in.ReadAs<uint32_t>());
+      for (auto& p : m_poses) in >> p;
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
 }
 
 /*---------------------------------------------------------------
@@ -49,9 +47,9 @@ Reads the stored pose at index "ind", where the first one is 0, the last
  ---------------------------------------------------------------*/
 void CPoses3DSequence::getPose(unsigned int ind, CPose3D& outPose)
 {
-	if (ind >= m_poses.size()) THROW_EXCEPTION("getPose: Index out of range!!");
+  if (ind >= m_poses.size()) THROW_EXCEPTION("getPose: Index out of range!!");
 
-	outPose = CPose3D(m_poses[ind]);
+  outPose = CPose3D(m_poses[ind]);
 }
 
 /*---------------------------------------------------------------
@@ -60,21 +58,18 @@ Changes the stored pose at index "ind", where the first one is 0, the last
  ---------------------------------------------------------------*/
 void CPoses3DSequence::changePose(unsigned int ind, CPose3D& inPose)
 {
-	if (ind >= m_poses.size()) THROW_EXCEPTION("getPose: Index out of range!!");
-	m_poses[ind] = inPose.asTPose();
+  if (ind >= m_poses.size()) THROW_EXCEPTION("getPose: Index out of range!!");
+  m_poses[ind] = inPose.asTPose();
 }
 
 /*---------------------------------------------------------------
-	Appends a new pose at the end of sequence. Remember that poses are relative,
+  Appends a new pose at the end of sequence. Remember that poses are relative,
  incremental to the last one.
  ---------------------------------------------------------------*/
-void CPoses3DSequence::appendPose(CPose3D& newPose)
-{
-	m_poses.push_back(newPose.asTPose());
-}
+void CPoses3DSequence::appendPose(CPose3D& newPose) { m_poses.push_back(newPose.asTPose()); }
 
 /*---------------------------------------------------------------
-			Clears the sequence.
+      Clears the sequence.
  ---------------------------------------------------------------*/
 void CPoses3DSequence::clear() { m_poses.clear(); }
 /*---------------------------------------------------------------
@@ -87,39 +82,32 @@ void CPoses3DSequence::clear() { m_poses.clear(); }
  */
 CPose3D CPoses3DSequence::absolutePoseOf(unsigned int n)
 {
-	CPose3D ret(0, 0, 0);
-	unsigned int i;
+  CPose3D ret(0, 0, 0);
+  unsigned int i;
 
-	if (n > m_poses.size())
-		THROW_EXCEPTION("absolutePoseOf: Index out of range!!");
+  if (n > m_poses.size()) THROW_EXCEPTION("absolutePoseOf: Index out of range!!");
 
-	for (i = 0; i < n; i++)
-		ret = ret + CPose3D(m_poses[i]);
+  for (i = 0; i < n; i++) ret = ret + CPose3D(m_poses[i]);
 
-	return ret;
+  return ret;
 }
 
 /*---------------------------------------------------------------
-	A shortcut for "absolutePoseOf( posesCount() )".
+  A shortcut for "absolutePoseOf( posesCount() )".
  ---------------------------------------------------------------*/
-CPose3D CPoses3DSequence::absolutePoseAfterAll()
-{
-	return absolutePoseOf(posesCount());
-}
+CPose3D CPoses3DSequence::absolutePoseAfterAll() { return absolutePoseOf(posesCount()); }
 
 double CPoses3DSequence::computeTraveledDistanceAfter(size_t n)
 {
-	double dist = 0;
+  double dist = 0;
 
-	if (n > m_poses.size())
-		THROW_EXCEPTION("computeTraveledDistanceAfter: Index out of range!!");
+  if (n > m_poses.size()) THROW_EXCEPTION("computeTraveledDistanceAfter: Index out of range!!");
 
-	for (size_t i = 0; i < n; i++)
-		dist += m_poses[i].norm();
-	return dist;
+  for (size_t i = 0; i < n; i++) dist += m_poses[i].norm();
+  return dist;
 }
 
 double CPoses3DSequence::computeTraveledDistanceAfterAll()
 {
-	return computeTraveledDistanceAfter(posesCount());
+  return computeTraveledDistanceAfter(posesCount());
 }

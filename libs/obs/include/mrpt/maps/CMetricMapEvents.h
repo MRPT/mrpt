@@ -25,17 +25,14 @@ namespace maps
  */
 class mrptEventMetricMapClear : public mrpt::system::mrptEvent
 {
-   protected:
-	/** Just to allow this class to be polymorphic */
-	void do_nothing() override {}
+ protected:
+  /** Just to allow this class to be polymorphic */
+  void do_nothing() override {}
 
-   public:
-	inline mrptEventMetricMapClear(const mrpt::maps::CMetricMap* smap)
-		: source_map(smap)
-	{
-	}
+ public:
+  inline mrptEventMetricMapClear(const mrpt::maps::CMetricMap* smap) : source_map(smap) {}
 
-	const mrpt::maps::CMetricMap* source_map;
+  const mrpt::maps::CMetricMap* source_map;
 };
 
 /** Event emitted by a metric up upon a succesful call to insertObservation()
@@ -44,21 +41,22 @@ class mrptEventMetricMapClear : public mrpt::system::mrptEvent
  */
 class mrptEventMetricMapInsert : public mrpt::system::mrptEvent
 {
-   protected:
-	/** Just to allow this class to be polymorphic */
-	void do_nothing() override {}
+ protected:
+  /** Just to allow this class to be polymorphic */
+  void do_nothing() override {}
 
-   public:
-	mrptEventMetricMapInsert(
-		const mrpt::maps::CMetricMap* smap, const mrpt::obs::CObservation* obs,
-		const std::optional<const mrpt::poses::CPose3D>& robotPose)
-		: source_map(smap), inserted_obs(obs), inserted_robotPose(robotPose)
-	{
-	}
+ public:
+  mrptEventMetricMapInsert(
+      const mrpt::maps::CMetricMap* smap,
+      const mrpt::obs::CObservation* obs,
+      const std::optional<const mrpt::poses::CPose3D>& robotPose) :
+      source_map(smap), inserted_obs(obs), inserted_robotPose(robotPose)
+  {
+  }
 
-	const mrpt::maps::CMetricMap* source_map;
-	const mrpt::obs::CObservation* inserted_obs;
-	const std::optional<const mrpt::poses::CPose3D> inserted_robotPose;
+  const mrpt::maps::CMetricMap* source_map;
+  const mrpt::obs::CObservation* inserted_obs;
+  const std::optional<const mrpt::poses::CPose3D> inserted_robotPose;
 };
 
 }  // namespace maps

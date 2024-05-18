@@ -24,29 +24,25 @@ namespace mrpt::nav
  */
 class CPTG_DiffDrive_CC : public CPTG_DiffDrive_CollisionGridBased
 {
-	DEFINE_SERIALIZABLE(CPTG_DiffDrive_CC, mrpt::nav)
-   public:
-	CPTG_DiffDrive_CC() = default;
-	CPTG_DiffDrive_CC(
-		const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
-	{
-		CPTG_DiffDrive_CC::loadFromConfigFile(cfg, sSection);
-	}
-	void loadFromConfigFile(
-		const mrpt::config::CConfigFileBase& cfg,
-		const std::string& sSection) override;
-	void saveToConfigFile(
-		mrpt::config::CConfigFileBase& cfg,
-		const std::string& sSection) const override;
+  DEFINE_SERIALIZABLE(CPTG_DiffDrive_CC, mrpt::nav)
+ public:
+  CPTG_DiffDrive_CC() = default;
+  CPTG_DiffDrive_CC(const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
+  {
+    CPTG_DiffDrive_CC::loadFromConfigFile(cfg, sSection);
+  }
+  void loadFromConfigFile(
+      const mrpt::config::CConfigFileBase& cfg, const std::string& sSection) override;
+  void saveToConfigFile(
+      mrpt::config::CConfigFileBase& cfg, const std::string& sSection) const override;
 
-	std::string getDescription() const override;
-	bool PTG_IsIntoDomain(double x, double y) const override;
-	void ptgDiffDriveSteeringFunction(
-		float alpha, float t, float x, float y, float phi, float& v,
-		float& w) const override;
-	void loadDefaultParams() override;
+  std::string getDescription() const override;
+  bool PTG_IsIntoDomain(double x, double y) const override;
+  void ptgDiffDriveSteeringFunction(
+      float alpha, float t, float x, float y, float phi, float& v, float& w) const override;
+  void loadDefaultParams() override;
 
-   protected:
-	double R{0}, K{0};
+ protected:
+  double R{0}, K{0};
 };
 }  // namespace mrpt::nav

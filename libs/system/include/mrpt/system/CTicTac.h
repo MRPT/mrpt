@@ -20,17 +20,17 @@ namespace mrpt::system
  */
 class CTicTac
 {
-   public:
-	/** Default constructor. Implicitly calls Tic() */
-	CTicTac() noexcept;
-	/** Starts the stopwatch. \sa Tac() */
-	void Tic() noexcept;
-	/** Stops the stopwatch.  \return Returns the ellapsed time in seconds.
-	 * \sa Tic() */
-	double Tac() const noexcept;
+ public:
+  /** Default constructor. Implicitly calls Tic() */
+  CTicTac() noexcept;
+  /** Starts the stopwatch. \sa Tac() */
+  void Tic() noexcept;
+  /** Stops the stopwatch.  \return Returns the ellapsed time in seconds.
+   * \sa Tic() */
+  double Tac() const noexcept;
 
-   private:
-	alignas(16) unsigned long largeInts[4]{0, 0};
-};	// End of class def.
+ private:
+  alignas(16) unsigned long largeInts[4]{0, 0};
+};  // End of class def.
 
 }  // namespace mrpt::system

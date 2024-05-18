@@ -21,9 +21,9 @@ namespace mrpt::img
  */
 enum class DistortionModel : uint8_t
 {
-	none = 0,  //!< No distortion applied
-	plumb_bob,	//!< 5-param Brown-Conrady or Plumb-Bob pinhole distortion model
-	kannala_brandt	//!< 4-parameter Kannala Brandt distortion model (fisheye)
+  none = 0,       //!< No distortion applied
+  plumb_bob,      //!< 5-param Brown-Conrady or Plumb-Bob pinhole distortion model
+  kannala_brandt  //!< 4-parameter Kannala Brandt distortion model (fisheye)
 };
 
 }  // namespace mrpt::img

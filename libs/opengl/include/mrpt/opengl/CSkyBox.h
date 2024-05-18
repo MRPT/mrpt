@@ -30,47 +30,43 @@ namespace mrpt::opengl
  */
 class CSkyBox : public CRenderizable
 {
-	DEFINE_SERIALIZABLE(CSkyBox, mrpt::opengl)
+  DEFINE_SERIALIZABLE(CSkyBox, mrpt::opengl)
 
-   public:
-	CSkyBox() = default;
-	virtual ~CSkyBox() override;
+ public:
+  CSkyBox() = default;
+  virtual ~CSkyBox() override;
 
-	/** @name Renderizable shader API virtual methods
-	 * @{ */
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
-	virtual shader_list_t requiredShaders() const override
-	{
-		return {DefaultShaderID::SKYBOX};
-	}
-	// Not needed, only for VAO and VBO
-	void freeOpenGLResources() override {}
-	void initializeTextures() const override;
-	/** @} */
+  /** @name Renderizable shader API virtual methods
+   * @{ */
+  void render(const RenderContext& rc) const override;
+  void renderUpdateBuffers() const override;
+  virtual shader_list_t requiredShaders() const override { return {DefaultShaderID::SKYBOX}; }
+  // Not needed, only for VAO and VBO
+  void freeOpenGLResources() override {}
+  void initializeTextures() const override;
+  /** @} */
 
-	/** Assigns a texture. It is mandatory to assign all 6 faces before
-	 * initializing/rendering the texture.
-	 *
-	 * \note Images are copied, the original ones can be deleted.
-	 */
-	void assignImage(
-		const CUBE_TEXTURE_FACE face, const mrpt::img::CImage& img);
+  /** Assigns a texture. It is mandatory to assign all 6 faces before
+   * initializing/rendering the texture.
+   *
+   * \note Images are copied, the original ones can be deleted.
+   */
+  void assignImage(const CUBE_TEXTURE_FACE face, const mrpt::img::CImage& img);
 
-	/// \overload with move semantics for the image.
-	void assignImage(const CUBE_TEXTURE_FACE face, img::CImage&& img);
+  /// \overload with move semantics for the image.
+  void assignImage(const CUBE_TEXTURE_FACE face, img::CImage&& img);
 
-	auto internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf override;
+  auto internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf override;
 
-	bool cullElegible() const override { return false; }
+  bool cullElegible() const override { return false; }
 
-   private:
-	/// The cube texture for the 6 faces
-	mutable Texture m_cubeTexture;
-	std::array<mrpt::img::CImage, 6> m_textureImages;
+ private:
+  /// The cube texture for the 6 faces
+  mutable Texture m_cubeTexture;
+  std::array<mrpt::img::CImage, 6> m_textureImages;
 
-	mutable Buffer m_vbo;
-	mutable VertexArrayObject m_vao;
+  mutable Buffer m_vbo;
+  mutable VertexArrayObject m_vao;
 };
 
 }  // namespace mrpt::opengl

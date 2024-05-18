@@ -30,176 +30,174 @@ using namespace std;
 // ------------------------------------------------------
 double grid_test_1(int a1, int a2)
 {
-	COccupancyGridMap2D gridMap(-20, 20, -20, 20, 0.05f);
+  COccupancyGridMap2D gridMap(-20, 20, -20, 20, 0.05f);
 
-	// test 1: getcell
-	// ----------------------------------------
-	const long N = 10000000;
-	float p = 0;
+  // test 1: getcell
+  // ----------------------------------------
+  const long N = 10000000;
+  float p = 0;
 
-	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		p += gridMap.getCell(0, 0);
-	}
-	return tictac.Tac() / N;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    p += gridMap.getCell(0, 0);
+  }
+  return tictac.Tac() / N;
 }
 
 double grid_test_2(int a1, int a2)
 {
-	COccupancyGridMap2D gridMap(-20, 20, -20, 20, 0.05f);
-	// test 2: setcell
-	// ----------------------------------------
-	const long N = 10000000;
+  COccupancyGridMap2D gridMap(-20, 20, -20, 20, 0.05f);
+  // test 2: setcell
+  // ----------------------------------------
+  const long N = 10000000;
 
-	float p = 0.8f;
+  float p = 0.8f;
 
-	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		gridMap.setCell(0, 0, p);
-	}
-	return tictac.Tac() / N;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    gridMap.setCell(0, 0, p);
+  }
+  return tictac.Tac() / N;
 }
 
 double grid_test_3(int a1, int a2)
 {
-	COccupancyGridMap2D gridMap(-20, 20, -20, 20, 0.05f);
-	const long N = 1000000;
-	float p = 0.57f;
+  COccupancyGridMap2D gridMap(-20, 20, -20, 20, 0.05f);
+  const long N = 1000000;
+  float p = 0.57f;
 
-	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		gridMap.updateCell(0, 0, p);
-	}
-	return tictac.Tac() / N;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    gridMap.updateCell(0, 0, p);
+  }
+  return tictac.Tac() / N;
 }
 
 double grid_test_4(int a1, int a2)
 {
-	COccupancyGridMap2D gridMap(-20, 20, -20, 20, 0.05f);
+  COccupancyGridMap2D gridMap(-20, 20, -20, 20, 0.05f);
 
-	// test 4: updateCell_fast
-	// ----------------------------------------
-	const long N = 10000000;
+  // test 4: updateCell_fast
+  // ----------------------------------------
+  const long N = 10000000;
 
-	float p = 0.57f;
-	COccupancyGridMap2D::cellType logodd_obs = COccupancyGridMap2D::p2l(p);
-	COccupancyGridMap2D::cellType* theMapArray = gridMap.getRow(0);
-	unsigned theMapSize_x = gridMap.getSizeX();
-	COccupancyGridMap2D::cellType logodd_thres_occupied =
-		COccupancyGridMap2D::OCCGRID_CELLTYPE_MIN + logodd_obs;
+  float p = 0.57f;
+  COccupancyGridMap2D::cellType logodd_obs = COccupancyGridMap2D::p2l(p);
+  COccupancyGridMap2D::cellType* theMapArray = gridMap.getRow(0);
+  unsigned theMapSize_x = gridMap.getSizeX();
+  COccupancyGridMap2D::cellType logodd_thres_occupied =
+      COccupancyGridMap2D::OCCGRID_CELLTYPE_MIN + logodd_obs;
 
-	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		gridMap.updateCell_fast_occupied(
-			2, 2, logodd_obs, logodd_thres_occupied, theMapArray, theMapSize_x);
-	}
-	return tictac.Tac() / N;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    gridMap.updateCell_fast_occupied(
+        2, 2, logodd_obs, logodd_thres_occupied, theMapArray, theMapSize_x);
+  }
+  return tictac.Tac() / N;
 }
 
 double grid_test_5_6(int a1, int a2)
 {
-	getRandomGenerator().randomize(333);
+  getRandomGenerator().randomize(333);
 
-	// prepare the laser scan:
-	CObservation2DRangeScan scan1;
-	stock_observations::example2DRangeScan(scan1);
+  // prepare the laser scan:
+  CObservation2DRangeScan scan1;
+  stock_observations::example2DRangeScan(scan1);
 
-	COccupancyGridMap2D gridmap(-20, 20, -20, 20, 0.05f);
-	gridmap.insertionOptions.wideningBeamsWithDistance = a1 != 0;
-	const long N = 3000;
-	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		CPose2D pose(
-			getRandomGenerator().drawUniform(-1.0, 1.0),
-			getRandomGenerator().drawUniform(-1.0, 1.0),
-			getRandomGenerator().drawUniform(-M_PI, M_PI));
-		CPose3D pose3D(pose);
+  COccupancyGridMap2D gridmap(-20, 20, -20, 20, 0.05f);
+  gridmap.insertionOptions.wideningBeamsWithDistance = a1 != 0;
+  const long N = 3000;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    CPose2D pose(
+        getRandomGenerator().drawUniform(-1.0, 1.0), getRandomGenerator().drawUniform(-1.0, 1.0),
+        getRandomGenerator().drawUniform(-M_PI, M_PI));
+    CPose3D pose3D(pose);
 
-		gridmap.insertObservation(scan1, pose3D);
-	}
-	return tictac.Tac() / N;
+    gridmap.insertObservation(scan1, pose3D);
+  }
+  return tictac.Tac() / N;
 }
 
 double grid_test_7(int a1, int a2)
 {
-	COccupancyGridMap2D gridmap(-20, 20, -20, 20, 0.05f);
-	CTicTac tictac;
+  COccupancyGridMap2D gridmap(-20, 20, -20, 20, 0.05f);
+  CTicTac tictac;
 
-	gridmap.resizeGrid(-30, 30, -40, 40);
+  gridmap.resizeGrid(-30, 30, -40, 40);
 
-	return tictac.Tac();
+  return tictac.Tac();
 }
 
 double grid_test_8(int a1, int a2)
 {
-	getRandomGenerator().randomize(333);
+  getRandomGenerator().randomize(333);
 
-	// prepare the laser scan:
-	CObservation2DRangeScan scan1;
-	stock_observations::example2DRangeScan(scan1);
+  // prepare the laser scan:
+  CObservation2DRangeScan scan1;
+  stock_observations::example2DRangeScan(scan1);
 
-	COccupancyGridMap2D gridmap(-20, 20, -20, 20, 0.05f);
+  COccupancyGridMap2D gridmap(-20, 20, -20, 20, 0.05f);
 
-	// test 8: Likelihood computation
-	const long N = 5000;
+  // test 8: Likelihood computation
+  const long N = 5000;
 
-	CPose3D pose3D(0, 0, 0);
-	gridmap.insertObservation(scan1, pose3D);
+  CPose3D pose3D(0, 0, 0);
+  gridmap.insertObservation(scan1, pose3D);
 
-	double R = 0;
-	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		CPose3D pose(
-			getRandomGenerator().drawUniform(-1.0, 1.0),
-			getRandomGenerator().drawUniform(-1.0, 1.0), .0,
-			getRandomGenerator().drawUniform(-M_PI, M_PI), .0, .0);
-		R += gridmap.computeObservationLikelihood(scan1, pose);
-	}
-	return tictac.Tac() / N;
+  double R = 0;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    CPose3D pose(
+        getRandomGenerator().drawUniform(-1.0, 1.0), getRandomGenerator().drawUniform(-1.0, 1.0),
+        .0, getRandomGenerator().drawUniform(-M_PI, M_PI), .0, .0);
+    R += gridmap.computeObservationLikelihood(scan1, pose);
+  }
+  return tictac.Tac() / N;
 }
 
 double grid_test_9(int a1, int a2)
 {
-	// test 9: computeMatchingWith2D
-	// ----------------------------------------
+  // test 9: computeMatchingWith2D
+  // ----------------------------------------
 
-	// prepare the laser scan:
-	CObservation2DRangeScan scan1;
-	stock_observations::example2DRangeScan(scan1);
+  // prepare the laser scan:
+  CObservation2DRangeScan scan1;
+  stock_observations::example2DRangeScan(scan1);
 
-	CSimplePointsMap gridmap;
-	CSimplePointsMap pt_map2;
-	pt_map2.insertionOptions.minDistBetweenLaserPoints = 0.03f;
+  CSimplePointsMap gridmap;
+  CSimplePointsMap pt_map2;
+  pt_map2.insertionOptions.minDistBetweenLaserPoints = 0.03f;
 
-	CPose3D pose;
-	gridmap.insertObservation(scan1, pose);
+  CPose3D pose;
+  gridmap.insertObservation(scan1, pose);
 
-	CPose3D pose2(0.05, 0.04, 0, 4.0_deg, 0, 0);
-	pt_map2.insertObservation(scan1, pose2);
+  CPose3D pose2(0.05, 0.04, 0, 4.0_deg, 0, 0);
+  pt_map2.insertObservation(scan1, pose2);
 
-	const CPose2D nullPose(0, 0, 0);
-	TMatchingPairList correspondences;
+  const CPose2D nullPose(0, 0, 0);
+  TMatchingPairList correspondences;
 
-	TMatchingParams matchParams;
-	TMatchingExtraResults matchExtraResults;
-	matchParams.maxDistForCorrespondence = 0.10f;
-	matchParams.maxAngularDistForCorrespondence = 0;
+  TMatchingParams matchParams;
+  TMatchingExtraResults matchExtraResults;
+  matchParams.maxDistForCorrespondence = 0.10f;
+  matchParams.maxAngularDistForCorrespondence = 0;
 
-	CTicTac tictac;
-	for (long i = 0; i < a1; i++)
-	{
-		gridmap.determineMatching2D(
-			&pt_map2,  // The other map
-			nullPose,  // The other map's pose
-			correspondences, matchParams, matchExtraResults);
-	}
-	return tictac.Tac() / a1;
+  CTicTac tictac;
+  for (long i = 0; i < a1; i++)
+  {
+    gridmap.determineMatching2D(
+        &pt_map2,  // The other map
+        nullPose,  // The other map's pose
+        correspondences, matchParams, matchExtraResults);
+  }
+  return tictac.Tac() / a1;
 }
 
 // ------------------------------------------------------
@@ -207,15 +205,13 @@ double grid_test_9(int a1, int a2)
 // ------------------------------------------------------
 void register_tests_grids()
 {
-	lstTests.emplace_back("gridmap2D: getCell", grid_test_1);
-	lstTests.emplace_back("gridmap2D: setCell", grid_test_2);
-	lstTests.emplace_back("gridmap2D: updateCell", grid_test_3);
-	lstTests.emplace_back("gridmap2D: updateCell_fast_occupied", grid_test_4);
-	lstTests.emplace_back(
-		"gridmap2D: insert scan w/o widening", grid_test_5_6, 0);
-	lstTests.emplace_back(
-		"gridmap2D: insert scan with widening", grid_test_5_6, 1);
-	lstTests.emplace_back("gridmap2D: resize", grid_test_7);
-	lstTests.emplace_back("gridmap2D: computeLikelihood", grid_test_8);
-	lstTests.emplace_back("gridmap2D: determineMatching2D", grid_test_9, 5000);
+  lstTests.emplace_back("gridmap2D: getCell", grid_test_1);
+  lstTests.emplace_back("gridmap2D: setCell", grid_test_2);
+  lstTests.emplace_back("gridmap2D: updateCell", grid_test_3);
+  lstTests.emplace_back("gridmap2D: updateCell_fast_occupied", grid_test_4);
+  lstTests.emplace_back("gridmap2D: insert scan w/o widening", grid_test_5_6, 0);
+  lstTests.emplace_back("gridmap2D: insert scan with widening", grid_test_5_6, 1);
+  lstTests.emplace_back("gridmap2D: resize", grid_test_7);
+  lstTests.emplace_back("gridmap2D: computeLikelihood", grid_test_8);
+  lstTests.emplace_back("gridmap2D: determineMatching2D", grid_test_9, 5000);
 }

@@ -26,15 +26,13 @@ namespace mrpt::containers
  * \endcode
  */
 template <typename src_container, typename dst_container>
-inline void copy_container_typecasting(
-	const src_container& src, dst_container& trg)
+inline void copy_container_typecasting(const src_container& src, dst_container& trg)
 {
-	trg.resize(src.size());
-	auto i = src.begin();
-	auto last = src.end();
-	auto target = trg.begin();
-	for (; i != last; ++i, ++target)
-		*target = static_cast<typename dst_container::value_type>(*i);
+  trg.resize(src.size());
+  auto i = src.begin();
+  auto last = src.end();
+  auto target = trg.begin();
+  for (; i != last; ++i, ++target) *target = static_cast<typename dst_container::value_type>(*i);
 }
 /** @} */  // end of grouping
 }  // namespace mrpt::containers

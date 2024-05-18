@@ -18,103 +18,107 @@ using namespace mrpt::nav;
 using namespace std;
 using namespace mrpt::system;
 
-IMPLEMENTS_SERIALIZABLE(
-	CPTG_DiffDrive_CS, CParameterizedTrajectoryGenerator, mrpt::nav)
+IMPLEMENTS_SERIALIZABLE(CPTG_DiffDrive_CS, CParameterizedTrajectoryGenerator, mrpt::nav)
 
 void CPTG_DiffDrive_CS::loadFromConfigFile(
-	const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
+    const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 {
-	CPTG_DiffDrive_CollisionGridBased::loadFromConfigFile(cfg, sSection);
+  CPTG_DiffDrive_CollisionGridBased::loadFromConfigFile(cfg, sSection);
 
-	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(K, double, cfg, sSection);
+  MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(K, double, cfg, sSection);
 
-	// The constant curvature turning radius used in this PTG:
-	R = V_MAX / W_MAX;
+  // The constant curvature turning radius used in this PTG:
+  R = V_MAX / W_MAX;
 }
 void CPTG_DiffDrive_CS::saveToConfigFile(
-	mrpt::config::CConfigFileBase& cfg, const std::string& sSection) const
+    mrpt::config::CConfigFileBase& cfg, const std::string& sSection) const
 {
-	MRPT_START
-	const int WN = 25, WV = 30;
-	CPTG_DiffDrive_CollisionGridBased::saveToConfigFile(cfg, sSection);
+  MRPT_START
+  const int WN = 25, WV = 30;
+  CPTG_DiffDrive_CollisionGridBased::saveToConfigFile(cfg, sSection);
 
-	cfg.write(
-		sSection, "K", K, WN, WV,
-		"K=+1 forward paths; K=-1 for backwards paths.");
+  cfg.write(sSection, "K", K, WN, WV, "K=+1 forward paths; K=-1 for backwards paths.");
 
-	MRPT_END
+  MRPT_END
 }
 
-void CPTG_DiffDrive_CS::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void CPTG_DiffDrive_CS::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(in);
+  CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(in);
 
-	switch (version)
-	{
-		case 0: in >> K; break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	};
+  switch (version)
+  {
+    case 0:
+      in >> K;
+      break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
 }
 
 uint8_t CPTG_DiffDrive_CS::serializeGetVersion() const { return 0; }
 void CPTG_DiffDrive_CS::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(out);
-	out << K;
+  CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(out);
+  out << K;
 }
 std::string CPTG_DiffDrive_CS::getDescription() const
 {
-	char str[100];
-	os::sprintf(str, 100, "CPTG_DiffDrive_CS,K=%i", (int)K);
-	return std::string(str);
+  char str[100];
+  os::sprintf(str, 100, "CPTG_DiffDrive_CS,K=%i", (int)K);
+  return std::string(str);
 }
 
 void CPTG_DiffDrive_CS::ptgDiffDriveSteeringFunction(
-	float alpha, float t, [[maybe_unused]] float x, [[maybe_unused]] float y,
-	[[maybe_unused]] float phi, float& v, float& w) const
+    float alpha,
+    float t,
+    [[maybe_unused]] float x,
+    [[maybe_unused]] float y,
+    [[maybe_unused]] float phi,
+    float& v,
+    float& w) const
 {
-	const float T = 0.847f * std::sqrt(std::abs(alpha)) * R / V_MAX;
+  const float T = 0.847f * std::sqrt(std::abs(alpha)) * R / V_MAX;
 
-	if (t < T)
-	{
-		// l+
-		v = V_MAX;
-		w = W_MAX * min(1.0f, 1.0f - (float)exp(-square(alpha)));
-	}
-	else
-	{
-		// s+:
-		v = V_MAX;
-		w = 0;
-	}
+  if (t < T)
+  {
+    // l+
+    v = V_MAX;
+    w = W_MAX * min(1.0f, 1.0f - (float)exp(-square(alpha)));
+  }
+  else
+  {
+    // s+:
+    v = V_MAX;
+    w = 0;
+  }
 
-	// Turn in the opposite direction??
-	if (alpha < 0) w *= -1;
+  // Turn in the opposite direction??
+  if (alpha < 0) w *= -1;
 
-	v *= K;
-	w *= K;
+  v *= K;
+  w *= K;
 }
 
 bool CPTG_DiffDrive_CS::PTG_IsIntoDomain(double x, double y) const
 {
-	// If signs of K and X are different, it is not into the domain:
-	if ((K * x) < 0) return false;
+  // If signs of K and X are different, it is not into the domain:
+  if ((K * x) < 0) return false;
 
-	if (fabs(y) >= R)
-	{
-		// Segmento de arriba:
-		return (fabs(x) > R - 0.10f);
-	}
-	else
-	{
-		// The circle at (0,R):
-		return (square(x) + square(fabs(y) - (R + 0.10f))) > square(R);
-	}
+  if (fabs(y) >= R)
+  {
+    // Segmento de arriba:
+    return (fabs(x) > R - 0.10f);
+  }
+  else
+  {
+    // The circle at (0,R):
+    return (square(x) + square(fabs(y) - (R + 0.10f))) > square(R);
+  }
 }
 
 void CPTG_DiffDrive_CS::loadDefaultParams()
 {
-	CPTG_DiffDrive_CollisionGridBased::loadDefaultParams();
-	K = +1.0;
+  CPTG_DiffDrive_CollisionGridBased::loadDefaultParams();
+  K = +1.0;
 }

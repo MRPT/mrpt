@@ -24,17 +24,16 @@ namespace mrpt::topography
  */
 struct TPathFromRTKInfo
 {
-	/** the path of the "best" GPS. */
-	std::map<mrpt::Clock::time_point, mrpt::math::TPoint3D> best_gps_path;
-	/** A measure of the quality at each point (may be empty if not there is no
-	 * enough information). */
-	std::map<mrpt::Clock::time_point, double> mahalabis_quality_measure;
-	/** The 6x6 covariance matrix for the uncertainty of each vehicle pose (may
-	 * be empty if there is no W_star info). */
-	std::map<mrpt::Clock::time_point, mrpt::math::CMatrixDouble66>
-		vehicle_uncertainty;
-	/** The reference covariance matrix used to compute vehicle_uncertainty. */
-	mrpt::math::CMatrixDouble W_star;
+  /** the path of the "best" GPS. */
+  std::map<mrpt::Clock::time_point, mrpt::math::TPoint3D> best_gps_path;
+  /** A measure of the quality at each point (may be empty if not there is no
+   * enough information). */
+  std::map<mrpt::Clock::time_point, double> mahalabis_quality_measure;
+  /** The 6x6 covariance matrix for the uncertainty of each vehicle pose (may
+   * be empty if there is no W_star info). */
+  std::map<mrpt::Clock::time_point, mrpt::math::CMatrixDouble66> vehicle_uncertainty;
+  /** The reference covariance matrix used to compute vehicle_uncertainty. */
+  mrpt::math::CMatrixDouble W_star;
 };
 
 /** Reconstruct the path of a vehicle equipped with 3 RTK GPSs.
@@ -56,10 +55,14 @@ struct TPathFromRTKInfo
  * \sa mrpt::topography
  */
 void path_from_rtk_gps(
-	mrpt::poses::CPose3DInterpolator& robot_path,
-	const mrpt::obs::CRawlog& rawlog, size_t rawlog_first, size_t rawlog_last,
-	bool isGUI = false, bool disableGPSInterp = false,
-	int path_smooth_filter_size = 2, TPathFromRTKInfo* outInfo = nullptr);
+    mrpt::poses::CPose3DInterpolator& robot_path,
+    const mrpt::obs::CRawlog& rawlog,
+    size_t rawlog_first,
+    size_t rawlog_last,
+    bool isGUI = false,
+    bool disableGPSInterp = false,
+    int path_smooth_filter_size = 2,
+    TPathFromRTKInfo* outInfo = nullptr);
 
 /** @} */  // end of grouping
 

@@ -19,21 +19,21 @@ namespace mrpt::slam
  */
 struct TMonteCarloLocalizationParams
 {
-	TMonteCarloLocalizationParams() = default;
+  TMonteCarloLocalizationParams() = default;
 
-	/** [update stage] Must be set to a metric map used to estimate the
-	 * likelihood of observations
-	 */
-	mrpt::maps::CMetricMap::ConstPtr metricMap;
+  /** [update stage] Must be set to a metric map used to estimate the
+   * likelihood of observations
+   */
+  mrpt::maps::CMetricMap::ConstPtr metricMap;
 
-	/** [update stage] Alternative way (if metricMap==nullptr): A metric map is
-	 * supplied for each particle: There must be the same maps here as pose
-	 * m_particles.
-	 */
-	std::vector<mrpt::maps::CMetricMap::ConstPtr> metricMaps;
+  /** [update stage] Alternative way (if metricMap==nullptr): A metric map is
+   * supplied for each particle: There must be the same maps here as pose
+   * m_particles.
+   */
+  std::vector<mrpt::maps::CMetricMap::ConstPtr> metricMaps;
 
-	/** Parameters for dynamic sample size, KLD method. */
-	TKLDParams KLD_params;
+  /** Parameters for dynamic sample size, KLD method. */
+  TKLDParams KLD_params;
 };
 
 }  // namespace mrpt::slam

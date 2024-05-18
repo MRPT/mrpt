@@ -16,7 +16,7 @@
 #include <string>
 
 /*---------------------------------------------------------------
-	Class
+  Class
   ---------------------------------------------------------------*/
 namespace mrpt::hwdrivers
 {
@@ -41,66 +41,68 @@ namespace mrpt::hwdrivers
  */
 class CFFMPEG_InputStream
 {
-   private:
-	/** The internal ffmpeg state */
-	struct Impl;
-	mrpt::pimpl<Impl> m_impl;
-	/** The open URL */
-	std::string m_url;
-	bool m_grab_as_grayscale;
+ private:
+  /** The internal ffmpeg state */
+  struct Impl;
+  mrpt::pimpl<Impl> m_impl;
+  /** The open URL */
+  std::string m_url;
+  bool m_grab_as_grayscale;
 
-   public:
-	/** Default constructor, does not open any video source at startup */
-	CFFMPEG_InputStream();
-	/** Destructor */
-	virtual ~CFFMPEG_InputStream();
+ public:
+  /** Default constructor, does not open any video source at startup */
+  CFFMPEG_InputStream();
+  /** Destructor */
+  virtual ~CFFMPEG_InputStream();
 
-	/** Open a video file or a video stream (rtsp://)
-	 *  This can be used to open local video files (eg. "myVideo.avi",
-	 * "c:\a.mpeg") and also IP cameras (e.g `rtsp://a.b.c.d/live.sdp`).
-	 *  User/password can be used like `rtsp://USER:PASSWORD@IP/PATH`.
-	 *
-	 * [ffmpeg options](https://www.ffmpeg.org/ffmpeg-protocols.html)
-	 * can be added via the \a options argument.
-	 *
-	 * If \a verbose is set to true, more information about the video will be
-	 * dumped to cout.
-	 *
-	 * \sa close, retrieveFrame
-	 * \return false on any error (and error info dumped to cerr), true on
-	 * success.
-	 */
-	bool openURL(
-		const std::string& url, bool grab_as_grayscale = false,
-		bool verbose = false,
-		const std::map<std::string, std::string>& options = {
-			{"rtsp_transport", "tcp"}});
+  /** Open a video file or a video stream (rtsp://)
+   *  This can be used to open local video files (eg. "myVideo.avi",
+   * "c:\a.mpeg") and also IP cameras (e.g `rtsp://a.b.c.d/live.sdp`).
+   *  User/password can be used like `rtsp://USER:PASSWORD@IP/PATH`.
+   *
+   * [ffmpeg options](https://www.ffmpeg.org/ffmpeg-protocols.html)
+   * can be added via the \a options argument.
+   *
+   * If \a verbose is set to true, more information about the video will be
+   * dumped to cout.
+   *
+   * \sa close, retrieveFrame
+   * \return false on any error (and error info dumped to cerr), true on
+   * success.
+   */
+  bool openURL(
+      const std::string& url,
+      bool grab_as_grayscale = false,
+      bool verbose = false,
+      const std::map<std::string, std::string>& options = {
+          {"rtsp_transport", "tcp"}
+  });
 
-	/** Return whether the video source was open correctly */
-	bool isOpen() const;
+  /** Return whether the video source was open correctly */
+  bool isOpen() const;
 
-	/** Close the video stream (this is called automatically at destruction).
-	 * \sa openURL
-	 */
-	void close();
+  /** Close the video stream (this is called automatically at destruction).
+   * \sa openURL
+   */
+  void close();
 
-	/** Get the frame-per-second (FPS) of the video source, or "-1" if the video
-	 * is not open. */
-	double getVideoFPS() const;
+  /** Get the frame-per-second (FPS) of the video source, or "-1" if the video
+   * is not open. */
+  double getVideoFPS() const;
 
-	/** Get the next frame from the video stream.
-	 *  Note that for remote streams (IP cameras) this method may block until
-	 * enough information is read to generate a new frame.
-	 *  Images are returned as 8-bit depth grayscale if "grab_as_grayscale" is
-	 * true.
-	 *  \return false on any error, true on success.
-	 *  \sa openURL, close, isOpen
-	 */
-	bool retrieveFrame(mrpt::img::CImage& out_img);
+  /** Get the next frame from the video stream.
+   *  Note that for remote streams (IP cameras) this method may block until
+   * enough information is read to generate a new frame.
+   *  Images are returned as 8-bit depth grayscale if "grab_as_grayscale" is
+   * true.
+   *  \return false on any error, true on success.
+   *  \sa openURL, close, isOpen
+   */
+  bool retrieveFrame(mrpt::img::CImage& out_img);
 
-	/** \overload also returning the frame PTS (frame presentation timestamp).
-	 *  Refer to docs for ffmpeg AVFrame::pts
-	 */
-	bool retrieveFrame(mrpt::img::CImage& out_img, int64_t& outPTS);
+  /** \overload also returning the frame PTS (frame presentation timestamp).
+   *  Refer to docs for ffmpeg AVFrame::pts
+   */
+  bool retrieveFrame(mrpt::img::CImage& out_img, int64_t& outPTS);
 };
 }  // namespace mrpt::hwdrivers

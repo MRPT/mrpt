@@ -20,28 +20,28 @@ namespace mrpt::graphslam::deciders
  * specific registration procedure
  */
 template <class GRAPH_T = typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CEmptyERD
-	: public mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_T>
+class CEmptyERD : public mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_T>
 {
-   public:
-	using constraint_t = typename GRAPH_T::constraint_t;
+ public:
+  using constraint_t = typename GRAPH_T::constraint_t;
 
-	CEmptyERD() = default;
-	~CEmptyERD() override = default;
+  CEmptyERD() = default;
+  ~CEmptyERD() override = default;
 
-	bool updateState(
-		mrpt::obs::CActionCollection::Ptr action,
-		mrpt::obs::CSensoryFrame::Ptr observations,
-		mrpt::obs::CObservation::Ptr observation) override
-	{
-		return true;
-	}
+  bool updateState(
+      mrpt::obs::CActionCollection::Ptr action,
+      mrpt::obs::CSensoryFrame::Ptr observations,
+      mrpt::obs::CObservation::Ptr observation) override
+  {
+    return true;
+  }
 
-   private:
-	void registerNewEdge(
-		const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
-		const constraint_t& rel_edge) override
-	{
-	}
+ private:
+  void registerNewEdge(
+      const mrpt::graphs::TNodeID& from,
+      const mrpt::graphs::TNodeID& to,
+      const constraint_t& rel_edge) override
+  {
+  }
 };
 }  // namespace mrpt::graphslam::deciders

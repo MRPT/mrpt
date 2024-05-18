@@ -33,80 +33,76 @@ std::cout << hist.getBinRatio(0) << std::endl;		// Result: "0.33"
  */
 class CHistogram
 {
-   private:
-	/** The histogram limits */
-	double m_min, m_max;
-	/** ((max-min)/nBins)^-1 */
-	double m_binSizeInv;
-	/** The bins counter */
-	std::vector<size_t> m_bins;
-	/** The total elements count */
-	size_t m_count;
+ private:
+  /** The histogram limits */
+  double m_min, m_max;
+  /** ((max-min)/nBins)^-1 */
+  double m_binSizeInv;
+  /** The bins counter */
+  std::vector<size_t> m_bins;
+  /** The total elements count */
+  size_t m_count;
 
-   public:
-	/** Constructor
-	 * \exception std::exception On nBins<=0 or max<=min
-	 */
-	CHistogram(const double min, const double max, size_t nBins);
+ public:
+  /** Constructor
+   * \exception std::exception On nBins<=0 or max<=min
+   */
+  CHistogram(const double min, const double max, size_t nBins);
 
-	/** Constructor with a fixed bin width.
-	 * \exception std::exception On max<=min or width<=0
-	 */
-	CHistogram createWithFixedWidth(double min, double max, double binWidth);
+  /** Constructor with a fixed bin width.
+   * \exception std::exception On max<=min or width<=0
+   */
+  CHistogram createWithFixedWidth(double min, double max, double binWidth);
 
-	/** Clear the histogram:
-	 */
-	void clear();
+  /** Clear the histogram:
+   */
+  void clear();
 
-	/**	Add an element to the histogram. If element is out of [min,max] it is
-	 * ignored. */
-	void add(const double x);
+  /**	Add an element to the histogram. If element is out of [min,max] it is
+   * ignored. */
+  void add(const double x);
 
-	/**	Add all the elements from a MRPT container to the histogram. If an
-	 * element is out of [min,max] it is ignored. */
-	template <
-		typename MAT_VECTOR_LIKE, typename = typename MAT_VECTOR_LIKE::Scalar>
-	inline void add(const MAT_VECTOR_LIKE& x)
-	{
-		const size_t N = x.size();
-		for (size_t i = 0; i < N; i++)
-			this->add(static_cast<double>(x[i]));
-	}
+  /**	Add all the elements from a MRPT container to the histogram. If an
+   * element is out of [min,max] it is ignored. */
+  template <typename MAT_VECTOR_LIKE, typename = typename MAT_VECTOR_LIKE::Scalar>
+  inline void add(const MAT_VECTOR_LIKE& x)
+  {
+    const size_t N = x.size();
+    for (size_t i = 0; i < N; i++) this->add(static_cast<double>(x[i]));
+  }
 
-	//! \overload
-	template <typename T>
-	inline void add(const std::vector<T>& x)
-	{
-		const size_t N = x.size();
-		for (size_t i = 0; i < N; i++)
-			this->add(static_cast<double>(x[i]));
-	}
+  //! \overload
+  template <typename T>
+  inline void add(const std::vector<T>& x)
+  {
+    const size_t N = x.size();
+    for (size_t i = 0; i < N; i++) this->add(static_cast<double>(x[i]));
+  }
 
-	/** Retuns the elements count into the selected bin index, where first one
-	 * is 0.
-	 * \exception std::exception On invalid index
-	 */
-	[[nodiscard]] size_t getBinCount(size_t index) const;
+  /** Retuns the elements count into the selected bin index, where first one
+   * is 0.
+   * \exception std::exception On invalid index
+   */
+  [[nodiscard]] size_t getBinCount(size_t index) const;
 
-	/** Retuns the ratio in [0,1] range for the selected bin index, where first
-	 * one is 0.
-	 *  It returns 0 if no elements have been added.
-	 * \exception std::exception On invalid index.
-	 */
-	[[nodiscard]] double getBinRatio(size_t index) const;
+  /** Retuns the ratio in [0,1] range for the selected bin index, where first
+   * one is 0.
+   *  It returns 0 if no elements have been added.
+   * \exception std::exception On invalid index.
+   */
+  [[nodiscard]] double getBinRatio(size_t index) const;
 
-	/** Returns the list of bin centers & hit counts
-	 * \sa getHistogramNormalized
-	 */
-	void getHistogram(std::vector<double>& x, std::vector<double>& hits) const;
+  /** Returns the list of bin centers & hit counts
+   * \sa getHistogramNormalized
+   */
+  void getHistogram(std::vector<double>& x, std::vector<double>& hits) const;
 
-	/** Returns the list of bin centers & hit counts, normalized such as the
-	 * integral of the histogram, interpreted as a density PDF, amounts to 1.
-	 * \sa getHistogram
-	 */
-	void getHistogramNormalized(
-		std::vector<double>& x, std::vector<double>& hits) const;
+  /** Returns the list of bin centers & hit counts, normalized such as the
+   * integral of the histogram, interpreted as a density PDF, amounts to 1.
+   * \sa getHistogram
+   */
+  void getHistogramNormalized(std::vector<double>& x, std::vector<double>& hits) const;
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace mrpt::math

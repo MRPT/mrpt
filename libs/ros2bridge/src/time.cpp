@@ -14,17 +14,17 @@
 
 mrpt::system::TTimeStamp mrpt::ros2bridge::fromROS(const rclcpp::Time& src)
 {
-	return mrpt::Clock::fromDouble(src.seconds());
+  return mrpt::Clock::fromDouble(src.seconds());
 }
 
 rclcpp::Time mrpt::ros2bridge::toROS(const mrpt::system::TTimeStamp& src)
 {
-	// Convert to "double-version of time_t", then extract integer and
-	// fractional parts:
-	const double t = mrpt::Clock::toDouble(src);
-	return rclcpp::Time(
-		// seconds:
-		static_cast<uint64_t>(t),
-		// nanoseconds:
-		static_cast<uint64_t>(std::fmod(t, 1.0) * 1e9 + 0.5 /*round*/));
+  // Convert to "double-version of time_t", then extract integer and
+  // fractional parts:
+  const double t = mrpt::Clock::toDouble(src);
+  return rclcpp::Time(
+      // seconds:
+      static_cast<uint64_t>(t),
+      // nanoseconds:
+      static_cast<uint64_t>(std::fmod(t, 1.0) * 1e9 + 0.5 /*round*/));
 }

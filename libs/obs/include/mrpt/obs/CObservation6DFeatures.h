@@ -25,44 +25,41 @@ namespace mrpt::obs
  */
 class CObservation6DFeatures : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservation6DFeatures, mrpt::obs)
-   public:
-	/** Default ctor */
-	CObservation6DFeatures();
+  DEFINE_SERIALIZABLE(CObservation6DFeatures, mrpt::obs)
+ public:
+  /** Default ctor */
+  CObservation6DFeatures();
 
-	/** Information about the sensor */
-	float minSensorDistance{0}, maxSensorDistance{1e6f};
+  /** Information about the sensor */
+  float minSensorDistance{0}, maxSensorDistance{1e6f};
 
-	/** Each one of the measurements */
-	struct TMeasurement
-	{
-		/** The observed feature SE(3) pose with respect to the sensor */
-		mrpt::poses::CPose3D pose;
-		/** The feature ID, or INVALID_LANDMARK_ID if unidentified (default) */
-		int32_t id;
-		/** The inverse of the observation covariance matrix (default:all zeros)
-		 */
-		mrpt::math::CMatrixDouble66 inf_matrix;
+  /** Each one of the measurements */
+  struct TMeasurement
+  {
+    /** The observed feature SE(3) pose with respect to the sensor */
+    mrpt::poses::CPose3D pose;
+    /** The feature ID, or INVALID_LANDMARK_ID if unidentified (default) */
+    int32_t id;
+    /** The inverse of the observation covariance matrix (default:all zeros)
+     */
+    mrpt::math::CMatrixDouble66 inf_matrix;
 
-		/** Ctor with default values */
-		TMeasurement();
+    /** Ctor with default values */
+    TMeasurement();
 
-		// Required because we contain Eigen
-		// matrices
-	};
-	/** The list of observed features */
-	std::deque<TMeasurement> sensedFeatures;
+    // Required because we contain Eigen
+    // matrices
+  };
+  /** The list of observed features */
+  std::deque<TMeasurement> sensedFeatures;
 
-	/** The pose of the sensor on the robot/vehicle */
-	mrpt::poses::CPose3D sensorPose;
+  /** The pose of the sensor on the robot/vehicle */
+  mrpt::poses::CPose3D sensorPose;
 
-	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose)
-		const override;	 // See base class docs.
-	void setSensorPose(const mrpt::poses::CPose3D& newSensorPose)
-		override;  // See base class docs.
-	void getDescriptionAsText(
-		std::ostream& o) const override;  // See base class docs
+  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override;  // See base class docs.
+  void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override;   // See base class docs.
+  void getDescriptionAsText(std::ostream& o) const override;                // See base class docs
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace mrpt::obs

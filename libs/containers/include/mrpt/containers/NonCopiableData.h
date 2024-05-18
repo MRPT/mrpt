@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <utility>	// std::move()
+#include <utility>  // std::move()
 
 namespace mrpt::containers
 {
@@ -24,17 +24,17 @@ namespace mrpt::containers
 template <class T>
 class NonCopiableData
 {
-   public:
-	NonCopiableData() = default;
-	~NonCopiableData() = default;
+ public:
+  NonCopiableData() = default;
+  ~NonCopiableData() = default;
 
-	T data;
+  T data;
 
-	NonCopiableData(const NonCopiableData&) {}
-	NonCopiableData& operator=(const NonCopiableData&) { return *this; }
+  NonCopiableData(const NonCopiableData&) {}
+  NonCopiableData& operator=(const NonCopiableData&) { return *this; }
 
-	NonCopiableData(NonCopiableData&&) {}
-	NonCopiableData& operator=(NonCopiableData&&) { return *this; }
+  NonCopiableData(NonCopiableData&&) {}
+  NonCopiableData& operator=(NonCopiableData&&) { return *this; }
 };
 
 }  // namespace mrpt::containers

@@ -18,6 +18,6 @@ namespace mrpt::config
  */
 inline void registerAllClasses_mrpt_config()
 {
-	// None in this lib.
+  // None in this lib.
 }
 }  // namespace mrpt::config

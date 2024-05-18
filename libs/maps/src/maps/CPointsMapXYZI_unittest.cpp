@@ -16,18 +16,16 @@
 
 TEST(CPointsMapXYZI, loadFromKittiVelodyneFile)
 {
-	using namespace std;
-	const string kitti_fil =
-		mrpt::UNITTEST_BASEDIR() + string("/tests/kitti_00_000000.bin.gz");
-	if (!mrpt::system::fileExists(kitti_fil))
-	{
-		cerr << "WARNING: Skipping test due to missing file: " << kitti_fil
-			 << "\n";
-		return;
-	}
+  using namespace std;
+  const string kitti_fil = mrpt::UNITTEST_BASEDIR() + string("/tests/kitti_00_000000.bin.gz");
+  if (!mrpt::system::fileExists(kitti_fil))
+  {
+    cerr << "WARNING: Skipping test due to missing file: " << kitti_fil << "\n";
+    return;
+  }
 
-	mrpt::maps::CPointsMapXYZI m;
-	const bool read_ok = m.loadFromKittiVelodyneFile(kitti_fil);
-	EXPECT_TRUE(read_ok);
-	EXPECT_EQ(124668U, m.size());
+  mrpt::maps::CPointsMapXYZI m;
+  const bool read_ok = m.loadFromKittiVelodyneFile(kitti_fil);
+  EXPECT_TRUE(read_ok);
+  EXPECT_EQ(124668U, m.size());
 }

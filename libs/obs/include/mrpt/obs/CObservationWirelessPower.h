@@ -25,32 +25,29 @@ namespace mrpt::obs
  */
 class CObservationWirelessPower : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationWirelessPower, mrpt::obs)
+  DEFINE_SERIALIZABLE(CObservationWirelessPower, mrpt::obs)
 
-   public:
-	/** @name The data members
-	 * @{ */
+ public:
+  /** @name The data members
+   * @{ */
 
-	/** The power or signal strength as sensed by the Wifi receiver (In
-	 * percentage: [0-100]) */
-	double power{0};
-	/** The location of the sensing antenna on the robot coordinate framework */
-	mrpt::poses::CPose3D sensorPoseOnRobot;
+  /** The power or signal strength as sensed by the Wifi receiver (In
+   * percentage: [0-100]) */
+  double power{0};
+  /** The location of the sensing antenna on the robot coordinate framework */
+  mrpt::poses::CPose3D sensorPoseOnRobot;
 
-	/** @} */
+  /** @} */
 
-	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose)
-		const override;	 // See base class docs
-	void setSensorPose(const mrpt::poses::CPose3D& newSensorPose)
-		override;  // See base class docs
-	void getDescriptionAsText(
-		std::ostream& o) const override;  // See base class docs
+  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override;  // See base class docs
+  void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override;   // See base class docs
+  void getDescriptionAsText(std::ostream& o) const override;                // See base class docs
 
-	// See base class docs:
-	bool exportTxtSupported() const override { return true; }
-	std::string exportTxtHeader() const override;
-	std::string exportTxtDataRow() const override;
+  // See base class docs:
+  bool exportTxtSupported() const override { return true; }
+  std::string exportTxtHeader() const override;
+  std::string exportTxtDataRow() const override;
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace mrpt::obs

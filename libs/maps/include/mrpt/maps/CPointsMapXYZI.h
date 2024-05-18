@@ -23,160 +23,157 @@ namespace maps
  */
 class CPointsMapXYZI : public CPointsMap
 {
-	DEFINE_SERIALIZABLE(CPointsMapXYZI, mrpt::maps)
+  DEFINE_SERIALIZABLE(CPointsMapXYZI, mrpt::maps)
 
-   public:
-	CPointsMapXYZI() = default;
+ public:
+  CPointsMapXYZI() = default;
 
-	CPointsMapXYZI(const CPointsMap& o) { CPointsMap::operator=(o); }
-	CPointsMapXYZI(const CPointsMapXYZI& o) : CPointsMap() { impl_copyFrom(o); }
-	CPointsMapXYZI& operator=(const CPointsMap& o)
-	{
-		impl_copyFrom(o);
-		return *this;
-	}
-	CPointsMapXYZI& operator=(const CPointsMapXYZI& o)
-	{
-		impl_copyFrom(o);
-		return *this;
-	}
+  CPointsMapXYZI(const CPointsMap& o) { CPointsMap::operator=(o); }
+  CPointsMapXYZI(const CPointsMapXYZI& o) : CPointsMap() { impl_copyFrom(o); }
+  CPointsMapXYZI& operator=(const CPointsMap& o)
+  {
+    impl_copyFrom(o);
+    return *this;
+  }
+  CPointsMapXYZI& operator=(const CPointsMapXYZI& o)
+  {
+    impl_copyFrom(o);
+    return *this;
+  }
 
-	/** @name Pure virtual interfaces to be implemented by any class derived
-   from CPointsMap
-	@{ */
+  /** @name Pure virtual interfaces to be implemented by any class derived
+ from CPointsMap
+  @{ */
 
-	void reserve(size_t newLength) override;  // See base class docs
-	void resize(size_t newLength) override;	 // See base class docs
-	void setSize(size_t newLength) override;  // See base class docs
+  void reserve(size_t newLength) override;  // See base class docs
+  void resize(size_t newLength) override;   // See base class docs
+  void setSize(size_t newLength) override;  // See base class docs
 
-	/** The virtual method for \a insertPoint() *without* calling
-	 * mark_as_modified()   */
-	void insertPointFast(float x, float y, float z = 0) override;
+  /** The virtual method for \a insertPoint() *without* calling
+   * mark_as_modified()   */
+  void insertPointFast(float x, float y, float z = 0) override;
 
-	/** Get all the data fields for one point as a vector: [X Y Z I]
-	 *  Unlike getPointAllFields(), this method does not check for index out of
-	 * bounds
-	 * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
-	 */
-	void getPointAllFieldsFast(
-		size_t index, std::vector<float>& point_data) const override
-	{
-		point_data.resize(4);
-		point_data[0] = m_x[index];
-		point_data[1] = m_y[index];
-		point_data[2] = m_z[index];
-		point_data[3] = m_intensity[index];
-	}
+  /** Get all the data fields for one point as a vector: [X Y Z I]
+   *  Unlike getPointAllFields(), this method does not check for index out of
+   * bounds
+   * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
+   */
+  void getPointAllFieldsFast(size_t index, std::vector<float>& point_data) const override
+  {
+    point_data.resize(4);
+    point_data[0] = m_x[index];
+    point_data[1] = m_y[index];
+    point_data[2] = m_z[index];
+    point_data[3] = m_intensity[index];
+  }
 
-	/** Set all the data fields for one point as a vector: [X Y Z I]
-	 *  Unlike setPointAllFields(), this method does not check for index out of
-	 * bounds
-	 * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
-	 */
-	void setPointAllFieldsFast(
-		size_t index, const std::vector<float>& point_data) override
-	{
-		ASSERT_(point_data.size() == 4);
-		m_x[index] = point_data[0];
-		m_y[index] = point_data[1];
-		m_z[index] = point_data[2];
-		m_intensity[index] = point_data[3];
-	}
+  /** Set all the data fields for one point as a vector: [X Y Z I]
+   *  Unlike setPointAllFields(), this method does not check for index out of
+   * bounds
+   * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
+   */
+  void setPointAllFieldsFast(size_t index, const std::vector<float>& point_data) override
+  {
+    ASSERT_(point_data.size() == 4);
+    m_x[index] = point_data[0];
+    m_y[index] = point_data[1];
+    m_z[index] = point_data[2];
+    m_intensity[index] = point_data[3];
+  }
 
-	/** Loads from a Kitti dataset Velodyne scan binary file.
-	 * The file can be gz compressed (only enabled if the filename ends in ".gz"
-	 * to prevent spurious false autodetection of gzip files).
-	 * \return true on success */
-	bool loadFromKittiVelodyneFile(const std::string& filename);
+  /** Loads from a Kitti dataset Velodyne scan binary file.
+   * The file can be gz compressed (only enabled if the filename ends in ".gz"
+   * to prevent spurious false autodetection of gzip files).
+   * \return true on success */
+  bool loadFromKittiVelodyneFile(const std::string& filename);
 
-	bool saveToKittiVelodyneFile(const std::string& filename) const;
+  bool saveToKittiVelodyneFile(const std::string& filename) const;
 
-	/** See CPointsMap::loadFromRangeScan() */
-	void loadFromRangeScan(
-		const mrpt::obs::CObservation2DRangeScan& rangeScan,
-		const std::optional<const mrpt::poses::CPose3D>& robotPose =
-			std::nullopt) override;
-	/** See CPointsMap::loadFromRangeScan() */
-	void loadFromRangeScan(
-		const mrpt::obs::CObservation3DRangeScan& rangeScan,
-		const std::optional<const mrpt::poses::CPose3D>& robotPose =
-			std::nullopt) override;
+  /** See CPointsMap::loadFromRangeScan() */
+  void loadFromRangeScan(
+      const mrpt::obs::CObservation2DRangeScan& rangeScan,
+      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
+  /** See CPointsMap::loadFromRangeScan() */
+  void loadFromRangeScan(
+      const mrpt::obs::CObservation3DRangeScan& rangeScan,
+      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
 
-   protected:
-	// See base class
-	void impl_copyFrom(const CPointsMap& obj) override;
-	// See base class
-	void addFrom_classSpecific(
-		const CPointsMap& anotherMap, size_t nPreviousPoints,
-		const bool filterOutPointsAtZero) override;
+ protected:
+  // See base class
+  void impl_copyFrom(const CPointsMap& obj) override;
+  // See base class
+  void addFrom_classSpecific(
+      const CPointsMap& anotherMap,
+      size_t nPreviousPoints,
+      const bool filterOutPointsAtZero) override;
 
-	// Friend methods:
-	template <class Derived>
-	friend struct detail::loadFromRangeImpl;
-	template <class Derived>
-	friend struct detail::pointmap_traits;
+  // Friend methods:
+  template <class Derived>
+  friend struct detail::loadFromRangeImpl;
+  template <class Derived>
+  friend struct detail::pointmap_traits;
 
-   public:
-	/** @} */
+ public:
+  /** @} */
 
-	/** Save to a text file. In each line contains X Y Z (meters) I (intensity)
-	 * Returns false if any error occured, true elsewere.
-	 */
-	bool saveXYZI_to_text_file(const std::string& file) const;
+  /** Save to a text file. In each line contains X Y Z (meters) I (intensity)
+   * Returns false if any error occured, true elsewere.
+   */
+  bool saveXYZI_to_text_file(const std::string& file) const;
 
-	/** Loads from a text file, each line having "X Y Z I", I in [0,1].
-	 * Returns false if any error occured, true elsewere. */
-	bool loadXYZI_from_text_file(const std::string& file);
+  /** Loads from a text file, each line having "X Y Z I", I in [0,1].
+   * Returns false if any error occured, true elsewere. */
+  bool loadXYZI_from_text_file(const std::string& file);
 
-	/** Changes a given point from map. First index is 0.
-	 * \exception Throws std::exception on index out of bound.
-	 */
-	void setPointRGB(
-		size_t index, float x, float y, float z, float R_intensity,
-		float G_ignored, float B_ignored) override;
+  /** Changes a given point from map. First index is 0.
+   * \exception Throws std::exception on index out of bound.
+   */
+  void setPointRGB(
+      size_t index, float x, float y, float z, float R_intensity, float G_ignored, float B_ignored)
+      override;
 
-	/** Adds a new point given its coordinates and color (colors range is [0,1])
-	 */
-	void insertPointRGB(
-		float x, float y, float z, float R_intensity, float G_ignored,
-		float B_ignored) override;
+  /** Adds a new point given its coordinates and color (colors range is [0,1])
+   */
+  void insertPointRGB(
+      float x, float y, float z, float R_intensity, float G_ignored, float B_ignored) override;
 
-	/** Changes the intensity of a given point from the map. First index is 0.
-	 * \exception Throws std::exception on index out of bound.
-	 */
-	void setPointIntensity(size_t index, float intensity);
+  /** Changes the intensity of a given point from the map. First index is 0.
+   * \exception Throws std::exception on index out of bound.
+   */
+  void setPointIntensity(size_t index, float intensity);
 
-	/** Like \c setPointColor but without checking for out-of-index erors */
-	inline void setPointColor_fast(size_t index, float R, float G, float B)
-	{
-		m_intensity[index] = R;
-	}
+  /** Like \c setPointColor but without checking for out-of-index erors */
+  inline void setPointColor_fast(size_t index, float R, float G, float B)
+  {
+    m_intensity[index] = R;
+  }
 
-	/** Retrieves a point and its color (colors range is [0,1])
-	 */
-	void getPointRGB(
-		size_t index, float& x, float& y, float& z, float& R_intensity,
-		float& G_intensity, float& B_intensity) const override;
+  /** Retrieves a point and its color (colors range is [0,1])
+   */
+  void getPointRGB(
+      size_t index,
+      float& x,
+      float& y,
+      float& z,
+      float& R_intensity,
+      float& G_intensity,
+      float& B_intensity) const override;
 
-	/** Retrieves a point intensity (range [0,1]) */
-	float getPointIntensity(size_t index) const;
+  /** Retrieves a point intensity (range [0,1]) */
+  float getPointIntensity(size_t index) const;
 
-	/** Like \c getPointColor but without checking for out-of-index erors */
-	inline float getPointIntensity_fast(size_t index) const
-	{
-		return m_intensity[index];
-	}
+  /** Like \c getPointColor but without checking for out-of-index erors */
+  inline float getPointIntensity_fast(size_t index) const { return m_intensity[index]; }
 
-	/** Returns true if the point map has a color field for each point */
-	bool hasColorPoints() const override { return true; }
+  /** Returns true if the point map has a color field for each point */
+  bool hasColorPoints() const override { return true; }
 
-	/** Override of the default 3D scene builder to account for the individual
-	 * points' color.
-	 */
-	void getVisualizationInto(
-		mrpt::opengl::CSetOfObjects& outObj) const override;
+  /** Override of the default 3D scene builder to account for the individual
+   * points' color.
+   */
+  void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
 
-	// clang-format off
+  // clang-format off
 	auto getPointsBufferRef_intensity() const  -> const mrpt::aligned_std_vector<float>* override { return &m_intensity; }
 	auto getPointsBufferRef_intensity()        -> mrpt::aligned_std_vector<float>* override { return &m_intensity; }
 	void insertPointField_Intensity(float i) override { m_intensity.push_back(i); }

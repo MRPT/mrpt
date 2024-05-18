@@ -50,152 +50,147 @@ namespace mrpt::system
  */
 class CTimeLogger : public mrpt::system::COutputLogger
 {
-   private:
-	CTicTac m_tictac;
-	bool m_enabled;
-	std::string m_name;
-	bool m_keep_whole_history{false};
+ private:
+  CTicTac m_tictac;
+  bool m_enabled;
+  std::string m_name;
+  bool m_keep_whole_history{false};
 
-	//! Data of all the calls:
-	struct TCallData
-	{
-		size_t n_calls{0};
-		double min_t{0}, max_t{0}, mean_t{0}, last_t{0};
-		std::stack<double, std::vector<double>> open_calls;
-		bool has_time_units{true};
-		std::optional<std::deque<double>> whole_history{};
+  //! Data of all the calls:
+  struct TCallData
+  {
+    size_t n_calls{0};
+    double min_t{0}, max_t{0}, mean_t{0}, last_t{0};
+    std::stack<double, std::vector<double>> open_calls;
+    bool has_time_units{true};
+    std::optional<std::deque<double>> whole_history{};
 
-		// Each instance holds its own mutex, even after = operations.
-		std::mutex mtx;
+    // Each instance holds its own mutex, even after = operations.
+    std::mutex mtx;
 
-		TCallData() = default;
+    TCallData() = default;
 
-		TCallData(const TCallData& d) { *this = d; }
-		TCallData(TCallData&& d) { *this = std::move(d); }
+    TCallData(const TCallData& d) { *this = d; }
+    TCallData(TCallData&& d) { *this = std::move(d); }
 
-		TCallData& operator=(const TCallData& d)
-		{
-			n_calls = d.n_calls;
-			min_t = d.min_t;
-			max_t = d.max_t;
-			mean_t = d.mean_t;
-			last_t = d.last_t;
-			open_calls = d.open_calls;
-			has_time_units = d.has_time_units;
-			whole_history = d.whole_history;
-			return *this;
-		}
-		TCallData& operator=(TCallData&& d)
-		{
-			n_calls = d.n_calls;
-			min_t = d.min_t;
-			max_t = d.max_t;
-			mean_t = d.mean_t;
-			last_t = d.last_t;
-			open_calls = std::move(d.open_calls);
-			has_time_units = d.has_time_units;
-			whole_history = std::move(d.whole_history);
-			return *this;
-		}
-	};
+    TCallData& operator=(const TCallData& d)
+    {
+      n_calls = d.n_calls;
+      min_t = d.min_t;
+      max_t = d.max_t;
+      mean_t = d.mean_t;
+      last_t = d.last_t;
+      open_calls = d.open_calls;
+      has_time_units = d.has_time_units;
+      whole_history = d.whole_history;
+      return *this;
+    }
+    TCallData& operator=(TCallData&& d)
+    {
+      n_calls = d.n_calls;
+      min_t = d.min_t;
+      max_t = d.max_t;
+      mean_t = d.mean_t;
+      last_t = d.last_t;
+      open_calls = std::move(d.open_calls);
+      has_time_units = d.has_time_units;
+      whole_history = std::move(d.whole_history);
+      return *this;
+    }
+  };
 
-   protected:
-	constexpr static unsigned int HASH_SIZE_IN_BYTES = 1;
-	constexpr static unsigned int HASH_ALLOWED_COLLISIONS = 10;
-	// Note: we CANNOT store a std::string_view here due to literals life scope.
-	using TDataMap = mrpt::containers::ts_hash_map<
-		std::string, TCallData, HASH_SIZE_IN_BYTES, HASH_ALLOWED_COLLISIONS>;
+ protected:
+  constexpr static unsigned int HASH_SIZE_IN_BYTES = 1;
+  constexpr static unsigned int HASH_ALLOWED_COLLISIONS = 10;
+  // Note: we CANNOT store a std::string_view here due to literals life scope.
+  using TDataMap = mrpt::containers::
+      ts_hash_map<std::string, TCallData, HASH_SIZE_IN_BYTES, HASH_ALLOWED_COLLISIONS>;
 
-	TDataMap m_data;
+  TDataMap m_data;
 
-	void do_enter(const std::string_view& func_name) noexcept;
-	double do_leave(const std::string_view& func_name) noexcept;
+  void do_enter(const std::string_view& func_name) noexcept;
+  double do_leave(const std::string_view& func_name) noexcept;
 
-   public:
-	/** Data of each call section: # of calls, minimum, maximum, average and
-	 * overall execution time (in seconds) \sa getStats */
-	struct TCallStats
-	{
-		size_t n_calls{0};
-		double min_t{0}, max_t{0}, mean_t{0}, total_t{0}, last_t{0};
-	};
+ public:
+  /** Data of each call section: # of calls, minimum, maximum, average and
+   * overall execution time (in seconds) \sa getStats */
+  struct TCallStats
+  {
+    size_t n_calls{0};
+    double min_t{0}, max_t{0}, mean_t{0}, total_t{0}, last_t{0};
+  };
 
-	CTimeLogger(
-		bool enabled = true, const std::string& name = "",
-		const bool keep_whole_history = false);
-	/** Destructor */
-	~CTimeLogger() override;
+  CTimeLogger(
+      bool enabled = true, const std::string& name = "", const bool keep_whole_history = false);
+  /** Destructor */
+  ~CTimeLogger() override;
 
-	// We must define these 4 because of the definition of a virtual dtor
-	// (compiler will not generate the defaults)
-	CTimeLogger(const CTimeLogger& o) = default;
-	CTimeLogger& operator=(const CTimeLogger& o) = default;
-	CTimeLogger(CTimeLogger&& o) = default;
-	CTimeLogger& operator=(CTimeLogger&& o) = default;
+  // We must define these 4 because of the definition of a virtual dtor
+  // (compiler will not generate the defaults)
+  CTimeLogger(const CTimeLogger& o) = default;
+  CTimeLogger& operator=(const CTimeLogger& o) = default;
+  CTimeLogger(CTimeLogger&& o) = default;
+  CTimeLogger& operator=(CTimeLogger&& o) = default;
 
-	/** Dump all stats to a multi-line text string. \sa dumpAllStats,
-	 * saveToCVSFile */
-	std::string getStatsAsText(size_t column_width = 80) const;
-	/** Returns all the current stats as a map: section_name => stats. \sa
-	 * getStatsAsText, dumpAllStats, saveToCVSFile */
-	void getStats(std::map<std::string, TCallStats>& out_stats) const;
-	/** Dump all stats through the COutputLogger interface. \sa getStatsAsText,
-	 * saveToCVSFile */
-	void dumpAllStats(size_t column_width = 80) const;
+  /** Dump all stats to a multi-line text string. \sa dumpAllStats,
+   * saveToCVSFile */
+  std::string getStatsAsText(size_t column_width = 80) const;
+  /** Returns all the current stats as a map: section_name => stats. \sa
+   * getStatsAsText, dumpAllStats, saveToCVSFile */
+  void getStats(std::map<std::string, TCallStats>& out_stats) const;
+  /** Dump all stats through the COutputLogger interface. \sa getStatsAsText,
+   * saveToCVSFile */
+  void dumpAllStats(size_t column_width = 80) const;
 
-	/** Resets all stats. By default (deep_clear=false), all section names are
-	 * remembered (not freed) so the cost of creating upon the first next call
-	 * is avoided.
-	 *
-	 * \note By design, calling this method is the only one which is not thread
-	 * safe. It's not made thread-safe to save the performance cost. Please,
-	 * ensure that you call `clear()` only while there are no other threads
-	 * registering annotations in the object.
-	 */
-	void clear(bool deep_clear = false);
+  /** Resets all stats. By default (deep_clear=false), all section names are
+   * remembered (not freed) so the cost of creating upon the first next call
+   * is avoided.
+   *
+   * \note By design, calling this method is the only one which is not thread
+   * safe. It's not made thread-safe to save the performance cost. Please,
+   * ensure that you call `clear()` only while there are no other threads
+   * registering annotations in the object.
+   */
+  void clear(bool deep_clear = false);
 
-	void enable(bool enabled = true) { m_enabled = enabled; }
-	void disable() { m_enabled = false; }
-	bool isEnabled() const { return m_enabled; }
+  void enable(bool enabled = true) { m_enabled = enabled; }
+  void disable() { m_enabled = false; }
+  bool isEnabled() const { return m_enabled; }
 
-	void enableKeepWholeHistory(bool enable = true)
-	{
-		m_keep_whole_history = enable;
-	}
-	bool isEnabledKeepWholeHistory() const { return m_keep_whole_history; }
+  void enableKeepWholeHistory(bool enable = true) { m_keep_whole_history = enable; }
+  bool isEnabledKeepWholeHistory() const { return m_keep_whole_history; }
 
-	/** Dump all stats to a Comma Separated Values (CSV) file. \sa dumpAllStats
-	 */
-	void saveToCSVFile(const std::string& csv_file) const;
-	/** Dump all stats to a Matlab/Octave (.m) file. \sa dumpAllStats */
-	void saveToMFile(const std::string& m_file) const;
-	void registerUserMeasure(
-		const std::string_view& event_name, const double value,
-		const bool is_time = false) noexcept;
+  /** Dump all stats to a Comma Separated Values (CSV) file. \sa dumpAllStats
+   */
+  void saveToCSVFile(const std::string& csv_file) const;
+  /** Dump all stats to a Matlab/Octave (.m) file. \sa dumpAllStats */
+  void saveToMFile(const std::string& m_file) const;
+  void registerUserMeasure(
+      const std::string_view& event_name, const double value, const bool is_time = false) noexcept;
 
-	const std::string& getName() const noexcept { return m_name; }
-	void setName(const std::string& name) noexcept;
+  const std::string& getName() const noexcept { return m_name; }
+  void setName(const std::string& name) noexcept;
 
-	/** Start of a named section \sa enter */
-	inline void enter(const std::string_view& func_name) noexcept
-	{
-		if (m_enabled) do_enter(func_name);
-	}
-	/** End of a named section \return The ellapsed time, in seconds or 0 if
-	 * disabled. \sa enter */
-	inline double leave(const std::string_view& func_name) noexcept
-	{
-		return m_enabled ? do_leave(func_name) : 0;
-	}
-	/** Return the mean execution time of the given "section", or 0 if it hasn't
-	 * ever been called "enter" with that section name */
-	double getMeanTime(const std::string& name) const;
-	/** Return the last execution time of the given "section", or 0 if it hasn't
-	 * ever been called "enter" with that section name */
-	double getLastTime(const std::string& name) const;
+  /** Start of a named section \sa enter */
+  inline void enter(const std::string_view& func_name) noexcept
+  {
+    if (m_enabled) do_enter(func_name);
+  }
+  /** End of a named section \return The ellapsed time, in seconds or 0 if
+   * disabled. \sa enter */
+  inline double leave(const std::string_view& func_name) noexcept
+  {
+    return m_enabled ? do_leave(func_name) : 0;
+  }
+  /** Return the mean execution time of the given "section", or 0 if it hasn't
+   * ever been called "enter" with that section name */
+  double getMeanTime(const std::string& name) const;
+  /** Return the last execution time of the given "section", or 0 if it hasn't
+   * ever been called "enter" with that section name */
+  double getLastTime(const std::string& name) const;
 
-	friend struct CTimeLoggerEntry;
-};	// End of class def.
+  friend struct CTimeLoggerEntry;
+};  // End of class def.
 
 /** A safe way to call enter() and leave() of a mrpt::system::CTimeLogger upon
  * construction and destruction of
@@ -230,18 +225,17 @@ class CTimeLogger : public mrpt::system::COutputLogger
  */
 struct CTimeLoggerEntry
 {
-	CTimeLoggerEntry(
-		const CTimeLogger& logger, const std::string_view& section_name);
-	~CTimeLoggerEntry();
-	CTimeLogger& m_logger;
-	void stop();  //!< for correct use, see docs for CTimeLoggerEntry
+  CTimeLoggerEntry(const CTimeLogger& logger, const std::string_view& section_name);
+  ~CTimeLoggerEntry();
+  CTimeLogger& m_logger;
+  void stop();  //!< for correct use, see docs for CTimeLoggerEntry
 
-   private:
-	// Note we cannot store the string_view since we have no guarantees of the
-	// life-time of the provided string buffer.
-	const std::string m_section_name;
-	double m_entry = 0;
-	bool stopped_{false};
+ private:
+  // Note we cannot store the string_view since we have no guarantees of the
+  // life-time of the provided string buffer.
+  const std::string m_section_name;
+  double m_entry = 0;
+  bool stopped_{false};
 };
 
 /** A helper class to save CSV stats upon self destruction, for example, at the
@@ -250,10 +244,10 @@ struct CTimeLoggerEntry
  */
 struct CTimeLoggerSaveAtDtor
 {
-	mrpt::system::CTimeLogger& m_tm;
+  mrpt::system::CTimeLogger& m_tm;
 
-	CTimeLoggerSaveAtDtor(mrpt::system::CTimeLogger& tm) : m_tm(tm) {}
-	~CTimeLoggerSaveAtDtor();
+  CTimeLoggerSaveAtDtor(mrpt::system::CTimeLogger& tm) : m_tm(tm) {}
+  ~CTimeLoggerSaveAtDtor();
 };
 
 /** @name Auxiliary stuff for the global profiler used in MRPT_START / MRPT_END

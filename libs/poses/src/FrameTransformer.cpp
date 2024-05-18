@@ -7,13 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"	// Precompiled headers
+#include "poses-precomp.h"  // Precompiled headers
 //
 #include <mrpt/core/exceptions.h>  // for ASSERTMSG_
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/FrameTransformer.h>  // for FrameTransformer, FrameTran...
-#include <mrpt/system/datetime.h>  // for TTimeStamp, INVALID_TIMESTAMP
+#include <mrpt/system/datetime.h>         // for TTimeStamp, INVALID_TIMESTAMP
 
 #include <string>  // for string
 
@@ -43,12 +43,12 @@ FrameTransformer<DIM>::~FrameTransformer() = default;
 
 template <int DIM>
 void FrameTransformer<DIM>::sendTransform(
-	const std::string& parent_frame, const std::string& child_frame,
-	const typename base_t::pose_t& child_wrt_parent,
-	const mrpt::system::TTimeStamp& timestamp)
+    const std::string& parent_frame,
+    const std::string& child_frame,
+    const typename base_t::pose_t& child_wrt_parent,
+    const mrpt::system::TTimeStamp& timestamp)
 {
-	m_pose_edges_buffer[parent_frame][child_frame] =
-		TF_TreeEdge(child_wrt_parent, timestamp);
+  m_pose_edges_buffer[parent_frame][child_frame] = TF_TreeEdge(child_wrt_parent, timestamp);
 }
 
 // future work: allow graph traversal and do pose chain composition?
@@ -57,27 +57,32 @@ void FrameTransformer<DIM>::sendTransform(
 
 template <int DIM>
 FrameLookUpStatus FrameTransformer<DIM>::lookupTransform(
-	const std::string& target_frame, const std::string& source_frame,
-	typename base_t::light_type& child_wrt_parent,
-	const mrpt::system::TTimeStamp query_time, const double timeout_secs)
+    const std::string& target_frame,
+    const std::string& source_frame,
+    typename base_t::light_type& child_wrt_parent,
+    const mrpt::system::TTimeStamp query_time,
+    const double timeout_secs)
 {
-	ASSERTMSG_(
-		timeout_secs == .0,
-		"timeout_secs!=0: Blocking calls not supported yet!");
-	ASSERTMSG_(
-		query_time == INVALID_TIMESTAMP,
-		"`query_time` different than 'latest' not supported yet!");
+  ASSERTMSG_(timeout_secs == .0, "timeout_secs!=0: Blocking calls not supported yet!");
+  ASSERTMSG_(
+      query_time == INVALID_TIMESTAMP, "`query_time` different than 'latest' not supported yet!");
 
-	const auto& it_src = m_pose_edges_buffer.find(source_frame);
-	if (it_src == m_pose_edges_buffer.end()) { return LKUP_UNKNOWN_FRAME; }
+  const auto& it_src = m_pose_edges_buffer.find(source_frame);
+  if (it_src == m_pose_edges_buffer.end())
+  {
+    return LKUP_UNKNOWN_FRAME;
+  }
 
-	const auto& it_dst = it_src->second.find(target_frame);
-	if (it_dst == it_src->second.end()) { return LKUP_NO_CONNECTIVITY; }
+  const auto& it_dst = it_src->second.find(target_frame);
+  if (it_dst == it_src->second.end())
+  {
+    return LKUP_NO_CONNECTIVITY;
+  }
 
-	const TF_TreeEdge& te = it_dst->second;
-	child_wrt_parent = te.pose.asTPose();
+  const TF_TreeEdge& te = it_dst->second;
+  child_wrt_parent = te.pose.asTPose();
 
-	return LKUP_GOOD;
+  return LKUP_GOOD;
 }
 
 namespace mrpt

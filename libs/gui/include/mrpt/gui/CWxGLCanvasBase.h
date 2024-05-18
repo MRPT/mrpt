@@ -58,69 +58,70 @@ namespace mrpt::gui
  */
 class CWxGLCanvasBase : public CGlCanvasBase, public wxGLCanvas
 {
-   public:
-	CWxGLCanvasBase(
-		wxWindow* parent, wxWindowID id = wxID_ANY,
-		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize, long style = 0,
-		const wxString& name = _T("CWxGLCanvasBase"));
+ public:
+  CWxGLCanvasBase(
+      wxWindow* parent,
+      wxWindowID id = wxID_ANY,
+      const wxPoint& pos = wxDefaultPosition,
+      const wxSize& size = wxDefaultSize,
+      long style = 0,
+      const wxString& name = _T("CWxGLCanvasBase"));
 
-	~CWxGLCanvasBase() override = default;
+  ~CWxGLCanvasBase() override = default;
 
-	void OnPaint(wxPaintEvent& event);
-	void OnSize(wxSizeEvent& event);
-	void OnEraseBackground(wxEraseEvent& event);
-	void OnEnterWindow(wxMouseEvent& event);
+  void OnPaint(wxPaintEvent& event);
+  void OnSize(wxSizeEvent& event);
+  void OnEraseBackground(wxEraseEvent& event);
+  void OnEnterWindow(wxMouseEvent& event);
 
-	void OnChar(wxKeyEvent& event);
+  void OnChar(wxKeyEvent& event);
 
-	void OnMouseDown(wxMouseEvent& event);
-	void OnMouseMove(wxMouseEvent& event);
-	void OnMouseUp(wxMouseEvent&);
-	void OnMouseWheel(wxMouseEvent& event);
+  void OnMouseDown(wxMouseEvent& event);
+  void OnMouseMove(wxMouseEvent& event);
+  void OnMouseUp(wxMouseEvent&);
+  void OnMouseWheel(wxMouseEvent& event);
 
-	void Render();
-	void InitGL();
+  void Render();
+  void InitGL();
 
-	/** Set the camera from a CPose3D, which defines the +X,+Y axis as image
-	 * place RIGHT and UP dirctions, and -Z as towards the pointing direction.
-	 */
-	void setCameraPose(const mrpt::poses::CPose3D& camPose);
+  /** Set the camera from a CPose3D, which defines the +X,+Y axis as image
+   * place RIGHT and UP dirctions, and -Z as towards the pointing direction.
+   */
+  void setCameraPose(const mrpt::poses::CPose3D& camPose);
 
-	/**  Methods that can be implemented in custom derived classes  */
-	virtual void OnCharCustom([[maybe_unused]] wxKeyEvent& event) {}
-	virtual void OnPreRender() {}
-	virtual void OnPostRender() {}
-	virtual void OnPostRenderSwapBuffers(
-		[[maybe_unused]] double At, [[maybe_unused]] wxPaintDC& dc)
-	{
-	}
+  /**  Methods that can be implemented in custom derived classes  */
+  virtual void OnCharCustom([[maybe_unused]] wxKeyEvent& event) {}
+  virtual void OnPreRender() {}
+  virtual void OnPostRender() {}
+  virtual void OnPostRenderSwapBuffers([[maybe_unused]] double At, [[maybe_unused]] wxPaintDC& dc)
+  {
+  }
 
-	virtual void OnRenderError([[maybe_unused]] const wxString& str) {}
+  virtual void OnRenderError([[maybe_unused]] const wxString& str) {}
 
-	bool is_GL_context_created() const { return m_init; }
+  bool is_GL_context_created() const { return m_init; }
 
-   protected:
-	static std::unique_ptr<wxGLContext> m_gl_context;
-	static std::recursive_mutex m_gl_context_mtx;
+ protected:
+  static std::unique_ptr<wxGLContext> m_gl_context;
+  static std::recursive_mutex m_gl_context_mtx;
 
-	std::atomic_bool m_init = false;
+  std::atomic_bool m_init = false;
 
-	long m_Key = 0;
-	unsigned long m_StartTime = 0;
-	unsigned long m_LastTime = 0;
-	unsigned long m_LastRedraw = 0;
+  long m_Key = 0;
+  unsigned long m_StartTime = 0;
+  unsigned long m_LastTime = 0;
+  unsigned long m_LastRedraw = 0;
 
-	// Used to create the gl context at startup.
-	void OnWindowCreation(wxWindowCreateEvent& ev);
-	void swapBuffers() override;
-	void preRender() override;
-	void postRender() override;
-	void renderError(const std::string& err_msg) override;
+  // Used to create the gl context at startup.
+  void OnWindowCreation(wxWindowCreateEvent& ev);
+  void swapBuffers() override;
+  void preRender() override;
+  void postRender() override;
+  void renderError(const std::string& err_msg) override;
 
-};	// end of class
+};  // end of class
 
 }  // namespace mrpt::gui
 
-#endif	// wxUSE_GLCANVAS
-#endif	// MRPT_HAS_WXWIDGETS
+#endif  // wxUSE_GLCANVAS
+#endif  // MRPT_HAS_WXWIDGETS

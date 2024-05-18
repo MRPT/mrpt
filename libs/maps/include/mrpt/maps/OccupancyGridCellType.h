@@ -11,11 +11,10 @@
 #include <mrpt/config.h>
 
 #include <cstdint>
-#if (                                                                          \
-	!defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) &&                             \
-	!defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS)) ||                           \
-	(defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) &&                             \
-	 defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS))
+#if (                                                \
+    !defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) &&   \
+    !defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS)) || \
+    (defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) && defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS))
 #error One of OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS or OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS must be defined.
 #endif
 
@@ -25,14 +24,14 @@ namespace mrpt::maps
 #ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
 struct OccGridCellTraits
 {
-	using cellType = int8_t;
-	using cellTypeUnsigned = uint8_t;
+  using cellType = int8_t;
+  using cellTypeUnsigned = uint8_t;
 };
 #else
 struct OccGridCellTraits
 {
-	using cellType = int16_t;
-	using cellTypeUnsigned = uint16_t;
+  using cellType = int16_t;
+  using cellTypeUnsigned = uint16_t;
 };
 #endif
 }  // namespace mrpt::maps

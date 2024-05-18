@@ -17,22 +17,21 @@
 #include "MatrixVectorBase_impl.h"
 
 // Template instantiations:
-#define DO_MATFIXED_INSTANTIATION_NM(T_, N_, M_)                               \
-	template class mrpt::math::MatrixVectorBase<                               \
-		T_, mrpt::math::CMatrixFixed<T_, N_, M_>>;
+#define DO_MATFIXED_INSTANTIATION_NM(T_, N_, M_) \
+  template class mrpt::math::MatrixVectorBase<T_, mrpt::math::CMatrixFixed<T_, N_, M_>>;
 
-#define DO_MATFIXED_INSTANTIATION(T_)                                          \
-	DO_MATFIXED_INSTANTIATION_NM(T_, 2, 2)                                     \
-	DO_MATFIXED_INSTANTIATION_NM(T_, 3, 3)                                     \
-	DO_MATFIXED_INSTANTIATION_NM(T_, 4, 4)                                     \
-	DO_MATFIXED_INSTANTIATION_NM(T_, 6, 6)                                     \
-	DO_MATFIXED_INSTANTIATION_NM(T_, 7, 7)                                     \
-	DO_MATFIXED_INSTANTIATION_NM(T_, 12, 12)
+#define DO_MATFIXED_INSTANTIATION(T_)    \
+  DO_MATFIXED_INSTANTIATION_NM(T_, 2, 2) \
+  DO_MATFIXED_INSTANTIATION_NM(T_, 3, 3) \
+  DO_MATFIXED_INSTANTIATION_NM(T_, 4, 4) \
+  DO_MATFIXED_INSTANTIATION_NM(T_, 6, 6) \
+  DO_MATFIXED_INSTANTIATION_NM(T_, 7, 7) \
+  DO_MATFIXED_INSTANTIATION_NM(T_, 12, 12)
 
 DO_MATFIXED_INSTANTIATION(float);
 DO_MATFIXED_INSTANTIATION(double);
 
 void mrpt::math::internal::printMatrixNoPrintErrorMsg(std::ostream& o)
 {
-	o << "(Dimensions not supported, cast to dynamic matrix)\n";
+  o << "(Dimensions not supported, cast to dynamic matrix)\n";
 }

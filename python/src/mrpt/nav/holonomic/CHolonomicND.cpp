@@ -8,7 +8,6 @@
 #include <mrpt/nav/holonomic/CHolonomicND.h>
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/serialization/CMessage.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/typemeta/static_string.h>
 #include <sstream> // __str__

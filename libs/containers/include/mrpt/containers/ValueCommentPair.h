@@ -22,13 +22,13 @@ namespace mrpt::containers
 template <typename T>
 struct ValueCommentPair
 {
-	ValueCommentPair(const T& v, const std::string& c, CommentPosition pos)
-		: value(v), comment(c), position(pos)
-	{
-	}
-	const T& value;
-	const std::string& comment;
-	const CommentPosition position;
+  ValueCommentPair(const T& v, const std::string& c, CommentPosition pos) :
+      value(v), comment(c), position(pos)
+  {
+  }
+  const T& value;
+  const std::string& comment;
+  const CommentPosition position;
 };
 
 /** Helper syntax sugar for ValueCommentPair
@@ -38,10 +38,9 @@ struct ValueCommentPair
  */
 template <typename T>
 struct ValueCommentPair<T> vcp(
-	const T& v, const std::string& c,
-	const CommentPosition pos = CommentPosition::RIGHT)
+    const T& v, const std::string& c, const CommentPosition pos = CommentPosition::RIGHT)
 {
-	return {v, c, pos};
+  return {v, c, pos};
 }
 
 /** Storage for value-comment pairs, with the comment associated to the key, not
@@ -54,16 +53,15 @@ struct ValueCommentPair<T> vcp(
 template <typename T>
 struct ValueKeyCommentPair
 {
-	ValueKeyCommentPair(
-		const std::string& keyName, const T& v, const std::string& c,
-		CommentPosition pos)
-		: keyname(keyName), value(v), comment(c), position(pos)
-	{
-	}
-	const std::string& keyname;
-	const T& value;
-	const std::string& comment;
-	const CommentPosition position;
+  ValueKeyCommentPair(
+      const std::string& keyName, const T& v, const std::string& c, CommentPosition pos) :
+      keyname(keyName), value(v), comment(c), position(pos)
+  {
+  }
+  const std::string& keyname;
+  const T& value;
+  const std::string& comment;
+  const CommentPosition position;
 };
 
 /** Helper syntax sugar for ValueKeyCommentPair
@@ -73,10 +71,12 @@ struct ValueKeyCommentPair
  */
 template <typename T>
 struct ValueKeyCommentPair<T> vkcp(
-	const std::string& keyName, const T& v, const std::string& c,
-	const CommentPosition pos = CommentPosition::TOP)
+    const std::string& keyName,
+    const T& v,
+    const std::string& c,
+    const CommentPosition pos = CommentPosition::TOP)
 {
-	return {keyName, v, c, pos};
+  return {keyName, v, c, pos};
 }
 
 }  // namespace mrpt::containers

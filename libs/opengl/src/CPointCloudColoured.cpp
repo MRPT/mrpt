@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"	 // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 //
 #include <mrpt/containers/yaml.h>
-#include <mrpt/core/round.h>  // round()
+#include <mrpt/core/round.h>           // round()
 #include <mrpt/math/ops_containers.h>  // for << ops
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/opengl_api.h>
@@ -27,45 +27,42 @@ IMPLEMENTS_SERIALIZABLE(CPointCloudColoured, CRenderizable, mrpt::opengl)
 
 void CPointCloudColoured::onUpdateBuffers_Points()
 {
-	octree_assure_uptodate();  // Rebuild octree if needed
-	m_last_rendered_count_ongoing = 0;
+  octree_assure_uptodate();  // Rebuild octree if needed
+  m_last_rendered_count_ongoing = 0;
 
-	{
-		mrpt::math::TPoint3Df tst[2];
-		// was static_assert(), error in gcc9.1, cannot use ptr+3 in constexpr.
-		ASSERTMSG_(
-			&tst[1].x == (&tst[0].x + 3), "memory layout not as expected");
-		ASSERTMSG_(
-			&tst[1].y == (&tst[0].y + 3), "memory layout not as expected");
-		ASSERTMSG_(
-			&tst[1].z == (&tst[0].z + 3), "memory layout not as expected");
-	}
+  {
+    mrpt::math::TPoint3Df tst[2];
+    // was static_assert(), error in gcc9.1, cannot use ptr+3 in constexpr.
+    ASSERTMSG_(&tst[1].x == (&tst[0].x + 3), "memory layout not as expected");
+    ASSERTMSG_(&tst[1].y == (&tst[0].y + 3), "memory layout not as expected");
+    ASSERTMSG_(&tst[1].z == (&tst[0].z + 3), "memory layout not as expected");
+  }
 
-	// const auto N = m_points.size();
+  // const auto N = m_points.size();
 
-	octree_assure_uptodate();  // Rebuild octree if needed
-	m_last_rendered_count_ongoing = 0;
+  octree_assure_uptodate();  // Rebuild octree if needed
+  m_last_rendered_count_ongoing = 0;
 
-	// TODO: Restore rendering using octrees?
-	// octree_render(*rc.state);  // Render all points recursively:
+  // TODO: Restore rendering using octrees?
+  // octree_render(*rc.state);  // Render all points recursively:
 
-	// ------------------------------
-	// Fill the shader buffers
-	// ------------------------------
-	// "CRenderizableShaderPoints::m_vertex_buffer_data" is already done, since
-	// "m_points" is an alias for it.
+  // ------------------------------
+  // Fill the shader buffers
+  // ------------------------------
+  // "CRenderizableShaderPoints::m_vertex_buffer_data" is already done, since
+  // "m_points" is an alias for it.
 
-	// color buffer: idem. "m_point_colors" is an alias for
-	// CRenderizableShaderPoints::m_color_buffer_data.
+  // color buffer: idem. "m_point_colors" is an alias for
+  // CRenderizableShaderPoints::m_color_buffer_data.
 
-	m_last_rendered_count = m_last_rendered_count_ongoing;
+  m_last_rendered_count = m_last_rendered_count_ongoing;
 }
 
 /** Render a subset of points (required by octree renderer) */
 void CPointCloudColoured::render_subset(
-	[[maybe_unused]] const bool all,
-	[[maybe_unused]] const std::vector<size_t>& idxs,
-	[[maybe_unused]] const float render_area_sqpixels) const
+    [[maybe_unused]] const bool all,
+    [[maybe_unused]] const std::vector<size_t>& idxs,
+    [[maybe_unused]] const float render_area_sqpixels) const
 {
 #if 0 && MRPT_HAS_OPENGL_GLUT
 	// Disabled for now... (Feb 2020)
@@ -104,113 +101,103 @@ void CPointCloudColoured::render_subset(
 uint8_t CPointCloudColoured::serializeGetVersion() const { return 4; }
 void CPointCloudColoured::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	std::shared_lock<std::shared_mutex> wfReadLock(
-		CRenderizableShaderPoints::m_pointsMtx.data);
+  std::shared_lock<std::shared_mutex> wfReadLock(CRenderizableShaderPoints::m_pointsMtx.data);
 
-	writeToStreamRender(out);
-	out << m_points << m_point_colors;
-	CRenderizableShaderPoints::params_serialize(out);
+  writeToStreamRender(out);
+  out << m_points << m_point_colors;
+  CRenderizableShaderPoints::params_serialize(out);
 }
 
-void CPointCloudColoured::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void CPointCloudColoured::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	std::unique_lock<std::shared_mutex> wfWriteLock(
-		CRenderizableShaderPoints::m_pointsMtx.data);
+  std::unique_lock<std::shared_mutex> wfWriteLock(CRenderizableShaderPoints::m_pointsMtx.data);
 
-	switch (version)
-	{
-		case 0:
-		case 1:
-		case 2:
-		case 3:
-		{
-			THROW_EXCEPTION(
-				"Binary backward compatibility lost for this class.");
-		}
-		break;
-		case 4:
-		{
-			readFromStreamRender(in);
-			in >> m_points >> m_point_colors;
+  switch (version)
+  {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    {
+      THROW_EXCEPTION("Binary backward compatibility lost for this class.");
+    }
+    break;
+    case 4:
+    {
+      readFromStreamRender(in);
+      in >> m_points >> m_point_colors;
 
-			CRenderizableShaderPoints::params_deserialize(in);
-		}
-		break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	};
+      CRenderizableShaderPoints::params_deserialize(in);
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
 
-	wfWriteLock.unlock();
-	markAllPointsAsNew();
-	CRenderizable::notifyChange();
+  wfWriteLock.unlock();
+  markAllPointsAsNew();
+  CRenderizable::notifyChange();
 }
 
 /** Write an individual point (checks for "i" in the valid range only in Debug).
  */
 void CPointCloudColoured::setPoint(size_t i, const TPointXYZfRGBAu8& p)
 {
-	std::unique_lock<std::shared_mutex> wfWriteLock(
-		CRenderizableShaderPoints::m_pointsMtx.data);
+  std::unique_lock<std::shared_mutex> wfWriteLock(CRenderizableShaderPoints::m_pointsMtx.data);
 
 #ifdef _DEBUG
-	ASSERT_LT_(i, size_unprotected());
+  ASSERT_LT_(i, size_unprotected());
 #endif
-	m_points[i] = p.pt;
-	auto& c = m_point_colors[i];
-	c.R = p.r;
-	c.G = p.g;
-	c.B = p.b;
-	c.A = p.a;
+  m_points[i] = p.pt;
+  auto& c = m_point_colors[i];
+  c.R = p.r;
+  c.G = p.g;
+  c.B = p.b;
+  c.A = p.a;
 
-	// JL: TODO note: Well, this can be clearly done much more efficiently
-	// but...I don't have time! :-(
-	wfWriteLock.unlock();
-	markAllPointsAsNew();
-	CRenderizable::notifyChange();
+  // JL: TODO note: Well, this can be clearly done much more efficiently
+  // but...I don't have time! :-(
+  wfWriteLock.unlock();
+  markAllPointsAsNew();
+  CRenderizable::notifyChange();
 }
 
 /** Inserts a new point into the point cloud. */
-void CPointCloudColoured::push_back(
-	float x, float y, float z, float R, float G, float B, float A)
+void CPointCloudColoured::push_back(float x, float y, float z, float R, float G, float B, float A)
 {
-	std::unique_lock<std::shared_mutex> wfWriteLock(
-		CRenderizableShaderPoints::m_pointsMtx.data);
+  std::unique_lock<std::shared_mutex> wfWriteLock(CRenderizableShaderPoints::m_pointsMtx.data);
 
-	m_points.emplace_back(x, y, z);
-	m_point_colors.emplace_back(f2u8(R), f2u8(G), f2u8(B), f2u8(A));
+  m_points.emplace_back(x, y, z);
+  m_point_colors.emplace_back(f2u8(R), f2u8(G), f2u8(B), f2u8(A));
 
-	// JL: TODO note: Well, this can be clearly done much more efficiently
-	// but...I don't have time! :-(
-	wfWriteLock.unlock();
-	markAllPointsAsNew();
-	CRenderizable::notifyChange();
+  // JL: TODO note: Well, this can be clearly done much more efficiently
+  // but...I don't have time! :-(
+  wfWriteLock.unlock();
+  markAllPointsAsNew();
+  CRenderizable::notifyChange();
 }
 
 void CPointCloudColoured::insertPoint(const mrpt::math::TPointXYZfRGBAu8& p)
 {
-	std::unique_lock<std::shared_mutex> wfWriteLock(
-		CRenderizableShaderPoints::m_pointsMtx.data);
+  std::unique_lock<std::shared_mutex> wfWriteLock(CRenderizableShaderPoints::m_pointsMtx.data);
 
-	m_points.emplace_back(p.pt);
-	m_point_colors.emplace_back(p.r, p.g, p.b, p.a);
+  m_points.emplace_back(p.pt);
+  m_point_colors.emplace_back(p.r, p.g, p.b, p.a);
 
-	wfWriteLock.unlock();
-	markAllPointsAsNew();
-	CRenderizable::notifyChange();
+  wfWriteLock.unlock();
+  markAllPointsAsNew();
+  CRenderizable::notifyChange();
 }
 
 // Do needed internal work if all points are new (octree rebuilt,...)
 void CPointCloudColoured::markAllPointsAsNew()
 {
-	octree_mark_as_outdated();
-	CRenderizable::notifyChange();
+  octree_mark_as_outdated();
+  CRenderizable::notifyChange();
 }
 /** In a base class, reserve memory to prepare subsequent calls to
  * PLY_import_set_vertex */
-void CPointCloudColoured::PLY_import_set_vertex_count(size_t N)
-{
-	this->resize(N);
-}
+void CPointCloudColoured::PLY_import_set_vertex_count(size_t N) { this->resize(N); }
 
 /** In a base class, will be called after PLY_import_set_vertex_count() once for
  * each loaded point.
@@ -218,25 +205,18 @@ void CPointCloudColoured::PLY_import_set_vertex_count(size_t N)
  * info.
  */
 void CPointCloudColoured::PLY_import_set_vertex(
-	size_t idx, const mrpt::math::TPoint3Df& pt,
-	const mrpt::img::TColorf* pt_color)
+    size_t idx, const mrpt::math::TPoint3Df& pt, const mrpt::img::TColorf* pt_color)
 {
-	if (!pt_color)
-		this->setPoint(
-			idx, TPointXYZfRGBAu8(pt.x, pt.y, pt.z, 0xff, 0xff, 0xff));
-	else
-		this->setPoint(
-			idx,
-			TPointXYZfRGBAu8(
-				pt.x, pt.y, pt.z, f2u8(pt_color->R), f2u8(pt_color->G),
-				f2u8(pt_color->B)));
+  if (!pt_color)
+    this->setPoint(idx, TPointXYZfRGBAu8(pt.x, pt.y, pt.z, 0xff, 0xff, 0xff));
+  else
+    this->setPoint(
+        idx, TPointXYZfRGBAu8(
+                 pt.x, pt.y, pt.z, f2u8(pt_color->R), f2u8(pt_color->G), f2u8(pt_color->B)));
 }
 
 /** In a base class, return the number of vertices */
-size_t CPointCloudColoured::PLY_export_get_vertex_count() const
-{
-	return this->size();
-}
+size_t CPointCloudColoured::PLY_export_get_vertex_count() const { return this->size(); }
 
 /** In a base class, will be called after PLY_export_get_vertex_count() once for
  * each exported point.
@@ -244,48 +224,53 @@ size_t CPointCloudColoured::PLY_export_get_vertex_count() const
  * info.
  */
 void CPointCloudColoured::PLY_export_get_vertex(
-	size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
-	mrpt::img::TColorf& pt_color) const
+    size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color, mrpt::img::TColorf& pt_color) const
 {
-	std::shared_lock<std::shared_mutex> wfReadLock(
-		CRenderizableShaderPoints::m_pointsMtx.data);
+  std::shared_lock<std::shared_mutex> wfReadLock(CRenderizableShaderPoints::m_pointsMtx.data);
 
-	auto& p = m_points[idx];
-	auto& p_color = m_point_colors[idx];
-	p = pt;
-	p_color = pt_color.asTColor();
-	pt_has_color = true;
+  auto& p = m_points[idx];
+  auto& p_color = m_point_colors[idx];
+  p = pt;
+  p_color = pt_color.asTColor();
+  pt_has_color = true;
 }
 
 void CPointCloudColoured::recolorizeByCoordinate(
-	const float coord_min, const float coord_max, const int coord_index,
-	const mrpt::img::TColormap color_map)
+    const float coord_min,
+    const float coord_max,
+    const int coord_index,
+    const mrpt::img::TColormap color_map)
 {
-	ASSERT_GE_(coord_index, 0);
-	ASSERT_LT_(coord_index, 3);
+  ASSERT_GE_(coord_index, 0);
+  ASSERT_LT_(coord_index, 3);
 
-	const float coord_range = coord_max - coord_min;
-	const float coord_range_1 = coord_range != 0.0f ? 1.0f / coord_range : 1.0f;
-	for (size_t i = 0; i < m_points.size(); i++)
-	{
-		float coord = .0f;
-		switch (coord_index)
-		{
-			case 0: coord = m_points[i].x; break;
-			case 1: coord = m_points[i].y; break;
-			case 2: coord = m_points[i].z; break;
-		};
-		const float col_idx =
-			std::max(0.0f, std::min(1.0f, (coord - coord_min) * coord_range_1));
-		float r, g, b;
-		mrpt::img::colormap(color_map, col_idx, r, g, b);
-		this->setPointColor_fast(i, r, g, b);
-	}
+  const float coord_range = coord_max - coord_min;
+  const float coord_range_1 = coord_range != 0.0f ? 1.0f / coord_range : 1.0f;
+  for (size_t i = 0; i < m_points.size(); i++)
+  {
+    float coord = .0f;
+    switch (coord_index)
+    {
+      case 0:
+        coord = m_points[i].x;
+        break;
+      case 1:
+        coord = m_points[i].y;
+        break;
+      case 2:
+        coord = m_points[i].z;
+        break;
+    };
+    const float col_idx = std::max(0.0f, std::min(1.0f, (coord - coord_min) * coord_range_1));
+    float r, g, b;
+    mrpt::img::colormap(color_map, col_idx, r, g, b);
+    this->setPointColor_fast(i, r, g, b);
+  }
 }
 
 void CPointCloudColoured::toYAMLMap(mrpt::containers::yaml& propertiesMap) const
 {
-	CRenderizable::toYAMLMap(propertiesMap);
-	propertiesMap["point_count"] = m_points.size();
-	propertiesMap["bounding_box"] = this->getBoundingBox().asString();
+  CRenderizable::toYAMLMap(propertiesMap);
+  propertiesMap["point_count"] = m_points.size();
+  propertiesMap["bounding_box"] = this->getBoundingBox().asString();
 }

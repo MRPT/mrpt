@@ -6,7 +6,6 @@
 #include <mrpt/obs/gnss_messages.h>
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/serialization/CMessage.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <ostream>
 #include <ratio>

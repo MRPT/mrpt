@@ -21,16 +21,16 @@ class slamdemoFrame;
 
 class slamdemoApp : public wxApp
 {
-	bool doCommandLineProcess();
-	void DoBatchExperiments(const std::string& cfgFil);
+  bool doCommandLineProcess();
+  void DoBatchExperiments(const std::string& cfgFil);
 
-	slamdemoFrame* win;
+  slamdemoFrame* win;
 
-   public:
-	bool OnInit() override;
+ public:
+  bool OnInit() override;
 
-   private:
-	bool m_option_norun;
+ private:
+  bool m_option_norun;
 };
 
-#endif	// SLAMDEMOAPP_H
+#endif  // SLAMDEMOAPP_H

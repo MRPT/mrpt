@@ -13,16 +13,17 @@
 
 class CObservationImageNode : public CBaseObservationNode
 {
-   public:
-	CObservationImageNode(
-		CNode* parent, mrpt::obs::CObservationImage::Ptr observation,
-		const mrpt::poses::CPose3D& pose);
+ public:
+  CObservationImageNode(
+      CNode* parent,
+      mrpt::obs::CObservationImage::Ptr observation,
+      const mrpt::poses::CPose3D& pose);
 
-	// CNode interface
-	ObjectType type() const override;
-	std::string displayName() const override;
-	mrpt::obs::CObservationImage::Ptr observation() const;
+  // CNode interface
+  ObjectType type() const override;
+  std::string displayName() const override;
+  mrpt::obs::CObservationImage::Ptr observation() const;
 
-   private:
-	mrpt::obs::CObservationImage::Ptr m_observation;
+ private:
+  mrpt::obs::CObservationImage::Ptr m_observation;
 };

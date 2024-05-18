@@ -19,52 +19,51 @@ using namespace mrpt::system;
 using namespace std;
 
 #include <mrpt/examples_config.h>
-string myDataDir(
-	MRPT_EXAMPLES_BASE_DIRECTORY + string("img_gauss_filtering_example/"));
+string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("img_gauss_filtering_example/"));
 
 // ------------------------------------------------------
 //					Test
 // ------------------------------------------------------
 void Test_GaussWindows()
 {
-	CTicTac tictac;
-	CImage inImg, outImg;
+  CTicTac tictac;
+  CImage inImg, outImg;
 
-	bool loadOk = inImg.loadFromFile(myDataDir + "test_in.jpg");
-	ASSERT_(loadOk);
+  bool loadOk = inImg.loadFromFile(myDataDir + "test_in.jpg");
+  ASSERT_(loadOk);
 
-	// Smoothed image:
-	// ---------------------------
-	tictac.Tic();
+  // Smoothed image:
+  // ---------------------------
+  tictac.Tic();
 
-	inImg.filterGaussian(outImg, 11, 11);  // Window size
+  inImg.filterGaussian(outImg, 11, 11);  // Window size
 
-	printf("Smoothed image in %.03fms\n", 1000 * tictac.Tac());
+  printf("Smoothed image in %.03fms\n", 1000 * tictac.Tac());
 
-	CDisplayWindow win1("Original Image");
-	CDisplayWindow win2("Smoothed Image");
+  CDisplayWindow win1("Original Image");
+  CDisplayWindow win2("Smoothed Image");
 
-	win1.showImage(inImg);
-	win2.showImage(outImg);
+  win1.showImage(inImg);
+  win2.showImage(outImg);
 
-	mrpt::system::pause();
+  mrpt::system::pause();
 }
 
 int main()
 {
-	try
-	{
-		Test_GaussWindows();
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cout << "MRPT exception caught: " << e.what() << std::endl;
-		return -1;
-	}
-	catch (...)
-	{
-		printf("Another exception!!");
-		return -1;
-	}
+  try
+  {
+    Test_GaussWindows();
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cout << "MRPT exception caught: " << e.what() << std::endl;
+    return -1;
+  }
+  catch (...)
+  {
+    printf("Another exception!!");
+    return -1;
+  }
 }

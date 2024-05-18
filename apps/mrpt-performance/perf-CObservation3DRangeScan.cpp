@@ -27,100 +27,95 @@ using namespace std;
 using namespace std::string_literals;
 
 const string rgbd_test_rawlog_file =
-	mrpt::system::getShareMRPTDir() + "datasets/tests_rgbd.rawlog"s;
+    mrpt::system::getShareMRPTDir() + "datasets/tests_rgbd.rawlog"s;
 
 void generateRandomMaskImage(
-	mrpt::math::CMatrixF& m, const unsigned int nrows, const unsigned int ncols)
+    mrpt::math::CMatrixF& m, const unsigned int nrows, const unsigned int ncols)
 {
-	m.resize(nrows, ncols);
-	for (unsigned r = 0; r < nrows; r++)
-		for (unsigned c = 0; c < ncols; c++)
-			m(r, c) = static_cast<float>(
-				mrpt::random::getRandomGenerator().drawUniform(0.0, 3.0));
+  m.resize(nrows, ncols);
+  for (unsigned r = 0; r < nrows; r++)
+    for (unsigned c = 0; c < ncols; c++)
+      m(r, c) = static_cast<float>(mrpt::random::getRandomGenerator().drawUniform(0.0, 3.0));
 }
 
 double obs3d_test_depth_to_3d(int a, int b)
 {
-	CObservation3DRangeScan obs1;
-	{
-		CFileGZInputStream f(rgbd_test_rawlog_file);
-		archiveFrom(f) >> obs1;
-	}
+  CObservation3DRangeScan obs1;
+  {
+    CFileGZInputStream f(rgbd_test_rawlog_file);
+    archiveFrom(f) >> obs1;
+  }
 
-	CTimeLogger timlog;
+  CTimeLogger timlog;
 
-	T3DPointsProjectionParams pp;
-	pp.USE_SSE2 = (a & 0x01) != 0;
+  T3DPointsProjectionParams pp;
+  pp.USE_SSE2 = (a & 0x01) != 0;
 
-	TRangeImageFilterParams fp;
-	mrpt::math::CMatrixF minF, maxF;
-	if (b & 0x01)
-	{
-		generateRandomMaskImage(
-			minF, obs1.rangeImage.rows(), obs1.rangeImage.cols());
-		fp.rangeMask_min = &minF;
-	}
-	if (b & 0x02)
-	{
-		generateRandomMaskImage(
-			maxF, obs1.rangeImage.rows(), obs1.rangeImage.cols());
-		fp.rangeMask_max = &maxF;
-	}
+  TRangeImageFilterParams fp;
+  mrpt::math::CMatrixF minF, maxF;
+  if (b & 0x01)
+  {
+    generateRandomMaskImage(minF, obs1.rangeImage.rows(), obs1.rangeImage.cols());
+    fp.rangeMask_min = &minF;
+  }
+  if (b & 0x02)
+  {
+    generateRandomMaskImage(maxF, obs1.rangeImage.rows(), obs1.rangeImage.cols());
+    fp.rangeMask_max = &maxF;
+  }
 
-	for (int i = 0; i < 100; i++)
-	{
-		CObservation3DRangeScan obs = obs1;
-		// to avoid counting the generation of the LUT
-		if (i > 0) timlog.enter("run");
+  for (int i = 0; i < 100; i++)
+  {
+    CObservation3DRangeScan obs = obs1;
+    // to avoid counting the generation of the LUT
+    if (i > 0) timlog.enter("run");
 
-		obs.unprojectInto(obs, pp, fp);
+    obs.unprojectInto(obs, pp, fp);
 
-		if (i > 0) timlog.leave("run");
-	}
-	const double t = timlog.getMeanTime("run");
-	timlog.clear(true);
-	return t;
+    if (i > 0) timlog.leave("run");
+  }
+  const double t = timlog.getMeanTime("run");
+  timlog.clear(true);
+  return t;
 }
 
 double obs3d_test_depth_to_2d_scan(int useMinFilter, int useMaxFilter)
 {
-	CObservation3DRangeScan obs1;
-	{
-		CFileGZInputStream f(rgbd_test_rawlog_file);
-		archiveFrom(f) >> obs1;
-	}
+  CObservation3DRangeScan obs1;
+  {
+    CFileGZInputStream f(rgbd_test_rawlog_file);
+    archiveFrom(f) >> obs1;
+  }
 
-	CTimeLogger timlog;
+  CTimeLogger timlog;
 
-	T3DPointsTo2DScanParams sp;
-	sp.sensorLabel = "mysensor";
+  T3DPointsTo2DScanParams sp;
+  sp.sensorLabel = "mysensor";
 
-	TRangeImageFilterParams fp;
-	mrpt::math::CMatrixF minF, maxF;
-	if (useMinFilter)
-	{
-		generateRandomMaskImage(
-			minF, obs1.rangeImage.rows(), obs1.rangeImage.cols());
-		fp.rangeMask_min = &minF;
-	}
-	if (useMaxFilter)
-	{
-		generateRandomMaskImage(
-			maxF, obs1.rangeImage.rows(), obs1.rangeImage.cols());
-		fp.rangeMask_max = &maxF;
-	}
+  TRangeImageFilterParams fp;
+  mrpt::math::CMatrixF minF, maxF;
+  if (useMinFilter)
+  {
+    generateRandomMaskImage(minF, obs1.rangeImage.rows(), obs1.rangeImage.cols());
+    fp.rangeMask_min = &minF;
+  }
+  if (useMaxFilter)
+  {
+    generateRandomMaskImage(maxF, obs1.rangeImage.rows(), obs1.rangeImage.cols());
+    fp.rangeMask_max = &maxF;
+  }
 
-	for (int i = 0; i < 10; i++)
-	{
-		CObservation3DRangeScan obs = obs1;
-		CObservation2DRangeScan fake2d;
-		timlog.enter("run");
-		obs.convertTo2DScan(fake2d, sp, fp);
-		timlog.leave("run");
-	}
-	const double t = timlog.getMeanTime("run");
-	timlog.clear(true);
-	return t;
+  for (int i = 0; i < 10; i++)
+  {
+    CObservation3DRangeScan obs = obs1;
+    CObservation2DRangeScan fake2d;
+    timlog.enter("run");
+    obs.convertTo2DScan(fake2d, sp, fp);
+    timlog.leave("run");
+  }
+  const double t = timlog.getMeanTime("run");
+  timlog.clear(true);
+  return t;
 }
 
 // ------------------------------------------------------
@@ -128,46 +123,36 @@ double obs3d_test_depth_to_2d_scan(int useMinFilter, int useMaxFilter)
 // ------------------------------------------------------
 void register_tests_CObservation3DRangeScan()
 {
-	if (mrpt::system::fileExists(rgbd_test_rawlog_file))
-	{
-		lstTests.emplace_back(
-			"3DRangeScan: 320x240 Depth->3D (w/o SSE2)", obs3d_test_depth_to_3d,
-			0x00, 0);
-		lstTests.emplace_back(
-			"3DRangeScan: 320x240 Depth->3D (w/SSE2)", obs3d_test_depth_to_3d,
-			0x01, 0);
+  if (mrpt::system::fileExists(rgbd_test_rawlog_file))
+  {
+    lstTests.emplace_back(
+        "3DRangeScan: 320x240 Depth->3D (w/o SSE2)", obs3d_test_depth_to_3d, 0x00, 0);
+    lstTests.emplace_back(
+        "3DRangeScan: 320x240 Depth->3D (w/SSE2)", obs3d_test_depth_to_3d, 0x01, 0);
 
-		lstTests.emplace_back(
-			"3DRangeScan: 320x240 Depth->3D (w/o SSE2,minFilter)",
-			obs3d_test_depth_to_3d, 0x00, 0x01);
-		lstTests.emplace_back(
-			"3DRangeScan: 320x240 Depth->3D (w/SSE2,minFilter)",
-			obs3d_test_depth_to_3d, 0x01, 0x01);
+    lstTests.emplace_back(
+        "3DRangeScan: 320x240 Depth->3D (w/o SSE2,minFilter)", obs3d_test_depth_to_3d, 0x00, 0x01);
+    lstTests.emplace_back(
+        "3DRangeScan: 320x240 Depth->3D (w/SSE2,minFilter)", obs3d_test_depth_to_3d, 0x01, 0x01);
 
-		lstTests.emplace_back(
-			"3DRangeScan: 320x240 Depth->3D (w/o SSE2,maxFilter)",
-			obs3d_test_depth_to_3d, 0x00, 0x02);
-		lstTests.emplace_back(
-			"3DRangeScan: 320x240 Depth->3D (w/SSE2,maxFilter)",
-			obs3d_test_depth_to_3d, 0x01, 0x02);
+    lstTests.emplace_back(
+        "3DRangeScan: 320x240 Depth->3D (w/o SSE2,maxFilter)", obs3d_test_depth_to_3d, 0x00, 0x02);
+    lstTests.emplace_back(
+        "3DRangeScan: 320x240 Depth->3D (w/SSE2,maxFilter)", obs3d_test_depth_to_3d, 0x01, 0x02);
 
-		lstTests.emplace_back(
-			"3DRangeScan: 320x240 Depth->3D (w/o SSE2,min/maxFilter)",
-			obs3d_test_depth_to_3d, 0x00, 0x03);
-		lstTests.emplace_back(
-			"3DRangeScan: 320x240 Depth->3D (w/SSE2,min/maxFilter)",
-			obs3d_test_depth_to_3d, 0x01, 0x03);
+    lstTests.emplace_back(
+        "3DRangeScan: 320x240 Depth->3D (w/o SSE2,min/maxFilter)", obs3d_test_depth_to_3d, 0x00,
+        0x03);
+    lstTests.emplace_back(
+        "3DRangeScan: 320x240 Depth->3D (w/SSE2,min/maxFilter)", obs3d_test_depth_to_3d, 0x01,
+        0x03);
 
-		lstTests.emplace_back(
-			"3DRangeScan: 320x240 Depth->2D scan", obs3d_test_depth_to_2d_scan);
-		lstTests.emplace_back(
-			"3DRangeScan: 320x240 Depth->2D scan + min_filter",
-			obs3d_test_depth_to_2d_scan, 1, 0);
-		lstTests.emplace_back(
-			"3DRangeScan: 320x240 Depth->2D scan + max_filter",
-			obs3d_test_depth_to_2d_scan, 0, 1);
-		lstTests.emplace_back(
-			"3DRangeScan: 320x240 Depth->2D scan + min/max_filters",
-			obs3d_test_depth_to_2d_scan, 1, 1);
-	}
+    lstTests.emplace_back("3DRangeScan: 320x240 Depth->2D scan", obs3d_test_depth_to_2d_scan);
+    lstTests.emplace_back(
+        "3DRangeScan: 320x240 Depth->2D scan + min_filter", obs3d_test_depth_to_2d_scan, 1, 0);
+    lstTests.emplace_back(
+        "3DRangeScan: 320x240 Depth->2D scan + max_filter", obs3d_test_depth_to_2d_scan, 0, 1);
+    lstTests.emplace_back(
+        "3DRangeScan: 320x240 Depth->2D scan + min/max_filters", obs3d_test_depth_to_2d_scan, 1, 1);
+  }
 }

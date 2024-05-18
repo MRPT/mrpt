@@ -22,25 +22,25 @@ namespace mrpt::opengl
 // inverse eye-distance for this reason.
 struct DefaultShaderID
 {
-	// Regular geometric elements:
-	static constexpr shader_id_t POINTS = 0;
-	static constexpr shader_id_t WIREFRAME = 1;
-	static constexpr shader_id_t TEXT = 2;
-	static constexpr shader_id_t TRIANGLES_LIGHT = 3;
-	static constexpr shader_id_t TEXTURED_TRIANGLES_LIGHT = 4;
-	static constexpr shader_id_t TRIANGLES_NO_LIGHT = 5;
-	static constexpr shader_id_t TEXTURED_TRIANGLES_NO_LIGHT = 6;
+  // Regular geometric elements:
+  static constexpr shader_id_t POINTS = 0;
+  static constexpr shader_id_t WIREFRAME = 1;
+  static constexpr shader_id_t TEXT = 2;
+  static constexpr shader_id_t TRIANGLES_LIGHT = 3;
+  static constexpr shader_id_t TEXTURED_TRIANGLES_LIGHT = 4;
+  static constexpr shader_id_t TRIANGLES_NO_LIGHT = 5;
+  static constexpr shader_id_t TEXTURED_TRIANGLES_NO_LIGHT = 6;
 
-	// Shadow generation 1st/2nd pass shaders:
-	static constexpr shader_id_t TRIANGLES_SHADOW_1ST = 10;
-	static constexpr shader_id_t TRIANGLES_SHADOW_2ND = 11;
-	static constexpr shader_id_t TEXTURED_TRIANGLES_SHADOW_1ST = 12;
-	static constexpr shader_id_t TEXTURED_TRIANGLES_SHADOW_2ND = 13;
+  // Shadow generation 1st/2nd pass shaders:
+  static constexpr shader_id_t TRIANGLES_SHADOW_1ST = 10;
+  static constexpr shader_id_t TRIANGLES_SHADOW_2ND = 11;
+  static constexpr shader_id_t TEXTURED_TRIANGLES_SHADOW_1ST = 12;
+  static constexpr shader_id_t TEXTURED_TRIANGLES_SHADOW_2ND = 13;
 
-	// Special effects:
-	static constexpr shader_id_t SKYBOX = 20;
-	static constexpr shader_id_t DEBUG_TEXTURE_TO_SCREEN = 30;
-	static constexpr shader_id_t NONE = 31;	 //!< Skip rendering
+  // Special effects:
+  static constexpr shader_id_t SKYBOX = 20;
+  static constexpr shader_id_t DEBUG_TEXTURE_TO_SCREEN = 30;
+  static constexpr shader_id_t NONE = 31;  //!< Skip rendering
 };
 
 /** Loads a set of OpenGL Vertex+Fragment shaders from the default library

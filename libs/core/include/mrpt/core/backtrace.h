@@ -19,18 +19,18 @@ namespace mrpt
 /** Used in callStackBackTrace() */
 struct TCallStackEntry
 {
-	TCallStackEntry() = default;
+  TCallStackEntry() = default;
 
-	/** Address of the calling point */
-	void* address = nullptr;
+  /** Address of the calling point */
+  void* address = nullptr;
 
-	/** Demangled symbol name (empty if not available) */
-	std::string symbolName;
-	/** Original (before demangle) symbol name  (empty if not available) */
-	std::string symbolNameOriginal;
+  /** Demangled symbol name (empty if not available) */
+  std::string symbolName;
+  /** Original (before demangle) symbol name  (empty if not available) */
+  std::string symbolNameOriginal;
 
-	std::string sourceFileName, sourceFileFullPath;
-	int sourceFileNumber = 0;
+  std::string sourceFileName, sourceFileFullPath;
+  int sourceFileNumber = 0;
 };
 
 #ifdef _MSC_VER
@@ -40,14 +40,14 @@ template class std::vector<TCallStackEntry>;
 /** See: callStackBackTrace() */
 struct TCallStackBackTrace
 {
-	TCallStackBackTrace();
-	std::vector<TCallStackEntry> backtrace_levels;
+  TCallStackBackTrace();
+  std::vector<TCallStackEntry> backtrace_levels;
 
-	/** Prints all backtrace entries, one per line in a human-readable format.
-	 * See [environment variables](env-vars.html) that can change the output
-	 * format.
-	 */
-	std::string asString() const noexcept;
+  /** Prints all backtrace entries, one per line in a human-readable format.
+   * See [environment variables](env-vars.html) that can change the output
+   * format.
+   */
+  std::string asString() const noexcept;
 };
 
 /** Returns a list of strings representing the current call stack
@@ -61,17 +61,17 @@ struct TCallStackBackTrace
  * \note (Moved from mrpt-system to mrpt-core in MRPT 2.1.5)
  */
 void callStackBackTrace(
-	TCallStackBackTrace& out_bt, const unsigned int framesToSkip = 1,
-	const unsigned int framesToCapture = 64) noexcept;
+    TCallStackBackTrace& out_bt,
+    const unsigned int framesToSkip = 1,
+    const unsigned int framesToCapture = 64) noexcept;
 
 /// \overload
 inline TCallStackBackTrace callStackBackTrace(
-	const unsigned int framesToSkip = 1,
-	const unsigned int framesToCapture = 64) noexcept
+    const unsigned int framesToSkip = 1, const unsigned int framesToCapture = 64) noexcept
 {
-	TCallStackBackTrace bt;
-	callStackBackTrace(bt, framesToSkip, framesToCapture);
-	return bt;
+  TCallStackBackTrace bt;
+  callStackBackTrace(bt, framesToSkip, framesToCapture);
+  return bt;
 }
 
 /** @} */

@@ -20,22 +20,21 @@ class CPointsConfig;
 }
 class CPointsConfig : public CBaseConfig
 {
-   public:
-	CPointsConfig();
-	~CPointsConfig() override;
+ public:
+  CPointsConfig();
+  ~CPointsConfig() override;
 
-	const QString getName() override;
-	void updateConfiguration(
-		mrpt::maps::TMetricMapInitializer* options) override;
-	TypeOfConfig type() const override;
+  const QString getName() override;
+  void updateConfiguration(mrpt::maps::TMetricMapInitializer* options) override;
+  TypeOfConfig type() const override;
 
-	void setInsertOpt(
-		const mrpt::maps::CSimplePointsMap::TInsertionOptions& insertOpt =
-			mrpt::maps::CSimplePointsMap::TInsertionOptions());
-	void setLikelihoodOpt(
-		const mrpt::maps::CSimplePointsMap::TLikelihoodOptions& likelihoodOpt =
-			mrpt::maps::CSimplePointsMap::TLikelihoodOptions());
+  void setInsertOpt(
+      const mrpt::maps::CSimplePointsMap::TInsertionOptions& insertOpt =
+          mrpt::maps::CSimplePointsMap::TInsertionOptions());
+  void setLikelihoodOpt(
+      const mrpt::maps::CSimplePointsMap::TLikelihoodOptions& likelihoodOpt =
+          mrpt::maps::CSimplePointsMap::TLikelihoodOptions());
 
-   private:
-	std::unique_ptr<Ui::CPointsConfig> m_ui;
+ private:
+  std::unique_ptr<Ui::CPointsConfig> m_ui;
 };

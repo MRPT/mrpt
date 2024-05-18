@@ -12,7 +12,7 @@
 
 #include <mrpt/core/bits_math.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/obs/obs_frwds.h>	 // CObservation2DRangeScan
+#include <mrpt/obs/obs_frwds.h>  // CObservation2DRangeScan
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
 
@@ -50,19 +50,18 @@ void register_tests_system();
 void register_tests_yaml();
 // -------------------------------------------------
 
-using TestFunctor =
-	std::function<double(int, int)>;  // return run-time in secs.
+using TestFunctor = std::function<double(int, int)>;  // return run-time in secs.
 
 struct TestData
 {
-	TestData(const char* nam, TestFunctor f, int a1 = 0, int a2 = 0)
-		: name(nam), func(f), arg1(a1), arg2(a2)
-	{
-	}
+  TestData(const char* nam, TestFunctor f, int a1 = 0, int a2 = 0) :
+      name(nam), func(f), arg1(a1), arg2(a2)
+  {
+  }
 
-	const char* name;
-	TestFunctor func;
-	int arg1, arg2;
+  const char* name;
+  TestFunctor func;
+  int arg1, arg2;
 };
 
 // Common data & functions available to all performance modules:

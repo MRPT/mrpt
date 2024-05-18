@@ -21,144 +21,139 @@ using namespace std;
 
 CHeightGridMap2D_Base::TPointInsertParams::TPointInsertParams()
 
-	= default;
+    = default;
 
 CHeightGridMap2D_Base::CHeightGridMap2D_Base() = default;
 CHeightGridMap2D_Base::~CHeightGridMap2D_Base() = default;
 bool CHeightGridMap2D_Base::getMinMaxHeight(float& z_min, float& z_max) const
 {
-	const size_t size_x = dem_get_size_x();
-	const size_t size_y = dem_get_size_y();
+  const size_t size_x = dem_get_size_x();
+  const size_t size_y = dem_get_size_y();
 
-	bool any = false;
-	z_min = z_max = 0;
-	for (size_t x = 0; x < size_x; x++)
-		for (size_t y = 0; y < size_y; y++)
-		{
-			double z;
-			if (dem_get_z_by_cell(x, y, z))
-			{
-				if (!any)
-				{
-					// First:
-					any = true;
-					z_min = z_max = mrpt::d2f(z);
-				}
-				else
-				{
-					mrpt::keep_max<float>(z_max, z);
-					mrpt::keep_min<float>(z_min, z);
-				}
-			}
-		}
-	return any;
+  bool any = false;
+  z_min = z_max = 0;
+  for (size_t x = 0; x < size_x; x++)
+    for (size_t y = 0; y < size_y; y++)
+    {
+      double z;
+      if (dem_get_z_by_cell(x, y, z))
+      {
+        if (!any)
+        {
+          // First:
+          any = true;
+          z_min = z_max = mrpt::d2f(z);
+        }
+        else
+        {
+          mrpt::keep_max<float>(z_max, z);
+          mrpt::keep_min<float>(z_min, z);
+        }
+      }
+    }
+  return any;
 }
 
 bool CHeightGridMap2D_Base::intersectLine3D(
-	const mrpt::math::TLine3D& ray, mrpt::math::TObject3D& obj) const
+    const mrpt::math::TLine3D& ray, mrpt::math::TObject3D& obj) const
 {
-	using namespace mrpt::math;
+  using namespace mrpt::math;
 
-	MRPT_START
+  MRPT_START
 
-	obj = TObject3D();
+  obj = TObject3D();
 
-	const double resolution = dem_get_resolution();
-	float z_min, z_max;
-	if (!getMinMaxHeight(z_min, z_max)) return false;
+  const double resolution = dem_get_resolution();
+  float z_min, z_max;
+  if (!getMinMaxHeight(z_min, z_max)) return false;
 
-	// 1st: intersections with 2 horizontal planes at the grid Z limits:
-	const TPlane horz_plane_above(
-		TPoint3D(0, 0, z_max + 1), TPoint3D(1, 0, z_max + 1),
-		TPoint3D(0, 1, z_max + 1));
-	const TPlane horz_plane_below(
-		TPoint3D(0, 0, z_min - 1), TPoint3D(1, 0, z_min - 1),
-		TPoint3D(0, 1, z_min - 1));
-	TPoint3D pt_ab, pt_be;
-	{
-		TObject3D int_ab, int_be;
-		intersect(ray, horz_plane_above, int_ab);
-		intersect(ray, horz_plane_below, int_be);
+  // 1st: intersections with 2 horizontal planes at the grid Z limits:
+  const TPlane horz_plane_above(
+      TPoint3D(0, 0, z_max + 1), TPoint3D(1, 0, z_max + 1), TPoint3D(0, 1, z_max + 1));
+  const TPlane horz_plane_below(
+      TPoint3D(0, 0, z_min - 1), TPoint3D(1, 0, z_min - 1), TPoint3D(0, 1, z_min - 1));
+  TPoint3D pt_ab, pt_be;
+  {
+    TObject3D int_ab, int_be;
+    intersect(ray, horz_plane_above, int_ab);
+    intersect(ray, horz_plane_below, int_be);
 
-		if (!int_ab.getPoint(pt_ab) || !int_be.getPoint(pt_be)) return false;
-	}
+    if (!int_ab.getPoint(pt_ab) || !int_be.getPoint(pt_be)) return false;
+  }
 
-	// Now, go from pt_ab -> pt_be doing "ray-tracing" and find the collision
-	// with a cell:
-	TPoint3D pt = pt_ab;
-	TPoint3D Apt = pt_be - pt_ab;
-	const double totalDist = Apt.norm();
-	if (totalDist == 0) return false;
-	// The step:
-	Apt *= resolution * 0.99 / totalDist;
+  // Now, go from pt_ab -> pt_be doing "ray-tracing" and find the collision
+  // with a cell:
+  TPoint3D pt = pt_ab;
+  TPoint3D Apt = pt_be - pt_ab;
+  const double totalDist = Apt.norm();
+  if (totalDist == 0) return false;
+  // The step:
+  Apt *= resolution * 0.99 / totalDist;
 
-	TPoint3D Apt_half = Apt;
-	Apt_half *= 0.5;
+  TPoint3D Apt_half = Apt;
+  Apt_half *= 0.5;
 
-	const size_t N = mrpt::round(ceil(totalDist / resolution));
+  const size_t N = mrpt::round(ceil(totalDist / resolution));
 
-	for (size_t i = 0; i < N; i++)
-	{
-		// Mid point between this and next step:
-		const TPoint3D testPt = pt + Apt_half;
-		// get its height in the grid:
-		double pt_z;
-		if (dem_get_z(testPt.x, testPt.y, pt_z))
-		{
-			// Do we go thru the cell?
-			if (pt_z >= std::min(pt.z, pt.z + Apt.z) &&
-				pt_z < std::max(pt.z, pt.z + Apt.z))
-			{
-				// yes:
-				TPoint3D colPt(testPt.x, testPt.y, pt_z);
-				obj = TObject3D::From(colPt);
-				return true;
-			}
-		}
-		pt += Apt;
-	}
+  for (size_t i = 0; i < N; i++)
+  {
+    // Mid point between this and next step:
+    const TPoint3D testPt = pt + Apt_half;
+    // get its height in the grid:
+    double pt_z;
+    if (dem_get_z(testPt.x, testPt.y, pt_z))
+    {
+      // Do we go thru the cell?
+      if (pt_z >= std::min(pt.z, pt.z + Apt.z) && pt_z < std::max(pt.z, pt.z + Apt.z))
+      {
+        // yes:
+        TPoint3D colPt(testPt.x, testPt.y, pt_z);
+        obj = TObject3D::From(colPt);
+        return true;
+      }
+    }
+    pt += Apt;
+  }
 
-	// No collision found!
-	return false;
+  // No collision found!
+  return false;
 
-	// None found:
-	MRPT_END
+  // None found:
+  MRPT_END
 }
 
 bool CHeightGridMap2D_Base::dem_internal_insertObservation(
-	const mrpt::obs::CObservation& obs,
-	const std::optional<const mrpt::poses::CPose3D>& robotPose)
+    const mrpt::obs::CObservation& obs, const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
-	using namespace mrpt::poses;
-	using namespace mrpt::obs;
+  using namespace mrpt::poses;
+  using namespace mrpt::obs;
 
-	MRPT_START
+  MRPT_START
 
-	CPose3D robotPose3D;  // Default: 0,0,0
+  CPose3D robotPose3D;  // Default: 0,0,0
 
-	if (robotPose) robotPose3D = (*robotPose);
+  if (robotPose) robotPose3D = (*robotPose);
 
-	// Points to insert:
-	CSimplePointsMap thePointsMoved;
-	thePointsMoved.insertObservation(obs, robotPose);
+  // Points to insert:
+  CSimplePointsMap thePointsMoved;
+  thePointsMoved.insertObservation(obs, robotPose);
 
-	// Factorized insertion of points, for different observation classes:
-	if (!thePointsMoved.empty())
-	{
-		TPointInsertParams pt_params;
-		pt_params.update_map_after_insertion =
-			false;	// update only once at end
+  // Factorized insertion of points, for different observation classes:
+  if (!thePointsMoved.empty())
+  {
+    TPointInsertParams pt_params;
+    pt_params.update_map_after_insertion = false;  // update only once at end
 
-		const size_t N = thePointsMoved.size();
-		for (size_t i = 0; i < N; i++)
-		{
-			float x, y, z;
-			thePointsMoved.getPoint(i, x, y, z);
-			insertIndividualPoint(x, y, z, pt_params);
-		}  // end for i
-		this->dem_update_map();
-		return true;  // Done, new points inserted
-	}
-	return false;  // No insertion done
-	MRPT_END
+    const size_t N = thePointsMoved.size();
+    for (size_t i = 0; i < N; i++)
+    {
+      float x, y, z;
+      thePointsMoved.getPoint(i, x, y, z);
+      insertIndividualPoint(x, y, z, pt_params);
+    }  // end for i
+    this->dem_update_map();
+    return true;  // Done, new points inserted
+  }
+  return false;  // No insertion done
+  MRPT_END
 }

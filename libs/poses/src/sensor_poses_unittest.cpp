@@ -34,28 +34,24 @@ sensors:
 
 TEST(sensor_poses, from_yaml)
 {
-	const auto d = mrpt::containers::yaml::FromText(sample_YAML_extrinsics1);
+  const auto d = mrpt::containers::yaml::FromText(sample_YAML_extrinsics1);
 
-	const auto s2p = mrpt::poses::sensor_poses_from_yaml(d["sensors"]);
+  const auto s2p = mrpt::poses::sensor_poses_from_yaml(d["sensors"]);
 
-	EXPECT_EQ(s2p.size(), 3U);
+  EXPECT_EQ(s2p.size(), 3U);
 
-	const std::map<std::string, mrpt::poses::CPose3D> gt_poses = {
-		{"base_link", mrpt::poses::CPose3D::Identity()},
-		{"lidar1",
-		 mrpt::poses::CPose3D::FromQuaternionAndTranslation(
-			 {0.49826434600894337, -0.5003218001035493, 0.5012125349997221,
-			  -0.5001966939080825},
-			 1.0506, 0.04, -0.002)},
-		{"imu", mrpt::poses::CPose3D::FromTranslation(1.0, 0.0, 0.0)},
-	};
+  const std::map<std::string, mrpt::poses::CPose3D> gt_poses = {
+      {"base_link",                        mrpt::poses::CPose3D::Identity()           },
+      { "lidar1",
+       mrpt::poses::CPose3D::FromQuaternionAndTranslation(
+       {0.49826434600894337, -0.5003218001035493, 0.5012125349997221, -0.5001966939080825},                                                                   1.0506, 0.04, -0.002)},
+      { "imu", mrpt::poses::CPose3D::FromTranslation(1.0,0.0, 0.0)},
+  };
 
-	for (const auto& kv : gt_poses)
-	{
-		EXPECT_NEAR(
-			mrpt::poses::Lie::SE<3>::log(s2p.at(kv.first) - kv.second).norm(),
-			.0, 1e-3);
-	}
+  for (const auto& kv : gt_poses)
+  {
+    EXPECT_NEAR(mrpt::poses::Lie::SE<3>::log(s2p.at(kv.first) - kv.second).norm(), .0, 1e-3);
+  }
 }
 
 #endif

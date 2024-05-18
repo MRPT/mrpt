@@ -21,16 +21,16 @@
 MRPT_INITIALIZER(registerAllClasses_mrpt_apps)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
-	// registerClass(CLASS_ID(XXX));
+  // registerClass(CLASS_ID(XXX));
 #endif
 }
 
 void mrpt::apps::registerAllClasses_mrpt_apps()
 {
-	::registerAllClasses_mrpt_apps();
-	// mrpt::graphslam::registerAllClasses_mrpt_graphslam(); // opt.
-	mrpt::gui::registerAllClasses_mrpt_gui();
-	mrpt::hwdrivers::registerAllClasses_mrpt_hwdrivers();
-	mrpt::slam::registerAllClasses_mrpt_slam();
-	mrpt::topography::registerAllClasses_mrpt_topography();
+  ::registerAllClasses_mrpt_apps();
+  // mrpt::graphslam::registerAllClasses_mrpt_graphslam(); // opt.
+  mrpt::gui::registerAllClasses_mrpt_gui();
+  mrpt::hwdrivers::registerAllClasses_mrpt_hwdrivers();
+  mrpt::slam::registerAllClasses_mrpt_slam();
+  mrpt::topography::registerAllClasses_mrpt_topography();
 }

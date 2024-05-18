@@ -21,42 +21,42 @@ using namespace std;
 
 TEST(COctoMapTests, updateVoxels)
 {
-	// Copied from the example program in the "octomap" C++ library.
+  // Copied from the example program in the "octomap" C++ library.
 
-	COctoMap map(0.1);
+  COctoMap map(0.1);
 
-	map.updateVoxel(1, 1, 1, true);	 // integrate 'occupied' measurement
+  map.updateVoxel(1, 1, 1, true);  // integrate 'occupied' measurement
 
-	map.updateVoxel(1.5, 1, 1, true);  // integrate 'occupied' measurement
-	map.updateVoxel(1.5, 1, 1, true);  // integrate 'occupied' measurement
-	map.updateVoxel(1.5, 1, 1, true);  // integrate 'occupied' measurement
+  map.updateVoxel(1.5, 1, 1, true);  // integrate 'occupied' measurement
+  map.updateVoxel(1.5, 1, 1, true);  // integrate 'occupied' measurement
+  map.updateVoxel(1.5, 1, 1, true);  // integrate 'occupied' measurement
 
-	map.updateVoxel(-1, -1, 1, false);	// integrate 'occupied' measurement
+  map.updateVoxel(-1, -1, 1, false);  // integrate 'occupied' measurement
 
-	double occup;
-	bool is_mapped;
-	mrpt::math::TPoint3D pt;
+  double occup;
+  bool is_mapped;
+  mrpt::math::TPoint3D pt;
 
-	pt = mrpt::math::TPoint3D(1, 1, 1);
-	is_mapped = map.getPointOccupancy(pt.x, pt.y, pt.z, occup);
-	EXPECT_GT(occup, 0.5);
-	EXPECT_TRUE(is_mapped);
+  pt = mrpt::math::TPoint3D(1, 1, 1);
+  is_mapped = map.getPointOccupancy(pt.x, pt.y, pt.z, occup);
+  EXPECT_GT(occup, 0.5);
+  EXPECT_TRUE(is_mapped);
 
-	pt = mrpt::math::TPoint3D(-1, -1, 1);
-	is_mapped = map.getPointOccupancy(pt.x, pt.y, pt.z, occup);
-	EXPECT_LT(occup, 0.5);
-	EXPECT_TRUE(is_mapped);
+  pt = mrpt::math::TPoint3D(-1, -1, 1);
+  is_mapped = map.getPointOccupancy(pt.x, pt.y, pt.z, occup);
+  EXPECT_LT(occup, 0.5);
+  EXPECT_TRUE(is_mapped);
 }
 
 TEST(COctoMapTests, insert2DScan)
 {
-	// Load scans:
-	mrpt::obs::CObservation2DRangeScan scan1;
-	stock_observations::example2DRangeScan(scan1);
+  // Load scans:
+  mrpt::obs::CObservation2DRangeScan scan1;
+  stock_observations::example2DRangeScan(scan1);
 
-	// Insert the scan in the map and check expected values:
-	{
-		COctoMap map(0.1);
-		map.insertObservation(scan1);
-	}
+  // Insert the scan in the map and check expected values:
+  {
+    COctoMap map(0.1);
+    map.insertObservation(scan1);
+  }
 }

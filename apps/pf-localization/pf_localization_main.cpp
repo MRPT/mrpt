@@ -8,12 +8,12 @@
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-	APPLICATION: Particle Filter (Global) Localization Demo
-	FILE: pf_localization_main.cpp
-	AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
+  APPLICATION: Particle Filter (Global) Localization Demo
+  FILE: pf_localization_main.cpp
+  AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
-	For instructions and more:
-	 https://www.mrpt.org/list-of-mrpt-apps/application-pf-localization
+  For instructions and more:
+   https://www.mrpt.org/list-of-mrpt-apps/application-pf-localization
   ---------------------------------------------------------------*/
 
 #include <mrpt/apps/MonteCarloLocalization_App.h>
@@ -22,19 +22,19 @@
 
 int main(int argc, char** argv)
 {
-	try
-	{
-		mrpt::apps::MonteCarloLocalization_Rawlog app;
+  try
+  {
+    mrpt::apps::MonteCarloLocalization_Rawlog app;
 
-		app.initialize(argc, argv);
-		app.run();
+    app.initialize(argc, argv);
+    app.run();
 
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << mrpt::exception_to_str(e);
-		mrpt::system::pause();
-		return -1;
-	}
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << mrpt::exception_to_str(e);
+    mrpt::system::pause();
+    return -1;
+  }
 }

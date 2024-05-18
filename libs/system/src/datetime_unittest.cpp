@@ -16,70 +16,68 @@
 
 TEST(DateTime, dateTimeVsClock)
 {
-	using namespace std::chrono_literals;
-	auto now1 = mrpt::Clock::now().time_since_epoch();
-	std::this_thread::sleep_for(1ms);
-	auto now_timestamp1 = mrpt::Clock::now();
-	EXPECT_LT(now1.count(), now_timestamp1.time_since_epoch().count());
+  using namespace std::chrono_literals;
+  auto now1 = mrpt::Clock::now().time_since_epoch();
+  std::this_thread::sleep_for(1ms);
+  auto now_timestamp1 = mrpt::Clock::now();
+  EXPECT_LT(now1.count(), now_timestamp1.time_since_epoch().count());
 
-	auto now_timestamp2 = mrpt::Clock::now();
-	std::this_thread::sleep_for(1ms);
-	auto now2 = mrpt::Clock::now().time_since_epoch();
-	EXPECT_GT(now2.count(), now_timestamp2.time_since_epoch().count());
+  auto now_timestamp2 = mrpt::Clock::now();
+  std::this_thread::sleep_for(1ms);
+  auto now2 = mrpt::Clock::now().time_since_epoch();
+  EXPECT_GT(now2.count(), now_timestamp2.time_since_epoch().count());
 }
 
 TEST(DateTime, time_t_forth_back)
 {
-	const double td5 = 1534142320.5;
-	const time_t t = 1534142320;
+  const double td5 = 1534142320.5;
+  const time_t t = 1534142320;
 
-	auto t1 = mrpt::Clock::fromDouble(td5);
-	auto t2 = mrpt::Clock::fromDouble(t);
-	EXPECT_NEAR(
-		std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t2).count(),
-		500, 1);
+  auto t1 = mrpt::Clock::fromDouble(td5);
+  auto t2 = mrpt::Clock::fromDouble(t);
+  EXPECT_NEAR(std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t2).count(), 500, 1);
 
-	const double t1d = mrpt::Clock::toDouble(t1);
-	const double t2d = mrpt::Clock::toDouble(t2);
-	EXPECT_NEAR((t1d - t2d), 0.5, 1e-3);
+  const double t1d = mrpt::Clock::toDouble(t1);
+  const double t2d = mrpt::Clock::toDouble(t2);
+  EXPECT_NEAR((t1d - t2d), 0.5, 1e-3);
 }
 
 TEST(DateTime, fixed_date_check)
 {
-	const uint64_t t_raw = 127822463930948526;
-	const auto t = mrpt::Clock::time_point(mrpt::Clock::duration(t_raw));
-	const std::string s = mrpt::system::dateTimeToString(t);
-	EXPECT_EQ(std::string("2006/01/20,15:59:53.094852"), s);
+  const uint64_t t_raw = 127822463930948526;
+  const auto t = mrpt::Clock::time_point(mrpt::Clock::duration(t_raw));
+  const std::string s = mrpt::system::dateTimeToString(t);
+  EXPECT_EQ(std::string("2006/01/20,15:59:53.094852"), s);
 
-	const double t_d = mrpt::Clock::toDouble(t);
-	EXPECT_NEAR(1137772793.09485, t_d, 1e-5);
+  const double t_d = mrpt::Clock::toDouble(t);
+  EXPECT_NEAR(1137772793.09485, t_d, 1e-5);
 }
 
 TEST(DateTime, double_to_from)
 {
-	auto t1 = mrpt::Clock::now();
-	const double d1 = mrpt::Clock::toDouble(t1);
-	auto t2 = mrpt::Clock::fromDouble(d1);
-	EXPECT_NEAR(mrpt::Clock::toDouble(t1), mrpt::Clock::toDouble(t2), 1e-4);
+  auto t1 = mrpt::Clock::now();
+  const double d1 = mrpt::Clock::toDouble(t1);
+  auto t2 = mrpt::Clock::fromDouble(d1);
+  EXPECT_NEAR(mrpt::Clock::toDouble(t1), mrpt::Clock::toDouble(t2), 1e-4);
 }
 
 TEST(DateTime, timestampAdd)
 {
-	const auto t1 = mrpt::Clock::now();
-	const double d1 = mrpt::Clock::toDouble(t1);
+  const auto t1 = mrpt::Clock::now();
+  const double d1 = mrpt::Clock::toDouble(t1);
 
-	const double delta = 10.5;	// seconds
+  const double delta = 10.5;  // seconds
 
-	// Positive incr:
-	{
-		const auto t1p = mrpt::system::timestampAdd(t1, delta);
-		const double d1p = mrpt::Clock::toDouble(t1p);
-		EXPECT_NEAR(d1p, d1 + delta, 1e-6);
-	}
-	// Negative incr:
-	{
-		const auto t1m = mrpt::system::timestampAdd(t1, -delta);
-		const double d1m = mrpt::Clock::toDouble(t1m);
-		EXPECT_NEAR(d1m, d1 - delta, 1e-6);
-	}
+  // Positive incr:
+  {
+    const auto t1p = mrpt::system::timestampAdd(t1, delta);
+    const double d1p = mrpt::Clock::toDouble(t1p);
+    EXPECT_NEAR(d1p, d1 + delta, 1e-6);
+  }
+  // Negative incr:
+  {
+    const auto t1m = mrpt::system::timestampAdd(t1, -delta);
+    const double d1m = mrpt::Clock::toDouble(t1m);
+    EXPECT_NEAR(d1m, d1 - delta, 1e-6);
+  }
 }

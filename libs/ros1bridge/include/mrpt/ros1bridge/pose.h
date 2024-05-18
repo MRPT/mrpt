@@ -19,7 +19,7 @@
 #include <tf2/LinearMath/Matrix3x3.h>
 #include <tf2/LinearMath/Transform.h>
 
-#include <cstring>	// size_t
+#include <cstring>  // size_t
 
 namespace mrpt::ros1bridge
 {
@@ -40,25 +40,20 @@ geometry_msgs::Pose toROS_Pose(const mrpt::poses::CPose3D& src);
 tf2::Transform toROS_tfTransform(const mrpt::math::TPose3D& src);
 geometry_msgs::Pose toROS_Pose(const mrpt::math::TPose3D& src);
 
-geometry_msgs::PoseWithCovariance toROS_Pose(
-	const mrpt::poses::CPose3DPDFGaussian& src);
+geometry_msgs::PoseWithCovariance toROS_Pose(const mrpt::poses::CPose3DPDFGaussian& src);
 
-geometry_msgs::PoseWithCovariance toROS(
-	const mrpt::poses::CPose3DPDFGaussianInf& src);
+geometry_msgs::PoseWithCovariance toROS(const mrpt::poses::CPose3DPDFGaussianInf& src);
 
-geometry_msgs::PoseWithCovariance toROS(
-	const mrpt::poses::CPosePDFGaussian& src);
+geometry_msgs::PoseWithCovariance toROS(const mrpt::poses::CPosePDFGaussian& src);
 
-geometry_msgs::PoseWithCovariance toROS(
-	const mrpt::poses::CPosePDFGaussianInf& src);
+geometry_msgs::PoseWithCovariance toROS(const mrpt::poses::CPosePDFGaussianInf& src);
 
 geometry_msgs::Quaternion toROS(const mrpt::math::CQuaternionDouble& src);
 
 mrpt::poses::CPose3D fromROS(const tf2::Transform& src);
 mrpt::math::CMatrixDouble33 fromROS(const tf2::Matrix3x3& src);
 mrpt::poses::CPose3D fromROS(const geometry_msgs::Pose& src);
-mrpt::poses::CPose3DPDFGaussian fromROS(
-	const geometry_msgs::PoseWithCovariance& src);
+mrpt::poses::CPose3DPDFGaussian fromROS(const geometry_msgs::PoseWithCovariance& src);
 mrpt::math::CQuaternionDouble fromROS(const geometry_msgs::Quaternion& src);
 
 /** @} */

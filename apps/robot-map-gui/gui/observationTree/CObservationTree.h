@@ -18,20 +18,20 @@ class CObservationTreeModel;
 
 class CObservationTree : public QTreeView
 {
-	Q_OBJECT
-   public:
-	CObservationTree(QWidget* parent = nullptr);
-	~CObservationTree() override = default;
-	void setModel(QAbstractItemModel* model) override;
-	void changeSelected(const std::vector<size_t>& idx);
+  Q_OBJECT
+ public:
+  CObservationTree(QWidget* parent = nullptr);
+  ~CObservationTree() override = default;
+  void setModel(QAbstractItemModel* model) override;
+  void changeSelected(const std::vector<size_t>& idx);
 
-   public slots:
-	void expandAll();
-	void collapseAll();
+ public slots:
+  void expandAll();
+  void collapseAll();
 
-   protected:
-	void contextMenuEvent(QContextMenuEvent* event) override;
+ protected:
+  void contextMenuEvent(QContextMenuEvent* event) override;
 
-   private:
-	CObservationTreeModel* m_model{nullptr};
+ private:
+  CObservationTreeModel* m_model{nullptr};
 };

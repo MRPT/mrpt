@@ -20,7 +20,7 @@ namespace opengl
 namespace graph_tools
 {
 /** @name Tool functions for graphs of pose constraints
-	@{ */
+  @{ */
 
 // clang-format off
 /** Returns an opengl objects representation of an arbitrary graph, as a network
@@ -58,7 +58,7 @@ namespace graph_tools
 // clang-format on
 template <class GRAPH_T>
 CSetOfObjects::Ptr graph_visualize(
-	const GRAPH_T& g, const mrpt::containers::yaml& extra_params = {});
+    const GRAPH_T& g, const mrpt::containers::yaml& extra_params = {});
 
 /** @} */
 }  // namespace graph_tools

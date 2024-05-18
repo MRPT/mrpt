@@ -31,114 +31,111 @@ namespace mrpt::poses
  */
 class CPose3DPDFSOG : public CPose3DPDF
 {
-	DEFINE_SERIALIZABLE(CPose3DPDFSOG, mrpt::poses)
+  DEFINE_SERIALIZABLE(CPose3DPDFSOG, mrpt::poses)
 
-   public:
-	/** The struct for each mode:
-	 */
-	struct TGaussianMode
-	{
-		TGaussianMode() : val() {}
-		CPose3DPDFGaussian val;
+ public:
+  /** The struct for each mode:
+   */
+  struct TGaussianMode
+  {
+    TGaussianMode() : val() {}
+    CPose3DPDFGaussian val;
 
-		/** The log-weight
-		 */
-		double log_w{0};
-	};
+    /** The log-weight
+     */
+    double log_w{0};
+  };
 
-	using TModesList = std::vector<
-		TGaussianMode, mrpt::aligned_allocator_cpp11<TGaussianMode>>;
-	using const_iterator = TModesList::const_iterator;
-	using iterator = TModesList::iterator;
+  using TModesList = std::vector<TGaussianMode, mrpt::aligned_allocator_cpp11<TGaussianMode>>;
+  using const_iterator = TModesList::const_iterator;
+  using iterator = TModesList::iterator;
 
-   protected:
-	/** Assures the symmetry of the covariance matrix (eventually certain
-	 * operations in the math-coprocessor lead to non-symmetric matrixes!)
-	 */
-	void enforceCovSymmetry();
+ protected:
+  /** Assures the symmetry of the covariance matrix (eventually certain
+   * operations in the math-coprocessor lead to non-symmetric matrixes!)
+   */
+  void enforceCovSymmetry();
 
-	/** Access directly to this array for modify the modes as desired.
-	 *  Note that no weight can be zero!!
-	 *  We must use pointers to satisfy the mem-alignment of the matrixes
-	 */
-	TModesList m_modes;
+  /** Access directly to this array for modify the modes as desired.
+   *  Note that no weight can be zero!!
+   *  We must use pointers to satisfy the mem-alignment of the matrixes
+   */
+  TModesList m_modes;
 
-   public:
-	/** Default constructor
-	 * \param nModes The initial size of CPose3DPDFSOG::m_modes
-	 */
-	CPose3DPDFSOG(size_t nModes = 1);
+ public:
+  /** Default constructor
+   * \param nModes The initial size of CPose3DPDFSOG::m_modes
+   */
+  CPose3DPDFSOG(size_t nModes = 1);
 
-	/** Clear all the gaussian modes */
-	void clear();
-	/** Set the number of SOG modes */
-	void resize(size_t N);
-	/** Return the number of Gaussian modes. */
-	size_t size() const { return m_modes.size(); }
-	/** Return whether there is any Gaussian mode. */
-	bool empty() const { return m_modes.empty(); }
-	iterator begin() { return m_modes.begin(); }
-	iterator end() { return m_modes.end(); }
-	const_iterator begin() const { return m_modes.begin(); }
-	const_iterator end() const { return m_modes.end(); }
+  /** Clear all the gaussian modes */
+  void clear();
+  /** Set the number of SOG modes */
+  void resize(size_t N);
+  /** Return the number of Gaussian modes. */
+  size_t size() const { return m_modes.size(); }
+  /** Return whether there is any Gaussian mode. */
+  bool empty() const { return m_modes.empty(); }
+  iterator begin() { return m_modes.begin(); }
+  iterator end() { return m_modes.end(); }
+  const_iterator begin() const { return m_modes.begin(); }
+  const_iterator end() const { return m_modes.end(); }
 
-	void getMean(CPose3D& mean_pose) const override;
-	std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override;
+  void getMean(CPose3D& mean_pose) const override;
+  std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override;
 
-	/** Normalize the weights in m_modes such as the maximum log-weight is 0. */
-	void normalizeWeights();
-	/** Return the Gaussian mode with the highest likelihood (or an empty
-	 * Gaussian if there are no modes in this SOG) */
-	void getMostLikelyMode(CPose3DPDFGaussian& outVal) const;
+  /** Normalize the weights in m_modes such as the maximum log-weight is 0. */
+  void normalizeWeights();
+  /** Return the Gaussian mode with the highest likelihood (or an empty
+   * Gaussian if there are no modes in this SOG) */
+  void getMostLikelyMode(CPose3DPDFGaussian& outVal) const;
 
-	/** Copy operator, translating if necesary (for example, between particles
-	 * and gaussian representations) */
-	void copyFrom(const CPose3DPDF& o) override;
+  /** Copy operator, translating if necesary (for example, between particles
+   * and gaussian representations) */
+  void copyFrom(const CPose3DPDF& o) override;
 
-	/** Save the density to a text file, with the following format:
-	 *  There is one row per Gaussian "mode", and each row contains 10
-	 * elements:
-	 *   - w (The linear weight)
-	 *   - x_mean (gaussian mean value)
-	 *   - y_mean (gaussian mean value)
-	 *   - x_mean (gaussian mean value)
-	 *   - yaw_mean (gaussian mean value, in radians)
-	 *   - pitch_mean (gaussian mean value, in radians)
-	 *   - roll_mean (gaussian mean value, in radians)
-	 *   - C11,C22,C33,C44,C55,C66 (Covariance elements)
-	 *   - C12,C13,C14,C15,C16 (Covariance elements)
-	 *   - C23,C24,C25,C25 (Covariance elements)
-	 *   - C34,C35,C36 (Covariance elements)
-	 *   - C45,C46 (Covariance elements)
-	 *   - C56 (Covariance elements)
-	 *
-	 */
-	bool saveToTextFile(const std::string& file) const override;
+  /** Save the density to a text file, with the following format:
+   *  There is one row per Gaussian "mode", and each row contains 10
+   * elements:
+   *   - w (The linear weight)
+   *   - x_mean (gaussian mean value)
+   *   - y_mean (gaussian mean value)
+   *   - x_mean (gaussian mean value)
+   *   - yaw_mean (gaussian mean value, in radians)
+   *   - pitch_mean (gaussian mean value, in radians)
+   *   - roll_mean (gaussian mean value, in radians)
+   *   - C11,C22,C33,C44,C55,C66 (Covariance elements)
+   *   - C12,C13,C14,C15,C16 (Covariance elements)
+   *   - C23,C24,C25,C25 (Covariance elements)
+   *   - C34,C35,C36 (Covariance elements)
+   *   - C45,C46 (Covariance elements)
+   *   - C56 (Covariance elements)
+   *
+   */
+  bool saveToTextFile(const std::string& file) const override;
 
-	/** this = p (+) this. This can be used to convert a PDF from local
-	 * coordinates to global, providing the point (newReferenceBase) from which
-	 *   "to project" the current pdf. Result PDF substituted the currently
-	 * stored one in the object. */
-	void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
+  /** this = p (+) this. This can be used to convert a PDF from local
+   * coordinates to global, providing the point (newReferenceBase) from which
+   *   "to project" the current pdf. Result PDF substituted the currently
+   * stored one in the object. */
+  void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 
-	/** Bayesian fusion of two pose distributions, then save the result in this
-	 * object (WARNING: Currently p1 must be a mrpt::poses::CPose3DPDFSOG object
-	 * and p2 a mrpt::poses::CPose3DPDFSOG object) */
-	void bayesianFusion(const CPose3DPDF& p1, const CPose3DPDF& p2) override;
+  /** Bayesian fusion of two pose distributions, then save the result in this
+   * object (WARNING: Currently p1 must be a mrpt::poses::CPose3DPDFSOG object
+   * and p2 a mrpt::poses::CPose3DPDFSOG object) */
+  void bayesianFusion(const CPose3DPDF& p1, const CPose3DPDF& p2) override;
 
-	/** Draws a single sample from the distribution */
-	void drawSingleSample(CPose3D& outPart) const override;
-	/** Draws a number of samples from the distribution, and saves as a list of
-	 * 1x6 vectors, where each row contains a (x,y,z,yaw,pitch,roll) datum */
-	void drawManySamples(
-		size_t N,
-		std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
-	/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
-	void inverse(CPose3DPDF& o) const override;
+  /** Draws a single sample from the distribution */
+  void drawSingleSample(CPose3D& outPart) const override;
+  /** Draws a number of samples from the distribution, and saves as a list of
+   * 1x6 vectors, where each row contains a (x,y,z,yaw,pitch,roll) datum */
+  void drawManySamples(size_t N, std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
+  /** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
+  void inverse(CPose3DPDF& o) const override;
 
-	/** Append the Gaussian modes from "o" to the current set of modes of "this"
-	 * density */
-	void appendFrom(const CPose3DPDFSOG& o);
+  /** Append the Gaussian modes from "o" to the current set of modes of "this"
+   * density */
+  void appendFrom(const CPose3DPDFSOG& o);
 
-};	// End of class def.
+};  // End of class def.
 }  // namespace mrpt::poses

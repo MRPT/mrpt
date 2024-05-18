@@ -25,66 +25,60 @@ using namespace mrpt::io;
 // ======================================================================
 DECLARE_OP_FUNCTION(op_list_rangebearing)
 {
-	// A class to do this operation:
-	class CRawlogProcessor_RangeBearing
-		: public CRawlogProcessorOnEachObservation
-	{
-	   protected:
-		string m_out_file;
-		std::ofstream m_out;
+  // A class to do this operation:
+  class CRawlogProcessor_RangeBearing : public CRawlogProcessorOnEachObservation
+  {
+   protected:
+    string m_out_file;
+    std::ofstream m_out;
 
-	   public:
-		CRawlogProcessor_RangeBearing(
-			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool Verbose)
-			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose)
-		{
-			getArgValue<std::string>(cmdline, "text-file-output", m_out_file);
-			VERBOSE_COUT << "Writing list to: " << m_out_file << endl;
+   public:
+    CRawlogProcessor_RangeBearing(
+        CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool Verbose) :
+        CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose)
+    {
+      getArgValue<std::string>(cmdline, "text-file-output", m_out_file);
+      VERBOSE_COUT << "Writing list to: " << m_out_file << endl;
 
-			m_out.open(m_out_file.c_str());
+      m_out.open(m_out_file.c_str());
 
-			if (!m_out.is_open())
-				throw std::runtime_error(
-					"list-range-bearing: Cannot open output text file.");
+      if (!m_out.is_open())
+        throw std::runtime_error("list-range-bearing: Cannot open output text file.");
 
-			// Header:
-			m_out << "%           TIMESTAMP                INDEX_IN_OBS    ID  "
-					 "  RANGE(m)    YAW(rad)   PITCH(rad) \n"
-				  << "%--------------------------------------------------------"
-					 "------------------------------------\n";
-		}
+      // Header:
+      m_out << "%           TIMESTAMP                INDEX_IN_OBS    ID  "
+               "  RANGE(m)    YAW(rad)   PITCH(rad) \n"
+            << "%--------------------------------------------------------"
+               "------------------------------------\n";
+    }
 
-		bool processOneObservation(CObservation::Ptr& obs) override
-		{
-			if (IS_CLASS(*obs, CObservationBearingRange))
-			{
-				const CObservationBearingRange::Ptr obsRB_ =
-					std::dynamic_pointer_cast<CObservationBearingRange>(obs);
-				const CObservationBearingRange* obsRB = obsRB_.get();
+    bool processOneObservation(CObservation::Ptr& obs) override
+    {
+      if (IS_CLASS(*obs, CObservationBearingRange))
+      {
+        const CObservationBearingRange::Ptr obsRB_ =
+            std::dynamic_pointer_cast<CObservationBearingRange>(obs);
+        const CObservationBearingRange* obsRB = obsRB_.get();
 
-				const double tim = mrpt::Clock::toDouble(obsRB->timestamp);
+        const double tim = mrpt::Clock::toDouble(obsRB->timestamp);
 
-				for (size_t i = 0; i < obsRB->sensedData.size(); i++)
-					m_out << format(
-						"%35.22f %8i %10i %10f %12f %12f\n", tim, (int)i,
-						(int)obsRB->sensedData[i].landmarkID,
-						(double)obsRB->sensedData[i].range,
-						(double)obsRB->sensedData[i].yaw,
-						(double)obsRB->sensedData[i].pitch);
-			}
+        for (size_t i = 0; i < obsRB->sensedData.size(); i++)
+          m_out << format(
+              "%35.22f %8i %10i %10f %12f %12f\n", tim, (int)i,
+              (int)obsRB->sensedData[i].landmarkID, (double)obsRB->sensedData[i].range,
+              (double)obsRB->sensedData[i].yaw, (double)obsRB->sensedData[i].pitch);
+      }
 
-			return true;
-		}
-	};
+      return true;
+    }
+  };
 
-	// Process
-	// ---------------------------------
-	CRawlogProcessor_RangeBearing proc(in_rawlog, cmdline, verbose);
-	proc.doProcessRawlog();
+  // Process
+  // ---------------------------------
+  CRawlogProcessor_RangeBearing proc(in_rawlog, cmdline, verbose);
+  proc.doProcessRawlog();
 
-	// Dump statistics:
-	// ---------------------------------
-	VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse
-				 << "\n";
+  // Dump statistics:
+  // ---------------------------------
+  VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse << "\n";
 }

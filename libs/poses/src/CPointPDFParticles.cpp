@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"	// Precompiled headers
+#include "poses-precomp.h"  // Precompiled headers
 //
 #include <mrpt/math/ops_containers.h>  // maximum()
 #include <mrpt/poses/CPoint3D.h>
@@ -25,151 +25,142 @@ using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE(CPointPDFParticles, CPointPDF, mrpt::poses)
 
-CPointPDFParticles::CPointPDFParticles(size_t numParticles)
-{
-	setSize(numParticles);
-}
+CPointPDFParticles::CPointPDFParticles(size_t numParticles) { setSize(numParticles); }
 
 /** Clear all the particles (free memory) */
 void CPointPDFParticles::clear() { setSize(0); }
 /*---------------------------------------------------------------
-		setSize
+    setSize
   ---------------------------------------------------------------*/
-void CPointPDFParticles::setSize(
-	size_t numberParticles, const mrpt::math::TPoint3Df& defaultValue)
+void CPointPDFParticles::setSize(size_t numberParticles, const mrpt::math::TPoint3Df& defaultValue)
 {
-	// Free old particles: automatic via smart ptr
-	m_particles.resize(numberParticles);
-	for (auto& it : m_particles)
-	{
-		it.log_w = 0;
-		it.d.reset(new TPoint3Df(defaultValue));
-	}
+  // Free old particles: automatic via smart ptr
+  m_particles.resize(numberParticles);
+  for (auto& it : m_particles)
+  {
+    it.log_w = 0;
+    it.d.reset(new TPoint3Df(defaultValue));
+  }
 }
 
 /*---------------------------------------------------------------
-						getMean
+            getMean
   Returns an estimate of the pose, (the mean, or mathematical expectation of the
  PDF)
  ---------------------------------------------------------------*/
 void CPointPDFParticles::getMean(CPoint3D& p) const
 {
-	MRPT_START
-	if (m_particles.empty())
-		THROW_EXCEPTION("Cannot compute mean since there are zero particles.");
+  MRPT_START
+  if (m_particles.empty()) THROW_EXCEPTION("Cannot compute mean since there are zero particles.");
 
-	CParticleList::const_iterator it;
-	double sumW = 0;
-	double x = 0, y = 0, z = 0;
-	for (it = m_particles.begin(); it != m_particles.end(); it++)
-	{
-		const double w = exp(it->log_w);
-		x += it->d->x * w;
-		y += it->d->y * w;
-		z += it->d->z * w;
-		sumW += w;
-	}
+  CParticleList::const_iterator it;
+  double sumW = 0;
+  double x = 0, y = 0, z = 0;
+  for (it = m_particles.begin(); it != m_particles.end(); it++)
+  {
+    const double w = exp(it->log_w);
+    x += it->d->x * w;
+    y += it->d->y * w;
+    z += it->d->z * w;
+    sumW += w;
+  }
 
-	ASSERT_(sumW != 0);
+  ASSERT_(sumW != 0);
 
-	sumW = 1.0 / sumW;
+  sumW = 1.0 / sumW;
 
-	p.x(x * sumW);
-	p.y(y * sumW);
-	p.z(z * sumW);
+  p.x(x * sumW);
+  p.y(y * sumW);
+  p.z(z * sumW);
 
-	MRPT_END
+  MRPT_END
 }
 
-std::tuple<CMatrixDouble33, CPoint3D> CPointPDFParticles::getCovarianceAndMean()
-	const
+std::tuple<CMatrixDouble33, CPoint3D> CPointPDFParticles::getCovarianceAndMean() const
 {
-	MRPT_START
+  MRPT_START
 
-	CPoint3D mean;
-	CMatrixDouble33 cov;
+  CPoint3D mean;
+  CMatrixDouble33 cov;
 
-	getMean(mean);
-	cov.setZero();
+  getMean(mean);
+  cov.setZero();
 
-	size_t i, n = m_particles.size();
-	double var_x = 0, var_y = 0, var_p = 0, var_xy = 0, var_xp = 0, var_yp = 0;
+  size_t i, n = m_particles.size();
+  double var_x = 0, var_y = 0, var_p = 0, var_xy = 0, var_xp = 0, var_yp = 0;
 
-	double lin_w_sum = 0;
+  double lin_w_sum = 0;
 
-	for (i = 0; i < n; i++)
-		lin_w_sum += exp(m_particles[i].log_w);
-	if (lin_w_sum == 0) lin_w_sum = 1;
+  for (i = 0; i < n; i++) lin_w_sum += exp(m_particles[i].log_w);
+  if (lin_w_sum == 0) lin_w_sum = 1;
 
-	for (i = 0; i < n; i++)
-	{
-		double w = exp(m_particles[i].log_w) / lin_w_sum;
+  for (i = 0; i < n; i++)
+  {
+    double w = exp(m_particles[i].log_w) / lin_w_sum;
 
-		double err_x = m_particles[i].d->x - mean.x();
-		double err_y = m_particles[i].d->y - mean.y();
-		double err_phi = m_particles[i].d->z - mean.z();
+    double err_x = m_particles[i].d->x - mean.x();
+    double err_y = m_particles[i].d->y - mean.y();
+    double err_phi = m_particles[i].d->z - mean.z();
 
-		var_x += square(err_x) * w;
-		var_y += square(err_y) * w;
-		var_p += square(err_phi) * w;
-		var_xy += err_x * err_y * w;
-		var_xp += err_x * err_phi * w;
-		var_yp += err_y * err_phi * w;
-	}
+    var_x += square(err_x) * w;
+    var_y += square(err_y) * w;
+    var_p += square(err_phi) * w;
+    var_xy += err_x * err_y * w;
+    var_xp += err_x * err_phi * w;
+    var_yp += err_y * err_phi * w;
+  }
 
-	if (n >= 2)
-	{
-		// Unbiased estimation of variance:
-		cov(0, 0) = var_x;
-		cov(1, 1) = var_y;
-		cov(2, 2) = var_p;
+  if (n >= 2)
+  {
+    // Unbiased estimation of variance:
+    cov(0, 0) = var_x;
+    cov(1, 1) = var_y;
+    cov(2, 2) = var_p;
 
-		cov(1, 0) = cov(0, 1) = var_xy;
-		cov(2, 0) = cov(0, 2) = var_xp;
-		cov(1, 2) = cov(2, 1) = var_yp;
-	}
+    cov(1, 0) = cov(0, 1) = var_xy;
+    cov(2, 0) = cov(0, 2) = var_xp;
+    cov(1, 2) = cov(2, 1) = var_yp;
+  }
 
-	return {cov, mean};
-	MRPT_END
+  return {cov, mean};
+  MRPT_END
 }
 
 uint8_t CPointPDFParticles::serializeGetVersion() const { return 0; }
 void CPointPDFParticles::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	uint32_t N = size();
-	out << N;
+  uint32_t N = size();
+  out << N;
 
-	for (const auto& m_particle : m_particles)
-		out << m_particle.log_w << m_particle.d->x << m_particle.d->y
-			<< m_particle.d->z;
+  for (const auto& m_particle : m_particles)
+    out << m_particle.log_w << m_particle.d->x << m_particle.d->y << m_particle.d->z;
 }
 
-void CPointPDFParticles::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void CPointPDFParticles::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	switch (version)
-	{
-		case 0:
-		{
-			uint32_t N;
-			in >> N;
-			setSize(N);
+  switch (version)
+  {
+    case 0:
+    {
+      uint32_t N;
+      in >> N;
+      setSize(N);
 
-			for (auto& m_particle : m_particles)
-				in >> m_particle.log_w >> m_particle.d->x >> m_particle.d->y >>
-					m_particle.d->z;
-		}
-		break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	};
+      for (auto& m_particle : m_particles)
+        in >> m_particle.log_w >> m_particle.d->x >> m_particle.d->y >> m_particle.d->z;
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
 }
 
 void CPointPDFParticles::copyFrom(const CPointPDF& o)
 {
-	if (this == &o) return;	 // It may be used sometimes
+  if (this == &o) return;  // It may be used sometimes
 
-	// Convert to samples:
-	THROW_EXCEPTION("NO");
+  // Convert to samples:
+  THROW_EXCEPTION("NO");
 }
 
 /*---------------------------------------------------------------
@@ -177,113 +168,112 @@ void CPointPDFParticles::copyFrom(const CPointPDF& o)
   ---------------------------------------------------------------*/
 bool CPointPDFParticles::saveToTextFile(const std::string& file) const
 {
-	MRPT_START
+  MRPT_START
 
-	FILE* f = os::fopen(file.c_str(), "wt");
-	if (!f) return false;
+  FILE* f = os::fopen(file.c_str(), "wt");
+  if (!f) return false;
 
-	size_t i, N = m_particles.size();
-	for (i = 0; i < N; i++)
-		os::fprintf(
-			f, "%f %f %f %e\n", m_particles[i].d->x, m_particles[i].d->y,
-			m_particles[i].d->z, m_particles[i].log_w);
+  size_t i, N = m_particles.size();
+  for (i = 0; i < N; i++)
+    os::fprintf(
+        f, "%f %f %f %e\n", m_particles[i].d->x, m_particles[i].d->y, m_particles[i].d->z,
+        m_particles[i].log_w);
 
-	os::fclose(f);
-	return true;
-	MRPT_END
+  os::fclose(f);
+  return true;
+  MRPT_END
 }
 
 /*---------------------------------------------------------------
-						changeCoordinatesReference
+            changeCoordinatesReference
  ---------------------------------------------------------------*/
-void CPointPDFParticles::changeCoordinatesReference(
-	const CPose3D& newReferenceBase)
+void CPointPDFParticles::changeCoordinatesReference(const CPose3D& newReferenceBase)
 {
-	TPoint3D pt;
-	for (auto& m_particle : m_particles)
-	{
-		newReferenceBase.composePoint(
-			m_particle.d->x, m_particle.d->y, m_particle.d->z,	// In
-			pt.x, pt.y, pt.z  // Out
-		);
-		m_particle.d->x = d2f(pt.x);
-		m_particle.d->y = d2f(pt.y);
-		m_particle.d->z = d2f(pt.z);
-	}
+  TPoint3D pt;
+  for (auto& m_particle : m_particles)
+  {
+    newReferenceBase.composePoint(
+        m_particle.d->x, m_particle.d->y,
+        m_particle.d->z,  // In
+        pt.x, pt.y, pt.z  // Out
+    );
+    m_particle.d->x = d2f(pt.x);
+    m_particle.d->y = d2f(pt.y);
+    m_particle.d->z = d2f(pt.z);
+  }
 }
 
 /*---------------------------------------------------------------
-						computeKurtosis
+            computeKurtosis
  ---------------------------------------------------------------*/
 double CPointPDFParticles::computeKurtosis()
 {
-	MRPT_START
+  MRPT_START
 
-	// kurtosis = \mu^4 / (\sigma^2) -3
-	Eigen::Vector3d kurts, mu4, m, var;
-	kurts.fill(0);
-	mu4.fill(0);
-	m.fill(0);
-	var.fill(0);
+  // kurtosis = \mu^4 / (\sigma^2) -3
+  Eigen::Vector3d kurts, mu4, m, var;
+  kurts.fill(0);
+  mu4.fill(0);
+  m.fill(0);
+  var.fill(0);
 
-	// Means:
-	for (auto& m_particle : m_particles)
-	{
-		m[0] += m_particle.d->x;
-		m[1] += m_particle.d->y;
-		m[2] += m_particle.d->z;
-	}
-	m *= 1.0 / m_particles.size();
+  // Means:
+  for (auto& m_particle : m_particles)
+  {
+    m[0] += m_particle.d->x;
+    m[1] += m_particle.d->y;
+    m[2] += m_particle.d->z;
+  }
+  m *= 1.0 / m_particles.size();
 
-	// variances:
-	for (auto& m_particle : m_particles)
-	{
-		var[0] += square(m_particle.d->x - m[0]);
-		var[1] += square(m_particle.d->y - m[1]);
-		var[2] += square(m_particle.d->z - m[2]);
-	}
-	var *= 1.0 / m_particles.size();
-	var[0] = square(var[0]);
-	var[1] = square(var[1]);
-	var[2] = square(var[2]);
+  // variances:
+  for (auto& m_particle : m_particles)
+  {
+    var[0] += square(m_particle.d->x - m[0]);
+    var[1] += square(m_particle.d->y - m[1]);
+    var[2] += square(m_particle.d->z - m[2]);
+  }
+  var *= 1.0 / m_particles.size();
+  var[0] = square(var[0]);
+  var[1] = square(var[1]);
+  var[2] = square(var[2]);
 
-	// Moment:
-	for (auto& m_particle : m_particles)
-	{
-		mu4[0] += pow(m_particle.d->x - m[0], 4.0);
-		mu4[1] += pow(m_particle.d->y - m[1], 4.0);
-		mu4[2] += pow(m_particle.d->z - m[2], 4.0);
-	}
-	mu4 *= 1.0 / m_particles.size();
+  // Moment:
+  for (auto& m_particle : m_particles)
+  {
+    mu4[0] += pow(m_particle.d->x - m[0], 4.0);
+    mu4[1] += pow(m_particle.d->y - m[1], 4.0);
+    mu4[2] += pow(m_particle.d->z - m[2], 4.0);
+  }
+  mu4 *= 1.0 / m_particles.size();
 
-	// Kurtosis's
-	kurts.array() = mu4.array() / var.array();
+  // Kurtosis's
+  kurts.array() = mu4.array() / var.array();
 
-	return math::maximum(kurts);
+  return math::maximum(kurts);
 
-	MRPT_END
+  MRPT_END
 }
 
 /*---------------------------------------------------------------
-					drawSingleSample
+          drawSingleSample
   ---------------------------------------------------------------*/
-void CPointPDFParticles::drawSingleSample(
-	[[maybe_unused]] CPoint3D& outSample) const
+void CPointPDFParticles::drawSingleSample([[maybe_unused]] CPoint3D& outSample) const
 {
-	THROW_EXCEPTION("TO DO!");
+  THROW_EXCEPTION("TO DO!");
 }
 
 /*---------------------------------------------------------------
-					bayesianFusion
+          bayesianFusion
  ---------------------------------------------------------------*/
 void CPointPDFParticles::bayesianFusion(
-	[[maybe_unused]] const CPointPDF& p1_,
-	[[maybe_unused]] const CPointPDF& p2_,
-	[[maybe_unused]] const double minMahalanobisDistToDrop)
+    [[maybe_unused]] const CPointPDF& p1_,
+    [[maybe_unused]] const CPointPDF& p2_,
+    [[maybe_unused]] const double minMahalanobisDistToDrop)
 {
-	MRPT_START
+  MRPT_START
 
-	THROW_EXCEPTION("TODO!!!");
+  THROW_EXCEPTION("TODO!!!");
 
-	MRPT_END
+  MRPT_END
 }

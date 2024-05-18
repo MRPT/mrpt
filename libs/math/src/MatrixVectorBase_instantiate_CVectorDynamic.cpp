@@ -21,14 +21,14 @@ template <typename T>
 template <typename T2>
 CVectorDynamic<T2> CVectorDynamic<T>::cast() const
 {
-	CVectorDynamic<T2> r(size());
-	r.asEigen() = asEigen().template cast<T2>();
-	return r;
+  CVectorDynamic<T2> r(size());
+  r.asEigen() = asEigen().template cast<T2>();
+  return r;
 }
 
 // Explicit instantiation of "MatrixVectorBase_impl.h" methods:
-#define DO_VECDYN_INSTANTIATION(T_)                                            \
-	template class mrpt::math::MatrixVectorBase<T_, CVectorDynamic<T_>>;
+#define DO_VECDYN_INSTANTIATION(T_) \
+  template class mrpt::math::MatrixVectorBase<T_, CVectorDynamic<T_>>;
 
 DO_VECDYN_INSTANTIATION(float)
 DO_VECDYN_INSTANTIATION(double)

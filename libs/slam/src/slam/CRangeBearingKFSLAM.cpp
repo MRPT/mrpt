@@ -41,247 +41,232 @@ using namespace mrpt;
 using namespace std;
 
 /*---------------------------------------------------------------
-							Constructor
+              Constructor
   ---------------------------------------------------------------*/
-CRangeBearingKFSLAM::CRangeBearingKFSLAM()
-	: options(),
-	  m_action(),
-	  m_SF(),
-	  m_IDs(),
-	  mapPartitioner(),
-	  m_SFs(),
-	  m_lastPartitionSet()
+CRangeBearingKFSLAM::CRangeBearingKFSLAM() :
+    options(), m_action(), m_SF(), m_IDs(), mapPartitioner(), m_SFs(), m_lastPartitionSet()
 {
-	reset();
+  reset();
 }
 
 /*---------------------------------------------------------------
-							reset
+              reset
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::reset()
 {
-	m_action.reset();
-	m_SF.reset();
-	m_IDs.clear();
-	m_SFs.clear();
-	mapPartitioner.clear();
-	m_lastPartitionSet.clear();
+  m_action.reset();
+  m_SF.reset();
+  m_IDs.clear();
+  m_SFs.clear();
+  mapPartitioner.clear();
+  m_lastPartitionSet.clear();
 
-	// -----------------------
-	// INIT KF STATE
-	m_xkk.assign(get_vehicle_size(), 0);  // State: 6D pose (x,y,z)=(0,0,0)
-	m_xkk[3] = 1.0;	 // (qr,qx,qy,qz)=(1,0,0,0)
+  // -----------------------
+  // INIT KF STATE
+  m_xkk.assign(get_vehicle_size(), 0);  // State: 6D pose (x,y,z)=(0,0,0)
+  m_xkk[3] = 1.0;                       // (qr,qx,qy,qz)=(1,0,0,0)
 
-	// Initial cov:  nullptr diagonal -> perfect knowledge.
-	m_pkk.setSize(get_vehicle_size(), get_vehicle_size());
-	m_pkk.setZero();
-	// -----------------------
+  // Initial cov:  nullptr diagonal -> perfect knowledge.
+  m_pkk.setSize(get_vehicle_size(), get_vehicle_size());
+  m_pkk.setZero();
+  // -----------------------
 
-	// Use SF-based matching (faster & easier for bearing-range observations
-	// with ID).
-	mapPartitioner.options.simil_method = smOBSERVATION_OVERLAP;
+  // Use SF-based matching (faster & easier for bearing-range observations
+  // with ID).
+  mapPartitioner.options.simil_method = smOBSERVATION_OVERLAP;
 }
 
 /*---------------------------------------------------------------
-							Destructor
+              Destructor
   ---------------------------------------------------------------*/
 CRangeBearingKFSLAM::~CRangeBearingKFSLAM() = default;
 /*---------------------------------------------------------------
-							getCurrentRobotPose
+              getCurrentRobotPose
   ---------------------------------------------------------------*/
-void CRangeBearingKFSLAM::getCurrentRobotPose(
-	CPose3DQuatPDFGaussian& out_robotPose) const
+void CRangeBearingKFSLAM::getCurrentRobotPose(CPose3DQuatPDFGaussian& out_robotPose) const
 {
-	MRPT_START
+  MRPT_START
 
-	ASSERT_(m_xkk.size() >= 7);
+  ASSERT_(m_xkk.size() >= 7);
 
-	// Copy xyz+quat: (explicitly unroll the loop)
-	out_robotPose.mean.m_coords[0] = m_xkk[0];
-	out_robotPose.mean.m_coords[1] = m_xkk[1];
-	out_robotPose.mean.m_coords[2] = m_xkk[2];
-	out_robotPose.mean.m_quat[0] = m_xkk[3];
-	out_robotPose.mean.m_quat[1] = m_xkk[4];
-	out_robotPose.mean.m_quat[2] = m_xkk[5];
-	out_robotPose.mean.m_quat[3] = m_xkk[6];
+  // Copy xyz+quat: (explicitly unroll the loop)
+  out_robotPose.mean.m_coords[0] = m_xkk[0];
+  out_robotPose.mean.m_coords[1] = m_xkk[1];
+  out_robotPose.mean.m_coords[2] = m_xkk[2];
+  out_robotPose.mean.m_quat[0] = m_xkk[3];
+  out_robotPose.mean.m_quat[1] = m_xkk[4];
+  out_robotPose.mean.m_quat[2] = m_xkk[5];
+  out_robotPose.mean.m_quat[3] = m_xkk[6];
 
-	// and cov:
-	out_robotPose.cov = m_pkk.blockCopy<7, 7>(0, 0);
+  // and cov:
+  out_robotPose.cov = m_pkk.blockCopy<7, 7>(0, 0);
 
-	MRPT_END
+  MRPT_END
 }
 
 /*---------------------------------------------------------------
-							getCurrentRobotPoseMean
+              getCurrentRobotPoseMean
   ---------------------------------------------------------------*/
 mrpt::poses::CPose3DQuat CRangeBearingKFSLAM::getCurrentRobotPoseMean() const
 {
-	CPose3DQuat q(mrpt::math::UNINITIALIZED_QUATERNION);
-	ASSERTDEB_(m_xkk.size() >= 7);
-	// Copy xyz+quat: (explicitly unroll the loop)
-	q.m_coords[0] = m_xkk[0];
-	q.m_coords[1] = m_xkk[1];
-	q.m_coords[2] = m_xkk[2];
-	q.m_quat[0] = m_xkk[3];
-	q.m_quat[1] = m_xkk[4];
-	q.m_quat[2] = m_xkk[5];
-	q.m_quat[3] = m_xkk[6];
+  CPose3DQuat q(mrpt::math::UNINITIALIZED_QUATERNION);
+  ASSERTDEB_(m_xkk.size() >= 7);
+  // Copy xyz+quat: (explicitly unroll the loop)
+  q.m_coords[0] = m_xkk[0];
+  q.m_coords[1] = m_xkk[1];
+  q.m_coords[2] = m_xkk[2];
+  q.m_quat[0] = m_xkk[3];
+  q.m_quat[1] = m_xkk[4];
+  q.m_quat[2] = m_xkk[5];
+  q.m_quat[3] = m_xkk[6];
 
-	return q;
+  return q;
 }
 
 /*---------------------------------------------------------------
-							getCurrentState
+              getCurrentState
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::getCurrentState(
-	CPose3DQuatPDFGaussian& out_robotPose,
-	std::vector<TPoint3D>& out_landmarksPositions,
-	std::map<unsigned int, CLandmark::TLandmarkID>& out_landmarkIDs,
-	CVectorDouble& out_fullState, CMatrixDouble& out_fullCovariance) const
+    CPose3DQuatPDFGaussian& out_robotPose,
+    std::vector<TPoint3D>& out_landmarksPositions,
+    std::map<unsigned int, CLandmark::TLandmarkID>& out_landmarkIDs,
+    CVectorDouble& out_fullState,
+    CMatrixDouble& out_fullCovariance) const
 {
-	MRPT_START
+  MRPT_START
 
-	ASSERT_(size_t(m_xkk.size()) >= get_vehicle_size());
+  ASSERT_(size_t(m_xkk.size()) >= get_vehicle_size());
 
-	// Copy xyz+quat: (explicitly unroll the loop)
-	out_robotPose.mean.m_coords[0] = m_xkk[0];
-	out_robotPose.mean.m_coords[1] = m_xkk[1];
-	out_robotPose.mean.m_coords[2] = m_xkk[2];
-	out_robotPose.mean.m_quat[0] = m_xkk[3];
-	out_robotPose.mean.m_quat[1] = m_xkk[4];
-	out_robotPose.mean.m_quat[2] = m_xkk[5];
-	out_robotPose.mean.m_quat[3] = m_xkk[6];
+  // Copy xyz+quat: (explicitly unroll the loop)
+  out_robotPose.mean.m_coords[0] = m_xkk[0];
+  out_robotPose.mean.m_coords[1] = m_xkk[1];
+  out_robotPose.mean.m_coords[2] = m_xkk[2];
+  out_robotPose.mean.m_quat[0] = m_xkk[3];
+  out_robotPose.mean.m_quat[1] = m_xkk[4];
+  out_robotPose.mean.m_quat[2] = m_xkk[5];
+  out_robotPose.mean.m_quat[3] = m_xkk[6];
 
-	// and cov:
-	out_robotPose.cov = m_pkk.blockCopy<7, 7>(0, 0);
+  // and cov:
+  out_robotPose.cov = m_pkk.blockCopy<7, 7>(0, 0);
 
-	// Landmarks:
-	ASSERT_(((m_xkk.size() - get_vehicle_size()) % get_feature_size()) == 0);
-	size_t i, nLMs = (m_xkk.size() - get_vehicle_size()) / get_feature_size();
-	out_landmarksPositions.resize(nLMs);
-	for (i = 0; i < nLMs; i++)
-	{
-		out_landmarksPositions[i].x =
-			m_xkk[get_vehicle_size() + i * get_feature_size() + 0];
-		out_landmarksPositions[i].y =
-			m_xkk[get_vehicle_size() + i * get_feature_size() + 1];
-		out_landmarksPositions[i].z =
-			m_xkk[get_vehicle_size() + i * get_feature_size() + 2];
-	}  // end for i
+  // Landmarks:
+  ASSERT_(((m_xkk.size() - get_vehicle_size()) % get_feature_size()) == 0);
+  size_t i, nLMs = (m_xkk.size() - get_vehicle_size()) / get_feature_size();
+  out_landmarksPositions.resize(nLMs);
+  for (i = 0; i < nLMs; i++)
+  {
+    out_landmarksPositions[i].x = m_xkk[get_vehicle_size() + i * get_feature_size() + 0];
+    out_landmarksPositions[i].y = m_xkk[get_vehicle_size() + i * get_feature_size() + 1];
+    out_landmarksPositions[i].z = m_xkk[get_vehicle_size() + i * get_feature_size() + 2];
+  }  // end for i
 
-	// IDs:
-	out_landmarkIDs = m_IDs.getInverseMap();  // m_IDs_inverse;
+  // IDs:
+  out_landmarkIDs = m_IDs.getInverseMap();  // m_IDs_inverse;
 
-	// Full state:
-	out_fullState.resize(m_xkk.size());
-	std::copy(m_xkk.begin(), m_xkk.end(), out_fullState.begin());
-	// Full cov:
-	out_fullCovariance = m_pkk;
+  // Full state:
+  out_fullState.resize(m_xkk.size());
+  std::copy(m_xkk.begin(), m_xkk.end(), out_fullState.begin());
+  // Full cov:
+  out_fullCovariance = m_pkk;
 
-	MRPT_END
+  MRPT_END
 }
 
 /*---------------------------------------------------------------
-						processActionObservation
+            processActionObservation
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::processActionObservation(
-	CActionCollection::Ptr& action, CSensoryFrame::Ptr& SF)
+    CActionCollection::Ptr& action, CSensoryFrame::Ptr& SF)
 {
-	MRPT_START
+  MRPT_START
 
-	m_action = action;
-	m_SF = SF;
+  m_action = action;
+  m_SF = SF;
 
-	// Sanity check:
-	ASSERT_(
-		m_IDs.size() ==
-		(m_pkk.cols() - get_vehicle_size()) / get_feature_size());
+  // Sanity check:
+  ASSERT_(m_IDs.size() == (m_pkk.cols() - get_vehicle_size()) / get_feature_size());
 
-	// ===================================================================================================================
-	// Here's the meat!: Call the main method for the KF algorithm, which will
-	// call all the callback methods as required:
-	// ===================================================================================================================
-	runOneKalmanIteration();
+  // ===================================================================================================================
+  // Here's the meat!: Call the main method for the KF algorithm, which will
+  // call all the callback methods as required:
+  // ===================================================================================================================
+  runOneKalmanIteration();
 
-	// =============================================================
-	//  ADD TO SFs SEQUENCE
-	// =============================================================
-	CPose3DQuatPDFGaussian q(UNINITIALIZED_QUATERNION);
-	this->getCurrentRobotPose(q);
-	CPose3DPDFGaussian::Ptr auxPosePDF = CPose3DPDFGaussian::Create(q);
+  // =============================================================
+  //  ADD TO SFs SEQUENCE
+  // =============================================================
+  CPose3DQuatPDFGaussian q(UNINITIALIZED_QUATERNION);
+  this->getCurrentRobotPose(q);
+  CPose3DPDFGaussian::Ptr auxPosePDF = CPose3DPDFGaussian::Create(q);
 
-	if (options.create_simplemap)
-	{
-		m_SFs.insert(CPose3DPDF::Ptr(auxPosePDF), SF);
-	}
+  if (options.create_simplemap)
+  {
+    m_SFs.insert(CPose3DPDF::Ptr(auxPosePDF), SF);
+  }
 
-	// =============================================================
-	//  UPDATE THE PARTITION GRAPH EXPERIMENT
-	// =============================================================
-	if (options.doPartitioningExperiment)
-	{
-		if (options.partitioningMethod == 0)
-		{
-			// Use spectral-graph technique:
-			mapPartitioner.addMapFrame(*SF, *auxPosePDF);
+  // =============================================================
+  //  UPDATE THE PARTITION GRAPH EXPERIMENT
+  // =============================================================
+  if (options.doPartitioningExperiment)
+  {
+    if (options.partitioningMethod == 0)
+    {
+      // Use spectral-graph technique:
+      mapPartitioner.addMapFrame(*SF, *auxPosePDF);
 
-			vector<std::vector<uint32_t>> partitions;
-			mapPartitioner.updatePartitions(partitions);
-			m_lastPartitionSet = partitions;
-		}
-		else
-		{
-			// Fixed partitions every K observations:
-			vector<std::vector<uint32_t>> partitions;
-			std::vector<uint32_t> tmpCluster;
+      vector<std::vector<uint32_t>> partitions;
+      mapPartitioner.updatePartitions(partitions);
+      m_lastPartitionSet = partitions;
+    }
+    else
+    {
+      // Fixed partitions every K observations:
+      vector<std::vector<uint32_t>> partitions;
+      std::vector<uint32_t> tmpCluster;
 
-			ASSERT_(options.partitioningMethod > 1);
-			size_t N = options.partitioningMethod;
+      ASSERT_(options.partitioningMethod > 1);
+      size_t N = options.partitioningMethod;
 
-			for (size_t i = 0; i < m_SFs.size(); i++)
-			{
-				tmpCluster.push_back(i);
-				if ((i % N) == 0)
-				{
-					partitions.push_back(tmpCluster);
-					tmpCluster.clear();
-					tmpCluster.push_back(i);  // This observation "i" is shared
-					// between both clusters
-				}
-			}
-			m_lastPartitionSet = partitions;
-		}
+      for (size_t i = 0; i < m_SFs.size(); i++)
+      {
+        tmpCluster.push_back(i);
+        if ((i % N) == 0)
+        {
+          partitions.push_back(tmpCluster);
+          tmpCluster.clear();
+          tmpCluster.push_back(i);  // This observation "i" is shared
+                                    // between both clusters
+        }
+      }
+      m_lastPartitionSet = partitions;
+    }
 
-		printf(
-			"Partitions: %u\n",
-			static_cast<unsigned>(m_lastPartitionSet.size()));
-	}
+    printf("Partitions: %u\n", static_cast<unsigned>(m_lastPartitionSet.size()));
+  }
 
-	MRPT_END
+  MRPT_END
 }
 
 /** Return the last odometry, as a pose increment.
  */
 CPose3DQuat CRangeBearingKFSLAM::getIncrementFromOdometry() const
 {
-	CActionRobotMovement2D::Ptr actMov2D =
-		m_action->getBestMovementEstimation();
-	CActionRobotMovement3D::Ptr actMov3D =
-		m_action->getActionByClass<CActionRobotMovement3D>();
-	if (actMov3D && !options.force_ignore_odometry)
-	{
-		return CPose3DQuat(actMov3D->poseChange.mean);
-	}
-	else if (actMov2D && !options.force_ignore_odometry)
-	{
-		CPose2D estMovMean;
-		actMov2D->poseChange->getMean(estMovMean);
-		return CPose3DQuat(CPose3D(estMovMean));
-	}
-	else
-	{
-		return CPose3DQuat();
-	}
+  CActionRobotMovement2D::Ptr actMov2D = m_action->getBestMovementEstimation();
+  CActionRobotMovement3D::Ptr actMov3D = m_action->getActionByClass<CActionRobotMovement3D>();
+  if (actMov3D && !options.force_ignore_odometry)
+  {
+    return CPose3DQuat(actMov3D->poseChange.mean);
+  }
+  else if (actMov2D && !options.force_ignore_odometry)
+  {
+    CPose2D estMovMean;
+    actMov2D->poseChange->getMean(estMovMean);
+    return CPose3DQuat(CPose3D(estMovMean));
+  }
+  else
+  {
+    return CPose3DQuat();
+  }
 }
 
 /** Must return the action vector u.
@@ -289,52 +274,50 @@ CPose3DQuat CRangeBearingKFSLAM::getIncrementFromOdometry() const
  */
 void CRangeBearingKFSLAM::OnGetAction(KFArray_ACT& u) const
 {
-	// Get odometry estimation:
-	const CPose3DQuat theIncr = getIncrementFromOdometry();
+  // Get odometry estimation:
+  const CPose3DQuat theIncr = getIncrementFromOdometry();
 
-	for (KFArray_ACT::Index i = 0;
-		 i < static_cast<KFArray_ACT::Index>(u.size()); i++)
-		u[i] = theIncr[i];
+  for (KFArray_ACT::Index i = 0; i < static_cast<KFArray_ACT::Index>(u.size()); i++)
+    u[i] = theIncr[i];
 }
 
 /** This virtual function musts implement the prediction model of the Kalman
  * filter.
  */
 void CRangeBearingKFSLAM::OnTransitionModel(
-	const KFArray_ACT& u, KFArray_VEH& xv, bool& out_skipPrediction) const
+    const KFArray_ACT& u, KFArray_VEH& xv, bool& out_skipPrediction) const
 {
-	MRPT_START
+  MRPT_START
 
-	// Do not update the vehicle pose & its covariance until we have some
-	// landmarks in the map,
-	// otherwise, we are imposing a lower bound to the best uncertainty from now
-	// on:
-	if (size_t(m_xkk.size()) == get_vehicle_size())
-	{
-		out_skipPrediction = true;
-	}
+  // Do not update the vehicle pose & its covariance until we have some
+  // landmarks in the map,
+  // otherwise, we are imposing a lower bound to the best uncertainty from now
+  // on:
+  if (size_t(m_xkk.size()) == get_vehicle_size())
+  {
+    out_skipPrediction = true;
+  }
 
-	// Current pose: copy xyz+quat
-	CPose3DQuat robotPose = getCurrentRobotPoseMean();
+  // Current pose: copy xyz+quat
+  CPose3DQuat robotPose = getCurrentRobotPoseMean();
 
-	// Increment pose: copy xyz+quat (explicitly unroll the loop)
-	CPose3DQuat odoIncrement(UNINITIALIZED_QUATERNION);
-	odoIncrement.m_coords[0] = u[0];
-	odoIncrement.m_coords[1] = u[1];
-	odoIncrement.m_coords[2] = u[2];
-	odoIncrement.m_quat[0] = u[3];
-	odoIncrement.m_quat[1] = u[4];
-	odoIncrement.m_quat[2] = u[5];
-	odoIncrement.m_quat[3] = u[6];
+  // Increment pose: copy xyz+quat (explicitly unroll the loop)
+  CPose3DQuat odoIncrement(UNINITIALIZED_QUATERNION);
+  odoIncrement.m_coords[0] = u[0];
+  odoIncrement.m_coords[1] = u[1];
+  odoIncrement.m_coords[2] = u[2];
+  odoIncrement.m_quat[0] = u[3];
+  odoIncrement.m_quat[1] = u[4];
+  odoIncrement.m_quat[2] = u[5];
+  odoIncrement.m_quat[3] = u[6];
 
-	// Pose composition:
-	robotPose += odoIncrement;
+  // Pose composition:
+  robotPose += odoIncrement;
 
-	// Output:
-	for (size_t i = 0; i < xv.SizeAtCompileTime; i++)
-		xv[i] = robotPose[i];
+  // Output:
+  for (size_t i = 0; i < xv.SizeAtCompileTime; i++) xv[i] = robotPose[i];
 
-	MRPT_END
+  MRPT_END
 }
 
 /** This virtual function musts calculate the Jacobian F of the prediction
@@ -342,24 +325,24 @@ void CRangeBearingKFSLAM::OnTransitionModel(
  */
 void CRangeBearingKFSLAM::OnTransitionJacobian(KFMatrix_VxV& F) const
 {
-	MRPT_START
+  MRPT_START
 
-	// Current pose: copy xyz+quat
-	CPose3DQuat robotPose = getCurrentRobotPoseMean();
+  // Current pose: copy xyz+quat
+  CPose3DQuat robotPose = getCurrentRobotPoseMean();
 
-	// Odometry:
-	const CPose3DQuat theIncr = getIncrementFromOdometry();
+  // Odometry:
+  const CPose3DQuat theIncr = getIncrementFromOdometry();
 
-	// Compute jacobians:
-	CMatrixDouble77 df_du(UNINITIALIZED_MATRIX);
+  // Compute jacobians:
+  CMatrixDouble77 df_du(UNINITIALIZED_MATRIX);
 
-	CPose3DQuatPDF::jacobiansPoseComposition(
-		robotPose,	// x
-		theIncr,  // u
-		F,	// df_dx,
-		df_du);
+  CPose3DQuatPDF::jacobiansPoseComposition(
+      robotPose,  // x
+      theIncr,    // u
+      F,          // df_dx,
+      df_du);
 
-	MRPT_END
+  MRPT_END
 }
 
 /** This virtual function musts calculate de noise matrix of the prediction
@@ -367,181 +350,171 @@ void CRangeBearingKFSLAM::OnTransitionJacobian(KFMatrix_VxV& F) const
  */
 void CRangeBearingKFSLAM::OnTransitionNoise(KFMatrix_VxV& Q) const
 {
-	MRPT_START
+  MRPT_START
 
-	// The uncertainty of the 2D odometry, projected from the current position:
-	CActionRobotMovement2D::Ptr act2D = m_action->getBestMovementEstimation();
-	CActionRobotMovement3D::Ptr act3D =
-		m_action->getActionByClass<CActionRobotMovement3D>();
+  // The uncertainty of the 2D odometry, projected from the current position:
+  CActionRobotMovement2D::Ptr act2D = m_action->getBestMovementEstimation();
+  CActionRobotMovement3D::Ptr act3D = m_action->getActionByClass<CActionRobotMovement3D>();
 
-	if (act3D && act2D)
-		THROW_EXCEPTION("Both 2D & 3D odometry are present!?!?");
+  if (act3D && act2D) THROW_EXCEPTION("Both 2D & 3D odometry are present!?!?");
 
-	CPose3DQuatPDFGaussian odoIncr;
+  CPose3DQuatPDFGaussian odoIncr;
 
-	if ((!act3D && !act2D) || options.force_ignore_odometry)
-	{
-		// Use constant Q:
-		Q.setZero();
-		ASSERT_(size_t(options.stds_Q_no_odo.size()) == size_t(Q.cols()));
-		for (size_t i = 0; i < get_vehicle_size(); i++)
-			Q(i, i) = square(options.stds_Q_no_odo[i]);
-		return;
-	}
-	else
-	{
-		if (act2D)
-		{
-			// 2D odometry:
-			CPosePDFGaussian odoIncr2D;
-			odoIncr2D.copyFrom(*act2D->poseChange);
-			odoIncr = CPose3DQuatPDFGaussian(CPose3DPDFGaussian(odoIncr2D));
-		}
-		else
-		{
-			// 3D odometry:
-			odoIncr = CPose3DQuatPDFGaussian(act3D->poseChange);
-		}
-	}
+  if ((!act3D && !act2D) || options.force_ignore_odometry)
+  {
+    // Use constant Q:
+    Q.setZero();
+    ASSERT_(size_t(options.stds_Q_no_odo.size()) == size_t(Q.cols()));
+    for (size_t i = 0; i < get_vehicle_size(); i++) Q(i, i) = square(options.stds_Q_no_odo[i]);
+    return;
+  }
+  else
+  {
+    if (act2D)
+    {
+      // 2D odometry:
+      CPosePDFGaussian odoIncr2D;
+      odoIncr2D.copyFrom(*act2D->poseChange);
+      odoIncr = CPose3DQuatPDFGaussian(CPose3DPDFGaussian(odoIncr2D));
+    }
+    else
+    {
+      // 3D odometry:
+      odoIncr = CPose3DQuatPDFGaussian(act3D->poseChange);
+    }
+  }
 
-	odoIncr.cov(2, 2) += square(options.std_odo_z_additional);
+  odoIncr.cov(2, 2) += square(options.std_odo_z_additional);
 
-	// Current pose: copy xyz+quat
-	CPose3DQuat robotPose = getCurrentRobotPoseMean();
+  // Current pose: copy xyz+quat
+  CPose3DQuat robotPose = getCurrentRobotPoseMean();
 
-	// Transform from odometry increment to "relative to the robot":
-	odoIncr.changeCoordinatesReference(robotPose);
+  // Transform from odometry increment to "relative to the robot":
+  odoIncr.changeCoordinatesReference(robotPose);
 
-	Q = odoIncr.cov;
+  Q = odoIncr.cov;
 
-	MRPT_END
+  MRPT_END
 }
 
 void CRangeBearingKFSLAM::OnObservationModel(
-	const std::vector<size_t>& idx_landmarks_to_predict,
-	vector_KFArray_OBS& out_predictions) const
+    const std::vector<size_t>& idx_landmarks_to_predict, vector_KFArray_OBS& out_predictions) const
 {
-	MRPT_START
+  MRPT_START
 
-	// Mean of the prior of the robot pose:
-	CPose3DQuat robotPose = getCurrentRobotPoseMean();
+  // Mean of the prior of the robot pose:
+  CPose3DQuat robotPose = getCurrentRobotPoseMean();
 
-	// Get the sensor pose relative to the robot:
-	CObservationBearingRange::Ptr obs =
-		m_SF->getObservationByClass<CObservationBearingRange>();
-	ASSERTMSG_(
-		obs,
-		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange");
-	const CPose3DQuat sensorPoseOnRobot =
-		CPose3DQuat(obs->sensorLocationOnRobot);
+  // Get the sensor pose relative to the robot:
+  CObservationBearingRange::Ptr obs = m_SF->getObservationByClass<CObservationBearingRange>();
+  ASSERTMSG_(
+      obs,
+      "*ERROR*: This method requires an observation of type "
+      "CObservationBearingRange");
+  const CPose3DQuat sensorPoseOnRobot = CPose3DQuat(obs->sensorLocationOnRobot);
 
-	/* -------------------------------------------
-	   Equations, obtained using matlab, of the relative 3D position of a
-	  landmark (xi,yi,zi), relative
-		  to a robot 6D pose (x0,y0,z0,y,p,r)
-		Refer to technical report "6D EKF derivation...", 2008
+  /* -------------------------------------------
+   Equations, obtained using matlab, of the relative 3D position of a
+  landmark (xi,yi,zi), relative
+    to a robot 6D pose (x0,y0,z0,y,p,r)
+    Refer to technical report "6D EKF derivation...", 2008
 
-		x0 y0 z0 y p r         % Robot's 6D pose
-		x0s y0s z0s ys ps rs   % Sensor's 6D pose relative to robot
-		xi yi zi % Absolute 3D landmark coordinates:
+    x0 y0 z0 y p r         % Robot's 6D pose
+    x0s y0s z0s ys ps rs   % Sensor's 6D pose relative to robot
+    xi yi zi % Absolute 3D landmark coordinates:
 
-		Hx : dh_dxv   -> Jacobian of the observation model wrt the robot pose
-		Hy : dh_dyi   -> Jacobian of the observation model wrt each landmark
-	  mean position
+    Hx : dh_dxv   -> Jacobian of the observation model wrt the robot pose
+    Hy : dh_dyi   -> Jacobian of the observation model wrt each landmark
+  mean position
 
-		Sizes:
-		 h:  Lx3
-		 Hx: 3Lx6
-		 Hy: 3Lx3
+    Sizes:
+     h:  Lx3
+     Hx: 3Lx6
+     Hy: 3Lx3
 
-		  L=# of landmarks in the map (ALL OF THEM)
-	  ------------------------------------------- */
+    L=# of landmarks in the map (ALL OF THEM)
+  ------------------------------------------- */
 
-	const size_t vehicle_size = get_vehicle_size();
-	// const size_t  obs_size  = get_observation_size();
-	const size_t feature_size = get_feature_size();
+  const size_t vehicle_size = get_vehicle_size();
+  // const size_t  obs_size  = get_observation_size();
+  const size_t feature_size = get_feature_size();
 
-	const CPose3DQuat sensorPoseAbs = robotPose + sensorPoseOnRobot;
+  const CPose3DQuat sensorPoseAbs = robotPose + sensorPoseOnRobot;
 
-	const size_t N = idx_landmarks_to_predict.size();
-	out_predictions.resize(N);
-	for (size_t i = 0; i < N; i++)
-	{
-		const size_t row_in = feature_size * idx_landmarks_to_predict[i];
+  const size_t N = idx_landmarks_to_predict.size();
+  out_predictions.resize(N);
+  for (size_t i = 0; i < N; i++)
+  {
+    const size_t row_in = feature_size * idx_landmarks_to_predict[i];
 
-		// Landmark absolute 3D position in the map:
-		const TPoint3D mapEst(
-			m_xkk[vehicle_size + row_in + 0], m_xkk[vehicle_size + row_in + 1],
-			m_xkk[vehicle_size + row_in + 2]);
+    // Landmark absolute 3D position in the map:
+    const TPoint3D mapEst(
+        m_xkk[vehicle_size + row_in + 0], m_xkk[vehicle_size + row_in + 1],
+        m_xkk[vehicle_size + row_in + 2]);
 
-		// Generate Range, yaw, pitch
-		// ---------------------------------------------------
-		sensorPoseAbs.sphericalCoordinates(
-			mapEst,
-			out_predictions[i][0],	// range
-			out_predictions[i][1],	// yaw
-			out_predictions[i][2]  // pitch
-		);
-	}
+    // Generate Range, yaw, pitch
+    // ---------------------------------------------------
+    sensorPoseAbs.sphericalCoordinates(
+        mapEst,
+        out_predictions[i][0],  // range
+        out_predictions[i][1],  // yaw
+        out_predictions[i][2]   // pitch
+    );
+  }
 
-	MRPT_END
+  MRPT_END
 }
 
 void CRangeBearingKFSLAM::OnObservationJacobians(
-	size_t idx_landmark_to_predict, KFMatrix_OxV& Hx, KFMatrix_OxF& Hy) const
+    size_t idx_landmark_to_predict, KFMatrix_OxV& Hx, KFMatrix_OxF& Hy) const
 {
-	MRPT_START
+  MRPT_START
 
-	// Mean of the prior of the robot pose:
-	const CPose3DQuat robotPose = getCurrentRobotPoseMean();
+  // Mean of the prior of the robot pose:
+  const CPose3DQuat robotPose = getCurrentRobotPoseMean();
 
-	// Get the sensor pose relative to the robot:
-	CObservationBearingRange::Ptr obs =
-		m_SF->getObservationByClass<CObservationBearingRange>();
-	ASSERTMSG_(
-		obs,
-		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange");
-	const CPose3DQuat sensorPoseOnRobot =
-		CPose3DQuat(obs->sensorLocationOnRobot);
+  // Get the sensor pose relative to the robot:
+  CObservationBearingRange::Ptr obs = m_SF->getObservationByClass<CObservationBearingRange>();
+  ASSERTMSG_(
+      obs,
+      "*ERROR*: This method requires an observation of type "
+      "CObservationBearingRange");
+  const CPose3DQuat sensorPoseOnRobot = CPose3DQuat(obs->sensorLocationOnRobot);
 
-	const size_t vehicle_size = get_vehicle_size();
-	// const size_t  obs_size  = get_observation_size();
-	const size_t feature_size = get_feature_size();
+  const size_t vehicle_size = get_vehicle_size();
+  // const size_t  obs_size  = get_observation_size();
+  const size_t feature_size = get_feature_size();
 
-	// Compute the jacobians, needed below:
-	// const CPose3DQuat  sensorPoseAbs= robotPose + sensorPoseOnRobot;
-	CPose3DQuat sensorPoseAbs(UNINITIALIZED_QUATERNION);
-	CMatrixFixed<kftype, 7, 7> H_senpose_vehpose(UNINITIALIZED_MATRIX);
-	CMatrixFixed<kftype, 7, 7> H_senpose_senrelpose(
-		UNINITIALIZED_MATRIX);	// Not actually used
+  // Compute the jacobians, needed below:
+  // const CPose3DQuat  sensorPoseAbs= robotPose + sensorPoseOnRobot;
+  CPose3DQuat sensorPoseAbs(UNINITIALIZED_QUATERNION);
+  CMatrixFixed<kftype, 7, 7> H_senpose_vehpose(UNINITIALIZED_MATRIX);
+  CMatrixFixed<kftype, 7, 7> H_senpose_senrelpose(UNINITIALIZED_MATRIX);  // Not actually used
 
-	CPose3DQuatPDF::jacobiansPoseComposition(
-		robotPose, sensorPoseOnRobot, H_senpose_vehpose, H_senpose_senrelpose,
-		&sensorPoseAbs);
+  CPose3DQuatPDF::jacobiansPoseComposition(
+      robotPose, sensorPoseOnRobot, H_senpose_vehpose, H_senpose_senrelpose, &sensorPoseAbs);
 
-	const size_t row_in = feature_size * idx_landmark_to_predict;
+  const size_t row_in = feature_size * idx_landmark_to_predict;
 
-	// Landmark absolute 3D position in the map:
-	const TPoint3D mapEst(
-		m_xkk[vehicle_size + row_in + 0], m_xkk[vehicle_size + row_in + 1],
-		m_xkk[vehicle_size + row_in + 2]);
+  // Landmark absolute 3D position in the map:
+  const TPoint3D mapEst(
+      m_xkk[vehicle_size + row_in + 0], m_xkk[vehicle_size + row_in + 1],
+      m_xkk[vehicle_size + row_in + 2]);
 
-	// The Jacobian wrt the sensor pose must be transformed later on:
-	KFMatrix_OxV Hx_sensor;
-	double obsData[3];
-	sensorPoseAbs.sphericalCoordinates(
-		mapEst,
-		obsData[0],	 // range
-		obsData[1],	 // yaw
-		obsData[2],	 // pitch
-		&Hy, &Hx_sensor);
+  // The Jacobian wrt the sensor pose must be transformed later on:
+  KFMatrix_OxV Hx_sensor;
+  double obsData[3];
+  sensorPoseAbs.sphericalCoordinates(
+      mapEst,
+      obsData[0],  // range
+      obsData[1],  // yaw
+      obsData[2],  // pitch
+      &Hy, &Hx_sensor);
 
-	// Chain rule: Hx = d sensorpose / d vehiclepose   * Hx_sensor
-	Hx = Hx_sensor * H_senpose_vehpose;
+  // Chain rule: Hx = d sensorpose / d vehiclepose   * Hx_sensor
+  Hx = Hx_sensor * H_senpose_vehpose;
 
-	MRPT_END
+  MRPT_END
 }
 
 /** This is called between the KF prediction step and the update step, and the
@@ -567,144 +540,136 @@ void CRangeBearingKFSLAM::OnObservationJacobians(
  * cross-covariances between them.
  */
 void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
-	vector_KFArray_OBS& Z, std::vector<int>& data_association,
-	const vector_KFArray_OBS& all_predictions, const KFMatrix& S,
-	const std::vector<size_t>& lm_indices_in_S, const KFMatrix_OxO& R)
+    vector_KFArray_OBS& Z,
+    std::vector<int>& data_association,
+    const vector_KFArray_OBS& all_predictions,
+    const KFMatrix& S,
+    const std::vector<size_t>& lm_indices_in_S,
+    const KFMatrix_OxO& R)
 {
-	MRPT_START
+  MRPT_START
 
-	// static const size_t vehicle_size = get_vehicle_size();
-	constexpr size_t obs_size = get_observation_size();
+  // static const size_t vehicle_size = get_vehicle_size();
+  constexpr size_t obs_size = get_observation_size();
 
-	// Z: Observations
-	CObservationBearingRange::TMeasurementList::const_iterator itObs;
+  // Z: Observations
+  CObservationBearingRange::TMeasurementList::const_iterator itObs;
 
-	CObservationBearingRange::Ptr obs =
-		m_SF->getObservationByClass<CObservationBearingRange>();
-	ASSERTMSG_(
-		obs,
-		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange");
+  CObservationBearingRange::Ptr obs = m_SF->getObservationByClass<CObservationBearingRange>();
+  ASSERTMSG_(
+      obs,
+      "*ERROR*: This method requires an observation of type "
+      "CObservationBearingRange");
 
-	const size_t N = obs->sensedData.size();
-	Z.resize(N);
+  const size_t N = obs->sensedData.size();
+  Z.resize(N);
 
-	size_t row;
-	for (row = 0, itObs = obs->sensedData.begin();
-		 itObs != obs->sensedData.end(); ++itObs, ++row)
-	{
-		// Fill one row in Z:
-		Z[row][0] = itObs->range;
-		Z[row][1] = itObs->yaw;
-		Z[row][2] = itObs->pitch;
-	}
+  size_t row;
+  for (row = 0, itObs = obs->sensedData.begin(); itObs != obs->sensedData.end(); ++itObs, ++row)
+  {
+    // Fill one row in Z:
+    Z[row][0] = itObs->range;
+    Z[row][1] = itObs->yaw;
+    Z[row][2] = itObs->pitch;
+  }
 
-	// Data association:
-	// ---------------------
-	data_association.assign(N, -1);	 // Initially, all new landmarks
+  // Data association:
+  // ---------------------
+  data_association.assign(N, -1);  // Initially, all new landmarks
 
-	// For each observed LM:
-	std::vector<size_t> obs_idxs_needing_data_assoc;
-	obs_idxs_needing_data_assoc.reserve(N);
+  // For each observed LM:
+  std::vector<size_t> obs_idxs_needing_data_assoc;
+  obs_idxs_needing_data_assoc.reserve(N);
 
-	{
-		std::vector<int>::iterator itDA;
-		for (row = 0, itObs = obs->sensedData.begin(),
-			itDA = data_association.begin();
-			 itObs != obs->sensedData.end(); ++itObs, ++itDA, ++row)
-		{
-			// Fill data asociation: Using IDs!
-			if (itObs->landmarkID < 0)
-				obs_idxs_needing_data_assoc.push_back(row);
-			else
-			{
-				mrpt::containers::bimap<
-					CLandmark::TLandmarkID, unsigned int>::iterator itID;
-				if ((itID = m_IDs.find_key(itObs->landmarkID)) != m_IDs.end())
-					*itDA = itID->second;  // This row in Z corresponds to the
-				// i'th map element in the state
-				// vector:
-			}
-		}
-	}
+  {
+    std::vector<int>::iterator itDA;
+    for (row = 0, itObs = obs->sensedData.begin(), itDA = data_association.begin();
+         itObs != obs->sensedData.end(); ++itObs, ++itDA, ++row)
+    {
+      // Fill data asociation: Using IDs!
+      if (itObs->landmarkID < 0)
+        obs_idxs_needing_data_assoc.push_back(row);
+      else
+      {
+        mrpt::containers::bimap<CLandmark::TLandmarkID, unsigned int>::iterator itID;
+        if ((itID = m_IDs.find_key(itObs->landmarkID)) != m_IDs.end())
+          *itDA = itID->second;  // This row in Z corresponds to the
+                                 // i'th map element in the state
+                                 // vector:
+      }
+    }
+  }
 
-	// ---- Perform data association ----
-	//  Only for observation indices in "obs_idxs_needing_data_assoc"
-	if (obs_idxs_needing_data_assoc.empty())
-	{
-		// We don't need to do DA:
-		m_last_data_association = TDataAssocInfo();
+  // ---- Perform data association ----
+  //  Only for observation indices in "obs_idxs_needing_data_assoc"
+  if (obs_idxs_needing_data_assoc.empty())
+  {
+    // We don't need to do DA:
+    m_last_data_association = TDataAssocInfo();
 
-		// Save them for the case the external user wants to access them:
-		for (size_t idxObs = 0; idxObs < data_association.size(); idxObs++)
-		{
-			int da = data_association[idxObs];
-			if (da >= 0)
-				m_last_data_association.results.associations[idxObs] =
-					data_association[idxObs];
-		}
-	}
-	else
-	{
-		// Build a Z matrix with the observations that need dat.assoc:
-		const size_t nObsDA = obs_idxs_needing_data_assoc.size();
+    // Save them for the case the external user wants to access them:
+    for (size_t idxObs = 0; idxObs < data_association.size(); idxObs++)
+    {
+      int da = data_association[idxObs];
+      if (da >= 0) m_last_data_association.results.associations[idxObs] = data_association[idxObs];
+    }
+  }
+  else
+  {
+    // Build a Z matrix with the observations that need dat.assoc:
+    const size_t nObsDA = obs_idxs_needing_data_assoc.size();
 
-		CMatrixDynamic<kftype> Z_obs_means(nObsDA, obs_size);
-		for (size_t i = 0; i < nObsDA; i++)
-		{
-			const size_t idx = obs_idxs_needing_data_assoc[i];
-			for (unsigned k = 0; k < obs_size; k++)
-				Z_obs_means(i, k) = Z[idx][k];
-		}
+    CMatrixDynamic<kftype> Z_obs_means(nObsDA, obs_size);
+    for (size_t i = 0; i < nObsDA; i++)
+    {
+      const size_t idx = obs_idxs_needing_data_assoc[i];
+      for (unsigned k = 0; k < obs_size; k++) Z_obs_means(i, k) = Z[idx][k];
+    }
 
-		// Vehicle uncertainty
-		// KFMatrix_VxV Pxx = m_pkk.extractMatrix<7, 7>(0, 0);
+    // Vehicle uncertainty
+    // KFMatrix_VxV Pxx = m_pkk.extractMatrix<7, 7>(0, 0);
 
-		// Build predictions:
-		// ---------------------------
-		const size_t nPredictions = lm_indices_in_S.size();
-		m_last_data_association.clear();
+    // Build predictions:
+    // ---------------------------
+    const size_t nPredictions = lm_indices_in_S.size();
+    m_last_data_association.clear();
 
-		// S is the covariance of the predictions:
-		m_last_data_association.Y_pred_covs = S;
+    // S is the covariance of the predictions:
+    m_last_data_association.Y_pred_covs = S;
 
-		// The means:
-		m_last_data_association.Y_pred_means.setSize(nPredictions, obs_size);
-		for (size_t q = 0; q < nPredictions; q++)
-		{
-			const size_t i = lm_indices_in_S[q];
-			for (size_t w = 0; w < obs_size; w++)
-				m_last_data_association.Y_pred_means(q, w) =
-					all_predictions[i][w];
-			m_last_data_association.predictions_IDs.push_back(
-				i);	 // for the conversion of indices...
-		}
+    // The means:
+    m_last_data_association.Y_pred_means.setSize(nPredictions, obs_size);
+    for (size_t q = 0; q < nPredictions; q++)
+    {
+      const size_t i = lm_indices_in_S[q];
+      for (size_t w = 0; w < obs_size; w++)
+        m_last_data_association.Y_pred_means(q, w) = all_predictions[i][w];
+      m_last_data_association.predictions_IDs.push_back(i);  // for the conversion of indices...
+    }
 
-		// Do Dat. Assoc :
-		// ---------------------------
-		if (nPredictions)
-		{
-			// CMatrixDouble Z_obs_cov = CMatrixDouble(R);
+    // Do Dat. Assoc :
+    // ---------------------------
+    if (nPredictions)
+    {
+      // CMatrixDouble Z_obs_cov = CMatrixDouble(R);
 
-			mrpt::slam::data_association_full_covariance(
-				Z_obs_means, m_last_data_association.Y_pred_means,
-				m_last_data_association.Y_pred_covs,
-				m_last_data_association.results, options.data_assoc_method,
-				options.data_assoc_metric, options.data_assoc_IC_chi2_thres,
-				true,  // Use KD-tree
-				m_last_data_association.predictions_IDs,
-				options.data_assoc_IC_metric,
-				options.data_assoc_IC_ml_threshold);
+      mrpt::slam::data_association_full_covariance(
+          Z_obs_means, m_last_data_association.Y_pred_means, m_last_data_association.Y_pred_covs,
+          m_last_data_association.results, options.data_assoc_method, options.data_assoc_metric,
+          options.data_assoc_IC_chi2_thres,
+          true,  // Use KD-tree
+          m_last_data_association.predictions_IDs, options.data_assoc_IC_metric,
+          options.data_assoc_IC_ml_threshold);
 
-			// Return pairings to the main KF algorithm:
-			for (auto it = m_last_data_association.results.associations.begin();
-				 it != m_last_data_association.results.associations.end(); ++it)
-				data_association[it->first] = it->second;
-		}
-	}
-	// ---- End of data association ----
+      // Return pairings to the main KF algorithm:
+      for (auto it = m_last_data_association.results.associations.begin();
+           it != m_last_data_association.results.associations.end(); ++it)
+        data_association[it->first] = it->second;
+    }
+  }
+  // ---- End of data association ----
 
-	MRPT_END
+  MRPT_END
 }
 
 /** This virtual function musts normalize the state vector and covariance matrix
@@ -712,214 +677,197 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
  */
 void CRangeBearingKFSLAM::OnNormalizeStateVector()
 {
-	MRPT_START
+  MRPT_START
 
-	// m_xkk[3:6] must be a normalized quaternion:
-	const double T = std::sqrt(
-		square(m_xkk[3]) + square(m_xkk[4]) + square(m_xkk[5]) +
-		square(m_xkk[6]));
-	ASSERTMSG_(T > 0, "Vehicle pose quaternion norm is not >0!!");
+  // m_xkk[3:6] must be a normalized quaternion:
+  const double T =
+      std::sqrt(square(m_xkk[3]) + square(m_xkk[4]) + square(m_xkk[5]) + square(m_xkk[6]));
+  ASSERTMSG_(T > 0, "Vehicle pose quaternion norm is not >0!!");
 
-	const double T_ = (m_xkk[3] < 0 ? -1.0 : 1.0) / T;	// qr>=0
-	m_xkk[3] *= T_;
-	m_xkk[4] *= T_;
-	m_xkk[5] *= T_;
-	m_xkk[6] *= T_;
+  const double T_ = (m_xkk[3] < 0 ? -1.0 : 1.0) / T;  // qr>=0
+  m_xkk[3] *= T_;
+  m_xkk[4] *= T_;
+  m_xkk[5] *= T_;
+  m_xkk[6] *= T_;
 
-	MRPT_END
+  MRPT_END
 }
 
 /*---------------------------------------------------------------
-						loadOptions
+            loadOptions
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::loadOptions(const mrpt::config::CConfigFileBase& ini)
 {
-	// Main
-	options.loadFromConfigFile(ini, "RangeBearingKFSLAM");
-	KF_options.loadFromConfigFile(ini, "RangeBearingKFSLAM_KalmanFilter");
-	// partition algorithm:
-	mapPartitioner.options.loadFromConfigFile(ini, "RangeBearingKFSLAM");
+  // Main
+  options.loadFromConfigFile(ini, "RangeBearingKFSLAM");
+  KF_options.loadFromConfigFile(ini, "RangeBearingKFSLAM_KalmanFilter");
+  // partition algorithm:
+  mapPartitioner.options.loadFromConfigFile(ini, "RangeBearingKFSLAM");
 }
 
 /*---------------------------------------------------------------
-						loadOptions
+            loadOptions
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::TOptions::loadFromConfigFile(
-	const mrpt::config::CConfigFileBase& source, const std::string& section)
+    const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
-	source.read_vector(section, "stds_Q_no_odo", stds_Q_no_odo, stds_Q_no_odo);
-	ASSERT_(stds_Q_no_odo.size() == 7);
-	std_sensor_range =
-		source.read_float(section, "std_sensor_range", std_sensor_range);
-	std_sensor_yaw = DEG2RAD(source.read_float(
-		section, "std_sensor_yaw_deg", RAD2DEG(std_sensor_yaw)));
-	std_sensor_pitch = DEG2RAD(source.read_float(
-		section, "std_sensor_pitch_deg", RAD2DEG(std_sensor_pitch)));
+  source.read_vector(section, "stds_Q_no_odo", stds_Q_no_odo, stds_Q_no_odo);
+  ASSERT_(stds_Q_no_odo.size() == 7);
+  std_sensor_range = source.read_float(section, "std_sensor_range", std_sensor_range);
+  std_sensor_yaw =
+      DEG2RAD(source.read_float(section, "std_sensor_yaw_deg", RAD2DEG(std_sensor_yaw)));
+  std_sensor_pitch =
+      DEG2RAD(source.read_float(section, "std_sensor_pitch_deg", RAD2DEG(std_sensor_pitch)));
 
-	std_odo_z_additional = source.read_float(
-		section, "std_odo_z_additional", std_odo_z_additional);
+  std_odo_z_additional = source.read_float(section, "std_odo_z_additional", std_odo_z_additional);
 
-	MRPT_LOAD_CONFIG_VAR(doPartitioningExperiment, bool, source, section);
-	MRPT_LOAD_CONFIG_VAR(partitioningMethod, int, source, section);
+  MRPT_LOAD_CONFIG_VAR(doPartitioningExperiment, bool, source, section);
+  MRPT_LOAD_CONFIG_VAR(partitioningMethod, int, source, section);
 
-	MRPT_LOAD_CONFIG_VAR(create_simplemap, bool, source, section);
+  MRPT_LOAD_CONFIG_VAR(create_simplemap, bool, source, section);
 
-	MRPT_LOAD_CONFIG_VAR(force_ignore_odometry, bool, source, section);
+  MRPT_LOAD_CONFIG_VAR(force_ignore_odometry, bool, source, section);
 
-	data_assoc_method = source.read_enum<TDataAssociationMethod>(
-		section, "data_assoc_method", data_assoc_method);
-	data_assoc_metric = source.read_enum<TDataAssociationMetric>(
-		section, "data_assoc_metric", data_assoc_metric);
-	data_assoc_IC_metric = source.read_enum<TDataAssociationMetric>(
-		section, "data_assoc_IC_metric", data_assoc_IC_metric);
+  data_assoc_method =
+      source.read_enum<TDataAssociationMethod>(section, "data_assoc_method", data_assoc_method);
+  data_assoc_metric =
+      source.read_enum<TDataAssociationMetric>(section, "data_assoc_metric", data_assoc_metric);
+  data_assoc_IC_metric = source.read_enum<TDataAssociationMetric>(
+      section, "data_assoc_IC_metric", data_assoc_IC_metric);
 
-	MRPT_LOAD_CONFIG_VAR(data_assoc_IC_chi2_thres, double, source, section);
-	MRPT_LOAD_CONFIG_VAR(data_assoc_IC_ml_threshold, double, source, section);
+  MRPT_LOAD_CONFIG_VAR(data_assoc_IC_chi2_thres, double, source, section);
+  MRPT_LOAD_CONFIG_VAR(data_assoc_IC_ml_threshold, double, source, section);
 
-	MRPT_LOAD_CONFIG_VAR(quantiles_3D_representation, float, source, section);
+  MRPT_LOAD_CONFIG_VAR(quantiles_3D_representation, float, source, section);
 }
 
 /*---------------------------------------------------------------
-						Constructor
+            Constructor
   ---------------------------------------------------------------*/
-CRangeBearingKFSLAM::TOptions::TOptions()
-	: stds_Q_no_odo(get_vehicle_size(), 0),
+CRangeBearingKFSLAM::TOptions::TOptions() :
+    stds_Q_no_odo(get_vehicle_size(), 0),
 
-	  std_sensor_yaw(DEG2RAD(0.2f)),
-	  std_sensor_pitch(DEG2RAD(0.2f))
+    std_sensor_yaw(DEG2RAD(0.2f)),
+    std_sensor_pitch(DEG2RAD(0.2f))
 
 {
-	stds_Q_no_odo[0] = stds_Q_no_odo[1] = stds_Q_no_odo[2] = 0.10f;
-	stds_Q_no_odo[3] = stds_Q_no_odo[4] = stds_Q_no_odo[5] = stds_Q_no_odo[6] =
-		0.05f;
+  stds_Q_no_odo[0] = stds_Q_no_odo[1] = stds_Q_no_odo[2] = 0.10f;
+  stds_Q_no_odo[3] = stds_Q_no_odo[4] = stds_Q_no_odo[5] = stds_Q_no_odo[6] = 0.05f;
 }
 
 /*---------------------------------------------------------------
-						dumpToTextStream
+            dumpToTextStream
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::TOptions::dumpToTextStream(std::ostream& out) const
 {
-	using namespace mrpt::typemeta;
+  using namespace mrpt::typemeta;
 
-	out << "\n----------- [CRangeBearingKFSLAM::TOptions] ------------ \n\n";
+  out << "\n----------- [CRangeBearingKFSLAM::TOptions] ------------ \n\n";
 
-	out << mrpt::format(
-		"doPartitioningExperiment                = %c\n",
-		doPartitioningExperiment ? 'Y' : 'N');
-	out << mrpt::format(
-		"partitioningMethod                      = %i\n", partitioningMethod);
-	out << mrpt::format(
-		"data_assoc_method                       = %s\n",
-		TEnumType<TDataAssociationMethod>::value2name(data_assoc_method)
-			.c_str());
-	out << mrpt::format(
-		"data_assoc_metric                       = %s\n",
-		TEnumType<TDataAssociationMetric>::value2name(data_assoc_metric)
-			.c_str());
-	out << mrpt::format(
-		"data_assoc_IC_chi2_thres                = %.06f\n",
-		data_assoc_IC_chi2_thres);
-	out << mrpt::format(
-		"data_assoc_IC_metric                    = %s\n",
-		TEnumType<TDataAssociationMetric>::value2name(data_assoc_IC_metric)
-			.c_str());
-	out << mrpt::format(
-		"data_assoc_IC_ml_threshold              = %.06f\n",
-		data_assoc_IC_ml_threshold);
+  out << mrpt::format(
+      "doPartitioningExperiment                = %c\n", doPartitioningExperiment ? 'Y' : 'N');
+  out << mrpt::format("partitioningMethod                      = %i\n", partitioningMethod);
+  out << mrpt::format(
+      "data_assoc_method                       = %s\n",
+      TEnumType<TDataAssociationMethod>::value2name(data_assoc_method).c_str());
+  out << mrpt::format(
+      "data_assoc_metric                       = %s\n",
+      TEnumType<TDataAssociationMetric>::value2name(data_assoc_metric).c_str());
+  out << mrpt::format(
+      "data_assoc_IC_chi2_thres                = %.06f\n", data_assoc_IC_chi2_thres);
+  out << mrpt::format(
+      "data_assoc_IC_metric                    = %s\n",
+      TEnumType<TDataAssociationMetric>::value2name(data_assoc_IC_metric).c_str());
+  out << mrpt::format(
+      "data_assoc_IC_ml_threshold              = %.06f\n", data_assoc_IC_ml_threshold);
 
-	out << "\n";
+  out << "\n";
 }
 
 void CRangeBearingKFSLAM::OnInverseObservationModel(
-	const KFArray_OBS& in_z, KFArray_FEAT& yn, KFMatrix_FxV& dyn_dxv,
-	KFMatrix_FxO& dyn_dhn) const
+    const KFArray_OBS& in_z, KFArray_FEAT& yn, KFMatrix_FxV& dyn_dxv, KFMatrix_FxO& dyn_dhn) const
 {
-	MRPT_START
+  MRPT_START
 
-	CObservationBearingRange::Ptr obs =
-		m_SF->getObservationByClass<CObservationBearingRange>();
-	ASSERTMSG_(
-		obs,
-		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange");
-	const CPose3DQuat sensorPoseOnRobot =
-		CPose3DQuat(obs->sensorLocationOnRobot);
+  CObservationBearingRange::Ptr obs = m_SF->getObservationByClass<CObservationBearingRange>();
+  ASSERTMSG_(
+      obs,
+      "*ERROR*: This method requires an observation of type "
+      "CObservationBearingRange");
+  const CPose3DQuat sensorPoseOnRobot = CPose3DQuat(obs->sensorLocationOnRobot);
 
-	// Mean of the prior of the robot pose:
-	const CPose3DQuat robotPose = getCurrentRobotPoseMean();
+  // Mean of the prior of the robot pose:
+  const CPose3DQuat robotPose = getCurrentRobotPoseMean();
 
-	// const CPose3DQuat  sensorPoseAbs= robotPose + sensorPoseOnRobot;
-	CPose3DQuat sensorPoseAbs(UNINITIALIZED_QUATERNION);
-	CMatrixFixed<kftype, 7, 7> dsensorabs_dvehpose(UNINITIALIZED_MATRIX);
-	CMatrixFixed<kftype, 7, 7> dsensorabs_dsenrelpose(
-		UNINITIALIZED_MATRIX);	// Not actually used
+  // const CPose3DQuat  sensorPoseAbs= robotPose + sensorPoseOnRobot;
+  CPose3DQuat sensorPoseAbs(UNINITIALIZED_QUATERNION);
+  CMatrixFixed<kftype, 7, 7> dsensorabs_dvehpose(UNINITIALIZED_MATRIX);
+  CMatrixFixed<kftype, 7, 7> dsensorabs_dsenrelpose(UNINITIALIZED_MATRIX);  // Not actually used
 
-	CPose3DQuatPDF::jacobiansPoseComposition(
-		robotPose, sensorPoseOnRobot, dsensorabs_dvehpose,
-		dsensorabs_dsenrelpose, &sensorPoseAbs);
+  CPose3DQuatPDF::jacobiansPoseComposition(
+      robotPose, sensorPoseOnRobot, dsensorabs_dvehpose, dsensorabs_dsenrelpose, &sensorPoseAbs);
 
-	kftype hn_r = in_z[0];
-	kftype hn_y = in_z[1];
-	kftype hn_p = in_z[2];
+  kftype hn_r = in_z[0];
+  kftype hn_y = in_z[1];
+  kftype hn_p = in_z[2];
 
-	kftype chn_y = cos(hn_y);
-	kftype shn_y = sin(hn_y);
-	kftype chn_p = cos(hn_p);
-	kftype shn_p = sin(hn_p);
+  kftype chn_y = cos(hn_y);
+  kftype shn_y = sin(hn_y);
+  kftype chn_p = cos(hn_p);
+  kftype shn_p = sin(hn_p);
 
-	/* -------------------------------------------
-		syms H h_range h_yaw h_pitch real;
-		H=[ h_range ; h_yaw ; h_pitch ];
+  /* -------------------------------------------
+    syms H h_range h_yaw h_pitch real;
+    H=[ h_range ; h_yaw ; h_pitch ];
 
-		syms X xi_ yi_ zi_ real;
-		xi_ = h_range * cos(h_yaw) * cos(h_pitch);
-		yi_ = h_range * sin(h_yaw) * cos(h_pitch);
-		zi_ = -h_range * sin(h_pitch);
+    syms X xi_ yi_ zi_ real;
+    xi_ = h_range * cos(h_yaw) * cos(h_pitch);
+    yi_ = h_range * sin(h_yaw) * cos(h_pitch);
+    zi_ = -h_range * sin(h_pitch);
 
-		X=[xi_ yi_ zi_];
-		jacob_inv_mod=jacobian(X,H)
-	  ------------------------------------------- */
+    X=[xi_ yi_ zi_];
+    jacob_inv_mod=jacobian(X,H)
+  ------------------------------------------- */
 
-	// The new point, relative to the sensor:
-	const TPoint3D yn_rel_sensor(
-		hn_r * chn_y * chn_p, hn_r * shn_y * chn_p, -hn_r * shn_p);
+  // The new point, relative to the sensor:
+  const TPoint3D yn_rel_sensor(hn_r * chn_y * chn_p, hn_r * shn_y * chn_p, -hn_r * shn_p);
 
-	// The Jacobian of the 3D point in the coordinate system of the sensor:
-	/*
-		[ cos(h_pitch)*cos(h_yaw), -h_range*cos(h_pitch)*sin(h_yaw),
-	   -h_range*cos(h_yaw)*sin(h_pitch)]
-		[ cos(h_pitch)*sin(h_yaw),  h_range*cos(h_pitch)*cos(h_yaw),
-	   -h_range*sin(h_pitch)*sin(h_yaw)]
-		[           -sin(h_pitch),                                0,
-	   -h_range*cos(h_pitch)]
-	*/
-	const kftype values_dynlocal_dhn[] = {
-		chn_p * chn_y,
-		-hn_r * chn_p * shn_y,
-		-hn_r * chn_y * shn_p,
-		chn_p * shn_y,
-		hn_r * chn_p * chn_y,
-		-hn_r * shn_p * shn_y,
-		-shn_p,
-		0,
-		-hn_r * chn_p};
-	const KFMatrix_FxO dynlocal_dhn(values_dynlocal_dhn);
+  // The Jacobian of the 3D point in the coordinate system of the sensor:
+  /*
+    [ cos(h_pitch)*cos(h_yaw), -h_range*cos(h_pitch)*sin(h_yaw),
+   -h_range*cos(h_yaw)*sin(h_pitch)]
+    [ cos(h_pitch)*sin(h_yaw),  h_range*cos(h_pitch)*cos(h_yaw),
+   -h_range*sin(h_pitch)*sin(h_yaw)]
+    [           -sin(h_pitch),                                0,
+   -h_range*cos(h_pitch)]
+  */
+  const kftype values_dynlocal_dhn[] = {
+      chn_p * chn_y,
+      -hn_r * chn_p * shn_y,
+      -hn_r * chn_y * shn_p,
+      chn_p * shn_y,
+      hn_r * chn_p * chn_y,
+      -hn_r * shn_p * shn_y,
+      -shn_p,
+      0,
+      -hn_r * chn_p};
+  const KFMatrix_FxO dynlocal_dhn(values_dynlocal_dhn);
 
-	KFMatrix_FxF jacob_dyn_dynrelsensor(UNINITIALIZED_MATRIX);
-	KFMatrix_FxV jacob_dyn_dsensorabs(UNINITIALIZED_MATRIX);
+  KFMatrix_FxF jacob_dyn_dynrelsensor(UNINITIALIZED_MATRIX);
+  KFMatrix_FxV jacob_dyn_dsensorabs(UNINITIALIZED_MATRIX);
 
-	sensorPoseAbs.composePoint(
-		yn_rel_sensor.x, yn_rel_sensor.y,
-		yn_rel_sensor.z,  // yn rel. to the sensor
-		yn[0], yn[1], yn[2],  // yn in global coords
-		&jacob_dyn_dynrelsensor, &jacob_dyn_dsensorabs);
+  sensorPoseAbs.composePoint(
+      yn_rel_sensor.x, yn_rel_sensor.y,
+      yn_rel_sensor.z,      // yn rel. to the sensor
+      yn[0], yn[1], yn[2],  // yn in global coords
+      &jacob_dyn_dynrelsensor, &jacob_dyn_dsensorabs);
 
-	dyn_dhn = jacob_dyn_dynrelsensor * dynlocal_dhn;
+  dyn_dhn = jacob_dyn_dynrelsensor * dynlocal_dhn;
 
-	// dyn_dxv =
-	dyn_dxv = jacob_dyn_dsensorabs * dsensorabs_dvehpose;
+  // dyn_dxv =
+  dyn_dxv = jacob_dyn_dsensorabs * dsensorabs_dvehpose;
 
-	MRPT_END
+  MRPT_END
 }
 
 /** If applicable to the given problem, do here any special handling of adding a
@@ -932,400 +880,375 @@ void CRangeBearingKFSLAM::OnInverseObservationModel(
  * so data association can be done according to these indices.
  * \sa OnInverseObservationModel
  */
-void CRangeBearingKFSLAM::OnNewLandmarkAddedToMap(
-	size_t in_obsIdx, size_t in_idxNewFeat)
+void CRangeBearingKFSLAM::OnNewLandmarkAddedToMap(size_t in_obsIdx, size_t in_idxNewFeat)
 {
-	MRPT_START
+  MRPT_START
 
-	CObservationBearingRange::Ptr obs =
-		m_SF->getObservationByClass<CObservationBearingRange>();
-	ASSERTMSG_(
-		obs,
-		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange");
+  CObservationBearingRange::Ptr obs = m_SF->getObservationByClass<CObservationBearingRange>();
+  ASSERTMSG_(
+      obs,
+      "*ERROR*: This method requires an observation of type "
+      "CObservationBearingRange");
 
-	// ----------------------------------------------
-	// introduce in the lists of ID<->index in map:
-	// ----------------------------------------------
-	ASSERT_(in_obsIdx < obs->sensedData.size());
-	if (obs->sensedData[in_obsIdx].landmarkID >= 0)
-	{
-		// The sensor provides us a LM ID... use it:
-		m_IDs.insert(obs->sensedData[in_obsIdx].landmarkID, in_idxNewFeat);
-	}
-	else
-	{
-		// Features do not have IDs... use indices:
-		m_IDs.insert(in_idxNewFeat, in_idxNewFeat);
-	}
+  // ----------------------------------------------
+  // introduce in the lists of ID<->index in map:
+  // ----------------------------------------------
+  ASSERT_(in_obsIdx < obs->sensedData.size());
+  if (obs->sensedData[in_obsIdx].landmarkID >= 0)
+  {
+    // The sensor provides us a LM ID... use it:
+    m_IDs.insert(obs->sensedData[in_obsIdx].landmarkID, in_idxNewFeat);
+  }
+  else
+  {
+    // Features do not have IDs... use indices:
+    m_IDs.insert(in_idxNewFeat, in_idxNewFeat);
+  }
 
-	MRPT_END
+  MRPT_END
 }
 
 /*---------------------------------------------------------------
-						getAs3DObject
+            getAs3DObject
   ---------------------------------------------------------------*/
-void CRangeBearingKFSLAM::getAs3DObject(
-	mrpt::opengl::CSetOfObjects::Ptr& outObj) const
+void CRangeBearingKFSLAM::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 {
-	outObj->clear();
+  outObj->clear();
 
-	// ------------------------------------------------
-	//  Add the XYZ corner for the current area:
-	// ------------------------------------------------
-	outObj->insert(opengl::stock_objects::CornerXYZ());
+  // ------------------------------------------------
+  //  Add the XYZ corner for the current area:
+  // ------------------------------------------------
+  outObj->insert(opengl::stock_objects::CornerXYZ());
 
-	// 3D ellipsoid for robot pose:
-	CPointPDFGaussian pointGauss;
-	pointGauss.mean.x(m_xkk[0]);
-	pointGauss.mean.y(m_xkk[1]);
-	pointGauss.mean.z(m_xkk[2]);
-	pointGauss.cov = m_pkk.blockCopy<3, 3>(0, 0);
+  // 3D ellipsoid for robot pose:
+  CPointPDFGaussian pointGauss;
+  pointGauss.mean.x(m_xkk[0]);
+  pointGauss.mean.y(m_xkk[1]);
+  pointGauss.mean.z(m_xkk[2]);
+  pointGauss.cov = m_pkk.blockCopy<3, 3>(0, 0);
 
-	{
-		auto ellip = opengl::CEllipsoid3D::Create();
+  {
+    auto ellip = opengl::CEllipsoid3D::Create();
 
-		ellip->setPose(pointGauss.mean);
-		ellip->setCovMatrix(pointGauss.cov);
-		ellip->enableDrawSolid3D(false);
-		ellip->setQuantiles(options.quantiles_3D_representation);
-		ellip->set3DsegmentsCount(10);
-		ellip->setColor(1, 0, 0);
+    ellip->setPose(pointGauss.mean);
+    ellip->setCovMatrix(pointGauss.cov);
+    ellip->enableDrawSolid3D(false);
+    ellip->setQuantiles(options.quantiles_3D_representation);
+    ellip->set3DsegmentsCount(10);
+    ellip->setColor(1, 0, 0);
 
-		outObj->insert(ellip);
-	}
+    outObj->insert(ellip);
+  }
 
-	// 3D ellipsoids for landmarks:
-	const size_t nLMs = this->getNumberOfLandmarksInTheMap();
-	for (size_t i = 0; i < nLMs; i++)
-	{
-		pointGauss.mean.x(
-			m_xkk[get_vehicle_size() + get_feature_size() * i + 0]);
-		pointGauss.mean.y(
-			m_xkk[get_vehicle_size() + get_feature_size() * i + 1]);
-		pointGauss.mean.z(
-			m_xkk[get_vehicle_size() + get_feature_size() * i + 2]);
+  // 3D ellipsoids for landmarks:
+  const size_t nLMs = this->getNumberOfLandmarksInTheMap();
+  for (size_t i = 0; i < nLMs; i++)
+  {
+    pointGauss.mean.x(m_xkk[get_vehicle_size() + get_feature_size() * i + 0]);
+    pointGauss.mean.y(m_xkk[get_vehicle_size() + get_feature_size() * i + 1]);
+    pointGauss.mean.z(m_xkk[get_vehicle_size() + get_feature_size() * i + 2]);
 
-		pointGauss.cov =
-			m_pkk.blockCopy<get_feature_size(), get_feature_size()>(
-				get_vehicle_size() + get_feature_size() * i,
-				get_vehicle_size() + get_feature_size() * i);
+    pointGauss.cov = m_pkk.blockCopy<get_feature_size(), get_feature_size()>(
+        get_vehicle_size() + get_feature_size() * i, get_vehicle_size() + get_feature_size() * i);
 
-		auto ellip = opengl::CEllipsoid3D::Create();
+    auto ellip = opengl::CEllipsoid3D::Create();
 
-		ellip->setName(format("%u", static_cast<unsigned int>(i)));
-		ellip->enableShowName(true);
-		ellip->setPose(pointGauss.mean);
-		ellip->setCovMatrix(pointGauss.cov);
-		ellip->enableDrawSolid3D(false);
-		ellip->setQuantiles(options.quantiles_3D_representation);
-		ellip->set3DsegmentsCount(10);
+    ellip->setName(format("%u", static_cast<unsigned int>(i)));
+    ellip->enableShowName(true);
+    ellip->setPose(pointGauss.mean);
+    ellip->setCovMatrix(pointGauss.cov);
+    ellip->enableDrawSolid3D(false);
+    ellip->setQuantiles(options.quantiles_3D_representation);
+    ellip->set3DsegmentsCount(10);
 
-		ellip->setColor(0, 0, 1);
+    ellip->setColor(0, 0, 1);
 
-		// Set color depending on partitions?
-		if (options.doPartitioningExperiment)
-		{
-			// This is done for each landmark:
-			map<int, bool> belongToPartition;
-			const CSimpleMap* SFs =
-				&m_SFs;	 // mapPartitioner.getSequenceOfFrames();
+    // Set color depending on partitions?
+    if (options.doPartitioningExperiment)
+    {
+      // This is done for each landmark:
+      map<int, bool> belongToPartition;
+      const CSimpleMap* SFs = &m_SFs;  // mapPartitioner.getSequenceOfFrames();
 
-			for (size_t p = 0; p < m_lastPartitionSet.size(); p++)
-			{
-				for (size_t w = 0; w < m_lastPartitionSet[p].size(); w++)
-				{
-					// Check if landmark #i is in the SF of
-					// m_lastPartitionSet[p][w]:
-					CLandmark::TLandmarkID i_th_ID = m_IDs.inverse(i);
+      for (size_t p = 0; p < m_lastPartitionSet.size(); p++)
+      {
+        for (size_t w = 0; w < m_lastPartitionSet[p].size(); w++)
+        {
+          // Check if landmark #i is in the SF of
+          // m_lastPartitionSet[p][w]:
+          CLandmark::TLandmarkID i_th_ID = m_IDs.inverse(i);
 
-					// Look for the lm_ID in the SF:
-					const auto& [pose_i, SF_i, twist_t] =
-						SFs->get(m_lastPartitionSet[p][w]);
+          // Look for the lm_ID in the SF:
+          const auto& [pose_i, SF_i, twist_t] = SFs->get(m_lastPartitionSet[p][w]);
 
-					CObservationBearingRange::Ptr obs =
-						SF_i->getObservationByClass<CObservationBearingRange>();
+          CObservationBearingRange::Ptr obs =
+              SF_i->getObservationByClass<CObservationBearingRange>();
 
-					for (auto& o : obs->sensedData)
-					{
-						if (o.landmarkID == i_th_ID)
-						{
-							belongToPartition[p] = true;
-							break;
-						}
-					}  // end for o
-				}  // end for w
-			}  // end for p
+          for (auto& o : obs->sensedData)
+          {
+            if (o.landmarkID == i_th_ID)
+            {
+              belongToPartition[p] = true;
+              break;
+            }
+          }  // end for o
+        }    // end for w
+      }      // end for p
 
-			// Build label:
-			string strParts("[");
+      // Build label:
+      string strParts("[");
 
-			for (auto it = belongToPartition.begin();
-				 it != belongToPartition.end(); ++it)
-			{
-				if (it != belongToPartition.begin()) strParts += string(",");
-				strParts += format("%i", it->first);
-			}
+      for (auto it = belongToPartition.begin(); it != belongToPartition.end(); ++it)
+      {
+        if (it != belongToPartition.begin()) strParts += string(",");
+        strParts += format("%i", it->first);
+      }
 
-			ellip->setName(ellip->getName() + strParts + string("]"));
-		}
+      ellip->setName(ellip->getName() + strParts + string("]"));
+    }
 
-		outObj->insert(ellip);
-	}
+    outObj->insert(ellip);
+  }
 }
 
 /*---------------------------------------------------------------
-						getLastPartitionLandmarks
+            getLastPartitionLandmarks
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::getLastPartitionLandmarksAsIfFixedSubmaps(
-	size_t K, std::vector<std::vector<uint32_t>>& landmarksMembership)
+    size_t K, std::vector<std::vector<uint32_t>>& landmarksMembership)
 {
-	// temporary copy:
-	std::vector<std::vector<uint32_t>> tmpParts = m_lastPartitionSet;
+  // temporary copy:
+  std::vector<std::vector<uint32_t>> tmpParts = m_lastPartitionSet;
 
-	// Fake "m_lastPartitionSet":
+  // Fake "m_lastPartitionSet":
 
-	// Fixed partitions every K observations:
-	vector<std::vector<uint32_t>> partitions;
-	std::vector<uint32_t> tmpCluster;
+  // Fixed partitions every K observations:
+  vector<std::vector<uint32_t>> partitions;
+  std::vector<uint32_t> tmpCluster;
 
-	for (size_t i = 0; i < m_SFs.size(); i++)
-	{
-		tmpCluster.push_back(i);
-		if ((i % K) == 0)
-		{
-			partitions.push_back(tmpCluster);
-			tmpCluster.clear();
-			tmpCluster.push_back(
-				i);	 // This observation "i" is shared between both clusters
-		}
-	}
-	m_lastPartitionSet = partitions;
+  for (size_t i = 0; i < m_SFs.size(); i++)
+  {
+    tmpCluster.push_back(i);
+    if ((i % K) == 0)
+    {
+      partitions.push_back(tmpCluster);
+      tmpCluster.clear();
+      tmpCluster.push_back(i);  // This observation "i" is shared between both clusters
+    }
+  }
+  m_lastPartitionSet = partitions;
 
-	// Call the actual method:
-	getLastPartitionLandmarks(landmarksMembership);
+  // Call the actual method:
+  getLastPartitionLandmarks(landmarksMembership);
 
-	// Replace copy:
-	m_lastPartitionSet = tmpParts;	//-V519
+  // Replace copy:
+  m_lastPartitionSet = tmpParts;  //-V519
 }
 
 /*---------------------------------------------------------------
-						getLastPartitionLandmarks
+            getLastPartitionLandmarks
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::getLastPartitionLandmarks(
-	std::vector<std::vector<uint32_t>>& landmarksMembership) const
+    std::vector<std::vector<uint32_t>>& landmarksMembership) const
 {
-	landmarksMembership.clear();
+  landmarksMembership.clear();
 
-	// All the computation is made based on "m_lastPartitionSet"
+  // All the computation is made based on "m_lastPartitionSet"
 
-	if (!options.doPartitioningExperiment) return;
+  if (!options.doPartitioningExperiment) return;
 
-	const size_t nLMs = this->getNumberOfLandmarksInTheMap();
-	for (size_t i = 0; i < nLMs; i++)
-	{
-		map<int, bool> belongToPartition;
-		const CSimpleMap* SFs =
-			&m_SFs;	 // mapPartitioner.getSequenceOfFrames();
+  const size_t nLMs = this->getNumberOfLandmarksInTheMap();
+  for (size_t i = 0; i < nLMs; i++)
+  {
+    map<int, bool> belongToPartition;
+    const CSimpleMap* SFs = &m_SFs;  // mapPartitioner.getSequenceOfFrames();
 
-		for (size_t p = 0; p < m_lastPartitionSet.size(); p++)
-		{
-			for (size_t w = 0; w < m_lastPartitionSet[p].size(); w++)
-			{
-				// Check if landmark #i is in the SF of
-				// m_lastPartitionSet[p][w]:
-				CLandmark::TLandmarkID i_th_ID = m_IDs.inverse(i);
+    for (size_t p = 0; p < m_lastPartitionSet.size(); p++)
+    {
+      for (size_t w = 0; w < m_lastPartitionSet[p].size(); w++)
+      {
+        // Check if landmark #i is in the SF of
+        // m_lastPartitionSet[p][w]:
+        CLandmark::TLandmarkID i_th_ID = m_IDs.inverse(i);
 
-				// Look for the lm_ID in the SF:
-				const auto& [pose_i, SF_i, twist_t] =
-					SFs->get(m_lastPartitionSet[p][w]);
+        // Look for the lm_ID in the SF:
+        const auto& [pose_i, SF_i, twist_t] = SFs->get(m_lastPartitionSet[p][w]);
 
-				CObservationBearingRange::Ptr obs =
-					SF_i->getObservationByClass<CObservationBearingRange>();
+        CObservationBearingRange::Ptr obs = SF_i->getObservationByClass<CObservationBearingRange>();
 
-				for (auto& o : obs->sensedData)
-				{
-					if (o.landmarkID == i_th_ID)
-					{
-						belongToPartition[p] = true;
-						break;
-					}
-				}  // end for o
-			}  // end for w
-		}  // end for p
+        for (auto& o : obs->sensedData)
+        {
+          if (o.landmarkID == i_th_ID)
+          {
+            belongToPartition[p] = true;
+            break;
+          }
+        }  // end for o
+      }    // end for w
+    }      // end for p
 
-		// Build membership list:
-		std::vector<uint32_t> membershipOfThisLM;
+    // Build membership list:
+    std::vector<uint32_t> membershipOfThisLM;
 
-		for (auto& it : belongToPartition)
-			membershipOfThisLM.push_back(it.first);
+    for (auto& it : belongToPartition) membershipOfThisLM.push_back(it.first);
 
-		landmarksMembership.push_back(membershipOfThisLM);
-	}  // end for i
+    landmarksMembership.push_back(membershipOfThisLM);
+  }  // end for i
 }
 
 /*---------------------------------------------------------------
-			computeOffDiagonalBlocksApproximationError
+      computeOffDiagonalBlocksApproximationError
   ---------------------------------------------------------------*/
 double CRangeBearingKFSLAM::computeOffDiagonalBlocksApproximationError(
-	const std::vector<std::vector<uint32_t>>& landmarksMembership) const
+    const std::vector<std::vector<uint32_t>>& landmarksMembership) const
 {
-	MRPT_START
+  MRPT_START
 
-	// Compute the information matrix:
-	CMatrixDynamic<kftype> fullCov(m_pkk);
-	size_t i;
-	for (i = 0; i < get_vehicle_size(); i++)
-		fullCov(i, i) = max(fullCov(i, i), 1e-6);
+  // Compute the information matrix:
+  CMatrixDynamic<kftype> fullCov(m_pkk);
+  size_t i;
+  for (i = 0; i < get_vehicle_size(); i++) fullCov(i, i) = max(fullCov(i, i), 1e-6);
 
-	CMatrixDynamic<kftype> H(fullCov.inverse_LLt());
-	H.array().abs();  // Replace by absolute values:
+  CMatrixDynamic<kftype> H(fullCov.inverse_LLt());
+  H.array().abs();  // Replace by absolute values:
 
-	double sumOffBlocks = 0;
-	unsigned int nLMs = landmarksMembership.size();
+  double sumOffBlocks = 0;
+  unsigned int nLMs = landmarksMembership.size();
 
-	ASSERT_(
-		int(get_vehicle_size() + nLMs * get_feature_size()) == fullCov.cols());
+  ASSERT_(int(get_vehicle_size() + nLMs * get_feature_size()) == fullCov.cols());
 
-	for (i = 0; i < nLMs; i++)
-	{
-		for (size_t j = i + 1; j < nLMs; j++)
-		{
-			// Sum the cross cov. between LM(i) and LM(j)??
-			// --> Only if there is no common cluster:
-			if (0 ==
-				math::countCommonElements(
-					landmarksMembership[i], landmarksMembership[j]))
-			{
-				size_t col = get_vehicle_size() + i * get_feature_size();
-				size_t row = get_vehicle_size() + j * get_feature_size();
-				sumOffBlocks += 2 * H.block<2, 2>(row, col).sum();
-			}
-		}
-	}
+  for (i = 0; i < nLMs; i++)
+  {
+    for (size_t j = i + 1; j < nLMs; j++)
+    {
+      // Sum the cross cov. between LM(i) and LM(j)??
+      // --> Only if there is no common cluster:
+      if (0 == math::countCommonElements(landmarksMembership[i], landmarksMembership[j]))
+      {
+        size_t col = get_vehicle_size() + i * get_feature_size();
+        size_t row = get_vehicle_size() + j * get_feature_size();
+        sumOffBlocks += 2 * H.block<2, 2>(row, col).sum();
+      }
+    }
+  }
 
-	return sumOffBlocks /
-		H.asEigen()
-			.block(
-				get_vehicle_size(), get_vehicle_size(),
-				H.rows() - get_vehicle_size(),
-				H.cols() - get_vehicle_size())
-			.sum();	 // Starting (7,7)-end
-	MRPT_END
+  return sumOffBlocks / H.asEigen()
+                            .block(
+                                get_vehicle_size(), get_vehicle_size(),
+                                H.rows() - get_vehicle_size(),
+                                H.cols() - get_vehicle_size())
+                            .sum();  // Starting (7,7)-end
+  MRPT_END
 }
 
 /*---------------------------------------------------------------
-			  reconsiderPartitionsNow
+        reconsiderPartitionsNow
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::reconsiderPartitionsNow()
 {
-	// A different buffer for making this
-	// thread-safe some day...
-	vector<std::vector<uint32_t>> partitions;
-	mapPartitioner.updatePartitions(partitions);
-	m_lastPartitionSet = partitions;
+  // A different buffer for making this
+  // thread-safe some day...
+  vector<std::vector<uint32_t>> partitions;
+  mapPartitioner.updatePartitions(partitions);
+  m_lastPartitionSet = partitions;
 }
 
 /*---------------------------------------------------------------
-			  saveMapAndPathRepresentationAsMATLABFile
+        saveMapAndPathRepresentationAsMATLABFile
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::saveMapAndPath2DRepresentationAsMATLABFile(
-	const string& fil, float stdCount, const string& styleLandmarks,
-	const string& stylePath, const string& styleRobot) const
+    const string& fil,
+    float stdCount,
+    const string& styleLandmarks,
+    const string& stylePath,
+    const string& styleRobot) const
 {
-	FILE* f = os::fopen(fil.c_str(), "wt");
-	if (!f) return;
+  FILE* f = os::fopen(fil.c_str(), "wt");
+  if (!f) return;
 
-	CMatrixDouble cov(2, 2);
-	CVectorDouble mean(2);
+  CMatrixDouble cov(2, 2);
+  CVectorDouble mean(2);
 
-	// Header:
-	os::fprintf(
-		f,
-		"%%--------------------------------------------------------------------"
-		"\n");
-	os::fprintf(f, "%% File automatically generated using the MRPT method:\n");
-	os::fprintf(
-		f,
-		"%% "
-		"'CRangeBearingKFSLAM::saveMapAndPath2DRepresentationAsMATLABFile'\n");
-	os::fprintf(f, "%%\n");
-	os::fprintf(f, "%%                        ~ MRPT ~\n");
-	os::fprintf(
-		f, "%%  Jose Luis Blanco Claraco, University of Malaga @ 2008\n");
-	os::fprintf(f, "%%      https://www.mrpt.org/     \n");
-	os::fprintf(
-		f,
-		"%%--------------------------------------------------------------------"
-		"\n");
+  // Header:
+  os::fprintf(
+      f,
+      "%%--------------------------------------------------------------------"
+      "\n");
+  os::fprintf(f, "%% File automatically generated using the MRPT method:\n");
+  os::fprintf(
+      f,
+      "%% "
+      "'CRangeBearingKFSLAM::saveMapAndPath2DRepresentationAsMATLABFile'\n");
+  os::fprintf(f, "%%\n");
+  os::fprintf(f, "%%                        ~ MRPT ~\n");
+  os::fprintf(f, "%%  Jose Luis Blanco Claraco, University of Malaga @ 2008\n");
+  os::fprintf(f, "%%      https://www.mrpt.org/     \n");
+  os::fprintf(
+      f,
+      "%%--------------------------------------------------------------------"
+      "\n");
 
-	// Main code:
-	os::fprintf(f, "hold on;\n\n");
+  // Main code:
+  os::fprintf(f, "hold on;\n\n");
 
-	const size_t nLMs = this->getNumberOfLandmarksInTheMap();
+  const size_t nLMs = this->getNumberOfLandmarksInTheMap();
 
-	for (size_t i = 0; i < nLMs; i++)
-	{
-		size_t idx = get_vehicle_size() + i * get_feature_size();
+  for (size_t i = 0; i < nLMs; i++)
+  {
+    size_t idx = get_vehicle_size() + i * get_feature_size();
 
-		cov(0, 0) = m_pkk(idx + 0, idx + 0);
-		cov(1, 1) = m_pkk(idx + 1, idx + 1);
-		cov(0, 1) = cov(1, 0) = m_pkk(idx + 0, idx + 1);
+    cov(0, 0) = m_pkk(idx + 0, idx + 0);
+    cov(1, 1) = m_pkk(idx + 1, idx + 1);
+    cov(0, 1) = cov(1, 0) = m_pkk(idx + 0, idx + 1);
 
-		mean[0] = m_xkk[idx + 0];
-		mean[1] = m_xkk[idx + 1];
+    mean[0] = m_xkk[idx + 0];
+    mean[1] = m_xkk[idx + 1];
 
-		// Command to draw the 2D ellipse:
-		os::fprintf(
-			f, "%s",
-			math::MATLAB_plotCovariance2D(cov, mean, stdCount, styleLandmarks)
-				.c_str());
-	}
+    // Command to draw the 2D ellipse:
+    os::fprintf(
+        f, "%s", math::MATLAB_plotCovariance2D(cov, mean, stdCount, styleLandmarks).c_str());
+  }
 
-	// Now: the robot path:
-	// ------------------------------
-	if (m_SFs.size())
-	{
-		os::fprintf(f, "\nROB_PATH=[");
-		for (size_t i = 0; i < m_SFs.size(); i++)
-		{
-			const auto& kf = m_SFs.get(i);
-			const CPose3D p = kf.pose->getMeanVal();
+  // Now: the robot path:
+  // ------------------------------
+  if (m_SFs.size())
+  {
+    os::fprintf(f, "\nROB_PATH=[");
+    for (size_t i = 0; i < m_SFs.size(); i++)
+    {
+      const auto& kf = m_SFs.get(i);
+      const CPose3D p = kf.pose->getMeanVal();
 
-			os::fprintf(f, "%.04f %.04f", p.x(), p.y());
-			if (i < (m_SFs.size() - 1)) os::fprintf(f, ";");
-		}
-		os::fprintf(f, "];\n");
+      os::fprintf(f, "%.04f %.04f", p.x(), p.y());
+      if (i < (m_SFs.size() - 1)) os::fprintf(f, ";");
+    }
+    os::fprintf(f, "];\n");
 
-		os::fprintf(
-			f, "plot(ROB_PATH(:,1),ROB_PATH(:,2),'%s');\n", stylePath.c_str());
-	}
+    os::fprintf(f, "plot(ROB_PATH(:,1),ROB_PATH(:,2),'%s');\n", stylePath.c_str());
+  }
 
-	// The robot pose:
-	cov(0, 0) = m_pkk(0, 0);
-	cov(1, 1) = m_pkk(1, 1);
-	cov(0, 1) = cov(1, 0) = m_pkk(0, 1);
+  // The robot pose:
+  cov(0, 0) = m_pkk(0, 0);
+  cov(1, 1) = m_pkk(1, 1);
+  cov(0, 1) = cov(1, 0) = m_pkk(0, 1);
 
-	mean[0] = m_xkk[0];
-	mean[1] = m_xkk[1];
+  mean[0] = m_xkk[0];
+  mean[1] = m_xkk[1];
 
-	os::fprintf(
-		f, "%s",
-		math::MATLAB_plotCovariance2D(cov, mean, stdCount, styleRobot).c_str());
+  os::fprintf(f, "%s", math::MATLAB_plotCovariance2D(cov, mean, stdCount, styleRobot).c_str());
 
-	os::fprintf(f, "\naxis equal;\n");
-	os::fclose(f);
+  os::fprintf(f, "\naxis equal;\n");
+  os::fclose(f);
 }
 
 /** Computes A=A-B, which may need to be re-implemented depending on the
  * topology of the individual scalar components (eg, angles).
  */
-void CRangeBearingKFSLAM::OnSubstractObservationVectors(
-	KFArray_OBS& A, const KFArray_OBS& B) const
+void CRangeBearingKFSLAM::OnSubstractObservationVectors(KFArray_OBS& A, const KFArray_OBS& B) const
 {
-	A -= B;
-	mrpt::math::wrapToPiInPlace(A[1]);
-	mrpt::math::wrapToPiInPlace(A[2]);
+  A -= B;
+  mrpt::math::wrapToPiInPlace(A[1]);
+  mrpt::math::wrapToPiInPlace(A[2]);
 }
 
 /** Return the observation NOISE covariance matrix, that is, the model of the
@@ -1335,9 +1258,9 @@ void CRangeBearingKFSLAM::OnSubstractObservationVectors(
  */
 void CRangeBearingKFSLAM::OnGetObservationNoise(KFMatrix_OxO& out_R) const
 {
-	out_R(0, 0) = square(options.std_sensor_range);
-	out_R(1, 1) = square(options.std_sensor_yaw);
-	out_R(2, 2) = square(options.std_sensor_pitch);
+  out_R(0, 0) = square(options.std_sensor_range);
+  out_R(1, 1) = square(options.std_sensor_yaw);
+  out_R(2, 2) = square(options.std_sensor_pitch);
 }
 
 /** This will be called before OnGetObservationsAndDataAssociation to allow the
@@ -1356,44 +1279,39 @@ void CRangeBearingKFSLAM::OnGetObservationNoise(KFMatrix_OxO& out_R) const
  * \sa OnGetObservations, OnDataAssociation
  */
 void CRangeBearingKFSLAM::OnPreComputingPredictions(
-	const vector_KFArray_OBS& prediction_means,
-	std::vector<size_t>& out_LM_indices_to_predict) const
+    const vector_KFArray_OBS& prediction_means,
+    std::vector<size_t>& out_LM_indices_to_predict) const
 {
-	CObservationBearingRange::Ptr obs =
-		m_SF->getObservationByClass<CObservationBearingRange>();
-	ASSERTMSG_(
-		obs,
-		"*ERROR*: This method requires an observation of type "
-		"CObservationBearingRange");
+  CObservationBearingRange::Ptr obs = m_SF->getObservationByClass<CObservationBearingRange>();
+  ASSERTMSG_(
+      obs,
+      "*ERROR*: This method requires an observation of type "
+      "CObservationBearingRange");
 
 #define USE_HEURISTIC_PREDICTION
 
 #ifdef USE_HEURISTIC_PREDICTION
-	const double sensor_max_range = obs->maxSensorDistance;
-	const double fov_yaw = obs->fieldOfView_yaw;
-	const double fov_pitch = obs->fieldOfView_pitch;
+  const double sensor_max_range = obs->maxSensorDistance;
+  const double fov_yaw = obs->fieldOfView_yaw;
+  const double fov_pitch = obs->fieldOfView_pitch;
 
-	const double max_vehicle_loc_uncertainty =
-		4 * std::sqrt(m_pkk(0, 0) + m_pkk(1, 1) + m_pkk(2, 2));
+  const double max_vehicle_loc_uncertainty = 4 * std::sqrt(m_pkk(0, 0) + m_pkk(1, 1) + m_pkk(2, 2));
 #endif
 
-	out_LM_indices_to_predict.clear();
-	for (size_t i = 0; i < prediction_means.size(); i++)
-	{
+  out_LM_indices_to_predict.clear();
+  for (size_t i = 0; i < prediction_means.size(); i++)
+  {
 #ifndef USE_HEURISTIC_PREDICTION
-		out_LM_indices_to_predict.push_back(i);
+    out_LM_indices_to_predict.push_back(i);
 #else
-		// Heuristic: faster but doesn't work always!
-		if (prediction_means[i][0] <
-				(15 + sensor_max_range + max_vehicle_loc_uncertainty +
-				 4 * options.std_sensor_range) &&
-			fabs(prediction_means[i][1]) <
-				(30.0_deg + 0.5 * fov_yaw + 4 * options.std_sensor_yaw) &&
-			fabs(prediction_means[i][2]) <
-				(30.0_deg + 0.5 * fov_pitch + 4 * options.std_sensor_pitch))
-		{
-			out_LM_indices_to_predict.push_back(i);
-		}
+    // Heuristic: faster but doesn't work always!
+    if (prediction_means[i][0] <
+            (15 + sensor_max_range + max_vehicle_loc_uncertainty + 4 * options.std_sensor_range) &&
+        fabs(prediction_means[i][1]) < (30.0_deg + 0.5 * fov_yaw + 4 * options.std_sensor_yaw) &&
+        fabs(prediction_means[i][2]) < (30.0_deg + 0.5 * fov_pitch + 4 * options.std_sensor_pitch))
+    {
+      out_LM_indices_to_predict.push_back(i);
+    }
 #endif
-	}
+  }
 }

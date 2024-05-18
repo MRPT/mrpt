@@ -94,210 +94,210 @@ class WxSubsystem
 {
 #if MRPT_HAS_WXWIDGETS
 
+ public:
+  /** This method must be called in the destructor of the user class FROM THE
+   * MAIN THREAD, in order to wait for the shutdown of the wx thread if this
+   * was the last open window.
+   */
+  static void waitWxShutdownsIfNoWindows();
+
+  /** Will be set to true at runtime if it's not detected a running wxApp
+   * instance.
+   *  For console apps, we'll create a new thread and run wxEntry from there.
+   *  For GUI apps (MRPT-based Windows are a part of a user wxWidget apps),
+   * we must leave the control of
+   *   message dispatching to the current main loop, so we cannot create a
+   * different threads, making things a little different (hence this
+   * variable).
+   */
+  static bool isConsoleApp();
+
+  /** An auxiliary global object used just to launch a final request to the
+   * wxSubsystem for shutdown:
+   */
+  class CAuxWxSubsystemShutdowner
+  {
    public:
-	/** This method must be called in the destructor of the user class FROM THE
-	 * MAIN THREAD, in order to wait for the shutdown of the wx thread if this
-	 * was the last open window.
-	 */
-	static void waitWxShutdownsIfNoWindows();
+    CAuxWxSubsystemShutdowner();
+    ~CAuxWxSubsystemShutdowner();
+  };
 
-	/** Will be set to true at runtime if it's not detected a running wxApp
-	 * instance.
-	 *  For console apps, we'll create a new thread and run wxEntry from there.
-	 *  For GUI apps (MRPT-based Windows are a part of a user wxWidget apps),
-	 * we must leave the control of
-	 *   message dispatching to the current main loop, so we cannot create a
-	 * different threads, making things a little different (hence this
-	 * variable).
-	 */
-	static bool isConsoleApp();
+  static CAuxWxSubsystemShutdowner global_wxsubsystem_shutdown;
 
-	/** An auxiliary global object used just to launch a final request to the
-	 * wxSubsystem for shutdown:
-	 */
-	class CAuxWxSubsystemShutdowner
-	{
-	   public:
-		CAuxWxSubsystemShutdowner();
-		~CAuxWxSubsystemShutdowner();
-	};
+  /** The main frame of the wxWidgets application
+   */
+  class CWXMainFrame : public wxFrame
+  {
+    friend void WxSubsystem::waitWxShutdownsIfNoWindows();
 
-	static CAuxWxSubsystemShutdowner global_wxsubsystem_shutdown;
+   public:
+    CWXMainFrame(wxWindow* parent, wxWindowID id = -1);
+    ~CWXMainFrame() override;
 
-	/** The main frame of the wxWidgets application
-	 */
-	class CWXMainFrame : public wxFrame
-	{
-		friend void WxSubsystem::waitWxShutdownsIfNoWindows();
+    /** Atomically increments the number of windows created with the main
+     * frame as parent.
+     * \return The updated number of windows.
+     */
+    static int notifyWindowCreation();
 
-	   public:
-		CWXMainFrame(wxWindow* parent, wxWindowID id = -1);
-		~CWXMainFrame() override;
+    /** Atomically decrements the number of windows created with the main
+     * frame as parent.
+     * \return The updated number of windows (0 if the calling was the last
+     * one).
+     */
+    static int notifyWindowDestruction();
 
-		/** Atomically increments the number of windows created with the main
-		 * frame as parent.
-		 * \return The updated number of windows.
-		 */
-		static int notifyWindowCreation();
+    static volatile CWXMainFrame* oneInstance;
 
-		/** Atomically decrements the number of windows created with the main
-		 * frame as parent.
-		 * \return The updated number of windows (0 if the calling was the last
-		 * one).
-		 */
-		static int notifyWindowDestruction();
+   private:
+    wxTimer* m_theTimer;
 
-		static volatile CWXMainFrame* oneInstance;
+    void OnTimerProcessRequests(wxTimerEvent& event);
 
-	   private:
-		wxTimer* m_theTimer;
+    DECLARE_EVENT_TABLE()
 
-		void OnTimerProcessRequests(wxTimerEvent& event);
+  };  // end class CWXMainFrame
 
-		DECLARE_EVENT_TABLE()
+  struct TWxMainThreadData
+  {
+    /** The thread ID of wxMainThread, or 0 if it is not running. */
+    std::thread m_wxMainThreadId;
+    /** This is signaled when wxMainThread is ready. */
+    std::promise<void> m_semWxMainThreadReady;
+    std::promise<void> m_done;
+    /** The critical section for accessing "m_wxMainThreadId" */
+    std::mutex m_csWxMainThreadId;
+  };
 
-	};	// end class CWXMainFrame
+  static TWxMainThreadData& GetWxMainThreadInstance();
 
-	struct TWxMainThreadData
-	{
-		/** The thread ID of wxMainThread, or 0 if it is not running. */
-		std::thread m_wxMainThreadId;
-		/** This is signaled when wxMainThread is ready. */
-		std::promise<void> m_semWxMainThreadReady;
-		std::promise<void> m_done;
-		/** The critical section for accessing "m_wxMainThreadId" */
-		std::mutex m_csWxMainThreadId;
-	};
+  /**  This will be the "MAIN" of wxWidgets: It starts an application object
+   * and does not end until all the windows are closed.
+   *   Only one instance of this thread can be running at a given instant, no
+   * matter how many windows are open.
+   */
+  static void wxMainThread();
 
-	static TWxMainThreadData& GetWxMainThreadInstance();
+  /** The data structure for each inter-thread request:
+   */
+  struct TRequestToWxMainThread
+  {
+    TRequestToWxMainThread() = default;
 
-	/**  This will be the "MAIN" of wxWidgets: It starts an application object
-	 * and does not end until all the windows are closed.
-	 *   Only one instance of this thread can be running at a given instant, no
-	 * matter how many windows are open.
-	 */
-	static void wxMainThread();
+    /** Only one of source* can be non-nullptr, indicating the class that
+     * generated the request. */
+    mrpt::gui::CDisplayWindow* source2D{nullptr};
 
-	/** The data structure for each inter-thread request:
-	 */
-	struct TRequestToWxMainThread
-	{
-		TRequestToWxMainThread() = default;
+    /** Only one of source* can be non-nullptr, indicating the class that
+     * generated the request. */
+    mrpt::gui::CDisplayWindow3D* source3D{nullptr};
 
-		/** Only one of source* can be non-nullptr, indicating the class that
-		 * generated the request. */
-		mrpt::gui::CDisplayWindow* source2D{nullptr};
+    /** Only one of source* can be non-nullptr, indicating the class that
+     * generated the request. */
+    mrpt::gui::CDisplayWindowPlots* sourcePlots{nullptr};
 
-		/** Only one of source* can be non-nullptr, indicating the class that
-		 * generated the request. */
-		mrpt::gui::CDisplayWindow3D* source3D{nullptr};
+    /** Only one of source* can be non-nullptr, indicating the class that
+     * generated the request. */
+    bool sourceCameraSelectDialog{false};
 
-		/** Only one of source* can be non-nullptr, indicating the class that
-		 * generated the request. */
-		mrpt::gui::CDisplayWindowPlots* sourcePlots{nullptr};
+    /** Parameters, depending on OPCODE.
+     */
+    std::string str;
 
-		/** Only one of source* can be non-nullptr, indicating the class that
-		 * generated the request. */
-		bool sourceCameraSelectDialog{false};
+    /** Parameters, depending on OPCODE.
+     */
+    void *voidPtr{nullptr}, *voidPtr2{nullptr};
+    int x{400}, y{400};
+    bool boolVal{false};
+    mrpt::math::CVectorFloat vector_x, vector_y;
+    std::string plotName;
 
-		/** Parameters, depending on OPCODE.
-		 */
-		std::string str;
+    /** Valid codes are:
+     *  For CDisplayWindow:
+     *     - 200: Create a new 2D window, with caption "str" and initial
+     *size "x" & "y", and save the "wxFrame*" in the "void**" passed in
+     *voidPtr.
+     *     - 201: Updates the image shown in the window, from a "wxImage*"
+     *passed in voidPtr2. The wxImage object will be freed with delete
+     *after that. voidPtr must be a "wxFrame*", a "CWindowDialog*"
+     *actually.
+     *     - 202: Set position to x,y
+     *     - 203: Change size to x,y
+     *     - 204: Change title to "str"
+     *     - 299: Delete the window associated with this source object.
+     *
+     *  For CDisplayWindow3D:
+     *     - 300: Create a new 3D window, with caption "str" and initial
+     *size "x" & "y", and save the "wxFrame*" in the "void**" passed in
+     *voidPtr.
+     *     - 302: Set position to x,y
+     *     - 303: Change size to x,y
+     *     - 304: Change title to "str"
+     *		- 350: Force refresh
+     *		- [Removed in MRPT2] 360: Add a 2D text message:
+     *		- [Removed in MRPT2] 361: Clear all 2D text messages.
+     *		- [Removed in MRPT2] 362: Add a 2D text message (vector font)
+     *		- 370: Change min/max range: min=vector_x[0], max=vector_x[1]
+     *     - 399: Delete the window associated with this source object.
+     *
+     *  For CDisplayWindowPlots:
+     *     - 400: Create a new Plots window, with caption "str" and initial
+     *size "x" & "y",and save the "wxFrame*" in the "void**" passed in
+     *voidPtr.
+     *     - 402: Set position to x,y
+     *     - 403: Change size to x,y
+     *     - 404: Change title to "str"
+     *     - 499: Delete the window associated with this source object.
+     *		- 410: Depending on "boolVal", enable/disable the mouse-zoom &
+     *pan
+     *		- 411: Depending on "boolVal", enable/disable the aspect ratio
+     *fix
+     *		- 412: Zoom over a rectangle vectorx[0-1] & vectory[0-1]
+     *		- 413: Axis fit, with aspect ratio fix to boolVal.
+     *		- 414: Clear all plot objects.
+     *		- 420: Add/update a 2D line/points plot: x/y data=
+     *vector_x/vector_y, format string=str, plot name =plotName.
+     *		- 421: Add/update a 2D ellipse: format string=str, plot name
+     *=plotName, vector_x[0,1]:X/Y center, vector_x[2]:quantiles,
+     *vector_y[0,1,2]: Covariance matrix entries 00,11,01,
+     *boolVal=showName?
+     *		- 422: Add/update a bitmap: plot name =plotName,
+     *vector_x[0,1]:X/Y
+     *corner, vector_x[2,3]: X/Y widths, voidPtr2: pointer to a newly
+     *created wxImage with the bitmap.
+     *		- 440: Insert submenu in the popup menu. plotName=menu label,
+     *x=user-defined ID.
+     *		- 700: Shows a camera-pick-dialog and wait for user selection.
+     *"voidPtr" must point to a CSemaphore, which will be signaled twice
+     *(1st upon construction, 2nd upon dialog close); voidPtr2 must point
+     *to a "mrpt::gui::CPanelCameraSelection*" which will be filled with
+     *the selection (the panel must be deleted by the caller)
+     *
+     *		- 800: Executes `userFunction` in the GUI thread.
+     */
+    int OPCODE;
 
-		/** Parameters, depending on OPCODE.
-		 */
-		void *voidPtr{nullptr}, *voidPtr2{nullptr};
-		int x{400}, y{400};
-		bool boolVal{false};
-		mrpt::math::CVectorFloat vector_x, vector_y;
-		std::string plotName;
+    std::function<void(void)> userFunction;
+  };
 
-		/** Valid codes are:
-		 *  For CDisplayWindow:
-		 *     - 200: Create a new 2D window, with caption "str" and initial
-		 *size "x" & "y", and save the "wxFrame*" in the "void**" passed in
-		 *voidPtr.
-		 *     - 201: Updates the image shown in the window, from a "wxImage*"
-		 *passed in voidPtr2. The wxImage object will be freed with delete
-		 *after that. voidPtr must be a "wxFrame*", a "CWindowDialog*"
-		 *actually.
-		 *     - 202: Set position to x,y
-		 *     - 203: Change size to x,y
-		 *     - 204: Change title to "str"
-		 *     - 299: Delete the window associated with this source object.
-		 *
-		 *  For CDisplayWindow3D:
-		 *     - 300: Create a new 3D window, with caption "str" and initial
-		 *size "x" & "y", and save the "wxFrame*" in the "void**" passed in
-		 *voidPtr.
-		 *     - 302: Set position to x,y
-		 *     - 303: Change size to x,y
-		 *     - 304: Change title to "str"
-		 *		- 350: Force refresh
-		 *		- [Removed in MRPT2] 360: Add a 2D text message:
-		 *		- [Removed in MRPT2] 361: Clear all 2D text messages.
-		 *		- [Removed in MRPT2] 362: Add a 2D text message (vector font)
-		 *		- 370: Change min/max range: min=vector_x[0], max=vector_x[1]
-		 *     - 399: Delete the window associated with this source object.
-		 *
-		 *  For CDisplayWindowPlots:
-		 *     - 400: Create a new Plots window, with caption "str" and initial
-		 *size "x" & "y",and save the "wxFrame*" in the "void**" passed in
-		 *voidPtr.
-		 *     - 402: Set position to x,y
-		 *     - 403: Change size to x,y
-		 *     - 404: Change title to "str"
-		 *     - 499: Delete the window associated with this source object.
-		 *		- 410: Depending on "boolVal", enable/disable the mouse-zoom &
-		 *pan
-		 *		- 411: Depending on "boolVal", enable/disable the aspect ratio
-		 *fix
-		 *		- 412: Zoom over a rectangle vectorx[0-1] & vectory[0-1]
-		 *		- 413: Axis fit, with aspect ratio fix to boolVal.
-		 *		- 414: Clear all plot objects.
-		 *		- 420: Add/update a 2D line/points plot: x/y data=
-		 *vector_x/vector_y, format string=str, plot name =plotName.
-		 *		- 421: Add/update a 2D ellipse: format string=str, plot name
-		 *=plotName, vector_x[0,1]:X/Y center, vector_x[2]:quantiles,
-		 *vector_y[0,1,2]: Covariance matrix entries 00,11,01,
-		 *boolVal=showName?
-		 *		- 422: Add/update a bitmap: plot name =plotName,
-		 *vector_x[0,1]:X/Y
-		 *corner, vector_x[2,3]: X/Y widths, voidPtr2: pointer to a newly
-		 *created wxImage with the bitmap.
-		 *		- 440: Insert submenu in the popup menu. plotName=menu label,
-		 *x=user-defined ID.
-		 *		- 700: Shows a camera-pick-dialog and wait for user selection.
-		 *"voidPtr" must point to a CSemaphore, which will be signaled twice
-		 *(1st upon construction, 2nd upon dialog close); voidPtr2 must point
-		 *to a "mrpt::gui::CPanelCameraSelection*" which will be filled with
-		 *the selection (the panel must be deleted by the caller)
-		 *
-		 *		- 800: Executes `userFunction` in the GUI thread.
-		 */
-		int OPCODE;
+  /** Thread-safe method to return the next pending request, or nullptr if
+   * there is none (After usage, FREE the memory!)
+   */
+  static TRequestToWxMainThread* popPendingWxRequest();
 
-		std::function<void(void)> userFunction;
-	};
+  /** Thread-safe method to insert a new pending request (The memory must be
+   * dinamically allocated with "new T[1]", will be freed by receiver.)
+   */
+  static void pushPendingWxRequest(TRequestToWxMainThread* data);
 
-	/** Thread-safe method to return the next pending request, or nullptr if
-	 * there is none (After usage, FREE the memory!)
-	 */
-	static TRequestToWxMainThread* popPendingWxRequest();
+  /** Thread-safe method to create one single instance of the main wxWidgets
+   * thread: it will create the thread only if it is not running yet.
+   */
+  static bool createOneInstanceMainThread();
 
-	/** Thread-safe method to insert a new pending request (The memory must be
-	 * dinamically allocated with "new T[1]", will be freed by receiver.)
-	 */
-	static void pushPendingWxRequest(TRequestToWxMainThread* data);
-
-	/** Thread-safe method to create one single instance of the main wxWidgets
-	 * thread: it will create the thread only if it is not running yet.
-	 */
-	static bool createOneInstanceMainThread();
-
-	static wxBitmap getMRPTDefaultIcon();
+  static wxBitmap getMRPTDefaultIcon();
 #endif
-};	// End of class def.
+};  // End of class def.
 
 #if MRPT_HAS_WXWIDGETS
 
@@ -305,161 +305,164 @@ class WxSubsystem
  */
 class CWindowDialog : public wxFrame
 {
-   public:
-	/** A custom control to display the bitmap and avoid flicker
-	 */
-	class wxMRPTImageControl : public wxPanel
-	{
-	   protected:
-		std::unique_ptr<wxBitmap> m_img;
-		std::mutex m_img_cs;
-		CDisplayWindow* m_win2D = nullptr;
-
-	   public:
-		wxMRPTImageControl(
-			wxWindow* parent, wxWindowID winID, int x, int y, int width,
-			int height);
-		~wxMRPTImageControl() override;
-
-		wxPoint m_last_mouse_point, m_last_mouse_click;
-		// std::mutex	m_mouse_cs;
-
-		/** Assigns this image. This object has the ownship of the image and
-		 * will delete it when appropriate. */
-		void AssignImage(wxBitmap* img);
-		void GetBitmap(wxBitmap& bmp);
-
-		void OnPaint(wxPaintEvent& ev);
-		void OnMouseMove(wxMouseEvent& ev);
-		void OnMouseClick(wxMouseEvent& ev);
-		void OnChar(wxKeyEvent& ev);
-
-		void OnEraseBackground(wxEraseEvent& ev)
-		{ /* Do nothing */
-		}
-	};
+ public:
+  /** A custom control to display the bitmap and avoid flicker
+   */
+  class wxMRPTImageControl : public wxPanel
+  {
+   protected:
+    std::unique_ptr<wxBitmap> m_img;
+    std::mutex m_img_cs;
+    CDisplayWindow* m_win2D = nullptr;
 
    public:
-	CWindowDialog(
-		CDisplayWindow* win2D, WxSubsystem::CWXMainFrame* parent,
-		wxWindowID id = -1,
-		const std::string& caption = std::string("[MRPT-CDisplayWindow]"),
-		wxSize initialSize = wxDefaultSize);
-	~CWindowDialog() override;
+    wxMRPTImageControl(wxWindow* parent, wxWindowID winID, int x, int y, int width, int height);
+    ~wxMRPTImageControl() override;
 
-	CDisplayWindow* m_win2D = nullptr;
-	WxSubsystem::CWXMainFrame* m_mainFrame;
+    wxPoint m_last_mouse_point, m_last_mouse_click;
+    // std::mutex	m_mouse_cs;
 
-	// wxStaticBitmap      *m_image;
-	wxMRPTImageControl* m_image;
+    /** Assigns this image. This object has the ownship of the image and
+     * will delete it when appropriate. */
+    void AssignImage(wxBitmap* img);
+    void GetBitmap(wxBitmap& bmp);
 
-	static const long ID_IMAGE_BITMAP;
+    void OnPaint(wxPaintEvent& ev);
+    void OnMouseMove(wxMouseEvent& ev);
+    void OnMouseClick(wxMouseEvent& ev);
+    void OnChar(wxKeyEvent& ev);
 
-   private:
-	void OnClose(wxCloseEvent& event);
-	void OnMenuClose(wxCommandEvent& event);
-	void OnMenuAbout(wxCommandEvent& event);
-	void OnMenuSave(wxCommandEvent& event);
-	void OnChar(wxKeyEvent& event);
-	void OnKeyDown(wxKeyEvent& event);
-	void OnResize(wxSizeEvent& event);
-	void OnMouseDown(wxMouseEvent& event);
-	void OnMouseMove(wxMouseEvent& event);
+    void OnEraseBackground(wxEraseEvent& ev)
+    { /* Do nothing */
+    }
+  };
 
-	DECLARE_EVENT_TABLE()
-};	// end class CWindowDialog
+ public:
+  CWindowDialog(
+      CDisplayWindow* win2D,
+      WxSubsystem::CWXMainFrame* parent,
+      wxWindowID id = -1,
+      const std::string& caption = std::string("[MRPT-CDisplayWindow]"),
+      wxSize initialSize = wxDefaultSize);
+  ~CWindowDialog() override;
+
+  CDisplayWindow* m_win2D = nullptr;
+  WxSubsystem::CWXMainFrame* m_mainFrame;
+
+  // wxStaticBitmap      *m_image;
+  wxMRPTImageControl* m_image;
+
+  static const long ID_IMAGE_BITMAP;
+
+ private:
+  void OnClose(wxCloseEvent& event);
+  void OnMenuClose(wxCommandEvent& event);
+  void OnMenuAbout(wxCommandEvent& event);
+  void OnMenuSave(wxCommandEvent& event);
+  void OnChar(wxKeyEvent& event);
+  void OnKeyDown(wxKeyEvent& event);
+  void OnResize(wxSizeEvent& event);
+  void OnMouseDown(wxMouseEvent& event);
+  void OnMouseMove(wxMouseEvent& event);
+
+  DECLARE_EVENT_TABLE()
+};  // end class CWindowDialog
 
 class C3DWindowDialog : public wxFrame
 {
-	friend class gui::CMyGLCanvas_DisplayWindow3D;
+  friend class gui::CMyGLCanvas_DisplayWindow3D;
 
-   public:
-	C3DWindowDialog(
-		CDisplayWindow3D* win3D, WxSubsystem::CWXMainFrame* parent,
-		wxWindowID id = -1,
-		const std::string& caption = std::string("[MRPT-CDisplayWindow3D]"),
-		wxSize initialSize = wxDefaultSize);
-	~C3DWindowDialog() override;
+ public:
+  C3DWindowDialog(
+      CDisplayWindow3D* win3D,
+      WxSubsystem::CWXMainFrame* parent,
+      wxWindowID id = -1,
+      const std::string& caption = std::string("[MRPT-CDisplayWindow3D]"),
+      wxSize initialSize = wxDefaultSize);
+  ~C3DWindowDialog() override;
 
-	CDisplayWindow3D* m_win3D;
-	WxSubsystem::CWXMainFrame* m_mainFrame;
+  CDisplayWindow3D* m_win3D;
+  WxSubsystem::CWXMainFrame* m_mainFrame;
 
-	CMyGLCanvas_DisplayWindow3D* m_canvas;
+  CMyGLCanvas_DisplayWindow3D* m_canvas;
 
-   private:
-	void OnClose(wxCloseEvent& event);
-	void OnMenuClose(wxCommandEvent& event);
-	void OnMenuAbout(wxCommandEvent& event);
-	void OnChar(wxKeyEvent& event);
-	void OnResize(wxSizeEvent& event);
+ private:
+  void OnClose(wxCloseEvent& event);
+  void OnMenuClose(wxCommandEvent& event);
+  void OnMenuAbout(wxCommandEvent& event);
+  void OnChar(wxKeyEvent& event);
+  void OnResize(wxSizeEvent& event);
 
-	static const long ID_MENUITEM1;
-	static const long ID_MENUITEM2;
+  static const long ID_MENUITEM1;
+  static const long ID_MENUITEM2;
 
-	DECLARE_EVENT_TABLE()
+  DECLARE_EVENT_TABLE()
 };
 
 /** The wx dialog for gui::CDisplayWindowPlots
  */
 class CWindowDialogPlots : public wxFrame
 {
-   public:
-	CWindowDialogPlots(
-		CDisplayWindowPlots* winPlots, WxSubsystem::CWXMainFrame* parent,
-		wxWindowID id = -1,
-		const std::string& caption = std::string("[MRPT-CDisplayWindowPlots]"),
-		wxSize initialSize = wxDefaultSize);
-	~CWindowDialogPlots() override;
+ public:
+  CWindowDialogPlots(
+      CDisplayWindowPlots* winPlots,
+      WxSubsystem::CWXMainFrame* parent,
+      wxWindowID id = -1,
+      const std::string& caption = std::string("[MRPT-CDisplayWindowPlots]"),
+      wxSize initialSize = wxDefaultSize);
+  ~CWindowDialogPlots() override;
 
-	CDisplayWindowPlots* m_winPlots;
-	WxSubsystem::CWXMainFrame* m_mainFrame;
+  CDisplayWindowPlots* m_winPlots;
+  WxSubsystem::CWXMainFrame* m_mainFrame;
 
-	mpWindow* m_plot;
-	// wxChartPanel 			*m_chartPanel;
-	static const long ID_PLOT;
-	static const long ID_MENU_PRINT;
-	/** to know whether to insert a separator the first time. */
-	bool m_firstSubmenu;
-	/** wxIDs to user IDs for submenus. */
-	std::map<long, long> m_ID2ID;
-	/** In graph coords */
-	mrpt::math::TPoint2D m_curCursorPos;
-	/** In pixels */
-	wxPoint m_last_mouse_point;
+  mpWindow* m_plot;
+  // wxChartPanel 			*m_chartPanel;
+  static const long ID_PLOT;
+  static const long ID_MENU_PRINT;
+  /** to know whether to insert a separator the first time. */
+  bool m_firstSubmenu;
+  /** wxIDs to user IDs for submenus. */
+  std::map<long, long> m_ID2ID;
+  /** In graph coords */
+  mrpt::math::TPoint2D m_curCursorPos;
+  /** In pixels */
+  wxPoint m_last_mouse_point;
 
-	void OnMenuSelected(wxCommandEvent& ev);
-	void OnMouseMove(wxMouseEvent& event);
+  void OnMenuSelected(wxCommandEvent& ev);
+  void OnMouseMove(wxMouseEvent& event);
 
-	/** Redirected from CDisplayWindowPlots::plot
-	 */
-	void plot(
-		const mrpt::math::CVectorFloat& x, const mrpt::math::CVectorFloat& y,
-		const std::string& lineFormat, const std::string& plotName);
+  /** Redirected from CDisplayWindowPlots::plot
+   */
+  void plot(
+      const mrpt::math::CVectorFloat& x,
+      const mrpt::math::CVectorFloat& y,
+      const std::string& lineFormat,
+      const std::string& plotName);
 
-	/** Redirected from CDisplayWindowPlots::plotEllipse
-	 */
-	void plotEllipse(
-		const mrpt::math::CVectorFloat& x, const mrpt::math::CVectorFloat& y,
-		const std::string& lineFormat, const std::string& plotName,
-		bool showName = false);
+  /** Redirected from CDisplayWindowPlots::plotEllipse
+   */
+  void plotEllipse(
+      const mrpt::math::CVectorFloat& x,
+      const mrpt::math::CVectorFloat& y,
+      const std::string& lineFormat,
+      const std::string& plotName,
+      bool showName = false);
 
-	/** Redirected from CDisplayWindowPlots::image
-	 */
-	void image(
-		void* theWxImage, float x0, float y0, float w, float h,
-		const std::string& plotName);
+  /** Redirected from CDisplayWindowPlots::image
+   */
+  void image(void* theWxImage, float x0, float y0, float w, float h, const std::string& plotName);
 
-   private:
-	void OnClose(wxCloseEvent& event);
-	void OnMenuPrint(wxCommandEvent& event);
-	void OnMenuClose(wxCommandEvent& event);
-	void OnMenuAbout(wxCommandEvent& event);
-	void OnChar(wxKeyEvent& event);
-	void OnResize(wxSizeEvent& event);
-	void OnMouseDown(wxMouseEvent& event);
+ private:
+  void OnClose(wxCloseEvent& event);
+  void OnMenuPrint(wxCommandEvent& event);
+  void OnMenuClose(wxCommandEvent& event);
+  void OnMenuAbout(wxCommandEvent& event);
+  void OnChar(wxKeyEvent& event);
+  void OnResize(wxSizeEvent& event);
+  void OnMouseDown(wxMouseEvent& event);
 
-	DECLARE_EVENT_TABLE()
-};	// end class CWindowDialog
+  DECLARE_EVENT_TABLE()
+};  // end class CWindowDialog
 
 #endif
 

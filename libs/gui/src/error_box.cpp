@@ -17,40 +17,39 @@
 #include <QString>
 #else
 #include <iostream>
-#endif	// MRPT_HAS_Qt5
+#endif  // MRPT_HAS_Qt5
 #if MRPT_HAS_WXWIDGETS
 #include <mrpt/gui/WxUtils.h>
 #endif
 
-void mrpt::gui::tryCatch(
-	const std::function<void()>& tryPart, const std::string& catchMessage)
+void mrpt::gui::tryCatch(const std::function<void()>& tryPart, const std::string& catchMessage)
 {
-	try
-	{
-		tryPart();
-	}
-	catch (const std::exception& e)
-	{
-		showErrorMessage(catchMessage + e.what());
-	}
-	catch (...)
-	{
-		showErrorMessage("Untyped exception!");
-	}
+  try
+  {
+    tryPart();
+  }
+  catch (const std::exception& e)
+  {
+    showErrorMessage(catchMessage + e.what());
+  }
+  catch (...)
+  {
+    showErrorMessage("Untyped exception!");
+  }
 }
 
 void mrpt::gui::showErrorMessage(const std::string& str)
 {
-	const size_t maxLines = 7;
-	const std::string sErr = mrpt::system::firstNLines(str, maxLines);
+  const size_t maxLines = 7;
+  const std::string sErr = mrpt::system::firstNLines(str, maxLines);
 
 #if MRPT_HAS_Qt5
-	QErrorMessage msg;
-	msg.showMessage(QString::fromStdString(sErr));
-	msg.exec();
+  QErrorMessage msg;
+  msg.showMessage(QString::fromStdString(sErr));
+  msg.exec();
 #elif MRPT_HAS_WXWIDGETS
-	wxMessageBox(sErr.c_str(), _("Exception"));
+  wxMessageBox(sErr.c_str(), _("Exception"));
 #else
-	std::cerr << str << std::endl;
-#endif	// MRPT_HAS_Qt5
+  std::cerr << str << std::endl;
+#endif  // MRPT_HAS_Qt5
 }

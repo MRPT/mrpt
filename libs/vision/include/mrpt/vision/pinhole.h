@@ -44,11 +44,11 @@ namespace pinhole
  * \sa projectPoints_with_distortion, projectPoint_no_distortion
  */
 void projectPoints_no_distortion(
-	const std::vector<mrpt::math::TPoint3D>& in_points_3D,
-	const mrpt::poses::CPose3D& cameraPose,
-	const mrpt::math::CMatrixDouble33& intrinsicParams,
-	std::vector<mrpt::img::TPixelCoordf>& projectedPoints,
-	bool accept_points_behind = false);
+    const std::vector<mrpt::math::TPoint3D>& in_points_3D,
+    const mrpt::poses::CPose3D& cameraPose,
+    const mrpt::math::CMatrixDouble33& intrinsicParams,
+    std::vector<mrpt::img::TPixelCoordf>& projectedPoints,
+    bool accept_points_behind = false);
 
 /** Project a single 3D point with global coordinates P into a camera at pose F,
  *without distortion parameters.
@@ -61,32 +61,34 @@ void projectPoints_no_distortion(
  */
 template <bool INVERSE_CAM_POSE>
 inline mrpt::img::TPixelCoordf projectPoint_no_distortion(
-	const mrpt::img::TCamera& cam_params, const mrpt::poses::CPose3D& F,
-	const mrpt::math::TPoint3D& P)
+    const mrpt::img::TCamera& cam_params,
+    const mrpt::poses::CPose3D& F,
+    const mrpt::math::TPoint3D& P)
 {
-	double x, y, z;	 // wrt cam (local coords)
-	if (INVERSE_CAM_POSE) F.composePoint(P.x, P.y, P.z, x, y, z);
-	else
-		F.inverseComposePoint(P.x, P.y, P.z, x, y, z);
-	ASSERT_(z != 0);
-	// Pinhole model:
-	return mrpt::img::TPixelCoordf(
-		cam_params.cx() + cam_params.fx() * x / z,
-		cam_params.cy() + cam_params.fy() * y / z);
+  double x, y, z;  // wrt cam (local coords)
+  if (INVERSE_CAM_POSE)
+    F.composePoint(P.x, P.y, P.z, x, y, z);
+  else
+    F.inverseComposePoint(P.x, P.y, P.z, x, y, z);
+  ASSERT_(z != 0);
+  // Pinhole model:
+  return mrpt::img::TPixelCoordf(
+      cam_params.cx() + cam_params.fx() * x / z, cam_params.cy() + cam_params.fy() * y / z);
 }
 
 //! \overload
 template <typename POINT>
 inline void projectPoint_no_distortion(
-	const POINT& in_point_wrt_cam, const mrpt::img::TCamera& cam_params,
-	mrpt::img::TPixelCoordf& out_projectedPoints)
+    const POINT& in_point_wrt_cam,
+    const mrpt::img::TCamera& cam_params,
+    mrpt::img::TPixelCoordf& out_projectedPoints)
 {
-	ASSERT_(in_point_wrt_cam.z != 0);
-	// Pinhole model:
-	out_projectedPoints.x = cam_params.cx() +
-		cam_params.fx() * in_point_wrt_cam.x / in_point_wrt_cam.z;
-	out_projectedPoints.y = cam_params.cy() +
-		cam_params.fy() * in_point_wrt_cam.y / in_point_wrt_cam.z;
+  ASSERT_(in_point_wrt_cam.z != 0);
+  // Pinhole model:
+  out_projectedPoints.x =
+      cam_params.cx() + cam_params.fx() * in_point_wrt_cam.x / in_point_wrt_cam.z;
+  out_projectedPoints.y =
+      cam_params.cy() + cam_params.fy() * in_point_wrt_cam.y / in_point_wrt_cam.z;
 }
 
 /** Project a set of 3D points into a camera at an arbitrary 6D pose using its
@@ -112,12 +114,12 @@ inline void projectPoint_no_distortion(
  * \sa projectPoint_with_distortion, projectPoints_no_distortion
  */
 void projectPoints_with_distortion(
-	const std::vector<mrpt::math::TPoint3D>& in_points_3D,
-	const mrpt::poses::CPose3D& cameraPose,
-	const mrpt::math::CMatrixDouble33& intrinsicParams,
-	const std::vector<double>& distortionParams,
-	std::vector<mrpt::img::TPixelCoordf>& projectedPoints,
-	bool accept_points_behind = false);
+    const std::vector<mrpt::math::TPoint3D>& in_points_3D,
+    const mrpt::poses::CPose3D& cameraPose,
+    const mrpt::math::CMatrixDouble33& intrinsicParams,
+    const std::vector<double>& distortionParams,
+    std::vector<mrpt::img::TPixelCoordf>& projectedPoints,
+    bool accept_points_behind = false);
 
 /** Project one 3D point into a camera using its calibration matrix and
  * distortion parameters (radial and tangential distortions projection model)
@@ -137,18 +139,18 @@ void projectPoints_with_distortion(
  * \sa projectPoints_with_distortion
  */
 void projectPoint_with_distortion(
-	const mrpt::math::TPoint3D& in_point_wrt_cam,
-	const mrpt::img::TCamera& in_cam_params,
-	mrpt::img::TPixelCoordf& out_projectedPoints,
-	bool accept_points_behind = false);
+    const mrpt::math::TPoint3D& in_point_wrt_cam,
+    const mrpt::img::TCamera& in_cam_params,
+    mrpt::img::TPixelCoordf& out_projectedPoints,
+    bool accept_points_behind = false);
 
 //! \overload
 void projectPoints_with_distortion(
-	const std::vector<mrpt::math::TPoint3D>& P,
-	const mrpt::img::TCamera& params,
-	const mrpt::poses::CPose3DQuat& cameraPose,
-	std::vector<mrpt::img::TPixelCoordf>& pixels,
-	bool accept_points_behind = false);
+    const std::vector<mrpt::math::TPoint3D>& P,
+    const mrpt::img::TCamera& params,
+    const mrpt::poses::CPose3DQuat& cameraPose,
+    std::vector<mrpt::img::TPixelCoordf>& pixels,
+    bool accept_points_behind = false);
 
 /** Undistort a list of points given by their pixel coordinates, provided the
  * camera matrix and distortion coefficients.
@@ -163,10 +165,10 @@ void projectPoints_with_distortion(
  * \sa undistort_point
  */
 void undistort_points(
-	const std::vector<mrpt::img::TPixelCoordf>& srcDistortedPixels,
-	std::vector<mrpt::img::TPixelCoordf>& dstUndistortedPixels,
-	const mrpt::math::CMatrixDouble33& intrinsicParams,
-	const std::vector<double>& distortionParams);
+    const std::vector<mrpt::img::TPixelCoordf>& srcDistortedPixels,
+    std::vector<mrpt::img::TPixelCoordf>& dstUndistortedPixels,
+    const mrpt::math::CMatrixDouble33& intrinsicParams,
+    const std::vector<double>& distortionParams);
 
 /** Undistort a list of points given by their pixel coordinates, provided the
  * camera matrix and distortion coefficients.
@@ -178,17 +180,18 @@ void undistort_points(
  * \sa undistort_point
  */
 void undistort_points(
-	const std::vector<mrpt::img::TPixelCoordf>& srcDistortedPixels,
-	std::vector<mrpt::img::TPixelCoordf>& dstUndistortedPixels,
-	const mrpt::img::TCamera& cameraModel);
+    const std::vector<mrpt::img::TPixelCoordf>& srcDistortedPixels,
+    std::vector<mrpt::img::TPixelCoordf>& dstUndistortedPixels,
+    const mrpt::img::TCamera& cameraModel);
 
 /** Undistort one point given by its pixel coordinates and the camera
  * parameters.
  * \sa undistort_points
  */
 void undistort_point(
-	const mrpt::img::TPixelCoordf& inPt, mrpt::img::TPixelCoordf& outPt,
-	const mrpt::img::TCamera& cameraModel);
+    const mrpt::img::TPixelCoordf& inPt,
+    mrpt::img::TPixelCoordf& outPt,
+    const mrpt::img::TCamera& cameraModel);
 
 /** @} */  // end of grouping
 }  // namespace pinhole

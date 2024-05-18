@@ -21,134 +21,127 @@ namespace mrpt::poses
  */
 class CPointPDFGaussian : public CPointPDF
 {
-	DEFINE_SERIALIZABLE(CPointPDFGaussian, mrpt::poses)
-	DEFINE_SCHEMA_SERIALIZABLE()
+  DEFINE_SERIALIZABLE(CPointPDFGaussian, mrpt::poses)
+  DEFINE_SCHEMA_SERIALIZABLE()
 
-   public:
-	/** Default constructor
-	 */
-	CPointPDFGaussian();
+ public:
+  /** Default constructor
+   */
+  CPointPDFGaussian();
 
-	/** Constructor
-	 */
-	explicit CPointPDFGaussian(const CPoint3D& init_Mean);
+  /** Constructor
+   */
+  explicit CPointPDFGaussian(const CPoint3D& init_Mean);
 
-	/** Constructor
-	 */
-	CPointPDFGaussian(
-		const CPoint3D& init_Mean, const mrpt::math::CMatrixDouble33& init_Cov);
+  /** Constructor
+   */
+  CPointPDFGaussian(const CPoint3D& init_Mean, const mrpt::math::CMatrixDouble33& init_Cov);
 
-	/** The mean value */
-	CPoint3D mean;
-	/** The 3x3 covariance matrix */
-	mrpt::math::CMatrixDouble33 cov;
+  /** The mean value */
+  CPoint3D mean;
+  /** The 3x3 covariance matrix */
+  mrpt::math::CMatrixDouble33 cov;
 
-	void getMean(CPoint3D& p) const override;
-	std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override
-	{
-		return {cov, mean};
-	}
+  void getMean(CPoint3D& p) const override;
+  std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override { return {cov, mean}; }
 
-	/** Copy operator, translating if necesary (for example, between particles
-	 * and gaussian representations) */
-	void copyFrom(const CPointPDF& o) override;
+  /** Copy operator, translating if necesary (for example, between particles
+   * and gaussian representations) */
+  void copyFrom(const CPointPDF& o) override;
 
-	/** Save PDF's particles to a text file, containing the 2D pose in the first
-	 * line, then the covariance matrix in next 3 lines. */
-	bool saveToTextFile(const std::string& file) const override;
+  /** Save PDF's particles to a text file, containing the 2D pose in the first
+   * line, then the covariance matrix in next 3 lines. */
+  bool saveToTextFile(const std::string& file) const override;
 
-	/** this = p (+) this. This can be used to convert a PDF from local
-	 * coordinates to global, providing the point (newReferenceBase) from which
-	 *   "to project" the current pdf. Result PDF substituted the currently
-	 * stored one in the object. Both the mean value and the covariance matrix
-	 * are updated correctly. */
-	void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
+  /** this = p (+) this. This can be used to convert a PDF from local
+   * coordinates to global, providing the point (newReferenceBase) from which
+   *   "to project" the current pdf. Result PDF substituted the currently
+   * stored one in the object. Both the mean value and the covariance matrix
+   * are updated correctly. */
+  void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 
-	/** Bayesian fusion of two points gauss. distributions, then save the result
-	 *in this object.
-	 *  The process is as follows:<br>
-	 *		- (x1,S1): Mean and variance of the p1 distribution.
-	 *		- (x2,S2): Mean and variance of the p2 distribution.
-	 *		- (x,S): Mean and variance of the resulting distribution.
-	 *
-	 *    \f$ S = (S_1^{-1} + S_2^{-1})^{-1} \f$
-	 *    \f$ x = S ( S_1^{-1} x_1 + S_2^{-1} x_2 ) \f$
-	 */
-	void bayesianFusion(
-		const CPointPDFGaussian& p1, const CPointPDFGaussian& p2);
+  /** Bayesian fusion of two points gauss. distributions, then save the result
+   *in this object.
+   *  The process is as follows:<br>
+   *		- (x1,S1): Mean and variance of the p1 distribution.
+   *		- (x2,S2): Mean and variance of the p2 distribution.
+   *		- (x,S): Mean and variance of the resulting distribution.
+   *
+   *    \f$ S = (S_1^{-1} + S_2^{-1})^{-1} \f$
+   *    \f$ x = S ( S_1^{-1} x_1 + S_2^{-1} x_2 ) \f$
+   */
+  void bayesianFusion(const CPointPDFGaussian& p1, const CPointPDFGaussian& p2);
 
-	/** Computes the "correspondence likelihood" of this PDF with another one:
-	 * This is implemented as the integral from -inf to +inf of the product of
-	 * both PDF.
-	 * The resulting number is >=0.
-	 * \sa productIntegralNormalizedWith
-	 * \exception std::exception On errors like covariance matrix with null
-	 * determinant, etc...
-	 */
-	double productIntegralWith(const CPointPDFGaussian& p) const;
+  /** Computes the "correspondence likelihood" of this PDF with another one:
+   * This is implemented as the integral from -inf to +inf of the product of
+   * both PDF.
+   * The resulting number is >=0.
+   * \sa productIntegralNormalizedWith
+   * \exception std::exception On errors like covariance matrix with null
+   * determinant, etc...
+   */
+  double productIntegralWith(const CPointPDFGaussian& p) const;
 
-	/** Computes the "correspondence likelihood" of this PDF with another one:
-	 * This is implemented as the integral from -inf to +inf of the product of
-	 * both PDF.
-	 * The resulting number is >=0.
-	 * NOTE: This version ignores the "z" coordinates!!
-	 * \sa productIntegralNormalizedWith
-	 * \exception std::exception On errors like covariance matrix with null
-	 * determinant, etc...
-	 */
-	double productIntegralWith2D(const CPointPDFGaussian& p) const;
+  /** Computes the "correspondence likelihood" of this PDF with another one:
+   * This is implemented as the integral from -inf to +inf of the product of
+   * both PDF.
+   * The resulting number is >=0.
+   * NOTE: This version ignores the "z" coordinates!!
+   * \sa productIntegralNormalizedWith
+   * \exception std::exception On errors like covariance matrix with null
+   * determinant, etc...
+   */
+  double productIntegralWith2D(const CPointPDFGaussian& p) const;
 
-	/** Computes the "correspondence likelihood" of this PDF with another one:
-	 * This is implemented as the integral from -inf to +inf of the product of
-	 * both PDF.
-	 * The resulting number is in the range [0,1]
-	 *  Note that the resulting value is in fact
-	 *  \f[ exp( -\frac{1}{2} D^2 ) \f]
-	 *  , with \f$ D^2 \f$ being the square Mahalanobis distance between the
-	 * two pdfs.
-	 * \sa productIntegralWith
-	 * \exception std::exception On errors like covariance matrix with null
-	 * determinant, etc...
-	 */
-	double productIntegralNormalizedWith(const CPointPDFGaussian& p) const;
+  /** Computes the "correspondence likelihood" of this PDF with another one:
+   * This is implemented as the integral from -inf to +inf of the product of
+   * both PDF.
+   * The resulting number is in the range [0,1]
+   *  Note that the resulting value is in fact
+   *  \f[ exp( -\frac{1}{2} D^2 ) \f]
+   *  , with \f$ D^2 \f$ being the square Mahalanobis distance between the
+   * two pdfs.
+   * \sa productIntegralWith
+   * \exception std::exception On errors like covariance matrix with null
+   * determinant, etc...
+   */
+  double productIntegralNormalizedWith(const CPointPDFGaussian& p) const;
 
-	/** Computes the "correspondence likelihood" of this PDF with another one:
-	 * This is implemented as the integral from -inf to +inf of the product of
-	 * both PDF.
-	 * The resulting number is in the range [0,1]. This versions ignores the
-	 * "z" coordinate.
-	 *
-	 *  Note that the resulting value is in fact
-	 *  \f[ exp( -\frac{1}{2} D^2 ) \f]
-	 *  , with \f$ D^2 \f$ being the square Mahalanobis distance between the
-	 * two pdfs.
-	 * \sa productIntegralWith
-	 * \exception std::exception On errors like covariance matrix with null
-	 * determinant, etc...
-	 */
-	double productIntegralNormalizedWith2D(const CPointPDFGaussian& p) const;
+  /** Computes the "correspondence likelihood" of this PDF with another one:
+   * This is implemented as the integral from -inf to +inf of the product of
+   * both PDF.
+   * The resulting number is in the range [0,1]. This versions ignores the
+   * "z" coordinate.
+   *
+   *  Note that the resulting value is in fact
+   *  \f[ exp( -\frac{1}{2} D^2 ) \f]
+   *  , with \f$ D^2 \f$ being the square Mahalanobis distance between the
+   * two pdfs.
+   * \sa productIntegralWith
+   * \exception std::exception On errors like covariance matrix with null
+   * determinant, etc...
+   */
+  double productIntegralNormalizedWith2D(const CPointPDFGaussian& p) const;
 
-	/** Draw a sample from the pdf */
-	void drawSingleSample(CPoint3D& outSample) const override;
+  /** Draw a sample from the pdf */
+  void drawSingleSample(CPoint3D& outSample) const override;
 
-	/** Bayesian fusion of two point distributions (product of two
-	 * distributions->new distribution), then save the result in this object
-	 * (WARNING: See implementing classes to see classes that can and cannot be
-	 * mixtured!)
-	 * \param p1 The first distribution to fuse
-	 * \param p2 The second distribution to fuse
-	 * \param minMahalanobisDistToDrop If set to different of 0, the result of
-	 * very separate Gaussian modes (that will result in negligible components)
-	 * in SOGs will be dropped to reduce the number of modes in the output.
-	 */
-	void bayesianFusion(
-		const CPointPDF& p1, const CPointPDF& p2,
-		const double minMahalanobisDistToDrop = 0) override;
+  /** Bayesian fusion of two point distributions (product of two
+   * distributions->new distribution), then save the result in this object
+   * (WARNING: See implementing classes to see classes that can and cannot be
+   * mixtured!)
+   * \param p1 The first distribution to fuse
+   * \param p2 The second distribution to fuse
+   * \param minMahalanobisDistToDrop If set to different of 0, the result of
+   * very separate Gaussian modes (that will result in negligible components)
+   * in SOGs will be dropped to reduce the number of modes in the output.
+   */
+  void bayesianFusion(
+      const CPointPDF& p1, const CPointPDF& p2, const double minMahalanobisDistToDrop = 0) override;
 
-	/** Returns the Mahalanobis distance from this PDF to another PDF, that is,
-	 * it's evaluation at (0,0,0) */
-	double mahalanobisDistanceTo(
-		const CPointPDFGaussian& other, bool only_2D = false) const;
+  /** Returns the Mahalanobis distance from this PDF to another PDF, that is,
+   * it's evaluation at (0,0,0) */
+  double mahalanobisDistanceTo(const CPointPDFGaussian& other, bool only_2D = false) const;
 
-};	// End of class def.
+};  // End of class def.
 }  // namespace mrpt::poses

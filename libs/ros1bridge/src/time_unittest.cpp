@@ -19,10 +19,10 @@
 
 TEST(Time, basicTest)
 {
-	const auto org_time = mrpt::Clock::now();
+  const auto org_time = mrpt::Clock::now();
 
-	ros::Time ros_tim = mrpt::ros1bridge::toROS(org_time);
-	mrpt::system::TTimeStamp mrpt_tim = mrpt::ros1bridge::fromROS(ros_tim);
+  ros::Time ros_tim = mrpt::ros1bridge::toROS(org_time);
+  mrpt::system::TTimeStamp mrpt_tim = mrpt::ros1bridge::fromROS(ros_tim);
 
-	EXPECT_NEAR(mrpt::system::timeDifference(org_time, mrpt_tim), .0, 1e-6);
+  EXPECT_NEAR(mrpt::system::timeDifference(org_time, mrpt_tim), .0, 1e-6);
 }

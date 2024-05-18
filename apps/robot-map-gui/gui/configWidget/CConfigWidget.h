@@ -29,38 +29,38 @@ class CConfigWidget;
 /** This class contains configuration*/
 class CConfigWidget : public QWidget
 {
-	Q_OBJECT
-   public:
-	CConfigWidget(QWidget* parent = nullptr);
-	~CConfigWidget() override;
-	mrpt::maps::TSetOfMetricMapInitializers config();
-	void setConfig(const mrpt::maps::CMultiMetricMap::TListMaps& config);
+  Q_OBJECT
+ public:
+  CConfigWidget(QWidget* parent = nullptr);
+  ~CConfigWidget() override;
+  mrpt::maps::TSetOfMetricMapInitializers config();
+  void setConfig(const mrpt::maps::CMultiMetricMap::TListMaps& config);
 
-	const SGeneralSetting& generalSetting();
+  const SGeneralSetting& generalSetting();
 
-   signals:
-	void addedMap();
-	void removedMap();
-	void updatedConfig();
-	void openedConfig(const std::string& str);
-	void applyConfigurationForCurrentMaps();
+ signals:
+  void addedMap();
+  void removedMap();
+  void updatedConfig();
+  void openedConfig(const std::string& str);
+  void applyConfigurationForCurrentMaps();
 
-   public slots:
-	void openConfig();
+ public slots:
+  void openConfig();
 
-   private slots:
-	void saveConfig();
-	void addMap();
-	void removeMap();
-	void currentConfigChanged(QListWidgetItem* current, QListWidgetItem*);
+ private slots:
+  void saveConfig();
+  void addMap();
+  void removeMap();
+  void currentConfigChanged(QListWidgetItem* current, QListWidgetItem*);
 
-   private:
-	CBaseConfig* configByType(TypeOfConfig type) const;
-	void clearConfig(bool deleteGeneral = false);
+ private:
+  CBaseConfig* configByType(TypeOfConfig type) const;
+  void clearConfig(bool deleteGeneral = false);
 
-	CGeneralConfig* m_general;
-	std::unique_ptr<Ui::CConfigWidget> m_ui;
-	std::map<TypeOfConfig, std::vector<CBaseConfig*>> m_configs;
+  CGeneralConfig* m_general;
+  std::unique_ptr<Ui::CConfigWidget> m_ui;
+  std::map<TypeOfConfig, std::vector<CBaseConfig*>> m_configs;
 
-	int addWidget(TypeOfConfig type, CBaseConfig* w);
+  int addWidget(TypeOfConfig type, CBaseConfig* w);
 };

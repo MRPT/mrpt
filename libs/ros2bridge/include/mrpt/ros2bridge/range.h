@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-	APPLICATION: mrpt_ros bridge
-	FILE: range.h
-	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
+  APPLICATION: mrpt_ros bridge
+  FILE: range.h
+  AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
   ---------------------------------------------------------------*/
 
 #pragma once
@@ -31,8 +31,7 @@ namespace mrpt::ros2bridge
 /** Convert sensor_msgs/Range -> mrpt::obs::CObservationRange
  * \return true on sucessful conversion, false on any error.
  */
-bool fromROS(
-	const sensor_msgs::msg::Range& msg, mrpt::obs::CObservationRange& obj);
+bool fromROS(const sensor_msgs::msg::Range& msg, mrpt::obs::CObservationRange& obj);
 
 /** Convert mrpt::obs::CObservationRange -> sensor_msgs/Range
  *  The user must supply the "msg_header" field to be copied into the output
@@ -43,8 +42,9 @@ bool fromROS(
  * sucessful conversion, false on any error.
  */
 bool toROS(
-	const mrpt::obs::CObservationRange& obj,
-	const std_msgs::msg::Header& msg_header, sensor_msgs::msg::Range* msg);
+    const mrpt::obs::CObservationRange& obj,
+    const std_msgs::msg::Header& msg_header,
+    sensor_msgs::msg::Range* msg);
 
 /** @} */
 

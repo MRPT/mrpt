@@ -25,46 +25,45 @@ using namespace std;
 // ------------------------------------------------------
 void Test_EnumerateDevices()
 {
-	CInterfaceFTDI usbDevice;
+  CInterfaceFTDI usbDevice;
 
-	unsigned long nConectedDevices;
+  unsigned long nConectedDevices;
 
-	TFTDIDeviceList lstDevs;
+  TFTDIDeviceList lstDevs;
 
-	while (!mrpt::system::os::kbhit())
-	{
-		// Create list of devices:
-		usbDevice.ListAllDevices(lstDevs);
+  while (!mrpt::system::os::kbhit())
+  {
+    // Create list of devices:
+    usbDevice.ListAllDevices(lstDevs);
 
-		nConectedDevices = (unsigned long)lstDevs.size();
+    nConectedDevices = (unsigned long)lstDevs.size();
 
-		cout << "There are " << nConectedDevices << " USB devices - "
-			 << mrpt::system::dateTimeToString(mrpt::Clock::now()) << endl;
+    cout << "There are " << nConectedDevices << " USB devices - "
+         << mrpt::system::dateTimeToString(mrpt::Clock::now()) << endl;
 
-		for (size_t i = 0; i < nConectedDevices; i++)
-			cout << lstDevs[i] << endl;
+    for (size_t i = 0; i < nConectedDevices; i++) cout << lstDevs[i] << endl;
 
-		printf("\nPRESS ANY KEY TO END THE PROGRAM...\n\n");
-		cout.flush();
-		std::this_thread::sleep_for(500ms);
-	};
+    printf("\nPRESS ANY KEY TO END THE PROGRAM...\n\n");
+    cout.flush();
+    std::this_thread::sleep_for(500ms);
+  };
 }
 
 int main()
 {
-	try
-	{
-		Test_EnumerateDevices();
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
-		return -1;
-	}
-	catch (...)
-	{
-		printf("Another exception!!");
-		return -1;
-	}
+  try
+  {
+    Test_EnumerateDevices();
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    return -1;
+  }
+  catch (...)
+  {
+    printf("Another exception!!");
+    return -1;
+  }
 }
