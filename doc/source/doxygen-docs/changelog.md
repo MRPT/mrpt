@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.13.0: UNRELEASED
+# Version 2.13.0: Released May 19th, 2024
 - Changes in apps:
   - SceneViewer3D: it now automatically guesses the min/max clip planes from the scene bounding box.
   - rosbag2rawlog (ROS1): tolerate loss of some sensor observations if /tf has not been yet received instead of aborting conversion.
