@@ -40,15 +40,16 @@ namespace mrpt::vision
  */
 
 /** @name Bundle-Adjustment methods
-	@{ */
+  @{ */
 
 /** A functor type for BA methods \sa bundle_adj_full */
 using TBundleAdjustmentFeedbackFunctor = std::function<void(
-	const size_t cur_iter, const double cur_total_sq_error,
-	const size_t max_iters,
-	const mrpt::vision::TSequenceFeatureObservations& input_observations,
-	const mrpt::vision::TFramePosesVec& current_frame_estimate,
-	const mrpt::vision::TLandmarkLocationsVec& current_landmark_estimate)>;
+    const size_t cur_iter,
+    const double cur_total_sq_error,
+    const size_t max_iters,
+    const mrpt::vision::TSequenceFeatureObservations& input_observations,
+    const mrpt::vision::TFramePosesVec& current_frame_estimate,
+    const mrpt::vision::TLandmarkLocationsVec& current_landmark_estimate)>;
 
 /** Sparse Levenberg-Marquart solution to bundle adjustment - optimizes all the
  *camera frames & the landmark locations.
@@ -108,18 +109,18 @@ using TBundleAdjustmentFeedbackFunctor = std::function<void(
  * \ingroup bundle_adj
  */
 double bundle_adj_full(
-	const mrpt::vision::TSequenceFeatureObservations& observations,
-	const mrpt::img::TCamera& camera_params,
-	mrpt::vision::TFramePosesVec& frame_poses,
-	mrpt::vision::TLandmarkLocationsVec& landmark_points,
-	const mrpt::containers::yaml& extra_params = {},
-	const mrpt::vision::TBundleAdjustmentFeedbackFunctor user_feedback =
-		mrpt::vision::TBundleAdjustmentFeedbackFunctor());
+    const mrpt::vision::TSequenceFeatureObservations& observations,
+    const mrpt::img::TCamera& camera_params,
+    mrpt::vision::TFramePosesVec& frame_poses,
+    mrpt::vision::TLandmarkLocationsVec& landmark_points,
+    const mrpt::containers::yaml& extra_params = {},
+    const mrpt::vision::TBundleAdjustmentFeedbackFunctor user_feedback =
+        mrpt::vision::TBundleAdjustmentFeedbackFunctor());
 
 /** @} */
 
 /** @name Bundle-Adjustment Auxiliary methods
-	@{ */
+  @{ */
 
 /** Fills the frames & landmark points maps with an initial gross estimate from
  * the sequence \a observations, so they can be fed to bundle adjustment
@@ -128,17 +129,17 @@ double bundle_adj_full(
  * \ingroup bundle_adj
  */
 void ba_initial_estimate(
-	const mrpt::vision::TSequenceFeatureObservations& observations,
-	const mrpt::img::TCamera& camera_params,
-	mrpt::vision::TFramePosesVec& frame_poses,
-	mrpt::vision::TLandmarkLocationsVec& landmark_points);
+    const mrpt::vision::TSequenceFeatureObservations& observations,
+    const mrpt::img::TCamera& camera_params,
+    mrpt::vision::TFramePosesVec& frame_poses,
+    mrpt::vision::TLandmarkLocationsVec& landmark_points);
 
 //! \overload
 void ba_initial_estimate(
-	const mrpt::vision::TSequenceFeatureObservations& observations,
-	const mrpt::img::TCamera& camera_params,
-	mrpt::vision::TFramePosesMap& frame_poses,
-	mrpt::vision::TLandmarkLocationsMap& landmark_points);
+    const mrpt::vision::TSequenceFeatureObservations& observations,
+    const mrpt::img::TCamera& camera_params,
+    mrpt::vision::TFramePosesMap& frame_poses,
+    mrpt::vision::TLandmarkLocationsMap& landmark_points);
 
 /** Compute reprojection error vector (used from within Bundle Adjustment
  * methods, but can be used in general)
@@ -150,25 +151,27 @@ void ba_initial_estimate(
  * \ingroup bundle_adj
  */
 double reprojectionResiduals(
-	const mrpt::vision::TSequenceFeatureObservations& observations,
-	const mrpt::img::TCamera& camera_params,
-	const mrpt::vision::TFramePosesVec& frame_poses,
-	const mrpt::vision::TLandmarkLocationsVec& landmark_points,
-	std::vector<std::array<double, 2>>& out_residuals,
-	const bool frame_poses_are_inverse, const bool use_robust_kernel = true,
-	const double kernel_param = 3.0,
-	std::vector<double>* out_kernel_1st_deriv = nullptr);
+    const mrpt::vision::TSequenceFeatureObservations& observations,
+    const mrpt::img::TCamera& camera_params,
+    const mrpt::vision::TFramePosesVec& frame_poses,
+    const mrpt::vision::TLandmarkLocationsVec& landmark_points,
+    std::vector<std::array<double, 2>>& out_residuals,
+    const bool frame_poses_are_inverse,
+    const bool use_robust_kernel = true,
+    const double kernel_param = 3.0,
+    std::vector<double>* out_kernel_1st_deriv = nullptr);
 
 //! \overload
 double reprojectionResiduals(
-	const mrpt::vision::TSequenceFeatureObservations& observations,
-	const mrpt::img::TCamera& camera_params,
-	const mrpt::vision::TFramePosesMap& frame_poses,
-	const mrpt::vision::TLandmarkLocationsMap& landmark_points,
-	std::vector<std::array<double, 2>>& out_residuals,
-	const bool frame_poses_are_inverse, const bool use_robust_kernel = true,
-	const double kernel_param = 3.0,
-	std::vector<double>* out_kernel_1st_deriv = nullptr);
+    const mrpt::vision::TSequenceFeatureObservations& observations,
+    const mrpt::img::TCamera& camera_params,
+    const mrpt::vision::TFramePosesMap& frame_poses,
+    const mrpt::vision::TLandmarkLocationsMap& landmark_points,
+    std::vector<std::array<double, 2>>& out_residuals,
+    const bool frame_poses_are_inverse,
+    const bool use_robust_kernel = true,
+    const double kernel_param = 3.0,
+    std::vector<double>* out_kernel_1st_deriv = nullptr);
 
 /** For each pose in the vector \a frame_poses, adds a "delta" increment to the
  * manifold, with the "delta" given in the se(3) Lie algebra:
@@ -187,10 +190,12 @@ double reprojectionResiduals(
  * \ingroup bundle_adj
  */
 void add_se3_deltas_to_frames(
-	const mrpt::vision::TFramePosesVec& frame_poses,
-	const mrpt::math::CVectorDouble& delta, size_t delta_first_idx,
-	size_t delta_num_vals, mrpt::vision::TFramePosesVec& new_frame_poses,
-	size_t num_fix_frames);
+    const mrpt::vision::TFramePosesVec& frame_poses,
+    const mrpt::math::CVectorDouble& delta,
+    size_t delta_first_idx,
+    size_t delta_num_vals,
+    mrpt::vision::TFramePosesVec& new_frame_poses,
+    size_t num_fix_frames);
 
 /** For each pose in the vector \a frame_poses, adds a "delta" increment to the
  * manifold, with the "delta" given in the se(3) Lie algebra:
@@ -204,11 +209,12 @@ void add_se3_deltas_to_frames(
  * \ingroup bundle_adj
  */
 void add_3d_deltas_to_points(
-	const mrpt::vision::TLandmarkLocationsVec& landmark_points,
-	const mrpt::math::CVectorDouble& delta, size_t delta_first_idx,
-	size_t delta_num_vals,
-	mrpt::vision::TLandmarkLocationsVec& new_landmark_points,
-	size_t num_fix_points);
+    const mrpt::vision::TLandmarkLocationsVec& landmark_points,
+    const mrpt::math::CVectorDouble& delta,
+    size_t delta_first_idx,
+    size_t delta_num_vals,
+    mrpt::vision::TLandmarkLocationsVec& new_landmark_points,
+    size_t num_fix_points);
 
 /** @} */
 }  // namespace mrpt::vision

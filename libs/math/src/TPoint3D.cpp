@@ -28,44 +28,42 @@ TPoint3D_<T>::TPoint3D_(const TPoint2D_<T>& p) : TPoint3D_data<T>{p.x, p.y, 0}
 }
 
 template <typename T>
-TPoint3D_<T>::TPoint3D_(const TPose2D& p)
-	: TPoint3D_data<T>{static_cast<T>(p.x), static_cast<T>(p.y), 0}
+TPoint3D_<T>::TPoint3D_(const TPose2D& p) :
+    TPoint3D_data<T>{static_cast<T>(p.x), static_cast<T>(p.y), 0}
 {
 }
 
 template <typename T>
-TPoint3D_<T>::TPoint3D_(const TPose3D& p)
-	: TPoint3D_data<T>{
-		  static_cast<T>(p.x), static_cast<T>(p.y), static_cast<T>(p.z)}
+TPoint3D_<T>::TPoint3D_(const TPose3D& p) :
+    TPoint3D_data<T>{static_cast<T>(p.x), static_cast<T>(p.y), static_cast<T>(p.z)}
 {
 }
 
 template <typename T>
 bool TPoint3D_<T>::operator<(const TPoint3D_<T>& p) const
 {
-	if (this->x < p.x) return true;
-	else if (this->x > p.x)
-		return false;
-	else if (this->y < p.y)
-		return true;
-	else if (this->y > p.y)
-		return false;
-	else
-		return this->z < p.z;
+  if (this->x < p.x)
+    return true;
+  else if (this->x > p.x)
+    return false;
+  else if (this->y < p.y)
+    return true;
+  else if (this->y > p.y)
+    return false;
+  else
+    return this->z < p.z;
 }
 
 template <typename T>
 void TPoint3D_<T>::fromString(const std::string& s)
 {
-	mrpt::math::CMatrixDynamic<T> m;
-	if (!m.fromMatlabStringFormat(s))
-		THROW_EXCEPTION_FMT(
-			"Malformed expression in ::fromString, s=\"%s\"", s.c_str());
-	ASSERTMSG_(
-		m.rows() == 1 && m.cols() == 3, "Wrong size of vector in ::fromString");
-	this->x = m(0, 0);
-	this->y = m(0, 1);
-	this->z = m(0, 2);
+  mrpt::math::CMatrixDynamic<T> m;
+  if (!m.fromMatlabStringFormat(s))
+    THROW_EXCEPTION_FMT("Malformed expression in ::fromString, s=\"%s\"", s.c_str());
+  ASSERTMSG_(m.rows() == 1 && m.cols() == 3, "Wrong size of vector in ::fromString");
+  this->x = m(0, 0);
+  this->y = m(0, 1);
+  this->z = m(0, 2);
 }
 
 // Explicit instantiations:
@@ -73,25 +71,25 @@ template struct TPoint3D_<float>;
 template struct TPoint3D_<double>;
 
 mrpt::serialization::CArchive& operator>>(
-	mrpt::serialization::CArchive& in, mrpt::math::TPointXYZfRGBu8& p)
+    mrpt::serialization::CArchive& in, mrpt::math::TPointXYZfRGBu8& p)
 {
-	return in >> p.pt >> p.r >> p.g >> p.b;
+  return in >> p.pt >> p.r >> p.g >> p.b;
 }
 mrpt::serialization::CArchive& operator<<(
-	mrpt::serialization::CArchive& out, const mrpt::math::TPointXYZfRGBu8& p)
+    mrpt::serialization::CArchive& out, const mrpt::math::TPointXYZfRGBu8& p)
 {
-	return out << p.pt << p.r << p.g << p.b;
+  return out << p.pt << p.r << p.g << p.b;
 }
 
 mrpt::serialization::CArchive& operator>>(
-	mrpt::serialization::CArchive& in, mrpt::math::TPointXYZfRGBAu8& p)
+    mrpt::serialization::CArchive& in, mrpt::math::TPointXYZfRGBAu8& p)
 {
-	return in >> p.pt >> p.r >> p.g >> p.b >> p.a;
+  return in >> p.pt >> p.r >> p.g >> p.b >> p.a;
 }
 mrpt::serialization::CArchive& operator<<(
-	mrpt::serialization::CArchive& out, const mrpt::math::TPointXYZfRGBAu8& p)
+    mrpt::serialization::CArchive& out, const mrpt::math::TPointXYZfRGBAu8& p)
 {
-	return out << p.pt << p.r << p.g << p.b << p.a;
+  return out << p.pt << p.r << p.g << p.b << p.a;
 }
 
 }  // namespace mrpt::math

@@ -24,63 +24,62 @@ namespace mrpt::obs
  */
 class CObservationSkeleton : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationSkeleton, mrpt::obs)
+  DEFINE_SERIALIZABLE(CObservationSkeleton, mrpt::obs)
 
-   public:
-	/** Constructor.
-	 */
-	CObservationSkeleton()
-		: sensorPose(),
-		  head(),
-		  neck(),
-		  torso(),
-		  left_shoulder(),
-		  left_elbow(),
-		  left_hand(),
-		  left_hip(),
-		  left_knee(),
-		  left_foot(),
-		  right_shoulder(),
-		  right_elbow(),
-		  right_hand(),
-		  right_hip(),
-		  right_knee(),
-		  right_foot()
-	{
-	}
+ public:
+  /** Constructor.
+   */
+  CObservationSkeleton() :
+      sensorPose(),
+      head(),
+      neck(),
+      torso(),
+      left_shoulder(),
+      left_elbow(),
+      left_hand(),
+      left_hip(),
+      left_knee(),
+      left_foot(),
+      right_shoulder(),
+      right_elbow(),
+      right_hand(),
+      right_hip(),
+      right_knee(),
+      right_foot()
+  {
+  }
 
-	/** Destructor
-	 */
-	~CObservationSkeleton() override = default;
-	/** The pose of the sensor on the robot. */
-	mrpt::poses::CPose3D sensorPose;
+  /** Destructor
+   */
+  ~CObservationSkeleton() override = default;
+  /** The pose of the sensor on the robot. */
+  mrpt::poses::CPose3D sensorPose;
 
-	/** A generic joint for the skeleton observation */
-	struct TSkeletonJoint
-	{
-		/** Default constructor */
-		TSkeletonJoint() = default;
-		/** 3D position */
-		double x{.0}, y{.0}, z{.0};
-		/** Confidence value [0...1] */
-		double conf{.0};
-	};
+  /** A generic joint for the skeleton observation */
+  struct TSkeletonJoint
+  {
+    /** Default constructor */
+    TSkeletonJoint() = default;
+    /** 3D position */
+    double x{.0}, y{.0}, z{.0};
+    /** Confidence value [0...1] */
+    double conf{.0};
+  };
 
-	/** The skeleton joints (15)*/
-	TSkeletonJoint head, neck, torso, left_shoulder, left_elbow, left_hand,
-		left_hip, left_knee, left_foot, right_shoulder, right_elbow, right_hand,
-		right_hip, right_knee, right_foot;
+  /** The skeleton joints (15)*/
+  TSkeletonJoint head, neck, torso, left_shoulder, left_elbow, left_hand, left_hip, left_knee,
+      left_foot, right_shoulder, right_elbow, right_hand, right_hip, right_knee, right_foot;
 
-	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
-	{
-		out_sensorPose = sensorPose;
-	}
-	void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override
-	{
-		sensorPose = newSensorPose;
-	}
-	void getDescriptionAsText(std::ostream& o) const override;
+  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
+  {
+    out_sensorPose = sensorPose;
+  }
+  void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override
+  {
+    sensorPose = newSensorPose;
+  }
+  void getDescriptionAsText(std::ostream& o) const override;
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace mrpt::obs

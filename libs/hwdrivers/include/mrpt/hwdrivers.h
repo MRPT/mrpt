@@ -17,18 +17,15 @@
 
 #ifndef MRPT_NO_WARN_BIG_HDR
 MRPT_WARNING(
-	"Including <mrpt/hwdrivers.h> makes compilation much slower, consider "
-	"including only what you need (define MRPT_NO_WARN_BIG_HDR to disable this "
-	"warning)")
+    "Including <mrpt/hwdrivers.h> makes compilation much slower, consider "
+    "including only what you need (define MRPT_NO_WARN_BIG_HDR to disable this "
+    "warning)")
 #endif
 
 // All HWDRIVERS classes:
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
-#include <mrpt/hwdrivers/CBoardENoses.h>
-#include <mrpt/hwdrivers/CBoardSonars.h>
 #include <mrpt/hwdrivers/CCANBusReader.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
-#include <mrpt/hwdrivers/CDUO3DCamera.h>
 #include <mrpt/hwdrivers/CEnoseModular.h>
 #include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
@@ -55,12 +52,9 @@ MRPT_WARNING(
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
 #include <mrpt/hwdrivers/COpenNI2_RGBD360.h>
 #include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
-#include <mrpt/hwdrivers/CPtuDPerception.h>
 #include <mrpt/hwdrivers/CRaePID.h>
 #include <mrpt/hwdrivers/CRoboPeakLidar.h>
-#include <mrpt/hwdrivers/CRoboticHeadInterface.h>
 #include <mrpt/hwdrivers/CSICKTim561Eth_2050101.h>
-#include <mrpt/hwdrivers/CServoeNeck.h>
 #include <mrpt/hwdrivers/CSickLaserSerial.h>
 #include <mrpt/hwdrivers/CSickLaserUSB.h>
 #include <mrpt/hwdrivers/CSkeletonTracker.h>
@@ -68,6 +62,5 @@ MRPT_WARNING(
 #include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
 #include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
 #include <mrpt/hwdrivers/CTaoboticsIMU.h>
-#include <mrpt/hwdrivers/CTuMicos.h>
 #include <mrpt/hwdrivers/CVelodyneScanner.h>
 #include <mrpt/hwdrivers/CWirelessPower.h>

@@ -8,12 +8,12 @@
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-	APPLICATION: ICP-based SLAM
-	FILE: icp-slam_main.cpp
-	AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
+  APPLICATION: ICP-based SLAM
+  FILE: icp-slam_main.cpp
+  AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
-	See README.txt for instructions or
-		  https://www.mrpt.org/list-of-mrpt-apps/application-icp-slam
+  See README.txt for instructions or
+      https://www.mrpt.org/list-of-mrpt-apps/application-icp-slam
   ---------------------------------------------------------------*/
 
 #include <mrpt/apps/ICP_SLAM_App.h>
@@ -22,19 +22,19 @@
 
 int main(int argc, char** argv)
 {
-	try
-	{
-		mrpt::apps::ICP_SLAM_App_Rawlog app;
+  try
+  {
+    mrpt::apps::ICP_SLAM_App_Rawlog app;
 
-		app.initialize(argc, argv);
-		app.run();
+    app.initialize(argc, argv);
+    app.run();
 
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << mrpt::exception_to_str(e);
-		mrpt::system::pause();
-		return -1;
-	}
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << mrpt::exception_to_str(e);
+    mrpt::system::pause();
+    return -1;
+  }
 }

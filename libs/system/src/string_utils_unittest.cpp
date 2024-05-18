@@ -12,10 +12,10 @@
 
 TEST(string_utils, firstNLines)
 {
-	const std::string s = "1\n2\n3\n4\n";
+  const std::string s = "1\n2\n3\n4\n";
 
-	EXPECT_EQ(mrpt::system::firstNLines(s, 1), "1");
-	EXPECT_EQ(mrpt::system::firstNLines(s, 2), "1\n2");
-	EXPECT_EQ(mrpt::system::firstNLines(s, 3), "1\n2\n3");
-	EXPECT_EQ(mrpt::system::firstNLines(s, 10), s);
+  EXPECT_EQ(mrpt::system::firstNLines(s, 1), "1");
+  EXPECT_EQ(mrpt::system::firstNLines(s, 2), "1\n2");
+  EXPECT_EQ(mrpt::system::firstNLines(s, 3), "1\n2\n3");
+  EXPECT_EQ(mrpt::system::firstNLines(s, 10), s);
 }

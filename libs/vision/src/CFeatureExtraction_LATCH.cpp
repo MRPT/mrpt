@@ -8,21 +8,21 @@
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-	CLASS: CFeatureExtraction
-	FILE: CFeatureExtraction_LATCH.cpp
-	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
+  CLASS: CFeatureExtraction
+  FILE: CFeatureExtraction_LATCH.cpp
+  AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
   ---------------------------------------------------------------*/
 
-#include "vision-precomp.h"	 // Precompiled headers
+#include "vision-precomp.h"  // Precompiled headers
 //
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/system/os.h>
-#include <mrpt/vision/CFeatureExtraction.h>	 // important import
+#include <mrpt/vision/CFeatureExtraction.h>  // important import
 
 // Universal include for all versions of OpenCV
 #include <mrpt/3rdparty/do_opencv_includes.h>
 
-#ifdef HAVE_OPENCV_NONFREE	// MRPT_HAS_OPENCV_NONFREE
+#ifdef HAVE_OPENCV_NONFREE  // MRPT_HAS_OPENCV_NONFREE
 #include <opencv2/nonfree/nonfree.hpp>
 #endif
 
@@ -48,59 +48,56 @@ using namespace std;
 #endif
 
 void CFeatureExtraction::internal_computeLATCHDescriptors(
-	const mrpt::img::CImage& in_img, CFeatureList& in_features)
+    const mrpt::img::CImage& in_img, CFeatureList& in_features)
 {
-	MRPT_START
+  MRPT_START
 
-	mrpt::system::CTimeLoggerEntry tle(
-		profiler, "internal_computeLATCHDescriptors");
+  mrpt::system::CTimeLoggerEntry tle(profiler, "internal_computeLATCHDescriptors");
 
 #if (!HAVE_OPENCV_WITH_LATCH)
-	THROW_EXCEPTION(
-		"This function requires OpenCV modules: xfeatures2d,line_descriptor");
+  THROW_EXCEPTION("This function requires OpenCV modules: xfeatures2d,line_descriptor");
 #else
-	using namespace cv;
+  using namespace cv;
 
-	if (in_features.empty()) return;
+  if (in_features.empty()) return;
 
-	const size_t n_feats = in_features.size();
-	// Make sure we operate on a gray-scale version of the image:
-	const CImage inImg_gray(in_img, FAST_REF_OR_CONVERT_TO_GRAY);
+  const size_t n_feats = in_features.size();
+  // Make sure we operate on a gray-scale version of the image:
+  const CImage inImg_gray(in_img, FAST_REF_OR_CONVERT_TO_GRAY);
 
-	// convert from CFeatureList to vector<KeyPoint>
-	vector<KeyPoint> cv_feats(n_feats);
-	for (size_t k = 0; k < n_feats; ++k)
-	{
-		KeyPoint& kp = cv_feats[k];
-		kp.pt.x = in_features[k].keypoint.pt.x;
-		kp.pt.y = in_features[k].keypoint.pt.y;
-		kp.angle = in_features[k].orientation;
-		kp.size = in_features[k].keypoint.octave;  // ?
-	}  // end-for
+  // convert from CFeatureList to vector<KeyPoint>
+  vector<KeyPoint> cv_feats(n_feats);
+  for (size_t k = 0; k < n_feats; ++k)
+  {
+    KeyPoint& kp = cv_feats[k];
+    kp.pt.x = in_features[k].keypoint.pt.x;
+    kp.pt.y = in_features[k].keypoint.pt.y;
+    kp.angle = in_features[k].orientation;
+    kp.size = in_features[k].keypoint.octave;  // ?
+  }                                            // end-for
 
-	const Mat& cvImg = inImg_gray.asCvMatRef();
-	Mat cv_descs;  // OpenCV descriptor output
+  const Mat& cvImg = inImg_gray.asCvMatRef();
+  Mat cv_descs;  // OpenCV descriptor output
 
-	Ptr<xfeatures2d::LATCH> latch = xfeatures2d::LATCH::create(
-		options.LATCHOptions.bytes, options.LATCHOptions.rotationInvariance,
-		options.LATCHOptions.half_ssd_size);
-	latch->compute(cvImg, cv_feats, cv_descs);
+  Ptr<xfeatures2d::LATCH> latch = xfeatures2d::LATCH::create(
+      options.LATCHOptions.bytes, options.LATCHOptions.rotationInvariance,
+      options.LATCHOptions.half_ssd_size);
+  latch->compute(cvImg, cv_feats, cv_descs);
 
-	// -----------------------------------------------------------------
-	// MRPT Wrapping
-	// -----------------------------------------------------------------
-	int i = 0;
-	for (auto& ft : in_features)
-	{
-		// Get the LATCH descriptor
-		ft.descriptors.LATCH.emplace();
-		ft.descriptors.LATCH->resize(cv_descs.cols);
-		for (int m = 0; m < cv_descs.cols; ++m)
-			(*ft.descriptors.LATCH)[m] = cv_descs.at<int>(i, m);
+  // -----------------------------------------------------------------
+  // MRPT Wrapping
+  // -----------------------------------------------------------------
+  int i = 0;
+  for (auto& ft : in_features)
+  {
+    // Get the LATCH descriptor
+    ft.descriptors.LATCH.emplace();
+    ft.descriptors.LATCH->resize(cv_descs.cols);
+    for (int m = 0; m < cv_descs.cols; ++m) (*ft.descriptors.LATCH)[m] = cv_descs.at<int>(i, m);
 
-		i++;
-	}
+    i++;
+  }
 
 #endif
-	MRPT_END
+  MRPT_END
 }  // end internal_computeLatchDescriptors

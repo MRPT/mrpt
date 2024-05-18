@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"	// Precompiled headers
+#include "poses-precomp.h"  // Precompiled headers
 //
 #include <mrpt/poses/CPoint.h>
 #include <mrpt/poses/CPoint2D.h>
@@ -20,27 +20,25 @@ using namespace mrpt::poses;
 template <class DERIVEDCLASS, std::size_t DIM>
 void CPoint<DERIVEDCLASS, DIM>::fromString(const std::string& s)
 {
-	mrpt::math::CMatrixDouble m;
-	if (!m.fromMatlabStringFormat(s))
-		THROW_EXCEPTION_FMT(
-			"Malformed expression in ::fromString, s=\"%s\"", s.c_str());
-	ASSERT_EQUAL_(m.rows(), 1);
-	ASSERT_EQUAL_(m.cols(), DERIVEDCLASS::static_size);
-	for (int i = 0; i < DERIVEDCLASS::static_size; i++)
-		derived().m_coords[i] = m(0, i);
+  mrpt::math::CMatrixDouble m;
+  if (!m.fromMatlabStringFormat(s))
+    THROW_EXCEPTION_FMT("Malformed expression in ::fromString, s=\"%s\"", s.c_str());
+  ASSERT_EQUAL_(m.rows(), 1);
+  ASSERT_EQUAL_(m.cols(), DERIVEDCLASS::static_size);
+  for (int i = 0; i < DERIVEDCLASS::static_size; i++) derived().m_coords[i] = m(0, i);
 }
 
 template <class DERIVEDCLASS, std::size_t DIM>
 std::string CPoint<DERIVEDCLASS, DIM>::asString() const
 {
-	return (!DERIVEDCLASS::is3DPoseOrPoint())
-		? mrpt::format(
-			  "[%f %f]", static_cast<const DERIVEDCLASS*>(this)->x(),
-			  static_cast<const DERIVEDCLASS*>(this)->y())
-		: mrpt::format(
-			  "[%f %f %f]", static_cast<const DERIVEDCLASS*>(this)->x(),
-			  static_cast<const DERIVEDCLASS*>(this)->y(),
-			  static_cast<const DERIVEDCLASS*>(this)->m_coords[2]);
+  return (!DERIVEDCLASS::is3DPoseOrPoint())
+             ? mrpt::format(
+                   "[%f %f]", static_cast<const DERIVEDCLASS*>(this)->x(),
+                   static_cast<const DERIVEDCLASS*>(this)->y())
+             : mrpt::format(
+                   "[%f %f %f]", static_cast<const DERIVEDCLASS*>(this)->x(),
+                   static_cast<const DERIVEDCLASS*>(this)->y(),
+                   static_cast<const DERIVEDCLASS*>(this)->m_coords[2]);
 }
 
 namespace mrpt::poses

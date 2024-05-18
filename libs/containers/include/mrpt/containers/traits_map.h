@@ -17,22 +17,22 @@ namespace mrpt::containers
 
 /** @name Trait helper classes for templatized selection of a std::map
    implementation
-	@{ */
+  @{ */
 
 /**  Traits for using a std::map<> (sparse representation) \sa
  * map_traits_map_as_vector */
 struct map_traits_stdmap
 {
-	template <class KEY, class VALUE>
-	using map = std::map<KEY, VALUE>;
+  template <class KEY, class VALUE>
+  using map = std::map<KEY, VALUE>;
 };
 
 /**  Traits for using a mrpt::containers::map_as_vector<> (dense, fastest
  * representation) \sa map_traits_stdmap  */
 struct map_traits_map_as_vector
 {
-	template <class KEY, class VALUE>
-	using map = mrpt::containers::map_as_vector<KEY, VALUE>;
+  template <class KEY, class VALUE>
+  using map = mrpt::containers::map_as_vector<KEY, VALUE>;
 };
 
 /** @} */

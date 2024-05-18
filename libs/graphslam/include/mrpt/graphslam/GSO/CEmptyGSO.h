@@ -21,28 +21,28 @@ namespace mrpt::graphslam::optimizers
  * specific registration procedure
  */
 template <class GRAPH_T = typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CEmptyGSO
-	: public mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_T>
+class CEmptyGSO : public mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_T>
 {
-   public:
-	using constraint_t = typename GRAPH_T::constraint_t;
+ public:
+  using constraint_t = typename GRAPH_T::constraint_t;
 
-	CEmptyGSO() = default;
-	~CEmptyGSO() = default;
+  CEmptyGSO() = default;
+  ~CEmptyGSO() = default;
 
-	bool updateState(
-		mrpt::obs::CActionCollection::Ptr action,
-		mrpt::obs::CSensoryFrame::Ptr observations,
-		mrpt::obs::CObservation::Ptr observation)
-	{
-		return true;
-	}
+  bool updateState(
+      mrpt::obs::CActionCollection::Ptr action,
+      mrpt::obs::CSensoryFrame::Ptr observations,
+      mrpt::obs::CObservation::Ptr observation)
+  {
+    return true;
+  }
 
-   private:
-	void registerNewEdge(
-		const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
-		const constraint_t& rel_edge)
-	{
-	}
+ private:
+  void registerNewEdge(
+      const mrpt::graphs::TNodeID& from,
+      const mrpt::graphs::TNodeID& to,
+      const constraint_t& rel_edge)
+  {
+  }
 };
 }  // namespace mrpt::graphslam::optimizers

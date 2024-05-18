@@ -30,124 +30,127 @@ std::string ntrip_pass = mrpt::get_env<std::string>("NTRIP_PASS");
 // ------------------------------------------------------
 void TestNTRIP()
 {
-	const string server = "www.euref-ip.net";
-	const int server_port = 2101;
+  const string server = "www.euref-ip.net";
+  const int server_port = 2101;
 
-	CNTRIPClient::TListMountPoints lst;
-	string errMsg;
+  CNTRIPClient::TListMountPoints lst;
+  string errMsg;
 
-	bool ret = CNTRIPClient::retrieveListOfMountpoints(
-		lst, errMsg, server, server_port);
+  bool ret = CNTRIPClient::retrieveListOfMountpoints(lst, errMsg, server, server_port);
 
-	if (!ret)
-	{
-		cout << "Error: " << errMsg << endl;
-		return;
-	}
+  if (!ret)
+  {
+    cout << "Error: " << errMsg << endl;
+    return;
+  }
 
-	if (lst.empty())
-	{
-		cout << "Zero streams listed in caster...?" << endl;
-		return;
-	}
+  if (lst.empty())
+  {
+    cout << "Zero streams listed in caster...?" << endl;
+    return;
+  }
 
-	// List:
-	// -----------------------------------
-	for (CNTRIPClient::TListMountPoints::const_iterator it = lst.begin();
-		 it != lst.end(); it++)
-	{
-		const CNTRIPClient::TMountPoint& m = *it;
-		cout << "MOUNT: " << m.mountpoint_name
-			 << "  | COUNTRY: " << m.country_code
-			 << "  | NMEA?: " << m.needs_nmea << "  | FORMAT: " << m.format
-			 << " (" << m.id << ") " << m.extra_info << endl;
-	}
+  // List:
+  // -----------------------------------
+  for (CNTRIPClient::TListMountPoints::const_iterator it = lst.begin(); it != lst.end(); it++)
+  {
+    const CNTRIPClient::TMountPoint& m = *it;
+    cout << "MOUNT: " << m.mountpoint_name << "  | COUNTRY: " << m.country_code
+         << "  | NMEA?: " << m.needs_nmea << "  | FORMAT: " << m.format << " (" << m.id << ") "
+         << m.extra_info << endl;
+  }
 
-	// Now connect to a random server:
-	// -----------------------------------
-	CNTRIPClient ntrip;
-	CNTRIPClient::NTRIPArgs params;
+  // Now connect to a random server:
+  // -----------------------------------
+  CNTRIPClient ntrip;
+  CNTRIPClient::NTRIPArgs params;
 
-	CNTRIPClient::TListMountPoints::iterator it = lst.begin();
-	// std::advance(it,8);
+  CNTRIPClient::TListMountPoints::iterator it = lst.begin();
+  // std::advance(it,8);
 
-	cout << "Connecting to: " << it->mountpoint_name << " - " << it->id << endl;
-	params.mountpoint = it->mountpoint_name;
-	params.server = server;
-	params.port = server_port;
+  cout << "Connecting to: " << it->mountpoint_name << " - " << it->id << endl;
+  params.mountpoint = it->mountpoint_name;
+  params.server = server;
+  params.port = server_port;
 
-	cout << "Using user: " << ntrip_user << endl;
-	cout << "Using pass: " << ntrip_pass << endl;
-	cout << "(You can change them with env variables NTRIP_USER and "
-			"NTRIP_PASS"
-		 << endl;
+  cout << "Using user: " << ntrip_user << endl;
+  cout << "Using pass: " << ntrip_pass << endl;
+  cout << "(You can change them with env variables NTRIP_USER and "
+          "NTRIP_PASS"
+       << endl;
 
-	params.user = ntrip_user;
-	params.password = ntrip_pass;
+  params.user = ntrip_user;
+  params.password = ntrip_pass;
 
-	string msgerr;
+  string msgerr;
 
-	if (!ntrip.open(params, msgerr)) { cout << "ERROR: " << msgerr << endl; }
-	else
-	{
-		cout << "Reading stream... press any key to finish." << endl;
+  if (!ntrip.open(params, msgerr))
+  {
+    cout << "ERROR: " << msgerr << endl;
+  }
+  else
+  {
+    cout << "Reading stream... press any key to finish." << endl;
 
-		std::vector<uint8_t> dat;
-		while (!mrpt::system::os::kbhit())
-		{
-			ntrip.stream_data.readAndClear(dat);
-			cout << "Read " << dat.size() << " bytes." << endl;
-			std::this_thread::sleep_for(1000ms);
-		}
-	}
+    std::vector<uint8_t> dat;
+    while (!mrpt::system::os::kbhit())
+    {
+      ntrip.stream_data.readAndClear(dat);
+      cout << "Read " << dat.size() << " bytes." << endl;
+      std::this_thread::sleep_for(1000ms);
+    }
+  }
 }
 
 void TestNTRIP2()
 {
-	// const string server = "www.euref-ip.net";
-	const string server = "193.144.251.13";
-	const int server_port = 2101;
+  // const string server = "www.euref-ip.net";
+  const string server = "193.144.251.13";
+  const int server_port = 2101;
 
-	// Now connect to a random server:
-	// -----------------------------------
-	CNTRIPClient ntrip;
-	CNTRIPClient::NTRIPArgs params;
+  // Now connect to a random server:
+  // -----------------------------------
+  CNTRIPClient ntrip;
+  CNTRIPClient::NTRIPArgs params;
 
-	params.mountpoint = "ACOR0";
-	params.server = server;
-	params.port = server_port;
-	params.user = "";
-	params.password = "";
+  params.mountpoint = "ACOR0";
+  params.server = server;
+  params.port = server_port;
+  params.user = "";
+  params.password = "";
 
-	string msgerr;
+  string msgerr;
 
-	if (!ntrip.open(params, msgerr)) { cout << "ERROR: " << msgerr << endl; }
-	else
-	{
-		cout << "Reading stream... press any key to finish." << endl;
+  if (!ntrip.open(params, msgerr))
+  {
+    cout << "ERROR: " << msgerr << endl;
+  }
+  else
+  {
+    cout << "Reading stream... press any key to finish." << endl;
 
-		std::vector<uint8_t> dat;
-		while (!mrpt::system::os::kbhit())
-		{
-			ntrip.stream_data.readAndClear(dat);
-			cout << "Read " << dat.size() << " bytes." << endl;
-			std::this_thread::sleep_for(1000ms);
-		}
-	}
+    std::vector<uint8_t> dat;
+    while (!mrpt::system::os::kbhit())
+    {
+      ntrip.stream_data.readAndClear(dat);
+      cout << "Read " << dat.size() << " bytes." << endl;
+      std::this_thread::sleep_for(1000ms);
+    }
+  }
 }
 
 int main()
 {
-	try
-	{
-		TestNTRIP();
-		// TestNTRIP2();
+  try
+  {
+    TestNTRIP();
+    // TestNTRIP2();
 
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
-		return -1;
-	}
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    return -1;
+  }
 }

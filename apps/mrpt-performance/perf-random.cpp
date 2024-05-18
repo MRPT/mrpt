@@ -24,176 +24,176 @@ using namespace std;
 // ------------------------------------------------------
 double random_test_1(int a1, int a2)
 {
-	CRandomGenerator rg;
+  CRandomGenerator rg;
 
-	// test 1: draw uint32
-	// ----------------------------------------
-	const long N = 100000000;
-	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		rg.drawUniform32bit();
-	}
-	return tictac.Tac() / N;
+  // test 1: draw uint32
+  // ----------------------------------------
+  const long N = 100000000;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    rg.drawUniform32bit();
+  }
+  return tictac.Tac() / N;
 }
 double random_test_2(int a1, int a2)
 {
-	CRandomGenerator rg;
+  CRandomGenerator rg;
 
-	// test 2: drawUniform
-	// ----------------------------------------
-	const long N = 100000000;
-	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		rg.drawUniform(0, 1);
-	}
-	return tictac.Tac() / N;
+  // test 2: drawUniform
+  // ----------------------------------------
+  const long N = 100000000;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    rg.drawUniform(0, 1);
+  }
+  return tictac.Tac() / N;
 }
 double random_test_3(int a1, int a2)
 {
-	CRandomGenerator rg;
+  CRandomGenerator rg;
 
-	// test 3: drawGaussian1D_normalized
-	// ----------------------------------------
-	const long N = 10000000;
-	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		rg.drawGaussian1D_normalized();
-	}
-	return tictac.Tac() / N;
+  // test 3: drawGaussian1D_normalized
+  // ----------------------------------------
+  const long N = 10000000;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    rg.drawGaussian1D_normalized();
+  }
+  return tictac.Tac() / N;
 }
 double random_test_4(int a1, int a2)
 {
-	CRandomGenerator rg;
+  CRandomGenerator rg;
 
-	// test 4: drawGaussian1D
-	// ----------------------------------------
-	const long N = 10000000;
-	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		rg.drawGaussian1D(5.0, 3.0);
-	}
-	return tictac.Tac() / N;
+  // test 4: drawGaussian1D
+  // ----------------------------------------
+  const long N = 10000000;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    rg.drawGaussian1D(5.0, 3.0);
+  }
+  return tictac.Tac() / N;
 }
 double random_test_5(int a1, int a2)
 {
-	CRandomGenerator rg;
+  CRandomGenerator rg;
 
-	// test 5: system rand()
-	// ----------------------------------------
-	const long N = 10000000;
-	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		rand();
-	}
-	return tictac.Tac() / N;
+  // test 5: system rand()
+  // ----------------------------------------
+  const long N = 10000000;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    rand();
+  }
+  return tictac.Tac() / N;
 }
 double random_test_6(int a1, int a2)
 {
-	CRandomGenerator rg;
-	double COVs[] = {6.0, -5.0, 2.0, -5.0, 3.0, 1.0, 2.0, 1.0, 7.0};
+  CRandomGenerator rg;
+  double COVs[] = {6.0, -5.0, 2.0, -5.0, 3.0, 1.0, 2.0, 1.0, 7.0};
 
-	CMatrixDouble33 COV(COVs);
+  CMatrixDouble33 COV(COVs);
 
-	// test 6:
-	// ----------------------------------------
-	const long N = 100000;
-	CTicTac tictac;
-	CVectorDouble res;
-	for (long i = 0; i < N; i++)
-	{
-		rg.drawGaussianMultivariate(res, COV);
-	}
-	return tictac.Tac() / N;
+  // test 6:
+  // ----------------------------------------
+  const long N = 100000;
+  CTicTac tictac;
+  CVectorDouble res;
+  for (long i = 0; i < N; i++)
+  {
+    rg.drawGaussianMultivariate(res, COV);
+  }
+  return tictac.Tac() / N;
 }
 double random_test_7(int a1, int a2)
 {
-	CRandomGenerator rg;
-	double COVs[] = {6.0, -5.0, 2.0, -5.0, 3.0, 1.0, 2.0, 1.0, 7.0};
+  CRandomGenerator rg;
+  double COVs[] = {6.0, -5.0, 2.0, -5.0, 3.0, 1.0, 2.0, 1.0, 7.0};
 
-	CMatrixDouble COV(3, 3, COVs);
+  CMatrixDouble COV(3, 3, COVs);
 
-	// test 7:
-	// ----------------------------------------
-	const long N = 100000;
-	CTicTac tictac;
-	CVectorDouble res;
-	for (long i = 0; i < N; i++)
-	{
-		rg.drawGaussianMultivariate(res, COV);
-	}
-	return tictac.Tac() / N;
+  // test 7:
+  // ----------------------------------------
+  const long N = 100000;
+  CTicTac tictac;
+  CVectorDouble res;
+  for (long i = 0; i < N; i++)
+  {
+    rg.drawGaussianMultivariate(res, COV);
+  }
+  return tictac.Tac() / N;
 }
 
 template <size_t DIM>
 double random_test_8(int a1, int a2)
 {
-	CRandomGenerator rg;
+  CRandomGenerator rg;
 
-	CMatrixFixed<double, DIM, DIM> R;
-	rg.drawGaussian1DMatrix(R, 0.0, 1.0);
+  CMatrixFixed<double, DIM, DIM> R;
+  rg.drawGaussian1DMatrix(R, 0.0, 1.0);
 
-	CMatrixFixed<double, DIM, DIM> COV;
-	COV.matProductOf_AAt(R);
+  CMatrixFixed<double, DIM, DIM> COV;
+  COV.matProductOf_AAt(R);
 
-	const size_t NSAMPS = 1000;
+  const size_t NSAMPS = 1000;
 
-	// test 8:
-	// ----------------------------------------
-	const long N = 1000;
-	CTicTac tictac;
-	std::vector<CVectorDouble> res;
-	for (long i = 0; i < N; i++)
-	{
-		rg.drawGaussianMultivariateMany(res, NSAMPS, COV);
-	}
-	return tictac.Tac() / (N * NSAMPS);
+  // test 8:
+  // ----------------------------------------
+  const long N = 1000;
+  CTicTac tictac;
+  std::vector<CVectorDouble> res;
+  for (long i = 0; i < N; i++)
+  {
+    rg.drawGaussianMultivariateMany(res, NSAMPS, COV);
+  }
+  return tictac.Tac() / (N * NSAMPS);
 }
 
 double random_test_9(int a1, int a2)
 {
-	CRandomGenerator rg;
+  CRandomGenerator rg;
 
-	CMatrixDynamic<double> R(a1, a1);
-	rg.drawGaussian1DMatrix(R, 0.0, 1.0);
+  CMatrixDynamic<double> R(a1, a1);
+  rg.drawGaussian1DMatrix(R, 0.0, 1.0);
 
-	CMatrixDynamic<double> COV;
-	COV.matProductOf_AAt(R);
-	const size_t NSAMPS = 1000;
+  CMatrixDynamic<double> COV;
+  COV.matProductOf_AAt(R);
+  const size_t NSAMPS = 1000;
 
-	// test 9:
-	// ----------------------------------------
-	const long N = 1000;
-	CTicTac tictac;
-	std::vector<CVectorDouble> res;
-	for (long i = 0; i < N; i++)
-	{
-		rg.drawGaussianMultivariateMany(res, NSAMPS, COV);
-	}
-	return tictac.Tac() / (N * NSAMPS);
+  // test 9:
+  // ----------------------------------------
+  const long N = 1000;
+  CTicTac tictac;
+  std::vector<CVectorDouble> res;
+  for (long i = 0; i < N; i++)
+  {
+    rg.drawGaussianMultivariateMany(res, NSAMPS, COV);
+  }
+  return tictac.Tac() / (N * NSAMPS);
 }
 
 double random_test_10(int a1, int a2)
 {
-	CRandomGenerator rg;
+  CRandomGenerator rg;
 
-	CVectorDouble vec(a1);
-	rg.drawUniformVector(vec, 0.0, 1.0);
+  CVectorDouble vec(a1);
+  rg.drawUniformVector(vec, 0.0, 1.0);
 
-	// test 10: permute
-	// ----------------------------------------
-	const long N = 10000;
-	CVectorDouble vec2;
-	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		rg.permuteVector(vec, vec2);
-	}
-	return tictac.Tac() / N;
+  // test 10: permute
+  // ----------------------------------------
+  const long N = 10000;
+  CVectorDouble vec2;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    rg.permuteVector(vec, vec2);
+  }
+  return tictac.Tac() / N;
 }
 
 // ------------------------------------------------------
@@ -201,39 +201,23 @@ double random_test_10(int a1, int a2)
 // ------------------------------------------------------
 void register_tests_random()
 {
-	lstTests.emplace_back("random: drawUniform32bit", random_test_1);
-	lstTests.emplace_back("random: drawUniform", random_test_2);
-	lstTests.emplace_back("random: drawGaussian1D_normalized", random_test_3);
-	lstTests.emplace_back("random: drawGaussian1D", random_test_4);
-	lstTests.emplace_back("random: system rand()", random_test_5);
+  lstTests.emplace_back("random: drawUniform32bit", random_test_1);
+  lstTests.emplace_back("random: drawUniform", random_test_2);
+  lstTests.emplace_back("random: drawGaussian1D_normalized", random_test_3);
+  lstTests.emplace_back("random: drawGaussian1D", random_test_4);
+  lstTests.emplace_back("random: system rand()", random_test_5);
 
-	lstTests.emplace_back(
-		"random: drawGaussianMultivariate(fixed 3x3)", random_test_6);
-	lstTests.emplace_back(
-		"random: drawGaussianMultivariate(dyn 3x3)", random_test_7);
+  lstTests.emplace_back("random: drawGaussianMultivariate(fixed 3x3)", random_test_6);
+  lstTests.emplace_back("random: drawGaussianMultivariate(dyn 3x3)", random_test_7);
 
-	lstTests.emplace_back(
-		"random: drawGaussianMultivariateMany(fixed 2x2, 1000)",
-		random_test_8<2>);
-	lstTests.emplace_back(
-		"random: drawGaussianMultivariateMany(fixed 3x3, 1000)",
-		random_test_8<3>);
-	lstTests.emplace_back(
-		"random: drawGaussianMultivariateMany(fixed 6x6, 1000)",
-		random_test_8<6>);
-	lstTests.emplace_back(
-		"random: drawGaussianMultivariateMany(dyn 2x2, 1000)", random_test_9,
-		2);
-	lstTests.emplace_back(
-		"random: drawGaussianMultivariateMany(dyn 3x3, 1000)", random_test_9,
-		3);
-	lstTests.emplace_back(
-		"random: drawGaussianMultivariateMany(dyn 6x6, 1000)", random_test_9,
-		6);
+  lstTests.emplace_back("random: drawGaussianMultivariateMany(fixed 2x2, 1000)", random_test_8<2>);
+  lstTests.emplace_back("random: drawGaussianMultivariateMany(fixed 3x3, 1000)", random_test_8<3>);
+  lstTests.emplace_back("random: drawGaussianMultivariateMany(fixed 6x6, 1000)", random_test_8<6>);
+  lstTests.emplace_back("random: drawGaussianMultivariateMany(dyn 2x2, 1000)", random_test_9, 2);
+  lstTests.emplace_back("random: drawGaussianMultivariateMany(dyn 3x3, 1000)", random_test_9, 3);
+  lstTests.emplace_back("random: drawGaussianMultivariateMany(dyn 6x6, 1000)", random_test_9, 6);
 
-	lstTests.emplace_back("random: permuteVector (len=10)", random_test_10, 10);
-	lstTests.emplace_back(
-		"random: permuteVector (len=100)", random_test_10, 100);
-	lstTests.emplace_back(
-		"random: permuteVector (len=1000)", random_test_10, 1000);
+  lstTests.emplace_back("random: permuteVector (len=10)", random_test_10, 10);
+  lstTests.emplace_back("random: permuteVector (len=100)", random_test_10, 100);
+  lstTests.emplace_back("random: permuteVector (len=1000)", random_test_10, 1000);
 }

@@ -22,40 +22,37 @@ namespace mrpt::rtti
  */
 class CListOfClasses : public mrpt::Stringifyable
 {
-   public:
-	using TSet = std::set<const mrpt::rtti::TRuntimeClassId*>;
-	TSet data;
+ public:
+  using TSet = std::set<const mrpt::rtti::TRuntimeClassId*>;
+  TSet data;
 
-	/** Insert a class in the list. Example of usage:
-	 *   \code
-	 *     myList.insert(CLASS_ID(CObservationImage));
-	 *   \endcode
-	 */
-	inline void insert(const mrpt::rtti::TRuntimeClassId* id)
-	{
-		data.insert(id);
-	}
+  /** Insert a class in the list. Example of usage:
+   *   \code
+   *     myList.insert(CLASS_ID(CObservationImage));
+   *   \endcode
+   */
+  inline void insert(const mrpt::rtti::TRuntimeClassId* id) { data.insert(id); }
 
-	/** Does the list contains this class? */
-	inline bool contains(const mrpt::rtti::TRuntimeClassId* id) const
-	{
-		return data.find(id) != data.end();
-	}
+  /** Does the list contains this class? */
+  inline bool contains(const mrpt::rtti::TRuntimeClassId* id) const
+  {
+    return data.find(id) != data.end();
+  }
 
-	/** Does the list contains a class derived from...? */
-	bool containsDerivedFrom(const mrpt::rtti::TRuntimeClassId* id) const;
+  /** Does the list contains a class derived from...? */
+  bool containsDerivedFrom(const mrpt::rtti::TRuntimeClassId* id) const;
 
-	/** Return a string representation of the list, for example: "CPose2D,
-	 * CObservation, CPose3D".
-	 */
-	std::string asString() const override;
+  /** Return a string representation of the list, for example: "CPose2D,
+   * CObservation, CPose3D".
+   */
+  std::string asString() const override;
 
-	/** Builds from a string representation of the list, for example: "CPose2D,
-	 * CObservation, CPose3D".
-	 * \exception std::exception On unregistered class name found.
-	 */
-	void fromString(const std::string& s);
+  /** Builds from a string representation of the list, for example: "CPose2D,
+   * CObservation, CPose3D".
+   * \exception std::exception On unregistered class name found.
+   */
+  void fromString(const std::string& s);
 
-};	// end of class
+};  // end of class
 
 }  // namespace mrpt::rtti

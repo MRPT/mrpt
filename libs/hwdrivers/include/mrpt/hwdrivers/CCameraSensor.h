@@ -11,7 +11,6 @@
 
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/gui/CDisplayWindow.h>
-#include <mrpt/hwdrivers/CDUO3DCamera.h>
 #include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
@@ -84,8 +83,7 @@ namespace mrpt::hwdrivers
  *   [supplied_section_name]
  *    # Select one of the grabber implementations -----------------------
  *    grabber_type       = opencv | dc1394 | bumblebee_dc1394 | ffmpeg | rawlog
- * | swissranger | svs | kinect | flycap | flycap_stereo | image_dir | duo3d |
- * myntd
+ * | swissranger | svs | kinect | flycap | flycap_stereo | image_dir | myntd
  *
  *    #  Options for any grabber_type ------------------------------------
  *    preview_decimation = 0     // N<=0 (or not present): No preview; N>0,
@@ -268,67 +266,6 @@ namespace mrpt::hwdrivers
  *    # Options for grabber_type= myntd  ------------------------------------
  *    myntd_xxx  =
  *
- *    # Options for grabber_type= duo3d
- *    Create a section like this:
- *    [DUO3DOptions]
- *    rawlog-grabber-ignore	= true // Instructs rawlog-grabber to ignore
- * this section (it is not a separate device!)
- *
- *    image_width   			= 640			// [int]	x Resolution
- *    image_height  			= 480			// [int]	y Resolution
- *    fps						= 30			// [int]	Frames per second
- * (<= 30)
- *    exposure				= 50			// [int]	Exposure value (1..100)
- *    led						= 0				// [int]	Led intensity
- * (only for some device models) (1..100).
- *    gain					= 50			// [int]	Camera gain (1..100)
- *    capture_rectified 		= false			// [bool]	Rectify
- * captured images
- *    capture_imu 			= true			// [bool]	Capture IMU data
- * from DUO3D device (if available)
- *    calibration_from_file	= true			// [bool]	Use YML
- * calibration files provided by calibration application supplied with DUO3D
- * device
- *    intrinsic_filename		= ""			// [string]	Intrinsic
- * parameters file. This filename should contain a substring _RWWWxHHH_ with WWW
- * being the image width and HHH the image height, as provided by the
- * calibration application.
- *    extrinsic_filename		= ""			// [string]	Extrinsic
- * parameters file. This filename should contain a substring _RWWWxHHH_ with WWW
- * being the image width and HHH the image height, as provided by the
- * calibration application.
- *    rectify_map_filename	= ""			// [string]	Rectification map
- * file. This filename should contain a substring _RWWWxHHH_ with WWW being the
- * image width and HHH the image height, as provided by the calibration
- * application.
- *
- *    // if 'calibration_from_file' = false, three more sections containing the
- * calibration must be provided:
- *    [DUO3D_LEFT]
- *    rawlog-grabber-ignore	= true // Instructs rawlog-grabber to ignore
- * this section (it is not a separate device!)
- *    resolution 		= [640 480]
- *    cx 				= 320
- *    cy 				= 240
- *    fx 				= 700
- *    fy 				= 700
- *    dist 			= [0 0 0 0 0]
- *
- *    [DUO3D_RIGHT]
- *    rawlog-grabber-ignore	= true // Instructs rawlog-grabber to ignore
- * this section (it is not a separate device!)
- *    resolution 		= [640 480]
- *    cx 				= 320
- *    cy 				= 240
- *    fx 				= 700
- *    fy 				= 700
- *    dist 			= [0 0 0 0 0]
- *
- *    [DUO3D_LEFT2RIGHT_POSE]
- *    rawlog-grabber-ignore	= true // Instructs rawlog-grabber to ignore
- * this section (it is not a separate device!)
- *    pose_quaternion = [0.12 0 0 1 0 0 0]
- *
  *  \endcode
  *
  *  \note The execution rate, in rawlog-grabber or the user code calling
@@ -345,238 +282,229 @@ namespace mrpt::hwdrivers
  */
 class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
 {
-	DEFINE_GENERIC_SENSOR(CCameraSensor)
+  DEFINE_GENERIC_SENSOR(CCameraSensor)
 
-   public:
-	using Ptr = std::shared_ptr<CCameraSensor>;
-	/** Constructor. The camera is not open until "initialize" is called. */
-	CCameraSensor();
+ public:
+  using Ptr = std::shared_ptr<CCameraSensor>;
+  /** Constructor. The camera is not open until "initialize" is called. */
+  CCameraSensor();
 
-	/** Destructor */
-	~CCameraSensor() override;
+  /** Destructor */
+  ~CCameraSensor() override;
 
-	// See docs in parent class
-	void doProcess() override;
+  // See docs in parent class
+  void doProcess() override;
 
-	/** Retrieves the next frame from the video source, raising an exception on
-	 *any error.
-	 * Note: The returned observations can be of one of these classes (you can
-	 *use IS_CLASS(obs,CObservationXXX) to determine it):
-	 *		- mrpt::obs::CObservationImage (For normal cameras or video sources)
-	 *		- mrpt::obs::CObservationStereoImages (For stereo cameras)
-	 *		- mrpt::obs::CObservation3DRangeScan (For 3D cameras)
-	 */
-	mrpt::obs::CObservation::Ptr getNextFrame();
-	void getNextFrame(
-		std::vector<mrpt::serialization::CSerializable::Ptr>& out_obs);
+  /** Retrieves the next frame from the video source, raising an exception on
+   *any error.
+   * Note: The returned observations can be of one of these classes (you can
+   *use IS_CLASS(obs,CObservationXXX) to determine it):
+   *		- mrpt::obs::CObservationImage (For normal cameras or video sources)
+   *		- mrpt::obs::CObservationStereoImages (For stereo cameras)
+   *		- mrpt::obs::CObservation3DRangeScan (For 3D cameras)
+   */
+  mrpt::obs::CObservation::Ptr getNextFrame();
+  void getNextFrame(std::vector<mrpt::serialization::CSerializable::Ptr>& out_obs);
 
-	/** Tries to open the camera, after setting all the parameters with a call
-	 * to loadConfig.
-	 *  \exception This method must throw an exception with a descriptive
-	 * message if some critical error is found.
-	 */
-	void initialize() override;
+  /** Tries to open the camera, after setting all the parameters with a call
+   * to loadConfig.
+   *  \exception This method must throw an exception with a descriptive
+   * message if some critical error is found.
+   */
+  void initialize() override;
 
-	/** Close the camera (if open).
-	 *   This method is called automatically on destruction.
-	 */
-	void close();
+  /** Close the camera (if open).
+   *   This method is called automatically on destruction.
+   */
+  void close();
 
-	/** Set Software trigger level value (ON or OFF) for cameras with this
-	 * function available.
-	 */
-	void setSoftwareTriggerLevel(bool level);
+  /** Set Software trigger level value (ON or OFF) for cameras with this
+   * function available.
+   */
+  void setSoftwareTriggerLevel(bool level);
 
-	/**  Set the path where to save off-rawlog image files (this class DOES take
-	 * into account this path).
-	 *  An  empty string (the default value at construction) means to save
-	 * images embedded in the rawlog, instead of on separate files.
-	 * \exception std::exception If the directory doesn't exists and cannot be
-	 * created.
-	 */
-	void setPathForExternalImages(const std::string& directory) override;
+  /**  Set the path where to save off-rawlog image files (this class DOES take
+   * into account this path).
+   *  An  empty string (the default value at construction) means to save
+   * images embedded in the rawlog, instead of on separate files.
+   * \exception std::exception If the directory doesn't exists and cannot be
+   * created.
+   */
+  void setPathForExternalImages(const std::string& directory) override;
 
-	/** This must be called before initialize() */
-	void enableLaunchOwnThreadForSavingImages(bool enable = true)
-	{
-		m_external_images_own_thread = enable;
-	};
+  /** This must be called before initialize() */
+  void enableLaunchOwnThreadForSavingImages(bool enable = true)
+  {
+    m_external_images_own_thread = enable;
+  };
 
-	/** Functor type */
-	using TPreSaveUserHook = std::function<void(
-		const mrpt::obs::CObservation::Ptr& obs, void* user_ptr)>;
+  /** Functor type */
+  using TPreSaveUserHook =
+      std::function<void(const mrpt::obs::CObservation::Ptr& obs, void* user_ptr)>;
 
-	/** Provides a "hook" for user-code to be run BEFORE an image is going to be
-	 * saved to disk if external storage is enabled (e.g. to rectify images,
-	 * preprocess them, etc.)
-	 * Notice that this code may be called from detached threads, so it must be
-	 * thread safe.
-	 * If used, call this before initialize() */
-	void addPreSaveHook(TPreSaveUserHook user_function, void* user_ptr)
-	{
-		m_hook_pre_save = user_function;
-		m_hook_pre_save_param = user_ptr;
-	};
+  /** Provides a "hook" for user-code to be run BEFORE an image is going to be
+   * saved to disk if external storage is enabled (e.g. to rectify images,
+   * preprocess them, etc.)
+   * Notice that this code may be called from detached threads, so it must be
+   * thread safe.
+   * If used, call this before initialize() */
+  void addPreSaveHook(TPreSaveUserHook user_function, void* user_ptr)
+  {
+    m_hook_pre_save = user_function;
+    m_hook_pre_save_param = user_ptr;
+  };
 
-   protected:
-	// Options for any grabber_type ------------------------------------
-	poses::CPose3D m_sensorPose;
+ protected:
+  // Options for any grabber_type ------------------------------------
+  poses::CPose3D m_sensorPose;
 
-	/** Can be "opencv",... */
-	std::string m_grabber_type;
-	bool m_capture_grayscale{false};
+  /** Can be "opencv",... */
+  std::string m_grabber_type;
+  bool m_capture_grayscale{false};
 
-	// Options for grabber_type= opencv  ------------------------------------
-	int m_cv_camera_index{0};
-	std::string m_cv_camera_type;
-	TCaptureCVOptions m_cv_options;
+  // Options for grabber_type= opencv  ------------------------------------
+  int m_cv_camera_index{0};
+  std::string m_cv_camera_type;
+  TCaptureCVOptions m_cv_options;
 
-	// Options for grabber_type= dc1394 -------------------------------------
-	uint64_t m_dc1394_camera_guid{0};
-	int m_dc1394_camera_unit{0};
-	TCaptureOptions_dc1394 m_dc1394_options;
-	int m_preview_decimation{0};
-	int m_preview_reduction{1};
+  // Options for grabber_type= dc1394 -------------------------------------
+  uint64_t m_dc1394_camera_guid{0};
+  int m_dc1394_camera_unit{0};
+  TCaptureOptions_dc1394 m_dc1394_options;
+  int m_preview_decimation{0};
+  int m_preview_reduction{1};
 
-	// Options for grabber_type= bumblebee_dc1394
-	// ----------------------------------
-	uint64_t m_bumblebee_dc1394_camera_guid{0};
-	int m_bumblebee_dc1394_camera_unit{0};
-	double m_bumblebee_dc1394_framerate{15};
+  // Options for grabber_type= bumblebee_dc1394
+  // ----------------------------------
+  uint64_t m_bumblebee_dc1394_camera_guid{0};
+  int m_bumblebee_dc1394_camera_unit{0};
+  double m_bumblebee_dc1394_framerate{15};
 
-	// Options for grabber type= svs -----------------------------------------
-	int m_svs_camera_index{0};
-	TCaptureOptions_SVS m_svs_options;
+  // Options for grabber type= svs -----------------------------------------
+  int m_svs_camera_index{0};
+  TCaptureOptions_SVS m_svs_options;
 
-	// Options for grabber_type= ffmpeg -------------------------------------
-	std::string m_ffmpeg_url;
+  // Options for grabber_type= ffmpeg -------------------------------------
+  std::string m_ffmpeg_url;
 
-	// Options for grabber_type= rawlog -------------------------------------
-	std::string m_rawlog_file;
-	std::string m_rawlog_camera_sensor_label;
-	std::string m_rawlog_detected_images_dir;
+  // Options for grabber_type= rawlog -------------------------------------
+  std::string m_rawlog_file;
+  std::string m_rawlog_camera_sensor_label;
+  std::string m_rawlog_detected_images_dir;
 
-	// Options for grabber_type= swissranger
-	// -------------------------------------
-	/** true: USB, false: ETH */
-	bool m_sr_open_from_usb{true};
-	std::string m_sr_ip_address;
-	/** Save the 3D point cloud (default: true) */
-	bool m_sr_save_3d{true};
-	/** Save the 2D range image (default: true) */
-	bool m_sr_save_range_img{true};
-	/** Save the 2D intensity image (default: true) */
-	bool m_sr_save_intensity_img{true};
-	/** Save the estimated confidence 2D image (default: false) */
-	bool m_sr_save_confidence{true};
+  // Options for grabber_type= swissranger
+  // -------------------------------------
+  /** true: USB, false: ETH */
+  bool m_sr_open_from_usb{true};
+  std::string m_sr_ip_address;
+  /** Save the 3D point cloud (default: true) */
+  bool m_sr_save_3d{true};
+  /** Save the 2D range image (default: true) */
+  bool m_sr_save_range_img{true};
+  /** Save the 2D intensity image (default: true) */
+  bool m_sr_save_intensity_img{true};
+  /** Save the estimated confidence 2D image (default: false) */
+  bool m_sr_save_confidence{true};
 
-	// Options for grabber_type= XBox kinect
-	// -------------------------------------
-	/** Save the 3D point cloud (default: true) */
-	bool m_kinect_save_3d{true};
-	/** Save the 2D range image (default: true) */
-	bool m_kinect_save_range_img{true};
-	/** Save the 2D intensity image (default: true) */
-	bool m_kinect_save_intensity_img{true};
-	/** Save RGB or IR channels (default:true) */
-	bool m_kinect_video_rgb{true};
+  // Options for grabber_type= XBox kinect
+  // -------------------------------------
+  /** Save the 3D point cloud (default: true) */
+  bool m_kinect_save_3d{true};
+  /** Save the 2D range image (default: true) */
+  bool m_kinect_save_range_img{true};
+  /** Save the 2D intensity image (default: true) */
+  bool m_kinect_save_intensity_img{true};
+  /** Save RGB or IR channels (default:true) */
+  bool m_kinect_video_rgb{true};
 
-	// Options for grabber type= flycap
-	// -----------------------------------------
-	TCaptureOptions_FlyCapture2 m_flycap_options;
+  // Options for grabber type= flycap
+  // -----------------------------------------
+  TCaptureOptions_FlyCapture2 m_flycap_options;
 
-	// Options for grabber type= myntd
-	// -----------------------------------------
-	TMyntEyeCameraParameters m_myntd_options;
+  // Options for grabber type= myntd
+  // -----------------------------------------
+  TMyntEyeCameraParameters m_myntd_options;
 
-	// Options for grabber type= flycap_stereo
-	// -----------------------------------------
-	bool m_fcs_start_synch_capture{false};
-	TCaptureOptions_FlyCapture2
-		m_flycap_stereo_options[2];	 // [0]:left, [1]:right
+  // Options for grabber type= flycap_stereo
+  // -----------------------------------------
+  bool m_fcs_start_synch_capture{false};
+  TCaptureOptions_FlyCapture2 m_flycap_stereo_options[2];  // [0]:left, [1]:right
 
-	// Options for grabber type= image_dir
-	std::string m_img_dir_url;
-	std::string m_img_dir_left_format;
-	std::string m_img_dir_right_format;
-	int m_img_dir_start_index{0};
-	int m_img_dir_end_index{100};
+  // Options for grabber type= image_dir
+  std::string m_img_dir_url;
+  std::string m_img_dir_left_format;
+  std::string m_img_dir_right_format;
+  int m_img_dir_start_index{0};
+  int m_img_dir_end_index{100};
 
-	bool m_img_dir_is_stereo{true};
-	int m_img_dir_counter{0};
+  bool m_img_dir_is_stereo{true};
+  int m_img_dir_counter{0};
 
-	// Options for grabber type= duo3d
-	TCaptureOptions_DUO3D m_duo3d_options;
+  // Other options:
+  /** Whether to launch independent thread */
+  bool m_external_images_own_thread{false};
 
-	// Other options:
-	/** Whether to launch independent thread */
-	bool m_external_images_own_thread{false};
+  /** See the class documentation at the top for expected parameters */
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection) override;
 
-	/** See the class documentation at the top for expected parameters */
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection) override;
+ private:
+  // Only one of these will be !=nullptr at a time ===========
+  /** The OpenCV capture object. */
+  std::unique_ptr<CImageGrabber_OpenCV> m_cap_cv;
+  /** The dc1394 capture object. */
+  std::unique_ptr<CImageGrabber_dc1394> m_cap_dc1394;
+  /** The FlyCapture2 object */
+  std::unique_ptr<CImageGrabber_FlyCapture2> m_cap_flycap;
+  /** The FlyCapture2 object for stereo pairs */
+  std::unique_ptr<CImageGrabber_FlyCapture2> m_cap_flycap_stereo_l, m_cap_flycap_stereo_r;
+  std::unique_ptr<CStereoGrabber_Bumblebee_libdc1394> m_cap_bumblebee_dc1394;
+  /** The svs capture object. */
+  std::unique_ptr<CStereoGrabber_SVS> m_cap_svs;
+  /** The FFMPEG capture object */
+  std::unique_ptr<CFFMPEG_InputStream> m_cap_ffmpeg;
+  /** The input file for rawlogs */
+  std::unique_ptr<mrpt::io::CFileGZInputStream> m_cap_rawlog;
+  /** SR 3D camera object. */
+  std::unique_ptr<CSwissRanger3DCamera> m_cap_swissranger;
+  /** Kinect camera object. */
+  std::unique_ptr<CKinect> m_cap_kinect;
+  /** OpenNI2 object. */
+  std::unique_ptr<COpenNI2Sensor> m_cap_openni2;
+  /** Read images from directory */
+  std::unique_ptr<std::string> m_cap_image_dir;
+  /** The MYNT EYE capture object */
+  std::unique_ptr<CMyntEyeCamera> m_myntd;
+  // =========================
 
-   private:
-	// Only one of these will be !=nullptr at a time ===========
-	/** The OpenCV capture object. */
-	std::unique_ptr<CImageGrabber_OpenCV> m_cap_cv;
-	/** The dc1394 capture object. */
-	std::unique_ptr<CImageGrabber_dc1394> m_cap_dc1394;
-	/** The FlyCapture2 object */
-	std::unique_ptr<CImageGrabber_FlyCapture2> m_cap_flycap;
-	/** The FlyCapture2 object for stereo pairs */
-	std::unique_ptr<CImageGrabber_FlyCapture2> m_cap_flycap_stereo_l,
-		m_cap_flycap_stereo_r;
-	std::unique_ptr<CStereoGrabber_Bumblebee_libdc1394> m_cap_bumblebee_dc1394;
-	/** The svs capture object. */
-	std::unique_ptr<CStereoGrabber_SVS> m_cap_svs;
-	/** The FFMPEG capture object */
-	std::unique_ptr<CFFMPEG_InputStream> m_cap_ffmpeg;
-	/** The input file for rawlogs */
-	std::unique_ptr<mrpt::io::CFileGZInputStream> m_cap_rawlog;
-	/** SR 3D camera object. */
-	std::unique_ptr<CSwissRanger3DCamera> m_cap_swissranger;
-	/** Kinect camera object. */
-	std::unique_ptr<CKinect> m_cap_kinect;
-	/** OpenNI2 object. */
-	std::unique_ptr<COpenNI2Sensor> m_cap_openni2;
-	/** Read images from directory */
-	std::unique_ptr<std::string> m_cap_image_dir;
-	/** The DUO3D capture object */
-	std::unique_ptr<CDUO3DCamera> m_cap_duo3d;
-	/** The MYNT EYE capture object */
-	std::unique_ptr<CMyntEyeCamera> m_myntd;
-	// =========================
+  int m_camera_grab_decimator{0};
+  int m_camera_grab_decimator_counter{0};
 
-	int m_camera_grab_decimator{0};
-	int m_camera_grab_decimator_counter{0};
+  int m_preview_counter{0};
+  /** Normally we'll use only one window, but for stereo images we'll use two
+   * of them. */
+  mrpt::gui::CDisplayWindow::Ptr m_preview_win1, m_preview_win2;
 
-	int m_preview_counter{0};
-	/** Normally we'll use only one window, but for stereo images we'll use two
-	 * of them. */
-	mrpt::gui::CDisplayWindow::Ptr m_preview_win1, m_preview_win2;
+  /** @name Stuff related to working threads to save images to disk
+    @{ */
+  /** Number of working threads. Default:1, set to 2 in quad cores. */
+  unsigned int m_external_image_saver_count;
+  std::vector<std::thread> m_threadImagesSaver;
 
-	/** @name Stuff related to working threads to save images to disk
-		@{ */
-	/** Number of working threads. Default:1, set to 2 in quad cores. */
-	unsigned int m_external_image_saver_count;
-	std::vector<std::thread> m_threadImagesSaver;
+  bool m_threadImagesSaverShouldEnd{false};
+  /** The critical section for m_toSaveList */
+  std::mutex m_csToSaveList;
+  /** The queues of objects to be returned by getObservations, one for each
+   * working thread. */
+  std::vector<TListObservations> m_toSaveList;
+  /** Thread to save images to files. */
+  void thread_save_images(unsigned int my_working_thread_index);
 
-	bool m_threadImagesSaverShouldEnd{false};
-	/** The critical section for m_toSaveList */
-	std::mutex m_csToSaveList;
-	/** The queues of objects to be returned by getObservations, one for each
-	 * working thread. */
-	std::vector<TListObservations> m_toSaveList;
-	/** Thread to save images to files. */
-	void thread_save_images(unsigned int my_working_thread_index);
+  TPreSaveUserHook m_hook_pre_save;
+  void* m_hook_pre_save_param{nullptr};
+  /**  @} */
 
-	TPreSaveUserHook m_hook_pre_save;
-	void* m_hook_pre_save_param{nullptr};
-	/**  @} */
-
-};	// end class
+};  // end class
 
 /** Used only from MRPT apps: Use with caution since "panel" MUST be a
  * "mrpt::gui::CPanelCameraSelection *"
@@ -591,8 +519,9 @@ CCameraSensor::Ptr prepareVideoSourceFromPanel(void* panel);
  * readConfigIntoVideoSourcePanel
  */
 void writeConfigFromVideoSourcePanel(
-	void* panel, const std::string& in_cfgfile_section_name,
-	mrpt::config::CConfigFileBase* out_cfgfile);
+    void* panel,
+    const std::string& in_cfgfile_section_name,
+    mrpt::config::CConfigFileBase* out_cfgfile);
 
 /** Parse the given section of the given configuration file and set accordingly
  * the controls of the wxWidgets "panel".
@@ -602,8 +531,9 @@ void writeConfigFromVideoSourcePanel(
  * writeConfigFromVideoSourcePanel
  */
 void readConfigIntoVideoSourcePanel(
-	void* panel, const std::string& in_cfgfile_section_name,
-	const mrpt::config::CConfigFileBase* in_cfgfile);
+    void* panel,
+    const std::string& in_cfgfile_section_name,
+    const mrpt::config::CConfigFileBase* in_cfgfile);
 
 /** Show to the user a list of possible camera drivers and creates and open the
  * selected camera.

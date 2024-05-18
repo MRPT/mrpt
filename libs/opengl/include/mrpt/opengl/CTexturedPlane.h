@@ -23,97 +23,92 @@ namespace mrpt::opengl
  *  \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
-class CTexturedPlane : public CRenderizableShaderTexturedTriangles,
-					   public CRenderizableShaderTriangles
+class CTexturedPlane :
+    public CRenderizableShaderTexturedTriangles,
+    public CRenderizableShaderTriangles
 {
-	DEFINE_SERIALIZABLE(CTexturedPlane, mrpt::opengl)
+  DEFINE_SERIALIZABLE(CTexturedPlane, mrpt::opengl)
 
-   protected:
-	float m_xMin = -1.0f, m_xMax = 1.0f;
-	float m_yMin = -1.0f, m_yMax = 1.0f;
+ protected:
+  float m_xMin = -1.0f, m_xMax = 1.0f;
+  float m_yMin = -1.0f, m_yMax = 1.0f;
 
-	mutable bool polygonUpToDate{false};
-	/** Used for ray-tracing */
-	mutable std::vector<mrpt::math::TPolygonWithPlane> tmpPoly;
-	void updatePoly() const;
+  mutable bool polygonUpToDate{false};
+  /** Used for ray-tracing */
+  mutable std::vector<mrpt::math::TPolygonWithPlane> tmpPoly;
+  void updatePoly() const;
 
-   public:
-	/** @name Renderizable shader API virtual methods
-	 * @{ */
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
-	virtual void onUpdateBuffers_TexturedTriangles() override;
-	virtual void onUpdateBuffers_Triangles() override;
-	virtual shader_list_t requiredShaders() const override
-	{
-		shader_list_t lst;
-		lst.push_back(
-			CRenderizableShaderTriangles::isLightEnabled()
-				? DefaultShaderID::TRIANGLES_LIGHT
-				: DefaultShaderID::TRIANGLES_NO_LIGHT);
-		lst.push_back(
-			CRenderizableShaderTexturedTriangles::isLightEnabled()
-				? DefaultShaderID::TEXTURED_TRIANGLES_LIGHT
-				: DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT);
-		return lst;
-	}
-	void freeOpenGLResources() override
-	{
-		CRenderizableShaderTriangles::freeOpenGLResources();
-		CRenderizableShaderTexturedTriangles::freeOpenGLResources();
-	}
+ public:
+  /** @name Renderizable shader API virtual methods
+   * @{ */
+  void render(const RenderContext& rc) const override;
+  void renderUpdateBuffers() const override;
+  virtual void onUpdateBuffers_TexturedTriangles() override;
+  virtual void onUpdateBuffers_Triangles() override;
+  virtual shader_list_t requiredShaders() const override
+  {
+    shader_list_t lst;
+    lst.push_back(
+        CRenderizableShaderTriangles::isLightEnabled() ? DefaultShaderID::TRIANGLES_LIGHT
+                                                       : DefaultShaderID::TRIANGLES_NO_LIGHT);
+    lst.push_back(
+        CRenderizableShaderTexturedTriangles::isLightEnabled()
+            ? DefaultShaderID::TEXTURED_TRIANGLES_LIGHT
+            : DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT);
+    return lst;
+  }
+  void freeOpenGLResources() override
+  {
+    CRenderizableShaderTriangles::freeOpenGLResources();
+    CRenderizableShaderTexturedTriangles::freeOpenGLResources();
+  }
 
-	/** Control whether to render the FRONT, BACK, or BOTH (default) set of
-	 * faces. Refer to docs for glCullFace() */
-	void cullFaces(const TCullFace& cf)
-	{
-		CRenderizableShaderTexturedTriangles::cullFaces(cf);
-		CRenderizableShaderTriangles::cullFaces(cf);
-	}
-	TCullFace cullFaces() const
-	{
-		return CRenderizableShaderTexturedTriangles::cullFaces();
-	}
+  /** Control whether to render the FRONT, BACK, or BOTH (default) set of
+   * faces. Refer to docs for glCullFace() */
+  void cullFaces(const TCullFace& cf)
+  {
+    CRenderizableShaderTexturedTriangles::cullFaces(cf);
+    CRenderizableShaderTriangles::cullFaces(cf);
+  }
+  TCullFace cullFaces() const { return CRenderizableShaderTexturedTriangles::cullFaces(); }
 
-	/** @} */
+  /** @} */
 
-	CTexturedPlane(
-		float x_min = -1, float x_max = 1, float y_min = -1, float y_max = 1);
-	virtual ~CTexturedPlane() override = default;
+  CTexturedPlane(float x_min = -1, float x_max = 1, float y_min = -1, float y_max = 1);
+  virtual ~CTexturedPlane() override = default;
 
-	/** Set the coordinates of the four corners that define the plane on the XY
-	 * plane. */
-	void setPlaneCorners(float xMin, float xMax, float yMin, float yMax)
-	{
-		ASSERT_NOT_EQUAL_(xMin, xMax);
-		ASSERT_NOT_EQUAL_(yMin, yMax);
-		m_xMin = xMin;
-		m_xMax = xMax;
-		m_yMin = yMin;
-		m_yMax = yMax;
-		polygonUpToDate = false;
-		CRenderizable::notifyChange();
-	}
+  /** Set the coordinates of the four corners that define the plane on the XY
+   * plane. */
+  void setPlaneCorners(float xMin, float xMax, float yMin, float yMax)
+  {
+    ASSERT_NOT_EQUAL_(xMin, xMax);
+    ASSERT_NOT_EQUAL_(yMin, yMax);
+    m_xMin = xMin;
+    m_xMax = xMax;
+    m_yMin = yMin;
+    m_yMax = yMax;
+    polygonUpToDate = false;
+    CRenderizable::notifyChange();
+  }
 
-	/** Get the coordinates of the four corners that define the plane on the XY
-	 * plane. */
-	inline void getPlaneCorners(
-		float& xMin, float& xMax, float& yMin, float& yMax) const
-	{
-		xMin = m_xMin;
-		xMax = m_xMax;
-		yMin = m_yMin;
-		yMax = m_yMax;
-	}
+  /** Get the coordinates of the four corners that define the plane on the XY
+   * plane. */
+  inline void getPlaneCorners(float& xMin, float& xMax, float& yMin, float& yMax) const
+  {
+    xMin = m_xMin;
+    xMax = m_xMax;
+    yMin = m_yMin;
+    yMax = m_yMax;
+  }
 
-	void enableLighting(bool enable = true)
-	{
-		CRenderizableShaderTriangles::enableLight(enable);
-		CRenderizableShaderTexturedTriangles::enableLight(enable);
-	}
+  void enableLighting(bool enable = true)
+  {
+    CRenderizableShaderTriangles::enableLight(enable);
+    CRenderizableShaderTexturedTriangles::enableLight(enable);
+  }
 
-	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
-	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
+  bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
+  mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 };
 
 }  // namespace mrpt::opengl

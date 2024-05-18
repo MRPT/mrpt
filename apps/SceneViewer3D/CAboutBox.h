@@ -30,46 +30,46 @@
 
 class CAboutBox : public wxDialog
 {
-   public:
-	CAboutBox(wxWindow* parent, wxWindowID id = -1);
-	~CAboutBox() override;
+ public:
+  CAboutBox(wxWindow* parent, wxWindowID id = -1);
+  ~CAboutBox() override;
 
-	//(*Identifiers(CAboutBox)
-	static const long ID_STATICTEXT1;
-	static const long ID_STATICTEXT2;
-	static const long ID_STATICBITMAP1;
-	static const long ID_STATICLINE1;
-	static const long ID_TEXTCTRL4;
-	static const long ID_TEXTCTRL1;
-	static const long ID_TEXTCTRL2;
-	static const long ID_TEXTCTRL3;
-	static const long ID_NOTEBOOK1;
-	static const long ID_BUTTON1;
-	//*)
+  //(*Identifiers(CAboutBox)
+  static const long ID_STATICTEXT1;
+  static const long ID_STATICTEXT2;
+  static const long ID_STATICBITMAP1;
+  static const long ID_STATICLINE1;
+  static const long ID_TEXTCTRL4;
+  static const long ID_TEXTCTRL1;
+  static const long ID_TEXTCTRL2;
+  static const long ID_TEXTCTRL3;
+  static const long ID_NOTEBOOK1;
+  static const long ID_BUTTON1;
+  //*)
 
-   protected:
-	//(*Handlers(CAboutBox)
-	void OnInit(wxInitDialogEvent& event);
-	void OnButton1Click(wxCommandEvent& event);
-	//*)
+ protected:
+  //(*Handlers(CAboutBox)
+  void OnInit(wxInitDialogEvent& event);
+  void OnButton1Click(wxCommandEvent& event);
+  //*)
 
-	//(*Declarations(CAboutBox)
-	wxFlexGridSizer* FlexGridSizer4;
-	wxNotebook* Notebook1;
-	wxStaticText* lbProgName;
-	wxButton* Button1;
-	wxStaticBitmap* StaticBitmap1;
-	wxTextCtrl* lbLicense;
-	wxTextCtrl* lbInfo;
-	wxStaticText* lbBuild;
-	wxStaticLine* StaticLine1;
-	wxTextCtrl* TextCtrl2;
-	wxTextCtrl* TextCtrl1;
-	wxFlexGridSizer* FlexGridSizer1;
-	//*)
+  //(*Declarations(CAboutBox)
+  wxFlexGridSizer* FlexGridSizer4;
+  wxNotebook* Notebook1;
+  wxStaticText* lbProgName;
+  wxButton* Button1;
+  wxStaticBitmap* StaticBitmap1;
+  wxTextCtrl* lbLicense;
+  wxTextCtrl* lbInfo;
+  wxStaticText* lbBuild;
+  wxStaticLine* StaticLine1;
+  wxTextCtrl* TextCtrl2;
+  wxTextCtrl* TextCtrl1;
+  wxFlexGridSizer* FlexGridSizer1;
+  //*)
 
-   private:
-	DECLARE_EVENT_TABLE()
+ private:
+  DECLARE_EVENT_TABLE()
 };
 
 #endif

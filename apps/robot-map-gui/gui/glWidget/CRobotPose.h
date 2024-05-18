@@ -12,16 +12,16 @@
 
 class CRobotPose : public mrpt::opengl::CSetOfObjects
 {
-   public:
-	using Ptr = std::shared_ptr<CRobotPose>;
-	CRobotPose(size_t id);
+ public:
+  using Ptr = std::shared_ptr<CRobotPose>;
+  CRobotPose(size_t id);
 
-	~CRobotPose() override = default;
-	size_t getId() const;
+  ~CRobotPose() override = default;
+  size_t getId() const;
 
-	void setSelected(bool is);
+  void setSelected(bool is);
 
-   private:
-	CSetOfObjects::Ptr m_currentObj;
-	size_t m_id;
+ private:
+  CSetOfObjects::Ptr m_currentObj;
+  size_t m_id;
 };

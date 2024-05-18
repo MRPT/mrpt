@@ -355,13 +355,6 @@ if(MRPT_BUILD_EXAMPLES)
 	set(CMAKE_EXAMPLE_DEPS mrpt::vision mrpt::hwdrivers)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
-	# === HWDRIVERS & DETECTORS ===
-	set(LIST_EXAMPLES_IN_THIS_DIR
-		detectors_face
-		)
-	set(CMAKE_EXAMPLE_DEPS mrpt::slam mrpt::hwdrivers mrpt::detectors)
-	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
-
 	# === OPENNI2 examples ===
 	if (MRPT_HAS_OPENNI2)
 		set(LIST_EXAMPLES_IN_THIS_DIR

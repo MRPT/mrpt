@@ -63,7 +63,6 @@ class CGridMapAligner(CMetricMapsAlignmentAlgorithm):
 
     class TConfigParams(mrpt.pymrpt.mrpt.config.CLoadableOptions):
         debug_save_map_pairs: bool
-        debug_show_corrs: bool
         featsPerSquareMeter: float
         feature_descriptor: mrpt.pymrpt.mrpt.vision.TDescriptorType
         feature_detector_options: mrpt.pymrpt.mrpt.vision.CFeatureExtraction.TOptions

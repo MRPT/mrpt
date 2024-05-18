@@ -24,15 +24,13 @@ namespace mrpt::io
  * \return Returns false on any error, true on everything OK.
  * \sa loadBinaryFile
  */
-bool vectorToBinaryFile(
-	const std::vector<uint8_t>& vec, const std::string& fileName);
+bool vectorToBinaryFile(const std::vector<uint8_t>& vec, const std::string& fileName);
 
 /** Loads a entire file as a vector of bytes.
  * \return Returns false on any error, true on everything OK.
  * \sa vectorToBinaryFile
  */
-bool loadBinaryFile(
-	std::vector<uint8_t>& out_data, const std::string& fileName);
+bool loadBinaryFile(std::vector<uint8_t>& out_data, const std::string& fileName);
 
 /** Loads a text file as a vector of string lines.
  * \return Returns false on any error, true on everything OK.
@@ -53,33 +51,41 @@ std::string file_get_contents(const std::string& fileName);
  * \return Returns false on any error, true on everything OK.
  */
 bool vectorToTextFile(
-	const std::vector<float>& vec, const std::string& fileName,
-	bool append = false, bool byRows = false);
+    const std::vector<float>& vec,
+    const std::string& fileName,
+    bool append = false,
+    bool byRows = false);
 //! \overload
 bool vectorToTextFile(
-	const std::vector<double>& vec, const std::string& fileName,
-	bool append = false, bool byRows = false);
+    const std::vector<double>& vec,
+    const std::string& fileName,
+    bool append = false,
+    bool byRows = false);
 //! \overload
 bool vectorToTextFile(
-	const std::vector<int>& vec, const std::string& fileName,
-	bool append = false, bool byRows = false);
+    const std::vector<int>& vec,
+    const std::string& fileName,
+    bool append = false,
+    bool byRows = false);
 //! \overload
 bool vectorToTextFile(
-	const std::vector<size_t>& vec, const std::string& fileName,
-	bool append = false, bool byRows = false);
+    const std::vector<size_t>& vec,
+    const std::string& fileName,
+    bool append = false,
+    bool byRows = false);
 //! \overload
 template <class EIGEN_MATRIX>
 bool vectorToTextFile(const EIGEN_MATRIX& vec, const std::string& fileName)
 {
-	try
-	{
-		vec.saveToTextFile(fileName);
-		return true;
-	}
-	catch (...)
-	{
-		return false;
-	}
+  try
+  {
+    vec.saveToTextFile(fileName);
+    return true;
+  }
+  catch (...)
+  {
+    return false;
+  }
 }
 
 /** Load a numeric std::vector<double> from a text file (compat. with MATLAB)
@@ -87,8 +93,7 @@ bool vectorToTextFile(const EIGEN_MATRIX& vec, const std::string& fileName)
  * \sa loadBinaryFile
  */
 bool vectorNumericFromTextFile(
-	std::vector<double>& vec, const std::string& fileName,
-	const bool byRows = false);
+    std::vector<double>& vec, const std::string& fileName, const bool byRows = false);
 
 /** @} */
 

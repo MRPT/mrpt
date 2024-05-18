@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-	APPLICATION: mrpt_ros bridge
-	FILE: image.h
-	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
+  APPLICATION: mrpt_ros bridge
+  FILE: image.h
+  AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
   ---------------------------------------------------------------*/
 
 #pragma once
@@ -18,7 +18,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/obs/CObservationImage.h>
 
-#include <cstring>	// size_t
+#include <cstring>  // size_t
 #include <sensor_msgs/msg/image.hpp>
 
 namespace mrpt::ros2bridge
@@ -30,8 +30,7 @@ namespace mrpt::ros2bridge
 mrpt::img::CImage fromROS(const sensor_msgs::msg::Image& i);
 
 /** Makes a deep copy of the image data */
-sensor_msgs::msg::Image toROS(
-	const mrpt::img::CImage& i, const std_msgs::msg::Header& msg_header);
+sensor_msgs::msg::Image toROS(const mrpt::img::CImage& i, const std_msgs::msg::Header& msg_header);
 /** @} */
 
 }  // namespace mrpt::ros2bridge

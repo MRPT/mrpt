@@ -22,42 +22,42 @@ namespace mrpt
 template <class T>
 struct safe_ptr_basic
 {
-   protected:
-	T* ptr;
+ protected:
+  T* ptr;
 
-   public:
-	safe_ptr_basic() : ptr(nullptr) {}
-	safe_ptr_basic(const safe_ptr_basic<T>& o) : ptr(o.ptr) {}
-	safe_ptr_basic(const T* p) : ptr(const_cast<T*>(p)) {}
-	safe_ptr_basic<T>& operator=(T* p)
-	{
-		ptr = p;
-		return *this;
-	}
+ public:
+  safe_ptr_basic() : ptr(nullptr) {}
+  safe_ptr_basic(const safe_ptr_basic<T>& o) : ptr(o.ptr) {}
+  safe_ptr_basic(const T* p) : ptr(const_cast<T*>(p)) {}
+  safe_ptr_basic<T>& operator=(T* p)
+  {
+    ptr = p;
+    return *this;
+  }
 
-	safe_ptr_basic<T>& operator=(const safe_ptr_basic<T>& o)
-	{
-		ptr = o.ptr;
-		return *this;
-	}
+  safe_ptr_basic<T>& operator=(const safe_ptr_basic<T>& o)
+  {
+    ptr = o.ptr;
+    return *this;
+  }
 
-	virtual ~safe_ptr_basic() = default;
-	bool operator==(const T* o) const { return o == ptr; }
-	bool operator==(const safe_ptr_basic<T>& o) const { return o.ptr == ptr; }
-	bool operator!=(const T* o) const { return o != ptr; }
-	bool operator!=(const safe_ptr_basic<T>& o) const { return o.ptr != ptr; }
-	T*& get() { return ptr; }
-	const T* get() const { return ptr; }
-	T*& operator->()
-	{
-		ASSERT_(ptr);
-		return ptr;
-	}
-	const T* operator->() const
-	{
-		ASSERT_(ptr);
-		return ptr;
-	}
+  virtual ~safe_ptr_basic() = default;
+  bool operator==(const T* o) const { return o == ptr; }
+  bool operator==(const safe_ptr_basic<T>& o) const { return o.ptr == ptr; }
+  bool operator!=(const T* o) const { return o != ptr; }
+  bool operator!=(const safe_ptr_basic<T>& o) const { return o.ptr != ptr; }
+  T*& get() { return ptr; }
+  const T* get() const { return ptr; }
+  T*& operator->()
+  {
+    ASSERT_(ptr);
+    return ptr;
+  }
+  const T* operator->() const
+  {
+    ASSERT_(ptr);
+    return ptr;
+  }
 };
 
 /** A wrapper class for pointers that can be safely copied with "=" operator
@@ -70,43 +70,43 @@ struct safe_ptr_basic
 template <class T>
 struct safe_ptr : safe_ptr_basic<T>
 {
-   public:
-	safe_ptr() : safe_ptr_basic<T>() {}
-	safe_ptr(const safe_ptr<T>& o) : safe_ptr_basic<T>(o) {}
-	safe_ptr(const T* p) : safe_ptr_basic<T>(p) {}
-	safe_ptr& operator=(const safe_ptr<T>& o)
-	{
-		safe_ptr_basic<T>::operator=(o);
-		return *this;
-	}
+ public:
+  safe_ptr() : safe_ptr_basic<T>() {}
+  safe_ptr(const safe_ptr<T>& o) : safe_ptr_basic<T>(o) {}
+  safe_ptr(const T* p) : safe_ptr_basic<T>(p) {}
+  safe_ptr& operator=(const safe_ptr<T>& o)
+  {
+    safe_ptr_basic<T>::operator=(o);
+    return *this;
+  }
 
-	safe_ptr& operator=(T* p)
-	{
-		safe_ptr_basic<T>::operator=(p);
-		return *this;
-	}
-	~safe_ptr() override = default;
-	T& operator*()
-	{
-		ASSERT_(safe_ptr_basic<T>::ptr);
-		return *safe_ptr_basic<T>::ptr;
-	}
-	const T& operator*() const
-	{
-		ASSERT_(safe_ptr_basic<T>::ptr);
-		return *safe_ptr_basic<T>::ptr;
-	}
+  safe_ptr& operator=(T* p)
+  {
+    safe_ptr_basic<T>::operator=(p);
+    return *this;
+  }
+  ~safe_ptr() override = default;
+  T& operator*()
+  {
+    ASSERT_(safe_ptr_basic<T>::ptr);
+    return *safe_ptr_basic<T>::ptr;
+  }
+  const T& operator*() const
+  {
+    ASSERT_(safe_ptr_basic<T>::ptr);
+    return *safe_ptr_basic<T>::ptr;
+  }
 
-	T& operator[](size_t i)
-	{
-		ASSERT_(safe_ptr_basic<T>::ptr);
-		return safe_ptr_basic<T>::ptr[i];
-	}
-	const T& operator[](size_t i) const
-	{
-		ASSERT_(safe_ptr_basic<T>::ptr);
-		return safe_ptr_basic<T>::ptr[i];
-	}
+  T& operator[](size_t i)
+  {
+    ASSERT_(safe_ptr_basic<T>::ptr);
+    return safe_ptr_basic<T>::ptr[i];
+  }
+  const T& operator[](size_t i) const
+  {
+    ASSERT_(safe_ptr_basic<T>::ptr);
+    return safe_ptr_basic<T>::ptr[i];
+  }
 };
 
 /** A wrapper class for pointers that can NOT be copied with "=" operator,
@@ -117,56 +117,50 @@ struct safe_ptr : safe_ptr_basic<T>
 template <class T>
 struct non_copiable_ptr_basic
 {
-   protected:
-	T* ptr;
+ protected:
+  T* ptr;
 
-   public:
-	non_copiable_ptr_basic() : ptr(nullptr) {}
-	non_copiable_ptr_basic(const non_copiable_ptr_basic<T>&) : ptr(nullptr)
-	{
-		THROW_EXCEPTION("Pointer non-copiable...");
-	}
-	non_copiable_ptr_basic(const T* p) : ptr(const_cast<T*>(p)) {}
-	non_copiable_ptr_basic<T>& operator=(T* p)
-	{
-		ptr = p;
-		return *this;
-	}
+ public:
+  non_copiable_ptr_basic() : ptr(nullptr) {}
+  non_copiable_ptr_basic(const non_copiable_ptr_basic<T>&) : ptr(nullptr)
+  {
+    THROW_EXCEPTION("Pointer non-copiable...");
+  }
+  non_copiable_ptr_basic(const T* p) : ptr(const_cast<T*>(p)) {}
+  non_copiable_ptr_basic<T>& operator=(T* p)
+  {
+    ptr = p;
+    return *this;
+  }
 
-	non_copiable_ptr_basic<T>& operator=(const non_copiable_ptr_basic<T>&)
-	{
-		THROW_EXCEPTION("Pointer non-copiable...");
-	}
+  non_copiable_ptr_basic<T>& operator=(const non_copiable_ptr_basic<T>&)
+  {
+    THROW_EXCEPTION("Pointer non-copiable...");
+  }
 
-	/** This method can change the pointer, since the change is made explicitly,
-	 * not through copy operators transparent to the user. */
-	void set(const T* p) { ptr = const_cast<T*>(p); }
-	virtual ~non_copiable_ptr_basic() = default;
-	bool operator==(const T* o) const { return o == ptr; }
-	bool operator==(const non_copiable_ptr_basic<T>& o) const
-	{
-		return o.ptr == ptr;
-	}
+  /** This method can change the pointer, since the change is made explicitly,
+   * not through copy operators transparent to the user. */
+  void set(const T* p) { ptr = const_cast<T*>(p); }
+  virtual ~non_copiable_ptr_basic() = default;
+  bool operator==(const T* o) const { return o == ptr; }
+  bool operator==(const non_copiable_ptr_basic<T>& o) const { return o.ptr == ptr; }
 
-	bool operator!=(const T* o) const { return o != ptr; }
-	bool operator!=(const non_copiable_ptr_basic<T>& o) const
-	{
-		return o.ptr != ptr;
-	}
+  bool operator!=(const T* o) const { return o != ptr; }
+  bool operator!=(const non_copiable_ptr_basic<T>& o) const { return o.ptr != ptr; }
 
-	T*& get() { return ptr; }
-	const T* get() const { return ptr; }
-	T** getPtrToPtr() { return &ptr; }
-	T*& operator->()
-	{
-		ASSERT_(ptr);
-		return ptr;
-	}
-	const T* operator->() const
-	{
-		ASSERT_(ptr);
-		return ptr;
-	}
+  T*& get() { return ptr; }
+  const T* get() const { return ptr; }
+  T** getPtrToPtr() { return &ptr; }
+  T*& operator->()
+  {
+    ASSERT_(ptr);
+    return ptr;
+  }
+  const T* operator->() const
+  {
+    ASSERT_(ptr);
+    return ptr;
+  }
 };
 
 /** A wrapper class for pointers that can NOT be copied with "=" operator,
@@ -177,46 +171,43 @@ struct non_copiable_ptr_basic
 template <class T>
 struct non_copiable_ptr : non_copiable_ptr_basic<T>
 {
-   public:
-	non_copiable_ptr() : non_copiable_ptr_basic<T>() {}
-	non_copiable_ptr(const non_copiable_ptr<T>& o)
-		: non_copiable_ptr_basic<T>(o)
-	{
-	}
-	non_copiable_ptr(const T* p) : non_copiable_ptr_basic<T>(p) {}
-	non_copiable_ptr<T>& operator=(const T* p)
-	{
-		non_copiable_ptr_basic<T>::ptr = const_cast<T*>(p);
-		return *this;
-	}
+ public:
+  non_copiable_ptr() : non_copiable_ptr_basic<T>() {}
+  non_copiable_ptr(const non_copiable_ptr<T>& o) : non_copiable_ptr_basic<T>(o) {}
+  non_copiable_ptr(const T* p) : non_copiable_ptr_basic<T>(p) {}
+  non_copiable_ptr<T>& operator=(const T* p)
+  {
+    non_copiable_ptr_basic<T>::ptr = const_cast<T*>(p);
+    return *this;
+  }
 
-	non_copiable_ptr<T>& operator=(const non_copiable_ptr<T>&)
-	{
-		THROW_EXCEPTION("Pointer non-copiable...");
-	}
+  non_copiable_ptr<T>& operator=(const non_copiable_ptr<T>&)
+  {
+    THROW_EXCEPTION("Pointer non-copiable...");
+  }
 
-	virtual ~non_copiable_ptr() = default;
-	T& operator*()
-	{
-		ASSERT_(non_copiable_ptr_basic<T>::ptr);
-		return *non_copiable_ptr_basic<T>::ptr;
-	}
-	const T& operator*() const
-	{
-		ASSERT_(non_copiable_ptr_basic<T>::ptr);
-		return *non_copiable_ptr_basic<T>::ptr;
-	}
+  virtual ~non_copiable_ptr() = default;
+  T& operator*()
+  {
+    ASSERT_(non_copiable_ptr_basic<T>::ptr);
+    return *non_copiable_ptr_basic<T>::ptr;
+  }
+  const T& operator*() const
+  {
+    ASSERT_(non_copiable_ptr_basic<T>::ptr);
+    return *non_copiable_ptr_basic<T>::ptr;
+  }
 
-	T& operator[](size_t i)
-	{
-		ASSERT_(non_copiable_ptr_basic<T>::ptr);
-		return non_copiable_ptr_basic<T>::ptr[i];
-	}
-	const T& operator[](size_t i) const
-	{
-		ASSERT_(non_copiable_ptr_basic<T>::ptr);
-		return non_copiable_ptr_basic<T>::ptr[i];
-	}
+  T& operator[](size_t i)
+  {
+    ASSERT_(non_copiable_ptr_basic<T>::ptr);
+    return non_copiable_ptr_basic<T>::ptr[i];
+  }
+  const T& operator[](size_t i) const
+  {
+    ASSERT_(non_copiable_ptr_basic<T>::ptr);
+    return non_copiable_ptr_basic<T>::ptr[i];
+  }
 };
 
 /** A wrapper class for pointers whose copy operations from other objects of the
@@ -230,41 +221,41 @@ struct non_copiable_ptr : non_copiable_ptr_basic<T>
 template <class T>
 struct ignored_copy_ptr
 {
-   protected:
-	T* ptr;
+ protected:
+  T* ptr;
 
-   public:
-	ignored_copy_ptr() : ptr(nullptr) {}
-	ignored_copy_ptr(const ignored_copy_ptr<T>&) : ptr(nullptr) {}
-	ignored_copy_ptr(const T* p) : ptr(const_cast<T*>(p)) {}
-	ignored_copy_ptr<T>& operator=(T* p)
-	{
-		ptr = p;
-		return *this;
-	}
+ public:
+  ignored_copy_ptr() : ptr(nullptr) {}
+  ignored_copy_ptr(const ignored_copy_ptr<T>&) : ptr(nullptr) {}
+  ignored_copy_ptr(const T* p) : ptr(const_cast<T*>(p)) {}
+  ignored_copy_ptr<T>& operator=(T* p)
+  {
+    ptr = p;
+    return *this;
+  }
 
-	ignored_copy_ptr<T>& operator=(const ignored_copy_ptr<T>&) { return *this; }
-	/** This method can change the pointer, since the change is made explicitly,
-	 * not through copy operators transparent to the user. */
-	void set(const T* p) { ptr = const_cast<T*>(p); }
-	virtual ~ignored_copy_ptr() = default;
-	bool operator==(const T* o) const { return o == ptr; }
-	bool operator==(const ignored_copy_ptr<T>& o) const { return o.ptr == ptr; }
-	bool operator!=(const T* o) const { return o != ptr; }
-	bool operator!=(const ignored_copy_ptr<T>& o) const { return o.ptr != ptr; }
-	T*& get() { return ptr; }
-	const T* get() const { return ptr; }
-	T** getPtrToPtr() { return &ptr; }
-	T*& operator->()
-	{
-		ASSERT_(ptr);
-		return ptr;
-	}
-	const T* operator->() const
-	{
-		ASSERT_(ptr);
-		return ptr;
-	}
+  ignored_copy_ptr<T>& operator=(const ignored_copy_ptr<T>&) { return *this; }
+  /** This method can change the pointer, since the change is made explicitly,
+   * not through copy operators transparent to the user. */
+  void set(const T* p) { ptr = const_cast<T*>(p); }
+  virtual ~ignored_copy_ptr() = default;
+  bool operator==(const T* o) const { return o == ptr; }
+  bool operator==(const ignored_copy_ptr<T>& o) const { return o.ptr == ptr; }
+  bool operator!=(const T* o) const { return o != ptr; }
+  bool operator!=(const ignored_copy_ptr<T>& o) const { return o.ptr != ptr; }
+  T*& get() { return ptr; }
+  const T* get() const { return ptr; }
+  T** getPtrToPtr() { return &ptr; }
+  T*& operator->()
+  {
+    ASSERT_(ptr);
+    return ptr;
+  }
+  const T* operator->() const
+  {
+    ASSERT_(ptr);
+    return ptr;
+  }
 };
 
 /** A wrapper class for pointers that, if copied with the "=" operator, should
@@ -275,49 +266,43 @@ struct ignored_copy_ptr
 template <class T>
 struct copiable_NULL_ptr_basic
 {
-   protected:
-	T* ptr;
+ protected:
+  T* ptr;
 
-   public:
-	copiable_NULL_ptr_basic() : ptr(nullptr) {}
-	copiable_NULL_ptr_basic(const copiable_NULL_ptr_basic<T>&) : ptr(nullptr) {}
-	copiable_NULL_ptr_basic<T>& operator=(T* p)
-	{
-		ptr = p;
-		return *this;
-	}
+ public:
+  copiable_NULL_ptr_basic() : ptr(nullptr) {}
+  copiable_NULL_ptr_basic(const copiable_NULL_ptr_basic<T>&) : ptr(nullptr) {}
+  copiable_NULL_ptr_basic<T>& operator=(T* p)
+  {
+    ptr = p;
+    return *this;
+  }
 
-	copiable_NULL_ptr_basic<T>& operator=(const copiable_NULL_ptr_basic<T>&)
-	{
-		ptr = nullptr;
-		return *this;
-	}
+  copiable_NULL_ptr_basic<T>& operator=(const copiable_NULL_ptr_basic<T>&)
+  {
+    ptr = nullptr;
+    return *this;
+  }
 
-	virtual ~copiable_NULL_ptr_basic() = default;
-	bool operator==(const T* o) const { return o == ptr; }
-	bool operator==(const copiable_NULL_ptr_basic<T>& o) const
-	{
-		return o.ptr == ptr;
-	}
+  virtual ~copiable_NULL_ptr_basic() = default;
+  bool operator==(const T* o) const { return o == ptr; }
+  bool operator==(const copiable_NULL_ptr_basic<T>& o) const { return o.ptr == ptr; }
 
-	bool operator!=(const T* o) const { return o != ptr; }
-	bool operator!=(const copiable_NULL_ptr_basic<T>& o) const
-	{
-		return o.ptr != ptr;
-	}
+  bool operator!=(const T* o) const { return o != ptr; }
+  bool operator!=(const copiable_NULL_ptr_basic<T>& o) const { return o.ptr != ptr; }
 
-	T*& get() { return ptr; }
-	const T*& get() const { return ptr; }
-	T*& operator->()
-	{
-		ASSERT_(ptr);
-		return ptr;
-	}
-	const T*& operator->() const
-	{
-		ASSERT_(ptr);
-		return ptr;
-	}
+  T*& get() { return ptr; }
+  const T*& get() const { return ptr; }
+  T*& operator->()
+  {
+    ASSERT_(ptr);
+    return ptr;
+  }
+  const T*& operator->() const
+  {
+    ASSERT_(ptr);
+    return ptr;
+  }
 };
 
 /** A wrapper class for pointers that, if copied with the "=" operator, should
@@ -328,41 +313,38 @@ struct copiable_NULL_ptr_basic
 template <class T>
 struct copiable_NULL_ptr : copiable_NULL_ptr_basic<T>
 {
-   public:
-	copiable_NULL_ptr() : copiable_NULL_ptr_basic<T>() {}
-	copiable_NULL_ptr(const copiable_NULL_ptr<T>& o)
-		: copiable_NULL_ptr_basic<T>(o)
-	{
-	}
+ public:
+  copiable_NULL_ptr() : copiable_NULL_ptr_basic<T>() {}
+  copiable_NULL_ptr(const copiable_NULL_ptr<T>& o) : copiable_NULL_ptr_basic<T>(o) {}
 
-	copiable_NULL_ptr<T>& operator=(T* p)
-	{
-		copiable_NULL_ptr_basic<T>::ptr = p;
-		return *this;
-	}
+  copiable_NULL_ptr<T>& operator=(T* p)
+  {
+    copiable_NULL_ptr_basic<T>::ptr = p;
+    return *this;
+  }
 
-	virtual ~copiable_NULL_ptr() = default;
-	T& operator*()
-	{
-		ASSERT_(copiable_NULL_ptr_basic<T>::ptr);
-		return *copiable_NULL_ptr_basic<T>::ptr;
-	}
-	const T& operator*() const
-	{
-		ASSERT_(copiable_NULL_ptr_basic<T>::ptr);
-		return *copiable_NULL_ptr_basic<T>::ptr;
-	}
+  virtual ~copiable_NULL_ptr() = default;
+  T& operator*()
+  {
+    ASSERT_(copiable_NULL_ptr_basic<T>::ptr);
+    return *copiable_NULL_ptr_basic<T>::ptr;
+  }
+  const T& operator*() const
+  {
+    ASSERT_(copiable_NULL_ptr_basic<T>::ptr);
+    return *copiable_NULL_ptr_basic<T>::ptr;
+  }
 
-	T& operator[](size_t i)
-	{
-		ASSERT_(copiable_NULL_ptr_basic<T>::ptr);
-		return copiable_NULL_ptr_basic<T>::ptr[i];
-	}
-	const T& operator[](size_t i) const
-	{
-		ASSERT_(copiable_NULL_ptr_basic<T>::ptr);
-		return copiable_NULL_ptr_basic<T>::ptr[i];
-	}
+  T& operator[](size_t i)
+  {
+    ASSERT_(copiable_NULL_ptr_basic<T>::ptr);
+    return copiable_NULL_ptr_basic<T>::ptr[i];
+  }
+  const T& operator[](size_t i) const
+  {
+    ASSERT_(copiable_NULL_ptr_basic<T>::ptr);
+    return copiable_NULL_ptr_basic<T>::ptr[i];
+  }
 };
 
 using void_ptr = safe_ptr_basic<void>;

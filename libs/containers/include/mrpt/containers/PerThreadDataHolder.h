@@ -23,74 +23,73 @@ namespace mrpt::containers
 template <class T>
 class PerThreadDataHolder
 {
-   public:
-	PerThreadDataHolder() = default;
+ public:
+  PerThreadDataHolder() = default;
 
-	T& get()
-	{
-		m_dataMtx.lock();
-		T& d = m_data[std::this_thread::get_id()];
-		m_dataMtx.unlock();
-		return d;
-	}
-	const T& get() const
-	{
-		m_dataMtx.lock();
-		const T& d = m_data[std::this_thread::get_id()];
-		m_dataMtx.unlock();
-		return d;
-	}
+  T& get()
+  {
+    m_dataMtx.lock();
+    T& d = m_data[std::this_thread::get_id()];
+    m_dataMtx.unlock();
+    return d;
+  }
+  const T& get() const
+  {
+    m_dataMtx.lock();
+    const T& d = m_data[std::this_thread::get_id()];
+    m_dataMtx.unlock();
+    return d;
+  }
 
-	/// Note: you should define your own mutex for the part of the user data T
-	/// that is read & writen from different threads.
-	void run_on_all(const std::function<void(T&)>& f)
-	{
-		m_dataMtx.lock();
-		for (auto& kv : m_data)
-			f(kv.second);
-		m_dataMtx.unlock();
-	}
+  /// Note: you should define your own mutex for the part of the user data T
+  /// that is read & writen from different threads.
+  void run_on_all(const std::function<void(T&)>& f)
+  {
+    m_dataMtx.lock();
+    for (auto& kv : m_data) f(kv.second);
+    m_dataMtx.unlock();
+  }
 
-	void clear()
-	{
-		m_dataMtx.lock();
-		m_data.clear();
-		m_dataMtx.unlock();
-	}
+  void clear()
+  {
+    m_dataMtx.lock();
+    m_data.clear();
+    m_dataMtx.unlock();
+  }
 
-	/// Copy the data, leave mutexes apart.
-	PerThreadDataHolder<T>& operator=(const PerThreadDataHolder<T>& o)
-	{
-		if (this == &o) return *this;
+  /// Copy the data, leave mutexes apart.
+  PerThreadDataHolder<T>& operator=(const PerThreadDataHolder<T>& o)
+  {
+    if (this == &o) return *this;
 
-		m_dataMtx.lock();
-		o.m_dataMtx.lock();
-		m_data = o.m_data;
-		m_dataMtx.unlock();
-		o.m_dataMtx.unlock();
-		return *this;
-	}
-	/// Copy the data, leave mutexes apart.
-	PerThreadDataHolder(const PerThreadDataHolder<T>& o) { *this = o; }
+    m_dataMtx.lock();
+    o.m_dataMtx.lock();
+    m_data = o.m_data;
+    m_dataMtx.unlock();
+    o.m_dataMtx.unlock();
+    return *this;
+  }
+  /// Copy the data, leave mutexes apart.
+  PerThreadDataHolder(const PerThreadDataHolder<T>& o) { *this = o; }
 
-	/// Move the data, leave mutexes apart.
-	PerThreadDataHolder<T>& operator=(PerThreadDataHolder<T>&& o)
-	{
-		if (this == &o) return *this;
+  /// Move the data, leave mutexes apart.
+  PerThreadDataHolder<T>& operator=(PerThreadDataHolder<T>&& o)
+  {
+    if (this == &o) return *this;
 
-		m_dataMtx.lock();
-		o.m_dataMtx.lock();
-		m_data = std::move(o.m_data);
-		m_dataMtx.unlock();
-		o.m_dataMtx.unlock();
-		return *this;
-	}
-	/// Move the data, leave mutexes apart.
-	PerThreadDataHolder(PerThreadDataHolder<T>&& o) { *this = std::move(o); }
+    m_dataMtx.lock();
+    o.m_dataMtx.lock();
+    m_data = std::move(o.m_data);
+    m_dataMtx.unlock();
+    o.m_dataMtx.unlock();
+    return *this;
+  }
+  /// Move the data, leave mutexes apart.
+  PerThreadDataHolder(PerThreadDataHolder<T>&& o) { *this = std::move(o); }
 
-   private:
-	mutable std::map<std::thread::id, T> m_data;
-	mutable std::mutex m_dataMtx;  // Mutex for m_data itself only
+ private:
+  mutable std::map<std::thread::id, T> m_data;
+  mutable std::mutex m_dataMtx;  // Mutex for m_data itself only
 };
 
 }  // namespace mrpt::containers

@@ -17,13 +17,12 @@
 #endif
 
 void mrpt::gui::show_mrpt_about_box_Qt(
-	const std::string& appName, const std::string& additionalInfo,
-	const bool showStandardInfo)
+    const std::string& appName, const std::string& additionalInfo, const bool showStandardInfo)
 {
 #if MRPT_HAS_Qt5
-	CAboutBoxQt dlg(appName, additionalInfo, showStandardInfo);
-	dlg.exec();
+  CAboutBoxQt dlg(appName, additionalInfo, showStandardInfo);
+  dlg.exec();
 #else
-	THROW_EXCEPTION("MRPT compiled without Qt support");
+  THROW_EXCEPTION("MRPT compiled without Qt support");
 #endif
 }

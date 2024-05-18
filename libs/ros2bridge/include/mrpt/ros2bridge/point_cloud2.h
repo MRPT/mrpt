@@ -34,22 +34,17 @@ namespace mrpt::ros2bridge
  * \return true on sucessful conversion, false on any error.
  * \sa toROS
  */
-bool fromROS(
-	const sensor_msgs::msg::PointCloud2& msg,
-	mrpt::maps::CSimplePointsMap& obj);
+bool fromROS(const sensor_msgs::msg::PointCloud2& msg, mrpt::maps::CSimplePointsMap& obj);
 
 /** \overload For (x,y,z,intensity) channels.
  * Requires point cloud fields: x,y,z,intensity
  */
-bool fromROS(
-	const sensor_msgs::msg::PointCloud2& msg, mrpt::maps::CPointsMapXYZI& obj);
+bool fromROS(const sensor_msgs::msg::PointCloud2& msg, mrpt::maps::CPointsMapXYZI& obj);
 
 /** \overload For (x,y,z,intensity,ring,time) channels.
  * Requires point cloud fields: x,y,z,intensity,ring,time
  */
-bool fromROS(
-	const sensor_msgs::msg::PointCloud2& msg,
-	mrpt::maps::CPointsMapXYZIRT& obj);
+bool fromROS(const sensor_msgs::msg::PointCloud2& msg, mrpt::maps::CPointsMapXYZIRT& obj);
 
 /** Convert sensor_msgs/PointCloud2 -> mrpt::obs::CObservationRotatingScan.
  * Requires point cloud fields: x,y,z,ring[,intensity][,time]
@@ -61,10 +56,11 @@ bool fromROS(
  *
  */
 bool fromROS(
-	const sensor_msgs::msg::PointCloud2& m,
-	mrpt::obs::CObservationRotatingScan& o,
-	const mrpt::poses::CPose3D& sensorPoseOnRobot,
-	unsigned int num_azimuth_divisions = 0, float max_intensity = 1000.0f);
+    const sensor_msgs::msg::PointCloud2& m,
+    mrpt::obs::CObservationRotatingScan& o,
+    const mrpt::poses::CPose3D& sensorPoseOnRobot,
+    unsigned int num_azimuth_divisions = 0,
+    float max_intensity = 1000.0f);
 
 /** Extract a list of fields found in the point cloud.
  * Typically: {"x","y","z","intensity"}
@@ -81,27 +77,27 @@ std::set<std::string> extractFields(const sensor_msgs::msg::PointCloud2& msg);
  * \sa fromROS
  */
 bool toROS(
-	const mrpt::maps::CSimplePointsMap& obj,
-	const std_msgs::msg::Header& msg_header,
-	sensor_msgs::msg::PointCloud2& msg);
+    const mrpt::maps::CSimplePointsMap& obj,
+    const std_msgs::msg::Header& msg_header,
+    sensor_msgs::msg::PointCloud2& msg);
 
 /** \overload With these fields: `x`, `y`, `z`, `intensity`
  * \return true on sucessful conversion, false on any error.
  * \sa fromROS
  */
 bool toROS(
-	const mrpt::maps::CPointsMapXYZI& obj,
-	const std_msgs::msg::Header& msg_header,
-	sensor_msgs::msg::PointCloud2& msg);
+    const mrpt::maps::CPointsMapXYZI& obj,
+    const std_msgs::msg::Header& msg_header,
+    sensor_msgs::msg::PointCloud2& msg);
 
 /** \overload With these fields: `x`, `y`, `z`, `intensity`, `ring`, `timestamp`
  * \return true on successful conversion, false on any error.
  * \sa fromROS
  */
 bool toROS(
-	const mrpt::maps::CPointsMapXYZIRT& obj,
-	const std_msgs::msg::Header& msg_header,
-	sensor_msgs::msg::PointCloud2& msg);
+    const mrpt::maps::CPointsMapXYZIRT& obj,
+    const std_msgs::msg::Header& msg_header,
+    sensor_msgs::msg::PointCloud2& msg);
 
 /** @} */
 /** @} */

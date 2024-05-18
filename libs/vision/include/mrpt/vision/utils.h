@@ -61,9 +61,15 @@ namespace vision
  * \sa cross_correlation
  */
 void openCV_cross_correlation(
-	const mrpt::img::CImage& img, const mrpt::img::CImage& patch_img,
-	size_t& x_max, size_t& y_max, double& max_val, int x_search_ini = -1,
-	int y_search_ini = -1, int x_search_size = -1, int y_search_size = -1);
+    const mrpt::img::CImage& img,
+    const mrpt::img::CImage& patch_img,
+    size_t& x_max,
+    size_t& y_max,
+    double& max_val,
+    int x_search_ini = -1,
+    int y_search_ini = -1,
+    int x_search_size = -1,
+    int y_search_size = -1);
 
 /** Extract a UNITARY 3D vector in the direction of a 3D point, given from its
  * (x,y) pixels coordinates, and the camera intrinsic coordinates.
@@ -74,7 +80,7 @@ void openCV_cross_correlation(
  * \sa buildIntrinsicParamsMatrix, TPixelCoordf
  */
 mrpt::math::TPoint3D pixelTo3D(
-	const mrpt::img::TPixelCoordf& xy, const mrpt::math::CMatrixDouble33& A);
+    const mrpt::img::TPixelCoordf& xy, const mrpt::math::CMatrixDouble33& A);
 
 /** Builds the intrinsic parameters matrix A from parameters:
   * \param focalLengthX [IN]   The focal length, in X (horizontal) pixels
@@ -93,22 +99,23 @@ mrpt::math::TPoint3D pixelTo3D(
   * \sa pixelTo3D
   */
 mrpt::math::CMatrixDouble33 buildIntrinsicParamsMatrix(
-	const double focalLengthX, const double focalLengthY, const double centerX,
-	const double centerY);
+    const double focalLengthX,
+    const double focalLengthY,
+    const double centerX,
+    const double centerY);
 
 /** Computes the mean squared distance between a set of 3D correspondences
  * ...
  */
-double computeMsd(
-	const mrpt::tfest::TMatchingPairList& list, const poses::CPose3D& Rt);
+double computeMsd(const mrpt::tfest::TMatchingPairList& list, const poses::CPose3D& Rt);
 
 /** Transform two clouds of 3D points into a matched list of points
  * ...
  */
 void cloudsToMatchedList(
-	const mrpt::obs::CObservationVisualLandmarks& cloud1,
-	const mrpt::obs::CObservationVisualLandmarks& cloud2,
-	mrpt::tfest::TMatchingPairList& outList);
+    const mrpt::obs::CObservationVisualLandmarks& cloud1,
+    const mrpt::obs::CObservationVisualLandmarks& cloud2,
+    mrpt::tfest::TMatchingPairList& outList);
 
 /** Computes the main orientation of a set of points with an image (for using in
  * SIFT-based algorithms)
@@ -119,8 +126,7 @@ void cloudsToMatchedList(
  * points.
  * \return The main orientation of the image point.
  */
-float computeMainOrientation(
-	const mrpt::img::CImage& image, unsigned int x, unsigned int y);
+float computeMainOrientation(const mrpt::img::CImage& image, unsigned int x, unsigned int y);
 
 /** Normalizes the brigthness and contrast of an image by setting its mean value
  * to zero and its standard deviation to unit.
@@ -138,10 +144,11 @@ void normalizeImage(const mrpt::img::CImage& image, mrpt::img::CImage& nimage);
  * \return Returns the number of matched pairs of features.
  */
 size_t matchFeatures(
-	const CFeatureList& list1, const CFeatureList& list2,
-	CMatchedFeatureList& matches,
-	const TMatchingOptions& options = TMatchingOptions(),
-	const TStereoSystemParams& params = TStereoSystemParams());
+    const CFeatureList& list1,
+    const CFeatureList& list2,
+    CMatchedFeatureList& matches,
+    const TMatchingOptions& options = TMatchingOptions(),
+    const TStereoSystemParams& params = TStereoSystemParams());
 
 /** Calculates the Sum of Absolutes Differences (range [0,1]) between two
  * patches. Both patches must have the same size.
@@ -152,8 +159,10 @@ size_t matchFeatures(
  * \exception if mList.size() = 0
  */
 void generateMask(
-	const CMatchedFeatureList& mList, mrpt::math::CMatrixBool& mask1,
-	mrpt::math::CMatrixBool& mask2, int wSize = 10);
+    const CMatchedFeatureList& mList,
+    mrpt::math::CMatrixBool& mask1,
+    mrpt::math::CMatrixBool& mask2,
+    int wSize = 10);
 
 /** Calculates the Sum of Absolutes Differences (range [0,1]) between two
  * patches. Both patches must have the same size.
@@ -161,8 +170,7 @@ void generateMask(
  * \param patch2 [IN]  The other patch.
  * \return The value of computed SAD normalized to [0,1]
  */
-double computeSAD(
-	const mrpt::img::CImage& patch1, const mrpt::img::CImage& patch2);
+double computeSAD(const mrpt::img::CImage& patch1, const mrpt::img::CImage& patch2);
 
 /** Draw rectangles around each of the features on a copy of the input image.
  * \param inImg    [IN]    The input image where to draw the features.
@@ -171,13 +179,12 @@ double computeSAD(
  * features.
  */
 void addFeaturesToImage(
-	const mrpt::img::CImage& inImg, const CFeatureList& theList,
-	mrpt::img::CImage& outImg);
+    const mrpt::img::CImage& inImg, const CFeatureList& theList, mrpt::img::CImage& outImg);
 
 void projectMatchedFeatures(
-	const CMatchedFeatureList& matches,
-	const mrpt::img::TStereoCamera& stereo_camera,
-	std::vector<mrpt::math::TPoint3D>& out_points);
+    const CMatchedFeatureList& matches,
+    const mrpt::img::TStereoCamera& stereo_camera,
+    std::vector<mrpt::math::TPoint3D>& out_points);
 
 /** Computes the 3D position of a set of matched features from their coordinates
  * in the images. The list have to be matched in order, e.g.
@@ -190,9 +197,10 @@ void projectMatchedFeatures(
  * stereo pair.
  */
 void projectMatchedFeatures(
-	const CFeatureList& leftList, const CFeatureList& rightList,
-	std::vector<mrpt::math::TPoint3D>& vP3D,
-	const TStereoSystemParams& params = TStereoSystemParams());
+    const CFeatureList& leftList,
+    const CFeatureList& rightList,
+    std::vector<mrpt::math::TPoint3D>& vP3D,
+    const TStereoSystemParams& params = TStereoSystemParams());
 
 /** Computes the 3D position of a particular matched feature.
  * \param leftList     [IN]    The left feature.
@@ -202,9 +210,10 @@ void projectMatchedFeatures(
  * stereo pair.
  */
 void projectMatchedFeature(
-	const CFeature& leftFeat, const CFeature& rightFeat,
-	mrpt::math::TPoint3D& p3D,
-	const TStereoSystemParams& params = TStereoSystemParams());
+    const CFeature& leftFeat,
+    const CFeature& rightFeat,
+    mrpt::math::TPoint3D& p3D,
+    const TStereoSystemParams& params = TStereoSystemParams());
 
 /** Project a list of matched features into the 3D space, using the provided
  * parameters of the stereo system
@@ -216,8 +225,9 @@ void projectMatchedFeature(
  * \sa TStereoSystemParams, CLandmarksMap
  */
 void projectMatchedFeatures(
-	CMatchedFeatureList& mfList, const TStereoSystemParams& param,
-	mrpt::maps::CLandmarksMap& landmarks);
+    CMatchedFeatureList& mfList,
+    const TStereoSystemParams& param,
+    mrpt::maps::CLandmarksMap& landmarks);
 
 /** Project a pair of feature lists into the 3D space, using the provided
  *options for the stereo system. The matches must be in order,
@@ -231,74 +241,84 @@ void projectMatchedFeatures(
  * \sa TStereoSystemParams, CLandmarksMap
  */
 void projectMatchedFeatures(
-	CFeatureList& leftList, CFeatureList& rightList,
-	const TStereoSystemParams& param, mrpt::maps::CLandmarksMap& landmarks);
+    CFeatureList& leftList,
+    CFeatureList& rightList,
+    const TStereoSystemParams& param,
+    mrpt::maps::CLandmarksMap& landmarks);
 
 /** Converts a stereo images observation into a bearing and range observation.
-	\param inObs	[IN]	The input stereo images observation.
-	\param sg		[IN]	The sigma of the row, col, and disparity variables
+  \param inObs	[IN]	The input stereo images observation.
+  \param sg		[IN]	The sigma of the row, col, and disparity variables
    involved in the feature detection.
-	\param outObs	[OUT]	The output bearing and range observation
+  \param outObs	[OUT]	The output bearing and range observation
    (including covariances).
 */
 void StereoObs2BRObs(
-	const mrpt::obs::CObservationStereoImages& inObs,
-	const std::vector<double>& sg, mrpt::obs::CObservationBearingRange& outObs);
+    const mrpt::obs::CObservationStereoImages& inObs,
+    const std::vector<double>& sg,
+    mrpt::obs::CObservationBearingRange& outObs);
 
 /** Converts a matched feature list into a bearing and range observation (some
    of the stereo camera system must be provided).
-	\param inMatches		[IN]	The input list of matched features.
-	\param intrinsicParams	[IN]	The intrisic params of the reference
+  \param inMatches		[IN]	The input list of matched features.
+  \param intrinsicParams	[IN]	The intrisic params of the reference
    (left) camera of the stereo system.
-	\param baseline			[IN]	The distance among the X axis of the
+  \param baseline			[IN]	The distance among the X axis of the
    right camera wrt the reference (left) camera.
-	\param sg				[IN]	The sigma of the row, col, and disparity
+  \param sg				[IN]	The sigma of the row, col, and disparity
    variables involved in the feature detection.
-	\param outObs			[OUT]	The output bearing and range observation
+  \param outObs			[OUT]	The output bearing and range observation
    (including covariances).
 */
 void StereoObs2BRObs(
-	const CMatchedFeatureList& inMatches,
-	const mrpt::math::CMatrixDouble33& intrinsicParams, double baseline,
-	const mrpt::poses::CPose3D& sensorPose, const std::vector<double>& sg,
-	mrpt::obs::CObservationBearingRange& outObs);
+    const CMatchedFeatureList& inMatches,
+    const mrpt::math::CMatrixDouble33& intrinsicParams,
+    double baseline,
+    const mrpt::poses::CPose3D& sensorPose,
+    const std::vector<double>& sg,
+    mrpt::obs::CObservationBearingRange& outObs);
 
 /** Converts a CObservationVisualLandmarks into a bearing and range observation
    (without any covariances). Fields of view are not computed.
-	\param inObs			[IN]	The input observation.
-	\param sg				[IN]	The sigma of the row, col, and disparity
+  \param inObs			[IN]	The input observation.
+  \param sg				[IN]	The sigma of the row, col, and disparity
    variables involved in the feature detection.
-	\param outObs			[OUT]	The output bearing and range observation.
+  \param outObs			[OUT]	The output bearing and range observation.
 */
 void StereoObs2BRObs(
-	const mrpt::obs::CObservationStereoImages& inObs,
-	const std::vector<double>& sg, mrpt::obs::CObservationBearingRange& outObs);
+    const mrpt::obs::CObservationStereoImages& inObs,
+    const std::vector<double>& sg,
+    mrpt::obs::CObservationBearingRange& outObs);
 
 /** Converts a CObservationVisualLandmarks into a bearing and range observation
    (without any covariances). Fields of view are not computed.
-	\param inObs			[IN]	The input observation.
-	\param outObs			[OUT]	The output bearing and range observation.
+  \param inObs			[IN]	The input observation.
+  \param outObs			[OUT]	The output bearing and range observation.
 */
 void StereoObs2BRObs(
-	const mrpt::obs::CObservationVisualLandmarks& inObs,
-	mrpt::obs::CObservationBearingRange& outObs);
+    const mrpt::obs::CObservationVisualLandmarks& inObs,
+    mrpt::obs::CObservationBearingRange& outObs);
 
 /** Computes a pair of x-and-y maps for stereo rectification from a pair of
 cameras and the relative pose of the second one wrt the first one.
-	\param cam1, cam2           [IN]    The pair of involved cameras
-	\param rightCameraPose      [IN]    The change in pose of the second camera
+  \param cam1, cam2           [IN]    The pair of involved cameras
+  \param rightCameraPose      [IN]    The change in pose of the second camera
 wrt the first one
-	\param outMap1x,outMap1y    [OUT]   The x-and-y maps corresponding to cam1
+  \param outMap1x,outMap1y    [OUT]   The x-and-y maps corresponding to cam1
 (should be converted to *cv::Mat)
-	\param outMap2x,outMap2y    [OUT]   The x-and-y maps corresponding to cam2
+  \param outMap2x,outMap2y    [OUT]   The x-and-y maps corresponding to cam2
 (should be converted to *cv::Mat)
 * \sa An easier to use class for stereo rectification
 mrpt::vision::CStereoRectifyMap
 */
 void computeStereoRectificationMaps(
-	const mrpt::img::TCamera& cam1, const mrpt::img::TCamera& cam2,
-	const mrpt::poses::CPose3D& rightCameraPose, void* outMap1x, void* outMap1y,
-	void* outMap2x, void* outMap2y);
+    const mrpt::img::TCamera& cam1,
+    const mrpt::img::TCamera& cam2,
+    const mrpt::poses::CPose3D& rightCameraPose,
+    void* outMap1x,
+    void* outMap1y,
+    void* outMap2x,
+    void* outMap2y);
 
 /** @} */  // end of grouping
 

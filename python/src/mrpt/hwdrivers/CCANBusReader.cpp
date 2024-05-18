@@ -7,7 +7,15 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/core/Clock.h>
 #include <mrpt/hwdrivers/CCANBusReader.h>
+#include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/img/CCanvas.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/img/TCamera.h>
+#include <mrpt/img/TColor.h>
+#include <mrpt/img/TPixelCoord.h>
+#include <mrpt/io/CStream.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/obs/CObservationCANBusJ1939.h>
 #include <mrpt/poses/CPose3D.h>
@@ -193,5 +201,20 @@ void bind_mrpt_hwdrivers_CCANBusReader(std::function< pybind11::module &(std::st
 		cl.def("doProcessSimple", (void (mrpt::hwdrivers::CCANBusReader::*)(bool &, class mrpt::obs::CObservationCANBusJ1939 &, bool &)) &mrpt::hwdrivers::CCANBusReader::doProcessSimple, "Specific laser scanner \"software drivers\" must process here new data\n from the I/O stream, and, if a whole scan has arrived, return it.\n  This method will be typically called in a different thread than other\n methods, and will be called in a timely fashion.\n\nC++: mrpt::hwdrivers::CCANBusReader::doProcessSimple(bool &, class mrpt::obs::CObservationCANBusJ1939 &, bool &) --> void", pybind11::arg("outThereIsObservation"), pybind11::arg("outObservation"), pybind11::arg("hardwareError"));
 		cl.def("initialize", (void (mrpt::hwdrivers::CCANBusReader::*)()) &mrpt::hwdrivers::CCANBusReader::initialize, "Set-up communication with the laser.\n  Called automatically by rawlog-grabber.\n  If used manually, call after \"loadConfig\" and before \"doProcess\".\n\n  In this class this method does nothing, since the communications are\n setup at the first try from \"doProcess\" or \"doProcessSimple\".\n\nC++: mrpt::hwdrivers::CCANBusReader::initialize() --> void");
 		cl.def("doProcess", (void (mrpt::hwdrivers::CCANBusReader::*)()) &mrpt::hwdrivers::CCANBusReader::doProcess, "C++: mrpt::hwdrivers::CCANBusReader::doProcess() --> void");
+	}
+	{ // mrpt::hwdrivers::CFFMPEG_InputStream file:mrpt/hwdrivers/CFFMPEG_InputStream.h line:42
+		pybind11::class_<mrpt::hwdrivers::CFFMPEG_InputStream, std::shared_ptr<mrpt::hwdrivers::CFFMPEG_InputStream>> cl(M("mrpt::hwdrivers"), "CFFMPEG_InputStream", "A generic class which process a video file or other kind of input stream\n (http, rtsp) and allows the extraction of images frame by frame.\n  Video sources can be open with \"openURL\", which can manage both video files\n and \"rtsp://\" sources (IP cameras).\n\n  Frames are retrieved by calling CFFMPEG_InputStream::retrieveFrame\n\n   For an example of usage, see the file \"samples/grab_camera_ffmpeg\"\n\n \n This class is an easy to use C++ wrapper for ffmpeg libraries\n (libavcodec). In Unix systems these libraries must be installed in the system\n as explained in \n* href=\"http://www.mrpt.org/Building_and_Installing_Instructions\" > MRPT's\n wiki. In Win32, a precompiled version for Visual Studio must be also\n downloaded as explained in \n* href=\"http://www.mrpt.org/Building_and_Installing_Instructions\" >the\n wiki.\n \n\n\n ");
+		cl.def( pybind11::init( [](){ return new mrpt::hwdrivers::CFFMPEG_InputStream(); } ) );
+		cl.def( pybind11::init( [](mrpt::hwdrivers::CFFMPEG_InputStream const &o){ return new mrpt::hwdrivers::CFFMPEG_InputStream(o); } ) );
+		cl.def("openURL", [](mrpt::hwdrivers::CFFMPEG_InputStream &o, const std::string & a0) -> bool { return o.openURL(a0); }, "", pybind11::arg("url"));
+		cl.def("openURL", [](mrpt::hwdrivers::CFFMPEG_InputStream &o, const std::string & a0, bool const & a1) -> bool { return o.openURL(a0, a1); }, "", pybind11::arg("url"), pybind11::arg("grab_as_grayscale"));
+		cl.def("openURL", [](mrpt::hwdrivers::CFFMPEG_InputStream &o, const std::string & a0, bool const & a1, bool const & a2) -> bool { return o.openURL(a0, a1, a2); }, "", pybind11::arg("url"), pybind11::arg("grab_as_grayscale"), pybind11::arg("verbose"));
+		cl.def("openURL", (bool (mrpt::hwdrivers::CFFMPEG_InputStream::*)(const std::string &, bool, bool, const class std::map<std::string, std::string > &)) &mrpt::hwdrivers::CFFMPEG_InputStream::openURL, "Open a video file or a video stream (rtsp://)\n  This can be used to open local video files (eg. \"myVideo.avi\",\n \"c:\\a.mpeg\") and also IP cameras (e.g `rtsp://a.b.c.d/live.sdp`).\n  User/password can be used like `rtsp://USER:PASSWORD/PATH`.\n\n [ffmpeg options](https://www.ffmpeg.org/ffmpeg-protocols.html)\n can be added via the  argument.\n\n If  is set to true, more information about the video will be\n dumped to cout.\n\n \n close, retrieveFrame\n \n\n false on any error (and error info dumped to cerr), true on\n success.\n\nC++: mrpt::hwdrivers::CFFMPEG_InputStream::openURL(const std::string &, bool, bool, const class std::map<std::string, std::string > &) --> bool", pybind11::arg("url"), pybind11::arg("grab_as_grayscale"), pybind11::arg("verbose"), pybind11::arg("options"));
+		cl.def("isOpen", (bool (mrpt::hwdrivers::CFFMPEG_InputStream::*)() const) &mrpt::hwdrivers::CFFMPEG_InputStream::isOpen, "Return whether the video source was open correctly \n\nC++: mrpt::hwdrivers::CFFMPEG_InputStream::isOpen() const --> bool");
+		cl.def("close", (void (mrpt::hwdrivers::CFFMPEG_InputStream::*)()) &mrpt::hwdrivers::CFFMPEG_InputStream::close, "Close the video stream (this is called automatically at destruction).\n \n\n openURL\n\nC++: mrpt::hwdrivers::CFFMPEG_InputStream::close() --> void");
+		cl.def("getVideoFPS", (double (mrpt::hwdrivers::CFFMPEG_InputStream::*)() const) &mrpt::hwdrivers::CFFMPEG_InputStream::getVideoFPS, "Get the frame-per-second (FPS) of the video source, or \"-1\" if the video\n is not open. \n\nC++: mrpt::hwdrivers::CFFMPEG_InputStream::getVideoFPS() const --> double");
+		cl.def("retrieveFrame", (bool (mrpt::hwdrivers::CFFMPEG_InputStream::*)(class mrpt::img::CImage &)) &mrpt::hwdrivers::CFFMPEG_InputStream::retrieveFrame, "Get the next frame from the video stream.\n  Note that for remote streams (IP cameras) this method may block until\n enough information is read to generate a new frame.\n  Images are returned as 8-bit depth grayscale if \"grab_as_grayscale\" is\n true.\n  \n\n false on any error, true on success.\n  \n\n openURL, close, isOpen\n\nC++: mrpt::hwdrivers::CFFMPEG_InputStream::retrieveFrame(class mrpt::img::CImage &) --> bool", pybind11::arg("out_img"));
+		cl.def("retrieveFrame", (bool (mrpt::hwdrivers::CFFMPEG_InputStream::*)(class mrpt::img::CImage &, long &)) &mrpt::hwdrivers::CFFMPEG_InputStream::retrieveFrame, "Refer to docs for ffmpeg AVFrame::pts\n\nC++: mrpt::hwdrivers::CFFMPEG_InputStream::retrieveFrame(class mrpt::img::CImage &, long &) --> bool", pybind11::arg("out_img"), pybind11::arg("outPTS"));
+		cl.def("assign", (class mrpt::hwdrivers::CFFMPEG_InputStream & (mrpt::hwdrivers::CFFMPEG_InputStream::*)(const class mrpt::hwdrivers::CFFMPEG_InputStream &)) &mrpt::hwdrivers::CFFMPEG_InputStream::operator=, "C++: mrpt::hwdrivers::CFFMPEG_InputStream::operator=(const class mrpt::hwdrivers::CFFMPEG_InputStream &) --> class mrpt::hwdrivers::CFFMPEG_InputStream &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
 }

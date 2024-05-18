@@ -23,31 +23,30 @@ namespace mrpt::graphslam::deciders
  * \ingroup mrpt_graphslam_grp
  */
 template <class GRAPH_T = typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CEmptyNRD
-	: public mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>
+class CEmptyNRD : public mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>
 {
-	/**\brief Handy typedefs */
-	/**\{*/
-	using pose_t = typename GRAPH_T::constraint_t::type_value;
-	using global_pose_t = typename GRAPH_T::global_pose_t;
-	/**\}*/
-   public:
-	CEmptyNRD() = default;
-	~CEmptyNRD() override = default;
+  /**\brief Handy typedefs */
+  /**\{*/
+  using pose_t = typename GRAPH_T::constraint_t::type_value;
+  using global_pose_t = typename GRAPH_T::global_pose_t;
+  /**\}*/
+ public:
+  CEmptyNRD() = default;
+  ~CEmptyNRD() override = default;
 
-	bool updateState(
-		mrpt::obs::CActionCollection::Ptr action,
-		mrpt::obs::CSensoryFrame::Ptr observations,
-		mrpt::obs::CObservation::Ptr observation) override
-	{
-		return false;
-	}
-	global_pose_t getCurrentRobotPosEstimation() const override
-	{
-		return typename GRAPH_T::global_pose_t();
-	};
+  bool updateState(
+      mrpt::obs::CActionCollection::Ptr action,
+      mrpt::obs::CSensoryFrame::Ptr observations,
+      mrpt::obs::CObservation::Ptr observation) override
+  {
+    return false;
+  }
+  global_pose_t getCurrentRobotPosEstimation() const override
+  {
+    return typename GRAPH_T::global_pose_t();
+  };
 
-   private:
-	void registerNewNode(){};
+ private:
+  void registerNewNode(){};
 };
 }  // namespace mrpt::graphslam::deciders

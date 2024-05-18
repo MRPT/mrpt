@@ -26,87 +26,87 @@ using namespace mrpt::serialization;
 using namespace std;
 
 /* ------------------------------------------------------------------------
-					Test_SoG_Merge
+          Test_SoG_Merge
    ------------------------------------------------------------------------ */
 void Test_SoG_Merge()
 {
-	CPosePDFSOG pdf;
+  CPosePDFSOG pdf;
 
-	CPosePDFSOG::TGaussianMode m;
-	m.mean = CPose2D(1.1, -0.1, -2.0_deg);
+  CPosePDFSOG::TGaussianMode m;
+  m.mean = CPose2D(1.1, -0.1, -2.0_deg);
 
-	m.cov.setIdentity();
-	m.cov(0, 0) = m.cov(1, 1) = square(0.1);
-	m.cov(2, 2) = square(2.0_deg);
-	m.log_w = 0;
+  m.cov.setIdentity();
+  m.cov(0, 0) = m.cov(1, 1) = square(0.1);
+  m.cov(2, 2) = square(2.0_deg);
+  m.log_w = 0;
 
-	pdf.clear();
-	pdf.push_back(m);
+  pdf.clear();
+  pdf.push_back(m);
 
-	m.mean = CPose2D(1.1, 0.1, 2.0_deg);
-	pdf.push_back(m);
+  m.mean = CPose2D(1.1, 0.1, 2.0_deg);
+  pdf.push_back(m);
 
-	m.mean = CPose2D(2, 0, 20.0_deg);
-	pdf.push_back(m);
+  m.mean = CPose2D(2, 0, 20.0_deg);
+  pdf.push_back(m);
 
-	cout << "Initial PDF: mean: " << pdf.getMeanVal() << endl;
-	cout << pdf.getCovariance() << endl << endl;
+  cout << "Initial PDF: mean: " << pdf.getMeanVal() << endl;
+  cout << pdf.getCovariance() << endl << endl;
 
 #if MRPT_HAS_WXWIDGETS
-	CDisplayWindow3D win_before("Before merge");
-	CDisplayWindow3D win_after("After merge");
+  CDisplayWindow3D win_before("Before merge");
+  CDisplayWindow3D win_after("After merge");
 #endif
 
-	{
-		Scene scene;
-		CSetOfObjects::Ptr o = CSetOfObjects::Create();
-		pdf.getAs3DObject(o);
-		scene.insert(o);
-		scene.insert(CGridPlaneXY::Create(-5, 5, -5, 5, 0, 1));
+  {
+    Scene scene;
+    CSetOfObjects::Ptr o = CSetOfObjects::Create();
+    pdf.getAs3DObject(o);
+    scene.insert(o);
+    scene.insert(CGridPlaneXY::Create(-5, 5, -5, 5, 0, 1));
 
-		CFileGZOutputStream f("sog_before.3Dscene");
-		archiveFrom(f) << scene;
+    CFileGZOutputStream f("sog_before.3Dscene");
+    archiveFrom(f) << scene;
 
 #if MRPT_HAS_WXWIDGETS
-		Scene::Ptr sc = win_before.get3DSceneAndLock();
-		*sc = scene;
-		win_before.unlockAccess3DScene();
-		win_before.setCameraZoom(5);
-		win_before.setCameraPointingToPoint(1, 0, 0);
-		win_before.forceRepaint();
+    Scene::Ptr sc = win_before.get3DSceneAndLock();
+    *sc = scene;
+    win_before.unlockAccess3DScene();
+    win_before.setCameraZoom(5);
+    win_before.setCameraPointingToPoint(1, 0, 0);
+    win_before.forceRepaint();
 #endif
-	}
+  }
 
-	cout << "Merging...";
-	pdf.mergeModes(0.9, true);
-	cout << " # modes after: " << pdf.size() << endl;
+  cout << "Merging...";
+  pdf.mergeModes(0.9, true);
+  cout << " # modes after: " << pdf.size() << endl;
 
-	cout << "Final PDF: mean: " << pdf.getMeanVal() << endl;
-	cout << pdf.getCovariance() << endl << endl;
+  cout << "Final PDF: mean: " << pdf.getMeanVal() << endl;
+  cout << pdf.getCovariance() << endl << endl;
 
-	{
-		Scene scene;
-		CSetOfObjects::Ptr o = CSetOfObjects::Create();
-		pdf.getAs3DObject(o);
-		scene.insert(o);
-		scene.insert(CGridPlaneXY::Create(-5, 5, -5, 5, 0, 1));
+  {
+    Scene scene;
+    CSetOfObjects::Ptr o = CSetOfObjects::Create();
+    pdf.getAs3DObject(o);
+    scene.insert(o);
+    scene.insert(CGridPlaneXY::Create(-5, 5, -5, 5, 0, 1));
 
-		CFileGZOutputStream f("sog_after.3Dscene");
-		archiveFrom(f) << scene;
+    CFileGZOutputStream f("sog_after.3Dscene");
+    archiveFrom(f) << scene;
 
 #if MRPT_HAS_WXWIDGETS
-		Scene::Ptr sc = win_after.get3DSceneAndLock();
-		*sc = scene;
-		win_after.unlockAccess3DScene();
-		win_after.setCameraZoom(5);
-		win_after.setCameraPointingToPoint(1, 0, 0);
-		win_after.forceRepaint();
+    Scene::Ptr sc = win_after.get3DSceneAndLock();
+    *sc = scene;
+    win_after.unlockAccess3DScene();
+    win_after.setCameraZoom(5);
+    win_after.setCameraPointingToPoint(1, 0, 0);
+    win_after.forceRepaint();
 #endif
-	}
+  }
 
 #if MRPT_HAS_WXWIDGETS
-	cout << "Push any key to exit..." << endl;
-	mrpt::system::os::getch();
+  cout << "Push any key to exit..." << endl;
+  mrpt::system::os::getch();
 #endif
 }
 
@@ -115,20 +115,20 @@ void Test_SoG_Merge()
 // ------------------------------------------------------
 int main(int argc, char** argv)
 {
-	try
-	{
-		Test_SoG_Merge();
+  try
+  {
+    Test_SoG_Merge();
 
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
-		return -1;
-	}
-	catch (...)
-	{
-		printf("Untyped exception!");
-		return -1;
-	}
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    return -1;
+  }
+  catch (...)
+  {
+    printf("Untyped exception!");
+    return -1;
+  }
 }

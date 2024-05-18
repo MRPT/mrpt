@@ -26,9 +26,11 @@ namespace mrpt::nav
  * (1e-10)
  */
 bool collision_free_dist_segment_circ_robot(
-	const mrpt::math::TPoint2D& p_start, const mrpt::math::TPoint2D& p_end,
-	const double robot_radius, const mrpt::math::TPoint2D& obstacle,
-	double& out_col_dist);
+    const mrpt::math::TPoint2D& p_start,
+    const mrpt::math::TPoint2D& p_end,
+    const double robot_radius,
+    const mrpt::math::TPoint2D& obstacle,
+    double& out_col_dist);
 
 /** Computes the collision-free distance for a forward path (+X) circular arc
  * path segment from pose (0,0,0) and radius of curvature R (>0 -> +Y, <0 ->
@@ -37,8 +39,10 @@ bool collision_free_dist_segment_circ_robot(
  * false otherwise.
  */
 bool collision_free_dist_arc_circ_robot(
-	const double arc_radius, const double robot_radius,
-	const mrpt::math::TPoint2D& obstacle, double& out_col_dist);
+    const double arc_radius,
+    const double robot_radius,
+    const mrpt::math::TPoint2D& obstacle,
+    double& out_col_dist);
 
 /** @} */
 }  // namespace mrpt::nav

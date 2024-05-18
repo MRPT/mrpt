@@ -31,98 +31,98 @@ using namespace std;
 // ------------------------------------------------------
 double icp_test_1(int a1, int a2)
 {
-	using namespace std::string_literals;
-	const std::string rawlog_file = mrpt::system::getShareMRPTDir() +
-		"datasets/2006-01ENE-21-SENA_Telecom Faculty_one_loop_only.rawlog"s;
+  using namespace std::string_literals;
+  const std::string rawlog_file =
+      mrpt::system::getShareMRPTDir() +
+      "datasets/2006-01ENE-21-SENA_Telecom Faculty_one_loop_only.rawlog"s;
 
-	if (!mrpt::system::fileExists(rawlog_file)) return 1;
+  if (!mrpt::system::fileExists(rawlog_file)) return 1;
 
-	CTicTac tictac;
+  CTicTac tictac;
 
-	int step = 0;
-	size_t rawlogEntry = 0;
-	mrpt::io::CFileGZInputStream rawlogFile(rawlog_file);
+  int step = 0;
+  size_t rawlogEntry = 0;
+  mrpt::io::CFileGZInputStream rawlogFile(rawlog_file);
 
-	TSetOfMetricMapInitializers metricMapsOpts;
+  TSetOfMetricMapInitializers metricMapsOpts;
 
-	const bool use_grid = a1 != 0;
+  const bool use_grid = a1 != 0;
 
-	if (use_grid)
-	{
-		mrpt::maps::COccupancyGridMap2D::TMapDefinition def;
-		def.resolution = 0.05f;
-		metricMapsOpts.push_back(def);
-	}
-	else
-	{
-		mrpt::maps::CSimplePointsMap::TMapDefinition def;
-		def.insertionOpts.minDistBetweenLaserPoints = 0.03f;
-		metricMapsOpts.push_back(def);
-	}
+  if (use_grid)
+  {
+    mrpt::maps::COccupancyGridMap2D::TMapDefinition def;
+    def.resolution = 0.05f;
+    metricMapsOpts.push_back(def);
+  }
+  else
+  {
+    mrpt::maps::CSimplePointsMap::TMapDefinition def;
+    def.insertionOpts.minDistBetweenLaserPoints = 0.03f;
+    metricMapsOpts.push_back(def);
+  }
 
-	double insertionLinDistance = 0.75;
-	double insertionAngDistance = 30.0_deg;
+  double insertionLinDistance = 0.75;
+  double insertionAngDistance = 30.0_deg;
 
-	CICP::TConfigParams icpOptions;
+  CICP::TConfigParams icpOptions;
 
-	icpOptions.maxIterations = 40;
+  icpOptions.maxIterations = 40;
 
-	// ---------------------------------
-	//		Constructor
-	// ---------------------------------
-	CMetricMapBuilderICP mapBuilder;
+  // ---------------------------------
+  //		Constructor
+  // ---------------------------------
+  CMetricMapBuilderICP mapBuilder;
 
-	mapBuilder.ICP_options.mapInitializers = metricMapsOpts;
+  mapBuilder.ICP_options.mapInitializers = metricMapsOpts;
 
-	mapBuilder.ICP_options.insertionLinDistance = insertionLinDistance;
-	mapBuilder.ICP_options.insertionAngDistance = insertionAngDistance;
+  mapBuilder.ICP_options.insertionLinDistance = insertionLinDistance;
+  mapBuilder.ICP_options.insertionAngDistance = insertionAngDistance;
 
-	mapBuilder.ICP_options.matchAgainstTheGrid = use_grid;
-	mapBuilder.ICP_params = icpOptions;
+  mapBuilder.ICP_options.matchAgainstTheGrid = use_grid;
+  mapBuilder.ICP_params = icpOptions;
 
-	// Start with an empty map:
-	mapBuilder.initialize(CSimpleMap());
+  // Start with an empty map:
+  mapBuilder.initialize(CSimpleMap());
 
-	// ---------------------------------
-	//   CMetricMapBuilder::TOptions
-	// ---------------------------------
-	mapBuilder.setVerbosityLevel(mrpt::system::LVL_ERROR);
-	mapBuilder.options.enableMapUpdating = true;
+  // ---------------------------------
+  //   CMetricMapBuilder::TOptions
+  // ---------------------------------
+  mapBuilder.setVerbosityLevel(mrpt::system::LVL_ERROR);
+  mapBuilder.options.enableMapUpdating = true;
 
-	// ----------------------------------------------------------
-	//						Map Building
-	// ----------------------------------------------------------
-	CActionCollection::Ptr action;
-	CSensoryFrame::Ptr observations;
+  // ----------------------------------------------------------
+  //						Map Building
+  // ----------------------------------------------------------
+  CActionCollection::Ptr action;
+  CSensoryFrame::Ptr observations;
 
-	auto arch = mrpt::serialization::archiveFrom(rawlogFile);
-	for (;;)
-	{
-		// Load action/observation pair from the rawlog:
-		// --------------------------------------------------
-		if (!CRawlog::readActionObservationPair(
-				arch, action, observations, rawlogEntry))
-			break;	// file EOF
+  auto arch = mrpt::serialization::archiveFrom(rawlogFile);
+  for (;;)
+  {
+    // Load action/observation pair from the rawlog:
+    // --------------------------------------------------
+    if (!CRawlog::readActionObservationPair(arch, action, observations, rawlogEntry))
+      break;  // file EOF
 
-		// Execute:
-		mapBuilder.processActionObservation(*action, *observations);
+    // Execute:
+    mapBuilder.processActionObservation(*action, *observations);
 
-		step++;
-		//		printf("\n---------------- STEP %u | RAWLOG ENTRY %u
-		//----------------\n",step, (unsigned)rawlogEntry);
+    step++;
+    //		printf("\n---------------- STEP %u | RAWLOG ENTRY %u
+    //----------------\n",step, (unsigned)rawlogEntry);
 
-		// Free memory:
-		action.reset();
-		observations.reset();
-	}
+    // Free memory:
+    action.reset();
+    observations.reset();
+  }
 
 #if 0
 	mapBuilder.getCurrentlyBuiltMetricMap().saveMetricMapRepresentationToFile( format("icp_%i_result",a1) );
 #endif
 
-	if (!step) step++;
+  if (!step) step++;
 
-	return tictac.Tac() / step;
+  return tictac.Tac() / step;
 }
 
 // ------------------------------------------------------
@@ -130,8 +130,6 @@ double icp_test_1(int a1, int a2)
 // ------------------------------------------------------
 void register_tests_icpslam()
 {
-	lstTests.emplace_back(
-		"icp-slam (match points): Run with sample dataset", icp_test_1, 0);
-	lstTests.emplace_back(
-		"icp-slam (match grid): Run with sample dataset", icp_test_1, 1);
+  lstTests.emplace_back("icp-slam (match points): Run with sample dataset", icp_test_1, 0);
+  lstTests.emplace_back("icp-slam (match grid): Run with sample dataset", icp_test_1, 1);
 }

@@ -4,7 +4,6 @@
 #include <mrpt/obs/CAction.h>
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/serialization/CMessage.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <ostream>
 #include <sstream> // __str__

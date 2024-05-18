@@ -8,79 +8,80 @@
    +------------------------------------------------------------------------+ */
 /** \example serialization_json_example/test.cpp */
 
-#include <iostream>	 // cout
-#include <sstream>	// stringstream
+#include <iostream>  // cout
+#include <sstream>   // stringstream
 
 //! [example]
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/serialization/CSchemeArchive.h>
 
-#include <iostream>	 // cout
+#include <iostream>  // cout
 
 void WriteAndReadExample()
 {
-	// Define the MRPT objects to be serialized:
-	mrpt::poses::CPosePDFGaussian pdf1{
-		mrpt::poses::CPose2D{1.0, 2.0, mrpt::DEG2RAD(90.0)},
-		mrpt::math::CMatrixDouble33()};
-	mrpt::poses::CPose2D p1{5.0, 6.0, mrpt::DEG2RAD(.0)};
+  // Define the MRPT objects to be serialized:
+  mrpt::poses::CPosePDFGaussian pdf1{
+      mrpt::poses::CPose2D{1.0, 2.0, mrpt::DEG2RAD(90.0)},
+      mrpt::math::CMatrixDouble33()
+  };
+  mrpt::poses::CPose2D p1{5.0, 6.0, mrpt::DEG2RAD(.0)};
 
-	// --------------------
-	// JSON Serialization
-	// --------------------
-	// Create a JSON archive:
-	auto arch = mrpt::serialization::archiveJSON();
+  // --------------------
+  // JSON Serialization
+  // --------------------
+  // Create a JSON archive:
+  auto arch = mrpt::serialization::archiveJSON();
 
-	// Writes the objects to the JSON archive:
-	arch["pose_pdf"] = pdf1;
-	arch["pose"] = p1;
+  // Writes the objects to the JSON archive:
+  arch["pose_pdf"] = pdf1;
+  arch["pose"] = p1;
 
-	// Writes the JSON representation to an std::ostream
-	std::stringstream ss;
-	ss << arch;
+  // Writes the JSON representation to an std::ostream
+  std::stringstream ss;
+  ss << arch;
 
-	// also, print to cout for illustration purposes:
-	std::cout << arch << std::endl;
+  // also, print to cout for illustration purposes:
+  std::cout << arch << std::endl;
 
-	// --------------------
-	// JSON Deserialization
-	// --------------------
-	// rewind stream for reading from the start
-	ss.seekg(0);
+  // --------------------
+  // JSON Deserialization
+  // --------------------
+  // rewind stream for reading from the start
+  ss.seekg(0);
 
-	// Create a new JSON archive for reading
-	auto arch2 = mrpt::serialization::archiveJSON();
+  // Create a new JSON archive for reading
+  auto arch2 = mrpt::serialization::archiveJSON();
 
-	// Load the plain text representation into the archive:
-	ss >> arch2;
+  // Load the plain text representation into the archive:
+  ss >> arch2;
 
-	// Parse the JSON data into an MRPT object:
-	mrpt::poses::CPosePDFGaussian pdf2;
-	arch2["pose_pdf"].readTo(pdf2);
-	mrpt::poses::CPose2D p2;
-	arch2["pose"].readTo(p2);
+  // Parse the JSON data into an MRPT object:
+  mrpt::poses::CPosePDFGaussian pdf2;
+  arch2["pose_pdf"].readTo(pdf2);
+  mrpt::poses::CPose2D p2;
+  arch2["pose"].readTo(p2);
 
-	std::cout << "read pose:" << p2.asString() << std::endl;
+  std::cout << "read pose:" << p2.asString() << std::endl;
 }
 //! [example]
 
 int main(int argc, char** argv)
 {
-	try
-	{
-		WriteAndReadExample();
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
-		return -1;
-	}
-	catch (...)
-	{
-		printf("Untyped exception!");
-		return -1;
-	}
+  try
+  {
+    WriteAndReadExample();
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    return -1;
+  }
+  catch (...)
+  {
+    printf("Untyped exception!");
+    return -1;
+  }
 }
 
 #if 0  // code disabled, only present as an example for the docs:

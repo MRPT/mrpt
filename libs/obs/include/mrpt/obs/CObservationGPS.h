@@ -67,189 +67,171 @@ namespace mrpt::obs
  */
 class CObservationGPS : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationGPS, mrpt::obs)
+  DEFINE_SERIALIZABLE(CObservationGPS, mrpt::obs)
 
-   public:
-	using message_list_t =
-		std::map<gnss::gnss_message_type_t, gnss::gnss_message_ptr>;
+ public:
+  using message_list_t = std::map<gnss::gnss_message_type_t, gnss::gnss_message_ptr>;
 
-	/** @name GNSS (GPS) data fields
-	 * @{ */
-	/** The sensor pose on the robot/vehicle */
-	mrpt::poses::CPose3D sensorPose{};
+  /** @name GNSS (GPS) data fields
+   * @{ */
+  /** The sensor pose on the robot/vehicle */
+  mrpt::poses::CPose3D sensorPose{};
 
-	/** The local computer-based timestamp based on the reception of the message
-	 * in the computer. \sa CObservation::timestamp in the base class, which
-	 * should contain the accurate satellite-based UTC timestamp. */
-	mrpt::system::TTimeStamp originalReceivedTimestamp{INVALID_TIMESTAMP};
+  /** The local computer-based timestamp based on the reception of the message
+   * in the computer. \sa CObservation::timestamp in the base class, which
+   * should contain the accurate satellite-based UTC timestamp. */
+  mrpt::system::TTimeStamp originalReceivedTimestamp{INVALID_TIMESTAMP};
 
-	/** If true, CObservation::timestamp has been generated from accurate
-	 * satellite clock. Otherwise, no GPS data is available and timestamps are
-	 * based on the local computer clock. */
-	bool has_satellite_timestamp{false};
+  /** If true, CObservation::timestamp has been generated from accurate
+   * satellite clock. Otherwise, no GPS data is available and timestamps are
+   * based on the local computer clock. */
+  bool has_satellite_timestamp{false};
 
-	/** The main piece of data in this class: a list of GNNS messages.
-	 * Normally users might prefer to access the list via the methods
-	 * CObservationGPS::getMsgByClass() and CObservationGPS::setMsg()
-	 * Typically only one message, may be multiple if all have the same
-	 * timestamp. */
-	message_list_t messages;
+  /** The main piece of data in this class: a list of GNNS messages.
+   * Normally users might prefer to access the list via the methods
+   * CObservationGPS::getMsgByClass() and CObservationGPS::setMsg()
+   * Typically only one message, may be multiple if all have the same
+   * timestamp. */
+  message_list_t messages;
 
-	/** If present, it defines the ENU position uncertainty.
-	 */
-	std::optional<mrpt::math::CMatrixDouble33> covariance_enu;
-	/** @} */
+  /** If present, it defines the ENU position uncertainty.
+   */
+  std::optional<mrpt::math::CMatrixDouble33> covariance_enu;
+  /** @} */
 
-	/** @name Main API to access to the data fields
-	 * @{ */
-	/** Stores a message in the list \a messages, making a copy of the passed
-	 * object.
-	 * Valid message classes are those derived from
-	 * mrpt::obs::gnss::gnss_message. If another message of the same type
-	 * exists, it is overwritten. */
-	template <class MSG_CLASS>
-	void setMsg(const MSG_CLASS& msg)
-	{
-		messages[static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type)]
-			.reset(new MSG_CLASS(msg));
-	}
-	/** Returns true if the list \a CObservationGPS::messages contains one of
-	 * the requested type. \sa mrpt::obs::gnss::gnss_message_type_t,
-	 * CObservationGPS::getMsgByType() */
-	bool hasMsgType(const gnss::gnss_message_type_t type_id) const;
-	/** Like \a hasMsgType() but allows querying for message classes, from any
-	 * of those derived from mrpt::obs::gnss::gnss_message \sa
-	 * CObservationGPS::hasMsgType(),  */
-	template <class MSG_CLASS>
-	bool hasMsgClass() const
-	{
-		return hasMsgType(
-			static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
-	}
-	/** Returns a pointer to the message in the list CObservationGPS::messages
-	 * of the requested type. Users normally would prefer using
-	 * CObservationGPS::getMsgByClass()
-	 * to avoid having to perform a dynamic_cast<>() on the returned pointer.
-	 * \exception std::runtime_error If there is no such a message in the list.
-	 * Please, check existence before calling this method with
-	 * CObservationGPS::hasMsgType()
-	 * \sa mrpt::obs::gnss::gnss_message_type_t,
-	 * CObservationGPS::getMsgByClass(), CObservationGPS::hasMsgType() */
-	mrpt::obs::gnss::gnss_message* getMsgByType(
-		const gnss::gnss_message_type_t type_id);
-	/** \overload */
-	const mrpt::obs::gnss::gnss_message* getMsgByType(
-		const gnss::gnss_message_type_t type_id) const;
+  /** @name Main API to access to the data fields
+   * @{ */
+  /** Stores a message in the list \a messages, making a copy of the passed
+   * object.
+   * Valid message classes are those derived from
+   * mrpt::obs::gnss::gnss_message. If another message of the same type
+   * exists, it is overwritten. */
+  template <class MSG_CLASS>
+  void setMsg(const MSG_CLASS& msg)
+  {
+    messages[static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type)].reset(new MSG_CLASS(msg));
+  }
+  /** Returns true if the list \a CObservationGPS::messages contains one of
+   * the requested type. \sa mrpt::obs::gnss::gnss_message_type_t,
+   * CObservationGPS::getMsgByType() */
+  bool hasMsgType(const gnss::gnss_message_type_t type_id) const;
+  /** Like \a hasMsgType() but allows querying for message classes, from any
+   * of those derived from mrpt::obs::gnss::gnss_message \sa
+   * CObservationGPS::hasMsgType(),  */
+  template <class MSG_CLASS>
+  bool hasMsgClass() const
+  {
+    return hasMsgType(static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
+  }
+  /** Returns a pointer to the message in the list CObservationGPS::messages
+   * of the requested type. Users normally would prefer using
+   * CObservationGPS::getMsgByClass()
+   * to avoid having to perform a dynamic_cast<>() on the returned pointer.
+   * \exception std::runtime_error If there is no such a message in the list.
+   * Please, check existence before calling this method with
+   * CObservationGPS::hasMsgType()
+   * \sa mrpt::obs::gnss::gnss_message_type_t,
+   * CObservationGPS::getMsgByClass(), CObservationGPS::hasMsgType() */
+  mrpt::obs::gnss::gnss_message* getMsgByType(const gnss::gnss_message_type_t type_id);
+  /** \overload */
+  const mrpt::obs::gnss::gnss_message* getMsgByType(const gnss::gnss_message_type_t type_id) const;
 
-	/** Returns a reference to the message in the list CObservationGPS::messages
-	 * of the requested class.
-	 * \exception std::runtime_error If there is no such a message in the list.
-	 * Please, check existence before calling this method with
-	 * CObservationGPS::hasMsgClass()
-	 * \sa mrpt::obs::gnss::gnss_message_type_t,
-	 * CObservationGPS::getMsgByType(), CObservationGPS::hasMsgType() */
-	template <class MSG_CLASS>
-	MSG_CLASS& getMsgByClass()
-	{
-		auto it = messages.find(
-			static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
-		ASSERTMSG_(
-			it != messages.end(),
-			mrpt::format(
-				"[CObservationGPS::getMsgByClass] Cannot "
-				"find any observation of type `%s`",
-				typeid(MSG_CLASS).name()));
-		ASSERT_(it->second.get());
-		return *dynamic_cast<MSG_CLASS*>(it->second.get());
-	}
-	/** \overload */
-	template <class MSG_CLASS>
-	const MSG_CLASS& getMsgByClass() const
-	{
-		auto it = messages.find(
-			static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
-		ASSERTMSG_(
-			it != messages.end(),
-			mrpt::format(
-				"[CObservationGPS::getMsgByClass] Cannot "
-				"find any observation of type `%s`",
-				typeid(MSG_CLASS).name()));
-		ASSERT_(it->second.get());
-		return *dynamic_cast<const MSG_CLASS*>(it->second.get());
-	}
+  /** Returns a reference to the message in the list CObservationGPS::messages
+   * of the requested class.
+   * \exception std::runtime_error If there is no such a message in the list.
+   * Please, check existence before calling this method with
+   * CObservationGPS::hasMsgClass()
+   * \sa mrpt::obs::gnss::gnss_message_type_t,
+   * CObservationGPS::getMsgByType(), CObservationGPS::hasMsgType() */
+  template <class MSG_CLASS>
+  MSG_CLASS& getMsgByClass()
+  {
+    auto it = messages.find(static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
+    ASSERTMSG_(
+        it != messages.end(), mrpt::format(
+                                  "[CObservationGPS::getMsgByClass] Cannot "
+                                  "find any observation of type `%s`",
+                                  typeid(MSG_CLASS).name()));
+    ASSERT_(it->second.get());
+    return *dynamic_cast<MSG_CLASS*>(it->second.get());
+  }
+  /** \overload */
+  template <class MSG_CLASS>
+  const MSG_CLASS& getMsgByClass() const
+  {
+    auto it = messages.find(static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
+    ASSERTMSG_(
+        it != messages.end(), mrpt::format(
+                                  "[CObservationGPS::getMsgByClass] Cannot "
+                                  "find any observation of type `%s`",
+                                  typeid(MSG_CLASS).name()));
+    ASSERT_(it->second.get());
+    return *dynamic_cast<const MSG_CLASS*>(it->second.get());
+  }
 
-	/** Like CObservationGPS::getMsgByClass() but returns a nullptr pointer if
-	 * message is not found, instead of launching an exception */
-	template <class MSG_CLASS>
-	MSG_CLASS* getMsgByClassPtr()
-	{
-		auto it = messages.find(
-			static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
-		return it == messages.end()
-			? static_cast<MSG_CLASS*>(nullptr)
-			: dynamic_cast<MSG_CLASS*>(it->second.get());
-	}
-	/** \overload */
-	template <class MSG_CLASS>
-	const MSG_CLASS* getMsgByClassPtr() const
-	{
-		auto it = messages.find(
-			static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
-		return it == messages.end()
-			? static_cast<const MSG_CLASS*>(nullptr)
-			: dynamic_cast<const MSG_CLASS*>(it->second.get());
-	}
+  /** Like CObservationGPS::getMsgByClass() but returns a nullptr pointer if
+   * message is not found, instead of launching an exception */
+  template <class MSG_CLASS>
+  MSG_CLASS* getMsgByClassPtr()
+  {
+    auto it = messages.find(static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
+    return it == messages.end() ? static_cast<MSG_CLASS*>(nullptr)
+                                : dynamic_cast<MSG_CLASS*>(it->second.get());
+  }
+  /** \overload */
+  template <class MSG_CLASS>
+  const MSG_CLASS* getMsgByClassPtr() const
+  {
+    auto it = messages.find(static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
+    return it == messages.end() ? static_cast<const MSG_CLASS*>(nullptr)
+                                : dynamic_cast<const MSG_CLASS*>(it->second.get());
+  }
 
-	/** Dumps the contents of the observation in a human-readable form to a
-	 * given output stream \sa dumpToConsole(), getDescriptionAsText() */
-	void dumpToStream(std::ostream& out) const;
-	/** Dumps the contents of the observation in a human-readable form to an
-	 * std::ostream (use std::cout to print to console) */
-	void dumpToConsole(std::ostream& o) const;
-	/** Empties this observation, clearing the container \a messages */
-	void clear();
+  /** Dumps the contents of the observation in a human-readable form to a
+   * given output stream \sa dumpToConsole(), getDescriptionAsText() */
+  void dumpToStream(std::ostream& out) const;
+  /** Dumps the contents of the observation in a human-readable form to an
+   * std::ostream (use std::cout to print to console) */
+  void dumpToConsole(std::ostream& o) const;
+  /** Empties this observation, clearing the container \a messages */
+  void clear();
 
-	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
-	{
-		out_sensorPose = sensorPose;
-	}  // See base class docs
-	void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override
-	{
-		sensorPose = newSensorPose;
-	}  // See base class docs
-	void getDescriptionAsText(
-		std::ostream& o) const override;  // See base class docs
+  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
+  {
+    out_sensorPose = sensorPose;
+  }  // See base class docs
+  void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override
+  {
+    sensorPose = newSensorPose;
+  }                                                           // See base class docs
+  void getDescriptionAsText(std::ostream& o) const override;  // See base class docs
 
-	mrpt::system::TTimeStamp getOriginalReceivedTimeStamp()
-		const override;	 // See base class docs
-	/** @} */
+  mrpt::system::TTimeStamp getOriginalReceivedTimeStamp() const override;  // See base class docs
+  /** @} */
 
-	/** true if the corresponding field exists in \a messages. */
-	bool has_GGA_datum() const
-	{
-		return messages.find(gnss::NMEA_GGA) != messages.end();
-	}
-	/** true if the corresponding field exists in \a messages. */
-	bool has_RMC_datum() const
-	{
-		return messages.find(gnss::NMEA_RMC) != messages.end();
-	}
+  /** true if the corresponding field exists in \a messages. */
+  bool has_GGA_datum() const { return messages.find(gnss::NMEA_GGA) != messages.end(); }
+  /** true if the corresponding field exists in \a messages. */
+  bool has_RMC_datum() const { return messages.find(gnss::NMEA_RMC) != messages.end(); }
 
-	/** @name Utilities
-	 * @{ */
-	static bool GPS_time_to_UTC(
-		uint16_t gps_week, double gps_sec,
-		const int leap_seconds_count /**< [in] GPS to UTC time number of leap
-										seconds (normally grabbed from
-										satellital live data) */
-		,
-		/** Return false on invalid input data */
-		mrpt::system::TTimeStamp& utc_out /**< [out] UTC timestamp */);
-	/** \overload */
-	static bool GPS_time_to_UTC(
-		uint16_t gps_week, double gps_sec, const int leap_seconds_count,
-		mrpt::system::TTimeParts& utc_out);
-	/** @} */
-};	// End of class def.
+  /** @name Utilities
+   * @{ */
+  static bool GPS_time_to_UTC(
+      uint16_t gps_week,
+      double gps_sec,
+      const int leap_seconds_count /**< [in] GPS to UTC time number of leap
+                      seconds (normally grabbed from
+                      satellital live data) */
+      ,
+      /** Return false on invalid input data */
+      mrpt::system::TTimeStamp& utc_out /**< [out] UTC timestamp */);
+  /** \overload */
+  static bool GPS_time_to_UTC(
+      uint16_t gps_week,
+      double gps_sec,
+      const int leap_seconds_count,
+      mrpt::system::TTimeParts& utc_out);
+  /** @} */
+};  // End of class def.
 
 }  // namespace mrpt::obs

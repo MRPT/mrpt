@@ -22,124 +22,116 @@
 
 double grid3d_test_getcell(int a1, int a2)
 {
-	mrpt::maps::COccupancyGridMap3D gridMap(
-		mrpt::math::TPoint3D(-3.0, -5.0, -2.0),
-		mrpt::math::TPoint3D(10.0, 5.0, 2.0), 0.10f);
+  mrpt::maps::COccupancyGridMap3D gridMap(
+      mrpt::math::TPoint3D(-3.0, -5.0, -2.0), mrpt::math::TPoint3D(10.0, 5.0, 2.0), 0.10f);
 
-	const long N = 10000000;
-	float p = 0;
+  const long N = 10000000;
+  float p = 0;
 
-	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		p += gridMap.getCellFreeness(1, 2, 3);
-	}
-	return tictac.Tac() / N;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    p += gridMap.getCellFreeness(1, 2, 3);
+  }
+  return tictac.Tac() / N;
 }
 
 double grid3d_test_updateCell(int a1, int a2)
 {
-	mrpt::maps::COccupancyGridMap3D gridMap(
-		mrpt::math::TPoint3D(-3.0, -5.0, -2.0),
-		mrpt::math::TPoint3D(10.0, 5.0, 2.0), 0.10f);
+  mrpt::maps::COccupancyGridMap3D gridMap(
+      mrpt::math::TPoint3D(-3.0, -5.0, -2.0), mrpt::math::TPoint3D(10.0, 5.0, 2.0), 0.10f);
 
-	const long N = 1000000;
-	float p = 0.57f;
+  const long N = 1000000;
+  float p = 0.57f;
 
-	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		gridMap.updateCell(1, 2, 3, p);
-	}
-	return tictac.Tac() / N;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    gridMap.updateCell(1, 2, 3, p);
+  }
+  return tictac.Tac() / N;
 }
 
 double grid3d_test_insert2DScan(int res_cm, int a2)
 {
-	auto& rn = mrpt::random::getRandomGenerator();
-	rn.randomize(333);
+  auto& rn = mrpt::random::getRandomGenerator();
+  rn.randomize(333);
 
-	// prepare the laser scan:
-	mrpt::obs::CObservation2DRangeScan scan1;
-	mrpt::obs::stock_observations::example2DRangeScan(scan1);
+  // prepare the laser scan:
+  mrpt::obs::CObservation2DRangeScan scan1;
+  mrpt::obs::stock_observations::example2DRangeScan(scan1);
 
-	mrpt::maps::COccupancyGridMap3D gridmap(
-		mrpt::math::TPoint3D(-3.0, -5.0, -2.0),
-		mrpt::math::TPoint3D(10.0, 5.0, 2.0), 0.01f * res_cm);
+  mrpt::maps::COccupancyGridMap3D gridmap(
+      mrpt::math::TPoint3D(-3.0, -5.0, -2.0), mrpt::math::TPoint3D(10.0, 5.0, 2.0), 0.01f * res_cm);
 
-	const long N = 1000;
-	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		mrpt::poses::CPose2D pose(
-			rn.drawUniform(-1.0, 1.0), rn.drawUniform(-1.0, 1.0),
-			rn.drawUniform(-M_PI, M_PI));
-		mrpt::poses::CPose3D pose3D(pose);
+  const long N = 1000;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    mrpt::poses::CPose2D pose(
+        rn.drawUniform(-1.0, 1.0), rn.drawUniform(-1.0, 1.0), rn.drawUniform(-M_PI, M_PI));
+    mrpt::poses::CPose3D pose3D(pose);
 
-		gridmap.insertObservation(scan1, pose3D);
-	}
-	return tictac.Tac() / N;
+    gridmap.insertObservation(scan1, pose3D);
+  }
+  return tictac.Tac() / N;
 }
 
 double grid3d_test_insert3DScan(int res_cm, int DECIM)
 {
-	auto& rn = mrpt::random::getRandomGenerator();
-	rn.randomize(333);
+  auto& rn = mrpt::random::getRandomGenerator();
+  rn.randomize(333);
 
-	using namespace std::string_literals;
-	const std::string rgbd_test_rawlog_file =
-		mrpt::system::getShareMRPTDir() + "datasets/tests_rgbd.rawlog"s;
+  using namespace std::string_literals;
+  const std::string rgbd_test_rawlog_file =
+      mrpt::system::getShareMRPTDir() + "datasets/tests_rgbd.rawlog"s;
 
-	mrpt::obs::CObservation3DRangeScan obs1;
-	{
-		mrpt::io::CFileGZInputStream f(rgbd_test_rawlog_file);
-		auto arch = mrpt::serialization::archiveFrom(f);
-		arch >> obs1;
-	}
+  mrpt::obs::CObservation3DRangeScan obs1;
+  {
+    mrpt::io::CFileGZInputStream f(rgbd_test_rawlog_file);
+    auto arch = mrpt::serialization::archiveFrom(f);
+    arch >> obs1;
+  }
 
-	// prepare the laser scan:
-	mrpt::obs::CObservation3DRangeScan scan;
+  // prepare the laser scan:
+  mrpt::obs::CObservation3DRangeScan scan;
 
-	mrpt::maps::COccupancyGridMap3D gridmap(
-		mrpt::math::TPoint3D(-3.0, -5.0, -2.0),
-		mrpt::math::TPoint3D(10.0, 5.0, 2.0), 0.01f * res_cm);
+  mrpt::maps::COccupancyGridMap3D gridmap(
+      mrpt::math::TPoint3D(-3.0, -5.0, -2.0), mrpt::math::TPoint3D(10.0, 5.0, 2.0), 0.01f * res_cm);
 
-	gridmap.insertionOptions.decimation_3d_range = DECIM;
+  gridmap.insertionOptions.decimation_3d_range = DECIM;
 
-	const long N = 10;
-	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		mrpt::poses::CPose2D pose(
-			rn.drawUniform(-1.0, 1.0), rn.drawUniform(-1.0, 1.0),
-			rn.drawUniform(-M_PI, M_PI));
-		mrpt::poses::CPose3D pose3D(pose);
+  const long N = 10;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    mrpt::poses::CPose2D pose(
+        rn.drawUniform(-1.0, 1.0), rn.drawUniform(-1.0, 1.0), rn.drawUniform(-M_PI, M_PI));
+    mrpt::poses::CPose3D pose3D(pose);
 
-		gridmap.insertObservation(obs1, pose3D);
-	}
-	return tictac.Tac() / N;
+    gridmap.insertObservation(obs1, pose3D);
+  }
+  return tictac.Tac() / N;
 }
 
 double grid3d_resize(int a1, int a2)
 {
-	mrpt::maps::COccupancyGridMap3D gridmap(
-		mrpt::math::TPoint3D(-20.0, -20.0, -2.0),
-		mrpt::math::TPoint3D(20.0, 20.0, 2.0), 0.20f);
+  mrpt::maps::COccupancyGridMap3D gridmap(
+      mrpt::math::TPoint3D(-20.0, -20.0, -2.0), mrpt::math::TPoint3D(20.0, 20.0, 2.0), 0.20f);
 
-	CTicTac tictac;
-	gridmap.resizeGrid(
-		mrpt::math::TPoint3D(-30.0, -30.0, -3.0),
-		mrpt::math::TPoint3D(40.0, 40.0, 3.0));
-	return tictac.Tac();
+  CTicTac tictac;
+  gridmap.resizeGrid(
+      mrpt::math::TPoint3D(-30.0, -30.0, -3.0), mrpt::math::TPoint3D(40.0, 40.0, 3.0));
+  return tictac.Tac();
 }
 
 void register_tests_grid3D()
 {
-	lstTests.emplace_back("gridmap3D: getCell", grid3d_test_getcell);
-	lstTests.emplace_back("gridmap3D: updateCell", grid3d_test_updateCell);
-	lstTests.emplace_back("gridmap3D: resize", grid3d_resize);
+  lstTests.emplace_back("gridmap3D: getCell", grid3d_test_getcell);
+  lstTests.emplace_back("gridmap3D: updateCell", grid3d_test_updateCell);
+  lstTests.emplace_back("gridmap3D: resize", grid3d_resize);
 
-	// clang-format off
+  // clang-format off
 	lstTests.emplace_back("gridmap3D: insert 2Dscan (voxels=5cm)", grid3d_test_insert2DScan, 5);
 	lstTests.emplace_back("gridmap3D: insert 2Dscan (voxels=10cm)", grid3d_test_insert2DScan, 10);
 	lstTests.emplace_back("gridmap3D: insert 2Dscan (voxels=15cm)", grid3d_test_insert2DScan, 15);
@@ -151,11 +143,11 @@ void register_tests_grid3D()
 	lstTests.emplace_back("gridmap3D: insert 3Dscan (voxels=10cm, DECIM=" #DECIM_ ")", grid3d_test_insert3DScan, 10, DECIM_); \
 	lstTests.emplace_back("gridmap3D: insert 3Dscan (voxels=15cm, DECIM=" #DECIM_ ")", grid3d_test_insert3DScan, 15, DECIM_); \
 	lstTests.emplace_back("gridmap3D: insert 3Dscan (voxels=20cm, DECIM=" #DECIM_ ")", grid3d_test_insert3DScan, 20, DECIM_)
-	// clang-format on
+  // clang-format on
 
-	TESTS_3DSCAN_FOR_DECIM(1);
-	TESTS_3DSCAN_FOR_DECIM(8);
-	TESTS_3DSCAN_FOR_DECIM(16);
+  TESTS_3DSCAN_FOR_DECIM(1);
+  TESTS_3DSCAN_FOR_DECIM(8);
+  TESTS_3DSCAN_FOR_DECIM(16);
 
 #undef TESTS_3DSCAN_FOR_DECIM
 }

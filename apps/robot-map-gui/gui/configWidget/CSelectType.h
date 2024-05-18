@@ -22,13 +22,13 @@ class CSelectType;
 
 class CSelectType : public QDialog
 {
-   public:
-	CSelectType(QWidget* parent = nullptr);
-	~CSelectType() override;
-	int selectedItem() const;
+ public:
+  CSelectType(QWidget* parent = nullptr);
+  ~CSelectType() override;
+  int selectedItem() const;
 
-   private:
-	void addItem(const QString& name, TypeOfConfig type);
+ private:
+  void addItem(const QString& name, TypeOfConfig type);
 
-	std::unique_ptr<Ui::CSelectType> m_ui;
+  std::unique_ptr<Ui::CSelectType> m_ui;
 };

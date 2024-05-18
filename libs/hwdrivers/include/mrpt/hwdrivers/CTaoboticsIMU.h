@@ -84,67 +84,66 @@ namespace mrpt::hwdrivers
  */
 class CTaoboticsIMU : public hwdrivers::CGenericSensor
 {
-	DEFINE_GENERIC_SENSOR(CTaoboticsIMU)
+  DEFINE_GENERIC_SENSOR(CTaoboticsIMU)
 
-   public:
-	CTaoboticsIMU();
-	~CTaoboticsIMU() override;
+ public:
+  CTaoboticsIMU();
+  ~CTaoboticsIMU() override;
 
-	/** See the class documentation at the top for expected parameters */
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection) override;
+  /** See the class documentation at the top for expected parameters */
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection) override;
 
-	/** This method will be invoked at a minimum rate of "process_rate" (Hz)
-	 *  \exception This method must throw an exception with a descriptive
-	 * message if some critical error is found.
-	 */
-	void doProcess() override;
+  /** This method will be invoked at a minimum rate of "process_rate" (Hz)
+   *  \exception This method must throw an exception with a descriptive
+   * message if some critical error is found.
+   */
+  void doProcess() override;
 
-	/** Opens the serial port and start streaming data.
-	 * You must have called loadConfig_sensorSpecific before
-	 * calling this function, or set the configuration via the provided methods,
-	 * e.g. setSerialPort(), etc.
-	 */
-	void initialize() override;
+  /** Opens the serial port and start streaming data.
+   * You must have called loadConfig_sensorSpecific before
+   * calling this function, or set the configuration via the provided methods,
+   * e.g. setSerialPort(), etc.
+   */
+  void initialize() override;
 
-	/// Must be called before initialize(). If not set, the default is
-	/// "/dev/ttyUSB0". Use "COM1", etc. for Windows.
-	void setSerialPort(const std::string& serialPort);
+  /// Must be called before initialize(). If not set, the default is
+  /// "/dev/ttyUSB0". Use "COM1", etc. for Windows.
+  void setSerialPort(const std::string& serialPort);
 
-	/// Must be called before initialize(). If not called, the default 921600 is
-	/// used.
-	void setSerialBaudRate(int rate);
+  /// Must be called before initialize(). If not called, the default 921600 is
+  /// used.
+  void setSerialBaudRate(int rate);
 
-   protected:
-	/** This serial port will be attempted to be opened automatically when this
-	 * class is first used to request data from the device.
-	 * \sa comms::CSerialPort
-	 */
-	int m_baudRate = 921600;
-	std::string m_com_port = "/dev/ttyUSB0";
-	std::string m_sensorModel = "hfi-a9";
-	mrpt::poses::CPose3D m_sensorPose;
+ protected:
+  /** This serial port will be attempted to be opened automatically when this
+   * class is first used to request data from the device.
+   * \sa comms::CSerialPort
+   */
+  int m_baudRate = 921600;
+  std::string m_com_port = "/dev/ttyUSB0";
+  std::string m_sensorModel = "hfi-a9";
+  mrpt::poses::CPose3D m_sensorPose;
 
-	/** Auxiliary buffer for readings */
-	mrpt::containers::circular_buffer<uint8_t> m_rx_buffer{4096};
+  /** Auxiliary buffer for readings */
+  mrpt::containers::circular_buffer<uint8_t> m_rx_buffer{4096};
 
-	/** The serial port connection */
-	std::unique_ptr<mrpt::comms::CSerialPort> m_serialPort;
+  /** The serial port connection */
+  std::unique_ptr<mrpt::comms::CSerialPort> m_serialPort;
 
-	mrpt::obs::CObservationIMU::Ptr m_observationGyro;
+  mrpt::obs::CObservationIMU::Ptr m_observationGyro;
 
-	using parser_t = std::function<std::vector<mrpt::obs::CObservation::Ptr>(
-		CTaoboticsIMU*, mrpt::containers::circular_buffer<uint8_t>& /*buf*/)>;
+  using parser_t = std::function<std::vector<mrpt::obs::CObservation::Ptr>(
+      CTaoboticsIMU*, mrpt::containers::circular_buffer<uint8_t>& /*buf*/)>;
 
-	parser_t m_activeParser;
+  parser_t m_activeParser;
 
-	std::vector<mrpt::obs::CObservation::Ptr> parser_hfi_b6(
-		mrpt::containers::circular_buffer<uint8_t>& buf) const;
+  std::vector<mrpt::obs::CObservation::Ptr> parser_hfi_b6(
+      mrpt::containers::circular_buffer<uint8_t>& buf) const;
 
-	std::vector<mrpt::obs::CObservation::Ptr> parser_hfi_a9(
-		mrpt::containers::circular_buffer<uint8_t>& buf) const;
+  std::vector<mrpt::obs::CObservation::Ptr> parser_hfi_a9(
+      mrpt::containers::circular_buffer<uint8_t>& buf) const;
 
-};	// end of class
+};  // end of class
 
 }  // namespace mrpt::hwdrivers

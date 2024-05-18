@@ -17,9 +17,9 @@ namespace mrpt::graphs::detail
  */
 struct TMRSlamEdgeAnnotations
 {
-	/**\brief Indicate whether this edge is a connection between nodes that have
-	 * been registered by two different SLAM agents
-	 */
-	bool is_interconnecting_edge;
+  /**\brief Indicate whether this edge is a connection between nodes that have
+   * been registered by two different SLAM agents
+   */
+  bool is_interconnecting_edge;
 };
 }  // namespace mrpt::graphs::detail

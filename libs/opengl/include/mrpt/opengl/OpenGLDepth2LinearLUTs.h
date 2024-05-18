@@ -23,56 +23,56 @@ namespace mrpt::opengl
 template <int DEPTH_LUT_NUM_BITS = 18>
 class OpenGLDepth2LinearLUTs
 {
-   public:
-	constexpr static std::size_t NUM_ENTRIES = 1 << DEPTH_LUT_NUM_BITS;
+ public:
+  constexpr static std::size_t NUM_ENTRIES = 1 << DEPTH_LUT_NUM_BITS;
 
-	static OpenGLDepth2LinearLUTs& Instance()
-	{
-		thread_local OpenGLDepth2LinearLUTs lut;
-		return lut;
-	}
+  static OpenGLDepth2LinearLUTs& Instance()
+  {
+    thread_local OpenGLDepth2LinearLUTs lut;
+    return lut;
+  }
 
-	using lut_t = std::vector<float>;
+  using lut_t = std::vector<float>;
 
-	lut_t& lut_from_zn_zf(float zn, float zf)
-	{
-		const auto p = std::pair<float, float>(zn, zf);
-		// reuse?
-		if (auto it = m_pool.find(p); it != m_pool.end()) return it->second;
+  lut_t& lut_from_zn_zf(float zn, float zf)
+  {
+    const auto p = std::pair<float, float>(zn, zf);
+    // reuse?
+    if (auto it = m_pool.find(p); it != m_pool.end()) return it->second;
 
-		// create new:
-		auto& lut = m_pool[p];
-		lut.resize(NUM_ENTRIES);
+    // create new:
+    auto& lut = m_pool[p];
+    lut.resize(NUM_ENTRIES);
 
-		const auto linearDepth = [zn, zf](float depthSample) -> float {
-			if (depthSample == 1.0f) return 0.0f;  // no echo
+    const auto linearDepth = [zn, zf](float depthSample) -> float
+    {
+      if (depthSample == 1.0f) return 0.0f;  // no echo
 
-			depthSample = 2.0f * depthSample - 1.0f;
-			float zLinear =
-				2.0f * zn * zf / (zf + zn - depthSample * (zf - zn));
-			return zLinear;
-		};
+      depthSample = 2.0f * depthSample - 1.0f;
+      float zLinear = 2.0f * zn * zf / (zf + zn - depthSample * (zf - zn));
+      return zLinear;
+    };
 
-		for (size_t i = 0; i < NUM_ENTRIES; i++)
-		{
-			float f = -1.0f + 2.0f * static_cast<float>(i) / (NUM_ENTRIES - 1);
-			lut.at(i) = linearDepth(f);
-		}
+    for (size_t i = 0; i < NUM_ENTRIES; i++)
+    {
+      float f = -1.0f + 2.0f * static_cast<float>(i) / (NUM_ENTRIES - 1);
+      lut.at(i) = linearDepth(f);
+    }
 
-		return lut;
-	}
+    return lut;
+  }
 
-   private:
-	struct MyHash
-	{
-		template <typename T>
-		std::size_t operator()(const std::pair<T, T>& x) const
-		{
-			return std::hash<T>()(x.first) ^ std::hash<T>()(x.second);
-		}
-	};
+ private:
+  struct MyHash
+  {
+    template <typename T>
+    std::size_t operator()(const std::pair<T, T>& x) const
+    {
+      return std::hash<T>()(x.first) ^ std::hash<T>()(x.second);
+    }
+  };
 
-	std::unordered_map<std::pair<float, float>, lut_t, MyHash> m_pool;
+  std::unordered_map<std::pair<float, float>, lut_t, MyHash> m_pool;
 };
 
 }  // namespace mrpt::opengl

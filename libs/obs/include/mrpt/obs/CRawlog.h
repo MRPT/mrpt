@@ -19,11 +19,9 @@
 namespace mrpt::obs
 {
 /** For usage with CRawlog classes. */
-using TTimeObservationPair =
-	std::pair<mrpt::system::TTimeStamp, CObservation::Ptr>;
+using TTimeObservationPair = std::pair<mrpt::system::TTimeStamp, CObservation::Ptr>;
 /** For usage with CRawlog classes. */
-using TListTimeAndObservations =
-	std::multimap<mrpt::system::TTimeStamp, CObservation::Ptr>;
+using TListTimeAndObservations = std::multimap<mrpt::system::TTimeStamp, CObservation::Ptr>;
 
 /** The main class for loading and processing robotics datasets, or "rawlogs".
  *
@@ -61,392 +59,378 @@ using TListTimeAndObservations =
  */
 class CRawlog : public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(CRawlog, mrpt::obs)
+  DEFINE_SERIALIZABLE(CRawlog, mrpt::obs)
 
-   private:
-	using TListObjects = std::vector<mrpt::serialization::CSerializable::Ptr>;
-	/** The list where the objects really are in. */
-	TListObjects m_seqOfActObs;
+ private:
+  using TListObjects = std::vector<mrpt::serialization::CSerializable::Ptr>;
+  /** The list where the objects really are in. */
+  TListObjects m_seqOfActObs;
 
-	/** Comments of the rawlog. */
-	CObservationComment m_commentTexts;
+  /** Comments of the rawlog. */
+  CObservationComment m_commentTexts;
+
+ public:
+  CRawlog() = default;
+  virtual ~CRawlog() override = default;
+
+  /** Returns the block of comment text for the rawlog */
+  void getCommentText(std::string& t) const;
+  /** Returns the block of comment text for the rawlog */
+  std::string getCommentText() const;
+  /** Changes the block of comment text for the rawlog */
+  void setCommentText(const std::string& t);
+  /** Saves the block of comment text for the rawlog into the passed config
+   * file object. */
+  void getCommentTextAsConfigFile(mrpt::config::CConfigFileMemory& memCfg) const;
+
+  /** The type of each entry in a rawlog.
+   * \sa CRawlog::getType
+   */
+  enum TEntryType
+  {
+    /** The entry is of type mrpt::obs::CSensoryFrame */
+    etSensoryFrame = 0,
+    /** The entry is of type mrpt::obs::CActionCollection */
+    etActionCollection,
+    /** The entry is of type mrpt::obs::CObservation */
+    etObservation,
+    /** The entry is none of the types above */
+    etOther
+  };
+
+  /** Clear the sequence of actions/observations. Smart pointers to objects
+   * previously in the rawlog will remain being valid. */
+  void clear();
+
+  /** Returns true if the rawlog is empty */
+  bool empty() const;
+
+  /** Add an action to the sequence: a collection of just one element is
+   * created.
+   *   The object is duplicated, so the original one can be freed if desired.
+   */
+  void insert(CAction& action);
+
+  /** Add a set of actions to the sequence; the object is duplicated, so the
+   * original one can be freed if desired.
+   * \sa insert, insert
+   */
+  void insert(CActionCollection& action);
+
+  /** Add a set of observations to the sequence; the object is duplicated, so
+   * the original one can be free if desired.
+   */
+  void insert(CSensoryFrame& observations);
+
+  /** Generic add for a smart pointer to a CSerializable object:
+   */
+  void insert(const mrpt::serialization::CSerializable::Ptr& obj);
+
+  /** Load the contents from a file containing one of these possibilities:
+   *  - A "CRawlog" object.
+   *  - Directly the sequence of objects (pairs
+   * `CSensoryFrame`/`CActionCollection` or `CObservation*` objects). In this
+   * case the method stops reading on EOF of an unrecogniced class name.
+   *  - Only if `non_obs_objects_are_legal` is true, any `CSerializable`
+   * object is allowed in the log file. Otherwise, the read stops on classes
+   * different from the ones listed in the item above.
+   * \returns It returns false upon error reading or accessing the file.
+   */
+  bool loadFromRawLogFile(const std::string& fileName, bool non_obs_objects_are_legal = false);
+
+  /** Saves the contents to a rawlog-file, compatible with RawlogViewer (As
+   * the sequence of internal objects).
+   *  The file is saved with gz-commpressed if MRPT has gz-streams.
+   * \returns It returns false if any error is found while writing/creating
+   * the target file.
+   */
+  bool saveToRawLogFile(const std::string& fileName) const;
+
+  /** Returns the number of actions / observations object in the sequence. */
+  size_t size() const;
+
+  /** Returns the type of a given element.
+   * \sa isAction, isObservation
+   */
+  TEntryType getType(size_t index) const;
+
+  /** Delete the action or observation stored in the given index.
+   * \exception std::exception If index is out of bounds
+   */
+  void remove(size_t index);
+
+  /** Delete the elements stored in the given range of indices (including both
+   * the first and last one).
+   * \exception std::exception If any index is out of bounds
+   */
+  void remove(size_t first_index, size_t last_index);
+
+  /** Returns the i'th element in the sequence, as being actions, where
+   * index=0 is the first object.
+   *  If it is not a CActionCollection, it throws an exception. Do neighter
+   * modify nor delete the returned pointer.
+   * \sa size, isAction, getAsObservations, getAsObservation
+   * \exception std::exception If index is out of bounds
+   */
+  CActionCollection::Ptr getAsAction(size_t index) const;
+
+  /** Returns the i'th element in the sequence, as being an action, where
+   * index=0 is the first object.
+   *  If it is not an CSensoryFrame, it throws an exception.
+   * \sa size, isAction, getAsAction, getAsObservation
+   * \exception std::exception If index is out of bounds
+   */
+  CSensoryFrame::Ptr getAsObservations(size_t index) const;
+
+  /** Returns the i'th element in the sequence, being its class whatever.
+   * \sa size, isAction, getAsAction, getAsObservations
+   * \exception std::exception If index is out of bounds
+   */
+  mrpt::serialization::CSerializable::Ptr getAsGeneric(size_t index) const;
+
+  /** Returns the i'th element in the sequence, as being an observation, where
+   * index=0 is the first object.
+   *  If it is not an CObservation, it throws an exception. Do neighter
+   * modify nor delete the returned pointer.
+   *  This is the proper method to obtain the objects stored in a "only
+   * observations"-rawlog file (named "format #2" above.
+   * \sa size, isAction, getAsAction
+   * \exception std::exception If index is out of bounds
+   */
+  CObservation::Ptr getAsObservation(size_t index) const;
+
+  /** Get the i'th observation as an observation of the given type.
+   * \exception std::exception If index is out of bounds, or type not
+   * compatible.
+   */
+  template <class T>
+  typename T::ConstPtr asObservation(size_t index) const
+  {
+    MRPT_START
+    auto ptr = std::dynamic_pointer_cast<const T>(getAsObservation(index));
+    ASSERTMSG_(ptr, "Could not convert observation to specified class");
+    return ptr;
+    MRPT_END
+  }
+
+  template <class T>
+  typename T::Ptr asObservation(size_t index)
+  {
+    MRPT_START
+    auto ptr = std::dynamic_pointer_cast<T>(getAsObservation(index));
+    ASSERTMSG_(ptr, "Could not convert observation to specified class");
+    return ptr;
+    MRPT_END
+  }
+
+  /** A normal iterator, plus the extra method "getType" to determine the
+   * type of each entry in the sequence. */
+  class iterator
+  {
+   protected:
+    TListObjects::iterator m_it;
 
    public:
-	CRawlog() = default;
-	virtual ~CRawlog() override = default;
+    iterator() : m_it() {}
+    iterator(const TListObjects::iterator& it) : m_it(it) {}
+    virtual ~iterator() = default;
+    iterator& operator=(const iterator& o) = default;
 
-	/** Returns the block of comment text for the rawlog */
-	void getCommentText(std::string& t) const;
-	/** Returns the block of comment text for the rawlog */
-	std::string getCommentText() const;
-	/** Changes the block of comment text for the rawlog */
-	void setCommentText(const std::string& t);
-	/** Saves the block of comment text for the rawlog into the passed config
-	 * file object. */
-	void getCommentTextAsConfigFile(
-		mrpt::config::CConfigFileMemory& memCfg) const;
+    bool operator==(const iterator& o) { return m_it == o.m_it; }
+    bool operator!=(const iterator& o) { return m_it != o.m_it; }
+    mrpt::serialization::CSerializable::Ptr operator*() { return *m_it; }
+    inline iterator operator++(int)
+    {
+      iterator aux = *this;
+      m_it++;
+      return aux;
+    }  // Post
+    inline iterator& operator++()
+    {
+      m_it++;
+      return *this;
+    }  // Pre
+    inline iterator operator--(int)
+    {
+      iterator aux = *this;
+      m_it--;
+      return aux;
+    }  // Post
+    inline iterator& operator--()
+    {
+      m_it--;
+      return *this;
+    }  // Pre
 
-	/** The type of each entry in a rawlog.
-	 * \sa CRawlog::getType
-	 */
-	enum TEntryType
-	{
-		/** The entry is of type mrpt::obs::CSensoryFrame */
-		etSensoryFrame = 0,
-		/** The entry is of type mrpt::obs::CActionCollection */
-		etActionCollection,
-		/** The entry is of type mrpt::obs::CObservation */
-		etObservation,
-		/** The entry is none of the types above */
-		etOther
-	};
+    TEntryType getType() const
+    {
+      if ((*m_it)->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+        return etObservation;
+      else if ((*m_it)->GetRuntimeClass()->derivedFrom(CLASS_ID(CSensoryFrame)))
+        return etSensoryFrame;
+      else
+        return etActionCollection;
+    }
 
-	/** Clear the sequence of actions/observations. Smart pointers to objects
-	 * previously in the rawlog will remain being valid. */
-	void clear();
+    static iterator erase(TListObjects& lst, const iterator& it) { return lst.erase(it.m_it); }
+  };
 
-	/** Returns true if the rawlog is empty */
-	bool empty() const;
+  /** A normal iterator, plus the extra method "getType" to determine the type
+   * of each entry in the sequence. */
+  class const_iterator
+  {
+   protected:
+    TListObjects::const_iterator m_it;
 
-	/** Add an action to the sequence: a collection of just one element is
-	 * created.
-	 *   The object is duplicated, so the original one can be freed if desired.
-	 */
-	void insert(CAction& action);
+   public:
+    const_iterator() : m_it() {}
+    const_iterator(const TListObjects::const_iterator& it) : m_it(it) {}
+    virtual ~const_iterator() = default;
+    bool operator==(const const_iterator& o) { return m_it == o.m_it; }
+    bool operator!=(const const_iterator& o) { return m_it != o.m_it; }
+    const mrpt::serialization::CSerializable::Ptr operator*() const { return *m_it; }
 
-	/** Add a set of actions to the sequence; the object is duplicated, so the
-	 * original one can be freed if desired.
-	 * \sa insert, insert
-	 */
-	void insert(CActionCollection& action);
+    inline const_iterator operator++(int)
+    {
+      const_iterator aux = *this;
+      m_it++;
+      return aux;
+    }  // Post
+    inline const_iterator& operator++()
+    {
+      m_it++;
+      return *this;
+    }  // Pre
+    inline const_iterator operator--(int)
+    {
+      const_iterator aux = *this;
+      m_it--;
+      return aux;
+    }  // Post
+    inline const_iterator& operator--()
+    {
+      m_it--;
+      return *this;
+    }  // Pre
 
-	/** Add a set of observations to the sequence; the object is duplicated, so
-	 * the original one can be free if desired.
-	 */
-	void insert(CSensoryFrame& observations);
+    TEntryType getType() const
+    {
+      if ((*m_it)->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+        return etObservation;
+      else if ((*m_it)->GetRuntimeClass()->derivedFrom(CLASS_ID(CSensoryFrame)))
+        return etSensoryFrame;
+      else
+        return etActionCollection;
+    }
+  };
 
-	/** Generic add for a smart pointer to a CSerializable object:
-	 */
-	void insert(const mrpt::serialization::CSerializable::Ptr& obj);
+  const_iterator begin() const { return m_seqOfActObs.begin(); }
+  iterator begin() { return m_seqOfActObs.begin(); }
+  const_iterator end() const { return m_seqOfActObs.end(); }
+  iterator end() { return m_seqOfActObs.end(); }
+  iterator erase(const iterator& it) { return iterator::erase(m_seqOfActObs, it); }
 
-	/** Load the contents from a file containing one of these possibilities:
-	 *  - A "CRawlog" object.
-	 *  - Directly the sequence of objects (pairs
-	 * `CSensoryFrame`/`CActionCollection` or `CObservation*` objects). In this
-	 * case the method stops reading on EOF of an unrecogniced class name.
-	 *  - Only if `non_obs_objects_are_legal` is true, any `CSerializable`
-	 * object is allowed in the log file. Otherwise, the read stops on classes
-	 * different from the ones listed in the item above.
-	 * \returns It returns false upon error reading or accessing the file.
-	 */
-	bool loadFromRawLogFile(
-		const std::string& fileName, bool non_obs_objects_are_legal = false);
+  /** Returns the sub-set of observations of a given class whose time-stamp t
+   * fulfills  time_start <= t < time_end.
+   *  This method requires the timestamps of the sensors to be in strict
+   * ascending order (which should be the normal situation).
+   *   Otherwise, the output is undeterminate.
+   * \sa findClosestObservationsByClass
+   */
+  void findObservationsByClassInRange(
+      mrpt::system::TTimeStamp time_start,
+      mrpt::system::TTimeStamp time_end,
+      const mrpt::rtti::TRuntimeClassId* class_type,
+      TListTimeAndObservations& out_found,
+      size_t guess_start_position = 0) const;
 
-	/** Saves the contents to a rawlog-file, compatible with RawlogViewer (As
-	 * the sequence of internal objects).
-	 *  The file is saved with gz-commpressed if MRPT has gz-streams.
-	 * \returns It returns false if any error is found while writing/creating
-	 * the target file.
-	 */
-	bool saveToRawLogFile(const std::string& fileName) const;
+  /** Efficiently swap the contents of two existing objects.
+   */
+  void swap(CRawlog& obj);
 
-	/** Returns the number of actions / observations object in the sequence. */
-	size_t size() const;
+  /** Reads a consecutive pair action / observation from the rawlog opened at
+   * some input stream.
+   * Previous contents of action and observations are discarded, and
+   * upon exit they contain smart pointers to the new objects read from the
+   * rawlog file.
+   * The input/output variable "rawlogEntry" is just a counter of the last
+   * rawlog entry read, for logging or monitoring purposes.
+   * \return false if there was some error, true otherwise.
+   * \sa getActionObservationPair, getActionObservationPairOrObservation
+   */
+  static bool readActionObservationPair(
+      mrpt::serialization::CArchive& inStream,
+      CActionCollection::Ptr& action,
+      CSensoryFrame::Ptr& observations,
+      size_t& rawlogEntry);
 
-	/** Returns the type of a given element.
-	 * \sa isAction, isObservation
-	 */
-	TEntryType getType(size_t index) const;
+  /** Reads a consecutive pair action/sensory_frame OR an observation,
+   * depending of the rawlog format, from the rawlog opened at some input
+   * stream.
+   * Previous contents of action and observations are discarded, and
+   * upon return they contain smart pointers to the new objects read from
+   * the rawlog file.
+   *
+   * Depending on the rawlog file format, at return either:
+   *  - action/observations contain objects, or
+   *  - observation contains an object.
+   *
+   * The input/output variable "rawlogEntry" is just a counter of the last
+   * rawlog entry read, for logging or monitoring purposes.
+   * \return false if there was some error, true otherwise.
+   * \sa getActionObservationPair
+   */
+  static bool getActionObservationPairOrObservation(
+      mrpt::serialization::CArchive& inStream,
+      CActionCollection::Ptr& action,
+      CSensoryFrame::Ptr& observations,
+      CObservation::Ptr& observation,
+      size_t& rawlogEntry);
 
-	/** Delete the action or observation stored in the given index.
-	 * \exception std::exception If index is out of bounds
-	 */
-	void remove(size_t index);
+  /** Alternative to getActionObservationPairOrObservation() returning the
+   * tuple [readOk, rawlogEntryIndex, action,sf, obs], with either (action,sf)
+   * or (obs) as empty smart pointers depending on the rawlog file format.
+   * readOk is false on EOF or any other error.
+   */
+  static std::tuple<bool, size_t, CActionCollection::Ptr, CSensoryFrame::Ptr, CObservation::Ptr>
+  ReadFromArchive(mrpt::serialization::CArchive& inStream, const size_t rawlogEntryIndex)
+  {
+    size_t retIndex = rawlogEntryIndex;
+    CActionCollection::Ptr action;
+    CSensoryFrame::Ptr sf;
+    CObservation::Ptr obs;
+    const bool readOk = getActionObservationPairOrObservation(inStream, action, sf, obs, retIndex);
+    return {readOk, retIndex, action, sf, obs};
+  }
 
-	/** Delete the elements stored in the given range of indices (including both
-	 * the first and last one).
-	 * \exception std::exception If any index is out of bounds
-	 */
-	void remove(size_t first_index, size_t last_index);
+  /** Gets the next consecutive pair action / observation from the rawlog
+   * loaded into this object.
+   * Previous contents of action and observations are discarded, and
+   * upon return they contain smart pointers to the next objects read from
+   * the rawlog dataset.
+   * The input/output variable "rawlogEntry" is just a counter of the last
+   * rawlog entry read, for logging or monitoring purposes.
+   * \return false if there was some error, true otherwise.
+   * \sa readActionObservationPair
+   */
+  bool getActionObservationPair(
+      CActionCollection::Ptr& action, CSensoryFrame::Ptr& observations, size_t& rawlogEntry) const;
 
-	/** Returns the i'th element in the sequence, as being actions, where
-	 * index=0 is the first object.
-	 *  If it is not a CActionCollection, it throws an exception. Do neighter
-	 * modify nor delete the returned pointer.
-	 * \sa size, isAction, getAsObservations, getAsObservation
-	 * \exception std::exception If index is out of bounds
-	 */
-	CActionCollection::Ptr getAsAction(size_t index) const;
+  /** Tries to auto-detect the external-images directory of the given rawlog
+   *file.
+   *  This searches for the existence of the directories:
+   *		- "<rawlog_file_path>/<rawlog_filename>_Images"
+   *		- "<rawlog_file_path>/<rawlog_filename>_images"
+   *		- "<rawlog_file_path>/<rawlog_filename>_IMAGES"
+   *		- "<rawlog_file_path>/Images"  (This one is returned if none of the
+   *choices actually exists).
+   *
+   *  The results from this function should be written into
+   *mrpt::img::CImage::getImagesPathBase() to enable automatic
+   *  loading of extenrnally-stored images in rawlogs.
+   */
+  static std::string detectImagesDirectory(const std::string& rawlogFilename);
 
-	/** Returns the i'th element in the sequence, as being an action, where
-	 * index=0 is the first object.
-	 *  If it is not an CSensoryFrame, it throws an exception.
-	 * \sa size, isAction, getAsAction, getAsObservation
-	 * \exception std::exception If index is out of bounds
-	 */
-	CSensoryFrame::Ptr getAsObservations(size_t index) const;
-
-	/** Returns the i'th element in the sequence, being its class whatever.
-	 * \sa size, isAction, getAsAction, getAsObservations
-	 * \exception std::exception If index is out of bounds
-	 */
-	mrpt::serialization::CSerializable::Ptr getAsGeneric(size_t index) const;
-
-	/** Returns the i'th element in the sequence, as being an observation, where
-	 * index=0 is the first object.
-	 *  If it is not an CObservation, it throws an exception. Do neighter
-	 * modify nor delete the returned pointer.
-	 *  This is the proper method to obtain the objects stored in a "only
-	 * observations"-rawlog file (named "format #2" above.
-	 * \sa size, isAction, getAsAction
-	 * \exception std::exception If index is out of bounds
-	 */
-	CObservation::Ptr getAsObservation(size_t index) const;
-
-	/** Get the i'th observation as an observation of the given type.
-	 * \exception std::exception If index is out of bounds, or type not
-	 * compatible.
-	 */
-	template <class T>
-	typename T::ConstPtr asObservation(size_t index) const
-	{
-		MRPT_START
-		auto ptr = std::dynamic_pointer_cast<const T>(getAsObservation(index));
-		ASSERTMSG_(ptr, "Could not convert observation to specified class");
-		return ptr;
-		MRPT_END
-	}
-
-	template <class T>
-	typename T::Ptr asObservation(size_t index)
-	{
-		MRPT_START
-		auto ptr = std::dynamic_pointer_cast<T>(getAsObservation(index));
-		ASSERTMSG_(ptr, "Could not convert observation to specified class");
-		return ptr;
-		MRPT_END
-	}
-
-	/** A normal iterator, plus the extra method "getType" to determine the
-	 * type of each entry in the sequence. */
-	class iterator
-	{
-	   protected:
-		TListObjects::iterator m_it;
-
-	   public:
-		iterator() : m_it() {}
-		iterator(const TListObjects::iterator& it) : m_it(it) {}
-		virtual ~iterator() = default;
-		iterator& operator=(const iterator& o) = default;
-
-		bool operator==(const iterator& o) { return m_it == o.m_it; }
-		bool operator!=(const iterator& o) { return m_it != o.m_it; }
-		mrpt::serialization::CSerializable::Ptr operator*() { return *m_it; }
-		inline iterator operator++(int)
-		{
-			iterator aux = *this;
-			m_it++;
-			return aux;
-		}  // Post
-		inline iterator& operator++()
-		{
-			m_it++;
-			return *this;
-		}  // Pre
-		inline iterator operator--(int)
-		{
-			iterator aux = *this;
-			m_it--;
-			return aux;
-		}  // Post
-		inline iterator& operator--()
-		{
-			m_it--;
-			return *this;
-		}  // Pre
-
-		TEntryType getType() const
-		{
-			if ((*m_it)->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
-				return etObservation;
-			else if ((*m_it)->GetRuntimeClass()->derivedFrom(
-						 CLASS_ID(CSensoryFrame)))
-				return etSensoryFrame;
-			else
-				return etActionCollection;
-		}
-
-		static iterator erase(TListObjects& lst, const iterator& it)
-		{
-			return lst.erase(it.m_it);
-		}
-	};
-
-	/** A normal iterator, plus the extra method "getType" to determine the type
-	 * of each entry in the sequence. */
-	class const_iterator
-	{
-	   protected:
-		TListObjects::const_iterator m_it;
-
-	   public:
-		const_iterator() : m_it() {}
-		const_iterator(const TListObjects::const_iterator& it) : m_it(it) {}
-		virtual ~const_iterator() = default;
-		bool operator==(const const_iterator& o) { return m_it == o.m_it; }
-		bool operator!=(const const_iterator& o) { return m_it != o.m_it; }
-		const mrpt::serialization::CSerializable::Ptr operator*() const
-		{
-			return *m_it;
-		}
-
-		inline const_iterator operator++(int)
-		{
-			const_iterator aux = *this;
-			m_it++;
-			return aux;
-		}  // Post
-		inline const_iterator& operator++()
-		{
-			m_it++;
-			return *this;
-		}  // Pre
-		inline const_iterator operator--(int)
-		{
-			const_iterator aux = *this;
-			m_it--;
-			return aux;
-		}  // Post
-		inline const_iterator& operator--()
-		{
-			m_it--;
-			return *this;
-		}  // Pre
-
-		TEntryType getType() const
-		{
-			if ((*m_it)->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
-				return etObservation;
-			else if ((*m_it)->GetRuntimeClass()->derivedFrom(
-						 CLASS_ID(CSensoryFrame)))
-				return etSensoryFrame;
-			else
-				return etActionCollection;
-		}
-	};
-
-	const_iterator begin() const { return m_seqOfActObs.begin(); }
-	iterator begin() { return m_seqOfActObs.begin(); }
-	const_iterator end() const { return m_seqOfActObs.end(); }
-	iterator end() { return m_seqOfActObs.end(); }
-	iterator erase(const iterator& it)
-	{
-		return iterator::erase(m_seqOfActObs, it);
-	}
-
-	/** Returns the sub-set of observations of a given class whose time-stamp t
-	 * fulfills  time_start <= t < time_end.
-	 *  This method requires the timestamps of the sensors to be in strict
-	 * ascending order (which should be the normal situation).
-	 *   Otherwise, the output is undeterminate.
-	 * \sa findClosestObservationsByClass
-	 */
-	void findObservationsByClassInRange(
-		mrpt::system::TTimeStamp time_start, mrpt::system::TTimeStamp time_end,
-		const mrpt::rtti::TRuntimeClassId* class_type,
-		TListTimeAndObservations& out_found,
-		size_t guess_start_position = 0) const;
-
-	/** Efficiently swap the contents of two existing objects.
-	 */
-	void swap(CRawlog& obj);
-
-	/** Reads a consecutive pair action / observation from the rawlog opened at
-	 * some input stream.
-	 * Previous contents of action and observations are discarded, and
-	 * upon exit they contain smart pointers to the new objects read from the
-	 * rawlog file.
-	 * The input/output variable "rawlogEntry" is just a counter of the last
-	 * rawlog entry read, for logging or monitoring purposes.
-	 * \return false if there was some error, true otherwise.
-	 * \sa getActionObservationPair, getActionObservationPairOrObservation
-	 */
-	static bool readActionObservationPair(
-		mrpt::serialization::CArchive& inStream, CActionCollection::Ptr& action,
-		CSensoryFrame::Ptr& observations, size_t& rawlogEntry);
-
-	/** Reads a consecutive pair action/sensory_frame OR an observation,
-	 * depending of the rawlog format, from the rawlog opened at some input
-	 * stream.
-	 * Previous contents of action and observations are discarded, and
-	 * upon return they contain smart pointers to the new objects read from
-	 * the rawlog file.
-	 *
-	 * Depending on the rawlog file format, at return either:
-	 *  - action/observations contain objects, or
-	 *  - observation contains an object.
-	 *
-	 * The input/output variable "rawlogEntry" is just a counter of the last
-	 * rawlog entry read, for logging or monitoring purposes.
-	 * \return false if there was some error, true otherwise.
-	 * \sa getActionObservationPair
-	 */
-	static bool getActionObservationPairOrObservation(
-		mrpt::serialization::CArchive& inStream, CActionCollection::Ptr& action,
-		CSensoryFrame::Ptr& observations, CObservation::Ptr& observation,
-		size_t& rawlogEntry);
-
-	/** Alternative to getActionObservationPairOrObservation() returning the
-	 * tuple [readOk, rawlogEntryIndex, action,sf, obs], with either (action,sf)
-	 * or (obs) as empty smart pointers depending on the rawlog file format.
-	 * readOk is false on EOF or any other error.
-	 */
-	static std::tuple<
-		bool, size_t, CActionCollection::Ptr, CSensoryFrame::Ptr,
-		CObservation::Ptr>
-		ReadFromArchive(
-			mrpt::serialization::CArchive& inStream,
-			const size_t rawlogEntryIndex)
-	{
-		size_t retIndex = rawlogEntryIndex;
-		CActionCollection::Ptr action;
-		CSensoryFrame::Ptr sf;
-		CObservation::Ptr obs;
-		const bool readOk = getActionObservationPairOrObservation(
-			inStream, action, sf, obs, retIndex);
-		return {readOk, retIndex, action, sf, obs};
-	}
-
-	/** Gets the next consecutive pair action / observation from the rawlog
-	 * loaded into this object.
-	 * Previous contents of action and observations are discarded, and
-	 * upon return they contain smart pointers to the next objects read from
-	 * the rawlog dataset.
-	 * The input/output variable "rawlogEntry" is just a counter of the last
-	 * rawlog entry read, for logging or monitoring purposes.
-	 * \return false if there was some error, true otherwise.
-	 * \sa readActionObservationPair
-	 */
-	bool getActionObservationPair(
-		CActionCollection::Ptr& action, CSensoryFrame::Ptr& observations,
-		size_t& rawlogEntry) const;
-
-	/** Tries to auto-detect the external-images directory of the given rawlog
-	 *file.
-	 *  This searches for the existence of the directories:
-	 *		- "<rawlog_file_path>/<rawlog_filename>_Images"
-	 *		- "<rawlog_file_path>/<rawlog_filename>_images"
-	 *		- "<rawlog_file_path>/<rawlog_filename>_IMAGES"
-	 *		- "<rawlog_file_path>/Images"  (This one is returned if none of the
-	 *choices actually exists).
-	 *
-	 *  The results from this function should be written into
-	 *mrpt::img::CImage::getImagesPathBase() to enable automatic
-	 *  loading of extenrnally-stored images in rawlogs.
-	 */
-	static std::string detectImagesDirectory(const std::string& rawlogFilename);
-
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace mrpt::obs

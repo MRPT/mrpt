@@ -30,66 +30,64 @@ namespace mrpt::serialization
  */
 class CSerializable : public mrpt::rtti::CObject
 {
-	friend class CArchive;
-	friend class CSchemeArchiveBase;
+  friend class CArchive;
+  friend class CSchemeArchiveBase;
 
-	// This must be added to any CObject derived class:
-	DEFINE_VIRTUAL_MRPT_OBJECT(CSerializable)
+  // This must be added to any CObject derived class:
+  DEFINE_VIRTUAL_MRPT_OBJECT(CSerializable)
 
-	~CSerializable() override = default;
+  ~CSerializable() override = default;
 
-   protected:
-	/** @name CSerializable virtual methods
-	 *  @{ */
-	/** Must return the current versioning number of the object. Start in zero
-	 * for new classes, and increments each time there is a change in the stored
-	 * format.
-	 */
-	virtual uint8_t serializeGetVersion() const = 0;
-	/** Pure virtual method for writing (serializing) to an abstract archive.
-	 *  Users don't call this method directly. Instead, use `stream << object;`.
-	 *	\exception std::exception On any I/O error
-	 */
-	virtual void serializeTo(CArchive& out) const = 0;
-	/** Pure virtual method for reading (deserializing) from an abstract
-	 *archive. Users don't call this method directly. Instead, use `stream >>
-	 *object;`. \param in The input binary stream where the object data must
-	 *read from. \param version The version of the object stored in the stream:
-	 *use this version number in your code to know how to read the incoming
-	 *data. \exception std::exception On any I/O error
-	 */
-	virtual void serializeFrom(CArchive& in, uint8_t serial_version) = 0;
-	/** Virtual method for writing (serializing) to an abstract
-	 *  schema based archive.
-	 */
-	virtual void serializeTo(CSchemeArchiveBase& out) const
-	{
-		const std::string err =
-			std::string(this->GetRuntimeClass()->className) +
-			std::string(" : class does not support schema based serialization");
-		THROW_EXCEPTION(err);
-	}
-	/** Virtual method for reading (deserializing) from an abstract
-	 *  schema based archive.
-	 */
-	virtual void serializeFrom(CSchemeArchiveBase& in)
-	{
-		const std::string err =
-			std::string(this->GetRuntimeClass()->className) +
-			std::string(" : class does not support schema based serialization");
-		THROW_EXCEPTION(err);
-	}
-	/** @} */
+ protected:
+  /** @name CSerializable virtual methods
+   *  @{ */
+  /** Must return the current versioning number of the object. Start in zero
+   * for new classes, and increments each time there is a change in the stored
+   * format.
+   */
+  virtual uint8_t serializeGetVersion() const = 0;
+  /** Pure virtual method for writing (serializing) to an abstract archive.
+   *  Users don't call this method directly. Instead, use `stream << object;`.
+   *	\exception std::exception On any I/O error
+   */
+  virtual void serializeTo(CArchive& out) const = 0;
+  /** Pure virtual method for reading (deserializing) from an abstract
+   *archive. Users don't call this method directly. Instead, use `stream >>
+   *object;`. \param in The input binary stream where the object data must
+   *read from. \param version The version of the object stored in the stream:
+   *use this version number in your code to know how to read the incoming
+   *data. \exception std::exception On any I/O error
+   */
+  virtual void serializeFrom(CArchive& in, uint8_t serial_version) = 0;
+  /** Virtual method for writing (serializing) to an abstract
+   *  schema based archive.
+   */
+  virtual void serializeTo(CSchemeArchiveBase& out) const
+  {
+    const std::string err = std::string(this->GetRuntimeClass()->className) +
+                            std::string(" : class does not support schema based serialization");
+    THROW_EXCEPTION(err);
+  }
+  /** Virtual method for reading (deserializing) from an abstract
+   *  schema based archive.
+   */
+  virtual void serializeFrom(CSchemeArchiveBase& in)
+  {
+    const std::string err = std::string(this->GetRuntimeClass()->className) +
+                            std::string(" : class does not support schema based serialization");
+    THROW_EXCEPTION(err);
+  }
+  /** @} */
 
-   public:
-	/** Introduces a pure virtual method responsible for writing to a `mxArray`
-	 * Matlab object, typically a MATLAB `struct` whose contents are documented
-	 * in each derived class. \return A new `mxArray` (caller is responsible of
-	 * memory freeing) or nullptr is class does not support conversion to
-	 * MATLAB.
-	 */
-	virtual mxArray* writeToMatlab() const { return nullptr; }
-};	// End of class def.
+ public:
+  /** Introduces a pure virtual method responsible for writing to a `mxArray`
+   * Matlab object, typically a MATLAB `struct` whose contents are documented
+   * in each derived class. \return A new `mxArray` (caller is responsible of
+   * memory freeing) or nullptr is class does not support conversion to
+   * MATLAB.
+   */
+  virtual mxArray* writeToMatlab() const { return nullptr; }
+};  // End of class def.
 
 /** \addtogroup noncstream_serialization Non-CStream serialization functions (in
  * #include <mrpt/serializatin/CSerializable.h>)
@@ -102,8 +100,7 @@ class CSerializable : public mrpt::rtti::CObject
  * be set automatically.
  * \sa OctetVectorToObject, ObjectToString
  */
-void ObjectToOctetVector(
-	const CSerializable* o, std::vector<uint8_t>& out_vector);
+void ObjectToOctetVector(const CSerializable* o, std::vector<uint8_t>& out_vector);
 
 /** Converts back (de-serializes) a sequence of binary data into a MRPT object,
  * without prior information about the object's class.
@@ -113,101 +110,97 @@ void ObjectToOctetVector(
  * pointer.
  * \sa ObjectToOctetVector, StringToObject
  */
-void OctetVectorToObject(
-	const std::vector<uint8_t>& in_data, CSerializable::Ptr& obj);
+void OctetVectorToObject(const std::vector<uint8_t>& in_data, CSerializable::Ptr& obj);
 
 /** @} */
 /** This declaration must be inserted in all CSerializable classes definition,
  * within the class declaration. */
-#define DEFINE_SCHEMA_SERIALIZABLE()                                           \
-   protected:                                                                  \
-	/*! @name CSerializable virtual methods for schema based archives*/        \
-	/*! @{ */                                                                  \
-	void serializeTo(mrpt::serialization::CSchemeArchiveBase& out)             \
-		const override;                                                        \
-	void serializeFrom(mrpt::serialization::CSchemeArchiveBase& in) override;  \
+#define DEFINE_SCHEMA_SERIALIZABLE()                                             \
+ protected:                                                                      \
+  /*! @name CSerializable virtual methods for schema based archives*/            \
+  /*! @{ */                                                                      \
+  void serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const override; \
+  void serializeFrom(mrpt::serialization::CSchemeArchiveBase& in) override;      \
 /*! @} */
 
 /** For use inside all serializeTo(CSchemeArchiveBase) methods */
-#define SCHEMA_SERIALIZE_DATATYPE_VERSION(ser_version)                         \
-	do                                                                         \
-	{                                                                          \
-		out["datatype"] = std::string(this->GetRuntimeClass()->className);     \
-		out["version"] = ser_version;                                          \
-	} while (false)
+#define SCHEMA_SERIALIZE_DATATYPE_VERSION(ser_version)                 \
+  do                                                                   \
+  {                                                                    \
+    out["datatype"] = std::string(this->GetRuntimeClass()->className); \
+    out["version"] = ser_version;                                      \
+  } while (false)
 
 /** For use inside serializeFrom(CSchemeArchiveBase) methods */
-#define SCHEMA_DESERIALIZE_DATATYPE_VERSION()                                  \
-	version = static_cast<int>(in["version"]);                                 \
-	const std::string read_typename{static_cast<std::string>(in["datatype"])}; \
-	const std::string expected_typename{this->GetRuntimeClass()->className};   \
-	if (expected_typename != read_typename)                                    \
-	{                                                                          \
-		THROW_EXCEPTION(mrpt::format(                                          \
-			"Schema deserializing class `%s` but expected `%s`",               \
-			read_typename.c_str(), expected_typename.c_str()));                \
-	}
+#define SCHEMA_DESERIALIZE_DATATYPE_VERSION()                                       \
+  version = static_cast<int>(in["version"]);                                        \
+  const std::string read_typename{static_cast<std::string>(in["datatype"])};        \
+  const std::string expected_typename{this->GetRuntimeClass()->className};          \
+  if (expected_typename != read_typename)                                           \
+  {                                                                                 \
+    THROW_EXCEPTION(mrpt::format(                                                   \
+        "Schema deserializing class `%s` but expected `%s`", read_typename.c_str(), \
+        expected_typename.c_str()));                                                \
+  }
 
 /** This declaration must be inserted in all CSerializable classes definition,
  * within the class declaration. */
-#define DEFINE_SERIALIZABLE(class_name, NS)                                    \
-	DEFINE_MRPT_OBJECT(class_name, NS)                                         \
-   protected:                                                                  \
-	/*! @name CSerializable virtual methods */                                 \
-	/*! @{ */                                                                  \
-	uint8_t serializeGetVersion() const override;                              \
-	void serializeTo(mrpt::serialization::CArchive& out) const override;       \
-	void serializeFrom(                                                        \
-		mrpt::serialization::CArchive& in, uint8_t serial_version) override;   \
+#define DEFINE_SERIALIZABLE(class_name, NS)                                               \
+  DEFINE_MRPT_OBJECT(class_name, NS)                                                      \
+ protected:                                                                               \
+  /*! @name CSerializable virtual methods */                                              \
+  /*! @{ */                                                                               \
+  uint8_t serializeGetVersion() const override;                                           \
+  void serializeTo(mrpt::serialization::CArchive& out) const override;                    \
+  void serializeFrom(mrpt::serialization::CArchive& in, uint8_t serial_version) override; \
 /*! @} */
 
 /** To be added to all CSerializable-classes implementation files.
  * This registers the class name with the NameSpace prefix.
  */
-#define IMPLEMENTS_SERIALIZABLE(class_name, base, NameSpace)                   \
-	IMPLEMENTS_MRPT_OBJECT(class_name, base, NameSpace)
+#define IMPLEMENTS_SERIALIZABLE(class_name, base, NameSpace) \
+  IMPLEMENTS_MRPT_OBJECT(class_name, base, NameSpace)
 
 /** This declaration must be inserted in virtual CSerializable classes
  * definition: */
-#define DEFINE_VIRTUAL_SERIALIZABLE(class_name)                                \
-	DEFINE_VIRTUAL_MRPT_OBJECT(class_name)
+#define DEFINE_VIRTUAL_SERIALIZABLE(class_name) DEFINE_VIRTUAL_MRPT_OBJECT(class_name)
 
 /** This must be inserted as implementation of some required members for
  *  virtual CSerializable classes:
  */
-#define IMPLEMENTS_VIRTUAL_SERIALIZABLE(class_name, base_class, NS)            \
-	IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base_class, NS)
+#define IMPLEMENTS_VIRTUAL_SERIALIZABLE(class_name, base_class, NS) \
+  IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base_class, NS)
 
-#define IMPLEMENTS_VIRTUAL_SERIALIZABLE_NS_PREFIX(class_name, base_class, NS)  \
-	IMPLEMENTS_VIRTUAL_MRPT_OBJECT_NS_PREFIX(class_name, base_class, NS)
+#define IMPLEMENTS_VIRTUAL_SERIALIZABLE_NS_PREFIX(class_name, base_class, NS) \
+  IMPLEMENTS_VIRTUAL_MRPT_OBJECT_NS_PREFIX(class_name, base_class, NS)
 
 /** This must be inserted if a custom conversion method for MEX API is
  * implemented in the class */
-#define DECLARE_MEX_CONVERSION                                                 \
-	/*! @name Virtual methods for MRPT-MEX conversion */                       \
-	/*! @{ */                                                                  \
-   public:                                                                     \
-	mxArray* writeToMatlab() const override;                                   \
+#define DECLARE_MEX_CONVERSION                         \
+  /*! @name Virtual methods for MRPT-MEX conversion */ \
+  /*! @{ */                                            \
+ public:                                               \
+  mxArray* writeToMatlab() const override;             \
 /*! @} */
 
 /** This must be inserted if a custom conversion method for MEX API is
  * implemented in the class */
-#define DECLARE_MEXPLUS_FROM(complete_type)                                    \
-	namespace mexplus                                                          \
-	{                                                                          \
-	template <typename T>                                                      \
-	mxArray* from(const T& value);                                             \
-	template <>                                                                \
-	mxArray* from(const complete_type& value);                                 \
-	}
+#define DECLARE_MEXPLUS_FROM(complete_type)  \
+  namespace mexplus                          \
+  {                                          \
+  template <typename T>                      \
+  mxArray* from(const T& value);             \
+  template <>                                \
+  mxArray* from(const complete_type& value); \
+  }
 
-#define IMPLEMENTS_MEXPLUS_FROM(complete_type)                                 \
-	namespace mexplus                                                          \
-	{                                                                          \
-	template <>                                                                \
-	mxArray* from(const complete_type& var)                                    \
-	{                                                                          \
-		return var.writeToMatlab();                                            \
-	}                                                                          \
-	}
+#define IMPLEMENTS_MEXPLUS_FROM(complete_type) \
+  namespace mexplus                            \
+  {                                            \
+  template <>                                  \
+  mxArray* from(const complete_type& var)      \
+  {                                            \
+    return var.writeToMatlab();                \
+  }                                            \
+  }
 }  // namespace mrpt::serialization

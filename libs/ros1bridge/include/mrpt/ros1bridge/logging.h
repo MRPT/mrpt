@@ -26,37 +26,36 @@ namespace mrpt::ros1bridge
  *@brief function that converts ROS verbosity level log4cxx::Level to MRPT
  * equivalent MRPT's VerbosityLevel
  */
-static inline mrpt::system::VerbosityLevel rosLoggerLvlToMRPTLoggerLvl(
-	log4cxx::LevelPtr lvl)
+static inline mrpt::system::VerbosityLevel rosLoggerLvlToMRPTLoggerLvl(log4cxx::LevelPtr lvl)
 {
-	using namespace log4cxx;
+  using namespace log4cxx;
 
-	// determine on the corresponding VerbosityLevel
-	mrpt::system::VerbosityLevel mrpt_lvl;
+  // determine on the corresponding VerbosityLevel
+  mrpt::system::VerbosityLevel mrpt_lvl;
 
-	if (lvl == Level::getFatal() || lvl == Level::getError())
-	{
-		mrpt_lvl = mrpt::system::LVL_ERROR;
-	}
-	else if (lvl == Level::getWarn())
-	{
-		mrpt_lvl = mrpt::system::LVL_WARN;
-	}
-	else if (lvl == Level::getInfo())
-	{
-		mrpt_lvl = mrpt::system::LVL_INFO;
-	}
-	else if (lvl == Level::getDebug() || lvl == Level::getTrace())
-	{
-		mrpt_lvl = mrpt::system::LVL_DEBUG;
-	}
-	else
-	{
-		mrpt_lvl = mrpt::system::LVL_INFO;
-		ROS_ERROR("Unknown log4cxx::Level is given.");
-	}
+  if (lvl == Level::getFatal() || lvl == Level::getError())
+  {
+    mrpt_lvl = mrpt::system::LVL_ERROR;
+  }
+  else if (lvl == Level::getWarn())
+  {
+    mrpt_lvl = mrpt::system::LVL_WARN;
+  }
+  else if (lvl == Level::getInfo())
+  {
+    mrpt_lvl = mrpt::system::LVL_INFO;
+  }
+  else if (lvl == Level::getDebug() || lvl == Level::getTrace())
+  {
+    mrpt_lvl = mrpt::system::LVL_DEBUG;
+  }
+  else
+  {
+    mrpt_lvl = mrpt::system::LVL_INFO;
+    ROS_ERROR("Unknown log4cxx::Level is given.");
+  }
 
-	return mrpt_lvl;
+  return mrpt_lvl;
 
 }  // end of rosLoggerLvlToMRPTLoggerLvl
 
@@ -68,26 +67,34 @@ static inline mrpt::system::VerbosityLevel rosLoggerLvlToMRPTLoggerLvl(
  * instead of the package from which macro is actually called.
  */
 static inline void mrptToROSLoggerCallback(
-	const std::string& msg, const mrpt::system::VerbosityLevel level,
-	[[maybe_unused]] const std::string& loggerName,
-	[[maybe_unused]] const mrpt::system::TTimeStamp timestamp)
+    const std::string& msg,
+    const mrpt::system::VerbosityLevel level,
+    [[maybe_unused]] const std::string& loggerName,
+    [[maybe_unused]] const mrpt::system::TTimeStamp timestamp)
 {
-	// Remove trailing \n if present
-	std::string tmsg = msg;
-	if (!tmsg.empty() &&
-		tmsg.compare(tmsg.length() - 1, tmsg.length(), "\n") == 0)
-	{
-		tmsg.erase(tmsg.end() - 1);
-	}
+  // Remove trailing \n if present
+  std::string tmsg = msg;
+  if (!tmsg.empty() && tmsg.compare(tmsg.length() - 1, tmsg.length(), "\n") == 0)
+  {
+    tmsg.erase(tmsg.end() - 1);
+  }
 
-	switch (level)
-	{
-		case mrpt::system::LVL_DEBUG: ROS_DEBUG_STREAM(msg); break;
-		case mrpt::system::LVL_WARN: ROS_WARN_STREAM(tmsg); break;
-		case mrpt::system::LVL_ERROR: ROS_ERROR_STREAM(tmsg); break;
-		default:
-		case mrpt::system::LVL_INFO: ROS_INFO_STREAM(tmsg); break;
-	}
+  switch (level)
+  {
+    case mrpt::system::LVL_DEBUG:
+      ROS_DEBUG_STREAM(msg);
+      break;
+    case mrpt::system::LVL_WARN:
+      ROS_WARN_STREAM(tmsg);
+      break;
+    case mrpt::system::LVL_ERROR:
+      ROS_ERROR_STREAM(tmsg);
+      break;
+    default:
+    case mrpt::system::LVL_INFO:
+      ROS_INFO_STREAM(tmsg);
+      break;
+  }
 }
 
 }  // namespace mrpt::ros1bridge

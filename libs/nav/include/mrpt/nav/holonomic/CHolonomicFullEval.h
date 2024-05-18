@@ -56,105 +56,101 @@ namespace mrpt::nav
  */
 class CHolonomicFullEval : public CAbstractHolonomicReactiveMethod
 {
-	DEFINE_SERIALIZABLE(CHolonomicFullEval, mrpt::nav)
-   public:
-	/**  Initialize the parameters of the navigator, from some configuration
-	 * file, or default values if set to nullptr */
-	CHolonomicFullEval(const mrpt::config::CConfigFileBase* INI_FILE = nullptr);
+  DEFINE_SERIALIZABLE(CHolonomicFullEval, mrpt::nav)
+ public:
+  /**  Initialize the parameters of the navigator, from some configuration
+   * file, or default values if set to nullptr */
+  CHolonomicFullEval(const mrpt::config::CConfigFileBase* INI_FILE = nullptr);
 
-	// See base class docs
-	void navigate(const NavInput& ni, NavOutput& no) override;
+  // See base class docs
+  void navigate(const NavInput& ni, NavOutput& no) override;
 
-	void initialize(const mrpt::config::CConfigFileBase& INI_FILE)
-		override;  // See base class docs
-	void saveConfigFile(mrpt::config::CConfigFileBase& c)
-		const override;	 // See base class docs
+  void initialize(const mrpt::config::CConfigFileBase& INI_FILE) override;  // See base class docs
+  void saveConfigFile(mrpt::config::CConfigFileBase& c) const override;     // See base class docs
 
-	/** Algorithm options */
-	struct TOptions : public mrpt::config::CLoadableOptions
-	{
-		/** Directions with collision-free distances below this threshold are
-		 * not elegible. */
-		double TOO_CLOSE_OBSTACLE{0.15};
-		/** Start to reduce speed when closer than this to target  [m] */
-		double TARGET_SLOW_APPROACHING_DISTANCE{0.60};
-		/** Start to reduce speed when clearance is below this value ([0,1]
-		 * ratio wrt obstacle reference/max distance) */
-		double OBSTACLE_SLOW_DOWN_DISTANCE{0.15};
-		/** Range of "sectors" (directions) for hysteresis over successive
-		 * timesteps */
-		double HYSTERESIS_SECTOR_COUNT{5};
-		/** See docs above */
-		std::vector<double> factorWeights;
-		/** 0/1 to normalize factors. */
-		std::vector<int32_t> factorNormalizeOrNot;
-		/** Factor indices [0,4] for the factors to consider in each phase
-		 * 1,2,...N of the movement decision (Defaults: `PHASE1_FACTORS=0 1 2`,
-		 * `PHASE2_FACTORS=`3 4`) */
-		std::vector<std::vector<int32_t>> PHASE_FACTORS;
-		/** Phase 1,2,N-1... scores must be above this relative range threshold
-		 * [0,1] to be considered in phase 2 (Default:`0.75`) */
-		std::vector<double> PHASE_THRESHOLDS;
+  /** Algorithm options */
+  struct TOptions : public mrpt::config::CLoadableOptions
+  {
+    /** Directions with collision-free distances below this threshold are
+     * not elegible. */
+    double TOO_CLOSE_OBSTACLE{0.15};
+    /** Start to reduce speed when closer than this to target  [m] */
+    double TARGET_SLOW_APPROACHING_DISTANCE{0.60};
+    /** Start to reduce speed when clearance is below this value ([0,1]
+     * ratio wrt obstacle reference/max distance) */
+    double OBSTACLE_SLOW_DOWN_DISTANCE{0.15};
+    /** Range of "sectors" (directions) for hysteresis over successive
+     * timesteps */
+    double HYSTERESIS_SECTOR_COUNT{5};
+    /** See docs above */
+    std::vector<double> factorWeights;
+    /** 0/1 to normalize factors. */
+    std::vector<int32_t> factorNormalizeOrNot;
+    /** Factor indices [0,4] for the factors to consider in each phase
+     * 1,2,...N of the movement decision (Defaults: `PHASE1_FACTORS=0 1 2`,
+     * `PHASE2_FACTORS=`3 4`) */
+    std::vector<std::vector<int32_t>> PHASE_FACTORS;
+    /** Phase 1,2,N-1... scores must be above this relative range threshold
+     * [0,1] to be considered in phase 2 (Default:`0.75`) */
+    std::vector<double> PHASE_THRESHOLDS;
 
-		/** (default:false, to save space) */
-		bool LOG_SCORE_MATRIX{false};
+    /** (default:false, to save space) */
+    bool LOG_SCORE_MATRIX{false};
 
-		/**  Ratio [0,1], times path_count, gives the minimum number of paths at
-		 * each side of a target direction to be accepted as desired direction
-		 */
-		double clearance_threshold_ratio{0.05};
-		/**  Ratio [0,1], times path_count, gives the minimum gap width to
-		 * accept a direct motion towards target. */
-		double gap_width_ratio_threshold{0.25};
+    /**  Ratio [0,1], times path_count, gives the minimum number of paths at
+     * each side of a target direction to be accepted as desired direction
+     */
+    double clearance_threshold_ratio{0.05};
+    /**  Ratio [0,1], times path_count, gives the minimum gap width to
+     * accept a direct motion towards target. */
+    double gap_width_ratio_threshold{0.25};
 
-		TOptions();
-		void loadFromConfigFile(
-			const mrpt::config::CConfigFileBase& source,
-			const std::string& section) override;  // See base docs
-		void saveToConfigFile(
-			mrpt::config::CConfigFileBase& cfg,
-			const std::string& section) const override;	 // See base docs
-	};
+    TOptions();
+    void loadFromConfigFile(
+        const mrpt::config::CConfigFileBase& source,
+        const std::string& section) override;  // See base docs
+    void saveToConfigFile(
+        mrpt::config::CConfigFileBase& cfg,
+        const std::string& section) const override;  // See base docs
+  };
 
-	/** Parameters of the algorithm (can be set manually or loaded from
-	 * CHolonomicFullEval::initialize or options.loadFromConfigFile(), etc.) */
-	TOptions options;
+  /** Parameters of the algorithm (can be set manually or loaded from
+   * CHolonomicFullEval::initialize or options.loadFromConfigFile(), etc.) */
+  TOptions options;
 
-	double getTargetApproachSlowDownDistance() const override
-	{
-		return options.TARGET_SLOW_APPROACHING_DISTANCE;
-	}
-	void setTargetApproachSlowDownDistance(const double dist) override
-	{
-		options.TARGET_SLOW_APPROACHING_DISTANCE = dist;
-	}
+  double getTargetApproachSlowDownDistance() const override
+  {
+    return options.TARGET_SLOW_APPROACHING_DISTANCE;
+  }
+  void setTargetApproachSlowDownDistance(const double dist) override
+  {
+    options.TARGET_SLOW_APPROACHING_DISTANCE = dist;
+  }
 
-   private:
-	unsigned int m_last_selected_sector;
-	unsigned int direction2sector(const double a, const unsigned int N);
-	/** Individual scores for each direction: (i,j), i (row) are directions, j
-	 * (cols) are scores. Not all directions may have evaluations, in which case
-	 * a "-1" value will be found. */
-	mrpt::math::CMatrixD m_dirs_scores;
+ private:
+  unsigned int m_last_selected_sector;
+  unsigned int direction2sector(const double a, const unsigned int N);
+  /** Individual scores for each direction: (i,j), i (row) are directions, j
+   * (cols) are scores. Not all directions may have evaluations, in which case
+   * a "-1" value will be found. */
+  mrpt::math::CMatrixD m_dirs_scores;
 
-	/** If desired, override in a derived class to manipulate the final
-	 * evaluations of each directions */
-	virtual void postProcessDirectionEvaluations(
-		std::vector<double>& dir_evals, const NavInput& ni,
-		unsigned int trg_idx);
+  /** If desired, override in a derived class to manipulate the final
+   * evaluations of each directions */
+  virtual void postProcessDirectionEvaluations(
+      std::vector<double>& dir_evals, const NavInput& ni, unsigned int trg_idx);
 
-	struct EvalOutput
-	{
-		std::vector<std::vector<double>> phase_scores;
-		EvalOutput() {}
-	};
+  struct EvalOutput
+  {
+    std::vector<std::vector<double>> phase_scores;
+    EvalOutput() {}
+  };
 
-	/** Evals one single target of the potentially many of them in NavInput */
-	void evalSingleTarget(
-		unsigned int target_idx, const NavInput& ni, EvalOutput& eo);
+  /** Evals one single target of the potentially many of them in NavInput */
+  void evalSingleTarget(unsigned int target_idx, const NavInput& ni, EvalOutput& eo);
 
-	mrpt::obs::CSinCosLookUpTableFor2DScans m_sincos_lut;
-};	// end of CHolonomicFullEval
+  mrpt::obs::CSinCosLookUpTableFor2DScans m_sincos_lut;
+};  // end of CHolonomicFullEval
 
 /** A class for storing extra information about the execution of
  * CHolonomicFullEval navigation.
@@ -162,24 +158,21 @@ class CHolonomicFullEval : public CAbstractHolonomicReactiveMethod
  */
 class CLogFileRecord_FullEval : public CHolonomicLogFileRecord
 {
-	DEFINE_SERIALIZABLE(CLogFileRecord_FullEval, mrpt::nav)
-   public:
-	CLogFileRecord_FullEval();
+  DEFINE_SERIALIZABLE(CLogFileRecord_FullEval, mrpt::nav)
+ public:
+  CLogFileRecord_FullEval();
 
-	/** Member data */
-	int32_t selectedSector{0};
-	double evaluation{.0};
-	/** Individual scores for each direction: (i,j), i (row) are directions, j
-	 * (cols) are scores. Not all directions may have evaluations, in which case
-	 * a "-1" value will be found. */
-	mrpt::math::CMatrixD dirs_scores;
-	/** Normally = 0. Can be >0 if multiple targets passed simultaneously. */
-	int32_t selectedTarget{0};
+  /** Member data */
+  int32_t selectedSector{0};
+  double evaluation{.0};
+  /** Individual scores for each direction: (i,j), i (row) are directions, j
+   * (cols) are scores. Not all directions may have evaluations, in which case
+   * a "-1" value will be found. */
+  mrpt::math::CMatrixD dirs_scores;
+  /** Normally = 0. Can be >0 if multiple targets passed simultaneously. */
+  int32_t selectedTarget{0};
 
-	const mrpt::math::CMatrixD* getDirectionScores() const override
-	{
-		return &dirs_scores;
-	}
+  const mrpt::math::CMatrixD* getDirectionScores() const override { return &dirs_scores; }
 };
 
 /** @} */

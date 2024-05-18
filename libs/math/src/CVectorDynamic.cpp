@@ -19,13 +19,12 @@ template <typename T>
 template <typename T2>
 CVectorDynamic<T2> CVectorDynamic<T>::cast() const
 {
-	CVectorDynamic<T2> r(size());
-	r.asEigen() = asEigen().template cast<T2>();
-	return r;
+  CVectorDynamic<T2> r(size());
+  r.asEigen() = asEigen().template cast<T2>();
+  return r;
 }
 
-#define DO_VECDYN_INSTANTIATION(T_)                                            \
-	template class mrpt::math::CVectorDynamic<T_>;
+#define DO_VECDYN_INSTANTIATION(T_) template class mrpt::math::CVectorDynamic<T_>;
 
 DO_VECDYN_INSTANTIATION(float)
 DO_VECDYN_INSTANTIATION(double)

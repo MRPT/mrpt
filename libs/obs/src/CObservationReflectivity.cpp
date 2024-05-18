@@ -19,45 +19,44 @@ using namespace mrpt::poses;
 IMPLEMENTS_SERIALIZABLE(CObservationReflectivity, CObservation, mrpt::obs)
 
 uint8_t CObservationReflectivity::serializeGetVersion() const { return 1; }
-void CObservationReflectivity::serializeTo(
-	mrpt::serialization::CArchive& out) const
+void CObservationReflectivity::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	out << reflectivityLevel << channel << sensorPose;
-	out << sensorLabel << timestamp;
+  out << reflectivityLevel << channel << sensorPose;
+  out << sensorLabel << timestamp;
 }
 
-void CObservationReflectivity::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void CObservationReflectivity::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	switch (version)
-	{
-		case 0:
-		case 1:
-		{
-			in >> reflectivityLevel;
-			if (version >= 1) in >> channel;
-			in >> sensorPose;
-			in >> sensorLabel >> timestamp;
-		}
-		break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	};
+  switch (version)
+  {
+    case 0:
+    case 1:
+    {
+      in >> reflectivityLevel;
+      if (version >= 1) in >> channel;
+      in >> sensorPose;
+      in >> sensorLabel >> timestamp;
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
 }
 
 void CObservationReflectivity::getDescriptionAsText(std::ostream& o) const
 {
-	CObservation::getDescriptionAsText(o);
+  CObservation::getDescriptionAsText(o);
 
-	o << "reflectivityLevel=" << reflectivityLevel << std::endl;
-	o << "channel=" << channel << " (-1=any)" << std::endl;
+  o << "reflectivityLevel=" << reflectivityLevel << std::endl;
+  o << "channel=" << channel << " (-1=any)" << std::endl;
 }
 
 std::string CObservationReflectivity::exportTxtHeader() const
 {
-	return "reflectivityLevel  channel";
+  return "reflectivityLevel  channel";
 }
 
 std::string CObservationReflectivity::exportTxtDataRow() const
 {
-	return mrpt::format("%18.5f %5d", reflectivityLevel, channel);
+  return mrpt::format("%18.5f %5d", reflectivityLevel, channel);
 }

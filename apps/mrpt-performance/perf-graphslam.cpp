@@ -25,35 +25,34 @@ using namespace std;
 template <class GRAPH_TYPE>
 double graphslam_levmarq_solve(int nVertices, int N)
 {
-	// This is the initial input graph (make a copy for later use):
-	GRAPH_TYPE graph;
-	GraphSlamLevMarqTest<GRAPH_TYPE>::create_ring_path(graph, nVertices);
+  // This is the initial input graph (make a copy for later use):
+  GRAPH_TYPE graph;
+  GraphSlamLevMarqTest<GRAPH_TYPE>::create_ring_path(graph, nVertices);
 
-	// cout << graph.nodeCount() << " nodes, " << graph.edgeCount() << "
-	// edges\n";
+  // cout << graph.nodeCount() << " nodes, " << graph.edgeCount() << "
+  // edges\n";
 
-	mrpt::containers::yaml params;
-	// params["verbose"]  = true;
-	// params["profiler"] = true;
-	params["max_iterations"] = 1000;
+  mrpt::containers::yaml params;
+  // params["verbose"]  = true;
+  // params["profiler"] = true;
+  params["max_iterations"] = 1000;
 
-	CTimeLogger timer;
+  CTimeLogger timer;
 
-	for (long i = 0; i < N; i++)
-	{
-		GRAPH_TYPE graph0 = graph;
+  for (long i = 0; i < N; i++)
+  {
+    GRAPH_TYPE graph0 = graph;
 
-		graphslam::TResultInfoSpaLevMarq levmarq_info;
+    graphslam::TResultInfoSpaLevMarq levmarq_info;
 
-		timer.enter("test");
+    timer.enter("test");
 
-		graphslam::optimize_graph_spa_levmarq(
-			graph0, levmarq_info, nullptr, params);
-		timer.leave("test");
-	}
-	const double ret = timer.getMeanTime("test");
-	timer.clear(true);	// this disables dump to cout upon destruction
-	return ret;
+    graphslam::optimize_graph_spa_levmarq(graph0, levmarq_info, nullptr, params);
+    timer.leave("test");
+  }
+  const double ret = timer.getMeanTime("test");
+  timer.clear(true);  // this disables dump to cout upon destruction
+  return ret;
 }
 
 // ------------------------------------------------------
@@ -61,17 +60,17 @@ double graphslam_levmarq_solve(int nVertices, int N)
 // ------------------------------------------------------
 void register_tests_graphslam()
 {
-	getRandomGenerator().randomize(1234);
-	lstTests.emplace_back(
-		"graphslam(2d): levmarq 50 KFs/101 edges",
-		graphslam_levmarq_solve<CNetworkOfPoses2D>, 50, 50);
-	lstTests.emplace_back(
-		"graphslam(2d): levmarq 100 KFs/451 edges",
-		graphslam_levmarq_solve<CNetworkOfPoses2D>, 100, 2);
-	lstTests.emplace_back(
-		"graphslam(3d): levmarq 50 KFs/101 edges",
-		graphslam_levmarq_solve<CNetworkOfPoses3D>, 50, 10);
-	lstTests.emplace_back(
-		"graphslam(3d): levmarq 100 KFs/451 edges",
-		graphslam_levmarq_solve<CNetworkOfPoses3D>, 100, 2);
+  getRandomGenerator().randomize(1234);
+  lstTests.emplace_back(
+      "graphslam(2d): levmarq 50 KFs/101 edges", graphslam_levmarq_solve<CNetworkOfPoses2D>, 50,
+      50);
+  lstTests.emplace_back(
+      "graphslam(2d): levmarq 100 KFs/451 edges", graphslam_levmarq_solve<CNetworkOfPoses2D>, 100,
+      2);
+  lstTests.emplace_back(
+      "graphslam(3d): levmarq 50 KFs/101 edges", graphslam_levmarq_solve<CNetworkOfPoses3D>, 50,
+      10);
+  lstTests.emplace_back(
+      "graphslam(3d): levmarq 100 KFs/451 edges", graphslam_levmarq_solve<CNetworkOfPoses3D>, 100,
+      2);
 }

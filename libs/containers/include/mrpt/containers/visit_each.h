@@ -20,7 +20,7 @@ namespace mrpt
 template <class Visitor, class... T>
 void visit_each(const Visitor& vis, T&&... t)
 {
-	(std::invoke(vis, std::forward<T>(t)), ...);
+  (std::invoke(vis, std::forward<T>(t)), ...);
 }
 /** @} */
 

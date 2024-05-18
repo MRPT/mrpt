@@ -26,12 +26,12 @@ namespace mrpt::opengl
  */
 enum class CUBE_TEXTURE_FACE
 {
-	LEFT = 0,  // +X
-	RIGHT,	// -X
-	TOP,  // +Y
-	BOTTOM,	 // -Y
-	FRONT,	// +Z
-	BACK  // -Z
+  LEFT = 0,  // +X
+  RIGHT,     // -X
+  TOP,       // +Y
+  BOTTOM,    // -Y
+  FRONT,     // +Z
+  BACK       // -Z
 };
 
 }  // namespace mrpt::opengl

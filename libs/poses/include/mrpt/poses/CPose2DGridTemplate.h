@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/core/bits_math.h>  // for .0_deg
-#include <mrpt/core/round.h>  // for round()
+#include <mrpt/core/round.h>      // for round()
 #include <mrpt/serialization/CSerializable.h>
 
 #include <tuple>
@@ -23,207 +23,214 @@ namespace mrpt::poses
 template <class T>
 class CPose2DGridTemplate
 {
-   protected:
-	/** The limits and resolution of the grid:
-	 */
-	double m_xMin, m_xMax, m_yMin, m_yMax, m_phiMin, m_phiMax, m_resolutionXY,
-		m_resolutionPhi;
+ protected:
+  /** The limits and resolution of the grid:
+   */
+  double m_xMin, m_xMax, m_yMin, m_yMax, m_phiMin, m_phiMax, m_resolutionXY, m_resolutionPhi;
 
-	/** The size of "m_data" is m_sizeX * m_sizeY * m_sizePhi
-	 */
-	size_t m_sizeX, m_sizeY, m_sizePhi, m_sizeXY;
+  /** The size of "m_data" is m_sizeX * m_sizeY * m_sizePhi
+   */
+  size_t m_sizeX, m_sizeY, m_sizePhi, m_sizeXY;
 
-	/** The indexes of the "left" borders:
-	 */
-	int m_idxLeftX, m_idxLeftY, m_idxLeftPhi;
+  /** The indexes of the "left" borders:
+   */
+  int m_idxLeftX, m_idxLeftY, m_idxLeftPhi;
 
-	/** The data */
-	std::vector<T> m_data;
+  /** The data */
+  std::vector<T> m_data;
 
-   public:
-	const std::vector<T>& data() const { return m_data; }
+ public:
+  const std::vector<T>& data() const { return m_data; }
 
-	/** Returns "indexes" from coordinates:
-	 */
-	size_t x2idx(double x) const
-	{
-		int idx = mrpt::round((x - m_xMin) / m_resolutionXY);
-		ASSERT_(idx >= 0 && idx < static_cast<int>(m_sizeX));
-		return idx;
-	}
+  /** Returns "indexes" from coordinates:
+   */
+  size_t x2idx(double x) const
+  {
+    int idx = mrpt::round((x - m_xMin) / m_resolutionXY);
+    ASSERT_(idx >= 0 && idx < static_cast<int>(m_sizeX));
+    return idx;
+  }
 
-	/** Returns "indexes" from coordinates:
-	 */
-	size_t y2idx(double y) const
-	{
-		int idx = mrpt::round((y - m_yMin) / m_resolutionXY);
-		ASSERT_(idx >= 0 && idx < static_cast<int>(m_sizeY));
-		return idx;
-	}
+  /** Returns "indexes" from coordinates:
+   */
+  size_t y2idx(double y) const
+  {
+    int idx = mrpt::round((y - m_yMin) / m_resolutionXY);
+    ASSERT_(idx >= 0 && idx < static_cast<int>(m_sizeY));
+    return idx;
+  }
 
-	/** Returns "indexes" from coordinates:
-	 */
-	size_t phi2idx(double phi) const
-	{
-		int idx = mrpt::round((phi - m_phiMin) / m_resolutionPhi);
-		ASSERT_(idx >= 0 && idx < static_cast<int>(m_sizePhi));
-		return idx;
-	}
+  /** Returns "indexes" from coordinates:
+   */
+  size_t phi2idx(double phi) const
+  {
+    int idx = mrpt::round((phi - m_phiMin) / m_resolutionPhi);
+    ASSERT_(idx >= 0 && idx < static_cast<int>(m_sizePhi));
+    return idx;
+  }
 
-	/** Returns coordinates from "indexes":
-	 */
-	double idx2x(size_t x) const
-	{
-		ASSERT_(x < m_sizeX);
-		return m_xMin + x * m_resolutionXY;
-	}
+  /** Returns coordinates from "indexes":
+   */
+  double idx2x(size_t x) const
+  {
+    ASSERT_(x < m_sizeX);
+    return m_xMin + x * m_resolutionXY;
+  }
 
-	/** Returns coordinates from "indexes":
-	 */
-	double idx2y(size_t y) const
-	{
-		ASSERT_(y < m_sizeY);
-		return m_yMin + y * m_resolutionXY;
-	}
+  /** Returns coordinates from "indexes":
+   */
+  double idx2y(size_t y) const
+  {
+    ASSERT_(y < m_sizeY);
+    return m_yMin + y * m_resolutionXY;
+  }
 
-	/** Returns coordinates from "indexes":
-	 */
-	double idx2phi(size_t phi) const
-	{
-		ASSERT_(phi < m_sizePhi);
-		return m_phiMin + phi * m_resolutionPhi;
-	}
+  /** Returns coordinates from "indexes":
+   */
+  double idx2phi(size_t phi) const
+  {
+    ASSERT_(phi < m_sizePhi);
+    return m_phiMin + phi * m_resolutionPhi;
+  }
 
-	/** Default constructor:
-	 */
-	CPose2DGridTemplate(
-		double xMin = -1.0f, double xMax = 1.0f, double yMin = -1.0f,
-		double yMax = 1.0f, double resolutionXY = 0.5f,
-		double resolutionPhi = mrpt::DEG2RAD(180.0), double phiMin = -M_PI,
-		double phiMax = M_PI)
-		: m_data()
-	{
-		setSize(
-			xMin, xMax, yMin, yMax, resolutionXY, resolutionPhi, phiMin,
-			phiMax);
-	}
+  /** Default constructor:
+   */
+  CPose2DGridTemplate(
+      double xMin = -1.0f,
+      double xMax = 1.0f,
+      double yMin = -1.0f,
+      double yMax = 1.0f,
+      double resolutionXY = 0.5f,
+      double resolutionPhi = mrpt::DEG2RAD(180.0),
+      double phiMin = -M_PI,
+      double phiMax = M_PI) :
+      m_data()
+  {
+    setSize(xMin, xMax, yMin, yMax, resolutionXY, resolutionPhi, phiMin, phiMax);
+  }
 
-	virtual ~CPose2DGridTemplate() = default;
-	/** Changes the limits and size of the grid, erasing previous contents:
-	 */
-	void setSize(
-		double xMin, double xMax, double yMin, double yMax, double resolutionXY,
-		double resolutionPhi, double phiMin = -M_PI, double phiMax = M_PI)
-	{
-		// Checks
-		ASSERT_(xMax > xMin);
-		ASSERT_(yMax > yMin);
-		ASSERT_(phiMax >= phiMin);
-		ASSERT_(resolutionXY > 0);
-		ASSERT_(resolutionPhi > 0);
+  virtual ~CPose2DGridTemplate() = default;
+  /** Changes the limits and size of the grid, erasing previous contents:
+   */
+  void setSize(
+      double xMin,
+      double xMax,
+      double yMin,
+      double yMax,
+      double resolutionXY,
+      double resolutionPhi,
+      double phiMin = -M_PI,
+      double phiMax = M_PI)
+  {
+    // Checks
+    ASSERT_(xMax > xMin);
+    ASSERT_(yMax > yMin);
+    ASSERT_(phiMax >= phiMin);
+    ASSERT_(resolutionXY > 0);
+    ASSERT_(resolutionPhi > 0);
 
-		// Copy data:
-		m_xMin = xMin;
-		m_xMax = xMax;
-		m_yMin = yMin;
-		m_yMax = yMax;
-		m_phiMin = phiMin;
-		m_phiMax = phiMax;
-		m_resolutionXY = resolutionXY;
-		m_resolutionPhi = resolutionPhi;
+    // Copy data:
+    m_xMin = xMin;
+    m_xMax = xMax;
+    m_yMin = yMin;
+    m_yMax = yMax;
+    m_phiMin = phiMin;
+    m_phiMax = phiMax;
+    m_resolutionXY = resolutionXY;
+    m_resolutionPhi = resolutionPhi;
 
-		// Compute the indexes of the starting borders:
-		m_idxLeftX = mrpt::round(xMin / resolutionXY);
-		m_idxLeftY = mrpt::round(yMin / resolutionXY);
-		m_idxLeftPhi = mrpt::round(phiMin / resolutionPhi);
+    // Compute the indexes of the starting borders:
+    m_idxLeftX = mrpt::round(xMin / resolutionXY);
+    m_idxLeftY = mrpt::round(yMin / resolutionXY);
+    m_idxLeftPhi = mrpt::round(phiMin / resolutionPhi);
 
-		// Compute new required space:
-		m_sizeX = mrpt::round(xMax / resolutionXY) - m_idxLeftX + 1;
-		m_sizeY = mrpt::round(yMax / resolutionXY) - m_idxLeftY + 1;
-		m_sizePhi = mrpt::round(phiMax / resolutionPhi) - m_idxLeftPhi + 1;
-		m_sizeXY = m_sizeX * m_sizeY;
+    // Compute new required space:
+    m_sizeX = mrpt::round(xMax / resolutionXY) - m_idxLeftX + 1;
+    m_sizeY = mrpt::round(yMax / resolutionXY) - m_idxLeftY + 1;
+    m_sizePhi = mrpt::round(phiMax / resolutionPhi) - m_idxLeftPhi + 1;
+    m_sizeXY = m_sizeX * m_sizeY;
 
-		// Resize "m_data":
-		m_data.clear();
-		m_data.resize(m_sizeX * m_sizeY * m_sizePhi);
-	}
+    // Resize "m_data":
+    m_data.clear();
+    m_data.resize(m_sizeX * m_sizeY * m_sizePhi);
+  }
 
-	/** Reads the contents of a cell
-	 */
-	const T* getByPos(double x, double y, double phi) const
-	{
-		return getByIndex(x2idx(x), y2idx(y), phi2idx(phi));
-	}
+  /** Reads the contents of a cell
+   */
+  const T* getByPos(double x, double y, double phi) const
+  {
+    return getByIndex(x2idx(x), y2idx(y), phi2idx(phi));
+  }
 
-	/** Reads the contents of a cell
-	 */
-	T* getByPos(double x, double y, double phi)
-	{
-		return getByIndex(x2idx(x), y2idx(y), phi2idx(phi));
-	}
+  /** Reads the contents of a cell
+   */
+  T* getByPos(double x, double y, double phi)
+  {
+    return getByIndex(x2idx(x), y2idx(y), phi2idx(phi));
+  }
 
-	/** (x,y,phi) indices to absolute index in raw data container */
-	size_t idx2absidx(size_t cx, size_t cy, size_t cPhi) const
-	{
-		return cPhi * m_sizeXY + cy * m_sizeX + cx;
-	}
+  /** (x,y,phi) indices to absolute index in raw data container */
+  size_t idx2absidx(size_t cx, size_t cy, size_t cPhi) const
+  {
+    return cPhi * m_sizeXY + cy * m_sizeX + cx;
+  }
 
-	/** absolute index to (x,y,phi) indices */
-	std::tuple<size_t, size_t, size_t> absidx2idx(size_t absIdx) const
-	{
-		const auto cPhi = absIdx / m_sizeXY;
-		const auto r = absIdx % m_sizeXY;
-		const auto cy = r / m_sizeX;
-		const auto cx = r % m_sizeX;
+  /** absolute index to (x,y,phi) indices */
+  std::tuple<size_t, size_t, size_t> absidx2idx(size_t absIdx) const
+  {
+    const auto cPhi = absIdx / m_sizeXY;
+    const auto r = absIdx % m_sizeXY;
+    const auto cy = r / m_sizeX;
+    const auto cx = r % m_sizeX;
 
-		return {cx, cy, cPhi};
-	}
+    return {cx, cy, cPhi};
+  }
 
-	/** Reads the contents of a cell
-	 */
-	const T* getByIndex(size_t x, size_t y, size_t phi) const
-	{
-		ASSERT_(x < m_sizeX && y < m_sizeY && phi < m_sizePhi);
-		return &m_data[idx2absidx(x, y, phi)];
-	}
+  /** Reads the contents of a cell
+   */
+  const T* getByIndex(size_t x, size_t y, size_t phi) const
+  {
+    ASSERT_(x < m_sizeX && y < m_sizeY && phi < m_sizePhi);
+    return &m_data[idx2absidx(x, y, phi)];
+  }
 
-	/** Reads the contents of a cell
-	 */
-	T* getByIndex(size_t x, size_t y, size_t phi)
-	{
-		ASSERT_(x < m_sizeX && y < m_sizeY && phi < m_sizePhi);
-		return &m_data[phi * m_sizeXY + y * m_sizeX + x];
-	}
+  /** Reads the contents of a cell
+   */
+  T* getByIndex(size_t x, size_t y, size_t phi)
+  {
+    ASSERT_(x < m_sizeX && y < m_sizeY && phi < m_sizePhi);
+    return &m_data[phi * m_sizeXY + y * m_sizeX + x];
+  }
 
-	/** Returns the whole grid as a matrix, for a given constant "phi" and where
-	 * each row contains values for a fixed "y".
-	 */
-	template <class MATRIXLIKE>
-	void getAsMatrix(double phi, MATRIXLIKE& outMat) const
-	{
-		MRPT_START
-		outMat.setSize(m_sizeY, m_sizeX);
-		size_t phiIdx = phi2idx(phi);
-		ASSERT_(phi < m_sizePhi);
-		for (size_t y = 0; y < m_sizeY; y++)
-			for (size_t x = 0; x < m_sizeX; x++)
-				outMat(y, x) = m_data[phiIdx * m_sizeXY + y * m_sizeX + x];
-		MRPT_END
-	}
+  /** Returns the whole grid as a matrix, for a given constant "phi" and where
+   * each row contains values for a fixed "y".
+   */
+  template <class MATRIXLIKE>
+  void getAsMatrix(double phi, MATRIXLIKE& outMat) const
+  {
+    MRPT_START
+    outMat.setSize(m_sizeY, m_sizeX);
+    size_t phiIdx = phi2idx(phi);
+    ASSERT_(phi < m_sizePhi);
+    for (size_t y = 0; y < m_sizeY; y++)
+      for (size_t x = 0; x < m_sizeX; x++)
+        outMat(y, x) = m_data[phiIdx * m_sizeXY + y * m_sizeX + x];
+    MRPT_END
+  }
 
-	/** Get info about the grid:
-	 */
-	double getXMin() const { return m_xMin; }
-	double getXMax() const { return m_xMax; }
-	double getYMin() const { return m_yMin; }
-	double getYMax() const { return m_yMax; }
-	double getPhiMin() const { return m_phiMin; }
-	double getPhiMax() const { return m_phiMax; }
-	double getResolutionXY() const { return m_resolutionXY; }
-	double getResolutionPhi() const { return m_resolutionPhi; }
-	size_t getSizeX() const { return m_sizeX; }
-	size_t getSizeY() const { return m_sizeY; }
-	size_t getSizePhi() const { return m_sizePhi; }
-};	// End of class def.
+  /** Get info about the grid:
+   */
+  double getXMin() const { return m_xMin; }
+  double getXMax() const { return m_xMax; }
+  double getYMin() const { return m_yMin; }
+  double getYMax() const { return m_yMax; }
+  double getPhiMin() const { return m_phiMin; }
+  double getPhiMax() const { return m_phiMax; }
+  double getResolutionXY() const { return m_resolutionXY; }
+  double getResolutionPhi() const { return m_resolutionPhi; }
+  size_t getSizeX() const { return m_sizeX; }
+  size_t getSizeY() const { return m_sizeY; }
+  size_t getSizePhi() const { return m_sizePhi; }
+};  // End of class def.
 
 }  // namespace mrpt::poses

@@ -19,76 +19,72 @@
 
 TEST(CObservationRotatingScan, fromKittiUndistorted)
 {
-	using namespace std::string_literals;
-	const auto fil =
-		mrpt::UNITTEST_BASEDIR() + "/tests/kitti_00_000000.bin.gz"s;
+  using namespace std::string_literals;
+  const auto fil = mrpt::UNITTEST_BASEDIR() + "/tests/kitti_00_000000.bin.gz"s;
 
-	auto pts = mrpt::maps::CPointsMapXYZI::Create();
-	bool read_ok = pts->loadFromKittiVelodyneFile(fil);
-	EXPECT_TRUE(read_ok);
+  auto pts = mrpt::maps::CPointsMapXYZI::Create();
+  bool read_ok = pts->loadFromKittiVelodyneFile(fil);
+  EXPECT_TRUE(read_ok);
 
-	//	read_ok = pts->loadXYZI_from_text_file("0000000060.txt");
-	EXPECT_TRUE(read_ok);
+  //	read_ok = pts->loadXYZI_from_text_file("0000000060.txt");
+  EXPECT_TRUE(read_ok);
 
-	const auto filBin = mrpt::system::getTempFileName();
-	const auto filTxt = mrpt::system::getTempFileName();
+  const auto filBin = mrpt::system::getTempFileName();
+  const auto filTxt = mrpt::system::getTempFileName();
 
-	pts->saveToKittiVelodyneFile(filBin);
-	pts->saveXYZI_to_text_file(filTxt);
+  pts->saveToKittiVelodyneFile(filBin);
+  pts->saveXYZI_to_text_file(filTxt);
 
-	mrpt::obs::CObservationPointCloud obsPcl;
-	//	obsPcl.
+  mrpt::obs::CObservationPointCloud obsPcl;
+  //	obsPcl.
 
-	mrpt::obs::CObservationRotatingScan rs;
-	//	rs.fromPointCloud()
+  mrpt::obs::CObservationRotatingScan rs;
+  //	rs.fromPointCloud()
 }
 
 TEST(CObservationRotatingScan, fromVelodyne)
 {
-	using namespace std::string_literals;
-	const auto fil = mrpt::system::getShareMRPTDir() +
-		"/datasets/test_velodyne_VLP16.rawlog"s;
+  using namespace std::string_literals;
+  const auto fil = mrpt::system::getShareMRPTDir() + "/datasets/test_velodyne_VLP16.rawlog"s;
 
-	mrpt::obs::CRawlog rawlog;
-	bool load_ok = rawlog.loadFromRawLogFile(fil);
-	EXPECT_TRUE(load_ok) << "Could not load " << fil;
+  mrpt::obs::CRawlog rawlog;
+  bool load_ok = rawlog.loadFromRawLogFile(fil);
+  EXPECT_TRUE(load_ok) << "Could not load " << fil;
 
-	auto oVelo = rawlog.asObservation<mrpt::obs::CObservationVelodyneScan>(0);
-	EXPECT_TRUE(oVelo.get() != nullptr);
+  auto oVelo = rawlog.asObservation<mrpt::obs::CObservationVelodyneScan>(0);
+  EXPECT_TRUE(oVelo.get() != nullptr);
 
-	mrpt::obs::CObservationRotatingScan rs;
-	rs.fromVelodyne(*oVelo);
+  mrpt::obs::CObservationRotatingScan rs;
+  rs.fromVelodyne(*oVelo);
 
-	EXPECT_TRUE(rs.azimuthSpan > 0) << "Rotation: CCW";
-	EXPECT_NEAR(std::abs(rs.azimuthSpan), 2 * M_PI, 0.1);
-	EXPECT_EQ(rs.columnCount, 28800);
-	EXPECT_EQ(rs.rowCount, 16);
+  EXPECT_TRUE(rs.azimuthSpan > 0) << "Rotation: CCW";
+  EXPECT_NEAR(std::abs(rs.azimuthSpan), 2 * M_PI, 0.1);
+  EXPECT_EQ(rs.columnCount, 28800);
+  EXPECT_EQ(rs.rowCount, 16);
 
-	// std::cout << rs.getDescriptionAsTextValue();
+  // std::cout << rs.getDescriptionAsTextValue();
 }
 
 TEST(CObservationRotatingScan, from2DScan)
 {
-	using namespace std::string_literals;
-	const auto fil =
-		mrpt::system::getShareMRPTDir() + "/datasets/localization_demo.rawlog"s;
+  using namespace std::string_literals;
+  const auto fil = mrpt::system::getShareMRPTDir() + "/datasets/localization_demo.rawlog"s;
 
-	mrpt::obs::CRawlog rawlog;
-	bool load_ok = rawlog.loadFromRawLogFile(fil);
-	EXPECT_TRUE(load_ok) << "Could not load " << fil;
+  mrpt::obs::CRawlog rawlog;
+  bool load_ok = rawlog.loadFromRawLogFile(fil);
+  EXPECT_TRUE(load_ok) << "Could not load " << fil;
 
-	auto oScan2D =
-		rawlog.getAsObservations(1)
-			->getObservationByClass<mrpt::obs::CObservation2DRangeScan>();
-	EXPECT_TRUE(oScan2D.get() != nullptr);
+  auto oScan2D =
+      rawlog.getAsObservations(1)->getObservationByClass<mrpt::obs::CObservation2DRangeScan>();
+  EXPECT_TRUE(oScan2D.get() != nullptr);
 
-	mrpt::obs::CObservationRotatingScan rs;
-	rs.fromScan2D(*oScan2D);
+  mrpt::obs::CObservationRotatingScan rs;
+  rs.fromScan2D(*oScan2D);
 
-	EXPECT_TRUE(rs.azimuthSpan > 0) << "Rotation: CCW";
-	EXPECT_NEAR(std::abs(rs.azimuthSpan), M_PI, 1e-4);
-	EXPECT_EQ(rs.columnCount, 361);
-	EXPECT_EQ(rs.rowCount, 1);
+  EXPECT_TRUE(rs.azimuthSpan > 0) << "Rotation: CCW";
+  EXPECT_NEAR(std::abs(rs.azimuthSpan), M_PI, 1e-4);
+  EXPECT_EQ(rs.columnCount, 361);
+  EXPECT_EQ(rs.rowCount, 1);
 
-	// std::cout << rs.getDescriptionAsTextValue();
+  // std::cout << rs.getDescriptionAsTextValue();
 }

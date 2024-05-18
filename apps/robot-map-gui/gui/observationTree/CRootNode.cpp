@@ -16,23 +16,23 @@ using namespace mrpt::maps;
 
 CRootNode::CRootNode(const CSimpleMap& simplemap) : CNode(nullptr)
 {
-	if (!simplemap.empty())
-	{
-		size_t idx = 0;
-		for (auto& p : simplemap)
-		{
-			auto* node = new CPairNode(this, p, idx++);
-			m_posesNode.push_back(node);
-		}
-	}
+  if (!simplemap.empty())
+  {
+    size_t idx = 0;
+    for (auto& p : simplemap)
+    {
+      auto* node = new CPairNode(this, p, idx++);
+      m_posesNode.push_back(node);
+    }
+  }
 }
 
 int CRootNode::childCount() const { return m_posesNode.size(); }
 CNode* CRootNode::child(int id)
 {
-	int size = m_posesNode.size();
-	ASSERT_(id <= size);
-	return m_posesNode[id];
+  int size = m_posesNode.size();
+  ASSERT_(id <= size);
+  return m_posesNode[id];
 }
 
 CNode::ObjectType CRootNode::type() const { return ObjectType::Root; }

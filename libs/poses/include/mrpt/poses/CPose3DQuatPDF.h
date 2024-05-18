@@ -38,74 +38,75 @@ class CPose3DPDF;
  * \sa CPose3DQuatPDF, CPose3DPDF
  * \ingroup poses_pdf_grp
  */
-class CPose3DQuatPDF
-	: public mrpt::serialization::CSerializable,
-	  public mrpt::math::CProbabilityDensityFunction<CPose3DQuat, 7>
+class CPose3DQuatPDF :
+    public mrpt::serialization::CSerializable,
+    public mrpt::math::CProbabilityDensityFunction<CPose3DQuat, 7>
 {
-	DEFINE_VIRTUAL_SERIALIZABLE(CPose3DQuatPDF)
+  DEFINE_VIRTUAL_SERIALIZABLE(CPose3DQuatPDF)
 
-   public:
-	/** Copy operator, translating if necesary (for example, between particles
-	 * and gaussian representations)
-	 * \sa createFrom2D
-	 */
-	virtual void copyFrom(const CPose3DQuatPDF& o) = 0;
+ public:
+  /** Copy operator, translating if necesary (for example, between particles
+   * and gaussian representations)
+   * \sa createFrom2D
+   */
+  virtual void copyFrom(const CPose3DQuatPDF& o) = 0;
 
-	/** This is a static transformation method from 2D poses to 3D PDFs,
-	 * preserving the representation type (particles->particles,
-	 * Gaussians->Gaussians,etc)
-	 *  It returns a new object of any of the derived classes of
-	 * CPose3DQuatPDF. This object must be deleted by the user when not required
-	 * anymore.
-	 *  \sa copyFrom
-	 */
-	static CPose3DQuatPDF::Ptr createFrom2D(const CPosePDF& o);
+  /** This is a static transformation method from 2D poses to 3D PDFs,
+   * preserving the representation type (particles->particles,
+   * Gaussians->Gaussians,etc)
+   *  It returns a new object of any of the derived classes of
+   * CPose3DQuatPDF. This object must be deleted by the user when not required
+   * anymore.
+   *  \sa copyFrom
+   */
+  static CPose3DQuatPDF::Ptr createFrom2D(const CPosePDF& o);
 
-	/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
-	virtual void inverse(CPose3DQuatPDF& o) const = 0;
+  /** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
+  virtual void inverse(CPose3DQuatPDF& o) const = 0;
 
-	virtual void changeCoordinatesReference(
-		const CPose3D& newReferenceBase) = 0;
+  virtual void changeCoordinatesReference(const CPose3D& newReferenceBase) = 0;
 
-	/** This static method computes the two Jacobians of a pose composition
-	 * operation \f$ (x,u)= x \oplus u \f$
-	 *  \param out_x_oplus_u If set to !=nullptr, the result of "x+u" will be
-	 * stored here (it will be computed internally anyway).
-	 *  To see the mathematical derivation of the formulas, refer to the
-	 * technical report here:
-	 *   -
-	 * https://www.mrpt.org/Probability_Density_Distributions_Over_Spatial_Representations
-	 */
-	static void jacobiansPoseComposition(
-		const CPose3DQuat& x, const CPose3DQuat& u,
-		mrpt::math::CMatrixDouble77& df_dx, mrpt::math::CMatrixDouble77& df_du,
-		CPose3DQuat* out_x_oplus_u = nullptr);
+  /** This static method computes the two Jacobians of a pose composition
+   * operation \f$ (x,u)= x \oplus u \f$
+   *  \param out_x_oplus_u If set to !=nullptr, the result of "x+u" will be
+   * stored here (it will be computed internally anyway).
+   *  To see the mathematical derivation of the formulas, refer to the
+   * technical report here:
+   *   -
+   * https://www.mrpt.org/Probability_Density_Distributions_Over_Spatial_Representations
+   */
+  static void jacobiansPoseComposition(
+      const CPose3DQuat& x,
+      const CPose3DQuat& u,
+      mrpt::math::CMatrixDouble77& df_dx,
+      mrpt::math::CMatrixDouble77& df_du,
+      CPose3DQuat* out_x_oplus_u = nullptr);
 
-	/** Returns a 3D representation of this PDF (it doesn't clear the current
-	 * contents of out_obj, but append new OpenGL objects to that list)
-	 * \note Needs the mrpt-opengl library, and using
-	 * mrpt::opengl::CSetOfObjects::Ptr as template argument.
-	 * \note By default, ellipsoids for the confidence intervals of  "q=3" are
-	 * drawn; for more mathematical details, see
-	 * CGeneralizedEllipsoidTemplate::setQuantiles()
-	 */
-	template <class OPENGL_SETOFOBJECTSPTR>
-	inline void getAs3DObject(OPENGL_SETOFOBJECTSPTR& out_obj) const
-	{
-		using SETOFOBJECTS = typename OPENGL_SETOFOBJECTSPTR::value_type;
-		out_obj->insertCollection(*SETOFOBJECTS::posePDF2opengl(*this));
-	}
+  /** Returns a 3D representation of this PDF (it doesn't clear the current
+   * contents of out_obj, but append new OpenGL objects to that list)
+   * \note Needs the mrpt-opengl library, and using
+   * mrpt::opengl::CSetOfObjects::Ptr as template argument.
+   * \note By default, ellipsoids for the confidence intervals of  "q=3" are
+   * drawn; for more mathematical details, see
+   * CGeneralizedEllipsoidTemplate::setQuantiles()
+   */
+  template <class OPENGL_SETOFOBJECTSPTR>
+  inline void getAs3DObject(OPENGL_SETOFOBJECTSPTR& out_obj) const
+  {
+    using SETOFOBJECTS = typename OPENGL_SETOFOBJECTSPTR::value_type;
+    out_obj->insertCollection(*SETOFOBJECTS::posePDF2opengl(*this));
+  }
 
-	/** Returns a 3D representation of this PDF.
-	 * \note Needs the mrpt-opengl library, and using
-	 * mrpt::opengl::CSetOfObjects::Ptr as template argument.
-	 */
-	template <class OPENGL_SETOFOBJECTSPTR>
-	inline OPENGL_SETOFOBJECTSPTR getAs3DObject() const
-	{
-		using SETOFOBJECTS = typename OPENGL_SETOFOBJECTSPTR::value_type;
-		return SETOFOBJECTS::posePDF2opengl(*this);
-	}
+  /** Returns a 3D representation of this PDF.
+   * \note Needs the mrpt-opengl library, and using
+   * mrpt::opengl::CSetOfObjects::Ptr as template argument.
+   */
+  template <class OPENGL_SETOFOBJECTSPTR>
+  inline OPENGL_SETOFOBJECTSPTR getAs3DObject() const
+  {
+    using SETOFOBJECTS = typename OPENGL_SETOFOBJECTSPTR::value_type;
+    return SETOFOBJECTS::posePDF2opengl(*this);
+  }
 
-};	// End of class def.
+};  // End of class def.
 }  // namespace mrpt::poses

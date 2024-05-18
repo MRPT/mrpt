@@ -29,18 +29,16 @@ void rgb2hsv(float r, float g, float b, float& h, float& s, float& v);
 /** Different colormaps for use in mrpt::img::colormap() */
 enum TColormap
 {
-	/** Undefined colormap */
-	cmNONE = -1,
-	cmGRAYSCALE = 0,
-	cmJET,
-	cmHOT
+  /** Undefined colormap */
+  cmNONE = -1,
+  cmGRAYSCALE = 0,
+  cmJET,
+  cmHOT
 };
 
 /** Transform a float number in the range [0,1] into RGB components. Different
  * colormaps are available. */
-void colormap(
-	const TColormap& color_map, const float color_index, float& r, float& g,
-	float& b);
+void colormap(const TColormap& color_map, const float color_index, float& r, float& g, float& b);
 
 /// \overload returning mrpt::img::TColor
 mrpt::img::TColor colormap(const TColormap& color_map, const float color_index);

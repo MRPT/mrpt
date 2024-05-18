@@ -39,121 +39,112 @@ class CPose3DPDFGaussian;
  */
 class CPose3DQuatPDFGaussianInf : public CPose3DQuatPDF
 {
-	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE(CPose3DQuatPDFGaussianInf, mrpt::poses)
-	using self_t = CPose3DQuatPDFGaussianInf;
+  // This must be added to any CSerializable derived class:
+  DEFINE_SERIALIZABLE(CPose3DQuatPDFGaussianInf, mrpt::poses)
+  using self_t = CPose3DQuatPDFGaussianInf;
 
-   public:
-	/** Default constructor - set all values to zero. */
-	CPose3DQuatPDFGaussianInf();
+ public:
+  /** Default constructor - set all values to zero. */
+  CPose3DQuatPDFGaussianInf();
 
-	/** Constructor which left all the member uninitialized, for using when
-	 * speed is critical - as argument, use UNINITIALIZED_QUATERNION. */
-	CPose3DQuatPDFGaussianInf(
-		mrpt::math::TConstructorFlags_Quaternions constructor_dummy_param);
+  /** Constructor which left all the member uninitialized, for using when
+   * speed is critical - as argument, use UNINITIALIZED_QUATERNION. */
+  CPose3DQuatPDFGaussianInf(mrpt::math::TConstructorFlags_Quaternions constructor_dummy_param);
 
-	/** Constructor from a default mean value, information matrix equals to
-	 * zero. */
-	explicit CPose3DQuatPDFGaussianInf(const CPose3DQuat& init_Mean);
+  /** Constructor from a default mean value, information matrix equals to
+   * zero. */
+  explicit CPose3DQuatPDFGaussianInf(const CPose3DQuat& init_Mean);
 
-	/** Constructor with mean and inverse covariance (information matrix). */
-	CPose3DQuatPDFGaussianInf(
-		const CPose3DQuat& init_Mean,
-		const mrpt::math::CMatrixDouble77& init_CovInv);
+  /** Constructor with mean and inverse covariance (information matrix). */
+  CPose3DQuatPDFGaussianInf(
+      const CPose3DQuat& init_Mean, const mrpt::math::CMatrixDouble77& init_CovInv);
 
-	/** The mean value */
-	CPose3DQuat mean;
-	/** The 7x7 information matrix (the inverse of the covariance) */
-	mrpt::math::CMatrixDouble77 cov_inv;
+  /** The mean value */
+  CPose3DQuat mean;
+  /** The 7x7 information matrix (the inverse of the covariance) */
+  mrpt::math::CMatrixDouble77 cov_inv;
 
-	inline const CPose3DQuat& getPoseMean() const { return mean; }
-	inline CPose3DQuat& getPoseMean() { return mean; }
+  inline const CPose3DQuat& getPoseMean() const { return mean; }
+  inline CPose3DQuat& getPoseMean() { return mean; }
 
-	void getMean(CPose3DQuat& mean_pose) const override { mean_pose = mean; }
-	bool isInfType() const override { return true; }
+  void getMean(CPose3DQuat& mean_pose) const override { mean_pose = mean; }
+  bool isInfType() const override { return true; }
 
-	std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override
-	{
-		return {cov_inv.inverse_LLt(), mean};
-	}
+  std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override
+  {
+    return {cov_inv.inverse_LLt(), mean};
+  }
 
-	/** Returns the information (inverse covariance) matrix (a STATE_LEN x
-	 * STATE_LEN matrix) \sa getMean, getCovarianceAndMean */
-	void getInformationMatrix(mrpt::math::CMatrixDouble77& inf) const override
-	{
-		inf = cov_inv;
-	}
+  /** Returns the information (inverse covariance) matrix (a STATE_LEN x
+   * STATE_LEN matrix) \sa getMean, getCovarianceAndMean */
+  void getInformationMatrix(mrpt::math::CMatrixDouble77& inf) const override { inf = cov_inv; }
 
-	/** Copy operator, translating if necesary (for example, between particles
-	 * and gaussian representations) */
-	void copyFrom(const CPose3DQuatPDF& o) override;
+  /** Copy operator, translating if necesary (for example, between particles
+   * and gaussian representations) */
+  void copyFrom(const CPose3DQuatPDF& o) override;
 
-	/** Save the PDF to a text file, containing the 3D pose in the first line (x
-	 * y z qr qx qy qz), then the information matrix in the next 7 lines. */
-	bool saveToTextFile(const std::string& file) const override;
+  /** Save the PDF to a text file, containing the 3D pose in the first line (x
+   * y z qr qx qy qz), then the information matrix in the next 7 lines. */
+  bool saveToTextFile(const std::string& file) const override;
 
-	/** this = p (+) this. This can be used to convert a PDF from local
-	 * coordinates to global, providing the point (newReferenceBase) from which
-	 *   "to project" the current pdf. Result PDF substituted the currently
-	 * stored one in the object. */
-	void changeCoordinatesReference(const CPose3DQuat& newReferenceBase);
+  /** this = p (+) this. This can be used to convert a PDF from local
+   * coordinates to global, providing the point (newReferenceBase) from which
+   *   "to project" the current pdf. Result PDF substituted the currently
+   * stored one in the object. */
+  void changeCoordinatesReference(const CPose3DQuat& newReferenceBase);
 
-	/** this = p (+) this. This can be used to convert a PDF from local
-	 * coordinates to global, providing the point (newReferenceBase) from which
-	 *   "to project" the current pdf. Result PDF substituted the currently
-	 * stored one in the object. */
-	void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
+  /** this = p (+) this. This can be used to convert a PDF from local
+   * coordinates to global, providing the point (newReferenceBase) from which
+   *   "to project" the current pdf. Result PDF substituted the currently
+   * stored one in the object. */
+  void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 
-	/** Draws a single sample from the distribution */
-	void drawSingleSample(CPose3DQuat& outPart) const override;
-	/** Draws a number of samples from the distribution, and saves as a list of
-	 * 1x7 vectors, where each row contains a (x,y,z,qr,qx,qy,qz) datum */
-	void drawManySamples(
-		size_t N,
-		std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
-	/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
-	void inverse(CPose3DQuatPDF& o) const override;
+  /** Draws a single sample from the distribution */
+  void drawSingleSample(CPose3DQuat& outPart) const override;
+  /** Draws a number of samples from the distribution, and saves as a list of
+   * 1x7 vectors, where each row contains a (x,y,z,qr,qx,qy,qz) datum */
+  void drawManySamples(size_t N, std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
+  /** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
+  void inverse(CPose3DQuatPDF& o) const override;
 
-	/** Unary - operator, returns the PDF of the inverse pose.  */
-	inline CPose3DQuatPDFGaussianInf operator-() const
-	{
-		CPose3DQuatPDFGaussianInf p(mrpt::math::UNINITIALIZED_QUATERNION);
-		this->inverse(p);
-		return p;
-	}
+  /** Unary - operator, returns the PDF of the inverse pose.  */
+  inline CPose3DQuatPDFGaussianInf operator-() const
+  {
+    CPose3DQuatPDFGaussianInf p(mrpt::math::UNINITIALIZED_QUATERNION);
+    this->inverse(p);
+    return p;
+  }
 
-	/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the
-	 * mean, and the covariance matrix are updated). */
-	void operator+=(const CPose3DQuat& Ap);
-	/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the
-	 * mean, and the covariance matrix are updated) (see formulas in
-	 * jacobiansPoseComposition ). */
-	void operator+=(const CPose3DQuatPDFGaussianInf& Ap);
-	/** Makes: thisPDF = thisPDF - Ap, where "-" is pose inverse composition
-	 * (both the mean, and the covariance matrix are updated). */
-	void operator-=(const CPose3DQuatPDFGaussianInf& Ap);
+  /** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the
+   * mean, and the covariance matrix are updated). */
+  void operator+=(const CPose3DQuat& Ap);
+  /** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the
+   * mean, and the covariance matrix are updated) (see formulas in
+   * jacobiansPoseComposition ). */
+  void operator+=(const CPose3DQuatPDFGaussianInf& Ap);
+  /** Makes: thisPDF = thisPDF - Ap, where "-" is pose inverse composition
+   * (both the mean, and the covariance matrix are updated). */
+  void operator-=(const CPose3DQuatPDFGaussianInf& Ap);
 
-	/** Evaluates the PDF at a given point */
-	double evaluatePDF(const CPose3DQuat& x) const;
-	/** Evaluates the ratio PDF(x) / PDF(MEAN), that is, the normalized PDF in
-	 * the range [0,1] */
-	double evaluateNormalizedPDF(const CPose3DQuat& x) const;
+  /** Evaluates the PDF at a given point */
+  double evaluatePDF(const CPose3DQuat& x) const;
+  /** Evaluates the ratio PDF(x) / PDF(MEAN), that is, the normalized PDF in
+   * the range [0,1] */
+  double evaluateNormalizedPDF(const CPose3DQuat& x) const;
 
-};	// End of class def.
+};  // End of class def.
 
-bool operator==(
-	const CPose3DQuatPDFGaussianInf& p1, const CPose3DQuatPDFGaussianInf& p2);
+bool operator==(const CPose3DQuatPDFGaussianInf& p1, const CPose3DQuatPDFGaussianInf& p2);
 /** Pose composition for two 3D pose Gaussians  \sa
  * CPose3DQuatPDFGaussianInf::operator += */
 CPose3DQuatPDFGaussianInf operator+(
-	const CPose3DQuatPDFGaussianInf& x, const CPose3DQuatPDFGaussianInf& u);
+    const CPose3DQuatPDFGaussianInf& x, const CPose3DQuatPDFGaussianInf& u);
 /** Inverse pose composition for two 3D pose Gaussians  \sa
  * CPose3DQuatPDFGaussianInf::operator -= */
 CPose3DQuatPDFGaussianInf operator-(
-	const CPose3DQuatPDFGaussianInf& x, const CPose3DQuatPDFGaussianInf& u);
+    const CPose3DQuatPDFGaussianInf& x, const CPose3DQuatPDFGaussianInf& u);
 
 /** Dumps the mean and covariance matrix to a text stream. */
-std::ostream& operator<<(
-	std::ostream& out, const CPose3DQuatPDFGaussianInf& obj);
+std::ostream& operator<<(std::ostream& out, const CPose3DQuatPDFGaussianInf& obj);
 
 }  // namespace mrpt::poses

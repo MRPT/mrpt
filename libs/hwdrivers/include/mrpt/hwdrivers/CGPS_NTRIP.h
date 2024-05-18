@@ -73,26 +73,25 @@ namespace mrpt::hwdrivers
  */
 class CGPS_NTRIP : public CGenericSensor
 {
-	DEFINE_GENERIC_SENSOR(CGPS_NTRIP)
+  DEFINE_GENERIC_SENSOR(CGPS_NTRIP)
 
-   public:
-	mrpt::hwdrivers::CGPSInterface gps;
-	mrpt::hwdrivers::CNTRIPEmitter ntrip;
+ public:
+  mrpt::hwdrivers::CGPSInterface gps;
+  mrpt::hwdrivers::CNTRIPEmitter ntrip;
 
-	/** Constructor */
-	CGPS_NTRIP();
-	/** Destructor */
-	~CGPS_NTRIP() override;
+  /** Constructor */
+  CGPS_NTRIP();
+  /** Destructor */
+  ~CGPS_NTRIP() override;
 
-	void doProcess() override;	// See docs in parent class
+  void doProcess() override;  // See docs in parent class
 
-	void initialize() override;
+  void initialize() override;
 
-   protected:
-	/** See the class documentation at the top for expected parameters */
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection) override;
-};	// end class
+ protected:
+  /** See the class documentation at the top for expected parameters */
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection) override;
+};  // end class
 
 }  // namespace mrpt::hwdrivers

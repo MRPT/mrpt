@@ -31,65 +31,62 @@ namespace mrpt::maps
  */
 class CWirelessPowerGridMap2D : public CRandomFieldGridMap2D
 {
-	DEFINE_SERIALIZABLE(CWirelessPowerGridMap2D, mrpt::maps)
-   public:
-	/** Constructor */
-	CWirelessPowerGridMap2D(
-		TMapRepresentation mapType = mrKernelDM, double x_min = -2,
-		double x_max = 2, double y_min = -2, double y_max = 2,
-		double resolution = 0.1);
+  DEFINE_SERIALIZABLE(CWirelessPowerGridMap2D, mrpt::maps)
+ public:
+  /** Constructor */
+  CWirelessPowerGridMap2D(
+      TMapRepresentation mapType = mrKernelDM,
+      double x_min = -2,
+      double x_max = 2,
+      double y_min = -2,
+      double y_max = 2,
+      double resolution = 0.1);
 
-	/** Destructor */
-	~CWirelessPowerGridMap2D() override;
+  /** Destructor */
+  ~CWirelessPowerGridMap2D() override;
 
-	/** Parameters related with inserting observations into the map:
-	 */
-	struct TInsertionOptions : public mrpt::config::CLoadableOptions,
-							   public TInsertionOptionsCommon
-	{
-		/** Default values loader */
-		TInsertionOptions();
+  /** Parameters related with inserting observations into the map:
+   */
+  struct TInsertionOptions : public mrpt::config::CLoadableOptions, public TInsertionOptionsCommon
+  {
+    /** Default values loader */
+    TInsertionOptions();
 
-		void loadFromConfigFile(
-			const mrpt::config::CConfigFileBase& source,
-			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			std::ostream& out) const override;	// See base docs
+    void loadFromConfigFile(
+        const mrpt::config::CConfigFileBase& source,
+        const std::string& section) override;                 // See base docs
+    void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
-	} insertionOptions;
+  } insertionOptions;
 
-	/** Returns a 3D object representing the map  */
-	void getVisualizationInto(
-		mrpt::opengl::CSetOfObjects& outObj) const override;
+  /** Returns a 3D object representing the map  */
+  void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
 
-   protected:
-	/** Get the part of the options common to all CRandomFieldGridMap2D classes
-	 */
-	CRandomFieldGridMap2D::TInsertionOptionsCommon* getCommonInsertOptions()
-		override
-	{
-		return &insertionOptions;
-	}
+ protected:
+  /** Get the part of the options common to all CRandomFieldGridMap2D classes
+   */
+  CRandomFieldGridMap2D::TInsertionOptionsCommon* getCommonInsertOptions() override
+  {
+    return &insertionOptions;
+  }
 
-	// See docs in derived class
-	void internal_clear() override;
-	bool internal_insertObservation(
-		const mrpt::obs::CObservation& obs,
-		const std::optional<const mrpt::poses::CPose3D>& robotPose =
-			std::nullopt) override;
-	double internal_computeObservationLikelihood(
-		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D& takenFrom) const override;
+  // See docs in derived class
+  void internal_clear() override;
+  bool internal_insertObservation(
+      const mrpt::obs::CObservation& obs,
+      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
+  double internal_computeObservationLikelihood(
+      const mrpt::obs::CObservation& obs, const mrpt::poses::CPose3D& takenFrom) const override;
 
-	MAP_DEFINITION_START(CWirelessPowerGridMap2D)
-	/** See CWirelessPowerGridMap2D::CWirelessPowerGridMap2D */
-	double min_x{-2}, max_x{2}, min_y{-2}, max_y{2}, resolution{0.10f};
-	/** The kind of map representation (see
-	 * CWirelessPowerGridMap2D::CWirelessPowerGridMap2D) */
-	mrpt::maps::CWirelessPowerGridMap2D::TMapRepresentation mapType{
-		CWirelessPowerGridMap2D::mrKernelDM};
-	mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions insertionOpts;
-	MAP_DEFINITION_END(CWirelessPowerGridMap2D)
+  MAP_DEFINITION_START(CWirelessPowerGridMap2D)
+  /** See CWirelessPowerGridMap2D::CWirelessPowerGridMap2D */
+  double min_x{-2}, max_x{2}, min_y{-2}, max_y{2}, resolution{0.10f};
+  /** The kind of map representation (see
+   * CWirelessPowerGridMap2D::CWirelessPowerGridMap2D) */
+  mrpt::maps::CWirelessPowerGridMap2D::TMapRepresentation mapType{
+      CWirelessPowerGridMap2D::mrKernelDM};
+  mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions insertionOpts;
+  MAP_DEFINITION_END(CWirelessPowerGridMap2D)
 };
 
 }  // namespace mrpt::maps

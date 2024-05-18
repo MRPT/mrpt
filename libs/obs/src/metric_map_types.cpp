@@ -20,38 +20,36 @@ using namespace mrpt::maps;
 IMPLEMENTS_SERIALIZABLE(TMapGenericParams, CSerializable, mrpt::maps)
 
 void TMapGenericParams::loadFromConfigFile(
-	const mrpt::config::CConfigFileBase& source, const std::string& sct)
+    const mrpt::config::CConfigFileBase& source, const std::string& sct)
 {
-	MRPT_LOAD_CONFIG_VAR(enableSaveAs3DObject, bool, source, sct);
-	MRPT_LOAD_CONFIG_VAR(enableObservationLikelihood, bool, source, sct);
-	MRPT_LOAD_CONFIG_VAR(enableObservationInsertion, bool, source, sct);
+  MRPT_LOAD_CONFIG_VAR(enableSaveAs3DObject, bool, source, sct);
+  MRPT_LOAD_CONFIG_VAR(enableObservationLikelihood, bool, source, sct);
+  MRPT_LOAD_CONFIG_VAR(enableObservationInsertion, bool, source, sct);
 }
 void TMapGenericParams::saveToConfigFile(
-	mrpt::config::CConfigFileBase& c, const std::string& s) const
+    mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
-	// Common:
-	MRPT_SAVE_CONFIG_VAR_COMMENT(enableSaveAs3DObject, "");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(enableObservationLikelihood, "");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(enableObservationInsertion, "");
+  // Common:
+  MRPT_SAVE_CONFIG_VAR_COMMENT(enableSaveAs3DObject, "");
+  MRPT_SAVE_CONFIG_VAR_COMMENT(enableObservationLikelihood, "");
+  MRPT_SAVE_CONFIG_VAR_COMMENT(enableObservationInsertion, "");
 }
 
 uint8_t TMapGenericParams::serializeGetVersion() const { return 0; }
 void TMapGenericParams::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	out << enableSaveAs3DObject << enableObservationLikelihood
-		<< enableObservationInsertion;
+  out << enableSaveAs3DObject << enableObservationLikelihood << enableObservationInsertion;
 }
-void TMapGenericParams::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void TMapGenericParams::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	switch (version)
-	{
-		case 0:
-		{
-			in >> enableSaveAs3DObject >> enableObservationLikelihood >>
-				enableObservationInsertion;
-		}
-		break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	};
+  switch (version)
+  {
+    case 0:
+    {
+      in >> enableSaveAs3DObject >> enableObservationLikelihood >> enableObservationInsertion;
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
 }

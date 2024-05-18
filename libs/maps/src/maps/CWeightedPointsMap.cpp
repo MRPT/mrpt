@@ -24,37 +24,31 @@ using namespace mrpt::math;
 
 //  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER(
-	"mrpt::maps::CWeightedPointsMap,weightedPointsMap",
-	mrpt::maps::CWeightedPointsMap)
+    "mrpt::maps::CWeightedPointsMap,weightedPointsMap", mrpt::maps::CWeightedPointsMap)
 
 CWeightedPointsMap::TMapDefinition::TMapDefinition() = default;
 void CWeightedPointsMap::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::config::CConfigFileBase& source,
-	const std::string& sectionNamePrefix)
+    const mrpt::config::CConfigFileBase& source, const std::string& sectionNamePrefix)
 {
-	insertionOpts.loadFromConfigFile(
-		source, sectionNamePrefix + string("_insertOpts"));
-	likelihoodOpts.loadFromConfigFile(
-		source, sectionNamePrefix + string("_likelihoodOpts"));
+  insertionOpts.loadFromConfigFile(source, sectionNamePrefix + string("_insertOpts"));
+  likelihoodOpts.loadFromConfigFile(source, sectionNamePrefix + string("_likelihoodOpts"));
 }
 
-void CWeightedPointsMap::TMapDefinition::dumpToTextStream_map_specific(
-	std::ostream& out) const
+void CWeightedPointsMap::TMapDefinition::dumpToTextStream_map_specific(std::ostream& out) const
 {
-	this->insertionOpts.dumpToTextStream(out);
-	this->likelihoodOpts.dumpToTextStream(out);
+  this->insertionOpts.dumpToTextStream(out);
+  this->likelihoodOpts.dumpToTextStream(out);
 }
 
-mrpt::maps::CMetricMap::Ptr
-	CWeightedPointsMap::internal_CreateFromMapDefinition(
-		const mrpt::maps::TMetricMapInitializer& _def)
+mrpt::maps::CMetricMap::Ptr CWeightedPointsMap::internal_CreateFromMapDefinition(
+    const mrpt::maps::TMetricMapInitializer& _def)
 {
-	const CWeightedPointsMap::TMapDefinition& def =
-		*dynamic_cast<const CWeightedPointsMap::TMapDefinition*>(&_def);
-	auto obj = CWeightedPointsMap::Create();
-	obj->insertionOptions = def.insertionOpts;
-	obj->likelihoodOptions = def.likelihoodOpts;
-	return obj;
+  const CWeightedPointsMap::TMapDefinition& def =
+      *dynamic_cast<const CWeightedPointsMap::TMapDefinition*>(&_def);
+  auto obj = CWeightedPointsMap::Create();
+  obj->insertionOptions = def.insertionOpts;
+  obj->likelihoodOptions = def.likelihoodOpts;
+  return obj;
 }
 //  =========== End of Map definition Block =========
 
@@ -62,10 +56,10 @@ IMPLEMENTS_SERIALIZABLE(CWeightedPointsMap, CPointsMap, mrpt::maps)
 
 void CWeightedPointsMap::reserve(size_t newLength)
 {
-	m_x.reserve(newLength);
-	m_y.reserve(newLength);
-	m_z.reserve(newLength);
-	pointWeight.reserve(newLength);
+  m_x.reserve(newLength);
+  m_y.reserve(newLength);
+  m_z.reserve(newLength);
+  pointWeight.reserve(newLength);
 }
 
 // Resizes all point buffers so they can hold the given number of points: newly
@@ -73,10 +67,10 @@ void CWeightedPointsMap::reserve(size_t newLength)
 //  and old contents are not changed.
 void CWeightedPointsMap::resize(size_t newLength)
 {
-	m_x.resize(newLength, 0);
-	m_y.resize(newLength, 0);
-	m_z.resize(newLength, 0);
-	pointWeight.resize(newLength, 1);
+  m_x.resize(newLength, 0);
+  m_y.resize(newLength, 0);
+  m_z.resize(newLength, 0);
+  pointWeight.resize(newLength, 1);
 }
 
 // Resizes all point buffers so they can hold the given number of points,
@@ -84,159 +78,154 @@ void CWeightedPointsMap::resize(size_t newLength)
 //  and leaving all points to default values.
 void CWeightedPointsMap::setSize(size_t newLength)
 {
-	m_x.assign(newLength, 0);
-	m_y.assign(newLength, 0);
-	m_z.assign(newLength, 0);
-	pointWeight.assign(newLength, 1);
+  m_x.assign(newLength, 0);
+  m_y.assign(newLength, 0);
+  m_z.assign(newLength, 0);
+  pointWeight.assign(newLength, 1);
 }
 
 void CWeightedPointsMap::insertPointFast(float x, float y, float z)
 {
-	m_x.push_back(x);
-	m_y.push_back(y);
-	m_z.push_back(z);
-	this->pointWeight.push_back(1);
-	// mark_as_modified(); -> Fast
+  m_x.push_back(x);
+  m_y.push_back(y);
+  m_z.push_back(z);
+  this->pointWeight.push_back(1);
+  // mark_as_modified(); -> Fast
 }
 
 void CWeightedPointsMap::impl_copyFrom(const CPointsMap& obj)
 {
-	// This also does a ::resize(N) of all data fields.
-	CPointsMap::base_copyFrom(obj);
+  // This also does a ::resize(N) of all data fields.
+  CPointsMap::base_copyFrom(obj);
 
-	const auto* pW = dynamic_cast<const CWeightedPointsMap*>(&obj);
-	if (pW) { pointWeight = pW->pointWeight; }
+  const auto* pW = dynamic_cast<const CWeightedPointsMap*>(&obj);
+  if (pW)
+  {
+    pointWeight = pW->pointWeight;
+  }
 }
 
 /*---------------------------------------------------------------
-						addFrom_classSpecific
+            addFrom_classSpecific
  ---------------------------------------------------------------*/
 void CWeightedPointsMap::addFrom_classSpecific(
-	const CPointsMap& anotherMap, size_t nPreviousPoints,
-	const bool filterOutPointsAtZero)
+    const CPointsMap& anotherMap, size_t nPreviousPoints, const bool filterOutPointsAtZero)
 {
-	const size_t nOther = anotherMap.size();
+  const size_t nOther = anotherMap.size();
 
-	// Specific data for this class:
-	const auto* anotheMap_w =
-		dynamic_cast<const CWeightedPointsMap*>(&anotherMap);
+  // Specific data for this class:
+  const auto* anotheMap_w = dynamic_cast<const CWeightedPointsMap*>(&anotherMap);
 
-	if (anotheMap_w)
-	{
-		for (size_t i = 0, j = nPreviousPoints; i < nOther; i++)
-		{
-			if (filterOutPointsAtZero &&
-				anotheMap_w->getPointsBufferRef_x()[i] == 0 &&
-				anotheMap_w->getPointsBufferRef_y()[i] == 0 &&
-				anotheMap_w->getPointsBufferRef_z()[i] == 0)
-				continue;
+  if (anotheMap_w)
+  {
+    for (size_t i = 0, j = nPreviousPoints; i < nOther; i++)
+    {
+      if (filterOutPointsAtZero && anotheMap_w->getPointsBufferRef_x()[i] == 0 &&
+          anotheMap_w->getPointsBufferRef_y()[i] == 0 &&
+          anotheMap_w->getPointsBufferRef_z()[i] == 0)
+        continue;
 
-			pointWeight[j] = anotheMap_w->pointWeight[i];
-			j++;
-		}
-	}
+      pointWeight[j] = anotheMap_w->pointWeight[i];
+      j++;
+    }
+  }
 }
 
 uint8_t CWeightedPointsMap::serializeGetVersion() const { return 2; }
 void CWeightedPointsMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	uint32_t n = m_x.size();
+  uint32_t n = m_x.size();
 
-	// First, write the number of points:
-	out << n;
+  // First, write the number of points:
+  out << n;
 
-	if (n > 0)
-	{
-		out.WriteBufferFixEndianness(&m_x[0], n);
-		out.WriteBufferFixEndianness(&m_y[0], n);
-		out.WriteBufferFixEndianness(&m_z[0], n);
-		out.WriteBufferFixEndianness(&pointWeight[0], n);
-	}
+  if (n > 0)
+  {
+    out.WriteBufferFixEndianness(&m_x[0], n);
+    out.WriteBufferFixEndianness(&m_y[0], n);
+    out.WriteBufferFixEndianness(&m_z[0], n);
+    out.WriteBufferFixEndianness(&pointWeight[0], n);
+  }
 
-	out << genericMapParams;  // v2
-	insertionOptions.writeToStream(
-		out);  // version 9: insert options are saved with its own method
-	likelihoodOptions.writeToStream(out);  // Added in version 5
+  out << genericMapParams;               // v2
+  insertionOptions.writeToStream(out);   // version 9: insert options are saved with its own method
+  likelihoodOptions.writeToStream(out);  // Added in version 5
 }
 
-void CWeightedPointsMap::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void CWeightedPointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	switch (version)
-	{
-		case 0:
-		case 1:
-		case 2:
-		{
-			mark_as_modified();
+  switch (version)
+  {
+    case 0:
+    case 1:
+    case 2:
+    {
+      mark_as_modified();
 
-			// Read the number of points:
-			uint32_t n;
-			in >> n;
+      // Read the number of points:
+      uint32_t n;
+      in >> n;
 
-			this->resize(n);
+      this->resize(n);
 
-			if (n > 0)
-			{
-				in.ReadBufferFixEndianness(&m_x[0], n);
-				in.ReadBufferFixEndianness(&m_y[0], n);
-				in.ReadBufferFixEndianness(&m_z[0], n);
-				in.ReadBufferFixEndianness(&pointWeight[0], n);
-			}
+      if (n > 0)
+      {
+        in.ReadBufferFixEndianness(&m_x[0], n);
+        in.ReadBufferFixEndianness(&m_y[0], n);
+        in.ReadBufferFixEndianness(&m_z[0], n);
+        in.ReadBufferFixEndianness(&pointWeight[0], n);
+      }
 
-			if (version >= 1)
-			{
-				if (version >= 2) in >> genericMapParams;
-				else
-				{
-					bool disableSaveAs3DObject;
-					in >> disableSaveAs3DObject;
-					genericMapParams.enableSaveAs3DObject =
-						!disableSaveAs3DObject;
-				}
+      if (version >= 1)
+      {
+        if (version >= 2)
+          in >> genericMapParams;
+        else
+        {
+          bool disableSaveAs3DObject;
+          in >> disableSaveAs3DObject;
+          genericMapParams.enableSaveAs3DObject = !disableSaveAs3DObject;
+        }
 
-				insertionOptions.readFromStream(in);  // version 9: insert
-				// options are saved with
-				// its own method
-			}
-			else
-			{
-				insertionOptions = TInsertionOptions();
-				in >> insertionOptions.minDistBetweenLaserPoints >>
-					insertionOptions.addToExistingPointsMap >>
-					insertionOptions.also_interpolate >>
-					insertionOptions.disableDeletion >>
-					insertionOptions.fuseWithExisting >>
-					insertionOptions.isPlanarMap >>
-					insertionOptions.maxDistForInterpolatePoints;
-				{
-					bool disableSaveAs3DObject;
-					in >> disableSaveAs3DObject;
-					genericMapParams.enableSaveAs3DObject =
-						!disableSaveAs3DObject;
-				}
-				in >> insertionOptions.horizontalTolerance;
-			}
+        insertionOptions.readFromStream(in);  // version 9: insert
+                                              // options are saved with
+                                              // its own method
+      }
+      else
+      {
+        insertionOptions = TInsertionOptions();
+        in >> insertionOptions.minDistBetweenLaserPoints >>
+            insertionOptions.addToExistingPointsMap >> insertionOptions.also_interpolate >>
+            insertionOptions.disableDeletion >> insertionOptions.fuseWithExisting >>
+            insertionOptions.isPlanarMap >> insertionOptions.maxDistForInterpolatePoints;
+        {
+          bool disableSaveAs3DObject;
+          in >> disableSaveAs3DObject;
+          genericMapParams.enableSaveAs3DObject = !disableSaveAs3DObject;
+        }
+        in >> insertionOptions.horizontalTolerance;
+      }
 
-			likelihoodOptions.readFromStream(in);  // Added in version 5
-		}
-		break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	};
+      likelihoodOptions.readFromStream(in);  // Added in version 5
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
 }
 
 /*---------------------------------------------------------------
-					Clear
+          Clear
   ---------------------------------------------------------------*/
 void CWeightedPointsMap::internal_clear()
 {
-	// This swap() thing is the only way to really deallocate the memory.
-	vector_strong_clear(m_x);
-	vector_strong_clear(m_y);
-	vector_strong_clear(m_z);
-	vector_strong_clear(pointWeight);
+  // This swap() thing is the only way to really deallocate the memory.
+  vector_strong_clear(m_x);
+  vector_strong_clear(m_y);
+  vector_strong_clear(m_z);
+  vector_strong_clear(pointWeight);
 
-	mark_as_modified();
+  mark_as_modified();
 }
 
 namespace mrpt::maps::detail
@@ -246,94 +235,89 @@ using mrpt::maps::CWeightedPointsMap;
 template <>
 struct pointmap_traits<CWeightedPointsMap>
 {
-	/** Helper method fot the generic implementation of
-	 * CPointsMap::loadFromRangeScan(), to be called only once before inserting
-	 * points - this is the place to reserve memory in lric for extra working
-	 * variables. */
-	inline static void internal_loadFromRangeScan2D_init(
-		[[maybe_unused]] CWeightedPointsMap& me,
-		[[maybe_unused]] mrpt::maps::CPointsMap::TLaserRange2DInsertContext&
-			lric)
-	{
-	}
-	/** Helper method fot the generic implementation of
-	 * CPointsMap::loadFromRangeScan(), to be called once per range data */
-	inline static void internal_loadFromRangeScan2D_prepareOneRange(
-		[[maybe_unused]] CWeightedPointsMap& me,
-		[[maybe_unused]] const float gx, [[maybe_unused]] const float gy,
-		[[maybe_unused]] const float gz,
-		[[maybe_unused]] mrpt::maps::CPointsMap::TLaserRange2DInsertContext&
-			lric)
-	{
-	}
-	/** Helper method fot the generic implementation of
-	 * CPointsMap::loadFromRangeScan(), to be called after each
-	 * "{x,y,z}.push_back(...);" */
-	inline static void internal_loadFromRangeScan2D_postPushBack(
-		CWeightedPointsMap& me,
-		[[maybe_unused]] mrpt::maps::CPointsMap::TLaserRange2DInsertContext&
-			lric)
-	{
-		me.pointWeight.push_back(1);
-	}
+  /** Helper method fot the generic implementation of
+   * CPointsMap::loadFromRangeScan(), to be called only once before inserting
+   * points - this is the place to reserve memory in lric for extra working
+   * variables. */
+  inline static void internal_loadFromRangeScan2D_init(
+      [[maybe_unused]] CWeightedPointsMap& me,
+      [[maybe_unused]] mrpt::maps::CPointsMap::TLaserRange2DInsertContext& lric)
+  {
+  }
+  /** Helper method fot the generic implementation of
+   * CPointsMap::loadFromRangeScan(), to be called once per range data */
+  inline static void internal_loadFromRangeScan2D_prepareOneRange(
+      [[maybe_unused]] CWeightedPointsMap& me,
+      [[maybe_unused]] const float gx,
+      [[maybe_unused]] const float gy,
+      [[maybe_unused]] const float gz,
+      [[maybe_unused]] mrpt::maps::CPointsMap::TLaserRange2DInsertContext& lric)
+  {
+  }
+  /** Helper method fot the generic implementation of
+   * CPointsMap::loadFromRangeScan(), to be called after each
+   * "{x,y,z}.push_back(...);" */
+  inline static void internal_loadFromRangeScan2D_postPushBack(
+      CWeightedPointsMap& me,
+      [[maybe_unused]] mrpt::maps::CPointsMap::TLaserRange2DInsertContext& lric)
+  {
+    me.pointWeight.push_back(1);
+  }
 
-	/** Helper method fot the generic implementation of
-	 * CPointsMap::loadFromRangeScan(), to be called only once before inserting
-	 * points - this is the place to reserve memory in lric for extra working
-	 * variables. */
-	inline static void internal_loadFromRangeScan3D_init(
-		[[maybe_unused]] CWeightedPointsMap& me,
-		[[maybe_unused]] mrpt::maps::CPointsMap::TLaserRange3DInsertContext&
-			lric)
-	{
-	}
-	/** Helper method fot the generic implementation of
-	 * CPointsMap::loadFromRangeScan(), to be called once per range data */
-	inline static void internal_loadFromRangeScan3D_prepareOneRange(
-		[[maybe_unused]] CWeightedPointsMap& me,
-		[[maybe_unused]] const float gx, [[maybe_unused]] const float gy,
-		[[maybe_unused]] const float gz,
-		[[maybe_unused]] mrpt::maps::CPointsMap::TLaserRange3DInsertContext&
-			lric)
-	{
-	}
-	/** Helper method fot the generic implementation of
-	 * CPointsMap::loadFromRangeScan(), to be called after each
-	 * "{x,y,z}.push_back(...);" */
-	inline static void internal_loadFromRangeScan3D_postPushBack(
-		CWeightedPointsMap& me,
-		[[maybe_unused]] mrpt::maps::CPointsMap::TLaserRange3DInsertContext&
-			lric)
-	{
-		me.pointWeight.push_back(1);
-	}
-	/** Helper method fot the generic implementation of
-	 * CPointsMap::loadFromRangeScan(), to be called once per range data, at the
-	 * end */
-	inline static void internal_loadFromRangeScan3D_postOneRange(
-		[[maybe_unused]] CWeightedPointsMap& me,
-		[[maybe_unused]] mrpt::maps::CPointsMap::TLaserRange3DInsertContext&
-			lric)
-	{
-	}
+  /** Helper method fot the generic implementation of
+   * CPointsMap::loadFromRangeScan(), to be called only once before inserting
+   * points - this is the place to reserve memory in lric for extra working
+   * variables. */
+  inline static void internal_loadFromRangeScan3D_init(
+      [[maybe_unused]] CWeightedPointsMap& me,
+      [[maybe_unused]] mrpt::maps::CPointsMap::TLaserRange3DInsertContext& lric)
+  {
+  }
+  /** Helper method fot the generic implementation of
+   * CPointsMap::loadFromRangeScan(), to be called once per range data */
+  inline static void internal_loadFromRangeScan3D_prepareOneRange(
+      [[maybe_unused]] CWeightedPointsMap& me,
+      [[maybe_unused]] const float gx,
+      [[maybe_unused]] const float gy,
+      [[maybe_unused]] const float gz,
+      [[maybe_unused]] mrpt::maps::CPointsMap::TLaserRange3DInsertContext& lric)
+  {
+  }
+  /** Helper method fot the generic implementation of
+   * CPointsMap::loadFromRangeScan(), to be called after each
+   * "{x,y,z}.push_back(...);" */
+  inline static void internal_loadFromRangeScan3D_postPushBack(
+      CWeightedPointsMap& me,
+      [[maybe_unused]] mrpt::maps::CPointsMap::TLaserRange3DInsertContext& lric)
+  {
+    me.pointWeight.push_back(1);
+  }
+  /** Helper method fot the generic implementation of
+   * CPointsMap::loadFromRangeScan(), to be called once per range data, at the
+   * end */
+  inline static void internal_loadFromRangeScan3D_postOneRange(
+      [[maybe_unused]] CWeightedPointsMap& me,
+      [[maybe_unused]] mrpt::maps::CPointsMap::TLaserRange3DInsertContext& lric)
+  {
+  }
 };
 }  // namespace mrpt::maps::detail
 /** See CPointsMap::loadFromRangeScan() */
 void CWeightedPointsMap::loadFromRangeScan(
-	const CObservation2DRangeScan& rangeScan,
-	const std::optional<const mrpt::poses::CPose3D>& robotPose)
+    const CObservation2DRangeScan& rangeScan,
+    const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
-	mrpt::maps::detail::loadFromRangeImpl<CWeightedPointsMap>::
-		templ_loadFromRangeScan(*this, rangeScan, robotPose);
+  mrpt::maps::detail::loadFromRangeImpl<CWeightedPointsMap>::templ_loadFromRangeScan(
+      *this, rangeScan, robotPose);
 }
 
 /** See CPointsMap::loadFromRangeScan() */
 void CWeightedPointsMap::loadFromRangeScan(
-	const CObservation3DRangeScan& rangeScan,
-	const std::optional<const mrpt::poses::CPose3D>& robotPose)
+    const CObservation3DRangeScan& rangeScan,
+    const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
-	mrpt::maps::detail::loadFromRangeImpl<CWeightedPointsMap>::
-		templ_loadFromRangeScan(*this, rangeScan, robotPose);
+  mrpt::maps::detail::loadFromRangeImpl<CWeightedPointsMap>::templ_loadFromRangeScan(
+      *this, rangeScan, robotPose);
 }
 
 // ================================ PLY files import & export virtual methods
@@ -341,7 +325,4 @@ void CWeightedPointsMap::loadFromRangeScan(
 
 /** In a base class, reserve memory to prepare subsequent calls to
  * PLY_import_set_vertex */
-void CWeightedPointsMap::PLY_import_set_vertex_count(size_t N)
-{
-	this->setSize(N);
-}
+void CWeightedPointsMap::PLY_import_set_vertex_count(size_t N) { this->setSize(N); }

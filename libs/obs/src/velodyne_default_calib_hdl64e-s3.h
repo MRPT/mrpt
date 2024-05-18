@@ -242,5 +242,5 @@ distance_resolution: 0.002
 )==";
 
 const std::string velodyne_default_calib_HDL64E_S3 =
-	std::string(velodyne_default_calib_HDL64E_S3_part1) +
-	std::string(velodyne_default_calib_HDL64E_S3_part2);
+    std::string(velodyne_default_calib_HDL64E_S3_part1) +
+    std::string(velodyne_default_calib_HDL64E_S3_part2);

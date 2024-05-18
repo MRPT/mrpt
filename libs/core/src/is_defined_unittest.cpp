@@ -12,12 +12,12 @@
 
 struct A
 {
-	int x;
+  int x;
 };
 struct B;
 
 TEST(is_defined, tests1)
 {
-	EXPECT_TRUE(mrpt::is_defined_v<A>);
-	EXPECT_FALSE(mrpt::is_defined_v<B>);
+  EXPECT_TRUE(mrpt::is_defined_v<A>);
+  EXPECT_FALSE(mrpt::is_defined_v<B>);
 }

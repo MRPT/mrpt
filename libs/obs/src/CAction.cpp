@@ -22,23 +22,22 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(CAction, CSerializable, mrpt::obs)
 
 void CAction::getDescriptionAsText(std::ostream& o) const
 {
-	using namespace mrpt::system;  // for the TTimeStamp << op
+  using namespace mrpt::system;  // for the TTimeStamp << op
 
-	o << mrpt::format(
-		"Timestamp (UTC): %s\n"
-		"        (local): %s\n"
-		"    (as time_t): %.09f\n",
-		mrpt::system::dateTimeToString(timestamp).c_str(),
-		mrpt::system::dateTimeLocalToString(timestamp).c_str(),
-		mrpt::Clock::toDouble(timestamp));
+  o << mrpt::format(
+      "Timestamp (UTC): %s\n"
+      "        (local): %s\n"
+      "    (as time_t): %.09f\n",
+      mrpt::system::dateTimeToString(timestamp).c_str(),
+      mrpt::system::dateTimeLocalToString(timestamp).c_str(), mrpt::Clock::toDouble(timestamp));
 
-	o << "ClassName: " << this->GetRuntimeClass()->className << "\n"
-	  << "\n";
+  o << "ClassName: " << this->GetRuntimeClass()->className << "\n"
+    << "\n";
 }
 
 std::string CAction::getDescriptionAsTextValue() const
 {
-	std::stringstream ss;
-	getDescriptionAsText(ss);
-	return ss.str();
+  std::stringstream ss;
+  getDescriptionAsText(ss);
+  return ss.str();
 }

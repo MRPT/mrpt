@@ -27,72 +27,61 @@ using namespace mrpt::io;
 // ======================================================================
 DECLARE_OP_FUNCTION(op_undistort)
 {
-	// A class to do this operation:
-	class CRawlogProcessor_Undistort : public CRawlogProcessorFilterObservations
-	{
-	   protected:
-		string m_out_file;
+  // A class to do this operation:
+  class CRawlogProcessor_Undistort : public CRawlogProcessorFilterObservations
+  {
+   protected:
+    string m_out_file;
 
-	   public:
-		CRawlogProcessor_Undistort(
-			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool Verbose, mrpt::io::CFileGZOutputStream& out_rawlog)
-			: CRawlogProcessorFilterObservations(
-				  in_rawlog, cmdline, Verbose, out_rawlog)
-		{
-		}
+   public:
+    CRawlogProcessor_Undistort(
+        CFileGZInputStream& in_rawlog,
+        TCLAP::CmdLine& cmdline,
+        bool Verbose,
+        mrpt::io::CFileGZOutputStream& out_rawlog) :
+        CRawlogProcessorFilterObservations(in_rawlog, cmdline, Verbose, out_rawlog)
+    {
+    }
 
-		bool tellIfThisObsPasses(mrpt::obs::CObservation::Ptr& obs) override
-		{
-			return true;
-		}
+    bool tellIfThisObsPasses(mrpt::obs::CObservation::Ptr& obs) override { return true; }
 
-		bool processOneObservation(CObservation::Ptr& obs) override
-		{
-			obs->load();
+    bool processOneObservation(CObservation::Ptr& obs) override
+    {
+      obs->load();
 
-			mrpt::img::CImage tmp;
+      mrpt::img::CImage tmp;
 
-			if (auto obsSt =
-					std::dynamic_pointer_cast<CObservationStereoImages>(obs);
-				obsSt)
-			{
-				// save image to file & convert into external storage:
-				obsSt->imageLeft.undistort(tmp, obsSt->leftCamera);
-				obsSt->imageLeft = std::move(tmp);
+      if (auto obsSt = std::dynamic_pointer_cast<CObservationStereoImages>(obs); obsSt)
+      {
+        // save image to file & convert into external storage:
+        obsSt->imageLeft.undistort(tmp, obsSt->leftCamera);
+        obsSt->imageLeft = std::move(tmp);
 
-				obsSt->imageRight.undistort(tmp, obsSt->rightCamera);
-				obsSt->imageRight = std::move(tmp);
-			}
-			else if (auto obsIm =
-						 std::dynamic_pointer_cast<CObservationImage>(obs);
-					 obsIm)
-			{
-				obsIm->image.undistort(tmp, obsIm->cameraParams);
-				obsIm->image = std::move(tmp);
-			}
-			else if (auto obs3D =
-						 std::dynamic_pointer_cast<CObservation3DRangeScan>(
-							 obs);
-					 obs3D)
-			{
-				obs3D->undistort();
-			}
+        obsSt->imageRight.undistort(tmp, obsSt->rightCamera);
+        obsSt->imageRight = std::move(tmp);
+      }
+      else if (auto obsIm = std::dynamic_pointer_cast<CObservationImage>(obs); obsIm)
+      {
+        obsIm->image.undistort(tmp, obsIm->cameraParams);
+        obsIm->image = std::move(tmp);
+      }
+      else if (auto obs3D = std::dynamic_pointer_cast<CObservation3DRangeScan>(obs); obs3D)
+      {
+        obs3D->undistort();
+      }
 
-			obs->unload();
-			return true;
-		}
-	};
+      obs->unload();
+      return true;
+    }
+  };
 
-	// Process
-	// ---------------------------------
-	TOutputRawlogCreator outrawlog;
-	CRawlogProcessor_Undistort proc(
-		in_rawlog, cmdline, verbose, outrawlog.out_rawlog_io);
-	proc.doProcessRawlog();
+  // Process
+  // ---------------------------------
+  TOutputRawlogCreator outrawlog;
+  CRawlogProcessor_Undistort proc(in_rawlog, cmdline, verbose, outrawlog.out_rawlog_io);
+  proc.doProcessRawlog();
 
-	// Dump statistics:
-	// ---------------------------------
-	VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse
-				 << "\n";
+  // Dump statistics:
+  // ---------------------------------
+  VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse << "\n";
 }

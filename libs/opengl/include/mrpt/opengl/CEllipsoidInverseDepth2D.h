@@ -36,33 +36,30 @@ namespace mrpt::opengl
  */
 class CEllipsoidInverseDepth2D : public CGeneralizedEllipsoidTemplate<2>
 {
-	using BASE = CGeneralizedEllipsoidTemplate<2>;
-	DEFINE_SERIALIZABLE(CEllipsoidInverseDepth2D, mrpt::opengl)
+  using BASE = CGeneralizedEllipsoidTemplate<2>;
+  DEFINE_SERIALIZABLE(CEllipsoidInverseDepth2D, mrpt::opengl)
 
-   public:
-	CEllipsoidInverseDepth2D() = default;
-	virtual ~CEllipsoidInverseDepth2D() override = default;
+ public:
+  CEllipsoidInverseDepth2D() = default;
+  virtual ~CEllipsoidInverseDepth2D() override = default;
 
-	/** The maximum range to be used as a correction when a point of the
-	 * ellipsoid falls in the negative ranges (default: 1e6) */
-	void setUnderflowMaxRange(const double maxRange)
-	{
-		m_underflowMaxRange = maxRange;
-	}
-	double getUnderflowMaxRange() const { return m_underflowMaxRange; }
+  /** The maximum range to be used as a correction when a point of the
+   * ellipsoid falls in the negative ranges (default: 1e6) */
+  void setUnderflowMaxRange(const double maxRange) { m_underflowMaxRange = maxRange; }
+  double getUnderflowMaxRange() const { return m_underflowMaxRange; }
 
-   protected:
-	/** To be implemented by derived classes: maps, using some arbitrary space
-	 * transformation, a list of points
-	 *  defining an ellipsoid in parameter space into their corresponding
-	 * points in 2D/3D space.
-	 */
-	void transformFromParameterSpace(
-		const std::vector<BASE::array_parameter_t>& in_pts,
-		std::vector<BASE::array_point_t>& out_pts) const override;
+ protected:
+  /** To be implemented by derived classes: maps, using some arbitrary space
+   * transformation, a list of points
+   *  defining an ellipsoid in parameter space into their corresponding
+   * points in 2D/3D space.
+   */
+  void transformFromParameterSpace(
+      const std::vector<BASE::array_parameter_t>& in_pts,
+      std::vector<BASE::array_point_t>& out_pts) const override;
 
-   private:
-	double m_underflowMaxRange{1e6};
+ private:
+  double m_underflowMaxRange{1e6};
 };
 
 }  // namespace mrpt::opengl

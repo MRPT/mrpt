@@ -48,16 +48,22 @@ char* strtok(char* str, const char* strDelimit, char** context) noexcept;
  */
 template <class OUT_CONTAINER>
 void tokenize(
-	const std::string& inString, const std::string& inDelimiters,
-	OUT_CONTAINER& outTokens, bool skipBlankTokens = true) noexcept;
+    const std::string& inString,
+    const std::string& inDelimiters,
+    OUT_CONTAINER& outTokens,
+    bool skipBlankTokens = true) noexcept;
 
 // explicit instantiations declarations (to silent gcc warnings):
 extern template void tokenize<std::deque<std::string>>(
-	const std::string& inString, const std::string& inDelimiters,
-	std::deque<std::string>& outTokens, bool skipBlankTokens) noexcept;
+    const std::string& inString,
+    const std::string& inDelimiters,
+    std::deque<std::string>& outTokens,
+    bool skipBlankTokens) noexcept;
 extern template void tokenize<std::vector<std::string>>(
-	const std::string& inString, const std::string& inDelimiters,
-	std::vector<std::string>& outTokens, bool skipBlankTokens) noexcept;
+    const std::string& inString,
+    const std::string& inDelimiters,
+    std::vector<std::string>& outTokens,
+    bool skipBlankTokens) noexcept;
 
 /**  Removes leading and trailing spaces */
 std::string trim(const std::string& str);
@@ -84,8 +90,7 @@ void encodeUTF8(const std::vector<uint16_t>& input, std::string& output);
 
 /** Encode a sequence of bytes as a string in base-64.
  * \sa decodeBase64  */
-void encodeBase64(
-	const std::vector<uint8_t>& inputData, std::string& outString);
+void encodeBase64(const std::vector<uint8_t>& inputData, std::string& outString);
 
 /** Decode a base-64 string into the original sequence of bytes.
  * \sa encodeBase64
@@ -104,12 +109,10 @@ bool decodeBase64(const std::string& inString, std::vector<uint8_t>& outData);
  * \endcode
  * \sa
  * intervalFormat */
-std::string unitsFormat(
-	const double val, int nDecimalDigits = 2, bool middle_space = true);
+std::string unitsFormat(const double val, int nDecimalDigits = 2, bool middle_space = true);
 
 /** Enlarge the string with spaces up to the given length. */
-std::string rightPad(
-	const std::string& str, size_t total_len, bool truncate_if_larger = false);
+std::string rightPad(const std::string& str, size_t total_len, bool truncate_if_larger = false);
 
 /** Return true if the two strings are equal (case sensitive)  \sa strCmpI  */
 bool strCmp(const std::string& s1, const std::string& s2);
@@ -131,33 +134,30 @@ bool strStartsI(const std::string& str, const std::string& subStr);
 template <typename T>
 std::string sprintf_container(const char* fmt, const T& V)
 {
-	std::string ret = "[";
-	auto it = V.begin();
-	for (; it != V.end();)
-	{
-		ret += format(fmt, *it);
-		++it;
-		if (it != V.end()) ret += ",";
-	}
-	ret += "]";
-	return ret;
+  std::string ret = "[";
+  auto it = V.begin();
+  for (; it != V.end();)
+  {
+    ret += format(fmt, *it);
+    ++it;
+    if (it != V.end()) ret += ",";
+  }
+  ret += "]";
+  return ret;
 }
 
 /** @brief Convert a string list to one single string with new-lines. */
 void stringListAsString(
-	const std::vector<std::string>& lst, std::string& out,
-	const std::string& newline = "\r\n");
+    const std::vector<std::string>& lst, std::string& out, const std::string& newline = "\r\n");
 /** \overload */
 void stringListAsString(
-	const std::deque<std::string>& lst, std::string& out,
-	const std::string& newline = "\r\n");
+    const std::deque<std::string>& lst, std::string& out, const std::string& newline = "\r\n");
 
 /** Finds the position of the n-th occurence of the given substring, or
  * std::string::npos if it does not happen.
  * \note New in MRPT 2.3.2
  */
-size_t nthOccurrence(
-	const std::string& str, const std::string& strToFind, size_t nth);
+size_t nthOccurrence(const std::string& str, const std::string& strToFind, size_t nth);
 
 /** Returns the first `n` lines (splitted by '\n' chars) of the given text.
  * \note New in MRPT 2.3.2
@@ -171,11 +171,11 @@ std::string firstNLines(const std::string& str, size_t n);
 template <typename T>
 T str2num(std::string const& value)
 {
-	std::stringstream sin;
-	sin << value;
-	T output;
-	sin >> output;
-	return output;
+  std::stringstream sin;
+  sin << value;
+  T output;
+  sin >> output;
+  return output;
 }
 
 /**\}*/

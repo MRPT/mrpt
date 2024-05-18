@@ -39,29 +39,27 @@ namespace typemeta
 template <typename T, size_t N>
 struct TTypeName<mrpt::math::CVectorFixed<T, N>>
 {
-	constexpr static auto get()
-	{
-		return literal("CVectorFixed<") + TTypeName<T>::get() + literal(",") +
-			literal(num_to_string<N>::value) + literal(">");
-	}
+  constexpr static auto get()
+  {
+    return literal("CVectorFixed<") + TTypeName<T>::get() + literal(",") +
+           literal(num_to_string<N>::value) + literal(">");
+  }
 };
 template <size_t N>
 struct TTypeName<mrpt::math::CVectorFixedDouble<N>>
 {
-	constexpr static auto get()
-	{
-		return literal("CVectorFixedDouble<") +
-			literal(num_to_string<N>::value) + literal(">");
-	}
+  constexpr static auto get()
+  {
+    return literal("CVectorFixedDouble<") + literal(num_to_string<N>::value) + literal(">");
+  }
 };
 template <size_t N>
 struct TTypeName<mrpt::math::CVectorFixedFloat<N>>
 {
-	constexpr static auto get()
-	{
-		return literal("CVectorFixedFloat<") +
-			literal(num_to_string<N>::value) + literal(">");
-	}
+  constexpr static auto get()
+  {
+    return literal("CVectorFixedFloat<") + literal(num_to_string<N>::value) + literal(">");
+  }
 };
 }  // namespace typemeta
 }  // namespace mrpt

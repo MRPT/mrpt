@@ -43,168 +43,160 @@ using namespace mrpt::system;
 using namespace mrpt::math;
 
 CDlgCamTracking::CDlgCamTracking(
-	_DSceneViewerFrame* parent, wxWindowID id, const wxPoint& pos,
-	const wxSize& size)
-	: m_main_win(parent)
+    _DSceneViewerFrame* parent, wxWindowID id, const wxPoint& pos, const wxSize& size) :
+    m_main_win(parent)
 {
-	//(*Initialize(CDlgCamTracking)
-	wxFlexGridSizer* FlexGridSizer4;
-	wxFlexGridSizer* FlexGridSizer3;
-	wxFlexGridSizer* FlexGridSizer2;
-	wxFlexGridSizer* FlexGridSizer1;
+  //(*Initialize(CDlgCamTracking)
+  wxFlexGridSizer* FlexGridSizer4;
+  wxFlexGridSizer* FlexGridSizer3;
+  wxFlexGridSizer* FlexGridSizer2;
+  wxFlexGridSizer* FlexGridSizer1;
 
-	Create(
-		parent, id, _("Define camera path"), wxDefaultPosition, wxDefaultSize,
-		wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER, _T("id"));
-	SetClientSize(wxDefaultSize);
-	Move(wxDefaultPosition);
-	FlexGridSizer1 = new wxFlexGridSizer(0, 1, 0, 0);
-	FlexGridSizer1->AddGrowableCol(0);
-	FlexGridSizer1->AddGrowableRow(2);
-	FlexGridSizer2 = new wxFlexGridSizer(0, 5, 0, 0);
-	FlexGridSizer2->AddGrowableCol(2);
-	btnLoad = new wxButton(
-		this, ID_BUTTON2, _("Load..."), wxDefaultPosition, wxDefaultSize, 0,
-		wxDefaultValidator, _T("ID_BUTTON2"));
-	FlexGridSizer2->Add(btnLoad, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	btnSave = new wxButton(
-		this, ID_BUTTON3, _("Save..."), wxDefaultPosition, wxDefaultSize, 0,
-		wxDefaultValidator, _T("ID_BUTTON3"));
-	FlexGridSizer2->Add(btnSave, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer2->Add(-1, -1, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	btnGrab = new wxButton(
-		this, ID_BUTTON4, _("Grab current"), wxDefaultPosition, wxDefaultSize,
-		0, wxDefaultValidator, _T("ID_BUTTON4"));
-	FlexGridSizer2->Add(btnGrab, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer1->Add(FlexGridSizer2, 1, wxEXPAND, 0);
-	FlexGridSizer4 = new wxFlexGridSizer(0, 5, 0, 0);
-	FlexGridSizer4->AddGrowableCol(2);
-	cbConstVel = new wxCheckBox(
-		this, ID_CHECKBOX1, _("Ignore time, with constant velocity (m/s):"),
-		wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
-		_T("ID_CHECKBOX1"));
-	cbConstVel->SetValue(false);
-	FlexGridSizer4->Add(cbConstVel, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	edVel = new wxTextCtrl(
-		this, ID_TEXTCTRL1, _("0.2"), wxDefaultPosition, wxDefaultSize, 0,
-		wxDefaultValidator, _T("ID_TEXTCTRL1"));
-	FlexGridSizer4->Add(edVel, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer4->Add(-1, -1, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	btnStart = new wxButton(
-		this, ID_BUTTON6, _("START"), wxDefaultPosition, wxDefaultSize, 0,
-		wxDefaultValidator, _T("ID_BUTTON6"));
-	FlexGridSizer4->Add(btnStart, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	btnStop = new wxButton(
-		this, ID_BUTTON5, _("STOP"), wxDefaultPosition, wxDefaultSize, 0,
-		wxDefaultValidator, _T("ID_BUTTON5"));
-	btnStop->Disable();
-	FlexGridSizer4->Add(btnStop, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer1->Add(FlexGridSizer4, 1, wxEXPAND, 0);
-	gridPoses = new wxGrid(
-		this, ID_GRID1, wxDefaultPosition, wxDefaultSize, 0, _T("ID_GRID1"));
-	gridPoses->CreateGrid(0, 7);
-	gridPoses->SetMinSize(wxSize(600, 200));
-	FlexGridSizer1->Add(gridPoses, 1, wxEXPAND, 5);
-	FlexGridSizer3 = new wxFlexGridSizer(0, 3, 0, 0);
-	btnClose = new wxButton(
-		this, ID_BUTTON1, _("Close"), wxDefaultPosition, wxDefaultSize, 0,
-		wxDefaultValidator, _T("ID_BUTTON1"));
-	FlexGridSizer3->Add(btnClose, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer1->Add(
-		FlexGridSizer3, 1, wxALL | wxALIGN_RIGHT | wxALIGN_TOP, 0);
-	SetSizer(FlexGridSizer1);
-	MenuItem1 = new wxMenuItem(
-		(&menuGrid), ID_MENUITEM1, _("Delete entry"), wxEmptyString,
-		wxITEM_NORMAL);
-	menuGrid.Append(MenuItem1);
-	FlexGridSizer1->Fit(this);
-	FlexGridSizer1->SetSizeHints(this);
+  Create(
+      parent, id, _("Define camera path"), wxDefaultPosition, wxDefaultSize,
+      wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER, _T("id"));
+  SetClientSize(wxDefaultSize);
+  Move(wxDefaultPosition);
+  FlexGridSizer1 = new wxFlexGridSizer(0, 1, 0, 0);
+  FlexGridSizer1->AddGrowableCol(0);
+  FlexGridSizer1->AddGrowableRow(2);
+  FlexGridSizer2 = new wxFlexGridSizer(0, 5, 0, 0);
+  FlexGridSizer2->AddGrowableCol(2);
+  btnLoad = new wxButton(
+      this, ID_BUTTON2, _("Load..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
+      _T("ID_BUTTON2"));
+  FlexGridSizer2->Add(btnLoad, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
+  btnSave = new wxButton(
+      this, ID_BUTTON3, _("Save..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
+      _T("ID_BUTTON3"));
+  FlexGridSizer2->Add(btnSave, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
+  FlexGridSizer2->Add(-1, -1, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
+  btnGrab = new wxButton(
+      this, ID_BUTTON4, _("Grab current"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
+      _T("ID_BUTTON4"));
+  FlexGridSizer2->Add(btnGrab, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
+  FlexGridSizer1->Add(FlexGridSizer2, 1, wxEXPAND, 0);
+  FlexGridSizer4 = new wxFlexGridSizer(0, 5, 0, 0);
+  FlexGridSizer4->AddGrowableCol(2);
+  cbConstVel = new wxCheckBox(
+      this, ID_CHECKBOX1, _("Ignore time, with constant velocity (m/s):"), wxDefaultPosition,
+      wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
+  cbConstVel->SetValue(false);
+  FlexGridSizer4->Add(cbConstVel, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
+  edVel = new wxTextCtrl(
+      this, ID_TEXTCTRL1, _("0.2"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
+      _T("ID_TEXTCTRL1"));
+  FlexGridSizer4->Add(edVel, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
+  FlexGridSizer4->Add(-1, -1, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
+  btnStart = new wxButton(
+      this, ID_BUTTON6, _("START"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
+      _T("ID_BUTTON6"));
+  FlexGridSizer4->Add(btnStart, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
+  btnStop = new wxButton(
+      this, ID_BUTTON5, _("STOP"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
+      _T("ID_BUTTON5"));
+  btnStop->Disable();
+  FlexGridSizer4->Add(btnStop, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
+  FlexGridSizer1->Add(FlexGridSizer4, 1, wxEXPAND, 0);
+  gridPoses = new wxGrid(this, ID_GRID1, wxDefaultPosition, wxDefaultSize, 0, _T("ID_GRID1"));
+  gridPoses->CreateGrid(0, 7);
+  gridPoses->SetMinSize(wxSize(600, 200));
+  FlexGridSizer1->Add(gridPoses, 1, wxEXPAND, 5);
+  FlexGridSizer3 = new wxFlexGridSizer(0, 3, 0, 0);
+  btnClose = new wxButton(
+      this, ID_BUTTON1, _("Close"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
+      _T("ID_BUTTON1"));
+  FlexGridSizer3->Add(btnClose, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
+  FlexGridSizer1->Add(FlexGridSizer3, 1, wxALL | wxALIGN_RIGHT | wxALIGN_TOP, 0);
+  SetSizer(FlexGridSizer1);
+  MenuItem1 =
+      new wxMenuItem((&menuGrid), ID_MENUITEM1, _("Delete entry"), wxEmptyString, wxITEM_NORMAL);
+  menuGrid.Append(MenuItem1);
+  FlexGridSizer1->Fit(this);
+  FlexGridSizer1->SetSizeHints(this);
 
-	Bind(wxEVT_BUTTON, &CDlgCamTracking::OnbtnLoadClick, this, ID_BUTTON2);
-	Bind(wxEVT_BUTTON, &CDlgCamTracking::OnbtnSaveClick, this, ID_BUTTON3);
-	Bind(wxEVT_BUTTON, &CDlgCamTracking::OnbtnGrabClick, this, ID_BUTTON4);
-	Bind(wxEVT_BUTTON, &CDlgCamTracking::OnbtnStartClick, this, ID_BUTTON6);
-	Bind(wxEVT_BUTTON, &CDlgCamTracking::OnbtnStopClick, this, ID_BUTTON5);
-	Bind(wxEVT_BUTTON, &CDlgCamTracking::OnbtnCloseClick, this, ID_BUTTON1);
-	Bind(wxEVT_MENU, &CDlgCamTracking::OnMenuItemDelete, this, ID_MENUITEM1);
-	//*)
+  Bind(wxEVT_BUTTON, &CDlgCamTracking::OnbtnLoadClick, this, ID_BUTTON2);
+  Bind(wxEVT_BUTTON, &CDlgCamTracking::OnbtnSaveClick, this, ID_BUTTON3);
+  Bind(wxEVT_BUTTON, &CDlgCamTracking::OnbtnGrabClick, this, ID_BUTTON4);
+  Bind(wxEVT_BUTTON, &CDlgCamTracking::OnbtnStartClick, this, ID_BUTTON6);
+  Bind(wxEVT_BUTTON, &CDlgCamTracking::OnbtnStopClick, this, ID_BUTTON5);
+  Bind(wxEVT_BUTTON, &CDlgCamTracking::OnbtnCloseClick, this, ID_BUTTON1);
+  Bind(wxEVT_MENU, &CDlgCamTracking::OnMenuItemDelete, this, ID_MENUITEM1);
+  //*)
 }
 
 CDlgCamTracking::~CDlgCamTracking()
 {
-	//(*Destroy(CDlgCamTracking)
-	//*)
+  //(*Destroy(CDlgCamTracking)
+  //*)
 }
 
 void CDlgCamTracking::OnbtnCloseClick(wxCommandEvent& event) { Close(); }
 void CDlgCamTracking::OnMenuItemDelete(wxCommandEvent& event) {}
 void CDlgCamTracking::OnbtnSaveClick(wxCommandEvent& event)
 {
-	this->m_poses.saveToTextFile("a.txt");
+  this->m_poses.saveToTextFile("a.txt");
 }
 
 void CDlgCamTracking::OnbtnLoadClick(wxCommandEvent& event) {}
 void CDlgCamTracking::OnbtnGrabClick(wxCommandEvent& event)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	CPose3D p;
-	m_main_win->m_canvas->getOpenGLSceneRef()
-		->getViewport("main")
-		->getCurrentCameraPose(p);
+  CPose3D p;
+  m_main_win->m_canvas->getOpenGLSceneRef()->getViewport("main")->getCurrentCameraPose(p);
 
-	if (m_poses.empty()) { m_poses.insert(Clock::now(), p); }
-	else
-	{
-		m_poses.insert(Clock::now(), p);
-	}
-	UpdateTableFromPoses();
+  if (m_poses.empty())
+  {
+    m_poses.insert(Clock::now(), p);
+  }
+  else
+  {
+    m_poses.insert(Clock::now(), p);
+  }
+  UpdateTableFromPoses();
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 void CDlgCamTracking::OnbtnStartClick(wxCommandEvent& event)
 {
-	m_poses.setMaxTimeInterpolation(std::chrono::seconds(10000));
-	m_poses.setInterpolationMethod(mrpt::poses::imSSLLLL);
-	// m_poses.setInterpolationMethod( CPose3DInterpolator::imLinear2Neig );
+  m_poses.setMaxTimeInterpolation(std::chrono::seconds(10000));
+  m_poses.setInterpolationMethod(mrpt::poses::imSSLLLL);
+  // m_poses.setInterpolationMethod( CPose3DInterpolator::imLinear2Neig );
 
-	m_main_win->m_travelling_is_arbitrary = true;
-	m_main_win->m_travelling_start_time = Clock::now();
-	m_main_win->m_tTravelling.Start(50);
+  m_main_win->m_travelling_is_arbitrary = true;
+  m_main_win->m_travelling_start_time = Clock::now();
+  m_main_win->m_tTravelling.Start(50);
 }
 
 void CDlgCamTracking::OnbtnStopClick(wxCommandEvent& event) {}
 void CDlgCamTracking::UpdateTableFromPoses()
 {
-	gridPoses->BeginBatch();
+  gridPoses->BeginBatch();
 
-	gridPoses->DeleteRows(0, gridPoses->GetNumberRows());
+  gridPoses->DeleteRows(0, gridPoses->GetNumberRows());
 
-	const size_t N = m_poses.size();
-	gridPoses->InsertRows(0, N);
+  const size_t N = m_poses.size();
+  gridPoses->InsertRows(0, N);
 
-	size_t i = 0;
-	auto it = m_poses.begin();
-	Clock::time_point t0 = it->first;
-	for (; it != m_poses.end(); ++it, ++i)
-	{
-		const Clock::time_point t = it->first;
-		const auto& p = it->second;
+  size_t i = 0;
+  auto it = m_poses.begin();
+  Clock::time_point t0 = it->first;
+  for (; it != m_poses.end(); ++it, ++i)
+  {
+    const Clock::time_point t = it->first;
+    const auto& p = it->second;
 
-		gridPoses->SetCellValue(
-			i, 0, wxString::Format(wxT("%.02f"), timeDifference(t0, t)));
+    gridPoses->SetCellValue(i, 0, wxString::Format(wxT("%.02f"), timeDifference(t0, t)));
 
-		gridPoses->SetCellValue(i, 1, wxString::Format(wxT("%f"), p.x));
-		gridPoses->SetCellValue(i, 2, wxString::Format(wxT("%f"), p.y));
-		gridPoses->SetCellValue(i, 3, wxString::Format(wxT("%f"), p.z));
-		gridPoses->SetCellValue(
-			i, 4, wxString::Format(wxT("%f"), RAD2DEG(p.yaw)));
-		gridPoses->SetCellValue(
-			i, 5, wxString::Format(wxT("%f"), RAD2DEG(p.pitch)));
-		gridPoses->SetCellValue(
-			i, 6, wxString::Format(wxT("%f"), RAD2DEG(p.roll)));
-	}
+    gridPoses->SetCellValue(i, 1, wxString::Format(wxT("%f"), p.x));
+    gridPoses->SetCellValue(i, 2, wxString::Format(wxT("%f"), p.y));
+    gridPoses->SetCellValue(i, 3, wxString::Format(wxT("%f"), p.z));
+    gridPoses->SetCellValue(i, 4, wxString::Format(wxT("%f"), RAD2DEG(p.yaw)));
+    gridPoses->SetCellValue(i, 5, wxString::Format(wxT("%f"), RAD2DEG(p.pitch)));
+    gridPoses->SetCellValue(i, 6, wxString::Format(wxT("%f"), RAD2DEG(p.roll)));
+  }
 
-	gridPoses->EndBatch();
+  gridPoses->EndBatch();
 }

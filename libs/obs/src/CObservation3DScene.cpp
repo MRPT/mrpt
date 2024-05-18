@@ -23,42 +23,46 @@ IMPLEMENTS_SERIALIZABLE(CObservation3DScene, CObservation, mrpt::obs)
 uint8_t CObservation3DScene::serializeGetVersion() const { return 0; }
 void CObservation3DScene::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	out << scene << timestamp;
+  out << scene << timestamp;
 }
 
-void CObservation3DScene::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void CObservation3DScene::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	switch (version)
-	{
-		case 0: in >> scene >> timestamp; break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	};
+  switch (version)
+  {
+    case 0:
+      in >> scene >> timestamp;
+      break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
 }
 
 void CObservation3DScene::getDescriptionAsText(std::ostream& o) const
 {
-	CObservation::getDescriptionAsText(o);
-	o << "3D scene:\n'";
-	if (!scene) { o << "nullptr\n"; }
-	else
-	{
-		auto d = scene->asYAML();
-		d.printAsYAML(o);
-	}
+  CObservation::getDescriptionAsText(o);
+  o << "3D scene:\n'";
+  if (!scene)
+  {
+    o << "nullptr\n";
+  }
+  else
+  {
+    auto d = scene->asYAML();
+    d.printAsYAML(o);
+  }
 }
 
-void CObservation3DScene::getVisualizationInto(
-	mrpt::opengl::CSetOfObjects& o) const
+void CObservation3DScene::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
 {
-	if (!scene) return;
+  if (!scene) return;
 
-	auto mainView = scene->getViewport();
-	if (!mainView) return;
+  auto mainView = scene->getViewport();
+  if (!mainView) return;
 
-	for (const auto& obj : *mainView)
-	{
-		if (!obj) continue;
-		o.insert(obj);
-	}
+  for (const auto& obj : *mainView)
+  {
+    if (!obj) continue;
+    o.insert(obj);
+  }
 }

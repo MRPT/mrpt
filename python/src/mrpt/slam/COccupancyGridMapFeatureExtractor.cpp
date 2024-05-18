@@ -88,13 +88,13 @@ struct PyCallBack_mrpt_slam_COccupancyGridMapFeatureExtractor : public mrpt::sla
 	}
 };
 
-// mrpt::slam::CGridMapAligner file:mrpt/slam/CGridMapAligner.h line:40
+// mrpt::slam::CGridMapAligner file:mrpt/slam/CGridMapAligner.h line:39
 struct PyCallBack_mrpt_slam_CGridMapAligner : public mrpt::slam::CGridMapAligner {
 	using mrpt::slam::CGridMapAligner::CGridMapAligner;
 
 };
 
-// mrpt::slam::CGridMapAligner::TConfigParams file:mrpt/slam/CGridMapAligner.h line:55
+// mrpt::slam::CGridMapAligner::TConfigParams file:mrpt/slam/CGridMapAligner.h line:54
 struct PyCallBack_mrpt_slam_CGridMapAligner_TConfigParams : public mrpt::slam::CGridMapAligner::TConfigParams {
 	using mrpt::slam::CGridMapAligner::TConfigParams::TConfigParams;
 
@@ -137,8 +137,8 @@ void bind_mrpt_slam_COccupancyGridMapFeatureExtractor(std::function< pybind11::m
 		cl.def_static("uncached_extractFeatures", (void (*)(const class mrpt::maps::COccupancyGridMap2D &, class mrpt::maps::CLandmarksMap &, size_t, const enum mrpt::vision::TDescriptorType, const struct mrpt::vision::CFeatureExtraction::TOptions &)) &mrpt::slam::COccupancyGridMapFeatureExtractor::uncached_extractFeatures, "Computes a set of distinctive landmarks from an occupancy grid, and\n store them (previous content is not erased!) into the given landmarks\n map.\n   Landmarks type can be any declared in\n mrpt::vision::CFeatureExtraction::TOptions\n\n \n See the paper \"...\"\n \n\n uncached_extractFeatures\n\nC++: mrpt::slam::COccupancyGridMapFeatureExtractor::uncached_extractFeatures(const class mrpt::maps::COccupancyGridMap2D &, class mrpt::maps::CLandmarksMap &, size_t, const enum mrpt::vision::TDescriptorType, const struct mrpt::vision::CFeatureExtraction::TOptions &) --> void", pybind11::arg("grid"), pybind11::arg("outMap"), pybind11::arg("number_of_features"), pybind11::arg("descriptors"), pybind11::arg("feat_options"));
 		cl.def("assign", (class mrpt::slam::COccupancyGridMapFeatureExtractor & (mrpt::slam::COccupancyGridMapFeatureExtractor::*)(const class mrpt::slam::COccupancyGridMapFeatureExtractor &)) &mrpt::slam::COccupancyGridMapFeatureExtractor::operator=, "C++: mrpt::slam::COccupancyGridMapFeatureExtractor::operator=(const class mrpt::slam::COccupancyGridMapFeatureExtractor &) --> class mrpt::slam::COccupancyGridMapFeatureExtractor &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::slam::CGridMapAligner file:mrpt/slam/CGridMapAligner.h line:40
-		pybind11::class_<mrpt::slam::CGridMapAligner, std::shared_ptr<mrpt::slam::CGridMapAligner>, PyCallBack_mrpt_slam_CGridMapAligner, mrpt::slam::CMetricMapsAlignmentAlgorithm> cl(M("mrpt::slam"), "CGridMapAligner", "A class for aligning two multi-metric maps (with an occupancy grid maps and\n a points map, at least) based on features extraction and matching.\n The matching pose is returned as a Sum of Gaussians (poses::CPosePDFSOG).\n\n  This class can use three methods (see options.methodSelection):\n   - amCorrelation: \"Brute-force\" correlation of the two maps over a\n 2D+orientation grid of possible 2D poses.\n   - amRobustMatch: Detection of features + RANSAC matching\n   - amModifiedRANSAC: Detection of features + modified multi-hypothesis\n RANSAC matching as described in was reported in the paper\n https://www.mrpt.org/Paper%3AOccupancy_Grid_Matching\n\n See CGridMapAligner::Align for more instructions.\n\n \n CMetricMapsAlignmentAlgorithm\n \n\n\n ");
+	{ // mrpt::slam::CGridMapAligner file:mrpt/slam/CGridMapAligner.h line:39
+		pybind11::class_<mrpt::slam::CGridMapAligner, std::shared_ptr<mrpt::slam::CGridMapAligner>, PyCallBack_mrpt_slam_CGridMapAligner, mrpt::slam::CMetricMapsAlignmentAlgorithm> cl(M("mrpt::slam"), "CGridMapAligner", "A class for aligning two multi-metric maps (with an occupancy grid maps and\n a points map, at least) based on features extraction and matching.\n The matching pose is returned as a Sum of Gaussians (poses::CPosePDFSOG).\n\n  This class can use three methods (see options.methodSelection):\n   - amCorrelation: \"Brute-force\" correlation of the two maps over a\n 2D+orientation grid of possible 2D poses.\n   - amRobustMatch: Detection of features + RANSAC matching\n   - amModifiedRANSAC: Detection of features + modified multi-hypothesis\n RANSAC matching as described in \n\n See CGridMapAligner::Align for more instructions.\n\n \n CMetricMapsAlignmentAlgorithm\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::slam::CGridMapAligner(); }, [](){ return new PyCallBack_mrpt_slam_CGridMapAligner(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_slam_CGridMapAligner const &o){ return new PyCallBack_mrpt_slam_CGridMapAligner(o); } ) );
 		cl.def( pybind11::init( [](mrpt::slam::CGridMapAligner const &o){ return new mrpt::slam::CGridMapAligner(o); } ) );
@@ -152,7 +152,7 @@ void bind_mrpt_slam_COccupancyGridMapFeatureExtractor(std::function< pybind11::m
 		cl.def_readwrite("options", &mrpt::slam::CGridMapAligner::options);
 		cl.def("assign", (class mrpt::slam::CGridMapAligner & (mrpt::slam::CGridMapAligner::*)(const class mrpt::slam::CGridMapAligner &)) &mrpt::slam::CGridMapAligner::operator=, "C++: mrpt::slam::CGridMapAligner::operator=(const class mrpt::slam::CGridMapAligner &) --> class mrpt::slam::CGridMapAligner &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::slam::CGridMapAligner::TConfigParams file:mrpt/slam/CGridMapAligner.h line:55
+		{ // mrpt::slam::CGridMapAligner::TConfigParams file:mrpt/slam/CGridMapAligner.h line:54
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::slam::CGridMapAligner::TConfigParams, std::shared_ptr<mrpt::slam::CGridMapAligner::TConfigParams>, PyCallBack_mrpt_slam_CGridMapAligner_TConfigParams, mrpt::config::CLoadableOptions> cl(enclosing_class, "TConfigParams", "The ICP algorithm configuration data");
 			cl.def( pybind11::init( [](){ return new mrpt::slam::CGridMapAligner::TConfigParams(); }, [](){ return new PyCallBack_mrpt_slam_CGridMapAligner_TConfigParams(); } ) );
@@ -173,13 +173,12 @@ void bind_mrpt_slam_COccupancyGridMapFeatureExtractor(std::function< pybind11::m
 			cl.def_readwrite("max_ICP_mahadist", &mrpt::slam::CGridMapAligner::TConfigParams::max_ICP_mahadist);
 			cl.def_readwrite("maxKLd_for_merge", &mrpt::slam::CGridMapAligner::TConfigParams::maxKLd_for_merge);
 			cl.def_readwrite("save_feat_coors", &mrpt::slam::CGridMapAligner::TConfigParams::save_feat_coors);
-			cl.def_readwrite("debug_show_corrs", &mrpt::slam::CGridMapAligner::TConfigParams::debug_show_corrs);
 			cl.def_readwrite("debug_save_map_pairs", &mrpt::slam::CGridMapAligner::TConfigParams::debug_save_map_pairs);
 			cl.def("loadFromConfigFile", (void (mrpt::slam::CGridMapAligner::TConfigParams::*)(const class mrpt::config::CConfigFileBase &, const std::string &)) &mrpt::slam::CGridMapAligner::TConfigParams::loadFromConfigFile, "C++: mrpt::slam::CGridMapAligner::TConfigParams::loadFromConfigFile(const class mrpt::config::CConfigFileBase &, const std::string &) --> void", pybind11::arg("source"), pybind11::arg("section"));
 			cl.def("assign", (class mrpt::slam::CGridMapAligner::TConfigParams & (mrpt::slam::CGridMapAligner::TConfigParams::*)(const class mrpt::slam::CGridMapAligner::TConfigParams &)) &mrpt::slam::CGridMapAligner::TConfigParams::operator=, "C++: mrpt::slam::CGridMapAligner::TConfigParams::operator=(const class mrpt::slam::CGridMapAligner::TConfigParams &) --> class mrpt::slam::CGridMapAligner::TConfigParams &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::slam::CGridMapAligner::TReturnInfo file:mrpt/slam/CGridMapAligner.h line:132
+		{ // mrpt::slam::CGridMapAligner::TReturnInfo file:mrpt/slam/CGridMapAligner.h line:130
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::slam::CGridMapAligner::TReturnInfo, std::shared_ptr<mrpt::slam::CGridMapAligner::TReturnInfo>, mrpt::slam::TMetricMapAlignmentResult> cl(enclosing_class, "TReturnInfo", "The ICP algorithm return information.");
 			cl.def( pybind11::init( [](){ return new mrpt::slam::CGridMapAligner::TReturnInfo(); } ) );
@@ -196,7 +195,7 @@ void bind_mrpt_slam_COccupancyGridMapFeatureExtractor(std::function< pybind11::m
 			cl.def_readwrite("icp_goodness_all_sog_modes", &mrpt::slam::CGridMapAligner::TReturnInfo::icp_goodness_all_sog_modes);
 			cl.def("assign", (struct mrpt::slam::CGridMapAligner::TReturnInfo & (mrpt::slam::CGridMapAligner::TReturnInfo::*)(const struct mrpt::slam::CGridMapAligner::TReturnInfo &)) &mrpt::slam::CGridMapAligner::TReturnInfo::operator=, "C++: mrpt::slam::CGridMapAligner::TReturnInfo::operator=(const struct mrpt::slam::CGridMapAligner::TReturnInfo &) --> struct mrpt::slam::CGridMapAligner::TReturnInfo &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-			{ // mrpt::slam::CGridMapAligner::TReturnInfo::TPairPlusDistance file:mrpt/slam/CGridMapAligner.h line:166
+			{ // mrpt::slam::CGridMapAligner::TReturnInfo::TPairPlusDistance file:mrpt/slam/CGridMapAligner.h line:164
 				auto & enclosing_class = cl;
 				pybind11::class_<mrpt::slam::CGridMapAligner::TReturnInfo::TPairPlusDistance, std::shared_ptr<mrpt::slam::CGridMapAligner::TReturnInfo::TPairPlusDistance>> cl(enclosing_class, "TPairPlusDistance", "");
 				cl.def( pybind11::init<size_t, size_t, float>(), pybind11::arg("i1"), pybind11::arg("i2"), pybind11::arg("d") );

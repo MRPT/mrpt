@@ -16,31 +16,30 @@ namespace mrpt::slam
  */
 class TKLDParams : public mrpt::config::CLoadableOptions
 {
-   public:
-	TKLDParams();
+ public:
+  TKLDParams();
 
-	void loadFromConfigFile(
-		const mrpt::config::CConfigFileBase& source,
-		const std::string& section) override;  // See base docs
-	void dumpToTextStream(std::ostream& out) const override;  // See base docs
+  void loadFromConfigFile(
+      const mrpt::config::CConfigFileBase& source,
+      const std::string& section) override;                 // See base docs
+  void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
-	/** Parameters for the KLD adaptive sample size algorithm (see Dieter Fox's
-	 * papers), which is used only if the CParticleFilter is created with the
-	 * "adaptiveSampleSize" flag set to true.
-	 */
-	double KLD_binSize_XY{0.2f}, KLD_binSize_PHI, KLD_delta{0.01f},
-		KLD_epsilon{0.02f};
+  /** Parameters for the KLD adaptive sample size algorithm (see Dieter Fox's
+   * papers), which is used only if the CParticleFilter is created with the
+   * "adaptiveSampleSize" flag set to true.
+   */
+  double KLD_binSize_XY{0.2f}, KLD_binSize_PHI, KLD_delta{0.01f}, KLD_epsilon{0.02f};
 
-	/** Parameters for the KLD adaptive sample size algorithm (see Dieter Fox's
-	 * papers), which is used only if the CParticleFilter is created with the
-	 * "adaptiveSampleSize" flag set to true.
-	 */
-	unsigned int KLD_minSampleSize{250}, KLD_maxSampleSize{100000};
+  /** Parameters for the KLD adaptive sample size algorithm (see Dieter Fox's
+   * papers), which is used only if the CParticleFilter is created with the
+   * "adaptiveSampleSize" flag set to true.
+   */
+  unsigned int KLD_minSampleSize{250}, KLD_maxSampleSize{100000};
 
-	/** (Default: KLD_minSamplesPerBin=0) The minimum number of samples will be
-	 * the maximum of KLD_minSampleSize and KLD_minSamplesPerBin *
-	 * #ofBinsOccupied in the last time step */
-	double KLD_minSamplesPerBin{0};
+  /** (Default: KLD_minSamplesPerBin=0) The minimum number of samples will be
+   * the maximum of KLD_minSampleSize and KLD_minSamplesPerBin *
+   * #ofBinsOccupied in the last time step */
+  double KLD_minSamplesPerBin{0};
 };
 
 }  // namespace mrpt::slam

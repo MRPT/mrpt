@@ -23,58 +23,55 @@ namespace mrpt::io
  */
 class CFileOutputStream : public CStream
 {
-   private:
-	/** The actual output file stream. */
-	std::ofstream m_of;
-	std::string m_filename;
+ private:
+  /** The actual output file stream. */
+  std::ofstream m_of;
+  std::string m_filename;
 
-   public:
-	/** Constructor
-	 * \param fileName The file to be open in this stream
-	 * \param mode Especify whether to truncate/create the file, or to append at
-	 * the end if it exists.
-	 * \exception std::exception if the file cannot be opened.
-	 */
-	CFileOutputStream(
-		const std::string& fileName, const OpenMode mode = OpenMode::TRUNCATE);
+ public:
+  /** Constructor
+   * \param fileName The file to be open in this stream
+   * \param mode Especify whether to truncate/create the file, or to append at
+   * the end if it exists.
+   * \exception std::exception if the file cannot be opened.
+   */
+  CFileOutputStream(const std::string& fileName, const OpenMode mode = OpenMode::TRUNCATE);
 
-	/** Default constructor */
-	CFileOutputStream();
+  /** Default constructor */
+  CFileOutputStream();
 
-	CFileOutputStream(const CFileOutputStream&) = delete;
-	CFileOutputStream& operator=(const CFileOutputStream&) = delete;
+  CFileOutputStream(const CFileOutputStream&) = delete;
+  CFileOutputStream& operator=(const CFileOutputStream&) = delete;
 
-	bool open(
-		const std::string& fileName, const OpenMode mode = OpenMode::TRUNCATE);
+  bool open(const std::string& fileName, const OpenMode mode = OpenMode::TRUNCATE);
 
-	/** Close the stream. */
-	void close();
+  /** Close the stream. */
+  void close();
 
-	std::string getStreamDescription() const override;
+  std::string getStreamDescription() const override;
 
-	/** Destructor */
-	~CFileOutputStream() override;
+  /** Destructor */
+  ~CFileOutputStream() override;
 
-	/** Returns true if the file was open without errors. */
-	bool fileOpenCorrectly() const;
-	/** Returns true if the file was open without errors. */
-	bool is_open() { return fileOpenCorrectly(); }
-	// See base class docs
-	uint64_t Seek(
-		int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override;
+  /** Returns true if the file was open without errors. */
+  bool fileOpenCorrectly() const;
+  /** Returns true if the file was open without errors. */
+  bool is_open() { return fileOpenCorrectly(); }
+  // See base class docs
+  uint64_t Seek(int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override;
 
-	/** Method for getting the total number of bytes written to buffer */
-	uint64_t getTotalBytesCount() const override;
+  /** Method for getting the total number of bytes written to buffer */
+  uint64_t getTotalBytesCount() const override;
 
-	/** Method for getting the current cursor position, where 0 is the first
-	 * byte and TotalBytesCount-1 the last one */
-	uint64_t getPosition() const override;
+  /** Method for getting the current cursor position, where 0 is the first
+   * byte and TotalBytesCount-1 the last one */
+  uint64_t getPosition() const override;
 
-	size_t Read(void* Buffer, size_t Count) override;
-	size_t Write(const void* Buffer, size_t Count) override;
-};	// End of class def.
+  size_t Read(void* Buffer, size_t Count) override;
+  size_t Write(const void* Buffer, size_t Count) override;
+};  // End of class def.
 static_assert(
-	!std::is_copy_constructible_v<CFileOutputStream> &&
-		!std::is_copy_assignable_v<CFileOutputStream>,
-	"Copy Check");
+    !std::is_copy_constructible_v<CFileOutputStream> &&
+        !std::is_copy_assignable_v<CFileOutputStream>,
+    "Copy Check");
 }  // namespace mrpt::io

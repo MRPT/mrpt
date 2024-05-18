@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "tfest-precomp.h"	// Precompiled headers
+#include "tfest-precomp.h"  // Precompiled headers
 //
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
@@ -65,199 +65,191 @@ using namespace std;
 //		t = ct_this-sR(ct_others)
 
 /*---------------------------------------------------------------
-					se3_l2  (old "HornMethod()")
+          se3_l2  (old "HornMethod()")
   ---------------------------------------------------------------*/
 namespace
 {
 bool se3_l2_internal(
-	std::vector<mrpt::math::TPoint3D>&
-		points_this,  // IN/OUT: It gets modified!
-	std::vector<mrpt::math::TPoint3D>&
-		points_other,  // IN/OUT: It gets modified!
-	mrpt::poses::CPose3DQuat& out_transform, double& out_scale,
-	bool forceScaleToUnity)
+    std::vector<mrpt::math::TPoint3D>& points_this,   // IN/OUT: It gets modified!
+    std::vector<mrpt::math::TPoint3D>& points_other,  // IN/OUT: It gets modified!
+    mrpt::poses::CPose3DQuat& out_transform,
+    double& out_scale,
+    bool forceScaleToUnity)
 {
-	MRPT_START
+  MRPT_START
 
-	ASSERT_EQUAL_(points_this.size(), points_other.size());
-	// Compute the centroids
-	TPoint3D ct_others(0, 0, 0), ct_this(0, 0, 0);
-	const size_t nMatches = points_this.size();
+  ASSERT_EQUAL_(points_this.size(), points_other.size());
+  // Compute the centroids
+  TPoint3D ct_others(0, 0, 0), ct_this(0, 0, 0);
+  const size_t nMatches = points_this.size();
 
-	if (nMatches < 3)
-		return false;  // Nothing we can estimate without 3 points!!
+  if (nMatches < 3) return false;  // Nothing we can estimate without 3 points!!
 
-	for (size_t i = 0; i < nMatches; i++)
-	{
-		ct_others += points_other[i];
-		ct_this += points_this[i];
-	}
+  for (size_t i = 0; i < nMatches; i++)
+  {
+    ct_others += points_other[i];
+    ct_this += points_this[i];
+  }
 
-	const double F = 1.0 / nMatches;
-	ct_others *= F;
-	ct_this *= F;
+  const double F = 1.0 / nMatches;
+  ct_others *= F;
+  ct_this *= F;
 
-	CMatrixDouble33 S;	// Zeroed by default
+  CMatrixDouble33 S;  // Zeroed by default
 
-	// Substract the centroid and compute the S matrix of cross products
-	for (size_t i = 0; i < nMatches; i++)
-	{
-		points_this[i] -= ct_this;
-		points_other[i] -= ct_others;
+  // Substract the centroid and compute the S matrix of cross products
+  for (size_t i = 0; i < nMatches; i++)
+  {
+    points_this[i] -= ct_this;
+    points_other[i] -= ct_others;
 
-		S(0, 0) += points_other[i].x * points_this[i].x;
-		S(0, 1) += points_other[i].x * points_this[i].y;
-		S(0, 2) += points_other[i].x * points_this[i].z;
+    S(0, 0) += points_other[i].x * points_this[i].x;
+    S(0, 1) += points_other[i].x * points_this[i].y;
+    S(0, 2) += points_other[i].x * points_this[i].z;
 
-		S(1, 0) += points_other[i].y * points_this[i].x;
-		S(1, 1) += points_other[i].y * points_this[i].y;
-		S(1, 2) += points_other[i].y * points_this[i].z;
+    S(1, 0) += points_other[i].y * points_this[i].x;
+    S(1, 1) += points_other[i].y * points_this[i].y;
+    S(1, 2) += points_other[i].y * points_this[i].z;
 
-		S(2, 0) += points_other[i].z * points_this[i].x;
-		S(2, 1) += points_other[i].z * points_this[i].y;
-		S(2, 2) += points_other[i].z * points_this[i].z;
-	}
+    S(2, 0) += points_other[i].z * points_this[i].x;
+    S(2, 1) += points_other[i].z * points_this[i].y;
+    S(2, 2) += points_other[i].z * points_this[i].z;
+  }
 
-	// Construct the N matrix
-	CMatrixDouble44 N;	// Zeroed by default
+  // Construct the N matrix
+  CMatrixDouble44 N;  // Zeroed by default
 
-	N(0, 0) = S(0, 0) + S(1, 1) + S(2, 2);
-	N(0, 1) = S(1, 2) - S(2, 1);
-	N(0, 2) = S(2, 0) - S(0, 2);
-	N(0, 3) = S(0, 1) - S(1, 0);
+  N(0, 0) = S(0, 0) + S(1, 1) + S(2, 2);
+  N(0, 1) = S(1, 2) - S(2, 1);
+  N(0, 2) = S(2, 0) - S(0, 2);
+  N(0, 3) = S(0, 1) - S(1, 0);
 
-	N(1, 0) = N(0, 1);
-	N(1, 1) = S(0, 0) - S(1, 1) - S(2, 2);
-	N(1, 2) = S(0, 1) + S(1, 0);
-	N(1, 3) = S(2, 0) + S(0, 2);
+  N(1, 0) = N(0, 1);
+  N(1, 1) = S(0, 0) - S(1, 1) - S(2, 2);
+  N(1, 2) = S(0, 1) + S(1, 0);
+  N(1, 3) = S(2, 0) + S(0, 2);
 
-	N(2, 0) = N(0, 2);
-	N(2, 1) = N(1, 2);
-	N(2, 2) = -S(0, 0) + S(1, 1) - S(2, 2);
-	N(2, 3) = S(1, 2) + S(2, 1);
+  N(2, 0) = N(0, 2);
+  N(2, 1) = N(1, 2);
+  N(2, 2) = -S(0, 0) + S(1, 1) - S(2, 2);
+  N(2, 3) = S(1, 2) + S(2, 1);
 
-	N(3, 0) = N(0, 3);
-	N(3, 1) = N(1, 3);
-	N(3, 2) = N(2, 3);
-	N(3, 3) = -S(0, 0) - S(1, 1) + S(2, 2);
+  N(3, 0) = N(0, 3);
+  N(3, 1) = N(1, 3);
+  N(3, 2) = N(2, 3);
+  N(3, 3) = -S(0, 0) - S(1, 1) + S(2, 2);
 
-	// q is the quaternion correspondent to the greatest eigenvector of the N
-	// matrix (last column in Z)
-	CMatrixDouble44 Z;
-	vector<double> eigvals;
-	N.eig_symmetric(Z, eigvals, true /*sorted*/);
+  // q is the quaternion correspondent to the greatest eigenvector of the N
+  // matrix (last column in Z)
+  CMatrixDouble44 Z;
+  vector<double> eigvals;
+  N.eig_symmetric(Z, eigvals, true /*sorted*/);
 
-	auto v = CVectorFixedDouble<4>(Z.col(3).eval());
+  auto v = CVectorFixedDouble<4>(Z.col(3).eval());
 
-	ASSERTDEB_(
-		fabs(
-			sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2] + v[3] * v[3]) - 1.0) <
-		0.1);
+  ASSERTDEB_(fabs(sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2] + v[3] * v[3]) - 1.0) < 0.1);
 
-	// Make q_r > 0
-	if (v[0] < 0)
-	{
-		v[0] *= -1;
-		v[1] *= -1;
-		v[2] *= -1;
-		v[3] *= -1;
-	}
+  // Make q_r > 0
+  if (v[0] < 0)
+  {
+    v[0] *= -1;
+    v[1] *= -1;
+    v[2] *= -1;
+    v[3] *= -1;
+  }
 
-	// out_transform: Create a pose rotation with the quaternion
-	for (unsigned int i = 0; i < 4; i++)  // insert the quaternion part
-		out_transform[i + 3] = v[i];
+  // out_transform: Create a pose rotation with the quaternion
+  for (unsigned int i = 0; i < 4; i++)  // insert the quaternion part
+    out_transform[i + 3] = v[i];
 
-	// Compute scale
-	double s;
-	if (forceScaleToUnity)
-	{
-		s = 1.0;  // Enforce scale to be 1
-	}
-	else
-	{
-		double num = 0.0;
-		double den = 0.0;
-		for (size_t i = 0; i < nMatches; i++)
-		{
-			num += square(points_other[i].x) + square(points_other[i].y) +
-				square(points_other[i].z);
-			den += square(points_this[i].x) + square(points_this[i].y) +
-				square(points_this[i].z);
-		}  // end-for
+  // Compute scale
+  double s;
+  if (forceScaleToUnity)
+  {
+    s = 1.0;  // Enforce scale to be 1
+  }
+  else
+  {
+    double num = 0.0;
+    double den = 0.0;
+    for (size_t i = 0; i < nMatches; i++)
+    {
+      num += square(points_other[i].x) + square(points_other[i].y) + square(points_other[i].z);
+      den += square(points_this[i].x) + square(points_this[i].y) + square(points_this[i].z);
+    }  // end-for
 
-		// The scale:
-		s = std::sqrt(num / den);
-	}
+    // The scale:
+    s = std::sqrt(num / den);
+  }
 
-	TPoint3D pp;
-	out_transform.composePoint(
-		ct_others.x, ct_others.y, ct_others.z, pp.x, pp.y, pp.z);
-	pp *= s;
+  TPoint3D pp;
+  out_transform.composePoint(ct_others.x, ct_others.y, ct_others.z, pp.x, pp.y, pp.z);
+  pp *= s;
 
-	out_transform[0] = ct_this.x - pp.x;  // X
-	out_transform[1] = ct_this.y - pp.y;  // Y
-	out_transform[2] = ct_this.z - pp.z;  // Z
+  out_transform[0] = ct_this.x - pp.x;  // X
+  out_transform[1] = ct_this.y - pp.y;  // Y
+  out_transform[2] = ct_this.z - pp.z;  // Z
 
-	out_scale = s;	// return scale
-	return true;
+  out_scale = s;  // return scale
+  return true;
 
-	MRPT_END
+  MRPT_END
 }  // end se3_l2_internal()
 }  // namespace
 
 bool tfest::se3_l2(
-	const std::vector<mrpt::math::TPoint3D>& in_points_this,
-	const std::vector<mrpt::math::TPoint3D>& in_points_other,
-	mrpt::poses::CPose3DQuat& out_transform, double& out_scale,
-	bool forceScaleToUnity)
+    const std::vector<mrpt::math::TPoint3D>& in_points_this,
+    const std::vector<mrpt::math::TPoint3D>& in_points_other,
+    mrpt::poses::CPose3DQuat& out_transform,
+    double& out_scale,
+    bool forceScaleToUnity)
 {
-	// make a copy because we need it anyway to substract the centroid and to
-	// provide a unified interface to TMatchingList API
-	std::vector<mrpt::math::TPoint3D> points_this = in_points_this;
-	std::vector<mrpt::math::TPoint3D> points_other = in_points_other;
+  // make a copy because we need it anyway to substract the centroid and to
+  // provide a unified interface to TMatchingList API
+  std::vector<mrpt::math::TPoint3D> points_this = in_points_this;
+  std::vector<mrpt::math::TPoint3D> points_other = in_points_other;
 
-	return se3_l2_internal(
-		points_this, points_other, out_transform, out_scale, forceScaleToUnity);
+  return se3_l2_internal(points_this, points_other, out_transform, out_scale, forceScaleToUnity);
 }
 
 bool tfest::se3_l2(
-	const mrpt::tfest::TMatchingPairList& corrs,
-	mrpt::poses::CPose3DQuat& out_transform, double& out_scale,
-	bool forceScaleToUnity)
+    const mrpt::tfest::TMatchingPairList& corrs,
+    mrpt::poses::CPose3DQuat& out_transform,
+    double& out_scale,
+    bool forceScaleToUnity)
 {
-	// Transform data types:
-	const size_t N = corrs.size();
-	std::vector<mrpt::math::TPoint3D> points_this(N), points_other(N);
-	for (size_t i = 0; i < N; i++)
-	{
-		points_this[i].x = corrs[i].global.x;
-		points_this[i].y = corrs[i].global.y;
-		points_this[i].z = corrs[i].global.z;
-		points_other[i].x = corrs[i].local.x;
-		points_other[i].y = corrs[i].local.y;
-		points_other[i].z = corrs[i].local.z;
-	}
-	return se3_l2_internal(
-		points_this, points_other, out_transform, out_scale, forceScaleToUnity);
+  // Transform data types:
+  const size_t N = corrs.size();
+  std::vector<mrpt::math::TPoint3D> points_this(N), points_other(N);
+  for (size_t i = 0; i < N; i++)
+  {
+    points_this[i].x = corrs[i].global.x;
+    points_this[i].y = corrs[i].global.y;
+    points_this[i].z = corrs[i].global.z;
+    points_other[i].x = corrs[i].local.x;
+    points_other[i].y = corrs[i].local.y;
+    points_other[i].z = corrs[i].local.z;
+  }
+  return se3_l2_internal(points_this, points_other, out_transform, out_scale, forceScaleToUnity);
 }
 
 bool tfest::se3_l2(
-	const mrpt::tfest::TMatchingPairList_d& corrs,
-	mrpt::poses::CPose3DQuat& out_transform, double& out_scale,
-	bool forceScaleToUnity)
+    const mrpt::tfest::TMatchingPairList_d& corrs,
+    mrpt::poses::CPose3DQuat& out_transform,
+    double& out_scale,
+    bool forceScaleToUnity)
 {
-	// Transform data types:
-	const size_t N = corrs.size();
-	std::vector<mrpt::math::TPoint3D> points_this(N), points_other(N);
-	for (size_t i = 0; i < N; i++)
-	{
-		points_this[i].x = corrs[i].global.x;
-		points_this[i].y = corrs[i].global.y;
-		points_this[i].z = corrs[i].global.z;
-		points_other[i].x = corrs[i].local.x;
-		points_other[i].y = corrs[i].local.y;
-		points_other[i].z = corrs[i].local.z;
-	}
-	return se3_l2_internal(
-		points_this, points_other, out_transform, out_scale, forceScaleToUnity);
+  // Transform data types:
+  const size_t N = corrs.size();
+  std::vector<mrpt::math::TPoint3D> points_this(N), points_other(N);
+  for (size_t i = 0; i < N; i++)
+  {
+    points_this[i].x = corrs[i].global.x;
+    points_this[i].y = corrs[i].global.y;
+    points_this[i].z = corrs[i].global.z;
+    points_other[i].x = corrs[i].local.x;
+    points_other[i].y = corrs[i].local.y;
+    points_other[i].z = corrs[i].local.z;
+  }
+  return se3_l2_internal(points_this, points_other, out_transform, out_scale, forceScaleToUnity);
 }

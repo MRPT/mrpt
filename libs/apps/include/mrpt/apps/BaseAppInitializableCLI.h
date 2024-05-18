@@ -18,13 +18,13 @@ namespace mrpt::apps
  */
 class BaseAppInitializableCLI
 {
-   public:
-	BaseAppInitializableCLI() = default;
-	virtual ~BaseAppInitializableCLI() = default;
+ public:
+  BaseAppInitializableCLI() = default;
+  virtual ~BaseAppInitializableCLI() = default;
 
-   protected:
-	virtual void impl_initialize(int argc, const char** argv) = 0;
-	virtual std::string impl_get_usage() const = 0;
+ protected:
+  virtual void impl_initialize(int argc, const char** argv) = 0;
+  virtual std::string impl_get_usage() const = 0;
 };
 
 }  // namespace mrpt::apps

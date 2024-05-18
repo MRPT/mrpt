@@ -30,54 +30,56 @@ namespace mrpt::nav
  */
 class PlannerSimple2D
 {
-   public:
-	PlannerSimple2D() = default;
-	virtual ~PlannerSimple2D() = default;
+ public:
+  PlannerSimple2D() = default;
+  virtual ~PlannerSimple2D() = default;
 
-	/** The maximum occupancy probability to consider a cell as an obstacle,
-	 * default=0.5  */
-	float occupancyThreshold{0.5f};
+  /** The maximum occupancy probability to consider a cell as an obstacle,
+   * default=0.5  */
+  float occupancyThreshold{0.5f};
 
-	/** The minimum distance between points in the returned found path
-	 * (default=0.4); Notice
-	 *  that full grid resolution is used in path finding, this is only a way
-	 * to reduce the
-	 *  amount of redundant information to be returned.
-	 */
-	float minStepInReturnedPath{0.4f};
+  /** The minimum distance between points in the returned found path
+   * (default=0.4); Notice
+   *  that full grid resolution is used in path finding, this is only a way
+   * to reduce the
+   *  amount of redundant information to be returned.
+   */
+  float minStepInReturnedPath{0.4f};
 
-	/** The aproximate robot radius used in the planification. Default is 0.35m
-	 */
-	float robotRadius{0.35f};
+  /** The aproximate robot radius used in the planification. Default is 0.35m
+   */
+  float robotRadius{0.35f};
 
-	/** This method compute the optimal path for a circular robot, in the given
-	 *   occupancy grid map, from the origin location to a target point.
-	 * The options and additional parameters to this method can be set with
-	 *   member configuration variables.
-	 *
-	 * \param theMap	[IN] The occupancy gridmap used to the planning.
-	 * \param origin	[IN] The starting pose of the robot, in coordinates of
-	 * "map".
-	 * \param target	[IN] The desired target pose for the robot, in
-	 * coordinates of "map".
-	 * \param path		[OUT] The found path, in global coordinates relative
-	 * to "map".
-	 * \param notFount	[OUT] Will be true if no path has been found.
-	 * \param maxSearchPathLength [IN] The maximum path length to search for,
-	 * in meters (-1 = no limit)
-	 *
-	 * \sa robotRadius
-	 *
-	 * \note If either the origin or the target are out of the gridmap
-	 * extensions, `notFound` will be returned as `true`.
-	 *
-	 * \exception std::exception On any error
-	 */
-	void computePath(
-		const mrpt::maps::COccupancyGridMap2D& theMap,
-		const mrpt::poses::CPose2D& origin, const mrpt::poses::CPose2D& target,
-		std::deque<mrpt::math::TPoint2D>& path, bool& notFound,
-		float maxSearchPathLength = -1) const;
+  /** This method compute the optimal path for a circular robot, in the given
+   *   occupancy grid map, from the origin location to a target point.
+   * The options and additional parameters to this method can be set with
+   *   member configuration variables.
+   *
+   * \param theMap	[IN] The occupancy gridmap used to the planning.
+   * \param origin	[IN] The starting pose of the robot, in coordinates of
+   * "map".
+   * \param target	[IN] The desired target pose for the robot, in
+   * coordinates of "map".
+   * \param path		[OUT] The found path, in global coordinates relative
+   * to "map".
+   * \param notFount	[OUT] Will be true if no path has been found.
+   * \param maxSearchPathLength [IN] The maximum path length to search for,
+   * in meters (-1 = no limit)
+   *
+   * \sa robotRadius
+   *
+   * \note If either the origin or the target are out of the gridmap
+   * extensions, `notFound` will be returned as `true`.
+   *
+   * \exception std::exception On any error
+   */
+  void computePath(
+      const mrpt::maps::COccupancyGridMap2D& theMap,
+      const mrpt::poses::CPose2D& origin,
+      const mrpt::poses::CPose2D& target,
+      std::deque<mrpt::math::TPoint2D>& path,
+      bool& notFound,
+      float maxSearchPathLength = -1) const;
 };
 
 /** @} */

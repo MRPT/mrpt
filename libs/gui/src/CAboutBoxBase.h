@@ -11,20 +11,18 @@
 
 class CAboutBoxBase
 {
-   public:
-	CAboutBoxBase(
-		const std::string& appName, const std::string& additionalInfo,
-		const bool showStandardInfo);
-	virtual ~CAboutBoxBase();
+ public:
+  CAboutBoxBase(
+      const std::string& appName, const std::string& additionalInfo, const bool showStandardInfo);
+  virtual ~CAboutBoxBase();
 
-   protected:
-	std::string MRPTBuildVersion() const;
-	std::string tutorial() const;
-	std::string license() const;
-	std::string information(
-		const std::string& guiLibName, const std::string& guiLibVersion) const;
+ protected:
+  std::string MRPTBuildVersion() const;
+  std::string tutorial() const;
+  std::string license() const;
+  std::string information(const std::string& guiLibName, const std::string& guiLibVersion) const;
 
-	const std::string m_appName;
-	const std::string m_additionalInfo;
-	const bool m_showStandardInfo;
+  const std::string m_appName;
+  const std::string m_additionalInfo;
+  const bool m_showStandardInfo;
 };

@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"	// Precompiled headers
+#include "hwdrivers-precomp.h"  // Precompiled headers
 //
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/system/filesystem.h>
@@ -24,562 +24,561 @@ const size_t MAX_NMEA_LINE_LENGTH = 1024;
 
 bool CGPSInterface::implement_parser_NMEA(size_t& out_minimum_rx_buf_to_decide)
 {
-	out_minimum_rx_buf_to_decide = 3;
+  out_minimum_rx_buf_to_decide = 3;
 
-	if (m_rx_buffer.size() < 3) return true;  // no need to skip a byte
+  if (m_rx_buffer.size() < 3) return true;  // no need to skip a byte
 
-	const size_t nBytesAval = m_rx_buffer.size();  // Available for read
+  const size_t nBytesAval = m_rx_buffer.size();  // Available for read
 
-	// If the string does not start with "$GP" it is not valid:
-	uint8_t buf[3];	 // peek_buffer
-	m_rx_buffer.peek_many(&buf[0], 3);
+  // If the string does not start with "$GP" it is not valid:
+  uint8_t buf[3];  // peek_buffer
+  m_rx_buffer.peek_many(&buf[0], 3);
 
-	// Known "talkers": Baidu, Galileo, GPS, GLONASS, etc.
-	// Ref: https://gpsd.gitlab.io/gpsd/NMEA.html
-	static const std::array<const char*, 12> known_prefixes = {
-		"BD", "CD", "EC", "GA", "GB", "GL", "GN", "GP", "II", "IN", "LC", "QZ"};
+  // Known "talkers": Baidu, Galileo, GPS, GLONASS, etc.
+  // Ref: https://gpsd.gitlab.io/gpsd/NMEA.html
+  static const std::array<const char*, 12> known_prefixes = {"BD", "CD", "EC", "GA", "GB", "GL",
+                                                             "GN", "GP", "II", "IN", "LC", "QZ"};
 
-	bool recognized = false;
-	if (buf[0] == '$')
-	{
-		for (const char* prefix : known_prefixes)
-		{
-			if (buf[1] == prefix[0] && buf[2] == prefix[1])
-			{
-				recognized = true;
-				break;
-			}
-		}
-	}
-	// Not the start of a NMEA string, skip 1 char:
-	if (!recognized) return false;
+  bool recognized = false;
+  if (buf[0] == '$')
+  {
+    for (const char* prefix : known_prefixes)
+    {
+      if (buf[1] == prefix[0] && buf[2] == prefix[1])
+      {
+        recognized = true;
+        break;
+      }
+    }
+  }
+  // Not the start of a NMEA string, skip 1 char:
+  if (!recognized) return false;
 
-	// It starts OK: try to find the end of the line
-	std::string line;
-	bool line_is_ended = false;
-	for (size_t i = 0; i < nBytesAval && i < MAX_NMEA_LINE_LENGTH; i++)
-	{
-		const char val = static_cast<char>(m_rx_buffer.peek(i));
-		if (val == '\r' || val == '\n')
-		{
-			line_is_ended = true;
-			break;
-		}
-		line.push_back(val);
-	}
-	if (line_is_ended)
-	{
-		// Pop from buffer:
-		for (size_t i = 0; i < line.size(); i++)
-			m_rx_buffer.pop();
+  // It starts OK: try to find the end of the line
+  std::string line;
+  bool line_is_ended = false;
+  for (size_t i = 0; i < nBytesAval && i < MAX_NMEA_LINE_LENGTH; i++)
+  {
+    const char val = static_cast<char>(m_rx_buffer.peek(i));
+    if (val == '\r' || val == '\n')
+    {
+      line_is_ended = true;
+      break;
+    }
+    line.push_back(val);
+  }
+  if (line_is_ended)
+  {
+    // Pop from buffer:
+    for (size_t i = 0; i < line.size(); i++) m_rx_buffer.pop();
 
-		// Parse:
-		const bool did_have_gga = m_parsed_messages->has_GGA_datum();
-		if (CGPSInterface::parse_NMEA(
-				line, *m_parsed_messages, false /*verbose*/))
-		{
-			// Parsers must set only the part of the msg type:
-			m_parsed_messages->sensorLabel = "NMEA";
+    // Parse:
+    const bool did_have_gga = m_parsed_messages->has_GGA_datum();
+    if (CGPSInterface::parse_NMEA(line, *m_parsed_messages, false /*verbose*/))
+    {
+      // Parsers must set only the part of the msg type:
+      m_parsed_messages->sensorLabel = "NMEA";
 
-			// Save GGA cache (useful for NTRIP,...)
-			const bool now_has_gga = m_parsed_messages->has_GGA_datum();
-			if (now_has_gga && !did_have_gga) { m_last_GGA = line; }
-		}
-		else
-		{
-			if (m_verbose)
-				std::cerr << "[CGPSInterface::implement_parser_NMEA] Line "
-							 "of unknown format ignored: `"
-						  << line << "`\n";
-		}
-		return true;
-	}
-	else
-	{
-		// We still need to wait for more data to be read:
-		out_minimum_rx_buf_to_decide = nBytesAval + 1;
-		return true;
-	}
+      // Save GGA cache (useful for NTRIP,...)
+      const bool now_has_gga = m_parsed_messages->has_GGA_datum();
+      if (now_has_gga && !did_have_gga)
+      {
+        m_last_GGA = line;
+      }
+    }
+    else
+    {
+      if (m_verbose)
+        std::cerr << "[CGPSInterface::implement_parser_NMEA] Line "
+                     "of unknown format ignored: `"
+                  << line << "`\n";
+    }
+    return true;
+  }
+  else
+  {
+    // We still need to wait for more data to be read:
+    out_minimum_rx_buf_to_decide = nBytesAval + 1;
+    return true;
+  }
 }
 
 /* -----------------------------------------------------
-					parse_NMEA
+          parse_NMEA
 ----------------------------------------------------- */
 bool CGPSInterface::parse_NMEA(
-	const std::string& s, mrpt::obs::CObservationGPS& out_obs,
-	const bool verbose)
+    const std::string& s, mrpt::obs::CObservationGPS& out_obs, const bool verbose)
 {
-	static mrpt::system::TTimeStamp last_known_date =
-		mrpt::Clock::now();	 // For building complete date+time in msgs without
-	// a date.
-	static mrpt::system::TTimeStamp last_known_time = mrpt::Clock::now();
+  static mrpt::system::TTimeStamp last_known_date =
+      mrpt::Clock::now();  // For building complete date+time in msgs without
+  // a date.
+  static mrpt::system::TTimeStamp last_known_time = mrpt::Clock::now();
 
-	if (verbose) cout << "[CGPSInterface] GPS raw string: " << s << endl;
+  if (verbose) cout << "[CGPSInterface] GPS raw string: " << s << endl;
 
-	// Firstly! If the string does not start with "$GP" it is not valid:
-	if (s.size() < 7) return false;
-	if (s[0] != '$') return false;
+  // Firstly! If the string does not start with "$GP" it is not valid:
+  if (s.size() < 7) return false;
+  if (s[0] != '$') return false;
 
-	std::vector<std::string> lstTokens;
-	mrpt::system::tokenize(
-		s, "*,\t\r\n", lstTokens, false /* do not skip blank tokens */);
-	if (lstTokens.size() < 3) return false;
+  std::vector<std::string> lstTokens;
+  mrpt::system::tokenize(s, "*,\t\r\n", lstTokens, false /* do not skip blank tokens */);
+  if (lstTokens.size() < 3) return false;
 
-	for (auto& lstToken : lstTokens)
-		lstToken = mrpt::system::trim(lstToken);  // Trim whitespaces
+  for (auto& lstToken : lstTokens) lstToken = mrpt::system::trim(lstToken);  // Trim whitespaces
 
-	bool parsed_ok = false;
+  bool parsed_ok = false;
 
-	// Remove talker ID "$xxGGA" ==> "GGA"
-	if (lstTokens[0].size() > 3) lstTokens[0] = lstTokens[0].substr(3);
+  // Remove talker ID "$xxGGA" ==> "GGA"
+  if (lstTokens[0].size() > 3) lstTokens[0] = lstTokens[0].substr(3);
 
-	// Try to determine the kind of command:
-	if (lstTokens[0] == "GGA" && lstTokens.size() >= 13)
-	{
-		// ---------------------------------------------
-		//					GGA
-		// ---------------------------------------------
-		bool all_fields_ok = true;
-		std::string token;
+  // Try to determine the kind of command:
+  if (lstTokens[0] == "GGA" && lstTokens.size() >= 13)
+  {
+    // ---------------------------------------------
+    //					GGA
+    // ---------------------------------------------
+    bool all_fields_ok = true;
+    std::string token;
 
-		// Fill out the output structure:
-		gnss::Message_NMEA_GGA gga;
+    // Fill out the output structure:
+    gnss::Message_NMEA_GGA gga;
 
-		// Time:
-		token = lstTokens[1];
-		if (token.size() >= 6)
-		{
-			gga.fields.UTCTime.hour = 10 * (token[0] - '0') + token[1] - '0';
-			gga.fields.UTCTime.minute = 10 * (token[2] - '0') + token[3] - '0';
-			gga.fields.UTCTime.sec = atof(&(token.c_str()[4]));
-		}
-		else
-			all_fields_ok = false;
+    // Time:
+    token = lstTokens[1];
+    if (token.size() >= 6)
+    {
+      gga.fields.UTCTime.hour = 10 * (token[0] - '0') + token[1] - '0';
+      gga.fields.UTCTime.minute = 10 * (token[2] - '0') + token[3] - '0';
+      gga.fields.UTCTime.sec = atof(&(token.c_str()[4]));
+    }
+    else
+      all_fields_ok = false;
 
-		// Latitude:
-		token = lstTokens[2];
-		if (token.size() >= 4)
-		{
-			double lat = 10 * (token[0] - '0') + token[1] - '0';
-			lat += atof(&(token.c_str()[2])) / 60.0;
-			gga.fields.latitude_degrees = lat;
-		}
-		else
-			all_fields_ok = false;
+    // Latitude:
+    token = lstTokens[2];
+    if (token.size() >= 4)
+    {
+      double lat = 10 * (token[0] - '0') + token[1] - '0';
+      lat += atof(&(token.c_str()[2])) / 60.0;
+      gga.fields.latitude_degrees = lat;
+    }
+    else
+      all_fields_ok = false;
 
-		// N/S:
-		token = lstTokens[3];
-		if (token.empty()) all_fields_ok = false;
-		else if (token[0] == 'S')
-			gga.fields.latitude_degrees = -gga.fields.latitude_degrees;
+    // N/S:
+    token = lstTokens[3];
+    if (token.empty())
+      all_fields_ok = false;
+    else if (token[0] == 'S')
+      gga.fields.latitude_degrees = -gga.fields.latitude_degrees;
 
-		// Longitude:
-		token = lstTokens[4];
-		if (token.size() >= 5)
-		{
-			double lat =
-				100 * (token[0] - '0') + 10 * (token[1] - '0') + token[2] - '0';
-			lat += atof(&(token.c_str()[3])) / 60.0;
-			gga.fields.longitude_degrees = lat;
-		}
-		else
-			all_fields_ok = false;
+    // Longitude:
+    token = lstTokens[4];
+    if (token.size() >= 5)
+    {
+      double lat = 100 * (token[0] - '0') + 10 * (token[1] - '0') + token[2] - '0';
+      lat += atof(&(token.c_str()[3])) / 60.0;
+      gga.fields.longitude_degrees = lat;
+    }
+    else
+      all_fields_ok = false;
 
-		// E_W:
-		token = lstTokens[5];
-		if (token.empty()) all_fields_ok = false;
-		else if (token[0] == 'W')
-			gga.fields.longitude_degrees = -gga.fields.longitude_degrees;
+    // E_W:
+    token = lstTokens[5];
+    if (token.empty())
+      all_fields_ok = false;
+    else if (token[0] == 'W')
+      gga.fields.longitude_degrees = -gga.fields.longitude_degrees;
 
-		// fix quality:
-		token = lstTokens[6];
-		if (!token.empty())
-			gga.fields.fix_quality = (unsigned char)atoi(token.c_str());
+    // fix quality:
+    token = lstTokens[6];
+    if (!token.empty()) gga.fields.fix_quality = (unsigned char)atoi(token.c_str());
 
-		// sats:
-		token = lstTokens[7];
-		if (!token.empty())
-			gga.fields.satellitesUsed = (unsigned char)atoi(token.c_str());
+    // sats:
+    token = lstTokens[7];
+    if (!token.empty()) gga.fields.satellitesUsed = (unsigned char)atoi(token.c_str());
 
-		// HDOP:
-		token = lstTokens[8];
-		if (!token.empty())
-		{
-			gga.fields.HDOP = (float)atof(token.c_str());
-			gga.fields.thereis_HDOP = true;
-		}
+    // HDOP:
+    token = lstTokens[8];
+    if (!token.empty())
+    {
+      gga.fields.HDOP = (float)atof(token.c_str());
+      gga.fields.thereis_HDOP = true;
+    }
 
-		// Altitude:
-		token = lstTokens[9];
-		if (token.empty()) all_fields_ok = false;
-		else
-			gga.fields.altitude_meters = atof(token.c_str());
+    // Altitude:
+    token = lstTokens[9];
+    if (token.empty())
+      all_fields_ok = false;
+    else
+      gga.fields.altitude_meters = atof(token.c_str());
 
-		// Units of the altitude:
-		//		token = lstTokens[10];
-		//		ASSERT_(token == "M");
+    // Units of the altitude:
+    //		token = lstTokens[10];
+    //		ASSERT_(token == "M");
 
-		// Geoidal separation [B] (undulation)
-		token = lstTokens[11];
-		if (!token.empty()) gga.fields.geoidal_distance = atof(token.c_str());
+    // Geoidal separation [B] (undulation)
+    token = lstTokens[11];
+    if (!token.empty()) gga.fields.geoidal_distance = atof(token.c_str());
 
-		// Units of the geoidal separation:
-		//		token = lstTokens[12];
-		//		ASSERT_(token == "M");
+    // Units of the geoidal separation:
+    //		token = lstTokens[12];
+    //		ASSERT_(token == "M");
 
-		// Total altitude [A]+[B] and mmGPS Corrected total altitude
-		// Corr([A]+[B]):
-		gga.fields.orthometric_altitude =
-			gga.fields.corrected_orthometric_altitude =
-				gga.fields.altitude_meters + gga.fields.geoidal_distance;
+    // Total altitude [A]+[B] and mmGPS Corrected total altitude
+    // Corr([A]+[B]):
+    gga.fields.orthometric_altitude = gga.fields.corrected_orthometric_altitude =
+        gga.fields.altitude_meters + gga.fields.geoidal_distance;
 
-		if (all_fields_ok)
-		{
-			out_obs.setMsg(gga);
-			out_obs.originalReceivedTimestamp = mrpt::Clock::now();
-			out_obs.timestamp =
-				gga.fields.UTCTime.getAsTimestamp(last_known_date);
-			out_obs.has_satellite_timestamp = true;
-		}
-		parsed_ok = all_fields_ok;
-	}
-	else if (lstTokens[0] == "RMC" && lstTokens.size() >= 13)
-	{
-		// ---------------------------------------------
-		//					GPRMC
-		// ---------------------------------------------
-		bool all_fields_ok = true;
-		std::string token;
+    if (all_fields_ok)
+    {
+      out_obs.setMsg(gga);
+      out_obs.originalReceivedTimestamp = mrpt::Clock::now();
+      out_obs.timestamp = gga.fields.UTCTime.getAsTimestamp(last_known_date);
+      out_obs.has_satellite_timestamp = true;
+    }
+    parsed_ok = all_fields_ok;
+  }
+  else if (lstTokens[0] == "RMC" && lstTokens.size() >= 13)
+  {
+    // ---------------------------------------------
+    //					GPRMC
+    // ---------------------------------------------
+    bool all_fields_ok = true;
+    std::string token;
 
-		// Fill out the output structure:
-		gnss::Message_NMEA_RMC rmc;
+    // Fill out the output structure:
+    gnss::Message_NMEA_RMC rmc;
 
-		// Time:
-		token = lstTokens[1];
-		if (token.size() >= 6)
-		{
-			rmc.fields.UTCTime.hour = 10 * (token[0] - '0') + token[1] - '0';
-			rmc.fields.UTCTime.minute = 10 * (token[2] - '0') + token[3] - '0';
-			rmc.fields.UTCTime.sec = atof(&(token.c_str()[4]));
-		}
-		else
-			all_fields_ok = false;
+    // Time:
+    token = lstTokens[1];
+    if (token.size() >= 6)
+    {
+      rmc.fields.UTCTime.hour = 10 * (token[0] - '0') + token[1] - '0';
+      rmc.fields.UTCTime.minute = 10 * (token[2] - '0') + token[3] - '0';
+      rmc.fields.UTCTime.sec = atof(&(token.c_str()[4]));
+    }
+    else
+      all_fields_ok = false;
 
-		// Valid?
-		token = lstTokens[2];
-		if (token.empty()) all_fields_ok = false;
-		else
-			rmc.fields.validity_char = token.c_str()[0];
+    // Valid?
+    token = lstTokens[2];
+    if (token.empty())
+      all_fields_ok = false;
+    else
+      rmc.fields.validity_char = token.c_str()[0];
 
-		// Latitude:
-		token = lstTokens[3];
-		if (token.size() >= 4)
-		{
-			double lat = 10 * (token[0] - '0') + token[1] - '0';
-			lat += atof(&(token.c_str()[2])) / 60.0;
-			rmc.fields.latitude_degrees = lat;
-		}
-		else
-			all_fields_ok = false;
+    // Latitude:
+    token = lstTokens[3];
+    if (token.size() >= 4)
+    {
+      double lat = 10 * (token[0] - '0') + token[1] - '0';
+      lat += atof(&(token.c_str()[2])) / 60.0;
+      rmc.fields.latitude_degrees = lat;
+    }
+    else
+      all_fields_ok = false;
 
-		// N/S:
-		token = lstTokens[4];
-		if (token.empty()) all_fields_ok = false;
-		else if (token[0] == 'S')
-			rmc.fields.latitude_degrees = -rmc.fields.latitude_degrees;
+    // N/S:
+    token = lstTokens[4];
+    if (token.empty())
+      all_fields_ok = false;
+    else if (token[0] == 'S')
+      rmc.fields.latitude_degrees = -rmc.fields.latitude_degrees;
 
-		// Longitude:
-		token = lstTokens[5];
-		if (token.size() >= 5)
-		{
-			double lat =
-				100 * (token[0] - '0') + 10 * (token[1] - '0') + token[2] - '0';
-			lat += atof(&(token.c_str()[3])) / 60.0;
-			rmc.fields.longitude_degrees = lat;
-		}
-		else
-			all_fields_ok = false;
+    // Longitude:
+    token = lstTokens[5];
+    if (token.size() >= 5)
+    {
+      double lat = 100 * (token[0] - '0') + 10 * (token[1] - '0') + token[2] - '0';
+      lat += atof(&(token.c_str()[3])) / 60.0;
+      rmc.fields.longitude_degrees = lat;
+    }
+    else
+      all_fields_ok = false;
 
-		// E/W:
-		token = lstTokens[6];
-		if (token.empty()) all_fields_ok = false;
-		else if (token[0] == 'W')
-			rmc.fields.longitude_degrees = -rmc.fields.longitude_degrees;
+    // E/W:
+    token = lstTokens[6];
+    if (token.empty())
+      all_fields_ok = false;
+    else if (token[0] == 'W')
+      rmc.fields.longitude_degrees = -rmc.fields.longitude_degrees;
 
-		// Speed:
-		token = lstTokens[7];
-		if (!token.empty()) rmc.fields.speed_knots = atof(token.c_str());
+    // Speed:
+    token = lstTokens[7];
+    if (!token.empty()) rmc.fields.speed_knots = atof(token.c_str());
 
-		// Direction:
-		token = lstTokens[8];
-		if (!token.empty()) rmc.fields.direction_degrees = atof(token.c_str());
+    // Direction:
+    token = lstTokens[8];
+    if (!token.empty()) rmc.fields.direction_degrees = atof(token.c_str());
 
-		// Date:
-		token = lstTokens[9];
-		if (token.size() >= 6)
-		{
-			rmc.fields.date_day = 10 * (token[0] - '0') + token[1] - '0';
-			rmc.fields.date_month = 10 * (token[2] - '0') + token[3] - '0';
-			rmc.fields.date_year = atoi(&(token.c_str()[4]));
-		}
-		else
-			all_fields_ok = false;
+    // Date:
+    token = lstTokens[9];
+    if (token.size() >= 6)
+    {
+      rmc.fields.date_day = 10 * (token[0] - '0') + token[1] - '0';
+      rmc.fields.date_month = 10 * (token[2] - '0') + token[3] - '0';
+      rmc.fields.date_year = atoi(&(token.c_str()[4]));
+    }
+    else
+      all_fields_ok = false;
 
-		// Magnetic var
-		token = lstTokens[10];
-		if (token.size() >= 2)
-		{
-			rmc.fields.magnetic_dir = atof(token.c_str());
-			// E/W:
-			token = lstTokens[11];
-			if (token.empty()) all_fields_ok = false;
-			else if (token[0] == 'W')
-				rmc.fields.magnetic_dir = -rmc.fields.magnetic_dir;
-		}
+    // Magnetic var
+    token = lstTokens[10];
+    if (token.size() >= 2)
+    {
+      rmc.fields.magnetic_dir = atof(token.c_str());
+      // E/W:
+      token = lstTokens[11];
+      if (token.empty())
+        all_fields_ok = false;
+      else if (token[0] == 'W')
+        rmc.fields.magnetic_dir = -rmc.fields.magnetic_dir;
+    }
 
-		// Mode ind.
-		if (lstTokens.size() >= 14)
-		{
-			// Only for NMEA 2.3
-			token = lstTokens[12];
-			if (token.empty()) all_fields_ok = false;
-			else
-				rmc.fields.positioning_mode = token.c_str()[0];
-		}
-		else
-			rmc.fields.positioning_mode = 'A';	// Default for older receiver
+    // Mode ind.
+    if (lstTokens.size() >= 14)
+    {
+      // Only for NMEA 2.3
+      token = lstTokens[12];
+      if (token.empty())
+        all_fields_ok = false;
+      else
+        rmc.fields.positioning_mode = token.c_str()[0];
+    }
+    else
+      rmc.fields.positioning_mode = 'A';  // Default for older receiver
 
-		if (all_fields_ok)
-		{
-			out_obs.setMsg(rmc);
-			out_obs.originalReceivedTimestamp = mrpt::Clock::now();
-			out_obs.timestamp =
-				rmc.fields.UTCTime.getAsTimestamp(rmc.getDateAsTimestamp());
-			last_known_date = rmc.getDateAsTimestamp();
-			last_known_time = out_obs.timestamp;
-			out_obs.has_satellite_timestamp = true;
-		}
-		parsed_ok = all_fields_ok;
-	}
-	else if (lstTokens[0] == "GLL" && lstTokens.size() >= 5)
-	{
-		// ---------------------------------------------
-		//					GPGLL
-		// ---------------------------------------------
-		bool all_fields_ok = true;
-		std::string token;
+    if (all_fields_ok)
+    {
+      out_obs.setMsg(rmc);
+      out_obs.originalReceivedTimestamp = mrpt::Clock::now();
+      out_obs.timestamp = rmc.fields.UTCTime.getAsTimestamp(rmc.getDateAsTimestamp());
+      last_known_date = rmc.getDateAsTimestamp();
+      last_known_time = out_obs.timestamp;
+      out_obs.has_satellite_timestamp = true;
+    }
+    parsed_ok = all_fields_ok;
+  }
+  else if (lstTokens[0] == "GLL" && lstTokens.size() >= 5)
+  {
+    // ---------------------------------------------
+    //					GPGLL
+    // ---------------------------------------------
+    bool all_fields_ok = true;
+    std::string token;
 
-		// Fill out the output structure:
-		gnss::Message_NMEA_GLL gll;
-		// Latitude:
-		token = lstTokens[1];
-		if (token.size() >= 4)
-		{
-			double lat = 10 * (token[0] - '0') + token[1] - '0';
-			lat += atof(&(token.c_str()[2])) / 60.0;
-			gll.fields.latitude_degrees = lat;
-		}
-		else
-			all_fields_ok = false;
+    // Fill out the output structure:
+    gnss::Message_NMEA_GLL gll;
+    // Latitude:
+    token = lstTokens[1];
+    if (token.size() >= 4)
+    {
+      double lat = 10 * (token[0] - '0') + token[1] - '0';
+      lat += atof(&(token.c_str()[2])) / 60.0;
+      gll.fields.latitude_degrees = lat;
+    }
+    else
+      all_fields_ok = false;
 
-		// N/S:
-		token = lstTokens[2];
-		if (token.empty()) all_fields_ok = false;
-		else if (token[0] == 'S')
-			gll.fields.latitude_degrees = -gll.fields.latitude_degrees;
+    // N/S:
+    token = lstTokens[2];
+    if (token.empty())
+      all_fields_ok = false;
+    else if (token[0] == 'S')
+      gll.fields.latitude_degrees = -gll.fields.latitude_degrees;
 
-		// Longitude:
-		token = lstTokens[3];
-		if (token.size() >= 5)
-		{
-			double lat =
-				100 * (token[0] - '0') + 10 * (token[1] - '0') + token[2] - '0';
-			lat += atof(&(token.c_str()[3])) / 60.0;
-			gll.fields.longitude_degrees = lat;
-		}
-		else
-			all_fields_ok = false;
+    // Longitude:
+    token = lstTokens[3];
+    if (token.size() >= 5)
+    {
+      double lat = 100 * (token[0] - '0') + 10 * (token[1] - '0') + token[2] - '0';
+      lat += atof(&(token.c_str()[3])) / 60.0;
+      gll.fields.longitude_degrees = lat;
+    }
+    else
+      all_fields_ok = false;
 
-		// E/W:
-		token = lstTokens[4];
-		if (token.empty()) all_fields_ok = false;
-		else if (token[0] == 'W')
-			gll.fields.longitude_degrees = -gll.fields.longitude_degrees;
+    // E/W:
+    token = lstTokens[4];
+    if (token.empty())
+      all_fields_ok = false;
+    else if (token[0] == 'W')
+      gll.fields.longitude_degrees = -gll.fields.longitude_degrees;
 
-		if (lstTokens.size() >= 7)
-		{
-			// Time:
-			token = lstTokens[5];
-			if (token.size() >= 6)
-			{
-				gll.fields.UTCTime.hour =
-					10 * (token[0] - '0') + token[1] - '0';
-				gll.fields.UTCTime.minute =
-					10 * (token[2] - '0') + token[3] - '0';
-				gll.fields.UTCTime.sec = atof(&(token.c_str()[4]));
-			}
-			else
-				all_fields_ok = false;
+    if (lstTokens.size() >= 7)
+    {
+      // Time:
+      token = lstTokens[5];
+      if (token.size() >= 6)
+      {
+        gll.fields.UTCTime.hour = 10 * (token[0] - '0') + token[1] - '0';
+        gll.fields.UTCTime.minute = 10 * (token[2] - '0') + token[3] - '0';
+        gll.fields.UTCTime.sec = atof(&(token.c_str()[4]));
+      }
+      else
+        all_fields_ok = false;
 
-			// Valid?
-			token = lstTokens[6];
-			if (token.empty()) all_fields_ok = false;
-			else
-				gll.fields.validity_char = token.c_str()[0];
-		}
+      // Valid?
+      token = lstTokens[6];
+      if (token.empty())
+        all_fields_ok = false;
+      else
+        gll.fields.validity_char = token.c_str()[0];
+    }
 
-		if (all_fields_ok)
-		{
-			out_obs.setMsg(gll);
-			out_obs.originalReceivedTimestamp = mrpt::Clock::now();
-			out_obs.timestamp =
-				gll.fields.UTCTime.getAsTimestamp(last_known_date);
-			last_known_time = out_obs.timestamp;
-			out_obs.has_satellite_timestamp = true;
-		}
-		parsed_ok = all_fields_ok;
-	}
-	else if (lstTokens[0] == "VTG" && lstTokens.size() >= 9)
-	{
-		// ---------------------------------------------
-		//					GPVTG
-		// ---------------------------------------------
-		bool all_fields_ok = true;
-		std::string token;
+    if (all_fields_ok)
+    {
+      out_obs.setMsg(gll);
+      out_obs.originalReceivedTimestamp = mrpt::Clock::now();
+      out_obs.timestamp = gll.fields.UTCTime.getAsTimestamp(last_known_date);
+      last_known_time = out_obs.timestamp;
+      out_obs.has_satellite_timestamp = true;
+    }
+    parsed_ok = all_fields_ok;
+  }
+  else if (lstTokens[0] == "VTG" && lstTokens.size() >= 9)
+  {
+    // ---------------------------------------------
+    //					GPVTG
+    // ---------------------------------------------
+    bool all_fields_ok = true;
+    std::string token;
 
-		// Fill out the output structure:
-		gnss::Message_NMEA_VTG vtg;
+    // Fill out the output structure:
+    gnss::Message_NMEA_VTG vtg;
 
-		vtg.fields.true_track = atof(lstTokens[1].c_str());
-		vtg.fields.magnetic_track = atof(lstTokens[3].c_str());
-		vtg.fields.ground_speed_knots = atof(lstTokens[5].c_str());
-		vtg.fields.ground_speed_kmh = atof(lstTokens[7].c_str());
+    vtg.fields.true_track = atof(lstTokens[1].c_str());
+    vtg.fields.magnetic_track = atof(lstTokens[3].c_str());
+    vtg.fields.ground_speed_knots = atof(lstTokens[5].c_str());
+    vtg.fields.ground_speed_kmh = atof(lstTokens[7].c_str());
 
-		if (lstTokens[2] != "T" || lstTokens[4] != "M" || lstTokens[6] != "N" ||
-			lstTokens[8] != "K")
-			all_fields_ok = false;
+    if (lstTokens[2] != "T" || lstTokens[4] != "M" || lstTokens[6] != "N" || lstTokens[8] != "K")
+      all_fields_ok = false;
 
-		if (all_fields_ok)
-		{
-			out_obs.setMsg(vtg);
-			out_obs.originalReceivedTimestamp = mrpt::Clock::now();
-			out_obs.timestamp = last_known_time;
-			out_obs.has_satellite_timestamp = false;
-		}
-		parsed_ok = all_fields_ok;
-	}
-	else if (lstTokens[0] == "ZDA" && lstTokens.size() >= 5)
-	{
-		// ---------------------------------------------
-		//					GPZDA
-		// ---------------------------------------------
-		bool all_fields_ok = true;
-		std::string token;
+    if (all_fields_ok)
+    {
+      out_obs.setMsg(vtg);
+      out_obs.originalReceivedTimestamp = mrpt::Clock::now();
+      out_obs.timestamp = last_known_time;
+      out_obs.has_satellite_timestamp = false;
+    }
+    parsed_ok = all_fields_ok;
+  }
+  else if (lstTokens[0] == "ZDA" && lstTokens.size() >= 5)
+  {
+    // ---------------------------------------------
+    //					GPZDA
+    // ---------------------------------------------
+    bool all_fields_ok = true;
+    std::string token;
 
-		// Fill out the output structure:
-		gnss::Message_NMEA_ZDA zda;
-		//$--ZDA,hhmmss.ss,xx,xx,xxxx,xx,xx
-		// hhmmss.ss = UTC
-		// xx = Day, 01 to 31
-		// xx = Month, 01 to 12
-		// xxxx = Year
-		// xx = Local zone description, 00 to +/- 13 hours
-		// xx = Local zone minutes description (same sign as hours)
+    // Fill out the output structure:
+    gnss::Message_NMEA_ZDA zda;
+    //$--ZDA,hhmmss.ss,xx,xx,xxxx,xx,xx
+    // hhmmss.ss = UTC
+    // xx = Day, 01 to 31
+    // xx = Month, 01 to 12
+    // xxxx = Year
+    // xx = Local zone description, 00 to +/- 13 hours
+    // xx = Local zone minutes description (same sign as hours)
 
-		// Time:
-		token = lstTokens[1];
-		if (token.size() >= 6)
-		{
-			zda.fields.UTCTime.hour = 10 * (token[0] - '0') + token[1] - '0';
-			zda.fields.UTCTime.minute = 10 * (token[2] - '0') + token[3] - '0';
-			zda.fields.UTCTime.sec = atof(&(token.c_str()[4]));
-		}
-		else
-			all_fields_ok = false;
+    // Time:
+    token = lstTokens[1];
+    if (token.size() >= 6)
+    {
+      zda.fields.UTCTime.hour = 10 * (token[0] - '0') + token[1] - '0';
+      zda.fields.UTCTime.minute = 10 * (token[2] - '0') + token[3] - '0';
+      zda.fields.UTCTime.sec = atof(&(token.c_str()[4]));
+    }
+    else
+      all_fields_ok = false;
 
-		// Day:
-		token = lstTokens[2];
-		if (!token.empty()) zda.fields.date_day = atoi(token.c_str());
-		// Month:
-		token = lstTokens[3];
-		if (!token.empty()) zda.fields.date_month = atoi(token.c_str());
-		// Year:
-		token = lstTokens[4];
-		if (!token.empty()) zda.fields.date_year = atoi(token.c_str());
+    // Day:
+    token = lstTokens[2];
+    if (!token.empty()) zda.fields.date_day = atoi(token.c_str());
+    // Month:
+    token = lstTokens[3];
+    if (!token.empty()) zda.fields.date_month = atoi(token.c_str());
+    // Year:
+    token = lstTokens[4];
+    if (!token.empty()) zda.fields.date_year = atoi(token.c_str());
 
-		if (all_fields_ok)
-		{
-			out_obs.setMsg(zda);
-			out_obs.originalReceivedTimestamp = mrpt::Clock::now();
-			try
-			{
-				out_obs.timestamp = zda.getDateTimeAsTimestamp();
-				last_known_date = zda.getDateAsTimestamp();
-				out_obs.has_satellite_timestamp = true;
-				last_known_time = out_obs.timestamp;
-			}
-			catch (...)
-			{
-				// Invalid date:
-				out_obs.timestamp = out_obs.originalReceivedTimestamp;
-			}
-		}
-		parsed_ok = all_fields_ok;
-	}
-	else if (lstTokens[0] == "GSA" && lstTokens.size() >= 18)
-	{
-		// ---------------------------------------------
-		//					GSA
-		// ---------------------------------------------
-		bool all_fields_ok = true;
-		std::string token;
+    if (all_fields_ok)
+    {
+      out_obs.setMsg(zda);
+      out_obs.originalReceivedTimestamp = mrpt::Clock::now();
+      try
+      {
+        out_obs.timestamp = zda.getDateTimeAsTimestamp();
+        last_known_date = zda.getDateAsTimestamp();
+        out_obs.has_satellite_timestamp = true;
+        last_known_time = out_obs.timestamp;
+      }
+      catch (...)
+      {
+        // Invalid date:
+        out_obs.timestamp = out_obs.originalReceivedTimestamp;
+      }
+    }
+    parsed_ok = all_fields_ok;
+  }
+  else if (lstTokens[0] == "GSA" && lstTokens.size() >= 18)
+  {
+    // ---------------------------------------------
+    //					GSA
+    // ---------------------------------------------
+    bool all_fields_ok = true;
+    std::string token;
 
-		// Fill out the output structure:
-		gnss::Message_NMEA_GSA gsa;
-		//  $GPGSA,A,3,04,05,,09,12,,,24,,,,,2.5,1.3,2.1*39
-		// Where:
-		//     GSA      Satellite status
-		//     A        Auto selection of 2D or 3D fix (M = manual)
-		//     3        3D fix - values include: 1 = no fix
-		//                                       2 = 2D fix
-		//                                       3 = 3D fix
-		//     04,05... PRNs of satellites used for fix (space for 12)
-		//     2.5      PDOP (dilution of precision)
-		//     1.3      Horizontal dilution of precision (HDOP)
-		//     2.1      Vertical dilution of precision (VDOP)
-		//     *39      the checksum data, always begins with *
-		token = lstTokens[1];
-		if (!token.empty()) gsa.fields.auto_selection_fix = token[0];
-		else
-			all_fields_ok = false;
+    // Fill out the output structure:
+    gnss::Message_NMEA_GSA gsa;
+    //  $GPGSA,A,3,04,05,,09,12,,,24,,,,,2.5,1.3,2.1*39
+    // Where:
+    //     GSA      Satellite status
+    //     A        Auto selection of 2D or 3D fix (M = manual)
+    //     3        3D fix - values include: 1 = no fix
+    //                                       2 = 2D fix
+    //                                       3 = 3D fix
+    //     04,05... PRNs of satellites used for fix (space for 12)
+    //     2.5      PDOP (dilution of precision)
+    //     1.3      Horizontal dilution of precision (HDOP)
+    //     2.1      Vertical dilution of precision (VDOP)
+    //     *39      the checksum data, always begins with *
+    token = lstTokens[1];
+    if (!token.empty())
+      gsa.fields.auto_selection_fix = token[0];
+    else
+      all_fields_ok = false;
 
-		token = lstTokens[2];
-		if (!token.empty()) gsa.fields.fix_2D_3D = token[0];
-		else
-			all_fields_ok = false;
+    token = lstTokens[2];
+    if (!token.empty())
+      gsa.fields.fix_2D_3D = token[0];
+    else
+      all_fields_ok = false;
 
-		for (int i = 0; i < 12; i++)
-		{
-			token = lstTokens[3 + i];
-			if (token.size() > 0) gsa.fields.PRNs[i][0] = token[0];
-			if (token.size() > 1) gsa.fields.PRNs[i][1] = token[1];
-		}
-		// PDOP:
-		gsa.fields.PDOP = ::atof(lstTokens[3 + 12 + 0].data());
-		gsa.fields.HDOP = ::atof(lstTokens[3 + 12 + 1].data());
-		gsa.fields.VDOP = ::atof(lstTokens[3 + 12 + 2].data());
+    for (int i = 0; i < 12; i++)
+    {
+      token = lstTokens[3 + i];
+      if (token.size() > 0) gsa.fields.PRNs[i][0] = token[0];
+      if (token.size() > 1) gsa.fields.PRNs[i][1] = token[1];
+    }
+    // PDOP:
+    gsa.fields.PDOP = ::atof(lstTokens[3 + 12 + 0].data());
+    gsa.fields.HDOP = ::atof(lstTokens[3 + 12 + 1].data());
+    gsa.fields.VDOP = ::atof(lstTokens[3 + 12 + 2].data());
 
-		if (all_fields_ok)
-		{
-			out_obs.setMsg(gsa);
-			out_obs.originalReceivedTimestamp = mrpt::Clock::now();
-		}
-		parsed_ok = all_fields_ok;
-	}
-	else
-	{
-		// other commands?
-	}
+    if (all_fields_ok)
+    {
+      out_obs.setMsg(gsa);
+      out_obs.originalReceivedTimestamp = mrpt::Clock::now();
+    }
+    parsed_ok = all_fields_ok;
+  }
+  else
+  {
+    // other commands?
+  }
 
-	return parsed_ok;
+  return parsed_ok;
 }

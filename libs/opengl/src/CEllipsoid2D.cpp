@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"	 // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 //
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/opengl/CEllipsoid2D.h>
@@ -18,45 +18,43 @@ using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(
-	CEllipsoid2D, CRenderizableShaderWireFrame, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CEllipsoid2D, CRenderizableShaderWireFrame, mrpt::opengl)
 
 void CEllipsoid2D::transformFromParameterSpace(
-	const std::vector<BASE::array_parameter_t>& in_pts,
-	std::vector<BASE::array_point_t>& out_pts) const
+    const std::vector<BASE::array_parameter_t>& in_pts,
+    std::vector<BASE::array_point_t>& out_pts) const
 {
-	// Euclidean space:
-	out_pts = in_pts;
+  // Euclidean space:
+  out_pts = in_pts;
 }
 
 uint8_t CEllipsoid2D::serializeGetVersion() const { return 0; }
 void CEllipsoid2D::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	writeToStreamRender(out);
-	out << m_cov << m_drawSolid3D << m_quantiles << (uint32_t)m_numSegments
-		<< m_lineWidth;
+  writeToStreamRender(out);
+  out << m_cov << m_drawSolid3D << m_quantiles << (uint32_t)m_numSegments << m_lineWidth;
 }
 
-void CEllipsoid2D::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void CEllipsoid2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	switch (version)
-	{
-		case 0:
-		{
-			readFromStreamRender(in);
-			in >> m_cov;
-			in >> m_drawSolid3D >> m_quantiles;
-			m_numSegments = in.ReadAs<uint32_t>();
-			in >> m_lineWidth;
+  switch (version)
+  {
+    case 0:
+    {
+      readFromStreamRender(in);
+      in >> m_cov;
+      in >> m_drawSolid3D >> m_quantiles;
+      m_numSegments = in.ReadAs<uint32_t>();
+      in >> m_lineWidth;
 
-			// Update cov. matrix cache:
-			setCovMatrix(m_cov);
-		}
-		break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	};
-	CRenderizable::notifyChange();
+      // Update cov. matrix cache:
+      setCovMatrix(m_cov);
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
+  CRenderizable::notifyChange();
 }
 
 #if 0
@@ -107,5 +105,5 @@ bool CEllipsoid2D::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 	}
 	return quickSolveEqn(a, b_2, c, dist);
 #endif
-	return false;
+  return false;
 }

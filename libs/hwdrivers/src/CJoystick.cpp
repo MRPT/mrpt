@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"	// Precompiled headers
+#include "hwdrivers-precomp.h"  // Precompiled headers
 //
 #include <mrpt/config.h>
 #include <mrpt/core/exceptions.h>
@@ -32,7 +32,6 @@
 #include <unistd.h>
 
 #include <cerrno>
-#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -47,55 +46,52 @@
 
 using namespace mrpt::hwdrivers;
 
+CJoystick::CJoystick() = default;
+
 /*---------------------------------------------------------------
-					Constructor
- ---------------------------------------------------------------*/
-CJoystick::CJoystick() { setLimits(); }
-/*---------------------------------------------------------------
-					Destructor
+          Destructor
  ---------------------------------------------------------------*/
 CJoystick::~CJoystick()
 {
 #if defined(MRPT_OS_LINUX) && defined(HAVE_LINUX_INPUT_H)
-	// Close joystick, if open:
-	if (m_joy_fd > 0)
-	{
-		close(m_joy_fd);
-		m_joy_fd = -1;
-	}
+  // Close joystick, if open:
+  if (m_joy_fd > 0)
+  {
+    close(m_joy_fd);
+    m_joy_fd = -1;
+  }
 #endif
 }
 
 /*---------------------------------------------------------------
-					getJoysticksCount
+          getJoysticksCount
   Returns the number of Joysticks in the computer.
  ---------------------------------------------------------------*/
 int CJoystick::getJoysticksCount()
 {
-	MRPT_START
+  MRPT_START
 #ifdef _WIN32
-	return joyGetNumDevs();
+  return joyGetNumDevs();
 #elif defined(MRPT_OS_LINUX) && defined(HAVE_LINUX_INPUT_H)
-	// Try to open several joy devs:
-	int joy_fd = -1;
-	int nJoys = 0;
+  // Try to open several joy devs:
+  int joy_fd = -1;
+  int nJoys = 0;
 
-	do
-	{
-		if (-1 !=
-			(joy_fd = open(format("/dev/input/js%i", nJoys).c_str(), O_RDONLY)))
-		{
-			nJoys++;
-			close(joy_fd);
-		}
-	} while (joy_fd != -1);
+  do
+  {
+    if (-1 != (joy_fd = open(format("/dev/input/js%i", nJoys).c_str(), O_RDONLY)))
+    {
+      nJoys++;
+      close(joy_fd);
+    }
+  } while (joy_fd != -1);
 
-	return nJoys;
+  return nJoys;
 #else
-	// Apple:
-	return 0;
+  // Apple:
+  return 0;
 #endif
-	MRPT_END
+  MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -104,146 +100,133 @@ int CJoystick::getJoysticksCount()
   \return Returns true if successfull, false on error, for example, if joystick
  is not present.
  ---------------------------------------------------------------*/
-bool CJoystick::getJoystickPosition(
-	int nJoy, float& x, float& y, float& z, std::vector<bool>& buttons,
-	int* raw_x_pos, int* raw_y_pos, int* raw_z_pos)
+bool CJoystick::getJoystickPosition(int nJoy, State& output)
 {
-	MRPT_START
+  MRPT_START
 #ifdef _WIN32
-	JOYINFO jinfo;
+  JOYINFO jinfo;
 
-	int ID = JOYSTICKID1 + nJoy;
+  int ID = JOYSTICKID1 + nJoy;
 
-	// Get joy pos:
-	if (JOYERR_NOERROR != joyGetPos(ID, &jinfo)) return false;	// Error.
+  // Get joy pos:
+  if (JOYERR_NOERROR != joyGetPos(ID, &jinfo)) return false;  // Error.
 
-	// Output data:
-	x = (jinfo.wXpos - m_x_min) / (float)(m_x_max - m_x_min);
-	y = (jinfo.wYpos - m_y_min) / (float)(m_y_max - m_y_min);
-	z = (jinfo.wZpos - m_z_min) / (float)(m_z_max - m_z_min);
+  int calib_min[3], calib_max[3];
 
-	x = 2 * x - 1;
-	y = 2 * y - 1;
-	z = 2 * z - 1;
+  for (int i = 0; i < 3; i++)
+  {
+    calib_min[i] = m_minPerAxis.size() > i ? m_minPerAxis[i] : 0;
+    calib_max[i] = m_maxPerAxis.size() > i ? m_maxPerAxis[i] : 0xffff;
+  }
 
-	buttons.resize(4);
+  // Output data:
+  float x = (jinfo.wXpos - calib_min[0]) / (float)(calib_max[0] - calib_min[0]);
+  float y = (jinfo.wYpos - calib_min[1]) / (float)(calib_max[1] - calib_min[1]);
+  float z = (jinfo.wZpos - calib_min[2]) / (float)(calib_max[2] - calib_min[2]);
 
-	buttons[0] = 0 != (jinfo.wButtons & JOY_BUTTON1);
-	buttons[1] = 0 != (jinfo.wButtons & JOY_BUTTON2);
-	buttons[2] = 0 != (jinfo.wButtons & JOY_BUTTON3);
-	buttons[3] = 0 != (jinfo.wButtons & JOY_BUTTON4);
+  x = 2 * x - 1;
+  y = 2 * y - 1;
+  z = 2 * z - 1;
 
-	if (raw_x_pos) *raw_x_pos = jinfo.wXpos;
-	if (raw_y_pos) *raw_y_pos = jinfo.wYpos;
-	if (raw_z_pos) *raw_z_pos = jinfo.wZpos;
+  output.buttons.resize(4);
 
-	return true;
+  output.buttons[0] = 0 != (jinfo.wButtons & JOY_BUTTON1);
+  output.buttons[1] = 0 != (jinfo.wButtons & JOY_BUTTON2);
+  output.buttons[2] = 0 != (jinfo.wButtons & JOY_BUTTON3);
+  output.buttons[3] = 0 != (jinfo.wButtons & JOY_BUTTON4);
+
+  output.axes_raw.resize(3);
+  output.axes_raw[0] = jinfo.wXpos;
+  output.axes_raw[1] = jinfo.wYpos;
+  output.axes_raw[2] = jinfo.wZpos;
+
+  output.axes.resize(3);
+  output.axes[0] = x;
+  output.axes[1] = y;
+  output.axes[2] = z;
+
+  return true;
 #elif defined(MRPT_OS_LINUX) && defined(HAVE_LINUX_INPUT_H)
-	// Already open?
-	if (m_joy_index == nJoy && m_joy_fd != -1)
-	{
-		// Ok
-	}
-	else
-	{
-		// Close previous opened joy?
-		if (m_joy_fd != -1) close(m_joy_fd);
+  // Already open?
+  if (m_joy_index == nJoy && m_joy_fd != -1)
+  {
+    // Ok
+  }
+  else
+  {
+    // Close previous opened joy?
+    if (m_joy_fd != -1) close(m_joy_fd);
 
-		// Go, try open joystick:
-		if ((m_joy_fd =
-				 open(format("/dev/input/js%i", nJoy).c_str(), O_RDONLY)) < 0)
-			return false;
+    // Go, try open joystick:
+    if ((m_joy_fd = open(format("/dev/input/js%i", nJoy).c_str(), O_RDONLY)) < 0) return false;
 
-		// Perfect!
-		m_joy_index = nJoy;
+    // Perfect!
+    m_joy_index = nJoy;
 
-		// Read in non-blocking way: **** Refer to sources of "jstest"!!!! ***
-		fcntl(m_joy_fd, F_SETFL, O_NONBLOCK);
-	}
+    // Read in non-blocking way: **** Refer to sources of "jstest"!!!! ***
+    fcntl(m_joy_fd, F_SETFL, O_NONBLOCK);
+  }
 
-	struct js_event js;
+  struct js_event js;
 
-	while (read(m_joy_fd, &js, sizeof(struct js_event)) ==
-		   sizeof(struct js_event))
-	{
-		// Button?
-		if (js.type & JS_EVENT_BUTTON)
-		{
-			// js.number: Button number
-			if (m_joystate_btns.size() < (size_t)js.number + 1)
-				m_joystate_btns.resize(js.number + 1);
-			m_joystate_btns[js.number] = js.value != 0;
-		}
+  while (read(m_joy_fd, &js, sizeof(struct js_event)) == sizeof(struct js_event))
+  {
+    // js.number: Button number
+    const size_t jsNum = static_cast<size_t>(js.number);
 
-		// Axes?
-		if (js.type & JS_EVENT_AXIS)
-		{
-			// std::cout << "joy: event axis" << std::endl;
-			if (m_joystate_axes.size() < (size_t)js.number + 1)
-				m_joystate_axes.resize(js.number + 1);
-			m_joystate_axes[js.number] = js.value;
-		}
-	}
+    // Button?
+    if (js.type & JS_EVENT_BUTTON)
+    {
+      if (m_joystate_btns.size() < jsNum + 1) m_joystate_btns.resize(jsNum + 1);
 
-	if (errno != EAGAIN)
-	{
-		// Joystick disconnected?
-		m_joy_fd = -1;
-		m_joy_index = -1;
-		return false;
-	}
+      m_joystate_btns[jsNum] = (js.value != 0);
+    }
 
-	// Fill out data:
-	const size_t nAxis = m_joystate_axes.size();
-	if (nAxis >= 1)
-	{
-		x = -1 +
-			2 * (m_joystate_axes[0] - m_x_min) / (float)(m_x_max - m_x_min);
-		if (raw_x_pos) *raw_x_pos = m_joystate_axes[0];
-	}
+    // Axes?
+    if (js.type & JS_EVENT_AXIS)
+    {
+      if (m_joystate_axes.size() < jsNum + 1) m_joystate_axes.resize(jsNum + 1);
 
-	if (nAxis >= 2)
-	{
-		y = -1 +
-			2 * (m_joystate_axes[1] - m_y_min) / (float)(m_y_max - m_y_min);
-		if (raw_y_pos) *raw_y_pos = m_joystate_axes[1];
-	}
+      m_joystate_axes[jsNum] = static_cast<int>(js.value);
+    }
+  }
 
-	if (nAxis >= 3)
-	{
-		z = -1 +
-			2 * (m_joystate_axes[2] - m_z_min) / (float)(m_z_max - m_z_min);
-		if (raw_z_pos) *raw_z_pos = m_joystate_axes[2];
-	}
-	else
-	{
-		z = 0;
-	}
+  if (errno != EAGAIN)
+  {
+    // Joystick disconnected?
+    m_joy_fd = -1;
+    m_joy_index = -1;
+    return false;
+  }
 
-	buttons = m_joystate_btns;
+  // Fill out data:
+  output.buttons = m_joystate_btns;
 
-	return true;
+  const size_t nAxis = m_joystate_axes.size();
+  output.axes_raw.resize(nAxis);
+  output.axes.resize(nAxis);
+
+  for (size_t i = 0; i < nAxis; i++)
+  {
+    output.axes_raw[i] = m_joystate_axes[i];
+
+    const int calib_min = m_minPerAxis.size() > i ? m_minPerAxis[i] : -32767;
+    const int calib_max = m_maxPerAxis.size() > i ? m_maxPerAxis[i] : 32767;
+
+    output.axes[i] =
+        -1.0f + 2.0f * (m_joystate_axes[i] - calib_min) / static_cast<float>(calib_max - calib_min);
+  }
+
+  return true;
 #else
-	// Apple.
-	return false;
+  // Apple.
+  return false;
 #endif
-	MRPT_END
+  MRPT_END
 }
 
-/** Set the axis limit values, for computing a [-1,1] position index easily.
- *   It seems that these values must been calibrated for each joystick model.
- *
- * \sa getJoystickPosition
- */
-void CJoystick::setLimits(
-	int x_min, int x_max, int y_min, int y_max, int z_min, int z_max)
+void CJoystick::setLimits(const std::vector<int>& minPerAxis, const std::vector<int>& maxPerAxis)
 {
-	m_x_max = x_max;
-	m_x_min = x_min;
-
-	m_y_max = y_max;
-	m_y_min = y_min;
-
-	m_z_max = z_max;
-	m_z_min = z_min;
+  m_minPerAxis = minPerAxis;
+  m_maxPerAxis = maxPerAxis;
 }

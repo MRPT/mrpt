@@ -21,22 +21,21 @@ class CBeaconConfig;
 }
 class CBeaconConfig : public CBaseConfig
 {
-   public:
-	CBeaconConfig();
-	~CBeaconConfig() override = default;
+ public:
+  CBeaconConfig();
+  ~CBeaconConfig() override = default;
 
-	void updateConfiguration(
-		mrpt::maps::TMetricMapInitializer* options) override;
-	const QString getName() override;
-	TypeOfConfig type() const override;
+  void updateConfiguration(mrpt::maps::TMetricMapInitializer* options) override;
+  const QString getName() override;
+  TypeOfConfig type() const override;
 
-	void setInsertOpt(
-		const mrpt::maps::CBeaconMap::TInsertionOptions& insertOpt =
-			mrpt::maps::CBeaconMap::TInsertionOptions());
-	void setLikelihoodOpt(
-		const mrpt::maps::CBeaconMap::TLikelihoodOptions& likelihoodOpt =
-			mrpt::maps::CBeaconMap::TLikelihoodOptions());
+  void setInsertOpt(
+      const mrpt::maps::CBeaconMap::TInsertionOptions& insertOpt =
+          mrpt::maps::CBeaconMap::TInsertionOptions());
+  void setLikelihoodOpt(
+      const mrpt::maps::CBeaconMap::TLikelihoodOptions& likelihoodOpt =
+          mrpt::maps::CBeaconMap::TLikelihoodOptions());
 
-   private:
-	std::unique_ptr<Ui::CBeaconConfig> m_ui;
+ private:
+  std::unique_ptr<Ui::CBeaconConfig> m_ui;
 };

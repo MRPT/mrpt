@@ -18,6 +18,6 @@ namespace mrpt::comms
  */
 inline void registerAllClasses_mrpt_comms()
 {
-	// None in this library
+  // None in this library
 }
 }  // namespace mrpt::comms

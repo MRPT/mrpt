@@ -37,251 +37,245 @@ namespace mrpt::slam
  */
 template <>
 void KLF_loadBinFromParticle(
-	mrpt::slam::detail::TPoseBin2D& outBin, const TKLDParams& opts,
-	const CMonteCarloLocalization2D::CParticleDataContent* currentParticleValue,
-	const TPose3D* newPoseToBeInserted)
+    mrpt::slam::detail::TPoseBin2D& outBin,
+    const TKLDParams& opts,
+    const CMonteCarloLocalization2D::CParticleDataContent* currentParticleValue,
+    const TPose3D* newPoseToBeInserted)
 {
-	// 2D pose approx: Use the latest pose only:
-	if (newPoseToBeInserted)
-	{
-		outBin.x = round(newPoseToBeInserted->x / opts.KLD_binSize_XY);
-		outBin.y = round(newPoseToBeInserted->y / opts.KLD_binSize_XY);
-		outBin.phi = round(newPoseToBeInserted->yaw / opts.KLD_binSize_PHI);
-	}
-	else
-	{
-		ASSERT_(currentParticleValue);
-		outBin.x = round(currentParticleValue->x / opts.KLD_binSize_XY);
-		outBin.y = round(currentParticleValue->y / opts.KLD_binSize_XY);
-		outBin.phi = round(currentParticleValue->phi / opts.KLD_binSize_PHI);
-	}
+  // 2D pose approx: Use the latest pose only:
+  if (newPoseToBeInserted)
+  {
+    outBin.x = round(newPoseToBeInserted->x / opts.KLD_binSize_XY);
+    outBin.y = round(newPoseToBeInserted->y / opts.KLD_binSize_XY);
+    outBin.phi = round(newPoseToBeInserted->yaw / opts.KLD_binSize_PHI);
+  }
+  else
+  {
+    ASSERT_(currentParticleValue);
+    outBin.x = round(currentParticleValue->x / opts.KLD_binSize_XY);
+    outBin.y = round(currentParticleValue->y / opts.KLD_binSize_XY);
+    outBin.phi = round(currentParticleValue->phi / opts.KLD_binSize_PHI);
+  }
 }
 }  // namespace mrpt::slam
 
 #include <mrpt/slam/PF_implementations.h>
 
 /*---------------------------------------------------------------
-				ctor
+        ctor
  ---------------------------------------------------------------*/
 // Passing a "this" pointer at this moment is not a problem since it will be NOT
 // access until the object is fully initialized
-CMonteCarloLocalization2D::CMonteCarloLocalization2D(size_t M)
-	: CPosePDFParticles(M)
+CMonteCarloLocalization2D::CMonteCarloLocalization2D(size_t M) : CPosePDFParticles(M)
 {
-	this->setLoggerName("CMonteCarloLocalization2D");
+  this->setLoggerName("CMonteCarloLocalization2D");
 }
 
 CMonteCarloLocalization2D::~CMonteCarloLocalization2D() = default;
-TPose3D CMonteCarloLocalization2D::getLastPose(
-	size_t i, bool& is_valid_pose) const
+TPose3D CMonteCarloLocalization2D::getLastPose(size_t i, bool& is_valid_pose) const
 {
-	if (i >= m_particles.size())
-		THROW_EXCEPTION("Particle index out of bounds!");
-	is_valid_pose = true;
-	return TPose3D(m_particles[i].d);
+  if (i >= m_particles.size()) THROW_EXCEPTION("Particle index out of bounds!");
+  is_valid_pose = true;
+  return TPose3D(m_particles[i].d);
 }
 
 /*---------------------------------------------------------------
 
-			prediction_and_update_pfStandardProposal
+      prediction_and_update_pfStandardProposal
 
  ---------------------------------------------------------------*/
 void CMonteCarloLocalization2D::prediction_and_update_pfStandardProposal(
-	const mrpt::obs::CActionCollection* actions,
-	const mrpt::obs::CSensoryFrame* sf,
-	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
+    const mrpt::obs::CActionCollection* actions,
+    const mrpt::obs::CSensoryFrame* sf,
+    const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
 {
-	MRPT_START
+  MRPT_START
 
-	if (sf)
-	{  // A map MUST be supplied!
-		ASSERT_(options.metricMap || options.metricMaps.size() > 0);
-		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size());
-	}
+  if (sf)
+  {  // A map MUST be supplied!
+    ASSERT_(options.metricMap || options.metricMaps.size() > 0);
+    if (!options.metricMap) ASSERT_(options.metricMaps.size() == m_particles.size());
+  }
 
-	PF_SLAM_implementation_pfStandardProposal<mrpt::slam::detail::TPoseBin2D>(
-		actions, sf, PF_options, options.KLD_params);
+  PF_SLAM_implementation_pfStandardProposal<mrpt::slam::detail::TPoseBin2D>(
+      actions, sf, PF_options, options.KLD_params);
 
-	MRPT_END
+  MRPT_END
 }
 
 /*---------------------------------------------------------------
 
-			prediction_and_update_pfAuxiliaryPFStandard
+      prediction_and_update_pfAuxiliaryPFStandard
 
  ---------------------------------------------------------------*/
 void CMonteCarloLocalization2D::prediction_and_update_pfAuxiliaryPFStandard(
-	const mrpt::obs::CActionCollection* actions,
-	const mrpt::obs::CSensoryFrame* sf,
-	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
+    const mrpt::obs::CActionCollection* actions,
+    const mrpt::obs::CSensoryFrame* sf,
+    const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
 {
-	MRPT_START
+  MRPT_START
 
-	if (sf)
-	{  // A map MUST be supplied!
-		ASSERT_(options.metricMap || options.metricMaps.size() > 0);
-		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size());
-	}
+  if (sf)
+  {  // A map MUST be supplied!
+    ASSERT_(options.metricMap || options.metricMaps.size() > 0);
+    if (!options.metricMap) ASSERT_(options.metricMaps.size() == m_particles.size());
+  }
 
-	PF_SLAM_implementation_pfAuxiliaryPFStandard<
-		mrpt::slam::detail::TPoseBin2D>(
-		actions, sf, PF_options, options.KLD_params);
+  PF_SLAM_implementation_pfAuxiliaryPFStandard<mrpt::slam::detail::TPoseBin2D>(
+      actions, sf, PF_options, options.KLD_params);
 
-	MRPT_END
+  MRPT_END
 }
 
 /*---------------------------------------------------------------
 
-			prediction_and_update_pfAuxiliaryPFOptimal
+      prediction_and_update_pfAuxiliaryPFOptimal
 
  ---------------------------------------------------------------*/
 void CMonteCarloLocalization2D::prediction_and_update_pfAuxiliaryPFOptimal(
-	const mrpt::obs::CActionCollection* actions,
-	const mrpt::obs::CSensoryFrame* sf,
-	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
+    const mrpt::obs::CActionCollection* actions,
+    const mrpt::obs::CSensoryFrame* sf,
+    const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
 {
-	MRPT_START
+  MRPT_START
 
-	if (sf)
-	{  // A map MUST be supplied!
-		ASSERT_(options.metricMap || options.metricMaps.size() > 0);
-		if (!options.metricMap)
-			ASSERT_(options.metricMaps.size() == m_particles.size());
-	}
+  if (sf)
+  {  // A map MUST be supplied!
+    ASSERT_(options.metricMap || options.metricMaps.size() > 0);
+    if (!options.metricMap) ASSERT_(options.metricMaps.size() == m_particles.size());
+  }
 
-	PF_SLAM_implementation_pfAuxiliaryPFOptimal<mrpt::slam::detail::TPoseBin2D>(
-		actions, sf, PF_options, options.KLD_params);
+  PF_SLAM_implementation_pfAuxiliaryPFOptimal<mrpt::slam::detail::TPoseBin2D>(
+      actions, sf, PF_options, options.KLD_params);
 
-	MRPT_END
+  MRPT_END
 }
 
 /*---------------------------------------------------------------
-			PF_SLAM_computeObservationLikelihoodForParticle
+      PF_SLAM_computeObservationLikelihoodForParticle
  ---------------------------------------------------------------*/
-double
-	CMonteCarloLocalization2D::PF_SLAM_computeObservationLikelihoodForParticle(
-		[[maybe_unused]] const CParticleFilter::TParticleFilterOptions&
-			PF_options,
-		size_t particleIndexForMap, const CSensoryFrame& observation,
-		const CPose3D& x) const
+double CMonteCarloLocalization2D::PF_SLAM_computeObservationLikelihoodForParticle(
+    [[maybe_unused]] const CParticleFilter::TParticleFilterOptions& PF_options,
+    size_t particleIndexForMap,
+    const CSensoryFrame& observation,
+    const CPose3D& x) const
 {
-	ASSERT_(
-		options.metricMap || particleIndexForMap < options.metricMaps.size());
+  ASSERT_(options.metricMap || particleIndexForMap < options.metricMaps.size());
 
-	// All particles, one map, or One map per particle
-	const auto map = (options.metricMap)
-		? options.metricMap
-		: options.metricMaps[particleIndexForMap];
+  // All particles, one map, or One map per particle
+  const auto map =
+      (options.metricMap) ? options.metricMap : options.metricMaps[particleIndexForMap];
 
-	// For each observation:
-	double ret = 1;
-	for (const auto& it : observation)
-		ret += map->computeObservationLikelihood(
-			*it, x);  // Compute the likelihood:
+  // For each observation:
+  double ret = 1;
+  for (const auto& it : observation)
+    ret += map->computeObservationLikelihood(*it, x);  // Compute the likelihood:
 
-	// Done!
-	return ret;
+  // Done!
+  return ret;
 }
 
 // Specialization for my kind of particles:
-void CMonteCarloLocalization2D::
-	PF_SLAM_implementation_custom_update_particle_with_new_pose(
-		TPose2D* particleData, const TPose3D& newPose) const
+void CMonteCarloLocalization2D::PF_SLAM_implementation_custom_update_particle_with_new_pose(
+    TPose2D* particleData, const TPose3D& newPose) const
 {
-	*particleData = TPose2D(newPose);
+  *particleData = TPose2D(newPose);
 }
 
 void CMonteCarloLocalization2D::PF_SLAM_implementation_replaceByNewParticleSet(
-	CParticleList& old_particles, const vector<TPose3D>& newParticles,
-	const vector<double>& newParticlesWeight,
-	[[maybe_unused]] const vector<size_t>& newParticlesDerivedFromIdx) const
+    CParticleList& old_particles,
+    const vector<TPose3D>& newParticles,
+    const vector<double>& newParticlesWeight,
+    [[maybe_unused]] const vector<size_t>& newParticlesDerivedFromIdx) const
 {
-	ASSERT_EQUAL_(
-		size_t(newParticlesWeight.size()), size_t(newParticles.size()));
+  ASSERT_EQUAL_(size_t(newParticlesWeight.size()), size_t(newParticles.size()));
 
-	// ---------------------------------------------------------------------------------
-	// Substitute old by new particle set:
-	//   Old are in "m_particles"
-	//   New are in "newParticles",
-	//   "newParticlesWeight","newParticlesDerivedFromIdx"
-	// ---------------------------------------------------------------------------------
-	// Free old m_particles: not needed since "d" is now a smart ptr
+  // ---------------------------------------------------------------------------------
+  // Substitute old by new particle set:
+  //   Old are in "m_particles"
+  //   New are in "newParticles",
+  //   "newParticlesWeight","newParticlesDerivedFromIdx"
+  // ---------------------------------------------------------------------------------
+  // Free old m_particles: not needed since "d" is now a smart ptr
 
-	// Copy into "m_particles"
-	const size_t N = newParticles.size();
-	old_particles.resize(N);
-	for (size_t i = 0; i < N; i++)
-	{
-		old_particles[i].log_w = newParticlesWeight[i];
-		old_particles[i].d = TPose2D(newParticles[i]);
-	}
+  // Copy into "m_particles"
+  const size_t N = newParticles.size();
+  old_particles.resize(N);
+  for (size_t i = 0; i < N; i++)
+  {
+    old_particles[i].log_w = newParticlesWeight[i];
+    old_particles[i].d = TPose2D(newParticles[i]);
+  }
 }
 
 void CMonteCarloLocalization2D::resetUniformFreeSpace(
-	COccupancyGridMap2D* theMap, const double freeCellsThreshold,
-	const int particlesCount, const double x_min, const double x_max,
-	const double y_min, const double y_max, const double phi_min,
-	const double phi_max)
+    COccupancyGridMap2D* theMap,
+    const double freeCellsThreshold,
+    const int particlesCount,
+    const double x_min,
+    const double x_max,
+    const double y_min,
+    const double y_max,
+    const double phi_min,
+    const double phi_max)
 {
-	MRPT_START
+  MRPT_START
 
-	ASSERT_(theMap != nullptr);
-	int sizeX = theMap->getSizeX();
-	int sizeY = theMap->getSizeY();
-	double gridRes = theMap->getResolution();
-	std::vector<double> freeCells_x, freeCells_y;
-	size_t nFreeCells;
-	unsigned int xIdx1, xIdx2;
-	unsigned int yIdx1, yIdx2;
+  ASSERT_(theMap != nullptr);
+  int sizeX = theMap->getSizeX();
+  int sizeY = theMap->getSizeY();
+  double gridRes = theMap->getResolution();
+  std::vector<double> freeCells_x, freeCells_y;
+  size_t nFreeCells;
+  unsigned int xIdx1, xIdx2;
+  unsigned int yIdx1, yIdx2;
 
-	freeCells_x.reserve(sizeX * sizeY);
-	freeCells_y.reserve(sizeX * sizeY);
+  freeCells_x.reserve(sizeX * sizeY);
+  freeCells_y.reserve(sizeX * sizeY);
 
-	if (x_min > theMap->getXMin()) xIdx1 = max(0, theMap->x2idx(x_min));
-	else
-		xIdx1 = 0;
-	if (x_max < theMap->getXMax()) xIdx2 = min(sizeX - 1, theMap->x2idx(x_max));
-	else
-		xIdx2 = sizeX - 1;
-	if (y_min > theMap->getYMin()) yIdx1 = max(0, theMap->y2idx(y_min));
-	else
-		yIdx1 = 0;
-	if (y_max < theMap->getYMax()) yIdx2 = min(sizeY - 1, theMap->y2idx(y_max));
-	else
-		yIdx2 = sizeY - 1;
+  if (x_min > theMap->getXMin())
+    xIdx1 = max(0, theMap->x2idx(x_min));
+  else
+    xIdx1 = 0;
+  if (x_max < theMap->getXMax())
+    xIdx2 = min(sizeX - 1, theMap->x2idx(x_max));
+  else
+    xIdx2 = sizeX - 1;
+  if (y_min > theMap->getYMin())
+    yIdx1 = max(0, theMap->y2idx(y_min));
+  else
+    yIdx1 = 0;
+  if (y_max < theMap->getYMax())
+    yIdx2 = min(sizeY - 1, theMap->y2idx(y_max));
+  else
+    yIdx2 = sizeY - 1;
 
-	for (unsigned int x = xIdx1; x <= xIdx2; x++)
-		for (unsigned int y = yIdx1; y <= yIdx2; y++)
-			if (theMap->getCell(x, y) >= freeCellsThreshold)
-			{
-				freeCells_x.push_back(theMap->idx2x(x));
-				freeCells_y.push_back(theMap->idx2y(y));
-			}
+  for (unsigned int x = xIdx1; x <= xIdx2; x++)
+    for (unsigned int y = yIdx1; y <= yIdx2; y++)
+      if (theMap->getCell(x, y) >= freeCellsThreshold)
+      {
+        freeCells_x.push_back(theMap->idx2x(x));
+        freeCells_y.push_back(theMap->idx2y(y));
+      }
 
-	nFreeCells = freeCells_x.size();
+  nFreeCells = freeCells_x.size();
 
-	// Assure that map is not fully occupied!
-	ASSERT_(nFreeCells);
+  // Assure that map is not fully occupied!
+  ASSERT_(nFreeCells);
 
-	if (particlesCount > 0) m_particles.resize(particlesCount);
+  if (particlesCount > 0) m_particles.resize(particlesCount);
 
-	const size_t M = m_particles.size();
-	// Generate pose m_particles:
-	for (size_t i = 0; i < M; i++)
-	{
-		int idx =
-			round(getRandomGenerator().drawUniform(0.0, nFreeCells - 1.001));
+  const size_t M = m_particles.size();
+  // Generate pose m_particles:
+  for (size_t i = 0; i < M; i++)
+  {
+    int idx = round(getRandomGenerator().drawUniform(0.0, nFreeCells - 1.001));
 
-		m_particles[i].d.x = freeCells_x[idx] +
-			getRandomGenerator().drawUniform(-gridRes, gridRes);
-		m_particles[i].d.y = freeCells_y[idx] +
-			getRandomGenerator().drawUniform(-gridRes, gridRes);
-		m_particles[i].d.phi =
-			getRandomGenerator().drawUniform(phi_min, phi_max);
-		m_particles[i].log_w = 0;
-	}
+    m_particles[i].d.x = freeCells_x[idx] + getRandomGenerator().drawUniform(-gridRes, gridRes);
+    m_particles[i].d.y = freeCells_y[idx] + getRandomGenerator().drawUniform(-gridRes, gridRes);
+    m_particles[i].d.phi = getRandomGenerator().drawUniform(phi_min, phi_max);
+    m_particles[i].log_w = 0;
+  }
 
-	MRPT_END
+  MRPT_END
 }

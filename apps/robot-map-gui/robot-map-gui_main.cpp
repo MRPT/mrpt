@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-	APPLICATION: robot-map-gui
-	FILE: robot-map-gui_main.cpp
-	AUTHOR: LisGein <alred402@gmail.com>
+  APPLICATION: robot-map-gui
+  FILE: robot-map-gui_main.cpp
+  AUTHOR: LisGein <alred402@gmail.com>
 
-	See README.txt for instructions.
+  See README.txt for instructions.
   ---------------------------------------------------------------*/
 #include <QApplication>
 #include <QCommandLineParser>
@@ -21,22 +21,22 @@
 
 int main(int argc, char** argv)
 {
-	setlocale(LC_NUMERIC, "C");
-	QLocale::setDefault(QLocale::C);
+  setlocale(LC_NUMERIC, "C");
+  QLocale::setDefault(QLocale::C);
 
-	QApplication app(argc, argv);
-	QApplication::setOrganizationName("MRPT");
-	QApplication::setOrganizationDomain("mrpt.org");
-	QApplication::setApplicationName("robot-map-gui");
+  QApplication app(argc, argv);
+  QApplication::setOrganizationName("MRPT");
+  QApplication::setOrganizationDomain("mrpt.org");
+  QApplication::setApplicationName("robot-map-gui");
 
-	QCommandLineParser parser;
-	parser.parse(QApplication::arguments());
-	const QStringList args = parser.positionalArguments();
+  QCommandLineParser parser;
+  parser.parse(QApplication::arguments());
+  const QStringList args = parser.positionalArguments();
 
-	CMainWindow mainWindow;
+  CMainWindow mainWindow;
 
-	if (!args.isEmpty()) mainWindow.loadMap(args.first());
+  if (!args.isEmpty()) mainWindow.loadMap(args.first());
 
-	mainWindow.show();
-	return app.exec();
+  mainWindow.show();
+  return app.exec();
 }

@@ -31,41 +31,41 @@ namespace mrpt::obs
  */
 class CObservationOdometry : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationOdometry, mrpt::obs)
+  DEFINE_SERIALIZABLE(CObservationOdometry, mrpt::obs)
 
-   public:
-	/** Default ctor */
-	CObservationOdometry();
+ public:
+  /** Default ctor */
+  CObservationOdometry();
 
-	/** The absolute odometry measurement (IT IS NOT INCREMENTAL) */
-	mrpt::poses::CPose2D odometry;
+  /** The absolute odometry measurement (IT IS NOT INCREMENTAL) */
+  mrpt::poses::CPose2D odometry;
 
-	/** "true" means that "encoderLeftTicks" and "encoderRightTicks" contain
-	 * valid values. */
-	bool hasEncodersInfo{false};
-	/** For differential-driven robots: The ticks count for each wheel in
-	 * ABSOLUTE VALUE (IT IS NOT INCREMENTAL) (positive means FORWARD, for both
-	 * wheels); \sa hasEncodersInfo  */
-	int32_t encoderLeftTicks{0}, encoderRightTicks{0};
+  /** "true" means that "encoderLeftTicks" and "encoderRightTicks" contain
+   * valid values. */
+  bool hasEncodersInfo{false};
+  /** For differential-driven robots: The ticks count for each wheel in
+   * ABSOLUTE VALUE (IT IS NOT INCREMENTAL) (positive means FORWARD, for both
+   * wheels); \sa hasEncodersInfo  */
+  int32_t encoderLeftTicks{0}, encoderRightTicks{0};
 
-	/** "true" means that `velocityLocal` contains valid values. */
-	bool hasVelocities{false};
-	/** Velocity, in the robot (local) frame of reference (+X=forward). */
-	mrpt::math::TTwist2D velocityLocal;
+  /** "true" means that `velocityLocal` contains valid values. */
+  bool hasVelocities{false};
+  /** Velocity, in the robot (local) frame of reference (+X=forward). */
+  mrpt::math::TTwist2D velocityLocal;
 
-	// See base class docs
-	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
-	{
-		out_sensorPose = mrpt::poses::CPose3D(0, 0, 0);
-	}
-	void setSensorPose(const mrpt::poses::CPose3D&) override {}
-	void getDescriptionAsText(std::ostream& o) const override;
+  // See base class docs
+  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
+  {
+    out_sensorPose = mrpt::poses::CPose3D(0, 0, 0);
+  }
+  void setSensorPose(const mrpt::poses::CPose3D&) override {}
+  void getDescriptionAsText(std::ostream& o) const override;
 
-	// See base class docs:
-	bool exportTxtSupported() const override { return true; }
-	std::string exportTxtHeader() const override;
-	std::string exportTxtDataRow() const override;
+  // See base class docs:
+  bool exportTxtSupported() const override { return true; }
+  std::string exportTxtHeader() const override;
+  std::string exportTxtDataRow() const override;
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace mrpt::obs

@@ -23,11 +23,11 @@
 // Depth of Kinect ranges:
 #if MRPT_HAS_KINECT_FREENECT
 #define MRPT_KINECT_DEPTH_10BIT
-#define KINECT_RANGES_TABLE_LEN 1024
+#define KINECT_RANGES_TABLE_LEN  1024
 #define KINECT_RANGES_TABLE_MASK 0x03FF
 #else  //  MRPT_HAS_KINECT_CL_NUI or none:
 #define MRPT_KINECT_DEPTH_11BIT
-#define KINECT_RANGES_TABLE_LEN 2048
+#define KINECT_RANGES_TABLE_LEN  2048
 #define KINECT_RANGES_TABLE_MASK 0x07FF
 #endif
 
@@ -264,284 +264,239 @@ namespace mrpt::hwdrivers
  */
 class CKinect : public mrpt::hwdrivers::CGenericSensor
 {
-	DEFINE_GENERIC_SENSOR(CKinect)
+  DEFINE_GENERIC_SENSOR(CKinect)
 
-   public:
-	/** A type for an array that converts raw depth to ranges in millimeters. */
-	using TDepth2RangeArray = uint16_t[KINECT_RANGES_TABLE_LEN];
+ public:
+  /** A type for an array that converts raw depth to ranges in millimeters. */
+  using TDepth2RangeArray = uint16_t[KINECT_RANGES_TABLE_LEN];
 
-	/** RGB or IR video channel identifiers \sa setVideoChannel */
-	enum TVideoChannel
-	{
-		VIDEO_CHANNEL_RGB = 0,
-		VIDEO_CHANNEL_IR
-	};
+  /** RGB or IR video channel identifiers \sa setVideoChannel */
+  enum TVideoChannel
+  {
+    VIDEO_CHANNEL_RGB = 0,
+    VIDEO_CHANNEL_IR
+  };
 
-	/** Default ctor */
-	CKinect();
-	/** Default ctor */
-	~CKinect() override;
+  /** Default ctor */
+  CKinect();
+  /** Default ctor */
+  ~CKinect() override;
 
-	/** Initializes the 3D camera - should be invoked after calling loadConfig()
-	 * or setting the different parameters with the set*() methods.
-	 *  \exception This method must throw an exception with a descriptive
-	 * message if some critical error is found.
-	 */
-	void initialize() override;
+  /** Initializes the 3D camera - should be invoked after calling loadConfig()
+   * or setting the different parameters with the set*() methods.
+   *  \exception This method must throw an exception with a descriptive
+   * message if some critical error is found.
+   */
+  void initialize() override;
 
-	/** To be called  at a high rate (>XX Hz), this method populates the
-	 * internal buffer of received observations.
-	 *  This method is mainly intended for usage within rawlog-grabber or
-	 * similar programs.
-	 *  For an alternative, see getNextObservation()
-	 *  \exception This method must throw an exception with a descriptive
-	 * message if some critical error is found.
-	 * \sa getNextObservation
-	 */
-	void doProcess() override;
+  /** To be called  at a high rate (>XX Hz), this method populates the
+   * internal buffer of received observations.
+   *  This method is mainly intended for usage within rawlog-grabber or
+   * similar programs.
+   *  For an alternative, see getNextObservation()
+   *  \exception This method must throw an exception with a descriptive
+   * message if some critical error is found.
+   * \sa getNextObservation
+   */
+  void doProcess() override;
 
-	/** The main data retrieving function, to be called after calling
-	 * loadConfig() and initialize().
-	 *  \param out_obs The output retrieved observation (only if
-	 * there_is_obs=true).
-	 *  \param there_is_obs If set to false, there was no new observation.
-	 *  \param hardware_error True on hardware/comms error.
-	 *
-	 * \sa doProcess
-	 */
-	void getNextObservation(
-		mrpt::obs::CObservation3DRangeScan& out_obs, bool& there_is_obs,
-		bool& hardware_error);
+  /** The main data retrieving function, to be called after calling
+   * loadConfig() and initialize().
+   *  \param out_obs The output retrieved observation (only if
+   * there_is_obs=true).
+   *  \param there_is_obs If set to false, there was no new observation.
+   *  \param hardware_error True on hardware/comms error.
+   *
+   * \sa doProcess
+   */
+  void getNextObservation(
+      mrpt::obs::CObservation3DRangeScan& out_obs, bool& there_is_obs, bool& hardware_error);
 
-	/** \overload
-	 * \note This method also grabs data from the accelerometers, returning
-	 * them in out_obs_imu
-	 */
-	void getNextObservation(
-		mrpt::obs::CObservation3DRangeScan& out_obs,
-		mrpt::obs::CObservationIMU& out_obs_imu, bool& there_is_obs,
-		bool& hardware_error);
+  /** \overload
+   * \note This method also grabs data from the accelerometers, returning
+   * them in out_obs_imu
+   */
+  void getNextObservation(
+      mrpt::obs::CObservation3DRangeScan& out_obs,
+      mrpt::obs::CObservationIMU& out_obs_imu,
+      bool& there_is_obs,
+      bool& hardware_error);
 
-	/**  Set the path where to save off-rawlog image files (this class DOES take
-	 * into account this path).
-	 *  An  empty string (the default value at construction) means to save
-	 * images embedded in the rawlog, instead of on separate files.
-	 * \exception std::exception If the directory doesn't exists and cannot be
-	 * created.
-	 */
-	void setPathForExternalImages(const std::string& directory) override;
+  /**  Set the path where to save off-rawlog image files (this class DOES take
+   * into account this path).
+   *  An  empty string (the default value at construction) means to save
+   * images embedded in the rawlog, instead of on separate files.
+   * \exception std::exception If the directory doesn't exists and cannot be
+   * created.
+   */
+  void setPathForExternalImages(const std::string& directory) override;
 
-	/** @name Sensor parameters (alternative to \a loadConfig ) and manual
-	   control
-		@{ */
+  /** @name Sensor parameters (alternative to \a loadConfig ) and manual
+   control
+    @{ */
 
-	/** Try to open the camera (set all the parameters before calling this) -
-	 * users may also call initialize(), which in turn calls this method.
-	 *  Raises an exception upon error.
-	 * \exception std::exception A textual description of the error.
-	 */
-	void open();
+  /** Try to open the camera (set all the parameters before calling this) -
+   * users may also call initialize(), which in turn calls this method.
+   *  Raises an exception upon error.
+   * \exception std::exception A textual description of the error.
+   */
+  void open();
 
-	/** Whether there is a working connection to the sensor */
-	bool isOpen() const;
+  /** Whether there is a working connection to the sensor */
+  bool isOpen() const;
 
-	/** Close the Connection to the sensor (not need to call it manually unless
-	 * desired for some reason,
-	 * since it's called at destructor) */
-	void close();
+  /** Close the Connection to the sensor (not need to call it manually unless
+   * desired for some reason,
+   * since it's called at destructor) */
+  void close();
 
-	/** Changes the video channel to open (RGB or IR) - you can call this method
-	   before start grabbing or in the middle of streaming and the video source
-	   will change on the fly.
-		Default is RGB channel. */
-	void setVideoChannel(const TVideoChannel vch);
-	/** Return the current video channel (RGB or IR) \sa setVideoChannel */
-	inline TVideoChannel getVideoChannel() const { return m_video_channel; }
-	/** Set the sensor index to open (if there're several sensors attached to
-	 * the computer); default=0 -> the first one. */
-	inline void setDeviceIndexToOpen(int index)
-	{
-		m_user_device_number = index;
-	}
-	inline int getDeviceIndexToOpen() const { return m_user_device_number; }
-	/** Change tilt angle \note Sensor must be open first. */
-	void setTiltAngleDegrees(double angle);
-	double getTiltAngleDegrees();
+  /** Changes the video channel to open (RGB or IR) - you can call this method
+   before start grabbing or in the middle of streaming and the video source
+   will change on the fly.
+    Default is RGB channel. */
+  void setVideoChannel(const TVideoChannel vch);
+  /** Return the current video channel (RGB or IR) \sa setVideoChannel */
+  inline TVideoChannel getVideoChannel() const { return m_video_channel; }
+  /** Set the sensor index to open (if there're several sensors attached to
+   * the computer); default=0 -> the first one. */
+  inline void setDeviceIndexToOpen(int index) { m_user_device_number = index; }
+  inline int getDeviceIndexToOpen() const { return m_user_device_number; }
+  /** Change tilt angle \note Sensor must be open first. */
+  void setTiltAngleDegrees(double angle);
+  double getTiltAngleDegrees();
 
-	/** Default: disabled */
-	inline void enablePreviewRGB(bool enable = true)
-	{
-		m_preview_window = enable;
-	}
-	inline void disablePreviewRGB() { m_preview_window = false; }
-	inline bool isPreviewRGBEnabled() const { return m_preview_window; }
-	/** If preview is enabled, show only one image out of N (default: 1=show
-	 * all) */
-	inline void setPreviewDecimation(size_t decimation_factor)
-	{
-		m_preview_window_decimation = decimation_factor;
-	}
-	inline size_t getPreviewDecimation() const
-	{
-		return m_preview_window_decimation;
-	}
+  /** Default: disabled */
+  inline void enablePreviewRGB(bool enable = true) { m_preview_window = enable; }
+  inline void disablePreviewRGB() { m_preview_window = false; }
+  inline bool isPreviewRGBEnabled() const { return m_preview_window; }
+  /** If preview is enabled, show only one image out of N (default: 1=show
+   * all) */
+  inline void setPreviewDecimation(size_t decimation_factor)
+  {
+    m_preview_window_decimation = decimation_factor;
+  }
+  inline size_t getPreviewDecimation() const { return m_preview_window_decimation; }
 
-	/** Get the maximum range (meters) that can be read in the observation field
-	 * "rangeImage" */
-	inline double getMaxRange() const { return m_maxRange; }
-	/** Get the row count in the camera images, loaded automatically upon camera
-	 * open(). */
-	inline size_t rows() const { return m_cameraParamsRGB.nrows; }
-	/** Get the col count in the camera images, loaded automatically upon camera
-	 * open(). */
-	inline size_t cols() const { return m_cameraParamsRGB.ncols; }
-	/** Get a const reference to the depth camera calibration parameters */
-	inline const mrpt::img::TCamera& getCameraParamsIntensity() const
-	{
-		return m_cameraParamsRGB;
-	}
-	inline void setCameraParamsIntensity(const mrpt::img::TCamera& p)
-	{
-		m_cameraParamsRGB = p;
-	}
+  /** Get the maximum range (meters) that can be read in the observation field
+   * "rangeImage" */
+  inline double getMaxRange() const { return m_maxRange; }
+  /** Get the row count in the camera images, loaded automatically upon camera
+   * open(). */
+  inline size_t rows() const { return m_cameraParamsRGB.nrows; }
+  /** Get the col count in the camera images, loaded automatically upon camera
+   * open(). */
+  inline size_t cols() const { return m_cameraParamsRGB.ncols; }
+  /** Get a const reference to the depth camera calibration parameters */
+  inline const mrpt::img::TCamera& getCameraParamsIntensity() const { return m_cameraParamsRGB; }
+  inline void setCameraParamsIntensity(const mrpt::img::TCamera& p) { m_cameraParamsRGB = p; }
 
-	/** Get a const reference to the depth camera calibration parameters */
-	inline const mrpt::img::TCamera& getCameraParamsDepth() const
-	{
-		return m_cameraParamsDepth;
-	}
-	inline void setCameraParamsDepth(const mrpt::img::TCamera& p)
-	{
-		m_cameraParamsDepth = p;
-	}
+  /** Get a const reference to the depth camera calibration parameters */
+  inline const mrpt::img::TCamera& getCameraParamsDepth() const { return m_cameraParamsDepth; }
+  inline void setCameraParamsDepth(const mrpt::img::TCamera& p) { m_cameraParamsDepth = p; }
 
-	/** Set the pose of the intensity camera wrt the depth camera \sa See
-	 * mrpt::obs::CObservation3DRangeScan for a 3D diagram of this pose */
-	inline void setRelativePoseIntensityWrtDepth(const mrpt::poses::CPose3D& p)
-	{
-		m_relativePoseIntensityWRTDepth = p;
-	}
-	inline const mrpt::poses::CPose3D& getRelativePoseIntensityWrtDepth() const
-	{
-		return m_relativePoseIntensityWRTDepth;
-	}
+  /** Set the pose of the intensity camera wrt the depth camera \sa See
+   * mrpt::obs::CObservation3DRangeScan for a 3D diagram of this pose */
+  inline void setRelativePoseIntensityWrtDepth(const mrpt::poses::CPose3D& p)
+  {
+    m_relativePoseIntensityWRTDepth = p;
+  }
+  inline const mrpt::poses::CPose3D& getRelativePoseIntensityWrtDepth() const
+  {
+    return m_relativePoseIntensityWRTDepth;
+  }
 
-	/** Get a reference to the array that convert raw depth values (10 or 11
-	 * bit) into ranges in mm, so it can be read or replaced by the user.
-	 *  If you replace it, remember to set the first and last entries (index 0
-	 * and KINECT_RANGES_TABLE_LEN-1) to zero, to indicate that those are
-	 * invalid ranges.
-	 */
-	inline TDepth2RangeArray& getRawDepth2RangeConversion()
-	{
-		return m_range2meters;
-	}
-	inline const TDepth2RangeArray& getRawDepth2RangeConversion() const
-	{
-		return m_range2meters;
-	}
+  /** Get a reference to the array that convert raw depth values (10 or 11
+   * bit) into ranges in mm, so it can be read or replaced by the user.
+   *  If you replace it, remember to set the first and last entries (index 0
+   * and KINECT_RANGES_TABLE_LEN-1) to zero, to indicate that those are
+   * invalid ranges.
+   */
+  inline TDepth2RangeArray& getRawDepth2RangeConversion() { return m_range2meters; }
+  inline const TDepth2RangeArray& getRawDepth2RangeConversion() const { return m_range2meters; }
 
-	/** Enable/disable the grabbing of the RGB channel */
-	inline void enableGrabRGB(bool enable = true) { m_grab_image = enable; }
-	inline bool isGrabRGBEnabled() const { return m_grab_image; }
-	/** Enable/disable the grabbing of the depth channel */
-	inline void enableGrabDepth(bool enable = true) { m_grab_depth = enable; }
-	inline bool isGrabDepthEnabled() const { return m_grab_depth; }
-	/** Enable/disable the grabbing of the inertial data */
-	inline void enableGrabAccelerometers(bool enable = true)
-	{
-		m_grab_IMU = enable;
-	}
-	inline bool isGrabAccelerometersEnabled() const { return m_grab_IMU; }
-	/** Enable/disable the grabbing of the 3D point clouds */
-	inline void enableGrab3DPoints(bool enable = true)
-	{
-		m_grab_3D_points = enable;
-	}
-	inline bool isGrab3DPointsEnabled() const { return m_grab_3D_points; }
-	/** @} */
+  /** Enable/disable the grabbing of the RGB channel */
+  inline void enableGrabRGB(bool enable = true) { m_grab_image = enable; }
+  inline bool isGrabRGBEnabled() const { return m_grab_image; }
+  /** Enable/disable the grabbing of the depth channel */
+  inline void enableGrabDepth(bool enable = true) { m_grab_depth = enable; }
+  inline bool isGrabDepthEnabled() const { return m_grab_depth; }
+  /** Enable/disable the grabbing of the inertial data */
+  inline void enableGrabAccelerometers(bool enable = true) { m_grab_IMU = enable; }
+  inline bool isGrabAccelerometersEnabled() const { return m_grab_IMU; }
+  /** Enable/disable the grabbing of the 3D point clouds */
+  inline void enableGrab3DPoints(bool enable = true) { m_grab_3D_points = enable; }
+  inline bool isGrab3DPointsEnabled() const { return m_grab_3D_points; }
+  /** @} */
 
 #if MRPT_HAS_KINECT_FREENECT
-	// Auxiliary getters/setters (we can't declare the libfreenect callback as
-	// friend since we
-	//   want to avoid including the API headers here).
-	inline mrpt::obs::CObservation3DRangeScan& internal_latest_obs()
-	{
-		return m_latest_obs;
-	}
-	inline volatile uint32_t& internal_tim_latest_depth()
-	{
-		return m_tim_latest_depth;
-	}
-	inline volatile uint32_t& internal_tim_latest_rgb()
-	{
-		return m_tim_latest_rgb;
-	}
-	inline std::mutex& internal_latest_obs_cs() { return m_latest_obs_cs; }
+  // Auxiliary getters/setters (we can't declare the libfreenect callback as
+  // friend since we
+  //   want to avoid including the API headers here).
+  inline mrpt::obs::CObservation3DRangeScan& internal_latest_obs() { return m_latest_obs; }
+  inline volatile uint32_t& internal_tim_latest_depth() { return m_tim_latest_depth; }
+  inline volatile uint32_t& internal_tim_latest_rgb() { return m_tim_latest_rgb; }
+  inline std::mutex& internal_latest_obs_cs() { return m_latest_obs_cs; }
 #endif
 
-   protected:
-	/** See the class documentation at the top for expected parameters */
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& section) override;
+ protected:
+  /** See the class documentation at the top for expected parameters */
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& section) override;
 
-	mrpt::poses::CPose3D m_sensorPoseOnRobot;
+  mrpt::poses::CPose3D m_sensorPoseOnRobot;
 
-	/** Show preview window while grabbing */
-	bool m_preview_window{false};
-	/** If preview is enabled, only show 1 out of N images. */
-	size_t m_preview_window_decimation{1};
-	size_t m_preview_decim_counter_range{0}, m_preview_decim_counter_rgb{0};
-	mrpt::gui::CDisplayWindow::Ptr m_win_range, m_win_int;
+  /** Show preview window while grabbing */
+  bool m_preview_window{false};
+  /** If preview is enabled, only show 1 out of N images. */
+  size_t m_preview_window_decimation{1};
+  size_t m_preview_decim_counter_range{0}, m_preview_decim_counter_rgb{0};
+  mrpt::gui::CDisplayWindow::Ptr m_win_range, m_win_int;
 
 #if MRPT_HAS_KINECT_FREENECT
-	/** The "freenect_context", or nullptr if closed */
-	void* m_f_ctx{nullptr};
-	/** The "freenect_device", or nullptr if closed */
-	void* m_f_dev{nullptr};
+  /** The "freenect_context", or nullptr if closed */
+  void* m_f_ctx{nullptr};
+  /** The "freenect_device", or nullptr if closed */
+  void* m_f_dev{nullptr};
 
-	// Data fields for use with the callback function:
-	mrpt::obs::CObservation3DRangeScan m_latest_obs;
-	volatile uint32_t m_tim_latest_depth{0},
-		m_tim_latest_rgb{0};  // 0 = not updated
-	std::mutex m_latest_obs_cs;
+  // Data fields for use with the callback function:
+  mrpt::obs::CObservation3DRangeScan m_latest_obs;
+  volatile uint32_t m_tim_latest_depth{0}, m_tim_latest_rgb{0};  // 0 = not updated
+  std::mutex m_latest_obs_cs;
 #endif
 
-	/** Params for the RGB camera */
-	mrpt::img::TCamera m_cameraParamsRGB;
-	/** Params for the Depth camera */
-	mrpt::img::TCamera m_cameraParamsDepth;
-	/** See mrpt::obs::CObservation3DRangeScan for a diagram of this pose */
-	mrpt::poses::CPose3D m_relativePoseIntensityWRTDepth;
+  /** Params for the RGB camera */
+  mrpt::img::TCamera m_cameraParamsRGB;
+  /** Params for the Depth camera */
+  mrpt::img::TCamera m_cameraParamsDepth;
+  /** See mrpt::obs::CObservation3DRangeScan for a diagram of this pose */
+  mrpt::poses::CPose3D m_relativePoseIntensityWRTDepth;
 
-	/** Set Kinect tilt to an initial deegre (it should be take in account in
-	 * the sensor pose by the user) */
-	int m_initial_tilt_angle{360};
+  /** Set Kinect tilt to an initial deegre (it should be take in account in
+   * the sensor pose by the user) */
+  int m_initial_tilt_angle{360};
 
-	/** Sensor max range (meters) */
-	double m_maxRange;
+  /** Sensor max range (meters) */
+  double m_maxRange;
 
-	/** Number of device to open (0:first,...) */
-	int m_user_device_number{0};
+  /** Number of device to open (0:first,...) */
+  int m_user_device_number{0};
 
-	/** Default: all true */
-	bool m_grab_image{true}, m_grab_depth{true}, m_grab_3D_points{true},
-		m_grab_IMU{true};
+  /** Default: all true */
+  bool m_grab_image{true}, m_grab_depth{true}, m_grab_3D_points{true}, m_grab_IMU{true};
 
-	/** The video channel to open: RGB or IR */
-	TVideoChannel m_video_channel;
+  /** The video channel to open: RGB or IR */
+  TVideoChannel m_video_channel;
 
-   private:
-	/** Temporary buffers for image grabbing. */
-	std::vector<uint8_t> m_buf_depth, m_buf_rgb;
-	/** The table raw depth -> range in meters */
-	TDepth2RangeArray m_range2meters;
+ private:
+  /** Temporary buffers for image grabbing. */
+  std::vector<uint8_t> m_buf_depth, m_buf_rgb;
+  /** The table raw depth -> range in meters */
+  TDepth2RangeArray m_range2meters;
 
-	/** Compute m_range2meters at construction */
-	void calculate_range2meters();
+  /** Compute m_range2meters at construction */
+  void calculate_range2meters();
 
-};	// End of class
+};  // End of class
 }  // namespace mrpt::hwdrivers
 MRPT_ENUM_TYPE_BEGIN(mrpt::hwdrivers::CKinect::TVideoChannel)
 using namespace mrpt::hwdrivers;

@@ -36,247 +36,241 @@ namespace mrpt::opengl
  *  \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
-class CMesh : public CRenderizableShaderTexturedTriangles,
-			  public CRenderizableShaderWireFrame
+class CMesh : public CRenderizableShaderTexturedTriangles, public CRenderizableShaderWireFrame
 {
-	DEFINE_SERIALIZABLE(CMesh, mrpt::opengl)
-   public:
-	struct TTriangleVertexIndices
-	{
-		size_t vind[3] = {0, 0, 0};
-	};
+  DEFINE_SERIALIZABLE(CMesh, mrpt::opengl)
+ public:
+  struct TTriangleVertexIndices
+  {
+    size_t vind[3] = {0, 0, 0};
+  };
 
-   public:
-	/** @name Renderizable shader API virtual methods
-	 * @{ */
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
+ public:
+  /** @name Renderizable shader API virtual methods
+   * @{ */
+  void render(const RenderContext& rc) const override;
+  void renderUpdateBuffers() const override;
 
-	virtual shader_list_t requiredShaders() const override
-	{
-		// May use up to two shaders (triangles and lines):
-		return {
-			DefaultShaderID::WIREFRAME,
-			DefaultShaderID::TEXTURED_TRIANGLES_LIGHT};
-	}
-	void onUpdateBuffers_Wireframe() override;
-	void onUpdateBuffers_TexturedTriangles() override;
-	void freeOpenGLResources() override
-	{
-		CRenderizableShaderTexturedTriangles::freeOpenGLResources();
-		CRenderizableShaderWireFrame::freeOpenGLResources();
-	}
-	/** @} */
+  virtual shader_list_t requiredShaders() const override
+  {
+    // May use up to two shaders (triangles and lines):
+    return {DefaultShaderID::WIREFRAME, DefaultShaderID::TEXTURED_TRIANGLES_LIGHT};
+  }
+  void onUpdateBuffers_Wireframe() override;
+  void onUpdateBuffers_TexturedTriangles() override;
+  void freeOpenGLResources() override
+  {
+    CRenderizableShaderTexturedTriangles::freeOpenGLResources();
+    CRenderizableShaderWireFrame::freeOpenGLResources();
+  }
+  /** @} */
 
-	CMesh(
-		bool enableTransparency = false, float xMin = -1.0f, float xMax = 1.0f,
-		float yMin = -1.0f, float yMax = 1.0f);
+  CMesh(
+      bool enableTransparency = false,
+      float xMin = -1.0f,
+      float xMax = 1.0f,
+      float yMin = -1.0f,
+      float yMax = 1.0f);
 
-	virtual ~CMesh() override;
+  virtual ~CMesh() override;
 
-	template <typename T>
-	void setGridLimits(T xMin, T xMax, T yMin, T yMax)
-	{
-		m_xMin = static_cast<float>(xMin);
-		m_xMax = static_cast<float>(xMax);
-		m_yMin = static_cast<float>(yMin);
-		m_yMax = static_cast<float>(yMax);
-		CRenderizable::notifyChange();
-	}
+  template <typename T>
+  void setGridLimits(T xMin, T xMax, T yMin, T yMax)
+  {
+    m_xMin = static_cast<float>(xMin);
+    m_xMax = static_cast<float>(xMax);
+    m_yMin = static_cast<float>(yMin);
+    m_yMax = static_cast<float>(yMax);
+    CRenderizable::notifyChange();
+  }
 
-	void getGridLimits(float& xMin, float& xMax, float& yMin, float& yMax) const
-	{
-		xMin = m_xMin;
-		xMax = m_xMax;
-		yMin = m_yMin;
-		yMax = m_yMax;
-	}
+  void getGridLimits(float& xMin, float& xMax, float& yMin, float& yMax) const
+  {
+    xMin = m_xMin;
+    xMax = m_xMax;
+    yMin = m_yMin;
+    yMax = m_yMax;
+  }
 
-	/** Sets the texture physical size (in "meters) using to wrap it over the
-	 * mesh extension.
-	 *  The default (0) means texture size is equal to whole grid extension. */
-	void setMeshTextureExtension(float textureSize_x, float textureSize_y)
-	{
-		m_textureSize_x = textureSize_x;
-		m_textureSize_y = textureSize_y;
-		CRenderizable::notifyChange();
-	}
+  /** Sets the texture physical size (in "meters) using to wrap it over the
+   * mesh extension.
+   *  The default (0) means texture size is equal to whole grid extension. */
+  void setMeshTextureExtension(float textureSize_x, float textureSize_y)
+  {
+    m_textureSize_x = textureSize_x;
+    m_textureSize_y = textureSize_y;
+    CRenderizable::notifyChange();
+  }
 
-	void getMeshTextureExtension(
-		float& textureSize_x, float& textureSize_y) const
-	{
-		textureSize_x = m_textureSize_x;
-		textureSize_y = m_textureSize_y;
-	}
+  void getMeshTextureExtension(float& textureSize_x, float& textureSize_y) const
+  {
+    textureSize_x = m_textureSize_x;
+    textureSize_y = m_textureSize_y;
+  }
 
-	void enableTransparency(bool v)
-	{
-		m_enableTransparency = v;
-		CRenderizable::notifyChange();
-	}
-	void enableWireFrame(bool v)
-	{
-		m_isWireFrame = v;
-		CRenderizable::notifyChange();
-	}
-	void enableColorFromZ(
-		bool v, mrpt::img::TColormap colorMap = mrpt::img::cmHOT)
-	{
-		m_colorFromZ = v;
-		m_colorMap = colorMap;
-		CRenderizable::notifyChange();
-	}
+  void enableTransparency(bool v)
+  {
+    m_enableTransparency = v;
+    CRenderizable::notifyChange();
+  }
+  void enableWireFrame(bool v)
+  {
+    m_isWireFrame = v;
+    CRenderizable::notifyChange();
+  }
+  void enableColorFromZ(bool v, mrpt::img::TColormap colorMap = mrpt::img::cmHOT)
+  {
+    m_colorFromZ = v;
+    m_colorMap = colorMap;
+    CRenderizable::notifyChange();
+  }
 
-	/** This method sets the matrix of heights for each position (cell) in the
-	 * mesh grid */
-	void setZ(const mrpt::math::CMatrixDynamic<float>& in_Z);
+  /** This method sets the matrix of heights for each position (cell) in the
+   * mesh grid */
+  void setZ(const mrpt::math::CMatrixDynamic<float>& in_Z);
 
-	/** Returns a reference to the internal Z matrix, allowing changing it
-	 * efficiently */
-	inline void getZ(mrpt::math::CMatrixFloat& out) const { out = Z; }
-	/** Returns a reference to the internal mask matrix, allowing changing it
-	 * efficiently */
-	inline void getMask(mrpt::math::CMatrixFloat& out) const { out = mask; }
-	/** This method sets the boolean mask of valid heights for each position
-	 * (cell) in the mesh grid */
-	void setMask(const mrpt::math::CMatrixDynamic<float>& in_mask);
+  /** Returns a reference to the internal Z matrix, allowing changing it
+   * efficiently */
+  inline void getZ(mrpt::math::CMatrixFloat& out) const { out = Z; }
+  /** Returns a reference to the internal mask matrix, allowing changing it
+   * efficiently */
+  inline void getMask(mrpt::math::CMatrixFloat& out) const { out = mask; }
+  /** This method sets the boolean mask of valid heights for each position
+   * (cell) in the mesh grid */
+  void setMask(const mrpt::math::CMatrixDynamic<float>& in_mask);
 
-	inline float getxMin() const { return m_xMin; }
-	inline float getxMax() const { return m_xMax; }
-	inline float getyMin() const { return m_yMin; }
-	inline float getyMax() const { return m_yMax; }
-	inline void setxMin(const float nxm)
-	{
-		m_xMin = nxm;
-		m_trianglesUpToDate = false;
-		CRenderizable::notifyChange();
-	}
-	inline void setxMax(const float nxm)
-	{
-		m_xMax = nxm;
-		m_trianglesUpToDate = false;
-		CRenderizable::notifyChange();
-	}
-	inline void setyMin(const float nym)
-	{
-		m_yMin = nym;
-		m_trianglesUpToDate = false;
-		CRenderizable::notifyChange();
-	}
-	inline void setyMax(const float nym)
-	{
-		m_yMax = nym;
-		m_trianglesUpToDate = false;
-		CRenderizable::notifyChange();
-	}
-	inline void getXBounds(float& min, float& max) const
-	{
-		min = m_xMin;
-		max = m_xMax;
-	}
-	inline void getYBounds(float& min, float& max) const
-	{
-		min = m_yMin;
-		max = m_yMax;
-	}
-	inline void setXBounds(const float min, const float max)
-	{
-		m_xMin = min;
-		m_xMax = max;
-		m_trianglesUpToDate = false;
-		CRenderizable::notifyChange();
-	}
-	inline void setYBounds(const float min, const float max)
-	{
-		m_yMin = min;
-		m_yMax = max;
-		m_trianglesUpToDate = false;
-		CRenderizable::notifyChange();
-	}
+  inline float getxMin() const { return m_xMin; }
+  inline float getxMax() const { return m_xMax; }
+  inline float getyMin() const { return m_yMin; }
+  inline float getyMax() const { return m_yMax; }
+  inline void setxMin(const float nxm)
+  {
+    m_xMin = nxm;
+    m_trianglesUpToDate = false;
+    CRenderizable::notifyChange();
+  }
+  inline void setxMax(const float nxm)
+  {
+    m_xMax = nxm;
+    m_trianglesUpToDate = false;
+    CRenderizable::notifyChange();
+  }
+  inline void setyMin(const float nym)
+  {
+    m_yMin = nym;
+    m_trianglesUpToDate = false;
+    CRenderizable::notifyChange();
+  }
+  inline void setyMax(const float nym)
+  {
+    m_yMax = nym;
+    m_trianglesUpToDate = false;
+    CRenderizable::notifyChange();
+  }
+  inline void getXBounds(float& min, float& max) const
+  {
+    min = m_xMin;
+    max = m_xMax;
+  }
+  inline void getYBounds(float& min, float& max) const
+  {
+    min = m_yMin;
+    max = m_yMax;
+  }
+  inline void setXBounds(const float min, const float max)
+  {
+    m_xMin = min;
+    m_xMax = max;
+    m_trianglesUpToDate = false;
+    CRenderizable::notifyChange();
+  }
+  inline void setYBounds(const float min, const float max)
+  {
+    m_yMin = min;
+    m_yMax = max;
+    m_trianglesUpToDate = false;
+    CRenderizable::notifyChange();
+  }
 
-	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
+  mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
-	/** Assigns a texture image.
-	 */
-	void assignImage(const mrpt::img::CImage& img);
+  /** Assigns a texture image.
+   */
+  void assignImage(const mrpt::img::CImage& img);
 
-	/** Assigns a texture image and Z simultaneously, and disable transparency.
-	 */
-	void assignImageAndZ(
-		const mrpt::img::CImage& img,
-		const mrpt::math::CMatrixDynamic<float>& in_Z);
+  /** Assigns a texture image and Z simultaneously, and disable transparency.
+   */
+  void assignImageAndZ(const mrpt::img::CImage& img, const mrpt::math::CMatrixDynamic<float>& in_Z);
 
-	/** Adjust grid limits according to the image aspect ratio, maintaining the
-	 * X limits and resizing in the Y direction.
-	 */
-	void adjustGridToImageAR();
+  /** Adjust grid limits according to the image aspect ratio, maintaining the
+   * X limits and resizing in the Y direction.
+   */
+  void adjustGridToImageAR();
 
-	/** Trace ray
-	 */
-	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
+  /** Trace ray
+   */
+  bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
-   protected:
-	bool m_enableTransparency;
-	bool m_colorFromZ{false};
-	bool m_isWireFrame{false};
-	bool m_isImage{false};
+ protected:
+  bool m_enableTransparency;
+  bool m_colorFromZ{false};
+  bool m_isWireFrame{false};
+  bool m_isImage{false};
 
-	/** Z(x,y): Z-coordinate of the point (x,y) */
-	math::CMatrixF Z;
-	math::CMatrixF mask;
+  /** Z(x,y): Z-coordinate of the point (x,y) */
+  math::CMatrixF Z;
+  math::CMatrixF mask;
 
-	/** Grayscale Color [0,1] for each cell, updated by updateColorsMatrix */
-	mutable math::CMatrixF C;
-	/** Red Component of the Color [0,1] for each cell, updated by
-	 * updateColorsMatrix */
-	mutable math::CMatrixF C_r;
-	/** Green Component of the  Color [0,1] for each cell, updated by
-	 * updateColorsMatrix */
-	mutable math::CMatrixF C_g;
-	/** Blue Component of the  Color [0,1] for each cell, updated by
-	 * updateColorsMatrix */
-	mutable math::CMatrixF C_b;
+  /** Grayscale Color [0,1] for each cell, updated by updateColorsMatrix */
+  mutable math::CMatrixF C;
+  /** Red Component of the Color [0,1] for each cell, updated by
+   * updateColorsMatrix */
+  mutable math::CMatrixF C_r;
+  /** Green Component of the  Color [0,1] for each cell, updated by
+   * updateColorsMatrix */
+  mutable math::CMatrixF C_g;
+  /** Blue Component of the  Color [0,1] for each cell, updated by
+   * updateColorsMatrix */
+  mutable math::CMatrixF C_b;
 
-	/** Used when m_colorFromZ is true */
-	mrpt::img::TColormap m_colorMap{mrpt::img::cmHOT};
+  /** Used when m_colorFromZ is true */
+  mrpt::img::TColormap m_colorMap{mrpt::img::cmHOT};
 
-	/** Whether C is not up-to-date wrt to Z */
-	mutable bool m_modified_Z{true};
-	/** Whether C is not up-to-date wrt to the texture image */
-	mutable bool m_modified_Image{false};
+  /** Whether C is not up-to-date wrt to Z */
+  mutable bool m_modified_Z{true};
+  /** Whether C is not up-to-date wrt to the texture image */
+  mutable bool m_modified_Image{false};
 
-	/** Called internally to assure C is updated. */
-	void updateColorsMatrix() const;
-	/** Called internally to assure the triangle list is updated. */
-	void updateTriangles() const;
-	void updatePolygons() const;  //<!Called internally to assure that the
-	// polygon list is updated.
+  /** Called internally to assure C is updated. */
+  void updateColorsMatrix() const;
+  /** Called internally to assure the triangle list is updated. */
+  void updateTriangles() const;
+  void updatePolygons() const;  //<!Called internally to assure that the
+  // polygon list is updated.
 
-	/** Mesh bounds */
-	float m_xMin, m_xMax, m_yMin, m_yMax;
+  /** Mesh bounds */
+  float m_xMin, m_xMax, m_yMin, m_yMax;
 
-	/** Texture wrap physical size (in "meters). 0=texture size equal to whole
-	 * grid extension. */
-	float m_textureSize_x = 0, m_textureSize_y = 0;
+  /** Texture wrap physical size (in "meters). 0=texture size equal to whole
+   * grid extension. */
+  float m_textureSize_x = 0, m_textureSize_y = 0;
 
-	mutable float m_zMin = 0, m_zMax = 0;  //!< Updated in updateTriangles()
+  mutable float m_zMin = 0, m_zMax = 0;  //!< Updated in updateTriangles()
 
-	mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_meshDataMtx;
+  mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_meshDataMtx;
 
-	/** List of triangles in the mesh */
-	mutable std::vector<
-		std::pair<mrpt::opengl::TTriangle, TTriangleVertexIndices>>
-		actualMesh;
+  /** List of triangles in the mesh */
+  mutable std::vector<std::pair<mrpt::opengl::TTriangle, TTriangleVertexIndices>> actualMesh;
 
-	/** The accumulated normals & counts for each vertex, so normals can be
-	 * averaged. */
-	mutable std::vector<std::pair<mrpt::math::TPoint3D, size_t>> vertex_normals;
-	/**Whether the actual mesh needs to be recalculated */
-	mutable bool m_trianglesUpToDate{false};
-	/**Whether the polygon mesh (auxiliary structure for ray tracing) needs to
-	 * be recalculated */
-	mutable bool m_polygonsUpToDate{false};
-	mutable std::vector<mrpt::math::TPolygonWithPlane> tmpPolys;
+  /** The accumulated normals & counts for each vertex, so normals can be
+   * averaged. */
+  mutable std::vector<std::pair<mrpt::math::TPoint3D, size_t>> vertex_normals;
+  /**Whether the actual mesh needs to be recalculated */
+  mutable bool m_trianglesUpToDate{false};
+  /**Whether the polygon mesh (auxiliary structure for ray tracing) needs to
+   * be recalculated */
+  mutable bool m_polygonsUpToDate{false};
+  mutable std::vector<mrpt::math::TPolygonWithPlane> tmpPolys;
 };
 
 }  // namespace mrpt::opengl

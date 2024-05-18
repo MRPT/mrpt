@@ -22,8 +22,10 @@ namespace mrpt::math
  * \sa fft2_real
  */
 void fft_real(
-	CVectorFloat& in_realData, CVectorFloat& out_FFT_Re,
-	CVectorFloat& out_FFT_Im, CVectorFloat& out_FFT_Mag);
+    CVectorFloat& in_realData,
+    CVectorFloat& out_FFT_Re,
+    CVectorFloat& out_FFT_Im,
+    CVectorFloat& out_FFT_Mag);
 
 /** Compute the 2D Discrete Fourier Transform (DFT) of a real matrix, returning
  * the real and imaginary parts separately.
@@ -36,9 +38,7 @@ void fft_real(
  *  If the dimensions of the matrix are powers of two, the fast fourier
  * transform (FFT) is used instead of the general algorithm.
  */
-void dft2_real(
-	const CMatrixFloat& in_data, CMatrixFloat& out_real,
-	CMatrixFloat& out_imag);
+void dft2_real(const CMatrixFloat& in_data, CMatrixFloat& out_real, CMatrixFloat& out_imag);
 
 /** Compute the 2D inverse Discrete Fourier Transform (DFT)
  * \param in_real The N_1xN_2 input matrix with real values.
@@ -52,9 +52,7 @@ void dft2_real(
  * transform (FFT) is used instead of the general algorithm.
  * \sa fft_real, fft2_real
  */
-void idft2_real(
-	const CMatrixFloat& in_real, const CMatrixFloat& in_imag,
-	CMatrixFloat& out_data);
+void idft2_real(const CMatrixFloat& in_real, const CMatrixFloat& in_imag, CMatrixFloat& out_data);
 
 /** Compute the 2D Discrete Fourier Transform (DFT) of a complex matrix,
  * returning the real and imaginary parts separately.
@@ -69,8 +67,10 @@ void idft2_real(
  * \sa fft_real, idft2_complex,dft2_real
  */
 void dft2_complex(
-	const CMatrixFloat& in_real, const CMatrixFloat& in_imag,
-	CMatrixFloat& out_real, CMatrixFloat& out_imag);
+    const CMatrixFloat& in_real,
+    const CMatrixFloat& in_imag,
+    CMatrixFloat& out_real,
+    CMatrixFloat& out_imag);
 
 /** Compute the 2D inverse Discrete Fourier Transform (DFT).
  * \param in_real The N_1xN_2 input matrix with real values, where both
@@ -86,13 +86,14 @@ void dft2_complex(
  * transform (FFT) is used instead of the general algorithm.
  */
 void idft2_complex(
-	const CMatrixFloat& in_real, const CMatrixFloat& in_imag,
-	CMatrixFloat& out_real, CMatrixFloat& out_imag);
+    const CMatrixFloat& in_real,
+    const CMatrixFloat& in_imag,
+    CMatrixFloat& out_real,
+    CMatrixFloat& out_imag);
 
 /** Correlation of two matrixes using 2D FFT
  */
-void cross_correlation_FFT(
-	const CMatrixFloat& A, const CMatrixFloat& B, CMatrixFloat& out_corr);
+void cross_correlation_FFT(const CMatrixFloat& A, const CMatrixFloat& B, CMatrixFloat& out_corr);
 
 /** @} */
 

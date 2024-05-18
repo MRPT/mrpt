@@ -21,7 +21,7 @@ using std::vector;
  * @{ */
 
 /** @name RANSAC detectors
-	@{
+  @{
   */
 
 /** Fit a number of 3-D planes to a given point cloud, automatically determining
@@ -36,10 +36,12 @@ using std::vector;
  */
 template <typename NUMTYPE>
 void ransac_detect_3D_planes(
-	const CVectorDynamic<NUMTYPE>& x, const CVectorDynamic<NUMTYPE>& y,
-	const CVectorDynamic<NUMTYPE>& z,
-	std::vector<std::pair<size_t, TPlane>>& out_detected_planes,
-	const double threshold, size_t min_inliers_for_valid_plane = 10);
+    const CVectorDynamic<NUMTYPE>& x,
+    const CVectorDynamic<NUMTYPE>& y,
+    const CVectorDynamic<NUMTYPE>& z,
+    std::vector<std::pair<size_t, TPlane>>& out_detected_planes,
+    const double threshold,
+    size_t min_inliers_for_valid_plane = 10);
 
 /** Fit a number of 2-D lines to a given point cloud, automatically determining
  * the number of existing lines by means of the provided threshold and minimum
@@ -53,24 +55,25 @@ void ransac_detect_3D_planes(
  */
 template <typename NUMTYPE>
 void ransac_detect_2D_lines(
-	const CVectorDynamic<NUMTYPE>& x, const CVectorDynamic<NUMTYPE>& y,
-	std::vector<std::pair<size_t, TLine2D>>& out_detected_lines,
-	const double threshold, size_t min_inliers_for_valid_line = 5);
+    const CVectorDynamic<NUMTYPE>& x,
+    const CVectorDynamic<NUMTYPE>& y,
+    std::vector<std::pair<size_t, TLine2D>>& out_detected_lines,
+    const double threshold,
+    size_t min_inliers_for_valid_line = 5);
 
 /** A stub for ransac_detect_3D_planes() with the points given as a
  * mrpt::maps::CPointsMap
  */
 template <class POINTSMAP>
 inline void ransac_detect_3D_planes(
-	const POINTSMAP* points_map,
-	std::vector<std::pair<size_t, TPlane>>& out_detected_planes,
-	const double threshold, size_t min_inliers_for_valid_plane)
+    const POINTSMAP* points_map,
+    std::vector<std::pair<size_t, TPlane>>& out_detected_planes,
+    const double threshold,
+    size_t min_inliers_for_valid_plane)
 {
-	CVectorFloat xs, ys, zs;
-	points_map->getAllPoints(xs, ys, zs);
-	ransac_detect_3D_planes(
-		xs, ys, zs, out_detected_planes, threshold,
-		min_inliers_for_valid_plane);
+  CVectorFloat xs, ys, zs;
+  points_map->getAllPoints(xs, ys, zs);
+  ransac_detect_3D_planes(xs, ys, zs, out_detected_planes, threshold, min_inliers_for_valid_plane);
 }
 
 /** @} */

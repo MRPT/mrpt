@@ -17,13 +17,12 @@ namespace mrpt::tfest::internal
 template <typename T = float>
 struct se2_l2_impl_return_t
 {
-	T mean_x_a, mean_y_a, mean_x_b, mean_y_b;
-	T Ax, Ay;
+  T mean_x_a, mean_y_a, mean_x_b, mean_y_b;
+  T Ax, Ay;
 };
 
 #if MRPT_ARCH_INTEL_COMPATIBLE
-extern se2_l2_impl_return_t<float> se2_l2_impl_SSE2(
-	const TMatchingPairList& in_correspondences);
+extern se2_l2_impl_return_t<float> se2_l2_impl_SSE2(const TMatchingPairList& in_correspondences);
 #endif
 
 }  // namespace mrpt::tfest::internal

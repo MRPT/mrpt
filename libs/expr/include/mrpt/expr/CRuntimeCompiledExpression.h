@@ -12,7 +12,6 @@
 
 #include <functional>
 #include <map>
-#include <memory>
 #include <string>
 
 #include "mrpt-expr_export.h"
@@ -63,95 +62,89 @@ namespace expr
 // symbols which would increase the lib size too much.
 class MRPT_EXPR_EXPORT CRuntimeCompiledExpression
 {
-   public:
-	/** Default ctor */
-	CRuntimeCompiledExpression();
-	~CRuntimeCompiledExpression();
+ public:
+  /** Default ctor */
+  CRuntimeCompiledExpression();
+  ~CRuntimeCompiledExpression();
 
-	/** Initializes the object by compiling an expression.
-	 * \exception std::runtime_error On any syntax error or undefined symbol
-	 * while compiling the expression. The `e.what()` message describes what is
-	 * exactly the problem.
-	 * \sa register_symbol_table()
-	 */
-	void compile(/** [in] The expression to be compiled. */
-				 const std::string& expression,
-				 /** [in] Map of variables/constants by `name` ->  `value`. The
-					references to the values in this map **must** be ensured to
-					be
-					valid thoughout all the life of the compiled expression. */
-				 const std::map<std::string, double>& variables = {},
-				 /** [in] A descriptive name of this formula, to be used when
-					generating error reports via an  exception, if needed */
-				 const std::string& expr_name_for_error_reporting = {});
+  /** Initializes the object by compiling an expression.
+   * \exception std::runtime_error On any syntax error or undefined symbol
+   * while compiling the expression. The `e.what()` message describes what is
+   * exactly the problem.
+   * \sa register_symbol_table()
+   */
+  void compile(/** [in] The expression to be compiled. */
+               const std::string& expression,
+               /** [in] Map of variables/constants by `name` ->  `value`. The
+                references to the values in this map **must** be ensured to
+                be
+                valid thoughout all the life of the compiled expression. */
+               const std::map<std::string, double>& variables = {},
+               /** [in] A descriptive name of this formula, to be used when
+                generating error reports via an  exception, if needed */
+               const std::string& expr_name_for_error_reporting = {});
 
-	/** Can be used **before** calling compile() to register additional
-	 * variables by means of **pointers** instead of a std::map  */
-	void register_symbol_table(
-		/** [in] Map of variables/constants by `name` ->  `value`. The
-		   references to the values in this map **must** be ensured to be
-		   valid thoughout all the life of the compiled expression. */
-		const std::map<std::string, double*>& variables);
+  /** Can be used **before** calling compile() to register additional
+   * variables by means of **pointers** instead of a std::map  */
+  void register_symbol_table(
+      /** [in] Map of variables/constants by `name` ->  `value`. The
+       references to the values in this map **must** be ensured to be
+       valid thoughout all the life of the compiled expression. */
+      const std::map<std::string, double*>& variables);
 
-	/** Register a user-defined nullary function. (New in MRPT 2.5.8) */
-	void register_function(
-		const std::string& name, const std::function<double()>& func)
-	{
-		m_funcs_0[name] = func;
-	}
+  /** Register a user-defined nullary function. (New in MRPT 2.5.8) */
+  void register_function(const std::string& name, const std::function<double()>& func)
+  {
+    m_funcs_0[name] = func;
+  }
 
-	/** Register a user-defined unary function. (New in MRPT 2.5.8) */
-	void register_function(
-		const std::string& name, const std::function<double(double)>& func)
-	{
-		m_funcs_1[name] = func;
-	}
+  /** Register a user-defined unary function. (New in MRPT 2.5.8) */
+  void register_function(const std::string& name, const std::function<double(double)>& func)
+  {
+    m_funcs_1[name] = func;
+  }
 
-	/** Register a user-defined binary function. (New in MRPT 2.5.8) */
-	void register_function(
-		const std::string& name,
-		const std::function<double(double, double)>& func)
-	{
-		m_funcs_2[name] = func;
-	}
+  /** Register a user-defined binary function. (New in MRPT 2.5.8) */
+  void register_function(const std::string& name, const std::function<double(double, double)>& func)
+  {
+    m_funcs_2[name] = func;
+  }
 
-	/** Register a user-defined ternary function. (New in MRPT 2.5.8) */
-	void register_function(
-		const std::string& name,
-		const std::function<double(double, double, double)>& func)
-	{
-		m_funcs_3[name] = func;
-	}
+  /** Register a user-defined ternary function. (New in MRPT 2.5.8) */
+  void register_function(
+      const std::string& name, const std::function<double(double, double, double)>& func)
+  {
+    m_funcs_3[name] = func;
+  }
 
-	/** Evaluates the current value of the precompiled formula.
-	 * \exception std::runtime_error If the formula has not been compiled yet.
-	 */
-	double eval() const;
+  /** Evaluates the current value of the precompiled formula.
+   * \exception std::runtime_error If the formula has not been compiled yet.
+   */
+  double eval() const;
 
-	/** Returns true if compile() was called and ended without errors. */
-	bool is_compiled() const;
-	/** Returns the original formula passed to compile(), or an empty string if
-	 * still not compiled. */
-	const std::string& get_original_expression() const;
+  /** Returns true if compile() was called and ended without errors. */
+  bool is_compiled() const;
+  /** Returns the original formula passed to compile(), or an empty string if
+   * still not compiled. */
+  const std::string& get_original_expression() const;
 
-	/** Access raw exprtk expression object. */
-	exprtk::expression<double>& get_raw_exprtk_expr();
-	/** Access raw exprtk expression object. */
-	const exprtk::expression<double>& get_raw_exprtk_expr() const;
+  /** Access raw exprtk expression object. */
+  exprtk::expression<double>& get_raw_exprtk_expr();
+  /** Access raw exprtk expression object. */
+  const exprtk::expression<double>& get_raw_exprtk_expr() const;
 
-   private:
-	struct Impl;
-	mrpt::pimpl<Impl> m_impl;
-	struct ExprVerbose;
-	friend struct ExprVerbose;
+ private:
+  struct Impl;
+  mrpt::pimpl<Impl> m_impl;
+  struct ExprVerbose;
+  friend struct ExprVerbose;
 
-	std::map<std::string, std::function<double()>> m_funcs_0;
-	std::map<std::string, std::function<double(double)>> m_funcs_1;
-	std::map<std::string, std::function<double(double, double)>> m_funcs_2;
-	std::map<std::string, std::function<double(double, double, double)>>
-		m_funcs_3;
+  std::map<std::string, std::function<double()>> m_funcs_0;
+  std::map<std::string, std::function<double(double)>> m_funcs_1;
+  std::map<std::string, std::function<double(double, double)>> m_funcs_2;
+  std::map<std::string, std::function<double(double, double, double)>> m_funcs_3;
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace expr
 

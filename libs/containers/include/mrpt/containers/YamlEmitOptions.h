@@ -17,13 +17,13 @@ namespace mrpt::containers
  */
 struct YamlEmitOptions
 {
-	/** Emit the `%YAML 1.2\n---\n` at the beginning. */
-	bool emitHeader = true;
+  /** Emit the `%YAML 1.2\n---\n` at the beginning. */
+  bool emitHeader = true;
 
-	bool emitComments = true;
-	bool endWithNewLine = true;
+  bool emitComments = true;
+  bool endWithNewLine = true;
 
-	bool indentSequences = true;
+  bool indentSequences = true;
 };
 
 }  // namespace mrpt::containers

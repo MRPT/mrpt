@@ -46,99 +46,96 @@ namespace mrpt::system
  */
 class CControlledRateTimer : public mrpt::system::COutputLogger
 {
-   public:
-	/** @name Main API
-	 *  @{ */
+ public:
+  /** @name Main API
+   *  @{ */
 
-	/** Ctor: specifies the desired rate (Hz) */
-	CControlledRateTimer(const double rate_hz = 1.0);
-	/** Dtor */
-	virtual ~CControlledRateTimer() = default;
+  /** Ctor: specifies the desired rate (Hz) */
+  CControlledRateTimer(const double rate_hz = 1.0);
+  /** Dtor */
+  virtual ~CControlledRateTimer() = default;
 
-	/** Changes the object loop rate (Hz) */
-	void setRate(const double rate_hz);
+  /** Changes the object loop rate (Hz) */
+  void setRate(const double rate_hz);
 
-	/** Sleeps for some time, such as the return of this method is 1/rate
-	 * (seconds)
-	 * after the return of the previous call.
-	 * \return false if the rate could not be achieved ("we are already late"),
-	 * true if all went right. */
-	bool sleep();
+  /** Sleeps for some time, such as the return of this method is 1/rate
+   * (seconds)
+   * after the return of the previous call.
+   * \return false if the rate could not be achieved ("we are already late"),
+   * true if all went right. */
+  bool sleep();
 
-	/** @} */
+  /** @} */
 
-	/** @name PI control parameters
-	 *  @{ */
+  /** @name PI control parameters
+   *  @{ */
 
-	/** PI controller Kp parameter [default=1.0] */
-	double controllerParam_Kp() const { return m_Kp; }
-	void controllerParam_Kp(double v)
-	{
-		ASSERT_GT_(v, .0);
-		m_Kp = v;
-	}
+  /** PI controller Kp parameter [default=1.0] */
+  double controllerParam_Kp() const { return m_Kp; }
+  void controllerParam_Kp(double v)
+  {
+    ASSERT_GT_(v, .0);
+    m_Kp = v;
+  }
 
-	/** PI controller Ti parameter [default=0.0194] */
-	double controllerParam_Ti() const { return m_Ti; }
-	void controllerParam_Ti(double v)
-	{
-		ASSERT_GE_(v, .0);
-		m_Ti = v;
-	}
+  /** PI controller Ti parameter [default=0.0194] */
+  double controllerParam_Ti() const { return m_Ti; }
+  void controllerParam_Ti(double v)
+  {
+    ASSERT_GE_(v, .0);
+    m_Ti = v;
+  }
 
-	/** Low-pass filter a0 value [default=0.9]:
-	 * estimation = a0*input + (1-a0)*former_estimation */
-	double lowPassParam_a0() const { return m_lowPass_a0; }
-	void lowPassParam_a0(double v)
-	{
-		ASSERT_GT_(v, .0);
-		ASSERT_LE_(v, 1.0);
-		m_lowPass_a0 = v;
-	}
+  /** Low-pass filter a0 value [default=0.9]:
+   * estimation = a0*input + (1-a0)*former_estimation */
+  double lowPassParam_a0() const { return m_lowPass_a0; }
+  void lowPassParam_a0(double v)
+  {
+    ASSERT_GT_(v, .0);
+    ASSERT_LE_(v, 1.0);
+    m_lowPass_a0 = v;
+  }
 
-	/** Get/set ratio threshold for issuing a warning (via COutputLogger
-	 * interface) if the achieved rate is not this close to the set-point
-	 * [Default=0.2, =20%]
-	 */
-	double followErrorRatioToRaiseWarning() const
-	{
-		return m_followErrorRatioForWarning;
-	}
-	void followErrorRatioToRaiseWarning(double v)
-	{
-		ASSERT_GT_(v, .0);
-		ASSERT_LE_(v, 1.0);
-		m_followErrorRatioForWarning = v;
-	}
+  /** Get/set ratio threshold for issuing a warning (via COutputLogger
+   * interface) if the achieved rate is not this close to the set-point
+   * [Default=0.2, =20%]
+   */
+  double followErrorRatioToRaiseWarning() const { return m_followErrorRatioForWarning; }
+  void followErrorRatioToRaiseWarning(double v)
+  {
+    ASSERT_GT_(v, .0);
+    ASSERT_LE_(v, 1.0);
+    m_followErrorRatioForWarning = v;
+  }
 
-	/** Gets the actual controller output: the rate (Hz) of the internal
-	 * CRateTimer object. */
-	double actualControlledRate() const { return m_ratetimer.rate(); }
+  /** Gets the actual controller output: the rate (Hz) of the internal
+   * CRateTimer object. */
+  double actualControlledRate() const { return m_ratetimer.rate(); }
 
-	/** Gets the latest estimated run rate (Hz), which comes from actual period
-	 * measurement, low-pass filtered. */
-	double estimatedRate() const { return m_currentEstimatedRate; }
+  /** Gets the latest estimated run rate (Hz), which comes from actual period
+   * measurement, low-pass filtered. */
+  double estimatedRate() const { return m_currentEstimatedRate; }
 
-	/** Last actual execution rate measured (Hz), without low-pass filtering */
-	double estimatedRateRaw() const { return m_lastRawRate; }
+  /** Last actual execution rate measured (Hz), without low-pass filtering */
+  double estimatedRateRaw() const { return m_lastRawRate; }
 
-	/** @} */
-   private:
-	double m_rate_hz = 1.0;
-	mrpt::system::CRateTimer m_ratetimer;  //!< the one control acts on
+  /** @} */
+ private:
+  double m_rate_hz = 1.0;
+  mrpt::system::CRateTimer m_ratetimer;  //!< the one control acts on
 
-	double m_lowPass_a0 = 0.99;
-	double m_Kp = 1.0;
-	double m_Ti = 0.1;
+  double m_lowPass_a0 = 0.99;
+  double m_Kp = 1.0;
+  double m_Ti = 0.1;
 
-	double m_followErrorRatioForWarning = 0.20;
-	double m_lastControlError = .0;
+  double m_followErrorRatioForWarning = 0.20;
+  double m_lastControlError = .0;
 
-	bool internalUpdateRateEstimate();
-	double m_currentEstimatedRate = 1.0, m_lastRawRate = 1.0;
-	double m_lastTic = 0;
-	mrpt::system::CTicTac m_tic;
+  bool internalUpdateRateEstimate();
+  double m_currentEstimatedRate = 1.0, m_lastRawRate = 1.0;
+  double m_lastTic = 0;
+  mrpt::system::CTicTac m_tic;
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace mrpt::system

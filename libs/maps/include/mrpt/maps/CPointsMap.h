@@ -68,514 +68,483 @@ struct pointmap_traits;
  * \sa CMetricMap, CPoint, CSerializable
  * \ingroup mrpt_maps_grp
  */
-class CPointsMap : public CMetricMap,
-				   public mrpt::math::KDTreeCapable<CPointsMap>,
-				   public mrpt::opengl::PLY_Importer,
-				   public mrpt::opengl::PLY_Exporter,
-				   public mrpt::maps::NearestNeighborsCapable
+class CPointsMap :
+    public CMetricMap,
+    public mrpt::math::KDTreeCapable<CPointsMap>,
+    public mrpt::opengl::PLY_Importer,
+    public mrpt::opengl::PLY_Exporter,
+    public mrpt::maps::NearestNeighborsCapable
 {
-	DEFINE_VIRTUAL_SERIALIZABLE(CPointsMap)
-	// This must be added for declaration of MEX-related functions
-	DECLARE_MEX_CONVERSION
+  DEFINE_VIRTUAL_SERIALIZABLE(CPointsMap)
+  // This must be added for declaration of MEX-related functions
+  DECLARE_MEX_CONVERSION
 
-   protected:
-	/** Helper struct used for \a internal_loadFromRangeScan2D_prepareOneRange()
-	 */
-	struct TLaserRange2DInsertContext
-	{
-		TLaserRange2DInsertContext(
-			const mrpt::obs::CObservation2DRangeScan& _rangeScan)
-			: HM(mrpt::math::UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
-		{
-		}
-		/** Homog matrix of the local sensor pose within the robot */
-		mrpt::math::CMatrixDouble44 HM;
-		const mrpt::obs::CObservation2DRangeScan& rangeScan;
-		/** Extra variables to be used as desired by the derived class. */
-		std::vector<float> fVars;
-		std::vector<unsigned int> uVars;
-		std::vector<uint8_t> bVars;
-	};
+ protected:
+  /** Helper struct used for \a internal_loadFromRangeScan2D_prepareOneRange()
+   */
+  struct TLaserRange2DInsertContext
+  {
+    TLaserRange2DInsertContext(const mrpt::obs::CObservation2DRangeScan& _rangeScan) :
+        HM(mrpt::math::UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
+    {
+    }
+    /** Homog matrix of the local sensor pose within the robot */
+    mrpt::math::CMatrixDouble44 HM;
+    const mrpt::obs::CObservation2DRangeScan& rangeScan;
+    /** Extra variables to be used as desired by the derived class. */
+    std::vector<float> fVars;
+    std::vector<unsigned int> uVars;
+    std::vector<uint8_t> bVars;
+  };
 
-	/** Helper struct used for \a internal_loadFromRangeScan3D_prepareOneRange()
-	 */
-	struct TLaserRange3DInsertContext
-	{
-		TLaserRange3DInsertContext(
-			const mrpt::obs::CObservation3DRangeScan& _rangeScan)
-			: HM(mrpt::math::UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
-		{
-		}
-		/** Homog matrix of the local sensor pose within the robot */
-		mrpt::math::CMatrixDouble44 HM;
-		const mrpt::obs::CObservation3DRangeScan& rangeScan;
-		/** In \a internal_loadFromRangeScan3D_prepareOneRange, these are the
-		 * local coordinates of the scan points being inserted right now. */
-		float scan_x, scan_y, scan_z;
-		/** Extra variables to be used as desired by the derived class. */
-		std::vector<float> fVars;
-		std::vector<unsigned int> uVars;
-		std::vector<uint8_t> bVars;
-	};
+  /** Helper struct used for \a internal_loadFromRangeScan3D_prepareOneRange()
+   */
+  struct TLaserRange3DInsertContext
+  {
+    TLaserRange3DInsertContext(const mrpt::obs::CObservation3DRangeScan& _rangeScan) :
+        HM(mrpt::math::UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
+    {
+    }
+    /** Homog matrix of the local sensor pose within the robot */
+    mrpt::math::CMatrixDouble44 HM;
+    const mrpt::obs::CObservation3DRangeScan& rangeScan;
+    /** In \a internal_loadFromRangeScan3D_prepareOneRange, these are the
+     * local coordinates of the scan points being inserted right now. */
+    float scan_x, scan_y, scan_z;
+    /** Extra variables to be used as desired by the derived class. */
+    std::vector<float> fVars;
+    std::vector<unsigned int> uVars;
+    std::vector<uint8_t> bVars;
+  };
 
-   public:
-	/** Ctor */
-	CPointsMap();
-	/** Virtual destructor. */
-	~CPointsMap() override;
+ public:
+  /** Ctor */
+  CPointsMap();
+  /** Virtual destructor. */
+  ~CPointsMap() override;
 
-	CPointsMap& operator=(const CPointsMap& o)
-	{
-		this->impl_copyFrom(o);
-		return *this;
-	}
-	/** Don't define this one as we cannot call the virtual method
-	 * impl_copyFrom() during copy ctors. Redefine in derived classes as needed
-	 * instead. */
-	CPointsMap(const CPointsMap& o) = delete;
+  CPointsMap& operator=(const CPointsMap& o)
+  {
+    this->impl_copyFrom(o);
+    return *this;
+  }
+  /** Don't define this one as we cannot call the virtual method
+   * impl_copyFrom() during copy ctors. Redefine in derived classes as needed
+   * instead. */
+  CPointsMap(const CPointsMap& o) = delete;
 
-	// --------------------------------------------
-	/** @name Pure virtual interfaces to be implemented by any class derived
-	   from CPointsMap
-		@{ */
+  // --------------------------------------------
+  /** @name Pure virtual interfaces to be implemented by any class derived
+   from CPointsMap
+    @{ */
 
-	/** Reserves memory for a given number of points: the size of the map does
-	 * not change, it only reserves the memory.
-	 *  This is useful for situations where it is approximately known the final
-	 * size of the map. This method is more
-	 *  efficient than constantly increasing the size of the buffers. Refer to
-	 * the STL C++ library's "reserve" methods.
-	 */
-	virtual void reserve(size_t newLength) = 0;
+  /** Reserves memory for a given number of points: the size of the map does
+   * not change, it only reserves the memory.
+   *  This is useful for situations where it is approximately known the final
+   * size of the map. This method is more
+   *  efficient than constantly increasing the size of the buffers. Refer to
+   * the STL C++ library's "reserve" methods.
+   */
+  virtual void reserve(size_t newLength) = 0;
 
-	/** Resizes all point buffers so they can hold the given number of points:
-	 * newly created points are set to default values,
-	 *  and old contents are not changed.
-	 * \sa reserve, setPoint, setPointFast, setSize
-	 */
-	virtual void resize(size_t newLength) = 0;
+  /** Resizes all point buffers so they can hold the given number of points:
+   * newly created points are set to default values,
+   *  and old contents are not changed.
+   * \sa reserve, setPoint, setPointFast, setSize
+   */
+  virtual void resize(size_t newLength) = 0;
 
-	/** Resizes all point buffers so they can hold the given number of points,
-	 * *erasing* all previous contents
-	 *  and leaving all points to default values.
-	 * \sa reserve, setPoint, setPointFast, setSize
-	 */
-	virtual void setSize(size_t newLength) = 0;
+  /** Resizes all point buffers so they can hold the given number of points,
+   * *erasing* all previous contents
+   *  and leaving all points to default values.
+   * \sa reserve, setPoint, setPointFast, setSize
+   */
+  virtual void setSize(size_t newLength) = 0;
 
-	/** Changes the coordinates of the given point (0-based index), *without*
-	 * checking for out-of-bounds and *without* calling mark_as_modified().
-	 * Also, color, intensity, or other data is left unchanged. \sa setPoint */
-	inline void setPointFast(size_t index, float x, float y, float z)
-	{
-		m_x[index] = x;
-		m_y[index] = y;
-		m_z[index] = z;
-	}
+  /** Changes the coordinates of the given point (0-based index), *without*
+   * checking for out-of-bounds and *without* calling mark_as_modified().
+   * Also, color, intensity, or other data is left unchanged. \sa setPoint */
+  inline void setPointFast(size_t index, float x, float y, float z)
+  {
+    m_x[index] = x;
+    m_y[index] = y;
+    m_z[index] = z;
+  }
 
-	/** The virtual method for \a insertPoint() *without* calling
-	 * mark_as_modified()   */
-	virtual void insertPointFast(float x, float y, float z = 0) = 0;
+  /** The virtual method for \a insertPoint() *without* calling
+   * mark_as_modified()   */
+  virtual void insertPointFast(float x, float y, float z = 0) = 0;
 
-	/** Get all the data fields for one point as a vector: depending on the
-	 * implementation class this can be [X Y Z] or [X Y Z R G B], etc...
-	 *  Unlike getPointAllFields(), this method does not check for index out of
-	 * bounds
-	 * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
-	 */
-	virtual void getPointAllFieldsFast(
-		size_t index, std::vector<float>& point_data) const = 0;
+  /** Get all the data fields for one point as a vector: depending on the
+   * implementation class this can be [X Y Z] or [X Y Z R G B], etc...
+   *  Unlike getPointAllFields(), this method does not check for index out of
+   * bounds
+   * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
+   */
+  virtual void getPointAllFieldsFast(size_t index, std::vector<float>& point_data) const = 0;
 
-	/** Set all the data fields for one point as a vector: depending on the
-	 * implementation class this can be [X Y Z] or [X Y Z R G B], etc...
-	 *  Unlike setPointAllFields(), this method does not check for index out of
-	 * bounds
-	 * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
-	 */
-	virtual void setPointAllFieldsFast(
-		size_t index, const std::vector<float>& point_data) = 0;
+  /** Set all the data fields for one point as a vector: depending on the
+   * implementation class this can be [X Y Z] or [X Y Z R G B], etc...
+   *  Unlike setPointAllFields(), this method does not check for index out of
+   * bounds
+   * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
+   */
+  virtual void setPointAllFieldsFast(size_t index, const std::vector<float>& point_data) = 0;
 
-   protected:
-	/** Virtual assignment operator, copies as much common data (XYZ, color,...)
-	 * as possible from the source map into this one. */
-	virtual void impl_copyFrom(const CPointsMap& obj) = 0;
+ protected:
+  /** Virtual assignment operator, copies as much common data (XYZ, color,...)
+   * as possible from the source map into this one. */
+  virtual void impl_copyFrom(const CPointsMap& obj) = 0;
 
-	/** Auxiliary method called from within \a addFrom() automatically, to
-	 * finish the copying of class-specific data  */
-	virtual void addFrom_classSpecific(
-		const CPointsMap& anotherMap, size_t nPreviousPoints,
-		const bool filterOutPointsAtZero) = 0;
+  /** Auxiliary method called from within \a addFrom() automatically, to
+   * finish the copying of class-specific data  */
+  virtual void addFrom_classSpecific(
+      const CPointsMap& anotherMap, size_t nPreviousPoints, const bool filterOutPointsAtZero) = 0;
 
-   public:
-	/** @} */
-	// --------------------------------------------
+ public:
+  /** @} */
+  // --------------------------------------------
 
-	/** Returns the square distance from the 2D point (x0,y0) to the closest
-	 * correspondence in the map.
-	 */
-	float squareDistanceToClosestCorrespondence(
-		float x0, float y0) const override;
+  /** Returns the square distance from the 2D point (x0,y0) to the closest
+   * correspondence in the map.
+   */
+  float squareDistanceToClosestCorrespondence(float x0, float y0) const override;
 
-	inline float squareDistanceToClosestCorrespondenceT(
-		const mrpt::math::TPoint2D& p0) const
-	{
-		return squareDistanceToClosestCorrespondence(d2f(p0.x), d2f(p0.y));
-	}
+  inline float squareDistanceToClosestCorrespondenceT(const mrpt::math::TPoint2D& p0) const
+  {
+    return squareDistanceToClosestCorrespondence(d2f(p0.x), d2f(p0.y));
+  }
 
-	/** With this struct options are provided to the observation insertion
-	 * process.
-	 * \sa CObservation::insertIntoPointsMap
-	 */
-	struct TInsertionOptions : public config::CLoadableOptions
-	{
-		/** Initilization of default parameters */
-		TInsertionOptions();
-		void loadFromConfigFile(
-			const mrpt::config::CConfigFileBase& source,
-			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			std::ostream& out) const override;	// See base docs
+  /** With this struct options are provided to the observation insertion
+   * process.
+   * \sa CObservation::insertIntoPointsMap
+   */
+  struct TInsertionOptions : public config::CLoadableOptions
+  {
+    /** Initilization of default parameters */
+    TInsertionOptions();
+    void loadFromConfigFile(
+        const mrpt::config::CConfigFileBase& source,
+        const std::string& section) override;                 // See base docs
+    void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
-		/** The minimum distance between points (in 3D): If two points are too
-		 * close, one of them is not inserted into the map. Default is 0.02
-		 * meters. */
-		float minDistBetweenLaserPoints{0.02f};
-		/** Applicable to "loadFromRangeScan" only! If set to false, the points
-		 * from the scan are loaded, clearing all previous content. Default is
-		 * false. */
-		bool addToExistingPointsMap{true};
-		/** If set to true, far points (<1m) are interpolated with samples at
-		 * "minDistSqrBetweenLaserPoints" intervals (Default is false). */
-		bool also_interpolate{false};
-		/** If set to false (default=true) points in the same plane as the
-		 * inserted scan and inside the free space, are erased: i.e. they don't
-		 * exist yet. */
-		bool disableDeletion{true};
-		/** If set to true (default=false), inserted points are "fused" with
-		 * previously existent ones. This shrink the size of the points map, but
-		 * its slower. */
-		bool fuseWithExisting{false};
-		/** If set to true, only HORIZONTAL (in the XY plane) measurements will
-		 * be inserted in the map (Default value is false, thus 3D maps are
-		 * generated). \sa	horizontalTolerance */
-		bool isPlanarMap{false};
-		/** The tolerance in rads in pitch & roll for a laser scan to be
-		 * considered horizontal, considered only when isPlanarMap=true
-		 * (default=0). */
-		float horizontalTolerance;
-		/** The maximum distance between two points to interpolate between them
-		 * (ONLY when also_interpolate=true) */
-		float maxDistForInterpolatePoints{2.0f};
-		/** Points with x,y,z coordinates set to zero will also be inserted */
-		bool insertInvalidPoints{false};
+    /** The minimum distance between points (in 3D): If two points are too
+     * close, one of them is not inserted into the map. Default is 0.02
+     * meters. */
+    float minDistBetweenLaserPoints{0.02f};
+    /** Applicable to "loadFromRangeScan" only! If set to false, the points
+     * from the scan are loaded, clearing all previous content. Default is
+     * false. */
+    bool addToExistingPointsMap{true};
+    /** If set to true, far points (<1m) are interpolated with samples at
+     * "minDistSqrBetweenLaserPoints" intervals (Default is false). */
+    bool also_interpolate{false};
+    /** If set to false (default=true) points in the same plane as the
+     * inserted scan and inside the free space, are erased: i.e. they don't
+     * exist yet. */
+    bool disableDeletion{true};
+    /** If set to true (default=false), inserted points are "fused" with
+     * previously existent ones. This shrink the size of the points map, but
+     * its slower. */
+    bool fuseWithExisting{false};
+    /** If set to true, only HORIZONTAL (in the XY plane) measurements will
+     * be inserted in the map (Default value is false, thus 3D maps are
+     * generated). \sa	horizontalTolerance */
+    bool isPlanarMap{false};
+    /** The tolerance in rads in pitch & roll for a laser scan to be
+     * considered horizontal, considered only when isPlanarMap=true
+     * (default=0). */
+    float horizontalTolerance;
+    /** The maximum distance between two points to interpolate between them
+     * (ONLY when also_interpolate=true) */
+    float maxDistForInterpolatePoints{2.0f};
+    /** Points with x,y,z coordinates set to zero will also be inserted */
+    bool insertInvalidPoints{false};
 
-		/** Binary dump to stream - for usage in derived classes' serialization
-		 */
-		void writeToStream(mrpt::serialization::CArchive& out) const;
-		/** Binary dump to stream - for usage in derived classes' serialization
-		 */
-		void readFromStream(mrpt::serialization::CArchive& in);
-	};
+    /** Binary dump to stream - for usage in derived classes' serialization
+     */
+    void writeToStream(mrpt::serialization::CArchive& out) const;
+    /** Binary dump to stream - for usage in derived classes' serialization
+     */
+    void readFromStream(mrpt::serialization::CArchive& in);
+  };
 
-	/** The options used when inserting observations in the map */
-	TInsertionOptions insertionOptions;
+  /** The options used when inserting observations in the map */
+  TInsertionOptions insertionOptions;
 
-	/** Options used when evaluating "computeObservationLikelihood" in the
-	 * derived classes.
-	 * \sa CObservation::computeObservationLikelihood
-	 */
-	struct TLikelihoodOptions : public config::CLoadableOptions
-	{
-		/** Initilization of default parameters
-		 */
-		TLikelihoodOptions();
-		~TLikelihoodOptions() override = default;
-		void loadFromConfigFile(
-			const mrpt::config::CConfigFileBase& source,
-			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			std::ostream& out) const override;	// See base docs
+  /** Options used when evaluating "computeObservationLikelihood" in the
+   * derived classes.
+   * \sa CObservation::computeObservationLikelihood
+   */
+  struct TLikelihoodOptions : public config::CLoadableOptions
+  {
+    /** Initilization of default parameters
+     */
+    TLikelihoodOptions();
+    ~TLikelihoodOptions() override = default;
+    void loadFromConfigFile(
+        const mrpt::config::CConfigFileBase& source,
+        const std::string& section) override;                 // See base docs
+    void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
-		/** Binary dump to stream - for usage in derived classes' serialization
-		 */
-		void writeToStream(mrpt::serialization::CArchive& out) const;
-		/** Binary dump to stream - for usage in derived classes' serialization
-		 */
-		void readFromStream(mrpt::serialization::CArchive& in);
+    /** Binary dump to stream - for usage in derived classes' serialization
+     */
+    void writeToStream(mrpt::serialization::CArchive& out) const;
+    /** Binary dump to stream - for usage in derived classes' serialization
+     */
+    void readFromStream(mrpt::serialization::CArchive& in);
 
-		/** Sigma squared (variance, in meters) of the exponential used to model
-		 * the likelihood (default= 0.5^2 meters) */
-		double sigma_dist{0.0025};
-		/** Maximum distance in meters to consider for the numerator divided by
-		 * "sigma_dist", so that each point has a minimum (but very small)
-		 * likelihood to avoid underflows (default=1.0 meters) */
-		double max_corr_distance{1.0};
-		/** Speed up the likelihood computation by considering only one out of N
-		 * rays (default=10) */
-		uint32_t decimation{10};
-	};
-	TLikelihoodOptions likelihoodOptions;
+    /** Sigma squared (variance, in meters) of the exponential used to model
+     * the likelihood (default= 0.5^2 meters) */
+    double sigma_dist{0.0025};
+    /** Maximum distance in meters to consider for the numerator divided by
+     * "sigma_dist", so that each point has a minimum (but very small)
+     * likelihood to avoid underflows (default=1.0 meters) */
+    double max_corr_distance{1.0};
+    /** Speed up the likelihood computation by considering only one out of N
+     * rays (default=10) */
+    uint32_t decimation{10};
+  };
+  TLikelihoodOptions likelihoodOptions;
 
-	/** Rendering options, used in getAs3DObject()
-	 */
-	struct TRenderOptions : public config::CLoadableOptions
-	{
-		void loadFromConfigFile(
-			const mrpt::config::CConfigFileBase& source,
-			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			std::ostream& out) const override;	// See base docs
+  /** Rendering options, used in getAs3DObject()
+   */
+  struct TRenderOptions : public config::CLoadableOptions
+  {
+    void loadFromConfigFile(
+        const mrpt::config::CConfigFileBase& source,
+        const std::string& section) override;                 // See base docs
+    void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
-		/** Binary dump to stream - used in derived classes' serialization */
-		void writeToStream(mrpt::serialization::CArchive& out) const;
-		/** Binary dump to stream - used in derived classes' serialization */
-		void readFromStream(mrpt::serialization::CArchive& in);
+    /** Binary dump to stream - used in derived classes' serialization */
+    void writeToStream(mrpt::serialization::CArchive& out) const;
+    /** Binary dump to stream - used in derived classes' serialization */
+    void readFromStream(mrpt::serialization::CArchive& in);
 
-		float point_size{1.0f};
-		/** Color of points. Superseded by colormap if the latter is set. */
-		mrpt::img::TColorf color{.0f, .0f, 1.0f};
-		/** Colormap for points (index is "z" coordinates) */
-		mrpt::img::TColormap colormap{mrpt::img::cmNONE};
-	};
-	TRenderOptions renderOptions;
+    float point_size{1.0f};
+    /** Color of points. Superseded by colormap if the latter is set. */
+    mrpt::img::TColorf color{.0f, .0f, 1.0f};
+    /** Colormap for points (index is "z" coordinates) */
+    mrpt::img::TColormap colormap{mrpt::img::cmNONE};
+  };
+  TRenderOptions renderOptions;
 
-	/** Insert the contents of another map into this one with some geometric
-	 * transformation, without fusing close points.
-	 * \param otherMap The other map whose points are to be inserted into this
-	 * one.
-	 * \param otherPose The pose of the other map in the coordinates of THIS map
-	 * \param filterOutPointsAtZero If true, points at (0,0,0) (in the frame of
-	 * reference of `otherMap`) will be assumed to be invalid and will not be
-	 * copied.
-	 *
-	 * \sa fuseWith, addFrom
-	 */
-	void insertAnotherMap(
-		const CPointsMap* otherMap, const mrpt::poses::CPose3D& otherPose,
-		const bool filterOutPointsAtZero = false);
+  /** Insert the contents of another map into this one with some geometric
+   * transformation, without fusing close points.
+   * \param otherMap The other map whose points are to be inserted into this
+   * one.
+   * \param otherPose The pose of the other map in the coordinates of THIS map
+   * \param filterOutPointsAtZero If true, points at (0,0,0) (in the frame of
+   * reference of `otherMap`) will be assumed to be invalid and will not be
+   * copied.
+   *
+   * \sa fuseWith, addFrom
+   */
+  void insertAnotherMap(
+      const CPointsMap* otherMap,
+      const mrpt::poses::CPose3D& otherPose,
+      const bool filterOutPointsAtZero = false);
 
-	/** Inserts another map into this one. \sa insertAnotherMap() */
-	void operator+=(const CPointsMap& anotherMap)
-	{
-		insertAnotherMap(&anotherMap, mrpt::poses::CPose3D::Identity());
-	}
+  /** Inserts another map into this one. \sa insertAnotherMap() */
+  void operator+=(const CPointsMap& anotherMap)
+  {
+    insertAnotherMap(&anotherMap, mrpt::poses::CPose3D::Identity());
+  }
 
-	// --------------------------------------------------
-	/** @name File input/output methods
-		@{ */
+  // --------------------------------------------------
+  /** @name File input/output methods
+    @{ */
 
-	/** Load from a text file. Each line should contain an "X Y" coordinate
-	 * pair, separated by whitespaces.
-	 *   Returns false if any error occured, true elsewere.
-	 */
-	inline bool load2D_from_text_file(const std::string& file)
-	{
-		return load2Dor3D_from_text_file(file, false);
-	}
-	inline bool load2D_from_text_stream(
-		std::istream& in,
-		mrpt::optional_ref<std::string> outErrorMsg = std::nullopt)
-	{
-		return load2Dor3D_from_text_stream(in, outErrorMsg, false);
-	}
+  /** Load from a text file. Each line should contain an "X Y" coordinate
+   * pair, separated by whitespaces.
+   *   Returns false if any error occured, true elsewere.
+   */
+  inline bool load2D_from_text_file(const std::string& file)
+  {
+    return load2Dor3D_from_text_file(file, false);
+  }
+  inline bool load2D_from_text_stream(
+      std::istream& in, mrpt::optional_ref<std::string> outErrorMsg = std::nullopt)
+  {
+    return load2Dor3D_from_text_stream(in, outErrorMsg, false);
+  }
 
-	/** Load from a text file. Each line should contain an "X Y Z" coordinate
-	 * tuple, separated by whitespaces.
-	 *   Returns false if any error occured, true elsewere.
-	 */
-	inline bool load3D_from_text_file(const std::string& file)
-	{
-		return load2Dor3D_from_text_file(file, true);
-	}
-	inline bool load3D_from_text_stream(
-		std::istream& in,
-		mrpt::optional_ref<std::string> outErrorMsg = std::nullopt)
-	{
-		return load2Dor3D_from_text_stream(in, outErrorMsg, true);
-	}
+  /** Load from a text file. Each line should contain an "X Y Z" coordinate
+   * tuple, separated by whitespaces.
+   *   Returns false if any error occured, true elsewere.
+   */
+  inline bool load3D_from_text_file(const std::string& file)
+  {
+    return load2Dor3D_from_text_file(file, true);
+  }
+  inline bool load3D_from_text_stream(
+      std::istream& in, mrpt::optional_ref<std::string> outErrorMsg = std::nullopt)
+  {
+    return load2Dor3D_from_text_stream(in, outErrorMsg, true);
+  }
 
-	/** 2D or 3D generic implementation of \a load2D_from_text_file and
-	 * load3D_from_text_file */
-	bool load2Dor3D_from_text_file(const std::string& file, const bool is_3D);
-	bool load2Dor3D_from_text_stream(
-		std::istream& in, mrpt::optional_ref<std::string> outErrorMsg,
-		const bool is_3D);
+  /** 2D or 3D generic implementation of \a load2D_from_text_file and
+   * load3D_from_text_file */
+  bool load2Dor3D_from_text_file(const std::string& file, const bool is_3D);
+  bool load2Dor3D_from_text_stream(
+      std::istream& in, mrpt::optional_ref<std::string> outErrorMsg, const bool is_3D);
 
-	/**  Save to a text file. Each line will contain "X Y" point coordinates.
-	 *		Returns false if any error occured, true elsewere.
-	 */
-	bool save2D_to_text_file(const std::string& file) const;
-	bool save2D_to_text_stream(std::ostream& out) const;
+  /**  Save to a text file. Each line will contain "X Y" point coordinates.
+   *		Returns false if any error occured, true elsewere.
+   */
+  bool save2D_to_text_file(const std::string& file) const;
+  bool save2D_to_text_stream(std::ostream& out) const;
 
-	/**  Save to a text file. Each line will contain "X Y Z" point coordinates.
-	 *     Returns false if any error occured, true elsewere.
-	 */
-	bool save3D_to_text_file(const std::string& file) const;
-	bool save3D_to_text_stream(std::ostream& out) const;
+  /**  Save to a text file. Each line will contain "X Y Z" point coordinates.
+   *     Returns false if any error occured, true elsewere.
+   */
+  bool save3D_to_text_file(const std::string& file) const;
+  bool save3D_to_text_stream(std::ostream& out) const;
 
-	/** This virtual method saves the map to a file "filNamePrefix"+<
-	 * some_file_extension >, as an image or in any other applicable way (Notice
-	 * that other methods to save the map may be implemented in classes
-	 * implementing this virtual interface) */
-	void saveMetricMapRepresentationToFile(
-		const std::string& filNamePrefix) const override
-	{
-		std::string fil(filNamePrefix + std::string(".txt"));
-		save3D_to_text_file(fil);
-	}
+  /** This virtual method saves the map to a file "filNamePrefix"+<
+   * some_file_extension >, as an image or in any other applicable way (Notice
+   * that other methods to save the map may be implemented in classes
+   * implementing this virtual interface) */
+  void saveMetricMapRepresentationToFile(const std::string& filNamePrefix) const override
+  {
+    std::string fil(filNamePrefix + std::string(".txt"));
+    save3D_to_text_file(fil);
+  }
 
-	/** Save the point cloud as a PCL PCD file, in either ASCII or binary format
-	 * \note This method requires user code to include PCL before MRPT headers.
-	 * \return false on any error */
+  /** Save the point cloud as a PCL PCD file, in either ASCII or binary format
+   * \note This method requires user code to include PCL before MRPT headers.
+   * \return false on any error */
 #if defined(PCL_LINEAR_VERSION)
-	inline bool savePCDFile(
-		const std::string& filename, bool save_as_binary) const
-	{
-		pcl::PointCloud<pcl::PointXYZ> cloud;
-		this->getPCLPointCloud(cloud);
-		return 0 == pcl::io::savePCDFile(filename, cloud, save_as_binary);
-	}
+  inline bool savePCDFile(const std::string& filename, bool save_as_binary) const
+  {
+    pcl::PointCloud<pcl::PointXYZ> cloud;
+    this->getPCLPointCloud(cloud);
+    return 0 == pcl::io::savePCDFile(filename, cloud, save_as_binary);
+  }
 #endif
 
-	/** Load the point cloud from a PCL PCD file.
-	 * \note This method requires user code to include PCL before MRPT headers.
-	 * \return false on any error */
+  /** Load the point cloud from a PCL PCD file.
+   * \note This method requires user code to include PCL before MRPT headers.
+   * \return false on any error */
 #if defined(PCL_LINEAR_VERSION)
-	inline bool loadPCDFile(const std::string& filename)
-	{
-		pcl::PointCloud<pcl::PointXYZ> cloud;
-		if (0 != pcl::io::loadPCDFile(filename, cloud)) return false;
-		this->getPCLPointCloud(cloud);
-		return true;
-	}
+  inline bool loadPCDFile(const std::string& filename)
+  {
+    pcl::PointCloud<pcl::PointXYZ> cloud;
+    if (0 != pcl::io::loadPCDFile(filename, cloud)) return false;
+    this->getPCLPointCloud(cloud);
+    return true;
+  }
 #endif
 
-	/** @} */  // End of: File input/output methods
-	// --------------------------------------------------
+  /** @} */  // End of: File input/output methods
+  // --------------------------------------------------
 
-	/** Returns the number of stored points in the map.
-	 */
-	inline size_t size() const { return m_x.size(); }
-	/** Access to a given point from map, as a 2D point. First index is 0.
-	 * \exception Throws std::exception on index out of bound.
-	 * \sa setPoint, getPointFast
-	 */
-	void getPoint(size_t index, float& x, float& y, float& z) const;
-	/// \overload
-	void getPoint(size_t index, float& x, float& y) const;
-	/// \overload
-	void getPoint(size_t index, double& x, double& y, double& z) const;
-	/// \overload
-	void getPoint(size_t index, double& x, double& y) const;
-	/// \overload
-	inline void getPoint(size_t index, mrpt::math::TPoint2D& p) const
-	{
-		getPoint(index, p.x, p.y);
-	}
-	/// \overload
-	inline void getPoint(size_t index, mrpt::math::TPoint3D& p) const
-	{
-		getPoint(index, p.x, p.y, p.z);
-	}
+  /** Returns the number of stored points in the map.
+   */
+  inline size_t size() const { return m_x.size(); }
+  /** Access to a given point from map, as a 2D point. First index is 0.
+   * \exception Throws std::exception on index out of bound.
+   * \sa setPoint, getPointFast
+   */
+  void getPoint(size_t index, float& x, float& y, float& z) const;
+  /// \overload
+  void getPoint(size_t index, float& x, float& y) const;
+  /// \overload
+  void getPoint(size_t index, double& x, double& y, double& z) const;
+  /// \overload
+  void getPoint(size_t index, double& x, double& y) const;
+  /// \overload
+  inline void getPoint(size_t index, mrpt::math::TPoint2D& p) const { getPoint(index, p.x, p.y); }
+  /// \overload
+  inline void getPoint(size_t index, mrpt::math::TPoint3D& p) const
+  {
+    getPoint(index, p.x, p.y, p.z);
+  }
 
-	/** Access to a given point from map, and its colors, if the map defines
-	 * them (othersise, R=G=B=1.0). First index is 0.
-	 * \return The return value is the weight of the point (the times it has
-	 * been fused)
-	 * \exception Throws std::exception on index out of bound.
-	 */
-	virtual void getPointRGB(
-		size_t index, float& x, float& y, float& z, float& R, float& G,
-		float& B) const
-	{
-		getPoint(index, x, y, z);
-		R = G = B = 1.f;
-	}
+  /** Access to a given point from map, and its colors, if the map defines
+   * them (othersise, R=G=B=1.0). First index is 0.
+   * \return The return value is the weight of the point (the times it has
+   * been fused)
+   * \exception Throws std::exception on index out of bound.
+   */
+  virtual void getPointRGB(
+      size_t index, float& x, float& y, float& z, float& R, float& G, float& B) const
+  {
+    getPoint(index, x, y, z);
+    R = G = B = 1.f;
+  }
 
-	/** Just like \a getPoint() but without checking out-of-bound index and
-	 * without returning the point weight, just XYZ.
-	 */
-	inline void getPointFast(size_t index, float& x, float& y, float& z) const
-	{
-		x = m_x[index];
-		y = m_y[index];
-		z = m_z[index];
-	}
+  /** Just like \a getPoint() but without checking out-of-bound index and
+   * without returning the point weight, just XYZ.
+   */
+  inline void getPointFast(size_t index, float& x, float& y, float& z) const
+  {
+    x = m_x[index];
+    y = m_y[index];
+    z = m_z[index];
+  }
 
-	/** Returns true if the point map has a color field for each point */
-	virtual bool hasColorPoints() const { return false; }
-	/** Changes a given point from map, with Z defaulting to 0 if not provided.
-	 * \exception Throws std::exception on index out of bound.
-	 */
-	inline void setPoint(size_t index, float x, float y, float z)
-	{
-		ASSERT_LT_(index, this->size());
-		setPointFast(index, x, y, z);
-		mark_as_modified();
-	}
-	/// \overload
-	inline void setPoint(size_t index, const mrpt::math::TPoint2D& p)
-	{
-		setPoint(index, d2f(p.x), d2f(p.y), 0);
-	}
-	/// \overload
-	inline void setPoint(size_t index, const mrpt::math::TPoint3D& p)
-	{
-		setPoint(index, d2f(p.x), d2f(p.y), d2f(p.z));
-	}
-	/// \overload
-	inline void setPoint(size_t index, float x, float y)
-	{
-		setPoint(index, x, y, 0);
-	}
-	/// overload (RGB data is ignored in classes without color information)
-	virtual void setPointRGB(
-		size_t index, float x, float y, float z, [[maybe_unused]] float R,
-		[[maybe_unused]] float G, [[maybe_unused]] float B)
-	{
-		setPoint(index, x, y, z);
-	}
+  /** Returns true if the point map has a color field for each point */
+  virtual bool hasColorPoints() const { return false; }
+  /** Changes a given point from map, with Z defaulting to 0 if not provided.
+   * \exception Throws std::exception on index out of bound.
+   */
+  inline void setPoint(size_t index, float x, float y, float z)
+  {
+    ASSERT_LT_(index, this->size());
+    setPointFast(index, x, y, z);
+    mark_as_modified();
+  }
+  /// \overload
+  inline void setPoint(size_t index, const mrpt::math::TPoint2D& p)
+  {
+    setPoint(index, d2f(p.x), d2f(p.y), 0);
+  }
+  /// \overload
+  inline void setPoint(size_t index, const mrpt::math::TPoint3D& p)
+  {
+    setPoint(index, d2f(p.x), d2f(p.y), d2f(p.z));
+  }
+  /// \overload
+  inline void setPoint(size_t index, float x, float y) { setPoint(index, x, y, 0); }
+  /// overload (RGB data is ignored in classes without color information)
+  virtual void setPointRGB(
+      size_t index,
+      float x,
+      float y,
+      float z,
+      [[maybe_unused]] float R,
+      [[maybe_unused]] float G,
+      [[maybe_unused]] float B)
+  {
+    setPoint(index, x, y, z);
+  }
 
-	/// Sets the point weight, which is ignored in all classes but those which
-	/// actually store that field (Note: No checks are done for out-of-bounds
-	/// index). \sa getPointWeight
-	virtual void setPointWeight(
-		[[maybe_unused]] size_t index, [[maybe_unused]] unsigned long w)
-	{
-	}
-	/// Gets the point weight, which is ignored in all classes (defaults to 1)
-	/// but in those which actually store that field (Note: No checks are done
-	/// for out-of-bounds index).  \sa setPointWeight
-	virtual unsigned int getPointWeight([[maybe_unused]] size_t index) const
-	{
-		return 1;
-	}
+  /// Sets the point weight, which is ignored in all classes but those which
+  /// actually store that field (Note: No checks are done for out-of-bounds
+  /// index). \sa getPointWeight
+  virtual void setPointWeight([[maybe_unused]] size_t index, [[maybe_unused]] unsigned long w) {}
+  /// Gets the point weight, which is ignored in all classes (defaults to 1)
+  /// but in those which actually store that field (Note: No checks are done
+  /// for out-of-bounds index).  \sa setPointWeight
+  virtual unsigned int getPointWeight([[maybe_unused]] size_t index) const { return 1; }
 
-	/** Provides a direct access to points buffer, or nullptr if there is no
-	 * points in the map.
-	 */
-	void getPointsBuffer(
-		size_t& outPointsCount, const float*& xs, const float*& ys,
-		const float*& zs) const;
+  /** Provides a direct access to points buffer, or nullptr if there is no
+   * points in the map.
+   */
+  void getPointsBuffer(
+      size_t& outPointsCount, const float*& xs, const float*& ys, const float*& zs) const;
 
-	/** Provides a direct access to a read-only reference of the internal point
-	 * buffer. \sa getAllPoints */
-	inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_x() const
-	{
-		return m_x;
-	}
-	/** Provides a direct access to a read-only reference of the internal point
-	 * buffer. \sa getAllPoints */
-	inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_y() const
-	{
-		return m_y;
-	}
-	/** Provides a direct access to a read-only reference of the internal point
-	 * buffer. \sa getAllPoints */
-	inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_z() const
-	{
-		return m_z;
-	}
-	// clang-format off
+  /** Provides a direct access to a read-only reference of the internal point
+   * buffer. \sa getAllPoints */
+  inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_x() const { return m_x; }
+  /** Provides a direct access to a read-only reference of the internal point
+   * buffer. \sa getAllPoints */
+  inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_y() const { return m_y; }
+  /** Provides a direct access to a read-only reference of the internal point
+   * buffer. \sa getAllPoints */
+  inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_z() const { return m_z; }
+  // clang-format off
 	virtual auto getPointsBufferRef_intensity() const  -> const mrpt::aligned_std_vector<float>* { return nullptr; }
 	virtual auto getPointsBufferRef_ring() const       -> const mrpt::aligned_std_vector<uint16_t>* { return nullptr; }
 	virtual auto getPointsBufferRef_timestamp() const  -> const mrpt::aligned_std_vector<float>* { return nullptr; }

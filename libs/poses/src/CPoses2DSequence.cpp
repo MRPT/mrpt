@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"	// Precompiled headers
+#include "poses-precomp.h"  // Precompiled headers
 //
 #include <mrpt/poses/CPoses2DSequence.h>
 #include <mrpt/serialization/CArchive.h>
@@ -22,24 +22,22 @@ size_t CPoses2DSequence::posesCount() { return poses.size(); }
 uint8_t CPoses2DSequence::serializeGetVersion() const { return 0; }
 void CPoses2DSequence::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	out.WriteAs<uint32_t>(poses.size());
-	for (const auto& p : poses)
-		out << p;
+  out.WriteAs<uint32_t>(poses.size());
+  for (const auto& p : poses) out << p;
 }
-void CPoses2DSequence::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void CPoses2DSequence::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	switch (version)
-	{
-		case 0:
-		{
-			poses.resize(in.ReadAs<uint32_t>());
-			for (auto& p : poses)
-				in >> p;
-		}
-		break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	};
+  switch (version)
+  {
+    case 0:
+    {
+      poses.resize(in.ReadAs<uint32_t>());
+      for (auto& p : poses) in >> p;
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
 }
 
 /*---------------------------------------------------------------
@@ -48,9 +46,9 @@ Reads the stored pose at index "ind", where the first one is 0, the last
  ---------------------------------------------------------------*/
 void CPoses2DSequence::getPose(unsigned int ind, CPose2D& outPose)
 {
-	if (ind >= poses.size()) THROW_EXCEPTION("Index out of range!!");
+  if (ind >= poses.size()) THROW_EXCEPTION("Index out of range!!");
 
-	outPose = poses[ind];
+  outPose = poses[ind];
 }
 
 /*---------------------------------------------------------------
@@ -59,22 +57,19 @@ Changes the stored pose at index "ind", where the first one is 0, the last
  ---------------------------------------------------------------*/
 void CPoses2DSequence::changePose(unsigned int ind, CPose2D& inPose)
 {
-	if (ind >= poses.size()) THROW_EXCEPTION("Index out of range!!");
+  if (ind >= poses.size()) THROW_EXCEPTION("Index out of range!!");
 
-	*((&(poses[ind])) + ind) = inPose;
+  *((&(poses[ind])) + ind) = inPose;
 }
 
 /*---------------------------------------------------------------
-	Appends a new pose at the end of sequence. Remember that poses are relative,
+  Appends a new pose at the end of sequence. Remember that poses are relative,
  incremental to the last one.
  ---------------------------------------------------------------*/
-void CPoses2DSequence::appendPose(CPose2D& newPose)
-{
-	poses.push_back(newPose);
-}
+void CPoses2DSequence::appendPose(CPose2D& newPose) { poses.push_back(newPose); }
 
 /*---------------------------------------------------------------
-			Clears the sequence.
+      Clears the sequence.
  ---------------------------------------------------------------*/
 void CPoses2DSequence::clear() { poses.clear(); }
 /*---------------------------------------------------------------
@@ -87,35 +82,30 @@ void CPoses2DSequence::clear() { poses.clear(); }
  */
 CPose2D CPoses2DSequence::absolutePoseOf(unsigned int n)
 {
-	CPose2D ret(0, 0, 0);
-	unsigned int i;
+  CPose2D ret(0, 0, 0);
+  unsigned int i;
 
-	if (n > poses.size()) THROW_EXCEPTION("Index out of range!!");
+  if (n > poses.size()) THROW_EXCEPTION("Index out of range!!");
 
-	for (i = 0; i < n; i++)
-		ret = ret + poses[i];
+  for (i = 0; i < n; i++) ret = ret + poses[i];
 
-	return ret;
+  return ret;
 }
 
-CPose2D CPoses2DSequence::absolutePoseAfterAll()
-{
-	return absolutePoseOf(posesCount());
-}
+CPose2D CPoses2DSequence::absolutePoseAfterAll() { return absolutePoseOf(posesCount()); }
 
 double CPoses2DSequence::computeTraveledDistanceAfter(size_t n)
 {
-	double dist = 0;
+  double dist = 0;
 
-	if (n > poses.size()) THROW_EXCEPTION("Index out of range!!");
+  if (n > poses.size()) THROW_EXCEPTION("Index out of range!!");
 
-	for (size_t i = 0; i < n; i++)
-		dist += poses[i].norm();
+  for (size_t i = 0; i < n; i++) dist += poses[i].norm();
 
-	return dist;
+  return dist;
 }
 
 double CPoses2DSequence::computeTraveledDistanceAfterAll()
 {
-	return computeTraveledDistanceAfter(posesCount());
+  return computeTraveledDistanceAfter(posesCount());
 }

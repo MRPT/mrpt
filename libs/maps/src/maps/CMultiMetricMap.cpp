@@ -44,304 +44,297 @@ IMPLEMENTS_SERIALIZABLE(CMultiMetricMap, CMetricMap, mrpt::maps)
 
 struct MapExecutor
 {
-	// Apply operation to maps in the same order as declared in
-	// CMultiMetricMap.h:
-	template <typename OP>
-	static void run(const CMultiMetricMap& _mmm, OP op)
-	{
-		MRPT_START
-		// This is to avoid duplicating "::run()" for const and non-const.
-		auto& mmm = const_cast<CMultiMetricMap&>(_mmm);
-		std::for_each(mmm.maps.begin(), mmm.maps.end(), op);
-		MRPT_END
-	}
-};	// end of MapExecutor
+  // Apply operation to maps in the same order as declared in
+  // CMultiMetricMap.h:
+  template <typename OP>
+  static void run(const CMultiMetricMap& _mmm, OP op)
+  {
+    MRPT_START
+    // This is to avoid duplicating "::run()" for const and non-const.
+    auto& mmm = const_cast<CMultiMetricMap&>(_mmm);
+    std::for_each(mmm.maps.begin(), mmm.maps.end(), op);
+    MRPT_END
+  }
+};  // end of MapExecutor
 
 // ------------------- Begin of map-operations helper templates
 
 struct MapCanComputeLikelihood
 {
-	const CObservation* obs;
-	bool& can;
+  const CObservation* obs;
+  bool& can;
 
-	MapCanComputeLikelihood(
-		const CMultiMetricMap& m, const CObservation* _obs, bool& _can)
-		: obs(_obs), can(_can)
-	{
-		can = false;
-	}
+  MapCanComputeLikelihood(const CMultiMetricMap& m, const CObservation* _obs, bool& _can) :
+      obs(_obs), can(_can)
+  {
+    can = false;
+  }
 
-	template <typename PTR>
-	inline void operator()(PTR& ptr)
-	{
-		can = can || ptr->canComputeObservationLikelihood(obs);
-	}
+  template <typename PTR>
+  inline void operator()(PTR& ptr)
+  {
+    can = can || ptr->canComputeObservationLikelihood(obs);
+  }
 
-};	// end of MapCanComputeLikelihood
+};  // end of MapCanComputeLikelihood
 
 struct MapAuxPFCleanup
 {
-	MapAuxPFCleanup() = default;
-	template <typename PTR>
-	inline void operator()(PTR& ptr)
-	{
-		if (ptr) ptr->auxParticleFilterCleanUp();
-	}
-};	// end of MapAuxPFCleanup
+  MapAuxPFCleanup() = default;
+  template <typename PTR>
+  inline void operator()(PTR& ptr)
+  {
+    if (ptr) ptr->auxParticleFilterCleanUp();
+  }
+};  // end of MapAuxPFCleanup
 
 struct MapIsEmpty
 {
-	bool& is_empty;
+  bool& is_empty;
 
-	MapIsEmpty(bool& _is_empty) : is_empty(_is_empty) { is_empty = true; }
-	template <typename PTR>
-	inline void operator()(PTR& ptr)
-	{
-		if (ptr) is_empty = is_empty && ptr->isEmpty();
-	}
-};	// end of MapIsEmpty
+  MapIsEmpty(bool& _is_empty) : is_empty(_is_empty) { is_empty = true; }
+  template <typename PTR>
+  inline void operator()(PTR& ptr)
+  {
+    if (ptr) is_empty = is_empty && ptr->isEmpty();
+  }
+};  // end of MapIsEmpty
 
 // ---- End of map-operations helper templates
 
 // Ctor
 CMultiMetricMap::CMultiMetricMap(const TSetOfMetricMapInitializers& i)
 {
-	MRPT_START
-	setListOfMaps(i);
-	MRPT_END
+  MRPT_START
+  setListOfMaps(i);
+  MRPT_END
 }
 
 void CMultiMetricMap::setListOfMaps(const TSetOfMetricMapInitializers& inits)
 {
-	MRPT_START
-	// Erase current list of maps:
-	maps.clear();
+  MRPT_START
+  // Erase current list of maps:
+  maps.clear();
 
-	auto& mmr = mrpt::maps::internal::TMetricMapTypesRegistry::Instance();
+  auto& mmr = mrpt::maps::internal::TMetricMapTypesRegistry::Instance();
 
-	// Process each entry in the "initializers" and create maps accordingly:
-	for (const auto& i : inits)
-	{
-		// Create map from the list of all params:
-		auto theMap = mmr.factoryMapObjectFromDefinition(*i.get());
-		ASSERT_(theMap);
-		// Add to the list of maps:
-		this->maps.emplace_back(theMap);
-	}
-	MRPT_END
+  // Process each entry in the "initializers" and create maps accordingly:
+  for (const auto& i : inits)
+  {
+    // Create map from the list of all params:
+    auto theMap = mmr.factoryMapObjectFromDefinition(*i.get());
+    ASSERT_(theMap);
+    // Add to the list of maps:
+    this->maps.emplace_back(theMap);
+  }
+  MRPT_END
 }
 
 void CMultiMetricMap::internal_clear()
 {
-	std::for_each(maps.begin(), maps.end(), [](auto ptr) {
-		if (ptr) ptr->clear();
-	});
+  std::for_each(
+      maps.begin(), maps.end(),
+      [](auto ptr)
+      {
+        if (ptr) ptr->clear();
+      });
 }
 
 uint8_t CMultiMetricMap::serializeGetVersion() const { return 12; }
 void CMultiMetricMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	const auto n = static_cast<uint32_t>(maps.size());
-	out << n;
-	for (uint32_t i = 0; i < n; i++)
-		out << *maps[i];
+  const auto n = static_cast<uint32_t>(maps.size());
+  out << n;
+  for (uint32_t i = 0; i < n; i++) out << *maps[i];
 }
 
-void CMultiMetricMap::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void CMultiMetricMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	switch (version)
-	{
-		case 11:
-		case 12:
-		{
-			// ID:
-			if (version < 12)  // ID was removed in v12
-			{
-				uint32_t ID;
-				in >> ID;
-			}
+  switch (version)
+  {
+    case 11:
+    case 12:
+    {
+      // ID:
+      if (version < 12)  // ID was removed in v12
+      {
+        uint32_t ID;
+        in >> ID;
+      }
 
-			// List of maps:
-			uint32_t n;
-			in >> n;
-			this->maps.resize(n);
-			for_each(
-				maps.begin(), maps.end(),
-				ObjectReadFromStreamToPtrs<mrpt::maps::CMetricMap::Ptr>(&in));
-		}
-		break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	};
+      // List of maps:
+      uint32_t n;
+      in >> n;
+      this->maps.resize(n);
+      for_each(
+          maps.begin(), maps.end(), ObjectReadFromStreamToPtrs<mrpt::maps::CMetricMap::Ptr>(&in));
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
 }
 
 // Read docs in base class
 double CMultiMetricMap::internal_computeObservationLikelihood(
-	const CObservation& obs, const CPose3D& takenFrom) const
+    const CObservation& obs, const CPose3D& takenFrom) const
 {
-	MRPT_START
-	double ret_log_lik = 0;
+  MRPT_START
+  double ret_log_lik = 0;
 
-	std::for_each(maps.begin(), maps.end(), [&](auto& ptr) {
-		ret_log_lik += ptr->computeObservationLikelihood(obs, takenFrom);
-	});
-	return ret_log_lik;
+  std::for_each(
+      maps.begin(), maps.end(),
+      [&](auto& ptr) { ret_log_lik += ptr->computeObservationLikelihood(obs, takenFrom); });
+  return ret_log_lik;
 
-	MRPT_END
+  MRPT_END
 }
 
 // Read docs in base class
-bool CMultiMetricMap::internal_canComputeObservationLikelihood(
-	const CObservation& obs) const
+bool CMultiMetricMap::internal_canComputeObservationLikelihood(const CObservation& obs) const
 {
-	bool can_comp = false;
-	std::for_each(maps.begin(), maps.end(), [&](auto& ptr) {
-		can_comp = can_comp || ptr->canComputeObservationLikelihood(obs);
-	});
-	return can_comp;  //-V614
+  bool can_comp = false;
+  std::for_each(
+      maps.begin(), maps.end(),
+      [&](auto& ptr) { can_comp = can_comp || ptr->canComputeObservationLikelihood(obs); });
+  return can_comp;  //-V614
 }
 
 bool CMultiMetricMap::internal_insertObservation(
-	const CObservation& obs,
-	const std::optional<const mrpt::poses::CPose3D>& robotPose)
+    const CObservation& obs, const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
-	int total_insert = 0;
+  int total_insert = 0;
 
-	std::for_each(maps.begin(), maps.end(), [&](auto& ptr) {
-		const bool ret = ptr->insertObservation(obs, robotPose);
-		if (ret) total_insert++;
-	});
-	return total_insert != 0;
+  std::for_each(
+      maps.begin(), maps.end(),
+      [&](auto& ptr)
+      {
+        const bool ret = ptr->insertObservation(obs, robotPose);
+        if (ret) total_insert++;
+      });
+  return total_insert != 0;
 }
 
 void CMultiMetricMap::determineMatching2D(
-	const mrpt::maps::CMetricMap* otherMap, const CPose2D& otherMapPose,
-	TMatchingPairList& correspondences, const TMatchingParams& params,
-	TMatchingExtraResults& extraResults) const
+    const mrpt::maps::CMetricMap* otherMap,
+    const CPose2D& otherMapPose,
+    TMatchingPairList& correspondences,
+    const TMatchingParams& params,
+    TMatchingExtraResults& extraResults) const
 {
-	MRPT_START
-	const auto numPointsMaps = countMapsByClass<CSimplePointsMap>();
+  MRPT_START
+  const auto numPointsMaps = countMapsByClass<CSimplePointsMap>();
 
-	ASSERTMSG_(
-		numPointsMaps == 1,
-		"There is not exactly 1 points maps in the multimetric map.");
-	mapByClass<CSimplePointsMap>()->determineMatching2D(
-		otherMap, otherMapPose, correspondences, params, extraResults);
-	MRPT_END
+  ASSERTMSG_(numPointsMaps == 1, "There is not exactly 1 points maps in the multimetric map.");
+  mapByClass<CSimplePointsMap>()->determineMatching2D(
+      otherMap, otherMapPose, correspondences, params, extraResults);
+  MRPT_END
 }
 
 bool CMultiMetricMap::isEmpty() const
 {
-	bool is_empty;
-	MapIsEmpty op_insert_obs(is_empty);	 //-V614
-	MapExecutor::run(*this, op_insert_obs);
-	return is_empty;
+  bool is_empty;
+  MapIsEmpty op_insert_obs(is_empty);  //-V614
+  MapExecutor::run(*this, op_insert_obs);
+  return is_empty;
 }
 
-void CMultiMetricMap::saveMetricMapRepresentationToFile(
-	const std::string& filNamePrefix) const
+void CMultiMetricMap::saveMetricMapRepresentationToFile(const std::string& filNamePrefix) const
 {
-	MRPT_START
+  MRPT_START
 
-	for (size_t idx = 0; idx < maps.size(); idx++)
-	{
-		const mrpt::maps::CMetricMap* m = maps[idx].get();
-		ASSERT_(m);
-		std::string fil = filNamePrefix;
-		fil += format(
-			"_%s_%02u",
-			mrpt::system::fileNameStripInvalidChars(
-				m->GetRuntimeClass()->className)
-				.c_str(),
-			static_cast<unsigned int>(idx));
-		m->saveMetricMapRepresentationToFile(fil);
-	}
+  for (size_t idx = 0; idx < maps.size(); idx++)
+  {
+    const mrpt::maps::CMetricMap* m = maps[idx].get();
+    ASSERT_(m);
+    std::string fil = filNamePrefix;
+    fil += format(
+        "_%s_%02u",
+        mrpt::system::fileNameStripInvalidChars(m->GetRuntimeClass()->className).c_str(),
+        static_cast<unsigned int>(idx));
+    m->saveMetricMapRepresentationToFile(fil);
+  }
 
-	MRPT_END
+  MRPT_END
 }
 
 void CMultiMetricMap::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
 {
-	MRPT_START
-	std::for_each(maps.begin(), maps.end(), [&](auto& ptr) {
-		ptr->getVisualizationInto(o);
-	});
-	MRPT_END
+  MRPT_START
+  std::for_each(maps.begin(), maps.end(), [&](auto& ptr) { ptr->getVisualizationInto(o); });
+  MRPT_END
 }
 
 // See docs in base class
 float CMultiMetricMap::compute3DMatchingRatio(
-	const mrpt::maps::CMetricMap* otherMap,
-	const mrpt::poses::CPose3D& otherMapPose,
-	const TMatchingRatioParams& params) const
+    const mrpt::maps::CMetricMap* otherMap,
+    const mrpt::poses::CPose3D& otherMapPose,
+    const TMatchingRatioParams& params) const
 {
-	MRPT_START
+  MRPT_START
 
-	float accumResult = 0;
+  float accumResult = 0;
 
-	for (const auto& map : maps)
-	{
-		const mrpt::maps::CMetricMap* m = map.get();
-		ASSERT_(m);
-		accumResult +=
-			m->compute3DMatchingRatio(otherMap, otherMapPose, params);
-	}
+  for (const auto& map : maps)
+  {
+    const mrpt::maps::CMetricMap* m = map.get();
+    ASSERT_(m);
+    accumResult += m->compute3DMatchingRatio(otherMap, otherMapPose, params);
+  }
 
-	// Return average:
-	const size_t nMapsComputed = maps.size();
-	if (nMapsComputed) accumResult /= nMapsComputed;
-	return accumResult;
+  // Return average:
+  const size_t nMapsComputed = maps.size();
+  if (nMapsComputed) accumResult /= nMapsComputed;
+  return accumResult;
 
-	MRPT_END
+  MRPT_END
 }
 
 void CMultiMetricMap::auxParticleFilterCleanUp()
 {
-	MRPT_START
-	std::for_each(maps.begin(), maps.end(), [](auto& ptr) {
-		ptr->auxParticleFilterCleanUp();
-	});
-	MRPT_END
+  MRPT_START
+  std::for_each(maps.begin(), maps.end(), [](auto& ptr) { ptr->auxParticleFilterCleanUp(); });
+  MRPT_END
 }
 
 const CSimplePointsMap* CMultiMetricMap::getAsSimplePointsMap() const
 {
-	MRPT_START
-	const auto numPointsMaps = countMapsByClass<CSimplePointsMap>();
-	ASSERT_(numPointsMaps == 1 || numPointsMaps == 0);
-	if (!numPointsMaps) return nullptr;
-	else
-		return this->mapByClass<CSimplePointsMap>(0).get();
-	MRPT_END
+  MRPT_START
+  const auto numPointsMaps = countMapsByClass<CSimplePointsMap>();
+  ASSERT_(numPointsMaps == 1 || numPointsMaps == 0);
+  if (!numPointsMaps)
+    return nullptr;
+  else
+    return this->mapByClass<CSimplePointsMap>(0).get();
+  MRPT_END
 }
 
 std::string CMultiMetricMap::asString() const
 {
-	std::stringstream ss;
-	ss << "Multi-map with " << maps.size() << " children maps: ";
-	for (size_t i = 0; i < maps.size(); i++)
-		ss << "[" << i << "] " << maps[i]->asString() << ", ";
+  std::stringstream ss;
+  ss << "Multi-map with " << maps.size() << " children maps: ";
+  for (size_t i = 0; i < maps.size(); i++) ss << "[" << i << "] " << maps[i]->asString() << ", ";
 
-	return ss.str();
+  return ss.str();
 }
 
 mrpt::maps::CMetricMap::Ptr CMultiMetricMap::mapByIndex(size_t idx) const
 {
-	MRPT_START
-	return maps.at(idx);
-	MRPT_END
+  MRPT_START
+  return maps.at(idx);
+  MRPT_END
 }
 
 CMultiMetricMap::CMultiMetricMap(const CMultiMetricMap& o) { *this = o; }
 CMultiMetricMap& CMultiMetricMap::operator=(const CMultiMetricMap& o)
 {
-	if (&o == this) return *this;
+  if (&o == this) return *this;
 
-	mrpt::io::CMemoryStream buf;
-	auto ar = mrpt::serialization::archiveFrom(buf);
-	ar << o;
-	buf.Seek(0);
-	ar.ReadObject(this);
+  mrpt::io::CMemoryStream buf;
+  auto ar = mrpt::serialization::archiveFrom(buf);
+  ar << o;
+  buf.Seek(0);
+  ar.ReadObject(this);
 
-	return *this;
+  return *this;
 }

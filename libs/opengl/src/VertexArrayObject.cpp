@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"	 // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 //
 #include <mrpt/core/exceptions.h>
 #include <mrpt/opengl/VertexArrayObject.h>
@@ -21,45 +21,45 @@ VertexArrayObject::VertexArrayObject() {}
 
 VertexArrayObject::RAII_Impl::~RAII_Impl()
 {
-	// Free resources:
-	destroy();
+  // Free resources:
+  destroy();
 }
 
 void VertexArrayObject::RAII_Impl::create()
 {
-	destroy();
+  destroy();
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-	GLuint buffer;
-	glGenVertexArrays(1, &buffer);
-	m_state.get().buffer_id = buffer;
-	m_state.get().created = true;
+  GLuint buffer;
+  glGenVertexArrays(1, &buffer);
+  m_state.get().buffer_id = buffer;
+  m_state.get().created = true;
 #endif
 }
 
 void VertexArrayObject::RAII_Impl::destroy()
 {
-	if (!m_state.get().created) return;
+  if (!m_state.get().created) return;
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
-	release();
-	glDeleteVertexArrays(1, &m_state.get().buffer_id);
+  release();
+  glDeleteVertexArrays(1, &m_state.get().buffer_id);
 #endif
-	m_state.get().buffer_id = 0;
-	m_state.get().created = false;
+  m_state.get().buffer_id = 0;
+  m_state.get().created = false;
 }
 
 void VertexArrayObject::RAII_Impl::bind()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-	ASSERT_(m_state.get().created);
-	glBindVertexArray(m_state.get().buffer_id);
+  ASSERT_(m_state.get().created);
+  glBindVertexArray(m_state.get().buffer_id);
 #endif
 }
 
 void VertexArrayObject::RAII_Impl::release()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-	if (!m_state.get().created) return;
-	glBindVertexArray(0);
+  if (!m_state.get().created) return;
+  glBindVertexArray(0);
 #endif
 }

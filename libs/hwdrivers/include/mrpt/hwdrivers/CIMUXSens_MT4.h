@@ -54,49 +54,48 @@ namespace mrpt::hwdrivers
  */
 class CIMUXSens_MT4 : public hwdrivers::CGenericSensor
 {
-	DEFINE_GENERIC_SENSOR(CIMUXSens_MT4)
-   public:
-	CIMUXSens_MT4();
-	~CIMUXSens_MT4() override;
+  DEFINE_GENERIC_SENSOR(CIMUXSens_MT4)
+ public:
+  CIMUXSens_MT4();
+  ~CIMUXSens_MT4() override;
 
-	/** This method will be invoked at a minimum rate of "process_rate" (Hz)
-	 *  \exception This method must throw an exception with a descriptive
-	 * message if some critical error is found.
-	 */
-	void doProcess() override;
+  /** This method will be invoked at a minimum rate of "process_rate" (Hz)
+   *  \exception This method must throw an exception with a descriptive
+   * message if some critical error is found.
+   */
+  void doProcess() override;
 
-	/** Turns on the xSens device and configure it for getting orientation data
-	 */
-	void initialize() override;
+  /** Turns on the xSens device and configure it for getting orientation data
+   */
+  void initialize() override;
 
-	void close();
+  void close();
 
-   protected:
-	/** The interface to the file: */
-	struct Impl;
-	mrpt::pimpl<Impl> m_impl;
+ protected:
+  /** The interface to the file: */
+  struct Impl;
+  mrpt::pimpl<Impl> m_impl;
 
-	/** Baudrate, only for COM ports. */
-	int m_port_bauds{0};
-	/** The USB or COM port name (if blank -> autodetect) */
-	std::string m_portname;
+  /** Baudrate, only for COM ports. */
+  int m_port_bauds{0};
+  /** The USB or COM port name (if blank -> autodetect) */
+  std::string m_portname;
 
-	/** Device ID to open, or first one if empty string. */
-	std::string m_deviceId;
+  /** Device ID to open, or first one if empty string. */
+  std::string m_deviceId;
 
-	std::string m_xsensLogFile;
+  std::string m_xsensLogFile;
 
-	int m_sampleFreq{100};
+  int m_sampleFreq{100};
 
-	mrpt::poses::CPose3D m_sensorPose;
+  mrpt::poses::CPose3D m_sensorPose;
 
-	/** See the class documentation at the top for expected parameters */
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection) override;
+  /** See the class documentation at the top for expected parameters */
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection) override;
 
-	friend class MyXSensCallback;
+  friend class MyXSensCallback;
 
-};	// end of class
+};  // end of class
 
 }  // namespace mrpt::hwdrivers

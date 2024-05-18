@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "graphslam-precomp.h"	// Precompiled headers
+#include "graphslam-precomp.h"  // Precompiled headers
 //
 // Implementattion file for TSlidingWindow struct
 #include <mrpt/config/CConfigFileBase.h>
@@ -19,199 +19,192 @@
 
 using namespace mrpt::graphslam;
 
-TSlidingWindow::TSlidingWindow(const std::string& name /* = "window" */)
-	: m_name(name)
-{
-}
+TSlidingWindow::TSlidingWindow(const std::string& name /* = "window" */) : m_name(name) {}
 
 double TSlidingWindow::getMedian()
 {
-	MRPT_START
+  MRPT_START
 
-	double median_out = 0.0;
-	if (m_measurements_vec.empty()) { return 0.0; }
+  double median_out = 0.0;
+  if (m_measurements_vec.empty())
+  {
+    return 0.0;
+  }
 
-	if (m_median_updated) { median_out = m_median_cached; }
-	else
-	{
-		// copy the current vector, sort it and return value in middle
-		std::vector<double> vec_sorted(m_measurements_vec);
-		std::sort(vec_sorted.begin(), vec_sorted.end());
+  if (m_median_updated)
+  {
+    median_out = m_median_cached;
+  }
+  else
+  {
+    // copy the current vector, sort it and return value in middle
+    std::vector<double> vec_sorted(m_measurements_vec);
+    std::sort(vec_sorted.begin(), vec_sorted.end());
 
-		median_out = vec_sorted.at(vec_sorted.size() / 2);
+    median_out = vec_sorted.at(vec_sorted.size() / 2);
 
-		m_median_cached = median_out;
-		m_median_updated = true;
-	}
+    m_median_cached = median_out;
+    m_median_updated = true;
+  }
 
-	return median_out;
+  return median_out;
 
-	MRPT_END
+  MRPT_END
 }
 double TSlidingWindow::getMean()
 {
-	MRPT_START
+  MRPT_START
 
-	double mean_out = 0.0;
+  double mean_out = 0.0;
 
-	if (m_mean_updated) { mean_out = m_mean_cached; }
-	else
-	{
-		mean_out = std::accumulate(
-			m_measurements_vec.begin(), m_measurements_vec.end(), 0.0);
-		mean_out /= m_measurements_vec.size();
+  if (m_mean_updated)
+  {
+    mean_out = m_mean_cached;
+  }
+  else
+  {
+    mean_out = std::accumulate(m_measurements_vec.begin(), m_measurements_vec.end(), 0.0);
+    mean_out /= m_measurements_vec.size();
 
-		m_mean_cached = mean_out;
-		m_mean_updated = true;
-	}
+    m_mean_cached = mean_out;
+    m_mean_updated = true;
+  }
 
-	return mean_out;
+  return mean_out;
 
-	MRPT_END
+  MRPT_END
 }
 double TSlidingWindow::getStdDev()
 {
-	MRPT_START
+  MRPT_START
 
-	double std_dev_out = 0.0;
+  double std_dev_out = 0.0;
 
-	if (m_std_dev_updated)
-	{  // return the cached version?
-		std_dev_out = m_std_dev_cached;
-	}
-	else
-	{
-		double mean = this->getMean();
+  if (m_std_dev_updated)
+  {  // return the cached version?
+    std_dev_out = m_std_dev_cached;
+  }
+  else
+  {
+    double mean = this->getMean();
 
-		double sum_of_sq_diffs = 0;
-		for (auto it = m_measurements_vec.begin();
-			 it != m_measurements_vec.end(); ++it)
-		{
-			sum_of_sq_diffs += std::pow(*it - mean, 2);
-		}
-		std_dev_out = sqrt(sum_of_sq_diffs / m_win_size);
+    double sum_of_sq_diffs = 0;
+    for (auto it = m_measurements_vec.begin(); it != m_measurements_vec.end(); ++it)
+    {
+      sum_of_sq_diffs += std::pow(*it - mean, 2);
+    }
+    std_dev_out = sqrt(sum_of_sq_diffs / m_win_size);
 
-		m_std_dev_cached = std_dev_out;
-		m_std_dev_updated = true;
-	}
+    m_std_dev_cached = std_dev_out;
+    m_std_dev_updated = true;
+  }
 
-	return std_dev_out;
-	MRPT_END
+  return std_dev_out;
+  MRPT_END
 }
 
 bool TSlidingWindow::evaluateMeasurementInGaussian(double measurement)
 {
-	// get the boundaries for acceptance of measurements - [-3sigma, 3sigma]
-	// with
-	// regards to the mean
-	double low_lim = this->getMean() - 3 * this->getStdDev();
-	double upper_lim = this->getMean() + 3 * this->getStdDev();
+  // get the boundaries for acceptance of measurements - [-3sigma, 3sigma]
+  // with
+  // regards to the mean
+  double low_lim = this->getMean() - 3 * this->getStdDev();
+  double upper_lim = this->getMean() + 3 * this->getStdDev();
 
-	return measurement > low_lim && measurement < upper_lim;
+  return measurement > low_lim && measurement < upper_lim;
 }
 bool TSlidingWindow::evaluateMeasurementAbove(double value)
 {
-	MRPT_START
+  MRPT_START
 
-	double threshold = this->getMean();
-	return (value > threshold);
+  double threshold = this->getMean();
+  return (value > threshold);
 
-	MRPT_END
+  MRPT_END
 }
 bool TSlidingWindow::evaluateMeasurementBelow(double value)
 {
-	return !evaluateMeasurementAbove(value);
+  return !evaluateMeasurementAbove(value);
 }
 
 void TSlidingWindow::addNewMeasurement(double measurement)
 {
-	MRPT_START
+  MRPT_START
 
-	m_is_initialized = true;
+  m_is_initialized = true;
 
-	// if I haven't already filled up to win_size the vector, just add it
-	if (m_win_size > m_measurements_vec.size())
-	{
-		m_measurements_vec.push_back(measurement);
-	}
-	else
-	{
-		// remove first element - add it as last element
-		m_measurements_vec.erase(m_measurements_vec.begin());
-		m_measurements_vec.push_back(measurement);
-	}
+  // if I haven't already filled up to win_size the vector, just add it
+  if (m_win_size > m_measurements_vec.size())
+  {
+    m_measurements_vec.push_back(measurement);
+  }
+  else
+  {
+    // remove first element - add it as last element
+    m_measurements_vec.erase(m_measurements_vec.begin());
+    m_measurements_vec.push_back(measurement);
+  }
 
-	m_mean_updated = false;
-	m_median_updated = false;
-	m_std_dev_updated = false;
+  m_mean_updated = false;
+  m_median_updated = false;
+  m_std_dev_updated = false;
 
-	MRPT_END
+  MRPT_END
 }
 void TSlidingWindow::resizeWindow(size_t new_size)
 {
-	MRPT_START
+  MRPT_START
 
-	size_t curr_size = m_measurements_vec.size();
-	if (new_size < curr_size)
-	{
-		// remove (curr_size - new_size) elements from the beginning of the
-		// measurements vector
-		m_measurements_vec.erase(
-			m_measurements_vec.begin(),
-			m_measurements_vec.begin() + (curr_size - new_size));
+  size_t curr_size = m_measurements_vec.size();
+  if (new_size < curr_size)
+  {
+    // remove (curr_size - new_size) elements from the beginning of the
+    // measurements vector
+    m_measurements_vec.erase(
+        m_measurements_vec.begin(), m_measurements_vec.begin() + (curr_size - new_size));
 
-		m_mean_updated = false;
-		m_median_updated = false;
-	}
+    m_mean_updated = false;
+    m_median_updated = false;
+  }
 
-	m_win_size = new_size;
+  m_win_size = new_size;
 
-	MRPT_END
+  MRPT_END
 }
 void TSlidingWindow::loadFromConfigFile(
-	const mrpt::config::CConfigFileBase& source, const std::string& section)
+    const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
-	MRPT_START
+  MRPT_START
 
-	size_t sliding_win_size =
-		source.read_int(section, "sliding_win_size", 10, false);
-	this->resizeWindow(sliding_win_size);
+  size_t sliding_win_size = source.read_int(section, "sliding_win_size", 10, false);
+  this->resizeWindow(sliding_win_size);
 
-	MRPT_END
+  MRPT_END
 }
 void TSlidingWindow::dumpToTextStream(std::ostream& out) const
 {
-	MRPT_START
+  MRPT_START
 
-	out << mrpt::format(
-		"-----------[ %s: Sliding Window Properties ]-----------\n",
-		m_name.c_str());
-	out << "Measurements Vector: \n";
-	for (double it : m_measurements_vec)
-	{
-		out << mrpt::format("\t%.2f\n", it);
-	}
-	out << "\n";
+  out << mrpt::format("-----------[ %s: Sliding Window Properties ]-----------\n", m_name.c_str());
+  out << "Measurements Vector: \n";
+  for (double it : m_measurements_vec)
+  {
+    out << mrpt::format("\t%.2f\n", it);
+  }
+  out << "\n";
 
-	out << mrpt::format("m_name              : %s\n", m_name.c_str());
-	out << mrpt::format("m_mean_cached       : %.2f\n", m_mean_cached);
-	out << mrpt::format("m_median_cached     : %.2f\n", m_median_cached);
-	out << mrpt::format("m_std_dev_cached    : %.2f\n", m_std_dev_cached);
-	out << mrpt::format(
-		"m_mean_updated      : %s\n", m_mean_updated ? "TRUE" : "FALSE");
-	out << mrpt::format(
-		"m_median_updated    : %s\n", m_median_updated ? "TRUE" : "FALSE");
-	out << mrpt::format(
-		"m_std_dev_updated   : %s\n", m_std_dev_updated ? "TRUE" : "FALSE");
-	out << mrpt::format("m_win_size          : %lu\n", m_win_size);
-	out << mrpt::format(
-		"m_is_initialized    : %s\n", m_is_initialized ? "TRUE" : "FALSE");
+  out << mrpt::format("m_name              : %s\n", m_name.c_str());
+  out << mrpt::format("m_mean_cached       : %.2f\n", m_mean_cached);
+  out << mrpt::format("m_median_cached     : %.2f\n", m_median_cached);
+  out << mrpt::format("m_std_dev_cached    : %.2f\n", m_std_dev_cached);
+  out << mrpt::format("m_mean_updated      : %s\n", m_mean_updated ? "TRUE" : "FALSE");
+  out << mrpt::format("m_median_updated    : %s\n", m_median_updated ? "TRUE" : "FALSE");
+  out << mrpt::format("m_std_dev_updated   : %s\n", m_std_dev_updated ? "TRUE" : "FALSE");
+  out << mrpt::format("m_win_size          : %lu\n", m_win_size);
+  out << mrpt::format("m_is_initialized    : %s\n", m_is_initialized ? "TRUE" : "FALSE");
 
-	MRPT_END
+  MRPT_END
 }
 
 size_t TSlidingWindow::getWindowSize() const { return m_win_size; }
-bool TSlidingWindow::windowIsFull() const
-{
-	return (m_win_size == m_measurements_vec.size());
-}
+bool TSlidingWindow::windowIsFull() const { return (m_win_size == m_measurements_vec.size()); }

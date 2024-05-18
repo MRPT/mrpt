@@ -45,13 +45,13 @@ struct ContainerType;
 template <typename Derived>
 struct ContainerType<Eigen::EigenBase<Derived>>
 {
-	using element_t = typename Derived::Scalar;
+  using element_t = typename Derived::Scalar;
 };
 /** Specialization for MRPT containers */
 template <typename Scalar, typename Derived>
 struct ContainerType<mrpt::math::MatrixVectorBase<Scalar, Derived>>
 {
-	using element_t = Scalar;
+  using element_t = Scalar;
 };
 
 /** Computes the normalized or normal histogram of a sequence of numbers given
@@ -63,32 +63,33 @@ struct ContainerType<mrpt::math::MatrixVectorBase<Scalar, Derived>>
  */
 template <class CONTAINER>
 std::vector<double> histogram(
-	const CONTAINER& v, double limit_min, double limit_max, size_t number_bins,
-	bool do_normalization = false,
-	std::vector<double>* out_bin_centers = nullptr)
+    const CONTAINER& v,
+    double limit_min,
+    double limit_max,
+    size_t number_bins,
+    bool do_normalization = false,
+    std::vector<double>* out_bin_centers = nullptr)
 {
-	mrpt::math::CHistogram H(limit_min, limit_max, number_bins);
-	std::vector<double> ret(number_bins);
-	std::vector<double> dummy_ret_bins;
-	H.add(v);
-	if (do_normalization)
-		H.getHistogramNormalized(
-			out_bin_centers ? *out_bin_centers : dummy_ret_bins, ret);
-	else
-		H.getHistogram(
-			out_bin_centers ? *out_bin_centers : dummy_ret_bins, ret);
-	return ret;
+  mrpt::math::CHistogram H(limit_min, limit_max, number_bins);
+  std::vector<double> ret(number_bins);
+  std::vector<double> dummy_ret_bins;
+  H.add(v);
+  if (do_normalization)
+    H.getHistogramNormalized(out_bin_centers ? *out_bin_centers : dummy_ret_bins, ret);
+  else
+    H.getHistogram(out_bin_centers ? *out_bin_centers : dummy_ret_bins, ret);
+  return ret;
 }
 
 template <class EIGEN_CONTAINER>
 void resizeLike(EIGEN_CONTAINER& trg, const EIGEN_CONTAINER& src)
 {
-	trg.resizeLike(src);
+  trg.resizeLike(src);
 }
 template <typename T>
 void resizeLike(std::vector<T>& trg, const std::vector<T>& src)
 {
-	trg.resize(src.size());
+  trg.resize(src.size());
 }
 
 /** Computes the cumulative sum of all the elements, saving the result in
@@ -101,19 +102,17 @@ void resizeLike(std::vector<T>& trg, const std::vector<T>& src)
 template <class CONTAINER1, class CONTAINER2>
 inline void cumsum_tmpl(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
 {
-	resizeLike(out_cumsum, in_data);
-	using T =
-		std::remove_const_t<std::remove_reference_t<decltype(in_data[0])>>;
-	T last = 0;
-	const size_t N = in_data.size();
-	for (size_t i = 0; i < N; i++)
-		last = out_cumsum[i] = last + in_data[i];
+  resizeLike(out_cumsum, in_data);
+  using T = std::remove_const_t<std::remove_reference_t<decltype(in_data[0])>>;
+  T last = 0;
+  const size_t N = in_data.size();
+  for (size_t i = 0; i < N; i++) last = out_cumsum[i] = last + in_data[i];
 }
 
 template <class CONTAINER1, class CONTAINER2>
 inline void cumsum(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
 {
-	cumsum_tmpl<CONTAINER1, CONTAINER2>(in_data, out_cumsum);
+  cumsum_tmpl<CONTAINER1, CONTAINER2>(in_data, out_cumsum);
 }
 
 /** Computes the cumulative sum of all the elements
@@ -121,60 +120,58 @@ inline void cumsum(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
 template <class CONTAINER>
 inline CONTAINER cumsum(const CONTAINER& in_data)
 {
-	CONTAINER ret;
-	cumsum(in_data, ret);
-	return ret;
+  CONTAINER ret;
+  cumsum(in_data, ret);
+  return ret;
 }
 
 template <class CONTAINER>
 inline typename CONTAINER::Scalar norm_inf(const CONTAINER& v)
 {
-	return v.norm_inf();
+  return v.norm_inf();
 }
 template <class CONTAINER>
 inline typename CONTAINER::Scalar norm(const CONTAINER& v)
 {
-	return v.norm();
+  return v.norm();
 }
 template <class CONTAINER, int = CONTAINER::is_mrpt_type>
 inline typename CONTAINER::Scalar maximum(const CONTAINER& v)
 {
-	return v.maxCoeff();
+  return v.maxCoeff();
 }
 template <class CONTAINER, int = CONTAINER::is_mrpt_type>
 inline typename CONTAINER::Scalar minimum(const CONTAINER& v)
 {
-	return v.minCoeff();
+  return v.minCoeff();
 }
 
 template <class Derived>
 inline typename Derived::Scalar maximum(const Eigen::MatrixBase<Derived>& v)
 {
-	return v.maxCoeff();
+  return v.maxCoeff();
 }
 template <class Derived>
 inline typename Derived::Scalar minimum(const Eigen::MatrixBase<Derived>& v)
 {
-	return v.minCoeff();
+  return v.minCoeff();
 }
 
 template <typename T>
 inline T maximum(const std::vector<T>& v)
 {
-	ASSERT_(!v.empty());
-	T m = v[0];
-	for (size_t i = 0; i < v.size(); i++)
-		mrpt::keep_max(m, v[i]);
-	return m;
+  ASSERT_(!v.empty());
+  T m = v[0];
+  for (size_t i = 0; i < v.size(); i++) mrpt::keep_max(m, v[i]);
+  return m;
 }
 template <typename T>
 inline T minimum(const std::vector<T>& v)
 {
-	ASSERT_(!v.empty());
-	T m = v[0];
-	for (size_t i = 0; i < v.size(); i++)
-		mrpt::keep_min(m, v[i]);
-	return m;
+  ASSERT_(!v.empty());
+  T m = v[0];
+  for (size_t i = 0; i < v.size(); i++) mrpt::keep_min(m, v[i]);
+  return m;
 }
 
 /** \name Generic container element-wise operations - Miscelaneous
@@ -186,7 +183,7 @@ inline T minimum(const std::vector<T>& v)
 template <class CONTAINER, typename VALUE>
 VALUE squareNorm_accum(const VALUE total, const CONTAINER& v)
 {
-	return total + v.squaredNorm();
+  return total + v.squaredNorm();
 }
 
 /** Compute the square norm of anything implementing [].
@@ -194,28 +191,25 @@ VALUE squareNorm_accum(const VALUE total, const CONTAINER& v)
 template <size_t N, class T, class U>
 inline T squareNorm(const U& v)
 {
-	T res = 0;
-	for (size_t i = 0; i < N; i++)
-		res += square(v[i]);
-	return res;
+  T res = 0;
+  for (size_t i = 0; i < N; i++) res += square(v[i]);
+  return res;
 }
 
 /** v1*v2: The dot product of two containers (vectors/arrays/matrices) */
 template <class CONTAINER1, class CONTAINER2>
-inline typename CONTAINER1::Scalar dotProduct(
-	const CONTAINER1& v1, const CONTAINER1& v2)
+inline typename CONTAINER1::Scalar dotProduct(const CONTAINER1& v1, const CONTAINER1& v2)
 {
-	return v1.dot(v2);
+  return v1.dot(v2);
 }
 
 /** v1*v2: The dot product of any two objects supporting []  */
 template <size_t N, class T, class U, class V>
 inline T dotProduct(const U& v1, const V& v2)
 {
-	T res = 0;
-	for (size_t i = 0; i < N; i++)
-		res += v1[i] * v2[i];
-	return res;
+  T res = 0;
+  for (size_t i = 0; i < N; i++) res += v1[i] * v2[i];
+  return res;
 }
 
 /** Computes the sum of all the elements.
@@ -226,14 +220,14 @@ inline T dotProduct(const U& v1, const V& v2)
 template <class CONTAINER>
 inline typename CONTAINER::Scalar sum(const CONTAINER& v)
 {
-	return v.sum();
+  return v.sum();
 }
 
 /// \overload
 template <typename T>
 inline T sum(const std::vector<T>& v)
 {
-	return std::accumulate(v.begin(), v.end(), T(0));
+  return std::accumulate(v.begin(), v.end(), T(0));
 }
 
 /** Computes the sum of all the elements, with a custom return type.
@@ -241,7 +235,7 @@ inline T sum(const std::vector<T>& v)
 template <class CONTAINER, typename RET>
 inline RET sumRetType(const CONTAINER& v)
 {
-	return v.template sumRetType<RET>();
+  return v.template sumRetType<RET>();
 }
 
 /** Computes the mean value of a vector  \return The mean, as a double number.
@@ -249,34 +243,34 @@ inline RET sumRetType(const CONTAINER& v)
 template <class CONTAINER>
 inline double mean(const CONTAINER& v)
 {
-	if (v.empty()) return 0;
-	else
-		return sum(v) / static_cast<double>(v.size());
+  if (v.empty())
+    return 0;
+  else
+    return sum(v) / static_cast<double>(v.size());
 }
 
 /** Return the maximum and minimum values of a std::vector */
 template <typename T, typename Alloc>
-inline void minimum_maximum(
-	const std::vector<T, Alloc>& V, T& curMin, T& curMax)
+inline void minimum_maximum(const std::vector<T, Alloc>& V, T& curMin, T& curMax)
 {
-	ASSERT_(V.size() != 0);
-	const size_t N = V.size();
-	curMin = curMax = V[0];
-	for (size_t i = 1; i < N; i++)
-	{
-		mrpt::keep_min(curMin, V[i]);
-		mrpt::keep_max(curMax, V[i]);
-	}
+  ASSERT_(V.size() != 0);
+  const size_t N = V.size();
+  curMin = curMax = V[0];
+  for (size_t i = 1; i < N; i++)
+  {
+    mrpt::keep_min(curMin, V[i]);
+    mrpt::keep_max(curMax, V[i]);
+  }
 }
 
 /** Return the maximum and minimum values of a Eigen-based vector or matrix */
 template <class Derived>
 inline void minimum_maximum(
-	const Eigen::MatrixBase<Derived>& V,
-	typename Eigen::MatrixBase<Derived>::Scalar& curMin,
-	typename Eigen::MatrixBase<Derived>::Scalar& curMax)
+    const Eigen::MatrixBase<Derived>& V,
+    typename Eigen::MatrixBase<Derived>::Scalar& curMin,
+    typename Eigen::MatrixBase<Derived>::Scalar& curMax)
 {
-	V.minimum_maximum(curMin, curMax);
+  V.minimum_maximum(curMin, curMax);
 }
 
 /** Scales all elements such as the minimum & maximum values are shifted to the
@@ -284,13 +278,13 @@ inline void minimum_maximum(
 template <class CONTAINER, typename Scalar>
 void normalize(CONTAINER& c, Scalar valMin, Scalar valMax)
 {
-	if (!c.size()) return;	// empty() is not defined for Eigen classes
-	const Scalar curMin = c.minCoeff();
-	const Scalar curMax = c.maxCoeff();
-	Scalar minMaxDelta = curMax - curMin;
-	if (minMaxDelta == 0) minMaxDelta = 1;
-	const Scalar minMaxDelta_ = (valMax - valMin) / minMaxDelta;
-	c.array() = (c.array() - curMin) * minMaxDelta_ + valMin;
+  if (!c.size()) return;  // empty() is not defined for Eigen classes
+  const Scalar curMin = c.minCoeff();
+  const Scalar curMax = c.maxCoeff();
+  Scalar minMaxDelta = curMax - curMin;
+  if (minMaxDelta == 0) minMaxDelta = 1;
+  const Scalar minMaxDelta_ = (valMax - valMin) / minMaxDelta;
+  c.array() = (c.array() - curMin) * minMaxDelta_ + valMin;
 }
 
 /** Counts the number of elements that appear in both STL-like containers
@@ -300,26 +294,25 @@ void normalize(CONTAINER& c, Scalar valMin, Scalar valMax)
 template <class CONTAINER1, class CONTAINER2>
 size_t countCommonElements(const CONTAINER1& a, const CONTAINER2& b)
 {
-	size_t ret = 0;
-	for (auto it1 = a.begin(); it1 != a.end(); ++it1)
-		for (auto it2 = b.begin(); it2 != b.end(); ++it2)
-			if ((*it1) == (*it2)) ret++;
-	return ret;
+  size_t ret = 0;
+  for (auto it1 = a.begin(); it1 != a.end(); ++it1)
+    for (auto it2 = b.begin(); it2 != b.end(); ++it2)
+      if ((*it1) == (*it2)) ret++;
+  return ret;
 }
 
 /** Adjusts the range of all the elements such as the minimum and maximum values
  * being those supplied by the user.  */
 template <class CONTAINER>
 void adjustRange(
-	CONTAINER& m, const typename CONTAINER::Scalar minVal,
-	const typename CONTAINER::Scalar maxVal)
+    CONTAINER& m, const typename CONTAINER::Scalar minVal, const typename CONTAINER::Scalar maxVal)
 {
-	if (size_t(m.size()) == 0) return;
-	typename CONTAINER::Scalar curMin, curMax;
-	minimum_maximum(m, curMin, curMax);
-	const typename CONTAINER::Scalar curRan = curMax - curMin;
-	m -= (curMin + minVal);
-	if (curRan != 0) m *= (maxVal - minVal) / curRan;
+  if (size_t(m.size()) == 0) return;
+  typename CONTAINER::Scalar curMin, curMax;
+  minimum_maximum(m, curMin, curMax);
+  const typename CONTAINER::Scalar curRan = curMax - curMin;
+  m -= (curMin + minVal);
+  if (curRan != 0) m *= (maxVal - minVal) / curRan;
 }
 
 /** Computes the standard deviation of a vector (or all elements of a matrix)
@@ -332,27 +325,23 @@ void adjustRange(
  * \sa math::mean,math::stddev
  */
 template <class VECTORLIKE>
-void meanAndStd(
-	const VECTORLIKE& v, double& out_mean, double& out_std,
-	bool unbiased = true)
+void meanAndStd(const VECTORLIKE& v, double& out_mean, double& out_std, bool unbiased = true)
 {
-	if (v.size() < 2)
-	{
-		out_std = 0;
-		out_mean = (v.size() == 1) ? *v.begin() : 0;
-	}
-	else
-	{
-		// Compute the mean:
-		const size_t N = v.size();
-		out_mean = mrpt::math::sum(v) / static_cast<double>(N);
-		// Compute the std:
-		double vector_std = 0;
-		for (size_t i = 0; i < N; i++)
-			vector_std += mrpt::square(v[i] - out_mean);
-		out_std =
-			std::sqrt(vector_std / static_cast<double>(N - (unbiased ? 1 : 0)));
-	}
+  if (v.size() < 2)
+  {
+    out_std = 0;
+    out_mean = (v.size() == 1) ? *v.begin() : 0;
+  }
+  else
+  {
+    // Compute the mean:
+    const size_t N = v.size();
+    out_mean = mrpt::math::sum(v) / static_cast<double>(N);
+    // Compute the std:
+    double vector_std = 0;
+    for (size_t i = 0; i < N; i++) vector_std += mrpt::square(v[i] - out_mean);
+    out_std = std::sqrt(vector_std / static_cast<double>(N - (unbiased ? 1 : 0)));
+  }
 }
 
 /** Computes the standard deviation of a vector
@@ -364,9 +353,9 @@ void meanAndStd(
 template <class VECTORLIKE>
 inline double stddev(const VECTORLIKE& v, bool unbiased = true)
 {
-	double m, s;
-	meanAndStd(v, m, s, unbiased);
-	return s;
+  double m, s;
+  meanAndStd(v, m, s, unbiased);
+  return s;
 }
 
 /** Computes the mean vector and covariance from a list of values given as a
@@ -377,43 +366,37 @@ inline double stddev(const VECTORLIKE& v, bool unbiased = true)
  * \sa mrpt::math::meanAndCovMat, math::mean,math::stddev, math::cov
  */
 template <class VECTOR_OF_VECTOR, class VECTORLIKE, class MATRIXLIKE>
-void meanAndCovVec(
-	const VECTOR_OF_VECTOR& v, VECTORLIKE& out_mean, MATRIXLIKE& out_cov)
+void meanAndCovVec(const VECTOR_OF_VECTOR& v, VECTORLIKE& out_mean, MATRIXLIKE& out_cov)
 {
-	const size_t N = v.size();
-	ASSERTMSG_(N > 0, "The input vector contains no elements");
-	const double N_inv = 1.0 / N;
+  const size_t N = v.size();
+  ASSERTMSG_(N > 0, "The input vector contains no elements");
+  const double N_inv = 1.0 / N;
 
-	const size_t M = v[0].size();
-	ASSERTMSG_(M > 0, "The input vector contains rows of length 0");
+  const size_t M = v[0].size();
+  ASSERTMSG_(M > 0, "The input vector contains rows of length 0");
 
-	// First: Compute the mean
-	out_mean.assign(M, 0);
-	for (size_t i = 0; i < N; i++)
-		for (size_t j = 0; j < M; j++)
-			out_mean[j] += v[i][j];
+  // First: Compute the mean
+  out_mean.assign(M, 0);
+  for (size_t i = 0; i < N; i++)
+    for (size_t j = 0; j < M; j++) out_mean[j] += v[i][j];
 
-	for (size_t j = 0; j < M; j++)
-		out_mean[j] *= N_inv;
+  for (size_t j = 0; j < M; j++) out_mean[j] *= N_inv;
 
-	// Second: Compute the covariance
-	//  Save only the above-diagonal part, then after averaging
-	//  duplicate that part to the other half.
-	out_cov.setZero(M, M);
-	for (size_t i = 0; i < N; i++)
-	{
-		for (size_t j = 0; j < M; j++)
-			out_cov(j, j) += square(v[i][j] - out_mean[j]);
+  // Second: Compute the covariance
+  //  Save only the above-diagonal part, then after averaging
+  //  duplicate that part to the other half.
+  out_cov.setZero(M, M);
+  for (size_t i = 0; i < N; i++)
+  {
+    for (size_t j = 0; j < M; j++) out_cov(j, j) += square(v[i][j] - out_mean[j]);
 
-		for (size_t j = 0; j < M; j++)
-			for (size_t k = j + 1; k < M; k++)
-				out_cov(j, k) +=
-					(v[i][j] - out_mean[j]) * (v[i][k] - out_mean[k]);
-	}
-	for (size_t j = 0; j < M; j++)
-		for (size_t k = j + 1; k < M; k++)
-			out_cov(k, j) = out_cov(j, k);
-	out_cov *= N_inv;
+    for (size_t j = 0; j < M; j++)
+      for (size_t k = j + 1; k < M; k++)
+        out_cov(j, k) += (v[i][j] - out_mean[j]) * (v[i][k] - out_mean[k]);
+  }
+  for (size_t j = 0; j < M; j++)
+    for (size_t k = j + 1; k < M; k++) out_cov(k, j) = out_cov(j, k);
+  out_cov *= N_inv;
 }
 
 /** Computes the covariance matrix from a list of values given as a vector of
@@ -426,10 +409,10 @@ void meanAndCovVec(
 template <class VECTOR_OF_VECTOR, class RETURN_MATRIX>
 inline RETURN_MATRIX covVector(const VECTOR_OF_VECTOR& v)
 {
-	std::vector<double> m;
-	RETURN_MATRIX C;
-	meanAndCovVec(v, m, C);
-	return C;
+  std::vector<double> m;
+  RETURN_MATRIX C;
+  meanAndCovVec(v, m, C);
+  return C;
 }
 
 /** Normalized Cross Correlation coefficient between two 1-D vectors, returning
@@ -449,23 +432,23 @@ inline RETURN_MATRIX covVector(const VECTOR_OF_VECTOR& v)
 template <class CONT1, class CONT2>
 double ncc_vector(const CONT1& a, const CONT2& b)
 {
-	ASSERT_EQUAL_(a.size(), b.size());
+  ASSERT_EQUAL_(a.size(), b.size());
 
-	double numerator = 0, sum_a = 0, sum_b = 0, result, a_mean, b_mean;
+  double numerator = 0, sum_a = 0, sum_b = 0, result, a_mean, b_mean;
 
-	a_mean = mrpt::math::mean(a);
-	b_mean = mrpt::math::mean(b);
+  a_mean = mrpt::math::mean(a);
+  b_mean = mrpt::math::mean(b);
 
-	const size_t N = a.size();
-	for (size_t i = 0; i < N; ++i)
-	{
-		numerator += (a[i] - a_mean) * (b[i] - b_mean);
-		sum_a += mrpt::square(a[i] - a_mean);
-		sum_b += mrpt::square(b[i] - b_mean);
-	}
-	ASSERTMSG_(sum_a * sum_b != 0, "Divide by zero when normalizing.");
-	result = numerator / std::sqrt(sum_a * sum_b);
-	return result;
+  const size_t N = a.size();
+  for (size_t i = 0; i < N; ++i)
+  {
+    numerator += (a[i] - a_mean) * (b[i] - b_mean);
+    sum_a += mrpt::square(a[i] - a_mean);
+    sum_b += mrpt::square(b[i] - b_mean);
+  }
+  ASSERTMSG_(sum_a * sum_b != 0, "Divide by zero when normalizing.");
+  result = numerator / std::sqrt(sum_a * sum_b);
+  return result;
 }
 
 /** Normalized Cross Correlation between two 1-D vectors, returning a vector
@@ -490,65 +473,63 @@ double ncc_vector(const CONT1& a, const CONT2& b)
  * \note (New in MRPT 2.3.3)
  */
 template <class VECTOR>
-VECTOR xcorr(
-	const VECTOR& a, const VECTOR& b, const size_t maxLag,
-	bool normalized = true)
+VECTOR xcorr(const VECTOR& a, const VECTOR& b, const size_t maxLag, bool normalized = true)
 {
-	MRPT_START
+  MRPT_START
 
-	const signed int na = a.size(), nb = b.size();
-	ASSERT_(na > 0);
-	ASSERT_(nb > 0);
-	ASSERTMSG_(
-		!normalized || na == nb,
-		"normalized=true is only possible for input sequences of identical "
-		"lengths.");
+  const signed int na = a.size(), nb = b.size();
+  ASSERT_(na > 0);
+  ASSERT_(nb > 0);
+  ASSERTMSG_(
+      !normalized || na == nb,
+      "normalized=true is only possible for input sequences of identical "
+      "lengths.");
 
-	const auto a_mean = mrpt::math::mean(a);
-	const auto b_mean = mrpt::math::mean(b);
+  const auto a_mean = mrpt::math::mean(a);
+  const auto b_mean = mrpt::math::mean(b);
 
-	// Cache "a" and "b" demeaned and squared to faster repeated access later:
-	auto az = a, asq = a;
-	for (int i = 0; i < na; i++)
-	{
-		az[i] -= a_mean;
-		asq[i] = mrpt::square(az[i]);
-	}
-	auto bz = b, bsq = b;
-	for (int i = 0; i < nb; i++)
-	{
-		bz[i] -= b_mean;
-		bsq[i] = mrpt::square(bz[i]);
-	}
+  // Cache "a" and "b" demeaned and squared to faster repeated access later:
+  auto az = a, asq = a;
+  for (int i = 0; i < na; i++)
+  {
+    az[i] -= a_mean;
+    asq[i] = mrpt::square(az[i]);
+  }
+  auto bz = b, bsq = b;
+  for (int i = 0; i < nb; i++)
+  {
+    bz[i] -= b_mean;
+    bsq[i] = mrpt::square(bz[i]);
+  }
 
-	VECTOR result;
-	result.resize(maxLag * 2 + 1);
+  VECTOR result;
+  result.resize(maxLag * 2 + 1);
 
-	const signed int maxLag_i = static_cast<signed int>(maxLag);
-	for (int lag = -maxLag_i, idx = 0; lag <= maxLag_i; ++lag, ++idx)
-	{
-		double numerator = 0, sum_a = 0, sum_b = 0;
-		for (int i_a = 0; i_a < na; ++i_a)
-		{
-			if (i_a + lag >= nb || i_a + lag < 0) continue;
+  const signed int maxLag_i = static_cast<signed int>(maxLag);
+  for (int lag = -maxLag_i, idx = 0; lag <= maxLag_i; ++lag, ++idx)
+  {
+    double numerator = 0, sum_a = 0, sum_b = 0;
+    for (int i_a = 0; i_a < na; ++i_a)
+    {
+      if (i_a + lag >= nb || i_a + lag < 0) continue;
 
-			numerator += az[i_a] * bz[i_a + lag];
-			if (normalized)
-			{
-				sum_a += asq[i_a];
-				sum_b += bsq[i_a + lag];
-			}
-		}
-		const auto sasb = sum_a * sum_b;
-		const auto r = sasb != 0 ? numerator / std::sqrt(sasb) : numerator;
-		result[idx] = r;
-	}
+      numerator += az[i_a] * bz[i_a + lag];
+      if (normalized)
+      {
+        sum_a += asq[i_a];
+        sum_b += bsq[i_a + lag];
+      }
+    }
+    const auto sasb = sum_a * sum_b;
+    const auto r = sasb != 0 ? numerator / std::sqrt(sasb) : numerator;
+    result[idx] = r;
+  }
 
-	return result;
-	MRPT_END
+  return result;
+  MRPT_END
 }
 
 /** @} Misc ops */
 
 }  // namespace mrpt::math
-/**  @} */	// end of grouping
+/**  @} */  // end of grouping

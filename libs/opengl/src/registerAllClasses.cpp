@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"	 // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 //
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/core/initializer.h>
@@ -20,52 +20,52 @@
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_opengl)
 {
-	using namespace mrpt::opengl;
+  using namespace mrpt::opengl;
 
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
-	// Opengl classes:
-	registerClass(CLASS_ID(Scene));
-	registerClassCustomName("COpenGLScene", CLASS_ID(Scene));
+  // Opengl classes:
+  registerClass(CLASS_ID(Scene));
+  registerClassCustomName("COpenGLScene", CLASS_ID(Scene));
 
-	registerClass(CLASS_ID(Viewport));
-	registerClassCustomName("COpenGLViewport", CLASS_ID(Viewport));
+  registerClass(CLASS_ID(Viewport));
+  registerClassCustomName("COpenGLViewport", CLASS_ID(Viewport));
 
-	registerClass(CLASS_ID(CArrow));
-	registerClass(CLASS_ID(CAssimpModel));
-	registerClass(CLASS_ID(CAxis));
-	registerClass(CLASS_ID(CBox));
-	registerClass(CLASS_ID(CCamera));
-	registerClass(CLASS_ID(CColorBar));
-	registerClass(CLASS_ID(CCylinder));
-	registerClass(CLASS_ID(CDisk));
-	registerClass(CLASS_ID(CEllipsoid2D));
-	registerClass(CLASS_ID(CEllipsoid3D));
-	registerClass(CLASS_ID(CEllipsoidInverseDepth2D));
-	registerClass(CLASS_ID(CEllipsoidInverseDepth3D));
-	registerClass(CLASS_ID(CEllipsoidRangeBearing2D));
-	registerClass(CLASS_ID(CFrustum));
-	registerClass(CLASS_ID(CGridPlaneXY));
-	registerClass(CLASS_ID(CGridPlaneXZ));
-	registerClass(CLASS_ID(CMesh));
-	registerClass(CLASS_ID(CMesh3D));
-	registerClass(CLASS_ID(CMeshFast));
-	registerClass(CLASS_ID(COctoMapVoxels));
-	registerClass(CLASS_ID(CPointCloud));
-	registerClass(CLASS_ID(CPointCloudColoured));
-	registerClass(CLASS_ID(CPolyhedron));
-	registerClass(CLASS_ID(CRenderizable));
-	registerClass(CLASS_ID(CSetOfLines));
-	registerClass(CLASS_ID(CSetOfObjects));
-	registerClass(CLASS_ID(CSetOfTriangles));
-	registerClass(CLASS_ID(CSetOfTexturedTriangles));
-	registerClass(CLASS_ID(CSkyBox));
-	registerClass(CLASS_ID(CSimpleLine));
-	registerClass(CLASS_ID(CSphere));
-	registerClass(CLASS_ID(CText));
-	registerClass(CLASS_ID(CText3D));
-	registerClass(CLASS_ID(CTexturedPlane));
-	registerClass(CLASS_ID(CVectorField2D));
-	registerClass(CLASS_ID(CVectorField3D));
+  registerClass(CLASS_ID(CArrow));
+  registerClass(CLASS_ID(CAssimpModel));
+  registerClass(CLASS_ID(CAxis));
+  registerClass(CLASS_ID(CBox));
+  registerClass(CLASS_ID(CCamera));
+  registerClass(CLASS_ID(CColorBar));
+  registerClass(CLASS_ID(CCylinder));
+  registerClass(CLASS_ID(CDisk));
+  registerClass(CLASS_ID(CEllipsoid2D));
+  registerClass(CLASS_ID(CEllipsoid3D));
+  registerClass(CLASS_ID(CEllipsoidInverseDepth2D));
+  registerClass(CLASS_ID(CEllipsoidInverseDepth3D));
+  registerClass(CLASS_ID(CEllipsoidRangeBearing2D));
+  registerClass(CLASS_ID(CFrustum));
+  registerClass(CLASS_ID(CGridPlaneXY));
+  registerClass(CLASS_ID(CGridPlaneXZ));
+  registerClass(CLASS_ID(CMesh));
+  registerClass(CLASS_ID(CMesh3D));
+  registerClass(CLASS_ID(CMeshFast));
+  registerClass(CLASS_ID(COctoMapVoxels));
+  registerClass(CLASS_ID(CPointCloud));
+  registerClass(CLASS_ID(CPointCloudColoured));
+  registerClass(CLASS_ID(CPolyhedron));
+  registerClass(CLASS_ID(CRenderizable));
+  registerClass(CLASS_ID(CSetOfLines));
+  registerClass(CLASS_ID(CSetOfObjects));
+  registerClass(CLASS_ID(CSetOfTriangles));
+  registerClass(CLASS_ID(CSetOfTexturedTriangles));
+  registerClass(CLASS_ID(CSkyBox));
+  registerClass(CLASS_ID(CSimpleLine));
+  registerClass(CLASS_ID(CSphere));
+  registerClass(CLASS_ID(CText));
+  registerClass(CLASS_ID(CText3D));
+  registerClass(CLASS_ID(CTexturedPlane));
+  registerClass(CLASS_ID(CVectorField2D));
+  registerClass(CLASS_ID(CVectorField3D));
 
 // These ones are in the lib: mrpt-obsmaps
 // registerClass( CLASS_ID( CPlanarLaserScan ) );
@@ -75,8 +75,8 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_opengl)
 
 void mrpt::opengl::registerAllClasses_mrpt_opengl()
 {
-	::registerAllClasses_mrpt_opengl();
-	// deps:
-	mrpt::img::registerAllClasses_mrpt_img();
-	mrpt::poses::registerAllClasses_mrpt_poses();
+  ::registerAllClasses_mrpt_opengl();
+  // deps:
+  mrpt::img::registerAllClasses_mrpt_img();
+  mrpt::poses::registerAllClasses_mrpt_poses();
 }

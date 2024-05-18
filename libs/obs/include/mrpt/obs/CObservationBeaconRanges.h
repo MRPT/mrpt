@@ -23,61 +23,58 @@ namespace mrpt::obs
  */
 class CObservationBeaconRanges : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationBeaconRanges, mrpt::obs)
+  DEFINE_SERIALIZABLE(CObservationBeaconRanges, mrpt::obs)
 
-   public:
-	/** ctor */
-	CObservationBeaconRanges();
+ public:
+  /** ctor */
+  CObservationBeaconRanges();
 
-	/** Info about sensor */
-	float minSensorDistance{0}, maxSensorDistance{1e2f};
-	/** The "sigma" of the sensor, assuming a zero-mean Gaussian noise model. */
-	float stdError{1e-2f};
+  /** Info about sensor */
+  float minSensorDistance{0}, maxSensorDistance{1e2f};
+  /** The "sigma" of the sensor, assuming a zero-mean Gaussian noise model. */
+  float stdError{1e-2f};
 
-	/** Each one of the measurements */
-	struct TMeasurement
-	{
-		TMeasurement()
-			: sensorLocationOnRobot(),
+  /** Each one of the measurements */
+  struct TMeasurement
+  {
+    TMeasurement() :
+        sensorLocationOnRobot(),
 
-			  beaconID(INVALID_BEACON_ID)
-		{
-		}
+        beaconID(INVALID_BEACON_ID)
+    {
+    }
 
-		/** Position of the sensor on the robot */
-		mrpt::poses::CPoint3D sensorLocationOnRobot;
-		/** The sensed range itself (in meters). */
-		float sensedDistance{0};
-		/** The ID of the sensed beacon (or INVALID_BEACON_ID if unknown) */
-		int32_t beaconID;
-	};
+    /** Position of the sensor on the robot */
+    mrpt::poses::CPoint3D sensorLocationOnRobot;
+    /** The sensed range itself (in meters). */
+    float sensedDistance{0};
+    /** The ID of the sensed beacon (or INVALID_BEACON_ID if unknown) */
+    int32_t beaconID;
+  };
 
-	/** The list of observed ranges */
-	std::deque<TMeasurement> sensedData;
+  /** The list of observed ranges */
+  std::deque<TMeasurement> sensedData;
 
-	/** The (X,Y,PHI) pose estimated by the UWB software, for comparison
-	 * purposes (Added in streamming version 1) */
-	mrpt::poses::CPose2D auxEstimatePose;
+  /** The (X,Y,PHI) pose estimated by the UWB software, for comparison
+   * purposes (Added in streamming version 1) */
+  mrpt::poses::CPose2D auxEstimatePose;
 
-	/** Prints out the contents of the object  */
-	void debugPrintOut();
+  /** Prints out the contents of the object  */
+  void debugPrintOut();
 
-	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose)
-		const override;	 // See base class docs.
-	void setSensorPose(const mrpt::poses::CPose3D& newSensorPose)
-		override;  // See base class docs.
-	void getDescriptionAsText(
-		std::ostream& o) const override;  // See base class docs
+  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override;  // See base class docs.
+  void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override;   // See base class docs.
+  void getDescriptionAsText(std::ostream& o) const override;                // See base class docs
 
-	/** Easy look-up into the vector sensedData, returns the range for a given
-	 * beacon, or 0 if the beacon is not observed */
-	float getSensedRangeByBeaconID(int32_t beaconID);
+  /** Easy look-up into the vector sensedData, returns the range for a given
+   * beacon, or 0 if the beacon is not observed */
+  float getSensedRangeByBeaconID(int32_t beaconID);
 
-	// See base class docs:
-	bool exportTxtSupported() const override { return true; }
-	std::string exportTxtHeader() const override;
-	std::string exportTxtDataRow() const override;
+  // See base class docs:
+  bool exportTxtSupported() const override { return true; }
+  std::string exportTxtHeader() const override;
+  std::string exportTxtDataRow() const override;
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace mrpt::obs

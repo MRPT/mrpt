@@ -12,8 +12,8 @@
 #include <mrpt/math/CVectorFixed.h>
 #include <mrpt/serialization/CArchive.h>
 
-#include <iomanip>	// for setprecision(), etc.
-#include <iterator>	 // std::ostream_iterator
+#include <iomanip>   // for setprecision(), etc.
+#include <iterator>  // std::ostream_iterator
 
 // Many of the functions originally in this file are now in ops_containers.h
 #include <mrpt/math/ops_containers.h>
@@ -31,79 +31,69 @@ namespace mrpt::math
 template <typename T1, typename T2>
 inline std::vector<T1>& operator*=(std::vector<T1>& a, const std::vector<T2>& b)
 {
-	ASSERT_EQUAL_(a.size(), b.size());
-	const size_t N = a.size();
-	for (size_t i = 0; i < N; i++)
-		a[i] *= b[i];
-	return a;
+  ASSERT_EQUAL_(a.size(), b.size());
+  const size_t N = a.size();
+  for (size_t i = 0; i < N; i++) a[i] *= b[i];
+  return a;
 }
 
 /** a*=k (multiplication by a constant) */
 template <typename T1>
 inline std::vector<T1>& operator*=(std::vector<T1>& a, const T1 b)
 {
-	const size_t N = a.size();
-	for (size_t i = 0; i < N; i++)
-		a[i] *= b;
-	return a;
+  const size_t N = a.size();
+  for (size_t i = 0; i < N; i++) a[i] *= b;
+  return a;
 }
 
 /** a*b (element-wise multiplication) */
 template <typename T1, typename T2>
-inline std::vector<T1> operator*(
-	const std::vector<T1>& a, const std::vector<T2>& b)
+inline std::vector<T1> operator*(const std::vector<T1>& a, const std::vector<T2>& b)
 {
-	ASSERT_EQUAL_(a.size(), b.size());
-	const size_t N = a.size();
-	std::vector<T1> ret(N);
-	for (size_t i = 0; i < N; i++)
-		ret[i] = a[i] * b[i];
-	return ret;
+  ASSERT_EQUAL_(a.size(), b.size());
+  const size_t N = a.size();
+  std::vector<T1> ret(N);
+  for (size_t i = 0; i < N; i++) ret[i] = a[i] * b[i];
+  return ret;
 }
 
 /** a+=b (element-wise sum) */
 template <typename T1, typename T2>
 inline std::vector<T1>& operator+=(std::vector<T1>& a, const std::vector<T2>& b)
 {
-	ASSERT_EQUAL_(a.size(), b.size());
-	const size_t N = a.size();
-	for (size_t i = 0; i < N; i++)
-		a[i] += b[i];
-	return a;
+  ASSERT_EQUAL_(a.size(), b.size());
+  const size_t N = a.size();
+  for (size_t i = 0; i < N; i++) a[i] += b[i];
+  return a;
 }
 
 /** a+=b (sum a constant) */
 template <typename T1>
 inline std::vector<T1>& operator+=(std::vector<T1>& a, const T1 b)
 {
-	const size_t N = a.size();
-	for (size_t i = 0; i < N; i++)
-		a[i] += b;
-	return a;
+  const size_t N = a.size();
+  for (size_t i = 0; i < N; i++) a[i] += b;
+  return a;
 }
 
 /** a+b (element-wise sum) */
 template <typename T1, typename T2>
-inline std::vector<T1> operator+(
-	const std::vector<T1>& a, const std::vector<T2>& b)
+inline std::vector<T1> operator+(const std::vector<T1>& a, const std::vector<T2>& b)
 {
-	ASSERT_EQUAL_(a.size(), b.size());
-	const size_t N = a.size();
-	std::vector<T1> ret(N);
-	for (size_t i = 0; i < N; i++)
-		ret[i] = a[i] + b[i];
-	return ret;
+  ASSERT_EQUAL_(a.size(), b.size());
+  const size_t N = a.size();
+  std::vector<T1> ret(N);
+  for (size_t i = 0; i < N; i++) ret[i] = a[i] + b[i];
+  return ret;
 }
 
 template <typename T1, typename T2>
-inline std::vector<T1> operator-(
-	const std::vector<T1>& v1, const std::vector<T2>& v2)
+inline std::vector<T1> operator-(const std::vector<T1>& v1, const std::vector<T2>& v2)
 {
-	ASSERT_EQUAL_(v1.size(), v2.size());
-	std::vector<T1> res(v1.size());
-	for (size_t i = 0; i < v1.size(); i++)
-		res[i] = v1[i] - v2[i];
-	return res;
+  ASSERT_EQUAL_(v1.size(), v2.size());
+  std::vector<T1> res(v1.size());
+  for (size_t i = 0; i < v1.size(); i++) res[i] = v1[i] - v2[i];
+  return res;
 }
 
 /** @} */
@@ -113,14 +103,14 @@ inline std::vector<T1> operator-(
 template <class T>
 std::ostream& operator<<(std::ostream& out, const std::vector<T>& d)
 {
-	const std::streamsize old_pre = out.precision();
-	const std::ios_base::fmtflags old_flags = out.flags();
-	out << "[" << std::fixed << std::setprecision(4);
-	std::copy(d.begin(), d.end(), std::ostream_iterator<T>(out, " "));
-	out << "]";
-	out.flags(old_flags);
-	out.precision(old_pre);
-	return out;
+  const std::streamsize old_pre = out.precision();
+  const std::ios_base::fmtflags old_flags = out.flags();
+  out << "[" << std::fixed << std::setprecision(4);
+  std::copy(d.begin(), d.end(), std::ostream_iterator<T>(out, " "));
+  out << "]";
+  out.flags(old_flags);
+  out.precision(old_pre);
+  return out;
 }
 
 /** A template function for printing out the contents of a std::vector variable.
@@ -128,44 +118,41 @@ std::ostream& operator<<(std::ostream& out, const std::vector<T>& d)
 template <class T>
 std::ostream& operator<<(std::ostream& out, std::vector<T>* d)
 {
-	const std::streamsize old_pre = out.precision();
-	const std::ios_base::fmtflags old_flags = out.flags();
-	out << "[" << std::fixed << std::setprecision(4);
-	copy(d->begin(), d->end(), std::ostream_iterator<T>(out, " "));
-	out << "]";
-	out.flags(old_flags);
-	out.precision(old_pre);
-	return out;
+  const std::streamsize old_pre = out.precision();
+  const std::ios_base::fmtflags old_flags = out.flags();
+  out << "[" << std::fixed << std::setprecision(4);
+  copy(d->begin(), d->end(), std::ostream_iterator<T>(out, " "));
+  out << "]";
+  out.flags(old_flags);
+  out.precision(old_pre);
+  return out;
 }
 
 /** Binary dump of a CVectorFixed<T,N> to a stream. */
 template <typename T, size_t N>
 mrpt::serialization::CArchive& operator<<(
-	mrpt::serialization::CArchive& ostrm, const CVectorFixed<T, N>& a)
+    mrpt::serialization::CArchive& ostrm, const CVectorFixed<T, N>& a)
 {
-	ostrm << mrpt::typemeta::TTypeName<CVectorFixed<T, N>>::get();
-	if (N) ostrm.WriteBufferFixEndianness<T>(&a[0], N);
-	return ostrm;
+  ostrm << mrpt::typemeta::TTypeName<CVectorFixed<T, N>>::get();
+  if (N) ostrm.WriteBufferFixEndianness<T>(&a[0], N);
+  return ostrm;
 }
 
 /** Binary read of a CVectorFixed<T,N> from a stream. */
 template <typename T, size_t N>
 mrpt::serialization::CArchive& operator>>(
-	mrpt::serialization::CArchive& istrm, CVectorFixed<T, N>& a)
+    mrpt::serialization::CArchive& istrm, CVectorFixed<T, N>& a)
 {
-	static const std::string namExpect =
-		mrpt::typemeta::TTypeName<CVectorFixed<T, N>>::get();
-	std::string nam;
-	istrm >> nam;
-	ASSERTMSG_(
-		nam == namExpect,
-		format(
-			"Error deserializing: expected '%s', got '%s'", namExpect.c_str(),
-			nam.c_str()));
-	if (N) istrm.ReadBufferFixEndianness<T>(&a[0], N);
-	return istrm;
+  static const std::string namExpect = mrpt::typemeta::TTypeName<CVectorFixed<T, N>>::get();
+  std::string nam;
+  istrm >> nam;
+  ASSERTMSG_(
+      nam == namExpect,
+      format("Error deserializing: expected '%s', got '%s'", namExpect.c_str(), nam.c_str()));
+  if (N) istrm.ReadBufferFixEndianness<T>(&a[0], N);
+  return istrm;
 }
 
-/**  @} */	// end of grouping
+/**  @} */  // end of grouping
 
 }  // namespace mrpt::math

@@ -67,9 +67,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /* do we have support for XBox Kinect? */
 #define MRPT_HAS_KINECT       ${CMAKE_MRPT_HAS_KINECT}
 
-/** Define for including DUO3D interface through the vendor's proprietary API, which enables the definition of some classes in the MRVL namespace. \sa CDUO3DCamera  */
-#define MRPT_HAS_DUO3D        ${CMAKE_MRPT_HAS_DUO3D}
-
 /* Kinect SDK variants: */
 #define MRPT_HAS_KINECT_FREENECT         ${CMAKE_MRPT_HAS_FREENECT}
 #define MRPT_HAS_KINECT_FREENECT_SYSTEM  ${CMAKE_MRPT_HAS_FREENECT_SYSTEM}

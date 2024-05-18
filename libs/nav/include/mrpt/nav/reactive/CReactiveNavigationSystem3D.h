@@ -20,29 +20,26 @@ namespace mrpt::nav
  */
 struct TRobotShape
 {
-	size_t size() const { return polygons.size(); }
-	void resize(size_t num_levels)
-	{
-		polygons.resize(num_levels);
-		radius.resize(num_levels);
-		heights.resize(num_levels);
-	}
+  size_t size() const { return polygons.size(); }
+  void resize(size_t num_levels)
+  {
+    polygons.resize(num_levels);
+    radius.resize(num_levels);
+    heights.resize(num_levels);
+  }
 
-	const mrpt::math::CPolygon& polygon(size_t level) const
-	{
-		return polygons[level];
-	}
-	double getRadius(size_t level) const { return radius[level]; }
-	double getHeight(size_t level) const { return heights[level]; }
-	mrpt::math::CPolygon& polygon(size_t level) { return polygons[level]; }
-	void setRadius(size_t level, double r) { radius[level] = r; }
-	void setHeight(size_t level, double h) { heights[level] = h; }
-	const std::vector<double>& getHeights() const { return heights; }
+  const mrpt::math::CPolygon& polygon(size_t level) const { return polygons[level]; }
+  double getRadius(size_t level) const { return radius[level]; }
+  double getHeight(size_t level) const { return heights[level]; }
+  mrpt::math::CPolygon& polygon(size_t level) { return polygons[level]; }
+  void setRadius(size_t level, double r) { radius[level] = r; }
+  void setHeight(size_t level, double h) { heights[level] = h; }
+  const std::vector<double>& getHeights() const { return heights; }
 
-   private:
-	std::vector<mrpt::math::CPolygon> polygons;	 // The polygonal bases
-	std::vector<double> radius;	 // The radius of each prism.
-	std::vector<double> heights;  // Heights of the prisms
+ private:
+  std::vector<mrpt::math::CPolygon> polygons;  // The polygonal bases
+  std::vector<double> radius;                  // The radius of each prism.
+  std::vector<double> heights;                 // Heights of the prisms
 };
 
 /** See base class CAbstractPTGBasedReactive for a description and instructions
@@ -82,101 +79,95 @@ struct TRobotShape
  */
 class CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
 {
-   public:
-   public:
-	/** See docs in ctor of base class */
-	CReactiveNavigationSystem3D(
-		CRobot2NavInterface& react_iterf_impl, bool enableConsoleOutput = true,
-		bool enableLogFile = false,
-		const std::string& logFileDirectory =
-			std::string("./reactivenav.logs"));
+ public:
+ public:
+  /** See docs in ctor of base class */
+  CReactiveNavigationSystem3D(
+      CRobot2NavInterface& react_iterf_impl,
+      bool enableConsoleOutput = true,
+      bool enableLogFile = false,
+      const std::string& logFileDirectory = std::string("./reactivenav.logs"));
 
-	/** Destructor */
-	~CReactiveNavigationSystem3D() override;
+  /** Destructor */
+  ~CReactiveNavigationSystem3D() override;
 
-	/** Change the robot shape, which is taken into account for collision grid
-	 * building. */
-	void changeRobotShape(TRobotShape robotShape);
+  /** Change the robot shape, which is taken into account for collision grid
+   * building. */
+  void changeRobotShape(TRobotShape robotShape);
 
-	// See base class docs:
-	bool checkCollisionWithLatestObstacles(
-		const mrpt::math::TPose2D& relative_robot_pose) const override;
-	size_t getPTG_count() const override
-	{
-		ASSERT_(!m_ptgmultilevel.empty());
-		return m_ptgmultilevel.size();
-	}
-	CParameterizedTrajectoryGenerator* getPTG(size_t i) override
-	{
-		ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[i].PTGs.empty());
-		return m_ptgmultilevel[i]
-			.PTGs[0]
-			.get();	 // Return for the 0'th level (ptgs
-		// are replicated at each level)
-	}
-	const CParameterizedTrajectoryGenerator* getPTG(size_t i) const override
-	{
-		ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[i].PTGs.empty());
-		return m_ptgmultilevel[i]
-			.PTGs[0]
-			.get();	 // Return for the 0'th level (ptgs
-		// are replicated at each level)
-	}
+  // See base class docs:
+  bool checkCollisionWithLatestObstacles(
+      const mrpt::math::TPose2D& relative_robot_pose) const override;
+  size_t getPTG_count() const override
+  {
+    ASSERT_(!m_ptgmultilevel.empty());
+    return m_ptgmultilevel.size();
+  }
+  CParameterizedTrajectoryGenerator* getPTG(size_t i) override
+  {
+    ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[i].PTGs.empty());
+    return m_ptgmultilevel[i].PTGs[0].get();  // Return for the 0'th level (ptgs
+                                              // are replicated at each level)
+  }
+  const CParameterizedTrajectoryGenerator* getPTG(size_t i) const override
+  {
+    ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[i].PTGs.empty());
+    return m_ptgmultilevel[i].PTGs[0].get();  // Return for the 0'th level (ptgs
+                                              // are replicated at each level)
+  }
 
-	void loadConfigFile(const mrpt::config::CConfigFileBase& c)
-		override;  // See base class docs!
-	void saveConfigFile(mrpt::config::CConfigFileBase& c)
-		const override;	 // See base class docs!
+  void loadConfigFile(const mrpt::config::CConfigFileBase& c) override;  // See base class docs!
+  void saveConfigFile(mrpt::config::CConfigFileBase& c) const override;  // See base class docs!
 
-   private:
-	// ------------------------------------------------------
-	//					PRIVATE DEFINITIONS
-	// ------------------------------------------------------
+ private:
+  // ------------------------------------------------------
+  //					PRIVATE DEFINITIONS
+  // ------------------------------------------------------
 
-	/** A set of PTGs of the same type, one per "height level" */
-	struct TPTGmultilevel
-	{
-		std::vector<CParameterizedTrajectoryGenerator::Ptr> PTGs;
-		mrpt::math::TPoint2D TP_Target;
-		TCandidateMovementPTG holonomicmov;
+  /** A set of PTGs of the same type, one per "height level" */
+  struct TPTGmultilevel
+  {
+    std::vector<CParameterizedTrajectoryGenerator::Ptr> PTGs;
+    mrpt::math::TPoint2D TP_Target;
+    TCandidateMovementPTG holonomicmov;
 
-		TPTGmultilevel() = default;
-	};
+    TPTGmultilevel() = default;
+  };
 
-	// ------------------------------------------------------
-	//					PRIVATE	VARIABLES
-	// ------------------------------------------------------
-	/** The unsorted set of obstacles from the sensors */
-	mrpt::maps::CSimplePointsMap m_WS_Obstacles_unsorted;
-	/** One point cloud per 2.5D robot-shape-slice, coordinates relative to the
-	 * robot local frame */
-	std::vector<mrpt::maps::CSimplePointsMap> m_WS_Obstacles_inlevels;
+  // ------------------------------------------------------
+  //					PRIVATE	VARIABLES
+  // ------------------------------------------------------
+  /** The unsorted set of obstacles from the sensors */
+  mrpt::maps::CSimplePointsMap m_WS_Obstacles_unsorted;
+  /** One point cloud per 2.5D robot-shape-slice, coordinates relative to the
+   * robot local frame */
+  std::vector<mrpt::maps::CSimplePointsMap> m_WS_Obstacles_inlevels;
 
-	/** The robot 3D shape model */
-	TRobotShape m_robotShape;
+  /** The robot 3D shape model */
+  TRobotShape m_robotShape;
 
-	/** The set of PTG-transformations to be used: indices are
-	 * [ptg_index][height_index] */
-	std::vector<TPTGmultilevel> m_ptgmultilevel;
+  /** The set of PTG-transformations to be used: indices are
+   * [ptg_index][height_index] */
+  std::vector<TPTGmultilevel> m_ptgmultilevel;
 
-	// Steps for the reactive navigation sytem.
-	// ----------------------------------------------------------------------------
-	void STEP1_InitPTGs() override;
+  // Steps for the reactive navigation sytem.
+  // ----------------------------------------------------------------------------
+  void STEP1_InitPTGs() override;
 
-	// See docs in parent class
-	bool implementSenseObstacles(
-		mrpt::system::TTimeStamp& obs_timestamp) override;
+  // See docs in parent class
+  bool implementSenseObstacles(mrpt::system::TTimeStamp& obs_timestamp) override;
 
-	// See docs in parent class
-	void STEP3_WSpaceToTPSpace(
-		size_t ptg_idx, std::vector<double>& out_TPObstacles,
-		mrpt::nav::ClearanceDiagram& out_clearance,
-		const mrpt::math::TPose2D& rel_pose_PTG_origin_wrt_sense,
-		const bool eval_clearance) override;
+  // See docs in parent class
+  void STEP3_WSpaceToTPSpace(
+      size_t ptg_idx,
+      std::vector<double>& out_TPObstacles,
+      mrpt::nav::ClearanceDiagram& out_clearance,
+      const mrpt::math::TPose2D& rel_pose_PTG_origin_wrt_sense,
+      const bool eval_clearance) override;
 
-	/** Generates a pointcloud of obstacles, and the robot shape, to be saved in
-	 * the logging record for the current timestep */
-	void loggingGetWSObstaclesAndShape(CLogFileRecord& out_log) override;
+  /** Generates a pointcloud of obstacles, and the robot shape, to be saved in
+   * the logging record for the current timestep */
+  void loggingGetWSObstaclesAndShape(CLogFileRecord& out_log) override;
 
-};	// end class
+};  // end class
 }  // namespace mrpt::nav

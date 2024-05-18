@@ -28,12 +28,11 @@ class CLoadableOptions;
 
 class CBaseConfig : public QWidget
 {
-   public:
-	CBaseConfig();
-	~CBaseConfig() override = default;
+ public:
+  CBaseConfig();
+  ~CBaseConfig() override = default;
 
-	virtual const QString getName() = 0;
-	virtual void updateConfiguration(
-		mrpt::maps::TMetricMapInitializer* options) = 0;
-	virtual TypeOfConfig type() const = 0;
+  virtual const QString getName() = 0;
+  virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer* options) = 0;
+  virtual TypeOfConfig type() const = 0;
 };

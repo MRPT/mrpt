@@ -24,62 +24,64 @@ namespace mrpt::opengl
  */
 class CTextMessageCapable
 {
-   public:
-	void clearTextMessages();
+ public:
+  void clearTextMessages();
 
-	/** Add 2D text messages overlapped to the 3D rendered scene. The string
-	 * will remain displayed in the 3D window
-	 *   until it's changed with subsequent calls to this same method, or all
-	 * the texts are cleared with clearTextMessages().
-	 *
-	 *  \param x The X position, interpreted as absolute pixels from the left
-	 * if X>=1, absolute pixels from the left if X<0 or as a width factor if in
-	 * the range [0,1[.
-	 *  \param y The Y position, interpreted as absolute pixels from the bottom
-	 * if Y>=1, absolute pixels from the top if Y<0 or as a height factor if in
-	 * the range [0,1[.
-	 *  \param text The text string to display.
-	 *  \param color The text color. For example: TColorf(1.0,1.0,1.0)
-	 *  \param unique_index An "index" for this text message, so that
-	 * subsequent calls with the same index will overwrite this text message
-	 * instead of creating new ones.
-	 *
-	 *  You'll need to refresh the display manually with forceRepaint().
-	 *
-	 * \sa clearTextMessages, updateTextMessage
-	 */
-	void addTextMessage(
-		const double x_frac, const double y_frac, const std::string& text,
-		const size_t unique_index = 0,
-		const TFontParams& fontParams = TFontParams());
+  /** Add 2D text messages overlapped to the 3D rendered scene. The string
+   * will remain displayed in the 3D window
+   *   until it's changed with subsequent calls to this same method, or all
+   * the texts are cleared with clearTextMessages().
+   *
+   *  \param x The X position, interpreted as absolute pixels from the left
+   * if X>=1, absolute pixels from the left if X<0 or as a width factor if in
+   * the range [0,1[.
+   *  \param y The Y position, interpreted as absolute pixels from the bottom
+   * if Y>=1, absolute pixels from the top if Y<0 or as a height factor if in
+   * the range [0,1[.
+   *  \param text The text string to display.
+   *  \param color The text color. For example: TColorf(1.0,1.0,1.0)
+   *  \param unique_index An "index" for this text message, so that
+   * subsequent calls with the same index will overwrite this text message
+   * instead of creating new ones.
+   *
+   *  You'll need to refresh the display manually with forceRepaint().
+   *
+   * \sa clearTextMessages, updateTextMessage
+   */
+  void addTextMessage(
+      const double x_frac,
+      const double y_frac,
+      const std::string& text,
+      const size_t unique_index = 0,
+      const TFontParams& fontParams = TFontParams());
 
-	/** Just updates the text of a given text message, without touching the
-	 * other parameters.
-	 * \return false if given ID doesn't exist.
-	 */
-	bool updateTextMessage(size_t unique_index, const std::string& text);
+  /** Just updates the text of a given text message, without touching the
+   * other parameters.
+   * \return false if given ID doesn't exist.
+   */
+  bool updateTextMessage(size_t unique_index, const std::string& text);
 
-	struct DataPerText : mrpt::opengl::T2DTextData
-	{
-		mutable mrpt::opengl::CText::Ptr gl_text, gl_text_shadow;
-		mutable bool gl_text_outdated = true;
-	};
+  struct DataPerText : mrpt::opengl::T2DTextData
+  {
+    mutable mrpt::opengl::CText::Ptr gl_text, gl_text_shadow;
+    mutable bool gl_text_outdated = true;
+  };
 
-	struct TListTextMessages
-	{
-		mutable mrpt::containers::NonCopiableData<std::shared_mutex> mtx;
+  struct TListTextMessages
+  {
+    mutable mrpt::containers::NonCopiableData<std::shared_mutex> mtx;
 
-		std::map<uint32_t, DataPerText> messages;
+    std::map<uint32_t, DataPerText> messages;
 
-		/** (re)generate all CText objects in the gl_text fields */
-		void regenerateGLobjects() const;
-	};
+    /** (re)generate all CText objects in the gl_text fields */
+    void regenerateGLobjects() const;
+  };
 
-	const TListTextMessages& getTextMessages() const { return m_2D_texts; }
+  const TListTextMessages& getTextMessages() const { return m_2D_texts; }
 
-   protected:
-	TListTextMessages m_2D_texts;
+ protected:
+  TListTextMessages m_2D_texts;
 
-};	// end of CTextMessageCapable
+};  // end of CTextMessageCapable
 
 }  // namespace mrpt::opengl

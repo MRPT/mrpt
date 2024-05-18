@@ -25,28 +25,27 @@ namespace mrpt::math
  */
 class TPolygonWithPlane
 {
-   public:
-	/** Actual polygon. */
-	TPolygon3D poly;
-	/** Plane containing the polygon. */
-	TPlane plane;
-	/** Plane's pose.  \sa inversePose */
-	mrpt::math::TPose3D pose;
-	/** Plane's inverse pose. \sa pose */
-	mrpt::math::TPose3D inversePose;
-	/** Polygon, after being projected to the plane using inversePose. \sa
-	 * inversePose */
-	TPolygon2D poly2D;
-	/** Constructor. Takes a polygon and computes each parameter. */
-	TPolygonWithPlane(const TPolygon3D& p);
-	/** Basic constructor. Needed to create containers  \sa
-	 * TPolygonWithPlane(const TPolygon3D &) */
-	TPolygonWithPlane() = default;
-	/** Static method for vectors. Takes a set of polygons and creates every
-	 * TPolygonWithPlane  */
-	static void getPlanes(
-		const std::vector<TPolygon3D>& oldPolys,
-		std::vector<TPolygonWithPlane>& newPolys);
+ public:
+  /** Actual polygon. */
+  TPolygon3D poly;
+  /** Plane containing the polygon. */
+  TPlane plane;
+  /** Plane's pose.  \sa inversePose */
+  mrpt::math::TPose3D pose;
+  /** Plane's inverse pose. \sa pose */
+  mrpt::math::TPose3D inversePose;
+  /** Polygon, after being projected to the plane using inversePose. \sa
+   * inversePose */
+  TPolygon2D poly2D;
+  /** Constructor. Takes a polygon and computes each parameter. */
+  TPolygonWithPlane(const TPolygon3D& p);
+  /** Basic constructor. Needed to create containers  \sa
+   * TPolygonWithPlane(const TPolygon3D &) */
+  TPolygonWithPlane() = default;
+  /** Static method for vectors. Takes a set of polygons and creates every
+   * TPolygonWithPlane  */
+  static void getPlanes(
+      const std::vector<TPolygon3D>& oldPolys, std::vector<TPolygonWithPlane>& newPolys);
 };
 
 /** @} */

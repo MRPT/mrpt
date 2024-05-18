@@ -20,26 +20,23 @@ namespace mrpt::obs
  */
 class CObservationRobotPose : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationRobotPose, mrpt::obs)
-   public:
-	/** The observed robot pose */
-	mrpt::poses::CPose3DPDFGaussian pose;
+  DEFINE_SERIALIZABLE(CObservationRobotPose, mrpt::obs)
+ public:
+  /** The observed robot pose */
+  mrpt::poses::CPose3DPDFGaussian pose;
 
-	/** The pose of the sensor on the robot/vehicle */
-	mrpt::poses::CPose3D sensorPose;
+  /** The pose of the sensor on the robot/vehicle */
+  mrpt::poses::CPose3D sensorPose;
 
-	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose)
-		const override;	 // See base class docs.
-	void setSensorPose(const mrpt::poses::CPose3D& newSensorPose)
-		override;  // See base class docs.
-	void getDescriptionAsText(
-		std::ostream& o) const override;  // See base class docs
+  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override;  // See base class docs.
+  void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override;   // See base class docs.
+  void getDescriptionAsText(std::ostream& o) const override;                // See base class docs
 
-	// See base class docs:
-	bool exportTxtSupported() const override { return true; }
-	std::string exportTxtHeader() const override;
-	std::string exportTxtDataRow() const override;
+  // See base class docs:
+  bool exportTxtSupported() const override { return true; }
+  std::string exportTxtHeader() const override;
+  std::string exportTxtDataRow() const override;
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace mrpt::obs

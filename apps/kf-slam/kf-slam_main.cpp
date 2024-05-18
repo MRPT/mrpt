@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-	APPLICATION: Kalman Filter-based SLAM implementation
-	FILE: kf-slam_main.cpp
-	AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
+  APPLICATION: Kalman Filter-based SLAM implementation
+  FILE: kf-slam_main.cpp
+  AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
-	See README.txt for instructions.
+  See README.txt for instructions.
  ---------------------------------------------------------------*/
 
 #include <mrpt/apps/KFSLAMApp.h>
@@ -21,19 +21,19 @@
 
 int main(int argc, char** argv)
 {
-	try
-	{
-		mrpt::apps::KFSLAMApp app;
+  try
+  {
+    mrpt::apps::KFSLAMApp app;
 
-		app.initialize(argc, argv);
-		app.run();
+    app.initialize(argc, argv);
+    app.run();
 
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << mrpt::exception_to_str(e);
-		mrpt::system::pause();
-		return -1;
-	}
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << mrpt::exception_to_str(e);
+    mrpt::system::pause();
+    return -1;
+  }
 }

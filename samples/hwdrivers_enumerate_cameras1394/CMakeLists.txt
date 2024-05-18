@@ -7,7 +7,7 @@
 set(sampleName hwdrivers_enumerate_cameras1394)
 project(EXAMPLE_${sampleName})
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.16)
 
 # ---------------------------------------------------------------------------
 # Set the output directory of each example to its corresponding subdirectory

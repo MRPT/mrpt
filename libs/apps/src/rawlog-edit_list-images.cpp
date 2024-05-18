@@ -27,76 +27,67 @@ using namespace mrpt::io;
 // ======================================================================
 DECLARE_OP_FUNCTION(op_list_images)
 {
-	// A class to do this operation:
-	class CRawlogProcessor_ListImages : public CRawlogProcessorOnEachObservation
-	{
-	   protected:
-		string m_out_file;
-		std::ofstream m_out;
+  // A class to do this operation:
+  class CRawlogProcessor_ListImages : public CRawlogProcessorOnEachObservation
+  {
+   protected:
+    string m_out_file;
+    std::ofstream m_out;
 
-	   public:
-		CRawlogProcessor_ListImages(
-			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool Verbose)
-			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose)
-		{
-			getArgValue<std::string>(cmdline, "text-file-output", m_out_file);
-			VERBOSE_COUT << "Writing list to: " << m_out_file << endl;
+   public:
+    CRawlogProcessor_ListImages(
+        CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool Verbose) :
+        CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose)
+    {
+      getArgValue<std::string>(cmdline, "text-file-output", m_out_file);
+      VERBOSE_COUT << "Writing list to: " << m_out_file << endl;
 
-			m_out.open(m_out_file.c_str());
+      m_out.open(m_out_file.c_str());
 
-			if (!m_out.is_open())
-				throw std::runtime_error(
-					"list-images: Cannot open output text file.");
-		}
+      if (!m_out.is_open()) throw std::runtime_error("list-images: Cannot open output text file.");
+    }
 
-		bool processOneObservation(CObservation::Ptr& obs) override
-		{
-			const string label_time = format(
-				"%s_%f", obs->sensorLabel.c_str(),
-				mrpt::Clock::toDouble(obs->timestamp));
-			if (IS_CLASS(*obs, CObservationStereoImages))
-			{
-				CObservationStereoImages::Ptr obsSt =
-					std::dynamic_pointer_cast<CObservationStereoImages>(obs);
-				// save image to file & convert into external storage:
-				if (obsSt->imageLeft.isExternallyStored())
-					m_out << obsSt->imageLeft.getExternalStorageFile()
-						  << std::endl;
+    bool processOneObservation(CObservation::Ptr& obs) override
+    {
+      const string label_time =
+          format("%s_%f", obs->sensorLabel.c_str(), mrpt::Clock::toDouble(obs->timestamp));
+      if (IS_CLASS(*obs, CObservationStereoImages))
+      {
+        CObservationStereoImages::Ptr obsSt =
+            std::dynamic_pointer_cast<CObservationStereoImages>(obs);
+        // save image to file & convert into external storage:
+        if (obsSt->imageLeft.isExternallyStored())
+          m_out << obsSt->imageLeft.getExternalStorageFile() << std::endl;
 
-				if (obsSt->imageRight.isExternallyStored())
-					m_out << obsSt->imageRight.getExternalStorageFile()
-						  << std::endl;
-			}
-			else if (IS_CLASS(*obs, CObservationImage))
-			{
-				CObservationImage::Ptr obsIm =
-					std::dynamic_pointer_cast<CObservationImage>(obs);
+        if (obsSt->imageRight.isExternallyStored())
+          m_out << obsSt->imageRight.getExternalStorageFile() << std::endl;
+      }
+      else if (IS_CLASS(*obs, CObservationImage))
+      {
+        CObservationImage::Ptr obsIm = std::dynamic_pointer_cast<CObservationImage>(obs);
 
-				if (obsIm->image.isExternallyStored())
-					m_out << obsIm->image.getExternalStorageFile() << std::endl;
-			}
-			else if (IS_CLASS(*obs, CObservation3DRangeScan))
-			{
-				CObservation3DRangeScan::Ptr obs3D =
-					std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
+        if (obsIm->image.isExternallyStored())
+          m_out << obsIm->image.getExternalStorageFile() << std::endl;
+      }
+      else if (IS_CLASS(*obs, CObservation3DRangeScan))
+      {
+        CObservation3DRangeScan::Ptr obs3D =
+            std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
 
-				if (obs3D->intensityImage.isExternallyStored())
-					m_out << obs3D->intensityImage.getExternalStorageFile()
-						  << std::endl;
-			}
+        if (obs3D->intensityImage.isExternallyStored())
+          m_out << obs3D->intensityImage.getExternalStorageFile() << std::endl;
+      }
 
-			return true;
-		}
-	};
+      return true;
+    }
+  };
 
-	// Process
-	// ---------------------------------
-	CRawlogProcessor_ListImages proc(in_rawlog, cmdline, verbose);
-	proc.doProcessRawlog();
+  // Process
+  // ---------------------------------
+  CRawlogProcessor_ListImages proc(in_rawlog, cmdline, verbose);
+  proc.doProcessRawlog();
 
-	// Dump statistics:
-	// ---------------------------------
-	VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse
-				 << "\n";
+  // Dump statistics:
+  // ---------------------------------
+  VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse << "\n";
 }

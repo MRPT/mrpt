@@ -17,8 +17,8 @@
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/math/ops_matrices.h>	 // << ops
-#include <mrpt/math/ops_vectors.h>	// << ops
+#include <mrpt/math/ops_matrices.h>  // << ops
+#include <mrpt/math/ops_vectors.h>   // << ops
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
@@ -143,25 +143,22 @@ string iniFileSect("CONF_LIN");
 // helper functions
 enum wxbuildinfoformat
 {
-	short_f,
-	long_f
+  short_f,
+  long_f
 };
 
 // Used below. Must be at global scope for usage within STL.
 struct TImageToSaveData
 {
-	TImageToSaveData() = default;
-	TImageToSaveData(mrpt::img::CImage* _img, const char* str)
-		: img(_img), channel_desc(str)
-	{
-	}
-	mrpt::img::CImage* img{nullptr};
-	std::string channel_desc;  // LEFT, RIGHT, etc...
+  TImageToSaveData() = default;
+  TImageToSaveData(mrpt::img::CImage* _img, const char* str) : img(_img), channel_desc(str) {}
+  mrpt::img::CImage* img{nullptr};
+  std::string channel_desc;  // LEFT, RIGHT, etc...
 };
 
 bool operator<(const TImageToSaveData& a, const TImageToSaveData& b)
 {
-	return a.channel_desc < b.channel_desc;
+  return a.channel_desc < b.channel_desc;
 }
 
 static const long ID_BUTTON2 = wxNewId();
@@ -341,1221 +338,1073 @@ BEGIN_EVENT_TABLE(xRawLogViewerFrame, wxFrame)
 EVT_MENU_RANGE(wxID_FILE1, wxID_FILE9, xRawLogViewerFrame::OnMRUFile)
 END_EVENT_TABLE()
 
-xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
-	: m_fileHistory(9 /* Max file list*/)
+xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id) :
+    m_fileHistory(9 /* Max file list*/)
 {
-	using This = xRawLogViewerFrame;  // shortcut!
+  using This = xRawLogViewerFrame;  // shortcut!
 
-	theMainWindow = this;
+  theMainWindow = this;
 
-	// Load my custom icons:
-	wxArtProvider::Push(new MyArtProvider);
+  // Load my custom icons:
+  wxArtProvider::Push(new MyArtProvider);
 
-	const wxFont monoFont(
-		8, wxFontFamily::wxFONTFAMILY_TELETYPE, wxFontStyle::wxFONTSTYLE_NORMAL,
-		wxFontWeight::wxFONTWEIGHT_NORMAL);
+  const wxFont monoFont(
+      8, wxFontFamily::wxFONTFAMILY_TELETYPE, wxFontStyle::wxFONTSTYLE_NORMAL,
+      wxFontWeight::wxFONTWEIGHT_NORMAL);
 
-	//(*Initialize(xRawLogViewerFrame)
-	wxMenu* Menu39;
-	wxFlexGridSizer* FlexGridSizer4;
-	wxFlexGridSizer* FlexGridSizer16;
-	wxMenuItem* MenuItem33;
-	wxMenuItem* MenuItem26;
-	wxMenuItem* MenuItem25;
-	wxMenuItem* MenuItem2;
-	wxFlexGridSizer* FlexGridSizer3;
-	wxMenuItem* MenuItem55;
-	wxMenuItem* MenuItem1;
-	wxMenuItem* MenuItem56;
-	wxFlexGridSizer* FlexGridSizer5;
-	wxFlexGridSizer* FlexGridSizer9;
-	wxMenuItem* MenuItem22;
-	wxFlexGridSizer* FlexGridSizer2;
-	wxMenuItem* MenuItem17;
-	wxMenu* Menu1;
-	wxFlexGridSizer* FlexGridSizer7;
-	wxMenuItem* MenuItem82;
-	wxMenuItem* MenuItem75;
-	wxMenuItem* MenuItem60;
-	wxMenuItem* MenuItem12;
-	wxMenuItem* MenuItem24;
-	wxMenuItem* MenuItem69;
-	wxMenuItem* MenuItem27;
-	wxFlexGridSizer* fgzToolbar;
-	wxFlexGridSizer* FlexGridSizer8;
-	wxMenuItem* MenuItem70;
-	wxMenuItem* MenuItem67;
-	wxMenuItem* MenuItem65;
-	wxFlexGridSizer* FlexGridSizer14;
-	wxFlexGridSizer* FlexGridSizer13;
-	wxMenuItem* MenuItem41;
-	wxMenu* MenuItem81;
-	wxMenuBar* MenuBar1;
-	wxFlexGridSizer* FlexGridSizer6;
-	wxFlexGridSizer* fgzMain;
-	wxMenuItem* MenuItem43;
-	wxMenu* Menu2;
-	wxMenuItem* MenuItem18;
-	wxMenuItem* MenuItem19;
+  //(*Initialize(xRawLogViewerFrame)
+  wxMenu* Menu39;
+  wxFlexGridSizer* FlexGridSizer4;
+  wxFlexGridSizer* FlexGridSizer16;
+  wxMenuItem* MenuItem33;
+  wxMenuItem* MenuItem26;
+  wxMenuItem* MenuItem25;
+  wxMenuItem* MenuItem2;
+  wxFlexGridSizer* FlexGridSizer3;
+  wxMenuItem* MenuItem55;
+  wxMenuItem* MenuItem1;
+  wxMenuItem* MenuItem56;
+  wxFlexGridSizer* FlexGridSizer5;
+  wxFlexGridSizer* FlexGridSizer9;
+  wxMenuItem* MenuItem22;
+  wxFlexGridSizer* FlexGridSizer2;
+  wxMenuItem* MenuItem17;
+  wxMenu* Menu1;
+  wxFlexGridSizer* FlexGridSizer7;
+  wxMenuItem* MenuItem82;
+  wxMenuItem* MenuItem75;
+  wxMenuItem* MenuItem60;
+  wxMenuItem* MenuItem12;
+  wxMenuItem* MenuItem24;
+  wxMenuItem* MenuItem69;
+  wxMenuItem* MenuItem27;
+  wxFlexGridSizer* fgzToolbar;
+  wxFlexGridSizer* FlexGridSizer8;
+  wxMenuItem* MenuItem70;
+  wxMenuItem* MenuItem67;
+  wxMenuItem* MenuItem65;
+  wxFlexGridSizer* FlexGridSizer14;
+  wxFlexGridSizer* FlexGridSizer13;
+  wxMenuItem* MenuItem41;
+  wxMenu* MenuItem81;
+  wxMenuBar* MenuBar1;
+  wxFlexGridSizer* FlexGridSizer6;
+  wxFlexGridSizer* fgzMain;
+  wxMenuItem* MenuItem43;
+  wxMenu* Menu2;
+  wxMenuItem* MenuItem18;
+  wxMenuItem* MenuItem19;
 
-	Create(
-		parent, id, _("RawlogViewer - Part of the MRPT project"),
-		wxDefaultPosition, wxDefaultSize,
-		wxCAPTION | wxDEFAULT_FRAME_STYLE | wxSYSTEM_MENU | wxRESIZE_BORDER |
-			wxCLOSE_BOX | wxMAXIMIZE_BOX | wxMINIMIZE_BOX,
-		_T("id"));
-	SetClientSize(wxSize(700, 500));
-	{
-		wxIcon FrameIcon;
-		FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")), wxART_OTHER));
-		SetIcon(FrameIcon);
-	}
-	fgzMain = new wxFlexGridSizer(3, 1, 0, 0);
-	fgzMain->AddGrowableCol(0);
-	fgzMain->AddGrowableRow(1);
-	fgzToolbar = new wxFlexGridSizer(1, 16, 0, 0);
-	fgzToolbar->AddGrowableCol(14);
-	fgzToolbar->AddGrowableCol(15);
+  Create(
+      parent, id, _("RawlogViewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize,
+      wxCAPTION | wxDEFAULT_FRAME_STYLE | wxSYSTEM_MENU | wxRESIZE_BORDER | wxCLOSE_BOX |
+          wxMAXIMIZE_BOX | wxMINIMIZE_BOX,
+      _T("id"));
+  SetClientSize(wxSize(700, 500));
+  {
+    wxIcon FrameIcon;
+    FrameIcon.CopyFromBitmap(
+        wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")), wxART_OTHER));
+    SetIcon(FrameIcon);
+  }
+  fgzMain = new wxFlexGridSizer(3, 1, 0, 0);
+  fgzMain->AddGrowableCol(0);
+  fgzMain->AddGrowableRow(1);
+  fgzToolbar = new wxFlexGridSizer(1, 16, 0, 0);
+  fgzToolbar->AddGrowableCol(14);
+  fgzToolbar->AddGrowableCol(15);
 
-	btnToolbarOpen = new wxCustomButton(
-		this, ID_BUTTON2, _("Load..."),
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FOLDER")), wxART_TOOLBAR),
-		wxDefaultPosition, wxSize(-1, 60), wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM,
-		wxDefaultValidator, _T("ID_BUTTON2"));
-	btnToolbarOpen->SetBitmapDisabled(wxArtProvider::GetBitmap(
-		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FOLDER")), wxART_TOOLBAR));
-	btnToolbarOpen->SetMargins(wxSize(5, 5));
-	fgzToolbar->Add(
-		btnToolbarOpen, 1,
-		wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL |
-			wxALIGN_CENTER_VERTICAL,
-		1);
-	Button1 = new wxCustomButton(
-		this, ID_BUTTON3, _("Save as..."),
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")),
-			wxART_TOOLBAR),
-		wxDefaultPosition, wxSize(-1, 60), wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM,
-		wxDefaultValidator, _T("ID_BUTTON3"));
-	Button1->SetBitmapDisabled(wxArtProvider::GetBitmap(
-		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")), wxART_TOOLBAR));
-	Button1->SetMargins(wxSize(5, 5));
-	fgzToolbar->Add(
-		Button1, 1,
-		wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL |
-			wxALIGN_CENTER_VERTICAL,
-		1);
-	StaticLine2 = new wxStaticLine(
-		this, ID_STATICLINE2, wxDefaultPosition, wxSize(3, 70), wxLI_VERTICAL,
-		_T("ID_STATICLINE2"));
-	fgzToolbar->Add(
-		StaticLine2, 1,
-		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
-	Button2 = new wxCustomButton(
-		this, ID_BUTTON4, _("Edit..."),
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_COPY")), wxART_TOOLBAR),
-		wxDefaultPosition, wxSize(-1, 60), wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM,
-		wxDefaultValidator, _T("ID_BUTTON4"));
-	Button2->SetBitmapDisabled(wxArtProvider::GetBitmap(
-		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_COPY")), wxART_TOOLBAR));
-	Button2->SetMargins(wxSize(5, 5));
-	fgzToolbar->Add(
-		Button2, 1,
-		wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL |
-			wxALIGN_CENTER_VERTICAL,
-		1);
-	Button3 = new wxCustomButton(
-		this, ID_BUTTON5, _("\"Raw-map\"..."),
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("ICON_RAWMAP")), wxART_TOOLBAR),
-		wxDefaultPosition, wxSize(-1, 60), wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM,
-		wxDefaultValidator, _T("ID_BUTTON5"));
-	Button3->SetBitmapDisabled(wxArtProvider::GetBitmap(
-		wxART_MAKE_ART_ID_FROM_STR(_T("ICON_RAWMAP")), wxART_TOOLBAR));
-	Button3->SetMargins(wxSize(5, 5));
-	fgzToolbar->Add(
-		Button3, 1,
-		wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL |
-			wxALIGN_CENTER_VERTICAL,
-		1);
-	Button4 = new wxCustomButton(
-		this, ID_BUTTON6, _("Motion model"),
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("ICON_MOTION")), wxART_TOOLBAR),
-		wxDefaultPosition, wxSize(-1, 60), wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM,
-		wxDefaultValidator, _T("ID_BUTTON6"));
-	Button4->SetBitmapDisabled(wxArtProvider::GetBitmap(
-		wxART_MAKE_ART_ID_FROM_STR(_T("ICON_MOTION")), wxART_TOOLBAR));
-	Button4->SetMargins(wxSize(5, 5));
-	fgzToolbar->Add(
-		Button4, 1,
-		wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL |
-			wxALIGN_CENTER_VERTICAL,
-		1);
-	StaticLine3 = new wxStaticLine(
-		this, ID_STATICLINE3, wxDefaultPosition, wxSize(3, 70), wxLI_VERTICAL,
-		_T("ID_STATICLINE3"));
-	fgzToolbar->Add(
-		StaticLine3, 1,
-		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
-	Button6 = new wxCustomButton(
-		this, ID_BUTTON8, _("Browse..."),
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ANIMATE_SCANS")),
-			wxART_TOOLBAR),
-		wxDefaultPosition, wxSize(-1, 60), wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM,
-		wxDefaultValidator, _T("ID_BUTTON8"));
-	Button6->SetBitmapDisabled(wxArtProvider::GetBitmap(
-		wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ANIMATE_SCANS")), wxART_TOOLBAR));
-	Button6->SetMargins(wxSize(5, 5));
-	fgzToolbar->Add(
-		Button6, 1,
-		wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL |
-			wxALIGN_CENTER_VERTICAL,
-		1);
-	Button7 = new wxCustomButton(
-		this, ID_BUTTON9, _("Video..."),
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TIP")), wxART_TOOLBAR),
-		wxDefaultPosition, wxSize(-1, 60), wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM,
-		wxDefaultValidator, _T("ID_BUTTON9"));
-	Button7->SetBitmapDisabled(wxArtProvider::GetBitmap(
-		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TIP")), wxART_TOOLBAR));
-	Button7->SetMargins(wxSize(5, 5));
-	fgzToolbar->Add(
-		Button7, 1,
-		wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL |
-			wxALIGN_CENTER_VERTICAL,
-		1);
-	StaticLine4 = new wxStaticLine(
-		this, ID_STATICLINE4, wxDefaultPosition, wxSize(3, 70), wxLI_VERTICAL,
-		_T("ID_STATICLINE4"));
-	fgzToolbar->Add(
-		StaticLine4, 1,
-		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
-	Button8 = new wxCustomButton(
-		this, ID_BUTTON10, _("About"),
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ABOUT")), wxART_TOOLBAR),
-		wxDefaultPosition, wxSize(-1, 60), wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM,
-		wxDefaultValidator, _T("ID_BUTTON10"));
-	Button8->SetBitmapDisabled(wxArtProvider::GetBitmap(
-		wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ABOUT")), wxART_TOOLBAR));
-	Button8->SetMargins(wxSize(5, 5));
-	fgzToolbar->Add(
-		Button8, 1,
-		wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL |
-			wxALIGN_CENTER_VERTICAL,
-		1);
-	Button9 = new wxCustomButton(
-		this, ID_BUTTON11, _("Quit"),
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("ICON_QUIT")), wxART_TOOLBAR),
-		wxDefaultPosition, wxSize(-1, 60), wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM,
-		wxDefaultValidator, _T("ID_BUTTON11"));
-	Button9->SetBitmapDisabled(wxArtProvider::GetBitmap(
-		wxART_MAKE_ART_ID_FROM_STR(_T("ICON_QUIT")), wxART_TOOLBAR));
-	Button9->SetMargins(wxSize(5, 5));
-	fgzToolbar->Add(
-		Button9, 1,
-		wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL |
-			wxALIGN_CENTER_VERTICAL,
-		1);
-	StaticLine1 = new wxStaticLine(
-		this, ID_STATICLINE1, wxDefaultPosition, wxSize(3, 70), wxLI_VERTICAL,
-		_T("ID_STATICLINE1"));
-	fgzToolbar->Add(
-		StaticLine1, 1,
-		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
-	FlexGridSizer16 = new wxFlexGridSizer(2, 1, 0, 0);
-	FlexGridSizer16->AddGrowableCol(0);
-	StaticText4 = new wxStaticText(
-		this, ID_STATICTEXT4, _("Image dirs:"), wxDefaultPosition,
-		wxDefaultSize, 0, _T("ID_STATICTEXT4"));
-	FlexGridSizer16->Add(
-		StaticText4, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
-	toolbarcomboImages = new wxComboBox(
-		this, ID_COMBO_IMG_DIRS, wxEmptyString, wxDefaultPosition,
-		wxDefaultSize, 0, nullptr, 0, wxDefaultValidator,
-		_T("ID_COMBO_IMG_DIRS"));
-	toolbarcomboImages->SetMinSize(wxSize(150, -1));
-	toolbarcomboImages->SetToolTip(_("Found external images paths"));
-	toolbarcomboImages->SetHelpText(_("Found external images paths"));
-	FlexGridSizer16->Add(
-		toolbarcomboImages, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL,
-		5);
-	fgzToolbar->Add(FlexGridSizer16, 1, wxEXPAND);
+  btnToolbarOpen = new wxCustomButton(
+      this, ID_BUTTON2, _("Load..."),
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FOLDER")), wxART_TOOLBAR),
+      wxDefaultPosition, wxSize(-1, 60), wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM, wxDefaultValidator,
+      _T("ID_BUTTON2"));
+  btnToolbarOpen->SetBitmapDisabled(
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FOLDER")), wxART_TOOLBAR));
+  btnToolbarOpen->SetMargins(wxSize(5, 5));
+  fgzToolbar->Add(
+      btnToolbarOpen, 1,
+      wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
+  Button1 = new wxCustomButton(
+      this, ID_BUTTON3, _("Save as..."),
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")), wxART_TOOLBAR),
+      wxDefaultPosition, wxSize(-1, 60), wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM, wxDefaultValidator,
+      _T("ID_BUTTON3"));
+  Button1->SetBitmapDisabled(wxArtProvider::GetBitmap(
+      wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")), wxART_TOOLBAR));
+  Button1->SetMargins(wxSize(5, 5));
+  fgzToolbar->Add(
+      Button1, 1, wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
+  StaticLine2 = new wxStaticLine(
+      this, ID_STATICLINE2, wxDefaultPosition, wxSize(3, 70), wxLI_VERTICAL, _T("ID_STATICLINE2"));
+  fgzToolbar->Add(StaticLine2, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
+  Button2 = new wxCustomButton(
+      this, ID_BUTTON4, _("Edit..."),
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_COPY")), wxART_TOOLBAR),
+      wxDefaultPosition, wxSize(-1, 60), wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM, wxDefaultValidator,
+      _T("ID_BUTTON4"));
+  Button2->SetBitmapDisabled(
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_COPY")), wxART_TOOLBAR));
+  Button2->SetMargins(wxSize(5, 5));
+  fgzToolbar->Add(
+      Button2, 1, wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
+  Button3 = new wxCustomButton(
+      this, ID_BUTTON5, _("\"Raw-map\"..."),
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_RAWMAP")), wxART_TOOLBAR),
+      wxDefaultPosition, wxSize(-1, 60), wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM, wxDefaultValidator,
+      _T("ID_BUTTON5"));
+  Button3->SetBitmapDisabled(
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_RAWMAP")), wxART_TOOLBAR));
+  Button3->SetMargins(wxSize(5, 5));
+  fgzToolbar->Add(
+      Button3, 1, wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
+  Button4 = new wxCustomButton(
+      this, ID_BUTTON6, _("Motion model"),
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_MOTION")), wxART_TOOLBAR),
+      wxDefaultPosition, wxSize(-1, 60), wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM, wxDefaultValidator,
+      _T("ID_BUTTON6"));
+  Button4->SetBitmapDisabled(
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_MOTION")), wxART_TOOLBAR));
+  Button4->SetMargins(wxSize(5, 5));
+  fgzToolbar->Add(
+      Button4, 1, wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
+  StaticLine3 = new wxStaticLine(
+      this, ID_STATICLINE3, wxDefaultPosition, wxSize(3, 70), wxLI_VERTICAL, _T("ID_STATICLINE3"));
+  fgzToolbar->Add(StaticLine3, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
+  Button6 = new wxCustomButton(
+      this, ID_BUTTON8, _("Browse..."),
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ANIMATE_SCANS")), wxART_TOOLBAR),
+      wxDefaultPosition, wxSize(-1, 60), wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM, wxDefaultValidator,
+      _T("ID_BUTTON8"));
+  Button6->SetBitmapDisabled(wxArtProvider::GetBitmap(
+      wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ANIMATE_SCANS")), wxART_TOOLBAR));
+  Button6->SetMargins(wxSize(5, 5));
+  fgzToolbar->Add(
+      Button6, 1, wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
+  Button7 = new wxCustomButton(
+      this, ID_BUTTON9, _("Video..."),
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TIP")), wxART_TOOLBAR),
+      wxDefaultPosition, wxSize(-1, 60), wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM, wxDefaultValidator,
+      _T("ID_BUTTON9"));
+  Button7->SetBitmapDisabled(
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TIP")), wxART_TOOLBAR));
+  Button7->SetMargins(wxSize(5, 5));
+  fgzToolbar->Add(
+      Button7, 1, wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
+  StaticLine4 = new wxStaticLine(
+      this, ID_STATICLINE4, wxDefaultPosition, wxSize(3, 70), wxLI_VERTICAL, _T("ID_STATICLINE4"));
+  fgzToolbar->Add(StaticLine4, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
+  Button8 = new wxCustomButton(
+      this, ID_BUTTON10, _("About"),
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ABOUT")), wxART_TOOLBAR),
+      wxDefaultPosition, wxSize(-1, 60), wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM, wxDefaultValidator,
+      _T("ID_BUTTON10"));
+  Button8->SetBitmapDisabled(
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ABOUT")), wxART_TOOLBAR));
+  Button8->SetMargins(wxSize(5, 5));
+  fgzToolbar->Add(
+      Button8, 1, wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
+  Button9 = new wxCustomButton(
+      this, ID_BUTTON11, _("Quit"),
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_QUIT")), wxART_TOOLBAR),
+      wxDefaultPosition, wxSize(-1, 60), wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM, wxDefaultValidator,
+      _T("ID_BUTTON11"));
+  Button9->SetBitmapDisabled(
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_QUIT")), wxART_TOOLBAR));
+  Button9->SetMargins(wxSize(5, 5));
+  fgzToolbar->Add(
+      Button9, 1, wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
+  StaticLine1 = new wxStaticLine(
+      this, ID_STATICLINE1, wxDefaultPosition, wxSize(3, 70), wxLI_VERTICAL, _T("ID_STATICLINE1"));
+  fgzToolbar->Add(StaticLine1, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
+  FlexGridSizer16 = new wxFlexGridSizer(2, 1, 0, 0);
+  FlexGridSizer16->AddGrowableCol(0);
+  StaticText4 = new wxStaticText(
+      this, ID_STATICTEXT4, _("Image dirs:"), wxDefaultPosition, wxDefaultSize, 0,
+      _T("ID_STATICTEXT4"));
+  FlexGridSizer16->Add(StaticText4, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
+  toolbarcomboImages = new wxComboBox(
+      this, ID_COMBO_IMG_DIRS, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, nullptr, 0,
+      wxDefaultValidator, _T("ID_COMBO_IMG_DIRS"));
+  toolbarcomboImages->SetMinSize(wxSize(150, -1));
+  toolbarcomboImages->SetToolTip(_("Found external images paths"));
+  toolbarcomboImages->SetHelpText(_("Found external images paths"));
+  FlexGridSizer16->Add(toolbarcomboImages, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
+  fgzToolbar->Add(FlexGridSizer16, 1, wxEXPAND);
 
-	edSelectedTimeInfo = new wxTextCtrl(
-		this, ID_TXT_SELECTED_INFO, wxEmptyString, wxDefaultPosition,
-		wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY, wxDefaultValidator,
-		_T("ID_TXT_SELECTED_INFO"));
-	edSelectedTimeInfo->SetFont(monoFont);
+  edSelectedTimeInfo = new wxTextCtrl(
+      this, ID_TXT_SELECTED_INFO, wxEmptyString, wxDefaultPosition, wxDefaultSize,
+      wxTE_MULTILINE | wxTE_READONLY, wxDefaultValidator, _T("ID_TXT_SELECTED_INFO"));
+  edSelectedTimeInfo->SetFont(monoFont);
 
-	fgzToolbar->Add(edSelectedTimeInfo, 1, wxEXPAND, 0);
+  fgzToolbar->Add(edSelectedTimeInfo, 1, wxEXPAND, 0);
 
-	fgzMain->Add(fgzToolbar, 1, wxEXPAND);
-	//---
-	SplitterWindow1 = new wxSplitterWindow(
-		this, ID_SPLITTERWINDOW1, wxDefaultPosition, wxDefaultSize,
-		wxSP_3D | wxSP_3DBORDER | wxSP_LIVE_UPDATE, _T("ID_SPLITTERWINDOW1"));
-	SplitterWindow1->SetMinSize(wxSize(10, 10));
-	SplitterWindow1->SetMinimumPaneSize(10);
-	Panel1 = new wxPanel(
-		SplitterWindow1, ID_PANEL1, wxDefaultPosition, wxSize(337, -1),
-		wxTAB_TRAVERSAL, _T("ID_PANEL1"));
-	FlexGridSizer2 = new wxFlexGridSizer(1, 1, 0, 0);
-	FlexGridSizer2->AddGrowableCol(0);
-	FlexGridSizer2->AddGrowableRow(0);
-	m_treeView = new CRawlogTreeView(
-		Panel1, ID_CUSTOM5, wxDefaultPosition, wxDefaultSize, wxVSCROLL,
-		_T("ID_CUSTOM5"));
-	FlexGridSizer2->Add(m_treeView, 1, wxEXPAND);
-	Panel1->SetSizer(FlexGridSizer2);
-	FlexGridSizer2->SetSizeHints(Panel1);
-	Panel2 = new wxPanel(
-		SplitterWindow1, ID_PANEL2, wxDefaultPosition, wxDefaultSize,
-		wxTAB_TRAVERSAL, _T("ID_PANEL2"));
-	BoxSizer1 = new wxBoxSizer(wxHORIZONTAL);
-	SplitterWindow3 = new wxSplitterWindow(
-		Panel2, ID_SPLITTERWINDOW3, wxDefaultPosition, wxDefaultSize,
-		wxSP_3D | wxSP_3DBORDER | wxSP_LIVE_UPDATE, _T("ID_SPLITTERWINDOW3"));
-	SplitterWindow3->SetMinSize(wxSize(150, 150));
-	SplitterWindow3->SetMinimumPaneSize(150);
-	Panel3 = new wxPanel(
-		SplitterWindow3, ID_PANEL3, wxDefaultPosition, wxDefaultSize,
-		wxTAB_TRAVERSAL, _T("ID_PANEL3"));
-	BoxSizer2 = new wxBoxSizer(wxHORIZONTAL);
-	memo = new wxTextCtrl(
-		Panel3, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition,
-		wxSize(327, 140),
-		wxTE_MULTILINE | wxTE_READONLY | wxTE_WORDWRAP | wxNO_BORDER |
-			wxVSCROLL,
-		wxDefaultValidator, _T("ID_TEXTCTRL1"));
-	memo->SetFont(monoFont);
-	BoxSizer2->Add(memo, 1, wxEXPAND);
-	Panel3->SetSizer(BoxSizer2);
-	BoxSizer2->Fit(Panel3);
-	BoxSizer2->SetSizeHints(Panel3);
-	Panel5 = new wxPanel(
-		SplitterWindow3, ID_PANEL5, wxDefaultPosition, wxDefaultSize,
-		wxTAB_TRAVERSAL, _T("ID_PANEL5"));
-	BoxSizer3 = new wxBoxSizer(wxHORIZONTAL);
-	Notebook1 = new wxSimplebook(Panel5, ID_NOTEBOOK1);
-	pn_CSensorialFrame = new wxPanel(
-		Notebook1, ID_PANEL6, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
-		_T("ID_PANEL6"));
-	FlexGridSizer6 = new wxFlexGridSizer(2, 1, 0, 0);
-	FlexGridSizer6->AddGrowableCol(0);
-	FlexGridSizer6->AddGrowableRow(1);
-	Panel9 = new wxPanel(
-		pn_CSensorialFrame, ID_PANEL18, wxDefaultPosition, wxDefaultSize,
-		wxTAB_TRAVERSAL, _T("ID_PANEL18"));
-	btnEditComments = new wxButton(
-		Panel9, ID_BUTTON1, _("Edit comments..."), wxDefaultPosition,
-		wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
-	FlexGridSizer6->Add(Panel9, 1, wxEXPAND);
-	Notebook3 = new wxNotebook(
-		pn_CSensorialFrame, ID_NOTEBOOK3, wxDefaultPosition, wxSize(-1, 150), 0,
-		_T("ID_NOTEBOOK3"));
-	Notebook3->SetMinSize(wxSize(-1, 150));
-	memStats = new wxTextCtrl(
-		Notebook3, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition,
-		wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY | wxVSCROLL,
-		wxDefaultValidator, _T("ID_TEXTCTRL2"));
-	memStats->SetMinSize(wxSize(-1, 150));
-	memStats->SetFont(monoFont);
-	memStats->SetToolTip(_("Statistics of the rawlog load"));
+  fgzMain->Add(fgzToolbar, 1, wxEXPAND);
+  //---
+  SplitterWindow1 = new wxSplitterWindow(
+      this, ID_SPLITTERWINDOW1, wxDefaultPosition, wxDefaultSize,
+      wxSP_3D | wxSP_3DBORDER | wxSP_LIVE_UPDATE, _T("ID_SPLITTERWINDOW1"));
+  SplitterWindow1->SetMinSize(wxSize(10, 10));
+  SplitterWindow1->SetMinimumPaneSize(10);
+  Panel1 = new wxPanel(
+      SplitterWindow1, ID_PANEL1, wxDefaultPosition, wxSize(337, -1), wxTAB_TRAVERSAL,
+      _T("ID_PANEL1"));
+  FlexGridSizer2 = new wxFlexGridSizer(1, 1, 0, 0);
+  FlexGridSizer2->AddGrowableCol(0);
+  FlexGridSizer2->AddGrowableRow(0);
+  m_treeView = new CRawlogTreeView(
+      Panel1, ID_CUSTOM5, wxDefaultPosition, wxDefaultSize, wxVSCROLL, _T("ID_CUSTOM5"));
+  FlexGridSizer2->Add(m_treeView, 1, wxEXPAND);
+  Panel1->SetSizer(FlexGridSizer2);
+  FlexGridSizer2->SetSizeHints(Panel1);
+  Panel2 = new wxPanel(
+      SplitterWindow1, ID_PANEL2, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
+      _T("ID_PANEL2"));
+  BoxSizer1 = new wxBoxSizer(wxHORIZONTAL);
+  SplitterWindow3 = new wxSplitterWindow(
+      Panel2, ID_SPLITTERWINDOW3, wxDefaultPosition, wxDefaultSize,
+      wxSP_3D | wxSP_3DBORDER | wxSP_LIVE_UPDATE, _T("ID_SPLITTERWINDOW3"));
+  SplitterWindow3->SetMinSize(wxSize(150, 150));
+  SplitterWindow3->SetMinimumPaneSize(150);
+  Panel3 = new wxPanel(
+      SplitterWindow3, ID_PANEL3, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
+      _T("ID_PANEL3"));
+  BoxSizer2 = new wxBoxSizer(wxHORIZONTAL);
+  memo = new wxTextCtrl(
+      Panel3, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxSize(327, 140),
+      wxTE_MULTILINE | wxTE_READONLY | wxTE_WORDWRAP | wxNO_BORDER | wxVSCROLL, wxDefaultValidator,
+      _T("ID_TEXTCTRL1"));
+  memo->SetFont(monoFont);
+  BoxSizer2->Add(memo, 1, wxEXPAND);
+  Panel3->SetSizer(BoxSizer2);
+  BoxSizer2->Fit(Panel3);
+  BoxSizer2->SetSizeHints(Panel3);
+  Panel5 = new wxPanel(
+      SplitterWindow3, ID_PANEL5, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
+      _T("ID_PANEL5"));
+  BoxSizer3 = new wxBoxSizer(wxHORIZONTAL);
+  Notebook1 = new wxSimplebook(Panel5, ID_NOTEBOOK1);
+  pn_CSensorialFrame = new wxPanel(
+      Notebook1, ID_PANEL6, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL6"));
+  FlexGridSizer6 = new wxFlexGridSizer(2, 1, 0, 0);
+  FlexGridSizer6->AddGrowableCol(0);
+  FlexGridSizer6->AddGrowableRow(1);
+  Panel9 = new wxPanel(
+      pn_CSensorialFrame, ID_PANEL18, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
+      _T("ID_PANEL18"));
+  btnEditComments = new wxButton(
+      Panel9, ID_BUTTON1, _("Edit comments..."), wxDefaultPosition, wxDefaultSize, 0,
+      wxDefaultValidator, _T("ID_BUTTON1"));
+  FlexGridSizer6->Add(Panel9, 1, wxEXPAND);
+  Notebook3 = new wxNotebook(
+      pn_CSensorialFrame, ID_NOTEBOOK3, wxDefaultPosition, wxSize(-1, 150), 0, _T("ID_NOTEBOOK3"));
+  Notebook3->SetMinSize(wxSize(-1, 150));
+  memStats = new wxTextCtrl(
+      Notebook3, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize,
+      wxTE_MULTILINE | wxTE_READONLY | wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL2"));
+  memStats->SetMinSize(wxSize(-1, 150));
+  memStats->SetFont(monoFont);
+  memStats->SetToolTip(_("Statistics of the rawlog load"));
 
-	txtException = new wxTextCtrl(
-		Notebook3, ID_TEXTCTRL3, wxEmptyString, wxDefaultPosition,
-		wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY, wxDefaultValidator,
-		_T("ID_TEXTCTRL3"));
-	txtException->SetFont(monoFont);
-	Notebook3->AddPage(memStats, _("Dataset statistics && info"), false);
-	Notebook3->AddPage(txtException, _("End of load message"), false);
-	FlexGridSizer6->Add(Notebook3, 1, wxEXPAND);
-	pn_CSensorialFrame->SetSizer(FlexGridSizer6);
-	FlexGridSizer6->Fit(pn_CSensorialFrame);
-	FlexGridSizer6->SetSizeHints(pn_CSensorialFrame);
-	pn_Action = new wxPanel(
-		Notebook1, ID_PANEL7, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
-		_T("ID_PANEL7"));
-	BoxSizer8 = new wxBoxSizer(wxHORIZONTAL);
-	plotAct2D_XY = new mpWindow(
-		pn_Action, ID_CUSTOM2, wxDefaultPosition, wxDefaultSize, 0);
-	BoxSizer8->Add(plotAct2D_XY, 1, wxEXPAND, 1);
-	plotAct2D_PHI = new mpWindow(
-		pn_Action, ID_CUSTOM3, wxDefaultPosition, wxDefaultSize, 0);
-	BoxSizer8->Add(plotAct2D_PHI, 1, wxEXPAND, 1);
-	pn_Action->SetSizer(BoxSizer8);
-	BoxSizer8->Fit(pn_Action);
-	BoxSizer8->SetSizeHints(pn_Action);
+  txtException = new wxTextCtrl(
+      Notebook3, ID_TEXTCTRL3, wxEmptyString, wxDefaultPosition, wxDefaultSize,
+      wxTE_MULTILINE | wxTE_READONLY, wxDefaultValidator, _T("ID_TEXTCTRL3"));
+  txtException->SetFont(monoFont);
+  Notebook3->AddPage(memStats, _("Dataset statistics && info"), false);
+  Notebook3->AddPage(txtException, _("End of load message"), false);
+  FlexGridSizer6->Add(Notebook3, 1, wxEXPAND);
+  pn_CSensorialFrame->SetSizer(FlexGridSizer6);
+  FlexGridSizer6->Fit(pn_CSensorialFrame);
+  FlexGridSizer6->SetSizeHints(pn_CSensorialFrame);
+  pn_Action = new wxPanel(
+      Notebook1, ID_PANEL7, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL7"));
+  BoxSizer8 = new wxBoxSizer(wxHORIZONTAL);
+  plotAct2D_XY = new mpWindow(pn_Action, ID_CUSTOM2, wxDefaultPosition, wxDefaultSize, 0);
+  BoxSizer8->Add(plotAct2D_XY, 1, wxEXPAND, 1);
+  plotAct2D_PHI = new mpWindow(pn_Action, ID_CUSTOM3, wxDefaultPosition, wxDefaultSize, 0);
+  BoxSizer8->Add(plotAct2D_PHI, 1, wxEXPAND, 1);
+  pn_Action->SetSizer(BoxSizer8);
+  BoxSizer8->Fit(pn_Action);
+  BoxSizer8->SetSizeHints(pn_Action);
 
-	pn_CObservationImage = new wxPanel(
-		Notebook1, ID_PANEL9, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
-		_T("ID_PANEL9"));
-	FlexGridSizer3 = new wxFlexGridSizer(0, 1, 0, 0);
-	FlexGridSizer3->AddGrowableCol(0);
-	FlexGridSizer3->AddGrowableRow(1);
-	StaticText2 = new wxStaticText(
-		pn_CObservationImage, ID_STATICTEXT2,
-		_("Right click on the images to see the popup menu:"),
-		wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
-	FlexGridSizer3->Add(
-		StaticText2, 1,
-		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+  pn_CObservationImage = new wxPanel(
+      Notebook1, ID_PANEL9, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL9"));
+  FlexGridSizer3 = new wxFlexGridSizer(0, 1, 0, 0);
+  FlexGridSizer3->AddGrowableCol(0);
+  FlexGridSizer3->AddGrowableRow(1);
+  StaticText2 = new wxStaticText(
+      pn_CObservationImage, ID_STATICTEXT2, _("Right click on the images to see the popup menu:"),
+      wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
+  FlexGridSizer3->Add(
+      StaticText2, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
 
-	ScrolledWindow2 = new wxScrolledWindow(
-		pn_CObservationImage, ID_SCROLLEDWINDOW2, wxDefaultPosition,
-		wxDefaultSize, wxHSCROLL | wxVSCROLL, _T("ID_SCROLLEDWINDOW2"));
-	FlexGridSizerImg = new wxFlexGridSizer(0, 1, 0, 0);
-	FlexGridSizerImg->AddGrowableCol(0);
-	FlexGridSizerImg->AddGrowableRow(0);
+  ScrolledWindow2 = new wxScrolledWindow(
+      pn_CObservationImage, ID_SCROLLEDWINDOW2, wxDefaultPosition, wxDefaultSize,
+      wxHSCROLL | wxVSCROLL, _T("ID_SCROLLEDWINDOW2"));
+  FlexGridSizerImg = new wxFlexGridSizer(0, 1, 0, 0);
+  FlexGridSizerImg->AddGrowableCol(0);
+  FlexGridSizerImg->AddGrowableRow(0);
 
-	bmpObsImage = new CMyGLCanvas(ScrolledWindow2, ID_STATICBITMAP1);
+  bmpObsImage = new CMyGLCanvas(ScrolledWindow2, ID_STATICBITMAP1);
 
-	FlexGridSizerImg->Add(bmpObsImage, 1, wxEXPAND, 0);
-	ScrolledWindow2->SetSizer(FlexGridSizerImg);
-	FlexGridSizerImg->Fit(ScrolledWindow2);
-	FlexGridSizerImg->SetSizeHints(ScrolledWindow2);
+  FlexGridSizerImg->Add(bmpObsImage, 1, wxEXPAND, 0);
+  ScrolledWindow2->SetSizer(FlexGridSizerImg);
+  FlexGridSizerImg->Fit(ScrolledWindow2);
+  FlexGridSizerImg->SetSizeHints(ScrolledWindow2);
 
-	FlexGridSizer3->Add(ScrolledWindow2, 1, wxEXPAND);
-	pn_CObservationImage->SetSizer(FlexGridSizer3);
-	FlexGridSizer3->Fit(pn_CObservationImage);
-	FlexGridSizer3->SetSizeHints(pn_CObservationImage);
-	pn_CObservationStereoImage = new wxPanel(
-		Notebook1, ID_PANEL10, wxDefaultPosition, wxDefaultSize,
-		wxTAB_TRAVERSAL | wxFULL_REPAINT_ON_RESIZE, _T("ID_PANEL10"));
-	FlexGridSizer4 = new wxFlexGridSizer(2, 1, 0, 0);
-	FlexGridSizer4->AddGrowableCol(0);
-	FlexGridSizer4->AddGrowableRow(1);
-	StaticText1 = new wxStaticText(
-		pn_CObservationStereoImage, ID_STATICTEXT1,
-		_("Right click on the images to see the popup menu:"),
-		wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
-	FlexGridSizer4->Add(
-		StaticText1, 1,
-		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	Notebook2 = new wxNotebook(
-		pn_CObservationStereoImage, ID_NOTEBOOK2, wxDefaultPosition,
-		wxDefaultSize, 0, _T("ID_NOTEBOOK2"));
-	Panel6 = new wxPanel(
-		Notebook2, ID_PANEL13, wxDefaultPosition, wxDefaultSize,
-		wxTAB_TRAVERSAL, _T("ID_PANEL13"));
-	FlexGridSizer5 = new wxFlexGridSizer(1, 1, 0, 0);
-	FlexGridSizer5->AddGrowableCol(0);
-	FlexGridSizer5->AddGrowableRow(0);
-	bmpObsStereoLeft = new CMyGLCanvas(Panel6, ID_STATICBITMAP2);
-	FlexGridSizer5->Add(bmpObsStereoLeft, 1, wxEXPAND, 0);
-	Panel6->SetSizer(FlexGridSizer5);
-	FlexGridSizer5->Fit(Panel6);
-	FlexGridSizer5->SetSizeHints(Panel6);
-	Panel7 = new wxPanel(
-		Notebook2, ID_PANEL14, wxDefaultPosition, wxDefaultSize,
-		wxTAB_TRAVERSAL, _T("ID_PANEL14"));
-	FlexGridSizer7 = new wxFlexGridSizer(1, 1, 0, 0);
-	FlexGridSizer7->AddGrowableCol(0);
-	FlexGridSizer7->AddGrowableRow(0);
-	bmpObsStereoRight = new CMyGLCanvas(Panel7, ID_STATICBITMAP3);
-	FlexGridSizer7->Add(bmpObsStereoRight, 1, wxEXPAND, 0);
-	Panel7->SetSizer(FlexGridSizer7);
-	FlexGridSizer7->Fit(Panel7);
-	FlexGridSizer7->SetSizeHints(Panel7);
-	Panel10 = new wxPanel(
-		Notebook2, ID_PANEL24, wxDefaultPosition, wxDefaultSize,
-		wxTAB_TRAVERSAL, _T("ID_PANEL24"));
-	FlexGridSizer13 = new wxFlexGridSizer(1, 1, 0, 0);
-	FlexGridSizer13->AddGrowableCol(0);
-	FlexGridSizer13->AddGrowableRow(0);
-	bmpObsStereoDisp = new CMyGLCanvas(Panel10, ID_STATICBITMAP7);
-	FlexGridSizer13->Add(bmpObsStereoDisp, 1, wxEXPAND, 0);
-	Panel10->SetSizer(FlexGridSizer13);
-	FlexGridSizer13->Fit(Panel10);
-	FlexGridSizer13->SetSizeHints(Panel10);
-	Notebook2->AddPage(Panel6, _("Left"), false);
-	Notebook2->AddPage(Panel7, _("Right"), false);
-	Notebook2->AddPage(Panel10, _("Disparity"), false);
-	FlexGridSizer4->Add(Notebook2, 1, wxEXPAND);
-	pn_CObservationStereoImage->SetSizer(FlexGridSizer4);
-	FlexGridSizer4->Fit(pn_CObservationStereoImage);
-	FlexGridSizer4->SetSizeHints(pn_CObservationStereoImage);
-	pn_CObservationBeaconRanges = new wxPanel(
-		Notebook1, ID_PANEL11, wxDefaultPosition, wxDefaultSize,
-		wxTAB_TRAVERSAL, _T("ID_PANEL11"));
-	pn_CObservationGasSensors = new wxPanel(
-		Notebook1, ID_PANEL12, wxDefaultPosition, wxDefaultSize,
-		wxTAB_TRAVERSAL, _T("ID_PANEL12"));
-	pn_CObservationGPS = new wxPanel(
-		Notebook1, ID_PANEL15, wxDefaultPosition, wxDefaultSize,
-		wxTAB_TRAVERSAL, _T("ID_PANEL15"));
-	pn_CObservationBearingRange = new wxPanel(
-		Notebook1, ID_PANEL16, wxDefaultPosition, wxDefaultSize,
-		wxTAB_TRAVERSAL, _T("ID_PANEL16"));
-	BoxSizer4 = new wxBoxSizer(wxVERTICAL);
-	plotRangeBearing = new mpWindow(
-		pn_CObservationBearingRange, ID_CUSTOM4, wxDefaultPosition,
-		wxDefaultSize, 0);
-	BoxSizer4->Add(plotRangeBearing, 10, wxEXPAND);
-	Panel8 = new wxPanel(
-		pn_CObservationBearingRange, ID_PANEL17, wxDefaultPosition,
-		wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL17"));
-	BoxSizer4->Add(Panel8, 1, wxEXPAND);
-	pn_CObservationBearingRange->SetSizer(BoxSizer4);
-	BoxSizer4->Fit(pn_CObservationBearingRange);
-	BoxSizer4->SetSizeHints(pn_CObservationBearingRange);
+  FlexGridSizer3->Add(ScrolledWindow2, 1, wxEXPAND);
+  pn_CObservationImage->SetSizer(FlexGridSizer3);
+  FlexGridSizer3->Fit(pn_CObservationImage);
+  FlexGridSizer3->SetSizeHints(pn_CObservationImage);
+  pn_CObservationStereoImage = new wxPanel(
+      Notebook1, ID_PANEL10, wxDefaultPosition, wxDefaultSize,
+      wxTAB_TRAVERSAL | wxFULL_REPAINT_ON_RESIZE, _T("ID_PANEL10"));
+  FlexGridSizer4 = new wxFlexGridSizer(2, 1, 0, 0);
+  FlexGridSizer4->AddGrowableCol(0);
+  FlexGridSizer4->AddGrowableRow(1);
+  StaticText1 = new wxStaticText(
+      pn_CObservationStereoImage, ID_STATICTEXT1,
+      _("Right click on the images to see the popup menu:"), wxDefaultPosition, wxDefaultSize, 0,
+      _T("ID_STATICTEXT1"));
+  FlexGridSizer4->Add(
+      StaticText1, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+  Notebook2 = new wxNotebook(
+      pn_CObservationStereoImage, ID_NOTEBOOK2, wxDefaultPosition, wxDefaultSize, 0,
+      _T("ID_NOTEBOOK2"));
+  Panel6 = new wxPanel(
+      Notebook2, ID_PANEL13, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL13"));
+  FlexGridSizer5 = new wxFlexGridSizer(1, 1, 0, 0);
+  FlexGridSizer5->AddGrowableCol(0);
+  FlexGridSizer5->AddGrowableRow(0);
+  bmpObsStereoLeft = new CMyGLCanvas(Panel6, ID_STATICBITMAP2);
+  FlexGridSizer5->Add(bmpObsStereoLeft, 1, wxEXPAND, 0);
+  Panel6->SetSizer(FlexGridSizer5);
+  FlexGridSizer5->Fit(Panel6);
+  FlexGridSizer5->SetSizeHints(Panel6);
+  Panel7 = new wxPanel(
+      Notebook2, ID_PANEL14, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL14"));
+  FlexGridSizer7 = new wxFlexGridSizer(1, 1, 0, 0);
+  FlexGridSizer7->AddGrowableCol(0);
+  FlexGridSizer7->AddGrowableRow(0);
+  bmpObsStereoRight = new CMyGLCanvas(Panel7, ID_STATICBITMAP3);
+  FlexGridSizer7->Add(bmpObsStereoRight, 1, wxEXPAND, 0);
+  Panel7->SetSizer(FlexGridSizer7);
+  FlexGridSizer7->Fit(Panel7);
+  FlexGridSizer7->SetSizeHints(Panel7);
+  Panel10 = new wxPanel(
+      Notebook2, ID_PANEL24, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL24"));
+  FlexGridSizer13 = new wxFlexGridSizer(1, 1, 0, 0);
+  FlexGridSizer13->AddGrowableCol(0);
+  FlexGridSizer13->AddGrowableRow(0);
+  bmpObsStereoDisp = new CMyGLCanvas(Panel10, ID_STATICBITMAP7);
+  FlexGridSizer13->Add(bmpObsStereoDisp, 1, wxEXPAND, 0);
+  Panel10->SetSizer(FlexGridSizer13);
+  FlexGridSizer13->Fit(Panel10);
+  FlexGridSizer13->SetSizeHints(Panel10);
+  Notebook2->AddPage(Panel6, _("Left"), false);
+  Notebook2->AddPage(Panel7, _("Right"), false);
+  Notebook2->AddPage(Panel10, _("Disparity"), false);
+  FlexGridSizer4->Add(Notebook2, 1, wxEXPAND);
+  pn_CObservationStereoImage->SetSizer(FlexGridSizer4);
+  FlexGridSizer4->Fit(pn_CObservationStereoImage);
+  FlexGridSizer4->SetSizeHints(pn_CObservationStereoImage);
+  pn_CObservationBeaconRanges = new wxPanel(
+      Notebook1, ID_PANEL11, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL11"));
+  pn_CObservationGasSensors = new wxPanel(
+      Notebook1, ID_PANEL12, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL12"));
+  pn_CObservationGPS = new wxPanel(
+      Notebook1, ID_PANEL15, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL15"));
+  pn_CObservationBearingRange = new wxPanel(
+      Notebook1, ID_PANEL16, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL16"));
+  BoxSizer4 = new wxBoxSizer(wxVERTICAL);
+  plotRangeBearing =
+      new mpWindow(pn_CObservationBearingRange, ID_CUSTOM4, wxDefaultPosition, wxDefaultSize, 0);
+  BoxSizer4->Add(plotRangeBearing, 10, wxEXPAND);
+  Panel8 = new wxPanel(
+      pn_CObservationBearingRange, ID_PANEL17, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
+      _T("ID_PANEL17"));
+  BoxSizer4->Add(Panel8, 1, wxEXPAND);
+  pn_CObservationBearingRange->SetSizer(BoxSizer4);
+  BoxSizer4->Fit(pn_CObservationBearingRange);
+  BoxSizer4->SetSizeHints(pn_CObservationBearingRange);
 
-	// Panel[8]: pn_CObservation3DRangeScan
-	pn_CObservation3DRangeScan = new wxPanel(
-		Notebook1, ID_PANEL19, wxDefaultPosition, wxDefaultSize,
-		wxTAB_TRAVERSAL, _T("ID_PANEL19"));
-	FlexGridSizer8 = new wxFlexGridSizer(1, 1, 0, 0);
-	FlexGridSizer8->AddGrowableCol(0);
-	FlexGridSizer8->AddGrowableRow(0);
+  // Panel[8]: pn_CObservation3DRangeScan
+  pn_CObservation3DRangeScan = new wxPanel(
+      Notebook1, ID_PANEL19, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL19"));
+  FlexGridSizer8 = new wxFlexGridSizer(1, 1, 0, 0);
+  FlexGridSizer8->AddGrowableCol(0);
+  FlexGridSizer8->AddGrowableRow(0);
 
-	// Tabs for 3D observations channels & options:
-	nb_3DObsChannels = new wxNotebook(
-		pn_CObservation3DRangeScan, ID_NOTEBOOK_3DOBS, wxDefaultPosition,
-		wxDefaultSize, 0, _T("ID_NOTEBOOK_3DOBS"));
+  // Tabs for 3D observations channels & options:
+  nb_3DObsChannels = new wxNotebook(
+      pn_CObservation3DRangeScan, ID_NOTEBOOK_3DOBS, wxDefaultPosition, wxDefaultSize, 0,
+      _T("ID_NOTEBOOK_3DOBS"));
 
-	// Tab: 3D view + range + intensity:
-	pn3Dobs_3D = new wxPanel(
-		nb_3DObsChannels, ID_PANEL20, wxDefaultPosition, wxDefaultSize,
-		wxTAB_TRAVERSAL, _T("ID_PANEL20"));
-	FlexGridSizer9 = new wxFlexGridSizer(1, 1, 0, 0);
-	FlexGridSizer9->AddGrowableCol(0);
-	FlexGridSizer9->AddGrowableRow(0);
+  // Tab: 3D view + range + intensity:
+  pn3Dobs_3D = new wxPanel(
+      nb_3DObsChannels, ID_PANEL20, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
+      _T("ID_PANEL20"));
+  FlexGridSizer9 = new wxFlexGridSizer(1, 1, 0, 0);
+  FlexGridSizer9->AddGrowableCol(0);
+  FlexGridSizer9->AddGrowableRow(0);
 
-	m_gl3DRangeScan = new CMyGLCanvas(
-		pn3Dobs_3D, ID_XY_GLCANVAS, wxDefaultPosition, wxDefaultSize,
-		wxTAB_TRAVERSAL, _T("ID_XY_GLCANVAS"));
-	FlexGridSizer9->Add(m_gl3DRangeScan, 1, wxEXPAND, 2);
+  m_gl3DRangeScan = new CMyGLCanvas(
+      pn3Dobs_3D, ID_XY_GLCANVAS, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
+      _T("ID_XY_GLCANVAS"));
+  FlexGridSizer9->Add(m_gl3DRangeScan, 1, wxEXPAND, 2);
 
-	// OpenGL Views:
-	bmp3Dobs_depth =
-		m_gl3DRangeScan->getOpenGLSceneRef()->createViewport("depth");
-	bmp3Dobs_depth->setCustomBackgroundColor({.0f, .0f, .0f});
+  // OpenGL Views:
+  bmp3Dobs_depth = m_gl3DRangeScan->getOpenGLSceneRef()->createViewport("depth");
+  bmp3Dobs_depth->setCustomBackgroundColor({.0f, .0f, .0f});
 
-	bmp3Dobs_int =
-		m_gl3DRangeScan->getOpenGLSceneRef()->createViewport("intensity");
-	bmp3Dobs_int->setCustomBackgroundColor({.0f, .0f, .0f});
+  bmp3Dobs_int = m_gl3DRangeScan->getOpenGLSceneRef()->createViewport("intensity");
+  bmp3Dobs_int->setCustomBackgroundColor({.0f, .0f, .0f});
 
-	bmp3Dobs_3dcloud =
-		m_gl3DRangeScan->getOpenGLSceneRef()->getViewport("main");
+  bmp3Dobs_3dcloud = m_gl3DRangeScan->getOpenGLSceneRef()->getViewport("main");
 
-	// The correct sizes will be updated anyway in SelectObjectInTreeView()
-	bmp3Dobs_depth->setViewportPosition(2, -50 - 2, 1.0, 50);
-	bmp3Dobs_int->setViewportPosition(2, -100 - 2 * 2, 1.0, 50);
+  // The correct sizes will be updated anyway in SelectObjectInTreeView()
+  bmp3Dobs_depth->setViewportPosition(2, -50 - 2, 1.0, 50);
+  bmp3Dobs_int->setViewportPosition(2, -100 - 2 * 2, 1.0, 50);
 
-	// panel done:
-	pn3Dobs_3D->SetSizer(FlexGridSizer9);
-	FlexGridSizer9->Fit(pn3Dobs_3D);
-	FlexGridSizer9->SetSizeHints(pn3Dobs_3D);
+  // panel done:
+  pn3Dobs_3D->SetSizer(FlexGridSizer9);
+  FlexGridSizer9->Fit(pn3Dobs_3D);
+  FlexGridSizer9->SetSizeHints(pn3Dobs_3D);
 
-	pn3Dobs_Conf = new wxPanel(
-		nb_3DObsChannels, ID_PANEL23, wxDefaultPosition, wxDefaultSize,
-		wxTAB_TRAVERSAL, _T("ID_PANEL23"));
-	FlexGridSizer14 = new wxFlexGridSizer(1, 1, 0, 0);
-	FlexGridSizer14->AddGrowableCol(0);
-	FlexGridSizer14->AddGrowableRow(0);
-	bmp3Dobs_conf = new CMyGLCanvas(pn3Dobs_Conf, ID_STATICBITMAP6);
-	FlexGridSizer14->Add(bmp3Dobs_conf, 1, wxEXPAND, 0);
-	pn3Dobs_Conf->SetSizer(FlexGridSizer14);
-	FlexGridSizer14->Fit(pn3Dobs_Conf);
-	FlexGridSizer14->SetSizeHints(pn3Dobs_Conf);
+  pn3Dobs_Conf = new wxPanel(
+      nb_3DObsChannels, ID_PANEL23, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
+      _T("ID_PANEL23"));
+  FlexGridSizer14 = new wxFlexGridSizer(1, 1, 0, 0);
+  FlexGridSizer14->AddGrowableCol(0);
+  FlexGridSizer14->AddGrowableRow(0);
+  bmp3Dobs_conf = new CMyGLCanvas(pn3Dobs_Conf, ID_STATICBITMAP6);
+  FlexGridSizer14->Add(bmp3Dobs_conf, 1, wxEXPAND, 0);
+  pn3Dobs_Conf->SetSizer(FlexGridSizer14);
+  FlexGridSizer14->Fit(pn3Dobs_Conf);
+  FlexGridSizer14->SetSizeHints(pn3Dobs_Conf);
 
-	pnViewOptions = new ViewOptions3DPoints(
-		nb_3DObsChannels, ID_PANEL_VIEW_3D_POINT_OPTIONS);
+  pnViewOptions = new ViewOptions3DPoints(nb_3DObsChannels, ID_PANEL_VIEW_3D_POINT_OPTIONS);
 
-	nb_3DObsChannels->AddPage(pn3Dobs_3D, _("3D/Range/Intensity"), true);
-	nb_3DObsChannels->AddPage(pn3Dobs_Conf, _("Confidence"), false);
-	nb_3DObsChannels->AddPage(pnViewOptions, _("Visualization options"), false);
+  nb_3DObsChannels->AddPage(pn3Dobs_3D, _("3D/Range/Intensity"), true);
+  nb_3DObsChannels->AddPage(pn3Dobs_Conf, _("Confidence"), false);
+  nb_3DObsChannels->AddPage(pnViewOptions, _("Visualization options"), false);
 
-	FlexGridSizer8->Add(nb_3DObsChannels, 1, wxEXPAND, 1);
-	pn_CObservation3DRangeScan->SetSizer(FlexGridSizer8);
-	FlexGridSizer8->Fit(pn_CObservation3DRangeScan);
-	FlexGridSizer8->SetSizeHints(pn_CObservation3DRangeScan);
-	Notebook1->AddPage(pn_CSensorialFrame, _("Rawlog information"), true);
-	Notebook1->AddPage(pn_Action, _("2D Mov. Action"), false);
-	Notebook1->AddPage(pn_CObservationImage, _("Obs: Image"), false);
-	Notebook1->AddPage(
-		pn_CObservationStereoImage, _("Obs: Stereo Image"), false);
-	Notebook1->AddPage(
-		pn_CObservationBeaconRanges, _("Obs: Beacon Ranges"), false);
-	Notebook1->AddPage(pn_CObservationGasSensors, _("Obs: e-Noses"), false);
-	Notebook1->AddPage(pn_CObservationGPS, _("Obs: GPS"), false);
-	Notebook1->AddPage(
-		pn_CObservationBearingRange, _("Obs: RangeBearing"), false);
-	Notebook1->AddPage(pn_CObservation3DRangeScan, _("Obs: 3D"), false);
-	BoxSizer3->Add(Notebook1, 1, wxEXPAND);
-	Panel5->SetSizer(BoxSizer3);
-	BoxSizer3->Fit(Panel5);
-	BoxSizer3->SetSizeHints(Panel5);
-	SplitterWindow3->SplitHorizontally(Panel3, Panel5);
-	BoxSizer1->Add(SplitterWindow3, 1, wxEXPAND);
-	Panel2->SetSizer(BoxSizer1);
-	BoxSizer1->Fit(Panel2);
-	BoxSizer1->SetSizeHints(Panel2);
-	SplitterWindow1->SplitVertically(Panel1, Panel2);
-	fgzMain->Add(SplitterWindow1, 1, wxEXPAND);
+  FlexGridSizer8->Add(nb_3DObsChannels, 1, wxEXPAND, 1);
+  pn_CObservation3DRangeScan->SetSizer(FlexGridSizer8);
+  FlexGridSizer8->Fit(pn_CObservation3DRangeScan);
+  FlexGridSizer8->SetSizeHints(pn_CObservation3DRangeScan);
+  Notebook1->AddPage(pn_CSensorialFrame, _("Rawlog information"), true);
+  Notebook1->AddPage(pn_Action, _("2D Mov. Action"), false);
+  Notebook1->AddPage(pn_CObservationImage, _("Obs: Image"), false);
+  Notebook1->AddPage(pn_CObservationStereoImage, _("Obs: Stereo Image"), false);
+  Notebook1->AddPage(pn_CObservationBeaconRanges, _("Obs: Beacon Ranges"), false);
+  Notebook1->AddPage(pn_CObservationGasSensors, _("Obs: e-Noses"), false);
+  Notebook1->AddPage(pn_CObservationGPS, _("Obs: GPS"), false);
+  Notebook1->AddPage(pn_CObservationBearingRange, _("Obs: RangeBearing"), false);
+  Notebook1->AddPage(pn_CObservation3DRangeScan, _("Obs: 3D"), false);
+  BoxSizer3->Add(Notebook1, 1, wxEXPAND);
+  Panel5->SetSizer(BoxSizer3);
+  BoxSizer3->Fit(Panel5);
+  BoxSizer3->SetSizeHints(Panel5);
+  SplitterWindow3->SplitHorizontally(Panel3, Panel5);
+  BoxSizer1->Add(SplitterWindow3, 1, wxEXPAND);
+  Panel2->SetSizer(BoxSizer1);
+  BoxSizer1->Fit(Panel2);
+  BoxSizer1->SetSizeHints(Panel2);
+  SplitterWindow1->SplitVertically(Panel1, Panel2);
+  fgzMain->Add(SplitterWindow1, 1, wxEXPAND);
 
-	// -----------------------
-	// Bottom timeline
-	// -----------------------
-	createTimeLineObjects(fgzMain);
+  // -----------------------
+  // Bottom timeline
+  // -----------------------
+  createTimeLineObjects(fgzMain);
 
-	// ----
-	SetSizer(fgzMain);
-	fgzMain->SetSizeHints(this);
-	// ----
+  // ----
+  SetSizer(fgzMain);
+  fgzMain->SetSizeHints(this);
+  // ----
 
-	// -----------------------
-	// MENUS
-	// -----------------------
-	MenuBar1 = new wxMenuBar();
-	Menu1 = new wxMenu();
-	MenuItem3 = new wxMenuItem(
-		Menu1, ID_MENUITEM1, _("Open..."),
-		_("Loads a whole rawlog file in memory"), wxITEM_NORMAL);
-	MenuItem3->SetBitmap(wxArtProvider::GetBitmap(
-		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FOLDER")), wxART_MENU));
-	Menu1->Append(MenuItem3);
-	MenuItem4 = new wxMenuItem(
-		Menu1, ID_MENUITEM2, _("Save as..."),
-		_("Saves the current rawlog in a file"), wxITEM_NORMAL);
-	MenuItem4->SetBitmap(wxArtProvider::GetBitmap(
-		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")), wxART_MENU));
-	Menu1->Append(MenuItem4);
-	MenuItem6 = new wxMenu();
-	MenuItem13 = new wxMenuItem(
-		MenuItem6, ID_MENUITEM11, _("New Menu"), wxEmptyString, wxITEM_NORMAL);
-	MenuItem6->Append(MenuItem13);
-	Menu1->Append(ID_MENUITEM4, _("Open recent"), MenuItem6, wxEmptyString);
-	MenuItem73 = new wxMenuItem(
-		Menu1, ID_MENUITEM76, _("Revert"),
-		_("Reload the currently open file, discarding changes"), wxITEM_NORMAL);
-	Menu1->Append(MenuItem73);
-	MenuItem8 = new wxMenu();
-	MenuItem9 = new wxMenuItem(
-		MenuItem8, ID_MENUITEM7, _("Load a part only..."),
-		_("Load a section of a long rawlog"), wxITEM_NORMAL);
-	MenuItem8->Append(MenuItem9);
-	MenuItem10 = new wxMenuItem(
-		MenuItem8, ID_MENUITEM8, _("Count entries..."),
-		_("Count the entries in a rawlog file"), wxITEM_NORMAL);
-	MenuItem8->Append(MenuItem10);
-	MenuItem12 = new wxMenuItem(
-		MenuItem8, ID_MENUITEM10, _("Save all images to files.."),
-		_("Save all the images in a rawlog to a given directory"),
-		wxITEM_NORMAL);
-	MenuItem8->Append(MenuItem12);
-	MenuItem59 = new wxMenuItem(
-		MenuItem8, ID_MENUITEM62, _("Conver to externally stored images..."),
-		wxEmptyString, wxITEM_NORMAL);
-	MenuItem8->Append(MenuItem59);
-	MenuItem61 = new wxMenuItem(
-		MenuItem8, ID_MENUITEM64, _("Convert to observations-only rawlog..."),
-		wxEmptyString, wxITEM_NORMAL);
-	MenuItem8->Append(MenuItem61);
-	MenuItem8->AppendSeparator();
-	MenuItem15 = new wxMenuItem(
-		MenuItem8, ID_MENUITEM13,
-		_("Append visual landmarks from stereo imgs..."),
-		_("Precompute 3D landmarks from stereo images and save in another "
-		  "rawlog"),
-		wxITEM_NORMAL);
-	MenuItem8->Append(MenuItem15);
-	MenuItem8->AppendSeparator();
-	MenuItem57 = new wxMenuItem(
-		MenuItem8, ID_MENUITEM60, _("Loss-less decimation..."),
-		_("Accumulate observations from many timesteps in one"), wxITEM_NORMAL);
-	MenuItem8->Append(MenuItem57);
-	MenuItem58 = new wxMenuItem(
-		MenuItem8, ID_MENUITEM61, _("Compact rawlog..."),
-		_("Group consecutive actions & observations"), wxITEM_NORMAL);
-	MenuItem8->Append(MenuItem58);
-	Menu1->Append(
-		ID_MENUITEM6, _("Operations on files"), MenuItem8, wxEmptyString);
-	Menu1->AppendSeparator();
-	MenuItem5 = new wxMenu();
-	MenuItem7 = new wxMenuItem(
-		MenuItem5, ID_MENUITEM5, _("a CARMEN log..."),
-		_("Import a CARMEN \"log\" file"), wxITEM_NORMAL);
-	MenuItem5->Append(MenuItem7);
-	MenuItem44 = new wxMenuItem(
-		MenuItem5, ID_MENUITEM47, _("a sequence of image files..."),
-		wxEmptyString, wxITEM_NORMAL);
-	MenuItem5->Append(MenuItem44);
-	MenuItem53 = new wxMenuItem(
-		MenuItem5, ID_MENUITEM56, _("a MOOS alog..."), wxEmptyString,
-		wxITEM_NORMAL);
-	MenuItem5->Append(MenuItem53);
-	MenuItem60 = new wxMenuItem(
-		MenuItem5, ID_MENUITEM63, _("a RTL log..."), wxEmptyString,
-		wxITEM_NORMAL);
-	MenuItem5->Append(MenuItem60);
-	MenuItem83 = new wxMenuItem(
-		MenuItem5, ID_MENUITEM87, _("a Bremen DLR log..."), wxEmptyString,
-		wxITEM_NORMAL);
-	MenuItem5->Append(MenuItem83);
-	Menu1->Append(ID_MENUITEM3, _("Import"), MenuItem5, wxEmptyString);
-	MenuItem51 = new wxMenu();
-	MenuItem55 = new wxMenuItem(
-		MenuItem51, ID_MENUITEM58, _("Plain text files..."),
-		_("Generate text files for odometry and laser"), wxITEM_NORMAL);
-	MenuItem51->Append(MenuItem55);
-	MenuItem52 = new wxMenuItem(
-		MenuItem51, ID_MENUITEM55, _("As a MOOS alog file..."), wxEmptyString,
-		wxITEM_NORMAL);
-	MenuItem51->Append(MenuItem52);
-	Menu1->Append(ID_MENUITEM54, _("Export"), MenuItem51, wxEmptyString);
-	Menu1->AppendSeparator();
-	MenuItem1 = new wxMenuItem(
-		Menu1, idMenuQuit, _("Quit\tAlt-F4"), _("Quit the application"),
-		wxITEM_NORMAL);
-	MenuItem1->SetBitmap(wxArtProvider::GetBitmap(
-		wxART_MAKE_ART_ID_FROM_STR(_T("ICON_QUIT")), wxART_MENU));
-	Menu1->Append(MenuItem1);
-	MenuBar1->Append(Menu1, _("&File"));
-	Menu3 = new wxMenu();
-	MenuItem16 = new wxMenuItem(
-		Menu3, ID_MENUITEM14, _("Edit rawlog..."),
-		_("Manipulate the rawlog entries"), wxITEM_NORMAL);
-	MenuItem16->SetBitmap(wxArtProvider::GetBitmap(
-		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_COPY")), wxART_MENU));
-	Menu3->Append(MenuItem16);
-	MenuItem48 = new wxMenuItem(
-		Menu3, ID_MENUITEM51, _("Insert a field for comments"), wxEmptyString,
-		wxITEM_NORMAL);
-	Menu3->Append(MenuItem48);
-	MenuItem66 = new wxMenuItem(
-		Menu3, ID_MENUITEM69, _("Rename a sensor..."), wxEmptyString,
-		wxITEM_NORMAL);
-	Menu3->Append(MenuItem66);
-	MenuItem86 = new wxMenuItem(
-		Menu3, ID_MENUITEM91, _("Rename selected object only..."),
-		_("Change the sensorLabel of one single observation"), wxITEM_NORMAL);
-	Menu3->Append(MenuItem86);
-	Menu3->AppendSeparator();
-	MenuItem17 = new wxMenuItem(
-		Menu3, ID_MENUITEM15, _("Change sensor/camera parameters..."),
-		_("Change the poses of the sensors"), wxITEM_NORMAL);
-	Menu3->Append(MenuItem17);
-	MenuItem67 = new wxMenuItem(
-		Menu3, ID_MENUITEM70, _("Batch change sensor poses..."),
-		_("Change the pose of all sensors from a ini-like config file"),
-		wxITEM_NORMAL);
-	Menu3->Append(MenuItem67);
-	Menu3->AppendSeparator();
-	MenuItem18 = new wxMenuItem(
-		Menu3, ID_MENUITEM16, _("Decimate records..."),
-		_("Reduce the number of observations in the rawlog"), wxITEM_NORMAL);
-	Menu3->Append(MenuItem18);
-	MenuItem56 = new wxMenuItem(
-		Menu3, ID_MENUITEM59, _("Loss-less decimation ..."),
-		_("Accumulate observations from many timesteps in one"), wxITEM_NORMAL);
-	Menu3->Append(MenuItem56);
-	MenuItem54 = new wxMenuItem(
-		Menu3, ID_MENUITEM57, _("Compact rawlog..."),
-		_("Group consecutive actions & observations"), wxITEM_NORMAL);
-	Menu3->Append(MenuItem54);
-	MenuItem72 = new wxMenuItem(
-		Menu3, ID_MENUITEM75, _("Convert into SF format..."),
-		_("Convert a rawlog of observations-only into the actions-sensory "
-		  "frames format"),
-		wxITEM_NORMAL);
-	Menu3->Append(MenuItem72);
-	Menu3->AppendSeparator();
-	MenuItem64 = new wxMenuItem(
-		Menu3, ID_MENUITEM67, _("Re-sort by timestamp"),
-		_("Re order all the observations in the rawlog using their timestamps"),
-		wxITEM_NORMAL);
-	Menu3->Append(MenuItem64);
-	MenuItem65 = new wxMenuItem(
-		Menu3, ID_MENUITEM68, _("Shift timestamp by sensorLabel..."),
-		_("Displaces in time all the observations of a given label by some "
-		  "amount"),
-		wxITEM_NORMAL);
-	Menu3->Append(MenuItem65);
-	MenuItem79 = new wxMenuItem(
-		Menu3, ID_MENUITEM82, _("Regenerate timestamps in SF"), wxEmptyString,
-		wxITEM_NORMAL);
-	Menu3->Append(MenuItem79);
+  // -----------------------
+  // MENUS
+  // -----------------------
+  MenuBar1 = new wxMenuBar();
+  Menu1 = new wxMenu();
+  MenuItem3 = new wxMenuItem(
+      Menu1, ID_MENUITEM1, _("Open..."), _("Loads a whole rawlog file in memory"), wxITEM_NORMAL);
+  MenuItem3->SetBitmap(
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FOLDER")), wxART_MENU));
+  Menu1->Append(MenuItem3);
+  MenuItem4 = new wxMenuItem(
+      Menu1, ID_MENUITEM2, _("Save as..."), _("Saves the current rawlog in a file"), wxITEM_NORMAL);
+  MenuItem4->SetBitmap(
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")), wxART_MENU));
+  Menu1->Append(MenuItem4);
+  MenuItem6 = new wxMenu();
+  MenuItem13 =
+      new wxMenuItem(MenuItem6, ID_MENUITEM11, _("New Menu"), wxEmptyString, wxITEM_NORMAL);
+  MenuItem6->Append(MenuItem13);
+  Menu1->Append(ID_MENUITEM4, _("Open recent"), MenuItem6, wxEmptyString);
+  MenuItem73 = new wxMenuItem(
+      Menu1, ID_MENUITEM76, _("Revert"), _("Reload the currently open file, discarding changes"),
+      wxITEM_NORMAL);
+  Menu1->Append(MenuItem73);
+  MenuItem8 = new wxMenu();
+  MenuItem9 = new wxMenuItem(
+      MenuItem8, ID_MENUITEM7, _("Load a part only..."), _("Load a section of a long rawlog"),
+      wxITEM_NORMAL);
+  MenuItem8->Append(MenuItem9);
+  MenuItem10 = new wxMenuItem(
+      MenuItem8, ID_MENUITEM8, _("Count entries..."), _("Count the entries in a rawlog file"),
+      wxITEM_NORMAL);
+  MenuItem8->Append(MenuItem10);
+  MenuItem12 = new wxMenuItem(
+      MenuItem8, ID_MENUITEM10, _("Save all images to files.."),
+      _("Save all the images in a rawlog to a given directory"), wxITEM_NORMAL);
+  MenuItem8->Append(MenuItem12);
+  MenuItem59 = new wxMenuItem(
+      MenuItem8, ID_MENUITEM62, _("Conver to externally stored images..."), wxEmptyString,
+      wxITEM_NORMAL);
+  MenuItem8->Append(MenuItem59);
+  MenuItem61 = new wxMenuItem(
+      MenuItem8, ID_MENUITEM64, _("Convert to observations-only rawlog..."), wxEmptyString,
+      wxITEM_NORMAL);
+  MenuItem8->Append(MenuItem61);
+  MenuItem8->AppendSeparator();
+  MenuItem15 = new wxMenuItem(
+      MenuItem8, ID_MENUITEM13, _("Append visual landmarks from stereo imgs..."),
+      _("Precompute 3D landmarks from stereo images and save in another "
+        "rawlog"),
+      wxITEM_NORMAL);
+  MenuItem8->Append(MenuItem15);
+  MenuItem8->AppendSeparator();
+  MenuItem57 = new wxMenuItem(
+      MenuItem8, ID_MENUITEM60, _("Loss-less decimation..."),
+      _("Accumulate observations from many timesteps in one"), wxITEM_NORMAL);
+  MenuItem8->Append(MenuItem57);
+  MenuItem58 = new wxMenuItem(
+      MenuItem8, ID_MENUITEM61, _("Compact rawlog..."),
+      _("Group consecutive actions & observations"), wxITEM_NORMAL);
+  MenuItem8->Append(MenuItem58);
+  Menu1->Append(ID_MENUITEM6, _("Operations on files"), MenuItem8, wxEmptyString);
+  Menu1->AppendSeparator();
+  MenuItem5 = new wxMenu();
+  MenuItem7 = new wxMenuItem(
+      MenuItem5, ID_MENUITEM5, _("a CARMEN log..."), _("Import a CARMEN \"log\" file"),
+      wxITEM_NORMAL);
+  MenuItem5->Append(MenuItem7);
+  MenuItem44 = new wxMenuItem(
+      MenuItem5, ID_MENUITEM47, _("a sequence of image files..."), wxEmptyString, wxITEM_NORMAL);
+  MenuItem5->Append(MenuItem44);
+  MenuItem53 =
+      new wxMenuItem(MenuItem5, ID_MENUITEM56, _("a MOOS alog..."), wxEmptyString, wxITEM_NORMAL);
+  MenuItem5->Append(MenuItem53);
+  MenuItem60 =
+      new wxMenuItem(MenuItem5, ID_MENUITEM63, _("a RTL log..."), wxEmptyString, wxITEM_NORMAL);
+  MenuItem5->Append(MenuItem60);
+  MenuItem83 = new wxMenuItem(
+      MenuItem5, ID_MENUITEM87, _("a Bremen DLR log..."), wxEmptyString, wxITEM_NORMAL);
+  MenuItem5->Append(MenuItem83);
+  Menu1->Append(ID_MENUITEM3, _("Import"), MenuItem5, wxEmptyString);
+  MenuItem51 = new wxMenu();
+  MenuItem55 = new wxMenuItem(
+      MenuItem51, ID_MENUITEM58, _("Plain text files..."),
+      _("Generate text files for odometry and laser"), wxITEM_NORMAL);
+  MenuItem51->Append(MenuItem55);
+  MenuItem52 = new wxMenuItem(
+      MenuItem51, ID_MENUITEM55, _("As a MOOS alog file..."), wxEmptyString, wxITEM_NORMAL);
+  MenuItem51->Append(MenuItem52);
+  Menu1->Append(ID_MENUITEM54, _("Export"), MenuItem51, wxEmptyString);
+  Menu1->AppendSeparator();
+  MenuItem1 = new wxMenuItem(
+      Menu1, idMenuQuit, _("Quit\tAlt-F4"), _("Quit the application"), wxITEM_NORMAL);
+  MenuItem1->SetBitmap(
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_QUIT")), wxART_MENU));
+  Menu1->Append(MenuItem1);
+  MenuBar1->Append(Menu1, _("&File"));
+  Menu3 = new wxMenu();
+  MenuItem16 = new wxMenuItem(
+      Menu3, ID_MENUITEM14, _("Edit rawlog..."), _("Manipulate the rawlog entries"), wxITEM_NORMAL);
+  MenuItem16->SetBitmap(
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_COPY")), wxART_MENU));
+  Menu3->Append(MenuItem16);
+  MenuItem48 = new wxMenuItem(
+      Menu3, ID_MENUITEM51, _("Insert a field for comments"), wxEmptyString, wxITEM_NORMAL);
+  Menu3->Append(MenuItem48);
+  MenuItem66 =
+      new wxMenuItem(Menu3, ID_MENUITEM69, _("Rename a sensor..."), wxEmptyString, wxITEM_NORMAL);
+  Menu3->Append(MenuItem66);
+  MenuItem86 = new wxMenuItem(
+      Menu3, ID_MENUITEM91, _("Rename selected object only..."),
+      _("Change the sensorLabel of one single observation"), wxITEM_NORMAL);
+  Menu3->Append(MenuItem86);
+  Menu3->AppendSeparator();
+  MenuItem17 = new wxMenuItem(
+      Menu3, ID_MENUITEM15, _("Change sensor/camera parameters..."),
+      _("Change the poses of the sensors"), wxITEM_NORMAL);
+  Menu3->Append(MenuItem17);
+  MenuItem67 = new wxMenuItem(
+      Menu3, ID_MENUITEM70, _("Batch change sensor poses..."),
+      _("Change the pose of all sensors from a ini-like config file"), wxITEM_NORMAL);
+  Menu3->Append(MenuItem67);
+  Menu3->AppendSeparator();
+  MenuItem18 = new wxMenuItem(
+      Menu3, ID_MENUITEM16, _("Decimate records..."),
+      _("Reduce the number of observations in the rawlog"), wxITEM_NORMAL);
+  Menu3->Append(MenuItem18);
+  MenuItem56 = new wxMenuItem(
+      Menu3, ID_MENUITEM59, _("Loss-less decimation ..."),
+      _("Accumulate observations from many timesteps in one"), wxITEM_NORMAL);
+  Menu3->Append(MenuItem56);
+  MenuItem54 = new wxMenuItem(
+      Menu3, ID_MENUITEM57, _("Compact rawlog..."), _("Group consecutive actions & observations"),
+      wxITEM_NORMAL);
+  Menu3->Append(MenuItem54);
+  MenuItem72 = new wxMenuItem(
+      Menu3, ID_MENUITEM75, _("Convert into SF format..."),
+      _("Convert a rawlog of observations-only into the actions-sensory "
+        "frames format"),
+      wxITEM_NORMAL);
+  Menu3->Append(MenuItem72);
+  Menu3->AppendSeparator();
+  MenuItem64 = new wxMenuItem(
+      Menu3, ID_MENUITEM67, _("Re-sort by timestamp"),
+      _("Re order all the observations in the rawlog using their timestamps"), wxITEM_NORMAL);
+  Menu3->Append(MenuItem64);
+  MenuItem65 = new wxMenuItem(
+      Menu3, ID_MENUITEM68, _("Shift timestamp by sensorLabel..."),
+      _("Displaces in time all the observations of a given label by some "
+        "amount"),
+      wxITEM_NORMAL);
+  Menu3->Append(MenuItem65);
+  MenuItem79 = new wxMenuItem(
+      Menu3, ID_MENUITEM82, _("Regenerate timestamps in SF"), wxEmptyString, wxITEM_NORMAL);
+  Menu3->Append(MenuItem79);
 
-	auto MenuItemRenameBySFIdx = new wxMenuItem(
-		Menu3, ID_MENUITEM_RENAME_BY_SF_IDX, _("Rename by SF index"),
-		wxEmptyString, wxITEM_NORMAL);
-	Menu3->Append(MenuItemRenameBySFIdx);
+  auto MenuItemRenameBySFIdx = new wxMenuItem(
+      Menu3, ID_MENUITEM_RENAME_BY_SF_IDX, _("Rename by SF index"), wxEmptyString, wxITEM_NORMAL);
+  Menu3->Append(MenuItemRenameBySFIdx);
 
-	MenuBar1->Append(Menu3, _("&Edit"));
-	Menu6 = new wxMenu();
-	Menu14 = new wxMenu();
-	MenuItem22 = new wxMenuItem(
-		Menu14, ID_MENUITEM20, _("Modify motion model..."),
-		_("Manipulate the uncertainty of odometry"), wxITEM_NORMAL);
-	Menu14->Append(MenuItem22);
-	MenuItem24 = new wxMenuItem(
-		Menu14, ID_MENUITEM22, _("Recalculate actions with ICP..."),
-		_("Compute ICP-based odometry"), wxITEM_NORMAL);
-	Menu14->Append(MenuItem24);
-	MenuItem50 = new wxMenuItem(
-		Menu14, ID_MENUITEM53, _("Modify uncertainty of ICP-based actions..."),
-		wxEmptyString, wxITEM_NORMAL);
-	Menu14->Append(MenuItem50);
-	MenuItem25 = new wxMenuItem(
-		Menu14, ID_MENUITEM23, _("Recompute odometry from encoders config..."),
-		_("Recompute odometry increments from encoders"), wxITEM_NORMAL);
-	Menu14->Append(MenuItem25);
-	MenuItem38 = new wxMenuItem(
-		Menu14, ID_MENUITEM41, _("Force encoders info to \'false\'"),
-		_("Can be used to force ignoring corrupted encoders data in old "
-		  "datasets"),
-		wxITEM_NORMAL);
-	Menu14->Append(MenuItem38);
-	MenuItem80 = new wxMenuItem(
-		Menu14, ID_MENUITEM84, _("Regenerate invalid odometry timestamps..."),
-		wxEmptyString, wxITEM_NORMAL);
-	Menu14->Append(MenuItem80);
-	Menu6->Append(
-		ID_MENUITEM12, _("&Odometry (actions)"), Menu14, wxEmptyString);
-	Menu20 = new wxMenu();
-	MenuItem19 = new wxMenuItem(
-		Menu20, ID_MENUITEM17, _("Show the ICP module..."),
-		_("A demonstration of scan-matching with ICP"), wxITEM_NORMAL);
-	MenuItem19->SetBitmap(wxArtProvider::GetBitmap(
-		wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ICP")), wxART_MENU));
-	Menu20->Append(MenuItem19);
-	MenuItem41 = new wxMenuItem(
-		Menu20, ID_MENUITEM44, _("Show an animation with the scans..."),
-		wxEmptyString, wxITEM_NORMAL);
-	Menu20->Append(MenuItem41);
-	MenuItem21 = new wxMenuItem(
-		Menu20, ID_MENUITEM19, _("Count laser scans with zero valid ranges"),
-		_("Count the numnber of scans without a single valid range"),
-		wxITEM_NORMAL);
-	Menu20->Append(MenuItem21);
-	MenuItem27 = new wxMenuItem(
-		Menu20, ID_MENUITEM25, _("Filter out erroneous range measurements..."),
-		_("Heuristic to remove erroneous laser sensor readings"),
-		wxITEM_NORMAL);
-	Menu20->Append(MenuItem27);
-	MenuItem70 = new wxMenuItem(
-		Menu20, ID_MENUITEM73,
-		_("Mark as invalid ranges larger than maximum..."), wxEmptyString,
-		wxITEM_NORMAL);
-	Menu20->Append(MenuItem70);
-	MenuItem71 = new wxMenuItem(
-		Menu20, ID_MENUITEM74, _("Change max. range for a given laser scan..."),
-		wxEmptyString, wxITEM_NORMAL);
-	Menu20->Append(MenuItem71);
-	MenuItem74 = new wxMenuItem(
-		Menu20, ID_MENUITEM77, _("Batch exclusion zone filtering..."),
-		wxEmptyString, wxITEM_NORMAL);
-	Menu20->Append(MenuItem74);
-	MenuItem76 = new wxMenuItem(
-		Menu20, ID_MENUITEM79, _("Batch exclusion angles filtering..."),
-		wxEmptyString, wxITEM_NORMAL);
-	Menu20->Append(MenuItem76);
-	Menu6->Append(ID_MENUITEM18, _("&Laser scans"), Menu20, wxEmptyString);
-	MenuItem81 = new wxMenu();
-	MenuItem82 = new wxMenuItem(
-		MenuItem81, ID_MENUITEM86, _("Recover camera params..."),
-		_("Executes a Levenberg-Marquart optimization to recover the camera "
-		  "calibration matrix"),
-		wxITEM_NORMAL);
-	MenuItem81->Append(MenuItem82);
-	mnuItemEnable3DCamAutoGenPoints = new wxMenuItem(
-		MenuItem81, ID_MENUITEM90,
-		_("Enable on-the-fly generate 3D point cloud"), wxEmptyString,
-		wxITEM_CHECK);
-	MenuItem81->Append(mnuItemEnable3DCamAutoGenPoints);
-	Menu6->Append(
-		ID_MENUITEM85, _("&3D depth cameras"), MenuItem81, wxEmptyString);
-	Menu23 = new wxMenu();
-	MenuItem31 = new wxMenuItem(
-		Menu23, ID_MENUITEM29, _("Sequence of PNG files with images..."),
-		_("Extract all the images of the rawlog to a given directory"),
-		wxITEM_NORMAL);
-	Menu23->Append(MenuItem31);
-	MenuItem11 = new wxMenuItem(
-		Menu23, ID_MENUITEM9, _("Show images as a video..."),
-		_("Show the sequence of images as a video"), wxITEM_NORMAL);
-	Menu23->Append(MenuItem11);
-	MenuItem30 = new wxMenuItem(
-		Menu23, ID_MENUITEM28, _("Generate 3D actions from visual odometry..."),
-		wxEmptyString, wxITEM_NORMAL);
-	Menu23->Append(MenuItem30);
-	MenuItem68 = new wxMenuItem(
-		Menu23, ID_MENUITEM71, _("Convert pairs of mono into stereo..."),
-		"Create stereo images observations from pairs of monocular images",
-		wxITEM_NORMAL);
-	Menu23->Append(MenuItem68);
-	MenuItem69 = new wxMenuItem(
-		Menu23, ID_MENUITEM72, _("Batch rectify images..."), wxEmptyString,
-		wxITEM_NORMAL);
-	Menu23->Append(MenuItem69);
-	MenuItem75 = new wxMenuItem(
-		Menu23, ID_MENUITEM78, _("Rename externally stored image files..."),
-		wxEmptyString, wxITEM_NORMAL);
-	Menu23->Append(MenuItem75);
-	mnuCreateAVI = new wxMenuItem(
-		Menu23, ID_MENUITEM83, _("Create AVI video file..."), wxEmptyString,
-		wxITEM_NORMAL);
-	Menu23->Append(mnuCreateAVI);
-	Menu6->Append(
-		ID_MENUITEM21, _("&Images (Mono && Stereo)"), Menu23, wxEmptyString);
-	Menu38 = new wxMenu();
-	MenuItem32 = new wxMenuItem(
-		Menu38, ID_MENUITEM30,
-		_("Generate text file with gas sensor readings..."),
-		_("Extract gas readings to a text file"), wxITEM_NORMAL);
-	Menu38->Append(MenuItem32);
-	MenuItem26 = new wxMenuItem(
-		Menu38, ID_MENUITEM24, _("Filter out spureous gas readings..."),
-		_("Heuristic to remove erroneous gas sensor readings"), wxITEM_NORMAL);
-	Menu38->Append(MenuItem26);
-	Menu6->Append(ID_MENUITEM35, _("Ga&s sensors"), Menu38, wxEmptyString);
-	Menu39 = new wxMenu();
-	MenuItem33 = new wxMenuItem(
-		Menu39, ID_MENUITEM31, _("Generate text file with GPS readings..."),
-		_("Extract GPS readings to a text file"), wxITEM_NORMAL);
-	Menu39->Append(MenuItem33);
-	MenuItem36 = new wxMenuItem(
-		Menu39, ID_MENUITEM34, _("Summary of DGPS modes"),
-		_("Show a summary of GPS modes found in the rawlog"), wxITEM_NORMAL);
-	Menu39->Append(MenuItem36);
-	MenuItem62 = new wxMenuItem(
-		Menu39, ID_MENUITEM65, _("&Measure distance between GPS\'s..."),
-		wxEmptyString, wxITEM_NORMAL);
-	Menu39->Append(MenuItem62);
-	MenuItem63 = new wxMenuItem(
-		Menu39, ID_MENUITEM66, _("Regenerate &timestamp from sat time"),
-		wxEmptyString, wxITEM_NORMAL);
-	Menu39->Append(MenuItem63);
-	MenuItem49 = new wxMenuItem(
-		Menu39, ID_MENUITEM52, _("&Draw 3D path..."), wxEmptyString,
-		wxITEM_NORMAL);
-	Menu39->Append(MenuItem49);
-	MenuItem77 = new wxMenuItem(
-		Menu39, ID_MENUITEM80, _("Delete entries with NaN"), wxEmptyString,
-		wxITEM_NORMAL);
-	Menu39->Append(MenuItem77);
-	Menu6->Append(ID_MENUITEM36, _("&GPS sensors"), Menu39, wxEmptyString);
-	Menu40 = new wxMenu();
-	MenuItem35 = new wxMenuItem(
-		Menu40, ID_MENUITEM33, _("Generate text file with Beacon ranges..."),
-		_("Extract range readings to a text file"), wxITEM_NORMAL);
-	Menu40->Append(MenuItem35);
-	MenuItem14 = new wxMenuItem(
-		Menu40, ID_MENUITEM38, _("Remove specific measurements"), wxEmptyString,
-		wxITEM_NORMAL);
-	Menu40->Append(MenuItem14);
-	Menu6->Append(
-		ID_MENUITEM37, _("Range-only (&beacon detector) sensors"), Menu40,
-		wxEmptyString);
-	MenuItem20 = new wxMenu();
-	MenuItem23 = new wxMenuItem(
-		MenuItem20, ID_MENUITEM40, _("Generate text file with measurements..."),
-		wxEmptyString, wxITEM_NORMAL);
-	MenuItem20->Append(MenuItem23);
-	MenuItem78 = new wxMenuItem(
-		MenuItem20, ID_MENUITEM81, _("Remove specific landmark by ID..."),
-		wxEmptyString, wxITEM_NORMAL);
-	MenuItem20->Append(MenuItem78);
-	Menu6->Append(
-		ID_MENUITEM39, _("Range-bearing (landmark detector) sensors"),
-		MenuItem20, wxEmptyString);
-	MenuItem42 = new wxMenu();
-	MenuItem43 = new wxMenuItem(
-		MenuItem42, ID_MENUITEM46,
-		_("Generate a text file with measurements..."), wxEmptyString,
-		wxITEM_NORMAL);
-	MenuItem42->Append(MenuItem43);
-	Menu6->Append(
-		ID_MENUITEM45, _("1D range finders (Ultrasonic,IR)"), MenuItem42,
-		wxEmptyString);
-	MenuItem39 = new wxMenu();
-	MenuItem40 = new wxMenuItem(
-		MenuItem39, ID_MENUITEM43,
-		_("Generate text file with measurementes..."), wxEmptyString,
-		wxITEM_NORMAL);
-	MenuItem39->Append(MenuItem40);
-	Menu6->Append(
-		ID_MENUITEM42, _("Inertial Measurement Units"), MenuItem39,
-		wxEmptyString);
-	MenuItem84 = new wxMenu();
-	MenuItem85 = new wxMenuItem(
-		MenuItem84, ID_MENUITEM89,
-		_("Generate &text file with all observations..."), wxEmptyString,
-		wxITEM_NORMAL);
-	MenuItem84->Append(MenuItem85);
-	Menu6->Append(
-		ID_MENUITEM88, _("&WiFi Strength"), MenuItem84, wxEmptyString);
-	MenuBar1->Append(Menu6, _("&Sensors"));
-	Menu4 = new wxMenu();
-	MenuItem28 = new wxMenuItem(
-		Menu4, ID_MENUITEM26, _("Open paths and &map generation module..."),
-		_("Open the raw map/path samples dialog"), wxITEM_NORMAL);
-	MenuItem28->SetBitmap(wxArtProvider::GetBitmap(
-		wxART_MAKE_ART_ID_FROM_STR(_T("ICON_RAWMAP")), wxART_MENU));
-	Menu4->Append(MenuItem28);
-	MenuItem34 = new wxMenuItem(
-		Menu4, ID_MENUITEM32, _("&Generate odometry and laser text files..."),
-		_("Extract odometry and laser scans to text files"), wxITEM_NORMAL);
-	Menu4->Append(MenuItem34);
-	MenuBar1->Append(Menu4, _("&Tools"));
-	Menu2 = new wxMenu();
-	MenuItem29 = new wxMenuItem(
-		Menu2, ID_MENUITEM27, _("Show &tips..."), wxEmptyString, wxITEM_NORMAL);
-	Menu2->Append(MenuItem29);
-	MenuItem2 = new wxMenuItem(
-		Menu2, idMenuAbout, _("&About\tF1"),
-		_("Show info about this application"), wxITEM_NORMAL);
-	MenuItem2->SetBitmap(wxArtProvider::GetBitmap(
-		wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ABOUT")), wxART_MENU));
-	Menu2->Append(MenuItem2);
-	MenuBar1->Append(Menu2, _("&Help"));
-	SetMenuBar(MenuBar1);
-	StatusBar1 = new wxStatusBar(this, ID_STATUSBAR1, 0, _T("ID_STATUSBAR1"));
-	int __wxStatusBarWidths_1[1] = {-1};
-	int __wxStatusBarStyles_1[1] = {wxSB_NORMAL};
-	StatusBar1->SetFieldsCount(1, __wxStatusBarWidths_1);
-	StatusBar1->SetStatusStyles(1, __wxStatusBarStyles_1);
-	SetStatusBar(StatusBar1);
-	MenuItem37 = new wxMenuItem(
-		(&mnuTree), MNU_1, _("Delete element"),
-		_("Erases the selected element"), wxITEM_NORMAL);
-	mnuTree.Append(MenuItem37);
-	MenuItem45 = new wxMenu();
-	MenuItem46 = new wxMenuItem(
-		MenuItem45, ID_MENUITEM49, _("2D increment (from odometry)"),
-		wxEmptyString, wxITEM_NORMAL);
-	MenuItem45->Append(MenuItem46);
-	MenuItem47 = new wxMenuItem(
-		MenuItem45, ID_MENUITEM50, _("2D increment (from scan-matching)"),
-		wxEmptyString, wxITEM_NORMAL);
-	MenuItem45->Append(MenuItem47);
-	mnuTree.Append(ID_MENUITEM48, _("Add action"), MenuItem45, wxEmptyString);
+  MenuBar1->Append(Menu3, _("&Edit"));
+  Menu6 = new wxMenu();
+  Menu14 = new wxMenu();
+  MenuItem22 = new wxMenuItem(
+      Menu14, ID_MENUITEM20, _("Modify motion model..."),
+      _("Manipulate the uncertainty of odometry"), wxITEM_NORMAL);
+  Menu14->Append(MenuItem22);
+  MenuItem24 = new wxMenuItem(
+      Menu14, ID_MENUITEM22, _("Recalculate actions with ICP..."), _("Compute ICP-based odometry"),
+      wxITEM_NORMAL);
+  Menu14->Append(MenuItem24);
+  MenuItem50 = new wxMenuItem(
+      Menu14, ID_MENUITEM53, _("Modify uncertainty of ICP-based actions..."), wxEmptyString,
+      wxITEM_NORMAL);
+  Menu14->Append(MenuItem50);
+  MenuItem25 = new wxMenuItem(
+      Menu14, ID_MENUITEM23, _("Recompute odometry from encoders config..."),
+      _("Recompute odometry increments from encoders"), wxITEM_NORMAL);
+  Menu14->Append(MenuItem25);
+  MenuItem38 = new wxMenuItem(
+      Menu14, ID_MENUITEM41, _("Force encoders info to \'false\'"),
+      _("Can be used to force ignoring corrupted encoders data in old "
+        "datasets"),
+      wxITEM_NORMAL);
+  Menu14->Append(MenuItem38);
+  MenuItem80 = new wxMenuItem(
+      Menu14, ID_MENUITEM84, _("Regenerate invalid odometry timestamps..."), wxEmptyString,
+      wxITEM_NORMAL);
+  Menu14->Append(MenuItem80);
+  Menu6->Append(ID_MENUITEM12, _("&Odometry (actions)"), Menu14, wxEmptyString);
+  Menu20 = new wxMenu();
+  MenuItem19 = new wxMenuItem(
+      Menu20, ID_MENUITEM17, _("Show the ICP module..."),
+      _("A demonstration of scan-matching with ICP"), wxITEM_NORMAL);
+  MenuItem19->SetBitmap(
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ICP")), wxART_MENU));
+  Menu20->Append(MenuItem19);
+  MenuItem41 = new wxMenuItem(
+      Menu20, ID_MENUITEM44, _("Show an animation with the scans..."), wxEmptyString,
+      wxITEM_NORMAL);
+  Menu20->Append(MenuItem41);
+  MenuItem21 = new wxMenuItem(
+      Menu20, ID_MENUITEM19, _("Count laser scans with zero valid ranges"),
+      _("Count the numnber of scans without a single valid range"), wxITEM_NORMAL);
+  Menu20->Append(MenuItem21);
+  MenuItem27 = new wxMenuItem(
+      Menu20, ID_MENUITEM25, _("Filter out erroneous range measurements..."),
+      _("Heuristic to remove erroneous laser sensor readings"), wxITEM_NORMAL);
+  Menu20->Append(MenuItem27);
+  MenuItem70 = new wxMenuItem(
+      Menu20, ID_MENUITEM73, _("Mark as invalid ranges larger than maximum..."), wxEmptyString,
+      wxITEM_NORMAL);
+  Menu20->Append(MenuItem70);
+  MenuItem71 = new wxMenuItem(
+      Menu20, ID_MENUITEM74, _("Change max. range for a given laser scan..."), wxEmptyString,
+      wxITEM_NORMAL);
+  Menu20->Append(MenuItem71);
+  MenuItem74 = new wxMenuItem(
+      Menu20, ID_MENUITEM77, _("Batch exclusion zone filtering..."), wxEmptyString, wxITEM_NORMAL);
+  Menu20->Append(MenuItem74);
+  MenuItem76 = new wxMenuItem(
+      Menu20, ID_MENUITEM79, _("Batch exclusion angles filtering..."), wxEmptyString,
+      wxITEM_NORMAL);
+  Menu20->Append(MenuItem76);
+  Menu6->Append(ID_MENUITEM18, _("&Laser scans"), Menu20, wxEmptyString);
+  MenuItem81 = new wxMenu();
+  MenuItem82 = new wxMenuItem(
+      MenuItem81, ID_MENUITEM86, _("Recover camera params..."),
+      _("Executes a Levenberg-Marquart optimization to recover the camera "
+        "calibration matrix"),
+      wxITEM_NORMAL);
+  MenuItem81->Append(MenuItem82);
+  mnuItemEnable3DCamAutoGenPoints = new wxMenuItem(
+      MenuItem81, ID_MENUITEM90, _("Enable on-the-fly generate 3D point cloud"), wxEmptyString,
+      wxITEM_CHECK);
+  MenuItem81->Append(mnuItemEnable3DCamAutoGenPoints);
+  Menu6->Append(ID_MENUITEM85, _("&3D depth cameras"), MenuItem81, wxEmptyString);
+  Menu23 = new wxMenu();
+  MenuItem31 = new wxMenuItem(
+      Menu23, ID_MENUITEM29, _("Sequence of PNG files with images..."),
+      _("Extract all the images of the rawlog to a given directory"), wxITEM_NORMAL);
+  Menu23->Append(MenuItem31);
+  MenuItem11 = new wxMenuItem(
+      Menu23, ID_MENUITEM9, _("Show images as a video..."),
+      _("Show the sequence of images as a video"), wxITEM_NORMAL);
+  Menu23->Append(MenuItem11);
+  MenuItem30 = new wxMenuItem(
+      Menu23, ID_MENUITEM28, _("Generate 3D actions from visual odometry..."), wxEmptyString,
+      wxITEM_NORMAL);
+  Menu23->Append(MenuItem30);
+  MenuItem68 = new wxMenuItem(
+      Menu23, ID_MENUITEM71, _("Convert pairs of mono into stereo..."),
+      "Create stereo images observations from pairs of monocular images", wxITEM_NORMAL);
+  Menu23->Append(MenuItem68);
+  MenuItem69 = new wxMenuItem(
+      Menu23, ID_MENUITEM72, _("Batch rectify images..."), wxEmptyString, wxITEM_NORMAL);
+  Menu23->Append(MenuItem69);
+  MenuItem75 = new wxMenuItem(
+      Menu23, ID_MENUITEM78, _("Rename externally stored image files..."), wxEmptyString,
+      wxITEM_NORMAL);
+  Menu23->Append(MenuItem75);
+  mnuCreateAVI = new wxMenuItem(
+      Menu23, ID_MENUITEM83, _("Create AVI video file..."), wxEmptyString, wxITEM_NORMAL);
+  Menu23->Append(mnuCreateAVI);
+  Menu6->Append(ID_MENUITEM21, _("&Images (Mono && Stereo)"), Menu23, wxEmptyString);
+  Menu38 = new wxMenu();
+  MenuItem32 = new wxMenuItem(
+      Menu38, ID_MENUITEM30, _("Generate text file with gas sensor readings..."),
+      _("Extract gas readings to a text file"), wxITEM_NORMAL);
+  Menu38->Append(MenuItem32);
+  MenuItem26 = new wxMenuItem(
+      Menu38, ID_MENUITEM24, _("Filter out spureous gas readings..."),
+      _("Heuristic to remove erroneous gas sensor readings"), wxITEM_NORMAL);
+  Menu38->Append(MenuItem26);
+  Menu6->Append(ID_MENUITEM35, _("Ga&s sensors"), Menu38, wxEmptyString);
+  Menu39 = new wxMenu();
+  MenuItem33 = new wxMenuItem(
+      Menu39, ID_MENUITEM31, _("Generate text file with GPS readings..."),
+      _("Extract GPS readings to a text file"), wxITEM_NORMAL);
+  Menu39->Append(MenuItem33);
+  MenuItem36 = new wxMenuItem(
+      Menu39, ID_MENUITEM34, _("Summary of DGPS modes"),
+      _("Show a summary of GPS modes found in the rawlog"), wxITEM_NORMAL);
+  Menu39->Append(MenuItem36);
+  MenuItem62 = new wxMenuItem(
+      Menu39, ID_MENUITEM65, _("&Measure distance between GPS\'s..."), wxEmptyString,
+      wxITEM_NORMAL);
+  Menu39->Append(MenuItem62);
+  MenuItem63 = new wxMenuItem(
+      Menu39, ID_MENUITEM66, _("Regenerate &timestamp from sat time"), wxEmptyString,
+      wxITEM_NORMAL);
+  Menu39->Append(MenuItem63);
+  MenuItem49 =
+      new wxMenuItem(Menu39, ID_MENUITEM52, _("&Draw 3D path..."), wxEmptyString, wxITEM_NORMAL);
+  Menu39->Append(MenuItem49);
+  MenuItem77 = new wxMenuItem(
+      Menu39, ID_MENUITEM80, _("Delete entries with NaN"), wxEmptyString, wxITEM_NORMAL);
+  Menu39->Append(MenuItem77);
+  Menu6->Append(ID_MENUITEM36, _("&GPS sensors"), Menu39, wxEmptyString);
+  Menu40 = new wxMenu();
+  MenuItem35 = new wxMenuItem(
+      Menu40, ID_MENUITEM33, _("Generate text file with Beacon ranges..."),
+      _("Extract range readings to a text file"), wxITEM_NORMAL);
+  Menu40->Append(MenuItem35);
+  MenuItem14 = new wxMenuItem(
+      Menu40, ID_MENUITEM38, _("Remove specific measurements"), wxEmptyString, wxITEM_NORMAL);
+  Menu40->Append(MenuItem14);
+  Menu6->Append(ID_MENUITEM37, _("Range-only (&beacon detector) sensors"), Menu40, wxEmptyString);
+  MenuItem20 = new wxMenu();
+  MenuItem23 = new wxMenuItem(
+      MenuItem20, ID_MENUITEM40, _("Generate text file with measurements..."), wxEmptyString,
+      wxITEM_NORMAL);
+  MenuItem20->Append(MenuItem23);
+  MenuItem78 = new wxMenuItem(
+      MenuItem20, ID_MENUITEM81, _("Remove specific landmark by ID..."), wxEmptyString,
+      wxITEM_NORMAL);
+  MenuItem20->Append(MenuItem78);
+  Menu6->Append(
+      ID_MENUITEM39, _("Range-bearing (landmark detector) sensors"), MenuItem20, wxEmptyString);
+  MenuItem42 = new wxMenu();
+  MenuItem43 = new wxMenuItem(
+      MenuItem42, ID_MENUITEM46, _("Generate a text file with measurements..."), wxEmptyString,
+      wxITEM_NORMAL);
+  MenuItem42->Append(MenuItem43);
+  Menu6->Append(ID_MENUITEM45, _("1D range finders (Ultrasonic,IR)"), MenuItem42, wxEmptyString);
+  MenuItem39 = new wxMenu();
+  MenuItem40 = new wxMenuItem(
+      MenuItem39, ID_MENUITEM43, _("Generate text file with measurementes..."), wxEmptyString,
+      wxITEM_NORMAL);
+  MenuItem39->Append(MenuItem40);
+  Menu6->Append(ID_MENUITEM42, _("Inertial Measurement Units"), MenuItem39, wxEmptyString);
+  MenuItem84 = new wxMenu();
+  MenuItem85 = new wxMenuItem(
+      MenuItem84, ID_MENUITEM89, _("Generate &text file with all observations..."), wxEmptyString,
+      wxITEM_NORMAL);
+  MenuItem84->Append(MenuItem85);
+  Menu6->Append(ID_MENUITEM88, _("&WiFi Strength"), MenuItem84, wxEmptyString);
+  MenuBar1->Append(Menu6, _("&Sensors"));
+  Menu4 = new wxMenu();
+  MenuItem28 = new wxMenuItem(
+      Menu4, ID_MENUITEM26, _("Open paths and &map generation module..."),
+      _("Open the raw map/path samples dialog"), wxITEM_NORMAL);
+  MenuItem28->SetBitmap(
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_RAWMAP")), wxART_MENU));
+  Menu4->Append(MenuItem28);
+  MenuItem34 = new wxMenuItem(
+      Menu4, ID_MENUITEM32, _("&Generate odometry and laser text files..."),
+      _("Extract odometry and laser scans to text files"), wxITEM_NORMAL);
+  Menu4->Append(MenuItem34);
+  MenuBar1->Append(Menu4, _("&Tools"));
+  Menu2 = new wxMenu();
+  MenuItem29 =
+      new wxMenuItem(Menu2, ID_MENUITEM27, _("Show &tips..."), wxEmptyString, wxITEM_NORMAL);
+  Menu2->Append(MenuItem29);
+  MenuItem2 = new wxMenuItem(
+      Menu2, idMenuAbout, _("&About\tF1"), _("Show info about this application"), wxITEM_NORMAL);
+  MenuItem2->SetBitmap(
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ABOUT")), wxART_MENU));
+  Menu2->Append(MenuItem2);
+  MenuBar1->Append(Menu2, _("&Help"));
+  SetMenuBar(MenuBar1);
+  StatusBar1 = new wxStatusBar(this, ID_STATUSBAR1, 0, _T("ID_STATUSBAR1"));
+  int __wxStatusBarWidths_1[1] = {-1};
+  int __wxStatusBarStyles_1[1] = {wxSB_NORMAL};
+  StatusBar1->SetFieldsCount(1, __wxStatusBarWidths_1);
+  StatusBar1->SetStatusStyles(1, __wxStatusBarStyles_1);
+  SetStatusBar(StatusBar1);
+  MenuItem37 = new wxMenuItem(
+      (&mnuTree), MNU_1, _("Delete element"), _("Erases the selected element"), wxITEM_NORMAL);
+  mnuTree.Append(MenuItem37);
+  MenuItem45 = new wxMenu();
+  MenuItem46 = new wxMenuItem(
+      MenuItem45, ID_MENUITEM49, _("2D increment (from odometry)"), wxEmptyString, wxITEM_NORMAL);
+  MenuItem45->Append(MenuItem46);
+  MenuItem47 = new wxMenuItem(
+      MenuItem45, ID_MENUITEM50, _("2D increment (from scan-matching)"), wxEmptyString,
+      wxITEM_NORMAL);
+  MenuItem45->Append(MenuItem47);
+  mnuTree.Append(ID_MENUITEM48, _("Add action"), MenuItem45, wxEmptyString);
 
-	timAutoLoad.SetOwner(this, ID_TIMER1);
-	timAutoLoad.Start(50, true);
+  timAutoLoad.SetOwner(this, ID_TIMER1);
+  timAutoLoad.Start(50, true);
 
-	// ----------------
-	// Events
-	// ----------------
-	Bind(wxEVT_BUTTON, &This::OnFileOpen, this, ID_BUTTON2);
-	Bind(wxEVT_BUTTON, &This::OnSaveFile, this, ID_BUTTON3);
-	Bind(wxEVT_BUTTON, &This::OnEditRawlog, this, ID_BUTTON4);
-	Bind(wxEVT_BUTTON, &This::OnRawMapOdo, this, ID_BUTTON5);
-	Bind(wxEVT_BUTTON, &This::OnChangeMotionModel, this, ID_BUTTON6);
-	Bind(wxEVT_BUTTON, &This::OnShowAnimateScans, this, ID_BUTTON8);
-	Bind(wxEVT_BUTTON, &This::OnShowImagesAsVideo, this, ID_BUTTON9);
-	Bind(wxEVT_BUTTON, &This::OnAbout, this, ID_BUTTON10);
-	Bind(wxEVT_BUTTON, &This::OnQuit, this, ID_BUTTON11);
-	Bind(wxEVT_BUTTON, &This::OnbtnEditCommentsClick1, this, ID_BUTTON1);
-	Bind(
-		wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING, &This::OnNotebook1PageChanging,
-		this, ID_NOTEBOOK1);
-	Bind(wxEVT_MENU, &This::OnFileOpen, this, ID_MENUITEM1);
-	Bind(wxEVT_MENU, &This::OnSaveFile, this, ID_MENUITEM2);
-	Bind(wxEVT_MENU, &This::OnMenuRevert, this, ID_MENUITEM76);
-	Bind(wxEVT_MENU, &This::OnLoadAPartOnly, this, ID_MENUITEM7);
-	Bind(wxEVT_MENU, &This::OnFileCountEntries, this, ID_MENUITEM8);
-	Bind(wxEVT_MENU, &This::OnFileSaveImages, this, ID_MENUITEM10);
-	Bind(wxEVT_MENU, &This::OnMenuConvertExternallyStored, this, ID_MENUITEM62);
-	Bind(wxEVT_MENU, &This::OnMenuConvertObservationOnly, this, ID_MENUITEM64);
-	Bind(
-		wxEVT_MENU, &This::OnFileGenVisualLMFromStereoImages, this,
-		ID_MENUITEM13);
-	Bind(wxEVT_MENU, &This::OnMenuLossLessDecFILE, this, ID_MENUITEM60);
-	Bind(wxEVT_MENU, &This::OnMenCompactFILE, this, ID_MENUITEM61);
-	Bind(wxEVT_MENU, &This::OnImportCARMEN, this, ID_MENUITEM5);
-	Bind(wxEVT_MENU, &This::OnImportSequenceOfImages, this, ID_MENUITEM47);
-	Bind(wxEVT_MENU, &This::OnMenuImportALOG, this, ID_MENUITEM56);
-	Bind(wxEVT_MENU, &This::OnImportRTL, this, ID_MENUITEM63);
-	Bind(wxEVT_MENU, &This::OnMenuItemImportBremenDLRLog, this, ID_MENUITEM87);
-	Bind(wxEVT_MENU, &This::OnGenOdoLaser, this, ID_MENUITEM58);
-	Bind(wxEVT_MENU, &This::OnMenuExportALOG, this, ID_MENUITEM55);
-	Bind(wxEVT_MENU, &This::OnQuit, this, idMenuQuit);
-	Bind(wxEVT_MENU, &This::OnEditRawlog, this, ID_MENUITEM14);
-	Bind(wxEVT_MENU, &This::OnMenuInsertComment, this, ID_MENUITEM51);
-	Bind(wxEVT_MENU, &This::OnMenuRenameSensor, this, ID_MENUITEM69);
-	Bind(wxEVT_MENU, &This::OnMenuRenameSingleObs, this, ID_MENUITEM91);
-	Bind(wxEVT_MENU, &This::OnChangeSensorPositions, this, ID_MENUITEM15);
-	Bind(wxEVT_MENU, &This::OnMenuChangePosesBatch, this, ID_MENUITEM70);
-	Bind(wxEVT_MENU, &This::OnDecimateRecords, this, ID_MENUITEM16);
-	Bind(wxEVT_MENU, &This::OnMenuLossLessDecimate, this, ID_MENUITEM59);
-	Bind(wxEVT_MENU, &This::OnMenuCompactRawlog, this, ID_MENUITEM57);
-	Bind(wxEVT_MENU, &This::OnMenuConvertSF, this, ID_MENUITEM75);
-	Bind(wxEVT_MENU, &This::OnMenuResortByTimestamp, this, ID_MENUITEM67);
-	Bind(wxEVT_MENU, &This::OnMenuShiftTimestampsByLabel, this, ID_MENUITEM68);
-	Bind(wxEVT_MENU, &This::OnMenuRegenerateTimestampBySF, this, ID_MENUITEM82);
-	Bind(wxEVT_MENU, &This::OnChangeMotionModel, this, ID_MENUITEM20);
-	Bind(wxEVT_MENU, &This::OnRecalculateActionsICP, this, ID_MENUITEM22);
-	Bind(
-		wxEVT_MENU, &This::OnMenuModifyICPActionsUncertainty, this,
-		ID_MENUITEM53);
-	Bind(wxEVT_MENU, &This::OnRecomputeOdometry, this, ID_MENUITEM23);
-	Bind(wxEVT_MENU, &This::OnForceEncodersFalse, this, ID_MENUITEM41);
-	Bind(wxEVT_MENU, &This::OnMenuRegenerateOdometryTimes, this, ID_MENUITEM84);
-	Bind(wxEVT_MENU, &This::OnShowICP, this, ID_MENUITEM17);
-	Bind(wxEVT_MENU, &This::OnShowAnimateScans, this, ID_MENUITEM44);
-	Bind(wxEVT_MENU, &This::OnCountBadScans, this, ID_MENUITEM19);
-	Bind(wxEVT_MENU, &This::OnFilterErroneousScans, this, ID_MENUITEM25);
-	Bind(wxEVT_MENU, &This::OnMenuMarkLaserScanInvalid, this, ID_MENUITEM73);
-	Bind(wxEVT_MENU, &This::OnMenuChangeMaxRangeLaser, this, ID_MENUITEM74);
-	Bind(
-		wxEVT_MENU, &This::OnMenuBatchLaserExclusionZones, this, ID_MENUITEM77);
-	Bind(wxEVT_MENU, &This::OnLaserFilterAngles, this, ID_MENUITEM79);
-	Bind(wxEVT_MENU, &This::OnMenuItem3DObsRecoverParams, this, ID_MENUITEM86);
-	Bind(wxEVT_MENU, &This::OnGenerateSeqImgs, this, ID_MENUITEM29);
-	Bind(wxEVT_MENU, &This::OnShowImagesAsVideo, this, ID_MENUITEM9);
-	Bind(wxEVT_MENU, &This::OnMenuMono2Stereo, this, ID_MENUITEM71);
-	Bind(wxEVT_MENU, &This::OnMenuRectifyImages, this, ID_MENUITEM72);
-	Bind(wxEVT_MENU, &This::OnMenuRenameImageFiles, this, ID_MENUITEM78);
-	Bind(wxEVT_MENU, &This::OnmnuCreateAVISelected, this, ID_MENUITEM83);
-	Bind(wxEVT_MENU, &This::OnGenGasTxt, this, ID_MENUITEM30);
-	Bind(wxEVT_MENU, &This::OnFilterSpureousGas, this, ID_MENUITEM24);
-	Bind(wxEVT_MENU, &This::OnGenGPSTxt, this, ID_MENUITEM31);
-	Bind(wxEVT_MENU, &This::OnSummaryGPS, this, ID_MENUITEM34);
-	Bind(wxEVT_MENU, &This::OnMenuDistanceBtwGPSs, this, ID_MENUITEM65);
-	Bind(wxEVT_MENU, &This::OnMenuRegenerateGPSTimestamps, this, ID_MENUITEM66);
-	Bind(wxEVT_MENU, &This::OnMenuDrawGPSPath, this, ID_MENUITEM52);
-	Bind(wxEVT_MENU, &This::OnMenuGPSDeleteNaN, this, ID_MENUITEM80);
-	Bind(wxEVT_MENU, &This::OnMenuGenerateBeaconList, this, ID_MENUITEM33);
-	Bind(wxEVT_MENU, &This::OnRemoveSpecificRangeMeas, this, ID_MENUITEM38);
-	Bind(
-		wxEVT_MENU, &This::OnGenerateTextFileRangeBearing, this, ID_MENUITEM40);
-	Bind(wxEVT_MENU, &This::OnMenuRangeBearFilterIDs, this, ID_MENUITEM81);
-	Bind(wxEVT_MENU, &This::OnRangeFinder1DGenTextFile, this, ID_MENUITEM46);
-	Bind(wxEVT_MENU, &This::OnGenerateIMUTextFile, this, ID_MENUITEM43);
-	Bind(wxEVT_MENU, &This::OnGenWifiTxt, this, ID_MENUITEM89);
-	Bind(wxEVT_MENU, &This::OnRawMapOdo, this, ID_MENUITEM26);
-	Bind(wxEVT_MENU, &This::OnGenOdoLaser, this, ID_MENUITEM32);
-	Bind(wxEVT_MENU, &This::OnMenuShowTips, this, ID_MENUITEM27);
-	Bind(wxEVT_MENU, &This::OnAbout, this, idMenuAbout);
-	Bind(wxEVT_MENU, &This::OnMenuItem37Selected, this, MNU_1);
-	Bind(wxEVT_MENU, &This::OnMenuItem46Selected, this, ID_MENUITEM49);
-	Bind(wxEVT_MENU, &This::OnMenuItem47Selected, this, ID_MENUITEM50);
-	Bind(wxEVT_TIMER, &This::OntimAutoLoadTrigger, this, ID_TIMER1);
-	//*)
+  // ----------------
+  // Events
+  // ----------------
+  Bind(wxEVT_BUTTON, &This::OnFileOpen, this, ID_BUTTON2);
+  Bind(wxEVT_BUTTON, &This::OnSaveFile, this, ID_BUTTON3);
+  Bind(wxEVT_BUTTON, &This::OnEditRawlog, this, ID_BUTTON4);
+  Bind(wxEVT_BUTTON, &This::OnRawMapOdo, this, ID_BUTTON5);
+  Bind(wxEVT_BUTTON, &This::OnChangeMotionModel, this, ID_BUTTON6);
+  Bind(wxEVT_BUTTON, &This::OnShowAnimateScans, this, ID_BUTTON8);
+  Bind(wxEVT_BUTTON, &This::OnShowImagesAsVideo, this, ID_BUTTON9);
+  Bind(wxEVT_BUTTON, &This::OnAbout, this, ID_BUTTON10);
+  Bind(wxEVT_BUTTON, &This::OnQuit, this, ID_BUTTON11);
+  Bind(wxEVT_BUTTON, &This::OnbtnEditCommentsClick1, this, ID_BUTTON1);
+  Bind(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING, &This::OnNotebook1PageChanging, this, ID_NOTEBOOK1);
+  Bind(wxEVT_MENU, &This::OnFileOpen, this, ID_MENUITEM1);
+  Bind(wxEVT_MENU, &This::OnSaveFile, this, ID_MENUITEM2);
+  Bind(wxEVT_MENU, &This::OnMenuRevert, this, ID_MENUITEM76);
+  Bind(wxEVT_MENU, &This::OnLoadAPartOnly, this, ID_MENUITEM7);
+  Bind(wxEVT_MENU, &This::OnFileCountEntries, this, ID_MENUITEM8);
+  Bind(wxEVT_MENU, &This::OnFileSaveImages, this, ID_MENUITEM10);
+  Bind(wxEVT_MENU, &This::OnMenuConvertExternallyStored, this, ID_MENUITEM62);
+  Bind(wxEVT_MENU, &This::OnMenuConvertObservationOnly, this, ID_MENUITEM64);
+  Bind(wxEVT_MENU, &This::OnFileGenVisualLMFromStereoImages, this, ID_MENUITEM13);
+  Bind(wxEVT_MENU, &This::OnMenuLossLessDecFILE, this, ID_MENUITEM60);
+  Bind(wxEVT_MENU, &This::OnMenCompactFILE, this, ID_MENUITEM61);
+  Bind(wxEVT_MENU, &This::OnImportCARMEN, this, ID_MENUITEM5);
+  Bind(wxEVT_MENU, &This::OnImportSequenceOfImages, this, ID_MENUITEM47);
+  Bind(wxEVT_MENU, &This::OnMenuImportALOG, this, ID_MENUITEM56);
+  Bind(wxEVT_MENU, &This::OnImportRTL, this, ID_MENUITEM63);
+  Bind(wxEVT_MENU, &This::OnMenuItemImportBremenDLRLog, this, ID_MENUITEM87);
+  Bind(wxEVT_MENU, &This::OnGenOdoLaser, this, ID_MENUITEM58);
+  Bind(wxEVT_MENU, &This::OnMenuExportALOG, this, ID_MENUITEM55);
+  Bind(wxEVT_MENU, &This::OnQuit, this, idMenuQuit);
+  Bind(wxEVT_MENU, &This::OnEditRawlog, this, ID_MENUITEM14);
+  Bind(wxEVT_MENU, &This::OnMenuInsertComment, this, ID_MENUITEM51);
+  Bind(wxEVT_MENU, &This::OnMenuRenameSensor, this, ID_MENUITEM69);
+  Bind(wxEVT_MENU, &This::OnMenuRenameSingleObs, this, ID_MENUITEM91);
+  Bind(wxEVT_MENU, &This::OnChangeSensorPositions, this, ID_MENUITEM15);
+  Bind(wxEVT_MENU, &This::OnMenuChangePosesBatch, this, ID_MENUITEM70);
+  Bind(wxEVT_MENU, &This::OnDecimateRecords, this, ID_MENUITEM16);
+  Bind(wxEVT_MENU, &This::OnMenuLossLessDecimate, this, ID_MENUITEM59);
+  Bind(wxEVT_MENU, &This::OnMenuCompactRawlog, this, ID_MENUITEM57);
+  Bind(wxEVT_MENU, &This::OnMenuConvertSF, this, ID_MENUITEM75);
+  Bind(wxEVT_MENU, &This::OnMenuResortByTimestamp, this, ID_MENUITEM67);
+  Bind(wxEVT_MENU, &This::OnMenuShiftTimestampsByLabel, this, ID_MENUITEM68);
+  Bind(wxEVT_MENU, &This::OnMenuRegenerateTimestampBySF, this, ID_MENUITEM82);
+  Bind(wxEVT_MENU, &This::OnChangeMotionModel, this, ID_MENUITEM20);
+  Bind(wxEVT_MENU, &This::OnRecalculateActionsICP, this, ID_MENUITEM22);
+  Bind(wxEVT_MENU, &This::OnMenuModifyICPActionsUncertainty, this, ID_MENUITEM53);
+  Bind(wxEVT_MENU, &This::OnRecomputeOdometry, this, ID_MENUITEM23);
+  Bind(wxEVT_MENU, &This::OnForceEncodersFalse, this, ID_MENUITEM41);
+  Bind(wxEVT_MENU, &This::OnMenuRegenerateOdometryTimes, this, ID_MENUITEM84);
+  Bind(wxEVT_MENU, &This::OnShowICP, this, ID_MENUITEM17);
+  Bind(wxEVT_MENU, &This::OnShowAnimateScans, this, ID_MENUITEM44);
+  Bind(wxEVT_MENU, &This::OnCountBadScans, this, ID_MENUITEM19);
+  Bind(wxEVT_MENU, &This::OnFilterErroneousScans, this, ID_MENUITEM25);
+  Bind(wxEVT_MENU, &This::OnMenuMarkLaserScanInvalid, this, ID_MENUITEM73);
+  Bind(wxEVT_MENU, &This::OnMenuChangeMaxRangeLaser, this, ID_MENUITEM74);
+  Bind(wxEVT_MENU, &This::OnMenuBatchLaserExclusionZones, this, ID_MENUITEM77);
+  Bind(wxEVT_MENU, &This::OnLaserFilterAngles, this, ID_MENUITEM79);
+  Bind(wxEVT_MENU, &This::OnMenuItem3DObsRecoverParams, this, ID_MENUITEM86);
+  Bind(wxEVT_MENU, &This::OnGenerateSeqImgs, this, ID_MENUITEM29);
+  Bind(wxEVT_MENU, &This::OnShowImagesAsVideo, this, ID_MENUITEM9);
+  Bind(wxEVT_MENU, &This::OnMenuMono2Stereo, this, ID_MENUITEM71);
+  Bind(wxEVT_MENU, &This::OnMenuRectifyImages, this, ID_MENUITEM72);
+  Bind(wxEVT_MENU, &This::OnMenuRenameImageFiles, this, ID_MENUITEM78);
+  Bind(wxEVT_MENU, &This::OnmnuCreateAVISelected, this, ID_MENUITEM83);
+  Bind(wxEVT_MENU, &This::OnGenGasTxt, this, ID_MENUITEM30);
+  Bind(wxEVT_MENU, &This::OnFilterSpureousGas, this, ID_MENUITEM24);
+  Bind(wxEVT_MENU, &This::OnGenGPSTxt, this, ID_MENUITEM31);
+  Bind(wxEVT_MENU, &This::OnSummaryGPS, this, ID_MENUITEM34);
+  Bind(wxEVT_MENU, &This::OnMenuDistanceBtwGPSs, this, ID_MENUITEM65);
+  Bind(wxEVT_MENU, &This::OnMenuRegenerateGPSTimestamps, this, ID_MENUITEM66);
+  Bind(wxEVT_MENU, &This::OnMenuDrawGPSPath, this, ID_MENUITEM52);
+  Bind(wxEVT_MENU, &This::OnMenuGPSDeleteNaN, this, ID_MENUITEM80);
+  Bind(wxEVT_MENU, &This::OnMenuGenerateBeaconList, this, ID_MENUITEM33);
+  Bind(wxEVT_MENU, &This::OnRemoveSpecificRangeMeas, this, ID_MENUITEM38);
+  Bind(wxEVT_MENU, &This::OnGenerateTextFileRangeBearing, this, ID_MENUITEM40);
+  Bind(wxEVT_MENU, &This::OnMenuRangeBearFilterIDs, this, ID_MENUITEM81);
+  Bind(wxEVT_MENU, &This::OnRangeFinder1DGenTextFile, this, ID_MENUITEM46);
+  Bind(wxEVT_MENU, &This::OnGenerateIMUTextFile, this, ID_MENUITEM43);
+  Bind(wxEVT_MENU, &This::OnGenWifiTxt, this, ID_MENUITEM89);
+  Bind(wxEVT_MENU, &This::OnRawMapOdo, this, ID_MENUITEM26);
+  Bind(wxEVT_MENU, &This::OnGenOdoLaser, this, ID_MENUITEM32);
+  Bind(wxEVT_MENU, &This::OnMenuShowTips, this, ID_MENUITEM27);
+  Bind(wxEVT_MENU, &This::OnAbout, this, idMenuAbout);
+  Bind(wxEVT_MENU, &This::OnMenuItem37Selected, this, MNU_1);
+  Bind(wxEVT_MENU, &This::OnMenuItem46Selected, this, ID_MENUITEM49);
+  Bind(wxEVT_MENU, &This::OnMenuItem47Selected, this, ID_MENUITEM50);
+  Bind(wxEVT_TIMER, &This::OntimAutoLoadTrigger, this, ID_TIMER1);
+  //*)
 
-	Bind(
-		wxEVT_NOTEBOOK_PAGE_CHANGED, &This::On3DObsPagesChange, this,
-		ID_NOTEBOOK_3DOBS);
-	Bind(
-		wxEVT_MENU, &This::OnMenuRenameBySFIndex, this,
-		ID_MENUITEM_RENAME_BY_SF_IDX);
+  Bind(wxEVT_NOTEBOOK_PAGE_CHANGED, &This::On3DObsPagesChange, this, ID_NOTEBOOK_3DOBS);
+  Bind(wxEVT_MENU, &This::OnMenuRenameBySFIndex, this, ID_MENUITEM_RENAME_BY_SF_IDX);
 
-	// "Manually" added code:
-	// ----------------------------
-	// Image list for the tree view:
-	auto imgList = std::make_shared<wxImageList>(16, 16, true, 0);
-	imgList->Add(wxIcon(tree_icon1_xpm));
-	imgList->Add(wxIcon(tree_icon2_xpm));
-	imgList->Add(wxIcon(tree_icon3_xpm));
-	imgList->Add(wxIcon(tree_icon4_xpm));
-	imgList->Add(wxIcon(tree_icon5_xpm));
-	imgList->Add(wxIcon(tree_icon6_xpm));
-	imgList->Add(wxIcon(tree_icon7_xpm));
-	imgList->Add(wxIcon(tree_icon8_xpm));
-	imgList->Add(wxIcon(tree_icon9_xpm));
-	imgList->Add(wxIcon(tree_icon10_xpm));
-	imgList->Add(wxIcon(tree_icon11_xpm));
-	imgList->Add(wxIcon(tree_icon12_xpm));
+  // "Manually" added code:
+  // ----------------------------
+  // Image list for the tree view:
+  auto imgList = std::make_shared<wxImageList>(16, 16, true, 0);
+  imgList->Add(wxIcon(tree_icon1_xpm));
+  imgList->Add(wxIcon(tree_icon2_xpm));
+  imgList->Add(wxIcon(tree_icon3_xpm));
+  imgList->Add(wxIcon(tree_icon4_xpm));
+  imgList->Add(wxIcon(tree_icon5_xpm));
+  imgList->Add(wxIcon(tree_icon6_xpm));
+  imgList->Add(wxIcon(tree_icon7_xpm));
+  imgList->Add(wxIcon(tree_icon8_xpm));
+  imgList->Add(wxIcon(tree_icon9_xpm));
+  imgList->Add(wxIcon(tree_icon10_xpm));
+  imgList->Add(wxIcon(tree_icon11_xpm));
+  imgList->Add(wxIcon(tree_icon12_xpm));
 
-	m_treeView->AssignImageList(imgList);
+  m_treeView->AssignImageList(imgList);
 
-	m_treeView->ConnectSelectedItemChange(OntreeViewSelectionChanged);
-	m_treeView->setWinParent(this);
+  m_treeView->ConnectSelectedItemChange(OntreeViewSelectionChanged);
+  m_treeView->setWinParent(this);
 
-	// Force this menu item starts checked.
-	mnuItemEnable3DCamAutoGenPoints->Check(true);
+  // Force this menu item starts checked.
+  mnuItemEnable3DCamAutoGenPoints->Check(true);
 
-	// The graphs:
-	// -----------------------------------
-	lyAction2D_XY = new mpFXYVector();
-	lyAction2D_PHI = new mpFXYVector();
+  // The graphs:
+  // -----------------------------------
+  lyAction2D_XY = new mpFXYVector();
+  lyAction2D_PHI = new mpFXYVector();
 
-	wxPen penBlue(wxColour(0, 0, 255), 3);
+  wxPen penBlue(wxColour(0, 0, 255), 3);
 
-	plotAct2D_XY->AddLayer(new mpScaleX());
-	plotAct2D_XY->AddLayer(new mpScaleY());
-	plotAct2D_XY->AddLayer(lyAction2D_XY);
-	plotAct2D_XY->LockAspect(true);
-	lyAction2D_XY->SetPen(penBlue);
+  plotAct2D_XY->AddLayer(new mpScaleX());
+  plotAct2D_XY->AddLayer(new mpScaleY());
+  plotAct2D_XY->AddLayer(lyAction2D_XY);
+  plotAct2D_XY->LockAspect(true);
+  lyAction2D_XY->SetPen(penBlue);
 
-	plotAct2D_PHI->AddLayer(new mpScaleX(_("PHI (deg)")));
-	plotAct2D_PHI->AddLayer(lyAction2D_PHI);
-	plotAct2D_PHI->LockAspect(true);
-	lyAction2D_PHI->SetPen(penBlue);
+  plotAct2D_PHI->AddLayer(new mpScaleX(_("PHI (deg)")));
+  plotAct2D_PHI->AddLayer(lyAction2D_PHI);
+  plotAct2D_PHI->LockAspect(true);
+  lyAction2D_PHI->SetPen(penBlue);
 
-	//  Range-bearing plot:
-	lyRangeBearingLandmarks = new mpFXYVector();
-	lyRangeBearingLandmarks->SetPen(penBlue);
-	lyRangeBearingLandmarks->SetContinuity(false);
+  //  Range-bearing plot:
+  lyRangeBearingLandmarks = new mpFXYVector();
+  lyRangeBearingLandmarks->SetPen(penBlue);
+  lyRangeBearingLandmarks->SetContinuity(false);
 
-	plotRangeBearing->AddLayer(new mpScaleX());
-	plotRangeBearing->AddLayer(new mpScaleY());
-	plotRangeBearing->AddLayer(lyRangeBearingLandmarks);
+  plotRangeBearing->AddLayer(new mpScaleX());
+  plotRangeBearing->AddLayer(new mpScaleY());
+  plotRangeBearing->AddLayer(lyRangeBearingLandmarks);
 
-	Maximize();	 // Maximize the main window
+  Maximize();  // Maximize the main window
 
-	// Set sliders:
-	// ----------------------
-	SplitterWindow1->SetSashPosition(400);
-	SplitterWindow3->SetSashPosition(400);
+  // Set sliders:
+  // ----------------------
+  SplitterWindow1->SetSashPosition(400);
+  SplitterWindow3->SetSashPosition(400);
 
-	// Set recent file list:
-	// -------------------------
-	MenuItem6->Destroy(MenuItem13);
-	m_fileHistory.UseMenu(MenuItem6);
+  // Set recent file list:
+  // -------------------------
+  MenuItem6->Destroy(MenuItem13);
+  m_fileHistory.UseMenu(MenuItem6);
 
-	for (int i = m_fileHistory.GetMaxFiles() - 1; i >= 0; i--)
-	{
-		string fil =
-			iniFile->read_string("RecentFiles", format("file_%03u", i), "");
-		if (fil.size() && mrpt::system::fileExists(fil))
-			m_fileHistory.AddFileToHistory(fil.c_str());
-	}
+  for (int i = m_fileHistory.GetMaxFiles() - 1; i >= 0; i--)
+  {
+    string fil = iniFile->read_string("RecentFiles", format("file_%03u", i), "");
+    if (fil.size() && mrpt::system::fileExists(fil)) m_fileHistory.AddFileToHistory(fil.c_str());
+  }
 
-	// 3D view: default view, with +X pointing to the right:
-	m_gl3DRangeScan->setAzimuthDegrees(-80.0f);
-	m_gl3DRangeScan->setElevationDegrees(30.0f);
+  // 3D view: default view, with +X pointing to the right:
+  m_gl3DRangeScan->setAzimuthDegrees(-80.0f);
+  m_gl3DRangeScan->setElevationDegrees(30.0f);
 
-	// Image directory selector on the toolbar:
-	// --------------------------------------------
-	Bind(
-		wxEVT_COMBOBOX, &This::OnComboImageDirsChange, this, ID_COMBO_IMG_DIRS);
+  // Image directory selector on the toolbar:
+  // --------------------------------------------
+  Bind(wxEVT_COMBOBOX, &This::OnComboImageDirsChange, this, ID_COMBO_IMG_DIRS);
 
-	// Construction of "global" dialog variables:
-	// ----------------------------------------------
-	formRawMap = new CFormRawMap(this);
-	scanMatchingDialog = new CScanMatching(this);
+  // Construction of "global" dialog variables:
+  // ----------------------------------------------
+  formRawMap = new CFormRawMap(this);
+  scanMatchingDialog = new CScanMatching(this);
 }
 
 xRawLogViewerFrame::~xRawLogViewerFrame()
 {
-	//(*Destroy(xRawLogViewerFrame)
-	//*)
+  //(*Destroy(xRawLogViewerFrame)
+  //*)
 
-	// Destroy dialogs:
-	delete formRawMap;
-	formRawMap = nullptr;
-	delete scanMatchingDialog;
-	scanMatchingDialog = nullptr;
+  // Destroy dialogs:
+  delete formRawMap;
+  formRawMap = nullptr;
+  delete scanMatchingDialog;
+  scanMatchingDialog = nullptr;
 
-	// Close extra windows, if any:
-	winGPSPath.reset();
+  // Close extra windows, if any:
+  winGPSPath.reset();
 }
 
 void xRawLogViewerFrame::OnQuit(wxCommandEvent&) { Close(); }
 void xRawLogViewerFrame::OnAbout(wxCommandEvent&)
 {
-	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "RawLogViewer");
+  mrpt::gui::show_mrpt_about_box_wxWidgets(this, "RawLogViewer");
 }
 
 //------------------------------------------------------------------------
@@ -1563,28 +1412,26 @@ void xRawLogViewerFrame::OnAbout(wxCommandEvent&)
 //------------------------------------------------------------------------
 bool xRawLogViewerFrame::AskForOpenRawlog(std::string& fil)
 {
-	wxString caption = wxT("Choose a file to open");
-	wxString wildcard =
-		wxT("RawLog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All "
-			"files (*.*)|*.*");
+  wxString caption = wxT("Choose a file to open");
+  wxString wildcard =
+      wxT("RawLog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All "
+          "files (*.*)|*.*");
 
-	wxString defaultDir(
-		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+  wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 
-	wxString defaultFilename;
-	wxFileDialog dialog(
-		this, caption, defaultDir, defaultFilename, wildcard,
-		wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+  wxString defaultFilename;
+  wxFileDialog dialog(
+      this, caption, defaultDir, defaultFilename, wildcard, wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
-	if (dialog.ShowModal() == wxID_OK)
-	{
-		wxString fileName = dialog.GetPath();
-		wxString filePath = dialog.GetDirectory();
+  if (dialog.ShowModal() == wxID_OK)
+  {
+    wxString fileName = dialog.GetPath();
+    wxString filePath = dialog.GetDirectory();
 
-		fil = string(fileName.mb_str());
-		return true;
-	}
-	return false;
+    fil = string(fileName.mb_str());
+    return true;
+  }
+  return false;
 }
 
 //------------------------------------------------------------------------
@@ -1592,28 +1439,26 @@ bool xRawLogViewerFrame::AskForOpenRawlog(std::string& fil)
 //------------------------------------------------------------------------
 bool xRawLogViewerFrame::AskForSaveRawlog(std::string& fil)
 {
-	wxString caption = wxT("Save file...");
-	wxString wildcard =
-		wxT("RawLog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All "
-			"files (*.*)|*.*");
+  wxString caption = wxT("Save file...");
+  wxString wildcard =
+      wxT("RawLog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All "
+          "files (*.*)|*.*");
 
-	wxString defaultDir(
-		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+  wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 
-	wxString defaultFilename;
-	wxFileDialog dialog(
-		this, caption, defaultDir, defaultFilename, wildcard,
-		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+  wxString defaultFilename;
+  wxFileDialog dialog(
+      this, caption, defaultDir, defaultFilename, wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-	if (dialog.ShowModal() == wxID_OK)
-	{
-		wxString fileName = dialog.GetPath();
-		wxString filePath = dialog.GetDirectory();
+  if (dialog.ShowModal() == wxID_OK)
+  {
+    wxString fileName = dialog.GetPath();
+    wxString filePath = dialog.GetDirectory();
 
-		fil = string(fileName.mb_str());
-		return true;
-	}
-	return false;
+    fil = string(fileName.mb_str());
+    return true;
+  }
+  return false;
 }
 
 //------------------------------------------------------------------------
@@ -1621,8 +1466,8 @@ bool xRawLogViewerFrame::AskForSaveRawlog(std::string& fil)
 //------------------------------------------------------------------------
 void xRawLogViewerFrame::OnFileOpen(wxCommandEvent&)
 {
-	string fil;
-	if (AskForOpenRawlog(fil)) loadRawlogFile(fil);
+  string fil;
+  if (AskForOpenRawlog(fil)) loadRawlogFile(fil);
 }
 
 //------------------------------------------------------------------------
@@ -1630,73 +1475,71 @@ void xRawLogViewerFrame::OnFileOpen(wxCommandEvent&)
 //------------------------------------------------------------------------
 void xRawLogViewerFrame::OnSaveFile(wxCommandEvent&)
 {
-	wxString caption = wxT("Save as...");
-	wxString wildcard =
-		wxT("RawLog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All "
-			"files (*.*)|*.*");
+  wxString caption = wxT("Save as...");
+  wxString wildcard =
+      wxT("RawLog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All "
+          "files (*.*)|*.*");
 
-	wxString defaultDir(
-		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+  wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 
-	wxString defaultFilename = loadedFileName.c_str();
-	wxFileDialog dialog(
-		this, caption, defaultDir, defaultFilename, wildcard,
-		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+  wxString defaultFilename = loadedFileName.c_str();
+  wxFileDialog dialog(
+      this, caption, defaultDir, defaultFilename, wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-	if (dialog.ShowModal() == wxID_OK)
-	{
-		wxString fileName = dialog.GetPath();
-		wxString filePath = dialog.GetDirectory();
+  if (dialog.ShowModal() == wxID_OK)
+  {
+    wxString fileName = dialog.GetPath();
+    wxString filePath = dialog.GetDirectory();
 
-		// Save the path
-		WX_START_TRY
+    // Save the path
+    WX_START_TRY
 
-		iniFile->write(iniFileSect, "LastDir", string(filePath.mb_str()));
+    iniFile->write(iniFileSect, "LastDir", string(filePath.mb_str()));
 
-		// Save the file:
-		loadedFileName = fileName.mb_str();
+    // Save the file:
+    loadedFileName = fileName.mb_str();
 
-		CFileGZOutputStream fs(loadedFileName.c_str());
+    CFileGZOutputStream fs(loadedFileName.c_str());
 
-		int countLoop = 0, i, n = (int)rawlog.size();
+    int countLoop = 0, i, n = (int)rawlog.size();
 
-		wxBusyCursor waitCursor;
+    wxBusyCursor waitCursor;
 
-		wxProgressDialog progDia(
-			wxT("Saving rawlog to file"), wxT("Saving..."),
-			n,	// range
-			this,  // parent
-			wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
-				wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+    wxProgressDialog progDia(
+        wxT("Saving rawlog to file"), wxT("Saving..."),
+        n,     // range
+        this,  // parent
+        wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
+            wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-		wxTheApp->Yield();	// Let the app. process messages
+    wxTheApp->Yield();  // Let the app. process messages
 
-		// Comments:
-		string comts;
-		rawlog.getCommentText(comts);
+    // Comments:
+    string comts;
+    rawlog.getCommentText(comts);
 
-		if (!comts.empty())
-		{
-			CObservationComment o;
-			o.text = comts;
-			archiveFrom(fs) << o;
-		}
+    if (!comts.empty())
+    {
+      CObservationComment o;
+      o.text = comts;
+      archiveFrom(fs) << o;
+    }
 
-		for (i = 0; i < n; i++)
-		{
-			if (countLoop++ % 100 == 0)
-			{
-				if (!progDia.Update(i)) break;	// Exit the loop
-				wxTheApp->Yield();	// Let the app. process messages
-			}
+    for (i = 0; i < n; i++)
+    {
+      if (countLoop++ % 100 == 0)
+      {
+        if (!progDia.Update(i)) break;  // Exit the loop
+        wxTheApp->Yield();              // Let the app. process messages
+      }
 
-			archiveFrom(fs) << *rawlog.getAsGeneric(i);
-		}  // end for i
+      archiveFrom(fs) << *rawlog.getAsGeneric(i);
+    }  // end for i
 
-		progDia.Update(n);
+    progDia.Update(n);
 
-		WX_END_TRY
-	}
+    WX_END_TRY
+  }
 }
 
 //------------------------------------------------------------------------
@@ -1704,38 +1547,36 @@ void xRawLogViewerFrame::OnSaveFile(wxCommandEvent&)
 //------------------------------------------------------------------------
 void xRawLogViewerFrame::OnEditRawlog(wxCommandEvent&)
 {
-	CFormEdit dialog(this);
+  CFormEdit dialog(this);
 
-	dialog.cbObsLabel->Clear();
-	for (auto i = listOfSensorLabels.begin(); i != listOfSensorLabels.end();
-		 ++i)
-		dialog.cbObsLabel->Append(i->first.c_str());
+  dialog.cbObsLabel->Clear();
+  for (auto i = listOfSensorLabels.begin(); i != listOfSensorLabels.end(); ++i)
+    dialog.cbObsLabel->Append(i->first.c_str());
 
-	dialog.slFrom->SetRange(0, (int)rawlog.size() - 1);
-	dialog.slFrom->SetValue(0);
+  dialog.slFrom->SetRange(0, (int)rawlog.size() - 1);
+  dialog.slFrom->SetValue(0);
 
-	dialog.spinFirst->SetRange(0, (int)rawlog.size() - 1);
-	dialog.spinFirst->SetValue(dialog.slFrom->GetValue());
+  dialog.spinFirst->SetRange(0, (int)rawlog.size() - 1);
+  dialog.spinFirst->SetValue(dialog.slFrom->GetValue());
 
-	dialog.slTo->SetRange(0, (int)rawlog.size() - 1);
-	dialog.slTo->SetValue((int)rawlog.size() - 1);
+  dialog.slTo->SetRange(0, (int)rawlog.size() - 1);
+  dialog.slTo->SetValue((int)rawlog.size() - 1);
 
-	dialog.spinLast->SetRange(0, (int)rawlog.size() - 1);
-	dialog.spinLast->SetValue(dialog.slTo->GetValue());
+  dialog.spinLast->SetRange(0, (int)rawlog.size() - 1);
+  dialog.spinLast->SetValue(dialog.slTo->GetValue());
 
-	// Fill all the observation classes:
-	dialog.cbObsClass->Clear();
-	vector<const mrpt::rtti::TRuntimeClassId*> lstClasses;
-	lstClasses = mrpt::rtti::getAllRegisteredClasses();
-	for (const auto& c : lstClasses)
-		if (c->derivedFrom(CLASS_ID(CObservation)))
-			dialog.cbObsClass->Append(c->className);
+  // Fill all the observation classes:
+  dialog.cbObsClass->Clear();
+  vector<const mrpt::rtti::TRuntimeClassId*> lstClasses;
+  lstClasses = mrpt::rtti::getAllRegisteredClasses();
+  for (const auto& c : lstClasses)
+    if (c->derivedFrom(CLASS_ID(CObservation))) dialog.cbObsClass->Append(c->className);
 
-	dialog.Fit();
-	dialog.ShowModal();
+  dialog.Fit();
+  dialog.ShowModal();
 
-	// Update the views:
-	rebuildTreeView();
+  // Update the views:
+  rebuildTreeView();
 }
 
 //------------------------------------------------------------------------
@@ -1743,276 +1584,261 @@ void xRawLogViewerFrame::OnEditRawlog(wxCommandEvent&)
 //------------------------------------------------------------------------
 void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	if (!fileExists(str))
-	{
-		wxMessageBox(
-			string(string("File doesn't exist:\n") + str).c_str(),
-			_("Error loading file"), wxOK, this);
-		return;
-	}
+  if (!fileExists(str))
+  {
+    wxMessageBox(
+        string(string("File doesn't exist:\n") + str).c_str(), _("Error loading file"), wxOK, this);
+    return;
+  }
 
-	// Add to MR files, and save the list:
-	WX_START_TRY
+  // Add to MR files, and save the list:
+  WX_START_TRY
 
-	m_fileHistory.AddFileToHistory(str.c_str());
+  m_fileHistory.AddFileToHistory(str.c_str());
 
-	for (size_t i = 0; i < m_fileHistory.GetCount(); i++)
-		iniFile->write(
-			"RecentFiles", format("file_%03u", static_cast<unsigned>(i)),
-			string(m_fileHistory.GetHistoryFile(i).mb_str()));
-	WX_END_TRY
+  for (size_t i = 0; i < m_fileHistory.GetCount(); i++)
+    iniFile->write(
+        "RecentFiles", format("file_%03u", static_cast<unsigned>(i)),
+        string(m_fileHistory.GetHistoryFile(i).mb_str()));
+  WX_END_TRY
 
-	// Save the path
-	string rawlog_path = extractFileDirectory(str);
-	if (rawlog_path.empty()) rawlog_path = "./";
-	else if (*rawlog_path.rbegin() != '/' && *rawlog_path.rbegin() != '\\')
-		rawlog_path += string("/");
+  // Save the path
+  string rawlog_path = extractFileDirectory(str);
+  if (rawlog_path.empty())
+    rawlog_path = "./";
+  else if (*rawlog_path.rbegin() != '/' && *rawlog_path.rbegin() != '\\')
+    rawlog_path += string("/");
 
-	WX_START_TRY
-	iniFile->write(iniFileSect, "LastDir", rawlog_path);
-	WX_END_TRY
+  WX_START_TRY
+  iniFile->write(iniFileSect, "LastDir", rawlog_path);
+  WX_END_TRY
 
-	// Set default delayed-load images base path:
-	toolbarcomboImages->Clear();
-	CImage::setImagesPathBase(CRawlog::detectImagesDirectory(str));
+  // Set default delayed-load images base path:
+  toolbarcomboImages->Clear();
+  CImage::setImagesPathBase(CRawlog::detectImagesDirectory(str));
 
-	// Add found dir to the combo:
-	toolbarcomboImages->Append(CImage::getImagesPathBase().c_str());
-	toolbarcomboImages->SetSelection(0);
+  // Add found dir to the combo:
+  toolbarcomboImages->Append(CImage::getImagesPathBase().c_str());
+  toolbarcomboImages->SetSelection(0);
 
-	// An extra rectified images dir??
-	// Other "Images*" directories??
-	if (mrpt::system::directoryExists(rawlog_path))
-	{
-		CDirectoryExplorer::TFileInfoList lstFiles;
-		CDirectoryExplorer::explore(
-			rawlog_path, FILE_ATTRIB_DIRECTORY, lstFiles);
-		for (auto i = lstFiles.begin(); i != lstFiles.end(); ++i)
-			if (0 == os::_strcmpi(i->name.substr(0, 6).c_str(), "Images"))
-			{
-				wxString s = i->wholePath.c_str();
-				if (toolbarcomboImages->FindString(s) == wxNOT_FOUND)
-					toolbarcomboImages->Append(s);
-			}
-	}
+  // An extra rectified images dir??
+  // Other "Images*" directories??
+  if (mrpt::system::directoryExists(rawlog_path))
+  {
+    CDirectoryExplorer::TFileInfoList lstFiles;
+    CDirectoryExplorer::explore(rawlog_path, FILE_ATTRIB_DIRECTORY, lstFiles);
+    for (auto i = lstFiles.begin(); i != lstFiles.end(); ++i)
+      if (0 == os::_strcmpi(i->name.substr(0, 6).c_str(), "Images"))
+      {
+        wxString s = i->wholePath.c_str();
+        if (toolbarcomboImages->FindString(s) == wxNOT_FOUND) toolbarcomboImages->Append(s);
+      }
+  }
 
 #ifdef __WXMSW__
-	SendMessage(
-		(HWND)toolbarcomboImages->GetHandle(), CB_SETDROPPEDWIDTH,
-		toolbarcomboImages->GetBestSize().GetWidth(), 0);
+  SendMessage(
+      (HWND)toolbarcomboImages->GetHandle(), CB_SETDROPPEDWIDTH,
+      toolbarcomboImages->GetBestSize().GetWidth(), 0);
 #endif
-	// ToolBar1->Realize();
+  // ToolBar1->Realize();
 
-	wxBusyCursor waitCursor;
+  wxBusyCursor waitCursor;
 
-	CFileGZInputStream fil(str);
+  CFileGZInputStream fil(str);
 
-	uint64_t filSize = fil.getTotalBytesCount();
+  uint64_t filSize = fil.getTotalBytesCount();
 
-	const uint64_t progDialogMax = filSize >>
-		10;	 // Size, in Kb's (to avoid saturatin the "int" in wxProgressDialog)
+  const uint64_t progDialogMax =
+      filSize >> 10;  // Size, in Kb's (to avoid saturatin the "int" in wxProgressDialog)
 
-	loadedFileName = str;
-	StatusBar1->SetStatusText(
-		(mrpt::format("Loading file: %s", str.c_str()).c_str()));
+  loadedFileName = str;
+  StatusBar1->SetStatusText((mrpt::format("Loading file: %s", str.c_str()).c_str()));
 
-	wxString auxStr;
-	wxProgressDialog progDia(
-		wxT("Progress of rawlog load"), wxT("Loading..."),
-		progDialogMax,	// range, in Kb's
-		this,  // parent
-		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
-			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+  wxString auxStr;
+  wxProgressDialog progDia(
+      wxT("Progress of rawlog load"), wxT("Loading..."),
+      progDialogMax,  // range, in Kb's
+      this,           // parent
+      wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
+          wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();	// Let the app. process messages
-	progDia.SetSize(500, progDia.GetSize().GetHeight());
-	progDia.Center();
+  wxTheApp->Yield();  // Let the app. process messages
+  progDia.SetSize(500, progDia.GetSize().GetHeight());
+  progDia.Center();
 
-	wxTheApp->Yield();	// Let the app. process messages
+  wxTheApp->Yield();  // Let the app. process messages
 
-	// Clear first:
-	rawlog.clear();
+  // Clear first:
+  rawlog.clear();
 
-	crono_Loading.Tic();
+  crono_Loading.Tic();
 
-	size_t countLoop = 0;
-	int entryIndex = 0;
-	bool keepLoading = true;
-	bool alreadyWarnedTooLargeFile = false;
-	string errorMsg;
+  size_t countLoop = 0;
+  int entryIndex = 0;
+  bool keepLoading = true;
+  bool alreadyWarnedTooLargeFile = false;
+  string errorMsg;
 
-	double last_ratio = -1;
-	while (keepLoading)
-	{
-		if (countLoop++ % 10 == 0)
-		{
-			uint64_t fil_pos = fil.getPosition();
-			double ratio = fil_pos / (1.0 * filSize);
+  double last_ratio = -1;
+  while (keepLoading)
+  {
+    if (countLoop++ % 10 == 0)
+    {
+      uint64_t fil_pos = fil.getPosition();
+      double ratio = fil_pos / (1.0 * filSize);
 
-			if (ratio - last_ratio >= 0.006)
-			{
-				last_ratio = ratio;
+      if (ratio - last_ratio >= 0.006)
+      {
+        last_ratio = ratio;
 
-				unsigned long memUsg = getMemoryUsage();
-				double memUsg_Mb = memUsg / (1024.0 * 1024.0);
+        unsigned long memUsg = getMemoryUsage();
+        double memUsg_Mb = memUsg / (1024.0 * 1024.0);
 
-				const uint64_t progPos = fil_pos >> 10;
+        const uint64_t progPos = fil_pos >> 10;
 
-				auxStr.sprintf(
-					wxT("Loading... %u objects / Memory usage: %.03fMb"),
-					static_cast<unsigned int>(rawlog.size()), memUsg_Mb);
-				if (!progDia.Update(
-						progPos < (progDialogMax - 1) ? progPos
-													  : (progDialogMax - 1),
-						auxStr))
-					keepLoading = false;
-				progDia.Fit();
-				wxTheApp->Yield();	// Let the app. process messages
+        auxStr.sprintf(
+            wxT("Loading... %u objects / Memory usage: %.03fMb"),
+            static_cast<unsigned int>(rawlog.size()), memUsg_Mb);
+        if (!progDia.Update(progPos < (progDialogMax - 1) ? progPos : (progDialogMax - 1), auxStr))
+          keepLoading = false;
+        progDia.Fit();
+        wxTheApp->Yield();  // Let the app. process messages
 
-				if (memUsg_Mb > 8000 && !alreadyWarnedTooLargeFile)
-				{
-					alreadyWarnedTooLargeFile = true;
-					string msg;
-					msg +=
-						"It seems that the file you are loading will consume a "
-						"large amount of memory if loaded in memory "
-						"completely.\n";
-					msg +=
-						"This is just a warning to make you watch whether your "
-						"system runs out of memory while still loading.\n";
-					msg += "Do you want to continue loading this file?";
-					if (wxNO ==
-						wxMessageBox(
-							msg.c_str(), _("Warning"),
-							wxYES_NO | wxICON_EXCLAMATION))
-						keepLoading = false;
-				}
-			}
-		}
+        if (memUsg_Mb > 8000 && !alreadyWarnedTooLargeFile)
+        {
+          alreadyWarnedTooLargeFile = true;
+          string msg;
+          msg +=
+              "It seems that the file you are loading will consume a "
+              "large amount of memory if loaded in memory "
+              "completely.\n";
+          msg +=
+              "This is just a warning to make you watch whether your "
+              "system runs out of memory while still loading.\n";
+          msg += "Do you want to continue loading this file?";
+          if (wxNO == wxMessageBox(msg.c_str(), _("Warning"), wxYES_NO | wxICON_EXCLAMATION))
+            keepLoading = false;
+        }
+      }
+    }
 
-		CSerializable::Ptr newObj;
-		try
-		{
-			archiveFrom(fil) >> newObj;
-			// Check type:
-			if (newObj->GetRuntimeClass() == CLASS_ID(CSensoryFrame))
-			{
-				if (entryIndex >= first && (last == -1 || entryIndex <= last))
-					rawlog.insert(
-						std::dynamic_pointer_cast<CSensoryFrame>(newObj));
-				entryIndex++;
-			}
-			else if (newObj->GetRuntimeClass() == CLASS_ID(CActionCollection))
-			{
-				if (entryIndex >= first && (last == -1 || entryIndex <= last))
-					rawlog.insert(
-						std::dynamic_pointer_cast<CActionCollection>(newObj));
-				entryIndex++;
-			}
-			/* Added in MRPT 0.6.0: The new "observations only" format: */
-			else if (newObj->GetRuntimeClass()->derivedFrom(
-						 CLASS_ID(CObservation)))
-			{
-				if (entryIndex >= first && (last == -1 || entryIndex <= last))
-					rawlog.insert(
-						std::dynamic_pointer_cast<CObservation>(newObj));
-				entryIndex++;
-			}
-			/* FOR BACKWARD COMPATIBILITY: CPose2D was used previously instead
-			   of an "ActionCollection" object
-																				26-JAN-2006	*/
-			else if (newObj->GetRuntimeClass() == CLASS_ID(CPose2D))
-			{
-				if (entryIndex >= first && (last == -1 || entryIndex <= last))
-				{
-					CPose2D::Ptr poseChange =
-						std::dynamic_pointer_cast<CPose2D>(newObj);
-					CActionCollection::Ptr temp =
-						std::make_shared<CActionCollection>();
-					CActionRobotMovement2D action;
-					CActionRobotMovement2D::TMotionModelOptions options;
-					action.computeFromOdometry(*poseChange, options);
-					temp->insert(action);
+    CSerializable::Ptr newObj;
+    try
+    {
+      archiveFrom(fil) >> newObj;
+      // Check type:
+      if (newObj->GetRuntimeClass() == CLASS_ID(CSensoryFrame))
+      {
+        if (entryIndex >= first && (last == -1 || entryIndex <= last))
+          rawlog.insert(std::dynamic_pointer_cast<CSensoryFrame>(newObj));
+        entryIndex++;
+      }
+      else if (newObj->GetRuntimeClass() == CLASS_ID(CActionCollection))
+      {
+        if (entryIndex >= first && (last == -1 || entryIndex <= last))
+          rawlog.insert(std::dynamic_pointer_cast<CActionCollection>(newObj));
+        entryIndex++;
+      }
+      /* Added in MRPT 0.6.0: The new "observations only" format: */
+      else if (newObj->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+      {
+        if (entryIndex >= first && (last == -1 || entryIndex <= last))
+          rawlog.insert(std::dynamic_pointer_cast<CObservation>(newObj));
+        entryIndex++;
+      }
+      /* FOR BACKWARD COMPATIBILITY: CPose2D was used previously instead
+       of an "ActionCollection" object
+                                        26-JAN-2006
+       */
+      else if (newObj->GetRuntimeClass() == CLASS_ID(CPose2D))
+      {
+        if (entryIndex >= first && (last == -1 || entryIndex <= last))
+        {
+          CPose2D::Ptr poseChange = std::dynamic_pointer_cast<CPose2D>(newObj);
+          CActionCollection::Ptr temp = std::make_shared<CActionCollection>();
+          CActionRobotMovement2D action;
+          CActionRobotMovement2D::TMotionModelOptions options;
+          action.computeFromOdometry(*poseChange, options);
+          temp->insert(action);
 
-					rawlog.insert(temp);
-				}
-				entryIndex++;
-			}
-			else if (newObj->GetRuntimeClass() == CLASS_ID(CRawlog))
-			{
-				CRawlog::Ptr rw = std::dynamic_pointer_cast<CRawlog>(newObj);
-				rawlog = std::move(*rw);
-			}
-			else
-			{
-				// Unknown class:
-				// New in MRPT v1.5.0: Allow loading some other classes:
-				rawlog.insert(newObj);
-			}
+          rawlog.insert(temp);
+        }
+        entryIndex++;
+      }
+      else if (newObj->GetRuntimeClass() == CLASS_ID(CRawlog))
+      {
+        CRawlog::Ptr rw = std::dynamic_pointer_cast<CRawlog>(newObj);
+        rawlog = std::move(*rw);
+      }
+      else
+      {
+        // Unknown class:
+        // New in MRPT v1.5.0: Allow loading some other classes:
+        rawlog.insert(newObj);
+      }
 
-			// Passed last?
-			if (last != -1 && entryIndex > last) keepLoading = false;
-		}
-		catch (std::bad_alloc&)
-		{
-			// Probably we're in a 32 bit machine and we rose up to 2Gb of
-			// mem... free
-			//  some, give a warning and go on.
-			if (rawlog.size() > 10000)
-			{
-				size_t NN = rawlog.size() - 10000;
-				while (rawlog.size() > NN)
-					rawlog.remove(NN);
-			}
-			else
-				rawlog.clear();
+      // Passed last?
+      if (last != -1 && entryIndex > last) keepLoading = false;
+    }
+    catch (std::bad_alloc&)
+    {
+      // Probably we're in a 32 bit machine and we rose up to 2Gb of
+      // mem... free
+      //  some, give a warning and go on.
+      if (rawlog.size() > 10000)
+      {
+        size_t NN = rawlog.size() - 10000;
+        while (rawlog.size() > NN) rawlog.remove(NN);
+      }
+      else
+        rawlog.clear();
 
-			wxString s =
-				_("OUT OF MEMORY: The last part of the rawlog has been freed "
-				  "to allow the program to continue.\n");
+      wxString s =
+          _("OUT OF MEMORY: The last part of the rawlog has been freed "
+            "to allow the program to continue.\n");
 #if MRPT_WORD_SIZE == 32
-			s << _(
-				"  This is a 32bit machine, so the maximum memory available is "
-				"2Gb despite of the real RAM installed.");
+      s << _(
+          "  This is a 32bit machine, so the maximum memory available is "
+          "2Gb despite of the real RAM installed.");
 #endif
-			wxMessageBox(s);
+      wxMessageBox(s);
 
-			keepLoading = false;
-		}
-		catch (exception& e)
-		{
-			errorMsg = mrpt::exception_to_str(e);
-			keepLoading = false;
-		}
-		catch (...)
-		{
-			keepLoading = false;
-		}
-	}  // end while keep loading
+      keepLoading = false;
+    }
+    catch (exception& e)
+    {
+      errorMsg = mrpt::exception_to_str(e);
+      keepLoading = false;
+    }
+    catch (...)
+    {
+      keepLoading = false;
+    }
+  }  // end while keep loading
 
-	timeToLoad = crono_Loading.Tac();
-	progDia.Update(progDialogMax);
+  timeToLoad = crono_Loading.Tac();
+  progDia.Update(progDialogMax);
 
-	//// Update the views:
-	rebuildTreeView();
+  //// Update the views:
+  rebuildTreeView();
 
-	//// Set error msg:
-	txtException->SetValue(errorMsg.c_str());
+  //// Set error msg:
+  txtException->SetValue(errorMsg.c_str());
 
-	// Seems something bad happened?
-	if (!rawlog.size())
-	{
-		wxMessageBox(
-			_("If the file is not really empty, perhaps the format is invalid "
-			  "or a more recent\nversion of RawLogViewer is required to load "
-			  "the file.\n Please check the tab \"End of load message\" for "
-			  "further details."),
-			_("Zero entries loaded"), wxOK, this);
-	}
+  // Seems something bad happened?
+  if (!rawlog.size())
+  {
+    wxMessageBox(
+        _("If the file is not really empty, perhaps the format is invalid "
+          "or a more recent\nversion of RawLogViewer is required to load "
+          "the file.\n Please check the tab \"End of load message\" for "
+          "further details."),
+        _("Zero entries loaded"), wxOK, this);
+  }
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 //------------------------------------------------------------------------
@@ -2020,309 +1846,300 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 //------------------------------------------------------------------------
 void xRawLogViewerFrame::rebuildTreeView()
 {
-	wxString s;
-	float totalDistance = 0;
-	bool firstSF = true;
-	TTimeStamp tim_start = INVALID_TIMESTAMP;
-	TTimeStamp tim_last = INVALID_TIMESTAMP;
-	int countLoop = 0;
+  wxString s;
+  float totalDistance = 0;
+  bool firstSF = true;
+  TTimeStamp tim_start = INVALID_TIMESTAMP;
+  TTimeStamp tim_last = INVALID_TIMESTAMP;
+  int countLoop = 0;
 
-	Notebook1->ChangeSelection(0);
-	m_selectedObj.reset();	// = nullptr;
-	curSelectedObject.reset();	// = nullptr;
+  Notebook1->ChangeSelection(0);
+  m_selectedObj.reset();      // = nullptr;
+  curSelectedObject.reset();  // = nullptr;
 
-	wxProgressDialog progDia(
-		wxT("Constructing the tree view"), wxT("Creating the tree..."),
-		(int)rawlog.size(),	 // range
-		this,  // parent
-		wxPD_APP_MODAL | wxPD_AUTO_HIDE);
+  wxProgressDialog progDia(
+      wxT("Constructing the tree view"), wxT("Creating the tree..."),
+      (int)rawlog.size(),  // range
+      this,                // parent
+      wxPD_APP_MODAL | wxPD_AUTO_HIDE);
 
-	wxTheApp->Yield();	// Let the app. process messages
+  wxTheApp->Yield();  // Let the app. process messages
 
-	WX_START_TRY
+  WX_START_TRY
 
-	wxBusyCursor waitCursor;
+  wxBusyCursor waitCursor;
 
-	listOfSensorLabels.clear();
+  listOfSensorLabels.clear();
 
-	// Refresh the custom tree view:
-	m_treeView->setRawlogName(loadedFileName);
-	m_treeView->setRawlogSource(&rawlog);
+  // Refresh the custom tree view:
+  m_treeView->setRawlogName(loadedFileName);
+  m_treeView->setRawlogSource(&rawlog);
 
-	// Does this need to be so complicated? -> Yes: In Linux (UNICODE) the
-	// straightforward
-	//  implementation runs *very* slow.
-	map<const TRuntimeClassId*, wxString> mapStrings;
+  // Does this need to be so complicated? -> Yes: In Linux (UNICODE) the
+  // straightforward
+  //  implementation runs *very* slow.
+  map<const TRuntimeClassId*, wxString> mapStrings;
 
-	size_t updateProgressBarSteps = (rawlog.size() / 20) + 1;
+  size_t updateProgressBarSteps = (rawlog.size() / 20) + 1;
 
-	using TListOfObjectsOccurs = std::map<const TRuntimeClassId*, size_t>;
-	TListOfObjectsOccurs listOfObjects;
+  using TListOfObjectsOccurs = std::map<const TRuntimeClassId*, size_t>;
+  TListOfObjectsOccurs listOfObjects;
 
-	// The elements:
-	for (unsigned int i = 0; i < rawlog.size(); i++)
-	{
-		if (countLoop++ % updateProgressBarSteps == 0)
-		{
-			progDia.Update(i);
-			wxTheApp->Yield();	// Let the app. process messages
-		}
+  // The elements:
+  for (unsigned int i = 0; i < rawlog.size(); i++)
+  {
+    if (countLoop++ % updateProgressBarSteps == 0)
+    {
+      progDia.Update(i);
+      wxTheApp->Yield();  // Let the app. process messages
+    }
 
-		// Process element:
-		s.clear();
-		switch (rawlog.getType(i))
-		{
-			case CRawlog::etActionCollection:
-			{
-				CActionCollection::Ptr acts = rawlog.getAsAction(i);
+    // Process element:
+    s.clear();
+    switch (rawlog.getType(i))
+    {
+      case CRawlog::etActionCollection:
+      {
+        CActionCollection::Ptr acts = rawlog.getAsAction(i);
 
-				// Distance:
-				CPose2D est;
-				if (acts->getBestMovementEstimation())
-				{
-					acts->getBestMovementEstimation()->poseChange->getMean(est);
-					totalDistance += est.norm();
-				}
-			}
-			break;
+        // Distance:
+        CPose2D est;
+        if (acts->getBestMovementEstimation())
+        {
+          acts->getBestMovementEstimation()->poseChange->getMean(est);
+          totalDistance += est.norm();
+        }
+      }
+      break;
 
-			case CRawlog::etSensoryFrame:
-			{
-				CSerializable::Ptr obj = rawlog.getAsObservations(i);
-				if (CLASS_ID(CSensoryFrame) != obj->GetRuntimeClass())
-					THROW_EXCEPTION(
-						"Expected an object of class CSensoryFrame!!");
+      case CRawlog::etSensoryFrame:
+      {
+        CSerializable::Ptr obj = rawlog.getAsObservations(i);
+        if (CLASS_ID(CSensoryFrame) != obj->GetRuntimeClass())
+          THROW_EXCEPTION("Expected an object of class CSensoryFrame!!");
 
-				CSensoryFrame::Ptr sf =
-					std::dynamic_pointer_cast<CSensoryFrame>(obj);
+        CSensoryFrame::Ptr sf = std::dynamic_pointer_cast<CSensoryFrame>(obj);
 
-				if (firstSF)
-				{
-					if (sf->size())
-					{
-						firstSF = false;
-						tim_start = (*sf->begin())->timestamp;
-					}
-				}
-				if (sf->size())
-					tim_last = (*sf->begin())->timestamp;  // Keep the last one
+        if (firstSF)
+        {
+          if (sf->size())
+          {
+            firstSF = false;
+            tim_start = (*sf->begin())->timestamp;
+          }
+        }
+        if (sf->size()) tim_last = (*sf->begin())->timestamp;  // Keep the last one
 
-				size_t j, n = sf->size();
+        size_t j, n = sf->size();
 
-				for (j = 0; j < n; j++)
-				{
-					CObservation::Ptr obs = sf->getObservationByIndex(j);
+        for (j = 0; j < n; j++)
+        {
+          CObservation::Ptr obs = sf->getObservationByIndex(j);
 
-					// Stats:
-					listOfObjects[obs->GetRuntimeClass()]++;
-					TInfoPerSensorLabel& dd =
-						listOfSensorLabels[obs->sensorLabel];
-					dd.addOcurrence(obs->timestamp);
-					if (dd.first == INVALID_TIMESTAMP)
-						dd.first = obs->timestamp;
-					dd.last = obs->timestamp;
-				}
+          // Stats:
+          listOfObjects[obs->GetRuntimeClass()]++;
+          TInfoPerSensorLabel& dd = listOfSensorLabels[obs->sensorLabel];
+          dd.addOcurrence(obs->timestamp);
+          if (dd.first == INVALID_TIMESTAMP) dd.first = obs->timestamp;
+          dd.last = obs->timestamp;
+        }
 
-			}  // end SensoryFrame
-			break;
+      }  // end SensoryFrame
+      break;
 
-			case CRawlog::etObservation:
-			{
-				CObservation::Ptr obs = rawlog.getAsObservation(i);
+      case CRawlog::etObservation:
+      {
+        CObservation::Ptr obs = rawlog.getAsObservation(i);
 
-				if (tim_start == INVALID_TIMESTAMP) tim_start = obs->timestamp;
+        if (tim_start == INVALID_TIMESTAMP) tim_start = obs->timestamp;
 
-				tim_last = obs->timestamp;	// Keep the last one
+        tim_last = obs->timestamp;  // Keep the last one
 
-				// Stats:
-				listOfObjects[obs->GetRuntimeClass()]++;
+        // Stats:
+        listOfObjects[obs->GetRuntimeClass()]++;
 
-				// 0-based timestamp:
-				TInfoPerSensorLabel& dd = listOfSensorLabels[obs->sensorLabel];
-				dd.addOcurrence(obs->timestamp);
-				if (dd.first == INVALID_TIMESTAMP) dd.first = obs->timestamp;
-				dd.last = obs->timestamp;
+        // 0-based timestamp:
+        TInfoPerSensorLabel& dd = listOfSensorLabels[obs->sensorLabel];
+        dd.addOcurrence(obs->timestamp);
+        if (dd.first == INVALID_TIMESTAMP) dd.first = obs->timestamp;
+        dd.last = obs->timestamp;
 
-				// For odometry measurements: total distance:
-				if (obs->GetRuntimeClass() == CLASS_ID(CObservationOdometry))
-				{
-					CObservationOdometry::Ptr odoObs =
-						std::dynamic_pointer_cast<CObservationOdometry>(obs);
+        // For odometry measurements: total distance:
+        if (obs->GetRuntimeClass() == CLASS_ID(CObservationOdometry))
+        {
+          CObservationOdometry::Ptr odoObs = std::dynamic_pointer_cast<CObservationOdometry>(obs);
 
-					static CPose2D oldOdo;
-					static bool oldOdo_first = true;
+          static CPose2D oldOdo;
+          static bool oldOdo_first = true;
 
-					if (oldOdo_first)
-					{
-						oldOdo_first = false;
-						oldOdo = odoObs->odometry;
-					}
-					else
-					{
-						CPose2D inc = odoObs->odometry - oldOdo;
-						oldOdo = odoObs->odometry;
+          if (oldOdo_first)
+          {
+            oldOdo_first = false;
+            oldOdo = odoObs->odometry;
+          }
+          else
+          {
+            CPose2D inc = odoObs->odometry - oldOdo;
+            oldOdo = odoObs->odometry;
 
-						totalDistance += inc.norm();
-					}
-				}
+            totalDistance += inc.norm();
+          }
+        }
 
-			}  // end Observation
-			break;
-			default:
-			{
-				auto obj = rawlog.getAsGeneric(i);
-				listOfObjects[obj->GetRuntimeClass()]++;
-			}
-			break;
-		};	// end switch type
+      }  // end Observation
+      break;
+      default:
+      {
+        auto obj = rawlog.getAsGeneric(i);
+        listOfObjects[obj->GetRuntimeClass()]++;
+      }
+      break;
+    };  // end switch type
 
-	}  // end for i
+  }  // end for i
 
-	if (tim_start != INVALID_TIMESTAMP && tim_last != INVALID_TIMESTAMP)
-		experimentLenght = timeDifference(tim_start, tim_last);
+  if (tim_start != INVALID_TIMESTAMP && tim_last != INVALID_TIMESTAMP)
+    experimentLenght = timeDifference(tim_start, tim_last);
 
-	// Statistics:
-	// ---------------------------
-	memStats->Clear();
+  // Statistics:
+  // ---------------------------
+  memStats->Clear();
 
-	memStats->AppendText(format(
-		"Time to load file                 : %.03fms\n", 1000 * timeToLoad));
-	memStats->AppendText(format(
-		"Rawlog entries                    : %u\n", (unsigned)rawlog.size()));
-	memStats->AppendText(format(
-		"Traveled distance (from odometry) : %.02f meters\n", totalDistance));
+  memStats->AppendText(format("Time to load file                 : %.03fms\n", 1000 * timeToLoad));
+  memStats->AppendText(format("Rawlog entries                    : %u\n", (unsigned)rawlog.size()));
+  memStats->AppendText(format("Traveled distance (from odometry) : %.02f meters\n", totalDistance));
 
-	if (m_treeView->getFirstTimestamp() != INVALID_TIMESTAMP)
-	{
-		rawlog_first_timestamp = m_treeView->getFirstTimestamp();
-		memStats->AppendText(format(
-			"Dataset first time-stamp (UTC)    : %s\n",
-			mrpt::system::dateTimeToString(m_treeView->getFirstTimestamp())
-				.c_str()));
-	}
+  if (m_treeView->getFirstTimestamp() != INVALID_TIMESTAMP)
+  {
+    rawlog_first_timestamp = m_treeView->getFirstTimestamp();
+    memStats->AppendText(format(
+        "Dataset first time-stamp (UTC)    : %s\n",
+        mrpt::system::dateTimeToString(m_treeView->getFirstTimestamp()).c_str()));
+  }
 
-	memStats->AppendText(format(
-		"Dataset duration                  : %s (hh:mm:ss,  %.03f "
-		"secs.)\n",
-		formatTimeInterval(experimentLenght).c_str(), experimentLenght));
+  memStats->AppendText(format(
+      "Dataset duration                  : %s (hh:mm:ss,  %.03f "
+      "secs.)\n",
+      formatTimeInterval(experimentLenght).c_str(), experimentLenght));
 
-	// Stats of object classes:
-	memStats->AppendText(
-		"\nSummary of classes found in the rawlog:\n"
-		"-----------------------------------------\n");
+  // Stats of object classes:
+  memStats->AppendText(
+      "\nSummary of classes found in the rawlog:\n"
+      "-----------------------------------------\n");
 
-	if (experimentLenght == 0) experimentLenght = 1;
+  if (experimentLenght == 0) experimentLenght = 1;
 
-	for (const auto& oc : listOfObjects)
-	{
-		const char* className = oc.first->className;
-		size_t count = oc.second;
-		memStats->AppendText(format(
-			" %8u %25s : %5.03f Hz\n", (unsigned)count, className,
-			double(count > 1 ? count - 1 : 1) / experimentLenght));
-	}
+  for (const auto& oc : listOfObjects)
+  {
+    const char* className = oc.first->className;
+    size_t count = oc.second;
+    memStats->AppendText(format(
+        " %8u %25s : %5.03f Hz\n", (unsigned)count, className,
+        double(count > 1 ? count - 1 : 1) / experimentLenght));
+  }
 
-	// Stats of object classes:
-	memStats->AppendText(
-		"\nSummary of 'sensorLabels' found in the rawlog:\n"
-		"-------------------------------------------------\n");
+  // Stats of object classes:
+  memStats->AppendText(
+      "\nSummary of 'sensorLabels' found in the rawlog:\n"
+      "-------------------------------------------------\n");
 
-	for (const auto& ipsl : listOfSensorLabels)
-	{
-		size_t count = ipsl.second.getOccurences();
-		TTimeStamp tf = ipsl.second.first;
-		TTimeStamp tl = ipsl.second.last;
-		double Hz = 0, dur = 0;
-		if (tf != INVALID_TIMESTAMP && tl != INVALID_TIMESTAMP)
-		{
-			dur = mrpt::system::timeDifference(tf, tl);
-			Hz = double(count > 1 ? count - 1 : 1) / dur;
-		}
+  for (const auto& ipsl : listOfSensorLabels)
+  {
+    size_t count = ipsl.second.getOccurences();
+    TTimeStamp tf = ipsl.second.first;
+    TTimeStamp tl = ipsl.second.last;
+    double Hz = 0, dur = 0;
+    if (tf != INVALID_TIMESTAMP && tl != INVALID_TIMESTAMP)
+    {
+      dur = mrpt::system::timeDifference(tf, tl);
+      Hz = double(count > 1 ? count - 1 : 1) / dur;
+    }
 
-		memStats->AppendText(format(
-			" %8u %25s : %5.03f Hz for %.04f s, with %.03f s max delay "
-			"btw readings.\n",
-			(unsigned)count, ipsl.first.c_str(), Hz, dur,
-			ipsl.second.max_ellapsed_tim_between_obs));
-	}
+    memStats->AppendText(format(
+        " %8u %25s : %5.03f Hz for %.04f s, with %.03f s max delay "
+        "btw readings.\n",
+        (unsigned)count, ipsl.first.c_str(), Hz, dur, ipsl.second.max_ellapsed_tim_between_obs));
+  }
 
-	memStats->ShowPosition(0);
+  memStats->ShowPosition(0);
 
-	SelectObjectInTreeView(CSerializable::Ptr());
-	m_treeView->Refresh();
+  SelectObjectInTreeView(CSerializable::Ptr());
+  m_treeView->Refresh();
 
-	// -----------------------------------------
-	// Rebuild bottom timeline view
-	// -----------------------------------------
-	m_timeline.resetAfterDatasetChanged();
-	rebuildBottomTimeLine();
+  // -----------------------------------------
+  // Rebuild bottom timeline view
+  // -----------------------------------------
+  m_timeline.resetAfterDatasetChanged();
+  rebuildBottomTimeLine();
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 // Selection has changed:
 void xRawLogViewerFrame::OntreeViewSelectionChanged(
-	wxWindow* me, CRawlogTreeView* the_tree, TRawlogTreeViewEvent /*ev*/,
-	int /*item_index*/,
-	const mrpt::serialization::CSerializable::Ptr& item_data)
+    wxWindow* me,
+    CRawlogTreeView* the_tree,
+    TRawlogTreeViewEvent /*ev*/,
+    int /*item_index*/,
+    const mrpt::serialization::CSerializable::Ptr& item_data)
 {
-	auto* win = (xRawLogViewerFrame*)me;
-	win->SelectObjectInTreeView(item_data);
-	the_tree->SetFocus();
+  auto* win = (xRawLogViewerFrame*)me;
+  win->SelectObjectInTreeView(item_data);
+  the_tree->SetFocus();
 }
 
 #if wxUSE_STARTUP_TIPS
 class CMyTips : public wxTipProvider
 {
-   public:
-	CMyTips(size_t n) : wxTipProvider(n) {}
-	wxString GetTip() override
-	{
-		size_t idx = m_currentTip++;
+ public:
+  CMyTips(size_t n) : wxTipProvider(n) {}
+  wxString GetTip() override
+  {
+    size_t idx = m_currentTip++;
 
-		static const size_t N_TIPS = 5;
+    static const size_t N_TIPS = 5;
 
-		switch (idx % N_TIPS)
-		{
-			case 0:
-				return _(
-					"To have a first overview of a dataset with odometry "
-					"and "
-					"laser scans, select 'Tools' -> 'maps & paths "
-					"generation "
-					"module' -> 'Map from odometry'.\n If the dataset is "
-					"very "
-					"large, select a portion of it, or use the "
-					"'decimation' "
-					"slide.");
-			case 1:
-				return _(
-					"When observations are selected in the tree-view at "
-					"the "
-					"left, extended information will be shown for that "
-					"observation: timestamp, a visualization of the laser "
-					"scan/image, etc.");
-			case 2:
-				return _(
-					"Portions of a rawlog can be stripped out in Edit "
-					"->Edit "
-					"Rawlog");
-			case 3:
-				return _(
-					"When a rawlog is loaded, the panel at the bottom "
-					"displays "
-					"a summary of the log, including approximate overall "
-					"distance traveled by the vehicle, overall time, and "
-					"the "
-					"frequency of each sensor.");
-			case 4:
-				return _(
-					"There is an ICP experimenting module that can be "
-					"opened "
-					"from the toolbar button 'ICP'");
-		}
-		return wxString();
-	}
+    switch (idx % N_TIPS)
+    {
+      case 0:
+        return _(
+            "To have a first overview of a dataset with odometry "
+            "and "
+            "laser scans, select 'Tools' -> 'maps & paths "
+            "generation "
+            "module' -> 'Map from odometry'.\n If the dataset is "
+            "very "
+            "large, select a portion of it, or use the "
+            "'decimation' "
+            "slide.");
+      case 1:
+        return _(
+            "When observations are selected in the tree-view at "
+            "the "
+            "left, extended information will be shown for that "
+            "observation: timestamp, a visualization of the laser "
+            "scan/image, etc.");
+      case 2:
+        return _(
+            "Portions of a rawlog can be stripped out in Edit "
+            "->Edit "
+            "Rawlog");
+      case 3:
+        return _(
+            "When a rawlog is loaded, the panel at the bottom "
+            "displays "
+            "a summary of the log, including approximate overall "
+            "distance traveled by the vehicle, overall time, and "
+            "the "
+            "frequency of each sensor.");
+      case 4:
+        return _(
+            "There is an ICP experimenting module that can be "
+            "opened "
+            "from the toolbar button 'ICP'");
+    }
+    return wxString();
+  }
 };
 #endif
 
@@ -2331,16 +2148,17 @@ class CMyTips : public wxTipProvider
 //------------------------------------------------------------------------
 void xRawLogViewerFrame::OntimAutoLoadTrigger(wxTimerEvent&)
 {
-	// To fix a strange bug in windows!: The window is not drawn correctly:
-	Panel5->Refresh();
+  // To fix a strange bug in windows!: The window is not drawn correctly:
+  Panel5->Refresh();
 
-	// Now: Open it:
-	if (global_fileToOpen.size()) loadRawlogFile(global_fileToOpen);
-	else
-		rebuildTreeView();
+  // Now: Open it:
+  if (global_fileToOpen.size())
+    loadRawlogFile(global_fileToOpen);
+  else
+    rebuildTreeView();
 
-	// Tips:
-	showNextTip();
+  // Tips:
+  showNextTip();
 }
 
 //------------------------------------------------------------------------
@@ -2349,41 +2167,38 @@ void xRawLogViewerFrame::OntimAutoLoadTrigger(wxTimerEvent&)
 void xRawLogViewerFrame::showNextTip(bool forceShow)
 {
 #if wxUSE_STARTUP_TIPS
-	// Show tips?
-	bool user_wants_to_show = iniFile->read_bool("tips", "show", true);
+  // Show tips?
+  bool user_wants_to_show = iniFile->read_bool("tips", "show", true);
 
-	if (forceShow || user_wants_to_show)
-	{
-		size_t last_tip = iniFile->read_int("tips", "next", 0);
-		auto* myTips = new CMyTips(last_tip);
-		bool cont_showing = ::wxShowTip(this, myTips);
+  if (forceShow || user_wants_to_show)
+  {
+    size_t last_tip = iniFile->read_int("tips", "next", 0);
+    auto* myTips = new CMyTips(last_tip);
+    bool cont_showing = ::wxShowTip(this, myTips);
 
-		// save cont_showing:
-		iniFile->write("tips", "show", cont_showing);
-		size_t next_tip = myTips->GetCurrentTip();
-		iniFile->write("tips", "next", (int)next_tip);
+    // save cont_showing:
+    iniFile->write("tips", "show", cont_showing);
+    size_t next_tip = myTips->GetCurrentTip();
+    iniFile->write("tips", "next", (int)next_tip);
 
-		delete myTips;
-	}
+    delete myTips;
+  }
 #endif
 }
 
 //------------------------------------------------------------------------
 // Tabs can only be changed programmatically.
 //------------------------------------------------------------------------
-void xRawLogViewerFrame::OnNotebook1PageChanging(wxNotebookEvent& event)
-{
-	event.Veto();
-}
+void xRawLogViewerFrame::OnNotebook1PageChanging(wxNotebookEvent& event) { event.Veto(); }
 
 //------------------------------------------------------------------------
 // Changes the motion model parameters.
 //------------------------------------------------------------------------
 void xRawLogViewerFrame::OnChangeMotionModel(wxCommandEvent&)
 {
-	// Create the dialog:
-	CFormMotionModel formMotionModel(this);
-	formMotionModel.ShowModal();
+  // Create the dialog:
+  CFormMotionModel formMotionModel(this);
+  formMotionModel.ShowModal();
 }
 
 //------------------------------------------------------------------------
@@ -2391,17 +2206,17 @@ void xRawLogViewerFrame::OnChangeMotionModel(wxCommandEvent&)
 //------------------------------------------------------------------------
 void xRawLogViewerFrame::OnShowImagesAsVideo(wxCommandEvent&)
 {
-	CFormPlayVideo diag(this);
+  CFormPlayVideo diag(this);
 
-	diag.getImageDirsCombo()->Clear();
-	for (unsigned int i = 0; i < toolbarcomboImages->GetCount(); i++)
-		diag.getImageDirsCombo()->Append(toolbarcomboImages->GetString(i));
+  diag.getImageDirsCombo()->Clear();
+  for (unsigned int i = 0; i < toolbarcomboImages->GetCount(); i++)
+    diag.getImageDirsCombo()->Append(toolbarcomboImages->GetString(i));
 
-	diag.getImageDirsCombo()->SetSelection(toolbarcomboImages->GetSelection());
+  diag.getImageDirsCombo()->SetSelection(toolbarcomboImages->GetSelection());
 
-	diag.ShowModal();
+  diag.ShowModal();
 
-	toolbarcomboImages->SetSelection(diag.getImageDirsCombo()->GetSelection());
+  toolbarcomboImages->SetSelection(diag.getImageDirsCombo()->GetSelection());
 }
 
 //------------------------------------------------------------------------
@@ -2409,1783 +2224,1617 @@ void xRawLogViewerFrame::OnShowImagesAsVideo(wxCommandEvent&)
 //------------------------------------------------------------------------
 void xRawLogViewerFrame::OnRawMapOdo(wxCommandEvent&)
 {
-	if (rawlog.empty())
-	{
-		wxMessageBox(
-			_("Please load a rawlog first!"), _("Rawlog is empty"), wxOK, this);
-		return;
-	}
+  if (rawlog.empty())
+  {
+    wxMessageBox(_("Please load a rawlog first!"), _("Rawlog is empty"), wxOK, this);
+    return;
+  }
 
-	// Set slider values:
-	//  If they have changed, we have a different rawlog loaded, thus we
-	//  select the whole range by default:
-	bool selectMaxRange =
-		((size_t)formRawMap->slFrom->GetMax()) != rawlog.size() - 1;
-	formRawMap->slFrom->SetRange(0, (int)rawlog.size() - 1);
-	formRawMap->slTo->SetRange(0, (int)rawlog.size() - 1);
+  // Set slider values:
+  //  If they have changed, we have a different rawlog loaded, thus we
+  //  select the whole range by default:
+  bool selectMaxRange = ((size_t)formRawMap->slFrom->GetMax()) != rawlog.size() - 1;
+  formRawMap->slFrom->SetRange(0, (int)rawlog.size() - 1);
+  formRawMap->slTo->SetRange(0, (int)rawlog.size() - 1);
 
-	formRawMap->edFirst->SetRange(0, (int)rawlog.size() - 1);
-	formRawMap->edLast->SetRange(0, (int)rawlog.size() - 1);
+  formRawMap->edFirst->SetRange(0, (int)rawlog.size() - 1);
+  formRawMap->edLast->SetRange(0, (int)rawlog.size() - 1);
 
-	if (selectMaxRange)
-	{
-		formRawMap->slFrom->SetValue(0);
-		formRawMap->slTo->SetValue((int)rawlog.size() - 1);
-	}
+  if (selectMaxRange)
+  {
+    formRawMap->slFrom->SetValue(0);
+    formRawMap->slTo->SetValue((int)rawlog.size() - 1);
+  }
 
-	// Clear the graphs:
-	formRawMap->plotMap->DelAllLayers(true, false);
+  // Clear the graphs:
+  formRawMap->plotMap->DelAllLayers(true, false);
 
-	// Show:
-	formRawMap->edFirst->SetValue(formRawMap->slFrom->GetValue());
-	formRawMap->edLast->SetValue(formRawMap->slTo->GetValue());
+  // Show:
+  formRawMap->edFirst->SetValue(formRawMap->slFrom->GetValue());
+  formRawMap->edLast->SetValue(formRawMap->slTo->GetValue());
 
-	// Enable "results" buttons:
-	formRawMap->btnSaveTxt->Disable();
-	formRawMap->btnSave3D->Disable();
-	formRawMap->btnSavePath->Disable();
-	formRawMap->btnSaveTxt->Disable();
-	formRawMap->btnSaveObsPath->Disable();
-	formRawMap->btnView3D->Disable();
+  // Enable "results" buttons:
+  formRawMap->btnSaveTxt->Disable();
+  formRawMap->btnSave3D->Disable();
+  formRawMap->btnSavePath->Disable();
+  formRawMap->btnSaveTxt->Disable();
+  formRawMap->btnSaveObsPath->Disable();
+  formRawMap->btnView3D->Disable();
 
-	formRawMap->ShowModal();
+  formRawMap->ShowModal();
 }
 
 void xRawLogViewerFrame::OnMenuGenerateBeaconList(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	wxString caption = wxT("Save as...");
-	wxString wildcard = wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*");
-	wxString defaultDir(
-		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
-	wxString defaultFilename =
-		(loadedFileName + string("_beacons.txt")).c_str();
-	wxFileDialog dialog(
-		this, caption, defaultDir, defaultFilename, wildcard,
-		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+  wxString caption = wxT("Save as...");
+  wxString wildcard = wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*");
+  wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+  wxString defaultFilename = (loadedFileName + string("_beacons.txt")).c_str();
+  wxFileDialog dialog(
+      this, caption, defaultDir, defaultFilename, wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-	if (dialog.ShowModal() == wxID_OK)
-	{
-		wxString fileName = dialog.GetPath();
-		string fil(fileName.mbc_str());
+  if (dialog.ShowModal() == wxID_OK)
+  {
+    wxString fileName = dialog.GetPath();
+    string fil(fileName.mbc_str());
 
-		int i, M = 0, n = (int)rawlog.size();
-		//            bool	    ref_valid = false;
+    int i, M = 0, n = (int)rawlog.size();
+    //            bool	    ref_valid = false;
 
-		FILE* f = os::fopen(fil.c_str(), "wt");
-		if (!f) THROW_EXCEPTION("Cannot open output file for write.");
+    FILE* f = os::fopen(fil.c_str(), "wt");
+    if (!f) THROW_EXCEPTION("Cannot open output file for write.");
 
-		for (i = 0; i < n; i++)
-		{
-			switch (rawlog.getType(i))
-			{
-				case CRawlog::etSensoryFrame:
-				{
-					CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
-					CObservationBeaconRanges::Ptr obs =
-						sf->getObservationByClass<CObservationBeaconRanges>();
+    for (i = 0; i < n; i++)
+    {
+      switch (rawlog.getType(i))
+      {
+        case CRawlog::etSensoryFrame:
+        {
+          CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
+          CObservationBeaconRanges::Ptr obs = sf->getObservationByClass<CObservationBeaconRanges>();
 
-					if (obs)
-					{
-						::fprintf(f, "%u ", i);
+          if (obs)
+          {
+            ::fprintf(f, "%u ", i);
 
-						for (unsigned int k = 0; k < 10; k++)
-						{
-							float rng = 0;
-							if (k < obs->sensedData.size())
-								rng = obs->sensedData[k].sensedDistance;
+            for (unsigned int k = 0; k < 10; k++)
+            {
+              float rng = 0;
+              if (k < obs->sensedData.size()) rng = obs->sensedData[k].sensedDistance;
 
-							if (std::isnan(rng)) rng = 0;
+              if (std::isnan(rng)) rng = 0;
 
-							::fprintf(f, "%f ", rng);
-						}
-						::fprintf(f, "\n");
-						M++;
-					}
-				}
-				break;
+              ::fprintf(f, "%f ", rng);
+            }
+            ::fprintf(f, "\n");
+            M++;
+          }
+        }
+        break;
 
-				case CRawlog::etObservation:
-				{
-					CObservation::Ptr o = rawlog.getAsObservation(i);
-					if (o->GetRuntimeClass() !=
-						CLASS_ID(CObservationBeaconRanges))
-						break;
-					CObservationBeaconRanges::Ptr obs =
-						std::dynamic_pointer_cast<CObservationBeaconRanges>(o);
-					::fprintf(f, "%u ", i);
+        case CRawlog::etObservation:
+        {
+          CObservation::Ptr o = rawlog.getAsObservation(i);
+          if (o->GetRuntimeClass() != CLASS_ID(CObservationBeaconRanges)) break;
+          CObservationBeaconRanges::Ptr obs =
+              std::dynamic_pointer_cast<CObservationBeaconRanges>(o);
+          ::fprintf(f, "%u ", i);
 
-					for (unsigned int k = 0; k < 10; k++)
-					{
-						float rng = 0;
-						if (k < obs->sensedData.size())
-							rng = obs->sensedData[k].sensedDistance;
+          for (unsigned int k = 0; k < 10; k++)
+          {
+            float rng = 0;
+            if (k < obs->sensedData.size()) rng = obs->sensedData[k].sensedDistance;
 
-						if (std::isnan(rng)) rng = 0;
+            if (std::isnan(rng)) rng = 0;
 
-						::fprintf(f, "%f ", rng);
-					}
-					::fprintf(f, "\n");
-					M++;
-				}
-				break;
+            ::fprintf(f, "%f ", rng);
+          }
+          ::fprintf(f, "\n");
+          M++;
+        }
+        break;
 
-				default: break;
-			}
-		}
+        default:
+          break;
+      }
+    }
 
-		os::fclose(f);
+    os::fclose(f);
 
-		char auxStr[100];
-		os::sprintf(auxStr, sizeof(auxStr), "%u entries saved!", M);
-		wxMessageBox(auxStr, _("Done"), wxOK, this);
-	}
+    char auxStr[100];
+    os::sprintf(auxStr, sizeof(auxStr), "%u entries saved!", M);
+    wxMessageBox(auxStr, _("Done"), wxOK, this);
+  }
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 string xRawLogViewerFrame::AskForImageFileFormat()
 {
 #define SIZE_lstImgFormats 5
-	wxString lstImgFormats[SIZE_lstImgFormats] = {
-		_("jpg"), _("png"), _("bmp"), _("tif"), _("pgm")};
+  wxString lstImgFormats[SIZE_lstImgFormats] = {_("jpg"), _("png"), _("bmp"), _("tif"), _("pgm")};
 
-	int ret = wxGetSingleChoiceIndex(
-		_("Choose the format of the output images:"), _("Images format"),
-		SIZE_lstImgFormats, lstImgFormats, this);
+  int ret = wxGetSingleChoiceIndex(
+      _("Choose the format of the output images:"), _("Images format"), SIZE_lstImgFormats,
+      lstImgFormats, this);
 
-	if (ret == -1) return string("");
-	else
-		return string(lstImgFormats[ret].mb_str());
+  if (ret == -1)
+    return string("");
+  else
+    return string(lstImgFormats[ret].mb_str());
 }
 
 void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	if (!rawlog.size())
-	{
-		::wxMessageBox(_("Load a rawlog first."));
-		return;
-	}
+  if (!rawlog.size())
+  {
+    ::wxMessageBox(_("Load a rawlog first."));
+    return;
+  }
 
-	const wxString& target_dir_wx = ::wxDirSelector(
-		_("Select the directory where the files will be saved"),
-		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
-		wxDD_DEFAULT_STYLE, wxDefaultPosition, this);
+  const wxString& target_dir_wx = ::wxDirSelector(
+      _("Select the directory where the files will be saved"),
+      (iniFile->read_string(iniFileSect, "LastDir", ".").c_str()), wxDD_DEFAULT_STYLE,
+      wxDefaultPosition, this);
 
-	if (target_dir_wx.empty()) return;
+  if (target_dir_wx.empty()) return;
 
-	const string target_dir = string(target_dir_wx.mb_str());
+  const string target_dir = string(target_dir_wx.mb_str());
 
-	const string fil_odo = target_dir + string("/") +
-		mrpt::system::extractFileName(loadedFileName) + string("_ODO.txt");
-	const string fil_odo_times = target_dir + string("/") +
-		mrpt::system::extractFileName(loadedFileName) +
-		string("_ODO_times.txt");
+  const string fil_odo =
+      target_dir + string("/") + mrpt::system::extractFileName(loadedFileName) + string("_ODO.txt");
+  const string fil_odo_times = target_dir + string("/") +
+                               mrpt::system::extractFileName(loadedFileName) +
+                               string("_ODO_times.txt");
 
-	const string prefix_laser = target_dir + string("/") +
-		mrpt::system::extractFileName(loadedFileName) + string("_LASER_");
+  const string prefix_laser =
+      target_dir + string("/") + mrpt::system::extractFileName(loadedFileName) + string("_LASER_");
 
-	unsigned int i, n = (unsigned int)rawlog.size();
+  unsigned int i, n = (unsigned int)rawlog.size();
 
-	bool genTimes = rawlog_first_timestamp != INVALID_TIMESTAMP;
-	if (!genTimes)
-		::wxMessageBox(
-			_("It seems that there are no valid timestamps in the rawlog. "
-			  "The "
-			  "time files will not be generated."));
+  bool genTimes = rawlog_first_timestamp != INVALID_TIMESTAMP;
+  if (!genTimes)
+    ::wxMessageBox(
+        _("It seems that there are no valid timestamps in the rawlog. "
+          "The "
+          "time files will not be generated."));
 
-	FILE* f_odo = os::fopen(fil_odo, "wt");
-	ASSERT_(f_odo);
-	FILE* f_odo_times = nullptr;
-	if (genTimes)
-	{
-		f_odo_times = os::fopen(fil_odo_times, "wt");
-		ASSERT_(f_odo_times);
-	}
+  FILE* f_odo = os::fopen(fil_odo, "wt");
+  ASSERT_(f_odo);
+  FILE* f_odo_times = nullptr;
+  if (genTimes)
+  {
+    f_odo_times = os::fopen(fil_odo_times, "wt");
+    ASSERT_(f_odo_times);
+  }
 
-	// Prepare for possibly several lasers: label -> < file: data, file:
-	// times, file: pose >
-	std::map<string, std::pair<FILE*, std::pair<FILE*, FILE*>>> lstFiles;
+  // Prepare for possibly several lasers: label -> < file: data, file:
+  // times, file: pose >
+  std::map<string, std::pair<FILE*, std::pair<FILE*, FILE*>>> lstFiles;
 
-	CPose2D lastOdo;
-	bool lastOdo_ok = false;
+  CPose2D lastOdo;
+  bool lastOdo_ok = false;
 
-	unsigned int nOdo = 0, nLaser = 0;
+  unsigned int nOdo = 0, nLaser = 0;
 
-	wxBusyCursor cursor_wait;
+  wxBusyCursor cursor_wait;
 
-	wxProgressDialog progDia(
-		wxT("Exporting as text files"), wxT("Saving..."),
-		n,	// range
-		this,  // parent
-		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
-			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+  wxProgressDialog progDia(
+      wxT("Exporting as text files"), wxT("Saving..."),
+      n,     // range
+      this,  // parent
+      wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
+          wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	for (i = 0; i < n; i++)
-	{
-		if (i % 50 == 0)
-		{
-			if (!progDia.Update(i)) break;
-			wxTheApp->Yield();	// Let the app. process messages
-		}
+  for (i = 0; i < n; i++)
+  {
+    if (i % 50 == 0)
+    {
+      if (!progDia.Update(i)) break;
+      wxTheApp->Yield();  // Let the app. process messages
+    }
 
-		switch (rawlog.getType(i))
-		{
-			case CRawlog::etActionCollection:
-			{
-				CActionCollection::Ptr acts = rawlog.getAsAction(i);
-				CActionRobotMovement2D::Ptr action =
-					acts->getBestMovementEstimation();
-				if (!action)
-					THROW_EXCEPTION_FMT(
-						"No odometry action found in rawlog entry %i!", i);
+    switch (rawlog.getType(i))
+    {
+      case CRawlog::etActionCollection:
+      {
+        CActionCollection::Ptr acts = rawlog.getAsAction(i);
+        CActionRobotMovement2D::Ptr action = acts->getBestMovementEstimation();
+        if (!action) THROW_EXCEPTION_FMT("No odometry action found in rawlog entry %i!", i);
 
-				CPose2D poseIncrement = action->poseChange->getMeanVal();
+        CPose2D poseIncrement = action->poseChange->getMeanVal();
 
-				::fprintf(
-					f_odo, "%f %f %f\n", poseIncrement.x(), poseIncrement.y(),
-					poseIncrement.phi());
-				nOdo++;
+        ::fprintf(f_odo, "%f %f %f\n", poseIncrement.x(), poseIncrement.y(), poseIncrement.phi());
+        nOdo++;
 
-				if (genTimes)
-				{
-					double t = 0;
-					if (action->timestamp != INVALID_TIMESTAMP)
-						// t =
-						// mrpt::system::timeDifference(rawlog_first_timestamp,
-						// action->timestamp);
-						t = mrpt::Clock::toDouble(action->timestamp);
+        if (genTimes)
+        {
+          double t = 0;
+          if (action->timestamp != INVALID_TIMESTAMP)
+            // t =
+            // mrpt::system::timeDifference(rawlog_first_timestamp,
+            // action->timestamp);
+            t = mrpt::Clock::toDouble(action->timestamp);
 
-					::fprintf(f_odo_times, "%f\n", t);
-				}
-			}
-			break;
-			case CRawlog::etSensoryFrame:
-			{
-				CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
-				// int nScans=0;
-				for (unsigned int k = 0; k < sf->size(); k++)
-				{
-					if (sf->getObservationByIndex(k)->GetRuntimeClass() ==
-						CLASS_ID(CObservation2DRangeScan))
-					{
-						auto obs = sf->getObservationByIndexAs<
-							CObservation2DRangeScan::Ptr>(k);
+          ::fprintf(f_odo_times, "%f\n", t);
+        }
+      }
+      break;
+      case CRawlog::etSensoryFrame:
+      {
+        CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
+        // int nScans=0;
+        for (unsigned int k = 0; k < sf->size(); k++)
+        {
+          if (sf->getObservationByIndex(k)->GetRuntimeClass() == CLASS_ID(CObservation2DRangeScan))
+          {
+            auto obs = sf->getObservationByIndexAs<CObservation2DRangeScan::Ptr>(k);
 
-						// Get files from list, or create them the first
-						// time:
-						std::pair<FILE*, std::pair<FILE*, FILE*>>* files =
-							nullptr;
-						std::map<
-							string,
-							std::pair<FILE*, std::pair<FILE*, FILE*>>>::iterator
-							it;
-						if ((it = lstFiles.find(obs->sensorLabel)) ==
-							lstFiles.end())
-						{
-							files = &lstFiles[obs->sensorLabel];
-							// Open files:
-							files->first = os::fopen(
-								prefix_laser + obs->sensorLabel +
-									string(".txt"),
-								"wt");
-							ASSERT_(files->first);
-							files->second.first = os::fopen(
-								prefix_laser + obs->sensorLabel +
-									string("_times.txt"),
-								"wt");
-							ASSERT_(files->second.first);
-							files->second.second = os::fopen(
-								prefix_laser + obs->sensorLabel +
-									string("_poses.txt"),
-								"wt");
-							ASSERT_(files->second.second);
-						}
-						else
-						{
-							files = &lstFiles[obs->sensorLabel];
-						}
+            // Get files from list, or create them the first
+            // time:
+            std::pair<FILE*, std::pair<FILE*, FILE*>>* files = nullptr;
+            std::map<string, std::pair<FILE*, std::pair<FILE*, FILE*>>>::iterator it;
+            if ((it = lstFiles.find(obs->sensorLabel)) == lstFiles.end())
+            {
+              files = &lstFiles[obs->sensorLabel];
+              // Open files:
+              files->first = os::fopen(prefix_laser + obs->sensorLabel + string(".txt"), "wt");
+              ASSERT_(files->first);
+              files->second.first =
+                  os::fopen(prefix_laser + obs->sensorLabel + string("_times.txt"), "wt");
+              ASSERT_(files->second.first);
+              files->second.second =
+                  os::fopen(prefix_laser + obs->sensorLabel + string("_poses.txt"), "wt");
+              ASSERT_(files->second.second);
+            }
+            else
+            {
+              files = &lstFiles[obs->sensorLabel];
+            }
 
-						for (size_t j = 0; j < obs->getScanSize(); j++)
-							::fprintf(
-								files->first, "%f ",
-								obs->getScanRangeValidity(j)
-									? obs->getScanRange(j)
-									: 0);
-						::fprintf(files->first, "\n");
+            for (size_t j = 0; j < obs->getScanSize(); j++)
+              ::fprintf(
+                  files->first, "%f ", obs->getScanRangeValidity(j) ? obs->getScanRange(j) : 0);
+            ::fprintf(files->first, "\n");
 
-						nLaser++;
+            nLaser++;
 
-						if (genTimes)
-						{
-							double t = 0;
-							if (obs->timestamp != INVALID_TIMESTAMP)
-								// t =
-								// mrpt::system::timeDifference(rawlog_first_timestamp,
-								// obs->timestamp);
-								t = mrpt::Clock::toDouble(obs->timestamp);
-							::fprintf(files->second.first, "%f\n", t);
-						}
+            if (genTimes)
+            {
+              double t = 0;
+              if (obs->timestamp != INVALID_TIMESTAMP)
+                // t =
+                // mrpt::system::timeDifference(rawlog_first_timestamp,
+                // obs->timestamp);
+                t = mrpt::Clock::toDouble(obs->timestamp);
+              ::fprintf(files->second.first, "%f\n", t);
+            }
 
-						// dump pose data
-						double y, p, r;
-						obs->sensorPose.getYawPitchRoll(y, p, r);
-						::fprintf(
-							files->second.second, "%f\t%f\t%f\n", y, p, r);
-					}
-				}
-			}
-			break;
+            // dump pose data
+            double y, p, r;
+            obs->sensorPose.getYawPitchRoll(y, p, r);
+            ::fprintf(files->second.second, "%f\t%f\t%f\n", y, p, r);
+          }
+        }
+      }
+      break;
 
-			case CRawlog::etObservation:
-			{
-				CObservation::Ptr o = rawlog.getAsObservation(i);
+      case CRawlog::etObservation:
+      {
+        CObservation::Ptr o = rawlog.getAsObservation(i);
 
-				if (IS_CLASS(*o, CObservation2DRangeScan))
-				{
-					CObservation2DRangeScan::Ptr obs =
-						std::dynamic_pointer_cast<CObservation2DRangeScan>(o);
+        if (IS_CLASS(*o, CObservation2DRangeScan))
+        {
+          CObservation2DRangeScan::Ptr obs = std::dynamic_pointer_cast<CObservation2DRangeScan>(o);
 
-					// Get files from list, or create them the first time:
-					std::pair<FILE*, std::pair<FILE*, FILE*>>* files = nullptr;
-					std::map<
-						string,
-						std::pair<FILE*, std::pair<FILE*, FILE*>>>::iterator it;
-					if ((it = lstFiles.find(obs->sensorLabel)) ==
-						lstFiles.end())
-					{
-						files = &lstFiles[obs->sensorLabel];
-						// Open files:
-						files->first = os::fopen(
-							prefix_laser + obs->sensorLabel + string(".txt"),
-							"wt");
-						ASSERT_(files->first);
-						files->second.first = os::fopen(
-							prefix_laser + obs->sensorLabel +
-								string("_times.txt"),
-							"wt");
-						ASSERT_(files->second.first);
-						files->second.second = os::fopen(
-							prefix_laser + obs->sensorLabel +
-								string("_poses.txt"),
-							"wt");
-						ASSERT_(files->second.second);
-					}
-					else
-					{
-						files = &lstFiles[obs->sensorLabel];
-					}
+          // Get files from list, or create them the first time:
+          std::pair<FILE*, std::pair<FILE*, FILE*>>* files = nullptr;
+          std::map<string, std::pair<FILE*, std::pair<FILE*, FILE*>>>::iterator it;
+          if ((it = lstFiles.find(obs->sensorLabel)) == lstFiles.end())
+          {
+            files = &lstFiles[obs->sensorLabel];
+            // Open files:
+            files->first = os::fopen(prefix_laser + obs->sensorLabel + string(".txt"), "wt");
+            ASSERT_(files->first);
+            files->second.first =
+                os::fopen(prefix_laser + obs->sensorLabel + string("_times.txt"), "wt");
+            ASSERT_(files->second.first);
+            files->second.second =
+                os::fopen(prefix_laser + obs->sensorLabel + string("_poses.txt"), "wt");
+            ASSERT_(files->second.second);
+          }
+          else
+          {
+            files = &lstFiles[obs->sensorLabel];
+          }
 
-					for (size_t j = 0; j < obs->getScanSize(); j++)
-						::fprintf(
-							files->first, "%f ",
-							obs->getScanRangeValidity(j) ? obs->getScanRange(j)
-														 : 0);
-					::fprintf(files->first, "\n");
+          for (size_t j = 0; j < obs->getScanSize(); j++)
+            ::fprintf(files->first, "%f ", obs->getScanRangeValidity(j) ? obs->getScanRange(j) : 0);
+          ::fprintf(files->first, "\n");
 
-					nLaser++;
+          nLaser++;
 
-					if (genTimes)
-					{
-						double t = 0;
-						if (obs->timestamp != INVALID_TIMESTAMP)
-							// t =
-							// mrpt::system::timeDifference(rawlog_first_timestamp,
-							// obs->timestamp);
-							t = mrpt::Clock::toDouble(obs->timestamp);
+          if (genTimes)
+          {
+            double t = 0;
+            if (obs->timestamp != INVALID_TIMESTAMP)
+              // t =
+              // mrpt::system::timeDifference(rawlog_first_timestamp,
+              // obs->timestamp);
+              t = mrpt::Clock::toDouble(obs->timestamp);
 
-						::fprintf(files->second.first, "%f\n", t);
-					}
+            ::fprintf(files->second.first, "%f\n", t);
+          }
 
-					// dump pose data
-					double y, p, r;
-					obs->sensorPose.getYawPitchRoll(y, p, r);
-					::fprintf(files->second.second, "%f\t%f\t%f\n", y, p, r);
-				}
-				else if (IS_CLASS(*o, CObservationOdometry))
-				{
-					CObservationOdometry::Ptr odo =
-						std::dynamic_pointer_cast<CObservationOdometry>(o);
+          // dump pose data
+          double y, p, r;
+          obs->sensorPose.getYawPitchRoll(y, p, r);
+          ::fprintf(files->second.second, "%f\t%f\t%f\n", y, p, r);
+        }
+        else if (IS_CLASS(*o, CObservationOdometry))
+        {
+          CObservationOdometry::Ptr odo = std::dynamic_pointer_cast<CObservationOdometry>(o);
 
-					CPose2D poseIncrement(0, 0, 0);
-					if (!lastOdo_ok) { lastOdo_ok = true; }
-					else
-					{
-						poseIncrement = odo->odometry - lastOdo;
-						lastOdo = odo->odometry;
-					}
+          CPose2D poseIncrement(0, 0, 0);
+          if (!lastOdo_ok)
+          {
+            lastOdo_ok = true;
+          }
+          else
+          {
+            poseIncrement = odo->odometry - lastOdo;
+            lastOdo = odo->odometry;
+          }
 
-					::fprintf(
-						f_odo, "%f %f %f\n", poseIncrement.x(),
-						poseIncrement.y(), poseIncrement.phi());
-					nOdo++;
+          ::fprintf(f_odo, "%f %f %f\n", poseIncrement.x(), poseIncrement.y(), poseIncrement.phi());
+          nOdo++;
 
-					if (genTimes)
-					{
-						double t = 0;
-						if (odo->timestamp != INVALID_TIMESTAMP)
-							// t =
-							// mrpt::system::timeDifference(rawlog_first_timestamp,
-							// odo->timestamp);
-							t = mrpt::Clock::toDouble(odo->timestamp);
-						::fprintf(f_odo_times, "%f\n", t);
-					}
-				}
-			}
-			break;
+          if (genTimes)
+          {
+            double t = 0;
+            if (odo->timestamp != INVALID_TIMESTAMP)
+              // t =
+              // mrpt::system::timeDifference(rawlog_first_timestamp,
+              // odo->timestamp);
+              t = mrpt::Clock::toDouble(odo->timestamp);
+            ::fprintf(f_odo_times, "%f\n", t);
+          }
+        }
+      }
+      break;
 
-			// Error:
-			default: THROW_EXCEPTION("Unknown element type in the rawlog");
+      // Error:
+      default:
+        THROW_EXCEPTION("Unknown element type in the rawlog");
 
-		}  // end switch.
-	}
+    }  // end switch.
+  }
 
-	progDia.Update(n);
+  progDia.Update(n);
 
-	os::fclose(f_odo);
-	if (f_odo_times) os::fclose(f_odo_times);
+  os::fclose(f_odo);
+  if (f_odo_times) os::fclose(f_odo_times);
 
-	for (auto l : lstFiles)
-	{
-		os::fclose(l.second.first);
-		os::fclose(l.second.second.first);
-		os::fclose(l.second.second.second);
-	}
+  for (auto l : lstFiles)
+  {
+    os::fclose(l.second.first);
+    os::fclose(l.second.second.first);
+    os::fclose(l.second.second.second);
+  }
 
-	wxMessageBox(
-		wxString::Format(
-			_("%u odometry & %u laser entries saved."), nOdo, nLaser),
-		_("Done"), wxOK, this);
+  wxMessageBox(
+      wxString::Format(_("%u odometry & %u laser entries saved."), nOdo, nLaser), _("Done"), wxOK,
+      this);
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 void xRawLogViewerFrame::OnShowICP(wxCommandEvent&)
 {
-	if (rawlog.size() < 1)
-	{
-		wxMessageBox(
-			_("Please load a rawlog first!"), _("Rawlog is empty"), wxOK, this);
-		return;
-	}
+  if (rawlog.size() < 1)
+  {
+    wxMessageBox(_("Please load a rawlog first!"), _("Rawlog is empty"), wxOK, this);
+    return;
+  }
 
-	scanMatchingDialog->Hide();
-	scanMatchingDialog->Show();
-	scanMatchingDialog->Maximize();
+  scanMatchingDialog->Hide();
+  scanMatchingDialog->Show();
+  scanMatchingDialog->Maximize();
 }
 
 void xRawLogViewerFrame::OnLoadAPartOnly(wxCommandEvent&)
 {
-	string fil;
-	if (!AskForOpenRawlog(fil)) return;
+  string fil;
+  if (!AskForOpenRawlog(fil)) return;
 
-	// Query the first and last entries to load:
-	wxString strFirst = wxGetTextFromUser(
-		_("Enter the first entry index to load:"), _("Load a part of rawlog:"),
-		_("0"));
-	wxString strLast = wxGetTextFromUser(
-		_("Enter the last entry index to load (-1:Last):"),
-		_("Load a part of rawlog:"), _("-1"));
-	long first;
-	strFirst.ToLong(&first);
-	long last;
-	strLast.ToLong(&last);
+  // Query the first and last entries to load:
+  wxString strFirst = wxGetTextFromUser(
+      _("Enter the first entry index to load:"), _("Load a part of rawlog:"), _("0"));
+  wxString strLast = wxGetTextFromUser(
+      _("Enter the last entry index to load (-1:Last):"), _("Load a part of rawlog:"), _("-1"));
+  long first;
+  strFirst.ToLong(&first);
+  long last;
+  strLast.ToLong(&last);
 
-	loadRawlogFile(fil, first, last);
+  loadRawlogFile(fil, first, last);
 }
 
 void xRawLogViewerFrame::OnFileCountEntries(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	string str;
-	if (!AskForOpenRawlog(str)) return;
+  string str;
+  if (!AskForOpenRawlog(str)) return;
 
-	wxBusyCursor waitCursor;
-	CFileGZInputStream fil(str);
-	auto filSize = (unsigned int)fil.getTotalBytesCount();
+  wxBusyCursor waitCursor;
+  CFileGZInputStream fil(str);
+  auto filSize = (unsigned int)fil.getTotalBytesCount();
 
-	wxString auxStr;
-	wxProgressDialog progDia(
-		wxT("Progress of rawlog read"), wxT("Parsing file..."),
-		filSize,  // range
-		this,  // parent
-		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
-			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+  wxString auxStr;
+  wxProgressDialog progDia(
+      wxT("Progress of rawlog read"), wxT("Parsing file..."),
+      filSize,  // range
+      this,     // parent
+      wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
+          wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();	// Let the app. process messages
+  wxTheApp->Yield();  // Let the app. process messages
 
-	unsigned int countLoop = 0;
-	int entryIndex = 0;
-	bool keepLoading = true;
-	string errorMsg;
+  unsigned int countLoop = 0;
+  int entryIndex = 0;
+  bool keepLoading = true;
+  string errorMsg;
 
-	while (keepLoading)
-	{
-		if (countLoop++ % 100 == 0)
-		{
-			auxStr.sprintf(wxT("Parsing file... %u objects"), entryIndex);
-			if (!progDia.Update((int)fil.getPosition(), auxStr))
-				keepLoading = false;
-			wxTheApp->Yield();	// Let the app. process messages
-		}
+  while (keepLoading)
+  {
+    if (countLoop++ % 100 == 0)
+    {
+      auxStr.sprintf(wxT("Parsing file... %u objects"), entryIndex);
+      if (!progDia.Update((int)fil.getPosition(), auxStr)) keepLoading = false;
+      wxTheApp->Yield();  // Let the app. process messages
+    }
 
-		CSerializable::Ptr newObj;
-		try
-		{
-			archiveFrom(fil) >> newObj;
-			// Check type:
-			if (newObj->GetRuntimeClass() == CLASS_ID(CSensoryFrame) ||
-				newObj->GetRuntimeClass() == CLASS_ID(CActionCollection) ||
-				newObj->GetRuntimeClass() == CLASS_ID(CPose2D))
-			{
-				entryIndex++;
-			}
-			else
-			{
-				// Unknown class:
-				THROW_EXCEPTION("Unknown class found in the file!");
-			}
-		}
-		catch (exception& e)
-		{
-			errorMsg = mrpt::exception_to_str(e);
-			keepLoading = false;
-		}
-		catch (...)
-		{
-			keepLoading = false;
-		}
-	}  // end while keep loading
+    CSerializable::Ptr newObj;
+    try
+    {
+      archiveFrom(fil) >> newObj;
+      // Check type:
+      if (newObj->GetRuntimeClass() == CLASS_ID(CSensoryFrame) ||
+          newObj->GetRuntimeClass() == CLASS_ID(CActionCollection) ||
+          newObj->GetRuntimeClass() == CLASS_ID(CPose2D))
+      {
+        entryIndex++;
+      }
+      else
+      {
+        // Unknown class:
+        THROW_EXCEPTION("Unknown class found in the file!");
+      }
+    }
+    catch (exception& e)
+    {
+      errorMsg = mrpt::exception_to_str(e);
+      keepLoading = false;
+    }
+    catch (...)
+    {
+      keepLoading = false;
+    }
+  }  // end while keep loading
 
-	progDia.Update(filSize);
+  progDia.Update(filSize);
 
-	// Set error msg:
-	char auxStr2[100];
-	os::sprintf(
-		auxStr2, sizeof(auxStr2), "There are %i entries in the rawlog file",
-		entryIndex);
-	wxMessageBox(auxStr2, _("Count done"), wxOK, this);
+  // Set error msg:
+  char auxStr2[100];
+  os::sprintf(auxStr2, sizeof(auxStr2), "There are %i entries in the rawlog file", entryIndex);
+  wxMessageBox(auxStr2, _("Count done"), wxOK, this);
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	string str;
-	if (!AskForOpenRawlog(str)) return;
+  string str;
+  if (!AskForOpenRawlog(str)) return;
 
-	// ask for the output directory:
-	wxDirDialog dirDialog(
-		this, _("Choose the output directory for the images"), _("."), 0,
-		wxDefaultPosition);
+  // ask for the output directory:
+  wxDirDialog dirDialog(
+      this, _("Choose the output directory for the images"), _("."), 0, wxDefaultPosition);
 
-	if (dirDialog.ShowModal() != wxID_OK) return;
-	string outDir(dirDialog.GetPath().mb_str());
+  if (dirDialog.ShowModal() != wxID_OK) return;
+  string outDir(dirDialog.GetPath().mb_str());
 
-	// Let the user choose the image format:
-	string imgFileExtension = AskForImageFileFormat();
-	if (imgFileExtension.empty()) return;
+  // Let the user choose the image format:
+  string imgFileExtension = AskForImageFileFormat();
+  if (imgFileExtension.empty()) return;
 
-	wxBusyCursor waitCursor;
-	CFileGZInputStream fil(str);
-	auto filSize = (unsigned int)fil.getTotalBytesCount();
+  wxBusyCursor waitCursor;
+  CFileGZInputStream fil(str);
+  auto filSize = (unsigned int)fil.getTotalBytesCount();
 
-	wxString auxStr;
-	wxProgressDialog progDia(
-		wxT("Progress"), wxT("Parsing file..."),
-		filSize,  // range
-		this,  // parent
-		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
-			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+  wxString auxStr;
+  wxProgressDialog progDia(
+      wxT("Progress"), wxT("Parsing file..."),
+      filSize,  // range
+      this,     // parent
+      wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
+          wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();	// Let the app. process messages
+  wxTheApp->Yield();  // Let the app. process messages
 
-	unsigned int countLoop = 0;
-	int imgSaved = 0;
-	bool keepLoading = true;
-	string errorMsg;
+  unsigned int countLoop = 0;
+  int imgSaved = 0;
+  bool keepLoading = true;
+  string errorMsg;
 
-	while (keepLoading)
-	{
-		if (countLoop++ % 5 == 0)
-		{
-			auxStr.sprintf(wxT("Parsing file... %u objects"), countLoop);
-			if (!progDia.Update((int)fil.getPosition(), auxStr))
-				keepLoading = false;
-			wxTheApp->Yield();	// Let the app. process messages
-		}
+  while (keepLoading)
+  {
+    if (countLoop++ % 5 == 0)
+    {
+      auxStr.sprintf(wxT("Parsing file... %u objects"), countLoop);
+      if (!progDia.Update((int)fil.getPosition(), auxStr)) keepLoading = false;
+      wxTheApp->Yield();  // Let the app. process messages
+    }
 
-		CSerializable::Ptr newObj;
-		try
-		{
-			archiveFrom(fil) >> newObj;
-			// Check type:
-			if (newObj->GetRuntimeClass() == CLASS_ID(CSensoryFrame))
-			{
-				CSensoryFrame::Ptr SF =
-					std::dynamic_pointer_cast<CSensoryFrame>(newObj);
+    CSerializable::Ptr newObj;
+    try
+    {
+      archiveFrom(fil) >> newObj;
+      // Check type:
+      if (newObj->GetRuntimeClass() == CLASS_ID(CSensoryFrame))
+      {
+        CSensoryFrame::Ptr SF = std::dynamic_pointer_cast<CSensoryFrame>(newObj);
 
-				for (unsigned k = 0; k < SF->size(); k++)
-				{
-					if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
-						CLASS_ID(CObservationStereoImages))
-					{
-						auto obsSt = SF->getObservationByIndexAs<
-							CObservationStereoImages::Ptr>(k);
-						bool savedOk = obsSt->imageLeft.saveToFile(format(
-							"%s/img_stereo_%u_left_%05u.%s", outDir.c_str(), k,
-							imgSaved, imgFileExtension.c_str()));
+        for (unsigned k = 0; k < SF->size(); k++)
+        {
+          if (SF->getObservationByIndex(k)->GetRuntimeClass() == CLASS_ID(CObservationStereoImages))
+          {
+            auto obsSt = SF->getObservationByIndexAs<CObservationStereoImages::Ptr>(k);
+            bool savedOk = obsSt->imageLeft.saveToFile(format(
+                "%s/img_stereo_%u_left_%05u.%s", outDir.c_str(), k, imgSaved,
+                imgFileExtension.c_str()));
 
-						ASSERT_(savedOk);
+            ASSERT_(savedOk);
 
-						if (obsSt->hasImageRight)
-						{
-							savedOk = obsSt->imageRight.saveToFile(format(
-								"%s/img_stereo_%u_right_%05u.%s",
-								outDir.c_str(), k, imgSaved,
-								imgFileExtension.c_str()));
-							ASSERT_(savedOk);
-						}
+            if (obsSt->hasImageRight)
+            {
+              savedOk = obsSt->imageRight.saveToFile(format(
+                  "%s/img_stereo_%u_right_%05u.%s", outDir.c_str(), k, imgSaved,
+                  imgFileExtension.c_str()));
+              ASSERT_(savedOk);
+            }
 
-						if (obsSt->hasImageDisparity)
-						{
-							savedOk = obsSt->imageDisparity.saveToFile(format(
-								"%s/img_stereo_%u_disp_%05u.%s", outDir.c_str(),
-								k, imgSaved, imgFileExtension.c_str()));
-							ASSERT_(savedOk);
-						}
-						imgSaved++;
-					}
-					if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
-						CLASS_ID(CObservationImage))
-					{
-						auto obsIm =
-							SF->getObservationByIndexAs<CObservationImage::Ptr>(
-								k);
+            if (obsSt->hasImageDisparity)
+            {
+              savedOk = obsSt->imageDisparity.saveToFile(format(
+                  "%s/img_stereo_%u_disp_%05u.%s", outDir.c_str(), k, imgSaved,
+                  imgFileExtension.c_str()));
+              ASSERT_(savedOk);
+            }
+            imgSaved++;
+          }
+          if (SF->getObservationByIndex(k)->GetRuntimeClass() == CLASS_ID(CObservationImage))
+          {
+            auto obsIm = SF->getObservationByIndexAs<CObservationImage::Ptr>(k);
 
-						bool savedOk = obsIm->image.saveToFile(format(
-							"%s/img_monocular_%u_%05u.%s", outDir.c_str(), k,
-							imgSaved, imgFileExtension.c_str()));
-						ASSERT_(savedOk);
-						imgSaved++;
-					}
-				}
-			}
-			else if (
-				newObj->GetRuntimeClass() == CLASS_ID(CActionCollection) ||
-				newObj->GetRuntimeClass() == CLASS_ID(CPose2D))
-			{
-			}
-			else
-			{
-				// Unknown class:
-				THROW_EXCEPTION("Unknown class found in the file!");
-			}
+            bool savedOk = obsIm->image.saveToFile(format(
+                "%s/img_monocular_%u_%05u.%s", outDir.c_str(), k, imgSaved,
+                imgFileExtension.c_str()));
+            ASSERT_(savedOk);
+            imgSaved++;
+          }
+        }
+      }
+      else if (
+          newObj->GetRuntimeClass() == CLASS_ID(CActionCollection) ||
+          newObj->GetRuntimeClass() == CLASS_ID(CPose2D))
+      {
+      }
+      else
+      {
+        // Unknown class:
+        THROW_EXCEPTION("Unknown class found in the file!");
+      }
 
-			newObj.reset();
-		}
-		catch (exception& e)
-		{
-			errorMsg = mrpt::exception_to_str(e);
-			keepLoading = false;
-		}
-		catch (...)
-		{
-			keepLoading = false;
-		}
-	}  // end while keep loading
+      newObj.reset();
+    }
+    catch (exception& e)
+    {
+      errorMsg = mrpt::exception_to_str(e);
+      keepLoading = false;
+    }
+    catch (...)
+    {
+      keepLoading = false;
+    }
+  }  // end while keep loading
 
-	progDia.Update(filSize);
+  progDia.Update(filSize);
 
-	// Set error msg:
-	wxMessageBox(
-		(format("Images saved: %i", imgSaved).c_str()), _("Done"), wxOK, this);
+  // Set error msg:
+  wxMessageBox((format("Images saved: %i", imgSaved).c_str()), _("Done"), wxOK, this);
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 void xRawLogViewerFrame::OnFileGenVisualLMFromStereoImages(wxCommandEvent&) {}
 
 void xRawLogViewerFrame::OnMRUFile(wxCommandEvent& event)
 {
-	wxString f(m_fileHistory.GetHistoryFile(event.GetId() - wxID_FILE1));
-	if (!f.empty()) loadRawlogFile(string(f.mb_str()));
+  wxString f(m_fileHistory.GetHistoryFile(event.GetId() - wxID_FILE1));
+  if (!f.empty()) loadRawlogFile(string(f.mb_str()));
 }
 
 void xRawLogViewerFrame::OnChangeSensorPositions(wxCommandEvent&)
 {
-	CFormChangeSensorPositions dialog(this);
+  CFormChangeSensorPositions dialog(this);
 
-	dialog.edLabel->Clear();
-	for (auto i = listOfSensorLabels.begin(); i != listOfSensorLabels.end();
-		 ++i)
-		dialog.edLabel->Append(i->first.c_str());
+  dialog.edLabel->Clear();
+  for (auto i = listOfSensorLabels.begin(); i != listOfSensorLabels.end(); ++i)
+    dialog.edLabel->Append(i->first.c_str());
 
-	dialog.ShowModal();
+  dialog.ShowModal();
 }
 
 void xRawLogViewerFrame::OnDecimateRecords(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	CRawlog newRawLog;
-	newRawLog.setCommentText(rawlog.getCommentText());
+  CRawlog newRawLog;
+  newRawLog.setCommentText(rawlog.getCommentText());
 
-	wxString strDecimation = wxGetTextFromUser(
-		_("The number of observations will be decimated (only 1 out of M "
-		  "will "
-		  "be kept). Enter the decimation ratio M:"),
-		_("Decimation"), _("1"));
-	long DECIMATE_RATIO;
-	strDecimation.ToLong(&DECIMATE_RATIO);
+  wxString strDecimation = wxGetTextFromUser(
+      _("The number of observations will be decimated (only 1 out of M "
+        "will "
+        "be kept). Enter the decimation ratio M:"),
+      _("Decimation"), _("1"));
+  long DECIMATE_RATIO;
+  strDecimation.ToLong(&DECIMATE_RATIO);
 
-	ASSERT_(DECIMATE_RATIO >= 1);
-	wxBusyCursor busyCursor;
-	wxTheApp->Yield();	// Let the app. process messages
+  ASSERT_(DECIMATE_RATIO >= 1);
+  wxBusyCursor busyCursor;
+  wxTheApp->Yield();  // Let the app. process messages
 
-	size_t i, N = rawlog.size();
+  size_t i, N = rawlog.size();
 
-	// ------------------------------------------------------------------------------
-	// METHOD TO BE MEMORY EFFICIENT:
-	//  To free the memory of the current rawlog entries as we create the
-	//  new one, then call "clearWithoutDelete" at the end.
-	// ------------------------------------------------------------------------------
-	CSensoryFrame::Ptr last_sf;	 // empty ptr
-	CActionRobotMovement2D::TMotionModelOptions odometryOptions;
-	bool cummMovementInit = false;
-	long SF_counter = 0;
+  // ------------------------------------------------------------------------------
+  // METHOD TO BE MEMORY EFFICIENT:
+  //  To free the memory of the current rawlog entries as we create the
+  //  new one, then call "clearWithoutDelete" at the end.
+  // ------------------------------------------------------------------------------
+  CSensoryFrame::Ptr last_sf;  // empty ptr
+  CActionRobotMovement2D::TMotionModelOptions odometryOptions;
+  bool cummMovementInit = false;
+  long SF_counter = 0;
 
-	// Reset cummulative pose change:
-	CPose2D accumMovement(0, 0, 0);
+  // Reset cummulative pose change:
+  CPose2D accumMovement(0, 0, 0);
 
-	// For each entry:
-	for (i = 0; i < N; i++)
-	{
-		CSerializable::Ptr obj = rawlog.getAsGeneric(i);
-		bool objToBeDeleted =
-			true;  // Will be set to false if "obj" cannot be deleted now.
+  // For each entry:
+  for (i = 0; i < N; i++)
+  {
+    CSerializable::Ptr obj = rawlog.getAsGeneric(i);
+    bool objToBeDeleted = true;  // Will be set to false if "obj" cannot be deleted now.
 
-		if (rawlog.getType(i) == CRawlog::etActionCollection)
-		{
-			// Accumulate Actions
-			// ----------------------
-			CActionCollection::Ptr curActs =
-				std::dynamic_pointer_cast<CActionCollection>(obj);
-			CActionRobotMovement2D::Ptr mov =
-				curActs->getBestMovementEstimation();
-			if (mov)
-			{
-				// Accumulate from odometry:
-				accumMovement = accumMovement + mov->poseChange->getMeanVal();
+    if (rawlog.getType(i) == CRawlog::etActionCollection)
+    {
+      // Accumulate Actions
+      // ----------------------
+      CActionCollection::Ptr curActs = std::dynamic_pointer_cast<CActionCollection>(obj);
+      CActionRobotMovement2D::Ptr mov = curActs->getBestMovementEstimation();
+      if (mov)
+      {
+        // Accumulate from odometry:
+        accumMovement = accumMovement + mov->poseChange->getMeanVal();
 
-				// Copy the probabilistic options from the first entry we
-				// find:
-				if (!cummMovementInit)
-				{
-					odometryOptions = mov->motionModelConfiguration;
-					cummMovementInit = true;
-				}
-			}
-		}
-		else if (rawlog.getType(i) == CRawlog::etSensoryFrame)
-		{
-			// Decimate Observations
-			// ---------------------------
-			if (!last_sf)
-			{
-				last_sf = std::dynamic_pointer_cast<CSensoryFrame>(obj);
-				objToBeDeleted = false;	 // Do not delete this one
-			}
+        // Copy the probabilistic options from the first entry we
+        // find:
+        if (!cummMovementInit)
+        {
+          odometryOptions = mov->motionModelConfiguration;
+          cummMovementInit = true;
+        }
+      }
+    }
+    else if (rawlog.getType(i) == CRawlog::etSensoryFrame)
+    {
+      // Decimate Observations
+      // ---------------------------
+      if (!last_sf)
+      {
+        last_sf = std::dynamic_pointer_cast<CSensoryFrame>(obj);
+        objToBeDeleted = false;  // Do not delete this one
+      }
 
-			if (++SF_counter >= DECIMATE_RATIO)
-			{
-				SF_counter = 0;
+      if (++SF_counter >= DECIMATE_RATIO)
+      {
+        SF_counter = 0;
 
-				// INSERT OBSERVATION:
-				newRawLog.insert(last_sf);
-				last_sf.reset();  // = nullptr;
+        // INSERT OBSERVATION:
+        newRawLog.insert(last_sf);
+        last_sf.reset();  // = nullptr;
 
-				// INSERT ACTIONS:
-				CActionCollection actsCol;
-				if (cummMovementInit)
-				{
-					CActionRobotMovement2D cummMovement;
-					cummMovement.computeFromOdometry(
-						accumMovement, odometryOptions);
-					actsCol.insert(cummMovement);
-					// Reset odometry accumulation:
-					accumMovement = CPose2D(0, 0, 0);
-				}
-				newRawLog.insert(actsCol);
-			}
-		}
-		else
-		{
-			THROW_EXCEPTION(
-				"This is only for rawlogs based on sensory frames.");
-		}
+        // INSERT ACTIONS:
+        CActionCollection actsCol;
+        if (cummMovementInit)
+        {
+          CActionRobotMovement2D cummMovement;
+          cummMovement.computeFromOdometry(accumMovement, odometryOptions);
+          actsCol.insert(cummMovement);
+          // Reset odometry accumulation:
+          accumMovement = CPose2D(0, 0, 0);
+        }
+        newRawLog.insert(actsCol);
+      }
+    }
+    else
+    {
+      THROW_EXCEPTION("This is only for rawlogs based on sensory frames.");
+    }
 
-		// Delete object?
-		if (objToBeDeleted) obj.reset();  // delete obj;
+    // Delete object?
+    if (objToBeDeleted) obj.reset();  // delete obj;
 
-	}  // end for i each entry
+  }  // end for i each entry
 
-	// Clear the list only (objects already deleted)
-	rawlog.clear();
+  // Clear the list only (objects already deleted)
+  rawlog.clear();
 
-	// Copy as new log:
-	rawlog = newRawLog;
+  // Copy as new log:
+  rawlog = newRawLog;
 
-	rebuildTreeView();
+  rebuildTreeView();
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 void xRawLogViewerFrame::OnCountBadScans(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	wxBusyCursor waitCursor;
-	int nEntries = (int)rawlog.size();
+  wxBusyCursor waitCursor;
+  int nEntries = (int)rawlog.size();
 
-	wxString auxStr;
-	wxProgressDialog progDia(
-		wxT("Progress"), wxT("Parsing rawlog..."),
-		nEntries,  // range
-		this,  // parent
-		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
-			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+  wxString auxStr;
+  wxProgressDialog progDia(
+      wxT("Progress"), wxT("Parsing rawlog..."),
+      nEntries,  // range
+      this,      // parent
+      wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
+          wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();	// Let the app. process messages
+  wxTheApp->Yield();  // Let the app. process messages
 
-	int invalidScans = 0;
-	string errorMsg;
+  int invalidScans = 0;
+  string errorMsg;
 
-	for (int countLoop = 0; countLoop < nEntries; countLoop++)
-	{
-		if (countLoop % 5 == 0)
-		{
-			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
-			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();	// Let the app. process messages
-		}
+  for (int countLoop = 0; countLoop < nEntries; countLoop++)
+  {
+    if (countLoop % 5 == 0)
+    {
+      auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
+      if (!progDia.Update(countLoop, auxStr)) break;
+      wxTheApp->Yield();  // Let the app. process messages
+    }
 
-		try
-		{
-			if (rawlog.getType(countLoop) == CRawlog::etSensoryFrame)
-			{
-				CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
+    try
+    {
+      if (rawlog.getType(countLoop) == CRawlog::etSensoryFrame)
+      {
+        CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
 
-				for (size_t k = 0; k < SF->size(); k++)
-				{
-					if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
-						CLASS_ID(CObservation2DRangeScan))
-					{
-						auto obsScan = SF->getObservationByIndexAs<
-							CObservation2DRangeScan::Ptr>(k);
-						bool thisValid = false;
+        for (size_t k = 0; k < SF->size(); k++)
+        {
+          if (SF->getObservationByIndex(k)->GetRuntimeClass() == CLASS_ID(CObservation2DRangeScan))
+          {
+            auto obsScan = SF->getObservationByIndexAs<CObservation2DRangeScan::Ptr>(k);
+            bool thisValid = false;
 
-						for (size_t i = 0; i < obsScan->getScanSize(); i++)
-						{
-							if (obsScan->getScanRangeValidity(i))
-								thisValid = true;
-							if (std::isnan(obsScan->getScanRange(i)))
-								thisValid = false;
-						}
+            for (size_t i = 0; i < obsScan->getScanSize(); i++)
+            {
+              if (obsScan->getScanRangeValidity(i)) thisValid = true;
+              if (std::isnan(obsScan->getScanRange(i))) thisValid = false;
+            }
 
-						if (!thisValid) invalidScans++;
-					}
-				}
-			}  // end for each entry
-			else if (rawlog.getType(countLoop) == CRawlog::etObservation)
-			{
-				CObservation::Ptr o = rawlog.getAsObservation(countLoop);
+            if (!thisValid) invalidScans++;
+          }
+        }
+      }  // end for each entry
+      else if (rawlog.getType(countLoop) == CRawlog::etObservation)
+      {
+        CObservation::Ptr o = rawlog.getAsObservation(countLoop);
 
-				if (o->GetRuntimeClass() == CLASS_ID(CObservation2DRangeScan))
-				{
-					CObservation2DRangeScan::Ptr obsScan =
-						std::dynamic_pointer_cast<CObservation2DRangeScan>(o);
-					bool thisValid = false;
+        if (o->GetRuntimeClass() == CLASS_ID(CObservation2DRangeScan))
+        {
+          CObservation2DRangeScan::Ptr obsScan =
+              std::dynamic_pointer_cast<CObservation2DRangeScan>(o);
+          bool thisValid = false;
 
-					for (size_t k = 0; k < obsScan->getScanSize(); k++)
-					{
-						if (obsScan->getScanRangeValidity(k)) thisValid = true;
-						if (std::isnan(obsScan->getScanRange(k)))
-							thisValid = false;
-					}
+          for (size_t k = 0; k < obsScan->getScanSize(); k++)
+          {
+            if (obsScan->getScanRangeValidity(k)) thisValid = true;
+            if (std::isnan(obsScan->getScanRange(k))) thisValid = false;
+          }
 
-					if (!thisValid) invalidScans++;
-				}
-			}  // end for each entry
-		}
-		catch (exception& e)
-		{
-			errorMsg = mrpt::exception_to_str(e);
-			break;
-		}
-		catch (...)
-		{
-			break;
-		}
-	}  // end while keep loading
+          if (!thisValid) invalidScans++;
+        }
+      }  // end for each entry
+    }
+    catch (exception& e)
+    {
+      errorMsg = mrpt::exception_to_str(e);
+      break;
+    }
+    catch (...)
+    {
+      break;
+    }
+  }  // end while keep loading
 
-	progDia.Update(nEntries);
+  progDia.Update(nEntries);
 
-	wxMessageBox(
-		(format(
-			 "Found %u range scans with no valid range values.", invalidScans)
-			 .c_str()),
-		_("Done"), wxOK, this);
+  wxMessageBox(
+      (format("Found %u range scans with no valid range values.", invalidScans).c_str()), _("Done"),
+      wxOK, this);
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 void xRawLogViewerFrame::OnFilterSpureousGas(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	wxString strMaxChange = wxGetTextFromUser(
-		_("Maximum change between readings (volts):"),
-		_("Filter out gas readings 'spikes':"), _("0.05"));
-	double maxChange;
-	strMaxChange.ToCDouble(&maxChange);
+  wxString strMaxChange = wxGetTextFromUser(
+      _("Maximum change between readings (volts):"), _("Filter out gas readings 'spikes':"),
+      _("0.05"));
+  double maxChange;
+  strMaxChange.ToCDouble(&maxChange);
 
-	wxBusyCursor waitCursor;
-	int nEntries = (int)rawlog.size();
+  wxBusyCursor waitCursor;
+  int nEntries = (int)rawlog.size();
 
-	wxString auxStr;
-	wxProgressDialog progDia(
-		wxT("Progress"), wxT("Parsing rawlog..."),
-		nEntries,  // range
-		this,  // parent
-		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
-			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+  wxString auxStr;
+  wxProgressDialog progDia(
+      wxT("Progress"), wxT("Parsing rawlog..."),
+      nEntries,  // range
+      this,      // parent
+      wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
+          wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();	// Let the app. process messages
+  wxTheApp->Yield();  // Let the app. process messages
 
-	int nFilt = 0, nReadings = 0;
-	string errorMsg;
-	CObservationGasSensors::Ptr obs_1, obs_2;
+  int nFilt = 0, nReadings = 0;
+  string errorMsg;
+  CObservationGasSensors::Ptr obs_1, obs_2;
 
-	for (int countLoop = 0; countLoop < nEntries; countLoop++)
-	{
-		if (countLoop % 5 == 0)
-		{
-			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
-			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();	// Let the app. process messages
-		}
+  for (int countLoop = 0; countLoop < nEntries; countLoop++)
+  {
+    if (countLoop % 5 == 0)
+    {
+      auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
+      if (!progDia.Update(countLoop, auxStr)) break;
+      wxTheApp->Yield();  // Let the app. process messages
+    }
 
-		try
-		{
-			switch (rawlog.getType(countLoop))
-			{
-				case CRawlog::etSensoryFrame:
-				{
-					CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
+    try
+    {
+      switch (rawlog.getType(countLoop))
+      {
+        case CRawlog::etSensoryFrame:
+        {
+          CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
 
-					for (size_t k = 0; k < SF->size(); k++)
-					{
-						if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
-							CLASS_ID(CObservationGasSensors))
-						{
-							auto obs = SF->getObservationByIndexAs<
-								CObservationGasSensors::Ptr>(k);
+          for (size_t k = 0; k < SF->size(); k++)
+          {
+            if (SF->getObservationByIndex(k)->GetRuntimeClass() == CLASS_ID(CObservationGasSensors))
+            {
+              auto obs = SF->getObservationByIndexAs<CObservationGasSensors::Ptr>(k);
 
-							// Do we have 3 consecutive readings??
-							if (obs_1 && obs_2)
-							{
-								// Process:
-								ASSERT_(
-									obs->m_readings.size() ==
-									obs_1->m_readings.size());
-								ASSERT_(
-									obs->m_readings.size() ==
-									obs_2->m_readings.size());
+              // Do we have 3 consecutive readings??
+              if (obs_1 && obs_2)
+              {
+                // Process:
+                ASSERT_(obs->m_readings.size() == obs_1->m_readings.size());
+                ASSERT_(obs->m_readings.size() == obs_2->m_readings.size());
 
-								for (size_t j = 0; j < obs->m_readings.size();
-									 j++)
-								{
-									ASSERT_(
-										obs->m_readings[j]
-											.readingsVoltage.size() ==
-										obs_1->m_readings[j]
-											.readingsVoltage.size());
-									ASSERT_(
-										obs->m_readings[j]
-											.readingsVoltage.size() ==
-										obs_2->m_readings[j]
-											.readingsVoltage.size());
+                for (size_t j = 0; j < obs->m_readings.size(); j++)
+                {
+                  ASSERT_(
+                      obs->m_readings[j].readingsVoltage.size() ==
+                      obs_1->m_readings[j].readingsVoltage.size());
+                  ASSERT_(
+                      obs->m_readings[j].readingsVoltage.size() ==
+                      obs_2->m_readings[j].readingsVoltage.size());
 
-									for (size_t i = 0;
-										 i < obs->m_readings[j]
-												 .readingsVoltage.size();
-										 i++)
-									{
-										nReadings++;
-										// Compute difference for "t-1":
-										if (fabs(
-												obs_1->m_readings[j]
-													.readingsVoltage[i] -
-												obs->m_readings[j]
-													.readingsVoltage[i]) >
-												maxChange &&
-											fabs(
-												obs_1->m_readings[j]
-													.readingsVoltage[i] -
-												obs_2->m_readings[j]
-													.readingsVoltage[i]) >
-												maxChange)
-										{
-											obs_1->m_readings[j]
-												.readingsVoltage[i] = 0.5f *
-												(obs->m_readings[j]
-													 .readingsVoltage[i] +
-												 obs_2->m_readings[j]
-													 .readingsVoltage[i]);
-											nFilt++;
-										}
-									}
-								}
-							}
+                  for (size_t i = 0; i < obs->m_readings[j].readingsVoltage.size(); i++)
+                  {
+                    nReadings++;
+                    // Compute difference for "t-1":
+                    if (fabs(
+                            obs_1->m_readings[j].readingsVoltage[i] -
+                            obs->m_readings[j].readingsVoltage[i]) > maxChange &&
+                        fabs(
+                            obs_1->m_readings[j].readingsVoltage[i] -
+                            obs_2->m_readings[j].readingsVoltage[i]) > maxChange)
+                    {
+                      obs_1->m_readings[j].readingsVoltage[i] =
+                          0.5f * (obs->m_readings[j].readingsVoltage[i] +
+                                  obs_2->m_readings[j].readingsVoltage[i]);
+                      nFilt++;
+                    }
+                  }
+                }
+              }
 
-							// Shift:
-							obs_2 = obs_1;
-							obs_1 = obs;
-						}
-					}
-				}
-				break;
+              // Shift:
+              obs_2 = obs_1;
+              obs_1 = obs;
+            }
+          }
+        }
+        break;
 
-				case CRawlog::etObservation:
-				{
-					CObservation::Ptr o = rawlog.getAsObservation(countLoop);
+        case CRawlog::etObservation:
+        {
+          CObservation::Ptr o = rawlog.getAsObservation(countLoop);
 
-					if (IS_CLASS(*o, CObservationGasSensors))
-					{
-						CObservationGasSensors::Ptr obs =
-							std::dynamic_pointer_cast<CObservationGasSensors>(
-								o);
+          if (IS_CLASS(*o, CObservationGasSensors))
+          {
+            CObservationGasSensors::Ptr obs = std::dynamic_pointer_cast<CObservationGasSensors>(o);
 
-						// Do we have 3 consecutive readings??
-						if (obs_1 && obs_2)
-						{
-							// Process:
-							ASSERT_(
-								obs->m_readings.size() ==
-								obs_1->m_readings.size());
-							ASSERT_(
-								obs->m_readings.size() ==
-								obs_2->m_readings.size());
+            // Do we have 3 consecutive readings??
+            if (obs_1 && obs_2)
+            {
+              // Process:
+              ASSERT_(obs->m_readings.size() == obs_1->m_readings.size());
+              ASSERT_(obs->m_readings.size() == obs_2->m_readings.size());
 
-							for (size_t j = 0; j < obs->m_readings.size(); j++)
-							{
-								ASSERT_(
-									obs->m_readings[j].readingsVoltage.size() ==
-									obs_1->m_readings[j]
-										.readingsVoltage.size());
-								ASSERT_(
-									obs->m_readings[j].readingsVoltage.size() ==
-									obs_2->m_readings[j]
-										.readingsVoltage.size());
+              for (size_t j = 0; j < obs->m_readings.size(); j++)
+              {
+                ASSERT_(
+                    obs->m_readings[j].readingsVoltage.size() ==
+                    obs_1->m_readings[j].readingsVoltage.size());
+                ASSERT_(
+                    obs->m_readings[j].readingsVoltage.size() ==
+                    obs_2->m_readings[j].readingsVoltage.size());
 
-								for (size_t k = 0; k <
-									 obs->m_readings[j].readingsVoltage.size();
-									 k++)
-								{
-									nReadings++;
-									// Compute difference for "t-1":
-									if (fabs(
-											obs_1->m_readings[j]
-												.readingsVoltage[k] -
-											obs->m_readings[j]
-												.readingsVoltage[k]) >
-											maxChange &&
-										fabs(
-											obs_1->m_readings[j]
-												.readingsVoltage[k] -
-											obs_2->m_readings[j]
-												.readingsVoltage[k]) >
-											maxChange)
-									{
-										obs_1->m_readings[j]
-											.readingsVoltage[k] = 0.5f *
-											(obs->m_readings[j]
-												 .readingsVoltage[k] +
-											 obs_2->m_readings[j]
-												 .readingsVoltage[k]);
-										nFilt++;
-									}
-								}
-							}
-						}
+                for (size_t k = 0; k < obs->m_readings[j].readingsVoltage.size(); k++)
+                {
+                  nReadings++;
+                  // Compute difference for "t-1":
+                  if (fabs(
+                          obs_1->m_readings[j].readingsVoltage[k] -
+                          obs->m_readings[j].readingsVoltage[k]) > maxChange &&
+                      fabs(
+                          obs_1->m_readings[j].readingsVoltage[k] -
+                          obs_2->m_readings[j].readingsVoltage[k]) > maxChange)
+                  {
+                    obs_1->m_readings[j].readingsVoltage[k] =
+                        0.5f * (obs->m_readings[j].readingsVoltage[k] +
+                                obs_2->m_readings[j].readingsVoltage[k]);
+                    nFilt++;
+                  }
+                }
+              }
+            }
 
-						// Shift:
-						obs_2 = obs_1;
-						obs_1 = obs;
-					}
-				}
-				break;
+            // Shift:
+            obs_2 = obs_1;
+            obs_1 = obs;
+          }
+        }
+        break;
 
-				default: break;
-			}  // end for each entry
-		}
-		catch (exception& e)
-		{
-			errorMsg = mrpt::exception_to_str(e);
-			break;
-		}
-		catch (...)
-		{
-			break;
-		}
-	}  // end while keep loading
+        default:
+          break;
+      }  // end for each entry
+    }
+    catch (exception& e)
+    {
+      errorMsg = mrpt::exception_to_str(e);
+      break;
+    }
+    catch (...)
+    {
+      break;
+    }
+  }  // end while keep loading
 
-	progDia.Update(nEntries);
+  progDia.Update(nEntries);
 
-	wxMessageBox(
-		(format(
-			 "%u out of %u readings have been filtered out!", nFilt, nReadings)
-			 .c_str()),
-		_("Done"), wxOK, this);
+  wxMessageBox(
+      (format("%u out of %u readings have been filtered out!", nFilt, nReadings).c_str()),
+      _("Done"), wxOK, this);
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 void xRawLogViewerFrame::OnRemoveSpecificRangeMeas(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	wxString strStart = wxGetTextFromUser(
-		_("First index of the rawlog to remove from:"),
-		_("Remove range-only measurements."), _("0"));
-	long start_filt;
-	strStart.ToLong(&start_filt);
+  wxString strStart = wxGetTextFromUser(
+      _("First index of the rawlog to remove from:"), _("Remove range-only measurements."), _("0"));
+  long start_filt;
+  strStart.ToLong(&start_filt);
 
-	wxString strEnd = wxGetTextFromUser(
-		_("Last index of the rawlog to remove from (-1:cancel & exit):"),
-		_("Remove range-only measurements."), _("-1"));
-	long end_filt;
-	strEnd.ToLong(&end_filt);
+  wxString strEnd = wxGetTextFromUser(
+      _("Last index of the rawlog to remove from (-1:cancel & exit):"),
+      _("Remove range-only measurements."), _("-1"));
+  long end_filt;
+  strEnd.ToLong(&end_filt);
 
-	if (end_filt < 0) return;
+  if (end_filt < 0) return;
 
-	wxString strIndex = wxGetTextFromUser(
-		_("Index of the range within the observation (-1:None)"),
-		_("Remove range-only measurements."), _("0"));
-	unsigned long indx_filt;
-	strIndex.ToULong(&indx_filt);
+  wxString strIndex = wxGetTextFromUser(
+      _("Index of the range within the observation (-1:None)"),
+      _("Remove range-only measurements."), _("0"));
+  unsigned long indx_filt;
+  strIndex.ToULong(&indx_filt);
 
-	vector<float> lastValidRanges;
+  vector<float> lastValidRanges;
 
-	wxBusyCursor waitCursor;
-	long i, n = (long)rawlog.size();
+  wxBusyCursor waitCursor;
+  long i, n = (long)rawlog.size();
 
-	int nFilt = 0, nReadings = 0;
-	string errorMsg;
-	CObservationBeaconRanges::Ptr obs_1, obs_2;
-	size_t q;
+  int nFilt = 0, nReadings = 0;
+  string errorMsg;
+  CObservationBeaconRanges::Ptr obs_1, obs_2;
+  size_t q;
 
-	for (i = start_filt; i <= end_filt; i++)
-	{
-		switch (rawlog.getType(i))
-		{
-			case CRawlog::etSensoryFrame:
-			{
-				CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
-				CObservationBeaconRanges::Ptr obs =
-					sf->getObservationByClass<CObservationBeaconRanges>();
-				if (obs)
-				{
-					ASSERT_(indx_filt < obs->sensedData.size());
-					obs->sensedData[indx_filt].sensedDistance = 0;
-				}
-			}
-			break;
-			case CRawlog::etObservation:
-			{
-				CObservation::Ptr o = rawlog.getAsObservation(i);
-				if (o->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
-				{
-					CObservationBeaconRanges::Ptr obs =
-						std::dynamic_pointer_cast<CObservationBeaconRanges>(o);
-					ASSERT_(indx_filt < obs->sensedData.size());
-					obs->sensedData[indx_filt].sensedDistance = 0;
-				}
-			}
-			break;
+  for (i = start_filt; i <= end_filt; i++)
+  {
+    switch (rawlog.getType(i))
+    {
+      case CRawlog::etSensoryFrame:
+      {
+        CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
+        CObservationBeaconRanges::Ptr obs = sf->getObservationByClass<CObservationBeaconRanges>();
+        if (obs)
+        {
+          ASSERT_(indx_filt < obs->sensedData.size());
+          obs->sensedData[indx_filt].sensedDistance = 0;
+        }
+      }
+      break;
+      case CRawlog::etObservation:
+      {
+        CObservation::Ptr o = rawlog.getAsObservation(i);
+        if (o->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+        {
+          CObservationBeaconRanges::Ptr obs =
+              std::dynamic_pointer_cast<CObservationBeaconRanges>(o);
+          ASSERT_(indx_filt < obs->sensedData.size());
+          obs->sensedData[indx_filt].sensedDistance = 0;
+        }
+      }
+      break;
 
-			default: break;
-		};	// end
-	}
+      default:
+        break;
+    };  // end
+  }
 
-	for (i = 0; i < n; i++)
-	{
-		switch (rawlog.getType(i))
-		{
-			case CRawlog::etSensoryFrame:
-			{
-				CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
-				CObservationBeaconRanges::Ptr obs =
-					sf->getObservationByClass<CObservationBeaconRanges>();
+  for (i = 0; i < n; i++)
+  {
+    switch (rawlog.getType(i))
+    {
+      case CRawlog::etSensoryFrame:
+      {
+        CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
+        CObservationBeaconRanges::Ptr obs = sf->getObservationByClass<CObservationBeaconRanges>();
 
-				if (obs)
-				{
-					nReadings++;
+        if (obs)
+        {
+          nReadings++;
 
-					// Do we have 2 consecutive readings??
-					if (obs_1 && obs_2)
-					{
-						ASSERT_(
-							obs->sensedData.size() == obs_1->sensedData.size());
-						ASSERT_(
-							obs_2->sensedData.size() ==
-							obs_1->sensedData.size());
+          // Do we have 2 consecutive readings??
+          if (obs_1 && obs_2)
+          {
+            ASSERT_(obs->sensedData.size() == obs_1->sensedData.size());
+            ASSERT_(obs_2->sensedData.size() == obs_1->sensedData.size());
 
-						for (q = 0; q < obs->sensedData.size(); q++)
-						{
-							bool filter = false;
+            for (q = 0; q < obs->sensedData.size(); q++)
+            {
+              bool filter = false;
 
-							if (std::isnan(obs->sensedData[q].sensedDistance))
-								obs->sensedData[q].sensedDistance = 0;
+              if (std::isnan(obs->sensedData[q].sensedDistance))
+                obs->sensedData[q].sensedDistance = 0;
 
-							filter =
-								std::isnan(obs_2->sensedData[q].sensedDistance);
+              filter = std::isnan(obs_2->sensedData[q].sensedDistance);
 
-							if (!filter)
-								filter =
-									(obs->sensedData[q].sensedDistance ==
-										 obs_1->sensedData[q].sensedDistance &&
-									 obs_1->sensedData[q].sensedDistance ==
-										 obs_2->sensedData[q].sensedDistance);
+              if (!filter)
+                filter =
+                    (obs->sensedData[q].sensedDistance == obs_1->sensedData[q].sensedDistance &&
+                     obs_1->sensedData[q].sensedDistance == obs_2->sensedData[q].sensedDistance);
 
-							if (filter)
-							{
-								obs_2->sensedData[q].sensedDistance = 0;
-							}
-							nFilt++;
-						}
-					}
+              if (filter)
+              {
+                obs_2->sensedData[q].sensedDistance = 0;
+              }
+              nFilt++;
+            }
+          }
 
-					// Shift:
-					obs_2 = obs_1;
-					obs_1 = obs;
-				}
-			}
-			default: break;
-		};
-	}
+          // Shift:
+          obs_2 = obs_1;
+          obs_1 = obs;
+        }
+      }
+      default:
+        break;
+    };
+  }
 
-	wxMessageBox(
-		(format(
-			 "%u out of %u readings have been filtered out!", nFilt, nReadings)
-			 .c_str()),
-		_("Done"), wxOK, this);
+  wxMessageBox(
+      (format("%u out of %u readings have been filtered out!", nFilt, nReadings).c_str()),
+      _("Done"), wxOK, this);
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 void xRawLogViewerFrame::OnForceEncodersFalse(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	bool clearEncoders = wxYES ==
-		wxMessageBox(_("Set 'hasEncodersInfo' fields to false?"),
-					 _("Select operations"), wxYES_NO, this);
-	bool clearVelocities = wxYES ==
-		wxMessageBox(_("Set 'hasVelocities' fields to false?"),
-					 _("Select operations"), wxYES_NO, this);
+  bool clearEncoders = wxYES == wxMessageBox(
+                                    _("Set 'hasEncodersInfo' fields to false?"),
+                                    _("Select operations"), wxYES_NO, this);
+  bool clearVelocities = wxYES == wxMessageBox(
+                                      _("Set 'hasVelocities' fields to false?"),
+                                      _("Select operations"), wxYES_NO, this);
 
-	wxBusyCursor waitCursor;
-	int nEntries = (int)rawlog.size();
+  wxBusyCursor waitCursor;
+  int nEntries = (int)rawlog.size();
 
-	wxString auxStr;
-	wxProgressDialog progDia(
-		wxT("Progress"), wxT("Parsing rawlog..."),
-		nEntries,  // range
-		this,  // parent
-		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
-			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+  wxString auxStr;
+  wxProgressDialog progDia(
+      wxT("Progress"), wxT("Parsing rawlog..."),
+      nEntries,  // range
+      this,      // parent
+      wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
+          wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();	// Let the app. process messages
+  wxTheApp->Yield();  // Let the app. process messages
 
-	int nChanges = 0;
-	string errorMsg;
+  int nChanges = 0;
+  string errorMsg;
 
-	for (int countLoop = 0; countLoop < nEntries; countLoop++)
-	{
-		if (countLoop % 20 == 0)
-		{
-			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
-			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();	// Let the app. process messages
-		}
+  for (int countLoop = 0; countLoop < nEntries; countLoop++)
+  {
+    if (countLoop % 20 == 0)
+    {
+      auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
+      if (!progDia.Update(countLoop, auxStr)) break;
+      wxTheApp->Yield();  // Let the app. process messages
+    }
 
-		try
-		{
-			if (rawlog.getType(countLoop) == CRawlog::etActionCollection)
-			{
-				CActionCollection::Ptr acts = rawlog.getAsAction(countLoop);
-				for (size_t k = 0; k < acts->size(); k++)
-				{
-					CAction::Ptr act = acts->get(k);
-					if (act->GetRuntimeClass() ==
-						CLASS_ID(CActionRobotMovement2D))
-					{
-						CActionRobotMovement2D::Ptr a =
-							std::dynamic_pointer_cast<CActionRobotMovement2D>(
-								act);
-						if (a->hasEncodersInfo && clearEncoders)
-						{
-							a->hasEncodersInfo = false;
-							nChanges++;
-						}
-						if (a->hasVelocities && clearVelocities)
-						{
-							a->hasVelocities = false;
-							nChanges++;
-						}
-					}
-				}
-			}  // end for each entry
-		}
-		catch (exception& e)
-		{
-			errorMsg = mrpt::exception_to_str(e);
-			break;
-		}
-		catch (...)
-		{
-			break;
-		}
-	}  // end while keep loading
+    try
+    {
+      if (rawlog.getType(countLoop) == CRawlog::etActionCollection)
+      {
+        CActionCollection::Ptr acts = rawlog.getAsAction(countLoop);
+        for (size_t k = 0; k < acts->size(); k++)
+        {
+          CAction::Ptr act = acts->get(k);
+          if (act->GetRuntimeClass() == CLASS_ID(CActionRobotMovement2D))
+          {
+            CActionRobotMovement2D::Ptr a = std::dynamic_pointer_cast<CActionRobotMovement2D>(act);
+            if (a->hasEncodersInfo && clearEncoders)
+            {
+              a->hasEncodersInfo = false;
+              nChanges++;
+            }
+            if (a->hasVelocities && clearVelocities)
+            {
+              a->hasVelocities = false;
+              nChanges++;
+            }
+          }
+        }
+      }  // end for each entry
+    }
+    catch (exception& e)
+    {
+      errorMsg = mrpt::exception_to_str(e);
+      break;
+    }
+    catch (...)
+    {
+      break;
+    }
+  }  // end while keep loading
 
-	progDia.Update(nEntries);
+  progDia.Update(nEntries);
 
-	wxMessageBox(
-		(format("%u entries have been modified", nChanges).c_str()), _("Done"),
-		wxOK, this);
+  wxMessageBox((format("%u entries have been modified", nChanges).c_str()), _("Done"), wxOK, this);
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 void doFilterErrScans(
-	CObservation::Ptr& obs, size_t& invalidSegments, size_t& invalidRanges,
-	bool& touched)
+    CObservation::Ptr& obs, size_t& invalidSegments, size_t& invalidRanges, bool& touched)
 {
-	if (obs->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation2DRangeScan)))
-	{
-		CObservation2DRangeScan::Ptr obsScan =
-			std::dynamic_pointer_cast<CObservation2DRangeScan>(obs);
+  if (obs->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation2DRangeScan)))
+  {
+    CObservation2DRangeScan::Ptr obsScan = std::dynamic_pointer_cast<CObservation2DRangeScan>(obs);
 
-		// Try to filter our spureous ranges:
-		// --------------------------------------------
+    // Try to filter our spureous ranges:
+    // --------------------------------------------
 
-		// Build a vector: each element is true if
-		//    element[k] is the element[k] -/+ a value in [0.10-2.0], and
-		//    viceversa with [k-1]
-		std::vector<bool> ringing(obsScan->getScanSize(), false);
-		unsigned int k;
+    // Build a vector: each element is true if
+    //    element[k] is the element[k] -/+ a value in [0.10-2.0], and
+    //    viceversa with [k-1]
+    std::vector<bool> ringing(obsScan->getScanSize(), false);
+    unsigned int k;
 
-		for (k = 1; k < (obsScan->getScanSize() - 1); k++)
-		{
-			if (obsScan->getScanRangeValidity(k) &&
-				obsScan->getScanRangeValidity(k - 1) &&
-				obsScan->getScanRangeValidity(k + 1))
-			{
-				int dirPrior = 0, dirPost = 0;
+    for (k = 1; k < (obsScan->getScanSize() - 1); k++)
+    {
+      if (obsScan->getScanRangeValidity(k) && obsScan->getScanRangeValidity(k - 1) &&
+          obsScan->getScanRangeValidity(k + 1))
+      {
+        int dirPrior = 0, dirPost = 0;
 
-				if (obsScan->getScanRange(k) >
-						(obsScan->getScanRange(k - 1) + 0.03f) &&
-					obsScan->getScanRange(k) <
-						(obsScan->getScanRange(k - 1) + 2.00f))
-					dirPrior = 1;
-				if (obsScan->getScanRange(k) <
-						(obsScan->getScanRange(k - 1) - 0.03f) &&
-					obsScan->getScanRange(k) >
-						(obsScan->getScanRange(k - 1) - 2.00f))
-					dirPrior = -1;
+        if (obsScan->getScanRange(k) > (obsScan->getScanRange(k - 1) + 0.03f) &&
+            obsScan->getScanRange(k) < (obsScan->getScanRange(k - 1) + 2.00f))
+          dirPrior = 1;
+        if (obsScan->getScanRange(k) < (obsScan->getScanRange(k - 1) - 0.03f) &&
+            obsScan->getScanRange(k) > (obsScan->getScanRange(k - 1) - 2.00f))
+          dirPrior = -1;
 
-				if (obsScan->getScanRange(k) >
-						(obsScan->getScanRange(k + 1) + 0.03f) &&
-					obsScan->getScanRange(k) <
-						(obsScan->getScanRange(k + 1) + 2.00f))
-					dirPost = -1;
-				if (obsScan->getScanRange(k) <
-						(obsScan->getScanRange(k + 1) - 0.03f) &&
-					obsScan->getScanRange(k) >
-						(obsScan->getScanRange(k + 1) - 2.00f))
-					dirPost = 1;
+        if (obsScan->getScanRange(k) > (obsScan->getScanRange(k + 1) + 0.03f) &&
+            obsScan->getScanRange(k) < (obsScan->getScanRange(k + 1) + 2.00f))
+          dirPost = -1;
+        if (obsScan->getScanRange(k) < (obsScan->getScanRange(k + 1) - 0.03f) &&
+            obsScan->getScanRange(k) > (obsScan->getScanRange(k + 1) - 2.00f))
+          dirPost = 1;
 
-				if ((dirPrior == 1 && dirPost == -1) ||
-					(dirPrior == -1 && dirPost == 1))
-					ringing[k] = true;
-			}
-		}
+        if ((dirPrior == 1 && dirPost == -1) || (dirPrior == -1 && dirPost == 1)) ringing[k] = true;
+      }
+    }
 
-		// Look for segments of 'K' consecutive ringing ranges, and mark
-		// them as not valid!!
-		int ringingStart = -1;
-		for (k = 1; k < (obsScan->getScanSize() - 1); k++)
-		{
-			if (ringing[k])
-			{
-				if (ringingStart == -1)
-				{
-					// First one in a segment:
-					ringingStart = k;
-				}
-			}
-			else
-			{
-				// End of segment?
-				if (ringingStart != -1)
-				{
-					// Length:
-					size_t len = (k - 1) - ringingStart;
-					if (len > 2)
-					{
-						// Mark them as invalid!!
-						for (size_t p = ringingStart; p < k;
-							 p++, invalidRanges++)
-						{
-							obsScan->setScanRangeValidity(p, false);
-							touched = true;
-						}
+    // Look for segments of 'K' consecutive ringing ranges, and mark
+    // them as not valid!!
+    int ringingStart = -1;
+    for (k = 1; k < (obsScan->getScanSize() - 1); k++)
+    {
+      if (ringing[k])
+      {
+        if (ringingStart == -1)
+        {
+          // First one in a segment:
+          ringingStart = k;
+        }
+      }
+      else
+      {
+        // End of segment?
+        if (ringingStart != -1)
+        {
+          // Length:
+          size_t len = (k - 1) - ringingStart;
+          if (len > 2)
+          {
+            // Mark them as invalid!!
+            for (size_t p = ringingStart; p < k; p++, invalidRanges++)
+            {
+              obsScan->setScanRangeValidity(p, false);
+              touched = true;
+            }
 
-						invalidSegments++;
-					}
-				}
-				// We are out of any segment just now:
-				ringingStart = -1;
-			}
-		}  // end for "k" & mark as invalid
-	}  // end-if is a laser scan
+            invalidSegments++;
+          }
+        }
+        // We are out of any segment just now:
+        ringingStart = -1;
+      }
+    }  // end for "k" & mark as invalid
+  }    // end-if is a laser scan
 }
 
 void xRawLogViewerFrame::OnFilterErroneousScans(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	wxMessageBox(
-		_("This process will look for spurious ranges, e.g. caused by "
-		  "\ndirect "
-		  "sunlight in an indoor laser scanner."),
-		_("Filter 2D range scans"), wxOK, this);
+  wxMessageBox(
+      _("This process will look for spurious ranges, e.g. caused by "
+        "\ndirect "
+        "sunlight in an indoor laser scanner."),
+      _("Filter 2D range scans"), wxOK, this);
 
-	wxBusyCursor waitCursor;
-	int nEntries = (int)rawlog.size();
+  wxBusyCursor waitCursor;
+  int nEntries = (int)rawlog.size();
 
-	wxString auxStr;
-	wxProgressDialog progDia(
-		wxT("Progress"), wxT("Parsing rawlog..."),
-		nEntries,  // range
-		this,  // parent
-		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
-			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+  wxString auxStr;
+  wxProgressDialog progDia(
+      wxT("Progress"), wxT("Parsing rawlog..."),
+      nEntries,  // range
+      this,      // parent
+      wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
+          wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();	// Let the app. process messages
+  wxTheApp->Yield();  // Let the app. process messages
 
-	size_t invalidSegments = 0, invalidRanges = 0;
-	string lstTouched;
-	string errorMsg;
+  size_t invalidSegments = 0, invalidRanges = 0;
+  string lstTouched;
+  string errorMsg;
 
-	for (int countLoop = 0; countLoop < nEntries; countLoop++)
-	{
-		if (countLoop % 5 == 0)
-		{
-			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
-			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();	// Let the app. process messages
-		}
+  for (int countLoop = 0; countLoop < nEntries; countLoop++)
+  {
+    if (countLoop % 5 == 0)
+    {
+      auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
+      if (!progDia.Update(countLoop, auxStr)) break;
+      wxTheApp->Yield();  // Let the app. process messages
+    }
 
-		try
-		{
-			// Check type:
-			switch (rawlog.getType(countLoop))
-			{
-				case CRawlog::etSensoryFrame:
-				{
-					// This is a SF:
-					CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
-					bool touched = false;
+    try
+    {
+      // Check type:
+      switch (rawlog.getType(countLoop))
+      {
+        case CRawlog::etSensoryFrame:
+        {
+          // This is a SF:
+          CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
+          bool touched = false;
 
-					for (size_t j = 0; j < SF->size(); j++)
-					{
-						CObservation::Ptr obs = SF->getObservationByIndex(j);
-						doFilterErrScans(
-							obs, invalidSegments, invalidRanges, touched);
-					}  // end for each Observation in the SF
+          for (size_t j = 0; j < SF->size(); j++)
+          {
+            CObservation::Ptr obs = SF->getObservationByIndex(j);
+            doFilterErrScans(obs, invalidSegments, invalidRanges, touched);
+          }  // end for each Observation in the SF
 
-					// Add to the list of modified entries:
-					if (touched)
-					{
-						if (lstTouched.size() < 1000)
-							lstTouched += format("%u ", countLoop);
-						else
-						{
-							static bool noMore = false;
-							if (!noMore) lstTouched += "...";
-							noMore = true;
-						}
-					}
-				}
-				break;
+          // Add to the list of modified entries:
+          if (touched)
+          {
+            if (lstTouched.size() < 1000)
+              lstTouched += format("%u ", countLoop);
+            else
+            {
+              static bool noMore = false;
+              if (!noMore) lstTouched += "...";
+              noMore = true;
+            }
+          }
+        }
+        break;
 
-				case CRawlog::etObservation:
-				{
-					// This is a SF:
-					CObservation::Ptr obs = rawlog.getAsObservation(countLoop);
-					bool touched = false;
+        case CRawlog::etObservation:
+        {
+          // This is a SF:
+          CObservation::Ptr obs = rawlog.getAsObservation(countLoop);
+          bool touched = false;
 
-					doFilterErrScans(
-						obs, invalidSegments, invalidRanges, touched);
+          doFilterErrScans(obs, invalidSegments, invalidRanges, touched);
 
-					// Add to the list of modified entries:
-					if (touched)
-					{
-						if (lstTouched.size() < 1000)
-							lstTouched += format("%u ", countLoop);
-						else
-						{
-							static bool noMore = false;
-							if (!noMore) lstTouched += "...";
-							noMore = true;
-						}
-					}
-				}
-				break;
+          // Add to the list of modified entries:
+          if (touched)
+          {
+            if (lstTouched.size() < 1000)
+              lstTouched += format("%u ", countLoop);
+            else
+            {
+              static bool noMore = false;
+              if (!noMore) lstTouched += "...";
+              noMore = true;
+            }
+          }
+        }
+        break;
 
-				default: break;
-			};	// end switch
-		}
-		catch (exception& e)
-		{
-			errorMsg = mrpt::exception_to_str(e);
-			break;
-		}
-		catch (...)
-		{
-			break;
-		}
-	}  // end while keep loading
+        default:
+          break;
+      };  // end switch
+    }
+    catch (exception& e)
+    {
+      errorMsg = mrpt::exception_to_str(e);
+      break;
+    }
+    catch (...)
+    {
+      break;
+    }
+  }  // end while keep loading
 
-	progDia.Update(nEntries);
+  progDia.Update(nEntries);
 
-	wxMessageBox(
-		format(
-			"Number of bad segments detected & marked as invalid: %u \n(%u "
-			"individual ranges. Rawlog indexes modified:\n%s",
-			(unsigned)invalidSegments, (unsigned)invalidRanges,
-			lstTouched.c_str()),
-		_("Done"), wxOK, this);
+  wxMessageBox(
+      format(
+          "Number of bad segments detected & marked as invalid: %u \n(%u "
+          "individual ranges. Rawlog indexes modified:\n%s",
+          (unsigned)invalidSegments, (unsigned)invalidRanges, lstTouched.c_str()),
+      _("Done"), wxOK, this);
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 void xRawLogViewerFrame::OnRecalculateActionsICP(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	wxMessageBox(
-		_("Please, modify as desired all the ICP algorithm options\nand the "
-		  "type of reference map from the following dialog, then close it to "
-		  "start recomputing the actions from scan matching."));
+  wxMessageBox(
+      _("Please, modify as desired all the ICP algorithm options\nand the "
+        "type of reference map from the following dialog, then close it to "
+        "start recomputing the actions from scan matching."));
 
-	// Take options from "scanMatchingDialog"
-	scanMatchingDialog->btnRunICP->Hide();
-	scanMatchingDialog->ShowModal();
-	scanMatchingDialog->btnRunICP->Show();
-	scanMatchingDialog->btnRunICP->Fit();
+  // Take options from "scanMatchingDialog"
+  scanMatchingDialog->btnRunICP->Hide();
+  scanMatchingDialog->ShowModal();
+  scanMatchingDialog->btnRunICP->Show();
+  scanMatchingDialog->btnRunICP->Fit();
 
-	// Ask for the min. ICP goodness:
-	float minICPGoodness = 0.4f;
+  // Ask for the min. ICP goodness:
+  float minICPGoodness = 0.4f;
 
-	// The reference and the new maps:
-	CSimplePointsMap refMapPt;
-	COccupancyGridMap2D refMapGrid;
-	CSimplePointsMap newMapPt;
-	CICP icp;
-	CICP::TReturnInfo icpInfo;
+  // The reference and the new maps:
+  CSimplePointsMap refMapPt;
+  COccupancyGridMap2D refMapGrid;
+  CSimplePointsMap newMapPt;
+  CICP icp;
+  CICP::TReturnInfo icpInfo;
 
-	// The 2 SFs and the action between:
-	CSensoryFrame::Ptr SF_ref;	// = nullptr;
-	CSensoryFrame::Ptr SF_new;	// = nullptr;
-	CActionCollection::Ptr act_between;	 // = nullptr;
+  // The 2 SFs and the action between:
+  CSensoryFrame::Ptr SF_ref;           // = nullptr;
+  CSensoryFrame::Ptr SF_new;           // = nullptr;
+  CActionCollection::Ptr act_between;  // = nullptr;
 
-	CPosePDF::Ptr poseEst;
+  CPosePDF::Ptr poseEst;
 
-	// Load ICP options:
-	// ------------------------------------------
-	CConfigFileMemory icpCfg(
-		string(scanMatchingDialog->edOptICP->GetValue().mb_str()));
-	icp.options.loadFromConfigFile(icpCfg, "ICP");
+  // Load ICP options:
+  // ------------------------------------------
+  CConfigFileMemory icpCfg(string(scanMatchingDialog->edOptICP->GetValue().mb_str()));
+  icp.options.loadFromConfigFile(icpCfg, "ICP");
 
-	// EXTRA options:
-	CPose2D initialEst(0, 0, 0);
+  // EXTRA options:
+  CPose2D initialEst(0, 0, 0);
 
-	// Create reference map & load its options:
-	// ------------------------------------------
-	bool useGridMap = scanMatchingDialog->rbGrid->GetValue();
-	if (!useGridMap)
-	{
-		CConfigFileMemory refCfg(
-			string(scanMatchingDialog->edOptRefPnt->GetValue().mb_str()));
-		refMapPt.insertionOptions.loadFromConfigFile(
-			refCfg, "InsertionOptions");
-	}
-	else
-	{
-		CConfigFileMemory refCfg(
-			string(scanMatchingDialog->edOptRefGrid->GetValue().mb_str()));
-		float gridRes = refCfg.read_float("Construction", "resolution", 0.05f);
-		refMapGrid.setSize(-10, 10, -10, 10, gridRes);
-		refMapGrid.insertionOptions.loadFromConfigFile(
-			refCfg, "InsertionOptions");
-	}
+  // Create reference map & load its options:
+  // ------------------------------------------
+  bool useGridMap = scanMatchingDialog->rbGrid->GetValue();
+  if (!useGridMap)
+  {
+    CConfigFileMemory refCfg(string(scanMatchingDialog->edOptRefPnt->GetValue().mb_str()));
+    refMapPt.insertionOptions.loadFromConfigFile(refCfg, "InsertionOptions");
+  }
+  else
+  {
+    CConfigFileMemory refCfg(string(scanMatchingDialog->edOptRefGrid->GetValue().mb_str()));
+    float gridRes = refCfg.read_float("Construction", "resolution", 0.05f);
+    refMapGrid.setSize(-10, 10, -10, 10, gridRes);
+    refMapGrid.insertionOptions.loadFromConfigFile(refCfg, "InsertionOptions");
+  }
 
-	CMetricMap* refMap =
-		useGridMap ? (CMetricMap*)&refMapGrid : (CMetricMap*)&refMapPt;
+  CMetricMap* refMap = useGridMap ? (CMetricMap*)&refMapGrid : (CMetricMap*)&refMapPt;
 
-	// Load new map options:
-	// ----------------------------
-	{
-		CConfigFileMemory refCfg(
-			string(scanMatchingDialog->edOptAlignMap->GetValue().mb_str()));
-		newMapPt.insertionOptions.loadFromConfigFile(
-			refCfg, "InsertionOptions");
-	}
+  // Load new map options:
+  // ----------------------------
+  {
+    CConfigFileMemory refCfg(string(scanMatchingDialog->edOptAlignMap->GetValue().mb_str()));
+    newMapPt.insertionOptions.loadFromConfigFile(refCfg, "InsertionOptions");
+  }
 
-	wxBusyCursor waitCursor;
-	int nEntries = (int)rawlog.size();
+  wxBusyCursor waitCursor;
+  int nEntries = (int)rawlog.size();
 
-	wxString auxStr;
-	wxProgressDialog progDia(
-		wxT("Progress"), wxT("Parsing rawlog..."),
-		nEntries,  // range
-		this,  // parent
-		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
-			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+  wxString auxStr;
+  wxProgressDialog progDia(
+      wxT("Progress"), wxT("Parsing rawlog..."),
+      nEntries,  // range
+      this,      // parent
+      wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
+          wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();	// Let the app. process messages
+  wxTheApp->Yield();  // Let the app. process messages
 
-	string errorMsg;
+  string errorMsg;
 
-	for (int countLoop = 0; countLoop < nEntries; countLoop++)
-	{
-		if (countLoop % 20 == 0)
-		{
-			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
-			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();	// Let the app. process messages
-		}
+  for (int countLoop = 0; countLoop < nEntries; countLoop++)
+  {
+    if (countLoop % 20 == 0)
+    {
+      auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
+      if (!progDia.Update(countLoop, auxStr)) break;
+      wxTheApp->Yield();  // Let the app. process messages
+    }
 
-		try
-		{
-			// Check type:
-			if (rawlog.getType(countLoop) == CRawlog::etActionCollection)
-			{
-				act_between = rawlog.getAsAction(countLoop);
-			}
-			else if (rawlog.getType(countLoop) == CRawlog::etSensoryFrame)
-			{
-				// This is a SF:
-				SF_new = rawlog.getAsObservations(countLoop);
+    try
+    {
+      // Check type:
+      if (rawlog.getType(countLoop) == CRawlog::etActionCollection)
+      {
+        act_between = rawlog.getAsAction(countLoop);
+      }
+      else if (rawlog.getType(countLoop) == CRawlog::etSensoryFrame)
+      {
+        // This is a SF:
+        SF_new = rawlog.getAsObservations(countLoop);
 
-				if (SF_new && SF_ref && act_between)
-				{
-					// Insert the observations:
-					// --------------------------------------
-					refMap->clear();
-					newMapPt.clear();
+        if (SF_new && SF_ref && act_between)
+        {
+          // Insert the observations:
+          // --------------------------------------
+          refMap->clear();
+          newMapPt.clear();
 
-					SF_ref->insertObservationsInto(*refMap);
-					CPose3D newMapRobotPose(initialEst);
-					SF_new->insertObservationsInto(newMapPt, newMapRobotPose);
+          SF_ref->insertObservationsInto(*refMap);
+          CPose3D newMapRobotPose(initialEst);
+          SF_new->insertObservationsInto(newMapPt, newMapRobotPose);
 
-					poseEst = icp.Align(
-						refMap, (CMetricMap*)&newMapPt, initialEst, icpInfo);
+          poseEst = icp.Align(refMap, (CMetricMap*)&newMapPt, initialEst, icpInfo);
 
-					// The final estimation:
-					// --------------------------------------
-					CPose2D estMean;
-					CMatrixDouble33 estCov;
-					poseEst->getCovarianceAndMean(estCov, estMean);
+          // The final estimation:
+          // --------------------------------------
+          CPose2D estMean;
+          CMatrixDouble33 estCov;
+          poseEst->getCovarianceAndMean(estCov, estMean);
 
-					if (icpInfo.goodness > minICPGoodness)
-					{
-						// Add SM-based action or overwrite:
-						CActionRobotMovement2D::Ptr act =
-							act_between->getMovementEstimationByType(
-								CActionRobotMovement2D::emScan2DMatching);
-						if (!act)
-						{
-							// Create:
-							CActionRobotMovement2D newAct;
-							newAct.estimationMethod =
-								CActionRobotMovement2D::emScan2DMatching;
-							newAct.poseChange = CPosePDF::Ptr(
-								new CPosePDFGaussian(estMean, estCov));
-							act_between->insert(newAct);
-						}
-						else
-						{
-							// Overwrite:
-							act->estimationMethod =
-								CActionRobotMovement2D::emScan2DMatching;
-							act->poseChange = CPosePDF::Ptr(
-								new CPosePDFGaussian(estMean, estCov));
-						}
-					}
-					else
-					{
-						// Remove SM-based action if it existed
-						for (int k = ((int)act_between->size()) - 1; k >= 0;
-							 k--)
-						{
-							if (act_between->get(k)->GetRuntimeClass() ==
-								CLASS_ID(CActionRobotMovement2D))
-							{
-								CActionRobotMovement2D::Ptr act =
-									std::dynamic_pointer_cast<
-										CActionRobotMovement2D>(
-										act_between->get(k));
-								if (act->estimationMethod ==
-									CActionRobotMovement2D::emScan2DMatching)
-									act_between->eraseByIndex(k);
-							}
-						}
-					}
+          if (icpInfo.goodness > minICPGoodness)
+          {
+            // Add SM-based action or overwrite:
+            CActionRobotMovement2D::Ptr act =
+                act_between->getMovementEstimationByType(CActionRobotMovement2D::emScan2DMatching);
+            if (!act)
+            {
+              // Create:
+              CActionRobotMovement2D newAct;
+              newAct.estimationMethod = CActionRobotMovement2D::emScan2DMatching;
+              newAct.poseChange = CPosePDF::Ptr(new CPosePDFGaussian(estMean, estCov));
+              act_between->insert(newAct);
+            }
+            else
+            {
+              // Overwrite:
+              act->estimationMethod = CActionRobotMovement2D::emScan2DMatching;
+              act->poseChange = CPosePDF::Ptr(new CPosePDFGaussian(estMean, estCov));
+            }
+          }
+          else
+          {
+            // Remove SM-based action if it existed
+            for (int k = ((int)act_between->size()) - 1; k >= 0; k--)
+            {
+              if (act_between->get(k)->GetRuntimeClass() == CLASS_ID(CActionRobotMovement2D))
+              {
+                CActionRobotMovement2D::Ptr act =
+                    std::dynamic_pointer_cast<CActionRobotMovement2D>(act_between->get(k));
+                if (act->estimationMethod == CActionRobotMovement2D::emScan2DMatching)
+                  act_between->eraseByIndex(k);
+              }
+            }
+          }
 
-				}  // end if both new/ref SFs.
+        }  // end if both new/ref SFs.
 
-				// For the next iteration:
-				SF_ref = SF_new;
+        // For the next iteration:
+        SF_ref = SF_new;
 
-			}  // end if it's a SF
-		}
-		catch (exception& e)
-		{
-			errorMsg = mrpt::exception_to_str(e);
-			break;
-		}
-		catch (...)
-		{
-			break;
-		}
-	}  // end while keep loading
+      }  // end if it's a SF
+    }
+    catch (exception& e)
+    {
+      errorMsg = mrpt::exception_to_str(e);
+      break;
+    }
+    catch (...)
+    {
+      break;
+    }
+  }  // end while keep loading
 
-	progDia.Update(nEntries);
+  progDia.Update(nEntries);
 
-	rebuildTreeView();
+  rebuildTreeView();
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 // --------------------------------------------------------------
@@ -4197,480 +3846,438 @@ void xRawLogViewerFrame::OnRecalculateActionsICP(wxCommandEvent&)
 /*
 void xRawLogViewerFrame::OntreeViewItemRightClick(wxTreeEvent& event)
 {
-	try
-	{
-		if (curSelectedObject)
-		{
-			// MNU: Delete
-			MenuItem37->Enable( curSelectedObject->GetRuntimeClass() !=
+  try
+  {
+    if (curSelectedObject)
+    {
+      // MNU: Delete
+      MenuItem37->Enable( curSelectedObject->GetRuntimeClass() !=
 CLASS_ID(CActionCollection) && curSelectedObject->GetRuntimeClass() !=
 CLASS_ID(CSensoryFrame));
-			// MNU: Add action
-			MenuItem46->Enable( curSelectedObject->GetRuntimeClass() ==
+      // MNU: Add action
+      MenuItem46->Enable( curSelectedObject->GetRuntimeClass() ==
 CLASS_ID(CActionCollection) );
-			MenuItem47->Enable( curSelectedObject->GetRuntimeClass() ==
+      MenuItem47->Enable( curSelectedObject->GetRuntimeClass() ==
 CLASS_ID(CActionCollection) );
-		}
-	}
-	catch (...){}
+    }
+  }
+  catch (...){}
 
-	treeView->PopupMenu( &mnuTree,event.GetPoint() );
+  treeView->PopupMenu( &mnuTree,event.GetPoint() );
 }
 */
 
 // Menu: Delete an element from the rawlog
 void xRawLogViewerFrame::OnMenuItem37Selected(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	if (curSelectedObject)
-	{
-		if (curSelectedObject->GetRuntimeClass()->derivedFrom(
-				CLASS_ID(CObservation)))
-		{
-			bool done = false;
-			// Look for its SF:
-			for (size_t i = 0; !done && i < rawlog.size(); i++)
-			{
-				if (rawlog.getType(i) == CRawlog::etSensoryFrame)
-				{
-					CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
-					for (size_t k = 0; !done && k < sf->size(); k++)
-					{
-						if (sf->getObservationByIndex(k) == curSelectedObject)
-						{
-							sf->eraseByIndex(k);
-							done = true;
-							break;
-						}
-					}
-				}
-				else if (rawlog.getType(i) == CRawlog::etActionCollection)
-				{
-					CActionCollection::Ptr acts = rawlog.getAsAction(i);
-					for (size_t k = 0; !done && k < acts->size(); k++)
-					{
-						if (acts->get(k) == curSelectedObject)
-						{
-							acts->eraseByIndex(k);
-							done = true;
-							break;
-						}
-					}
-				}
-			}
-		}
-	}
+  if (curSelectedObject)
+  {
+    if (curSelectedObject->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+    {
+      bool done = false;
+      // Look for its SF:
+      for (size_t i = 0; !done && i < rawlog.size(); i++)
+      {
+        if (rawlog.getType(i) == CRawlog::etSensoryFrame)
+        {
+          CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
+          for (size_t k = 0; !done && k < sf->size(); k++)
+          {
+            if (sf->getObservationByIndex(k) == curSelectedObject)
+            {
+              sf->eraseByIndex(k);
+              done = true;
+              break;
+            }
+          }
+        }
+        else if (rawlog.getType(i) == CRawlog::etActionCollection)
+        {
+          CActionCollection::Ptr acts = rawlog.getAsAction(i);
+          for (size_t k = 0; !done && k < acts->size(); k++)
+          {
+            if (acts->get(k) == curSelectedObject)
+            {
+              acts->eraseByIndex(k);
+              done = true;
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
 
-	rebuildTreeView();
-	WX_END_TRY
+  rebuildTreeView();
+  WX_END_TRY
 }
 
 void xRawLogViewerFrame::OnMenuRenameBySFIndex(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	wxTextEntryDialog dlg1(
-		this, "Enter SF 0-based index:", "Rename by SF index", "0");
-	dlg1.SetTextValidator(wxFILTER_DIGITS);
-	if (dlg1.ShowModal() != wxID_OK) return;
+  wxTextEntryDialog dlg1(this, "Enter SF 0-based index:", "Rename by SF index", "0");
+  dlg1.SetTextValidator(wxFILTER_DIGITS);
+  if (dlg1.ShowModal() != wxID_OK) return;
 
-	wxTextEntryDialog dlg2(
-		this, "Enter new sensor label:", "Rename by SF index", "NEW_NAME");
-	if (dlg2.ShowModal() != wxID_OK) return;
+  wxTextEntryDialog dlg2(this, "Enter new sensor label:", "Rename by SF index", "NEW_NAME");
+  if (dlg2.ShowModal() != wxID_OK) return;
 
-	unsigned long obsIdx = 0;
-	if (!dlg1.GetValue().ToULong(&obsIdx)) return;
+  unsigned long obsIdx = 0;
+  if (!dlg1.GetValue().ToULong(&obsIdx)) return;
 
-	const auto newName = dlg2.GetValue().ToStdString();
+  const auto newName = dlg2.GetValue().ToStdString();
 
-	for (const auto& e : rawlog)
-	{
-		auto sf = std::dynamic_pointer_cast<CSensoryFrame>(e);
-		if (!sf) continue;
+  for (const auto& e : rawlog)
+  {
+    auto sf = std::dynamic_pointer_cast<CSensoryFrame>(e);
+    if (!sf) continue;
 
-		if (sf->size() < obsIdx) continue;
-		sf->getObservationByIndex(obsIdx)->sensorLabel = newName;
-	}
+    if (sf->size() < obsIdx) continue;
+    sf->getObservationByIndex(obsIdx)->sensorLabel = newName;
+  }
 
-	rebuildTreeView();
-	WX_END_TRY
+  rebuildTreeView();
+  WX_END_TRY
 }
 
 // Menu: New action 2D (SM)
 void xRawLogViewerFrame::OnMenuItem47Selected(wxCommandEvent&)
 {
-	WX_START_TRY
-	if (curSelectedObject)
-	{
-		if (curSelectedObject->GetRuntimeClass() == CLASS_ID(CActionCollection))
-		{
-			CActionCollection::Ptr acts =
-				std::dynamic_pointer_cast<CActionCollection>(curSelectedObject);
+  WX_START_TRY
+  if (curSelectedObject)
+  {
+    if (curSelectedObject->GetRuntimeClass() == CLASS_ID(CActionCollection))
+    {
+      CActionCollection::Ptr acts = std::dynamic_pointer_cast<CActionCollection>(curSelectedObject);
 
-			float odo_x =
-				atof(string(wxGetTextFromUser(
-								_("Estimated displacement, X (meters):"),
-								_("Enter new action parameter:"), _("0"))
-								.mb_str())
-						 .c_str());
-			float odo_y =
-				atof(string(wxGetTextFromUser(
-								_("Estimated displacement, Y (meters):"),
-								_("Enter new action parameter:"), _("0"))
-								.mb_str())
-						 .c_str());
-			float odo_phi = DEG2RAD(
-				atof(string(wxGetTextFromUser(
-								_("Estimated displacement, PHI (degrees):"),
-								_("Enter new action parameter:"), _("0"))
-								.mb_str())
-						 .c_str()));
+      float odo_x = atof(string(wxGetTextFromUser(
+                                    _("Estimated displacement, X (meters):"),
+                                    _("Enter new action parameter:"), _("0"))
+                                    .mb_str())
+                             .c_str());
+      float odo_y = atof(string(wxGetTextFromUser(
+                                    _("Estimated displacement, Y (meters):"),
+                                    _("Enter new action parameter:"), _("0"))
+                                    .mb_str())
+                             .c_str());
+      float odo_phi = DEG2RAD(atof(string(wxGetTextFromUser(
+                                              _("Estimated displacement, PHI (degrees):"),
+                                              _("Enter new action parameter:"), _("0"))
+                                              .mb_str())
+                                       .c_str()));
 
-			CPose2D estMean(odo_x, odo_y, odo_phi);
-			CMatrixDouble33 estCov;
-			estCov.setDiagonal(3, 1e-6);
+      CPose2D estMean(odo_x, odo_y, odo_phi);
+      CMatrixDouble33 estCov;
+      estCov.setDiagonal(3, 1e-6);
 
-			CActionRobotMovement2D newAct;
-			newAct.estimationMethod = CActionRobotMovement2D::emScan2DMatching;
-			newAct.poseChange =
-				CPosePDF::Ptr(new CPosePDFGaussian(estMean, estCov));
+      CActionRobotMovement2D newAct;
+      newAct.estimationMethod = CActionRobotMovement2D::emScan2DMatching;
+      newAct.poseChange = CPosePDF::Ptr(new CPosePDFGaussian(estMean, estCov));
 
-			acts->insert(newAct);
-		}
-	}
-	rebuildTreeView();
-	WX_END_TRY
+      acts->insert(newAct);
+    }
+  }
+  rebuildTreeView();
+  WX_END_TRY
 }
 // Menu: New action 2D (odometry)
 void xRawLogViewerFrame::OnMenuItem46Selected(wxCommandEvent&)
 {
-	WX_START_TRY
-	if (curSelectedObject)
-	{
-		if (curSelectedObject->GetRuntimeClass() == CLASS_ID(CActionCollection))
-		{
-			CActionCollection::Ptr acts =
-				std::dynamic_pointer_cast<CActionCollection>(curSelectedObject);
+  WX_START_TRY
+  if (curSelectedObject)
+  {
+    if (curSelectedObject->GetRuntimeClass() == CLASS_ID(CActionCollection))
+    {
+      CActionCollection::Ptr acts = std::dynamic_pointer_cast<CActionCollection>(curSelectedObject);
 
-			float odo_x =
-				atof(string(wxGetTextFromUser(
-								_("Estimated displacement, X (meters):"),
-								_("Enter new action parameter:"), _("0"))
-								.mb_str())
-						 .c_str());
-			float odo_y =
-				atof(string(wxGetTextFromUser(
-								_("Estimated displacement, Y (meters):"),
-								_("Enter new action parameter:"), _("0"))
-								.mb_str())
-						 .c_str());
-			float odo_phi = DEG2RAD(
-				atof(string(wxGetTextFromUser(
-								_("Estimated displacement, PHI (degrees):"),
-								_("Enter new action parameter:"), _("0"))
-								.mb_str())
-						 .c_str()));
+      float odo_x = atof(string(wxGetTextFromUser(
+                                    _("Estimated displacement, X (meters):"),
+                                    _("Enter new action parameter:"), _("0"))
+                                    .mb_str())
+                             .c_str());
+      float odo_y = atof(string(wxGetTextFromUser(
+                                    _("Estimated displacement, Y (meters):"),
+                                    _("Enter new action parameter:"), _("0"))
+                                    .mb_str())
+                             .c_str());
+      float odo_phi = DEG2RAD(atof(string(wxGetTextFromUser(
+                                              _("Estimated displacement, PHI (degrees):"),
+                                              _("Enter new action parameter:"), _("0"))
+                                              .mb_str())
+                                       .c_str()));
 
-			CPose2D odo(odo_x, odo_y, odo_phi);
+      CPose2D odo(odo_x, odo_y, odo_phi);
 
-			CActionRobotMovement2D newAct;
-			CActionRobotMovement2D::TMotionModelOptions
-				odoOpts;  // Default values
-			newAct.computeFromOdometry(odo, odoOpts);
+      CActionRobotMovement2D newAct;
+      CActionRobotMovement2D::TMotionModelOptions odoOpts;  // Default values
+      newAct.computeFromOdometry(odo, odoOpts);
 
-			acts->insert(newAct);
-		}
-	}
-	rebuildTreeView();
-	WX_END_TRY
+      acts->insert(newAct);
+    }
+  }
+  rebuildTreeView();
+  WX_END_TRY
 }
 
 void xRawLogViewerFrame::OnMenuExpandAll(wxCommandEvent&)
 {
-	// treeView->ExpandAll();
+  // treeView->ExpandAll();
 }
 
 void xRawLogViewerFrame::OnMenuCollapseAll(wxCommandEvent&)
 {
-	// treeView->CollapseAll();
+  // treeView->CollapseAll();
 }
 
 void xRawLogViewerFrame::OnRecomputeOdometry(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	COdometryParams dialog(this);
+  COdometryParams dialog(this);
 
-	if (dialog.ShowModal())
-	{
-		float K_left, K_right, D;
+  if (dialog.ShowModal())
+  {
+    float K_left, K_right, D;
 
-		K_left = atof(string(dialog.edKL->GetValue().mb_str()).c_str());
-		K_right = atof(string(dialog.edKR->GetValue().mb_str()).c_str());
-		D = atof(string(dialog.edD->GetValue().mb_str()).c_str());
+    K_left = atof(string(dialog.edKL->GetValue().mb_str()).c_str());
+    K_right = atof(string(dialog.edKR->GetValue().mb_str()).c_str());
+    D = atof(string(dialog.edD->GetValue().mb_str()).c_str());
 
-		size_t M = 0;
+    size_t M = 0;
 
-		mrpt::poses::CPose2D auxLastAbsOdo;
-		bool auxLastAbsOdo_valid = false;
+    mrpt::poses::CPose2D auxLastAbsOdo;
+    bool auxLastAbsOdo_valid = false;
 
-		{
-			wxBusyCursor waitCursor;
+    {
+      wxBusyCursor waitCursor;
 
-			for (size_t i = 0; i < rawlog.size(); i++)
-			{
-				if (rawlog.getType(i) == CRawlog::etActionCollection)
-				{
-					CActionCollection::Ptr acts =
-						std::dynamic_pointer_cast<CActionCollection>(
-							rawlog.getAsAction(i));
-					CActionRobotMovement2D::Ptr act =
-						acts->getMovementEstimationByType(
-							CActionRobotMovement2D::emOdometry);
-					if (act)
-					{
-						if (!act->hasEncodersInfo)
-						{
-							wxMessageBox(
-								(format(
-									 "An odometry measurement was found at "
-									 "entry %i which does not\ncontain "
-									 "encoders info: Cannot recompute "
-									 "odometry without this information!",
-									 (unsigned)i)
-									 .c_str()));
-							return;
-						}
-						act->computeFromEncoders(K_left, K_right, D);
-						M++;
-					}
-				}
+      for (size_t i = 0; i < rawlog.size(); i++)
+      {
+        if (rawlog.getType(i) == CRawlog::etActionCollection)
+        {
+          CActionCollection::Ptr acts =
+              std::dynamic_pointer_cast<CActionCollection>(rawlog.getAsAction(i));
+          CActionRobotMovement2D::Ptr act =
+              acts->getMovementEstimationByType(CActionRobotMovement2D::emOdometry);
+          if (act)
+          {
+            if (!act->hasEncodersInfo)
+            {
+              wxMessageBox((format(
+                                "An odometry measurement was found at "
+                                "entry %i which does not\ncontain "
+                                "encoders info: Cannot recompute "
+                                "odometry without this information!",
+                                (unsigned)i)
+                                .c_str()));
+              return;
+            }
+            act->computeFromEncoders(K_left, K_right, D);
+            M++;
+          }
+        }
 
-				if (rawlog.getAsGeneric(i)->GetRuntimeClass() ==
-					CLASS_ID(CObservationOdometry))
-				{
-					CObservationOdometry::Ptr obs =
-						std::dynamic_pointer_cast<CObservationOdometry>(
-							rawlog.getAsGeneric(i));
-					CObservationOdometry* odo = obs.get();
-					if (!odo->hasEncodersInfo)
-					{
-						wxMessageBox(
-							(format(
-								 "An odometry measurement was found at "
-								 "entry "
-								 "%i which does not\ncontain encoders info: "
-								 "Cannot recompute odometry without this "
-								 "information!",
-								 (unsigned)i)
-								 .c_str()));
-						return;
-					}
+        if (rawlog.getAsGeneric(i)->GetRuntimeClass() == CLASS_ID(CObservationOdometry))
+        {
+          CObservationOdometry::Ptr obs =
+              std::dynamic_pointer_cast<CObservationOdometry>(rawlog.getAsGeneric(i));
+          CObservationOdometry* odo = obs.get();
+          if (!odo->hasEncodersInfo)
+          {
+            wxMessageBox((format(
+                              "An odometry measurement was found at "
+                              "entry "
+                              "%i which does not\ncontain encoders info: "
+                              "Cannot recompute odometry without this "
+                              "information!",
+                              (unsigned)i)
+                              .c_str()));
+            return;
+          }
 
-					// Create aux odo increment to recompute the global odo:
-					CActionRobotMovement2D auxOdoIncr;
-					auxOdoIncr.hasEncodersInfo = true;
-					auxOdoIncr.encoderLeftTicks = odo->encoderLeftTicks;
-					auxOdoIncr.encoderRightTicks = odo->encoderRightTicks;
-					auxOdoIncr.computeFromEncoders(K_left, K_right, D);
+          // Create aux odo increment to recompute the global odo:
+          CActionRobotMovement2D auxOdoIncr;
+          auxOdoIncr.hasEncodersInfo = true;
+          auxOdoIncr.encoderLeftTicks = odo->encoderLeftTicks;
+          auxOdoIncr.encoderRightTicks = odo->encoderRightTicks;
+          auxOdoIncr.computeFromEncoders(K_left, K_right, D);
 
-					if (!auxLastAbsOdo_valid)
-					{
-						auxLastAbsOdo_valid = true;
-						auxLastAbsOdo = odo->odometry;
-						// and don't modify this odo val.
-					}
-					else
-					{
-						odo->odometry = auxLastAbsOdo +
-							auxOdoIncr.rawOdometryIncrementReading;
-						auxLastAbsOdo = odo->odometry;
-					}
-					M++;
-				}
-			}
-		}
+          if (!auxLastAbsOdo_valid)
+          {
+            auxLastAbsOdo_valid = true;
+            auxLastAbsOdo = odo->odometry;
+            // and don't modify this odo val.
+          }
+          else
+          {
+            odo->odometry = auxLastAbsOdo + auxOdoIncr.rawOdometryIncrementReading;
+            auxLastAbsOdo = odo->odometry;
+          }
+          M++;
+        }
+      }
+    }
 
-		wxMessageBox((format("%u entries modified!", (unsigned)M).c_str()));
-	}
-	WX_END_TRY
+    wxMessageBox((format("%u entries modified!", (unsigned)M).c_str()));
+  }
+  WX_END_TRY
 }
 
 // Generate text file with 1D range measurements
 void xRawLogViewerFrame::OnRangeFinder1DGenTextFile(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	wxString caption = wxT("Save as...");
-	wxString wildcard = wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*");
-	wxString defaultDir(
-		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
-	wxString defaultFilename =
-		(loadedFileName + string("_1DrangeFinders.txt")).c_str();
-	wxFileDialog dialog(
-		this, caption, defaultDir, defaultFilename, wildcard,
-		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+  wxString caption = wxT("Save as...");
+  wxString wildcard = wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*");
+  wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+  wxString defaultFilename = (loadedFileName + string("_1DrangeFinders.txt")).c_str();
+  wxFileDialog dialog(
+      this, caption, defaultDir, defaultFilename, wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-	if (dialog.ShowModal() == wxID_OK)
-	{
-		wxString fileName = dialog.GetPath();
-		string fil(fileName.mbc_str());
+  if (dialog.ShowModal() == wxID_OK)
+  {
+    wxString fileName = dialog.GetPath();
+    string fil(fileName.mbc_str());
 
-		int i, M = 0, n = (int)rawlog.size();
-		FILE* f = os::fopen(fil.c_str(), "wt");
-		if (!f) THROW_EXCEPTION("Cannot open output file for write.");
+    int i, M = 0, n = (int)rawlog.size();
+    FILE* f = os::fopen(fil.c_str(), "wt");
+    if (!f) THROW_EXCEPTION("Cannot open output file for write.");
 
-		for (i = 0; i < n; i++)
-		{
-			if (rawlog.getType(i) == CRawlog::etSensoryFrame)
-			{
-				CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
-				for (size_t k = 0; k < sf->size(); k++)
-				{
-					if (sf->getObservationByIndex(k)->GetRuntimeClass() ==
-						CLASS_ID(CObservationRange))
-					{
-						auto obs =
-							sf->getObservationByIndexAs<CObservationRange::Ptr>(
-								k);
+    for (i = 0; i < n; i++)
+    {
+      if (rawlog.getType(i) == CRawlog::etSensoryFrame)
+      {
+        CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
+        for (size_t k = 0; k < sf->size(); k++)
+        {
+          if (sf->getObservationByIndex(k)->GetRuntimeClass() == CLASS_ID(CObservationRange))
+          {
+            auto obs = sf->getObservationByIndexAs<CObservationRange::Ptr>(k);
 
-						vector<float> rowOfRangesByID(100, 0);
-						for (auto it = obs->begin(); it != obs->end(); ++it)
-						{
-							ASSERT_(it->sensorID < rowOfRangesByID.size());
-							rowOfRangesByID[it->sensorID] = it->sensedDistance;
-						}
+            vector<float> rowOfRangesByID(100, 0);
+            for (auto it = obs->begin(); it != obs->end(); ++it)
+            {
+              ASSERT_(it->sensorID < rowOfRangesByID.size());
+              rowOfRangesByID[it->sensorID] = it->sensedDistance;
+            }
 
-						::fprintf(f, "%06u ", i);
-						for (float q : rowOfRangesByID)
-							::fprintf(f, "%03.04f ", q);
-						::fprintf(f, "\n");
-						M++;
-					}
-				}  // end for k
-			}
-			else if (rawlog.getType(i) == CRawlog::etObservation)
-			{
-				CObservation::Ptr o = rawlog.getAsObservation(i);
+            ::fprintf(f, "%06u ", i);
+            for (float q : rowOfRangesByID) ::fprintf(f, "%03.04f ", q);
+            ::fprintf(f, "\n");
+            M++;
+          }
+        }  // end for k
+      }
+      else if (rawlog.getType(i) == CRawlog::etObservation)
+      {
+        CObservation::Ptr o = rawlog.getAsObservation(i);
 
-				if (IS_CLASS(*o, CObservationRange))
-				{
-					CObservationRange::Ptr obs =
-						std::dynamic_pointer_cast<CObservationRange>(o);
+        if (IS_CLASS(*o, CObservationRange))
+        {
+          CObservationRange::Ptr obs = std::dynamic_pointer_cast<CObservationRange>(o);
 
-					deque<CObservationRange::TMeasurement>::iterator it;
-					vector<float> rowOfRangesByID(100, 0);
-					for (it = obs->sensedData.begin();
-						 it != obs->sensedData.end(); it++)
-					{
-						ASSERT_(it->sensorID < rowOfRangesByID.size());
-						rowOfRangesByID[it->sensorID] = it->sensedDistance;
-					}
+          deque<CObservationRange::TMeasurement>::iterator it;
+          vector<float> rowOfRangesByID(100, 0);
+          for (it = obs->sensedData.begin(); it != obs->sensedData.end(); it++)
+          {
+            ASSERT_(it->sensorID < rowOfRangesByID.size());
+            rowOfRangesByID[it->sensorID] = it->sensedDistance;
+          }
 
-					::fprintf(f, "%06u ", i);
-					for (float q : rowOfRangesByID)
-						::fprintf(f, "%03.04f ", q);
-					::fprintf(f, "\n");
-					M++;
-				}
-			}
-		}
+          ::fprintf(f, "%06u ", i);
+          for (float q : rowOfRangesByID) ::fprintf(f, "%03.04f ", q);
+          ::fprintf(f, "\n");
+          M++;
+        }
+      }
+    }
 
-		os::fclose(f);
+    os::fclose(f);
 
-		wxMessageBox(
-			(format("%u entries saved!", M).c_str()), _("Done"), wxOK, this);
-	}
+    wxMessageBox((format("%u entries saved!", M).c_str()), _("Done"), wxOK, this);
+  }
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 void xRawLogViewerFrame::OnMenuModifyICPActionsUncertainty(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	float std_xy =
-		atof(string(wxGetTextFromUser(
-						_("Standard deviation of x and y (meters):"),
-						_("ICP-based odometry uncertainty:"), _("0.01"))
-						.mb_str())
-				 .c_str());
-	float std_phi =
-		DEG2RAD(atof(string(wxGetTextFromUser(
-								_("Standard deviation of phi (degrees):"),
-								_("ICP-based odometry uncertainty:"), _("0.2"))
-								.mb_str())
-						 .c_str()));
+  float std_xy = atof(string(wxGetTextFromUser(
+                                 _("Standard deviation of x and y (meters):"),
+                                 _("ICP-based odometry uncertainty:"), _("0.01"))
+                                 .mb_str())
+                          .c_str());
+  float std_phi = DEG2RAD(atof(string(wxGetTextFromUser(
+                                          _("Standard deviation of phi (degrees):"),
+                                          _("ICP-based odometry uncertainty:"), _("0.2"))
+                                          .mb_str())
+                                   .c_str()));
 
-	float std_xy2 = square(std_xy);
-	float std_phi2 = square(std_phi);
+  float std_xy2 = square(std_xy);
+  float std_phi2 = square(std_phi);
 
-	size_t M = 0;
+  size_t M = 0;
 
-	{
-		wxBusyCursor waitCursor;
+  {
+    wxBusyCursor waitCursor;
 
-		for (size_t i = 0; i < rawlog.size(); i++)
-		{
-			if (rawlog.getType(i) == CRawlog::etActionCollection)
-			{
-				CActionCollection::Ptr acts =
-					CActionCollection::Ptr(rawlog.getAsAction(i));
-				for (unsigned int j = 0; j < acts->size(); j++)
-				{
-					CAction::Ptr act = acts->get(j);
+    for (size_t i = 0; i < rawlog.size(); i++)
+    {
+      if (rawlog.getType(i) == CRawlog::etActionCollection)
+      {
+        CActionCollection::Ptr acts = CActionCollection::Ptr(rawlog.getAsAction(i));
+        for (unsigned int j = 0; j < acts->size(); j++)
+        {
+          CAction::Ptr act = acts->get(j);
 
-					if (act->GetRuntimeClass()->derivedFrom(
-							CLASS_ID(CActionRobotMovement2D)))
-					{
-						CActionRobotMovement2D::Ptr actMov =
-							std::dynamic_pointer_cast<CActionRobotMovement2D>(
-								act);
+          if (act->GetRuntimeClass()->derivedFrom(CLASS_ID(CActionRobotMovement2D)))
+          {
+            CActionRobotMovement2D::Ptr actMov =
+                std::dynamic_pointer_cast<CActionRobotMovement2D>(act);
 
-						if (actMov->estimationMethod ==
-							CActionRobotMovement2D::emScan2DMatching)
-						{
-							ASSERT_(
-								actMov->poseChange->GetRuntimeClass() ==
-								CLASS_ID(CPosePDFGaussian));
+            if (actMov->estimationMethod == CActionRobotMovement2D::emScan2DMatching)
+            {
+              ASSERT_(actMov->poseChange->GetRuntimeClass() == CLASS_ID(CPosePDFGaussian));
 
-							CPosePDFGaussian::Ptr aux =
-								std::dynamic_pointer_cast<CPosePDFGaussian>(
-									actMov->poseChange.get_ptr());
-							aux->cov.setZero();
-							aux->cov(0, 0) = aux->cov(1, 1) = std_xy2;
-							aux->cov(2, 2) = std_phi2;
+              CPosePDFGaussian::Ptr aux =
+                  std::dynamic_pointer_cast<CPosePDFGaussian>(actMov->poseChange.get_ptr());
+              aux->cov.setZero();
+              aux->cov(0, 0) = aux->cov(1, 1) = std_xy2;
+              aux->cov(2, 2) = std_phi2;
 
-							actMov->motionModelConfiguration.modelSelection =
-								CActionRobotMovement2D::mmGaussian;
-							actMov->rawOdometryIncrementReading = aux->mean;
-							M++;
-						}
-					}
-				}
-			}
-		}
-	}
+              actMov->motionModelConfiguration.modelSelection = CActionRobotMovement2D::mmGaussian;
+              actMov->rawOdometryIncrementReading = aux->mean;
+              M++;
+            }
+          }
+        }
+      }
+    }
+  }
 
-	wxMessageBox((format("%u entries modified!", (unsigned)M).c_str()));
+  wxMessageBox((format("%u entries modified!", (unsigned)M).c_str()));
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 void xRawLogViewerFrame::OnShowAnimateScans(wxCommandEvent&)
 {
-	if (rawlog.empty())
-	{
-		wxMessageBox(
-			_("Please load a rawlog first!"), _("Rawlog is empty"), wxOK, this);
-		return;
-	}
+  if (rawlog.empty())
+  {
+    wxMessageBox(_("Please load a rawlog first!"), _("Rawlog is empty"), wxOK, this);
+    return;
+  }
 
-	CScanAnimation scanAnimation(this);
-	scanAnimation.Maximize();
+  CScanAnimation scanAnimation(this);
+  scanAnimation.Maximize();
 
-	scanAnimation.ShowModal();
+  scanAnimation.ShowModal();
 }
 
 void xRawLogViewerFrame::OnMenuShowTips(wxCommandEvent&) { showNextTip(true); }
@@ -4679,1451 +4286,1354 @@ void xRawLogViewerFrame::OnbtnEditCommentsClick(wxCommandEvent&) {}
 void xRawLogViewerFrame::OnMenuInsertComment(wxCommandEvent&) {}
 // Asks for a sensor label:
 std::vector<std::string> xRawLogViewerFrame::AskForObservationByLabelMultiple(
-	const std::string& title)
+    const std::string& title)
 {
-	std::vector<std::string> labels;
+  std::vector<std::string> labels;
 
-	if (listOfSensorLabels.empty())
-	{
-		wxMessageBox(
-			_("No sensors were found with proper sensor labels. Labels are "
-			  "required for this operation."));
-		return std::vector<std::string>();
-	}
+  if (listOfSensorLabels.empty())
+  {
+    wxMessageBox(
+        _("No sensors were found with proper sensor labels. Labels are "
+          "required for this operation."));
+    return std::vector<std::string>();
+  }
 
-	// List of labels:
-	wxArrayString lstLabels;
-	std::vector<std::string> lstLabelsStd;
-	for (auto i = listOfSensorLabels.begin(); i != listOfSensorLabels.end();
-		 ++i)
-	{
-		lstLabelsStd.push_back(i->first);
-		lstLabels.Add(i->first.c_str());
-	}
+  // List of labels:
+  wxArrayString lstLabels;
+  std::vector<std::string> lstLabelsStd;
+  for (auto i = listOfSensorLabels.begin(); i != listOfSensorLabels.end(); ++i)
+  {
+    lstLabelsStd.push_back(i->first);
+    lstLabels.Add(i->first.c_str());
+  }
 
-	wxArrayInt sels;
+  wxArrayInt sels;
 
 #if (wxMAJOR_VERSION >= 3) || ((wxMAJOR_VERSION == 2) && (wxMINOR_VERSION >= 9))
-	wxGetSelectedChoices(
-		sels, title.c_str(), _("Sensor Labels"), lstLabels, this);
+  wxGetSelectedChoices(sels, title.c_str(), _("Sensor Labels"), lstLabels, this);
 #else
-	wxGetMultipleChoices(
-		sels, title.c_str(), _("Sensor Labels"), lstLabels, this);
+  wxGetMultipleChoices(sels, title.c_str(), _("Sensor Labels"), lstLabels, this);
 #endif
 
-	labels.resize(sels.Count());
-	for (size_t i = 0; i < labels.size(); i++)
-		labels[i] = lstLabelsStd[sels[i]];
+  labels.resize(sels.Count());
+  for (size_t i = 0; i < labels.size(); i++) labels[i] = lstLabelsStd[sels[i]];
 
-	return labels;
+  return labels;
 }
 
 // Asks for a sensor label:
-std::string xRawLogViewerFrame::AskForObservationByLabel(
-	const std::string& title)
+std::string xRawLogViewerFrame::AskForObservationByLabel(const std::string& title)
 {
-	if (listOfSensorLabels.empty())
-	{
-		wxMessageBox(
-			_("No sensors were found with proper sensor labels. Labels are "
-			  "required for this operation."));
-		return string();
-	}
+  if (listOfSensorLabels.empty())
+  {
+    wxMessageBox(
+        _("No sensors were found with proper sensor labels. Labels are "
+          "required for this operation."));
+    return string();
+  }
 
-	// List of labels:
-	wxArrayString lstLabels;
-	for (auto i = listOfSensorLabels.begin(); i != listOfSensorLabels.end();
-		 ++i)
-	{
-		lstLabels.Add(i->first.c_str());
-	}
+  // List of labels:
+  wxArrayString lstLabels;
+  for (auto i = listOfSensorLabels.begin(); i != listOfSensorLabels.end(); ++i)
+  {
+    lstLabels.Add(i->first.c_str());
+  }
 
-	wxString ret =
-		wxGetSingleChoice(title.c_str(), _("Sensor Labels"), lstLabels, this);
-	if (ret.IsEmpty()) return string();
+  wxString ret = wxGetSingleChoice(title.c_str(), _("Sensor Labels"), lstLabels, this);
+  if (ret.IsEmpty()) return string();
 
-	return string(ret.mb_str());
+  return string(ret.mb_str());
 }
 
 // Changes the label of a sensor:
 void xRawLogViewerFrame::OnMenuRenameSensor(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	const string the_label =
-		AskForObservationByLabel("Choose the label of the sensor to change:");
+  const string the_label = AskForObservationByLabel("Choose the label of the sensor to change:");
 
-	wxString new_label = wxGetTextFromUser(
-		_("Enter the new sensor label"), _("New label:"), the_label.c_str(),
-		this);
-	if (new_label.IsEmpty()) return;
+  wxString new_label =
+      wxGetTextFromUser(_("Enter the new sensor label"), _("New label:"), the_label.c_str(), this);
+  if (new_label.IsEmpty()) return;
 
-	const string the_new_label = string(new_label.mb_str());
+  const string the_new_label = string(new_label.mb_str());
 
-	if (the_new_label == the_label) return;
+  if (the_new_label == the_label) return;
 
-	size_t i, n = rawlog.size();
-	unsigned int nChanges = 0;
+  size_t i, n = rawlog.size();
+  unsigned int nChanges = 0;
 
-	for (i = 0; i < n; i++)
-	{
-		switch (rawlog.getType(i))
-		{
-			case CRawlog::etSensoryFrame:
-			{
-				CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
-				CObservation::Ptr o;
-				while ((o = sf->getObservationBySensorLabel(the_label, 0)))
-				{
-					o->sensorLabel = the_new_label;
-					nChanges++;
-				}
-			}
-			break;
+  for (i = 0; i < n; i++)
+  {
+    switch (rawlog.getType(i))
+    {
+      case CRawlog::etSensoryFrame:
+      {
+        CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
+        CObservation::Ptr o;
+        while ((o = sf->getObservationBySensorLabel(the_label, 0)))
+        {
+          o->sensorLabel = the_new_label;
+          nChanges++;
+        }
+      }
+      break;
 
-			case CRawlog::etObservation:
-			{
-				CObservation::Ptr o = rawlog.getAsObservation(i);
+      case CRawlog::etObservation:
+      {
+        CObservation::Ptr o = rawlog.getAsObservation(i);
 
-				if (o->sensorLabel == the_label)
-				{
-					o->sensorLabel = the_new_label;
-					nChanges++;
-				}
-			}
-			break;
+        if (o->sensorLabel == the_label)
+        {
+          o->sensorLabel = the_new_label;
+          nChanges++;
+        }
+      }
+      break;
 
-			default: break;
-		}  // end switch type
+      default:
+        break;
+    }  // end switch type
 
-	}  // end for
+  }  // end for
 
-	wxMessageBox(
-		wxString::Format(_("%u changes"), nChanges), _("Done"), wxOK, this);
+  wxMessageBox(wxString::Format(_("%u changes"), nChanges), _("Done"), wxOK, this);
 
-	// Update the views:
-	rebuildTreeView();
+  // Update the views:
+  rebuildTreeView();
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 void xRawLogViewerFrame::OnMenuChangePosesBatch(wxCommandEvent&)
 {
-	CFormBatchSensorPose dialog(this);
-	if (dialog.ShowModal())
-	{
-		WX_START_TRY
+  CFormBatchSensorPose dialog(this);
+  if (dialog.ShowModal())
+  {
+    WX_START_TRY
 
-		wxBusyCursor busy;
+    wxBusyCursor busy;
 
-		// Load the "ini-file" from the text control:
-		CConfigFileMemory cfg(string(dialog.edText->GetValue().mb_str()));
+    // Load the "ini-file" from the text control:
+    CConfigFileMemory cfg(string(dialog.edText->GetValue().mb_str()));
 
-		// make a list  "sensor_label -> sensor_pose" by parsing the
-		// ini-file:
-		using TSensor2PoseMap = std::map<std::string, mrpt::poses::CPose3D>;
-		TSensor2PoseMap desiredSensorPoses;
-		std::map<std::string, mrpt::obs::CObservationImage> desiredCamParams;
+    // make a list  "sensor_label -> sensor_pose" by parsing the
+    // ini-file:
+    using TSensor2PoseMap = std::map<std::string, mrpt::poses::CPose3D>;
+    TSensor2PoseMap desiredSensorPoses;
+    std::map<std::string, mrpt::obs::CObservationImage> desiredCamParams;
 
-		std::vector<std::string> sections;
-		cfg.getAllSections(sections);
+    std::vector<std::string> sections;
+    cfg.getAllSections(sections);
 
-		for (auto& section : sections)
-		{
-			if (section.empty()) continue;
+    for (auto& section : sections)
+    {
+      if (section.empty()) continue;
 
-			// Get sensor label:
-			string label = cfg.read_string(section, "sensorLabel", "");
-			if (label.empty()) continue;
+      // Get sensor label:
+      string label = cfg.read_string(section, "sensorLabel", "");
+      if (label.empty()) continue;
 
-			CPose3D the_pose(
-				cfg.read_double(section, "pose_x", 0, true),
-				cfg.read_double(section, "pose_y", 0, true),
-				cfg.read_double(section, "pose_z", 0, true),
-				DEG2RAD(cfg.read_double(section, "pose_yaw", 0)),
-				DEG2RAD(cfg.read_double(section, "pose_pitch", 0)),
-				DEG2RAD(cfg.read_double(section, "pose_roll", 0)));
+      CPose3D the_pose(
+          cfg.read_double(section, "pose_x", 0, true), cfg.read_double(section, "pose_y", 0, true),
+          cfg.read_double(section, "pose_z", 0, true),
+          DEG2RAD(cfg.read_double(section, "pose_yaw", 0)),
+          DEG2RAD(cfg.read_double(section, "pose_pitch", 0)),
+          DEG2RAD(cfg.read_double(section, "pose_roll", 0)));
 
-			// insert:
-			desiredSensorPoses[label] = the_pose;
+      // insert:
+      desiredSensorPoses[label] = the_pose;
 
-			// Camera params?
-			CVectorDouble calib, distort;
-			cfg.read_vector(section, "calib_params", CVectorDouble(), calib);
-			cfg.read_vector(
-				section, "distort_params", CVectorDouble(), distort);
+      // Camera params?
+      CVectorDouble calib, distort;
+      cfg.read_vector(section, "calib_params", CVectorDouble(), calib);
+      cfg.read_vector(section, "distort_params", CVectorDouble(), distort);
 
-			if (calib.empty() || distort.empty()) continue;
+      if (calib.empty() || distort.empty()) continue;
 
-			ASSERT_(calib.size() == 4);
-			ASSERT_(distort.size() == 4);
+      ASSERT_(calib.size() == 4);
+      ASSERT_(distort.size() == 4);
 
-			CMatrixDouble33& I =
-				desiredCamParams[label].cameraParams.intrinsicParams;
-			I.setZero(3, 3);
-			I(2, 2) = 1;
-			I(0, 0) = calib[0];
-			I(1, 1) = calib[1];
-			I(0, 2) = calib[2];
-			I(1, 2) = calib[3];
+      CMatrixDouble33& I = desiredCamParams[label].cameraParams.intrinsicParams;
+      I.setZero(3, 3);
+      I(2, 2) = 1;
+      I(0, 0) = calib[0];
+      I(1, 1) = calib[1];
+      I(0, 2) = calib[2];
+      I(1, 2) = calib[3];
 
-			desiredCamParams[label].cameraParams.setDistortionParamsVector(
-				distort);
-		}  // end for sections
+      desiredCamParams[label].cameraParams.setDistortionParamsVector(distort);
+    }  // end for sections
 
-		if (desiredSensorPoses.empty())
-		{
-			wxMessageBox(
-				_("No valid 'sensorLabel' entry was found in the text"),
-				_("Error"), wxOK, this);
-			return;
-		}
+    if (desiredSensorPoses.empty())
+    {
+      wxMessageBox(_("No valid 'sensorLabel' entry was found in the text"), _("Error"), wxOK, this);
+      return;
+    }
 
-		// now apply the changes:
-		wxProgressDialog progDia(
-			wxT("Modifying rawlog"), wxT("Processing..."),
-			rawlog.size(),	// range
-			this,  // parent
-			wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
-				wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+    // now apply the changes:
+    wxProgressDialog progDia(
+        wxT("Modifying rawlog"), wxT("Processing..."),
+        rawlog.size(),  // range
+        this,           // parent
+        wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
+            wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-		wxTheApp->Yield();	// Let the app. process messages
+    wxTheApp->Yield();  // Let the app. process messages
 
-		size_t changes = 0;
-		int countLoop = 0;
-		bool keepDoing = true;
-		for (CRawlog::iterator it = rawlog.begin();
-			 it != rawlog.end() && keepDoing; it++, countLoop++)
-		{
-			CObservation::Ptr obs;
+    size_t changes = 0;
+    int countLoop = 0;
+    bool keepDoing = true;
+    for (CRawlog::iterator it = rawlog.begin(); it != rawlog.end() && keepDoing; it++, countLoop++)
+    {
+      CObservation::Ptr obs;
 
-			// Go thru all the obs. of a SF, or just the obs. for non-SF
-			// rawlogs:
-			size_t idx_in_sf = 0;
-			bool isSingleObs;
-			while (true)
-			{
-				isSingleObs = false;
+      // Go thru all the obs. of a SF, or just the obs. for non-SF
+      // rawlogs:
+      size_t idx_in_sf = 0;
+      bool isSingleObs;
+      while (true)
+      {
+        isSingleObs = false;
 
-				if (it.getType() == CRawlog::etObservation)
-				{
-					obs = std::dynamic_pointer_cast<CObservation>(*it);
-					isSingleObs = true;
-				}
-				else if (it.getType() == CRawlog::etSensoryFrame)
-				{
-					CSensoryFrame::Ptr sf =
-						std::dynamic_pointer_cast<CSensoryFrame>(*it);
+        if (it.getType() == CRawlog::etObservation)
+        {
+          obs = std::dynamic_pointer_cast<CObservation>(*it);
+          isSingleObs = true;
+        }
+        else if (it.getType() == CRawlog::etSensoryFrame)
+        {
+          CSensoryFrame::Ptr sf = std::dynamic_pointer_cast<CSensoryFrame>(*it);
 
-					if (idx_in_sf >= sf->size()) break;
-					obs = sf->getObservationByIndex(idx_in_sf++);
-				}
-				else
-					break;
+          if (idx_in_sf >= sf->size()) break;
+          obs = sf->getObservationByIndex(idx_in_sf++);
+        }
+        else
+          break;
 
-				if (obs)
-				{
-					// Check the sensor label:
-					auto i = desiredSensorPoses.find(obs->sensorLabel);
-					if (i != desiredSensorPoses.end())
-					{
-						obs->setSensorPose(i->second);
-						changes++;
-					}
+        if (obs)
+        {
+          // Check the sensor label:
+          auto i = desiredSensorPoses.find(obs->sensorLabel);
+          if (i != desiredSensorPoses.end())
+          {
+            obs->setSensorPose(i->second);
+            changes++;
+          }
 
-					// Check for camera params:
-					auto c = desiredCamParams.find(obs->sensorLabel);
-					if (c != desiredCamParams.end())
-					{
-						if (!IS_CLASS(*obs, CObservationImage))
-							THROW_EXCEPTION_FMT(
-								"Camera parameters found for non-image "
-								"observation class: %s",
-								obs->sensorLabel.c_str());
+          // Check for camera params:
+          auto c = desiredCamParams.find(obs->sensorLabel);
+          if (c != desiredCamParams.end())
+          {
+            if (!IS_CLASS(*obs, CObservationImage))
+              THROW_EXCEPTION_FMT(
+                  "Camera parameters found for non-image "
+                  "observation class: %s",
+                  obs->sensorLabel.c_str());
 
-						CObservationImage::Ptr img =
-							std::dynamic_pointer_cast<CObservationImage>(obs);
-						img->cameraParams = c->second.cameraParams;
-					}
+            CObservationImage::Ptr img = std::dynamic_pointer_cast<CObservationImage>(obs);
+            img->cameraParams = c->second.cameraParams;
+          }
 
-					if (isSingleObs) break;
-				}
-				else
-					break;
-			}
+          if (isSingleObs) break;
+        }
+        else
+          break;
+      }
 
-			if (countLoop++ % 100 == 0)
-			{
-				if (!progDia.Update(
-						countLoop,
-						wxString::Format(
-							wxT("Processing... (%i objects processed)"),
-							countLoop)))
-					keepDoing = false;
-				wxTheApp->Yield();	// Let the app. process messages
-			}
-		}
+      if (countLoop++ % 100 == 0)
+      {
+        if (!progDia.Update(
+                countLoop,
+                wxString::Format(wxT("Processing... (%i objects processed)"), countLoop)))
+          keepDoing = false;
+        wxTheApp->Yield();  // Let the app. process messages
+      }
+    }
 
-		progDia.Update(rawlog.size());	// Close dialog.
+    progDia.Update(rawlog.size());  // Close dialog.
 
-		wxMessageBox(
-			wxString::Format(
-				_("%i entries modified for %i sensor labels."), (int)changes,
-				(int)desiredSensorPoses.size()),
-			_("Done"), wxOK, this);
+    wxMessageBox(
+        wxString::Format(
+            _("%i entries modified for %i sensor labels."), (int)changes,
+            (int)desiredSensorPoses.size()),
+        _("Done"), wxOK, this);
 
-		WX_END_TRY
-	}
+    WX_END_TRY
+  }
 }
 
 void doFilterInvalidRange(CObservation::Ptr& obs, size_t& invalidRanges)
 {
-	if (obs->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation2DRangeScan)))
-	{
-		CObservation2DRangeScan::Ptr obsScan =
-			std::dynamic_pointer_cast<CObservation2DRangeScan>(obs);
-		for (size_t k = 0; k < obsScan->getScanSize(); k++)
-			if (obsScan->getScanRange(k) >= obsScan->maxRange)
-			{
-				obsScan->setScanRangeValidity(k, false);
-				invalidRanges++;
-			}
-	}
+  if (obs->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation2DRangeScan)))
+  {
+    CObservation2DRangeScan::Ptr obsScan = std::dynamic_pointer_cast<CObservation2DRangeScan>(obs);
+    for (size_t k = 0; k < obsScan->getScanSize(); k++)
+      if (obsScan->getScanRange(k) >= obsScan->maxRange)
+      {
+        obsScan->setScanRangeValidity(k, false);
+        invalidRanges++;
+      }
+  }
 }
 
 void xRawLogViewerFrame::OnMenuMarkLaserScanInvalid(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	wxBusyCursor waitCursor;
-	int nEntries = (int)rawlog.size();
+  wxBusyCursor waitCursor;
+  int nEntries = (int)rawlog.size();
 
-	wxString auxStr;
-	wxProgressDialog progDia(
-		wxT("Progress"), wxT("Parsing rawlog..."),
-		nEntries,  // range
-		this,  // parent
-		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
-			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+  wxString auxStr;
+  wxProgressDialog progDia(
+      wxT("Progress"), wxT("Parsing rawlog..."),
+      nEntries,  // range
+      this,      // parent
+      wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
+          wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();	// Let the app. process messages
+  wxTheApp->Yield();  // Let the app. process messages
 
-	size_t invalidRanges = 0;
+  size_t invalidRanges = 0;
 
-	for (int countLoop = 0; countLoop < nEntries; countLoop++)
-	{
-		if (countLoop % 50 == 0)
-		{
-			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
-			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();	// Let the app. process messages
-		}
+  for (int countLoop = 0; countLoop < nEntries; countLoop++)
+  {
+    if (countLoop % 50 == 0)
+    {
+      auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
+      if (!progDia.Update(countLoop, auxStr)) break;
+      wxTheApp->Yield();  // Let the app. process messages
+    }
 
-		// Check type:
-		switch (rawlog.getType(countLoop))
-		{
-			case CRawlog::etSensoryFrame:
-			{
-				// This is a SF:
-				CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
+    // Check type:
+    switch (rawlog.getType(countLoop))
+    {
+      case CRawlog::etSensoryFrame:
+      {
+        // This is a SF:
+        CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
 
-				for (size_t j = 0; j < SF->size(); j++)
-				{
-					CObservation::Ptr obs = SF->getObservationByIndex(j);
-					doFilterInvalidRange(obs, invalidRanges);
-				}  // end for each Observation in the SF
-			}
-			break;
+        for (size_t j = 0; j < SF->size(); j++)
+        {
+          CObservation::Ptr obs = SF->getObservationByIndex(j);
+          doFilterInvalidRange(obs, invalidRanges);
+        }  // end for each Observation in the SF
+      }
+      break;
 
-			case CRawlog::etObservation:
-			{
-				// This is a SF:
-				CObservation::Ptr obs = rawlog.getAsObservation(countLoop);
-				doFilterInvalidRange(obs, invalidRanges);
-			}
-			break;
+      case CRawlog::etObservation:
+      {
+        // This is a SF:
+        CObservation::Ptr obs = rawlog.getAsObservation(countLoop);
+        doFilterInvalidRange(obs, invalidRanges);
+      }
+      break;
 
-			default: break;
-		};	// end switch
+      default:
+        break;
+    };  // end switch
 
-	}  // end while keep loading
+  }  // end while keep loading
 
-	progDia.Update(nEntries);
+  progDia.Update(nEntries);
 
-	wxMessageBox(
-		(format("Number of invalid ranges marked: %i", (int)invalidRanges)
-			 .c_str()),
-		_("Done"), wxOK, this);
+  wxMessageBox(
+      (format("Number of invalid ranges marked: %i", (int)invalidRanges).c_str()), _("Done"), wxOK,
+      this);
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 void xRawLogViewerFrame::OnMenuChangeMaxRangeLaser(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	std::string lab = AskForObservationByLabel("Select the laser sensor");
-	if (lab.empty()) return;
+  std::string lab = AskForObservationByLabel("Select the laser sensor");
+  if (lab.empty()) return;
 
-	wxString strMaxR = wxGetTextFromUser(
-		_("Enter the new maximum range (in meters):"), _("Maximum range:"),
-		_("81.0"));
-	double maxR;
-	strMaxR.ToCDouble(&maxR);
+  wxString strMaxR = wxGetTextFromUser(
+      _("Enter the new maximum range (in meters):"), _("Maximum range:"), _("81.0"));
+  double maxR;
+  strMaxR.ToCDouble(&maxR);
 
-	wxBusyCursor waitCursor;
-	int nEntries = (int)rawlog.size();
+  wxBusyCursor waitCursor;
+  int nEntries = (int)rawlog.size();
 
-	wxString auxStr;
-	wxProgressDialog progDia(
-		wxT("Progress"), wxT("Parsing rawlog..."),
-		nEntries,  // range
-		this,  // parent
-		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
-			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+  wxString auxStr;
+  wxProgressDialog progDia(
+      wxT("Progress"), wxT("Parsing rawlog..."),
+      nEntries,  // range
+      this,      // parent
+      wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
+          wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();	// Let the app. process messages
+  wxTheApp->Yield();  // Let the app. process messages
 
-	size_t N = 0;
+  size_t N = 0;
 
-	for (int countLoop = 0; countLoop < nEntries; countLoop++)
-	{
-		if (countLoop % 50 == 0)
-		{
-			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
-			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();	// Let the app. process messages
-		}
+  for (int countLoop = 0; countLoop < nEntries; countLoop++)
+  {
+    if (countLoop % 50 == 0)
+    {
+      auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
+      if (!progDia.Update(countLoop, auxStr)) break;
+      wxTheApp->Yield();  // Let the app. process messages
+    }
 
-		// Check type:
-		switch (rawlog.getType(countLoop))
-		{
-			case CRawlog::etSensoryFrame:
-			{
-				// This is a SF:
-				CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
+    // Check type:
+    switch (rawlog.getType(countLoop))
+    {
+      case CRawlog::etSensoryFrame:
+      {
+        // This is a SF:
+        CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
 
-				for (size_t j = 0; j < SF->size(); j++)
-				{
-					CObservation::Ptr obs = SF->getObservationByIndex(j);
-					if (obs->sensorLabel == lab &&
-						IS_CLASS(*obs, CObservation2DRangeScan))
-					{
-						CObservation2DRangeScan::Ptr o =
-							std::dynamic_pointer_cast<CObservation2DRangeScan>(
-								obs);
-						o->maxRange = maxR;
-						N++;
-					}
-				}  // end for each Observation in the SF
-			}
-			break;
+        for (size_t j = 0; j < SF->size(); j++)
+        {
+          CObservation::Ptr obs = SF->getObservationByIndex(j);
+          if (obs->sensorLabel == lab && IS_CLASS(*obs, CObservation2DRangeScan))
+          {
+            CObservation2DRangeScan::Ptr o =
+                std::dynamic_pointer_cast<CObservation2DRangeScan>(obs);
+            o->maxRange = maxR;
+            N++;
+          }
+        }  // end for each Observation in the SF
+      }
+      break;
 
-			case CRawlog::etObservation:
-			{
-				// This is a SF:
-				CObservation::Ptr obs = rawlog.getAsObservation(countLoop);
-				if (obs->sensorLabel == lab &&
-					IS_CLASS(*obs, CObservation2DRangeScan))
-				{
-					CObservation2DRangeScan::Ptr o =
-						std::dynamic_pointer_cast<CObservation2DRangeScan>(obs);
-					o->maxRange = maxR;
-					N++;
-				}
-			}
-			break;
+      case CRawlog::etObservation:
+      {
+        // This is a SF:
+        CObservation::Ptr obs = rawlog.getAsObservation(countLoop);
+        if (obs->sensorLabel == lab && IS_CLASS(*obs, CObservation2DRangeScan))
+        {
+          CObservation2DRangeScan::Ptr o = std::dynamic_pointer_cast<CObservation2DRangeScan>(obs);
+          o->maxRange = maxR;
+          N++;
+        }
+      }
+      break;
 
-			default: break;
-		};	// end switch
+      default:
+        break;
+    };  // end switch
 
-	}  // end while keep loading
+  }  // end while keep loading
 
-	progDia.Update(nEntries);
+  progDia.Update(nEntries);
 
-	wxMessageBox(
-		(format("Number of changes: %i", (int)N).c_str()), _("Done"), wxOK,
-		this);
+  wxMessageBox((format("Number of changes: %i", (int)N).c_str()), _("Done"), wxOK, this);
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 void xRawLogViewerFrame::OnbtnEditCommentsClick1(wxCommandEvent&)
 {
-	CIniEditor dlg(this);
+  CIniEditor dlg(this);
 
-	string s;
-	rawlog.getCommentText(s);
-	dlg.edText->SetValue(s.c_str());
+  string s;
+  rawlog.getCommentText(s);
+  dlg.edText->SetValue(s.c_str());
 
-	if (dlg.ShowModal())
-	{
-		rawlog.setCommentText(string(dlg.edText->GetValue().mb_str()));
-		rebuildTreeView();
-	}
+  if (dlg.ShowModal())
+  {
+    rawlog.setCommentText(string(dlg.edText->GetValue().mb_str()));
+    rebuildTreeView();
+  }
 }
 
 void xRawLogViewerFrame::OnMenuRevert(wxCommandEvent&)
 {
-	if (mrpt::system::fileExists(loadedFileName))
-		loadRawlogFile(loadedFileName);
+  if (mrpt::system::fileExists(loadedFileName)) loadRawlogFile(loadedFileName);
 }
 
 void xRawLogViewerFrame::OnMenuBatchLaserExclusionZones(wxCommandEvent&)
 {
-	CFormBatchSensorPose dialog(this);
+  CFormBatchSensorPose dialog(this);
 
-	if (dialog.ShowModal())
-	{
-		WX_START_TRY
+  if (dialog.ShowModal())
+  {
+    WX_START_TRY
 
-		wxBusyCursor busy;
+    wxBusyCursor busy;
 
-		// Load the "ini-file" from the text control:
-		CConfigFileMemory cfg(string(dialog.edText->GetValue().mb_str()));
+    // Load the "ini-file" from the text control:
+    CConfigFileMemory cfg(string(dialog.edText->GetValue().mb_str()));
 
-		// make a list  "sensor_label -> list of exclusion polygons" by
-		// parsing the ini-file:
-		using TPolygonList = map<string, vector<CPolygon>>;
-		TPolygonList lstExclusions;
+    // make a list  "sensor_label -> list of exclusion polygons" by
+    // parsing the ini-file:
+    using TPolygonList = map<string, vector<CPolygon>>;
+    TPolygonList lstExclusions;
 
-		std::vector<std::string> sections;
-		cfg.getAllSections(sections);
+    std::vector<std::string> sections;
+    cfg.getAllSections(sections);
 
-		unsigned int nExclZones = 0;
+    unsigned int nExclZones = 0;
 
-		for (auto& section : sections)
-		{
-			if (section.empty()) continue;
+    for (auto& section : sections)
+    {
+      if (section.empty()) continue;
 
-			// Get sensor label:
-			string label = cfg.read_string(section, "sensorLabel", "");
-			if (label.empty()) continue;
+      // Get sensor label:
+      string label = cfg.read_string(section, "sensorLabel", "");
+      if (label.empty()) continue;
 
-			unsigned int N = 1;
+      unsigned int N = 1;
 
-			for (;;)
-			{
-				vector<double> x, y;
-				cfg.read_vector(
-					section, format("exclusionZone%u_x", N), vector<double>(0),
-					x);
-				cfg.read_vector(
-					section, format("exclusionZone%u_y", N++),
-					vector<double>(0), y);
+      for (;;)
+      {
+        vector<double> x, y;
+        cfg.read_vector(section, format("exclusionZone%u_x", N), vector<double>(0), x);
+        cfg.read_vector(section, format("exclusionZone%u_y", N++), vector<double>(0), y);
 
-				if (!x.empty() && !y.empty())
-				{
-					ASSERT_(x.size() == y.size());
-					mrpt::math::CPolygon p;
-					p.setAllVertices(x, y);
-					lstExclusions[label].push_back(p);
-					nExclZones++;
-				}
-				else
-					break;
-			}
+        if (!x.empty() && !y.empty())
+        {
+          ASSERT_(x.size() == y.size());
+          mrpt::math::CPolygon p;
+          p.setAllVertices(x, y);
+          lstExclusions[label].push_back(p);
+          nExclZones++;
+        }
+        else
+          break;
+      }
 
-		}  // end for sections
+    }  // end for sections
 
-		if (lstExclusions.empty())
-		{
-			wxMessageBox(
-				_("No valid exclusion zones found in the text"), _("Error"),
-				wxOK, this);
-			return;
-		}
+    if (lstExclusions.empty())
+    {
+      wxMessageBox(_("No valid exclusion zones found in the text"), _("Error"), wxOK, this);
+      return;
+    }
 
-		// now apply the changes:
-		wxProgressDialog progDia(
-			wxT("Modifying rawlog"), wxT("Processing..."),
-			rawlog.size(),	// range
-			this,  // parent
-			wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
-				wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+    // now apply the changes:
+    wxProgressDialog progDia(
+        wxT("Modifying rawlog"), wxT("Processing..."),
+        rawlog.size(),  // range
+        this,           // parent
+        wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
+            wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-		wxTheApp->Yield();	// Let the app. process messages
+    wxTheApp->Yield();  // Let the app. process messages
 
-		size_t changes = 0;
-		int countLoop = 0;
-		bool keepDoing = true;
-		for (CRawlog::iterator it = rawlog.begin();
-			 it != rawlog.end() && keepDoing; it++, countLoop++)
-		{
-			CObservation2DRangeScan::Ptr obs;
+    size_t changes = 0;
+    int countLoop = 0;
+    bool keepDoing = true;
+    for (CRawlog::iterator it = rawlog.begin(); it != rawlog.end() && keepDoing; it++, countLoop++)
+    {
+      CObservation2DRangeScan::Ptr obs;
 
-			// Go thru all the obs. of a SF, or just the obs. for non-SF
-			// rawlogs:
-			size_t idx_in_sf = 0;
-			bool isSingleObs;
-			while (true)
-			{
-				isSingleObs = false;
+      // Go thru all the obs. of a SF, or just the obs. for non-SF
+      // rawlogs:
+      size_t idx_in_sf = 0;
+      bool isSingleObs;
+      while (true)
+      {
+        isSingleObs = false;
 
-				if (it.getType() == CRawlog::etObservation)
-				{
-					if (IS_CLASS(**it, CObservation2DRangeScan))
-					{
-						obs =
-							std::dynamic_pointer_cast<CObservation2DRangeScan>(
-								*it);
-						isSingleObs = true;
-					}
-					else
-						break;	// not a laser scan
-				}
-				else if (it.getType() == CRawlog::etSensoryFrame)
-				{
-					CSensoryFrame::Ptr sf =
-						std::dynamic_pointer_cast<CSensoryFrame>(*it);
+        if (it.getType() == CRawlog::etObservation)
+        {
+          if (IS_CLASS(**it, CObservation2DRangeScan))
+          {
+            obs = std::dynamic_pointer_cast<CObservation2DRangeScan>(*it);
+            isSingleObs = true;
+          }
+          else
+            break;  // not a laser scan
+        }
+        else if (it.getType() == CRawlog::etSensoryFrame)
+        {
+          CSensoryFrame::Ptr sf = std::dynamic_pointer_cast<CSensoryFrame>(*it);
 
-					obs = sf->getObservationByClass<CObservation2DRangeScan>(
-						idx_in_sf++);
-					if (!obs)
-					{
-						idx_in_sf = 0;
-						break;
-					}
-				}
-				else
-					break;
+          obs = sf->getObservationByClass<CObservation2DRangeScan>(idx_in_sf++);
+          if (!obs)
+          {
+            idx_in_sf = 0;
+            break;
+          }
+        }
+        else
+          break;
 
-				if (obs)
-				{
-					// Check the sensor label:
-					auto i = lstExclusions.find(obs->sensorLabel);
-					if (i != lstExclusions.end())
-					{
-						obs->filterByExclusionAreas(i->second);
-						changes++;
-					}
-					if (isSingleObs) break;
-				}
-				else
-					break;
-			}
+        if (obs)
+        {
+          // Check the sensor label:
+          auto i = lstExclusions.find(obs->sensorLabel);
+          if (i != lstExclusions.end())
+          {
+            obs->filterByExclusionAreas(i->second);
+            changes++;
+          }
+          if (isSingleObs) break;
+        }
+        else
+          break;
+      }
 
-			if (countLoop++ % 100 == 0)
-			{
-				if (!progDia.Update(
-						countLoop,
-						wxString::Format(
-							wxT("Processing... (%i objects processed)"),
-							countLoop)))
-					keepDoing = false;
-				wxTheApp->Yield();	// Let the app. process messages
-			}
-		}
+      if (countLoop++ % 100 == 0)
+      {
+        if (!progDia.Update(
+                countLoop,
+                wxString::Format(wxT("Processing... (%i objects processed)"), countLoop)))
+          keepDoing = false;
+        wxTheApp->Yield();  // Let the app. process messages
+      }
+    }
 
-		progDia.Update(rawlog.size());	// Close dialog.
+    progDia.Update(rawlog.size());  // Close dialog.
 
-		wxMessageBox(
-			wxString::Format(
-				_("%i entries modified for %i sensor labels and %u "
-				  "exclusion "
-				  "areas."),
-				(int)changes, (int)lstExclusions.size(), nExclZones),
-			_("Done"), wxOK, this);
+    wxMessageBox(
+        wxString::Format(
+            _("%i entries modified for %i sensor labels and %u "
+              "exclusion "
+              "areas."),
+            (int)changes, (int)lstExclusions.size(), nExclZones),
+        _("Done"), wxOK, this);
 
-		WX_END_TRY
-	}
+    WX_END_TRY
+  }
 }
 
 void xRawLogViewerFrame::OnComboImageDirsChange(wxCommandEvent&)
 {
-	wxString dir = toolbarcomboImages->GetStringSelection();
+  wxString dir = toolbarcomboImages->GetStringSelection();
 
-	string dirc = string(dir.mb_str());
+  string dirc = string(dir.mb_str());
 
-	if (mrpt::system::fileExists(dirc))
-	{
-		CImage::setImagesPathBase(dirc);
-		// wxMessageBox( _("The current directory for external images has
-		// been set to:\n")+dir , _("External images"));
+  if (mrpt::system::fileExists(dirc))
+  {
+    CImage::setImagesPathBase(dirc);
+    // wxMessageBox( _("The current directory for external images has
+    // been set to:\n")+dir , _("External images"));
 
-		m_treeView->SetSelectedItem(m_treeView->GetSelectedItem(), true);
-	}
-	else
-	{
-		wxMessageBox(
-			_("The directory:\n") + dir + _("does not exist."),
-			_("External images"));
-	}
+    m_treeView->SetSelectedItem(m_treeView->GetSelectedItem(), true);
+  }
+  else
+  {
+    wxMessageBox(_("The directory:\n") + dir + _("does not exist."), _("External images"));
+  }
 }
 
 void xRawLogViewerFrame::OnLaserFilterAngles(wxCommandEvent&)
 {
-	CFormBatchSensorPose dialog(this);
+  CFormBatchSensorPose dialog(this);
 
-	if (dialog.ShowModal())
-	{
-		WX_START_TRY
+  if (dialog.ShowModal())
+  {
+    WX_START_TRY
 
-		wxBusyCursor busy;
+    wxBusyCursor busy;
 
-		// Load the "ini-file" from the text control:
-		CConfigFileMemory cfg(string(dialog.edText->GetValue().mb_str()));
+    // Load the "ini-file" from the text control:
+    CConfigFileMemory cfg(string(dialog.edText->GetValue().mb_str()));
 
-		// make a list  "sensor_label -> list of exclusion polygons" by
-		// parsing the ini-file:
-		using TExclAreasList = map<string, vector<pair<double, double>>>;
-		TExclAreasList lstExclusions;
+    // make a list  "sensor_label -> list of exclusion polygons" by
+    // parsing the ini-file:
+    using TExclAreasList = map<string, vector<pair<double, double>>>;
+    TExclAreasList lstExclusions;
 
-		std::vector<std::string> sections;
-		cfg.getAllSections(sections);
+    std::vector<std::string> sections;
+    cfg.getAllSections(sections);
 
-		unsigned int nExclZones = 0;
+    unsigned int nExclZones = 0;
 
-		for (auto& section : sections)
-		{
-			if (section.empty()) continue;
+    for (auto& section : sections)
+    {
+      if (section.empty()) continue;
 
-			// Get sensor label:
-			string label = cfg.read_string(section, "sensorLabel", "");
-			if (label.empty()) continue;
+      // Get sensor label:
+      string label = cfg.read_string(section, "sensorLabel", "");
+      if (label.empty()) continue;
 
-			// Load forbiden angles;
-			unsigned int N = 1;
-			for (;;)
-			{
-				const double ini = DEG2RAD(cfg.read_double(
-					section, format("exclusionAngles%u_ini", N), -1000));
-				const double end = DEG2RAD(cfg.read_double(
-					section, format("exclusionAngles%u_end", N++), -1000));
+      // Load forbiden angles;
+      unsigned int N = 1;
+      for (;;)
+      {
+        const double ini =
+            DEG2RAD(cfg.read_double(section, format("exclusionAngles%u_ini", N), -1000));
+        const double end =
+            DEG2RAD(cfg.read_double(section, format("exclusionAngles%u_end", N++), -1000));
 
-				if (ini > -M_PI && end > -M_PI)
-				{
-					lstExclusions[label].push_back(make_pair(ini, end));
-					nExclZones++;
-				}
-				else
-					break;
-			}
-		}  // end for sections
+        if (ini > -M_PI && end > -M_PI)
+        {
+          lstExclusions[label].push_back(make_pair(ini, end));
+          nExclZones++;
+        }
+        else
+          break;
+      }
+    }  // end for sections
 
-		if (lstExclusions.empty())
-		{
-			wxMessageBox(
-				_("No valid exclusion zones found in the text"), _("Error"),
-				wxOK, this);
-			return;
-		}
+    if (lstExclusions.empty())
+    {
+      wxMessageBox(_("No valid exclusion zones found in the text"), _("Error"), wxOK, this);
+      return;
+    }
 
-		// now apply the changes:
-		wxProgressDialog progDia(
-			wxT("Modifying rawlog"), wxT("Processing..."),
-			rawlog.size(),	// range
-			this,  // parent
-			wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
-				wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+    // now apply the changes:
+    wxProgressDialog progDia(
+        wxT("Modifying rawlog"), wxT("Processing..."),
+        rawlog.size(),  // range
+        this,           // parent
+        wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
+            wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-		wxTheApp->Yield();	// Let the app. process messages
+    wxTheApp->Yield();  // Let the app. process messages
 
-		size_t changes = 0;
-		int countLoop = 0;
-		bool keepDoing = true;
-		for (CRawlog::iterator it = rawlog.begin();
-			 it != rawlog.end() && keepDoing; it++, countLoop++)
-		{
-			CObservation2DRangeScan::Ptr obs;
+    size_t changes = 0;
+    int countLoop = 0;
+    bool keepDoing = true;
+    for (CRawlog::iterator it = rawlog.begin(); it != rawlog.end() && keepDoing; it++, countLoop++)
+    {
+      CObservation2DRangeScan::Ptr obs;
 
-			// Go thru all the obs. of a SF, or just the obs. for non-SF
-			// rawlogs:
-			size_t idx_in_sf = 0;
-			bool isSingleObs;
-			while (true)
-			{
-				isSingleObs = false;
+      // Go thru all the obs. of a SF, or just the obs. for non-SF
+      // rawlogs:
+      size_t idx_in_sf = 0;
+      bool isSingleObs;
+      while (true)
+      {
+        isSingleObs = false;
 
-				if (it.getType() == CRawlog::etObservation)
-				{
-					if (IS_CLASS(**it, CObservation2DRangeScan))
-					{
-						obs =
-							std::dynamic_pointer_cast<CObservation2DRangeScan>(
-								*it);
-						isSingleObs = true;
-					}
-					else
-						break;	// not a laser scan
-				}
-				else if (it.getType() == CRawlog::etSensoryFrame)
-				{
-					CSensoryFrame::Ptr sf =
-						std::dynamic_pointer_cast<CSensoryFrame>(*it);
+        if (it.getType() == CRawlog::etObservation)
+        {
+          if (IS_CLASS(**it, CObservation2DRangeScan))
+          {
+            obs = std::dynamic_pointer_cast<CObservation2DRangeScan>(*it);
+            isSingleObs = true;
+          }
+          else
+            break;  // not a laser scan
+        }
+        else if (it.getType() == CRawlog::etSensoryFrame)
+        {
+          CSensoryFrame::Ptr sf = std::dynamic_pointer_cast<CSensoryFrame>(*it);
 
-					obs = sf->getObservationByClass<CObservation2DRangeScan>(
-						idx_in_sf++);
-					if (!obs)
-					{
-						idx_in_sf = 0;
-						break;
-					}
-				}
-				else
-					break;
+          obs = sf->getObservationByClass<CObservation2DRangeScan>(idx_in_sf++);
+          if (!obs)
+          {
+            idx_in_sf = 0;
+            break;
+          }
+        }
+        else
+          break;
 
-				if (obs)
-				{
-					// Check the sensor label:
-					auto i = lstExclusions.find(obs->sensorLabel);
-					if (i != lstExclusions.end())
-					{
-						obs->filterByExclusionAngles(i->second);
-						changes++;
-					}
-					if (isSingleObs) break;
-				}
-				else
-					break;
-			}
+        if (obs)
+        {
+          // Check the sensor label:
+          auto i = lstExclusions.find(obs->sensorLabel);
+          if (i != lstExclusions.end())
+          {
+            obs->filterByExclusionAngles(i->second);
+            changes++;
+          }
+          if (isSingleObs) break;
+        }
+        else
+          break;
+      }
 
-			if (countLoop++ % 100 == 0)
-			{
-				if (!progDia.Update(
-						countLoop,
-						wxString::Format(
-							wxT("Processing... (%i objects processed)"),
-							countLoop)))
-					keepDoing = false;
-				wxTheApp->Yield();	// Let the app. process messages
-			}
-		}
+      if (countLoop++ % 100 == 0)
+      {
+        if (!progDia.Update(
+                countLoop,
+                wxString::Format(wxT("Processing... (%i objects processed)"), countLoop)))
+          keepDoing = false;
+        wxTheApp->Yield();  // Let the app. process messages
+      }
+    }
 
-		progDia.Update(rawlog.size());	// Close dialog.
+    progDia.Update(rawlog.size());  // Close dialog.
 
-		wxMessageBox(
-			wxString::Format(
-				_("%i entries modified for %i sensor labels and %u "
-				  "exclusion "
-				  "areas."),
-				(int)changes, (int)lstExclusions.size(), nExclZones),
-			_("Done"), wxOK, this);
+    wxMessageBox(
+        wxString::Format(
+            _("%i entries modified for %i sensor labels and %u "
+              "exclusion "
+              "areas."),
+            (int)changes, (int)lstExclusions.size(), nExclZones),
+        _("Done"), wxOK, this);
 
-		WX_END_TRY
-	}
+    WX_END_TRY
+  }
 }
 
 void xRawLogViewerFrame::OnMenuRangeBearFilterIDs(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	wxString strID = wxGetTextFromUser(
-		_("Enter the landmark ID to remove:"), _("Landmark ID"), _("0"));
-	long ID;
-	strID.ToLong(&ID);
+  wxString strID =
+      wxGetTextFromUser(_("Enter the landmark ID to remove:"), _("Landmark ID"), _("0"));
+  long ID;
+  strID.ToLong(&ID);
 
-	wxBusyCursor waitCursor;
-	int nEntries = (int)rawlog.size();
+  wxBusyCursor waitCursor;
+  int nEntries = (int)rawlog.size();
 
-	wxString auxStr;
-	wxProgressDialog progDia(
-		wxT("Progress"), wxT("Parsing rawlog..."),
-		nEntries,  // range
-		this,  // parent
-		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
-			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+  wxString auxStr;
+  wxProgressDialog progDia(
+      wxT("Progress"), wxT("Parsing rawlog..."),
+      nEntries,  // range
+      this,      // parent
+      wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
+          wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();	// Let the app. process messages
+  wxTheApp->Yield();  // Let the app. process messages
 
-	size_t N = 0;
+  size_t N = 0;
 
-	for (int countLoop = 0; countLoop < nEntries; countLoop++)
-	{
-		if (countLoop % 50 == 0)
-		{
-			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
-			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();	// Let the app. process messages
-		}
+  for (int countLoop = 0; countLoop < nEntries; countLoop++)
+  {
+    if (countLoop % 50 == 0)
+    {
+      auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
+      if (!progDia.Update(countLoop, auxStr)) break;
+      wxTheApp->Yield();  // Let the app. process messages
+    }
 
-		// Check type:
-		switch (rawlog.getType(countLoop))
-		{
-			case CRawlog::etSensoryFrame:
-			{
-				// This is a SF:
-				CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
+    // Check type:
+    switch (rawlog.getType(countLoop))
+    {
+      case CRawlog::etSensoryFrame:
+      {
+        // This is a SF:
+        CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
 
-				for (size_t j = 0; j < SF->size(); j++)
-				{
-					CObservation::Ptr obs = SF->getObservationByIndex(j);
-					if (IS_CLASS(*obs, CObservationBearingRange))
-					{
-						CObservationBearingRange::Ptr o =
-							std::dynamic_pointer_cast<CObservationBearingRange>(
-								obs);
-						for (size_t k = 0; k < o->sensedData.size(); k++)
-						{
-							if (ID == o->sensedData[k].landmarkID)
-							{
-								o->sensedData.erase(o->sensedData.begin() + k);
-								N++;
-							}
-						}
-					}
-				}  // end for each Observation in the SF
-			}
-			break;
+        for (size_t j = 0; j < SF->size(); j++)
+        {
+          CObservation::Ptr obs = SF->getObservationByIndex(j);
+          if (IS_CLASS(*obs, CObservationBearingRange))
+          {
+            CObservationBearingRange::Ptr o =
+                std::dynamic_pointer_cast<CObservationBearingRange>(obs);
+            for (size_t k = 0; k < o->sensedData.size(); k++)
+            {
+              if (ID == o->sensedData[k].landmarkID)
+              {
+                o->sensedData.erase(o->sensedData.begin() + k);
+                N++;
+              }
+            }
+          }
+        }  // end for each Observation in the SF
+      }
+      break;
 
-			case CRawlog::etObservation:
-			{
-				// This is a SF:
-				CObservation::Ptr obs = rawlog.getAsObservation(countLoop);
-				if (IS_CLASS(*obs, CObservationBearingRange))
-				{
-					CObservationBearingRange::Ptr o =
-						std::dynamic_pointer_cast<CObservationBearingRange>(
-							obs);
-					for (size_t k = 0; k < o->sensedData.size(); k++)
-					{
-						if (ID == o->sensedData[k].landmarkID)
-						{
-							o->sensedData.erase(o->sensedData.begin() + k);
-							N++;
-						}
-					}
-				}
-			}
-			break;
+      case CRawlog::etObservation:
+      {
+        // This is a SF:
+        CObservation::Ptr obs = rawlog.getAsObservation(countLoop);
+        if (IS_CLASS(*obs, CObservationBearingRange))
+        {
+          CObservationBearingRange::Ptr o =
+              std::dynamic_pointer_cast<CObservationBearingRange>(obs);
+          for (size_t k = 0; k < o->sensedData.size(); k++)
+          {
+            if (ID == o->sensedData[k].landmarkID)
+            {
+              o->sensedData.erase(o->sensedData.begin() + k);
+              N++;
+            }
+          }
+        }
+      }
+      break;
 
-			default: break;
-		};	// end switch
+      default:
+        break;
+    };  // end switch
 
-	}  // end while keep loading
+  }  // end while keep loading
 
-	progDia.Update(nEntries);
+  progDia.Update(nEntries);
 
-	wxMessageBox(
-		(format("Number of changes: %i", (int)N).c_str()), _("Done"), wxOK,
-		this);
+  wxMessageBox((format("Number of changes: %i", (int)N).c_str()), _("Done"), wxOK, this);
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 void xRawLogViewerFrame::OnMenuRegenerateTimestampBySF(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	wxBusyCursor waitCursor;
-	const size_t nEntries = rawlog.size();
+  wxBusyCursor waitCursor;
+  const size_t nEntries = rawlog.size();
 
-	wxString auxStr;
-	wxProgressDialog progDia(
-		wxT("Progress"), wxT("Parsing rawlog..."),
-		nEntries,  // range
-		this,  // parent
-		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
-			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+  wxString auxStr;
+  wxProgressDialog progDia(
+      wxT("Progress"), wxT("Parsing rawlog..."),
+      nEntries,  // range
+      this,      // parent
+      wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
+          wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();	// Let the app. process messages
+  wxTheApp->Yield();  // Let the app. process messages
 
-	size_t N = 0;
+  size_t N = 0;
 
-	for (size_t countLoop = 0; countLoop < nEntries; countLoop++)
-	{
-		if (countLoop % 50 == 0)
-		{
-			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
-			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();	// Let the app. process messages
-		}
+  for (size_t countLoop = 0; countLoop < nEntries; countLoop++)
+  {
+    if (countLoop % 50 == 0)
+    {
+      auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
+      if (!progDia.Update(countLoop, auxStr)) break;
+      wxTheApp->Yield();  // Let the app. process messages
+    }
 
-		// Check type:
-		switch (rawlog.getType(countLoop))
-		{
-			case CRawlog::etSensoryFrame:
-			{
-				// This is a SF:
-				CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
+    // Check type:
+    switch (rawlog.getType(countLoop))
+    {
+      case CRawlog::etSensoryFrame:
+      {
+        // This is a SF:
+        CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
 
-				// Take a timestamp for this SF:
-				TTimeStamp tim = INVALID_TIMESTAMP;
-				for (size_t j = 0; j < SF->size(); j++)
-				{
-					CObservation::Ptr obs = SF->getObservationByIndex(j);
-					if (obs->timestamp != INVALID_TIMESTAMP)
-					{
-						tim = obs->timestamp;
-						break;
-					}
-				}  // end for each Observation in the SF
-				if (tim != INVALID_TIMESTAMP)
-				{
-					for (size_t j = 0; j < SF->size(); j++)
-					{
-						CObservation::Ptr obs = SF->getObservationByIndex(j);
-						if (obs->timestamp == INVALID_TIMESTAMP)
-						{
-							obs->timestamp = tim;
-							N++;
-						}
-					}  // end for each Observation in the SF
-				}
-			}
-			break;
+        // Take a timestamp for this SF:
+        TTimeStamp tim = INVALID_TIMESTAMP;
+        for (size_t j = 0; j < SF->size(); j++)
+        {
+          CObservation::Ptr obs = SF->getObservationByIndex(j);
+          if (obs->timestamp != INVALID_TIMESTAMP)
+          {
+            tim = obs->timestamp;
+            break;
+          }
+        }  // end for each Observation in the SF
+        if (tim != INVALID_TIMESTAMP)
+        {
+          for (size_t j = 0; j < SF->size(); j++)
+          {
+            CObservation::Ptr obs = SF->getObservationByIndex(j);
+            if (obs->timestamp == INVALID_TIMESTAMP)
+            {
+              obs->timestamp = tim;
+              N++;
+            }
+          }  // end for each Observation in the SF
+        }
+      }
+      break;
 
-			default: break;
-		};	// end switch
+      default:
+        break;
+    };  // end switch
 
-	}  // end while keep loading
+  }  // end while keep loading
 
-	progDia.Update(nEntries);
+  progDia.Update(nEntries);
 
-	wxMessageBox(
-		(format("Number of changes: %i", (int)N).c_str()), _("Done"), wxOK,
-		this);
+  wxMessageBox((format("Number of changes: %i", (int)N).c_str()), _("Done"), wxOK, this);
 
-	WX_END_TRY
+  WX_END_TRY
 }
 void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	std::string senLabel = AskForObservationByLabel("Select the camera:");
-	if (senLabel.empty()) return;
+  std::string senLabel = AskForObservationByLabel("Select the camera:");
+  if (senLabel.empty()) return;
 
-	wxString caption = wxT("Save AVI video...");
-	wxString wildcard = wxT("AVI files (*.avi)|*.avi|All files (*.*)|*.*");
-	wxString defaultDir(
-		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
-	wxString defaultFilename =
-		((loadedFileName + format("_%s.avi", senLabel.c_str())).c_str());
-	wxFileDialog dialog(
-		this, caption, defaultDir, defaultFilename, wildcard,
-		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+  wxString caption = wxT("Save AVI video...");
+  wxString wildcard = wxT("AVI files (*.avi)|*.avi|All files (*.*)|*.*");
+  wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+  wxString defaultFilename = ((loadedFileName + format("_%s.avi", senLabel.c_str())).c_str());
+  wxFileDialog dialog(
+      this, caption, defaultDir, defaultFilename, wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-	if (dialog.ShowModal() != wxID_OK) return;
+  if (dialog.ShowModal() != wxID_OK) return;
 
-	const string outAviFilename = string(dialog.GetPath().mb_str());
+  const string outAviFilename = string(dialog.GetPath().mb_str());
 
-	float FPS = 20.0;  // For the AVI
+  float FPS = 20.0;  // For the AVI
 
-	wxBusyCursor waitCursor;
-	int nEntries = (int)rawlog.size();
+  wxBusyCursor waitCursor;
+  int nEntries = (int)rawlog.size();
 
-	wxString auxStr;
-	wxProgressDialog progDia(
-		wxT("Progress"), wxT("Parsing rawlog..."),
-		nEntries,  // range
-		this,  // parent
-		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
-			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+  wxString auxStr;
+  wxProgressDialog progDia(
+      wxT("Progress"), wxT("Parsing rawlog..."),
+      nEntries,  // range
+      this,      // parent
+      wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
+          wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();	// Let the app. process messages
+  wxTheApp->Yield();  // Let the app. process messages
 
-	//  possible <channel_desc>: left, right, disparity (more in the
-	//  future?)
-	std::vector<std::string> outVideosIdx;
-	mrpt::vision::CVideoFileWriter outVideos[20];
+  //  possible <channel_desc>: left, right, disparity (more in the
+  //  future?)
+  std::vector<std::string> outVideosIdx;
+  mrpt::vision::CVideoFileWriter outVideos[20];
 
-	int nFrames = 0;
-	string errorMsg;
+  int nFrames = 0;
+  string errorMsg;
 
-	for (int countLoop = 0; countLoop < nEntries; countLoop++)
-	{
-		if (countLoop % 5 == 0)
-		{
-			auxStr.sprintf(
-				wxT("Processing rawlog... %u image frames"), countLoop);
-			if (!progDia.Update(countLoop, auxStr)) break;
-			progDia.Fit();
-			wxTheApp->Yield();	// Let the app. process messages
-		}
+  for (int countLoop = 0; countLoop < nEntries; countLoop++)
+  {
+    if (countLoop % 5 == 0)
+    {
+      auxStr.sprintf(wxT("Processing rawlog... %u image frames"), countLoop);
+      if (!progDia.Update(countLoop, auxStr)) break;
+      progDia.Fit();
+      wxTheApp->Yield();  // Let the app. process messages
+    }
 
-		try
-		{
-			std::set<TImageToSaveData> imgsForVideo;
+    try
+    {
+      std::set<TImageToSaveData> imgsForVideo;
 
-			if (rawlog.getType(countLoop) == CRawlog::etSensoryFrame)
-			{
-				CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
+      if (rawlog.getType(countLoop) == CRawlog::etSensoryFrame)
+      {
+        CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
 
-				CObservationImage::Ptr obsImg =
-					SF->getObservationByClass<CObservationImage>();
-				if (obsImg)
-				{
-					imgsForVideo.insert(
-						TImageToSaveData(&obsImg->image, "IMAGE"));
-				}
-				else
-				{
-					CObservationStereoImages::Ptr obsStereoImg =
-						SF->getObservationByClass<CObservationStereoImages>();
-					if (obsStereoImg)
-					{
-						imgsForVideo.insert(
-							TImageToSaveData(&obsStereoImg->imageLeft, "LEFT"));
-						if (obsStereoImg->hasImageRight)
-							imgsForVideo.insert(TImageToSaveData(
-								&obsStereoImg->imageRight, "RIGHT"));
-						if (obsStereoImg->hasImageDisparity)
-							imgsForVideo.insert(TImageToSaveData(
-								&obsStereoImg->imageDisparity, "DISP"));
-					}
-					else
-					{
-						CObservation3DRangeScan::Ptr obs3D =
-							SF->getObservationByClass<
-								CObservation3DRangeScan>();
-						if (obs3D)
-						{
-							imgsForVideo.insert(TImageToSaveData(
-								&obs3D->intensityImage, "INTENSITY"));
-						}
-					}
-				}
-			}  // end for each entry
-			else if (rawlog.getType(countLoop) == CRawlog::etObservation)
-			{
-				CObservation::Ptr o = rawlog.getAsObservation(countLoop);
-				if (IS_CLASS(*o, CObservationImage))
-				{
-					CObservationImage::Ptr obsImg =
-						std::dynamic_pointer_cast<CObservationImage>(o);
-					imgsForVideo.insert(
-						TImageToSaveData(&obsImg->image, "IMAGE"));
-				}
-				else if (IS_CLASS(*o, CObservationStereoImages))
-				{
-					CObservationStereoImages::Ptr obsStereoImg =
-						std::dynamic_pointer_cast<CObservationStereoImages>(o);
-					imgsForVideo.insert(
-						TImageToSaveData(&obsStereoImg->imageLeft, "LEFT"));
-					if (obsStereoImg->hasImageRight)
-						imgsForVideo.insert(TImageToSaveData(
-							&obsStereoImg->imageRight, "RIGHT"));
-					if (obsStereoImg->hasImageDisparity)
-						imgsForVideo.insert(TImageToSaveData(
-							&obsStereoImg->imageDisparity, "DISP"));
-				}
-				else if (IS_CLASS(*o, CObservation3DRangeScan))
-				{
-					CObservation3DRangeScan::Ptr obs3D =
-						std::dynamic_pointer_cast<CObservation3DRangeScan>(o);
-					imgsForVideo.insert(
-						TImageToSaveData(&obs3D->intensityImage, "INTENSITY"));
-				}
-			}  // end for each entry
+        CObservationImage::Ptr obsImg = SF->getObservationByClass<CObservationImage>();
+        if (obsImg)
+        {
+          imgsForVideo.insert(TImageToSaveData(&obsImg->image, "IMAGE"));
+        }
+        else
+        {
+          CObservationStereoImages::Ptr obsStereoImg =
+              SF->getObservationByClass<CObservationStereoImages>();
+          if (obsStereoImg)
+          {
+            imgsForVideo.insert(TImageToSaveData(&obsStereoImg->imageLeft, "LEFT"));
+            if (obsStereoImg->hasImageRight)
+              imgsForVideo.insert(TImageToSaveData(&obsStereoImg->imageRight, "RIGHT"));
+            if (obsStereoImg->hasImageDisparity)
+              imgsForVideo.insert(TImageToSaveData(&obsStereoImg->imageDisparity, "DISP"));
+          }
+          else
+          {
+            CObservation3DRangeScan::Ptr obs3D =
+                SF->getObservationByClass<CObservation3DRangeScan>();
+            if (obs3D)
+            {
+              imgsForVideo.insert(TImageToSaveData(&obs3D->intensityImage, "INTENSITY"));
+            }
+          }
+        }
+      }  // end for each entry
+      else if (rawlog.getType(countLoop) == CRawlog::etObservation)
+      {
+        CObservation::Ptr o = rawlog.getAsObservation(countLoop);
+        if (IS_CLASS(*o, CObservationImage))
+        {
+          CObservationImage::Ptr obsImg = std::dynamic_pointer_cast<CObservationImage>(o);
+          imgsForVideo.insert(TImageToSaveData(&obsImg->image, "IMAGE"));
+        }
+        else if (IS_CLASS(*o, CObservationStereoImages))
+        {
+          CObservationStereoImages::Ptr obsStereoImg =
+              std::dynamic_pointer_cast<CObservationStereoImages>(o);
+          imgsForVideo.insert(TImageToSaveData(&obsStereoImg->imageLeft, "LEFT"));
+          if (obsStereoImg->hasImageRight)
+            imgsForVideo.insert(TImageToSaveData(&obsStereoImg->imageRight, "RIGHT"));
+          if (obsStereoImg->hasImageDisparity)
+            imgsForVideo.insert(TImageToSaveData(&obsStereoImg->imageDisparity, "DISP"));
+        }
+        else if (IS_CLASS(*o, CObservation3DRangeScan))
+        {
+          CObservation3DRangeScan::Ptr obs3D =
+              std::dynamic_pointer_cast<CObservation3DRangeScan>(o);
+          imgsForVideo.insert(TImageToSaveData(&obs3D->intensityImage, "INTENSITY"));
+        }
+      }  // end for each entry
 
-			// If we have images in "imgsForVideo", save them to their video
-			// (AVI) files,
-			//  and create them upon first usage:
-			for (const auto& d : imgsForVideo)
-			{
-				size_t idx = mrpt::containers::find_in_vector(
-					d.channel_desc, outVideosIdx);
-				if (string::npos == idx)  // new?
-				{
-					idx = outVideosIdx.size();
-					outVideosIdx.push_back(d.channel_desc);
-				}
+      // If we have images in "imgsForVideo", save them to their video
+      // (AVI) files,
+      //  and create them upon first usage:
+      for (const auto& d : imgsForVideo)
+      {
+        size_t idx = mrpt::containers::find_in_vector(d.channel_desc, outVideosIdx);
+        if (string::npos == idx)  // new?
+        {
+          idx = outVideosIdx.size();
+          outVideosIdx.push_back(d.channel_desc);
+        }
 
-				// The video writter for this channel:
-				mrpt::vision::CVideoFileWriter& vid = outVideos[idx];
+        // The video writter for this channel:
+        mrpt::vision::CVideoFileWriter& vid = outVideos[idx];
 
-				if (!vid.isOpen())	// Open file upon first usage:
-				{
-					const string filname =
-						mrpt::system::extractFileDirectory(outAviFilename) +
-						string("/") +
-						mrpt::system::extractFileName(outAviFilename) +
-						string("_") + d.channel_desc + string(".avi");
+        if (!vid.isOpen())  // Open file upon first usage:
+        {
+          const string filname = mrpt::system::extractFileDirectory(outAviFilename) + string("/") +
+                                 mrpt::system::extractFileName(outAviFilename) + string("_") +
+                                 d.channel_desc + string(".avi");
 
-					if (!vid.open(
-							filname, FPS,
-							TImageSize(d.img->getWidth(), d.img->getHeight()),
+          if (!vid.open(
+                  filname, FPS, TImageSize(d.img->getWidth(), d.img->getHeight()),
 #ifdef MRPT_OS_WINDOWS
-							""
+                  ""
 #else
-							"XVID"
+                  "XVID"
 #endif
-							))
-						throw std::runtime_error(
-							"Error creating the AVI video file...");
-				}
-				// and save video frame:
-				CImage imgAux;
-				d.img->colorImage(imgAux);
-				vid << imgAux;
-				nFrames++;
-				d.img->unload();
-			}  // end for each image
-		}
-		catch (exception& e)
-		{
-			errorMsg = mrpt::exception_to_str(e);
-			break;
-		}
-		catch (...)
-		{
-			break;
-		}
-	}  // end while keep loading
+                  ))
+            throw std::runtime_error("Error creating the AVI video file...");
+        }
+        // and save video frame:
+        CImage imgAux;
+        d.img->colorImage(imgAux);
+        vid << imgAux;
+        nFrames++;
+        d.img->unload();
+      }  // end for each image
+    }
+    catch (exception& e)
+    {
+      errorMsg = mrpt::exception_to_str(e);
+      break;
+    }
+    catch (...)
+    {
+      break;
+    }
+  }  // end while keep loading
 
-	progDia.Update(nEntries);
+  progDia.Update(nEntries);
 
-	if (!errorMsg.empty()) wxMessageBox(errorMsg.c_str(), _("Error"));
+  if (!errorMsg.empty()) wxMessageBox(errorMsg.c_str(), _("Error"));
 
-	wxMessageBox(
-		(format("Saved %u images.", nFrames).c_str()), _("Done"), wxOK, this);
+  wxMessageBox((format("Saved %u images.", nFrames).c_str()), _("Done"), wxOK, this);
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 void xRawLogViewerFrame::OnMenuRegenerateOdometryTimes(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	wxBusyCursor waitCursor;
-	int nEntries = (int)rawlog.size();
+  wxBusyCursor waitCursor;
+  int nEntries = (int)rawlog.size();
 
-	wxString auxStr;
-	wxProgressDialog progDia(
-		wxT("Progress"), wxT("Parsing rawlog..."),
-		nEntries,  // range
-		this,  // parent
-		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
-			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+  wxString auxStr;
+  wxProgressDialog progDia(
+      wxT("Progress"), wxT("Parsing rawlog..."),
+      nEntries,  // range
+      this,      // parent
+      wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
+          wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();	// Let the app. process messages
+  wxTheApp->Yield();  // Let the app. process messages
 
-	int nChanges = 0;
-	string errorMsg;
+  int nChanges = 0;
+  string errorMsg;
 
-	mrpt::system::TTimeStamp lastObsTime = INVALID_TIMESTAMP;
-	CActionRobotMovement2D::Ptr lastOdo;
+  mrpt::system::TTimeStamp lastObsTime = INVALID_TIMESTAMP;
+  CActionRobotMovement2D::Ptr lastOdo;
 
-	for (int countLoop = 0; countLoop < nEntries; countLoop++)
-	{
-		if (countLoop % 20 == 0)
-		{
-			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
-			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();	// Let the app. process messages
-		}
+  for (int countLoop = 0; countLoop < nEntries; countLoop++)
+  {
+    if (countLoop % 20 == 0)
+    {
+      auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
+      if (!progDia.Update(countLoop, auxStr)) break;
+      wxTheApp->Yield();  // Let the app. process messages
+    }
 
-		try
-		{
-			if (rawlog.getType(countLoop) == CRawlog::etActionCollection)
-			{
-				CActionCollection::Ptr acts = rawlog.getAsAction(countLoop);
-				for (size_t k = 0; k < acts->size(); k++)
-				{
-					CAction::Ptr act = acts->get(k);
-					if (act->GetRuntimeClass() ==
-						CLASS_ID(CActionRobotMovement2D))
-						lastOdo =
-							std::dynamic_pointer_cast<CActionRobotMovement2D>(
-								act);
-				}
-			}
-			else if (rawlog.getType(countLoop) == CRawlog::etSensoryFrame)
-			{
-				CSensoryFrame::Ptr sf = rawlog.getAsObservations(countLoop);
-				if (sf->size() > 0)
-				{
-					TTimeStamp thisObsTime = (*sf->begin())->timestamp;
-					if (thisObsTime != INVALID_TIMESTAMP)
-					{
-						if (lastOdo && lastObsTime != INVALID_TIMESTAMP)
-						{  // Do average:
-							lastOdo->timestamp =
-								mrpt::Clock::time_point(mrpt::Clock::duration(
-									(lastObsTime.time_since_epoch().count() >>
-									 1) +
-									(thisObsTime.time_since_epoch().count() >>
-									 1)));
-							lastOdo.reset();
-							nChanges++;
-						}
-						lastObsTime = thisObsTime;
-					}
-				}
-			}
-		}
-		catch (exception& e)
-		{
-			errorMsg = mrpt::exception_to_str(e);
-			break;
-		}
-		catch (...)
-		{
-			break;
-		}
-	}  // end while keep loading
+    try
+    {
+      if (rawlog.getType(countLoop) == CRawlog::etActionCollection)
+      {
+        CActionCollection::Ptr acts = rawlog.getAsAction(countLoop);
+        for (size_t k = 0; k < acts->size(); k++)
+        {
+          CAction::Ptr act = acts->get(k);
+          if (act->GetRuntimeClass() == CLASS_ID(CActionRobotMovement2D))
+            lastOdo = std::dynamic_pointer_cast<CActionRobotMovement2D>(act);
+        }
+      }
+      else if (rawlog.getType(countLoop) == CRawlog::etSensoryFrame)
+      {
+        CSensoryFrame::Ptr sf = rawlog.getAsObservations(countLoop);
+        if (sf->size() > 0)
+        {
+          TTimeStamp thisObsTime = (*sf->begin())->timestamp;
+          if (thisObsTime != INVALID_TIMESTAMP)
+          {
+            if (lastOdo && lastObsTime != INVALID_TIMESTAMP)
+            {  // Do average:
+              lastOdo->timestamp = mrpt::Clock::time_point(mrpt::Clock::duration(
+                  (lastObsTime.time_since_epoch().count() >> 1) +
+                  (thisObsTime.time_since_epoch().count() >> 1)));
+              lastOdo.reset();
+              nChanges++;
+            }
+            lastObsTime = thisObsTime;
+          }
+        }
+      }
+    }
+    catch (exception& e)
+    {
+      errorMsg = mrpt::exception_to_str(e);
+      break;
+    }
+    catch (...)
+    {
+      break;
+    }
+  }  // end while keep loading
 
-	progDia.Update(nEntries);
+  progDia.Update(nEntries);
 
-	wxMessageBox(
-		(format("%u entries have been modified", nChanges).c_str()), _("Done"),
-		wxOK, this);
+  wxMessageBox((format("%u entries have been modified", nChanges).c_str()), _("Done"), wxOK, this);
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 // Recover 3D camera params from range data:
 void xRawLogViewerFrame::OnMenuItem3DObsRecoverParams(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	wxBusyCursor waitCursor;
-	int nEntries = (int)rawlog.size();
+  wxBusyCursor waitCursor;
+  int nEntries = (int)rawlog.size();
 
-	wxString auxStr;
-	wxProgressDialog progDia(
-		wxT("Progress"), wxT("Parsing rawlog..."),
-		nEntries,  // range
-		this,  // parent
-		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
-			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+  wxString auxStr;
+  wxProgressDialog progDia(
+      wxT("Progress"), wxT("Parsing rawlog..."),
+      nEntries,  // range
+      this,      // parent
+      wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
+          wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();	// Let the app. process messages
+  wxTheApp->Yield();  // Let the app. process messages
 
-	int nChanges = 0;
-	string errorMsg;
+  int nChanges = 0;
+  string errorMsg;
 
-	bool firstObs = true;
-	TCamera optimal_params;
+  bool firstObs = true;
+  TCamera optimal_params;
 
-	for (int countLoop = 0; countLoop < nEntries; countLoop++)
-	{
-		if (countLoop % 20 == 0)
-		{
-			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
-			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();	// Let the app. process messages
-		}
+  for (int countLoop = 0; countLoop < nEntries; countLoop++)
+  {
+    if (countLoop % 20 == 0)
+    {
+      auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
+      if (!progDia.Update(countLoop, auxStr)) break;
+      wxTheApp->Yield();  // Let the app. process messages
+    }
 
-		try
-		{
-			if (rawlog.getType(countLoop) == CRawlog::etObservation)
-			{
-				CObservation::Ptr obs = rawlog.getAsObservation(countLoop);
-				if (IS_CLASS(*obs, CObservation3DRangeScan))
-				{
-					CObservation3DRangeScan::Ptr o =
-						std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
+    try
+    {
+      if (rawlog.getType(countLoop) == CRawlog::etObservation)
+      {
+        CObservation::Ptr obs = rawlog.getAsObservation(countLoop);
+        if (IS_CLASS(*obs, CObservation3DRangeScan))
+        {
+          CObservation3DRangeScan::Ptr o = std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
 
-					if (firstObs)
-					{
-						const double avrErr = CObservation3DRangeScan::
-							recoverCameraCalibrationParameters(
-								*o, optimal_params);
+          if (firstObs)
+          {
+            const double avrErr =
+                CObservation3DRangeScan::recoverCameraCalibrationParameters(*o, optimal_params);
 
-						if (wxNO ==
-							wxMessageBox(
-								(format(
-									 "Calibration with first "
-									 "observation:\nAverage reprojection "
-									 "error=%.04fpx.\n Accept and apply to "
-									 "ALL 3D observations?",
-									 avrErr)
-									 .c_str()),
-								_("Warning"), wxYES_NO | wxICON_EXCLAMATION))
-							break;
+            if (wxNO == wxMessageBox(
+                            (format(
+                                 "Calibration with first "
+                                 "observation:\nAverage reprojection "
+                                 "error=%.04fpx.\n Accept and apply to "
+                                 "ALL 3D observations?",
+                                 avrErr)
+                                 .c_str()),
+                            _("Warning"), wxYES_NO | wxICON_EXCLAMATION))
+              break;
 
-						firstObs = false;
-					}
+            firstObs = false;
+          }
 
-					// For the rest (including the first obs):
-					o->cameraParams = optimal_params;
-					nChanges++;
-				}
-			}
-		}
-		catch (exception& e)
-		{
-			errorMsg = mrpt::exception_to_str(e);
-			break;
-		}
-		catch (...)
-		{
-			break;
-		}
-	}  // end while keep loading
+          // For the rest (including the first obs):
+          o->cameraParams = optimal_params;
+          nChanges++;
+        }
+      }
+    }
+    catch (exception& e)
+    {
+      errorMsg = mrpt::exception_to_str(e);
+      break;
+    }
+    catch (...)
+    {
+      break;
+    }
+  }  // end while keep loading
 
-	progDia.Update(nEntries);
+  progDia.Update(nEntries);
 
-	wxMessageBox(
-		(format("%u entries have been modified", nChanges).c_str()), _("Done"),
-		wxOK, this);
+  wxMessageBox((format("%u entries have been modified", nChanges).c_str()), _("Done"), wxOK, this);
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 size_t TInfoPerSensorLabel::getOccurences() const { return timOccurs.size(); }
 void TInfoPerSensorLabel::addOcurrence(Clock::time_point obsTim)
 {
-	double ellapsed_tim = .0;
-	if (!timOccurs.empty())
-		ellapsed_tim = mrpt::system::timeDifference(timOccurs.back(), obsTim);
+  double ellapsed_tim = .0;
+  if (!timOccurs.empty()) ellapsed_tim = mrpt::system::timeDifference(timOccurs.back(), obsTim);
 
-	timOccurs.push_back(obsTim);
+  timOccurs.push_back(obsTim);
 
-	if (ellapsed_tim > max_ellapsed_tim_between_obs)
-		max_ellapsed_tim_between_obs = ellapsed_tim;
+  if (ellapsed_tim > max_ellapsed_tim_between_obs) max_ellapsed_tim_between_obs = ellapsed_tim;
 }
 
 void xRawLogViewerFrame::OnMenuRenameSingleObs(wxCommandEvent&)
 {
-	WX_START_TRY
+  WX_START_TRY
 
-	if (!curSelectedObject) return;
+  if (!curSelectedObject) return;
 
-	if (!curSelectedObject->GetRuntimeClass()->derivedFrom(
-			CLASS_ID(CObservation)))
-		return;
+  if (!curSelectedObject->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation))) return;
 
-	CObservation::Ptr obj =
-		std::dynamic_pointer_cast<CObservation>(curSelectedObject);
+  CObservation::Ptr obj = std::dynamic_pointer_cast<CObservation>(curSelectedObject);
 
-	const wxString new_label = wxGetTextFromUser(
-		_("Enter the new sensor label for selected object"), _("New label:"),
-		obj->sensorLabel.c_str(), this);
-	if (new_label.IsEmpty()) return;
+  const wxString new_label = wxGetTextFromUser(
+      _("Enter the new sensor label for selected object"), _("New label:"),
+      obj->sensorLabel.c_str(), this);
+  if (new_label.IsEmpty()) return;
 
-	const string the_new_label = string(new_label.mb_str());
+  const string the_new_label = string(new_label.mb_str());
 
-	obj->sensorLabel = the_new_label;
+  obj->sensorLabel = the_new_label;
 
-	// Update the views:
-	rebuildTreeView();
+  // Update the views:
+  rebuildTreeView();
 
-	WX_END_TRY
+  WX_END_TRY
 }
 
 void xRawLogViewerFrame::On3DObsPagesChange(wxBookCtrlEvent& event)
 {
-	if (event.GetSelection() == 0)
-	{
-		// Re-generate 3D points (to reflect changes in viz options):
-		SelectObjectInTreeView(curSelectedObject);
+  if (event.GetSelection() == 0)
+  {
+    // Re-generate 3D points (to reflect changes in viz options):
+    SelectObjectInTreeView(curSelectedObject);
 
-		m_gl3DRangeScan->Refresh();
-		// DONT!: wxTheApp->Yield();
-	}
+    m_gl3DRangeScan->Refresh();
+    // DONT!: wxTheApp->Yield();
+  }
 }
 
 // Recalculate bottom-time line sizes, etc.
 void xRawLogViewerFrame::OnSize(wxSizeEvent& e)
 {
-	OnSizeOrMaximize();
-	e.Skip();
+  OnSizeOrMaximize();
+  e.Skip();
 }
 
 void xRawLogViewerFrame::OnMaximize(wxMaximizeEvent& e)
 {
-	OnSizeOrMaximize();
-	e.Skip();
+  OnSizeOrMaximize();
+  e.Skip();
 }
 void xRawLogViewerFrame::OnSizeOrMaximize()
 {
-	static double last_tim = 0;
-	const double t = mrpt::Clock::nowDouble();
-	if (t - last_tim > 0.1)
-	{
-		last_tim = t;
-		rebuildBottomTimeLine();
-	}
+  static double last_tim = 0;
+  const double t = mrpt::Clock::nowDouble();
+  if (t - last_tim > 0.1)
+  {
+    last_tim = t;
+    rebuildBottomTimeLine();
+  }
 }

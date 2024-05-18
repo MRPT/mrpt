@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-	APPLICATION: mrpt_ros bridge
-	FILE: GPS.h
-	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
+  APPLICATION: mrpt_ros bridge
+  FILE: GPS.h
+  AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
   ---------------------------------------------------------------*/
 
 #pragma once
@@ -34,8 +34,7 @@ namespace mrpt::ros2bridge
 /** Convert sensor_msgs/NavSatFix -> mrpt::obs::CObservationGPS
  * \return true on sucessful conversion, false on any error.
  */
-bool fromROS(
-	const sensor_msgs::msg::NavSatFix& msg, mrpt::obs::CObservationGPS& obj);
+bool fromROS(const sensor_msgs::msg::NavSatFix& msg, mrpt::obs::CObservationGPS& obj);
 
 /** Convert mrpt::obs::CObservationGPS -> sensor_msgs/NavSatFix
  *  The user must supply the "msg_header" field to be copied into the output
@@ -45,8 +44,9 @@ bool fromROS(
  * message.
  */
 bool toROS(
-	const mrpt::obs::CObservationGPS& obj,
-	const std_msgs::msg::Header& msg_header, sensor_msgs::msg::NavSatFix& msg);
+    const mrpt::obs::CObservationGPS& obj,
+    const std_msgs::msg::Header& msg_header,
+    sensor_msgs::msg::NavSatFix& msg);
 
 /** @} */
 

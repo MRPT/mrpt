@@ -32,35 +32,35 @@ using std::string;
 /** Possible returns from a HTTP request. */
 enum class http_errorcode : uint8_t
 {
-	Ok = 0,
-	BadURL,
-	CouldntConnect,
-	NotFound,
-	OtherHTTPError
+  Ok = 0,
+  BadURL,
+  CouldntConnect,
+  NotFound,
+  OtherHTTPError
 };
 
 struct HttpRequestOptions
 {
-	int port = 80;
+  int port = 80;
 
-	/** Send a basic HTTP authorization request with the given user & password
-	 */
-	string auth_user, auth_pass;
+  /** Send a basic HTTP authorization request with the given user & password
+   */
+  string auth_user, auth_pass;
 
-	/** Additional HTTP headers to send */
-	std::map<std::string, std::string> extra_headers;
+  /** Additional HTTP headers to send */
+  std::map<std::string, std::string> extra_headers;
 
-	int timeout_ms = 1000;
+  int timeout_ms = 1000;
 };
 
 struct HttpRequestOutput
 {
-	int http_responsecode = 0;
+  int http_responsecode = 0;
 
-	string errormsg;
+  string errormsg;
 
-	/** Received HTTP headers */
-	std::map<std::string, std::string> out_headers;
+  /** Received HTTP headers */
+  std::map<std::string, std::string> out_headers;
 };
 
 /** Perform an HTTP GET operation (version for retrieving the data as a
@@ -83,23 +83,27 @@ struct HttpRequestOutput
  * \sa http_request()
  */
 http_errorcode http_get(
-	const string& url, std::vector<uint8_t>& out_content,
-	const HttpRequestOptions& options = HttpRequestOptions(),
-	mrpt::optional_ref<HttpRequestOutput> output = std::nullopt);
+    const string& url,
+    std::vector<uint8_t>& out_content,
+    const HttpRequestOptions& options = HttpRequestOptions(),
+    mrpt::optional_ref<HttpRequestOutput> output = std::nullopt);
 
 /** \overload (version for retrieving the data as text)
  */
 http_errorcode http_get(
-	const string& url, string& out_content,
-	const HttpRequestOptions& options = HttpRequestOptions(),
-	mrpt::optional_ref<HttpRequestOutput> output = std::nullopt);
+    const string& url,
+    string& out_content,
+    const HttpRequestOptions& options = HttpRequestOptions(),
+    mrpt::optional_ref<HttpRequestOutput> output = std::nullopt);
 
 /** Generic function for HTTP GET & POST methods. \sa http_get */
 http_errorcode http_request(
-	const string& http_method, const string& http_send_content,
-	const string& url, std::vector<uint8_t>& out_content,
-	const HttpRequestOptions& options = HttpRequestOptions(),
-	mrpt::optional_ref<HttpRequestOutput> output = std::nullopt);
+    const string& http_method,
+    const string& http_send_content,
+    const string& url,
+    std::vector<uint8_t>& out_content,
+    const HttpRequestOptions& options = HttpRequestOptions(),
+    mrpt::optional_ref<HttpRequestOutput> output = std::nullopt);
 
 /** Resolve a server address by its name, returning its IP address as a
  * string - This method has a timeout for the maximum time to wait for
@@ -109,8 +113,7 @@ http_errorcode http_request(
  * \return true on success, false on timeout or other error.
  */
 bool DNS_resolve_async(
-	const std::string& server_name, std::string& out_ip,
-	const unsigned int timeout_ms = 3000);
+    const std::string& server_name, std::string& out_ip, const unsigned int timeout_ms = 3000);
 
 /** Returns a description of the last Sockets error */
 std::string getLastSocketErrorStr();
@@ -129,9 +132,7 @@ std::string getLastSocketErrorStr();
  * }
  *
  */
-bool Ping(
-	const std::string& address, const int max_attempts,
-	std::string* output_str = nullptr);
+bool Ping(const std::string& address, const int max_attempts, std::string* output_str = nullptr);
 
 /** @} */  // end grouping
 

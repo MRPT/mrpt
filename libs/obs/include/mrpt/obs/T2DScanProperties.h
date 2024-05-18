@@ -19,10 +19,10 @@ namespace mrpt::obs
  */
 struct T2DScanProperties
 {
-	size_t nRays;
-	double aperture;
-	/** Angles storage order: true=counterclockwise; false=clockwise */
-	bool rightToLeft;
+  size_t nRays;
+  double aperture;
+  /** Angles storage order: true=counterclockwise; false=clockwise */
+  bool rightToLeft;
 };
 /** Order operator, so T2DScanProperties can appear in associative STL
  * containers. */
