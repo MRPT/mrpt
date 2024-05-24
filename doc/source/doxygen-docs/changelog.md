@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.13.1: UNRELEASED
+(none yet)
+
 # Version 2.13.0: Released May 19th, 2024
 - Changes in apps:
   - SceneViewer3D: it now automatically guesses the min/max clip planes from the scene bounding box.
