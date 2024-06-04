@@ -2,6 +2,7 @@
 
 # Version 2.13.1: UNRELEASED
 - BUG FIXES:
+  - nanogui: Fix invalidation of iterators/references in widget lists.
   - rnav: fix exception thrown when target is out of the domain of one PTG.
 
 # Version 2.13.0: Released May 19th, 2024
