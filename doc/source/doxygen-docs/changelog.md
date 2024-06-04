@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.13.1: UNRELEASED
-(none yet)
+- BUG FIXES:
+  - rnav: fix exception thrown when target is out of the domain of one PTG.
 
 # Version 2.13.0: Released May 19th, 2024
 - Changes in apps:
