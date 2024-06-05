@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.13.1: UNRELEASED
+# Version 2.13.1: Released June 5th, 2024
 - BUG FIXES:
   - nanogui: Fix invalidation of iterators/references in widget lists.
   - rnav: fix exception thrown when target is out of the domain of one PTG.
