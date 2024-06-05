@@ -61,7 +61,7 @@ int CMultiObjectiveMotionOptimizerBase::decide(
         catch (std::exception&)
         {
           m_score_exprs.clear();
-          return -1; // no good motion in this case
+          return -1;  // no good motion in this case
         }
 
         // Register formulas also as variables, usable by the assert()
@@ -99,7 +99,7 @@ int CMultiObjectiveMotionOptimizerBase::decide(
         catch (std::exception&)
         {
           m_movement_assert_exprs.clear();
-          return -1; // no good motion in this case
+          return -1;  // no good motion in this case
         }
       }
     }
