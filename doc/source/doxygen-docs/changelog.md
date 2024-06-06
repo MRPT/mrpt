@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.13.2: UNRELEASED
+(none yet)
+
 # Version 2.13.1: Released June 5th, 2024
 - BUG FIXES:
   - nanogui: Fix invalidation of iterators/references in widget lists.
