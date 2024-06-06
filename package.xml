@@ -7,10 +7,10 @@
 <package format="3">
   <name>mrpt2</name>
   <!-- Before updating version number, read [MRPT_ROOT]/version_prefix.txt first -->
-  <version>2.13.1</version>
+  <version>2.13.2</version>
   <description>Mobile Robot Programming Toolkit (MRPT) version 2.x</description>
 
-  <author     email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</author>
+  <author email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</author>
   <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
 
   <url type="website">https://www.mrpt.org/</url>
@@ -67,7 +67,7 @@
   <depend>libopencv-dev</depend>
   <!-- <depend>octomap</depend> -->  <!-- Temporarily removed 2024 March due to FTBFS octomap in u24.04 -->
   <!--<depend>pcl_conversions</depend> WAS: To run unit tests only -->
-  
+
   <depend condition="$ROS_VERSION == 1">rosbag_storage</depend>
   <depend condition="$ROS_VERSION == 2">rosbag2_storage</depend>
   <depend condition="$ROS_VERSION == 1">roscpp</depend>
