@@ -44,6 +44,8 @@ jobs:
           brew install nasm
           brew install eigen
           brew install opencv
+          brew install suite-sparse
+          brew ls suite-sparse
           brew install assimp
           echo "CC=clang" >> $GITHUB_ENV
           echo "CXX=clang++" >> $GITHUB_ENV
