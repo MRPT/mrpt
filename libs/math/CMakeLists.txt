@@ -82,12 +82,17 @@ if(BUILD_mrpt-math)
 	# nanoflann:
 	target_link_libraries(math PUBLIC nanoflann::nanoflann)
 
-	if (NOT "${SuiteSparse_LIBRARIES}" STREQUAL "")
-		target_link_libraries(math PRIVATE ${SuiteSparse_LIBRARIES})
-	endif ()
-	if (NOT "${SuiteSparse_LIBRARIES}" STREQUAL "")
-		target_include_directories(math PUBLIC ${SuiteSparse_INCLUDE_DIRS})
-	endif ()
+	if (TARGET SuiteSparse::CXSparse)
+		# Modern cmake interface?
+		target_link_libraries(math PUBLIC SuiteSparse::CXSparse)
+	else()
+		if (NOT "${SuiteSparse_LIBRARIES}" STREQUAL "")
+			target_link_libraries(math PRIVATE ${SuiteSparse_LIBRARIES})
+		endif ()
+		if (NOT "${SuiteSparse_LIBRARIES}" STREQUAL "")
+			target_include_directories(math PUBLIC ${SuiteSparse_INCLUDE_DIRS})
+		endif ()
+	endif()
 
 	# Minimize debug info for this module:
 	#mrpt_reduced_debug_symbols(math)
