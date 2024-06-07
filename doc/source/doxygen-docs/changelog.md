@@ -1,7 +1,9 @@
 \page changelog Change Log
 
 # Version 2.13.2: UNRELEASED
-(none yet)
+- Changes in libraries:
+  - \ref mrpt_ros1bridge_grp:
+    - mrpt::ros1bridge::toROS() conversion from `PointCloud2` to mrpt::maps::CPointsMapXYZIRT: recognize timestamp field names `"t"` and `"timestamp"`, and support conversion from uint32_t timestamps as nanoseconds.
 
 # Version 2.13.1: Released June 5th, 2024
 - BUG FIXES:

@@ -18,7 +18,9 @@
 
 using namespace mrpt::maps;
 
-static bool check_field(
+namespace
+{
+bool check_field(
     const sensor_msgs::PointField& input_field,
     std::string check_name,
     const sensor_msgs::PointField** output)
@@ -29,6 +31,7 @@ static bool check_field(
     if (input_field.datatype != sensor_msgs::PointField::FLOAT32 &&
         input_field.datatype != sensor_msgs::PointField::FLOAT64 &&
         input_field.datatype != sensor_msgs::PointField::UINT16 &&
+        input_field.datatype != sensor_msgs::PointField::UINT32 &&
         input_field.datatype != sensor_msgs::PointField::UINT8)
     {
       *output = nullptr;
@@ -42,7 +45,7 @@ static bool check_field(
   return coherence_error;
 }
 
-static void get_float_from_field(
+void get_float_from_field(
     const sensor_msgs::PointField* field, const unsigned char* data, float& output)
 {
   if (field != nullptr)
@@ -55,7 +58,7 @@ static void get_float_from_field(
   else
     output = 0.0;
 }
-static void get_uint16_from_field(
+void get_uint16_from_field(
     const sensor_msgs::PointField* field, const unsigned char* data, uint16_t& output)
 {
   if (field != nullptr)
@@ -68,6 +71,18 @@ static void get_uint16_from_field(
   else
     output = 0;
 }
+void get_uint32_from_field(
+    const sensor_msgs::PointField* field, const unsigned char* data, uint32_t& output)
+{
+  if (field != nullptr)
+  {
+    if (field->datatype == sensor_msgs::PointField::UINT32)
+      output = *(reinterpret_cast<const uint32_t*>(&data[field->offset]));
+  }
+  else
+    output = 0;
+}
+}  // namespace
 
 std::set<std::string> mrpt::ros1bridge::extractFields(const sensor_msgs::PointCloud2& msg)
 {
@@ -175,7 +190,10 @@ bool mrpt::ros1bridge::fromROS(const sensor_msgs::PointCloud2& msg, CPointsMapXY
     incompatible |= check_field(msg.fields[i], "z", &z_field);
     incompatible |= check_field(msg.fields[i], "intensity", &i_field);
     incompatible |= check_field(msg.fields[i], "ring", &r_field);
+
+    incompatible |= check_field(msg.fields[i], "timestamp", &t_field);
     incompatible |= check_field(msg.fields[i], "time", &t_field);
+    incompatible |= check_field(msg.fields[i], "t", &t_field);
   }
 
   if (incompatible || (!x_field || !y_field || !z_field)) return false;
@@ -210,12 +228,29 @@ bool mrpt::ros1bridge::fromROS(const sensor_msgs::PointCloud2& msg, CPointsMapXY
       }
       if (t_field)
       {
-        float t;
-        get_float_from_field(t_field, msg_data, t);
-        obj.setPointTime(idx, t);
+        if (t_field->datatype == sensor_msgs::PointField::FLOAT32)
+        {
+          float t;
+          get_float_from_field(t_field, msg_data, t);
+          obj.setPointTime(idx, t);
+        }
+        else
+        {
+          uint32_t t;
+          get_uint32_from_field(t_field, msg_data, t);
+
+          // Convention:
+          // I only found one case (NTU Viral dataset) using uint32_t for time,
+          // and times ranged from 0 to ~99822766 = 100,000,000 = 1e8
+          // so they seems to be nanoseconds:
+          // TODO(jlbc): We are using a hard-coded half sensor period:
+          const float T_half = 0.10f / 2;
+          obj.setPointTime(idx, t * 1e-9 - T_half);
+        }
       }
     }
   }
+
   return true;
 }
 
