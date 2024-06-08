@@ -169,7 +169,7 @@ void bind_mrpt_slam_CMetricMapsAlignmentAlgorithm(std::function< pybind11::modul
 			cl.def("assign", (class mrpt::slam::CICP::TConfigParams & (mrpt::slam::CICP::TConfigParams::*)(const class mrpt::slam::CICP::TConfigParams &)) &mrpt::slam::CICP::TConfigParams::operator=, "C++: mrpt::slam::CICP::TConfigParams::operator=(const class mrpt::slam::CICP::TConfigParams &) --> class mrpt::slam::CICP::TConfigParams &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::slam::CICP::TReturnInfo file:mrpt/slam/CICP.h line:190
+		{ // mrpt::slam::CICP::TReturnInfo file:mrpt/slam/CICP.h line:186
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::slam::CICP::TReturnInfo, std::shared_ptr<mrpt::slam::CICP::TReturnInfo>, mrpt::slam::TMetricMapAlignmentResult> cl(enclosing_class, "TReturnInfo", "The ICP algorithm return information");
 			cl.def( pybind11::init( [](){ return new mrpt::slam::CICP::TReturnInfo(); } ) );

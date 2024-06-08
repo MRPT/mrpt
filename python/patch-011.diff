@@ -42,17 +42,6 @@ index 6b4c0940e..9ba6f5aec 100644
  		pybind11::gil_scoped_acquire gil;
  		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::COccupancyGridMap2D *>(this), "nn_single_search");
  		if (overload) {
-@@ -664,8 +664,8 @@ void bind_mrpt_maps_COccupancyGridMap2D(std::function< pybind11::module &(std::s
- 		cl.def("asString", (std::string (mrpt::maps::COccupancyGridMap2D::*)() const) &mrpt::maps::COccupancyGridMap2D::asString, "Returns a short description of the map. \n\nC++: mrpt::maps::COccupancyGridMap2D::asString() const --> std::string");
- 		cl.def("nn_has_indices_or_ids", (bool (mrpt::maps::COccupancyGridMap2D::*)() const) &mrpt::maps::COccupancyGridMap2D::nn_has_indices_or_ids, "		@{ \n\nC++: mrpt::maps::COccupancyGridMap2D::nn_has_indices_or_ids() const --> bool");
- 		cl.def("nn_index_count", (size_t (mrpt::maps::COccupancyGridMap2D::*)() const) &mrpt::maps::COccupancyGridMap2D::nn_index_count, "C++: mrpt::maps::COccupancyGridMap2D::nn_index_count() const --> size_t");
--		cl.def("nn_single_search", (bool (mrpt::maps::COccupancyGridMap2D::*)(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &, unsigned long &) const) &mrpt::maps::COccupancyGridMap2D::nn_single_search, "C++: mrpt::maps::COccupancyGridMap2D::nn_single_search(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &, unsigned long &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"), pybind11::arg("resultIndexOrID"));
--		cl.def("nn_single_search", (bool (mrpt::maps::COccupancyGridMap2D::*)(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &, unsigned long &) const) &mrpt::maps::COccupancyGridMap2D::nn_single_search, "C++: mrpt::maps::COccupancyGridMap2D::nn_single_search(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &, unsigned long &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"), pybind11::arg("resultIndexOrID"));
-+		cl.def("nn_single_search", (bool (mrpt::maps::COccupancyGridMap2D::*)(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &, uint64_t &) const) &mrpt::maps::COccupancyGridMap2D::nn_single_search, "C++: mrpt::maps::COccupancyGridMap2D::nn_single_search(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &, uint64_t &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"), pybind11::arg("resultIndexOrID"));
-+		cl.def("nn_single_search", (bool (mrpt::maps::COccupancyGridMap2D::*)(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &, uint64_t &) const) &mrpt::maps::COccupancyGridMap2D::nn_single_search, "C++: mrpt::maps::COccupancyGridMap2D::nn_single_search(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &, uint64_t &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"), pybind11::arg("resultIndexOrID"));
- 		cl.def("assign", (class mrpt::maps::COccupancyGridMap2D & (mrpt::maps::COccupancyGridMap2D::*)(const class mrpt::maps::COccupancyGridMap2D &)) &mrpt::maps::COccupancyGridMap2D::operator=, "C++: mrpt::maps::COccupancyGridMap2D::operator=(const class mrpt::maps::COccupancyGridMap2D &) --> class mrpt::maps::COccupancyGridMap2D &", pybind11::return_value_policy::automatic, pybind11::arg(""));
- 
- 		{ // mrpt::maps::COccupancyGridMap2D::TUpdateCellsInfoChangeOnly file:mrpt/maps/COccupancyGridMap2D.h line:215
 diff --git a/python/src/mrpt/maps/COccupancyGridMap3D.cpp b/python/src/mrpt/maps/COccupancyGridMap3D.cpp
 index b68479e5c..72772ebc2 100644
 --- a/python/src/mrpt/maps/COccupancyGridMap3D.cpp
@@ -75,15 +64,6 @@ index b68479e5c..72772ebc2 100644
  		pybind11::gil_scoped_acquire gil;
  		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::COccupancyGridMap3D *>(this), "nn_single_search");
  		if (overload) {
-@@ -568,8 +568,8 @@ void bind_mrpt_maps_COccupancyGridMap3D(std::function< pybind11::module &(std::s
- 		cl.def("asString", (std::string (mrpt::maps::COccupancyGridMap3D::*)() const) &mrpt::maps::COccupancyGridMap3D::asString, "Returns a short description of the map. \n\nC++: mrpt::maps::COccupancyGridMap3D::asString() const --> std::string");
- 		cl.def("nn_has_indices_or_ids", (bool (mrpt::maps::COccupancyGridMap3D::*)() const) &mrpt::maps::COccupancyGridMap3D::nn_has_indices_or_ids, "		@{ \n\nC++: mrpt::maps::COccupancyGridMap3D::nn_has_indices_or_ids() const --> bool");
- 		cl.def("nn_index_count", (size_t (mrpt::maps::COccupancyGridMap3D::*)() const) &mrpt::maps::COccupancyGridMap3D::nn_index_count, "C++: mrpt::maps::COccupancyGridMap3D::nn_index_count() const --> size_t");
--		cl.def("nn_single_search", (bool (mrpt::maps::COccupancyGridMap3D::*)(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &, unsigned long &) const) &mrpt::maps::COccupancyGridMap3D::nn_single_search, "C++: mrpt::maps::COccupancyGridMap3D::nn_single_search(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &, unsigned long &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"), pybind11::arg("resultIndexOrID"));
--		cl.def("nn_single_search", (bool (mrpt::maps::COccupancyGridMap3D::*)(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &, unsigned long &) const) &mrpt::maps::COccupancyGridMap3D::nn_single_search, "C++: mrpt::maps::COccupancyGridMap3D::nn_single_search(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &, unsigned long &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"), pybind11::arg("resultIndexOrID"));
-+		cl.def("nn_single_search", (bool (mrpt::maps::COccupancyGridMap3D::*)(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &, uint64_t &) const) &mrpt::maps::COccupancyGridMap3D::nn_single_search, "C++: mrpt::maps::COccupancyGridMap3D::nn_single_search(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &, uint64_t &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"), pybind11::arg("resultIndexOrID"));
-+		cl.def("nn_single_search", (bool (mrpt::maps::COccupancyGridMap3D::*)(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &, uint64_t &) const) &mrpt::maps::COccupancyGridMap3D::nn_single_search, "C++: mrpt::maps::COccupancyGridMap3D::nn_single_search(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &, uint64_t &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"), pybind11::arg("resultIndexOrID"));
- 		cl.def("assign", (class mrpt::maps::COccupancyGridMap3D & (mrpt::maps::COccupancyGridMap3D::*)(const class mrpt::maps::COccupancyGridMap3D &)) &mrpt::maps::COccupancyGridMap3D::operator=, "C++: mrpt::maps::COccupancyGridMap3D::operator=(const class mrpt::maps::COccupancyGridMap3D &) --> class mrpt::maps::COccupancyGridMap3D &", pybind11::return_value_policy::automatic, pybind11::arg(""));
  
  		{ // mrpt::maps::COccupancyGridMap3D::TInsertionOptions file:mrpt/maps/COccupancyGridMap3D.h line:221
 diff --git a/python/src/mrpt/maps/COctoMap.cpp b/python/src/mrpt/maps/COctoMap.cpp
@@ -130,21 +110,6 @@ index 9e61fbe51..f5485e2cb 100644
  		pybind11::gil_scoped_acquire gil;
  		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CPointsMapXYZI *>(this), "nn_single_search");
  		if (overload) {
-diff --git a/python/src/mrpt/maps/CPointsMap.cpp b/python/src/mrpt/maps/CPointsMap.cpp
-index b7cbd6fb6..35650c183 100644
---- a/python/src/mrpt/maps/CPointsMap.cpp
-+++ b/python/src/mrpt/maps/CPointsMap.cpp
-@@ -257,8 +257,8 @@ void bind_mrpt_maps_CPointsMap(std::function< pybind11::module &(std::string con
- 		cl.def("nn_prepare_for_3d_queries", (void (mrpt::maps::CPointsMap::*)() const) &mrpt::maps::CPointsMap::nn_prepare_for_3d_queries, "C++: mrpt::maps::CPointsMap::nn_prepare_for_3d_queries() const --> void");
- 		cl.def("nn_has_indices_or_ids", (bool (mrpt::maps::CPointsMap::*)() const) &mrpt::maps::CPointsMap::nn_has_indices_or_ids, "C++: mrpt::maps::CPointsMap::nn_has_indices_or_ids() const --> bool");
- 		cl.def("nn_index_count", (size_t (mrpt::maps::CPointsMap::*)() const) &mrpt::maps::CPointsMap::nn_index_count, "C++: mrpt::maps::CPointsMap::nn_index_count() const --> size_t");
--		cl.def("nn_single_search", (bool (mrpt::maps::CPointsMap::*)(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &, unsigned long &) const) &mrpt::maps::CPointsMap::nn_single_search, "C++: mrpt::maps::CPointsMap::nn_single_search(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &, unsigned long &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"), pybind11::arg("resultIndexOrID"));
--		cl.def("nn_single_search", (bool (mrpt::maps::CPointsMap::*)(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &, unsigned long &) const) &mrpt::maps::CPointsMap::nn_single_search, "C++: mrpt::maps::CPointsMap::nn_single_search(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &, unsigned long &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"), pybind11::arg("resultIndexOrID"));
-+		cl.def("nn_single_search", (bool (mrpt::maps::CPointsMap::*)(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &, uint64_t &) const) &mrpt::maps::CPointsMap::nn_single_search, "C++: mrpt::maps::CPointsMap::nn_single_search(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &, uint64_t &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"), pybind11::arg("resultIndexOrID"));
-+		cl.def("nn_single_search", (bool (mrpt::maps::CPointsMap::*)(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &, uint64_t &) const) &mrpt::maps::CPointsMap::nn_single_search, "C++: mrpt::maps::CPointsMap::nn_single_search(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &, uint64_t &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"), pybind11::arg("resultIndexOrID"));
- 
- 		{ // mrpt::maps::CPointsMap::TInsertionOptions file:mrpt/maps/CPointsMap.h line:228
- 			auto & enclosing_class = cl;
 diff --git a/python/src/mrpt/maps/CReflectivityGridMap2D.cpp b/python/src/mrpt/maps/CReflectivityGridMap2D.cpp
 index bed19b4fc..09244fb04 100644
 --- a/python/src/mrpt/maps/CReflectivityGridMap2D.cpp
@@ -167,15 +132,6 @@ index bed19b4fc..09244fb04 100644
  		pybind11::gil_scoped_acquire gil;
  		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CWeightedPointsMap *>(this), "nn_single_search");
  		if (overload) {
-@@ -1130,7 +1130,7 @@ void bind_mrpt_maps_CReflectivityGridMap2D(std::function< pybind11::module &(std
- 		cl.def("setSize", (void (mrpt::maps::CWeightedPointsMap::*)(size_t)) &mrpt::maps::CWeightedPointsMap::setSize, "C++: mrpt::maps::CWeightedPointsMap::setSize(size_t) --> void", pybind11::arg("newLength"));
- 		cl.def("insertPointFast", [](mrpt::maps::CWeightedPointsMap &o, float const & a0, float const & a1) -> void { return o.insertPointFast(a0, a1); }, "", pybind11::arg("x"), pybind11::arg("y"));
- 		cl.def("insertPointFast", (void (mrpt::maps::CWeightedPointsMap::*)(float, float, float)) &mrpt::maps::CWeightedPointsMap::insertPointFast, "The virtual method for  *without* calling\n mark_as_modified()   \n\nC++: mrpt::maps::CWeightedPointsMap::insertPointFast(float, float, float) --> void", pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"));
--		cl.def("setPointWeight", (void (mrpt::maps::CWeightedPointsMap::*)(size_t, unsigned long)) &mrpt::maps::CWeightedPointsMap::setPointWeight, "Sets the point weight, which is ignored in all classes but those which\n actually store that field (Note: No checks are done for out-of-bounds\n index). \n\n getPointWeight\n\nC++: mrpt::maps::CWeightedPointsMap::setPointWeight(size_t, unsigned long) --> void", pybind11::arg("index"), pybind11::arg("w"));
-+		cl.def("setPointWeight", (void (mrpt::maps::CWeightedPointsMap::*)(size_t, uint64_t)) &mrpt::maps::CWeightedPointsMap::setPointWeight, "Sets the point weight, which is ignored in all classes but those which\n actually store that field (Note: No checks are done for out-of-bounds\n index). \n\n getPointWeight\n\nC++: mrpt::maps::CWeightedPointsMap::setPointWeight(size_t, uint64_t) --> void", pybind11::arg("index"), pybind11::arg("w"));
- 		cl.def("getPointWeight", (unsigned int (mrpt::maps::CWeightedPointsMap::*)(size_t) const) &mrpt::maps::CWeightedPointsMap::getPointWeight, "Gets the point weight, which is ignored in all classes (defaults to 1)\n but in those which actually store that field (Note: No checks are done\n for out-of-bounds index).  \n\n setPointWeight\n\nC++: mrpt::maps::CWeightedPointsMap::getPointWeight(size_t) const --> unsigned int", pybind11::arg("index"));
- 
- 		{ // mrpt::maps::CWeightedPointsMap::TMapDefinitionBase file: line:80
 diff --git a/python/src/mrpt/maps/CVoxelMap.cpp b/python/src/mrpt/maps/CVoxelMap.cpp
 index d36a783ff..6955a6caf 100644
 --- a/python/src/mrpt/maps/CVoxelMap.cpp

@@ -237,7 +237,7 @@ struct PyCallBack_mrpt_obs_CObservationVelodyneScan : public mrpt::obs::CObserva
 	}
 };
 
-// mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper file:mrpt/obs/CObservationVelodyneScan.h line:321
+// mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper file:mrpt/obs/CObservationVelodyneScan.h line:298
 struct PyCallBack_mrpt_obs_CObservationVelodyneScan_PointCloudStorageWrapper : public mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper {
 	using mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper::PointCloudStorageWrapper;
 
@@ -298,7 +298,7 @@ void bind_mrpt_obs_VelodyneCalibration(std::function< pybind11::module &(std::st
 		cl.def("loadFromYAMLFile", (bool (mrpt::obs::VelodyneCalibration::*)(const std::string &)) &mrpt::obs::VelodyneCalibration::loadFromYAMLFile, "Loads calibration from a YAML calibration file.\n \n\n loadFromYAMLText, loadFromXMLFile\n \n\n false on any error, true on success \n\nC++: mrpt::obs::VelodyneCalibration::loadFromYAMLFile(const std::string &) --> bool", pybind11::arg("velodyne_calib_yaml_filename"));
 		cl.def("assign", (struct mrpt::obs::VelodyneCalibration & (mrpt::obs::VelodyneCalibration::*)(const struct mrpt::obs::VelodyneCalibration &)) &mrpt::obs::VelodyneCalibration::operator=, "C++: mrpt::obs::VelodyneCalibration::operator=(const struct mrpt::obs::VelodyneCalibration &) --> struct mrpt::obs::VelodyneCalibration &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::obs::VelodyneCalibration::PerLaserCalib file:mrpt/obs/VelodyneCalibration.h line:65
+		{ // mrpt::obs::VelodyneCalibration::PerLaserCalib file:mrpt/obs/VelodyneCalibration.h line:64
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::VelodyneCalibration::PerLaserCalib, std::shared_ptr<mrpt::obs::VelodyneCalibration::PerLaserCalib>> cl(enclosing_class, "PerLaserCalib", "");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::VelodyneCalibration::PerLaserCalib(); } ) );
@@ -342,7 +342,7 @@ void bind_mrpt_obs_VelodyneCalibration(std::function< pybind11::module &(std::st
 		cl.def("setSensorPose", (void (mrpt::obs::CObservationVelodyneScan::*)(const class mrpt::poses::CPose3D &)) &mrpt::obs::CObservationVelodyneScan::setSensorPose, "C++: mrpt::obs::CObservationVelodyneScan::setSensorPose(const class mrpt::poses::CPose3D &) --> void", pybind11::arg("newSensorPose"));
 		cl.def("assign", (class mrpt::obs::CObservationVelodyneScan & (mrpt::obs::CObservationVelodyneScan::*)(const class mrpt::obs::CObservationVelodyneScan &)) &mrpt::obs::CObservationVelodyneScan::operator=, "C++: mrpt::obs::CObservationVelodyneScan::operator=(const class mrpt::obs::CObservationVelodyneScan &) --> class mrpt::obs::CObservationVelodyneScan &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::obs::CObservationVelodyneScan::laser_return_t file:mrpt/obs/CObservationVelodyneScan.h line:123
+		{ // mrpt::obs::CObservationVelodyneScan::laser_return_t file:mrpt/obs/CObservationVelodyneScan.h line:122
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::CObservationVelodyneScan::laser_return_t, std::shared_ptr<mrpt::obs::CObservationVelodyneScan::laser_return_t>> cl(enclosing_class, "laser_return_t", "");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::CObservationVelodyneScan::laser_return_t(); } ) );
@@ -350,7 +350,7 @@ void bind_mrpt_obs_VelodyneCalibration(std::function< pybind11::module &(std::st
 			cl.def("intensity", (uint8_t (mrpt::obs::CObservationVelodyneScan::laser_return_t::*)() const) &mrpt::obs::CObservationVelodyneScan::laser_return_t::intensity, "C++: mrpt::obs::CObservationVelodyneScan::laser_return_t::intensity() const --> uint8_t");
 		}
 
-		{ // mrpt::obs::CObservationVelodyneScan::raw_block_t file:mrpt/obs/CObservationVelodyneScan.h line:139
+		{ // mrpt::obs::CObservationVelodyneScan::raw_block_t file:mrpt/obs/CObservationVelodyneScan.h line:135
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::CObservationVelodyneScan::raw_block_t, std::shared_ptr<mrpt::obs::CObservationVelodyneScan::raw_block_t>> cl(enclosing_class, "raw_block_t", "Raw Velodyne data block.\n  Each block contains data from either the upper or lower laser\n  bank.  The device returns three times as many upper bank blocks. ");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::CObservationVelodyneScan::raw_block_t(); } ) );
@@ -358,7 +358,7 @@ void bind_mrpt_obs_VelodyneCalibration(std::function< pybind11::module &(std::st
 			cl.def("rotation", (uint16_t (mrpt::obs::CObservationVelodyneScan::raw_block_t::*)() const) &mrpt::obs::CObservationVelodyneScan::raw_block_t::rotation, "C++: mrpt::obs::CObservationVelodyneScan::raw_block_t::rotation() const --> uint16_t");
 		}
 
-		{ // mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket file:mrpt/obs/CObservationVelodyneScan.h line:159
+		{ // mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket file:mrpt/obs/CObservationVelodyneScan.h line:149
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket, std::shared_ptr<mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket>> cl(enclosing_class, "TVelodyneRawPacket", "One unit of data from the scanner (the payload of one UDP DATA packet)");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket(); } ) );
@@ -367,7 +367,7 @@ void bind_mrpt_obs_VelodyneCalibration(std::function< pybind11::module &(std::st
 			cl.def("gps_timestamp", (uint32_t (mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket::*)() const) &mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket::gps_timestamp, "C++: mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket::gps_timestamp() const --> uint32_t");
 		}
 
-		{ // mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket file:mrpt/obs/CObservationVelodyneScan.h line:181
+		{ // mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket file:mrpt/obs/CObservationVelodyneScan.h line:168
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket, std::shared_ptr<mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket>> cl(enclosing_class, "TVelodynePositionPacket", "Payload of one POSITION packet ");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket(); } ) );
@@ -375,7 +375,7 @@ void bind_mrpt_obs_VelodyneCalibration(std::function< pybind11::module &(std::st
 			cl.def("unused2", (uint32_t (mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket::*)() const) &mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket::unused2, "C++: mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket::unused2() const --> uint32_t");
 		}
 
-		{ // mrpt::obs::CObservationVelodyneScan::TPointCloud file:mrpt/obs/CObservationVelodyneScan.h line:232
+		{ // mrpt::obs::CObservationVelodyneScan::TPointCloud file:mrpt/obs/CObservationVelodyneScan.h line:212
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::CObservationVelodyneScan::TPointCloud, std::shared_ptr<mrpt::obs::CObservationVelodyneScan::TPointCloud>> cl(enclosing_class, "TPointCloud", "See  and  ");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::CObservationVelodyneScan::TPointCloud(); } ) );
@@ -395,7 +395,7 @@ void bind_mrpt_obs_VelodyneCalibration(std::function< pybind11::module &(std::st
 			cl.def("assign", (struct mrpt::obs::CObservationVelodyneScan::TPointCloud & (mrpt::obs::CObservationVelodyneScan::TPointCloud::*)(const struct mrpt::obs::CObservationVelodyneScan::TPointCloud &)) &mrpt::obs::CObservationVelodyneScan::TPointCloud::operator=, "C++: mrpt::obs::CObservationVelodyneScan::TPointCloud::operator=(const struct mrpt::obs::CObservationVelodyneScan::TPointCloud &) --> struct mrpt::obs::CObservationVelodyneScan::TPointCloud &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::obs::CObservationVelodyneScan::TGeneratePointCloudParameters file:mrpt/obs/CObservationVelodyneScan.h line:269
+		{ // mrpt::obs::CObservationVelodyneScan::TGeneratePointCloudParameters file:mrpt/obs/CObservationVelodyneScan.h line:249
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::CObservationVelodyneScan::TGeneratePointCloudParameters, std::shared_ptr<mrpt::obs::CObservationVelodyneScan::TGeneratePointCloudParameters>> cl(enclosing_class, "TGeneratePointCloudParameters", "@{ ");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::CObservationVelodyneScan::TGeneratePointCloudParameters(); } ) );
@@ -427,7 +427,7 @@ void bind_mrpt_obs_VelodyneCalibration(std::function< pybind11::module &(std::st
 			cl.def_readwrite("generatePointsForLaserID", &mrpt::obs::CObservationVelodyneScan::TGeneratePointCloudParameters::generatePointsForLaserID);
 		}
 
-		{ // mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper file:mrpt/obs/CObservationVelodyneScan.h line:321
+		{ // mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper file:mrpt/obs/CObservationVelodyneScan.h line:298
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper, std::shared_ptr<mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper>, PyCallBack_mrpt_obs_CObservationVelodyneScan_PointCloudStorageWrapper> cl(enclosing_class, "PointCloudStorageWrapper", "Derive from this class to generate pointclouds into custom containers.\n \n\n generatePointCloud() ");
 			cl.def( pybind11::init( [](){ return new PyCallBack_mrpt_obs_CObservationVelodyneScan_PointCloudStorageWrapper(); } ) );
@@ -437,7 +437,7 @@ void bind_mrpt_obs_VelodyneCalibration(std::function< pybind11::module &(std::st
 			cl.def("assign", (struct mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper & (mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper::*)(const struct mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper &)) &mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper::operator=, "C++: mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper::operator=(const struct mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper &) --> struct mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::obs::CObservationVelodyneScan::TGeneratePointCloudSE3Results file:mrpt/obs/CObservationVelodyneScan.h line:359
+		{ // mrpt::obs::CObservationVelodyneScan::TGeneratePointCloudSE3Results file:mrpt/obs/CObservationVelodyneScan.h line:338
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::CObservationVelodyneScan::TGeneratePointCloudSE3Results, std::shared_ptr<mrpt::obs::CObservationVelodyneScan::TGeneratePointCloudSE3Results>> cl(enclosing_class, "TGeneratePointCloudSE3Results", "Results for generatePointCloudAlongSE3Trajectory() ");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::CObservationVelodyneScan::TGeneratePointCloudSE3Results(); } ) );

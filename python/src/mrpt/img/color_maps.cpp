@@ -35,13 +35,13 @@ void bind_mrpt_img_color_maps(std::function< pybind11::module &(std::string cons
 	// mrpt::img::colormap(const enum mrpt::img::TColormap &, const float, float &, float &, float &) file:mrpt/img/color_maps.h line:41
 	M("mrpt::img").def("colormap", (void (*)(const enum mrpt::img::TColormap &, const float, float &, float &, float &)) &mrpt::img::colormap, "Transform a float number in the range [0,1] into RGB components. Different\n colormaps are available. \n\nC++: mrpt::img::colormap(const enum mrpt::img::TColormap &, const float, float &, float &, float &) --> void", pybind11::arg("color_map"), pybind11::arg("color_index"), pybind11::arg("r"), pybind11::arg("g"), pybind11::arg("b"));
 
-	// mrpt::img::colormap(const enum mrpt::img::TColormap &, const float) file:mrpt/img/color_maps.h line:46
+	// mrpt::img::colormap(const enum mrpt::img::TColormap &, const float) file:mrpt/img/color_maps.h line:44
 	M("mrpt::img").def("colormap", (struct mrpt::img::TColor (*)(const enum mrpt::img::TColormap &, const float)) &mrpt::img::colormap, "C++: mrpt::img::colormap(const enum mrpt::img::TColormap &, const float) --> struct mrpt::img::TColor", pybind11::arg("color_map"), pybind11::arg("color_index"));
 
-	// mrpt::img::jet2rgb(const float, float &, float &, float &) file:mrpt/img/color_maps.h line:50
+	// mrpt::img::jet2rgb(const float, float &, float &, float &) file:mrpt/img/color_maps.h line:48
 	M("mrpt::img").def("jet2rgb", (void (*)(const float, float &, float &, float &)) &mrpt::img::jet2rgb, "Computes the RGB color components (range [0,1]) for the corresponding color\n index in the range [0,1] using the MATLAB 'jet' colormap.  \n\n colormap  \n\nC++: mrpt::img::jet2rgb(const float, float &, float &, float &) --> void", pybind11::arg("color_index"), pybind11::arg("r"), pybind11::arg("g"), pybind11::arg("b"));
 
-	// mrpt::img::hot2rgb(const float, float &, float &, float &) file:mrpt/img/color_maps.h line:54
+	// mrpt::img::hot2rgb(const float, float &, float &, float &) file:mrpt/img/color_maps.h line:52
 	M("mrpt::img").def("hot2rgb", (void (*)(const float, float &, float &, float &)) &mrpt::img::hot2rgb, "Computes the RGB color components (range [0,1]) for the corresponding color\n index in the range [0,1] using the MATLAB 'hot' colormap.  \n\n colormap  \n\nC++: mrpt::img::hot2rgb(const float, float &, float &, float &) --> void", pybind11::arg("color_index"), pybind11::arg("r"), pybind11::arg("g"), pybind11::arg("b"));
 
 }

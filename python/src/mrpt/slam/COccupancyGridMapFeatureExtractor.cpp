@@ -178,7 +178,7 @@ void bind_mrpt_slam_COccupancyGridMapFeatureExtractor(std::function< pybind11::m
 			cl.def("assign", (class mrpt::slam::CGridMapAligner::TConfigParams & (mrpt::slam::CGridMapAligner::TConfigParams::*)(const class mrpt::slam::CGridMapAligner::TConfigParams &)) &mrpt::slam::CGridMapAligner::TConfigParams::operator=, "C++: mrpt::slam::CGridMapAligner::TConfigParams::operator=(const class mrpt::slam::CGridMapAligner::TConfigParams &) --> class mrpt::slam::CGridMapAligner::TConfigParams &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::slam::CGridMapAligner::TReturnInfo file:mrpt/slam/CGridMapAligner.h line:130
+		{ // mrpt::slam::CGridMapAligner::TReturnInfo file:mrpt/slam/CGridMapAligner.h line:128
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::slam::CGridMapAligner::TReturnInfo, std::shared_ptr<mrpt::slam::CGridMapAligner::TReturnInfo>, mrpt::slam::TMetricMapAlignmentResult> cl(enclosing_class, "TReturnInfo", "The ICP algorithm return information.");
 			cl.def( pybind11::init( [](){ return new mrpt::slam::CGridMapAligner::TReturnInfo(); } ) );
@@ -195,7 +195,7 @@ void bind_mrpt_slam_COccupancyGridMapFeatureExtractor(std::function< pybind11::m
 			cl.def_readwrite("icp_goodness_all_sog_modes", &mrpt::slam::CGridMapAligner::TReturnInfo::icp_goodness_all_sog_modes);
 			cl.def("assign", (struct mrpt::slam::CGridMapAligner::TReturnInfo & (mrpt::slam::CGridMapAligner::TReturnInfo::*)(const struct mrpt::slam::CGridMapAligner::TReturnInfo &)) &mrpt::slam::CGridMapAligner::TReturnInfo::operator=, "C++: mrpt::slam::CGridMapAligner::TReturnInfo::operator=(const struct mrpt::slam::CGridMapAligner::TReturnInfo &) --> struct mrpt::slam::CGridMapAligner::TReturnInfo &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-			{ // mrpt::slam::CGridMapAligner::TReturnInfo::TPairPlusDistance file:mrpt/slam/CGridMapAligner.h line:164
+			{ // mrpt::slam::CGridMapAligner::TReturnInfo::TPairPlusDistance file:mrpt/slam/CGridMapAligner.h line:161
 				auto & enclosing_class = cl;
 				pybind11::class_<mrpt::slam::CGridMapAligner::TReturnInfo::TPairPlusDistance, std::shared_ptr<mrpt::slam::CGridMapAligner::TReturnInfo::TPairPlusDistance>> cl(enclosing_class, "TPairPlusDistance", "");
 				cl.def( pybind11::init<size_t, size_t, float>(), pybind11::arg("i1"), pybind11::arg("i2"), pybind11::arg("d") );

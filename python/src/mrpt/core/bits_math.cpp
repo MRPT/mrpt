@@ -30,19 +30,19 @@ void bind_mrpt_core_bits_math(std::function< pybind11::module &(std::string cons
 	// mrpt::DEG2RAD(const float) file:mrpt/core/bits_math.h line:52
 	M("mrpt").def("DEG2RAD", (float (*)(const float)) &mrpt::DEG2RAD, "Degrees to radians \n\nC++: mrpt::DEG2RAD(const float) --> float", pybind11::arg("x"));
 
-	// mrpt::DEG2RAD(const int) file:mrpt/core/bits_math.h line:57
+	// mrpt::DEG2RAD(const int) file:mrpt/core/bits_math.h line:54
 	M("mrpt").def("DEG2RAD", (double (*)(const int)) &mrpt::DEG2RAD, "Degrees to radians \n\nC++: mrpt::DEG2RAD(const int) --> double", pybind11::arg("x"));
 
-	// mrpt::RAD2DEG(const double) file:mrpt/core/bits_math.h line:59
+	// mrpt::RAD2DEG(const double) file:mrpt/core/bits_math.h line:56
 	M("mrpt").def("RAD2DEG", (double (*)(const double)) &mrpt::RAD2DEG, "Radians to degrees \n\nC++: mrpt::RAD2DEG(const double) --> double", pybind11::arg("x"));
 
-	// mrpt::RAD2DEG(const float) file:mrpt/core/bits_math.h line:61
+	// mrpt::RAD2DEG(const float) file:mrpt/core/bits_math.h line:58
 	M("mrpt").def("RAD2DEG", (float (*)(const float)) &mrpt::RAD2DEG, "Radians to degrees \n\nC++: mrpt::RAD2DEG(const float) --> float", pybind11::arg("x"));
 
-	// mrpt::DEG2RAD(const long double) file:mrpt/core/bits_math.h line:70
+	// mrpt::DEG2RAD(const long double) file:mrpt/core/bits_math.h line:64
 	M("mrpt").def("DEG2RAD", (long double (*)(const long double)) &mrpt::DEG2RAD, "Degrees to radians \n\nC++: mrpt::DEG2RAD(const long double) --> long double", pybind11::arg("x"));
 
-	// mrpt::RAD2DEG(const long double) file:mrpt/core/bits_math.h line:75
+	// mrpt::RAD2DEG(const long double) file:mrpt/core/bits_math.h line:66
 	M("mrpt").def("RAD2DEG", (long double (*)(const long double)) &mrpt::RAD2DEG, "Radians to degrees \n\nC++: mrpt::RAD2DEG(const long double) --> long double", pybind11::arg("x"));
 
 }

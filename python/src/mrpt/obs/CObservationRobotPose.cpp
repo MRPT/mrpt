@@ -442,7 +442,7 @@ struct PyCallBack_mrpt_obs_CObservationStereoImagesFeatures : public mrpt::obs::
 	}
 };
 
-// mrpt::obs::CRawlog file:mrpt/obs/CRawlog.h line:62
+// mrpt::obs::CRawlog file:mrpt/obs/CRawlog.h line:60
 struct PyCallBack_mrpt_obs_CRawlog : public mrpt::obs::CRawlog {
 	using mrpt::obs::CRawlog::CRawlog;
 
@@ -562,7 +562,7 @@ void bind_mrpt_obs_CObservationRobotPose(std::function< pybind11::module &(std::
 		cl.def("setSensorPose", (void (mrpt::obs::CObservationStereoImagesFeatures::*)(const class mrpt::poses::CPose3DQuat &)) &mrpt::obs::CObservationStereoImagesFeatures::setSensorPose, "A general method to change the sensor pose on the robot in a CPose3DQuat\n form.\n  Note that most sensors will use the full (6D) CPose3DQuat, but see the\n derived classes for more details or special cases.\n \n\n getSensorPose\n\nC++: mrpt::obs::CObservationStereoImagesFeatures::setSensorPose(const class mrpt::poses::CPose3DQuat &) --> void", pybind11::arg("newSensorPose"));
 		cl.def("assign", (class mrpt::obs::CObservationStereoImagesFeatures & (mrpt::obs::CObservationStereoImagesFeatures::*)(const class mrpt::obs::CObservationStereoImagesFeatures &)) &mrpt::obs::CObservationStereoImagesFeatures::operator=, "C++: mrpt::obs::CObservationStereoImagesFeatures::operator=(const class mrpt::obs::CObservationStereoImagesFeatures &) --> class mrpt::obs::CObservationStereoImagesFeatures &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::obs::CRawlog file:mrpt/obs/CRawlog.h line:62
+	{ // mrpt::obs::CRawlog file:mrpt/obs/CRawlog.h line:60
 		pybind11::class_<mrpt::obs::CRawlog, std::shared_ptr<mrpt::obs::CRawlog>, PyCallBack_mrpt_obs_CRawlog, mrpt::serialization::CSerializable> cl(M("mrpt::obs"), "CRawlog", "The main class for loading and processing robotics datasets, or \"rawlogs\".\n\n Please, refer to the [rawlog format specification](rawlog_format.html).\n\n In short, this class stores a sequence of objects, in one of two possible\nformats:\n  - Format #1: A sequence of actions and observations. There is a sequence\nof objects, where each one can be of one type:\n    - An action:	Implemented as a CActionCollection object, the\nactuation\nof the robot (i.e. odometry increment).\n    - Observations: Implemented as a CSensoryFrame, refering to a set of\nrobot observations from the same pose.\n  - Format #2: A sequence of actions and observations. There is a sequence\nof objects, where each one can be of one type:\n\n See also [RawLogViewer](app_RawLogViewer.html) for a GUI application for\n quick inspection and analysis of rawlogs.\n\n There is a field for dataset plain-text comments (human-friendly description,\n blocks of parameters, etc.) accessible through CRawlog::getCommentText() and\n CRawlog::setCommentText().\n\n This container provides a STL container-like interface (see CRawlog::begin,\n CRawlog::iterator, ...).\n\n \n There is a static helper method CRawlog::detectImagesDirectory() to\n       identify the directory where external images are stored.\n\n \n CSensoryFrame,\n     [Dataset file format](robotics_file_formats.html#datasets).\n\n \n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::obs::CRawlog(); }, [](){ return new PyCallBack_mrpt_obs_CRawlog(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_CRawlog const &o){ return new PyCallBack_mrpt_obs_CRawlog(o); } ) );
@@ -608,7 +608,7 @@ void bind_mrpt_obs_CObservationRobotPose(std::function< pybind11::module &(std::
 		cl.def_static("detectImagesDirectory", (std::string (*)(const std::string &)) &mrpt::obs::CRawlog::detectImagesDirectory, "Tries to auto-detect the external-images directory of the given rawlog\nfile.\n  This searches for the existence of the directories:\n		- \"<rawlog_file_path>/<rawlog_filename>_Images\"\n		- \"<rawlog_file_path>/<rawlog_filename>_images\"\n		- \"<rawlog_file_path>/<rawlog_filename>_IMAGES\"\n		- \"<rawlog_file_path>/Images\"  (This one is returned if none of the\nchoices actually exists).\n\n  The results from this function should be written into\nmrpt::img::CImage::getImagesPathBase() to enable automatic\n  loading of extenrnally-stored images in rawlogs.\n\nC++: mrpt::obs::CRawlog::detectImagesDirectory(const std::string &) --> std::string", pybind11::arg("rawlogFilename"));
 		cl.def("assign", (class mrpt::obs::CRawlog & (mrpt::obs::CRawlog::*)(const class mrpt::obs::CRawlog &)) &mrpt::obs::CRawlog::operator=, "C++: mrpt::obs::CRawlog::operator=(const class mrpt::obs::CRawlog &) --> class mrpt::obs::CRawlog &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::obs::CRawlog::iterator file:mrpt/obs/CRawlog.h line:232
+		{ // mrpt::obs::CRawlog::iterator file:mrpt/obs/CRawlog.h line:228
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::CRawlog::iterator, std::shared_ptr<mrpt::obs::CRawlog::iterator>> cl(enclosing_class, "iterator", "A normal iterator, plus the extra method \"getType\" to determine the\n type of each entry in the sequence. ");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::CRawlog::iterator(); } ) );
@@ -616,7 +616,7 @@ void bind_mrpt_obs_CObservationRobotPose(std::function< pybind11::module &(std::
 			cl.def("getType", (enum mrpt::obs::CRawlog::TEntryType (mrpt::obs::CRawlog::iterator::*)() const) &mrpt::obs::CRawlog::iterator::getType, "C++: mrpt::obs::CRawlog::iterator::getType() const --> enum mrpt::obs::CRawlog::TEntryType");
 		}
 
-		{ // mrpt::obs::CRawlog::const_iterator file:mrpt/obs/CRawlog.h line:288
+		{ // mrpt::obs::CRawlog::const_iterator file:mrpt/obs/CRawlog.h line:280
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::CRawlog::const_iterator, std::shared_ptr<mrpt::obs::CRawlog::const_iterator>> cl(enclosing_class, "const_iterator", "A normal iterator, plus the extra method \"getType\" to determine the type\n of each entry in the sequence. ");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::CRawlog::const_iterator(); } ) );

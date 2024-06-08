@@ -36,23 +36,23 @@ void bind_mrpt_core_integer_select(std::function< pybind11::module &(std::string
 		pybind11::class_<mrpt::int_select_by_bytecount<8U>, std::shared_ptr<mrpt::int_select_by_bytecount<8U>>> cl(M("mrpt"), "int_select_by_bytecount_8U_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::int_select_by_bytecount<8U>(); } ) );
 	}
-	{ // mrpt::uint_select_by_bytecount file:mrpt/core/integer_select.h line:62
+	{ // mrpt::uint_select_by_bytecount file:mrpt/core/integer_select.h line:61
 		pybind11::class_<mrpt::uint_select_by_bytecount<1U>, std::shared_ptr<mrpt::uint_select_by_bytecount<1U>>> cl(M("mrpt"), "uint_select_by_bytecount_1U_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::uint_select_by_bytecount<1U>(); } ) );
 	}
-	{ // mrpt::uint_select_by_bytecount file:mrpt/core/integer_select.h line:67
+	{ // mrpt::uint_select_by_bytecount file:mrpt/core/integer_select.h line:66
 		pybind11::class_<mrpt::uint_select_by_bytecount<2U>, std::shared_ptr<mrpt::uint_select_by_bytecount<2U>>> cl(M("mrpt"), "uint_select_by_bytecount_2U_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::uint_select_by_bytecount<2U>(); } ) );
 	}
-	{ // mrpt::uint_select_by_bytecount file:mrpt/core/integer_select.h line:72
+	{ // mrpt::uint_select_by_bytecount file:mrpt/core/integer_select.h line:71
 		pybind11::class_<mrpt::uint_select_by_bytecount<3U>, std::shared_ptr<mrpt::uint_select_by_bytecount<3U>>> cl(M("mrpt"), "uint_select_by_bytecount_3U_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::uint_select_by_bytecount<3U>(); } ) );
 	}
-	{ // mrpt::uint_select_by_bytecount file:mrpt/core/integer_select.h line:77
+	{ // mrpt::uint_select_by_bytecount file:mrpt/core/integer_select.h line:76
 		pybind11::class_<mrpt::uint_select_by_bytecount<4U>, std::shared_ptr<mrpt::uint_select_by_bytecount<4U>>> cl(M("mrpt"), "uint_select_by_bytecount_4U_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::uint_select_by_bytecount<4U>(); } ) );
 	}
-	{ // mrpt::uint_select_by_bytecount file:mrpt/core/integer_select.h line:82
+	{ // mrpt::uint_select_by_bytecount file:mrpt/core/integer_select.h line:81
 		pybind11::class_<mrpt::uint_select_by_bytecount<8U>, std::shared_ptr<mrpt::uint_select_by_bytecount<8U>>> cl(M("mrpt"), "uint_select_by_bytecount_8U_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::uint_select_by_bytecount<8U>(); } ) );
 	}

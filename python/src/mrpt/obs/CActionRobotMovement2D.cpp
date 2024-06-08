@@ -172,7 +172,7 @@ void bind_mrpt_obs_CActionRobotMovement2D(std::function< pybind11::module &(std:
 				cl.def("assign", (struct mrpt::obs::CActionRobotMovement2D::TMotionModelOptions::TOptions_GaussianModel & (mrpt::obs::CActionRobotMovement2D::TMotionModelOptions::TOptions_GaussianModel::*)(const struct mrpt::obs::CActionRobotMovement2D::TMotionModelOptions::TOptions_GaussianModel &)) &mrpt::obs::CActionRobotMovement2D::TMotionModelOptions::TOptions_GaussianModel::operator=, "C++: mrpt::obs::CActionRobotMovement2D::TMotionModelOptions::TOptions_GaussianModel::operator=(const struct mrpt::obs::CActionRobotMovement2D::TMotionModelOptions::TOptions_GaussianModel &) --> struct mrpt::obs::CActionRobotMovement2D::TMotionModelOptions::TOptions_GaussianModel &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 			}
 
-			{ // mrpt::obs::CActionRobotMovement2D::TMotionModelOptions::TOptions_ThrunModel file:mrpt/obs/CActionRobotMovement2D.h line:128
+			{ // mrpt::obs::CActionRobotMovement2D::TMotionModelOptions::TOptions_ThrunModel file:mrpt/obs/CActionRobotMovement2D.h line:122
 				auto & enclosing_class = cl;
 				pybind11::class_<mrpt::obs::CActionRobotMovement2D::TMotionModelOptions::TOptions_ThrunModel, std::shared_ptr<mrpt::obs::CActionRobotMovement2D::TMotionModelOptions::TOptions_ThrunModel>> cl(enclosing_class, "TOptions_ThrunModel", "Options for the Thrun's model, which generates a CPosePDFParticles\n object in poseChange using a MonteCarlo simulation.\n See docs in:\n https://docs.mrpt.org/reference/latest/tutorial-motion-models.html");
 				cl.def( pybind11::init( [](){ return new mrpt::obs::CActionRobotMovement2D::TMotionModelOptions::TOptions_ThrunModel(); } ) );

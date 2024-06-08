@@ -114,7 +114,7 @@ void bind_mrpt_bayes_CParticleFilter(std::function< pybind11::module &(std::stri
 			cl.def("assign", (struct mrpt::bayes::CParticleFilter::TParticleFilterOptions & (mrpt::bayes::CParticleFilter::TParticleFilterOptions::*)(const struct mrpt::bayes::CParticleFilter::TParticleFilterOptions &)) &mrpt::bayes::CParticleFilter::TParticleFilterOptions::operator=, "C++: mrpt::bayes::CParticleFilter::TParticleFilterOptions::operator=(const struct mrpt::bayes::CParticleFilter::TParticleFilterOptions &) --> struct mrpt::bayes::CParticleFilter::TParticleFilterOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::bayes::CParticleFilter::TParticleFilterStats file:mrpt/bayes/CParticleFilter.h line:169
+		{ // mrpt::bayes::CParticleFilter::TParticleFilterStats file:mrpt/bayes/CParticleFilter.h line:167
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::bayes::CParticleFilter::TParticleFilterStats, std::shared_ptr<mrpt::bayes::CParticleFilter::TParticleFilterStats>> cl(enclosing_class, "TParticleFilterStats", "Statistics for being returned from the \"execute\" method. ");
 			cl.def( pybind11::init( [](){ return new mrpt::bayes::CParticleFilter::TParticleFilterStats(); } ) );

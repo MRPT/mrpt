@@ -32,7 +32,7 @@ void bind_unknown_unknown_4(std::function< pybind11::module &(std::string const 
 
 ;
 
-	// mrpt::obs::gnss::nv_oem6_ins_status_type::enum2str(int) file: line:198
+	// mrpt::obs::gnss::nv_oem6_ins_status_type::enum2str(int) file: line:197
 	M("mrpt::obs::gnss::nv_oem6_ins_status_type").def("enum2str", (const std::string & (*)(int)) &mrpt::obs::gnss::nv_oem6_ins_status_type::enum2str, "for nv_ins_status_type_t \n\nC++: mrpt::obs::gnss::nv_oem6_ins_status_type::enum2str(int) --> const std::string &", pybind11::return_value_policy::automatic, pybind11::arg("val"));
 
 }

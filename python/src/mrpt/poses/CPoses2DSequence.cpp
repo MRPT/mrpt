@@ -241,7 +241,7 @@ void bind_mrpt_poses_CPoses2DSequence(std::function< pybind11::module &(std::str
 		cl.def("getLatestRobotPose", (bool (mrpt::poses::CRobot2DPoseEstimator::*)(class mrpt::poses::CPose2D &) const) &mrpt::poses::CRobot2DPoseEstimator::getLatestRobotPose, "C++: mrpt::poses::CRobot2DPoseEstimator::getLatestRobotPose(class mrpt::poses::CPose2D &) const --> bool", pybind11::arg("pose"));
 		cl.def_static("extrapolateRobotPose", (void (*)(const struct mrpt::math::TPose2D &, const struct mrpt::math::TTwist2D &, const double, struct mrpt::math::TPose2D &)) &mrpt::poses::CRobot2DPoseEstimator::extrapolateRobotPose, "Auxiliary static method to extrapolate the pose of a robot located at\n \"p\" with velocities (v,w) after a time delay \"delta_time\". \n\nC++: mrpt::poses::CRobot2DPoseEstimator::extrapolateRobotPose(const struct mrpt::math::TPose2D &, const struct mrpt::math::TTwist2D &, const double, struct mrpt::math::TPose2D &) --> void", pybind11::arg("p"), pybind11::arg("robot_vel_local"), pybind11::arg("delta_time"), pybind11::arg("new_p"));
 
-		{ // mrpt::poses::CRobot2DPoseEstimator::TOptions file:mrpt/poses/CRobot2DPoseEstimator.h line:79
+		{ // mrpt::poses::CRobot2DPoseEstimator::TOptions file:mrpt/poses/CRobot2DPoseEstimator.h line:81
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::poses::CRobot2DPoseEstimator::TOptions, std::shared_ptr<mrpt::poses::CRobot2DPoseEstimator::TOptions>> cl(enclosing_class, "TOptions", "");
 			cl.def( pybind11::init( [](){ return new mrpt::poses::CRobot2DPoseEstimator::TOptions(); } ) );

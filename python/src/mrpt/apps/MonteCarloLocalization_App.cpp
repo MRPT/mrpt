@@ -35,7 +35,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::apps::MonteCarloLocalization_Rawlog file:mrpt/apps/MonteCarloLocalization_App.h line:97
+// mrpt::apps::MonteCarloLocalization_Rawlog file:mrpt/apps/MonteCarloLocalization_App.h line:100
 struct PyCallBack_mrpt_apps_MonteCarloLocalization_Rawlog : public mrpt::apps::MonteCarloLocalization_Rawlog {
 	using mrpt::apps::MonteCarloLocalization_Rawlog::MonteCarloLocalization_Rawlog;
 
@@ -78,7 +78,7 @@ void bind_mrpt_apps_MonteCarloLocalization_App(std::function< pybind11::module &
 		cl.def("run", (void (mrpt::apps::MonteCarloLocalization_Base::*)()) &mrpt::apps::MonteCarloLocalization_Base::run, "Runs with the current parameter set. Throws on errors. \n\nC++: mrpt::apps::MonteCarloLocalization_Base::run() --> void");
 		cl.def("assign", (class mrpt::apps::MonteCarloLocalization_Base & (mrpt::apps::MonteCarloLocalization_Base::*)(const class mrpt::apps::MonteCarloLocalization_Base &)) &mrpt::apps::MonteCarloLocalization_Base::operator=, "C++: mrpt::apps::MonteCarloLocalization_Base::operator=(const class mrpt::apps::MonteCarloLocalization_Base &) --> class mrpt::apps::MonteCarloLocalization_Base &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::apps::MonteCarloLocalization_Rawlog file:mrpt/apps/MonteCarloLocalization_App.h line:97
+	{ // mrpt::apps::MonteCarloLocalization_Rawlog file:mrpt/apps/MonteCarloLocalization_App.h line:100
 		pybind11::class_<mrpt::apps::MonteCarloLocalization_Rawlog, std::shared_ptr<mrpt::apps::MonteCarloLocalization_Rawlog>, PyCallBack_mrpt_apps_MonteCarloLocalization_Rawlog, mrpt::apps::MonteCarloLocalization_Base, mrpt::apps::DataSourceRawlog> cl(M("mrpt::apps"), "MonteCarloLocalization_Rawlog", "MonteCarlo (Particle filter) localization wrapper class, reading from a\n rawlog dataset.\n\n \n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::apps::MonteCarloLocalization_Rawlog(); }, [](){ return new PyCallBack_mrpt_apps_MonteCarloLocalization_Rawlog(); } ) );
 	}

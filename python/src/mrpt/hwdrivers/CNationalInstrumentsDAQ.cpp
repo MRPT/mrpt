@@ -215,7 +215,7 @@ void bind_mrpt_hwdrivers_CNationalInstrumentsDAQ(std::function< pybind11::module
 			cl.def_readwrite("co_pulses", &mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::co_pulses);
 			cl.def("assign", (struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription & (mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::*)(const struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription &)) &mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::operator=, "C++: mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::operator=(const struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription &) --> struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-			{ // mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ai_t file:mrpt/hwdrivers/CNationalInstrumentsDAQ.h line:301
+			{ // mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ai_t file:mrpt/hwdrivers/CNationalInstrumentsDAQ.h line:300
 				auto & enclosing_class = cl;
 				pybind11::class_<mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ai_t, std::shared_ptr<mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ai_t>> cl(enclosing_class, "desc_ai_t", "Analog inputs ");
 				cl.def( pybind11::init( [](){ return new mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ai_t(); } ) );
@@ -228,7 +228,7 @@ void bind_mrpt_hwdrivers_CNationalInstrumentsDAQ(std::function< pybind11::module
 				cl.def("assign", (struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ai_t & (mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ai_t::*)(const struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ai_t &)) &mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ai_t::operator=, "C++: mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ai_t::operator=(const struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ai_t &) --> struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ai_t &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 			}
 
-			{ // mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ao_t file:mrpt/hwdrivers/CNationalInstrumentsDAQ.h line:313
+			{ // mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ao_t file:mrpt/hwdrivers/CNationalInstrumentsDAQ.h line:312
 				auto & enclosing_class = cl;
 				pybind11::class_<mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ao_t, std::shared_ptr<mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ao_t>> cl(enclosing_class, "desc_ao_t", "Analog outputs ");
 				cl.def( pybind11::init( [](){ return new mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ao_t(); } ) );
@@ -240,7 +240,7 @@ void bind_mrpt_hwdrivers_CNationalInstrumentsDAQ(std::function< pybind11::module
 				cl.def("assign", (struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ao_t & (mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ao_t::*)(const struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ao_t &)) &mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ao_t::operator=, "C++: mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ao_t::operator=(const struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ao_t &) --> struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ao_t &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 			}
 
-			{ // mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_di_t file:mrpt/hwdrivers/CNationalInstrumentsDAQ.h line:324
+			{ // mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_di_t file:mrpt/hwdrivers/CNationalInstrumentsDAQ.h line:323
 				auto & enclosing_class = cl;
 				pybind11::class_<mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_di_t, std::shared_ptr<mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_di_t>> cl(enclosing_class, "desc_di_t", "Digital inputs (di) ");
 				cl.def( pybind11::init( [](){ return new mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_di_t(); } ) );
@@ -249,7 +249,7 @@ void bind_mrpt_hwdrivers_CNationalInstrumentsDAQ(std::function< pybind11::module
 				cl.def("assign", (struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_di_t & (mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_di_t::*)(const struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_di_t &)) &mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_di_t::operator=, "C++: mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_di_t::operator=(const struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_di_t &) --> struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_di_t &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 			}
 
-			{ // mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_do_t file:mrpt/hwdrivers/CNationalInstrumentsDAQ.h line:331
+			{ // mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_do_t file:mrpt/hwdrivers/CNationalInstrumentsDAQ.h line:330
 				auto & enclosing_class = cl;
 				pybind11::class_<mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_do_t, std::shared_ptr<mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_do_t>> cl(enclosing_class, "desc_do_t", "Digital outs (do) ");
 				cl.def( pybind11::init( [](){ return new mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_do_t(); } ) );
@@ -258,7 +258,7 @@ void bind_mrpt_hwdrivers_CNationalInstrumentsDAQ(std::function< pybind11::module
 				cl.def("assign", (struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_do_t & (mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_do_t::*)(const struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_do_t &)) &mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_do_t::operator=, "C++: mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_do_t::operator=(const struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_do_t &) --> struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_do_t &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 			}
 
-			{ // mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_period_t file:mrpt/hwdrivers/CNationalInstrumentsDAQ.h line:337
+			{ // mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_period_t file:mrpt/hwdrivers/CNationalInstrumentsDAQ.h line:336
 				auto & enclosing_class = cl;
 				pybind11::class_<mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_period_t, std::shared_ptr<mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_period_t>> cl(enclosing_class, "desc_ci_period_t", "");
 				cl.def( pybind11::init( [](){ return new mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_period_t(); } ) );
@@ -273,7 +273,7 @@ void bind_mrpt_hwdrivers_CNationalInstrumentsDAQ(std::function< pybind11::module
 				cl.def("assign", (struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_period_t & (mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_period_t::*)(const struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_period_t &)) &mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_period_t::operator=, "C++: mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_period_t::operator=(const struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_period_t &) --> struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_period_t &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 			}
 
-			{ // mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_count_edges_t file:mrpt/hwdrivers/CNationalInstrumentsDAQ.h line:350
+			{ // mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_count_edges_t file:mrpt/hwdrivers/CNationalInstrumentsDAQ.h line:349
 				auto & enclosing_class = cl;
 				pybind11::class_<mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_count_edges_t, std::shared_ptr<mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_count_edges_t>> cl(enclosing_class, "desc_ci_count_edges_t", "Counter: period of a digital signal ");
 				cl.def( pybind11::init( [](){ return new mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_count_edges_t(); } ) );
@@ -285,7 +285,7 @@ void bind_mrpt_hwdrivers_CNationalInstrumentsDAQ(std::function< pybind11::module
 				cl.def("assign", (struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_count_edges_t & (mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_count_edges_t::*)(const struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_count_edges_t &)) &mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_count_edges_t::operator=, "C++: mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_count_edges_t::operator=(const struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_count_edges_t &) --> struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_count_edges_t &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 			}
 
-			{ // mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_pulse_width_t file:mrpt/hwdrivers/CNationalInstrumentsDAQ.h line:359
+			{ // mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_pulse_width_t file:mrpt/hwdrivers/CNationalInstrumentsDAQ.h line:358
 				auto & enclosing_class = cl;
 				pybind11::class_<mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_pulse_width_t, std::shared_ptr<mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_pulse_width_t>> cl(enclosing_class, "desc_ci_pulse_width_t", "Counter: measure the width of a digital pulse ");
 				cl.def( pybind11::init( [](){ return new mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_pulse_width_t(); } ) );
@@ -298,7 +298,7 @@ void bind_mrpt_hwdrivers_CNationalInstrumentsDAQ(std::function< pybind11::module
 				cl.def("assign", (struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_pulse_width_t & (mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_pulse_width_t::*)(const struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_pulse_width_t &)) &mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_pulse_width_t::operator=, "C++: mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_pulse_width_t::operator=(const struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_pulse_width_t &) --> struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_pulse_width_t &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 			}
 
-			{ // mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_lin_encoder_t file:mrpt/hwdrivers/CNationalInstrumentsDAQ.h line:367
+			{ // mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_lin_encoder_t file:mrpt/hwdrivers/CNationalInstrumentsDAQ.h line:366
 				auto & enclosing_class = cl;
 				pybind11::class_<mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_lin_encoder_t, std::shared_ptr<mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_lin_encoder_t>> cl(enclosing_class, "desc_ci_lin_encoder_t", "Counter: uses a linear encoder to measure linear position ");
 				cl.def( pybind11::init( [](){ return new mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_lin_encoder_t(); } ) );
@@ -314,7 +314,7 @@ void bind_mrpt_hwdrivers_CNationalInstrumentsDAQ(std::function< pybind11::module
 				cl.def("assign", (struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_lin_encoder_t & (mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_lin_encoder_t::*)(const struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_lin_encoder_t &)) &mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_lin_encoder_t::operator=, "C++: mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_lin_encoder_t::operator=(const struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_lin_encoder_t &) --> struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_lin_encoder_t &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 			}
 
-			{ // mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_ang_encoder_t file:mrpt/hwdrivers/CNationalInstrumentsDAQ.h line:379
+			{ // mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_ang_encoder_t file:mrpt/hwdrivers/CNationalInstrumentsDAQ.h line:378
 				auto & enclosing_class = cl;
 				pybind11::class_<mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_ang_encoder_t, std::shared_ptr<mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_ang_encoder_t>> cl(enclosing_class, "desc_ci_ang_encoder_t", "Counter: uses an angular encoder to measure angular position ");
 				cl.def( pybind11::init( [](){ return new mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_ang_encoder_t(); } ) );
@@ -332,7 +332,7 @@ void bind_mrpt_hwdrivers_CNationalInstrumentsDAQ(std::function< pybind11::module
 				cl.def("assign", (struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_ang_encoder_t & (mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_ang_encoder_t::*)(const struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_ang_encoder_t &)) &mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_ang_encoder_t::operator=, "C++: mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_ang_encoder_t::operator=(const struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_ang_encoder_t &) --> struct mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_ci_ang_encoder_t &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 			}
 
-			{ // mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_co_pulses_t file:mrpt/hwdrivers/CNationalInstrumentsDAQ.h line:392
+			{ // mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_co_pulses_t file:mrpt/hwdrivers/CNationalInstrumentsDAQ.h line:391
 				auto & enclosing_class = cl;
 				pybind11::class_<mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_co_pulses_t, std::shared_ptr<mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_co_pulses_t>> cl(enclosing_class, "desc_co_pulses_t", "Output counter: digital pulses output ");
 				cl.def( pybind11::init( [](){ return new mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription::desc_co_pulses_t(); } ) );

@@ -325,7 +325,7 @@ void bind_mrpt_slam_CMetricMapBuilder(std::function< pybind11::module &(std::str
 		cl.def("saveCurrentMapToFile", [](mrpt::slam::CMetricMapBuilder const &o, const std::string & a0) -> void { return o.saveCurrentMapToFile(a0); }, "", pybind11::arg("fileName"));
 		cl.def("saveCurrentMapToFile", (void (mrpt::slam::CMetricMapBuilder::*)(const std::string &, bool) const) &mrpt::slam::CMetricMapBuilder::saveCurrentMapToFile, "Save map (mrpt::maps::CSimpleMap) to a \".simplemap\" file. \n\nC++: mrpt::slam::CMetricMapBuilder::saveCurrentMapToFile(const std::string &, bool) const --> void", pybind11::arg("fileName"), pybind11::arg("compressGZ"));
 
-		{ // mrpt::slam::CMetricMapBuilder::TOptions file:mrpt/slam/CMetricMapBuilder.h line:113
+		{ // mrpt::slam::CMetricMapBuilder::TOptions file:mrpt/slam/CMetricMapBuilder.h line:108
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::slam::CMetricMapBuilder::TOptions, std::shared_ptr<mrpt::slam::CMetricMapBuilder::TOptions>> cl(enclosing_class, "TOptions", "Options for the algorithm ");
 			cl.def( pybind11::init<enum mrpt::system::VerbosityLevel &>(), pybind11::arg("verb_level_ref") );
@@ -378,7 +378,7 @@ void bind_mrpt_slam_CMetricMapBuilder(std::function< pybind11::module &(std::str
 			cl.def("assign", (struct mrpt::slam::CMetricMapBuilderRBPF::TConstructionOptions & (mrpt::slam::CMetricMapBuilderRBPF::TConstructionOptions::*)(const struct mrpt::slam::CMetricMapBuilderRBPF::TConstructionOptions &)) &mrpt::slam::CMetricMapBuilderRBPF::TConstructionOptions::operator=, "C++: mrpt::slam::CMetricMapBuilderRBPF::TConstructionOptions::operator=(const struct mrpt::slam::CMetricMapBuilderRBPF::TConstructionOptions &) --> struct mrpt::slam::CMetricMapBuilderRBPF::TConstructionOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::slam::CMetricMapBuilderRBPF::TStats file:mrpt/slam/CMetricMapBuilderRBPF.h line:194
+		{ // mrpt::slam::CMetricMapBuilderRBPF::TStats file:mrpt/slam/CMetricMapBuilderRBPF.h line:189
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::slam::CMetricMapBuilderRBPF::TStats, std::shared_ptr<mrpt::slam::CMetricMapBuilderRBPF::TStats>> cl(enclosing_class, "TStats", "This structure will hold stats after each execution of\n processActionObservation");
 			cl.def( pybind11::init( [](){ return new mrpt::slam::CMetricMapBuilderRBPF::TStats(); } ) );

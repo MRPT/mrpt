@@ -73,7 +73,7 @@ void bind_mrpt_hwdrivers_CImageGrabber_dc1394(std::function< pybind11::module &(
 		cl.def("setSoftwareTriggerLevel", (bool (mrpt::hwdrivers::CImageGrabber_dc1394::*)(bool)) &mrpt::hwdrivers::CImageGrabber_dc1394::setSoftwareTriggerLevel, "Changes the boolean level associated to Software Trigger (ON/OFF)\n Can be used to control camera triggering trough software\n \n\n false on error\n\nC++: mrpt::hwdrivers::CImageGrabber_dc1394::setSoftwareTriggerLevel(bool) --> bool", pybind11::arg("level"));
 		cl.def("assign", (class mrpt::hwdrivers::CImageGrabber_dc1394 & (mrpt::hwdrivers::CImageGrabber_dc1394::*)(const class mrpt::hwdrivers::CImageGrabber_dc1394 &)) &mrpt::hwdrivers::CImageGrabber_dc1394::operator=, "C++: mrpt::hwdrivers::CImageGrabber_dc1394::operator=(const class mrpt::hwdrivers::CImageGrabber_dc1394 &) --> class mrpt::hwdrivers::CImageGrabber_dc1394 &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::hwdrivers::CImageGrabber_dc1394::TCameraInfo file:mrpt/hwdrivers/CImageGrabber_dc1394.h line:192
+		{ // mrpt::hwdrivers::CImageGrabber_dc1394::TCameraInfo file:mrpt/hwdrivers/CImageGrabber_dc1394.h line:193
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::hwdrivers::CImageGrabber_dc1394::TCameraInfo, std::shared_ptr<mrpt::hwdrivers::CImageGrabber_dc1394::TCameraInfo>> cl(enclosing_class, "TCameraInfo", "Used in enumerateCameras ");
 			cl.def( pybind11::init( [](){ return new mrpt::hwdrivers::CImageGrabber_dc1394::TCameraInfo(); } ) );

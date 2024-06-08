@@ -26,7 +26,7 @@
 
 void bind_mrpt_bayes_CProbabilityParticle_1(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::bayes::CProbabilityParticle file:mrpt/bayes/CProbabilityParticle.h line:55
+	{ // mrpt::bayes::CProbabilityParticle file:mrpt/bayes/CProbabilityParticle.h line:54
 		pybind11::class_<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose3D,mrpt::bayes::particle_storage_mode::VALUE>, std::shared_ptr<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose3D,mrpt::bayes::particle_storage_mode::VALUE>>, mrpt::bayes::CProbabilityParticleBase> cl(M("mrpt::bayes"), "CProbabilityParticle_mrpt_math_TPose3D_mrpt_bayes_particle_storage_mode_VALUE_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::bayes::CProbabilityParticle<mrpt::math::TPose3D,mrpt::bayes::particle_storage_mode::VALUE>(); } ) );
 		cl.def( pybind11::init<const struct mrpt::math::TPose3D &, const double>(), pybind11::arg("data"), pybind11::arg("logw") );
@@ -35,7 +35,7 @@ void bind_mrpt_bayes_CProbabilityParticle_1(std::function< pybind11::module &(st
 		cl.def_readwrite("log_w", &mrpt::bayes::CProbabilityParticleBase::log_w);
 		cl.def("assign", (struct mrpt::bayes::CProbabilityParticleBase & (mrpt::bayes::CProbabilityParticleBase::*)(const struct mrpt::bayes::CProbabilityParticleBase &)) &mrpt::bayes::CProbabilityParticleBase::operator=, "C++: mrpt::bayes::CProbabilityParticleBase::operator=(const struct mrpt::bayes::CProbabilityParticleBase &) --> struct mrpt::bayes::CProbabilityParticleBase &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::bayes::CProbabilityParticle file:mrpt/bayes/CProbabilityParticle.h line:55
+	{ // mrpt::bayes::CProbabilityParticle file:mrpt/bayes/CProbabilityParticle.h line:54
 		pybind11::class_<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D,mrpt::bayes::particle_storage_mode::VALUE>, std::shared_ptr<mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D,mrpt::bayes::particle_storage_mode::VALUE>>, mrpt::bayes::CProbabilityParticleBase> cl(M("mrpt::bayes"), "CProbabilityParticle_mrpt_math_TPose2D_mrpt_bayes_particle_storage_mode_VALUE_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::bayes::CProbabilityParticle<mrpt::math::TPose2D,mrpt::bayes::particle_storage_mode::VALUE>(); } ) );
 		cl.def( pybind11::init<const struct mrpt::math::TPose2D &, const double>(), pybind11::arg("data"), pybind11::arg("logw") );

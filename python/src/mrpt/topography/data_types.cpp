@@ -40,7 +40,7 @@ void bind_mrpt_topography_data_types(std::function< pybind11::module &(std::stri
 
 		cl.def("__str__", [](mrpt::topography::TCoords const &o) -> std::string { std::ostringstream s; using namespace mrpt::topography; s << o; return s.str(); } );
 	}
-	{ // mrpt::topography::TEllipsoid file:mrpt/topography/data_types.h line:79
+	{ // mrpt::topography::TEllipsoid file:mrpt/topography/data_types.h line:78
 		pybind11::class_<mrpt::topography::TEllipsoid, std::shared_ptr<mrpt::topography::TEllipsoid>> cl(M("mrpt::topography"), "TEllipsoid", "");
 		cl.def( pybind11::init( [](){ return new mrpt::topography::TEllipsoid(); } ) );
 		cl.def( pybind11::init<const double, const double, const std::string &>(), pybind11::arg("_sa"), pybind11::arg("_sb"), pybind11::arg("_name") );
@@ -73,7 +73,7 @@ void bind_mrpt_topography_data_types(std::function< pybind11::module &(std::stri
 		cl.def_static("Ellipsoid_Airy_1830", (struct mrpt::topography::TEllipsoid (*)()) &mrpt::topography::TEllipsoid::Ellipsoid_Airy_1830, "C++: mrpt::topography::TEllipsoid::Ellipsoid_Airy_1830() --> struct mrpt::topography::TEllipsoid");
 		cl.def("assign", (struct mrpt::topography::TEllipsoid & (mrpt::topography::TEllipsoid::*)(const struct mrpt::topography::TEllipsoid &)) &mrpt::topography::TEllipsoid::operator=, "C++: mrpt::topography::TEllipsoid::operator=(const struct mrpt::topography::TEllipsoid &) --> struct mrpt::topography::TEllipsoid &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::topography::TGeodeticCoords file:mrpt/topography/data_types.h line:192
+	{ // mrpt::topography::TGeodeticCoords file:mrpt/topography/data_types.h line:188
 		pybind11::class_<mrpt::topography::TGeodeticCoords, std::shared_ptr<mrpt::topography::TGeodeticCoords>> cl(M("mrpt::topography"), "TGeodeticCoords", "A set of geodetic coordinates: latitude, longitude and height, defined over\n a given geoid (typically, WGS84)  ");
 		cl.def( pybind11::init( [](){ return new mrpt::topography::TGeodeticCoords(); } ) );
 		cl.def( pybind11::init<const double, const double, const double>(), pybind11::arg("_lat"), pybind11::arg("_lon"), pybind11::arg("_height") );
@@ -83,7 +83,7 @@ void bind_mrpt_topography_data_types(std::function< pybind11::module &(std::stri
 		cl.def_readwrite("height", &mrpt::topography::TGeodeticCoords::height);
 		cl.def("isClear", (bool (mrpt::topography::TGeodeticCoords::*)() const) &mrpt::topography::TGeodeticCoords::isClear, "C++: mrpt::topography::TGeodeticCoords::isClear() const --> bool");
 	}
-	{ // mrpt::topography::TDatum7Params file:mrpt/topography/data_types.h line:220
+	{ // mrpt::topography::TDatum7Params file:mrpt/topography/data_types.h line:215
 		pybind11::class_<mrpt::topography::TDatum7Params, std::shared_ptr<mrpt::topography::TDatum7Params>> cl(M("mrpt::topography"), "TDatum7Params", "Parameters for a topographic transfomation\n \n\n TDatum10Params, transform7params");
 		cl.def( pybind11::init<const double, const double, const double, const double, const double, const double, const double>(), pybind11::arg("_dX"), pybind11::arg("_dY"), pybind11::arg("_dZ"), pybind11::arg("_Rx"), pybind11::arg("_Ry"), pybind11::arg("_Rz"), pybind11::arg("_dS") );
 
@@ -113,7 +113,7 @@ void bind_mrpt_topography_data_types(std::function< pybind11::module &(std::stri
 		cl.def_readwrite("m33", &mrpt::topography::TDatum7Params_TOPCON::m33);
 		cl.def_readwrite("dS", &mrpt::topography::TDatum7Params_TOPCON::dS);
 	}
-	{ // mrpt::topography::TDatum10Params file:mrpt/topography/data_types.h line:274
+	{ // mrpt::topography::TDatum10Params file:mrpt/topography/data_types.h line:283
 		pybind11::class_<mrpt::topography::TDatum10Params, std::shared_ptr<mrpt::topography::TDatum10Params>> cl(M("mrpt::topography"), "TDatum10Params", "Parameters for a topographic transfomation\n \n\n TDatum7Params, transform10params");
 		cl.def( pybind11::init<const double, const double, const double, const double, const double, const double, const double, const double, const double, const double>(), pybind11::arg("_dX"), pybind11::arg("_dY"), pybind11::arg("_dZ"), pybind11::arg("_Xp"), pybind11::arg("_Yp"), pybind11::arg("_Zp"), pybind11::arg("_Rx"), pybind11::arg("_Ry"), pybind11::arg("_Rz"), pybind11::arg("_dS") );
 
@@ -128,7 +128,7 @@ void bind_mrpt_topography_data_types(std::function< pybind11::module &(std::stri
 		cl.def_readwrite("Rz", &mrpt::topography::TDatum10Params::Rz);
 		cl.def_readwrite("dS", &mrpt::topography::TDatum10Params::dS);
 	}
-	{ // mrpt::topography::TDatumHelmert2D file:mrpt/topography/data_types.h line:301
+	{ // mrpt::topography::TDatumHelmert2D file:mrpt/topography/data_types.h line:317
 		pybind11::class_<mrpt::topography::TDatumHelmert2D, std::shared_ptr<mrpt::topography::TDatumHelmert2D>> cl(M("mrpt::topography"), "TDatumHelmert2D", "Parameters for a topographic transfomation\n \n\n TDatumHelmert3D, transformHelmert2D");
 		cl.def( pybind11::init<const double, const double, const double, const double, const double, const double>(), pybind11::arg("_dX"), pybind11::arg("_dY"), pybind11::arg("_alpha"), pybind11::arg("_dS"), pybind11::arg("_Xp"), pybind11::arg("_Yp") );
 
@@ -139,7 +139,7 @@ void bind_mrpt_topography_data_types(std::function< pybind11::module &(std::stri
 		cl.def_readwrite("Xp", &mrpt::topography::TDatumHelmert2D::Xp);
 		cl.def_readwrite("Yp", &mrpt::topography::TDatumHelmert2D::Yp);
 	}
-	{ // mrpt::topography::TDatumHelmert2D_TOPCON file:mrpt/topography/data_types.h line:319
+	{ // mrpt::topography::TDatumHelmert2D_TOPCON file:mrpt/topography/data_types.h line:339
 		pybind11::class_<mrpt::topography::TDatumHelmert2D_TOPCON, std::shared_ptr<mrpt::topography::TDatumHelmert2D_TOPCON>> cl(M("mrpt::topography"), "TDatumHelmert2D_TOPCON", "");
 		cl.def( pybind11::init<const double, const double, const double, const double>(), pybind11::arg("_a"), pybind11::arg("_b"), pybind11::arg("_c"), pybind11::arg("_d") );
 
@@ -148,7 +148,7 @@ void bind_mrpt_topography_data_types(std::function< pybind11::module &(std::stri
 		cl.def_readwrite("c", &mrpt::topography::TDatumHelmert2D_TOPCON::c);
 		cl.def_readwrite("d", &mrpt::topography::TDatumHelmert2D_TOPCON::d);
 	}
-	{ // mrpt::topography::TDatumHelmert3D file:mrpt/topography/data_types.h line:333
+	{ // mrpt::topography::TDatumHelmert3D file:mrpt/topography/data_types.h line:353
 		pybind11::class_<mrpt::topography::TDatumHelmert3D, std::shared_ptr<mrpt::topography::TDatumHelmert3D>> cl(M("mrpt::topography"), "TDatumHelmert3D", "Parameters for a topographic transfomation\n \n\n TDatumHelmert2D, transformHelmert3D");
 		cl.def( pybind11::init<const double, const double, const double, const double, const double, const double, const double>(), pybind11::arg("_dX"), pybind11::arg("_dY"), pybind11::arg("_dZ"), pybind11::arg("_Rx"), pybind11::arg("_Ry"), pybind11::arg("_Rz"), pybind11::arg("_dS") );
 

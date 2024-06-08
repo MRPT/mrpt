@@ -169,7 +169,7 @@ struct PyCallBack_mrpt_nav_CHolonomicFullEval : public mrpt::nav::CHolonomicFull
 	}
 };
 
-// mrpt::nav::CHolonomicFullEval::TOptions file:mrpt/nav/holonomic/CHolonomicFullEval.h line:74
+// mrpt::nav::CHolonomicFullEval::TOptions file:mrpt/nav/holonomic/CHolonomicFullEval.h line:72
 struct PyCallBack_mrpt_nav_CHolonomicFullEval_TOptions : public mrpt::nav::CHolonomicFullEval::TOptions {
 	using mrpt::nav::CHolonomicFullEval::TOptions::TOptions;
 
@@ -201,7 +201,7 @@ struct PyCallBack_mrpt_nav_CHolonomicFullEval_TOptions : public mrpt::nav::CHolo
 	}
 };
 
-// mrpt::nav::CLogFileRecord_FullEval file:mrpt/nav/holonomic/CHolonomicFullEval.h line:163
+// mrpt::nav::CLogFileRecord_FullEval file:mrpt/nav/holonomic/CHolonomicFullEval.h line:159
 struct PyCallBack_mrpt_nav_CLogFileRecord_FullEval : public mrpt::nav::CLogFileRecord_FullEval {
 	using mrpt::nav::CLogFileRecord_FullEval::CLogFileRecord_FullEval;
 
@@ -421,7 +421,7 @@ struct PyCallBack_mrpt_nav_CHolonomicND : public mrpt::nav::CHolonomicND {
 	}
 };
 
-// mrpt::nav::CHolonomicND::TOptions file:mrpt/nav/holonomic/CHolonomicND.h line:92
+// mrpt::nav::CHolonomicND::TOptions file:mrpt/nav/holonomic/CHolonomicND.h line:91
 struct PyCallBack_mrpt_nav_CHolonomicND_TOptions : public mrpt::nav::CHolonomicND::TOptions {
 	using mrpt::nav::CHolonomicND::TOptions::TOptions;
 
@@ -474,7 +474,7 @@ void bind_mrpt_nav_holonomic_CHolonomicFullEval(std::function< pybind11::module 
 		cl.def("setTargetApproachSlowDownDistance", (void (mrpt::nav::CHolonomicFullEval::*)(const double)) &mrpt::nav::CHolonomicFullEval::setTargetApproachSlowDownDistance, "C++: mrpt::nav::CHolonomicFullEval::setTargetApproachSlowDownDistance(const double) --> void", pybind11::arg("dist"));
 		cl.def("assign", (class mrpt::nav::CHolonomicFullEval & (mrpt::nav::CHolonomicFullEval::*)(const class mrpt::nav::CHolonomicFullEval &)) &mrpt::nav::CHolonomicFullEval::operator=, "C++: mrpt::nav::CHolonomicFullEval::operator=(const class mrpt::nav::CHolonomicFullEval &) --> class mrpt::nav::CHolonomicFullEval &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::nav::CHolonomicFullEval::TOptions file:mrpt/nav/holonomic/CHolonomicFullEval.h line:74
+		{ // mrpt::nav::CHolonomicFullEval::TOptions file:mrpt/nav/holonomic/CHolonomicFullEval.h line:72
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::nav::CHolonomicFullEval::TOptions, std::shared_ptr<mrpt::nav::CHolonomicFullEval::TOptions>, PyCallBack_mrpt_nav_CHolonomicFullEval_TOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TOptions", "Algorithm options ");
 			cl.def( pybind11::init( [](){ return new mrpt::nav::CHolonomicFullEval::TOptions(); }, [](){ return new PyCallBack_mrpt_nav_CHolonomicFullEval_TOptions(); } ) );
@@ -497,7 +497,7 @@ void bind_mrpt_nav_holonomic_CHolonomicFullEval(std::function< pybind11::module 
 		}
 
 	}
-	{ // mrpt::nav::CLogFileRecord_FullEval file:mrpt/nav/holonomic/CHolonomicFullEval.h line:163
+	{ // mrpt::nav::CLogFileRecord_FullEval file:mrpt/nav/holonomic/CHolonomicFullEval.h line:159
 		pybind11::class_<mrpt::nav::CLogFileRecord_FullEval, std::shared_ptr<mrpt::nav::CLogFileRecord_FullEval>, PyCallBack_mrpt_nav_CLogFileRecord_FullEval, mrpt::nav::CHolonomicLogFileRecord> cl(M("mrpt::nav"), "CLogFileRecord_FullEval", "A class for storing extra information about the execution of\n CHolonomicFullEval navigation.\n \n\n CHolonomicFullEval, CHolonomicLogFileRecord");
 		cl.def( pybind11::init( [](){ return new mrpt::nav::CLogFileRecord_FullEval(); }, [](){ return new PyCallBack_mrpt_nav_CLogFileRecord_FullEval(); } ) );
 		cl.def_readwrite("selectedSector", &mrpt::nav::CLogFileRecord_FullEval::selectedSector);
@@ -549,7 +549,7 @@ void bind_mrpt_nav_holonomic_CHolonomicFullEval(std::function< pybind11::module 
 			cl.def_readwrite("representative_sector", &mrpt::nav::CHolonomicND::TGap::representative_sector);
 		}
 
-		{ // mrpt::nav::CHolonomicND::TOptions file:mrpt/nav/holonomic/CHolonomicND.h line:92
+		{ // mrpt::nav::CHolonomicND::TOptions file:mrpt/nav/holonomic/CHolonomicND.h line:91
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::nav::CHolonomicND::TOptions, std::shared_ptr<mrpt::nav::CHolonomicND::TOptions>, PyCallBack_mrpt_nav_CHolonomicND_TOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TOptions", "Algorithm options ");
 			cl.def( pybind11::init( [](){ return new mrpt::nav::CHolonomicND::TOptions(); }, [](){ return new PyCallBack_mrpt_nav_CHolonomicND_TOptions(); } ) );

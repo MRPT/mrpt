@@ -292,7 +292,7 @@ struct PyCallBack_mrpt_nav_CAbstractNavigator : public mrpt::nav::CAbstractNavig
 	}
 };
 
-// mrpt::nav::CAbstractNavigator::TNavigationParamsBase file:mrpt/nav/reactive/CAbstractNavigator.h line:104
+// mrpt::nav::CAbstractNavigator::TNavigationParamsBase file:mrpt/nav/reactive/CAbstractNavigator.h line:103
 struct PyCallBack_mrpt_nav_CAbstractNavigator_TNavigationParamsBase : public mrpt::nav::CAbstractNavigator::TNavigationParamsBase {
 	using mrpt::nav::CAbstractNavigator::TNavigationParamsBase::TNavigationParamsBase;
 
@@ -324,7 +324,7 @@ struct PyCallBack_mrpt_nav_CAbstractNavigator_TNavigationParamsBase : public mrp
 	}
 };
 
-// mrpt::nav::CAbstractNavigator::TNavigationParams file:mrpt/nav/reactive/CAbstractNavigator.h line:118
+// mrpt::nav::CAbstractNavigator::TNavigationParams file:mrpt/nav/reactive/CAbstractNavigator.h line:116
 struct PyCallBack_mrpt_nav_CAbstractNavigator_TNavigationParams : public mrpt::nav::CAbstractNavigator::TNavigationParams {
 	using mrpt::nav::CAbstractNavigator::TNavigationParams::TNavigationParams;
 
@@ -356,7 +356,7 @@ struct PyCallBack_mrpt_nav_CAbstractNavigator_TNavigationParams : public mrpt::n
 	}
 };
 
-// mrpt::nav::CAbstractNavigator::TAbstractNavigatorParams file:mrpt/nav/reactive/CAbstractNavigator.h line:235
+// mrpt::nav::CAbstractNavigator::TAbstractNavigatorParams file:mrpt/nav/reactive/CAbstractNavigator.h line:223
 struct PyCallBack_mrpt_nav_CAbstractNavigator_TAbstractNavigatorParams : public mrpt::nav::CAbstractNavigator::TAbstractNavigatorParams {
 	using mrpt::nav::CAbstractNavigator::TAbstractNavigatorParams::TAbstractNavigatorParams;
 
@@ -443,7 +443,7 @@ void bind_mrpt_nav_reactive_CAbstractNavigator(std::function< pybind11::module &
 			cl.def("assign", (struct mrpt::nav::CAbstractNavigator::TargetInfo & (mrpt::nav::CAbstractNavigator::TargetInfo::*)(const struct mrpt::nav::CAbstractNavigator::TargetInfo &)) &mrpt::nav::CAbstractNavigator::TargetInfo::operator=, "C++: mrpt::nav::CAbstractNavigator::TargetInfo::operator=(const struct mrpt::nav::CAbstractNavigator::TargetInfo &) --> struct mrpt::nav::CAbstractNavigator::TargetInfo &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::nav::CAbstractNavigator::TNavigationParamsBase file:mrpt/nav/reactive/CAbstractNavigator.h line:104
+		{ // mrpt::nav::CAbstractNavigator::TNavigationParamsBase file:mrpt/nav/reactive/CAbstractNavigator.h line:103
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::nav::CAbstractNavigator::TNavigationParamsBase, std::shared_ptr<mrpt::nav::CAbstractNavigator::TNavigationParamsBase>, PyCallBack_mrpt_nav_CAbstractNavigator_TNavigationParamsBase> cl(enclosing_class, "TNavigationParamsBase", "Base for all high-level navigation commands. See derived classes ");
 			cl.def(pybind11::init<PyCallBack_mrpt_nav_CAbstractNavigator_TNavigationParamsBase const &>());
@@ -452,7 +452,7 @@ void bind_mrpt_nav_reactive_CAbstractNavigator(std::function< pybind11::module &
 			cl.def("assign", (struct mrpt::nav::CAbstractNavigator::TNavigationParamsBase & (mrpt::nav::CAbstractNavigator::TNavigationParamsBase::*)(const struct mrpt::nav::CAbstractNavigator::TNavigationParamsBase &)) &mrpt::nav::CAbstractNavigator::TNavigationParamsBase::operator=, "C++: mrpt::nav::CAbstractNavigator::TNavigationParamsBase::operator=(const struct mrpt::nav::CAbstractNavigator::TNavigationParamsBase &) --> struct mrpt::nav::CAbstractNavigator::TNavigationParamsBase &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::nav::CAbstractNavigator::TNavigationParams file:mrpt/nav/reactive/CAbstractNavigator.h line:118
+		{ // mrpt::nav::CAbstractNavigator::TNavigationParams file:mrpt/nav/reactive/CAbstractNavigator.h line:116
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::nav::CAbstractNavigator::TNavigationParams, std::shared_ptr<mrpt::nav::CAbstractNavigator::TNavigationParams>, PyCallBack_mrpt_nav_CAbstractNavigator_TNavigationParams, mrpt::nav::CAbstractNavigator::TNavigationParamsBase> cl(enclosing_class, "TNavigationParams", "The struct for configuring navigation requests. Used in\n CAbstractPTGBasedReactive::navigate() ");
 			cl.def( pybind11::init( [](){ return new mrpt::nav::CAbstractNavigator::TNavigationParams(); }, [](){ return new PyCallBack_mrpt_nav_CAbstractNavigator_TNavigationParams(); } ) );
@@ -460,7 +460,7 @@ void bind_mrpt_nav_reactive_CAbstractNavigator(std::function< pybind11::module &
 			cl.def("getAsText", (std::string (mrpt::nav::CAbstractNavigator::TNavigationParams::*)() const) &mrpt::nav::CAbstractNavigator::TNavigationParams::getAsText, "Gets navigation params as a human-readable format \n\nC++: mrpt::nav::CAbstractNavigator::TNavigationParams::getAsText() const --> std::string");
 		}
 
-		{ // mrpt::nav::CAbstractNavigator::TErrorReason file:mrpt/nav/reactive/CAbstractNavigator.h line:191
+		{ // mrpt::nav::CAbstractNavigator::TErrorReason file:mrpt/nav/reactive/CAbstractNavigator.h line:189
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::nav::CAbstractNavigator::TErrorReason, std::shared_ptr<mrpt::nav::CAbstractNavigator::TErrorReason>> cl(enclosing_class, "TErrorReason", "");
 			cl.def( pybind11::init( [](){ return new mrpt::nav::CAbstractNavigator::TErrorReason(); } ) );
@@ -470,7 +470,7 @@ void bind_mrpt_nav_reactive_CAbstractNavigator(std::function< pybind11::module &
 			cl.def("assign", (struct mrpt::nav::CAbstractNavigator::TErrorReason & (mrpt::nav::CAbstractNavigator::TErrorReason::*)(const struct mrpt::nav::CAbstractNavigator::TErrorReason &)) &mrpt::nav::CAbstractNavigator::TErrorReason::operator=, "C++: mrpt::nav::CAbstractNavigator::TErrorReason::operator=(const struct mrpt::nav::CAbstractNavigator::TErrorReason &) --> struct mrpt::nav::CAbstractNavigator::TErrorReason &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::nav::CAbstractNavigator::TAbstractNavigatorParams file:mrpt/nav/reactive/CAbstractNavigator.h line:235
+		{ // mrpt::nav::CAbstractNavigator::TAbstractNavigatorParams file:mrpt/nav/reactive/CAbstractNavigator.h line:223
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::nav::CAbstractNavigator::TAbstractNavigatorParams, std::shared_ptr<mrpt::nav::CAbstractNavigator::TAbstractNavigatorParams>, PyCallBack_mrpt_nav_CAbstractNavigator_TAbstractNavigatorParams, mrpt::config::CLoadableOptions> cl(enclosing_class, "TAbstractNavigatorParams", "@}");
 			cl.def( pybind11::init( [](){ return new mrpt::nav::CAbstractNavigator::TAbstractNavigatorParams(); }, [](){ return new PyCallBack_mrpt_nav_CAbstractNavigator_TAbstractNavigatorParams(); } ) );

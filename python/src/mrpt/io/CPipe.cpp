@@ -18,7 +18,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::io::CPipeBaseEndPoint file:mrpt/io/CPipe.h line:63
+// mrpt::io::CPipeBaseEndPoint file:mrpt/io/CPipe.h line:62
 struct PyCallBack_mrpt_io_CPipeBaseEndPoint : public mrpt::io::CPipeBaseEndPoint {
 	using mrpt::io::CPipeBaseEndPoint::CPipeBaseEndPoint;
 
@@ -115,7 +115,7 @@ struct PyCallBack_mrpt_io_CPipeBaseEndPoint : public mrpt::io::CPipeBaseEndPoint
 	}
 };
 
-// mrpt::io::CPipeReadEndPoint file:mrpt/io/CPipe.h line:127
+// mrpt::io::CPipeReadEndPoint file:mrpt/io/CPipe.h line:126
 struct PyCallBack_mrpt_io_CPipeReadEndPoint : public mrpt::io::CPipeReadEndPoint {
 	using mrpt::io::CPipeReadEndPoint::CPipeReadEndPoint;
 
@@ -212,7 +212,7 @@ struct PyCallBack_mrpt_io_CPipeReadEndPoint : public mrpt::io::CPipeReadEndPoint
 	}
 };
 
-// mrpt::io::CPipeWriteEndPoint file:mrpt/io/CPipe.h line:150
+// mrpt::io::CPipeWriteEndPoint file:mrpt/io/CPipe.h line:149
 struct PyCallBack_mrpt_io_CPipeWriteEndPoint : public mrpt::io::CPipeWriteEndPoint {
 	using mrpt::io::CPipeWriteEndPoint::CPipeWriteEndPoint;
 
@@ -311,7 +311,7 @@ struct PyCallBack_mrpt_io_CPipeWriteEndPoint : public mrpt::io::CPipeWriteEndPoi
 
 void bind_mrpt_io_CPipe(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::io::CPipeBaseEndPoint file:mrpt/io/CPipe.h line:63
+	{ // mrpt::io::CPipeBaseEndPoint file:mrpt/io/CPipe.h line:62
 		pybind11::class_<mrpt::io::CPipeBaseEndPoint, std::shared_ptr<mrpt::io::CPipeBaseEndPoint>, PyCallBack_mrpt_io_CPipeBaseEndPoint, mrpt::io::CStream> cl(M("mrpt::io"), "CPipeBaseEndPoint", "Common interface of read & write pipe end-points\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::io::CPipeBaseEndPoint(); }, [](){ return new PyCallBack_mrpt_io_CPipeBaseEndPoint(); } ) );
 		cl.def( pybind11::init<const std::string &>(), pybind11::arg("serialized") );
@@ -328,13 +328,13 @@ void bind_mrpt_io_CPipe(std::function< pybind11::module &(std::string const &nam
 		cl.def("getTotalBytesCount", (uint64_t (mrpt::io::CPipeBaseEndPoint::*)() const) &mrpt::io::CPipeBaseEndPoint::getTotalBytesCount, "Without effect in this class \n\nC++: mrpt::io::CPipeBaseEndPoint::getTotalBytesCount() const --> uint64_t");
 		cl.def("getPosition", (uint64_t (mrpt::io::CPipeBaseEndPoint::*)() const) &mrpt::io::CPipeBaseEndPoint::getPosition, "Without effect in this class \n\nC++: mrpt::io::CPipeBaseEndPoint::getPosition() const --> uint64_t");
 	}
-	{ // mrpt::io::CPipeReadEndPoint file:mrpt/io/CPipe.h line:127
+	{ // mrpt::io::CPipeReadEndPoint file:mrpt/io/CPipe.h line:126
 		pybind11::class_<mrpt::io::CPipeReadEndPoint, std::shared_ptr<mrpt::io::CPipeReadEndPoint>, PyCallBack_mrpt_io_CPipeReadEndPoint, mrpt::io::CPipeBaseEndPoint> cl(M("mrpt::io"), "CPipeReadEndPoint", "The read end-point in a pipe created with mrpt::synch::CPipe.\n Use the method CStream::Read() of the base class CStream\n for blocking reading.\n \n\n\n ");
 		cl.def( pybind11::init<const std::string &>(), pybind11::arg("serialized") );
 
 		cl.def("Write", (size_t (mrpt::io::CPipeReadEndPoint::*)(const void *, size_t)) &mrpt::io::CPipeReadEndPoint::Write, "Read-only pipe, don't call this method \n\nC++: mrpt::io::CPipeReadEndPoint::Write(const void *, size_t) --> size_t", pybind11::arg("Buffer"), pybind11::arg("Count"));
 	}
-	{ // mrpt::io::CPipeWriteEndPoint file:mrpt/io/CPipe.h line:150
+	{ // mrpt::io::CPipeWriteEndPoint file:mrpt/io/CPipe.h line:149
 		pybind11::class_<mrpt::io::CPipeWriteEndPoint, std::shared_ptr<mrpt::io::CPipeWriteEndPoint>, PyCallBack_mrpt_io_CPipeWriteEndPoint, mrpt::io::CPipeBaseEndPoint> cl(M("mrpt::io"), "CPipeWriteEndPoint", "The write end-point in a pipe created with mrpt::synch::CPipe.\n Use the method CStream::Write() of the base class CStream\n for blocking writing. ");
 		cl.def( pybind11::init<const std::string &>(), pybind11::arg("serialized") );
 

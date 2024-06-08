@@ -15,8 +15,8 @@
 
 void bind_mrpt_math_math_frwds(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	// mrpt::math::TConstructorFlags_Matrices file:mrpt/math/math_frwds.h line:55
-	pybind11::enum_<mrpt::math::TConstructorFlags_Matrices>(M("mrpt::math"), "TConstructorFlags_Matrices", pybind11::arithmetic(), "For usage in one of the constructors of CMatrixFixed or\n   CMatrixDynamic (and derived classes), if it's not required\n	 to fill it with zeros at the constructor to save time. ")
+	// mrpt::math::TConstructorFlags_Matrices file:mrpt/math/math_frwds.h line:59
+	pybind11::enum_<mrpt::math::TConstructorFlags_Matrices>(M("mrpt::math"), "TConstructorFlags_Matrices", pybind11::arithmetic(), "For usage in one of the constructors of CMatrixFixed or\n   CMatrixDynamic (and derived classes), if it's not required\n   to fill it with zeros at the constructor to save time. ")
 		.value("UNINITIALIZED_MATRIX", mrpt::math::UNINITIALIZED_MATRIX)
 		.export_values();
 

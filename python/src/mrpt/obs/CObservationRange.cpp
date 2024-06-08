@@ -239,7 +239,7 @@ struct PyCallBack_mrpt_obs_CObservationRange : public mrpt::obs::CObservationRan
 void bind_mrpt_obs_CObservationRange(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
 	{ // mrpt::obs::CObservationRange file:mrpt/obs/CObservationRange.h line:27
-		pybind11::class_<mrpt::obs::CObservationRange, std::shared_ptr<mrpt::obs::CObservationRange>, PyCallBack_mrpt_obs_CObservationRange, mrpt::obs::CObservation> cl(M("mrpt::obs"), "CObservationRange", "Declares a class derived from \"CObservation\" that\n	   encapsules a single range measurement, and associated parameters. This\n can be used\n     for example to store measurements from infrared proximity sensors (IR) or\n ultrasonic sensors (sonars).\n\n \n CObservation\n \n\n\n ");
+		pybind11::class_<mrpt::obs::CObservationRange, std::shared_ptr<mrpt::obs::CObservationRange>, PyCallBack_mrpt_obs_CObservationRange, mrpt::obs::CObservation> cl(M("mrpt::obs"), "CObservationRange", "Declares a class derived from \"CObservation\" that\n     encapsules a single range measurement, and associated parameters. This\n can be used\n     for example to store measurements from infrared proximity sensors (IR) or\n ultrasonic sensors (sonars).\n\n \n CObservation\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::obs::CObservationRange(); }, [](){ return new PyCallBack_mrpt_obs_CObservationRange(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_CObservationRange const &o){ return new PyCallBack_mrpt_obs_CObservationRange(o); } ) );
 		cl.def( pybind11::init( [](mrpt::obs::CObservationRange const &o){ return new mrpt::obs::CObservationRange(o); } ) );
