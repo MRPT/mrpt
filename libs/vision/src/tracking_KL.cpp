@@ -45,7 +45,7 @@ void CFeatureTracker_KL::trackFeatures_impl_templ(
 
   const int LK_levels = extra_params.getOrDefault<int>("LK_levels", 3);
   const int LK_max_iters = extra_params.getOrDefault<int>("LK_max_iters", 10);
-  const int LK_epsilon = extra_params.getOrDefault<int>("LK_epsilon", 0.1);
+  const double LK_epsilon = extra_params.getOrDefault<double>("LK_epsilon", 0.1);
   const float LK_max_tracking_error =
       extra_params.getOrDefault<float>("LK_max_tracking_error", 150.0f);
 
