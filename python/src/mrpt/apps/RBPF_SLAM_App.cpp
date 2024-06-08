@@ -37,7 +37,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::apps::RBPF_SLAM_App_Rawlog file:mrpt/apps/RBPF_SLAM_App.h line:82
+// mrpt::apps::RBPF_SLAM_App_Rawlog file:mrpt/apps/RBPF_SLAM_App.h line:83
 struct PyCallBack_mrpt_apps_RBPF_SLAM_App_Rawlog : public mrpt::apps::RBPF_SLAM_App_Rawlog {
 	using mrpt::apps::RBPF_SLAM_App_Rawlog::RBPF_SLAM_App_Rawlog;
 
@@ -80,7 +80,7 @@ void bind_mrpt_apps_RBPF_SLAM_App(std::function< pybind11::module &(std::string 
 		cl.def("run", (void (mrpt::apps::RBPF_SLAM_App_Base::*)()) &mrpt::apps::RBPF_SLAM_App_Base::run, "Runs with the current parameter set. Throws on errors. \n\nC++: mrpt::apps::RBPF_SLAM_App_Base::run() --> void");
 		cl.def("assign", (class mrpt::apps::RBPF_SLAM_App_Base & (mrpt::apps::RBPF_SLAM_App_Base::*)(const class mrpt::apps::RBPF_SLAM_App_Base &)) &mrpt::apps::RBPF_SLAM_App_Base::operator=, "C++: mrpt::apps::RBPF_SLAM_App_Base::operator=(const class mrpt::apps::RBPF_SLAM_App_Base &) --> class mrpt::apps::RBPF_SLAM_App_Base &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::apps::RBPF_SLAM_App_Rawlog file:mrpt/apps/RBPF_SLAM_App.h line:82
+	{ // mrpt::apps::RBPF_SLAM_App_Rawlog file:mrpt/apps/RBPF_SLAM_App.h line:83
 		pybind11::class_<mrpt::apps::RBPF_SLAM_App_Rawlog, std::shared_ptr<mrpt::apps::RBPF_SLAM_App_Rawlog>, PyCallBack_mrpt_apps_RBPF_SLAM_App_Rawlog, mrpt::apps::RBPF_SLAM_App_Base, mrpt::apps::DataSourceRawlog> cl(M("mrpt::apps"), "RBPF_SLAM_App_Rawlog", "Instance of RBPF_SLAM_App_Base to run mapping from an offline dataset file.");
 		cl.def( pybind11::init( [](){ return new mrpt::apps::RBPF_SLAM_App_Rawlog(); }, [](){ return new PyCallBack_mrpt_apps_RBPF_SLAM_App_Rawlog(); } ) );
 		cl.def("init", (void (mrpt::apps::RBPF_SLAM_App_Rawlog::*)(const std::string &, const std::string &)) &mrpt::apps::RBPF_SLAM_App_Rawlog::init, "C++: mrpt::apps::RBPF_SLAM_App_Rawlog::init(const std::string &, const std::string &) --> void", pybind11::arg("iniConfigFile"), pybind11::arg("rawlogFile"));

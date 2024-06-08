@@ -16,11 +16,11 @@
 
 void bind_mrpt_rtti_CObject_2(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::rtti::internal::CopyCtor file:mrpt/rtti/CObject.h line:124
+	{ // mrpt::rtti::internal::CopyCtor file:mrpt/rtti/CObject.h line:123
 		pybind11::class_<mrpt::rtti::internal::CopyCtor<true>, std::shared_ptr<mrpt::rtti::internal::CopyCtor<true>>> cl(M("mrpt::rtti::internal"), "CopyCtor_true_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::internal::CopyCtor<true>(); } ) );
 	}
-	{ // mrpt::rtti::internal::CopyCtor file:mrpt/rtti/CObject.h line:133
+	{ // mrpt::rtti::internal::CopyCtor file:mrpt/rtti/CObject.h line:132
 		pybind11::class_<mrpt::rtti::internal::CopyCtor<false>, std::shared_ptr<mrpt::rtti::internal::CopyCtor<false>>> cl(M("mrpt::rtti::internal"), "CopyCtor_false_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::internal::CopyCtor<false>(); } ) );
 	}

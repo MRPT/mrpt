@@ -17,7 +17,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::rtti::CObject file:mrpt/rtti/CObject.h line:178
+// mrpt::rtti::CObject file:mrpt/rtti/CObject.h line:175
 struct PyCallBack_mrpt_rtti_CObject : public mrpt::rtti::CObject {
 	using mrpt::rtti::CObject::CObject;
 
@@ -51,7 +51,7 @@ struct PyCallBack_mrpt_rtti_CObject : public mrpt::rtti::CObject {
 
 void bind_mrpt_rtti_CObject_3(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::rtti::CObject file:mrpt/rtti/CObject.h line:178
+	{ // mrpt::rtti::CObject file:mrpt/rtti/CObject.h line:175
 		pybind11::class_<mrpt::rtti::CObject, std::shared_ptr<mrpt::rtti::CObject>, PyCallBack_mrpt_rtti_CObject> cl(M("mrpt::rtti"), "CObject", "Virtual base to provide a compiler-independent RTTI system.\n\n Each class named `Foo` will have associated smart pointer types:\n - `Foo::Ptr` => `std::shared_ptr<Foo>` (the most commonly-used one)\n - `Foo::ConstPtr` => `std::shared_ptr<const Foo>`\n - `Foo::UniquePtr` => `std::unique_ptr<Foo>`\n - `Foo::ConstUniquePtr` => `std::unique_ptr<const Foo>`\n\n It is recommended to use MRPT-defined `std::make_shared<>` instead\n of `std::make_shared<>` to create objects, to avoid memory alignment\n problems caused by classes containing Eigen vectors or matrices. Example:\n \n\n\n\n Or using the shorter auxiliary static method `::Create()` for conciseness or\n to keep compatibility with MRPT 1.5.* code bases:\n \n\n\n\n If a special memory allocator is needed, use `Foo::CreateAlloc(alloc,...);`.\n \n\n  mrpt::rtti::CObject\n \n\n\n ");
 		cl.def(pybind11::init<PyCallBack_mrpt_rtti_CObject const &>());
 		cl.def( pybind11::init( [](){ return new PyCallBack_mrpt_rtti_CObject(); } ) );
@@ -61,10 +61,10 @@ void bind_mrpt_rtti_CObject_3(std::function< pybind11::module &(std::string cons
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::rtti::CObject::*)() const) &mrpt::rtti::CObject::clone, "Returns a deep copy (clone) of the object, indepently of its class. \n\nC++: mrpt::rtti::CObject::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
 		cl.def("assign", (class mrpt::rtti::CObject & (mrpt::rtti::CObject::*)(const class mrpt::rtti::CObject &)) &mrpt::rtti::CObject::operator=, "C++: mrpt::rtti::CObject::operator=(const class mrpt::rtti::CObject &) --> class mrpt::rtti::CObject &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	// mrpt::rtti::registerAllPendingClasses() file:mrpt/rtti/CObject.h line:339
+	// mrpt::rtti::registerAllPendingClasses() file:mrpt/rtti/CObject.h line:321
 	M("mrpt::rtti").def("registerAllPendingClasses", (void (*)()) &mrpt::rtti::registerAllPendingClasses, "Register all pending classes - to be called just before\n de-serializing an object, for example. After calling this method,\n pending_class_registers_modified is set to false until\n pending_class_registers() is invoked.\n\nC++: mrpt::rtti::registerAllPendingClasses() --> void");
 
-	// mrpt::rtti::classFactory(const std::string &) file:mrpt/rtti/CObject.h line:343
+	// mrpt::rtti::classFactory(const std::string &) file:mrpt/rtti/CObject.h line:325
 	M("mrpt::rtti").def("classFactory", (class std::shared_ptr<class mrpt::rtti::CObject> (*)(const std::string &)) &mrpt::rtti::classFactory, "Creates an object given by its registered name.\n \n\n findRegisteredClass(), registerClass() \n\nC++: mrpt::rtti::classFactory(const std::string &) --> class std::shared_ptr<class mrpt::rtti::CObject>", pybind11::arg("className"));
 
 }

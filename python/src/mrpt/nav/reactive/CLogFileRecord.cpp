@@ -102,7 +102,7 @@ struct PyCallBack_mrpt_nav_CLogFileRecord : public mrpt::nav::CLogFileRecord {
 	}
 };
 
-// mrpt::nav::CMultiObjectiveMotionOptimizerBase::TParamsBase file:mrpt/nav/reactive/CMultiObjectiveMotionOptimizerBase.h line:59
+// mrpt::nav::CMultiObjectiveMotionOptimizerBase::TParamsBase file:mrpt/nav/reactive/CMultiObjectiveMotionOptimizerBase.h line:56
 struct PyCallBack_mrpt_nav_CMultiObjectiveMotionOptimizerBase_TParamsBase : public mrpt::nav::CMultiObjectiveMotionOptimizerBase::TParamsBase {
 	using mrpt::nav::CMultiObjectiveMotionOptimizerBase::TParamsBase::TParamsBase;
 
@@ -216,7 +216,7 @@ void bind_mrpt_nav_reactive_CLogFileRecord(std::function< pybind11::module &(std
 		cl.def("saveConfigFile", (void (mrpt::nav::CMultiObjectiveMotionOptimizerBase::*)(class mrpt::config::CConfigFileBase &) const) &mrpt::nav::CMultiObjectiveMotionOptimizerBase::saveConfigFile, "C++: mrpt::nav::CMultiObjectiveMotionOptimizerBase::saveConfigFile(class mrpt::config::CConfigFileBase &) const --> void", pybind11::arg("c"));
 		cl.def("clear", (void (mrpt::nav::CMultiObjectiveMotionOptimizerBase::*)()) &mrpt::nav::CMultiObjectiveMotionOptimizerBase::clear, "Resets the object state; use if the parameters change, so they are\n re-read and applied. \n\nC++: mrpt::nav::CMultiObjectiveMotionOptimizerBase::clear() --> void");
 
-		{ // mrpt::nav::CMultiObjectiveMotionOptimizerBase::TResultInfo file:mrpt/nav/reactive/CMultiObjectiveMotionOptimizerBase.h line:32
+		{ // mrpt::nav::CMultiObjectiveMotionOptimizerBase::TResultInfo file:mrpt/nav/reactive/CMultiObjectiveMotionOptimizerBase.h line:31
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::nav::CMultiObjectiveMotionOptimizerBase::TResultInfo, std::shared_ptr<mrpt::nav::CMultiObjectiveMotionOptimizerBase::TResultInfo>> cl(enclosing_class, "TResultInfo", "");
 			cl.def( pybind11::init( [](){ return new mrpt::nav::CMultiObjectiveMotionOptimizerBase::TResultInfo(); } ) );
@@ -227,7 +227,7 @@ void bind_mrpt_nav_reactive_CLogFileRecord(std::function< pybind11::module &(std
 			cl.def("assign", (struct mrpt::nav::CMultiObjectiveMotionOptimizerBase::TResultInfo & (mrpt::nav::CMultiObjectiveMotionOptimizerBase::TResultInfo::*)(const struct mrpt::nav::CMultiObjectiveMotionOptimizerBase::TResultInfo &)) &mrpt::nav::CMultiObjectiveMotionOptimizerBase::TResultInfo::operator=, "C++: mrpt::nav::CMultiObjectiveMotionOptimizerBase::TResultInfo::operator=(const struct mrpt::nav::CMultiObjectiveMotionOptimizerBase::TResultInfo &) --> struct mrpt::nav::CMultiObjectiveMotionOptimizerBase::TResultInfo &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::nav::CMultiObjectiveMotionOptimizerBase::TParamsBase file:mrpt/nav/reactive/CMultiObjectiveMotionOptimizerBase.h line:59
+		{ // mrpt::nav::CMultiObjectiveMotionOptimizerBase::TParamsBase file:mrpt/nav/reactive/CMultiObjectiveMotionOptimizerBase.h line:56
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::nav::CMultiObjectiveMotionOptimizerBase::TParamsBase, std::shared_ptr<mrpt::nav::CMultiObjectiveMotionOptimizerBase::TParamsBase>, PyCallBack_mrpt_nav_CMultiObjectiveMotionOptimizerBase_TParamsBase, mrpt::config::CLoadableOptions> cl(enclosing_class, "TParamsBase", "Common params for all children ");
 			cl.def( pybind11::init( [](){ return new mrpt::nav::CMultiObjectiveMotionOptimizerBase::TParamsBase(); }, [](){ return new PyCallBack_mrpt_nav_CMultiObjectiveMotionOptimizerBase_TParamsBase(); } ) );

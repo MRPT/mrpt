@@ -790,7 +790,7 @@ struct PyCallBack_mrpt_maps_CPointsMapXYZI : public mrpt::maps::CPointsMapXYZI {
 	}
 };
 
-// mrpt::maps::CPointsMapXYZI::TMapDefinition file: line:85
+// mrpt::maps::CPointsMapXYZI::TMapDefinition file: line:78
 struct PyCallBack_mrpt_maps_CPointsMapXYZI_TMapDefinition : public mrpt::maps::CPointsMapXYZI::TMapDefinition {
 	using mrpt::maps::CPointsMapXYZI::TMapDefinition::TMapDefinition;
 
@@ -877,7 +877,7 @@ void bind_mrpt_maps_CPointCloudFilterByDistance(std::function< pybind11::module 
 		cl.def_static("CreateObject", (class std::shared_ptr<class mrpt::rtti::CObject> (*)()) &mrpt::maps::CPointsMapXYZI::CreateObject, "C++: mrpt::maps::CPointsMapXYZI::CreateObject() --> class std::shared_ptr<class mrpt::rtti::CObject>");
 		cl.def("assign", (class mrpt::maps::CPointsMapXYZI & (mrpt::maps::CPointsMapXYZI::*)(const class mrpt::maps::CPointsMap &)) &mrpt::maps::CPointsMapXYZI::operator=, "C++: mrpt::maps::CPointsMapXYZI::operator=(const class mrpt::maps::CPointsMap &) --> class mrpt::maps::CPointsMapXYZI &", pybind11::return_value_policy::automatic, pybind11::arg("o"));
 		cl.def("assign", (class mrpt::maps::CPointsMapXYZI & (mrpt::maps::CPointsMapXYZI::*)(const class mrpt::maps::CPointsMapXYZI &)) &mrpt::maps::CPointsMapXYZI::operator=, "C++: mrpt::maps::CPointsMapXYZI::operator=(const class mrpt::maps::CPointsMapXYZI &) --> class mrpt::maps::CPointsMapXYZI &", pybind11::return_value_policy::automatic, pybind11::arg("o"));
-		cl.def("reserve", (void (mrpt::maps::CPointsMapXYZI::*)(size_t)) &mrpt::maps::CPointsMapXYZI::reserve, "from CPointsMap\n	@{ \n\nC++: mrpt::maps::CPointsMapXYZI::reserve(size_t) --> void", pybind11::arg("newLength"));
+		cl.def("reserve", (void (mrpt::maps::CPointsMapXYZI::*)(size_t)) &mrpt::maps::CPointsMapXYZI::reserve, "from CPointsMap\n  @{ \n\nC++: mrpt::maps::CPointsMapXYZI::reserve(size_t) --> void", pybind11::arg("newLength"));
 		cl.def("resize", (void (mrpt::maps::CPointsMapXYZI::*)(size_t)) &mrpt::maps::CPointsMapXYZI::resize, "C++: mrpt::maps::CPointsMapXYZI::resize(size_t) --> void", pybind11::arg("newLength"));
 		cl.def("setSize", (void (mrpt::maps::CPointsMapXYZI::*)(size_t)) &mrpt::maps::CPointsMapXYZI::setSize, "C++: mrpt::maps::CPointsMapXYZI::setSize(size_t) --> void", pybind11::arg("newLength"));
 		cl.def("insertPointFast", [](mrpt::maps::CPointsMapXYZI &o, float const & a0, float const & a1) -> void { return o.insertPointFast(a0, a1); }, "", pybind11::arg("x"), pybind11::arg("y"));
@@ -898,12 +898,12 @@ void bind_mrpt_maps_CPointCloudFilterByDistance(std::function< pybind11::module 
 		cl.def("insertPointField_Intensity", (void (mrpt::maps::CPointsMapXYZI::*)(float)) &mrpt::maps::CPointsMapXYZI::insertPointField_Intensity, "C++: mrpt::maps::CPointsMapXYZI::insertPointField_Intensity(float) --> void", pybind11::arg("i"));
 		cl.def("saveMetricMapRepresentationToFile", (void (mrpt::maps::CPointsMapXYZI::*)(const std::string &) const) &mrpt::maps::CPointsMapXYZI::saveMetricMapRepresentationToFile, "clang-format on\n\nC++: mrpt::maps::CPointsMapXYZI::saveMetricMapRepresentationToFile(const std::string &) const --> void", pybind11::arg("filNamePrefix"));
 
-		{ // mrpt::maps::CPointsMapXYZI::TMapDefinitionBase file: line:80
+		{ // mrpt::maps::CPointsMapXYZI::TMapDefinitionBase file: line:74
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CPointsMapXYZI::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CPointsMapXYZI::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CPointsMapXYZI::TMapDefinition file: line:85
+		{ // mrpt::maps::CPointsMapXYZI::TMapDefinition file: line:78
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CPointsMapXYZI::TMapDefinition, std::shared_ptr<mrpt::maps::CPointsMapXYZI::TMapDefinition>, PyCallBack_mrpt_maps_CPointsMapXYZI_TMapDefinition, mrpt::maps::CPointsMapXYZI::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CPointsMapXYZI::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CPointsMapXYZI_TMapDefinition(); } ) );

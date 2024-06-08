@@ -533,7 +533,7 @@ struct PyCallBack_mrpt_maps_CColouredOctoMap : public mrpt::maps::CColouredOctoM
 	}
 };
 
-// mrpt::maps::CColouredOctoMap::TMapDefinition file: line:85
+// mrpt::maps::CColouredOctoMap::TMapDefinition file: line:78
 struct PyCallBack_mrpt_maps_CColouredOctoMap_TMapDefinition : public mrpt::maps::CColouredOctoMap::TMapDefinition {
 	using mrpt::maps::CColouredOctoMap::TMapDefinition::TMapDefinition;
 
@@ -1221,7 +1221,7 @@ struct PyCallBack_mrpt_maps_CColouredPointsMap : public mrpt::maps::CColouredPoi
 	}
 };
 
-// mrpt::maps::CColouredPointsMap::TColourOptions file:mrpt/maps/CColouredPointsMap.h line:208
+// mrpt::maps::CColouredPointsMap::TColourOptions file:mrpt/maps/CColouredPointsMap.h line:198
 struct PyCallBack_mrpt_maps_CColouredPointsMap_TColourOptions : public mrpt::maps::CColouredPointsMap::TColourOptions {
 	using mrpt::maps::CColouredPointsMap::TColourOptions::TColourOptions;
 
@@ -1253,7 +1253,7 @@ struct PyCallBack_mrpt_maps_CColouredPointsMap_TColourOptions : public mrpt::map
 	}
 };
 
-// mrpt::maps::CColouredPointsMap::TMapDefinition file: line:85
+// mrpt::maps::CColouredPointsMap::TMapDefinition file: line:78
 struct PyCallBack_mrpt_maps_CColouredPointsMap_TMapDefinition : public mrpt::maps::CColouredPointsMap::TMapDefinition {
 	using mrpt::maps::CColouredPointsMap::TMapDefinition::TMapDefinition;
 
@@ -1308,7 +1308,7 @@ void bind_mrpt_maps_CColouredOctoMap(std::function< pybind11::module &(std::stri
 		cl.def( pybind11::init( [](PyCallBack_mrpt_maps_CColouredOctoMap const &o){ return new PyCallBack_mrpt_maps_CColouredOctoMap(o); } ) );
 		cl.def( pybind11::init( [](mrpt::maps::CColouredOctoMap const &o){ return new mrpt::maps::CColouredOctoMap(o); } ) );
 
-		pybind11::enum_<mrpt::maps::CColouredOctoMap::TColourUpdate>(cl, "TColourUpdate", pybind11::arithmetic(), "This allows the user to select the desired method to update voxels\n	   colour.\n		SET = Set the colour of the voxel at (x,y,z) directly\n		AVERAGE = Set the colour of the voxel at (x,y,z) as the mean of\n	   its previous colour and the new observed one.\n		INTEGRATE = Calculate the new colour of the voxel at (x,y,z) using\n	   this formula: prev_color*node_prob +  new_color*(0.99-node_prob)\n		If there isn't any previous color, any method is equivalent to\n	   SET.\n		INTEGRATE is the default option")
+		pybind11::enum_<mrpt::maps::CColouredOctoMap::TColourUpdate>(cl, "TColourUpdate", pybind11::arithmetic(), "This allows the user to select the desired method to update voxels\n   colour.\n    SET = Set the colour of the voxel at (x,y,z) directly\n    AVERAGE = Set the colour of the voxel at (x,y,z) as the mean of\n   its previous colour and the new observed one.\n    INTEGRATE = Calculate the new colour of the voxel at (x,y,z) using\n   this formula: prev_color*node_prob +  new_color*(0.99-node_prob)\n    If there isn't any previous color, any method is equivalent to\n   SET.\n    INTEGRATE is the default option")
 			.value("INTEGRATE", mrpt::maps::CColouredOctoMap::INTEGRATE)
 			.value("SET", mrpt::maps::CColouredOctoMap::SET)
 			.value("AVERAGE", mrpt::maps::CColouredOctoMap::AVERAGE)
@@ -1356,12 +1356,12 @@ void bind_mrpt_maps_CColouredOctoMap(std::function< pybind11::module &(std::stri
 		cl.def("getClampingThresMaxLog", (float (mrpt::maps::CColouredOctoMap::*)() const) &mrpt::maps::CColouredOctoMap::getClampingThresMaxLog, "C++: mrpt::maps::CColouredOctoMap::getClampingThresMaxLog() const --> float");
 		cl.def("assign", (class mrpt::maps::CColouredOctoMap & (mrpt::maps::CColouredOctoMap::*)(const class mrpt::maps::CColouredOctoMap &)) &mrpt::maps::CColouredOctoMap::operator=, "C++: mrpt::maps::CColouredOctoMap::operator=(const class mrpt::maps::CColouredOctoMap &) --> class mrpt::maps::CColouredOctoMap &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::maps::CColouredOctoMap::TMapDefinitionBase file: line:80
+		{ // mrpt::maps::CColouredOctoMap::TMapDefinitionBase file: line:74
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CColouredOctoMap::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CColouredOctoMap::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CColouredOctoMap::TMapDefinition file: line:85
+		{ // mrpt::maps::CColouredOctoMap::TMapDefinition file: line:78
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CColouredOctoMap::TMapDefinition, std::shared_ptr<mrpt::maps::CColouredOctoMap::TMapDefinition>, PyCallBack_mrpt_maps_CColouredOctoMap_TMapDefinition, mrpt::maps::CColouredOctoMap::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CColouredOctoMap::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CColouredOctoMap_TMapDefinition(); } ) );
@@ -1395,7 +1395,7 @@ void bind_mrpt_maps_CColouredOctoMap(std::function< pybind11::module &(std::stri
 		cl.def_static("CreateObject", (class std::shared_ptr<class mrpt::rtti::CObject> (*)()) &mrpt::maps::CColouredPointsMap::CreateObject, "C++: mrpt::maps::CColouredPointsMap::CreateObject() --> class std::shared_ptr<class mrpt::rtti::CObject>");
 		cl.def("assign", (class mrpt::maps::CColouredPointsMap & (mrpt::maps::CColouredPointsMap::*)(const class mrpt::maps::CPointsMap &)) &mrpt::maps::CColouredPointsMap::operator=, "C++: mrpt::maps::CColouredPointsMap::operator=(const class mrpt::maps::CPointsMap &) --> class mrpt::maps::CColouredPointsMap &", pybind11::return_value_policy::automatic, pybind11::arg("o"));
 		cl.def("assign", (class mrpt::maps::CColouredPointsMap & (mrpt::maps::CColouredPointsMap::*)(const class mrpt::maps::CColouredPointsMap &)) &mrpt::maps::CColouredPointsMap::operator=, "C++: mrpt::maps::CColouredPointsMap::operator=(const class mrpt::maps::CColouredPointsMap &) --> class mrpt::maps::CColouredPointsMap &", pybind11::return_value_policy::automatic, pybind11::arg("o"));
-		cl.def("reserve", (void (mrpt::maps::CColouredPointsMap::*)(size_t)) &mrpt::maps::CColouredPointsMap::reserve, "	   from CPointsMap\n		@{ \n\nC++: mrpt::maps::CColouredPointsMap::reserve(size_t) --> void", pybind11::arg("newLength"));
+		cl.def("reserve", (void (mrpt::maps::CColouredPointsMap::*)(size_t)) &mrpt::maps::CColouredPointsMap::reserve, "from CPointsMap\n    @{ \n\nC++: mrpt::maps::CColouredPointsMap::reserve(size_t) --> void", pybind11::arg("newLength"));
 		cl.def("resize", (void (mrpt::maps::CColouredPointsMap::*)(size_t)) &mrpt::maps::CColouredPointsMap::resize, "C++: mrpt::maps::CColouredPointsMap::resize(size_t) --> void", pybind11::arg("newLength"));
 		cl.def("setSize", (void (mrpt::maps::CColouredPointsMap::*)(size_t)) &mrpt::maps::CColouredPointsMap::setSize, "C++: mrpt::maps::CColouredPointsMap::setSize(size_t) --> void", pybind11::arg("newLength"));
 		cl.def("insertPointFast", [](mrpt::maps::CColouredPointsMap &o, float const & a0, float const & a1) -> void { return o.insertPointFast(a0, a1); }, "", pybind11::arg("x"), pybind11::arg("y"));
@@ -1417,7 +1417,7 @@ void bind_mrpt_maps_CColouredOctoMap(std::function< pybind11::module &(std::stri
 		cl.def("insertPointField_color_G", (void (mrpt::maps::CColouredPointsMap::*)(float)) &mrpt::maps::CColouredPointsMap::insertPointField_color_G, "C++: mrpt::maps::CColouredPointsMap::insertPointField_color_G(float) --> void", pybind11::arg("v"));
 		cl.def("insertPointField_color_B", (void (mrpt::maps::CColouredPointsMap::*)(float)) &mrpt::maps::CColouredPointsMap::insertPointField_color_B, "C++: mrpt::maps::CColouredPointsMap::insertPointField_color_B(float) --> void", pybind11::arg("v"));
 
-		{ // mrpt::maps::CColouredPointsMap::TColourOptions file:mrpt/maps/CColouredPointsMap.h line:208
+		{ // mrpt::maps::CColouredPointsMap::TColourOptions file:mrpt/maps/CColouredPointsMap.h line:198
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CColouredPointsMap::TColourOptions, std::shared_ptr<mrpt::maps::CColouredPointsMap::TColourOptions>, PyCallBack_mrpt_maps_CColouredPointsMap_TColourOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TColourOptions", "The definition of parameters for generating colors from laser scans ");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CColouredPointsMap::TColourOptions(); }, [](){ return new PyCallBack_mrpt_maps_CColouredPointsMap_TColourOptions(); } ) );
@@ -1431,12 +1431,12 @@ void bind_mrpt_maps_CColouredOctoMap(std::function< pybind11::module &(std::stri
 			cl.def("assign", (struct mrpt::maps::CColouredPointsMap::TColourOptions & (mrpt::maps::CColouredPointsMap::TColourOptions::*)(const struct mrpt::maps::CColouredPointsMap::TColourOptions &)) &mrpt::maps::CColouredPointsMap::TColourOptions::operator=, "C++: mrpt::maps::CColouredPointsMap::TColourOptions::operator=(const struct mrpt::maps::CColouredPointsMap::TColourOptions &) --> struct mrpt::maps::CColouredPointsMap::TColourOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CColouredPointsMap::TMapDefinitionBase file: line:80
+		{ // mrpt::maps::CColouredPointsMap::TMapDefinitionBase file: line:74
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CColouredPointsMap::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CColouredPointsMap::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CColouredPointsMap::TMapDefinition file: line:85
+		{ // mrpt::maps::CColouredPointsMap::TMapDefinition file: line:78
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CColouredPointsMap::TMapDefinition, std::shared_ptr<mrpt::maps::CColouredPointsMap::TMapDefinition>, PyCallBack_mrpt_maps_CColouredPointsMap_TMapDefinition, mrpt::maps::CColouredPointsMap::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CColouredPointsMap::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CColouredPointsMap_TMapDefinition(); } ) );

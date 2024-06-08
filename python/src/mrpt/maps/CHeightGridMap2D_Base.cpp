@@ -582,7 +582,7 @@ struct PyCallBack_mrpt_maps_CHeightGridMap2D_TInsertionOptions : public mrpt::ma
 	}
 };
 
-// mrpt::maps::CHeightGridMap2D::TMapDefinition file: line:85
+// mrpt::maps::CHeightGridMap2D::TMapDefinition file: line:78
 struct PyCallBack_mrpt_maps_CHeightGridMap2D_TMapDefinition : public mrpt::maps::CHeightGridMap2D::TMapDefinition {
 	using mrpt::maps::CHeightGridMap2D::TMapDefinition::TMapDefinition;
 
@@ -633,7 +633,7 @@ void bind_mrpt_maps_CHeightGridMap2D_Base(std::function< pybind11::module &(std:
 		pybind11::class_<mrpt::maps::CHeightGridMap2D_Base, std::shared_ptr<mrpt::maps::CHeightGridMap2D_Base>, PyCallBack_mrpt_maps_CHeightGridMap2D_Base> cl(M("mrpt::maps"), "CHeightGridMap2D_Base", "Virtual base class for Digital Elevation Model (DEM) maps. See derived\n classes for details.\n This class implements those operations which are especific to DEMs.\n \n");
 		cl.def( pybind11::init( [](){ return new PyCallBack_mrpt_maps_CHeightGridMap2D_Base(); } ) );
 		cl.def(pybind11::init<PyCallBack_mrpt_maps_CHeightGridMap2D_Base const &>());
-		cl.def("intersectLine3D", (bool (mrpt::maps::CHeightGridMap2D_Base::*)(const struct mrpt::math::TLine3D &, struct mrpt::math::TObject3D &) const) &mrpt::maps::CHeightGridMap2D_Base::intersectLine3D, "		@{ \n\n Gets the intersection between a 3D line and a Height Grid map (taking\n into account the different heights of each individual cell)  \n\nC++: mrpt::maps::CHeightGridMap2D_Base::intersectLine3D(const struct mrpt::math::TLine3D &, struct mrpt::math::TObject3D &) const --> bool", pybind11::arg("r1"), pybind11::arg("obj"));
+		cl.def("intersectLine3D", (bool (mrpt::maps::CHeightGridMap2D_Base::*)(const struct mrpt::math::TLine3D &, struct mrpt::math::TObject3D &) const) &mrpt::maps::CHeightGridMap2D_Base::intersectLine3D, "@{ \n\n Gets the intersection between a 3D line and a Height Grid map (taking\n into account the different heights of each individual cell)  \n\nC++: mrpt::maps::CHeightGridMap2D_Base::intersectLine3D(const struct mrpt::math::TLine3D &, struct mrpt::math::TObject3D &) const --> bool", pybind11::arg("r1"), pybind11::arg("obj"));
 		cl.def("getMinMaxHeight", (bool (mrpt::maps::CHeightGridMap2D_Base::*)(float &, float &) const) &mrpt::maps::CHeightGridMap2D_Base::getMinMaxHeight, "Computes the minimum and maximum height in the grid.\n \n\n False if there is no observed cell yet. \n\nC++: mrpt::maps::CHeightGridMap2D_Base::getMinMaxHeight(float &, float &) const --> bool", pybind11::arg("z_min"), pybind11::arg("z_max"));
 		cl.def("insertIndividualPoint", [](mrpt::maps::CHeightGridMap2D_Base &o, const double & a0, const double & a1, const double & a2) -> bool { return o.insertIndividualPoint(a0, a1, a2); }, "", pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"));
 		cl.def("insertIndividualPoint", (bool (mrpt::maps::CHeightGridMap2D_Base::*)(const double, const double, const double, const struct mrpt::maps::CHeightGridMap2D_Base::TPointInsertParams &)) &mrpt::maps::CHeightGridMap2D_Base::insertIndividualPoint, "Update the DEM with one new point.\n \n\n mrpt::maps::CMetricMap::insertObservation() for inserting\n higher-level objects like 2D/3D LIDAR scans\n \n\n true if updated OK, false if (x,y) is out of bounds \n\nC++: mrpt::maps::CHeightGridMap2D_Base::insertIndividualPoint(const double, const double, const double, const struct mrpt::maps::CHeightGridMap2D_Base::TPointInsertParams &) --> bool", pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"), pybind11::arg("params"));
@@ -645,7 +645,7 @@ void bind_mrpt_maps_CHeightGridMap2D_Base(std::function< pybind11::module &(std:
 		cl.def("dem_update_map", (void (mrpt::maps::CHeightGridMap2D_Base::*)()) &mrpt::maps::CHeightGridMap2D_Base::dem_update_map, "Ensure that all observations are reflected in the map estimate \n\nC++: mrpt::maps::CHeightGridMap2D_Base::dem_update_map() --> void");
 		cl.def("assign", (class mrpt::maps::CHeightGridMap2D_Base & (mrpt::maps::CHeightGridMap2D_Base::*)(const class mrpt::maps::CHeightGridMap2D_Base &)) &mrpt::maps::CHeightGridMap2D_Base::operator=, "C++: mrpt::maps::CHeightGridMap2D_Base::operator=(const class mrpt::maps::CHeightGridMap2D_Base &) --> class mrpt::maps::CHeightGridMap2D_Base &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::maps::CHeightGridMap2D_Base::TPointInsertParams file:mrpt/maps/CHeightGridMap2D_Base.h line:41
+		{ // mrpt::maps::CHeightGridMap2D_Base::TPointInsertParams file:mrpt/maps/CHeightGridMap2D_Base.h line:40
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CHeightGridMap2D_Base::TPointInsertParams, std::shared_ptr<mrpt::maps::CHeightGridMap2D_Base::TPointInsertParams>> cl(enclosing_class, "TPointInsertParams", "Extra params for insertIndividualPoint() ");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CHeightGridMap2D_Base::TPointInsertParams(); } ) );
@@ -722,12 +722,12 @@ void bind_mrpt_maps_CHeightGridMap2D_Base(std::function< pybind11::module &(std:
 			cl.def("assign", (struct mrpt::maps::CHeightGridMap2D::TInsertionOptions & (mrpt::maps::CHeightGridMap2D::TInsertionOptions::*)(const struct mrpt::maps::CHeightGridMap2D::TInsertionOptions &)) &mrpt::maps::CHeightGridMap2D::TInsertionOptions::operator=, "C++: mrpt::maps::CHeightGridMap2D::TInsertionOptions::operator=(const struct mrpt::maps::CHeightGridMap2D::TInsertionOptions &) --> struct mrpt::maps::CHeightGridMap2D::TInsertionOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CHeightGridMap2D::TMapDefinitionBase file: line:80
+		{ // mrpt::maps::CHeightGridMap2D::TMapDefinitionBase file: line:74
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CHeightGridMap2D::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CHeightGridMap2D::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CHeightGridMap2D::TMapDefinition file: line:85
+		{ // mrpt::maps::CHeightGridMap2D::TMapDefinition file: line:78
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CHeightGridMap2D::TMapDefinition, std::shared_ptr<mrpt::maps::CHeightGridMap2D::TMapDefinition>, PyCallBack_mrpt_maps_CHeightGridMap2D_TMapDefinition, mrpt::maps::CHeightGridMap2D::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CHeightGridMap2D::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CHeightGridMap2D_TMapDefinition(); } ) );

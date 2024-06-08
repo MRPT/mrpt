@@ -67,7 +67,7 @@ struct PyCallBack_mrpt_vision_TStereoSystemParams : public mrpt::vision::TStereo
 	}
 };
 
-// mrpt::vision::TMatchingOptions file:mrpt/vision/types.h line:343
+// mrpt::vision::TMatchingOptions file:mrpt/vision/types.h line:340
 struct PyCallBack_mrpt_vision_TMatchingOptions : public mrpt::vision::TMatchingOptions {
 	using mrpt::vision::TMatchingOptions::TMatchingOptions;
 
@@ -153,7 +153,7 @@ void bind_mrpt_vision_types(std::function< pybind11::module &(std::string const 
 		cl.def_readwrite("px", &mrpt::vision::TFeatureObservation::px);
 		cl.def("assign", (struct mrpt::vision::TFeatureObservation & (mrpt::vision::TFeatureObservation::*)(const struct mrpt::vision::TFeatureObservation &)) &mrpt::vision::TFeatureObservation::operator=, "C++: mrpt::vision::TFeatureObservation::operator=(const struct mrpt::vision::TFeatureObservation &) --> struct mrpt::vision::TFeatureObservation &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::vision::TRelativeFeaturePos file:mrpt/vision/types.h line:141
+	{ // mrpt::vision::TRelativeFeaturePos file:mrpt/vision/types.h line:142
 		pybind11::class_<mrpt::vision::TRelativeFeaturePos, std::shared_ptr<mrpt::vision::TRelativeFeaturePos>> cl(M("mrpt::vision"), "TRelativeFeaturePos", "One relative feature observation entry, used with some relative\n bundle-adjustment functions.");
 		cl.def( pybind11::init( [](){ return new mrpt::vision::TRelativeFeaturePos(); } ) );
 		cl.def( pybind11::init<const unsigned long, const struct mrpt::math::TPoint3D_<double> &>(), pybind11::arg("_id_frame_base"), pybind11::arg("_pos") );
@@ -161,7 +161,7 @@ void bind_mrpt_vision_types(std::function< pybind11::module &(std::string const 
 		cl.def_readwrite("id_frame_base", &mrpt::vision::TRelativeFeaturePos::id_frame_base);
 		cl.def_readwrite("pos", &mrpt::vision::TRelativeFeaturePos::pos);
 	}
-	{ // mrpt::vision::TSequenceFeatureObservations file:mrpt/vision/types.h line:171
+	{ // mrpt::vision::TSequenceFeatureObservations file:mrpt/vision/types.h line:170
 		pybind11::class_<mrpt::vision::TSequenceFeatureObservations, std::shared_ptr<mrpt::vision::TSequenceFeatureObservations>> cl(M("mrpt::vision"), "TSequenceFeatureObservations", "A complete sequence of observations of features from different camera frames\n (poses).\n  This structure is the input to some (Bundle-adjustment) methods in\n mrpt::vision\n  \n\n Pixel coordinates can be either \"raw\" or \"undistorted\". Read the doc\n of functions handling this structure to see what they expect.\n  \n\n mrpt::vision::bundle_adj_full");
 		cl.def( pybind11::init( [](){ return new mrpt::vision::TSequenceFeatureObservations(); } ) );
 		cl.def( pybind11::init<size_t>(), pybind11::arg("size") );
@@ -225,7 +225,7 @@ void bind_mrpt_vision_types(std::function< pybind11::module &(std::string const 
 		cl.def_readwrite("yMin", &mrpt::vision::TImageROI::yMin);
 		cl.def_readwrite("yMax", &mrpt::vision::TImageROI::yMax);
 	}
-	{ // mrpt::vision::TMatchingOptions file:mrpt/vision/types.h line:343
+	{ // mrpt::vision::TMatchingOptions file:mrpt/vision/types.h line:340
 		pybind11::class_<mrpt::vision::TMatchingOptions, std::shared_ptr<mrpt::vision::TMatchingOptions>, PyCallBack_mrpt_vision_TMatchingOptions, mrpt::config::CLoadableOptions> cl(M("mrpt::vision"), "TMatchingOptions", "A structure containing options for the matching");
 		cl.def( pybind11::init( [](){ return new mrpt::vision::TMatchingOptions(); }, [](){ return new PyCallBack_mrpt_vision_TMatchingOptions(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_vision_TMatchingOptions const &o){ return new PyCallBack_mrpt_vision_TMatchingOptions(o); } ) );

@@ -28,7 +28,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::gui::CGlCanvasBaseHeadless file:mrpt/gui/CGlCanvasBase.h line:248
+// mrpt::gui::CGlCanvasBaseHeadless file:mrpt/gui/CGlCanvasBase.h line:250
 struct PyCallBack_mrpt_gui_CGlCanvasBaseHeadless : public mrpt::gui::CGlCanvasBaseHeadless {
 	using mrpt::gui::CGlCanvasBaseHeadless::CGlCanvasBaseHeadless;
 
@@ -205,7 +205,7 @@ struct PyCallBack_mrpt_gui_CGlCanvasBaseHeadless : public mrpt::gui::CGlCanvasBa
 
 void bind_mrpt_gui_CGlCanvasBase(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::gui::CGlCanvasBaseHeadless file:mrpt/gui/CGlCanvasBase.h line:248
+	{ // mrpt::gui::CGlCanvasBaseHeadless file:mrpt/gui/CGlCanvasBase.h line:250
 		pybind11::class_<mrpt::gui::CGlCanvasBaseHeadless, std::shared_ptr<mrpt::gui::CGlCanvasBaseHeadless>, PyCallBack_mrpt_gui_CGlCanvasBaseHeadless, mrpt::gui::CGlCanvasBase> cl(M("mrpt::gui"), "CGlCanvasBaseHeadless", "A headless dummy implementation of CGlCanvasBase: can be used to keep track\n of user UI mouse events and update the camera parameters, with actual\n rendering being delegated to someone else. \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::gui::CGlCanvasBaseHeadless(); }, [](){ return new PyCallBack_mrpt_gui_CGlCanvasBaseHeadless(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_gui_CGlCanvasBaseHeadless const &o){ return new PyCallBack_mrpt_gui_CGlCanvasBaseHeadless(o); } ) );

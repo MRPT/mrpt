@@ -127,7 +127,7 @@ struct PyCallBack_mrpt_maps_TMapGenericParams : public mrpt::maps::TMapGenericPa
 	}
 };
 
-// mrpt::maps::TSetOfMetricMapInitializers file:mrpt/maps/TMetricMapInitializer.h line:90
+// mrpt::maps::TSetOfMetricMapInitializers file:mrpt/maps/TMetricMapInitializer.h line:88
 struct PyCallBack_mrpt_maps_TSetOfMetricMapInitializers : public mrpt::maps::TSetOfMetricMapInitializers {
 	using mrpt::maps::TSetOfMetricMapInitializers::TSetOfMetricMapInitializers;
 
@@ -202,7 +202,7 @@ void bind_mrpt_maps_metric_map_types(std::function< pybind11::module &(std::stri
 		cl.def("saveToConfigFile", (void (mrpt::maps::TMapGenericParams::*)(class mrpt::config::CConfigFileBase &, const std::string &) const) &mrpt::maps::TMapGenericParams::saveToConfigFile, "C++: mrpt::maps::TMapGenericParams::saveToConfigFile(class mrpt::config::CConfigFileBase &, const std::string &) const --> void", pybind11::arg("target"), pybind11::arg("section"));
 		cl.def("assign", (class mrpt::maps::TMapGenericParams & (mrpt::maps::TMapGenericParams::*)(const class mrpt::maps::TMapGenericParams &)) &mrpt::maps::TMapGenericParams::operator=, "C++: mrpt::maps::TMapGenericParams::operator=(const class mrpt::maps::TMapGenericParams &) --> class mrpt::maps::TMapGenericParams &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::maps::TSetOfMetricMapInitializers file:mrpt/maps/TMetricMapInitializer.h line:90
+	{ // mrpt::maps::TSetOfMetricMapInitializers file:mrpt/maps/TMetricMapInitializer.h line:88
 		pybind11::class_<mrpt::maps::TSetOfMetricMapInitializers, std::shared_ptr<mrpt::maps::TSetOfMetricMapInitializers>, PyCallBack_mrpt_maps_TSetOfMetricMapInitializers, mrpt::config::CLoadableOptions> cl(M("mrpt::maps"), "TSetOfMetricMapInitializers", "A set of TMetricMapInitializer structures, passed to the constructor\n CMultiMetricMap::CMultiMetricMap\n  See the comments for TSetOfMetricMapInitializers::loadFromConfigFile, and\n \"CMultiMetricMap::setListOfMaps\" for\n   effectively creating the list of desired maps.\n \n\n CMultiMetricMap::CMultiMetricMap, CLoadableOptions\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::maps::TSetOfMetricMapInitializers(); }, [](){ return new PyCallBack_mrpt_maps_TSetOfMetricMapInitializers(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_maps_TSetOfMetricMapInitializers const &o){ return new PyCallBack_mrpt_maps_TSetOfMetricMapInitializers(o); } ) );

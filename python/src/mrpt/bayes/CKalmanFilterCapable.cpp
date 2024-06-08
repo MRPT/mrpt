@@ -32,7 +32,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::bayes::TKF_options file:mrpt/bayes/CKalmanFilterCapable.h line:59
+// mrpt::bayes::TKF_options file:mrpt/bayes/CKalmanFilterCapable.h line:57
 struct PyCallBack_mrpt_bayes_TKF_options : public mrpt::bayes::TKF_options {
 	using mrpt::bayes::TKF_options::TKF_options;
 
@@ -76,7 +76,7 @@ void bind_mrpt_bayes_CKalmanFilterCapable(std::function< pybind11::module &(std:
 
 ;
 
-	{ // mrpt::bayes::CKalmanFilterCapable file:mrpt/bayes/CKalmanFilterCapable.h line:225
+	{ // mrpt::bayes::CKalmanFilterCapable file:mrpt/bayes/CKalmanFilterCapable.h line:201
 		pybind11::class_<mrpt::bayes::CKalmanFilterCapable<7UL,3UL,3UL,7UL,double>, std::shared_ptr<mrpt::bayes::CKalmanFilterCapable<7UL,3UL,3UL,7UL,double>>> cl(M("mrpt::bayes"), "CKalmanFilterCapable_7UL_3UL_3UL_7UL_double_t", "");
 		cl.def_readonly("KF_options", &mrpt::bayes::CKalmanFilterCapable<7UL,3UL,3UL,7UL,double>::KF_options);
 		cl.def_static("get_vehicle_size", (size_t (*)()) &mrpt::bayes::CKalmanFilterCapable<7, 3, 3, 7>::get_vehicle_size, "C++: mrpt::bayes::CKalmanFilterCapable<7, 3, 3, 7>::get_vehicle_size() --> size_t");
@@ -95,7 +95,7 @@ void bind_mrpt_bayes_CKalmanFilterCapable(std::function< pybind11::module &(std:
 		cl.def("OnPostIteration", (void (mrpt::bayes::CKalmanFilterCapable<7UL,3UL,3UL,7UL,double>::*)()) &mrpt::bayes::CKalmanFilterCapable<7, 3, 3, 7>::OnPostIteration, "C++: mrpt::bayes::CKalmanFilterCapable<7, 3, 3, 7>::OnPostIteration() --> void");
 		cl.def("getProfiler", (class mrpt::system::CTimeLogger & (mrpt::bayes::CKalmanFilterCapable<7UL,3UL,3UL,7UL,double>::*)()) &mrpt::bayes::CKalmanFilterCapable<7, 3, 3, 7>::getProfiler, "C++: mrpt::bayes::CKalmanFilterCapable<7, 3, 3, 7>::getProfiler() --> class mrpt::system::CTimeLogger &", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::bayes::CKalmanFilterCapable file:mrpt/bayes/CKalmanFilterCapable.h line:225
+	{ // mrpt::bayes::CKalmanFilterCapable file:mrpt/bayes/CKalmanFilterCapable.h line:201
 		pybind11::class_<mrpt::bayes::CKalmanFilterCapable<3UL,2UL,2UL,3UL,double>, std::shared_ptr<mrpt::bayes::CKalmanFilterCapable<3UL,2UL,2UL,3UL,double>>> cl(M("mrpt::bayes"), "CKalmanFilterCapable_3UL_2UL_2UL_3UL_double_t", "");
 		cl.def_readonly("KF_options", &mrpt::bayes::CKalmanFilterCapable<3UL,2UL,2UL,3UL,double>::KF_options);
 		cl.def_static("get_vehicle_size", (size_t (*)()) &mrpt::bayes::CKalmanFilterCapable<3, 2, 2, 3>::get_vehicle_size, "C++: mrpt::bayes::CKalmanFilterCapable<3, 2, 2, 3>::get_vehicle_size() --> size_t");
@@ -114,7 +114,7 @@ void bind_mrpt_bayes_CKalmanFilterCapable(std::function< pybind11::module &(std:
 		cl.def("OnPostIteration", (void (mrpt::bayes::CKalmanFilterCapable<3UL,2UL,2UL,3UL,double>::*)()) &mrpt::bayes::CKalmanFilterCapable<3, 2, 2, 3>::OnPostIteration, "C++: mrpt::bayes::CKalmanFilterCapable<3, 2, 2, 3>::OnPostIteration() --> void");
 		cl.def("getProfiler", (class mrpt::system::CTimeLogger & (mrpt::bayes::CKalmanFilterCapable<3UL,2UL,2UL,3UL,double>::*)()) &mrpt::bayes::CKalmanFilterCapable<3, 2, 2, 3>::getProfiler, "C++: mrpt::bayes::CKalmanFilterCapable<3, 2, 2, 3>::getProfiler() --> class mrpt::system::CTimeLogger &", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::bayes::TKF_options file:mrpt/bayes/CKalmanFilterCapable.h line:59
+	{ // mrpt::bayes::TKF_options file:mrpt/bayes/CKalmanFilterCapable.h line:57
 		pybind11::class_<mrpt::bayes::TKF_options, std::shared_ptr<mrpt::bayes::TKF_options>, PyCallBack_mrpt_bayes_TKF_options, mrpt::config::CLoadableOptions> cl(M("mrpt::bayes"), "TKF_options", "Generic options for the Kalman Filter algorithm in itself.\n \n\n\n ");
 		cl.def( pybind11::init<enum mrpt::system::VerbosityLevel &>(), pybind11::arg("verb_level_ref") );
 

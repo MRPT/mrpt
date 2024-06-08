@@ -1,3 +1,4 @@
+#include <deque>
 #include <iterator>
 #include <memory>
 #include <nanogui/common.h>
@@ -9,7 +10,6 @@
 #include <nanogui/window.h>
 #include <sstream> // __str__
 #include <string>
-#include <vector>
 
 #include <functional>
 #include <pybind11/pybind11.h>

@@ -595,7 +595,7 @@ void bind_mrpt_opengl_CSetOfTriangles(std::function< pybind11::module &(std::str
 		cl.def("getUntracedRays", (void (mrpt::opengl::CAngularObservationMesh::*)(class std::shared_ptr<class mrpt::opengl::CSetOfLines> &, double) const) &mrpt::opengl::CAngularObservationMesh::getUntracedRays, "Gets a set of lines containing the untraced rays, up to a specified\n distance, for displaying them.\n \n\n getTracedRays,mrpt::opengl::CSetOfLines\n\nC++: mrpt::opengl::CAngularObservationMesh::getUntracedRays(class std::shared_ptr<class mrpt::opengl::CSetOfLines> &, double) const --> void", pybind11::arg("res"), pybind11::arg("dist"));
 		cl.def("assign", (class mrpt::opengl::CAngularObservationMesh & (mrpt::opengl::CAngularObservationMesh::*)(const class mrpt::opengl::CAngularObservationMesh &)) &mrpt::opengl::CAngularObservationMesh::operator=, "C++: mrpt::opengl::CAngularObservationMesh::operator=(const class mrpt::opengl::CAngularObservationMesh &) --> class mrpt::opengl::CAngularObservationMesh &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::opengl::CAngularObservationMesh::TDoubleRange file:mrpt/opengl/CAngularObservationMesh.h line:49
+		{ // mrpt::opengl::CAngularObservationMesh::TDoubleRange file:mrpt/opengl/CAngularObservationMesh.h line:50
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::opengl::CAngularObservationMesh::TDoubleRange, std::shared_ptr<mrpt::opengl::CAngularObservationMesh::TDoubleRange>> cl(enclosing_class, "TDoubleRange", "Range specification type, with several uses.");
 			cl.def( pybind11::init<double, double, double>(), pybind11::arg("a"), pybind11::arg("b"), pybind11::arg("c") );

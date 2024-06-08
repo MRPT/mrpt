@@ -18,7 +18,7 @@
 
 void bind_mrpt_rtti_CObject_4(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::ptr_cast file:mrpt/rtti/CObject.h line:354
+	{ // mrpt::ptr_cast file:mrpt/rtti/CObject.h line:336
 		pybind11::class_<mrpt::ptr_cast<mrpt::serialization::CSerializable>, std::shared_ptr<mrpt::ptr_cast<mrpt::serialization::CSerializable>>> cl(M("mrpt"), "ptr_cast_mrpt_serialization_CSerializable_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::ptr_cast<mrpt::serialization::CSerializable>(); } ) );
 		cl.def_static("from", (class std::shared_ptr<class mrpt::serialization::CSerializable> (*)(const class std::shared_ptr<class mrpt::rtti::CObject> &)) &mrpt::ptr_cast<mrpt::serialization::CSerializable>::from<std::shared_ptr<mrpt::rtti::CObject>>, "C++: mrpt::ptr_cast<mrpt::serialization::CSerializable>::from(const class std::shared_ptr<class mrpt::rtti::CObject> &) --> class std::shared_ptr<class mrpt::serialization::CSerializable>", pybind11::arg("ptr"));

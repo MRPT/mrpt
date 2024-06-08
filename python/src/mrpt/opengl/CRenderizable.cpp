@@ -120,7 +120,7 @@ void bind_mrpt_opengl_CRenderizable(std::function< pybind11::module &(std::strin
 		cl.def("initializeTextures", (void (mrpt::opengl::CRenderizable::*)() const) &mrpt::opengl::CRenderizable::initializeTextures, "Initializes all textures (loads them into opengl memory). \n\nC++: mrpt::opengl::CRenderizable::initializeTextures() const --> void");
 		cl.def("assign", (class mrpt::opengl::CRenderizable & (mrpt::opengl::CRenderizable::*)(const class mrpt::opengl::CRenderizable &)) &mrpt::opengl::CRenderizable::operator=, "C++: mrpt::opengl::CRenderizable::operator=(const class mrpt::opengl::CRenderizable &) --> class mrpt::opengl::CRenderizable &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::opengl::CRenderizable::RenderContext file:mrpt/opengl/CRenderizable.h line:340
+		{ // mrpt::opengl::CRenderizable::RenderContext file:mrpt/opengl/CRenderizable.h line:339
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::opengl::CRenderizable::RenderContext, std::shared_ptr<mrpt::opengl::CRenderizable::RenderContext>> cl(enclosing_class, "RenderContext", "Context for calls to render() ");
 			cl.def( pybind11::init( [](){ return new mrpt::opengl::CRenderizable::RenderContext(); } ) );

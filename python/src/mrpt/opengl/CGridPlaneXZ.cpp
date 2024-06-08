@@ -614,7 +614,7 @@ void bind_mrpt_opengl_CGridPlaneXZ(std::function< pybind11::module &(std::string
 		cl.def("traceRay", (bool (mrpt::opengl::CMesh::*)(const class mrpt::poses::CPose3D &, double &) const) &mrpt::opengl::CMesh::traceRay, "Trace ray\n\nC++: mrpt::opengl::CMesh::traceRay(const class mrpt::poses::CPose3D &, double &) const --> bool", pybind11::arg("o"), pybind11::arg("dist"));
 		cl.def("assign", (class mrpt::opengl::CMesh & (mrpt::opengl::CMesh::*)(const class mrpt::opengl::CMesh &)) &mrpt::opengl::CMesh::operator=, "C++: mrpt::opengl::CMesh::operator=(const class mrpt::opengl::CMesh &) --> class mrpt::opengl::CMesh &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::opengl::CMesh::TTriangleVertexIndices file:mrpt/opengl/CMesh.h line:44
+		{ // mrpt::opengl::CMesh::TTriangleVertexIndices file:mrpt/opengl/CMesh.h line:43
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::opengl::CMesh::TTriangleVertexIndices, std::shared_ptr<mrpt::opengl::CMesh::TTriangleVertexIndices>> cl(enclosing_class, "TTriangleVertexIndices", "");
 			cl.def( pybind11::init( [](){ return new mrpt::opengl::CMesh::TTriangleVertexIndices(); } ) );

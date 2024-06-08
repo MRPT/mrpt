@@ -27,7 +27,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::obs::gnss::Message_NMEA_VTG file: line:177
+// mrpt::obs::gnss::Message_NMEA_VTG file: line:174
 struct PyCallBack_mrpt_obs_gnss_Message_NMEA_VTG : public mrpt::obs::gnss::Message_NMEA_VTG {
 	using mrpt::obs::gnss::Message_NMEA_VTG::Message_NMEA_VTG;
 
@@ -72,7 +72,7 @@ struct PyCallBack_mrpt_obs_gnss_Message_NMEA_VTG : public mrpt::obs::gnss::Messa
 	}
 };
 
-// mrpt::obs::gnss::Message_NMEA_GSA file: line:201
+// mrpt::obs::gnss::Message_NMEA_GSA file: line:198
 struct PyCallBack_mrpt_obs_gnss_Message_NMEA_GSA : public mrpt::obs::gnss::Message_NMEA_GSA {
 	using mrpt::obs::gnss::Message_NMEA_GSA::Message_NMEA_GSA;
 
@@ -117,7 +117,7 @@ struct PyCallBack_mrpt_obs_gnss_Message_NMEA_GSA : public mrpt::obs::gnss::Messa
 	}
 };
 
-// mrpt::obs::gnss::Message_NMEA_ZDA file: line:227
+// mrpt::obs::gnss::Message_NMEA_ZDA file: line:224
 struct PyCallBack_mrpt_obs_gnss_Message_NMEA_ZDA : public mrpt::obs::gnss::Message_NMEA_ZDA {
 	using mrpt::obs::gnss::Message_NMEA_ZDA::Message_NMEA_ZDA;
 
@@ -164,7 +164,7 @@ struct PyCallBack_mrpt_obs_gnss_Message_NMEA_ZDA : public mrpt::obs::gnss::Messa
 
 void bind_unknown_unknown_1(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::obs::gnss::Message_NMEA_VTG file: line:177
+	{ // mrpt::obs::gnss::Message_NMEA_VTG file: line:174
 		pybind11::class_<mrpt::obs::gnss::Message_NMEA_VTG, std::shared_ptr<mrpt::obs::gnss::Message_NMEA_VTG>, PyCallBack_mrpt_obs_gnss_Message_NMEA_VTG, mrpt::obs::gnss::gnss_message> cl(M("mrpt::obs::gnss"), "Message_NMEA_VTG", "NMEA datum: VTG. \n mrpt::obs::CObservationGPS  ");
 		cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NMEA_VTG(); }, [](){ return new PyCallBack_mrpt_obs_gnss_Message_NMEA_VTG(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_gnss_Message_NMEA_VTG const &o){ return new PyCallBack_mrpt_obs_gnss_Message_NMEA_VTG(o); } ) );
@@ -172,7 +172,7 @@ void bind_unknown_unknown_1(std::function< pybind11::module &(std::string const 
 		cl.def_readwrite("fields", &mrpt::obs::gnss::Message_NMEA_VTG::fields);
 		cl.def("assign", (struct mrpt::obs::gnss::Message_NMEA_VTG & (mrpt::obs::gnss::Message_NMEA_VTG::*)(const struct mrpt::obs::gnss::Message_NMEA_VTG &)) &mrpt::obs::gnss::Message_NMEA_VTG::operator=, "C++: mrpt::obs::gnss::Message_NMEA_VTG::operator=(const struct mrpt::obs::gnss::Message_NMEA_VTG &) --> struct mrpt::obs::gnss::Message_NMEA_VTG &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::obs::gnss::Message_NMEA_VTG::content_t file: line:186
+		{ // mrpt::obs::gnss::Message_NMEA_VTG::content_t file: line:183
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::gnss::Message_NMEA_VTG::content_t, std::shared_ptr<mrpt::obs::gnss::Message_NMEA_VTG::content_t>> cl(enclosing_class, "content_t", "");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NMEA_VTG::content_t(); } ) );
@@ -185,7 +185,7 @@ void bind_unknown_unknown_1(std::function< pybind11::module &(std::string const 
 		}
 
 	}
-	{ // mrpt::obs::gnss::Message_NMEA_GSA file: line:201
+	{ // mrpt::obs::gnss::Message_NMEA_GSA file: line:198
 		pybind11::class_<mrpt::obs::gnss::Message_NMEA_GSA, std::shared_ptr<mrpt::obs::gnss::Message_NMEA_GSA>, PyCallBack_mrpt_obs_gnss_Message_NMEA_GSA, mrpt::obs::gnss::gnss_message> cl(M("mrpt::obs::gnss"), "Message_NMEA_GSA", "NMEA datum: GSA. \n mrpt::obs::CObservationGPS   ");
 		cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NMEA_GSA(); }, [](){ return new PyCallBack_mrpt_obs_gnss_Message_NMEA_GSA(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_gnss_Message_NMEA_GSA const &o){ return new PyCallBack_mrpt_obs_gnss_Message_NMEA_GSA(o); } ) );
@@ -193,7 +193,7 @@ void bind_unknown_unknown_1(std::function< pybind11::module &(std::string const 
 		cl.def_readwrite("fields", &mrpt::obs::gnss::Message_NMEA_GSA::fields);
 		cl.def("assign", (struct mrpt::obs::gnss::Message_NMEA_GSA & (mrpt::obs::gnss::Message_NMEA_GSA::*)(const struct mrpt::obs::gnss::Message_NMEA_GSA &)) &mrpt::obs::gnss::Message_NMEA_GSA::operator=, "C++: mrpt::obs::gnss::Message_NMEA_GSA::operator=(const struct mrpt::obs::gnss::Message_NMEA_GSA &) --> struct mrpt::obs::gnss::Message_NMEA_GSA &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::obs::gnss::Message_NMEA_GSA::content_t file: line:210
+		{ // mrpt::obs::gnss::Message_NMEA_GSA::content_t file: line:207
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::gnss::Message_NMEA_GSA::content_t, std::shared_ptr<mrpt::obs::gnss::Message_NMEA_GSA::content_t>> cl(enclosing_class, "content_t", "");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NMEA_GSA::content_t(); } ) );
@@ -207,7 +207,7 @@ void bind_unknown_unknown_1(std::function< pybind11::module &(std::string const 
 		}
 
 	}
-	{ // mrpt::obs::gnss::Message_NMEA_ZDA file: line:227
+	{ // mrpt::obs::gnss::Message_NMEA_ZDA file: line:224
 		pybind11::class_<mrpt::obs::gnss::Message_NMEA_ZDA, std::shared_ptr<mrpt::obs::gnss::Message_NMEA_ZDA>, PyCallBack_mrpt_obs_gnss_Message_NMEA_ZDA, mrpt::obs::gnss::gnss_message> cl(M("mrpt::obs::gnss"), "Message_NMEA_ZDA", "NMEA datum: ZDA. \n mrpt::obs::CObservationGPS   ");
 		cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NMEA_ZDA(); }, [](){ return new PyCallBack_mrpt_obs_gnss_Message_NMEA_ZDA(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_gnss_Message_NMEA_ZDA const &o){ return new PyCallBack_mrpt_obs_gnss_Message_NMEA_ZDA(o); } ) );
@@ -217,7 +217,7 @@ void bind_unknown_unknown_1(std::function< pybind11::module &(std::string const 
 		cl.def("getDateAsTimestamp", (mrpt::Clock::time_point (mrpt::obs::gnss::Message_NMEA_ZDA::*)() const) &mrpt::obs::gnss::Message_NMEA_ZDA::getDateAsTimestamp, "Build an MRPT timestamp with the year/month/day of this observation. \n\nC++: mrpt::obs::gnss::Message_NMEA_ZDA::getDateAsTimestamp() const --> mrpt::Clock::time_point");
 		cl.def("assign", (struct mrpt::obs::gnss::Message_NMEA_ZDA & (mrpt::obs::gnss::Message_NMEA_ZDA::*)(const struct mrpt::obs::gnss::Message_NMEA_ZDA &)) &mrpt::obs::gnss::Message_NMEA_ZDA::operator=, "C++: mrpt::obs::gnss::Message_NMEA_ZDA::operator=(const struct mrpt::obs::gnss::Message_NMEA_ZDA &) --> struct mrpt::obs::gnss::Message_NMEA_ZDA &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::obs::gnss::Message_NMEA_ZDA::content_t file: line:236
+		{ // mrpt::obs::gnss::Message_NMEA_ZDA::content_t file: line:233
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::gnss::Message_NMEA_ZDA::content_t, std::shared_ptr<mrpt::obs::gnss::Message_NMEA_ZDA::content_t>> cl(enclosing_class, "content_t", "");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NMEA_ZDA::content_t(); } ) );

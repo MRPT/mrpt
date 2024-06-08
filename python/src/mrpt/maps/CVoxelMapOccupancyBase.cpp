@@ -56,7 +56,7 @@ struct PyCallBack_mrpt_maps_TVoxelMap_InsertionOptions : public mrpt::maps::TVox
 	}
 };
 
-// mrpt::maps::TVoxelMap_LikelihoodOptions file:mrpt/maps/CVoxelMapOccupancyBase.h line:52
+// mrpt::maps::TVoxelMap_LikelihoodOptions file:mrpt/maps/CVoxelMapOccupancyBase.h line:54
 struct PyCallBack_mrpt_maps_TVoxelMap_LikelihoodOptions : public mrpt::maps::TVoxelMap_LikelihoodOptions {
 	using mrpt::maps::TVoxelMap_LikelihoodOptions::TVoxelMap_LikelihoodOptions;
 
@@ -102,13 +102,14 @@ void bind_mrpt_maps_CVoxelMapOccupancyBase(std::function< pybind11::module &(std
 		cl.def_readwrite("clamp_max", &mrpt::maps::TVoxelMap_InsertionOptions::clamp_max);
 		cl.def_readwrite("ray_trace_free_space", &mrpt::maps::TVoxelMap_InsertionOptions::ray_trace_free_space);
 		cl.def_readwrite("decimation", &mrpt::maps::TVoxelMap_InsertionOptions::decimation);
+		cl.def_readwrite("remove_voxels_farther_than", &mrpt::maps::TVoxelMap_InsertionOptions::remove_voxels_farther_than);
 		cl.def("loadFromConfigFile", (void (mrpt::maps::TVoxelMap_InsertionOptions::*)(const class mrpt::config::CConfigFileBase &, const std::string &)) &mrpt::maps::TVoxelMap_InsertionOptions::loadFromConfigFile, "C++: mrpt::maps::TVoxelMap_InsertionOptions::loadFromConfigFile(const class mrpt::config::CConfigFileBase &, const std::string &) --> void", pybind11::arg("source"), pybind11::arg("section"));
 		cl.def("saveToConfigFile", (void (mrpt::maps::TVoxelMap_InsertionOptions::*)(class mrpt::config::CConfigFileBase &, const std::string &) const) &mrpt::maps::TVoxelMap_InsertionOptions::saveToConfigFile, "C++: mrpt::maps::TVoxelMap_InsertionOptions::saveToConfigFile(class mrpt::config::CConfigFileBase &, const std::string &) const --> void", pybind11::arg("c"), pybind11::arg("s"));
 		cl.def("writeToStream", (void (mrpt::maps::TVoxelMap_InsertionOptions::*)(class mrpt::serialization::CArchive &) const) &mrpt::maps::TVoxelMap_InsertionOptions::writeToStream, "C++: mrpt::maps::TVoxelMap_InsertionOptions::writeToStream(class mrpt::serialization::CArchive &) const --> void", pybind11::arg("out"));
 		cl.def("readFromStream", (void (mrpt::maps::TVoxelMap_InsertionOptions::*)(class mrpt::serialization::CArchive &)) &mrpt::maps::TVoxelMap_InsertionOptions::readFromStream, "C++: mrpt::maps::TVoxelMap_InsertionOptions::readFromStream(class mrpt::serialization::CArchive &) --> void", pybind11::arg("in"));
 		cl.def("assign", (struct mrpt::maps::TVoxelMap_InsertionOptions & (mrpt::maps::TVoxelMap_InsertionOptions::*)(const struct mrpt::maps::TVoxelMap_InsertionOptions &)) &mrpt::maps::TVoxelMap_InsertionOptions::operator=, "C++: mrpt::maps::TVoxelMap_InsertionOptions::operator=(const struct mrpt::maps::TVoxelMap_InsertionOptions &) --> struct mrpt::maps::TVoxelMap_InsertionOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::maps::TVoxelMap_LikelihoodOptions file:mrpt/maps/CVoxelMapOccupancyBase.h line:52
+	{ // mrpt::maps::TVoxelMap_LikelihoodOptions file:mrpt/maps/CVoxelMapOccupancyBase.h line:54
 		pybind11::class_<mrpt::maps::TVoxelMap_LikelihoodOptions, std::shared_ptr<mrpt::maps::TVoxelMap_LikelihoodOptions>, PyCallBack_mrpt_maps_TVoxelMap_LikelihoodOptions, mrpt::config::CLoadableOptions> cl(M("mrpt::maps"), "TVoxelMap_LikelihoodOptions", "Options used when evaluating \"computeObservationLikelihood\"\n \n\n CObservation::computeObservationLikelihood");
 		cl.def( pybind11::init( [](){ return new mrpt::maps::TVoxelMap_LikelihoodOptions(); }, [](){ return new PyCallBack_mrpt_maps_TVoxelMap_LikelihoodOptions(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_maps_TVoxelMap_LikelihoodOptions const &o){ return new PyCallBack_mrpt_maps_TVoxelMap_LikelihoodOptions(o); } ) );

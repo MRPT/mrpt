@@ -48,7 +48,7 @@ void bind_mrpt_opengl_Texture(std::function< pybind11::module &(std::string cons
 		cl.def_readwrite("unit", &mrpt::opengl::texture_name_unit_t::unit);
 		cl.def("assign", (struct mrpt::opengl::texture_name_unit_t & (mrpt::opengl::texture_name_unit_t::*)(const struct mrpt::opengl::texture_name_unit_t &)) &mrpt::opengl::texture_name_unit_t::operator=, "C++: mrpt::opengl::texture_name_unit_t::operator=(const struct mrpt::opengl::texture_name_unit_t &) --> struct mrpt::opengl::texture_name_unit_t &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::opengl::Texture file:mrpt/opengl/Texture.h line:43
+	{ // mrpt::opengl::Texture file:mrpt/opengl/Texture.h line:40
 		pybind11::class_<mrpt::opengl::Texture, std::shared_ptr<mrpt::opengl::Texture>> cl(M("mrpt::opengl"), "Texture", "Resource management for OpenGL 2D or Cube textures.\n\n The texture is generated when images are assigned via\n assignImage2D() or assignCubeImages().\n\n \n CRenderizableShaderTexturedTriangles\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::opengl::Texture(); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::Texture const &o){ return new mrpt::opengl::Texture(o); } ) );
@@ -66,7 +66,7 @@ void bind_mrpt_opengl_Texture(std::function< pybind11::module &(std::string cons
 		cl.def("textureNameID", (unsigned int (mrpt::opengl::Texture::*)() const) &mrpt::opengl::Texture::textureNameID, "C++: mrpt::opengl::Texture::textureNameID() const --> unsigned int");
 		cl.def("assign", (class mrpt::opengl::Texture & (mrpt::opengl::Texture::*)(const class mrpt::opengl::Texture &)) &mrpt::opengl::Texture::operator=, "C++: mrpt::opengl::Texture::operator=(const class mrpt::opengl::Texture &) --> class mrpt::opengl::Texture &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::opengl::Texture::Options file:mrpt/opengl/Texture.h line:50
+		{ // mrpt::opengl::Texture::Options file:mrpt/opengl/Texture.h line:47
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::opengl::Texture::Options, std::shared_ptr<mrpt::opengl::Texture::Options>> cl(enclosing_class, "Options", "Options while creating a texture from an image.");
 			cl.def( pybind11::init( [](){ return new mrpt::opengl::Texture::Options(); } ) );
@@ -76,10 +76,10 @@ void bind_mrpt_opengl_Texture(std::function< pybind11::module &(std::string cons
 		}
 
 	}
-	// mrpt::opengl::getNewTextureNumber() file:mrpt/opengl/Texture.h line:119
+	// mrpt::opengl::getNewTextureNumber() file:mrpt/opengl/Texture.h line:118
 	M("mrpt::opengl").def("getNewTextureNumber", (unsigned int (*)()) &mrpt::opengl::getNewTextureNumber, "C++: mrpt::opengl::getNewTextureNumber() --> unsigned int");
 
-	// mrpt::opengl::releaseTextureName(const unsigned int &) file:mrpt/opengl/Texture.h line:120
+	// mrpt::opengl::releaseTextureName(const unsigned int &) file:mrpt/opengl/Texture.h line:119
 	M("mrpt::opengl").def("releaseTextureName", (void (*)(const unsigned int &)) &mrpt::opengl::releaseTextureName, "C++: mrpt::opengl::releaseTextureName(const unsigned int &) --> void", pybind11::arg("t"));
 
 	{ // mrpt::opengl::CRenderizableShaderTexturedTriangles file:mrpt/opengl/CRenderizableShaderTexturedTriangles.h line:28

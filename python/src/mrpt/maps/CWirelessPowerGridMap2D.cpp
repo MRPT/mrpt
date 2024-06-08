@@ -462,7 +462,7 @@ struct PyCallBack_mrpt_maps_CWirelessPowerGridMap2D : public mrpt::maps::CWirele
 	}
 };
 
-// mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions file:mrpt/maps/CWirelessPowerGridMap2D.h line:47
+// mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions file:mrpt/maps/CWirelessPowerGridMap2D.h line:50
 struct PyCallBack_mrpt_maps_CWirelessPowerGridMap2D_TInsertionOptions : public mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions {
 	using mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions::TInsertionOptions;
 
@@ -494,7 +494,7 @@ struct PyCallBack_mrpt_maps_CWirelessPowerGridMap2D_TInsertionOptions : public m
 	}
 };
 
-// mrpt::maps::CWirelessPowerGridMap2D::TMapDefinition file: line:85
+// mrpt::maps::CWirelessPowerGridMap2D::TMapDefinition file: line:78
 struct PyCallBack_mrpt_maps_CWirelessPowerGridMap2D_TMapDefinition : public mrpt::maps::CWirelessPowerGridMap2D::TMapDefinition {
 	using mrpt::maps::CWirelessPowerGridMap2D::TMapDefinition::TMapDefinition;
 
@@ -561,7 +561,7 @@ void bind_mrpt_maps_CWirelessPowerGridMap2D(std::function< pybind11::module &(st
 		cl.def("getVisualizationInto", (void (mrpt::maps::CWirelessPowerGridMap2D::*)(class mrpt::opengl::CSetOfObjects &) const) &mrpt::maps::CWirelessPowerGridMap2D::getVisualizationInto, "Returns a 3D object representing the map  \n\nC++: mrpt::maps::CWirelessPowerGridMap2D::getVisualizationInto(class mrpt::opengl::CSetOfObjects &) const --> void", pybind11::arg("outObj"));
 		cl.def("assign", (class mrpt::maps::CWirelessPowerGridMap2D & (mrpt::maps::CWirelessPowerGridMap2D::*)(const class mrpt::maps::CWirelessPowerGridMap2D &)) &mrpt::maps::CWirelessPowerGridMap2D::operator=, "C++: mrpt::maps::CWirelessPowerGridMap2D::operator=(const class mrpt::maps::CWirelessPowerGridMap2D &) --> class mrpt::maps::CWirelessPowerGridMap2D &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions file:mrpt/maps/CWirelessPowerGridMap2D.h line:47
+		{ // mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions file:mrpt/maps/CWirelessPowerGridMap2D.h line:50
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions, std::shared_ptr<mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions>, PyCallBack_mrpt_maps_CWirelessPowerGridMap2D_TInsertionOptions, mrpt::config::CLoadableOptions, mrpt::maps::CRandomFieldGridMap2D::TInsertionOptionsCommon> cl(enclosing_class, "TInsertionOptions", "Parameters related with inserting observations into the map:");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions(); }, [](){ return new PyCallBack_mrpt_maps_CWirelessPowerGridMap2D_TInsertionOptions(); } ) );
@@ -571,12 +571,12 @@ void bind_mrpt_maps_CWirelessPowerGridMap2D(std::function< pybind11::module &(st
 			cl.def("assign", (struct mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions & (mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions::*)(const struct mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions &)) &mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions::operator=, "C++: mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions::operator=(const struct mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions &) --> struct mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CWirelessPowerGridMap2D::TMapDefinitionBase file: line:80
+		{ // mrpt::maps::CWirelessPowerGridMap2D::TMapDefinitionBase file: line:74
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CWirelessPowerGridMap2D::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CWirelessPowerGridMap2D::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CWirelessPowerGridMap2D::TMapDefinition file: line:85
+		{ // mrpt::maps::CWirelessPowerGridMap2D::TMapDefinition file: line:78
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CWirelessPowerGridMap2D::TMapDefinition, std::shared_ptr<mrpt::maps::CWirelessPowerGridMap2D::TMapDefinition>, PyCallBack_mrpt_maps_CWirelessPowerGridMap2D_TMapDefinition, mrpt::maps::CWirelessPowerGridMap2D::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CWirelessPowerGridMap2D::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CWirelessPowerGridMap2D_TMapDefinition(); } ) );

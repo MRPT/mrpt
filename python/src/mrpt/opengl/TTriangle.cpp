@@ -377,7 +377,7 @@ void bind_mrpt_opengl_TTriangle(std::function< pybind11::module &(std::string co
 		cl.def("getTextMessages", (const struct mrpt::opengl::CTextMessageCapable::TListTextMessages & (mrpt::opengl::CTextMessageCapable::*)() const) &mrpt::opengl::CTextMessageCapable::getTextMessages, "C++: mrpt::opengl::CTextMessageCapable::getTextMessages() const --> const struct mrpt::opengl::CTextMessageCapable::TListTextMessages &", pybind11::return_value_policy::automatic);
 		cl.def("assign", (class mrpt::opengl::CTextMessageCapable & (mrpt::opengl::CTextMessageCapable::*)(const class mrpt::opengl::CTextMessageCapable &)) &mrpt::opengl::CTextMessageCapable::operator=, "C++: mrpt::opengl::CTextMessageCapable::operator=(const class mrpt::opengl::CTextMessageCapable &) --> class mrpt::opengl::CTextMessageCapable &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::opengl::CTextMessageCapable::DataPerText file:mrpt/opengl/CTextMessageCapable.h line:62
+		{ // mrpt::opengl::CTextMessageCapable::DataPerText file:mrpt/opengl/CTextMessageCapable.h line:64
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::opengl::CTextMessageCapable::DataPerText, std::shared_ptr<mrpt::opengl::CTextMessageCapable::DataPerText>, mrpt::opengl::T2DTextData> cl(enclosing_class, "DataPerText", "");
 			cl.def( pybind11::init( [](){ return new mrpt::opengl::CTextMessageCapable::DataPerText(); } ) );
@@ -388,7 +388,7 @@ void bind_mrpt_opengl_TTriangle(std::function< pybind11::module &(std::string co
 			cl.def("assign", (struct mrpt::opengl::CTextMessageCapable::DataPerText & (mrpt::opengl::CTextMessageCapable::DataPerText::*)(const struct mrpt::opengl::CTextMessageCapable::DataPerText &)) &mrpt::opengl::CTextMessageCapable::DataPerText::operator=, "C++: mrpt::opengl::CTextMessageCapable::DataPerText::operator=(const struct mrpt::opengl::CTextMessageCapable::DataPerText &) --> struct mrpt::opengl::CTextMessageCapable::DataPerText &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::opengl::CTextMessageCapable::TListTextMessages file:mrpt/opengl/CTextMessageCapable.h line:68
+		{ // mrpt::opengl::CTextMessageCapable::TListTextMessages file:mrpt/opengl/CTextMessageCapable.h line:70
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::opengl::CTextMessageCapable::TListTextMessages, std::shared_ptr<mrpt::opengl::CTextMessageCapable::TListTextMessages>> cl(enclosing_class, "TListTextMessages", "");
 			cl.def( pybind11::init( [](){ return new mrpt::opengl::CTextMessageCapable::TListTextMessages(); } ) );
