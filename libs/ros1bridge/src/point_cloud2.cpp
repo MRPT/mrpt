@@ -200,6 +200,8 @@ bool mrpt::ros1bridge::fromROS(const sensor_msgs::PointCloud2& msg, CPointsMapXY
 
   obj.resize_XYZIRT(num_points, !!i_field, !!r_field, !!t_field);
 
+  std::optional<float> minTime, maxTime;
+
   unsigned int idx = 0;
   for (unsigned int row = 0; row < msg.height; ++row)
   {
@@ -230,24 +232,44 @@ bool mrpt::ros1bridge::fromROS(const sensor_msgs::PointCloud2& msg, CPointsMapXY
       {
         if (t_field->datatype == sensor_msgs::PointField::FLOAT32)
         {
-          float t;
+          float t = 0;
           get_float_from_field(t_field, msg_data, t);
           obj.setPointTime(idx, t);
         }
         else
         {
-          uint32_t t;
+          uint32_t t = 0;
           get_uint32_from_field(t_field, msg_data, t);
 
           // Convention:
           // I only found one case (NTU Viral dataset) using uint32_t for time,
           // and times ranged from 0 to ~99822766 = 100,000,000 = 1e8
           // so they seems to be nanoseconds:
-          // TODO(jlbc): We are using a hard-coded half sensor period:
-          const float T_half = 0.10f / 2;
-          obj.setPointTime(idx, t * 1e-9 - T_half);
+          obj.setPointTime(idx, t * 1e-9);
+        }
+
+        const float t = obj.getPointTime(idx);
+        if (!minTime)
+        {
+          minTime = t;
+          maxTime = t;
+        }
+        else
+        {
+          mrpt::keep_min(*minTime, t);
+          mrpt::keep_max(*maxTime, t);
         }
       }
+    }
+  }
+
+  // Force timestamps to be in the range [-T/2,T/2]:
+  if (minTime && *maxTime > *minTime)
+  {
+    const float At = (*maxTime - *minTime) * 0.5f;
+    for (size_t i = 0; i < obj.size(); i++)
+    {
+      obj.setPointTime(i, obj.getPointTime(i) - At);
     }
   }
 
