@@ -2,6 +2,8 @@
 
 # Version 2.13.2: UNRELEASED
 - Changes in libraries:
+  - \ref mrpt_maps_grp:
+    - mrpt::maps::CPointsMapXYZIRT now creates timestamps per point for input observations of type mrpt::obs::CObservationVelodyneScan
   - \ref mrpt_ros1bridge_grp:
     - mrpt::ros1bridge::toROS() conversion from `PointCloud2` to mrpt::maps::CPointsMapXYZIRT: recognize timestamp field names `"t"` and `"timestamp"`, and support conversion from uint32_t timestamps as nanoseconds.
 - BUG FIXES:
