@@ -365,6 +365,12 @@ class CObservationVelodyneScan : public CObservation
 
   /** @} */
 
+  /** @name Delayed-load manual control methods.
+    @{ */
+  /** Frees the memory of cached point clouds */
+  void unload() const override;
+  /** @} */
+
   void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
   {
     out_sensorPose = sensorPose;
