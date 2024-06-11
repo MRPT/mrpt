@@ -465,7 +465,8 @@ bool CPointsMapXYZIRT::internal_insertObservation(
 
     for (size_t i = 0; i < n; i++)
     {
-      insertPointFast(pc.x[i], pc.y[i], pc.z[i]);
+      const auto gp = robotPose3D.composePoint(mrpt::math::TPoint3D(pc.x[i], pc.y[i], pc.z[i]));
+      insertPointFast(gp.x, gp.y, gp.z);
       this->insertPointField_Intensity(mrpt::u8tof(pc.intensity[i]));
       this->insertPointField_Ring(pc.laser_id[i]);
       this->insertPointField_Timestamp(ts[i]);
