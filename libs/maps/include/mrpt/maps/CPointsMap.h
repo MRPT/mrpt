@@ -1151,7 +1151,8 @@ class CPointsMap :
 	std::string asString() const override
 	{
 		return mrpt::format(
-			"Pointcloud map with %u points, bounding box:%s",
+			"Pointcloud map of type %s with %u points, bounding box:%s",
+			this->GetRuntimeClass()->className,
 			static_cast<unsigned int>(size()),
 			boundingBox().asString().c_str());
 	}
