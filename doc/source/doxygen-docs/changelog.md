@@ -4,6 +4,7 @@
 - Changes in libraries:
   - \ref mrpt_maps_grp:
     - mrpt::maps::CPointsMapXYZIRT now creates timestamps per point for input observations of type mrpt::obs::CObservationVelodyneScan
+    - mrpt::maps::CPointsMap::asString() now also shows the actual derived class name.
   - \ref mrpt_obs_grp:
     - mrpt::obs::CObservationVelodyneScan now implements unload() to free memory for cached point clouds.
   - \ref mrpt_ros1bridge_grp:
