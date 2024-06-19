@@ -1553,24 +1553,20 @@ void CPointsMap::insertAnotherMap(
     // filter NANs:
     if (pt.x != pt.x) continue;
 
-    // Translation:
-    mrpt::math::TPoint3D g;
-
-    if (!identity_tf)
-      otherPose.composePoint(pt.x, pt.y, pt.z, g.x, g.y, g.z);
-    else
-    {
-      g = pt;
-    }
-
     // Add to this map:
-    this->insertPointFast(g.x, g.y, g.z);
+    this->insertPointFrom(*otherMap, src);
+
+    // and overwrite the XYZ, if needed:
+    if (!identity_tf)
+    {
+      // Translation:
+      mrpt::math::TPoint3D g;
+      otherPose.composePoint(pt.x, pt.y, pt.z, g.x, g.y, g.z);
+      m_x.back() = g.x;
+      m_y.back() = g.y;
+      m_z.back() = g.z;
+    }
   }
-
-  // Also copy other data fields (color, ...)
-  addFrom_classSpecific(*otherMap, N_this, filterOutPointsAtZero);
-
-  mark_as_modified();
 }
 
 /** Helper method for ::copyFrom() */
