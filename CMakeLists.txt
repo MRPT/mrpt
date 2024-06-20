@@ -254,6 +254,13 @@ if(NOT MSVC AND NOT XCODE_VERSION)
     endif()
 endif()
 
+# Leave these includes here before ROS to prevent the warning:
+#   cmakemodules/ECMFindModuleHelpers.cmake:112 (message):
+#   Your project should require at least CMake 3.16.0 to use FindEGL.cmake
+#
+include(cmakemodules/script_gl_glut.cmake REQUIRED)     # Check for the GL,GLUT libraries
+include(cmakemodules/script_jsoncpp.cmake REQUIRED)     # Check for jsoncpp
+
 # ----------------------------------------------------------------------------
 # ROS
 # ----------------------------------------------------------------------------
@@ -275,14 +282,12 @@ include(cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C lib
 include(cmakemodules/script_flycapture2.cmake REQUIRED) # Check for PointGreyResearch (PGR) FlyCapture2 library
 include(cmakemodules/script_ftdi.cmake REQUIRED)        # Check for the FTDI headers (Linux only, in win32 we use built-in header & dynamic DLL load):
 include(cmakemodules/script_gcc_clang_id.cmake REQUIRED) # Helper variables
-include(cmakemodules/script_gl_glut.cmake REQUIRED)     # Check for the GL,GLUT libraries
 include(cmakemodules/script_gridmap_options.cmake REQUIRED) # Gridmap options
 include(cmakemodules/script_gtest.cmake REQUIRED)       # Unit testing lib
 include(cmakemodules/script_inotify.cmake REQUIRED)     # Check for the sys/inotify headers (Linux only, in win32 we use the equivalent API for file system monitoring):
 include(cmakemodules/script_isense.cmake REQUIRED)      # Support for INTERSENSE Sensors
 include(cmakemodules/script_iwyu.cmake REQUIRED)        # Include-what-you-use
 include(cmakemodules/script_jpeg.cmake REQUIRED)        # Check for jpeg
-include(cmakemodules/script_jsoncpp.cmake REQUIRED)     # Check for jsoncpp
 include(cmakemodules/script_kinect.cmake REQUIRED)      # Kinect support in a set of different ways
 include(cmakemodules/script_libdc1394.cmake REQUIRED)   # Check for libdc1394-2
 include(cmakemodules/script_libfyaml.cmake REQUIRED)    # Defines embedded version of libfyaml
