@@ -336,10 +336,6 @@ void CColouredPointsMap::insertPointFast(float x, float y, float z)
   m_x.push_back(x);
   m_y.push_back(y);
   m_z.push_back(z);
-  m_color_R.push_back(1);
-  m_color_G.push_back(1);
-  m_color_B.push_back(1);
-
   // mark_as_modified(); -> Fast
 }
 

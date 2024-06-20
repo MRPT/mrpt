@@ -11,6 +11,7 @@
     - mrpt::ros1bridge::toROS() conversion from `PointCloud2` to mrpt::maps::CPointsMapXYZIRT: recognize timestamp field names `"t"` and `"timestamp"`, and support conversion from uint32_t timestamps as nanoseconds.
 - BUG FIXES:
   - mrpt::vision::CFeatureTracker_KL: Parameter ``LK_epsilon`` was rounded to integer.
+  - mrpt::maps::CPointsMapXYZI::insertPointFast() did also append to the intensity channel, which is inconsistent behavior with the other map classes.
 
 # Version 2.13.1: Released June 5th, 2024
 - BUG FIXES:
