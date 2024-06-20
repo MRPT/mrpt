@@ -187,7 +187,6 @@ void CPointsMapXYZI::insertPointFast(float x, float y, float z)
   m_x.push_back(x);
   m_y.push_back(y);
   m_z.push_back(z);
-  m_intensity.push_back(0);
   // mark_as_modified(); Don't, this is the "XXXFast()" method
 }
 
