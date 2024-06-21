@@ -2646,6 +2646,9 @@ bool mpPrintout::HasPage(int page) { return (page == 1); }
 //-----------------------------------------------------------------------------
 // mpMovableObject - provided by Jose Luis Blanco
 //-----------------------------------------------------------------------------
+
+mpMovableObject::~mpMovableObject() = default;
+
 void mpMovableObject::TranslatePoint(double x, double y, double& out_x, double& out_y)
 {
   double ccos = cos(m_reference_phi);  // Avoid computing cos/sin twice.
