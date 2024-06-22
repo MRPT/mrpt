@@ -103,20 +103,6 @@ void CColouredPointsMap::setSize(size_t newLength)
   mark_as_modified();
 }
 
-void CColouredPointsMap::impl_copyFrom(const CPointsMap& obj)
-{
-  // This also does a ::resize(N) of all data fields.
-  CPointsMap::base_copyFrom(obj);
-
-  const auto* pCol = dynamic_cast<const CColouredPointsMap*>(&obj);
-  if (pCol)
-  {
-    m_color_R = pCol->m_color_R;
-    m_color_G = pCol->m_color_G;
-    m_color_B = pCol->m_color_B;
-  }
-}
-
 uint8_t CColouredPointsMap::serializeGetVersion() const { return 9; }
 void CColouredPointsMap::serializeTo(mrpt::serialization::CArchive& out) const
 {

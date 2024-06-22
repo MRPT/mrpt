@@ -98,17 +98,6 @@ void CPointsMapXYZI::setSize(size_t newLength)
   mark_as_modified();
 }
 
-void CPointsMapXYZI::impl_copyFrom(const CPointsMap& obj)
-{
-  // This also does a ::resize(N) of all data fields.
-  CPointsMap::base_copyFrom(obj);
-
-  ASSERT_EQUAL_(m_x.size(), m_intensity.size());
-
-  if (const auto* Is = obj.getPointsBufferRef_intensity(); Is) m_intensity = *Is;
-  // else: leave with default values in this class
-}
-
 uint8_t CPointsMapXYZI::serializeGetVersion() const { return 0; }
 void CPointsMapXYZI::serializeTo(mrpt::serialization::CArchive& out) const
 {
