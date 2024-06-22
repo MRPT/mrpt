@@ -699,19 +699,6 @@ struct PyCallBack_mrpt_maps_CColouredPointsMap : public mrpt::maps::CColouredPoi
 		}
 		return CColouredPointsMap::insertPointFast(a0, a1, a2);
 	}
-	void impl_copyFrom(const class mrpt::maps::CPointsMap & a0) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CColouredPointsMap *>(this), "impl_copyFrom");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CColouredPointsMap::impl_copyFrom(a0);
-	}
 	void addFrom_classSpecific(const class mrpt::maps::CPointsMap & a0, size_t a1, const bool a2) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CColouredPointsMap *>(this), "addFrom_classSpecific");
@@ -1221,7 +1208,7 @@ struct PyCallBack_mrpt_maps_CColouredPointsMap : public mrpt::maps::CColouredPoi
 	}
 };
 
-// mrpt::maps::CColouredPointsMap::TColourOptions file:mrpt/maps/CColouredPointsMap.h line:198
+// mrpt::maps::CColouredPointsMap::TColourOptions file:mrpt/maps/CColouredPointsMap.h line:194
 struct PyCallBack_mrpt_maps_CColouredPointsMap_TColourOptions : public mrpt::maps::CColouredPointsMap::TColourOptions {
 	using mrpt::maps::CColouredPointsMap::TColourOptions::TColourOptions;
 
@@ -1417,7 +1404,7 @@ void bind_mrpt_maps_CColouredOctoMap(std::function< pybind11::module &(std::stri
 		cl.def("insertPointField_color_G", (void (mrpt::maps::CColouredPointsMap::*)(float)) &mrpt::maps::CColouredPointsMap::insertPointField_color_G, "C++: mrpt::maps::CColouredPointsMap::insertPointField_color_G(float) --> void", pybind11::arg("v"));
 		cl.def("insertPointField_color_B", (void (mrpt::maps::CColouredPointsMap::*)(float)) &mrpt::maps::CColouredPointsMap::insertPointField_color_B, "C++: mrpt::maps::CColouredPointsMap::insertPointField_color_B(float) --> void", pybind11::arg("v"));
 
-		{ // mrpt::maps::CColouredPointsMap::TColourOptions file:mrpt/maps/CColouredPointsMap.h line:198
+		{ // mrpt::maps::CColouredPointsMap::TColourOptions file:mrpt/maps/CColouredPointsMap.h line:194
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CColouredPointsMap::TColourOptions, std::shared_ptr<mrpt::maps::CColouredPointsMap::TColourOptions>, PyCallBack_mrpt_maps_CColouredPointsMap_TColourOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TColourOptions", "The definition of parameters for generating colors from laser scans ");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CColouredPointsMap::TColourOptions(); }, [](){ return new PyCallBack_mrpt_maps_CColouredPointsMap_TColourOptions(); } ) );

@@ -28,7 +28,7 @@
 
 void bind_mrpt_maps_CWeightedPointsMap(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::opengl::PointCloudAdapter file:mrpt/maps/CWeightedPointsMap.h line:161
+	{ // mrpt::opengl::PointCloudAdapter file:mrpt/maps/CWeightedPointsMap.h line:160
 		pybind11::class_<mrpt::opengl::PointCloudAdapter<mrpt::maps::CWeightedPointsMap>, std::shared_ptr<mrpt::opengl::PointCloudAdapter<mrpt::maps::CWeightedPointsMap>>> cl(M("mrpt::opengl"), "PointCloudAdapter_mrpt_maps_CWeightedPointsMap_t", "Specialization\n mrpt::opengl::PointCloudAdapter<mrpt::maps::CWeightedPointsMap>\n \n");
 		cl.def( pybind11::init<const class mrpt::maps::CWeightedPointsMap &>(), pybind11::arg("obj") );
 

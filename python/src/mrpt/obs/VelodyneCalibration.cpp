@@ -131,6 +131,19 @@ struct PyCallBack_mrpt_obs_CObservationVelodyneScan : public mrpt::obs::CObserva
 		}
 		return CObservationVelodyneScan::getOriginalReceivedTimeStamp();
 	}
+	void unload() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationVelodyneScan *>(this), "unload");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CObservationVelodyneScan::unload();
+	}
 	void getSensorPose(class mrpt::poses::CPose3D & a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationVelodyneScan *>(this), "getSensorPose");
@@ -208,19 +221,6 @@ struct PyCallBack_mrpt_obs_CObservationVelodyneScan : public mrpt::obs::CObserva
 			else return pybind11::detail::cast_safe<std::string>(std::move(o));
 		}
 		return CObservation::exportTxtDataRow();
-	}
-	void unload() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationVelodyneScan *>(this), "unload");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CObservation::unload();
 	}
 	void load_impl() const override {
 		pybind11::gil_scoped_acquire gil;
@@ -338,6 +338,7 @@ void bind_mrpt_obs_VelodyneCalibration(std::function< pybind11::module &(std::st
 		cl.def("generatePointCloud", (void (mrpt::obs::CObservationVelodyneScan::*)(const struct mrpt::obs::CObservationVelodyneScan::TGeneratePointCloudParameters &)) &mrpt::obs::CObservationVelodyneScan::generatePointCloud, "Generates the point cloud into the point cloud data fields in \n where it is stored in local coordinates wrt the sensor (neither the\n vehicle nor the world).\n So, this method does not take into account the possible motion of the\n sensor through the world as it collects LIDAR scans.\n For high dynamics, see the more costly API\n generatePointCloudAlongSE3Trajectory()\n \n\n Points with ranges out of [minRange,maxRange] are discarded; as\n well, other filters are available in \n \n\n generatePointCloudAlongSE3Trajectory(),\n TGeneratePointCloudParameters\n\nC++: mrpt::obs::CObservationVelodyneScan::generatePointCloud(const struct mrpt::obs::CObservationVelodyneScan::TGeneratePointCloudParameters &) --> void", pybind11::arg("params"));
 		cl.def("generatePointCloud", [](mrpt::obs::CObservationVelodyneScan &o, struct mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper & a0) -> void { return o.generatePointCloud(a0); }, "", pybind11::arg("dest"));
 		cl.def("generatePointCloud", (void (mrpt::obs::CObservationVelodyneScan::*)(struct mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper &, const struct mrpt::obs::CObservationVelodyneScan::TGeneratePointCloudParameters &)) &mrpt::obs::CObservationVelodyneScan::generatePointCloud, "C++: mrpt::obs::CObservationVelodyneScan::generatePointCloud(struct mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper &, const struct mrpt::obs::CObservationVelodyneScan::TGeneratePointCloudParameters &) --> void", pybind11::arg("dest"), pybind11::arg("params"));
+		cl.def("unload", (void (mrpt::obs::CObservationVelodyneScan::*)() const) &mrpt::obs::CObservationVelodyneScan::unload, "@{ \n\n Frees the memory of cached point clouds \n\nC++: mrpt::obs::CObservationVelodyneScan::unload() const --> void");
 		cl.def("getSensorPose", (void (mrpt::obs::CObservationVelodyneScan::*)(class mrpt::poses::CPose3D &) const) &mrpt::obs::CObservationVelodyneScan::getSensorPose, "@} \n\nC++: mrpt::obs::CObservationVelodyneScan::getSensorPose(class mrpt::poses::CPose3D &) const --> void", pybind11::arg("out_sensorPose"));
 		cl.def("setSensorPose", (void (mrpt::obs::CObservationVelodyneScan::*)(const class mrpt::poses::CPose3D &)) &mrpt::obs::CObservationVelodyneScan::setSensorPose, "C++: mrpt::obs::CObservationVelodyneScan::setSensorPose(const class mrpt::poses::CPose3D &) --> void", pybind11::arg("newSensorPose"));
 		cl.def("assign", (class mrpt::obs::CObservationVelodyneScan & (mrpt::obs::CObservationVelodyneScan::*)(const class mrpt::obs::CObservationVelodyneScan &)) &mrpt::obs::CObservationVelodyneScan::operator=, "C++: mrpt::obs::CObservationVelodyneScan::operator=(const class mrpt::obs::CObservationVelodyneScan &) --> class mrpt::obs::CObservationVelodyneScan &", pybind11::return_value_policy::automatic, pybind11::arg(""));
