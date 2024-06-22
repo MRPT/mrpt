@@ -691,12 +691,12 @@ class CPointsMap :
 
 		// XYZ:
 		insertPointFast(xs[i], ys[i], zs[i]);
-		if (Is && hasField_Intensity()) insertPointField_Intensity((*Is)[i]);
-		if (Rs && hasField_Ring()) insertPointField_Ring((*Rs)[i]);
-		if (Ts && hasField_Timestamp()) insertPointField_Timestamp((*Ts)[i]);
-		if (cR && hasField_color_R()) insertPointField_color_R((*cR)[i]);
-		if (cG && hasField_color_G()) insertPointField_color_G((*cG)[i]);
-		if (cB && hasField_color_B()) insertPointField_color_B((*cB)[i]);
+		if (Is && !Is->empty() && hasField_Intensity()) insertPointField_Intensity((*Is)[i]);
+		if (Rs && !Rs->empty() && hasField_Ring()) insertPointField_Ring((*Rs)[i]);
+		if (Ts && !Ts->empty() && hasField_Timestamp()) insertPointField_Timestamp((*Ts)[i]);
+		if (cR && !cR->empty() && hasField_color_R()) insertPointField_color_R((*cR)[i]);
+		if (cG && !cG->empty() && hasField_color_G()) insertPointField_color_G((*cG)[i]);
+		if (cB && !cB->empty() && hasField_color_B()) insertPointField_color_B((*cB)[i]);
 
 		mark_as_modified();
 	}
