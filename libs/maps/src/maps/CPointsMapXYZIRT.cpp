@@ -66,8 +66,14 @@ mrpt::maps::CMetricMap::Ptr CPointsMapXYZIRT::internal_CreateFromMapDefinition(
 
 IMPLEMENTS_SERIALIZABLE(CPointsMapXYZIRT, CPointsMap, mrpt::maps)
 
-CPointsMapXYZIRT::CPointsMapXYZIRT(const CPointsMapXYZIRT& o) : CPointsMap() { impl_copyFrom(o); }
-CPointsMapXYZIRT::CPointsMapXYZIRT(const CPointsMapXYZI& o) : CPointsMap() { impl_copyFrom(o); }
+CPointsMapXYZIRT::CPointsMapXYZIRT(const CPointsMapXYZIRT& o) : CPointsMap()
+{
+  CPointsMapXYZIRT::impl_copyFrom(o);
+}
+CPointsMapXYZIRT::CPointsMapXYZIRT(const CPointsMapXYZI& o) : CPointsMap()
+{
+  CPointsMapXYZIRT::impl_copyFrom(o);
+}
 CPointsMapXYZIRT& CPointsMapXYZIRT::operator=(const CPointsMap& o)
 {
   impl_copyFrom(o);
@@ -142,27 +148,6 @@ void CPointsMapXYZIRT::setSize(size_t newLength)
   m_ring.assign(newLength, 0);
   m_time.assign(newLength, 0);
   mark_as_modified();
-}
-
-void CPointsMapXYZIRT::impl_copyFrom(const CPointsMap& obj)
-{
-  // This also does a ::resize(N) of all data fields.
-  CPointsMap::base_copyFrom(obj);
-
-  if (const auto* Is = obj.getPointsBufferRef_intensity(); Is)
-    m_intensity = *Is;
-  else
-    m_intensity.clear();
-
-  if (const auto* Rs = obj.getPointsBufferRef_ring(); Rs)
-    m_ring = *Rs;
-  else
-    m_ring.clear();
-
-  if (const auto* Ts = obj.getPointsBufferRef_timestamp(); Ts)
-    m_time = *Ts;
-  else
-    m_time.clear();
 }
 
 uint8_t CPointsMapXYZIRT::serializeGetVersion() const { return 0; }

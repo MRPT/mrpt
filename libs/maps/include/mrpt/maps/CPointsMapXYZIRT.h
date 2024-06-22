@@ -116,8 +116,6 @@ class CPointsMapXYZIRT : public CPointsMap
 
  protected:
   // See base class
-  void impl_copyFrom(const CPointsMap& obj) override;
-  // See base class
   void addFrom_classSpecific(
       const CPointsMap& anotherMap,
       size_t nPreviousPoints,

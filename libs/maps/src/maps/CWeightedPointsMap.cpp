@@ -93,18 +93,6 @@ void CWeightedPointsMap::insertPointFast(float x, float y, float z)
   // mark_as_modified(); -> Fast
 }
 
-void CWeightedPointsMap::impl_copyFrom(const CPointsMap& obj)
-{
-  // This also does a ::resize(N) of all data fields.
-  CPointsMap::base_copyFrom(obj);
-
-  const auto* pW = dynamic_cast<const CWeightedPointsMap*>(&obj);
-  if (pW)
-  {
-    pointWeight = pW->pointWeight;
-  }
-}
-
 /*---------------------------------------------------------------
             addFrom_classSpecific
  ---------------------------------------------------------------*/

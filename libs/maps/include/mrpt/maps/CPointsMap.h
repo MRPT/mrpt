@@ -194,7 +194,13 @@ class CPointsMap :
  protected:
   /** Virtual assignment operator, copies as much common data (XYZ, color,...)
    * as possible from the source map into this one. */
-  virtual void impl_copyFrom(const CPointsMap& obj) = 0;
+  virtual void impl_copyFrom(const CPointsMap& obj) final
+  {
+    const size_t N = obj.size();
+    this->clear();
+    this->reserve(N);
+    for (size_t i = 0; i < N; i++) insertPointFrom(obj, i);
+  }
 
   /** Auxiliary method called from within \a addFrom() automatically, to
    * finish the copying of class-specific data  */

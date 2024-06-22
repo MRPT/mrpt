@@ -86,12 +86,6 @@ void CSimplePointsMap::setSize(size_t newLength)
   mark_as_modified();
 }
 
-void CSimplePointsMap::impl_copyFrom(const CPointsMap& obj)
-{
-  // This also does a ::resize(N) of all data fields.
-  CPointsMap::base_copyFrom(obj);
-}
-
 uint8_t CSimplePointsMap::serializeGetVersion() const { return 10; }
 void CSimplePointsMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
