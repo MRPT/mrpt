@@ -436,16 +436,25 @@ bool CPointsMapXYZIRT::internal_insertObservation(
 
     std::vector<double> ts;
     ts.reserve(n);
-    double minT = 0, maxT = 0;
+    std::optional<double> minT, maxT;
     for (size_t i = 0; i < n; i++)
     {
       const double t = mrpt::Clock::toDouble(pc.timestamp[i]);
-      mrpt::keep_min(minT, t);
-      mrpt::keep_max(maxT, t);
+      if (!minT)
+      {
+        minT = t;
+        maxT = t;
+      }
+      else
+      {
+        mrpt::keep_min(*minT, t);
+        mrpt::keep_max(*maxT, t);
+      }
       ts.push_back(t);
     }
+
     // scale timestamps so the center is At=0:
-    const double Tmid = (minT + maxT) * 0.5;
+    const double Tmid = minT ? (*minT + *maxT) * 0.5 : .0;
     for (size_t i = 0; i < n; i++) ts[i] -= Tmid;
 
     for (size_t i = 0; i < n; i++)
