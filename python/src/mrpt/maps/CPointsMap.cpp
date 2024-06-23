@@ -108,7 +108,7 @@ struct PyCallBack_mrpt_maps_CPointsMap_TInsertionOptions : public mrpt::maps::CP
 	}
 };
 
-// mrpt::maps::CPointsMap::TLikelihoodOptions file:mrpt/maps/CPointsMap.h line:286
+// mrpt::maps::CPointsMap::TLikelihoodOptions file:mrpt/maps/CPointsMap.h line:285
 struct PyCallBack_mrpt_maps_CPointsMap_TLikelihoodOptions : public mrpt::maps::CPointsMap::TLikelihoodOptions {
 	using mrpt::maps::CPointsMap::TLikelihoodOptions::TLikelihoodOptions;
 
@@ -140,7 +140,7 @@ struct PyCallBack_mrpt_maps_CPointsMap_TLikelihoodOptions : public mrpt::maps::C
 	}
 };
 
-// mrpt::maps::CPointsMap::TRenderOptions file:mrpt/maps/CPointsMap.h line:320
+// mrpt::maps::CPointsMap::TRenderOptions file:mrpt/maps/CPointsMap.h line:318
 struct PyCallBack_mrpt_maps_CPointsMap_TRenderOptions : public mrpt::maps::CPointsMap::TRenderOptions {
 	using mrpt::maps::CPointsMap::TRenderOptions::TRenderOptions;
 
@@ -214,7 +214,7 @@ void bind_mrpt_maps_CPointsMap(std::function< pybind11::module &(std::string con
 		cl.def("setPoint", (void (mrpt::maps::CPointsMap::*)(size_t, const struct mrpt::math::TPoint3D_<double> &)) &mrpt::maps::CPointsMap::setPoint, "C++: mrpt::maps::CPointsMap::setPoint(size_t, const struct mrpt::math::TPoint3D_<double> &) --> void", pybind11::arg("index"), pybind11::arg("p"));
 		cl.def("setPoint", (void (mrpt::maps::CPointsMap::*)(size_t, float, float)) &mrpt::maps::CPointsMap::setPoint, "C++: mrpt::maps::CPointsMap::setPoint(size_t, float, float) --> void", pybind11::arg("index"), pybind11::arg("x"), pybind11::arg("y"));
 		cl.def("setPointRGB", (void (mrpt::maps::CPointsMap::*)(size_t, float, float, float, float, float, float)) &mrpt::maps::CPointsMap::setPointRGB, "overload (RGB data is ignored in classes without color information)\n\nC++: mrpt::maps::CPointsMap::setPointRGB(size_t, float, float, float, float, float, float) --> void", pybind11::arg("index"), pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"), pybind11::arg("R"), pybind11::arg("G"), pybind11::arg("B"));
-		cl.def("setPointWeight", (void (mrpt::maps::CPointsMap::*)(size_t, unsigned long)) &mrpt::maps::CPointsMap::setPointWeight, "Sets the point weight, which is ignored in all classes but those which\n actually store that field (Note: No checks are done for out-of-bounds\n index). \n\n getPointWeight\n\nC++: mrpt::maps::CPointsMap::setPointWeight(size_t, unsigned long) --> void", pybind11::arg("index"), pybind11::arg("w"));
+		cl.def("setPointWeight", (void (mrpt::maps::CPointsMap::*)(size_t, uint64_t)) &mrpt::maps::CPointsMap::setPointWeight, "Sets the point weight, which is ignored in all classes but those which\n actually store that field (Note: No checks are done for out-of-bounds\n index). \n\n getPointWeight\n\nC++: mrpt::maps::CPointsMap::setPointWeight(size_t, uint64_t) --> void", pybind11::arg("index"), pybind11::arg("w"));
 		cl.def("getPointWeight", (unsigned int (mrpt::maps::CPointsMap::*)(size_t) const) &mrpt::maps::CPointsMap::getPointWeight, "Gets the point weight, which is ignored in all classes (defaults to 1)\n but in those which actually store that field (Note: No checks are done\n for out-of-bounds index).  \n\n setPointWeight\n\nC++: mrpt::maps::CPointsMap::getPointWeight(size_t) const --> unsigned int", pybind11::arg("index"));
 		cl.def("hasField_Intensity", (bool (mrpt::maps::CPointsMap::*)() const) &mrpt::maps::CPointsMap::hasField_Intensity, "C++: mrpt::maps::CPointsMap::hasField_Intensity() const --> bool");
 		cl.def("hasField_Ring", (bool (mrpt::maps::CPointsMap::*)() const) &mrpt::maps::CPointsMap::hasField_Ring, "C++: mrpt::maps::CPointsMap::hasField_Ring() const --> bool");
@@ -259,7 +259,7 @@ void bind_mrpt_maps_CPointsMap(std::function< pybind11::module &(std::string con
 		cl.def("setHeightFilterLevels", (void (mrpt::maps::CPointsMap::*)(const double, const double)) &mrpt::maps::CPointsMap::setHeightFilterLevels, "Set the min/max Z levels for points to be actually inserted in the map\n (only if  was called before). \n\nC++: mrpt::maps::CPointsMap::setHeightFilterLevels(const double, const double) --> void", pybind11::arg("_z_min"), pybind11::arg("_z_max"));
 		cl.def("getHeightFilterLevels", (void (mrpt::maps::CPointsMap::*)(double &, double &) const) &mrpt::maps::CPointsMap::getHeightFilterLevels, "Get the min/max Z levels for points to be actually inserted in the map\n \n\n enableFilterByHeight, setHeightFilterLevels \n\nC++: mrpt::maps::CPointsMap::getHeightFilterLevels(double &, double &) const --> void", pybind11::arg("_z_min"), pybind11::arg("_z_max"));
 		cl.def("internal_computeObservationLikelihood", (double (mrpt::maps::CPointsMap::*)(const class mrpt::obs::CObservation &, const class mrpt::poses::CPose3D &) const) &mrpt::maps::CPointsMap::internal_computeObservationLikelihood, "@} \n\nC++: mrpt::maps::CPointsMap::internal_computeObservationLikelihood(const class mrpt::obs::CObservation &, const class mrpt::poses::CPose3D &) const --> double", pybind11::arg("obs"), pybind11::arg("takenFrom"));
-		cl.def("internal_computeObservationLikelihoodPointCloud3D", (double (mrpt::maps::CPointsMap::*)(const class mrpt::poses::CPose3D &, const float *, const float *, const float *, const unsigned long) const) &mrpt::maps::CPointsMap::internal_computeObservationLikelihoodPointCloud3D, "C++: mrpt::maps::CPointsMap::internal_computeObservationLikelihoodPointCloud3D(const class mrpt::poses::CPose3D &, const float *, const float *, const float *, const unsigned long) const --> double", pybind11::arg("pc_in_map"), pybind11::arg("xs"), pybind11::arg("ys"), pybind11::arg("zs"), pybind11::arg("num_pts"));
+		cl.def("internal_computeObservationLikelihoodPointCloud3D", (double (mrpt::maps::CPointsMap::*)(const class mrpt::poses::CPose3D &, const float *, const float *, const float *, const size_t) const) &mrpt::maps::CPointsMap::internal_computeObservationLikelihoodPointCloud3D, "C++: mrpt::maps::CPointsMap::internal_computeObservationLikelihoodPointCloud3D(const class mrpt::poses::CPose3D &, const float *, const float *, const float *, const size_t) const --> double", pybind11::arg("pc_in_map"), pybind11::arg("xs"), pybind11::arg("ys"), pybind11::arg("zs"), pybind11::arg("num_pts"));
 		cl.def("kdtree_get_point_count", (size_t (mrpt::maps::CPointsMap::*)() const) &mrpt::maps::CPointsMap::kdtree_get_point_count, "Must return the number of data points\n\nC++: mrpt::maps::CPointsMap::kdtree_get_point_count() const --> size_t");
 		cl.def("kdtree_get_pt", (float (mrpt::maps::CPointsMap::*)(size_t, int) const) &mrpt::maps::CPointsMap::kdtree_get_pt, "Returns the dim'th component of the idx'th point in the class:\n\nC++: mrpt::maps::CPointsMap::kdtree_get_pt(size_t, int) const --> float", pybind11::arg("idx"), pybind11::arg("dim"));
 		cl.def("kdtree_distance", (float (mrpt::maps::CPointsMap::*)(const float *, size_t, size_t) const) &mrpt::maps::CPointsMap::kdtree_distance, "Returns the distance between the vector \"p1[0:size-1]\" and the data\n point with index \"idx_p2\" stored in the class:\n\nC++: mrpt::maps::CPointsMap::kdtree_distance(const float *, size_t, size_t) const --> float", pybind11::arg("p1"), pybind11::arg("idx_p2"), pybind11::arg("size"));
@@ -293,7 +293,7 @@ void bind_mrpt_maps_CPointsMap(std::function< pybind11::module &(std::string con
 			cl.def("assign", (struct mrpt::maps::CPointsMap::TInsertionOptions & (mrpt::maps::CPointsMap::TInsertionOptions::*)(const struct mrpt::maps::CPointsMap::TInsertionOptions &)) &mrpt::maps::CPointsMap::TInsertionOptions::operator=, "C++: mrpt::maps::CPointsMap::TInsertionOptions::operator=(const struct mrpt::maps::CPointsMap::TInsertionOptions &) --> struct mrpt::maps::CPointsMap::TInsertionOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CPointsMap::TLikelihoodOptions file:mrpt/maps/CPointsMap.h line:286
+		{ // mrpt::maps::CPointsMap::TLikelihoodOptions file:mrpt/maps/CPointsMap.h line:285
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CPointsMap::TLikelihoodOptions, std::shared_ptr<mrpt::maps::CPointsMap::TLikelihoodOptions>, PyCallBack_mrpt_maps_CPointsMap_TLikelihoodOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TLikelihoodOptions", "Options used when evaluating \"computeObservationLikelihood\" in the\n derived classes.\n \n\n CObservation::computeObservationLikelihood");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CPointsMap::TLikelihoodOptions(); }, [](){ return new PyCallBack_mrpt_maps_CPointsMap_TLikelihoodOptions(); } ) );
@@ -308,7 +308,7 @@ void bind_mrpt_maps_CPointsMap(std::function< pybind11::module &(std::string con
 			cl.def("assign", (struct mrpt::maps::CPointsMap::TLikelihoodOptions & (mrpt::maps::CPointsMap::TLikelihoodOptions::*)(const struct mrpt::maps::CPointsMap::TLikelihoodOptions &)) &mrpt::maps::CPointsMap::TLikelihoodOptions::operator=, "C++: mrpt::maps::CPointsMap::TLikelihoodOptions::operator=(const struct mrpt::maps::CPointsMap::TLikelihoodOptions &) --> struct mrpt::maps::CPointsMap::TLikelihoodOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CPointsMap::TRenderOptions file:mrpt/maps/CPointsMap.h line:320
+		{ // mrpt::maps::CPointsMap::TRenderOptions file:mrpt/maps/CPointsMap.h line:318
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CPointsMap::TRenderOptions, std::shared_ptr<mrpt::maps::CPointsMap::TRenderOptions>, PyCallBack_mrpt_maps_CPointsMap_TRenderOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TRenderOptions", "Rendering options, used in getAs3DObject()");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CPointsMap::TRenderOptions(); }, [](){ return new PyCallBack_mrpt_maps_CPointsMap_TRenderOptions(); } ) );

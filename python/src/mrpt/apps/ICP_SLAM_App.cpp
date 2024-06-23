@@ -36,7 +36,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::apps::ICP_SLAM_App_Rawlog file:mrpt/apps/ICP_SLAM_App.h line:81
+// mrpt::apps::ICP_SLAM_App_Rawlog file:mrpt/apps/ICP_SLAM_App.h line:82
 struct PyCallBack_mrpt_apps_ICP_SLAM_App_Rawlog : public mrpt::apps::ICP_SLAM_App_Rawlog {
 	using mrpt::apps::ICP_SLAM_App_Rawlog::ICP_SLAM_App_Rawlog;
 
@@ -68,7 +68,7 @@ struct PyCallBack_mrpt_apps_ICP_SLAM_App_Rawlog : public mrpt::apps::ICP_SLAM_Ap
 	}
 };
 
-// mrpt::apps::ICP_SLAM_App_Live file:mrpt/apps/ICP_SLAM_App.h line:96
+// mrpt::apps::ICP_SLAM_App_Live file:mrpt/apps/ICP_SLAM_App.h line:94
 struct PyCallBack_mrpt_apps_ICP_SLAM_App_Live : public mrpt::apps::ICP_SLAM_App_Live {
 	using mrpt::apps::ICP_SLAM_App_Live::ICP_SLAM_App_Live;
 
@@ -110,11 +110,11 @@ void bind_mrpt_apps_ICP_SLAM_App(std::function< pybind11::module &(std::string c
 		cl.def("run", (void (mrpt::apps::ICP_SLAM_App_Base::*)()) &mrpt::apps::ICP_SLAM_App_Base::run, "Runs with the current parameter set. Throws on errors. \n\nC++: mrpt::apps::ICP_SLAM_App_Base::run() --> void");
 		cl.def("assign", (class mrpt::apps::ICP_SLAM_App_Base & (mrpt::apps::ICP_SLAM_App_Base::*)(const class mrpt::apps::ICP_SLAM_App_Base &)) &mrpt::apps::ICP_SLAM_App_Base::operator=, "C++: mrpt::apps::ICP_SLAM_App_Base::operator=(const class mrpt::apps::ICP_SLAM_App_Base &) --> class mrpt::apps::ICP_SLAM_App_Base &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::apps::ICP_SLAM_App_Rawlog file:mrpt/apps/ICP_SLAM_App.h line:81
+	{ // mrpt::apps::ICP_SLAM_App_Rawlog file:mrpt/apps/ICP_SLAM_App.h line:82
 		pybind11::class_<mrpt::apps::ICP_SLAM_App_Rawlog, std::shared_ptr<mrpt::apps::ICP_SLAM_App_Rawlog>, PyCallBack_mrpt_apps_ICP_SLAM_App_Rawlog, mrpt::apps::ICP_SLAM_App_Base, mrpt::apps::DataSourceRawlog> cl(M("mrpt::apps"), "ICP_SLAM_App_Rawlog", "Instance of ICP_SLAM_App_Base to run mapping from an offline dataset file.");
 		cl.def( pybind11::init( [](){ return new mrpt::apps::ICP_SLAM_App_Rawlog(); }, [](){ return new PyCallBack_mrpt_apps_ICP_SLAM_App_Rawlog(); } ) );
 	}
-	{ // mrpt::apps::ICP_SLAM_App_Live file:mrpt/apps/ICP_SLAM_App.h line:96
+	{ // mrpt::apps::ICP_SLAM_App_Live file:mrpt/apps/ICP_SLAM_App.h line:94
 		pybind11::class_<mrpt::apps::ICP_SLAM_App_Live, std::shared_ptr<mrpt::apps::ICP_SLAM_App_Live>, PyCallBack_mrpt_apps_ICP_SLAM_App_Live, mrpt::apps::ICP_SLAM_App_Base> cl(M("mrpt::apps"), "ICP_SLAM_App_Live", "Instance of ICP_SLAM_App_Base to run mapping from a live LIDAR sensor.");
 		cl.def( pybind11::init( [](){ return new mrpt::apps::ICP_SLAM_App_Live(); }, [](){ return new PyCallBack_mrpt_apps_ICP_SLAM_App_Live(); } ) );
 	}

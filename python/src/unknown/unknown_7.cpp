@@ -204,7 +204,7 @@ struct PyCallBack_mrpt_obs_gnss_Message_TOPCON_PZS : public mrpt::obs::gnss::Mes
 	}
 };
 
-// mrpt::obs::gnss::Message_TOPCON_SATS file: line:90
+// mrpt::obs::gnss::Message_TOPCON_SATS file: line:87
 struct PyCallBack_mrpt_obs_gnss_Message_TOPCON_SATS : public mrpt::obs::gnss::Message_TOPCON_SATS {
 	using mrpt::obs::gnss::Message_TOPCON_SATS::Message_TOPCON_SATS;
 
@@ -260,7 +260,7 @@ void bind_unknown_unknown_7(std::function< pybind11::module &(std::string const 
 		cl.def("fixEndianness", (void (mrpt::obs::gnss::Message_NV_OEM6_MARKTIME::*)()) &mrpt::obs::gnss::Message_NV_OEM6_MARKTIME::fixEndianness, "C++: mrpt::obs::gnss::Message_NV_OEM6_MARKTIME::fixEndianness() --> void");
 		cl.def("assign", (struct mrpt::obs::gnss::Message_NV_OEM6_MARKTIME & (mrpt::obs::gnss::Message_NV_OEM6_MARKTIME::*)(const struct mrpt::obs::gnss::Message_NV_OEM6_MARKTIME &)) &mrpt::obs::gnss::Message_NV_OEM6_MARKTIME::operator=, "C++: mrpt::obs::gnss::Message_NV_OEM6_MARKTIME::operator=(const struct mrpt::obs::gnss::Message_NV_OEM6_MARKTIME &) --> struct mrpt::obs::gnss::Message_NV_OEM6_MARKTIME &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::obs::gnss::Message_NV_OEM6_MARKTIME::content_t file: line:137
+		{ // mrpt::obs::gnss::Message_NV_OEM6_MARKTIME::content_t file: line:122
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::gnss::Message_NV_OEM6_MARKTIME::content_t, std::shared_ptr<mrpt::obs::gnss::Message_NV_OEM6_MARKTIME::content_t>> cl(enclosing_class, "content_t", "");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NV_OEM6_MARKTIME::content_t(); } ) );
@@ -286,7 +286,7 @@ void bind_unknown_unknown_7(std::function< pybind11::module &(std::string const 
 		cl.def("fixEndianness", (void (mrpt::obs::gnss::Message_NV_OEM6_MARK2TIME::*)()) &mrpt::obs::gnss::Message_NV_OEM6_MARK2TIME::fixEndianness, "C++: mrpt::obs::gnss::Message_NV_OEM6_MARK2TIME::fixEndianness() --> void");
 		cl.def("assign", (struct mrpt::obs::gnss::Message_NV_OEM6_MARK2TIME & (mrpt::obs::gnss::Message_NV_OEM6_MARK2TIME::*)(const struct mrpt::obs::gnss::Message_NV_OEM6_MARK2TIME &)) &mrpt::obs::gnss::Message_NV_OEM6_MARK2TIME::operator=, "C++: mrpt::obs::gnss::Message_NV_OEM6_MARK2TIME::operator=(const struct mrpt::obs::gnss::Message_NV_OEM6_MARK2TIME &) --> struct mrpt::obs::gnss::Message_NV_OEM6_MARK2TIME &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::obs::gnss::Message_NV_OEM6_MARK2TIME::content_t file: line:137
+		{ // mrpt::obs::gnss::Message_NV_OEM6_MARK2TIME::content_t file: line:122
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::gnss::Message_NV_OEM6_MARK2TIME::content_t, std::shared_ptr<mrpt::obs::gnss::Message_NV_OEM6_MARK2TIME::content_t>> cl(enclosing_class, "content_t", "");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NV_OEM6_MARK2TIME::content_t(); } ) );
@@ -312,7 +312,7 @@ void bind_unknown_unknown_7(std::function< pybind11::module &(std::string const 
 		cl.def("fixEndianness", (void (mrpt::obs::gnss::Message_NV_OEM6_IONUTC::*)()) &mrpt::obs::gnss::Message_NV_OEM6_IONUTC::fixEndianness, "C++: mrpt::obs::gnss::Message_NV_OEM6_IONUTC::fixEndianness() --> void");
 		cl.def("assign", (struct mrpt::obs::gnss::Message_NV_OEM6_IONUTC & (mrpt::obs::gnss::Message_NV_OEM6_IONUTC::*)(const struct mrpt::obs::gnss::Message_NV_OEM6_IONUTC &)) &mrpt::obs::gnss::Message_NV_OEM6_IONUTC::operator=, "C++: mrpt::obs::gnss::Message_NV_OEM6_IONUTC::operator=(const struct mrpt::obs::gnss::Message_NV_OEM6_IONUTC &) --> struct mrpt::obs::gnss::Message_NV_OEM6_IONUTC &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::obs::gnss::Message_NV_OEM6_IONUTC::content_t file: line:137
+		{ // mrpt::obs::gnss::Message_NV_OEM6_IONUTC::content_t file: line:122
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::gnss::Message_NV_OEM6_IONUTC::content_t, std::shared_ptr<mrpt::obs::gnss::Message_NV_OEM6_IONUTC::content_t>> cl(enclosing_class, "content_t", "");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NV_OEM6_IONUTC::content_t(); } ) );
@@ -373,7 +373,7 @@ void bind_unknown_unknown_7(std::function< pybind11::module &(std::string const 
 		cl.def_readwrite("stats_rtk_fix_progress", &mrpt::obs::gnss::Message_TOPCON_PZS::stats_rtk_fix_progress);
 		cl.def("assign", (struct mrpt::obs::gnss::Message_TOPCON_PZS & (mrpt::obs::gnss::Message_TOPCON_PZS::*)(const struct mrpt::obs::gnss::Message_TOPCON_PZS &)) &mrpt::obs::gnss::Message_TOPCON_PZS::operator=, "C++: mrpt::obs::gnss::Message_TOPCON_PZS::operator=(const struct mrpt::obs::gnss::Message_TOPCON_PZS &) --> struct mrpt::obs::gnss::Message_TOPCON_PZS &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::obs::gnss::Message_TOPCON_SATS file: line:90
+	{ // mrpt::obs::gnss::Message_TOPCON_SATS file: line:87
 		pybind11::class_<mrpt::obs::gnss::Message_TOPCON_SATS, std::shared_ptr<mrpt::obs::gnss::Message_TOPCON_SATS>, PyCallBack_mrpt_obs_gnss_Message_TOPCON_SATS, mrpt::obs::gnss::gnss_message> cl(M("mrpt::obs::gnss"), "Message_TOPCON_SATS", "TopCon mmGPS devices: SATS, a generic structure for statistics about tracked\n satelites and their positions. \n\n mrpt::obs::CObservationGPS   ");
 		cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_TOPCON_SATS(); }, [](){ return new PyCallBack_mrpt_obs_gnss_Message_TOPCON_SATS(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_gnss_Message_TOPCON_SATS const &o){ return new PyCallBack_mrpt_obs_gnss_Message_TOPCON_SATS(o); } ) );

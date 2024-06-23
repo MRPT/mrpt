@@ -138,6 +138,16 @@ macro(SuiteSparse_FIND_COMPONENTS )
 			set(suitesparseComp_ALT "cs") # Alternative name of CXSparse
 		endif()
 
+
+		if (APPLE)
+			# /opt/homebrew/Cellar/suite-sparse/7.7.0/include/suitesparse/cs.h
+			file(GLOB_RECURSE SUITESPARSE_CS_H_FILE /opt/homebrew/Cellar/cs.h)
+			get_filename_component(SUITESPARSE_CS_H_DIR "${SUITESPARSE_CS_H_FILE}" DIRECTORY)
+
+			message(STATUS "SUITESPARSE_CS_H_DIR: ${SUITESPARSE_CS_H_DIR}")
+		endif()
+		
+
 		## try to find include dir (looking for very important header file)
 		find_path(SuiteSparse_${suitesparseCompUC}_INCLUDE_DIR	
 			NAMES 			${suitesparseComp}.h ${suitesparseCompLC}.h ${suitesparseCompUC}.h ${suitesparseComp_ALT}.h
@@ -157,6 +167,7 @@ macro(SuiteSparse_FIND_COMPONENTS )
 						${${suitesparseCompUC}_DIR}/include
 						${${suitesparseCompUC}_DIR}/${suitesparseComp}/include
 						${${suitesparseCompUC}_DIR}
+						${SUITESPARSE_CS_H_DIR}/
 		)
 		## check if found
 		if(NOT SuiteSparse_${suitesparseCompUC}_INCLUDE_DIR)

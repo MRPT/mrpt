@@ -27,7 +27,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::nav::CLogFileRecord_ND file:mrpt/nav/holonomic/CHolonomicND.h line:164
+// mrpt::nav::CLogFileRecord_ND file:mrpt/nav/holonomic/CHolonomicND.h line:167
 struct PyCallBack_mrpt_nav_CLogFileRecord_ND : public mrpt::nav::CLogFileRecord_ND {
 	using mrpt::nav::CLogFileRecord_ND::CLogFileRecord_ND;
 
@@ -113,7 +113,7 @@ struct PyCallBack_mrpt_nav_CLogFileRecord_ND : public mrpt::nav::CLogFileRecord_
 
 void bind_mrpt_nav_holonomic_CHolonomicND(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::nav::CLogFileRecord_ND file:mrpt/nav/holonomic/CHolonomicND.h line:164
+	{ // mrpt::nav::CLogFileRecord_ND file:mrpt/nav/holonomic/CHolonomicND.h line:167
 		pybind11::class_<mrpt::nav::CLogFileRecord_ND, std::shared_ptr<mrpt::nav::CLogFileRecord_ND>, PyCallBack_mrpt_nav_CLogFileRecord_ND, mrpt::nav::CHolonomicLogFileRecord> cl(M("mrpt::nav"), "CLogFileRecord_ND", "A class for storing extra information about the execution of\n    CHolonomicND navigation.\n \n\n CHolonomicND, CHolonomicLogFileRecord");
 		cl.def( pybind11::init( [](){ return new mrpt::nav::CLogFileRecord_ND(); }, [](){ return new PyCallBack_mrpt_nav_CLogFileRecord_ND(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_nav_CLogFileRecord_ND const &o){ return new PyCallBack_mrpt_nav_CLogFileRecord_ND(o); } ) );

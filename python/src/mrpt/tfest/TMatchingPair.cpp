@@ -36,7 +36,7 @@
 
 void bind_mrpt_tfest_TMatchingPair(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::tfest::TMatchingPairListTempl file:mrpt/tfest/TMatchingPair.h line:128
+	{ // mrpt::tfest::TMatchingPairListTempl file:mrpt/tfest/TMatchingPair.h line:129
 		pybind11::class_<mrpt::tfest::TMatchingPairListTempl<float>, std::shared_ptr<mrpt::tfest::TMatchingPairListTempl<float>>> cl(M("mrpt::tfest"), "TMatchingPairListTempl_float_t", "");
 		cl.def( pybind11::init( [](mrpt::tfest::TMatchingPairListTempl<float> const &o){ return new mrpt::tfest::TMatchingPairListTempl<float>(o); } ) );
 		cl.def( pybind11::init( [](){ return new mrpt::tfest::TMatchingPairListTempl<float>(); } ) );

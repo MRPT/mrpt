@@ -116,8 +116,6 @@ class CPointsMapXYZIRT : public CPointsMap
 
  protected:
   // See base class
-  void impl_copyFrom(const CPointsMap& obj) override;
-  // See base class
   void addFrom_classSpecific(
       const CPointsMap& anotherMap,
       size_t nPreviousPoints,
@@ -266,6 +264,13 @@ class CPointsMapXYZIRT : public CPointsMap
 
 	/** Clear the map, erasing all the points */
 	void internal_clear() override;
+ 
+  /** Redefinition to handle Velodyne Scan observations and generate per-point timestamps */
+	bool internal_insertObservation(
+		const mrpt::obs::CObservation& obs,
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) override;
+
 
 	/** @name Redefinition of PLY Import virtual methods from CPointsMap
 		@{ */

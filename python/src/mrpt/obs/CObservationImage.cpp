@@ -246,7 +246,7 @@ struct PyCallBack_mrpt_obs_CObservationImage : public mrpt::obs::CObservationIma
 void bind_mrpt_obs_CObservationImage(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
 	{ // mrpt::obs::CObservationImage file:mrpt/obs/CObservationImage.h line:32
-		pybind11::class_<mrpt::obs::CObservationImage, std::shared_ptr<mrpt::obs::CObservationImage>, PyCallBack_mrpt_obs_CObservationImage, mrpt::obs::CObservation> cl(M("mrpt::obs"), "CObservationImage", "Declares a class derived from \"CObservation\" that encapsules an image from a\n camera, whose relative pose to robot is also stored.\n	 The next figure illustrate the coordinates reference systems involved in\n this class:\n	 <center>\n	 \n	 </center>\n\n \n CObservation, CObservationStereoImages\n \n\n\n ");
+		pybind11::class_<mrpt::obs::CObservationImage, std::shared_ptr<mrpt::obs::CObservationImage>, PyCallBack_mrpt_obs_CObservationImage, mrpt::obs::CObservation> cl(M("mrpt::obs"), "CObservationImage", "Declares a class derived from \"CObservation\" that encapsules an image from a\n camera, whose relative pose to robot is also stored.\n   The next figure illustrate the coordinates reference systems involved in\n this class:\n   <center>\n   \n   </center>\n\n \n CObservation, CObservationStereoImages\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::obs::CObservationImage(); }, [](){ return new PyCallBack_mrpt_obs_CObservationImage(); } ) );
 		cl.def_readwrite("cameraPose", &mrpt::obs::CObservationImage::cameraPose);
 		cl.def_readwrite("cameraParams", &mrpt::obs::CObservationImage::cameraParams);

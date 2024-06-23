@@ -532,7 +532,7 @@ struct PyCallBack_mrpt_maps_COctoMap : public mrpt::maps::COctoMap {
 	}
 };
 
-// mrpt::maps::COctoMap::TMapDefinition file: line:85
+// mrpt::maps::COctoMap::TMapDefinition file: line:78
 struct PyCallBack_mrpt_maps_COctoMap_TMapDefinition : public mrpt::maps::COctoMap::TMapDefinition {
 	using mrpt::maps::COctoMap::TMapDefinition::TMapDefinition;
 
@@ -716,19 +716,6 @@ struct PyCallBack_mrpt_maps_CSimplePointsMap : public mrpt::maps::CSimplePointsM
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
 		return CSimplePointsMap::insertPointFast(a0, a1, a2);
-	}
-	void impl_copyFrom(const class mrpt::maps::CPointsMap & a0) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "impl_copyFrom");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CSimplePointsMap::impl_copyFrom(a0);
 	}
 	void addFrom_classSpecific(const class mrpt::maps::CPointsMap & a0, size_t a1, const bool a2) override {
 		pybind11::gil_scoped_acquire gil;
@@ -1252,7 +1239,7 @@ struct PyCallBack_mrpt_maps_CSimplePointsMap : public mrpt::maps::CSimplePointsM
 	}
 };
 
-// mrpt::maps::CSimplePointsMap::TMapDefinition file: line:85
+// mrpt::maps::CSimplePointsMap::TMapDefinition file: line:78
 struct PyCallBack_mrpt_maps_CSimplePointsMap_TMapDefinition : public mrpt::maps::CSimplePointsMap::TMapDefinition {
 	using mrpt::maps::CSimplePointsMap::TMapDefinition::TMapDefinition;
 
@@ -1344,12 +1331,12 @@ void bind_mrpt_maps_COctoMap(std::function< pybind11::module &(std::string const
 		cl.def("getClampingThresMaxLog", (float (mrpt::maps::COctoMap::*)() const) &mrpt::maps::COctoMap::getClampingThresMaxLog, "C++: mrpt::maps::COctoMap::getClampingThresMaxLog() const --> float");
 		cl.def("assign", (class mrpt::maps::COctoMap & (mrpt::maps::COctoMap::*)(const class mrpt::maps::COctoMap &)) &mrpt::maps::COctoMap::operator=, "C++: mrpt::maps::COctoMap::operator=(const class mrpt::maps::COctoMap &) --> class mrpt::maps::COctoMap &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::maps::COctoMap::TMapDefinitionBase file: line:80
+		{ // mrpt::maps::COctoMap::TMapDefinitionBase file: line:74
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::COctoMap::TMapDefinitionBase, std::shared_ptr<mrpt::maps::COctoMap::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::COctoMap::TMapDefinition file: line:85
+		{ // mrpt::maps::COctoMap::TMapDefinition file: line:78
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::COctoMap::TMapDefinition, std::shared_ptr<mrpt::maps::COctoMap::TMapDefinition>, PyCallBack_mrpt_maps_COctoMap_TMapDefinition, mrpt::maps::COctoMap::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::COctoMap::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_COctoMap_TMapDefinition(); } ) );
@@ -1391,19 +1378,19 @@ void bind_mrpt_maps_COctoMap(std::function< pybind11::module &(std::string const
 		cl.def_static("CreateObject", (class std::shared_ptr<class mrpt::rtti::CObject> (*)()) &mrpt::maps::CSimplePointsMap::CreateObject, "C++: mrpt::maps::CSimplePointsMap::CreateObject() --> class std::shared_ptr<class mrpt::rtti::CObject>");
 		cl.def("assign", (class mrpt::maps::CSimplePointsMap & (mrpt::maps::CSimplePointsMap::*)(const class mrpt::maps::CPointsMap &)) &mrpt::maps::CSimplePointsMap::operator=, "C++: mrpt::maps::CSimplePointsMap::operator=(const class mrpt::maps::CPointsMap &) --> class mrpt::maps::CSimplePointsMap &", pybind11::return_value_policy::automatic, pybind11::arg("o"));
 		cl.def("assign", (class mrpt::maps::CSimplePointsMap & (mrpt::maps::CSimplePointsMap::*)(const class mrpt::maps::CSimplePointsMap &)) &mrpt::maps::CSimplePointsMap::operator=, "C++: mrpt::maps::CSimplePointsMap::operator=(const class mrpt::maps::CSimplePointsMap &) --> class mrpt::maps::CSimplePointsMap &", pybind11::return_value_policy::automatic, pybind11::arg("o"));
-		cl.def("reserve", (void (mrpt::maps::CSimplePointsMap::*)(size_t)) &mrpt::maps::CSimplePointsMap::reserve, "	   from CPointsMap\n		@{ \n\nC++: mrpt::maps::CSimplePointsMap::reserve(size_t) --> void", pybind11::arg("newLength"));
+		cl.def("reserve", (void (mrpt::maps::CSimplePointsMap::*)(size_t)) &mrpt::maps::CSimplePointsMap::reserve, "from CPointsMap\n    @{ \n\nC++: mrpt::maps::CSimplePointsMap::reserve(size_t) --> void", pybind11::arg("newLength"));
 		cl.def("resize", (void (mrpt::maps::CSimplePointsMap::*)(size_t)) &mrpt::maps::CSimplePointsMap::resize, "C++: mrpt::maps::CSimplePointsMap::resize(size_t) --> void", pybind11::arg("newLength"));
 		cl.def("setSize", (void (mrpt::maps::CSimplePointsMap::*)(size_t)) &mrpt::maps::CSimplePointsMap::setSize, "C++: mrpt::maps::CSimplePointsMap::setSize(size_t) --> void", pybind11::arg("newLength"));
 		cl.def("insertPointFast", [](mrpt::maps::CSimplePointsMap &o, float const & a0, float const & a1) -> void { return o.insertPointFast(a0, a1); }, "", pybind11::arg("x"), pybind11::arg("y"));
 		cl.def("insertPointFast", (void (mrpt::maps::CSimplePointsMap::*)(float, float, float)) &mrpt::maps::CSimplePointsMap::insertPointFast, "The virtual method for  *without* calling\n mark_as_modified()   \n\nC++: mrpt::maps::CSimplePointsMap::insertPointFast(float, float, float) --> void", pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"));
 		cl.def("getAsSimplePointsMap", (const class mrpt::maps::CSimplePointsMap * (mrpt::maps::CSimplePointsMap::*)() const) &mrpt::maps::CSimplePointsMap::getAsSimplePointsMap, "@} \n\nC++: mrpt::maps::CSimplePointsMap::getAsSimplePointsMap() const --> const class mrpt::maps::CSimplePointsMap *", pybind11::return_value_policy::automatic);
 
-		{ // mrpt::maps::CSimplePointsMap::TMapDefinitionBase file: line:80
+		{ // mrpt::maps::CSimplePointsMap::TMapDefinitionBase file: line:74
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CSimplePointsMap::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CSimplePointsMap::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CSimplePointsMap::TMapDefinition file: line:85
+		{ // mrpt::maps::CSimplePointsMap::TMapDefinition file: line:78
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CSimplePointsMap::TMapDefinition, std::shared_ptr<mrpt::maps::CSimplePointsMap::TMapDefinition>, PyCallBack_mrpt_maps_CSimplePointsMap_TMapDefinition, mrpt::maps::CSimplePointsMap::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CSimplePointsMap::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CSimplePointsMap_TMapDefinition(); } ) );

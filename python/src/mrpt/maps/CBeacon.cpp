@@ -521,7 +521,7 @@ struct PyCallBack_mrpt_maps_CBeaconMap : public mrpt::maps::CBeaconMap {
 	}
 };
 
-// mrpt::maps::CBeaconMap::TLikelihoodOptions file:mrpt/maps/CBeaconMap.h line:114
+// mrpt::maps::CBeaconMap::TLikelihoodOptions file:mrpt/maps/CBeaconMap.h line:112
 struct PyCallBack_mrpt_maps_CBeaconMap_TLikelihoodOptions : public mrpt::maps::CBeaconMap::TLikelihoodOptions {
 	using mrpt::maps::CBeaconMap::TLikelihoodOptions::TLikelihoodOptions;
 
@@ -553,7 +553,7 @@ struct PyCallBack_mrpt_maps_CBeaconMap_TLikelihoodOptions : public mrpt::maps::C
 	}
 };
 
-// mrpt::maps::CBeaconMap::TInsertionOptions file:mrpt/maps/CBeaconMap.h line:132
+// mrpt::maps::CBeaconMap::TInsertionOptions file:mrpt/maps/CBeaconMap.h line:129
 struct PyCallBack_mrpt_maps_CBeaconMap_TInsertionOptions : public mrpt::maps::CBeaconMap::TInsertionOptions {
 	using mrpt::maps::CBeaconMap::TInsertionOptions::TInsertionOptions;
 
@@ -585,7 +585,7 @@ struct PyCallBack_mrpt_maps_CBeaconMap_TInsertionOptions : public mrpt::maps::CB
 	}
 };
 
-// mrpt::maps::CBeaconMap::TMapDefinition file: line:85
+// mrpt::maps::CBeaconMap::TMapDefinition file: line:78
 struct PyCallBack_mrpt_maps_CBeaconMap_TMapDefinition : public mrpt::maps::CBeaconMap::TMapDefinition {
 	using mrpt::maps::CBeaconMap::TMapDefinition::TMapDefinition;
 
@@ -705,7 +705,7 @@ void bind_mrpt_maps_CBeacon(std::function< pybind11::module &(std::string const 
 		cl.def("getBeaconByID", (class mrpt::maps::CBeacon * (mrpt::maps::CBeaconMap::*)(int64_t)) &mrpt::maps::CBeaconMap::getBeaconByID, "Returns a pointer to the beacon with the given ID, or nullptr if it does\n not exist. \n\nC++: mrpt::maps::CBeaconMap::getBeaconByID(int64_t) --> class mrpt::maps::CBeacon *", pybind11::return_value_policy::automatic, pybind11::arg("id"));
 		cl.def("assign", (class mrpt::maps::CBeaconMap & (mrpt::maps::CBeaconMap::*)(const class mrpt::maps::CBeaconMap &)) &mrpt::maps::CBeaconMap::operator=, "C++: mrpt::maps::CBeaconMap::operator=(const class mrpt::maps::CBeaconMap &) --> class mrpt::maps::CBeaconMap &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::maps::CBeaconMap::TLikelihoodOptions file:mrpt/maps/CBeaconMap.h line:114
+		{ // mrpt::maps::CBeaconMap::TLikelihoodOptions file:mrpt/maps/CBeaconMap.h line:112
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CBeaconMap::TLikelihoodOptions, std::shared_ptr<mrpt::maps::CBeaconMap::TLikelihoodOptions>, PyCallBack_mrpt_maps_CBeaconMap_TLikelihoodOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TLikelihoodOptions", "With this struct options are provided to the likelihood computations ");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CBeaconMap::TLikelihoodOptions(); }, [](){ return new PyCallBack_mrpt_maps_CBeaconMap_TLikelihoodOptions(); } ) );
@@ -716,7 +716,7 @@ void bind_mrpt_maps_CBeacon(std::function< pybind11::module &(std::string const 
 			cl.def("assign", (struct mrpt::maps::CBeaconMap::TLikelihoodOptions & (mrpt::maps::CBeaconMap::TLikelihoodOptions::*)(const struct mrpt::maps::CBeaconMap::TLikelihoodOptions &)) &mrpt::maps::CBeaconMap::TLikelihoodOptions::operator=, "C++: mrpt::maps::CBeaconMap::TLikelihoodOptions::operator=(const struct mrpt::maps::CBeaconMap::TLikelihoodOptions &) --> struct mrpt::maps::CBeaconMap::TLikelihoodOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CBeaconMap::TInsertionOptions file:mrpt/maps/CBeaconMap.h line:132
+		{ // mrpt::maps::CBeaconMap::TInsertionOptions file:mrpt/maps/CBeaconMap.h line:129
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CBeaconMap::TInsertionOptions, std::shared_ptr<mrpt::maps::CBeaconMap::TInsertionOptions>, PyCallBack_mrpt_maps_CBeaconMap_TInsertionOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TInsertionOptions", "This struct contains data for choosing the method by which new beacons\n are inserted in the map.");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CBeaconMap::TInsertionOptions(); }, [](){ return new PyCallBack_mrpt_maps_CBeaconMap_TInsertionOptions(); } ) );
@@ -737,12 +737,12 @@ void bind_mrpt_maps_CBeacon(std::function< pybind11::module &(std::string const 
 			cl.def("assign", (struct mrpt::maps::CBeaconMap::TInsertionOptions & (mrpt::maps::CBeaconMap::TInsertionOptions::*)(const struct mrpt::maps::CBeaconMap::TInsertionOptions &)) &mrpt::maps::CBeaconMap::TInsertionOptions::operator=, "C++: mrpt::maps::CBeaconMap::TInsertionOptions::operator=(const struct mrpt::maps::CBeaconMap::TInsertionOptions &) --> struct mrpt::maps::CBeaconMap::TInsertionOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CBeaconMap::TMapDefinitionBase file: line:80
+		{ // mrpt::maps::CBeaconMap::TMapDefinitionBase file: line:74
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CBeaconMap::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CBeaconMap::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CBeaconMap::TMapDefinition file: line:85
+		{ // mrpt::maps::CBeaconMap::TMapDefinition file: line:78
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CBeaconMap::TMapDefinition, std::shared_ptr<mrpt::maps::CBeaconMap::TMapDefinition>, PyCallBack_mrpt_maps_CBeaconMap_TMapDefinition, mrpt::maps::CBeaconMap::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CBeaconMap::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CBeaconMap_TMapDefinition(); } ) );

@@ -389,7 +389,7 @@ void bind_mrpt_opengl_COctoMapVoxels(std::function< pybind11::module &(std::stri
 		cl.def("internalBoundingBoxLocal", (struct mrpt::math::TBoundingBox_<float> (mrpt::opengl::COctoMapVoxels::*)() const) &mrpt::opengl::COctoMapVoxels::internalBoundingBoxLocal, "C++: mrpt::opengl::COctoMapVoxels::internalBoundingBoxLocal() const --> struct mrpt::math::TBoundingBox_<float>");
 		cl.def("assign", (class mrpt::opengl::COctoMapVoxels & (mrpt::opengl::COctoMapVoxels::*)(const class mrpt::opengl::COctoMapVoxels &)) &mrpt::opengl::COctoMapVoxels::operator=, "C++: mrpt::opengl::COctoMapVoxels::operator=(const class mrpt::opengl::COctoMapVoxels &) --> class mrpt::opengl::COctoMapVoxels &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::opengl::COctoMapVoxels::TVoxel file:mrpt/opengl/COctoMapVoxels.h line:96
+		{ // mrpt::opengl::COctoMapVoxels::TVoxel file:mrpt/opengl/COctoMapVoxels.h line:97
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::opengl::COctoMapVoxels::TVoxel, std::shared_ptr<mrpt::opengl::COctoMapVoxels::TVoxel>> cl(enclosing_class, "TVoxel", "The info of each of the voxels ");
 			cl.def( pybind11::init( [](){ return new mrpt::opengl::COctoMapVoxels::TVoxel(); } ) );
@@ -414,7 +414,7 @@ void bind_mrpt_opengl_COctoMapVoxels(std::function< pybind11::module &(std::stri
 			cl.def("assign", (struct mrpt::opengl::COctoMapVoxels::TGridCube & (mrpt::opengl::COctoMapVoxels::TGridCube::*)(const struct mrpt::opengl::COctoMapVoxels::TGridCube &)) &mrpt::opengl::COctoMapVoxels::TGridCube::operator=, "C++: mrpt::opengl::COctoMapVoxels::TGridCube::operator=(const struct mrpt::opengl::COctoMapVoxels::TGridCube &) --> struct mrpt::opengl::COctoMapVoxels::TGridCube &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::opengl::COctoMapVoxels::TInfoPerVoxelSet file:mrpt/opengl/COctoMapVoxels.h line:126
+		{ // mrpt::opengl::COctoMapVoxels::TInfoPerVoxelSet file:mrpt/opengl/COctoMapVoxels.h line:124
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::opengl::COctoMapVoxels::TInfoPerVoxelSet, std::shared_ptr<mrpt::opengl::COctoMapVoxels::TInfoPerVoxelSet>> cl(enclosing_class, "TInfoPerVoxelSet", "");
 			cl.def( pybind11::init( [](){ return new mrpt::opengl::COctoMapVoxels::TInfoPerVoxelSet(); } ) );

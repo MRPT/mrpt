@@ -37,7 +37,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::kinematics::CKinematicChain file:mrpt/kinematics/CKinematicChain.h line:74
+// mrpt::kinematics::CKinematicChain file:mrpt/kinematics/CKinematicChain.h line:68
 struct PyCallBack_mrpt_kinematics_CKinematicChain : public mrpt::kinematics::CKinematicChain {
 	using mrpt::kinematics::CKinematicChain::CKinematicChain;
 
@@ -121,7 +121,7 @@ void bind_mrpt_kinematics_CKinematicChain(std::function< pybind11::module &(std:
 		cl.def_readwrite("alpha", &mrpt::kinematics::TKinematicLink::alpha);
 		cl.def_readwrite("is_prismatic", &mrpt::kinematics::TKinematicLink::is_prismatic);
 	}
-	{ // mrpt::kinematics::CKinematicChain file:mrpt/kinematics/CKinematicChain.h line:74
+	{ // mrpt::kinematics::CKinematicChain file:mrpt/kinematics/CKinematicChain.h line:68
 		pybind11::class_<mrpt::kinematics::CKinematicChain, std::shared_ptr<mrpt::kinematics::CKinematicChain>, PyCallBack_mrpt_kinematics_CKinematicChain, mrpt::serialization::CSerializable> cl(M("mrpt::kinematics"), "CKinematicChain", "A open-loop kinematic chain model, suitable to robotic manipulators.\n  Each link is parameterized with standard Denavit-Hartenberg standard\n parameterization [theta, d, a, alpha].\n\n  The orientation of the first link can be modified with setOriginPose(),\n which defaults to standard XYZ axes with +Z pointing upwards.\n\n \n CPose3D\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::kinematics::CKinematicChain(); }, [](){ return new PyCallBack_mrpt_kinematics_CKinematicChain(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_kinematics_CKinematicChain const &o){ return new PyCallBack_mrpt_kinematics_CKinematicChain(o); } ) );

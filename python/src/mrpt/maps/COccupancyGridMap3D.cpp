@@ -408,7 +408,7 @@ struct PyCallBack_mrpt_maps_COccupancyGridMap3D : public mrpt::maps::COccupancyG
 	}
 };
 
-// mrpt::maps::COccupancyGridMap3D::TInsertionOptions file:mrpt/maps/COccupancyGridMap3D.h line:221
+// mrpt::maps::COccupancyGridMap3D::TInsertionOptions file:mrpt/maps/COccupancyGridMap3D.h line:202
 struct PyCallBack_mrpt_maps_COccupancyGridMap3D_TInsertionOptions : public mrpt::maps::COccupancyGridMap3D::TInsertionOptions {
 	using mrpt::maps::COccupancyGridMap3D::TInsertionOptions::TInsertionOptions;
 
@@ -440,7 +440,7 @@ struct PyCallBack_mrpt_maps_COccupancyGridMap3D_TInsertionOptions : public mrpt:
 	}
 };
 
-// mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions file:mrpt/maps/COccupancyGridMap3D.h line:283
+// mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions file:mrpt/maps/COccupancyGridMap3D.h line:262
 struct PyCallBack_mrpt_maps_COccupancyGridMap3D_TLikelihoodOptions : public mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions {
 	using mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions::TLikelihoodOptions;
 
@@ -472,7 +472,7 @@ struct PyCallBack_mrpt_maps_COccupancyGridMap3D_TLikelihoodOptions : public mrpt
 	}
 };
 
-// mrpt::maps::COccupancyGridMap3D::TMapDefinition file: line:85
+// mrpt::maps::COccupancyGridMap3D::TMapDefinition file: line:78
 struct PyCallBack_mrpt_maps_COccupancyGridMap3D_TMapDefinition : public mrpt::maps::COccupancyGridMap3D::TMapDefinition {
 	using mrpt::maps::COccupancyGridMap3D::TMapDefinition::TMapDefinition;
 
@@ -565,13 +565,13 @@ void bind_mrpt_maps_COccupancyGridMap3D(std::function< pybind11::module &(std::s
 		cl.def("compute3DMatchingRatio", (float (mrpt::maps::COccupancyGridMap3D::*)(const class mrpt::maps::CMetricMap *, const class mrpt::poses::CPose3D &, const struct mrpt::maps::TMatchingRatioParams &) const) &mrpt::maps::COccupancyGridMap3D::compute3DMatchingRatio, "See docs in base class: in this class this always returns 0 \n\nC++: mrpt::maps::COccupancyGridMap3D::compute3DMatchingRatio(const class mrpt::maps::CMetricMap *, const class mrpt::poses::CPose3D &, const struct mrpt::maps::TMatchingRatioParams &) const --> float", pybind11::arg("otherMap"), pybind11::arg("otherMapPose"), pybind11::arg("params"));
 		cl.def("saveMetricMapRepresentationToFile", (void (mrpt::maps::COccupancyGridMap3D::*)(const std::string &) const) &mrpt::maps::COccupancyGridMap3D::saveMetricMapRepresentationToFile, "C++: mrpt::maps::COccupancyGridMap3D::saveMetricMapRepresentationToFile(const std::string &) const --> void", pybind11::arg("f"));
 		cl.def("asString", (std::string (mrpt::maps::COccupancyGridMap3D::*)() const) &mrpt::maps::COccupancyGridMap3D::asString, "Returns a short description of the map. \n\nC++: mrpt::maps::COccupancyGridMap3D::asString() const --> std::string");
-		cl.def("nn_has_indices_or_ids", (bool (mrpt::maps::COccupancyGridMap3D::*)() const) &mrpt::maps::COccupancyGridMap3D::nn_has_indices_or_ids, "		@{ \n\nC++: mrpt::maps::COccupancyGridMap3D::nn_has_indices_or_ids() const --> bool");
+		cl.def("nn_has_indices_or_ids", (bool (mrpt::maps::COccupancyGridMap3D::*)() const) &mrpt::maps::COccupancyGridMap3D::nn_has_indices_or_ids, "@{ \n\nC++: mrpt::maps::COccupancyGridMap3D::nn_has_indices_or_ids() const --> bool");
 		cl.def("nn_index_count", (size_t (mrpt::maps::COccupancyGridMap3D::*)() const) &mrpt::maps::COccupancyGridMap3D::nn_index_count, "C++: mrpt::maps::COccupancyGridMap3D::nn_index_count() const --> size_t");
 		cl.def("nn_single_search", (bool (mrpt::maps::COccupancyGridMap3D::*)(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &, uint64_t &) const) &mrpt::maps::COccupancyGridMap3D::nn_single_search, "C++: mrpt::maps::COccupancyGridMap3D::nn_single_search(const struct mrpt::math::TPoint3D_<float> &, struct mrpt::math::TPoint3D_<float> &, float &, uint64_t &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"), pybind11::arg("resultIndexOrID"));
 		cl.def("nn_single_search", (bool (mrpt::maps::COccupancyGridMap3D::*)(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &, uint64_t &) const) &mrpt::maps::COccupancyGridMap3D::nn_single_search, "C++: mrpt::maps::COccupancyGridMap3D::nn_single_search(const struct mrpt::math::TPoint2D_<float> &, struct mrpt::math::TPoint2D_<float> &, float &, uint64_t &) const --> bool", pybind11::arg("query"), pybind11::arg("result"), pybind11::arg("out_dist_sqr"), pybind11::arg("resultIndexOrID"));
 		cl.def("assign", (class mrpt::maps::COccupancyGridMap3D & (mrpt::maps::COccupancyGridMap3D::*)(const class mrpt::maps::COccupancyGridMap3D &)) &mrpt::maps::COccupancyGridMap3D::operator=, "C++: mrpt::maps::COccupancyGridMap3D::operator=(const class mrpt::maps::COccupancyGridMap3D &) --> class mrpt::maps::COccupancyGridMap3D &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::maps::COccupancyGridMap3D::TInsertionOptions file:mrpt/maps/COccupancyGridMap3D.h line:221
+		{ // mrpt::maps::COccupancyGridMap3D::TInsertionOptions file:mrpt/maps/COccupancyGridMap3D.h line:202
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::COccupancyGridMap3D::TInsertionOptions, std::shared_ptr<mrpt::maps::COccupancyGridMap3D::TInsertionOptions>, PyCallBack_mrpt_maps_COccupancyGridMap3D_TInsertionOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TInsertionOptions", "With this struct options are provided to the observation insertion\n process.\n \n\n CObservation::insertIntoGridMap ");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::COccupancyGridMap3D::TInsertionOptions(); }, [](){ return new PyCallBack_mrpt_maps_COccupancyGridMap3D_TInsertionOptions(); } ) );
@@ -583,12 +583,12 @@ void bind_mrpt_maps_COccupancyGridMap3D(std::function< pybind11::module &(std::s
 			cl.def_readwrite("decimation_3d_range", &mrpt::maps::COccupancyGridMap3D::TInsertionOptions::decimation_3d_range);
 			cl.def_readwrite("decimation", &mrpt::maps::COccupancyGridMap3D::TInsertionOptions::decimation);
 			cl.def_readwrite("raytraceEmptyCells", &mrpt::maps::COccupancyGridMap3D::TInsertionOptions::raytraceEmptyCells);
-			cl.def("loadFromConfigFile", (void (mrpt::maps::COccupancyGridMap3D::TInsertionOptions::*)(const class mrpt::config::CConfigFileBase &, const std::string &)) &mrpt::maps::COccupancyGridMap3D::TInsertionOptions::loadFromConfigFile, "This method load the options from a \".ini\" file.\n   Only those parameters found in the given \"section\" and having\n   the same name that the variable are loaded. Those not found in\n   the file will stay with their previous values (usually the default\n   values loaded at initialization). An example of an \".ini\" file:\n  \n\n\n\n\n\n		 \n\nC++: mrpt::maps::COccupancyGridMap3D::TInsertionOptions::loadFromConfigFile(const class mrpt::config::CConfigFileBase &, const std::string &) --> void", pybind11::arg("source"), pybind11::arg("section"));
+			cl.def("loadFromConfigFile", (void (mrpt::maps::COccupancyGridMap3D::TInsertionOptions::*)(const class mrpt::config::CConfigFileBase &, const std::string &)) &mrpt::maps::COccupancyGridMap3D::TInsertionOptions::loadFromConfigFile, "This method load the options from a \".ini\" file.\n   Only those parameters found in the given \"section\" and having\n   the same name that the variable are loaded. Those not found in\n   the file will stay with their previous values (usually the default\n   values loaded at initialization). An example of an \".ini\" file:\n  \n\n\n\n\n\n     \n\nC++: mrpt::maps::COccupancyGridMap3D::TInsertionOptions::loadFromConfigFile(const class mrpt::config::CConfigFileBase &, const std::string &) --> void", pybind11::arg("source"), pybind11::arg("section"));
 			cl.def("saveToConfigFile", (void (mrpt::maps::COccupancyGridMap3D::TInsertionOptions::*)(class mrpt::config::CConfigFileBase &, const std::string &) const) &mrpt::maps::COccupancyGridMap3D::TInsertionOptions::saveToConfigFile, "C++: mrpt::maps::COccupancyGridMap3D::TInsertionOptions::saveToConfigFile(class mrpt::config::CConfigFileBase &, const std::string &) const --> void", pybind11::arg("target"), pybind11::arg("section"));
 			cl.def("assign", (class mrpt::maps::COccupancyGridMap3D::TInsertionOptions & (mrpt::maps::COccupancyGridMap3D::TInsertionOptions::*)(const class mrpt::maps::COccupancyGridMap3D::TInsertionOptions &)) &mrpt::maps::COccupancyGridMap3D::TInsertionOptions::operator=, "C++: mrpt::maps::COccupancyGridMap3D::TInsertionOptions::operator=(const class mrpt::maps::COccupancyGridMap3D::TInsertionOptions &) --> class mrpt::maps::COccupancyGridMap3D::TInsertionOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions file:mrpt/maps/COccupancyGridMap3D.h line:283
+		{ // mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions file:mrpt/maps/COccupancyGridMap3D.h line:262
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions, std::shared_ptr<mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions>, PyCallBack_mrpt_maps_COccupancyGridMap3D_TLikelihoodOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TLikelihoodOptions", "With this struct options are provided to the observation likelihood\n computation process ");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions(); }, [](){ return new PyCallBack_mrpt_maps_COccupancyGridMap3D_TLikelihoodOptions(); } ) );
@@ -604,12 +604,12 @@ void bind_mrpt_maps_COccupancyGridMap3D(std::function< pybind11::module &(std::s
 			cl.def_readwrite("LF_useSquareDist", &mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions::LF_useSquareDist);
 			cl.def_readwrite("rayTracing_decimation", &mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions::rayTracing_decimation);
 			cl.def_readwrite("rayTracing_stdHit", &mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions::rayTracing_stdHit);
-			cl.def("loadFromConfigFile", (void (mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions::*)(const class mrpt::config::CConfigFileBase &, const std::string &)) &mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions::loadFromConfigFile, "This method load the options from a \".ini\" file.\n   Only those parameters found in the given \"section\" and having\n   the same name that the variable are loaded. Those not found in\n   the file will stay with their previous values (usually the default\n   values loaded at initialization). An example of an \".ini\" file:\n  \n\n\n\n\n\n		 \n\nC++: mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions::loadFromConfigFile(const class mrpt::config::CConfigFileBase &, const std::string &) --> void", pybind11::arg("source"), pybind11::arg("section"));
+			cl.def("loadFromConfigFile", (void (mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions::*)(const class mrpt::config::CConfigFileBase &, const std::string &)) &mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions::loadFromConfigFile, "This method load the options from a \".ini\" file.\n   Only those parameters found in the given \"section\" and having\n   the same name that the variable are loaded. Those not found in\n   the file will stay with their previous values (usually the default\n   values loaded at initialization). An example of an \".ini\" file:\n  \n\n\n\n\n\n     \n\nC++: mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions::loadFromConfigFile(const class mrpt::config::CConfigFileBase &, const std::string &) --> void", pybind11::arg("source"), pybind11::arg("section"));
 			cl.def("saveToConfigFile", (void (mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions::*)(class mrpt::config::CConfigFileBase &, const std::string &) const) &mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions::saveToConfigFile, "C++: mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions::saveToConfigFile(class mrpt::config::CConfigFileBase &, const std::string &) const --> void", pybind11::arg("c"), pybind11::arg("s"));
 			cl.def("assign", (class mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions & (mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions::*)(const class mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions &)) &mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions::operator=, "C++: mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions::operator=(const class mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions &) --> class mrpt::maps::COccupancyGridMap3D::TLikelihoodOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::COccupancyGridMap3D::TRenderingOptions file:mrpt/maps/COccupancyGridMap3D.h line:337
+		{ // mrpt::maps::COccupancyGridMap3D::TRenderingOptions file:mrpt/maps/COccupancyGridMap3D.h line:313
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::COccupancyGridMap3D::TRenderingOptions, std::shared_ptr<mrpt::maps::COccupancyGridMap3D::TRenderingOptions>> cl(enclosing_class, "TRenderingOptions", "Options for the conversion of a mrpt::maps::COccupancyGridMap3D into a\n mrpt::opengl::COctoMapVoxels ");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::COccupancyGridMap3D::TRenderingOptions(); } ) );
@@ -624,12 +624,12 @@ void bind_mrpt_maps_COccupancyGridMap3D(std::function< pybind11::module &(std::s
 			cl.def("assign", (struct mrpt::maps::COccupancyGridMap3D::TRenderingOptions & (mrpt::maps::COccupancyGridMap3D::TRenderingOptions::*)(const struct mrpt::maps::COccupancyGridMap3D::TRenderingOptions &)) &mrpt::maps::COccupancyGridMap3D::TRenderingOptions::operator=, "C++: mrpt::maps::COccupancyGridMap3D::TRenderingOptions::operator=(const struct mrpt::maps::COccupancyGridMap3D::TRenderingOptions &) --> struct mrpt::maps::COccupancyGridMap3D::TRenderingOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::COccupancyGridMap3D::TMapDefinitionBase file: line:80
+		{ // mrpt::maps::COccupancyGridMap3D::TMapDefinitionBase file: line:74
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::COccupancyGridMap3D::TMapDefinitionBase, std::shared_ptr<mrpt::maps::COccupancyGridMap3D::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::COccupancyGridMap3D::TMapDefinition file: line:85
+		{ // mrpt::maps::COccupancyGridMap3D::TMapDefinition file: line:78
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::COccupancyGridMap3D::TMapDefinition, std::shared_ptr<mrpt::maps::COccupancyGridMap3D::TMapDefinition>, PyCallBack_mrpt_maps_COccupancyGridMap3D_TMapDefinition, mrpt::maps::COccupancyGridMap3D::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::COccupancyGridMap3D::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_COccupancyGridMap3D_TMapDefinition(); } ) );

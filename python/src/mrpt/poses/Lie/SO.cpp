@@ -27,7 +27,7 @@ void bind_mrpt_poses_Lie_SO(std::function< pybind11::module &(std::string const 
 		cl.def_static("fromYPR", (class mrpt::math::CMatrixFixed<double, 3, 3> (*)(const double, const double, const double)) &mrpt::poses::Lie::SO<3>::fromYPR, "Returns the 3x3 SO(3) rotation matrix from yaw, pitch, roll angles.\n See CPose3D for the axis conventions and a picture. \n\nC++: mrpt::poses::Lie::SO<3>::fromYPR(const double, const double, const double) --> class mrpt::math::CMatrixFixed<double, 3, 3>", pybind11::arg("yaw"), pybind11::arg("pitch"), pybind11::arg("roll"));
 		cl.def_static("vee_RmRt", (class mrpt::math::CMatrixFixed<double, 3, 1> (*)(const class mrpt::math::CMatrixFixed<double, 3, 3> &)) &mrpt::poses::Lie::SO<3>::vee_RmRt, "Returns vee(R-R'), which is an approximation to 2*vee(logmat(R)) for\n small rotations. \n\nC++: mrpt::poses::Lie::SO<3>::vee_RmRt(const class mrpt::math::CMatrixFixed<double, 3, 3> &) --> class mrpt::math::CMatrixFixed<double, 3, 1>", pybind11::arg("R"));
 	}
-	{ // mrpt::poses::Lie::SO file:mrpt/poses/Lie/SO.h line:88
+	{ // mrpt::poses::Lie::SO file:mrpt/poses/Lie/SO.h line:87
 		pybind11::class_<mrpt::poses::Lie::SO<2U>, std::shared_ptr<mrpt::poses::Lie::SO<2U>>> cl(M("mrpt::poses::Lie"), "SO_2U_t", "Traits for SO(2), rotations in R^2 space.\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::poses::Lie::SO<2U>(); } ) );
 	}

@@ -35,7 +35,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::gui::mrptEvent3DWindowGrabImageFile file:mrpt/gui/CDisplayWindow3D.h line:408
+// mrpt::gui::mrptEvent3DWindowGrabImageFile file:mrpt/gui/CDisplayWindow3D.h line:409
 struct PyCallBack_mrpt_gui_mrptEvent3DWindowGrabImageFile : public mrpt::gui::mrptEvent3DWindowGrabImageFile {
 	using mrpt::gui::mrptEvent3DWindowGrabImageFile::mrptEvent3DWindowGrabImageFile;
 
@@ -231,7 +231,7 @@ struct PyCallBack_mrpt_gui_CGlCanvasBase : public mrpt::gui::CGlCanvasBase {
 
 void bind_mrpt_gui_CDisplayWindow3D_1(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::gui::mrptEvent3DWindowGrabImageFile file:mrpt/gui/CDisplayWindow3D.h line:408
+	{ // mrpt::gui::mrptEvent3DWindowGrabImageFile file:mrpt/gui/CDisplayWindow3D.h line:409
 		pybind11::class_<mrpt::gui::mrptEvent3DWindowGrabImageFile, std::shared_ptr<mrpt::gui::mrptEvent3DWindowGrabImageFile>, PyCallBack_mrpt_gui_mrptEvent3DWindowGrabImageFile, mrpt::system::mrptEvent> cl(M("mrpt::gui"), "mrptEvent3DWindowGrabImageFile", "An event sent by a CDisplayWindow3D window when an image is saved after\n enabling this feature with CDisplayWindow3D::grabImagesStart()\n\n  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked\n from the wxWidgets internal MRPT thread,\n    so all your code in the handler must be thread safe.");
 		cl.def( pybind11::init<class mrpt::gui::CDisplayWindow3D *, const std::string &>(), pybind11::arg("obj"), pybind11::arg("_img_file") );
 
@@ -280,7 +280,7 @@ void bind_mrpt_gui_CDisplayWindow3D_1(std::function< pybind11::module &(std::str
 		cl.def("cameraFOV", (float (mrpt::gui::CGlCanvasBase::*)() const) &mrpt::gui::CGlCanvasBase::cameraFOV, "C++: mrpt::gui::CGlCanvasBase::cameraFOV() const --> float");
 		cl.def("OnUserManuallyMovesCamera", (void (mrpt::gui::CGlCanvasBase::*)(float, float, float, float, float, float)) &mrpt::gui::CGlCanvasBase::OnUserManuallyMovesCamera, "Overload this method to limit the capabilities of the user to move the\n camera using the mouse.\n  For all these variables:\n  - cameraPointingX\n  - cameraPointingY\n  - cameraPointingZ\n  - cameraZoomDistance\n  - cameraElevationDeg\n  - cameraAzimuthDeg\n\n  A \"new_NAME\" variable will be passed with the temptative new\n value after the user action.\n   The default behavior should be to copy all the new variables\n to the variables listed above\n   but in the middle any find of user-defined filter can be\n implemented.\n\nC++: mrpt::gui::CGlCanvasBase::OnUserManuallyMovesCamera(float, float, float, float, float, float) --> void", pybind11::arg("new_cameraPointingX"), pybind11::arg("new_cameraPointingY"), pybind11::arg("new_cameraPointingZ"), pybind11::arg("new_cameraZoomDistance"), pybind11::arg("new_cameraElevationDeg"), pybind11::arg("new_cameraAzimuthDeg"));
 		cl.def("getLastMousePosition", (void (mrpt::gui::CGlCanvasBase::*)(int &, int &) const) &mrpt::gui::CGlCanvasBase::getLastMousePosition, "C++: mrpt::gui::CGlCanvasBase::getLastMousePosition(int &, int &) const --> void", pybind11::arg("x"), pybind11::arg("y"));
-		cl.def("getOpenGLSceneRef", (class std::shared_ptr<class mrpt::opengl::Scene> & (mrpt::gui::CGlCanvasBase::*)()) &mrpt::gui::CGlCanvasBase::getOpenGLSceneRef, "At constructor an empty scene is created. The object is freed at GL\n	canvas destructor.\n This function returns a smart pointer to the opengl scene\n	getOpenGLSceneRef		  \n\nC++: mrpt::gui::CGlCanvasBase::getOpenGLSceneRef() --> class std::shared_ptr<class mrpt::opengl::Scene> &", pybind11::return_value_policy::automatic);
+		cl.def("getOpenGLSceneRef", (class std::shared_ptr<class mrpt::opengl::Scene> & (mrpt::gui::CGlCanvasBase::*)()) &mrpt::gui::CGlCanvasBase::getOpenGLSceneRef, "At constructor an empty scene is created. The object is freed at GL\n  canvas destructor.\n This function returns a smart pointer to the opengl scene\n  getOpenGLSceneRef		  \n\nC++: mrpt::gui::CGlCanvasBase::getOpenGLSceneRef() --> class std::shared_ptr<class mrpt::opengl::Scene> &", pybind11::return_value_policy::automatic);
 		cl.def("setOpenGLSceneRef", (void (mrpt::gui::CGlCanvasBase::*)(class std::shared_ptr<class mrpt::opengl::Scene>)) &mrpt::gui::CGlCanvasBase::setOpenGLSceneRef, "C++: mrpt::gui::CGlCanvasBase::setOpenGLSceneRef(class std::shared_ptr<class mrpt::opengl::Scene>) --> void", pybind11::arg("scene"));
 		cl.def("assign", (class mrpt::gui::CGlCanvasBase & (mrpt::gui::CGlCanvasBase::*)(const class mrpt::gui::CGlCanvasBase &)) &mrpt::gui::CGlCanvasBase::operator=, "C++: mrpt::gui::CGlCanvasBase::operator=(const class mrpt::gui::CGlCanvasBase &) --> class mrpt::gui::CGlCanvasBase &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 

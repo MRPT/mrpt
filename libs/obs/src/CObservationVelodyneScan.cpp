@@ -541,5 +541,7 @@ void Velo::TPointCloud::reserve(std::size_t n)
   pointsForLaserID.reserve(64);  // ring number
 }
 
+void Velo::unload() const { const_cast<Velo&>(*this).point_cloud.clear_deep(); }
+
 // Default ctor. Do NOT move to the .h, that causes build errors.
 Velo::TGeneratePointCloudParameters::TGeneratePointCloudParameters() = default;

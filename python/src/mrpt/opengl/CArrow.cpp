@@ -850,7 +850,7 @@ void bind_mrpt_opengl_CArrow(std::function< pybind11::module &(std::string const
 		cl.def("internalBoundingBoxLocal", (struct mrpt::math::TBoundingBox_<float> (mrpt::opengl::CAssimpModel::*)() const) &mrpt::opengl::CAssimpModel::internalBoundingBoxLocal, "C++: mrpt::opengl::CAssimpModel::internalBoundingBoxLocal() const --> struct mrpt::math::TBoundingBox_<float>");
 		cl.def("assign", (class mrpt::opengl::CAssimpModel & (mrpt::opengl::CAssimpModel::*)(const class mrpt::opengl::CAssimpModel &)) &mrpt::opengl::CAssimpModel::operator=, "C++: mrpt::opengl::CAssimpModel::operator=(const class mrpt::opengl::CAssimpModel &) --> class mrpt::opengl::CAssimpModel &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::opengl::CAssimpModel::LoadFlags file:mrpt/opengl/CAssimpModel.h line:83
+		{ // mrpt::opengl::CAssimpModel::LoadFlags file:mrpt/opengl/CAssimpModel.h line:84
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::opengl::CAssimpModel::LoadFlags, std::shared_ptr<mrpt::opengl::CAssimpModel::LoadFlags>> cl(enclosing_class, "LoadFlags", "Import flags for loadScene ");
 			cl.def( pybind11::init( [](){ return new mrpt::opengl::CAssimpModel::LoadFlags(); } ) );

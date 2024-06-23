@@ -109,7 +109,7 @@ struct PyCallBack_mrpt_gui_mrptEventWindowChar : public mrpt::gui::mrptEventWind
 	}
 };
 
-// mrpt::gui::mrptEventWindowResize file:mrpt/gui/CBaseGUIWindow.h line:195
+// mrpt::gui::mrptEventWindowResize file:mrpt/gui/CBaseGUIWindow.h line:194
 struct PyCallBack_mrpt_gui_mrptEventWindowResize : public mrpt::gui::mrptEventWindowResize {
 	using mrpt::gui::mrptEventWindowResize::mrptEventWindowResize;
 
@@ -128,7 +128,7 @@ struct PyCallBack_mrpt_gui_mrptEventWindowResize : public mrpt::gui::mrptEventWi
 	}
 };
 
-// mrpt::gui::mrptEventMouseDown file:mrpt/gui/CBaseGUIWindow.h line:221
+// mrpt::gui::mrptEventMouseDown file:mrpt/gui/CBaseGUIWindow.h line:219
 struct PyCallBack_mrpt_gui_mrptEventMouseDown : public mrpt::gui::mrptEventMouseDown {
 	using mrpt::gui::mrptEventMouseDown::mrptEventMouseDown;
 
@@ -147,7 +147,7 @@ struct PyCallBack_mrpt_gui_mrptEventMouseDown : public mrpt::gui::mrptEventMouse
 	}
 };
 
-// mrpt::gui::mrptEventMouseMove file:mrpt/gui/CBaseGUIWindow.h line:250
+// mrpt::gui::mrptEventMouseMove file:mrpt/gui/CBaseGUIWindow.h line:244
 struct PyCallBack_mrpt_gui_mrptEventMouseMove : public mrpt::gui::mrptEventMouseMove {
 	using mrpt::gui::mrptEventMouseMove::mrptEventMouseMove;
 
@@ -166,7 +166,7 @@ struct PyCallBack_mrpt_gui_mrptEventMouseMove : public mrpt::gui::mrptEventMouse
 	}
 };
 
-// mrpt::gui::mrptEventWindowClosed file:mrpt/gui/CBaseGUIWindow.h line:286
+// mrpt::gui::mrptEventWindowClosed file:mrpt/gui/CBaseGUIWindow.h line:276
 struct PyCallBack_mrpt_gui_mrptEventWindowClosed : public mrpt::gui::mrptEventWindowClosed {
 	using mrpt::gui::mrptEventWindowClosed::mrptEventWindowClosed;
 
@@ -217,7 +217,7 @@ void bind_mrpt_gui_CBaseGUIWindow(std::function< pybind11::module &(std::string 
 		cl.def_readwrite("key_modifiers", &mrpt::gui::mrptEventWindowChar::key_modifiers);
 		cl.def("assign", (class mrpt::gui::mrptEventWindowChar & (mrpt::gui::mrptEventWindowChar::*)(const class mrpt::gui::mrptEventWindowChar &)) &mrpt::gui::mrptEventWindowChar::operator=, "C++: mrpt::gui::mrptEventWindowChar::operator=(const class mrpt::gui::mrptEventWindowChar &) --> class mrpt::gui::mrptEventWindowChar &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::gui::mrptEventWindowResize file:mrpt/gui/CBaseGUIWindow.h line:195
+	{ // mrpt::gui::mrptEventWindowResize file:mrpt/gui/CBaseGUIWindow.h line:194
 		pybind11::class_<mrpt::gui::mrptEventWindowResize, std::shared_ptr<mrpt::gui::mrptEventWindowResize>, PyCallBack_mrpt_gui_mrptEventWindowResize, mrpt::system::mrptEvent> cl(M("mrpt::gui"), "mrptEventWindowResize", "An event sent by a window upon resize.\n\n  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked\n from the wxWidgets internal MRPT thread,\n    so all your code in the handler must be thread safe.");
 		cl.def( pybind11::init<class mrpt::gui::CBaseGUIWindow *, size_t, size_t>(), pybind11::arg("obj"), pybind11::arg("_new_width"), pybind11::arg("_new_height") );
 
@@ -225,7 +225,7 @@ void bind_mrpt_gui_CBaseGUIWindow(std::function< pybind11::module &(std::string 
 		cl.def_readwrite("new_height", &mrpt::gui::mrptEventWindowResize::new_height);
 		cl.def("assign", (class mrpt::gui::mrptEventWindowResize & (mrpt::gui::mrptEventWindowResize::*)(const class mrpt::gui::mrptEventWindowResize &)) &mrpt::gui::mrptEventWindowResize::operator=, "C++: mrpt::gui::mrptEventWindowResize::operator=(const class mrpt::gui::mrptEventWindowResize &) --> class mrpt::gui::mrptEventWindowResize &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::gui::mrptEventMouseDown file:mrpt/gui/CBaseGUIWindow.h line:221
+	{ // mrpt::gui::mrptEventMouseDown file:mrpt/gui/CBaseGUIWindow.h line:219
 		pybind11::class_<mrpt::gui::mrptEventMouseDown, std::shared_ptr<mrpt::gui::mrptEventMouseDown>, PyCallBack_mrpt_gui_mrptEventMouseDown, mrpt::system::mrptEvent> cl(M("mrpt::gui"), "mrptEventMouseDown", "An event sent by a window upon a mouse click, giving the (x,y) pixel\n coordinates.\n\n  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked\n from the wxWidgets internal MRPT thread,\n    so all your code in the handler must be thread safe.\n\n \n mrptEventMouseMove");
 		cl.def( pybind11::init<class mrpt::gui::CBaseGUIWindow *, struct mrpt::img::TPixelCoord, bool, bool>(), pybind11::arg("obj"), pybind11::arg("_coords"), pybind11::arg("_leftButton"), pybind11::arg("_rightButton") );
 
@@ -234,7 +234,7 @@ void bind_mrpt_gui_CBaseGUIWindow(std::function< pybind11::module &(std::string 
 		cl.def_readwrite("rightButton", &mrpt::gui::mrptEventMouseDown::rightButton);
 		cl.def("assign", (class mrpt::gui::mrptEventMouseDown & (mrpt::gui::mrptEventMouseDown::*)(const class mrpt::gui::mrptEventMouseDown &)) &mrpt::gui::mrptEventMouseDown::operator=, "C++: mrpt::gui::mrptEventMouseDown::operator=(const class mrpt::gui::mrptEventMouseDown &) --> class mrpt::gui::mrptEventMouseDown &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::gui::mrptEventMouseMove file:mrpt/gui/CBaseGUIWindow.h line:250
+	{ // mrpt::gui::mrptEventMouseMove file:mrpt/gui/CBaseGUIWindow.h line:244
 		pybind11::class_<mrpt::gui::mrptEventMouseMove, std::shared_ptr<mrpt::gui::mrptEventMouseMove>, PyCallBack_mrpt_gui_mrptEventMouseMove, mrpt::system::mrptEvent> cl(M("mrpt::gui"), "mrptEventMouseMove", "An event sent by a window when the mouse is moved over it.\n  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked\n from the wxWidgets internal MRPT thread,\n    so all your code in the handler must be thread safe.\n \n\n mrptEventMouseDown");
 		cl.def( pybind11::init<class mrpt::gui::CBaseGUIWindow *, struct mrpt::img::TPixelCoord, bool, bool>(), pybind11::arg("obj"), pybind11::arg("_coords"), pybind11::arg("_leftButton"), pybind11::arg("_rightButton") );
 
@@ -243,7 +243,7 @@ void bind_mrpt_gui_CBaseGUIWindow(std::function< pybind11::module &(std::string 
 		cl.def_readwrite("rightButton", &mrpt::gui::mrptEventMouseMove::rightButton);
 		cl.def("assign", (class mrpt::gui::mrptEventMouseMove & (mrpt::gui::mrptEventMouseMove::*)(const class mrpt::gui::mrptEventMouseMove &)) &mrpt::gui::mrptEventMouseMove::operator=, "C++: mrpt::gui::mrptEventMouseMove::operator=(const class mrpt::gui::mrptEventMouseMove &) --> class mrpt::gui::mrptEventMouseMove &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::gui::mrptEventWindowClosed file:mrpt/gui/CBaseGUIWindow.h line:286
+	{ // mrpt::gui::mrptEventWindowClosed file:mrpt/gui/CBaseGUIWindow.h line:276
 		pybind11::class_<mrpt::gui::mrptEventWindowClosed, std::shared_ptr<mrpt::gui::mrptEventWindowClosed>, PyCallBack_mrpt_gui_mrptEventWindowClosed, mrpt::system::mrptEvent> cl(M("mrpt::gui"), "mrptEventWindowClosed", "An event sent by a window upon when it's about to be closed, either\n manually by the user or programmatically.\n   The event field member  is default by default, but can be\n set to false in the event callback\n   to forbid the window to be closed by the user. If the event corresponds to\n a programatic close, this field is ignored.\n\n  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked\n from the wxWidgets internal MRPT thread,\n    so all your code in the handler must be thread safe.\n\n \n CBaseGUIWindow");
 		cl.def( pybind11::init( [](class mrpt::gui::CBaseGUIWindow * a0){ return new mrpt::gui::mrptEventWindowClosed(a0); }, [](class mrpt::gui::CBaseGUIWindow * a0){ return new PyCallBack_mrpt_gui_mrptEventWindowClosed(a0); } ), "doc");
 		cl.def( pybind11::init<class mrpt::gui::CBaseGUIWindow *, bool>(), pybind11::arg("obj"), pybind11::arg("_allow_close") );

@@ -42,7 +42,7 @@ void bind_mrpt_core_safe_pointers_1(std::function< pybind11::module &(std::strin
 		cl.def("get", (void *& (mrpt::non_copiable_ptr_basic<void>::*)()) &mrpt::non_copiable_ptr_basic<void>::get, "C++: mrpt::non_copiable_ptr_basic<void>::get() --> void *&", pybind11::return_value_policy::automatic);
 		cl.def("arrow", (void *& (mrpt::non_copiable_ptr_basic<void>::*)()) &mrpt::non_copiable_ptr_basic<void>::operator->, "C++: mrpt::non_copiable_ptr_basic<void>::operator->() --> void *&", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::ignored_copy_ptr file:mrpt/core/safe_pointers.h line:231
+	{ // mrpt::ignored_copy_ptr file:mrpt/core/safe_pointers.h line:222
 		pybind11::class_<mrpt::ignored_copy_ptr<mrpt::maps::COctoMapBase<octomap::ColorOcTree, octomap::ColorOcTreeNode>>, std::shared_ptr<mrpt::ignored_copy_ptr<mrpt::maps::COctoMapBase<octomap::ColorOcTree, octomap::ColorOcTreeNode>>>> cl(M("mrpt"), "ignored_copy_ptr_mrpt_maps_COctoMapBase_octomap_ColorOcTree_octomap_ColorOcTreeNode_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::ignored_copy_ptr<mrpt::maps::COctoMapBase<octomap::ColorOcTree, octomap::ColorOcTreeNode>>(); } ) );
 		cl.def( pybind11::init( [](mrpt::ignored_copy_ptr<mrpt::maps::COctoMapBase<octomap::ColorOcTree, octomap::ColorOcTreeNode>> const &o){ return new mrpt::ignored_copy_ptr<mrpt::maps::COctoMapBase<octomap::ColorOcTree, octomap::ColorOcTreeNode>>(o); } ) );
@@ -58,7 +58,7 @@ void bind_mrpt_core_safe_pointers_1(std::function< pybind11::module &(std::strin
 		cl.def("get", (class mrpt::maps::COctoMapBase<class octomap::ColorOcTree, class octomap::ColorOcTreeNode> *& (mrpt::ignored_copy_ptr<mrpt::maps::COctoMapBase<octomap::ColorOcTree, octomap::ColorOcTreeNode>>::*)()) &mrpt::ignored_copy_ptr<mrpt::maps::COctoMapBase<octomap::ColorOcTree, octomap::ColorOcTreeNode>>::get, "C++: mrpt::ignored_copy_ptr<mrpt::maps::COctoMapBase<octomap::ColorOcTree, octomap::ColorOcTreeNode>>::get() --> class mrpt::maps::COctoMapBase<class octomap::ColorOcTree, class octomap::ColorOcTreeNode> *&", pybind11::return_value_policy::automatic);
 		cl.def("arrow", (class mrpt::maps::COctoMapBase<class octomap::ColorOcTree, class octomap::ColorOcTreeNode> *& (mrpt::ignored_copy_ptr<mrpt::maps::COctoMapBase<octomap::ColorOcTree, octomap::ColorOcTreeNode>>::*)()) &mrpt::ignored_copy_ptr<mrpt::maps::COctoMapBase<octomap::ColorOcTree, octomap::ColorOcTreeNode>>::operator->, "C++: mrpt::ignored_copy_ptr<mrpt::maps::COctoMapBase<octomap::ColorOcTree, octomap::ColorOcTreeNode>>::operator->() --> class mrpt::maps::COctoMapBase<class octomap::ColorOcTree, class octomap::ColorOcTreeNode> *&", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::ignored_copy_ptr file:mrpt/core/safe_pointers.h line:231
+	{ // mrpt::ignored_copy_ptr file:mrpt/core/safe_pointers.h line:222
 		pybind11::class_<mrpt::ignored_copy_ptr<mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>>, std::shared_ptr<mrpt::ignored_copy_ptr<mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>>>> cl(M("mrpt"), "ignored_copy_ptr_mrpt_maps_COctoMapBase_octomap_OcTree_octomap_OcTreeNode_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::ignored_copy_ptr<mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>>(); } ) );
 		cl.def( pybind11::init( [](mrpt::ignored_copy_ptr<mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>> const &o){ return new mrpt::ignored_copy_ptr<mrpt::maps::COctoMapBase<octomap::OcTree, octomap::OcTreeNode>>(o); } ) );

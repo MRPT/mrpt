@@ -75,7 +75,7 @@ struct PyCallBack_mrpt_nav_CAbstractPTGBasedReactive_TNavigationParamsPTG : publ
 	}
 };
 
-// mrpt::nav::CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams file:mrpt/nav/reactive/CAbstractPTGBasedReactive.h line:173
+// mrpt::nav::CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams file:mrpt/nav/reactive/CAbstractPTGBasedReactive.h line:162
 struct PyCallBack_mrpt_nav_CAbstractPTGBasedReactive_TAbstractPTGNavigatorParams : public mrpt::nav::CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams {
 	using mrpt::nav::CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::TAbstractPTGNavigatorParams;
 
@@ -143,7 +143,7 @@ void bind_mrpt_nav_reactive_CAbstractPTGBasedReactive(std::function< pybind11::m
 			cl.def("assign", (struct mrpt::nav::CAbstractPTGBasedReactive::TNavigationParamsPTG & (mrpt::nav::CAbstractPTGBasedReactive::TNavigationParamsPTG::*)(const struct mrpt::nav::CAbstractPTGBasedReactive::TNavigationParamsPTG &)) &mrpt::nav::CAbstractPTGBasedReactive::TNavigationParamsPTG::operator=, "C++: mrpt::nav::CAbstractPTGBasedReactive::TNavigationParamsPTG::operator=(const struct mrpt::nav::CAbstractPTGBasedReactive::TNavigationParamsPTG &) --> struct mrpt::nav::CAbstractPTGBasedReactive::TNavigationParamsPTG &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::nav::CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams file:mrpt/nav/reactive/CAbstractPTGBasedReactive.h line:173
+		{ // mrpt::nav::CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams file:mrpt/nav/reactive/CAbstractPTGBasedReactive.h line:162
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::nav::CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams, std::shared_ptr<mrpt::nav::CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams>, PyCallBack_mrpt_nav_CAbstractPTGBasedReactive_TAbstractPTGNavigatorParams, mrpt::config::CLoadableOptions> cl(enclosing_class, "TAbstractPTGNavigatorParams", "");
 			cl.def( pybind11::init( [](){ return new mrpt::nav::CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams(); }, [](){ return new PyCallBack_mrpt_nav_CAbstractPTGBasedReactive_TAbstractPTGNavigatorParams(); } ) );

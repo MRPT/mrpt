@@ -143,7 +143,7 @@ struct PyCallBack_mrpt_maps_CRandomFieldGridMap3D : public mrpt::maps::CRandomFi
 	}
 };
 
-// mrpt::maps::CRandomFieldGridMap3D::TInsertionOptions file:mrpt/maps/CRandomFieldGridMap3D.h line:116
+// mrpt::maps::CRandomFieldGridMap3D::TInsertionOptions file:mrpt/maps/CRandomFieldGridMap3D.h line:120
 struct PyCallBack_mrpt_maps_CRandomFieldGridMap3D_TInsertionOptions : public mrpt::maps::CRandomFieldGridMap3D::TInsertionOptions {
 	using mrpt::maps::CRandomFieldGridMap3D::TInsertionOptions::TInsertionOptions;
 
@@ -175,7 +175,7 @@ struct PyCallBack_mrpt_maps_CRandomFieldGridMap3D_TInsertionOptions : public mrp
 	}
 };
 
-// mrpt::maps::CRandomFieldGridMap3D::ConnectivityDescriptor file:mrpt/maps/CRandomFieldGridMap3D.h line:162
+// mrpt::maps::CRandomFieldGridMap3D::ConnectivityDescriptor file:mrpt/maps/CRandomFieldGridMap3D.h line:174
 struct PyCallBack_mrpt_maps_CRandomFieldGridMap3D_ConnectivityDescriptor : public mrpt::maps::CRandomFieldGridMap3D::ConnectivityDescriptor {
 	using mrpt::maps::CRandomFieldGridMap3D::ConnectivityDescriptor::ConnectivityDescriptor;
 
@@ -243,7 +243,7 @@ void bind_mrpt_maps_CRandomFieldGridMap3D(std::function< pybind11::module &(std:
 		cl.def("updateMapEstimation", (void (mrpt::maps::CRandomFieldGridMap3D::*)()) &mrpt::maps::CRandomFieldGridMap3D::updateMapEstimation, "Run the method-specific procedure required to ensure that the mean &\n variances are up-to-date with all inserted observations, using parameters\n in insertionOptions \n\nC++: mrpt::maps::CRandomFieldGridMap3D::updateMapEstimation() --> void");
 		cl.def("assign", (class mrpt::maps::CRandomFieldGridMap3D & (mrpt::maps::CRandomFieldGridMap3D::*)(const class mrpt::maps::CRandomFieldGridMap3D &)) &mrpt::maps::CRandomFieldGridMap3D::operator=, "C++: mrpt::maps::CRandomFieldGridMap3D::operator=(const class mrpt::maps::CRandomFieldGridMap3D &) --> class mrpt::maps::CRandomFieldGridMap3D &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::maps::CRandomFieldGridMap3D::TInsertionOptions file:mrpt/maps/CRandomFieldGridMap3D.h line:116
+		{ // mrpt::maps::CRandomFieldGridMap3D::TInsertionOptions file:mrpt/maps/CRandomFieldGridMap3D.h line:120
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CRandomFieldGridMap3D::TInsertionOptions, std::shared_ptr<mrpt::maps::CRandomFieldGridMap3D::TInsertionOptions>, PyCallBack_mrpt_maps_CRandomFieldGridMap3D_TInsertionOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TInsertionOptions", "Parameters common to any derived class.\n  Derived classes should derive a new struct from this one, plus\n mrpt::config::CLoadableOptions,\n  and call the internal_* methods where appropiate to deal with the\n variables declared here.\n  Derived classes instantions of their \"TInsertionOptions\" MUST set the\n pointer \"m_insertOptions_common\" upon construction.");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CRandomFieldGridMap3D::TInsertionOptions(); }, [](){ return new PyCallBack_mrpt_maps_CRandomFieldGridMap3D_TInsertionOptions(); } ) );
@@ -255,7 +255,7 @@ void bind_mrpt_maps_CRandomFieldGridMap3D(std::function< pybind11::module &(std:
 			cl.def("assign", (struct mrpt::maps::CRandomFieldGridMap3D::TInsertionOptions & (mrpt::maps::CRandomFieldGridMap3D::TInsertionOptions::*)(const struct mrpt::maps::CRandomFieldGridMap3D::TInsertionOptions &)) &mrpt::maps::CRandomFieldGridMap3D::TInsertionOptions::operator=, "C++: mrpt::maps::CRandomFieldGridMap3D::TInsertionOptions::operator=(const struct mrpt::maps::CRandomFieldGridMap3D::TInsertionOptions &) --> struct mrpt::maps::CRandomFieldGridMap3D::TInsertionOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CRandomFieldGridMap3D::ConnectivityDescriptor file:mrpt/maps/CRandomFieldGridMap3D.h line:162
+		{ // mrpt::maps::CRandomFieldGridMap3D::ConnectivityDescriptor file:mrpt/maps/CRandomFieldGridMap3D.h line:174
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CRandomFieldGridMap3D::ConnectivityDescriptor, std::shared_ptr<mrpt::maps::CRandomFieldGridMap3D::ConnectivityDescriptor>, PyCallBack_mrpt_maps_CRandomFieldGridMap3D_ConnectivityDescriptor> cl(enclosing_class, "ConnectivityDescriptor", "Base class for user-supplied objects capable of describing voxels\n connectivity, used to build prior factors of the MRF graph. \n\n\n setvoxelsConnectivity() ");
 			cl.def( pybind11::init( [](){ return new PyCallBack_mrpt_maps_CRandomFieldGridMap3D_ConnectivityDescriptor(); } ) );

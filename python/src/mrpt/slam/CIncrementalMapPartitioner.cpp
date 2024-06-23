@@ -53,7 +53,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::slam::CIncrementalMapPartitioner file:mrpt/slam/CIncrementalMapPartitioner.h line:56
+// mrpt::slam::CIncrementalMapPartitioner file:mrpt/slam/CIncrementalMapPartitioner.h line:57
 struct PyCallBack_mrpt_slam_CIncrementalMapPartitioner : public mrpt::slam::CIncrementalMapPartitioner {
 	using mrpt::slam::CIncrementalMapPartitioner::CIncrementalMapPartitioner;
 
@@ -176,7 +176,7 @@ void bind_mrpt_slam_CIncrementalMapPartitioner(std::function< pybind11::module &
 		cl.def_readwrite("raw_observations", &mrpt::slam::map_keyframe_t::raw_observations);
 		cl.def("assign", (struct mrpt::slam::map_keyframe_t & (mrpt::slam::map_keyframe_t::*)(const struct mrpt::slam::map_keyframe_t &)) &mrpt::slam::map_keyframe_t::operator=, "C++: mrpt::slam::map_keyframe_t::operator=(const struct mrpt::slam::map_keyframe_t &) --> struct mrpt::slam::map_keyframe_t &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::slam::CIncrementalMapPartitioner file:mrpt/slam/CIncrementalMapPartitioner.h line:56
+	{ // mrpt::slam::CIncrementalMapPartitioner file:mrpt/slam/CIncrementalMapPartitioner.h line:57
 		pybind11::class_<mrpt::slam::CIncrementalMapPartitioner, std::shared_ptr<mrpt::slam::CIncrementalMapPartitioner>, PyCallBack_mrpt_slam_CIncrementalMapPartitioner, mrpt::serialization::CSerializable> cl(M("mrpt::slam"), "CIncrementalMapPartitioner", "Finds partitions in metric maps based on N-cut graph partition theory.\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::slam::CIncrementalMapPartitioner(); }, [](){ return new PyCallBack_mrpt_slam_CIncrementalMapPartitioner(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_slam_CIncrementalMapPartitioner const &o){ return new PyCallBack_mrpt_slam_CIncrementalMapPartitioner(o); } ) );

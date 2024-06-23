@@ -114,7 +114,7 @@ struct PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_RAWEPHEM : public mrpt::obs::gns
 	}
 };
 
-// mrpt::obs::gnss::Message_NV_OEM6_VERSION file: line:462
+// mrpt::obs::gnss::Message_NV_OEM6_VERSION file: line:448
 struct PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_VERSION : public mrpt::obs::gnss::Message_NV_OEM6_VERSION {
 	using mrpt::obs::gnss::Message_NV_OEM6_VERSION::Message_NV_OEM6_VERSION;
 
@@ -260,7 +260,7 @@ void bind_unknown_unknown_6(std::function< pybind11::module &(std::string const 
 		cl.def("fixEndianness", (void (mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS::*)()) &mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS::fixEndianness, "C++: mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS::fixEndianness() --> void");
 		cl.def("assign", (struct mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS & (mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS::*)(const struct mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS &)) &mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS::operator=, "C++: mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS::operator=(const struct mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS &) --> struct mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS::content_t file: line:137
+		{ // mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS::content_t file: line:122
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS::content_t, std::shared_ptr<mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS::content_t>> cl(enclosing_class, "content_t", "");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NV_OEM6_RXSTATUS::content_t(); } ) );
@@ -298,7 +298,7 @@ void bind_unknown_unknown_6(std::function< pybind11::module &(std::string const 
 		cl.def("fixEndianness", (void (mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM::*)()) &mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM::fixEndianness, "C++: mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM::fixEndianness() --> void");
 		cl.def("assign", (struct mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM & (mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM::*)(const struct mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM &)) &mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM::operator=, "C++: mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM::operator=(const struct mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM &) --> struct mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM::content_t file: line:137
+		{ // mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM::content_t file: line:122
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM::content_t, std::shared_ptr<mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM::content_t>> cl(enclosing_class, "content_t", "");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NV_OEM6_RAWEPHEM::content_t(); } ) );
@@ -312,7 +312,7 @@ void bind_unknown_unknown_6(std::function< pybind11::module &(std::string const 
 		}
 
 	}
-	{ // mrpt::obs::gnss::Message_NV_OEM6_VERSION file: line:462
+	{ // mrpt::obs::gnss::Message_NV_OEM6_VERSION file: line:448
 		pybind11::class_<mrpt::obs::gnss::Message_NV_OEM6_VERSION, std::shared_ptr<mrpt::obs::gnss::Message_NV_OEM6_VERSION>, PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_VERSION, mrpt::obs::gnss::gnss_message> cl(M("mrpt::obs::gnss"), "Message_NV_OEM6_VERSION", "Novatel frame: NV_OEM6_VERSION. \n mrpt::obs::CObservationGPS  ");
 		cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NV_OEM6_VERSION(); }, [](){ return new PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_VERSION(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_VERSION const &o){ return new PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_VERSION(o); } ) );
@@ -324,7 +324,7 @@ void bind_unknown_unknown_6(std::function< pybind11::module &(std::string const 
 		cl.def("fixEndianness", (void (mrpt::obs::gnss::Message_NV_OEM6_VERSION::*)()) &mrpt::obs::gnss::Message_NV_OEM6_VERSION::fixEndianness, "C++: mrpt::obs::gnss::Message_NV_OEM6_VERSION::fixEndianness() --> void");
 		cl.def("assign", (struct mrpt::obs::gnss::Message_NV_OEM6_VERSION & (mrpt::obs::gnss::Message_NV_OEM6_VERSION::*)(const struct mrpt::obs::gnss::Message_NV_OEM6_VERSION &)) &mrpt::obs::gnss::Message_NV_OEM6_VERSION::operator=, "C++: mrpt::obs::gnss::Message_NV_OEM6_VERSION::operator=(const struct mrpt::obs::gnss::Message_NV_OEM6_VERSION &) --> struct mrpt::obs::gnss::Message_NV_OEM6_VERSION &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::obs::gnss::Message_NV_OEM6_VERSION::TComponentVersion file: line:468
+		{ // mrpt::obs::gnss::Message_NV_OEM6_VERSION::TComponentVersion file: line:451
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::gnss::Message_NV_OEM6_VERSION::TComponentVersion, std::shared_ptr<mrpt::obs::gnss::Message_NV_OEM6_VERSION::TComponentVersion>> cl(enclosing_class, "TComponentVersion", "");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NV_OEM6_VERSION::TComponentVersion(); } ) );
@@ -341,7 +341,7 @@ void bind_unknown_unknown_6(std::function< pybind11::module &(std::string const 
 		cl.def("fixEndianness", (void (mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS::*)()) &mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS::fixEndianness, "C++: mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS::fixEndianness() --> void");
 		cl.def("assign", (struct mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS & (mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS::*)(const struct mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS &)) &mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS::operator=, "C++: mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS::operator=(const struct mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS &) --> struct mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS::content_t file: line:137
+		{ // mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS::content_t file: line:122
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS::content_t, std::shared_ptr<mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS::content_t>> cl(enclosing_class, "content_t", "");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NV_OEM6_RAWIMUS::content_t(); } ) );
@@ -370,7 +370,7 @@ void bind_unknown_unknown_6(std::function< pybind11::module &(std::string const 
 		cl.def("fixEndianness", (void (mrpt::obs::gnss::Message_NV_OEM6_MARKPOS::*)()) &mrpt::obs::gnss::Message_NV_OEM6_MARKPOS::fixEndianness, "C++: mrpt::obs::gnss::Message_NV_OEM6_MARKPOS::fixEndianness() --> void");
 		cl.def("assign", (struct mrpt::obs::gnss::Message_NV_OEM6_MARKPOS & (mrpt::obs::gnss::Message_NV_OEM6_MARKPOS::*)(const struct mrpt::obs::gnss::Message_NV_OEM6_MARKPOS &)) &mrpt::obs::gnss::Message_NV_OEM6_MARKPOS::operator=, "C++: mrpt::obs::gnss::Message_NV_OEM6_MARKPOS::operator=(const struct mrpt::obs::gnss::Message_NV_OEM6_MARKPOS &) --> struct mrpt::obs::gnss::Message_NV_OEM6_MARKPOS &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::obs::gnss::Message_NV_OEM6_MARKPOS::content_t file: line:137
+		{ // mrpt::obs::gnss::Message_NV_OEM6_MARKPOS::content_t file: line:122
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::gnss::Message_NV_OEM6_MARKPOS::content_t, std::shared_ptr<mrpt::obs::gnss::Message_NV_OEM6_MARKPOS::content_t>> cl(enclosing_class, "content_t", "");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NV_OEM6_MARKPOS::content_t(); } ) );

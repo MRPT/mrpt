@@ -266,7 +266,7 @@ void bind_mrpt_obs_CObservationGasSensors(std::function< pybind11::module &(std:
 			cl.def("assign", (struct mrpt::obs::CObservationGasSensors::TObservationENose & (mrpt::obs::CObservationGasSensors::TObservationENose::*)(const struct mrpt::obs::CObservationGasSensors::TObservationENose &)) &mrpt::obs::CObservationGasSensors::TObservationENose::operator=, "C++: mrpt::obs::CObservationGasSensors::TObservationENose::operator=(const struct mrpt::obs::CObservationGasSensors::TObservationENose &) --> struct mrpt::obs::CObservationGasSensors::TObservationENose &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::obs::CObservationGasSensors::CMOSmodel file:mrpt/obs/CObservationGasSensors.h line:83
+		{ // mrpt::obs::CObservationGasSensors::CMOSmodel file:mrpt/obs/CObservationGasSensors.h line:80
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::CObservationGasSensors::CMOSmodel, std::shared_ptr<mrpt::obs::CObservationGasSensors::CMOSmodel>> cl(enclosing_class, "CMOSmodel", "Declares a class within \"CObservationGasSensors\" that represents a set\n of gas concentration readings from the modelation of a MOS gas sensor\n readings.\n This class provides the parameters and functions to simulate the inverse\n model of a MOS gas sensor.\n\n \n CObservationGasSensors");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::CObservationGasSensors::CMOSmodel(); } ) );

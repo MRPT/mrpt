@@ -63,19 +63,22 @@ void CObservationPointCloud::getDescriptionAsText(std::ostream& o) const
     {
       float Imin, Imax;
       mrpt::math::minimum_maximum(*ptrIs, Imin, Imax);
-      o << "Intensity channel values: min=" << Imin << " max=" << Imax << "\n";
+      o << "Intensity channel values: min=" << Imin << " max=" << Imax << " (" << ptrIs->size()
+        << " entries)\n";
     }
     if (auto* ptrTs = pointcloud->getPointsBufferRef_timestamp(); ptrTs && !ptrTs->empty())
     {
       float Tmin, Tmax;
       mrpt::math::minimum_maximum(*ptrTs, Tmin, Tmax);
-      o << "Timestamp channel values: min=" << Tmin << " max=" << Tmax << "\n";
+      o << "Timestamp channel values: min=" << Tmin << " max=" << Tmax << " (" << ptrTs->size()
+        << " entries)\n";
     }
     if (auto* ptrRs = pointcloud->getPointsBufferRef_ring(); ptrRs && !ptrRs->empty())
     {
       uint16_t Rmin, Rmax;
       mrpt::math::minimum_maximum(*ptrRs, Rmin, Rmax);
-      o << "Ring channel values: min=" << Rmin << " max=" << Rmax << "\n";
+      o << "Ring channel values: min=" << Rmin << " max=" << Rmax << " (" << ptrRs->size()
+        << " entries)\n";
     }
   }
 

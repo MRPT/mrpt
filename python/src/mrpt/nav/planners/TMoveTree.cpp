@@ -341,7 +341,7 @@ struct PyCallBack_mrpt_nav_CRobot2NavInterface : public mrpt::nav::CRobot2NavInt
 
 void bind_mrpt_nav_planners_TMoveTree(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::nav::TMoveTree file:mrpt/nav/planners/TMoveTree.h line:51
+	{ // mrpt::nav::TMoveTree file:mrpt/nav/planners/TMoveTree.h line:52
 		pybind11::class_<mrpt::nav::TMoveTree<mrpt::nav::TNodeSE2_TP,mrpt::nav::TMoveEdgeSE2_TP,mrpt::containers::map_traits_map_as_vector>, std::shared_ptr<mrpt::nav::TMoveTree<mrpt::nav::TNodeSE2_TP,mrpt::nav::TMoveEdgeSE2_TP,mrpt::containers::map_traits_map_as_vector>>, mrpt::graphs::CDirectedTree<mrpt::nav::TMoveEdgeSE2_TP>> cl(M("mrpt::nav"), "TMoveTree_mrpt_nav_TNodeSE2_TP_mrpt_nav_TMoveEdgeSE2_TP_mrpt_containers_map_traits_map_as_vector_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::nav::TMoveTree<mrpt::nav::TNodeSE2_TP,mrpt::nav::TMoveEdgeSE2_TP,mrpt::containers::map_traits_map_as_vector>(); } ) );
 		cl.def( pybind11::init( [](mrpt::nav::TMoveTree<mrpt::nav::TNodeSE2_TP,mrpt::nav::TMoveEdgeSE2_TP,mrpt::containers::map_traits_map_as_vector> const &o){ return new mrpt::nav::TMoveTree<mrpt::nav::TNodeSE2_TP,mrpt::nav::TMoveEdgeSE2_TP,mrpt::containers::map_traits_map_as_vector>(o); } ) );
@@ -355,7 +355,7 @@ void bind_mrpt_nav_planners_TMoveTree(std::function< pybind11::module &(std::str
 		cl.def("getAsTextDescription", (std::string (mrpt::graphs::CDirectedTree<mrpt::nav::TMoveEdgeSE2_TP>::*)() const) &mrpt::graphs::CDirectedTree<mrpt::nav::TMoveEdgeSE2_TP>::getAsTextDescription, "C++: mrpt::graphs::CDirectedTree<mrpt::nav::TMoveEdgeSE2_TP>::getAsTextDescription() const --> std::string");
 		cl.def("assign", (class mrpt::graphs::CDirectedTree<struct mrpt::nav::TMoveEdgeSE2_TP> & (mrpt::graphs::CDirectedTree<mrpt::nav::TMoveEdgeSE2_TP>::*)(const class mrpt::graphs::CDirectedTree<struct mrpt::nav::TMoveEdgeSE2_TP> &)) &mrpt::graphs::CDirectedTree<mrpt::nav::TMoveEdgeSE2_TP>::operator=, "C++: mrpt::graphs::CDirectedTree<mrpt::nav::TMoveEdgeSE2_TP>::operator=(const class mrpt::graphs::CDirectedTree<struct mrpt::nav::TMoveEdgeSE2_TP> &) --> class mrpt::graphs::CDirectedTree<struct mrpt::nav::TMoveEdgeSE2_TP> &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::nav::TMoveEdgeSE2_TP file:mrpt/nav/planners/TMoveTree.h line:184
+	{ // mrpt::nav::TMoveEdgeSE2_TP file:mrpt/nav/planners/TMoveTree.h line:179
 		pybind11::class_<mrpt::nav::TMoveEdgeSE2_TP, std::shared_ptr<mrpt::nav::TMoveEdgeSE2_TP>> cl(M("mrpt::nav"), "TMoveEdgeSE2_TP", "An edge for the move tree used for planning in SE2 and TP-space ");
 		cl.def( pybind11::init( [](){ return new mrpt::nav::TMoveEdgeSE2_TP(); } ) );
 		cl.def( pybind11::init<const unsigned long, const struct mrpt::math::TPose2D>(), pybind11::arg("parent_id_"), pybind11::arg("end_pose_") );
@@ -367,27 +367,27 @@ void bind_mrpt_nav_planners_TMoveTree(std::function< pybind11::module &(std::str
 		cl.def_readwrite("ptg_K", &mrpt::nav::TMoveEdgeSE2_TP::ptg_K);
 		cl.def_readwrite("ptg_dist", &mrpt::nav::TMoveEdgeSE2_TP::ptg_dist);
 	}
-	{ // mrpt::nav::TNodeSE2 file:mrpt/nav/planners/TMoveTree.h line:216
+	{ // mrpt::nav::TNodeSE2 file:mrpt/nav/planners/TMoveTree.h line:209
 		pybind11::class_<mrpt::nav::TNodeSE2, std::shared_ptr<mrpt::nav::TNodeSE2>> cl(M("mrpt::nav"), "TNodeSE2", "");
 		cl.def( pybind11::init<const struct mrpt::math::TPose2D &>(), pybind11::arg("state_") );
 
 		cl.def( pybind11::init( [](){ return new mrpt::nav::TNodeSE2(); } ) );
 		cl.def_readwrite("state", &mrpt::nav::TNodeSE2::state);
 	}
-	{ // mrpt::nav::PoseDistanceMetric file:mrpt/nav/planners/TMoveTree.h line:226
+	{ // mrpt::nav::PoseDistanceMetric file:mrpt/nav/planners/TMoveTree.h line:219
 		pybind11::class_<mrpt::nav::PoseDistanceMetric<mrpt::nav::TNodeSE2>, std::shared_ptr<mrpt::nav::PoseDistanceMetric<mrpt::nav::TNodeSE2>>> cl(M("mrpt::nav"), "PoseDistanceMetric_mrpt_nav_TNodeSE2_t", "Pose metric for SE(2) ");
 		cl.def( pybind11::init( [](){ return new mrpt::nav::PoseDistanceMetric<mrpt::nav::TNodeSE2>(); } ) );
 		cl.def("cannotBeNearerThan", (bool (mrpt::nav::PoseDistanceMetric<mrpt::nav::TNodeSE2>::*)(const struct mrpt::nav::TNodeSE2 &, const struct mrpt::nav::TNodeSE2 &, const double) const) &mrpt::nav::PoseDistanceMetric<mrpt::nav::TNodeSE2>::cannotBeNearerThan, "C++: mrpt::nav::PoseDistanceMetric<mrpt::nav::TNodeSE2>::cannotBeNearerThan(const struct mrpt::nav::TNodeSE2 &, const struct mrpt::nav::TNodeSE2 &, const double) const --> bool", pybind11::arg("a"), pybind11::arg("b"), pybind11::arg("d"));
 		cl.def("distance", (double (mrpt::nav::PoseDistanceMetric<mrpt::nav::TNodeSE2>::*)(const struct mrpt::nav::TNodeSE2 &, const struct mrpt::nav::TNodeSE2 &) const) &mrpt::nav::PoseDistanceMetric<mrpt::nav::TNodeSE2>::distance, "C++: mrpt::nav::PoseDistanceMetric<mrpt::nav::TNodeSE2>::distance(const struct mrpt::nav::TNodeSE2 &, const struct mrpt::nav::TNodeSE2 &) const --> double", pybind11::arg("a"), pybind11::arg("b"));
 	}
-	{ // mrpt::nav::TNodeSE2_TP file:mrpt/nav/planners/TMoveTree.h line:245
+	{ // mrpt::nav::TNodeSE2_TP file:mrpt/nav/planners/TMoveTree.h line:236
 		pybind11::class_<mrpt::nav::TNodeSE2_TP, std::shared_ptr<mrpt::nav::TNodeSE2_TP>> cl(M("mrpt::nav"), "TNodeSE2_TP", "");
 		cl.def( pybind11::init<const struct mrpt::math::TPose2D &>(), pybind11::arg("state_") );
 
 		cl.def( pybind11::init( [](){ return new mrpt::nav::TNodeSE2_TP(); } ) );
 		cl.def_readwrite("state", &mrpt::nav::TNodeSE2_TP::state);
 	}
-	{ // mrpt::nav::PoseDistanceMetric file:mrpt/nav/planners/TMoveTree.h line:256
+	{ // mrpt::nav::PoseDistanceMetric file:mrpt/nav/planners/TMoveTree.h line:247
 		pybind11::class_<mrpt::nav::PoseDistanceMetric<mrpt::nav::TNodeSE2_TP>, std::shared_ptr<mrpt::nav::PoseDistanceMetric<mrpt::nav::TNodeSE2_TP>>> cl(M("mrpt::nav"), "PoseDistanceMetric_mrpt_nav_TNodeSE2_TP_t", "Pose metric for SE(2) limited to a given PTG manifold. NOTE: This 'metric'\n is NOT symmetric for all PTGs: d(a,b)!=d(b,a) ");
 		cl.def( pybind11::init<const class mrpt::nav::CParameterizedTrajectoryGenerator &>(), pybind11::arg("ptg") );
 
@@ -426,7 +426,7 @@ void bind_mrpt_nav_planners_TMoveTree(std::function< pybind11::module &(std::str
 	// mrpt::nav::collision_free_dist_segment_circ_robot(const struct mrpt::math::TPoint2D_<double> &, const struct mrpt::math::TPoint2D_<double> &, const double, const struct mrpt::math::TPoint2D_<double> &, double &) file:mrpt/nav/planners/nav_plan_geometry_utils.h line:28
 	M("mrpt::nav").def("collision_free_dist_segment_circ_robot", (bool (*)(const struct mrpt::math::TPoint2D_<double> &, const struct mrpt::math::TPoint2D_<double> &, const double, const struct mrpt::math::TPoint2D_<double> &, double &)) &mrpt::nav::collision_free_dist_segment_circ_robot, "Computes the collision-free distance for a linear segment path between two\n points, for a circular robot, and a point obstacle (ox,oy).\n \n\n true if a collision exists, and the distance along the segment will\n be in out_col_dist; false otherwise.\n \n\n std::runtime_error If the two points are closer than an epsilon\n (1e-10)\n\nC++: mrpt::nav::collision_free_dist_segment_circ_robot(const struct mrpt::math::TPoint2D_<double> &, const struct mrpt::math::TPoint2D_<double> &, const double, const struct mrpt::math::TPoint2D_<double> &, double &) --> bool", pybind11::arg("p_start"), pybind11::arg("p_end"), pybind11::arg("robot_radius"), pybind11::arg("obstacle"), pybind11::arg("out_col_dist"));
 
-	// mrpt::nav::collision_free_dist_arc_circ_robot(const double, const double, const struct mrpt::math::TPoint2D_<double> &, double &) file:mrpt/nav/planners/nav_plan_geometry_utils.h line:39
+	// mrpt::nav::collision_free_dist_arc_circ_robot(const double, const double, const struct mrpt::math::TPoint2D_<double> &, double &) file:mrpt/nav/planners/nav_plan_geometry_utils.h line:41
 	M("mrpt::nav").def("collision_free_dist_arc_circ_robot", (bool (*)(const double, const double, const struct mrpt::math::TPoint2D_<double> &, double &)) &mrpt::nav::collision_free_dist_arc_circ_robot, "Computes the collision-free distance for a forward path (+X) circular arc\n path segment from pose (0,0,0) and radius of curvature R (>0 -> +Y, <0 ->\n -Y), a circular robot and a point obstacle (ox,oy). \n\n true if a\n collision exists, and the distance along the path will be in out_col_dist;\n false otherwise.\n\nC++: mrpt::nav::collision_free_dist_arc_circ_robot(const double, const double, const struct mrpt::math::TPoint2D_<double> &, double &) --> bool", pybind11::arg("arc_radius"), pybind11::arg("robot_radius"), pybind11::arg("obstacle"), pybind11::arg("out_col_dist"));
 
 	{ // mrpt::nav::CRobot2NavInterface file:mrpt/nav/reactive/CRobot2NavInterface.h line:43
@@ -434,7 +434,7 @@ void bind_mrpt_nav_planners_TMoveTree(std::function< pybind11::module &(std::str
 		cl.def( pybind11::init( [](){ return new PyCallBack_mrpt_nav_CRobot2NavInterface(); } ) );
 		cl.def(pybind11::init<PyCallBack_mrpt_nav_CRobot2NavInterface const &>());
 		cl.def("getCurrentPoseAndSpeeds", (bool (mrpt::nav::CRobot2NavInterface::*)(struct mrpt::math::TPose2D &, struct mrpt::math::TTwist2D &, mrpt::Clock::time_point &, struct mrpt::math::TPose2D &, std::string &)) &mrpt::nav::CRobot2NavInterface::getCurrentPoseAndSpeeds, "Get the current pose and velocity of the robot. The implementation\n should not take too much time to return,\n   so if it might take more than ~10ms to ask the robot for the\n instantaneous data, it may be good enough to\n   return the latest values from a cache which is updated in a parallel\n thread.\n \n\n false on any error retrieving these values from the robot.\n \n\n\nC++: mrpt::nav::CRobot2NavInterface::getCurrentPoseAndSpeeds(struct mrpt::math::TPose2D &, struct mrpt::math::TTwist2D &, mrpt::Clock::time_point &, struct mrpt::math::TPose2D &, std::string &) --> bool", pybind11::arg("curPose"), pybind11::arg("curVelGlobal"), pybind11::arg("timestamp"), pybind11::arg("curOdometry"), pybind11::arg("frame_id"));
-		cl.def("changeSpeeds", (bool (mrpt::nav::CRobot2NavInterface::*)(const class mrpt::kinematics::CVehicleVelCmd &)) &mrpt::nav::CRobot2NavInterface::changeSpeeds, "Sends a velocity command to the robot.\n The number components in each command depends on children classes of\n mrpt::kinematics::CVehicleVelCmd.\n One robot may accept one or more different CVehicleVelCmd classes.\n This method resets the watchdog timer (that may be or may be not\n implemented in a particular robotic platform) started with\n startWatchdog()\n \n\n false on any error.\n \n\n startWatchdog\n \n\n\n	 \n\nC++: mrpt::nav::CRobot2NavInterface::changeSpeeds(const class mrpt::kinematics::CVehicleVelCmd &) --> bool", pybind11::arg("vel_cmd"));
+		cl.def("changeSpeeds", (bool (mrpt::nav::CRobot2NavInterface::*)(const class mrpt::kinematics::CVehicleVelCmd &)) &mrpt::nav::CRobot2NavInterface::changeSpeeds, "Sends a velocity command to the robot.\n The number components in each command depends on children classes of\n mrpt::kinematics::CVehicleVelCmd.\n One robot may accept one or more different CVehicleVelCmd classes.\n This method resets the watchdog timer (that may be or may be not\n implemented in a particular robotic platform) started with\n startWatchdog()\n \n\n false on any error.\n \n\n startWatchdog\n \n\n\n   \n\nC++: mrpt::nav::CRobot2NavInterface::changeSpeeds(const class mrpt::kinematics::CVehicleVelCmd &) --> bool", pybind11::arg("vel_cmd"));
 		cl.def("changeSpeedsNOP", (bool (mrpt::nav::CRobot2NavInterface::*)()) &mrpt::nav::CRobot2NavInterface::changeSpeedsNOP, "Just like changeSpeeds(), but will be called when the last velocity\n command is still the preferred solution,\n so there is no need to change that past command. The unique effect of\n this callback would be resetting the watchdog timer.\n \n\n false on any error.\n \n\n changeSpeeds(), startWatchdog()\n \n\n\nC++: mrpt::nav::CRobot2NavInterface::changeSpeedsNOP() --> bool");
 		cl.def("stop", [](mrpt::nav::CRobot2NavInterface &o) -> bool { return o.stop(); }, "");
 		cl.def("stop", (bool (mrpt::nav::CRobot2NavInterface::*)(bool)) &mrpt::nav::CRobot2NavInterface::stop, "Stop the robot right now.\n  \n\n true if stop is due to some unexpected error.\n false if \"stop\" happens as part of a normal operation (e.g. target\n reached).\n \n\n false on any error.\n\nC++: mrpt::nav::CRobot2NavInterface::stop(bool) --> bool", pybind11::arg("isEmergencyStop"));

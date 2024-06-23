@@ -325,7 +325,7 @@ struct PyCallBack_mrpt_maps_CLandmarksMap : public mrpt::maps::CLandmarksMap {
 	}
 };
 
-// mrpt::maps::CLandmarksMap::TInsertionOptions file:mrpt/maps/CLandmarksMap.h line:232
+// mrpt::maps::CLandmarksMap::TInsertionOptions file:mrpt/maps/CLandmarksMap.h line:227
 struct PyCallBack_mrpt_maps_CLandmarksMap_TInsertionOptions : public mrpt::maps::CLandmarksMap::TInsertionOptions {
 	using mrpt::maps::CLandmarksMap::TInsertionOptions::TInsertionOptions;
 
@@ -357,7 +357,7 @@ struct PyCallBack_mrpt_maps_CLandmarksMap_TInsertionOptions : public mrpt::maps:
 	}
 };
 
-// mrpt::maps::CLandmarksMap::TLikelihoodOptions file:mrpt/maps/CLandmarksMap.h line:347
+// mrpt::maps::CLandmarksMap::TLikelihoodOptions file:mrpt/maps/CLandmarksMap.h line:341
 struct PyCallBack_mrpt_maps_CLandmarksMap_TLikelihoodOptions : public mrpt::maps::CLandmarksMap::TLikelihoodOptions {
 	using mrpt::maps::CLandmarksMap::TLikelihoodOptions::TLikelihoodOptions;
 
@@ -389,7 +389,7 @@ struct PyCallBack_mrpt_maps_CLandmarksMap_TLikelihoodOptions : public mrpt::maps
 	}
 };
 
-// mrpt::maps::CLandmarksMap::TMapDefinition file: line:85
+// mrpt::maps::CLandmarksMap::TMapDefinition file: line:78
 struct PyCallBack_mrpt_maps_CLandmarksMap_TMapDefinition : public mrpt::maps::CLandmarksMap::TMapDefinition {
 	using mrpt::maps::CLandmarksMap::TMapDefinition::TMapDefinition;
 
@@ -437,7 +437,7 @@ struct PyCallBack_mrpt_maps_CLandmarksMap_TMapDefinition : public mrpt::maps::CL
 void bind_mrpt_maps_CLandmarksMap(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
 	{ // mrpt::maps::CLandmarksMap file:mrpt/maps/CLandmarksMap.h line:74
-		pybind11::class_<mrpt::maps::CLandmarksMap, std::shared_ptr<mrpt::maps::CLandmarksMap>, PyCallBack_mrpt_maps_CLandmarksMap, mrpt::maps::CMetricMap> cl(M("mrpt::maps"), "CLandmarksMap", "A class for storing a map of 3D probabilistic landmarks.\n \n  Currently these types of landmarks are defined: (see mrpt::maps::CLandmark)\n		- For \"visual landmarks\" from images: features with associated\n descriptors.\n		- For laser scanners: each of the range measuremnts, as \"occupancy\"\n landmarks.\n		- For grid maps: \"Panoramic descriptor\" feature points.\n		- For range-only localization and SLAM: Beacons. It is also supported\n the simulation of expected beacon-to-sensor readings, observation\n likelihood,...\n \n How to load landmarks from observations:\n  When invoking CLandmarksMap::insertObservation(), the values in\n CLandmarksMap::insertionOptions will\n     determinate the kind of landmarks that will be extracted and fused into\n the map. Supported feature\n     extraction processes are listed next:\n\n  \n   Observation class: Generated Landmarks:\n Comments: \n   CObservationImage vlSIFT 1) A SIFT feature is\n created for each SIFT detected in the image,\n		   2) Correspondences between SIFTs features and existing ones are\n finded by computeMatchingWith3DLandmarks,\n		   3) The corresponding feaures are fused, and the new ones added,\n with an initial uncertainty according to insertionOptions \n   CObservationStereoImages vlSIFT  Each image is\n separately procesed by the method for CObservationImage observations \n \n   CObservationStereoImages vlColor  TODO... \n \n   CObservation2DRangeScan glOccupancy  A landmark is\n added for each range in the scan, with its appropiate covariance matrix derived\n from the jacobians matrixes.  \n  \n\n \n CMetricMap\n \n\n\n ");
+		pybind11::class_<mrpt::maps::CLandmarksMap, std::shared_ptr<mrpt::maps::CLandmarksMap>, PyCallBack_mrpt_maps_CLandmarksMap, mrpt::maps::CMetricMap> cl(M("mrpt::maps"), "CLandmarksMap", "A class for storing a map of 3D probabilistic landmarks.\n \n  Currently these types of landmarks are defined: (see mrpt::maps::CLandmark)\n		- For \"visual landmarks\" from images: features with associated\n descriptors.\n		- For laser scanners: each of the range measuremnts, as \"occupancy\"\n landmarks.\n		- For grid maps: \"Panoramic descriptor\" feature points.\n		- For range-only localization and SLAM: Beacons. It is also supported\n the simulation of expected beacon-to-sensor readings, observation\n likelihood,...\n \n How to load landmarks from observations:\n  When invoking CLandmarksMap::insertObservation(), the values in\n CLandmarksMap::insertionOptions will\n     determinate the kind of landmarks that will be extracted and fused into\n the map. Supported feature\n     extraction processes are listed next:\n\n  \n   Observation class: Generated Landmarks:\n Comments: \n   CObservationImage vlSIFT 1) A SIFT feature is\n created for each SIFT detected in the image,\n       2) Correspondences between SIFTs features and existing ones are\n finded by computeMatchingWith3DLandmarks,\n       3) The corresponding feaures are fused, and the new ones added,\n with an initial uncertainty according to insertionOptions \n   CObservationStereoImages vlSIFT  Each image is\n separately procesed by the method for CObservationImage observations \n \n   CObservationStereoImages vlColor  TODO... \n \n   CObservation2DRangeScan glOccupancy  A landmark is\n added for each range in the scan, with its appropiate covariance matrix derived\n from the jacobians matrixes.  \n  \n\n \n CMetricMap\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::maps::CLandmarksMap(); }, [](){ return new PyCallBack_mrpt_maps_CLandmarksMap(); } ) );
 		cl.def_readwrite("landmarks", &mrpt::maps::CLandmarksMap::landmarks);
 		cl.def_readwrite("insertionOptions", &mrpt::maps::CLandmarksMap::insertionOptions);
@@ -460,7 +460,7 @@ void bind_mrpt_maps_CLandmarksMap(std::function< pybind11::module &(std::string 
 		cl.def("saveToMATLABScript3D", [](mrpt::maps::CLandmarksMap const &o, std::string const & a0, const char * a1) -> bool { return o.saveToMATLABScript3D(a0, a1); }, "", pybind11::arg("file"), pybind11::arg("style"));
 		cl.def("saveToMATLABScript3D", (bool (mrpt::maps::CLandmarksMap::*)(std::string, const char *, float) const) &mrpt::maps::CLandmarksMap::saveToMATLABScript3D, "Save to a MATLAB script which displays 3D error ellipses for the map.\n	\n\n		The name of the file to save the script to.\n  \n\n	The MATLAB-like string for the style of the lines (see\n'help plot' in MATLAB for possibilities)\n  \n\n The ellipsoids will be drawn from the center to a given\nconfidence interval in [0,1], e.g. 2 sigmas=0.95 (default is 2std = 0.95\nconfidence intervals)\n\n  \n Returns false if any error occured, true elsewere.\n\nC++: mrpt::maps::CLandmarksMap::saveToMATLABScript3D(std::string, const char *, float) const --> bool", pybind11::arg("file"), pybind11::arg("style"), pybind11::arg("confInterval"));
 		cl.def("size", (size_t (mrpt::maps::CLandmarksMap::*)() const) &mrpt::maps::CLandmarksMap::size, "Returns the stored landmarks count.\n\nC++: mrpt::maps::CLandmarksMap::size() const --> size_t");
-		cl.def("computeLikelihood_RSLC_2007", (double (mrpt::maps::CLandmarksMap::*)(const class mrpt::maps::CLandmarksMap *, const class mrpt::poses::CPose2D &) const) &mrpt::maps::CLandmarksMap::computeLikelihood_RSLC_2007, "Computes the (logarithmic) likelihood function for a sensed observation\n	  \"o\" according to \"this\" map.\n   This is the implementation of the algorithm reported in the paper:\n			J.L. Blanco, J. Gonzalez, and J.A. Fernandez-Madrigal, \"A\n	  Consensus-based Approach for Estimating the Observation Likelihood of\n	  Accurate Range Sensors\", in IEEE International Conference on Robotics and\n	  Automation (ICRA), Rome (Italy), Apr 10-14, 2007\n\nC++: mrpt::maps::CLandmarksMap::computeLikelihood_RSLC_2007(const class mrpt::maps::CLandmarksMap *, const class mrpt::poses::CPose2D &) const --> double", pybind11::arg("s"), pybind11::arg("sensorPose"));
+		cl.def("computeLikelihood_RSLC_2007", (double (mrpt::maps::CLandmarksMap::*)(const class mrpt::maps::CLandmarksMap *, const class mrpt::poses::CPose2D &) const) &mrpt::maps::CLandmarksMap::computeLikelihood_RSLC_2007, "Computes the (logarithmic) likelihood function for a sensed observation\n  \"o\" according to \"this\" map.\n   This is the implementation of the algorithm reported in the paper:\n      J.L. Blanco, J. Gonzalez, and J.A. Fernandez-Madrigal, \"A\n  Consensus-based Approach for Estimating the Observation Likelihood of\n  Accurate Range Sensors\", in IEEE International Conference on Robotics and\n  Automation (ICRA), Rome (Italy), Apr 10-14, 2007\n\nC++: mrpt::maps::CLandmarksMap::computeLikelihood_RSLC_2007(const class mrpt::maps::CLandmarksMap *, const class mrpt::poses::CPose2D &) const --> double", pybind11::arg("s"), pybind11::arg("sensorPose"));
 		cl.def("loadSiftFeaturesFromImageObservation", [](mrpt::maps::CLandmarksMap &o, const class mrpt::obs::CObservationImage & a0) -> void { return o.loadSiftFeaturesFromImageObservation(a0); }, "", pybind11::arg("obs"));
 		cl.def("loadSiftFeaturesFromImageObservation", (void (mrpt::maps::CLandmarksMap::*)(const class mrpt::obs::CObservationImage &, const struct mrpt::vision::CFeatureExtraction::TOptions &)) &mrpt::maps::CLandmarksMap::loadSiftFeaturesFromImageObservation, "Loads into this landmarks map the SIFT features extracted from an image\n observation (Previous contents of map will be erased)\n  The robot is assumed to be at the origin of the map.\n  Some options may be applicable from \"insertionOptions\"\n (insertionOptions.SIFTsLoadDistanceOfTheMean)\n\n  \n Optionally, you can pass here parameters for\n changing the default SIFT detector settings.\n\nC++: mrpt::maps::CLandmarksMap::loadSiftFeaturesFromImageObservation(const class mrpt::obs::CObservationImage &, const struct mrpt::vision::CFeatureExtraction::TOptions &) --> void", pybind11::arg("obs"), pybind11::arg("feat_options"));
 		cl.def("loadSiftFeaturesFromStereoImageObservation", [](mrpt::maps::CLandmarksMap &o, const class mrpt::obs::CObservationStereoImages & a0, long const & a1) -> void { return o.loadSiftFeaturesFromStereoImageObservation(a0, a1); }, "", pybind11::arg("obs"), pybind11::arg("fID"));
@@ -480,7 +480,7 @@ void bind_mrpt_maps_CLandmarksMap(std::function< pybind11::module &(std::string 
 		cl.def("auxParticleFilterCleanUp", (void (mrpt::maps::CLandmarksMap::*)()) &mrpt::maps::CLandmarksMap::auxParticleFilterCleanUp, "C++: mrpt::maps::CLandmarksMap::auxParticleFilterCleanUp() --> void");
 		cl.def("assign", (class mrpt::maps::CLandmarksMap & (mrpt::maps::CLandmarksMap::*)(const class mrpt::maps::CLandmarksMap &)) &mrpt::maps::CLandmarksMap::operator=, "C++: mrpt::maps::CLandmarksMap::operator=(const class mrpt::maps::CLandmarksMap &) --> class mrpt::maps::CLandmarksMap &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::maps::CLandmarksMap::TCustomSequenceLandmarks file:mrpt/maps/CLandmarksMap.h line:135
+		{ // mrpt::maps::CLandmarksMap::TCustomSequenceLandmarks file:mrpt/maps/CLandmarksMap.h line:133
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CLandmarksMap::TCustomSequenceLandmarks, std::shared_ptr<mrpt::maps::CLandmarksMap::TCustomSequenceLandmarks>> cl(enclosing_class, "TCustomSequenceLandmarks", "The list of landmarks: the wrapper class is just for maintaining the\n KD-Tree representation");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CLandmarksMap::TCustomSequenceLandmarks(); } ) );
@@ -499,7 +499,7 @@ void bind_mrpt_maps_CLandmarksMap(std::function< pybind11::module &(std::string 
 			cl.def("assign", (struct mrpt::maps::CLandmarksMap::TCustomSequenceLandmarks & (mrpt::maps::CLandmarksMap::TCustomSequenceLandmarks::*)(const struct mrpt::maps::CLandmarksMap::TCustomSequenceLandmarks &)) &mrpt::maps::CLandmarksMap::TCustomSequenceLandmarks::operator=, "C++: mrpt::maps::CLandmarksMap::TCustomSequenceLandmarks::operator=(const struct mrpt::maps::CLandmarksMap::TCustomSequenceLandmarks &) --> struct mrpt::maps::CLandmarksMap::TCustomSequenceLandmarks &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CLandmarksMap::TInsertionOptions file:mrpt/maps/CLandmarksMap.h line:232
+		{ // mrpt::maps::CLandmarksMap::TInsertionOptions file:mrpt/maps/CLandmarksMap.h line:227
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CLandmarksMap::TInsertionOptions, std::shared_ptr<mrpt::maps::CLandmarksMap::TInsertionOptions>, PyCallBack_mrpt_maps_CLandmarksMap_TInsertionOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TInsertionOptions", "With this struct options are provided to the observation insertion\n process.");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CLandmarksMap::TInsertionOptions(); }, [](){ return new PyCallBack_mrpt_maps_CLandmarksMap_TInsertionOptions(); } ) );
@@ -526,7 +526,7 @@ void bind_mrpt_maps_CLandmarksMap(std::function< pybind11::module &(std::string 
 			cl.def("assign", (struct mrpt::maps::CLandmarksMap::TInsertionOptions & (mrpt::maps::CLandmarksMap::TInsertionOptions::*)(const struct mrpt::maps::CLandmarksMap::TInsertionOptions &)) &mrpt::maps::CLandmarksMap::TInsertionOptions::operator=, "C++: mrpt::maps::CLandmarksMap::TInsertionOptions::operator=(const struct mrpt::maps::CLandmarksMap::TInsertionOptions &) --> struct mrpt::maps::CLandmarksMap::TInsertionOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CLandmarksMap::TLikelihoodOptions file:mrpt/maps/CLandmarksMap.h line:347
+		{ // mrpt::maps::CLandmarksMap::TLikelihoodOptions file:mrpt/maps/CLandmarksMap.h line:341
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CLandmarksMap::TLikelihoodOptions, std::shared_ptr<mrpt::maps::CLandmarksMap::TLikelihoodOptions>, PyCallBack_mrpt_maps_CLandmarksMap_TLikelihoodOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TLikelihoodOptions", "With this struct options are provided to the likelihood computations.");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CLandmarksMap::TLikelihoodOptions(); }, [](){ return new PyCallBack_mrpt_maps_CLandmarksMap_TLikelihoodOptions(); } ) );
@@ -547,7 +547,7 @@ void bind_mrpt_maps_CLandmarksMap(std::function< pybind11::module &(std::string 
 			cl.def("loadFromConfigFile", (void (mrpt::maps::CLandmarksMap::TLikelihoodOptions::*)(const class mrpt::config::CConfigFileBase &, const std::string &)) &mrpt::maps::CLandmarksMap::TLikelihoodOptions::loadFromConfigFile, "C++: mrpt::maps::CLandmarksMap::TLikelihoodOptions::loadFromConfigFile(const class mrpt::config::CConfigFileBase &, const std::string &) --> void", pybind11::arg("source"), pybind11::arg("section"));
 			cl.def("assign", (struct mrpt::maps::CLandmarksMap::TLikelihoodOptions & (mrpt::maps::CLandmarksMap::TLikelihoodOptions::*)(const struct mrpt::maps::CLandmarksMap::TLikelihoodOptions &)) &mrpt::maps::CLandmarksMap::TLikelihoodOptions::operator=, "C++: mrpt::maps::CLandmarksMap::TLikelihoodOptions::operator=(const struct mrpt::maps::CLandmarksMap::TLikelihoodOptions &) --> struct mrpt::maps::CLandmarksMap::TLikelihoodOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-			{ // mrpt::maps::CLandmarksMap::TLikelihoodOptions::TGPSOrigin file:mrpt/maps/CLandmarksMap.h line:408
+			{ // mrpt::maps::CLandmarksMap::TLikelihoodOptions::TGPSOrigin file:mrpt/maps/CLandmarksMap.h line:401
 				auto & enclosing_class = cl;
 				pybind11::class_<mrpt::maps::CLandmarksMap::TLikelihoodOptions::TGPSOrigin, std::shared_ptr<mrpt::maps::CLandmarksMap::TLikelihoodOptions::TGPSOrigin>> cl(enclosing_class, "TGPSOrigin", "This struct store de GPS longitude, latitude (in degrees ) and\n altitude (in meters) for the first GPS observation\n compose with de sensor position on the robot ");
 				cl.def( pybind11::init( [](){ return new mrpt::maps::CLandmarksMap::TLikelihoodOptions::TGPSOrigin(); } ) );
@@ -564,7 +564,7 @@ void bind_mrpt_maps_CLandmarksMap(std::function< pybind11::module &(std::string 
 
 		}
 
-		{ // mrpt::maps::CLandmarksMap::TInsertionResults file:mrpt/maps/CLandmarksMap.h line:435
+		{ // mrpt::maps::CLandmarksMap::TInsertionResults file:mrpt/maps/CLandmarksMap.h line:428
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CLandmarksMap::TInsertionResults, std::shared_ptr<mrpt::maps::CLandmarksMap::TInsertionResults>> cl(enclosing_class, "TInsertionResults", "This struct stores extra results from invoking insertObservation");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CLandmarksMap::TInsertionResults(); } ) );
@@ -573,7 +573,7 @@ void bind_mrpt_maps_CLandmarksMap(std::function< pybind11::module &(std::string 
 			cl.def("assign", (struct mrpt::maps::CLandmarksMap::TInsertionResults & (mrpt::maps::CLandmarksMap::TInsertionResults::*)(const struct mrpt::maps::CLandmarksMap::TInsertionResults &)) &mrpt::maps::CLandmarksMap::TInsertionResults::operator=, "C++: mrpt::maps::CLandmarksMap::TInsertionResults::operator=(const struct mrpt::maps::CLandmarksMap::TInsertionResults &) --> struct mrpt::maps::CLandmarksMap::TInsertionResults &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CLandmarksMap::TFuseOptions file:mrpt/maps/CLandmarksMap.h line:446
+		{ // mrpt::maps::CLandmarksMap::TFuseOptions file:mrpt/maps/CLandmarksMap.h line:439
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CLandmarksMap::TFuseOptions, std::shared_ptr<mrpt::maps::CLandmarksMap::TFuseOptions>> cl(enclosing_class, "TFuseOptions", "With this struct options are provided to the fusion process.");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CLandmarksMap::TFuseOptions(); } ) );
@@ -582,12 +582,12 @@ void bind_mrpt_maps_CLandmarksMap(std::function< pybind11::module &(std::string 
 			cl.def("assign", (struct mrpt::maps::CLandmarksMap::TFuseOptions & (mrpt::maps::CLandmarksMap::TFuseOptions::*)(const struct mrpt::maps::CLandmarksMap::TFuseOptions &)) &mrpt::maps::CLandmarksMap::TFuseOptions::operator=, "C++: mrpt::maps::CLandmarksMap::TFuseOptions::operator=(const struct mrpt::maps::CLandmarksMap::TFuseOptions &) --> struct mrpt::maps::CLandmarksMap::TFuseOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CLandmarksMap::TMapDefinitionBase file: line:80
+		{ // mrpt::maps::CLandmarksMap::TMapDefinitionBase file: line:74
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CLandmarksMap::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CLandmarksMap::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CLandmarksMap::TMapDefinition file: line:85
+		{ // mrpt::maps::CLandmarksMap::TMapDefinition file: line:78
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CLandmarksMap::TMapDefinition, std::shared_ptr<mrpt::maps::CLandmarksMap::TMapDefinition>, PyCallBack_mrpt_maps_CLandmarksMap_TMapDefinition, mrpt::maps::CLandmarksMap::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CLandmarksMap::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CLandmarksMap_TMapDefinition(); } ) );

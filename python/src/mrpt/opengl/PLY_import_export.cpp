@@ -84,7 +84,7 @@ struct PyCallBack_mrpt_opengl_PLY_Importer : public mrpt::opengl::PLY_Importer {
 	}
 };
 
-// mrpt::opengl::PLY_Exporter file:mrpt/opengl/PLY_import_export.h line:87
+// mrpt::opengl::PLY_Exporter file:mrpt/opengl/PLY_import_export.h line:84
 struct PyCallBack_mrpt_opengl_PLY_Exporter : public mrpt::opengl::PLY_Exporter {
 	using mrpt::opengl::PLY_Exporter::PLY_Exporter;
 
@@ -141,7 +141,7 @@ void bind_mrpt_opengl_PLY_import_export(std::function< pybind11::module &(std::s
 		cl.def("getLoadPLYErrorString", (std::string (mrpt::opengl::PLY_Importer::*)() const) &mrpt::opengl::PLY_Importer::getLoadPLYErrorString, "Return a description of the error if loadFromPlyFile() returned false,\n or an empty string if the file was loaded without problems. \n\nC++: mrpt::opengl::PLY_Importer::getLoadPLYErrorString() const --> std::string");
 		cl.def("assign", (class mrpt::opengl::PLY_Importer & (mrpt::opengl::PLY_Importer::*)(const class mrpt::opengl::PLY_Importer &)) &mrpt::opengl::PLY_Importer::operator=, "C++: mrpt::opengl::PLY_Importer::operator=(const class mrpt::opengl::PLY_Importer &) --> class mrpt::opengl::PLY_Importer &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::opengl::PLY_Exporter file:mrpt/opengl/PLY_import_export.h line:87
+	{ // mrpt::opengl::PLY_Exporter file:mrpt/opengl/PLY_import_export.h line:84
 		pybind11::class_<mrpt::opengl::PLY_Exporter, std::shared_ptr<mrpt::opengl::PLY_Exporter>, PyCallBack_mrpt_opengl_PLY_Exporter> cl(M("mrpt::opengl"), "PLY_Exporter", "A virtual base class that implements the capability of exporting 3D point\n clouds and faces to a file in the Stanford PLY format.\n \n\n https://www.mrpt.org/Support_for_the_Stanford_3D_models_file_format_PLY\n \n\n PLY_Importer\n \n\n\n ");
 		cl.def(pybind11::init<PyCallBack_mrpt_opengl_PLY_Exporter const &>());
 		cl.def( pybind11::init( [](){ return new PyCallBack_mrpt_opengl_PLY_Exporter(); } ) );

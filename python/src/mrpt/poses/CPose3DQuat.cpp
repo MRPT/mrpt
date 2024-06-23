@@ -212,7 +212,7 @@ void bind_mrpt_poses_CPose3DQuat(std::function< pybind11::module &(std::string c
 
 		cl.def("__str__", [](mrpt::poses::CPose3DQuat const &o) -> std::string { std::ostringstream s; using namespace mrpt::poses; s << o; return s.str(); } );
 
-		{ // mrpt::poses::CPose3DQuat::iterator file:mrpt/poses/CPose3DQuat.h line:371
+		{ // mrpt::poses::CPose3DQuat::iterator file:mrpt/poses/CPose3DQuat.h line:375
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::poses::CPose3DQuat::iterator, std::shared_ptr<mrpt::poses::CPose3DQuat::iterator>> cl(enclosing_class, "iterator", "");
 			cl.def( pybind11::init( [](){ return new mrpt::poses::CPose3DQuat::iterator(); } ) );
@@ -222,7 +222,7 @@ void bind_mrpt_poses_CPose3DQuat(std::function< pybind11::module &(std::string c
 			cl.def("__getitem__", (double & (mrpt::poses::CPose3DQuat::iterator::*)(int64_t) const) &mrpt::poses::CPose3DQuat::iterator::operator[], "C++: mrpt::poses::CPose3DQuat::iterator::operator[](int64_t) const --> double &", pybind11::return_value_policy::automatic, pybind11::arg("off"));
 		}
 
-		{ // mrpt::poses::CPose3DQuat::const_iterator file:mrpt/poses/CPose3DQuat.h line:482
+		{ // mrpt::poses::CPose3DQuat::const_iterator file:mrpt/poses/CPose3DQuat.h line:469
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::poses::CPose3DQuat::const_iterator, std::shared_ptr<mrpt::poses::CPose3DQuat::const_iterator>> cl(enclosing_class, "const_iterator", "");
 			cl.def( pybind11::init( [](){ return new mrpt::poses::CPose3DQuat::const_iterator(); } ) );

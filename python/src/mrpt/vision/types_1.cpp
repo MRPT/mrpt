@@ -24,7 +24,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::vision::TMultiResDescMatchOptions file:mrpt/vision/types.h line:525
+// mrpt::vision::TMultiResDescMatchOptions file:mrpt/vision/types.h line:518
 struct PyCallBack_mrpt_vision_TMultiResDescMatchOptions : public mrpt::vision::TMultiResDescMatchOptions {
 	using mrpt::vision::TMultiResDescMatchOptions::TMultiResDescMatchOptions;
 
@@ -90,7 +90,7 @@ struct PyCallBack_mrpt_vision_TMultiResDescOptions : public mrpt::vision::TMulti
 
 void bind_mrpt_vision_types_1(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::vision::TMultiResMatchingOutput file:mrpt/vision/types.h line:502
+	{ // mrpt::vision::TMultiResMatchingOutput file:mrpt/vision/types.h line:495
 		pybind11::class_<mrpt::vision::TMultiResMatchingOutput, std::shared_ptr<mrpt::vision::TMultiResMatchingOutput>> cl(M("mrpt::vision"), "TMultiResMatchingOutput", "Struct containing the output after matching multi-resolution SIFT-like\n descriptors");
 		cl.def( pybind11::init( [](){ return new mrpt::vision::TMultiResMatchingOutput(); } ) );
 		cl.def( pybind11::init( [](mrpt::vision::TMultiResMatchingOutput const &o){ return new mrpt::vision::TMultiResMatchingOutput(o); } ) );
@@ -101,7 +101,7 @@ void bind_mrpt_vision_types_1(std::function< pybind11::module &(std::string cons
 		cl.def_readwrite("firstListDistance", &mrpt::vision::TMultiResMatchingOutput::firstListDistance);
 		cl.def("assign", (struct mrpt::vision::TMultiResMatchingOutput & (mrpt::vision::TMultiResMatchingOutput::*)(const struct mrpt::vision::TMultiResMatchingOutput &)) &mrpt::vision::TMultiResMatchingOutput::operator=, "C++: mrpt::vision::TMultiResMatchingOutput::operator=(const struct mrpt::vision::TMultiResMatchingOutput &) --> struct mrpt::vision::TMultiResMatchingOutput &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::vision::TMultiResDescMatchOptions file:mrpt/vision/types.h line:525
+	{ // mrpt::vision::TMultiResDescMatchOptions file:mrpt/vision/types.h line:518
 		pybind11::class_<mrpt::vision::TMultiResDescMatchOptions, std::shared_ptr<mrpt::vision::TMultiResDescMatchOptions>, PyCallBack_mrpt_vision_TMultiResDescMatchOptions, mrpt::config::CLoadableOptions> cl(M("mrpt::vision"), "TMultiResDescMatchOptions", "Struct containing the options when matching multi-resolution SIFT-like\n descriptors");
 		cl.def( pybind11::init( [](){ return new mrpt::vision::TMultiResDescMatchOptions(); }, [](){ return new PyCallBack_mrpt_vision_TMultiResDescMatchOptions(); } ) );
 		cl.def( pybind11::init<bool, double, bool, double, double, const unsigned int &, const unsigned int &, const unsigned int &, const unsigned int &, int, int, int, int, int>(), pybind11::arg("_useOriFilter"), pybind11::arg("_oriThreshold"), pybind11::arg("_useDepthFilter"), pybind11::arg("_th"), pybind11::arg("_th2"), pybind11::arg("_lwscl1"), pybind11::arg("_lwscl2"), pybind11::arg("_hwscl1"), pybind11::arg("_hwscl2"), pybind11::arg("_searchAreaSize"), pybind11::arg("_lsth"), pybind11::arg("_tsth"), pybind11::arg("_minFeaturesToFind"), pybind11::arg("_minFeaturesToBeLost") );

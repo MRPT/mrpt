@@ -22,7 +22,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::serialization::CArchiveStreamBase file:mrpt/serialization/CArchive.h line:604
+// mrpt::serialization::CArchiveStreamBase file:mrpt/serialization/CArchive.h line:602
 struct PyCallBack_mrpt_serialization_CArchiveStreamBase_mrpt_io_CFileInputStream_t : public mrpt::serialization::CArchiveStreamBase<mrpt::io::CFileInputStream> {
 	using mrpt::serialization::CArchiveStreamBase<mrpt::io::CFileInputStream>::CArchiveStreamBase;
 
@@ -67,7 +67,7 @@ struct PyCallBack_mrpt_serialization_CArchiveStreamBase_mrpt_io_CFileInputStream
 	}
 };
 
-// mrpt::serialization::CArchiveStreamBase file:mrpt/serialization/CArchive.h line:604
+// mrpt::serialization::CArchiveStreamBase file:mrpt/serialization/CArchive.h line:602
 struct PyCallBack_mrpt_serialization_CArchiveStreamBase_mrpt_io_CFileOutputStream_t : public mrpt::serialization::CArchiveStreamBase<mrpt::io::CFileOutputStream> {
 	using mrpt::serialization::CArchiveStreamBase<mrpt::io::CFileOutputStream>::CArchiveStreamBase;
 
@@ -114,7 +114,7 @@ struct PyCallBack_mrpt_serialization_CArchiveStreamBase_mrpt_io_CFileOutputStrea
 
 void bind_mrpt_serialization_CArchive_1(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::serialization::CArchiveStreamBase file:mrpt/serialization/CArchive.h line:604
+	{ // mrpt::serialization::CArchiveStreamBase file:mrpt/serialization/CArchive.h line:602
 		pybind11::class_<mrpt::serialization::CArchiveStreamBase<mrpt::io::CFileInputStream>, std::shared_ptr<mrpt::serialization::CArchiveStreamBase<mrpt::io::CFileInputStream>>, PyCallBack_mrpt_serialization_CArchiveStreamBase_mrpt_io_CFileInputStream_t, mrpt::serialization::CArchive> cl(M("mrpt::serialization"), "CArchiveStreamBase_mrpt_io_CFileInputStream_t", "");
 		cl.def( pybind11::init<class mrpt::io::CFileInputStream &>(), pybind11::arg("s") );
 
@@ -137,7 +137,7 @@ void bind_mrpt_serialization_CArchive_1(std::function< pybind11::module &(std::s
 		cl.def("__rshift__", (class mrpt::serialization::CArchive & (mrpt::serialization::CArchive::*)(class std::shared_ptr<class mrpt::serialization::CSerializable> &)) &mrpt::serialization::CArchive::operator>>, "C++: mrpt::serialization::CArchive::operator>>(class std::shared_ptr<class mrpt::serialization::CSerializable> &) --> class mrpt::serialization::CArchive &", pybind11::return_value_policy::automatic, pybind11::arg("pObj"));
 		cl.def("assign", (class mrpt::serialization::CArchive & (mrpt::serialization::CArchive::*)(const class mrpt::serialization::CArchive &)) &mrpt::serialization::CArchive::operator=, "C++: mrpt::serialization::CArchive::operator=(const class mrpt::serialization::CArchive &) --> class mrpt::serialization::CArchive &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::serialization::CArchiveStreamBase file:mrpt/serialization/CArchive.h line:604
+	{ // mrpt::serialization::CArchiveStreamBase file:mrpt/serialization/CArchive.h line:602
 		pybind11::class_<mrpt::serialization::CArchiveStreamBase<mrpt::io::CFileOutputStream>, std::shared_ptr<mrpt::serialization::CArchiveStreamBase<mrpt::io::CFileOutputStream>>, PyCallBack_mrpt_serialization_CArchiveStreamBase_mrpt_io_CFileOutputStream_t, mrpt::serialization::CArchive> cl(M("mrpt::serialization"), "CArchiveStreamBase_mrpt_io_CFileOutputStream_t", "");
 		cl.def( pybind11::init<class mrpt::io::CFileOutputStream &>(), pybind11::arg("s") );
 

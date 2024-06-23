@@ -97,7 +97,6 @@ class CWeightedPointsMap : public CPointsMap
       const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
 
  protected:
-  void impl_copyFrom(const CPointsMap& obj) override;
   void addFrom_classSpecific(
       const CPointsMap& anotherMap,
       size_t nPreviousPoints,

@@ -36,7 +36,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::bayes::CRejectionSamplingCapable file:mrpt/bayes/CRejectionSamplingCapable.h line:31
+// mrpt::bayes::CRejectionSamplingCapable file:mrpt/bayes/CRejectionSamplingCapable.h line:30
 struct PyCallBack_mrpt_bayes_CRejectionSamplingCapable_mrpt_poses_CPose2D_mrpt_bayes_particle_storage_mode_POINTER_t : public mrpt::bayes::CRejectionSamplingCapable<mrpt::poses::CPose2D,mrpt::bayes::particle_storage_mode::POINTER> {
 	using mrpt::bayes::CRejectionSamplingCapable<mrpt::poses::CPose2D,mrpt::bayes::particle_storage_mode::POINTER>::CRejectionSamplingCapable;
 
@@ -70,7 +70,7 @@ struct PyCallBack_mrpt_bayes_CRejectionSamplingCapable_mrpt_poses_CPose2D_mrpt_b
 
 void bind_mrpt_bayes_CRejectionSamplingCapable(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::bayes::CRejectionSamplingCapable file:mrpt/bayes/CRejectionSamplingCapable.h line:31
+	{ // mrpt::bayes::CRejectionSamplingCapable file:mrpt/bayes/CRejectionSamplingCapable.h line:30
 		pybind11::class_<mrpt::bayes::CRejectionSamplingCapable<mrpt::poses::CPose2D,mrpt::bayes::particle_storage_mode::POINTER>, std::shared_ptr<mrpt::bayes::CRejectionSamplingCapable<mrpt::poses::CPose2D,mrpt::bayes::particle_storage_mode::POINTER>>, PyCallBack_mrpt_bayes_CRejectionSamplingCapable_mrpt_poses_CPose2D_mrpt_bayes_particle_storage_mode_POINTER_t> cl(M("mrpt::bayes"), "CRejectionSamplingCapable_mrpt_poses_CPose2D_mrpt_bayes_particle_storage_mode_POINTER_t", "");
 		cl.def( pybind11::init( [](){ return new PyCallBack_mrpt_bayes_CRejectionSamplingCapable_mrpt_poses_CPose2D_mrpt_bayes_particle_storage_mode_POINTER_t(); } ) );
 		cl.def(pybind11::init<PyCallBack_mrpt_bayes_CRejectionSamplingCapable_mrpt_poses_CPose2D_mrpt_bayes_particle_storage_mode_POINTER_t const &>());
