@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.13.2: Released June 22nd, 2024
+# Version 2.13.2: Released June 23rd, 2024
 - Changes in libraries:
   - \ref mrpt_maps_grp:
     - mrpt::maps::CPointsMapXYZIRT now creates timestamps per point for input observations of type mrpt::obs::CObservationVelodyneScan
