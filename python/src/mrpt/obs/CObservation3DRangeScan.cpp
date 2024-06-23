@@ -32,7 +32,7 @@
 
 void bind_mrpt_obs_CObservation3DRangeScan(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::opengl::PointCloudAdapter file:mrpt/obs/CObservation3DRangeScan.h line:614
+	{ // mrpt::opengl::PointCloudAdapter file:mrpt/obs/CObservation3DRangeScan.h line:602
 		pybind11::class_<mrpt::opengl::PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>, std::shared_ptr<mrpt::opengl::PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>>> cl(M("mrpt::opengl"), "PointCloudAdapter_mrpt_obs_CObservation3DRangeScan_t", "Specialization mrpt::opengl::PointCloudAdapter<CObservation3DRangeScan>\n \n");
 		cl.def( pybind11::init<const class mrpt::obs::CObservation3DRangeScan &>(), pybind11::arg("obj") );
 

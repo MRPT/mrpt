@@ -554,7 +554,7 @@ struct PyCallBack_mrpt_maps_CHeightGridMap2D_MRF : public mrpt::maps::CHeightGri
 	}
 };
 
-// mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions file:mrpt/maps/CHeightGridMap2D_MRF.h line:48
+// mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions file:mrpt/maps/CHeightGridMap2D_MRF.h line:50
 struct PyCallBack_mrpt_maps_CHeightGridMap2D_MRF_TInsertionOptions : public mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions {
 	using mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions::TInsertionOptions;
 
@@ -586,7 +586,7 @@ struct PyCallBack_mrpt_maps_CHeightGridMap2D_MRF_TInsertionOptions : public mrpt
 	}
 };
 
-// mrpt::maps::CHeightGridMap2D_MRF::TMapDefinition file: line:85
+// mrpt::maps::CHeightGridMap2D_MRF::TMapDefinition file: line:78
 struct PyCallBack_mrpt_maps_CHeightGridMap2D_MRF_TMapDefinition : public mrpt::maps::CHeightGridMap2D_MRF::TMapDefinition {
 	using mrpt::maps::CHeightGridMap2D_MRF::TMapDefinition::TMapDefinition;
 
@@ -666,7 +666,7 @@ void bind_mrpt_maps_CHeightGridMap2D_MRF(std::function< pybind11::module &(std::
 		cl.def("internal_computeObservationLikelihood", (double (mrpt::maps::CHeightGridMap2D_MRF::*)(const class mrpt::obs::CObservation &, const class mrpt::poses::CPose3D &) const) &mrpt::maps::CHeightGridMap2D_MRF::internal_computeObservationLikelihood, "C++: mrpt::maps::CHeightGridMap2D_MRF::internal_computeObservationLikelihood(const class mrpt::obs::CObservation &, const class mrpt::poses::CPose3D &) const --> double", pybind11::arg("obs"), pybind11::arg("takenFrom"));
 		cl.def("assign", (class mrpt::maps::CHeightGridMap2D_MRF & (mrpt::maps::CHeightGridMap2D_MRF::*)(const class mrpt::maps::CHeightGridMap2D_MRF &)) &mrpt::maps::CHeightGridMap2D_MRF::operator=, "C++: mrpt::maps::CHeightGridMap2D_MRF::operator=(const class mrpt::maps::CHeightGridMap2D_MRF &) --> class mrpt::maps::CHeightGridMap2D_MRF &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions file:mrpt/maps/CHeightGridMap2D_MRF.h line:48
+		{ // mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions file:mrpt/maps/CHeightGridMap2D_MRF.h line:50
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions, std::shared_ptr<mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions>, PyCallBack_mrpt_maps_CHeightGridMap2D_MRF_TInsertionOptions, mrpt::config::CLoadableOptions, mrpt::maps::CRandomFieldGridMap2D::TInsertionOptionsCommon> cl(enclosing_class, "TInsertionOptions", "Parameters related with inserting observations into the map ");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions(); }, [](){ return new PyCallBack_mrpt_maps_CHeightGridMap2D_MRF_TInsertionOptions(); } ) );
@@ -676,12 +676,12 @@ void bind_mrpt_maps_CHeightGridMap2D_MRF(std::function< pybind11::module &(std::
 			cl.def("assign", (struct mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions & (mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions::*)(const struct mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions &)) &mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions::operator=, "C++: mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions::operator=(const struct mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions &) --> struct mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::maps::CHeightGridMap2D_MRF::TMapDefinitionBase file: line:80
+		{ // mrpt::maps::CHeightGridMap2D_MRF::TMapDefinitionBase file: line:74
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CHeightGridMap2D_MRF::TMapDefinitionBase, std::shared_ptr<mrpt::maps::CHeightGridMap2D_MRF::TMapDefinitionBase>> cl(enclosing_class, "TMapDefinitionBase", "");
 		}
 
-		{ // mrpt::maps::CHeightGridMap2D_MRF::TMapDefinition file: line:85
+		{ // mrpt::maps::CHeightGridMap2D_MRF::TMapDefinition file: line:78
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CHeightGridMap2D_MRF::TMapDefinition, std::shared_ptr<mrpt::maps::CHeightGridMap2D_MRF::TMapDefinition>, PyCallBack_mrpt_maps_CHeightGridMap2D_MRF_TMapDefinition, mrpt::maps::CHeightGridMap2D_MRF::TMapDefinitionBase> cl(enclosing_class, "TMapDefinition", "");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CHeightGridMap2D_MRF::TMapDefinition(); }, [](){ return new PyCallBack_mrpt_maps_CHeightGridMap2D_MRF_TMapDefinition(); } ) );

@@ -47,9 +47,8 @@ jobs:
           choco install --verbose wxwidgets
 
       - name: Install Qt5
-        run: |
-          choco install --verbose qt5-default
-          
+        uses: jurplel/install-qt-action@v4
+
       # (Jul 2022: Disabled since find_package(Doxygen) in Octomap leads to 
       #  internal Doxygen.exe errors leading to CI failure)
       #- name: Install doxygen+graphviz

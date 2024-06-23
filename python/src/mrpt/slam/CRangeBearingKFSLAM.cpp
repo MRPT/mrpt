@@ -206,7 +206,7 @@ struct PyCallBack_mrpt_slam_CRangeBearingKFSLAM : public mrpt::slam::CRangeBeari
 	}
 };
 
-// mrpt::slam::CRangeBearingKFSLAM::TOptions file:mrpt/slam/CRangeBearingKFSLAM.h line:164
+// mrpt::slam::CRangeBearingKFSLAM::TOptions file:mrpt/slam/CRangeBearingKFSLAM.h line:158
 struct PyCallBack_mrpt_slam_CRangeBearingKFSLAM_TOptions : public mrpt::slam::CRangeBearingKFSLAM::TOptions {
 	using mrpt::slam::CRangeBearingKFSLAM::TOptions::TOptions;
 
@@ -387,7 +387,7 @@ struct PyCallBack_mrpt_slam_CRangeBearingKFSLAM2D : public mrpt::slam::CRangeBea
 	}
 };
 
-// mrpt::slam::CRangeBearingKFSLAM2D::TOptions file:mrpt/slam/CRangeBearingKFSLAM2D.h line:106
+// mrpt::slam::CRangeBearingKFSLAM2D::TOptions file:mrpt/slam/CRangeBearingKFSLAM2D.h line:103
 struct PyCallBack_mrpt_slam_CRangeBearingKFSLAM2D_TOptions : public mrpt::slam::CRangeBearingKFSLAM2D::TOptions {
 	using mrpt::slam::CRangeBearingKFSLAM2D::TOptions::TOptions;
 
@@ -432,7 +432,7 @@ void bind_mrpt_slam_CRangeBearingKFSLAM(std::function< pybind11::module &(std::s
 		cl.def("getCurrentRobotPose", (void (mrpt::slam::CRangeBearingKFSLAM::*)(class mrpt::poses::CPose3DQuatPDFGaussian &) const) &mrpt::slam::CRangeBearingKFSLAM::getCurrentRobotPose, "Returns the mean & the 7x7 covariance matrix of the robot 6D pose (with\n rotation as a quaternion).\n \n\n getCurrentState, getCurrentRobotPoseMean\n\nC++: mrpt::slam::CRangeBearingKFSLAM::getCurrentRobotPose(class mrpt::poses::CPose3DQuatPDFGaussian &) const --> void", pybind11::arg("out_robotPose"));
 		cl.def("getCurrentRobotPoseMean", (class mrpt::poses::CPose3DQuat (mrpt::slam::CRangeBearingKFSLAM::*)() const) &mrpt::slam::CRangeBearingKFSLAM::getCurrentRobotPoseMean, "Get the current robot pose mean, as a 3D+quaternion pose.\n \n\n getCurrentRobotPose\n\nC++: mrpt::slam::CRangeBearingKFSLAM::getCurrentRobotPoseMean() const --> class mrpt::poses::CPose3DQuat");
 		cl.def("getCurrentRobotPose", (void (mrpt::slam::CRangeBearingKFSLAM::*)(class mrpt::poses::CPose3DPDFGaussian &) const) &mrpt::slam::CRangeBearingKFSLAM::getCurrentRobotPose, "Returns the mean & the 6x6 covariance matrix of the robot 6D pose (with\n rotation as 3 angles).\n \n\n getCurrentState\n\nC++: mrpt::slam::CRangeBearingKFSLAM::getCurrentRobotPose(class mrpt::poses::CPose3DPDFGaussian &) const --> void", pybind11::arg("out_robotPose"));
-		cl.def("getAs3DObject", (void (mrpt::slam::CRangeBearingKFSLAM::*)(class std::shared_ptr<class mrpt::opengl::CSetOfObjects> &) const) &mrpt::slam::CRangeBearingKFSLAM::getAs3DObject, "Returns a 3D representation of the landmarks in the map and the robot 3D\n position according to the current filter state.\n  \n\n\n	 \n\nC++: mrpt::slam::CRangeBearingKFSLAM::getAs3DObject(class std::shared_ptr<class mrpt::opengl::CSetOfObjects> &) const --> void", pybind11::arg("outObj"));
+		cl.def("getAs3DObject", (void (mrpt::slam::CRangeBearingKFSLAM::*)(class std::shared_ptr<class mrpt::opengl::CSetOfObjects> &) const) &mrpt::slam::CRangeBearingKFSLAM::getAs3DObject, "Returns a 3D representation of the landmarks in the map and the robot 3D\n position according to the current filter state.\n  \n\n\n   \n\nC++: mrpt::slam::CRangeBearingKFSLAM::getAs3DObject(class std::shared_ptr<class mrpt::opengl::CSetOfObjects> &) const --> void", pybind11::arg("outObj"));
 		cl.def("loadOptions", (void (mrpt::slam::CRangeBearingKFSLAM::*)(const class mrpt::config::CConfigFileBase &)) &mrpt::slam::CRangeBearingKFSLAM::loadOptions, "Load options from a ini-like file/text\n\nC++: mrpt::slam::CRangeBearingKFSLAM::loadOptions(const class mrpt::config::CConfigFileBase &) --> void", pybind11::arg("ini"));
 		cl.def("getLastDataAssociation", (const struct mrpt::slam::CRangeBearingKFSLAM::TDataAssocInfo & (mrpt::slam::CRangeBearingKFSLAM::*)() const) &mrpt::slam::CRangeBearingKFSLAM::getLastDataAssociation, "Returns a read-only reference to the information on the last\n data-association \n\nC++: mrpt::slam::CRangeBearingKFSLAM::getLastDataAssociation() const --> const struct mrpt::slam::CRangeBearingKFSLAM::TDataAssocInfo &", pybind11::return_value_policy::automatic);
 		cl.def("reconsiderPartitionsNow", (void (mrpt::slam::CRangeBearingKFSLAM::*)()) &mrpt::slam::CRangeBearingKFSLAM::reconsiderPartitionsNow, "The partitioning of the entire map is recomputed again.\n  Only when options.doPartitioningExperiment = true.\n  This can be used after changing the parameters of the partitioning\n method.\n  After this method, you can call getLastPartitionLandmarks.\n \n\n getLastPartitionLandmarks\n\nC++: mrpt::slam::CRangeBearingKFSLAM::reconsiderPartitionsNow() --> void");
@@ -443,7 +443,7 @@ void bind_mrpt_slam_CRangeBearingKFSLAM(std::function< pybind11::module &(std::s
 		cl.def("saveMapAndPath2DRepresentationAsMATLABFile", [](mrpt::slam::CRangeBearingKFSLAM const &o, const std::string & a0, float const & a1, const std::string & a2, const std::string & a3) -> void { return o.saveMapAndPath2DRepresentationAsMATLABFile(a0, a1, a2, a3); }, "", pybind11::arg("fil"), pybind11::arg("stdCount"), pybind11::arg("styleLandmarks"), pybind11::arg("stylePath"));
 		cl.def("saveMapAndPath2DRepresentationAsMATLABFile", (void (mrpt::slam::CRangeBearingKFSLAM::*)(const std::string &, float, const std::string &, const std::string &, const std::string &) const) &mrpt::slam::CRangeBearingKFSLAM::saveMapAndPath2DRepresentationAsMATLABFile, "Save the current state of the filter (robot pose & map) to a MATLAB\n script which displays all the elements in 2D\n\nC++: mrpt::slam::CRangeBearingKFSLAM::saveMapAndPath2DRepresentationAsMATLABFile(const std::string &, float, const std::string &, const std::string &, const std::string &) const --> void", pybind11::arg("fil"), pybind11::arg("stdCount"), pybind11::arg("styleLandmarks"), pybind11::arg("stylePath"), pybind11::arg("styleRobot"));
 
-		{ // mrpt::slam::CRangeBearingKFSLAM::TOptions file:mrpt/slam/CRangeBearingKFSLAM.h line:164
+		{ // mrpt::slam::CRangeBearingKFSLAM::TOptions file:mrpt/slam/CRangeBearingKFSLAM.h line:158
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::slam::CRangeBearingKFSLAM::TOptions, std::shared_ptr<mrpt::slam::CRangeBearingKFSLAM::TOptions>, PyCallBack_mrpt_slam_CRangeBearingKFSLAM_TOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TOptions", "The options for the algorithm");
 			cl.def( pybind11::init( [](){ return new mrpt::slam::CRangeBearingKFSLAM::TOptions(); }, [](){ return new PyCallBack_mrpt_slam_CRangeBearingKFSLAM_TOptions(); } ) );
@@ -468,7 +468,7 @@ void bind_mrpt_slam_CRangeBearingKFSLAM(std::function< pybind11::module &(std::s
 			cl.def("assign", (struct mrpt::slam::CRangeBearingKFSLAM::TOptions & (mrpt::slam::CRangeBearingKFSLAM::TOptions::*)(const struct mrpt::slam::CRangeBearingKFSLAM::TOptions &)) &mrpt::slam::CRangeBearingKFSLAM::TOptions::operator=, "C++: mrpt::slam::CRangeBearingKFSLAM::TOptions::operator=(const struct mrpt::slam::CRangeBearingKFSLAM::TOptions &) --> struct mrpt::slam::CRangeBearingKFSLAM::TOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::slam::CRangeBearingKFSLAM::TDataAssocInfo file:mrpt/slam/CRangeBearingKFSLAM.h line:227
+		{ // mrpt::slam::CRangeBearingKFSLAM::TDataAssocInfo file:mrpt/slam/CRangeBearingKFSLAM.h line:220
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::slam::CRangeBearingKFSLAM::TDataAssocInfo, std::shared_ptr<mrpt::slam::CRangeBearingKFSLAM::TDataAssocInfo>> cl(enclosing_class, "TDataAssocInfo", "Information for data-association:\n \n\n getLastDataAssociation");
 			cl.def( pybind11::init( [](){ return new mrpt::slam::CRangeBearingKFSLAM::TDataAssocInfo(); } ) );
@@ -492,7 +492,7 @@ void bind_mrpt_slam_CRangeBearingKFSLAM(std::function< pybind11::module &(std::s
 		cl.def("reset", (void (mrpt::slam::CRangeBearingKFSLAM2D::*)()) &mrpt::slam::CRangeBearingKFSLAM2D::reset, "Reset the state of the SLAM filter: The map is emptied and the robot put\n back to (0,0,0). \n\nC++: mrpt::slam::CRangeBearingKFSLAM2D::reset() --> void");
 		cl.def("processActionObservation", (void (mrpt::slam::CRangeBearingKFSLAM2D::*)(class std::shared_ptr<class mrpt::obs::CActionCollection> &, class std::shared_ptr<class mrpt::obs::CSensoryFrame> &)) &mrpt::slam::CRangeBearingKFSLAM2D::processActionObservation, "Process one new action and observations to update the map and robot pose\nestimate. See the description of the class at the top of this page.\n  \n\n May contain odometry\n	\n\n The set of observations, must contain at least one\nCObservationBearingRange\n\nC++: mrpt::slam::CRangeBearingKFSLAM2D::processActionObservation(class std::shared_ptr<class mrpt::obs::CActionCollection> &, class std::shared_ptr<class mrpt::obs::CSensoryFrame> &) --> void", pybind11::arg("action"), pybind11::arg("SF"));
 		cl.def("getCurrentRobotPose", (void (mrpt::slam::CRangeBearingKFSLAM2D::*)(class mrpt::poses::CPosePDFGaussian &) const) &mrpt::slam::CRangeBearingKFSLAM2D::getCurrentRobotPose, "Returns the mean & 3x3 covariance matrix of the robot 2D pose.\n \n\n getCurrentState\n\nC++: mrpt::slam::CRangeBearingKFSLAM2D::getCurrentRobotPose(class mrpt::poses::CPosePDFGaussian &) const --> void", pybind11::arg("out_robotPose"));
-		cl.def("getAs3DObject", (void (mrpt::slam::CRangeBearingKFSLAM2D::*)(class std::shared_ptr<class mrpt::opengl::CSetOfObjects> &) const) &mrpt::slam::CRangeBearingKFSLAM2D::getAs3DObject, "Returns a 3D representation of the landmarks in the map and the robot 3D\n position according to the current filter state.\n  \n\n\n	 \n\nC++: mrpt::slam::CRangeBearingKFSLAM2D::getAs3DObject(class std::shared_ptr<class mrpt::opengl::CSetOfObjects> &) const --> void", pybind11::arg("outObj"));
+		cl.def("getAs3DObject", (void (mrpt::slam::CRangeBearingKFSLAM2D::*)(class std::shared_ptr<class mrpt::opengl::CSetOfObjects> &) const) &mrpt::slam::CRangeBearingKFSLAM2D::getAs3DObject, "Returns a 3D representation of the landmarks in the map and the robot 3D\n position according to the current filter state.\n  \n\n\n   \n\nC++: mrpt::slam::CRangeBearingKFSLAM2D::getAs3DObject(class std::shared_ptr<class mrpt::opengl::CSetOfObjects> &) const --> void", pybind11::arg("outObj"));
 		cl.def("loadOptions", (void (mrpt::slam::CRangeBearingKFSLAM2D::*)(const class mrpt::config::CConfigFileBase &)) &mrpt::slam::CRangeBearingKFSLAM2D::loadOptions, "Load options from a ini-like file/text\n\nC++: mrpt::slam::CRangeBearingKFSLAM2D::loadOptions(const class mrpt::config::CConfigFileBase &) --> void", pybind11::arg("ini"));
 		cl.def("saveMapAndPath2DRepresentationAsMATLABFile", [](mrpt::slam::CRangeBearingKFSLAM2D const &o, const std::string & a0) -> void { return o.saveMapAndPath2DRepresentationAsMATLABFile(a0); }, "", pybind11::arg("fil"));
 		cl.def("saveMapAndPath2DRepresentationAsMATLABFile", [](mrpt::slam::CRangeBearingKFSLAM2D const &o, const std::string & a0, float const & a1) -> void { return o.saveMapAndPath2DRepresentationAsMATLABFile(a0, a1); }, "", pybind11::arg("fil"), pybind11::arg("stdCount"));
@@ -501,7 +501,7 @@ void bind_mrpt_slam_CRangeBearingKFSLAM(std::function< pybind11::module &(std::s
 		cl.def("saveMapAndPath2DRepresentationAsMATLABFile", (void (mrpt::slam::CRangeBearingKFSLAM2D::*)(const std::string &, float, const std::string &, const std::string &, const std::string &) const) &mrpt::slam::CRangeBearingKFSLAM2D::saveMapAndPath2DRepresentationAsMATLABFile, "Save the current state of the filter (robot pose & map) to a MATLAB\n script which displays all the elements in 2D\n\nC++: mrpt::slam::CRangeBearingKFSLAM2D::saveMapAndPath2DRepresentationAsMATLABFile(const std::string &, float, const std::string &, const std::string &, const std::string &) const --> void", pybind11::arg("fil"), pybind11::arg("stdCount"), pybind11::arg("styleLandmarks"), pybind11::arg("stylePath"), pybind11::arg("styleRobot"));
 		cl.def("getLastDataAssociation", (const struct mrpt::slam::CRangeBearingKFSLAM2D::TDataAssocInfo & (mrpt::slam::CRangeBearingKFSLAM2D::*)() const) &mrpt::slam::CRangeBearingKFSLAM2D::getLastDataAssociation, "Returns a read-only reference to the information on the last\n data-association \n\nC++: mrpt::slam::CRangeBearingKFSLAM2D::getLastDataAssociation() const --> const struct mrpt::slam::CRangeBearingKFSLAM2D::TDataAssocInfo &", pybind11::return_value_policy::automatic);
 
-		{ // mrpt::slam::CRangeBearingKFSLAM2D::TOptions file:mrpt/slam/CRangeBearingKFSLAM2D.h line:106
+		{ // mrpt::slam::CRangeBearingKFSLAM2D::TOptions file:mrpt/slam/CRangeBearingKFSLAM2D.h line:103
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::slam::CRangeBearingKFSLAM2D::TOptions, std::shared_ptr<mrpt::slam::CRangeBearingKFSLAM2D::TOptions>, PyCallBack_mrpt_slam_CRangeBearingKFSLAM2D_TOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TOptions", "The options for the algorithm");
 			cl.def( pybind11::init( [](){ return new mrpt::slam::CRangeBearingKFSLAM2D::TOptions(); }, [](){ return new PyCallBack_mrpt_slam_CRangeBearingKFSLAM2D_TOptions(); } ) );
@@ -521,7 +521,7 @@ void bind_mrpt_slam_CRangeBearingKFSLAM(std::function< pybind11::module &(std::s
 			cl.def("assign", (struct mrpt::slam::CRangeBearingKFSLAM2D::TOptions & (mrpt::slam::CRangeBearingKFSLAM2D::TOptions::*)(const struct mrpt::slam::CRangeBearingKFSLAM2D::TOptions &)) &mrpt::slam::CRangeBearingKFSLAM2D::TOptions::operator=, "C++: mrpt::slam::CRangeBearingKFSLAM2D::TOptions::operator=(const struct mrpt::slam::CRangeBearingKFSLAM2D::TOptions &) --> struct mrpt::slam::CRangeBearingKFSLAM2D::TOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::slam::CRangeBearingKFSLAM2D::TDataAssocInfo file:mrpt/slam/CRangeBearingKFSLAM2D.h line:160
+		{ // mrpt::slam::CRangeBearingKFSLAM2D::TDataAssocInfo file:mrpt/slam/CRangeBearingKFSLAM2D.h line:157
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::slam::CRangeBearingKFSLAM2D::TDataAssocInfo, std::shared_ptr<mrpt::slam::CRangeBearingKFSLAM2D::TDataAssocInfo>> cl(enclosing_class, "TDataAssocInfo", "Information for data-association:\n \n\n getLastDataAssociation");
 			cl.def( pybind11::init( [](){ return new mrpt::slam::CRangeBearingKFSLAM2D::TDataAssocInfo(); } ) );

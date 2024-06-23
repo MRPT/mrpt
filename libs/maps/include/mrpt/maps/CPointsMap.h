@@ -194,7 +194,13 @@ class CPointsMap :
  protected:
   /** Virtual assignment operator, copies as much common data (XYZ, color,...)
    * as possible from the source map into this one. */
-  virtual void impl_copyFrom(const CPointsMap& obj) = 0;
+  virtual void impl_copyFrom(const CPointsMap& obj) final
+  {
+    const size_t N = obj.size();
+    this->clear();
+    this->reserve(N);
+    for (size_t i = 0; i < N; i++) insertPointFrom(obj, i);
+  }
 
   /** Auxiliary method called from within \a addFrom() automatically, to
    * finish the copying of class-specific data  */
@@ -691,12 +697,12 @@ class CPointsMap :
 
 		// XYZ:
 		insertPointFast(xs[i], ys[i], zs[i]);
-		if (Is && hasField_Intensity()) insertPointField_Intensity((*Is)[i]);
-		if (Rs && hasField_Ring()) insertPointField_Ring((*Rs)[i]);
-		if (Ts && hasField_Timestamp()) insertPointField_Timestamp((*Ts)[i]);
-		if (cR && hasField_color_R()) insertPointField_color_R((*cR)[i]);
-		if (cG && hasField_color_G()) insertPointField_color_G((*cG)[i]);
-		if (cB && hasField_color_B()) insertPointField_color_B((*cB)[i]);
+		if (Is && !Is->empty() && hasField_Intensity()) insertPointField_Intensity((*Is)[i]);
+		if (Rs && !Rs->empty() && hasField_Ring()) insertPointField_Ring((*Rs)[i]);
+		if (Ts && !Ts->empty() && hasField_Timestamp()) insertPointField_Timestamp((*Ts)[i]);
+		if (cR && !cR->empty() && hasField_color_R()) insertPointField_color_R((*cR)[i]);
+		if (cG && !cG->empty() && hasField_color_G()) insertPointField_color_G((*cG)[i]);
+		if (cB && !cB->empty() && hasField_color_B()) insertPointField_color_B((*cB)[i]);
 
 		mark_as_modified();
 	}
@@ -1151,7 +1157,8 @@ class CPointsMap :
 	std::string asString() const override
 	{
 		return mrpt::format(
-			"Pointcloud map with %u points, bounding box:%s",
+			"Pointcloud map of type %s with %u points, bounding box:%s",
+			this->GetRuntimeClass()->className,
 			static_cast<unsigned int>(size()),
 			boundingBox().asString().c_str());
 	}

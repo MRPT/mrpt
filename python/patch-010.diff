@@ -1,0 +1,13 @@
+diff --git a/python/src/mrpt/hwdrivers/CCANBusReader.cpp b/python/src/mrpt/hwdrivers/CCANBusReader.cpp
+index c3c46bb96..018626225 100644
+--- a/python/src/mrpt/hwdrivers/CCANBusReader.cpp
++++ b/python/src/mrpt/hwdrivers/CCANBusReader.cpp
+@@ -214,7 +214,7 @@ void bind_mrpt_hwdrivers_CCANBusReader(std::function< pybind11::module &(std::st
+ 		cl.def("close", (void (mrpt::hwdrivers::CFFMPEG_InputStream::*)()) &mrpt::hwdrivers::CFFMPEG_InputStream::close, "Close the video stream (this is called automatically at destruction).\n \n\n openURL\n\nC++: mrpt::hwdrivers::CFFMPEG_InputStream::close() --> void");
+ 		cl.def("getVideoFPS", (double (mrpt::hwdrivers::CFFMPEG_InputStream::*)() const) &mrpt::hwdrivers::CFFMPEG_InputStream::getVideoFPS, "Get the frame-per-second (FPS) of the video source, or \"-1\" if the video\n is not open. \n\nC++: mrpt::hwdrivers::CFFMPEG_InputStream::getVideoFPS() const --> double");
+ 		cl.def("retrieveFrame", (bool (mrpt::hwdrivers::CFFMPEG_InputStream::*)(class mrpt::img::CImage &)) &mrpt::hwdrivers::CFFMPEG_InputStream::retrieveFrame, "Get the next frame from the video stream.\n  Note that for remote streams (IP cameras) this method may block until\n enough information is read to generate a new frame.\n  Images are returned as 8-bit depth grayscale if \"grab_as_grayscale\" is\n true.\n  \n\n false on any error, true on success.\n  \n\n openURL, close, isOpen\n\nC++: mrpt::hwdrivers::CFFMPEG_InputStream::retrieveFrame(class mrpt::img::CImage &) --> bool", pybind11::arg("out_img"));
+-		cl.def("retrieveFrame", (bool (mrpt::hwdrivers::CFFMPEG_InputStream::*)(class mrpt::img::CImage &, long &)) &mrpt::hwdrivers::CFFMPEG_InputStream::retrieveFrame, "Refer to docs for ffmpeg AVFrame::pts\n\nC++: mrpt::hwdrivers::CFFMPEG_InputStream::retrieveFrame(class mrpt::img::CImage &, long &) --> bool", pybind11::arg("out_img"), pybind11::arg("outPTS"));
++		cl.def("retrieveFrame", (bool (mrpt::hwdrivers::CFFMPEG_InputStream::*)(class mrpt::img::CImage &, int64_t &)) &mrpt::hwdrivers::CFFMPEG_InputStream::retrieveFrame, "Refer to docs for ffmpeg AVFrame::pts\n\nC++: mrpt::hwdrivers::CFFMPEG_InputStream::retrieveFrame(class mrpt::img::CImage &, int64_t &) --> bool", pybind11::arg("out_img"), pybind11::arg("outPTS"));
+ 		cl.def("assign", (class mrpt::hwdrivers::CFFMPEG_InputStream & (mrpt::hwdrivers::CFFMPEG_InputStream::*)(const class mrpt::hwdrivers::CFFMPEG_InputStream &)) &mrpt::hwdrivers::CFFMPEG_InputStream::operator=, "C++: mrpt::hwdrivers::CFFMPEG_InputStream::operator=(const class mrpt::hwdrivers::CFFMPEG_InputStream &) --> class mrpt::hwdrivers::CFFMPEG_InputStream &", pybind11::return_value_policy::automatic, pybind11::arg(""));
+ 	}
+ }

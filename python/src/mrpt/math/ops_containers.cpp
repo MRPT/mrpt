@@ -122,13 +122,13 @@ struct PyCallBack_mrpt_math_CSplineInterpolator1D : public mrpt::math::CSplineIn
 
 void bind_mrpt_math_ops_containers(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	// mrpt::math::maximum(const class mrpt::math::CVectorDynamic<double> &) file:mrpt/math/ops_containers.h line:140
+	// mrpt::math::maximum(const class mrpt::math::CVectorDynamic<double> &) file:mrpt/math/ops_containers.h line:139
 	M("mrpt::math").def("maximum", (double (*)(const class mrpt::math::CVectorDynamic<double> &)) &mrpt::math::maximum<mrpt::math::CVectorDynamic<double>,1>, "C++: mrpt::math::maximum(const class mrpt::math::CVectorDynamic<double> &) --> double", pybind11::arg("v"));
 
-	// mrpt::math::minimum(const class mrpt::math::CVectorDynamic<double> &) file:mrpt/math/ops_containers.h line:145
+	// mrpt::math::minimum(const class mrpt::math::CVectorDynamic<double> &) file:mrpt/math/ops_containers.h line:144
 	M("mrpt::math").def("minimum", (double (*)(const class mrpt::math::CVectorDynamic<double> &)) &mrpt::math::minimum<mrpt::math::CVectorDynamic<double>,1>, "C++: mrpt::math::minimum(const class mrpt::math::CVectorDynamic<double> &) --> double", pybind11::arg("v"));
 
-	// mrpt::math::mean(const class mrpt::math::CVectorDynamic<double> &) file:mrpt/math/ops_containers.h line:250
+	// mrpt::math::mean(const class mrpt::math::CVectorDynamic<double> &) file:mrpt/math/ops_containers.h line:244
 	M("mrpt::math").def("mean", (double (*)(const class mrpt::math::CVectorDynamic<double> &)) &mrpt::math::mean<mrpt::math::CVectorDynamic<double>>, "C++: mrpt::math::mean(const class mrpt::math::CVectorDynamic<double> &) --> double", pybind11::arg("v"));
 
 	{ // mrpt::math::CSplineInterpolator1D file:mrpt/math/CSplineInterpolator1D.h line:25

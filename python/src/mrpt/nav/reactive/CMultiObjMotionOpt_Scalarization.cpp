@@ -143,7 +143,7 @@ struct PyCallBack_mrpt_nav_CMultiObjMotionOpt_Scalarization : public mrpt::nav::
 	}
 };
 
-// mrpt::nav::CMultiObjMotionOpt_Scalarization::TParams file:mrpt/nav/reactive/CMultiObjMotionOpt_Scalarization.h line:36
+// mrpt::nav::CMultiObjMotionOpt_Scalarization::TParams file:mrpt/nav/reactive/CMultiObjMotionOpt_Scalarization.h line:35
 struct PyCallBack_mrpt_nav_CMultiObjMotionOpt_Scalarization_TParams : public mrpt::nav::CMultiObjMotionOpt_Scalarization::TParams {
 	using mrpt::nav::CMultiObjMotionOpt_Scalarization::TParams::TParams;
 
@@ -872,7 +872,7 @@ void bind_mrpt_nav_reactive_CMultiObjMotionOpt_Scalarization(std::function< pybi
 		cl.def("saveConfigFile", (void (mrpt::nav::CMultiObjMotionOpt_Scalarization::*)(class mrpt::config::CConfigFileBase &) const) &mrpt::nav::CMultiObjMotionOpt_Scalarization::saveConfigFile, "C++: mrpt::nav::CMultiObjMotionOpt_Scalarization::saveConfigFile(class mrpt::config::CConfigFileBase &) const --> void", pybind11::arg("c"));
 		cl.def("clear", (void (mrpt::nav::CMultiObjMotionOpt_Scalarization::*)()) &mrpt::nav::CMultiObjMotionOpt_Scalarization::clear, "C++: mrpt::nav::CMultiObjMotionOpt_Scalarization::clear() --> void");
 
-		{ // mrpt::nav::CMultiObjMotionOpt_Scalarization::TParams file:mrpt/nav/reactive/CMultiObjMotionOpt_Scalarization.h line:36
+		{ // mrpt::nav::CMultiObjMotionOpt_Scalarization::TParams file:mrpt/nav/reactive/CMultiObjMotionOpt_Scalarization.h line:35
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::nav::CMultiObjMotionOpt_Scalarization::TParams, std::shared_ptr<mrpt::nav::CMultiObjMotionOpt_Scalarization::TParams>, PyCallBack_mrpt_nav_CMultiObjMotionOpt_Scalarization_TParams, mrpt::nav::CMultiObjectiveMotionOptimizerBase::TParamsBase> cl(enclosing_class, "TParams", "");
 			cl.def( pybind11::init( [](){ return new mrpt::nav::CMultiObjMotionOpt_Scalarization::TParams(); }, [](){ return new PyCallBack_mrpt_nav_CMultiObjMotionOpt_Scalarization_TParams(); } ) );
@@ -895,7 +895,7 @@ void bind_mrpt_nav_reactive_CMultiObjMotionOpt_Scalarization(std::function< pybi
 		cl.def("initialize", (void (mrpt::nav::CNavigatorManualSequence::*)()) &mrpt::nav::CNavigatorManualSequence::initialize, "Must be called for loading collision grids, etc. before invoking any\n navigation command \n\nC++: mrpt::nav::CNavigatorManualSequence::initialize() --> void");
 		cl.def("navigationStep", (void (mrpt::nav::CNavigatorManualSequence::*)()) &mrpt::nav::CNavigatorManualSequence::navigationStep, "Overriden in this class to ignore the cancel/pause/... commands \n\nC++: mrpt::nav::CNavigatorManualSequence::navigationStep() --> void");
 
-		{ // mrpt::nav::CNavigatorManualSequence::TVelCmd file:mrpt/nav/reactive/CNavigatorManualSequence.h line:42
+		{ // mrpt::nav::CNavigatorManualSequence::TVelCmd file:mrpt/nav/reactive/CNavigatorManualSequence.h line:40
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::nav::CNavigatorManualSequence::TVelCmd, std::shared_ptr<mrpt::nav::CNavigatorManualSequence::TVelCmd>> cl(enclosing_class, "TVelCmd", "");
 			cl.def( pybind11::init( [](){ return new mrpt::nav::CNavigatorManualSequence::TVelCmd(); } ) );

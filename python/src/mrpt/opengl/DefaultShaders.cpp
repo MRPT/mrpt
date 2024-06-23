@@ -119,13 +119,13 @@ void bind_mrpt_opengl_DefaultShaders(std::function< pybind11::module &(std::stri
 
 		cl.def_readwrite("renderState", &mrpt::opengl::RenderQueueElement::renderState);
 	}
-	{ // mrpt::opengl::RenderQueueStats file:mrpt/opengl/RenderQueue.h line:52
+	{ // mrpt::opengl::RenderQueueStats file:mrpt/opengl/RenderQueue.h line:50
 		pybind11::class_<mrpt::opengl::RenderQueueStats, std::shared_ptr<mrpt::opengl::RenderQueueStats>> cl(M("mrpt::opengl"), "RenderQueueStats", "Stats for the rendering queue\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::opengl::RenderQueueStats(); } ) );
 		cl.def_readwrite("numObjTotal", &mrpt::opengl::RenderQueueStats::numObjTotal);
 		cl.def_readwrite("numObjRendered", &mrpt::opengl::RenderQueueStats::numObjRendered);
 	}
-	// mrpt::opengl::depthAndVisibleInView(const class mrpt::opengl::CRenderizable *, const struct mrpt::opengl::TRenderMatrices &, const bool) file:mrpt/opengl/RenderQueue.h line:66
+	// mrpt::opengl::depthAndVisibleInView(const class mrpt::opengl::CRenderizable *, const struct mrpt::opengl::TRenderMatrices &, const bool) file:mrpt/opengl/RenderQueue.h line:64
 	M("mrpt::opengl").def("depthAndVisibleInView", (class std::tuple<double, bool, bool> (*)(const class mrpt::opengl::CRenderizable *, const struct mrpt::opengl::TRenderMatrices &, const bool)) &mrpt::opengl::depthAndVisibleInView, "Computes the eye-view depth of an object, and whether any part of its\n bounding box is visible by the camera in the current state.\n Return:\n  - double: Depth of representative point.\n  - bool: visible (at least in part)\n  - bool: the whole bbox is visible (only checked for CSetOfObjects)\n \n\n\nC++: mrpt::opengl::depthAndVisibleInView(const class mrpt::opengl::CRenderizable *, const struct mrpt::opengl::TRenderMatrices &, const bool) --> class std::tuple<double, bool, bool>", pybind11::arg("obj"), pybind11::arg("objState"), pybind11::arg("skipCullChecks"));
 
 	{ // mrpt::opengl::TLightParameters file:mrpt/opengl/TLightParameters.h line:23

@@ -94,7 +94,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::nav::CReactiveNavigationSystem3D file:mrpt/nav/reactive/CReactiveNavigationSystem3D.h line:83
+// mrpt::nav::CReactiveNavigationSystem3D file:mrpt/nav/reactive/CReactiveNavigationSystem3D.h line:80
 struct PyCallBack_mrpt_nav_CReactiveNavigationSystem3D : public mrpt::nav::CReactiveNavigationSystem3D {
 	using mrpt::nav::CReactiveNavigationSystem3D::CReactiveNavigationSystem3D;
 
@@ -756,7 +756,7 @@ struct PyCallBack_mrpt_nav_CRobot2NavInterfaceForSimulator_Holo : public mrpt::n
 	}
 };
 
-// mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven file:mrpt/nav/reactive/CRobot2NavInterfaceForSimulator.h line:111
+// mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven file:mrpt/nav/reactive/CRobot2NavInterfaceForSimulator.h line:102
 struct PyCallBack_mrpt_nav_CRobot2NavInterfaceForSimulator_DiffDriven : public mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven {
 	using mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven::CRobot2NavInterfaceForSimulator_DiffDriven;
 
@@ -1037,7 +1037,7 @@ void bind_mrpt_nav_reactive_CReactiveNavigationSystem3D(std::function< pybind11:
 		cl.def("setHeight", (void (mrpt::nav::TRobotShape::*)(size_t, double)) &mrpt::nav::TRobotShape::setHeight, "C++: mrpt::nav::TRobotShape::setHeight(size_t, double) --> void", pybind11::arg("level"), pybind11::arg("h"));
 		cl.def("assign", (struct mrpt::nav::TRobotShape & (mrpt::nav::TRobotShape::*)(const struct mrpt::nav::TRobotShape &)) &mrpt::nav::TRobotShape::operator=, "C++: mrpt::nav::TRobotShape::operator=(const struct mrpt::nav::TRobotShape &) --> struct mrpt::nav::TRobotShape &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::nav::CReactiveNavigationSystem3D file:mrpt/nav/reactive/CReactiveNavigationSystem3D.h line:83
+	{ // mrpt::nav::CReactiveNavigationSystem3D file:mrpt/nav/reactive/CReactiveNavigationSystem3D.h line:80
 		pybind11::class_<mrpt::nav::CReactiveNavigationSystem3D, std::shared_ptr<mrpt::nav::CReactiveNavigationSystem3D>, PyCallBack_mrpt_nav_CReactiveNavigationSystem3D, mrpt::nav::CAbstractPTGBasedReactive> cl(M("mrpt::nav"), "CReactiveNavigationSystem3D", "See base class CAbstractPTGBasedReactive for a description and instructions\n of use.\n This particular implementation assumes a 3D (or \"2.5D\") robot shape model,\n build as a vertical stack of \"2D slices\".\n\n  Paper describing the method:\n  - M. Jaimez-Tarifa, J. Gonzalez-Jimenez, J.L. Blanco,\n    \"Efficient Reactive Navigation with Exact Collision Determination for 3D\n Robot Shapes\",\n     International Journal of Advanced Robotic Systems, 2015.\n\n Class history:\n - SEP/2012: First design.\n - JUL/2013: Integrated into MRPT library.\n - DEC/2013: Code refactoring between this class and\n CAbstractHolonomicReactiveMethod\n - FEB/2017: Refactoring of all parameters for a consistent organization in\n sections by class names (MRPT 1.5.0)\n\n This class requires a number of parameters which are usually provided via an\n external config (\".ini\") file.\n Alternatively, a memory-only object can be used to avoid physical files, see\n mrpt::config::CConfigFileMemory.\n\n A template config file can be generated at any moment by the user by calling\n saveConfigFile() with a default-constructed object.\n\n Next we provide a self-documented template config file; or see it online:\n https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/navigation-ptgs/reactive3d_config.ini\n \n\n\n  \n CAbstractNavigator, CParameterizedTrajectoryGenerator,\n CAbstractHolonomicReactiveMethod\n  \n\n\n ");
 		cl.def( pybind11::init( [](class mrpt::nav::CRobot2NavInterface & a0){ return new mrpt::nav::CReactiveNavigationSystem3D(a0); }, [](class mrpt::nav::CRobot2NavInterface & a0){ return new PyCallBack_mrpt_nav_CReactiveNavigationSystem3D(a0); } ), "doc");
 		cl.def( pybind11::init( [](class mrpt::nav::CRobot2NavInterface & a0, bool const & a1){ return new mrpt::nav::CReactiveNavigationSystem3D(a0, a1); }, [](class mrpt::nav::CRobot2NavInterface & a0, bool const & a1){ return new PyCallBack_mrpt_nav_CReactiveNavigationSystem3D(a0, a1); } ), "doc");
@@ -1065,7 +1065,7 @@ void bind_mrpt_nav_reactive_CReactiveNavigationSystem3D(std::function< pybind11:
 		cl.def("getNavigationTime", (double (mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::*)()) &mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::getNavigationTime, "See CRobot2NavInterface::getNavigationTime(). In this class, simulation\n time is returned instead of wall-clock time. \n\nC++: mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::getNavigationTime() --> double");
 		cl.def("resetNavigationTimer", (void (mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::*)()) &mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::resetNavigationTimer, "See CRobot2NavInterface::resetNavigationTimer() \n\nC++: mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::resetNavigationTimer() --> void");
 	}
-	{ // mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven file:mrpt/nav/reactive/CRobot2NavInterfaceForSimulator.h line:111
+	{ // mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven file:mrpt/nav/reactive/CRobot2NavInterfaceForSimulator.h line:102
 		pybind11::class_<mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven, std::shared_ptr<mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven>, PyCallBack_mrpt_nav_CRobot2NavInterfaceForSimulator_DiffDriven, mrpt::nav::CRobot2NavInterface> cl(M("mrpt::nav"), "CRobot2NavInterfaceForSimulator_DiffDriven", "CRobot2NavInterface implemented for a simulator object based on\n mrpt::kinematics::CVehicleSimul_DiffDriven\n Only `senseObstacles()` remains virtual for the user to implement it.\n\n \n CReactiveNavigationSystem, CAbstractNavigator,\n mrpt::kinematics::CVehicleSimulVirtualBase\n  \n\n\n ");
 		cl.def( pybind11::init<class mrpt::kinematics::CVehicleSimul_DiffDriven &>(), pybind11::arg("simul") );
 
@@ -1091,7 +1091,7 @@ void bind_mrpt_nav_reactive_CReactiveNavigationSystem3D(std::function< pybind11:
 		cl.def_readwrite("v", &mrpt::nav::TCPoint::v);
 		cl.def_readwrite("w", &mrpt::nav::TCPoint::w);
 	}
-	{ // mrpt::nav::CPTG_DiffDrive_CollisionGridBased file:mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h line:52
+	{ // mrpt::nav::CPTG_DiffDrive_CollisionGridBased file:mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h line:56
 		pybind11::class_<mrpt::nav::CPTG_DiffDrive_CollisionGridBased, std::shared_ptr<mrpt::nav::CPTG_DiffDrive_CollisionGridBased>, mrpt::nav::CPTG_RobotShape_Polygonal> cl(M("mrpt::nav"), "CPTG_DiffDrive_CollisionGridBased", "Base class for all PTGs suitable to non-holonomic, differentially-driven (or\n Ackermann) vehicles\n based on numerical integration of the trajectories and collision\n look-up-table.\n Regarding `initialize()`: in this this family of PTGs, the method builds the\n collision grid or load it from a cache file.\n Collision grids must be calculated before calling getTPObstacle(). Robot\n shape must be set before initializing with setRobotShape().\n The rest of PTG parameters should have been set at the constructor.");
 		cl.def("ptgDiffDriveSteeringFunction", (void (mrpt::nav::CPTG_DiffDrive_CollisionGridBased::*)(float, float, float, float, float, float &, float &) const) &mrpt::nav::CPTG_DiffDrive_CollisionGridBased::ptgDiffDriveSteeringFunction, "The main method to be implemented in derived classes: it defines the\n differential-driven differential equation \n\nC++: mrpt::nav::CPTG_DiffDrive_CollisionGridBased::ptgDiffDriveSteeringFunction(float, float, float, float, float, float &, float &) const --> void", pybind11::arg("alpha"), pybind11::arg("t"), pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("phi"), pybind11::arg("v"), pybind11::arg("w"));
 		cl.def("inverseMap_WS2TP", [](mrpt::nav::CPTG_DiffDrive_CollisionGridBased const &o, double const & a0, double const & a1, int & a2, double & a3) -> bool { return o.inverseMap_WS2TP(a0, a1, a2, a3); }, "", pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("out_k"), pybind11::arg("out_d"));

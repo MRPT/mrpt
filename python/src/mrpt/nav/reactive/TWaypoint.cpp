@@ -387,7 +387,7 @@ struct PyCallBack_mrpt_nav_CWaypointsNavigator_TNavigationParamsWaypoints : publ
 	}
 };
 
-// mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams file:mrpt/nav/reactive/CWaypointsNavigator.h line:125
+// mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams file:mrpt/nav/reactive/CWaypointsNavigator.h line:120
 struct PyCallBack_mrpt_nav_CWaypointsNavigator_TWaypointsNavigatorParams : public mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams {
 	using mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::TWaypointsNavigatorParams;
 
@@ -421,7 +421,7 @@ struct PyCallBack_mrpt_nav_CWaypointsNavigator_TWaypointsNavigatorParams : publi
 
 void bind_mrpt_nav_reactive_TWaypoint(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::nav::TWaypointsRenderingParams file:mrpt/nav/reactive/TWaypoint.h line:90
+	{ // mrpt::nav::TWaypointsRenderingParams file:mrpt/nav/reactive/TWaypoint.h line:92
 		pybind11::class_<mrpt::nav::TWaypointsRenderingParams, std::shared_ptr<mrpt::nav::TWaypointsRenderingParams>> cl(M("mrpt::nav"), "TWaypointsRenderingParams", "used in getAsOpenglVisualization() ");
 		cl.def( pybind11::init( [](){ return new mrpt::nav::TWaypointsRenderingParams(); } ) );
 		cl.def( pybind11::init( [](mrpt::nav::TWaypointsRenderingParams const &o){ return new mrpt::nav::TWaypointsRenderingParams(o); } ) );
@@ -438,7 +438,7 @@ void bind_mrpt_nav_reactive_TWaypoint(std::function< pybind11::module &(std::str
 		cl.def_readwrite("show_labels", &mrpt::nav::TWaypointsRenderingParams::show_labels);
 		cl.def("assign", (struct mrpt::nav::TWaypointsRenderingParams & (mrpt::nav::TWaypointsRenderingParams::*)(const struct mrpt::nav::TWaypointsRenderingParams &)) &mrpt::nav::TWaypointsRenderingParams::operator=, "C++: mrpt::nav::TWaypointsRenderingParams::operator=(const struct mrpt::nav::TWaypointsRenderingParams &) --> struct mrpt::nav::TWaypointsRenderingParams &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::nav::TWaypointSequence file:mrpt/nav/reactive/TWaypoint.h line:107
+	{ // mrpt::nav::TWaypointSequence file:mrpt/nav/reactive/TWaypoint.h line:109
 		pybind11::class_<mrpt::nav::TWaypointSequence, std::shared_ptr<mrpt::nav::TWaypointSequence>> cl(M("mrpt::nav"), "TWaypointSequence", "The struct for requesting navigation requests for a sequence of waypoints.\n Used in CWaypointsNavigator::navigateWaypoints().\n Users can directly fill in the list of waypoints manipulating the public\n field `waypoints`.\n  \n");
 		cl.def( pybind11::init( [](){ return new mrpt::nav::TWaypointSequence(); } ) );
 		cl.def( pybind11::init( [](mrpt::nav::TWaypointSequence const &o){ return new mrpt::nav::TWaypointSequence(o); } ) );
@@ -451,7 +451,7 @@ void bind_mrpt_nav_reactive_TWaypoint(std::function< pybind11::module &(std::str
 		cl.def("load", (void (mrpt::nav::TWaypointSequence::*)(const class mrpt::config::CConfigFileBase &, const std::string &)) &mrpt::nav::TWaypointSequence::load, "Loads waypoints to a config file section \n\nC++: mrpt::nav::TWaypointSequence::load(const class mrpt::config::CConfigFileBase &, const std::string &) --> void", pybind11::arg("c"), pybind11::arg("s"));
 		cl.def("assign", (struct mrpt::nav::TWaypointSequence & (mrpt::nav::TWaypointSequence::*)(const struct mrpt::nav::TWaypointSequence &)) &mrpt::nav::TWaypointSequence::operator=, "C++: mrpt::nav::TWaypointSequence::operator=(const struct mrpt::nav::TWaypointSequence &) --> struct mrpt::nav::TWaypointSequence &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::nav::TWaypointStatus file:mrpt/nav/reactive/TWaypoint.h line:129
+	{ // mrpt::nav::TWaypointStatus file:mrpt/nav/reactive/TWaypoint.h line:131
 		pybind11::class_<mrpt::nav::TWaypointStatus, std::shared_ptr<mrpt::nav::TWaypointStatus>, mrpt::nav::TWaypoint> cl(M("mrpt::nav"), "TWaypointStatus", "A waypoint with an execution status. ");
 		cl.def( pybind11::init( [](){ return new mrpt::nav::TWaypointStatus(); } ) );
 		cl.def( pybind11::init( [](mrpt::nav::TWaypointStatus const &o){ return new mrpt::nav::TWaypointStatus(o); } ) );
@@ -464,7 +464,7 @@ void bind_mrpt_nav_reactive_TWaypoint(std::function< pybind11::module &(std::str
 		cl.def("getAsText", (std::string (mrpt::nav::TWaypointStatus::*)() const) &mrpt::nav::TWaypointStatus::getAsText, "Gets navigation params as a human-readable format \n\nC++: mrpt::nav::TWaypointStatus::getAsText() const --> std::string");
 		cl.def("assign", (struct mrpt::nav::TWaypointStatus & (mrpt::nav::TWaypointStatus::*)(const struct mrpt::nav::TWaypointStatus &)) &mrpt::nav::TWaypointStatus::operator=, "C++: mrpt::nav::TWaypointStatus::operator=(const struct mrpt::nav::TWaypointStatus &) --> struct mrpt::nav::TWaypointStatus &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::nav::TWaypointStatusSequence file:mrpt/nav/reactive/TWaypoint.h line:163
+	{ // mrpt::nav::TWaypointStatusSequence file:mrpt/nav/reactive/TWaypoint.h line:165
 		pybind11::class_<mrpt::nav::TWaypointStatusSequence, std::shared_ptr<mrpt::nav::TWaypointStatusSequence>> cl(M("mrpt::nav"), "TWaypointStatusSequence", "The struct for querying the status of waypoints navigation. Used in\n CWaypointsNavigator::getWaypointNavStatus().\n  \n");
 		cl.def( pybind11::init( [](){ return new mrpt::nav::TWaypointStatusSequence(); } ) );
 		cl.def( pybind11::init( [](mrpt::nav::TWaypointStatusSequence const &o){ return new mrpt::nav::TWaypointStatusSequence(o); } ) );
@@ -487,7 +487,7 @@ void bind_mrpt_nav_reactive_TWaypoint(std::function< pybind11::module &(std::str
 		cl.def("cancel", (void (mrpt::nav::CWaypointsNavigator::*)()) &mrpt::nav::CWaypointsNavigator::cancel, "Cancel current navegation. \n\nC++: mrpt::nav::CWaypointsNavigator::cancel() --> void");
 		cl.def("navigateWaypoints", (void (mrpt::nav::CWaypointsNavigator::*)(const struct mrpt::nav::TWaypointSequence &)) &mrpt::nav::CWaypointsNavigator::navigateWaypoints, "Waypoint navigation request. This immediately cancels any other previous\n on-going navigation.\n \n\n CAbstractNavigator::navigate() for single waypoint navigation\n requests.\n\nC++: mrpt::nav::CWaypointsNavigator::navigateWaypoints(const struct mrpt::nav::TWaypointSequence &) --> void", pybind11::arg("nav_request"));
 		cl.def("getWaypointNavStatus", (void (mrpt::nav::CWaypointsNavigator::*)(struct mrpt::nav::TWaypointStatusSequence &) const) &mrpt::nav::CWaypointsNavigator::getWaypointNavStatus, "Get a copy of the control structure which describes the progress status\n of the waypoint navigation. \n\nC++: mrpt::nav::CWaypointsNavigator::getWaypointNavStatus(struct mrpt::nav::TWaypointStatusSequence &) const --> void", pybind11::arg("out_nav_status"));
-		cl.def("getWaypointNavStatus", (struct mrpt::nav::TWaypointStatusSequence (mrpt::nav::CWaypointsNavigator::*)() const) &mrpt::nav::CWaypointsNavigator::getWaypointNavStatus, "Get a copy of the control structure which describes the progress status\n of the waypoint navigation.\n \n	 \n\nC++: mrpt::nav::CWaypointsNavigator::getWaypointNavStatus() const --> struct mrpt::nav::TWaypointStatusSequence");
+		cl.def("getWaypointNavStatus", (struct mrpt::nav::TWaypointStatusSequence (mrpt::nav::CWaypointsNavigator::*)() const) &mrpt::nav::CWaypointsNavigator::getWaypointNavStatus, "Get a copy of the control structure which describes the progress status\n of the waypoint navigation.\n \n   \n\nC++: mrpt::nav::CWaypointsNavigator::getWaypointNavStatus() const --> struct mrpt::nav::TWaypointStatusSequence");
 		cl.def("beginWaypointsAccess", (struct mrpt::nav::TWaypointStatusSequence & (mrpt::nav::CWaypointsNavigator::*)()) &mrpt::nav::CWaypointsNavigator::beginWaypointsAccess, "Gets a write-enabled reference to the list of waypoints, simultanously\n acquiring the critical section mutex.\n Caller must call endWaypointsAccess() when done editing the waypoints.\n\nC++: mrpt::nav::CWaypointsNavigator::beginWaypointsAccess() --> struct mrpt::nav::TWaypointStatusSequence &", pybind11::return_value_policy::automatic);
 		cl.def("endWaypointsAccess", (void (mrpt::nav::CWaypointsNavigator::*)()) &mrpt::nav::CWaypointsNavigator::endWaypointsAccess, "Must be called after beginWaypointsAccess() \n\nC++: mrpt::nav::CWaypointsNavigator::endWaypointsAccess() --> void");
 		cl.def("isRelativePointReachable", (bool (mrpt::nav::CWaypointsNavigator::*)(const struct mrpt::math::TPoint2D_<double> &) const) &mrpt::nav::CWaypointsNavigator::isRelativePointReachable, "Returns `true` if, according to the information gathered at the last\n navigation step,\n there is a free path to the given point; `false` otherwise: if way is\n blocked or there is missing information,\n the point is out of range for the existing PTGs, etc. \n\nC++: mrpt::nav::CWaypointsNavigator::isRelativePointReachable(const struct mrpt::math::TPoint2D_<double> &) const --> bool", pybind11::arg("wp_local_wrt_robot"));
@@ -505,7 +505,7 @@ void bind_mrpt_nav_reactive_TWaypoint(std::function< pybind11::module &(std::str
 			cl.def("assign", (struct mrpt::nav::CWaypointsNavigator::TNavigationParamsWaypoints & (mrpt::nav::CWaypointsNavigator::TNavigationParamsWaypoints::*)(const struct mrpt::nav::CWaypointsNavigator::TNavigationParamsWaypoints &)) &mrpt::nav::CWaypointsNavigator::TNavigationParamsWaypoints::operator=, "C++: mrpt::nav::CWaypointsNavigator::TNavigationParamsWaypoints::operator=(const struct mrpt::nav::CWaypointsNavigator::TNavigationParamsWaypoints &) --> struct mrpt::nav::CWaypointsNavigator::TNavigationParamsWaypoints &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams file:mrpt/nav/reactive/CWaypointsNavigator.h line:125
+		{ // mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams file:mrpt/nav/reactive/CWaypointsNavigator.h line:120
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams, std::shared_ptr<mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams>, PyCallBack_mrpt_nav_CWaypointsNavigator_TWaypointsNavigatorParams, mrpt::config::CLoadableOptions> cl(enclosing_class, "TWaypointsNavigatorParams", "");
 			cl.def( pybind11::init( [](){ return new mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams(); }, [](){ return new PyCallBack_mrpt_nav_CWaypointsNavigator_TWaypointsNavigatorParams(); } ) );

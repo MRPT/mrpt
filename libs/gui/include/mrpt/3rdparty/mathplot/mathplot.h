@@ -1684,7 +1684,7 @@ class WXDLLIMPEXP_MATHPLOT mpMovableObject : public mpLayer
 	 */
 	mpMovableObject() : m_shape_xs(0), m_shape_ys(0) { m_type = mpLAYER_PLOT; }
 
-	~mpMovableObject() override = default;
+	~mpMovableObject() override;
 
 	/** Get the current coordinate transformation.
 	 */

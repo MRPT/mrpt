@@ -13,6 +13,7 @@
 #include <mrpt/maps/CPointsMapXYZI.h>
 #include <mrpt/maps/CPointsMapXYZIRT.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/serialization/aligned_serialization.h>
 #include <mrpt/system/filesystem.h>
@@ -65,8 +66,14 @@ mrpt::maps::CMetricMap::Ptr CPointsMapXYZIRT::internal_CreateFromMapDefinition(
 
 IMPLEMENTS_SERIALIZABLE(CPointsMapXYZIRT, CPointsMap, mrpt::maps)
 
-CPointsMapXYZIRT::CPointsMapXYZIRT(const CPointsMapXYZIRT& o) : CPointsMap() { impl_copyFrom(o); }
-CPointsMapXYZIRT::CPointsMapXYZIRT(const CPointsMapXYZI& o) : CPointsMap() { impl_copyFrom(o); }
+CPointsMapXYZIRT::CPointsMapXYZIRT(const CPointsMapXYZIRT& o) : CPointsMap()
+{
+  CPointsMapXYZIRT::impl_copyFrom(o);
+}
+CPointsMapXYZIRT::CPointsMapXYZIRT(const CPointsMapXYZI& o) : CPointsMap()
+{
+  CPointsMapXYZIRT::impl_copyFrom(o);
+}
 CPointsMapXYZIRT& CPointsMapXYZIRT::operator=(const CPointsMap& o)
 {
   impl_copyFrom(o);
@@ -141,27 +148,6 @@ void CPointsMapXYZIRT::setSize(size_t newLength)
   m_ring.assign(newLength, 0);
   m_time.assign(newLength, 0);
   mark_as_modified();
-}
-
-void CPointsMapXYZIRT::impl_copyFrom(const CPointsMap& obj)
-{
-  // This also does a ::resize(N) of all data fields.
-  CPointsMap::base_copyFrom(obj);
-
-  if (const auto* Is = obj.getPointsBufferRef_intensity(); Is)
-    m_intensity = *Is;
-  else
-    m_intensity.clear();
-
-  if (const auto* Rs = obj.getPointsBufferRef_ring(); Rs)
-    m_ring = *Rs;
-  else
-    m_ring.clear();
-
-  if (const auto* Ts = obj.getPointsBufferRef_timestamp(); Ts)
-    m_time = *Ts;
-  else
-    m_time.clear();
 }
 
 uint8_t CPointsMapXYZIRT::serializeGetVersion() const { return 0; }
@@ -410,6 +396,81 @@ void CPointsMapXYZIRT::addFrom_classSpecific(
       m_intensity.push_back(oi->getPointIntensity_fast(i));
     }
   }
+}
+
+bool CPointsMapXYZIRT::internal_insertObservation(
+    const mrpt::obs::CObservation& obs, const std::optional<const mrpt::poses::CPose3D>& robotPose)
+{
+  CPose3D robotPose3D;
+  if (robotPose) robotPose3D = (*robotPose);
+
+  if (IS_CLASS(obs, CObservationVelodyneScan))
+  {
+    /********************************************************************
+          OBSERVATION TYPE: CObservationVelodyneScan
+     ********************************************************************/
+    mark_as_modified();
+
+    const auto& o = static_cast<const CObservationVelodyneScan&>(obs);
+
+    // Automatically generate pointcloud if needed:
+    // make sure points have timestamps:
+    if (!o.point_cloud.size() || o.point_cloud.timestamp.empty())
+    {
+      CObservationVelodyneScan::TGeneratePointCloudParameters p;
+      p.generatePerPointTimestamp = true;
+
+      const_cast<CObservationVelodyneScan&>(o).generatePointCloud(p);
+    }
+
+    const auto& pc = o.point_cloud;
+    ASSERT_EQUAL_(pc.x.size(), pc.intensity.size());
+    ASSERT_EQUAL_(pc.x.size(), pc.timestamp.size());
+    ASSERT_EQUAL_(pc.x.size(), pc.laser_id.size());
+
+    const size_t n = pc.x.size();
+    if (!n) return true;
+
+    const size_t n0 = this->size();
+    resize_XYZIRT(n0 + pc.x.size(), true /*I*/, true /*R*/, true /*T*/);
+
+    std::vector<double> ts;
+    ts.reserve(n);
+    std::optional<double> minT, maxT;
+    for (size_t i = 0; i < n; i++)
+    {
+      const double t = mrpt::Clock::toDouble(pc.timestamp[i]);
+      if (!minT)
+      {
+        minT = t;
+        maxT = t;
+      }
+      else
+      {
+        mrpt::keep_min(*minT, t);
+        mrpt::keep_max(*maxT, t);
+      }
+      ts.push_back(t);
+    }
+
+    // scale timestamps so the center is At=0:
+    const double Tmid = minT ? (*minT + *maxT) * 0.5 : .0;
+    for (size_t i = 0; i < n; i++) ts[i] -= Tmid;
+
+    for (size_t i = 0; i < n; i++)
+    {
+      const auto gp = robotPose3D.composePoint(mrpt::math::TPoint3D(pc.x[i], pc.y[i], pc.z[i]));
+      insertPointFast(gp.x, gp.y, gp.z);
+      this->insertPointField_Intensity(mrpt::u8tof(pc.intensity[i]));
+      this->insertPointField_Ring(pc.laser_id[i]);
+      this->insertPointField_Timestamp(ts[i]);
+    }
+
+    return true;
+  }
+
+  // let my parent class to handle it:
+  return CPointsMap::internal_insertObservation(obs, robotPose);
 }
 
 namespace mrpt::maps::detail

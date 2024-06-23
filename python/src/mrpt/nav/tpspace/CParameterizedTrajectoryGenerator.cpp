@@ -273,7 +273,7 @@ struct PyCallBack_mrpt_nav_CAbstractHolonomicReactiveMethod : public mrpt::nav::
 
 void bind_mrpt_nav_tpspace_CParameterizedTrajectoryGenerator(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::nav::CPTG_RobotShape_Polygonal file:mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h line:529
+	{ // mrpt::nav::CPTG_RobotShape_Polygonal file:mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h line:501
 		pybind11::class_<mrpt::nav::CPTG_RobotShape_Polygonal, std::shared_ptr<mrpt::nav::CPTG_RobotShape_Polygonal>, mrpt::nav::CParameterizedTrajectoryGenerator> cl(M("mrpt::nav"), "CPTG_RobotShape_Polygonal", "Base class for all PTGs using a 2D polygonal robot shape model.\n  \n\n\n ");
 		cl.def("setRobotShape", (void (mrpt::nav::CPTG_RobotShape_Polygonal::*)(const class mrpt::math::CPolygon &)) &mrpt::nav::CPTG_RobotShape_Polygonal::setRobotShape, "@{ *\n\n Robot shape must be set before initialization, either from ctor params\n or via this method. \n\nC++: mrpt::nav::CPTG_RobotShape_Polygonal::setRobotShape(const class mrpt::math::CPolygon &) --> void", pybind11::arg("robotShape"));
 		cl.def("getRobotShape", (const class mrpt::math::CPolygon & (mrpt::nav::CPTG_RobotShape_Polygonal::*)() const) &mrpt::nav::CPTG_RobotShape_Polygonal::getRobotShape, "C++: mrpt::nav::CPTG_RobotShape_Polygonal::getRobotShape() const --> const class mrpt::math::CPolygon &", pybind11::return_value_policy::automatic);
@@ -285,7 +285,7 @@ void bind_mrpt_nav_tpspace_CParameterizedTrajectoryGenerator(std::function< pybi
 		cl.def_static("static_add_robotShape_to_setOfLines", (void (*)(class mrpt::opengl::CSetOfLines &, const class mrpt::poses::CPose2D &, const class mrpt::math::CPolygon &)) &mrpt::nav::CPTG_RobotShape_Polygonal::static_add_robotShape_to_setOfLines, "C++: mrpt::nav::CPTG_RobotShape_Polygonal::static_add_robotShape_to_setOfLines(class mrpt::opengl::CSetOfLines &, const class mrpt::poses::CPose2D &, const class mrpt::math::CPolygon &) --> void", pybind11::arg("gl_shape"), pybind11::arg("origin"), pybind11::arg("robotShape"));
 		cl.def("assign", (class mrpt::nav::CPTG_RobotShape_Polygonal & (mrpt::nav::CPTG_RobotShape_Polygonal::*)(const class mrpt::nav::CPTG_RobotShape_Polygonal &)) &mrpt::nav::CPTG_RobotShape_Polygonal::operator=, "C++: mrpt::nav::CPTG_RobotShape_Polygonal::operator=(const class mrpt::nav::CPTG_RobotShape_Polygonal &) --> class mrpt::nav::CPTG_RobotShape_Polygonal &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::nav::CPTG_RobotShape_Circular file:mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h line:576
+	{ // mrpt::nav::CPTG_RobotShape_Circular file:mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h line:545
 		pybind11::class_<mrpt::nav::CPTG_RobotShape_Circular, std::shared_ptr<mrpt::nav::CPTG_RobotShape_Circular>, mrpt::nav::CParameterizedTrajectoryGenerator> cl(M("mrpt::nav"), "CPTG_RobotShape_Circular", "Base class for all PTGs using a 2D circular robot shape model.\n  \n\n\n ");
 		cl.def("setRobotShapeRadius", (void (mrpt::nav::CPTG_RobotShape_Circular::*)(const double)) &mrpt::nav::CPTG_RobotShape_Circular::setRobotShapeRadius, "@{ *\n\n Robot shape must be set before initialization, either from ctor params\n or via this method. \n\nC++: mrpt::nav::CPTG_RobotShape_Circular::setRobotShapeRadius(const double) --> void", pybind11::arg("robot_radius"));
 		cl.def("getRobotShapeRadius", (double (mrpt::nav::CPTG_RobotShape_Circular::*)() const) &mrpt::nav::CPTG_RobotShape_Circular::getRobotShapeRadius, "C++: mrpt::nav::CPTG_RobotShape_Circular::getRobotShapeRadius() const --> double");
@@ -327,7 +327,7 @@ void bind_mrpt_nav_tpspace_CParameterizedTrajectoryGenerator(std::function< pybi
 		cl.def("enableApproachTargetSlowDown", (void (mrpt::nav::CAbstractHolonomicReactiveMethod::*)(bool)) &mrpt::nav::CAbstractHolonomicReactiveMethod::enableApproachTargetSlowDown, "C++: mrpt::nav::CAbstractHolonomicReactiveMethod::enableApproachTargetSlowDown(bool) --> void", pybind11::arg("enable"));
 		cl.def("assign", (class mrpt::nav::CAbstractHolonomicReactiveMethod & (mrpt::nav::CAbstractHolonomicReactiveMethod::*)(const class mrpt::nav::CAbstractHolonomicReactiveMethod &)) &mrpt::nav::CAbstractHolonomicReactiveMethod::operator=, "C++: mrpt::nav::CAbstractHolonomicReactiveMethod::operator=(const class mrpt::nav::CAbstractHolonomicReactiveMethod &) --> class mrpt::nav::CAbstractHolonomicReactiveMethod &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::nav::CAbstractHolonomicReactiveMethod::NavInput file:mrpt/nav/holonomic/CAbstractHolonomicReactiveMethod.h line:35
+		{ // mrpt::nav::CAbstractHolonomicReactiveMethod::NavInput file:mrpt/nav/holonomic/CAbstractHolonomicReactiveMethod.h line:34
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::nav::CAbstractHolonomicReactiveMethod::NavInput, std::shared_ptr<mrpt::nav::CAbstractHolonomicReactiveMethod::NavInput>> cl(enclosing_class, "NavInput", "Input parameters for CAbstractHolonomicReactiveMethod::navigate() ");
 			cl.def( pybind11::init( [](){ return new mrpt::nav::CAbstractHolonomicReactiveMethod::NavInput(); } ) );
@@ -339,7 +339,7 @@ void bind_mrpt_nav_tpspace_CParameterizedTrajectoryGenerator(std::function< pybi
 			cl.def("assign", (struct mrpt::nav::CAbstractHolonomicReactiveMethod::NavInput & (mrpt::nav::CAbstractHolonomicReactiveMethod::NavInput::*)(const struct mrpt::nav::CAbstractHolonomicReactiveMethod::NavInput &)) &mrpt::nav::CAbstractHolonomicReactiveMethod::NavInput::operator=, "C++: mrpt::nav::CAbstractHolonomicReactiveMethod::NavInput::operator=(const struct mrpt::nav::CAbstractHolonomicReactiveMethod::NavInput &) --> struct mrpt::nav::CAbstractHolonomicReactiveMethod::NavInput &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::nav::CAbstractHolonomicReactiveMethod::NavOutput file:mrpt/nav/holonomic/CAbstractHolonomicReactiveMethod.h line:62
+		{ // mrpt::nav::CAbstractHolonomicReactiveMethod::NavOutput file:mrpt/nav/holonomic/CAbstractHolonomicReactiveMethod.h line:61
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::nav::CAbstractHolonomicReactiveMethod::NavOutput, std::shared_ptr<mrpt::nav::CAbstractHolonomicReactiveMethod::NavOutput>> cl(enclosing_class, "NavOutput", "Output for CAbstractHolonomicReactiveMethod::navigate() ");
 			cl.def( pybind11::init( [](){ return new mrpt::nav::CAbstractHolonomicReactiveMethod::NavOutput(); } ) );

@@ -264,7 +264,7 @@ struct PyCallBack_mrpt_nav_CHolonomicVFF : public mrpt::nav::CHolonomicVFF {
 	}
 };
 
-// mrpt::nav::CHolonomicVFF::TOptions file:mrpt/nav/holonomic/CHolonomicVFF.h line:65
+// mrpt::nav::CHolonomicVFF::TOptions file:mrpt/nav/holonomic/CHolonomicVFF.h line:63
 struct PyCallBack_mrpt_nav_CHolonomicVFF_TOptions : public mrpt::nav::CHolonomicVFF::TOptions {
 	using mrpt::nav::CHolonomicVFF::TOptions::TOptions;
 
@@ -326,7 +326,7 @@ void bind_mrpt_nav_holonomic_CHolonomicVFF(std::function< pybind11::module &(std
 		cl.def("setTargetApproachSlowDownDistance", (void (mrpt::nav::CHolonomicVFF::*)(const double)) &mrpt::nav::CHolonomicVFF::setTargetApproachSlowDownDistance, "C++: mrpt::nav::CHolonomicVFF::setTargetApproachSlowDownDistance(const double) --> void", pybind11::arg("dist"));
 		cl.def("assign", (class mrpt::nav::CHolonomicVFF & (mrpt::nav::CHolonomicVFF::*)(const class mrpt::nav::CHolonomicVFF &)) &mrpt::nav::CHolonomicVFF::operator=, "C++: mrpt::nav::CHolonomicVFF::operator=(const class mrpt::nav::CHolonomicVFF &) --> class mrpt::nav::CHolonomicVFF &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::nav::CHolonomicVFF::TOptions file:mrpt/nav/holonomic/CHolonomicVFF.h line:65
+		{ // mrpt::nav::CHolonomicVFF::TOptions file:mrpt/nav/holonomic/CHolonomicVFF.h line:63
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::nav::CHolonomicVFF::TOptions, std::shared_ptr<mrpt::nav::CHolonomicVFF::TOptions>, PyCallBack_mrpt_nav_CHolonomicVFF_TOptions, mrpt::config::CLoadableOptions> cl(enclosing_class, "TOptions", "Algorithm options ");
 			cl.def( pybind11::init( [](){ return new mrpt::nav::CHolonomicVFF::TOptions(); }, [](){ return new PyCallBack_mrpt_nav_CHolonomicVFF_TOptions(); } ) );

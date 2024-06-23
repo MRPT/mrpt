@@ -92,7 +92,6 @@ class CSimplePointsMap : public CPointsMap
       const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
 
  protected:
-  void impl_copyFrom(const CPointsMap& obj) override;
   void addFrom_classSpecific(
       [[maybe_unused]] const CPointsMap& anotherMap,
       [[maybe_unused]] size_t nPreviousPoints,

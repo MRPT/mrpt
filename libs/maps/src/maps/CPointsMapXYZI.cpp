@@ -98,17 +98,6 @@ void CPointsMapXYZI::setSize(size_t newLength)
   mark_as_modified();
 }
 
-void CPointsMapXYZI::impl_copyFrom(const CPointsMap& obj)
-{
-  // This also does a ::resize(N) of all data fields.
-  CPointsMap::base_copyFrom(obj);
-
-  ASSERT_EQUAL_(m_x.size(), m_intensity.size());
-
-  if (const auto* Is = obj.getPointsBufferRef_intensity(); Is) m_intensity = *Is;
-  // else: leave with default values in this class
-}
-
 uint8_t CPointsMapXYZI::serializeGetVersion() const { return 0; }
 void CPointsMapXYZI::serializeTo(mrpt::serialization::CArchive& out) const
 {
@@ -187,7 +176,6 @@ void CPointsMapXYZI::insertPointFast(float x, float y, float z)
   m_x.push_back(x);
   m_y.push_back(y);
   m_z.push_back(z);
-  m_intensity.push_back(0);
   // mark_as_modified(); Don't, this is the "XXXFast()" method
 }
 

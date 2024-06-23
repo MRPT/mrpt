@@ -62,23 +62,23 @@ void bind_mrpt_system_CTimeLogger(std::function< pybind11::module &(std::string 
 		}
 
 	}
-	{ // mrpt::system::CTimeLoggerEntry file:mrpt/system/CTimeLogger.h line:231
+	{ // mrpt::system::CTimeLoggerEntry file:mrpt/system/CTimeLogger.h line:226
 		pybind11::class_<mrpt::system::CTimeLoggerEntry, std::shared_ptr<mrpt::system::CTimeLoggerEntry>> cl(M("mrpt::system"), "CTimeLoggerEntry", "A safe way to call enter() and leave() of a mrpt::system::CTimeLogger upon\n construction and destruction of\n this auxiliary object, making sure that leave() will be called upon\n exceptions, etc.\n Usage mode #1 (scoped):\n \n\n\n\n\n\n\n\n\n\n\n\n Usage mode #2 (unscoped):\n \n\n\n\n\n\n\n\n\n\n\n \n\n ");
 		cl.def( pybind11::init( [](mrpt::system::CTimeLoggerEntry const &o){ return new mrpt::system::CTimeLoggerEntry(o); } ) );
 		cl.def("stop", (void (mrpt::system::CTimeLoggerEntry::*)()) &mrpt::system::CTimeLoggerEntry::stop, "C++: mrpt::system::CTimeLoggerEntry::stop() --> void");
 	}
-	{ // mrpt::system::CTimeLoggerSaveAtDtor file:mrpt/system/CTimeLogger.h line:251
+	{ // mrpt::system::CTimeLoggerSaveAtDtor file:mrpt/system/CTimeLogger.h line:245
 		pybind11::class_<mrpt::system::CTimeLoggerSaveAtDtor, std::shared_ptr<mrpt::system::CTimeLoggerSaveAtDtor>> cl(M("mrpt::system"), "CTimeLoggerSaveAtDtor", "A helper class to save CSV stats upon self destruction, for example, at the\n end of a program run. The target file will be named after timelogger's name.\n \n\n\n ");
 		cl.def( pybind11::init<class mrpt::system::CTimeLogger &>(), pybind11::arg("tm") );
 
 	}
-	// mrpt::system::global_profiler_enter(const char *) file:mrpt/system/CTimeLogger.h line:262
+	// mrpt::system::global_profiler_enter(const char *) file:mrpt/system/CTimeLogger.h line:256
 	M("mrpt::system").def("global_profiler_enter", (void (*)(const char *)) &mrpt::system::global_profiler_enter, "macros.\n  @{ \n\nC++: mrpt::system::global_profiler_enter(const char *) --> void", pybind11::arg("func_name"));
 
-	// mrpt::system::global_profiler_leave(const char *) file:mrpt/system/CTimeLogger.h line:263
+	// mrpt::system::global_profiler_leave(const char *) file:mrpt/system/CTimeLogger.h line:257
 	M("mrpt::system").def("global_profiler_leave", (void (*)(const char *)) &mrpt::system::global_profiler_leave, "C++: mrpt::system::global_profiler_leave(const char *) --> void", pybind11::arg("func_name"));
 
-	// mrpt::system::global_profiler_getref() file:mrpt/system/CTimeLogger.h line:264
+	// mrpt::system::global_profiler_getref() file:mrpt/system/CTimeLogger.h line:258
 	M("mrpt::system").def("global_profiler_getref", (class mrpt::system::CTimeLogger & (*)()) &mrpt::system::global_profiler_getref, "C++: mrpt::system::global_profiler_getref() --> class mrpt::system::CTimeLogger &", pybind11::return_value_policy::automatic);
 
 }

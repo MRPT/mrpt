@@ -16,7 +16,7 @@
 
 void bind_mrpt_typemeta_static_string(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::typemeta::internal::make_sequence_ file:mrpt/typemeta/static_string.h line:82
+	{ // mrpt::typemeta::internal::make_sequence_ file:mrpt/typemeta/static_string.h line:75
 		pybind11::class_<mrpt::typemeta::internal::make_sequence_<0>, std::shared_ptr<mrpt::typemeta::internal::make_sequence_<0>>> cl(M("mrpt::typemeta::internal"), "make_sequence_0_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::typemeta::internal::make_sequence_<0>(); } ) );
 	}

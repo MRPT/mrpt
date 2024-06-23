@@ -15,10 +15,10 @@
 
 void bind_mrpt_poses_CPose3DPDFGaussian(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	// mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION(bool) file:mrpt/poses/CPose3DPDFGaussian.h line:240
+	// mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION(bool) file:mrpt/poses/CPose3DPDFGaussian.h line:235
 	M("mrpt::global_settings").def("USE_SUT_QUAT2EULER_CONVERSION", (void (*)(bool)) &mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION, "If set to true (false), a Scaled Unscented Transform is used instead of a\nlinear approximation with Jacobians.\n Affects to:\n		- CPose3DPDFGaussian::CPose3DPDFGaussian( const CPose3DQuatPDFGaussian\n&o)\n\nC++: mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION(bool) --> void", pybind11::arg("value"));
 
-	// mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION() file:mrpt/poses/CPose3DPDFGaussian.h line:241
+	// mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION() file:mrpt/poses/CPose3DPDFGaussian.h line:236
 	M("mrpt::global_settings").def("USE_SUT_QUAT2EULER_CONVERSION", (bool (*)()) &mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION, "C++: mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION() --> bool");
 
 }

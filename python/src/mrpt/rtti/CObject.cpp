@@ -85,96 +85,96 @@ void bind_mrpt_rtti_CObject(std::function< pybind11::module &(std::string const 
 	// mrpt::rtti::registerClassCustomName(const char *, const struct mrpt::rtti::TRuntimeClassId *) file:mrpt/rtti/CObject.h line:57
 	M("mrpt::rtti").def("registerClassCustomName", (void (*)(const char *, const struct mrpt::rtti::TRuntimeClassId *)) &mrpt::rtti::registerClassCustomName, "Mostly for internal use within mrpt sources, to handle exceptional cases\n with multiple serialization names for backward compatibility\n (CMultiMetricMaps, CImage,...)\n\nC++: mrpt::rtti::registerClassCustomName(const char *, const struct mrpt::rtti::TRuntimeClassId *) --> void", pybind11::arg("customName"), pybind11::arg("pNewClass"));
 
-	// mrpt::rtti::findRegisteredClass(const std::string &, const bool) file:mrpt/rtti/CObject.h line:88
+	// mrpt::rtti::findRegisteredClass(const std::string &, const bool) file:mrpt/rtti/CObject.h line:87
 	M("mrpt::rtti").def("findRegisteredClass", [](const std::string & a0) -> const mrpt::rtti::TRuntimeClassId * { return mrpt::rtti::findRegisteredClass(a0); }, "", pybind11::return_value_policy::automatic, pybind11::arg("className"));
 	M("mrpt::rtti").def("findRegisteredClass", (const struct mrpt::rtti::TRuntimeClassId * (*)(const std::string &, const bool)) &mrpt::rtti::findRegisteredClass, "Return info about a given class by its name, or nullptr if the class is not\n registered.\n\n The list of registered \"namespaces::class_name\" will be looked up first. If\n no match is found, **and** `allow_ignore_namespace=true`, then a second\n search will be performed looking for a match of the class name without the\n namespace part. Note that this is enabled by default since namespaces were\n not used while serializing classes in MRPT older than v2.0, so this option\n allows reading from older datasets transparently. It could be set to false if\n it is ensured that only mrpt2 datasets will be read.\n\n \n The name of the class to look up\n \n\n See discussion above\n\n \n registerClass, getAllRegisteredClasses\n\nC++: mrpt::rtti::findRegisteredClass(const std::string &, const bool) --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic, pybind11::arg("className"), pybind11::arg("allow_ignore_namespace"));
 
-	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:92
+	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:91
 		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::rtti::CObject>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::rtti::CObject>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_rtti_CObject_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::rtti::CObject>(); } ) );
 		cl.def_static("get", (const struct mrpt::rtti::TRuntimeClassId * (*)()) &mrpt::rtti::CLASS_ID_impl<mrpt::rtti::CObject>::get, "C++: mrpt::rtti::CLASS_ID_impl<mrpt::rtti::CObject>::get() --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:92
+	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:91
 		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CBeaconMap>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CBeaconMap>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_maps_CBeaconMap_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::maps::CBeaconMap>(); } ) );
 		cl.def_static("get", (const struct mrpt::rtti::TRuntimeClassId * (*)()) &mrpt::rtti::CLASS_ID_impl<mrpt::maps::CBeaconMap>::get, "C++: mrpt::rtti::CLASS_ID_impl<mrpt::maps::CBeaconMap>::get() --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:92
+	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:91
 		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CColouredOctoMap>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CColouredOctoMap>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_maps_CColouredOctoMap_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::maps::CColouredOctoMap>(); } ) );
 		cl.def_static("get", (const struct mrpt::rtti::TRuntimeClassId * (*)()) &mrpt::rtti::CLASS_ID_impl<mrpt::maps::CColouredOctoMap>::get, "C++: mrpt::rtti::CLASS_ID_impl<mrpt::maps::CColouredOctoMap>::get() --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:92
+	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:91
 		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CColouredPointsMap>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CColouredPointsMap>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_maps_CColouredPointsMap_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::maps::CColouredPointsMap>(); } ) );
 		cl.def_static("get", (const struct mrpt::rtti::TRuntimeClassId * (*)()) &mrpt::rtti::CLASS_ID_impl<mrpt::maps::CColouredPointsMap>::get, "C++: mrpt::rtti::CLASS_ID_impl<mrpt::maps::CColouredPointsMap>::get() --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:92
+	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:91
 		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CGasConcentrationGridMap2D>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CGasConcentrationGridMap2D>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_maps_CGasConcentrationGridMap2D_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::maps::CGasConcentrationGridMap2D>(); } ) );
 		cl.def_static("get", (const struct mrpt::rtti::TRuntimeClassId * (*)()) &mrpt::rtti::CLASS_ID_impl<mrpt::maps::CGasConcentrationGridMap2D>::get, "C++: mrpt::rtti::CLASS_ID_impl<mrpt::maps::CGasConcentrationGridMap2D>::get() --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:92
+	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:91
 		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CHeightGridMap2D>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CHeightGridMap2D>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_maps_CHeightGridMap2D_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::maps::CHeightGridMap2D>(); } ) );
 		cl.def_static("get", (const struct mrpt::rtti::TRuntimeClassId * (*)()) &mrpt::rtti::CLASS_ID_impl<mrpt::maps::CHeightGridMap2D>::get, "C++: mrpt::rtti::CLASS_ID_impl<mrpt::maps::CHeightGridMap2D>::get() --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:92
+	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:91
 		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CHeightGridMap2D_MRF>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CHeightGridMap2D_MRF>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_maps_CHeightGridMap2D_MRF_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::maps::CHeightGridMap2D_MRF>(); } ) );
 		cl.def_static("get", (const struct mrpt::rtti::TRuntimeClassId * (*)()) &mrpt::rtti::CLASS_ID_impl<mrpt::maps::CHeightGridMap2D_MRF>::get, "C++: mrpt::rtti::CLASS_ID_impl<mrpt::maps::CHeightGridMap2D_MRF>::get() --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:92
+	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:91
 		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::maps::COccupancyGridMap2D>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::maps::COccupancyGridMap2D>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_maps_COccupancyGridMap2D_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::maps::COccupancyGridMap2D>(); } ) );
 		cl.def_static("get", (const struct mrpt::rtti::TRuntimeClassId * (*)()) &mrpt::rtti::CLASS_ID_impl<mrpt::maps::COccupancyGridMap2D>::get, "C++: mrpt::rtti::CLASS_ID_impl<mrpt::maps::COccupancyGridMap2D>::get() --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:92
+	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:91
 		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::maps::COccupancyGridMap3D>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::maps::COccupancyGridMap3D>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_maps_COccupancyGridMap3D_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::maps::COccupancyGridMap3D>(); } ) );
 		cl.def_static("get", (const struct mrpt::rtti::TRuntimeClassId * (*)()) &mrpt::rtti::CLASS_ID_impl<mrpt::maps::COccupancyGridMap3D>::get, "C++: mrpt::rtti::CLASS_ID_impl<mrpt::maps::COccupancyGridMap3D>::get() --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:92
+	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:91
 		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::maps::COctoMap>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::maps::COctoMap>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_maps_COctoMap_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::maps::COctoMap>(); } ) );
 		cl.def_static("get", (const struct mrpt::rtti::TRuntimeClassId * (*)()) &mrpt::rtti::CLASS_ID_impl<mrpt::maps::COctoMap>::get, "C++: mrpt::rtti::CLASS_ID_impl<mrpt::maps::COctoMap>::get() --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:92
+	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:91
 		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CSimplePointsMap>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CSimplePointsMap>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_maps_CSimplePointsMap_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::maps::CSimplePointsMap>(); } ) );
 		cl.def_static("get", (const struct mrpt::rtti::TRuntimeClassId * (*)()) &mrpt::rtti::CLASS_ID_impl<mrpt::maps::CSimplePointsMap>::get, "C++: mrpt::rtti::CLASS_ID_impl<mrpt::maps::CSimplePointsMap>::get() --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:92
+	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:91
 		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CPointsMapXYZI>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CPointsMapXYZI>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_maps_CPointsMapXYZI_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::maps::CPointsMapXYZI>(); } ) );
 		cl.def_static("get", (const struct mrpt::rtti::TRuntimeClassId * (*)()) &mrpt::rtti::CLASS_ID_impl<mrpt::maps::CPointsMapXYZI>::get, "C++: mrpt::rtti::CLASS_ID_impl<mrpt::maps::CPointsMapXYZI>::get() --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:92
+	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:91
 		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CReflectivityGridMap2D>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CReflectivityGridMap2D>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_maps_CReflectivityGridMap2D_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::maps::CReflectivityGridMap2D>(); } ) );
 		cl.def_static("get", (const struct mrpt::rtti::TRuntimeClassId * (*)()) &mrpt::rtti::CLASS_ID_impl<mrpt::maps::CReflectivityGridMap2D>::get, "C++: mrpt::rtti::CLASS_ID_impl<mrpt::maps::CReflectivityGridMap2D>::get() --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:92
+	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:91
 		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CWeightedPointsMap>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CWeightedPointsMap>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_maps_CWeightedPointsMap_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::maps::CWeightedPointsMap>(); } ) );
 		cl.def_static("get", (const struct mrpt::rtti::TRuntimeClassId * (*)()) &mrpt::rtti::CLASS_ID_impl<mrpt::maps::CWeightedPointsMap>::get, "C++: mrpt::rtti::CLASS_ID_impl<mrpt::maps::CWeightedPointsMap>::get() --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:92
+	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:91
 		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CWirelessPowerGridMap2D>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CWirelessPowerGridMap2D>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_maps_CWirelessPowerGridMap2D_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::maps::CWirelessPowerGridMap2D>(); } ) );
 		cl.def_static("get", (const struct mrpt::rtti::TRuntimeClassId * (*)()) &mrpt::rtti::CLASS_ID_impl<mrpt::maps::CWirelessPowerGridMap2D>::get, "C++: mrpt::rtti::CLASS_ID_impl<mrpt::maps::CWirelessPowerGridMap2D>::get() --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:92
+	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:91
 		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CVoxelMap>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CVoxelMap>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_maps_CVoxelMap_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::maps::CVoxelMap>(); } ) );
 		cl.def_static("get", (const struct mrpt::rtti::TRuntimeClassId * (*)()) &mrpt::rtti::CLASS_ID_impl<mrpt::maps::CVoxelMap>::get, "C++: mrpt::rtti::CLASS_ID_impl<mrpt::maps::CVoxelMap>::get() --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:92
+	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:91
 		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CVoxelMapRGB>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CVoxelMapRGB>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_maps_CVoxelMapRGB_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::maps::CVoxelMapRGB>(); } ) );
 		cl.def_static("get", (const struct mrpt::rtti::TRuntimeClassId * (*)()) &mrpt::rtti::CLASS_ID_impl<mrpt::maps::CVoxelMapRGB>::get, "C++: mrpt::rtti::CLASS_ID_impl<mrpt::maps::CVoxelMapRGB>::get() --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:92
+	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:91
 		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::obs::CObservation>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::obs::CObservation>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_obs_CObservation_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::obs::CObservation>(); } ) );
 		cl.def_static("get", (const struct mrpt::rtti::TRuntimeClassId * (*)()) &mrpt::rtti::CLASS_ID_impl<mrpt::obs::CObservation>::get, "C++: mrpt::rtti::CLASS_ID_impl<mrpt::obs::CObservation>::get() --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);

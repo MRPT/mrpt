@@ -48,7 +48,7 @@ void bind_mrpt_img_TColor(std::function< pybind11::module &(std::string const &n
 
 		cl.def("__str__", [](mrpt::img::TColor const &o) -> std::string { std::ostringstream s; using namespace mrpt::img; s << o; return s.str(); } );
 	}
-	{ // mrpt::img::TColorf file:mrpt/img/TColor.h line:89
+	{ // mrpt::img::TColorf file:mrpt/img/TColor.h line:85
 		pybind11::class_<mrpt::img::TColorf, std::shared_ptr<mrpt::img::TColorf>> cl(M("mrpt::img"), "TColorf", "An RGBA color - floats in the range [0,1]\n \n");
 		cl.def( pybind11::init( [](){ return new mrpt::img::TColorf(); } ) );
 		cl.def( pybind11::init( [](float const & a0, float const & a1, float const & a2){ return new mrpt::img::TColorf(a0, a1, a2); } ), "doc" , pybind11::arg("r"), pybind11::arg("g"), pybind11::arg("b"));

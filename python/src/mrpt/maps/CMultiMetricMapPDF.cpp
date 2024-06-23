@@ -144,7 +144,7 @@ struct PyCallBack_mrpt_maps_CRBPFParticleData : public mrpt::maps::CRBPFParticle
 	}
 };
 
-// mrpt::maps::CMultiMetricMapPDF file:mrpt/maps/CMultiMetricMapPDF.h line:54
+// mrpt::maps::CMultiMetricMapPDF file:mrpt/maps/CMultiMetricMapPDF.h line:53
 struct PyCallBack_mrpt_maps_CMultiMetricMapPDF : public mrpt::maps::CMultiMetricMapPDF {
 	using mrpt::maps::CMultiMetricMapPDF::CMultiMetricMapPDF;
 
@@ -397,7 +397,7 @@ struct PyCallBack_mrpt_maps_CMultiMetricMapPDF : public mrpt::maps::CMultiMetric
 	}
 };
 
-// mrpt::maps::CMultiMetricMapPDF::TPredictionParams file:mrpt/maps/CMultiMetricMapPDF.h line:108
+// mrpt::maps::CMultiMetricMapPDF::TPredictionParams file:mrpt/maps/CMultiMetricMapPDF.h line:104
 struct PyCallBack_mrpt_maps_CMultiMetricMapPDF_TPredictionParams : public mrpt::maps::CMultiMetricMapPDF::TPredictionParams {
 	using mrpt::maps::CMultiMetricMapPDF::TPredictionParams::TPredictionParams;
 
@@ -446,7 +446,7 @@ void bind_mrpt_maps_CMultiMetricMapPDF(std::function< pybind11::module &(std::st
 		cl.def_static("CreateObject", (class std::shared_ptr<class mrpt::rtti::CObject> (*)()) &mrpt::maps::CRBPFParticleData::CreateObject, "C++: mrpt::maps::CRBPFParticleData::CreateObject() --> class std::shared_ptr<class mrpt::rtti::CObject>");
 		cl.def("assign", (class mrpt::maps::CRBPFParticleData & (mrpt::maps::CRBPFParticleData::*)(const class mrpt::maps::CRBPFParticleData &)) &mrpt::maps::CRBPFParticleData::operator=, "C++: mrpt::maps::CRBPFParticleData::operator=(const class mrpt::maps::CRBPFParticleData &) --> class mrpt::maps::CRBPFParticleData &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::maps::CMultiMetricMapPDF file:mrpt/maps/CMultiMetricMapPDF.h line:54
+	{ // mrpt::maps::CMultiMetricMapPDF file:mrpt/maps/CMultiMetricMapPDF.h line:53
 		pybind11::class_<mrpt::maps::CMultiMetricMapPDF, std::shared_ptr<mrpt::maps::CMultiMetricMapPDF>, PyCallBack_mrpt_maps_CMultiMetricMapPDF, mrpt::serialization::CSerializable, mrpt::bayes::CParticleFilterData<mrpt::maps::CRBPFParticleData,mrpt::bayes::particle_storage_mode::POINTER>, mrpt::bayes::CParticleFilterDataImpl<mrpt::maps::CMultiMetricMapPDF,std::deque<mrpt::bayes::CProbabilityParticle<mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER> >>, mrpt::slam::PF_implementation<mrpt::maps::CRBPFParticleData,mrpt::maps::CMultiMetricMapPDF,mrpt::bayes::particle_storage_mode::POINTER>> cl(M("mrpt::maps"), "CMultiMetricMapPDF", "Declares a class that represents a Rao-Blackwellized set of particles for\n solving the SLAM problem (This class is the base of RBPF-SLAM applications).\n   This class is used internally by the map building algorithm in\n \"mrpt::slam::CMetricMapBuilderRBPF\"\n\n \n mrpt::slam::CMetricMapBuilderRBPF\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::maps::CMultiMetricMapPDF(); }, [](){ return new PyCallBack_mrpt_maps_CMultiMetricMapPDF(); } ) );
 		cl.def( pybind11::init<const struct mrpt::bayes::CParticleFilter::TParticleFilterOptions &, const class mrpt::maps::TSetOfMetricMapInitializers &, const struct mrpt::maps::CMultiMetricMapPDF::TPredictionParams &>(), pybind11::arg("opts"), pybind11::arg("mapsInitializers"), pybind11::arg("predictionOptions") );
@@ -472,14 +472,14 @@ void bind_mrpt_maps_CMultiMetricMapPDF(std::function< pybind11::module &(std::st
 		cl.def("getCurrentJointEntropy", (double (mrpt::maps::CMultiMetricMapPDF::*)()) &mrpt::maps::CMultiMetricMapPDF::getCurrentJointEntropy, "Returns the joint entropy estimation over paths and maps, acording to\n \"Information Gain-based Exploration Using\" by C. Stachniss, G. Grissetti\n and W.Burgard.\n\nC++: mrpt::maps::CMultiMetricMapPDF::getCurrentJointEntropy() --> double");
 		cl.def("updateSensoryFrameSequence", (void (mrpt::maps::CMultiMetricMapPDF::*)()) &mrpt::maps::CMultiMetricMapPDF::updateSensoryFrameSequence, "Update the poses estimation of the member \"SFs\" according to the current\n path belief.\n\nC++: mrpt::maps::CMultiMetricMapPDF::updateSensoryFrameSequence() --> void");
 		cl.def("saveCurrentPathEstimationToTextFile", (void (mrpt::maps::CMultiMetricMapPDF::*)(const std::string &)) &mrpt::maps::CMultiMetricMapPDF::saveCurrentPathEstimationToTextFile, "A logging utility: saves the current path estimation for each particle\n in a text file (a row per particle, each 3-column-entry is a set\n [x,y,phi], respectively).\n\nC++: mrpt::maps::CMultiMetricMapPDF::saveCurrentPathEstimationToTextFile(const std::string &) --> void", pybind11::arg("fil"));
-		cl.def("getLastPose", (struct mrpt::math::TPose3D (mrpt::maps::CMultiMetricMapPDF::*)(size_t, bool &) const) &mrpt::maps::CMultiMetricMapPDF::getLastPose, "		@{ \n\nC++: mrpt::maps::CMultiMetricMapPDF::getLastPose(size_t, bool &) const --> struct mrpt::math::TPose3D", pybind11::arg("i"), pybind11::arg("pose_is_valid"));
+		cl.def("getLastPose", (struct mrpt::math::TPose3D (mrpt::maps::CMultiMetricMapPDF::*)(size_t, bool &) const) &mrpt::maps::CMultiMetricMapPDF::getLastPose, "@{ \n\nC++: mrpt::maps::CMultiMetricMapPDF::getLastPose(size_t, bool &) const --> struct mrpt::math::TPose3D", pybind11::arg("i"), pybind11::arg("pose_is_valid"));
 		cl.def("PF_SLAM_implementation_custom_update_particle_with_new_pose", (void (mrpt::maps::CMultiMetricMapPDF::*)(class mrpt::maps::CRBPFParticleData *, const struct mrpt::math::TPose3D &) const) &mrpt::maps::CMultiMetricMapPDF::PF_SLAM_implementation_custom_update_particle_with_new_pose, "C++: mrpt::maps::CMultiMetricMapPDF::PF_SLAM_implementation_custom_update_particle_with_new_pose(class mrpt::maps::CRBPFParticleData *, const struct mrpt::math::TPose3D &) const --> void", pybind11::arg("particleData"), pybind11::arg("newPose"));
 		cl.def("PF_SLAM_implementation_doWeHaveValidObservations", (bool (mrpt::maps::CMultiMetricMapPDF::*)(const class std::deque<struct mrpt::bayes::CProbabilityParticle<class mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER> > &, const class mrpt::obs::CSensoryFrame *) const) &mrpt::maps::CMultiMetricMapPDF::PF_SLAM_implementation_doWeHaveValidObservations, "C++: mrpt::maps::CMultiMetricMapPDF::PF_SLAM_implementation_doWeHaveValidObservations(const class std::deque<struct mrpt::bayes::CProbabilityParticle<class mrpt::maps::CRBPFParticleData, mrpt::bayes::particle_storage_mode::POINTER> > &, const class mrpt::obs::CSensoryFrame *) const --> bool", pybind11::arg("particles"), pybind11::arg("sf"));
 		cl.def("PF_SLAM_implementation_skipRobotMovement", (bool (mrpt::maps::CMultiMetricMapPDF::*)() const) &mrpt::maps::CMultiMetricMapPDF::PF_SLAM_implementation_skipRobotMovement, "C++: mrpt::maps::CMultiMetricMapPDF::PF_SLAM_implementation_skipRobotMovement() const --> bool");
 		cl.def("PF_SLAM_computeObservationLikelihoodForParticle", (double (mrpt::maps::CMultiMetricMapPDF::*)(const struct mrpt::bayes::CParticleFilter::TParticleFilterOptions &, size_t, const class mrpt::obs::CSensoryFrame &, const class mrpt::poses::CPose3D &) const) &mrpt::maps::CMultiMetricMapPDF::PF_SLAM_computeObservationLikelihoodForParticle, "Evaluate the observation likelihood for one particle at a given location\n\nC++: mrpt::maps::CMultiMetricMapPDF::PF_SLAM_computeObservationLikelihoodForParticle(const struct mrpt::bayes::CParticleFilter::TParticleFilterOptions &, size_t, const class mrpt::obs::CSensoryFrame &, const class mrpt::poses::CPose3D &) const --> double", pybind11::arg("PF_options"), pybind11::arg("particleIndexForMap"), pybind11::arg("observation"), pybind11::arg("x"));
 		cl.def("assign", (class mrpt::maps::CMultiMetricMapPDF & (mrpt::maps::CMultiMetricMapPDF::*)(const class mrpt::maps::CMultiMetricMapPDF &)) &mrpt::maps::CMultiMetricMapPDF::operator=, "C++: mrpt::maps::CMultiMetricMapPDF::operator=(const class mrpt::maps::CMultiMetricMapPDF &) --> class mrpt::maps::CMultiMetricMapPDF &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::maps::CMultiMetricMapPDF::TPredictionParams file:mrpt/maps/CMultiMetricMapPDF.h line:108
+		{ // mrpt::maps::CMultiMetricMapPDF::TPredictionParams file:mrpt/maps/CMultiMetricMapPDF.h line:104
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::maps::CMultiMetricMapPDF::TPredictionParams, std::shared_ptr<mrpt::maps::CMultiMetricMapPDF::TPredictionParams>, PyCallBack_mrpt_maps_CMultiMetricMapPDF_TPredictionParams, mrpt::config::CLoadableOptions> cl(enclosing_class, "TPredictionParams", "The struct for passing extra simulation parameters to the\n prediction/update stage\n    when running a particle filter.\n \n\n prediction_and_update");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CMultiMetricMapPDF::TPredictionParams(); }, [](){ return new PyCallBack_mrpt_maps_CMultiMetricMapPDF_TPredictionParams(); } ) );

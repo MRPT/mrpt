@@ -49,14 +49,14 @@ void bind_mrpt_comms_net_utils(std::function< pybind11::module &(std::string con
 		cl.def_readwrite("out_headers", &mrpt::comms::net::HttpRequestOutput::out_headers);
 		cl.def("assign", (struct mrpt::comms::net::HttpRequestOutput & (mrpt::comms::net::HttpRequestOutput::*)(const struct mrpt::comms::net::HttpRequestOutput &)) &mrpt::comms::net::HttpRequestOutput::operator=, "C++: mrpt::comms::net::HttpRequestOutput::operator=(const struct mrpt::comms::net::HttpRequestOutput &) --> struct mrpt::comms::net::HttpRequestOutput &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	// mrpt::comms::net::DNS_resolve_async(const std::string &, std::string &, const unsigned int) file:mrpt/comms/net_utils.h line:111
+	// mrpt::comms::net::DNS_resolve_async(const std::string &, std::string &, const unsigned int) file:mrpt/comms/net_utils.h line:115
 	M("mrpt::comms::net").def("DNS_resolve_async", [](const std::string & a0, std::string & a1) -> bool { return mrpt::comms::net::DNS_resolve_async(a0, a1); }, "", pybind11::arg("server_name"), pybind11::arg("out_ip"));
 	M("mrpt::comms::net").def("DNS_resolve_async", (bool (*)(const std::string &, std::string &, const unsigned int)) &mrpt::comms::net::DNS_resolve_async, "Resolve a server address by its name, returning its IP address as a\n string - This method has a timeout for the maximum time to wait for\n the DNS server.  For example: server_name=\"www.google.com\" ->\n out_ip=\"209.85.227.99\"\n\n \n true on success, false on timeout or other error.\n\nC++: mrpt::comms::net::DNS_resolve_async(const std::string &, std::string &, const unsigned int) --> bool", pybind11::arg("server_name"), pybind11::arg("out_ip"), pybind11::arg("timeout_ms"));
 
-	// mrpt::comms::net::getLastSocketErrorStr() file:mrpt/comms/net_utils.h line:116
+	// mrpt::comms::net::getLastSocketErrorStr() file:mrpt/comms/net_utils.h line:119
 	M("mrpt::comms::net").def("getLastSocketErrorStr", (std::string (*)()) &mrpt::comms::net::getLastSocketErrorStr, "Returns a description of the last Sockets error \n\nC++: mrpt::comms::net::getLastSocketErrorStr() --> std::string");
 
-	// mrpt::comms::net::Ping(const std::string &, const int, std::string *) file:mrpt/comms/net_utils.h line:132
+	// mrpt::comms::net::Ping(const std::string &, const int, std::string *) file:mrpt/comms/net_utils.h line:135
 	M("mrpt::comms::net").def("Ping", [](const std::string & a0, const int & a1) -> bool { return mrpt::comms::net::Ping(a0, a1); }, "", pybind11::arg("address"), pybind11::arg("max_attempts"));
 	M("mrpt::comms::net").def("Ping", (bool (*)(const std::string &, const int, std::string *)) &mrpt::comms::net::Ping, "Ping an IP address\n\n \n Address to ping.\n \n\n Number of attempts to try and ping.\n \n\n String containing output information\n\n \n True if responsive, false otherwise.\n\n \n { I am redirecting stderr to stdout, so that the overall process\n is simplified.  Otherwise see:\n https://jineshkj.wordpress.com/2006/12/22/how-to-capture-stdin-stdout-and-stderr-of-child-program/\n }\n\n \n\nC++: mrpt::comms::net::Ping(const std::string &, const int, std::string *) --> bool", pybind11::arg("address"), pybind11::arg("max_attempts"), pybind11::arg("output_str"));
 

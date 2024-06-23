@@ -1,5 +1,18 @@
 \page changelog Change Log
 
+# Version 2.13.2: Released June 23rd, 2024
+- Changes in libraries:
+  - \ref mrpt_maps_grp:
+    - mrpt::maps::CPointsMapXYZIRT now creates timestamps per point for input observations of type mrpt::obs::CObservationVelodyneScan
+    - mrpt::maps::CPointsMap::asString() now also shows the actual derived class name.
+  - \ref mrpt_obs_grp:
+    - mrpt::obs::CObservationVelodyneScan now implements unload() to free memory for cached point clouds.
+  - \ref mrpt_ros1bridge_grp:
+    - mrpt::ros1bridge::toROS() conversion from `PointCloud2` to mrpt::maps::CPointsMapXYZIRT: recognize timestamp field names `"t"` and `"timestamp"`, and support conversion from uint32_t timestamps as nanoseconds.
+- BUG FIXES:
+  - mrpt::vision::CFeatureTracker_KL: Parameter ``LK_epsilon`` was rounded to integer.
+  - mrpt::maps::CPointsMapXYZI::insertPointFast() did also append to the intensity channel, which is inconsistent behavior with the other map classes.
+
 # Version 2.13.1: Released June 5th, 2024
 - BUG FIXES:
   - nanogui: Fix invalidation of iterators/references in widget lists.

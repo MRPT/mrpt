@@ -63,6 +63,7 @@ void do_test_insertPoints()
     MAP pts2 = pts1;
     MAP pts3 = pts1;
 
+    EXPECT_EQ(pts1.size(), pts2.size());
     EXPECT_EQ(pts2.size(), pts3.size());
     for (size_t i = 0; i < demo9_N; i++)
     {
