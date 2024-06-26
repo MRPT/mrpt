@@ -533,7 +533,7 @@ class CPointsMap :
   /// Gets the point weight, which is ignored in all classes (defaults to 1)
   /// but in those which actually store that field (Note: No checks are done
   /// for out-of-bounds index).  \sa setPointWeight
-  virtual unsigned int getPointWeight([[maybe_unused]] size_t index) const { return 1; }
+  virtual unsigned long getPointWeight([[maybe_unused]] size_t index) const { return 1; }
 
   /** Provides a direct access to points buffer, or nullptr if there is no
    * points in the map.

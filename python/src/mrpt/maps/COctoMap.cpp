@@ -860,16 +860,16 @@ struct PyCallBack_mrpt_maps_CSimplePointsMap : public mrpt::maps::CSimplePointsM
 		}
 		return CPointsMap::setPointWeight(a0, a1);
 	}
-	unsigned int getPointWeight(size_t a0) const override {
+	unsigned long getPointWeight(size_t a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "getPointWeight");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned int>::value) {
-				static pybind11::detail::override_caster_t<unsigned int> caster;
-				return pybind11::detail::cast_ref<unsigned int>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
+				static pybind11::detail::override_caster_t<unsigned long> caster;
+				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned int>(std::move(o));
+			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
 		}
 		return CPointsMap::getPointWeight(a0);
 	}
