@@ -1,5 +1,11 @@
 \page changelog Change Log
 
+# Version 2.13.3: UNRELEASED
+- Build system:
+  - ROS package.xml: Re-enable the octomap dependency
+- BUG FIXES:
+  - Fix FTBFS of pymrpt for armhf
+
 # Version 2.13.2: Released June 23rd, 2024
 - Changes in libraries:
   - \ref mrpt_maps_grp:
