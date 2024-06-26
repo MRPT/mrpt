@@ -119,7 +119,7 @@ class CWeightedPointsMap : public CPointsMap
   /// Gets the point weight, which is ignored in all classes (defaults to 1)
   /// but in those which actually store that field (Note: No checks are done
   /// for out-of-bounds index).  \sa setPointWeight
-  unsigned int getPointWeight(size_t index) const override { return pointWeight[index]; }
+  unsigned long getPointWeight(size_t index) const override { return pointWeight[index]; }
 
  protected:
   /** The points weights */
