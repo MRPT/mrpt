@@ -1933,15 +1933,10 @@ void CImage::equalizeHist(CImage& out_img) const
 #endif
 }
 
+#if MRPT_HAS_OPENCV
 template <unsigned int HALF_WIN_SIZE>
 void image_KLT_response_template(
-    const uint8_t* in,
-    const int widthStep,
-    unsigned int x,
-    unsigned int y,
-    int32_t& _gxx,
-    int32_t& _gyy,
-    int32_t& _gxy)
+    const cv::Mat& im, unsigned int x, unsigned int y, int32_t& _gxx, int32_t& _gyy, int32_t& _gxy)
 {
   const auto min_x = x - HALF_WIN_SIZE;
   const auto min_y = y - HALF_WIN_SIZE;
@@ -1955,13 +1950,13 @@ void image_KLT_response_template(
   unsigned int yy = min_y;
   for (unsigned int iy = WIN_SIZE; iy; --iy, ++yy)
   {
-    const uint8_t* ptr = in + widthStep * yy + min_x;
     unsigned int xx = min_x;
-    for (unsigned int ix = WIN_SIZE; ix; --ix, ++xx, ++ptr)
+    for (unsigned int ix = WIN_SIZE; ix; --ix, ++xx)
     {
-      const int32_t dx = static_cast<int32_t>(ptr[+1]) - static_cast<int32_t>(ptr[-1]);
-      const int32_t dy =
-          static_cast<int32_t>(ptr[+widthStep]) - static_cast<int32_t>(ptr[-widthStep]);
+      const int32_t dx = static_cast<int32_t>(im.at<uint8_t>(yy, xx + 1)) -
+                         static_cast<int32_t>(im.at<uint8_t>(yy, xx - 1));
+      const int32_t dy = static_cast<int32_t>(im.at<uint8_t>(yy + 1, xx)) -
+                         static_cast<int32_t>(im.at<uint8_t>(yy - 1, xx));
       gxx += dx * dx;
       gxy += dx * dy;
       gyy += dy * dy;
@@ -1971,6 +1966,7 @@ void image_KLT_response_template(
   _gyy = gyy;
   _gxy = gxy;
 }
+#endif
 
 float CImage::KLT_response(
     const unsigned int x, const unsigned int y, const unsigned int half_window_size) const
@@ -1980,7 +1976,6 @@ float CImage::KLT_response(
   const auto& im1 = m_impl->img;
   const auto img_w = static_cast<unsigned int>(im1.cols),
              img_h = static_cast<unsigned int>(im1.rows);
-  const int widthStep = im1.step[0];
 
   // If any of those predefined values worked, do the generic way:
   const unsigned int min_x = x - half_window_size;
@@ -2000,66 +1995,67 @@ float CImage::KLT_response(
   int32_t gxy = 0;
   int32_t gyy = 0;
 
-  const auto* img_data = im1.ptr<uint8_t>(0);
   switch (half_window_size)
   {
     case 2:
-      image_KLT_response_template<2>(img_data, widthStep, x, y, gxx, gyy, gxy);
+      image_KLT_response_template<2>(im1, x, y, gxx, gyy, gxy);
       break;
     case 3:
-      image_KLT_response_template<3>(img_data, widthStep, x, y, gxx, gyy, gxy);
+      image_KLT_response_template<3>(im1, x, y, gxx, gyy, gxy);
       break;
     case 4:
-      image_KLT_response_template<4>(img_data, widthStep, x, y, gxx, gyy, gxy);
+      image_KLT_response_template<4>(im1, x, y, gxx, gyy, gxy);
       break;
     case 5:
-      image_KLT_response_template<5>(img_data, widthStep, x, y, gxx, gyy, gxy);
+      image_KLT_response_template<5>(im1, x, y, gxx, gyy, gxy);
       break;
     case 6:
-      image_KLT_response_template<6>(img_data, widthStep, x, y, gxx, gyy, gxy);
+      image_KLT_response_template<6>(im1, x, y, gxx, gyy, gxy);
       break;
     case 7:
-      image_KLT_response_template<7>(img_data, widthStep, x, y, gxx, gyy, gxy);
+      image_KLT_response_template<7>(im1, x, y, gxx, gyy, gxy);
       break;
     case 8:
-      image_KLT_response_template<8>(img_data, widthStep, x, y, gxx, gyy, gxy);
+      image_KLT_response_template<8>(im1, x, y, gxx, gyy, gxy);
       break;
     case 9:
-      image_KLT_response_template<9>(img_data, widthStep, x, y, gxx, gyy, gxy);
+      image_KLT_response_template<9>(im1, x, y, gxx, gyy, gxy);
       break;
     case 10:
-      image_KLT_response_template<10>(img_data, widthStep, x, y, gxx, gyy, gxy);
+      image_KLT_response_template<10>(im1, x, y, gxx, gyy, gxy);
       break;
     case 11:
-      image_KLT_response_template<11>(img_data, widthStep, x, y, gxx, gyy, gxy);
+      image_KLT_response_template<11>(im1, x, y, gxx, gyy, gxy);
       break;
     case 12:
-      image_KLT_response_template<12>(img_data, widthStep, x, y, gxx, gyy, gxy);
+      image_KLT_response_template<12>(im1, x, y, gxx, gyy, gxy);
       break;
     case 13:
-      image_KLT_response_template<13>(img_data, widthStep, x, y, gxx, gyy, gxy);
+      image_KLT_response_template<13>(im1, x, y, gxx, gyy, gxy);
       break;
     case 14:
-      image_KLT_response_template<14>(img_data, widthStep, x, y, gxx, gyy, gxy);
+      image_KLT_response_template<14>(im1, x, y, gxx, gyy, gxy);
       break;
     case 15:
-      image_KLT_response_template<15>(img_data, widthStep, x, y, gxx, gyy, gxy);
+      image_KLT_response_template<15>(im1, x, y, gxx, gyy, gxy);
       break;
     case 16:
-      image_KLT_response_template<16>(img_data, widthStep, x, y, gxx, gyy, gxy);
+      image_KLT_response_template<16>(im1, x, y, gxx, gyy, gxy);
       break;
     case 32:
-      image_KLT_response_template<32>(img_data, widthStep, x, y, gxx, gyy, gxy);
+      image_KLT_response_template<32>(im1, x, y, gxx, gyy, gxy);
       break;
 
     default:
       for (unsigned int yy = min_y; yy <= max_y; yy++)
       {
-        const uint8_t* p = img_data + widthStep * yy + min_x;
         for (unsigned int xx = min_x; xx <= max_x; xx++)
         {
-          const int32_t dx = p[+1] - p[-1];
-          const int32_t dy = p[+widthStep] - p[-widthStep];
+          const int32_t dx = static_cast<int32_t>(im1.at<uint8_t>(yy, xx + 1)) -
+                             static_cast<int32_t>(im1.at<uint8_t>(yy, xx - 1));
+          const int32_t dy = static_cast<int32_t>(im1.at<uint8_t>(yy + 1, xx)) -
+                             static_cast<int32_t>(im1.at<uint8_t>(yy - 1, xx));
+
           gxx += dx * dx;
           gxy += dx * dy;
           gyy += dy * dy;
