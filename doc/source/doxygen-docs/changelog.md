@@ -5,6 +5,7 @@
   - ROS package.xml: Re-enable the octomap dependency
 - BUG FIXES:
   - Fix FTBFS of pymrpt for armhf
+  - Fix failing unit tests for KLT_response() in non-Intel architectures.
 
 # Version 2.13.2: Released June 23rd, 2024
 - Changes in libraries:
