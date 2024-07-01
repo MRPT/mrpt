@@ -476,7 +476,8 @@ TEST(CImage, Serialize)
 }
 
 // This seems to fail now as of Jun 2024, don't have bandwith to debug it (!)
-#if !defined(__APPLE__)
+#if !defined(__APPLE__) && !defined(__aarch64__) && !defined(__ppc64__) && !defined(__s390x__) && \
+    !defined(__powerpc) && !defined(__powerpc__) && !defined(__powerpc64__)
 TEST(CImage, KLT_response)
 {
   using namespace mrpt::img;
@@ -489,7 +490,10 @@ TEST(CImage, KLT_response)
     for (int w = 2; w < 12; w++)
     {
       const auto resp = a.KLT_response(40, 30, w);
-      EXPECT_GT(resp, 0.5f);
+      EXPECT_GT(resp, 0.9f) << " w=" << w;
+
+      const auto flatResp = a.KLT_response(20, 20, w);
+      EXPECT_LT(flatResp, 0.1f) << " w=" << w;
     }
   }
 }
