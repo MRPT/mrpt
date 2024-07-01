@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.13.3: UNRELEASED
+# Version 2.13.3: Released July 1st, 2024
 - Build system:
   - ROS package.xml: Re-enable the octomap dependency
 - BUG FIXES:
