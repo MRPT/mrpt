@@ -87,7 +87,7 @@ class CObservationGPS : public CObservation
    * based on the local computer clock. */
   bool has_satellite_timestamp{false};
 
-  /** The main piece of data in this class: a list of GNNS messages.
+  /** The main piece of data in this class: a list of GNSS messages.
    * Normally users might prefer to access the list via the methods
    * CObservationGPS::getMsgByClass() and CObservationGPS::setMsg()
    * Typically only one message, may be multiple if all have the same
