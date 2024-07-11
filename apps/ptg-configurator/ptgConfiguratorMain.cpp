@@ -206,7 +206,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id) :
   btnReloadParams = new wxButton(
       Panel1, ID_BUTTON1, _("Initialize PTG"), wxDefaultPosition, wxDefaultSize, 0,
       wxDefaultValidator, _T("ID_BUTTON1"));
-  wxFont btnReloadParamsFont(-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxBOLD);
+  wxFont btnReloadParamsFont(-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
   btnReloadParams->SetFont(btnReloadParamsFont);
   FlexGridSizer7->Add(
       btnReloadParams, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);

@@ -166,7 +166,7 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent, wxWindowID id)
   btnCaptureNow = new wxButton(
       this, ID_BUTTON8, _("Grab now..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
       _T("ID_BUTTON8"));
-  wxFont btnCaptureNowFont(-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxBOLD);
+  wxFont btnCaptureNowFont(-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
   btnCaptureNow->SetFont(btnCaptureNowFont);
   FlexGridSizer5->Add(btnCaptureNow, 1, wxEXPAND, 5);
   btnPoseEstimateNow = new wxButton(
@@ -301,7 +301,7 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent, wxWindowID id)
       this, ID_BUTTON3, _("Calibrate"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
       _T("ID_BUTTON3"));
   btnRunCalib->SetDefault();
-  wxFont btnRunCalibFont(-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxBOLD);
+  wxFont btnRunCalibFont(-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
   btnRunCalib->SetFont(btnRunCalibFont);
   FlexGridSizer8->Add(btnRunCalib, 1, wxEXPAND, 5);
   btnSave = new wxButton(
