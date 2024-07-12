@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.13.4: Released July 11th, 2024
+# Version 2.13.4: UNRELEASED
 - Fix docs typos.
 - Upgraded nanoflann to v1.6.0 (fixes an important bug).
 
