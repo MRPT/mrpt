@@ -728,7 +728,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 
   // IC plot ------------
   m_lyICvisibleRange = new mpPolygon();
-  m_lyICvisibleRange->SetPen(wxPen(wxColour(0, 0, 0), 1, wxLONG_DASH));
+  m_lyICvisibleRange->SetPen(wxPen(wxColour(0, 0, 0), 1, wxPENSTYLE_LONG_DASH));
   m_lyICvisibleRange->SetContinuity(true);
   m_lyICvisibleRange->SetCoordinateBase(0, 0, 0);
   plotIndivCompat->AddLayer(m_lyICvisibleRange);
