@@ -57,7 +57,7 @@ enum XsStatusFlag
 
 	,XSF_RepresentativeMotion		= 0x20		//!< Indicates if the In-Run Compass Calibration is doing the representative motion analysis
 
-	,XSF_ExternalClockSynced		= 0x40		//!< Indicates whether the internal clock is synced with an external clock (Either GNNS or custom provided clock sync)
+	,XSF_ExternalClockSynced		= 0x40		//!< Indicates whether the internal clock is synced with an external clock (Either GNSS or custom provided clock sync)
 
 	,XSF_ClipAccX					= 0x00000100
 	,XSF_ClipAccY					= 0x00000200

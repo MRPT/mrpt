@@ -1,5 +1,9 @@
 \page changelog Change Log
 
+# Version 2.13.4: Released July 24th, 2024
+- Fix docs typos.
+- Upgraded nanoflann to v1.6.0 (fixes an important bug).
+
 # Version 2.13.3: Released July 1st, 2024
 - Build system:
   - ROS package.xml: Re-enable the octomap dependency

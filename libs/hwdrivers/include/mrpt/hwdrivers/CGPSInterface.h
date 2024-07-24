@@ -64,7 +64,7 @@ namespace mrpt::hwdrivers
  *  baudRate     = 4800   // The baudrate of the communications (typ. 4800 or
  * 9600 bauds)
  *
- *  # (Default:true) Whether to append the GNNS message type to CObservation
+ *  # (Default:true) Whether to append the GNSS message type to CObservation
  * `sensorLabel` field
  *  sensor_label_append_msg_type = true
  *
