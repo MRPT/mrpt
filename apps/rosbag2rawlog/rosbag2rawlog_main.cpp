@@ -13,7 +13,7 @@
 //             as a RawLog file, easily readable by MRPT C++ programs.
 //
 //  Started: Hunter Laux @ SEPT-2018.
-//  Maintained: JLBC @ 2018-2023
+//  Maintained: JLBC @ 2018-2024
 // ===========================================================================
 
 #include <cv_bridge/cv_bridge.h>  // this header is obsolete in ros2-I but as long as this app is only built for ros1 we are ok
