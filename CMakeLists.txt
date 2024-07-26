@@ -121,8 +121,6 @@ if (${CMAKE_GENERATOR} MATCHES ".*Makefiles")
     endif()
 endif()
 
-include(cmakemodules/script_select_app_to_build.cmake REQUIRED)		# Build (or not) some apps:
-
 # ----------------------------------------------------------------------------
 # 		CHECK FOR SYSTEM LIBRARIES, OPTIONS, ETC..
 # ----------------------------------------------------------------------------
