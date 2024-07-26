@@ -134,6 +134,9 @@ if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR AND MRPT_BUILD_rplidar_sdk)
 	)
 	set_target_properties(mrpt_rplidar PROPERTIES FOLDER "3rd party")
 
+	if(NOT TARGET mrpt::core)
+		find_package(mrpt-core REQUIRED)
+	endif()
 	target_link_libraries(mrpt_rplidar PRIVATE mrpt::core) # To enforce c++17
 
 	# needs to be exported, even if private, to make cmake happy since it wants
