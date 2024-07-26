@@ -10,13 +10,13 @@
   <version>2.13.5</version>
   <description>Mobile Robot Programming Toolkit (MRPT) version 2.x</description>
 
-  <author email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</author>
   <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
+  <license>BSD</license>
 
   <url type="website">https://www.mrpt.org/</url>
   <url type="bugtracker">https://github.com/MRPT/mrpt/issues</url>
 
-  <license>BSD</license>
+  <author email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</author>
 
   <!-- Deps required by user code (they are in public headers or built as ROS (vs system) packages -->
   <depend>eigen</depend>
@@ -41,7 +41,7 @@
   <build_depend>assimp-dev</build_depend>
   <build_depend>ffmpeg</build_depend>
   <build_depend>libfreenect-dev</build_depend>
-  <build_depend condition="$ROS_VERSION == 2">libfyaml-dev</build_depend>
+  <!-- <build_depend condition="$ROS_VERSION == 2">libfyaml-dev</build_depend> -->  <!-- Removed since not packaged for non-Debian platforms -->
   <build_depend>libjpeg</build_depend>
   <build_depend>libjsoncpp-dev</build_depend>
   <build_depend>libopenni2-dev</build_depend>

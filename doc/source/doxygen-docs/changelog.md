@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.13.5: UNRELEASED
-(none yet)
+- Build system:
+  - ROS package.xml: Remove libfyaml-dev as required build dependency (will use embedded copy). This enables correct builds on non-Debian distributions.
 
 # Version 2.13.4: Released July 24th, 2024
 - Fix docs typos.
