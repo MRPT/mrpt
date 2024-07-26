@@ -34,8 +34,8 @@ if (NOT DISABLE_ROS)
 	find_package(rosbag2 QUIET)
 
 	# optional, for tests only:
-	find_package(pcl_conversions QUIET)
-	find_package(PCL QUIET COMPONENTS common)
+	#find_package(pcl_conversions QUIET)
+	#find_package(PCL QUIET COMPONENTS common)
 	
 	# ROS libs for msgs:
 	find_package(sensor_msgs QUIET)
