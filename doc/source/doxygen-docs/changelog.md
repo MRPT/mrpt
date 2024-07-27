@@ -2,7 +2,9 @@
 
 # Version 2.13.5: UNRELEASED
 - Build system:
-  - ROS package.xml: Remove libfyaml-dev as required build dependency (will use embedded copy). This enables correct builds on non-Debian distributions.
+  - This main MRPT repository is no longer directly built as a ROS package. Please, use the wrappers for better modularity:
+    - https://github.com/MRPT/mrpt_ros
+    - https://github.com/MRPT/python_mrpt_ros
 
 # Version 2.13.4: Released July 24th, 2024
 - Fix docs typos.
