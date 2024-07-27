@@ -45,9 +45,23 @@ else()
   target_link_options(pymrpt PRIVATE -flto=auto)
 endif()
 
+# enable separate build of pymrpt for ros packages:
+if(NOT TARGET mrpt::apps)
+  find_package(mrpt-apps REQUIRED)
+endif()
+if(NOT TARGET mrpt::nav)
+  find_package(mrpt-nav REQUIRED)
+endif()
+if(NOT TARGET mrpt::slam)
+  find_package(mrpt-slam REQUIRED)
+endif()
+if(NOT TARGET mrpt::gui)
+  find_package(mrpt-gui REQUIRED)
+endif()
+
+# Link:
 target_link_libraries(pymrpt PUBLIC 
   mrpt::apps
-  mrpt::serialization
   mrpt::slam
   mrpt::gui
   mrpt::nav
