@@ -42,7 +42,7 @@ if (NOT MRPT_PYBIND11_WITH_LTO)
   set_target_properties(pymrpt PROPERTIES LINK_LIBRARIES ${_opts})
 else()
   # Add parallel lto:
-  option(MRPT_PYTHON_LTO_PARALLEL_JOBS "Number of parallel threads for link-time -flto in pymrpt. Setting it to a large number may lead to RAM swapping. Default=3. Set to 'auto' for automatic core detection." "3")
+  set(MRPT_PYTHON_LTO_PARALLEL_JOBS "3" CACHE STRING "Number of parallel threads for link-time -flto in pymrpt. Setting it to a large number may lead to RAM swapping. Default=3. Set to 'auto' for automatic core detection.")
   target_link_options(pymrpt PRIVATE -flto=${MRPT_PYTHON_LTO_PARALLEL_JOBS})
 endif()
 
