@@ -1,6 +1,9 @@
 \page changelog Change Log
 
 # Version 2.13.5: UNRELEASED
+- Changes in libraries:
+  - \ref mrpt_ros2bridge_grp:
+    - mrpt::ros2bridge::toROS() conversion from `PointCloud2` to mrpt::maps::CPointsMapXYZIRT: recognize timestamp field names `"t"` and `"timestamp"`, apart of `"time"`.
 - Build system:
   - This main MRPT repository is no longer directly built as a ROS package. Please, use the wrappers for better modularity:
     - https://github.com/MRPT/mrpt_ros
