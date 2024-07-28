@@ -179,7 +179,10 @@ bool mrpt::ros2bridge::fromROS(const sensor_msgs::msg::PointCloud2& msg, CPoints
     incompatible |= check_field(msg.fields[i], "z", &z_field);
     incompatible |= check_field(msg.fields[i], "intensity", &i_field);
     incompatible |= check_field(msg.fields[i], "ring", &r_field);
+
+    incompatible |= check_field(msg.fields[i], "timestamp", &t_field);
     incompatible |= check_field(msg.fields[i], "time", &t_field);
+    incompatible |= check_field(msg.fields[i], "t", &t_field);
   }
 
   if (incompatible || (!x_field || !y_field || !z_field)) return false;
