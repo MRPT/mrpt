@@ -10,6 +10,8 @@
   - This main MRPT repository is no longer directly built as a ROS package. Please, use the wrappers for better modularity:
     - https://github.com/MRPT/mrpt_ros
     - https://github.com/MRPT/python_mrpt_ros
+- BUG FIXES:
+  - CWaypointsNavigator::waypoints_navigationStep() stops aligning with target after the waypoint is considered as reached.
 
 # Version 2.13.4: Released July 24th, 2024
 - Fix docs typos.
