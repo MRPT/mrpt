@@ -10,6 +10,8 @@
   - This main MRPT repository is no longer directly built as a ROS package. Please, use the wrappers for better modularity:
     - https://github.com/MRPT/mrpt_ros
     - https://github.com/MRPT/python_mrpt_ros
+- BUG FIXES:
+  - ros1bridge and ros2bridge: fix conversion to PointCloud XYZI.
 
 # Version 2.13.4: Released July 24th, 2024
 - Fix docs typos.
