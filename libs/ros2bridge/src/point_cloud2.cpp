@@ -171,8 +171,7 @@ bool mrpt::ros2bridge::fromROS(const sensor_msgs::msg::PointCloud2& msg, CPoints
       get_float_from_field(z_field, msg_data, z);
       get_float_from_field(i_field, msg_data, i);
       obj.insertPoint(x, y, z);
-
-      obj.setPointIntensity(obj.size() - 1, i);
+      obj.insertPointField_Intensity(i);
     }
   }
   return true;

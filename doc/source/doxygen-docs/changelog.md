@@ -11,6 +11,7 @@
     - https://github.com/MRPT/mrpt_ros
     - https://github.com/MRPT/python_mrpt_ros
 - BUG FIXES:
+  - ros1bridge and ros2bridge: fix conversion to PointCloud XYZI.
   - CWaypointsNavigator::waypoints_navigationStep() stops aligning with target after the waypoint is considered as reached.
 
 # Version 2.13.4: Released July 24th, 2024
