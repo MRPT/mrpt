@@ -166,7 +166,7 @@ void CPointsMapXYZI::setPointRGB(size_t index, float x, float y, float z, float 
 
 void CPointsMapXYZI::setPointIntensity(size_t index, float I)
 {
-  if (index >= m_x.size()) THROW_EXCEPTION("Index out of bounds");
+  if (index >= m_intensity.size()) THROW_EXCEPTION("Index out of bounds");
   this->m_intensity[index] = I;
   // mark_as_modified();  // No need to rebuild KD-trees, etc...
 }

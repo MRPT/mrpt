@@ -314,8 +314,14 @@ macro(internal_define_mrpt_lib name headers_only )
 			# Now, check mrpt-* deps only:
 			# Check if all dependencies are to be build:
 			if ("${BUILD_mrpt-${DEP_MRPT_NAME}}" STREQUAL "OFF")
-				set(AUX_ALL_DEPS_BUILD 0)
-				message(STATUS "*Warning*: Lib mrpt-${name} cannot be built because dependency mrpt-${DEP_MRPT_NAME} has been disabled!")
+				# Attempt at using system version?
+				find_package(mrpt-${DEP_MRPT_NAME})
+				if (NOT TARGET mrpt::${DEP_MRPT_NAME})
+					set(AUX_ALL_DEPS_BUILD 0)
+					message(STATUS "*Warning*: Lib mrpt-${name} cannot be built because dependency mrpt-${DEP_MRPT_NAME} has been disabled!")
+				else()
+					message(STATUS "*Warning*: Lib mrpt-${name} is using system depency: mrpt-${DEP_MRPT_NAME}")
+				endif()
 			endif ()
 		endif ()
 	endforeach()

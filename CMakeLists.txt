@@ -121,8 +121,6 @@ if (${CMAKE_GENERATOR} MATCHES ".*Makefiles")
     endif()
 endif()
 
-include(cmakemodules/script_select_app_to_build.cmake REQUIRED)		# Build (or not) some apps:
-
 # ----------------------------------------------------------------------------
 # 		CHECK FOR SYSTEM LIBRARIES, OPTIONS, ETC..
 # ----------------------------------------------------------------------------
@@ -636,6 +634,11 @@ add_custom_target(all_mrpt_libs ALL) # all_mrpt_libs: target to build all mrpt-*
 # ----------------------------------------------------------------------------
 add_subdirectory(3rdparty)   # The third-party libraries
 add_subdirectory(libs)        # The MRPT C++ libraries
+
+# Build pymrpt after defining the libs above
+if(CMAKE_MRPT_HAS_PYTHON_BINDINGS)
+add_subdirectory(python)
+endif()
 
 set(MRPT_BUILD_APPLICATIONS ON CACHE BOOL "If you only want the MRPT libraries, disable this.")
 if(MRPT_BUILD_APPLICATIONS)

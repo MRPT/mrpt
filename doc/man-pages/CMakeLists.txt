@@ -9,7 +9,10 @@ project(all_man_pages)
 find_program(PROG_POD2MAN pod2man)
 find_program(PROG_GZIP gzip)
 
-if (PROG_GZIP AND PROG_POD2MAN)
+option(MRPT_BUILD_MANPAGES "Do build manpages" ON)
+mark_as_advanced(MRPT_BUILD_MANPAGES)
+
+if (PROG_GZIP AND PROG_POD2MAN AND MRPT_BUILD_MANPAGES)
 	mark_as_advanced(PROG_POD2MAN)
 	mark_as_advanced(PROG_GZIP)
 

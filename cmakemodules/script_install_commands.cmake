@@ -57,18 +57,27 @@ if(WIN32)
 	endforeach()
 
 else(WIN32)
-	install(DIRECTORY "${MRPT_SOURCE_DIR}/samples" DESTINATION share/doc/mrpt-doc/)
+	option(MRPT_INSTALL_EXAMPLES "Do install examples" ON)
+	mark_as_advanced(MRPT_INSTALL_EXAMPLES)
+
+	if(MRPT_INSTALL_EXAMPLES)
+		install(DIRECTORY "${MRPT_SOURCE_DIR}/samples" DESTINATION share/doc/mrpt-doc/)
+	endif()
 
 	# applications config files
-	install(
-		DIRECTORY
-			"${MRPT_SOURCE_DIR}/share/applications"
-			"${MRPT_SOURCE_DIR}/share/pixmaps"
-			"${MRPT_SOURCE_DIR}/share/metainfo"
-			"${MRPT_SOURCE_DIR}/share/mime"
-		DESTINATION
-			share
-		)
+	option(MRPT_INSTALL_SHARE_DIRS "Do install share/* directories" ON)
+	mark_as_advanced(MRPT_INSTALL_SHARE_DIRS)
+
+	if(MRPT_INSTALL_SHARE_DIRS)
+		install(
+			DIRECTORY
+				"${MRPT_SOURCE_DIR}/share/applications"
+				"${MRPT_SOURCE_DIR}/share/pixmaps"
+				"${MRPT_SOURCE_DIR}/share/metainfo"
+				"${MRPT_SOURCE_DIR}/share/mime"
+			DESTINATION
+				share
+			)
 
 		install(
 			DIRECTORY
@@ -76,14 +85,20 @@ else(WIN32)
 			DESTINATION
 				share
 			)
+	endif()
 endif()
 
 # Config-dependent headers: to /usr/include/mrpt root dir.
-install(
-	FILES
-		"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h"
-		"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h"
-		"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/mrpt_paths_config.h"
-	DESTINATION
-		"include/mrpt/"
+option(MRPT_INSTALL_CONFIG_HEADERS "Do install *config.h/version.h" ON)
+mark_as_advanced(MRPT_INSTALL_CONFIG_HEADERS)
+
+if (MRPT_INSTALL_CONFIG_HEADERS)
+	install(
+		FILES
+			"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h"
+			"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h"
+			"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/mrpt_paths_config.h"
+		DESTINATION
+			"include/mrpt/"
 	)
+endif()

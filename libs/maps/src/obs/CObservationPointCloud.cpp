@@ -70,8 +70,8 @@ void CObservationPointCloud::getDescriptionAsText(std::ostream& o) const
     {
       float Tmin, Tmax;
       mrpt::math::minimum_maximum(*ptrTs, Tmin, Tmax);
-      o << "Timestamp channel values: min=" << Tmin << " max=" << Tmax << " (" << ptrTs->size()
-        << " entries)\n";
+      o << mrpt::format("Timestamp channel values: min=%f max=%f", Tmin, Tmax);
+      o << "(" << ptrTs->size() << " entries)\n";
     }
     if (auto* ptrRs = pointcloud->getPointsBufferRef_ring(); ptrRs && !ptrRs->empty())
     {

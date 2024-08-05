@@ -31,9 +31,16 @@ macro(DeclareAppDependencies name)
 	foreach (_DEP ${ALL_DEPS})
 		# Check if all dependencies are to be build:
 		string(REGEX REPLACE "mrpt::(.*)" "\\1" DEP_MRPT_NAME ${_DEP})
+
 		if ("${BUILD_mrpt-${DEP_MRPT_NAME}}" STREQUAL "OFF")
-			set(AUX_ALL_DEPS_BUILD 0)
-			message(STATUS "*Warning*: App ${name} cannot be built because dependency mrpt-${DEP_MRPT_NAME} has been disabled!")
+			# Attempt at using system version?
+			find_package(mrpt-${DEP_MRPT_NAME})
+			if (NOT TARGET mrpt::${DEP_MRPT_NAME})
+				set(AUX_ALL_DEPS_BUILD 0)
+				message(STATUS "*Warning*: App ${name} cannot be built because dependency mrpt-${DEP_MRPT_NAME} has been disabled!")
+			else()
+				message(STATUS "*Warning*: App ${name} is using system depency: mrpt-${DEP_MRPT_NAME}")
+			endif()
 		endif()
 	endforeach()
 

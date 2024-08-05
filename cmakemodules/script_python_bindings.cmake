@@ -50,7 +50,6 @@ if(UNIX AND NOT MRPT_DISABLE_PYTHON_BINDINGS)
         if (pybind11_FOUND)
             # build python bindings if we have all requirements
             set(CMAKE_MRPT_HAS_PYTHON_BINDINGS 1)
-            add_subdirectory(python)
         endif()
     endif()
 endif()
