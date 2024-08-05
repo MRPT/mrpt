@@ -34,8 +34,8 @@ if (NOT DISABLE_ROS)
 	find_package(rosbag2 QUIET)
 
 	# optional, for tests only:
-	find_package(pcl_conversions QUIET)
-	find_package(PCL QUIET COMPONENTS common)
+	#find_package(pcl_conversions QUIET)
+	#find_package(PCL QUIET COMPONENTS common)
 	
 	# ROS libs for msgs:
 	find_package(sensor_msgs QUIET)
@@ -151,6 +151,7 @@ if (NOT DISABLE_ROS)
 	# Kinda hack to prevent build farm to time out for "dev" jobs:
 	# The server scripts always run: (1) build+install, then (2) build+test.
 	# We will catch the (2) situation and don't build a thing, but return quickly.
+	if(0) # disabled: re-enable unit tests after package partitioning
 	if (("${BUILD_TESTING}" STREQUAL "1") AND ("$ENV{HOME}" STREQUAL "/home/buildfarm"))
 		message(STATUS "====== ROS build farm 'build+test' detected. Aborting tests in this build")
 		# "make test" shall not fail:
@@ -160,6 +161,7 @@ if (NOT DISABLE_ROS)
 
 		set(MRPT_ABORT_CMAKE_SCRIPT 1)
 		return()
+	endif()
 	endif()
 
 endif() # NOT DISABLE_ROS

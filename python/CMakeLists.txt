@@ -42,12 +42,27 @@ if (NOT MRPT_PYBIND11_WITH_LTO)
   set_target_properties(pymrpt PROPERTIES LINK_LIBRARIES ${_opts})
 else()
   # Add parallel lto:
-  target_link_options(pymrpt PRIVATE -flto=auto)
+  set(MRPT_PYTHON_LTO_PARALLEL_JOBS "3" CACHE STRING "Number of parallel threads for link-time -flto in pymrpt. Setting it to a large number may lead to RAM swapping. Default=3. Set to 'auto' for automatic core detection.")
+  target_link_options(pymrpt PRIVATE -flto=${MRPT_PYTHON_LTO_PARALLEL_JOBS})
 endif()
 
+# enable separate build of pymrpt for ros packages:
+if(NOT TARGET mrpt::apps AND NOT TARGET mrpt-apps)
+  find_package(mrpt-apps REQUIRED)
+endif()
+if(NOT TARGET mrpt::nav AND NOT TARGET mrpt-nav)
+  find_package(mrpt-nav REQUIRED)
+endif()
+if(NOT TARGET mrpt::slam AND NOT TARGET mrpt-slam)
+  find_package(mrpt-slam REQUIRED)
+endif()
+if(NOT TARGET mrpt::gui AND NOT TARGET mrpt-gui)
+  find_package(mrpt-gui REQUIRED)
+endif()
+
+# Link:
 target_link_libraries(pymrpt PUBLIC 
   mrpt::apps
-  mrpt::serialization
   mrpt::slam
   mrpt::gui
   mrpt::nav

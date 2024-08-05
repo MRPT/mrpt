@@ -1,5 +1,14 @@
 \page changelog Change Log
 
+# Version 2.13.5: Released Aug 5th, 2024
+- Changes in libraries:
+  - \ref mrpt_ros2bridge_grp:
+    - mrpt::ros2bridge::toROS() conversion from `PointCloud2` to mrpt::maps::CPointsMapXYZIRT:
+      - Recognize timestamp field names `"t"` and `"timestamp"`, apart of `"time"`.
+      - Fixed detection of timestamp fields in `Float64` format, and convert them from absolute to relative timestamps.
+- BUG FIXES:
+  - ros1bridge and ros2bridge: fix conversion to PointCloud XYZI.
+
 # Version 2.13.4: Released July 24th, 2024
 - Fix docs typos.
 - Upgraded nanoflann to v1.6.0 (fixes an important bug).

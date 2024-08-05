@@ -4,7 +4,10 @@ include(../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake
 # ----------------------------------
 # wxThings
 # ----------------------------------
-if(CMAKE_MRPT_HAS_WXWIDGETS)
+option(MRPT_BUILD_wxThings "Build wxThings" ON)
+mark_as_advanced(MRPT_BUILD_wxThings)
+
+if(CMAKE_MRPT_HAS_WXWIDGETS AND MRPT_BUILD_wxThings)
 	add_subdirectory(wxThings)
 endif()
 
@@ -88,7 +91,10 @@ endif()
 # ----------------------------------
 # Build RPLIDAR?
 # ----------------------------------
-if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
+option(MRPT_BUILD_rplidar_sdk "Build rplidar_sdk" ON)
+mark_as_advanced(MRPT_BUILD_rplidar_sdk)
+
+if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR AND MRPT_BUILD_rplidar_sdk)
 	set(RPLIDAR_ROOT ${MRPT_SOURCE_DIR}/3rdparty/rplidar_sdk/sdk/)
 	set(SRCS_LIST
 		${RPLIDAR_ROOT}/src/*.cpp
@@ -128,6 +134,9 @@ if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
 	)
 	set_target_properties(mrpt_rplidar PROPERTIES FOLDER "3rd party")
 
+	if((DEFINED BUILD_mrpt-core) AND (NOT BUILD_mrpt-core))
+		find_package(mrpt-core REQUIRED)
+	endif()
 	target_link_libraries(mrpt_rplidar PRIVATE mrpt::core) # To enforce c++17
 
 	# needs to be exported, even if private, to make cmake happy since it wants
@@ -153,7 +162,10 @@ endif()
 # ----------------------------------
 # Build xSens IMU library
 # ----------------------------------
-if(CMAKE_MRPT_HAS_xSENS)
+option(MRPT_BUILD_xsens "Build mrpt_xsens lib" ON)
+mark_as_advanced(MRPT_BUILD_xsens)
+
+if(CMAKE_MRPT_HAS_xSENS AND MRPT_BUILD_xsens)
 	file(GLOB_RECURSE SRCS
 		xspublic/*.cpp
 		xspublic/*.c
