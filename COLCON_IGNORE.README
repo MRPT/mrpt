@@ -1,7 +1,0 @@
-Since 2024-Jul, MRPT is no longer built as a monolithic ROS package. Instead,
-please, clone the new repository: 
-
-   https://github.com/MRPT/mrpt-ros
-
-which leads to generating finer-grained MRPT ROS packages.
-
