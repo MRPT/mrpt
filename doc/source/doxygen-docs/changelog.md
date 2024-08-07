@@ -1,5 +1,9 @@
 \page changelog Change Log
 
+# Version 2.13.6: UNRELEASED
+- BUG FIXES:
+  - CWaypointsNavigator::waypoints_navigationStep() stops aligning with target after the waypoint is considered as reached.
+
 # Version 2.13.5: Released Aug 5th, 2024
 - Changes in libraries:
   - \ref mrpt_ros2bridge_grp:
@@ -8,7 +12,6 @@
       - Fixed detection of timestamp fields in `Float64` format, and convert them from absolute to relative timestamps.
 - BUG FIXES:
   - ros1bridge and ros2bridge: fix conversion to PointCloud XYZI.
-  - CWaypointsNavigator::waypoints_navigationStep() stops aligning with target after the waypoint is considered as reached.
 
 # Version 2.13.4: Released July 24th, 2024
 - Fix docs typos.
