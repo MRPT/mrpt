@@ -1,15 +1,11 @@
 \page changelog Change Log
 
-# Version 2.13.5: UNRELEASED
+# Version 2.13.5: Released Aug 5th, 2024
 - Changes in libraries:
   - \ref mrpt_ros2bridge_grp:
     - mrpt::ros2bridge::toROS() conversion from `PointCloud2` to mrpt::maps::CPointsMapXYZIRT:
       - Recognize timestamp field names `"t"` and `"timestamp"`, apart of `"time"`.
       - Fixed detection of timestamp fields in `Float64` format, and convert them from absolute to relative timestamps.
-- Build system:
-  - This main MRPT repository is no longer directly built as a ROS package. Please, use the wrappers for better modularity:
-    - https://github.com/MRPT/mrpt_ros
-    - https://github.com/MRPT/python_mrpt_ros
 - BUG FIXES:
   - ros1bridge and ros2bridge: fix conversion to PointCloud XYZI.
   - CWaypointsNavigator::waypoints_navigationStep() stops aligning with target after the waypoint is considered as reached.
