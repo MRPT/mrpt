@@ -239,6 +239,8 @@ void CWaypointsNavigator::waypoints_navigationStep()
                    " segment-to-target dist: "
                 << dist2target << ", allowed_dist: " << wp.allowed_distance);
 
+            m_is_aligning = false;
+
             wp.reached = true;
             wp.skipped = false;
             wp.timestamp_reach = mrpt::Clock::now();

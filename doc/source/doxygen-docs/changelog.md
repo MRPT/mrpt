@@ -8,6 +8,7 @@
       - Fixed detection of timestamp fields in `Float64` format, and convert them from absolute to relative timestamps.
 - BUG FIXES:
   - ros1bridge and ros2bridge: fix conversion to PointCloud XYZI.
+  - CWaypointsNavigator::waypoints_navigationStep() stops aligning with target after the waypoint is considered as reached.
 
 # Version 2.13.4: Released July 24th, 2024
 - Fix docs typos.
