@@ -7,6 +7,7 @@
     - https://github.com/MRPT/python_mrpt_ros
 - BUG FIXES:
   - CWaypointsNavigator::waypoints_navigationStep() stops aligning with target after the waypoint is considered as reached.
+  - Fix FTBFS in Debian sid (g++-14) due to missing ``#include <iomanip>``.
 
 # Version 2.13.5: Released Aug 5th, 2024
 - Changes in libraries:

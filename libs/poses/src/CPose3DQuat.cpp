@@ -16,7 +16,7 @@
 #include <mrpt/serialization/CSerializable.h>
 
 #include <Eigen/Dense>
-#include <iomanip>
+#include <iomanip>  // for setprecision(), etc.
 #include <limits>
 
 using namespace std;
