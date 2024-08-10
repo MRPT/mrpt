@@ -36,7 +36,7 @@
 #include <Eigen/Dense>
 #include <algorithm>  // for move
 #include <cmath>      // for fabs
-#include <iomanip>    // for operator<<
+#include <iomanip>    // for setprecision(), etc.
 #include <limits>     // for numeric_...
 #include <ostream>    // for operator<<
 #include <string>     // for allocator
