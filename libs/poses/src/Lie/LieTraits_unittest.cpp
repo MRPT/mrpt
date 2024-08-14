@@ -15,6 +15,7 @@
 #include <mrpt/poses/Lie/SE.h>
 
 #include <Eigen/Dense>
+#include <iomanip>  // for setprecision(), etc.
 
 using namespace mrpt;
 using namespace mrpt::poses;
