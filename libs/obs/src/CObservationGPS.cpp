@@ -14,7 +14,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/optional_serialization.h>
 
-#include <iomanip>
+#include <iomanip>  // for setprecision(), etc.
 
 using namespace std;
 using namespace mrpt;

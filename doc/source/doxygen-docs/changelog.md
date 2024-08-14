@@ -1,5 +1,14 @@
 \page changelog Change Log
 
+# Version 2.13.6: Released Aug 14th, 2024
+- Build system:
+  - This main MRPT repository is no longer directly built as a ROS package. Please, use the wrappers for better modularity:
+    - https://github.com/MRPT/mrpt_ros
+    - https://github.com/MRPT/python_mrpt_ros
+- BUG FIXES:
+  - CWaypointsNavigator::waypoints_navigationStep() stops aligning with target after the waypoint is considered as reached.
+  - Fix FTBFS in Debian sid (g++-14) due to missing ``#include <iomanip>``.
+
 # Version 2.13.5: Released Aug 5th, 2024
 - Changes in libraries:
   - \ref mrpt_ros2bridge_grp:
