@@ -2,20 +2,6 @@
 #   More installation commands:
 # ----------------------------------------------------------------------------
 
-# MRPTConfig.cmake: backwards-compatible file as it was named in mrpt v1.x
-if(WIN32)
-	set(cfg_ver_destdir "./")
-else()
-	set(cfg_ver_destdir "share/mrpt")
-endif()
-install(
-	FILES
-		"${MRPT_SOURCE_DIR}/parse-files/mrpt-config.cmake"
-		"${CMAKE_BINARY_DIR}/mrpt-config-version.cmake"
-	DESTINATION
-		${cfg_ver_destdir}
-	)
-
 # Docs, examples and the rest of files:
 if(WIN32)
 	install(DIRECTORY
@@ -100,5 +86,19 @@ if (MRPT_INSTALL_CONFIG_HEADERS)
 			"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/mrpt_paths_config.h"
 		DESTINATION
 			"include/mrpt/"
+	)
+
+	# MRPTConfig.cmake: backwards-compatible file as it was named in mrpt v1.x
+	if(WIN32)
+		set(cfg_ver_destdir "./")
+	else()
+		set(cfg_ver_destdir "share/mrpt")
+	endif()
+	install(
+		FILES
+			"${MRPT_SOURCE_DIR}/parse-files/mrpt-config.cmake"
+			"${CMAKE_BINARY_DIR}/mrpt-config-version.cmake"
+		DESTINATION
+			${cfg_ver_destdir}
 	)
 endif()
