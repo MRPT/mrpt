@@ -30,6 +30,6 @@ if(DC1394_INCLUDE_DIR)
 #The following deprecated settings are for backwards compatibility with CMake1.4
     set (DC1394_INCLUDE_PATH ${DC1394_INCLUDE_DIR})
 
-  endif(DC1394_LIBRARY)
-endif(DC1394_INCLUDE_DIR)
+  endif()
+endif()
 

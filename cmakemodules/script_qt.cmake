@@ -32,7 +32,7 @@ if (MRPT_WITH_QT)
 			message(STATUS "Qt5 include dirs: ${Qt5_COMPONENTS_INCLUDE_DIRS}")
 		endif()
 
-	endif(Qt5Core_FOUND)
+	endif()
 endif()
 
 

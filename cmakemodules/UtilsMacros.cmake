@@ -9,11 +9,11 @@ macro(STRING_APPEND  _VAR _VALUE )
   if (${_VAR})
     # not empty, add space and value
     set(${_VAR} "${${_VAR}} ${_VALUE}")
-  else(${_VAR})
+  else()
     # empty, no space required.
     set(${_VAR} "${_VALUE}")
   endif (${_VAR})
-endmacro(STRING_APPEND)
+endmacro()
 
 # Based on: http://www.cmake.org/pipermail/cmake/2008-February/020114.html
 # Usage: list_subdirectories(the_list_is_returned_here C:/cwd)
@@ -24,10 +24,10 @@ macro(list_subdirectories retval curdir)
     string(SUBSTRING ${dir} 0 1 dir1st)
     if(IS_DIRECTORY ${curdir}/${dir} AND NOT ${dir1st} STREQUAL "." AND NOT ${dir} STREQUAL "CMakeFiles")
         set(list_of_dirs ${list_of_dirs} ${dir})
-    endif(IS_DIRECTORY ${curdir}/${dir} AND NOT ${dir1st} STREQUAL "." AND NOT ${dir} STREQUAL "CMakeFiles")
+    endif()
   endforeach(dir)
   set(${retval} ${list_of_dirs})
-endmacro(list_subdirectories)
+endmacro()
 
 
 # Parse a list of "pkg-config"-like flags and split them into INCLUDE_DIRS,etc.
@@ -55,7 +55,7 @@ macro(pkgconfig_parse _FLAGS _OUT_PREFIX)
 			endif (${_START} STREQUAL "-L")
 		endif (_LEN GREATER 2)
 	endforeach(str)
-endmacro(pkgconfig_parse )
+endmacro()
 
 # Converts a version like "1.2.3" into a string "0x10203",
 # or "3.4.19" into "0x30413".

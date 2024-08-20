@@ -11,4 +11,4 @@ define_mrpt_lib_header_only(
 
 if(BUILD_mrpt-tclap)
 
-endif( )
+endif()

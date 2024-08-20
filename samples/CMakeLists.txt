@@ -363,7 +363,7 @@ if(MRPT_BUILD_EXAMPLES)
 			)
 		set(CMAKE_EXAMPLE_DEPS mrpt::hwdrivers mrpt::gui mrpt::opengl mrpt::maps)
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
-	endif(MRPT_HAS_OPENNI2)
+	endif()
 
 	# === Navigation examples ===
 	if(BUILD_mrpt-nav)

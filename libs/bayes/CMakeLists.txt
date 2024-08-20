@@ -11,4 +11,4 @@ define_mrpt_lib(
 
 if(BUILD_mrpt-bayes)
 
-endif( )
+endif()

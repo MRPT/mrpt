@@ -26,9 +26,9 @@ if((NOT CMAKE_MRPT_HAS_JPEG_SYSTEM) AND NOT ("${CMAKE_SYSTEM_NAME}" STREQUAL "Em
 	find_program(NASM_PATH nasm)
 	if(NASM_PATH)
 		set(JPEG_ENABLE_SIMD 1)
-	else(NASM_PATH)
+	else()
 		set(JPEG_ENABLE_SIMD 0)
-	endif(NASM_PATH)
+	endif()
 
 	ExternalProject_Add(EP_JPEG
 		URL               "https://github.com/libjpeg-turbo/libjpeg-turbo/archive/1.5.90.tar.gz"

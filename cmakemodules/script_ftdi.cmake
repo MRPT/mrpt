@@ -41,10 +41,10 @@ if(UNIX)
 				)
 			if(${CMAKE_FTDI_CONFIG_RES})
 				message("Error invoking FTDI config file:\n ${FTDI_CONFIG_FILE} --libs")
-			endif(${CMAKE_FTDI_CONFIG_RES})
+			endif()
 
 			pkgconfig_parse(${CMAKE_FTDI_LIBS} "FTDI")
-		endif(FTDI_CONFIG_FILE)
+		endif()
 	endif (LibFTDI1_FOUND)
 
 	if(CMAKE_MRPT_HAS_FTDI)
@@ -53,7 +53,7 @@ if(UNIX)
 			message(STATUS "  FTDI_INCLUDE_DIRS: ${FTDI_INCLUDE_DIRS}")
 			message(STATUS "  FTDI_LINK_DIRS: ${FTDI_LINK_DIRS}")
 			message(STATUS "  FTDI_LIBS: ${FTDI_LIBS}")
-		endif($ENV{VERBOSE})
+		endif()
 
 		add_library(imp_ftdi INTERFACE IMPORTED)
 		set_target_properties(imp_ftdi

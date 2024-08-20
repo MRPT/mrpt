@@ -255,7 +255,7 @@ function(add_coverage_target TNAME)
 
 	add_gcov_target(${TNAME})
 	add_lcov_target(${TNAME})
-endfunction(add_coverage_target)
+endfunction()
 
 
 

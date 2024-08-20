@@ -8,7 +8,7 @@ if (NOT DISABLE_LIBUSB)
 		if(PKG_CONFIG_FOUND)
 			PKG_CHECK_MODULES(PKG_LIBUSB10 QUIET libusb-1.0 IMPORTED_TARGET GLOBAL) # PkgConfig::PKG_LIBUSB10
 		endif()
-	endif(UNIX)
+	endif()
 else ()
 	set(PKG_LIBUSB10_FOUND "")
 endif ()
