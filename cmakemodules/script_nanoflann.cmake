@@ -38,14 +38,19 @@ if (NOT nanoflann_FOUND)
     message(FATAL_ERROR "nanoflann not found, neither as system library nor git submodule. Check error messages above for possible reasons.")
 endif()
 
+option(MRPT_INSTALL_EMBEDDED_nanoflann "Only if nanoflann is not a system library, do install embedded nanoflann? (Default: yes)" ON)
+mark_as_advanced(MRPT_INSTALL_EMBEDDED_nanoflann)
+
 # system library?:
 if (NOT "${nanoflann_DIR}" STREQUAL "${nanoflann_EMBEDDED_BUILD_DIR}")
     set(CMAKE_MRPT_HAS_NANOFLANN_SYSTEM 1)
 else()
     set(CMAKE_MRPT_HAS_NANOFLANN_SYSTEM 0)
 
-    # install the embedded copy too (we need nanoflann-config.cmake, etc.)
-    install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} --build \"${nanoflann_EMBEDDED_BUILD_DIR}\" --target install)")
+    if (MRPT_INSTALL_EMBEDDED_nanoflann)
+        # install the embedded copy too (we need nanoflann-config.cmake, etc.)
+        install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} --build \"${nanoflann_EMBEDDED_BUILD_DIR}\" --target install)")
+    endif()
 endif()
 
 if ($ENV{VERBOSE})
