@@ -100,4 +100,4 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 	DeclareAppForInstall(${PROJECT_NAME})
 	AppStartMenuLink(${PROJECT_NAME} "Robot-made maps viewer")   # Add link to the Start menu (in Windows Installable packages)
 
-endif(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
+endif()

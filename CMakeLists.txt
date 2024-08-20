@@ -61,7 +61,7 @@ mark_as_advanced(CMAKE_TIMING_VERBOSE)
 if(CMAKE_TIMING_VERBOSE AND UNIX)
   set_property(GLOBAL PROPERTY RULE_MESSAGES OFF)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_CURRENT_SOURCE_DIR}/cmakemodules/custom_output.sh")
-endif(CMAKE_TIMING_VERBOSE AND UNIX)
+endif()
 
 # Detect wordsize:
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)  # Size in bytes!

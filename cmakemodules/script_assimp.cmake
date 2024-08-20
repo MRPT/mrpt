@@ -30,7 +30,7 @@ if(PKG_CONFIG_FOUND)
 
 		set(ASSIMP_CXX_FLAGS ${ASSIMP_CFLAGS})
 	endif (ASSIMP_FOUND)
-endif(PKG_CONFIG_FOUND)
+endif()
 
 if (NOT ASSIMP_FOUND)
 	set(MRPT_BUILD_ASSIMP ON CACHE BOOL "Build an embedded version of Assimp (3D models importer)")

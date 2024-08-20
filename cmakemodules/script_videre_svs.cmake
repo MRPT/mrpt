@@ -13,33 +13,33 @@ if(MRPT_HAS_SVS)
 		if(NOT EXISTS ${SVS_ROOT_DIR})
 			set(CMAKE_MRPT_HAS_SVS 0)
 			message("The directory 'SVS_ROOT_DIR' does not exists. Turn off SVS support or provide the correct path.")
-		endif(NOT EXISTS ${SVS_ROOT_DIR})
+		endif()
 
 		if(NOT EXISTS ${SVS_ROOT_DIR}/src/svsclass.h)
 			set(CMAKE_MRPT_HAS_SVS 0)
 			message("The directory 'SVS_ROOT_DIR' does not contain src/svsclass.h. Turn off SVS support or provide the correct path.")
-		endif(NOT EXISTS ${SVS_ROOT_DIR}/src/svsclass.h)
+		endif()
 
 		if(NOT EXISTS ${SVS_ROOT_DIR}/src/dcs.h)
 			set(CMAKE_MRPT_HAS_SVS 0)
 			message("The directory 'SVS_ROOT_DIR' does not contain src/dcs.h. Turn off SVS support or provide the correct path.")
-		endif(NOT EXISTS ${SVS_ROOT_DIR}/src/dcs.h)
-	else(UNIX)
+		endif()
+	else()
 
 
 		message("Sorry! STOC camera is supported only for LINUX yet. Set MRPT_HAS_SVS to OFF")
 		set(CMAKE_MRPT_HAS_SVS 0)
-	endif(UNIX)
-endif(MRPT_HAS_SVS)
+	endif()
+endif()
 
 if(CMAKE_MRPT_HAS_SVS)
 	include_directories("${SVS_ROOT_DIR}/src")
 	link_directories("${SVS_ROOT_DIR}/bin")
-endif(CMAKE_MRPT_HAS_SVS)
+endif()
 
 # This can only be a system lib:
 set(CMAKE_MRPT_HAS_SVS_SYSTEM 0)
 if(CMAKE_MRPT_HAS_SVS)
 	set(CMAKE_MRPT_HAS_SVS_SYSTEM 1)
-endif(CMAKE_MRPT_HAS_SVS)
+endif()
 

@@ -57,4 +57,4 @@ if(BUILD_mrpt-obs)
 	# Update Sep 2019: mrpt-obs now also uses OpenCV directly, so let's just link against opencv anyway:
 	target_link_libraries(obs PRIVATE imp_opencv)
 
-endif(BUILD_mrpt-obs)
+endif()

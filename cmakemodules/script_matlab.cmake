@@ -11,9 +11,9 @@ if(MRPT_WITH_MATLAB_WRAPPER)
 if(NOT MATLAB_ROOT)
         if(WINDOWS) # In Windows
                 set(MATLAB_ROOT "C:")
-        else(WINDOWS) # In Linux
+        else() # In Linux
                 set(MATLAB_ROOT "/usr/local/MATLAB")
-        endif(WINDOWS)
+        endif()
 
         if(IS_DIRECTORY ${MATLAB_ROOT}) # Search installed versions in default directory
                 file(GLOB LIST_MATLAB_INSTALLS RELATIVE ${MATLAB_ROOT} ${MATLAB_ROOT}/*)
@@ -23,11 +23,11 @@ if(NOT MATLAB_ROOT)
                 list(GET LIST_MATLAB_INSTALLS 0 MATLAB_VERSION) # Take first element (highest version)
 
                 set(MATLAB_ROOT "${MATLAB_ROOT}/${MATLAB_VERSION}")
-        endif(IS_DIRECTORY ${MATLAB_ROOT})
+        endif()
 
         set(MATLAB_ROOT ${MATLAB_ROOT} CACHE PATH "Path to the MATLAB installation directory (e.g. /usr/local/MATLAB/R2012b, C:/... (TODO)")
         set(MATLAB_VERSION ${MATLAB_VERSION} CACHE STRING "R...-like version to use from installed ones")
-endif(NOT MATLAB_ROOT)
+endif()
 
 # DISABLE_MATLAB
 # ---------------------
@@ -56,10 +56,10 @@ if(NOT CMAKE_MRPT_HAS_MATLAB)
 				# MEXPLUS header-only lib to handle mxArray class:
 				add_subdirectory("${MRPT_SOURCE_DIR}/3rdparty/mexplus/")
 				include_directories("${MRPT_SOURCE_DIR}/3rdparty/mexplus/")
-		else(MATLAB_FOUND)
+		else()
 			message("MATLAB not found. Either set MATLAB_ROOT correctly, or set MRPT_WITH_MATLAB_WRAPPER=OFF")
-		endif(MATLAB_FOUND)
-endif(NOT CMAKE_MRPT_HAS_MATLAB)
+		endif()
+endif()
 
 # It seems it works with dynamic libraries too now!
 ## Set special options for Matlab wrapper compatibility
@@ -67,7 +67,7 @@ endif(NOT CMAKE_MRPT_HAS_MATLAB)
 #        message(SEND_ERROR
 #"BUILD_SHARED_LIBS is activated.
 #Static libraries are needed for MEX libraries due to TLS limitation in Matlab. Deactivate BUILD_SHARED_LIBRARIES.")
-#endif(BUILD_SHARED_LIBS)
+#endif()
 
 ## Since MEX libraries are dynamic but MRPT libraries need to be static, the static libraries must be Position Independent Code (PIC)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -79,6 +79,6 @@ file(COPY ${MRPT_SOURCE_DIR}/mex/samples DESTINATION ${CMAKE_BINARY_DIR}/mex)
 file(COPY ${MRPT_SOURCE_DIR}/mex/mrpt_setup.m DESTINATION ${CMAKE_BINARY_DIR}/mex)
 file(COPY ${MRPT_SOURCE_DIR}/mex/README.txt   DESTINATION ${CMAKE_BINARY_DIR}/mex)
 
-endif(NOT DISABLE_MATLAB)
+endif()
 
-endif(MRPT_WITH_MATLAB_WRAPPER)
+endif()

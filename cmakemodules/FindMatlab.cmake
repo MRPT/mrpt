@@ -15,7 +15,7 @@ find_path(MATLAB_INCLUDE_DIR mex.h
 
 if(MATLAB_INCLUDE_DIR) # Protect against #include'ing undefined dirs.
         include_directories(${MATLAB_INCLUDE_DIR})
-endif(MATLAB_INCLUDE_DIR)
+endif()
 
 find_library( MATLAB_MEX_LIBRARY
               NAMES libmex mex
@@ -37,7 +37,7 @@ if(MATLAB_INCLUDE_DIR AND MATLAB_LIBRARIES)
         set(MATLAB_FOUND 1)
 #        get_filename_component(MATLAB_VERSION ${MATLAB_ROOT} NAME) # Find MATLAB version
 #        set(MATLAB_VERSION ${MATLAB_VERSION} CACHE STRING "" FORCE) # Force value over GUI
-endif(MATLAB_INCLUDE_DIR AND MATLAB_LIBRARIES)
+endif()
 
 mark_as_advanced(
   MATLAB_LIBRARIES

@@ -63,7 +63,7 @@ set(OpenMP_CXX_TEST_SOURCE ${OpenMP_C_TEST_SOURCE})
 if(DEFINED OpenMP_C_FLAGS AND DEFINED OpenMP_CXX_FLAGS)
   set(OpenMP_C_FLAG_CANDIDATES)
   set(OpenMP_CXX_FLAG_CANDIDATES)
-endif(DEFINED OpenMP_C_FLAGS AND DEFINED OpenMP_CXX_FLAGS)
+endif()
 
 # check c compiler
 foreach(FLAG ${OpenMP_C_FLAG_CANDIDATES})
@@ -76,7 +76,7 @@ foreach(FLAG ${OpenMP_C_FLAG_CANDIDATES})
   if(OpenMP_FLAG_DETECTED)
     set(OpenMP_C_FLAGS_INTERNAL "${FLAG}")
     break()
-  endif(OpenMP_FLAG_DETECTED) 
+  endif() 
 endforeach(FLAG ${OpenMP_C_FLAG_CANDIDATES})
 
 # check cxx compiler
@@ -90,7 +90,7 @@ foreach(FLAG ${OpenMP_CXX_FLAG_CANDIDATES})
   if(OpenMP_FLAG_DETECTED)
     set(OpenMP_CXX_FLAGS_INTERNAL "${FLAG}")
     break()
-  endif(OpenMP_FLAG_DETECTED)
+  endif()
 endforeach(FLAG ${OpenMP_CXX_FLAG_CANDIDATES})
 
 set(OpenMP_C_FLAGS "${OpenMP_C_FLAGS_INTERNAL}"
