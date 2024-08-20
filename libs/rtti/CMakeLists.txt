@@ -15,4 +15,4 @@ define_mrpt_lib(
 if(BUILD_mrpt-rtti)
 
 
-endif( )
+endif()

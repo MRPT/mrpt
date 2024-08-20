@@ -445,7 +445,7 @@ macro(internal_define_mrpt_lib name headers_only )
 			if (EXISTS "${PDB_FILE}")
 				install(FILES ${PDB_FILE} DESTINATION bin COMPONENT LibrariesDebugInfoPDB)
 			endif ()
-		endif(MSVC)
+		endif()
 	else() # it IS headers_only:
 		install(TARGETS ${name} EXPORT mrpt-${name}-targets)
 	endif ()

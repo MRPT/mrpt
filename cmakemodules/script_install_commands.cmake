@@ -42,7 +42,7 @@ if(WIN32)
 		install(FILES "${F}" DESTINATION lib)
 	endforeach()
 
-else(WIN32)
+else()
 	option(MRPT_INSTALL_EXAMPLES "Do install examples" ON)
 	mark_as_advanced(MRPT_INSTALL_EXAMPLES)
 

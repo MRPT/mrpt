@@ -8,6 +8,6 @@
 
 if(NOT MRPT_SOURCE_DIR)
 	message(FATAL_ERROR "ERROR: Do not use this directory as 'source directory' in CMake, but the ROOT directory of the MRPT source tree.")
-endif(NOT MRPT_SOURCE_DIR)
+endif()
 
 

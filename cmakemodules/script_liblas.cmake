@@ -16,7 +16,7 @@ if(UNIX)
 			)
 		if(${CMAKE_LAS_CONFIG_RES})
 			message("Error invoking LAS config file:\n ${LAS_CONFIG_FILE} --libs")
-		endif(${CMAKE_LAS_CONFIG_RES})
+		endif()
 
 		execute_process(COMMAND ${LAS_CONFIG_FILE} --includes
 			RESULT_VARIABLE CMAKE_LAS_CONFIG_RES
@@ -25,7 +25,7 @@ if(UNIX)
 			)
 		if(${CMAKE_LAS_CONFIG_RES})
 			message("Error invoking LAS config file:\n ${LAS_CONFIG_FILE} --includes")
-		endif(${CMAKE_LAS_CONFIG_RES})
+		endif()
 
 		# Join all flags and parse to separate them:
 		set(CMAKE_LAS_CFGS "${CMAKE_LAS_LIBS} ${CMAKE_LAS_INCLUDES}")
@@ -40,13 +40,13 @@ if(UNIX)
 			message(STATUS "  LAS_INCLUDE_DIRS: ${LAS_INCLUDE_DIRS}")
 			message(STATUS "  LAS_LINK_DIRS: ${LAS_LINK_DIRS}")
 			message(STATUS "  LAS_LIBS: ${LAS_LIBS}")
-		endif($ENV{VERBOSE})
+		endif()
 
-	else(LAS_CONFIG_FILE)
+	else()
 		set(CMAKE_MRPT_HAS_LIBLAS 0)
-	endif(LAS_CONFIG_FILE)
-else(UNIX)
+	endif()
+else()
 	# Windows: (Not supported for now)
 	set(CMAKE_MRPT_HAS_LIBLAS 0)
-endif(UNIX)
+endif()
 

@@ -33,11 +33,11 @@ if(NOT DISABLE_NationalInstruments)
 		# The variable that actually ends up in config.h
 		if (NI_DAQmxBASE_INCLUDE_DIR AND NI_DAQmxBASE_LIB_FILE)
 			set(CMAKE_MRPT_HAS_NIDAQMXBASE 1) 
-		else(NI_DAQmxBASE_INCLUDE_DIR AND NI_DAQmxBASE_LIB_FILE)
+		else()
 			message("Error: Correct NI_DAQmxBASE_LIB_FILE and NI_DAQmxBASE_INCLUDE_DIR, or uncheck MRPT_HAS_NI_DAQmxBASE")
 		endif (NI_DAQmxBASE_INCLUDE_DIR AND NI_DAQmxBASE_LIB_FILE)
-	endif(MRPT_HAS_NI_DAQmxBASE)
-endif(NOT DISABLE_NationalInstruments)	
+	endif()
+endif()	
 
 
 # National Instruments "DAQmx" C API 
@@ -70,8 +70,8 @@ if(NOT DISABLE_NationalInstruments)
 		# The variable that actually ends up in config.h
 		if (NI_DAQmx_INCLUDE_DIR AND NI_DAQmx_LIB_FILE)
 			set(CMAKE_MRPT_HAS_NIDAQMX 1) 
-		else(NI_DAQmx_INCLUDE_DIR AND NI_DAQmx_LIB_FILE)
+		else()
 			message("Error: Correct NI_DAQmx_LIB_FILE and NI_DAQmx_INCLUDE_DIR, or uncheck MRPT_HAS_NI_DAQmx")
 		endif (NI_DAQmx_INCLUDE_DIR AND NI_DAQmx_LIB_FILE)
-	endif(MRPT_HAS_NI_DAQmx)
-endif(NOT DISABLE_NationalInstruments)	
+	endif()
+endif()	
