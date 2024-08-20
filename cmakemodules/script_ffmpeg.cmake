@@ -70,19 +70,19 @@ if(MRPT_HAS_FFMPEG_WIN32)
 		set(CMAKE_MRPT_HAS_FFMPEG 0)
 		set(CMAKE_MRPT_HAS_FFMPEG_SYSTEM 0)
 		message("The directory 'FFMPEG_WIN32_ROOT_DIR' does not exists. Turn off FFmpeg support or provide the correct path.")
-	endif(NOT EXISTS "${FFMPEG_WIN32_ROOT_DIR}")
+	endif()
 
 	if(NOT EXISTS "${FFMPEG_WIN32_ROOT_DIR}/include/libavcodec" OR NOT EXISTS "${FFMPEG_WIN32_ROOT_DIR}/include/libavformat" OR NOT EXISTS "${FFMPEG_WIN32_ROOT_DIR}/include/libavutil" OR NOT EXISTS "${FFMPEG_WIN32_ROOT_DIR}/include/libswscale")
 		set(CMAKE_MRPT_HAS_FFMPEG 0)
 		set(CMAKE_MRPT_HAS_FFMPEG_SYSTEM 0)
 		message("The directory 'FFMPEG_WIN32_ROOT_DIR' does not contain include/{libavcodec,libavformat,libavutil,libswscale}. Turn off FFmpeg support or provide the correct path.")
-	endif(NOT EXISTS "${FFMPEG_WIN32_ROOT_DIR}/include/libavcodec" OR NOT EXISTS "${FFMPEG_WIN32_ROOT_DIR}/include/libavformat" OR NOT EXISTS "${FFMPEG_WIN32_ROOT_DIR}/include/libavutil" OR NOT EXISTS "${FFMPEG_WIN32_ROOT_DIR}/include/libswscale")
+	endif()
 
 	if(NOT EXISTS "${FFMPEG_WIN32_ROOT_DIR}/lib")
 		set(CMAKE_MRPT_HAS_FFMPEG 0)
 		set(CMAKE_MRPT_HAS_FFMPEG_SYSTEM 0)
 		message("The directory 'FFMPEG_WIN32_ROOT_DIR' does not contain /lib/. Turn off FFmpeg support or provide the correct path.")
-	endif(NOT EXISTS "${FFMPEG_WIN32_ROOT_DIR}/lib")
+	endif()
 
 	# We need the .lib files: avcodec-52.lib, avformat-52.lib, avutil-49.lib, swscale-0.lib
 	file(GLOB FFMPEG_WIN32_AVCODEC_LIB "${FFMPEG_WIN32_ROOT_DIR}/lib/avcodec*.lib")

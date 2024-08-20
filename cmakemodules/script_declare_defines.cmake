@@ -4,10 +4,10 @@
 macro(CREATE_CMAKE_MRPT_DEFINE defName)
 	if(${defName} MATCHES "ON")
 		set(CMAKE_${defName} "1")
-	else(${defName} MATCHES "ON")
+	else()
 		set(CMAKE_${defName} "0")
-	endif(${defName} MATCHES "ON")
-endmacro(CREATE_CMAKE_MRPT_DEFINE)
+	endif()
+endmacro()
 
 CREATE_CMAKE_MRPT_DEFINE(MRPT_ALWAYS_CHECKS_DEBUG)
 CREATE_CMAKE_MRPT_DEFINE(MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
