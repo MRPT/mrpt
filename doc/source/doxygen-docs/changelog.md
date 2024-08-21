@@ -1,9 +1,10 @@
 \page changelog Change Log
 
 # Version 2.13.7: UNRELEASED
+- Changes in apps:
+  - rosbag2rawlog (ROS1): Implement generation of odometry from /tf messages.
 - BUG FIXES:
   - Fix incorrect check in mrpt-io unit tests leading to potential false positives.
-
 
 # Version 2.13.6: Released Aug 14th, 2024
 - Build system:
