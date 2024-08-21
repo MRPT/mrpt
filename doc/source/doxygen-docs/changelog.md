@@ -1,5 +1,10 @@
 \page changelog Change Log
 
+# Version 2.13.7: UNRELEASED
+- BUG FIXES:
+  - Fix incorrect check in mrpt-io unit tests leading to potential false positives.
+
+
 # Version 2.13.6: Released Aug 14th, 2024
 - Build system:
   - This main MRPT repository is no longer directly built as a ROS package. Please, use the wrappers for better modularity:
