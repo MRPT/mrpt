@@ -88,6 +88,9 @@ TCLAP::ValueArg<std::string> arg_base_link_frame(
     "base_link",
     cmd);
 
+std::optional<std::string> odom_from_tf_label;
+std::string odom_frame_id = "odom";
+
 using Obs = std::list<mrpt::serialization::CSerializable::Ptr>;
 
 using CallbackFunction = std::function<Obs(const rosbag::MessageInstance&)>;
@@ -534,29 +537,52 @@ Obs toRangeImage(
 template <bool isStatic>
 Obs toTf(tf2::BufferCore& tfBuf, const rosbag::MessageInstance& rosmsg)
 {
-  if (rosmsg.getDataType() == "tf2_msgs/TFMessage")
-  {
-    auto tfs = rosmsg.instantiate<tf2_msgs::TFMessage>();
-    for (auto& tf : tfs->transforms)
-    {
-      try
-      {
-        tfBuf.setTransform(tf, "bagfile", isStatic);
+  if (rosmsg.getDataType() != "tf2_msgs/TFMessage") return {};
 
-        addTfFrameAsKnown(tf.child_frame_id);
-        addTfFrameAsKnown(tf.header.frame_id);
+  Obs ret;
+  auto tfs = rosmsg.instantiate<tf2_msgs::TFMessage>();
+  for (auto& tf : tfs->transforms)
+  {
+    try
+    {
+      tfBuf.setTransform(tf, "bagfile", isStatic);
+
+      addTfFrameAsKnown(tf.child_frame_id);
+      addTfFrameAsKnown(tf.header.frame_id);
 #if 0
 				std::cout << "tf: " << tf.child_frame_id
 						  << " <= " << tf.header.frame_id << "\n";
 #endif
-      }
-      catch (const tf2::TransformException& ex)
+
+      // Process /tf -> odometry conversion, if enabled:
+      const auto baseLink = arg_base_link_frame.getValue();
+
+      if (odom_from_tf_label &&
+          (tf.child_frame_id == odom_frame_id || tf.header.frame_id == odom_frame_id) &&
+          (tf.child_frame_id == baseLink || tf.header.frame_id == baseLink))
       {
-        std::cerr << ex.what() << std::endl;
+        mrpt::poses::CPose3D p;
+        bool valid =
+            findOutSensorPose(p, odom_frame_id, arg_base_link_frame.getValue(), std::nullopt);
+        if (valid)
+        {
+          auto o = mrpt::obs::CObservationOdometry::Create();
+          o->sensorLabel = odom_from_tf_label.value();
+          o->timestamp = mrpt::ros1bridge::fromROS(tf.header.stamp);
+
+          // Convert data:
+          o->odometry = {p.x(), p.y(), p.yaw()};
+          o->hasVelocities = false;
+          ret.push_back(o);
+        }
       }
     }
+    catch (const tf2::TransformException& ex)
+    {
+      std::cerr << ex.what() << std::endl;
+    }
   }
-  return {};
+  return ret;
 }
 
 class Transcriber
@@ -566,12 +592,24 @@ class Transcriber
   {
     tfBuffer = std::make_shared<tf2::BufferCore>();
 
+    if (config.has("odom_from_tf"))
+    {
+      ASSERT_(config["odom_from_tf"].isMap());
+      ASSERTMSG_(
+          config["odom_from_tf"].has("sensor_label"),
+          "odom_from_tf YAML map must contain a sensor_label entry.");
+
+      const auto c = config["odom_from_tf"];
+      odom_from_tf_label = c["sensor_label"].as<std::string>();
+      if (c.has("odom_frame_id")) odom_frame_id = c["odom_frame_id"].as<std::string>();
+    }
+
     m_lookup["/tf"].emplace_back([=](const rosbag::MessageInstance& rosmsg)
                                  { return toTf<false>(*tfBuffer, rosmsg); });
     m_lookup["/tf_static"].emplace_back([=](const rosbag::MessageInstance& rosmsg)
                                         { return toTf<true>(*tfBuffer, rosmsg); });
 
-    for (auto& sensorNode : config["sensors"].asMap())
+    for (auto& sensorNode : config["sensors"].asMapRange())
     {
       auto sensorName = sensorNode.first.as<std::string>();
       auto& sensor = sensorNode.second.asMap();
