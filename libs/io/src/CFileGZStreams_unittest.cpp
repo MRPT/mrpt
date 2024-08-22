@@ -16,6 +16,23 @@
 #include <test_mrpt_common.h>
 
 #include <algorithm>  // std::equal
+#include <cstdint>
+#include <iomanip>
+#include <sstream>
+#include <string>
+
+namespace
+{
+std::string to_hex_string(const uint8_t* buf, size_t len)
+{
+  std::ostringstream oss;
+  for (size_t i = 0; i < len; ++i)
+  {
+    oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(buf[i]);
+  }
+  return oss.str();
+}
+}  // namespace
 
 const size_t tst_data_len = 1000U;
 
@@ -112,7 +129,10 @@ TEST(CFileGZStreams, readwriteTmpFileCompressed)
       const size_t rd_count = fil_in.Read(rd_buf, tst_data_len / 4);
       EXPECT_EQ(rd_count, tst_data_len / 4);
 
-      EXPECT_TRUE(std::equal(std::begin(tst_data), std::end(tst_data), std::begin(rd_buf)));
+      EXPECT_TRUE(std::equal(std::begin(rd_buf), std::end(rd_buf), std::begin(tst_data)))
+          << " compress_level: " << compress_level << "\n"
+          << " test_data: " << to_hex_string(tst_data.data(), tst_data.size()) << "\n"
+          << " read_data: " << to_hex_string(rd_buf, sizeof(rd_buf)) << "\n";
 
       // next I should find an EOF:
       const auto rdEof = fil_in.Read(rd_buf, 1);
