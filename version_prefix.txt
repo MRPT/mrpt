@@ -1,4 +1,4 @@
-2.13.6
+2.13.7
 # IMPORTANT: This file is parsed by CMake, don't add any comment to
 # the first line.
 # This file is used in both Windows and Linux scripts to automatically
@@ -7,5 +7,4 @@
 #
 # IMPORTANT: Whenever this version gets bumped, also remember to update it in:
 # - appveyor.yml  => For Windows binary builds.
-# - package.xml   => For ROS package builds.
 # - doc/source/doxygen-docs/changelog.md  => The changelog.
