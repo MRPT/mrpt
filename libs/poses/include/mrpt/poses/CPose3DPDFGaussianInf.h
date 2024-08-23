@@ -90,11 +90,11 @@ class CPose3DPDFGaussianInf : public CPose3DPDF
    * STATE_LEN matrix) \sa getMean, getCovarianceAndMean */
   void getInformationMatrix(mrpt::math::CMatrixDouble66& inf) const override { inf = cov_inv; }
 
-  /** Copy operator, translating if necesary (for example, between particles
+  /** Copy operator, translating if necessary (for example, between particles
    * and gaussian representations) */
   void copyFrom(const CPose3DPDF& o) override;
 
-  /** Copy operator, translating if necesary (for example, between particles
+  /** Copy operator, translating if necessary (for example, between particles
    * and gaussian representations) */
   void copyFrom(const CPosePDF& o);
 

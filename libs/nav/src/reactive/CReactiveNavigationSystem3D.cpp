@@ -74,7 +74,7 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::config::CConfigFile
 
   m_PTGsMustBeReInitialized = true;
 
-  // 1st: load my own params; at the end, call parent's overriden method:
+  // 1st: load my own params; at the end, call parent's overridden method:
   const std::string s = "CReactiveNavigationSystem3D";
 
   unsigned int num_levels;
@@ -119,7 +119,7 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::config::CConfigFile
   MRPT_LOG_DEBUG_FMT(
       " Robot height sections = %u\n", static_cast<unsigned int>(m_robotShape.size()));
 
-  CAbstractPTGBasedReactive::loadConfigFile(c);  // call parent's overriden method:
+  CAbstractPTGBasedReactive::loadConfigFile(c);  // call parent's overridden method:
 
   MRPT_END
 }

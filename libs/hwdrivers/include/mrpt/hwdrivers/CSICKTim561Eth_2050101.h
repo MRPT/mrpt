@@ -28,7 +28,7 @@ class CSICKTim561Eth : public C2DRangeFinderAbstract
    */
   ~CSICKTim561Eth() override;
 
-  /** This function acquire a laser scan from the device. If an error occured,
+  /** This function acquire a laser scan from the device. If an error occurred,
    * hardwareError will be set to true.
    * The new laser scan will be stored in the outObservation argument.
    *

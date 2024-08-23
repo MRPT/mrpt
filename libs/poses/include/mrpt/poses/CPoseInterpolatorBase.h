@@ -21,7 +21,7 @@ namespace mrpt::poses
  *  - imSpline: Spline interpolation using 4 points (2 before + 2 after the
  * query point).
  *  - imLinear2Neig: Linear interpolation between the previous and next
- * neightbour.
+ * neighbour.
  *  - imLinear4Neig: Linear interpolation using the linear fit of the 4 closer
  * points (2 before + 2 after the query point).
  *  - imSSLLLL : Use Spline for X and Y, and Linear Least squares for Z, yaw,

@@ -52,9 +52,9 @@ namespace mrpt::hwdrivers
  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
  * -------------------------------------------------------
  *   [supplied_section_name]
- *	  ip_address = 192.168.0.50 ;a string wich is the SICK's ip adress
+ *	  ip_address = 192.168.0.50 ;a string which is the SICK's ip adress
  *(default is 192.168.0.1)
- *   TCP_port = 1234			; an integer value : the tcp ip port on wich the
+ *   TCP_port = 1234			; an integer value : the tcp ip port on which the
  *sick is listening (default is 2111).
  *   pose_x=0.21	; Laser range scaner 3D position in the robot (meters)
  *   pose_y=0
@@ -63,7 +63,7 @@ namespace mrpt::hwdrivers
  *   pose_pitch=0
  *   pose_roll=0
  *  \endcode
- * This class doesn't configure the SICK LMS sensor, it is recomended to
+ * This class doesn't configure the SICK LMS sensor, it is recommended to
  *configure the sensor via the
  * the SICK software : SOPAS.
  * \note This class was contributed by Adrien Barral - Robopec (France)
@@ -82,7 +82,7 @@ class CLMS100Eth : public C2DRangeFinderAbstract
    * Close communcation with the device, and free memory.
    */
   ~CLMS100Eth() override;
-  /** This function acquire a laser scan from the device. If an error occured,
+  /** This function acquire a laser scan from the device. If an error occurred,
    * hardwareError will be set to true.
    * The new laser scan will be stored in the outObservation argument.
    *

@@ -33,7 +33,7 @@ namespace mrpt::nav
  * Based Space Transformation for Reactive Navigation"
  * - 29/SEP/2005: Totally rewritten again, for integration into MRPT library and
  * according to the ICRA paper.
- * - 17/OCT/2007: Whole code updated to accomodate to MRPT 0.5 and make it
+ * - 17/OCT/2007: Whole code updated to accommodate to MRPT 0.5 and make it
  * portable to Linux.
  * - DEC/2013: Code refactoring between this class and
  * CAbstractHolonomicReactiveMethod

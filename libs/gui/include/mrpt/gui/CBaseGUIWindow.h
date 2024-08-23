@@ -265,7 +265,7 @@ class mrptEventMouseMove : public mrpt::system::mrptEvent
  *   The event field member \a allow_close is default by default, but can be
  * set to false in the event callback
  *   to forbid the window to be closed by the user. If the event corresponds to
- * a programatic close, this field is ignored.
+ * a programmatic close, this field is ignored.
  *
  *  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked
  * from the wxWidgets internal MRPT thread,

@@ -233,7 +233,7 @@ struct TSequenceFeatureObservations : public std::vector<TFeatureObservation>
  */
 struct TStereoSystemParams : public mrpt::config::CLoadableOptions
 {
-  /** Initilization of default parameters */
+  /** Initialization of default parameters */
   TStereoSystemParams();
 
   void loadFromConfigFile(

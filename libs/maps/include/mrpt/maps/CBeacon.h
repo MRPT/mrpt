@@ -55,14 +55,14 @@ class CBeacon : public mrpt::poses::CPointPDF
    */
   TTypePDF m_typePDF{pdfGauss};
 
-  /** The individual PDF, if m_typePDF=pdfMonteCarlo (publicly accesible for
+  /** The individual PDF, if m_typePDF=pdfMonteCarlo (publicly accessible for
    * ease of use, but the CPointPDF interface is also implemented in CBeacon).
    */
   mrpt::poses::CPointPDFParticles m_locationMC{1};
-  /** The individual PDF, if m_typePDF=pdfGauss (publicly accesible for ease
+  /** The individual PDF, if m_typePDF=pdfGauss (publicly accessible for ease
    * of use, but the CPointPDF interface is also implemented in CBeacon). */
   mrpt::poses::CPointPDFGaussian m_locationGauss;
-  /** The individual PDF, if m_typePDF=pdfSOG (publicly accesible for ease of
+  /** The individual PDF, if m_typePDF=pdfSOG (publicly accessible for ease of
    * use, but the CPointPDF interface is also implemented in CBeacon). */
   mrpt::poses::CPointPDFSOG m_locationSOG{1};
 
@@ -93,7 +93,7 @@ class CBeacon : public mrpt::poses::CPointPDF
 
   std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override;
 
-  /** Copy operator, translating if necesary (for example, between particles
+  /** Copy operator, translating if necessary (for example, between particles
    * and gaussian representations) */
   void copyFrom(const mrpt::poses::CPointPDF& o) override;
 

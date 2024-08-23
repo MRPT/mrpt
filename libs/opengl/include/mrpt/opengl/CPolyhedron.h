@@ -73,7 +73,7 @@ class CPolyhedron : public CRenderizableShaderWireFrame, public CRenderizableSha
      */
     TPolyhedronEdge() = default;
     /**
-     * Comparison agains another edge. Simmetry is taken into account.
+     * Comparison against another edge. Simmetry is taken into account.
      */
     bool operator==(const TPolyhedronEdge& e) const
     {

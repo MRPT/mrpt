@@ -76,7 +76,7 @@ class CEnhancedMetaFile : public CCanvas
    * image is to be drawn
    * \param img The image to be drawn in this canvas
    *  This method may be redefined in some classes implementing this
-   * interface in a more appropiate manner.
+   * interface in a more appropriate manner.
    */
   void drawImage(int x, int y, const mrpt::img::CImage& img) override;
 
@@ -89,7 +89,7 @@ class CEnhancedMetaFile : public CCanvas
    * \param width The desired width of the line (this is IGNORED in this
    * virtual class)
    *  This method may be redefined in some classes implementing this
-   * interface in a more appropiate manner.
+   * interface in a more appropriate manner.
    */
   void line(
       int x0,
@@ -107,7 +107,7 @@ class CEnhancedMetaFile : public CCanvas
    * \param color The text color
    * \param fontSize The font size, in "points"
    *  This method may be redefined in some classes implementing this
-   * interface in a more appropiate manner.
+   * interface in a more appropriate manner.
    * \sa rectangle
    */
   void textOut(int x0, int y0, const std::string& str, const mrpt::img::TColor color) override;
@@ -133,7 +133,7 @@ class CEnhancedMetaFile : public CCanvas
    * \param scale The scale factor, e.g. 2 means twice the original size.
    * \param img The image to be drawn in this canvas
    *  This method may be redefined in some classes implementing this
-   * interface in a more appropiate manner.
+   * interface in a more appropriate manner.
    */
   void drawImage(int x, int y, const mrpt::img::CImage& img, float rotation, float scale) override
   {

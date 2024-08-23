@@ -15,7 +15,7 @@
 
 namespace mrpt::hwdrivers
 {
-/** A class for grabing "range images" from a MESA imaging SwissRanger 3D
+/** A class for grabbing "range images" from a MESA imaging SwissRanger 3D
  *cameras (SR-2, SR-3000, SR-4k).
  *
  * NOTES:

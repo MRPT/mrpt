@@ -80,7 +80,7 @@ class CPose3DQuat :
   /** \overload */
   inline CPose3DQuat(TConstructorFlags_Poses) : m_quat(mrpt::math::UNINITIALIZED_QUATERNION) {}
 
-  /** Constructor with initilization of the pose - the quaternion is
+  /** Constructor with Initialization of the pose - the quaternion is
    * normalized to make sure it's unitary */
   inline CPose3DQuat(
       const double x, const double y, const double z, const mrpt::math::CQuaternionDouble& q) :

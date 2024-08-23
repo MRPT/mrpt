@@ -49,7 +49,7 @@ class CPosePDFParticles :
    */
   CPosePDFParticles(size_t M = 1);
 
-  /** Copy operator, translating if necesary (for example, between m_particles
+  /** Copy operator, translating if necessary (for example, between m_particles
    * and gaussian representations)
    */
   void copyFrom(const CPosePDF& o) override;

@@ -42,7 +42,7 @@ class CPose3DPDFGrid : public CPose3DPDF, public CPose3DGridTemplate<double>
   /** Destructor */
   ~CPose3DPDFGrid() override = default;
 
-  /** Copy operator, translating if necesary (for example, between
+  /** Copy operator, translating if necessary (for example, between
    * particles and gaussian representations) */
   void copyFrom(const CPose3DPDF& o) override;
 

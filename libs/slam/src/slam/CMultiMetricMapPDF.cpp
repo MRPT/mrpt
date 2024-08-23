@@ -377,7 +377,7 @@ void CMultiMetricMapPDF::rebuildAverageMap()
     MRPT_END
   }  // End of SSE not supported
 
-  // Don't calculate again until really necesary.
+  // Don't calculate again until really necessary.
   averageMapIsUpdated = true;
 }
 

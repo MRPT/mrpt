@@ -1257,7 +1257,7 @@
     - CICP: parameter `onlyClosestCorrespondences` deleted (always true now).
     - mrpt::slam::CICP API: Simplified and modernized to use only one output parameter, using std::optional.
   - \ref mrpt_system_grp
-    - functions to get timestamp as *local* time were removed, since they don't make sense. All timestamps in MRPT are UTC, and they can be formated as dates in either UTC or local time frames.
+    - functions to get timestamp as *local* time were removed, since they don't make sense. All timestamps in MRPT are UTC, and they can be formatted as dates in either UTC or local time frames.
     - Added: mrpt::system::WorkerThreadsPool
   - \ref mrpt_rtti_grp  [NEW IN MRPT 2.0.0]
     - All classes are now registered (and de/serialized) with their full name including namespaces. A backwards-compatible flag has been added to mrpt::rtti::findRegisteredClass().
@@ -2648,7 +2648,7 @@ href="http://code.google.com/p/mrpt/source/detail?r=3065" >r3065</a>
         - New methods mrpt::poses::SE_traits::pseudo_exp()
         - mrpt::system::CTimeLogger:
           - New method mrpt::system::CTimeLogger::getStats() for
-programatic execution time stats analysis - <a
+programmatic execution time stats analysis - <a
 href="http://code.google.com/p/mrpt/source/detail?r=2998" >r2998</a>
           - New method
 mrpt::system::CTimeLogger::registerUserMeasure() for making stats of

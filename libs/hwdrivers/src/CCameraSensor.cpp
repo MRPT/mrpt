@@ -1386,7 +1386,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 
   CCameraSensor::Ptr cam = std::make_shared<CCameraSensor>();
   cam->loadConfig(selectedConfig, "CONFIG");
-  cam->initialize();  // This will raise an exception if neccesary
+  cam->initialize();  // This will raise an exception if necessary
 
   return cam;
 #else
@@ -1410,7 +1410,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromPanel(void* _panel)
     CCameraSensor::Ptr video = std::make_shared<CCameraSensor>();
     video->loadConfig(cfg, "CONFIG");
 
-    // This will raise an exception if neccesary
+    // This will raise an exception if necessary
     video->initialize();
 
     return video;

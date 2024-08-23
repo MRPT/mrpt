@@ -453,7 +453,7 @@ int main(int argc, char** argv)
         CImage::setImagesPathBase(CRawlog::detectImagesDirectory(fil));
 
         cam->loadConfig(cfg, "CONFIG");
-        cam->initialize();  // This will raise an exception if neccesary
+        cam->initialize();  // This will raise an exception if necessary
       }
       else
       {
@@ -465,7 +465,7 @@ int main(int argc, char** argv)
         cfg.write("CONFIG", "ffmpeg_url", fil);
 
         cam->loadConfig(cfg, "CONFIG");
-        cam->initialize();  // This will raise an exception if neccesary
+        cam->initialize();  // This will raise an exception if necessary
       }
     }
 

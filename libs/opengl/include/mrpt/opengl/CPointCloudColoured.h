@@ -126,7 +126,7 @@ class CPointCloudColoured :
     markAllPointsAsNew();
   }
 
-  /** Like \c setPointColor but without checking for out-of-index erors */
+  /** Like \c setPointColor but without checking for out-of-index errors */
   void setPointColor_fast(size_t index, float R, float G, float B, float A = 1)
   {
     std::unique_lock<std::shared_mutex> wfWriteLock(CRenderizableShaderPoints::m_pointsMtx.data);
@@ -143,7 +143,7 @@ class CPointCloudColoured :
     m_point_colors[index].B = b;
     m_point_colors[index].A = a;
   }
-  /** Like \c getPointColor but without checking for out-of-index erors */
+  /** Like \c getPointColor but without checking for out-of-index errors */
   void getPointColor_fast(size_t index, float& R, float& G, float& B) const
   {
     std::shared_lock<std::shared_mutex> wfReadLock(CRenderizableShaderPoints::m_pointsMtx.data);

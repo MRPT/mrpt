@@ -51,7 +51,7 @@ struct TCaptureOptions_SVS
   bool m_calDisparity;
 };
 
-/** A class for grabing stereo images from a STOC camera of Videre Design
+/** A class for grabbing stereo images from a STOC camera of Videre Design
  * NOTE:
  *		- Windows:
  *			- This class is not available.

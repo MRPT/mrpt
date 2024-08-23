@@ -113,7 +113,7 @@ void bind_mrpt_obs_CActionRobotMovement2D(std::function< pybind11::module &(std:
 		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_CActionRobotMovement2D const &o){ return new PyCallBack_mrpt_obs_CActionRobotMovement2D(o); } ) );
 		cl.def( pybind11::init( [](mrpt::obs::CActionRobotMovement2D const &o){ return new mrpt::obs::CActionRobotMovement2D(o); } ) );
 
-		pybind11::enum_<mrpt::obs::CActionRobotMovement2D::TEstimationMethod>(cl, "TEstimationMethod", pybind11::arithmetic(), "A list of posible ways for estimating the content of a\n CActionRobotMovement2D object.")
+		pybind11::enum_<mrpt::obs::CActionRobotMovement2D::TEstimationMethod>(cl, "TEstimationMethod", pybind11::arithmetic(), "A list of possible ways for estimating the content of a\n CActionRobotMovement2D object.")
 			.value("emOdometry", mrpt::obs::CActionRobotMovement2D::emOdometry)
 			.value("emScan2DMatching", mrpt::obs::CActionRobotMovement2D::emScan2DMatching)
 			.export_values();

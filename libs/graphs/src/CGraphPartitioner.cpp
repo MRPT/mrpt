@@ -301,7 +301,7 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::exactBisection(
   else
     Adj = in_A;
 
-  // Brute force: compute all posible partitions:
+  // Brute force: compute all possible partitions:
   //-----------------------------------------------------------------
 
   // First combination: 1000...0000

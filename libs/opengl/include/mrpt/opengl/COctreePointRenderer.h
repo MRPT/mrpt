@@ -32,7 +32,7 @@ void OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL(float value);
 float OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL();
 
 /** Default value = 1e5. Maximum number of elements in each octree node before
- *spliting. Affects to these classes (read their docs for further details):
+ *splitting. Affects to these classes (read their docs for further details):
  *		- mrpt::opengl::CPointCloud
  *		- mrpt::opengl::CPointCloudColoured
  * \ingroup mrpt_opengl_grp

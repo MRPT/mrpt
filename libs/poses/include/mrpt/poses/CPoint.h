@@ -32,7 +32,7 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS, DIM>, public mrpt::Stringifyabl
     @{ */
 
   /** Scalar addition of all coordinates.
-   * This is diferent from poses/point composition, which is implemented as
+   * This is different from poses/point composition, which is implemented as
    * "+" operators in classes derived from "CPose"
    */
   template <class OTHERCLASS>

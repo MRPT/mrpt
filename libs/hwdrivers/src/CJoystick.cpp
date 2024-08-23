@@ -97,7 +97,7 @@ int CJoystick::getJoysticksCount()
 /*---------------------------------------------------------------
   Gets joystick information.
 
-  \return Returns true if successfull, false on error, for example, if joystick
+  \return Returns true if successful, false on error, for example, if joystick
  is not present.
  ---------------------------------------------------------------*/
 bool CJoystick::getJoystickPosition(int nJoy, State& output)

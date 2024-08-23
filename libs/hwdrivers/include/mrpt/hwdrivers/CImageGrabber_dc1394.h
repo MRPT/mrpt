@@ -95,7 +95,7 @@ struct TCaptureOptions_dc1394
   int ring_buffer_size{15};
 };
 
-/** A class for grabing images from a IEEE1394 (Firewire) camera using the
+/** A class for grabbing images from a IEEE1394 (Firewire) camera using the
  * libdc1394-2 library.
  *   See the constructor for the options when opening the camera. Notice that
  * you may have

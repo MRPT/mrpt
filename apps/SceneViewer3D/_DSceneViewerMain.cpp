@@ -820,7 +820,7 @@ void _DSceneViewerFrame::loadFromFile(const std::string& fil, bool isInASequence
     const double sceneMaxScale = std::max<double>(1000.0, (sceneBbox.max - sceneBbox.min).norm());
     openGLSceneRef->getViewport()->setViewportClipDistances(0.1, 5.0 * sceneMaxScale);
 
-    // Change the camera if necesary:
+    // Change the camera if necessary:
     if (openGLSceneRef->followCamera())
     {
       Viewport::Ptr view = openGLSceneRef->getViewport("main");

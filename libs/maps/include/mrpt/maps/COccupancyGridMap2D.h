@@ -179,7 +179,7 @@ class COccupancyGridMap2D :
    * reference system, or nullptr (default) if you want to use
    * CPose2D(0,0,deg)
    *
-   *  After successfull execution, "lastObservationInsertionInfo" is updated.
+   *  After successful execution, "lastObservationInsertionInfo" is updated.
    *
    * \sa insertionOptions, CObservation::insertObservationInto
    */
@@ -233,7 +233,7 @@ class COccupancyGridMap2D :
    * \param y_min The "y" coordinates of top most side of grid.
    * \param y_max The "y" coordinates of bottom most side of grid.
    * \param resolution The new size of cells.
-   * \param default_value The value of cells, tipically 0.5.
+   * \param default_value The value of cells, typically 0.5.
    * \sa ResizeGrid
    */
   void setSize(
@@ -249,7 +249,7 @@ class COccupancyGridMap2D :
    * \param new_x_max The "x" coordinates of new right most side of grid.
    * \param new_y_min The "y" coordinates of new top most side of grid.
    * \param new_y_max The "y" coordinates of new bottom most side of grid.
-   * \param new_cells_default_value The value of the new cells, tipically 0.5.
+   * \param new_cells_default_value The value of the new cells, typically 0.5.
    * \param additionalMargin If set to true (default), an additional margin of
    * a few meters will be added to the grid, ONLY if the new coordinates are
    * larger than current ones.
@@ -291,7 +291,7 @@ class COccupancyGridMap2D :
   inline float idx2x(size_t cx) const { return m_xMin + (cx + 0.5f) * m_resolution; }
   inline float idx2y(size_t cy) const { return m_yMin + (cy + 0.5f) * m_resolution; }
 
-  /** Transform a coordinate value into a cell index, using a diferent "x_min"
+  /** Transform a coordinate value into a cell index, using a different "x_min"
    * value */
   inline int x2idx(float x, float xmin) const
   {
@@ -515,7 +515,7 @@ class COccupancyGridMap2D :
   class TLikelihoodOptions : public mrpt::config::CLoadableOptions
   {
    public:
-    /** Initilization of default parameters */
+    /** Initialization of default parameters */
     TLikelihoodOptions();
 
     /** This method load the options from a ".ini" file.

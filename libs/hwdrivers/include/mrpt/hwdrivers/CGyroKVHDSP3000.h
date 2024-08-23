@@ -113,7 +113,7 @@ class CGyroKVHDSP3000 : public hwdrivers::CGenericSensor
    * calling this function.
    */
   void initialize() override;
-  /** Send to the sensor the command 'Z' wich reset the integrated angle. (in
+  /** Send to the sensor the command 'Z' which reset the integrated angle. (in
    * both rate mode and incremental, this function has no effect) */
   void resetIncrementalAngle();
   void changeMode(GYRO_MODE _newMode);

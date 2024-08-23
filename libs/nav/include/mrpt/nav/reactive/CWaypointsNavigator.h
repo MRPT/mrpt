@@ -95,7 +95,7 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
     return nav_status;
   }
 
-  /** Gets a write-enabled reference to the list of waypoints, simultanously
+  /** Gets a write-enabled reference to the list of waypoints, simultaneously
    * acquiring the critical section mutex.
    * Caller must call endWaypointsAccess() when done editing the waypoints.
    */
