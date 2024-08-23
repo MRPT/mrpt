@@ -131,12 +131,12 @@ class CPointsMapXYZIRT : public CPointsMap
   /** @} */
 
   /** Save to a text file. In each line contains `X Y Z I R T`
-   * Returns false if any error occured, true elsewere.
+   * Returns false if any error occurred, true elsewere.
    */
   bool saveXYZIRT_to_text_file(const std::string& file) const;
 
   /** Loads from a text file, each line having "X Y Z I", I in [0,1].
-   * Returns false if any error occured, true elsewere. */
+   * Returns false if any error occurred, true elsewere. */
   bool loadXYZIRT_from_text_file(const std::string& file);
 
   /** Changes a given point from map. First index is 0.
@@ -181,7 +181,7 @@ class CPointsMapXYZIRT : public CPointsMap
     // mark_as_modified();  // No need to rebuild KD-trees, etc...
   }
 
-  /** Like \c setPointColor but without checking for out-of-index erors */
+  /** Like \c setPointColor but without checking for out-of-index errors */
   inline void setPointColor_fast(size_t index, float R, float G, float B)
   {
     m_intensity[index] = R;
@@ -220,7 +220,7 @@ class CPointsMapXYZIRT : public CPointsMap
     return m_time[index];
   }
 
-  /** Like \c getPointColor but without checking for out-of-index erors */
+  /** Like \c getPointColor but without checking for out-of-index errors */
   inline float getPointIntensity_fast(size_t index) const { return m_intensity[index]; }
 
   /** Returns true if the point map has a color field for each point */

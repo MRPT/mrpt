@@ -3702,7 +3702,7 @@ void XsDevice::removeRef()
 	\param data The data buffer
 	\param pageNr The page number
 	\param bankNr The bank number
-	\returns True if succesful
+	\returns True if successful
 */
 bool XsDevice::writeEmtsPage(uint8_t const* data, int pageNr, int bankNr)
 {

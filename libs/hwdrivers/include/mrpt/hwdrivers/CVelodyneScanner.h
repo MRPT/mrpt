@@ -24,7 +24,7 @@ namespace mrpt::hwdrivers
  * WireShark PCAP file for offline processing.
  * The choice of online vs. offline operation is taken upon calling \a
  * initialize(): if a PCAP input file has been defined,
- * offline operation takes place and network is not listened for incomming
+ * offline operation takes place and network is not listened for incoming
  * packets.
  *
  * Parsing dual return scans requires a VLP-16 with firmware version 3.0.23 or
@@ -316,8 +316,8 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 
   /** Switches whole frame (points in a single revolution) on/off publication
    * to data packet publication. When on, getNextObservation() will return
-   * true whenever a frame is avaliable, when off, getNextObservation() will
-   * return true whenever a data packet is avaliable. The default is on. When
+   * true whenever a frame is available, when off, getNextObservation() will
+   * return true whenever a data packet is available. The default is on. When
    * listening to data packets on a PCAP, pcap_read_fast is enforced.
    */
   void setFramePublishing(bool on);

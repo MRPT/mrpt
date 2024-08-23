@@ -35,7 +35,7 @@ namespace mrpt::opengl
 {
 /** A viewport within a Scene, containing a set of OpenGL objects to
  *render.
- *   This class has protected constuctor, thus it cannot be created by users.
+ *   This class has protected constructor, thus it cannot be created by users.
  *Use Scene::createViewport instead.
  *  A viewport has these "operation modes":
  *		- Normal (default): It renders the contained objects.

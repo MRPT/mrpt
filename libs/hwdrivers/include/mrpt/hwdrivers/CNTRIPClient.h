@@ -25,7 +25,7 @@ namespace mrpt::hwdrivers
  *		- To obtain a list of all the mountpoints available at a given NTRIP
  *Caster, call "retrieveListOfMountpoints" (it's a static method).
  *
- *  It is not neccesary to call "close", the connection is ended at
+ *  It is not necessary to call "close", the connection is ended at
  *destruction.
  *
  * \note For a good reference of the NTRIP protocol, see

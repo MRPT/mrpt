@@ -197,7 +197,7 @@ class CObservation : public mrpt::serialization::CSerializable, public mrpt::Str
   }
 
   /** Unload all images, for the case they being delayed-load images stored in
-   * external files (othewise, has no effect).
+   * external files (otherwise, has no effect).
    * \sa load
    */
   virtual void unload() const

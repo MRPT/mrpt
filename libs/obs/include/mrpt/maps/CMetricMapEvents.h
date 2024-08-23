@@ -35,7 +35,7 @@ class mrptEventMetricMapClear : public mrpt::system::mrptEvent
   const mrpt::maps::CMetricMap* source_map;
 };
 
-/** Event emitted by a metric up upon a succesful call to insertObservation()
+/** Event emitted by a metric up upon a successful call to insertObservation()
  * \sa CMetricMap
  * \ingroup mrpt_obs_grp
  */

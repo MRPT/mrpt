@@ -455,7 +455,7 @@ void Viewport::renderTextMessages() const
   // Ensure GL objects are up-to-date:
   m_2D_texts.regenerateGLobjects();
 
-  // Prepare shaders upon first invokation:
+  // Prepare shaders upon first invocation:
   if (m_threadedData.get().shaders.empty()) loadDefaultShaders();
 
   // Prepare camera (projection matrix):
@@ -540,7 +540,7 @@ void Viewport::render(
 
   if (!m_isViewportVisible) return;
 
-  // Prepare shaders upon first invokation:
+  // Prepare shaders upon first invocation:
   if (m_threadedData.get().shaders.empty()) loadDefaultShaders();
 
   auto& _ = m_threadedData.get().state;

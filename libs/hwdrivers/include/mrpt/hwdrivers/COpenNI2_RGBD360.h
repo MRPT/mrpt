@@ -16,7 +16,7 @@
 
 namespace mrpt::hwdrivers
 {
-/** A class for grabing RGBD images from several OpenNI2 sensors. This is used
+/** A class for grabbing RGBD images from several OpenNI2 sensors. This is used
  *to obtain larger fields of view using a radial configuration of the sensors.
  * The same options (resolution, fps, etc.) are used for every sensor.
  *

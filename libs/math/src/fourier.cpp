@@ -929,7 +929,7 @@ void mrpt::math::fft_real(
 
   auto n = (unsigned long)in_realData.size();
 
-  // TODO: Test data lenght is 2^N...
+  // TODO: Test data length is 2^N...
 
   CVectorFloat auxVect(n + 1);
 

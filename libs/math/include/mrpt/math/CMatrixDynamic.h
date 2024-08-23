@@ -88,7 +88,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 
  private:
   /** Internal use only: It reallocs the memory for the 2D matrix, maintaining
-   * the previous contents if posible.
+   * the previous contents if possible.
    */
   void realloc(size_t row, size_t col, bool newElementsToZero = false)
   {
@@ -441,7 +441,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
   }
 
   /** Appends a new row to the MxN matrix from a 1xN vector.
-   *  The lenght of the vector must match the width of the matrix, unless
+   *  The length of the vector must match the width of the matrix, unless
    * it's empty: in that case the matrix is resized to 1xN.
    *  \code
    *    CMatrixDouble  M(0,0);

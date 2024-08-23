@@ -59,7 +59,7 @@ class CDynamicGrid3D
       const T& defaultValueNewCells,
       coord_t additionalMarginMeters = 2)
   {
-    // Is resize really necesary?
+    // Is resize really necessary?
     if (new_x_min >= m_x_min && new_y_min >= m_y_min && new_z_min >= m_z_min &&
         new_x_max <= m_x_max && new_y_max <= m_y_max && new_z_max <= m_z_max)
       return;
@@ -82,7 +82,7 @@ class CDynamicGrid3D
       if (new_z_max > m_z_max) new_z_max = ceil(new_z_max + additionalMarginMeters);
     }
 
-    // Adjust sizes to adapt them to full sized cells acording to the
+    // Adjust sizes to adapt them to full sized cells according to the
     // resolution:
     if (fabs(new_x_min / m_resolution_xy - round(new_x_min / m_resolution_xy)) > 0.05)
       new_x_min = m_resolution_xy * round(new_x_min / m_resolution_xy);
@@ -171,7 +171,7 @@ class CDynamicGrid3D
   {
     const coord_t resolution_z = resolution_z_ > 0 ? resolution_z_ : resolution_xy;
 
-    // Adjust sizes to adapt them to full sized cells acording to the
+    // Adjust sizes to adapt them to full sized cells according to the
     // resolution:
     m_x_min = x_min;
     m_y_min = y_min;
@@ -338,7 +338,7 @@ class CDynamicGrid3D
 
  public:
   /** Serialization of all parameters, except the contents of each voxel
-   * (responsability of the derived class) */
+   * (responsibility of the derived class) */
   template <class ARCHIVE>
   void dyngridcommon_writeToStream(ARCHIVE& out) const
   {
@@ -349,7 +349,7 @@ class CDynamicGrid3D
         .template WriteAs<uint32_t>(m_size_z);
   }
   /** Serialization of all parameters, except the contents of each voxel
-   * (responsability of the derived class) */
+   * (responsibility of the derived class) */
   template <class ARCHIVE>
   void dyngridcommon_readFromStream(ARCHIVE& in)
   {

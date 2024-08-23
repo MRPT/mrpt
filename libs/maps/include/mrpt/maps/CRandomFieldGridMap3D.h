@@ -112,7 +112,7 @@ class CRandomFieldGridMap3D :
   /** Parameters common to any derived class.
    *  Derived classes should derive a new struct from this one, plus
    * mrpt::config::CLoadableOptions,
-   *  and call the internal_* methods where appropiate to deal with the
+   *  and call the internal_* methods where appropriate to deal with the
    * variables declared here.
    *  Derived classes instantions of their "TInsertionOptions" MUST set the
    * pointer "m_insertOptions_common" upon construction.

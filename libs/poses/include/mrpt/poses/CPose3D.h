@@ -125,7 +125,7 @@ class CPose3D :
   /** Default constructor, with all the coordinates set to zero. */
   CPose3D();
 
-  /** Constructor with initilization of the pose, translation (x,y,z) in
+  /** Constructor with Initialization of the pose, translation (x,y,z) in
    * meters, (yaw,pitch,roll) angles in radians.
    *
    * \sa FromXYZYawPitchRoll()
@@ -500,7 +500,7 @@ class CPose3D :
   /** @name Access and modify contents
     @{ */
 
-  /** Scalar sum of all 6 components: This is diferent from poses composition,
+  /** Scalar sum of all 6 components: This is different from poses composition,
    * which is implemented as "+" operators.
    * \sa normalizeAngles
    */

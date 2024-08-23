@@ -20,12 +20,12 @@ namespace mrpt::hwdrivers
  *  \class CPhidgetInterfaceKitProximitySensors
  *  \author Adrien BARRAL - Robopec (aba@robopec.com).
  *
- * An interface for the Phidgets Interface kit board (part number 1018) on wich
+ * An interface for the Phidgets Interface kit board (part number 1018) on which
  * it could be plugged either an Sharp IR adaptater board
  * (phidget's part number : 1101),or a MaxBotix EZ-1 sonar (phidget's part
  * number : 1118).
  * The configuration file describe what is plugged to this board, and the
- * geometry of the sensors on the robots. See the exemple below.
+ * geometry of the sensors on the robots. See the example below.
  * \code
  * [PhidgetInterfaceKitProximitySensors]
  * sensorLabel = FrontProximitySensors
@@ -86,7 +86,7 @@ namespace mrpt::hwdrivers
  * for the maximal range.
  * \endlatexonly
  * \warning{The Phidget library use udev. By default, udev require to be root to
- * be launched, if you want to be able to run a program wich use a phidget board
+ * be launched, if you want to be able to run a program which use a phidget board
  * without be root, you must modify files in /etc/udev/rules.d .}
  * \ingroup mrpt_hwdrivers_grp
  */
@@ -135,7 +135,7 @@ class CPhidgetInterfaceKitProximitySensors :
   void doProcess() override;
 
  private:
-  /** An 8 dimension vector of boolean value wich store the presence or
+  /** An 8 dimension vector of boolean value which store the presence or
    * abscence of a sensor on the phidget interface kit board.
    */
   std::vector<bool> m_sensorIsPlugged;

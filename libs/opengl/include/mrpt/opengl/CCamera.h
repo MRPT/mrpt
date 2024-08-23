@@ -20,7 +20,7 @@ namespace mrpt::opengl
 /** Defines the intrinsic and extrinsic camera coordinates from which to render
  * a 3D scene.
  *
- *  By default, each viewport has its own camera, accesible via
+ *  By default, each viewport has its own camera, accessible via
  *  Viewport::getCamera(), but if a CCamera object is added as an object
  *  to be rendered, it will override the internal viewport camera.
  *

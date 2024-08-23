@@ -29,7 +29,7 @@ namespace mrpt::nav
  * arbitrary holonomic
  * reactive method running on it and any number of PTGs for transforming the
  * navigation space.
- * Both, the holonomic method and the PTGs can be customized by the apropriate
+ * Both, the holonomic method and the PTGs can be customized by the appropriate
  * user derived classes.
  *
  * How to use:
@@ -59,7 +59,7 @@ namespace mrpt::nav
  * - `clearance`: Clearance (larger means larger distances to obstacles) for
  * the path from "current pose" up to "end of trajectory".
  * - `collision_free_distance`: Normalized [0,1] collision-free distance in
- * selected path. For NOP candidates, the traveled distances is substracted.
+ * selected path. For NOP candidates, the traveled distances is subtracted.
  * - `dist_eucl_final`: Euclidean distance (in the real-world WordSpace)
  * between "end of trajectory" and target.
  * - `eta`: Estimated Time of Arrival at "end of trajectory".

@@ -24,7 +24,7 @@ namespace mrpt::hwdrivers
  * C2DRangeFinderAbstract::bindIO.
  *   Connection is established when user call the turnOn() method. You can
  * pass to the class's constructor the Lux's ip address and port.
- *   Device will NOT be configured. Configuration has to be done seperately.
+ *   Device will NOT be configured. Configuration has to be done separately.
  *
  * To get a laser scan you must proceed like that :
  * \code
@@ -53,7 +53,7 @@ class CIbeoLuxETH : public mrpt::hwdrivers::CGenericSensor
    * Close communcation with the device, and free memory.
    */
   ~CIbeoLuxETH() override;
-  /** This function acquire a laser scan from the device. If an error occured,
+  /** This function acquire a laser scan from the device. If an error occurred,
    * hardwareError will be set to true.
    * The new laser scan will be stored in the outObservation argument.
    *

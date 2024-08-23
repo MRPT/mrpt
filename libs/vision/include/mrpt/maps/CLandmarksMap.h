@@ -59,12 +59,12 @@ using TSequenceLandmarks = std::vector<CLandmark>;
        <br>3) The corresponding feaures are fused, and the new ones added,
  with an initial uncertainty according to insertionOptions</td> </tr>
   <tr> <td>CObservationStereoImages</td> <td>vlSIFT</td> <td> Each image is
- separately procesed by the method for CObservationImage observations </td>
+ separately processed by the method for CObservationImage observations </td>
  </tr>
   <tr> <td>CObservationStereoImages</td> <td>vlColor</td> <td> TODO... </td>
  </tr>
   <tr> <td>CObservation2DRangeScan</td> <td>glOccupancy</td> <td> A landmark is
- added for each range in the scan, with its appropiate covariance matrix derived
+ added for each range in the scan, with its appropriate covariance matrix derived
  from the jacobians matrixes. </td> </tr>
   </table>
  *
@@ -103,12 +103,12 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
    * added,
    *with an initial uncertainty according to insertionOptions</td> </tr>
    * <tr> <td>CObservationStereoImages</td> <td>vlSIFT</td> <td> Each image is
-   *separately procesed by the method for CObservationImage observations </td>
+   *separately processed by the method for CObservationImage observations </td>
    *</tr>
    * <tr> <td>CObservationStereoImages</td> <td>vlColor</td> <td> TODO...
    *</td> </tr>
    * <tr> <td>CObservation2DRangeScan</td> <td>glOccupancy</td> <td> A
-   *landmark is added for each range in the scan, with its appropiate
+   *landmark is added for each range in the scan, with its appropriate
    *covariance matrix derived from the jacobians matrixes. </td> </tr>
    * </table>
    *
@@ -227,7 +227,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
   struct TInsertionOptions : public mrpt::config::CLoadableOptions
   {
    public:
-    /** Initilization of default parameters
+    /** Initialization of default parameters
      */
     TInsertionOptions();
 
@@ -457,7 +457,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
    *  In line "i" there are the (x,y,z) mean values of the i'th landmark +
    * type of landmark + # times seen + timestamp + RGB/descriptor + ID
    *
-   *   Returns false if any error occured, true elsewere.
+   *   Returns false if any error occurred, true elsewere.
    */
   bool saveToTextFile(std::string file);
 
@@ -470,7 +470,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
    *"stdCount" times the "standard deviations". (default is 2std = 95%
    *confidence intervals)
    *
-   *  \return Returns false if any error occured, true elsewere.
+   *  \return Returns false if any error occurred, true elsewere.
    */
   bool saveToMATLABScript2D(std::string file, const char* style = "b", float stdCount = 2.0f);
 
@@ -482,7 +482,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
    *confidence interval in [0,1], e.g. 2 sigmas=0.95 (default is 2std = 0.95
    *confidence intervals)
    *
-   *  \return Returns false if any error occured, true elsewere.
+   *  \return Returns false if any error occurred, true elsewere.
    */
   bool saveToMATLABScript3D(
       std::string file, const char* style = "b", float confInterval = 0.95f) const;

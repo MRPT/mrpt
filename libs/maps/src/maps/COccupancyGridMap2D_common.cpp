@@ -145,7 +145,7 @@ void COccupancyGridMap2D::setSize(
   freeMap();
   m_likelihoodCacheOutDated = true;
 
-  // Adjust sizes to adapt them to full sized cells acording to the
+  // Adjust sizes to adapt them to full sized cells according to the
   // resolution:
   xmin = res * round(xmin / res);
   ymin = res * round(ymin / res);
@@ -236,7 +236,7 @@ void COccupancyGridMap2D::resizeGrid(
   new_y_min = min(new_y_min, m_yMin);
   new_y_max = max(new_y_max, m_yMax);
 
-  // Adjust sizes to adapt them to full sized cells acording to the
+  // Adjust sizes to adapt them to full sized cells according to the
   // resolution:
   if (fabs(new_x_min / m_resolution - round(new_x_min / m_resolution)) > 0.05f)
     new_x_min = m_resolution * round(new_x_min / m_resolution);
@@ -352,7 +352,7 @@ void COccupancyGridMap2D::computeEntropy(TEntropyInfo& info) const
   size_t N = 65536;
 #endif
 
-  // Compute the entropy table: The entropy for each posible cell value
+  // Compute the entropy table: The entropy for each possible cell value
   // ----------------------------------------------------------------------
   if (entropyTable.size() != N)
   {

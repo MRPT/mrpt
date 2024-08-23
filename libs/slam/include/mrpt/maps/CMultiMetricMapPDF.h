@@ -202,7 +202,7 @@ class CMultiMetricMapPDF :
    */
   double getCurrentEntropyOfPaths();
 
-  /** Returns the joint entropy estimation over paths and maps, acording to
+  /** Returns the joint entropy estimation over paths and maps, according to
    * "Information Gain-based Exploration Using" by C. Stachniss, G. Grissetti
    * and W.Burgard.
    */

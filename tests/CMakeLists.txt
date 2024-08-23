@@ -36,7 +36,7 @@ include_directories("${MRPT_SOURCE_DIR}/tests/include")
 # Tests based on Google gtest:
 # -----------------------------
 
-# Include gtest from embeded lib:
+# Include gtest from embedded lib:
 if (NOT CMAKE_MRPT_HAS_GTEST_SYSTEM)
 	include_directories("${CMAKE_MRPT_GTEST_SRC_DIR}/include/")
 endif()
