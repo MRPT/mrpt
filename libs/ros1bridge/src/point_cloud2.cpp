@@ -560,7 +560,7 @@ bool mrpt::ros1bridge::fromROS(
     {
       const unsigned char* msg_data = row_data + col * msg.point_step;
 
-      float x, y, z;
+      float x = 0, y = 0, z = 0;
       uint16_t ring_id = 0;
       get_float_from_field(x_field, msg_data, x);
       get_float_from_field(y_field, msg_data, y);
@@ -589,7 +589,7 @@ bool mrpt::ros1bridge::fromROS(
 
       if (i_field)
       {
-        float intensity;
+        float intensity = 0;
         get_float_from_field(i_field, msg_data, intensity);
         obj.intensityImage(ring_id, az_idx) = lround(255 * intensity / max_intensity);
       }
