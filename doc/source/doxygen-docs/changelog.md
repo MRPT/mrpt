@@ -3,6 +3,7 @@
 # Version 2.13.8: UNRELEASED
 - BUG FIXES:
   - Avoid failing KLT unit tests in the loong64 architecture.
+  - Fix tons of typos and Debian-specific spare install files (lintian --pedantic).
 
 # Version 2.13.7: Released Aug 22nd, 2024
 - Changes in apps:
