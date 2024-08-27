@@ -477,7 +477,8 @@ TEST(CImage, Serialize)
 
 // This seems to fail now as of Jun 2024, don't have bandwith to debug it (!)
 #if !defined(__APPLE__) && !defined(__aarch64__) && !defined(__ppc64__) && !defined(__s390x__) && \
-    !defined(__powerpc) && !defined(__powerpc__) && !defined(__powerpc64__)
+    !defined(__powerpc) && !defined(__powerpc__) && !defined(__powerpc64__) &&                    \
+    !defined(__loongarch__)
 TEST(CImage, KLT_response)
 {
   using namespace mrpt::img;

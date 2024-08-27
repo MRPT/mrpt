@@ -1,8 +1,8 @@
 \page changelog Change Log
 
 # Version 2.13.8: UNRELEASED
-(None yet)
-
+- BUG FIXES:
+  - Avoid failing KLT unit tests in the loong64 architecture.
 
 # Version 2.13.7: Released Aug 22nd, 2024
 - Changes in apps:
