@@ -7,7 +7,7 @@
   - pymrpt:
     - Fix all C++ build warnings in pymrpt.
 - BUG FIXES:
-  - Avoid failing KLT unit tests in the loong64 architecture.
+  - Fix unstable keypoint KLT response values leading to NaN in some architectures.
   - Fix tons of typos and Debian-specific spare install files (lintian --pedantic).
   - Fix segfault in arm64 EKF unit tests.
 
