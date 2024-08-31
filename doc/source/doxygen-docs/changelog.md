@@ -9,6 +9,7 @@
 - BUG FIXES:
   - Avoid failing KLT unit tests in the loong64 architecture.
   - Fix tons of typos and Debian-specific spare install files (lintian --pedantic).
+  - Fix segfault in arm64 EKF unit tests.
 
 # Version 2.13.7: Released Aug 22nd, 2024
 - Changes in apps:
