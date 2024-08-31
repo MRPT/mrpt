@@ -1,8 +1,11 @@
 \page changelog Change Log
 
 # Version 2.13.8: UNRELEASED
-- Build system:
-  - Fix all C++ build warnings in pymrpt.
+- Changes in libraries:
+  - \ref mrpt_vision_grp:
+    - mrpt::vision::TMatchingOptions: Remove useless custom "operator=".
+  - pymrpt:
+    - Fix all C++ build warnings in pymrpt.
 - BUG FIXES:
   - Avoid failing KLT unit tests in the loong64 architecture.
   - Fix tons of typos and Debian-specific spare install files (lintian --pedantic).

@@ -1889,16 +1889,6 @@ void TStereoSystemParams::dumpToTextStream(std::ostream& out) const
   out << "-------------------------------------------------------- \n";
 }
 
-/*-------------------------------------------------------------
-      TMatchingOptions: constructor
--------------------------------------------------------------*/
-TMatchingOptions::TMatchingOptions()
-
-    = default;  // end constructor TMatchingOptions
-
-/*-------------------------------------------------------------
-      TMatchingOptions: loadFromConfigFile
--------------------------------------------------------------*/
 void TMatchingOptions::loadFromConfigFile(const CConfigFileBase& iniFile, const string& section)
 {
   int mm = iniFile.read_int(section.c_str(), "matching_method", matching_method);
