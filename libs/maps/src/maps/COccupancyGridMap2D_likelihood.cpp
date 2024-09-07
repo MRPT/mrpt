@@ -769,7 +769,7 @@ double COccupancyGridMap2D::computeLikelihoodField_II(
 }
 
 /*---------------------------------------------------------------
-  Initilization of values, don't needed to be called directly.
+  Initialization of values, don't needed to be called directly.
   ---------------------------------------------------------------*/
 COccupancyGridMap2D::TLikelihoodOptions::TLikelihoodOptions() : OWA_weights(100, 1 / 100.0f) {}
 

@@ -59,7 +59,7 @@ void bind_mrpt_math_CMatrixDynamic(std::function< pybind11::module &(std::string
 		cl.def_static("Identity", [](const size_t N) -> mat_t { return mat_t::Identity(N); }, "Returns the NxN identity matrix");
 		cl.def_static("Zero", [](const size_t nRows, const size_t nCols) -> mat_t { return mat_t::Zero(nRows,nCols); }, "Returns a matrix with zeroes");
 		cl.def(pybind11::init( [](pybind11::list vals){ auto m = new mat_t(); const auto nR = vals.size(); if (!nR) return m; const auto nC = vals[0].cast<pybind11::list>().size(); m->setSize(nR,nC); for (size_t r=0;r<nR;r++) { const auto row = vals[r].cast<pybind11::list>(); for (size_t c=0;c<nC;c++) m->coeffRef(r,c) = row[c].cast<dat_t>(); } return m; }));
-		cl.def("to_list", [](const mat_t&self) -> pybind11::list { auto l = pybind11::list(); const auto nR = self.rows(), nC = self.cols(); for (size_t r=0;r<nR;r++) { auto row = pybind11::list(); l.append(row); for (size_t c=0;c<nC;c++) row.append(self.coeff(r,c)); } return l; });
+		cl.def("to_list", [](const mat_t&self) -> pybind11::list { auto l = pybind11::list(); const auto nR = self.rows(), nC = self.cols(); for (int r=0;r<nR;r++) { auto row = pybind11::list(); l.append(row); for (int c=0;c<nC;c++) row.append(self.coeff(r,c)); } return l; });
 	}
 	{ // mrpt::math::CMatrixDynamic file:mrpt/math/CMatrixDynamic.h line:41
 		pybind11::class_<mrpt::math::CMatrixDynamic<unsigned char>, std::shared_ptr<mrpt::math::CMatrixDynamic<unsigned char>>> cl(M("mrpt::math"), "CMatrixDynamic_unsigned_char_t", "");

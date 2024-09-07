@@ -190,7 +190,7 @@ struct TMoveEdgeSE2_TP
   int ptg_index;
   /** identify the trajectory number K of the type ptg_index */
   int ptg_K;
-  /** identify the lenght of the trajectory for this motion */
+  /** identify the length of the trajectory for this motion */
   double ptg_dist;
 
   TMoveEdgeSE2_TP() = default;

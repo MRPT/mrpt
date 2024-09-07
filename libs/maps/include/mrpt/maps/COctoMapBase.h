@@ -66,7 +66,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
    */
   struct TInsertionOptions : public mrpt::config::CLoadableOptions
   {
-    /** Initilization of default parameters */
+    /** Initialization of default parameters */
     TInsertionOptions(myself_t& parent);
 
     /** Special constructor, not attached to a real COctoMap object: used
@@ -212,7 +212,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
    */
   struct TLikelihoodOptions : public mrpt::config::CLoadableOptions
   {
-    /** Initilization of default parameters
+    /** Initialization of default parameters
      */
     TLikelihoodOptions();
     ~TLikelihoodOptions() override = default;

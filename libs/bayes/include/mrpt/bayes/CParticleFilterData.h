@@ -93,7 +93,7 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
   }
 
   /** Replaces the old particles by copies determined by the indexes in
-   * "indx", performing an efficient copy of the necesary particles only and
+   * "indx", performing an efficient copy of the necessary particles only and
    * allowing the number of particles to change.*/
   void performSubstitution(const std::vector<size_t>& indx) override
   {

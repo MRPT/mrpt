@@ -28,7 +28,7 @@ class SelfAdjointEigenSolver;
 
 namespace mrpt
 {
-/** A namespace of pseudo-random numbers generators of diferent distributions.
+/** A namespace of pseudo-random numbers generators of different distributions.
  * The central class in this namespace is mrpt::random::CRandomGenerator
  * \ingroup mrpt_random_grp
  */

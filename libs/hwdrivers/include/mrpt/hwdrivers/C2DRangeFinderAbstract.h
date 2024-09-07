@@ -22,7 +22,7 @@ namespace mrpt::hwdrivers
  * scanners (laser range finders).
  *  Physical devices may be interfaced through a serial port, a USB
  * connection,etc. but this class
- *   abstract those details throught the "binding" of the specific scanner
+ *   abstract those details through the "binding" of the specific scanner
  * driver to a given I/O channel,
  *   which must be set by calling "hwdrivers::C2DRangeFinderAbstract::bindIO".
  * See also the derived classes.

@@ -503,7 +503,7 @@ void CDifodoDatasets::loadFrame()
     // quat[3] = w, quat[4] = qx; quat[5] = qy; quat[6] = qz;
     // gt.setFromXYZQ(quat);
 
-    // Set the initial pose (if appropiate)
+    // Set the initial pose (if appropriate)
     if (first_pose == false)
     {
       cam_pose = gt + transf;

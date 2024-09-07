@@ -22,7 +22,7 @@ namespace mrpt::comms
  * description, which is platform dependent.
  *
  *  In Windows they are numbered "COM1"-"COM4" and "\\.\COMXXX" for numbers
- * above. It is recomended to always use the prefix "\\.\" despite the actual
+ * above. It is recommended to always use the prefix "\\.\" despite the actual
  * port number.
  *
  *  In Linux the name must refer to the device, for example: "ttyUSB0","ttyS0".

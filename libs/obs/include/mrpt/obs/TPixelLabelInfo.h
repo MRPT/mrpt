@@ -75,7 +75,7 @@ struct TPixelLabelInfoBase
   /** Removes all categories for pixel(row,col)  \sa setLabel, unsetLabel
    */
   virtual void unsetAll(const int row, const int col, uint8_t label_idx) = 0;
-  /** Checks whether pixel(row,col) has been clasified into category \a
+  /** Checks whether pixel(row,col) has been classified into category \a
    * label_idx, which may be in the range 0 to 7
    * \sa unsetLabel, unsetAll */
   virtual bool checkLabel(const int row, const int col, uint8_t label_idx) const = 0;

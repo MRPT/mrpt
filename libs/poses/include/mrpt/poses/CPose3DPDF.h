@@ -18,7 +18,7 @@ namespace mrpt::poses
 class CPosePDF;
 
 /** A Probability Density Function (PDF) of a SE(3) pose.
- * This class is just the base class for unifying many diferent
+ * This class is just the base class for unifying many different
  *    ways this PDF can be implemented.
  *
  *  For convenience, a pose composition is also defined for any
@@ -40,7 +40,7 @@ class CPose3DPDF :
   DEFINE_VIRTUAL_SERIALIZABLE(CPose3DPDF)
 
  public:
-  /** Copy operator, translating if necesary (for example, between particles
+  /** Copy operator, translating if necessary (for example, between particles
    * and gaussian representations)
    * \sa createFrom2D
    */

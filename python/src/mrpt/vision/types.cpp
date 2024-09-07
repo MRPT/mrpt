@@ -265,6 +265,6 @@ void bind_mrpt_vision_types(std::function< pybind11::module &(std::string const 
 		cl.def_readwrite("maxDepthThreshold", &mrpt::vision::TMatchingOptions::maxDepthThreshold);
 		cl.def("loadFromConfigFile", (void (mrpt::vision::TMatchingOptions::*)(const class mrpt::config::CConfigFileBase &, const std::string &)) &mrpt::vision::TMatchingOptions::loadFromConfigFile, "C++: mrpt::vision::TMatchingOptions::loadFromConfigFile(const class mrpt::config::CConfigFileBase &, const std::string &) --> void", pybind11::arg("source"), pybind11::arg("section"));
 		cl.def("__eq__", (bool (mrpt::vision::TMatchingOptions::*)(const struct mrpt::vision::TMatchingOptions &) const) &mrpt::vision::TMatchingOptions::operator==, "C++: mrpt::vision::TMatchingOptions::operator==(const struct mrpt::vision::TMatchingOptions &) const --> bool", pybind11::arg("o"));
-		cl.def("assign", (void (mrpt::vision::TMatchingOptions::*)(const struct mrpt::vision::TMatchingOptions &)) &mrpt::vision::TMatchingOptions::operator=, "C++: mrpt::vision::TMatchingOptions::operator=(const struct mrpt::vision::TMatchingOptions &) --> void", pybind11::arg("o"));
+		cl.def("assign", (struct mrpt::vision::TMatchingOptions & (mrpt::vision::TMatchingOptions::*)(const struct mrpt::vision::TMatchingOptions &)) &mrpt::vision::TMatchingOptions::operator=, "C++: mrpt::vision::TMatchingOptions::operator=(const struct mrpt::vision::TMatchingOptions &) --> struct mrpt::vision::TMatchingOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
 }

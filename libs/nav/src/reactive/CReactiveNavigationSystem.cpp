@@ -70,7 +70,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::config::CConfigFileBa
 {
   MRPT_START
 
-  // 1st: load my own params; at the end, call parent's overriden method:
+  // 1st: load my own params; at the end, call parent's overridden method:
   const std::string sectCfg = "CReactiveNavigationSystem";
   this->params_reactive_nav.loadFromConfigFile(c, sectCfg);
 
@@ -116,7 +116,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::config::CConfigFileBa
         CParameterizedTrajectoryGenerator::CreatePTG(sPTGName, c, sectCfg, format("PTG%u_", n));
   }
 
-  CAbstractPTGBasedReactive::loadConfigFile(c);  // call parent's overriden method:
+  CAbstractPTGBasedReactive::loadConfigFile(c);  // call parent's overridden method:
 
   MRPT_END
 }

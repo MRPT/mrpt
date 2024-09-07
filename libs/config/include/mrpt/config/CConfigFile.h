@@ -94,7 +94,7 @@ class CConfigFile : public CConfigFileBase
   /** Empties the "config file" */
   void clear() override;
 
-  /** Returs a list with all the keys into a section. */
+  /** Returns a list with all the keys into a section. */
   void getAllKeys(const std::string& section, std::vector<std::string>& keys) const override;
 
 };  // End of class def.

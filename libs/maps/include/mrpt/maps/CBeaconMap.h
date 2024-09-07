@@ -129,7 +129,7 @@ class CBeaconMap : public mrpt::maps::CMetricMap
   struct TInsertionOptions : public mrpt::config::CLoadableOptions
   {
    public:
-    /** Initilization of default parameters */
+    /** Initialization of default parameters */
     void loadFromConfigFile(
         const mrpt::config::CConfigFileBase& source,
         const std::string& section) override;                 // See base docs
@@ -199,7 +199,7 @@ class CBeaconMap : public mrpt::maps::CMetricMap
    *confidence interval in [0,1], e.g. 2 sigmas=0.95 (default is 2std = 0.95
    *confidence intervals)
    *
-   *  \return Returns false if any error occured, true elsewere.
+   *  \return Returns false if any error occurred, true elsewere.
    */
   bool saveToMATLABScript3D(
       const std::string& file, const char* style = "b", float confInterval = 0.95f) const;

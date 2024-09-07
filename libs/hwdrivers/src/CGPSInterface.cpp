@@ -324,7 +324,7 @@ void CGPSInterface::doProcess()
     return;
   }
 
-  // Try to parse incomming data as messages:
+  // Try to parse incoming data as messages:
   parseBuffer();
 
   // Decide whether to push out a new observation in old legacy mode.

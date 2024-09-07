@@ -167,7 +167,7 @@ class CRawlog : public mrpt::serialization::CSerializable
 
   /** Returns the i'th element in the sequence, as being actions, where
    * index=0 is the first object.
-   *  If it is not a CActionCollection, it throws an exception. Do neighter
+   *  If it is not a CActionCollection, it throws an exception. Do neither
    * modify nor delete the returned pointer.
    * \sa size, isAction, getAsObservations, getAsObservation
    * \exception std::exception If index is out of bounds
@@ -190,7 +190,7 @@ class CRawlog : public mrpt::serialization::CSerializable
 
   /** Returns the i'th element in the sequence, as being an observation, where
    * index=0 is the first object.
-   *  If it is not an CObservation, it throws an exception. Do neighter
+   *  If it is not an CObservation, it throws an exception. Do neither
    * modify nor delete the returned pointer.
    *  This is the proper method to obtain the objects stored in a "only
    * observations"-rawlog file (named "format #2" above.

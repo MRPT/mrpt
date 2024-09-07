@@ -949,8 +949,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
     // Compute the correlation:
     map1_img.cross_correlation_FFT(
         map2_img, outCrossCorr, -1, -1, -1, -1,
-        127,  // Bias to be substracted
-        127   // Bias to be substracted
+        127,  // Bias to be subtracted
+        127   // Bias to be subtracted
     );
 
     float corrPeak = outCrossCorr.maxCoeff();

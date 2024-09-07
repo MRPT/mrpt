@@ -67,7 +67,7 @@ class CJoystick
   /** Gets joystick information.
    *
    *   This method will try first to open the joystick, so you can safely call
-   * it while the joystick is plugged and removed arbitrarly.
+   * it while the joystick is plugged and removed arbitrarily.
    *
    * \param nJoy The index of the joystick to query: The first one is 0, the
    * second 1, etc... See CJoystick::getJoysticksCount to discover the number
@@ -84,7 +84,7 @@ class CJoystick
    * \param raw_z_pos If it is desired the raw integer measurement from
    * JoyStick, set this pointer to a desired placeholder.
    *
-   * \return Returns true if successfull, false on error, for example, if
+   * \return Returns true if successful, false on error, for example, if
    * joystick is not present.
    *
    * \sa setLimits

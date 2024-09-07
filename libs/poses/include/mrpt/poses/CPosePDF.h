@@ -19,7 +19,7 @@ class CPosePDFGaussian;  // frd decl.
 
 /** Declares a class that represents a probability density function (pdf) of a
  * 2D pose (x,y,phi).
- *   This class is just the base class for unifying many diferent ways this pdf
+ *   This class is just the base class for unifying many different ways this pdf
  * can be implemented.
  *
  *  For convenience, a pose composition is also defined for any pdf derived
@@ -40,7 +40,7 @@ class CPosePDF :
   DEFINE_VIRTUAL_SERIALIZABLE(CPosePDF)
 
  public:
-  /** Copy operator, translating if necesary (for example, between particles
+  /** Copy operator, translating if necessary (for example, between particles
    * and gaussian representations)
    */
   virtual void copyFrom(const CPosePDF& o) = 0;

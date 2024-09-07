@@ -382,9 +382,9 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    * \param out_corr The output for the correlation matrix, which will be
    * "u_search_size" x "v_search_size"
    * \param biasThisImg This optional parameter is a fixed "bias" value to be
-   * substracted to the pixels of "this" image before performing correlation.
+   * subtracted to the pixels of "this" image before performing correlation.
    * \param biasInImg This optional parameter is a fixed "bias" value to be
-   * substracted to the pixels of "in_img" image before performing
+   * subtracted to the pixels of "in_img" image before performing
    * correlation. Note: By default, the search area is the whole (this) image.
    * (by JLBC @ JAN-2006)
    * \sa cross_correlation

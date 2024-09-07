@@ -20,9 +20,9 @@ namespace mrpt::kinematics
  * differential driven planar mobile robot, including odometry errors and
  * dynamics limitations.
  *  Main API methods are:
- *  - movementCommand: Call this for send a command to the robot. This comamnd
+ *  - movementCommand: Call this for send a command to the robot. This command
  * will be
- *    delayed and passed throught a first order low-pass filter to simulate
+ *    delayed and passed through a first order low-pass filter to simulate
  *    robot dynamics.
  *  - simulateInterval: Call this for run the simulator for the desired time
  * period.

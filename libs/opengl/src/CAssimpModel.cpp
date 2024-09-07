@@ -144,7 +144,7 @@ class TexturesCache
 
     if (!entry.load_ok)
     {
-      /* Error occured */
+      /* Error occurred */
       const std::string sError =
           mrpt::format("[CAssimpModel] Couldn't load texture image: '%s'", texturePath.c_str());
       std::cerr << sError << std::endl;

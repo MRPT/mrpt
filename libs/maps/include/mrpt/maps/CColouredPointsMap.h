@@ -118,7 +118,7 @@ class CColouredPointsMap : public CPointsMap
 
   /** Save to a text file. In each line contains X Y Z (meters) R G B (range
    * [0,1]) for each point in the map.
-   *     Returns false if any error occured, true elsewere.
+   *     Returns false if any error occurred, true elsewere.
    */
   bool save3D_and_colour_to_text_file(const std::string& file) const;
 
@@ -136,7 +136,7 @@ class CColouredPointsMap : public CPointsMap
    */
   void setPointColor(size_t index, float R, float G, float B);
 
-  /** Like \c setPointColor but without checking for out-of-index erors */
+  /** Like \c setPointColor but without checking for out-of-index errors */
   inline void setPointColor_fast(size_t index, float R, float G, float B)
   {
     m_color_R[index] = R;
@@ -152,7 +152,7 @@ class CColouredPointsMap : public CPointsMap
   /** Retrieves a point color (colors range is [0,1]) */
   void getPointColor(size_t index, float& R, float& G, float& B) const;
 
-  /** Like \c getPointColor but without checking for out-of-index erors */
+  /** Like \c getPointColor but without checking for out-of-index errors */
   inline void getPointColor_fast(size_t index, float& R, float& G, float& B) const
   {
     R = m_color_R[index];
@@ -193,7 +193,7 @@ class CColouredPointsMap : public CPointsMap
   /** The definition of parameters for generating colors from laser scans */
   struct TColourOptions : public mrpt::config::CLoadableOptions
   {
-    /** Initilization of default parameters */
+    /** Initialization of default parameters */
     TColourOptions();
     void loadFromConfigFile(
         const mrpt::config::CConfigFileBase& source,

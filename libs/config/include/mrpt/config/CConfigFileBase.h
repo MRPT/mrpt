@@ -86,10 +86,10 @@ class CConfigFileBase
     return ret;
   }
 
-  /** Returs a list with all the keys into a section */
+  /** Returns a list with all the keys into a section */
   virtual void getAllKeys(const std::string& section, std::vector<std::string>& keys) const = 0;
 
-  /** Returs, by value, a list with all the keys into a section */
+  /** Returns, by value, a list with all the keys into a section */
   std::vector<std::string> keys(const std::string& section) const
   {
     std::vector<std::string> keys;

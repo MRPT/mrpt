@@ -230,7 +230,7 @@ class CObservation2DRangeScan : public CObservation
   void getDescriptionAsText(std::ostream& o) const override;
 
   /** A general method to truncate the scan by defining a minimum valid
-   distance and a maximum valid angle as well as minimun and maximum heights
+   distance and a maximum valid angle as well as minimum and maximum heights
    (NOTE: the laser z-coordinate must be provided).
   */
   void truncateByDistanceAndAngle(

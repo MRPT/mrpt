@@ -90,7 +90,7 @@ class CPose3DPDFSOG : public CPose3DPDF
    * Gaussian if there are no modes in this SOG) */
   void getMostLikelyMode(CPose3DPDFGaussian& outVal) const;
 
-  /** Copy operator, translating if necesary (for example, between particles
+  /** Copy operator, translating if necessary (for example, between particles
    * and gaussian representations) */
   void copyFrom(const CPose3DPDF& o) override;
 

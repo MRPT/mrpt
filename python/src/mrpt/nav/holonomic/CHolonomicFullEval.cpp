@@ -519,7 +519,7 @@ void bind_mrpt_nav_holonomic_CHolonomicFullEval(std::function< pybind11::module 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_nav_CHolonomicND const &o){ return new PyCallBack_mrpt_nav_CHolonomicND(o); } ) );
 		cl.def( pybind11::init( [](mrpt::nav::CHolonomicND const &o){ return new mrpt::nav::CHolonomicND(o); } ) );
 
-		pybind11::enum_<mrpt::nav::CHolonomicND::TSituations>(cl, "TSituations", pybind11::arithmetic(), "The set of posible situations for each trajectory.\n (mrpt::typemeta::TEnumType works with this enum) ")
+		pybind11::enum_<mrpt::nav::CHolonomicND::TSituations>(cl, "TSituations", pybind11::arithmetic(), "The set of possible situations for each trajectory.\n (mrpt::typemeta::TEnumType works with this enum) ")
 			.value("SITUATION_TARGET_DIRECTLY", mrpt::nav::CHolonomicND::SITUATION_TARGET_DIRECTLY)
 			.value("SITUATION_SMALL_GAP", mrpt::nav::CHolonomicND::SITUATION_SMALL_GAP)
 			.value("SITUATION_WIDE_GAP", mrpt::nav::CHolonomicND::SITUATION_WIDE_GAP)

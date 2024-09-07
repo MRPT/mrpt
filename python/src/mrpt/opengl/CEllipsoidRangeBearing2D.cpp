@@ -697,7 +697,7 @@ void bind_mrpt_opengl_CEllipsoidRangeBearing2D(std::function< pybind11::module &
 			cl.def( pybind11::init( [](mrpt::opengl::CPolyhedron::TPolyhedronEdge const &o){ return new mrpt::opengl::CPolyhedron::TPolyhedronEdge(o); } ) );
 			cl.def_readwrite("v1", &mrpt::opengl::CPolyhedron::TPolyhedronEdge::v1);
 			cl.def_readwrite("v2", &mrpt::opengl::CPolyhedron::TPolyhedronEdge::v2);
-			cl.def("__eq__", (bool (mrpt::opengl::CPolyhedron::TPolyhedronEdge::*)(const struct mrpt::opengl::CPolyhedron::TPolyhedronEdge &) const) &mrpt::opengl::CPolyhedron::TPolyhedronEdge::operator==, "Comparison agains another edge. Simmetry is taken into account.\n\nC++: mrpt::opengl::CPolyhedron::TPolyhedronEdge::operator==(const struct mrpt::opengl::CPolyhedron::TPolyhedronEdge &) const --> bool", pybind11::arg("e"));
+			cl.def("__eq__", (bool (mrpt::opengl::CPolyhedron::TPolyhedronEdge::*)(const struct mrpt::opengl::CPolyhedron::TPolyhedronEdge &) const) &mrpt::opengl::CPolyhedron::TPolyhedronEdge::operator==, "Comparison against another edge. Simmetry is taken into account.\n\nC++: mrpt::opengl::CPolyhedron::TPolyhedronEdge::operator==(const struct mrpt::opengl::CPolyhedron::TPolyhedronEdge &) const --> bool", pybind11::arg("e"));
 			cl.def("assign", (struct mrpt::opengl::CPolyhedron::TPolyhedronEdge & (mrpt::opengl::CPolyhedron::TPolyhedronEdge::*)(const struct mrpt::opengl::CPolyhedron::TPolyhedronEdge &)) &mrpt::opengl::CPolyhedron::TPolyhedronEdge::operator=, "C++: mrpt::opengl::CPolyhedron::TPolyhedronEdge::operator=(const struct mrpt::opengl::CPolyhedron::TPolyhedronEdge &) --> struct mrpt::opengl::CPolyhedron::TPolyhedronEdge &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 

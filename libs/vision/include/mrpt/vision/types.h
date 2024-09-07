@@ -233,7 +233,7 @@ struct TSequenceFeatureObservations : public std::vector<TFeatureObservation>
  */
 struct TStereoSystemParams : public mrpt::config::CLoadableOptions
 {
-  /** Initilization of default parameters */
+  /** Initialization of default parameters */
   TStereoSystemParams();
 
   void loadFromConfigFile(
@@ -435,14 +435,13 @@ struct TMatchingOptions : public mrpt::config::CLoadableOptions
   //            double  fx,cx,cy,baseline;
 
   /** Constructor */
-  TMatchingOptions();
+  TMatchingOptions() = default;
 
   void loadFromConfigFile(
       const mrpt::config::CConfigFileBase& source,
       const std::string& section) override;                 // See base docs
   void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
-#define COPY_MEMBER(_m)  this->_m = o._m;
 #define CHECK_MEMBER(_m) this->_m == o._m
 
   bool operator==(const TMatchingOptions& o) const
@@ -457,34 +456,6 @@ struct TMatchingOptions : public mrpt::config::CLoadableOptions
            CHECK_MEMBER(maxSAD_TH) && CHECK_MEMBER(max_disp) && CHECK_MEMBER(minCC_TH) &&
            CHECK_MEMBER(minDCC_TH) && CHECK_MEMBER(min_disp) && CHECK_MEMBER(parallelOpticalAxis) &&
            CHECK_MEMBER(rCC_TH) && CHECK_MEMBER(SAD_RATIO);
-  }
-
-  void operator=(const TMatchingOptions& o)
-  {
-    COPY_MEMBER(useXRestriction)
-    COPY_MEMBER(useDisparityLimits)
-    COPY_MEMBER(useEpipolarRestriction)
-    COPY_MEMBER(addMatches)
-    COPY_MEMBER(EDD_RATIO)
-    COPY_MEMBER(EDSD_RATIO)
-    COPY_MEMBER(enable_robust_1to1_match)
-    COPY_MEMBER(epipolar_TH)
-    COPY_MEMBER(estimateDepth)
-    COPY_MEMBER(F)
-    COPY_MEMBER(hasFundamentalMatrix)
-    COPY_MEMBER(matching_method)
-    COPY_MEMBER(maxDepthThreshold)
-    COPY_MEMBER(maxEDD_TH)
-    COPY_MEMBER(maxEDSD_TH)
-    COPY_MEMBER(maxORB_dist)
-    COPY_MEMBER(maxSAD_TH)
-    COPY_MEMBER(max_disp)
-    COPY_MEMBER(minCC_TH)
-    COPY_MEMBER(minDCC_TH)
-    COPY_MEMBER(min_disp)
-    COPY_MEMBER(parallelOpticalAxis)
-    COPY_MEMBER(rCC_TH)
-    COPY_MEMBER(SAD_RATIO)
   }
 
 };  // end struct TMatchingOptions

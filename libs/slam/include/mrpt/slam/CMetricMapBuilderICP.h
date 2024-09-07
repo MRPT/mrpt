@@ -42,7 +42,10 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
     /** Initializer */
     TConfigParams(mrpt::system::VerbosityLevel& parent_verbosity_level);
     TConfigParams& operator=(const TConfigParams& other);  // Copy
-    // assignment
+    TConfigParams(const TConfigParams& other) : verbosity_level(other.verbosity_level)
+    {
+      *this = other;
+    }
 
     void loadFromConfigFile(
         const mrpt::config::CConfigFileBase& source,

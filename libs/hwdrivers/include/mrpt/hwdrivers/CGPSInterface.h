@@ -40,7 +40,7 @@ namespace mrpt::hwdrivers
  * configuration file below or in method CGPSInterface::setParser():
  *  - `NONE`: Do not try to parse the messages into CObservation's. Only useful
  * if combined with `raw_dump_file_prefix`
- *  - `AUTO`: Try to automatically identify the format of incomming data.
+ *  - `AUTO`: Try to automatically identify the format of incoming data.
  *  - `NMEA` (NMEA 0183, ASCII messages): Default parser. Supported frames:
  * GGA, RMC,... See full list of messages in children of
  * mrpt::obs::gnss::gnss_message
@@ -171,7 +171,7 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
   /** Get the serial port to use (COM1, ttyUSB0, etc). */
   std::string getSerialPortName() const;
 
-  /** Select the parser for incomming data, among the options enumerated in \a
+  /** Select the parser for incoming data, among the options enumerated in \a
    * CGPSInterface */
   void setParser(PARSERS parser);
   PARSERS getParser() const;

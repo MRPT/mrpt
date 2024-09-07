@@ -26,7 +26,7 @@ namespace mrpt::opengl
  *  gl_PointSize = vertexPointSize +
  *  variablePointSize_k/(variablePointSize_DepthScale*gl_Position.z + 0.01);
  *
- * where the paramters vertexPointSize, variablePointSize_k, and
+ * where the parameters vertexPointSize, variablePointSize_k, and
  * variablePointSize_DepthScale can be set in this class via setPointSize(),
  * setVariablePointSize_k(), and setVariablePointSize_DepthScale(),
  * respectively.

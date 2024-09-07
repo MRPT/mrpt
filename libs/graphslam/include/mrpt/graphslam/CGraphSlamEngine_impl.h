@@ -528,7 +528,7 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
       m_last_laser_scan2D = scan;
 
       if (!m_first_laser_scan2D)
-      {  // capture first laser scan seperately
+      {  // capture first laser scan separately
         m_first_laser_scan2D = m_last_laser_scan2D;
       }
     }
@@ -1377,7 +1377,7 @@ void CGraphSlamEngine<GRAPH_T>::readGTFileRGBD_TUM(
     }
   }
 
-  // handle the first pose seperately
+  // handle the first pose separately
   // make sure that the ground-truth starts at 0.
   pose_t pose_diff;
   vector<string> curr_tokens;

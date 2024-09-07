@@ -110,7 +110,7 @@ class CNTRIPEmitter : public CGenericSensor
   void initialize() override;
 
   /** The main loop, which must be called in a timely fashion in order to
-   * process the incomming NTRIP data stream and dump it to the serial port.
+   * process the incoming NTRIP data stream and dump it to the serial port.
    *  This method is called automatically when used within rawlog-grabber.
    */
   void doProcess() override;

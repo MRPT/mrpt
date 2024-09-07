@@ -142,47 +142,44 @@ CDirectoryExplorer::TFileInfoList CDirectoryExplorer::explore(
 
   while ((ent = readdir(dir)) != nullptr)
   {
-    if (strcmp(ent->d_name, ".") != 0 && strcmp(ent->d_name, "..") != 0)
+    if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) continue;
+
+    // File name:
+    newEntry.name = string(ent->d_name);
+
+    // Complete absolute file path:
+    newEntry.wholePath = fs::absolute(fs::path(searchPath + newEntry.name));
+
+    // File times:
+    struct stat statDat
     {
-      // File name:
-      newEntry.name = string(ent->d_name);
+    }, lstatDat{};
 
-      // Complete absolute file path:
-      newEntry.wholePath = fs::absolute(fs::path(searchPath + newEntry.name));
+    if (stat(newEntry.wholePath.c_str(), &statDat))
+      continue;  // Ignore it: permissions problem or broken symlink?
 
-      // File times:
-      struct stat statDat
+    newEntry.modTime = mrpt::Clock::fromDouble(static_cast<double>(statDat.st_mtime));
+    newEntry.accessTime = mrpt::Clock::fromDouble(static_cast<double>(statDat.st_atime));
+
+    // Flags:
+    newEntry.isDir = S_ISDIR(statDat.st_mode);
+
+    if (((mask & FILE_ATTRIB_ARCHIVE) != 0 && !newEntry.isDir) ||
+        ((mask & FILE_ATTRIB_DIRECTORY) != 0 && newEntry.isDir))
+    {
+      // File size:
+      newEntry.fileSize = (intmax_t)statDat.st_size;
+
+      // Is it a symbolic link?? Need to call "lstat":
+      if (!lstat(newEntry.wholePath.c_str(), &lstatDat))
       {
-      }, lstatDat{};
-      if (stat(newEntry.wholePath.c_str(), &statDat))
-      {
-        closedir(dir);
-        THROW_EXCEPTION_FMT("Cannot get stat for file: '%s'", newEntry.wholePath.c_str());
+        newEntry.isSymLink = S_ISLNK(lstatDat.st_mode);
       }
+      else
+        newEntry.isSymLink = false;
 
-      newEntry.modTime = mrpt::Clock::fromDouble(static_cast<double>(statDat.st_mtime));
-      newEntry.accessTime = mrpt::Clock::fromDouble(static_cast<double>(statDat.st_atime));
-
-      // Flags:
-      newEntry.isDir = S_ISDIR(statDat.st_mode);
-
-      if (((mask & FILE_ATTRIB_ARCHIVE) != 0 && !newEntry.isDir) ||
-          ((mask & FILE_ATTRIB_DIRECTORY) != 0 && newEntry.isDir))
-      {
-        // File size:
-        newEntry.fileSize = (intmax_t)statDat.st_size;
-
-        // Is it a symbolic link?? Need to call "lstat":
-        if (!lstat(newEntry.wholePath.c_str(), &lstatDat))
-        {
-          newEntry.isSymLink = S_ISLNK(lstatDat.st_mode);
-        }
-        else
-          newEntry.isSymLink = false;
-
-        // Save:
-        outList.push_back(newEntry);
-      }
+      // Save:
+      outList.push_back(newEntry);
     }
   }
 

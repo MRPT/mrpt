@@ -136,7 +136,7 @@ double normalCDF(double p);
 
 /** The "quantile" of the Chi-Square distribution, for dimension "dim" and
  * probability 0<P<1 (the inverse of chi2CDF)
- * An aproximation from the Wilson-Hilferty transformation is used.
+ * An approximation from the Wilson-Hilferty transformation is used.
  *  \note Equivalent to MATLAB chi2inv(), but note that this is just an
  * approximation, which becomes very poor for small values of "P".
  */

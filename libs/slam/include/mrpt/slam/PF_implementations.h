@@ -403,7 +403,7 @@ double PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::PF_SLAM_particlesEvalu
 
   // Compute the quantity:
   //     w[i]*p(zt|z^{t-1},x^{[i],t-1})
-  // As the Monte-Carlo approximation of the integral over all posible $x_t$.
+  // As the Monte-Carlo approximation of the integral over all possible $x_t$.
   // --------------------------------------------
   double indivLik, maxLik = -1e300;
   mrpt::poses::CPose3D maxLikDraw;
@@ -500,7 +500,7 @@ double PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::PF_SLAM_particlesEvalu
     // Do something similar to in Optimal sampling:
     // Compute the quantity:
     //     w[i]*p(zt|z^{t-1},x^{[i],t-1})
-    // As the Monte-Carlo approximation of the integral over all posible
+    // As the Monte-Carlo approximation of the integral over all possible
     // $x_t$.
     // --------------------------------------------
     double indivLik, maxLik = -1e300;

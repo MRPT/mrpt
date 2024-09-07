@@ -46,7 +46,7 @@ struct TCaptureCVOptions
   bool ieee1394_grayscale{false};
 };
 
-/** A class for grabing images from a "OpenCV"-compatible camera, or from an AVI
+/** A class for grabbing images from a "OpenCV"-compatible camera, or from an AVI
  * video file.
  *   See the constructor for the options when opening the camera.
  *
