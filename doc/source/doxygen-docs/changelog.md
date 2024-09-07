@@ -11,6 +11,7 @@
   - Fix tons of typos and Debian-specific spare install files (lintian --pedantic).
   - Fix segfault in arm64 EKF unit tests.
   - Fix bug in mrpt::system::CDirectoryExplorer: it would throw and stop if finds a broken symlink.
+  - Fix regression in mrpt::math::KDTreeCapable: all RKNN calls (NN with maximum radius) may return undefined pairing indices if less than N points are found within the given radius.
 
 # Version 2.13.7: Released Aug 22nd, 2024
 - Changes in apps:
