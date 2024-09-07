@@ -165,7 +165,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
   ~CDisplayWindow3D() override;
 
   /** Gets a reference to the smart shared pointer that holds the internal
-   * scene (carefuly read introduction in gui::CDisplayWindow3D before use!)
+   * scene (carefully read introduction in gui::CDisplayWindow3D before use!)
    *  This also locks the critical section for accessing the scene, thus the
    * window will not be repainted until it is unlocked.
    * \note It is safer to use mrpt::gui::CDisplayWindow3DLocker instead.*/

@@ -168,7 +168,7 @@ class CObservation3DRangeScan : public CObservation
    */
   void load_impl() const override;
   /** Unload all images, for the case they being delayed-load images stored in
-   * external files (othewise, has no effect).
+   * external files (otherwise, has no effect).
    * \sa load
    */
   void unload() const override;
@@ -372,7 +372,7 @@ class CObservation3DRangeScan : public CObservation
   /** Builds a visualization from the rangeImage.
    * The image is built with the given color map (default: grayscale) and such
    * that the colormap range is mapped to ranges 0 meters to the field
-   * "maxRange" in this object, unless overriden with the optional parameters.
+   * "maxRange" in this object, unless overridden with the optional parameters.
    * Note that the usage of optional<> allows any parameter to be left to its
    * default placing `std::nullopt`.
    *
@@ -420,7 +420,7 @@ class CObservation3DRangeScan : public CObservation
   void rangeImage_convertToExternalStorage(
       const std::string& fileName, const std::string& use_this_base_dir);
   /** Forces marking this observation as non-externally stored - it doesn't
-   * anything else apart from reseting the corresponding flag (Users won't
+   * anything else apart from resetting the corresponding flag (Users won't
    * normally want to call this, it's only used from internal MRPT programs)
    */
   void rangeImage_forceResetExternalStorage() { m_rangeImage_external_stored = false; }
@@ -463,7 +463,7 @@ class CObservation3DRangeScan : public CObservation
   /** Returns true if the field CObservation3DRangeScan::pixelLabels contains
    * a non-NULL smart pointer.
    * To enhance a 3D point cloud with labeling info, just assign an
-   * appropiate object to \a pixelLabels
+   * appropriate object to \a pixelLabels
    */
   bool hasPixelLabels() const { return pixelLabels ? true : false; }
 

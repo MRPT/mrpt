@@ -208,7 +208,7 @@ std::string MATLAB_plotCovariance2D(
  *  const double numbers[] = { 1,2,3,5,6,7,8,9,10 };
  *  loadVector( v, numbers );
  * \endcode
- * \note This operator performs the appropiate type castings, if required.
+ * \note This operator performs the appropriate type castings, if required.
  */
 template <typename VECTOR_T, typename At, size_t N>
 VECTOR_T& loadVector(VECTOR_T& v, At (&theArray)[N])

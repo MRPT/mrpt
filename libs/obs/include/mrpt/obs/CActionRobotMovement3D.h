@@ -30,7 +30,7 @@ class CActionRobotMovement3D : public CAction
   DEFINE_SERIALIZABLE(CActionRobotMovement3D, mrpt::obs)
 
  public:
-  /** A list of posible ways for estimating the content of a
+  /** A list of possible ways for estimating the content of a
    * CActionRobotMovement3D object.
    */
   enum TEstimationMethod

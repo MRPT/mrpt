@@ -49,7 +49,7 @@ wxImage* mrpt::gui::MRPTImage2wxImage(const mrpt::img::CImage& img)
 
   const int w = new_image.getWidth(), h = new_image.getHeight(), rs = new_image.getRowStride();
 
-  // Copy row by row only if necesary:
+  // Copy row by row only if necessary:
   if (row_in_bytes != rs)
   {
     auto* trg = data;

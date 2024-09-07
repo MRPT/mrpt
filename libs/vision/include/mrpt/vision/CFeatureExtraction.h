@@ -41,7 +41,7 @@ namespace mrpt::vision
  *		- BCD (Binary Corner Detector): A detector (no descriptor vector) (Not
  *implemented yet).
  *		- SIFT: An implementation of the SIFT detector and descriptor. The
- *implemention may be selected with
+ *implementation may be selected with
  *CFeatureExtraction::TOptions::SIFTOptions::implementation.
  *		- SURF: OpenCV's implementation of SURF detector and descriptor.
  *		- The FAST feature detector (OpenCV's implementation)

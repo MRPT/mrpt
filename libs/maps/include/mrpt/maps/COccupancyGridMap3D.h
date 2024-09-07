@@ -99,7 +99,7 @@ class COccupancyGridMap3D :
 
   /** Change the size of gridmap, erasing all its previous contents.
    * \param resolution The new size of voxels.
-   * \param default_value The value of voxels, tipically 0.5.
+   * \param default_value The value of voxels, typically 0.5.
    * \sa ResizeGrid
    */
   void setSize(
@@ -109,7 +109,7 @@ class COccupancyGridMap3D :
       float default_value = 0.5f);
 
   /** Change the size of gridmap, maintaining previous contents.
-   * \param new_voxels_default_value Value of new voxels, tipically 0.5
+   * \param new_voxels_default_value Value of new voxels, typically 0.5
    * \sa setSize()
    */
   void resizeGrid(

@@ -59,7 +59,7 @@ struct Message_NMEA_GGA : public gnss_message
 
     content_t();
   };
-  /** Message content, accesible by individual fields */
+  /** Message content, accessible by individual fields */
   content_t fields;
 
   void dumpToStream(std::ostream& out) const override;  // See docs in base
@@ -119,7 +119,7 @@ struct Message_NMEA_GLL : public gnss_message
     int8_t validity_char{'V'};
     content_t();
   };
-  /** Message content, accesible by individual fields */
+  /** Message content, accessible by individual fields */
   content_t fields;
   void dumpToStream(std::ostream& out) const override;  // See docs in base
   bool getAllFieldDescriptions(std::ostream& o) const override;
@@ -159,7 +159,7 @@ struct Message_NMEA_RMC : public gnss_message
     char positioning_mode{'N'};
     content_t();
   };
-  /** Message content, accesible by individual fields */
+  /** Message content, accessible by individual fields */
   content_t fields;
 
   /** Build an MRPT timestamp with the year/month/day of this observation. */
@@ -187,7 +187,7 @@ struct Message_NMEA_VTG : public gnss_message
     double ground_speed_knots{}, ground_speed_kmh{};
     content_t();
   };
-  /** Message content, accesible by individual fields */
+  /** Message content, accessible by individual fields */
   content_t fields;
   void dumpToStream(std::ostream& out) const override;  // See docs in base
   bool getAllFieldDescriptions(std::ostream& o) const override;
@@ -212,7 +212,7 @@ struct Message_NMEA_GSA : public gnss_message
     double PDOP = 0, HDOP = 0, VDOP = 0;
     content_t();
   };
-  /** Message content, accesible by individual fields */
+  /** Message content, accessible by individual fields */
   content_t fields;
 
   void dumpToStream(std::ostream& out) const override;  // See docs in base
@@ -242,7 +242,7 @@ struct Message_NMEA_ZDA : public gnss_message
     uint16_t date_year{};
     content_t();
   };
-  /** Message content, accesible by individual fields */
+  /** Message content, accessible by individual fields */
   content_t fields;
 
   /** Build an MRPT UTC timestamp with the year/month/day + hour/minute/sec of

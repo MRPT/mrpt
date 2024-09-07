@@ -133,10 +133,10 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
 
     //---------------------------- Enose Modular FRAME
     //--------------------------------------------------
-    // Wait for e-nose frame:	<0x69><0x91><lenght><body><0x96> "Bytes"
+    // Wait for e-nose frame:	<0x69><0x91><length><body><0x96> "Bytes"
     // Where <body> = <temp>[<SensorID_H><SensorID_L><Sensor_Value>] x
     // N_senosrs
-    // Modular-nose provides a 4B+body frame lenght
+    // Modular-nose provides a 4B+body frame length
 
     mrpt::serialization::CMessage msg;
     bool time_out = false;

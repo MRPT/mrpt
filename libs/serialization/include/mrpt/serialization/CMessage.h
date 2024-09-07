@@ -54,7 +54,7 @@ class CMessage
    * priori) unknown class.
    *  The pointer will contain on return a copy of the reconstructed object.
    * Deleting this object when
-   *   no longer required is the responsability of the user. Note that
+   *   no longer required is the responsibility of the user. Note that
    * previous contents of the pointer
    *   will be ignored (it should be nullptr).
    * \except std::exception On corrupt data, unknown serialized objects,

@@ -134,11 +134,11 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 
   /** Loads all params from a file. To be called before initialize().
    * Each derived class *MUST* load its own parameters, and then call *ITS
-   * PARENT'S* overriden method to ensure all params are loaded. */
+   * PARENT'S* overridden method to ensure all params are loaded. */
   virtual void loadConfigFile(const mrpt::config::CConfigFileBase& c);
   /** Saves all current options to a config file.
    * Each derived class *MUST* save its own parameters, and then call *ITS
-   * PARENT'S* overriden method to ensure all params are saved. */
+   * PARENT'S* overridden method to ensure all params are saved. */
   virtual void saveConfigFile(mrpt::config::CConfigFileBase& c) const;
 
   /**  Must be called before any other navigation command */
@@ -196,7 +196,7 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
   };
 
   /** In case of state=NAV_ERROR, this returns the reason for the error.
-   * Error state is reseted every time a new navigation starts with
+   * Error state is reset every time a new navigation starts with
    * a call to navigate(), or when resetNavError() is called.
    */
   inline const TErrorReason& getErrorReason() const { return m_navErrorReason; }
@@ -302,11 +302,11 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
   /** Stops the robot and set navigation state to error */
   virtual void doEmergencyStop(const std::string& msg);
 
-  /** Default: forward call to m_robot.changeSpeed(). Can be overriden. */
+  /** Default: forward call to m_robot.changeSpeed(). Can be overridden. */
   virtual bool changeSpeeds(const mrpt::kinematics::CVehicleVelCmd& vel_cmd);
-  /** Default: forward call to m_robot.changeSpeedsNOP(). Can be overriden. */
+  /** Default: forward call to m_robot.changeSpeedsNOP(). Can be overridden. */
   virtual bool changeSpeedsNOP();
-  /** Default: forward call to m_robot.stop(). Can be overriden. */
+  /** Default: forward call to m_robot.stop(). Can be overridden. */
   virtual bool stop(bool isEmergencyStop);
 
   /** Default implementation: check if target_dist is below the accepted

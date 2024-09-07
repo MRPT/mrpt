@@ -719,7 +719,7 @@ void fghCalculateMenuBoxSize( void )
 
         /*
          * If the entry is a submenu, then it needs to be wider to
-         * accomodate the arrow. JCJ 31 July 2003
+         * accommodate the arrow. JCJ 31 July 2003
          */
         if (menuEntry->SubMenu )
             menuEntry->Width += glutBitmapLength(

@@ -79,7 +79,7 @@ class ScalarFactorGraph : public mrpt::system::COutputLogger
   /** Insert constraints into the GMRF problem.
    * \param listOfConstraints List of user-implemented constraints.
    * **A pointer to the passed object is kept**, but memory ownship *REMAINS*
-   * being responsability of the caller. This is
+   * being responsibility of the caller. This is
    * done such that arrays/vectors of constraints can be more efficiently
    * allocated if their type is known at build time.
    */

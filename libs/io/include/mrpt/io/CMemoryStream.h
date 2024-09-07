@@ -42,13 +42,13 @@ class CMemoryStream : public CStream
  public:
   /** Default constructor */
   CMemoryStream() = default;
-  /** Constructor to initilize the data in the stream from a block of memory
+  /** Constructor to Initialize the data in the stream from a block of memory
    * (which is copied), and sets the current stream position at the beginning
    * of the data.
    * \sa assignMemoryNotOwn */
   CMemoryStream(const void* data, const uint64_t nBytesInData);
 
-  /** Initilize the data in the stream from a block of memory which is NEITHER
+  /** Initialize the data in the stream from a block of memory which is NEITHER
    * OWNED NOR COPIED by the object, so it must exist during the whole live of
    * the object.
    *  After assigning a block of data with this method, the object becomes
@@ -73,7 +73,7 @@ class CMemoryStream : public CStream
    * byte and TotalBytesCount-1 the last one */
   uint64_t getPosition() const override;
 
-  /** Method for getting a pointer to the raw stored data. The lenght in bytes
+  /** Method for getting a pointer to the raw stored data. The length in bytes
    * is given by getTotalBytesCount */
   void* getRawBufferData();
   const void* getRawBufferData() const;

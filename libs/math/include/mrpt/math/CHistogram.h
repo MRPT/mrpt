@@ -79,13 +79,13 @@ class CHistogram
     for (size_t i = 0; i < N; i++) this->add(static_cast<double>(x[i]));
   }
 
-  /** Retuns the elements count into the selected bin index, where first one
+  /** Returns the elements count into the selected bin index, where first one
    * is 0.
    * \exception std::exception On invalid index
    */
   [[nodiscard]] size_t getBinCount(size_t index) const;
 
-  /** Retuns the ratio in [0,1] range for the selected bin index, where first
+  /** Returns the ratio in [0,1] range for the selected bin index, where first
    * one is 0.
    *  It returns 0 if no elements have been added.
    * \exception std::exception On invalid index.

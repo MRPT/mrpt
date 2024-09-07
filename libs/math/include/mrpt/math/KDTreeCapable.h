@@ -340,12 +340,14 @@ class KDTreeCapable
       resultSet.init(&ret_indexes[0], &out_dist_sqr[0]);
 
       m_kdtree2d_data.index->findNeighbors(resultSet, &query_point[0], {});
+      ret_indexes.resize(resultSet.size());
+      out_dist_sqr.resize(resultSet.size());
 #else
       THROW_EXCEPTION("RKNN search requires nanoflann>=1.5.1");
 #endif
     }
 
-    for (size_t i = 0; i < knn; i++)
+    for (size_t i = 0; i < ret_indexes.size(); i++)
     {
       out_x[i] = derived().kdtree_get_pt(ret_indexes[i], 0);
       out_y[i] = derived().kdtree_get_pt(ret_indexes[i], 1);
@@ -423,6 +425,8 @@ class KDTreeCapable
       resultSet.init(&out_idx[0], &out_dist_sqr[0]);
 
       m_kdtree2d_data.index->findNeighbors(resultSet, &query_point[0], {});
+      out_idx.resize(resultSet.size());
+      out_dist_sqr.resize(resultSet.size());
 #else
       THROW_EXCEPTION("RKNN search requires nanoflann>=1.5.1");
 #endif
@@ -579,12 +583,14 @@ class KDTreeCapable
       nanoflann::RKNNResultSet<num_t> resultSet(knn, *maximumSearchDistanceSqr);
       resultSet.init(&ret_indexes[0], &out_dist_sqr[0]);
       m_kdtree3d_data.index->findNeighbors(resultSet, &query_point[0], {});
+      ret_indexes.resize(resultSet.size());
+      out_dist_sqr.resize(resultSet.size());
 #else
       THROW_EXCEPTION("RKNN search requires nanoflann>=1.5.1");
 #endif
     }
 
-    for (size_t i = 0; i < knn; i++)
+    for (size_t i = 0; i < ret_indexes.size(); i++)
     {
       out_x[i] = derived().kdtree_get_pt(ret_indexes[i], 0);
       out_y[i] = derived().kdtree_get_pt(ret_indexes[i], 1);
@@ -654,12 +660,14 @@ class KDTreeCapable
       nanoflann::RKNNResultSet<num_t> resultSet(knn, *maximumSearchDistanceSqr);
       resultSet.init(&out_idx[0], &out_dist_sqr[0]);
       m_kdtree3d_data.index->findNeighbors(resultSet, &query_point[0], {});
+      out_idx.resize(resultSet.size());
+      out_dist_sqr.resize(resultSet.size());
 #else
       THROW_EXCEPTION("RKNN search requires nanoflann>=1.5.1");
 #endif
     }
 
-    for (size_t i = 0; i < knn; i++)
+    for (size_t i = 0; i < out_idx.size(); i++)
     {
       out_x[i] = derived().kdtree_get_pt(out_idx[i], 0);
       out_y[i] = derived().kdtree_get_pt(out_idx[i], 1);
@@ -805,6 +813,8 @@ class KDTreeCapable
       nanoflann::RKNNResultSet<num_t> resultSet(knn, *maximumSearchDistanceSqr);
       resultSet.init(&out_idx[0], &out_dist_sqr[0]);
       m_kdtree3d_data.index->findNeighbors(resultSet, &query_point[0], {});
+      out_idx.resize(resultSet.size());
+      out_dist_sqr.resize(resultSet.size());
 #else
       THROW_EXCEPTION("RKNN search requires nanoflann>=1.5.1");
 #endif

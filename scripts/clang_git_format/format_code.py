@@ -401,7 +401,7 @@ class ClangRepoFormatter(object):
 
         min_commit_id_len = 5
 
-        # verify given commits lenght
+        # verify given commits length
         if (len(commit_prior_reformat) < min_commit_id_len):
             raise CommitIDTooShort(commit_prior_reformat,
                                    min_commit_id_len)

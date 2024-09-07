@@ -421,7 +421,7 @@ class CLoopCloserERD :
     /**\brief Indicate whethet to use scan-matching at all during
      * graphSLAM [on by default].
      *
-     * \warning It is strongly recomended that the user does not set this
+     * \warning It is strongly recommended that the user does not set this
      * to false (via the .ini file). graphSLAM may diverge significantly if
      * no scan-matching is not used.
      */
@@ -760,7 +760,7 @@ class CLoopCloserERD :
    *	 correspond to the end of the course find where to split the current
    *	 partition
    *
-   *	 \note Method is used in single-robot graphSLAM for spliting a
+   *	 \note Method is used in single-robot graphSLAM for splitting a
    *	 partition of nodes to lower and higher node IDs
    *
    *	 \param[in] partition Partition to be split.

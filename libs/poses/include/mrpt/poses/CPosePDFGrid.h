@@ -43,7 +43,7 @@ class CPosePDFGrid : public CPosePDF, public CPose2DGridTemplate<double>
   /** Destructor */
   ~CPosePDFGrid() override;
 
-  /** Copy operator, translating if necesary (for example, between particles
+  /** Copy operator, translating if necessary (for example, between particles
    * and gaussian representations) */
   void copyFrom(const CPosePDF& o) override;
 

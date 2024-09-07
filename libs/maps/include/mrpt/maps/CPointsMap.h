@@ -227,7 +227,7 @@ class CPointsMap :
    */
   struct TInsertionOptions : public config::CLoadableOptions
   {
-    /** Initilization of default parameters */
+    /** Initialization of default parameters */
     TInsertionOptions();
     void loadFromConfigFile(
         const mrpt::config::CConfigFileBase& source,
@@ -284,7 +284,7 @@ class CPointsMap :
    */
   struct TLikelihoodOptions : public config::CLoadableOptions
   {
-    /** Initilization of default parameters
+    /** Initialization of default parameters
      */
     TLikelihoodOptions();
     ~TLikelihoodOptions() override = default;
@@ -363,7 +363,7 @@ class CPointsMap :
 
   /** Load from a text file. Each line should contain an "X Y" coordinate
    * pair, separated by whitespaces.
-   *   Returns false if any error occured, true elsewere.
+   *   Returns false if any error occurred, true elsewere.
    */
   inline bool load2D_from_text_file(const std::string& file)
   {
@@ -377,7 +377,7 @@ class CPointsMap :
 
   /** Load from a text file. Each line should contain an "X Y Z" coordinate
    * tuple, separated by whitespaces.
-   *   Returns false if any error occured, true elsewere.
+   *   Returns false if any error occurred, true elsewere.
    */
   inline bool load3D_from_text_file(const std::string& file)
   {
@@ -396,13 +396,13 @@ class CPointsMap :
       std::istream& in, mrpt::optional_ref<std::string> outErrorMsg, const bool is_3D);
 
   /**  Save to a text file. Each line will contain "X Y" point coordinates.
-   *		Returns false if any error occured, true elsewere.
+   *		Returns false if any error occurred, true elsewere.
    */
   bool save2D_to_text_file(const std::string& file) const;
   bool save2D_to_text_stream(std::ostream& out) const;
 
   /**  Save to a text file. Each line will contain "X Y Z" point coordinates.
-   *     Returns false if any error occured, true elsewere.
+   *     Returns false if any error occurred, true elsewere.
    */
   bool save3D_to_text_file(const std::string& file) const;
   bool save3D_to_text_stream(std::ostream& out) const;
@@ -1222,7 +1222,7 @@ class CPointsMap :
 	/** This is a common version of CMetricMap::insertObservation() for point
 	 * maps (actually, CMetricMap::internal_insertObservation),
 	 *   so derived classes don't need to worry implementing that method unless
-	 * something special is really necesary.
+	 * something special is really necessary.
 	 * See mrpt::maps::CPointsMap for the enumeration of types of observations
 	 * which are accepted. */
 	bool internal_insertObservation(

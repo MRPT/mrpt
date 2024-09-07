@@ -219,7 +219,7 @@ class CPose2D :
    * operator. */
   CPose3D operator-(const CPose3D& b) const;
 
-  /** Scalar sum of components: This is diferent from poses
+  /** Scalar sum of components: This is different from poses
    *    composition, which is implemented as "+" operators in "CPose" derived
    * classes.
    */

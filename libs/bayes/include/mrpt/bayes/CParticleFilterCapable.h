@@ -159,7 +159,7 @@ class CParticleFilterCapable
   virtual size_t particlesCount() const = 0;
 
   /** Performs the prediction stage of the Particle Filter.
-   *  This method simply selects the appropiate protected method according to
+   *  This method simply selects the appropriate protected method according to
    * the particle filter algorithm to run.
    * \sa
    * prediction_and_update_pfStandardProposal,prediction_and_update_pfAuxiliaryPFStandard,prediction_and_update_pfOptimalProposal,prediction_and_update_pfAuxiliaryPFOptimal

@@ -97,12 +97,12 @@ class CPose3DPDFGaussian : public CPose3DPDF, public mrpt::Stringifyable
 
   std::string asString() const override;
 
-  /** Copy operator, translating if necesary (for example, between particles
+  /** Copy operator, translating if necessary (for example, between particles
    * and gaussian representations)
    */
   void copyFrom(const CPose3DPDF& o) override;
 
-  /** Copy operator, translating if necesary (for example, between particles
+  /** Copy operator, translating if necessary (for example, between particles
    * and gaussian representations)
    */
   void copyFrom(const CPosePDF& o);

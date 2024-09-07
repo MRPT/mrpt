@@ -161,7 +161,7 @@ void bind_mrpt_maps_CRandomFieldGridMap2D(std::function< pybind11::module &(std:
 
 		{ // mrpt::maps::CRandomFieldGridMap2D::TInsertionOptionsCommon file:mrpt/maps/CRandomFieldGridMap2D.h line:253
 			auto & enclosing_class = cl;
-			pybind11::class_<mrpt::maps::CRandomFieldGridMap2D::TInsertionOptionsCommon, std::shared_ptr<mrpt::maps::CRandomFieldGridMap2D::TInsertionOptionsCommon>> cl(enclosing_class, "TInsertionOptionsCommon", "Parameters common to any derived class.\n  Derived classes should derive a new struct from this one, plus \"public\n CLoadableOptions\",\n  and call the internal_* methods where appropiate to deal with the\n variables declared here.\n  Derived classes instantions of their \"TInsertionOptions\" MUST set the\n pointer \"m_insertOptions_common\" upon construction.");
+			pybind11::class_<mrpt::maps::CRandomFieldGridMap2D::TInsertionOptionsCommon, std::shared_ptr<mrpt::maps::CRandomFieldGridMap2D::TInsertionOptionsCommon>> cl(enclosing_class, "TInsertionOptionsCommon", "Parameters common to any derived class.\n  Derived classes should derive a new struct from this one, plus \"public\n CLoadableOptions\",\n  and call the internal_* methods where appropriate to deal with the\n variables declared here.\n  Derived classes instantions of their \"TInsertionOptions\" MUST set the\n pointer \"m_insertOptions_common\" upon construction.");
 			cl.def( pybind11::init( [](){ return new mrpt::maps::CRandomFieldGridMap2D::TInsertionOptionsCommon(); } ) );
 			cl.def( pybind11::init( [](mrpt::maps::CRandomFieldGridMap2D::TInsertionOptionsCommon const &o){ return new mrpt::maps::CRandomFieldGridMap2D::TInsertionOptionsCommon(o); } ) );
 			cl.def_readwrite("sigma", &mrpt::maps::CRandomFieldGridMap2D::TInsertionOptionsCommon::sigma);

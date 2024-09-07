@@ -280,7 +280,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
   /**\brief Main class method responsible for parsing each measurement and
    * for executing graphSLAM.
    *
-   * \note Method reads each measurement seperately, so the application that
+   * \note Method reads each measurement separately, so the application that
    * invokes it is responsibe for fetching the measurements (e.g. from a
    * rawlog file).
    *
@@ -738,7 +738,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
    * \brief Flags for visualizing various trajectories/objects of interest.
    *
    * These are set from the .ini configuration file. The actual visualization
-   * of these objects can be overriden if the user issues the corresponding
+   * of these objects can be overridden if the user issues the corresponding
    * keystrokes in the CDisplayWindow3D. In order for them to have any
    * effect, a pointer to CDisplayWindow3D has to be given first.
    */

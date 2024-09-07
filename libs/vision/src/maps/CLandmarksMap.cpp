@@ -1665,7 +1665,7 @@ void CLandmarksMap::TCustomSequenceLandmarks::clear()
 
 void CLandmarksMap::TCustomSequenceLandmarks::push_back(const CLandmark& l)
 {
-  // Resize grid if necesary:
+  // Resize grid if necessary:
   std::vector<int32_t> dummyEmpty;
 
   m_grid.resize(
@@ -1721,7 +1721,7 @@ void CLandmarksMap::TCustomSequenceLandmarks::hasBeenModified(unsigned int indx)
 {
   std::vector<int32_t> dummyEmpty;
 
-  // Resize grid if necesary:
+  // Resize grid if necessary:
   m_grid.resize(
       min(m_grid.getXMin(), m_landmarks[indx].pose_mean.x),
       max(m_grid.getXMax(), m_landmarks[indx].pose_mean.x),

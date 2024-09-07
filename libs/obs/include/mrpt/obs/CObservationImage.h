@@ -56,7 +56,7 @@ class CObservationImage : public CObservation
    * of this observation. */
   mrpt::img::CImage image;
 
-  /** Computes the un-distorted image, using the embeded camera
+  /** Computes the un-distorted image, using the embedded camera
    * intrinsic & distortion parameters.
    */
   void getUndistortedImage(mrpt::img::CImage& out_img) const;
@@ -81,7 +81,7 @@ class CObservationImage : public CObservation
   void load_impl() const override;
 
   /** Unload image, for the case of it being stored in lazy-load mode
-   *  (othewise, the method has no effect).
+   *  (otherwise, the method has no effect).
    * \sa load
    */
   void unload() const override;

@@ -68,6 +68,12 @@ target_link_libraries(pymrpt PUBLIC
   mrpt::nav
 )
 
+# Avoid warnings for pybind auto-generated code:
+if (MRPT_COMPILER_IS_GCC_OR_CLANG)
+  target_compile_options(pymrpt PRIVATE -Wno-shadow)
+endif()
+
+# Includes:
 target_include_directories(pymrpt PRIVATE ".")
 
 #target_compile_definitions(pymrpt PRIVATE 

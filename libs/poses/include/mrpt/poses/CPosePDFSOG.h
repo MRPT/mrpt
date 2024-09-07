@@ -143,7 +143,7 @@ class CPosePDFSOG : public CPosePDF
   /** Normalize the weights in m_modes such as the maximum log-weight is 0 */
   void normalizeWeights();
 
-  /** Copy operator, translating if necesary (for example, between particles
+  /** Copy operator, translating if necessary (for example, between particles
    * and gaussian representations) */
   void copyFrom(const CPosePDF& o) override;
 

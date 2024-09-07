@@ -312,7 +312,7 @@ XsResultValue XsFile_close(struct XsFile *thisPtr)
 
 /*!	\relates XsFile
 	\brief Writes unwritten data to the file
-	\returns XRV_OK if the flushing was succesful, an XRV_ERROR otherwise
+	\returns XRV_OK if the flushing was successful, an XRV_ERROR otherwise
 
 */
 XsResultValue XsFile_flush(struct XsFile *thisPtr)
@@ -458,7 +458,7 @@ XsResultValue XsFile_puts(struct XsFile *thisPtr, const char *str)
 /*!	\relates XsFile
 	\brief Moves the current file position relative to the start of the file
 	\param offset Position in the file to move to, relative to the start of the file
-	\returns XRV_OK if the seek was succesful
+	\returns XRV_OK if the seek was successful
 */
 XsResultValue XsFile_seek(struct XsFile *thisPtr, XsFilePos offset)
 {
@@ -472,7 +472,7 @@ XsResultValue XsFile_seek(struct XsFile *thisPtr, XsFilePos offset)
 /*!	\relates XsFile
 	\brief Moves the current file position relative to the end of the file
 	\param offset Position in the file to move to, relative to the end of the file
-	\returns XRV_OK if the seek was succesful
+	\returns XRV_OK if the seek was successful
 */
 XsResultValue XsFile_seek_r(struct XsFile *thisPtr, XsFilePos offset)
 {

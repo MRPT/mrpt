@@ -466,7 +466,7 @@ class CRenderizable : public mrpt::serialization::CSerializable
     m_state.representativePoint = p;
   }
 
-  /** Returns or constructs (in its first invokation) the associated
+  /** Returns or constructs (in its first invocation) the associated
    * mrpt::opengl::CText object representing the label of the object.
    * \sa enableShowName()
    */

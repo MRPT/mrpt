@@ -106,7 +106,7 @@ void CHokuyoURG::doProcessSimple(
   {
     if (!internal_notifyNoScanReceived())
     {
-      // It seems the sensor needs to be reseted (?), let this know
+      // It seems the sensor needs to be reset (?), let this know
       // to the caller:
       m_state = ssError;
       hardwareError = true;

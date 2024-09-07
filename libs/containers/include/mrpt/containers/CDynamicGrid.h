@@ -75,7 +75,7 @@ class CDynamicGrid
       const double resolution,
       const T* fill_value = nullptr)
   {
-    // Adjust sizes to adapt them to full sized cells acording to the
+    // Adjust sizes to adapt them to full sized cells according to the
     // resolution:
     m_x_min = resolution * round(x_min / resolution);
     m_y_min = resolution * round(y_min / resolution);
@@ -121,7 +121,7 @@ class CDynamicGrid
       const T& defaultValueNewCells,
       double additionalMarginMeters = 2.0)
   {
-    // Is resize really necesary?
+    // Is resize really necessary?
     if (new_x_min >= m_x_min && new_y_min >= m_y_min && new_x_max <= m_x_max &&
         new_y_max <= m_y_max)
       return;
@@ -140,7 +140,7 @@ class CDynamicGrid
       if (new_y_max > m_y_max) new_y_max = ceil(new_y_max + additionalMarginMeters);
     }
 
-    // Adjust sizes to adapt them to full sized cells acording to the
+    // Adjust sizes to adapt them to full sized cells according to the
     // resolution:
     if (fabs(new_x_min / m_resolution - round(new_x_min / m_resolution)) > 0.05f)
       new_x_min = m_resolution * round(new_x_min / m_resolution);

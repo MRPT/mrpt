@@ -104,7 +104,7 @@ inline mrpt::system::TTimeStamp timestampAdd(
   return tim + std::chrono::microseconds(static_cast<int64_t>(num_seconds * 1e6));
 }
 
-/** Returns a formated string with the given time difference (passed as the
+/** Returns a formatted string with the given time difference (passed as the
  * number of seconds), as a string [H]H:MM:SS.MILLISECONDS
  * \sa unitsFormat
  */

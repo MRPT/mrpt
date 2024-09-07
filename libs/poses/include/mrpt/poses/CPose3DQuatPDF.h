@@ -21,7 +21,7 @@ class CPose3DPDF;
 /** Declares a class that represents a Probability Density Function (PDF) of a
  * 3D pose (6D actually), by means of a 7-vector with a translation [x y z] and
  * a quaternion [qr qx qy qz].
- *   This class is just the base class for unifying many diferent ways this PDF
+ *   This class is just the base class for unifying many different ways this PDF
  * can be implemented.
  *
  *  For convenience, a pose composition is also defined for any
@@ -45,7 +45,7 @@ class CPose3DQuatPDF :
   DEFINE_VIRTUAL_SERIALIZABLE(CPose3DQuatPDF)
 
  public:
-  /** Copy operator, translating if necesary (for example, between particles
+  /** Copy operator, translating if necessary (for example, between particles
    * and gaussian representations)
    * \sa createFrom2D
    */

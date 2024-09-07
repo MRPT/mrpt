@@ -54,7 +54,7 @@ void bind_mrpt_system_datetime(std::function< pybind11::module &(std::string con
 	M("mrpt::system").def("timestampAdd", (mrpt::Clock::time_point (*)(const mrpt::Clock::time_point, const double)) &mrpt::system::timestampAdd, "Shifts a timestamp the given amount of seconds (>0: forwards in time, <0:\n backwards)  \n\nC++: mrpt::system::timestampAdd(const mrpt::Clock::time_point, const double) --> mrpt::Clock::time_point", pybind11::arg("tim"), pybind11::arg("num_seconds"));
 
 	// mrpt::system::formatTimeInterval(const double) file:mrpt/system/datetime.h line:111
-	M("mrpt::system").def("formatTimeInterval", (std::string (*)(const double)) &mrpt::system::formatTimeInterval, "Returns a formated string with the given time difference (passed as the\n number of seconds), as a string [H]H:MM:SS.MILLISECONDS\n \n\n unitsFormat\n\nC++: mrpt::system::formatTimeInterval(const double) --> std::string", pybind11::arg("timeSeconds"));
+	M("mrpt::system").def("formatTimeInterval", (std::string (*)(const double)) &mrpt::system::formatTimeInterval, "Returns a formatted string with the given time difference (passed as the\n number of seconds), as a string [H]H:MM:SS.MILLISECONDS\n \n\n unitsFormat\n\nC++: mrpt::system::formatTimeInterval(const double) --> std::string", pybind11::arg("timeSeconds"));
 
 	// mrpt::system::dateTimeToString(const mrpt::Clock::time_point) file:mrpt/system/datetime.h line:117
 	M("mrpt::system").def("dateTimeToString", (std::string (*)(const mrpt::Clock::time_point)) &mrpt::system::dateTimeToString, "Convert a timestamp into this textual form (UTC time):\n YEAR/MONTH/DAY,HH:MM:SS.MMM\n \n\n dateTimeLocalToString\n\nC++: mrpt::system::dateTimeToString(const mrpt::Clock::time_point) --> std::string", pybind11::arg("t"));

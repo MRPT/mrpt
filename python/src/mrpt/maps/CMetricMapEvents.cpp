@@ -82,7 +82,7 @@ void bind_mrpt_maps_CMetricMapEvents(std::function< pybind11::module &(std::stri
 		cl.def("assign", (class mrpt::maps::mrptEventMetricMapClear & (mrpt::maps::mrptEventMetricMapClear::*)(const class mrpt::maps::mrptEventMetricMapClear &)) &mrpt::maps::mrptEventMetricMapClear::operator=, "C++: mrpt::maps::mrptEventMetricMapClear::operator=(const class mrpt::maps::mrptEventMetricMapClear &) --> class mrpt::maps::mrptEventMetricMapClear &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
 	{ // mrpt::maps::mrptEventMetricMapInsert file:mrpt/maps/CMetricMapEvents.h line:42
-		pybind11::class_<mrpt::maps::mrptEventMetricMapInsert, std::shared_ptr<mrpt::maps::mrptEventMetricMapInsert>, PyCallBack_mrpt_maps_mrptEventMetricMapInsert, mrpt::system::mrptEvent> cl(M("mrpt::maps"), "mrptEventMetricMapInsert", "Event emitted by a metric up upon a succesful call to insertObservation()\n \n\n CMetricMap\n \n\n\n ");
+		pybind11::class_<mrpt::maps::mrptEventMetricMapInsert, std::shared_ptr<mrpt::maps::mrptEventMetricMapInsert>, PyCallBack_mrpt_maps_mrptEventMetricMapInsert, mrpt::system::mrptEvent> cl(M("mrpt::maps"), "mrptEventMetricMapInsert", "Event emitted by a metric up upon a successful call to insertObservation()\n \n\n CMetricMap\n \n\n\n ");
 		cl.def( pybind11::init( [](PyCallBack_mrpt_maps_mrptEventMetricMapInsert const &o){ return new PyCallBack_mrpt_maps_mrptEventMetricMapInsert(o); } ) );
 		cl.def( pybind11::init( [](mrpt::maps::mrptEventMetricMapInsert const &o){ return new mrpt::maps::mrptEventMetricMapInsert(o); } ) );
 		cl.def_readonly("inserted_robotPose", &mrpt::maps::mrptEventMetricMapInsert::inserted_robotPose);

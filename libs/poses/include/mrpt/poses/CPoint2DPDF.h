@@ -15,7 +15,7 @@ namespace mrpt::poses
 {
 /** Declares a class that represents a Probability Distribution function (PDF)
  * of a 2D point (x,y).
- *   This class is just the base class for unifying many diferent
+ *   This class is just the base class for unifying many different
  *    ways this PDF can be implemented.
  *
  *  For convenience, a pose composition is also defined for any
@@ -37,7 +37,7 @@ class CPoint2DPDF :
   DEFINE_VIRTUAL_SERIALIZABLE(CPoint2DPDF)
 
  public:
-  /** Copy operator, translating if necesary (for example, between particles
+  /** Copy operator, translating if necessary (for example, between particles
    * and gaussian representations)
    */
   virtual void copyFrom(const CPoint2DPDF& o) = 0;

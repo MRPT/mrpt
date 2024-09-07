@@ -245,7 +245,7 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling(
     // level
     if (reading < min_reading) min_reading = reading;
 
-    // Check if estimation posible (not possible in the first iteration)
+    // Check if estimation possible (not possible in the first iteration)
     if (!first_iteration)
     {
       // Assure the samples are provided at constant rate (important for

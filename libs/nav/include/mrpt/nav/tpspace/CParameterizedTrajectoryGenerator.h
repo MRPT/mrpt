@@ -327,7 +327,7 @@ class CParameterizedTrajectoryGenerator :
   void updateNavDynamicState(const TNavDynamicState& newState, const bool force_update = false);
   const TNavDynamicState& getCurrentNavDynamicState() const { return m_nav_dyn_state; }
 
-  /** The path used as defaul output in, for example, debugDumpInFiles.
+  /** The path used as default output in, for example, debugDumpInFiles.
    * (Default="./reactivenav.logs/") */
   static std::string& OUTPUT_DEBUG_PATH_PREFIX();
 

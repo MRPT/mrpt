@@ -70,11 +70,11 @@ class CPosePDFGaussian : public CPosePDF
 
   std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override { return {cov, mean}; }
 
-  /** Copy operator, translating if necesary (for example, between particles
+  /** Copy operator, translating if necessary (for example, between particles
    * and gaussian representations) */
   void copyFrom(const CPosePDF& o) override;
 
-  /** Copy operator, translating if necesary (for example, between particles
+  /** Copy operator, translating if necessary (for example, between particles
    * and gaussian representations) */
   void copyFrom(const CPose3DPDF& o);
 

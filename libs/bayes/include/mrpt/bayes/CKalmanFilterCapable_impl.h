@@ -116,7 +116,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
     }
 
     // Q is the process noise covariance matrix, is associated to the robot
-    // movement and is necesary to calculate the prediction P(k+1|k)
+    // movement and is necessary to calculate the prediction P(k+1|k)
     KFMatrix_VxV Q;
     OnTransitionNoise(Q);
 
@@ -149,7 +149,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
     // =============================================================
     for (size_t i = 0; i < VEH_SIZE; i++) m_xkk[i] = xv[i];
 
-    // Normalize, if neccesary.
+    // Normalize, if necessary.
     OnNormalizeStateVector();
 
   }  // end if (!skipPrediction)

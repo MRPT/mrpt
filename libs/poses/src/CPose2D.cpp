@@ -276,7 +276,7 @@ void CPose2D::inverseComposeFrom(const CPose2D& A, const CPose2D& B)
 }
 
 /*---------------------------------------------------------------
- Scalar sum of components: This is diferent from poses
+ Scalar sum of components: This is different from poses
    composition, which is implemented as "+" operators in "CPose" derived
  classes.
  ---------------------------------------------------------------*/

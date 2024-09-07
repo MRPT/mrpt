@@ -15,7 +15,7 @@
 
 namespace mrpt::hwdrivers
 {
-/** A class for grabing "range images", intensity images (either RGB or IR) and
+/** A class for grabbing "range images", intensity images (either RGB or IR) and
  *other information from an OpenNI2 sensor.
  * This class permits one to access several sensors simultaneously. The same
  *options (resolution, fps, etc.) are used for every sensor.
@@ -33,7 +33,7 @@ namespace mrpt::hwdrivers
  *   - call COpenNI2Sensor::getNextObservation() for getting the data.
  *
  * <h2>Calibration parameters</h2><hr>
- *  In this class we employ the OpenNI2 method to return depth images refered
+ *  In this class we employ the OpenNI2 method to return depth images referred
  *to the RGB camera. Otherwise we could specify
  *   an accurate transformation of depth images to 3D points, you'll have to
  *calibrate your RGBD sensor for that, and supply

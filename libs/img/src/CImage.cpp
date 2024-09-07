@@ -2076,8 +2076,9 @@ float CImage::KLT_response(
   // mrpt::math::detail::eigenVectorsMatrix_special_2x2():
   const float t = Gxx + Gyy;               // Trace
   const float de = Gxx * Gyy - Gxy * Gxy;  // Det
+  const float discr = std::max<float>(.0f, t * t - 4.0f * de);
   // The smallest eigenvalue is:
-  return 0.5f * (t - std::sqrt(t * t - 4.0f * de));
+  return 0.5f * (t - std::sqrt(discr));
 #else
   return 0;
 #endif

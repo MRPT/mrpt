@@ -284,7 +284,7 @@ struct TDatum10Params
 {
   /** Deltas (X,Y,Z) */
   double dX, dY, dZ;
-  /** To be substracted to the input point */
+  /** To be subtracted to the input point */
   double Xp, Yp, Zp;
   /** Rotation components */
   double Rx, Ry, Rz;

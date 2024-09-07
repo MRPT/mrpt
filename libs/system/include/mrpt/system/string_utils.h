@@ -153,7 +153,7 @@ void stringListAsString(
 void stringListAsString(
     const std::deque<std::string>& lst, std::string& out, const std::string& newline = "\r\n");
 
-/** Finds the position of the n-th occurence of the given substring, or
+/** Finds the position of the n-th occurrence of the given substring, or
  * std::string::npos if it does not happen.
  * \note New in MRPT 2.3.2
  */

@@ -121,7 +121,7 @@ inline void getPoseFromString</*QUAT_REPR=*/true, /*TUM_FORMAT=*/false>(
  * timestamps are not needed.
  * \param[in] substract_init_offset If true, the filled poses are to start from
  * 0, that means, that if the first found pose is non-zero, it's going to be
- * considered and offset and substracted from all poses in the file.
+ * considered and offset and subtracted from all poses in the file.
  *
  * \sa
  * https://www.mrpt.org/Collection_of_Kinect_RGBD_datasets_with_ground_truth_CVPR_TUM_2011

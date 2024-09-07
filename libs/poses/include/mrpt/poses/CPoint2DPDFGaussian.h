@@ -45,7 +45,7 @@ class CPoint2DPDFGaussian : public CPoint2DPDF
     return {this->cov, this->mean};
   }
 
-  /** Copy operator, translating if necesary (for example, between particles
+  /** Copy operator, translating if necessary (for example, between particles
    * and gaussian representations) */
   void copyFrom(const CPoint2DPDF& o) override;
 

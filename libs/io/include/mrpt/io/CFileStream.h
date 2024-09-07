@@ -44,7 +44,7 @@ class CFileStream : public CStream
  public:
   /** Constructor and open a file
    * \param fileName The file to be open in this stream
-   * \param mode The open mode: can be an or'd conbination of different
+   * \param mode The open mode: can be an or'd combination of different
    * values.
    * \exception std::exception On error creating or accessing the file.
    *  By default the file is opened for open and write and created if not
@@ -65,7 +65,7 @@ class CFileStream : public CStream
 
   /** Opens the file, returning true on success.
    * \param fileName The file to be open in this stream
-   * \param mode The open mode: can be an or'd conbination of different
+   * \param mode The open mode: can be an or'd combination of different
    * values.
    *  By default the file is opened for open and write and created if not
    * found.

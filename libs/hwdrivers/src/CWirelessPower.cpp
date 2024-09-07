@@ -111,7 +111,7 @@ std::vector<PWLAN_INTERFACE_INFO> ListInterfacesW(HANDLE hClient)
   }
   else
   {
-    // iterate throught interfaces to add them to the output vector
+    // iterate through interfaces to add them to the output vector
     for (i = 0; i < (int)pIfList->dwNumberOfItems; i++)
     {
       pIfInfo = (WLAN_INTERFACE_INFO*)&pIfList->InterfaceInfo[i];

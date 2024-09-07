@@ -68,7 +68,7 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
   /** @} */
 
   /** Internal use only: It reallocs the memory for the 2D matrix, maintaining
-   * the previous contents if posible.
+   * the previous contents if possible.
    */
   void realloc(size_t new_len, bool newElementsToZero = false)
   {
