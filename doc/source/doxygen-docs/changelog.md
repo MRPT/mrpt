@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.13.8: UNRELEASED
+# Version 2.13.8: Released Sep 7th, 2024
 - Changes in libraries:
   - \ref mrpt_vision_grp:
     - mrpt::vision::TMatchingOptions: Remove useless custom "operator=".
