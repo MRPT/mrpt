@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.13.9: UNRELEASED
-(none yet)
+- BUG FIXES:
+  - Fix recursive mutex lock if calling mrpt::opengl::CPointCloud::insertPoint() with signatures for mrpt::math::TPoint3D.
 
 # Version 2.13.8: Released Sep 7th, 2024
 - Changes in libraries:
