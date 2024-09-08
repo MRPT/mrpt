@@ -37,7 +37,7 @@ namespace mrpt::opengl
  */
 class CRenderizableShaderPoints : public virtual CRenderizable
 {
-  DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderPoints)
+  DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderPoints, mrpt::opengl)
 
  public:
   CRenderizableShaderPoints() = default;

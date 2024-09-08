@@ -26,7 +26,7 @@ namespace mrpt::opengl
  */
 class CRenderizableShaderText : public virtual CRenderizable
 {
-  DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderText)
+  DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderText, mrpt::opengl)
 
  public:
   CRenderizableShaderText() = default;

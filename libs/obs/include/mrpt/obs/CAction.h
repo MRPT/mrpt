@@ -23,7 +23,7 @@ namespace mrpt::obs
  */
 class CAction : public mrpt::serialization::CSerializable
 {
-  DEFINE_VIRTUAL_SERIALIZABLE(CAction)
+  DEFINE_VIRTUAL_SERIALIZABLE(CAction, mrpt::obs)
  public:
   /** Default ctor */
   CAction() = default;

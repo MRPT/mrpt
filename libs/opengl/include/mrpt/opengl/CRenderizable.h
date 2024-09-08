@@ -70,7 +70,7 @@ enum class TCullFace : uint8_t
  */
 class CRenderizable : public mrpt::serialization::CSerializable
 {
-  DEFINE_VIRTUAL_SERIALIZABLE(CRenderizable)
+  DEFINE_VIRTUAL_SERIALIZABLE(CRenderizable, mrpt::opengl)
 
   friend class mrpt::opengl::Viewport;
   friend class mrpt::opengl::CSetOfObjects;

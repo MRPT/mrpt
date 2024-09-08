@@ -1,8 +1,15 @@
 \page changelog Change Log
 
 # Version 2.13.9: UNRELEASED
+- Changes in libraries:
+  - \ref mrpt_rtti_grp:
+    - mrpt::rtti::CObject::GetRuntimeClassIdStatic() no longer depends on static variables, but on constexpr. This totally removes the possibility of initialization order fiasco while registering classes.
+    - **IMPORTANT CHANGE**: To make the change above possible, these macros have changed:
+      - `DEFINE_VIRTUAL_SERIALIZABLE(class)` ==>`DEFINE_VIRTUAL_SERIALIZABLE(class, namespace)`
+      - `DEFINE_VIRTUAL_MRPT_OBJECT(class)` ==>`DEFINE_VIRTUAL_MRPT_OBJECT(class, namespace)`
 - BUG FIXES:
   - Fix recursive mutex lock if calling mrpt::opengl::CPointCloud::insertPoint() with signatures for mrpt::math::TPoint3D.
+  - Fix potential initialization-order fiasco accessing GetRuntimeClassIdStatic() in clang (see change above).
 
 # Version 2.13.8: Released Sep 7th, 2024
 - Changes in libraries:

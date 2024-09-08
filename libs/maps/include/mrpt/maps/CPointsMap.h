@@ -75,7 +75,7 @@ class CPointsMap :
     public mrpt::opengl::PLY_Exporter,
     public mrpt::maps::NearestNeighborsCapable
 {
-  DEFINE_VIRTUAL_SERIALIZABLE(CPointsMap)
+  DEFINE_VIRTUAL_SERIALIZABLE(CPointsMap, mrpt::maps)
   // This must be added for declaration of MEX-related functions
   DECLARE_MEX_CONVERSION
 
