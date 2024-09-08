@@ -23,7 +23,7 @@ namespace mrpt::nav
  */
 class CHolonomicLogFileRecord : public mrpt::serialization::CSerializable
 {
-  DEFINE_VIRTUAL_SERIALIZABLE(CHolonomicLogFileRecord)
+  DEFINE_VIRTUAL_SERIALIZABLE(CHolonomicLogFileRecord, mrpt::nav)
  public:
   /** Final [N-1] and earlier stages [0...N-1] evaluation scores for each
    * direction, in the same order of TP-Obstacles. May be not filled by all

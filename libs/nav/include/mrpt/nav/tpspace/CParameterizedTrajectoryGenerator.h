@@ -80,7 +80,7 @@ class CParameterizedTrajectoryGenerator :
     public mrpt::serialization::CSerializable,
     public mrpt::config::CLoadableOptions
 {
-  DEFINE_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator)
+  DEFINE_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator, mrpt::nav)
  public:
   /** Default ctor. Must call `loadFromConfigFile()` before initialization */
   CParameterizedTrajectoryGenerator() = default;

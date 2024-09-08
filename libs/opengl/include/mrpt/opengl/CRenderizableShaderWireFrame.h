@@ -25,7 +25,7 @@ namespace mrpt::opengl
  */
 class CRenderizableShaderWireFrame : public virtual CRenderizable
 {
-  DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderWireFrame)
+  DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderWireFrame, mrpt::opengl)
 
  public:
   CRenderizableShaderWireFrame() = default;

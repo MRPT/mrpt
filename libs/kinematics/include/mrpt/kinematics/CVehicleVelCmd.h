@@ -21,7 +21,7 @@ namespace mrpt::kinematics
  * \ingroup mrpt_kinematics_grp */
 class CVehicleVelCmd : public mrpt::serialization::CSerializable, public mrpt::Stringifyable
 {
-  DEFINE_VIRTUAL_SERIALIZABLE(CVehicleVelCmd)
+  DEFINE_VIRTUAL_SERIALIZABLE(CVehicleVelCmd, mrpt::kinematics)
  public:
   CVehicleVelCmd();
   CVehicleVelCmd(const CVehicleVelCmd& other);
