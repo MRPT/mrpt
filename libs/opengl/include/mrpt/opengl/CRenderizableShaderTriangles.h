@@ -26,7 +26,7 @@ namespace mrpt::opengl
  */
 class CRenderizableShaderTriangles : public virtual CRenderizable
 {
-  DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderTriangles)
+  DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderTriangles, mrpt::opengl)
 
  public:
   CRenderizableShaderTriangles() = default;

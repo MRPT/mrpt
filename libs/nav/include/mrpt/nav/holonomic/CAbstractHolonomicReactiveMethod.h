@@ -28,7 +28,7 @@ namespace mrpt::nav
  */
 class CAbstractHolonomicReactiveMethod : public mrpt::serialization::CSerializable
 {
-  DEFINE_VIRTUAL_SERIALIZABLE(CAbstractHolonomicReactiveMethod)
+  DEFINE_VIRTUAL_SERIALIZABLE(CAbstractHolonomicReactiveMethod, mrpt::nav)
  public:
   /** Input parameters for CAbstractHolonomicReactiveMethod::navigate() */
   struct NavInput

@@ -101,9 +101,9 @@ void bind_mrpt_img_TStereoCamera(std::function< pybind11::module &(std::string c
 {
 	{ // mrpt::img::TStereoCamera file:mrpt/img/TStereoCamera.h line:23
 		pybind11::class_<mrpt::img::TStereoCamera, std::shared_ptr<mrpt::img::TStereoCamera>, PyCallBack_mrpt_img_TStereoCamera, mrpt::serialization::CSerializable> cl(M("mrpt::img"), "TStereoCamera", "Structure to hold the parameters of a pinhole stereo camera model.\n  The parameters obtained for one camera resolution can be used for any other\n resolution by means of the method TStereoCamera::scaleToResolution()\n\n \n mrpt::vision, the application stereo-calib-gui for calibrating a stereo\n camera");
+		cl.def( pybind11::init( [](){ return new mrpt::img::TStereoCamera(); }, [](){ return new PyCallBack_mrpt_img_TStereoCamera(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_img_TStereoCamera const &o){ return new PyCallBack_mrpt_img_TStereoCamera(o); } ) );
 		cl.def( pybind11::init( [](mrpt::img::TStereoCamera const &o){ return new mrpt::img::TStereoCamera(o); } ) );
-		cl.def( pybind11::init( [](){ return new mrpt::img::TStereoCamera(); }, [](){ return new PyCallBack_mrpt_img_TStereoCamera(); } ) );
 		cl.def_readwrite("leftCamera", &mrpt::img::TStereoCamera::leftCamera);
 		cl.def_readwrite("rightCamera", &mrpt::img::TStereoCamera::rightCamera);
 		cl.def_readwrite("rightCameraPose", &mrpt::img::TStereoCamera::rightCameraPose);

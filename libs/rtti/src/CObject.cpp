@@ -102,7 +102,6 @@ CObject::Ptr TRuntimeClassId::createObject() const
 // since it has no base class. These methods are defined
 // automatically for derived classes.
 TRuntimeClassId* CObject::_GetBaseClass() { return nullptr; }
-const struct TRuntimeClassId CObject::runtimeClassId = {"CObject", nullptr, nullptr};
 
 mrpt::rtti::CObject::Ptr mrpt::rtti::classFactory(const std::string& className)
 {
