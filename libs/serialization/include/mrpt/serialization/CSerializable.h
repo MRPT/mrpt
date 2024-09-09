@@ -34,9 +34,7 @@ class CSerializable : public mrpt::rtti::CObject
   friend class CSchemeArchiveBase;
 
   // This must be added to any CObject derived class:
-  DEFINE_VIRTUAL_MRPT_OBJECT(CSerializable)
-
-  ~CSerializable() override = default;
+  DEFINE_VIRTUAL_MRPT_OBJECT(CSerializable, mrpt::serialization)
 
  protected:
   /** @name CSerializable virtual methods
@@ -163,7 +161,8 @@ void OctetVectorToObject(const std::vector<uint8_t>& in_data, CSerializable::Ptr
 
 /** This declaration must be inserted in virtual CSerializable classes
  * definition: */
-#define DEFINE_VIRTUAL_SERIALIZABLE(class_name) DEFINE_VIRTUAL_MRPT_OBJECT(class_name)
+#define DEFINE_VIRTUAL_SERIALIZABLE(class_name, NameSpace) \
+  DEFINE_VIRTUAL_MRPT_OBJECT(class_name, NameSpace)
 
 /** This must be inserted as implementation of some required members for
  *  virtual CSerializable classes:

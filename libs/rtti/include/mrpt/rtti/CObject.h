@@ -12,7 +12,6 @@
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/typemeta/static_string.h>  // literal()
 
-#include <functional>
 #include <memory>
 #include <vector>
 
@@ -32,11 +31,12 @@ class CObject;
 struct TRuntimeClassId
 {
   using Ptr = safe_ptr<TRuntimeClassId>;
-  const char* className;
+  const char* className = nullptr;
   /** Create an object of the related class, or nullptr if it is virtual. */
-  std::function<std::shared_ptr<CObject>(void)> ptrCreateObject;
+  std::shared_ptr<CObject> (*ptrCreateObject)() = nullptr;
+
   /** Gets the base class runtime id. */
-  const TRuntimeClassId* (*getBaseClass)();
+  const TRuntimeClassId* (*getBaseClass)() = nullptr;
 
   // Operations
   std::shared_ptr<CObject> createObject() const;
@@ -176,7 +176,7 @@ class CObject
 {
  protected:
   static mrpt::rtti::TRuntimeClassId* _GetBaseClass();
-  static const mrpt::rtti::TRuntimeClassId runtimeClassId;
+  static constexpr mrpt::rtti::TRuntimeClassId runtimeClassId = {"CObject", nullptr, nullptr};
 
  public:
   using Ptr = std::shared_ptr<CObject>;
@@ -206,10 +206,6 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 #define DEFINE_MRPT_OBJECT(class_name, NameSpace)                                \
   /*! @name RTTI stuff  */                                                       \
   /*! @{  */                                                                     \
- protected:                                                                      \
-  static const mrpt::rtti::TRuntimeClassId* _GetBaseClass();                     \
-  static const mrpt::rtti::TRuntimeClassId runtimeClassId;                       \
-                                                                                 \
  public:                                                                         \
   /*! A type for the associated smart pointer */                                 \
   using Ptr = std::shared_ptr<NameSpace::class_name>;                            \
@@ -240,49 +236,55 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
   {                                                                              \
     return std::make_unique<class_name>(std::forward<Args>(args)...);            \
   }                                                                              \
+                                                                                 \
+ protected:                                                                      \
+  static const mrpt::rtti::TRuntimeClassId* _GetBaseClass();                     \
+  static constexpr mrpt::rtti::TRuntimeClassId runtimeClassId = {                \
+      #NameSpace "::" #class_name, NameSpace::class_name::CreateObject,          \
+      &class_name::_GetBaseClass};                                               \
+                                                                                 \
   /*! @} */                                                                      \
  public:
 
-#define INTERNAL_IMPLEMENTS_MRPT_OBJECT(class_name, base, NameSpace, class_registry_name)    \
-  mrpt::rtti::CObject::Ptr NameSpace::class_name::CreateObject()                             \
-  {                                                                                          \
-    return std::static_pointer_cast<CObject>(std::make_shared<NameSpace::class_name>());     \
-  }                                                                                          \
-  const mrpt::rtti::TRuntimeClassId* NameSpace::class_name::_GetBaseClass()                  \
-  {                                                                                          \
-    return CLASS_ID(base);                                                                   \
-  }                                                                                          \
-  const mrpt::rtti::TRuntimeClassId& NameSpace::class_name::GetRuntimeClassIdStatic()        \
-  {                                                                                          \
-    return NameSpace::class_name::runtimeClassId;                                            \
-  }                                                                                          \
-  const mrpt::rtti::TRuntimeClassId NameSpace::class_name::runtimeClassId = {                \
-      class_registry_name, NameSpace::class_name::CreateObject, &class_name::_GetBaseClass}; \
-  const mrpt::rtti::TRuntimeClassId* NameSpace::class_name::GetRuntimeClass() const          \
-  {                                                                                          \
-    return CLASS_ID_NAMESPACE(class_name, NameSpace);                                        \
-  }                                                                                          \
-  mrpt::rtti::CObject* NameSpace::class_name::clone() const                                  \
-  {                                                                                          \
-    return mrpt::rtti::internal::CopyCtor<                                                   \
-        std::is_copy_constructible<NameSpace::class_name>::value>::clone(*this);             \
+#define INTERNAL_IMPLEMENTS_MRPT_OBJECT(class_name, base, NameSpace)                     \
+  mrpt::rtti::CObject::Ptr NameSpace::class_name::CreateObject()                         \
+  {                                                                                      \
+    return std::static_pointer_cast<CObject>(std::make_shared<NameSpace::class_name>()); \
+  }                                                                                      \
+  const mrpt::rtti::TRuntimeClassId* NameSpace::class_name::_GetBaseClass()              \
+  {                                                                                      \
+    return CLASS_ID(base);                                                               \
+  }                                                                                      \
+  const mrpt::rtti::TRuntimeClassId& NameSpace::class_name::GetRuntimeClassIdStatic()    \
+  {                                                                                      \
+    return NameSpace::class_name::runtimeClassId;                                        \
+  }                                                                                      \
+  const mrpt::rtti::TRuntimeClassId* NameSpace::class_name::GetRuntimeClass() const      \
+  {                                                                                      \
+    return CLASS_ID_NAMESPACE(class_name, NameSpace);                                    \
+  }                                                                                      \
+  mrpt::rtti::CObject* NameSpace::class_name::clone() const                              \
+  {                                                                                      \
+    return mrpt::rtti::internal::CopyCtor<                                               \
+        std::is_copy_constructible<NameSpace::class_name>::value>::clone(*this);         \
   }
 
 /** Must be added to all CObject-derived classes implementation file.
  * This registers class ns1::Foo as "ns1::Foo".
  */
 #define IMPLEMENTS_MRPT_OBJECT(class_name, base, NameSpace) \
-  INTERNAL_IMPLEMENTS_MRPT_OBJECT(class_name, base, NameSpace, #NameSpace "::" #class_name)
+  INTERNAL_IMPLEMENTS_MRPT_OBJECT(class_name, base, NameSpace)
 
 /** This declaration must be inserted in virtual CObject classes
  * definition:
  */
-#define DEFINE_VIRTUAL_MRPT_OBJECT(class_name)                                 \
+#define DEFINE_VIRTUAL_MRPT_OBJECT(class_name, NameSpace)                      \
   /*! @name RTTI stuff  */                                                     \
   /*! @{  */                                                                   \
  protected:                                                                    \
   static const mrpt::rtti::TRuntimeClassId* _GetBaseClass();                   \
-  static const mrpt::rtti::TRuntimeClassId runtimeClassId;                     \
+  static constexpr mrpt::rtti::TRuntimeClassId runtimeClassId = {              \
+      #NameSpace "::" #class_name, nullptr, &class_name::_GetBaseClass};       \
                                                                                \
  public:                                                                       \
   using Ptr = std::shared_ptr<class_name>;                                     \
@@ -294,24 +296,22 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 /** This must be inserted as implementation of some required members for
  *  virtual CObject classes:
  */
-#define INTERNAL_IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base_name, NS, registered_name) \
-  const mrpt::rtti::TRuntimeClassId* NS::class_name::_GetBaseClass()                        \
-  {                                                                                         \
-    return CLASS_ID(base_name);                                                             \
-  }                                                                                         \
-  const mrpt::rtti::TRuntimeClassId NS::class_name::runtimeClassId = {                      \
-      registered_name, nullptr, &NS::class_name::_GetBaseClass};                            \
-  const mrpt::rtti::TRuntimeClassId* NS::class_name::GetRuntimeClass() const                \
-  {                                                                                         \
-    return CLASS_ID(class_name);                                                            \
-  }                                                                                         \
-  const mrpt::rtti::TRuntimeClassId& NS::class_name::GetRuntimeClassIdStatic()              \
-  {                                                                                         \
-    return NS::class_name::runtimeClassId;                                                  \
+#define INTERNAL_IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base_name, NS)     \
+  const mrpt::rtti::TRuntimeClassId* NS::class_name::_GetBaseClass()           \
+  {                                                                            \
+    return CLASS_ID(base_name);                                                \
+  }                                                                            \
+  const mrpt::rtti::TRuntimeClassId* NS::class_name::GetRuntimeClass() const   \
+  {                                                                            \
+    return CLASS_ID(class_name);                                               \
+  }                                                                            \
+  const mrpt::rtti::TRuntimeClassId& NS::class_name::GetRuntimeClassIdStatic() \
+  {                                                                            \
+    return NS::class_name::runtimeClassId;                                     \
   }
 
 #define IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base, NS) \
-  INTERNAL_IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base, NS, #NS "::" #class_name)
+  INTERNAL_IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base, NS)
 
 /** Register all pending classes - to be called just before
  * de-serializing an object, for example. After calling this method,
