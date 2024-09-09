@@ -29,7 +29,7 @@ class BarBase : public mrpt::rtti::CObject
 {
  public:
   BarBase() {}
-  DEFINE_VIRTUAL_MRPT_OBJECT(BarBase)
+  DEFINE_VIRTUAL_MRPT_OBJECT(BarBase, MyNS)
 
   virtual void printName() { std::cout << "printName: BarBase" << std::endl; }
 };
