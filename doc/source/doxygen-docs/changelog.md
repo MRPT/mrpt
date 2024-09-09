@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.13.9: UNRELEASED
+# Version 2.14.0: UNRELEASED
 - Changes in libraries:
   - \ref mrpt_rtti_grp:
     - mrpt::rtti::CObject::GetRuntimeClassIdStatic() no longer depends on static variables, but on constexpr. This totally removes the possibility of initialization order fiasco while registering classes.
