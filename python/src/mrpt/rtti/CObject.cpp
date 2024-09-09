@@ -39,6 +39,7 @@
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationRange.h>
+#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/CPoint3D.h>
@@ -69,15 +70,12 @@
 
 void bind_mrpt_rtti_CObject(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::rtti::TRuntimeClassId file:mrpt/rtti/CObject.h line:32
+	{ // mrpt::rtti::TRuntimeClassId file:mrpt/rtti/CObject.h line:31
 		pybind11::class_<mrpt::rtti::TRuntimeClassId, std::shared_ptr<mrpt::rtti::TRuntimeClassId>> cl(M("mrpt::rtti"), "TRuntimeClassId", "A structure that holds runtime class type information. Use\n CLASS_ID(<class_name>) to get a reference to the class_name's TRuntimeClassId\n descriptor.\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::TRuntimeClassId(); } ) );
-		cl.def( pybind11::init( [](mrpt::rtti::TRuntimeClassId const &o){ return new mrpt::rtti::TRuntimeClassId(o); } ) );
-		cl.def_readwrite("ptrCreateObject", &mrpt::rtti::TRuntimeClassId::ptrCreateObject);
 		cl.def("createObject", (class std::shared_ptr<class mrpt::rtti::CObject> (mrpt::rtti::TRuntimeClassId::*)() const) &mrpt::rtti::TRuntimeClassId::createObject, "C++: mrpt::rtti::TRuntimeClassId::createObject() const --> class std::shared_ptr<class mrpt::rtti::CObject>");
 		cl.def("derivedFrom", (bool (mrpt::rtti::TRuntimeClassId::*)(const struct mrpt::rtti::TRuntimeClassId *) const) &mrpt::rtti::TRuntimeClassId::derivedFrom, "C++: mrpt::rtti::TRuntimeClassId::derivedFrom(const struct mrpt::rtti::TRuntimeClassId *) const --> bool", pybind11::arg("pBaseClass"));
 		cl.def("derivedFrom", (bool (mrpt::rtti::TRuntimeClassId::*)(const char *) const) &mrpt::rtti::TRuntimeClassId::derivedFrom, "C++: mrpt::rtti::TRuntimeClassId::derivedFrom(const char *) const --> bool", pybind11::arg("pBaseClass_name"));
-		cl.def("assign", (struct mrpt::rtti::TRuntimeClassId & (mrpt::rtti::TRuntimeClassId::*)(const struct mrpt::rtti::TRuntimeClassId &)) &mrpt::rtti::TRuntimeClassId::operator=, "C++: mrpt::rtti::TRuntimeClassId::operator=(const struct mrpt::rtti::TRuntimeClassId &) --> struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
 	// mrpt::rtti::registerClass(const struct mrpt::rtti::TRuntimeClassId *) file:mrpt/rtti/CObject.h line:51
 	M("mrpt::rtti").def("registerClass", (void (*)(const struct mrpt::rtti::TRuntimeClassId *)) &mrpt::rtti::registerClass, "Register a class into the MRPT internal list of \"CObject\" descendents.\n  Used internally in the macros DEFINE_SERIALIZABLE, etc...\n \n\n getAllRegisteredClasses\n\nC++: mrpt::rtti::registerClass(const struct mrpt::rtti::TRuntimeClassId *) --> void", pybind11::arg("pNewClass"));
@@ -178,5 +176,10 @@ void bind_mrpt_rtti_CObject(std::function< pybind11::module &(std::string const 
 		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::obs::CObservation>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::obs::CObservation>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_obs_CObservation_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::obs::CObservation>(); } ) );
 		cl.def_static("get", (const struct mrpt::rtti::TRuntimeClassId * (*)()) &mrpt::rtti::CLASS_ID_impl<mrpt::obs::CObservation>::get, "C++: mrpt::rtti::CLASS_ID_impl<mrpt::obs::CObservation>::get() --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
+	}
+	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:91
+		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::obs::CSensoryFrame>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::obs::CSensoryFrame>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_obs_CSensoryFrame_t", "");
+		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::obs::CSensoryFrame>(); } ) );
+		cl.def_static("get", (const struct mrpt::rtti::TRuntimeClassId * (*)()) &mrpt::rtti::CLASS_ID_impl<mrpt::obs::CSensoryFrame>::get, "C++: mrpt::rtti::CLASS_ID_impl<mrpt::obs::CSensoryFrame>::get() --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 	}
 }

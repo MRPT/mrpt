@@ -114,7 +114,7 @@ struct PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_GENERIC_SHORT_FRAME : public mrp
 	}
 };
 
-// mrpt::obs::gnss::Message_NV_OEM6_BESTPOS file: line:78
+// mrpt::obs::gnss::Message_NV_OEM6_BESTPOS file: line:2
 struct PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_BESTPOS : public mrpt::obs::gnss::Message_NV_OEM6_BESTPOS {
 	using mrpt::obs::gnss::Message_NV_OEM6_BESTPOS::Message_NV_OEM6_BESTPOS;
 
@@ -159,7 +159,7 @@ struct PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_BESTPOS : public mrpt::obs::gnss
 	}
 };
 
-// mrpt::obs::gnss::Message_NV_OEM6_INSPVAS file: line:84
+// mrpt::obs::gnss::Message_NV_OEM6_INSPVAS file: line:8
 struct PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_INSPVAS : public mrpt::obs::gnss::Message_NV_OEM6_INSPVAS {
 	using mrpt::obs::gnss::Message_NV_OEM6_INSPVAS::Message_NV_OEM6_INSPVAS;
 
@@ -204,7 +204,7 @@ struct PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_INSPVAS : public mrpt::obs::gnss
 	}
 };
 
-// mrpt::obs::gnss::Message_NV_OEM6_INSCOVS file: line:90
+// mrpt::obs::gnss::Message_NV_OEM6_INSCOVS file: line:14
 struct PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_INSCOVS : public mrpt::obs::gnss::Message_NV_OEM6_INSCOVS {
 	using mrpt::obs::gnss::Message_NV_OEM6_INSCOVS::Message_NV_OEM6_INSCOVS;
 
@@ -316,7 +316,7 @@ void bind_unknown_unknown_5(std::function< pybind11::module &(std::string const 
 		cl.def("fixEndianness", (void (mrpt::obs::gnss::Message_NV_OEM6_GENERIC_SHORT_FRAME::*)()) &mrpt::obs::gnss::Message_NV_OEM6_GENERIC_SHORT_FRAME::fixEndianness, "C++: mrpt::obs::gnss::Message_NV_OEM6_GENERIC_SHORT_FRAME::fixEndianness() --> void");
 		cl.def("assign", (struct mrpt::obs::gnss::Message_NV_OEM6_GENERIC_SHORT_FRAME & (mrpt::obs::gnss::Message_NV_OEM6_GENERIC_SHORT_FRAME::*)(const struct mrpt::obs::gnss::Message_NV_OEM6_GENERIC_SHORT_FRAME &)) &mrpt::obs::gnss::Message_NV_OEM6_GENERIC_SHORT_FRAME::operator=, "C++: mrpt::obs::gnss::Message_NV_OEM6_GENERIC_SHORT_FRAME::operator=(const struct mrpt::obs::gnss::Message_NV_OEM6_GENERIC_SHORT_FRAME &) --> struct mrpt::obs::gnss::Message_NV_OEM6_GENERIC_SHORT_FRAME &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::obs::gnss::Message_NV_OEM6_BESTPOS file: line:78
+	{ // mrpt::obs::gnss::Message_NV_OEM6_BESTPOS file: line:2
 		pybind11::class_<mrpt::obs::gnss::Message_NV_OEM6_BESTPOS, std::shared_ptr<mrpt::obs::gnss::Message_NV_OEM6_BESTPOS>, PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_BESTPOS, mrpt::obs::gnss::gnss_message> cl(M("mrpt::obs::gnss"), "Message_NV_OEM6_BESTPOS", "");
 		cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NV_OEM6_BESTPOS(); }, [](){ return new PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_BESTPOS(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_BESTPOS const &o){ return new PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_BESTPOS(o); } ) );
@@ -356,7 +356,7 @@ void bind_unknown_unknown_5(std::function< pybind11::module &(std::string const 
 		}
 
 	}
-	{ // mrpt::obs::gnss::Message_NV_OEM6_INSPVAS file: line:84
+	{ // mrpt::obs::gnss::Message_NV_OEM6_INSPVAS file: line:8
 		pybind11::class_<mrpt::obs::gnss::Message_NV_OEM6_INSPVAS, std::shared_ptr<mrpt::obs::gnss::Message_NV_OEM6_INSPVAS>, PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_INSPVAS, mrpt::obs::gnss::gnss_message> cl(M("mrpt::obs::gnss"), "Message_NV_OEM6_INSPVAS", "");
 		cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NV_OEM6_INSPVAS(); }, [](){ return new PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_INSPVAS(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_INSPVAS const &o){ return new PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_INSPVAS(o); } ) );
@@ -388,7 +388,7 @@ void bind_unknown_unknown_5(std::function< pybind11::module &(std::string const 
 		}
 
 	}
-	{ // mrpt::obs::gnss::Message_NV_OEM6_INSCOVS file: line:90
+	{ // mrpt::obs::gnss::Message_NV_OEM6_INSCOVS file: line:14
 		pybind11::class_<mrpt::obs::gnss::Message_NV_OEM6_INSCOVS, std::shared_ptr<mrpt::obs::gnss::Message_NV_OEM6_INSCOVS>, PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_INSCOVS, mrpt::obs::gnss::gnss_message> cl(M("mrpt::obs::gnss"), "Message_NV_OEM6_INSCOVS", "");
 		cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::Message_NV_OEM6_INSCOVS(); }, [](){ return new PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_INSCOVS(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_INSCOVS const &o){ return new PyCallBack_mrpt_obs_gnss_Message_NV_OEM6_INSCOVS(o); } ) );
