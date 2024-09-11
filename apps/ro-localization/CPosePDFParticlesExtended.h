@@ -30,8 +30,6 @@ class TExtendedCPose2D
   mrpt::math::CVectorDouble state;
 };
 
-#define DUMMY_LINKAGE
-
 /** Declares a class that represents a Probability Distribution
  *    function (PDF) of a 2D pose (x,y,phi).
  *   This class implements that PDF using a set of particles
