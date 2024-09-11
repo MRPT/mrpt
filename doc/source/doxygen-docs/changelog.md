@@ -2,6 +2,8 @@
 
 # Version 2.14.0: UNRELEASED
 - Changes in libraries:
+  - \ref mrpt_slam_grp:
+    - Particle filtering algorithm pfStandardProposal now uses TBB (if present) for automatically running weight updates in parallel.
   - \ref mrpt_rtti_grp:
     - mrpt::rtti::CObject::GetRuntimeClassIdStatic() no longer depends on static variables, but on constexpr. This totally removes the possibility of initialization order fiasco while registering classes.
     - **IMPORTANT CHANGE**: To make the change above possible, these macros have changed:

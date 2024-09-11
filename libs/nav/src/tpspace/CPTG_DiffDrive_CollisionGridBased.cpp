@@ -9,6 +9,8 @@
 
 #include "nav-precomp.h"  // Precomp header
 //
+#include <mrpt/core/WorkerThreadsPool.h>
+#include <mrpt/core/get_env.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
@@ -785,7 +787,7 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
       }
     }  // k
 
-    if (verbose) cout << format("Done! [%.03f sec]\n", tictac.Tac());
+    if (verbose) cout << format("Done! [%.03f sec]", tictac.Tac()) << std::endl;
 
     // save it to the cache file for the next run:
     saveColGridsToFile(cacheFilename, m_robotShape);
