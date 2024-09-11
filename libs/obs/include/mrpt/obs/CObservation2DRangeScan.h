@@ -8,13 +8,17 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/containers/NonCopiableData.h>
 #include <mrpt/core/aligned_std_vector.h>
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/T2DScanProperties.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
+
+#include <mutex>
 
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::obs::CObservation2DRangeScan)
@@ -166,6 +170,7 @@ class CObservation2DRangeScan : public CObservation
    *  It's a generic smart pointer to avoid depending here in the library
    * mrpt-obs on classes on other libraries.
    */
+  mutable mrpt::containers::NonCopiableData<std::recursive_mutex> m_cachedMapMtx;
   mutable mrpt::maps::CMetricMap::Ptr m_cachedMap;
   /** Internal method, used from buildAuxPointsMap() */
   void internal_buildAuxPointsMap(const void* options = nullptr) const;
@@ -183,6 +188,7 @@ class CObservation2DRangeScan : public CObservation
   template <class POINTSMAP>
   inline const POINTSMAP* getAuxPointsMap() const
   {
+    auto lck = mrpt::lockHelper(m_cachedMapMtx.data);
     return static_cast<const POINTSMAP*>(m_cachedMap.get());
   }
 
@@ -201,6 +207,8 @@ class CObservation2DRangeScan : public CObservation
   template <class POINTSMAP>
   inline const POINTSMAP* buildAuxPointsMap(const void* options = nullptr) const
   {
+    auto lck = mrpt::lockHelper(m_cachedMapMtx.data);
+
     if (!m_cachedMap) internal_buildAuxPointsMap(options);
     return static_cast<const POINTSMAP*>(m_cachedMap.get());
   }

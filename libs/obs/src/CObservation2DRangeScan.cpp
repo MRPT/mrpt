@@ -178,6 +178,7 @@ void CObservation2DRangeScan::serializeFrom(mrpt::serialization::CArchive& in, u
       MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
   };
 
+  auto lck = mrpt::lockHelper(m_cachedMapMtx.data);
   m_cachedMap.reset();
 }
 
@@ -423,6 +424,8 @@ void internal_set_build_points_map_from_scan2D(scan2pts_functor fn)
   ---------------------------------------------------------------*/
 void CObservation2DRangeScan::internal_buildAuxPointsMap(const void* options) const
 {
+  auto lck = mrpt::lockHelper(m_cachedMapMtx.data);
+
   if (!ptr_internal_build_points_map_from_scan2D)
     throw std::runtime_error(
         "[CObservation2DRangeScan::buildAuxPointsMap] ERROR: This function "

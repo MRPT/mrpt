@@ -308,6 +308,7 @@ include(cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimiza
 include(cmakemodules/script_simpleini.cmake REQUIRED)   # SimpleINI lib
 include(cmakemodules/script_suitesparse.cmake REQUIRED) # SuiteSparse libs
 include(cmakemodules/script_swissrange.cmake REQUIRED)  # Support for SWISSRANGE 3D camera:
+include(cmakemodules/script_tbb.cmake REQUIRED)         # TBB
 include(cmakemodules/script_tinyxml2.cmake REQUIRED)    # tinyxml2 lib
 include(cmakemodules/script_triclops.cmake REQUIRED)    # Check for PointGreyResearch (PGR) Triclops library
 include(cmakemodules/script_videre_svs.cmake REQUIRED)  # Support for Videre Design stereo camera:
