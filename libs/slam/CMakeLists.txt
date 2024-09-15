@@ -10,6 +10,12 @@ list(APPEND slam_EXTRA_SRCS
 list(APPEND slam_EXTRA_SRCS_NAME
 	"slam" "slam" "slam-headers")
 
+if(CMAKE_MRPT_HAS_TBB)
+	set(tbb_dep TBB)
+else()
+	set(tbb_dep "")
+endif()
+
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------
@@ -19,8 +25,13 @@ define_mrpt_lib(
 	# Dependencies
 	mrpt-vision
 	mrpt-maps
+	# Other imported targets:
+	${tbb_dep} # find_package() lib name
 	)
 
 if(BUILD_mrpt-slam)
 
+	if (CMAKE_MRPT_HAS_TBB)
+		target_link_libraries(slam PUBLIC TBB::tbb)
+	endif()
 endif()

@@ -195,12 +195,12 @@ class CPointCloud :
 
   void insertPoint(const mrpt::math::TPoint3Df& p)
   {
-    std::unique_lock<std::shared_mutex> wfWriteLock(CRenderizableShaderPoints::m_pointsMtx.data);
+    // lock already hold by insertPoint() below
     insertPoint(p.x, p.y, p.z);
   }
   void insertPoint(const mrpt::math::TPoint3D& p)
   {
-    std::unique_lock<std::shared_mutex> wfWriteLock(CRenderizableShaderPoints::m_pointsMtx.data);
+    // lock already hold by insertPoint() below
     insertPoint(p.x, p.y, p.z);
   }
 

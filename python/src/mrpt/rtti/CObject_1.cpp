@@ -11,7 +11,6 @@
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
-#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
@@ -40,11 +39,6 @@
 
 void bind_mrpt_rtti_CObject_1(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:91
-		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::obs::CSensoryFrame>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::obs::CSensoryFrame>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_obs_CSensoryFrame_t", "");
-		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::obs::CSensoryFrame>(); } ) );
-		cl.def_static("get", (const struct mrpt::rtti::TRuntimeClassId * (*)()) &mrpt::rtti::CLASS_ID_impl<mrpt::obs::CSensoryFrame>::get, "C++: mrpt::rtti::CLASS_ID_impl<mrpt::obs::CSensoryFrame>::get() --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
-	}
 	{ // mrpt::rtti::CLASS_ID_impl file:mrpt/rtti/CObject.h line:91
 		pybind11::class_<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CLandmarksMap>, std::shared_ptr<mrpt::rtti::CLASS_ID_impl<mrpt::maps::CLandmarksMap>>> cl(M("mrpt::rtti"), "CLASS_ID_impl_mrpt_maps_CLandmarksMap_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::rtti::CLASS_ID_impl<mrpt::maps::CLandmarksMap>(); } ) );

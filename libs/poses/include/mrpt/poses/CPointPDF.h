@@ -36,7 +36,7 @@ class CPointPDF :
     public mrpt::serialization::CSerializable,
     public mrpt::math::CProbabilityDensityFunction<CPoint3D, 3>
 {
-  DEFINE_VIRTUAL_SERIALIZABLE(CPointPDF)
+  DEFINE_VIRTUAL_SERIALIZABLE(CPointPDF, mrpt::poses)
 
  public:
   /** Copy operator, translating if necessary (for example, between particles

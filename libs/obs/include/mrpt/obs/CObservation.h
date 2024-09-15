@@ -49,7 +49,7 @@ static constexpr int INVALID_LANDMARK_ID = -1;
  */
 class CObservation : public mrpt::serialization::CSerializable, public mrpt::Stringifyable
 {
-  DEFINE_VIRTUAL_SERIALIZABLE(CObservation)
+  DEFINE_VIRTUAL_SERIALIZABLE(CObservation, mrpt::obs)
 
  protected:
   /** Swap with another observation, ONLY the data defined here in the base

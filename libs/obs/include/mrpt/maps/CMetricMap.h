@@ -76,7 +76,7 @@ class CMetricMap :
     public mrpt::Stringifyable,
     public mrpt::opengl::Visualizable
 {
-  DEFINE_VIRTUAL_SERIALIZABLE(CMetricMap)
+  DEFINE_VIRTUAL_SERIALIZABLE(CMetricMap, mrpt::obs)
 
  private:
   /** Internal method called by clear() */

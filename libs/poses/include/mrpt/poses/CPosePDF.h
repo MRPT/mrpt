@@ -37,7 +37,7 @@ class CPosePDF :
     public mrpt::serialization::CSerializable,
     public mrpt::math::CProbabilityDensityFunction<CPose2D, 3>
 {
-  DEFINE_VIRTUAL_SERIALIZABLE(CPosePDF)
+  DEFINE_VIRTUAL_SERIALIZABLE(CPosePDF, mrpt::poses)
 
  public:
   /** Copy operator, translating if necessary (for example, between particles
