@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.14.1: UNRELEASED
+(None yet)
+
 # Version 2.14.0: Released Sep 15th, 2024
 - Changes in libraries:
   - \ref mrpt_slam_grp:
