@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.14.0: UNRELEASED
+# Version 2.14.0: Released Sep 15th, 2024
 - Changes in libraries:
   - \ref mrpt_slam_grp:
     - Particle filtering algorithm pfStandardProposal now uses TBB (if present) for automatically running weight updates in parallel.
