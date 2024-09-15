@@ -11,6 +11,7 @@
 
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
+#include <mrpt/config.h>
 #include <mrpt/math/data_utils.h>     // averageLogLikelihood()
 #include <mrpt/math/distributions.h>  // chi2inv
 #include <mrpt/obs/CActionCollection.h>
@@ -21,6 +22,11 @@
 #include <mrpt/slam/TKLDParams.h>
 
 #include <cmath>
+#include <set>
+
+#if MRPT_HAS_TBB
+#include <tbb/tbb.h>
+#endif
 
 /** \file PF_implementations.h
  *  This file contains the implementations of the template members declared in
@@ -334,17 +340,31 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::PF_SLAM_implementation_p
     //	UPDATE STAGE
     // ----------------------------------------------------------------------
     // Compute all the likelihood values & update particles weight:
+#if MRPT_HAS_TBB
+    tbb::parallel_for(
+        tbb::blocked_range<size_t>(0, M),
+        [&](const tbb::blocked_range<size_t>& r)
+        {
+          for (size_t i = r.begin(); i != r.end(); ++i)
+          {
+#else
     for (size_t i = 0; i < M; i++)
     {
-      bool pose_is_valid;
-      const mrpt::math::TPose3D partPose =
-          getLastPose(i, pose_is_valid);  // Take the particle data:
-      auto partPose2 = mrpt::poses::CPose3D(partPose);
-      const double obs_log_lik =
-          PF_SLAM_computeObservationLikelihoodForParticle(PF_options, i, *sf, partPose2);
-      ASSERT_(!std::isnan(obs_log_lik) && std::isfinite(obs_log_lik));
-      me->m_particles[i].log_w += obs_log_lik * PF_options.powFactor;
+#endif
+            bool pose_is_valid;
+            const mrpt::math::TPose3D partPose =
+                getLastPose(i, pose_is_valid);  // Take the particle data:
+            auto partPose2 = mrpt::poses::CPose3D(partPose);
+            const double obs_log_lik =
+                PF_SLAM_computeObservationLikelihoodForParticle(PF_options, i, *sf, partPose2);
+            ASSERT_(!std::isnan(obs_log_lik) && std::isfinite(obs_log_lik));
+            me->m_particles[i].log_w += obs_log_lik * PF_options.powFactor;
+#if MRPT_HAS_TBB
+          }  // for each particle "i"
+        });
+#else
     }  // for each particle "i"
+#endif
 
     // Normalization of weights is done outside of this method
     // automatically.

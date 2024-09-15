@@ -12,8 +12,6 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/archiveFrom_std_vector.h>
 
-#include <cstdio>
-
 using namespace mrpt;
 using namespace mrpt::serialization;
 

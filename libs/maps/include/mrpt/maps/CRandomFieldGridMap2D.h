@@ -158,7 +158,7 @@ class CRandomFieldGridMap2D :
 {
   using BASE = mrpt::containers::CDynamicGrid<TRandomFieldCell>;
 
-  DEFINE_VIRTUAL_SERIALIZABLE(CRandomFieldGridMap2D)
+  DEFINE_VIRTUAL_SERIALIZABLE(CRandomFieldGridMap2D, mrpt::maps)
  public:
   /** Calls the base CMetricMap::clear
    * Declared here to avoid ambiguity between the two clear() in both base

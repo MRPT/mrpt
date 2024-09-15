@@ -112,6 +112,8 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #define MRPT_HAS_SIMPLEINI ${CMAKE_MRPT_HAS_SIMPLEINI}
 #define MRPT_HAS_SIMPLEINI_SYSTEM ${CMAKE_MRPT_HAS_SIMPLEINI_SYSTEM}
 
+#define MRPT_HAS_TBB              ${CMAKE_MRPT_HAS_TBB}
+
 #cmakedefine MRPT_ROS_VERSION ${MRPT_ROS_VERSION}
 
 /** These two values are detected in Eigen when building MRPT, so we have
