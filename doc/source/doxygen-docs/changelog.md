@@ -1,7 +1,9 @@
 \page changelog Change Log
 
 # Version 2.14.1: UNRELEASED
-(None yet)
+- Changes in libraries:
+  - \ref mrpt_opengl_grp:
+    - New method mrpt::opengl::CAssimpModel::split_triangles_rendering_bbox() to enable a new feature in Assimp 3D models: splitting into smaller triangle sets for correct z-ordering of semitransparent objects; e.g. required for trees with masked leaves.
 
 # Version 2.14.0: Released Sep 15th, 2024
 - Changes in libraries:
