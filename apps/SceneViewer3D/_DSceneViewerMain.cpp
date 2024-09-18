@@ -891,32 +891,43 @@ void _DSceneViewerFrame::OntimLoadFileCmdLineTrigger(wxTimerEvent&)
 {
   timLoadFileCmdLine.Stop();  // One shot only.
   // Open file if passed by the command line:
-  if (!global_fileToOpen.empty())
-  {
-    if (mrpt::system::strCmpI(
-            "3Dscene", mrpt::system::extractFileExtension(global_fileToOpen, true /*ignore .gz*/)))
-    {
-      loadFromFile(global_fileToOpen);
-    }
-    else
-    {
-      std::cout << "Filename extension does not match `3Dscene`, "
-                   "importing as an ASSIMP model...\n";
-      try
-      {
-        auto obj3D = mrpt::opengl::CAssimpModel::Create();
-        obj3D->loadScene(global_fileToOpen);
-        // obj3D->setPose(mrpt::math::TPose3D(0, 0, 0, .0_deg,
-        // 0._deg, 90.0_deg));
-        m_canvas->getOpenGLSceneRef()->insert(obj3D);
+  if (global_fileToOpen.empty()) return;
 
-        m_canvas->Refresh();
-      }
-      catch (const std::exception& e)
-      {
-        std::cerr << mrpt::exception_to_str(e) << std::endl;
-        wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
-      }
+  if (mrpt::system::strCmpI(
+          "3Dscene", mrpt::system::extractFileExtension(global_fileToOpen, true /*ignore .gz*/)))
+  {
+    loadFromFile(global_fileToOpen);
+  }
+  else
+  {
+    std::cout << "Filename extension does not match `3Dscene`, "
+                 "importing as an ASSIMP model...\n";
+    try
+    {
+      auto obj3D = mrpt::opengl::CAssimpModel::Create();
+      obj3D->loadScene(global_fileToOpen);
+      // obj3D->setPose(mrpt::math::TPose3D(0, 0, 0, .0_deg,
+      // 0._deg, 90.0_deg));
+      m_canvas->getOpenGLSceneRef()->insert(obj3D);
+
+      // TODO: make optional?
+      obj3D->split_triangles_rendering_bbox(0.25);
+
+      m_canvas->Refresh();
+    }
+    catch (const std::exception& e)
+    {
+      std::cerr << mrpt::exception_to_str(e) << std::endl;
+      wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
+    }
+  }
+
+  // Enable shadows?
+  if (0)
+  {
+    if (auto vw = m_canvas->getOpenGLSceneRef()->getViewport(); vw)
+    {
+      vw->enableShadowCasting();
     }
   }
 }

@@ -33,6 +33,7 @@
 #endif
 
 #include <mrpt/core/lock_helper.h>
+#include <mrpt/core/round.h>
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
@@ -273,8 +274,65 @@ void CAssimpModel::onUpdateBuffers_all()
 
   process_textures(m_assimp_scene->scene);
 
+  // Model -> 3D primitives:
   const auto transf = mrpt::poses::CPose3D();
   recursive_render(m_assimp_scene->scene, m_assimp_scene->scene->mRootNode, transf, re);
+
+  // Handle split:
+  if (m_split_triangles_rendering_bbox > .0f)
+  {
+    const float voxel = m_split_triangles_rendering_bbox;
+
+    ASSERT_EQUAL_(m_texturedObjects.size(), m_textureIdMap.size());
+    const std::vector<CSetOfTexturedTriangles::Ptr> origTexturedObjects = m_texturedObjects;
+    m_texturedObjects.clear();
+
+    std::unordered_map<int64_t, std::map<size_t /*textId*/, CSetOfTexturedTriangles::Ptr>>
+        newTextObjs;
+
+    for (size_t textId = 0; textId < m_textureIdMap.size(); textId++)
+    {
+      const auto& glTris = origTexturedObjects.at(textId);
+      const std::vector<mrpt::opengl::TTriangle>& iTris = glTris->shaderTexturedTrianglesBuffer();
+      for (const auto& t : iTris)
+      {
+        const auto midPt = 0.333f * (t.vertices[0].xyzrgba.pt + t.vertices[1].xyzrgba.pt +
+                                     t.vertices[2].xyzrgba.pt);
+        // hash for "voxels":
+        const int64_t vxlCoord = mrpt::round(midPt.x / voxel) +           //
+                                 mrpt::round(midPt.y / voxel) * 10'000 +  //
+                                 mrpt::round(midPt.z / voxel) * 100'000'000;
+
+        auto& trgObj = newTextObjs[vxlCoord][textId];
+        if (!trgObj)
+        {
+          // Create
+          trgObj = CSetOfTexturedTriangles::Create();
+
+          // Set representative point: the MOST FUNDAMENTAL property
+          // to ensure proper z ordering for transparent rendering:
+          trgObj->setLocalRepresentativePoint(midPt);
+
+          // copy texture
+          const auto& texRGB = glTris->getTextureImage();
+          const auto& texAlpha = glTris->getTextureAlphaImage();
+          if (!texAlpha.isEmpty())
+            trgObj->assignImage(texRGB, texAlpha);
+          else
+            trgObj->assignImage(texRGB);
+        }
+        // Add triangle:
+        trgObj->insertTriangle(t);
+      }
+    }
+
+    // replace list of objects:
+    m_texturedObjects.clear();
+    for (const auto& m : newTextObjs)
+      for (const auto& [k, v] : m.second)  //
+        m_texturedObjects.push_back(v);
+  }  // end: split into subobjects:
+
 #endif
 }
 
@@ -297,14 +355,15 @@ void CAssimpModel::enqueueForRenderRecursive(
   mrpt::opengl::enqueueForRendering(lst, state, rq, wholeInView, is1stShadowMapPass);
 }
 
-uint8_t CAssimpModel::serializeGetVersion() const { return 2; }
+uint8_t CAssimpModel::serializeGetVersion() const { return 3; }
 void CAssimpModel::serializeTo(mrpt::serialization::CArchive& out) const
 {
   writeToStreamRender(out);
 #if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL) && MRPT_HAS_ASSIMP
   const bool empty = m_assimp_scene->scene == nullptr;
   out << empty;
-  out << m_modelPath;  // v2
+  out << m_modelPath;                       // v2
+  out << m_split_triangles_rendering_bbox;  // v3
   if (!empty)
   {
 #if 0
@@ -348,6 +407,8 @@ void CAssimpModel::serializeFrom(mrpt::serialization::CArchive& in, uint8_t vers
       {
         const bool empty = in.ReadAs<bool>();
         in >> m_modelPath;
+        if (version >= 3) in >> m_split_triangles_rendering_bbox;
+
         if (!empty)
         {
           const auto blobSize = in.ReadAs<uint32_t>();
@@ -439,6 +500,7 @@ void CAssimpModel::after_load_model()
   // Evaluate overall bbox:
   {
     aiVector3D scene_min, scene_max;
+    ASSERT_(m_assimp_scene->scene);
     get_bounding_box(m_assimp_scene->scene, &scene_min, &scene_max);
     m_bbox_min.x = scene_min.x;
     m_bbox_min.y = scene_min.y;
@@ -458,6 +520,14 @@ void CAssimpModel::after_load_model()
 auto CAssimpModel::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
   return mrpt::math::TBoundingBoxf::FromUnsortedPoints(m_bbox_min, m_bbox_max);
+}
+
+void CAssimpModel::split_triangles_rendering_bbox(const float bbox_size)
+{
+  m_split_triangles_rendering_bbox = bbox_size;
+
+  CRenderizable::notifyChange();
+  if (m_assimp_scene->scene) after_load_model();
 }
 
 bool CAssimpModel::traceRay(
