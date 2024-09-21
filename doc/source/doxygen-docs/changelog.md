@@ -1,6 +1,8 @@
 \page changelog Change Log
 
 # Version 2.14.1: UNRELEASED
+- Changes in apps:
+  - SceneViewer3D: New button to enable shadow casting.
 - Changes in libraries:
   - \ref mrpt_opengl_grp:
     - New method mrpt::opengl::CAssimpModel::split_triangles_rendering_bbox() to enable a new feature in Assimp 3D models: splitting into smaller triangle sets for correct z-ordering of semitransparent objects; e.g. required for trees with masked leaves.
