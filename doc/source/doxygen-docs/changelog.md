@@ -6,6 +6,7 @@
 - Changes in libraries:
   - \ref mrpt_opengl_grp:
     - New method mrpt::opengl::CAssimpModel::split_triangles_rendering_bbox() to enable a new feature in Assimp 3D models: splitting into smaller triangle sets for correct z-ordering of semitransparent objects; e.g. required for trees with masked leaves.
+    - SkyBox shader changed its internal ID so it gets rendered before potentially transparent elements, fixing render artifacts.
 
 # Version 2.14.0: Released Sep 15th, 2024
 - Changes in libraries:
