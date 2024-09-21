@@ -526,8 +526,10 @@ void CAssimpModel::split_triangles_rendering_bbox(const float bbox_size)
 {
   m_split_triangles_rendering_bbox = bbox_size;
 
+#if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL) && MRPT_HAS_ASSIMP
   CRenderizable::notifyChange();
   if (m_assimp_scene->scene) after_load_model();
+#endif
 }
 
 bool CAssimpModel::traceRay(
