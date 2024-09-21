@@ -126,7 +126,7 @@ bool mrpt::ros2bridge::fromROS(const sensor_msgs::msg::PointCloud2& msg, CSimple
     {
       const unsigned char* msg_data = row_data + col * msg.point_step;
 
-      float x, y, z;
+      float x = 0, y = 0, z = 0;
       get_float_from_field(x_field, msg_data, x);
       get_float_from_field(y_field, msg_data, y);
       get_float_from_field(z_field, msg_data, z);
@@ -165,7 +165,7 @@ bool mrpt::ros2bridge::fromROS(const sensor_msgs::msg::PointCloud2& msg, CPoints
     {
       const unsigned char* msg_data = row_data + col * msg.point_step;
 
-      float x, y, z, i;
+      float x = 0, y = 0, z = 0, i = 0;
       get_float_from_field(x_field, msg_data, x);
       get_float_from_field(y_field, msg_data, y);
       get_float_from_field(z_field, msg_data, z);
@@ -212,7 +212,7 @@ bool mrpt::ros2bridge::fromROS(const sensor_msgs::msg::PointCloud2& msg, CPoints
     {
       const unsigned char* msg_data = row_data + col * msg.point_step;
 
-      float x, y, z;
+      float x = 0, y = 0, z = 0;
       get_float_from_field(x_field, msg_data, x);
       get_float_from_field(y_field, msg_data, y);
       get_float_from_field(z_field, msg_data, z);
@@ -220,7 +220,7 @@ bool mrpt::ros2bridge::fromROS(const sensor_msgs::msg::PointCloud2& msg, CPoints
 
       if (i_field)
       {
-        float i;
+        float i = 0;
         get_float_from_field(i_field, msg_data, i);
         obj.setPointIntensity(idx, i);
       }
