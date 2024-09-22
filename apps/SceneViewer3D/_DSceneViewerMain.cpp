@@ -320,6 +320,7 @@ const long _DSceneViewerFrame::ID_BUTTON5 = wxNewId();
 const long _DSceneViewerFrame::ID_STATICLINE2 = wxNewId();
 const long _DSceneViewerFrame::ID_BUTTON6 = wxNewId();
 const long _DSceneViewerFrame::ID_BUTTON7 = wxNewId();
+const long _DSceneViewerFrame::ID_BUTTON_SHADOWS = wxNewId();
 const long _DSceneViewerFrame::ID_BUTTON8 = wxNewId();
 const long _DSceneViewerFrame::ID_BUTTON9 = wxNewId();
 const long _DSceneViewerFrame::ID_STATICLINE3 = wxNewId();
@@ -480,6 +481,17 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id) : maxv(0
       wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TICK_MARK")), wxART_TOOLBAR));
   btnOrtho->SetMargins(wxSize(5, 5));
   FlexGridSizer2->Add(btnOrtho, 1, wxEXPAND, 1);
+
+  btnShadows = new wxCustomButton(
+      this, ID_BUTTON_SHADOWS, _(" Shadows "),
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TICK_MARK")), wxART_TOOLBAR),
+      wxDefaultPosition, wxDefaultSize, wxCUSTBUT_TOGGLE | wxCUSTBUT_BOTTOM, wxDefaultValidator,
+      _T("ID_BUTTON_SHADOWS"));
+  btnShadows->SetBitmapDisabled(
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TICK_MARK")), wxART_TOOLBAR));
+  btnShadows->SetMargins(wxSize(5, 5));
+  FlexGridSizer2->Add(btnShadows, 1, wxEXPAND, 1);
+
   btnAutoplay = new wxCustomButton(
       this, ID_BUTTON8, _("  Autoplay  "),
       wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REMOVABLE")), wxART_TOOLBAR),
@@ -657,6 +669,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id) : maxv(0
   Bind(wxEVT_BUTTON, &svf::OnReload, this, ID_BUTTON5);
   Bind(wxEVT_BUTTON, &svf::OnMenuOptions, this, ID_BUTTON6);
   Bind(wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, &svf::OnbtnOrthoClicked, this, ID_BUTTON7);
+  Bind(wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, &svf::OnbtnShadowsClicked, this, ID_BUTTON_SHADOWS);
   Bind(wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, &svf::OnbtnAutoplayClicked, this, ID_BUTTON8);
   Bind(wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, &svf::OnBtnRecordClicked, this, ID_BUTTON9);
   Bind(wxEVT_BUTTON, &svf::OnAbout, this, ID_BUTTON10);
@@ -891,34 +904,39 @@ void _DSceneViewerFrame::OntimLoadFileCmdLineTrigger(wxTimerEvent&)
 {
   timLoadFileCmdLine.Stop();  // One shot only.
   // Open file if passed by the command line:
-  if (!global_fileToOpen.empty())
-  {
-    if (mrpt::system::strCmpI(
-            "3Dscene", mrpt::system::extractFileExtension(global_fileToOpen, true /*ignore .gz*/)))
-    {
-      loadFromFile(global_fileToOpen);
-    }
-    else
-    {
-      std::cout << "Filename extension does not match `3Dscene`, "
-                   "importing as an ASSIMP model...\n";
-      try
-      {
-        auto obj3D = mrpt::opengl::CAssimpModel::Create();
-        obj3D->loadScene(global_fileToOpen);
-        // obj3D->setPose(mrpt::math::TPose3D(0, 0, 0, .0_deg,
-        // 0._deg, 90.0_deg));
-        m_canvas->getOpenGLSceneRef()->insert(obj3D);
+  if (global_fileToOpen.empty()) return;
 
-        m_canvas->Refresh();
-      }
-      catch (const std::exception& e)
-      {
-        std::cerr << mrpt::exception_to_str(e) << std::endl;
-        wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
-      }
+  if (mrpt::system::strCmpI(
+          "3Dscene", mrpt::system::extractFileExtension(global_fileToOpen, true /*ignore .gz*/)))
+  {
+    loadFromFile(global_fileToOpen);
+  }
+  else
+  {
+    std::cout << "Filename extension does not match `3Dscene`, "
+                 "importing as an ASSIMP model...\n";
+    try
+    {
+      auto obj3D = mrpt::opengl::CAssimpModel::Create();
+      obj3D->loadScene(global_fileToOpen);
+      // obj3D->setPose(mrpt::math::TPose3D(0, 0, 0, .0_deg,
+      // 0._deg, 90.0_deg));
+      m_canvas->getOpenGLSceneRef()->insert(obj3D);
+
+      // TODO: make optional?
+      obj3D->split_triangles_rendering_bbox(0.25);
+
+      m_canvas->Refresh();
+    }
+    catch (const std::exception& e)
+    {
+      std::cerr << mrpt::exception_to_str(e) << std::endl;
+      wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
     }
   }
+
+  // Enable shadows?
+  applyShadowsOptions();
 }
 
 void _DSceneViewerFrame::OnbtnAutoplayClicked(wxCommandEvent& event)
@@ -1035,6 +1053,24 @@ void _DSceneViewerFrame::OnbtnOrthoClicked(wxCommandEvent& event)
   m_canvas->setCameraProjective(!ortho);
 
   m_canvas->Refresh(false);
+}
+
+void _DSceneViewerFrame::OnbtnShadowsClicked(wxCommandEvent& event)
+{
+  applyShadowsOptions();
+  m_canvas->Refresh(false);
+}
+
+void _DSceneViewerFrame::applyShadowsOptions()
+{
+  bool shadowsEnabled = btnShadows->GetValue();
+  auto scene = m_canvas->getOpenGLSceneRef();
+  if (!scene) return;
+
+  auto vw = scene->getViewport();
+  if (!vw) return;
+
+  vw->enableShadowCasting(shadowsEnabled);
 }
 
 void _DSceneViewerFrame::OnReload(wxCommandEvent& event)
