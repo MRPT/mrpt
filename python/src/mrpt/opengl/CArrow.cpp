@@ -848,6 +848,8 @@ void bind_mrpt_opengl_CArrow(std::function< pybind11::module &(std::string const
 		cl.def("clear", (void (mrpt::opengl::CAssimpModel::*)()) &mrpt::opengl::CAssimpModel::clear, "Empty the object \n\nC++: mrpt::opengl::CAssimpModel::clear() --> void");
 		cl.def("traceRay", (bool (mrpt::opengl::CAssimpModel::*)(const class mrpt::poses::CPose3D &, double &) const) &mrpt::opengl::CAssimpModel::traceRay, "C++: mrpt::opengl::CAssimpModel::traceRay(const class mrpt::poses::CPose3D &, double &) const --> bool", pybind11::arg("o"), pybind11::arg("dist"));
 		cl.def("internalBoundingBoxLocal", (struct mrpt::math::TBoundingBox_<float> (mrpt::opengl::CAssimpModel::*)() const) &mrpt::opengl::CAssimpModel::internalBoundingBoxLocal, "C++: mrpt::opengl::CAssimpModel::internalBoundingBoxLocal() const --> struct mrpt::math::TBoundingBox_<float>");
+		cl.def("split_triangles_rendering_bbox", (void (mrpt::opengl::CAssimpModel::*)(const float)) &mrpt::opengl::CAssimpModel::split_triangles_rendering_bbox, "Enable (or disable if set to .0f) a feature in which textured triangles\n  are split into different renderizable smaller objects.\n  This is required only for semitransparent objects with overlaping regions.\n\nC++: mrpt::opengl::CAssimpModel::split_triangles_rendering_bbox(const float) --> void", pybind11::arg("bbox_size"));
+		cl.def("split_triangles_rendering_bbox", (float (mrpt::opengl::CAssimpModel::*)() const) &mrpt::opengl::CAssimpModel::split_triangles_rendering_bbox, "C++: mrpt::opengl::CAssimpModel::split_triangles_rendering_bbox() const --> float");
 		cl.def("assign", (class mrpt::opengl::CAssimpModel & (mrpt::opengl::CAssimpModel::*)(const class mrpt::opengl::CAssimpModel &)) &mrpt::opengl::CAssimpModel::operator=, "C++: mrpt::opengl::CAssimpModel::operator=(const class mrpt::opengl::CAssimpModel &) --> class mrpt::opengl::CAssimpModel &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
 		{ // mrpt::opengl::CAssimpModel::LoadFlags file:mrpt/opengl/CAssimpModel.h line:84
@@ -866,7 +868,7 @@ void bind_mrpt_opengl_CArrow(std::function< pybind11::module &(std::string const
 
 		}
 
-		{ // mrpt::opengl::CAssimpModel::TInfoPerTexture file:mrpt/opengl/CAssimpModel.h line:123
+		{ // mrpt::opengl::CAssimpModel::TInfoPerTexture file:mrpt/opengl/CAssimpModel.h line:133
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::opengl::CAssimpModel::TInfoPerTexture, std::shared_ptr<mrpt::opengl::CAssimpModel::TInfoPerTexture>> cl(enclosing_class, "TInfoPerTexture", "");
 			cl.def( pybind11::init( [](){ return new mrpt::opengl::CAssimpModel::TInfoPerTexture(); } ) );

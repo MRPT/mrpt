@@ -22,7 +22,9 @@
 
 using namespace mrpt::maps;
 
-static bool check_field(
+namespace
+{
+bool check_field(
     const sensor_msgs::msg::PointField& input_field,
     std::string check_name,
     const sensor_msgs::msg::PointField** output)
@@ -33,6 +35,7 @@ static bool check_field(
     if (input_field.datatype != sensor_msgs::msg::PointField::FLOAT32 &&
         input_field.datatype != sensor_msgs::msg::PointField::FLOAT64 &&
         input_field.datatype != sensor_msgs::msg::PointField::UINT16 &&
+        input_field.datatype != sensor_msgs::msg::PointField::UINT32 &&
         input_field.datatype != sensor_msgs::msg::PointField::UINT8)
     {
       *output = nullptr;
@@ -46,7 +49,7 @@ static bool check_field(
   return coherence_error;
 }
 
-static void get_float_from_field(
+void get_float_from_field(
     const sensor_msgs::msg::PointField* field, const unsigned char* data, float& output)
 {
   if (field != nullptr)
@@ -60,7 +63,7 @@ static void get_float_from_field(
     output = 0.0;
 }
 
-static void get_double_from_field(
+void get_double_from_field(
     const sensor_msgs::msg::PointField* field, const unsigned char* data, double& output)
 {
   if (field != nullptr)
@@ -74,7 +77,7 @@ static void get_double_from_field(
     output = 0.0;
 }
 
-static void get_uint16_from_field(
+void get_uint16_from_field(
     const sensor_msgs::msg::PointField* field, const unsigned char* data, uint16_t& output)
 {
   if (field != nullptr)
@@ -87,6 +90,18 @@ static void get_uint16_from_field(
   else
     output = 0;
 }
+void get_uint32_from_field(
+    const sensor_msgs::msg::PointField* field, const unsigned char* data, uint32_t& output)
+{
+  if (field != nullptr)
+  {
+    if (field->datatype == sensor_msgs::msg::PointField::UINT32)
+      output = *(reinterpret_cast<const uint32_t*>(&data[field->offset]));
+  }
+  else
+    output = 0;
+}
+}  // namespace
 
 std::set<std::string> mrpt::ros2bridge::extractFields(const sensor_msgs::msg::PointCloud2& msg)
 {
@@ -97,7 +112,7 @@ std::set<std::string> mrpt::ros2bridge::extractFields(const sensor_msgs::msg::Po
 
 /** Convert sensor_msgs/PointCloud2 -> mrpt::slam::CSimplePointsMap
  *
- * \return true on sucessful conversion, false on any error.
+ * \return true on successful conversion, false on any error.
  */
 bool mrpt::ros2bridge::fromROS(const sensor_msgs::msg::PointCloud2& msg, CSimplePointsMap& obj)
 {
@@ -126,7 +141,7 @@ bool mrpt::ros2bridge::fromROS(const sensor_msgs::msg::PointCloud2& msg, CSimple
     {
       const unsigned char* msg_data = row_data + col * msg.point_step;
 
-      float x, y, z;
+      float x = 0, y = 0, z = 0;
       get_float_from_field(x_field, msg_data, x);
       get_float_from_field(y_field, msg_data, y);
       get_float_from_field(z_field, msg_data, z);
@@ -165,7 +180,7 @@ bool mrpt::ros2bridge::fromROS(const sensor_msgs::msg::PointCloud2& msg, CPoints
     {
       const unsigned char* msg_data = row_data + col * msg.point_step;
 
-      float x, y, z, i;
+      float x = 0, y = 0, z = 0, i = 0;
       get_float_from_field(x_field, msg_data, x);
       get_float_from_field(y_field, msg_data, y);
       get_float_from_field(z_field, msg_data, z);
@@ -212,7 +227,7 @@ bool mrpt::ros2bridge::fromROS(const sensor_msgs::msg::PointCloud2& msg, CPoints
     {
       const unsigned char* msg_data = row_data + col * msg.point_step;
 
-      float x, y, z;
+      float x = 0, y = 0, z = 0;
       get_float_from_field(x_field, msg_data, x);
       get_float_from_field(y_field, msg_data, y);
       get_float_from_field(z_field, msg_data, z);
@@ -220,7 +235,7 @@ bool mrpt::ros2bridge::fromROS(const sensor_msgs::msg::PointCloud2& msg, CPoints
 
       if (i_field)
       {
-        float i;
+        float i = 0;
         get_float_from_field(i_field, msg_data, i);
         obj.setPointIntensity(idx, i);
       }
@@ -233,7 +248,21 @@ bool mrpt::ros2bridge::fromROS(const sensor_msgs::msg::PointCloud2& msg, CPoints
       if (t_field)
       {
         double t = 0;
-        get_double_from_field(t_field, msg_data, t);
+
+        if (t_field->datatype == sensor_msgs::msg::PointField::FLOAT32 ||
+            t_field->datatype == sensor_msgs::msg::PointField::FLOAT64)
+        {
+          get_double_from_field(t_field, msg_data, t);
+        }
+        else
+        {
+          uint32_t tim = 0;
+
+          get_uint32_from_field(t_field, msg_data, tim);
+
+          // Convention: they seem to be nanoseconds:
+          t = tim * 1e-9;
+        }
 
         // If the sensor uses absolute timestamp, convert them to relative
         // since otherwise precision is lost in the double->float conversion:
