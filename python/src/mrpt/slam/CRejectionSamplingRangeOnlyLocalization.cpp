@@ -1,24 +1,16 @@
-#include <chrono>
-#include <ios>
 #include <iterator>
 #include <memory>
-#include <mrpt/core/Clock.h>
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/maps/CMetricMap.h>
-#include <mrpt/maps/CSimpleMap.h>
-#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/maps/metric_map_types.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CQuaternion.h>
-#include <mrpt/math/CVectorDynamic.h>
-#include <mrpt/math/TBoundingBox.h>
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/TPose3D.h>
-#include <mrpt/math/TPose3DQuat.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/matrix_size_t.h>
 #include <mrpt/obs/CObservation.h>
@@ -27,7 +19,6 @@
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
-#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
@@ -37,15 +28,12 @@
 #include <mrpt/poses/CPoseOrPoint.h>
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/slam/CRejectionSamplingRangeOnlyLocalization.h>
-#include <mrpt/slam/observations_overlap.h>
 #include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/typemeta/static_string.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <optional>
 #include <ostream>
-#include <ratio>
 #include <sstream> // __str__
-#include <streambuf>
 #include <string>
 #include <vector>
 
@@ -106,20 +94,4 @@ void bind_mrpt_slam_CRejectionSamplingRangeOnlyLocalization(std::function< pybin
 		cl.def("setParams", (bool (mrpt::slam::CRejectionSamplingRangeOnlyLocalization::*)(const class mrpt::maps::CLandmarksMap &, const class mrpt::obs::CObservationBeaconRanges &, float, const class mrpt::poses::CPose2D &, float, bool)) &mrpt::slam::CRejectionSamplingRangeOnlyLocalization::setParams, "The parameters used in the generation of random samples:\n \n\n The map containing the N beacons (indexed by their\n \"beacon ID\"s). Only the mean 3D position of the beacons is used, the\n covariance is ignored.\n \n\n An observation with, at least ONE range measurement.\n \n\n The standard deviation of the \"range measurement\n noise\".\n \n\n The height of the robot on the floor (default=0). Note\n that the beacon sensor on the robot may be at a different height,\n according to data within the observation object.\n \n\n Whether to make a simple check for potential\n good angles from the beacons to generate samples (disable to speed-up the\n preparation vs. making slower the drawn).\n  This method fills out the member \"m_dataPerBeacon\".\n \n\n true if at least ONE beacon has been successfully loaded, false\n otherwise. In this case do not call \"rejectionSampling\" or an exception\n will be launch, since there is no information to generate samples.\n\nC++: mrpt::slam::CRejectionSamplingRangeOnlyLocalization::setParams(const class mrpt::maps::CLandmarksMap &, const class mrpt::obs::CObservationBeaconRanges &, float, const class mrpt::poses::CPose2D &, float, bool) --> bool", pybind11::arg("beaconsMap"), pybind11::arg("observation"), pybind11::arg("sigmaRanges"), pybind11::arg("oldPose"), pybind11::arg("robot_z"), pybind11::arg("autoCheckAngleRanges"));
 		cl.def("assign", (class mrpt::slam::CRejectionSamplingRangeOnlyLocalization & (mrpt::slam::CRejectionSamplingRangeOnlyLocalization::*)(const class mrpt::slam::CRejectionSamplingRangeOnlyLocalization &)) &mrpt::slam::CRejectionSamplingRangeOnlyLocalization::operator=, "C++: mrpt::slam::CRejectionSamplingRangeOnlyLocalization::operator=(const class mrpt::slam::CRejectionSamplingRangeOnlyLocalization &) --> class mrpt::slam::CRejectionSamplingRangeOnlyLocalization &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	// mrpt::slam::observationsOverlap(const class mrpt::obs::CObservation *, const class mrpt::obs::CObservation *, const class mrpt::poses::CPose3D *) file:mrpt/slam/observations_overlap.h line:26
-	M("mrpt::slam").def("observationsOverlap", [](const class mrpt::obs::CObservation * a0, const class mrpt::obs::CObservation * a1) -> double { return mrpt::slam::observationsOverlap(a0, a1); }, "", pybind11::arg("o1"), pybind11::arg("o2"));
-	M("mrpt::slam").def("observationsOverlap", (double (*)(const class mrpt::obs::CObservation *, const class mrpt::obs::CObservation *, const class mrpt::poses::CPose3D *)) &mrpt::slam::observationsOverlap, "Estimates the \"overlap\" or \"matching ratio\" of two observations (range\n [0,1]), possibly taking into account their relative positions.\n  \n\n This is used in mrpt::slam::CIncrementalMapPartitioner\n\nC++: mrpt::slam::observationsOverlap(const class mrpt::obs::CObservation *, const class mrpt::obs::CObservation *, const class mrpt::poses::CPose3D *) --> double", pybind11::arg("o1"), pybind11::arg("o2"), pybind11::arg("pose_o2_wrt_o1"));
-
-	// mrpt::slam::observationsOverlap(const class std::shared_ptr<class mrpt::obs::CObservation> &, const class std::shared_ptr<class mrpt::obs::CObservation> &, const class mrpt::poses::CPose3D *) file:mrpt/slam/observations_overlap.h line:35
-	M("mrpt::slam").def("observationsOverlap", [](const class std::shared_ptr<class mrpt::obs::CObservation> & a0, const class std::shared_ptr<class mrpt::obs::CObservation> & a1) -> double { return mrpt::slam::observationsOverlap(a0, a1); }, "", pybind11::arg("o1"), pybind11::arg("o2"));
-	M("mrpt::slam").def("observationsOverlap", (double (*)(const class std::shared_ptr<class mrpt::obs::CObservation> &, const class std::shared_ptr<class mrpt::obs::CObservation> &, const class mrpt::poses::CPose3D *)) &mrpt::slam::observationsOverlap, "Estimates the \"overlap\" or \"matching ratio\" of two observations (range\n [0,1]), possibly taking into account their relative positions.\n  \n\n This is used in mrpt::slam::CIncrementalMapPartitioner\n\nC++: mrpt::slam::observationsOverlap(const class std::shared_ptr<class mrpt::obs::CObservation> &, const class std::shared_ptr<class mrpt::obs::CObservation> &, const class mrpt::poses::CPose3D *) --> double", pybind11::arg("o1"), pybind11::arg("o2"), pybind11::arg("pose_o2_wrt_o1"));
-
-	// mrpt::slam::observationsOverlap(const class mrpt::obs::CSensoryFrame &, const class mrpt::obs::CSensoryFrame &, const class mrpt::poses::CPose3D *) file:mrpt/slam/observations_overlap.h line:49
-	M("mrpt::slam").def("observationsOverlap", [](const class mrpt::obs::CSensoryFrame & a0, const class mrpt::obs::CSensoryFrame & a1) -> double { return mrpt::slam::observationsOverlap(a0, a1); }, "", pybind11::arg("sf1"), pybind11::arg("sf2"));
-	M("mrpt::slam").def("observationsOverlap", (double (*)(const class mrpt::obs::CSensoryFrame &, const class mrpt::obs::CSensoryFrame &, const class mrpt::poses::CPose3D *)) &mrpt::slam::observationsOverlap, "Estimates the \"overlap\" or \"matching ratio\" of two set of observations\n (range [0,1]), possibly taking into account their relative positions.\n   This method computes the average between each of the observations in each\n SF.\n  \n\n This is used in mrpt::slam::CIncrementalMapPartitioner\n\nC++: mrpt::slam::observationsOverlap(const class mrpt::obs::CSensoryFrame &, const class mrpt::obs::CSensoryFrame &, const class mrpt::poses::CPose3D *) --> double", pybind11::arg("sf1"), pybind11::arg("sf2"), pybind11::arg("pose_sf2_wrt_sf1"));
-
-	// mrpt::slam::observationsOverlap(const class std::shared_ptr<class mrpt::obs::CSensoryFrame> &, const class std::shared_ptr<class mrpt::obs::CSensoryFrame> &, const class mrpt::poses::CPose3D *) file:mrpt/slam/observations_overlap.h line:60
-	M("mrpt::slam").def("observationsOverlap", [](const class std::shared_ptr<class mrpt::obs::CSensoryFrame> & a0, const class std::shared_ptr<class mrpt::obs::CSensoryFrame> & a1) -> double { return mrpt::slam::observationsOverlap(a0, a1); }, "", pybind11::arg("sf1"), pybind11::arg("sf2"));
-	M("mrpt::slam").def("observationsOverlap", (double (*)(const class std::shared_ptr<class mrpt::obs::CSensoryFrame> &, const class std::shared_ptr<class mrpt::obs::CSensoryFrame> &, const class mrpt::poses::CPose3D *)) &mrpt::slam::observationsOverlap, "Estimates the \"overlap\" or \"matching ratio\" of two set of observations\n (range [0,1]), possibly taking into account their relative positions.\n   This method computes the average between each of the observations in each\n SF.\n  \n\n This is used in mrpt::slam::CIncrementalMapPartitioner\n\nC++: mrpt::slam::observationsOverlap(const class std::shared_ptr<class mrpt::obs::CSensoryFrame> &, const class std::shared_ptr<class mrpt::obs::CSensoryFrame> &, const class mrpt::poses::CPose3D *) --> double", pybind11::arg("sf1"), pybind11::arg("sf2"), pybind11::arg("pose_sf2_wrt_sf1"));
-
 }
