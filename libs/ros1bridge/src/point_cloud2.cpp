@@ -93,7 +93,7 @@ std::set<std::string> mrpt::ros1bridge::extractFields(const sensor_msgs::PointCl
 
 /** Convert sensor_msgs/PointCloud2 -> mrpt::slam::CSimplePointsMap
  *
- * \return true on sucessful conversion, false on any error.
+ * \return true on successful conversion, false on any error.
  */
 bool mrpt::ros1bridge::fromROS(const sensor_msgs::PointCloud2& msg, CSimplePointsMap& obj)
 {
@@ -243,7 +243,7 @@ bool mrpt::ros1bridge::fromROS(const sensor_msgs::PointCloud2& msg, CPointsMapXY
           // Convention:
           // I only found one case (NTU Viral dataset) using uint32_t for time,
           // and times ranged from 0 to ~99822766 = 100,000,000 = 1e8
-          // so they seems to be nanoseconds:
+          // so they seem to be nanoseconds:
           obj.setPointTime(idx, t * 1e-9);
         }
 
