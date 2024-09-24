@@ -120,6 +120,16 @@ class CAssimpModel :
 
   mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
+  /** Enable (or disable if set to .0f) a feature in which textured triangles
+   *  are split into different renderizable smaller objects.
+   *  This is required only for semitransparent objects with overlaping regions.
+   */
+  void split_triangles_rendering_bbox(const float bbox_size);
+  [[nodiscard]] float split_triangles_rendering_bbox() const
+  {
+    return m_split_triangles_rendering_bbox;
+  }
+
   struct TInfoPerTexture
   {
     // indices in \a m_texturedObjects. string::npos for non-initialized
@@ -152,6 +162,7 @@ class CAssimpModel :
   mutable std::vector<CSetOfTexturedTriangles::Ptr> m_texturedObjects;
   bool m_verboseLoad = false;
   bool m_ignoreMaterialColor = false;
+  float m_split_triangles_rendering_bbox = .0f;
 
   void recursive_render(
       const aiScene* sc,

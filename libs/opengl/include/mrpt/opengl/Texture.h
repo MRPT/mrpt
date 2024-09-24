@@ -43,6 +43,14 @@ class Texture
   Texture() = default;
   ~Texture() = default;
 
+  enum class Wrapping : uint8_t
+  {
+    Repeat = 0,
+    MirroredRepeat,
+    ClampToEdge,
+    ClapToBorder
+  };
+
   /// Options while creating a texture from an image.
   struct Options
   {
@@ -57,6 +65,12 @@ class Texture
     bool magnifyLinearFilter = true;
 
     bool enableTransparency = false;
+
+    /** How to repeat texture coordinate "S" */
+    Wrapping wrappingModeS = Wrapping::Repeat;
+
+    /** How to repeat texture coordinate "T" */
+    Wrapping wrappingModeT = Wrapping::Repeat;
   };
 
   /** This is how an 2D texture image is loaded into this object, and a

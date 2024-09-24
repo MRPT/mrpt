@@ -349,6 +349,7 @@ void bind_mrpt_slam_data_association(std::function< pybind11::module &(std::stri
 void bind_mrpt_slam_CRangeBearingKFSLAM(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_bayes_CRejectionSamplingCapable(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_slam_CRejectionSamplingRangeOnlyLocalization(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_slam_observations_overlap(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_system_CRateTimer(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_system_crc(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_system_scheduler(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -775,6 +776,7 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_slam_CRangeBearingKFSLAM(M);
 	bind_mrpt_bayes_CRejectionSamplingCapable(M);
 	bind_mrpt_slam_CRejectionSamplingRangeOnlyLocalization(M);
+	bind_mrpt_slam_observations_overlap(M);
 	bind_mrpt_system_CRateTimer(M);
 	bind_mrpt_system_crc(M);
 	bind_mrpt_system_scheduler(M);

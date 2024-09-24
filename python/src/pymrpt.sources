@@ -339,6 +339,7 @@ mrpt/slam/data_association.cpp
 mrpt/slam/CRangeBearingKFSLAM.cpp
 mrpt/bayes/CRejectionSamplingCapable.cpp
 mrpt/slam/CRejectionSamplingRangeOnlyLocalization.cpp
+mrpt/slam/observations_overlap.cpp
 mrpt/system/CRateTimer.cpp
 mrpt/system/crc.cpp
 mrpt/system/scheduler.cpp

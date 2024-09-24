@@ -51,7 +51,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::obs::CObservation2DRangeScan file:mrpt/obs/CObservation2DRangeScan.h line:55
+// mrpt::obs::CObservation2DRangeScan file:mrpt/obs/CObservation2DRangeScan.h line:59
 struct PyCallBack_mrpt_obs_CObservation2DRangeScan : public mrpt::obs::CObservation2DRangeScan {
 	using mrpt::obs::CObservation2DRangeScan::CObservation2DRangeScan;
 
@@ -242,7 +242,7 @@ struct PyCallBack_mrpt_obs_CObservation2DRangeScan : public mrpt::obs::CObservat
 
 void bind_mrpt_obs_CObservation2DRangeScan(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::obs::CObservation2DRangeScan file:mrpt/obs/CObservation2DRangeScan.h line:55
+	{ // mrpt::obs::CObservation2DRangeScan file:mrpt/obs/CObservation2DRangeScan.h line:59
 		pybind11::class_<mrpt::obs::CObservation2DRangeScan, std::shared_ptr<mrpt::obs::CObservation2DRangeScan>, PyCallBack_mrpt_obs_CObservation2DRangeScan, mrpt::obs::CObservation> cl(M("mrpt::obs"), "CObservation2DRangeScan", "A \"CObservation\"-derived class that represents a 2D range scan measurement\n (typically from a laser scanner).\n The data structures are generic enough to hold a wide variety of 2D\n scanners and \"3D\" planar rotating 2D lasers.\n\n These are the most important data fields:\n - Scan ranges: A vector of float values with all the range measurements\n [meters]. Access via `CObservation2DRangeScan::getScanRange()` and\n `CObservation2DRangeScan::setScanRange()`.\n - Range validity: A vector (of identical size to scan), it holds\n `true` for those ranges than are valid (i.e. will be zero for non-reflected\n rays, etc.), `false` for scan rays without a valid lidar return.\n - Reflection intensity: A vector (of identical size to scan) a\n unitless int values representing the relative strength of each return. Higher\n values indicate a more intense return. This is useful for filtering out low\n intensity (noisy) returns or detecting intense landmarks.\n - CObservation2DRangeScan::aperture: The field-of-view of the scanner,\n in radians (typically, M_PI = 180deg).\n - CObservation2DRangeScan::sensorPose: The 6D location of the sensor on\n the robot reference frame (default=at the origin), i.e. wrt `base_link`\n following ROS conventions.\n - CObservation2DRangeScan::rightToLeft: The scanning direction:\n true=counterclockwise (default), false=clockwise.\n\n Note that the *angle of each range* in the vectors above is implicitly\n defined by the index within the vector.\n \n\n CObservation, CPointsMap, T2DScanProperties\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::obs::CObservation2DRangeScan(); }, [](){ return new PyCallBack_mrpt_obs_CObservation2DRangeScan(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_CObservation2DRangeScan const &o){ return new PyCallBack_mrpt_obs_CObservation2DRangeScan(o); } ) );
