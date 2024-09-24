@@ -276,14 +276,28 @@ void Texture::internalAssignImage_2D(
       GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, o.magnifyLinearFilter ? GL_LINEAR : GL_NEAREST);
   CHECK_OPENGL_ERROR_IN_DEBUG();
 
+  const auto lmbdWrapMap = [](const Wrapping w)
+  {
+    // clang-format off
+    switch (w)
+    {
+      case Wrapping::Repeat:           return GL_REPEAT;
+      case Wrapping::MirroredRepeat:   return GL_MIRRORED_REPEAT;
+      case Wrapping::ClampToEdge:      return GL_CLAMP_TO_EDGE;
+      case Wrapping::ClapToBorder:     return GL_CLAMP_TO_BORDER;
+      default:
+        THROW_EXCEPTION_FMT("Invalid texture wrapping value: %i", static_cast<int>(w));
+    };
+    // clang-format on
+  };
+
   // if wrap is true, the texture wraps over at the edges (repeat)
   //       ... false, the texture ends at the edges (clamp)
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, lmbdWrapMap(o.wrappingModeS));
   CHECK_OPENGL_ERROR_IN_DEBUG();
 
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, lmbdWrapMap(o.wrappingModeT));
   CHECK_OPENGL_ERROR_IN_DEBUG();
-  MRPT_TODO("wrap options?");
 
   // Assure that the images do not overpass the maximum dimensions allowed
   // by OpenGL:
@@ -296,7 +310,7 @@ void Texture::internalAssignImage_2D(
     if (!warningEmitted)
     {
       warningEmitted = true;
-      std::cerr << "[mrpt::opengl::CRenderizableShaderTexturedTriangles] "
+      std::cerr << "[mrpt::opengl::Texture] "
                    "**PERFORMACE WARNING**:\n"
                 << " Downsampling texture image of size " << rgb.getWidth() << "x"
                 << rgb.getHeight()
