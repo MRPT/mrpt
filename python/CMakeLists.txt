@@ -18,16 +18,12 @@ if (NOT CMAKE_MRPT_HAS_PYTHON_BINDINGS)
   return()
 endif()
 
-set(PY_SRCS_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
-
-# these "all" files can be generated like:
-#  ls -1 src/nanogui/*.cpp | xargs -I FIL echo "#include \"FIL\"" > all_nanogui.cpp
-
-#file(GLOB_RECURSE PY_ALL_SRCS ${PY_SRCS_DIR}/all_*.cpp)
-file(GLOB_RECURSE PY_ALL_SRCS all_*.cpp)
+# Take list of sources:
+file(READ ${CMAKE_CURRENT_LIST_DIR}/src/pymrpt.sources PY_ALL_SRCS)
+string(REPLACE "\n" ";" PY_ALL_SRCS "${PY_ALL_SRCS}")  # string -> list of strings
+list(TRANSFORM PY_ALL_SRCS PREPEND "src/")
 
 pybind11_add_module(pymrpt
-  ${PY_SRCS_DIR}/pymrpt.cpp
   ${PY_ALL_SRCS}
   # -- manually crafted files --
   pymrpt_internals.cpp

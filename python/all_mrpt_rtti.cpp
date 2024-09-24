@@ -1,6 +1,0 @@
-#include "src/mrpt/rtti/CListOfClasses.cpp"
-#include "src/mrpt/rtti/CObject_1.cpp"
-#include "src/mrpt/rtti/CObject_2.cpp"
-#include "src/mrpt/rtti/CObject_3.cpp"
-#include "src/mrpt/rtti/CObject_4.cpp"
-#include "src/mrpt/rtti/CObject.cpp"
