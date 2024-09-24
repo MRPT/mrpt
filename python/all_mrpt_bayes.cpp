@@ -1,8 +1,0 @@
-#include "src/mrpt/bayes/CKalmanFilterCapable.cpp"
-#include "src/mrpt/bayes/CParticleFilterCapable.cpp"
-#include "src/mrpt/bayes/CParticleFilter.cpp"
-#include "src/mrpt/bayes/CParticleFilterData_1.cpp"
-#include "src/mrpt/bayes/CParticleFilterData.cpp"
-#include "src/mrpt/bayes/CProbabilityParticle_1.cpp"
-#include "src/mrpt/bayes/CProbabilityParticle.cpp"
-#include "src/mrpt/bayes/CRejectionSamplingCapable.cpp"

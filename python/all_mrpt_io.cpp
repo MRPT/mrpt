@@ -1,7 +1,0 @@
-#include "src/mrpt/io/CFileInputStream.cpp"
-#include "src/mrpt/io/CFileStream.cpp"
-#include "src/mrpt/io/CMemoryStream.cpp"
-#include "src/mrpt/io/CPipe.cpp"
-#include "src/mrpt/io/CStream.cpp"
-#include "src/mrpt/io/CTextFileLinesParser.cpp"
-#include "src/mrpt/io/zip.cpp"
