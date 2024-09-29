@@ -516,7 +516,8 @@ void CMesh::updateColorsMatrix() const
 
     if ((cols != Z.cols()) || (rows != Z.rows()))
     {
-      std::cerr << "[CMesh] Texture image and Z matrix have different sizes.\n";
+      // Texture image and Z matrix have different sizes.
+      // Don't create color matrices.
     }
     else if (getTextureImage().isColor())
     {
