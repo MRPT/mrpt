@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.14.2: UNRELEASED
+(none)
+
 # Version 2.14.1: Released Sep 24th, 2024
 - Changes in apps:
   - SceneViewer3D: New button to enable shadow casting.
