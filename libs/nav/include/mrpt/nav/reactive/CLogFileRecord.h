@@ -65,18 +65,19 @@ class CLogFileRecord : public mrpt::serialization::CSerializable
     mrpt::nav::CParameterizedTrajectoryGenerator::Ptr ptg;
     /** Clearance for each path */
     mrpt::nav::ClearanceDiagram clearance;
+    /** Stored for each PTG to cope with custom internal states */
+    mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState dynState, lastDynState;
   };
 
-  mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState navDynState;
   /** The number of PTGS: */
-  uint32_t nPTGs{0};
+  uint32_t nPTGs = 0;
 
   /** The info for each applied PTG: must contain "nPTGs * nSecDistances"
    * elements */
   std::vector<TInfoPerPTG> infoPerPTG;
 
   /** The selected PTG. */
-  int32_t nSelectedPTG{-1};
+  int32_t nSelectedPTG = -1;
 
   /** Known values:
    *	- "executionTime": The total computation time, excluding sensing.
@@ -136,7 +137,6 @@ class CLogFileRecord : public mrpt::serialization::CSerializable
   uint16_t ptg_last_k_NOP{0};
   mrpt::math::TPose2D rel_cur_pose_wrt_last_vel_cmd_NOP{0, 0, 0},
       rel_pose_PTG_origin_wrt_sense_NOP{0, 0, 0};
-  mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState ptg_last_navDynState;
 
   /** Additional visual entities that the source application wants to show
    * in the navlog viewer UI. All objects will be placed relative to the
