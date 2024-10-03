@@ -808,13 +808,14 @@ void NavlogViewerApp::updateVisualization()
         {
           if (!ptg->isInitialized()) ptg->initialize();
 
+          auto& ipp = log.infoPerPTG[sel_ptg_idx];
+
           // Set instantaneous dyn state:
-          ptg->updateNavDynamicState(is_NOP_cmd ? log.ptg_last_navDynState : log.navDynState);
+          ptg->updateNavDynamicState(is_NOP_cmd ? ipp.lastDynState : ipp.dynState);
 
           // Draw path:
           const int selected_k =
-              log.ptg_index_NOP < 0 ? ptg->alpha2index(log.infoPerPTG[sel_ptg_idx].desiredDirection)
-                                    : log.ptg_last_k_NOP;
+              log.ptg_index_NOP < 0 ? ptg->alpha2index(ipp.desiredDirection) : log.ptg_last_k_NOP;
           float max_dist = ptg->getRefDistance();
           ptg->add_robotShape_to_setOfLines(*gl_path);
 
@@ -916,8 +917,13 @@ void NavlogViewerApp::updateVisualization()
         {
           if (!ptg->isInitialized()) ptg->initialize();
 
+          const bool this_NOP_cmd =
+              m_manualPickPTGIdx == static_cast<int>(m_logdata_ptg_paths.size() - 1);
+
+          auto& ipp = log.infoPerPTG[m_manualPickPTGIdx];
+
           // Set instantaneous dyn state:
-          ptg->updateNavDynamicState(is_NOP_cmd ? log.ptg_last_navDynState : log.navDynState);
+          ptg->updateNavDynamicState(this_NOP_cmd ? ipp.lastDynState : ipp.dynState);
 
           // Draw path:
           const int selected_k = m_manualPickTrajectoryIdx;
@@ -1137,13 +1143,16 @@ void NavlogViewerApp::updateVisualization()
 
   if (m_cbShowAllDebugFields->checked())
   {
-    ADD_WIN_TEXTMSG(format(
-                        "navDynState: curVelLocal=%s relTarget=%s "
-                        "targetRelSpeed=%.02f",
-                        log.navDynState.curVelLocal.asString().c_str(),
-                        log.navDynState.relTarget.asString().c_str(),
-                        log.navDynState.targetRelSpeed)
-                        .c_str());
+    if (!log.infoPerPTG.empty())
+    {
+      ADD_WIN_TEXTMSG(format(
+                          "navDynState: curVelLocal=%s relTarget=%s "
+                          "targetRelSpeed=%.02f",
+                          log.infoPerPTG.front().dynState.curVelLocal.asString().c_str(),
+                          log.infoPerPTG.front().dynState.relTarget.asString().c_str(),
+                          log.infoPerPTG.front().dynState.targetRelSpeed)
+                          .c_str());
+    }
 
     for (const auto& e : log.values)
       ADD_WIN_TEXTMSG(format(
