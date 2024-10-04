@@ -555,10 +555,14 @@ bool CParameterizedTrajectoryGenerator::TNavDynamicState::operator==(
 void mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState::writeToStream(
     mrpt::serialization::CArchive& out) const
 {
-  const uint8_t version = 0;
+  const uint8_t version = 1;
   out << version;
   // Data:
   out << curVelLocal << relTarget << targetRelSpeed;
+  // internalState:
+  std::stringstream ss;
+  internalState.printAsYAML(ss);
+  out << ss.str();
 }
 
 void mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState::readFromStream(
@@ -569,7 +573,21 @@ void mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState::readFromStr
   switch (version)
   {
     case 0:
+    case 1:
       in >> curVelLocal >> relTarget >> targetRelSpeed;
+      if (version >= 1)
+      {
+        std::string s;
+        in >> s;
+        if (s.empty())
+          internalState.clear();
+        else
+          internalState = mrpt::containers::yaml::FromText(s);
+      }
+      else
+      {
+        internalState.clear();
+      }
       break;
     default:
       MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
