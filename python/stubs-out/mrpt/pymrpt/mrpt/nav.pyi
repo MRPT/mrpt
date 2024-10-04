@@ -2,6 +2,7 @@ from typing import Any, ClassVar, Dict, List, Optional
 
 from typing import overload
 import mrpt.pymrpt.mrpt.config
+import mrpt.pymrpt.mrpt.containers
 import mrpt.pymrpt.mrpt.graphs
 import mrpt.pymrpt.mrpt.img
 import mrpt.pymrpt.mrpt.kinematics
@@ -598,8 +599,10 @@ class CLogFileRecord(mrpt.pymrpt.mrpt.serialization.CSerializable):
         clearance: ClearanceDiagram
         desiredDirection: float
         desiredSpeed: float
+        dynState: CParameterizedTrajectoryGenerator.TNavDynamicState
         evalFactors: Dict[str,float]
         evaluation: float
+        lastDynState: CParameterizedTrajectoryGenerator.TNavDynamicState
         ptg: CParameterizedTrajectoryGenerator
         timeForHolonomicMethod: float
         timeForTPObsTransformation: float
@@ -619,10 +622,8 @@ class CLogFileRecord(mrpt.pymrpt.mrpt.serialization.CSerializable):
     infoPerPTG: Any
     nPTGs: int
     nSelectedPTG: int
-    navDynState: CParameterizedTrajectoryGenerator.TNavDynamicState
     ptg_index_NOP: int
     ptg_last_k_NOP: int
-    ptg_last_navDynState: CParameterizedTrajectoryGenerator.TNavDynamicState
     relPoseSense: mrpt.pymrpt.mrpt.math.TPose2D
     relPoseVelCmd: mrpt.pymrpt.mrpt.math.TPose2D
     rel_cur_pose_wrt_last_vel_cmd_NOP: mrpt.pymrpt.mrpt.math.TPose2D
@@ -1106,6 +1107,7 @@ class CParameterizedTrajectoryGenerator(mrpt.pymrpt.mrpt.serialization.CSerializ
     class TNavDynamicState:
         __hash__: ClassVar[None] = ...
         curVelLocal: Any
+        internalState: mrpt.pymrpt.mrpt.containers.yaml
         relTarget: mrpt.pymrpt.mrpt.math.TPose2D
         targetRelSpeed: float
         @overload

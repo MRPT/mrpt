@@ -39,7 +39,7 @@
 
 void bind_mrpt_maps_CVoxelMapBase(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::maps::CVoxelMapBase file:mrpt/maps/CVoxelMapBase.h line:42
+	{ // mrpt::maps::CVoxelMapBase file:mrpt/maps/CVoxelMapBase.h line:44
 		pybind11::class_<mrpt::maps::CVoxelMapBase<mrpt::maps::VoxelNodeOccupancy>, std::shared_ptr<mrpt::maps::CVoxelMapBase<mrpt::maps::VoxelNodeOccupancy>>, mrpt::maps::CMetricMap> cl(M("mrpt::maps"), "CVoxelMapBase_mrpt_maps_VoxelNodeOccupancy_t", "");
 		cl.def("assign", (class mrpt::maps::CVoxelMapBase<struct mrpt::maps::VoxelNodeOccupancy> & (mrpt::maps::CVoxelMapBase<mrpt::maps::VoxelNodeOccupancy>::*)(const class mrpt::maps::CVoxelMapBase<struct mrpt::maps::VoxelNodeOccupancy> &)) &mrpt::maps::CVoxelMapBase<mrpt::maps::VoxelNodeOccupancy>::operator=, "C++: mrpt::maps::CVoxelMapBase<mrpt::maps::VoxelNodeOccupancy>::operator=(const class mrpt::maps::CVoxelMapBase<struct mrpt::maps::VoxelNodeOccupancy> &) --> class mrpt::maps::CVoxelMapBase<struct mrpt::maps::VoxelNodeOccupancy> &", pybind11::return_value_policy::automatic, pybind11::arg("o"));
 		cl.def("asString", (std::string (mrpt::maps::CVoxelMapBase<mrpt::maps::VoxelNodeOccupancy>::*)() const) &mrpt::maps::CVoxelMapBase<mrpt::maps::VoxelNodeOccupancy>::asString, "C++: mrpt::maps::CVoxelMapBase<mrpt::maps::VoxelNodeOccupancy>::asString() const --> std::string");
@@ -70,7 +70,7 @@ void bind_mrpt_maps_CVoxelMapBase(std::function< pybind11::module &(std::string 
 		cl.def("getAsSimplePointsMap", (class mrpt::maps::CSimplePointsMap * (mrpt::maps::CMetricMap::*)()) &mrpt::maps::CMetricMap::getAsSimplePointsMap, "C++: mrpt::maps::CMetricMap::getAsSimplePointsMap() --> class mrpt::maps::CSimplePointsMap *", pybind11::return_value_policy::automatic);
 		cl.def("assign", (class mrpt::maps::CMetricMap & (mrpt::maps::CMetricMap::*)(const class mrpt::maps::CMetricMap &)) &mrpt::maps::CMetricMap::operator=, "C++: mrpt::maps::CMetricMap::operator=(const class mrpt::maps::CMetricMap &) --> class mrpt::maps::CMetricMap &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::maps::CVoxelMapBase file:mrpt/maps/CVoxelMapBase.h line:42
+	{ // mrpt::maps::CVoxelMapBase file:mrpt/maps/CVoxelMapBase.h line:44
 		pybind11::class_<mrpt::maps::CVoxelMapBase<mrpt::maps::VoxelNodeOccRGB>, std::shared_ptr<mrpt::maps::CVoxelMapBase<mrpt::maps::VoxelNodeOccRGB>>, mrpt::maps::CMetricMap> cl(M("mrpt::maps"), "CVoxelMapBase_mrpt_maps_VoxelNodeOccRGB_t", "");
 		cl.def("assign", (class mrpt::maps::CVoxelMapBase<struct mrpt::maps::VoxelNodeOccRGB> & (mrpt::maps::CVoxelMapBase<mrpt::maps::VoxelNodeOccRGB>::*)(const class mrpt::maps::CVoxelMapBase<struct mrpt::maps::VoxelNodeOccRGB> &)) &mrpt::maps::CVoxelMapBase<mrpt::maps::VoxelNodeOccRGB>::operator=, "C++: mrpt::maps::CVoxelMapBase<mrpt::maps::VoxelNodeOccRGB>::operator=(const class mrpt::maps::CVoxelMapBase<struct mrpt::maps::VoxelNodeOccRGB> &) --> class mrpt::maps::CVoxelMapBase<struct mrpt::maps::VoxelNodeOccRGB> &", pybind11::return_value_policy::automatic, pybind11::arg("o"));
 		cl.def("asString", (std::string (mrpt::maps::CVoxelMapBase<mrpt::maps::VoxelNodeOccRGB>::*)() const) &mrpt::maps::CVoxelMapBase<mrpt::maps::VoxelNodeOccRGB>::asString, "C++: mrpt::maps::CVoxelMapBase<mrpt::maps::VoxelNodeOccRGB>::asString() const --> std::string");
