@@ -52,6 +52,13 @@ void bind_mrpt_opengl_Texture(std::function< pybind11::module &(std::string cons
 		pybind11::class_<mrpt::opengl::Texture, std::shared_ptr<mrpt::opengl::Texture>> cl(M("mrpt::opengl"), "Texture", "Resource management for OpenGL 2D or Cube textures.\n\n The texture is generated when images are assigned via\n assignImage2D() or assignCubeImages().\n\n \n CRenderizableShaderTexturedTriangles\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::opengl::Texture(); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::Texture const &o){ return new mrpt::opengl::Texture(o); } ) );
+
+		pybind11::enum_<mrpt::opengl::Texture::Wrapping>(cl, "Wrapping", "")
+			.value("Repeat", mrpt::opengl::Texture::Wrapping::Repeat)
+			.value("MirroredRepeat", mrpt::opengl::Texture::Wrapping::MirroredRepeat)
+			.value("ClampToEdge", mrpt::opengl::Texture::Wrapping::ClampToEdge)
+			.value("ClapToBorder", mrpt::opengl::Texture::Wrapping::ClapToBorder);
+
 		cl.def("assignImage2D", [](mrpt::opengl::Texture &o, const class mrpt::img::CImage & a0, const struct mrpt::opengl::Texture::Options & a1) -> void { return o.assignImage2D(a0, a1); }, "", pybind11::arg("rgb"), pybind11::arg("o"));
 		cl.def("assignImage2D", (void (mrpt::opengl::Texture::*)(const class mrpt::img::CImage &, const struct mrpt::opengl::Texture::Options &, int)) &mrpt::opengl::Texture::assignImage2D, "This is how an 2D texture image is loaded into this object, and a\n texture ID is generated underneath. Valid image formats are 8bit per\n channel RGB or RGBA.\n\nC++: mrpt::opengl::Texture::assignImage2D(const class mrpt::img::CImage &, const struct mrpt::opengl::Texture::Options &, int) --> void", pybind11::arg("rgb"), pybind11::arg("o"), pybind11::arg("textureUnit"));
 		cl.def("assignImage2D", [](mrpt::opengl::Texture &o, const class mrpt::img::CImage & a0, const class mrpt::img::CImage & a1, const struct mrpt::opengl::Texture::Options & a2) -> void { return o.assignImage2D(a0, a1, a2); }, "", pybind11::arg("rgb"), pybind11::arg("alpha"), pybind11::arg("o"));
@@ -66,20 +73,22 @@ void bind_mrpt_opengl_Texture(std::function< pybind11::module &(std::string cons
 		cl.def("textureNameID", (unsigned int (mrpt::opengl::Texture::*)() const) &mrpt::opengl::Texture::textureNameID, "C++: mrpt::opengl::Texture::textureNameID() const --> unsigned int");
 		cl.def("assign", (class mrpt::opengl::Texture & (mrpt::opengl::Texture::*)(const class mrpt::opengl::Texture &)) &mrpt::opengl::Texture::operator=, "C++: mrpt::opengl::Texture::operator=(const class mrpt::opengl::Texture &) --> class mrpt::opengl::Texture &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::opengl::Texture::Options file:mrpt/opengl/Texture.h line:47
+		{ // mrpt::opengl::Texture::Options file:mrpt/opengl/Texture.h line:55
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::opengl::Texture::Options, std::shared_ptr<mrpt::opengl::Texture::Options>> cl(enclosing_class, "Options", "Options while creating a texture from an image.");
 			cl.def( pybind11::init( [](){ return new mrpt::opengl::Texture::Options(); } ) );
 			cl.def_readwrite("generateMipMaps", &mrpt::opengl::Texture::Options::generateMipMaps);
 			cl.def_readwrite("magnifyLinearFilter", &mrpt::opengl::Texture::Options::magnifyLinearFilter);
 			cl.def_readwrite("enableTransparency", &mrpt::opengl::Texture::Options::enableTransparency);
+			cl.def_readwrite("wrappingModeS", &mrpt::opengl::Texture::Options::wrappingModeS);
+			cl.def_readwrite("wrappingModeT", &mrpt::opengl::Texture::Options::wrappingModeT);
 		}
 
 	}
-	// mrpt::opengl::getNewTextureNumber() file:mrpt/opengl/Texture.h line:118
+	// mrpt::opengl::getNewTextureNumber() file:mrpt/opengl/Texture.h line:132
 	M("mrpt::opengl").def("getNewTextureNumber", (unsigned int (*)()) &mrpt::opengl::getNewTextureNumber, "C++: mrpt::opengl::getNewTextureNumber() --> unsigned int");
 
-	// mrpt::opengl::releaseTextureName(const unsigned int &) file:mrpt/opengl/Texture.h line:119
+	// mrpt::opengl::releaseTextureName(const unsigned int &) file:mrpt/opengl/Texture.h line:133
 	M("mrpt::opengl").def("releaseTextureName", (void (*)(const unsigned int &)) &mrpt::opengl::releaseTextureName, "C++: mrpt::opengl::releaseTextureName(const unsigned int &) --> void", pybind11::arg("t"));
 
 	{ // mrpt::opengl::CRenderizableShaderTexturedTriangles file:mrpt/opengl/CRenderizableShaderTexturedTriangles.h line:28
