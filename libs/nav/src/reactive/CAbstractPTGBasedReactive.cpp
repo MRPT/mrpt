@@ -22,8 +22,6 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 
-#include <array>
-#include <iomanip>
 #include <limits>
 
 using namespace mrpt;
@@ -470,8 +468,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
     ptg_dynState.relTarget = relTargets[0];
     ptg_dynState.targetRelSpeed = m_navigationParams->target.targetDesiredRelSpeed;
 
-    newLogRec.navDynState = ptg_dynState;
-
     {
       mrpt::system::CTimeLoggerEntry tle2(
           m_navProfiler,
@@ -916,7 +912,6 @@ void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(
   newLogRec.rel_pose_PTG_origin_wrt_sense_NOP = rel_pose_PTG_origin_wrt_sense_NOP;
   newLogRec.ptg_index_NOP = best_is_NOP_cmdvel ? m_lastSentVelCmd.ptg_index : -1;
   newLogRec.ptg_last_k_NOP = m_lastSentVelCmd.ptg_alpha_index;
-  newLogRec.ptg_last_navDynState = m_lastSentVelCmd.ptg_dynState;
 
   m_timelogger.leave("navigationStep.populate_log_info");
 
@@ -1606,7 +1601,14 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
           this_is_PTG_continuation ? m_lastSentVelCmd.colfreedist_move_k : .0;
 
       //  SAVE LOG
-      newLogRec.infoPerPTG[idx_in_log_infoPerPTGs].evalFactors = cm.props;
+      auto& ipp = newLogRec.infoPerPTG[idx_in_log_infoPerPTGs];
+
+      ipp.evalFactors = cm.props;
+
+      if (m_lastSentVelCmd.ptg_index == static_cast<int>(idx_in_log_infoPerPTGs))
+        ipp.lastDynState = m_lastSentVelCmd.ptg_dynState;
+
+      ipp.dynState = ptg->getCurrentNavDynamicState();
     }
 
   }  // end "valid_TP"
