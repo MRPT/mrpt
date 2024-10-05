@@ -21,43 +21,40 @@ using namespace mrpt::nav;
 
 IMPLEMENTS_SERIALIZABLE(CLogFileRecord, CSerializable, mrpt::nav)
 
-uint8_t CLogFileRecord::serializeGetVersion() const { return 27; }
+uint8_t CLogFileRecord::serializeGetVersion() const { return 28; }
 void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
 {
-  uint32_t i, n;
-
   // Version 0 ---------
-  n = infoPerPTG.size();
-  out << n;
-  for (i = 0; i < n; i++)
+  out.WriteAs<uint32_t>(infoPerPTG.size());
+  for (const auto& ipp : infoPerPTG)
   {
-    out << infoPerPTG[i].PTG_desc.c_str();
+    out << ipp.PTG_desc.c_str();
 
-    uint32_t m = infoPerPTG[i].TP_Obstacles.size();
+    uint32_t m = ipp.TP_Obstacles.size();
     out << m;
     if (m)
-      out.WriteBuffer(
-          (const void*)&(*infoPerPTG[i].TP_Obstacles.begin()),
-          m * sizeof(infoPerPTG[i].TP_Obstacles[0]));
+      out.WriteBuffer((const void*)&(*ipp.TP_Obstacles.begin()), m * sizeof(ipp.TP_Obstacles[0]));
 
-    out << infoPerPTG[i].TP_Targets;  // v8: CPoint2D -> TPoint2D. v26: vector
-    out << infoPerPTG[i].TP_Robot;    // v17
-    out << infoPerPTG[i].timeForTPObsTransformation
-        << infoPerPTG[i].timeForHolonomicMethod;  // made double in v12
-    out << infoPerPTG[i].desiredDirection << infoPerPTG[i].desiredSpeed
-        << infoPerPTG[i].evaluation;  // made double in v12
+    out << ipp.TP_Targets;  // v8: CPoint2D -> TPoint2D. v26: vector
+    out << ipp.TP_Robot;    // v17
+    out << ipp.timeForTPObsTransformation << ipp.timeForHolonomicMethod;  // made double in v12
+    out << ipp.desiredDirection << ipp.desiredSpeed << ipp.evaluation;    // made double in v12
     // removed in v23: out << evaluation_org << evaluation_priority; //
     // added in v21
-    out << infoPerPTG[i].HLFR;
+    out << ipp.HLFR;
 
     // Version 9: Removed security distances. Added optional field with
     // PTG info.
-    const bool there_is_ptg_data = infoPerPTG[i].ptg ? true : false;
+    const bool there_is_ptg_data = ipp.ptg ? true : false;
     out << there_is_ptg_data;
-    if (there_is_ptg_data) out << infoPerPTG[i].ptg;
+    if (there_is_ptg_data) out << ipp.ptg;
 
-    // Was: out << infoPerPTG[i].clearance.raw_clearances; // v19
-    infoPerPTG[i].clearance.writeToStream(out);  // v25
+    // Was: out << ipp.clearance.raw_clearances; // v19
+    ipp.clearance.writeToStream(out);  // v25
+
+    // v28
+    ipp.dynState.writeToStream(out);
+    ipp.lastDynState.writeToStream(out);
   }
   out << nSelectedPTG << WS_Obstacles;
   out << WS_Obstacles_original;  // v20
@@ -72,15 +69,15 @@ void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
       << rel_pose_PTG_origin_wrt_sense_NOP;  // v24: CPose2D->TPose2D
 
   // Removed: v24. out << ptg_last_curRobotVelLocal; // v17
-  ptg_last_navDynState.writeToStream(out);  // v24
+  // Removed: v28 ptg_last_navDynState.writeToStream(out);  // v24
 
   if (ptg_index_NOP < 0) out << cmd_vel /*v10*/ << cmd_vel_original;  // v15
 
   // Previous values: REMOVED IN VERSION #6
-  n = robotShape_x.size();
-  out << n;
-  if (n)
+  out.WriteAs<uint32_t>(robotShape_x.size());
+  if (!robotShape_x.empty())
   {
+    const auto n = robotShape_x.size();
     out.WriteBuffer((const void*)&(*robotShape_x.begin()), n * sizeof(robotShape_x[0]));
     out.WriteBuffer((const void*)&(*robotShape_y.begin()), n * sizeof(robotShape_y[0]));
   }
@@ -90,11 +87,11 @@ void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
   // out << estimatedExecutionPeriod; // removed v13
 
   // Version 3 ----------
-  for (i = 0; i < infoPerPTG.size(); i++)
+  for (const auto& ipp : infoPerPTG)
   {
     // v22: this is now a TParameters
     // (mrpt 2.1.0) Directly a std::map<>
-    out << infoPerPTG[i].evalFactors;
+    out << ipp.evalFactors;
   }
 
   out << nPTGs;  // v4
@@ -109,7 +106,7 @@ void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
   // v15: cmd_vel converted from std::vector<double> into CSerializable
   out << additional_debug_msgs;  // v18
 
-  navDynState.writeToStream(out);  // v24
+  // Removed v28. navDynState.writeToStream(out);  // v24.
 
   out << visuals;  // v27
 }
@@ -146,6 +143,7 @@ void CLogFileRecord::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ve
     case 25:
     case 26:
     case 27:
+    case 28:
     {
       // Version 0 --------------
       uint32_t i, n;
@@ -239,6 +237,12 @@ void CLogFileRecord::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ve
         {
           ipp.clearance.clear();
         }
+
+        if (version >= 28)
+        {
+          ipp.dynState.readFromStream(in);
+          ipp.lastDynState.readFromStream(in);
+        }
       }
 
       in >> nSelectedPTG >> WS_Obstacles;
@@ -306,11 +310,15 @@ void CLogFileRecord::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ve
       }
       if (version >= 17 && version < 24)
       {
-        in >> ptg_last_navDynState.curVelLocal;
+        mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState ds;
+        in >> ds.curVelLocal;
+        for (auto& ipp : infoPerPTG) ipp.dynState = ds;
       }
-      if (version >= 24)
+      if (version >= 24 && version < 28)
       {
-        ptg_last_navDynState.readFromStream(in);
+        mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState ds;
+        ds.readFromStream(in);
+        for (auto& ipp : infoPerPTG) ipp.dynState = ds;
       }
 
       if (version >= 10)
@@ -518,13 +526,19 @@ void CLogFileRecord::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ve
       else
         additional_debug_msgs.clear();
 
-      if (version >= 24)
-        navDynState.readFromStream(in);
-      else
+      if (version < 28)
       {
-        navDynState = CParameterizedTrajectoryGenerator::TNavDynamicState();
-        navDynState.curVelLocal = cur_vel_local;
-        if (!WS_targets_relative.empty()) navDynState.relTarget = WS_targets_relative[0];
+        CParameterizedTrajectoryGenerator::TNavDynamicState ds;
+        if (version >= 24)
+        {
+          ds.readFromStream(in);
+        }
+        else
+        {
+          ds.curVelLocal = cur_vel_local;
+          if (!WS_targets_relative.empty()) ds.relTarget = WS_targets_relative[0];
+        }
+        for (auto& ipp : infoPerPTG) ipp.dynState = ds;
       }
 
       if (version >= 27)

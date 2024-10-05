@@ -141,7 +141,6 @@ void bind_mrpt_nav_reactive_CLogFileRecord(std::function< pybind11::module &(std
 		cl.def( pybind11::init( [](){ return new mrpt::nav::CLogFileRecord(); }, [](){ return new PyCallBack_mrpt_nav_CLogFileRecord(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_nav_CLogFileRecord const &o){ return new PyCallBack_mrpt_nav_CLogFileRecord(o); } ) );
 		cl.def( pybind11::init( [](mrpt::nav::CLogFileRecord const &o){ return new mrpt::nav::CLogFileRecord(o); } ) );
-		cl.def_readwrite("navDynState", &mrpt::nav::CLogFileRecord::navDynState);
 		cl.def_readwrite("nPTGs", &mrpt::nav::CLogFileRecord::nPTGs);
 		cl.def_readwrite("infoPerPTG", &mrpt::nav::CLogFileRecord::infoPerPTG);
 		cl.def_readwrite("nSelectedPTG", &mrpt::nav::CLogFileRecord::nSelectedPTG);
@@ -166,7 +165,6 @@ void bind_mrpt_nav_reactive_CLogFileRecord(std::function< pybind11::module &(std
 		cl.def_readwrite("ptg_last_k_NOP", &mrpt::nav::CLogFileRecord::ptg_last_k_NOP);
 		cl.def_readwrite("rel_cur_pose_wrt_last_vel_cmd_NOP", &mrpt::nav::CLogFileRecord::rel_cur_pose_wrt_last_vel_cmd_NOP);
 		cl.def_readwrite("rel_pose_PTG_origin_wrt_sense_NOP", &mrpt::nav::CLogFileRecord::rel_pose_PTG_origin_wrt_sense_NOP);
-		cl.def_readwrite("ptg_last_navDynState", &mrpt::nav::CLogFileRecord::ptg_last_navDynState);
 		cl.def_readwrite("visuals", &mrpt::nav::CLogFileRecord::visuals);
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::nav::CLogFileRecord::GetRuntimeClassIdStatic, "C++: mrpt::nav::CLogFileRecord::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::nav::CLogFileRecord::*)() const) &mrpt::nav::CLogFileRecord::GetRuntimeClass, "C++: mrpt::nav::CLogFileRecord::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
@@ -192,6 +190,8 @@ void bind_mrpt_nav_reactive_CLogFileRecord(std::function< pybind11::module &(std
 			cl.def_readwrite("HLFR", &mrpt::nav::CLogFileRecord::TInfoPerPTG::HLFR);
 			cl.def_readwrite("ptg", &mrpt::nav::CLogFileRecord::TInfoPerPTG::ptg);
 			cl.def_readwrite("clearance", &mrpt::nav::CLogFileRecord::TInfoPerPTG::clearance);
+			cl.def_readwrite("dynState", &mrpt::nav::CLogFileRecord::TInfoPerPTG::dynState);
+			cl.def_readwrite("lastDynState", &mrpt::nav::CLogFileRecord::TInfoPerPTG::lastDynState);
 			cl.def("assign", (struct mrpt::nav::CLogFileRecord::TInfoPerPTG & (mrpt::nav::CLogFileRecord::TInfoPerPTG::*)(const struct mrpt::nav::CLogFileRecord::TInfoPerPTG &)) &mrpt::nav::CLogFileRecord::TInfoPerPTG::operator=, "C++: mrpt::nav::CLogFileRecord::TInfoPerPTG::operator=(const struct mrpt::nav::CLogFileRecord::TInfoPerPTG &) --> struct mrpt::nav::CLogFileRecord::TInfoPerPTG &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 

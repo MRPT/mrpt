@@ -1,5 +1,12 @@
 \page changelog Change Log
 
+# Version 2.14.2: Released Oct 5th, 2024
+- Changes in libraries:
+  - \ref mrpt_nav_grp:
+    - Add generic internalState to PTGs.
+  - \ref mrpt_opengl_grp:
+    - mrpt::opengl::CMesh: Remove the annoying warning "Texture image and Z matrix have different sizes"
+
 # Version 2.14.1: Released Sep 24th, 2024
 - Changes in apps:
   - SceneViewer3D: New button to enable shadow casting.

@@ -10,6 +10,7 @@
 
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/containers/yaml.h>
 #include <mrpt/core/round.h>
 #include <mrpt/kinematics/CVehicleVelCmd.h>
 #include <mrpt/math/CPolygon.h>
@@ -181,6 +182,9 @@ class CParameterizedTrajectoryGenerator :
     mrpt::math::TPose2D relTarget{20.0, .0, .0};
     /** Desired relative speed [0,1] at target. Default=0 */
     double targetRelSpeed{0};
+
+    /** Derived-class specific internal state variables */
+    mrpt::containers::yaml internalState;
 
     TNavDynamicState() = default;
     bool operator==(const TNavDynamicState& o) const;
