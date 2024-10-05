@@ -171,11 +171,8 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
   void internal_select_next_waypoint_skip_policy(std::list<std::function<void(void)>>& new_events);
   void internal_send_new_nav_cmd(const int prev_wp_index);
 
-  bool waypoints_isAligning() const { return m_is_aligning; }
-  /** Whether the last timestep was "is_aligning" in a waypoint with heading
-   */
-  bool m_was_aligning{false};
-  bool m_is_aligning{false};
+  bool waypoints_isAligning() const;
+
   mrpt::system::TTimeStamp m_last_alignment_cmd;
 };
 }  // namespace mrpt::nav
