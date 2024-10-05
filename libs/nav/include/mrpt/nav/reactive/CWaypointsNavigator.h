@@ -164,6 +164,13 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
   /** The waypoints-specific part of navigationStep() */
   virtual void waypoints_navigationStep();
 
+  /// Sub-algorithms within waypoints_navigationStep()
+  void internal_select_next_waypoint();
+  void internal_select_next_waypoint_default_policy(
+      std::list<std::function<void(void)>>& new_events);
+  void internal_select_next_waypoint_skip_policy(std::list<std::function<void(void)>>& new_events);
+  void internal_send_new_nav_cmd(const int prev_wp_index);
+
   bool waypoints_isAligning() const { return m_is_aligning; }
   /** Whether the last timestep was "is_aligning" in a waypoint with heading
    */
