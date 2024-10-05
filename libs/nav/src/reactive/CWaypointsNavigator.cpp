@@ -54,17 +54,15 @@ void CWaypointsNavigator::onNavigateCommandReceived()
 
   std::lock_guard<std::recursive_mutex> csl(m_nav_waypoints_cs);
 
-  m_was_aligning = false;
-
   // This initializes all fields to initial values:
-  m_waypoint_nav_status = TWaypointStatusSequence();
+  m_waypoint_nav_status = {};
 }
 
 void CWaypointsNavigator::navigateWaypoints(const TWaypointSequence& nav_request)
 {
   MRPT_START
 
-  this->onNavigateCommandReceived();
+  this->onNavigateCommandReceived();  // reset waypoint status to {}
 
   std::lock_guard<std::recursive_mutex> csl(m_nav_waypoints_cs);
 
@@ -112,19 +110,19 @@ void CWaypointsNavigator::waypoints_navigationStep()
 
   using mrpt::square;
 
+  // shortcut to save typing
+  TWaypointStatusSequence& wps = m_waypoint_nav_status;
+
   // --------------------------------------
   //     Waypoint navigation algorithm
   // --------------------------------------
-  m_is_aligning = false;  // the robot is aligning into a waypoint with a desired heading
+  wps.is_aligning = false;  // the robot is aligning into a waypoint with a desired heading
 
   mrpt::system::CTimeLoggerEntry tle(m_timlog_delays, "CWaypointsNavigator::navigationStep()");
   auto lck = mrpt::lockHelper(m_nav_waypoints_cs);
 
   // 0) Get current robot pose:
   CAbstractNavigator::updateCurrentPoseAndSpeeds();
-
-  // shortcut to save typing
-  TWaypointStatusSequence& wps = m_waypoint_nav_status;
 
   if (wps.waypoints.empty() || wps.final_goal_reached)
   {
@@ -138,7 +136,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
   // Note: navigationStep() is called *after* this waypoints part,
   // in order to get end-of-navigation events *after* waypoints-related events.
 
-  m_was_aligning = m_is_aligning;  // Let the next timestep know about this
+  wps.was_aligning = wps.is_aligning;  // Let the next timestep know about this
 
   MRPT_END
 }
@@ -194,23 +192,34 @@ void CWaypointsNavigator::internal_select_next_waypoint()
   internal_send_new_nav_cmd(prev_wp_index);
 }
 
+// -------------------------------------------------------------------------
+// default policy: go thru WPs one by one
+// -------------------------------------------------------------------------
 void CWaypointsNavigator::internal_select_next_waypoint_default_policy(
     std::list<std::function<void()>>& new_events)
 {
   TWaypointStatusSequence& wps = m_waypoint_nav_status;
 
-  if (wps.waypoint_index_current_goal < 0) return;
+  if (wps.waypoint_index_current_goal < 0) return;  // no active navigation
 
+  // Check if waypoint (WP) was reached:
   auto& wp = wps.waypoints[wps.waypoint_index_current_goal];
   const double dist2target = wps.robot_move_seg.distance(wp.target);
 
-  if (dist2target > wp.allowed_distance && !m_was_aligning /* we were already aligning at a WP */)
-    return;  // no need to check
+  if (dist2target > wp.allowed_distance && !wps.was_aligning /* we were already aligning at a WP */)
+    return;  // no need to check, we are not close enough.
+
+  if (!wps.was_aligning)
+  {
+    // We are approaching a WP, within |wp.allowed_distance| radius.
+    // XXX
+  }
 
   bool consider_wp_reached = false;
+
   if (!wp.target_heading.has_value())
   {
-    // Any heading is ok:
+    // We reached a WP without any desired heading, so we are done:
     consider_wp_reached = true;
   }
   else
@@ -223,16 +232,16 @@ void CWaypointsNavigator::internal_select_next_waypoint_default_policy(
     const double ALIGN_WAIT_TIME = 1.5;  // seconds
 
     if (std::abs(ang_err) <= params_waypoints_navigator.waypoint_angle_tolerance &&
-        /* give some time for the alignment (if supported in this robot) to finish)*/
+        /* give some time for the alignment (if supported in this robot) to finish */
         tim_since_last_align > ALIGN_WAIT_TIME)
     {
       consider_wp_reached = true;
     }
     else
     {
-      m_is_aligning = true;
+      wps.is_aligning = true;
 
-      if (!m_was_aligning)
+      if (!wps.was_aligning)
       {
         // 1st time we are aligning:
         // Send vel_cmd to the robot:
@@ -276,7 +285,7 @@ void CWaypointsNavigator::internal_select_next_waypoint_default_policy(
            " segment-to-target dist: "
         << dist2target << ", allowed_dist: " << wp.allowed_distance);
 
-    m_is_aligning = false;
+    wps.is_aligning = false;
 
     wp.reached = true;
     wp.skipped = false;
@@ -431,11 +440,17 @@ void CWaypointsNavigator::internal_send_new_nav_cmd(const int prev_wp_index)
       << this->getWaypointNavStatus().getAsText());
 }
 
+bool CWaypointsNavigator::waypoints_isAligning() const
+{
+  auto lck = mrpt::lockHelper(m_nav_waypoints_cs);
+  return m_waypoint_nav_status.is_aligning;
+}
+
 void CWaypointsNavigator::navigationStep()
 {
   MRPT_START
-  // the robot is aligning into a waypoint with a desired heading
-  m_is_aligning = false;
+
+  m_waypoint_nav_status.is_aligning = false;
 
   mrpt::system::CTimeLoggerEntry tle(m_navProfiler, "CWaypointsNavigator::navigationStep()");
 
@@ -446,10 +461,9 @@ void CWaypointsNavigator::navigationStep()
 
   // Call base navigation step to execute one-single waypoint navigation, as
   // usual:
-  if (!m_is_aligning)
+  if (!m_waypoint_nav_status.is_aligning)
   {
-    CAbstractNavigator::navigationStep();  // This internally locks
-                                           // "m_nav_cs"
+    CAbstractNavigator::navigationStep();  // This internally locks "m_nav_cs"
   }
   else
   {

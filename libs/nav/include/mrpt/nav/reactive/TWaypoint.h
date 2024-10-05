@@ -189,6 +189,11 @@ struct TWaypointStatusSequence
 
   mrpt::math::TSegment2D robot_move_seg;
 
+  /** Whether the last timestep was "is_aligning" in a waypoint with heading
+   */
+  bool was_aligning = false;
+  bool is_aligning = false;
+
   /** Ctor with default values */
   /** Gets navigation params as a human-readable format */
   std::string getAsText() const;
