@@ -1,7 +1,9 @@
 \page changelog Change Log
 
 # Version 2.14.3: UNRELEASED
-(none yet)
+- Changes in libraries:
+  - \ref mrpt_nav_grp:
+    - mrpt::nav::CWaypointsNavigator: New parameter "minimum_target_approach_per_step" and feature to keep approaching waypoints until no significant improvement is done.
 
 # Version 2.14.2: Released Oct 5th, 2024
 - Changes in libraries:
