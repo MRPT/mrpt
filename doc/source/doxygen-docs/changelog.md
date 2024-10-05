@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.14.3: UNRELEASED
+(none yet)
+
 # Version 2.14.2: Released Oct 5th, 2024
 - Changes in libraries:
   - \ref mrpt_nav_grp:
