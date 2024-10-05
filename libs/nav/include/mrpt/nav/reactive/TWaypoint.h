@@ -189,6 +189,9 @@ struct TWaypointStatusSequence
 
   mrpt::math::TSegment2D robot_move_seg;
 
+  /** Used to detect whether we peaked in closeness to a waypoint */
+  double prevDist2target = .0;
+
   /** Whether the last timestep was "is_aligning" in a waypoint with heading
    */
   bool was_aligning = false;

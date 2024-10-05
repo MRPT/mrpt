@@ -206,13 +206,22 @@ void CWaypointsNavigator::internal_select_next_waypoint_default_policy(
   auto& wp = wps.waypoints[wps.waypoint_index_current_goal];
   const double dist2target = wps.robot_move_seg.distance(wp.target);
 
+  const double prev_dist2target = wps.prevDist2target;
+  wps.prevDist2target = dist2target;
+
   if (dist2target > wp.allowed_distance && !wps.was_aligning /* we were already aligning at a WP */)
     return;  // no need to check, we are not close enough.
 
-  if (!wps.was_aligning)
+  if (!wps.was_aligning && wps.prevDist2target > 0)
   {
     // We are approaching a WP, within |wp.allowed_distance| radius.
-    // XXX
+    // As long as we are getting closer and closer, let it keep going:
+    if (dist2target <
+        prev_dist2target - params_waypoints_navigator.minimum_target_approach_per_step)
+    {  // ok, we are getting closer, do nothing:
+      return;
+    }
+    // Continue and accept the WP as reached (or perform the alignment there)
   }
 
   bool consider_wp_reached = false;
@@ -506,6 +515,7 @@ void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::loadFromConfigFi
   MRPT_LOAD_CONFIG_VAR(min_timesteps_confirm_skip_waypoints, int, c, s);
   MRPT_LOAD_CONFIG_VAR_DEGREES(waypoint_angle_tolerance, c, s);
   MRPT_LOAD_CONFIG_VAR(multitarget_look_ahead, int, c, s);
+  MRPT_LOAD_CONFIG_VAR(minimum_target_approach_per_step, double, c, s);
 }
 
 void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::saveToConfigFile(
@@ -527,12 +537,7 @@ void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::saveToConfigFile
       ">=0 number of waypoints to forward to the underlying navigation "
       "engine, to ease obstacles avoidance when a waypoint is blocked "
       "(Default=0 : none)");
-}
-
-CWaypointsNavigator::TWaypointsNavigatorParams::TWaypointsNavigatorParams() :
-    waypoint_angle_tolerance(mrpt::DEG2RAD(5.0))
-
-{
+  MRPT_SAVE_CONFIG_VAR(minimum_target_approach_per_step, c, s);
 }
 
 /** \callergraph */
