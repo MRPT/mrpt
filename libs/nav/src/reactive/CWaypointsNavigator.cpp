@@ -121,15 +121,15 @@ void CWaypointsNavigator::waypoints_navigationStep()
   mrpt::system::CTimeLoggerEntry tle(m_timlog_delays, "CWaypointsNavigator::navigationStep()");
   auto lck = mrpt::lockHelper(m_nav_waypoints_cs);
 
-  // 0) Get current robot pose:
-  CAbstractNavigator::updateCurrentPoseAndSpeeds();
-
   if (wps.waypoints.empty() || wps.final_goal_reached)
   {
     // No nav request is pending or it was canceled
   }
   else
   {
+    // Get current robot pose:
+    CAbstractNavigator::updateCurrentPoseAndSpeeds();
+
     internal_select_next_waypoint();
   }
 
