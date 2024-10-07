@@ -96,16 +96,22 @@ bool fromROS(const nav_msgs::msg::OccupancyGrid& src, mrpt::maps::COccupancyGrid
  * @return true on sucessful conversion, false on any error.
  * @param src
  * @param header
+ * @param as_costmap If set to true, gridmap cell values will be copied without changes
+ *        (interpreted as int8_t instead of Log-odds)
  */
 bool toROS(
     const mrpt::maps::COccupancyGridMap2D& src,
     nav_msgs::msg::OccupancyGrid& msg,
-    const std_msgs::msg::Header& header);
+    const std_msgs::msg::Header& header,
+    bool as_costmap = false);
 /**
  * converts mrpt object to ros msg
  * @return true on sucessful conversion, false on any error.
  */
-bool toROS(const mrpt::maps::COccupancyGridMap2D& src, nav_msgs::msg::OccupancyGrid& msg);
+bool toROS(
+    const mrpt::maps::COccupancyGridMap2D& src,
+    nav_msgs::msg::OccupancyGrid& msg,
+    bool as_costmap = false);
 
 /** @}
  * @}

@@ -4,6 +4,8 @@
 - Changes in libraries:
   - \ref mrpt_nav_grp:
     - mrpt::nav::CWaypointsNavigator: New parameter "minimum_target_approach_per_step" and feature to keep approaching waypoints until no significant improvement is done.
+  - \ref mrpt_ros1bridge_grp and mrpt_ros2bridge_grp:
+    - Convert from MRPT occupancy grids to ROS: Add new optional parameter to interpret grid maps as cost maps.
 
 # Version 2.14.2: Released Oct 5th, 2024
 - Changes in libraries:
