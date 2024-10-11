@@ -1797,6 +1797,21 @@ void CImage::rotateImage(
   // Detect in-place operation and make a deep copy if needed:
   if (out_img.m_impl->img.data == srcImg.data) srcImg = srcImg.clone();
 
+  // quick rotation?
+  if (std::abs(M_PI * 0.5 - std::abs(ang)) < 1e-3 || std::abs(M_PI - std::abs(ang)) < 1e-3)
+  {
+    int rotCode = 0;
+    if (std::abs(M_PI * 0.5 - ang) < 1e-3)
+      rotCode = cv::ROTATE_90_COUNTERCLOCKWISE;
+    else if (std::abs(-M_PI * 0.5 - ang) < 1e-3)
+      rotCode = cv::ROTATE_90_CLOCKWISE;
+    else if (std::abs(M_PI - ang) < 1e-3)
+      rotCode = cv::ROTATE_180;
+
+    cv::rotate(srcImg, out_img.m_impl->img, rotCode);
+  }
+  // else: general rotation:
+
   out_img.resize(getWidth(), getHeight(), getChannelCount());
 
   // Based on the blog entry:
