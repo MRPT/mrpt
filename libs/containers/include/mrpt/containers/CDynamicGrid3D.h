@@ -203,7 +203,7 @@ class CDynamicGrid3D
   virtual void clear()
   {
     m_map.clear();
-    m_map.resize(m_size_x * m_size_y * m_size_z);
+    if (const size_t N = m_size_x * m_size_y * m_size_z; N) m_map.resize(N);
   }
 
   /** Fills all the cells with the same value
