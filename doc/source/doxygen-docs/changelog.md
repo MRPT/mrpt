@@ -4,6 +4,8 @@
 - Changes in libraries:
   - \ref mrpt_img_grp:
     - mrpt::img::CImage::rotateImage(): Special angles 90,-90, 180 are handled as expected with a quick image transformation and rotation.
+  - \ref mrpt_math_grp:
+    - mrpt::math::TPose2D and mrpt::math::TPose3D constructors from points are marked as explicit.
   - \ref mrpt_nav_grp:
     - mrpt::nav::CWaypointsNavigator: New parameter "minimum_target_approach_per_step" and feature to keep approaching waypoints until no significant improvement is done.
   - \ref mrpt_ros1bridge_grp and mrpt_ros2bridge_grp:
