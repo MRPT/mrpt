@@ -46,27 +46,24 @@ struct TPose3D : public TPoseOrPoint, public internal::ProvideStaticResize<TPose
    * \sa TPoint2D
    */
   TPose3D(const TPoint2D& p);
-  /**
-   * Implicit constructor from TPose2D. Gets the yaw from the 2D pose's phi,
+
+  /** Implicit constructor from TPose2D. Gets the yaw from the 2D pose's phi,
    * zeroing all the unprovided information.
    * \sa TPose2D
    */
   TPose3D(const TPose2D& p);
-  /**
-   * Implicit constructor from TPoint3D. Zeroes angular information.
+
+  /** Explicit  constructor from TPoint3D. Zeroes angular information.
    * \sa TPoint3D
    */
-  TPose3D(const TPoint3D& p);
-  /**
-   * Constructor from coordinates.
-   */
+  explicit TPose3D(const TPoint3D& p);
+
+  /** Constructor from coordinates */
   constexpr TPose3D(double _x, double _y, double _z, double _yaw, double _pitch, double _roll) :
       x(_x), y(_y), z(_z), yaw(_yaw), pitch(_pitch), roll(_roll)
   {
   }
-  /**
-   * Default fast constructor. Initializes to zeros.
-   */
+  /** Default fast constructor. Initializes to zeros. */
   constexpr TPose3D() = default;
 
   /** See fromString() for a description of the expected string format. */

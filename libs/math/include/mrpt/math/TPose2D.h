@@ -36,10 +36,11 @@ struct TPose2D : public TPoseOrPoint, public internal::ProvideStaticResize<TPose
   /** Returns the identity transformation */
   static constexpr TPose2D Identity() { return TPose2D(); }
 
-  /** Implicit constructor from TPoint2D. Zeroes the phi coordinate.
+  /** Explicit constructor from TPoint2D. Zeroes the phi coordinate.
    * \sa TPoint2D
    */
-  TPose2D(const TPoint2D& p);
+  explicit TPose2D(const TPoint2D& p);
+
   /**
    * Constructor from TPoint3D, losing information. Zeroes the phi
    * coordinate.
