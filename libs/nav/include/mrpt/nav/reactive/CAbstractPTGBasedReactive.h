@@ -331,16 +331,20 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 
   struct PTGTarget
   {
-    /** For each PTG, whether target falls into the PTG domain. */
-    bool valid_TP{false};
-    /** The Target, in TP-Space (x,y) */
-    mrpt::math::TPoint2D TP_Target;
-    /** TP-Target */
-    double target_alpha, target_dist;
-    /** The discrete version of target_alpha */
-    int target_k;
-
     PTGTarget() = default;
+
+    /** For each PTG, whether target falls into the PTG domain. */
+    bool valid_TP = false;
+
+    /** The Target, in TP-Space (x,y), plust its actual relative heading (phi)
+     *  wrt to the current robot pose. */
+    mrpt::math::TPose2D TP_Target;
+
+    /** TP-Target */
+    double target_alpha = 0, target_dist = 0;
+
+    /** The discrete version of target_alpha */
+    int target_k = 0;
   };
 
   /** Scores \a holonomicMovement */

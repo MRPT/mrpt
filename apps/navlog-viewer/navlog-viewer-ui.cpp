@@ -984,6 +984,10 @@ void NavlogViewerApp::updateVisualization()
 
     {
       // Target:
+      mrpt::opengl::CSetOfObjects::Ptr gl_trgCorners;
+      mrpt::opengl::CRenderizable::Ptr gl_trgC_r =
+          gl_robot_frame->getByName("target_corners");  // Get or create if new
+
       mrpt::opengl::CPointCloud::Ptr gl_trg;
       mrpt::opengl::CRenderizable::Ptr gl_trg_r =
           gl_robot_frame->getByName("target");  // Get or create if new
@@ -995,14 +999,22 @@ void NavlogViewerApp::updateVisualization()
         gl_trg->setPointSize(9.0);
         gl_trg->setColor_u8(mrpt::img::TColor(0x00, 0x00, 0x00));
         gl_robot_frame->insert(gl_trg);
+
+        gl_trgCorners = mrpt::opengl::CSetOfObjects::Create();
+        gl_trgCorners->setName("target_corners");
+        gl_robot_frame->insert(gl_trgCorners);
       }
       else
       {
         gl_trg = std::dynamic_pointer_cast<mrpt::opengl::CPointCloud>(gl_trg_r);
+        gl_trgCorners = std::dynamic_pointer_cast<mrpt::opengl::CSetOfObjects>(gl_trgC_r);
+        ASSERT_(gl_trg);
+        ASSERT_(gl_trgCorners);
       }
       // Move the map & add a point at (0,0,0) so the name label
       // appears at the target:
       gl_trg->clear();
+      gl_trgCorners->clear();
       if (!log.WS_targets_relative.empty())
       {
         const auto t0 = log.WS_targets_relative[0];
@@ -1011,6 +1023,9 @@ void NavlogViewerApp::updateVisualization()
         for (const auto& t : log.WS_targets_relative)
         {
           gl_trg->insertPoint(t.x - t0.x, t.y - t0.y, tz);
+          auto glCorner = mrpt::opengl::stock_objects::CornerXYZ(0.25f);
+          glCorner->setPose(t);
+          gl_trgCorners->insert(glCorner);
         }
       }
     }
@@ -1264,10 +1279,8 @@ void NavlogViewerApp::updateVisualization()
         scene->insert(gl_obj);
       }
       {
-        auto gl_obj = mrpt::opengl::CPointCloud::Create();
+        auto gl_obj = mrpt::opengl::CSetOfObjects::Create();
         gl_obj->setName("tp_target");
-        gl_obj->setPointSize(5.0f);
-        gl_obj->setColor_u8(mrpt::img::TColor(0x30, 0x30, 0x30, 0xff));
         gl_obj->setLocation(0, 0, 0.02f);
         scene->insert(gl_obj);
       }
@@ -1342,11 +1355,18 @@ void NavlogViewerApp::updateVisualization()
     // Target:
     {
       auto gl_obj =
-          std::dynamic_pointer_cast<mrpt::opengl::CPointCloud>(scene->getByName("tp_target"));
+          std::dynamic_pointer_cast<mrpt::opengl::CSetOfObjects>(scene->getByName("tp_target"));
       gl_obj->clear();
+      auto glTargetPts = mrpt::opengl::CPointCloud::Create();
+      glTargetPts->setPointSize(5);
+      glTargetPts->setColor_u8(0, 0, 0);
+      gl_obj->insert(glTargetPts);
       for (const auto& p : pI.TP_Targets)
       {
-        gl_obj->insertPoint(p.x, p.y, .0);
+        auto glCorner = mrpt::opengl::stock_objects::CornerXYZ(0.15f);
+        glCorner->setPose(p);
+        gl_obj->insert(glCorner);
+        glTargetPts->insertPoint(p.x, p.y, 0.02);
       }
 
       if (!pI.TP_Targets.empty())

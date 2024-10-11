@@ -123,7 +123,7 @@ void CHolonomicND::navigate(const NavInput& ni, NavOutput& no)
         Find gaps in the obtacles (Beta version)
   ---------------------------------------------------------------*/
 void CHolonomicND::gapsEstimator(
-    const std::vector<double>& obstacles, const mrpt::math::TPoint2D& target, TGapArray& gaps_out)
+    const std::vector<double>& obstacles, const mrpt::math::TPose2D& target, TGapArray& gaps_out)
 {
   const size_t n = obstacles.size();
   ASSERT_(n > 2);
@@ -279,7 +279,7 @@ void CHolonomicND::searchBestGap(
     const std::vector<double>& obstacles,
     const double maxObsRange,
     const TGapArray& in_gaps,
-    const mrpt::math::TPoint2D& target,
+    const mrpt::math::TPose2D& target,
     unsigned int& out_selDirection,
     double& out_selEvaluation,
     TSituations& out_situation,
@@ -421,7 +421,7 @@ void CHolonomicND::searchBestGap(
     field in the gap structure:
   ---------------------------------------------------------------*/
 void CHolonomicND::calcRepresentativeSectorForGap(
-    TGap& gap, const mrpt::math::TPoint2D& target, const std::vector<double>& obstacles)
+    TGap& gap, const mrpt::math::TPose2D& target, const std::vector<double>& obstacles)
 {
   int sector;
   const unsigned int sectors_to_be_wide = round(options.WIDE_GAP_SIZE_PERCENT * obstacles.size());
