@@ -1809,6 +1809,7 @@ void CImage::rotateImage(
       rotCode = cv::ROTATE_180;
 
     cv::rotate(srcImg, out_img.m_impl->img, rotCode);
+    return;
   }
   // else: general rotation:
 
