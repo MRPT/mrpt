@@ -169,7 +169,7 @@ class holonomic_navigator_demoFrame : public wxFrame
 
   std::unique_ptr<mrpt::nav::CAbstractHolonomicReactiveMethod> m_holonomicMethod;
   mrpt::maps::COccupancyGridMap2D m_gridMap;
-  mrpt::math::TPoint2D m_targetPoint;
+  mrpt::math::TPose2D m_targetPose;
   mrpt::math::TPose2D m_robotPose;
 
   mrpt::system::CTicTac m_runtime;

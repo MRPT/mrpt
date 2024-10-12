@@ -1525,11 +1525,9 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
       ni.maxRobotSpeed = 1.0;           // So, we use a normalized max speed here.
       ni.obstacles = ipf.TP_Obstacles;  // Normalized [0,1]
 
-      ni.targets.clear();  // Normalized [0,1]
-      for (const auto& t : ipf.targets)
-      {
+      ni.targets.clear();
+      for (const auto& t : ipf.targets)  //
         ni.targets.push_back(t.TP_Target);
-      }
 
       CAbstractHolonomicReactiveMethod::NavOutput no;
 

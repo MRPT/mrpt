@@ -119,22 +119,31 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 
   struct TWaypointsNavigatorParams : public mrpt::config::CLoadableOptions
   {
+    TWaypointsNavigatorParams() = default;
+
     /** In meters. <0: unlimited */
-    double max_distance_to_allow_skip_waypoint{-1.0};
+    double max_distance_to_allow_skip_waypoint = -1.0;
+
     /** How many times shall a future waypoint be seen as reachable to skip
      * to it (Default: 1) */
-    int min_timesteps_confirm_skip_waypoints{1};
+    int min_timesteps_confirm_skip_waypoints = 1;
+
     /** [rad] Angular error tolerance for waypoints with an assigned heading
      * (Default: 5 deg) */
-    double waypoint_angle_tolerance;
+    double waypoint_angle_tolerance = mrpt::DEG2RAD(5.0);
+
     /** >=0 number of waypoints to forward to the underlying navigation
      * engine, to ease obstacles avoidance when a waypoint is blocked
      * (Default=0 : none). */
-    int multitarget_look_ahead{0};
+    int multitarget_look_ahead = 0;
+
+    /** While within the waypoint allowed_distance radius, this is the minimum distance [m]
+     *  to be reduced for each time step. Once it is not, the waypoint will be marked as reached.
+     */
+    double minimum_target_approach_per_step = 0.02;
 
     void loadFromConfigFile(const mrpt::config::CConfigFileBase& c, const std::string& s) override;
     void saveToConfigFile(mrpt::config::CConfigFileBase& c, const std::string& s) const override;
-    TWaypointsNavigatorParams();
   };
 
   TWaypointsNavigatorParams params_waypoints_navigator;
@@ -164,11 +173,15 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
   /** The waypoints-specific part of navigationStep() */
   virtual void waypoints_navigationStep();
 
-  bool waypoints_isAligning() const { return m_is_aligning; }
-  /** Whether the last timestep was "is_aligning" in a waypoint with heading
-   */
-  bool m_was_aligning{false};
-  bool m_is_aligning{false};
+  /// Sub-algorithms within waypoints_navigationStep()
+  void internal_select_next_waypoint();
+  void internal_select_next_waypoint_default_policy(
+      std::list<std::function<void(void)>>& new_events);
+  void internal_select_next_waypoint_skip_policy(std::list<std::function<void(void)>>& new_events);
+  void internal_send_new_nav_cmd(const int prev_wp_index);
+
+  bool waypoints_isAligning() const;
+
   mrpt::system::TTimeStamp m_last_alignment_cmd;
 };
 }  // namespace mrpt::nav

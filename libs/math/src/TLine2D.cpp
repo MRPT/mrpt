@@ -80,9 +80,8 @@ void TLine2D::getAsPose2D(TPose2D& outPose) const
 void TLine2D::getAsPose2DForcingOrigin(const TPoint2D& origin, TPose2D& outPose) const
 {
   if (!contains(origin)) throw std::logic_error("Base point is not contained in the line");
-  outPose = origin;
   // Line's director vector is (-coefs[1],coefs[0]).
-  outPose.phi = atan2(coefs[0], -coefs[1]);
+  outPose = {origin.x, origin.y, atan2(coefs[0], -coefs[1])};
 }
 TLine2D::TLine2D(const TPoint2D& p1, const TPoint2D& p2)
 {

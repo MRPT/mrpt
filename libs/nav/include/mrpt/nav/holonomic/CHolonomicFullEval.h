@@ -27,30 +27,7 @@ namespace mrpt::nav
  * CHolonomicFullEval::initialize() or directly in \a
  * CHolonomicFullEval::options
  *
- * \code
- * # Section name can be changed via setConfigFileSectionName()
- * [FULL_EVAL_CONFIG]
- * factorWeights        = 1.0 1.0 1.0 0.05 1.0
- * factorNormalizeOrNot =   0   0   0    0   1
- * // 0: Clearness in direction
- * // 1: Closest approach to target along straight line (Euclidean)
- * // 2: Distance of end collision-free point to target (Euclidean)
- * // 3: Hysteresis
- * // 4: Clearness to nearest obstacle along path
- * // 5: Like 2, but without being decimated if path to target is obstructed
- * TARGET_SLOW_APPROACHING_DISTANCE = 0.20   // Start to reduce speed when
- * closer than this to target [m]
- * TOO_CLOSE_OBSTACLE               = 0.02   // Directions with collision-free
- * distances below this threshold are not elegible.
- * HYSTERESIS_SECTOR_COUNT          = 5      // Range of "sectors" (directions)
- * for hysteresis over successive timesteps
- * PHASE1_FACTORS   = 0 1 2                  // Indices of the factors above to
- * be considered in phase 1
- * PHASE2_FACTORS   = 3 4                    // Indices of the factors above to
- * be considered in phase 2
- * PHASE1_THRESHOLD = 0.75                   // Phase1 scores must be above this
- * relative range threshold [0,1] to be considered in phase 2 (Default:`0.75`)
- * \endcode
+ * See [MRPT]/share/mrpt/config_files_navigation-ptgs for example configurations.
  *
  *  \sa CAbstractHolonomicReactiveMethod,CReactiveNavigationSystem
  */

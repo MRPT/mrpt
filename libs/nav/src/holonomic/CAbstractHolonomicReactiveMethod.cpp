@@ -64,8 +64,3 @@ CAbstractHolonomicReactiveMethod::Ptr CAbstractHolonomicReactiveMethod::Factory(
     return CAbstractHolonomicReactiveMethod::Ptr();
   }
 }
-
-CAbstractHolonomicReactiveMethod::NavInput::NavInput() : targets() {}
-CAbstractHolonomicReactiveMethod::NavOutput::NavOutput()
-
-    = default;

@@ -242,7 +242,7 @@ void bind_mrpt_nav_reactive_CLogFileRecord(std::function< pybind11::module &(std
 		}
 
 	}
-	{ // mrpt::nav::TWaypoint file:mrpt/nav/reactive/TWaypoint.h line:26
+	{ // mrpt::nav::TWaypoint file:mrpt/nav/reactive/TWaypoint.h line:27
 		pybind11::class_<mrpt::nav::TWaypoint, std::shared_ptr<mrpt::nav::TWaypoint>> cl(M("mrpt::nav"), "TWaypoint", "A single waypoint within TWaypointSequence. ");
 		cl.def( pybind11::init( [](){ return new mrpt::nav::TWaypoint(); } ) );
 		cl.def( pybind11::init( [](mrpt::nav::TWaypoint const &o){ return new mrpt::nav::TWaypoint(o); } ) );

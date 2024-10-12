@@ -1587,7 +1587,7 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
           heading *= M_PI / 180;
         }
         m_waypoints_clicked.waypoints.emplace_back(
-            m_curCursorPos.x, m_curCursorPos.y, 0.2 /* allowed dist */, allow_skip_wps, heading);
+            m_curCursorPos.x, m_curCursorPos.y, 0.35 /* allowed dist */, allow_skip_wps, heading);
       }
       if (event.ButtonIsDown(wxMOUSE_BTN_RIGHT))
       {

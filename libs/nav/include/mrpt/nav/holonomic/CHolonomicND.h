@@ -128,7 +128,7 @@ class CHolonomicND : public CAbstractHolonomicReactiveMethod
   /**  Find gaps in the obtacles.
    */
   void gapsEstimator(
-      const std::vector<double>& obstacles, const mrpt::math::TPoint2D& in_target, TGapArray& gaps);
+      const std::vector<double>& obstacles, const math::TPose2D& in_target, TGapArray& gaps);
 
   /** Search the best gap.
    */
@@ -136,7 +136,7 @@ class CHolonomicND : public CAbstractHolonomicReactiveMethod
       const std::vector<double>& in_obstacles,
       const double in_maxObsRange,
       const TGapArray& in_gaps,
-      const mrpt::math::TPoint2D& in_target,
+      const math::TPose2D& in_target,
       unsigned int& out_selDirection,
       double& out_selEvaluation,
       TSituations& out_situation,
@@ -146,7 +146,7 @@ class CHolonomicND : public CAbstractHolonomicReactiveMethod
   /** Fills in the representative sector field in the gap structure:
    */
   void calcRepresentativeSectorForGap(
-      TGap& gap, const mrpt::math::TPoint2D& target, const std::vector<double>& obstacles);
+      TGap& gap, const math::TPose2D& target, const std::vector<double>& obstacles);
 
   /** Evaluate each gap:
    */

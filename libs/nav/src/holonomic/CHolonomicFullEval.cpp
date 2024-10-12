@@ -18,6 +18,7 @@
 
 #include <Eigen/Dense>  // col(),...
 #include <cmath>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -27,7 +28,7 @@ using namespace std;
 IMPLEMENTS_SERIALIZABLE(CLogFileRecord_FullEval, CHolonomicLogFileRecord, mrpt::nav)
 IMPLEMENTS_SERIALIZABLE(CHolonomicFullEval, CAbstractHolonomicReactiveMethod, mrpt::nav)
 
-const unsigned NUM_FACTORS = 7U;
+constexpr unsigned NUM_FACTORS = 8U;
 
 CHolonomicFullEval::CHolonomicFullEval(const mrpt::config::CConfigFileBase* INI_FILE) :
     CAbstractHolonomicReactiveMethod("CHolonomicFullEval"),
@@ -101,7 +102,7 @@ void CHolonomicFullEval::evalSingleTarget(
 
   for (unsigned int i = 0; i < nDirs; i++)
   {
-    double scores[NUM_FACTORS];  // scores for each criterion
+    std::array<double, NUM_FACTORS> scores;  // scores for each criterion
 
     // Too close to obstacles? (unless target is in between obstacles and
     // the robot)
@@ -152,7 +153,7 @@ void CHolonomicFullEval::evalSingleTarget(
 
     // Range of attainable values: 0=passes thru target. 2=opposite
     // direction
-    double min_dist_target_along_path = sg.distance(target);
+    double min_dist_target_along_path = sg.distance(target.translation());
 
     // Idea: if this segment is taking us *away* from target, don't make
     // the segment to start at (0,0), since all paths "running away"
@@ -169,7 +170,7 @@ void CHolonomicFullEval::evalSingleTarget(
       // path takes us away or way blocked:
       sg.point1.x = x * 0.5;
       sg.point1.y = y * 0.5;
-      min_dist_target_along_path = sg.distance(target);
+      min_dist_target_along_path = sg.distance(target.translation());
     }
 
     scores[1] = 1.0 / (1.0 + square(min_dist_target_along_path));
@@ -239,6 +240,13 @@ void CHolonomicFullEval::evalSingleTarget(
       scores[2] *= 0.1;
       scores[6] *= 0.1;
     }
+
+    // Factor [7]: Heading mismatch: 1.0=perfect phi aligment, 0.0=180deg error
+    // -------------------------------------------------------------------------
+    uint32_t ptgStep = 0;
+    ptg->getPathStepForDist(i, d * ptg->getRefDistance(), ptgStep);
+    const auto ptgPose = ptg->getPathPose(i, ptgStep);
+    scores[7] = 1.0 - std::abs(mrpt::math::angDistance(target.phi, ptgPose.phi) / M_PI);
 
     // Save stats for debugging:
     for (size_t l = 0; l < NUM_FACTORS; l++) m_dirs_scores(i, l) = scores[l];
