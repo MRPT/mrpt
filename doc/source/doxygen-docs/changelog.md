@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.14.4: UNRELEASED
+(None yet)
+
 # Version 2.14.3: Released Oct 12th, 2024
 - Changes in libraries:
   - \ref mrpt_img_grp:
