@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.14.3: UNRELEASED
+# Version 2.14.3: Released Oct 12th, 2024
 - Changes in libraries:
   - \ref mrpt_img_grp:
     - mrpt::img::CImage::rotateImage(): Special angles 90,-90, 180 are handled as expected with a quick image transformation and rotation.
