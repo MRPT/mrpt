@@ -27,7 +27,7 @@ namespace mrpt::nav
  * CHolonomicFullEval::initialize() or directly in \a
  * CHolonomicFullEval::options
  *
- * See [MRPT]/share/mrpt/config_files_navigation-ptgs/*.ini for example configurations.
+ * See [MRPT]/share/mrpt/config_files_navigation-ptgs for example configurations.
  *
  *  \sa CAbstractHolonomicReactiveMethod,CReactiveNavigationSystem
  */

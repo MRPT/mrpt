@@ -339,7 +339,7 @@ void bind_mrpt_nav_tpspace_CParameterizedTrajectoryGenerator(std::function< pybi
 			cl.def("assign", (struct mrpt::nav::CAbstractHolonomicReactiveMethod::NavInput & (mrpt::nav::CAbstractHolonomicReactiveMethod::NavInput::*)(const struct mrpt::nav::CAbstractHolonomicReactiveMethod::NavInput &)) &mrpt::nav::CAbstractHolonomicReactiveMethod::NavInput::operator=, "C++: mrpt::nav::CAbstractHolonomicReactiveMethod::NavInput::operator=(const struct mrpt::nav::CAbstractHolonomicReactiveMethod::NavInput &) --> struct mrpt::nav::CAbstractHolonomicReactiveMethod::NavInput &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
-		{ // mrpt::nav::CAbstractHolonomicReactiveMethod::NavOutput file:mrpt/nav/holonomic/CAbstractHolonomicReactiveMethod.h line:61
+		{ // mrpt::nav::CAbstractHolonomicReactiveMethod::NavOutput file:mrpt/nav/holonomic/CAbstractHolonomicReactiveMethod.h line:65
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::nav::CAbstractHolonomicReactiveMethod::NavOutput, std::shared_ptr<mrpt::nav::CAbstractHolonomicReactiveMethod::NavOutput>> cl(enclosing_class, "NavOutput", "Output for CAbstractHolonomicReactiveMethod::navigate() ");
 			cl.def( pybind11::init( [](){ return new mrpt::nav::CAbstractHolonomicReactiveMethod::NavOutput(); } ) );
