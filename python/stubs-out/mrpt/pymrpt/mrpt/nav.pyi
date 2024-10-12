@@ -23,7 +23,7 @@ class CAbstractHolonomicReactiveMethod(mrpt.pymrpt.mrpt.serialization.CSerializa
         maxObstacleDist: float
         maxRobotSpeed: float
         obstacles: List[float]
-        targets: Any
+        targets: List[mrpt.pymrpt.mrpt.math.TPose2D]
         @overload
         def __init__(self) -> None: ...
         @overload
@@ -595,7 +595,7 @@ class CLogFileRecord(mrpt.pymrpt.mrpt.serialization.CSerializable):
         PTG_desc: str
         TP_Obstacles: Any
         TP_Robot: Any
-        TP_Targets: Any
+        TP_Targets: List[mrpt.pymrpt.mrpt.math.TPose2D]
         clearance: ClearanceDiagram
         desiredDirection: float
         desiredSpeed: float
@@ -1536,6 +1536,7 @@ class CWaypointsNavigator(CAbstractNavigator):
     class TWaypointsNavigatorParams(mrpt.pymrpt.mrpt.config.CLoadableOptions):
         max_distance_to_allow_skip_waypoint: float
         min_timesteps_confirm_skip_waypoints: int
+        minimum_target_approach_per_step: float
         multitarget_look_ahead: int
         waypoint_angle_tolerance: float
         @overload
@@ -1971,8 +1972,12 @@ class TWaypointStatus(TWaypoint):
 
 class TWaypointStatusSequence:
     final_goal_reached: bool
+    is_aligning: bool
     last_robot_pose: mrpt.pymrpt.mrpt.math.TPose2D
+    prevDist2target: float
+    robot_move_seg: mrpt.pymrpt.mrpt.math.TSegment2D
     timestamp_nav_started: mrpt.pymrpt.std.chrono.time_point_mrpt_Clock_std_chrono_duration_long_std_ratio_1_10000000_t
+    was_aligning: bool
     waypoint_index_current_goal: int
     waypoints: List[TWaypointStatus]
     @overload
