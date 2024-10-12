@@ -261,8 +261,10 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
       unsigned int height,
       TInterpolationMethod interp = IMG_INTERP_CUBIC) const;
 
-  /** Rotates the image by the given angle around the given center point, with
+  /** Rotates the image by the given angle (in radians) around the given center point, with
    * an optional scale factor.
+   * The output image will have the same size as the input, except if angle is exactly ±90 degrees,
+   * in which case a quick image rotation (switching height and widht) will be performed instead.
    * \sa resize, scaleImage
    */
   void rotateImage(

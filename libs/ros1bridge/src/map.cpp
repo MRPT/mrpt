@@ -107,13 +107,17 @@ bool mrpt::ros1bridge::fromROS(const nav_msgs::OccupancyGrid& src, COccupancyGri
   MRPT_END
 }
 bool mrpt::ros1bridge::toROS(
-    const COccupancyGridMap2D& src, nav_msgs::OccupancyGrid& des, const std_msgs::Header& header)
+    const COccupancyGridMap2D& src,
+    nav_msgs::OccupancyGrid& des,
+    const std_msgs::Header& header,
+    bool as_costmap)
 {
   des.header = header;
-  return toROS(src, des);
+  return toROS(src, des, as_costmap);
 }
 
-bool mrpt::ros1bridge::toROS(const COccupancyGridMap2D& src, nav_msgs::OccupancyGrid& des)
+bool mrpt::ros1bridge::toROS(
+    const COccupancyGridMap2D& src, nav_msgs::OccupancyGrid& des, bool as_costmap)
 {
   des.info.width = src.getSizeX();
   des.info.height = src.getSizeY();
@@ -133,10 +137,14 @@ bool mrpt::ros1bridge::toROS(const COccupancyGridMap2D& src, nav_msgs::Occupancy
   for (unsigned int h = 0; h < des.info.height; h++)
   {
     const COccupancyGridMap2D::cellType* pSrc = src.getRow(h);
+    ASSERT_(pSrc);
     int8_t* pDes = &des.data[h * des.info.width];
     for (unsigned int w = 0; w < des.info.width; w++)
     {
-      *pDes++ = MapHdl::instance()->cellMrpt2Ros(*pSrc++);
+      if (as_costmap)
+        *pDes++ = static_cast<int8_t>(*pSrc++);
+      else
+        *pDes++ = MapHdl::instance()->cellMrpt2Ros(*pSrc++);
     }
   }
   return true;

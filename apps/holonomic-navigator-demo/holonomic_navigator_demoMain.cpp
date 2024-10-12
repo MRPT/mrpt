@@ -110,7 +110,7 @@ END_EVENT_TABLE()
 
 holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent, wxWindowID id) :
     m_gridMap(),
-    m_targetPoint(-5, -7),
+    m_targetPose(-5, -7, 0),
     m_robotPose(0, 0, 0),
     m_curCursorPos(0, 0),
     m_cursorPickState(cpsNone)
@@ -667,9 +667,10 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
   gl_scan2D->setScan(simulatedScan);  // Draw scaled scan in right-hand view
 
   // Navigate:
-  mrpt::math::TPoint2D relTargetPose =
-      (mrpt::poses::CPoint2D(m_targetPoint) - mrpt::poses::CPose2D(m_robotPose)).asTPoint();
-  relTargetPose *= 1.0 / simulatedScan.maxRange;  // Normalized relative target:
+  mrpt::math::TPose2D relTargetPose = m_targetPose - m_robotPose;
+  // Normalized relative target:
+  relTargetPose.x *= 1.0 / simulatedScan.maxRange;
+  relTargetPose.y *= 1.0 / simulatedScan.maxRange;
 
   // tictac.Tic();
   CAbstractHolonomicReactiveMethod::NavOutput no;
@@ -757,14 +758,13 @@ void holonomic_navigator_demoFrame::updateViewsDynamicObjects()
     // Parabolic path
     const double s = 4 * t * (TARGET_BOUNCE_MAX - TARGET_BOUNCE_MIN) * (1 - t) + TARGET_BOUNCE_MIN;
 
-    gl_target->setLocation(m_targetPoint.x, m_targetPoint.y, 0);
+    gl_target->setLocation(mrpt::math::TPoint3D(m_targetPose.translation()));
     gl_target->setScale(s);
   }
 
   // Labels:
   StatusBar1->SetStatusText(mrpt::format("Robot: (%.03f,%.03f)", m_robotPose.x, m_robotPose.y), 0);
-  StatusBar1->SetStatusText(
-      mrpt::format("Target: (%.03f,%.03f)", m_targetPoint.x, m_targetPoint.y), 1);
+  StatusBar1->SetStatusText(mrpt::format("Target: %s", m_targetPose.asString().c_str()));
 
   // Show/hide:
   gl_robot_sensor_range->setVisibility(mnuViewMaxRange->IsChecked());
@@ -820,7 +820,7 @@ void holonomic_navigator_demoFrame::Onplot3DMouseClick(wxMouseEvent& event)
   {
     case cpsPickTarget:
     {
-      m_targetPoint = m_curCursorPos;
+      m_targetPose = {m_curCursorPos.x, m_curCursorPos.y, .0};
 
       btnPlaceTarget->SetValue(false);
       btnPlaceTarget->Refresh();

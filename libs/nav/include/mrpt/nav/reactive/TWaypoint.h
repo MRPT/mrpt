@@ -12,6 +12,7 @@
 #include <mrpt/img/TColor.h>
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPose2D.h>
+#include <mrpt/math/TSegment2D.h>
 #include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/system/datetime.h>
 
@@ -173,18 +174,28 @@ struct TWaypointStatusSequence
   mrpt::system::TTimeStamp timestamp_nav_started = INVALID_TIMESTAMP;
 
   /** Whether the final waypoint has been reached successfuly. */
-  bool final_goal_reached{false};
+  bool final_goal_reached = false;
 
   /** Index in `waypoints` of the waypoint the navigator is currently trying
    * to reach.
    * This will point to the last waypoint after navigation ends successfully.
    * Its value is `-1` if navigation has not started yet */
-  int waypoint_index_current_goal{-1};
+  int waypoint_index_current_goal = -1;
 
   /** Robot pose at last time step (has INVALID_NUM fields upon
    * initialization) */
   mrpt::math::TPose2D last_robot_pose{
       TWaypoint::INVALID_NUM, TWaypoint::INVALID_NUM, TWaypoint::INVALID_NUM};
+
+  mrpt::math::TSegment2D robot_move_seg;
+
+  /** Used to detect whether we peaked in closeness to a waypoint */
+  double prevDist2target = .0;
+
+  /** Whether the last timestep was "is_aligning" in a waypoint with heading
+   */
+  bool was_aligning = false;
+  bool is_aligning = false;
 
   /** Ctor with default values */
   /** Gets navigation params as a human-readable format */

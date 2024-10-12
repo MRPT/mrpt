@@ -42,24 +42,33 @@ class CLogFileRecord : public mrpt::serialization::CSerializable
   {
     /** A short description for the applied PTG */
     std::string PTG_desc;
+
     /** Distances until obstacles, in "pseudometers", first index for -PI
      * direction, last one for PI direction. */
     mrpt::math::CVectorFloat TP_Obstacles;
+
     /** Target(s) location in TP-Space */
-    std::vector<mrpt::math::TPoint2D> TP_Targets;
+    std::vector<mrpt::math::TPose2D> TP_Targets;
+
     /** Robot location in TP-Space: normally (0,0), except during "NOP cmd
      * vel" steps */
     mrpt::math::TPoint2D TP_Robot;
+
     /** Time, in seconds. */
     double timeForTPObsTransformation, timeForHolonomicMethod;
+
     /** The results from the holonomic method. */
     double desiredDirection, desiredSpeed;
+
     /** Final score of this candidate */
     double evaluation;
+
     /** Evaluation factors */
     std::map<std::string, double> evalFactors;
+
     /** Other useful info about holonomic method execution. */
     CHolonomicLogFileRecord::Ptr HLFR;
+
     /** Only for the FIRST entry in a log file, this will contain a copy of
      * the PTG with trajectories, suitable to render trajectories, etc. */
     mrpt::nav::CParameterizedTrajectoryGenerator::Ptr ptg;

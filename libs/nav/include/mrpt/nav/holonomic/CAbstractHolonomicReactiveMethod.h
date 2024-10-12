@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/math/TPoint2D.h>
+#include <mrpt/math/TPose2D.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/serialization/CSerializable.h>
@@ -33,6 +33,8 @@ class CAbstractHolonomicReactiveMethod : public mrpt::serialization::CSerializab
   /** Input parameters for CAbstractHolonomicReactiveMethod::navigate() */
   struct NavInput
   {
+    NavInput() = default;
+
     /** Distance to obstacles in polar coordinates, relative to the robot.
      * First index refers to -PI direction, and last one to +PI direction.
      * Distances can be dealed as "meters", although when used inside the
@@ -40,37 +42,40 @@ class CAbstractHolonomicReactiveMethod : public mrpt::serialization::CSerializab
      * the range [0,1].
      */
     std::vector<double> obstacles;
+
     /** Relative location (x,y) of target point(s). In the same units than
      * `obstacles`. If many, last targets have higher priority. */
-    std::vector<mrpt::math::TPoint2D> targets;
+    std::vector<mrpt::math::TPose2D> targets;
+
     /** Maximum robot speed, in the same units than `obstacles`, per second.
      */
-    double maxRobotSpeed{1.0};
+    double maxRobotSpeed = 1.0;
+
     /** Maximum expected value to be found in `obstacles`. Typically, values
      * in `obstacles` larger or equal to this value mean there is no visible
      * obstacle in that direction. */
-    double maxObstacleDist{1.0};
+    double maxObstacleDist = 1.0;
+
     /** The computed clearance for each direction (optional in some
      * implementations). Leave to default (NULL) if not needed. */
-    const mrpt::nav::ClearanceDiagram* clearance{nullptr};
-
-    NavInput();
+    const mrpt::nav::ClearanceDiagram* clearance = nullptr;
   };
 
   /** Output for CAbstractHolonomicReactiveMethod::navigate() */
   struct NavOutput
   {
+    NavOutput() = default;
+
     /** The desired motion direction, in the range [-PI, PI] */
-    double desiredDirection{0};
+    double desiredDirection = 0;
+
     /** The desired motion speed in that direction, from 0 up to
      * NavInput::maxRobotSpeed */
-    double desiredSpeed{0};
+    double desiredSpeed = 0;
 
     /** The navigation method will create a log record and store it here via
      * a smart pointer. Input value is ignored. */
     CHolonomicLogFileRecord::Ptr logRecord;
-
-    NavOutput();
   };
 
   static CAbstractHolonomicReactiveMethod::Ptr Factory(const std::string& className) noexcept;

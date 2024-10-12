@@ -21,7 +21,7 @@ using namespace mrpt::nav;
 
 IMPLEMENTS_SERIALIZABLE(CLogFileRecord, CSerializable, mrpt::nav)
 
-uint8_t CLogFileRecord::serializeGetVersion() const { return 28; }
+uint8_t CLogFileRecord::serializeGetVersion() const { return 29; }
 void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
 {
   // Version 0 ---------
@@ -35,7 +35,7 @@ void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
     if (m)
       out.WriteBuffer((const void*)&(*ipp.TP_Obstacles.begin()), m * sizeof(ipp.TP_Obstacles[0]));
 
-    out << ipp.TP_Targets;  // v8: CPoint2D -> TPoint2D. v26: vector
+    out << ipp.TP_Targets;  // v8: CPoint2D -> TPoint2D. v26: vector. v29: TPose2D
     out << ipp.TP_Robot;    // v17
     out << ipp.timeForTPObsTransformation << ipp.timeForHolonomicMethod;  // made double in v12
     out << ipp.desiredDirection << ipp.desiredSpeed << ipp.evaluation;    // made double in v12
@@ -144,6 +144,7 @@ void CLogFileRecord::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ve
     case 26:
     case 27:
     case 28:
+    case 29:
     {
       // Version 0 --------------
       uint32_t i, n;
@@ -167,20 +168,29 @@ void CLogFileRecord::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ve
         {
           if (version >= 26)
           {
-            in >> ipp.TP_Targets;
+            if (version >= 29)
+            {
+              in >> ipp.TP_Targets;
+            }
+            else
+            {
+              std::vector<mrpt::math::TPoint2D> trgs;
+              in >> trgs;
+              for (const auto& t : trgs) ipp.TP_Targets.push_back({t.x, t.y, .0});
+            }
           }
           else
           {
             mrpt::math::TPoint2D trg;
             in >> trg;
-            ipp.TP_Targets.push_back(trg);
+            ipp.TP_Targets.push_back({trg.x, trg.y, .0});
           }
         }
         else
         {
           mrpt::poses::CPoint2D pos;
           in >> pos;
-          ipp.TP_Targets.emplace_back(pos.x(), pos.y());
+          ipp.TP_Targets.emplace_back(pos.x(), pos.y(), .0);
         }
         if (version >= 17)
           in >> ipp.TP_Robot;
