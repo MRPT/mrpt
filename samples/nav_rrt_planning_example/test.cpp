@@ -93,8 +93,8 @@ void TestRRT1()
   // gridmap.getAsPointCloud( planner_input.obstacles_points );
 
   // Workspace bounding box:
-  planner_input.world_bbox_min = mrpt::math::TPoint2D(bbox.min.x, bbox.min.y);
-  planner_input.world_bbox_max = mrpt::math::TPoint2D(bbox.max.x, bbox.max.y);
+  planner_input.world_bbox_min = {bbox.min.x, bbox.min.y, -M_PI};
+  planner_input.world_bbox_max = {bbox.max.x, bbox.max.y, +M_PI};
 
 // size_t iters=0;
 // Show results in a GUI and keep improving:
