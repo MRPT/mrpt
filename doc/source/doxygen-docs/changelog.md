@@ -3,6 +3,7 @@
 # Version 2.14.4: UNRELEASED
 - BUG FIXES:
   - mrpt::nav::CAbstractPTGBasedReactive: Missing heading information in recently-added TP-Space targets as TPose2D.
+  - rosbag2rawlog: Fix detection of mrpt-ros1bridge when built within mrpt_ros ROS packaging.
 
 # Version 2.14.3: Released Oct 12th, 2024
 - Changes in libraries:

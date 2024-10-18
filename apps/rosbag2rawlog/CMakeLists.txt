@@ -1,6 +1,10 @@
 
 if(NOT TARGET ros1bridge)
-	return()
+	# Try to find it as an external project (needed for mrpt_ros package)
+	find_package(ros1bridge QUIET)
+	if(NOT TARGET ros1bridge)
+		return()
+	endif()
 endif()
 
 project(rosbag2rawlog)
