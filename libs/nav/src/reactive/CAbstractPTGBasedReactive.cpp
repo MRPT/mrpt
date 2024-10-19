@@ -1462,6 +1462,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
       ptg_target.target_alpha = ptg->index2alpha(ptg_target.target_k);
       ptg_target.TP_Target.x = cos(ptg_target.target_alpha) * ptg_target.target_dist;
       ptg_target.TP_Target.y = sin(ptg_target.target_alpha) * ptg_target.target_dist;
+      ptg_target.TP_Target.phi = trg.phi;
 
       ipf.targets.emplace_back(ptg_target);
     }
