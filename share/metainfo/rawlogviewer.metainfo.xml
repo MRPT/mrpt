@@ -4,8 +4,9 @@
   <metadata_license>MIT</metadata_license>
   <name>RawLogViewer</name>
   <summary>GUI to visualize and manipulate robotics datasets</summary>
+  <content_rating type="oars-1.0" />
   <description>
-    <p>GUI to visualize and manipulate robotics datasets.</p>
+    <p>GUI to browse, visualize, and edit robotics datasets comprising camera sensors, 2D or 3D LiDARs, IMUs, etc.</p>
   </description>
   <launchable type="desktop-id">rawlogviewer.desktop</launchable>
   <screenshots>

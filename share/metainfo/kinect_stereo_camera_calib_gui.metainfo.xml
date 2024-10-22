@@ -4,8 +4,9 @@
   <metadata_license>MIT</metadata_license>
   <name>kinect-stereo-calib</name>
   <summary>Stereo Camera and Kinect Calibration GUI</summary>
+  <content_rating type="oars-1.0" />
   <description>
-    <p>Stereo Camera and Kinect Calibration GUI.</p>
+    <p>GUI tool to calibrate the intrinsic parameters of Kinect or Stereo cameras using checkerboards.</p>
   </description>
   <launchable type="desktop-id">kinect_stereo_camera_calib_gui.desktop</launchable>
   <screenshots>
