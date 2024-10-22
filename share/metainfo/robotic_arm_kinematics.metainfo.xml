@@ -3,6 +3,7 @@
   <id>org.mrpt.robotic_arm_kinematics.desktop</id>
   <metadata_license>MIT</metadata_license>
   <name>robotic-arm-kinematics</name>
+  <content_rating type="oars-1.0" />
   <summary>GUI to practice and learn the Denavit-Hartenberg (DH) parameters</summary>
   <description>
     <p>GUI to practice and learn the Denavit-Hartenberg (DH) parameters for robotic arm manipulators.</p>
