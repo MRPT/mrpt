@@ -1,5 +1,9 @@
 \page changelog Change Log
 
+# Version 2.14.5: UNRELEASED
+- Debian files:
+  - Fix appstreamcli warnings in metadata XML files.
+
 # Version 2.14.4: Released Oct 19th, 2024
 - BUG FIXES:
   - mrpt::nav::CAbstractPTGBasedReactive: Missing heading information in recently-added TP-Space targets as TPose2D.
