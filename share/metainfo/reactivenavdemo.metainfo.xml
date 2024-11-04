@@ -4,8 +4,9 @@
   <metadata_license>MIT</metadata_license>
   <name>ReactiveNavigationDemo</name>
   <summary>Reactive Navigation Demo</summary>
+  <content_rating type="oars-1.0" />
   <description>
-    <p>Reactive Navigation Demo.</p>
+    <p>Interactive GUI that simulates a 2D world and a robot with a 2D LiDAR and runs reactive navigation algorithms.</p>
   </description>
   <launchable type="desktop-id">reactivenavdemo.desktop</launchable>
   <screenshots>

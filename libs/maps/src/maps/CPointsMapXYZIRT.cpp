@@ -283,12 +283,20 @@ void CPointsMapXYZIRT::getPointRGB(
     size_t index, float& x, float& y, float& z, float& R, float& G, float& B) const
 {
   ASSERT_LT_(index, m_x.size());
-  ASSERT_LT_(index, m_intensity.size());
-
   x = m_x[index];
   y = m_y[index];
   z = m_z[index];
-  R = G = B = m_intensity[index];
+
+  if (!m_intensity.empty())
+  {
+    ASSERT_LT_(index, m_intensity.size());
+    R = G = B = m_intensity[index];
+  }
+  else
+  {
+    // Default color if no intensity:
+    R = G = B = 1.0f;
+  }
 }
 
 bool CPointsMapXYZIRT::saveXYZIRT_to_text_file(const std::string& file) const

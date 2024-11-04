@@ -3,9 +3,10 @@
   <id>org.mrpt.sceneviewer.desktop</id>
   <metadata_license>MIT</metadata_license>
   <name>SceneViewer3D</name>
+  <content_rating type="oars-1.0" />
   <summary>Viewer of MRPT 3D scene files</summary>
   <description>
-    <p>Viewer of MRPT 3D scene files.</p>
+    <p>GUI tool to visualize MRPT 3D scene files (*.3Dscene).</p>
   </description>
   <launchable type="desktop-id">sceneviewer.desktop</launchable>
   <screenshots>

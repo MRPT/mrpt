@@ -4,8 +4,9 @@
   <metadata_license>MIT</metadata_license>
   <name>GridmapNavSimul</name>
   <summary>Gridmap Navigation Simulator</summary>
+  <content_rating type="oars-1.0" />
   <description>
-    <p>Gridmap Navigation Simulator.</p>
+    <p>Mobile robot navigation simulator for 2D wheeled robots equipped with a 2D LiDAR.</p>
   </description>
   <launchable type="desktop-id">gridmapnavsimul.desktop</launchable>
   <screenshots>

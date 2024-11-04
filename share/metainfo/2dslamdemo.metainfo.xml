@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>org.mrpt.2dslamdemo.desktop</id>
+  <id>org.mrpt._2dslamdemo.desktop</id>
   <metadata_license>MIT</metadata_license>
   <name>2d-slam-demo</name>
   <summary>A didactic robotic SLAM simulator</summary>
+  <content_rating type="oars-1.0" />
   <description>
     <p>This GUI application is an extension to a similar Matlab program developed by J. Neira and J. D. Tardós (University of Zaragoza). It allows extensive experimentation with data-association and the behavior of Kalman Filter-based 2D SLAM, in a didactic way.</p>
     <p>At the core of this program is just one MRPT class: mrpt::slam::CRangeBearingKFSLAM2D. Check out its Doxygen documentation for more details.</p>

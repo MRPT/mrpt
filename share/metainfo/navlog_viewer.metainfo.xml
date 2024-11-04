@@ -4,8 +4,9 @@
   <metadata_license>MIT</metadata_license>
   <name>navlog-viewer</name>
   <summary>Navigation log viewer</summary>
+  <content_rating type="oars-1.0" />
   <description>
-    <p>Navigation log viewer.</p>
+    <p>GUI tool to browse and analize the contents of MRPT reactive navigation log files.</p>
   </description>
   <launchable type="desktop-id">navlog_viewer.desktop</launchable>
   <screenshots>
