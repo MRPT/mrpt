@@ -1,5 +1,16 @@
 \page changelog Change Log
 
+# Version 2.14.5: Released Nov 4th, 2024
+- Upgraded nanoflann to v1.6.2 (fixes a potential bug).
+- Debian files:
+  - Fix appstreamcli warnings in metadata XML files.
+- Changes in libraries:
+  - \ref mrpt_expr_grp
+    - ExprTk updated to latest version (https://www.partow.net/programming/exprtk/exprtk_release_notes_v0.0.3.txt).
+- BUG FIXES:
+  - mrpt::maps::CPointsMapXYZIRT::getPointRGB() now handles the case of no intensity without throwing, fixing the visualization of such clouds through mrpt::opengl::CPointCloudColoured::loadFromPointsMap().
+  - GridmapNavSimul: Loading a different gridmap won't update the map visualization.
+
 # Version 2.14.4: Released Oct 19th, 2024
 - BUG FIXES:
   - mrpt::nav::CAbstractPTGBasedReactive: Missing heading information in recently-added TP-Space targets as TPose2D.

@@ -4,6 +4,7 @@
   <metadata_license>MIT</metadata_license>
   <name>camera-calib</name>
   <summary>Tool for easy calibration of monocular cameras</summary>
+  <content_rating type="oars-1.0" />
   <description>
     <p>This GUI program allows users to find out the camera parameters of a camera by capturing several images of a checkerboard. The program allows online grabbing or images as well as selection of pre-recorded image files. It also shows the reprojected points, undistorted images and a 3D view of the reconstructed camera poses.</p>
 
