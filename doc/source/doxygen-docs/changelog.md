@@ -5,6 +5,7 @@
   - Fix appstreamcli warnings in metadata XML files.
 - BUG FIXES:
   - mrpt::maps::CPointsMapXYZIRT::getPointRGB() now handles the case of no intensity without throwing, fixing the visualization of such clouds through mrpt::opengl::CPointCloudColoured::loadFromPointsMap().
+  - GridmapNavSimul: Loading a different gridmap won't update the map visualization.
 
 # Version 2.14.4: Released Oct 19th, 2024
 - BUG FIXES:
