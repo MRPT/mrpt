@@ -131,7 +131,8 @@ CPose2D lastOdo, pose_start;
 bool we_are_closing = false;
 long decimation = 1;
 
-mrpt::opengl::CSetOfObjects::Ptr gl_grid;
+auto gl_grid = mrpt::opengl::CSetOfObjects::Create();
+
 mrpt::opengl::CSetOfObjects::Ptr gl_robot;
 mrpt::opengl::CPlanarLaserScan::Ptr gl_scan;
 mrpt::opengl::CPointCloud::Ptr gl_path_GT;
@@ -652,7 +653,11 @@ gridmapSimulFrame::~gridmapSimulFrame()
   //*)
 }
 
-void gridmapSimulFrame::update_grid_map_3d() { gl_grid = the_grid.getVisualization(); }
+void gridmapSimulFrame::update_grid_map_3d()
+{
+  gl_grid->clear();
+  gl_grid->insert(the_grid.getVisualization());
+}
 
 void gridmapSimulFrame::OnbtnQuitClick(wxCommandEvent& event)
 {
