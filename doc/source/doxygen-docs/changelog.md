@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.14.6: UNRELEASED
+(None yet)
+
 # Version 2.14.5: Released Nov 4th, 2024
 - Upgraded nanoflann to v1.6.2 (fixes a potential bug).
 - Debian files:
