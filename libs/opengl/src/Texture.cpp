@@ -14,6 +14,9 @@
 #include <mrpt/opengl/Texture.h>
 #include <mrpt/opengl/opengl_api.h>
 
+// Universal include for all versions of OpenCV
+#include <mrpt/3rdparty/do_opencv_includes.h>
+
 #include <iostream>
 #include <mutex>
 #include <set>
@@ -244,11 +247,45 @@ void Texture::internalAssignImage_2D(
   in_rgb->forceLoad();  // just in case they are lazy-load imgs
   if (in_alpha) in_alpha->forceLoad();
 
-  ASSERT_(in_rgb->getPixelDepth() == mrpt::img::PixelDepth::D8U);
+  mrpt::img::CImage rgb;
+
+  switch (in_rgb->getPixelDepth())
+  {
+    // Ideal case, nothing to do:
+    case mrpt::img::PixelDepth::D8U:
+      rgb = mrpt::img::CImage(*in_rgb, mrpt::img::SHALLOW_COPY);
+      break;
+
+    case mrpt::img::PixelDepth::D16U:
+    {
+#if MRPT_HAS_OPENCV
+      double ratio;
+      if (o.autoScale16to8bitConversion)
+      {
+        // enhance brigthness:
+
+        cv::Scalar meanColor = cv::mean(in_rgb->asCvMatRef());
+        const double avrVal = meanColor.val[0];
+        ratio = std::max<double>(1.0, 2 * avrVal);
+      }
+      else
+      {
+        ratio = 65536.0;
+      }
+
+      rgb.resize(in_rgb->getWidth(), in_rgb->getHeight(), mrpt::img::CH_RGB);
+      cv::convertScaleAbs(in_rgb->asCvMatRef(), rgb.asCvMatRef(), 255.0 / ratio);
+#endif
+    }
+    break;
+
+    default:
+      THROW_EXCEPTION_FMT(
+          "Unhandled pixel depth: PixelDepth=#%i", static_cast<int>(in_rgb->getPixelDepth()));
+  };
 
   // Shallow copy of the images, for the case we need to downsample them
   // below:
-  mrpt::img::CImage rgb(*in_rgb, mrpt::img::SHALLOW_COPY);
   mrpt::img::CImage alpha;
   if (in_alpha) alpha = mrpt::img::CImage(*in_alpha, mrpt::img::SHALLOW_COPY);
 
@@ -299,7 +336,7 @@ void Texture::internalAssignImage_2D(
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, lmbdWrapMap(o.wrappingModeT));
   CHECK_OPENGL_ERROR_IN_DEBUG();
 
-  // Assure that the images do not overpass the maximum dimensions allowed
+  // Ensure that the images do not overpass the maximum dimensions allowed
   // by OpenGL:
   // ------------------------------------------------------------------------------------
   GLint texSize;
