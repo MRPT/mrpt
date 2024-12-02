@@ -82,13 +82,14 @@ void bind_mrpt_opengl_Texture(std::function< pybind11::module &(std::string cons
 			cl.def_readwrite("enableTransparency", &mrpt::opengl::Texture::Options::enableTransparency);
 			cl.def_readwrite("wrappingModeS", &mrpt::opengl::Texture::Options::wrappingModeS);
 			cl.def_readwrite("wrappingModeT", &mrpt::opengl::Texture::Options::wrappingModeT);
+			cl.def_readwrite("autoScale16to8bitConversion", &mrpt::opengl::Texture::Options::autoScale16to8bitConversion);
 		}
 
 	}
-	// mrpt::opengl::getNewTextureNumber() file:mrpt/opengl/Texture.h line:132
+	// mrpt::opengl::getNewTextureNumber() file:mrpt/opengl/Texture.h line:137
 	M("mrpt::opengl").def("getNewTextureNumber", (unsigned int (*)()) &mrpt::opengl::getNewTextureNumber, "C++: mrpt::opengl::getNewTextureNumber() --> unsigned int");
 
-	// mrpt::opengl::releaseTextureName(const unsigned int &) file:mrpt/opengl/Texture.h line:133
+	// mrpt::opengl::releaseTextureName(const unsigned int &) file:mrpt/opengl/Texture.h line:138
 	M("mrpt::opengl").def("releaseTextureName", (void (*)(const unsigned int &)) &mrpt::opengl::releaseTextureName, "C++: mrpt::opengl::releaseTextureName(const unsigned int &) --> void", pybind11::arg("t"));
 
 	{ // mrpt::opengl::CRenderizableShaderTexturedTriangles file:mrpt/opengl/CRenderizableShaderTexturedTriangles.h line:28
