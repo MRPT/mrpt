@@ -22,7 +22,7 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CCamera, CRenderizable, mrpt::opengl)
 
-uint8_t CCamera::serializeGetVersion() const { return 3; }
+uint8_t CCamera::serializeGetVersion() const { return 4; }
 void CCamera::serializeTo(mrpt::serialization::CArchive& out) const
 {
   // Save data:
@@ -30,6 +30,7 @@ void CCamera::serializeTo(mrpt::serialization::CArchive& out) const
       << m_elevationDeg << m_projectiveModel << m_projectiveFOVdeg;
   out << m_pinholeModel;     // v2
   out << m_useNoProjection;  // v3
+  out << m_eyeRollDeg;       // v4
 }
 
 void CCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -39,6 +40,7 @@ void CCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
     case 1:
     case 2:
     case 3:
+    case 4:
     {
       // Load data:
       in >> m_pointingX >> m_pointingY >> m_pointingZ >> m_eyeDistance >> m_azimuthDeg >>
@@ -52,6 +54,11 @@ void CCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
         in >> m_useNoProjection;
       else
         m_useNoProjection = false;
+
+      if (version >= 4)
+        in >> m_eyeRollDeg;
+      else
+        m_eyeRollDeg = 0;
     }
     break;
     case 0:
@@ -81,6 +88,7 @@ void CCamera::toYAMLMap(mrpt::containers::yaml& p) const
   MCP_SAVE(p, m_projectiveModel);
   MCP_SAVE(p, m_projectiveFOVdeg);
   MCP_SAVE(p, m_useNoProjection);
+  MCP_SAVE(p, m_eyeRollDeg);
 
   if (m_pinholeModel) p["pinholeModel"] = m_pinholeModel->asYAML();
 }

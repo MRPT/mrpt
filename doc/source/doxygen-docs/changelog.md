@@ -2,8 +2,11 @@
 
 # Version 2.14.6: UNRELEASED
 - Changes in libraries:
+  - \ref mrpt_gui_grp:
+    - Added a new mouse control to rotate OpenGL cameras by pressing the "Alt" key.
   - \ref mrpt_opengl_grp:
     - mrpt::opengl::Texture now supports rendering 16-bit images.
+    - mrpt::opengl::CCamera now has a "roll" angle when in orbit-view mode.
 
 # Version 2.14.5: Released Nov 4th, 2024
 - Upgraded nanoflann to v1.6.2 (fixes a potential bug).

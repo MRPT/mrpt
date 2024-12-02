@@ -14,6 +14,8 @@ All MRPT applications use the following convention:
 
 - **Look around** (pivot camera): CTRL+Left-button pressed + mouse move up/down.
 
+- **Roll camera** (rotate around front-facing axis): ALT+Left-button pressed + mouse move up/down.
+
 - **Pan** (XY plane): Right button or wheel pressed + mouse move.
 
 - **Move camera along Z axis**: SHIFT+Left-button pressed + mouse move left/right,

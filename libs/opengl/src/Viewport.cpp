@@ -1233,6 +1233,7 @@ void Viewport::updateMatricesFromCamera(const CCamera& myCamera) const
     _.eyeDistance = myCamera.getZoomDistance();
     _.azimuth = DEG2RAD(myCamera.getAzimuthDegrees());
     _.elev = DEG2RAD(myCamera.getElevationDegrees());
+    _.roll = DEG2RAD(myCamera.getRollDegrees());
 
     if (myCamera.is6DOFMode())
     {
@@ -1255,14 +1256,26 @@ void Viewport::updateMatricesFromCamera(const CCamera& myCamera) const
       // point:
       _.pointing = myCamera.getPointingAt();
 
+      const auto c2m_u = mrpt::math::TVector3D(
+          cos(_.azimuth) * cos(_.elev),  //
+          sin(_.azimuth) * cos(_.elev),  //
+          sin(_.elev)                    //
+      );
+
       const double dis = std::max<double>(0.001, myCamera.getZoomDistance());
-      _.eye.x = _.pointing.x + dis * cos(_.azimuth) * cos(_.elev);
-      _.eye.y = _.pointing.y + dis * sin(_.azimuth) * cos(_.elev);
-      _.eye.z = _.pointing.z + dis * sin(_.elev);
+      _.eye = _.pointing + c2m_u * dis;
 
       _.up.x = -cos(_.azimuth) * sin(_.elev);
       _.up.y = -sin(_.azimuth) * sin(_.elev);
       _.up.z = cos(_.elev);
+
+      // roll?
+      if (_.roll != .0)
+      {
+        // _.up & c2m_u are both unit vectors and orthogonal to each other.
+        const auto w = mrpt::math::crossProduct3D(c2m_u, _.up);
+        _.up = _.up * cos(_.roll) + w * sin(_.roll);
+      }
     }
 
     // Compute the projection matrix (p_matrix):

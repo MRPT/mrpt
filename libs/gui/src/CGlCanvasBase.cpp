@@ -9,6 +9,7 @@
 
 #include "gui-precomp.h"  // Precompiled headers
 //
+#include <mrpt/core/round.h>
 #include <mrpt/gui/CGlCanvasBase.h>
 #include <mrpt/opengl/opengl_api.h>
 
@@ -147,6 +148,12 @@ void CGlCanvasBase::updatePan(CamaraParams& params, int x, int y) const
       D * (Ax * sin(DEG2RAD(params.cameraAzimuthDeg)) + Ay * cos(DEG2RAD(params.cameraAzimuthDeg)));
 }
 
+void CGlCanvasBase::updateRoll(CamaraParams& params, int x, int y, float scale) const
+{
+  int Arot = mrpt::round(scale * (y - m_mouseClickY));
+  params.cameraRollDeg += Arot;
+}
+
 CGlCanvasBase::CamaraParams CGlCanvasBase::cameraParams() const { return m_cameraParams; }
 
 const CGlCanvasBase::CamaraParams& CGlCanvasBase::getRefCameraParams() const
@@ -169,6 +176,7 @@ CCamera& CGlCanvasBase::updateCameraParams(CCamera& cam) const
   cam.setPointingAt(_.cameraPointingX, _.cameraPointingY, _.cameraPointingZ);
   cam.setZoomDistance(_.cameraZoomDistance);
   cam.setAzimuthDegrees(_.cameraAzimuthDeg);
+  cam.setRollDegrees(_.cameraRollDeg);
   cam.setElevationDegrees(_.cameraElevationDeg);
   cam.setProjectiveModel(_.cameraIsProjective);
   cam.setProjectiveFOVdeg(_.cameraFOV);
@@ -185,6 +193,8 @@ void CGlCanvasBase::setElevationDegrees(float ang) { m_cameraParams.cameraElevat
 float CGlCanvasBase::getAzimuthDegrees() const { return m_cameraParams.cameraAzimuthDeg; }
 
 float CGlCanvasBase::getElevationDegrees() const { return m_cameraParams.cameraElevationDeg; }
+
+float CGlCanvasBase::getRollDegrees() const { return m_cameraParams.cameraRollDeg; }
 
 void CGlCanvasBase::setCameraProjective(bool is) { m_cameraParams.cameraIsProjective = is; }
 
@@ -327,6 +337,7 @@ CGlCanvasBase::CamaraParams CGlCanvasBase::CamaraParams::FromCamera(const mrpt::
   p.cameraPointingY = c.getPointingAtY();
   p.cameraPointingZ = c.getPointingAtZ();
   p.cameraZoomDistance = c.getZoomDistance();
+  p.cameraRollDeg = c.getRollDegrees();
 
   return p;
 }

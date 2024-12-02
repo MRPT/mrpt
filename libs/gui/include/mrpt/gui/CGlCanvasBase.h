@@ -39,6 +39,7 @@ class CGlCanvasBase
     float cameraElevationDeg = 45.f, cameraAzimuthDeg = 45.f;
     bool cameraIsProjective = true;
     float cameraFOV = 30.f;
+    float cameraRollDeg = .0f;
   };
 
   CGlCanvasBase() = default;
@@ -63,6 +64,7 @@ class CGlCanvasBase
 
   /** Sets the last mouse position */
   void updateLastPos(int x, int y);
+
   /** Calls the glViewport function*/
   void resizeViewport(int w, int h);
 
@@ -71,27 +73,34 @@ class CGlCanvasBase
    * and updates the zoom of the CameraParams.
    * See also updateZoom(CamaraParams &, float)*/
   void updateZoom(CamaraParams& params, int x, int y) const;
+
   /** This function for the wheel event
    * It gets a reference to CamaraParams, delta
    * and updates the zoom of the CameraParams.
    * See also updateZoom(CamaraParams &, int, int)*/
   void updateZoom(CamaraParams& params, float delta) const;
+
   /** This function for the mouse event
    * It gets a reference to CamaraParams, x, y
    * and updates the elevation and azimuth.
    * See also getElevationDegrees(), getAzimuthDegrees()*/
   void updateRotate(CamaraParams& params, int x, int y) const;
+
   /** This function for the mouse event
    * It gets a reference to CamaraParams, x, y
    * and updates the elevation and azimuth.
    * See also getElevationDegrees(), getAzimuthDegrees()*/
   void updateOrbitCamera(CamaraParams& params, int x, int y) const;
+
   /** This function for the mouse event
    * It gets a reference to CamaraParams, x, y
    * and updates the pointing of the camera.
    * See also getCameraPointingX(), getCameraPointingY(),
    * getCameraPointingZ()*/
   void updatePan(CamaraParams& params, int x, int y) const;
+
+  /** Updates the camera "roll" \note New in MRPT 2.14.6 */
+  void updateRoll(CamaraParams& params, int x, int y, float scale = 0.15f) const;
 
   /** Returns a copy of CamaraParams
    * See also getRefCameraParams(), setCameraParams(const CamaraParams &)*/
@@ -159,6 +168,8 @@ class CGlCanvasBase
    * See also setAzimuthDegrees(float)
    */
   float getAzimuthDegrees() const;
+
+  float getRollDegrees() const;
 
   /** Saves the degrees of the elevation camera
    * See also getElevationDegrees()
