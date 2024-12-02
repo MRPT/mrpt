@@ -41,6 +41,8 @@ void NanoGUICanvasHeadless::mouseMotionEvent(
         updateZoom(params, X, Y);
       else if (modifiers & GLFW_MOD_CONTROL)
         updateRotate(params, X, Y);
+      else if (modifiers & GLFW_MOD_ALT)
+        updateRoll(params, X, Y, 0.30f);
       else
         updateOrbitCamera(params, X, Y);
     }
