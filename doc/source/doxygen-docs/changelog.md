@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.14.6: UNRELEASED
+# Version 2.14.6: Released Dec 3rd, 2024
 - Changes in libraries:
   - \ref mrpt_gui_grp:
     - Added a new mouse control to rotate OpenGL cameras by pressing the "Alt" key.
