@@ -86,6 +86,7 @@ void bind_mrpt_opengl_DefaultShaders(std::function< pybind11::module &(std::stri
 		cl.def_readwrite("FOV", &mrpt::opengl::TRenderMatrices::FOV);
 		cl.def_readwrite("azimuth", &mrpt::opengl::TRenderMatrices::azimuth);
 		cl.def_readwrite("elev", &mrpt::opengl::TRenderMatrices::elev);
+		cl.def_readwrite("roll", &mrpt::opengl::TRenderMatrices::roll);
 		cl.def_readwrite("eyeDistance", &mrpt::opengl::TRenderMatrices::eyeDistance);
 		cl.def_readwrite("viewport_width", &mrpt::opengl::TRenderMatrices::viewport_width);
 		cl.def_readwrite("viewport_height", &mrpt::opengl::TRenderMatrices::viewport_height);

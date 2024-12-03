@@ -565,6 +565,10 @@ class CCamera(CRenderizable):
     @overload
     def getProjectiveFOVdeg() -> float: ...
     @overload
+    def getRollDegrees(self) -> float: ...
+    @overload
+    def getRollDegrees() -> float: ...
+    @overload
     def getZoomDistance(self) -> float: ...
     @overload
     def getZoomDistance() -> float: ...
@@ -630,6 +634,10 @@ class CCamera(CRenderizable):
     def setProjectiveModel(self, v: bool) -> None: ...
     @overload
     def setProjectiveModel(bool) -> void: ...
+    @overload
+    def setRollDegrees(self, ang: float) -> None: ...
+    @overload
+    def setRollDegrees(float) -> void: ...
     @overload
     def setZoomDistance(self, z: float) -> None: ...
     @overload
@@ -3693,6 +3701,7 @@ class TRenderMatrices:
     pinhole_model: Optional[mrpt.pymrpt.mrpt.img.TCamera]
     pmv_matrix: Any
     pointing: Any
+    roll: float
     up: Any
     v_matrix: Any
     v_matrix_no_translation: Any
@@ -3799,6 +3808,7 @@ class TTriangle:
 
 class Texture:
     class Options:
+        autoScale16to8bitConversion: bool
         enableTransparency: bool
         generateMipMaps: bool
         magnifyLinearFilter: bool
