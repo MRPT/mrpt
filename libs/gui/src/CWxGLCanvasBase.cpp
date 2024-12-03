@@ -102,6 +102,8 @@ void CWxGLCanvasBase::OnMouseMove(wxMouseEvent& event)
         updateZoom(params, X, Y);
       else if (event.ControlDown())
         updateRotate(params, X, Y);
+      else if (event.AltDown())
+        updateRoll(params, X, Y);
       else
         updateOrbitCamera(params, X, Y);
     }

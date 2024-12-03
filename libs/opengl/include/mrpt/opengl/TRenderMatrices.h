@@ -82,7 +82,7 @@ struct TRenderMatrices
   double FOV = 30.0f;
 
   /** Camera elev & azimuth, in radians. */
-  double azimuth = .0, elev = .0;
+  double azimuth = .0, elev = .0, roll = .0;
   double eyeDistance = 1.0f;
 
   /** In pixels. This may be smaller than the total render window. */

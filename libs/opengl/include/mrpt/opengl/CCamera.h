@@ -135,12 +135,15 @@ class CCamera : public CRenderizable
 
   mrpt::math::TPoint3Df getPointingAt() const { return {m_pointingX, m_pointingY, m_pointingZ}; }
 
-  void setZoomDistance(float z) { m_eyeDistance = z; }
   float getZoomDistance() const { return m_eyeDistance; }
   float getAzimuthDegrees() const { return m_azimuthDeg; }
   float getElevationDegrees() const { return m_elevationDeg; }
+  float getRollDegrees() const { return m_eyeRollDeg; }
+
+  void setZoomDistance(float z) { m_eyeDistance = z; }
   void setAzimuthDegrees(float ang) { m_azimuthDeg = ang; }
   void setElevationDegrees(float ang) { m_elevationDeg = ang; }
+  void setRollDegrees(float ang) { m_eyeRollDeg = ang; }
 
   /** Set 6DOFMode, if enabled camera is set according to its pose, set via
    *CRenderizable::setPose(). (default=false).
@@ -168,6 +171,7 @@ class CCamera : public CRenderizable
   float m_pointingX{0}, m_pointingY{0}, m_pointingZ{0};
   float m_eyeDistance{10};
   float m_azimuthDeg{45}, m_elevationDeg{45};
+  float m_eyeRollDeg{0};
 
   /** If set to true (default), camera model is projective, otherwise, it's
    * orthogonal. */

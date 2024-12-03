@@ -234,9 +234,9 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc)
   meanEstimatedFPS = 0.8 * meanEstimatedFPS + 0.2 * estimatedFPS;
 
   string str = format(
-      "Center=(%.02f,%.02f,%.02f) Zoom:%.02f AZ=%.02f deg EL:%.02f deg", getCameraPointingX(),
-      getCameraPointingY(), getCameraPointingZ(), getZoomDistance(), getAzimuthDegrees(),
-      getElevationDegrees());
+      "Center=(%.02f,%.02f,%.02f) Zoom:%.02f AZ=%.02f deg EL:%.02f deg ROLL:%.02f",
+      getCameraPointingX(), getCameraPointingY(), getCameraPointingZ(), getZoomDistance(),
+      getAzimuthDegrees(), getElevationDegrees(), getRollDegrees());
   theWindow->StatusBar1->SetStatusText(str.c_str(), 1);
 
   str = format("%.02f FPS", meanEstimatedFPS);

@@ -371,7 +371,7 @@ void CMesh::onUpdateBuffers_TexturedTriangles()
 
   // Default: texture over the whole extension.
   const float textureSizeX = (m_textureSize_x != 0) ? m_textureSize_x : (m_xMax - m_xMin);
-  const float textureSizeY = (m_textureSize_y != 0) ? m_textureSize_y : (m_xMax - m_xMin);
+  const float textureSizeY = (m_textureSize_y != 0) ? m_textureSize_y : (m_yMax - m_yMin);
 
   for (auto& i : actualMesh)
   {
