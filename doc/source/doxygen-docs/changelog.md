@@ -1,6 +1,8 @@
 \page changelog Change Log
 
 # Version 2.14.7: UNRELEASED
+- Changes in apps:
+  - rosbag2rawlog (ROS1): Implement conversion of NavSatFix -> mrpt::obs::CObservationGPS
 - Build system:
   - `mrpt-*-config.cmake` files now enforce the search of cmake dependencies in CONFIG mode, to avoid being foolish by deprecated `FindXXX()` lying around.
 

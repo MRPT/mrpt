@@ -30,6 +30,7 @@
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/ros1bridge/gps.h>
 #include <mrpt/ros1bridge/imu.h>
 #include <mrpt/ros1bridge/laser_scan.h>
 #include <mrpt/ros1bridge/point_cloud2.h>
@@ -398,6 +399,33 @@ Obs toIMU(
   return {mrptObs};
 }
 
+Obs toGPS(
+    std::string_view msg,
+    const rosbag::MessageInstance& rosmsg,
+    const std::optional<mrpt::poses::CPose3D>& fixedSensorPose)
+{
+  auto gps = rosmsg.instantiate<sensor_msgs::NavSatFix>();
+
+  auto mrptObs = mrpt::obs::CObservationGPS::Create();
+
+  mrptObs->sensorLabel = msg;
+  mrptObs->timestamp = mrpt::ros1bridge::fromROS(gps->header.stamp);
+
+  // Convert data:
+  mrpt::ros1bridge::fromROS(*gps, *mrptObs);
+
+  bool sensorPoseOK = findOutSensorPose(
+      mrptObs->sensorPose, gps->header.frame_id, arg_base_link_frame.getValue(), fixedSensorPose);
+  if (!sensorPoseOK)
+  {
+    std::cerr << "Warning: dropping one observation of type '" << msg
+              << "' due to missing /tf data.\n";
+    return {};
+  }
+
+  return {mrptObs};
+}
+
 Obs toOdometry(std::string_view msg, const rosbag::MessageInstance& rosmsg)
 {
   auto odo = rosmsg.instantiate<nav_msgs::Odometry>();
@@ -674,6 +702,12 @@ class Transcriber
       {
         auto callback = [=](const rosbag::MessageInstance& m)
         { return toIMU(sensorName, m, fixedSensorPose); };
+        m_lookup[sensor.at("topic").as<std::string>()].emplace_back(callback);
+      }
+      else if (sensorType == "CObservationGPS")
+      {
+        auto callback = [=](const rosbag::MessageInstance& m)
+        { return toGPS(sensorName, m, fixedSensorPose); };
         m_lookup[sensor.at("topic").as<std::string>()].emplace_back(callback);
       }
       else if (sensorType == "CObservationOdometry")
