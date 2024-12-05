@@ -40,7 +40,7 @@ foreach(_dep ${_deps}) # NO quotes for the list to be a CMake list!
   if (${_dep}_FOUND)
       continue() # already found
   endif()
-  find_dependency(${_dep})
+  find_dependency(${_dep} CONFIG) # Don't look for old FindXXX() files
   if(${_dep}_FOUND)
     mark_as_advanced(${_dep}_DIR)
   endif()

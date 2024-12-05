@@ -1,5 +1,9 @@
 \page changelog Change Log
 
+# Version 2.14.7: UNRELEASED
+- Build system:
+  - `mrpt-*-config.cmake` files now enforce the search of cmake dependencies in CONFIG mode, to avoid being foolish by deprecated `FindXXX()` lying around.
+
 # Version 2.14.6: Released Dec 3rd, 2024
 - Changes in libraries:
   - \ref mrpt_gui_grp:
