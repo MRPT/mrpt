@@ -44,7 +44,7 @@ void bind_mrpt_math_TBoundingBox(std::function< pybind11::module &(std::string c
 		cl.def( pybind11::init( [](mrpt::math::TBoundingBox_<double> const &o){ return new mrpt::math::TBoundingBox_<double>(o); } ) );
 
 		pybind11::enum_<mrpt::math::TBoundingBox_<double>::CTOR_FLAGS>(cl, "CTOR_FLAGS", "")
-			.value("None", mrpt::math::TBoundingBox_<double>::CTOR_FLAGS::None)
+			.value("NoFlags", mrpt::math::TBoundingBox_<double>::CTOR_FLAGS::NoFlags)
 			.value("AllowUnordered", mrpt::math::TBoundingBox_<double>::CTOR_FLAGS::AllowUnordered);
 
 		cl.def_readwrite("min", &mrpt::math::TBoundingBox_<double>::min);
@@ -70,7 +70,7 @@ void bind_mrpt_math_TBoundingBox(std::function< pybind11::module &(std::string c
 		cl.def( pybind11::init( [](mrpt::math::TBoundingBox_<float> const &o){ return new mrpt::math::TBoundingBox_<float>(o); } ) );
 
 		pybind11::enum_<mrpt::math::TBoundingBox_<float>::CTOR_FLAGS>(cl, "CTOR_FLAGS", "")
-			.value("None", mrpt::math::TBoundingBox_<float>::CTOR_FLAGS::None)
+			.value("NoFlags", mrpt::math::TBoundingBox_<float>::CTOR_FLAGS::NoFlags)
 			.value("AllowUnordered", mrpt::math::TBoundingBox_<float>::CTOR_FLAGS::AllowUnordered);
 
 		cl.def_readwrite("min", &mrpt::math::TBoundingBox_<float>::min);
