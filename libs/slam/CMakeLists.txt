@@ -11,9 +11,8 @@ list(APPEND slam_EXTRA_SRCS_NAME
 	"slam" "slam" "slam-headers")
 
 if(CMAKE_MRPT_HAS_TBB)
-	set(tbb_dep TBB)
-else()
-	set(tbb_dep "")
+	set(EXTRA_CONFIG_CMDS
+		"find_dependency(TBB CONFIG)")
 endif()
 
 #---------------------------------------------
@@ -25,8 +24,6 @@ define_mrpt_lib(
 	# Dependencies
 	mrpt-vision
 	mrpt-maps
-	# Other imported targets:
-	${tbb_dep} # find_package() lib name
 	)
 
 if(BUILD_mrpt-slam)
