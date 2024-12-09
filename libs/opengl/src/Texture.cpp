@@ -9,6 +9,7 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 //
+#include <mrpt/containers/bimap.h>
 #include <mrpt/core/get_env.h>
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/opengl/Texture.h>
@@ -57,8 +58,8 @@ class TextureResourceHandler
     return o;
   }
 
-  /// Return [textureName, textureUnit]
-  texture_name_t generateTextureID()
+  /// Return textureName
+  texture_name_t generateTextureID(const uint8_t* rgbDataForAssociation)
   {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
     auto lck = mrpt::lockHelper(m_texturesMtx);
@@ -71,12 +72,29 @@ class TextureResourceHandler
     CHECK_OPENGL_ERROR_IN_DEBUG();
     m_textureReservedFrom[textureID] = std::this_thread::get_id();
 
+    if (rgbDataForAssociation) m_textureToRGBdata.insert(textureID, rgbDataForAssociation);
+
     if (MRPT_OPENGL_VERBOSE)
       std::cout << "[mrpt generateTextureID] textureName:" << textureID << std::endl;
 
     return textureID;
 #else
     THROW_EXCEPTION("This function needs OpenGL");
+#endif
+  }
+
+  std::optional<texture_name_t> checkIfTextureAlreadyExists(const mrpt::img::CImage& rgb)
+  {
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+    auto lck = mrpt::lockHelper(m_texturesMtx);
+
+    auto it = m_textureToRGBdata.getInverseMap().find(rgb.asCvMatRef().data);
+    if (it != m_textureToRGBdata.getInverseMap().end())
+      return it->second;
+    else
+      return {};
+#else
+    return {};
 #endif
   }
 
@@ -109,19 +127,36 @@ class TextureResourceHandler
   void processDestroyQueue()
   {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-    if (auto itLst = m_destroyQueue.find(std::this_thread::get_id()); itLst != m_destroyQueue.end())
+    if (auto itLst = m_destroyQueue.find(std::this_thread::get_id());
+        itLst != m_destroyQueue.end() && !itLst->second.empty())
     {
       auto& lst = itLst->second;
+
+      // Delete in OpenGL:
       glDeleteTextures(lst.size(), lst.data());
       CHECK_OPENGL_ERROR_IN_DEBUG();
+
+      // delete in rgb data container too:
+      for (const auto id : lst)
+      {
+        if (m_textureToRGBdata.hasKey(id)) m_textureToRGBdata.erase_by_key(id);
+      }
+
+      if (MRPT_OPENGL_VERBOSE)
+      {
+        std::cout << "[mrpt processDestroyQueue] threadId=" << std::this_thread::get_id()
+                  << " destroyed " << lst.size() << "\n";
+      }
       lst.clear();
+      m_destroyQueue.erase(itLst);
     }
-    if (MRPT_OPENGL_VERBOSE)
+    if (!m_destroyQueue.empty() && MRPT_OPENGL_VERBOSE)
     {
       std::cout << "[mrpt processDestroyQueue] threadId=" << std::this_thread::get_id()
-                << ". At output: ";
+                << ". Remaining at output: ";
       for (const auto& lst : m_destroyQueue)
-        std::cout << "[" << lst.first << "]=" << lst.second.size() << " ";
+        std::cout << "[" << lst.first << "]=" << lst.second.size() << " textures ";
+      std::cout << "\n";
     }
 #endif
   }
@@ -130,14 +165,20 @@ class TextureResourceHandler
   std::mutex m_texturesMtx;
   std::map<GLuint, std::thread::id> m_textureReservedFrom;
   std::map<std::thread::id, std::vector<GLuint>> m_destroyQueue;
+  mrpt::containers::bimap<GLuint, const uint8_t*> m_textureToRGBdata;
   GLint m_maxTextureUnits;
 #endif
 };
 
-/// Returns: [texture name, texture unit]
-texture_name_t mrpt::opengl::getNewTextureNumber()
+std::optional<texture_name_t> checkIfTextureAlreadyExists(const mrpt::img::CImage& rgb)
 {
-  return TextureResourceHandler::Instance().generateTextureID();
+  return TextureResourceHandler::Instance().checkIfTextureAlreadyExists(rgb);
+}
+
+/// Returns: [texture name, texture unit]
+texture_name_t mrpt::opengl::getNewTextureNumber(const uint8_t* optionalRgbDataForAssociation)
+{
+  return TextureResourceHandler::Instance().generateTextureID(optionalRgbDataForAssociation);
 }
 
 void mrpt::opengl::releaseTextureName(const texture_name_t& t)
@@ -247,6 +288,21 @@ void Texture::internalAssignImage_2D(
   in_rgb->forceLoad();  // just in case they are lazy-load imgs
   if (in_alpha) in_alpha->forceLoad();
 
+  // Check if we already have this texture loaded in GPU and avoid creating
+  // duplicated texture ID:
+  const auto existingTextureId = checkIfTextureAlreadyExists(*in_rgb);
+  if (existingTextureId.has_value())
+  {
+    get() = existingTextureId.value();
+    get()->unit = textureUnit;
+
+    if (MRPT_OPENGL_VERBOSE)
+      std::cout << "[mrpt internalAssignImage_2D] Reusing existing textureName:" << get()->name
+                << "\n";
+
+    return;
+  }
+
   mrpt::img::CImage rgb;
 
   switch (in_rgb->getPixelDepth())
@@ -290,7 +346,7 @@ void Texture::internalAssignImage_2D(
   if (in_alpha) alpha = mrpt::img::CImage(*in_alpha, mrpt::img::SHALLOW_COPY);
 
   // allocate texture names:
-  get() = getNewTextureNumber();
+  get() = getNewTextureNumber(in_rgb->asCvMatRef().data);
   get()->unit = textureUnit;
 
   // activate the texture unit first before binding texture
@@ -536,7 +592,7 @@ void Texture::assignCubeImages(const std::array<mrpt::img::CImage, 6>& imgs, int
   }
 
   // allocate texture "name" (ID):
-  get() = getNewTextureNumber();
+  get() = getNewTextureNumber(nullptr); /* no cached img for cube textures */
 
   // activate the texture unit first before binding texture
   bindAsCubeTexture();

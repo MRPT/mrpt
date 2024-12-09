@@ -211,7 +211,7 @@ void CRenderizableShaderTexturedTriangles::assignImage(const CImage& img)
 
   m_glTexture.unloadTexture();
 
-  // Make a copy:
+  // Make a shallow copy:
   m_textureImage = img;
   m_textureImageAssigned = true;
 

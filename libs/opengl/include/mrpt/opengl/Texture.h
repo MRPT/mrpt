@@ -134,7 +134,7 @@ class Texture
 
 // Normally users should not need to call these, but they are exposed just in
 // case they are useful someday.
-texture_name_t getNewTextureNumber();
+texture_name_t getNewTextureNumber(const uint8_t* optionalRgbDataForAssociation);
 void releaseTextureName(const texture_name_t& t);
 
 }  // namespace mrpt::opengl
