@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.14.7: UNRELEASED
+# Version 2.14.7: Released Dec 9th, 2024
 - Changes in apps:
   - rosbag2rawlog (ROS1): Implement conversion of NavSatFix -> mrpt::obs::CObservationGPS
 - Changes in libraries:
