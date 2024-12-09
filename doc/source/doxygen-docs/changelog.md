@@ -3,6 +3,8 @@
 # Version 2.14.7: UNRELEASED
 - Changes in apps:
   - rosbag2rawlog (ROS1): Implement conversion of NavSatFix -> mrpt::obs::CObservationGPS
+- Changes in libraries:
+    - mrpt::opengl::Texture now caches "texture names" (OpenGL texture IDs) via image data, boosting performance of MVSim boot up time.
 - Build system:
   - `mrpt-*-config.cmake` files now enforce the search of cmake dependencies in CONFIG mode, to avoid being foolish by deprecated `FindXXX()` lying around.
 
