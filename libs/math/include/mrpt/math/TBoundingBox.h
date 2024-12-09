@@ -28,7 +28,7 @@ struct TBoundingBox_
 {
   enum class CTOR_FLAGS
   {
-    None = 0,
+    NoFlags = 0,
     AllowUnordered
   };
 
@@ -43,7 +43,7 @@ struct TBoundingBox_
   TBoundingBox_(
       const mrpt::math::TPoint3D_<T>& Min,
       const mrpt::math::TPoint3D_<T>& Max,
-      const CTOR_FLAGS f = CTOR_FLAGS::None) :
+      const CTOR_FLAGS f = CTOR_FLAGS::NoFlags) :
       min(Min), max(Max)
   {
     if (f != CTOR_FLAGS::AllowUnordered)

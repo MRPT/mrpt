@@ -34,6 +34,10 @@ if(NOT "${CMAKE_CURRENT_LIST_DIR}/../" IN_LIST CMAKE_PREFIX_PATH)
 endif()
 cmake_policy(POP)
 
+# Prefer config instead of the old FindXXX() files
+set(_BCK_CMAKE_FIND_PACKAGE_PREFER_CONFIG ${CMAKE_FIND_PACKAGE_PREFER_CONFIG})
+set(CMAKE_FIND_PACKAGE_PREFER_CONFIG TRUE)
+
 # Search for dependencies first:
 set(_deps "@ALL_DEPS_LIST@")
 foreach(_dep ${_deps}) # NO quotes for the list to be a CMake list!
@@ -46,6 +50,10 @@ foreach(_dep ${_deps}) # NO quotes for the list to be a CMake list!
   endif()
 endforeach()
 @EXTRA_CONFIG_CMDS@
+
+# Restore user's settings:
+set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ${_BCK_CMAKE_FIND_PACKAGE_PREFER_CONFIG})
+unset(_BCK_CMAKE_FIND_PACKAGE_PREFER_CONFIG)
 
 # Include targets for this library:
 include(${CMAKE_CURRENT_LIST_DIR}/mrpt-@MRPT_MODULE_NAME@-targets.cmake)
