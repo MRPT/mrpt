@@ -10,8 +10,8 @@
 
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/obs/obs_frwds.h>
-#include <mrpt/opengl/pointcloud_adapters.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/viz/pointcloud_adapters.h>
 
 namespace mrpt::maps
 {
@@ -229,7 +229,7 @@ class CPointsMapXYZIRT : public CPointsMap
   /** Override of the default 3D scene builder to account for the individual
    * points' color.
    */
-  void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
+  void getVisualizationInto(mrpt::viz::CSetOfObjects& outObj) const override;
 
   // clang-format off
 	auto getPointsBufferRef_intensity() const  -> const mrpt::aligned_std_vector<float>* override { return &m_intensity; }
@@ -304,10 +304,10 @@ class CPointsMapXYZIRT : public CPointsMap
 
 }  // namespace mrpt::maps
 
-namespace mrpt::opengl
+namespace mrpt::viz
 {
 /** Specialization
- * mrpt::opengl::PointCloudAdapter<mrpt::maps::CPointsMapXYZIRT>
+ * mrpt::viz::PointCloudAdapter<mrpt::maps::CPointsMapXYZIRT>
  * \ingroup mrpt_adapters_grp */
 template <>
 class PointCloudAdapter<mrpt::maps::CPointsMapXYZIRT>
@@ -411,4 +411,4 @@ class PointCloudAdapter<mrpt::maps::CPointsMapXYZIRT>
 	}
 
 };	// end of PointCloudAdapter<mrpt::maps::CPointsMapXYZIRT>
-}  // namespace mrpt::opengl
+}  // namespace mrpt::viz

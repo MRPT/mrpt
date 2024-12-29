@@ -10,9 +10,9 @@
 #include "hwdrivers-precomp.h"  // Precompiled headers
 //
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
-#include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>  // in library mrpt-maps
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CAxis.h>
+#include <mrpt/viz/CPlanarLaserScan.h>  // in library mrpt-maps
 
 using namespace std;
 using namespace mrpt::obs;
@@ -197,7 +197,7 @@ void C2DRangeFinderAbstract::filterByExclusionAngles(mrpt::obs::CObservation2DRa
 
 void C2DRangeFinderAbstract::processPreview(const mrpt::obs::CObservation2DRangeScan& obs)
 {
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   // show laser scan
   if (m_showPreview)

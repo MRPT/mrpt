@@ -17,14 +17,14 @@
 #include <mrpt/io/vector_loadsave.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/slam/CRangeBearingKFSLAM.h>
 #include <mrpt/slam/CRangeBearingKFSLAM2D.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CSetOfLines.h>
+#include <mrpt/viz/stock_objects.h>
 
 #include <fstream>
 
@@ -84,7 +84,7 @@ void KFSLAMApp::run()
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::poses;
@@ -587,8 +587,8 @@ void KFSLAMApp::Run_KF_SLAM()
             if (++path_decim > 10)
             {
               path_decim = 0;
-              mrpt::opengl::CSetOfObjects::Ptr xyz =
-                  mrpt::opengl::stock_objects::CornerXYZSimple(0.3f, 2.0f);
+              mrpt::viz::CSetOfObjects::Ptr xyz =
+                  mrpt::viz::stock_objects::CornerXYZSimple(0.3f, 2.0f);
               xyz->setPose(CPose3D(it));
               scene3D->insert(xyz);
             }
@@ -597,8 +597,7 @@ void KFSLAMApp::Run_KF_SLAM()
 
           // finally a big corner for the latest robot pose:
           {
-            mrpt::opengl::CSetOfObjects::Ptr xyz =
-                mrpt::opengl::stock_objects::CornerXYZSimple(1.0, 2.5);
+            mrpt::viz::CSetOfObjects::Ptr xyz = mrpt::viz::stock_objects::CornerXYZSimple(1.0, 2.5);
             xyz->setPose(robotPoseMean3D);
             scene3D->insert(xyz);
           }
@@ -652,7 +651,7 @@ void KFSLAMApp::Run_KF_SLAM()
         {
           const typename ekfslam_t::TDataAssocInfo& da = mapping.getLastDataAssociation();
 
-          mrpt::opengl::CSetOfLines::Ptr lins = mrpt::opengl::CSetOfLines::Create();
+          mrpt::viz::CSetOfLines::Ptr lins = mrpt::viz::CSetOfLines::Create();
           lins->setLineWidth(1.2f);
           lins->setColor(1, 1, 1);
           for (auto it = da.results.associations.begin(); it != da.results.associations.end(); ++it)
@@ -683,7 +682,7 @@ void KFSLAMApp::Run_KF_SLAM()
 
         if (win3d)
         {
-          mrpt::opengl::Scene::Ptr& scn = win3d->get3DSceneAndLock();
+          mrpt::viz::Scene::Ptr& scn = win3d->get3DSceneAndLock();
           scn = scene3D;
 
           // Update text messages:

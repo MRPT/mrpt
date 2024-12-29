@@ -13,10 +13,10 @@
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/opengl/pointcloud_adapters.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/viz/pointcloud_adapters.h>
 
 namespace mrpt
 {

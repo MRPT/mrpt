@@ -9,10 +9,10 @@
 #pragma once
 
 #include <mrpt/obs/CObservation.h>
-#include <mrpt/opengl/Scene.h>
-#include <mrpt/opengl/Visualizable.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/viz/Scene.h>
+#include <mrpt/viz/Visualizable.h>
 
 namespace mrpt::obs
 {
@@ -25,7 +25,7 @@ namespace mrpt::obs
  * \ingroup mrpt_obs_grp
  * \note (New in MRPT 2.3.1)
  */
-class CObservation3DScene : public CObservation, public mrpt::opengl::Visualizable
+class CObservation3DScene : public CObservation, public mrpt::viz::Visualizable
 {
   DEFINE_SERIALIZABLE(CObservation3DScene, mrpt::obs)
 
@@ -34,7 +34,7 @@ class CObservation3DScene : public CObservation, public mrpt::opengl::Visualizab
   ~CObservation3DScene() override = default;
 
   /** The payload: a 3D scene smart pointer. */
-  mrpt::opengl::Scene::Ptr scene;
+  mrpt::viz::Scene::Ptr scene;
 
   /** The pose of the sensor on the robot. It does not have any predefined
    * meaning in this particular class. Ignore it unless you want it to have
@@ -52,7 +52,7 @@ class CObservation3DScene : public CObservation, public mrpt::opengl::Visualizab
   }
   void getDescriptionAsText(std::ostream& o) const override;
 
-  void getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const override;
+  void getVisualizationInto(mrpt::viz::CSetOfObjects& o) const override;
 
 };  // End of class def.
 

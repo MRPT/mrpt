@@ -13,8 +13,8 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
-#include <mrpt/opengl/Scene.h>
 #include <mrpt/system/CTimeLogger.h>
+#include <mrpt/viz/Scene.h>
 
 #include <cstdlib>  // size_t
 #include <string>
@@ -216,7 +216,7 @@ class PlannerTPS_VirtualBase
 
   template <typename node_pose_t, typename world_limits_t, typename tree_t>
   void renderMoveTree(
-      mrpt::opengl::Scene& scene,
+      mrpt::viz::Scene& scene,
       const TPlannerInputTempl<node_pose_t, world_limits_t>& pi,
       const TPlannerResultTempl<tree_t>& result,
       const TRenderPlannedPathOptions& options);

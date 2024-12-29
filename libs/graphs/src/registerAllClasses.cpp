@@ -12,7 +12,7 @@
 #include <mrpt/core/initializer.h>
 #include <mrpt/graphs/registerAllClasses.h>
 // Deps:
-#include <mrpt/opengl/registerAllClasses.h>
+#include <mrpt/viz/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_graphs)
 {
@@ -26,5 +26,5 @@ void mrpt::graphs::registerAllClasses_mrpt_graphs()
 {
   ::registerAllClasses_mrpt_graphs();
   // deps:
-  mrpt::opengl::registerAllClasses_mrpt_opengl();
+  mrpt::viz::registerAllClasses_mrpt_viz();
 }

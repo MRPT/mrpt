@@ -14,8 +14,8 @@
 #include <mrpt/nav/holonomic/CHolonomicLogFileRecord.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
-#include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/viz/opengl_frwds.h>
 
 #include <map>
 #include <vector>
@@ -152,6 +152,6 @@ class CLogFileRecord : public mrpt::serialization::CSerializable
    * current robot pose.
    * \note (New in MRPT 2.5.7)
    */
-  std::vector<std::shared_ptr<mrpt::opengl::CSetOfObjects>> visuals;
+  std::vector<std::shared_ptr<mrpt::viz::CSetOfObjects>> visuals;
 };
 }  // namespace mrpt::nav

@@ -14,10 +14,11 @@
 #include <mrpt/maps/CPointsMapXYZIRT.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/serialization/aligned_serialization.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 #include <fstream>
 #include <iostream>
@@ -266,11 +267,11 @@ void CPointsMapXYZIRT::insertPointRGB(
   mark_as_modified();
 }
 
-void CPointsMapXYZIRT::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
+void CPointsMapXYZIRT::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
   if (!genericMapParams.enableSaveAs3DObject) return;
 
-  auto obj = mrpt::opengl::CPointCloudColoured::Create();
+  auto obj = mrpt::viz::CPointCloudColoured::Create();
 
   obj->loadFromPointsMap(this);
   obj->setColor(1, 1, 1, 1.0);

@@ -16,10 +16,10 @@
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/obs_frwds.h>
-#include <mrpt/opengl/Visualizable.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/CObservable.h>
 #include <mrpt/tfest/TMatchingPair.h>
+#include <mrpt/viz/Visualizable.h>
 
 #include <deque>
 
@@ -74,7 +74,7 @@ class CMetricMap :
     public mrpt::serialization::CSerializable,
     public mrpt::system::CObservable,
     public mrpt::Stringifyable,
-    public mrpt::opengl::Visualizable
+    public mrpt::viz::Visualizable
 {
   DEFINE_VIRTUAL_SERIALIZABLE(CMetricMap, mrpt::obs)
 

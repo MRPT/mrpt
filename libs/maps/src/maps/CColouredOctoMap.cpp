@@ -14,10 +14,10 @@
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/opengl/COctoMapVoxels.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/opengl/Scene.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/viz/COctoMapVoxels.h>
+#include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/Scene.h>
 #include <octomap/ColorOcTree.h>
 #include <octomap/octomap.h>
 
@@ -34,7 +34,7 @@ using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace mrpt::img;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::math;
 
 //  =========== Begin of Map definition ============
@@ -198,7 +198,7 @@ bool CColouredOctoMap::internal_insertObservation(
     // source, if that's the case...
 
     // Project 3D points & color:
-    mrpt::opengl::CPointCloudColoured::Ptr pts = mrpt::opengl::CPointCloudColoured::Create();
+    mrpt::viz::CPointCloudColoured::Ptr pts = mrpt::viz::CPointCloudColoured::Create();
     T3DPointsProjectionParams proj_params;
     proj_params.robotPoseInTheWorld = robotPose3D;
     const_cast<CObservation3DRangeScan&>(o).unprojectInto(*pts, proj_params);
@@ -302,8 +302,8 @@ void CColouredOctoMap::updateVoxelColour(
 }
 
 /** Builds a renderizable representation of the octomap as a
- * mrpt::opengl::COctoMapVoxels object. */
-void CColouredOctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_obj) const
+ * mrpt::viz::COctoMapVoxels object. */
+void CColouredOctoMap::getAsOctoMapVoxels(mrpt::viz::COctoMapVoxels& gl_obj) const
 {
   // Go thru all voxels:
 

@@ -12,7 +12,7 @@
 #include <mrpt/gui/gui_frwds.h>
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/TPoint2D.h>
-#include <mrpt/opengl/opengl_fonts.h>
+#include <mrpt/viz/opengl_fonts.h>
 
 #include <future>
 #include <map>

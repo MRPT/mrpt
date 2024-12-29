@@ -23,11 +23,11 @@
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/math/utils.h>
-#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 #include <iostream>
 #include <iterator>
@@ -294,7 +294,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
    * class instance.
    */
   inline void getAs3DObject(
-      mrpt::opengl::CSetOfObjects::Ptr object, const mrpt::containers::yaml& viz_params) const
+      mrpt::viz::CSetOfObjects::Ptr object, const mrpt::containers::yaml& viz_params) const
   {
     using visualizer_t = mrpt::graphs::detail::CVisualizer<
         CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>;

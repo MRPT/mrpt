@@ -132,18 +132,3 @@ void CRenderizableShaderPoints::params_deserialize(mrpt::serialization::CArchive
       MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
   };
 }
-
-const mrpt::math::TBoundingBoxf CRenderizableShaderPoints::verticesBoundingBox() const
-{
-  std::shared_lock<std::shared_mutex> wfReadLock(CRenderizableShaderPoints::m_pointsMtx.data);
-
-  mrpt::math::TBoundingBoxf bb;
-
-  if (m_vertex_buffer_data.empty()) return bb;
-
-  bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
-
-  for (const auto& p : m_vertex_buffer_data) bb.updateWithPoint(p);
-
-  return bb;
-}

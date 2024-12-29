@@ -22,7 +22,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 {
   using namespace mrpt::maps;
   using namespace mrpt::obs;
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
   registerClass(CLASS_ID(CBeacon));

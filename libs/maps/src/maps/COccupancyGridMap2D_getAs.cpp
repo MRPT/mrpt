@@ -12,9 +12,9 @@
 #include <mrpt/core/round.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/CTexturedPlane.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -140,13 +140,13 @@ void COccupancyGridMap2D::getAsImageFiltered(CImage& img, bool verticalFlip, boo
     img.filterMedian(img, round(insertionOptions.CFD_features_median_size));
 }
 
-void COccupancyGridMap2D::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
+void COccupancyGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
   if (!genericMapParams.enableSaveAs3DObject) return;
 
   MRPT_START
 
-  auto outObj = mrpt::opengl::CTexturedPlane::Create();
+  auto outObj = mrpt::viz::CTexturedPlane::Create();
 
   outObj->setPlaneCorners(m_xMin, m_xMax, m_yMin, m_yMax);
 

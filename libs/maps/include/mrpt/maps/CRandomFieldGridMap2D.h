@@ -15,9 +15,9 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/math/CMatrixD.h>
-#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/typemeta/TEnumType.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 #include <list>
 
@@ -398,11 +398,11 @@ class CRandomFieldGridMap2D :
   virtual void saveAsMatlab3DGraph(const std::string& filName) const;
 
   /** Returns a 3D object representing the map (mean) */
-  void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
+  void getVisualizationInto(mrpt::viz::CSetOfObjects& outObj) const override;
 
   /** Returns two 3D objects representing the mean and variance maps */
   virtual void getAs3DObject(
-      mrpt::opengl::CSetOfObjects& meanObj, mrpt::opengl::CSetOfObjects& varObj) const;
+      mrpt::viz::CSetOfObjects& meanObj, mrpt::viz::CSetOfObjects& varObj) const;
 
   /** Return the type of the random-field grid map, according to parameters
    * passed on construction. */

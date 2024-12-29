@@ -202,7 +202,6 @@ void CPointCloud::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) cons
   out["colorFromDepth_max"]["R"] = m_colorFromDepth_max.R;
   out["colorFromDepth_max"]["G"] = m_colorFromDepth_max.G;
   out["colorFromDepth_max"]["B"] = m_colorFromDepth_max.B;
-  out["pointSmooth"] = m_pointSmooth;
 }
 void CPointCloud::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 {
@@ -232,7 +231,6 @@ void CPointCloud::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
       m_colorFromDepth_max.R = static_cast<float>(in["colorFromDepth_max"]["R"]);
       m_colorFromDepth_max.G = static_cast<float>(in["colorFromDepth_max"]["G"]);
       m_colorFromDepth_max.B = static_cast<float>(in["colorFromDepth_max"]["B"]);
-      m_pointSmooth = static_cast<bool>(in["pointSmooth"]);
     }
     break;
     default:

@@ -14,13 +14,13 @@
 #include <mrpt/maps.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
-#include <mrpt/opengl/CAngularObservationMesh.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/viz/CAngularObservationMesh.h>
+#include <mrpt/viz/CPlanarLaserScan.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::obs;
 using namespace mrpt::io;
 using namespace mrpt::serialization;

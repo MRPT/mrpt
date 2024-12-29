@@ -53,7 +53,7 @@ void CObservation3DScene::getDescriptionAsText(std::ostream& o) const
   }
 }
 
-void CObservation3DScene::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
+void CObservation3DScene::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
   if (!scene) return;
 

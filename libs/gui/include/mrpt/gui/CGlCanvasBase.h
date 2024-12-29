@@ -8,12 +8,12 @@
    +------------------------------------------------------------------------+ */
 
 #pragma once
-#include <mrpt/opengl/Scene.h>
+#include <mrpt/viz/Scene.h>
 
-namespace mrpt::opengl
+namespace mrpt::viz
 {
 class CCamera;
-}  // namespace mrpt::opengl
+}  // namespace mrpt::viz
 
 namespace mrpt::gui
 {
@@ -32,7 +32,7 @@ class CGlCanvasBase
     void setElevationDeg(float deg);
 
     /** Converts from a CCamera objects \note [New in MRPT 2.1.5] */
-    static CamaraParams FromCamera(const mrpt::opengl::CCamera& c);
+    static CamaraParams FromCamera(const mrpt::viz::CCamera& c);
 
     float cameraPointingX = .0f, cameraPointingY = .0f, cameraPointingZ = .0f;
     float cameraZoomDistance = 40.f;
@@ -112,11 +112,11 @@ class CGlCanvasBase
    * See also cameraParams(), getRefCameraParams()*/
   virtual void setCameraParams(const CamaraParams& params);
 
-  /** This function gets a reference to mrpt::opengl::CCamera and
+  /** This function gets a reference to mrpt::viz::CCamera and
    * updates the camera parameters(pointing, zoom, azimuth, elevation,
    * IsProjective, FOV)
    */
-  mrpt::opengl::CCamera& updateCameraParams(mrpt::opengl::CCamera& cam) const;
+  mrpt::viz::CCamera& updateCameraParams(mrpt::viz::CCamera& cam) const;
 
   /** If set to true (default=false), the cameraPointingX,... parameters are
    * ignored and the camera stored in the 3D scene is used instead.
@@ -232,8 +232,8 @@ class CGlCanvasBase
   canvas destructor.
    * This function returns a smart pointer to the opengl scene
   getOpenGLSceneRef		  */
-  mrpt::opengl::Scene::Ptr& getOpenGLSceneRef() { return m_openGLScene; }
-  void setOpenGLSceneRef(mrpt::opengl::Scene::Ptr scene);
+  mrpt::viz::Scene::Ptr& getOpenGLSceneRef() { return m_openGLScene; }
+  void setOpenGLSceneRef(mrpt::viz::Scene::Ptr scene);
 
  protected:
   virtual void swapBuffers() = 0;
@@ -245,7 +245,7 @@ class CGlCanvasBase
 
  private:
   bool useCameraFromScene = false;
-  mrpt::opengl::Scene::Ptr m_openGLScene = mrpt::opengl::Scene::Create();
+  mrpt::viz::Scene::Ptr m_openGLScene = mrpt::viz::Scene::Create();
   int m_mouseLastX = 0, m_mouseLastY = 0;
   int m_mouseClickX = 0, m_mouseClickY = 0;
   bool mouseClicked = false;

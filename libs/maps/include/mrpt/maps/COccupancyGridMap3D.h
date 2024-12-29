@@ -14,9 +14,9 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/NearestNeighborsCapable.h>
 #include <mrpt/maps/OccupancyGridCellType.h>
-#include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/typemeta/TEnumType.h>
+#include <mrpt/viz/viz_frwds.h>
 
 namespace mrpt::obs
 {
@@ -184,10 +184,10 @@ class COccupancyGridMap3D :
       const std::optional<mrpt::poses::CPose3D>& robotPose = std::nullopt);
 
   /** \sa renderingOptions */
-  void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_obj) const;
+  void getAsOctoMapVoxels(mrpt::viz::COctoMapVoxels& gl_obj) const;
 
   /** Returns a 3D object representing the map. \sa renderingOptions */
-  void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
+  void getVisualizationInto(mrpt::viz::CSetOfObjects& outObj) const override;
 
   mrpt::math::TBoundingBoxf boundingBox() const override
   {
@@ -309,7 +309,7 @@ class COccupancyGridMap3D :
   TLikelihoodOptions likelihoodOptions;
 
   /** Options for the conversion of a mrpt::maps::COccupancyGridMap3D into a
-   * mrpt::opengl::COctoMapVoxels */
+   * mrpt::viz::COctoMapVoxels */
   struct TRenderingOptions
   {
     TRenderingOptions() = default;

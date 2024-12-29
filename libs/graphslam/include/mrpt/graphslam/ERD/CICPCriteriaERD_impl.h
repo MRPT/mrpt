@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 
 #pragma once
-#include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/viz/CDisk.h>
+#include <mrpt/viz/CPlanarLaserScan.h>
 
 namespace mrpt::graphslam::deciders
 {
@@ -341,7 +341,7 @@ void CICPCriteriaERD<GRAPH_T>::toggleLaserScansVisualization()
   ASSERTDEBMSG_(this->m_win, "No CDisplayWindow3D* was provided");
   ASSERTDEBMSG_(this->m_win_manager, "No CWindowManager* was provided");
 
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   this->logFmt(mrpt::system::LVL_INFO, "Toggling LaserScans visualization...");
 
@@ -377,7 +377,7 @@ template <class GRAPH_T>
 void CICPCriteriaERD<GRAPH_T>::initializeVisuals()
 {
   MRPT_START
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
   this->logFmt(mrpt::system::LVL_DEBUG, "Initializing visuals");
   this->m_time_logger.enter("CICPCriteriaERD::Visuals");
   parent_t::initializeVisuals();
@@ -409,7 +409,7 @@ void CICPCriteriaERD<GRAPH_T>::initializeVisuals()
   {
     Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 
-    CPlanarLaserScan::Ptr laser_scan_viz = mrpt::opengl::CPlanarLaserScan::Create();
+    CPlanarLaserScan::Ptr laser_scan_viz = mrpt::viz::CPlanarLaserScan::Create();
     laser_scan_viz->enablePoints(true);
     laser_scan_viz->enableLine(true);
     laser_scan_viz->enableSurface(true);
@@ -443,7 +443,7 @@ void CICPCriteriaERD<GRAPH_T>::updateVisuals()
 {
   MRPT_START
   this->m_time_logger.enter("CICPCriteriaERD::Visuals");
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
   using namespace mrpt::math;
   using namespace mrpt::poses;
   parent_t::updateVisuals();

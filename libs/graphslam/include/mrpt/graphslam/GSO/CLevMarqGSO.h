@@ -15,9 +15,9 @@
 #include <mrpt/graphslam/levmarq.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/viz/CRenderizable.h>
 
 #include <cmath>
 #include <iostream>
@@ -291,9 +291,9 @@ class CLevMarqGSO : public mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAP
    * \return Disk/Sphere instance for 2D/3D SLAM respectively
    */
   /**\{*/
-  mrpt::opengl::CRenderizable::Ptr initOptDistanceVisualizationInternal(
+  mrpt::viz::CRenderizable::Ptr initOptDistanceVisualizationInternal(
       const mrpt::poses::CPose2D& p_unused);
-  mrpt::opengl::CRenderizable::Ptr initOptDistanceVisualizationInternal(
+  mrpt::viz::CRenderizable::Ptr initOptDistanceVisualizationInternal(
       const mrpt::poses::CPose3D& p_unused);
   /**\}*/
 

@@ -13,16 +13,16 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
-#include <mrpt/opengl/CEllipsoid2D.h>
-#include <mrpt/opengl/CEllipsoid3D.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/slam/CRangeBearingKFSLAM2D.h>
 #include <mrpt/slam/data_association.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CEllipsoid2D.h>
+#include <mrpt/viz/CEllipsoid3D.h>
+#include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/stock_objects.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::maps;
@@ -885,7 +885,7 @@ void CRangeBearingKFSLAM2D::OnNewLandmarkAddedToMap(size_t in_obsIdx, size_t in_
 /*---------------------------------------------------------------
             getAs3DObject
   ---------------------------------------------------------------*/
-void CRangeBearingKFSLAM2D::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
+void CRangeBearingKFSLAM2D::getAs3DObject(mrpt::viz::CSetOfObjects::Ptr& outObj) const
 {
   outObj->clear();
 

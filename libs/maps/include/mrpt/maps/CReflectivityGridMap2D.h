@@ -92,7 +92,7 @@ class CReflectivityGridMap2D :
 
   void saveMetricMapRepresentationToFile(const std::string& filNamePrefix) const override;
 
-  void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
+  void getVisualizationInto(mrpt::viz::CSetOfObjects& outObj) const override;
 
   /** Returns the grid as a 8-bit graylevel image, where each pixel is a cell
    * (output image is RGB only if forceRGB is true) */

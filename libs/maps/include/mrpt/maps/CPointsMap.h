@@ -22,9 +22,9 @@
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
 #include <mrpt/obs/obs_frwds.h>
-#include <mrpt/opengl/PLY_import_export.h>
-#include <mrpt/opengl/pointcloud_adapters.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/viz/PLY_import_export.h>
+#include <mrpt/viz/pointcloud_adapters.h>
 
 #include <iosfwd>
 
@@ -71,8 +71,8 @@ struct pointmap_traits;
 class CPointsMap :
     public CMetricMap,
     public mrpt::math::KDTreeCapable<CPointsMap>,
-    public mrpt::opengl::PLY_Importer,
-    public mrpt::opengl::PLY_Exporter,
+    public mrpt::viz::PLY_Importer,
+    public mrpt::viz::PLY_Exporter,
     public mrpt::maps::NearestNeighborsCapable
 {
   DEFINE_VIRTUAL_SERIALIZABLE(CPointsMap, mrpt::maps)
@@ -944,7 +944,7 @@ class CPointsMap :
 	 *  The color of the points is controlled by renderOptions
 	 */
 	void getVisualizationInto(
-		mrpt::opengl::CSetOfObjects& outObj) const override;
+		mrpt::viz::CSetOfObjects& outObj) const override;
 
 	/** This method returns the largest distance from the origin to any of the
 	 * points, such as a sphere centered at the origin with this radius cover
@@ -1283,9 +1283,9 @@ class CPointsMap :
 
 }  // namespace maps
 
-namespace opengl
+namespace viz
 {
-/** Specialization mrpt::opengl::PointCloudAdapter<mrpt::maps::CPointsMap>
+/** Specialization mrpt::viz::PointCloudAdapter<mrpt::maps::CPointsMap>
  * \ingroup mrpt_adapters_grp*/
 template <>
 class PointCloudAdapter<mrpt::maps::CPointsMap>
@@ -1332,5 +1332,5 @@ class PointCloudAdapter<mrpt::maps::CPointsMap>
 		m_obj.setPointFast(idx, 0, 0, 0);
 	}
 };	// end of PointCloudAdapter<mrpt::maps::CPointsMap>
-}  // namespace opengl
+}  // namespace viz
 }  // namespace mrpt

@@ -10,23 +10,23 @@
 #include <gtest/gtest.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/stock_observations.h>
-#include <mrpt/opengl/CAngularObservationMesh.h>
-#include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CSphere.h>
-#include <mrpt/opengl/Scene.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/slam/CICP.h>
+#include <mrpt/viz/CAngularObservationMesh.h>
+#include <mrpt/viz/CDisk.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/CSphere.h>
+#include <mrpt/viz/Scene.h>
+#include <mrpt/viz/stock_objects.h>
 
 #include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::obs;

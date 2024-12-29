@@ -17,11 +17,11 @@
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/utils.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CSetOfTriangles.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/CSetOfTriangles.h>
 
 #include <numeric>
 
@@ -1432,23 +1432,23 @@ void CRandomFieldGridMap2D::saveAsMatlab3DGraph(const std::string& filName) cons
   MRPT_END
 }
 
-void CRandomFieldGridMap2D::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
+void CRandomFieldGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
   if (!genericMapParams.enableSaveAs3DObject) return;
 
   // Returns only the mean map
-  mrpt::opengl::CSetOfObjects other_obj;
+  mrpt::viz::CSetOfObjects other_obj;
   getAs3DObject(o, other_obj);
 }
 
 void CRandomFieldGridMap2D::getAs3DObject(
-    mrpt::opengl::CSetOfObjects& meanObj, mrpt::opengl::CSetOfObjects& varObj) const
+    mrpt::viz::CSetOfObjects& meanObj, mrpt::viz::CSetOfObjects& varObj) const
 {
   if (!genericMapParams.enableSaveAs3DObject) return;
 
   recoverMeanAndCov();  // Only works for KF2 method
 
-  mrpt::opengl::TTriangle triag;
+  mrpt::viz::TTriangle triag;
 
   unsigned int cx, cy;
   vector<double> xs, ys;
@@ -1470,8 +1470,8 @@ void CRandomFieldGridMap2D::getAs3DObject(
     {
       // for Kalman models:
       // ----------------------------------
-      auto obj_m = std::make_shared<opengl::CSetOfTriangles>();
-      auto obj_v = std::make_shared<opengl::CSetOfTriangles>();
+      auto obj_m = std::make_shared<viz::CSetOfTriangles>();
+      auto obj_v = std::make_shared<viz::CSetOfTriangles>();
 
       //  Compute mean max/min values:
       // ---------------------------------------
@@ -1631,8 +1631,8 @@ void CRandomFieldGridMap2D::getAs3DObject(
     {
       // Draw for Kernel model:
       // ----------------------------------
-      auto obj_m = std::make_shared<opengl::CSetOfTriangles>();
-      auto obj_v = std::make_shared<opengl::CSetOfTriangles>();
+      auto obj_m = std::make_shared<viz::CSetOfTriangles>();
+      auto obj_v = std::make_shared<viz::CSetOfTriangles>();
 
       //  Compute mean max/min values:
       // ---------------------------------------

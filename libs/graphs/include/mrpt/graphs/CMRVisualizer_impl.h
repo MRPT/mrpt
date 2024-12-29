@@ -35,15 +35,13 @@ CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::~
 
 template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS, class EDGE_ANNOTATIONS>
 void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::drawNodePoints(
-    mrpt::opengl::CSetOfObjects::Ptr& object,
-    const mrpt::containers::yaml* viz_params /*=NULL*/) const
+    mrpt::viz::CSetOfObjects::Ptr& object, const mrpt::containers::yaml* viz_params /*=NULL*/) const
 {
 }
 
 template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS, class EDGE_ANNOTATIONS>
 void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::drawEdges(
-    mrpt::opengl::CSetOfObjects::Ptr& object,
-    const mrpt::containers::yaml* viz_params /*=NULL*/) const
+    mrpt::viz::CSetOfObjects::Ptr& object, const mrpt::containers::yaml* viz_params /*=NULL*/) const
 {
 }
 
@@ -68,10 +66,10 @@ CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations, EDGE_ANNOTATIO
 template <class CPOSE, class MAPS_IMPLEMENTATION, class EDGE_ANNOTATIONS>
 void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations, EDGE_ANNOTATIONS>::
     drawNodePoints(
-        mrpt::opengl::CSetOfObjects::Ptr& object,
+        mrpt::viz::CSetOfObjects::Ptr& object,
         const mrpt::containers::yaml* viz_params /*=NULL*/) const
 {
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
   using namespace mrpt::graphs;
   using namespace mrpt::img;
   using namespace std;
@@ -143,10 +141,9 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations, EDGE_ANNO
 
 template <class CPOSE, class MAPS_IMPLEMENTATION, class EDGE_ANNOTATIONS>
 void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations, EDGE_ANNOTATIONS>::drawEdges(
-    mrpt::opengl::CSetOfObjects::Ptr& object,
-    const mrpt::containers::yaml* viz_params /*=NULL*/) const
+    mrpt::viz::CSetOfObjects::Ptr& object, const mrpt::containers::yaml* viz_params /*=NULL*/) const
 {
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
   using namespace mrpt::img;
 
   ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");

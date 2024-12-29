@@ -12,10 +12,10 @@
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
 #include <mrpt/nav/reactive/CLogFileRecord.h>
-#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 using namespace mrpt::nav;
 

@@ -10,10 +10,10 @@
 #include "nav-precomp.h"  // Precomp header
 //
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
-#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CSetOfLines.h>
 
 #include <fstream>
 
@@ -197,7 +197,7 @@ uint16_t CParameterizedTrajectoryGenerator::alpha2index(double alpha) const
 
 void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(
     const uint16_t k,
-    mrpt::opengl::CSetOfLines& gl_obj,
+    mrpt::viz::CSetOfLines& gl_obj,
     const double decimate_distance,
     const double max_path_distance) const
 {

@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 #include <vector>
 
@@ -72,7 +72,7 @@ class CKinematicChain : public mrpt::serialization::CSerializable
  private:
   /** Smart pointers to the last objects for each link, as returned in
    * getAs3DObject(), for usage within update3DObject() */
-  mutable std::vector<mrpt::opengl::CRenderizable::Ptr> m_last_gl_objects;
+  mutable std::vector<mrpt::viz::CVisualObject::Ptr> m_last_gl_objects;
 
   /** The links of this robot arm */
   std::vector<TKinematicLink> m_links;
@@ -163,7 +163,7 @@ class CKinematicChain : public mrpt::serialization::CSerializable
    * \sa update3DObject
    */
   void getAs3DObject(
-      mrpt::opengl::CSetOfObjects::Ptr& inout_gl_obj,
+      mrpt::viz::CSetOfObjects::Ptr& inout_gl_obj,
       std::vector<mrpt::poses::CPose3D>* out_all_poses = nullptr) const;
 
   /** Read getAs3DObject() for a description.

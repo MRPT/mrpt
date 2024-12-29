@@ -11,8 +11,8 @@
 
 #include <mrpt/config.h>
 #include <mrpt/gui/CGlCanvasBase.h>
-#include <mrpt/opengl/Scene.h>
-#include <mrpt/opengl/opengl_fonts.h>
+#include <mrpt/viz/Scene.h>
+#include <mrpt/viz/opengl_fonts.h>
 
 #include <atomic>
 #include <mutex>

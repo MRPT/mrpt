@@ -387,7 +387,7 @@ class CParameterizedTrajectoryGenerator :
    */
   virtual void renderPathAsSimpleLine(
       const uint16_t k,
-      mrpt::opengl::CSetOfLines& gl_obj,
+      mrpt::viz::CSetOfLines& gl_obj,
       const double decimate_distance = 0.1,
       const double max_path_distance = -1.0) const;
 
@@ -417,7 +417,7 @@ class CParameterizedTrajectoryGenerator :
 
   /** Auxiliary function for rendering */
   virtual void add_robotShape_to_setOfLines(
-      mrpt::opengl::CSetOfLines& gl_shape,
+      mrpt::viz::CSetOfLines& gl_shape,
       const mrpt::poses::CPose2D& origin = mrpt::poses::CPose2D()) const = 0;
 
   /** Defines the behavior when there is an obstacle *inside* the robot shape
@@ -519,11 +519,11 @@ class CPTG_RobotShape_Polygonal : public CParameterizedTrajectoryGenerator
   /** @} */
   bool isPointInsideRobotShape(const double x, const double y) const override;
   void add_robotShape_to_setOfLines(
-      mrpt::opengl::CSetOfLines& gl_shape,
+      mrpt::viz::CSetOfLines& gl_shape,
       const mrpt::poses::CPose2D& origin = mrpt::poses::CPose2D()) const override;
 
   static void static_add_robotShape_to_setOfLines(
-      mrpt::opengl::CSetOfLines& gl_shape,
+      mrpt::viz::CSetOfLines& gl_shape,
       const mrpt::poses::CPose2D& origin,
       const mrpt::math::CPolygon& robotShape);
 
@@ -562,11 +562,11 @@ class CPTG_RobotShape_Circular : public CParameterizedTrajectoryGenerator
   double evalClearanceToRobotShape(const double ox, const double oy) const override;
   /** @} */
   void add_robotShape_to_setOfLines(
-      mrpt::opengl::CSetOfLines& gl_shape,
+      mrpt::viz::CSetOfLines& gl_shape,
       const mrpt::poses::CPose2D& origin = mrpt::poses::CPose2D()) const override;
 
   static void static_add_robotShape_to_setOfLines(
-      mrpt::opengl::CSetOfLines& gl_shape,
+      mrpt::viz::CSetOfLines& gl_shape,
       const mrpt::poses::CPose2D& origin,
       const double robotRadius);
 

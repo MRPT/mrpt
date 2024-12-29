@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/serialization/serialization_frwds.h>
+#include <mrpt/viz/opengl_frwds.h>
 
 #include <cstdint>
 #include <map>
@@ -49,7 +49,7 @@ class ClearanceDiagram
    */
   double getClearance(uint16_t k, double TPS_query_distance, bool integrate_over_path) const;
   void renderAs3DObject(
-      mrpt::opengl::CMesh& mesh,
+      mrpt::viz::CMesh& mesh,
       double min_x,
       double max_x,
       double min_y,

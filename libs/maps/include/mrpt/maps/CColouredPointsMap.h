@@ -12,9 +12,9 @@
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/obs_frwds.h>
-#include <mrpt/opengl/pointcloud_adapters.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/typemeta/TEnumType.h>
+#include <mrpt/viz/pointcloud_adapters.h>
 
 namespace mrpt
 {
@@ -165,7 +165,7 @@ class CColouredPointsMap : public CPointsMap
   /** Override of the default 3D scene builder to account for the individual
    * points' color.
    */
-  void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
+  void getVisualizationInto(mrpt::viz::CSetOfObjects& outObj) const override;
 
   /** Colour a set of points from a CObservationImage and the global pose of
    * the robot */
@@ -364,10 +364,10 @@ class CColouredPointsMap : public CPointsMap
 
 }  // namespace maps
 
-namespace opengl
+namespace viz
 {
 /** Specialization
- * mrpt::opengl::PointCloudAdapter<mrpt::maps::CColouredPointsMap> \ingroup
+ * mrpt::viz::PointCloudAdapter<mrpt::maps::CColouredPointsMap> \ingroup
  * mrpt_adapters_grp */
 template <>
 class PointCloudAdapter<mrpt::maps::CColouredPointsMap>
@@ -482,7 +482,7 @@ class PointCloudAdapter<mrpt::maps::CColouredPointsMap>
 	}
 
 };	// end of PointCloudAdapter<mrpt::maps::CColouredPointsMap>
-}  // namespace opengl
+}  // namespace viz
 }  // namespace mrpt
 
 MRPT_ENUM_TYPE_BEGIN(mrpt::maps::CColouredPointsMap::TColouringMethod)

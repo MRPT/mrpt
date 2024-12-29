@@ -13,10 +13,10 @@
 #include <mrpt/img/color_maps.h>
 #include <mrpt/maps/CWirelessPowerGridMap2D.h>
 #include <mrpt/obs/CObservationWirelessPower.h>
-#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -325,7 +325,7 @@ void CWirelessPowerGridMap2D::TInsertionOptions::loadFromConfigFile(
   internal_loadFromConfigFile_common(iniFile, section);
 }
 
-void CWirelessPowerGridMap2D::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
+void CWirelessPowerGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
   MRPT_START
   if (!genericMapParams.enableSaveAs3DObject) return;

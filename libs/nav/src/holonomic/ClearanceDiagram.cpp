@@ -12,9 +12,9 @@
 #include <mrpt/core/round.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
-#include <mrpt/opengl/CMesh.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/viz/CMesh.h>
 
 #include <limits>
 
@@ -25,7 +25,7 @@ ClearanceDiagram::ClearanceDiagram()
     = default;
 
 void ClearanceDiagram::renderAs3DObject(
-    mrpt::opengl::CMesh& mesh,
+    mrpt::viz::CMesh& mesh,
     double min_x,
     double max_x,
     double min_y,

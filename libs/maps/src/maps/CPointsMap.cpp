@@ -22,12 +22,12 @@
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
-#include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CPointCloudColoured.h>
 
 #include <fstream>
 #include <sstream>
@@ -721,7 +721,7 @@ void CPointsMap::TRenderOptions::loadFromConfigFile(
   colormap = iniFile.read_enum(section, "colormap", this->colormap);
 }
 
-void CPointsMap::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
+void CPointsMap::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
   MRPT_START
   if (!genericMapParams.enableSaveAs3DObject) return;
@@ -729,7 +729,7 @@ void CPointsMap::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
   if (renderOptions.colormap == mrpt::img::cmNONE)
   {
     // Single color:
-    auto obj = opengl::CPointCloud::Create();
+    auto obj = viz::CPointCloud::Create();
     obj->loadFromPointsMap(this);
     obj->setColor(renderOptions.color);
     obj->setPointSize(renderOptions.point_size);
@@ -738,7 +738,7 @@ void CPointsMap::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
   }
   else
   {
-    auto obj = opengl::CPointCloudColoured::Create();
+    auto obj = viz::CPointCloudColoured::Create();
     obj->loadFromPointsMap(this);
     obj->setPointSize(renderOptions.point_size);
 

@@ -53,7 +53,7 @@ opengl::Viewport::Ptr CQtGlCanvasBase::mainViewport() const { return m_mainViewp
 
 float CQtGlCanvasBase::getCameraZoomDistance() const
 {
-  mrpt::opengl::CCamera& cam = m_mainViewport->getCamera();
+  mrpt::viz::CCamera& cam = m_mainViewport->getCamera();
   return cam.getZoomDistance();
 }
 
@@ -139,7 +139,7 @@ void CQtGlCanvasBase::renderError(const std::string& err_msg) { Q_UNUSED(err_msg
 
 void CQtGlCanvasBase::updateCamerasParams()
 {
-  mrpt::opengl::CCamera& cam = m_mainViewport->getCamera();
+  mrpt::viz::CCamera& cam = m_mainViewport->getCamera();
   updateCameraParams(cam);
 }
 

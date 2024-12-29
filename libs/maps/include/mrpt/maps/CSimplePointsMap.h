@@ -140,9 +140,9 @@ class CSimplePointsMap : public CPointsMap
 };  // End of class def.
 }  // namespace maps
 
-namespace opengl
+namespace viz
 {
-/** Specialization mrpt::opengl::PointCloudAdapter<mrpt::maps::CSimplePointsMap>
+/** Specialization mrpt::viz::PointCloudAdapter<mrpt::maps::CSimplePointsMap>
  * \ingroup mrpt_adapters_grp*/
 template <>
 class PointCloudAdapter<mrpt::maps::CSimplePointsMap>
@@ -186,6 +186,6 @@ class PointCloudAdapter<mrpt::maps::CSimplePointsMap>
   /** Set XYZ coordinates of i'th point */
   inline void setInvalidPoint(size_t idx) { m_obj.setPointFast(idx, 0, 0, 0); }
 };  // end of PointCloudAdapter<mrpt::maps::CPointsMap>
-}  // namespace opengl
+}  // namespace viz
 
 }  // namespace mrpt

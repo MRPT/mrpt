@@ -1,0 +1,402 @@
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          https://www.mrpt.org/                         |
+   |                                                                        |
+   | Copyright (c) 2005-2024, Individual contributors, see AUTHORS file     |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
+   +------------------------------------------------------------------------+ */
+#pragma once
+
+#include <mrpt/img/color_maps.h>
+#include <mrpt/math/TPoint3D.h>
+#include <mrpt/viz/CVisualObject.h>
+#include <mrpt/viz/PLY_import_export.h>
+#include <mrpt/viz/pointcloud_adapters.h>
+
+namespace mrpt::viz
+{
+/** A cloud of points, each one with an individual colour (R,G,B). The alpha
+ * component is shared by all the points and is stored in the base member
+ * m_color_A.
+ *
+ * To load from a points-map, CPointCloudColoured::loadFromPointsMap().
+ *
+ * This class uses smart optimizations while rendering to efficiently draw
+ * clouds of millions of points, using octrees.
+ *
+ * ![mrpt::viz::CPointCloudColoured](preview_CPointCloudColoured.png)
+ *
+ * \sa opengl::Scene, opengl::CPointCloud
+ * \ingroup mrpt_viz_grp
+ */
+class CPointCloudColoured :
+    virtual public CVisualObject,
+    public VisualObjectParams_Points,
+    public mrpt::viz::PLY_Importer,
+    public mrpt::viz::PLY_Exporter
+{
+  DEFINE_SERIALIZABLE(CPointCloudColoured, mrpt::viz)
+
+ private:
+  /** Actually, an alias for the base class shader container of points. Kept
+   * to have an easy to use name. */
+  std::vector<mrpt::math::TPoint3Df>& m_points = VisualObjectParams_Points::m_vertex_buffer_data;
+
+  std::vector<mrpt::img::TColor>& m_point_colors = VisualObjectParams_Points::m_color_buffer_data;
+
+  mutable size_t m_last_rendered_count{0}, m_last_rendered_count_ongoing{0};
+
+ public:
+  CPointCloudColoured() = default;
+  virtual ~CPointCloudColoured() override = default;
+
+  void markAllPointsAsNew();
+
+ public:
+  auto internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf override;
+
+  /** @name Read/Write of the list of points to render
+    @{ */
+
+  /** Inserts a new point into the point cloud. */
+  void push_back(float x, float y, float z, float R, float G, float B, float A = 1);
+
+  /** inserts a new point */
+  void insertPoint(const mrpt::math::TPointXYZfRGBAu8& p);
+
+  /** Set the number of points, with undefined contents */
+  void resize(size_t N)
+  {
+    std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
+
+    m_points.resize(N);
+    m_point_colors.resize(N);
+    wfWriteLock.unlock();
+    markAllPointsAsNew();
+    CVisualObject::notifyChange();
+  }
+
+  /** Like STL std::vector's reserve */
+  void reserve(size_t N)
+  {
+    std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
+
+    m_points.reserve(N);
+    m_point_colors.reserve(N);
+  }
+
+  /// NOTE: This method is intentionally not protected by the shared_mutex,
+  /// since it's called in the inner loops of the octree, which acquires the
+  /// lock once.
+  const mrpt::math::TPoint3Df& getPoint3Df(size_t i) const { return m_points[i]; }
+
+  /** Write an individual point (checks for "i" in the valid range only in
+   * Debug). */
+  void setPoint(size_t i, const mrpt::math::TPointXYZfRGBAu8& p);
+
+  /** Like \a setPoint() but does not check for index out of bounds */
+  void setPoint_fast(size_t i, const mrpt::math::TPointXYZfRGBAu8& p)
+  {
+    std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
+
+    m_points[i] = p.pt;
+    m_point_colors[i] = mrpt::img::TColor(p.r, p.g, p.b, p.a);
+    wfWriteLock.unlock();
+    markAllPointsAsNew();
+  }
+
+  /** Like \a setPoint() but does not check for index out of bounds */
+  void setPoint_fast(size_t i, const float x, const float y, const float z)
+  {
+    std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
+    m_points[i] = {x, y, z};
+    wfWriteLock.unlock();
+    markAllPointsAsNew();
+  }
+
+  /** Like \c setPointColor but without checking for out-of-index errors */
+  void setPointColor_fast(size_t index, float R, float G, float B, float A = 1)
+  {
+    std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
+    m_point_colors[index].R = f2u8(R);
+    m_point_colors[index].G = f2u8(G);
+    m_point_colors[index].B = f2u8(B);
+    m_point_colors[index].A = f2u8(A);
+  }
+  void setPointColor_u8_fast(size_t index, uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0xff)
+  {
+    std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
+    m_point_colors[index].R = r;
+    m_point_colors[index].G = g;
+    m_point_colors[index].B = b;
+    m_point_colors[index].A = a;
+  }
+  /** Like \c getPointColor but without checking for out-of-index errors */
+  void getPointColor_fast(size_t index, float& R, float& G, float& B) const
+  {
+    std::shared_lock<std::shared_mutex> wfReadLock(VisualObjectParams_Points::m_pointsMtx.data);
+    R = u8tof(m_point_colors[index].R);
+    G = u8tof(m_point_colors[index].G);
+    B = u8tof(m_point_colors[index].B);
+  }
+  void getPointColor_fast(size_t index, uint8_t& r, uint8_t& g, uint8_t& b) const
+  {
+    std::shared_lock<std::shared_mutex> wfReadLock(VisualObjectParams_Points::m_pointsMtx.data);
+    r = m_point_colors[index].R;
+    g = m_point_colors[index].B;
+    b = m_point_colors[index].B;
+  }
+  mrpt::img::TColor getPointColor(size_t index) const
+  {
+    std::shared_lock<std::shared_mutex> wfReadLock(VisualObjectParams_Points::m_pointsMtx.data);
+    return m_point_colors[index];
+  }
+
+  /** Return the number of points */
+  size_t size() const
+  {
+    std::shared_lock<std::shared_mutex> wfReadLock(VisualObjectParams_Points::m_pointsMtx.data);
+    return m_points.size();
+  }
+  /// Like size(), but without locking the data mutex (internal usage)
+  size_t size_unprotected() const { return m_points.size(); }
+
+  bool empty() const
+  {
+    std::shared_lock<std::shared_mutex> wfReadLock(VisualObjectParams_Points::m_pointsMtx.data);
+    return m_points.empty();
+  }
+
+  /** Erase all the points */
+  void clear()
+  {
+    std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
+    m_points.clear();
+    m_point_colors.clear();
+    wfWriteLock.unlock();
+    markAllPointsAsNew();
+    CVisualObject::notifyChange();
+  }
+
+  /** Load the points from any other point map class supported by the adapter
+   * mrpt::viz::PointCloudAdapter. */
+  template <class POINTSMAP>
+  void loadFromPointsMap(const POINTSMAP* themap);
+  // Must be implemented at the end of the header.
+
+  /** Get the number of elements actually rendered in the last render event.
+   */
+  size_t getActuallyRendered() const { return m_last_rendered_count; }
+  /** @} */
+
+  /** @name Modify the appearance of the rendered points
+    @{ */
+
+  /** Regenerates the color of each point according the one coordinate
+   * (coord_index:0,1,2 for X,Y,Z) and the given color map. */
+  void recolorizeByCoordinate(
+      const float coord_min,
+      const float coord_max,
+      const int coord_index = 2,
+      const mrpt::img::TColormap color_map = mrpt::img::cmJET);
+
+  /** @} */
+
+  /** Render a subset of points (required by octree renderer) */
+  void render_subset(
+      const bool all, const std::vector<size_t>& idxs, const float render_area_sqpixels) const;
+
+  void toYAMLMap(mrpt::containers::yaml& propertiesMap) const override;
+
+ protected:
+  /** @name PLY Import virtual methods to implement in base classes
+    @{ */
+  /** In a base class, reserve memory to prepare subsequent calls to
+   * PLY_import_set_vertex */
+  void PLY_import_set_vertex_count(size_t N) override;
+  /** In a base class, reserve memory to prepare subsequent calls to
+   * PLY_import_set_face */
+  void PLY_import_set_face_count([[maybe_unused]] size_t N) override {}
+  void PLY_import_set_vertex_timestamp(
+      [[maybe_unused]] size_t idx, [[maybe_unused]] const double unixTimestamp) override
+  {
+    // do nothing, this class ignores timestamps
+  }
+  /** In a base class, will be called after PLY_import_set_vertex_count() once
+   * for each loaded point.
+   *  \param pt_color Will be nullptr if the loaded file does not provide
+   * color info.
+   */
+  void PLY_import_set_vertex(
+      size_t idx,
+      const mrpt::math::TPoint3Df& pt,
+      const mrpt::img::TColorf* pt_color = nullptr) override;
+  /** @} */
+
+  /** @name PLY Export virtual methods to implement in base classes
+    @{ */
+  size_t PLY_export_get_vertex_count() const override;
+  size_t PLY_export_get_face_count() const override { return 0; }
+  void PLY_export_get_vertex(
+      size_t idx,
+      mrpt::math::TPoint3Df& pt,
+      bool& pt_has_color,
+      mrpt::img::TColorf& pt_color) const override;
+  /** @} */
+};
+
+/** Specialization
+ * mrpt::viz::PointCloudAdapter<mrpt::viz::CPointCloudColoured>  \ingroup
+ * mrpt_adapters_grp*/
+template <>
+class PointCloudAdapter<mrpt::viz::CPointCloudColoured>
+{
+ private:
+  mrpt::viz::CPointCloudColoured& m_obj;
+
+ public:
+  /** The type of each point XYZ coordinates */
+  using coords_t = float;
+  /** Has any color RGB info? */
+  static constexpr bool HAS_RGB = true;
+  /** Has native RGB info (as floats)? */
+  static constexpr bool HAS_RGBf = true;
+  /** Has native RGB info (as uint8_t)? */
+  static constexpr bool HAS_RGBu8 = false;
+
+  /** Constructor (accept a const ref for convenience) */
+  PointCloudAdapter(const mrpt::viz::CPointCloudColoured& obj) :
+      m_obj(*const_cast<mrpt::viz::CPointCloudColoured*>(&obj))
+  {
+  }
+  /** Get number of points */
+  size_t size() const { return m_obj.size(); }
+  /** Set number of points (to uninitialized values) */
+  void resize(size_t N) { m_obj.resize(N); }
+  /** Does nothing as of now */
+  void setDimensions(size_t height, size_t width) {}
+  /** Get XYZ coordinates of i'th point */
+  template <typename T>
+  void getPointXYZ(size_t idx, T& x, T& y, T& z) const
+  {
+    const auto& p = m_obj.getPoint3Df(idx);
+    x = p.x;
+    y = p.y;
+    z = p.z;
+  }
+  /** Set XYZ coordinates of i'th point */
+  void setPointXYZ(size_t idx, const coords_t x, const coords_t y, const coords_t z)
+  {
+    m_obj.setPoint_fast(idx, x, y, z);
+  }
+
+  void setInvalidPoint(size_t idx) { m_obj.setPoint_fast(idx, 0, 0, 0); }
+
+  /** Get XYZ_RGBf coordinates of i'th point */
+  template <typename T>
+  void getPointXYZ_RGBAf(
+      size_t idx, T& x, T& y, T& z, float& Rf, float& Gf, float& Bf, float& Af) const
+  {
+    const auto& pt = m_obj.getPoint3Df(idx);
+    const auto& col = m_obj.getPointColor(idx);
+    x = pt.x;
+    y = pt.y;
+    z = pt.z;
+    Rf = u8tof(col.R);
+    Gf = u8tof(col.G);
+    Bf = u8tof(col.B);
+    Af = u8tof(col.A);
+  }
+  /** Set XYZ_RGBf coordinates of i'th point */
+  void setPointXYZ_RGBAf(
+      size_t idx,
+      const coords_t x,
+      const coords_t y,
+      const coords_t z,
+      const float Rf,
+      const float Gf,
+      const float Bf,
+      const float Af)
+  {
+    m_obj.setPoint(
+        idx, mrpt::math::TPointXYZfRGBAu8(x, y, z, f2u8(Rf), f2u8(Gf), f2u8(Bf), f2u8(Af)));
+  }
+
+  /** Get XYZ_RGBu8 coordinates of i'th point */
+  template <typename T>
+  void getPointXYZ_RGBu8(size_t idx, T& x, T& y, T& z, uint8_t& r, uint8_t& g, uint8_t& b) const
+  {
+    const auto& pt = m_obj.getPoint3Df(idx);
+    const auto& col = m_obj.getPointColor(idx);
+    x = pt.x;
+    y = pt.y;
+    z = pt.z;
+    r = col.R;
+    g = col.G;
+    b = col.B;
+  }
+  /** Set XYZ_RGBu8 coordinates of i'th point */
+  void setPointXYZ_RGBu8(
+      size_t idx,
+      const coords_t x,
+      const coords_t y,
+      const coords_t z,
+      const uint8_t r,
+      const uint8_t g,
+      const uint8_t b,
+      const uint8_t a = 0xff)
+  {
+    m_obj.setPoint_fast(idx, mrpt::math::TPointXYZfRGBAu8(x, y, z, r, g, b, a));
+  }
+
+  /** Get RGBf color of i'th point */
+  void getPointRGBf(size_t idx, float& r, float& g, float& b) const
+  {
+    m_obj.getPointColor_fast(idx, r, g, b);
+  }
+  /** Set XYZ_RGBf coordinates of i'th point */
+  void setPointRGBf(size_t idx, const float r, const float g, const float b)
+  {
+    m_obj.setPointColor_fast(idx, r, g, b);
+  }
+
+  /** Get RGBu8 color of i'th point */
+  void getPointRGBu8(size_t idx, uint8_t& r, uint8_t& g, uint8_t& b) const
+  {
+    m_obj.getPointColor_fast(idx, r, g, b);
+  }
+  /** Set RGBu8 coordinates of i'th point */
+  void setPointRGBu8(size_t idx, const uint8_t r, const uint8_t g, const uint8_t b)
+  {
+    m_obj.setPointColor_u8_fast(idx, r, g, b);
+  }
+
+};  // end of PointCloudAdapter<mrpt::viz::CPointCloudColoured>
+
+// After declaring the adapter we can here implement this method:
+template <class POINTSMAP>
+void CPointCloudColoured::loadFromPointsMap(const POINTSMAP* themap)
+{
+  CVisualObject::notifyChange();
+  mrpt::viz::PointCloudAdapter<CPointCloudColoured> pc_dst(*this);
+  const mrpt::viz::PointCloudAdapter<POINTSMAP> pc_src(*themap);
+  const size_t N = pc_src.size();
+  pc_dst.resize(N);
+  for (size_t i = 0; i < N; i++)
+  {
+    if constexpr (mrpt::viz::PointCloudAdapter<POINTSMAP>::HAS_RGB)
+    {
+      float x, y, z, r, g, b, a;
+      pc_src.getPointXYZ_RGBAf(i, x, y, z, r, g, b, a);
+      pc_dst.setPointXYZ_RGBAf(i, x, y, z, r, g, b, a);
+    }
+    else
+    {
+      float x, y, z;
+      pc_src.getPointXYZ(i, x, y, z);
+      pc_dst.setPointXYZ_RGBAf(i, x, y, z, 0, 0, 0, 1);
+    }
+  }
+}
+}  // namespace mrpt::viz

@@ -12,11 +12,11 @@
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/maps/CReflectivityGridMap2D.h>
 #include <mrpt/obs/CObservationReflectivity.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/CTexturedPlane.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -329,13 +329,13 @@ void CReflectivityGridMap2D::getAsImage(CImage& img, bool verticalFlip, bool for
   }
 }
 
-void CReflectivityGridMap2D::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
+void CReflectivityGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
   if (!genericMapParams.enableSaveAs3DObject) return;
 
   MRPT_START
 
-  opengl::CTexturedPlane::Ptr outObj = std::make_shared<opengl::CTexturedPlane>();
+  viz::CTexturedPlane::Ptr outObj = std::make_shared<viz::CTexturedPlane>();
 
   outObj->setPlaneCorners(m_x_min, m_x_max, m_y_min, m_y_max);
 

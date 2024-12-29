@@ -42,10 +42,10 @@ class CMRVisualizer :
 
   ~CMRVisualizer() override;
   void drawNodePoints(
-      mrpt::opengl::CSetOfObjects::Ptr& object,
+      mrpt::viz::CSetOfObjects::Ptr& object,
       const mrpt::containers::yaml* viz_params = nullptr) const override;
   void drawEdges(
-      mrpt::opengl::CSetOfObjects::Ptr& object,
+      mrpt::viz::CSetOfObjects::Ptr& object,
       const mrpt::containers::yaml* viz_params = nullptr) const override;
 
  private:
@@ -70,10 +70,10 @@ class CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations, EDGE_ANN
 
   ~CMRVisualizer();
   void drawNodePoints(
-      mrpt::opengl::CSetOfObjects::Ptr& object,
+      mrpt::viz::CSetOfObjects::Ptr& object,
       const mrpt::containers::yaml* viz_params = nullptr) const;
   void drawEdges(
-      mrpt::opengl::CSetOfObjects::Ptr& object,
+      mrpt::viz::CSetOfObjects::Ptr& object,
       const mrpt::containers::yaml* viz_params = nullptr) const;
 
  private:

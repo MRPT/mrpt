@@ -19,10 +19,10 @@
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/data_association.h>
+#include <mrpt/viz/opengl_frwds.h>
 
 namespace mrpt::slam
 {
@@ -92,7 +92,7 @@ class CRangeBearingKFSLAM2D :
    * position according to the current filter state.
    *  \param out_objects
    */
-  void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const;
+  void getAs3DObject(mrpt::viz::CSetOfObjects::Ptr& outObj) const;
 
   /** Load options from a ini-like file/text
    */

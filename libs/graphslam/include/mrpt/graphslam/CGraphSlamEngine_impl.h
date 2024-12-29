@@ -14,9 +14,9 @@
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservationOdometry.h>
-#include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/viz/CAxis.h>
+#include <mrpt/viz/CPlanarLaserScan.h>
 
 namespace mrpt::graphslam
 {
@@ -90,7 +90,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 {
   MRPT_START
   using namespace mrpt;
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
   using namespace std;
 
   // logger instance properties
@@ -476,7 +476,7 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
   using namespace mrpt::poses;
   using namespace mrpt::obs;
   using namespace mrpt::obs::utils;
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
   using namespace mrpt::system;
 
   m_time_logger.enter("proc_time");
@@ -1101,7 +1101,7 @@ void CGraphSlamEngine<GRAPH_T>::initRangeImageViewport()
 {
   MRPT_START
   ASSERTDEB_(m_enable_visuals);
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   Scene::Ptr scene = m_win->get3DSceneAndLock();
   Viewport::Ptr viewp_range;
@@ -1138,7 +1138,7 @@ void CGraphSlamEngine<GRAPH_T>::updateRangeImageViewport()
   MRPT_START
   ASSERTDEB_(m_enable_visuals);
   using namespace mrpt::math;
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   if (m_last_laser_scan3D->hasRangeImage)
   {
@@ -1166,7 +1166,7 @@ void CGraphSlamEngine<GRAPH_T>::initIntensityImageViewport()
 {
   MRPT_START
   ASSERTDEB_(m_enable_visuals);
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   Scene::Ptr scene = m_win->get3DSceneAndLock();
   Viewport::Ptr viewp_intensity;
@@ -1186,7 +1186,7 @@ void CGraphSlamEngine<GRAPH_T>::updateIntensityImageViewport()
 {
   MRPT_START
   ASSERTDEB_(m_enable_visuals);
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   if (m_last_laser_scan3D->hasIntensityImage)
   {
@@ -1207,25 +1207,25 @@ void CGraphSlamEngine<GRAPH_T>::updateIntensityImageViewport()
 }  // end of updateIntensityImageViewport
 
 template <class GRAPH_T>
-mrpt::opengl::CSetOfObjects::Ptr CGraphSlamEngine<GRAPH_T>::initRobotModelVisualization()
+mrpt::viz::CSetOfObjects::Ptr CGraphSlamEngine<GRAPH_T>::initRobotModelVisualization()
 {
   pose_t p;
   return this->initRobotModelVisualizationInternal(p);
 }  // end of initRobotModelVisualization
 
 template <class GRAPH_T>
-mrpt::opengl::CSetOfObjects::Ptr CGraphSlamEngine<GRAPH_T>::initRobotModelVisualizationInternal(
+mrpt::viz::CSetOfObjects::Ptr CGraphSlamEngine<GRAPH_T>::initRobotModelVisualizationInternal(
     const mrpt::poses::CPose2D& p_unused)
 {
-  return mrpt::opengl::stock_objects::RobotPioneer();
+  return mrpt::viz::stock_objects::RobotPioneer();
 
 }  // end of initRobotModelVisualizationInternal - CPose2D
 
 template <class GRAPH_T>
-mrpt::opengl::CSetOfObjects::Ptr CGraphSlamEngine<GRAPH_T>::initRobotModelVisualizationInternal(
+mrpt::viz::CSetOfObjects::Ptr CGraphSlamEngine<GRAPH_T>::initRobotModelVisualizationInternal(
     const mrpt::poses::CPose3D& p_unused)
 {
-  return mrpt::opengl::stock_objects::CornerXYZ();
+  return mrpt::viz::stock_objects::CornerXYZ();
 }  // end of initRobotModelVisualizationInternal - CPose3D
 
 template <class GRAPH_T>
@@ -1233,7 +1233,7 @@ void CGraphSlamEngine<GRAPH_T>::initCurrPosViewport()
 {
   MRPT_START
   ASSERTDEB_(m_enable_visuals);
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   Scene::Ptr scene = m_win->get3DSceneAndLock();
   Viewport::Ptr viewp = scene->createViewport("curr_robot_pose_viewport");
@@ -1260,7 +1260,7 @@ inline void CGraphSlamEngine<GRAPH_T>::updateCurrPosViewport()
 {
   MRPT_START
   ASSERTDEB_(m_enable_visuals);
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
   using namespace mrpt::poses;
 
   ASSERTDEB_(m_enable_visuals);
@@ -1554,7 +1554,7 @@ void CGraphSlamEngine<GRAPH_T>::toggleOdometryVisualization()
 {
   MRPT_START
   ASSERTDEB_(m_enable_visuals);
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
   MRPT_LOG_INFO_STREAM("Toggling Odometry visualization...");
 
   Scene::Ptr scene = m_win->get3DSceneAndLock();
@@ -1582,7 +1582,7 @@ void CGraphSlamEngine<GRAPH_T>::toggleGTVisualization()
 {
   MRPT_START
   ASSERTDEB_(m_enable_visuals);
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
   MRPT_LOG_INFO_STREAM("Toggling Ground Truth visualization");
 
   Scene::Ptr scene = m_win->get3DSceneAndLock();
@@ -1611,7 +1611,7 @@ void CGraphSlamEngine<GRAPH_T>::toggleMapVisualization()
   MRPT_START
   ASSERTDEB_(m_enable_visuals);
   using namespace std;
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
   MRPT_LOG_INFO_STREAM("Toggling Map visualization... ");
 
   Scene::Ptr scene = m_win->get3DSceneAndLock();
@@ -1651,7 +1651,7 @@ void CGraphSlamEngine<GRAPH_T>::toggleEstimatedTrajectoryVisualization()
 {
   MRPT_START
   ASSERTDEB_(m_enable_visuals);
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
   MRPT_LOG_INFO_STREAM("Toggling Estimated Trajectory visualization... ");
 
   Scene::Ptr scene = m_win->get3DSceneAndLock();
@@ -1738,7 +1738,7 @@ mrpt::poses::CPose3D CGraphSlamEngine<GRAPH_T>::getLSPoseForGridMapVisualization
 template <class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::initMapVisualization()
 {
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   CSetOfObjects::Ptr map_obj = std::make_shared<CSetOfObjects>();
   map_obj->setName("map");
@@ -1757,7 +1757,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
   MRPT_START
   ASSERTDEB_(m_enable_visuals);
   using namespace mrpt::obs;
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
   using namespace std;
   using namespace mrpt::poses;
   Scene::Ptr scene = m_win->get3DSceneAndLock();
@@ -1872,7 +1872,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 
 template <class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::setObjectPropsFromNodeID(
-    const mrpt::graphs::TNodeID nodeID, mrpt::opengl::CSetOfObjects::Ptr& viz_object)
+    const mrpt::graphs::TNodeID nodeID, mrpt::viz::CSetOfObjects::Ptr& viz_object)
 {
   MRPT_START
   viz_object->setColor_u8(m_optimized_map_color);
@@ -1913,7 +1913,7 @@ void CGraphSlamEngine<GRAPH_T>::initGTVisualization()
 {
   MRPT_START
   ASSERTDEB_(m_enable_visuals);
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   // assertions
   ASSERTDEB_(m_has_read_config);
@@ -1955,7 +1955,7 @@ void CGraphSlamEngine<GRAPH_T>::updateGTVisualization()
 {
   MRPT_START
   ASSERTDEB_(m_enable_visuals);
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   // add to the GT PointCloud and visualize it
   // check that GT vector is not depleted
@@ -1992,7 +1992,7 @@ void CGraphSlamEngine<GRAPH_T>::initOdometryVisualization()
   MRPT_START
   ASSERTDEB_(m_has_read_config);
   ASSERTDEB_(m_enable_visuals);
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   // point cloud
   CPointCloud::Ptr odometry_poses_cloud = std::make_shared<CPointCloud>();
@@ -2032,7 +2032,7 @@ void CGraphSlamEngine<GRAPH_T>::updateOdometryVisualization()
       m_win,
       "Visualization of data was requested but no CDisplayWindow3D pointer "
       "was given");
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   Scene::Ptr scene = m_win->get3DSceneAndLock();
 
@@ -2059,7 +2059,7 @@ void CGraphSlamEngine<GRAPH_T>::initEstimatedTrajectoryVisualization()
 {
   MRPT_START
   ASSERTDEB_(m_enable_visuals);
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   // SetOfLines
   CSetOfLines::Ptr estimated_traj_setoflines = std::make_shared<CSetOfLines>();
@@ -2105,7 +2105,7 @@ void CGraphSlamEngine<GRAPH_T>::updateEstimatedTrajectoryVisualization(bool full
 {
   MRPT_START
   ASSERTDEB_(m_enable_visuals);
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   std::lock_guard<std::mutex> graph_lock(m_graph_section);
   ASSERTDEB_(m_graph.nodeCount() != 0);
@@ -2267,7 +2267,7 @@ void CGraphSlamEngine<GRAPH_T>::save3DScene(const std::string* fname_in) const
       m_enable_visuals,
       "\nsave3DScene was called even though enable_visuals flag is "
       "off.\nExiting...\n");
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   Scene::Ptr scene = m_win->get3DSceneAndLock();
 
@@ -2620,13 +2620,13 @@ void CGraphSlamEngine<GRAPH_T>::generateReportFiles(const std::string& output_di
   MRPT_END
 }
 template <class GRAPH_T>
-mrpt::opengl::CSetOfObjects::Ptr CGraphSlamEngine<GRAPH_T>::setCurrentPositionModel(
+mrpt::viz::CSetOfObjects::Ptr CGraphSlamEngine<GRAPH_T>::setCurrentPositionModel(
     const std::string& model_name,
     const mrpt::img::TColor& model_color,
     const size_t model_size,
     const pose_t& init_pose)
 {
-  mrpt::opengl::CSetOfObjects::Ptr model = this->initRobotModelVisualization();
+  mrpt::viz::CSetOfObjects::Ptr model = this->initRobotModelVisualization();
   model->setName(model_name);
   model->setColor_u8(model_color);
   model->setScale(model_size);
