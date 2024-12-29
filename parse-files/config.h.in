@@ -114,8 +114,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 
 #define MRPT_HAS_TBB              ${CMAKE_MRPT_HAS_TBB}
 
-#cmakedefine MRPT_ROS_VERSION ${MRPT_ROS_VERSION}
-
 /** These two values are detected in Eigen when building MRPT, so we have
   the same settings given the user-provided flags  */
 #define MRPT_MAX_ALIGN_BYTES           ${EIGEN_MAX_ALIGN_BYTES}
