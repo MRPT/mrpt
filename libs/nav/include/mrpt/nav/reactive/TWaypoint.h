@@ -13,8 +13,8 @@
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/TSegment2D.h>
-#include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/system/datetime.h>
+#include <mrpt/viz/opengl_frwds.h>
 
 #include <any>
 #include <optional>
@@ -119,7 +119,7 @@ struct TWaypointSequence
   /** Renders the sequence of waypoints (previous contents of `obj` are
    * cleared) */
   void getAsOpenglVisualization(
-      mrpt::opengl::CSetOfObjects& obj,
+      mrpt::viz::CSetOfObjects& obj,
       const mrpt::nav::TWaypointsRenderingParams& params =
           mrpt::nav::TWaypointsRenderingParams()) const;
   /** Saves waypoints to a config file section */
@@ -204,7 +204,7 @@ struct TWaypointStatusSequence
   /** Renders the sequence of waypoints (previous contents of `obj` are
    * cleared) */
   void getAsOpenglVisualization(
-      mrpt::opengl::CSetOfObjects& obj,
+      mrpt::viz::CSetOfObjects& obj,
       const mrpt::nav::TWaypointsRenderingParams& params =
           mrpt::nav::TWaypointsRenderingParams()) const;
 };

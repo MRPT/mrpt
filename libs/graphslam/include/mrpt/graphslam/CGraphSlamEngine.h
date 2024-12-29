@@ -26,10 +26,10 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/obs_utils.h>
-#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/system/COutputLogger.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 #include <map>
 #include <memory>
@@ -470,15 +470,15 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
   void initRangeImageViewport();
   void initIntensityImageViewport();
 
-  mrpt::opengl::CSetOfObjects::Ptr initRobotModelVisualization();
+  mrpt::viz::CSetOfObjects::Ptr initRobotModelVisualization();
   /**\brief Method to help overcome the partial template specialization
    * restriction of C++. Apply polymorphism by overloading function arguments
    * instead
    */
   /**\{ */
-  mrpt::opengl::CSetOfObjects::Ptr initRobotModelVisualizationInternal(
+  mrpt::viz::CSetOfObjects::Ptr initRobotModelVisualizationInternal(
       const mrpt::poses::CPose2D& p_unused);
-  mrpt::opengl::CSetOfObjects::Ptr initRobotModelVisualizationInternal(
+  mrpt::viz::CSetOfObjects::Ptr initRobotModelVisualizationInternal(
       const mrpt::poses::CPose3D& p_unused);
   /**\} */
 
@@ -525,7 +525,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
    * \note Base class method sets only the color of the object
    */
   virtual void setObjectPropsFromNodeID(
-      const mrpt::graphs::TNodeID nodeID, mrpt::opengl::CSetOfObjects::Ptr& viz_object);
+      const mrpt::graphs::TNodeID nodeID, mrpt::viz::CSetOfObjects::Ptr& viz_object);
   void initMapVisualization();
   /**\brief Update the map visualization based on the current graphSLAM
    * state.
@@ -577,7 +577,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 
   /**\brief Cut down on the size of the given laser scan.
    *
-   * Handy for reducing the size of the resulting mrpt::opengl::CSetOfObjects
+   * Handy for reducing the size of the resulting mrpt::viz::CSetOfObjects
    * that would be inserted in the visualization scene. Increase the
    * decimation rate - keep-every_n_entries - to reduce the computational
    * cost of updating the map visualization
@@ -658,7 +658,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
    * \note Different model is used depending on whether we are running 2D or
    * 3D SLAM.
    */
-  mrpt::opengl::CSetOfObjects::Ptr setCurrentPositionModel(
+  mrpt::viz::CSetOfObjects::Ptr setCurrentPositionModel(
       const std::string& model_name,
       const mrpt::img::TColor& model_color = mrpt::img::TColor(0, 0, 0),
       const size_t model_size = 1,

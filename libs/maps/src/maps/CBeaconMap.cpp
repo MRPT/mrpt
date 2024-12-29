@@ -18,14 +18,14 @@
 #include <mrpt/math/data_utils.h>  // averageLogLikelihood()
 #include <mrpt/math/geometry.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/Scene.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/Scene.h>
+#include <mrpt/viz/stock_objects.h>
 
 #include <Eigen/Dense>
 
@@ -971,9 +971,9 @@ void CBeaconMap::saveMetricMapRepresentationToFile(const string& filNamePrefix) 
   saveToMATLABScript3D(fil1);
 
   // 3D Scene:
-  opengl::Scene scene;
-  const opengl::CSetOfObjects::Ptr obj3D = getVisualization();
-  auto objGround = opengl::CGridPlaneXY::Create(-100.0f, 100.0f, -100.0f, 100.0f, .0f, 1.f);
+  viz::Scene scene;
+  const viz::CSetOfObjects::Ptr obj3D = getVisualization();
+  auto objGround = viz::CGridPlaneXY::Create(-100.0f, 100.0f, -100.0f, 100.0f, .0f, 1.f);
 
   scene.insert(obj3D);
   scene.insert(objGround);
@@ -1017,7 +1017,7 @@ void CBeaconMap::saveMetricMapRepresentationToFile(const string& filNamePrefix) 
   MRPT_END
 }
 
-void CBeaconMap::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
+void CBeaconMap::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
   MRPT_START
 
@@ -1026,7 +1026,7 @@ void CBeaconMap::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
   // ------------------------------------------------
   //  Add the XYZ corner for the current area:
   // ------------------------------------------------
-  o.insert(opengl::stock_objects::CornerXYZ());
+  o.insert(viz::stock_objects::CornerXYZ());
 
   // Save 3D ellipsoids or whatever representation:
   for (const auto& m_beacon : m_beacons) m_beacon.getVisualizationInto(o);

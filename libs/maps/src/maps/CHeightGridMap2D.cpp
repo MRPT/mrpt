@@ -12,11 +12,12 @@
 #include <mrpt/config/CConfigFileBase.h>  // MRPT_LOAD_CONFIG_VAR()
 #include <mrpt/img/color_maps.h>
 #include <mrpt/maps/CHeightGridMap2D.h>
-#include <mrpt/opengl/CMesh.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/viz/CMesh.h>
+#include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 using namespace mrpt::maps;
 using namespace mrpt::obs;
@@ -266,13 +267,13 @@ void CHeightGridMap2D::saveMetricMapRepresentationToFile(const std::string& filN
   saveToTextFile(filNamePrefix + std::string("_mean.txt"));
 }
 
-void CHeightGridMap2D::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
+void CHeightGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
   if (!genericMapParams.enableSaveAs3DObject) return;
 
   if (HEIGHTGRIDMAP_EXPORT3D_AS_MESH_value)
   {
-    opengl::CMesh::Ptr mesh = std::make_shared<opengl::CMesh>();
+    viz::CMesh::Ptr mesh = std::make_shared<viz::CMesh>();
 
     mesh->setGridLimits(m_x_min, m_x_max, m_y_min, m_y_max);
 
@@ -307,7 +308,7 @@ void CHeightGridMap2D::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) cons
   else
   {
     // As points:
-    mrpt::opengl::CPointCloudColoured::Ptr obj = mrpt::opengl::CPointCloudColoured::Create();
+    mrpt::viz::CPointCloudColoured::Ptr obj = mrpt::viz::CPointCloudColoured::Create();
     obj->setPointSize(2);
 
     // Find min/max:

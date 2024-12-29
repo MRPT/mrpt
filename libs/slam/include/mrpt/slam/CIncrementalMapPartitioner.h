@@ -14,10 +14,10 @@
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/CMatrixD.h>
-#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/typemeta/TEnumType.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 #include <functional>
 #include <limits>
@@ -174,7 +174,7 @@ class CIncrementalMapPartitioner :
    * The previous contents of "objs" will be discarded
    */
   void getAs3DScene(
-      mrpt::opengl::CSetOfObjects::Ptr& objs,
+      mrpt::viz::CSetOfObjects::Ptr& objs,
       const std::map<uint32_t, int64_t>* renameIndexes = nullptr) const;
 
   /** Return a copy of the adjacency matrix.  */

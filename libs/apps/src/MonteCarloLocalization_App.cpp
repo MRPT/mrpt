@@ -31,12 +31,6 @@
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CEllipsoid2D.h>
-#include <mrpt/opengl/CEllipsoid3D.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose2DInterpolator.h>
 #include <mrpt/random.h>
@@ -46,6 +40,12 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CDisk.h>
+#include <mrpt/viz/CEllipsoid2D.h>
+#include <mrpt/viz/CEllipsoid3D.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/stock_objects.h>
 
 #include <Eigen/Dense>
 
@@ -90,7 +90,7 @@ void MonteCarloLocalization_Base::initialize(int argc, const char** argv)
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt::system;
@@ -409,8 +409,8 @@ void MonteCarloLocalization_Base::do_pf_localization()
         mrpt::math::TBoundingBoxf bbox({-50, -50, 0}, {50, 50, 0});
         if (auto pts = metricMap->getAsSimplePointsMap(); pts) bbox = pts->boundingBox();
 
-        scene.insert(mrpt::opengl::CGridPlaneXY::Create(
-            bbox.min.x, bbox.max.x, bbox.min.y, bbox.max.y, 0, 5));
+        scene.insert(
+            mrpt::viz::CGridPlaneXY::Create(bbox.min.x, bbox.max.x, bbox.min.y, bbox.max.y, 0, 5));
 
         if (win3D)
           win3D->setCameraZoom(2 * std::max(bbox.max.x - bbox.min.x, bbox.max.y - bbox.min.y));

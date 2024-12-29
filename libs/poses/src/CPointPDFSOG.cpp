@@ -529,7 +529,7 @@ void CPointPDFSOG::getMostLikelyMode(CPointPDFGaussian& outVal) const
 /*---------------------------------------------------------------
             getAs3DObject
  ---------------------------------------------------------------*/
-// void  CPointPDFSOG::getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj
+// void  CPointPDFSOG::getAs3DObject( mrpt::viz::CSetOfObjects::Ptr	&outObj
 // )
 // const
 //{

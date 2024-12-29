@@ -10,9 +10,9 @@
 #include "nav-precomp.h"  // Precomp header
 //
 #include <mrpt/nav/reactive/TWaypoint.h>
-#include <mrpt/opengl/CArrow.h>
-#include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/viz/CArrow.h>
+#include <mrpt/viz/CDisk.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 #include <limits>
 
@@ -125,13 +125,13 @@ TWaypointsRenderingParams::TWaypointsRenderingParams() :
 }
 
 void TWaypointSequence::getAsOpenglVisualization(
-    mrpt::opengl::CSetOfObjects& obj, const mrpt::nav::TWaypointsRenderingParams& params) const
+    mrpt::viz::CSetOfObjects& obj, const mrpt::nav::TWaypointsRenderingParams& params) const
 {
   obj.clear();
   unsigned int idx = 0;
   for (const auto& p : waypoints)
   {
-    auto gl_pt = mrpt::opengl::CDisk::Create(
+    auto gl_pt = mrpt::viz::CDisk::Create(
         p.allow_skip ? params.outer_radius : params.outer_radius_non_skippable,
         p.allow_skip ? params.inner_radius : params.inner_radius_non_skippable, 15);
     gl_pt->setLocation(p.target.x, p.target.y, 0.01);
@@ -145,7 +145,7 @@ void TWaypointSequence::getAsOpenglVisualization(
 
     if (p.target_heading.has_value())
     {
-      auto o = mrpt::opengl::CArrow::Create(0, 0, 0, params.heading_arrow_len, 0.0f, 0.0f);
+      auto o = mrpt::viz::CArrow::Create(0, 0, 0, params.heading_arrow_len, 0.0f, 0.0f);
       o->setPose(
           mrpt::poses::CPose3D(p.target.x, p.target.y, 0.02, p.target_heading.value(), 0, 0));
       obj.insert(o);
@@ -155,7 +155,7 @@ void TWaypointSequence::getAsOpenglVisualization(
 }
 
 void TWaypointStatusSequence::getAsOpenglVisualization(
-    mrpt::opengl::CSetOfObjects& obj, const mrpt::nav::TWaypointsRenderingParams& params) const
+    mrpt::viz::CSetOfObjects& obj, const mrpt::nav::TWaypointsRenderingParams& params) const
 {
   obj.clear();
   {
@@ -164,7 +164,7 @@ void TWaypointStatusSequence::getAsOpenglVisualization(
     {
       const bool is_cur_goal = (int(idx) == waypoint_index_current_goal);
 
-      mrpt::opengl::CDisk::Ptr gl_pt = mrpt::opengl::CDisk::Create(
+      mrpt::viz::CDisk::Ptr gl_pt = mrpt::viz::CDisk::Create(
           p.reached ? params.outer_radius_reached
                     : (p.allow_skip ? params.outer_radius : params.outer_radius_non_skippable),
           p.reached ? params.inner_radius_reached
@@ -183,7 +183,7 @@ void TWaypointStatusSequence::getAsOpenglVisualization(
 
       if (p.target_heading.has_value())
       {
-        auto o = mrpt::opengl::CArrow::Create(0, 0, 0, params.heading_arrow_len, 0.0f, 0.0f);
+        auto o = mrpt::viz::CArrow::Create(0, 0, 0, params.heading_arrow_len, 0.0f, 0.0f);
         o->setPose(
             mrpt::poses::CPose3D(p.target.x, p.target.y, 0.02, p.target_heading.value(), 0, 0));
         obj.insert(o);

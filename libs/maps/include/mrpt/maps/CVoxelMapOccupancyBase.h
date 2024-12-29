@@ -74,7 +74,7 @@ struct TVoxelMap_LikelihoodOptions : public mrpt::config::CLoadableOptions
 };
 
 /** Options for the conversion of a mrpt::maps::COctoMap into a
- * mrpt::opengl::COctoMapVoxels */
+ * mrpt::viz::COctoMapVoxels */
 struct TVoxelMap_RenderingOptions
 {
   TVoxelMap_RenderingOptions() = default;
@@ -133,7 +133,7 @@ class CVoxelMapOccupancyBase :
 
   bool isEmpty() const override { return base_t::m_impl->grid.activeCellsCount() == 0; }
 
-  void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_obj) const override;
+  void getAsOctoMapVoxels(mrpt::viz::COctoMapVoxels& gl_obj) const override;
 
   /** Manually updates the occupancy of the voxel at (x,y,z) as being occupied
    * (true) or free (false), using the log-odds parameters in \a
@@ -359,11 +359,11 @@ class CVoxelMapOccupancyBase :
 // ============= Implementations ===============
 template <typename voxel_node_t, typename occupancy_t>
 void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::getAsOctoMapVoxels(
-    mrpt::opengl::COctoMapVoxels& gl_obj) const
+    mrpt::viz::COctoMapVoxels& gl_obj) const
 {
-  using mrpt::opengl::COctoMapVoxels;
-  using mrpt::opengl::VOXEL_SET_FREESPACE;
-  using mrpt::opengl::VOXEL_SET_OCCUPIED;
+  using mrpt::viz::COctoMapVoxels;
+  using mrpt::viz::VOXEL_SET_FREESPACE;
+  using mrpt::viz::VOXEL_SET_OCCUPIED;
 
   const mrpt::img::TColorf general_color = gl_obj.getColor();
   const mrpt::img::TColor general_color_u = general_color.asTColor();
@@ -371,8 +371,8 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::getAsOctoMapVoxels(
   gl_obj.clear();
   gl_obj.resizeVoxelSets(2);  // 2 sets of voxels: occupied & free
 
-  gl_obj.showVoxels(mrpt::opengl::VOXEL_SET_OCCUPIED, renderingOptions.visibleOccupiedVoxels);
-  gl_obj.showVoxels(mrpt::opengl::VOXEL_SET_FREESPACE, renderingOptions.visibleFreeVoxels);
+  gl_obj.showVoxels(mrpt::viz::VOXEL_SET_OCCUPIED, renderingOptions.visibleOccupiedVoxels);
+  gl_obj.showVoxels(mrpt::viz::VOXEL_SET_FREESPACE, renderingOptions.visibleFreeVoxels);
 
   const size_t nLeafs = base_t::m_impl->grid.activeCellsCount();
   gl_obj.reserveVoxels(VOXEL_SET_OCCUPIED, nLeafs);

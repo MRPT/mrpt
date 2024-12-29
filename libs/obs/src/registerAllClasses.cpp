@@ -17,8 +17,8 @@
 #include <mrpt/obs/registerAllClasses.h>
 #include <mrpt/serialization/CSerializable.h>
 // deps:
-#include <mrpt/opengl/registerAllClasses.h>
 #include <mrpt/tfest/registerAllClasses.h>
+#include <mrpt/viz/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_obs)
 {
@@ -78,6 +78,6 @@ void mrpt::obs::registerAllClasses_mrpt_obs()
 {
   ::registerAllClasses_mrpt_obs();
   // deps:
-  mrpt::opengl::registerAllClasses_mrpt_opengl();
+  mrpt::viz::registerAllClasses_mrpt_viz();
   mrpt::tfest::registerAllClasses_mrpt_tfest();
 }

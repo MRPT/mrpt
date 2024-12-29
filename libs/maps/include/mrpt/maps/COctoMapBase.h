@@ -14,8 +14,8 @@
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/obs/obs_frwds.h>
-#include <mrpt/opengl/COctoMapVoxels.h>
-#include <mrpt/opengl/Scene.h>
+#include <mrpt/viz/COctoMapVoxels.h>
+#include <mrpt/viz/Scene.h>
 
 namespace mrpt::maps
 {
@@ -235,7 +235,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
   void saveMetricMapRepresentationToFile(const std::string& filNamePrefix) const override;
 
   /** Options for the conversion of a mrpt::maps::COctoMap into a
-   * mrpt::opengl::COctoMapVoxels */
+   * mrpt::viz::COctoMapVoxels */
   struct TRenderingOptions
   {
     bool generateGridLines{false};  //!< Generate grid lines for all octree nodes,
@@ -267,18 +267,18 @@ class COctoMapBase : public mrpt::maps::CMetricMap
   /** Returns a 3D object representing the map.
    * \sa renderingOptions
    */
-  void getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const override
+  void getVisualizationInto(mrpt::viz::CSetOfObjects& o) const override
   {
-    auto gl_obj = mrpt::opengl::COctoMapVoxels::Create();
+    auto gl_obj = mrpt::viz::COctoMapVoxels::Create();
     this->getAsOctoMapVoxels(*gl_obj);
     o.insert(gl_obj);
   }
 
   /** Builds a renderizable representation of the octomap as a
-   * mrpt::opengl::COctoMapVoxels object.
+   * mrpt::viz::COctoMapVoxels object.
    * \sa renderingOptions
    */
-  virtual void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_obj) const = 0;
+  virtual void getAsOctoMapVoxels(mrpt::viz::COctoMapVoxels& gl_obj) const = 0;
 
   /** Get the occupancy probability [0,1] of a point
    * \return false if the point is not mapped, in which case the returned

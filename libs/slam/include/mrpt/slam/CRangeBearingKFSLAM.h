@@ -147,7 +147,7 @@ class CRangeBearingKFSLAM :
    * position according to the current filter state.
    *  \param out_objects
    */
-  void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const;
+  void getAs3DObject(mrpt::viz::CSetOfObjects::Ptr& outObj) const;
 
   /** Load options from a ini-like file/text
    */

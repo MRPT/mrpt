@@ -156,7 +156,7 @@ inline void CLevMarqGSO<GRAPH_T>::updateGraphVisualization()
 {
   MRPT_START
   ASSERTDEBMSG_(this->m_win_manager, "No CWindowManager* is given");
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   this->logFmt(mrpt::system::LVL_DEBUG, "In the updateGraphVisualization function");
 
@@ -203,7 +203,7 @@ template <class GRAPH_T>
 void CLevMarqGSO<GRAPH_T>::toggleGraphVisualization()
 {
   MRPT_START
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   Scene::Ptr& scene = this->m_win->get3DSceneAndLock();
 
@@ -220,7 +220,7 @@ template <class GRAPH_T>
 void CLevMarqGSO<GRAPH_T>::fitGraphInView()
 {
   MRPT_START
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   ASSERTDEBMSG_(
       this->m_win,
@@ -255,7 +255,7 @@ template <class GRAPH_T>
 void CLevMarqGSO<GRAPH_T>::initOptDistanceVisualization()
 {
   MRPT_START
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   if (opt_params.optimization_distance > 0)
   {
@@ -289,10 +289,10 @@ void CLevMarqGSO<GRAPH_T>::initOptDistanceVisualization()
 }
 
 template <class GRAPH_T>
-mrpt::opengl::CRenderizable::Ptr CLevMarqGSO<GRAPH_T>::initOptDistanceVisualizationInternal(
+mrpt::viz::CRenderizable::Ptr CLevMarqGSO<GRAPH_T>::initOptDistanceVisualizationInternal(
     const mrpt::poses::CPose2D& p_unused)
 {
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   CDisk::Ptr obj = std::make_shared<CDisk>();
   obj->setDiskRadius(opt_params.optimization_distance, opt_params.optimization_distance - 0.1);
@@ -301,10 +301,10 @@ mrpt::opengl::CRenderizable::Ptr CLevMarqGSO<GRAPH_T>::initOptDistanceVisualizat
   return obj;
 }
 template <class GRAPH_T>
-mrpt::opengl::CRenderizable::Ptr CLevMarqGSO<GRAPH_T>::initOptDistanceVisualizationInternal(
+mrpt::viz::CRenderizable::Ptr CLevMarqGSO<GRAPH_T>::initOptDistanceVisualizationInternal(
     const mrpt::poses::CPose3D& p_unused)
 {
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   CSphere::Ptr obj = std::make_shared<CSphere>();
   obj->setRadius(opt_params.optimization_distance);
@@ -321,7 +321,7 @@ void CLevMarqGSO<GRAPH_T>::updateOptDistanceVisualization()
 {
   MRPT_START
   ASSERTDEBMSG_(this->m_win_manager, "No CWindowManager* is given");
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   // update ICP_max_distance Disk
   Scene::Ptr scene = this->m_win->get3DSceneAndLock();
@@ -339,7 +339,7 @@ template <class GRAPH_T>
 void CLevMarqGSO<GRAPH_T>::toggleOptDistanceVisualization()
 {
   MRPT_START
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 

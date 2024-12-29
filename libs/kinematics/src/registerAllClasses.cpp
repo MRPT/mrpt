@@ -13,7 +13,7 @@
 #include <mrpt/kinematics.h>
 #include <mrpt/kinematics/registerAllClasses.h>
 // deps:
-#include <mrpt/opengl/registerAllClasses.h>
+#include <mrpt/viz/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_kinematics)
 {
@@ -32,5 +32,5 @@ void mrpt::kinematics::registerAllClasses_mrpt_kinematics()
 {
   ::registerAllClasses_mrpt_kinematics();
   // deps:
-  mrpt::opengl::registerAllClasses_mrpt_opengl();
+  mrpt::viz::registerAllClasses_mrpt_viz();
 }

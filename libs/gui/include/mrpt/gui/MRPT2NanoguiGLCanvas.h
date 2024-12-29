@@ -43,7 +43,7 @@ class MRPT2NanoguiGLCanvas : public nanogui::GLCanvas
   /** The scene to render in this control.
    * \note Users must lock the mutex scene_mtx while modifying this variable.
    */
-  mrpt::opengl::Scene::Ptr scene;
+  mrpt::viz::Scene::Ptr scene;
   std::mutex scene_mtx;
 
   CGlCanvasBase& camera() { return m_headless_canvas; }

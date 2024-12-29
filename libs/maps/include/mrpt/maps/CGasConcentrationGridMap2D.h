@@ -87,14 +87,14 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
   } insertionOptions;
 
   /** Returns a 3D object representing the map */
-  void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
+  void getVisualizationInto(mrpt::viz::CSetOfObjects& outObj) const override;
 
   /** Returns two 3D objects representing the mean and variance maps */
   void getAs3DObject(
-      mrpt::opengl::CSetOfObjects& meanObj, mrpt::opengl::CSetOfObjects& varObj) const override;
+      mrpt::viz::CSetOfObjects& meanObj, mrpt::viz::CSetOfObjects& varObj) const override;
 
   /** Returns the 3D object representing the wind grid information */
-  void getWindAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& windObj) const;
+  void getWindAs3DObject(mrpt::viz::CSetOfObjects::Ptr& windObj) const;
 
   /** Increase the kf_std of all cells from the m_map
    *	This mehod is usually called by the main_map to simulate loss of

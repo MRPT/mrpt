@@ -62,6 +62,7 @@ target_link_libraries(pymrpt PUBLIC
   mrpt::slam
   mrpt::gui
   mrpt::nav
+  mrpt::viz
 )
 
 # Avoid warnings for pybind auto-generated code:

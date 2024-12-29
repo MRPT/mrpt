@@ -13,8 +13,8 @@
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/obs/obs_utils.h>
-#include <mrpt/opengl/CEllipsoid3D.h>
-#include <mrpt/opengl/CSphere.h>
+#include <mrpt/viz/CEllipsoid3D.h>
+#include <mrpt/viz/CSphere.h>
 
 namespace mrpt::graphslam::deciders
 {
@@ -48,7 +48,7 @@ bool CLoopCloserERD<GRAPH_T>::updateState(
   using namespace mrpt;
   using namespace mrpt::obs;
   using namespace mrpt::obs::utils;
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
   using namespace mrpt::poses;
   using namespace mrpt::math;
 
@@ -1690,7 +1690,7 @@ void CLoopCloserERD<GRAPH_T>::initMapPartitionsVisualization()
   using namespace mrpt;
   using namespace mrpt::gui;
   using namespace mrpt::math;
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   // textmessage - display the number of partitions
   this->m_win_manager->assignTextMessageParameters(
@@ -1712,7 +1712,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization()
   using namespace mrpt;
   using namespace mrpt::gui;
   using namespace mrpt::math;
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
   using namespace mrpt::poses;
 
   // textmessage
@@ -1910,14 +1910,14 @@ void CLoopCloserERD<GRAPH_T>::toggleMapPartitionsVisualization()
   MRPT_START
   ASSERTDEBMSG_(this->m_win, "No CDisplayWindow3D* was provided");
   ASSERTDEBMSG_(this->m_win_manager, "No CWindowManager* was provided");
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   MRPT_LOG_INFO("Toggling map partitions  visualization...");
-  mrpt::opengl::Scene::Ptr scene = this->m_win->get3DSceneAndLock();
+  mrpt::viz::Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 
   if (m_lc_params.visualize_map_partitions)
   {
-    mrpt::opengl::CRenderizable::Ptr obj = scene->getByName("map_partitions");
+    mrpt::viz::CRenderizable::Ptr obj = scene->getByName("map_partitions");
     obj->setVisibility(!obj->isVisible());
   }
   else
@@ -1963,9 +1963,9 @@ void CLoopCloserERD<GRAPH_T>::initLaserScansVisualization()
   // laser scan visualization
   if (m_laser_params.visualize_laser_scans)
   {
-    mrpt::opengl::Scene::Ptr scene = this->m_win->get3DSceneAndLock();
+    mrpt::viz::Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 
-    mrpt::opengl::CPlanarLaserScan::Ptr laser_scan_viz = mrpt::opengl::CPlanarLaserScan::Create();
+    mrpt::viz::CPlanarLaserScan::Ptr laser_scan_viz = mrpt::viz::CPlanarLaserScan::Create();
     laser_scan_viz->enablePoints(true);
     laser_scan_viz->enableLine(true);
     laser_scan_viz->enableSurface(true);
@@ -1991,11 +1991,11 @@ void CLoopCloserERD<GRAPH_T>::updateLaserScansVisualization()
   // update laser scan visual
   if (m_laser_params.visualize_laser_scans && m_last_laser_scan2D)
   {
-    mrpt::opengl::Scene::Ptr scene = this->m_win->get3DSceneAndLock();
+    mrpt::viz::Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 
-    mrpt::opengl::CRenderizable::Ptr obj = scene->getByName("laser_scan_viz");
-    mrpt::opengl::CPlanarLaserScan::Ptr laser_scan_viz =
-        std::dynamic_pointer_cast<mrpt::opengl::CPlanarLaserScan>(obj);
+    mrpt::viz::CRenderizable::Ptr obj = scene->getByName("laser_scan_viz");
+    mrpt::viz::CPlanarLaserScan::Ptr laser_scan_viz =
+        std::dynamic_pointer_cast<mrpt::viz::CPlanarLaserScan>(obj);
     laser_scan_viz->setScan(*m_last_laser_scan2D);
 
     // set the pose of the laser scan
@@ -2025,11 +2025,11 @@ void CLoopCloserERD<GRAPH_T>::toggleLaserScansVisualization()
 
   MRPT_LOG_INFO("Toggling LaserScans visualization...");
 
-  mrpt::opengl::Scene::Ptr scene = this->m_win->get3DSceneAndLock();
+  mrpt::viz::Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 
   if (m_laser_params.visualize_laser_scans)
   {
-    mrpt::opengl::CRenderizable::Ptr obj = scene->getByName("laser_scan_viz");
+    mrpt::viz::CRenderizable::Ptr obj = scene->getByName("laser_scan_viz");
     obj->setVisibility(!obj->isVisible());
   }
   else
@@ -2107,7 +2107,7 @@ void CLoopCloserERD<GRAPH_T>::initCurrCovarianceVisualization()
 {
   MRPT_START
   using namespace std;
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   // text message for covariance ellipsis
   this->m_win_manager->assignTextMessageParameters(
@@ -2125,7 +2125,7 @@ void CLoopCloserERD<GRAPH_T>::initCurrCovarianceVisualization()
   cov_ellipsis_obj->setLocation(0, 0, 0);
   // cov_ellipsis_obj->setQuantiles(2.0);
 
-  mrpt::opengl::Scene::Ptr scene = this->m_win->get3DSceneAndLock();
+  mrpt::viz::Scene::Ptr scene = this->m_win->get3DSceneAndLock();
   scene->insert(cov_ellipsis_obj);
   this->m_win->unlockAccess3DScene();
   this->m_win->forceRepaint();
@@ -2139,7 +2139,7 @@ void CLoopCloserERD<GRAPH_T>::updateCurrCovarianceVisualization()
   MRPT_START
   using namespace std;
   using namespace mrpt::math;
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
   using namespace mrpt::gui;
 
   // get the optimal path to the current node
@@ -2159,7 +2159,7 @@ void CLoopCloserERD<GRAPH_T>::updateCurrCovarianceVisualization()
          "determinant : "
       << mat.det());
 
-  mrpt::opengl::Scene::Ptr scene = this->m_win->get3DSceneAndLock();
+  mrpt::viz::Scene::Ptr scene = this->m_win->get3DSceneAndLock();
   CRenderizable::Ptr obj = scene->getByName("cov_ellipsis_obj");
   CEllipsoid3D::Ptr cov_ellipsis_obj = std::dynamic_pointer_cast<CEllipsoid3D>(obj);
 

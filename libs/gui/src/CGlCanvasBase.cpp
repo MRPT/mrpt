@@ -11,7 +11,7 @@
 //
 #include <mrpt/core/round.h>
 #include <mrpt/gui/CGlCanvasBase.h>
-#include <mrpt/opengl/opengl_api.h>
+#include <mrpt/viz/opengl_api.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -38,7 +38,7 @@
 
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace std;
 
 float CGlCanvasBase::SENSIBILITY_DEG_PER_PIXEL = 0.1f;
@@ -259,7 +259,7 @@ double CGlCanvasBase::renderCanvas(int width, int height)
       {
         if (Viewport::Ptr view = m_openGLScene->getViewport("main"); view)
         {
-          mrpt::opengl::CCamera& cam = view->getCamera();
+          mrpt::viz::CCamera& cam = view->getCamera();
           updateCameraParams(cam);
         }
         else
@@ -326,7 +326,7 @@ void CGlCanvasBase::CamaraParams::setElevationDeg(float deg)
     cameraElevationDeg = 90.0f;
 }
 
-CGlCanvasBase::CamaraParams CGlCanvasBase::CamaraParams::FromCamera(const mrpt::opengl::CCamera& c)
+CGlCanvasBase::CamaraParams CGlCanvasBase::CamaraParams::FromCamera(const mrpt::viz::CCamera& c)
 {
   CGlCanvasBase::CamaraParams p;
   p.cameraAzimuthDeg = c.getAzimuthDegrees();

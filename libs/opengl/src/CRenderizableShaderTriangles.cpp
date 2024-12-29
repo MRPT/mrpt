@@ -185,23 +185,3 @@ const math::TBoundingBoxf CRenderizableShaderTriangles::trianglesBoundingBox() c
 
   return bb;
 }
-
-void CRenderizableShaderTriangles::params_serialize(mrpt::serialization::CArchive& out) const
-{
-  out.WriteAs<uint8_t>(0);  // serialization version
-  out << m_enableLight << static_cast<uint8_t>(m_cullface);
-}
-void CRenderizableShaderTriangles::params_deserialize(mrpt::serialization::CArchive& in)
-{
-  const auto version = in.ReadAs<uint8_t>();
-
-  switch (version)
-  {
-    case 0:
-      in >> m_enableLight;
-      m_cullface = static_cast<TCullFace>(in.ReadAs<uint8_t>());
-      break;
-    default:
-      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-  };
-}

@@ -371,7 +371,7 @@ void CGraphSlamHandler<GRAPH_T>::execute()
 template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::initVisualization()
 {
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
   using namespace mrpt::gui;
   using namespace mrpt::graphslam;
 

@@ -274,7 +274,7 @@ void CHeightGridMap2D_MRF::TInsertionOptions::loadFromConfigFile(
   // ...
 }
 
-void CHeightGridMap2D_MRF::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
+void CHeightGridMap2D_MRF::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
   MRPT_START
   if (!genericMapParams.enableSaveAs3DObject) return;
@@ -286,7 +286,7 @@ void CHeightGridMap2D_MRF::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) 
             getAs3DObject
 ---------------------------------------------------------------*/
 void CHeightGridMap2D_MRF::getAs3DObject(
-    opengl::CSetOfObjects& meanObj, opengl::CSetOfObjects& varObj) const
+    viz::CSetOfObjects& meanObj, viz::CSetOfObjects& varObj) const
 {
   MRPT_START
   if (!genericMapParams.enableSaveAs3DObject) return;

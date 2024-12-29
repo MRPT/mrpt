@@ -16,8 +16,8 @@
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 namespace mrpt::obs
 {
@@ -72,7 +72,7 @@ struct VisualizationParameters
 bool obs_to_viz(
     const mrpt::obs::CObservation::Ptr& obs,
     const VisualizationParameters& p,
-    mrpt::opengl::CSetOfObjects& out);
+    mrpt::viz::CSetOfObjects& out);
 
 /** Clears `out` and creates a visualization of the given sensory-frame,
  *  dispatching the call according to the actual observation classes inside the
@@ -88,40 +88,40 @@ bool obs_to_viz(
 bool obs_to_viz(
     const mrpt::obs::CSensoryFrame& sf,
     const VisualizationParameters& p,
-    mrpt::opengl::CSetOfObjects& out);
+    mrpt::viz::CSetOfObjects& out);
 
 /// Clears `out` and creates a visualization of the given observation.
 void obs3Dscan_to_viz(
     const mrpt::obs::CObservation3DRangeScan::Ptr& obs,
     const VisualizationParameters& p,
-    mrpt::opengl::CSetOfObjects& out);
+    mrpt::viz::CSetOfObjects& out);
 
 /// Clears `out` and creates a visualization of the given observation.
 void obsVelodyne_to_viz(
     const mrpt::obs::CObservationVelodyneScan::Ptr& obs,
     const VisualizationParameters& p,
-    mrpt::opengl::CSetOfObjects& out);
+    mrpt::viz::CSetOfObjects& out);
 
 /// Clears `out` and creates a visualization of the given observation.
 void obsPointCloud_to_viz(
     const mrpt::obs::CObservationPointCloud::Ptr& obs,
     const VisualizationParameters& p,
-    mrpt::opengl::CSetOfObjects& out);
+    mrpt::viz::CSetOfObjects& out);
 
 void obsRotatingScan_to_viz(
     const mrpt::obs::CObservationRotatingScan::Ptr& obs,
     const VisualizationParameters& p,
-    mrpt::opengl::CSetOfObjects& out);
+    mrpt::viz::CSetOfObjects& out);
 
 /// Clears `out` and creates a visualization of the given observation.
 void obs2Dscan_to_viz(
     const mrpt::obs::CObservation2DRangeScan::Ptr& obs,
     const VisualizationParameters& p,
-    mrpt::opengl::CSetOfObjects& out);
+    mrpt::viz::CSetOfObjects& out);
 
 /// Recolorize a pointcloud according to the given parameters
 void recolorize3Dpc(
-    const mrpt::opengl::CPointCloudColoured::Ptr& pnts, const VisualizationParameters& p);
+    const mrpt::viz::CPointCloudColoured::Ptr& pnts, const VisualizationParameters& p);
 
 /** @} */
 

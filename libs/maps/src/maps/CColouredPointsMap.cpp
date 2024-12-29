@@ -14,9 +14,9 @@
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/serialization/aligned_serialization.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CPointCloudColoured.h>
 
 #include "CPointsMap_crtp_common.h"
 
@@ -337,11 +337,11 @@ void CColouredPointsMap::insertPointRGB(float x, float y, float z, float R, floa
   mark_as_modified();
 }
 
-void CColouredPointsMap::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
+void CColouredPointsMap::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
   if (!genericMapParams.enableSaveAs3DObject) return;
 
-  opengl::CPointCloudColoured::Ptr obj = std::make_shared<opengl::CPointCloudColoured>();
+  viz::CPointCloudColoured::Ptr obj = std::make_shared<viz::CPointCloudColoured>();
 
   obj->loadFromPointsMap(this);
   obj->setColor(1, 1, 1, 1.0);

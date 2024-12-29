@@ -16,10 +16,6 @@
 #include <mrpt/io/vector_loadsave.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CObservationOdometry.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>  // from lib [mrpt-maps]
-#include <mrpt/opengl/Scene.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
 #include <mrpt/system/CRateTimer.h>
@@ -27,6 +23,10 @@
 #include <mrpt/system/memory.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/thread_name.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CPlanarLaserScan.h>  // from lib [mrpt-maps]
+#include <mrpt/viz/Scene.h>
+#include <mrpt/viz/stock_objects.h>
 
 using namespace mrpt::apps;
 
@@ -75,7 +75,7 @@ void ICP_SLAM_App_Base::run()
   using namespace mrpt::slam;
   using namespace mrpt::obs;
   using namespace mrpt::maps;
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
   using namespace mrpt::gui;
   using namespace mrpt::io;
   using namespace mrpt::gui;
@@ -279,7 +279,7 @@ void ICP_SLAM_App_Base::run()
     // Save a 3D scene view of the mapping process:
     if ((LOG_FREQUENCY > 0 && 0 == (step % LOG_FREQUENCY)) || (SAVE_3D_SCENE || win3D))
     {
-      auto scene = mrpt::opengl::Scene::Create();
+      auto scene = mrpt::viz::Scene::Create();
 
       Viewport::Ptr view = scene->getViewport("main");
       ASSERT_(view);
@@ -290,7 +290,7 @@ void ICP_SLAM_App_Base::run()
       view_map->setTransparent(false);
 
       {
-        mrpt::opengl::CCamera& cam = view_map->getCamera();
+        mrpt::viz::CCamera& cam = view_map->getCamera();
         cam.setAzimuthDegrees(-90);
         cam.setElevationDegrees(90);
         cam.setPointingAt(robotPose);
@@ -299,8 +299,8 @@ void ICP_SLAM_App_Base::run()
       }
 
       // The ground:
-      mrpt::opengl::CGridPlaneXY::Ptr groundPlane =
-          mrpt::opengl::CGridPlaneXY::Create(-200, 200, -200, 200, 0, 5);
+      mrpt::viz::CGridPlaneXY::Ptr groundPlane =
+          mrpt::viz::CGridPlaneXY::Create(-200, 200, -200, 200, 0, 5);
       groundPlane->setColor(0.4f, 0.4f, 0.4f);
       view->insert(groundPlane);
       view_map->insert(CRenderizable::Ptr(groundPlane));  // A copy
@@ -310,7 +310,7 @@ void ICP_SLAM_App_Base::run()
       {
         scene->enableFollowCamera(true);
 
-        mrpt::opengl::CCamera& cam = view_map->getCamera();
+        mrpt::viz::CCamera& cam = view_map->getCamera();
         cam.setAzimuthDegrees(-45);
         cam.setElevationDegrees(45);
         cam.setPointingAt(robotPose);

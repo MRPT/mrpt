@@ -12,10 +12,10 @@
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/customizable_obs_viz.h>
-#include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/viz/CAxis.h>
+#include <mrpt/viz/CPlanarLaserScan.h>
+#include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/stock_objects.h>
 
 using namespace mrpt::obs;
 
@@ -88,7 +88,7 @@ static thread_local std::optional<mrpt::math::TBoundingBox> bbMemory;
 double bbMemoryFading = 0.99;
 
 void mrpt::obs::recolorize3Dpc(
-    const mrpt::opengl::CPointCloudColoured::Ptr& pnts, const VisualizationParameters& p)
+    const mrpt::viz::CPointCloudColoured::Ptr& pnts, const VisualizationParameters& p)
 {
   const auto newBb = pnts->getBoundingBox();
 
@@ -133,12 +133,12 @@ void mrpt::obs::recolorize3Dpc(
 namespace
 {
 void add_common_to_viz(
-    const CObservation& obs, const VisualizationParameters& p, mrpt::opengl::CSetOfObjects& out)
+    const CObservation& obs, const VisualizationParameters& p, mrpt::viz::CSetOfObjects& out)
 {
   if (p.showAxis)
   {
     const float L = p.axisLimits;
-    auto gl_axis = mrpt::opengl::CAxis::Create(-L, -L, -L, L, L, L, p.axisTickFrequency, 2, true);
+    auto gl_axis = mrpt::viz::CAxis::Create(-L, -L, -L, L, L, L, p.axisTickFrequency, 2, true);
     gl_axis->setTextScale(p.axisTickTextSize);
     gl_axis->setColor_u8(0xa0, 0xa0, 0xa0, 0x80);
     out.insert(gl_axis);
@@ -157,7 +157,7 @@ void add_common_to_viz(
 
   if (p.drawSensorPose)
   {
-    const auto glCorner = mrpt::opengl::stock_objects::CornerXYZSimple(p.sensorPoseScale);
+    const auto glCorner = mrpt::viz::stock_objects::CornerXYZSimple(p.sensorPoseScale);
     glCorner->setPose(obs.sensorPose());
     out.insert(glCorner);
   }
@@ -167,7 +167,7 @@ void add_common_to_viz(
 void mrpt::obs::obs3Dscan_to_viz(
     const CObservation3DRangeScan::Ptr& obs,
     const VisualizationParameters& p,
-    mrpt::opengl::CSetOfObjects& out)
+    mrpt::viz::CSetOfObjects& out)
 {
   out.clear();
 
@@ -205,7 +205,7 @@ void mrpt::obs::obs3Dscan_to_viz(
 
   add_common_to_viz(*obs, p, out);
 
-  auto gl_pnts = mrpt::opengl::CPointCloudColoured::Create();
+  auto gl_pnts = mrpt::viz::CPointCloudColoured::Create();
   // Load as RGB or grayscale points:
   if (pointMapCol)
     gl_pnts->loadFromPointsMap(pointMapCol.get());
@@ -225,13 +225,13 @@ void mrpt::obs::obs3Dscan_to_viz(
 void mrpt::obs::obsVelodyne_to_viz(
     const CObservationVelodyneScan::Ptr& obs,
     const VisualizationParameters& p,
-    mrpt::opengl::CSetOfObjects& out)
+    mrpt::viz::CSetOfObjects& out)
 {
   out.clear();
 
   add_common_to_viz(*obs, p, out);
 
-  auto pnts = mrpt::opengl::CPointCloudColoured::Create();
+  auto pnts = mrpt::viz::CPointCloudColoured::Create();
   out.insert(pnts);
 
   mrpt::maps::CColouredPointsMap pntsMap;
@@ -245,13 +245,13 @@ void mrpt::obs::obsVelodyne_to_viz(
 void mrpt::obs::obsPointCloud_to_viz(
     const mrpt::obs::CObservationPointCloud::Ptr& obs,
     const VisualizationParameters& p,
-    mrpt::opengl::CSetOfObjects& out)
+    mrpt::viz::CSetOfObjects& out)
 {
   out.clear();
 
   add_common_to_viz(*obs, p, out);
 
-  auto pnts = mrpt::opengl::CPointCloudColoured::Create();
+  auto pnts = mrpt::viz::CPointCloudColoured::Create();
   out.insert(pnts);
 
   if (obs->pointcloud) pnts->loadFromPointsMap(obs->pointcloud.get());
@@ -265,13 +265,13 @@ void mrpt::obs::obsPointCloud_to_viz(
 void mrpt::obs::obsRotatingScan_to_viz(
     const mrpt::obs::CObservationRotatingScan::Ptr& obs,
     const VisualizationParameters& p,
-    mrpt::opengl::CSetOfObjects& out)
+    mrpt::viz::CSetOfObjects& out)
 {
   out.clear();
 
   add_common_to_viz(*obs, p, out);
 
-  auto pnts = mrpt::opengl::CPointCloudColoured::Create();
+  auto pnts = mrpt::viz::CPointCloudColoured::Create();
   out.insert(pnts);
 
   if (!obs->organizedPoints.empty())
@@ -288,13 +288,13 @@ void mrpt::obs::obsRotatingScan_to_viz(
 void mrpt::obs::obs2Dscan_to_viz(
     const CObservation2DRangeScan::Ptr& obs,
     const VisualizationParameters& p,
-    mrpt::opengl::CSetOfObjects& out)
+    mrpt::viz::CSetOfObjects& out)
 {
   out.clear();
 
   add_common_to_viz(*obs, p, out);
 
-  auto pnts = mrpt::opengl::CPlanarLaserScan::Create();
+  auto pnts = mrpt::viz::CPlanarLaserScan::Create();
   out.insert(pnts);
 
   pnts->setScan(*obs);
@@ -313,7 +313,7 @@ void mrpt::obs::obs2Dscan_to_viz(
 bool mrpt::obs::obs_to_viz(
     const mrpt::obs::CObservation::Ptr& obs,
     const VisualizationParameters& p,
-    mrpt::opengl::CSetOfObjects& out)
+    mrpt::viz::CSetOfObjects& out)
 {
   using namespace mrpt::obs;
 
@@ -351,7 +351,7 @@ bool mrpt::obs::obs_to_viz(
 bool mrpt::obs::obs_to_viz(
     const mrpt::obs::CSensoryFrame& sf,
     const VisualizationParameters& p,
-    mrpt::opengl::CSetOfObjects& out)
+    mrpt::viz::CSetOfObjects& out)
 {
   out.clear();
 
@@ -361,7 +361,7 @@ bool mrpt::obs::obs_to_viz(
   for (const auto& obs : sf)
   {
     if (!obs) continue;
-    auto glObj = mrpt::opengl::CSetOfObjects::Create();
+    auto glObj = mrpt::viz::CSetOfObjects::Create();
 
     bool ok = obs_to_viz(obs, vp, *glObj);
     if (!ok) continue;

@@ -19,12 +19,12 @@
 #include <mrpt/obs/T3DPointsTo2DScanParams.h>
 #include <mrpt/obs/TPixelLabelInfo.h>
 #include <mrpt/obs/TRangeImageFilter.h>
-#include <mrpt/opengl/pointcloud_adapters.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/serialization_frwds.h>
 #include <mrpt/typemeta/TEnumType.h>
+#include <mrpt/viz/pointcloud_adapters.h>
 
 #include <optional>
 
@@ -220,8 +220,8 @@ class CObservation3DRangeScan : public CObservation
    * T3DPointsProjectionParams::layer will be unprojected.
    *
    * \tparam POINTMAP Supported maps are all those covered by
-   * mrpt::opengl::PointCloudAdapter (mrpt::maps::CPointsMap and derived,
-   * mrpt::opengl::CPointCloudColoured, PCL point clouds,...)
+   * mrpt::viz::PointCloudAdapter (mrpt::maps::CPointsMap and derived,
+   * mrpt::viz::CPointCloudColoured, PCL point clouds,...)
    */
   template <class POINTMAP>
   inline void unprojectInto(
@@ -594,9 +594,9 @@ class CObservation3DRangeScan : public CObservation
 };  // End of class def.
 }  // namespace mrpt::obs
 
-namespace mrpt::opengl
+namespace mrpt::viz
 {
-/** Specialization mrpt::opengl::PointCloudAdapter<CObservation3DRangeScan>
+/** Specialization mrpt::viz::PointCloudAdapter<CObservation3DRangeScan>
  * \ingroup mrpt_adapters_grp */
 template <>
 class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
@@ -653,7 +653,7 @@ class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
   }
 
 };  // end of PointCloudAdapter<CObservation3DRangeScan>
-}  // namespace mrpt::opengl
+}  // namespace mrpt::viz
 MRPT_ENUM_TYPE_BEGIN(mrpt::obs::CObservation3DRangeScan::TIntensityChannelID)
 MRPT_FILL_ENUM_MEMBER(mrpt::obs::CObservation3DRangeScan, CH_VISIBLE);
 MRPT_FILL_ENUM_MEMBER(mrpt::obs::CObservation3DRangeScan, CH_IR);

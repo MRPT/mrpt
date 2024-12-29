@@ -44,7 +44,7 @@
 
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace std;
 
 /*----------------------------------------------------------------

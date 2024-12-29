@@ -11,8 +11,8 @@
 //
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
-#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/viz/CSetOfLines.h>
 
 using namespace mrpt::nav;
 
@@ -85,7 +85,7 @@ void CPTG_RobotShape_Polygonal::saveToConfigFile(
 }
 
 void CPTG_RobotShape_Polygonal::static_add_robotShape_to_setOfLines(
-    mrpt::opengl::CSetOfLines& gl_shape,
+    mrpt::viz::CSetOfLines& gl_shape,
     const mrpt::poses::CPose2D& origin,
     const mrpt::math::CPolygon& robotShape)
 {
@@ -109,7 +109,7 @@ void CPTG_RobotShape_Polygonal::static_add_robotShape_to_setOfLines(
 }
 
 void CPTG_RobotShape_Polygonal::add_robotShape_to_setOfLines(
-    mrpt::opengl::CSetOfLines& gl_shape, const mrpt::poses::CPose2D& origin) const
+    mrpt::viz::CSetOfLines& gl_shape, const mrpt::poses::CPose2D& origin) const
 {
   static_add_robotShape_to_setOfLines(gl_shape, origin, m_robotShape);
 }

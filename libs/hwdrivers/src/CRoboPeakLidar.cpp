@@ -25,7 +25,7 @@ using namespace rp::standalone::rplidar;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace std;
 
 /*-------------------------------------------------------------

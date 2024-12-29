@@ -57,7 +57,7 @@ namespace obs
  *    - mrpt::maps::CPointsMap::loadFromVelodyneScan() (available in all
  * derived classes)
  *    - and the generic method:mrpt::maps::CPointsMap::insertObservation()
- *  - mrpt::opengl::CPointCloud and mrpt::opengl::CPointCloudColoured is
+ *  - mrpt::viz::CPointCloud and mrpt::viz::CPointCloudColoured is
  * supported by first converting
  *    this scan to a mrpt::maps::CPointsMap-derived class, then loading it into
  * the opengl object.

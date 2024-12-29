@@ -15,7 +15,7 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/T3DPointsProjectionParams.h>
 #include <mrpt/obs/TRangeImageFilter.h>
-#include <mrpt/opengl/pointcloud_adapters.h>
+#include <mrpt/viz/pointcloud_adapters.h>
 
 #include <Eigen/Dense>  // block<>()
 
@@ -32,7 +32,7 @@ void do_project_3d_pointcloud(
     const float* kzs,
     mrpt::math::CMatrix_u16& rangeImage,
     const float rangeUnits,
-    mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
+    mrpt::viz::PointCloudAdapter<POINTMAP>& pca,
     std::vector<uint16_t>& idxs_x,
     std::vector<uint16_t>& idxs_y,
     const mrpt::obs::TRangeImageFilterParams& fp,
@@ -47,7 +47,7 @@ void do_project_3d_pointcloud_SSE2(
     const float* kzs,
     mrpt::math::CMatrix_u16& rangeImage,
     const float rangeUnits,
-    mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
+    mrpt::viz::PointCloudAdapter<POINTMAP>& pca,
     std::vector<uint16_t>& idxs_x,
     std::vector<uint16_t>& idxs_y,
     const mrpt::obs::TRangeImageFilterParams& fp,
@@ -55,7 +55,7 @@ void do_project_3d_pointcloud_SSE2(
 
 template <typename POINTMAP>
 inline void range2XYZ_LUT(
-    mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
+    mrpt::viz::PointCloudAdapter<POINTMAP>& pca,
     mrpt::obs::CObservation3DRangeScan& src_obs,
     const mrpt::obs::T3DPointsProjectionParams& pp,
     const mrpt::obs::TRangeImageFilterParams& fp,
@@ -130,7 +130,7 @@ void unprojectInto(
 {
   using namespace mrpt::math;
 
-  mrpt::opengl::PointCloudAdapter<POINTMAP> pca(dest_pointcloud);
+  mrpt::viz::PointCloudAdapter<POINTMAP> pca(dest_pointcloud);
 
   if (!src_obs.hasRangeImage)
   {
@@ -347,7 +347,7 @@ inline void do_project_3d_pointcloud(
     const float* kzs,
     mrpt::math::CMatrix_u16& rangeImage,
     const float rangeUnits,
-    mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
+    mrpt::viz::PointCloudAdapter<POINTMAP>& pca,
     std::vector<uint16_t>& idxs_x,
     std::vector<uint16_t>& idxs_y,
     const mrpt::obs::TRangeImageFilterParams& fp,
@@ -432,7 +432,7 @@ inline void do_project_3d_pointcloud_SSE2(
     const float* kzs,
     mrpt::math::CMatrix_u16& rangeImage,
     const float rangeUnits,
-    mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
+    mrpt::viz::PointCloudAdapter<POINTMAP>& pca,
     std::vector<uint16_t>& idxs_x,
     std::vector<uint16_t>& idxs_y,
     const mrpt::obs::TRangeImageFilterParams& fp,

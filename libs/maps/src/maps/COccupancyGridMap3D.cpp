@@ -12,10 +12,10 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/maps/COccupancyGridMap3D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/opengl/COctoMapVoxels.h>
-#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/viz/COctoMapVoxels.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -209,13 +209,13 @@ float COccupancyGridMap3D::compute3DMatchingRatio(
   return 0;
 }
 
-void COccupancyGridMap3D::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_obj) const
+void COccupancyGridMap3D::getAsOctoMapVoxels(mrpt::viz::COctoMapVoxels& gl_obj) const
 {
   MRPT_START
 
   using mrpt::img::TColor;
   using mrpt::img::TColorf;
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   const size_t N = m_grid.getSizeX() * m_grid.getSizeY() * m_grid.getSizeZ();
   const TColorf general_color = gl_obj.getColor();
@@ -225,11 +225,11 @@ void COccupancyGridMap3D::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_ob
   gl_obj.resizeVoxelSets(2);  // 2 sets of voxels: occupied & free
   if (renderingOptions.generateGridLines) gl_obj.reserveGridCubes(N);
 
-  gl_obj.showVoxels(mrpt::opengl::VOXEL_SET_OCCUPIED, renderingOptions.visibleOccupiedVoxels);
-  gl_obj.showVoxels(mrpt::opengl::VOXEL_SET_FREESPACE, renderingOptions.visibleFreeVoxels);
+  gl_obj.showVoxels(mrpt::viz::VOXEL_SET_OCCUPIED, renderingOptions.visibleOccupiedVoxels);
+  gl_obj.showVoxels(mrpt::viz::VOXEL_SET_FREESPACE, renderingOptions.visibleFreeVoxels);
 
-  gl_obj.reserveVoxels(mrpt::opengl::VOXEL_SET_OCCUPIED, N / 4);
-  gl_obj.reserveVoxels(mrpt::opengl::VOXEL_SET_FREESPACE, N / 4);
+  gl_obj.reserveVoxels(mrpt::viz::VOXEL_SET_OCCUPIED, N / 4);
+  gl_obj.reserveVoxels(mrpt::viz::VOXEL_SET_FREESPACE, N / 4);
 
   const mrpt::math::TPoint3D bbmin(m_grid.getXMin(), m_grid.getYMin(), m_grid.getZMin());
   const mrpt::math::TPoint3D bbmax(m_grid.getXMax(), m_grid.getYMax(), m_grid.getZMax());
@@ -333,9 +333,9 @@ void COccupancyGridMap3D::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_ob
   MRPT_END
 }
 
-void COccupancyGridMap3D::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
+void COccupancyGridMap3D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
-  auto gl_obj = mrpt::opengl::COctoMapVoxels::Create();
+  auto gl_obj = mrpt::viz::COctoMapVoxels::Create();
   this->getAsOctoMapVoxels(*gl_obj);
   o.insert(gl_obj);
 }

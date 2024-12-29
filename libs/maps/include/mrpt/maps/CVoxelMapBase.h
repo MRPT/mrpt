@@ -13,9 +13,9 @@
 #include <mrpt/maps/CSimpleMap.h>    // required by pymrpt
 #include <mrpt/obs/CSensoryFrame.h>  // required by pymrpt
 #include <mrpt/obs/obs_frwds.h>
-#include <mrpt/opengl/COctoMapVoxels.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/Scene.h>
+#include <mrpt/viz/COctoMapVoxels.h>
+#include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/Scene.h>
 
 #include <cstdint>
 
@@ -79,26 +79,26 @@ class CVoxelMapBase : public mrpt::maps::CMetricMap
   /** Returns a 3D object representing the map.
    * \sa renderingOptions
    */
-  void getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const override
+  void getVisualizationInto(mrpt::viz::CSetOfObjects& o) const override
   {
-    auto gl_obj = mrpt::opengl::COctoMapVoxels::Create();
+    auto gl_obj = mrpt::viz::COctoMapVoxels::Create();
     this->getAsOctoMapVoxels(*gl_obj);
     o.insert(gl_obj);
   }
 
   /** Builds a renderizable representation of the octomap as a
-   * mrpt::opengl::COctoMapVoxels object.
+   * mrpt::viz::COctoMapVoxels object.
    * Implementation defined for each children class.
    * \sa renderingOptions
    */
-  virtual void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_obj) const = 0;
+  virtual void getAsOctoMapVoxels(mrpt::viz::COctoMapVoxels& gl_obj) const = 0;
 
   virtual void saveMetricMapRepresentationToFile(const std::string& filNamePrefix) const override
   {
     MRPT_START
     // Save as 3D Scene:
     {
-      mrpt::opengl::Scene scene;
+      mrpt::viz::Scene scene;
       scene.insert(this->getVisualization());
       const std::string fil = filNamePrefix + std::string("_3D.3Dscene");
       scene.saveToFile(fil);

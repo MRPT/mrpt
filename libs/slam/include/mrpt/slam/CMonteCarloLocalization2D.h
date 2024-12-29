@@ -9,10 +9,10 @@
 #pragma once
 
 #include <mrpt/obs/obs_frwds.h>
-#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/slam/PF_implementations_data.h>
 #include <mrpt/slam/TMonteCarloLocalizationParams.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 namespace mrpt
 {
@@ -137,11 +137,11 @@ class CMonteCarloLocalization2D :
 
   /** Returns a 3D representation of this PDF.
    * \note Needs the mrpt-opengl library, and using
-   * mrpt::opengl::CSetOfObjects::Ptr as template argument.
+   * mrpt::viz::CSetOfObjects::Ptr as template argument.
    */
-  mrpt::opengl::CSetOfObjects::Ptr getVisualization() const
+  mrpt::viz::CSetOfObjects::Ptr getVisualization() const
   {
-    return mrpt::opengl::CSetOfObjects::posePDF2opengl(*this);
+    return mrpt::viz::CSetOfObjects::posePDF2opengl(*this);
   }
 
   // protected:

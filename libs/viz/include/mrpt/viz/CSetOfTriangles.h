@@ -1,0 +1,144 @@
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          https://www.mrpt.org/                         |
+   |                                                                        |
+   | Copyright (c) 2005-2024, Individual contributors, see AUTHORS file     |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
+   +------------------------------------------------------------------------+ */
+#pragma once
+
+#include <mrpt/math/geometry.h>
+#include <mrpt/viz/CVisualObject.h>
+#include <mrpt/viz/TTriangle.h>
+
+namespace mrpt::viz
+{
+/** A set of colored triangles, able to draw any solid, arbitrarily complex
+ * object without textures. For textures, see CSetOfTexturedTriangles
+ *
+ * \sa opengl::Scene, CSetOfTexturedTriangles
+ * \ingroup mrpt_viz_grp
+ */
+class CSetOfTriangles : virtual public CVisualObject, public VisualObjectParams_Triangles
+{
+  DEFINE_SERIALIZABLE(CSetOfTriangles, mrpt::viz)
+ public:
+  using const_iterator = std::vector<TTriangle>::const_iterator;
+  using const_reverse_iterator = std::vector<TTriangle>::const_reverse_iterator;
+
+  /** Explicitly updates the internal polygon cache, with all triangles as
+   * polygons. \sa getPolygons() */
+  void updatePolygons() const;
+
+  /** Clear this object, removing all triangles. */
+  void clearTriangles();
+
+  /** Get triangle count */
+  size_t getTrianglesCount() const;
+
+  /** Gets the i-th triangle */
+  void getTriangle(size_t idx, TTriangle& t) const
+  {
+    std::shared_lock<std::shared_mutex> trisReadLock(
+        VisualObjectParams_Triangles::m_trianglesMtx.data);
+
+    ASSERT_LT_(idx, shaderTrianglesBuffer().size());
+    t = shaderTrianglesBuffer().at(idx);
+  }
+  /** Inserts a triangle into the set */
+  void insertTriangle(const TTriangle& t)
+  {
+    std::unique_lock<std::shared_mutex> trisLck(VisualObjectParams_Triangles::m_trianglesMtx.data);
+    auto& tris = VisualObjectParams_Triangles::m_triangles;
+
+    tris.push_back(t);
+    polygonsUpToDate = false;
+    trisLck.unlock();
+    CVisualObject::notifyChange();
+  }
+
+  /** Inserts a set of triangles, bounded by iterators, into this set.
+   * \sa insertTriangle
+   */
+  template <class InputIterator>
+  void insertTriangles(const InputIterator& begin, const InputIterator& end)
+  {
+    std::unique_lock<std::shared_mutex> trisLck(VisualObjectParams_Triangles::m_trianglesMtx.data);
+    auto& tris = VisualObjectParams_Triangles::m_triangles;
+
+    tris.insert(tris.end(), begin, end);
+    polygonsUpToDate = false;
+    trisLck.unlock();
+    CVisualObject::notifyChange();
+  }
+
+  /** Inserts an existing CSetOfTriangles into this one */
+  void insertTriangles(const CSetOfTriangles::Ptr& p);
+
+  /**
+   * Reserves memory for certain number of triangles, avoiding multiple
+   * memory allocation calls.
+   */
+  void reserve(size_t t)
+  {
+    std::unique_lock<std::shared_mutex> trisLck(VisualObjectParams_Triangles::m_trianglesMtx.data);
+    auto& tris = VisualObjectParams_Triangles::m_triangles;
+
+    tris.reserve(t);
+    trisLck.unlock();
+    CVisualObject::notifyChange();
+  }
+
+  /** Overwrite all triangles colors with the one provided */
+  CVisualObject& setColor_u8(const mrpt::img::TColor& c) override;
+  /** Overwrite all triangles colors with the one provided */
+  CVisualObject& setColorA_u8(const uint8_t a) override;
+
+  bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
+
+  /**
+   * Gets the polygon cache.
+   * \sa insertTriangles
+   */
+  void getPolygons(std::vector<mrpt::math::TPolygon3D>& polys) const;
+
+  /**
+   * Inserts a set of triangles, given in a container of either TTriangle's
+   * or TPolygon3D
+   * \sa insertTriangle
+   */
+  template <class CONTAINER>
+  void insertTriangles(const CONTAINER& c)
+  {
+    this->insertTriangles(c.begin(), c.end());
+    CVisualObject::notifyChange();
+  }
+
+  /** Evaluates the bounding box of this object (including possible children)
+   * in the coordinate frame of the object parent. */
+  mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
+
+  CSetOfTriangles() = default;
+  virtual ~CSetOfTriangles() override = default;
+
+ protected:
+  /**
+   * Mutable variable used to check whether polygons need to be recalculated.
+   */
+  mutable bool polygonsUpToDate{false};
+
+  /** Polygon cache, used for ray-tracing only */
+  mutable std::vector<mrpt::math::TPolygonWithPlane> m_polygons;
+};
+/** Inserts a set of triangles into the list; note that this method allows one
+ * to pass another CSetOfTriangles as argument. Allows call chaining. \sa
+ * mrpt::viz::CSetOfTriangles::insertTriangle
+ */
+template <class T>
+CSetOfTriangles::Ptr& operator<<(CSetOfTriangles::Ptr& s, const T& t)
+{
+  s->insertTriangles(t.begin(), t.end());
+  return s;
+}
+}  // namespace mrpt::viz

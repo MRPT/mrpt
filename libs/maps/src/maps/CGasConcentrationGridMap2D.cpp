@@ -17,13 +17,13 @@
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/obs/CObservationGasSensors.h>
-#include <mrpt/opengl/CArrow.h>
-#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CArrow.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -470,7 +470,7 @@ void CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
   advectionFreq = iniFile.read_float(section.c_str(), "advectionFreq", 1, true);
 }
 
-void CGasConcentrationGridMap2D::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
+void CGasConcentrationGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
   MRPT_START
   if (!genericMapParams.enableSaveAs3DObject) return;
@@ -482,7 +482,7 @@ void CGasConcentrationGridMap2D::getVisualizationInto(mrpt::opengl::CSetOfObject
             getAs3DObject
 ---------------------------------------------------------------*/
 void CGasConcentrationGridMap2D::getAs3DObject(
-    opengl::CSetOfObjects& meanObj, opengl::CSetOfObjects& varObj) const
+    viz::CSetOfObjects& meanObj, viz::CSetOfObjects& varObj) const
 {
   MRPT_START
   if (!genericMapParams.enableSaveAs3DObject) return;
@@ -493,7 +493,7 @@ void CGasConcentrationGridMap2D::getAs3DObject(
 /*---------------------------------------------------------------
             getWindAs3DObject
 ---------------------------------------------------------------*/
-void CGasConcentrationGridMap2D::getWindAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& windObj) const
+void CGasConcentrationGridMap2D::getWindAs3DObject(mrpt::viz::CSetOfObjects::Ptr& windObj) const
 {
   // Return an arrow map of the wind state (module(color) and direction).
   float scale = 0.2f;
@@ -534,7 +534,7 @@ void CGasConcentrationGridMap2D::getWindAs3DObject(mrpt::opengl::CSetOfObjects::
       double dir_xy = *windGrid_direction.cellByPos(xs[cx], ys[cy]);
       double mod_xy = *windGrid_module.cellByPos(xs[cx], ys[cy]);
 
-      auto obj = mrpt::opengl::CArrow::Create(
+      auto obj = mrpt::viz::CArrow::Create(
           xs[cx], ys[cy], 0.f, xs[cx] + scale * (float)cos(dir_xy),
           ys[cy] + scale * (float)sin(dir_xy), 0.f, 1.15f * scale, 0.3f * scale, 0.35f * scale);
 

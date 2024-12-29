@@ -19,15 +19,15 @@
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/opengl/CEllipsoid2D.h>
-#include <mrpt/opengl/CEllipsoid3D.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>  // ASSERT_FILE_EXISTS_()
 #include <mrpt/system/memory.h>      // getMemoryUsage()
+#include <mrpt/viz/CEllipsoid2D.h>
+#include <mrpt/viz/CEllipsoid3D.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CSetOfLines.h>
+#include <mrpt/viz/stock_objects.h>
 
 using namespace mrpt::apps;
 
@@ -76,7 +76,7 @@ void RBPF_SLAM_App_Base::run()
   using namespace mrpt::slam;
   using namespace mrpt::obs;
   using namespace mrpt::maps;
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
   using namespace mrpt::gui;
   using namespace mrpt::io;
   using namespace mrpt::gui;
@@ -396,15 +396,15 @@ void RBPF_SLAM_App_Base::run()
         scene = std::make_shared<Scene>();
 
         // The ground:
-        mrpt::opengl::CGridPlaneXY::Ptr groundPlane =
-            mrpt::opengl::CGridPlaneXY::Create(-200, 200, -200, 200, 0, 5);
+        mrpt::viz::CGridPlaneXY::Ptr groundPlane =
+            mrpt::viz::CGridPlaneXY::Create(-200, 200, -200, 200, 0, 5);
         groundPlane->setColor(0.4f, 0.4f, 0.4f);
         scene->insert(groundPlane);
 
         // The camera pointing to the current robot pose:
         if (CAMERA_3DSCENE_FOLLOWS_ROBOT)
         {
-          mrpt::opengl::CCamera::Ptr objCam = mrpt::opengl::CCamera::Create();
+          mrpt::viz::CCamera::Ptr objCam = mrpt::viz::CCamera::Create();
           CPose3D robotPose;
           curPDF.getMean(robotPose);
 
@@ -419,7 +419,7 @@ void RBPF_SLAM_App_Base::run()
 
         // Draw the robot particles:
         size_t M = mapBuilder->mapPDF.particlesCount();
-        mrpt::opengl::CSetOfLines::Ptr objLines = mrpt::opengl::CSetOfLines::Create();
+        mrpt::viz::CSetOfLines::Ptr objLines = mrpt::viz::CSetOfLines::Create();
         objLines->setColor(0, 1, 1);
         for (size_t i = 0; i < M; i++)
         {

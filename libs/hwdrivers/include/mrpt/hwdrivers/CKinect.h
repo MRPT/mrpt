@@ -131,8 +131,8 @@ namespace mrpt::hwdrivers
  *with:
  *
  *  \code
- *    mrpt::opengl::CPointCloudColoured::Ptr gl_points =
- *mrpt::opengl::CPointCloudColoured::Create();
+ *    mrpt::viz::CPointCloudColoured::Ptr gl_points =
+ *mrpt::viz::CPointCloudColoured::Create();
  *    gl_points->loadFromPointsMap(&pntsMap);
  *  \endcode
  *

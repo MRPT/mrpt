@@ -11,8 +11,8 @@
 //
 #include <mrpt/core/round.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
-#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/viz/CSetOfLines.h>
 
 using namespace mrpt::nav;
 
@@ -42,9 +42,7 @@ void CPTG_RobotShape_Circular::saveToConfigFile(
 }
 
 void CPTG_RobotShape_Circular::static_add_robotShape_to_setOfLines(
-    mrpt::opengl::CSetOfLines& gl_shape,
-    const mrpt::poses::CPose2D& origin,
-    const double robotRadius)
+    mrpt::viz::CSetOfLines& gl_shape, const mrpt::poses::CPose2D& origin, const double robotRadius)
 {
   const double R = robotRadius;
   const int N = 17;
@@ -69,7 +67,7 @@ void CPTG_RobotShape_Circular::static_add_robotShape_to_setOfLines(
 }
 
 void CPTG_RobotShape_Circular::add_robotShape_to_setOfLines(
-    mrpt::opengl::CSetOfLines& gl_shape, const mrpt::poses::CPose2D& origin) const
+    mrpt::viz::CSetOfLines& gl_shape, const mrpt::poses::CPose2D& origin) const
 {
   static_add_robotShape_to_setOfLines(gl_shape, origin, m_robotRadius);
 }

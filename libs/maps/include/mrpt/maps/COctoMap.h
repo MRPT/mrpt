@@ -47,7 +47,7 @@ class COctoMap : public COctoMapBase<octomap::OcTree, octomap::OcTreeNode>
   COctoMap(const double resolution = 0.10);  //!< Default constructor
   ~COctoMap() override;                      //!< Destructor
 
-  void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_obj) const override;
+  void getAsOctoMapVoxels(mrpt::viz::COctoMapVoxels& gl_obj) const override;
 
   MAP_DEFINITION_START(COctoMap)
   /// The finest resolution of the octomap (default: 0.10 meters)

@@ -30,7 +30,7 @@ using namespace mrpt::img;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace mrpt::math;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 
 //  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER("mrpt::maps::COctoMap,octoMap", mrpt::maps::COctoMap)
@@ -142,8 +142,8 @@ bool COctoMap::internal_insertObservation(
 }
 
 /** Builds a renderizable representation of the octomap as a
- * mrpt::opengl::COctoMapVoxels object. */
-void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_obj) const
+ * mrpt::viz::COctoMapVoxels object. */
+void COctoMap::getAsOctoMapVoxels(mrpt::viz::COctoMapVoxels& gl_obj) const
 {
   // Go thru all voxels:
   // OcTreeVolume voxel; // current voxel, possibly transformed

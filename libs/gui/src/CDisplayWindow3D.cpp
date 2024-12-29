@@ -39,7 +39,7 @@
 
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::math;
 using namespace mrpt::img;
 using namespace std;
@@ -570,7 +570,7 @@ void CDisplayWindow3D::setMinRange(float new_min)
 {
   if (m_3Dscene)
   {
-    mrpt::opengl::Viewport::Ptr gl_view = m_3Dscene->getViewport("main");
+    mrpt::viz::Viewport::Ptr gl_view = m_3Dscene->getViewport("main");
     if (gl_view)
     {
       float m, M;
@@ -583,7 +583,7 @@ void CDisplayWindow3D::setMaxRange(float new_max)
 {
   if (m_3Dscene)
   {
-    mrpt::opengl::Viewport::Ptr gl_view = m_3Dscene->getViewport("main");
+    mrpt::viz::Viewport::Ptr gl_view = m_3Dscene->getViewport("main");
     if (gl_view)
     {
       float m, M;
@@ -807,7 +807,7 @@ void CDisplayWindow3D::internal_emitGrabImageEvent(const std::string& fil)
 }
 
 // Returns the "main" viewport of the scene.
-mrpt::opengl::Viewport::Ptr CDisplayWindow3D::getDefaultViewport()
+mrpt::viz::Viewport::Ptr CDisplayWindow3D::getDefaultViewport()
 {
   std::lock_guard<std::recursive_timed_mutex> lck(m_csAccess3DScene);
   return m_3Dscene->getViewport("main");
@@ -826,7 +826,7 @@ void CDisplayWindow3D::setImageView(mrpt::img::CImage&& img)
 }
 
 CDisplayWindow3DLocker::CDisplayWindow3DLocker(
-    CDisplayWindow3D& win, mrpt::opengl::Scene::Ptr& out_scene_ptr) :
+    CDisplayWindow3D& win, mrpt::viz::Scene::Ptr& out_scene_ptr) :
     m_win(win)
 {
   out_scene_ptr = m_win.get3DSceneAndLock();

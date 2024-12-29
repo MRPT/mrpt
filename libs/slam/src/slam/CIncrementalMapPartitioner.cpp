@@ -12,10 +12,6 @@
 #include <mrpt/config/CConfigFilePrefixer.h>
 #include <mrpt/graphs/CGraphPartitioner.h>
 #include <mrpt/maps/CMultiMetricMap.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CSimpleLine.h>
-#include <mrpt/opengl/CSphere.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/poses/CPosePDFParticles.h>
@@ -23,6 +19,10 @@
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/observations_overlap.h>
 #include <mrpt/system/CTicTac.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/CSimpleLine.h>
+#include <mrpt/viz/CSphere.h>
 
 #include <Eigen/Dense>
 
@@ -340,7 +340,7 @@ void CIncrementalMapPartitioner::changeCoordinatesOriginPoseIndex(unsigned int n
 }
 
 void CIncrementalMapPartitioner::getAs3DScene(
-    mrpt::opengl::CSetOfObjects::Ptr& objs, const std::map<uint32_t, int64_t>* renameIndexes) const
+    mrpt::viz::CSetOfObjects::Ptr& objs, const std::map<uint32_t, int64_t>* renameIndexes) const
 {
   objs->clear();
   ASSERT_((int)m_individualFrames.size() == m_A.cols());

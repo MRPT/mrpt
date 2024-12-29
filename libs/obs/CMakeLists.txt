@@ -36,7 +36,7 @@ define_mrpt_lib(
 	# Lib name
 	obs
 	# Dependencies
-	mrpt-opengl
+	mrpt-viz
 	mrpt-tfest
 	)
 

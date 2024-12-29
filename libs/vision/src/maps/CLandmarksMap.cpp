@@ -21,12 +21,12 @@
 #include <mrpt/obs/CObservationRobotPose.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CObservationVisualLandmarks.h>
-#include <mrpt/opengl/CEllipsoid3D.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/Scene.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/random.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CEllipsoid3D.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/Scene.h>
 
 #include <Eigen/Dense>
 
@@ -2232,7 +2232,7 @@ void CLandmarksMap::saveMetricMapRepresentationToFile(const std::string& filName
 /*---------------------------------------------------------------
             getAs3DObject
   ---------------------------------------------------------------*/
-void CLandmarksMap::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
+void CLandmarksMap::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
   if (!genericMapParams.enableSaveAs3DObject) return;
 

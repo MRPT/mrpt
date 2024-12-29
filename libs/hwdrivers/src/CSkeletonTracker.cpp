@@ -13,16 +13,16 @@
 #include <mrpt/hwdrivers/CSkeletonTracker.h>
 
 // opengl includes
-#include <mrpt/opengl/CBox.h>
-#include <mrpt/opengl/CCylinder.h>
-#include <mrpt/opengl/CGridPlaneXZ.h>
-#include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/opengl/CSimpleLine.h>
-#include <mrpt/opengl/CSphere.h>
-#include <mrpt/opengl/CText.h>
-#include <mrpt/opengl/CTexturedPlane.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPoint3D.h>
+#include <mrpt/viz/CBox.h>
+#include <mrpt/viz/CCylinder.h>
+#include <mrpt/viz/CGridPlaneXZ.h>
+#include <mrpt/viz/CSetOfLines.h>
+#include <mrpt/viz/CSimpleLine.h>
+#include <mrpt/viz/CSphere.h>
+#include <mrpt/viz/CText.h>
+#include <mrpt/viz/CTexturedPlane.h>
+#include <mrpt/viz/stock_objects.h>
 
 #include <chrono>
 #include <thread>
@@ -96,7 +96,7 @@ CSkeletonTracker::~CSkeletonTracker()
 -------------------------------------------------------------*/
 void CSkeletonTracker::processPreviewNone()
 {
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   // show skeleton data
   if (m_showPreview)
@@ -266,7 +266,7 @@ void CSkeletonTracker::processPreviewNone()
 -------------------------------------------------------------*/
 void CSkeletonTracker::processPreview(const mrpt::obs::CObservationSkeleton::Ptr& obs)
 {
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
 
   // show skeleton data
   if (m_showPreview)

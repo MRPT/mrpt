@@ -81,7 +81,7 @@ class CColouredOctoMap : public COctoMapBase<octomap::ColorOcTree, octomap::Colo
 
   /// Get the method used to update voxels colour
   TColourUpdate getVoxelColourMethod() { return m_colour_method; }
-  void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_obj) const override;
+  void getAsOctoMapVoxels(mrpt::viz::COctoMapVoxels& gl_obj) const override;
 
   MAP_DEFINITION_START(CColouredOctoMap)
   double resolution{0.10};  //!< The finest resolution of the octomap (default: 0.10

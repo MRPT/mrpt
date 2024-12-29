@@ -10,11 +10,11 @@
 #include "kinematics-precomp.h"  // Precompiled headers
 //
 #include <mrpt/kinematics/CKinematicChain.h>
-#include <mrpt/opengl/CCylinder.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/viz/CCylinder.h>
+#include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/stock_objects.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -129,18 +129,18 @@ void CKinematicChain::recomputeAllPoses(
 
 const float R = 0.01f;
 
-void addBar_D(mrpt::opengl::CSetOfObjects::Ptr& objs, const double d)
+void addBar_D(mrpt::viz::CSetOfObjects::Ptr& objs, const double d)
 {
-  mrpt::opengl::CCylinder::Ptr gl_cyl = mrpt::opengl::CCylinder::Create(R, R, d);
+  mrpt::viz::CCylinder::Ptr gl_cyl = mrpt::viz::CCylinder::Create(R, R, d);
   gl_cyl->setColor_u8(mrpt::img::TColor(0x00, 0x00, 0xff));
   gl_cyl->setName("cyl.d");
 
   objs->insert(gl_cyl);
 }
 
-void addBar_A(mrpt::opengl::CSetOfObjects::Ptr& objs, const double a)
+void addBar_A(mrpt::viz::CSetOfObjects::Ptr& objs, const double a)
 {
-  mrpt::opengl::CCylinder::Ptr gl_cyl2 = mrpt::opengl::CCylinder::Create(R, R, -a);
+  mrpt::viz::CCylinder::Ptr gl_cyl2 = mrpt::viz::CCylinder::Create(R, R, -a);
   gl_cyl2->setColor_u8(mrpt::img::TColor(0xff, 0x00, 0x00));
   gl_cyl2->setPose(mrpt::poses::CPose3D(0, 0, 0, 0, 90.0_deg, 0));
   gl_cyl2->setName("cyl.a");
@@ -149,7 +149,7 @@ void addBar_A(mrpt::opengl::CSetOfObjects::Ptr& objs, const double a)
 }
 
 void CKinematicChain::getAs3DObject(
-    mrpt::opengl::CSetOfObjects::Ptr& obj, std::vector<mrpt::poses::CPose3D>* out_all_poses) const
+    mrpt::viz::CSetOfObjects::Ptr& obj, std::vector<mrpt::poses::CPose3D>* out_all_poses) const
 {
   ASSERT_(obj);
   const size_t N = m_links.size();
@@ -163,8 +163,7 @@ void CKinematicChain::getAs3DObject(
   // Ground [0] and Links [1-N]:
   for (size_t i = 0; i <= N; i++)
   {
-    mrpt::opengl::CSetOfObjects::Ptr gl_corner =
-        mrpt::opengl::stock_objects::CornerXYZSimple(0.1f, 3.0f);
+    mrpt::viz::CSetOfObjects::Ptr gl_corner = mrpt::viz::stock_objects::CornerXYZSimple(0.1f, 3.0f);
     gl_corner->setPose(all_poses[i]);
 
     gl_corner->setName(mrpt::format("%u", static_cast<unsigned int>(i)));
@@ -195,22 +194,22 @@ void CKinematicChain::update3DObject(std::vector<mrpt::poses::CPose3D>* out_all_
 
   for (size_t i = 0; i <= N; i++)
   {
-    mrpt::opengl::CSetOfObjects::Ptr gl_objs =
-        std::dynamic_pointer_cast<mrpt::opengl::CSetOfObjects>(m_last_gl_objects[i]);
+    mrpt::viz::CSetOfObjects::Ptr gl_objs =
+        std::dynamic_pointer_cast<mrpt::viz::CSetOfObjects>(m_last_gl_objects[i]);
     gl_objs->setPose(all_poses[i]);
 
     if (i < N)
     {
-      mrpt::opengl::CCylinder::Ptr glCyl =
-          std::dynamic_pointer_cast<mrpt::opengl::CCylinder>(gl_objs->getByName("cyl.d"));
+      mrpt::viz::CCylinder::Ptr glCyl =
+          std::dynamic_pointer_cast<mrpt::viz::CCylinder>(gl_objs->getByName("cyl.d"));
       const float d = mrpt::d2f(m_links[i].d);
       glCyl->setHeight(d);
     }
 
     if (i > 0)
     {
-      mrpt::opengl::CCylinder::Ptr glCyl2 =
-          std::dynamic_pointer_cast<mrpt::opengl::CCylinder>(gl_objs->getByName("cyl.a"));
+      mrpt::viz::CCylinder::Ptr glCyl2 =
+          std::dynamic_pointer_cast<mrpt::viz::CCylinder>(gl_objs->getByName("cyl.a"));
       const float a = mrpt::d2f(m_links[i - 1].a);
       glCyl2->setHeight(-a);
     }

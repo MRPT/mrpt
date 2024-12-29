@@ -19,12 +19,12 @@
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/ops_containers.h>  // norm(), etc.
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/viz/CPointCloud.h>
 
 #include <cstring>
 #include <limits>
@@ -1324,7 +1324,7 @@ void CObservation3DRangeScan::convertTo2DScan(
     T3DPointsProjectionParams projParams;
     projParams.takeIntoAccountSensorPoseOnRobot = true;
 
-    mrpt::opengl::CPointCloud::Ptr pc = mrpt::opengl::CPointCloud::Create();
+    mrpt::viz::CPointCloud::Ptr pc = mrpt::viz::CPointCloud::Create();
     this->unprojectInto(*pc, projParams, fp);
 
     const std::vector<mrpt::math::TPoint3Df>& pts = pc->getArrayPoints();

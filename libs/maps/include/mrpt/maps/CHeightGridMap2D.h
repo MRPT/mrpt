@@ -132,10 +132,10 @@ class CHeightGridMap2D :
       const std::string& filNamePrefix) const override;  // See base class docs
 
   /** Returns a 3D object representing the map: by default, it will be a
-   * mrpt::opengl::CMesh object, unless
+   * mrpt::viz::CMesh object, unless
    *   it is specified otherwise in
    * mrpt::global_settings::HEIGHTGRIDMAP_EXPORT3D_AS_MESH */
-  void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
+  void getVisualizationInto(mrpt::viz::CSetOfObjects& outObj) const override;
 
   /** Return the type of the gas distribution map, according to parameters
    * passed on construction */
@@ -183,7 +183,7 @@ class CHeightGridMap2D :
 namespace global_settings
 {
 /** If set to true (default), mrpt::maps::CHeightGridMap2D will be exported as a
- *opengl::CMesh, otherwise, as a opengl::CPointCloudColoured
+ *viz::CMesh, otherwise, as a viz::CPointCloudColoured
  * Affects to:
  *		- CHeightGridMap2D::getAs3DObject
  */

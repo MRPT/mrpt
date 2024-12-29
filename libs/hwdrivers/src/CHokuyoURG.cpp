@@ -12,10 +12,10 @@
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/hwdrivers/CHokuyoURG.h>
-#include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>  // in library mrpt-maps
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CAxis.h>
+#include <mrpt/viz/CPlanarLaserScan.h>  // in library mrpt-maps
 
 #include <chrono>
 #include <thread>
@@ -26,7 +26,7 @@ using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::comms;
 using namespace mrpt::system;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace std;
 
 const int MINIMUM_PACKETS_TO_SET_TIMESTAMP_REFERENCE = 10;

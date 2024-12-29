@@ -12,7 +12,7 @@
 // Implementation file for CWindowObserver class
 #include <mrpt/graphslam/misc/CWindowObserver.h>
 #include <mrpt/gui/CBaseGUIWindow.h>
-#include <mrpt/opengl/Viewport.h>
+#include <mrpt/viz/Viewport.h>
 
 using namespace mrpt::graphslam;
 
@@ -117,10 +117,10 @@ void CWindowObserver::OnEvent(const mrpt::system::mrptEvent& e)
     std::cout << "Mouse down event received from: " << ev.source_object << "pt: " << ev.coords.x
               << "," << ev.coords.y << "\n";
   }
-  else if (e.isOfType<mrpt::opengl::mrptEventGLPostRender>())
+  else if (e.isOfType<mrpt::viz::mrptEventGLPostRender>())
   {
     /*
-     * An event sent by an mrpt::opengl::Viewport AFTER calling
+     * An event sent by an mrpt::viz::Viewport AFTER calling
      * the
      * SCENE OPENGL DRAWING PRIMITIVES and before doing a glSwapBuffers.
      */

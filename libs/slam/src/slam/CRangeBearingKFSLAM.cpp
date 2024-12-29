@@ -19,15 +19,15 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
-#include <mrpt/opengl/CEllipsoid3D.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/slam/CRangeBearingKFSLAM.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CEllipsoid3D.h>
+#include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/stock_objects.h>
 
 #include <Eigen/Dense>
 
@@ -911,7 +911,7 @@ void CRangeBearingKFSLAM::OnNewLandmarkAddedToMap(size_t in_obsIdx, size_t in_id
 /*---------------------------------------------------------------
             getAs3DObject
   ---------------------------------------------------------------*/
-void CRangeBearingKFSLAM::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
+void CRangeBearingKFSLAM::getAs3DObject(mrpt::viz::CSetOfObjects::Ptr& outObj) const
 {
   outObj->clear();
 

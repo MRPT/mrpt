@@ -983,7 +983,7 @@ class COccupancyGridMap2D :
    * transparency proportional to "uncertainty" (i.e. a value of 0.5 is fully
    * transparent)
    */
-  void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
+  void getVisualizationInto(mrpt::viz::CSetOfObjects& outObj) const override;
 
   /** Get a point cloud with all (border) occupied cells as points */
   void getAsPointCloud(mrpt::maps::CSimplePointsMap& pm, const float occup_threshold = 0.5f) const;

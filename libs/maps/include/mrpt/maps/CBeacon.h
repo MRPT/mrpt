@@ -10,12 +10,12 @@
 
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/obs/CObservation.h>  // INVALID_BEACON_ID
-#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/poses/CPointPDFParticles.h>
 #include <mrpt/poses/CPointPDFSOG.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 namespace mrpt::maps
 {
@@ -109,7 +109,7 @@ class CBeacon : public mrpt::poses::CPointPDF
   void changeCoordinatesReference(const mrpt::poses::CPose3D& newReferenceBase) override;
 
   /** Saves a 3D representation of the beacon into a given OpenGL scene  */
-  void getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const;
+  void getVisualizationInto(mrpt::viz::CSetOfObjects& o) const;
 
   /** Gets a set of MATLAB commands which draw the current state of the
    * beacon: */

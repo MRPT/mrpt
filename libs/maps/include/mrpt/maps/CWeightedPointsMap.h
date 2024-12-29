@@ -151,10 +151,10 @@ class CWeightedPointsMap : public CPointsMap
 };  // End of class def.
 }  // namespace maps
 
-namespace opengl
+namespace viz
 {
 /** Specialization
- * mrpt::opengl::PointCloudAdapter<mrpt::maps::CWeightedPointsMap>
+ * mrpt::viz::PointCloudAdapter<mrpt::maps::CWeightedPointsMap>
  * \ingroup mrpt_adapters_grp */
 template <>
 class PointCloudAdapter<mrpt::maps::CWeightedPointsMap>
@@ -195,5 +195,5 @@ class PointCloudAdapter<mrpt::maps::CWeightedPointsMap>
     m_obj.setPointFast(idx, x, y, z);
   }
 };  // end of PointCloudAdapter<mrpt::maps::CPointsMap>
-}  // namespace opengl
+}  // namespace viz
 }  // namespace mrpt

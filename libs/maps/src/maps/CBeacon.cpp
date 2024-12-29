@@ -14,12 +14,12 @@
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/obs/CObservation.h>
-#include <mrpt/opengl/CEllipsoid3D.h>
-#include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CText.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CEllipsoid3D.h>
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/CText.h>
 
 #include <Eigen/Dense>
 
@@ -214,7 +214,7 @@ void CBeacon::changeCoordinatesReference(const CPose3D& newReferenceBase)
   MRPT_END
 }
 
-void CBeacon::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
+void CBeacon::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
   MRPT_START
 
@@ -222,7 +222,7 @@ void CBeacon::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
   {
     case pdfMonteCarlo:
     {
-      opengl::CPointCloud::Ptr obj = std::make_shared<opengl::CPointCloud>();
+      viz::CPointCloud::Ptr obj = std::make_shared<viz::CPointCloud>();
       obj->setColor(1, 0, 0);
 
       obj->setPointSize(2.5);
@@ -240,7 +240,7 @@ void CBeacon::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
     break;
     case pdfGauss:
     {
-      opengl::CEllipsoid3D::Ptr obj = std::make_shared<opengl::CEllipsoid3D>();
+      viz::CEllipsoid3D::Ptr obj = std::make_shared<viz::CEllipsoid3D>();
 
       obj->setPose(m_locationGauss.mean);
       obj->setLineWidth(3);
@@ -257,7 +257,7 @@ void CBeacon::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
     break;
     case pdfSOG:
     {
-      auto auxObjs = mrpt::opengl::CSetOfObjects::Create();
+      auto auxObjs = mrpt::viz::CSetOfObjects::Create();
       m_locationSOG.getAs3DObject(auxObjs);
       o.insert(auxObjs);
     }
@@ -266,7 +266,7 @@ void CBeacon::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
       THROW_EXCEPTION("ERROR: Invalid 'm_typePDF' value");
   };
 
-  opengl::CText::Ptr obj2 = std::make_shared<opengl::CText>();
+  viz::CText::Ptr obj2 = std::make_shared<viz::CText>();
   obj2->setString(format("#%d", static_cast<int>(m_ID)));
 
   CPoint3D meanP;

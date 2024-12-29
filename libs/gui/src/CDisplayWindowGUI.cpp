@@ -82,9 +82,9 @@ void CDisplayWindowGUI::drawContents()
     glGetIntegerv(GL_VIEWPORT, win_dims);
 
     // Set the camera params in the scene:
-    mrpt::opengl::Viewport::Ptr view = background_scene->getViewport("main");
+    mrpt::viz::Viewport::Ptr view = background_scene->getViewport("main");
     if (!view) THROW_EXCEPTION("Fatal error: there is no 'main' viewport in the 3D scene!");
-    mrpt::opengl::CCamera& cam = view->getCamera();
+    mrpt::viz::CCamera& cam = view->getCamera();
     m_background_canvas.updateCameraParams(cam);
 
     for (const auto& m_viewport : background_scene->viewports())

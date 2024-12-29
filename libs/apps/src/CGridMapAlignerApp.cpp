@@ -23,9 +23,6 @@
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/opengl/Scene.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDFParticles.h>
@@ -34,6 +31,9 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CSetOfLines.h>
+#include <mrpt/viz/Scene.h>
 
 using namespace mrpt::apps;
 
@@ -188,7 +188,7 @@ void CGridMapAlignerApp::run()
   using namespace mrpt::slam;
   using namespace mrpt::maps;
   using namespace mrpt::obs;
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
   using namespace mrpt::tfest;
   using namespace mrpt::math;
   using namespace mrpt::serialization;

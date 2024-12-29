@@ -54,9 +54,6 @@ class CPointCloud :
    * to have an easy to use name. */
   std::vector<mrpt::math::TPoint3Df>& m_points = CRenderizableShaderPoints::m_vertex_buffer_data;
 
-  /** Default: false */
-  bool m_pointSmooth = false;
-
   mutable size_t m_last_rendered_count{0}, m_last_rendered_count_ongoing{0};
 
   /** Do needed internal work if all points are new (octree rebuilt,...) */
@@ -285,13 +282,6 @@ class CPointCloud :
     CRenderizable::notifyChange();
   }
 
-  void enablePointSmooth(bool enable = true)
-  {
-    m_pointSmooth = enable;
-    CRenderizable::notifyChange();
-  }
-  void disablePointSmooth() { m_pointSmooth = false; }
-  bool isPointSmoothEnabled() const { return m_pointSmooth; }
   /** Sets the colors used as extremes when colorFromDepth is enabled. */
   void setGradientColors(const mrpt::img::TColorf& colorMin, const mrpt::img::TColorf& colorMax);
 
