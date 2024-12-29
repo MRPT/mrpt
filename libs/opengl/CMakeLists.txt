@@ -35,6 +35,7 @@ define_mrpt_lib(
 	# Lib name
 	opengl
 	# Dependencies:
+	mrpt-viz
 	mrpt-poses
 	mrpt-img
 	)

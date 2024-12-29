@@ -46,8 +46,6 @@ define_mrpt_lib(
 	# Dependencies
 	mrpt-comms # serial ports, etc.
 	mrpt-maps  # used to laser preview, etc.
-	mrpt-gui    # used to camera preview, etc.
-	mrpt-vision  # needed to stereo rectification
 	)
 
 if(NOT BUILD_mrpt-hwdrivers)

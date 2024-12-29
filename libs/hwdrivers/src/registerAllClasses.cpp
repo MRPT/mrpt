@@ -17,7 +17,6 @@
 #include <mrpt/comms/registerAllClasses.h>
 #include <mrpt/gui/registerAllClasses.h>
 #include <mrpt/maps/registerAllClasses.h>
-#include <mrpt/vision/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_hwdrivers)
 {
@@ -63,5 +62,4 @@ void mrpt::hwdrivers::registerAllClasses_mrpt_hwdrivers()
   mrpt::comms::registerAllClasses_mrpt_comms();
   mrpt::maps::registerAllClasses_mrpt_maps();
   mrpt::gui::registerAllClasses_mrpt_gui();
-  mrpt::vision::registerAllClasses_mrpt_vision();
 }
