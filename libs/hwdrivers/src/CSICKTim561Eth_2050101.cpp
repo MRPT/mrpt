@@ -472,9 +472,6 @@ void CSICKTim561Eth::doProcessSimple(
     // Filter:
     C2DRangeFinderAbstract::filterByExclusionAreas(outObservation);
     C2DRangeFinderAbstract::filterByExclusionAngles(outObservation);
-    // Do show preview:
-    C2DRangeFinderAbstract::processPreview(outObservation);
-    MRPT_LOG_DEBUG("doProcessSimple Show");
 
     outThereIsObservation = true;
     hardwareError = false;

@@ -115,9 +115,6 @@ bool C2DRangeFinderAbstract::internal_notifyNoScanReceived()
 void C2DRangeFinderAbstract::loadCommonParams(
     const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection)
 {
-  // Params:
-  m_showPreview = configSource.read_bool(iniSection, "preview", false);
-
   // Load exclusion areas:
   m_lstExclusionPolys.clear();
   m_lstExclusionAngles.clear();
@@ -193,45 +190,4 @@ void C2DRangeFinderAbstract::filterByExclusionAreas(mrpt::obs::CObservation2DRan
 void C2DRangeFinderAbstract::filterByExclusionAngles(mrpt::obs::CObservation2DRangeScan& obs) const
 {
   obs.filterByExclusionAngles(m_lstExclusionAngles);
-}
-
-void C2DRangeFinderAbstract::processPreview(const mrpt::obs::CObservation2DRangeScan& obs)
-{
-  using namespace mrpt::viz;
-
-  // show laser scan
-  if (m_showPreview)
-  {
-    if (!m_win)
-    {
-      string caption = string("Preview of ") + m_sensorLabel;
-      m_win = mrpt::gui::CDisplayWindow3D::Create(caption, 640, 480);
-      m_win->setCameraAzimuthDeg(180);
-      m_win->setCameraElevationDeg(90);
-      Scene::Ptr& theScene = m_win->get3DSceneAndLock();
-      theScene->insert(std::make_shared<CAxis>(-300, -300, -50, 300, 300, 50, 1.0, 3, true));
-      m_win->unlockAccess3DScene();
-    }
-
-    if (m_win && m_win->isOpen())
-    {
-      Scene::Ptr& theScene = m_win->get3DSceneAndLock();
-      opengl::CPlanarLaserScan::Ptr laser;
-      CRenderizable::Ptr obj = theScene->getByName("laser");
-      if (!obj)
-      {
-        laser = std::make_shared<opengl::CPlanarLaserScan>();
-        laser->setName("laser");
-        laser->setScan(obs);
-        theScene->insert(laser);
-      }
-      else
-      {
-        laser = std::dynamic_pointer_cast<CPlanarLaserScan>(obj);
-        laser->setScan(obs);
-      }
-      m_win->unlockAccess3DScene();
-      m_win->forceRepaint();
-    }  // end if
-  }    // end if
 }

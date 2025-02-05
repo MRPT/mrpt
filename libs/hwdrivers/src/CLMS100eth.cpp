@@ -319,8 +319,6 @@ void CLMS100Eth::doProcessSimple(
     // Do filter:
     C2DRangeFinderAbstract::filterByExclusionAreas(outObservation);
     C2DRangeFinderAbstract::filterByExclusionAngles(outObservation);
-    // Do show preview:
-    C2DRangeFinderAbstract::processPreview(outObservation);
 
     outThereIsObservation = true;
     hardwareError = false;

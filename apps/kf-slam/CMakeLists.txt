@@ -25,6 +25,6 @@ add_executable(${PROJECT_NAME}
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${PROJECT_NAME} mrpt::apps)
+DeclareAppDependencies(${PROJECT_NAME} mrpt::apps-gui)
 
 DeclareAppForInstall(${PROJECT_NAME})

@@ -104,8 +104,6 @@ void CSickLaserUSB::doProcessSimple(
   // Do filter:
   C2DRangeFinderAbstract::filterByExclusionAreas(outObservation);
   C2DRangeFinderAbstract::filterByExclusionAngles(outObservation);
-  // Do show preview:
-  C2DRangeFinderAbstract::processPreview(outObservation);
 
   outThereIsObservation = true;
 }
@@ -188,7 +186,6 @@ bool CSickLaserUSB::waitContinuousSampleFrame(
   {
     if (lenghtField > 800)
     {
-      cout << "#";
       nFrameBytes = 0;  // No es cabecera de trama correcta
       buf[2] = buf[3] = 0;
     }

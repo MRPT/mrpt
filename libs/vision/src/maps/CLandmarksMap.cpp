@@ -2215,10 +2215,9 @@ void CLandmarksMap::saveMetricMapRepresentationToFile(const std::string& filName
   saveToMATLABScript3D(fil1);
 
   // 3D Scene:
-  opengl::Scene scene;
+  mrpt::viz::Scene scene;
 
-  opengl::CGridPlaneXY::Ptr objGround =
-      std::make_shared<opengl::CGridPlaneXY>(-100, 100, -100, 100, 0, 1);
+  auto objGround = mrpt::viz::CGridPlaneXY::Create(-100, 100, -100, 100, 0, 1);
 
   scene.insert(getVisualization());
   scene.insert(objGround);
@@ -2242,7 +2241,7 @@ void CLandmarksMap::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
   CPointPDFGaussian pointGauss;
   for (const auto& landmark : landmarks)
   {
-    opengl::CEllipsoid3D::Ptr ellip = std::make_shared<opengl::CEllipsoid3D>();
+    auto ellip = std::make_shared<mrpt::viz::CEllipsoid3D>();
 
     landmark.getPose(pointGauss);
 
@@ -2270,17 +2269,6 @@ const CLandmark* CLandmarksMap::TCustomSequenceLandmarks::getByID(CLandmark::TLa
   }
   return nullptr;
 }
-
-// CLandmark* 	CLandmarksMap::TCustomSequenceLandmarks::getByID(
-// CLandmark::TLandmarkID ID )
-//{
-//	for(size_t indx = 0; indx < m_landmarks.size(); indx++)
-//	{
-//		if( m_landmarks[indx].ID == ID )
-//			return &m_landmarks[indx];
-//	}
-//	return nullptr;
-//}
 
 const CLandmark* CLandmarksMap::TCustomSequenceLandmarks::getByBeaconID(unsigned int ID) const
 {

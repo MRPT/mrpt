@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationIMU.h>
@@ -365,18 +364,6 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
   void setTiltAngleDegrees(double angle);
   double getTiltAngleDegrees();
 
-  /** Default: disabled */
-  inline void enablePreviewRGB(bool enable = true) { m_preview_window = enable; }
-  inline void disablePreviewRGB() { m_preview_window = false; }
-  inline bool isPreviewRGBEnabled() const { return m_preview_window; }
-  /** If preview is enabled, show only one image out of N (default: 1=show
-   * all) */
-  inline void setPreviewDecimation(size_t decimation_factor)
-  {
-    m_preview_window_decimation = decimation_factor;
-  }
-  inline size_t getPreviewDecimation() const { return m_preview_window_decimation; }
-
   /** Get the maximum range (meters) that can be read in the observation field
    * "rangeImage" */
   inline double getMaxRange() const { return m_maxRange; }
@@ -444,13 +431,6 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
       const mrpt::config::CConfigFileBase& configSource, const std::string& section) override;
 
   mrpt::poses::CPose3D m_sensorPoseOnRobot;
-
-  /** Show preview window while grabbing */
-  bool m_preview_window{false};
-  /** If preview is enabled, only show 1 out of N images. */
-  size_t m_preview_window_decimation{1};
-  size_t m_preview_decim_counter_range{0}, m_preview_decim_counter_rgb{0};
-  mrpt::gui::CDisplayWindow::Ptr m_win_range, m_win_int;
 
 #if MRPT_HAS_KINECT_FREENECT
   /** The "freenect_context", or nullptr if closed */

@@ -31,7 +31,6 @@ If not present, the following classes will raise an exception upon usage:
 If this library is not present in the system, the following will raise an exception upon usage:
 
 - All window classes in mrpt::gui except those based on nanogui.
-- The function  mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 
 Also, most GUI apps will not be built if wxWidgets is not found.
 

@@ -88,7 +88,6 @@ CSkeletonTracker::~CSkeletonTracker()
   delete user_tracker;
   m_userTracker_ptr = nullptr;
 #endif
-  if (m_win) m_win.reset();
 }
 
 /*-------------------------------------------------------------
@@ -98,6 +97,7 @@ void CSkeletonTracker::processPreviewNone()
 {
   using namespace mrpt::viz;
 
+#if 0  // Port to mrpt-viz?
   // show skeleton data
   if (m_showPreview)
   {
@@ -259,6 +259,7 @@ void CSkeletonTracker::processPreviewNone()
       m_win->forceRepaint();
     }  // end if
   }    // end if
+#endif
 }  // end-processPreviewNone
 
 /*-------------------------------------------------------------
@@ -268,6 +269,7 @@ void CSkeletonTracker::processPreview(const mrpt::obs::CObservationSkeleton::Ptr
 {
   using namespace mrpt::viz;
 
+#if 0
   // show skeleton data
   if (m_showPreview)
   {
@@ -402,6 +404,7 @@ void CSkeletonTracker::processPreview(const mrpt::obs::CObservationSkeleton::Ptr
       m_win->forceRepaint();
     }  // end if
   }    // end if
+#endif
 }
 
 /*-------------------------------------------------------------
@@ -581,13 +584,10 @@ void CSkeletonTracker::loadConfig_sensorSpecific(
       DEG2RAD(configSource.read_float(iniSection, "pose_pitch", 0, false)),
       DEG2RAD(configSource.read_float(iniSection, "pose_roll", 0, false)));
 
-  m_showPreview = configSource.read_bool(iniSection, "showPreview", m_showPreview, false);
-
   // dump parameters to console
   cout << "---------------------------" << endl;
   cout << "Skeleton Tracker parameters: " << endl;
   cout << "---------------------------" << endl;
   cout << m_sensorPose << endl;
-  cout << m_showPreview << endl;
   cout << "---------------------------" << endl << endl;
 }

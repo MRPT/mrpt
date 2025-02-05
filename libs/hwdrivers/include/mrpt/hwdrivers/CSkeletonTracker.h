@@ -10,7 +10,6 @@
 #pragma once
 
 #include <mrpt/comms/CSerialPort.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservationSkeleton.h>
 #include <mrpt/poses/CPose3D.h>
@@ -84,9 +83,6 @@ class CSkeletonTracker : public hwdrivers::CGenericSensor
   /** Number of detected users */
   int m_nUsers{0};
 
-  /** Preview window management */
-  bool m_showPreview{false};
-  mrpt::gui::CDisplayWindow3D::Ptr m_win;
   /** Lines between joints */
   std::vector<std::pair<JOINT, JOINT>> m_linesToPlot;
   /** Joint angles when no skeleton has been detected */
@@ -122,8 +118,6 @@ class CSkeletonTracker : public hwdrivers::CGenericSensor
    */
   void initialize() override;
 
-  /** Set/unset preview */
-  inline void setPreview(const bool setPreview = true) { m_showPreview = setPreview; }
 };  // end of class
 
 }  // namespace mrpt::hwdrivers
