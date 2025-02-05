@@ -4,8 +4,8 @@
 list(APPEND maps_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/libs/maps/src/maps/*.cpp" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/maps/*.h" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/slam/*.h")
 list(APPEND maps_EXTRA_SRCS_NAME 	"maps" "maps" "back-compat-hdrs")
 
-list(APPEND maps_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/libs/maps/src/opengl/*.cpp" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/viz/*.h")
-list(APPEND maps_EXTRA_SRCS_NAME 	"opengl" "opengl")
+list(APPEND maps_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/libs/maps/src/viz/*.cpp" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/viz/*.h")
+list(APPEND maps_EXTRA_SRCS_NAME 	"viz" "viz")
 
 list(APPEND maps_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/libs/maps/src/obs/*.cpp" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/obs/*.h")
 list(APPEND maps_EXTRA_SRCS_NAME 	"obs" "obs")

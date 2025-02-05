@@ -208,10 +208,6 @@ class CColouredPointsMap : public CPointsMap
   /** The options employed when inserting laser scans in the map. */
   TColourOptions colorScheme;
 
-  /** Reset the minimum-observed-distance buffer for all the points to a
-   * predefined value */
-  void resetPointsMinDist(float defValue = 2000.0f);
-
   // clang-format off
 	auto getPointsBufferRef_color_R() const    -> const mrpt::aligned_std_vector<float>* override { return &m_color_R;}
 	auto getPointsBufferRef_color_G() const    -> const mrpt::aligned_std_vector<float>* override { return &m_color_G; }
@@ -316,9 +312,6 @@ class CColouredPointsMap : public CPointsMap
    protected:
 	/** The color data */
 	mrpt::aligned_std_vector<float> m_color_R, m_color_G, m_color_B;
-
-	/** Minimum distance from where the points have been seen */
-	// std::vector<float>	m_min_dist;
 
 	/** Clear the map, erasing all the points */
 	void internal_clear() override;

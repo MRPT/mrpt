@@ -17,6 +17,7 @@
 #include <mrpt/serialization/aligned_serialization.h>
 #include <mrpt/system/os.h>
 #include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 #include "CPointsMap_crtp_common.h"
 
@@ -492,9 +493,6 @@ bool CColouredPointsMap::colourFromObservation(
     chB = 2;
   }
 
-  unsigned int n_proj = 0;
-  const float factor = 1.0f / 255;  // Normalize pixels:
-
   // Get the colour of the projected points
   size_t k;
   for (itProPoints = projectedPoints.begin(), k = 0; itProPoints != projectedPoints.end();
@@ -506,21 +504,13 @@ bool CColouredPointsMap::colourFromObservation(
       unsigned int ii = p_idx[p_proj[k]];
       uint8_t* p = obs.image((unsigned int)itProPoints->x, (unsigned int)itProPoints->y);
 
-      m_color_R[ii] = p[chR] * factor;  // R
-      m_color_G[ii] = p[chG] * factor;  // G
-      m_color_B[ii] = p[chB] * factor;  // B
-      // m_min_dist[ii]	= p_dist[p_proj[k]];
-
-      n_proj++;
+      m_color_R[ii] = mrpt::u8tof(p[chR]);
+      m_color_G[ii] = mrpt::u8tof(p[chG]);
+      m_color_B[ii] = mrpt::u8tof(p[chB]);
     }
-  }  // end for
+  }
 
   return true;
-}  // end colourFromObservation
-
-void CColouredPointsMap::resetPointsMinDist([[maybe_unused]] float defValue)
-{
-  // m_min_dist.assign(x.size(),defValue);
 }
 
 bool CColouredPointsMap::save3D_and_colour_to_text_file(const std::string& file) const
