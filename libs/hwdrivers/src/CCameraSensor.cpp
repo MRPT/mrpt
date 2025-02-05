@@ -12,8 +12,6 @@
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/config/CConfigFilePrefixer.h>
-#include <mrpt/gui/WxSubsystem.h>
-#include <mrpt/gui/WxUtils.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
@@ -25,13 +23,11 @@
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/thread_name.h>
 
-#include <chrono>
 #include <memory>
 #include <thread>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::gui;
 using namespace mrpt::obs;
 using namespace mrpt::config;
 using namespace mrpt::system;
@@ -398,8 +394,6 @@ void CCameraSensor::loadConfig_sensorSpecific(
     m_camera_grab_decimator = m_camera_grab_decimator_counter = 0;
 
   m_grabber_type = configSource.read_string_first_word(iniSection, "grabber_type", m_grabber_type);
-  MRPT_LOAD_HERE_CONFIG_VAR(preview_decimation, int, m_preview_decimation, configSource, iniSection)
-  MRPT_LOAD_HERE_CONFIG_VAR(preview_reduction, int, m_preview_reduction, configSource, iniSection)
 
   // OpenCV options:
   m_cv_camera_type =
@@ -618,13 +612,8 @@ void CCameraSensor::loadConfig_sensorSpecific(
 /* -----------------------------------------------------
         Destructor
    ----------------------------------------------------- */
-CCameraSensor::~CCameraSensor()
-{
-  close();
+CCameraSensor::~CCameraSensor() { close(); }
 
-  m_preview_win1.reset();
-  m_preview_win2.reset();
-}
 /* -----------------------------------------------------
         getNextFrame
 ----------------------------------------------------- */
@@ -1073,21 +1062,6 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
     }
   }
 
-  // Before saving to disk, keep a copy for display, if needed:
-  CImage img4gui, img4guiR;
-  if (m_preview_win1 && m_preview_win1->isOpen())
-  {
-    if (stObs)
-    {
-      img4gui = stObs->imageLeft.makeDeepCopy();
-      img4guiR = stObs->imageRight.makeDeepCopy();
-    }
-    else if (obs)
-      img4gui = obs->image.makeDeepCopy();
-    else
-      img4gui = obs3D->intensityImage.makeDeepCopy();
-  }
-
   // External storage?
   // If true, we'll return nothing, but the observation will be
   // inserted from the thread.
@@ -1193,82 +1167,6 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
     }  // end else
   }
 
-  // Show preview??
-  if (m_preview_decimation > 0)
-  {  // Yes
-    if (++m_preview_counter > m_preview_decimation)
-    {
-      m_preview_counter = 0;
-
-      // Create window the first time:
-      if (!m_preview_win1)
-      {
-        string caption = string("Preview of ") + m_sensorLabel;
-        if (stObs) caption += "-LEFT";
-        if (m_preview_decimation > 1) caption += format(" (decimation: %i)", m_preview_decimation);
-        m_preview_win1 = mrpt::gui::CDisplayWindow::Create(caption);
-      }
-      if (stObs && !m_preview_win2)
-      {
-        string caption = string("Preview of ") + m_sensorLabel;
-        if (stObs) caption += "-RIGHT";
-        if (m_preview_decimation > 1) caption += format(" (decimation: %i)", m_preview_decimation);
-        m_preview_win2 = mrpt::gui::CDisplayWindow::Create(caption);
-      }
-      // Monocular image or Left from a stereo pair:
-      if (m_preview_win1->isOpen() && img4gui.getWidth() > 0)
-      {
-        // Apply image reduction?
-        if (m_preview_reduction >= 2)
-        {
-          unsigned int w = img4gui.getWidth();
-          unsigned int h = img4gui.getHeight();
-          CImage auxImg;
-          img4gui.scaleImage(
-              auxImg, w / m_preview_reduction, h / m_preview_reduction, IMG_INTERP_NN);
-          m_preview_win1->showImage(auxImg);
-        }
-        else
-          m_preview_win1->showImage(img4gui);
-      }
-
-      // Right from a stereo pair:
-      if (m_preview_win2 && m_preview_win2->isOpen() && stObs && stObs->hasImageRight &&
-          img4gui.getWidth() > 0)
-      {
-        // Apply image reduction?
-        if (m_preview_reduction >= 2)
-        {
-          unsigned int w = img4guiR.getWidth();
-          unsigned int h = img4guiR.getHeight();
-          CImage auxImg;
-          img4guiR.scaleImage(
-              auxImg, w / m_preview_reduction, h / m_preview_reduction, IMG_INTERP_NN);
-          m_preview_win2->showImage(auxImg);
-        }
-        else
-          m_preview_win2->showImage(img4guiR);
-      }
-
-      // Disparity from a stereo pair:
-      if (m_preview_win2 && m_preview_win2->isOpen() && stObs && stObs->hasImageDisparity)
-      {
-        // Apply image reduction?
-        if (m_preview_reduction >= 2)
-        {
-          unsigned int w = stObs->imageDisparity.getWidth();
-          unsigned int h = stObs->imageDisparity.getHeight();
-          CImage auxImg;
-          stObs->imageDisparity.scaleImage(
-              auxImg, w / m_preview_reduction, h / m_preview_reduction, IMG_INTERP_NN);
-          m_preview_win2->showImage(auxImg);
-        }
-        else
-          m_preview_win2->showImage(stObs->imageDisparity);
-      }
-    }
-  }  // end show preview
-
   if (!delayed_insertion_in_obs_queue)
   {
     if (stObs) out_obs.push_back(CObservation::Ptr(stObs));
@@ -1318,151 +1216,6 @@ void CCameraSensor::setPathForExternalImages(const std::string& directory)
         "Cannot create the directory for externally saved images: `%s`", directory.c_str());
   }
   m_path_for_external_images = directory;
-}
-
-/* ------------------------------------------------------------------------
-            prepareVideoSourceFromUserSelection
-   ------------------------------------------------------------------------ */
-CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
-{
-#if MRPT_HAS_WXWIDGETS
-  // Create the main wxThread, if it doesn't exist yet:
-  if (!mrpt::gui::WxSubsystem::createOneInstanceMainThread())
-  {
-    std::cerr << "[mrpt::hwdrivers::prepareVideoSourceFromUserSelection] "
-                 "Error initiating Wx subsystem."
-              << std::endl;
-    return CCameraSensor::Ptr();  // Error!
-  }
-
-  std::promise<void> semDlg;
-  std::promise<mrpt::gui::detail::TReturnAskUserOpenCamera> dlgSelection;
-
-  // Create window:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
-  REQ->OPCODE = 700;
-  REQ->sourceCameraSelectDialog = true;
-  REQ->voidPtr = reinterpret_cast<void*>(&semDlg);
-  REQ->voidPtr2 = reinterpret_cast<void*>(&dlgSelection);
-  WxSubsystem::pushPendingWxRequest(REQ);
-
-  // Wait for the window to realize and signal it's alive:
-  if (!WxSubsystem::isConsoleApp())
-  {
-    std::this_thread::sleep_for(20ms);  // Force at least 1-2 timer ticks for processing the event:
-    wxApp::GetInstance()->Yield(true);
-  }
-
-  // wait for window construction:
-  int maxTimeout =
-#ifdef _DEBUG
-      30000;
-#else
-      6000;
-#endif
-  // If we have an "MRPT_WXSUBSYS_TIMEOUT_MS" environment variable, use that
-  // timeout instead:
-  const char* envVal = getenv("MRPT_WXSUBSYS_TIMEOUT_MS");
-  if (envVal) maxTimeout = atoi(envVal);
-
-  if (semDlg.get_future().wait_for(std::chrono::milliseconds(maxTimeout)) ==
-      std::future_status::timeout)
-  {
-    cerr << "[prepareVideoSourceFromUserSelection] Timeout waiting window "
-            "creation."
-         << endl;
-    return CCameraSensor::Ptr();
-  }
-
-  // wait for user selection:
-  auto future = dlgSelection.get_future();
-  future.wait();
-  const auto& ret = future.get();
-
-  // If the user didn't accept the dialog, return now:
-  if (!ret.accepted_by_user) return CCameraSensor::Ptr();
-
-  mrpt::config::CConfigFileMemory selectedConfig(ret.selectedConfig);
-
-  CCameraSensor::Ptr cam = std::make_shared<CCameraSensor>();
-  cam->loadConfig(selectedConfig, "CONFIG");
-  cam->initialize();  // This will raise an exception if necessary
-
-  return cam;
-#else
-  THROW_EXCEPTION("MRPT compiled without wxWidgets");
-#endif  // MRPT_HAS_WXWIDGETS
-}
-
-/* ------------------------------------------------------------------------
-            prepareVideoSourceFromPanel
-   ------------------------------------------------------------------------ */
-CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromPanel(void* _panel)
-{
-#if MRPT_HAS_WXWIDGETS
-
-  try
-  {
-    CConfigFileMemory cfg;
-    writeConfigFromVideoSourcePanel(_panel, "CONFIG", &cfg);
-
-    // Try to open the camera:
-    CCameraSensor::Ptr video = std::make_shared<CCameraSensor>();
-    video->loadConfig(cfg, "CONFIG");
-
-    // This will raise an exception if necessary
-    video->initialize();
-
-    return video;
-  }
-  catch (const std::exception& e)
-  {
-    cerr << endl << e.what() << endl;
-    wxMessageBox(_("Couldn't open video source"), _("Error"));
-    return CCameraSensor::Ptr();
-  }
-#else
-  THROW_EXCEPTION("MRPT compiled without wxWidgets");
-#endif  // MRPT_HAS_WXWIDGETS
-}
-
-/* ------------------------------------------------------------------------
-            writeConfigFromVideoSourcePanel
-   ------------------------------------------------------------------------ */
-void mrpt::hwdrivers::writeConfigFromVideoSourcePanel(
-    void* _panel, const std::string& sect, mrpt::config::CConfigFileBase* cfg)
-{
-  MRPT_START
-#if MRPT_HAS_WXWIDGETS
-  ASSERT_(_panel);
-  auto* panel = reinterpret_cast<mrpt::gui::CPanelCameraSelection*>(_panel);
-  ASSERTMSG_(panel, "panel must be of type mrpt::gui::CPanelCameraSelection *");
-  panel->writeConfigFromVideoSourcePanel(sect, cfg);
-
-#else
-  THROW_EXCEPTION("MRPT compiled without wxWidgets");
-#endif  // MRPT_HAS_WXWIDGETS
-  MRPT_END
-}
-
-/* ------------------------------------------------------------------------
-            readConfigIntoVideoSourcePanel
-   ------------------------------------------------------------------------ */
-void mrpt::hwdrivers::readConfigIntoVideoSourcePanel(
-    void* _panel, const std::string& sect, const mrpt::config::CConfigFileBase* cfg)
-{
-  MRPT_START
-#if MRPT_HAS_WXWIDGETS
-  ASSERT_(_panel);
-  auto* panel = reinterpret_cast<mrpt::gui::CPanelCameraSelection*>(_panel);
-  ASSERTMSG_(panel, "panel must be of type mrpt::gui::CPanelCameraSelection *");
-
-  panel->readConfigIntoVideoSourcePanel(sect, cfg);
-
-#else
-  THROW_EXCEPTION("MRPT compiled without wxWidgets");
-#endif  // MRPT_HAS_WXWIDGETS
-  MRPT_END
 }
 
 /* -----------------------------------------------------

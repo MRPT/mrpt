@@ -12,7 +12,7 @@
    For instructions and more: see manpage of rawlog-edit
   ---------------------------------------------------------------*/
 
-#include <mrpt/apps/RawlogEditApp.h>
+#include <mrpt/apps-cli/RawlogEditApp.h>
 
 #include <iostream>
 

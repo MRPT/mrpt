@@ -918,7 +918,7 @@ void CRangeBearingKFSLAM::getAs3DObject(mrpt::viz::CSetOfObjects::Ptr& outObj) c
   // ------------------------------------------------
   //  Add the XYZ corner for the current area:
   // ------------------------------------------------
-  outObj->insert(opengl::stock_objects::CornerXYZ());
+  outObj->insert(mrpt::viz::stock_objects::CornerXYZ());
 
   // 3D ellipsoid for robot pose:
   CPointPDFGaussian pointGauss;
@@ -928,7 +928,7 @@ void CRangeBearingKFSLAM::getAs3DObject(mrpt::viz::CSetOfObjects::Ptr& outObj) c
   pointGauss.cov = m_pkk.blockCopy<3, 3>(0, 0);
 
   {
-    auto ellip = opengl::CEllipsoid3D::Create();
+    auto ellip = mrpt::viz::CEllipsoid3D::Create();
 
     ellip->setPose(pointGauss.mean);
     ellip->setCovMatrix(pointGauss.cov);
@@ -951,7 +951,7 @@ void CRangeBearingKFSLAM::getAs3DObject(mrpt::viz::CSetOfObjects::Ptr& outObj) c
     pointGauss.cov = m_pkk.blockCopy<get_feature_size(), get_feature_size()>(
         get_vehicle_size() + get_feature_size() * i, get_vehicle_size() + get_feature_size() * i);
 
-    auto ellip = opengl::CEllipsoid3D::Create();
+    auto ellip = mrpt::viz::CEllipsoid3D::Create();
 
     ellip->setName(format("%u", static_cast<unsigned int>(i)));
     ellip->enableShowName(true);

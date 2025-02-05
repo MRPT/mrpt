@@ -10,7 +10,6 @@
 #pragma once
 
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
@@ -29,6 +28,7 @@
 
 #include <functional>
 #include <memory>  // unique_ptr
+#include <thread>
 
 namespace mrpt::hwdrivers
 {
@@ -65,10 +65,6 @@ namespace mrpt::hwdrivers
  * mrpt::hwdrivers::CImageGrabber_OpenCV
  *  - For the parameters of dc1394 parameters, refer to generic IEEE1394
  * documentation, and to mrpt::hwdrivers::TCaptureOptions_dc1394.
- *  - If the high number of existing parameters annoy you, try the function
- * prepareVideoSourceFromUserSelection(),
- *     which displays a GUI dialog to the user so he/she can choose the desired
- * camera & its parameters.
  *
  *  Images can be saved in the "external storage" mode. Detached threads are
  * created for this task. See \a setPathForExternalImages() and \a
@@ -276,8 +272,7 @@ namespace mrpt::hwdrivers
  * \note [New in MRPT 1.4.0] The `bumblebee` driver has been deleted, use the
  * `flycap` driver in stereo mode.
  *  \sa mrpt::hwdrivers::CImageGrabber_OpenCV,
- * mrpt::hwdrivers::CImageGrabber_dc1394, CGenericSensor,
- * prepareVideoSourceFromUserSelection()
+ * mrpt::hwdrivers::CImageGrabber_dc1394, CGenericSensor
  * \ingroup mrpt_hwdrivers_grp
  */
 class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
@@ -371,8 +366,6 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
   uint64_t m_dc1394_camera_guid{0};
   int m_dc1394_camera_unit{0};
   TCaptureOptions_dc1394 m_dc1394_options;
-  int m_preview_decimation{0};
-  int m_preview_reduction{1};
 
   // Options for grabber_type= bumblebee_dc1394
   // ----------------------------------
@@ -480,11 +473,6 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
   int m_camera_grab_decimator{0};
   int m_camera_grab_decimator_counter{0};
 
-  int m_preview_counter{0};
-  /** Normally we'll use only one window, but for stereo images we'll use two
-   * of them. */
-  mrpt::gui::CDisplayWindow::Ptr m_preview_win1, m_preview_win2;
-
   /** @name Stuff related to working threads to save images to disk
     @{ */
   /** Number of working threads. Default:1, set to 2 in quad cores. */
@@ -505,39 +493,5 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
   /**  @} */
 
 };  // end class
-
-/** Used only from MRPT apps: Use with caution since "panel" MUST be a
- * "mrpt::gui::CPanelCameraSelection *"
- */
-CCameraSensor::Ptr prepareVideoSourceFromPanel(void* panel);
-
-/** Parse the user options in the wxWidgets "panel" and write the configuration
- * into the given section of the given configuration file.
- * Use with caution since "panel" MUST be a "mrpt::gui::CPanelCameraSelection
- * *"
- * \sa prepareVideoSourceFromUserSelection, prepareVideoSourceFromPanel,
- * readConfigIntoVideoSourcePanel
- */
-void writeConfigFromVideoSourcePanel(
-    void* panel,
-    const std::string& in_cfgfile_section_name,
-    mrpt::config::CConfigFileBase* out_cfgfile);
-
-/** Parse the given section of the given configuration file and set accordingly
- * the controls of the wxWidgets "panel".
- * Use with caution since "panel" MUST be a "mrpt::gui::CPanelCameraSelection
- * *"
- * \sa prepareVideoSourceFromUserSelection, prepareVideoSourceFromPanel,
- * writeConfigFromVideoSourcePanel
- */
-void readConfigIntoVideoSourcePanel(
-    void* panel,
-    const std::string& in_cfgfile_section_name,
-    const mrpt::config::CConfigFileBase* in_cfgfile);
-
-/** Show to the user a list of possible camera drivers and creates and open the
- * selected camera.
- */
-CCameraSensor::Ptr prepareVideoSourceFromUserSelection();
 
 }  // namespace mrpt::hwdrivers

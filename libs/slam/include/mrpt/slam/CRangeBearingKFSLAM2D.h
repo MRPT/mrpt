@@ -22,7 +22,7 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/data_association.h>
-#include <mrpt/viz/opengl_frwds.h>
+#include <mrpt/viz/viz_frwds.h>
 
 namespace mrpt::slam
 {

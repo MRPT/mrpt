@@ -14,11 +14,9 @@
 
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/opengl/TTriangle.h>
-#include <mrpt/opengl/opengl_fonts.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/viz/opengl_fonts.h>
 
-#include <iostream>
-#include <map>
 #include <string>
 #include <utility>
 #include <vector>
@@ -37,7 +35,7 @@ void glSetFont(const std::string& fontname);
 const std::string& glGetFont();
 
 /// different style for font rendering
-using TEXT_STYLE = TOpenGLFontStyle;
+using TEXT_STYLE = mrpt::viz::TOpenGLFontStyle;
 
 /// renders a string in GL using the current settings.
 /// Font coordinates are +X along the line and +Y along the up direction of
@@ -54,7 +52,7 @@ std::pair<double, double> glDrawText(
     const std::string& text,
     std::vector<mrpt::opengl::TTriangle>& tris,
     std::vector<mrpt::math::TPoint3Df>& lines,
-    TEXT_STYLE style = NICE,
+    TEXT_STYLE style = mrpt::viz::NICE,
     double spacing = 1.5,
     double kerning = 0.1);
 
@@ -70,7 +68,7 @@ void glDrawTextTransformed(
     const mrpt::poses::CPose3D& text_pose,
     float text_scale,
     const mrpt::img::TColor& text_color,
-    TEXT_STYLE style = NICE,
+    TEXT_STYLE style = mrpt::viz::NICE,
     double spacing = 1.5,
     double kerning = 0.1);
 

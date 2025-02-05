@@ -20,11 +20,11 @@
 #include <mrpt/opengl/Shader.h>
 #include <mrpt/opengl/TLightParameters.h>
 #include <mrpt/opengl/TRenderMatrices.h>
-#include <mrpt/opengl/opengl_fonts.h>
 #include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/typemeta/TEnumType.h>
+#include <mrpt/viz/opengl_fonts.h>
 
 #include <deque>
 #include <optional>

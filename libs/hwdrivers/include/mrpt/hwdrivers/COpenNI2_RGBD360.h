@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/obs/CObservationRGBD360.h>
@@ -83,8 +82,6 @@ namespace mrpt::hwdrivers
  *that thread (see mrpt::system::createThread ).
  *		- The intensity channel default to the RGB images, but it can be changed
  *with setVideoChannel() to read the IR camera images (useful for calibrating).
- *		- There is a built-in support for an optional preview of the data on a
- *window, so you don't need to even worry on creating a window to show them.
  *		- This class relies on an embedded version of libfreenect (you do NOT
  *need
  *to install it in your system). Thanks guys for the great job!
@@ -136,8 +133,6 @@ namespace mrpt::hwdrivers
  * -------------------------------------------------------
  *   [supplied_section_name]
  *    sensorLabel     = RGBD360       // A text description
- *    preview_window  = false        // Show a window with a preview of the
- *grabbed data in real-time
  *
  *    device_number   = 0           // Device index to open (0:first Kinect,
  *1:second Kinect,...)
@@ -282,15 +277,6 @@ class COpenNI2_RGBD360 :
   mrpt::poses::CPose3D m_sensorPoseOnRobot;
 
   static const int NUM_SENSORS = 2;
-
-  /** Show preview window while grabbing
-   */
-  bool m_preview_window{false};
-  /** If preview is enabled, only show 1 out of N images.
-   */
-  size_t m_preview_window_decimation{1};
-  size_t m_preview_decim_counter_range{0}, m_preview_decim_counter_rgb{0};
-  mrpt::gui::CDisplayWindow::Ptr m_win_range[NUM_SENSORS], m_win_int[NUM_SENSORS];
 
   /** Sensor max range (meters)
    */

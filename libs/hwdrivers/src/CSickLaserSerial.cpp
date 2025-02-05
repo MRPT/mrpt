@@ -17,15 +17,15 @@
 #include <mrpt/system/crc.h>
 #include <mrpt/system/os.h>
 
-#include <chrono>
+#include <iostream>
 #include <thread>
 
 IMPLEMENTS_GENERIC_SENSOR(CSickLaserSerial, mrpt::hwdrivers)
 
-#define RET_ERROR(msg)                                               \
-  {                                                                  \
-    cout << "[" << __CURRENT_FUNCTION_NAME__ << "] " << msg << endl; \
-    return false;                                                    \
+#define RET_ERROR(msg)                                                         \
+  {                                                                            \
+    std::cout << "[" << __CURRENT_FUNCTION_NAME__ << "] " << msg << std::endl; \
+    return false;                                                              \
   }
 
 using namespace std;
@@ -132,8 +132,6 @@ void CSickLaserSerial::doProcessSimple(
   // Do filter:
   C2DRangeFinderAbstract::filterByExclusionAreas(outObservation);
   C2DRangeFinderAbstract::filterByExclusionAngles(outObservation);
-  // Do show preview:
-  C2DRangeFinderAbstract::processPreview(outObservation);
 
   outThereIsObservation = true;
   internal_notifyGoodScanNow();

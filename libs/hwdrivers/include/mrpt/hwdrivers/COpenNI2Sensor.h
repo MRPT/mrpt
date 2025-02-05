@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/typemeta/TEnumType.h>
@@ -326,15 +325,6 @@ class COpenNI2Sensor :
       const mrpt::config::CConfigFileBase& configSource, const std::string& section) override;
 
   mrpt::poses::CPose3D m_sensorPoseOnRobot;
-
-  /** Show preview window while grabbing
-   */
-  bool m_preview_window{false};
-  /** If preview is enabled, only show 1 out of N images.
-   */
-  size_t m_preview_window_decimation{1};
-  size_t m_preview_decim_counter_range{0}, m_preview_decim_counter_rgb{0};
-  mrpt::gui::CDisplayWindow::Ptr m_win_range, m_win_int;
 
   /** Params for the RGB camera
    */

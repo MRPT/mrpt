@@ -130,8 +130,6 @@ void COpenNI2_RGBD360::loadConfig_sensorSpecific(
       DEG2RAD(configSource.read_float(iniSection, "pose_pitch", 0)),
       DEG2RAD(configSource.read_float(iniSection, "pose_roll", 0)));
 
-  m_preview_window = configSource.read_bool(iniSection, "preview_window", m_preview_window);
-
   m_width = configSource.read_int(iniSection, "width", 0);
   m_height = configSource.read_int(iniSection, "height", 0);
   m_fps = configSource.read_float(iniSection, "fps", 0);
@@ -183,51 +181,6 @@ void COpenNI2_RGBD360::getNextObservation(
         sensor_id);
   }
 
-  // preview in real-time?
-  for (unsigned sensor_id = 0; sensor_id < (unsigned int)NUM_SENSORS; sensor_id++)
-  {
-    if (m_preview_window)
-    {
-      if (out_obs.hasRangeImage)
-      {
-        if (++m_preview_decim_counter_range > m_preview_window_decimation)
-        {
-          m_preview_decim_counter_range = 0;
-          if (!m_win_range[sensor_id])
-          {
-            m_win_range[sensor_id] = mrpt::gui::CDisplayWindow::Create("Preview RANGE");
-            m_win_range[sensor_id]->setPos(5, 5 + 250 * sensor_id);
-          }
-
-          // Normalize the image
-          mrpt::img::CImage img;
-          const Eigen::MatrixXf r = out_obs.rangeImages[sensor_id].asEigen().cast<float>() *
-                                    out_obs.rangeUnits * float(1.0 / this->m_maxRange);
-          img.setFromMatrix(r, true /*normalized 0-1 */);
-          m_win_range[sensor_id]->showImage(img);
-        }
-      }
-      if (out_obs.hasIntensityImage)
-      {
-        if (++m_preview_decim_counter_rgb > m_preview_window_decimation)
-        {
-          m_preview_decim_counter_rgb = 0;
-          if (!m_win_int[sensor_id])
-          {
-            m_win_int[sensor_id] = mrpt::gui::CDisplayWindow::Create("Preview INTENSITY");
-            m_win_int[sensor_id]->setPos(330, 5 + 250 * sensor_id);
-          }
-          m_win_int[sensor_id]->showImage(out_obs.intensityImages[sensor_id]);
-        }
-      }
-    }
-    else
-    {
-      if (m_win_range[sensor_id]) m_win_range[sensor_id].reset();
-      if (m_win_int[sensor_id]) m_win_int[sensor_id].reset();
-    }
-  }
-  cout << "getNextObservation took " << 1000 * tictac.Tac() << "ms\n";
 #else
   THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2

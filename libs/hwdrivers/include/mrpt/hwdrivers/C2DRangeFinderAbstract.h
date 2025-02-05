@@ -9,8 +9,8 @@
 #pragma once
 
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/io/CStream.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/serialization/CArchive.h>
@@ -57,12 +57,8 @@ class C2DRangeFinderAbstract :
    * vehicle, that is, taking into account the "sensorPose". */
   mrpt::obs::CObservation2DRangeScan::TListExclusionAreasWithRanges m_lstExclusionPolys;
   /** A list of pairs of angles <init,end> such as all sensor ranges falling
-   * in those forbiden angles will be marked as invalid. */
+   * in those forbidden angles will be marked as invalid. */
   std::vector<std::pair<double, double>> m_lstExclusionAngles;
-
-  /** If true, shows a 3D window with a preview of the grabber data */
-  bool m_showPreview{false};
-  mrpt::gui::CDisplayWindow3D::Ptr m_win;
 
  protected:
   /** The I/O channel (will be nullptr if not bound). */
@@ -97,14 +93,10 @@ class C2DRangeFinderAbstract :
    */
   void filterByExclusionAreas(mrpt::obs::CObservation2DRangeScan& obs) const;
 
-  /** Mark as invalid those ranges in a set of forbiden angle ranges.
+  /** Mark as invalid those ranges in a set of forbidden angle ranges.
    * \sa loadExclusionAreas
    */
   void filterByExclusionAngles(mrpt::obs::CObservation2DRangeScan& obs) const;
-
-  /** Must be called inside the capture method to allow optional GUI preview
-   * of scans */
-  void processPreview(const mrpt::obs::CObservation2DRangeScan& obs);
 
  public:
   /** Default constructor */
@@ -112,8 +104,6 @@ class C2DRangeFinderAbstract :
   /** Destructor */
   ~C2DRangeFinderAbstract() override;
 
-  /** Enables GUI visualization in real-time */
-  void showPreview(bool enable = true) { m_showPreview = enable; }
   /** Binds the object to a given I/O channel.
    *  The stream object must not be deleted before the destruction of this
    * class.

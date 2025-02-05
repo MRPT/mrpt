@@ -9,7 +9,6 @@
 #pragma once
 
 #include <mrpt/containers/circular_buffer.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
 #include <mrpt/poses/CPose3D.h>
 
@@ -108,7 +107,6 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 
   /** High sensitivity [HS] mode (default: false) */
   bool m_highSensMode{false};
-  mrpt::gui::CDisplayWindow3D::Ptr m_win;
 
   /** Enables the SCIP2.0 protocol (this must be called at the very
    * begining!).

@@ -33,18 +33,7 @@ const int MINIMUM_PACKETS_TO_SET_TIMESTAMP_REFERENCE = 10;
 
 CHokuyoURG::CHokuyoURG() : m_rx_buffer(40000) { m_sensorLabel = "Hokuyo"; }
 
-CHokuyoURG::~CHokuyoURG()
-{
-  try
-  {
-    m_win.reset();
-    closeStreamConnection();
-  }
-  catch (const std::exception& e)
-  {
-    std::cerr << "[~CHokuyoURG] Exception:\n" << mrpt::exception_to_str(e);
-  }
-}
+CHokuyoURG::~CHokuyoURG() = default;
 
 void CHokuyoURG::closeStreamConnection()
 {
@@ -210,8 +199,6 @@ void CHokuyoURG::doProcessSimple(
   // Do filter:
   C2DRangeFinderAbstract::filterByExclusionAreas(outObservation);
   C2DRangeFinderAbstract::filterByExclusionAngles(outObservation);
-  // Do show preview:
-  C2DRangeFinderAbstract::processPreview(outObservation);
 
   outThereIsObservation = true;
   internal_notifyGoodScanNow();

@@ -2,10 +2,13 @@ digraph MRPT_LIBS {
 
 	node [shape=box,style=filled, fillcolor="#D0D0D0"];
 
-	apps [label="mrpt-apps",URL="group_mrpt_bayes_grp.html"];
-	apps -> gui;
-	apps -> slam;
-	apps -> hwdrivers;
+	apps_gui [label="mrpt-apps-gui",URL="group_mrpt_apps_gui_grp.html"];
+	apps_gui -> apps_cli;
+	apps_gui -> gui;
+
+	apps_cli [label="mrpt-apps-cli",URL="group_mrpt_apps_cli_grp.html"];
+	apps_cli -> slam;
+	apps_cli -> hwdrivers;
 
 	bayes [label="mrpt-bayes",URL="group_mrpt_bayes_grp.html"];
 	bayes -> math;
@@ -32,12 +35,10 @@ digraph MRPT_LIBS {
 	graphs -> viz;
 
 	graphslam  [label="mrpt-graphslam",URL="group_mrpt_graphslam_grp.html"];
-	graphslam -> gui;
 	graphslam -> slam;
 
 	gui        [label="mrpt-gui",URL="group_mrpt_gui_grp.html"];
 	gui -> opengl;
-	gui -> viz;
 
 	viz        [label="mrpt-viz",URL="group_mrpt_viz_grp.html"];
 	viz -> poses;

@@ -176,8 +176,6 @@ void CKinect::loadConfig_sensorSpecific(
       DEG2RAD(configSource.read_float(iniSection, "pose_pitch", 0)),
       DEG2RAD(configSource.read_float(iniSection, "pose_roll", 0)));
 
-  m_preview_window = configSource.read_bool(iniSection, "preview_window", m_preview_window);
-
   // "Stereo" calibration data:
   // [<SECTION>_LEFT]  // Depth
   //   ...
@@ -567,45 +565,6 @@ void CKinect::getNextObservation(
       m_out_obs.hasRangeImage = false;
       m_out_obs.rangeImage.resize(0, 0);
     }
-  }
-
-  // preview in real-time?
-  if (m_preview_window)
-  {
-    if (m_out_obs.hasRangeImage)
-    {
-      if (++m_preview_decim_counter_range > m_preview_window_decimation)
-      {
-        m_preview_decim_counter_range = 0;
-        if (!m_win_range)
-        {
-          m_win_range = mrpt::gui::CDisplayWindow::Create("Preview RANGE");
-          m_win_range->setPos(5, 5);
-        }
-
-        // Normalize the image
-        mrpt::img::CImage img = m_out_obs.rangeImage_getAsImage();
-        m_win_range->showImage(img);
-      }
-    }
-    if (m_out_obs.hasIntensityImage)
-    {
-      if (++m_preview_decim_counter_rgb > m_preview_window_decimation)
-      {
-        m_preview_decim_counter_rgb = 0;
-        if (!m_win_int)
-        {
-          m_win_int = mrpt::gui::CDisplayWindow::Create("Preview INTENSITY");
-          m_win_int->setPos(300, 5);
-        }
-        m_win_int->showImage(m_out_obs.intensityImage);
-      }
-    }
-  }
-  else
-  {
-    if (m_win_range) m_win_range.reset();
-    if (m_win_int) m_win_int.reset();
   }
 }
 

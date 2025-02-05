@@ -163,8 +163,6 @@ void CSwissRanger3DCamera::loadConfig_sensorSpecific(
       DEG2RAD(configSource.read_float(iniSection, "pose_pitch", 0)),
       DEG2RAD(configSource.read_float(iniSection, "pose_roll", 0)));
 
-  m_preview_window = configSource.read_bool(iniSection, "preview_window", m_preview_window);
-
   m_save_3d = configSource.read_bool(iniSection, "save_3d", m_save_3d);
   m_save_range_img = configSource.read_bool(iniSection, "save_range_img", m_save_range_img);
   m_save_intensity_img =
@@ -501,52 +499,6 @@ void CSwissRanger3DCamera::getNextObservation(
   m_out_obs.swap(obs);
 
   there_is_obs = true;
-
-  // preview in real-time?
-  if (m_preview_window)
-  {
-    if (m_out_obs.hasRangeImage)
-    {
-      static int decim = 0;
-      if (++decim > 10)
-      {
-        decim = 0;
-        if (!m_win_range)
-        {
-          m_win_range = mrpt::gui::CDisplayWindow::Create("Preview RANGE");
-          m_win_range->setPos(5, 5);
-        }
-
-        mrpt::img::CImage img;
-        // Normalize the image
-        math::CMatrixFloat range2D = m_out_obs.rangeImage;
-        range2D *= 1.0 / m_maxRange;
-        img.setFromMatrix(range2D);
-        m_win_range->showImage(img);
-      }
-    }
-    if (m_out_obs.hasIntensityImage)
-    {
-      static int decim = 0;
-      if (++decim > 10)
-      {
-        decim = 0;
-        if (!m_win_int)
-        {
-          m_win_int = mrpt::gui::CDisplayWindow::Create("Preview INTENSITY");
-          m_win_int->setPos(300, 5);
-        }
-        m_win_int->showImage(m_out_obs.intensityImage);
-      }
-    }
-  }
-  else
-  {
-    if (m_win_range) m_win_range.clear();
-    if (m_win_int) m_win_int.clear();
-  }
-
-  return;
 #endif
 }
 

@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationImage.h>
@@ -214,8 +213,6 @@ class CSwissRanger3DCamera : public mrpt::hwdrivers::CGenericSensor
     internal_resendParamsToCamera();
   }
   inline bool isEnabledDenoiseANF() const { return m_enable_denoise_anf; }
-  inline void enablePreviewWindow(bool enable = true) { m_preview_window = enable; }
-  inline bool isEnabledPreviewWindow() const { return m_preview_window; }
   /** @} */
 
   // List of small functions to be implemented differently in Win/Lin.
@@ -260,10 +257,6 @@ class CSwissRanger3DCamera : public mrpt::hwdrivers::CGenericSensor
   unsigned int m_cam_serial_num{0};
   /** Max range, as deducted from the camera frequency. */
   double m_maxRange{5};
-
-  /** Show preview window while grabbing */
-  bool m_preview_window{false};
-  mrpt::gui::CDisplayWindow::Ptr m_win_range, m_win_int;
 
   /** opaque handler to SRCAM. nullptr means it's not open yet. */
   void* m_cam;
