@@ -28,6 +28,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/viz/CPointCloud.h>
 #include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 #include <fstream>
 #include <sstream>

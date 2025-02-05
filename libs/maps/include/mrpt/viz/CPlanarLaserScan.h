@@ -14,14 +14,9 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/viz/CRenderizableShaderPoints.h>
-#include <mrpt/viz/CRenderizableShaderTriangles.h>
-#include <mrpt/viz/CRenderizableShaderWireFrame.h>
+#include <mrpt/viz/CVisualObject.h>
 
-namespace mrpt
-{
-/** \ingroup mrpt_maps_grp */
-namespace viz
+namespace mrpt::viz
 {
 /** This object renders a 2D laser scan by means of three elements: the points,
  * the line along end-points and the 2D scanned surface.
@@ -53,35 +48,14 @@ namespace viz
  * \ingroup mrpt_maps_grp
  */
 class CPlanarLaserScan :
-    public CRenderizableShaderPoints,
-    public CRenderizableShaderTriangles,
-    public CRenderizableShaderWireFrame
+    virtual public CVisualObject,
+    public VisualObjectParams_Triangles,
+    public VisualObjectParams_Lines,
+    public VisualObjectParams_Points
 {
   DEFINE_SERIALIZABLE(CPlanarLaserScan, mrpt::viz)
 
  public:
-  /** @name Renderizable shader API virtual methods
-   * @{ */
-  void render(const RenderContext& rc) const override;
-  void renderUpdateBuffers() const override;
-  void freeOpenGLResources() override
-  {
-    CRenderizableShaderTriangles::freeOpenGLResources();
-    CRenderizableShaderWireFrame::freeOpenGLResources();
-    CRenderizableShaderPoints::freeOpenGLResources();
-  }
-
-  virtual shader_list_t requiredShaders() const override
-  {
-    return {
-        DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES_NO_LIGHT, DefaultShaderID::POINTS};
-  }
-  void onUpdateBuffers_Wireframe() override;
-  void onUpdateBuffers_Triangles() override;
-  void onUpdateBuffers_Points() override;
-  mrpt::math::TPoint3Df getLocalRepresentativePoint() const override;
-  /** @} */
-
   CPlanarLaserScan() = default;
   ~CPlanarLaserScan() override = default;
 
@@ -89,25 +63,25 @@ class CPlanarLaserScan :
   void clear();
 
   /** Show or hides the scanned points \sa sePointsWidth, setPointsColor*/
-  inline void enablePoints(bool enable = true)
+  void enablePoints(bool enable = true)
   {
     m_enable_points = enable;
-    CRenderizable::notifyChange();
+    CVisualObject::notifyChange();
   }
 
   /** Show or hides lines along all scanned points \sa setLineWidth,
    * setLineColor*/
-  inline void enableLine(bool enable = true)
+  void enableLine(bool enable = true)
   {
     m_enable_line = enable;
-    CRenderizable::notifyChange();
+    CVisualObject::notifyChange();
   }
 
   /** Show or hides the scanned area as a 2D surface \sa setSurfaceColor */
-  inline void enableSurface(bool enable = true)
+  void enableSurface(bool enable = true)
   {
     m_enable_surface = enable;
-    CRenderizable::notifyChange();
+    CVisualObject::notifyChange();
   }
 
   void setLineColor(float R, float G, float B, float A = 1.0f)
@@ -134,12 +108,13 @@ class CPlanarLaserScan :
 
   void setScan(const mrpt::obs::CObservation2DRangeScan& scan)
   {
-    CRenderizable::notifyChange();
+    CVisualObject::notifyChange();
     m_cache_valid = false;
     m_scan = scan;
   }
 
   auto internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf override;
+  auto getLocalRepresentativePoint() const -> mrpt::math::TPoint3Df override;
 
  protected:
   mrpt::obs::CObservation2DRangeScan m_scan;
@@ -157,5 +132,4 @@ class CPlanarLaserScan :
   bool m_enable_surface{true};
 };
 
-}  // namespace viz
-}  // namespace mrpt
+}  // namespace mrpt::viz

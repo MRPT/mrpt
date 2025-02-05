@@ -13,10 +13,9 @@
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/viz/CRenderizableShaderTriangles.h>
-#include <mrpt/viz/CRenderizableShaderWireFrame.h>
 #include <mrpt/viz/CSetOfLines.h>
 #include <mrpt/viz/CSetOfTriangles.h>
+#include <mrpt/viz/CVisualObject.h>
 
 namespace mrpt::viz
 {
@@ -39,8 +38,9 @@ namespace mrpt::viz
  * \ingroup mrpt_maps_grp
  */
 class CAngularObservationMesh :
-    public CRenderizableShaderTriangles,
-    public CRenderizableShaderWireFrame
+    virtual public CVisualObject,
+    public VisualObjectParams_Triangles,
+    public VisualObjectParams_Lines
 {
   DEFINE_SERIALIZABLE(CAngularObservationMesh, mrpt::viz)
  public:
@@ -120,7 +120,7 @@ class CAngularObservationMesh :
      * and the increment.
      * \throw std::logic_error if the increment is zero.
      */
-    inline static TDoubleRange CreateFromIncrement(double initial, double final, double increment)
+    static TDoubleRange CreateFromIncrement(double initial, double final, double increment)
     {
       if (increment == 0) throw std::logic_error("Invalid increment value.");
       return TDoubleRange(initial, final, increment);
@@ -129,7 +129,7 @@ class CAngularObservationMesh :
      * Creates a range of values from the initial value, the final value
      * and a desired amount of samples.
      */
-    inline static TDoubleRange CreateFromAmount(double initial, double final, size_t amount)
+    static TDoubleRange CreateFromAmount(double initial, double final, size_t amount)
     {
       return TDoubleRange(initial, final, amount);
     }
@@ -137,8 +137,7 @@ class CAngularObservationMesh :
      * Creates a zero-centered range of values from an aperture, an amount
      * of samples and a direction.
      */
-    inline static TDoubleRange CreateFromAperture(
-        double aperture, size_t amount, bool negToPos = true)
+    static TDoubleRange CreateFromAperture(double aperture, size_t amount, bool negToPos = true)
     {
       return TDoubleRange(aperture, amount, negToPos);
     }
@@ -146,7 +145,7 @@ class CAngularObservationMesh :
      * Returns the total aperture of the range.
      * \throw std::logic_error on invalid range type.
      */
-    inline double aperture() const
+    double aperture() const
     {
       switch (rangeType)
       {
@@ -167,7 +166,7 @@ class CAngularObservationMesh :
      * Returns the first value of the range.
      * \throw std::logic_error on invalid range type.
      */
-    inline double initialValue() const
+    double initialValue() const
     {
       switch (rangeType)
       {
@@ -185,7 +184,7 @@ class CAngularObservationMesh :
      * Returns the last value of the range.
      * \throw std::logic_error on invalid range type.
      */
-    inline double finalValue() const
+    double finalValue() const
     {
       switch (rangeType)
       {
@@ -207,7 +206,7 @@ class CAngularObservationMesh :
      * Returns the increment between two consecutive values of the range.
      * \throw std::logic_error on invalid range type.
      */
-    inline double increment() const
+    double increment() const
     {
       switch (rangeType)
       {
@@ -228,7 +227,7 @@ class CAngularObservationMesh :
      * Returns the total amount of values in this range.
      * \throw std::logic_error on invalid range type.
      */
-    inline size_t amount() const
+    size_t amount() const
     {
       switch (rangeType)
       {
@@ -257,7 +256,7 @@ class CAngularObservationMesh :
      * positive, false otherwise.
      * \throw std::logic_error on invalid range type.
      */
-    inline bool negToPos() const
+    bool negToPos() const
     {
       switch (rangeType)
       {
@@ -315,46 +314,27 @@ class CAngularObservationMesh :
   /**
    * Returns whether the object is configured as wireframe or solid.
    */
-  inline bool isWireframe() const { return m_Wireframe; }
+  bool isWireframe() const { return m_Wireframe; }
   /**
    * Sets the display mode for the object. True=wireframe, False=solid.
    */
-  inline void setWireframe(bool enabled = true)
+  void setWireframe(bool enabled = true)
   {
     m_Wireframe = enabled;
-    CRenderizable::notifyChange();
+    CVisualObject::notifyChange();
   }
   /**
    * Returns whether the object may be transparent or not.
    */
-  inline bool isTransparencyEnabled() const { return mEnableTransparency; }
+  bool isTransparencyEnabled() const { return mEnableTransparency; }
   /**
    * Enables or disables transparencies.
    */
-  inline void enableTransparency(bool enabled = true)
+  void enableTransparency(bool enabled = true)
   {
     mEnableTransparency = enabled;
-    CRenderizable::notifyChange();
+    CVisualObject::notifyChange();
   }
-
-  /** @name Renderizable shader API virtual methods
-   * @{ */
-  void freeOpenGLResources() override
-  {
-    CRenderizableShaderTriangles::freeOpenGLResources();
-    CRenderizableShaderWireFrame::freeOpenGLResources();
-  }
-  void render(const RenderContext& rc) const override;
-  void renderUpdateBuffers() const override;
-
-  virtual shader_list_t requiredShaders() const override
-  {
-    // May use up to two shaders (triangles and lines):
-    return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES_LIGHT};
-  }
-  void onUpdateBuffers_Wireframe() override;
-  void onUpdateBuffers_Triangles() override;
-  /** @} */
 
   /**
    * Traces a ray to the object, returning the distance to a given pose

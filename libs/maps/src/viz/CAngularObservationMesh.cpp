@@ -14,29 +14,6 @@
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/viz/CAngularObservationMesh.h>
 
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-#ifdef _WIN32
-// Windows:
-#include <windows.h>
-#endif
-
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#else
-#include <GL/gl.h>
-#endif
-#endif
-
-// Include libraries in linking:
-#if MRPT_HAS_OPENGL_GLUT && defined(_WIN32)
-// WINDOWS:
-#if defined(_MSC_VER)
-#pragma comment(lib, "opengl32.lib")
-#pragma comment(lib, "GlU32.lib")
-#endif
-#endif
-
-using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::math;
@@ -44,7 +21,7 @@ using namespace mrpt::viz;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
-IMPLEMENTS_SERIALIZABLE(CAngularObservationMesh, CRenderizable, mrpt::viz)
+IMPLEMENTS_SERIALIZABLE(CAngularObservationMesh, CVisualObject, mrpt::viz)
 
 void CAngularObservationMesh::addTriangle(
     const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3) const
@@ -57,12 +34,12 @@ void CAngularObservationMesh::addTriangle(
   t.setColor(getColor_u8());
 
   triangles.emplace_back(std::move(t));
-  CRenderizable::notifyChange();
+  CVisualObject::notifyChange();
 }
 
 void CAngularObservationMesh::updateMesh() const
 {
-  CRenderizable::notifyChange();
+  CVisualObject::notifyChange();
   updateMeshImpl();
 }
 
@@ -145,62 +122,6 @@ void CAngularObservationMesh::updateMeshImpl() const
   meshUpToDate = true;
 }
 
-void CAngularObservationMesh::render(const RenderContext& rc) const
-{
-  switch (rc.shader_id)
-  {
-    case DefaultShaderID::TRIANGLES_LIGHT:
-      if (!m_Wireframe) CRenderizableShaderTriangles::render(rc);
-      break;
-    case DefaultShaderID::WIREFRAME:
-      if (m_Wireframe) CRenderizableShaderWireFrame::render(rc);
-      break;
-  };
-}
-void CAngularObservationMesh::renderUpdateBuffers() const
-{
-  CRenderizableShaderTriangles::renderUpdateBuffers();
-  CRenderizableShaderWireFrame::renderUpdateBuffers();
-}
-
-void CAngularObservationMesh::onUpdateBuffers_Wireframe()
-{
-  auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
-  auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
-  std::unique_lock<std::shared_mutex> wfWriteLock(
-      CRenderizableShaderWireFrame::m_wireframeMtx.data);
-
-  vbd.clear();
-  cbd.clear();
-
-  for (const auto& t : triangles)
-  {
-    // Was: glBegin(GL_LINE_LOOP);
-    for (int k = 0; k <= 3; k++)
-    {
-      int kk = k % 3;
-      vbd.emplace_back(t.x(kk), t.y(kk), t.z(kk));
-      cbd.emplace_back(t.r(kk), t.g(kk), t.b(kk), t.a(kk));
-    }
-  }
-}
-
-void CAngularObservationMesh::onUpdateBuffers_Triangles()
-{
-  std::unique_lock<std::shared_mutex> trisWriteLock(
-      CRenderizableShaderTriangles::m_trianglesMtx.data);
-  auto& tris = CRenderizableShaderTriangles::m_triangles;
-
-  tris = this->triangles;
-
-  // All faces, all vertices, same color:
-  for (auto& t : tris)
-  {
-    t.setColor(getColor_u8());
-    t.computeNormals();
-  }
-}
-
 bool CAngularObservationMesh::traceRay(
     [[maybe_unused]] const mrpt::poses::CPose3D& o, [[maybe_unused]] double& dist) const
 {
@@ -211,7 +132,7 @@ bool CAngularObservationMesh::traceRay(
 bool CAngularObservationMesh::setScanSet(
     const std::vector<mrpt::obs::CObservation2DRangeScan>& scans)
 {
-  CRenderizable::notifyChange();
+  CVisualObject::notifyChange();
 
   // Returns false if the scan is inconsistent
   if (scans.size() > 0)
@@ -226,27 +147,27 @@ bool CAngularObservationMesh::setScanSet(
   }
   scanSet = scans;
   meshUpToDate = false;
-  CRenderizable::notifyChange();
+  CVisualObject::notifyChange();
   return true;
 }
 
 void CAngularObservationMesh::setPitchBounds(const double initial, const double final)
 {
-  CRenderizable::notifyChange();
+  CVisualObject::notifyChange();
 
   pitchBounds.clear();
   pitchBounds.push_back(initial);
   pitchBounds.push_back(final);
   meshUpToDate = false;
-  CRenderizable::notifyChange();
+  CVisualObject::notifyChange();
 }
 void CAngularObservationMesh::setPitchBounds(const std::vector<double>& bounds)
 {
-  CRenderizable::notifyChange();
+  CVisualObject::notifyChange();
 
   pitchBounds = bounds;
   meshUpToDate = false;
-  CRenderizable::notifyChange();
+  CVisualObject::notifyChange();
 }
 void CAngularObservationMesh::getPitchBounds(double& initial, double& final) const
 {
@@ -288,7 +209,7 @@ void CAngularObservationMesh::serializeTo(mrpt::serialization::CArchive& out) co
   writeToStreamRender(out);
   // Version 0:
   out << pitchBounds << scanSet << m_Wireframe << mEnableTransparency;
-  CRenderizableShaderTriangles::params_serialize(out);  // v1
+  VisualObjectParams_Triangles::params_serialize(out);  // v1
 }
 
 void CAngularObservationMesh::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -300,14 +221,14 @@ void CAngularObservationMesh::serializeFrom(mrpt::serialization::CArchive& in, u
       readFromStreamRender(in);
       in >> pitchBounds >> scanSet >> m_Wireframe >> mEnableTransparency;
 
-      if (version >= 1) CRenderizableShaderTriangles::params_deserialize(in);
+      if (version >= 1) VisualObjectParams_Triangles::params_deserialize(in);
 
       break;
     default:
       MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
   };
   meshUpToDate = false;
-  CRenderizable::notifyChange();
+  CVisualObject::notifyChange();
 }
 
 void CAngularObservationMesh::TDoubleRange::values(std::vector<double>& vals) const
