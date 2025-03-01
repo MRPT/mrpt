@@ -22,7 +22,7 @@ class LockHelper
   using Tnc = std::remove_const_t<T>;
 
  public:
-  LockHelper(const Tnc* l) : l_{const_cast<Tnc*>(l)} { l_->lock(); }
+  explicit LockHelper(const Tnc* l) : l_{const_cast<Tnc*>(l)} { l_->lock(); }
   ~LockHelper()
   {
     if (l_) l_->unlock();
@@ -31,11 +31,11 @@ class LockHelper
   LockHelper(const LockHelper& o) = delete;
   LockHelper& operator=(const LockHelper& o) = delete;
 
-  LockHelper(LockHelper&& o) : l_{o.l} { o.l = nullptr; }
+  LockHelper(LockHelper&& o) : l_{o.l_} { o.l_ = nullptr; }
   LockHelper& operator=(LockHelper&& o)
   {
-    l_ = o.l;
-    o.l = nullptr;
+    l_ = o.l_;
+    o.l_ = nullptr;
     return *this;
   }
 
