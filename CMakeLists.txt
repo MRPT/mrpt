@@ -8,20 +8,16 @@
 #  For compiling instructions for all compilers and platforms, see
 #   https://docs.mrpt.org/reference/latest/compiling.html
 #
-#  2007-2023, Jose Luis Blanco <jlblanco@ual.es>
+#  2007-2025, Jose Luis Blanco <jlblanco@ual.es>
 # ----------------------------------------------------------------------------
 
 # -------------------------
 #        Setup CMake
 # -------------------------
 # Minimum version required for:
-# - target_compile_features() => 3.8.0
 # - cmakemodules/ECMFindModuleHelpers.cmake:112  => 3.16.0  (Available in Ubuntu >=20.04)
 cmake_minimum_required(VERSION 3.16.0)
 
-if (POLICY CMP0048) # cmake warns if loaded from a min-3.x-required parent dir:
-  cmake_policy(SET CMP0048 NEW)
-endif()
 if (POLICY CMP0075) # CheckIncludeFile: Yes, we will set "CMAKE_REQUIRED_LIBRARIES".
 	cmake_policy(SET CMP0075 NEW)
 endif()
@@ -70,7 +66,7 @@ else()
 	set(CMAKE_MRPT_WORD_SIZE 32)
 endif()
 
-include(cmakemodules/script_version_number.cmake REQUIRED)	#  Loads MRPT version number
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_version_number.cmake REQUIRED)	#  Loads MRPT version number
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmakemodules") # Directory for CMake scripts
 
@@ -83,21 +79,18 @@ find_package(codecov)
 
 option(MRPT_ALLOW_LGPLV3 "Allows MRPT to use LGPLV3 code (mrpt-vision-lgpl)" "OFF")
 
-option(MRPT_EXCEPTIONS_WITH_CALL_STACK "Report callstack upon exceptions" "ON")
-set(MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH "50" CACHE STRING "Maximum number of stack levels to show upon exceptions.")
-mark_as_advanced(MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH)
 
 # The root directory for all MRPT libraries/modules:
 set(MRPT_LIBS_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/libs" CACHE INTERNAL "")  # This emulates global vars
 
 # ----- Useful macros ------
-include(cmakemodules/UtilsMacros.cmake REQUIRED)
-include(cmakemodules/DebugMacros.cmake REQUIRED)
-include(cmakemodules/FilterFileLists.cmake REQUIRED)
-include(cmakemodules/DeclareMRPTLib.cmake REQUIRED)
-include(cmakemodules/DeclareMEXLib.cmake REQUIRED)
-include(cmakemodules/DeclareAppDependencies.cmake REQUIRED)
-include(cmakemodules/script_detect_unix_arch.cmake REQUIRED) # Detect machine architecture, on UNIX
+include(${MRPT_SOURCE_DIR}/cmakemodules/UtilsMacros.cmake REQUIRED)
+include(${MRPT_SOURCE_DIR}/cmakemodules/DebugMacros.cmake REQUIRED)
+include(${MRPT_SOURCE_DIR}/cmakemodules/FilterFileLists.cmake REQUIRED)
+include(${MRPT_SOURCE_DIR}/cmakemodules/DeclareMRPTLib.cmake REQUIRED)
+include(${MRPT_SOURCE_DIR}/cmakemodules/DeclareMEXLib.cmake REQUIRED)
+include(${MRPT_SOURCE_DIR}/cmakemodules/DeclareAppDependencies.cmake REQUIRED)
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_detect_unix_arch.cmake REQUIRED) # Detect machine architecture, on UNIX
 # --------------------------
 
 # Avoid the need for DLL export/import macros in Windows:
@@ -158,25 +151,6 @@ include(FindPkgConfig OPTIONAL)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMakeTargets")
 
-# Build the RoboPeak Lidar library?
-set(DEFAULT_BUILD_ROBOPEAK_LIDAR ON) # Default: Yes
-if ((${CMAKE_MRPT_KERNEL} MATCHES "GNU") # It doesnt build in hurd
-    OR APPLE # and macos
-    OR ("$ENV{DEB_TARGET_ARCH_CPU}" STREQUAL "ppc64")   # fails: termios2
-    OR ("$ENV{DEB_TARGET_ARCH_CPU}" STREQUAL "ppc64el") # fails: termios2
-    OR ("$ENV{DEB_TARGET_ARCH_CPU}" STREQUAL "powerpc") # fails: termios2
-    OR MINGW
-    )
-	set(DEFAULT_BUILD_ROBOPEAK_LIDAR OFF)
-endif()
-# Decl option:
-set(MRPT_WITH_ROBOPEAK_LIDAR ${DEFAULT_BUILD_ROBOPEAK_LIDAR} CACHE BOOL "Build an embedded version of RoboPeak LIDAR SDK (interface to low-cost lidar)")
-if(MRPT_WITH_ROBOPEAK_LIDAR)
-	set(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR 1)
-else()
-	set(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR 0)
-endif()
-
 #-----------------------------------
 #  Build with MRPT-MEX compatibility?
 #-----------------------------------
@@ -201,15 +175,9 @@ endif()
 set(MRPT_ENABLE_PRECOMPILED_HDRS ${default_use_precomp} CACHE BOOL "Enable precompiled headers")
 mark_as_advanced(MRPT_ENABLE_PRECOMPILED_HDRS)
 
-# MRPT_TRY_START/END blocks
-# ===================================================
-set(MRPT_HAS_STACKED_EXCEPTIONS ON CACHE BOOL "Enable MRPT_TRY_START/END blocks (disable it for speed up).")
-
-# ASSERT_ blocks
-set(MRPT_HAS_ASSERT ON CACHE BOOL "Enable ASSERT_ statements (disable it for speed up).")
 
 # "Classic" function & headers detection:
-include(cmakemodules/script_detect_functions_headers.cmake REQUIRED)
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_detect_functions_headers.cmake REQUIRED)
 
 # MSVC only:
 # ===================================================
@@ -252,61 +220,18 @@ if(NOT MSVC AND NOT XCODE_VERSION)
     endif()
 endif()
 
-# Leave these includes here before ROS to prevent the warning:
-#   cmakemodules/ECMFindModuleHelpers.cmake:112 (message):
-#   Your project should require at least CMake 3.16.0 to use FindEGL.cmake
-#
-include(cmakemodules/script_gl_glut.cmake REQUIRED)     # Check for the GL,GLUT libraries
-include(cmakemodules/script_jsoncpp.cmake REQUIRED)     # Check for jsoncpp
-
 # ----------------------------------------------------------------------------
 # Other sub-scripts:
 # ----------------------------------------------------------------------------
-include(cmakemodules/script_assimp.cmake REQUIRED)      # Check for system assimp lib (3D models)
-include(cmakemodules/script_bfd.cmake REQUIRED)      # BFD library for debug symbols for stack backtraces
-include(cmakemodules/script_clang_tidy.cmake REQUIRED)  # Clang tidy
-include(cmakemodules/script_eigen.cmake REQUIRED)       # Eigen3
-include(cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale
-include(cmakemodules/script_flycapture2.cmake REQUIRED) # Check for PointGreyResearch (PGR) FlyCapture2 library
-include(cmakemodules/script_ftdi.cmake REQUIRED)        # Check for the FTDI headers (Linux only, in win32 we use built-in header & dynamic DLL load):
-include(cmakemodules/script_gcc_clang_id.cmake REQUIRED) # Helper variables
-include(cmakemodules/script_gridmap_options.cmake REQUIRED) # Gridmap options
-include(cmakemodules/script_gtest.cmake REQUIRED)       # Unit testing lib
-include(cmakemodules/script_inotify.cmake REQUIRED)     # Check for the sys/inotify headers (Linux only, in win32 we use the equivalent API for file system monitoring):
-include(cmakemodules/script_isense.cmake REQUIRED)      # Support for INTERSENSE Sensors
-include(cmakemodules/script_iwyu.cmake REQUIRED)        # Include-what-you-use
-include(cmakemodules/script_jpeg.cmake REQUIRED)        # Check for jpeg
-include(cmakemodules/script_kinect.cmake REQUIRED)      # Kinect support in a set of different ways
-include(cmakemodules/script_libdc1394.cmake REQUIRED)   # Check for libdc1394-2
-include(cmakemodules/script_libfyaml.cmake REQUIRED)    # Defines embedded version of libfyaml
-include(cmakemodules/script_liblas.cmake REQUIRED)      # Check for the LAS LiDAR format library
-include(cmakemodules/script_libtclap.cmake REQUIRED)    # Check for system libtclap
-include(cmakemodules/script_matlab.cmake REQUIRED)      # Support for Matlab MEX functions generation
-include(cmakemodules/script_mynteye.cmake REQUIRED)     # Support for MYNT EYE cameras
-include(cmakemodules/script_nanogui.cmake REQUIRED)     # Check for nanogui
-include(cmakemodules/script_nanoflann.cmake REQUIRED)   # Check for nanoflann
-include(cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
-include(cmakemodules/script_nite2.cmake REQUIRED)       # Check for NITE2 library
-include(cmakemodules/script_octomap.cmake REQUIRED)     # Check for the octomap library
-include(cmakemodules/script_opencv.cmake REQUIRED)      # Check for the OpenCV libraries (via pkg-config, CMake, with different options)
-include(cmakemodules/script_openni2.cmake REQUIRED)     # Check for the OpenNI2 library
-include(cmakemodules/script_pcap.cmake REQUIRED)        # Check for the libpcap library
-include(cmakemodules/script_phidget.cmake REQUIRED)     # Support for phidget Interface Kit with proximity sensor device :
-include(cmakemodules/script_python_bindings.cmake REQUIRED)     # Support for python
-include(cmakemodules/script_qt.cmake REQUIRED)          # Check for wxWidgets + GL
-include(cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimization options
-include(cmakemodules/script_simpleini.cmake REQUIRED)   # SimpleINI lib
-include(cmakemodules/script_suitesparse.cmake REQUIRED) # SuiteSparse libs
-include(cmakemodules/script_swissrange.cmake REQUIRED)  # Support for SWISSRANGE 3D camera:
-include(cmakemodules/script_tbb.cmake REQUIRED)         # TBB
-include(cmakemodules/script_tinyxml2.cmake REQUIRED)    # tinyxml2 lib
-include(cmakemodules/script_triclops.cmake REQUIRED)    # Check for PointGreyResearch (PGR) Triclops library
-include(cmakemodules/script_videre_svs.cmake REQUIRED)  # Support for Videre Design stereo camera:
-include(cmakemodules/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + GL
-include(cmakemodules/script_xsens.cmake REQUIRED)       # XSens Motion trackers / IMU drivers
-include(cmakemodules/script_zlib.cmake REQUIRED)        # Check for zlib
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_clang_tidy.cmake REQUIRED)  # Clang tidy
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimization options
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_gcc_clang_id.cmake REQUIRED) # Helper variables
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_gtest.cmake REQUIRED)       # Unit testing lib
 
-include(cmakemodules/process_emscripten_embedded_files.cmake REQUIRED)
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_matlab.cmake REQUIRED)      # Support for Matlab MEX functions generation
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_python_bindings.cmake REQUIRED)     # Support for python
+
+include(${MRPT_SOURCE_DIR}/cmakemodules/process_emscripten_embedded_files.cmake REQUIRED)
 
 
 # ---------------------------------------------------------------------------
@@ -321,7 +246,7 @@ mark_as_advanced(FORCE MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 # Include Asian fonts in CMRPTCanvas ?
 set( MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in CMRPTCanvas (increases library size).")
 
-include(cmakemodules/script_declare_defines.cmake REQUIRED)  # Transform the variables MRPT_XXX="ON/OFF" to CMAKE_MRPT_XXX="1/0"
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_declare_defines.cmake REQUIRED)  # Transform the variables MRPT_XXX="ON/OFF" to CMAKE_MRPT_XXX="1/0"
 
 # ---------------------------------------------------------------------------
 # The C++ include & link directories:
@@ -581,7 +506,7 @@ set( MEX_EXECUTABLE_OUTPUT_PATH ${MRPT_BINARY_DIR}/mex/test CACHE PATH "Output d
 set(ALL_MRPT_LIBS "" CACHE INTERNAL "")  # This emulates global vars
 
 if (NOT MSVC AND MRPT_ENABLE_PRECOMPILED_HDRS)
-	include(cmakemodules/cotire.cmake REQUIRED) # COmpiler TIme REducer helper for PCH
+	include(${MRPT_SOURCE_DIR}/cmakemodules/cotire.cmake REQUIRED) # COmpiler TIme REducer helper for PCH
 	set_directory_properties(PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE) # Disable unity targets
 endif()
 
@@ -598,8 +523,8 @@ else()
     set(EIGEN_MAX_STATIC_ALIGN_BYTES 16)
 endif()
 
-include(cmakemodules/script_create_config_h.cmake REQUIRED)   # Build config.h
-include(cmakemodules/script_create_version_h.cmake REQUIRED)  # Build version.h
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_create_config_h.cmake REQUIRED)   # Build config.h
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_create_version_h.cmake REQUIRED)  # Build version.h
 
 add_custom_target(all_mrpt_libs ALL) # all_mrpt_libs: target to build all mrpt-* modules
 
@@ -648,7 +573,7 @@ endif()
 unset(_def_value )
 
 # Prepare CPack params for building binary packages (has to be after the apps/)
-include(cmakemodules/script_setup_cpack.cmake REQUIRED)
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_setup_cpack.cmake REQUIRED)
 
 # ----------------------------------------------------------------------------
 #  Hide some variables to the user, just show the important variables:
@@ -673,11 +598,11 @@ write_basic_package_version_file(
 )
 
 # Build list of files to install, packages, etc.
-include(cmakemodules/script_install_commands.cmake REQUIRED)
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_install_commands.cmake REQUIRED)
 
 
 # Summary
-include(cmakemodules/script_show_final_summary.cmake REQUIRED)
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_show_final_summary.cmake REQUIRED)
 
 #-----------------------------------
 # The examples

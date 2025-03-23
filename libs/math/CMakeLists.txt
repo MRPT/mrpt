@@ -1,4 +1,10 @@
-﻿#  See "DeclareMRPTLib.cmake"
+﻿
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_eigen.cmake REQUIRED)       # Eigen3
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_nanoflann.cmake REQUIRED)   # Check for nanoflann
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_suitesparse.cmake REQUIRED) # SuiteSparse libs
+
+
+#  See "DeclareMRPTLib.cmake"
 list(APPEND math_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/math/*.cpp" "${MRPT_LIBS_ROOT}/math/*.h")
 list(APPEND math_EXTRA_SRCS_NAME 	"math" "math")
 
@@ -12,12 +18,6 @@ endif()
 # kmeans++
 list(APPEND math_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/math/src/kmeans++/*.cpp" "${MRPT_LIBS_ROOT}/math/src/kmeans++/*.h")
 list(APPEND math_EXTRA_SRCS_NAME 	"math/kmeans" "math/kmeans")
-
-# debug visualizer for Eigen matrices
-if (MSVC AND MSVC_VERSION GREATER 1800) # VS>= 2013
-	list(APPEND math_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/debug/*.natvis")
-	list(APPEND math_EXTRA_SRCS_NAME 	"MSVC debug natvis")
-endif()
 
 # extra dependencies required by unit tests in this module:
 set_property(GLOBAL PROPERTY mrpt_math_UNIT_TEST_EXTRA_DEPS mrpt-io)

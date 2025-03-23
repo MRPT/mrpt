@@ -1,3 +1,7 @@
+
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_jsoncpp.cmake REQUIRED)     # Check for jsoncpp
+
+
 # Extra dependencies required by unit tests in this module:
 # Include jsoncpp only if present (optional)
 if (CMAKE_MRPT_HAS_JSONCPP)

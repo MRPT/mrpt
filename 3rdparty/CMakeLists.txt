@@ -1,5 +1,5 @@
 
-include(../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+include(${MRPT_SOURCE_DIR}/cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 # ----------------------------------
 # wxThings
@@ -91,6 +91,26 @@ endif()
 # ----------------------------------
 # Build RPLIDAR?
 # ----------------------------------
+# Build the RoboPeak Lidar library?
+set(DEFAULT_BUILD_ROBOPEAK_LIDAR ON) # Default: Yes
+if ((${CMAKE_MRPT_KERNEL} MATCHES "GNU") # It doesnt build in hurd
+    OR APPLE # and macos
+    OR ("$ENV{DEB_TARGET_ARCH_CPU}" STREQUAL "ppc64")   # fails: termios2
+    OR ("$ENV{DEB_TARGET_ARCH_CPU}" STREQUAL "ppc64el") # fails: termios2
+    OR ("$ENV{DEB_TARGET_ARCH_CPU}" STREQUAL "powerpc") # fails: termios2
+    OR MINGW
+    )
+	set(DEFAULT_BUILD_ROBOPEAK_LIDAR OFF)
+endif()
+# Decl option:
+set(MRPT_WITH_ROBOPEAK_LIDAR ${DEFAULT_BUILD_ROBOPEAK_LIDAR} CACHE BOOL "Build an embedded version of RoboPeak LIDAR SDK (interface to low-cost lidar)")
+if(MRPT_WITH_ROBOPEAK_LIDAR)
+	set(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR 1)
+else()
+	set(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR 0)
+endif()
+
+
 option(MRPT_BUILD_rplidar_sdk "Build rplidar_sdk" ON)
 mark_as_advanced(MRPT_BUILD_rplidar_sdk)
 
@@ -326,7 +346,7 @@ endif()
 # ----------------------------------
 # nanogui:
 # ----------------------------------
-# Already handled in cmakemodules/script_nanogui.cmake
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_nanogui.cmake REQUIRED)     # Check for nanogui
 
 # ----------------------------------
 # libfyaml

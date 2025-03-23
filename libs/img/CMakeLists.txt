@@ -1,3 +1,8 @@
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_opencv.cmake REQUIRED)      # Check for the OpenCV libraries (via pkg-config, CMake, with different options)
+
+# TODO: Consider using just opencv writers?
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_jpeg.cmake REQUIRED)        # Check for jpeg
+
 
 define_mrpt_lib(
 	img 		# Lib name

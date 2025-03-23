@@ -1,3 +1,7 @@
+
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_simpleini.cmake REQUIRED)   # SimpleINI lib
+
+
 #  See "DeclareMRPTLib.cmake"
 list(APPEND config_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/config/*.cpp" "${MRPT_LIBS_ROOT}/config/*.h")
 list(APPEND config_EXTRA_SRCS_NAME 	"config" "config")

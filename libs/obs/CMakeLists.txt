@@ -1,3 +1,5 @@
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_tinyxml2.cmake REQUIRED)    # tinyxml2 lib
+
 # extra dependencies required by unit tests in this module:
 set_property(GLOBAL PROPERTY mrpt_obs_UNIT_TEST_EXTRA_DEPS mrpt-maps)
 

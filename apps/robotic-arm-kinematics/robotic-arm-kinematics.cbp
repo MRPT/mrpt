@@ -819,9 +819,6 @@
       <Unit filename="/home/jlblanco/code/mrpt/cmakemodules/script_lib3ds.cmake">
           <Option virtualFolder="CMake Files\cmakemodules\" />
       </Unit>
-      <Unit filename="/home/jlblanco/code/mrpt/cmakemodules/script_liblas.cmake">
-          <Option virtualFolder="CMake Files\cmakemodules\" />
-      </Unit>
       <Unit filename="/home/jlblanco/code/mrpt/cmakemodules/script_libtclap.cmake">
           <Option virtualFolder="CMake Files\cmakemodules\" />
       </Unit>

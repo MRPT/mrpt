@@ -3,8 +3,8 @@
 #  See "DeclareMRPTLib.cmake" for explanations
 # -------------------------------------------------
 
-# Glext headers only (for Windows)
-#include_directories(${CVD_DIR})
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_assimp.cmake REQUIRED)      # Check for system assimp lib (3D models)
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_gl_glut.cmake REQUIRED)     # Check for the GL,GLUT libraries
 
 # Assimp:
 if (CMAKE_MRPT_HAS_ASSIMP)

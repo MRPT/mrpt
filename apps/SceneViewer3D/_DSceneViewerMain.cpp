@@ -87,9 +87,6 @@ const std::string iniFileSect("CONF_LIN");
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
-#if MRPT_HAS_LIBLAS
-#include <mrpt/maps/CPointsMap_liblas.h>
-#endif
 
 const mrpt::maps::CColouredPointsMap dummy_map;  // this is to enforce to load
 // the mrpt-maps DLL, then
@@ -680,7 +677,6 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id) : maxv(0
   Bind(wxEVT_MENU, &svf::OnMenuSave, this, ID_MENUITEM7);
   Bind(wxEVT_MENU, &svf::OnInsert3DS, this, ID_MENUITEM6);
   Bind(wxEVT_MENU, &svf::OnMenuItemImportPLYPointCloud, this, ID_MENUITEM20);
-  Bind(wxEVT_MENU, &svf::OnmnuImportLASSelected, this, ID_MENUITEM25);
   Bind(wxEVT_MENU, &svf::OnmnuImportImageView, this, ID_MENUITEM_ImportImage);
   Bind(wxEVT_MENU, &svf::OnMenuItemExportPointsPLY, this, ID_MENUITEM22);
   Bind(wxEVT_MENU, &svf::OnPrevious, this, ID_MENUITEM29);
@@ -1925,169 +1921,6 @@ void _DSceneViewerFrame::OnmnuSelectionScaleSelected(wxCommandEvent& event)
       m_selected_gl_object->setScale(s * sx, s * sy, s * sz);
     }
   Refresh(false);
-}
-
-// Import a LAS LiDAR file:
-void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
-{
-  try
-  {
-#if MRPT_HAS_LIBLAS
-    wxFileDialog dialog(
-        this, _("Choose the LAS file to import"),
-        (iniFile->read_string(iniFileSect, "LastDir", ".").c_str()), _("*.las"),
-        _("LAS files (*.las, "
-          "*.laz)|*.las;*.LAS;*.laz;*.LAZ|All files (*.*)|*.*"),
-        wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-
-    if (dialog.ShowModal() != wxID_OK) return;
-
-    const std::string fil = string(dialog.GetPath().mb_str());
-    saveLastUsedDirectoryToCfgFile(fil);
-
-    CDlgPLYOptions dlgPLY(this);
-
-    // Default values for LAS:
-    dlgPLY.SetTitle(_("LAS import options"));
-    dlgPLY.edRoll->SetValue(_("0"));
-    dlgPLY.rbIntFromXYZ->SetSelection(3);
-
-    if (dlgPLY.ShowModal() != wxID_OK) return;
-
-    opengl::CPointCloud::Ptr gl_points;
-    opengl::CPointCloudColoured::Ptr gl_points_col;
-
-    if (dlgPLY.rbClass->GetSelection() == 0)
-      gl_points = std::make_shared<opengl::CPointCloud>();
-    else
-      gl_points_col = std::make_shared<opengl::CPointCloudColoured>();
-
-    mrpt::maps::CColouredPointsMap pts_map;
-    mrpt::maps::LAS_HeaderInfo las_hdr;
-
-    bool res;
-    {
-      wxBusyCursor busy;
-      res = mrpt::maps::loadLASFile(pts_map, fil, las_hdr);
-    }
-
-    if (!res)
-    {
-      wxMessageBox(_("Error loading or parsing the LAS file"), _("Exception"), wxOK, this);
-      return;
-    }
-
-    mrpt::math::TBoundingBox bb;
-    {
-      wxBusyCursor busy;
-      if (gl_points_col)
-      {
-        gl_points_col->loadFromPointsMap(&pts_map);
-        bb = gl_points_col->getBoundingBox();
-      }
-      else
-      {
-        gl_points->loadFromPointsMap(&pts_map);
-        bb = gl_points->getBoundingBox();
-      }
-    }
-
-    const double scene_size = bb.min.distanceTo(bb.max);
-
-    // Set the point cloud as the only object in scene:
-    auto scene = std::make_shared<opengl::Scene>();
-    m_canvas->setOpenGLSceneRef(scene);
-
-    if (dlgPLY.cbXYGrid->GetValue())
-    {
-      mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create(
-          bb.min.x, bb.max.x, bb.min.y, bb.max.y, 0, scene_size * 0.02);
-      obj->setColor(0.3f, 0.3f, 0.3f);
-      scene->insert(obj);
-    }
-
-    if (dlgPLY.cbXYZ->GetValue()) scene->insert(mrpt::opengl::stock_objects::CornerXYZ());
-
-    double ptSize;
-    dlgPLY.cbPointSize->GetStringSelection().ToCDouble(&ptSize);
-    if (gl_points) gl_points->setPointSize(ptSize);
-    if (gl_points_col) gl_points_col->setPointSize(ptSize);
-
-    if (gl_points)
-    {
-      switch (dlgPLY.rbIntFromXYZ->GetSelection())
-      {
-        case 1:
-          gl_points->enableColorFromX();
-          break;
-        case 2:
-          gl_points->enableColorFromY();
-          break;
-        case 3:
-          gl_points->enableColorFromZ();
-          break;
-      };
-    }
-
-    TPose3D ptCloudPose(0, 0, 0, 0, 0, 0);
-
-    dlgPLY.edYaw->GetValue().ToCDouble(&ptCloudPose.yaw);
-    dlgPLY.edPitch->GetValue().ToCDouble(&ptCloudPose.pitch);
-    dlgPLY.edRoll->GetValue().ToCDouble(&ptCloudPose.roll);
-    ptCloudPose.yaw = DEG2RAD(ptCloudPose.yaw);
-    ptCloudPose.pitch = DEG2RAD(ptCloudPose.pitch);
-    ptCloudPose.roll = DEG2RAD(ptCloudPose.roll);
-
-    if (gl_points) gl_points->setPose(CPose3D(ptCloudPose));
-    if (gl_points_col) gl_points_col->setPose(CPose3D(ptCloudPose));
-
-    // Insert point cloud into scene:
-    if (gl_points) scene->insert(gl_points);
-    if (gl_points_col) scene->insert(gl_points_col);
-
-    m_canvas->setCameraPointing(
-        (bb.min.x + bb.max.x) * 0.5, (bb.min.y + bb.max.y) * 0.5, (bb.min.z + bb.max.z) * 0.5);
-
-    m_canvas->setZoomDistance(2 * scene_size);
-    m_canvas->setAzimuthDegrees(45);
-    m_canvas->setElevationDegrees(30);
-
-    Viewport::Ptr gl_view = scene->getViewport();
-    gl_view->setViewportClipDistances(0.01, 10 * scene_size);
-
-    loadedFileName = std::string("Imported_") + fil + std::string(".3Dscene");
-    updateTitle();
-
-    // Typically, LAS scenes have millions of points:
-    mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL(1000);
-
-    Refresh(false);
-
-    std::stringstream ss;
-    ss << pts_map.size() << " points loaded.\n"
-       << "Bounding box:\n"
-       << " X: " << bb.min.x << " <=> " << bb.max.x << "\n"
-       << " Y: " << bb.min.y << " <=> " << bb.max.y << "\n"
-       << " Z: " << bb.min.z << " <=> " << bb.max.z << "\n"
-       << "LAS header info:\n"
-       << "---------------------------------\n"
-       << "FileSignature      : " << las_hdr.FileSignature << endl
-       << "SystemIdentifier   : " << las_hdr.SystemIdentifier << endl
-       << "SoftwareIdentifier : " << las_hdr.SoftwareIdentifier << endl
-       << "project GUID       : " << las_hdr.project_guid << endl
-       << "SRS Proj.4         : " << las_hdr.spatial_reference_proj4 << endl
-       << "Creation date      : Year=" << las_hdr.creation_year << " DOY=" << las_hdr.creation_DOY
-       << endl;
-
-    wxMessageBox(ss.str().c_str(), _("File info"), wxOK, this);
-#else
-    throw std::runtime_error("MRPT was built without libLAS support!");
-#endif
-  }
-  catch (const std::exception& e)
-  {
-    wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
-  }
 }
 
 void _DSceneViewerFrame::OnmnuImportImageView(wxCommandEvent&)

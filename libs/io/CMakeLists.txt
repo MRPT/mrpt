@@ -1,3 +1,7 @@
+
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_zlib.cmake REQUIRED)        # Check for zlib
+
+
 #  See "DeclareMRPTLib.cmake"
 list(APPEND io_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/io/*.cpp" "${MRPT_LIBS_ROOT}/io/*.h")
 list(APPEND io_EXTRA_SRCS_NAME 	"io" "io")

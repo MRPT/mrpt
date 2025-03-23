@@ -1,3 +1,6 @@
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_tbb.cmake REQUIRED)         # TBB
+
+
 # Lists of directories with source files:
 #  See "DeclareMRPTLib.cmake" for explanations
 # -------------------------------------------------

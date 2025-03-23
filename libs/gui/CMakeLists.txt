@@ -1,3 +1,9 @@
+
+
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_qt.cmake REQUIRED)          # Check for wxWidgets + GL
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + GL
+
+
 # Lists of directories with source files:
 #  See "DeclareMRPTLib.cmake" for explanations
 # -------------------------------------------------
