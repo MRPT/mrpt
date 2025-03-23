@@ -1,0 +1,3 @@
+Checks: '-*,modernize-*,readability-*,bugprone-*,-bugprone-narrowing-conversions,-cppcoreguidelines-c-copy-assignment-signature,cppcoreguidelines-interfaces-global-init,cppcoreguidelines-pro-type-member-init,cppcoreguidelines-pro-type-static-cast-downcast,cppcoreguidelines-pro-type-union-access,cppcoreguidelines-slicing,cppcoreguidelines-special-member-functions'
+WarningsAsErrors: ''
+HeaderFilterRegex: '.*'

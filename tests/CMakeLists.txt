@@ -1,4 +1,4 @@
-include(../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+include(${MRPT_SOURCE_DIR}/cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 # ----------------------------------------------------------------------------
 #   TESTS

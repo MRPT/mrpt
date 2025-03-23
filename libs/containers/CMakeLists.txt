@@ -1,3 +1,6 @@
+
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_libfyaml.cmake REQUIRED)    # Defines embedded version of libfyaml
+
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------

@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------------
 project(ALL_MRPT_APPS)
 
-include(../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+include(${MRPT_SOURCE_DIR}/cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 # Enumerate all subdirs and process them:
 list_subdirectories(LIST_MRPT_APP_DIRS "${MRPT_SOURCE_DIR}/apps")

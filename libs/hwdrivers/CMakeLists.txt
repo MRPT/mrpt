@@ -1,3 +1,23 @@
+
+
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_flycapture2.cmake REQUIRED) # Check for PointGreyResearch (PGR) FlyCapture2 library
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_ftdi.cmake REQUIRED)        # Check for the FTDI headers (Linux only, in win32 we use built-in header & dynamic DLL load):
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_isense.cmake REQUIRED)      # Support for INTERSENSE Sensors
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_kinect.cmake REQUIRED)      # Kinect support in a set of different ways
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_mynteye.cmake REQUIRED)     # Support for MYNT EYE cameras
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_nite2.cmake REQUIRED)       # Check for NITE2 library
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_openni2.cmake REQUIRED)     # Check for the OpenNI2 library
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_pcap.cmake REQUIRED)        # Check for the libpcap library
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_phidget.cmake REQUIRED)     # Support for phidget Interface Kit with proximity sensor device :
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_swissrange.cmake REQUIRED)  # Support for SWISSRANGE 3D camera:
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_triclops.cmake REQUIRED)    # Check for PointGreyResearch (PGR) Triclops library
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_videre_svs.cmake REQUIRED)  # Support for Videre Design stereo camera:
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_xsens.cmake REQUIRED)       # XSens Motion trackers / IMU drivers
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_libdc1394.cmake REQUIRED)   # Check for libdc1394-2
+
+
 # Lists of directories with source files:
 #  See "DeclareMRPTLib.cmake" for explanations
 # -------------------------------------------------

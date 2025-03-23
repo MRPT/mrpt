@@ -1,7 +1,7 @@
-#  See "DeclareMRPTLib.cmake"
-
 # Use C++17 filesystem lib:
 find_package(Filesystem REQUIRED)
+
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_inotify.cmake REQUIRED)     # Check for the sys/inotify headers (Linux only, in win32 we use the equivalent API for file system monitoring):
 
 list(APPEND system_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/system/*.cpp" "${MRPT_LIBS_ROOT}/system/*.h")
 list(APPEND system_EXTRA_SRCS_NAME 	"system" "system")

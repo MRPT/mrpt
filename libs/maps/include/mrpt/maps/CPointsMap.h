@@ -59,11 +59,8 @@ struct pointmap_traits;
  *   - mrpt::obs::CObservationVelodyneScan
  *   - mrpt::obs::CObservationPointCloud
  *
- * Loading and saving in the standard LAS LiDAR point cloud format is supported
- * by installing `libLAS` and including the
- * header `<mrpt/maps/CPointsMaps_liblas.h>` in your program. Since MRPT 1.5.0
- * there is no need to build MRPT against libLAS to use this feature.
- * See LAS functions in \ref mrpt_maps_liblas_grp.
+ * Loading and saving in the standard LAS LiDAR point cloud format is possible
+ * using MP2P_ICP, see that project documentation.
  *
  * \sa CMetricMap, CPoint, CSerializable
  * \ingroup mrpt_maps_grp

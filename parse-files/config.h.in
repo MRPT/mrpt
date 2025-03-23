@@ -81,10 +81,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #define MRPT_HAS_FTDI             ${CMAKE_MRPT_HAS_FTDI}
 #define MRPT_FTDI_VERSION         0x${LIBFTDI_VERSION_MAJOR}${LIBFTDI_VERSION_MINOR}0
 
-
-/** Support for the liblas library (A standard for LiDAR data format)  */
-#define MRPT_HAS_LIBLAS           ${CMAKE_MRPT_HAS_LIBLAS}
-
 /** wxWidgets is present in the system (required for mrpt::gui::CDisplayWindow, etc.) */
 #define MRPT_HAS_WXWIDGETS        ${CMAKE_MRPT_HAS_WXWIDGETS}
 

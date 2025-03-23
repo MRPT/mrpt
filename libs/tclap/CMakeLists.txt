@@ -1,5 +1,7 @@
 # Modified version of the TCLAP library. Search for JLBC in the sources to see the changes
 
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_libtclap.cmake REQUIRED)    # Check for system libtclap
+
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------

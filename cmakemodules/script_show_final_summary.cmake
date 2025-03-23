@@ -133,7 +133,6 @@ SHOW_CONFIG_LINE_SYSTEM("fyaml (YAML/JSON parsing)           " CMAKE_MRPT_HAS_LI
 SHOW_CONFIG_LINE_SYSTEM("gtest (Google unit testing library) " CMAKE_MRPT_HAS_GTEST)
 SHOW_CONFIG_LINE_SYSTEM("jsoncpp (JSON format serialization) " CMAKE_MRPT_HAS_JSONCPP "[Version: ${jsoncpp_VERSION}]")
 SHOW_CONFIG_LINE_SYSTEM("libjpeg (jpeg)                      " CMAKE_MRPT_HAS_JPEG)
-SHOW_CONFIG_LINE_SYSTEM("liblas (ASPRS LAS LiDAR format)     " CMAKE_MRPT_HAS_LIBLAS)
 SHOW_CONFIG_LINE       ("mexplus                             " CMAKE_MRPT_HAS_MATLAB)
 SHOW_CONFIG_LINE_SYSTEM("Octomap                             " CMAKE_MRPT_HAS_OCTOMAP "[Version: ${OCTOMAP_VERSION}]")
 SHOW_CONFIG_LINE_SYSTEM("OpenCV (Image manipulation)         " CMAKE_MRPT_HAS_OPENCV "[Version: ${MRPT_OPENCV_VERSION}]")
