@@ -2,7 +2,6 @@
 
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_flycapture2.cmake REQUIRED) # Check for PointGreyResearch (PGR) FlyCapture2 library
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_ftdi.cmake REQUIRED)        # Check for the FTDI headers (Linux only, in win32 we use built-in header & dynamic DLL load):
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_isense.cmake REQUIRED)      # Support for INTERSENSE Sensors
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_kinect.cmake REQUIRED)      # Kinect support in a set of different ways
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_mynteye.cmake REQUIRED)     # Support for MYNT EYE cameras

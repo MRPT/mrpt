@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <mrpt/config.h>
+#include <mrpt/core/config.h>  // MRPT_ARCH_INTEL_COMPATIBLE
 #include <mrpt/tfest/TMatchingPair.h>
 
 namespace mrpt::tfest::internal

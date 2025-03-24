@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
-#include <mrpt/config.h>
+#include <mrpt/core/config.h>
 #include <mrpt/core/WorkerThreadsPool.h>
 
 #if !MRPT_IN_EMSCRIPTEN  // No multithreading

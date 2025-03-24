@@ -8,8 +8,6 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/config.h>
-
 #include <cstddef>
 #include <cstdint>
 

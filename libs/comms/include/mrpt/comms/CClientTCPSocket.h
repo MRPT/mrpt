@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/config.h>  // MRPT_WORD_SIZE
+#include <mrpt/core/config.h>  // MRPT_WORD_SIZE
 #include <mrpt/io/CStream.h>
 #include <mrpt/system/os.h>
 

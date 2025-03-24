@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
-#include <mrpt/config.h>
+#include <mrpt/core/config.h>
 #include <mrpt/core/exceptions.h>
 
 #include <algorithm>  // count()

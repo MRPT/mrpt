@@ -13,7 +13,7 @@
 #include <mrpt/serialization/CSchemeArchive.h>
 
 // Check if we have jsoncpp to enable those tests:
-#include <mrpt/config.h>
+#include <mrpt/serialization/config.h>
 #if MRPT_HAS_JSONCPP
 #include <json/json.h>
 #endif

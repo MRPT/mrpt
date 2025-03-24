@@ -15,7 +15,7 @@
  * cross-platform implementation.
  */
 #if defined(_MSC_VER)
-#include <mrpt/config.h>
+#include <mrpt/core/config.h>
 #if defined(MRPT_BUILT_AS_DLL)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>

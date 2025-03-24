@@ -1,0 +1,192 @@
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          https://www.mrpt.org/                            |
+   |                                                                           |
+   | Copyright (c) 2005-2024, Individual contributors, see AUTHORS file        |
+   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
+   | Released under BSD License. See details in https://www.mrpt.org/License   |
+   +---------------------------------------------------------------------------+
+ */
+
+#pragma once
+
+// clang-format off
+
+/** MRPT_BUILT_AS_DLL is defined only if MRPT has been built
+  *   as a shared library (.dll/.so) vs. a static library (.lib/.a).
+  *  Additionally, MRPT_EXPORTS will be defined only when compiling
+  *   the DLLs, not when the user imports them.
+  */
+${CMAKE_MRPT_BUILD_SHARED_LIB}
+
+#define MRPT_HAS_TBB              ${CMAKE_MRPT_HAS_TBB}
+
+/** These two values are detected in Eigen when building MRPT, so we have
+  the same settings given the user-provided flags  */
+#define MRPT_MAX_ALIGN_BYTES           ${EIGEN_MAX_ALIGN_BYTES}
+#define MRPT_MAX_STATIC_ALIGN_BYTES    ${EIGEN_MAX_STATIC_ALIGN_BYTES}
+
+/* Automatic definition of OS-macros */
+#if defined(_WIN32) || defined(_WIN32_)  || defined(WIN32) || defined(_WIN64)
+    #define MRPT_OS_WINDOWS
+#elif defined(unix) || defined(__unix__) || defined(__unix)
+    #define MRPT_OS_LINUX
+#elif defined(__APPLE__)
+    #define MRPT_OS_APPLE
+#else
+    #error Unsupported platform (Found neither _WIN32_, __unix__ or __APPLE__)
+#endif
+
+/** The architecture is 32 or 64 bit wordsize:  */
+#define MRPT_WORD_SIZE	${CMAKE_MRPT_WORD_SIZE}
+
+/** True if we are in amd64 or i386 architectures */
+#define MRPT_ARCH_INTEL_COMPATIBLE ${MRPT_ARCH_INTEL_COMPATIBLE}
+
+/** Use optimized functions with the SSE2 machine instructions set */
+#if defined WIN32 && (!defined WIN64 || defined EM64T) && \
+ (_MSC_VER >= 1400) || (defined __SSE2__ && defined __GNUC__ && __GNUC__ >= 4)
+	#define MRPT_HAS_SSE2  ${CMAKE_MRPT_HAS_SSE2}   // This value can be set to 0 from CMake with ENABLE_SSE2
+#else
+	#define MRPT_HAS_SSE2  0
+#endif
+
+/** Use optimized functions with the SSE3 machine instructions set */
+#if defined WIN32 && (!defined WIN64 || defined EM64T) && \
+ (_MSC_VER >= 1500) || (defined __SSE3__ && defined __GNUC__ && __GNUC__ >= 4)
+	#define MRPT_HAS_SSE3  ${CMAKE_MRPT_HAS_SSE3}   // This value can be set to 0 from CMake with ENABLE_SSE3
+#else
+	#define MRPT_HAS_SSE3  0
+#endif
+
+// This value can be set to 0 from CMake with ENABLE_XXX
+#define MRPT_HAS_SSE4_1  ${CMAKE_MRPT_HAS_SSE4_1}
+#define MRPT_HAS_SSE4_2  ${CMAKE_MRPT_HAS_SSE4_2}
+#define MRPT_HAS_SSE4_A  ${CMAKE_MRPT_HAS_SSE4_A}
+#define MRPT_HAS_AVX     ${CMAKE_MRPT_HAS_AVX}
+#define MRPT_HAS_AVX2    ${CMAKE_MRPT_HAS_AVX2}
+#define MRPT_HAS_NEON    ${CMAKE_MRPT_HAS_NEON}
+
+/** Are we in a big-endian system? (Intel, amd, etc.. are little-endian) */
+#define MRPT_IS_BIG_ENDIAN ${CMAKE_MRPT_IS_BIG_ENDIAN}
+
+/** Are we in an Emscripten build? */
+#define MRPT_IN_EMSCRIPTEN ${CMAKE_MRPT_IN_EMSCRIPTEN}
+
+/** Standard headers */
+#ifndef HAVE_INTTYPES_H
+#cmakedefine HAVE_INTTYPES_H 1
+#endif
+
+#ifndef HAVE_STDINT_H
+#cmakedefine HAVE_STDINT_H 1
+#endif
+
+#ifndef HAVE_WINSOCK2_H
+#cmakedefine HAVE_WINSOCK2_H 1
+#endif
+
+#ifndef HAVE_ALLOCA_H
+#cmakedefine HAVE_ALLOCA_H 1
+#endif
+
+#ifndef HAVE_LINUX_SERIAL_H
+#cmakedefine HAVE_LINUX_SERIAL_H 1
+#endif
+
+#ifndef HAVE_LINUX_INPUT_H
+#cmakedefine HAVE_LINUX_INPUT_H 1
+#endif
+
+#ifndef HAVE_SYS_TIME_H
+#cmakedefine HAVE_SYS_TIME_H 1
+#endif
+
+#ifndef HAVE_PTHREAD_H
+#cmakedefine HAVE_PTHREAD_H 1
+#endif
+
+#ifndef HAVE_UNISTD_H
+#cmakedefine HAVE_UNISTD_H 1
+#endif
+
+// Has <malloc.h>?
+#ifndef HAVE_MALLOC_H
+#cmakedefine HAVE_MALLOC_H 1
+#endif
+
+// Has <malloc/malloc.h>?
+#ifndef HAVE_MALLOC_MALLOC_H
+#cmakedefine HAVE_MALLOC_MALLOC_H 1
+#endif
+
+#ifndef HAVE_FREEGLUT_EXT_H
+#cmakedefine HAVE_FREEGLUT_EXT_H 1
+#endif
+
+/** Standard functions */
+#ifndef HAVE_TIMEGM
+#cmakedefine HAVE_TIMEGM
+#endif
+
+#ifndef HAVE_MKGMTIME
+#cmakedefine HAVE_MKGMTIME
+#endif
+
+#ifndef HAVE_ALLOCA
+#cmakedefine HAVE_ALLOCA
+#endif
+
+#ifndef HAVE_GETTID
+#cmakedefine HAVE_GETTID
+#endif
+
+#ifndef HAVE_SINCOS
+#cmakedefine HAVE_SINCOS
+#endif
+
+#ifndef HAVE_LRINT
+#cmakedefine HAVE_LRINT
+#endif
+
+#ifndef HAVE_STRTOK_R
+#cmakedefine HAVE_STRTOK_R
+#endif
+
+#ifndef HAVE_LOCALTIME_R
+#cmakedefine HAVE_LOCALTIME_R
+#endif
+
+#ifndef HAVE_ALIGNED_MALLOC
+#cmakedefine HAVE_ALIGNED_MALLOC
+#endif
+
+/* Standard types  */
+#ifndef HAVE_LONG_DOUBLE
+#cmakedefine HAVE_LONG_DOUBLE
+#endif
+
+/* BFD library for debug symbols */
+#define MRPT_HAS_BFD ${CMAKE_MRPT_HAS_BFD}
+#cmakedefine HAVE_DECL_BFD_SECTION_FLAGS 1
+#cmakedefine HAVE_DECL_BFD_GET_SECTION_FLAGS 1
+#cmakedefine HAVE_DECL_BFD_GET_SECTION_VMA 1
+#cmakedefine HAVE_DECL_BFD_SECTION_VMA 1
+#cmakedefine HAVE_1_ARG_BFD_SECTION_SIZE 1
+
+
+/* Defined only if MRPT is being build/was built with precompiled
+    headers enabled */
+#cmakedefine MRPT_ENABLE_PRECOMPILED_HDRS 1
+
+/** Matlab wrapper is available */
+#define MRPT_HAS_MATLAB           ${CMAKE_MRPT_HAS_MATLAB}
+
+// -------------------------------
+//			Some checks:
+// -------------------------------
+#if !defined(MRPT_OS_WINDOWS) && !defined(MRPT_OS_LINUX) && !defined(MRPT_OS_APPLE)
+#error Neither OS detected from MRPT_OS_LINUX, MRPT_OS_APPLE or MRPT_OS_WINDOWS!
+#endif
+
+// clang-format on

@@ -9,7 +9,7 @@
 
 #include "core-precomp.h"  // Precompiled headers
 //
-#include <mrpt/config.h>  // MRPT_HAS_BFD, etc.
+#include <mrpt/core/config.h>  // MRPT_HAS_BFD, etc.
 #include <mrpt/core/backtrace.h>
 #include <mrpt/core/demangle.h>
 #include <mrpt/core/format.h>

@@ -9,7 +9,7 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 //
-#include <mrpt/config.h>  // HAVE_SINCOS
+#include <mrpt/core/config.h>  // HAVE_SINCOS
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPoint2D.h>

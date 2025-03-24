@@ -18,7 +18,6 @@ function(mrpt_lib_target_requires_cpp17 _TARGET)
 
 	# Modern, clean way to do this:
 	target_compile_features(${_TARGET} ${INTERF_TYPE} cxx_std_17)
-
 endfunction()
 
 # Minimize the time and memory required to build and load debug info:
@@ -449,6 +448,21 @@ macro(internal_define_mrpt_lib name headers_only )
 	else() # it IS headers_only:
 		install(TARGETS ${name} EXPORT mrpt-${name}-targets)
 	endif ()
+
+	# Create module/config.h file
+	# ------------------------------------
+	if (EXISTS ${MRPT_SOURCE_DIR}/libs/${name}/config.h.in)
+		set(MODULES_BASE_CONFIG_INCLUDES_DIR ${CMAKE_BINARY_DIR}/include/mrpt-configuration/)
+		set(MODULE_CONFIG_FILE_INCLUDE_DIR ${MODULES_BASE_CONFIG_INCLUDES_DIR}/mrpt/${name})
+		file(MAKE_DIRECTORY ${MODULE_CONFIG_FILE_INCLUDE_DIR})
+
+		configure_file(${MRPT_SOURCE_DIR}/libs/${name}/config.h.in ${MODULE_CONFIG_FILE_INCLUDE_DIR}/config.h)
+
+		target_include_directories(${name} ${iftype}
+			$<BUILD_INTERFACE:${MODULES_BASE_CONFIG_INCLUDES_DIR}>
+		)
+		install()
+	endif()
 
 	# Create module CMake config file:
 	# For local usage from the BUILD directory (without "install"):

@@ -9,7 +9,7 @@
 
 #include "containers-precomp.h"  // Precompiled headers
 //
-#include <mrpt/config.h>
+#include <mrpt/containers/config.h>
 #include <mrpt/containers/yaml.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/get_env.h>

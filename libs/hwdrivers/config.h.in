@@ -1,0 +1,43 @@
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          https://www.mrpt.org/                            |
+   |                                                                           |
+   | Copyright (c) 2005-2024, Individual contributors, see AUTHORS file        |
+   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
+   | Released under BSD License. See details in https://www.mrpt.org/License   |
+   +---------------------------------------------------------------------------+
+ */
+
+#pragma once
+
+// clang-format off
+
+/** Has PGR Fly Capture 2? */
+#define MRPT_HAS_FLYCAPTURE2 ${CMAKE_MRPT_HAS_FLYCAPTURE2}
+
+/** Has PGR Triclops? */
+#define MRPT_HAS_TRICLOPS ${CMAKE_MRPT_HAS_TRICLOPS}
+
+/** Define for including Phidget interface kit interface through the vendor's proprietary API (libPhidget). \sa CStereoGrabber_SVS  */
+#define MRPT_HAS_PHIDGET        ${CMAKE_MRPT_HAS_PHIDGET}
+
+/** Define for including SVS interface through the vendor's proprietary API. \sa CStereoGrabber_SVS */
+#define MRPT_HAS_SVS        ${CMAKE_MRPT_HAS_SVS}
+
+/* do we have MESA Imaging SwissRange 3D camera driver? */
+#define MRPT_HAS_SWISSRANGE       ${CMAKE_MRPT_HAS_SWISSRANGE}
+
+/* do we have support for XBox Kinect? */
+#define MRPT_HAS_KINECT       ${CMAKE_MRPT_HAS_KINECT}
+
+/* Kinect SDK variants: */
+#define MRPT_HAS_KINECT_FREENECT         ${CMAKE_MRPT_HAS_FREENECT}
+#define MRPT_HAS_KINECT_FREENECT_SYSTEM  ${CMAKE_MRPT_HAS_FREENECT_SYSTEM}
+
+/* OpenNI2 lib: */
+#define MRPT_HAS_OPENNI2                 ${CMAKE_MRPT_HAS_OPENNI2}
+
+/** MYNTEYE-Depth SDK is available */
+#define MRPT_HAS_MYNTEYE_D          ${CMAKE_MRPT_HAS_MYNTEYE_D}
+
+// clang-format on

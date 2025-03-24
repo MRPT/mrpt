@@ -9,6 +9,8 @@
 
 #include "comms-precomp.h"  // Precompiled headers
 //
+#include <mrpt/core/config.h>  // MRPT_OS_LINUX
+//
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/system/os.h>

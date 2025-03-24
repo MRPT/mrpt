@@ -9,9 +9,9 @@
 
 #include "img-precomp.h"  // Precompiled headers
 //
-#include <mrpt/config.h>
 #include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/img/config.h>
 #include <mrpt/system/os.h>
 
 #ifdef _WIN32

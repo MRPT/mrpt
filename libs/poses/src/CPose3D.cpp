@@ -9,8 +9,8 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 //
-#include <mrpt/config.h>               // for HAVE_SINCOS
 #include <mrpt/core/bits_math.h>       // for square
+#include <mrpt/core/config.h>          // for HAVE_SINCOS
 #include <mrpt/math/CMatrixDynamic.h>  // for CMatrixD...
 #include <mrpt/math/CMatrixF.h>        // for CMatrixF
 #include <mrpt/math/CMatrixFixed.h>    // for CMatrixF...

@@ -12,11 +12,11 @@
 // By including this file you make sure of #including all the relevant OpenCV
 // headers for OpenCV 2.4, 3.x, 4.x
 
-#include <mrpt/config.h>
+#include <mrpt/img/config.h>  // MRPT_HAS_OPENCV
 
 #if MRPT_HAS_OPENCV
 // OPENCV HEADERS
-#define CV_NO_CVV_IMAGE	 // Avoid CImage name crash
+#define CV_NO_CVV_IMAGE  // Avoid CImage name crash
 
 #if MRPT_OPENCV_VERSION_NUM < 0x020400
 #error "MRPT requires OpenCV 2.4.0 or newer"
@@ -77,4 +77,4 @@
 #define cvIplImage(X) (X)
 #endif
 
-#endif	// MRPT_HAS_OPENCV
+#endif  // MRPT_HAS_OPENCV
