@@ -280,7 +280,7 @@ void COccupancyGridMap2D::resizeGrid(
 
     for (size_t y = 0; y < m_size_y; y++)
     {
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
+#if defined(_DEBUG)
       assert(dest_ptr + row_size - 1 <= &new_map[new_map.size() - 1]);
       assert(src_ptr + row_size - 1 <= &m_map[m_map.size() - 1]);
 #endif

@@ -444,7 +444,7 @@ unsigned char* CImage::operator()(unsigned int ucol, unsigned int urow, unsigned
 {
 #if MRPT_HAS_OPENCV
 
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
+#if defined(_DEBUG)
   MRPT_START
 #endif
 
@@ -453,7 +453,7 @@ unsigned char* CImage::operator()(unsigned int ucol, unsigned int urow, unsigned
   const auto row = static_cast<int>(urow);
   const auto channel = static_cast<int>(uchannel);
 
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
+#if defined(_DEBUG)
   ASSERT_(m_impl && !m_impl->img.empty());
   if (row >= m_impl->img.rows || col >= m_impl->img.cols || channel >= m_impl->img.channels())
   {
@@ -465,7 +465,7 @@ unsigned char* CImage::operator()(unsigned int ucol, unsigned int urow, unsigned
 #endif
   auto p = (&m_impl->img.at<uint8_t>(row, m_impl->img.channels() * col)) + channel;
   return const_cast<unsigned char*>(p);
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
+#if defined(_DEBUG)
   MRPT_END
 #endif
 
@@ -1091,7 +1091,7 @@ void CImage::setPixel(int x, int y, size_t color)
 {
 #if MRPT_HAS_OPENCV
 
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
+#if defined(_DEBUG)
   MRPT_START
 #endif
 
@@ -1109,7 +1109,7 @@ void CImage::setPixel(int x, int y, size_t color)
     }
     else
     {
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
+#if defined(_DEBUG)
       ASSERT_(img.channels() == 3);
 #endif
       auto* dest = &img.ptr<uint8_t>(y)[3 * x];
@@ -1121,7 +1121,7 @@ void CImage::setPixel(int x, int y, size_t color)
     }
   }
 
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
+#if defined(_DEBUG)
   MRPT_END
 #endif
 

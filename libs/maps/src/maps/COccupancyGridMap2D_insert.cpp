@@ -131,7 +131,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
       const float px = d2f(laserPose.x());
       const float py = d2f(laserPose.y());
 
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
+#if defined(_DEBUG)
       MRPT_CHECK_NORMAL_NUMBER(px);
       MRPT_CHECK_NORMAL_NUMBER(py);
 #endif
@@ -467,7 +467,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
           P2.cx = x2idx(P2.x);
           P2.cy = y2idx(P2.y);
 
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
+#if defined(_DEBUG)
           // The x> comparison implicitly holds if x<0
           ASSERT_(
               static_cast<unsigned int>(P0.cx) < m_size_x &&
@@ -692,7 +692,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
             P2.cx = x2idx(P2.x);
             P2.cy = y2idx(P2.y);
 
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
+#if defined(_DEBUG)
             // The x> comparison implicitly holds if x<0
             ASSERT_(
                 static_cast<unsigned int>(P1.cx) < m_size_x &&
@@ -801,7 +801,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
       px = d2f(laserPose.x());
       py = d2f(laserPose.y());
 
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
+#if defined(_DEBUG)
       MRPT_CHECK_NORMAL_NUMBER(px);
       MRPT_CHECK_NORMAL_NUMBER(py);
 #endif
@@ -951,7 +951,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
         P2.cx = x2idx(P2.x);
         P2.cy = y2idx(P2.y);
 
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
+#if defined(_DEBUG)
         // The x> comparison implicitly holds if x<0
         ASSERT_(
             static_cast<unsigned int>(P0.cx) < m_size_x &&
@@ -1173,7 +1173,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
           P2.cx = x2idx(P2.x);
           P2.cy = y2idx(P2.y);
 
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
+#if defined(_DEBUG)
           // The x> comparison implicitly holds if x<0
           ASSERT_(
               static_cast<unsigned int>(P1.cx) < m_size_x &&

@@ -238,11 +238,6 @@ include(${MRPT_SOURCE_DIR}/cmakemodules/process_emscripten_embedded_files.cmake 
 #			OPTIONS
 #The options for the user when using "cmakesetup" or "ccmake":
 # ---------------------------------------------------------------------------
-option(MRPT_ALWAYS_CHECKS_DEBUG "Additional checks even in Release" "OFF")
-mark_as_advanced(FORCE MRPT_ALWAYS_CHECKS_DEBUG)
-option(MRPT_ALWAYS_CHECKS_DEBUG_MATRICES "Additional checks even in Release (Only in matrix classes)" "OFF")
-mark_as_advanced(FORCE MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
-
 # Include Asian fonts in CMRPTCanvas ?
 set( MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in CMRPTCanvas (increases library size).")
 

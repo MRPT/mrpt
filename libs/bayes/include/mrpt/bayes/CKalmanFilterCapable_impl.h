@@ -781,15 +781,6 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
                     // It is symmetric
                     m_pkk(q, k) = m_pkk(k, q);
                   }
-
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
-                  if (m_pkk(k, k) < 0)
-                  {
-                    m_pkk.saveToTextFile("Pkk_err.txt");
-                    mrpt::io::vectorToTextFile(Kij, "Kij.txt");
-                    ASSERT_(m_pkk(k, k) > 0);
-                  }
-#endif
                 }
               }
 
