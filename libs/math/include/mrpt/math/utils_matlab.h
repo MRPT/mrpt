@@ -12,7 +12,8 @@
  * This file can be safely included without checking MRPT_HAS_MATLAB
  */
 
-#include <mrpt/config.h>
+#include <mrpt/core/config.h>  // MRPT_HAS_MATLAB
+
 #if MRPT_HAS_MATLAB
 #include <mexplus.h>
 #endif

@@ -10,7 +10,7 @@
 #pragma once
 
 // This is to match Eigen expectations on alignment of dynamic objects:
-#include <mrpt/config.h>
+#include <mrpt/core/config.h>
 
 // #define MRPT_MAX_ALIGN_BYTES          XXX
 // #define MRPT_MAX_STATIC_ALIGN_BYTES   XXX

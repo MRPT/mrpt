@@ -9,8 +9,8 @@
 
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
-#include <mrpt/config.h>
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/containers/config.h>  // MRPT_HAS_FYAML
 #include <mrpt/containers/yaml.h>
 #include <mrpt/img/TCamera.h>
 

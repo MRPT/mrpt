@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
-#include <mrpt/config.h>
+#include <mrpt/system/config.h>
 #include <mrpt/core/format.h>
 #include <mrpt/system/thread_name.h>
 

@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <mrpt/config.h>
+#include <mrpt/core/config.h>
 
 // SSE2 types:
 #if MRPT_ARCH_INTEL_COMPATIBLE

@@ -9,8 +9,8 @@
 
 #include "img-precomp.h"  // Precompiled headers
 //
-#include <mrpt/config.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/img/config.h>  // MRPT_HAS_JPEG
 #include <mrpt/io/CStream.h>
 
 #include "CImage_impl.h"

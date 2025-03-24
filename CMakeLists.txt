@@ -518,7 +518,6 @@ else()
     set(EIGEN_MAX_STATIC_ALIGN_BYTES 16)
 endif()
 
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_create_config_h.cmake REQUIRED)   # Build config.h
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_create_version_h.cmake REQUIRED)  # Build version.h
 
 add_custom_target(all_mrpt_libs ALL) # all_mrpt_libs: target to build all mrpt-* modules

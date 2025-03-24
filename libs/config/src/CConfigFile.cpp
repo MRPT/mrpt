@@ -19,7 +19,8 @@ using binary_function = std::function<RET(T1, T2)>;
 }
 #endif
 
-#include <mrpt/config.h>
+#include <mrpt/config/config.h>
+
 #if MRPT_HAS_SIMPLEINI_SYSTEM
 // Enforce using libuci instead of copyrighted ConvertUTF.h
 #define SI_CONVERT_ICU 1

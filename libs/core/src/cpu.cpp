@@ -9,7 +9,7 @@
 
 #include "core-precomp.h"  // Precompiled headers
 //
-#include <mrpt/config.h>
+#include <mrpt/core/config.h>
 #include <mrpt/core/cpu.h>
 #include <mrpt/core/format.h>
 

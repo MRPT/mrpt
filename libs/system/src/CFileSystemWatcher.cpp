@@ -9,7 +9,8 @@
 
 #include "system-precomp.h"  // Precompiled headers
 //
-#include <mrpt/config.h>
+#include <mrpt/system/config.h>  // MRPT_HAS_INOTIFY
+#include <mrpt/core/config.h>
 
 #ifdef _WIN32
 #ifndef _WIN32_WINNT

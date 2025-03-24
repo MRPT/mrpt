@@ -1,0 +1,19 @@
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          https://www.mrpt.org/                            |
+   |                                                                           |
+   | Copyright (c) 2005-2024, Individual contributors, see AUTHORS file        |
+   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
+   | Released under BSD License. See details in https://www.mrpt.org/License   |
+   +---------------------------------------------------------------------------+
+ */
+
+#pragma once
+
+// clang-format off
+
+/** The size of cells in mrpt::maps::COccupancyGridMap2D */
+#define	OCCUPANCY_GRIDMAP_CELL_SIZE_${MRPT_OCCUPANCY_GRID_CELLSIZE}BITS
+
+
+// clang-format on

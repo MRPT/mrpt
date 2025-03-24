@@ -7,7 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/config.h>
+#include <mrpt/comms/config.h>  // MRPT_HAS_FTDI
+#include <mrpt/core/config.h>   // MRPT_OS_LINUX
 #include <mrpt/core/exceptions.h>
 
 #include <cstring>

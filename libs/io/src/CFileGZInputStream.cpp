@@ -17,7 +17,7 @@
 #include <cstring>  // strerror
 #include <type_traits>
 //
-#include <mrpt/config.h>
+#include <mrpt/core/config.h>
 #if HAVE_UNISTD_H
 #include <unistd.h>
 #endif

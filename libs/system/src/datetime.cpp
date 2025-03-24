@@ -9,8 +9,9 @@
 
 #include "system-precomp.h"  // Precompiled headers
 //
-#include <mrpt/config.h>
+#include <mrpt/core/config.h>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/system/config.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
 

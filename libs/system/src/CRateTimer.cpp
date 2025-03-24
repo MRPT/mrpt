@@ -9,7 +9,7 @@
 
 #include "system-precomp.h"  // Precompiled headers
 //
-#include <mrpt/config.h>
+#include <mrpt/system/config.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/system/CRateTimer.h>
 

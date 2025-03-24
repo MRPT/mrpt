@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <mrpt/config.h>
+#include <mrpt/core/config.h>
 #if MRPT_ENABLE_PRECOMPILED_HDRS
 
 #include <mrpt/graphslam.h>

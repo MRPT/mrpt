@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/config.h>
 #include <mrpt/containers/circular_buffer.h>
+#include <mrpt/core/config.h>  // MRPT_OS_LINUX
 #include <mrpt/io/CStream.h>
 
 #include <deque>

@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/config.h>  // MRPT_IS_BIG_ENDIAN
+#include <mrpt/core/config.h>  // MRPT_IS_BIG_ENDIAN
 #include <mrpt/core/Clock.h>
 #include <mrpt/core/is_shared_ptr.h>
 #include <mrpt/core/reverse_bytes.h>

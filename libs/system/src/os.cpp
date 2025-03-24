@@ -9,6 +9,7 @@
 
 #include "system-precomp.h"  // Precompiled headers
 //
+#include <mrpt/core/config.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/format.h>
 #include <mrpt/core/winerror2str.h>

@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include <mrpt/config.h>  // For HAVE_MALLOC_H
+#include <mrpt/core/config.h>  // For HAVE_MALLOC_H
 
 // Includes
 /* Jerome Monceaux : bilock@gmail.com

@@ -9,5 +9,6 @@
 
 #pragma once
 
-#include <mrpt/config.h>
+//#include <mrpt/core/config.h>
+
 #include <mrpt/kinematics/CKinematicChain.h>

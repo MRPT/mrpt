@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
-#include <mrpt/config.h>
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/containers/config.h>
 
 #if MRPT_HAS_FYAML
 

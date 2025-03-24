@@ -9,7 +9,7 @@
 
 #include "img-precomp.h"  // Precompiled headers
 //
-#include <mrpt/config.h>
+#include <mrpt/core/config.h>  // MRPT_ARCH_INTEL_COMPATIBLE
 
 #if MRPT_ARCH_INTEL_COMPATIBLE
 // ---------------------------------------------------------------------------

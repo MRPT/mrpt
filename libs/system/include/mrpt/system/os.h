@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/config.h>
+#include <mrpt/system/config.h>
 #include <mrpt/core/common.h>
 #include <mrpt/core/optional_ref.h>
 
