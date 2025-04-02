@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "gui-precomp.h"  // Precompiled headers
+#include "mrpt/math/geometry.h"
 //
 #include <mrpt/core/round.h>
 #include <mrpt/gui/CGlCanvasBase.h>
@@ -142,10 +143,19 @@ void CGlCanvasBase::updatePan(CamaraParams& params, int x, int y) const
   float Ay = -(x - m_mouseClickX);
   float Ax = -(y - m_mouseClickY);
   float D = 0.001f * params.cameraZoomDistance;
-  params.cameraPointingX +=
-      D * (Ax * cos(DEG2RAD(params.cameraAzimuthDeg)) - Ay * sin(DEG2RAD(params.cameraAzimuthDeg)));
-  params.cameraPointingY +=
-      D * (Ax * sin(DEG2RAD(params.cameraAzimuthDeg)) + Ay * cos(DEG2RAD(params.cameraAzimuthDeg)));
+
+  const double cos_az = cos(DEG2RAD(params.cameraAzimuthDeg));
+  const double sin_az = sin(DEG2RAD(params.cameraAzimuthDeg));
+  const double cos_el = cos(DEG2RAD(params.cameraElevationDeg));
+  const double sin_el = sin(DEG2RAD(params.cameraElevationDeg));
+
+  const auto forward = mrpt::math::TVector3D(-cos_az * cos_el, -sin_az * cos_el, -sin_el);
+  const auto up = mrpt::math::TVector3D(-cos_az * sin_el, -sin_az * sin_el, -cos_el);
+  const auto right = mrpt::math::crossProduct3D(forward, up);
+
+  params.cameraPointingX += D * (Ay * right.x - Ax * up.x);
+  params.cameraPointingY += D * (Ay * right.y - Ax * up.y);
+  params.cameraPointingZ += D * (Ay * right.z - Ax * up.z);
 }
 
 void CGlCanvasBase::updateRoll(CamaraParams& params, int x, int y, float scale) const
