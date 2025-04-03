@@ -630,8 +630,13 @@ CCameraSensor::~CCameraSensor()
 ----------------------------------------------------- */
 CObservation::Ptr CCameraSensor::getNextFrame()
 {
-  vector<CSerializable::Ptr> out_obs;
+  std::vector<CSerializable::Ptr> out_obs;
   getNextFrame(out_obs);
+  if (out_obs.empty())
+  {
+    return {};
+  }
+
   return std::dynamic_pointer_cast<CObservation>(out_obs[0]);
 }
 
