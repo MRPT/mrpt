@@ -9,7 +9,6 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/hwdrivers/CStereoGrabber_Bumblebee_libdc1394.h>
 #include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
-#include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/TCamera.h>
 #include <mrpt/img/TStereoCamera.h>

@@ -328,7 +328,6 @@ if(MRPT_BUILD_EXAMPLES)
 
 	# === Depending on: maps & hwdrivers ===
 	set(LIST_EXAMPLES_IN_THIS_DIR
-		hwdrivers_swissranger_example
 		hwdrivers_sick_serial_example
 		hwdrivers_sick_eth_example
 		hwdrivers_hokuyo_example

@@ -201,7 +201,6 @@ For all platforms/compilers:
 - ``MRPT_EIGEN_USE_EMBEDDED_VERSION``: By default O, instructs MRPT to use the Eigen headers in MRPT/otherlibs/eigen3/. Uncheck if you have Eigen installed in the system and it’s visible through pkg-config. It’s recommended to uncheck this option if you have eigen3 installed in your system (today, eigen3 it’s not yet in any distro repository, that’s why it’s ON by default).
 - ``MRPT_ENABLE_EMBEDDED_ENABLED_PROFILER``: If enabled, all code blocks within macros "MRPT_BEGIN/MRPT_END" will be profiled and the statistics dumped to the console at the end of execution of any program. Default is OFF.
 - ``MRPT_HAS_ASIAN_FONTS``: Enables Asian fonts in mrpt::img::CCanvas (see this page), but increases library size by 1.5Mb. Default is ON.
-- ``MRPT_HAS_SVS``: To enable integration of the Videre SVS libraries to interface their stereo cameras. You’ll need the vendor libraries installed in the system before to enable this option. After setting this option to “ON”, the new configuration fields “SVS_ROOT_DIR” will appear and will be tried to be set pointing to the directory where the library is (As of Aug/2010, this option only works in GNU/Linux).
 - ``MRPT_OCCUPANCY_GRID_CELLSIZE``: Can be either 8 or 16 (bits). The size of each cell in the class mrpt::slam::COccupancyGridMap2D. Default is 8 bits. More on this here.
 
 For Windows only:

@@ -1,18 +1,12 @@
-
-
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_flycapture2.cmake REQUIRED) # Check for PointGreyResearch (PGR) FlyCapture2 library
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_isense.cmake REQUIRED)      # Support for INTERSENSE Sensors
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_kinect.cmake REQUIRED)      # Kinect support in a set of different ways
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_mynteye.cmake REQUIRED)     # Support for MYNT EYE cameras
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_nite2.cmake REQUIRED)       # Check for NITE2 library
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_openni2.cmake REQUIRED)     # Check for the OpenNI2 library
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_pcap.cmake REQUIRED)        # Check for the libpcap library
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_phidget.cmake REQUIRED)     # Support for phidget Interface Kit with proximity sensor device :
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_swissrange.cmake REQUIRED)  # Support for SWISSRANGE 3D camera:
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_triclops.cmake REQUIRED)    # Check for PointGreyResearch (PGR) Triclops library
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_videre_svs.cmake REQUIRED)  # Support for Videre Design stereo camera:
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_xsens.cmake REQUIRED)       # XSens Motion trackers / IMU drivers
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_libdc1394.cmake REQUIRED)   # Check for libdc1394-2
 
@@ -39,7 +33,6 @@ if(CMAKE_MRPT_HAS_FREENECT AND CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 	endif()
 endif()
 
-
 if(CMAKE_MRPT_HAS_LIBDC1394_2)
 	if ("${LIBDC1394_2_INCLUDE_DIRS}")
 		include_directories("${LIBDC1394_2_INCLUDE_DIRS}")
@@ -49,10 +42,6 @@ if(CMAKE_MRPT_HAS_LIBDC1394_2)
 	endif ()
 endif()
 
-
-if(CMAKE_MRPT_HAS_SWISSRANGE)
-	include_directories("${SWR_LIBMESASR_DIR}")
-endif()
 
 if(CMAKE_MRPT_HAS_LIBPCAP)
 	include_directories(${PCAP_INCLUDE_DIR})
@@ -118,10 +107,6 @@ endif()
 
 if(CMAKE_MRPT_HAS_OPENNI2)
 	target_link_libraries(hwdrivers PRIVATE ${MRPT_OPENNI2_LIBRARIES})
-endif()
-
-if(CMAKE_MRPT_HAS_SWISSRANGE)
-	target_link_libraries(hwdrivers PRIVATE ${MRPT_SWR_LIBS})
 endif()
 
 # Seems to be required to link against prebuilt libavcodec, etc.
@@ -210,11 +195,6 @@ endif()
 
 if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
 	target_link_libraries(hwdrivers PRIVATE mrpt_rplidar)
-endif()
-
-# Build with link on SVS lib
-if(CMAKE_MRPT_HAS_SVS)
-	target_link_libraries(hwdrivers PRIVATE dcap svs svscalc svscap)
 endif()
 
 # Remove the "--pedantic" flag for the file "CFFMPEG_InputStream.cpp" since headers

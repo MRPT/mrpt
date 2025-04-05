@@ -1,6 +1,7 @@
-include(../../cmakemodules/AssureCMakeRootFile.cmake)
-
 project(benchmarking-image-features)
+
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_qt.cmake REQUIRED)          # Check for wxWidgets + GL
+
 
 if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENCV AND NOT "${MRPT_OPENCV_VERSION}" VERSION_LESS "3.2"
 	AND NOT WIN32 # added JLBC (may 2019): the app uses gcc-only headers dirent.h (!)

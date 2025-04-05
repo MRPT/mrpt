@@ -43,20 +43,6 @@ See \ `this page <http://www.mrpt.org/Kinect_and_MRPT>`__ for more
 information, demo videos and example code.
 
 
-SwissRanger SR3000/4000 (legacy)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. image:: images/SR4000-150x150.jpg
-   :align: right
-
-The C++ interface is implemented in the
-class \ `mrpt::hwdrivers::CSwissRanger3DCamera <class_mrpt_hwdrivers_CSwissRanger3DCamera.html>`__.
-See the \ `page of the demo application <page_hwdrivers_swissranger_example.html>`__ for
-more information and a demo video.
-
-Manufacturer: mesa-imaging
-
-
 2. 2D laser scanners
 --------------------
 

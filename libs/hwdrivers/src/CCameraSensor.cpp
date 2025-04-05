@@ -154,33 +154,6 @@ void CCameraSensor::initialize()
       THROW_EXCEPTION_FMT("Error opening FFmpeg stream: %s", m_ffmpeg_url.c_str());
     }
   }
-  else if (m_grabber_type == "swissranger")
-  {
-    cout << "[CCameraSensor::initialize] SwissRanger camera...\n";
-    m_cap_swissranger = std::make_unique<CSwissRanger3DCamera>();
-
-    m_cap_swissranger->setOpenFromUSB(m_sr_open_from_usb);
-    m_cap_swissranger->setOpenIPAddress(m_sr_ip_address);
-
-    m_cap_swissranger->setSave3D(m_sr_save_3d);
-    m_cap_swissranger->setSaveRangeImage(m_sr_save_range_img);
-    m_cap_swissranger->setSaveIntensityImage(m_sr_save_intensity_img);
-    m_cap_swissranger->setSaveConfidenceImage(m_sr_save_confidence);
-
-    if (!m_path_for_external_images.empty())
-      m_cap_swissranger->setPathForExternalImages(m_path_for_external_images);
-
-    // Open it:
-    try
-    {
-      m_cap_swissranger->initialize();  // This will launch an exception if needed.
-    }
-    catch (std::exception&)
-    {
-      m_state = CGenericSensor::ssError;
-      throw;
-    }
-  }
   else if (m_grabber_type == "kinect")
   {
     cout << "[CCameraSensor::initialize] Kinect camera...\n";
@@ -356,7 +329,6 @@ void CCameraSensor::close()
   m_cap_bumblebee_dc1394.reset();
   m_cap_ffmpeg.reset();
   m_cap_rawlog.reset();
-  m_cap_swissranger.reset();
   m_cap_kinect.reset();
   m_cap_svs.reset();
   m_cap_image_dir.reset();
@@ -518,17 +490,6 @@ void CCameraSensor::loadConfig_sensorSpecific(
   m_img_dir_is_stereo = !m_img_dir_right_format.empty();
   m_img_dir_counter = m_img_dir_start_index;
 
-  // SwissRanger options:
-  m_sr_open_from_usb = configSource.read_bool(iniSection, "sr_use_usb", m_sr_open_from_usb);
-  m_sr_ip_address = configSource.read_string(iniSection, "sr_IP", m_sr_ip_address);
-
-  m_sr_save_3d = configSource.read_bool(iniSection, "sr_grab_3d", m_sr_save_3d);
-  m_sr_save_intensity_img =
-      configSource.read_bool(iniSection, "sr_grab_grayscale", m_sr_save_intensity_img);
-  m_sr_save_range_img = configSource.read_bool(iniSection, "sr_grab_range", m_sr_save_range_img);
-  m_sr_save_confidence =
-      configSource.read_bool(iniSection, "sr_grab_confidence", m_sr_save_confidence);
-
   m_kinect_save_3d = configSource.read_bool(iniSection, "kinect_grab_3d", m_kinect_save_3d);
   m_kinect_save_intensity_img =
       configSource.read_bool(iniSection, "kinect_grab_intensity", m_kinect_save_intensity_img);
@@ -654,21 +615,6 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
     {  // Error
       m_state = CGenericSensor::ssError;
       THROW_EXCEPTION("Error grabbing image");
-    }
-    else
-      capture_ok = true;
-  }
-  else if (m_cap_swissranger)
-  {
-    obs3D = std::make_shared<CObservation3DRangeScan>();
-
-    bool there_is_obs, hardware_error;
-    m_cap_swissranger->getNextObservation(*obs3D, there_is_obs, hardware_error);
-
-    if (!there_is_obs || hardware_error)
-    {  // Error
-      m_state = CGenericSensor::ssError;
-      THROW_EXCEPTION("Error grabbing image from SwissRanger camera.");
     }
     else
       capture_ok = true;

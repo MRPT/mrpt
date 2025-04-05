@@ -1,5 +1,4 @@
 
-
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_qt.cmake REQUIRED)          # Check for wxWidgets + GL
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + GL
 
@@ -53,10 +52,8 @@ if(BUILD_mrpt-gui)
 		target_link_libraries(gui PRIVATE Qt5::Widgets Qt5::OpenGL)
 	endif()
 
-	if(CMAKE_MRPT_HAS_OPENCV)
-		target_link_libraries(gui PRIVATE imp_opencv)
-	endif()
-
+	target_link_libraries(gui PRIVATE imp_opencv)
+	
 	if(MRPT_OPENGL_LIBS)
 		# Link against glut:
 		target_link_libraries(gui PRIVATE ${MRPT_OPENGL_LIBS})

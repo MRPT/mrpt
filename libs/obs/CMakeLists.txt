@@ -42,21 +42,23 @@ define_mrpt_lib(
 	mrpt-tfest
 	)
 
-if(BUILD_mrpt-obs)
-	# tinyxml2 as system lib:
-	if (TARGET imp_tinyxml2)
-		target_link_libraries(obs PRIVATE imp_tinyxml2)
-	endif()
-	#
-	# Ignore precompiled headers in built-in tinyxml2 (for Windows, etc.):
-	if(CMAKE_MRPT_HAS_TINYXML2 AND NOT CMAKE_MRPT_HAS_TINYXML2_SYSTEM)
-		if(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-			set_source_files_properties(${tinyxml2_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
-		endif()
-	endif()
-
-	# Windows only: the mxplus lib internally requires linking with opencv (sigh...)
-	# Update Sep 2019: mrpt-obs now also uses OpenCV directly, so let's just link against opencv anyway:
-	target_link_libraries(obs PRIVATE imp_opencv)
-
+if(NOT BUILD_mrpt-obs)
+	return()
 endif()
+# tinyxml2 as system lib:
+if (TARGET imp_tinyxml2)
+	target_link_libraries(obs PRIVATE imp_tinyxml2)
+endif()
+#
+# Ignore precompiled headers in built-in tinyxml2 (for Windows, etc.):
+if(CMAKE_MRPT_HAS_TINYXML2 AND NOT CMAKE_MRPT_HAS_TINYXML2_SYSTEM)
+	if(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+		set_source_files_properties(${tinyxml2_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
+	endif()
+endif()
+
+# Update Sep 2019: mrpt-obs now also uses OpenCV directly, so let's just link against opencv anyway:
+if(CMAKE_MRPT_HAS_OPENCV)
+	target_link_libraries(obs PRIVATE imp_opencv)
+endif()
+

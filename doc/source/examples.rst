@@ -59,7 +59,6 @@ Python examples are `here <python_examples.html>`_.
   page_hwdrivers_robopeaklidar_example.rst
   page_hwdrivers_sick_eth_example.rst
   page_hwdrivers_sick_serial_example.rst
-  page_hwdrivers_swissranger_example.rst
   page_hwdrivers_taobotics_imu.rst
   page_img_basic_example.rst
   page_img_convolution_fft.rst

@@ -357,10 +357,11 @@ macro(internal_define_mrpt_lib name headers_only )
 
 		# If UNIX, don't link against unused libs:
 		IF (UNIX AND NOT APPLE)
-		    set_property(
-			    TARGET ${name}
+		set_property(
+				TARGET ${name}
 				APPEND_STRING PROPERTY
-				LINK_FLAGS " -Wl,--copy-dt-needed-entries -Wl,--no-undefined -Wl,--no-allow-shlib-undefined")
+				#LINK_FLAGS " -Wl,--copy-dt-needed-entries -Wl,--no-undefined -Wl,--no-allow-shlib-undefined")
+				LINK_FLAGS " -Wl,--as-needed")
 		endif()
 
 		if(MRPT_ENABLE_PRECOMPILED_HDRS)

@@ -1,8 +1,8 @@
 # ===================================================
 # nanogui
 # ===================================================
-set(CMAKE_MRPT_HAS_NANOGUI 0)
-set(CMAKE_MRPT_HAS_NANOGUI_SYSTEM 0)
+set(CMAKE_MRPT_HAS_NANOGUI 0 CACHE INTERNAL "")
+set(CMAKE_MRPT_HAS_NANOGUI_SYSTEM 0 CACHE INTERNAL "")
 
 if (APPLE)
   set(def_ OFF)
@@ -43,5 +43,5 @@ if(MRPT_BUILD_nanogui)
   endif()
 endif()
 
-set(CMAKE_MRPT_HAS_NANOGUI 1)
-set(CMAKE_MRPT_HAS_NANOGUI_SYSTEM 0)
+set(CMAKE_MRPT_HAS_NANOGUI 1 CACHE INTERNAL "")
+set(CMAKE_MRPT_HAS_NANOGUI_SYSTEM 0 CACHE INTERNAL "")

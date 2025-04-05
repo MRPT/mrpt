@@ -14,7 +14,7 @@
 #define GLEW_STATIC
 #endif
 
-#include <mrpt/config.h>
+#include <mrpt/opengl/config.h>
 
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 #ifdef _WIN32

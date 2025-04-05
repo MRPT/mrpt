@@ -1,5 +1,3 @@
-
-
 #-----------------------------------------------------------------
 # CMake file for the MRPT application:  robot-map-gui
 #
@@ -8,6 +6,8 @@
 #  May 2017, LisGein <alred402@gmail.com>
 #-----------------------------------------------------------------
 project(robot-map-gui)
+
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_qt.cmake REQUIRED)          # Check for wxWidgets + GL
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTORCC ON)

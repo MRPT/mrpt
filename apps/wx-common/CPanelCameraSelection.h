@@ -67,7 +67,6 @@ class CPanelCameraSelection : public wxPanel
   wxCheckBox* cbSR_chIntensity;
   wxCheckBox* cbKinect_Depth;
   wxNotebook* pagesCameras;
-  wxPanel* pnSwissRanger;
   wxTextCtrl* edRawlogFile;
   wxTextCtrl* edRawlogImgDir;
   wxPanel* Panel2;

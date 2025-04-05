@@ -83,8 +83,6 @@ message(STATUS " C++ flags (active config.)  : ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FL
 message(STATUS " EXE link flags (active)     : ${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_EXE_LINKER_FLAGS_${CMAKE_BUILD_TYPE}}")
 message(STATUS " Shared link flags (active)  : ${CMAKE_SHARED_LINKER} ${CMAKE_SHARED_LINKER_FLAGS_${CMAKE_BUILD_TYPE}}")
 
-message(STATUS " clang-tidy checks           : ${CLANG_TIDY_CHECKS}")
-
 message(STATUS "")
 message(STATUS " __________________________ OPTIONS _____________________________")
 SHOW_CONFIG_LINE("Build MRPT as a shared library?  " CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF)
@@ -117,7 +115,7 @@ if($ENV{VERBOSE})
 endif()
 
 message(STATUS " _____________________ MANDATORY LIBRARIES ______________________")
-SHOW_CONFIG_LINE_SYSTEM("eigen3                              " CMAKE_MRPT_HAS_EIGEN "[Version: ${MRPT_EIGEN_VERSION}]")
+SHOW_CONFIG_LINE("eigen3                              " CMAKE_MRPT_HAS_EIGEN "[Version: ${MRPT_EIGEN_VERSION}]")
 message(STATUS " - Assumed max. EIGEN_MAX_ALIGN_BYTES         : ${EIGEN_MAX_ALIGN_BYTES}")
 message(STATUS " - Assumed max. EIGEN_MAX_STATIC_ALIGN_BYTES  : ${EIGEN_MAX_STATIC_ALIGN_BYTES}")
 SHOW_CONFIG_LINE_SYSTEM("nanoflann                           " CMAKE_MRPT_HAS_NANOFLANN "[Version: ${NANOFLANN_VERSION}]")
@@ -185,8 +183,6 @@ SHOW_CONFIG_LINE_SYSTEM("OpenKinect libfreenect              " CMAKE_MRPT_HAS_FR
 SHOW_CONFIG_LINE_SYSTEM("OpenNI2                             " CMAKE_MRPT_HAS_OPENNI2)
 SHOW_CONFIG_LINE_SYSTEM("Phidgets                            " CMAKE_MRPT_HAS_PHIDGET)
 SHOW_CONFIG_LINE("RoboPeak LIDAR                      " CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
-SHOW_CONFIG_LINE_SYSTEM("SwissRanger 3/4000 3D camera        " CMAKE_MRPT_HAS_SWISSRANGE )
-SHOW_CONFIG_LINE_SYSTEM("Videre SVS stereo camera            " CMAKE_MRPT_HAS_SVS)
 if(UNIX)
 SHOW_CONFIG_LINE_SYSTEM("libudev (requisite for XSensMT)     " CMAKE_MRPT_HAS_LIBUDEV)
 endif()

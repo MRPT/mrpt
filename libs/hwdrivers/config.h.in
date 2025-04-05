@@ -21,12 +21,6 @@
 /** Define for including Phidget interface kit interface through the vendor's proprietary API (libPhidget). \sa CStereoGrabber_SVS  */
 #define MRPT_HAS_PHIDGET        ${CMAKE_MRPT_HAS_PHIDGET}
 
-/** Define for including SVS interface through the vendor's proprietary API. \sa CStereoGrabber_SVS */
-#define MRPT_HAS_SVS        ${CMAKE_MRPT_HAS_SVS}
-
-/* do we have MESA Imaging SwissRange 3D camera driver? */
-#define MRPT_HAS_SWISSRANGE       ${CMAKE_MRPT_HAS_SWISSRANGE}
-
 /* do we have support for XBox Kinect? */
 #define MRPT_HAS_KINECT       ${CMAKE_MRPT_HAS_KINECT}
 

@@ -93,6 +93,10 @@ include(${MRPT_SOURCE_DIR}/cmakemodules/DeclareAppDependencies.cmake REQUIRED)
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_detect_unix_arch.cmake REQUIRED) # Detect machine architecture, on UNIX
 # --------------------------
 
+# Put these deps here for global visibility:
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_opencv.cmake REQUIRED)      # Check for the OpenCV libraries (via pkg-config, CMake, with different options)
+
+
 # Avoid the need for DLL export/import macros in Windows:
 if (WIN32)
 	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS  ON)
@@ -223,7 +227,6 @@ endif()
 # ----------------------------------------------------------------------------
 # Other sub-scripts:
 # ----------------------------------------------------------------------------
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_clang_tidy.cmake REQUIRED)  # Clang tidy
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimization options
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_gcc_clang_id.cmake REQUIRED) # Helper variables
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_gtest.cmake REQUIRED)       # Unit testing lib
@@ -319,11 +322,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 	add_compile_options(-Wreturn-local-addr   -Werror=return-local-addr)
 	add_compile_options(-Wno-psabi)
 	add_compile_options("$<$<COMPILE_LANGUAGE:C>:-Werror=implicit-function-declaration>")
-
-	# Workaround: Eigen <3.4 produces *tons* of warnings in GCC >=6. See http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1221
-	if (NOT ${CMAKE_CXX_COMPILER_VERSION} LESS "6.0" AND "${MRPT_EIGEN_VERSION}" VERSION_LESS "3.4")
-		add_compile_options(-Wno-ignored-attributes -Wno-int-in-bool-context)
-	endif()
 
 	if(NOT APPLE)
 		# This causes the option "-Wnowrite-strings" to be set on gcc-4.9 on OS X
@@ -526,6 +524,11 @@ add_custom_target(all_mrpt_libs ALL) # all_mrpt_libs: target to build all mrpt-*
 #      					PROCESS SUBDIRECTORIES:
 # ----------------------------------------------------------------------------
 add_subdirectory(3rdparty)   # The third-party libraries
+
+# Ensure we only link what we actually use
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--as-needed")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--as-needed")
+
 add_subdirectory(libs)        # The MRPT C++ libraries
 
 # Build pymrpt after defining the libs above
@@ -599,10 +602,9 @@ include(${MRPT_SOURCE_DIR}/cmakemodules/script_install_commands.cmake REQUIRED)
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_show_final_summary.cmake REQUIRED)
 
 #-----------------------------------
-# The examples
+# Examples
 # *Note*: This must be AFTER the generation of the mrpt-xxx-config.cmake files
 #-----------------------------------
-add_definitions(-DMRPT_OPENCV_SRC_DIR="${MRPT_OPENCV_SRC_DIR}")
 add_subdirectory(samples)
 
 # evaluate coverage
