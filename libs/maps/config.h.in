@@ -15,5 +15,4 @@
 /** The size of cells in mrpt::maps::COccupancyGridMap2D */
 #define	OCCUPANCY_GRIDMAP_CELL_SIZE_${MRPT_OCCUPANCY_GRID_CELLSIZE}BITS
 
-
 // clang-format on

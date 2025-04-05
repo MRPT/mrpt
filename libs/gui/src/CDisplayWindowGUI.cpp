@@ -9,9 +9,9 @@
 
 #include "gui-precomp.h"  // Precompiled headers
 //
-#include <mrpt/config.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/gui/CDisplayWindowGUI.h>
+#include <mrpt/gui/config.h>
 #include <mrpt/gui/default_mrpt_glfw_icon.h>
 
 #if MRPT_HAS_OPENCV

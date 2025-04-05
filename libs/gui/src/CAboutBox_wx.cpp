@@ -26,7 +26,7 @@
 #include <mrpt/gui/WxUtils.h>  //
 
 // For CV_VERSION
-#include <mrpt/config.h>
+#include <mrpt/gui/config.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt;

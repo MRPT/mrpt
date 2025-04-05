@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 
 #pragma once
-#include <mrpt/config.h>
 #include <mrpt/gui/CGlCanvasBase.h>
+#include <mrpt/gui/config.h>
 #if MRPT_HAS_Qt5
 
 #include <QtGlobal>

@@ -81,7 +81,7 @@ mark_as_advanced(MRPT_INSTALL_CONFIG_HEADERS)
 if (MRPT_INSTALL_CONFIG_HEADERS)
 	install(
 		FILES
-			"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h"
+			#"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h"
 			"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h"
 			"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/mrpt_paths_config.h"
 		DESTINATION

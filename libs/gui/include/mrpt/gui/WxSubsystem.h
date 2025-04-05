@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/config.h>
+#include <mrpt/gui/config.h>
 #include <mrpt/gui/gui_frwds.h>
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/TPoint2D.h>

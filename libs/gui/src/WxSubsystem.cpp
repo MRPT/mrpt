@@ -9,12 +9,12 @@
 
 #include "gui-precomp.h"  // Precompiled headers
 //
-#include <mrpt/config.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/gui/config.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/thread_name.h>
 

@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/config.h>
+#include <mrpt/maps/config.h>
 
 #include <cstdint>
 #if (                                                \

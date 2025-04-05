@@ -14,8 +14,6 @@ MRPT_WARNING(
     "only what you need (define MRPT_NO_WARN_BIG_HDR to disable this warning)")
 #endif
 
-#include <mrpt/config.h>
-
 // Observations:
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>

@@ -9,8 +9,8 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 //
-#include <mrpt/config.h>
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
+#include <mrpt/hwdrivers/config.h>
 
 // Include the libdc1394-2 headers:
 #if MRPT_HAS_LIBDC1394_2

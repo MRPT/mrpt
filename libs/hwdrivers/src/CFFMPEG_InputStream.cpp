@@ -14,7 +14,7 @@
 //
 #include "hwdrivers-precomp.h"  // Precompiled headers
 //
-#include <mrpt/config.h>
+#include <mrpt/hwdrivers/config.h>
 
 #if MRPT_HAS_FFMPEG
 extern "C"

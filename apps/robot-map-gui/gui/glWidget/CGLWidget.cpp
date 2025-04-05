@@ -28,7 +28,6 @@
 #include "CDocument.h"
 
 // Include libraries in linking (needed for Windows)
-#include <mrpt/config.h>
 #if defined(_MSC_VER)
 #pragma comment(lib, "opengl32.lib")
 #endif

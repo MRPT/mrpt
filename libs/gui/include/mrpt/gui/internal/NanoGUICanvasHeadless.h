@@ -11,7 +11,7 @@
 #include <mrpt/gui/CGlCanvasBase.h>
 
 // Expose nanogui API to mrpt users, for direct use of nanogui classes.
-#include <mrpt/config.h>
+#include <mrpt/gui/config.h>
 #if MRPT_HAS_NANOGUI
 
 #ifdef None  // X11 headers conflict...
