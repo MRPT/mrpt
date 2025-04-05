@@ -318,7 +318,7 @@ bool CImage::loadFromFile(const std::string& fileName, int isColor)
   MRPT_START
 
 #if MRPT_HAS_OPENCV
-#ifdef HAVE_OPENCV_IMGCODECS
+#if defined(HAVE_OPENCV_IMGCODECS)
   std::vector<uint8_t> fileData;
   if (!mrpt::io::loadBinaryFile(fileData, fileName)) return false;
   const cv::Mat data(fileData.size(), 1, CV_8UC1, fileData.data());

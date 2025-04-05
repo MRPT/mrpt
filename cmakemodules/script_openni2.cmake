@@ -2,7 +2,7 @@
 #  pkg-config if available (Linux), otherwise via 
 # Originally based on: https://github.com/rgbdemo/nestk/blob/master/cmake/FindOpenNI2.cmake
 # =========================================================
-set(CMAKE_MRPT_HAS_OPENNI2 0)
+set(CMAKE_MRPT_HAS_OPENNI2 0 CACHE INTERNAL "")
 
 option(DISABLE_OPENNI2 "Disable the OpenNI2 library, even if automatically found" "OFF")
 mark_as_advanced(DISABLE_OPENNI2)
@@ -53,8 +53,8 @@ find_library(OPENNI2_LIBRARY
 			 DOC "The OpenNI2.lib file path")
 
 if (OPENNI2_INCLUDE_DIR AND OPENNI2_LIBRARY)
-	set(CMAKE_MRPT_HAS_OPENNI2  1)
-	set(CMAKE_MRPT_HAS_OPENNI2_SYSTEM  1)
+	set(CMAKE_MRPT_HAS_OPENNI2  1 CACHE INTERNAL "")
+	set(CMAKE_MRPT_HAS_OPENNI2_SYSTEM  1 CACHE INTERNAL "")
 
 	add_library(imp_openni2 INTERFACE IMPORTED)
 	set_target_properties(imp_openni2

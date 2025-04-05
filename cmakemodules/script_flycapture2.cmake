@@ -1,6 +1,6 @@
 # Check for FLIR/PointGreyResearch FlyCapture2 library
 # -------------------------------------------------
-set(CMAKE_MRPT_HAS_FLYCAPTURE2 0)
+set(CMAKE_MRPT_HAS_FLYCAPTURE2 0 CACHE INTERNAL "")
 
 # Leave at the user's choice to disable it:
 option(DISABLE_PGR_FLYCAPTURE2 "Forces NOT using Flir FlyCapture2 libs, even if they are found by CMake" "OFF")
@@ -31,6 +31,6 @@ if(NOT DISABLE_PGR_FLYCAPTURE2)
 
 	# The variable that actually ends up in config.h
 	if (PGR_FLYCAPTURE2_INCLUDE_DIR AND PGR_FLYCAPTURE2_LIB_FILE_RELEASE)
-		set(CMAKE_MRPT_HAS_FLYCAPTURE2 1)
+		set(CMAKE_MRPT_HAS_FLYCAPTURE2 1 CACHE INTERNAL "")
 	endif()
 endif()

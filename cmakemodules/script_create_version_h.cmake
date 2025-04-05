@@ -46,6 +46,7 @@ if ("" STREQUAL "${CMAKE_SOURCE_DATE_EPOCH}")
   endif()
 endif()
 
+set(MRPT_CONFIG_FILE_INCLUDE_DIR ${CMAKE_BINARY_DIR}/include/mrpt-configuration/)
 
 configure_file("${MRPT_SOURCE_DIR}/parse-files/version.h.in" "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h")
 

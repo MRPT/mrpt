@@ -1,8 +1,8 @@
 # ===================================================
 # libfyaml
 # ===================================================
-set(CMAKE_MRPT_HAS_LIBFYAML 0)
-set(CMAKE_MRPT_HAS_LIBFYAML_SYSTEM 0)
+set(CMAKE_MRPT_HAS_LIBFYAML 0 CACHE INTERNAL "")
+set(CMAKE_MRPT_HAS_LIBFYAML_SYSTEM 0 CACHE INTERNAL "")
 
 if (WIN32)
 	# libfyaml does not support Windows (as of Aug 2020)
@@ -14,13 +14,13 @@ OPTION(MRPT_HAS_LIBFYAML "Use libfyaml, from the system or built-in (for YAML & 
 unset(initial_has_libfyaml)
 
 if(MRPT_HAS_LIBFYAML)
-	set(CMAKE_MRPT_HAS_LIBFYAML 1)
+	set(CMAKE_MRPT_HAS_LIBFYAML 1 CACHE INTERNAL "")
 	
 	# system version found?
 	find_library(LIBFYAML_LIB NAMES fyaml libfyaml)
 	find_path(LIBFYAML_INCLUDES NAMES libfyaml.h)
 	if (LIBFYAML_LIB AND LIBFYAML_INCLUDES)
-		set(CMAKE_MRPT_HAS_LIBFYAML_SYSTEM 1)
+		set(CMAKE_MRPT_HAS_LIBFYAML_SYSTEM 1 CACHE INTERNAL "")
 		if ($ENV{VERBOSE})
 			message(STATUS "LIBFYAML_LIB      : ${LIBFYAML_LIB}")
 			message(STATUS "LIBFYAML_INCLUDES : ${LIBFYAML_INCLUDES}")

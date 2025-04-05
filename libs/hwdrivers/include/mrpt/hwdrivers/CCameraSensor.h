@@ -20,7 +20,6 @@
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
 #include <mrpt/hwdrivers/CStereoGrabber_Bumblebee_libdc1394.h>
 #include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
-#include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
@@ -79,7 +78,7 @@ namespace mrpt::hwdrivers
  *   [supplied_section_name]
  *    # Select one of the grabber implementations -----------------------
  *    grabber_type       = opencv | dc1394 | bumblebee_dc1394 | ffmpeg | rawlog
- * | swissranger | svs | kinect | flycap | flycap_stereo | image_dir | myntd
+ * | svs | kinect | flycap | flycap_stereo | image_dir | myntd
  *
  *    #  Options for any grabber_type ------------------------------------
  *    preview_decimation = 0     // N<=0 (or not present): No preview; N>0,
@@ -202,19 +201,6 @@ namespace mrpt::hwdrivers
  *    svs_SpeckleSize = ...
  *    svs_procesOnChip = false
  *    svs_calDisparity = true
- *
- *    # Options for grabber_type= swissranger
- * -------------------------------------
- *    sr_use_usb         = true	        // True: use USB, false: use
- * ethernet
- *    sr_IP              = 192.168.2.14    // If sr_use_usb=false, the camera
- * IP
- *    sr_grab_grayscale  = true            // whether to save the intensity
- * channel
- *    sr_grab_3d         = true            // whether to save the 3D points
- *    sr_grab_range      = true            // whether to save the range image
- *    sr_grab_confidence = true            // whether to save the confidence
- * image
  *
  *    # Options for grabber_type= XBox kinect
  * -------------------------------------
@@ -385,20 +371,6 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
   std::string m_rawlog_camera_sensor_label;
   std::string m_rawlog_detected_images_dir;
 
-  // Options for grabber_type= swissranger
-  // -------------------------------------
-  /** true: USB, false: ETH */
-  bool m_sr_open_from_usb{true};
-  std::string m_sr_ip_address;
-  /** Save the 3D point cloud (default: true) */
-  bool m_sr_save_3d{true};
-  /** Save the 2D range image (default: true) */
-  bool m_sr_save_range_img{true};
-  /** Save the 2D intensity image (default: true) */
-  bool m_sr_save_intensity_img{true};
-  /** Save the estimated confidence 2D image (default: false) */
-  bool m_sr_save_confidence{true};
-
   // Options for grabber_type= XBox kinect
   // -------------------------------------
   /** Save the 3D point cloud (default: true) */
@@ -458,8 +430,6 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
   std::unique_ptr<CFFMPEG_InputStream> m_cap_ffmpeg;
   /** The input file for rawlogs */
   std::unique_ptr<mrpt::io::CFileGZInputStream> m_cap_rawlog;
-  /** SR 3D camera object. */
-  std::unique_ptr<CSwissRanger3DCamera> m_cap_swissranger;
   /** Kinect camera object. */
   std::unique_ptr<CKinect> m_cap_kinect;
   /** OpenNI2 object. */

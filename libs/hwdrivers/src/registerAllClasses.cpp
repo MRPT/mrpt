@@ -37,7 +37,6 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_hwdrivers)
   CEnoseModular::doRegister();
   CGillAnemometer::doRegister();
   CNTRIPEmitter::doRegister();
-  CSwissRanger3DCamera::doRegister();
   CLMS100Eth::doRegister();
   CPhidgetInterfaceKitProximitySensors::doRegister();
   CGyroKVHDSP3000::doRegister();

@@ -85,7 +85,7 @@ if (CMAKE_MRPT_HAS_SSE3)
 	# If the headers are not found, disable optimizations:
 	if (NOT HAVE_PMMINTRIN_H)
 		set(CMAKE_MRPT_HAS_SSE3 0)
-	endif (NOT )
+	endif ()
 endif()
 
 # Compiler type sizes:

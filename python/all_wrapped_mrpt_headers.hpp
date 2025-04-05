@@ -110,7 +110,6 @@
 #include <mrpt/hwdrivers/CSkeletonTracker.h>
 #include <mrpt/hwdrivers/CStereoGrabber_Bumblebee_libdc1394.h>
 #include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
-#include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
 #include <mrpt/hwdrivers/CTaoboticsIMU.h>
 #include <mrpt/hwdrivers/CVelodyneScanner.h>
 #include <mrpt/hwdrivers/CWirelessPower.h>

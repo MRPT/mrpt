@@ -60,7 +60,6 @@ namespace obs
  *   loaded and ready in memory.
  *
  *  Classes that grab observations of this type are:
- *		- mrpt::hwdrivers::CSwissRanger3DCamera
  *		- mrpt::hwdrivers::CKinect
  *
  *

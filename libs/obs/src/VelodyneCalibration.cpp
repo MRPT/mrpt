@@ -9,11 +9,11 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 //
-#include <mrpt/config.h>
 #include <mrpt/containers/yaml.h>
 #include <mrpt/core/bits_math.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/obs/VelodyneCalibration.h>
+#include <mrpt/obs/config.h>
 
 #include <cmath>
 #include <fstream>

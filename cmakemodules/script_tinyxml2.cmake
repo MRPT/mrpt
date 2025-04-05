@@ -1,7 +1,7 @@
 # Check for the TINYXML2 library
 # ===================================================
-set(CMAKE_MRPT_HAS_TINYXML2 0)
-set(CMAKE_MRPT_HAS_TINYXML2_SYSTEM 0)
+set(CMAKE_MRPT_HAS_TINYXML2 0 CACHE INTERNAL "")
+set(CMAKE_MRPT_HAS_TINYXML2_SYSTEM 0 CACHE INTERNAL "")
 
 # This option will be available only on Linux, hence it's declared here:
 option(DISABLE_TINYXML2 "Do not use the tinyxml2 library" 0)
@@ -34,8 +34,8 @@ if (TINYXML2_USE_EMBEDDED_VERSION)
 			"${MRPT_BINARY_DIR}/3rdparty/tinyxml2/tinyxml2.cpp" SHOW_PROGRESS)
 	endif()
 
-	set(CMAKE_MRPT_HAS_TINYXML2 1)
-	set(CMAKE_MRPT_HAS_TINYXML2_SYSTEM 0)
+	set(CMAKE_MRPT_HAS_TINYXML2 1 CACHE INTERNAL "")
+	set(CMAKE_MRPT_HAS_TINYXML2_SYSTEM 0 CACHE INTERNAL "")
 endif()
 
 if(UNIX AND NOT CMAKE_MRPT_HAS_TINYXML2)
@@ -46,8 +46,8 @@ if(UNIX AND NOT CMAKE_MRPT_HAS_TINYXML2)
 	mark_as_advanced(TINYXML2_LIBRARY)
 
 	if(TINYXML2_INCLUDE_DIR AND TINYXML2_LIBRARY)
-		set(CMAKE_MRPT_HAS_TINYXML2 1)
-		set(CMAKE_MRPT_HAS_TINYXML2_SYSTEM 1)
+		set(CMAKE_MRPT_HAS_TINYXML2 1 CACHE INTERNAL "")
+		set(CMAKE_MRPT_HAS_TINYXML2_SYSTEM 1 CACHE INTERNAL "")
 
 		add_library(imp_tinyxml2 INTERFACE IMPORTED)
 		set_target_properties(imp_tinyxml2

@@ -93,7 +93,6 @@ void unprojectInto(
  * loaded and ready in memory.
  *
  * Some classes that grab observations of this type are:
- *  - mrpt::hwdrivers::CSwissRanger3DCamera
  *  - mrpt::hwdrivers::CKinect
  *  - mrpt::hwdrivers::COpenNI2Sensor
  *
@@ -141,7 +140,7 @@ void unprojectInto(
  * \note Since MRPT 1.5.0, external files format can be selected at runtime
  *       with `CObservation3DRangeScan::EXTERNALS_AS_TEXT`
  *
- * \sa mrpt::hwdrivers::CSwissRanger3DCamera, mrpt::hwdrivers::CKinect,
+ * \sa mrpt::hwdrivers::CKinect,
  *     mrpt::hwdrivers::COpenNI2Sensor, mrpt::obs::CObservation
  *
  * \ingroup mrpt_obs_grp

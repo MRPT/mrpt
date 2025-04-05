@@ -1,8 +1,8 @@
 # Check for system libassimp:
 #  http://assimp.sourceforge.net/
 # ===================================================
-set(CMAKE_MRPT_HAS_ASSIMP 0)
-set(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 0)
+set(CMAKE_MRPT_HAS_ASSIMP 0 CACHE INTERNAL "")
+set(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 0 CACHE INTERNAL "")
 
 option(DISABLE_ASSIMP "Force not using ASSIMP library" "OFF")
 mark_as_advanced(DISABLE_ASSIMP)
@@ -18,18 +18,18 @@ set(EMBEDDED_ASSIMP_DIR "${MRPT_BINARY_DIR}/3rdparty/assimp")
 find_package(PkgConfig QUIET)
 if(PKG_CONFIG_FOUND)
 	PKG_CHECK_MODULES(ASSIMP QUIET assimp)
-	if (ASSIMP_FOUND)
-		if ($ENV{VERBOSE})
+	if(ASSIMP_FOUND)
+		if($ENV{VERBOSE})
 			message(STATUS "Assimp: Found via pkg-config")
 			message(STATUS " ASSIMP_LIBRARIES=${ASSIMP_LIBRARIES}")
 			message(STATUS " ASSIMP_INCLUDE_DIRS=${ASSIMP_INCLUDE_DIRS}")
-		endif ($ENV{VERBOSE})
+		endif()
 
-		set(CMAKE_MRPT_HAS_ASSIMP 1)
-		set(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 1)
+		set(CMAKE_MRPT_HAS_ASSIMP 1 CACHE INTERNAL "")
+		set(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 1 CACHE INTERNAL "")
 
-		set(ASSIMP_CXX_FLAGS ${ASSIMP_CFLAGS})
-	endif (ASSIMP_FOUND)
+		set(ASSIMP_CXX_FLAGS ${ASSIMP_CFLAGS} CACHE INTERNAL "")
+	endif()
 endif()
 
 if (NOT ASSIMP_FOUND)
@@ -67,14 +67,14 @@ if (NOT ASSIMP_FOUND)
 
 		set(ASSIMP_FOUND_VIA_CMAKE 1)
 
-		set(CMAKE_MRPT_HAS_ASSIMP 1)
-		set(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 0)
+		set(CMAKE_MRPT_HAS_ASSIMP 1 CACHE INTERNAL "")
+		set(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 0 CACHE INTERNAL "")
 	endif ()
 endif()
 
 if (ASSIMP_FOUND_VIA_CMAKE)
 	# override wrong target libs in -config.cmake file:
-	set(ASSIMP_LIBRARIES "")
+	set(ASSIMP_LIBRARIES "" CACHE INTERNAL "")
 
 	if(MSVC12)
 		set(ASSIMP_MSVC_VERSION "vc120")
@@ -86,7 +86,7 @@ if (ASSIMP_FOUND_VIA_CMAKE)
 		set(ASSIMP_CUSTOM_LIB_NAME "assimp-mrpt-${ASSIMP_MSVC_VERSION}-mt")
 	else()
 		set(ASSIMP_CUSTOM_LIB_NAME "assimp")
-		set(ASSIMP_LIBRARY_DIRS "${MRPT_BINARY_DIR}/lib")
+		set(ASSIMP_LIBRARY_DIRS "${MRPT_BINARY_DIR}/lib" CACHE INTERNAL "")
 	endif()
 
 	list(APPEND ASSIMP_LIBRARIES optimized "${ASSIMP_CUSTOM_LIB_NAME}" debug "${ASSIMP_CUSTOM_LIB_NAME}${CMAKE_DEBUG_POSTFIX}")
@@ -95,6 +95,7 @@ if (ASSIMP_FOUND_VIA_CMAKE)
 	set(ASSIMP_INCLUDE_DIRS
 		"${MRPT_BINARY_DIR}/3rdparty/assimp/include/"
 		"${MRPT_BINARY_DIR}/EP_assimp-prefix/src/EP_assimp-build/include/"
+		CACHE INTERNAL ""
 	)
 
 	# Install assimp DLLs (for binary packages)
@@ -102,7 +103,7 @@ if (ASSIMP_FOUND_VIA_CMAKE)
 		file(GLOB_RECURSE EXTRA_DLLS "${MRPT_BINARY_DIR}/bin/Release/assimp-*.dll" "${MRPT_BINARY_DIR}/bin/Debug/assimp-*.dll")
 		foreach(F ${EXTRA_DLLS})
 			install(FILES "${F}" DESTINATION bin)
-		endforeach(F)
+		endforeach()
 	endif()
 endif ()
 

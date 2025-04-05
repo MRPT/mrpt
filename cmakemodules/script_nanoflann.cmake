@@ -1,7 +1,7 @@
 # ===================================================
 # nanoflann
 # ===================================================
-set(CMAKE_MRPT_HAS_NANOFLANN 1) # nanoflann is a mandatory dependency
+set(CMAKE_MRPT_HAS_NANOFLANN 1 CACHE INTERNAL "") # nanoflann is a mandatory dependency
 
 # Where the embedded version would be built:
 set(nanoflann_EMBEDDED_BUILD_DIR "${MRPT_BINARY_DIR}/3rdparty/nanoflann")
@@ -43,9 +43,9 @@ mark_as_advanced(MRPT_INSTALL_EMBEDDED_nanoflann)
 
 # system library?:
 if (NOT "${nanoflann_DIR}" STREQUAL "${nanoflann_EMBEDDED_BUILD_DIR}")
-    set(CMAKE_MRPT_HAS_NANOFLANN_SYSTEM 1)
+    set(CMAKE_MRPT_HAS_NANOFLANN_SYSTEM 1 CACHE INTERNAL "")
 else()
-    set(CMAKE_MRPT_HAS_NANOFLANN_SYSTEM 0)
+    set(CMAKE_MRPT_HAS_NANOFLANN_SYSTEM 0 CACHE INTERNAL "")
 
     if (MRPT_INSTALL_EMBEDDED_nanoflann)
         # install the embedded copy too (we need nanoflann-config.cmake, etc.)

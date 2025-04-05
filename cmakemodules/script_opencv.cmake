@@ -1,20 +1,15 @@
 # Check for the OpenCV libraries:
 #  pkg-config if available (Linux), otherwise CMake module
 # =========================================================
-set(CMAKE_MRPT_HAS_OPENCV 0)
+set(CMAKE_MRPT_HAS_OPENCV 0 CACHE INTERNAL "")
 
-set(MRPT_OPENCV_VERSION 0.0.0)
-set(MRPT_OPENCV_VERSION_HEX "0x000")
-set(MRPT_OPENCV_SRC_DIR "") # used by MRPT exported targets
+set(MRPT_OPENCV_VERSION 0.0.0 CACHE INTERNAL "")
+set(MRPT_OPENCV_VERSION_HEX "0x000" CACHE INTERNAL "")
 
 # Define the interface library even if we don't have opencv in the system,
 # or its use is disabled in mrpt, to simplify specifying the list of dependencies
 # in all other libs / apps:
 add_library(imp_opencv INTERFACE IMPORTED)
-
-
-set(OpenCV_IGNORE_PKGCONFIG OFF CACHE BOOL "Forces using OpenCVConfig.cmake to find OpenCV")
-mark_as_advanced(OpenCV_IGNORE_PKGCONFIG)
 
 option(DISABLE_OPENCV "Disable the OpenCV library" "OFF")
 mark_as_advanced(DISABLE_OPENCV)
@@ -22,52 +17,37 @@ if(DISABLE_OPENCV)
 	return()
 endif()
 
-
 # 1st option: Try to find OpenCV config file (NO_MODULE: Don't find a module, but OpenCVConfig.cmake):
 if(NOT CMAKE_MRPT_HAS_OPENCV)
-	find_package(OpenCV QUIET NO_MODULE)
+	find_package(OpenCV QUIET COMPONENTS core imgproc imgcodecs calib3d)
 	if(OpenCV_FOUND)
-		set(MRPT_OPENCV_VERSION ${OpenCV_VERSION})
-		set(OpenCV_LIBRARIES ${OpenCV_LIBS})
-		set(OPENCV_LIBDIR ${OpenCV_LIB_DIR})
-		if (NOT "${BASEDIR}" STREQUAL "")
-			set(MRPT_OPENCV_SRC_DIR "${BASEDIR}")
-		endif (NOT "${BASEDIR}" STREQUAL "")
-		if($ENV{VERBOSE})
-			message(STATUS "OpenCV ${OpenCV_VERSION} found through OpenCVConfig.cmake")
-		endif()
+		set(MRPT_OPENCV_VERSION ${OpenCV_VERSION} CACHE INTERNAL "")
+		set(CMAKE_MRPT_HAS_OPENCV 1 CACHE INTERNAL "")
 
-		set(CMAKE_MRPT_HAS_OPENCV 1)
 	endif()
 endif()
 
 # Opencv version as Hex. number:
-VERSION_TO_HEXADECIMAL(MRPT_OPENCV_VERSION_HEX ${MRPT_OPENCV_VERSION})
+VERSION_TO_HEXADECIMAL(OPENCV_VERSION_HEX ${MRPT_OPENCV_VERSION})
+set(MRPT_OPENCV_VERSION_HEX "${OPENCV_VERSION_HEX}" CACHE INTERNAL "")
 
 # OpenCV (all compilers):
 if(CMAKE_MRPT_HAS_OPENCV)
-	# Important: we can't link against opencv_ts, apparently it leads to crashes
-	# when also linking to gtest (???)
-	list(REMOVE_ITEM OpenCV_LIBRARIES opencv_ts)
-
 	if($ENV{VERBOSE})
-		message(STATUS "OpenCV:")
-		message(STATUS "        OpenCV_LIBRARIES:   ${OpenCV_LIBRARIES}")
+		message(STATUS "OpenCV: ${OpenCV_VERSION}")
+		message(STATUS "        OpenCV_LIBS:         ${OpenCV_LIBS}")
 		message(STATUS "        OpenCV_INCLUDE_DIRS: ${OpenCV_INCLUDE_DIRS}")
 	endif()
 
 	set_target_properties(imp_opencv
 		PROPERTIES
 		INTERFACE_INCLUDE_DIRECTORIES "${OpenCV_INCLUDE_DIRS}"
-		INTERFACE_LINK_LIBRARIES "${OpenCV_LIBRARIES}"
+		INTERFACE_LINK_LIBRARIES "${OpenCV_LIBS}"
 		)
 
-	# TODO: When all opencv versions in non-EOL Ubuntu distros use exported targets
-	# simplify all this:
-	set(OpenCV_LIBRARIES imp_opencv)
-
-	set(CMAKE_MRPT_HAS_OPENCV_SYSTEM 1)
+	set(CMAKE_MRPT_HAS_OPENCV_SYSTEM 1 CACHE INTERNAL "")
 endif()
+
 
 # -- install DLLs for MRPT binary packages --
 if(DEFINED ENV{OPENCV_DLLS_TO_INSTALL_DIRS})

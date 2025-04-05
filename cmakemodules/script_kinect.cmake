@@ -42,9 +42,9 @@ else()
 	set(MRPT_WITH_KINECT_DEFAULT OFF)
 endif()
 
-set(CMAKE_MRPT_HAS_KINECT 0)  # Will be set to 1 only if all conditions are OK
-set(CMAKE_MRPT_HAS_FREENECT 0)
-set(CMAKE_MRPT_HAS_FREENECT_SYSTEM 0) # This means libfreenect is already built somewhere else in the system.
+set(CMAKE_MRPT_HAS_KINECT 0 CACHE INTERNAL "")  # Will be set to 1 only if all conditions are OK
+set(CMAKE_MRPT_HAS_FREENECT 0 CACHE INTERNAL "")
+set(CMAKE_MRPT_HAS_FREENECT_SYSTEM 0 CACHE INTERNAL "") # This means libfreenect is already built somewhere else in the system.
 
 set(MRPT_WITH_KINECT ${MRPT_WITH_KINECT_DEFAULT} CACHE BOOL "Build support for Xbox Kinect")
 if(MRPT_WITH_KINECT)
@@ -62,13 +62,13 @@ if(MRPT_WITH_KINECT)
 						message(STATUS "- PKG_LIBFREENECT_LIBRARIES: PkgConfig::PKG_LIBFREENECT")
 					endif()
 
-				set(CMAKE_MRPT_HAS_KINECT 1)
-				set(CMAKE_MRPT_HAS_FREENECT 1)
-				set(CMAKE_MRPT_HAS_FREENECT_SYSTEM 1)
+				set(CMAKE_MRPT_HAS_KINECT 1 CACHE INTERNAL "")
+				set(CMAKE_MRPT_HAS_FREENECT 1 CACHE INTERNAL "")
+				set(CMAKE_MRPT_HAS_FREENECT_SYSTEM 1 CACHE INTERNAL "")
 			else()
 				if(PKG_LIBUSB10_FOUND)
-					set(CMAKE_MRPT_HAS_KINECT 1)
-					set(CMAKE_MRPT_HAS_FREENECT 1)
+					set(CMAKE_MRPT_HAS_KINECT 1 CACHE INTERNAL "")
+					set(CMAKE_MRPT_HAS_FREENECT 1 CACHE INTERNAL "")
 
 					set(LIBUSB10_LIBS PkgConfig::PKG_LIBUSB10)
 					if($ENV{VERBOSE})
@@ -91,9 +91,9 @@ if(MRPT_WITH_KINECT)
 				set(FREENECT_LIBS PkgConfig::PKG_LIBUSB10)
 
 				# All OK:
-				set(CMAKE_MRPT_HAS_KINECT 1)
-				set(CMAKE_MRPT_HAS_FREENECT 1)
-				set(CMAKE_MRPT_HAS_FREENECT_SYSTEM 0)  # use embedded version
+				set(CMAKE_MRPT_HAS_KINECT 1 CACHE INTERNAL "")
+				set(CMAKE_MRPT_HAS_FREENECT 1 CACHE INTERNAL "")
+				set(CMAKE_MRPT_HAS_FREENECT_SYSTEM 0 CACHE INTERNAL "")  # use embedded version
 			else ()
 				# Error:
 				message(SEND_ERROR "*** ERROR *** Please, set libusb-1 variables or disable MRPT_WITH_KINECT.")
@@ -104,5 +104,5 @@ if(MRPT_WITH_KINECT)
 	endif()
 
 else()
-	set(CMAKE_MRPT_HAS_KINECT 0)
+	set(CMAKE_MRPT_HAS_KINECT 0 CACHE INTERNAL "")
 endif()
