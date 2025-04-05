@@ -9,8 +9,8 @@
 
 #include "gui-precomp.h"  // Precompiled headers
 //
-#include <mrpt/config.h>
 #include <mrpt/core/format.h>
+#include <mrpt/gui/config.h>
 #include <mrpt/system/os.h>
 
 #include <Eigen/Dense>

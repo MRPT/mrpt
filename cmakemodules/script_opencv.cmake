@@ -19,7 +19,7 @@ endif()
 
 # 1st option: Try to find OpenCV config file (NO_MODULE: Don't find a module, but OpenCVConfig.cmake):
 if(NOT CMAKE_MRPT_HAS_OPENCV)
-	find_package(OpenCV QUIET COMPONENTS core imgproc imgcodecs calib3d)
+	find_package(OpenCV QUIET COMPONENTS core imgcodecs calib3d) # imgproc  )
 	if(OpenCV_FOUND)
 		set(MRPT_OPENCV_VERSION ${OpenCV_VERSION} CACHE INTERNAL "")
 		set(CMAKE_MRPT_HAS_OPENCV 1 CACHE INTERNAL "")

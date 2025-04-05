@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/config.h>
+#include <mrpt/gui/config.h>
 
 namespace mrpt::gui
 {

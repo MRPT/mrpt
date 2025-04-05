@@ -16,7 +16,7 @@ using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace std;
 
-#include <mrpt/config.h>
+#include <mrpt/hwdrivers/config.h>
 #if MRPT_HAS_LIBPCAP && MRPT_HAS_TINYXML2
 
 TEST(CVelodyneScanner, sample_vlp16_dataset)

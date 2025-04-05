@@ -9,8 +9,8 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 //
-#include <mrpt/config.h>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/hwdrivers/config.h>
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN

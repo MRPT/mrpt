@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/config.h>
+#include <mrpt/hwdrivers/config.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 

@@ -9,11 +9,11 @@
 
 #include "gui-precomp.h"  // Precompiled headers
 //
-#include <mrpt/config.h>
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/gui/config.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/system/os.h>

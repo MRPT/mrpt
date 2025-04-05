@@ -14,7 +14,7 @@
 #include <mrpt/typemeta/TEnumType.h>
 
 // MRPT implements a common interface to Kinect disregarding the
-//  actual underlying library. These macros defined in "mrpt/config.h"
+//  actual underlying library. These macros defined in "mrpt/hwdrivers/config.h"
 //  let us know which library is actually used:
 //   - [DEPRECATED AS OF MRPT 1.3.0] MRPT_HAS_KINECT_CL_NUI     = 0 or 1
 //   - MRPT_HAS_KINECT_FREENECT   = 0 or 1

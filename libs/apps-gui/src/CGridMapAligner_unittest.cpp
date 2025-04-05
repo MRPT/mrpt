@@ -9,7 +9,7 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/apps/CGridMapAlignerApp.h>
-#include <mrpt/config.h>
+#include <mrpt/img/config.h>
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/system/filesystem.h>

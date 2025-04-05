@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/config.h>
 #include <mrpt/core/pimpl.h>
 #include <mrpt/core/safe_pointers.h>
+#include <mrpt/hwdrivers/config.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/typemeta/TEnumType.h>
 

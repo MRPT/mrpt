@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <mrpt/config.h>  //MRPT_HAS_OPENNI2
+#include <mrpt/hwdrivers/config.h>  //MRPT_HAS_OPENNI2
 
 /** @file Include this file only from your user code if you have OPENNI2 */
 

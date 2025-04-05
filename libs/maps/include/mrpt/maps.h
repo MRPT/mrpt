@@ -15,7 +15,6 @@ MRPT_WARNING(
     "only what you need (define MRPT_NO_WARN_BIG_HDR to disable this warning)")
 #endif
 
-#include <mrpt/config.h>
 #include <mrpt/maps/CBeacon.h>
 #include <mrpt/maps/CBeaconMap.h>
 #include <mrpt/maps/CColouredOctoMap.h>

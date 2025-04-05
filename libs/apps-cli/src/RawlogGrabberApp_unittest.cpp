@@ -9,8 +9,9 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/apps-cli/RawlogGrabberApp.h>
-#include <mrpt/config.h>
 #include <mrpt/core/lock_helper.h>
+#include <mrpt/hwdrivers/config.h>
+#include <mrpt/img/config.h>
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
 

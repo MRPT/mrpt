@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <mrpt/config.h>
 #include <mrpt/gui/CGlCanvasBase.h>
+#include <mrpt/gui/config.h>
 #include <mrpt/viz/Scene.h>
 #include <mrpt/viz/opengl_fonts.h>
 

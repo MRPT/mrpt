@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
-#include <mrpt/config.h>
+#include <mrpt/containers/config.h>
 #include <mrpt/containers/yaml.h>
 #include <mrpt/io/vector_loadsave.h>
 #include <mrpt/system/COutputLogger.h>  // for enum type tests

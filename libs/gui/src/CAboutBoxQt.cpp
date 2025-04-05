@@ -9,7 +9,7 @@
 
 #include "gui-precomp.h"  // Precompiled headers
 //
-#include <mrpt/config.h>
+#include <mrpt/gui/config.h>
 
 #if MRPT_HAS_Qt5
 

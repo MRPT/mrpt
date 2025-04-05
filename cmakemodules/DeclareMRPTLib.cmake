@@ -361,7 +361,7 @@ macro(internal_define_mrpt_lib name headers_only )
 				TARGET ${name}
 				APPEND_STRING PROPERTY
 				#LINK_FLAGS " -Wl,--copy-dt-needed-entries -Wl,--no-undefined -Wl,--no-allow-shlib-undefined")
-				LINK_FLAGS " -Wl,--as-needed")
+				LINK_FLAGS " -Wl,--no-copy-dt-needed-entries")
 		endif()
 
 		if(MRPT_ENABLE_PRECOMPILED_HDRS)
