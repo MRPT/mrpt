@@ -1,7 +1,7 @@
 # Check for Matlab (Only in Linux, there is no
 #  Windows version yet...)
 # ===================================================
-set(CMAKE_MRPT_HAS_MATLAB 0 CACHE INTERNAL "")
+set(CMAKE_MRPT_HAS_MATLAB 0)
 
 # Natural option to set ON the building of Matlab wrapper
 # --------------------------------------------------------
@@ -39,7 +39,7 @@ if(MRPT_WITH_MATLAB_WRAPPER)
 			# TODO: This behaviour does not allow to update found libraries if MATLAB_ROOT is changed
 			find_package(Matlab)
 			if(MATLAB_FOUND)
-				set(CMAKE_MRPT_HAS_MATLAB 1 CACHE INTERNAL "")
+				set(CMAKE_MRPT_HAS_MATLAB 1)
 				list(APPEND MATLAB_LINK_LIBRARIES ${MATLAB_LIBRARIES} )
 
 				# ----------------------------------------------------

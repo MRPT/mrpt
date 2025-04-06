@@ -2,7 +2,7 @@
 # If it is found, will set CMAKE_MRPT_HAS_Qt5=1
 
 set(MRPT_WITH_QT ON CACHE BOOL "Build Qt")
-set(CMAKE_MRPT_HAS_Qt5 0 CACHE INTERNAL "")
+set(CMAKE_MRPT_HAS_Qt5 0)
 
 if (MRPT_WITH_QT)
 	set(QT_MRPT_COMPONENTS_TO_SEARCH "Gui;Widgets;Core;OpenGL" CACHE STRING "Components to search in Qt")
@@ -10,7 +10,7 @@ if (MRPT_WITH_QT)
 	find_package(Qt5 QUIET COMPONENTS ${QT_MRPT_COMPONENTS_TO_SEARCH})
 
 	if (Qt5Core_FOUND)
-		set(CMAKE_MRPT_HAS_Qt5 1 CACHE INTERNAL "")
+		set(CMAKE_MRPT_HAS_Qt5 1)
 		list(APPEND Qt5_COMPONENTS_LIBS "")
 		list(APPEND Qt5_COMPONENTS_INCLUDE_DIRS "")
 

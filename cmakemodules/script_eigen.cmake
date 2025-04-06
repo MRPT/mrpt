@@ -77,7 +77,7 @@ else()
 endif()
 
 # Create variables just for the final summary of the configuration (see bottom of this file):
-set(CMAKE_MRPT_HAS_EIGEN 1 CACHE INTERNAL "")        # Always, it's a fundamental dep.!
+set(CMAKE_MRPT_HAS_EIGEN 1)        # Always, it's a fundamental dep.!
 
 # Detect Eigen version (just to show it in the CMake config summary)
 set(EIGEN_VER_H "${MRPT_EIGEN_INCLUDE_DIR}/Eigen/src/Core/util/Macros.h")
@@ -95,7 +95,7 @@ if (EXISTS ${EIGEN_VER_H})
 	string(REGEX MATCH "EIGEN_MINOR_VERSION[ ]+[0-9]+" CMAKE_EIGEN_VERSION_NUMBER_PATCH "${STR_EIGEN_VERSION}")
 	string(REGEX MATCH "[0-9]+" CMAKE_EIGEN_VERSION_NUMBER_PATCH "${CMAKE_EIGEN_VERSION_NUMBER_PATCH}")
 
-	set(MRPT_EIGEN_VERSION "${CMAKE_EIGEN_VERSION_NUMBER_MAJOR}.${CMAKE_EIGEN_VERSION_NUMBER_MINOR}.${CMAKE_EIGEN_VERSION_NUMBER_PATCH}" CACHE INTERNAL "")
+	set(MRPT_EIGEN_VERSION "${CMAKE_EIGEN_VERSION_NUMBER_MAJOR}.${CMAKE_EIGEN_VERSION_NUMBER_MINOR}.${CMAKE_EIGEN_VERSION_NUMBER_PATCH}")
 
 	if($ENV{VERBOSE})
 		message(STATUS "Eigen version detected: ${MRPT_EIGEN_VERSION}")

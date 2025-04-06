@@ -1,10 +1,10 @@
 # Check for the OpenCV libraries:
 #  pkg-config if available (Linux), otherwise CMake module
 # =========================================================
-set(CMAKE_MRPT_HAS_OPENCV 0 CACHE INTERNAL "")
+set(CMAKE_MRPT_HAS_OPENCV 0)
 
-set(MRPT_OPENCV_VERSION 0.0.0 CACHE INTERNAL "")
-set(MRPT_OPENCV_VERSION_HEX "0x000" CACHE INTERNAL "")
+set(MRPT_OPENCV_VERSION 0.0.0)
+set(MRPT_OPENCV_VERSION_HEX "0x000")
 
 # Define the interface library even if we don't have opencv in the system,
 # or its use is disabled in mrpt, to simplify specifying the list of dependencies
@@ -21,15 +21,15 @@ endif()
 if(NOT CMAKE_MRPT_HAS_OPENCV)
 	find_package(OpenCV QUIET COMPONENTS core imgcodecs calib3d) # imgproc  )
 	if(OpenCV_FOUND)
-		set(MRPT_OPENCV_VERSION ${OpenCV_VERSION} CACHE INTERNAL "")
-		set(CMAKE_MRPT_HAS_OPENCV 1 CACHE INTERNAL "")
+		set(MRPT_OPENCV_VERSION ${OpenCV_VERSION})
+		set(CMAKE_MRPT_HAS_OPENCV 1)
 
 	endif()
 endif()
 
 # Opencv version as Hex. number:
 VERSION_TO_HEXADECIMAL(OPENCV_VERSION_HEX ${MRPT_OPENCV_VERSION})
-set(MRPT_OPENCV_VERSION_HEX "${OPENCV_VERSION_HEX}" CACHE INTERNAL "")
+set(MRPT_OPENCV_VERSION_HEX "${OPENCV_VERSION_HEX}")
 
 # OpenCV (all compilers):
 if(CMAKE_MRPT_HAS_OPENCV)
@@ -45,7 +45,7 @@ if(CMAKE_MRPT_HAS_OPENCV)
 		INTERFACE_LINK_LIBRARIES "${OpenCV_LIBS}"
 		)
 
-	set(CMAKE_MRPT_HAS_OPENCV_SYSTEM 1 CACHE INTERNAL "")
+	set(CMAKE_MRPT_HAS_OPENCV_SYSTEM 1)
 endif()
 
 

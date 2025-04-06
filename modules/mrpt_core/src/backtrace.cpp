@@ -9,8 +9,8 @@
 
 #include "core-precomp.h"  // Precompiled headers
 //
-#include <mrpt/core/config.h>  // MRPT_HAS_BFD, etc.
 #include <mrpt/core/backtrace.h>
+#include <mrpt/core/config.h>  // MRPT_HAS_BFD, etc.
 #include <mrpt/core/demangle.h>
 #include <mrpt/core/format.h>
 #include <mrpt/core/get_env.h>
@@ -368,9 +368,10 @@ void mrpt::callStackBackTrace(
 #elif !defined(__EMSCRIPTEN__)
   // Based on: https://gist.github.com/fmela/591333
   std::vector<void*> callstack(framesToCapture + 4);
-  const int nMaxFrames = framesToCapture;
-  int nFrames = ::backtrace(callstack.data(), nMaxFrames);
-  char** symbols = ::backtrace_symbols(callstack.data(), nFrames);
+  const auto nMaxFrames = framesToCapture;
+  auto nFrames =
+      static_cast<unsigned int>(::backtrace(callstack.data(), static_cast<int>(nMaxFrames)));
+  char** symbols = ::backtrace_symbols(callstack.data(), static_cast<int>(nFrames));
 
 // Detailed callback stack traces with debug symbols: only in debug builds:
 #if MRPT_HAS_BFD && defined(_DEBUG)
@@ -385,7 +386,10 @@ void mrpt::callStackBackTrace(
   {
     // Use BFD to solve for symbol names and line numbers.
     std::vector<void*> addrs;
-    for (int i = (int)framesToSkip; i < nFrames; i++) addrs.push_back(callstack[i]);
+    for (unsigned int i = framesToSkip; i < nFrames; i++)
+    {
+      addrs.push_back(callstack[i]);
+    }
 
 #if MRPT_HAS_BFD && defined(_DEBUG)
     // It seems BFD crashes if it is invoked from several threads in
@@ -402,7 +406,7 @@ void mrpt::callStackBackTrace(
   else
   {
     // If BFD is not available, solve for symbol names only:
-    for (int i = (int)framesToSkip; i < nFrames; i++)
+    for (unsigned int i = framesToSkip; i < nFrames; i++)
     {
       TCallStackEntry cse;
       cse.address = callstack[i];

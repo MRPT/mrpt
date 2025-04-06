@@ -18,7 +18,8 @@ std::string mrpt::format(const char* fmt, ...)
 {
   if (!fmt) return {};
 
-  int result = -1, length = 2048;
+  int result = -1;
+  std::size_t length = 2048;
   std::string buffer;
   while (result == -1)
   {
@@ -34,13 +35,16 @@ std::string mrpt::format(const char* fmt, ...)
     va_end(args);
 
     // Truncated?
-    if (result >= length) result = -1;
+    if (result >= static_cast<int>(length))
+    {
+      result = -1;
+    }
     length *= 2;
 
     // Ok?
     if (result >= 0)
     {
-      buffer.resize(result);
+      buffer.resize(static_cast<size_t>(result));
     }
   }
   return buffer;

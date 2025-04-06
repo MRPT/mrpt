@@ -74,14 +74,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #define MRPT_IN_EMSCRIPTEN ${CMAKE_MRPT_IN_EMSCRIPTEN}
 
 /** Standard headers */
-#ifndef HAVE_INTTYPES_H
-#cmakedefine HAVE_INTTYPES_H 1
-#endif
-
-#ifndef HAVE_STDINT_H
-#cmakedefine HAVE_STDINT_H 1
-#endif
-
 #ifndef HAVE_WINSOCK2_H
 #cmakedefine HAVE_WINSOCK2_H 1
 #endif

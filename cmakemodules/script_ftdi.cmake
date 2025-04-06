@@ -1,7 +1,7 @@
 # Check for the FTDI headers (Linux only, in win32
 #  we use built-in header & dynamic DLL load):
 # ===================================================
-set(CMAKE_MRPT_HAS_FTDI 0 CACHE INTERNAL "")
+set(CMAKE_MRPT_HAS_FTDI 0)
 
 # This option will be available only on Linux, hence it's declared here:
 option(DISABLE_FTDI "Do not use the USB driver for FTDI chips" 0)
@@ -15,8 +15,8 @@ if(UNIX)
 	# 1st: try to find LIBFTDI1 (1.2+)
 	find_package(LibFTDI1 QUIET)
 	if (LibFTDI1_FOUND)
-		set(CMAKE_MRPT_HAS_FTDI 1 CACHE INTERNAL "")
-		set(CMAKE_MRPT_HAS_FTDI_SYSTEM 1 CACHE INTERNAL "")
+		set(CMAKE_MRPT_HAS_FTDI 1)
+		set(CMAKE_MRPT_HAS_FTDI_SYSTEM 1)
 
 		set(FTDI_INCLUDE_DIRS ${LIBFTDI_INCLUDE_DIRS})
 		set(FTDI_LINK_DIRS ${LIBFTDI_LIBRARY_DIRS})
@@ -27,8 +27,8 @@ if(UNIX)
 		if(FTDI_CONFIG_FILE)
 			mark_as_advanced(FTDI_CONFIG_FILE)
 
-			set(CMAKE_MRPT_HAS_FTDI 1 CACHE INTERNAL "")
-			set(CMAKE_MRPT_HAS_FTDI_SYSTEM 1 CACHE INTERNAL "")
+			set(CMAKE_MRPT_HAS_FTDI 1)
+			set(CMAKE_MRPT_HAS_FTDI_SYSTEM 1)
 
 			set(LIBFTDI_VERSION_MAJOR 1)
 			set(LIBFTDI_VERSION_MINOR 0)
@@ -66,7 +66,7 @@ if(UNIX)
 
 else()
 	# In windows we always have FTDI support (at compile time at least...)
-	set(CMAKE_MRPT_HAS_FTDI 1 CACHE INTERNAL "")
+	set(CMAKE_MRPT_HAS_FTDI 1)
 
 	set(LIBFTDI_VERSION_MAJOR 1)
 	set(LIBFTDI_VERSION_MINOR 0)

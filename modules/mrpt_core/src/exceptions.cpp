@@ -49,7 +49,8 @@ size_t findClosingBracket(const char chClosing, const char chOpening, const std:
 }  // namespace
 
 /** Recursive implementation for mrpt::exception_to_str() */
-void impl_excep_to_str(const std::exception& e, std::string& ret, [[maybe_unused]] int lvl = 0)
+void impl_excep_to_str(
+    const std::exception& e, std::string& ret, [[maybe_unused]] unsigned int lvl = 0)
 {
 #if defined(MRPT_EXCEPTIONS_WITH_CALL_STACK)
   using namespace std::string_literals;
@@ -113,4 +114,4 @@ std::string mrpt::exception_to_str(const std::exception& e)
   return descr;
 }
 
-int mrpt::internal::MAX_BACKTRACE_DEPTH() { return MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH; }
+unsigned int mrpt::internal::MAX_BACKTRACE_DEPTH() { return MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH; }

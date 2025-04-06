@@ -3,9 +3,9 @@
 # ----------------------------------------------------------------------------
 macro(CREATE_CMAKE_MRPT_DEFINE defName)
 	if(${defName} MATCHES "ON")
-		set(CMAKE_${defName} "1" CACHE INTERNAL "")
+		set(CMAKE_${defName} "1")
 	else()
-		set(CMAKE_${defName} "0" CACHE INTERNAL "")
+		set(CMAKE_${defName} "0")
 	endif()
 endmacro()
 

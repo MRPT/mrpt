@@ -123,7 +123,7 @@ endfunction ()
 # used to gather even empty report data.
 if (NOT TARGET lcov-capture-init)
 	add_custom_target(lcov-capture-init)
-	set(LCOV_CAPTURE_INIT_FILES "" CACHE INTERNAL "")
+	set(LCOV_CAPTURE_INIT_FILES "")
 endif (NOT TARGET lcov-capture-init)
 
 
@@ -186,7 +186,7 @@ function (lcov_capture_initial_tgt TNAME)
 	# add geninfo file generation to global lcov-geninfo target
 	add_dependencies(lcov-capture-init ${TNAME}-capture-init)
 	set(LCOV_CAPTURE_INIT_FILES "${LCOV_CAPTURE_INIT_FILES}"
-		"${OUTFILE}" CACHE INTERNAL ""
+		"${OUTFILE}"
 	)
 endfunction (lcov_capture_initial_tgt)
 
@@ -216,7 +216,7 @@ endfunction (lcov_capture_initial)
 # target will be used to generate the global info file.
 if (NOT TARGET lcov-capture)
 	add_custom_target(lcov-capture)
-	set(LCOV_CAPTURE_FILES "" CACHE INTERNAL "")
+	set(LCOV_CAPTURE_FILES "")
 endif (NOT TARGET lcov-capture)
 
 

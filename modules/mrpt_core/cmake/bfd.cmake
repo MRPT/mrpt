@@ -1,7 +1,7 @@
 # Check for system BFD library for debug symbols (GNU/Linux only)
 # ===================================================
-set(CMAKE_MRPT_HAS_BFD 0 CACHE INTERNAL "")
-set(CMAKE_MRPT_HAS_BFD_SYSTEM 0 CACHE INTERNAL "")
+set(CMAKE_MRPT_HAS_BFD 0)
+set(CMAKE_MRPT_HAS_BFD_SYSTEM 0)
 
 option(DISABLE_BFD "Force not using BFD library" "OFF")
 mark_as_advanced(DISABLE_BFD)
@@ -31,11 +31,11 @@ if (NOT (HAVE_BFD_H AND BFD_LIBRARY AND Z_LIBRARY AND IBERTY_LIBRARY))
 	return()
 endif()
 
-set(BFD_LIBRARIES ${BFD_LIBRARY} ${Z_LIBRARY} ${CMAKE_DL_LIBS} ${IBERTY_LIBRARY} CACHE INTERNAL "")
+set(BFD_LIBRARIES ${BFD_LIBRARY} ${Z_LIBRARY} ${CMAKE_DL_LIBS} ${IBERTY_LIBRARY})
 
 # Ok, we have the library, now detect different API versions:
-set(CMAKE_MRPT_HAS_BFD 1 CACHE INTERNAL "")
-set(CMAKE_MRPT_HAS_BFD_SYSTEM 1 CACHE INTERNAL "")
+set(CMAKE_MRPT_HAS_BFD 1)
+set(CMAKE_MRPT_HAS_BFD_SYSTEM 1)
 
 check_symbol_exists(bfd_get_section_flags  "bfd.h" HAVE_DECL_BFD_GET_SECTION_FLAGS)
 check_symbol_exists(bfd_section_flags      "bfd.h" HAVE_DECL_BFD_SECTION_FLAGS)

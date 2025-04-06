@@ -16,7 +16,8 @@
 #include <windows.h>
 #endif
 
-std::string mrpt::winerror2str(const char* caller, const char* errorPrefix)
+std::string mrpt::winerror2str(
+    [[maybe_unused]] const char* caller, [[maybe_unused]] const char* errorPrefix)
 {
 #ifdef _WIN32
   DWORD e = GetLastError();

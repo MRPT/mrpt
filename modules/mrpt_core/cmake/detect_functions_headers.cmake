@@ -1,3 +1,8 @@
+
+if (POLICY CMP0075) # CheckIncludeFile: Yes, we will set "CMAKE_REQUIRED_LIBRARIES".
+	cmake_policy(SET CMP0075 NEW)
+endif()
+
 # ---------------------------------------------------------------
 #   "Clasic" function & headers detection:
 # ---------------------------------------------------------------
@@ -47,10 +52,7 @@ else()
 	set(HAVE_FREEGLUT_EXT_H 1)
 endif()
 
-CHECK_INCLUDE_FILE("stdint.h" HAVE_STDINT_H)
-CHECK_INCLUDE_FILE("inttypes.h" HAVE_INTTYPES_H)
 CHECK_INCLUDE_FILE("winsock2.h" HAVE_WINSOCK2_H)
-
 
 CHECK_INCLUDE_FILES("windows.h;winusb.h" HAVE_WINUSB_H)
 

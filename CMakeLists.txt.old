@@ -18,9 +18,6 @@
 # - cmakemodules/ECMFindModuleHelpers.cmake:112  => 3.16.0  (Available in Ubuntu >=20.04)
 cmake_minimum_required(VERSION 3.16.0)
 
-if (POLICY CMP0075) # CheckIncludeFile: Yes, we will set "CMAKE_REQUIRED_LIBRARIES".
-	cmake_policy(SET CMP0075 NEW)
-endif()
 if (POLICY CMP0135)  # The DOWNLOAD_EXTRACT_TIMESTAMP option was not given
 	cmake_policy(SET CMP0135 NEW)
 endif()
@@ -59,13 +56,6 @@ if(CMAKE_TIMING_VERBOSE AND UNIX)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_CURRENT_SOURCE_DIR}/cmakemodules/custom_output.sh")
 endif()
 
-# Detect wordsize:
-if(CMAKE_SIZEOF_VOID_P EQUAL 8)  # Size in bytes!
-	set(CMAKE_MRPT_WORD_SIZE 64)
-else()
-	set(CMAKE_MRPT_WORD_SIZE 32)
-endif()
-
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_version_number.cmake REQUIRED)	#  Loads MRPT version number
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmakemodules") # Directory for CMake scripts
@@ -81,7 +71,7 @@ option(MRPT_ALLOW_LGPLV3 "Allows MRPT to use LGPLV3 code (mrpt-vision-lgpl)" "OF
 
 
 # The root directory for all MRPT libraries/modules:
-set(MRPT_LIBS_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/libs" CACHE INTERNAL "")  # This emulates global vars
+set(MRPT_LIBS_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/libs")  # This emulates global vars
 
 # ----- Useful macros ------
 include(${MRPT_SOURCE_DIR}/cmakemodules/UtilsMacros.cmake REQUIRED)
@@ -180,8 +170,6 @@ set(MRPT_ENABLE_PRECOMPILED_HDRS ${default_use_precomp} CACHE BOOL "Enable preco
 mark_as_advanced(MRPT_ENABLE_PRECOMPILED_HDRS)
 
 
-# "Classic" function & headers detection:
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_detect_functions_headers.cmake REQUIRED)
 
 # MSVC only:
 # ===================================================
@@ -207,22 +195,6 @@ set_target_properties(uninstall PROPERTIES FOLDER "CMakeTargets")
 # See docs for CMake FindThreads()
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads) # Defines imported target Threads::Threads
-
-# ccache:
-if(NOT MSVC AND NOT XCODE_VERSION)
-    option(MRPT_BUILD_WITH_CCACHE "Use ccache compiler cache" ON)
-    find_program(CCACHE_FOUND ccache)
-	mark_as_advanced(CCACHE_FOUND)
-    if(CCACHE_FOUND)
-        if(MRPT_BUILD_WITH_CCACHE)
-            set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-            set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
-        else()
-            set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "")
-            set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "")
-        endif()
-    endif()
-endif()
 
 # ----------------------------------------------------------------------------
 # Other sub-scripts:
@@ -496,24 +468,11 @@ set( MEX_EXECUTABLE_OUTPUT_PATH ${MRPT_BINARY_DIR}/mex/test CACHE PATH "Output d
 
 # This will become a list with all libraries to be built, and their
 #  dependencies stored in "mrpt-${name}_LIB_DEPS"
-set(ALL_MRPT_LIBS "" CACHE INTERNAL "")  # This emulates global vars
+set(ALL_MRPT_LIBS "")  # This emulates global vars
 
 if (NOT MSVC AND MRPT_ENABLE_PRECOMPILED_HDRS)
 	include(${MRPT_SOURCE_DIR}/cmakemodules/cotire.cmake REQUIRED) # COmpiler TIme REducer helper for PCH
 	set_directory_properties(PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE) # Disable unity targets
-endif()
-
-# Eigen Alignment to make MRPT compatible with different compiler build flags.
-# EIGEN_MAX_ALIGN_BYTES & EIGEN_MAX_STATIC_ALIGN_BYTES
-# Just go for the safer side: align=32 bytes
-# ------------------------------------------------------
-if (MRPT_ARCH_INTEL_COMPATIBLE)
-    set(EIGEN_MAX_ALIGN_BYTES 32)
-    set(EIGEN_MAX_STATIC_ALIGN_BYTES 32)
-else()
-    # for aarch64, etc.
-    set(EIGEN_MAX_ALIGN_BYTES 16)
-    set(EIGEN_MAX_STATIC_ALIGN_BYTES 16)
 endif()
 
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_create_version_h.cmake REQUIRED)  # Build version.h
