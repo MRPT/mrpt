@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<!-- This is a ROS package file, intended to allow this library to be built
+     side-by-side to ROS packages in a catkin/ament environment.
+-->
+<package format="3">
+  <name>mola_common</name>
+  <version>0.4.0</version>
+  <description>Common CMake scripts to all MOLA modules</description>
+
+  <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
+  <license file="LICENSE">BSD</license>
+
+  <url type="website">https://github.com/MOLAorg/</url>
+
+
+  <doc_depend>doxygen</doc_depend>
+
+  <!-- COMMON DEPS -->
+  <build_depend>ros_environment</build_depend>
+
+  <!-- BUILD TOOLS -->
+  <buildtool_depend>cmake</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake_gtest</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake</buildtool_depend>
+
+  <!-- ROS2 -->
+  <test_depend condition="$ROS_VERSION == 2">ament_lint_auto</test_depend>
+  <test_depend condition="$ROS_VERSION == 2">ament_lint_common</test_depend>
+  <build_depend condition="$ROS_VERSION == 2">ament_cmake_xmllint</build_depend>
+
+  <export>
+    <build_type condition="$ROS_VERSION == 1">catkin</build_type>
+    <build_type condition="$ROS_VERSION == 2">ament_cmake</build_type>
+  </export>
+
+</package>
