@@ -58,7 +58,8 @@ inline long round_long(const T value)
 template <class T>
 T round_10power(T val, int power10)
 {
-  long double F = ::pow((long double)10.0, -(long double)power10);
+  long double F =
+      std::pow<long double>(static_cast<long double>(10.0), -static_cast<long double>(power10));
   long int t = round_long(val * F);
   return T(t / F);
 }

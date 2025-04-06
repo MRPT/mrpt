@@ -86,6 +86,13 @@ if ((NOT DETECTED_ROS2) AND (NOT DETECTED_ROS1))
 			DESTINATION
 				share/${PROJECT_NAME}/cmake
 	)
+	install(
+		DIRECTORY
+			${CMAKE_SOURCE_DIR}/common_sources
+			${CMAKE_SOURCE_DIR}/common_headers
+			DESTINATION
+				share/${PROJECT_NAME}/
+	)
 
 	# Provide make uninstall:
 	if (NOT TARGET uninstall)
