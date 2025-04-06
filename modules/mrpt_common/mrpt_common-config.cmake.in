@@ -7,21 +7,21 @@
 # Released under BSD-3. See LICENSE file
 # ------------------------------------------------------------------------------
 
-# mola_common: Defined common CMake variables and functions to unify building
-# of all MOLA modules.
+# mrpt_common: Defined common CMake variables and functions to unify building
+# of all MRPT modules.
 #
-# Main functions (refer to their docs in mola_cmake_functions.cmake):
-#  - mola_add_library()
-#  - mola_add_executable()
+# Main functions (refer to their docs in mrpt_cmake_functions.cmake):
+#  - mrpt_add_library()
+#  - mrpt_add_executable()
 #
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 
 # TODO: Support INSTALL path
 list(APPEND CMAKE_MODULE_PATH @CMAKE_CURRENT_LIST_DIR@)
-#	$<BUILD_INTERFACE:"@mola-common_SOURCE_DIR@">
+#	$<BUILD_INTERFACE:"@mrpt-common_SOURCE_DIR@">
 #	$<INSTALL_INTERFACE:"${CMAKE_CURRENT_LIST_DIR}">
 
 
-include(mola-version)
-include(mola_cmake_functions)
+#TODO: include(mrpt-version)
+include(mrpt_cmake_functions)
