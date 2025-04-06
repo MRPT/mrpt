@@ -6,16 +6,26 @@
 # Released under BSD-3 license. See LICENSE file
 # ------------------------------------------------------------------------------
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.16)
 
 # Tell CMake we'll use C++ for use in its tests/flags
-project(mrpt_core LANGUAGES CXX)
+project(mrpt_core LANGUAGES C CXX)
 
 # MRPT CMake scripts: "mrpt_xxx()"
 find_package(mrpt_common REQUIRED)
 
 # find dependencies:
-#find_package(...)
+find_package(Threads REQUIRED)
+
+# "Classic" function & headers detection:
+include(./cmake/bfd.cmake REQUIRED)
+include(./cmake/detect_functions_headers.cmake REQUIRED)
+include(./cmake/detect_unix_arch.cmake REQUIRED)
+include(./cmake/detect_word_size.cmake REQUIRED)
+include(./cmake/exceptions_and_backtraces.cmake REQUIRED)
+include(./cmake/max_alignment.cmake REQUIRED)
+include(./cmake/simd.cmake REQUIRED)
+include(./cmake/tbb.cmake REQUIRED)
 
 # define lib:
 set(LIB_SRCS
@@ -93,3 +103,25 @@ mrpt_add_library(
 #  CMAKE_DEPENDENCIES
 #   xxx
 )
+
+target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads) # for WorkerThreads
+
+# Fix a MSVC binary-breaking compatibility in MSVC 2017 15.8:
+if (MSVC)
+  target_compile_definitions(${PROJECT_NAME} PUBLIC -D_ENABLE_EXTENDED_ALIGNED_STORAGE)
+endif()
+
+if(WIN32)
+  target_link_libraries(${PROJECT_NAME} PRIVATE Dbghelp) # For mrpt::demangle(), mrpt::callStackBackTrace()
+else()
+  target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_DL_LIBS}) # For mrpt::callStackBackTrace()
+endif()
+
+if (CMAKE_MRPT_HAS_BFD)
+  target_link_libraries(${PROJECT_NAME} PRIVATE ${BFD_LIBRARIES})
+endif()
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH=${MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH}U)
+if (MRPT_EXCEPTIONS_WITH_CALL_STACK)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE MRPT_EXCEPTIONS_WITH_CALL_STACK)
+endif()

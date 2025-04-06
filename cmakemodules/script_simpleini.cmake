@@ -1,7 +1,7 @@
 # Check for system libsimpleini
 # ===================================================
-set(CMAKE_MRPT_HAS_SIMPLEINI 0 CACHE INTERNAL "")
-set(CMAKE_MRPT_HAS_SIMPLEINI_SYSTEM 0 CACHE INTERNAL "")
+set(CMAKE_MRPT_HAS_SIMPLEINI 0)
+set(CMAKE_MRPT_HAS_SIMPLEINI_SYSTEM 0)
 
 # 1st) Try to locate the pkg via pkg-config:
 find_path(SIMPLEINI_INCLUDE_DIRS SimpleIni.h)
@@ -24,14 +24,14 @@ if(LIBUCI_INCLUDE_DIR AND
 			message(STATUS "SIMPLEINI: Found in the system")
 		endif()
 
-		set(CMAKE_MRPT_HAS_SIMPLEINI 1 CACHE INTERNAL "")
-		set(CMAKE_MRPT_HAS_SIMPLEINI_SYSTEM 1 CACHE INTERNAL "")
+		set(CMAKE_MRPT_HAS_SIMPLEINI 1)
+		set(CMAKE_MRPT_HAS_SIMPLEINI_SYSTEM 1)
 endif()
 
 if (NOT CMAKE_MRPT_HAS_SIMPLEINI)
 	# Set to use embedded copy:
 	set(SIMPLEINI_INCLUDE_DIRS ${MRPT_SOURCE_DIR}/3rdparty/simpleini)
 
-	set(CMAKE_MRPT_HAS_SIMPLEINI 1 CACHE INTERNAL "")
-	set(CMAKE_MRPT_HAS_SIMPLEINI_SYSTEM 0 CACHE INTERNAL "")
+	set(CMAKE_MRPT_HAS_SIMPLEINI 1)
+	set(CMAKE_MRPT_HAS_SIMPLEINI_SYSTEM 0)
 endif()

@@ -16,6 +16,31 @@ include(CMakePackageConfigHelpers)
 #   include(mrpt_cmake_functions)
 #
 
+# ccache:
+if(NOT MSVC AND NOT XCODE_VERSION)
+    option(MRPT_BUILD_WITH_CCACHE "Use ccache compiler cache" ON)
+    find_program(CCACHE_FOUND ccache)
+    mark_as_advanced(CCACHE_FOUND)
+    if(CCACHE_FOUND)
+        if(MRPT_BUILD_WITH_CCACHE)
+            set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+            set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+        else()
+            set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "")
+            set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "")
+        endif()
+    endif()
+endif()
+
+# mrpt_foo => foo
+function(strip_mrpt_name TARGETNAME OUTPUT_VAR)
+    set(name "${TARGETNAME}")
+    if(name MATCHES "^mrpt_(.+)")
+        string(REGEX REPLACE "^mrpt_" "" name "${name}")
+    endif()
+    set(${OUTPUT_VAR} "${name}" PARENT_SCOPE)
+endfunction()
+
 # Project version:
 if (mrpt_common_VERSION)  # If installed via colcon+ament
   set(MRPT_VERSION_NUMBER_MAJOR ${mrpt_common_VERSION_MAJOR})
@@ -28,7 +53,7 @@ endif()
 set(_MRPTCOMMON_MODULE_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}")
 
 if (NOT DEFINED MRPT_VERSION_NUMBER_MAJOR)
-	message(ERROR "MRPT_VERSION_NUMBER_MAJOR not defined: use `find_package(mrpt_common)`")
+  message(ERROR "MRPT_VERSION_NUMBER_MAJOR not defined: use `find_package(mrpt_common)`")
 endif()
 
 # Avoid the need for DLL export/import macros in Windows:
@@ -69,7 +94,7 @@ if (WIN32)
   set(MRPT_DLL_VERSION_POSTFIX
     "${MRPT_VERSION_NUMBER_MAJOR}${MRPT_VERSION_NUMBER_MINOR}${MRPT_VERSION_NUMBER_PATCH}_${MRPT_COMPILER_NAME}_x${MRPT_WORD_SIZE}")
   if ($ENV{VERBOSE})
-  	message(STATUS "Using DLL version postfix: ${MRPT_DLL_VERSION_POSTFIX}")
+    message(STATUS "Using DLL version postfix: ${MRPT_DLL_VERSION_POSTFIX}")
   endif()
 else()
   set(MRPT_DLL_VERSION_POSTFIX "")
@@ -88,15 +113,15 @@ set(CMAKE_DEBUG_POSTFIX "-dbg")
 
 # GNU GCC options ================================
 if(CMAKE_COMPILER_IS_GNUCXX)
-	# BUILD_TYPE: SanitizeAddress
-	set(CMAKE_CXX_FLAGS_SANITIZEADDRESS "-fsanitize=address  -fsanitize=leak -g")
-	set(CMAKE_EXE_LINKER_FLAGS_SANITIZEADDRESS "-fsanitize=address  -fsanitize=leak")
-	set(CMAKE_SHARED_LINKER_FLAGS_SANITIZEADDRESS "-fsanitize=address  -fsanitize=leak")
+  # BUILD_TYPE: SanitizeAddress
+  set(CMAKE_CXX_FLAGS_SANITIZEADDRESS "-fsanitize=address  -fsanitize=leak -g")
+  set(CMAKE_EXE_LINKER_FLAGS_SANITIZEADDRESS "-fsanitize=address  -fsanitize=leak")
+  set(CMAKE_SHARED_LINKER_FLAGS_SANITIZEADDRESS "-fsanitize=address  -fsanitize=leak")
 
-	# BUILD_TYPE: SanitizeThread
-	set(CMAKE_CXX_FLAGS_SANITIZETHREAD "-fsanitize=thread -g")
-	set(CMAKE_EXE_LINKER_FLAGS_SANITIZETHREAD "-fsanitize=thread")
-	set(CMAKE_SHARED_LINKER_FLAGS_SANITIZETHREAD "-fsanitize=thread")
+  # BUILD_TYPE: SanitizeThread
+  set(CMAKE_CXX_FLAGS_SANITIZETHREAD "-fsanitize=thread -g")
+  set(CMAKE_EXE_LINKER_FLAGS_SANITIZETHREAD "-fsanitize=thread")
+  set(CMAKE_SHARED_LINKER_FLAGS_SANITIZETHREAD "-fsanitize=thread")
 endif()
 
 # -----------------------------------------------------------------------------
@@ -147,12 +172,25 @@ function(mrpt_set_target_build_options TARGETNAME)
       _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
     )
   else()
-    # gcc & clang:
+    # gcc & clang: C and C++:
     target_compile_options(${TARGETNAME} PRIVATE
-      -Wall -Wextra -Wshadow
+      -Wall
+      -Wextra
+      -Wshadow
       -Werror=return-type # error on missing return();
-      -Wtype-limits -Wcast-align -Wparentheses
+      -Wtype-limits
+      -Wcast-align
+      -Wparentheses
+      -Wunused
+      -Wpedantic
+      -Wconversion
+      -Wsign-conversion
+      -Wdouble-promotion
       -fPIC
+      )
+    # C++:
+    target_compile_options(${TARGETNAME}
+      PRIVATE $<$<COMPILE_LANGUAGE:CXX>: -Woverloaded-virtual -Wold-style-cast -Wnon-virtual-dtor>
     )
   endif()
 
@@ -215,6 +253,26 @@ function(mrpt_configure_library TARGETNAME)
     )
   endif()
 
+    
+  strip_mrpt_name(${TARGETNAME} MRPT_LIB_NAME)
+      
+
+  # Create module/config.h file
+  if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/config.h.in)
+    set(MODULES_BASE_CONFIG_INCLUDES_DIR ${CMAKE_BINARY_DIR}/include/mrpt-configuration/)
+    set(MODULE_CONFIG_FILE_INCLUDE_DIR ${MODULES_BASE_CONFIG_INCLUDES_DIR}/mrpt/${MRPT_LIB_NAME})
+    file(MAKE_DIRECTORY ${MODULE_CONFIG_FILE_INCLUDE_DIR})
+
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${MODULE_CONFIG_FILE_INCLUDE_DIR}/config.h)
+
+    target_include_directories(${TARGETNAME} PUBLIC
+      $<BUILD_INTERFACE:${MODULES_BASE_CONFIG_INCLUDES_DIR}>
+    )
+    # TODO!
+    install()
+    unset(MODULES_BASE_CONFIG_INCLUDES_DIR)
+  endif()
+
   # make project importable from build_dir:
   export(
     TARGETS ${TARGETNAME}
@@ -240,21 +298,21 @@ function(mrpt_configure_library TARGETNAME)
     COMPATIBILITY AnyNewerVersion
   )
 
-	# Install cmake config module
-	install(
-		EXPORT
-			${TARGETNAME}-targets
-		DESTINATION
-			${CMAKE_INSTALL_LIBDIR}/${TARGETNAME}/cmake
-		NAMESPACE mrpt::
-	)
-	install(
-		FILES
-			${CMAKE_BINARY_DIR}/${TARGETNAME}-config.cmake
-			${CMAKE_BINARY_DIR}/${TARGETNAME}-config-version.cmake
-		DESTINATION
-			${CMAKE_INSTALL_LIBDIR}/${TARGETNAME}/cmake
-	)
+  # Install cmake config module
+  install(
+    EXPORT
+      ${TARGETNAME}-targets
+    DESTINATION
+      ${CMAKE_INSTALL_LIBDIR}/${TARGETNAME}/cmake
+    NAMESPACE mrpt::
+  )
+  install(
+    FILES
+      ${CMAKE_BINARY_DIR}/${TARGETNAME}-config.cmake
+      ${CMAKE_BINARY_DIR}/${TARGETNAME}-config-version.cmake
+    DESTINATION
+      ${CMAKE_INSTALL_LIBDIR}/${TARGETNAME}/cmake
+  )
 endfunction()
 
 # -----------------------------------------------------------------------------
@@ -278,8 +336,44 @@ endfunction()
 # Otherwise, does nothing.
 # -----------------------------------------------------------------------------
 function(mrpt_message_verbose)
-	if ($ENV{VERBOSE})
-		message(STATUS ${ARGN})
+  if ($ENV{VERBOSE})
+    message(STATUS ${ARGN})
+  endif()
+endfunction()
+
+# Example of usage: 
+#  remove_matching_files_from_list(".*_LIN.cpp" my_srcs)
+#
+macro(remove_matching_files_from_list match_expr lst_files)
+	set(lst_files_aux "")
+	foreach(FIL ${${lst_files}})
+		if(NOT ${FIL} MATCHES "${match_expr}")
+			set(lst_files_aux "${lst_files_aux}" "${FIL}")
+		endif()
+	endforeach()
+	set(${lst_files} ${lst_files_aux})
+endmacro()
+
+macro(keep_matching_files_from_list match_expr lst_files)
+	set(lst_files_aux "")
+	foreach(FIL ${${lst_files}})
+		if(${FIL} MATCHES "${match_expr}")
+			set(lst_files_aux "${lst_files_aux}" "${FIL}")
+		endif()
+	endforeach()
+	set(${lst_files} ${lst_files_aux})
+endmacro()
+
+# handle_special_simd_flags(): Add custom flags to a set of source files
+# Only for Intel-compatible archs
+#-----------------------------------------------------------------------
+function(handle_special_simd_flags lst_files FILE_PATTERN FLAGS_TO_ADD)
+	if (MRPT_COMPILER_IS_GCC_OR_CLANG AND MRPT_ARCH_INTEL_COMPATIBLE)
+		set(_lst ${lst_files})
+		KEEP_MATCHING_FILES_FROM_LIST(${FILE_PATTERN} _lst)
+		if(NOT "${_lst}" STREQUAL "")
+			set_source_files_properties(${_lst} PROPERTIES COMPILE_FLAGS "${FLAGS_TO_ADD}")
+		endif()
 	endif()
 endfunction()
 
@@ -302,6 +396,37 @@ function(mrpt_add_library)
     set(multiValueArgs SOURCES PUBLIC_LINK_LIBRARIES PRIVATE_LINK_LIBRARIES CMAKE_DEPENDENCIES)
     cmake_parse_arguments(MRPT_ADD_LIBRARY "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
+    # Remove _LIN files when compiling under Windows, and _WIN files when compiling under Linux.
+    if(WIN32)
+      remove_matching_files_from_list(".*_LIN.cpp" MRPT_ADD_LIBRARY_SOURCES)		# Win32
+    else()
+      remove_matching_files_from_list(".*_WIN.cpp" MRPT_ADD_LIBRARY_SOURCES)		# Apple & Unix
+    endif()
+
+    # Keep a list of unit testing files, for declaring them in /test:
+    set(lst_unittests ${MRPT_ADD_LIBRARY_SOURCES})
+    keep_matching_files_from_list(".*_unittest.cpp" lst_unittests)
+    if(NOT "${lst_unittests}" STREQUAL "")
+      # We have unit tests:
+      get_property(_lst_lib_test GLOBAL PROPERTY "MRPT_TEST_LIBS")
+      set_property(GLOBAL PROPERTY "MRPT_TEST_LIBS" ${_lst_lib_test} mrpt_${name})
+      set_property(GLOBAL PROPERTY "${MRPT_ADD_LIBRARY_TARGET}_UNIT_TEST_FILES" ${lst_unittests})
+    endif()
+
+
+    # Enable SIMD especial instructions in especialized source files, even if
+    # those instructions are NOT enabled globally for the entire build:
+    handle_special_simd_flags("${MRPT_ADD_LIBRARY_SOURCES}" ".*\.SSE2.cpp"  "-msse2")
+    handle_special_simd_flags("${MRPT_ADD_LIBRARY_SOURCES}" ".*\.SSSE3.cpp"  "-msse3 -mssse3")
+    handle_special_simd_flags("${MRPT_ADD_LIBRARY_SOURCES}" ".*\.AVX.cpp"  "-mavx")
+    handle_special_simd_flags("${MRPT_ADD_LIBRARY_SOURCES}" ".*\.AVX2.cpp"  "-mavx2")
+
+
+    # Don't include here the unit testing code:
+    remove_matching_files_from_list(".*_unittest.cpp" MRPT_ADD_LIBRARY_SOURCES)
+
+
+    # Create library target:
     add_library(${MRPT_ADD_LIBRARY_TARGET}
       SHARED
       ${MRPT_ADD_LIBRARY_SOURCES}
@@ -437,9 +562,9 @@ endfunction()
 # descriptive message and call "return()" to exit the current cmake script.
 # -----------------------------------------------------------------------------
 macro(mrpt_find_package_or_return PACKAGE_NAME)
-	find_package(${PACKAGE_NAME} QUIET)
-	if (NOT ${PACKAGE_NAME}_FOUND)
-		message(WARNING "${PROJECT_NAME}: Skipping due to missing dependency `${PACKAGE_NAME}`")
-		return()
-	endif()
+  find_package(${PACKAGE_NAME} QUIET)
+  if (NOT ${PACKAGE_NAME}_FOUND)
+    message(WARNING "${PROJECT_NAME}: Skipping due to missing dependency `${PACKAGE_NAME}`")
+    return()
+  endif()
 endmacro()

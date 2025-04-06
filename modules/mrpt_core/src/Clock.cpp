@@ -77,12 +77,13 @@ struct ClockState
 #if !defined(_WIN32)
 inline uint64_t as_nanoseconds(const struct timespec& ts)
 {
-  return ts.tv_sec * static_cast<uint64_t>(1000000000L) + ts.tv_nsec;
+  return static_cast<uint64_t>(ts.tv_sec) * static_cast<uint64_t>(1000000000L) +
+         static_cast<uint64_t>(ts.tv_nsec);
 }
 inline void from_nanoseconds(const uint64_t ns, struct timespec& ts)
 {
-  ts.tv_sec = (ns / static_cast<uint64_t>(1000000000L));
-  ts.tv_nsec = (ns % static_cast<uint64_t>(1000000000L));
+  ts.tv_sec = static_cast<decltype(ts.tv_sec)>((ns / static_cast<uint64_t>(1000000000L)));
+  ts.tv_nsec = static_cast<decltype(ts.tv_nsec)>((ns % static_cast<uint64_t>(1000000000L)));
 }
 #endif
 
@@ -92,8 +93,8 @@ namespace
 {
 uint64_t to100ns(const timespec& tim)
 {
-  return uint64_t(tim.tv_sec) * UINT64_C(10000000) + UINT64_C(116444736) * UINT64_C(1000000000) +
-         tim.tv_nsec / 100;
+  return static_cast<uint64_t>(tim.tv_sec) * UINT64_C(10000000) +
+         UINT64_C(116444736) * UINT64_C(1000000000) + static_cast<uint64_t>(tim.tv_nsec) / 100U;
 }
 }  // namespace
 #endif
@@ -182,8 +183,7 @@ double mrpt::Clock::toDouble(const mrpt::Clock::time_point t) noexcept
 {
   if (t == mrpt::Clock::time_point()) return .0;  // invalid time point
 
-  return double(t.time_since_epoch().count() - UINT64_C(116444736) * UINT64_C(1000000000)) /
-         10000000.0;
+  return (static_cast<double>(t.time_since_epoch().count()) - 116444736e9) / 10000000.0;
 }
 
 void mrpt::Clock::setActiveClock(const Source s)
@@ -248,5 +248,5 @@ uint64_t mrpt::Clock::getMonotonicToRealtimeOffset()
 void mrpt::Clock::setSimulatedTime(const time_point& t)
 {
   auto& clk = mrpt::internal::ClockState::Instance();
-  clk.simulatedTime(t.time_since_epoch().count());
+  clk.simulatedTime(static_cast<uint64_t>(t.time_since_epoch().count()));
 }

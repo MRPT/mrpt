@@ -1,8 +1,8 @@
 # Build the xSENS support in mrpt-hwdrivers?
 # ===================================================
 # Default build MT4 only if we have libusb-1.0 & libudev
-set(CMAKE_MRPT_HAS_LIBUDEV 0 CACHE INTERNAL "")  # Declare these vars system-wide just in case other future classes depend on this lib
-set(CMAKE_MRPT_HAS_LIBUDEV_SYSTEM 0 CACHE INTERNAL "")
+set(CMAKE_MRPT_HAS_LIBUDEV 0)  # Declare these vars system-wide just in case other future classes depend on this lib
+set(CMAKE_MRPT_HAS_LIBUDEV_SYSTEM 0)
 
 if (WIN32)
 	set(DEFAULT_BUILD_MT4 "OFF")
@@ -20,8 +20,8 @@ else()
 		endif()
 
 		if (PKG_LIBUDEV_FOUND)
-			set(CMAKE_MRPT_HAS_LIBUDEV 1 CACHE INTERNAL "")
-			set(CMAKE_MRPT_HAS_LIBUDEV_SYSTEM 1 CACHE INTERNAL "")
+			set(CMAKE_MRPT_HAS_LIBUDEV 1)
+			set(CMAKE_MRPT_HAS_LIBUDEV_SYSTEM 1)
 		endif ()
 	endif ()
 endif()
@@ -60,9 +60,9 @@ if (MRPT_WITH_XSENS)
 endif ()
 
 # Create config vars for xSens:
-set(CMAKE_MRPT_HAS_xSENS 0 CACHE INTERNAL "")
-set(CMAKE_MRPT_HAS_xSENS_SYSTEM 0 CACHE INTERNAL "")
+set(CMAKE_MRPT_HAS_xSENS 0)
+set(CMAKE_MRPT_HAS_xSENS_SYSTEM 0)
 if(MRPT_WITH_XSENS)
-	set(CMAKE_MRPT_HAS_xSENS 1 CACHE INTERNAL "")
-	set(CMAKE_MRPT_HAS_xSENS_SYSTEM 0 CACHE INTERNAL "")
+	set(CMAKE_MRPT_HAS_xSENS 1)
+	set(CMAKE_MRPT_HAS_xSENS_SYSTEM 0)
 endif()

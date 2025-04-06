@@ -1,8 +1,8 @@
 # Check for system libassimp:
 #  http://assimp.sourceforge.net/
 # ===================================================
-set(CMAKE_MRPT_HAS_ASSIMP 0 CACHE INTERNAL "")
-set(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 0 CACHE INTERNAL "")
+set(CMAKE_MRPT_HAS_ASSIMP 0)
+set(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 0)
 
 option(DISABLE_ASSIMP "Force not using ASSIMP library" "OFF")
 mark_as_advanced(DISABLE_ASSIMP)
@@ -25,10 +25,10 @@ if(PKG_CONFIG_FOUND)
 			message(STATUS " ASSIMP_INCLUDE_DIRS=${ASSIMP_INCLUDE_DIRS}")
 		endif()
 
-		set(CMAKE_MRPT_HAS_ASSIMP 1 CACHE INTERNAL "")
-		set(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 1 CACHE INTERNAL "")
+		set(CMAKE_MRPT_HAS_ASSIMP 1)
+		set(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 1)
 
-		set(ASSIMP_CXX_FLAGS ${ASSIMP_CFLAGS} CACHE INTERNAL "")
+		set(ASSIMP_CXX_FLAGS ${ASSIMP_CFLAGS})
 	endif()
 endif()
 
@@ -67,14 +67,14 @@ if (NOT ASSIMP_FOUND)
 
 		set(ASSIMP_FOUND_VIA_CMAKE 1)
 
-		set(CMAKE_MRPT_HAS_ASSIMP 1 CACHE INTERNAL "")
-		set(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 0 CACHE INTERNAL "")
+		set(CMAKE_MRPT_HAS_ASSIMP 1)
+		set(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 0)
 	endif ()
 endif()
 
 if (ASSIMP_FOUND_VIA_CMAKE)
 	# override wrong target libs in -config.cmake file:
-	set(ASSIMP_LIBRARIES "" CACHE INTERNAL "")
+	set(ASSIMP_LIBRARIES "")
 
 	if(MSVC12)
 		set(ASSIMP_MSVC_VERSION "vc120")
@@ -86,7 +86,7 @@ if (ASSIMP_FOUND_VIA_CMAKE)
 		set(ASSIMP_CUSTOM_LIB_NAME "assimp-mrpt-${ASSIMP_MSVC_VERSION}-mt")
 	else()
 		set(ASSIMP_CUSTOM_LIB_NAME "assimp")
-		set(ASSIMP_LIBRARY_DIRS "${MRPT_BINARY_DIR}/lib" CACHE INTERNAL "")
+		set(ASSIMP_LIBRARY_DIRS "${MRPT_BINARY_DIR}/lib")
 	endif()
 
 	list(APPEND ASSIMP_LIBRARIES optimized "${ASSIMP_CUSTOM_LIB_NAME}" debug "${ASSIMP_CUSTOM_LIB_NAME}${CMAKE_DEBUG_POSTFIX}")

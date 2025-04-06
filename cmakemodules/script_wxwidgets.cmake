@@ -6,7 +6,7 @@
 #  You can figure out what libraries you need here;  http://www.wxwidgets.org/manuals/2.8/wx_librarieslist.html
 set(wxWidgets_MRPT_COMPONENTS_TO_SEARCH "base;core;gl;adv;aui;html" CACHE STRING "Components to search in wxWidgets")
 
-set(CMAKE_MRPT_HAS_WXWIDGETS 0 CACHE INTERNAL "")
+set(CMAKE_MRPT_HAS_WXWIDGETS 0)
 set(wxWidgets_LIBRARIES "")
 
 set(DISABLE_WXWIDGETS OFF CACHE BOOL "Forces compilation WITHOUT wxWidgets")
@@ -88,13 +88,13 @@ if(wxWidgets_FOUND)
 	# For use in the MRPTconfig.cmake
 	set(CMAKE_MRPT_WX_ROOT_DIR ${wxWidgets_ROOT_DIR})
 
-	set(CMAKE_MRPT_HAS_WXWIDGETS 1 CACHE INTERNAL "")
+	set(CMAKE_MRPT_HAS_WXWIDGETS 1)
 endif()
 
 # It's always a system lib:
-set(CMAKE_MRPT_HAS_WXWIDGETS_SYSTEM 0 CACHE INTERNAL "")
+set(CMAKE_MRPT_HAS_WXWIDGETS_SYSTEM 0)
 if(CMAKE_MRPT_HAS_WXWIDGETS)
-	set(CMAKE_MRPT_HAS_WXWIDGETS_SYSTEM 1 CACHE INTERNAL "")
+	set(CMAKE_MRPT_HAS_WXWIDGETS_SYSTEM 1)
 endif()
 
 

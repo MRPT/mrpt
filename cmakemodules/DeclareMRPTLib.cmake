@@ -285,9 +285,9 @@ macro(internal_define_mrpt_lib name headers_only )
 
 	# Append to list of all mrpt-* libraries:
 	if("${ALL_MRPT_LIBS}" STREQUAL "")  # first one is different to avoid an empty first list element ";mrpt-xxx"
-		set(ALL_MRPT_LIBS "${name}" CACHE INTERNAL "")  # This emulates global vars
+		set(ALL_MRPT_LIBS "${name}")  # This emulates global vars
 	else()
-		set(ALL_MRPT_LIBS "${ALL_MRPT_LIBS};${name}" CACHE INTERNAL "")  # This emulates global vars
+		set(ALL_MRPT_LIBS "${ALL_MRPT_LIBS};${name}")  # This emulates global vars
 	endif()
 
 	# Dependencies:

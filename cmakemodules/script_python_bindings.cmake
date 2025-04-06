@@ -2,12 +2,12 @@
 # ===================================================
 
 # disabled on start
-set(CMAKE_MRPT_HAS_PYTHON_BINDINGS 0 CACHE INTERNAL "")
+set(CMAKE_MRPT_HAS_PYTHON_BINDINGS 0)
 
 # Leave at the user's choice to disable the python bindings:
 option(MRPT_DISABLE_PYTHON_BINDINGS "Disable the build (if possible) of Python bindings" "OFF")
 if(MRPT_DISABLE_PYTHON_BINDINGS)
-    set(CMAKE_MRPT_HAS_PYTHON_BINDINGS 0 CACHE INTERNAL "")
+    set(CMAKE_MRPT_HAS_PYTHON_BINDINGS 0)
 endif()
 
 if (NOT MRPT_DISABLE_PYTHON_BINDINGS AND (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang"))
@@ -49,7 +49,7 @@ if(UNIX AND NOT MRPT_DISABLE_PYTHON_BINDINGS)
     
         if (pybind11_FOUND)
             # build python bindings if we have all requirements
-            set(CMAKE_MRPT_HAS_PYTHON_BINDINGS 1 CACHE INTERNAL "")
+            set(CMAKE_MRPT_HAS_PYTHON_BINDINGS 1)
         endif()
     endif()
 endif()

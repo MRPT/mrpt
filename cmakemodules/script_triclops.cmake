@@ -1,7 +1,7 @@
 # Check for FLIR/PointGreyResearch Triclops library
 # --------------------------------------------------
 
-set(CMAKE_MRPT_HAS_TRICLOPS 0 CACHE INTERNAL "")
+set(CMAKE_MRPT_HAS_TRICLOPS 0)
 
 # Leave at the user's choice to disable it:
 option(DISABLE_PGR_TRICLOPS "Forces NOT using Flir FlyCapture2 libs, even if they are found by CMake" "OFF")
@@ -42,6 +42,6 @@ if(NOT DISABLE_PGR_TRICLOPS)
 			PGR_TRICLOPS_LIB_FILE_RELEASE AND
 			PGR_FC2BRIDGE_LIB_FILE_RELEASE
 		)
-		set(CMAKE_MRPT_HAS_TRICLOPS 1 CACHE INTERNAL "")
+		set(CMAKE_MRPT_HAS_TRICLOPS 1)
 	endif ()
 endif()
