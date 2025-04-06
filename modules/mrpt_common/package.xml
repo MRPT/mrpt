@@ -4,15 +4,14 @@
      side-by-side to ROS packages in a catkin/ament environment.
 -->
 <package format="3">
-  <name>mola_common</name>
-  <version>0.4.0</version>
-  <description>Common CMake scripts to all MOLA modules</description>
+  <name>mrpt_common</name>
+  <version>3.0.0</version>
+  <description>Common CMake scripts to all MRPT modules</description>
 
   <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
   <license file="LICENSE">BSD</license>
 
-  <url type="website">https://github.com/MOLAorg/</url>
-
+  <url type="website">https://github.com/MRPT/</url>
 
   <doc_depend>doxygen</doc_depend>
 

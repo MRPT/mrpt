@@ -1,5 +1,5 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Changelog for package mola_common
+Changelog for package mrpt_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 0.4.0 (2024-08-20)

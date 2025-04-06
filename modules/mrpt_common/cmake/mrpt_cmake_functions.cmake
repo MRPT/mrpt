@@ -1,6 +1,6 @@
 # ------------------------------------------------------------------------------
 #        A Modular Optimization framework for Localization and mApping
-#                               (MOLA)
+#                               (MRPT)
 #
 # Copyright (C) 2018-2025, Jose Luis Blanco-Claraco, contributors (AUTHORS.md)
 # All rights reserved.
@@ -11,24 +11,24 @@ include(GNUInstallDirs) # for install dirs in multilib
 include(CMakePackageConfigHelpers)
 
 # This file defines utility CMake functions to ensure uniform settings all
-# accross MOLA modules, programs, and tests.
+# accross MRPT modules, programs, and tests.
 # Usage:
-#   include(mola_cmake_functions)
+#   include(mrpt_cmake_functions)
 #
 
 # Project version:
-if (mola_common_VERSION)  # If installed via colcon+ament
-  set(MOLA_VERSION_NUMBER_MAJOR ${mola_common_VERSION_MAJOR})
-  set(MOLA_VERSION_NUMBER_MINOR ${mola_common_VERSION_MINOR})
-  set(MOLA_VERSION_NUMBER_PATCH ${mola_common_VERSION_PATCH})
+if (mrpt_common_VERSION)  # If installed via colcon+ament
+  set(MRPT_VERSION_NUMBER_MAJOR ${mrpt_common_VERSION_MAJOR})
+  set(MRPT_VERSION_NUMBER_MINOR ${mrpt_common_VERSION_MINOR})
+  set(MRPT_VERSION_NUMBER_PATCH ${mrpt_common_VERSION_PATCH})
 else() # Installed without ament:
-  include(${CMAKE_CURRENT_LIST_DIR}/mola-version.cmake)
+  include(${CMAKE_CURRENT_LIST_DIR}/mrpt-version.cmake)
 endif()
 
-set(_MOLACOMMON_MODULE_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}")
+set(_MRPTCOMMON_MODULE_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}")
 
-if (NOT DEFINED MOLA_VERSION_NUMBER_MAJOR)
-	message(ERROR "MOLA_VERSION_NUMBER_MAJOR not defined: use `find_package(mola_common)`")
+if (NOT DEFINED MRPT_VERSION_NUMBER_MAJOR)
+	message(ERROR "MRPT_VERSION_NUMBER_MAJOR not defined: use `find_package(mrpt_common)`")
 endif()
 
 # Avoid the need for DLL export/import macros in Windows:
@@ -38,9 +38,9 @@ endif()
 
 # Detect wordsize:
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)  # Size in bytes!
-  set(MOLA_WORD_SIZE 64)
+  set(MRPT_WORD_SIZE 64)
 else()
-  set(MOLA_WORD_SIZE 32)
+  set(MRPT_WORD_SIZE 32)
 endif()
 
 # Default output dirs for libs:
@@ -59,20 +59,20 @@ if (MSVC)
   if (MSVC_VERSION_3D GREATER 120)
     math(EXPR MSVC_VERSION_3D "${MSVC_VERSION_3D}+10")
   endif()
-  set(MOLA_COMPILER_NAME "msvc${MSVC_VERSION_3D}")
+  set(MRPT_COMPILER_NAME "msvc${MSVC_VERSION_3D}")
 else()
-  set(MOLA_COMPILER_NAME "${CMAKE_CXX_COMPILER_ID}")
+  set(MRPT_COMPILER_NAME "${CMAKE_CXX_COMPILER_ID}")
 endif()
 
 # Build DLL full name:
 if (WIN32)
-  set(MOLA_DLL_VERSION_POSTFIX
-    "${MOLA_VERSION_NUMBER_MAJOR}${MOLA_VERSION_NUMBER_MINOR}${MOLA_VERSION_NUMBER_PATCH}_${MOLA_COMPILER_NAME}_x${MOLA_WORD_SIZE}")
+  set(MRPT_DLL_VERSION_POSTFIX
+    "${MRPT_VERSION_NUMBER_MAJOR}${MRPT_VERSION_NUMBER_MINOR}${MRPT_VERSION_NUMBER_PATCH}_${MRPT_COMPILER_NAME}_x${MRPT_WORD_SIZE}")
   if ($ENV{VERBOSE})
-  	message(STATUS "Using DLL version postfix: ${MOLA_DLL_VERSION_POSTFIX}")
+  	message(STATUS "Using DLL version postfix: ${MRPT_DLL_VERSION_POSTFIX}")
   endif()
 else()
-  set(MOLA_DLL_VERSION_POSTFIX "")
+  set(MRPT_DLL_VERSION_POSTFIX "")
 endif()
 
 # Group projects in "folders"
@@ -100,27 +100,27 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 # -----------------------------------------------------------------------------
-# find_mola_package(package_name)
+# find_mrpt_package(package_name)
 #
 # Does nothing if the target is known at build time, or issues the corresponding
 # standard CMake find_package().
 # -----------------------------------------------------------------------------
-function(find_mola_package PACKAGE_NAME)
+function(find_mrpt_package PACKAGE_NAME)
     if (NOT TARGET ${PACKAGE_NAME})
-        mola_message_verbose("find_mola_package: ${PACKAGE_NAME} not a known target, using find_package().")
+        mrpt_message_verbose("find_mrpt_package: ${PACKAGE_NAME} not a known target, using find_package().")
         find_package(${PACKAGE_NAME} REQUIRED)
       else()
-        mola_message_verbose("find_mola_package: ${PACKAGE_NAME} is a known target, doing nothing.")
+        mrpt_message_verbose("find_mrpt_package: ${PACKAGE_NAME} is a known target, doing nothing.")
     endif()
-    #TODO: use mola namespace (mola::xxx)?
+    #TODO: use mrpt namespace (mrpt::xxx)?
 endfunction()
 
 # -----------------------------------------------------------------------------
-# mola_set_target_cxx17(target)
+# mrpt_set_target_cxx17(target)
 #
 # Enabled C++17 for the given target
 # -----------------------------------------------------------------------------
-function(mola_set_target_cxx17 TARGETNAME)
+function(mrpt_set_target_cxx17 TARGETNAME)
   target_compile_features(${TARGETNAME} PUBLIC cxx_std_17)
   if (MSVC)
     # this seems to be required in addition to the cxx_std_17 above (?)
@@ -129,13 +129,13 @@ function(mola_set_target_cxx17 TARGETNAME)
 endfunction()
 
 # -----------------------------------------------------------------------------
-# mola_set_target_build_options(target)
+# mrpt_set_target_build_options(target)
 #
-# Set defaults for each MOLA cmake target
+# Set defaults for each MRPT cmake target
 # -----------------------------------------------------------------------------
-function(mola_set_target_build_options TARGETNAME)
+function(mrpt_set_target_build_options TARGETNAME)
   # Build for C++17
-  mola_set_target_cxx17(${TARGETNAME})
+  mrpt_set_target_cxx17(${TARGETNAME})
 
   # Warning level:
   if (MSVC)
@@ -159,9 +159,9 @@ function(mola_set_target_build_options TARGETNAME)
   # Optimization:
   # -------------------------
   if((NOT MSVC) AND (NOT CMAKE_CROSSCOMPILING))
-    option(MOLA_BUILD_MARCH_NATIVE "Build with `-march=\"native\"`" OFF)
+    option(MRPT_BUILD_MARCH_NATIVE "Build with `-march=\"native\"`" OFF)
 
-    if (MOLA_BUILD_MARCH_NATIVE)
+    if (MRPT_BUILD_MARCH_NATIVE)
       # Note 1: GTSAM must be built with identical flags to avoid crashes.
       #  We will use this cmake variable too to populate GTSAM_BUILD_WITH_MARCH_NATIVE
       # Note 2: We must set "march=native" PUBLIC to avoid crashes with Eigen in derived projects
@@ -175,11 +175,11 @@ function(mola_set_target_build_options TARGETNAME)
 endfunction()
 
 # -----------------------------------------------------------------------------
-# mola_configure_library(target [dep1 dep2...])
+# mrpt_configure_library(target [dep1 dep2...])
 #
 # Define a consistent install behavior for cmake-based library project:
 # -----------------------------------------------------------------------------
-function(mola_configure_library TARGETNAME)
+function(mrpt_configure_library TARGETNAME)
   # Public hdrs interface:
   target_include_directories(${TARGETNAME} PUBLIC
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -190,16 +190,16 @@ function(mola_configure_library TARGETNAME)
   # Dynamic libraries output options:
   # -----------------------------------
   set_target_properties(${TARGETNAME} PROPERTIES
-    OUTPUT_NAME "${TARGETNAME}${MOLA_DLL_VERSION_POSTFIX}"
-    COMPILE_PDB_NAME "${TARGETNAME}${MOLA_DLL_VERSION_POSTFIX}"
-    COMPILE_PDB_NAME_DEBUG "${TARGETNAME}${MOLA_DLL_VERSION_POSTFIX}${CMAKE_DEBUG_POSTFIX}"
-    VERSION "${MOLA_VERSION_NUMBER_MAJOR}.${MOLA_VERSION_NUMBER_MINOR}.${MOLA_VERSION_NUMBER_PATCH}"
-    SOVERSION ${MOLA_VERSION_NUMBER_MAJOR}.${MOLA_VERSION_NUMBER_MINOR}
+    OUTPUT_NAME "${TARGETNAME}${MRPT_DLL_VERSION_POSTFIX}"
+    COMPILE_PDB_NAME "${TARGETNAME}${MRPT_DLL_VERSION_POSTFIX}"
+    COMPILE_PDB_NAME_DEBUG "${TARGETNAME}${MRPT_DLL_VERSION_POSTFIX}${CMAKE_DEBUG_POSTFIX}"
+    VERSION "${MRPT_VERSION_NUMBER_MAJOR}.${MRPT_VERSION_NUMBER_MINOR}.${MRPT_VERSION_NUMBER_PATCH}"
+    SOVERSION ${MRPT_VERSION_NUMBER_MAJOR}.${MRPT_VERSION_NUMBER_MINOR}
     )
 
   # Project "folder":
   # -------------------
-  set_target_properties(${TARGETNAME} PROPERTIES FOLDER "MOLA-modules")
+  set_target_properties(${TARGETNAME} PROPERTIES FOLDER "MRPT-modules")
 
   # Install lib:
   install(TARGETS ${TARGETNAME} EXPORT ${TARGETNAME}-targets
@@ -218,25 +218,25 @@ function(mola_configure_library TARGETNAME)
   # make project importable from build_dir:
   export(
     TARGETS ${TARGETNAME}
-    # export to ROOT cmake directory (when building MOLA as a superproject)
+    # export to ROOT cmake directory (when building MRPT as a superproject)
     FILE ${CMAKE_BINARY_DIR}/${TARGETNAME}-targets.cmake
-    NAMESPACE mola::
+    NAMESPACE mrpt::
   )
 
   # Add alias to use the namespaced name within local builds from source:
-  add_library(mola::${TARGETNAME} ALIAS ${TARGETNAME})
+  add_library(mrpt::${TARGETNAME} ALIAS ${TARGETNAME})
 
   # And generate the -config.cmake file:
   set(ALL_DEPS_LIST ${ARGN}) # used in xxx-config.cmake.in
-  set(MOLA_MODULE_NAME ${TARGETNAME})
+  set(MRPT_MODULE_NAME ${TARGETNAME})
   configure_file(
-    "${_MOLACOMMON_MODULE_BASE_DIR}/mola-xxx-config.cmake.in"
+    "${_MRPTCOMMON_MODULE_BASE_DIR}/mrpt-xxx-config.cmake.in"
     "${CMAKE_BINARY_DIR}/${TARGETNAME}-config.cmake" IMMEDIATE @ONLY
   )
   # Version file:
   write_basic_package_version_file(
     "${CMAKE_BINARY_DIR}/${TARGETNAME}-config-version.cmake"
-    VERSION ${MOLA_VERSION_NUMBER_MAJOR}.${MOLA_VERSION_NUMBER_MINOR}.${MOLA_VERSION_NUMBER_PATCH}
+    VERSION ${MRPT_VERSION_NUMBER_MAJOR}.${MRPT_VERSION_NUMBER_MINOR}.${MRPT_VERSION_NUMBER_PATCH}
     COMPATIBILITY AnyNewerVersion
   )
 
@@ -246,7 +246,7 @@ function(mola_configure_library TARGETNAME)
 			${TARGETNAME}-targets
 		DESTINATION
 			${CMAKE_INSTALL_LIBDIR}/${TARGETNAME}/cmake
-		NAMESPACE mola::
+		NAMESPACE mrpt::
 	)
 	install(
 		FILES
@@ -258,13 +258,13 @@ function(mola_configure_library TARGETNAME)
 endfunction()
 
 # -----------------------------------------------------------------------------
-# mola_configure_app(target)
+# mrpt_configure_app(target)
 #
 # Define common properties of cmake-based executable projects:
 # -----------------------------------------------------------------------------
-function(mola_configure_app TARGETNAME)
+function(mrpt_configure_app TARGETNAME)
   # Project "folder":
-  set_target_properties(${TARGETNAME} PROPERTIES FOLDER "MOLA-apps")
+  set_target_properties(${TARGETNAME} PROPERTIES FOLDER "MRPT-apps")
 
   #TODO: install
 
@@ -273,11 +273,11 @@ endfunction()
 
 
 # -----------------------------------------------------------------------------
-# mola_message_verbose(...)
+# mrpt_message_verbose(...)
 # Maps to `message(STATUS ...)` if the environment variable VERBOSE is !=0.
 # Otherwise, does nothing.
 # -----------------------------------------------------------------------------
-function(mola_message_verbose)
+function(mrpt_message_verbose)
 	if ($ENV{VERBOSE})
 		message(STATUS ${ARGN})
 	endif()
@@ -285,7 +285,7 @@ endfunction()
 
 
 # -----------------------------------------------------------------------------
-# mola_add_library(
+# mrpt_add_library(
 #	TARGET name
 #	SOURCES ${SRC_FILES}
 #	[PUBLIC_LINK_LIBRARIES lib1 lib2]
@@ -293,32 +293,32 @@ endfunction()
 # [CMAKE_DEPENDENCIES pkg1 pkg2]
 #	)
 #
-# Defines a MOLA library. `CMAKE_DEPENDENCIES` enumerates those packages
+# Defines a MRPT library. `CMAKE_DEPENDENCIES` enumerates those packages
 # that needs to be find_package'd in this library's xxx-config.cmake file.
 # -----------------------------------------------------------------------------
-function(mola_add_library)
+function(mrpt_add_library)
     set(options "")
     set(oneValueArgs TARGET)
     set(multiValueArgs SOURCES PUBLIC_LINK_LIBRARIES PRIVATE_LINK_LIBRARIES CMAKE_DEPENDENCIES)
-    cmake_parse_arguments(MOLA_ADD_LIBRARY "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    cmake_parse_arguments(MRPT_ADD_LIBRARY "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    add_library(${MOLA_ADD_LIBRARY_TARGET}
+    add_library(${MRPT_ADD_LIBRARY_TARGET}
       SHARED
-      ${MOLA_ADD_LIBRARY_SOURCES}
+      ${MRPT_ADD_LIBRARY_SOURCES}
     )
 
     # Define common flags:
-    mola_set_target_build_options(${MOLA_ADD_LIBRARY_TARGET})
-    mola_configure_library(${MOLA_ADD_LIBRARY_TARGET} ${MOLA_ADD_LIBRARY_CMAKE_DEPENDENCIES})
+    mrpt_set_target_build_options(${MRPT_ADD_LIBRARY_TARGET})
+    mrpt_configure_library(${MRPT_ADD_LIBRARY_TARGET} ${MRPT_ADD_LIBRARY_CMAKE_DEPENDENCIES})
 
     # lib Dependencies:
-    target_link_libraries(${MOLA_ADD_LIBRARY_TARGET}
+    target_link_libraries(${MRPT_ADD_LIBRARY_TARGET}
       PUBLIC
-      ${MOLA_ADD_LIBRARY_PUBLIC_LINK_LIBRARIES}
+      ${MRPT_ADD_LIBRARY_PUBLIC_LINK_LIBRARIES}
     )
-    target_link_libraries(${MOLA_ADD_LIBRARY_TARGET}
+    target_link_libraries(${MRPT_ADD_LIBRARY_TARGET}
       PRIVATE
-      ${MOLA_ADD_LIBRARY_PRIVATE_LINK_LIBRARIES}
+      ${MRPT_ADD_LIBRARY_PRIVATE_LINK_LIBRARIES}
     )
 
    #TODO: install
@@ -326,39 +326,39 @@ function(mola_add_library)
 endfunction()
 
 # -----------------------------------------------------------------------------
-# mola_add_executable(
+# mrpt_add_executable(
 #	TARGET name
 #	SOURCES ${SRC_FILES}
 #	[LINK_LIBRARIES lib1 lib2]
 #	)
 #
-# Defines a MOLA executable
+# Defines a MRPT executable
 # -----------------------------------------------------------------------------
-function(mola_add_executable)
+function(mrpt_add_executable)
     set(options DONT_INSTALL)
     set(oneValueArgs TARGET)
     set(multiValueArgs SOURCES LINK_LIBRARIES)
-    cmake_parse_arguments(MOLA_ADD_EXECUTABLE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    cmake_parse_arguments(MRPT_ADD_EXECUTABLE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    add_executable(${MOLA_ADD_EXECUTABLE_TARGET}
-      ${MOLA_ADD_EXECUTABLE_SOURCES}
+    add_executable(${MRPT_ADD_EXECUTABLE_TARGET}
+      ${MRPT_ADD_EXECUTABLE_SOURCES}
     )
 
     # Define common flags:
-    mola_set_target_build_options(${MOLA_ADD_EXECUTABLE_TARGET})
-    mola_configure_app(${MOLA_ADD_EXECUTABLE_TARGET})
+    mrpt_set_target_build_options(${MRPT_ADD_EXECUTABLE_TARGET})
+    mrpt_configure_app(${MRPT_ADD_EXECUTABLE_TARGET})
 
     # lib Dependencies:
-    if (MOLA_ADD_EXECUTABLE_LINK_LIBRARIES)
+    if (MRPT_ADD_EXECUTABLE_LINK_LIBRARIES)
       target_link_libraries(
-      ${MOLA_ADD_EXECUTABLE_TARGET}
-      ${MOLA_ADD_EXECUTABLE_LINK_LIBRARIES}
+      ${MRPT_ADD_EXECUTABLE_TARGET}
+      ${MRPT_ADD_EXECUTABLE_LINK_LIBRARIES}
       )
     endif()
 
     # install:
-    if (NOT MOLA_ADD_EXECUTABLE_DONT_INSTALL)
-      install(TARGETS ${MOLA_ADD_EXECUTABLE_TARGET}
+    if (NOT MRPT_ADD_EXECUTABLE_DONT_INSTALL)
+      install(TARGETS ${MRPT_ADD_EXECUTABLE_TARGET}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -368,48 +368,48 @@ endfunction()
 
 
 # -----------------------------------------------------------------------------
-# mola_add_test(
+# mrpt_add_test(
 #	TARGET name
 #	SOURCES ${SRC_FILES}
 #	[LINK_LIBRARIES lib1 lib2]
 #	)
 #
-# Defines a MOLA unit test
+# Defines a MRPT unit test
 # -----------------------------------------------------------------------------
-function(mola_add_test)
+function(mrpt_add_test)
     set(oneValueArgs TARGET)
     set(multiValueArgs SOURCES LINK_LIBRARIES)
-    cmake_parse_arguments(MOLA_ADD_TEST "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    cmake_parse_arguments(MRPT_ADD_TEST "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    add_executable(${MOLA_ADD_TEST_TARGET}
-      ${MOLA_ADD_TEST_SOURCES}
+    add_executable(${MRPT_ADD_TEST_TARGET}
+      ${MRPT_ADD_TEST_SOURCES}
     )
 
     # Define common flags:
-    mola_set_target_build_options(${MOLA_ADD_TEST_TARGET})
-    mola_configure_app(${MOLA_ADD_TEST_TARGET})
+    mrpt_set_target_build_options(${MRPT_ADD_TEST_TARGET})
+    mrpt_configure_app(${MRPT_ADD_TEST_TARGET})
 
     # lib Dependencies:
-    if (MOLA_ADD_TEST_LINK_LIBRARIES)
+    if (MRPT_ADD_TEST_LINK_LIBRARIES)
       target_link_libraries(
-      ${MOLA_ADD_TEST_TARGET}
-      ${MOLA_ADD_TEST_LINK_LIBRARIES}
+      ${MRPT_ADD_TEST_TARGET}
+      ${MRPT_ADD_TEST_LINK_LIBRARIES}
       )
     endif()
 
     # Macro for source dir path:
-    target_compile_definitions(${MOLA_ADD_TEST_TARGET} PRIVATE
-        MOLA_MODULE_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\"
+    target_compile_definitions(${MRPT_ADD_TEST_TARGET} PRIVATE
+        MRPT_MODULE_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\"
         )
 
     # Run it:
-    #add_custom_target(run_${MOLA_ADD_TEST_TARGET} COMMAND $<TARGET_FILE:${MOLA_ADD_TEST_TARGET}>)
-    add_test(${MOLA_ADD_TEST_TARGET}_build "${CMAKE_COMMAND}" --build ${CMAKE_CURRENT_BINARY_DIR} --target ${MOLA_ADD_TEST_TARGET})
-    add_test(run_${MOLA_ADD_TEST_TARGET} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${MOLA_ADD_TEST_TARGET})
-    set_tests_properties(run_${MOLA_ADD_TEST_TARGET} PROPERTIES DEPENDS ${MOLA_ADD_TEST_TARGET}_build)
+    #add_custom_target(run_${MRPT_ADD_TEST_TARGET} COMMAND $<TARGET_FILE:${MRPT_ADD_TEST_TARGET}>)
+    add_test(${MRPT_ADD_TEST_TARGET}_build "${CMAKE_COMMAND}" --build ${CMAKE_CURRENT_BINARY_DIR} --target ${MRPT_ADD_TEST_TARGET})
+    add_test(run_${MRPT_ADD_TEST_TARGET} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${MRPT_ADD_TEST_TARGET})
+    set_tests_properties(run_${MRPT_ADD_TEST_TARGET} PROPERTIES DEPENDS ${MRPT_ADD_TEST_TARGET}_build)
 
-    add_custom_target(run_${MOLA_ADD_TEST_TARGET} COMMAND ${MOLA_ADD_TEST_TARGET})
-    add_dependencies(run_${MOLA_ADD_TEST_TARGET} ${MOLA_ADD_TEST_TARGET})
+    add_custom_target(run_${MRPT_ADD_TEST_TARGET} COMMAND ${MRPT_ADD_TEST_TARGET})
+    add_dependencies(run_${MRPT_ADD_TEST_TARGET} ${MRPT_ADD_TEST_TARGET})
 
 endfunction()
 
@@ -431,12 +431,12 @@ function(list_subdirectories retval curdir)
 endfunction()
 
 # -----------------------------------------------------------------------------
-# mola_find_package_or_return(package_name)
+# mrpt_find_package_or_return(package_name)
 #
 # Calls find_package(package_name QUIET), and if it is not found, prints a
 # descriptive message and call "return()" to exit the current cmake script.
 # -----------------------------------------------------------------------------
-macro(mola_find_package_or_return PACKAGE_NAME)
+macro(mrpt_find_package_or_return PACKAGE_NAME)
 	find_package(${PACKAGE_NAME} QUIET)
 	if (NOT ${PACKAGE_NAME}_FOUND)
 		message(WARNING "${PROJECT_NAME}: Skipping due to missing dependency `${PACKAGE_NAME}`")
