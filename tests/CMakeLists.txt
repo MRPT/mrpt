@@ -36,21 +36,6 @@ include_directories("${MRPT_SOURCE_DIR}/tests/include")
 # Tests based on Google gtest:
 # -----------------------------
 
-# Include gtest from embedded lib:
-if (NOT CMAKE_MRPT_HAS_GTEST_SYSTEM)
-	include_directories("${CMAKE_MRPT_GTEST_SRC_DIR}/include/")
-endif()
-
-# If using system library, add C++ flags:
-if (NOT "${CMAKE_GTEST_CFLAGS}" STREQUAL "")
-	add_definitions(${CMAKE_GTEST_CFLAGS})
-endif ()
-
-if(MSVC)
-	# avoid MSVC pedantic warning on tr1. See: https://github.com/google/googletest/issues/1111
-	add_definitions(/D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING)
-endif()
-
 get_property(LST_LIB_TESTS GLOBAL PROPERTY "MRPT_TEST_LIBS")
 foreach(_TSTLIB ${LST_LIB_TESTS})
 	string(REGEX REPLACE "mrpt_(.*)" "mrpt-\\1" _TSTLIB_DASH ${_TSTLIB})

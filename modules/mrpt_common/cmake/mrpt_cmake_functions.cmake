@@ -10,6 +10,8 @@
 include(GNUInstallDirs) # for install dirs in multilib
 include(CMakePackageConfigHelpers)
 
+find_package(GTest QUIET)
+
 # This file defines utility CMake functions to ensure uniform settings all
 # accross MRPT modules, programs, and tests.
 # Usage:
@@ -408,11 +410,12 @@ function(mrpt_add_library)
     keep_matching_files_from_list(".*_unittest.cpp" lst_unittests)
     if(NOT "${lst_unittests}" STREQUAL "")
       # We have unit tests:
-      get_property(_lst_lib_test GLOBAL PROPERTY "MRPT_TEST_LIBS")
-      set_property(GLOBAL PROPERTY "MRPT_TEST_LIBS" ${_lst_lib_test} mrpt_${name})
-      set_property(GLOBAL PROPERTY "${MRPT_ADD_LIBRARY_TARGET}_UNIT_TEST_FILES" ${lst_unittests})
+      mrpt_add_test(
+        TARGET test_${MRPT_ADD_LIBRARY_TARGET}
+        SOURCES ${lst_unittests}
+        LINK_LIBRARIES ${MRPT_ADD_LIBRARY_TARGET}
+      )
     endif()
-
 
     # Enable SIMD especial instructions in especialized source files, even if
     # those instructions are NOT enabled globally for the entire build:
@@ -506,8 +509,10 @@ function(mrpt_add_test)
     set(multiValueArgs SOURCES LINK_LIBRARIES)
     cmake_parse_arguments(MRPT_ADD_TEST "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
+    enable_testing()
     add_executable(${MRPT_ADD_TEST_TARGET}
       ${MRPT_ADD_TEST_SOURCES}
+      ${mrpt_common_DIR}/../common_sources/mrpt_test_main.cpp
     )
 
     # Define common flags:
@@ -515,18 +520,24 @@ function(mrpt_add_test)
     mrpt_configure_app(${MRPT_ADD_TEST_TARGET})
 
     # lib Dependencies:
-    if (MRPT_ADD_TEST_LINK_LIBRARIES)
-      target_link_libraries(
+    target_link_libraries(
       ${MRPT_ADD_TEST_TARGET}
       ${MRPT_ADD_TEST_LINK_LIBRARIES}
-      )
-    endif()
+      Threads::Threads
+      GTest::GTest
+    )
+
+    # Make common_headers visible:
+    target_include_directories(${MRPT_ADD_TEST_TARGET} PRIVATE ${mrpt_common_DIR}/../common_headers/)
 
     # Macro for source dir path:
-    target_compile_definitions(${MRPT_ADD_TEST_TARGET} PRIVATE
-        MRPT_MODULE_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\"
-        )
-
+    if (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten")
+      target_compile_definitions(${MRPT_ADD_TEST_TARGET} PRIVATE CMAKE_UNITTEST_BASEDIR="${CMAKE_SOURCE_DIR}")
+    else()
+      # Use relative paths for embedded files:
+      target_compile_definitions(${MRPT_ADD_TEST_TARGET} PRIVATE CMAKE_UNITTEST_BASEDIR=".")
+    endif()
+  
     # Run it:
     #add_custom_target(run_${MRPT_ADD_TEST_TARGET} COMMAND $<TARGET_FILE:${MRPT_ADD_TEST_TARGET}>)
     add_test(${MRPT_ADD_TEST_TARGET}_build "${CMAKE_COMMAND}" --build ${CMAKE_CURRENT_BINARY_DIR} --target ${MRPT_ADD_TEST_TARGET})
