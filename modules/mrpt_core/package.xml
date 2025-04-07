@@ -4,9 +4,9 @@
      side-by-side to ROS packages in a catkin/ament environment.
 -->
 <package format="3">
-  <name>mrpt_common</name>
+  <name>mrpt_core</name>
   <version>2.20.0</version>
-  <description>Common CMake scripts to all MRPT modules</description>
+  <description>The MRPT C++ library mrpt_core</description>
 
   <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
   <license file="LICENSE">BSD</license>
@@ -15,6 +15,8 @@
 
   <!-- BUILD TOOLS -->
   <buildtool_depend>cmake</buildtool_depend>
+
+  <depend>mrpt_common</depend>
 
   <export>
     <build_type>cmake</build_type>

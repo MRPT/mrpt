@@ -1,14 +1,43 @@
-#---------------------------------------------
-# Macro declared in "DeclareMRPTLib.cmake":
-#---------------------------------------------
-define_mrpt_lib_header_only(
-	# Lib name
-	typemeta
-	# Dependencies
-	)
+# ------------------------------------------------------------------------------
+#        Mobile Robot Programming Toolkit (MRPT)
+#
+# Copyright (c) 2005-2025, Jose Luis Blanco-Claraco, contributors (see Git history)
+# All rights reserved.
+# Released under BSD-3 license. See LICENSE file
+# ------------------------------------------------------------------------------
 
-if(BUILD_mrpt-typemeta)
-	# Enforce C++17 in all dependent projects:
-	mrpt_lib_target_requires_cpp17(typemeta)
+cmake_minimum_required(VERSION 3.16)
 
-endif()
+# Tell CMake we'll use C++ for use in its tests/flags
+project(mrpt_typemeta LANGUAGES C CXX)
+
+# MRPT CMake scripts: "mrpt_xxx()"
+find_package(mrpt_common REQUIRED)
+
+# define lib:
+  set(LIB_SRCS
+  src/typename_unittest.cpp
+  src/enumtype_unittest.cpp
+  src/static_string_unittest.cpp
+  src/xassert_unittest.cpp
+)
+
+set(LIB_PUBLIC_HDRS
+  include/mrpt/typemeta/static_string.h
+  include/mrpt/typemeta/xassert.h
+  include/mrpt/typemeta/TTypeName.h
+  include/mrpt/typemeta/TEnumType.h
+  include/mrpt/typemeta/num_to_string.h
+  include/mrpt/typemeta/TTypeName_stl.h
+)
+
+mrpt_add_library(
+  TARGET ${PROJECT_NAME}
+  SOURCES ${LIB_SRCS} ${LIB_PUBLIC_HDRS}
+#  PUBLIC_LINK_LIBRARIES
+#   xxx
+#  PRIVATE_LINK_LIBRARIES
+#  CMAKE_DEPENDENCIES
+#   xxx
+)
+
