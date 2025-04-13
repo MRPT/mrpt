@@ -7,11 +7,6 @@
 # Released under BSD-3. See LICENSE file
 # ------------------------------------------------------------------------------
 
-include(GNUInstallDirs) # for install dirs in multilib
-include(CMakePackageConfigHelpers)
-
-find_package(GTest QUIET)
-
 # This file defines utility CMake functions to ensure uniform settings all
 # across MRPT modules, programs, and tests.
 #
@@ -19,6 +14,31 @@ find_package(GTest QUIET)
 #
 # find_package(mrpt_common REQUIRED) # this includes mrpt_cmake_functions.cmake
 #
+
+include(GNUInstallDirs) # for install dirs in multilib
+include(CMakePackageConfigHelpers)
+
+find_package(GTest QUIET)
+
+# Build static or dynamic libs?
+# ===================================================
+# Default: dynamic libraries (except if building to JavaScript code)
+if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten")
+	set(_def_value OFF)
+else()
+	set(_def_value ON)
+endif()
+set(BUILD_SHARED_LIBS ${_def_value} CACHE BOOL "Build shared libraries (.dll/.so) instead of static ones (.lib/.a)")
+unset(_def_value)
+
+if(BUILD_SHARED_LIBS)
+	set(CMAKE_MRPT_BUILD_SHARED_LIB "#define MRPT_BUILT_AS_DLL")
+	set(CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF 1)
+else()
+	set(CMAKE_MRPT_BUILD_SHARED_LIB "/* #define MRPT_BUILT_AS_DLL */")
+	set(CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF 0)
+endif()
+
 
 # ccache:
 if(NOT MSVC AND NOT XCODE_VERSION)

@@ -64,7 +64,10 @@ class vector_with_small_size_optimization
 
   vector_with_small_size_optimization(size_t n) : m_is_small(n <= small_size), m_size(n)
   {
-    if (!m_is_small) m_v.resize(n);
+    if (!m_is_small)
+    {
+      m_v.resize(n);
+    }
   }
 
   vector_with_small_size_optimization(const vector_with_small_size_optimization& o) { *this = o; }
@@ -74,9 +77,13 @@ class vector_with_small_size_optimization
     m_size = o.m_size;
     m_is_small = o.m_is_small;
     if (m_size > small_size)
+    {
       m_v = o.m_v;
+    }
     else if (m_size > 0)
+    {
       m_a = o.m_a;
+    }
     return *this;
   }
   vector_with_small_size_optimization& operator=(vector_with_small_size_optimization&& o)
@@ -84,9 +91,13 @@ class vector_with_small_size_optimization
     m_size = o.m_size;
     m_is_small = o.m_is_small;
     if (m_size > small_size)
+    {
       m_v = std::move(o.m_v);
+    }
     else if (m_size > 0)
+    {
       m_a = std::move(o.m_a);
+    }
     return *this;
   }
 
@@ -179,7 +190,7 @@ class vector_with_small_size_optimization
       }
       else if (!m_is_small && n <= small_size)
       {
-        std::copy(m_v.begin(), m_v.begin() + n, m_a.begin());
+        std::copy(m_v.begin(), m_v.begin() + static_cast<difference_type>(n), m_a.begin());
       }
     }
     m_size = n;

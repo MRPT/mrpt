@@ -87,14 +87,18 @@ class CDynamicGrid
     m_resolution = resolution;
 
     // Now the number of cells should be integers:
-    m_size_x = round((m_x_max - m_x_min) / m_resolution);
-    m_size_y = round((m_y_max - m_y_min) / m_resolution);
+    m_size_x = static_cast<std::size_t>(round((m_x_max - m_x_min) / m_resolution));
+    m_size_y = static_cast<std::size_t>(round((m_y_max - m_y_min) / m_resolution));
 
     // Cells memory:
     if (fill_value)
+    {
       m_map.assign(m_size_x * m_size_y, *fill_value);
+    }
     else
+    {
       m_map.resize(m_size_x * m_size_y);
+    }
   }
 
   /** Erase the contents of all the cells. */
@@ -125,7 +129,9 @@ class CDynamicGrid
     // Is resize really necessary?
     if (new_x_min >= m_x_min && new_y_min >= m_y_min && new_x_max <= m_x_max &&
         new_y_max <= m_y_max)
+    {
       return;
+    }
 
     if (new_x_min > m_x_min) new_x_min = m_x_min;
     if (new_x_max < m_x_max) new_x_max = m_x_max;
@@ -153,23 +159,26 @@ class CDynamicGrid
       new_y_max = m_resolution * round(new_y_max / m_resolution);
 
     // Change the map size: Extensions at each side:
-    unsigned int extra_x_izq = round((m_x_min - new_x_min) / m_resolution);
-    unsigned int extra_y_arr = round((m_y_min - new_y_min) / m_resolution);
+    const auto extra_x_left = static_cast<std::size_t>(round((m_x_min - new_x_min) / m_resolution));
+    const auto extra_y_top = static_cast<std::size_t>(round((m_y_min - new_y_min) / m_resolution));
 
-    unsigned int new_size_x = round((new_x_max - new_x_min) / m_resolution);
-    unsigned int new_size_y = round((new_y_max - new_y_min) / m_resolution);
+    const auto new_size_x = static_cast<std::size_t>(round((new_x_max - new_x_min) / m_resolution));
+    const auto new_size_y = static_cast<std::size_t>(round((new_y_max - new_y_min) / m_resolution));
 
     // Reserve new memory:
     grid_data_t new_map;
     new_map.resize(new_size_x * new_size_y, defaultValueNewCells);
 
     // Copy previous rows:
-    unsigned int x, y;
     iterator itSrc, itDst;
-    for (y = 0; y < m_size_y; y++)
+    for (std::size_t y = 0; y < m_size_y; y++)
     {
-      for (x = 0, itSrc = (m_map.begin() + y * m_size_x),
-          itDst = (new_map.begin() + extra_x_izq + (y + extra_y_arr) * new_size_x);
+      const auto idxSrc = static_cast<typename std::vector<T>::difference_type>(y * m_size_x);
+      const auto idxDst = static_cast<typename std::vector<T>::difference_type>(
+          extra_x_left + (y + extra_y_top) * new_size_x);
+
+      std::size_t x;
+      for (x = 0, itSrc = (m_map.begin() + idxSrc), itDst = (new_map.begin() + idxDst);
            x < m_size_x; ++x, ++itSrc, ++itDst)
       {
         *itDst = *itSrc;
@@ -198,7 +207,7 @@ class CDynamicGrid
     const int cy = y2idx(y);
     if (cx < 0 || cx >= static_cast<int>(m_size_x)) return nullptr;
     if (cy < 0 || cy >= static_cast<int>(m_size_y)) return nullptr;
-    return &m_map[cx + cy * m_size_x];
+    return &m_map[static_cast<size_t>(cx) + static_cast<size_t>(cy) * m_size_x];
   }
   /** \overload */
   inline const T* cellByPos(double x, double y) const
@@ -207,7 +216,7 @@ class CDynamicGrid
     const int cy = y2idx(y);
     if (cx < 0 || cx >= static_cast<int>(m_size_x)) return nullptr;
     if (cy < 0 || cy >= static_cast<int>(m_size_y)) return nullptr;
-    return &m_map[cx + cy * m_size_x];
+    return &m_map[static_cast<size_t>(cx) + static_cast<size_t>(cy) * m_size_x];
   }
 
   /** Returns a pointer to the contents of a cell given by its cell indexes,

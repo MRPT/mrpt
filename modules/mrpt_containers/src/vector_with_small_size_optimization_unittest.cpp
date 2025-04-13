@@ -12,7 +12,7 @@
 #include <mrpt/containers/vector_with_small_size_optimization.h>
 #include <mrpt/core/common.h>
 
-using data_t = unsigned int;
+using data_t = std::size_t;
 constexpr size_t SMALL_LEN = 16;
 
 using vwsso_t = mrpt::containers::vector_with_small_size_optimization<data_t, SMALL_LEN>;

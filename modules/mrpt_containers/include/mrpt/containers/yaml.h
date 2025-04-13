@@ -226,8 +226,8 @@ class yaml
     bool hasComment(CommentPosition pos) const
     {
       MRPT_START
-      unsigned int posIndex = static_cast<int>(pos);
-      ASSERT_LT_(posIndex, static_cast<int>(CommentPosition::MAX));
+      const auto posIndex = static_cast<unsigned int>(pos);
+      ASSERT_LT_(posIndex, static_cast<unsigned int>(CommentPosition::MAX));
       return comments[posIndex].has_value();
       MRPT_END
     }
@@ -247,8 +247,8 @@ class yaml
     const std::string& comment(CommentPosition pos) const
     {
       MRPT_START
-      unsigned int posIndex = static_cast<int>(pos);
-      ASSERT_LT_(posIndex, static_cast<int>(CommentPosition::MAX));
+      const auto posIndex = static_cast<unsigned int>(pos);
+      ASSERT_LT_(posIndex, static_cast<unsigned int>(CommentPosition::MAX));
       ASSERTMSG_(
           comments[posIndex].has_value(), "Trying to access comment but this node has none.");
       return comments[posIndex].value();
@@ -654,9 +654,8 @@ class yaml
         "on the left hand.");
     operator[](vc.keyname) = vc.value;
     // keyComment:
-    int posIndex = static_cast<int>(vc.position);
-    ASSERT_GE_(posIndex, 0);
-    ASSERT_LT_(posIndex, static_cast<int>(CommentPosition::MAX));
+    unsigned int posIndex = static_cast<unsigned int>(vc.position);
+    ASSERT_LT_(posIndex, static_cast<unsigned int>(CommentPosition::MAX));
     auto& n = keyNode(vc.keyname);
     n.comments[posIndex].emplace(vc.comment);
     return *this;
