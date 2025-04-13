@@ -16,15 +16,16 @@
 #include <string>
 #include <vector>
 
-namespace mrpt
-{
-namespace containers
+namespace mrpt::containers
 {
 namespace internal
 {
 // Aux class.
 struct dynamic_grid_txt_saver
 {
+  dynamic_grid_txt_saver() = default;
+  virtual ~dynamic_grid_txt_saver() = default;
+
   bool saveToTextFile(const std::string& fileName) const;
   virtual unsigned int getSizeX() const = 0;
   virtual unsigned int getSizeY() const = 0;
@@ -142,13 +143,13 @@ class CDynamicGrid
 
     // Adjust sizes to adapt them to full sized cells according to the
     // resolution:
-    if (fabs(new_x_min / m_resolution - round(new_x_min / m_resolution)) > 0.05f)
+    if (fabs(new_x_min / m_resolution - round(new_x_min / m_resolution)) > 0.05)
       new_x_min = m_resolution * round(new_x_min / m_resolution);
-    if (fabs(new_y_min / m_resolution - round(new_y_min / m_resolution)) > 0.05f)
+    if (fabs(new_y_min / m_resolution - round(new_y_min / m_resolution)) > 0.05)
       new_y_min = m_resolution * round(new_y_min / m_resolution);
-    if (fabs(new_x_max / m_resolution - round(new_x_max / m_resolution)) > 0.05f)
+    if (fabs(new_x_max / m_resolution - round(new_x_max / m_resolution)) > 0.05)
       new_x_max = m_resolution * round(new_x_max / m_resolution);
-    if (fabs(new_y_max / m_resolution - round(new_y_max / m_resolution)) > 0.05f)
+    if (fabs(new_y_max / m_resolution - round(new_y_max / m_resolution)) > 0.05)
       new_y_max = m_resolution * round(new_y_max / m_resolution);
 
     // Change the map size: Extensions at each side:
@@ -357,5 +358,4 @@ class CDynamicGrid
 
 };  // end of CDynamicGrid<>
 
-}  // namespace containers
-}  // namespace mrpt
+}  // namespace mrpt::containers

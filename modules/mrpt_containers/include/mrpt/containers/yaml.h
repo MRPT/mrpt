@@ -226,8 +226,7 @@ class yaml
     bool hasComment(CommentPosition pos) const
     {
       MRPT_START
-      int posIndex = static_cast<int>(pos);
-      ASSERT_GE_(posIndex, 0);
+      unsigned int posIndex = static_cast<int>(pos);
       ASSERT_LT_(posIndex, static_cast<int>(CommentPosition::MAX));
       return comments[posIndex].has_value();
       MRPT_END
@@ -236,15 +235,19 @@ class yaml
     {
       MRPT_START
       for (const auto& c : comments)
-        if (c.has_value()) return c.value();
+      {
+        if (c.has_value())
+        {
+          return c.value();
+        }
+      }
       THROW_EXCEPTION("Trying to access comment but this node has none.");
       MRPT_END
     }
     const std::string& comment(CommentPosition pos) const
     {
       MRPT_START
-      int posIndex = static_cast<int>(pos);
-      ASSERT_GE_(posIndex, 0);
+      unsigned int posIndex = static_cast<int>(pos);
       ASSERT_LT_(posIndex, static_cast<int>(CommentPosition::MAX));
       ASSERTMSG_(
           comments[posIndex].has_value(), "Trying to access comment but this node has none.");
@@ -767,7 +770,7 @@ class yaml
   {
     YamlEmitOptions eo;
 
-    int indent = 0;
+    unsigned int indent = 0;
     bool needsNL = false;
     bool needsSpace = false;
     bool shortFormat = false;
@@ -777,7 +780,7 @@ class yaml
   static bool internalPrintNodeAsYAML(
       const node_t& p, std::ostream& o, const InternalPrintState& ps);
 
-  static void internalPrintDebugStructure(const node_t& p, std::ostream& o, int indent);
+  static void internalPrintDebugStructure(const node_t& p, std::ostream& o, unsigned int indent);
 
   template <typename T>
   void internalPushBack(const T& v);

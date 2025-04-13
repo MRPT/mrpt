@@ -23,7 +23,10 @@ bool mrpt::containers::internal::dynamic_grid_txt_saver::saveToTextFile(
   const unsigned int sy = getSizeY(), sx = getSizeX();
   for (unsigned int cy = 0; cy < sy; cy++)
   {
-    for (unsigned int cx = 0; cx < sx; cx++) f << mrpt::format("%f ", getCellAsFloat(cx, cy));
+    for (unsigned int cx = 0; cx < sx; cx++)
+    {
+      f << mrpt::format("%lf ", static_cast<double>(getCellAsFloat(cx, cy)));
+    }
     f << "\n";
   }
   return true;
