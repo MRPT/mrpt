@@ -14,12 +14,16 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <string_view>
 
 void mrpt::containers::reduced_hash(const std::string_view& value, uint64_t& out_hash)
 {
   // dbj2 method:
   uint64_t hash = 5381;
-  for (auto c : value) hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+  for (auto c : value)
+  {
+    hash = ((hash << 5) + hash) + static_cast<uint64_t>(c);
+  }
   out_hash = hash;
 }
 void mrpt::containers::reduced_hash(const std::string_view& value, uint8_t& out_hash)
@@ -39,5 +43,5 @@ void mrpt::containers::reduced_hash(const std::string_view& value, uint32_t& out
 {
   uint64_t hash;
   reduced_hash(value, hash);
-  out_hash = (hash & 0xffffffff) ^ ((hash >> 32) & 0xffffffff);
+  out_hash = static_cast<uint32_t>((hash & 0xffffffff) ^ ((hash >> 32) & 0xffffffff));
 }

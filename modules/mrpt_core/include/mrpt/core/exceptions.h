@@ -234,11 +234,11 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION, public ExceptionWithCallBa
  * throw the call stack after an exception. \sa
  * MRPT_TRY_START,MRPT_TRY_END_WITH_CLEAN_UP
  */
-#define MRPT_TRY_END                                        \
-  }                                                         \
-  catch (std::bad_alloc&) { throw; }                        \
-  catch (const mrpt::ExceptionWithCallBackBase&) { throw; } \
-  catch (const std::exception& __e) { throw mrpt::ExceptionWithCallBack(__e); }
+#define MRPT_TRY_END                                                             \
+  }                                                                              \
+  catch ([[maybe_unused]] std::bad_alloc & __e) { throw; }                       \
+  catch ([[maybe_unused]] const mrpt::ExceptionWithCallBackBase& __e) { throw; } \
+  catch (const std::exception& __e) { throw mrpt::ExceptionWithCallBack<std::runtime_error>(__e); }
 
 /** The end of a standard MRPT "try...catch()" block that allows tracing
  * throw the call stack after an exception, including a "clean up" piece

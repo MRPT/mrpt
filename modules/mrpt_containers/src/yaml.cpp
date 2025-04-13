@@ -294,7 +294,7 @@ yaml yaml::operator()(int index)
   if (index < 0 || index >= static_cast<int>(seq.size()))
     THROW_TYPED_EXCEPTION("yaml::operator() out of range", std::out_of_range);
 
-  return yaml(internal::tag_as_proxy_t(), seq.at(index), "");
+  return yaml(internal::tag_as_proxy_t(), seq.at(static_cast<std::size_t>(index)), "");
 }
 const yaml yaml::operator()(int index) const
 {
@@ -307,7 +307,7 @@ const yaml yaml::operator()(int index) const
   if (index < 0 || index >= static_cast<int>(seq.size()))
     THROW_TYPED_EXCEPTION("yaml::operator() out of range", std::out_of_range);
 
-  return yaml(internal::tag_as_const_proxy_t(), seq.at(index), "");
+  return yaml(internal::tag_as_const_proxy_t(), seq.at(static_cast<std::size_t>(index)), "");
 }
 
 void yaml::printAsYAML() const { printAsYAML(std::cout); }
@@ -328,7 +328,7 @@ void yaml::printAsYAML(std::ostream& o, const YamlEmitOptions& eo) const
 void yaml::printDebugStructure(std::ostream& o) const
 {
   const node_t* n = dereferenceProxy();
-  int indent = 0;
+  unsigned int indent = 0;
   internalPrintDebugStructure(*n, o, indent);
 }
 
@@ -415,7 +415,7 @@ std::string shortenComment(const std::optional<std::string>& c)
 }
 }  // namespace
 
-void yaml::internalPrintDebugStructure(const node_t& p, std::ostream& o, int indent)
+void yaml::internalPrintDebugStructure(const node_t& p, std::ostream& o, unsigned int indent)
 {
   const auto& cs = p.comments;
   const std::string sInd(indent, ' ');
@@ -507,7 +507,10 @@ bool yaml::internalPrintAsYAML(
   }
 }
 bool yaml::internalPrintAsYAML(
-    const yaml::sequence_t& v, std::ostream& o, const InternalPrintState& ps, const comments_t& cs)
+    const yaml::sequence_t& v,
+    std::ostream& o,
+    const InternalPrintState& ps,
+    [[maybe_unused]] const comments_t& cs)
 {
 #if 0
 	if (!ps.needsNL)
@@ -566,7 +569,10 @@ bool yaml::internalPrintAsYAML(
   return true;
 }
 bool yaml::internalPrintAsYAML(
-    const yaml::map_t& m, std::ostream& o, const InternalPrintState& ps, const comments_t& cs)
+    const yaml::map_t& m,
+    std::ostream& o,
+    const InternalPrintState& ps,
+    [[maybe_unused]] const comments_t& cs)
 {
 #if 0
 	if (!ps.first)
@@ -697,7 +703,7 @@ bool yaml::internalPrintAsYAML(
     if (internalPrintStringScalar(std::any_cast<std::string>(v), o, ps, cs)) return true;
   }
   else if (v.type() == typeid(float))
-    o << mrpt::format("%.16g", std::any_cast<float>(v));
+    o << mrpt::format("%.16g", static_cast<double>(std::any_cast<float>(v)));
   else if (v.type() == typeid(double))
     o << mrpt::format("%.16g", std::any_cast<double>(v));
   else if (v.type() == typeid(uint16_t))
@@ -775,7 +781,8 @@ std::optional<std::string> extractComment(struct fy_token* t, enum fy_comment_pl
   const std::string c(str.data());
 
   PARSER_DBG_OUT(
-      "token: " << reinterpret_cast<void*>(t) << " comment [" << (int)cp << "]: '" << c << "'");
+      "token: " << reinterpret_cast<void*>(t) << " comment [" << static_cast<int>(cp) << "]: '" << c
+                << "'");
 
   return c;
 }
@@ -920,8 +927,9 @@ std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
 
       PARSER_DBG_OUT(
           "token: " << reinterpret_cast<void*>(event->scalar.value)
-                    << " Scalar: implicit=" << (event->scalar.tag_implicit ? "1" : "0") << " tag: "
-                    << ((void*)event->scalar.tag) << " anchor: " << ((void*)event->scalar.anchor)
+                    << " Scalar: implicit=" << (event->scalar.tag_implicit ? "1" : "0")
+                    << " tag: " << static_cast<void*>(event->scalar.tag)
+                    << " anchor: " << static_cast<void*>(event->scalar.anchor)
                     << fy_token_get_text0(event->scalar.anchor) << " value: " << sValue);
 
       if (event->scalar.value)
@@ -1008,8 +1016,8 @@ std::string local_file_get_contents(const std::string& fileName)
     THROW_EXCEPTION_FMT("file_get_contents(): Error opening for read file `%s`", fileName.c_str());
 
   t.seekg(0, std::ios::end);
-  std::size_t size = t.tellg();
-  std::string buffer(size, ' ');
+  const auto size = t.tellg();
+  std::string buffer(static_cast<size_t>(size), ' ');
   t.seekg(0);
   t.read(&buffer[0], size);
   return buffer;
@@ -1039,7 +1047,7 @@ void yaml::loadFromStream(std::istream& i)
   std::string str;
 
   i.seekg(0, std::ios::end);
-  str.reserve(i.tellg());
+  str.reserve(static_cast<std::size_t>(i.tellg()));
   i.seekg(0, std::ios::beg);
   str.assign((std::istreambuf_iterator<char>(i)), std::istreambuf_iterator<char>());
 
@@ -1084,9 +1092,8 @@ const std::string& yaml::comment(CommentPosition pos) const
 
 void yaml::comment(const std::string& c, CommentPosition position)
 {
-  int posIndex = static_cast<int>(position);
-  ASSERT_GE_(posIndex, 0);
-  ASSERT_LT_(posIndex, static_cast<int>(CommentPosition::MAX));
+  const auto posIndex = static_cast<unsigned int>(position);
+  ASSERT_LT_(posIndex, static_cast<unsigned int>(CommentPosition::MAX));
 
   node_t* n = dereferenceProxy();
   n->comments[posIndex].emplace(c);
@@ -1117,9 +1124,8 @@ bool yaml::keyHasComment(const std::string& key) const
 bool yaml::keyHasComment(const std::string& key, CommentPosition pos) const
 {
   MRPT_START
-  int posIndex = static_cast<int>(pos);
-  ASSERT_GE_(posIndex, 0);
-  ASSERT_LT_(posIndex, static_cast<int>(CommentPosition::MAX));
+  const auto posIndex = static_cast<unsigned int>(pos);
+  ASSERT_LT_(posIndex, static_cast<unsigned int>(CommentPosition::MAX));
 
   const yaml::node_t& n = findKeyNode(dereferenceProxy(), key);
   return n.comments[posIndex].has_value();
@@ -1140,9 +1146,8 @@ const std::string& yaml::keyComment(const std::string& key) const
 const std::string& yaml::keyComment(const std::string& key, CommentPosition pos) const
 {
   MRPT_START
-  int posIndex = static_cast<int>(pos);
-  ASSERT_GE_(posIndex, 0);
-  ASSERT_LT_(posIndex, static_cast<int>(CommentPosition::MAX));
+  const auto posIndex = static_cast<unsigned int>(pos);
+  ASSERT_LT_(posIndex, static_cast<unsigned int>(CommentPosition::MAX));
 
   const yaml::node_t& n = findKeyNode(dereferenceProxy(), key);
 
@@ -1153,9 +1158,8 @@ const std::string& yaml::keyComment(const std::string& key, CommentPosition pos)
 
 void yaml::keyComment(const std::string& key, const std::string& c, CommentPosition position)
 {
-  int posIndex = static_cast<int>(position);
-  ASSERT_GE_(posIndex, 0);
-  ASSERT_LT_(posIndex, static_cast<int>(CommentPosition::MAX));
+  const auto posIndex = static_cast<unsigned int>(position);
+  ASSERT_LT_(posIndex, static_cast<unsigned int>(CommentPosition::MAX));
 
   yaml::node_t& n = const_cast<node_t&>(findKeyNode(dereferenceProxy(), key));
 
