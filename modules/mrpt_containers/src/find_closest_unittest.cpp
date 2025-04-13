@@ -22,11 +22,11 @@ TEST(find_closest, testStdMap)
     EXPECT_FALSE(ret.has_value());
   }
 
-  const std::map<float, char> data = {
-      {  1.0f, 'A'},
-      {  2.0f, 'B'},
-      {  3.0f, 'C'},
-      {100.0f, 'Z'}
+  const std::map<double, char> data = {
+      {  1.0, 'A'},
+      {  2.0, 'B'},
+      {  3.0, 'C'},
+      {100.0, 'Z'}
   };
 
   {
@@ -49,11 +49,11 @@ TEST(find_closest, testStdMap)
 
 TEST(find_closest, testStdMultiMap)
 {
-  const std::multimap<float, char> data = {
-      {  1.0f, 'A'},
-      {  2.0f, 'B'},
-      {  3.0f, 'C'},
-      {100.0f, 'Z'}
+  const std::multimap<double, char> data = {
+      {  1.0, 'A'},
+      {  2.0, 'B'},
+      {  3.0, 'C'},
+      {100.0, 'Z'}
   };
 
   {
@@ -62,7 +62,7 @@ TEST(find_closest, testStdMultiMap)
     EXPECT_EQ(ret.value().second, 'A');
   }
   {
-    auto ret = mrpt::containers::find_closest(data, 1.4f);
+    auto ret = mrpt::containers::find_closest(data, 1.4);
     EXPECT_TRUE(ret.has_value());
     EXPECT_EQ(ret.value().second, 'A');
   }
@@ -77,17 +77,17 @@ TEST(find_closest, testStdMultiMap)
 TEST(find_closest_with_tolerance, testStdMap)
 {
   {
-    const std::map<float, char> emptyData = {};
+    const std::map<double, char> emptyData = {};
 
     auto ret = mrpt::containers::find_closest_with_tolerance(emptyData, 1.0, 0.1);
     EXPECT_FALSE(ret.has_value());
   }
 
-  const std::map<float, char> data = {
-      {  1.0f, 'A'},
-      {  2.0f, 'B'},
-      {  3.0f, 'C'},
-      {100.0f, 'Z'}
+  const std::map<double, char> data = {
+      {  1.0, 'A'},
+      {  2.0, 'B'},
+      {  3.0, 'C'},
+      {100.0, 'Z'}
   };
 
   {
@@ -98,13 +98,12 @@ TEST(find_closest_with_tolerance, testStdMap)
 
   EXPECT_FALSE(mrpt::containers::find_closest_with_tolerance(data, 0.9, 0.09).has_value());
   EXPECT_EQ(mrpt::containers::find_closest_with_tolerance(data, 0.9, 0.11).value().second, 'A');
-  EXPECT_EQ(mrpt::containers::find_closest_with_tolerance(data, 0.9f, 0.11f).value().second, 'A');
 
   EXPECT_EQ(mrpt::containers::find_closest_with_tolerance(data, 1.0, 0.0).value().second, 'A');
 
-  EXPECT_EQ(mrpt::containers::find_closest_with_tolerance(data, 2.4f, 0.5f).value().second, 'B');
-  EXPECT_EQ(mrpt::containers::find_closest_with_tolerance(data, 2.6f, 0.5f).value().second, 'C');
-  EXPECT_FALSE(mrpt::containers::find_closest_with_tolerance(data, 2.6f, 0.3f).has_value());
+  EXPECT_EQ(mrpt::containers::find_closest_with_tolerance(data, 2.4, 0.5).value().second, 'B');
+  EXPECT_EQ(mrpt::containers::find_closest_with_tolerance(data, 2.6, 0.5).value().second, 'C');
+  EXPECT_FALSE(mrpt::containers::find_closest_with_tolerance(data, 2.6, 0.3).has_value());
 
   EXPECT_FALSE(mrpt::containers::find_closest_with_tolerance(data, 200, 10).has_value());
   EXPECT_EQ(mrpt::containers::find_closest_with_tolerance(data, 200, 110).value().second, 'Z');

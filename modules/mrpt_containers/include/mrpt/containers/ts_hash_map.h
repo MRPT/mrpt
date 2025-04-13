@@ -114,8 +114,15 @@ class ts_hash_map
       return m_vec == o.m_vec && m_idx_outer == o.m_idx_outer && m_idx_inner == o.m_idx_inner;
     }
     bool operator!=(const const_iterator& o) const { return !(*this == o); }
-    const value_type& operator*() const { return (*m_vec)[m_idx_outer][m_idx_inner]; }
-    const value_type* operator->() const { return &(*m_vec)[m_idx_outer][m_idx_inner]; }
+    const value_type& operator*() const
+    {
+      return (*m_vec)[static_cast<std::size_t>(m_idx_outer)][static_cast<std::size_t>(m_idx_inner)];
+    }
+    const value_type* operator->() const
+    {
+      return &(
+          *m_vec)[static_cast<std::size_t>(m_idx_outer)][static_cast<std::size_t>(m_idx_inner)];
+    }
     inline const_iterator operator++(int)
     { /* Post: it++ */
       const_iterator aux = *this;
@@ -143,8 +150,10 @@ class ts_hash_map
           m_idx_inner = 0;
           m_idx_outer++;
         }
-      } while (m_idx_outer < static_cast<int>(m_parent->m_vec.size()) &&
-               !(*m_vec)[m_idx_outer][m_idx_inner].used);
+      } while (
+          m_idx_outer < static_cast<int>(m_parent->m_vec.size()) &&
+          !(*m_vec)[static_cast<std::size_t>(m_idx_outer)][static_cast<std::size_t>(m_idx_inner)]
+               .used);
     }
   };
 
@@ -158,11 +167,13 @@ class ts_hash_map
     }
     value_type& operator*()
     {
-      return (*const_iterator::m_vec)[const_iterator::m_idx_outer][const_iterator::m_idx_inner];
+      return (*const_iterator::m_vec)[static_cast<std::size_t>(const_iterator::m_idx_outer)]
+                                     [static_cast<std::size_t>(const_iterator::m_idx_inner)];
     }
     value_type* operator->()
     {
-      return &(*const_iterator::m_vec)[const_iterator::m_idx_outer][const_iterator::m_idx_inner];
+      return &(*const_iterator::m_vec)[static_cast<std::size_t>(const_iterator::m_idx_outer)]
+                                      [static_cast<std::size_t>(const_iterator::m_idx_inner)];
     }
     inline iterator operator++(int)
     { /* Post: it++ */
@@ -269,7 +280,9 @@ class ts_hash_map
     for (unsigned int i = 0; i < NUM_HAS_TABLE_COLLISIONS_ALLOWED; i++)
     {
       if (match_arr[i].used && match_arr[i].first == key)
-        return const_iterator(m_vec, *this, hash, i);
+      {
+        return const_iterator(m_vec, *this, hash, static_cast<int>(i));
+      }
     }
     return this->end();
   }
@@ -285,7 +298,7 @@ class ts_hash_map
   const_iterator end() const
   {
     auto lck = mrpt::lockHelper(m_mtx);
-    return const_iterator(m_vec, *this, m_vec.size(), 0);
+    return const_iterator(m_vec, *this, static_cast<int>(m_vec.size()), 0);
   }
   iterator begin()
   {
@@ -297,7 +310,7 @@ class ts_hash_map
   iterator end()
   {
     auto lck = mrpt::lockHelper(m_mtx);
-    return iterator(m_vec, *this, m_vec.size(), 0);
+    return iterator(m_vec, *this, static_cast<int>(m_vec.size()), 0);
   }
   /** @} */
 

@@ -10,9 +10,8 @@
 #include <gtest/gtest.h>
 #include <mrpt/containers/config.h>
 #include <mrpt/containers/yaml.h>
-#include <mrpt/io/vector_loadsave.h>
-#include <mrpt/system/COutputLogger.h>  // for enum type tests
-#include <mrpt/system/os.h>
+//#include <mrpt/io/vector_loadsave.h>
+//#include <mrpt/system/COutputLogger.h>  // for enum type tests
 
 #include <algorithm>  // count()
 #include <fstream>
@@ -470,6 +469,8 @@ MRPT_TEST(yaml, macros)
 
     EXPECT_EQ(p2["i"].as<int>(), 10);
 
+    // TODO(jlbc): Add another enum test
+#if 0
     {
       mrpt::system::VerbosityLevel vl = mrpt::system::LVL_WARN;
       MCP_SAVE(p2, vl);
@@ -493,6 +494,7 @@ MRPT_TEST(yaml, macros)
       p3["vl"] = "FakeEnumValue";
       EXPECT_THROW(MCP_LOAD_OPT(p3, vl), std::exception);
     }
+#endif
   }
 }
 MRPT_TEST_END()
@@ -893,10 +895,11 @@ MRPT_TEST(yaml, parseAndEmit)
         const auto sCmd = mrpt::format("yamllint %s -f parsable", tmpFil.c_str());
 
         // std::cout << "Running '" << sCmd << "'...\n";
-        std::string lintOut;
-        const int ret = mrpt::system::executeCommand(sCmd, &lintOut);
+        // std::string lintOut;
+        // const int ret = mrpt::system::executeCommand(sCmd, &lintOut);
+        const int ret = ::system(sCmd.c_str());
         EXPECT_EQ(ret, 0);
-        if (!lintOut.empty()) GTEST_FAIL() << "Linter output:\n" << lintOut << "\n";
+        // if (!lintOut.empty()) GTEST_FAIL() << "Linter output:\n" << lintOut << "\n";
       }
     }
 

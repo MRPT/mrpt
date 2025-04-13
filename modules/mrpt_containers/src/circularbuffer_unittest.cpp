@@ -11,9 +11,9 @@
 #include <gtest/gtest.h>
 #include <mrpt/containers/circular_buffer.h>
 #include <mrpt/core/common.h>
-#include <mrpt/random.h>
 
 #include <array>
+#include <random>
 
 template class mrpt::CTraitsTest<mrpt::containers::circular_buffer<char>>;
 
@@ -44,10 +44,15 @@ TEST(circular_buffer_tests, RandomWriteAndPeek)
   constexpr size_t LEN = 20;
   mrpt::containers::circular_buffer<cb_t> cb(LEN);
 
+  std::mt19937_64 generator(12345);
+
   for (size_t iter = 0; iter < 1000; iter++)
   {
-    const size_t nWr = mrpt::random::getRandomGenerator().drawUniform32bit() % LEN;
-    for (size_t i = 0; i < nWr; i++) cb.push(i);
+    const size_t nWr = generator() % LEN;
+    for (size_t i = 0; i < nWr; i++)
+    {
+      cb.push(static_cast<cb_t>(i));
+    }
     cb_t ret;
     for (size_t i = 0; i < nWr; i++)
     {
@@ -66,10 +71,11 @@ TEST(circular_buffer_tests, RandomWriteManyAndPeek)
   constexpr size_t LEN = 20;
   mrpt::containers::circular_buffer<cb_t> cb(LEN);
   std::vector<cb_t> dum_buf;
+  std::mt19937_64 generator(12345);
 
   for (size_t iter = 0; iter < 1000; iter++)
   {
-    const size_t nWr = 1 + mrpt::random::getRandomGenerator().drawUniform32bit() % (LEN - 1);
+    const size_t nWr = 1 + generator() % (LEN - 1);
     dum_buf.resize(nWr);
     cb.push_many(&dum_buf[0], nWr);
     cb_t ret;
@@ -97,11 +103,15 @@ TEST(circular_buffer_tests, RandomWriteAndPeekOverrun)
 {
   constexpr size_t LEN = 20;
   mrpt::containers::circular_buffer<cb_t> cb(LEN);
+  std::mt19937_64 generator(12345);
 
   for (size_t iter = 0; iter < 100; iter++)
   {
-    const size_t nWr = mrpt::random::getRandomGenerator().drawUniform32bit() % LEN;
-    for (size_t i = 0; i < nWr; i++) cb.push(i);
+    const size_t nWr = generator() % LEN;
+    for (size_t i = 0; i < nWr; i++)
+    {
+      cb.push(static_cast<cb_t>(i));
+    }
     cb_t ret;
     for (unsigned k = 0; k < 5; k++)
     {

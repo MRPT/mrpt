@@ -9,8 +9,20 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/containers/deepcopy_ptr.h>
-#include <mrpt/core/common.h>  // TODO
-#include <mrpt/poses/CPose2D.h>
+#include <mrpt/core/common.h>
+
+namespace
+{
+class DummyClass
+{
+ public:
+  double x = 0;
+
+  bool operator==(const DummyClass &o) const { return x == o.x; }
+
+  DummyClass *clone() const { return new DummyClass(*this); }
+};
+}  // namespace
 
 using namespace mrpt;
 using namespace std;
@@ -45,13 +57,13 @@ TEST(copy_ptr, SimpleOps)
 
 TEST(copy_ptr, StlContainer)
 {
-  using str2d_ptr = mrpt::containers::copy_ptr<std::pair<std::string, int>>;
+  using str2d_ptr = mrpt::containers::copy_ptr<std::pair<std::string, std::size_t>>;
 
   str2d_ptr ptr;
   EXPECT_FALSE(ptr);
 
   std::vector<str2d_ptr> v;
-  for (int i = 0; i < 10; i++)
+  for (std::size_t i = 0; i < 10; i++)
   {
     v.push_back(str2d_ptr(new str2d_ptr::value_type));
     v[i]->first = "xxx";
@@ -68,50 +80,50 @@ TEST(copy_ptr, StlContainer)
 
 TEST(poly_ptr, SimpleOps)
 {
-  mrpt::containers::poly_ptr<mrpt::poses::CPose2D> ptr1;
+  mrpt::containers::poly_ptr<DummyClass> ptr1;
   EXPECT_FALSE(ptr1);
 
-  ptr1.reset(new mrpt::poses::CPose2D());
+  ptr1.reset(new DummyClass());
   EXPECT_TRUE(ptr1);
 
-  ptr1->x(123.0);
-  EXPECT_NEAR(ptr1->x(), 123.0, 1e-9);
+  ptr1->x = 123.0;
+  EXPECT_NEAR(ptr1->x, 123.0, 1e-9);
 
   {
-    mrpt::containers::poly_ptr<mrpt::poses::CPose2D> ptr2 = ptr1;
+    mrpt::containers::poly_ptr<DummyClass> ptr2 = ptr1;
     EXPECT_TRUE(*ptr1 == *ptr2);
 
-    ptr2->x_incr(1.0);
+    ptr2->x += 1.0;
     EXPECT_FALSE(*ptr1 == *ptr2);
   }
   {
-    mrpt::containers::poly_ptr<mrpt::poses::CPose2D> ptr2;
+    mrpt::containers::poly_ptr<DummyClass> ptr2;
     ptr2 = ptr1;
     EXPECT_TRUE(*ptr1 == *ptr2);
 
-    ptr2->x_incr(1.0);
+    ptr2->x += 1.0;
     EXPECT_FALSE(*ptr1 == *ptr2);
   }
 }
 
 TEST(poly_ptr, StlContainer)
 {
-  using str2d_ptr = mrpt::containers::poly_ptr<mrpt::poses::CPose2D>;
+  using str2d_ptr = mrpt::containers::poly_ptr<DummyClass>;
 
   str2d_ptr ptr;
   EXPECT_FALSE(ptr);
 
   std::vector<str2d_ptr> v;
-  for (int i = 0; i < 10; i++)
+  for (std::size_t i = 0; i < 10; i++)
   {
     v.push_back(str2d_ptr(new str2d_ptr::value_type));
-    v[i]->x(i);
+    v[i]->x = static_cast<double>(i);
   }
 
   str2d_ptr v3 = v[3];
-  EXPECT_NEAR(v3->x(), 3.0, 1e-9);
-  v3->x_incr(1.0);
+  EXPECT_NEAR(v3->x, 3.0, 1e-9);
+  v3->x += 1.0;
 
-  EXPECT_NEAR(v3->x(), 4.0, 1e-9);
-  EXPECT_NEAR(v[3]->x(), 3.0, 1e-9);
+  EXPECT_NEAR(v3->x, 4.0, 1e-9);
+  EXPECT_NEAR(v[3]->x, 3.0, 1e-9);
 }

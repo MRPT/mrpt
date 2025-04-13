@@ -32,7 +32,10 @@ namespace mrpt::containers
  */
 template <typename Container>
 std::optional<std::pair<typename Container::key_type, typename Container::mapped_type>>
-find_closest_with_tolerance(const Container& data, const double x, double tolerance)
+find_closest_with_tolerance(
+    const Container& data,
+    const typename Container::key_type x,
+    const typename Container::key_type tolerance)
 {
   const auto t_min = x - tolerance;
   const auto t_max = x + tolerance;
@@ -40,7 +43,7 @@ find_closest_with_tolerance(const Container& data, const double x, double tolera
   auto it_lo = data.lower_bound(t_min);
   auto it_hi = data.upper_bound(t_max);
 
-  double min_distance = std::numeric_limits<double>::max();
+  auto min_distance = std::numeric_limits<typename Container::key_type>::max();
   std::optional<std::pair<typename Container::key_type, typename Container::mapped_type>> best;
 
   for (auto it = it_lo; it != it_hi; ++it)
@@ -71,13 +74,16 @@ find_closest_with_tolerance(const Container& data, const double x, double tolera
  */
 template <typename Container>
 std::optional<std::pair<typename Container::key_type, typename Container::mapped_type>>
-find_closest(const Container& data, const double x)
+find_closest(const Container& data, const typename Container::key_type x)
 {
   typename Container::const_iterator its[2] = {data.lower_bound(x), data.upper_bound(x)};
 
-  if (!data.empty() && its[0] != data.begin()) --its[0];
+  if (!data.empty() && its[0] != data.begin())
+  {
+    --its[0];
+  }
 
-  double min_distance = std::numeric_limits<double>::max();
+  auto min_distance = std::numeric_limits<typename Container::key_type>::max();
   std::optional<std::pair<typename Container::key_type, typename Container::mapped_type>> best;
 
   for (const auto& it : its)
