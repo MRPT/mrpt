@@ -24,9 +24,16 @@ namespace mrpt::random
 template <class RandomIt, class URBG>
 void shuffle(RandomIt first, RandomIt last, URBG&& g)
 {
-  const uint64_t n = last - first;
+  const auto n = static_cast<int64_t>(last - first);
+  if (n == 0)
+  {
+    return;
+  }
   for (int64_t i = static_cast<int64_t>(n) - 1; i > 0; --i)
-    std::swap(first[i], first[portable_uniform_distribution(g, 0, i)]);
+  {
+    const auto idx = portable_uniform_distribution(g, 0, static_cast<uint64_t>(i));
+    std::swap(first[i], first[static_cast<typename RandomIt::difference_type>(idx)]);
+  }
 }
 
 /** Uniform shuffle a sequence.
@@ -49,10 +56,19 @@ void shuffle(RandomIt first, RandomIt last)
 template <class RandomIt, class URBG>
 void partial_shuffle(RandomIt first, RandomIt last, URBG&& g, size_t N)
 {
-  const int64_t n = static_cast<int64_t>(last - first);
-  const int64_t n_1 = n - 1;
-  for (int64_t i = 0; i < n && i < static_cast<int64_t>(N); ++i)
-    std::swap(first[i], first[portable_uniform_distribution(g, i, n_1)]);
+  const uint64_t n = static_cast<uint64_t>(last - first);
+  if (n == 0 || N == 0)
+  {
+    return;
+  }
+  const uint64_t n_1 = n - 1;
+  for (uint64_t i = 0; i < n && i < N; ++i)
+  {
+    const auto idx = portable_uniform_distribution(g, i, n_1);
+    std::swap(
+        first[static_cast<typename RandomIt::difference_type>(i)],
+        first[static_cast<typename RandomIt::difference_type>(idx)]);
+  }
 }
 
 }  // namespace mrpt::random
