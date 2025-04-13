@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
-#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/random/RandomGenerators.h>
 #include <mrpt/random/random_shuffle.h>
 
@@ -83,6 +82,8 @@ TEST(Random, KnownSequence)
   }
 }
 
+// TODO(jlbc): Move this test to mrpt_math
+#if 0
 TEST(Random, drawGaussianMultivariateMany)
 {
   using namespace mrpt::random;
@@ -100,6 +101,7 @@ TEST(Random, drawGaussianMultivariateMany)
   EXPECT_EQ(samples.size(), nSamples);
   EXPECT_EQ(samples.at(0).size(), static_cast<size_t>(cov.rows()));
 }
+#endif
 
 TEST(Random, portable_uniform_distribution)
 {
@@ -130,10 +132,10 @@ TEST(Random, portable_uniform_distribution)
        },
   };
 
-  for (int seed = 0; seed < 5; seed++)
+  for (uint64_t seed = 0; seed < 5; seed++)
   {
     rnd.seed(seeds[seed]);
-    for (int i = 0; i < 30; i++)
+    for (uint64_t i = 0; i < 30; i++)
     {
       const auto v = mrpt::random::portable_uniform_distribution(rnd, seed * 5, 100 - 20 * seed);
       EXPECT_EQ(v, psr_seq[seed][i]) << "seed=" << seed << " i=" << i << "\n";
