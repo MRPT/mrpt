@@ -437,7 +437,6 @@ macro(internal_define_mrpt_lib name headers_only )
 			ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries
 			)
 
-
 		# Collect .pdb debug files for optional installation:
 		if (MSVC)
 			set(PDB_FILE
