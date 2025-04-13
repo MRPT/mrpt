@@ -13,9 +13,11 @@ include(CMakePackageConfigHelpers)
 find_package(GTest QUIET)
 
 # This file defines utility CMake functions to ensure uniform settings all
-# accross MRPT modules, programs, and tests.
+# across MRPT modules, programs, and tests.
+#
 # Usage:
-#   include(mrpt_cmake_functions)
+#
+# find_package(mrpt_common REQUIRED) # this includes mrpt_cmake_functions.cmake
 #
 
 # ccache:
@@ -160,7 +162,7 @@ endfunction()
 #
 # Set defaults for each MRPT cmake target
 # -----------------------------------------------------------------------------
-function(mrpt_set_target_build_options TARGETNAME)
+function(mrpt_set_target_build_options TARGETNAME HEADERS_ONLY_LIBRARY)
   # Build for C++17
   mrpt_set_target_cxx17(${TARGETNAME})
 
@@ -219,34 +221,50 @@ endfunction()
 #
 # Define a consistent install behavior for cmake-based library project:
 # -----------------------------------------------------------------------------
-function(mrpt_configure_library TARGETNAME)
+function(mrpt_configure_library TARGETNAME HEADERS_ONLY_LIBRARY)
+
   # Public hdrs interface:
-  target_include_directories(${TARGETNAME} PUBLIC
+  if (HEADERS_ONLY_LIBRARY)
+    target_include_directories(${TARGETNAME} INTERFACE
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      $<INSTALL_INTERFACE:include>
+    )
+  else()
+    target_include_directories(${TARGETNAME} PUBLIC
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
       $<INSTALL_INTERFACE:include>
       PRIVATE src
     )
+  endif()
 
-  # Dynamic libraries output options:
-  # -----------------------------------
-  set_target_properties(${TARGETNAME} PROPERTIES
-    OUTPUT_NAME "${TARGETNAME}${MRPT_DLL_VERSION_POSTFIX}"
-    COMPILE_PDB_NAME "${TARGETNAME}${MRPT_DLL_VERSION_POSTFIX}"
-    COMPILE_PDB_NAME_DEBUG "${TARGETNAME}${MRPT_DLL_VERSION_POSTFIX}${CMAKE_DEBUG_POSTFIX}"
-    VERSION "${MRPT_VERSION_NUMBER_MAJOR}.${MRPT_VERSION_NUMBER_MINOR}.${MRPT_VERSION_NUMBER_PATCH}"
-    SOVERSION ${MRPT_VERSION_NUMBER_MAJOR}.${MRPT_VERSION_NUMBER_MINOR}
-    )
+
+  if (NOT HEADERS_ONLY_LIBRARY)
+    # Dynamic libraries output options:
+    # -----------------------------------
+    set_target_properties(${TARGETNAME} PROPERTIES
+      OUTPUT_NAME "${TARGETNAME}${MRPT_DLL_VERSION_POSTFIX}"
+      COMPILE_PDB_NAME "${TARGETNAME}${MRPT_DLL_VERSION_POSTFIX}"
+      COMPILE_PDB_NAME_DEBUG "${TARGETNAME}${MRPT_DLL_VERSION_POSTFIX}${CMAKE_DEBUG_POSTFIX}"
+      VERSION "${MRPT_VERSION_NUMBER_MAJOR}.${MRPT_VERSION_NUMBER_MINOR}.${MRPT_VERSION_NUMBER_PATCH}"
+      SOVERSION ${MRPT_VERSION_NUMBER_MAJOR}.${MRPT_VERSION_NUMBER_MINOR}
+      )
+  endif()
 
   # Project "folder":
   # -------------------
   set_target_properties(${TARGETNAME} PROPERTIES FOLDER "MRPT-modules")
 
   # Install lib:
-  install(TARGETS ${TARGETNAME} EXPORT ${TARGETNAME}-targets
-      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    )
+  if (NOT HEADERS_ONLY_LIBRARY)
+    install(TARGETS ${TARGETNAME} EXPORT ${TARGETNAME}-targets
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+      )
+  else()
+    install(TARGETS ${TARGETNAME} EXPORT ${TARGETNAME}-targets)
+  endif()
+
   # Install hdrs:
   if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/include/)
     install(
@@ -255,9 +273,7 @@ function(mrpt_configure_library TARGETNAME)
     )
   endif()
 
-    
   strip_mrpt_name(${TARGETNAME} MRPT_LIB_NAME)
-      
 
   # Create module/config.h file
   if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/config.h.in)
@@ -270,8 +286,11 @@ function(mrpt_configure_library TARGETNAME)
     target_include_directories(${TARGETNAME} PUBLIC
       $<BUILD_INTERFACE:${MODULES_BASE_CONFIG_INCLUDES_DIR}>
     )
-    # TODO!
-    install()
+    # And install it:
+    install(
+      FILES ${MODULE_CONFIG_FILE_INCLUDE_DIR}/config.h
+      DESTINATION ${CMAKE_INSTALL_PREFIX}/include/mrpt/${MRPT_LIB_NAME}/
+    )
     unset(MODULES_BASE_CONFIG_INCLUDES_DIR)
   endif()
 
@@ -284,7 +303,7 @@ function(mrpt_configure_library TARGETNAME)
   )
 
   # Add alias to use the namespaced name within local builds from source:
-  add_library(mrpt::${TARGETNAME} ALIAS ${TARGETNAME})
+  #add_library(mrpt::${TARGETNAME} ALIAS ${TARGETNAME})
 
   # And generate the -config.cmake file:
   set(ALL_DEPS_LIST ${ARGN}) # used in xxx-config.cmake.in
@@ -299,6 +318,15 @@ function(mrpt_configure_library TARGETNAME)
     VERSION ${MRPT_VERSION_NUMBER_MAJOR}.${MRPT_VERSION_NUMBER_MINOR}.${MRPT_VERSION_NUMBER_PATCH}
     COMPATIBILITY AnyNewerVersion
   )
+
+  # Regular arch-dep libraries get to LIBDIR (/usr/lib), while
+  # arch-indep (headers-only) go to DATADIR (/usr/share):
+  #if (${headers_only})
+  #  set(LIB_TARGET_INSTALL_DEST ${CMAKE_INSTALL_DATADIR})
+  #else()
+  #  set(LIB_TARGET_INSTALL_DEST ${CMAKE_INSTALL_LIBDIR})
+  #endif()
+
 
   # Install cmake config module
   install(
@@ -384,6 +412,7 @@ endfunction()
 # mrpt_add_library(
 #	TARGET name
 #	SOURCES ${SRC_FILES}
+# [HEADERS_ONLY_LIBRARY]
 #	[PUBLIC_LINK_LIBRARIES lib1 lib2]
 #	[PRIVATE_LINK_LIBRARIES lib3 lib4]
 # [CMAKE_DEPENDENCIES pkg1 pkg2]
@@ -393,7 +422,7 @@ endfunction()
 # that needs to be find_package'd in this library's xxx-config.cmake file.
 # -----------------------------------------------------------------------------
 function(mrpt_add_library)
-    set(options "")
+    set(options HEADERS_ONLY_LIBRARY)
     set(oneValueArgs TARGET)
     set(multiValueArgs SOURCES PUBLIC_LINK_LIBRARIES PRIVATE_LINK_LIBRARIES CMAKE_DEPENDENCIES)
     cmake_parse_arguments(MRPT_ADD_LIBRARY "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -424,20 +453,33 @@ function(mrpt_add_library)
     handle_special_simd_flags("${MRPT_ADD_LIBRARY_SOURCES}" ".*\.AVX.cpp"  "-mavx")
     handle_special_simd_flags("${MRPT_ADD_LIBRARY_SOURCES}" ".*\.AVX2.cpp"  "-mavx2")
 
-
     # Don't include here the unit testing code:
     remove_matching_files_from_list(".*_unittest.cpp" MRPT_ADD_LIBRARY_SOURCES)
 
+    # Library type: 
+    # - HEADERS_ONLY_LIBRARY: `INTERFACE`
+    # - Regular lib: (none: default to SHARED / STATIC)
 
     # Create library target:
-    add_library(${MRPT_ADD_LIBRARY_TARGET}
-      SHARED
-      ${MRPT_ADD_LIBRARY_SOURCES}
-    )
+    if (NOT MRPT_ADD_LIBRARY_HEADERS_ONLY_LIBRARY)
+      # Regular library:
+      add_library(${MRPT_ADD_LIBRARY_TARGET}
+        ${MRPT_ADD_LIBRARY_SOURCES}
+      )
+      #add_coverage(${name})
+
+      mrpt_set_target_build_options(${MRPT_ADD_LIBRARY_TARGET} ${MRPT_ADD_LIBRARY_HEADERS_ONLY_LIBRARY})
+
+    else()
+      # A hdr-only library: needs no real compiling
+      add_library(${MRPT_ADD_LIBRARY_TARGET} INTERFACE)
+
+      # List of hdr files (for editing in IDEs,etc.):
+      #target_sources(${MRPT_ADD_LIBRARY_TARGET} INTERFACE ${MRPT_ADD_LIBRARY_SOURCES})
+    endif()
 
     # Define common flags:
-    mrpt_set_target_build_options(${MRPT_ADD_LIBRARY_TARGET})
-    mrpt_configure_library(${MRPT_ADD_LIBRARY_TARGET} ${MRPT_ADD_LIBRARY_CMAKE_DEPENDENCIES})
+    mrpt_configure_library(${MRPT_ADD_LIBRARY_TARGET} ${MRPT_ADD_LIBRARY_CMAKE_DEPENDENCIES} ${MRPT_ADD_LIBRARY_HEADERS_ONLY_LIBRARY})
 
     # lib Dependencies:
     target_link_libraries(${MRPT_ADD_LIBRARY_TARGET}
@@ -473,7 +515,7 @@ function(mrpt_add_executable)
     )
 
     # Define common flags:
-    mrpt_set_target_build_options(${MRPT_ADD_EXECUTABLE_TARGET})
+    mrpt_set_target_build_options(${MRPT_ADD_EXECUTABLE_TARGET} FALSE) # FALSE: no headers-only target
     mrpt_configure_app(${MRPT_ADD_EXECUTABLE_TARGET})
 
     # lib Dependencies:
@@ -516,7 +558,7 @@ function(mrpt_add_test)
     )
 
     # Define common flags:
-    mrpt_set_target_build_options(${MRPT_ADD_TEST_TARGET})
+    mrpt_set_target_build_options(${MRPT_ADD_TEST_TARGET} FALSE) # FALSE: no headers-only target
     mrpt_configure_app(${MRPT_ADD_TEST_TARGET})
 
     # lib Dependencies:

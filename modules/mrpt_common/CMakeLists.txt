@@ -109,17 +109,21 @@ endif()
 # -----------------------------------------------------------------------------
 #  common
 # -----------------------------------------------------------------------------
-set(CUSTOM_CMAKE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
 # Install files common to both, ROS and non-ROS builds:
 install(
 	FILES
-		${CUSTOM_CMAKE_DIR}/mrpt_cmake_functions.cmake
-		${CUSTOM_CMAKE_DIR}/mrpt-xxx-config.cmake.in
+		${CMAKE_CURRENT_SOURCE_DIR}/cmake/mrpt_cmake_functions.cmake
+		${CMAKE_CURRENT_SOURCE_DIR}/cmake/mrpt-xxx-config.cmake.in
 		DESTINATION
 			share/${PROJECT_NAME}/cmake
 )
-
+install(
+	DIRECTORY
+		${CMAKE_CURRENT_SOURCE_DIR}/common_headers
+		${CMAKE_CURRENT_SOURCE_DIR}/common_sources
+		DESTINATION
+			share/${PROJECT_NAME}/
+)
 
 # -----------------------------------------------------------------------------
 #  ROS1
