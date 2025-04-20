@@ -92,7 +92,9 @@ inline double timeDifference(
   MRPT_START
   ASSERT_(t_later != INVALID_TIMESTAMP);
   ASSERT_(t_first != INVALID_TIMESTAMP);
-  return 1e-6 * std::chrono::duration_cast<std::chrono::microseconds>(t_later - t_first).count();
+  return 1e-6 *
+         static_cast<double>(
+             std::chrono::duration_cast<std::chrono::microseconds>(t_later - t_first).count());
   MRPT_END
 }
 

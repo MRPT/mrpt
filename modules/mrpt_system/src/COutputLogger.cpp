@@ -103,24 +103,61 @@ void COutputLogger::logFmt(const VerbosityLevel level, const char* fmt, ...) con
 
 std::string COutputLogger::generateStringFromFormat(std::string_view fmt, va_list argp) const
 {
-  int result = -1, length = 1024;
-  std::vector<char> buffer;
-  // make sure that the buffer is large enough to handle the string
-  while (result == -1)
-  {
-    buffer.resize(length + 10);
-    result = os::vsnprintf(&buffer[0], length, fmt.data(), argp);
+  // --- Step 1: Determine required buffer size ---
 
-    // http://www.cplusplus.com/reference/cstdio/vsnprintf/
-    // only when this returned value is non-negative and less than n, the
-    // string has been completely written
-    if (result >= length) result = -1;
-    length *= 2;
+  // Create a copy of the va_list, as vsnprintf might invalidate argp
+  va_list argp_copy;
+  va_copy(argp_copy, argp);
+
+  // Ensure the format string is null-terminated for vsnprintf
+  std::string fmt_null_terminated(fmt);
+
+  // Call vsnprintf with null buffer and zero size to get the needed length
+  // The return value is the number of characters required, excluding the null terminator.
+  int needed_size = std::vsnprintf(nullptr, 0, fmt_null_terminated.c_str(), argp_copy);
+
+  // Clean up the copied va_list
+  va_end(argp_copy);
+
+  // Check for encoding errors or other failures from the size calculation call
+  if (needed_size < 0)
+  {
+    // Handle error:
+    return "[vsnprintf size calculation error]";
   }
 
-  // return result to the caller
-  return std::string(&buffer[0]);
+  // --- Step 2: Format into a correctly sized buffer ---
+
+  // Create a string to act as the buffer.
+  // Size is needed_size; std::string handles null termination automatically
+  // when accessing via c_str(), and provides buffer space internally.
+  std::string buffer(needed_size, '\0');  // Initialize with null chars
+
+  // Call vsnprintf again, this time with the allocated buffer and the *original* va_list.
+  // Pass buffer.size() + 1 for the size argument to include space for the null terminator.
+  int result = std::vsnprintf(&buffer[0], buffer.size() + 1, fmt_null_terminated.c_str(), argp);
+
+  // --- Step 3: Final checks and return ---
+
+  // Check for errors during the actual formatting
+  if (result < 0)
+  {
+    return "[vsnprintf formatting error]";
+  }
+
+  // Optional sanity check: The number of chars written should match the calculated size
+  // Note: result could theoretically be larger than needed_size if va_list state changed
+  // unexpectedly between va_copy and the second call, though highly unlikely.
+  if (static_cast<size_t>(result) < buffer.size())
+  {
+    buffer.resize(result);
+  }
+  // No need to handle result > needed_size explicitly, as vsnprintf respects the buffer limit.
+
+  // Return the formatted string
+  return buffer;
 }
+
 void COutputLogger::logCond(const VerbosityLevel level, bool cond, const std::string& msg_str) const
 {
   if (!cond) return;
@@ -259,19 +296,11 @@ void COutputLogger::logRegisterCallback(output_logger_callback_t userFunc)
   m_listCallbacks.emplace_back(userFunc);
 }
 
-template <typename T, typename... U>
-size_t getAddress(std::function<T(U...)> f)
-{
-  using fnType = T (*)(U...);
-  auto** fnPointer = f.template target<fnType*>();
-  return (size_t)*fnPointer;
-}
-
 bool COutputLogger::logDeregisterCallback(output_logger_callback_t userFunc)
 {
   for (auto it = m_listCallbacks.begin(); it != m_listCallbacks.end(); ++it)
   {
-    if (getAddress(*it) == getAddress(userFunc))
+    if (it->target<void (*)()>() == userFunc.target<void (*)()>())
     {
       m_listCallbacks.erase(it);
       return true;
