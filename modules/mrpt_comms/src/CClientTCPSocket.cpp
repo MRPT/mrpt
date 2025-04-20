@@ -11,6 +11,7 @@
 //
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/net_utils.h>
+#include <mrpt/core/config.h>  // MRPT_OS_*()
 #include <mrpt/core/exceptions.h>
 
 #include <cstring>

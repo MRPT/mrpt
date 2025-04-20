@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
-#include <mrpt/random.h>
 #include <mrpt/system/string_utils.h>
 
+#include <random>
+
 using namespace mrpt;
-using namespace mrpt::random;
 using namespace std;
 
 // Load data from constant file and check for exact match.
@@ -20,20 +20,26 @@ TEST(Base64, RandomEncDec)
 {
   for (unsigned int seed = 0; seed < 500; seed++)
   {
-    getRandomGenerator().randomize(seed);
+    std::mt19937 rng(seed);
 
-    const size_t block_len = getRandomGenerator().drawUniform32bit() % 567;
+    std::uniform_int_distribution<size_t> length_dist(0, 566);  // inclusive range
+    const size_t block_len = length_dist(rng);
 
+    std::uniform_int_distribution<uint32_t> byte_dist(0, 0xFF);  // 8-bit random values
     std::vector<uint8_t> myData(block_len);
     for (size_t n = 0; n < block_len; n++)
-      myData[n] = static_cast<uint8_t>(getRandomGenerator().drawUniform32bit());
+    {
+      myData[n] = static_cast<uint8_t>(byte_dist(rng));
+    }
 
     std::string myStr;
     mrpt::system::encodeBase64(myData, myStr);
 
     std::vector<uint8_t> outData;
     if (!mrpt::system::decodeBase64(myStr, outData))
+    {
       GTEST_FAIL() << "Error decoding the just encoded data!\n";
+    }
 
     // Compare data:
     EXPECT_EQ(outData.size(), myData.size());

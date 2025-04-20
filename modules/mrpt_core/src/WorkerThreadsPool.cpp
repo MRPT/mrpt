@@ -15,8 +15,9 @@
 
 #include "core-precomp.h"  // Precompiled headers
 //
-#include <mrpt/core/config.h>
 #include <mrpt/core/WorkerThreadsPool.h>
+#include <mrpt/core/config.h>
+#include <mrpt/core/config.h>  // MRPT_OS_*()
 #include <mrpt/core/exceptions.h>
 
 #include <iostream>

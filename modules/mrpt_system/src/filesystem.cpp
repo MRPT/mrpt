@@ -9,11 +9,13 @@
 
 #include "system-precomp.h"  // Precompiled headers
 //
+#include <mrpt/core/config.h>      // MRPT_OS_*()
 #include <mrpt/core/exceptions.h>  // for MRPT_END, MRPT_START, e
 #include <mrpt/core/format.h>
 #include <mrpt/system/CDirectoryExplorer.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>  // for sprintf
+#include <mrpt/version.h>
 
 #include <algorithm>
 #include <cstdio>
@@ -334,7 +336,6 @@ mrpt::Clock::time_point mrpt::system::getFileModificationTime(const std::string&
     return mrpt::Clock::fromDouble(static_cast<double>(fS.st_mtime));
 }
 
-#include <mrpt/version.h>
 // Read docs in .h
 std::string mrpt::system::getShareMRPTDir()
 {

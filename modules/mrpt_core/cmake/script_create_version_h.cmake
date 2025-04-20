@@ -3,10 +3,14 @@
 #    FILE_TO_PARSE="SRC/include/mrpt/MRPT_version.h.in"
 #    TARGET_FILE  ="MRPT_version.h"
 # ----------------------------------------------------------------------------
+set(CMAKE_MRPT_VERSION_NUMBER_MAJOR ${mrpt_common_VERSION_MAJOR})
+set(CMAKE_MRPT_VERSION_NUMBER_MINOR ${mrpt_common_VERSION_MINOT})
+set(CMAKE_MRPT_VERSION_NUMBER_PATCH ${mrpt_common_VERSION_PATCH})
+
 set(CMAKE_MRPT_COMPLETE_NAME "MRPT ${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}.${CMAKE_MRPT_VERSION_NUMBER_PATCH}")
 
 # Build a six digits hex version code, eg. 1.2.0 -> 0x010200
-VERSION_TO_HEXADECIMAL(CMAKE_MRPT_VERSION_CODE ${CMAKE_MRPT_COMPLETE_NAME})
+mrpt_version_to_hexadecimal(CMAKE_MRPT_VERSION_CODE ${mrpt_common_VERSION})
 
 # SOURCE_DATE_EPOCH: See Specs in https://reproducible-builds.org/specs/source-date-epoch/
 # Take its value from:
@@ -48,16 +52,11 @@ endif()
 
 set(MRPT_CONFIG_FILE_INCLUDE_DIR ${CMAKE_BINARY_DIR}/include/mrpt-configuration/)
 
-configure_file("${MRPT_SOURCE_DIR}/parse-files/version.h.in" "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/version.h.in" "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h")
+# And install it:
+install(
+  FILES ${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/mrpt/
+)
 
-
-# Prepare version.rc for Windows apps:
-if (WIN32)
-	configure_file(
-		${MRPT_SOURCE_DIR}/parse-files/version.rc.in
-		${MRPT_BINARY_DIR}/version.rc
-		@ONLY)
-	set(MRPT_VERSION_RC_FILE "${MRPT_BINARY_DIR}/version.rc")
-else()
-	set(MRPT_VERSION_RC_FILE "")
-endif()
+# Prepare version.rc for Windows apps (2025, JLBC: Not worth porting to mrpt3)

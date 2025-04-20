@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/config.h>  // MRPT_OS_*()
 #include <mrpt/system/os.h>
 
 #include <mutex>

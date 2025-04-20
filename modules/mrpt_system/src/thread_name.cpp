@@ -9,8 +9,9 @@
 
 #include "system-precomp.h"  // Precompiled headers
 //
-#include <mrpt/system/config.h>
+#include <mrpt/core/config.h>  // MRPT_OS_*()
 #include <mrpt/core/exceptions.h>
+#include <mrpt/system/config.h>
 #include <mrpt/system/thread_name.h>
 
 #if defined(MRPT_OS_WINDOWS)

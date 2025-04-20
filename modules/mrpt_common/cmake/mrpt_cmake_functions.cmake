@@ -252,7 +252,6 @@ function(mrpt_configure_library TARGETNAME HEADERS_ONLY_LIBRARY ADDITIONAL_EXPOR
       $<INSTALL_INTERFACE:include>
     )
   else()
-    message(STATUS "XXX: ${CMAKE_CURRENT_SOURCE_DIR}/include")
     target_include_directories(${TARGETNAME} PUBLIC
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
       $<INSTALL_INTERFACE:include>
@@ -646,4 +645,22 @@ macro(mrpt_find_package_or_return PACKAGE_NAME)
     message(WARNING "${PROJECT_NAME}: Skipping due to missing dependency `${PACKAGE_NAME}`")
     return()
   endif()
+endmacro()
+
+
+
+# Converts a version like "1.2.3" into a string "0x10203",
+# or "3.4.19" into "0x30413".
+# Usage: mrpt_version_to_hexadecimal(TARGET_VAR "1.2.3")
+macro(mrpt_version_to_hexadecimal OUT_VAR IN_VERSION)
+  string(REGEX MATCHALL "[0-9]+" VERSION_PARTS "${IN_VERSION}")
+  list(GET VERSION_PARTS 0 VERSION_NUMBER_MAJOR)
+  list(GET VERSION_PARTS 1 VERSION_NUMBER_MINOR)
+  list(GET VERSION_PARTS 2 VERSION_NUMBER_PATCH)
+
+  # Convert each part to hex:
+  math(EXPR ${OUT_VAR}
+  "(${VERSION_NUMBER_MAJOR} << 16) + \
+    (${VERSION_NUMBER_MINOR} << 8) + \
+    (${VERSION_NUMBER_PATCH})" OUTPUT_FORMAT HEXADECIMAL )
 endmacro()
