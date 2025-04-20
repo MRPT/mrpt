@@ -9,7 +9,7 @@
 
 #include "system-precomp.h"  // Precompiled headers
 //
-#include <mrpt/system/config.h>           // for MRPT_OS_LINUX
+#include <mrpt/core/config.h>      // MRPT_OS_*()
 #include <mrpt/core/exceptions.h>  // for MRPT_END, MRPT_START, MRPT_UNUSE...
 #include <mrpt/system/memory.h>
 

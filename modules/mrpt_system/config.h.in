@@ -14,5 +14,9 @@
 
 /** Only for Linux: the inotify kernel module has been found. Requires kernel 2.6.13.  */
 #define MRPT_HAS_INOTIFY ${CMAKE_MRPT_HAS_INOTIFY}
- 
+
+
+#define MRPT_SOURCE_BASE_DIRECTORY "${MRPT_CURRENT_SOURCE_DIR}"
+#define MRPT_INSTALL_PREFIX_DIRECTORY "${CMAKE_INSTALL_PREFIX}"
+
 // clang-format on

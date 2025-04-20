@@ -57,21 +57,6 @@ macro(pkgconfig_parse _FLAGS _OUT_PREFIX)
 	endforeach(str)
 endmacro()
 
-# Converts a version like "1.2.3" into a string "0x10203",
-# or "3.4.19" into "0x30413".
-# Usage: VERSION_TO_HEXADECIMAL(TARGET_VAR "1.2.3")
-macro(VERSION_TO_HEXADECIMAL OUT_VAR IN_VERSION)
-  string(REGEX MATCHALL "[0-9]+" VERSION_PARTS "${IN_VERSION}")
-  list(GET VERSION_PARTS 0 VERSION_NUMBER_MAJOR)
-  list(GET VERSION_PARTS 1 VERSION_NUMBER_MINOR)
-  list(GET VERSION_PARTS 2 VERSION_NUMBER_PATCH)
-
-  # Convert each part to hex:
-  math(EXPR ${OUT_VAR}
-  "(${VERSION_NUMBER_MAJOR} << 16) + \
-    (${VERSION_NUMBER_MINOR} << 8) + \
-    (${VERSION_NUMBER_PATCH})" OUTPUT_FORMAT HEXADECIMAL )
-endmacro()
 
 
 # GOOD & BAD are single strings, INPUT is a list wrapped in string

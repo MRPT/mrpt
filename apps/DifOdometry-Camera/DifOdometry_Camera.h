@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/core/config.h>  // MRPT_OS_*()
 #include <mrpt/core/round.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/img/CImage.h>

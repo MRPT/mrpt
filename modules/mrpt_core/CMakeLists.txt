@@ -17,7 +17,6 @@ find_package(mrpt_common REQUIRED)
 # find dependencies:
 find_package(Threads REQUIRED)
 
-# "Classic" function & headers detection:
 include(./cmake/bfd.cmake REQUIRED)
 include(./cmake/detect_functions_headers.cmake REQUIRED)
 include(./cmake/detect_unix_arch.cmake REQUIRED)
@@ -26,6 +25,9 @@ include(./cmake/exceptions_and_backtraces.cmake REQUIRED)
 include(./cmake/max_alignment.cmake REQUIRED)
 include(./cmake/simd.cmake REQUIRED)
 include(./cmake/tbb.cmake REQUIRED)
+
+include(./cmake/script_create_version_h.cmake REQUIRED)
+
 
 # define lib:
 set(LIB_SRCS

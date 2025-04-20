@@ -35,7 +35,8 @@ TEST(DateTime, time_t_forth_back)
 
   auto t1 = mrpt::Clock::fromDouble(td5);
   auto t2 = mrpt::Clock::fromDouble(t);
-  EXPECT_NEAR(std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t2).count(), 500, 1);
+  EXPECT_LE(
+      std::abs(std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t2).count() - 500), 1);
 
   const double t1d = mrpt::Clock::toDouble(t1);
   const double t2d = mrpt::Clock::toDouble(t2);

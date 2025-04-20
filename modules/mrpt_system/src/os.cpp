@@ -10,9 +10,11 @@
 #include "system-precomp.h"  // Precompiled headers
 //
 #include <mrpt/core/config.h>
+#include <mrpt/core/config.h>  // MRPT_OS_*()
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/format.h>
 #include <mrpt/core/winerror2str.h>
+#include <mrpt/system/config.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
@@ -561,7 +563,6 @@ bool mrpt::system::launchProcess(const std::string& command)
 
 }  // end launchProcess
 
-#include <mrpt/mrpt_paths_config.h>
 std::string mrpt::system::find_mrpt_shared_dir()
 {
   static bool mrpt_shared_first_call = true;

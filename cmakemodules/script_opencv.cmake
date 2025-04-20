@@ -28,7 +28,7 @@ if(NOT CMAKE_MRPT_HAS_OPENCV)
 endif()
 
 # Opencv version as Hex. number:
-VERSION_TO_HEXADECIMAL(OPENCV_VERSION_HEX ${MRPT_OPENCV_VERSION})
+mrpt_version_to_hexadecimal(OPENCV_VERSION_HEX ${MRPT_OPENCV_VERSION})
 set(MRPT_OPENCV_VERSION_HEX "${OPENCV_VERSION_HEX}")
 
 # OpenCV (all compilers):

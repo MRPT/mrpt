@@ -8,8 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
-#include <mrpt/system/config.h>
+#include <mrpt/core/config.h>  // MRPT_OS_*()
 #include <mrpt/core/format.h>
+#include <mrpt/system/config.h>
 #include <mrpt/system/thread_name.h>
 
 #include <atomic>

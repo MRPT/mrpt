@@ -10,6 +10,7 @@
 #include "xRawLogViewerMain.h"
 
 #include <mrpt/containers/stl_containers_utils.h>
+#include <mrpt/core/config.h>  // MRPT_OS_*()
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/gui/about_box.h>
 #include <mrpt/io/CFileGZInputStream.h>

@@ -53,9 +53,11 @@ uint16_t mrpt::system::compute_CRC16(const uint8_t* data, size_t len_, const uin
   return uCrc16;
 }
 
-unsigned long CRC32Value(int i, const uint32_t CRC32_POLYNOMIAL)
+namespace
 {
-  unsigned long ulCRC = i;
+uint32_t CRC32Value(int i, const uint32_t CRC32_POLYNOMIAL)
+{
+  uint32_t ulCRC = static_cast<uint32_t>(i);
   for (int j = 8; j > 0; j--)
   {
     if (ulCRC & 1)
@@ -65,15 +67,16 @@ unsigned long CRC32Value(int i, const uint32_t CRC32_POLYNOMIAL)
   }
   return ulCRC;
 }
+}  // namespace
 
 uint32_t mrpt::system::compute_CRC32(const uint8_t* data, size_t len_, const uint32_t gen_pol)
 {
   size_t len = len_;
-  unsigned long ulCRC = 0;
+  uint32_t ulCRC = 0;
   while (len-- != 0)
   {
-    unsigned long ulTemp1 = (ulCRC >> 8) & 0x00FFFFFFL;
-    unsigned long ulTemp2 = CRC32Value(((int)ulCRC ^ *data++) & 0xff, gen_pol);
+    const uint32_t ulTemp1 = (static_cast<uint32_t>(ulCRC) >> 8) & 0x00FFFFFFUL;
+    const uint32_t ulTemp2 = CRC32Value((static_cast<int>(ulCRC) ^ *data++) & 0xff, gen_pol);
     ulCRC = ulTemp1 ^ ulTemp2;
   }
   return ulCRC;

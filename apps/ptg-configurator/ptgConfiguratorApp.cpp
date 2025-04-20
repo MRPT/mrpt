@@ -14,6 +14,7 @@
 
 #include "ptgConfiguratorMain.h"
 //*)
+#include <mrpt/core/config.h>  // MRPT_OS_*()
 #include <mrpt/system/os.h>
 #include <wx/cmdline.h>
 

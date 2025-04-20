@@ -9,6 +9,8 @@
 
 // This seems to be assumed by OpenNI.h and undefined for some reason in
 // GCC/Ubuntu
+#include <mrpt/core/config.h>  // MRPT_OS_*()
+
 #if !defined(MRPT_OS_WINDOWS)
 #define linux 1
 #endif
