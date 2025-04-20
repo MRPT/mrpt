@@ -21,7 +21,7 @@ class Stringifyable
 {
  public:
   Stringifyable() = default;
-  ~Stringifyable() = default;
+  virtual ~Stringifyable() = default;
 
   /** Returns a human-friendly textual description of the object. For classes
    * with a large/complex internal state, only a summary should be returned
