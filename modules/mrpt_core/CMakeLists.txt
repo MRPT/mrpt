@@ -36,7 +36,6 @@ set(LIB_SRCS
   src/bits_math_unittest.cpp
   src/reverse_bytes_unittest.cpp
   src/Clock.cpp
-  src/core-precomp.cpp
   src/format_unittest.cpp
   src/demangle.cpp
   src/format.cpp

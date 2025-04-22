@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/config.h>  // MRPT_OS_*()
 #include <mrpt/core/exceptions.h>
 #include <mrpt/system/config.h>
@@ -52,9 +50,7 @@ void mrpt::system::changeCurrentThreadPriority(TThreadPriority priority)
   const pthread_t tid = pthread_self();
 
   int ret, policy;
-  struct sched_param param
-  {
-  };
+  struct sched_param param{};
 
   if (0 != (ret = pthread_getschedparam(tid, &policy, &param)))
   {

@@ -50,7 +50,6 @@ set(LIB_SRCS
   src/CRateTimer.cpp
   src/scheduler.cpp
   src/WorkerThreadsPool.cpp
-  src/system-precomp.cpp
   src/datetime.cpp
   src/CObserver.cpp
   src/CDirectoryExplorer.cpp

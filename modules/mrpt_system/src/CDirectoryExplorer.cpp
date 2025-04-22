@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-//
 #ifdef _WIN32
 #ifdef _MSC_VER
 #include <sys/utime.h>
@@ -35,8 +33,6 @@
 
 #include <algorithm>
 #include <cstdio>
-#include <iostream>
-#include <queue>
 
 #if STD_FS_IS_EXPERIMENTAL
 #include <experimental/filesystem>
@@ -72,8 +68,6 @@ CDirectoryExplorer::TFileInfoList CDirectoryExplorer::explore(
       searchPath.push_back('/');
 #endif
     }
-
-    // cout << "searchPath:"<<searchPath<<endl;
 
 #ifdef _WIN32
   // ====================
@@ -151,9 +145,7 @@ CDirectoryExplorer::TFileInfoList CDirectoryExplorer::explore(
     newEntry.wholePath = fs::absolute(fs::path(searchPath + newEntry.name));
 
     // File times:
-    struct stat statDat
-    {
-    }, lstatDat{};
+    struct stat statDat{}, lstatDat{};
 
     if (stat(newEntry.wholePath.c_str(), &statDat))
       continue;  // Ignore it: permissions problem or broken symlink?
@@ -168,7 +160,7 @@ CDirectoryExplorer::TFileInfoList CDirectoryExplorer::explore(
         ((mask & FILE_ATTRIB_DIRECTORY) != 0 && newEntry.isDir))
     {
       // File size:
-      newEntry.fileSize = (intmax_t)statDat.st_size;
+      newEntry.fileSize = static_cast<uint64_t>(statDat.st_size);
 
       // Is it a symbolic link?? Need to call "lstat":
       if (!lstat(newEntry.wholePath.c_str(), &lstatDat))

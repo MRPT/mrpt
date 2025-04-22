@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-//
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>

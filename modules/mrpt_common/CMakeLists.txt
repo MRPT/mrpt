@@ -156,3 +156,8 @@ if (DETECTED_ROS2)
 		CONFIG_EXTRAS cmake/mrpt_cmake_functions.cmake
 	)
 endif()
+
+# Silent cmake warnings:
+set(dummy ${CMAKE_EXPORT_COMPILE_COMMANDS})
+unset(dummy)
+

@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/format.h>
 #include <mrpt/system/os.h>  // strncmp(),...
 #include <mrpt/system/string_utils.h>
@@ -31,7 +29,7 @@ string mrpt::system::lowerCase(const string& str)
   std::transform(
       outStr.begin(), outStr.end(),  // In
       outStr.begin(),                // Out
-      (int (*)(int))tolower);
+      [](unsigned char c) { return std::tolower(c); });
   return outStr;
 }
 
@@ -44,7 +42,7 @@ string mrpt::system::upperCase(const string& str)
   std::transform(
       outStr.begin(), outStr.end(),  // In
       outStr.begin(),                // Out
-      (int (*)(int))toupper);
+      [](unsigned char c) { return std::toupper(c); });
   return outStr;
 }
 

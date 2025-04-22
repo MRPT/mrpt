@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "core-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/aligned_allocator.h>
 
 #include <cstdlib>  // free, realloc, C++17 aligned_alloc

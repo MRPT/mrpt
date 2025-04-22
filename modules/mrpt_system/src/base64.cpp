@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/common.h>
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/system/string_utils.h>
