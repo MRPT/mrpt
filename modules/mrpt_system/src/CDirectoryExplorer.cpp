@@ -60,6 +60,7 @@ CDirectoryExplorer::TFileInfoList CDirectoryExplorer::explore(
   // The path terminated in "/" or "\\"
   string searchPath(path);
   if (searchPath.size())
+  {
     if (searchPath[searchPath.size() - 1] != '\\' && searchPath[searchPath.size() - 1] != '/')
     {
 #ifdef _WIN32
@@ -68,6 +69,7 @@ CDirectoryExplorer::TFileInfoList CDirectoryExplorer::explore(
       searchPath.push_back('/');
 #endif
     }
+  }
 
 #ifdef _WIN32
   // ====================
@@ -131,12 +133,17 @@ CDirectoryExplorer::TFileInfoList CDirectoryExplorer::explore(
 
   DIR* dir = opendir(searchPath.c_str());
   if (!dir)
+  {
     THROW_EXCEPTION_FMT(
         "Error starting exploration of '%s' (does path exist?)", searchPath.c_str());
+  }
 
   while ((ent = readdir(dir)) != nullptr)
   {
-    if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) continue;
+    if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, ".."))
+    {
+      continue;
+    }
 
     // File name:
     newEntry.name = string(ent->d_name);
@@ -148,7 +155,9 @@ CDirectoryExplorer::TFileInfoList CDirectoryExplorer::explore(
     struct stat statDat{}, lstatDat{};
 
     if (stat(newEntry.wholePath.c_str(), &statDat))
+    {
       continue;  // Ignore it: permissions problem or broken symlink?
+    }
 
     newEntry.modTime = mrpt::Clock::fromDouble(static_cast<double>(statDat.st_mtime));
     newEntry.accessTime = mrpt::Clock::fromDouble(static_cast<double>(statDat.st_atime));
@@ -168,7 +177,9 @@ CDirectoryExplorer::TFileInfoList CDirectoryExplorer::explore(
         newEntry.isSymLink = S_ISLNK(lstatDat.st_mode);
       }
       else
+      {
         newEntry.isSymLink = false;
+      }
 
       // Save:
       outList.push_back(newEntry);
@@ -212,14 +223,16 @@ void CDirectoryExplorer::sortByName(TFileInfoList& lstFiles, bool ascendingOrder
  ---------------------------------------------------------------*/
 void CDirectoryExplorer::filterByExtension(TFileInfoList& lstFiles, const std::string& extension)
 {
-  int i, n = (int)lstFiles.size();
-  for (i = n - 1; i >= 0; i--)
+  for (auto it = lstFiles.begin(); it != lstFiles.end();)
   {
-    if (0 != os::_strcmpi(
-                 mrpt::system::extractFileExtension(lstFiles[i].name).c_str(), extension.c_str()))
+    if (0 != os::_strcmpi(mrpt::system::extractFileExtension(it->name).c_str(), extension.c_str()))
     {
       // Does not match:
-      lstFiles.erase(lstFiles.begin() + i);
+      it = lstFiles.erase(it);
+    }
+    else
+    {
+      ++it;
     }
   }
 }

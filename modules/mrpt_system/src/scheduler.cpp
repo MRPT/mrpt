@@ -62,8 +62,14 @@ void mrpt::system::changeCurrentThreadPriority(TThreadPriority priority)
 
   policy = SCHED_RR;
   int min_prio = sched_get_priority_min(policy), max_prio = sched_get_priority_max(policy);
-  if (min_prio < 0) min_prio = 1;  // Just in case of error to calls above (!)
-  if (max_prio < 0) max_prio = 99;
+  if (min_prio < 0)
+  {
+    min_prio = 1;  // Just in case of error to calls above (!)
+  }
+  if (max_prio < 0)
+  {
+    max_prio = 99;
+  }
 
   int prio = 0;
   switch (priority)

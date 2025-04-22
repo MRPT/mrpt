@@ -59,9 +59,13 @@ uint32_t CRC32Value(int i, const uint32_t CRC32_POLYNOMIAL)
   for (int j = 8; j > 0; j--)
   {
     if (ulCRC & 1)
+    {
       ulCRC = (ulCRC >> 1) ^ CRC32_POLYNOMIAL;
+    }
     else
+    {
       ulCRC >>= 1;
+    }
   }
   return ulCRC;
 }

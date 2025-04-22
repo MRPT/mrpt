@@ -112,7 +112,10 @@ class CDynamicGrid
    */
   inline void fill(const T& value)
   {
-    for (auto it = m_map.begin(); it != m_map.end(); ++it) *it = value;
+    for (auto it = m_map.begin(); it != m_map.end(); ++it)
+    {
+      *it = value;
+    }
   }
 
   /** Changes the size of the grid, maintaining previous contents.
@@ -133,30 +136,62 @@ class CDynamicGrid
       return;
     }
 
-    if (new_x_min > m_x_min) new_x_min = m_x_min;
-    if (new_x_max < m_x_max) new_x_max = m_x_max;
-    if (new_y_min > m_y_min) new_y_min = m_y_min;
-    if (new_y_max < m_y_max) new_y_max = m_y_max;
+    if (new_x_min > m_x_min)
+    {
+      new_x_min = m_x_min;
+    }
+    if (new_x_max < m_x_max)
+    {
+      new_x_max = m_x_max;
+    }
+    if (new_y_min > m_y_min)
+    {
+      new_y_min = m_y_min;
+    }
+    if (new_y_max < m_y_max)
+    {
+      new_y_max = m_y_max;
+    }
 
     // Additional margin:
     if (additionalMarginMeters > 0)
     {
-      if (new_x_min < m_x_min) new_x_min = floor(new_x_min - additionalMarginMeters);
-      if (new_x_max > m_x_max) new_x_max = ceil(new_x_max + additionalMarginMeters);
-      if (new_y_min < m_y_min) new_y_min = floor(new_y_min - additionalMarginMeters);
-      if (new_y_max > m_y_max) new_y_max = ceil(new_y_max + additionalMarginMeters);
+      if (new_x_min < m_x_min)
+      {
+        new_x_min = floor(new_x_min - additionalMarginMeters);
+      }
+      if (new_x_max > m_x_max)
+      {
+        new_x_max = ceil(new_x_max + additionalMarginMeters);
+      }
+      if (new_y_min < m_y_min)
+      {
+        new_y_min = floor(new_y_min - additionalMarginMeters);
+      }
+      if (new_y_max > m_y_max)
+      {
+        new_y_max = ceil(new_y_max + additionalMarginMeters);
+      }
     }
 
     // Adjust sizes to adapt them to full sized cells according to the
     // resolution:
     if (fabs(new_x_min / m_resolution - round(new_x_min / m_resolution)) > 0.05)
+    {
       new_x_min = m_resolution * round(new_x_min / m_resolution);
+    }
     if (fabs(new_y_min / m_resolution - round(new_y_min / m_resolution)) > 0.05)
+    {
       new_y_min = m_resolution * round(new_y_min / m_resolution);
+    }
     if (fabs(new_x_max / m_resolution - round(new_x_max / m_resolution)) > 0.05)
+    {
       new_x_max = m_resolution * round(new_x_max / m_resolution);
+    }
     if (fabs(new_y_max / m_resolution - round(new_y_max / m_resolution)) > 0.05)
+    {
       new_y_max = m_resolution * round(new_y_max / m_resolution);
+    }
 
     // Change the map size: Extensions at each side:
     const auto extra_x_left = static_cast<std::size_t>(round((m_x_min - new_x_min) / m_resolution));
@@ -205,8 +240,14 @@ class CDynamicGrid
   {
     const int cx = x2idx(x);
     const int cy = y2idx(y);
-    if (cx < 0 || cx >= static_cast<int>(m_size_x)) return nullptr;
-    if (cy < 0 || cy >= static_cast<int>(m_size_y)) return nullptr;
+    if (cx < 0 || cx >= static_cast<int>(m_size_x))
+    {
+      return nullptr;
+    }
+    if (cy < 0 || cy >= static_cast<int>(m_size_y))
+    {
+      return nullptr;
+    }
     return &m_map[static_cast<size_t>(cx) + static_cast<size_t>(cy) * m_size_x];
   }
   /** \overload */
@@ -214,8 +255,14 @@ class CDynamicGrid
   {
     const int cx = x2idx(x);
     const int cy = y2idx(y);
-    if (cx < 0 || cx >= static_cast<int>(m_size_x)) return nullptr;
-    if (cy < 0 || cy >= static_cast<int>(m_size_y)) return nullptr;
+    if (cx < 0 || cx >= static_cast<int>(m_size_x))
+    {
+      return nullptr;
+    }
+    if (cy < 0 || cy >= static_cast<int>(m_size_y))
+    {
+      return nullptr;
+    }
     return &m_map[static_cast<size_t>(cx) + static_cast<size_t>(cy) * m_size_x];
   }
 
@@ -225,9 +272,10 @@ class CDynamicGrid
   inline T* cellByIndex(unsigned int cx, unsigned int cy)
   {
     if (cx >= m_size_x || cy >= m_size_y)
+    {
       return nullptr;
-    else
-      return &m_map[cx + cy * m_size_x];
+    }
+    return &m_map[cx + cy * m_size_x];
   }
 
   /** Returns a pointer to the contents of a cell given by its cell indexes,
@@ -236,9 +284,10 @@ class CDynamicGrid
   inline const T* cellByIndex(unsigned int cx, unsigned int cy) const
   {
     if (cx >= m_size_x || cy >= m_size_y)
+    {
       return nullptr;
-    else
-      return &m_map[cx + cy * m_size_x];
+    }
+    return &m_map[cx + cy * m_size_x];
   }
 
   /** Returns the horizontal size of grid map in cells count */
@@ -287,10 +336,18 @@ class CDynamicGrid
   void getAsMatrix(MAT& m) const
   {
     m.setSize(m_size_y, m_size_x);
-    if (m_map.empty()) return;
+    if (m_map.empty())
+    {
+      return;
+    }
     const T* c = &m_map[0];
     for (size_t cy = 0; cy < m_size_y; cy++)
-      for (size_t cx = 0; cx < m_size_x; cx++) m(cy, cx) = *c++;
+    {
+      for (size_t cx = 0; cx < m_size_x; cx++)
+      {
+        m(cy, cx) = *c++;
+      }
+    }
   }
 
   /** The user must implement this in order to provide "saveToTextFile" a way

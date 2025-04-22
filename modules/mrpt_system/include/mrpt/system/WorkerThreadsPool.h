@@ -79,7 +79,10 @@ auto WorkerThreadsPool::enqueue(F&& f, Args&&... args)
     std::unique_lock<std::mutex> lock(queue_mutex_);
 
     // don't allow enqueueing after stopping the pool
-    if (do_stop_) throw std::runtime_error("enqueue on stopped ThreadPool");
+    if (do_stop_)
+    {
+      throw std::runtime_error("enqueue on stopped ThreadPool");
+    }
 
     // policy check: drop pending tasks if we have more tasks than threads
     if (policy_ == POLICY_DROP_OLD)

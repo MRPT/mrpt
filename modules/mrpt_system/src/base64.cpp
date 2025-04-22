@@ -76,7 +76,10 @@ void mrpt::system::encodeBase64(const std::vector<uint8_t>& inputData, std::stri
       outString.push_back(alphabet[(bits >> 6) & 0x3f]);
       outString.push_back('=');
     }
-    if (cols > 0) outString.push_back('\n');
+    if (cols > 0)
+    {
+      outString.push_back('\n');
+    }
   }
 }
 
@@ -116,7 +119,10 @@ bool mrpt::system::decodeBase64(const std::string& inString, std::vector<uint8_t
       finish_flag_found = true;
       break;
     }
-    if (!inalphabet[c]) continue;
+    if (!inalphabet[c])
+    {
+      continue;
+    }
 
     bits += decoder[c];
     char_count++;
@@ -129,7 +135,9 @@ bool mrpt::system::decodeBase64(const std::string& inString, std::vector<uint8_t
       char_count = 0;
     }
     else
+    {
       bits <<= 6;
+    }
   }
 
   if (!finish_flag_found)

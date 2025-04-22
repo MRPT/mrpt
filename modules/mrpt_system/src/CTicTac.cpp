@@ -90,7 +90,9 @@ double CTicTac::Tac() const noexcept
   QueryPerformanceCounter(&l1);
   return (l1.QuadPart - l[0].QuadPart) * AuxWindowsTicTac::GetInstance().dbl_period;
 #else
-  struct timespec ts1;
+  struct timespec ts1
+  {
+  };
   const auto* ts = TIMEVAL_NUMS_CONST;
   clock_gettime(CLOCK_MONOTONIC, &ts1);
   return static_cast<double>(ts1.tv_sec - ts[0].tv_sec) +

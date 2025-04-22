@@ -15,13 +15,19 @@
 void* mrpt::aligned_calloc(size_t bytes, size_t alignment)
 {
   void* ptr = mrpt::aligned_malloc(bytes, alignment);
-  if (ptr) ::memset(ptr, 0, bytes);
+  if (ptr)
+  {
+    ::memset(ptr, 0, bytes);
+  }
   return ptr;
 }
 void* mrpt::aligned_malloc(size_t size, size_t alignment)
 {
   // size must be an integral multiple of alignment:
-  if (alignment != 0 && (size % alignment) != 0) size = ((size / alignment) + 1) * alignment;
+  if (alignment != 0 && (size % alignment) != 0)
+  {
+    size = ((size / alignment) + 1) * alignment;
+  }
 #if defined(_MSC_VER) || defined(__MINGW32_MAJOR_VERSION)
   return _aligned_malloc(size, alignment);
 #elif __APPLE__

@@ -52,7 +52,10 @@ bool CRateTimer::sleep()
     ASSERT_LE_(ts.tv_nsec, 999999999);
 
     int err = clock_nanosleep(CLOCK_MONOTONIC, 0, &ts, &ts_remainer);
-    if (err == 0) break;  // all good
+    if (err == 0)
+    {
+      break;  // all good
+    }
     if (err == EINTR)
     {
       ts = ts_remainer;

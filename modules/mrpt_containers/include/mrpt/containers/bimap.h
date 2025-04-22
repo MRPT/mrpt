@@ -94,7 +94,10 @@ class bimap
 
     if (!keyExists && valueExists) THROW_EXCEPTION("Duplicated `value` with different `key`");
 
-    if (keyExists && valueExists && itKey->second == v) return;  // Ok
+    if (keyExists && valueExists && itKey->second == v)
+    {
+      return;  // Ok
+    }
 
     // New:
     m_k2v[k] = v;
@@ -109,7 +112,10 @@ class bimap
   bool direct(const KEY& k, VALUE& out_v) const
   {
     const_iterator i = m_k2v.find(k);
-    if (i == m_k2v.end()) return false;
+    if (i == m_k2v.end())
+    {
+      return false;
+    }
     out_v = i->second;
     return true;
   }
@@ -142,7 +148,10 @@ class bimap
   bool inverse(const VALUE& v, KEY& out_k) const
   {
     const_iterator_inverse i = m_v2k.find(v);
-    if (i == m_v2k.end()) return false;
+    if (i == m_v2k.end())
+    {
+      return false;
+    }
     out_k = i->second;
     return true;
   }

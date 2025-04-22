@@ -16,7 +16,10 @@ using namespace std;
 CObserver::CObserver() = default;
 CObserver::~CObserver()
 {
-  while (!m_subscribed.empty()) this->observeEnd(**m_subscribed.begin());
+  while (!m_subscribed.empty())
+  {
+    this->observeEnd(**m_subscribed.begin());
+  }
 }
 
 /** Starts the subscription of this observer to the given object.  \sa

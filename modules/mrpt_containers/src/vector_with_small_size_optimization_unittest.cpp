@@ -57,7 +57,10 @@ TEST(vector_with_small_size_optimization, ResizeWriteRead)
     v.resize(n);
 
     for (size_t i = 0; i < n; i++) v[i] = i;
-    for (size_t i = 0; i < n; i++) EXPECT_EQ(v[i], i);
+    for (size_t i = 0; i < n; i++)
+    {
+      EXPECT_EQ(v[i], i);
+    }
   }
 
   // Reusing object:
@@ -66,7 +69,10 @@ TEST(vector_with_small_size_optimization, ResizeWriteRead)
   {
     v.resize(n);
     for (size_t i = 0; i < n; i++) v[i] = i;
-    for (size_t i = 0; i < n; i++) EXPECT_EQ(v[i], i);
+    for (size_t i = 0; i < n; i++)
+    {
+      EXPECT_EQ(v[i], i);
+    }
   }
 }
 
@@ -111,7 +117,10 @@ TEST(vector_with_small_size_optimization, GrowCheckContents)
     v.resize(n);
     v[n - 1] = n - 1;
 
-    for (size_t i = 0; i < n; i++) EXPECT_EQ(v[i], i) << "n=" << n;
+    for (size_t i = 0; i < n; i++)
+    {
+      EXPECT_EQ(v[i], i) << "n=" << n;
+    }
   }
 }
 

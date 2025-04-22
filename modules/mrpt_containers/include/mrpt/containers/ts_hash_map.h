@@ -24,7 +24,7 @@ struct ts_map_entry
 {
   bool used{false};
   KEY first;
-  VALUE second;
+  VALUE second{};
 
   ts_map_entry() = default;
   ts_map_entry(const ts_map_entry& e) { *this = e; }
@@ -228,7 +228,12 @@ class ts_hash_map
     auto lck = mrpt::lockHelper(m_mtx);
     m_size = 0;
     for (size_t oi = 0; oi < m_vec.size(); oi++)
-      for (size_t ii = 0; ii < NUM_HAS_TABLE_COLLISIONS_ALLOWED; ii++) m_vec[oi][ii] = value_type();
+    {
+      for (size_t ii = 0; ii < NUM_HAS_TABLE_COLLISIONS_ALLOWED; ii++)
+      {
+        m_vec[oi][ii] = value_type();
+      }
+    }
   }
 
   bool empty() const
@@ -254,7 +259,10 @@ class ts_hash_map
         match_arr[i].first = key;
         return &match_arr[i].second;
       }
-      if (match_arr[i].first == key) return &match_arr[i].second;
+      if (match_arr[i].first == key)
+      {
+        return &match_arr[i].second;
+      }
     }
     return nullptr;
   }
@@ -266,7 +274,10 @@ class ts_hash_map
     auto lck = mrpt::lockHelper(m_mtx);
 
     VALUE* v = find_or_alloc(key);
-    if (!v) throw std::runtime_error("ts_hash_map: too many hash collisions!");
+    if (!v)
+    {
+      throw std::runtime_error("ts_hash_map: too many hash collisions!");
+    }
     return *v;
   }
 

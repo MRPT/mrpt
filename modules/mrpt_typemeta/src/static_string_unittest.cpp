@@ -11,6 +11,8 @@
 #include <mrpt/typemeta/num_to_string.h>
 #include <mrpt/typemeta/static_string.h>
 
+#include <cstddef>
+
 using namespace mrpt::typemeta;
 
 TEST(StaticString, ctor)
@@ -47,7 +49,7 @@ TEST(StaticString, concat_multi)
 
   // test sstring + sstring:
   auto abba = ab + ba;
-  static_assert(abba.size() == 2 * 6, "***");
+  static_assert(abba.size() == static_cast<unsigned long>(2 * 6), "***");
 
   // Test c_str():
   const char* s = abba.c_str();

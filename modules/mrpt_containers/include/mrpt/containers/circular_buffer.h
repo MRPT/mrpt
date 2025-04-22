@@ -30,7 +30,10 @@ class circular_buffer
  public:
   circular_buffer(size_t size) : m_data(size), m_size(size), m_next_read(0), m_next_write(0)
   {
-    if (m_size <= 2) throw std::invalid_argument("size must be >2");
+    if (m_size <= 2)
+    {
+      throw std::invalid_argument("size must be >2");
+    }
   }
 
   /** Insert a copy of the given element in the buffer.
@@ -39,8 +42,14 @@ class circular_buffer
   void push(T d)
   {
     auto new_idx = m_next_write + 1;
-    if (new_idx == m_size) new_idx = 0;
-    if (new_idx == m_next_read) throw std::out_of_range("push: circular_buffer is full");
+    if (new_idx == m_size)
+    {
+      new_idx = 0;
+    }
+    if (new_idx == m_next_read)
+    {
+      throw std::out_of_range("push: circular_buffer is full");
+    }
     m_data[m_next_write] = d;
     m_next_write = new_idx;
   }
@@ -51,9 +60,15 @@ class circular_buffer
   void push_ref(const T& d)
   {
     m_data[m_next_write++] = d;
-    if (m_next_write == m_size) m_next_write = 0;
+    if (m_next_write == m_size)
+    {
+      m_next_write = 0;
+    }
 
-    if (m_next_write == m_next_read) throw std::out_of_range("push: circular_buffer is full");
+    if (m_next_write == m_next_read)
+    {
+      throw std::out_of_range("push: circular_buffer is full");
+    }
   }
 
   /** Insert an array of elements in the buffer.
@@ -61,7 +76,10 @@ class circular_buffer
    */
   void push_many(T* array_elements, size_t count)
   {
-    while (count--) push(*array_elements++);
+    while (count--)
+    {
+      push(*array_elements++);
+    }
   }
 
   /** Retrieve an element from the buffer.
@@ -69,10 +87,16 @@ class circular_buffer
    */
   T pop()
   {
-    if (m_next_read == m_next_write) throw std::out_of_range("pop: circular_buffer is empty");
+    if (m_next_read == m_next_write)
+    {
+      throw std::out_of_range("pop: circular_buffer is empty");
+    }
 
     const size_t i = m_next_read++;
-    if (m_next_read == m_size) m_next_read = 0;
+    if (m_next_read == m_size)
+    {
+      m_next_read = 0;
+    }
     return m_data[i];
   }
 
@@ -81,10 +105,16 @@ class circular_buffer
    */
   void pop(T& out_val)
   {
-    if (m_next_read == m_next_write) throw std::out_of_range("pop: circular_buffer is empty");
+    if (m_next_read == m_next_write)
+    {
+      throw std::out_of_range("pop: circular_buffer is empty");
+    }
 
     out_val = m_data[m_next_read++];
-    if (m_next_read == m_size) m_next_read = 0;
+    if (m_next_read == m_size)
+    {
+      m_next_read = 0;
+    }
   }
 
   /** Pop a number of elements into a user-provided array.
@@ -92,7 +122,10 @@ class circular_buffer
    * requested. */
   void pop_many(T* out_array, size_t count)
   {
-    while (count--) pop(*out_array++);
+    while (count--)
+    {
+      pop(*out_array++);
+    }
   }
 
   /** Peek (see without modifying) what is to be read from the buffer if pop()
@@ -100,7 +133,10 @@ class circular_buffer
    * \exception std::out_of_range If the buffer is empty. */
   T peek() const
   {
-    if (m_next_read == m_next_write) throw std::out_of_range("peek: circular_buffer is empty");
+    if (m_next_read == m_next_write)
+    {
+      throw std::out_of_range("peek: circular_buffer is empty");
+    }
     return m_data[m_next_read];
   }
   /** Like peek(), but seeking ahead in the buffer (index=0 means the
@@ -109,7 +145,10 @@ class circular_buffer
    * available elements. */
   T peek(size_t index) const
   {
-    if (index >= this->size()) throw std::out_of_range("peek: seek out of range");
+    if (index >= this->size())
+    {
+      throw std::out_of_range("peek: seek out of range");
+    }
     return m_data[(m_next_read + index) % m_size];
   }
 
@@ -122,9 +161,15 @@ class circular_buffer
     size_t peek_read = m_next_read;
     while (count--)
     {
-      if (peek_read == m_next_write) throw std::out_of_range("peek: circular_buffer is empty");
+      if (peek_read == m_next_write)
+      {
+        throw std::out_of_range("peek: circular_buffer is empty");
+      }
       T val = m_data[peek_read++];
-      if (peek_read == m_size) peek_read = 0;
+      if (peek_read == m_size)
+      {
+        peek_read = 0;
+      }
       *out_array++ = val;
     }
   }
@@ -135,9 +180,10 @@ class circular_buffer
   size_t size() const
   {
     if (m_next_write >= m_next_read)
+    {
       return m_next_write - m_next_read;
-    else
-      return m_next_write + (m_size - m_next_read);
+    }
+    return m_next_write + (m_size - m_next_read);
   }
 
   /** Return the maximum capacity of the buffer.

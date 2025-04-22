@@ -53,10 +53,10 @@ namespace fs = std::filesystem;
 #include <sys/types.h>
 
 #if !defined(_MSC_VER)
-#define _access access
-#define _rmdir  rmdir
+#define access access
+#define rmdir  rmdir
 #ifndef _stat  // It seems MinGW already defines this.
-#define _stat stat
+#define stat stat
 #endif
 #endif
 
@@ -102,7 +102,10 @@ string mrpt::system::extractFileDirectory(const string& filePath)
 
 string mrpt::system::extractFileExtension(const string& filePath, bool ignore_gz)
 {
-  if (filePath.size() < 2) return string("");
+  if (filePath.size() < 2)
+  {
+    return string("");
+  }
 
   size_t i_end = filePath.size() - 1;
 
@@ -113,14 +116,15 @@ string mrpt::system::extractFileExtension(const string& filePath, bool ignore_gz
     {
       string the_ext = filePath.substr(i + 1, i_end - i);
       if (!ignore_gz || the_ext != "gz")
-        return the_ext;
-      else
       {
-        i_end = --i;
+        return the_ext;
       }
+      i_end = --i;
     }
     else
+    {
       i--;
+    }
   }
   // No extension:
   return string("");
@@ -128,7 +132,7 @@ string mrpt::system::extractFileExtension(const string& filePath, bool ignore_gz
 
 bool mrpt::system::fileExists(const string& path)
 {
-  return 0 == _access(path.c_str(), 0x00);  // 0x00 = Check for existence only!
+  return 0 == access(path.c_str(), 0x00);  // 0x00 = Check for existence only!
 }
 
 bool mrpt::system::directoryExists(const std::string& _path)
@@ -137,11 +141,18 @@ bool mrpt::system::directoryExists(const std::string& _path)
 
   // Remove the trailing "/" or "\\":
   if (!path.empty() && (*path.rbegin() == '/' || *path.rbegin() == '\\'))
+  {
     path = path.substr(0, path.size() - 1);
+  }
 
   // Verify it's a directory:
-  struct _stat buf{};
-  if (0 != _stat(path.c_str(), &buf)) return false;
+  struct stat buf
+  {
+  };
+  if (0 != stat(path.c_str(), &buf))
+  {
+    return false;
+  }
 
 #ifdef _WIN32
   return 0 != (buf.st_mode & _S_IFDIR);
@@ -181,7 +192,10 @@ void mrpt::system::deleteFiles(const string& s)
 ---------------------------------------------------------------*/
 bool mrpt::system::deleteFilesInDirectory(const string& path, bool deleteDirectoryAsWell)
 {
-  if (!directoryExists(path)) return false;
+  if (!directoryExists(path))
+  {
+    return false;
+  }
 
   CDirectoryExplorer::TFileInfoList lstFiles;
   CDirectoryExplorer::explore(path, FILE_ATTRIB_ARCHIVE | FILE_ATTRIB_DIRECTORY, lstFiles);
@@ -192,20 +206,27 @@ bool mrpt::system::deleteFilesInDirectory(const string& path, bool deleteDirecto
     {
       if (lstFile.name != "." && lstFile.name != "..")
       {
-        if (!mrpt::system::deleteFilesInDirectory(lstFile.wholePath, true)) return false;
+        if (!mrpt::system::deleteFilesInDirectory(lstFile.wholePath, true))
+        {
+          return false;
+        }
       }
     }
     else
     {
-      if (!mrpt::system::deleteFile(lstFile.wholePath)) return false;
+      if (!mrpt::system::deleteFile(lstFile.wholePath))
+      {
+        return false;
+      }
     }
   }
 
   // Finally, delete the directory itselt.
   if (deleteDirectoryAsWell)
-    return 0 == _rmdir(path.c_str());
-  else
-    return true;
+  {
+    return 0 == rmdir(path.c_str());
+  }
+  return true;
 }
 
 std::string mrpt::system::getcwd() { return p2s(fs::current_path()); }
@@ -247,9 +268,13 @@ bool mrpt::system::renameFile(
   if (error_msg)
   {
     if (ret_err)
+    {
       *error_msg = strerror(errno);
+    }
     else
+    {
       *error_msg = "";
+    }
   }
 
   return ret_err;
@@ -270,9 +295,17 @@ std::string mrpt::system::fileNameStripInvalidChars(
     bool invalid = (c < 32);
 
     for (unsigned int i = 0; !invalid && i < nForbid; i++)
-      if (c == forbid[i]) invalid = true;
+    {
+      if (c == forbid[i])
+      {
+        invalid = true;
+      }
+    }
 
-    if (invalid) c = replacement_to_invalid_chars;
+    if (invalid)
+    {
+      c = replacement_to_invalid_chars;
+    }
   }
   return ret;
 }
@@ -299,9 +332,15 @@ bool mrpt::system::copyFile(
   bool ok = fs::copy_file(
       fs::path(sourceFile), fs::path(targetFile), fs::copy_options::overwrite_existing, ec);
 
-  if (ok) return true;
+  if (ok)
+  {
+    return true;
+  }
 
-  if (outErrStr) *outErrStr = ec.message();
+  if (outErrStr)
+  {
+    *outErrStr = ec.message();
+  }
 
   return false;
 }
@@ -315,7 +354,10 @@ std::string mrpt::system::filePathSeparatorsToNative(const std::string& filePath
 #ifdef _WIN32
     if (ret[i] == '/') ret[i] = '\\';
 #else
-    if (ret[i] == '\\') ret[i] = '/';
+    if (ret[i] == '\\')
+    {
+      ret[i] = '/';
+    }
 #endif
   }
   return p2s(fs::path(ret).native());
@@ -325,9 +367,10 @@ mrpt::Clock::time_point mrpt::system::getFileModificationTime(const std::string&
 {
   struct stat fS{};
   if (0 != stat(filename.c_str(), &fS))
+  {
     THROW_EXCEPTION_FMT("Could not access modification time of file '%s'", filename.c_str());
-  else
-    return mrpt::Clock::fromDouble(static_cast<double>(fS.st_mtime));
+  }
+  return mrpt::Clock::fromDouble(static_cast<double>(fS.st_mtime));
 }
 
 // Read docs in .h
@@ -356,7 +399,10 @@ std::string mrpt::system::getShareMRPTDir()
 #endif
 #ifdef MRPT_OS_LINUX
     ssize_t nRead = readlink("/proc/self/exe", buf, sizeof(buf));
-    if (nRead >= 0) buf[nRead] = '\0';
+    if (nRead >= 0)
+    {
+      buf[nRead] = '\0';
+    }
     sBufOk = (-1 != nRead);
 #endif
 
@@ -371,25 +417,33 @@ std::string mrpt::system::getShareMRPTDir()
     }
 
     for (const auto& e : sPaths)
+    {
       if (directoryExists(e))
       {
         sDetectedPath = e;
         break;
       }
+    }
   }
   return sDetectedPath;
 }
 
 std::string mrpt::system::toAbsolutePath(const std::string& path, bool resolveToCanonical)
 {
-  if (resolveToCanonical) return p2s(fs::canonical(fs::path(path)));
+  if (resolveToCanonical)
+  {
+    return p2s(fs::canonical(fs::path(path)));
+  }
   return p2s(fs::absolute(fs::path(path)));
 }
 
 std::string mrpt::system::pathJoin(const std::vector<std::string>& paths)
 {
   fs::path p;
-  for (const auto& d : paths) p.append(d);
+  for (const auto& d : paths)
+  {
+    p.append(d);
+  }
 
   return p2s(p);
 }

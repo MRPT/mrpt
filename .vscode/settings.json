@@ -26,6 +26,7 @@
         "**/build/",
         "**/install/",
         "**/log/",
+        ".clang-tidy"
     ],
     "search.exclude": {
         "**/build": true,

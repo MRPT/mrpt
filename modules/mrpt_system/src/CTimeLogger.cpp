@@ -71,14 +71,18 @@ void CTimeLogger::setName(const std::string& name) noexcept
 CTimeLogger::~CTimeLogger()
 {
   // Dump all stats:
-  if (!m_data.empty())  // If logging is disabled, do nothing...
+  if (!m_data.empty())
+  {  // If logging is disabled, do nothing...
     dumpAllStats();
+  }
 }
 
 void CTimeLogger::clear(bool deep_clear)
 {
   if (deep_clear)
+  {
     m_data.clear();
+  }
   else
   {
     for (auto& e : m_data)
@@ -97,7 +101,10 @@ std::string aux_format_string_multilines(const std::string& s, size_t len)
   for (size_t p = 0; p < s.size(); p += len)
   {
     ret += rightPad(s.substr(p), len, true);
-    if (p + len < s.size()) ret += "\n";
+    if (p + len < s.size())
+    {
+      ret += "\n";
+    }
   }
   return ret;
 }
@@ -113,7 +120,7 @@ void CTimeLogger::getStats(std::map<std::string, TCallStats>& out_stats) const
     cs.min_t = e.second.min_t;
     cs.max_t = e.second.max_t;
     cs.total_t = e.second.mean_t;
-    cs.mean_t = e.second.n_calls ? e.second.mean_t / e.second.n_calls : 0;
+    cs.mean_t = e.second.n_calls ? e.second.mean_t / static_cast<double>(e.second.n_calls) : 0;
     cs.n_calls = e.second.n_calls;
     cs.last_t = e.second.last_t;
   }
@@ -153,7 +160,10 @@ std::string CTimeLogger::getStatsAsText(size_t column_width) const
   // for all the timed sections: sort by inserting into a std::map
   using NameAndCallData = std::map<std::string_view, TCallData>;
   NameAndCallData stat_strs;
-  for (const auto& i : m_data) stat_strs[i.first] = i.second;
+  for (const auto& i : m_data)
+  {
+    stat_strs[i.first] = i.second;
+  }
 
   // format tree-like patterns like:
   //  ----------
@@ -191,8 +201,8 @@ std::string CTimeLogger::getStatsAsText(size_t column_width) const
     const string sMinT = unitsFormat(i.second.min_t, 1, false);
     const string sMaxT = unitsFormat(i.second.max_t, 1, false);
     const string sTotalT = unitsFormat(i.second.mean_t, 1, false);
-    const string sMeanT =
-        unitsFormat(i.second.n_calls ? i.second.mean_t / i.second.n_calls : 0, 1, false);
+    const string sMeanT = unitsFormat(
+        i.second.n_calls ? i.second.mean_t / static_cast<double>(i.second.n_calls) : 0, 1, false);
 
     stats_text += mrpt::format(
         "%s %7u %6s%c %6s%c %6s%c %6s%c\n", aux_format_string_multilines(line, 39).c_str(),
@@ -220,7 +230,8 @@ void CTimeLogger::saveToCSVFile(const std::string& csv_file) const
     s += format(
         "\"%.*s\",%7u,%e,%e,%e,%e,%e", static_cast<int>(i.first.size()), i.first.data(),
         static_cast<unsigned int>(i.second.n_calls), i.second.last_t, i.second.min_t,
-        i.second.n_calls ? i.second.mean_t / i.second.n_calls : 0, i.second.max_t, i.second.mean_t);
+        i.second.n_calls ? i.second.mean_t / static_cast<double>(i.second.n_calls) : 0,
+        i.second.max_t, i.second.mean_t);
 
     if (i.second.whole_history)
     {
@@ -273,7 +284,10 @@ void CTimeLogger::saveToMFile(const std::string& file) const
 
       s += "s.whole."s + clean_name + "=[";
       const auto& wh = i.second.whole_history.value();
-      for (const double v : wh) s += mrpt::format("%e,", v);
+      for (const double v : wh)
+      {
+        s += mrpt::format("%e,", v);
+      }
       s += "];\n";
     }
   }
@@ -348,20 +362,25 @@ double CTimeLogger::do_leave(const std::string_view& func_name) noexcept
     if (m_keep_whole_history)
     {
       // Init the first time:
-      if (!d.whole_history) d.whole_history = decltype(d.whole_history)::value_type();
+      if (!d.whole_history)
+      {
+        d.whole_history = decltype(d.whole_history)::value_type();
+      }
       // Append to history:
       d.whole_history.value().push_back(At);
     }
     return At;
   }
-  else
-    return 0;  // This shouldn't happen!
+  return 0;  // This shouldn't happen!
 }
 
 void CTimeLogger::registerUserMeasure(
     const std::string_view& event_name, const double value, const bool is_time) noexcept
 {
-  if (!m_enabled) return;
+  if (!m_enabled)
+  {
+    return;
+  }
   TCallData* d_ptr = m_data.find_or_alloc(std::string(event_name));
   if (!d_ptr)
   {
@@ -388,7 +407,10 @@ void CTimeLogger::registerUserMeasure(
   if (m_keep_whole_history)
   {
     // Init the first time:
-    if (!d.whole_history) d.whole_history = decltype(d.whole_history)::value_type();
+    if (!d.whole_history)
+    {
+      d.whole_history = decltype(d.whole_history)::value_type();
+    }
     // Append to history:
     d.whole_history.value().push_back(value);
   }
@@ -398,24 +420,22 @@ double CTimeLogger::getMeanTime(const std::string& name) const
 {
   TDataMap::const_iterator it = m_data.find(name);
   if (it == m_data.end())
-    return 0;
-  else
   {
-    auto lck = mrpt::lockHelper(it->second.mtx);
-
-    return it->second.n_calls ? it->second.mean_t / it->second.n_calls : 0;
+    return 0;
   }
+  auto lck = mrpt::lockHelper(it->second.mtx);
+
+  return it->second.n_calls ? it->second.mean_t / static_cast<double>(it->second.n_calls) : 0;
 }
 double CTimeLogger::getLastTime(const std::string& name) const
 {
   TDataMap::const_iterator it = m_data.find(name);
   if (it == m_data.end())
-    return 0;
-  else
   {
-    auto lck = mrpt::lockHelper(it->second.mtx);
-    return it->second.last_t;
+    return 0;
   }
+  auto lck = mrpt::lockHelper(it->second.mtx);
+  return it->second.last_t;
 }
 
 CTimeLoggerEntry::CTimeLoggerEntry(
@@ -426,7 +446,10 @@ CTimeLoggerEntry::CTimeLoggerEntry(
 }
 void CTimeLoggerEntry::stop()
 {
-  if (stopped_) return;
+  if (stopped_)
+  {
+    return;
+  }
   const double leave = m_logger.m_tictac.Tac();
   const double dt = leave - m_entry;
 

@@ -45,7 +45,7 @@ class CPU_analyzer
  public:
   static CPU_analyzer& Instance() noexcept;
 
-  std::array<bool, static_cast<std::size_t>(mrpt::cpu::feature::FEATURE_COUNT)> feat_detected;
+  std::array<bool, static_cast<std::size_t>(mrpt::cpu::feature::FEATURE_COUNT)> feat_detected{};
 
   inline bool& feat(mrpt::cpu::feature f) noexcept
   {

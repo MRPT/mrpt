@@ -1,12 +1,14 @@
-Checks:>-*,
-bugprone-*,
--bugprone-narrowing-conversions,
--cppcoreguidelines-c-copy-assignment-signature,
-cppcoreguidelines-interfaces-global-init,
-cppcoreguidelines-pro-type-member-init,
-cppcoreguidelines-pro-type-static-cast-downcast,
-cppcoreguidelines-pro-type-union-access,
-cppcoreguidelines-slicing,
-cppcoreguidelines-special-member-functions WarningsAsErrors: ''
+Checks: >
+  -*,
+  bugprone-*,
+  readability-braces-around-statements,
+  readability-else-after-return,
+  cppcoreguidelines-interfaces-global-init,
+  cppcoreguidelines-pro-type-member-init,
+  cppcoreguidelines-pro-type-static-cast-downcast,
+  cppcoreguidelines-pro-type-union-access,
+  cppcoreguidelines-slicing,
+  cppcoreguidelines-special-member-functions
+WarningsAsErrors: ''
 HeaderFilterRegex: '.*'
 FormatStyle: file
