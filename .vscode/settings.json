@@ -1,0 +1,36 @@
+{
+    "C_Cpp.autoAddFileAssociations": false,
+    "C_Cpp.doxygen.generateOnType": false,
+    "C_Cpp.files.exclude": {
+        "**/.git": true,
+        "**/.vscode": true,
+        "**/docs": true,
+        "**/install": true,
+        "**/log": true
+    },
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "clangd.arguments": [
+        "--background-index",
+        "--compile-commands-dir=${workspaceFolder}/build",
+        "--completion-style=detailed",
+        "--header-insertion=never",
+        "--pretty"
+    ],
+    "[cpp]": {
+        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
+    },
+    "cSpell.allowCompoundWords": true,
+    "cSpell.ignorePaths": [
+        "**/.git/objects/**",
+        "**/.vscode",
+        "**/build/",
+        "**/install/",
+        "**/log/",
+    ],
+    "search.exclude": {
+        "**/build": true,
+        "**/install": true,
+        "**/log": true
+    },
+    "ros.distro": "humble"
+}
