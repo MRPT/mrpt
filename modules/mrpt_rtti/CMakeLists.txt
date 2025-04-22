@@ -5,11 +5,10 @@
 # All rights reserved.
 # Released under BSD-3 license. See LICENSE file
 # ------------------------------------------------------------------------------
-
 cmake_minimum_required(VERSION 3.16)
 
 # Tell CMake we'll use C++ for use in its tests/flags
-project(mrpt_rtti LANGUAGES C CXX)
+project(mrpt_system LANGUAGES C CXX)
 
 # MRPT CMake scripts: "mrpt_xxx()"
 find_package(mrpt_common REQUIRED)
@@ -19,10 +18,9 @@ find_package(mrpt_typemeta REQUIRED)
 # define lib:
 set(LIB_SRCS
   src/CListOfClasses.cpp
-  src/rtti_unittest.cpp
   src/CObject.cpp
-  src/rtti-precomp.cpp
   src/internal_class_registry.cpp
+  src/rtti_unittest.cpp
 )
 
 set(LIB_PUBLIC_HDRS
@@ -42,4 +40,3 @@ mrpt_add_library(
     mrpt_core
     mrpt_typemeta
 )
-
