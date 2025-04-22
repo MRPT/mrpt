@@ -23,7 +23,10 @@ CControlledRateTimer::CControlledRateTimer(const double rate_hz) :
 }
 void CControlledRateTimer::setRate(const double rate_hz)
 {
-  if (rate_hz == m_rate_hz) return;
+  if (rate_hz == m_rate_hz)
+  {
+    return;
+  }
 
   ASSERT_GT_(rate_hz, 0.0);
   m_rate_hz = rate_hz;

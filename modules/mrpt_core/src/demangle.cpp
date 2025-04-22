@@ -26,7 +26,10 @@
 
 std::string mrpt::demangle(const std::string& symbolName)
 {
-  if (symbolName.empty()) return {};
+  if (symbolName.empty())
+  {
+    return {};
+  }
 
 #ifdef __EMSCRIPTEN__
   return symbolName;

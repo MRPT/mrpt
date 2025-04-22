@@ -48,7 +48,10 @@ find_closest_with_tolerance(
 
   for (auto it = it_lo; it != it_hi; ++it)
   {
-    if (it == data.end()) continue;
+    if (it == data.end())
+    {
+      continue;
+    }
     const auto dist = std::abs(it->first - x);
     if (dist < min_distance)
     {
@@ -88,7 +91,10 @@ find_closest(const Container& data, const typename Container::key_type x)
 
   for (const auto& it : its)
   {
-    if (it == data.end()) continue;
+    if (it == data.end())
+    {
+      continue;
+    }
     const auto dist = std::abs(it->first - x);
     if (dist < min_distance)
     {

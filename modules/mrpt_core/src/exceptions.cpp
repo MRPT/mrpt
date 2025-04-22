@@ -36,11 +36,16 @@ size_t findClosingBracket(const char chClosing, const char chOpening, const std:
   {
     if (str[p] == chClosing)
     {
-      if (nestedLevel == 1) return p;
+      if (nestedLevel == 1)
+      {
+        return p;
+      }
       nestedLevel--;
     }
     else if (str[p] == chOpening)
+    {
       nestedLevel++;
+    }
   }
   return std::string::npos;
 }
@@ -61,7 +66,10 @@ void impl_excep_to_str(
     if (const auto* ecb = dynamic_cast<const ExceptionWithCallBackBase*>(&e); ecb != nullptr)
     {
       std::string err = ecb->originalWhat;
-      if (!err.empty() && *err.rbegin() != '\n') err += "\n"s;
+      if (!err.empty() && *err.rbegin() != '\n')
+      {
+        err += "\n"s;
+      }
 
       if (const auto idx = findClosingBracket(']', '[', err); idx != std::string::npos)
       {
@@ -84,7 +92,9 @@ void impl_excep_to_str(
   {
     // It's nested: recursive call
     if (lvl < MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH)
+    {
       impl_excep_to_str(er, ret, lvl + 1);
+    }
     else
     {
       ret += " (... max depth reached ...)\n";

@@ -87,7 +87,7 @@ struct make_sequence_ : append<make_sequence<I - 1>>
 template <std::size_t N>
 class array_string
 {
-  char _array[N + 1];
+  char _array[N + 1]{};
 
   template <typename S1, typename S2, std::size_t... PACK1, std::size_t... PACK2>
   constexpr array_string(

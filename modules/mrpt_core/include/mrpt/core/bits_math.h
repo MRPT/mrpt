@@ -99,8 +99,10 @@ template <typename T>
 [[nodiscard]] T lowestPositive(const T a, const T b)
 {
   if (a > 0 && a <= b)
+  {
     return a;  // a positive and smaller than b
-  else if (b > 0)
+  }
+  if (b > 0)
     return b;  // b is positive and either smaller than a or a is negative
   else
     return a;  // at least b is negative, we might not have an answer
@@ -130,22 +132,34 @@ template <typename T>
 template <typename T, typename K>
 inline void keep_min(T& var, const K test_val)
 {
-  if (test_val < var) var = static_cast<T>(test_val);
+  if (test_val < var)
+  {
+    var = static_cast<T>(test_val);
+  }
 }
 /** If the second argument is above the first one, set the first argument to
  * this higher value. */
 template <typename T, typename K>
 inline void keep_max(T& var, const K test_val)
 {
-  if (test_val > var) var = static_cast<T>(test_val);
+  if (test_val > var)
+  {
+    var = static_cast<T>(test_val);
+  }
 }
 /** Saturate the value of var (the variable gets modified) so it does not get
  * out of [min,max]. */
 template <typename T>
 inline void saturate(T& var, const T sat_min, const T sat_max)
 {
-  if (var > sat_max) var = sat_max;
-  if (var < sat_min) var = sat_min;
+  if (var > sat_max)
+  {
+    var = sat_max;
+  }
+  if (var < sat_min)
+  {
+    var = sat_min;
+  }
 }
 /** Like saturate() but it returns the value instead of modifying the variable
  */
@@ -153,8 +167,14 @@ template <typename T>
 [[nodiscard]] inline T saturate_val(const T& value, const T sat_min, const T sat_max)
 {
   T var = value;
-  if (var > sat_max) var = sat_max;
-  if (var < sat_min) var = sat_min;
+  if (var > sat_max)
+  {
+    var = sat_max;
+  }
+  if (var < sat_min)
+  {
+    var = sat_min;
+  }
   return var;
 }
 
@@ -166,7 +186,10 @@ template <class T>
   while (n < val)
   {
     n <<= 1;
-    if (n <= 1) throw std::invalid_argument("round2up: Overflow!");
+    if (n <= 1)
+    {
+      throw std::invalid_argument("round2up: Overflow!");
+    }
   }
   return n;
 }

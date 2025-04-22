@@ -174,7 +174,10 @@ class CTimeLogger : public mrpt::system::COutputLogger
   /** Start of a named section \sa enter */
   inline void enter(const std::string_view& func_name) noexcept
   {
-    if (m_enabled) do_enter(func_name);
+    if (m_enabled)
+    {
+      do_enter(func_name);
+    }
   }
   /** End of a named section \return The ellapsed time, in seconds or 0 if
    * disabled. \sa enter */

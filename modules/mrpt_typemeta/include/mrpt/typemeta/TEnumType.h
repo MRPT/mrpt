@@ -30,14 +30,20 @@ struct bimap
   bool direct(const KEY& k, VALUE& out_v) const
   {
     auto i = m_k2v.find(k);
-    if (i == m_k2v.end()) return false;
+    if (i == m_k2v.end())
+    {
+      return false;
+    }
     out_v = i->second;
     return true;
   }
   bool inverse(const VALUE& v, KEY& out_k) const
   {
     auto i = m_v2k.find(v);
-    if (i == m_v2k.end()) return false;
+    if (i == m_v2k.end())
+    {
+      return false;
+    }
     out_k = i->second;
     return true;
   }
@@ -90,7 +96,7 @@ struct TEnumTypeFiller
 template <typename ENUMTYPE>
 struct TEnumType
 {
-#define _MRPT_AUXTOSTR(__AA) #__AA
+#define MRPT_AUXTOSTR(__AA) #__AA
 
   /** Gives the numerical name for a given enum text name \exception
    * std::exception on unknown enum name */
@@ -101,9 +107,12 @@ struct TEnumType
     if (!getBimap().inverse(name, val))
     {
       std::string s =
-          std::string("TEnumType<" _MRPT_AUXTOSTR(TEnumType) ">::name2value(): Unknown name '") +
+          std::string("TEnumType<" MRPT_AUXTOSTR(TEnumType) ">::name2value(): Unknown name '") +
           name + "' (Valid ones:";
-      for (const auto& kv : getBimap().m_v2k) s += " '"s + kv.first + "',"s;
+      for (const auto& kv : getBimap().m_v2k)
+      {
+        s += " '"s + kv.first + "',"s;
+      }
       s += ")."s;
       throw std::runtime_error(s);
     }
@@ -118,7 +127,7 @@ struct TEnumType
     if (!getBimap().direct(val, s))
     {
       throw std::runtime_error(
-          std::string("TEnumType<" _MRPT_AUXTOSTR(TEnumType) ">::value2name(): Unknown value: ") +
+          std::string("TEnumType<" MRPT_AUXTOSTR(TEnumType) ">::value2name(): Unknown value: ") +
           std::to_string(static_cast<int>(val)));
     }
     return s;
@@ -128,7 +137,10 @@ struct TEnumType
   static inline internal::bimap<ENUMTYPE, std::string>& getBimap()
   {
     static thread_local internal::bimap<ENUMTYPE, std::string> data;
-    if (data.m_k2v.empty()) TEnumTypeFiller<ENUMTYPE>::fill(data);
+    if (data.m_k2v.empty())
+    {
+      TEnumTypeFiller<ENUMTYPE>::fill(data);
+    }
     return data;
   }
 #undef _MRPT_AUXTOSTR

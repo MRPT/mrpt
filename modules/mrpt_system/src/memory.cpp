@@ -130,7 +130,10 @@ unsigned long mrpt::system::getMemoryUsage()
 
 #ifdef MRPT_OS_LINUX
   FILE* f = ::fopen("/proc/self/statm", "r");
-  if (!f) return 0;
+  if (!f)
+  {
+    return 0;
+  }
 
   unsigned long mem_pages = 0;
   // see 'man proc' for docs on this

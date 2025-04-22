@@ -37,13 +37,20 @@ void WorkerThreadsPool::clear()
   condition_.notify_all();
 
   if (!tasks_.empty())
+  {
     std::cerr << "[WorkerThreadsPool name=`" << name_
               << "`] Warning: clear() called (probably from a "
                  "dtor) while having "
               << tasks_.size() << " pending tasks. Aborting them.\n";
+  }
 
   for (auto& t : threads_)
-    if (t.joinable()) t.join();
+  {
+    if (t.joinable())
+    {
+      t.join();
+    }
+  }
   threads_.clear();
 }
 
@@ -57,6 +64,7 @@ std::size_t WorkerThreadsPool::pendingTasks() const noexcept
 void WorkerThreadsPool::resize(std::size_t num_threads)
 {
   for (std::size_t i = 0; i < num_threads; ++i)
+  {
     threads_.emplace_back(
         [this]
         {
@@ -68,7 +76,10 @@ void WorkerThreadsPool::resize(std::size_t num_threads)
               {
                 std::unique_lock<std::mutex> lock(queue_mutex_);
                 condition_.wait(lock, [this] { return do_stop_ || !tasks_.empty(); });
-                if (do_stop_) return;
+                if (do_stop_)
+                {
+                  return;
+                }
                 task = std::move(tasks_.front());
                 tasks_.pop();
               }
@@ -82,6 +93,7 @@ void WorkerThreadsPool::resize(std::size_t num_threads)
             }
           }
         });
+  }
 }
 
 // code partially replicated from mrpt::system for convenience (avoid dep)

@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
-#include <mrpt/core/config.h>
 #include <mrpt/core/Clock.h>
+#include <mrpt/core/config.h>
 
 #include <chrono>
 #include <thread>
@@ -83,7 +83,7 @@ TEST(clock, checkSynchEpoch)
     const int64_t errLimit = 1000 * 1000;  // We are running on Javascript!
 #else
     // normally much smaller, but for busy build servers
-    const int64_t errLimit = 90 * 1000;
+    const int64_t errLimit = static_cast<const int64_t>(90 * 1000);
 #endif
 
     EXPECT_LT(std::abs(err), errLimit);

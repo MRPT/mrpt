@@ -34,7 +34,10 @@ std::string mrpt::system::progress(
   ASSERT_GE_(barLength, 1);
 
   std::string s;
-  if (encloseInSquareBrackets) s = "[";
+  if (encloseInSquareBrackets)
+  {
+    s = "[";
+  }
 
   const size_t nphases = phases.size();
   const double filled_len = barLength * progressRatio0to1;
@@ -44,18 +47,29 @@ std::string mrpt::system::progress(
   const size_t phase = static_cast<size_t>((filled_len - nfull) * nphases);
   int nempty = int(barLength - nfull) - 1;  // Number of empty chars
 
-  for (size_t i = 0; i < nfull; i++) s += phases.back();
+  for (size_t i = 0; i < nfull; i++)
+  {
+    s += phases.back();
+  }
 
   if (phase > 0)
+  {
     s += phases.at(phase);
+  }
   else
   {
     nempty++;
   }
 
-  for (int i = 0; i < nempty; i++) s += phases.front();
+  for (int i = 0; i < nempty; i++)
+  {
+    s += phases.front();
+  }
 
-  if (encloseInSquareBrackets) s += "]";
+  if (encloseInSquareBrackets)
+  {
+    s += "]";
+  }
 
   return s;
   MRPT_END

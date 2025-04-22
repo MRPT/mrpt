@@ -46,7 +46,10 @@ TEST(ts_hash_map, stdstring_key)
   EXPECT_EQ(4.0, m["tres"]) << "Fail after ++ operator applied to reference [].";
 
   double num = .0;
-  for (const auto& e : m) num += e.second;
+  for (const auto& e : m)
+  {
+    num += e.second;
+  }
   EXPECT_NEAR(num, 7.0, 1e-10) << "Fail after visiting and summing all entries";
 
   {

@@ -86,7 +86,7 @@ using output_logger_callback_t = std::function<void(
  * - The message, when printed in the terminal window, is **colored** according
  * to
  *   the logger's current verbosity/logging level (Logging level with which
- *   the underlying TMsg instance was instantiatedd).  The available verbosity
+ *   the underlying TMsg instance was instantiated).  The available verbosity
  *   levels as well as their corresponding colors are listed below:
  *
  *   + LVL_DEBUG => CONCOL_BLUE
@@ -125,9 +125,11 @@ using output_logger_callback_t = std::function<void(
 class COutputLogger
 {
  public:
-  /** Map from VerbosityLevels to their corresponding
-   * mrpt::system::TConsoleColor. Handy for coloring the input based on the
-   * verbosity of the message */
+  COutputLogger(const COutputLogger&) {}
+  COutputLogger& operator=(const COutputLogger&) { return *this; }  // NOLINT
+  COutputLogger(COutputLogger&&) {}
+  COutputLogger& operator=(COutputLogger&&) { return *this; }  // NOLINT
+
   static std::array<mrpt::system::ConsoleForegroundColor, NUMBER_OF_VERBOSITY_LEVELS>&
   logging_levels_to_colors();
 
@@ -252,7 +254,7 @@ class COutputLogger
   void dumpLogToConsole() const;
   /** Return the last Tmsg instance registered in the logger history */
   std::string getLoggerLastMsg() const;
-  /** Fill inputtted string with the contents of the last message in history
+  /** Fill input string with the contents of the last message in history
    */
   void getLoggerLastMsg(std::string& msg_str) const;
   /** Reset the contents of the logger instance. Called upon construction. */
@@ -301,8 +303,6 @@ class COutputLogger
         const mrpt::system::VerbosityLevel level,
         std::string_view msg,
         const COutputLogger& logger);
-    /** \brief  Default Destructor */
-    ~TMsg();
 
     /** \brief Return a string representation of the underlying message */
     std::string getAsString() const;
@@ -348,9 +348,21 @@ struct COutputLoggerStreamWrapper
       m_level(level), m_logger(logger)
   {
   }
+
+  // Explicitly delete copy constructor and copy assignment operator
+  COutputLoggerStreamWrapper(const COutputLoggerStreamWrapper&) = delete;
+  COutputLoggerStreamWrapper& operator=(const COutputLoggerStreamWrapper&) = delete;
+
+  // Explicitly delete move constructor and move assignment operator
+  COutputLoggerStreamWrapper(COutputLoggerStreamWrapper&&) = delete;
+  COutputLoggerStreamWrapper& operator=(COutputLoggerStreamWrapper&&) = delete;
+
   ~COutputLoggerStreamWrapper()
   {
-    if (m_logger.isLoggingLevelVisible(m_level)) m_logger.logStr(m_level, m_str.str());
+    if (m_logger.isLoggingLevelVisible(m_level))
+    {
+      m_logger.logStr(m_level, m_str.str());
+    }
   }
 
   template <typename T>
@@ -394,13 +406,13 @@ struct COutputLoggerStreamWrapper
     }                                                 \
   } while (0)
 
-#define INTERNAL_MRPT_LOG_STREAM(_LVL, __CONTENTS)                           \
-  do                                                                         \
-  {                                                                          \
-    if (this->isLoggingLevelVisible(_LVL))                                   \
-    {                                                                        \
-      ::mrpt::system::COutputLoggerStreamWrapper(_LVL, *this) << __CONTENTS; \
-    }                                                                        \
+#define INTERNAL_MRPT_LOG_STREAM(_LVL, __CONTENTS)                                        \
+  do                                                                                      \
+  {                                                                                       \
+    if (this->isLoggingLevelVisible(_LVL))                                                \
+    {                                                                                     \
+      ::mrpt::system::COutputLoggerStreamWrapper(_LVL, *this) << __CONTENTS; /* NOLINT */ \
+    }                                                                                     \
   } while (0)
 
 #define INTERNAL_MRPT_LOG_THROTTLE(_LVL, _PERIOD_SECONDS, _STRING) \
@@ -410,7 +422,7 @@ struct COutputLoggerStreamWrapper
     {                                                              \
       static mrpt::system::CTicTac tim;                            \
       static bool first = true;                                    \
-      if (first || tim.Tac() > _PERIOD_SECONDS)                    \
+      if (first || tim.Tac() > (_PERIOD_SECONDS))                  \
       {                                                            \
         first = false;                                             \
         tim.Tic();                                                 \
@@ -419,20 +431,20 @@ struct COutputLoggerStreamWrapper
     }                                                              \
   } while (0)
 
-#define INTERNAL_MRPT_LOG_THROTTLE_STREAM(_LVL, _PERIOD_SECONDS, __CONTENTS)   \
-  do                                                                           \
-  {                                                                            \
-    if (this->isLoggingLevelVisible(_LVL))                                     \
-    {                                                                          \
-      static mrpt::system::CTicTac tim;                                        \
-      static bool first = true;                                                \
-      if (first || tim.Tac() > _PERIOD_SECONDS)                                \
-      {                                                                        \
-        first = false;                                                         \
-        tim.Tic();                                                             \
-        ::mrpt::system::COutputLoggerStreamWrapper(_LVL, *this) << __CONTENTS; \
-      }                                                                        \
-    }                                                                          \
+#define INTERNAL_MRPT_LOG_THROTTLE_STREAM(_LVL, _PERIOD_SECONDS, __CONTENTS)     \
+  do                                                                             \
+  {                                                                              \
+    if (this->isLoggingLevelVisible(_LVL))                                       \
+    {                                                                            \
+      static mrpt::system::CTicTac tim;                                          \
+      static bool first = true;                                                  \
+      if (first || tim.Tac() > (_PERIOD_SECONDS))                                \
+      {                                                                          \
+        first = false;                                                           \
+        tim.Tic();                                                               \
+        ::mrpt::system::COutputLoggerStreamWrapper(_LVL, *this) << (__CONTENTS); \
+      }                                                                          \
+    }                                                                            \
   } while (0)
 
 #define INTERNAL_MRPT_LOG_THROTTLE_FMT(_LVL, _PERIOD_SECONDS, _FMT_STRING, ...) \

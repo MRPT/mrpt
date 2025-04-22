@@ -75,19 +75,28 @@ void COutputLogger::logStr(const VerbosityLevel level, std::string_view msg_str)
     m_history.push_back(msg);
   }
 
-  if (level >= m_min_verbosity_level && logging_enable_console_output) msg.dumpToConsole();
+  if (level >= m_min_verbosity_level && logging_enable_console_output)
+  {
+    msg.dumpToConsole();
+  }
 
   // User callbacks:
   if (level >= m_min_verbosity_level_callbacks)
   {
-    for (const auto& c : m_listCallbacks) c(msg.body, msg.level, msg.name, msg.timestamp);
+    for (const auto& c : m_listCallbacks)
+    {
+      c(msg.body, msg.level, msg.name, msg.timestamp);
+    }
   }
 }
 
 void COutputLogger::logFmt(const VerbosityLevel level, const char* fmt, ...) const
 {
   // check for nullptr pointer
-  if (!fmt) return;
+  if (!fmt)
+  {
+    return;
+  }
 
   // initialize the va_list and let generateStringFromFormat do the work
   // http://c-faq.com/varargs/handoff.html
@@ -129,7 +138,8 @@ std::string COutputLogger::generateStringFromFormat(std::string_view fmt, va_lis
   // Create a string to act as the buffer.
   // Size is needed_size; std::string handles null termination automatically
   // when accessing via c_str(), and provides buffer space internally.
-  std::string buffer(needed_size, '\0');  // Initialize with null chars
+  std::string buffer(
+      static_cast<std::string::size_type>(needed_size), '\0');  // Initialize with null chars
 
   // Call vsnprintf again, this time with the allocated buffer and the *original* va_list.
   // Pass buffer.size() + 1 for the size argument to include space for the null terminator.
@@ -148,7 +158,7 @@ std::string COutputLogger::generateStringFromFormat(std::string_view fmt, va_lis
   // unexpectedly between va_copy and the second call, though highly unlikely.
   if (static_cast<size_t>(result) < buffer.size())
   {
-    buffer.resize(result);
+    buffer.resize(static_cast<size_t>(result));
   }
   // No need to handle result > needed_size explicitly, as vsnprintf respects the buffer limit.
 
@@ -158,7 +168,10 @@ std::string COutputLogger::generateStringFromFormat(std::string_view fmt, va_lis
 
 void COutputLogger::logCond(const VerbosityLevel level, bool cond, const std::string& msg_str) const
 {
-  if (!cond) return;
+  if (!cond)
+  {
+    return;
+  }
   this->logStr(level, msg_str);
 }
 
@@ -181,7 +194,10 @@ void COutputLogger::getLogAsString(std::string& fname) const
 {
   fname.clear();
   auto lck = mrpt::lockHelper(*m_historyMtx);
-  for (const auto& h : m_history) fname += h.getAsString();
+  for (const auto& h : m_history)
+  {
+    fname += h.getAsString();
+  }
 }
 std::string COutputLogger::getLogAsString() const
 {
@@ -212,7 +228,10 @@ void COutputLogger::writeLogToFile(const std::optional<string> fname_in) const
 void COutputLogger::dumpLogToConsole() const
 {
   auto lck = mrpt::lockHelper(*m_historyMtx);
-  for (const auto& h : m_history) h.dumpToConsole();
+  for (const auto& h : m_history)
+  {
+    h.dumpToConsole();
+  }
 }
 
 std::string COutputLogger::getLoggerLastMsg() const
@@ -243,14 +262,15 @@ COutputLogger::TMsg::TMsg(
 {
 }
 
-COutputLogger::TMsg::~TMsg() = default;
-
 std::string COutputLogger::TMsg::getAsString() const
 {
   stringstream out;
   out << "[" << mrpt::system::timeLocalToString(timestamp, 4) << "|"
       << COutputLogger::logging_levels_to_names()[level] << "|" << name << "] " << body;
-  if (!body.empty() && *body.rbegin() != '\n') out << std::endl;
+  if (!body.empty() && *body.rbegin() != '\n')
+  {
+    out << std::endl;
+  }
 
   return out.str();
 }

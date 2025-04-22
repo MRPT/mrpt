@@ -25,7 +25,10 @@ CObservable::~CObservable()
     this->publishEvent(mrptEventOnDestroy(this));
 
     // Tell observers to unsubscribe:
-    while (!m_subscribers.empty()) (*m_subscribers.begin())->observeEnd(*this);
+    while (!m_subscribers.empty())
+    {
+      (*m_subscribers.begin())->observeEnd(*this);
+    }
   }
   catch (const std::exception& e)
   {
@@ -53,6 +56,11 @@ void CObservable::publishEvent(const mrptEvent& e) const
 {
   MRPT_START
   for (auto& s : m_subscribers)
-    if (s) s->internal_on_event(e);
+  {
+    if (s)
+    {
+      s->internal_on_event(e);
+    }
+  }
   MRPT_END
 }

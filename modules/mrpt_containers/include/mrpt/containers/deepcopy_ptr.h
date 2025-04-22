@@ -25,7 +25,10 @@ struct CopyStatic
 {
   T* copy(const T* o)
   {
-    if (!o) return nullptr;
+    if (!o)
+    {
+      return nullptr;
+    }
     return new T(*o);
   }
 };
@@ -35,9 +38,15 @@ struct CopyCloner
 {
   T* copy(const T* o)
   {
-    if (!o) return nullptr;
+    if (!o)
+    {
+      return nullptr;
+    }
     T* n = dynamic_cast<T*>(o->clone());
-    if (!n) throw std::runtime_error("error: clone() returned unexpected type");
+    if (!n)
+    {
+      throw std::runtime_error("error: clone() returned unexpected type");
+    }
     return n;
   }
 };
@@ -56,7 +65,10 @@ class generic_copier_ptr
   generic_copier_ptr(const generic_copier_ptr<T, Copier>& o) : m_ptr(Copier().copy(o.m_ptr)) {}
   ~generic_copier_ptr()
   {
-    if (m_ptr) delete m_ptr;
+    if (m_ptr)
+    {
+      delete m_ptr;
+    }
   }
 
   /** move ctor */
@@ -68,7 +80,10 @@ class generic_copier_ptr
   /** move operator */
   generic_copier_ptr<T, Copier>& operator=(generic_copier_ptr<T, Copier>&& o)
   {
-    if (this == &o) return *this;
+    if (this == &o)
+    {
+      return *this;
+    }
     m_ptr = o.m_ptr;
     o.m_ptr = nullptr;
     return *this;
@@ -77,7 +92,10 @@ class generic_copier_ptr
   /** copy operator */
   generic_copier_ptr<T, Copier>& operator=(const generic_copier_ptr<T, Copier>& o)
   {
-    if (this == &o) return *this;
+    if (this == &o)
+    {
+      return *this;
+    }
     this->reset();
     m_ptr = Copier().copy(o.m_ptr);
     return *this;
@@ -86,31 +104,35 @@ class generic_copier_ptr
   T* operator->()
   {
     if (m_ptr)
+    {
       return m_ptr;
-    else
-      throw std::runtime_error("dereferencing nullptr poly_ptr");
+    }
+    throw std::runtime_error("dereferencing nullptr poly_ptr");
   }
   const T* operator->() const
   {
     if (m_ptr)
+    {
       return m_ptr;
-    else
-      throw std::runtime_error("dereferencing nullptr poly_ptr");
+    }
+    throw std::runtime_error("dereferencing nullptr poly_ptr");
   }
 
   T& operator*()
   {
     if (m_ptr)
+    {
       return *m_ptr;
-    else
-      throw std::runtime_error("dereferencing nullptr poly_ptr");
+    }
+    throw std::runtime_error("dereferencing nullptr poly_ptr");
   }
   const T& operator*() const
   {
     if (m_ptr)
+    {
       return *m_ptr;
-    else
-      throw std::runtime_error("dereferencing nullptr poly_ptr");
+    }
+    throw std::runtime_error("dereferencing nullptr poly_ptr");
   }
 
   T* get() { return m_ptr; }
@@ -127,8 +149,14 @@ class generic_copier_ptr
 
   void reset(T* ptr = nullptr)
   {
-    if (ptr == m_ptr) return;
-    if (m_ptr) delete m_ptr;
+    if (ptr == m_ptr)
+    {
+      return;
+    }
+    if (m_ptr)
+    {
+      delete m_ptr;
+    }
     m_ptr = ptr;
   }
   void resetDefaultCtor() { this->reset(new T()); }

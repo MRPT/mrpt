@@ -50,7 +50,9 @@ CFileSystemWatcher::CFileSystemWatcher(const std::string& path) : m_watchedDirec
 
   if (m_watchedDirectory[m_watchedDirectory.size() - 1] != '/' &&
       m_watchedDirectory[m_watchedDirectory.size() - 1] != '\\')
+  {
     m_watchedDirectory.push_back('/');
+  }
 
 #ifdef _WIN32
   // Windows version:
@@ -74,14 +76,20 @@ CFileSystemWatcher::CFileSystemWatcher(const std::string& path) : m_watchedDirec
   m_wd = -1;
 
   m_fd = inotify_init();
-  if (m_fd < 0) THROW_EXCEPTION("inotify_init returned error!");
+  if (m_fd < 0)
+  {
+    THROW_EXCEPTION("inotify_init returned error!");
+  }
 
   // Create watcher:
   m_wd = inotify_add_watch(
       m_fd, path.c_str(),
       IN_CLOSE_WRITE | IN_DELETE | IN_MOVED_TO | IN_MOVED_FROM | IN_CREATE | IN_ACCESS);
 
-  if (m_wd < 0) THROW_EXCEPTION("inotify_add_watch returned error!");
+  if (m_wd < 0)
+  {
+    THROW_EXCEPTION("inotify_add_watch returned error!");
+  }
 #endif
 #endif
   MRPT_END
@@ -107,7 +115,10 @@ CFileSystemWatcher::~CFileSystemWatcher()
   {
     close(m_fd);
     m_fd = -1;
-    if (m_wd >= 0) inotify_rm_watch(m_fd, m_wd);
+    if (m_wd >= 0)
+    {
+      inotify_rm_watch(m_fd, m_wd);
+    }
   }
 #endif
 #endif
@@ -147,7 +158,10 @@ void CFileSystemWatcher::getChanges(TFileSystemChangeList& out_list)
 
 #else
 #if MRPT_HAS_INOTIFY
-  if (m_fd < 0) return;  // Not open?
+  if (m_fd < 0)
+  {
+    return;  // Not open?
+  }
 
   // Linux version:
   // Refer to:
@@ -174,7 +188,7 @@ void CFileSystemWatcher::getChanges(TFileSystemChangeList& out_list)
     return;
   }
 
-  else if (!ret)
+  if (!ret)
   {
     // timed out!
   }
@@ -208,7 +222,7 @@ void CFileSystemWatcher::getChanges(TFileSystemChangeList& out_list)
     {
       const inotify_event* event = reinterpret_cast<const inotify_event*>(&buf[i]);
 
-      i += EVENT_SIZE + event->len;
+      i += EVENT_SIZE + static_cast<ssize_t>(event->len);
 
       // printf ("wd=%d mask=%u cookie=%u len=%u\n",event->wd,
       // event->mask,event->cookie, event->len);

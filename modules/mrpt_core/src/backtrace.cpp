@@ -419,7 +419,7 @@ void mrpt::callStackBackTrace(
     }
   }
 
-  free(symbols);
+  std::free(static_cast<void*>(symbols));
 #else
   // Emscripten: do nothing.
   return;

@@ -64,7 +64,7 @@ void mrpt::system::timestampToParts(TTimeStamp t, TTimeParts& p, bool localTime)
 #if !defined(HAVE_LOCALTIME_R)
   struct tm* parts = localTime ? localtime(&tt) : gmtime(&tt);
 #else
-  tm myTm;
+  tm myTm{};
   tm* parts = localTime ? localtime_r(&tt, &myTm) : gmtime_r(&tt, &myTm);
 #endif
 
@@ -188,9 +188,18 @@ string mrpt::system::formatTimeInterval(const double t)
   const auto nSecs = static_cast<unsigned int>(timeSeconds) % 60;
   const auto milSecs = static_cast<unsigned int>(1000 * (timeSeconds - floor(timeSeconds)));
 
-  if (nDays > 0) s += mrpt::format("%udays ", nDays);
-  if (nHours > 0) s += mrpt::format("%uh ", nHours);
-  if (nMins > 0) s += mrpt::format("%02umin ", nMins);
+  if (nDays > 0)
+  {
+    s += mrpt::format("%udays ", nDays);
+  }
+  if (nHours > 0)
+  {
+    s += mrpt::format("%uh ", nHours);
+  }
+  if (nMins > 0)
+  {
+    s += mrpt::format("%02umin ", nMins);
+  }
   s += mrpt::format("%02u.%03us", nSecs, milSecs);
   return s;
 }
@@ -208,14 +217,20 @@ unsigned int calcSecFractions(const uint64_t tmp)
   ---------------------------------------------------------------*/
 string mrpt::system::dateTimeToString(const mrpt::system::TTimeStamp t)
 {
-  if (t == INVALID_TIMESTAMP) return string("INVALID_TIMESTAMP");
+  if (t == INVALID_TIMESTAMP)
+  {
+    return string("INVALID_TIMESTAMP");
+  }
 
   uint64_t tmp = (t.time_since_epoch().count() - ((uint64_t)116444736 * 1000000000));
   time_t auxTime = tmp / (uint64_t)10000000;
   auto secFractions = calcSecFractions(tmp);
   tm* ptm = gmtime(&auxTime);
 
-  if (!ptm) return std::string("(Malformed timestamp)");
+  if (!ptm)
+  {
+    return std::string("(Malformed timestamp)");
+  }
 
   return format(
       "%u/%02u/%02u,%02u:%02u:%02u.%06u", 1900 + ptm->tm_year, ptm->tm_mon + 1, ptm->tm_mday,
@@ -228,7 +243,10 @@ string mrpt::system::dateTimeToString(const mrpt::system::TTimeStamp t)
   ---------------------------------------------------------------*/
 string mrpt::system::dateTimeLocalToString(const mrpt::system::TTimeStamp t)
 {
-  if (t == INVALID_TIMESTAMP) return string("INVALID_TIMESTAMP");
+  if (t == INVALID_TIMESTAMP)
+  {
+    return string("INVALID_TIMESTAMP");
+  }
 
   uint64_t tmp = (t.time_since_epoch().count() - ((uint64_t)116444736 * 1000000000));
   time_t auxTime = tmp / (uint64_t)10000000;
@@ -237,11 +255,14 @@ string mrpt::system::dateTimeLocalToString(const mrpt::system::TTimeStamp t)
 #if !defined(HAVE_LOCALTIME_R)
   tm* ptm = localtime(&auxTime);
 #else
-  tm myTm;
+  tm myTm{};
   tm* ptm = localtime_r(&auxTime, &myTm);
 #endif
 
-  if (!ptm) return "(Malformed timestamp)";
+  if (!ptm)
+  {
+    return "(Malformed timestamp)";
+  }
 
   return format(
       "%u/%02u/%02u,%02u:%02u:%02u.%06u", 1900 + ptm->tm_year, ptm->tm_mon + 1, ptm->tm_mday,
@@ -276,7 +297,10 @@ double mrpt::system::extractDayTimeFromTimestamp(const mrpt::system::TTimeStamp 
 string mrpt::system::timeLocalToString(
     const mrpt::system::TTimeStamp tt, unsigned int secondFractionDigits)
 {
-  if (tt == INVALID_TIMESTAMP) return string("INVALID_TIMESTAMP");
+  if (tt == INVALID_TIMESTAMP)
+  {
+    return string("INVALID_TIMESTAMP");
+  }
   auto t = tt.time_since_epoch().count();
 
   uint64_t tmp = (t - ((uint64_t)116444736 * 1000000000));
@@ -285,14 +309,17 @@ string mrpt::system::timeLocalToString(
 #if !defined(HAVE_LOCALTIME_R)
   const tm* ptm = localtime(&auxTime);
 #else
-  tm myTm;
+  tm myTm{};
   const tm* ptm = localtime_r(&auxTime, &myTm);
 #endif
 
   auto secFractions = calcSecFractions(tmp);
   // We start with 10^{-6} second units: reduce if requested by user:
   const unsigned int user_secondFractionDigits = secondFractionDigits;
-  while (secondFractionDigits++ < 6) secFractions = secFractions / 10;
+  while (secondFractionDigits++ < 6)
+  {
+    secFractions = secFractions / 10;
+  }
 
   return format(
       "%02u:%02u:%02u.%0*u", ptm->tm_hour, ptm->tm_min, (unsigned int)ptm->tm_sec,
@@ -304,14 +331,20 @@ string mrpt::system::timeLocalToString(
   ---------------------------------------------------------------*/
 string mrpt::system::timeToString(const mrpt::system::TTimeStamp tt)
 {
-  if (tt == INVALID_TIMESTAMP) return string("INVALID_TIMESTAMP");
+  if (tt == INVALID_TIMESTAMP)
+  {
+    return string("INVALID_TIMESTAMP");
+  }
   auto t = tt.time_since_epoch().count();
 
   uint64_t tmp = (t - ((uint64_t)116444736 * 1000000000));
   time_t auxTime = tmp / (uint64_t)10000000;
   auto secFractions = calcSecFractions(tmp);
   tm* ptm = gmtime(&auxTime);
-  if (!ptm) return string("(Malformed timestamp)");
+  if (!ptm)
+  {
+    return string("(Malformed timestamp)");
+  }
 
   return format(
       "%02u:%02u:%02u.%06u", ptm->tm_hour, ptm->tm_min, (unsigned int)ptm->tm_sec, secFractions);
@@ -322,13 +355,19 @@ string mrpt::system::timeToString(const mrpt::system::TTimeStamp tt)
   ---------------------------------------------------------------*/
 string mrpt::system::dateToString(const mrpt::system::TTimeStamp tt)
 {
-  if (tt == INVALID_TIMESTAMP) return string("INVALID_TIMESTAMP");
+  if (tt == INVALID_TIMESTAMP)
+  {
+    return string("INVALID_TIMESTAMP");
+  }
   auto t = tt.time_since_epoch().count();
 
   uint64_t tmp = (t - ((uint64_t)116444736 * 1000000000));
   time_t auxTime = tmp / (uint64_t)10000000;
   tm* ptm = gmtime(&auxTime);
-  if (!ptm) return string("(Malformed timestamp)");
+  if (!ptm)
+  {
+    return string("(Malformed timestamp)");
+  }
 
   return format("%u/%02u/%02u", 1900 + ptm->tm_year, ptm->tm_mon + 1, ptm->tm_mday);
 }
@@ -345,7 +384,7 @@ std::string implIntervalFormat(const double seconds)
     return format("%i year%s", i, i > 1 ? "s" : "") + ", "s +
            implIntervalFormat(std::fmod(seconds, (365 * 24 * 3600)));
   }
-  else if (seconds >= 24 * 3600)
+  if (seconds >= 24 * 3600)
   {
     const int i = static_cast<int>(seconds / (24 * 3600));
     return format("%i day%s", i, i > 1 ? "s" : "") + ", "s +

@@ -123,7 +123,12 @@ TEST(thread_name, set_get_other_thread)
   }
 
   for (auto& t : threads)
-    if (t.joinable()) t.join();
+  {
+    if (t.joinable())
+    {
+      t.join();
+    }
+  }
 }
 
 #endif

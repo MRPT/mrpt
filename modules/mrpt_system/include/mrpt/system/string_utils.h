@@ -140,7 +140,10 @@ std::string sprintf_container(const char* fmt, const T& V)
   {
     ret += format(fmt, *it);
     ++it;
-    if (it != V.end()) ret += ",";
+    if (it != V.end())
+    {
+      ret += ",";
+    }
   }
   ret += "]";
   return ret;

@@ -25,7 +25,10 @@ class LockHelper
   explicit LockHelper(const Tnc* l) : l_{const_cast<Tnc*>(l)} { l_->lock(); }
   ~LockHelper()
   {
-    if (l_) l_->unlock();
+    if (l_)
+    {
+      l_->unlock();
+    }
   }
 
   LockHelper(const LockHelper& o) = delete;
@@ -44,7 +47,10 @@ class LockHelper
    */
   void unlock()
   {
-    if (!l_) return;
+    if (!l_)
+    {
+      return;
+    }
     l_->unlock();
     l_ = nullptr;
   }

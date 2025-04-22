@@ -29,10 +29,11 @@ std::string mrpt::system::hyperlink(
 #endif
   // See: https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda
   if (supportsLinks || force_use_format)
+  {
     return mrpt::format("\033]8;;%s\033\\%s\033]8;;\033\\", uri.c_str(), text.c_str());
-  else
-    return show_uri_anyway ?  //
-               (text + " ("s + uri + ")"s)
-                           :  //
-               text;
+  }
+  return show_uri_anyway ?  //
+             (text + " ("s + uri + ")"s)
+                         :  //
+             text;
 }

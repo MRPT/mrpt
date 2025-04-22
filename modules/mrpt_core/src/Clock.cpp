@@ -142,7 +142,10 @@ uint64_t getCurrentTime() noexcept
       timespec tim{0, 0};
       // Get the realtime clock reference timepoint, the first time we run
       // this:
-      if (!clk.monotonic_epoch_init) mrpt::Clock::resetMonotonicToRealTimeEpoch();
+      if (!clk.monotonic_epoch_init)
+      {
+        mrpt::Clock::resetMonotonicToRealTimeEpoch();
+      }
 
       // get the monotonic clock:
       clock_gettime(CLOCK_MONOTONIC, &tim);
@@ -179,7 +182,10 @@ mrpt::Clock::time_point mrpt::Clock::fromDouble(const double t) noexcept
 // Convert to time_t UNIX timestamp, with fractional part.
 double mrpt::Clock::toDouble(const mrpt::Clock::time_point t) noexcept
 {
-  if (t == mrpt::Clock::time_point()) return .0;  // invalid time point
+  if (t == mrpt::Clock::time_point())
+  {
+    return .0;  // invalid time point
+  }
 
   return (static_cast<double>(t.time_since_epoch().count()) - 116444736e9) / 10000000.0;
 }
@@ -239,7 +245,10 @@ int64_t mrpt::Clock::resetMonotonicToRealTimeEpoch() noexcept
 uint64_t mrpt::Clock::getMonotonicToRealtimeOffset()
 {
   auto& clk = mrpt::internal::ClockState::Instance();
-  if (!clk.monotonic_epoch_init) mrpt::Clock::resetMonotonicToRealTimeEpoch();
+  if (!clk.monotonic_epoch_init)
+  {
+    mrpt::Clock::resetMonotonicToRealTimeEpoch();
+  }
   return clk.m2r_epoch.rt2mono_diff;
 }
 

@@ -39,9 +39,18 @@ bool yaml::node_t::isMap() const { return std::holds_alternative<map_t>(d); }
 std::string yaml::node_t::typeName() const
 {
   MRPT_START
-  if (isNullNode()) return "null";
-  if (isSequence()) return "sequence";
-  if (isMap()) return "map";
+  if (isNullNode())
+  {
+    return "null";
+  }
+  if (isSequence())
+  {
+    return "sequence";
+  }
+  if (isMap())
+  {
+    return "map";
+  }
   ASSERT_(isScalar());
   const auto& s = std::get<scalar_t>(d);
   ASSERT_(s.has_value());
@@ -108,8 +117,10 @@ const yaml::scalar_t& yaml::node_t::asScalar() const
 size_t yaml::node_t::size() const
 {
   if (isScalar() || isNullNode())
+  {
     return 1;
-  else if (isMap())
+  }
+  if (isMap())
     return asMap().size();
   else
     return asSequence().size();
@@ -167,7 +178,10 @@ size_t yaml::size() const { return dereferenceProxy()->size(); }
 
 bool yaml::has(const std::string& key) const
 {
-  if (isNullNode()) return false;
+  if (isNullNode())
+  {
+    return false;
+  }
   const map_t& m = this->asMap();
   return m.end() != m.find(key);
 }
@@ -175,7 +189,10 @@ bool yaml::has(const std::string& key) const
 const std::type_info& yaml::scalarType() const
 {
   MRPT_START
-  if (this->isNullNode()) return typeid(void);
+  if (this->isNullNode())
+  {
+    return typeid(void);
+  }
 
   const scalar_t& s = this->asScalar();
   return s.type();
@@ -211,11 +228,20 @@ yaml::node_t* yaml::dereferenceProxy()
 bool yaml::empty() const
 {
   auto n = dereferenceProxy();
-  if (std::holds_alternative<map_t>(n->d)) return std::get<map_t>(n->d).empty();
+  if (std::holds_alternative<map_t>(n->d))
+  {
+    return std::get<map_t>(n->d).empty();
+  }
 
-  if (std::holds_alternative<sequence_t>(n->d)) return std::get<sequence_t>(n->d).empty();
+  if (std::holds_alternative<sequence_t>(n->d))
+  {
+    return std::get<sequence_t>(n->d).empty();
+  }
 
-  if (std::holds_alternative<std::monostate>(n->d)) return true;
+  if (std::holds_alternative<std::monostate>(n->d))
+  {
+    return true;
+  }
 
   if (std::holds_alternative<scalar_t>(n->d))
     THROW_EXCEPTION(
@@ -263,7 +289,10 @@ yaml yaml::operator[](const std::string& s)
 {
   node_t* n = dereferenceProxy();
   // Init as map on first use:
-  if (n->isNullNode()) n->d.emplace<map_t>();
+  if (n->isNullNode())
+  {
+    n->d.emplace<map_t>();
+  }
 
   if (!n->isMap()) THROW_EXCEPTION("write operator[] not applicable to non-map nodes.");
 
@@ -316,13 +345,19 @@ void yaml::printAsYAML(std::ostream& o, const YamlEmitOptions& eo) const
 {
   const node_t* n = dereferenceProxy();
 
-  if (eo.emitHeader) o << "%YAML 1.2\n---\n";
+  if (eo.emitHeader)
+  {
+    o << "%YAML 1.2\n---\n";
+  }
 
   InternalPrintState ps;
   ps.eo = eo;
 
   bool lastLineNL = yaml::internalPrintNodeAsYAML(*n, o, ps);
-  if (!lastLineNL && eo.endWithNewLine) o << "\n";
+  if (!lastLineNL && eo.endWithNewLine)
+  {
+    o << "\n";
+  }
 }
 
 void yaml::printDebugStructure(std::ostream& o) const
@@ -345,10 +380,16 @@ bool yaml::internalPrintNodeAsYAML(const node_t& p, std::ostream& o, const Inter
     // Split line by line:
     for (size_t i = 0; i < comment.size();)
     {
-      if (i > 0) o << sInd;
+      if (i > 0)
+      {
+        o << sInd;
+      }
 
       size_t nextLN = comment.find('\n', i);
-      if (nextLN == std::string::npos) nextLN = comment.size();
+      if (nextLN == std::string::npos)
+      {
+        nextLN = comment.size();
+      }
 
       const size_t lineLen = nextLN - i;
       std::string_view line(comment.data() + i, lineLen);
@@ -357,7 +398,10 @@ bool yaml::internalPrintNodeAsYAML(const node_t& p, std::ostream& o, const Inter
       i += lineLen + 1;
     }
     // Indent of next line:
-    if (!comment.empty()) o << sInd;
+    if (!comment.empty())
+    {
+      o << sInd;
+    }
   }
 
   // Dispatch:
@@ -389,7 +433,10 @@ bool yaml::internalPrintNodeAsYAML(const node_t& p, std::ostream& o, const Inter
       else
       {
         o << "\n";
-        if (ps.eo.indentSequences) ps2.indent += 2;
+        if (ps.eo.indentSequences)
+        {
+          ps2.indent += 2;
+        }
       }
       ps2.needsNL = false;
     }
@@ -405,13 +452,17 @@ namespace
 {
 std::string shortenComment(const std::optional<std::string>& c)
 {
-  if (!c.has_value()) return {"[none]"};
+  if (!c.has_value())
+  {
+    return {"[none]"};
+  }
 
   const size_t maxLen = 14;
   if (c.value().size() > maxLen - 3)
+  {
     return {c.value().substr(0, maxLen) + "..."};
-  else
-    return {c.value()};
+  }
+  return {c.value()};
 }
 }  // namespace
 
@@ -422,9 +473,13 @@ void yaml::internalPrintDebugStructure(const node_t& p, std::ostream& o, unsigne
 
   o << sInd << "- " << p.typeName() << ". Comments:";
   if (!cs.at(0).has_value() && !cs.at(1).has_value())
+  {
     o << " [none]. ";
+  }
   else
+  {
     o << " top='" << shortenComment(cs.at(0)) << "' right:'" << shortenComment(cs.at(1)) << "'. ";
+  }
 
   o << " (line,col):(" << p.marks.line << "," << p.marks.column << ") ";
 
@@ -492,7 +547,10 @@ void internalPrintRightComment(std::ostream& o, const std::string& c)
 bool yaml::internalPrintAsYAML(
     const std::monostate&, std::ostream& o, const InternalPrintState& ps, const comments_t& cs)
 {
-  if (ps.needsSpace) o << " ";
+  if (ps.needsSpace)
+  {
+    o << " ";
+  }
 
   o << "~";
 
@@ -501,10 +559,8 @@ bool yaml::internalPrintAsYAML(
     internalPrintRightComment(o, rc.value());
     return true;  // \n already emitted.
   }
-  else
-  {
-    return false;  // \n not emitted.
-  }
+
+  return false;  // \n not emitted.
 }
 bool yaml::internalPrintAsYAML(
     const yaml::sequence_t& v,
@@ -634,8 +690,7 @@ bool yaml::internalPrintStringScalar(
           internalPrintRightComment(o, rc.value());
           return true;  // \n already emitted
         }
-        else
-          return false;  // \n not emitted
+        return false;  // \n not emitted
       }
       else
       {
@@ -646,14 +701,19 @@ bool yaml::internalPrintStringScalar(
     if (i == 0)
     {
       o << "|";
-      if (!hasFinalNL) o << "-";
+      if (!hasFinalNL)
+      {
+        o << "-";
+      }
 
       if (const auto& rc = cs[static_cast<size_t>(CommentPosition::RIGHT)]; rc.has_value())
       {
         internalPrintRightComment(o, rc.value());
       }
       else
+      {
         o << "\n";
+      }
     }
     // Indent + string line:
     o << sInd;
@@ -678,54 +738,92 @@ bool yaml::internalPrintAsYAML(
   if (v.type() == typeid(yaml))
     return internalPrintNodeAsYAML(*std::any_cast<yaml>(v).dereferenceProxy(), o, ps);
 
-  if (ps.needsSpace) o << " ";
+  if (ps.needsSpace)
+  {
+    o << " ";
+  }
 
   if (v.type() == typeid(bool))
+  {
     o << (std::any_cast<bool>(v) ? "true" : "false");
+  }
   else if (v.type() == typeid(uint64_t))
+  {
     o << std::any_cast<uint64_t>(v);
+  }
   else if (v.type() == typeid(int64_t))
+  {
     o << std::any_cast<int64_t>(v);
+  }
   else if (v.type() == typeid(uint32_t))
+  {
     o << std::any_cast<uint32_t>(v);
+  }
   else if (v.type() == typeid(int32_t))
+  {
     o << std::any_cast<int32_t>(v);
+  }
   else if (v.type() == typeid(int))
+  {
     o << std::any_cast<int>(v);
+  }
   else if (v.type() == typeid(unsigned int))
+  {
     o << std::any_cast<unsigned int>(v);
+  }
   else if (v.type() == typeid(const char*))
   {
-    if (internalPrintStringScalar(std::any_cast<const char*>(v), o, ps, cs)) return true;
+    if (internalPrintStringScalar(std::any_cast<const char*>(v), o, ps, cs))
+    {
+      return true;
+    }
   }
   else if (v.type() == typeid(std::string))
   {
-    if (internalPrintStringScalar(std::any_cast<std::string>(v), o, ps, cs)) return true;
+    if (internalPrintStringScalar(std::any_cast<std::string>(v), o, ps, cs))
+    {
+      return true;
+    }
   }
   else if (v.type() == typeid(float))
+  {
     o << mrpt::format("%.16g", static_cast<double>(std::any_cast<float>(v)));
+  }
   else if (v.type() == typeid(double))
+  {
     o << mrpt::format("%.16g", std::any_cast<double>(v));
+  }
   else if (v.type() == typeid(uint16_t))
+  {
     o << std::any_cast<uint16_t>(v);
+  }
   else if (v.type() == typeid(int16_t))
+  {
     o << std::any_cast<int16_t>(v);
+  }
   else if (v.type() == typeid(uint8_t))
+  {
     o << std::any_cast<uint8_t>(v);
+  }
   else if (v.type() == typeid(int8_t))
+  {
     o << std::any_cast<int8_t>(v);
+  }
   else if (v.type() == typeid(char))
+  {
     o << std::any_cast<char>(v);
+  }
   else
+  {
     o << "(unknown type)";
+  }
 
   if (const auto& rc = cs[static_cast<size_t>(CommentPosition::RIGHT)]; rc.has_value())
   {
     internalPrintRightComment(o, rc.value());
     return true;  // \n already emitted
   }
-  else
-    return false;  // \n not emitted
+  return false;  // \n not emitted
 }
 
 yaml yaml::FromText(const std::string& yamlTextBlock)
@@ -744,7 +842,10 @@ yaml::scalar_t textToScalar(const std::string& s)
 {
   // tag:yaml.org,2002:null
   // https://yaml.org/spec/1.2/spec.html#id2803362
-  if (s == "~" || s == "null" || s == "Null" || s == "NULL") return {};
+  if (s == "~" || s == "null" || s == "Null" || s == "NULL")
+  {
+    return {};
+  }
 
   // TODO: Try to parse to int or double?
 
@@ -759,23 +860,26 @@ std::optional<yaml::node_t> recursiveParse(struct fy_parser* p);
 }
 static bool MRPT_YAML_PARSER_VERBOSE = mrpt::get_env<bool>("MRPT_YAML_PARSER_VERBOSE", false);
 
-#define PARSER_DBG_OUT(STR_)              \
-  do                                      \
-  {                                       \
-    if (MRPT_YAML_PARSER_VERBOSE)         \
-      std::cout << ">> " << STR_ << "\n"; \
-    else                                  \
-    {                                     \
-    }                                     \
+#define PARSER_DBG_OUT(STR_)                                                      \
+  do                                                                              \
+  {                                                                               \
+    if (MRPT_YAML_PARSER_VERBOSE)                                                 \
+      std::cout << ">> " << STR_ << "\n"; /* NOLINT(bugprone-macro-parentheses)*/ \
+    else                                                                          \
+    {                                                                             \
+    }                                                                             \
   } while (0)
 
 namespace
 {
 std::optional<std::string> extractComment(struct fy_token* t, enum fy_comment_placement cp)
 {
-  std::array<char, 2048> str;
+  std::array<char, 2048> str{};
   const char* strRet = fy_token_get_comment(t, str.data(), str.size(), cp);
-  if (!strRet || strRet[0] == '\0') return {};
+  if (!strRet || strRet[0] == '\0')
+  {
+    return {};
+  }
 
   // str is already a 0-terminated string:
   const std::string c(str.data());
@@ -789,16 +893,25 @@ std::optional<std::string> extractComment(struct fy_token* t, enum fy_comment_pl
 
 void parseTokenCommentsAndMarks(struct fy_token* tk, yaml::node_t& n)
 {
-  if (!tk) return;
+  if (!tk)
+  {
+    return;
+  }
 
   {
     auto cT = extractComment(tk, fycp_top);
-    if (cT) n.comments[static_cast<size_t>(CommentPosition::TOP)] = std::move(cT.value());
+    if (cT)
+    {
+      n.comments[static_cast<size_t>(CommentPosition::TOP)] = std::move(cT.value());
+    }
   }
 
   {
     auto cR = extractComment(tk, fycp_right);
-    if (cR) n.comments[static_cast<size_t>(CommentPosition::RIGHT)] = std::move(cR.value());
+    if (cR)
+    {
+      n.comments[static_cast<size_t>(CommentPosition::RIGHT)] = std::move(cR.value());
+    }
   }
 
   if (const struct fy_mark* mrk = fy_token_start_mark(tk); mrk)
@@ -814,7 +927,10 @@ std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
   MRPT_START
 
   struct fy_event* event = fy_parser_parse(p);
-  if (!event) return {};
+  if (!event)
+  {
+    return {};
+  }
 
   // process event:
   switch (event->type)
@@ -869,7 +985,10 @@ std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
         // Next event is map key:
         auto nKey = recursiveParse(p);
         // end of map reached?
-        if (!nKey.has_value()) break;
+        if (!nKey.has_value())
+        {
+          break;
+        }
 
         ASSERT_(nKey->isScalar());
 
@@ -905,7 +1024,10 @@ std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
       for (;;)
       {
         auto entry = recursiveParse(p);
-        if (!entry.has_value()) break;  // end of sequence reached?
+        if (!entry.has_value())
+        {
+          break;  // end of sequence reached?
+        }
         s.push_back(std::move(entry.value()));
       }
 
@@ -942,12 +1064,10 @@ std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
         fy_parser_event_free(p, event);  // free event
         return n;
       }
-      else
-      {
-        THROW_EXCEPTION(
-            "Unexpected empty scalar?! Re-run with environment "
-            "variable MRPT_YAML_PARSER_VERBOSE=1 to get more details.");
-      }
+
+      THROW_EXCEPTION(
+          "Unexpected empty scalar?! Re-run with environment "
+          "variable MRPT_YAML_PARSER_VERBOSE=1 to get more details.");
     }
     break;
     case FYET_ALIAS:
@@ -971,7 +1091,7 @@ void yaml::loadFromText(const std::string& yamlTextBlock)
   // Reset:
   *this = yaml();
 
-  struct fy_parse_cfg cfg;
+  struct fy_parse_cfg cfg{};
   cfg.search_path = "";
   cfg.diag = nullptr;
   cfg.flags = FYPCF_PARSE_COMMENTS;

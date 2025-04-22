@@ -121,7 +121,12 @@ TEST(CTimeLogger, multithread)
   mtx.unlock();  // now, all threads will run
 
   for (auto& t : ths)
-    if (t.joinable()) t.join();
+  {
+    if (t.joinable())
+    {
+      t.join();
+    }
+  }
 
   const std::string s = tl.getStatsAsText();
   tl.clear(true);  // to silent console output upon dtor

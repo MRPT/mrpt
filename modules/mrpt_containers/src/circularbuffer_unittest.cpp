@@ -31,9 +31,15 @@ TEST(circular_buffer_tests, EmptyPopAfterPushes)
   mrpt::containers::circular_buffer<cb_t> cb(LEN);
   for (size_t nWr = 0; nWr < LEN; nWr++)
   {
-    for (size_t i = 0; i < nWr; i++) cb.push(12);
+    for (size_t i = 0; i < nWr; i++)
+    {
+      cb.push(12);
+    }
     cb_t ret;
-    for (size_t i = 0; i < nWr; i++) cb.pop(ret);
+    for (size_t i = 0; i < nWr; i++)
+    {
+      cb.pop(ret);
+    }
     // The next one must fail:
     EXPECT_THROW(cb.pop(ret), std::exception);
   }
@@ -81,7 +87,10 @@ TEST(circular_buffer_tests, RandomWriteManyAndPeek)
     cb_t ret;
     if (iter % 2)
     {
-      for (size_t i = 0; i < nWr; i++) ret = cb.peek(i);
+      for (size_t i = 0; i < nWr; i++)
+      {
+        ret = cb.peek(i);
+      }
       (void)ret;
     }
     else
@@ -90,7 +99,10 @@ TEST(circular_buffer_tests, RandomWriteManyAndPeek)
     }
     if (iter % 3)
     {
-      for (size_t i = 0; i < nWr; i++) cb.pop(ret);
+      for (size_t i = 0; i < nWr; i++)
+      {
+        cb.pop(ret);
+      }
       (void)ret;
     }
     else
@@ -117,7 +129,10 @@ TEST(circular_buffer_tests, RandomWriteAndPeekOverrun)
     {
       EXPECT_ANY_THROW(ret = cb.peek(nWr + k););
     }
-    for (size_t i = 0; i < nWr; i++) cb.pop(ret);
+    for (size_t i = 0; i < nWr; i++)
+    {
+      cb.pop(ret);
+    }
   }
 }
 
@@ -143,12 +158,18 @@ void impl_WritePeekCheck()
   constexpr T LEN = 20;
   mrpt::containers::circular_buffer<T> cb(LEN + 1);
 
-  for (T i = 0; i < LEN; i++) cb.push(i);
+  for (T i = 0; i < LEN; i++)
+  {
+    cb.push(i);
+  }
 
-  std::array<T, LEN> peek_vals;
+  std::array<T, LEN> peek_vals{};
   cb.peek_many(&peek_vals[0], LEN);
 
-  for (T i = 0; i < LEN; i++) EXPECT_EQ(static_cast<int>(peek_vals[i]), static_cast<int>(i));
+  for (T i = 0; i < LEN; i++)
+  {
+    EXPECT_EQ(static_cast<int>(peek_vals[i]), static_cast<int>(i));
+  }
 }
 
 TEST(circular_buffer_tests, WritePeekCheck_uint8_t) { impl_WritePeekCheck<uint8_t>(); }

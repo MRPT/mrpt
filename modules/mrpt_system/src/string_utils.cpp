@@ -136,7 +136,10 @@ std::string mrpt::system::unitsFormat(const double val, int nDecimalDigits, bool
   const double aVal = std::abs(val);
 
   // special case for 0:
-  if (val == 0) return middle_space ? "0 " : "0";
+  if (val == 0)
+  {
+    return middle_space ? "0 " : "0";
+  }
 
   if (aVal >= 1e12)
   {
@@ -237,7 +240,10 @@ void mrpt::system::tokenize(
     {
       if (prev_was_delim)
       {
-        if (!skipBlankTokens) outTokens.push_back(std::string());
+        if (!skipBlankTokens)
+        {
+          outTokens.push_back(std::string());
+        }
       }
       else
       {
@@ -274,15 +280,13 @@ std::string mrpt::system::trim(const std::string& str)
   {
     return std::string();
   }
+
+  size_t s = str.find_first_not_of(" \t");
+  size_t e = str.find_last_not_of(" \t");
+  if (s == std::string::npos || e == std::string::npos)
+    return std::string();
   else
-  {
-    size_t s = str.find_first_not_of(" \t");
-    size_t e = str.find_last_not_of(" \t");
-    if (s == std::string::npos || e == std::string::npos)
-      return std::string();
-    else
-      return str.substr(s, e - s + 1);
-  }
+    return str.substr(s, e - s + 1);
 }
 
 /*---------------------------------------------------------------
@@ -292,7 +296,10 @@ std::string mrpt::system::rightPad(
     const std::string& str, size_t total_len, bool truncate_if_larger)
 {
   std::string r = str;
-  if (r.size() < total_len || truncate_if_larger) r.resize(total_len, ' ');
+  if (r.size() < total_len || truncate_if_larger)
+  {
+    r.resize(total_len, ' ');
+  }
   return r;
 }
 
@@ -336,7 +343,10 @@ void impl_stringListAsString(
 
   // 1) Compute overall length, including 2 chars per new-line:
   size_t totalLen = lst.size() * lenNL;
-  for (const auto& s : lst) totalLen += s.size();
+  for (const auto& s : lst)
+  {
+    totalLen += s.size();
+  }
 
   outText.resize(totalLen);
 
@@ -346,7 +356,10 @@ void impl_stringListAsString(
   {
     mrpt::system::os::memcpy(&outText[curPos], totalLen, s.c_str(), s.size());
     curPos += s.size();
-    for (const auto& sNL : newline) outText[curPos++] = sNL;
+    for (const auto& sNL : newline)
+    {
+      outText[curPos++] = sNL;
+    }
   }
 }
 }  // namespace
@@ -372,7 +385,10 @@ size_t mrpt::system::nthOccurrence(const std::string& str, const std::string& st
   {
     pos++;
     pos = str.find(strToFind, pos);
-    if (pos == std::string::npos) return std::string::npos;
+    if (pos == std::string::npos)
+    {
+      return std::string::npos;
+    }
     cnt++;
   }
   return pos;
@@ -382,7 +398,8 @@ std::string mrpt::system::firstNLines(const std::string& str, size_t n)
 {
   const auto i = nthOccurrence(str, "\n", n);
   if (i == std::string::npos)
+  {
     return str;
-  else
-    return str.substr(0, i);
+  }
+  return str.substr(0, i);
 }

@@ -19,7 +19,10 @@ bool mrpt::containers::internal::dynamic_grid_txt_saver::saveToTextFile(
 {
   std::ofstream f;
   f.open(fileName.c_str(), std::ofstream::out);
-  if (!f.is_open()) return false;
+  if (!f.is_open())
+  {
+    return false;
+  }
   const unsigned int sy = getSizeY(), sx = getSizeX();
   for (unsigned int cy = 0; cy < sy; cy++)
   {
