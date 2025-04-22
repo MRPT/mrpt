@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/config.h>      // MRPT_OS_*()
 #include <mrpt/core/exceptions.h>  // for MRPT_END, MRPT_START, e
 #include <mrpt/core/format.h>
@@ -142,9 +140,7 @@ bool mrpt::system::directoryExists(const std::string& _path)
     path = path.substr(0, path.size() - 1);
 
   // Verify it's a directory:
-  struct _stat buf
-  {
-  };
+  struct _stat buf{};
   if (0 != _stat(path.c_str(), &buf)) return false;
 
 #ifdef _WIN32
@@ -327,9 +323,7 @@ std::string mrpt::system::filePathSeparatorsToNative(const std::string& filePath
 
 mrpt::Clock::time_point mrpt::system::getFileModificationTime(const std::string& filename)
 {
-  struct stat fS
-  {
-  };
+  struct stat fS{};
   if (0 != stat(filename.c_str(), &fS))
     THROW_EXCEPTION_FMT("Could not access modification time of file '%s'", filename.c_str());
   else

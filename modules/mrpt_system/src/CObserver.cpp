@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-//
 #include <mrpt/system/CObservable.h>
 #include <mrpt/system/CObserver.h>
 

@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "core-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/backtrace.h>
 #include <mrpt/core/config.h>  // MRPT_HAS_BFD, etc.
 #include <mrpt/core/demangle.h>
@@ -17,7 +15,9 @@
 #include <mrpt/core/winerror2str.h>
 
 #include <iostream>
+#if MRPT_HAS_BFD && defined(_DEBUG)
 #include <mutex>
+#endif
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -27,16 +27,14 @@
 #else
 #include <dlfcn.h>  // dladdr()
 #include <dlfcn.h>
+
 #ifndef __EMSCRIPTEN__
 #include <execinfo.h>
 #endif
-#include <stdio.h>
+
 #include <stdlib.h>
-#include <string.h>
 
 #include <cstdlib>
-#include <iostream>
-#include <sstream>
 #include <string>
 #endif
 

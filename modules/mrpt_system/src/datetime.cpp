@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/config.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/system/config.h>
@@ -133,9 +131,7 @@ time_t my_timegm(struct tm* tm)
   ---------------------------------------------------------------*/
 TTimeStamp mrpt::system::buildTimestampFromParts(const TTimeParts& p)
 {
-  struct tm parts
-  {
-  };
+  struct tm parts{};
 
   parts.tm_year = p.year - 1900;
   parts.tm_mon = p.month - 1;
@@ -158,9 +154,7 @@ TTimeStamp mrpt::system::buildTimestampFromParts(const TTimeParts& p)
   ---------------------------------------------------------------*/
 TTimeStamp mrpt::system::buildTimestampFromPartsLocalTime(const TTimeParts& p)
 {
-  struct tm parts
-  {
-  };
+  struct tm parts{};
 
   parts.tm_year = p.year - 1900;
   parts.tm_mon = p.month - 1;

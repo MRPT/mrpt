@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "core-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/reverse_bytes.h>
 
 #include <cstdlib>
@@ -28,24 +26,20 @@
 template <typename T>
 void reverseBytesInPlace_2b(T& v_in_out)
 {
+  // Was: = *reinterpret_cast<uint16_t*>(&v_in_out); but caused SIGBUS in some archs
   uint16_t org;
-  std::memcpy(&org, &v_in_out,
-              sizeof(T));  // Was: = *reinterpret_cast<uint16_t*>(&v_in_out); but
-  // caused SIGBUS in some archs
-  const uint16_t val_rev = ((org & 0xff00) >> 8) | ((org & 0x00ff) << 8);
-  std::memcpy(&v_in_out, &val_rev, sizeof(T));  // This avoid deref. puned
-                                                // pointer warning with:
-                                                // *reinterpret_cast<const
-                                                // T*>(&val_rev);
+  std::memcpy(&org, &v_in_out, sizeof(T));
+  const uint16_t val_rev = static_cast<uint16_t>(((org & 0xff00) >> 8) | ((org & 0x00ff) << 8));
+  // This avoid deref. punned pointer warning with: // *reinterpret_cast<const T*>(&val_rev);
+  std::memcpy(&v_in_out, &val_rev, sizeof(T));
 }
 
 template <typename T>
 void reverseBytesInPlace_4b(T& v_in_out)
 {
   uint32_t org;
-  std::memcpy(&org, &v_in_out,
-              sizeof(T));  // Was: = = *reinterpret_cast<uint32_t*>(&v_in_out); but
-  // caused SIGBUS in some archs
+  // Was: *reinterpret_cast<uint32_t*>(&v_in_out); but caused SIGBUS in some archs
+  std::memcpy(&org, &v_in_out, sizeof(T));
   const uint32_t val_rev =
 #if defined(_MSC_VER)
       _byteswap_ulong(org);
@@ -55,19 +49,16 @@ void reverseBytesInPlace_4b(T& v_in_out)
       ((org & 0xff000000) >> (3 * 8)) | ((org & 0x00ff0000) >> (1 * 8)) |
       ((org & 0x0000ff00) << (1 * 8)) | ((org & 0x000000ff) << (3 * 8));
 #endif
-  std::memcpy(&v_in_out, &val_rev, sizeof(T));  // This avoid deref. puned
-                                                // pointer warning with:
-                                                // *reinterpret_cast<const
-                                                // T*>(&val_rev);
+  // This avoid deref. punned pointer warning with: // *reinterpret_cast<const T*>(&val_rev);
+  std::memcpy(&v_in_out, &val_rev, sizeof(T));
 }
 
 template <typename T>
 void reverseBytesInPlace_8b(T& v_in_out)
 {
+  // Was: = *reinterpret_cast<uint64_t*>(&v_in_out); but caused SIGBUS in some archs
   uint64_t org;
-  std::memcpy(&org, &v_in_out,
-              sizeof(T));  // Was: = *reinterpret_cast<uint64_t*>(&v_in_out); but
-// caused SIGBUS in some archs
+  std::memcpy(&org, &v_in_out, sizeof(T));
 #if defined(_MSC_VER)
   uint64_t val_rev = _byteswap_uint64(org);
 #elif defined(HAVE_BSWAP_INTRINSICS)
@@ -80,10 +71,8 @@ void reverseBytesInPlace_8b(T& v_in_out)
   for (i = 3, j = 1; i >= 0; i--, j += 2)
     val_rev |= ((org & (UINT64_C(0xff) << (i * 8))) << (j * 8));
 #endif
-  std::memcpy(&v_in_out, &val_rev, sizeof(T));  // This avoid deref. puned
-                                                // pointer warning with:
-                                                // *reinterpret_cast<const
-                                                // T*>(&val_rev);
+  // This avoid deref. punned pointer warning with: // *reinterpret_cast<const T*>(&val_rev);
+  std::memcpy(&v_in_out, &val_rev, sizeof(T));
 }
 
 void mrpt::reverseBytesInPlace(bool&)

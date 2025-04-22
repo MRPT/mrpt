@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "core-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/demangle.h>
 
 #ifdef _WIN32
@@ -23,8 +21,6 @@
 #include <execinfo.h>
 #endif
 #include <cstdlib>
-#include <iostream>
-#include <sstream>
 #include <string>
 #endif
 

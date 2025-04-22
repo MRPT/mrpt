@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "core-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/winerror2str.h>
 
 #ifdef _WIN32

@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "core-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/format.h>
 
 #include <cstdarg>  // For va_list, va_start, va_end, va_copy

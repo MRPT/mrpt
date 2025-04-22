@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/config.h>
 #include <mrpt/core/config.h>  // MRPT_OS_*()
 #include <mrpt/core/exceptions.h>
@@ -79,9 +77,7 @@ using namespace std;
 void my_aux_sighandler(int) {}
 int myKbhit()
 {
-  struct termios oldtio
-  {
-  }, curtio{};
+  struct termios oldtio{}, curtio{};
   //		struct sigaction sa;
 
   /* Save stdin terminal attributes */
@@ -330,9 +326,7 @@ int os::getch() noexcept
 #ifdef _WIN32
   return ::getch();  // cin.get();
 #else
-  struct termios oldt
-  {
-  }, newt{};
+  struct termios oldt{}, newt{};
   int ch;
   tcgetattr(STDIN_FILENO, &oldt);
   newt = oldt;

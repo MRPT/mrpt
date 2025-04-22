@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled header
-//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/system/WorkerThreadsPool.h>
 

@@ -39,8 +39,6 @@ documentation and/or software.
 
 */
 
-#include "system-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/common.h>      // MSVC warnings
 #include <mrpt/core/exceptions.h>  // ASSERT_
 #include <mrpt/system/md5.h>

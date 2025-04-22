@@ -13,8 +13,6 @@
  * @date   Dec 6, 2018
  */
 
-#include "core-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/WorkerThreadsPool.h>
 #include <mrpt/core/config.h>
 #include <mrpt/core/config.h>  // MRPT_OS_*()

@@ -7,10 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-//
-#include <mrpt/system/config.h>  // MRPT_HAS_INOTIFY
 #include <mrpt/core/config.h>
+#include <mrpt/system/config.h>  // MRPT_HAS_INOTIFY
 
 #ifdef _WIN32
 #ifndef _WIN32_WINNT
@@ -155,9 +153,7 @@ void CFileSystemWatcher::getChanges(TFileSystemChangeList& out_list)
   // Refer to:
   //  http://www.linuxjournal.com/article/8478
   //  http://inotify.aiken.cz/?section=common&page=home&lang=en
-  struct timeval time
-  {
-  };
+  struct timeval time{};
   fd_set rfds;
   int ret;
 

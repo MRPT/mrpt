@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/bits_math.h>
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/system/CTimeLogger.h>
@@ -26,7 +24,7 @@ using namespace std;
 
 struct MyGlobalProfiler : public mrpt::system::CTimeLogger
 {
-  MyGlobalProfiler() : mrpt::system::CTimeLogger("MRPT_global_profiler") {}
+  MyGlobalProfiler() : mrpt::system::CTimeLogger(true, "MRPT_global_profiler") {}
   ~MyGlobalProfiler() override
   {
     try
