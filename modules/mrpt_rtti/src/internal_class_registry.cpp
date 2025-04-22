@@ -7,16 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "rtti-precomp.h"  // Precompiled headers
-//
+#include "internal_class_registry.h"
+
 #include <mrpt/rtti/CObject.h>
 
 #include <cstdarg>
 #include <iostream>
 #include <map>
 #include <shared_mutex>
-
-#include "internal_class_registry.h"
 
 using namespace mrpt::rtti;
 

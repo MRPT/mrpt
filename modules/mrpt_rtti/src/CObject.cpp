@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "rtti-precomp.h"  // Precompiled headers
-//
 #include <mrpt/rtti/CObject.h>
 
 #include <cstdio>
