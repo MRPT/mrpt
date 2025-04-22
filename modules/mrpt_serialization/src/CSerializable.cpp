@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "serialization-precomp.h"  // Precompiled headers
-//
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/archiveFrom_std_vector.h>
 

@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "serialization-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/byte_manip.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/serialization/CArchive.h>
@@ -317,7 +315,7 @@ CArchive& mrpt::serialization::operator>>(CArchive& in, std::string& str)
   return in;
 }
 
-//#define CARCHIVE_VERBOSE     1
+// #define CARCHIVE_VERBOSE     1
 #define CARCHIVE_VERBOSE 0
 
 void CArchive::internal_ReadObjectHeader(

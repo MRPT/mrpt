@@ -60,7 +60,7 @@ class CSerializable : public mrpt::rtti::CObject
   /** Virtual method for writing (serializing) to an abstract
    *  schema based archive.
    */
-  virtual void serializeTo(CSchemeArchiveBase& out) const
+  virtual void serializeTo([[maybe_unused]] CSchemeArchiveBase& out) const
   {
     const std::string err = std::string(this->GetRuntimeClass()->className) +
                             std::string(" : class does not support schema based serialization");
@@ -69,7 +69,7 @@ class CSerializable : public mrpt::rtti::CObject
   /** Virtual method for reading (deserializing) from an abstract
    *  schema based archive.
    */
-  virtual void serializeFrom(CSchemeArchiveBase& in)
+  virtual void serializeFrom([[maybe_unused]] CSchemeArchiveBase& in)
   {
     const std::string err = std::string(this->GetRuntimeClass()->className) +
                             std::string(" : class does not support schema based serialization");
