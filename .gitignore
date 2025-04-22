@@ -1,6 +1,7 @@
 *~
 build*
 install*
+log
 *.layout
 CMakeFiles/
 CMakeLists.txt.user*
@@ -26,6 +27,8 @@ graphslam_results/
 #visual studio
 .vs/*
 .vscode
+!.vscode/settings.json
+
 
 # doxygen files
 doc/source/dox_mrpt.tag
