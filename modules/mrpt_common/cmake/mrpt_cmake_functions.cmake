@@ -664,3 +664,18 @@ macro(mrpt_version_to_hexadecimal OUT_VAR IN_VERSION)
     (${VERSION_NUMBER_MINOR} << 8) + \
     (${VERSION_NUMBER_PATCH})" OUTPUT_FORMAT HEXADECIMAL )
 endmacro()
+
+# Minimize the time and memory required to build and load debug info:
+#-----------------------------------------------------------------------
+function(mrpt_reduced_debug_symbols TARGET_)
+	get_property(CUR_FLAGS_ TARGET ${TARGET_} PROPERTY COMPILE_OPTIONS)
+	set(cxxflags_ "$ENV{CXXFLAGS}")
+	separate_arguments(cxxflags_)
+	if (("-g" IN_LIST CUR_FLAGS_) OR ("-g" IN_LIST cxxflags_))
+		if (MRPT_COMPILER_IS_GCC)
+			target_compile_options(${TARGET_} PRIVATE -g1)
+		elseif(MRPT_COMPILER_IS_CLANG)
+			target_compile_options(${TARGET_} PRIVATE -gline-tables-only)
+		endif()
+	endif()
+endfunction()

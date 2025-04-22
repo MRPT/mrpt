@@ -20,20 +20,6 @@ function(mrpt_lib_target_requires_cpp17 _TARGET)
 	target_compile_features(${_TARGET} ${INTERF_TYPE} cxx_std_17)
 endfunction()
 
-# Minimize the time and memory required to build and load debug info:
-#-----------------------------------------------------------------------
-function(mrpt_reduced_debug_symbols TARGET_)
-	get_property(CUR_FLAGS_ TARGET ${TARGET_} PROPERTY COMPILE_OPTIONS)
-	set(cxxflags_ "$ENV{CXXFLAGS}")
-	separate_arguments(cxxflags_)
-	if (("-g" IN_LIST CUR_FLAGS_) OR ("-g" IN_LIST cxxflags_))
-		if (MRPT_COMPILER_IS_GCC)
-			target_compile_options(${TARGET_} PRIVATE -g1)
-		elseif(MRPT_COMPILER_IS_CLANG)
-			target_compile_options(${TARGET_} PRIVATE -gline-tables-only)
-		endif()
-	endif()
-endfunction()
 
 # handle_special_simd_flags(): Add custom flags to a set of source files
 # Only for Intel-compatible archs
