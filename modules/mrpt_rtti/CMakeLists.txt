@@ -8,7 +8,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 # Tell CMake we'll use C++ for use in its tests/flags
-project(mrpt_system LANGUAGES C CXX)
+project(mrpt_rtti LANGUAGES C CXX)
 
 # MRPT CMake scripts: "mrpt_xxx()"
 find_package(mrpt_common REQUIRED)
