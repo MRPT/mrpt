@@ -46,3 +46,4 @@ doc/source/doxygen-index.rst
 .cmake
 doc/venv
 .pc
+.cache

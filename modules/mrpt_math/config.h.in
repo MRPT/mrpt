@@ -15,7 +15,4 @@
 #define MRPT_HAS_NANOFLANN          ${CMAKE_MRPT_HAS_NANOFLANN}
 #define MRPT_HAS_NANOFLANN_SYSTEM   ${CMAKE_MRPT_HAS_NANOFLANN_SYSTEM}
 
-/** Has SuiteSparse sublibs? */
-#define MRPT_HAS_SUITESPARSE ${CMAKE_MRPT_HAS_SUITESPARSE}
-
 // clang-format on
