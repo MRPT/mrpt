@@ -86,8 +86,8 @@ void bind_mrpt_opengl_Texture(std::function< pybind11::module &(std::string cons
 		}
 
 	}
-	// mrpt::opengl::getNewTextureNumber() file:mrpt/opengl/Texture.h line:137
-	M("mrpt::opengl").def("getNewTextureNumber", (unsigned int (*)()) &mrpt::opengl::getNewTextureNumber, "C++: mrpt::opengl::getNewTextureNumber() --> unsigned int");
+	// mrpt::opengl::getNewTextureNumber(const unsigned char *) file:mrpt/opengl/Texture.h line:137
+	M("mrpt::opengl").def("getNewTextureNumber", (unsigned int (*)(const unsigned char *)) &mrpt::opengl::getNewTextureNumber, "C++: mrpt::opengl::getNewTextureNumber(const unsigned char *) --> unsigned int", pybind11::arg("optionalRgbDataForAssociation"));
 
 	// mrpt::opengl::releaseTextureName(const unsigned int &) file:mrpt/opengl/Texture.h line:138
 	M("mrpt::opengl").def("releaseTextureName", (void (*)(const unsigned int &)) &mrpt::opengl::releaseTextureName, "C++: mrpt::opengl::releaseTextureName(const unsigned int &) --> void", pybind11::arg("t"));

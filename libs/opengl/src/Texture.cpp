@@ -85,7 +85,7 @@ class TextureResourceHandler
 
   std::optional<texture_name_t> checkIfTextureAlreadyExists(const mrpt::img::CImage& rgb)
   {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL) && MRPT_HAS_OPENCV
     auto lck = mrpt::lockHelper(m_texturesMtx);
 
     auto it = m_textureToRGBdata.getInverseMap().find(rgb.asCvMatRef().data);
@@ -275,7 +275,7 @@ void Texture::internalAssignImage_2D(
     const Options& o,
     int textureUnit)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL) && MRPT_HAS_OPENCV
   unsigned char* dataAligned = nullptr;
   std::vector<uint8_t> data;
 
@@ -314,7 +314,6 @@ void Texture::internalAssignImage_2D(
 
     case mrpt::img::PixelDepth::D16U:
     {
-#if MRPT_HAS_OPENCV
       double ratio;
       if (o.autoScale16to8bitConversion)
       {
@@ -331,7 +330,6 @@ void Texture::internalAssignImage_2D(
 
       rgb.resize(in_rgb->getWidth(), in_rgb->getHeight(), mrpt::img::CH_RGB);
       cv::convertScaleAbs(in_rgb->asCvMatRef(), rgb.asCvMatRef(), 255.0 / ratio);
-#endif
     }
     break;
 

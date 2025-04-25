@@ -70,3 +70,33 @@ TEST(TopographyConversion, geodeticToENU_WGS84)
   EXPECT_NEAR(P.y, 0, 0.1e-3);
   EXPECT_NEAR(P.z, A_height, 0.1e-3);
 }
+
+TEST(TopographyConversion, geodeticToUTM_WGS84)
+{
+  mrpt::topography::TGeodeticCoords gps_point;
+  gps_point.lon = -2.404508;
+  gps_point.lat = 36.829293;
+  gps_point.height = 0;
+
+  mrpt::topography::TUTMCoords utm;
+  int utm_zone = 0;
+  char lat_band = 0;
+
+  mrpt::topography::geodeticToUTM(gps_point, utm, utm_zone, lat_band);
+
+  EXPECT_EQ(utm_zone, 30);
+  EXPECT_EQ(lat_band, 'S');
+  EXPECT_NEAR(utm.x, 553103.02, 0.05);
+  EXPECT_NEAR(utm.y, 4076100.98, 0.05);
+}
+
+TEST(TopographyConversion, UTMToGeodetic_WGS84)
+{
+  const mrpt::topography::TUTMCoords utm = {553103.020, 4076100.969, 0.0};
+
+  mrpt::topography::TGeodeticCoords gc;
+  mrpt::topography::UTMToGeodetic(utm, 30, 'N', gc);
+
+  EXPECT_NEAR(gc.lat, 36.829293, 1e-6);
+  EXPECT_NEAR(gc.lon, -2.404508, 1e-6);
+}
