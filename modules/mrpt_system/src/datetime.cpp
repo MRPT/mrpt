@@ -40,6 +40,7 @@
 
 #include <cmath>  // floor()
 #include <ctime>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -391,26 +392,37 @@ std::string implIntervalFormat(const double seconds)
     return format("%i day%s", i, i > 1 ? "s" : "") + ", "s +
            implIntervalFormat(std::fmod(seconds, (24 * 3600)));
   }
-  else if (seconds >= 3600)
+
+  if (seconds >= 3600)
   {
     const int i = static_cast<int>(seconds / 3600);
     return format("%i hour%s", i, i > 1 ? "s" : "") + ", "s +
            implIntervalFormat(std::fmod(seconds, 3600));
   }
-  else if (seconds >= 60)
+
+  if (seconds >= 60)
   {
     const int i = static_cast<int>(seconds / 60);
     return format("%i minute%s", i, i > 1 ? "s" : "") + ", "s +
            implIntervalFormat(std::fmod(seconds, 60));
   }
-  else if (seconds >= 1)
+
+  if (seconds >= 1)
+  {
     return format("%.2f sec", seconds);
-  else if (seconds >= 1e-3)
+  }
+
+  if (seconds >= 1e-3)
+  {
     return format("%.2f ms", seconds * 1e3);
-  else if (seconds >= 1e-6)
+  }
+
+  if (seconds >= 1e-6)
+  {
     return format("%.2f us", seconds * 1e6);
-  else
-    return format("%.2f ns", seconds * 1e9);
+  }
+
+  return format("%.2f ns", seconds * 1e9);
 }
 }  // namespace
 

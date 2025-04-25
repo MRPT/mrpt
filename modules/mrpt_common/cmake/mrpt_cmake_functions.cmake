@@ -243,8 +243,6 @@ endfunction()
 # -----------------------------------------------------------------------------
 function(mrpt_configure_library TARGETNAME HEADERS_ONLY_LIBRARY ADDITIONAL_EXPORT_TARGETS CMAKE_DEPS)
 
-  message(STATUS "HEADERS_ONLY_LIBRARY: ${HEADERS_ONLY_LIBRARY}")
-
   # Public hdrs interface:
   if (HEADERS_ONLY_LIBRARY)
     target_include_directories(${TARGETNAME} INTERFACE
