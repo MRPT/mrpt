@@ -87,9 +87,9 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 
   // track, AND ALSO, add new features
   tracker->extra_params["add_new_features"] = 1;
-  tracker->extra_params["desired_num_features_adapt"] = 500;
+  tracker->extra_params["desired_num_features_adapt"] = 1500;
   tracker->extra_params["add_new_feat_min_separation"] = 30;
-  tracker->extra_params["add_new_feat_max_features"] = 350;
+  tracker->extra_params["add_new_feat_max_features"] = 500;
   // FAST9,10,12:
   tracker->extra_params["add_new_features_FAST_version"] = 10;
 
@@ -98,7 +98,7 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
   tracker->extra_params["update_patches_every"] = 0;
 
   // KLT-response to ensure good features:
-  tracker->extra_params["minimum_KLT_response_to_add"] = 70;
+  tracker->extra_params["minimum_KLT_response_to_add"] = 30;
   tracker->extra_params["check_KLT_response_every"] = 1;
   tracker->extra_params["minimum_KLT_response"] = 30;
   tracker->extra_params["KLT_response_half_win"] = 8;
@@ -496,34 +496,16 @@ int main(int argc, char** argv)
     std::cerr << mrpt::exception_to_str(e) << std::endl
               << "Program finished for an exception!!" << std::endl;
     mrpt::system::pause();
-    return -1;
-  }
-  catch (...)
-  {
-    std::cerr << "Untyped exception!!" << std::endl;
-    mrpt::system::pause();
-    return -1;
+    return 1;
   }
 }
 
 void showUsage(char* cmd)
 {
-  cout << "Usage:\n"
-          "  "
-       << cmd
-       << " [--save-video]                -> Ask the user for video source.\n"
-          "  "
-       << cmd
-       << " dataset.rawlog [--save-video]  -> Use a rawlog file.\n"
-          "  "
-       << cmd
-       << " video.{avi,mpg}[--save-video]  -> Use a video file.\n"
-          "  "
-       << cmd
-       << " --help          -> Show this information.\n"
-          "  "
-       << cmd
-       << " If added --save-video, an video file will be created with "
-          "results.\n"
-          "\n";
+  cout << "Usage:\n  " << cmd
+       << " [--save-video]                -> Ask the user for video source.\n  " <<  //
+      cmd << " dataset.rawlog [--save-video]  -> Use a rawlog file.\n  " <<          //
+      cmd << " video.{avi,mpg}[--save-video]  -> Use a video file.\n  " <<           //
+      cmd << " --help          -> Show this information.\n  " <<                     //
+      cmd << " If added --save-video, an video file will be created with results.\n";
 }

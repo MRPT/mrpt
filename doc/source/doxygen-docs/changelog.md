@@ -1,5 +1,12 @@
 \page changelog Change Log
 
+# Version 2.14.8: Released Apr 25th, 2025
+- Build system:
+  - Fix build w/o OpenCV.
+- BUG FIXES:
+  - RawLogViewer scan matching module GUI was broken.
+  - CCameraSensor would crash at the end of a video file input.
+
 # Version 2.14.7: Released Dec 9th, 2024
 - Changes in apps:
   - rosbag2rawlog (ROS1): Implement conversion of NavSatFix -> mrpt::obs::CObservationGPS

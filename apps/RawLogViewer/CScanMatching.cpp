@@ -582,6 +582,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
     cout << "REFERENCE MAP FOR THE ICP:" << endl;
     refMapPt.insertionOptions.dumpToConsole();
     refMapPt.renderOptions.color = mrpt::img::TColorf(.0f, .0f, 1.0f);
+    refMapPt.renderOptions.point_size = 3.0;
   }
   else
   {
@@ -602,6 +603,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
     CConfigFileMemory refCfg(string(edOptAlignMap->GetValue().mb_str()));
     newMapPt.insertionOptions.loadFromConfigFile(refCfg, "InsertionOptions");
     newMapPt.renderOptions.color = mrpt::img::TColorf(1.0f, .0f, .0f);
+    newMapPt.renderOptions.point_size = 2.0;
 
     cout << "NEW MAP (TO ALIGN) FOR THE ICP:" << endl;
     newMapPt.insertionOptions.dumpToConsole();
@@ -613,8 +615,9 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
   insert_obs_into_map(obj_new, &newMapPt);
 
   // Delete all existing draw layers:
-  m_gl_map_ref = refMap->getVisualization();
-  m_gl_map_new = newMapPt.getVisualization();
+  *m_gl_map_ref = *refMap->getVisualization();
+  m_gl_map_new->clear();
+  m_gl_map_new->insert(newMapPt.getVisualization());
 
   auto gl_ellipse = mrpt::opengl::CEllipsoid2D::Create();
   gl_ellipse->setQuantiles(3.0f);
@@ -624,8 +627,8 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
   // Align:
   // --------------------------------------
   bool isAnimation = cbAnimate->GetValue();
-  unsigned int maxSteps = icp.options.maxIterations;
-  unsigned int curStep = isAnimation ? 0 : maxSteps;
+  const unsigned int maxSteps = icp.options.maxIterations;
+  unsigned int curStep = isAnimation ? 1 : maxSteps;
   CPose2D estMean;
   CMatrixDouble33 estCov;
 
@@ -639,13 +642,12 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 
     pbSteps->SetRange(maxSteps);
 
-    while (curStep <= maxSteps)
+    for (; curStep <= maxSteps; curStep++)
     {
       if (isAnimation)
       {
         txtStep->SetLabel((format("Step: %u / %u", curStep, maxSteps).c_str()));
         pbSteps->SetValue(curStep);
-        wxTheApp->Yield();  // Let the app. process messages
       }
 
       icp.options.maxIterations = curStep;
@@ -672,7 +674,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
       cout << format("Quality: %.04f\n", icpInfo.quality);
 
       // Already converged?
-      if (isAnimation && icpInfo.nIterations < (curStep - 3))
+      if (isAnimation && static_cast<int>(icpInfo.nIterations) < (static_cast<int>(curStep) - 3))
       {
         curStep = maxSteps;
         pbSteps->SetValue(maxSteps);
@@ -689,28 +691,23 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
       cout << " std(phi) = " << RAD2DEG(sqrt(estCov(2, 2))) << " deg. " << endl;
 
       cout << format("Output PDF class is: %s\n", poseEst->GetRuntimeClass()->className);
-      if (poseEst->GetRuntimeClass() == CLASS_ID(CPosePDFSOG))
+      if (const auto SOG = std::dynamic_pointer_cast<CPosePDFSOG>(poseEst); SOG)
       {
-        CPosePDFSOG::Ptr SOG = std::dynamic_pointer_cast<CPosePDFSOG>(poseEst);
-        size_t i, n = SOG->size();
+        const size_t n = SOG->size();
         cout << format("# of gaussians in SOG: %i\n", (int)n);
-        for (i = 0; i < n; i++)
+        for (size_t i = 0; i < n; i++)
         {
           cout << format("SOG[%02i]:w=%e mean=", (int)i, SOG->get(i).log_w) << SOG->get(i).mean
                << endl;
         }
       }
 
-      // delete poseEst; poseEst=nullptr;
-
       if (isAnimation)
       {
-        wxTheApp->Yield();  // Let the app. process messages
+        wxTheApp->SafeYield(this, true);
         ::wxMilliSleep(100);
       }
-
-      curStep++;
-    }  // end while
+    }
 
     // End of wait cursor
   }
