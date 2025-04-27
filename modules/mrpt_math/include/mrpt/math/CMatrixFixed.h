@@ -288,15 +288,17 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
    */
   inline T& operator()(int row, int col)
   {
-    ASSERTDEB_(static_cast<std::size_t>(row) < ROWS);
-    ASSERTDEB_(static_cast<std::size_t>(col) < COLS);
-    return m_data[row * COLS + col];
+    const auto r = static_cast<std::size_t>(row), c = static_cast<std::size_t>(r);
+    ASSERTDEB_(r < ROWS);
+    ASSERTDEB_(c < COLS);
+    return m_data[r * COLS + c];
   }
   inline const T& operator()(int row, int col) const
   {
-    ASSERTDEB_(static_cast<std::size_t>(row) < ROWS);
-    ASSERTDEB_(static_cast<std::size_t>(col) < COLS);
-    return m_data[row * COLS + col];
+    const auto r = static_cast<std::size_t>(row), c = static_cast<std::size_t>(r);
+    ASSERTDEB_(r < ROWS);
+    ASSERTDEB_(c < COLS);
+    return m_data[r * COLS + c];
   }
 
   /** Access the i-th element, Row-Major order, without out-of-bounds check
@@ -304,27 +306,31 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
    */
   inline T& operator()(int i)
   {
-    ASSERTDEB_(static_cast<std::size_t>(i) < ROWS * COLS);
-    return m_data[i];
+    const auto idx = static_cast<std::size_t>(i);
+    ASSERTDEB_(idx < ROWS * COLS);
+    return m_data[idx];
   }
   inline const T& operator()(int i) const
   {
-    ASSERTDEB_(static_cast<std::size_t>(i) < ROWS * COLS);
-    return m_data[i];
+    const auto idx = static_cast<std::size_t>(i);
+    ASSERTDEB_(idx < ROWS * COLS);
+    return m_data[idx];
   }
 
   /** Access the [i-th] element (for 1xN or Nx1 matrices) */
   inline T& operator[](int i)
   {
     ASSERT_(ROWS == 1 || COLS == 1);
-    ASSERTDEB_(static_cast<std::size_t>(i) < ROWS * COLS);
-    return m_data[i];
+    const auto idx = static_cast<std::size_t>(i);
+    ASSERTDEB_(idx < ROWS * COLS);
+    return m_data[idx];
   }
   inline const T& operator[](int i) const
   {
     ASSERT_(ROWS == 1 || COLS == 1);
-    ASSERTDEB_(static_cast<std::size_t>(i) < ROWS * COLS);
-    return m_data[i];
+    const auto idx = static_cast<std::size_t>(i);
+    ASSERTDEB_(idx < ROWS * COLS);
+    return m_data[idx];
   }
 
   CMatrixFixed<float, ROWS, COLS> cast_float() const;
