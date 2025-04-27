@@ -25,7 +25,7 @@ template <>
 class CArchiveStreamBase<std::vector<uint8_t>> : public CArchive
 {
   std::vector<uint8_t>& m_v;
-  int m_pos_read{0};
+  std::size_t m_pos_read{0};
 
  public:
   CArchiveStreamBase(std::vector<uint8_t>& v) : m_v(v) {}
@@ -40,9 +40,11 @@ class CArchiveStreamBase<std::vector<uint8_t>> : public CArchive
   }
   size_t read(void* d, size_t n) override
   {
-    const int avail = static_cast<int>(m_v.size()) - m_pos_read;
-    if (avail < static_cast<int>(n))
+    const auto avail = m_v.size() - m_pos_read;
+    if (avail < n)
+    {
       throw std::runtime_error("CArchiveStreamBase: EOF reading from std::vector!");
+    }
     std::memcpy(d, &m_v[m_pos_read], n);
     m_pos_read += n;
     return n;
@@ -53,21 +55,23 @@ template <>
 class CArchiveStreamBase<const std::vector<uint8_t>> : public CArchive
 {
   const std::vector<uint8_t>& m_v;
-  int m_pos_read{0};
+  std::size_t m_pos_read{0};
 
  public:
   CArchiveStreamBase(const std::vector<uint8_t>& v) : m_v(v) {}
 
  protected:
-  size_t write(const void* d, size_t n) override
+  size_t write([[maybe_unused]] const void* d, [[maybe_unused]] size_t n) override
   {
     throw std::runtime_error("CArchiveStreamBase: Attempt to write to read-only vector.");
   }
   size_t read(void* d, size_t n) override
   {
-    const int avail = static_cast<int>(m_v.size()) - m_pos_read;
-    if (avail < static_cast<int>(n))
+    const auto avail = m_v.size() - m_pos_read;
+    if (avail < n)
+    {
       throw std::runtime_error("CArchiveStreamBase: EOF reading from std::vector!");
+    }
     std::memcpy(d, &m_v[m_pos_read], n);
     m_pos_read += n;
     return n;

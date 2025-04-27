@@ -14,7 +14,6 @@
 
 #include <Eigen/Eigenvalues>  // EigenSolver
 #include <cstdint>
-#include <stdexcept>
 #include <vector>
 
 namespace mrpt::math
@@ -26,12 +25,14 @@ void MatrixBase<Scalar, Derived>::unsafeRemoveColumns(const std::vector<std::siz
   const auto nR = mbDerived().rows();
   for (auto it = idxs.rbegin(); it != idxs.rend(); ++it, ++k)
   {
-    const auto nC = mbDerived().cols() - *it - k;
+    const auto nC = mbDerived().cols() - static_cast<int>(*it) - static_cast<int>(k);
     if (nC > 0)
+    {
       mbDerived().asEigen().block(0, *it, nR, nC) =
           mbDerived().asEigen().block(0, *it + 1, nR, nC).eval();
+    }
   }
-  mbDerived().setSize(nR, mbDerived().cols() - idxs.size());
+  mbDerived().setSize(static_cast<typename Derived::Index>(nR), mbDerived().cols() - idxs.size());
 }
 
 template <typename Scalar, class Derived>
@@ -40,7 +41,7 @@ void MatrixBase<Scalar, Derived>::removeColumns(const std::vector<std::size_t>& 
   std::vector<std::size_t> idxs = idxsToRemove;
   std::sort(idxs.begin(), idxs.end());
   auto itEnd = std::unique(idxs.begin(), idxs.end());
-  idxs.resize(itEnd - idxs.begin());
+  idxs.resize(static_cast<std::size_t>(itEnd - idxs.begin()));
   for (const auto idx : idxs)
   {
     ASSERT_LT_(idx, static_cast<std::size_t>(mbDerived().cols()));
@@ -55,12 +56,17 @@ void MatrixBase<Scalar, Derived>::unsafeRemoveRows(const std::vector<size_t>& id
   const auto nC = mbDerived().cols();
   for (auto it = idxs.rbegin(); it != idxs.rend(); ++it, ++k)
   {
-    const auto nR = mbDerived().rows() - *it - k;
+    const auto nR = mbDerived().rows() - static_cast<int>(*it) - static_cast<int>(k);
     if (nR > 0)
+    {
       mbDerived().asEigen().block(*it, 0, nR, nC) =
-          mbDerived().asEigen().block(*it + 1, 0, nR, nC).eval();
+          mbDerived()
+              .asEigen()
+              .block(static_cast<typename Derived::Index>(*it + 1), 0, nR, nC)
+              .eval();
+    }
   }
-  mbDerived().setSize(mbDerived().rows() - idxs.size(), nC);
+  mbDerived().setSize(mbDerived().rows() - static_cast<int>(idxs.size()), nC);
 }
 
 template <typename Scalar, class Derived>
@@ -69,7 +75,7 @@ void MatrixBase<Scalar, Derived>::removeRows(const std::vector<size_t>& idxsToRe
   std::vector<std::size_t> idxs = idxsToRemove;
   std::sort(idxs.begin(), idxs.end());
   auto itEnd = std::unique(idxs.begin(), idxs.end());
-  idxs.resize(itEnd - idxs.begin());
+  idxs.resize(static_cast<std::size_t>(itEnd - idxs.begin()));
   for (const auto idx : idxs)
   {
     ASSERT_LT_(idx, static_cast<std::size_t>(mbDerived().rows()));
@@ -96,7 +102,11 @@ void sortEigResults(
   const int64_t N = static_cast<int64_t>(eVals.size());
   std::vector<std::pair<Scalar, int64_t>> D;
   D.reserve(N);
-  for (int64_t i = 0; i < N; i++) D.emplace_back(eVals[i], i);
+  for (int64_t i = 0; i < N; i++)
+  {
+    D.emplace_back(eVals[i], i);
+  }
+
   std::sort(D.begin(), D.end());
 
   // store:
@@ -104,8 +114,9 @@ void sortEigResults(
   sorted_eVals.resize(N);
   for (int64_t i = 0; i < N; i++)
   {
-    sorted_eVals[i] = D[i].first;
-    sorted_eVecs.col(i) = eVecs.col(D[i].second);
+    sorted_eVals[static_cast<std::size_t>(i)] = D[static_cast<std::size_t>(i)].first;
+    sorted_eVecs.col(static_cast<typename MATRIX2::Index>(i)) =
+        eVecs.col(D[static_cast<std::size_t>(i)].second);
   }
 }
 }  // namespace detail
@@ -114,7 +125,10 @@ template <typename Scalar, class Derived>
 bool MatrixBase<Scalar, Derived>::eig(Derived& eVecs, std::vector<Scalar>& eVals, bool sorted) const
 {
   Eigen::EigenSolver<typename Derived::eigen_t> es(mbDerived().asEigen());
-  if (es.info() != Eigen::Success) return false;
+  if (es.info() != Eigen::Success)
+  {
+    return false;
+  }
   const auto eigenVal = es.eigenvalues().real();
   ASSERT_EQUAL_(eigenVal.rows(), mbDerived().rows());
   const auto N = eigenVal.rows();
@@ -127,7 +141,10 @@ bool MatrixBase<Scalar, Derived>::eig(Derived& eVecs, std::vector<Scalar>& eVals
   {
     eVals.resize(N);
     eVecs = es.eigenvectors().real();
-    for (int i = 0; i < N; i++) eVals[i] = eigenVal[i];
+    for (int i = 0; i < N; i++)
+    {
+      eVals[static_cast<std::size_t>(i)] = eigenVal[i];
+    }
   }
   return true;
 }
@@ -137,7 +154,10 @@ bool MatrixBase<Scalar, Derived>::eig_symmetric(
     Derived& eVecs, std::vector<Scalar>& eVals, bool sorted) const
 {
   Eigen::SelfAdjointEigenSolver<typename Derived::eigen_t> es(mbDerived().asEigen());
-  if (es.info() != Eigen::Success) return false;
+  if (es.info() != Eigen::Success)
+  {
+    return false;
+  }
   const auto eigenVal = es.eigenvalues().real();
   ASSERT_EQUAL_(eigenVal.rows(), mbDerived().rows());
   const auto N = eigenVal.rows();
@@ -147,13 +167,19 @@ bool MatrixBase<Scalar, Derived>::eig_symmetric(
     detail::sortEigResults(eigenVal, es.eigenvectors().real(), eVals, eVecs);
 
     // Avoid numerical issues on some platforms (e.g. i386 arch)
-    if (eVals.at(0) < 0) eVals.at(0) = 0;
+    if (eVals.at(0) < 0)
+    {
+      eVals.at(0) = 0;
+    }
   }
   else
   {
-    eVals.resize(N);
+    eVals.resize(static_cast<std::size_t>(N));
     eVecs = es.eigenvectors().real();
-    for (int i = 0; i < N; i++) eVals[i] = eigenVal[i];
+    for (int i = 0; i < N; i++)
+    {
+      eVals[static_cast<std::size_t>(i)] = eigenVal[i];
+    }
   }
   return true;
 }
@@ -162,7 +188,11 @@ template <typename Scalar, class Derived>
 int MatrixBase<Scalar, Derived>::rank(Scalar threshold) const
 {
   Eigen::FullPivLU<typename Derived::eigen_t> lu(mbDerived().asEigen().eval());
-  if (threshold > 0) lu.setThreshold(threshold);
+  if (threshold > 0)
+  {
+    lu.setThreshold(threshold);
+  }
+
   return lu.rank();
 }
 
@@ -171,7 +201,10 @@ bool MatrixBase<Scalar, Derived>::chol(Derived& U) const
 {
   Eigen::LLT<typename Derived::eigen_t> Chol =
       mbDerived().asEigen().template selfadjointView<Eigen::Lower>().llt();
-  if (Chol.info() == Eigen::NoConvergence) return false;
+  if (Chol.info() == Eigen::NoConvergence)
+  {
+    return false;
+  }
   U = typename Derived::eigen_t(Chol.matrixU());
   return true;
 }

@@ -27,12 +27,12 @@ class InnerStride;
 template <int Outer, int Inner>
 class Stride;
 template <
-    typename _Scalar,
-    int _Rows,
-    int _Cols,
-    int _Options,
-    int _MaxRows /*= _Rows*/,
-    int _MaxCols /* = _Cols*/>
+    typename Scalar,
+    int Rows,
+    int Cols,
+    int Options,
+    int MaxRows /*= _Rows*/,
+    int MaxCols /* = _Cols*/>
 class Matrix;
 // For reference: _Options =
 // /*AutoAlign*/ 0 | ((_Rows == 1 && _Cols != 1) ? /*Eigen::RowMajor*/ 1
@@ -45,7 +45,7 @@ template <typename Derived>
 struct EigenBase;
 template <typename VectorType, int Size>
 class VectorBlock;
-template <typename _Lhs, typename _Rhs, int Option>
+template <typename LHS, typename RHS, int Option>
 class Product;
 template <typename BinaryOp, typename LhsType, typename RhsType>
 class CwiseBinaryOp;
@@ -63,7 +63,7 @@ enum TConstructorFlags_Matrices
 
 template <class T>
 class CMatrixDynamic;
-template <typename T, std::size_t ROWS, std::size_t COLS>
+template <typename T, int ROWS, int COLS>
 class CMatrixFixed;
 
 }  // namespace mrpt::math

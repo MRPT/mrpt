@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/config.h>  // MRPT_IS_BIG_ENDIAN
 #include <mrpt/core/Clock.h>
+#include <mrpt/core/config.h>  // MRPT_IS_BIG_ENDIAN
 #include <mrpt/core/is_shared_ptr.h>
 #include <mrpt/core/reverse_bytes.h>
 #include <mrpt/serialization/CSerializable.h>
@@ -201,8 +201,10 @@ class CArchive
     {
       const mrpt::rtti::TRuntimeClassId* classId = mrpt::rtti::findRegisteredClass(strClassName);
       if (!classId)
+      {
         THROW_EXCEPTION_FMT(
             "Stored object has class '%s' which is not registered!", strClassName.c_str());
+      }
       obj = mrpt::ptr_cast<CSerializable>::from(classId->createObject());
     }
     internal_ReadObject(
@@ -212,10 +214,8 @@ class CArchive
     {
       return typename T::Ptr();
     }
-    else
-    {
-      return std::dynamic_pointer_cast<T>(obj);
-    }
+
+    return std::dynamic_pointer_cast<T>(obj);
   }
 
   /** If redefined in derived classes, allows finding a human-friendly
@@ -224,7 +224,7 @@ class CArchive
 
  private:
   template <typename RET>
-  RET ReadVariant_helper(CSerializable::Ptr& ptr)
+  RET ReadVariant_helper([[maybe_unused]] CSerializable::Ptr& ptr)
   {
     throw std::runtime_error("Can't match variant type");
     return RET();
@@ -235,7 +235,9 @@ class CArchive
       CSerializable::Ptr& ptr, std::enable_if_t<mrpt::is_shared_ptr<T>::value>* = nullptr)
   {
     if (IS_CLASS(*ptr, typename T::element_type))
+    {
       return std::dynamic_pointer_cast<typename T::element_type>(ptr);
+    }
     return ReadVariant_helper<RET, R...>(ptr);
   }
 
@@ -267,11 +269,16 @@ class CArchive
     bool isOldFormat;
     int8_t version;
     internal_ReadObjectHeader(strClassName, isOldFormat, version);
-    if (strClassName == "std::monostate") return {};
+    if (strClassName == "std::monostate")
+    {
+      return {};
+    }
     const mrpt::rtti::TRuntimeClassId* classId = mrpt::rtti::findRegisteredClass(strClassName);
     if (!classId)
+    {
       THROW_EXCEPTION_FMT(
           "Stored object has class '%s' which is not registered!", strClassName.c_str());
+    }
     if (strClassName != "nullptr")
     {
       obj = mrpt::ptr_cast<CSerializable>::from(classId->createObject());
@@ -281,10 +288,8 @@ class CArchive
     {
       return std::variant<T...>();
     }
-    else
-    {
-      return ReadVariant_helper<std::variant<T...>, T...>(obj);
-    }
+
+    return ReadVariant_helper<std::variant<T...>, T...>(obj);
   }
 
 #if !defined(HAS_BROKEN_CLANG_STD_VISIT)
@@ -298,7 +303,7 @@ class CArchive
 
   /** Reads a simple POD type and returns by value. Useful when `stream >>
    * var;`
-   * cannot be used becuase of errors of misaligned reference binding.
+   * cannot be used because of errors of misaligned reference binding.
    * Use with macro `MRPT_READ_POD` to avoid typing the type T yourself.
    * \note [New in MRPT 2.0.0]
    * \note Write operator `s << var;` is safe for misaligned variables.
@@ -440,14 +445,14 @@ CArchive& operator>>(CArchive& in, T& a)
 template <typename T, std::enable_if_t<is_simple_type<T>::value, int> = 0>
 CArchive& operator<<(CArchive& out, const T& a)
 {
-  out.WriteBuffer((void*)&a, sizeof(a));
+  out.WriteBuffer(reinterpret_cast<const void*>(&a), sizeof(a));
   return out;
 }
 
 template <typename T, std::enable_if_t<is_simple_type<T>::value, int> = 0>
 CArchive& operator>>(CArchive& in, T& a)
 {
-  in.ReadBuffer((void*)&a, sizeof(a));
+  in.ReadBuffer(reinterpret_cast<void*>(&a), sizeof(a));
   return in;
 }
 #endif

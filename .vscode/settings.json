@@ -17,7 +17,10 @@
         "--pretty"
     ],
     "[cpp]": {
-        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
+        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
+        "editor.rulers": [
+            100
+        ]
     },
     "cSpell.allowCompoundWords": true,
     "cSpell.ignorePaths": [
@@ -33,5 +36,11 @@
         "**/install": true,
         "**/log": true
     },
-    "ros.distro": "humble"
+    "cSpell.words": [
+        "Eigen",
+        "MRPT",
+        "mrpt",
+        "CArchive",
+    ],
+    "ros.distro": "humble",
 }

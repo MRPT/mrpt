@@ -268,28 +268,35 @@ inline void covariancesAndMeanWeighted(  // Done inline to speed-up the special 
   ASSERTMSG_(
       elements.size() != 0, "No samples provided, so there is no way to deduce the output size.");
   using T = typename MATRIXLIKE::Scalar;
-  const size_t DIM = elements[0].size();
+  using size_type = typename VECTORLIKE::size_type;
+  const auto DIM = elements[0].size();
   means.resize(DIM);
   covariances.resize(DIM, DIM);
-  const size_t nElms = elements.size();
+  const auto nElms = elements.size();
   const T NORM = 1.0 / static_cast<T>(nElms);
   if (weights_mean)
   {
     ASSERTDEB_(size_t(weights_mean->size()) == size_t(nElms));
   }
   // The mean goes first:
-  for (size_t i = 0; i < DIM; i++)
+  for (size_type i = 0; i < DIM; i++)
   {
     T accum = 0;
     if (!elem_do_wrap2pi || !elem_do_wrap2pi[i])
     {  // i'th dimension is a "normal", real number:
       if (weights_mean)
       {
-        for (size_t j = 0; j < nElms; j++) accum += (*weights_mean)[j] * elements[j][i];
+        for (size_type j = 0; j < nElms; j++)
+        {
+          accum += (*weights_mean)[j] * elements[j][i];
+        }
       }
       else
       {
-        for (size_t j = 0; j < nElms; j++) accum += elements[j][i];
+        for (size_type j = 0; j < nElms; j++)
+        {
+          accum += elements[j][i];
+        }
         accum *= NORM;
       }
     }
@@ -298,13 +305,16 @@ inline void covariancesAndMeanWeighted(  // Done inline to speed-up the special 
       // here:
       double accum_L = 0, accum_R = 0;
       double Waccum_L = 0, Waccum_R = 0;
-      for (size_t j = 0; j < nElms; j++)
+      for (size_type j = 0; j < nElms; j++)
       {
         double ang = elements[j][i];
         const double w = weights_mean != nullptr ? (*weights_mean)[j] : NORM;
         if (fabs(ang) > 0.5 * M_PI)
         {  // LEFT HALF: 0,2pi
-          if (ang < 0) ang = (M_2PI + ang);
+          if (ang < 0)
+          {
+            ang = (M_2PI + ang);
+          }
           accum_L += ang * w;
           Waccum_L += w;
         }
@@ -314,49 +324,69 @@ inline void covariancesAndMeanWeighted(  // Done inline to speed-up the special 
           Waccum_R += w;
         }
       }
-      if (Waccum_L > 0) accum_L /= Waccum_L;              // [0,2pi]
-      if (Waccum_R > 0) accum_R /= Waccum_R;              // [-pi,pi]
-      if (accum_L > M_PI) accum_L -= M_2PI;               // Left side to [-pi,pi] again:
+      if (Waccum_L > 0)
+      {
+        accum_L /= Waccum_L;  // [0,2pi]
+      }
+      if (Waccum_R > 0)
+      {
+        accum_R /= Waccum_R;  // [-pi,pi]
+      }
+      if (accum_L > M_PI)
+      {
+        accum_L -= M_2PI;  // Left side to [-pi,pi] again:
+      }
       accum = (accum_L * Waccum_L + accum_R * Waccum_R);  // The overall result:
     }
     means[i] = accum;
   }
   // Now the covariance:
-  for (size_t i = 0; i < DIM; i++)
-    for (size_t j = 0; j <= i; j++)  // Only 1/2 of the matrix
+  for (size_type i = 0; i < DIM; i++)
+  {
+    for (size_type j = 0; j <= i; j++)  // Only 1/2 of the matrix
     {
       typename MATRIXLIKE::Scalar elem = 0;
       if (weights_cov)
       {
-        ASSERTDEB_(size_t(weights_cov->size()) == size_t(nElms));
-        for (size_t k = 0; k < nElms; k++)
+        ASSERTDEB_(weights_cov->size() == nElms);
+        for (size_type k = 0; k < nElms; k++)
         {
           const T Ai = (elements[k][i] - means[i]);
           const T Aj = (elements[k][j] - means[j]);
           if (!elem_do_wrap2pi || !elem_do_wrap2pi[i])
+          {
             elem += (*weights_cov)[k] * Ai * Aj;
+          }
           else
+          {
             elem += (*weights_cov)[k] * mrpt::math::wrapToPi(Ai) * mrpt::math::wrapToPi(Aj);
+          }
         }
       }
       else
       {
-        for (size_t k = 0; k < nElms; k++)
+        for (size_type k = 0; k < nElms; k++)
         {
           const T Ai = (elements[k][i] - means[i]);
           const T Aj = (elements[k][j] - means[j]);
           if (!elem_do_wrap2pi || !elem_do_wrap2pi[i])
+          {
             elem += Ai * Aj;
+          }
           else
+          {
             elem += mrpt::math::wrapToPi(Ai) * mrpt::math::wrapToPi(Aj);
+          }
         }
         elem *= NORM;
       }
       covariances(i, j) = elem;
-      if (i != j) {
+      if (i != j)
+      {
         covariances(j, i) = elem;
       }
     }
+  }
 }
 
 /** Computes covariances and mean of any vector of containers.
@@ -401,7 +431,7 @@ void weightedHistogram(
     const VECTORLIKE1& values,
     const VECTORLIKE1& weights,
     float binWidth,
-    VECTORLIKE2& out_binCenters,
+    VECTORLIKE2& out_binCenters,  // NOLINT
     VECTORLIKE2& out_binValues)
 {
   MRPT_START
@@ -431,13 +461,19 @@ void weightedHistogram(
   for (itVal = values.begin(), itW = weights.begin(); itVal != values.end(); ++itVal, ++itW)
   {
     int idx = round(((*itVal) - minBin) / binWidth);
-    if (idx >= int(nBins)) idx = nBins - 1;
+    if (idx >= int(nBins))
+    {
+      idx = static_cast<int>(nBins) - 1;
+    }
     ASSERTDEB_(idx >= 0);
     out_binValues[idx] += *itW;
     totalSum += *itW;
   }
 
-  if (totalSum) out_binValues /= totalSum;
+  if (totalSum)
+  {
+    out_binValues /= totalSum;
+  }
 
   MRPT_END
 }
@@ -459,7 +495,7 @@ void weightedHistogramLog(
     const VECTORLIKE1& values,
     const VECTORLIKE1& log_weights,
     float binWidth,
-    VECTORLIKE2& out_binCenters,
+    VECTORLIKE2& out_binCenters,  // NOLINT
     VECTORLIKE2& out_binValues)
 {
   MRPT_START
@@ -490,14 +526,20 @@ void weightedHistogramLog(
   for (itVal = values.begin(), itW = log_weights.begin(); itVal != values.end(); ++itVal, ++itW)
   {
     int idx = round(((*itVal) - minBin) / binWidth);
-    if (idx >= int(nBins)) idx = nBins - 1;
+    if (idx >= int(nBins))
+    {
+      idx = static_cast<int>(nBins) - 1;
+    }
     ASSERTDEB_(idx >= 0);
     const TNum w = exp(*itW - max_log_weight);
     out_binValues[idx] += w;
     totalSum += w;
   }
 
-  if (totalSum) out_binValues /= totalSum;
+  if (totalSum)
+  {
+    out_binValues /= totalSum;
+  }
 
   MRPT_END
 }

@@ -260,7 +260,12 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 
     CMatrixDynamic<Scalar> ret(BLOCK_ROWS, BLOCK_COLS);
     for (int r = 0; r < BLOCK_ROWS; r++)
-      for (int c = 0; c < BLOCK_COLS; c++) ret(r, c) = mbDerived()(r + start_row, c + start_col);
+    {
+      for (int c = 0; c < BLOCK_COLS; c++)
+      {
+        ret(r, c) = mbDerived()(r + start_row, c + start_col);
+      }
+    }
     return ret;
   }
 
@@ -277,7 +282,10 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
       for (Index c = r; c < N; c++)
       {
         typename Derived::Scalar s = 0;
-        for (Index i = 0; i < Ninner; i++) s += A(r, i) * A(c, i);
+        for (Index i = 0; i < Ninner; i++)
+        {
+          s += A(r, i) * A(c, i);
+        }
         mbDerived()(r, c) = s;
         mbDerived()(c, r) = s;
       }

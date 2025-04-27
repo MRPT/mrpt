@@ -44,8 +44,6 @@ set(LIB_SRCS
   src/CMatrixFixed_unittest.cpp
   src/container_ops_unittest.cpp
   src/CPolygon.cpp
-  src/CSparseMatrix.cpp
-  src/CSparseMatrix_unittest.cpp
   src/CSplineInterpolator1D.cpp
   src/CVectorDynamic.cpp
   src/CVectorFixed.cpp

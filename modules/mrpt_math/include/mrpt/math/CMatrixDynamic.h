@@ -24,15 +24,15 @@
 namespace mrpt::math
 {
 /**  This template class provides the basic functionality for a general 2D
- *any-size, resizable container of numerical or non-numerical elements.
- * NOTES:
+ *  any-size, resizable container of numerical or non-numerical elements.
+ * Notes:
  * - This class is not serializable since it is a template. For using
- *serialization, see mrpt::math::CMatrixD.
+ *   serialization, see mrpt::math::CMatrixD.
  * - First row or column index is "0".
  * - This class includes range checks with ASSERT_() if compiling with "_DEBUG"
- *or "MRPT_ALWAYS_CHECKS_DEBUG_MATRICES=1".
+ *   or "MRPT_ALWAYS_CHECKS_DEBUG_MATRICES=1".
  * - Use asEigen() to get an `Eigen::Map<>` object and to access full Algebra
- *functionality.
+ *   functionality.
  *
  * \sa CMatrixFixed
  * \ingroup mrpt_math_grp
@@ -40,15 +40,6 @@ namespace mrpt::math
 template <class T>
 class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 {
- private:
-  static constexpr size_t small_size = 16;
-  using vec_t = mrpt::containers::
-      vector_with_small_size_optimization<T, small_size, MRPT_MAX_STATIC_ALIGN_BYTES>;
-
-  /** RowMajor matrix data */
-  vec_t m_data;
-  size_t m_Rows{0}, m_Cols{0};
-
  public:
   /** @name Matrix type definitions
    * @{ */
@@ -74,6 +65,16 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
       ColsAtCompileTime>;
   /** @} */
 
+ private:
+  static constexpr size_t small_size = 16;
+  using vec_t = mrpt::containers::
+      vector_with_small_size_optimization<T, small_size, MRPT_MAX_STATIC_ALIGN_BYTES>;
+
+  /** RowMajor matrix data */
+  vec_t m_data;
+  size_type m_Rows{0}, m_Cols{0};
+
+ public:
   /** @name Iterators interface
    * @{ */
   using iterator = typename vec_t::iterator;
@@ -90,43 +91,79 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
   /** Internal use only: It reallocs the memory for the 2D matrix, maintaining
    * the previous contents if possible.
    */
-  void realloc(size_t row, size_t col, bool newElementsToZero = false)
+  void realloc(size_type row, size_type col, bool newElementsToZero = false)
   {
-    if (row == m_Rows && col == m_Cols) return;
+    if (row == m_Rows && col == m_Cols)
+    {
+      return;
+    }
+
     const auto old_rows = m_Rows, old_cols = m_Cols;
     m_Rows = row;
     m_Cols = col;
 
     // New buffer:
-    decltype(m_data) newData(m_Rows * m_Cols);
+    decltype(m_data) newData(static_cast<std::size_t>(m_Rows * m_Cols));
     newData.fill(typename decltype(m_data)::value_type());
     // Copy old content:
     const auto nRowsToCopy = m_Rows >= old_rows ? old_rows : m_Rows;
     const auto nColsToCopy = m_Cols >= old_cols ? old_cols : m_Cols;
-    for (size_t r = 0; r < nRowsToCopy; r++)
+    for (Index r = 0; r < nRowsToCopy; r++)
     {
       if constexpr (std::is_trivial_v<T>)
-        std::memcpy(&newData[r * m_Cols], &m_data[r * old_cols], sizeof(T) * nColsToCopy);
+      {
+        std::memcpy(
+            &newData[static_cast<size_t>(r * m_Cols)], &m_data[static_cast<size_t>(r * old_cols)],
+            sizeof(T) * static_cast<size_t>(nColsToCopy));
+      }
       else
-        for (size_t c = 0; c < nColsToCopy; c++) newData[r * m_Cols + c] = m_data[r * old_cols + c];
+      {
+        for (Index c = 0; c < nColsToCopy; c++)
+        {
+          newData[static_cast<size_t>(r * m_Cols + c)] =
+              m_data[static_cast<size_t>(r * old_cols + c)];
+        }
+      }
     }
     // New rows to zero?
     if (newElementsToZero && m_Rows > old_rows)
     {
       if constexpr (std::is_trivial_v<T>)
-        ::memset(&newData[old_rows * m_Cols], 0, sizeof(T) * (m_Rows - old_rows));
+      {
+        ::memset(
+            &newData[static_cast<std::size_t>(old_rows * m_Cols)], 0,
+            sizeof(T) * static_cast<std::size_t>(m_Rows - old_rows));
+      }
       else
-        for (size_t r = old_rows; r < m_Rows; r++)
-          for (size_t c = 0; c < m_Cols; c++) newData[r * m_Cols + c] = T();
+      {
+        for (Index r = old_rows; r < m_Rows; r++)
+        {
+          for (Index c = 0; c < m_Cols; c++)
+          {
+            newData[static_cast<size_t>(r * m_Cols + c)] = T();
+          }
+        }
+      }
     }
     // New cols to zero?
     if (newElementsToZero && m_Cols > old_cols)
     {
-      for (size_t r = 0; r < old_rows; r++)
+      for (Index r = 0; r < old_rows; r++)
+      {
         if constexpr (std::is_trivial_v<T>)
-          ::memset(&newData[r * m_Cols + old_cols], 0, sizeof(T) * (m_Cols - old_cols));
+        {
+          ::memset(
+              &newData[static_cast<std::size_t>(r * m_Cols + old_cols)], 0,
+              sizeof(T) * static_cast<std::size_t>(m_Cols - old_cols));
+        }
         else
-          for (size_t c = old_cols; c < m_Cols; c++) newData[r * m_Cols + c] = T();
+        {
+          for (Index c = old_cols; c < m_Cols; c++)
+          {
+            newData[static_cast<size_t>(r * m_Cols + c)] = T();
+          }
+        }
+      }
     }
     // Swap:
     m_data.swap(newData);
@@ -145,7 +182,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
   /** Constructors */
   CMatrixDynamic(const CMatrixDynamic& m) { (*this) = m; }
 
-  explicit CMatrixDynamic(size_t row = 0, size_t col = 0) { realloc(row, col); }
+  explicit CMatrixDynamic(size_type row = 0, size_type col = 0) { realloc(row, col); }
 
   /** Copy (casting from if needed) from another matrix  */
   template <typename U>
@@ -162,8 +199,8 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
   }
 
   /** Convert from Eigen product */
-  template <typename _Lhs, typename _Rhs, int Option>
-  explicit CMatrixDynamic(const Eigen::Product<_Lhs, _Rhs, Option>& p)
+  template <typename LHS, typename RHS, int Option>
+  explicit CMatrixDynamic(const Eigen::Product<LHS, RHS, Option>& p)
   {
     *this = p.eval();
   }
@@ -176,17 +213,22 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 
   /** Copy constructor & crop from another matrix
    */
-  CMatrixDynamic(const CMatrixDynamic& m, size_t cropRowCount, size_t cropColCount)
+  CMatrixDynamic(const CMatrixDynamic& m, size_type cropRowCount, size_type cropColCount)
   {
     ASSERT_(m.m_Rows >= cropRowCount);
     ASSERT_(m.m_Cols >= cropColCount);
     realloc(cropRowCount, cropColCount);
-    for (size_t i = 0; i < m_Rows; i++)
-      for (size_t j = 0; j < m_Cols; j++) (*this)(i, j) = m(i, j);
+    for (Index i = 0; i < m_Rows; i++)
+    {
+      for (Index j = 0; j < m_Cols; j++)
+      {
+        (*this)(i, j) = m(i, j);
+      }
+    }
   }
 
   /** Constructor from fixed-size matrix: */
-  template <std::size_t ROWS, std::size_t COLS>
+  template <size_type ROWS, size_type COLS>
   explicit CMatrixDynamic(const CMatrixFixed<T, ROWS, COLS>& o)
   {
     *this = o;
@@ -201,20 +243,27 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
    *  CMatrixDouble   M(3,2, numbers);
    * \endcode
    */
-  template <typename V, size_t N>
-  CMatrixDynamic(size_t row, size_t col, V (&theArray)[N])
+  template <typename V, size_type N>
+  CMatrixDynamic(size_type row, size_type col, V (&theArray)[N])
   {
     static_assert(N != 0, "Empty array!");
     realloc(row, col);
     if (m_Rows * m_Cols != N)
-      THROW_EXCEPTION(format(
+    {
+      THROW_EXCEPTION_FMT(
           "Mismatch between matrix size %lu x %lu and array of "
           "length %lu",
           static_cast<long unsigned>(m_Rows), static_cast<long unsigned>(m_Cols),
-          static_cast<long unsigned>(N)));
-    size_t idx = 0;
-    for (size_t i = 0; i < m_Rows; i++)
-      for (size_t j = 0; j < m_Cols; j++) (*this)(i, j) = static_cast<T>(theArray[idx++]);
+          static_cast<long unsigned>(N));
+    }
+    Index idx = 0;
+    for (Index i = 0; i < m_Rows; i++)
+    {
+      for (Index j = 0; j < m_Cols; j++)
+      {
+        (*this)(i, j) = static_cast<T>(theArray[idx++]);
+      }
+    }
   }
 
   /** Constructor from a given size and a STL container (std::vector,
@@ -222,19 +271,26 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
    * x row.
    */
   template <typename V>
-  CMatrixDynamic(size_t row, size_t col, const V& theVector)
+  CMatrixDynamic(size_type row, size_type col, const V& theVector)
   {
-    const size_t N = theVector.size();
+    const size_type N = theVector.size();
     realloc(row, col);
-    if (m_Rows * m_Cols != N)
-      THROW_EXCEPTION(format(
+    if (m_Rows * m_Cols != static_cast<size_type>(N))
+    {
+      THROW_EXCEPTION_FMT(
           "Mismatch between matrix size %lu x %lu and array of "
           "length %lu",
           static_cast<long unsigned>(m_Rows), static_cast<long unsigned>(m_Cols),
-          static_cast<long unsigned>(N)));
+          static_cast<long unsigned>(N));
+    }
     typename V::const_iterator it = theVector.begin();
-    for (size_t i = 0; i < m_Rows; i++)
-      for (size_t j = 0; j < m_Cols; j++) (*this)(i, j) = static_cast<T>(*(it++));
+    for (Index i = 0; i < m_Rows; i++)
+    {
+      for (Index j = 0; j < m_Cols; j++)
+      {
+        (*this)(i, j) = static_cast<T>(*(it++));
+      }
+    }
   }
 
   virtual ~CMatrixDynamic() = default;
@@ -243,9 +299,14 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
   void setFromMatrixLike(const MAT& m)
   {
     MRPT_START
-    setSize(m.rows(), m.cols());
+    setSize(static_cast<size_type>(m.rows()), static_cast<size_type>(m.cols()));
     for (Index r = 0; r < rows(); r++)
-      for (Index c = 0; c < cols(); c++) (*this)(r, c) = static_cast<T>(m(r, c));
+    {
+      for (Index c = 0; c < cols(); c++)
+      {
+        (*this)(r, c) = static_cast<T>(m(r, c));
+      }
+    }
     MRPT_END
   }
 
@@ -272,7 +333,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
     MRPT_END
   }
   /** Assignment from a fixed matrix */
-  template <std::size_t ROWS, std::size_t COLS>
+  template <size_type ROWS, size_type COLS>
   CMatrixDynamic& operator=(const CMatrixFixed<T, ROWS, COLS>& m)
   {
     MRPT_START
@@ -282,7 +343,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
   }
 
   /** Assignment operator for initializing from a C array (The matrix must be
-   *set to the correct size before invoking this asignament)
+   *set to the correct size before invoking this assignment)
    * \code
    *	 CMatrixDouble   M(3,2);
    *  const double numbers[] = {
@@ -297,16 +358,21 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
   CMatrixDynamic& operator=(V (&theArray)[N])
   {
     static_assert(N != 0, "Empty array!");
-    if (m_Rows * m_Cols != N)
+    if (m_Rows * m_Cols != static_cast<size_type>(N))
     {
       THROW_EXCEPTION(format(
           "Mismatch between matrix size %lu x %lu and array of "
           "length %lu",
           m_Rows, m_Cols, N));
     }
-    size_t idx = 0;
-    for (size_t i = 0; i < m_Rows; i++)
-      for (size_t j = 0; j < m_Cols; j++) (*this)(i, j) = static_cast<T>(theArray[idx++]);
+    Index idx = 0;
+    for (Index i = 0; i < m_Rows; i++)
+    {
+      for (Index j = 0; j < m_Cols; j++)
+      {
+        (*this)(i, j) = static_cast<T>(theArray[idx++]);
+      }
+    }
     return *this;
   }
 
@@ -338,14 +404,14 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
   }
 
   /** Changes the size of matrix, maintaining the previous contents. */
-  void setSize(size_t row, size_t col, bool zeroNewElements = false)
+  void setSize(size_type row, size_type col, bool zeroNewElements = false)
   {
     realloc(row, col, zeroNewElements);
   }
-  void resize(size_t row, size_t col) { setSize(row, col); }
+  void resize(size_type row, size_type col) { setSize(row, col); }
 
   /** Resizes as a Nx1 vector */
-  void resize(size_t vectorLen) { setSize(vectorLen, 1); }
+  void resize(size_type vectorLen) { setSize(vectorLen, 1); }
 
   /** Resize the matrix */
   inline void resize(const matrix_size_t& siz, bool zeroNewElements = false)
@@ -356,7 +422,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
   // These ones are to make template code compatible with Eigen & mrpt:
   CMatrixDynamic& derived() { return *this; }
   const CMatrixDynamic& derived() const { return *this; }
-  void conservativeResize(size_t row, size_t col) { setSize(row, col); }
+  void conservativeResize(size_type row, size_type col) { setSize(row, col); }
 
   /** Return raw pointer to row-major data buffer. All matrix cells can be
    * assumed to be stored contiguously in memory, i.e. row stride = column
@@ -375,56 +441,62 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 
   /** Subscript operator to get/set individual elements
    */
-  inline T& operator()(size_t row, size_t col)
+  inline T& operator()(Index row, Index col)
   {
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
     if (row >= m_Rows || col >= m_Cols)
+    {
       THROW_EXCEPTION(format(
           "Indexes (%lu,%lu) out of range. Matrix is %lux%lu", static_cast<unsigned long>(row),
           static_cast<unsigned long>(col), static_cast<unsigned long>(m_Rows),
           static_cast<unsigned long>(m_Cols)));
+    }
 #endif
-    return m_data[row * m_Cols + col];
+    return m_data[static_cast<std::size_t>(row * m_Cols + col)];
   }
 
   /** Subscript operator to get individual elements
    */
-  inline const T& operator()(size_t row, size_t col) const
+  inline const T& operator()(Index row, Index col) const
   {
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
     if (row >= m_Rows || col >= m_Cols)
+    {
       THROW_EXCEPTION(format(
           "Indexes (%lu,%lu) out of range. Matrix is %lux%lu", static_cast<unsigned long>(row),
           static_cast<unsigned long>(col), static_cast<unsigned long>(m_Rows),
           static_cast<unsigned long>(m_Cols)));
+    }
 #endif
-    return m_data[row * m_Cols + col];
+    return m_data[static_cast<std::size_t>(row * m_Cols + col)];
   }
 
   /** Subscript operator to get/set an individual element from a row or column
    * matrix.
    * \exception std::exception If the object is not a column or row matrix.
    */
-  inline T& operator[](size_t ith)
+  inline T& operator[](Index ith)
   {
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
     ASSERT_(m_Rows == 1 || m_Cols == 1);
-#endif
     if (m_Rows == 1)
     {
-// A row matrix:
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
-      if (ith >= m_Cols) THROW_EXCEPTION_FMT("Index %u out of range!", static_cast<unsigned>(ith));
-#endif
+      // A row matrix:
+      if (ith >= m_Cols)
+      {
+        THROW_EXCEPTION_FMT("Index %u out of range!", static_cast<unsigned>(ith));
+      }
     }
     else
     {
-// A columns matrix:
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
-      if (ith >= m_Rows) THROW_EXCEPTION_FMT("Index %u out of range!", static_cast<unsigned>(ith));
-#endif
+      // A columns matrix:
+      if (ith >= m_Rows)
+      {
+        THROW_EXCEPTION_FMT("Index %u out of range!", static_cast<unsigned>(ith));
+      }
     }
-    return m_data[ith];
+#endif
+    return m_data[static_cast<std::size_t>(ith)];
   }
 
   /** Subscript operator to get/set an individual element from a row or column
@@ -432,12 +504,12 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
    * element, in RowMajor order.
    * \exception std::exception If the object is not a column or row matrix.
    */
-  inline const T& operator[](size_t ith) const
+  inline const T& operator[](Index ith) const
   {
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
     ASSERT_LT_(ith, m_Rows * m_Cols);
 #endif
-    return m_data[ith];
+    return m_data[static_cast<std::size_t>(ith)];
   }
 
   /** Appends a new row to the MxN matrix from a 1xN vector.
@@ -458,26 +530,39 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
   void appendRow(const VECTOR& in)
   {
     if (m_Cols == 0 || m_Rows == 0)
+    {
       ASSERT_(!in.empty());
+    }
     else
+    {
       ASSERT_(in.size() == m_Cols);
+    }
     const auto row = m_Rows;
     realloc(row + 1, m_Cols = in.size());
-    for (size_t i = 0; i < m_Cols; i++) (*this)(row, i) = in[i];
+    for (Index i = 0; i < m_Cols; i++)
+    {
+      (*this)(row, i) = in[i];
+    }
   }
 
   template <typename VECTOR>
   void setRow(const Index row, const VECTOR& v)
   {
     ASSERT_EQUAL_(cols(), static_cast<size_type>(v.size()));
-    for (Index c = 0; c < cols(); c++) (*this)(row, c) = v[c];
+    for (Index c = 0; c < cols(); c++)
+    {
+      (*this)(row, c) = v[c];
+    }
   }
 
   template <typename VECTOR>
   void setCol(const Index col, const VECTOR& v)
   {
     ASSERT_EQUAL_(rows(), static_cast<size_type>(v.size()));
-    for (Index r = 0; r < rows(); r++) (*this)(r, col) = v[r];
+    for (Index r = 0; r < rows(); r++)
+    {
+      (*this)(r, col) = v[r];
+    }
   }
 
   /** Appends a new column to the matrix from a vector.
@@ -490,7 +575,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
   template <typename VECTOR>
   void appendCol(const VECTOR& in)
   {
-    size_t r = m_Rows, c = m_Cols;
+    size_type r = m_Rows, c = m_Cols;
     if (m_Cols == 0 || m_Rows == 0)
     {
       ASSERT_(!in.empty());
@@ -498,9 +583,14 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
       c = 0;
     }
     else
+    {
       ASSERT_EQUAL_(static_cast<decltype(m_Rows)>(in.size()), m_Rows);
+    }
     realloc(r, c + 1);
-    for (size_t i = 0; i < m_Rows; i++) (*this)(i, m_Cols - 1) = in[i];
+    for (Index i = 0; i < m_Rows; i++)
+    {
+      (*this)(i, m_Cols - 1) = in[i];
+    }
   }
 
   /** Returns a vector containing the matrix's values.
@@ -510,7 +600,10 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
   {
     out.clear();
     out.reserve(m_Rows * m_Cols);
-    for (const auto& d : m_data) out.push_back(d);
+    for (const auto& d : m_data)
+    {
+      out.push_back(d);
+    }
   }
 
   /** Get as an Eigen-compatible Eigen::Map object  */
@@ -523,7 +616,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
         std::is_same_v<EIGEN_MATRIX, eigen_t>,
         "Please, do not override the default template arguments of this "
         "method.");
-    return EIGEN_MAP(&m_data[0], m_Rows, m_Cols);
+    return EIGEN_MAP(&m_data[0], static_cast<Index>(m_Rows), static_cast<Index>(m_Cols));
   }
   /** \overload (const version) */
   template <
@@ -536,7 +629,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
         std::is_same_v<EIGEN_MATRIX, eigen_t>,
         "Please, do not override the default template arguments of this "
         "method.");
-    return EIGEN_MAP(&m_data[0], m_Rows, m_Cols);
+    return EIGEN_MAP(&m_data[0], static_cast<Index>(m_Rows), static_cast<Index>(m_Cols));
   }
 
   CMatrixDynamic<float> cast_float() const;
