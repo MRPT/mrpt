@@ -22,6 +22,3 @@
 [submodule "3rdparty/libfyaml"]
 	path = 3rdparty/libfyaml
 	url = https://github.com/pantoniou/libfyaml.git
-[submodule "3rdparty/mola_common"]
-	path = 3rdparty/mola_common
-	url = https://github.com/MOLAorg/mola_common.git
