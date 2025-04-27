@@ -16,7 +16,6 @@
 #include <cstddef>    // size_t
 #include <iosfwd>
 #include <string>
-#include <vector>
 
 namespace mrpt::math
 {
@@ -24,7 +23,7 @@ template <class T>
 class CVectorDynamic;
 template <class T>
 class CMatrixDynamic;
-template <typename T, std::size_t ROWS, std::size_t COLS>
+template <typename T, int ROWS, int COLS>
 class CMatrixFixed;
 
 template <typename DER>
@@ -68,12 +67,12 @@ class MatrixVectorBase
   void fill(const Scalar& val) { std::fill(mvbDerived().begin(), mvbDerived().end(), val); }
 
   inline void setConstant(const Scalar value) { fill(value); }
-  inline void setConstant(size_t nrows, size_t ncols, const Scalar value)
+  inline void setConstant(int nrows, int ncols, const Scalar value)
   {
     mvbDerived().resize(nrows, ncols);
     fill(value);
   }
-  inline void setConstant(size_t nrows, const Scalar value)
+  inline void setConstant(int nrows, const Scalar value)
   {
     ASSERTMSG_(
         Derived::ColsAtCompileTime == 1,
@@ -91,22 +90,22 @@ class MatrixVectorBase
     m.fill(value);
     return m;
   }
-  [[nodiscard]] static Derived Constant(size_t nrows, size_t ncols, const Scalar value)
+  [[nodiscard]] static Derived Constant(int nrows, int ncols, const Scalar value)
   {
     Derived m;
     m.setConstant(nrows, ncols, value);
     return m;
   }
 
-  inline void assign(const std::size_t N, const Scalar value)
+  inline void assign(const int N, const Scalar value)
   {
     mvbDerived().resize(N);
     fill(value);
   }
 
   inline void setZero() { fill(0); }
-  inline void setZero(size_t nrows, size_t ncols) { setConstant(nrows, ncols, 0); }
-  inline void setZero(size_t nrows)
+  inline void setZero(int nrows, int ncols) { setConstant(nrows, ncols, 0); }
+  inline void setZero(int nrows)
   {
     ASSERTMSG_(
         Derived::ColsAtCompileTime == 1, "setZero(n) can be used only for vectors, not matrices");
@@ -114,10 +113,7 @@ class MatrixVectorBase
   }
 
   [[nodiscard]] static Derived Zero() { return Constant(0); }
-  [[nodiscard]] static Derived Zero(size_t nrows, size_t ncols)
-  {
-    return Constant(nrows, ncols, 0);
-  }
+  [[nodiscard]] static Derived Zero(int nrows, int ncols) { return Constant(nrows, ncols, 0); }
 
   /** @} */
 
@@ -230,13 +226,13 @@ class MatrixVectorBase
 
   /** Minimum value in the matrix/vector */
   Scalar minCoeff() const;
-  Scalar minCoeff(std::size_t& outIndexOfMin) const;
-  Scalar minCoeff(std::size_t& rowIdx, std::size_t& colIdx) const;
+  Scalar minCoeff(int& outIndexOfMin) const;
+  Scalar minCoeff(int& rowIdx, int& colIdx) const;
 
   /** Maximum value in the matrix/vector */
   Scalar maxCoeff() const;
-  Scalar maxCoeff(std::size_t& outIndexOfMax) const;
-  Scalar maxCoeff(std::size_t& rowIdx, std::size_t& colIdx) const;
+  Scalar maxCoeff(int& outIndexOfMax) const;
+  Scalar maxCoeff(int& rowIdx, int& colIdx) const;
 
   /** returns true if matrix is NxN */
   bool isSquare() const { return mvbDerived().cols() == mvbDerived().rows(); }

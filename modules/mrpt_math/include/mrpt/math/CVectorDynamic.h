@@ -70,17 +70,27 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
   /** Internal use only: It reallocs the memory for the 2D matrix, maintaining
    * the previous contents if possible.
    */
-  void realloc(size_t new_len, bool newElementsToZero = false)
+  void realloc(size_type new_len, bool newElementsToZero = false)
   {
     const auto old_len = m_data.size();
-    if (new_len == old_len) return;
+    if (new_len == old_len)
+    {
+      return;
+    }
     m_data.resize(new_len);
     if (newElementsToZero && new_len > old_len)
     {
       if constexpr (std::is_trivial_v<T>)
-        ::memset(&m_data[old_len], 0, sizeof(T) * (new_len - old_len));
+      {
+        ::memset(&m_data[old_len], 0, sizeof(T) * static_cast<std::size_t>(new_len - old_len));
+      }
       else
-        for (size_t k = old_len; k < new_len; k++) m_data[k] = T();
+      {
+        for (size_t k = old_len; k < new_len; k++)
+        {
+          m_data[k] = T();
+        }
+      }
     }
   }
 
@@ -90,7 +100,7 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
   CVectorDynamic() = default;
 
   /** Initializes to a vector of "N" zeros */
-  CVectorDynamic(size_t N, bool initZero = true) { realloc(N, initZero); }
+  CVectorDynamic(size_type N, bool initZero = true) { realloc(N, initZero); }
 
   /** Copy (casting from if needed) from another matrix  */
   template <typename U>
@@ -100,7 +110,7 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
   }
 
   /** Ctor from a fixed-size vector */
-  template <std::size_t ROWS>
+  template <size_type ROWS>
   explicit CVectorDynamic(const CMatrixFixed<T, ROWS, 1>& v)
   {
     (*this) = v;
@@ -121,7 +131,10 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
     std::size_t N = std::size(data);
     ASSERTMSG_(N != 0, "CVectorDynamic ctor: Empty array!");
     realloc(N);
-    for (size_t i = 0; i < N; i++) m_data[i] = static_cast<T>(data[i]);
+    for (size_t i = 0; i < N; i++)
+    {
+      m_data[i] = static_cast<T>(data[i]);
+    }
   }
 
   /** Convert from Eigen matrix */
@@ -138,12 +151,12 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
   size_type cols() const { return 1; }
 
   /** Get a 2-vector with [NROWS NCOLS] (as in MATLAB command size(x)) */
-  size_type size() const { return m_data.size(); }
+  size_type size() const { return static_cast<size_type>(m_data.size()); }
 
   bool empty() const { return m_data.empty(); }
 
   /** Changes the size of matrix, maintaining the previous contents. */
-  void setSize(size_t row, size_t col, bool zeroNewElements = false)
+  void setSize(size_type row, size_type col, bool zeroNewElements = false)  // NOLINT
   {
     ASSERT_(col == 1);
     realloc(row, zeroNewElements);
@@ -156,7 +169,10 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
     MRPT_START
     ASSERT_EQUAL_(m.cols(), 1U);
     setSize(m.rows(), 1);
-    for (Index r = 0; r < rows(); r++) (*this)[r] = m(r, 0);
+    for (Index r = 0; r < rows(); r++)
+    {
+      (*this)[r] = m(r, 0);
+    }
     MRPT_END
   }
 
@@ -202,69 +218,75 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
   CMatrixFixed<Scalar, LEN, 1> segmentCopy(int start = 0) const
   {
     CMatrixFixed<Scalar, LEN, 1> v;
-    for (int i = 0; i < LEN; i++) v[i] = m_data[start + i];
+    for (int i = 0; i < LEN; i++)
+    {
+      v[i] = m_data[start + i];
+    }
     return v;
   }
 
   /** const segmentCopy(): Returns a *copy* of the given vector segment (non
    * templated version, dynamic length) */
-  CVectorDynamic<Scalar> segmentCopy(int start, int LEN) const
+  CVectorDynamic<Scalar> segmentCopy(int start, int LEN) const  // NOLINT
   {
     CVectorDynamic<Scalar> v;
     v.resize(LEN);
-    for (int i = 0; i < LEN; i++) v[i] = m_data[start + i];
+    for (int i = 0; i < LEN; i++)
+    {
+      v[i] = m_data[start + i];
+    }
     return v;
   }
 
   /** Subscript operator to get/set individual elements
    */
-  inline T& operator()(size_t row, size_t col)
+  inline T& operator()(Index row, Index col)
   {
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
     if (row >= m_data.size() || col > 0)
-      THROW_EXCEPTION(format(
+    {
+      THROW_EXCEPTION_FMT(
           "Indexes (%lu,%lu) out of range. Vector is %lux%lu", static_cast<unsigned long>(row),
           static_cast<unsigned long>(col), static_cast<unsigned long>(m_data.size()),
-          static_cast<unsigned long>(1)));
-#endif
-    return m_data[row];
+          static_cast<unsigned long>(1));
+    }
+    return m_data[static_cast<std::size_t>(row)];
   }
 
   /** Subscript operator to get individual elements
    */
-  inline const T& operator()(size_t row, size_t col) const
+  inline const T& operator()(Index row, Index col) const
   {
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
     if (row >= m_data.size() || col > 0)
-      THROW_EXCEPTION(format(
+    {
+      THROW_EXCEPTION_FMT(
           "Indexes (%lu,%lu) out of range. Vector is %lux%lu", static_cast<unsigned long>(row),
           static_cast<unsigned long>(col), static_cast<unsigned long>(m_data.size()),
-          static_cast<unsigned long>(1)));
-#endif
-    return m_data[row];
+          static_cast<unsigned long>(1));
+    }
+    return m_data[static_cast<std::size_t>(row)];
   }
 
   /** Subscript operator to get/set an individual element from a row or column
    * matrix.
    * \exception std::exception If the object is not a column or row matrix.
    */
-  inline T& operator[](size_t ith)
+  inline T& operator[](Index ith)
   {
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
     if (ith >= m_data.size())
       THROW_EXCEPTION_FMT("Index %u out of range!", static_cast<unsigned>(ith));
 #endif
-    return m_data[ith];
+    return m_data[static_cast<std::size_t>(ith)];
   }
 
   /// \overload
-  inline const T& operator[](size_t ith) const
+  inline const T& operator[](Index ith) const
   {
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
     if (ith >= m_data.size())
       THROW_EXCEPTION_FMT("Index %u out of range!", static_cast<unsigned>(ith));
 #endif
-    return m_data[ith];
+    return m_data[static_cast<std::size_t>(ith)];
   }
 
   /** Get as an Eigen-compatible Eigen::Map object  */

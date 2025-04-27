@@ -17,9 +17,6 @@
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/typemeta/num_to_string.h>
 
-#include <array>
-#include <cstddef>  // std::size_t
-
 namespace mrpt::math
 {
 /** A compile-time fixed-size numeric matrix container.
@@ -30,14 +27,9 @@ namespace mrpt::math
  * https://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
  * \ingroup mrpt_math_grp
  */
-template <typename T, std::size_t ROWS, std::size_t COLS>
+template <typename T, int ROWS, int COLS>
 class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 {
- private:
-  /** RowMajor matrix data */
-  using vec_t = std::array<T, ROWS * COLS>;
-  alignas(MRPT_MAX_STATIC_ALIGN_BYTES) vec_t m_data;
-
  public:
   /** @name Matrix type definitions
    * @{ */
@@ -57,6 +49,12 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
   using eigen_t = Eigen::Matrix<T, ROWS, COLS, StorageOrder, ROWS, COLS>;
   /** @} */
 
+ private:
+  /** RowMajor matrix data */
+  using vec_t = std::array<T, static_cast<std::size_t>(ROWS* COLS)>;
+  alignas(MRPT_MAX_STATIC_ALIGN_BYTES) vec_t m_data;
+
+ public:
   /** @name Iterators interface
    * @{ */
   using iterator = typename vec_t::iterator;
@@ -98,8 +96,8 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
     *this = m;
   }
   /** Convert from Eigen product */
-  template <typename _Lhs, typename _Rhs, int Option>
-  explicit CMatrixFixed(const Eigen::Product<_Lhs, _Rhs, Option>& p)
+  template <typename LHS, typename RHS, int Option>
+  explicit CMatrixFixed(const Eigen::Product<LHS, RHS, Option>& p)
   {
     *this = p.eval();
   }
@@ -134,7 +132,12 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
     MRPT_START
     setSize(m.rows(), m.cols());
     for (Index r = 0; r < rows(); r++)
-      for (Index c = 0; c < cols(); c++) (*this)(r, c) = m(r, c);
+    {
+      for (Index c = 0; c < cols(); c++)
+      {
+        (*this)(r, c) = m(r, c);
+      }
+    }
     MRPT_END
   }
 
@@ -173,8 +176,13 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
     MRPT_START
     const auto LEN = std::size(vals);
     ASSERT_EQUAL_(LEN, ROWS * COLS);
-    for (size_t r = 0, i = 0; r < ROWS; r++)
-      for (size_t c = 0; c < COLS; c++) m_data[r * COLS + c] = vals[i++];
+    for (Index r = 0, i = 0; r < ROWS; r++)
+    {
+      for (Index c = 0; c < COLS; c++)
+      {
+        m_data[r * COLS + c] = vals[i++];
+      }
+    }
     MRPT_END
   }
 
@@ -182,12 +190,17 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
    * loadFromArray() wherever possible, to ensure buffer length checks. */
   void loadFromRawPointer(const T* data)
   {
-    for (size_t r = 0, i = 0; r < ROWS; r++)
-      for (size_t c = 0; c < COLS; c++) m_data[r * COLS + c] = data[i++];
+    for (Index r = 0, i = 0; r < ROWS; r++)
+    {
+      for (Index c = 0; c < COLS; c++)
+      {
+        m_data[r * COLS + c] = data[i++];
+      }
+    }
   }
 
   /** Throws if size does not match with the fixed matrix size */
-  void setSize(size_t row, size_t col, [[maybe_unused]] bool zeroNewElements = false)
+  void setSize(size_type row, size_type col, [[maybe_unused]] bool zeroNewElements = false)
   {
     ASSERT_EQUAL_(row, ROWS);
     ASSERT_EQUAL_(col, COLS);
@@ -198,16 +211,22 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
   // These ones are to make template code compatible with Eigen & mrpt:
   CMatrixFixed& derived() { return *this; }
   const CMatrixFixed& derived() const { return *this; }
-  void conservativeResize(size_t row, size_t col) { setSize(row, col); }
+  void conservativeResize(size_type row, size_type col) { setSize(row, col); }
 
-  void resize(size_t n)
+  void resize(size_type n)
   {
     if (ROWS == 1)
+    {
       ASSERT_EQUAL_(COLS, n);
+    }
     else if (COLS == 1)
+    {
       ASSERT_EQUAL_(ROWS, n);
+    }
     else
+    {
       THROW_EXCEPTION("resize() can be invoked on 1xN or Nx1 only");
+    }
   }
 
   /** Throws if size does not match with the fixed matrix size */
@@ -215,7 +234,7 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
   {
     resize(siz[0], siz[1]);
   }
-  void resize(size_t row, size_t col)
+  void resize(size_type row, size_type col)
   {
     ASSERT_EQUAL_(row, ROWS);
     ASSERT_EQUAL_(col, COLS);
@@ -286,51 +305,45 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 
   /** Access (row,col), without out-of-bounds check (except in Debug builds)
    */
-  inline T& operator()(int row, int col)
+  inline T& operator()(Index row, Index col)
   {
-    const auto r = static_cast<std::size_t>(row), c = static_cast<std::size_t>(r);
     ASSERTDEB_(r < ROWS);
     ASSERTDEB_(c < COLS);
-    return m_data[r * COLS + c];
+    return m_data[static_cast<std::size_t>(row * COLS + col)];
   }
-  inline const T& operator()(int row, int col) const
+  inline const T& operator()(Index row, Index col) const
   {
-    const auto r = static_cast<std::size_t>(row), c = static_cast<std::size_t>(r);
     ASSERTDEB_(r < ROWS);
     ASSERTDEB_(c < COLS);
-    return m_data[r * COLS + c];
+    return m_data[static_cast<std::size_t>(row * COLS + col)];
   }
 
   /** Access the i-th element, Row-Major order, without out-of-bounds check
    * (except in Debug builds)
    */
-  inline T& operator()(int i)
+  inline T& operator()(Index i)
   {
-    const auto idx = static_cast<std::size_t>(i);
-    ASSERTDEB_(idx < ROWS * COLS);
-    return m_data[idx];
+    ASSERTDEB_(i < ROWS * COLS);
+    return m_data[static_cast<std::size_t>(i)];
   }
-  inline const T& operator()(int i) const
+  inline const T& operator()(Index i) const
   {
-    const auto idx = static_cast<std::size_t>(i);
-    ASSERTDEB_(idx < ROWS * COLS);
-    return m_data[idx];
+    ASSERTDEB_(i < ROWS * COLS);
+    return m_data[static_cast<std::size_t>(i)];
   }
 
   /** Access the [i-th] element (for 1xN or Nx1 matrices) */
-  inline T& operator[](int i)
+  inline T& operator[](Index i)
   {
     ASSERT_(ROWS == 1 || COLS == 1);
-    const auto idx = static_cast<std::size_t>(i);
-    ASSERTDEB_(idx < ROWS * COLS);
-    return m_data[idx];
+    ASSERTDEB_(i < ROWS * COLS);
+    return m_data[static_cast<std::size_t>(i)];
   }
-  inline const T& operator[](int i) const
+  inline const T& operator[](Index i) const
   {
     ASSERT_(ROWS == 1 || COLS == 1);
-    const auto idx = static_cast<std::size_t>(i);
-    ASSERTDEB_(idx < ROWS * COLS);
-    return m_data[idx];
+    ASSERTDEB_(i < ROWS * COLS);
+    return m_data[static_cast<std::size_t>(i)];
   }
 
   CMatrixFixed<float, ROWS, COLS> cast_float() const;
@@ -350,7 +363,12 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
     if constexpr (ROWS == COLS)
     {
       for (Index r = 0; r < static_cast<Index>(ROWS); r++)
-        for (Index c = 0; c < static_cast<Index>(COLS); c++) (*this)(r, c) += A(c, r);
+      {
+        for (Index c = 0; c < static_cast<Index>(COLS); c++)
+        {
+          (*this)(r, c) += A(c, r);
+        }
+      }
     }
     else
     {
@@ -412,7 +430,7 @@ using CMatrixFloat15 = CMatrixFixed<float, 1, 5>;
 
 namespace mrpt::typemeta
 {
-template <typename T, std::size_t N, std::size_t M>
+template <typename T, int N, int M>
 struct TTypeName<mrpt::math::CMatrixFixed<T, N, M>>
 {
   constexpr static auto get()

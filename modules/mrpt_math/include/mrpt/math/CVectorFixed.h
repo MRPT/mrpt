@@ -20,15 +20,15 @@ namespace math
  * operations (actually, just a wrapper on Eigen::Matrix<T,N,1>)
  * \sa CVectorFixedFloat, CVectorFixedDouble, CArray
  */
-template <typename T, std::size_t N>
+template <typename T, int N>
 using CVectorFixed = CMatrixFixed<T, N, 1>;
 
 /** Specialization of CVectorFixed for float numbers \sa CVectorFixed  */
-template <std::size_t N>
+template <int N>
 using CVectorFixedFloat = CVectorFixed<float, N>;
 
 /** Specialization of CVectorFixed for double numbers \sa CVectorFixed  */
-template <std::size_t N>
+template <int N>
 using CVectorFixedDouble = CVectorFixed<double, N>;
 
 }  // namespace math
@@ -36,7 +36,7 @@ using CVectorFixedDouble = CVectorFixed<double, N>;
 namespace typemeta
 {
 // Extensions to mrpt::typemeta::TTypeName for matrices:
-template <typename T, size_t N>
+template <typename T, int N>
 struct TTypeName<mrpt::math::CVectorFixed<T, N>>
 {
   constexpr static auto get()
@@ -45,7 +45,7 @@ struct TTypeName<mrpt::math::CVectorFixed<T, N>>
            literal(num_to_string<N>::value) + literal(">");
   }
 };
-template <size_t N>
+template <int N>
 struct TTypeName<mrpt::math::CVectorFixedDouble<N>>
 {
   constexpr static auto get()
@@ -53,7 +53,7 @@ struct TTypeName<mrpt::math::CVectorFixedDouble<N>>
     return literal("CVectorFixedDouble<") + literal(num_to_string<N>::value) + literal(">");
   }
 };
-template <size_t N>
+template <int N>
 struct TTypeName<mrpt::math::CVectorFixedFloat<N>>
 {
   constexpr static auto get()
