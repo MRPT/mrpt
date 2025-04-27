@@ -272,7 +272,7 @@ inline void covariancesAndMeanWeighted(  // Done inline to speed-up the special 
   means.resize(DIM);
   covariances.resize(DIM, DIM);
   const size_t nElms = elements.size();
-  const T NORM = 1.0 / nElms;
+  const T NORM = 1.0 / static_cast<T>(nElms);
   if (weights_mean)
   {
     ASSERTDEB_(size_t(weights_mean->size()) == size_t(nElms));
@@ -353,7 +353,9 @@ inline void covariancesAndMeanWeighted(  // Done inline to speed-up the special 
         elem *= NORM;
       }
       covariances(i, j) = elem;
-      if (i != j) covariances(j, i) = elem;
+      if (i != j) {
+        covariances(j, i) = elem;
+      }
     }
 }
 
