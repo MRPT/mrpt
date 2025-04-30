@@ -46,10 +46,10 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
   /** The type of the matrix elements */
   using value_type = T;
   using Scalar = T;
-  using Index = int;
+  using Index = long int;
   using reference = T&;
   using const_reference = const T&;
-  using size_type = int;
+  using size_type = long int;
   using difference_type = std::ptrdiff_t;
   constexpr static int RowsAtCompileTime = -1;
   constexpr static int ColsAtCompileTime = -1;
@@ -243,12 +243,12 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
    *  CMatrixDouble   M(3,2, numbers);
    * \endcode
    */
-  template <typename V, size_type N>
+  template <typename V, std::size_t N>
   CMatrixDynamic(size_type row, size_type col, V (&theArray)[N])
   {
     static_assert(N != 0, "Empty array!");
     realloc(row, col);
-    if (m_Rows * m_Cols != N)
+    if (m_Rows * m_Cols != static_cast<size_type>(N))
     {
       THROW_EXCEPTION_FMT(
           "Mismatch between matrix size %lu x %lu and array of "
@@ -389,13 +389,13 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
   }
 
   /** Number of rows in the matrix \sa rows() */
-  inline size_type rows() const { return m_Rows; }
+  size_type rows() const { return m_Rows; }
 
   /** Number of columns in the matrix \sa rows() */
-  inline size_type cols() const { return m_Cols; }
+  size_type cols() const { return m_Cols; }
 
   /** Get a 2-vector with [NROWS NCOLS] (as in MATLAB command size(x)) */
-  inline matrix_size_t size() const
+  matrix_size_t size() const
   {
     matrix_size_t dims;
     dims[0] = m_Rows;

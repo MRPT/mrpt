@@ -63,7 +63,7 @@ enum TConstructorFlags_Matrices
 
 template <class T>
 class CMatrixDynamic;
-template <typename T, int ROWS, int COLS>
+template <typename T, long int ROWS, long int COLS>
 class CMatrixFixed;
 
 }  // namespace mrpt::math

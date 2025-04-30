@@ -17,16 +17,16 @@ namespace mrpt::math
  * behavior of STL-containers.
  * \ingroup mrpt_math_grp
  */
-struct matrix_size_t : public std::array<std::size_t, 2>
+struct matrix_size_t : public std::array<long int, 2>
 {
-  constexpr matrix_size_t() : std::array<std::size_t, 2>{0, 0} {}
-  constexpr matrix_size_t(const std::size_t rows, const std::size_t cols) :
-      std::array<std::size_t, 2>{rows, cols}
+  constexpr matrix_size_t() : std::array<long int, 2>{0, 0} {}
+  constexpr matrix_size_t(const long int rows, const long int cols) :
+      std::array<long int, 2>{rows, cols}
   {
   }
 
   /** Cast to size_t as the overall number of matrix/vector elements */
-  operator std::size_t() const { return at(0) * at(1); }
+  operator long int() const { return at(0) * at(1); }
 };
 
 }  // namespace mrpt::math

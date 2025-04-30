@@ -44,10 +44,10 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
   /** The type of the matrix elements */
   using value_type = T;
   using Scalar = T;
-  using Index = int;
+  using Index = long int;
   using reference = T&;
   using const_reference = const T&;
-  using size_type = int;
+  using size_type = long int;
   using difference_type = std::ptrdiff_t;
   constexpr static int RowsAtCompileTime = -1;
   constexpr static int ColsAtCompileTime = 1;

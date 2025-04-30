@@ -26,14 +26,21 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
   Derived& mbDerived() { return static_cast<Derived&>(*this); }
   const Derived& mbDerived() const { return static_cast<const Derived&>(*this); }
 
+  using Index_t = long int;      // Index_t;
+  using size_type_t = long int;  // size_type_t;
+
   /** Resize to NxN, set all entries to zero, except the main diagonal which
    * is set to `value` */
-  void setDiagonal(const std::size_t N, const Scalar value)
+  void setDiagonal(const size_type_t N, const Scalar value)
   {
     mbDerived().resize(N, N);
-    for (typename Derived::Index r = 0; r < mbDerived().rows(); r++)
-      for (typename Derived::Index c = 0; c < mbDerived().cols(); c++)
+    for (Index_t r = 0; r < mbDerived().rows(); r++)
+    {
+      for (Index_t c = 0; c < mbDerived().cols(); c++)
+      {
         mbDerived()(r, c) = (r == c) ? value : 0;
+      }
+    }
   }
   /** Set all entries to zero, except the main diagonal which is set to
    * `value` */
@@ -47,16 +54,19 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
    */
   void setDiagonal(const std::vector<Scalar>& diags)
   {
-    const std::size_t N = diags.size();
+    const auto N = static_cast<size_type_t>(diags.size());
     mbDerived().setZero(N, N);
-    for (std::size_t i = 0; i < N; i++) mbDerived()(i, i) = diags[i];
+    for (Index_t i = 0; i < N; i++)
+    {
+      mbDerived()(i, i) = diags[i];
+    }
   }
   void setIdentity()
   {
     ASSERT_EQUAL_(mbDerived().rows(), mbDerived().cols());
     setDiagonal(mbDerived().cols(), 1);
   }
-  void setIdentity(const std::size_t N) { setDiagonal(N, 1); }
+  void setIdentity(const size_type_t N) { setDiagonal(N, 1); }
 
   [[nodiscard]] static Derived Identity()
   {
@@ -68,7 +78,7 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
     m.setIdentity();
     return m;
   }
-  [[nodiscard]] static Derived Identity(const std::size_t N)
+  [[nodiscard]] static Derived Identity(const size_type_t N)
   {
     Derived m;
     m.setIdentity(N);
@@ -83,56 +93,57 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
   /** @name Operations that DO require `#include <Eigen/Dense>` in user code
    * @{ */
 
-  auto col(int colIdx)
+  auto col(Index_t colIdx)
   {
     internalAssertEigenDefined<Derived>();
     return mbDerived().asEigen().col(colIdx);
   }
-  auto col(int colIdx) const
+  auto col(Index_t colIdx) const
   {
     internalAssertEigenDefined<Derived>();
     return mbDerived().asEigen().col(colIdx);
   }
 
-  auto row(int rowIdx)
+  auto row(Index_t rowIdx)
   {
     internalAssertEigenDefined<Derived>();
     return mbDerived().asEigen().row(rowIdx);
   }
-  auto row(int rowIdx) const
+  auto row(Index_t rowIdx) const
   {
     internalAssertEigenDefined<Derived>();
     return mbDerived().asEigen().row(rowIdx);
   }
 
-  template <typename VECTOR_LIKE>
-  void extractRow(int rowIdx, VECTOR_LIKE& v) const
+  template <typename VectorLike>
+  void extractRow(Index_t rowIdx, VectorLike& v) const
   {
     ASSERT_LT_(rowIdx, mbDerived().rows());
     v.resize(mbDerived().cols());
-    for (typename Derived::Index i = 0; i < mbDerived().cols(); i++)
-      v[i] = mbDerived().coeff(rowIdx, i);
+    for (Index_t i = 0; i < mbDerived().cols(); i++) v[i] = mbDerived().coeff(rowIdx, i);
   }
-  template <typename VECTOR_LIKE>
-  VECTOR_LIKE extractRow(int rowIdx) const
+  template <typename VectorLike>
+  VectorLike extractRow(Index_t rowIdx) const
   {
-    VECTOR_LIKE v;
+    VectorLike v;
     extractRow(rowIdx, v);
     return v;
   }
 
-  template <typename VECTOR_LIKE>
-  void extractColumn(int colIdx, VECTOR_LIKE& v) const
+  template <typename VectorLike>
+  void extractColumn(Index_t colIdx, VectorLike& v) const
   {
     ASSERT_LT_(colIdx, mbDerived().cols());
     v.resize(mbDerived().rows());
-    for (typename Derived::Index i = 0; i < mbDerived().rows(); i++)
+    for (Index_t i = 0; i < mbDerived().rows(); i++)
+    {
       v[i] = mbDerived().coeff(i, colIdx);
+    }
   }
-  template <typename VECTOR_LIKE>
-  VECTOR_LIKE extractColumn(int colIdx) const
+  template <typename VectorLike>
+  VectorLike extractColumn(Index_t colIdx) const
   {
-    VECTOR_LIKE c;
+    VectorLike c;
     extractColumn(colIdx, c);
     return c;
   }
@@ -205,63 +216,82 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 
   /** Copies the given input submatrix/vector into this matrix/vector,
    * starting at the given top-left coordinates. */
-  template <typename OTHERMATVEC>
-  void insertMatrix(const int row_start, const int col_start, const OTHERMATVEC& submat)
+  template <typename OtherMatrixOrVector>
+  void insertMatrix(
+      const Index_t row_start, const Index_t col_start, const OtherMatrixOrVector& submat)
   {
     ASSERT_LE_(row_start + submat.rows(), mbDerived().rows());
     ASSERT_LE_(col_start + submat.cols(), mbDerived().cols());
-    for (int r = 0; r < submat.rows(); r++)
-      for (int c = 0; c < submat.cols(); c++)
+    for (Index_t r = 0; r < submat.rows(); r++)
+    {
+      for (Index_t c = 0; c < submat.cols(); c++)
+      {
         mbDerived()(r + row_start, c + col_start) = submat(r, c);
+      }
+    }
   }
   /** Like insertMatrix(), but inserts `submat'` (transposed) */
-  template <typename OTHERMATVEC>
-  void insertMatrixTransposed(const int row_start, const int col_start, const OTHERMATVEC& submat)
+  template <typename OtherMatrixOrVector>
+  void insertMatrixTransposed(
+      const Index_t row_start, const Index_t col_start, const OtherMatrixOrVector& submat)
   {
     ASSERT_LE_(row_start + submat.cols(), mbDerived().rows());
     ASSERT_LE_(col_start + submat.rows(), mbDerived().cols());
-    for (int r = 0; r < submat.cols(); r++)
-      for (int c = 0; c < submat.rows(); c++)
+    for (Index_t r = 0; r < submat.cols(); r++)
+    {
+      for (Index_t c = 0; c < submat.rows(); c++)
+      {
         mbDerived()(r + row_start, c + col_start) = submat(c, r);
+      }
+    }
   }
 
   /** const blockCopy(): Returns a *copy* of the given block */
-  template <int BLOCK_ROWS, int BLOCK_COLS>
-  CMatrixFixed<Scalar, BLOCK_ROWS, BLOCK_COLS> blockCopy(int start_row = 0, int start_col = 0) const
+  template <size_type_t BLOCK_ROWS, size_type_t BLOCK_COLS>
+  CMatrixFixed<Scalar, BLOCK_ROWS, BLOCK_COLS> blockCopy(
+      Index_t start_row = 0, Index_t start_col = 0) const
   {
     return extractMatrix<BLOCK_ROWS, BLOCK_COLS>(start_row, start_col);
   }
   /** const blockCopy(): Returns a *copy* of the given block (non templated
    * version, dynamic sizes) */
   CMatrixDynamic<Scalar> blockCopy(
-      int start_row, int start_col, int BLOCK_ROWS, int BLOCK_COLS) const
+      Index_t start_row, Index_t start_col, size_type_t BLOCK_ROWS, size_type_t BLOCK_COLS) const
   {
     return extractMatrix(start_row, start_col, BLOCK_ROWS, BLOCK_COLS);
   }
 
-  template <int BLOCK_ROWS, int BLOCK_COLS>
+  template <size_type_t BLOCK_ROWS, size_type_t BLOCK_COLS>
   CMatrixFixed<Scalar, BLOCK_ROWS, BLOCK_COLS> extractMatrix(
-      const int start_row = 0, const int start_col = 0) const
+      const Index_t start_row = 0, const Index_t start_col = 0) const
   {
     ASSERT_LE_(start_row + BLOCK_ROWS, mbDerived().rows());
     ASSERT_LE_(start_col + BLOCK_COLS, mbDerived().cols());
 
     CMatrixFixed<Scalar, BLOCK_ROWS, BLOCK_COLS> ret;
-    for (int r = 0; r < BLOCK_ROWS; r++)
-      for (int c = 0; c < BLOCK_COLS; c++) ret(r, c) = mbDerived()(r + start_row, c + start_col);
+    for (Index_t r = 0; r < BLOCK_ROWS; r++)
+    {
+      for (Index_t c = 0; c < BLOCK_COLS; c++)
+      {
+        ret(r, c) = mbDerived()(r + start_row, c + start_col);
+      }
+    }
     return ret;
   }
 
   CMatrixDynamic<Scalar> extractMatrix(
-      const int BLOCK_ROWS, const int BLOCK_COLS, const int start_row, const int start_col) const
+      const size_type_t BLOCK_ROWS,
+      const size_type_t BLOCK_COLS,
+      const Index_t start_row,
+      const Index_t start_col) const
   {
     ASSERT_LE_(start_row + BLOCK_ROWS, mbDerived().rows());
     ASSERT_LE_(start_col + BLOCK_COLS, mbDerived().cols());
 
     CMatrixDynamic<Scalar> ret(BLOCK_ROWS, BLOCK_COLS);
-    for (int r = 0; r < BLOCK_ROWS; r++)
+    for (Index_t r = 0; r < BLOCK_ROWS; r++)
     {
-      for (int c = 0; c < BLOCK_COLS; c++)
+      for (Index_t c = 0; c < BLOCK_COLS; c++)
       {
         ret(r, c) = mbDerived()(r + start_row, c + start_col);
       }
@@ -273,7 +303,7 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
   template <typename MAT_A>
   void matProductOf_AAt(const MAT_A& A)
   {
-    using Index = typename Derived::Index;
+    using Index = Index_t;
     const auto N = A.rows(), Ninner = A.cols();
     mbDerived().resize(N, N);
     for (Index r = 0; r < N; r++)
@@ -295,7 +325,7 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
   template <typename MAT_A>
   void matProductOf_AtA(const MAT_A& A)
   {
-    using Index = typename Derived::Index;
+    using Index = Index_t;
     const auto N = A.cols(), Ninner = A.rows();
     mbDerived().resize(N, N);
     for (Index r = 0; r < N; r++)
