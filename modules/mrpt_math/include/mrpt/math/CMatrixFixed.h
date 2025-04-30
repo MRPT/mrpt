@@ -36,10 +36,10 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
   /** The type of the matrix elements */
   using value_type = T;
   using Scalar = T;
-  using Index = int;
+  using Index = long int;
   using reference = T&;
   using const_reference = const T&;
-  using size_type = int;
+  using size_type = long int;
   using difference_type = std::ptrdiff_t;
   constexpr static int RowsAtCompileTime = ROWS;
   constexpr static int ColsAtCompileTime = COLS;
@@ -430,7 +430,7 @@ using CMatrixFloat15 = CMatrixFixed<float, 1, 5>;
 
 namespace mrpt::typemeta
 {
-template <typename T, int N, int M>
+template <typename T, long int N, long int M>
 struct TTypeName<mrpt::math::CMatrixFixed<T, N, M>>
 {
   constexpr static auto get()

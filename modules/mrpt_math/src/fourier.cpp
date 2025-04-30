@@ -1065,18 +1065,20 @@ void math::idft2_real(
 {
   MRPT_START
 
-  size_t i, j;
+  CMatrixFloat::Index i, j;
   using float_ptr = FFT_TYPE*;
 
   ASSERT_(in_real.rows() == in_imag.rows());
   ASSERT_(in_real.cols() == in_imag.cols());
 
   // The dimensions:
-  size_t dim1 = in_real.rows();
-  size_t dim2 = in_real.cols();
+  const auto dim1 = in_real.rows();
+  const auto dim2 = in_real.cols();
 
   if (mrpt::round2up(dim1) != dim1 || mrpt::round2up(dim2) != dim2)
+  {
     THROW_EXCEPTION("Matrix sizes are not a power of two!");
+  }
 
   // Transform to format compatible with C routines:
   // ------------------------------------------------------------
@@ -1094,11 +1096,13 @@ void math::idft2_real(
   // a[j1][2*j2+1] = I[j1][j2] = -I[n1-j1][n2-j2],
   //    0<j1<n1, 0<j2<n2/2,
   for (i = 1; i < dim1; i++)
+  {
     for (j = 1; j < dim2 / 2; j++)
     {
       a[i][2 * j] = in_real(i, j);
       a[i][2 * j + 1] = -in_imag(i, j);
     }
+  }
 
   // a[0][2*j2] = R[0][j2] = R[0][n2-j2],
   // a[0][2*j2+1] = I[0][j2] = -I[0][n2-j2],
@@ -1147,10 +1151,18 @@ void math::idft2_real(
   FFT_TYPE scale = 2.0f / (dim1 * dim2);
 
   for (i = 0; i < dim1; i++)
-    for (j = 0; j < dim2; j++) out_data(i, j) = (float)(a[i][j] * scale);
+  {
+    for (j = 0; j < dim2; j++)
+    {
+      out_data(i, j) = (float)(a[i][j] * scale);
+    }
+  }
 
   // Free temporary memory:
-  for (i = 0; i < dim1; i++) delete[] a[i];
+  for (i = 0; i < dim1; i++)
+  {
+    delete[] a[i];
+  }
   delete[] a;
   delete[] t;
   delete[] ip;
@@ -1208,14 +1220,14 @@ static void myGeneralDFT(
 
           phase += ang2 * k2;
         }  // end for k2
-      }    // end for k1
+      }  // end for k1
 
       // Save result:
       out_real(k1, k2) = R * scale;
       out_imag(k1, k2) = I * scale;
 
     }  // end for k2
-  }    // end for k1
+  }  // end for k1
 }
 
 /*---------------------------------------------------------------

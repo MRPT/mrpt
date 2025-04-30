@@ -25,6 +25,7 @@ template <typename Scalar, class Derived>
 bool MatrixVectorBase<Scalar, Derived>::fromMatlabStringFormat(
     const std::string& s, mrpt::optional_ref<std::ostream> dump_errors_here)
 {
+  using Index = typename Derived::Index;
   // Start with a (0,0) matrix:
   if (Derived::RowsAtCompileTime == Eigen::Dynamic)
   {
@@ -52,7 +53,7 @@ bool MatrixVectorBase<Scalar, Derived>::fromMatlabStringFormat(
   std::vector<Scalar> lstElements;
 
   size_t i = ini + 1;
-  int nRow = 0;
+  Index nRow = 0;
 
   while (i < end)
   {
@@ -100,12 +101,12 @@ bool MatrixVectorBase<Scalar, Derived>::fromMatlabStringFormat(
     }
     else
     {
-      const size_t N = lstElements.size();
+      const auto N = static_cast<Index>(lstElements.size());
 
       // Check valid width: All rows must have the same width
       if ((nRow > 0 && mvbDerived().cols() != N) ||
           (nRow == 0 && Derived::ColsAtCompileTime != Eigen::Dynamic &&
-           Derived::ColsAtCompileTime != int(N)))
+           Derived::ColsAtCompileTime != N))
       {
         if (dump_errors_here)
         {
@@ -130,7 +131,7 @@ bool MatrixVectorBase<Scalar, Derived>::fromMatlabStringFormat(
         }
         return false;
       }
-      for (int q = 0; q < N; q++)
+      for (Index q = 0; q < N; q++)
       {
         mvbDerived()(nRow, q) = lstElements[q];
       }
@@ -305,15 +306,13 @@ void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(std::istream& f)
       if (Derived::RowsAtCompileTime == Eigen::Dynamic ||
           Derived::ColsAtCompileTime == Eigen::Dynamic)
       {
-        if (mvbDerived().rows() < static_cast<int>(nRows + 1) ||
-            mvbDerived().cols() < static_cast<int>(i))
+        if (mvbDerived().rows() < nRows + 1 || mvbDerived().cols() < i)
         {
           const size_t extra_rows = std::max(static_cast<size_t>(1), nRows >> 1);
           mvbDerived().resize(nRows + extra_rows, i);
         }
       }
-      else if (
-          Derived::RowsAtCompileTime != Eigen::Dynamic && int(nRows) >= Derived::RowsAtCompileTime)
+      else if (Derived::RowsAtCompileTime != Eigen::Dynamic && nRows >= Derived::RowsAtCompileTime)
       {
         throw std::runtime_error(
             "loadFromTextFile: Read more rows than the capacity of the "

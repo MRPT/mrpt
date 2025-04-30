@@ -21,18 +21,19 @@ namespace mrpt::math
 template <typename Scalar, class Derived>
 void MatrixBase<Scalar, Derived>::unsafeRemoveColumns(const std::vector<std::size_t>& idxs)
 {
+  using Index = typename Derived::Index;
   std::size_t k = 1;
   const auto nR = mbDerived().rows();
   for (auto it = idxs.rbegin(); it != idxs.rend(); ++it, ++k)
   {
-    const auto nC = mbDerived().cols() - static_cast<int>(*it) - static_cast<int>(k);
+    const auto nC = mbDerived().cols() - static_cast<Index>(*it) - static_cast<Index>(k);
     if (nC > 0)
     {
       mbDerived().asEigen().block(0, *it, nR, nC) =
           mbDerived().asEigen().block(0, *it + 1, nR, nC).eval();
     }
   }
-  mbDerived().setSize(static_cast<typename Derived::Index>(nR), mbDerived().cols() - idxs.size());
+  mbDerived().setSize(static_cast<Index>(nR), mbDerived().cols() - static_cast<Index>(idxs.size()));
 }
 
 template <typename Scalar, class Derived>
@@ -52,11 +53,12 @@ void MatrixBase<Scalar, Derived>::removeColumns(const std::vector<std::size_t>& 
 template <typename Scalar, class Derived>
 void MatrixBase<Scalar, Derived>::unsafeRemoveRows(const std::vector<size_t>& idxs)
 {
+  using Index = typename Derived::Index;
   std::size_t k = 1;
   const auto nC = mbDerived().cols();
   for (auto it = idxs.rbegin(); it != idxs.rend(); ++it, ++k)
   {
-    const auto nR = mbDerived().rows() - static_cast<int>(*it) - static_cast<int>(k);
+    const auto nR = mbDerived().rows() - static_cast<Index>(*it) - static_cast<Index>(k);
     if (nR > 0)
     {
       mbDerived().asEigen().block(*it, 0, nR, nC) =
@@ -66,7 +68,7 @@ void MatrixBase<Scalar, Derived>::unsafeRemoveRows(const std::vector<size_t>& id
               .eval();
     }
   }
-  mbDerived().setSize(mbDerived().rows() - static_cast<int>(idxs.size()), nC);
+  mbDerived().setSize(mbDerived().rows() - static_cast<Index>(idxs.size()), nC);
 }
 
 template <typename Scalar, class Derived>
@@ -92,17 +94,18 @@ Scalar MatrixBase<Scalar, Derived>::det() const
 namespace detail
 {
 // Aux func to sort by ascending eigenvalues:
-template <typename Scalar, typename VEC1, typename MATRIX1, typename MATRIX2>
+template <typename Scalar, typename Vector, typename Matrix1, typename Matrix2>
 void sortEigResults(
-    const VEC1& eVals,
-    const MATRIX1& eVecs,
+    const Vector& eVals,
+    const Matrix1& eVecs,
     std::vector<Scalar>& sorted_eVals,
-    MATRIX2& sorted_eVecs)
+    Matrix2& sorted_eVecs)
 {
-  const int64_t N = static_cast<int64_t>(eVals.size());
+  using Index = typename Matrix1::Index;
+  const auto N = eVals.size();
   std::vector<std::pair<Scalar, int64_t>> D;
   D.reserve(N);
-  for (int64_t i = 0; i < N; i++)
+  for (Index i = 0; i < N; i++)
   {
     D.emplace_back(eVals[i], i);
   }
@@ -112,10 +115,10 @@ void sortEigResults(
   // store:
   sorted_eVecs.resize(eVecs.rows(), eVecs.cols());
   sorted_eVals.resize(N);
-  for (int64_t i = 0; i < N; i++)
+  for (Index i = 0; i < N; i++)
   {
-    sorted_eVals[static_cast<std::size_t>(i)] = D[static_cast<std::size_t>(i)].first;
-    sorted_eVecs.col(static_cast<typename MATRIX2::Index>(i)) =
+    sorted_eVals[i] = D[i].first;
+    sorted_eVecs.col(static_cast<typename Matrix2::Index>(i)) =
         eVecs.col(D[static_cast<std::size_t>(i)].second);
   }
 }
@@ -124,6 +127,7 @@ void sortEigResults(
 template <typename Scalar, class Derived>
 bool MatrixBase<Scalar, Derived>::eig(Derived& eVecs, std::vector<Scalar>& eVals, bool sorted) const
 {
+  using Index = typename Derived::Index;
   Eigen::EigenSolver<typename Derived::eigen_t> es(mbDerived().asEigen());
   if (es.info() != Eigen::Success)
   {
@@ -141,7 +145,7 @@ bool MatrixBase<Scalar, Derived>::eig(Derived& eVecs, std::vector<Scalar>& eVals
   {
     eVals.resize(N);
     eVecs = es.eigenvectors().real();
-    for (int i = 0; i < N; i++)
+    for (Index i = 0; i < N; i++)
     {
       eVals[static_cast<std::size_t>(i)] = eigenVal[i];
     }
@@ -176,7 +180,7 @@ bool MatrixBase<Scalar, Derived>::eig_symmetric(
   {
     eVals.resize(static_cast<std::size_t>(N));
     eVecs = es.eigenvectors().real();
-    for (int i = 0; i < N; i++)
+    for (typename Derived::Index i = 0; i < N; i++)
     {
       eVals[static_cast<std::size_t>(i)] = eigenVal[i];
     }

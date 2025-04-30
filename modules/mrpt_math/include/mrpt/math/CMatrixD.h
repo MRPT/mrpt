@@ -30,7 +30,7 @@ class CMatrixD : public mrpt::serialization::CSerializable, public CMatrixDynami
   /** Constructor */
   CMatrixD() : Base(1, 1) {}
   /** Constructor */
-  CMatrixD(size_t row, size_t col) : Base(row, col) {}
+  CMatrixD(Base::size_type row, Base::size_type col) : Base(row, col) {}
 
   /** Copy constructor */
   explicit CMatrixD(const Base& m) : Base(m) {}
