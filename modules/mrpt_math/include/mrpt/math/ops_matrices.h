@@ -19,9 +19,7 @@
  * This file implements miscelaneous matrix and matrix/vector operations, and
  * internal functions in mrpt::math::detail
  */
-namespace mrpt
-{
-namespace math
+namespace mrpt::math
 {
 /** R = H * C * H^t */
 template <typename MAT_H, typename MAT_C, typename MAT_R>
@@ -39,7 +37,7 @@ inline void multiply_HCHt(
 }
 
 /** return a fixed-size matrix with the result of: H * C * H^t */
-template <std::size_t H_ROWS, std::size_t H_COLS, typename Scalar>
+template <matrix_dim_t H_ROWS, matrix_dim_t H_COLS, typename Scalar>
 mrpt::math::CMatrixFixed<Scalar, H_ROWS, H_ROWS> multiply_HCHt(
     const mrpt::math::CMatrixFixed<Scalar, H_ROWS, H_COLS>& H,
     const mrpt::math::CMatrixFixed<Scalar, H_COLS, H_COLS>& C)
@@ -162,9 +160,9 @@ void multiply_A_skew3(const MAT_A& A, const SKEW_3VECTOR& v, MAT_OUT& out)
   MRPT_START
   ASSERT_EQUAL_(A.cols(), 3);
   ASSERT_EQUAL_(v.size(), 3);
-  const size_t N = A.rows();
+  const auto N = A.rows();
   out.setSize(N, 3);
-  for (size_t i = 0; i < N; i++)
+  for (typename MAT_A::Index i = 0; i < N; i++)
   {
     out(i, 0) = A(i, 1) * v[2] - A(i, 2) * v[1];
     out(i, 1) = -A(i, 0) * v[2] + A(i, 2) * v[0];
@@ -183,9 +181,9 @@ void multiply_skew3_A(const SKEW_3VECTOR& v, const MAT_A& A, MAT_OUT& out)
   MRPT_START
   ASSERT_EQUAL_(A.rows(), 3);
   ASSERT_EQUAL_(v.size(), 3);
-  const size_t N = A.cols();
+  const auto N = A.cols();
   out.setSize(3, N);
-  for (size_t i = 0; i < N; i++)
+  for (typename MAT_A::Index i = 0; i < N; i++)
   {
     out(0, i) = -A(1, i) * v[2] + A(2, i) * v[1];
     out(1, i) = A(0, i) * v[2] - A(2, i) * v[0];
@@ -201,14 +199,20 @@ void multiply_skew3_A(const SKEW_3VECTOR& v, const MAT_A& A, MAT_OUT& out)
 template <typename MATIN, typename MATOUT>
 void laplacian(const MATIN& g, MATOUT& ret)
 {
-  if (g.rows() != g.cols()) throw std::runtime_error("laplacian: Defined for square matrixes only");
+  if (g.rows() != g.cols())
+  {
+    throw std::runtime_error("laplacian: Defined for square matrixes only");
+  }
   const auto N = g.rows();
   ret = g;
   ret *= -1;
   for (typename MATIN::Index i = 0; i < N; i++)
   {
     typename MATIN::Scalar deg = 0;
-    for (typename MATIN::Index j = 0; j < N; j++) deg += g(j, i);
+    for (typename MATIN::Index j = 0; j < N; j++)
+    {
+      deg += g(j, i);
+    }
     ret(i, i) += deg;
   }
 }
@@ -225,14 +229,21 @@ void extractSubmatrixSymmetricalBlocks(
     const MAT& m, const std::vector<size_t>& block_indices, MATRIX& out)
 {
   if (BLOCKSIZE < 1)
+  {
     throw std::runtime_error("extractSubmatrixSymmetricalBlocks: BLOCKSIZE must be >=1");
+  }
   if (m.cols() != m.rows())
+  {
     throw std::runtime_error("extractSubmatrixSymmetricalBlocks: Matrix is not square.");
+  }
 
   const size_t N = block_indices.size();
   const size_t nrows_out = N * BLOCKSIZE;
   out.resize(nrows_out, nrows_out);
-  if (!N) return;  // Done
+  if (!N)
+  {
+    return;  // Done
+  }
   for (size_t dst_row_blk = 0; dst_row_blk < N; ++dst_row_blk)
   {
     for (size_t dst_col_blk = 0; dst_col_blk < N; ++dst_col_blk)
@@ -260,14 +271,21 @@ void extractSubmatrixSymmetricalBlocksDyn(
     MATRIX& out)
 {
   if (BLOCKSIZE < 1)
+  {
     throw std::runtime_error("extractSubmatrixSymmetricalBlocks: BLOCKSIZE must be >=1");
+  }
   if (m.cols() != m.rows())
+  {
     throw std::runtime_error("extractSubmatrixSymmetricalBlocks: Matrix is not square.");
+  }
 
   const size_t N = block_indices.size();
   const size_t nrows_out = N * BLOCKSIZE;
   out.resize(nrows_out, nrows_out);
-  if (!N) return;  // Done
+  if (!N)
+  {
+    return;  // Done
+  }
   for (size_t dst_row_blk = 0; dst_row_blk < N; ++dst_row_blk)
   {
     for (size_t dst_col_blk = 0; dst_col_blk < N; ++dst_col_blk)
@@ -295,18 +313,26 @@ template <typename MAT, typename MATRIX>
 void extractSubmatrixSymmetrical(const MAT& m, const std::vector<size_t>& indices, MATRIX& out)
 {
   if (m.cols() != m.rows())
+  {
     throw std::runtime_error("extractSubmatrixSymmetrical: Matrix is not square.");
+  }
 
   const size_t N = indices.size();
   const size_t nrows_out = N;
   out.resize(nrows_out, nrows_out);
-  if (!N) return;  // Done
+  if (!N)
+  {
+    return;  // Done
+  }
   for (size_t dst_row_blk = 0; dst_row_blk < N; ++dst_row_blk)
+  {
     for (size_t dst_col_blk = 0; dst_col_blk < N; ++dst_col_blk)
+    {
       out(dst_row_blk, dst_col_blk) = m(indices[dst_row_blk], indices[dst_col_blk]);
+    }
+  }
 }
 
 /**  @} */  // end of grouping
 
-}  // namespace math
-}  // namespace mrpt
+}  // namespace mrpt::math

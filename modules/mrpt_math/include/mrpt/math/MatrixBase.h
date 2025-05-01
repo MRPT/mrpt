@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/math/MatrixVectorBase.h>
+#include <mrpt/math/math_frwds.h>
 
 namespace mrpt::math
 {
@@ -26,8 +27,8 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
   Derived& mbDerived() { return static_cast<Derived&>(*this); }
   const Derived& mbDerived() const { return static_cast<const Derived&>(*this); }
 
-  using Index_t = long int;      // Index_t;
-  using size_type_t = long int;  // size_type_t;
+  using Index_t = matrix_index_t;    // Index_t;
+  using size_type_t = matrix_dim_t;  // size_type_t;
 
   /** Resize to NxN, set all entries to zero, except the main diagonal which
    * is set to `value` */
@@ -58,7 +59,7 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
     mbDerived().setZero(N, N);
     for (Index_t i = 0; i < N; i++)
     {
-      mbDerived()(i, i) = diags[i];
+      mbDerived()(i, i) = diags[static_cast<std::size_t>(i)];
     }
   }
   void setIdentity()
@@ -163,7 +164,7 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 
   /** Finds the rank of the matrix via LU decomposition.
    * Uses Eigen's default threshold unless `threshold>0`. */
-  int rank(Scalar threshold = 0) const;
+  matrix_dim_t rank(Scalar threshold = 0) const;
 
   /** Cholesky M=U<sup>T</sup> * U decomposition for symmetric matrix
    * (upper-half of the matrix is actually ignored.

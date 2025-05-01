@@ -11,6 +11,7 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/is_defined.h>
 #include <mrpt/core/optional_ref.h>
+#include <mrpt/math/math_frwds.h>
 
 #include <algorithm>  // fill()
 #include <cstddef>    // size_t
@@ -19,13 +20,6 @@
 
 namespace mrpt::math
 {
-template <class T>
-class CVectorDynamic;
-template <class T>
-class CMatrixDynamic;
-template <typename T, long int ROWS, long int COLS>
-class CMatrixFixed;
-
 template <typename DER>
 void internalAssertEigenDefined();
 
@@ -59,9 +53,6 @@ class MatrixVectorBase
   Derived& mvbDerived() { return static_cast<Derived&>(*this); }
   const Derived& mvbDerived() const { return static_cast<const Derived&>(*this); }
 
-  using Index_t = long int;      // typename Derived::Index;
-  using size_type_t = long int;  // typename Derived::size_type;
-
   /** @name Initialization methods
    * @{ */
 
@@ -70,12 +61,12 @@ class MatrixVectorBase
   void fill(const Scalar& val) { std::fill(mvbDerived().begin(), mvbDerived().end(), val); }
 
   inline void setConstant(const Scalar value) { fill(value); }
-  inline void setConstant(size_type_t nrows, size_type_t ncols, const Scalar value)
+  inline void setConstant(matrix_dim_t nrows, matrix_dim_t ncols, const Scalar value)
   {
     mvbDerived().resize(nrows, ncols);
     fill(value);
   }
-  inline void setConstant(size_type_t nrows, const Scalar value)
+  inline void setConstant(matrix_dim_t nrows, const Scalar value)
   {
     ASSERTMSG_(
         Derived::ColsAtCompileTime == 1,
@@ -93,22 +84,22 @@ class MatrixVectorBase
     m.fill(value);
     return m;
   }
-  [[nodiscard]] static Derived Constant(size_type_t nrows, size_type_t ncols, const Scalar value)
+  [[nodiscard]] static Derived Constant(matrix_dim_t nrows, matrix_dim_t ncols, const Scalar value)
   {
     Derived m;
     m.setConstant(nrows, ncols, value);
     return m;
   }
 
-  inline void assign(const size_type_t N, const Scalar value)
+  inline void assign(const matrix_dim_t N, const Scalar value)
   {
     mvbDerived().resize(N);
     fill(value);
   }
 
   inline void setZero() { fill(0); }
-  inline void setZero(size_type_t nrows, size_type_t ncols) { setConstant(nrows, ncols, 0); }
-  inline void setZero(size_type_t nrows)
+  inline void setZero(matrix_dim_t nrows, matrix_dim_t ncols) { setConstant(nrows, ncols, 0); }
+  inline void setZero(matrix_dim_t nrows)
   {
     ASSERTMSG_(
         Derived::ColsAtCompileTime == 1, "setZero(n) can be used only for vectors, not matrices");
@@ -116,7 +107,7 @@ class MatrixVectorBase
   }
 
   [[nodiscard]] static Derived Zero() { return Constant(0); }
-  [[nodiscard]] static Derived Zero(size_type_t nrows, size_type_t ncols)
+  [[nodiscard]] static Derived Zero(matrix_dim_t nrows, matrix_dim_t ncols)
   {
     return Constant(nrows, ncols, 0);
   }
@@ -127,20 +118,27 @@ class MatrixVectorBase
    * @{ */
 
   /** non-const block(): Returns an Eigen::Block reference to the block */
-  template <size_type_t BLOCK_ROWS, size_type_t BLOCK_COLS>
-  auto block(Index_t start_row, Index_t start_col)
+  template <matrix_dim_t BLOCK_ROWS, matrix_dim_t BLOCK_COLS>
+  auto block(matrix_index_t start_row, matrix_index_t start_col)
   {
     internalAssertEigenDefined<Derived>();
     return mvbDerived().asEigen().template block<BLOCK_ROWS, BLOCK_COLS>(start_row, start_col);
   }
 
-  auto block(Index_t start_row, Index_t start_col, size_type_t BLOCK_ROWS, size_type_t BLOCK_COLS)
+  auto block(
+      matrix_index_t start_row,
+      matrix_index_t start_col,
+      matrix_dim_t BLOCK_ROWS,
+      matrix_dim_t BLOCK_COLS)
   {
     internalAssertEigenDefined<Derived>();
     return mvbDerived().asEigen().block(start_row, start_col, BLOCK_ROWS, BLOCK_COLS);
   }
   auto block(
-      Index_t start_row, Index_t start_col, size_type_t BLOCK_ROWS, size_type_t BLOCK_COLS) const
+      matrix_index_t start_row,
+      matrix_index_t start_col,
+      matrix_dim_t BLOCK_ROWS,
+      matrix_dim_t BLOCK_COLS) const
   {
     internalAssertEigenDefined<Derived>();
     return mvbDerived().asEigen().block(start_row, start_col, BLOCK_ROWS, BLOCK_COLS);
@@ -212,12 +210,12 @@ class MatrixVectorBase
     return mvbDerived().asEigen() * s;
   }
 
-  template <size_type_t N>
+  template <matrix_dim_t N>
   CMatrixFixed<Scalar, N, 1> tail() const
   {
     return CMatrixFixed<Scalar, N, 1>(mvbDerived().asEigen().template tail<N>());
   }
-  template <size_type_t N>
+  template <matrix_dim_t N>
   CMatrixFixed<Scalar, N, 1> head() const
   {
     return CMatrixFixed<Scalar, N, 1>(mvbDerived().asEigen().template head<N>());
@@ -228,18 +226,18 @@ class MatrixVectorBase
   /** @name Standalone operations (do NOT require `#include <Eigen/Dense>`)
    * @{ */
 
-  Scalar& coeffRef(Index_t r, Index_t c) { return mvbDerived()(r, c); }
-  const Scalar& coeff(Index_t r, Index_t c) const { return mvbDerived()(r, c); }
+  Scalar& coeffRef(matrix_index_t r, matrix_index_t c) { return mvbDerived()(r, c); }
+  const Scalar& coeff(matrix_index_t r, matrix_index_t c) const { return mvbDerived()(r, c); }
 
   /** Minimum value in the matrix/vector */
   Scalar minCoeff() const;
-  Scalar minCoeff(Index_t& outIndexOfMin) const;
-  Scalar minCoeff(Index_t& rowIdx, Index_t& colIdx) const;
+  Scalar minCoeff(matrix_index_t& outIndexOfMin) const;
+  Scalar minCoeff(matrix_index_t& rowIdx, matrix_index_t& colIdx) const;
 
   /** Maximum value in the matrix/vector */
   Scalar maxCoeff() const;
-  Scalar maxCoeff(Index_t& outIndexOfMax) const;
-  Scalar maxCoeff(Index_t& rowIdx, Index_t& colIdx) const;
+  Scalar maxCoeff(matrix_index_t& outIndexOfMax) const;
+  Scalar maxCoeff(matrix_index_t& rowIdx, matrix_index_t& colIdx) const;
 
   /** returns true if matrix is NxN */
   bool isSquare() const { return mvbDerived().cols() == mvbDerived().rows(); }

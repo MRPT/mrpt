@@ -164,11 +164,13 @@ TPolygon2D::TPolygon2D(const TPolygon3D& p) : std::vector<TPoint2D>()
 void TPolygon2D::createRegularPolygon(size_t numEdges, double radius, TPolygon2D& poly)
 {
   if (numEdges < 3 || std::abs(radius) < getEpsilon())
+  {
     throw std::logic_error("Invalid arguments for regular polygon creations");
+  }
   poly.resize(numEdges);
   for (size_t i = 0; i < numEdges; i++)
   {
-    double angle = i * M_PI * 2 / numEdges;
+    double angle = static_cast<double>(i) * M_PI * 2 / static_cast<double>(numEdges);
     poly[i] = TPoint2D(radius * cos(angle), radius * sin(angle));
   }
 }
@@ -177,7 +179,10 @@ void TPolygon2D::createRegularPolygon(
     size_t numEdges, double radius, TPolygon2D& poly, const TPose2D& pose)
 {
   createRegularPolygon(numEdges, radius, poly);
-  for (size_t i = 0; i < numEdges; i++) poly[i] = pose.composePoint(poly[i]);
+  for (size_t i = 0; i < numEdges; i++)
+  {
+    poly[i] = pose.composePoint(poly[i]);
+  }
 }
 
 std::ostream& mrpt::math::operator<<(std::ostream& o, const TPolygon2D& p)
@@ -189,7 +194,10 @@ std::ostream& mrpt::math::operator<<(std::ostream& o, const TPolygon2D& p)
 
 TPolygon2D TPolygon2D::FromYAML(const mrpt::containers::yaml& c)
 {
-  if (c.isNullNode() || c.empty()) return {};
+  if (c.isNullNode() || c.empty())
+  {
+    return {};
+  }
   TPolygon2D p;
   ASSERT_(c.isSequence());
   for (const auto& vertex : c.asSequence())

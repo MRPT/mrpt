@@ -11,7 +11,10 @@
 #include <mrpt/system/CTicTac.h>
 
 #include <cmath>
+
+#ifdef LEVMARQ_EXAMPLE_VERBOSE
 #include <iostream>
+#endif
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -21,11 +24,21 @@ using namespace std;
 double levmarq_final_error = 1e10;
 
 // The error function F(x):
-void myFunction(const CVectorDouble& x, const CVectorDouble& y, CVectorDouble& out_f)
+void myFunction(const CVectorDouble& x, const CVectorDouble& y, CVectorDouble& out_f)  // NOLINT
 {
-  out_f.resize(1);
+  // The function to be minimized is:
   // 1-cos(x+1) *cos(x*y+1)
-  out_f[0] = 1 - cos(x[0] + 1) * cos(x[0] * x[1] + 1);
+  // with x[0] = x, x[1] = y
+  // and the output is a vector of size 1.
+  // The function is defined in the range [-2,2] for both x and y.
+
+  ASSERT_EQUAL_(x.size(), 2);
+  ASSERT_EQUAL_(y.size(), 0);
+  {
+    out_f.resize(1);
+    // 1-cos(x+1) *cos(x*y+1)
+    out_f[0] = 1 - cos(x[0] + 1) * cos(x[0] * x[1] + 1);
+  }
 }
 
 void TestLevMarq()
@@ -49,7 +62,9 @@ void TestLevMarq()
   CLevenbergMarquardt lm;
   tictac.Tic();
   for (size_t k = 0; k < N; k++)
+  {
     lm.execute(optimal_x, initial_x, myFunction, increments_x, y, info);
+  }
 
   levmarq_final_error = std::sqrt(info.final_sqr_err);
 

@@ -600,7 +600,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
           S.extractMatrix(base_idx_in_S, base_idx_in_S, lm_cov);
 
           double md, log_pdf;
-          mahalanobisDistance2AndLogPDF(lm_mu - obs_mu, lm_cov, md, log_pdf);
+          mahalanobisDistanceSqAndLogPDF(lm_mu - obs_mu, lm_cov, md, log_pdf);
 
           if (valid_idx_pred == idx_pred)
             fC.printf("%e %e\n", md, log_pdf);

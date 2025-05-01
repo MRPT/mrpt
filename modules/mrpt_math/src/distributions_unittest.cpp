@@ -133,7 +133,7 @@ TEST(distributions, noncentralChi2PDF_CDF)
   EXPECT_NEAR(mrpt::math::noncentralChi2PDF_CDF(2, 3, 3.0).first, 0.121500177080913, eps2);
 }
 
-TEST(data_utils, mahalanobisDistance2AndLogPDF)
+TEST(data_utils, mahalanobisDistanceSqAndLogPDF)
 {
   const double cov_vals[3 * 3] = {0.00393682,   -6.11165e-07, -8.62169e-05,
                                   -6.11165e-07, 7.44917e-05,  -1.17274e-07,
@@ -144,7 +144,7 @@ TEST(data_utils, mahalanobisDistance2AndLogPDF)
   const CMatrixDouble31 x(x_vals);
 
   double out_maha2, out_ml;
-  mrpt::math::mahalanobisDistance2AndLogPDF(x, COV, out_maha2, out_ml);
+  mrpt::math::mahalanobisDistanceSqAndLogPDF(x, COV, out_maha2, out_ml);
 
   EXPECT_NEAR(out_maha2, 0.388264, 1e-4);
   EXPECT_NEAR(out_ml, 9.14118, 1e-4);

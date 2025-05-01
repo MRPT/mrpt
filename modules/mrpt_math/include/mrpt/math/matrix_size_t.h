@@ -8,6 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/math/math_frwds.h>
+
 #include <array>
 
 namespace mrpt::math
@@ -17,16 +19,16 @@ namespace mrpt::math
  * behavior of STL-containers.
  * \ingroup mrpt_math_grp
  */
-struct matrix_size_t : public std::array<long int, 2>
+struct matrix_size_t : public std::array<matrix_dim_t, 2>
 {
-  constexpr matrix_size_t() : std::array<long int, 2>{0, 0} {}
-  constexpr matrix_size_t(const long int rows, const long int cols) :
-      std::array<long int, 2>{rows, cols}
+  constexpr matrix_size_t() : std::array<matrix_dim_t, 2>{0, 0} {}
+  constexpr matrix_size_t(const matrix_dim_t rows, const matrix_dim_t cols) :
+      std::array<matrix_dim_t, 2>{rows, cols}
   {
   }
 
   /** Cast to size_t as the overall number of matrix/vector elements */
-  operator long int() const { return at(0) * at(1); }
+  operator matrix_dim_t() const { return at(0) * at(1); }
 };
 
 }  // namespace mrpt::math

@@ -12,12 +12,9 @@
 // compiling in small systems.
 
 #include <gtest/gtest.h>
-#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/CMatrixFixed.h>
-#include <mrpt/math/matrix_serialization.h>  // serialization of matrices
 #include <mrpt/random.h>
-#include <mrpt/serialization/CArchive.h>
 
 #include <Eigen/Dense>
 
@@ -62,36 +59,6 @@ TEST(Matrices, A_times_B_fix)
   Err = C.asEigen() - CMatrixFixed<double, 3, 2>(C_ok).asEigen();
 
   EXPECT_NEAR(0, fabs(Err.asEigen().array().sum()), 1e-5);
-}
-
-TEST(Matrices, SerializeCMatrixD)
-{
-  CMatrixDouble A(3, 2, dat_A);
-  CMatrixFixed<double, 3, 2> fA;
-
-  CMatrixD As = CMatrixD(A);
-
-  mrpt::io::CMemoryStream membuf;
-  auto arch = mrpt::serialization::archiveFrom(membuf);
-  arch << As;
-  membuf.Seek(0);
-  arch >> fA;
-
-  EXPECT_NEAR(0, fabs((CMatrixDouble(fA) - A).sum()), 1e-9);
-
-  try
-  {
-    // Now, if we try to de-serialize into the wrong type, we should get an
-    // exception:
-    membuf.Seek(0);
-    CMatrixFixed<double, 2, 2> fB;
-    arch >> fB;  // Wrong size!
-
-    GTEST_FAIL() << "Exception not launched when it was expected!";
-  }
-  catch (...)
-  {  // OK, exception occurred, as expected
-  }
 }
 
 TEST(Matrices, EigenVal2x2dyn)

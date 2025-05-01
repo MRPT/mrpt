@@ -271,8 +271,8 @@ void confidenceIntervalsFromHistogram(
   ASSERT_(it_low != Hc.end());
   auto it_high = std::upper_bound(Hc.begin(), Hc.end(), 1 - confidenceInterval);
   ASSERT_(it_high != Hc.end());
-  const size_t idx_low = std::distance(Hc.begin(), it_low);
-  const size_t idx_high = std::distance(Hc.begin(), it_high);
+  const size_t idx_low = static_cast<size_t>(std::distance(Hc.begin(), it_low));
+  const size_t idx_high = static_cast<size_t>(std::distance(Hc.begin(), it_high));
   out_lower_conf_interval = x_min + idx_low * binWidth;
   out_upper_conf_interval = x_min + idx_high * binWidth;
 

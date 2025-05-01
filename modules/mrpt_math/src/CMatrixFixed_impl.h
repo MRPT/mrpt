@@ -14,7 +14,7 @@
 
 namespace mrpt::math
 {
-template <typename T, std::size_t ROWS, std::size_t COLS>
+template <typename T, matrix_dim_t ROWS, matrix_dim_t COLS>
 CMatrixFixed<float, ROWS, COLS> CMatrixFixed<T, ROWS, COLS>::cast_float() const
 {
   CMatrixFixed<float, ROWS, COLS> r(rows(), cols());
@@ -22,7 +22,7 @@ CMatrixFixed<float, ROWS, COLS> CMatrixFixed<T, ROWS, COLS>::cast_float() const
   return r;
 }
 
-template <typename T, std::size_t ROWS, std::size_t COLS>
+template <typename T, matrix_dim_t ROWS, matrix_dim_t COLS>
 CMatrixFixed<double, ROWS, COLS> CMatrixFixed<T, ROWS, COLS>::cast_double() const
 {
   CMatrixFixed<double, ROWS, COLS> r(rows(), cols());
@@ -30,7 +30,7 @@ CMatrixFixed<double, ROWS, COLS> CMatrixFixed<T, ROWS, COLS>::cast_double() cons
   return r;
 }
 
-template <typename T, std::size_t ROWS, std::size_t COLS>
+template <typename T, matrix_dim_t ROWS, matrix_dim_t COLS>
 CMatrixFixed<T, ROWS, 1> CMatrixFixed<T, ROWS, COLS>::llt_solve(
     const CMatrixFixed<T, ROWS, 1>& b) const
 {
@@ -44,7 +44,7 @@ CMatrixFixed<T, ROWS, 1> CMatrixFixed<T, ROWS, COLS>::llt_solve(
     throw std::invalid_argument("llt_solve(): only available for square matrices.");
   }
 }
-template <typename T, std::size_t ROWS, std::size_t COLS>
+template <typename T, matrix_dim_t ROWS, matrix_dim_t COLS>
 CMatrixFixed<T, ROWS, 1> CMatrixFixed<T, ROWS, COLS>::lu_solve(
     const CMatrixFixed<T, ROWS, 1>& b) const
 {

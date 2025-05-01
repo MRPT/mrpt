@@ -29,8 +29,8 @@ void MatrixBase<Scalar, Derived>::unsafeRemoveColumns(const std::vector<std::siz
     const auto nC = mbDerived().cols() - static_cast<Index>(*it) - static_cast<Index>(k);
     if (nC > 0)
     {
-      mbDerived().asEigen().block(0, *it, nR, nC) =
-          mbDerived().asEigen().block(0, *it + 1, nR, nC).eval();
+      mbDerived().asEigen().block(0, static_cast<Index>(*it), nR, nC) =
+          mbDerived().asEigen().block(0, static_cast<Index>(*it + 1), nR, nC).eval();
     }
   }
   mbDerived().setSize(static_cast<Index>(nR), mbDerived().cols() - static_cast<Index>(idxs.size()));
@@ -61,7 +61,7 @@ void MatrixBase<Scalar, Derived>::unsafeRemoveRows(const std::vector<size_t>& id
     const auto nR = mbDerived().rows() - static_cast<Index>(*it) - static_cast<Index>(k);
     if (nR > 0)
     {
-      mbDerived().asEigen().block(*it, 0, nR, nC) =
+      mbDerived().asEigen().block(static_cast<Index>(*it), 0, nR, nC) =
           mbDerived()
               .asEigen()
               .block(static_cast<typename Derived::Index>(*it + 1), 0, nR, nC)
@@ -104,7 +104,7 @@ void sortEigResults(
   using Index = typename Matrix1::Index;
   const auto N = eVals.size();
   std::vector<std::pair<Scalar, int64_t>> D;
-  D.reserve(N);
+  D.reserve(static_cast<std::size_t>(N));
   for (Index i = 0; i < N; i++)
   {
     D.emplace_back(eVals[i], i);
@@ -114,12 +114,12 @@ void sortEigResults(
 
   // store:
   sorted_eVecs.resize(eVecs.rows(), eVecs.cols());
-  sorted_eVals.resize(N);
+  sorted_eVals.resize(static_cast<std::size_t>(N));
   for (Index i = 0; i < N; i++)
   {
-    sorted_eVals[i] = D[i].first;
-    sorted_eVecs.col(static_cast<typename Matrix2::Index>(i)) =
-        eVecs.col(D[static_cast<std::size_t>(i)].second);
+    const auto ii = static_cast<std::size_t>(i);
+    sorted_eVals[ii] = D[ii].first;
+    sorted_eVecs.col(static_cast<typename Matrix2::Index>(i)) = eVecs.col(D[ii].second);
   }
 }
 }  // namespace detail
@@ -143,7 +143,7 @@ bool MatrixBase<Scalar, Derived>::eig(Derived& eVecs, std::vector<Scalar>& eVals
   }
   else
   {
-    eVals.resize(N);
+    eVals.resize(static_cast<std::size_t>(N));
     eVecs = es.eigenvectors().real();
     for (Index i = 0; i < N; i++)
     {
@@ -189,7 +189,7 @@ bool MatrixBase<Scalar, Derived>::eig_symmetric(
 }
 
 template <typename Scalar, class Derived>
-int MatrixBase<Scalar, Derived>::rank(Scalar threshold) const
+matrix_dim_t MatrixBase<Scalar, Derived>::rank(Scalar threshold) const
 {
   Eigen::FullPivLU<typename Derived::eigen_t> lu(mbDerived().asEigen().eval());
   if (threshold > 0)
@@ -197,7 +197,7 @@ int MatrixBase<Scalar, Derived>::rank(Scalar threshold) const
     lu.setThreshold(threshold);
   }
 
-  return lu.rank();
+  return static_cast<matrix_dim_t>(lu.rank());
 }
 
 template <typename Scalar, class Derived>

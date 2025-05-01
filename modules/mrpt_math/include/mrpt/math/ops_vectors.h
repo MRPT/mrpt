@@ -129,7 +129,7 @@ std::ostream& operator<<(std::ostream& out, std::vector<T>* d)
 }
 
 /** Binary dump of a CVectorFixed<T,N> to a stream. */
-template <typename T, size_t N>
+template <typename T, matrix_dim_t N>
 mrpt::serialization::CArchive& operator<<(
     mrpt::serialization::CArchive& ostrm, const CVectorFixed<T, N>& a)
 {
@@ -139,7 +139,7 @@ mrpt::serialization::CArchive& operator<<(
 }
 
 /** Binary read of a CVectorFixed<T,N> from a stream. */
-template <typename T, size_t N>
+template <typename T, matrix_dim_t N>
 mrpt::serialization::CArchive& operator>>(
     mrpt::serialization::CArchive& istrm, CVectorFixed<T, N>& a)
 {
