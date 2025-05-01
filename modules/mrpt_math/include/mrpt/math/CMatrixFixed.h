@@ -27,7 +27,7 @@ namespace mrpt::math
  * https://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
  * \ingroup mrpt_math_grp
  */
-template <typename T, int ROWS, int COLS>
+template <typename T, matrix_dim_t ROWS, matrix_dim_t COLS>
 class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 {
  public:
@@ -36,10 +36,10 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
   /** The type of the matrix elements */
   using value_type = T;
   using Scalar = T;
-  using Index = long int;
+  using Index = matrix_index_t;
   using reference = T&;
   using const_reference = const T&;
-  using size_type = long int;
+  using size_type = matrix_dim_t;
   using difference_type = std::ptrdiff_t;
   constexpr static int RowsAtCompileTime = ROWS;
   constexpr static int ColsAtCompileTime = COLS;
@@ -194,7 +194,7 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
     {
       for (Index c = 0; c < COLS; c++)
       {
-        m_data[r * COLS + c] = data[i++];
+        m_data[static_cast<std::size_t>(r * COLS + c)] = data[static_cast<std::size_t>(i++)];
       }
     }
   }
@@ -430,7 +430,7 @@ using CMatrixFloat15 = CMatrixFixed<float, 1, 5>;
 
 namespace mrpt::typemeta
 {
-template <typename T, long int N, long int M>
+template <typename T, mrpt::math::matrix_dim_t N, mrpt::math::matrix_dim_t M>
 struct TTypeName<mrpt::math::CMatrixFixed<T, N, M>>
 {
   constexpr static auto get()

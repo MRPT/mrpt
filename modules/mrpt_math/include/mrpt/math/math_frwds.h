@@ -53,6 +53,9 @@ class CwiseBinaryOp;
 
 namespace mrpt::math
 {
+using matrix_index_t = long int;  //!< Index type for matrices
+using matrix_dim_t = long int;    //!< Size type for matrices
+
 /** For usage in one of the constructors of CMatrixFixed or
    CMatrixDynamic (and derived classes), if it's not required
    to fill it with zeros at the constructor to save time. */
@@ -63,7 +66,9 @@ enum TConstructorFlags_Matrices
 
 template <class T>
 class CMatrixDynamic;
-template <typename T, long int ROWS, long int COLS>
+template <typename T, matrix_dim_t ROWS, matrix_dim_t COLS>
 class CMatrixFixed;
+template <class T>
+class CVectorDynamic;
 
 }  // namespace mrpt::math

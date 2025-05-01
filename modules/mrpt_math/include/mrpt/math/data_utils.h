@@ -13,6 +13,8 @@
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/wrap2pi.h>
 
+#include <cstddef>
+
 namespace mrpt::math
 {
 /** \addtogroup stats_grp
@@ -22,25 +24,64 @@ namespace mrpt::math
 /** @name Probability density distributions (pdf) distance metrics
 @{ */
 
-/** Computes the squared mahalanobis distance of a vector X given the mean MU
- * and the covariance *inverse* COV_inv
- *  \f[ d^2 =  (X-MU)^\top \Sigma^{-1} (X-MU)  \f]
+/**
+ * @brief Computes the squared Mahalanobis distance between vector X and mean MU using covariance
+ * COV.
+ *
+ * Mahalanobis distance squared: $d^2 = (X - \mu)^T \Sigma^{-1} (X - \mu)$
+ * This function uses the Cholesky decomposition (LLT) of the covariance matrix for stable
+ * inversion.
+ *
+ * @tparam VECTORLIKE1 Type of the input vector X (must support size() and operator[] or be
+ * Eigen-compatible).
+ * @tparam VECTORLIKE2 Type of the mean vector MU (must support size() and operator[] or be
+ * Eigen-compatible).
+ * @tparam MAT Type of the covariance matrix COV (must be Eigen-compatible, square, positive
+ * semi-definite, and support llt_solve or llt().solve()).
+ * @param X Input vector.
+ * @param MU Mean vector.
+ * @param COV Covariance matrix (\f$ \Sigma \f$).
+ * @return The squared Mahalanobis distance (scalar).
  */
 template <class VECTORLIKE1, class VECTORLIKE2, class MAT>
-typename MAT::Scalar mahalanobisDistance2(
+[[nodiscard]]
+typename MAT::Scalar mahalanobisDistanceSq(
     const VECTORLIKE1& X, const VECTORLIKE2& MU, const MAT& COV)
 {
   MRPT_START
+
+  // Use auto for size type, likely std::size_t or Eigen::Index
+  const auto N = X.size();
+  using Scalar = typename MAT::Scalar;  // The scalar type (e.g., float, double)
+
+  // Compile-time checks could use static_assert if conditions were purely type-based,
+  // but size checks are runtime. The existing debug checks are fine.
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
+  // Use Eigen::Index for consistency if MAT is Eigen-based
+  using Index = typename MAT::Index;
   ASSERT_(!X.empty());
-  ASSERT_(X.size() == MU.size());
-  ASSERT_(X.size() == COV.rows() && COV.isSquare());
+  // Cast N to Index type for comparison with Eigen sizes
+  ASSERT_(static_cast<Index>(N) == MU.size());
+  ASSERT_(static_cast<Index>(N) == COV.rows() && COV.isSquare());
+  // Optional: Add check if COV is positive definite if required by llt_solve
 #endif
-  const size_t N = X.size();
-  CVectorDynamic<typename MAT::Scalar> X_MU(N);
-  for (size_t i = 0; i < N; i++) X_MU[i] = X[i] - MU[i];
-  auto z = COV.llt_solve(X_MU);
-  return z.dot(z);
+
+  // --- Compute difference vector: X - MU ---
+  mrpt::math::CVectorDynamic<Scalar> diff(N);  // Or Eigen::VectorX<Scalar>
+  for (std::size_t i = 0; i < N; ++i)
+  {
+    diff[i] = X[i] - MU[i];
+  }
+
+  // --- Solve the linear system using Cholesky decomposition ---
+  // Calculates z = COV^{-1} * diff
+  auto z = COV.llt_solve(diff);
+
+  // --- Compute the dot product for Mahalanobis distance squared ---
+  // Result = diff^T * z = diff^T * COV^{-1} * diff
+  Scalar result = diff.dot(z);
+
+  return result;
   MRPT_END
 }
 
@@ -52,7 +93,7 @@ template <class VECTORLIKE1, class VECTORLIKE2, class MAT>
 inline typename VECTORLIKE1::Scalar mahalanobisDistance(
     const VECTORLIKE1& X, const VECTORLIKE2& MU, const MAT& COV)
 {
-  return std::sqrt(mahalanobisDistance2(X, MU, COV));
+  return std::sqrt(mahalanobisDistanceSq(X, MU, COV));
 }
 
 /** Computes the squared mahalanobis distance between two *non-independent*
@@ -62,7 +103,7 @@ inline typename VECTORLIKE1::Scalar mahalanobisDistance(
  * \Delta_\mu  \f]
  */
 template <class VECTORLIKE, class MAT1, class MAT2, class MAT3>
-typename MAT1::Scalar mahalanobisDistance2(
+typename MAT1::Scalar mahalanobisDistanceSq(
     const VECTORLIKE& mean_diffs, const MAT1& COV1, const MAT2& COV2, const MAT3& CROSS_COV12)
 {
   MRPT_START
@@ -100,7 +141,7 @@ inline typename VECTORLIKE::Scalar mahalanobisDistance(
  *  \f[ d^2 = \Delta_\mu^\top \Sigma^{-1} \Delta_\mu  \f]
  */
 template <class VECTORLIKE, class MATRIXLIKE>
-inline typename MATRIXLIKE::Scalar mahalanobisDistance2(
+inline typename MATRIXLIKE::Scalar mahalanobisDistanceSq(
     const VECTORLIKE& delta_mu, const MATRIXLIKE& cov)
 {
   ASSERTDEB_(cov.isSquare());
@@ -117,7 +158,7 @@ template <class VECTORLIKE, class MATRIXLIKE>
 inline typename MATRIXLIKE::Scalar mahalanobisDistance(
     const VECTORLIKE& delta_mu, const MATRIXLIKE& cov)
 {
-  return std::sqrt(mahalanobisDistance2(delta_mu, cov));
+  return std::sqrt(mahalanobisDistanceSq(delta_mu, cov));
 }
 
 /** Computes the integral of the product of two Gaussians, with means separated
@@ -167,7 +208,7 @@ T productIntegralTwoGaussians(
 
 /** Computes both, the integral of the product of two Gaussians and their square
  * Mahalanobis distance.
- * \sa productIntegralTwoGaussians, mahalanobisDistance2
+ * \sa productIntegralTwoGaussians, mahalanobisDistanceSq
  */
 template <typename T, class VECLIKE, class MATLIKE1, class MATLIKE2>
 void productIntegralAndMahalanobisTwoGaussians(
@@ -199,11 +240,11 @@ void productIntegralAndMahalanobisTwoGaussians(
 
 /** Computes both, the logarithm of the PDF and the square Mahalanobis distance
  * between a point (given by its difference wrt the mean) and a Gaussian.
- * \sa productIntegralTwoGaussians, mahalanobisDistance2, normalPDF,
- * mahalanobisDistance2AndPDF
+ * \sa productIntegralTwoGaussians, mahalanobisDistanceSq, normalPDF,
+ * mahalanobisDistanceSqAndPDF
  */
 template <typename T, class VECLIKE, class MATRIXLIKE>
-void mahalanobisDistance2AndLogPDF(
+void mahalanobisDistanceSqAndLogPDF(
     const VECLIKE& diff_mean, const MATRIXLIKE& cov, T& maha2_out, T& log_pdf_out)
 {
   MRPT_START
@@ -221,13 +262,13 @@ void mahalanobisDistance2AndLogPDF(
 
 /** Computes both, the PDF and the square Mahalanobis distance between a point
  * (given by its difference wrt the mean) and a Gaussian.
- * \sa productIntegralTwoGaussians, mahalanobisDistance2, normalPDF
+ * \sa productIntegralTwoGaussians, mahalanobisDistanceSq, normalPDF
  */
 template <typename T, class VECLIKE, class MATRIXLIKE>
-inline void mahalanobisDistance2AndPDF(
+inline void mahalanobisDistanceSqAndPDF(
     const VECLIKE& diff_mean, const MATRIXLIKE& cov, T& maha2_out, T& pdf_out)
 {
-  mahalanobisDistance2AndLogPDF(diff_mean, cov, maha2_out, pdf_out);
+  mahalanobisDistanceSqAndLogPDF(diff_mean, cov, maha2_out, pdf_out);
   pdf_out = std::exp(pdf_out);  // log to linear
 }
 

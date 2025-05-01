@@ -10,7 +10,7 @@
 #include <gtest/gtest.h>
 
 // Reuse code from example:
-#include "samples/math_optimize_lm_example/LevMarqTest_impl.cpp"
+#include "../../../samples/math_optimize_lm_example/LevMarqTest_impl.cpp"  // NOLINT
 
 TEST(LevMarq, optimizeTest)
 {

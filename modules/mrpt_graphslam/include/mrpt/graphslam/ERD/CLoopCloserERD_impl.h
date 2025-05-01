@@ -1581,7 +1581,7 @@ bool CLoopCloserERD<GRAPH_T>::mahalanobisDistanceOdometryToICPEdge(
   rel_edge.getCovariance(cov_mat);
 
   // mahalanobis distance computation
-  double mahal_distance = mrpt::math::mahalanobisDistance2(mean_diff, cov_mat);
+  double mahal_distance = mrpt::math::mahalanobisDistanceSq(mean_diff, cov_mat);
   bool mahal_distance_null = std::isnan(mahal_distance);
   if (!mahal_distance_null)
   {

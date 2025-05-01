@@ -46,10 +46,10 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
   /** The type of the matrix elements */
   using value_type = T;
   using Scalar = T;
-  using Index = long int;
+  using Index = matrix_index_t;
   using reference = T&;
   using const_reference = const T&;
-  using size_type = long int;
+  using size_type = matrix_dim_t;
   using difference_type = std::ptrdiff_t;
   constexpr static int RowsAtCompileTime = -1;
   constexpr static int ColsAtCompileTime = -1;

@@ -377,7 +377,7 @@ void mrpt::slam::data_association_full_covariance(
         double d2, ml;
         // mrpt::math::productIntegralAndMahalanobisTwoGaussians(diff_means_i_j,pred_i_cov,obs_j_cov,
         // d2,ml);
-        mrpt::math::mahalanobisDistance2AndLogPDF(diff_means_i_j, pred_i_cov, d2, ml);
+        mrpt::math::mahalanobisDistanceSqAndLogPDF(diff_means_i_j, pred_i_cov, d2, ml);
 
         // The distance according to the metric
         double val = (metric == metricMaha) ? d2 : ml;
@@ -418,7 +418,7 @@ void mrpt::slam::data_association_full_covariance(
         double d2, ml;
         //				mrpt::math::productIntegralAndMahalanobisTwoGaussians(diff_means_i_j,pred_i_cov,obs_j_cov,
         // d2,ml);
-        mrpt::math::mahalanobisDistance2AndLogPDF(diff_means_i_j, pred_i_cov, d2, ml);
+        mrpt::math::mahalanobisDistanceSqAndLogPDF(diff_means_i_j, pred_i_cov, d2, ml);
 
         if (d2 > 6 * chi2thres) break;  // Since kd-tree returns the landmarks by distance
         // order, we can skip the rest
@@ -435,7 +435,7 @@ void mrpt::slam::data_association_full_covariance(
         if (IC) results.indiv_compatibility_counts[j]++;
       }
     }  // end use KD-Tree
-  }    // end for
+  }  // end for
 
 #if 0
 	cout << "Distances: " << endl << results.indiv_distances << endl;

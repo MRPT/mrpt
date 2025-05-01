@@ -30,11 +30,12 @@ namespace mrpt::math
 // data is a complex array of length nn or, equivalently, a real array of length
 // 2*nn. nn MUST
 // be an integer power of 2 (this is not checked for!).
-static void four1(float data[], unsigned long nn, int isign)
+static void four1(float data[], unsigned long nn, int isign)  // NOLINT
+
 {
   unsigned long n, mmax, m, j, i;
-  double wtemp, wr, wpr, wpi, wi,
-      theta;  // Double precision for the trigonometric recurrences.
+  // Double precision for the trigonometric recurrences.
+  double wtemp, wr, wpr, wpi, wi, theta;
   float tempr, tempi;
 
   n = nn << 1;

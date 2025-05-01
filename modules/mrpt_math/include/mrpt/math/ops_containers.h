@@ -325,7 +325,8 @@ void adjustRange(
  * \sa math::mean,math::stddev
  */
 template <class VECTORLIKE>
-void meanAndStd(const VECTORLIKE& v, double& out_mean, double& out_std, bool unbiased = true)
+void meanAndStd(
+    const VECTORLIKE& v, double& out_mean, double& out_std, bool unbiased = true)  // NOLINT
 {
   if (v.size() < 2)
   {
@@ -335,11 +336,14 @@ void meanAndStd(const VECTORLIKE& v, double& out_mean, double& out_std, bool unb
   else
   {
     // Compute the mean:
-    const size_t N = v.size();
+    const auto N = v.size();
     out_mean = mrpt::math::sum(v) / static_cast<double>(N);
     // Compute the std:
     double vector_std = 0;
-    for (size_t i = 0; i < N; i++) vector_std += mrpt::square(v[i] - out_mean);
+    for (const auto& val : v)
+    {
+      vector_std += mrpt::square(val - out_mean);
+    }
     out_std = std::sqrt(vector_std / static_cast<double>(N - (unbiased ? 1 : 0)));
   }
 }
@@ -378,9 +382,17 @@ void meanAndCovVec(const VECTOR_OF_VECTOR& v, VECTORLIKE& out_mean, MATRIXLIKE& 
   // First: Compute the mean
   out_mean.assign(M, 0);
   for (size_t i = 0; i < N; i++)
-    for (size_t j = 0; j < M; j++) out_mean[j] += v[i][j];
+  {
+    for (size_t j = 0; j < M; j++)
+    {
+      out_mean[j] += v[i][j];
+    }
+  }
 
-  for (size_t j = 0; j < M; j++) out_mean[j] *= N_inv;
+  for (auto& val : out_mean)
+  {
+    val *= N_inv;
+  }
 
   // Second: Compute the covariance
   //  Save only the above-diagonal part, then after averaging
@@ -388,14 +400,26 @@ void meanAndCovVec(const VECTOR_OF_VECTOR& v, VECTORLIKE& out_mean, MATRIXLIKE& 
   out_cov.setZero(M, M);
   for (size_t i = 0; i < N; i++)
   {
-    for (size_t j = 0; j < M; j++) out_cov(j, j) += square(v[i][j] - out_mean[j]);
+    for (size_t j = 0; j < M; j++)
+    {
+      out_cov(j, j) += square(v[i][j] - out_mean[j]);
+    }
 
     for (size_t j = 0; j < M; j++)
+    {
       for (size_t k = j + 1; k < M; k++)
+      {
         out_cov(j, k) += (v[i][j] - out_mean[j]) * (v[i][k] - out_mean[k]);
+      }
+    }
   }
   for (size_t j = 0; j < M; j++)
-    for (size_t k = j + 1; k < M; k++) out_cov(k, j) = out_cov(j, k);
+  {
+    for (size_t k = j + 1; k < M; k++)
+    {
+      out_cov(k, j) = out_cov(j, k);
+    }
+  }
   out_cov *= N_inv;
 }
 
@@ -511,7 +535,10 @@ VECTOR xcorr(const VECTOR& a, const VECTOR& b, const size_t maxLag, bool normali
     double numerator = 0, sum_a = 0, sum_b = 0;
     for (int i_a = 0; i_a < na; ++i_a)
     {
-      if (i_a + lag >= nb || i_a + lag < 0) continue;
+      if (i_a + lag >= nb || i_a + lag < 0)
+      {
+        continue;
+      }
 
       numerator += az[i_a] * bz[i_a + lag];
       if (normalized)

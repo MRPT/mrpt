@@ -44,10 +44,10 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
   /** The type of the matrix elements */
   using value_type = T;
   using Scalar = T;
-  using Index = long int;
+  using Index = matrix_index_t;
   using reference = T&;
   using const_reference = const T&;
-  using size_type = long int;
+  using size_type = matrix_dim_t;
   using difference_type = std::ptrdiff_t;
   constexpr static int RowsAtCompileTime = -1;
   constexpr static int ColsAtCompileTime = 1;
@@ -73,16 +73,17 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
   void realloc(size_type new_len, bool newElementsToZero = false)
   {
     const auto old_len = m_data.size();
-    if (new_len == old_len)
+    const auto old_len_s = static_cast<matrix_dim_t>(old_len);
+    if (new_len == old_len_s)
     {
       return;
     }
-    m_data.resize(new_len);
-    if (newElementsToZero && new_len > old_len)
+    m_data.resize(static_cast<std::size_t>(new_len));
+    if (newElementsToZero && new_len > old_len_s)
     {
       if constexpr (std::is_trivial_v<T>)
       {
-        ::memset(&m_data[old_len], 0, sizeof(T) * static_cast<std::size_t>(new_len - old_len));
+        ::memset(&m_data[old_len], 0, sizeof(T) * static_cast<std::size_t>(new_len - old_len_s));
       }
       else
       {
@@ -145,13 +146,13 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
   }
 
   /** Number of rows in the vector */
-  size_type rows() const { return m_data.size(); }
+  size_type rows() const { return static_cast<size_type>(m_data.size()); }
 
   /** Number of columns in the matrix (always 1) */
   size_type cols() const { return 1; }
 
   /** Get a 2-vector with [NROWS NCOLS] (as in MATLAB command size(x)) */
-  size_type size() const { return static_cast<size_type>(m_data.size()); }
+  size_type size() const { return rows(); }
 
   bool empty() const { return m_data.empty(); }
 
@@ -161,7 +162,7 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
     ASSERT_(col == 1);
     realloc(row, zeroNewElements);
   }
-  void resize(std::size_t N, bool zeroNewElements = false) { setSize(N, 1, zeroNewElements); }
+  void resize(size_type N, bool zeroNewElements = false) { setSize(N, 1, zeroNewElements); }
 
   template <class MAT>
   void fromVectorLike(const MAT& m)
@@ -198,7 +199,7 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
   }
 
   /** Assignment from a fixed-size vector */
-  template <std::size_t ROWS>
+  template <matrix_dim_t ROWS>
   CVectorDynamic& operator=(const CMatrixFixed<T, ROWS, 1>& v)
   {
     MRPT_START
@@ -256,7 +257,7 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
    */
   inline const T& operator()(Index row, Index col) const
   {
-    if (row >= m_data.size() || col > 0)
+    if (row >= static_cast<Index>(m_data.size()) || col > 0)
     {
       THROW_EXCEPTION_FMT(
           "Indexes (%lu,%lu) out of range. Vector is %lux%lu", static_cast<unsigned long>(row),
@@ -295,7 +296,7 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
       typename EIGEN_MAP = Eigen::Map<EIGEN_VECTOR, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
   EIGEN_MAP asEigen()
   {
-    return EIGEN_MAP(&m_data[0], m_data.size());
+    return EIGEN_MAP(&m_data[0], static_cast<matrix_index_t>(m_data.size()));
   }
   /** \overload (const version) */
   template <
@@ -304,7 +305,7 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
           Eigen::Map<const EIGEN_VECTOR, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
   EIGEN_MAP asEigen() const
   {
-    return EIGEN_MAP(&m_data[0], m_data.size());
+    return EIGEN_MAP(&m_data[0], static_cast<matrix_index_t>(m_data.size()));
   }
 
   template <typename T2>

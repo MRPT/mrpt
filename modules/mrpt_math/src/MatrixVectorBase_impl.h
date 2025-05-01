@@ -133,7 +133,7 @@ bool MatrixVectorBase<Scalar, Derived>::fromMatlabStringFormat(
       }
       for (Index q = 0; q < N; q++)
       {
-        mvbDerived()(nRow, q) = lstElements[q];
+        mvbDerived()(nRow, q) = lstElements[static_cast<std::size_t>(q)];
       }
       // Go for the next row:
       nRow++;
@@ -248,7 +248,7 @@ void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(std::istream& f)
   using Index = typename Derived::Index;
   std::string str;
   std::vector<double> fil(512);
-  size_t nRows = 0;
+  matrix_dim_t nRows = 0;
   while (!f.eof() && !f.fail())
   {
     std::getline(f, str);
@@ -257,7 +257,7 @@ void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(std::istream& f)
       // Parse row to floats:
       const char* ptr = str.c_str();
       char* ptrEnd = nullptr;
-      size_t i = 0;
+      Index i = 0;
       // Process each number in this row:
       while (ptr[0] && ptr != ptrEnd)
       {
@@ -267,12 +267,12 @@ void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(std::istream& f)
         {
           ptr++;
         }
-        if (fil.size() <= i)
+        if (fil.size() <= static_cast<std::size_t>(i))
         {
           fil.resize(fil.size() + (fil.size() >> 1));
         }
         // Convert to "double":
-        fil[i] = strtod(ptr, &ptrEnd);
+        fil[static_cast<std::size_t>(i)] = strtod(ptr, &ptrEnd);
         // A valid conversion has been done?
         if (ptr != ptrEnd)
         {
@@ -294,8 +294,7 @@ void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(std::istream& f)
             "loadFromTextFile: The matrix in the text file does not "
             "match fixed matrix size");
       }
-      if (Derived::ColsAtCompileTime == Eigen::Dynamic && nRows > 0 &&
-          Index(i) != mvbDerived().cols())
+      if (Derived::ColsAtCompileTime == Eigen::Dynamic && nRows > 0 && i != mvbDerived().cols())
       {
         throw std::runtime_error(
             "loadFromTextFile: The matrix in the text file does not "
@@ -308,20 +307,19 @@ void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(std::istream& f)
       {
         if (mvbDerived().rows() < nRows + 1 || mvbDerived().cols() < i)
         {
-          const size_t extra_rows = std::max(static_cast<size_t>(1), nRows >> 1);
+          const auto extra_rows = std::max<matrix_dim_t>(1, nRows >> 1);
           mvbDerived().resize(nRows + extra_rows, i);
         }
       }
       else if (Derived::RowsAtCompileTime != Eigen::Dynamic && nRows >= Derived::RowsAtCompileTime)
       {
         throw std::runtime_error(
-            "loadFromTextFile: Read more rows than the capacity of the "
-            "fixed sized matrix.");
+            "loadFromTextFile: Read more rows than the capacity of the fixed sized matrix.");
       }
 
-      for (size_t q = 0; q < i; q++)
+      for (Index q = 0; q < i; q++)
       {
-        mvbDerived()(nRows, q) = Scalar(fil[q]);
+        mvbDerived()(nRows, q) = Scalar(fil[static_cast<std::size_t>(q)]);
       }
 
       nRows++;
@@ -385,14 +383,11 @@ Scalar MatrixVectorBase<Scalar, Derived>::maxCoeff() const
 }
 
 template <typename Scalar, class Derived>
-Scalar MatrixVectorBase<Scalar, Derived>::minCoeff(std::size_t& outIdx) const
+Scalar MatrixVectorBase<Scalar, Derived>::minCoeff(matrix_index_t& outIdx) const
 {
   if constexpr (Derived::ColsAtCompileTime == 1)
   {
-    typename Derived::Index idx;
-    auto r = mvbDerived().asEigen().minCoeff(&idx);
-    outIdx = static_cast<std::size_t>(idx);
-    return r;
+    return mvbDerived().asEigen().minCoeff(&outIdx);
   }
   else
   {
@@ -401,14 +396,11 @@ Scalar MatrixVectorBase<Scalar, Derived>::minCoeff(std::size_t& outIdx) const
 }
 
 template <typename Scalar, class Derived>
-Scalar MatrixVectorBase<Scalar, Derived>::maxCoeff(std::size_t& outIdx) const
+Scalar MatrixVectorBase<Scalar, Derived>::maxCoeff(matrix_index_t& outIdx) const
 {
   if constexpr (Derived::ColsAtCompileTime == 1)
   {
-    typename Derived::Index idx;
-    auto r = mvbDerived().asEigen().maxCoeff(&idx);
-    outIdx = static_cast<std::size_t>(idx);
-    return r;
+    return mvbDerived().asEigen().maxCoeff(&outIdx);
   }
   else
   {
@@ -417,24 +409,17 @@ Scalar MatrixVectorBase<Scalar, Derived>::maxCoeff(std::size_t& outIdx) const
 }
 template <typename Scalar, class Derived>
 Scalar MatrixVectorBase<Scalar, Derived>::minCoeff(
-    std::size_t& rowIdx, std::size_t& colIdx) const  // NOLINT
+    matrix_index_t& rowIdx, matrix_index_t& colIdx) const  // NOLINT
 {
-  typename Derived::Index row, col;
-  auto r = mvbDerived().asEigen().minCoeff(&row, &col);
-  rowIdx = static_cast<std::size_t>(row);
-  colIdx = static_cast<std::size_t>(col);
+  auto r = mvbDerived().asEigen().minCoeff(&rowIdx, &colIdx);
   return r;
 }
 
 template <typename Scalar, class Derived>
 Scalar MatrixVectorBase<Scalar, Derived>::maxCoeff(
-    std::size_t& rowIdx, std::size_t& colIdx) const  // NOLINT
+    matrix_index_t& rowIdx, matrix_index_t& colIdx) const  // NOLINT
 {
-  typename Derived::Index row, col;
-  auto r = mvbDerived().asEigen().maxCoeff(&row, &col);
-  rowIdx = static_cast<std::size_t>(row);
-  colIdx = static_cast<std::size_t>(col);
-  return r;
+  return mvbDerived().asEigen().maxCoeff(&rowIdx, &colIdx);
 }
 
 template <typename Scalar, class Derived>
