@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "io-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/reverse_bytes.h>
 #include <mrpt/io/CStream.h>
@@ -18,7 +16,7 @@
 #include <iostream>
 #include <vector>
 
-//#include "internal_class_registry.h"
+// #include "internal_class_registry.h"
 
 using namespace mrpt;
 using namespace mrpt::io;

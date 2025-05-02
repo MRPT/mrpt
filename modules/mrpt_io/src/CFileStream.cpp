@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "io-precomp.h"  // Precompiled headers
-//
 #include <mrpt/io/CFileStream.h>
 
 #include <iomanip>

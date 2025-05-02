@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "io-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/io/CPipe.h>
 
@@ -139,9 +137,7 @@ size_t CPipeBaseEndPoint::Read(void* Buffer, size_t Count)
     size_t alreadyRead = 0;
     bool timeoutExpired = false;
 
-    struct timeval timeoutSelect
-    {
-    };
+    struct timeval timeoutSelect{};
     struct timeval* ptrTimeout{nullptr};
 
     // Init fd_set structure & add our socket to it:
