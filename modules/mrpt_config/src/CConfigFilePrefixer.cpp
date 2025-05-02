@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "config-precomp.h"  // Precompiled headers
-//
 #include <mrpt/config/CConfigFilePrefixer.h>
 
 using namespace mrpt::config;
