@@ -19,7 +19,6 @@ find_package(Threads REQUIRED)
 
 include(./cmake/bfd.cmake REQUIRED)
 include(./cmake/detect_functions_headers.cmake REQUIRED)
-include(./cmake/detect_unix_arch.cmake REQUIRED)
 include(./cmake/detect_word_size.cmake REQUIRED)
 include(./cmake/exceptions_and_backtraces.cmake REQUIRED)
 include(./cmake/max_alignment.cmake REQUIRED)
@@ -27,6 +26,12 @@ include(./cmake/simd.cmake REQUIRED)
 include(./cmake/tbb.cmake REQUIRED)
 
 include(./cmake/script_create_version_h.cmake REQUIRED)
+
+set(MRPT_WITH_MATLAB_WRAPPER OFF CACHE BOOL "Build with compatibility options for MEX wrapper?.")
+include(./cmake/script_matlab.cmake REQUIRED)      # Support for Matlab MEX functions generation
+#if(MRPT_WITH_MATLAB_WRAPPER)
+#    add_subdirectory(mex/apps)# The MEX applications
+#endif()
 
 
 # define lib:

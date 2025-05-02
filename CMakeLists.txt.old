@@ -83,8 +83,6 @@ include(${MRPT_SOURCE_DIR}/cmakemodules/DeclareAppDependencies.cmake REQUIRED)
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_detect_unix_arch.cmake REQUIRED) # Detect machine architecture, on UNIX
 # --------------------------
 
-# Put these deps here for global visibility:
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_opencv.cmake REQUIRED)      # Check for the OpenCV libraries (via pkg-config, CMake, with different options)
 
 
 # Avoid the need for DLL export/import macros in Windows:
@@ -126,11 +124,6 @@ include(FindPkgConfig OPTIONAL)
 # Group projects in "folders"
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMakeTargets")
-
-#-----------------------------------
-#  Build with MRPT-MEX compatibility?
-#-----------------------------------
-set(MRPT_WITH_MATLAB_WRAPPER OFF CACHE BOOL "Build with compatibility options for MEX wrapper?.")
 
 # GCC only:
 # ===================================================
@@ -185,7 +178,6 @@ include(${MRPT_SOURCE_DIR}/cmakemodules/script_SIMD.cmake REQUIRED)        # SSE
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_gcc_clang_id.cmake REQUIRED) # Helper variables
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_gtest.cmake REQUIRED)       # Unit testing lib
 
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_matlab.cmake REQUIRED)      # Support for Matlab MEX functions generation
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_python_bindings.cmake REQUIRED)     # Support for python
 
 include(${MRPT_SOURCE_DIR}/cmakemodules/process_emscripten_embedded_files.cmake REQUIRED)
@@ -195,8 +187,6 @@ include(${MRPT_SOURCE_DIR}/cmakemodules/process_emscripten_embedded_files.cmake 
 #			OPTIONS
 #The options for the user when using "cmakesetup" or "ccmake":
 # ---------------------------------------------------------------------------
-# Include Asian fonts in CMRPTCanvas ?
-set( MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in CMRPTCanvas (increases library size).")
 
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_declare_defines.cmake REQUIRED)  # Transform the variables MRPT_XXX="ON/OFF" to CMAKE_MRPT_XXX="1/0"
 
@@ -482,9 +472,6 @@ if(MRPT_BUILD_APPLICATIONS)
 	add_subdirectory(apps)    # The applications:
 endif()
 
-if(MRPT_WITH_MATLAB_WRAPPER)
-    add_subdirectory(mex/apps)# The MEX applications
-endif()
 
 # Generate .h to locate MRPT sources:
 configure_file(

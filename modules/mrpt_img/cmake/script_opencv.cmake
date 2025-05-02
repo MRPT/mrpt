@@ -23,7 +23,6 @@ if(NOT CMAKE_MRPT_HAS_OPENCV)
 	if(OpenCV_FOUND)
 		set(MRPT_OPENCV_VERSION ${OpenCV_VERSION})
 		set(CMAKE_MRPT_HAS_OPENCV 1)
-
 	endif()
 endif()
 
