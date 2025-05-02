@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "bayes-precomp.h"  // Precompiled headers
-//
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/random.h>
@@ -47,7 +45,10 @@ void CParticleFilterCapable::performResampling(
   performSubstitution(indxs);
 
   // Finally, equal weights:
-  for (size_t i = 0; i < out_particle_count; i++) setW(i, 0 /* Logarithmic weight */);
+  for (size_t i = 0; i < out_particle_count; i++)
+  {
+    setW(i, 0 /* Logarithmic weight */);
+  }
 
   MRPT_END
 }
@@ -69,7 +70,10 @@ void CParticleFilterCapable::computeResampling(
   size_t i, j, M = in_logWeights.size();
   ASSERT_(M > 0);
 
-  if (!out_particle_count) out_particle_count = M;
+  if (!out_particle_count)
+  {
+    out_particle_count = M;
+  }
 
   vector<double> linW(M, 0);
   vector<double>::const_iterator inIt;
@@ -79,7 +83,9 @@ void CParticleFilterCapable::computeResampling(
   // This is to avoid float point range problems:
   double max_log_w = math::maximum(in_logWeights);
   for (i = 0, inIt = in_logWeights.begin(), outIt = linW.begin(); i < M; i++, inIt++, outIt++)
+  {
     linW_SUM += ((*outIt) = exp((*inIt) - max_log_w));
+  }
 
   // Normalize weights:
   ASSERT_(linW_SUM > 0);
@@ -132,7 +138,7 @@ void CParticleFilterCapable::computeResampling(
       size_t R = 0;  // Remainder or residual count
       for (i = 0; i < M; i++)
       {
-        N[i] = int(M * linW[i]);
+        N[i] = static_cast<uint32_t>(M * linW[i]);
         R += N[i];
       }
       size_t N_rnd =
@@ -143,7 +149,12 @@ void CParticleFilterCapable::computeResampling(
       // Fillout the deterministic part of the resampling:
       out_indexes.resize(out_particle_count);
       for (i = 0, j = 0; i < out_particle_count; i++)
-        for (size_t k = 0; k < N[i]; k++) out_indexes[j++] = i;
+      {
+        for (size_t k = 0; k < N[i]; k++)
+        {
+          out_indexes[j++] = i;
+        }
+      }
 
       size_t M_fixed = j;
 
@@ -156,7 +167,10 @@ void CParticleFilterCapable::computeResampling(
         // Compute modified weights:
         vector<double> linW_mod(M);
         const double M_R_1 = 1.0 / N_rnd;
-        for (i = 0; i < M; i++) linW_mod[i] = M_R_1 * (M * linW[i] - N[i]);
+        for (i = 0; i < M; i++)
+        {
+          linW_mod[i] = M_R_1 * (M * linW[i] - N[i]);
+        }
 
         // perform resampling:
         vector<double> Q;
@@ -214,7 +228,9 @@ void CParticleFilterCapable::computeResampling(
       while (i < out_particle_count)
       {
         if (T[i] < Q[j])
+        {
           out_indexes[i++] = (unsigned int)j;
+        }
         else
         {
           j++;
@@ -236,7 +252,10 @@ void CParticleFilterCapable::computeResampling(
       vector<double> T(M + 1);
       double _1_M = 1.0 / M;
       T[0] = getRandomGenerator().drawUniform(0.0, _1_M);
-      for (i = 1; i < M; i++) T[i] = T[i - 1] + _1_M;
+      for (i = 1; i < M; i++)
+      {
+        T[i] = T[i - 1] + _1_M;
+      }
       T[M] = 1;
 
       out_indexes.resize(out_particle_count);
@@ -244,7 +263,9 @@ void CParticleFilterCapable::computeResampling(
       while (i < out_particle_count)
       {
         if (T[i] < Q[j])
+        {
           out_indexes[i++] = (unsigned int)j;
+        }
         else
         {
           j++;
@@ -355,9 +376,11 @@ void CParticleFilterCapable::prepareFastDrawSample(
     //  -> Use m_fastDrawAuxiliary.CDF, PDF, CDF_indexes
     // --------------------------------------------------------
     if (PF_options.resamplingMethod != CParticleFilter::prMultinomial)
+    {
       THROW_EXCEPTION(
           "resamplingMethod must be 'prMultinomial' for a dynamic number "
           "of particles!");
+    }
 
     size_t i, j = 666666, M = particlesCount();
 
@@ -376,7 +399,9 @@ void CParticleFilterCapable::prepareFastDrawSample(
     double SUM = 0;
     // Save the log likelihoods:
     for (i = 0; i < M; i++)
+    {
       m_fastDrawAuxiliary.PDF[i] = partEvaluator(PF_options, this, i, action, observation);
+    }
     // "Normalize":
     m_fastDrawAuxiliary.PDF += -math::maximum(m_fastDrawAuxiliary.PDF);
     for (i = 0; i < M; i++) SUM += m_fastDrawAuxiliary.PDF[i] = exp(m_fastDrawAuxiliary.PDF[i]);
@@ -386,7 +411,9 @@ void CParticleFilterCapable::prepareFastDrawSample(
 
     // Compute the CDF thresholds:
     for (i = 0; i < PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS; i++)
+    {
       m_fastDrawAuxiliary.CDF[i] = ((double)i) / ((double)PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS);
+    }
     m_fastDrawAuxiliary.CDF[PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS] = 1.0;
 
     // Compute the CDF and save threshold indexes:
@@ -394,26 +421,27 @@ void CParticleFilterCapable::prepareFastDrawSample(
     for (i = 0, j = 0; i < M && j < PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS; i++)
     {
       double CDF_next = CDF + m_fastDrawAuxiliary.PDF[i];
-      if (i == (M - 1)) CDF_next = 1.0;  // rounds fix...
-      if (CDF_next > 1.0) CDF_next = 1.0;
+      if (i == (M - 1))
+      {
+        CDF_next = 1.0;  // rounds fix...
+      }
+      if (CDF_next > 1.0)
+      {
+        CDF_next = 1.0;
+      }
 
       while (m_fastDrawAuxiliary.CDF[j] < CDF_next)
+      {
         m_fastDrawAuxiliary.CDF_indexes[j++] = (unsigned int)i;
+      }
 
       CDF = CDF_next;
     }
 
     ASSERT_(j == PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS);
 
-// Done!
-#if !defined(_MSC_VER) || (_MSC_VER > 1400)  // <=VC2005 doesn't work with this!
-    MRPT_END_WITH_CLEAN_UP(                  /* Debug: */
-                           cout << "j=" << j << "\nm_fastDrawAuxiliary.CDF_indexes:"
-                                << m_fastDrawAuxiliary.CDF_indexes << endl;
-                           cout << "m_fastDrawAuxiliary.CDF:" << m_fastDrawAuxiliary.CDF << endl;);
-#else
+    // Done!
     MRPT_END
-#endif
   }
   else
   {
@@ -426,9 +454,10 @@ void CParticleFilterCapable::prepareFastDrawSample(
     size_t i, M = particlesCount();
     vector<double> PDF(M, 0);
     for (i = 0; i < M; i++)
-      PDF[i] = partEvaluator(
-          PF_options, this, i, action,
-          observation);  // Default evaluator: takes current weight.
+    {
+      // Default evaluator: takes current weight.
+      PDF[i] = partEvaluator(PF_options, this, i, action, observation);
+    }
 
     vector<size_t> idxs;
 
@@ -440,7 +469,9 @@ void CParticleFilterCapable::prepareFastDrawSample(
     m_fastDrawAuxiliary.alreadyDrawnIndexes.resize(idxs.size());
     for (it = idxs.begin(), it2 = m_fastDrawAuxiliary.alreadyDrawnIndexes.begin(); it != idxs.end();
          ++it, ++it2)
+    {
       *it2 = (unsigned int)(*it);
+    }
 
     m_fastDrawAuxiliary.alreadyDrawnNextOne = 0;
   }
@@ -463,9 +494,11 @@ size_t CParticleFilterCapable::fastDrawSample(
     //  -> Use m_fastDrawAuxiliary.CDF, PDF, CDF_indexes
     // --------------------------------------------------------
     if (PF_options.resamplingMethod != CParticleFilter::prMultinomial)
+    {
       THROW_EXCEPTION(
           "resamplingMethod must be 'prMultinomial' for a dynamic number "
           "of particles!");
+    }
 
     double draw = getRandomGenerator().drawUniform(0.0, 0.999999);
     double CDF_next = -1.;
@@ -500,9 +533,11 @@ size_t CParticleFilterCapable::fastDrawSample(
     //  -> Use m_fastDrawAuxiliary.alreadyDrawnIndexes & alreadyDrawnNextOne
     // --------------------------------------------------------
     if (m_fastDrawAuxiliary.alreadyDrawnNextOne >= m_fastDrawAuxiliary.alreadyDrawnIndexes.size())
+    {
       THROW_EXCEPTION(
           "Have you called 'fastDrawSample' more times than the sample "
           "size? Did you forget calling 'prepareFastCall' before?");
+    }
 
     return m_fastDrawAuxiliary.alreadyDrawnIndexes[m_fastDrawAuxiliary.alreadyDrawnNextOne++];
   }
@@ -522,15 +557,24 @@ void CParticleFilterCapable::log2linearWeights(
 
   out_linWeights.resize(N);
 
-  if (!N) return;
+  if (!N)
+  {
+    return;
+  }
 
   double sumW = 0;
   size_t i;
-  for (i = 0; i < N; i++) sumW += out_linWeights[i] = exp(in_logWeights[i]);
+  for (i = 0; i < N; i++)
+  {
+    sumW += out_linWeights[i] = exp(in_logWeights[i]);
+  }
 
   ASSERT_(sumW > 0);
 
-  for (i = 0; i < N; i++) out_linWeights[i] /= sumW;
+  for (i = 0; i < N; i++)
+  {
+    out_linWeights[i] /= sumW;
+  }
 
   MRPT_END
 }
