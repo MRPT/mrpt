@@ -9,6 +9,7 @@
 
 #include "img-precomp.h"  // Precompiled headers
 //
+#include <mrpt/core/config.h>  // MRPT_HAS_MATLAB
 #include <mrpt/core/cpu.h>
 #include <mrpt/core/get_env.h>
 #include <mrpt/core/round.h>  // for round()
@@ -958,7 +959,7 @@ bool my_img_to_grayscale(const cv::Mat& src, cv::Mat& dest)
   if (dest.size() != src.size() || dest.type() != src.type())
     dest = cv::Mat(src.rows, src.cols, CV_8UC1);
 
-    // If possible, use SSE optimized version:
+  // If possible, use SSE optimized version:
 #if MRPT_ARCH_INTEL_COMPATIBLE
   if ((src.step[0] & 0x0f) == 0 && (dest.step[0] & 0x0f) == 0 &&
       mrpt::cpu::supports(mrpt::cpu::feature::SSSE3))
@@ -1081,7 +1082,7 @@ void CImage::loadFromMemoryBuffer(
       *(dest++) = *(srcG++);
       *(dest++) = *(srcR++);
     }  // end of x
-  }    // end of y
+  }  // end of y
 
   MRPT_END
 #endif

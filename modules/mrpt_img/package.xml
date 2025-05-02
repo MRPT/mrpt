@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<!-- This is a ROS package file, intended to allow this library to be built
+     side-by-side to ROS packages in a catkin/ament environment.
+-->
+<package format="3">
+  <name>mrpt_img</name>
+  <version>2.20.0</version>
+  <description>The MRPT C++ library mrpt_img</description>
+
+  <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
+  <license file="LICENSE">BSD</license>
+
+  <url type="website">https://github.com/MRPT/</url>
+
+  <!-- BUILD TOOLS -->
+  <buildtool_depend>cmake</buildtool_depend>
+
+  <depend>mrpt_common</depend>
+  <depend>mrpt_io</depend>
+  <depend>mrpt_config</depend>
+  <depend>mrpt_math</depend>
+
+  <export>
+    <build_type>cmake</build_type>
+  </export>
+
+</package>

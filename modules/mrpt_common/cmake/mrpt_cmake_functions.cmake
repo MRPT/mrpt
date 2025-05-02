@@ -415,17 +415,39 @@ macro(keep_matching_files_from_list match_expr lst_files)
 	set(${lst_files} ${lst_files_aux})
 endmacro()
 
+# Rely on CMake to detect target system architecture:
+# ---------------------------------------------------------
+SET(CMAKE_MRPT_ARCH ${CMAKE_SYSTEM_PROCESSOR})
+if(UNIX)
+  execute_process(COMMAND uname -s
+    OUTPUT_VARIABLE CMAKE_MRPT_KERNEL
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+  if ($ENV{VERBOSE})
+    message(STATUS "Kernel name (uname -s): ${CMAKE_MRPT_KERNEL}")
+  endif()
+endif()
+
+# Detect if we are in i386 / amd64:
+# Intel arch names in Linux & Windows.
+if (("${CMAKE_MRPT_ARCH}" MATCHES "^(x86_64|i686|AMD64|IA64|x86)$") AND (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten"))
+	set(MRPT_ARCH_INTEL_COMPATIBLE 1)
+else()
+	set(MRPT_ARCH_INTEL_COMPATIBLE 0)
+endif()
+
+
 # handle_special_simd_flags(): Add custom flags to a set of source files
 # Only for Intel-compatible archs
 #-----------------------------------------------------------------------
 function(handle_special_simd_flags lst_files FILE_PATTERN FLAGS_TO_ADD)
-	if (MRPT_COMPILER_IS_GCC_OR_CLANG AND MRPT_ARCH_INTEL_COMPATIBLE)
-		set(_lst ${lst_files})
-		KEEP_MATCHING_FILES_FROM_LIST(${FILE_PATTERN} _lst)
-		if(NOT "${_lst}" STREQUAL "")
-			set_source_files_properties(${_lst} PROPERTIES COMPILE_FLAGS "${FLAGS_TO_ADD}")
-		endif()
-	endif()
+  if (MRPT_COMPILER_IS_GCC_OR_CLANG AND MRPT_ARCH_INTEL_COMPATIBLE)
+    set(_lst ${lst_files})
+    keep_matching_files_from_list(${FILE_PATTERN} _lst)
+    if(NOT "${_lst}" STREQUAL "")
+      message(STATUS "Adding special flags ${FLAGS_TO_ADD} to ${_lst}")
+      set_source_files_properties(${_lst} PROPERTIES COMPILE_FLAGS "${FLAGS_TO_ADD}")
+    endif()
+  endif()
 endfunction()
 
 
