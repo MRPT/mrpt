@@ -7,11 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "config-precomp.h"  // Precompiled headers
-
 // Fix to SimpleIni bug: not able to build with C++17
-#include <functional>
 #ifdef _MSC_VER
+#include <functional>
 namespace std
 {
 template <typename T1, typename T2, typename RET>

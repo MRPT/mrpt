@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "config-precomp.h"  // Precompiled headers
-//
 #include <mrpt/config/config_parser.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/expr/CRuntimeCompiledExpression.h>

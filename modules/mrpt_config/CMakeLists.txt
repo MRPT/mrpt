@@ -1,21 +1,56 @@
+# ------------------------------------------------------------------------------
+#        Mobile Robot Programming Toolkit (MRPT)
+#
+# Copyright (c) 2005-2025, Jose Luis Blanco-Claraco, contributors (see Git history)
+# All rights reserved.
+# Released under BSD-3 license. See LICENSE file
+# ------------------------------------------------------------------------------
 
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_simpleini.cmake REQUIRED)   # SimpleINI lib
+cmake_minimum_required(VERSION 3.16)
 
+# Tell CMake we'll use C++ for use in its tests/flags
+project(mrpt_config LANGUAGES C CXX)
 
-#  See "DeclareMRPTLib.cmake"
-list(APPEND config_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/config/*.cpp" "${MRPT_LIBS_ROOT}/config/*.h")
-list(APPEND config_EXTRA_SRCS_NAME 	"config" "config")
+# MRPT CMake scripts: "mrpt_xxx()"
+find_package(mrpt_common REQUIRED)
+find_package(mrpt_expr REQUIRED)
 
-define_mrpt_lib(
-	config 		# Lib name
-	# Dependencies:
-	mrpt-system
-	mrpt-expr
-	)
+include(./cmake/script_simpleini.cmake REQUIRED)   # SimpleINI lib
 
-if(BUILD_mrpt-config)
-	target_include_directories(config PRIVATE "${SIMPLEINI_INCLUDE_DIRS}")
-	if (SIMPLEINI_LIBRARY)
-	  target_link_libraries(config PRIVATE ${SIMPLEINI_LIBRARY})
-	endif()
+# define lib:
+set(LIB_SRCS
+  src/yaml2config_unittest.cpp
+  src/config_parser.cpp
+  src/CConfigFilePrefixer.cpp
+  src/CConfigFileBase.cpp
+  src/CLoadableOptions.cpp
+  src/CConfigFileMemory.cpp
+  src/CConfigFileMemory_unittest.cpp
+  src/CConfigFile.cpp
+)
+
+set(LIB_PUBLIC_HDRS
+  include/mrpt/config/config_parser.h
+  include/mrpt/config/CConfigFileBase.h
+  include/mrpt/config/registerAllClasses.h
+  include/mrpt/config/CConfigFile.h
+  include/mrpt/config/CLoadableOptions.h
+  include/mrpt/config/CConfigFileMemory.h
+  include/mrpt/config/CConfigFilePrefixer.h
+)
+
+mrpt_add_library(
+  TARGET ${PROJECT_NAME}
+  SOURCES ${LIB_SRCS} ${LIB_PUBLIC_HDRS}
+  PUBLIC_LINK_LIBRARIES
+    mrpt::mrpt_expr
+#  PRIVATE_LINK_LIBRARIES
+  CMAKE_DEPENDENCIES
+    mrpt_expr
+  # Other imported targets:
+)
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${SIMPLEINI_INCLUDE_DIRS})
+if (SIMPLEINI_LIBRARY)
+  target_link_libraries(${PROJECT_NAME} PRIVATE ${SIMPLEINI_LIBRARY})
 endif()
