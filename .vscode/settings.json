@@ -37,10 +37,12 @@
         "**/log": true
     },
     "cSpell.words": [
-        "Eigen",
-        "MRPT",
-        "mrpt",
         "CArchive",
+        "Eigen",
+        "Kbhit",
+        "mrpt",
+        "MRPT",
+        "stbi"
     ],
     "ros.distro": "humble",
 }
