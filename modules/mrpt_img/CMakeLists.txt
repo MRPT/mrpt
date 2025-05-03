@@ -79,6 +79,14 @@ mrpt_add_library(
   # Other imported targets:
 )
 
+if (OpenCV_INCLUDE_DIRS)
+  target_include_directories(${PROJECT_NAME} PUBLIC ${OpenCV_INCLUDE_DIRS})
+endif()
+
+if(TARGET test_${PROJECT_NAME})
+  target_link_libraries(test_${PROJECT_NAME} imp_opencv)
+endif()
+
 if(CMAKE_MRPT_HAS_JPEG)
   if(NOT CMAKE_MRPT_HAS_JPEG_SYSTEM)
     add_dependencies(${PROJECT_NAME} JPEG)

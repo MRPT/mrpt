@@ -435,16 +435,31 @@ else()
 	set(MRPT_ARCH_INTEL_COMPATIBLE 0)
 endif()
 
+# Define the helper variables:
+#  MRPT_COMPILER_IS_CLANG
+#  MRPT_COMPILER_IS_GCC
+#  MRPT_COMPILER_IS_GCC_OR_CLANG
+#---------------------------------------------------
+set(MRPT_COMPILER_IS_CLANG 0)
+if (${CMAKE_CXX_COMPILER_ID}  STREQUAL "Clang")
+	set(MRPT_COMPILER_IS_CLANG 1)
+endif()
+set(MRPT_COMPILER_IS_GCC ${CMAKE_COMPILER_IS_GNUCXX})
+if (MRPT_COMPILER_IS_GCC OR MRPT_COMPILER_IS_CLANG)
+	set(MRPT_COMPILER_IS_GCC_OR_CLANG 1)
+else()
+	set(MRPT_COMPILER_IS_GCC_OR_CLANG 0)
+endif()
 
 # handle_special_simd_flags(): Add custom flags to a set of source files
-# Only for Intel-compatible archs
+# Only for Intel-compatible architectures
 #-----------------------------------------------------------------------
 function(handle_special_simd_flags lst_files FILE_PATTERN FLAGS_TO_ADD)
   if (MRPT_COMPILER_IS_GCC_OR_CLANG AND MRPT_ARCH_INTEL_COMPATIBLE)
     set(_lst ${lst_files})
     keep_matching_files_from_list(${FILE_PATTERN} _lst)
     if(NOT "${_lst}" STREQUAL "")
-      message(STATUS "Adding special flags ${FLAGS_TO_ADD} to ${_lst}")
+      #message(STATUS "Adding special flags ${FLAGS_TO_ADD} to ${_lst}")
       set_source_files_properties(${_lst} PROPERTIES COMPILE_FLAGS "${FLAGS_TO_ADD}")
     endif()
   endif()
