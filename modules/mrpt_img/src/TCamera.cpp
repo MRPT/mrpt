@@ -15,6 +15,7 @@
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/matrix_serialization.h>  // For "<<" ">>" operators.
 #include <mrpt/math/utils_matlab.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::img;
 using namespace mrpt::math;
@@ -67,9 +68,14 @@ void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
       in >> focalLengthMeters;
 
       dist.fill(0);
-      for (unsigned int k = 0; k < 5; k++) in >> dist[k];
+      for (unsigned int k = 0; k < 5; k++)
+      {
+        in >> dist[k];
+      }
       if (version >= 3)
+      {
         for (unsigned int k = 5; k < 8; k++) in >> dist[k];
+      }
 
       if (version < 4)
       {
@@ -90,18 +96,23 @@ void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 
       if (version == 0)
       {
-        CMatrixDouble15 __distortionParams;
-        in >> __distortionParams;
+        CMatrixDouble15 distortionParams_dummy;
+        in >> distortionParams_dummy;
       }
 
       if (version >= 2)
+      {
         in >> nrows >> ncols;
+      }
       else
       {
         nrows = 480;
         ncols = 640;
       }
-      if (version >= 5) in >> cameraName;
+      if (version >= 5)
+      {
+        in >> cameraName;
+      }
 
       if (version >= 6)
       {
