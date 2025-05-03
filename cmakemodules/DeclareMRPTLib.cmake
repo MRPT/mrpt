@@ -368,7 +368,6 @@ macro(internal_define_mrpt_lib name headers_only )
 			else()
 				# Use cotire module for GCC/CLANG:
 				list(APPEND COTIRE_PREFIX_HEADER_IGNORE_PATH
-					"${OpenCV_INCLUDE_DIR}"
 					"${MRPT_LIBS_ROOT}/${name}/src"
 					"/usr/"  # avoid problems with Cotire trying to include internal GCC headers, not suitable for direct use.
 				)

@@ -57,8 +57,3 @@ if(CMAKE_MRPT_HAS_TINYXML2 AND NOT CMAKE_MRPT_HAS_TINYXML2_SYSTEM)
 	endif()
 endif()
 
-# Update Sep 2019: mrpt-obs now also uses OpenCV directly, so let's just link against opencv anyway:
-if(CMAKE_MRPT_HAS_OPENCV)
-	target_link_libraries(obs PRIVATE imp_opencv)
-endif()
-

@@ -17,9 +17,6 @@ find_package(mrpt_io REQUIRED)
 find_package(mrpt_config REQUIRED)
 find_package(mrpt_math REQUIRED)
 
-include(./cmake/script_jpeg.cmake REQUIRED)        # Check for jpeg
-include(./cmake/script_opencv.cmake REQUIRED)      # Check for the OpenCV libraries (via pkg-config, CMake, with different options)
-
 
 # Include Asian fonts in CMRPTCanvas ?
 set(MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in CMRPTCanvas (increases library size).")
@@ -87,8 +84,3 @@ if(TARGET test_${PROJECT_NAME})
   target_link_libraries(test_${PROJECT_NAME} imp_opencv)
 endif()
 
-if(CMAKE_MRPT_HAS_JPEG)
-  if(NOT CMAKE_MRPT_HAS_JPEG_SYSTEM)
-    add_dependencies(${PROJECT_NAME} JPEG)
-  endif()
-endif()

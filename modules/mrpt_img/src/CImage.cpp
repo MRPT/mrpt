@@ -77,7 +77,6 @@ void CImage::setImagesPathBase(const std::string& path) { mrpt::io::setLazyLoadP
 mrpt::img::CTimeLogger alloc_tims;
 #endif
 
-#if MRPT_HAS_OPENCV
 namespace
 {
 int interpolationMethod2Cv(TInterpolationMethod i)
@@ -149,7 +148,6 @@ PixelDepth cvDepth2PixelDepth(int64_t d)
   return PixelDepth::D8U;
 }
 }  // namespace
-#endif  // MRPT_HAS_OPENCV
 
 // Default ctor
 CImage::CImage() : m_impl(mrpt::make_impl<CImage::Impl>()) {}

@@ -2094,7 +2094,6 @@ PREDEFINED             = MRPT_HAS_SSE2 \
                          MRPT_HAS_SSE4 \
                          MRPT_HAS_MATLAB=1 \
                          MRPT_HAS_WXWIDGETS=1 \
-                         MRPT_HAS_OPENCV=1 \
                          MRPT_HAS_NANOGUI=1
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this

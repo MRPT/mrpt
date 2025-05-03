@@ -14,10 +14,6 @@
 #include <mrpt/gui/config.h>
 #include <mrpt/gui/default_mrpt_glfw_icon.h>
 
-#if MRPT_HAS_OPENCV
-#include <mrpt/3rdparty/do_opencv_includes.h>
-#endif
-
 using namespace mrpt::gui;
 
 #if MRPT_HAS_NANOGUI
@@ -107,7 +103,6 @@ void CDisplayWindowGUI::setWindowTitle(const std::string& str) { Screen::setCapt
 
 void CDisplayWindowGUI::setIcon(const mrpt::img::CImage& img)
 {
-#if MRPT_HAS_OPENCV
   const cv::Mat& cvIn = img.asCvMatRef();
 
   // We need the image to be in RGBA format:
@@ -138,8 +133,6 @@ void CDisplayWindowGUI::setIcon(const mrpt::img::CImage& img)
 // glfwSetWindowIcon added in glfw 3.2
 #if GLFW_VERSION_MAJOR > 3 || (GLFW_VERSION_MAJOR == 3 && GLFW_VERSION_MINOR >= 2)
   glfwSetWindowIcon(screen()->glfwWindow(), 1, &images);
-#endif
-
 #endif
 }
 

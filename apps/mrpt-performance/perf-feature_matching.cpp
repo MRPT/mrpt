@@ -267,9 +267,8 @@ void register_tests_feature_matching()
       "feature_matching [640x480]: Harris + CC", feature_matching_test_Harris_CC, 640, 480);
   lstTests.emplace_back(
       "feature_matching [640x480]: Harris + SAD", feature_matching_test_Harris_SAD, 640, 480);
-#if 0  // crash in opencv 3.1?
-	lstTests.push_back( TestData("feature_matching [640x480]: SIFT", feature_matching_test_SIFT, 640, 480 ) );
-#endif
+  lstTests.push_back(
+      TestData("feature_matching [640x480]: SIFT", feature_matching_test_SIFT, 640, 480));
   lstTests.emplace_back("feature_matching [640x480]: SURF", feature_matching_test_SURF, 640, 480);
   lstTests.emplace_back(
       "feature_matching [640x480]: FAST + CC", feature_matching_test_FAST_CC, 640, 480);

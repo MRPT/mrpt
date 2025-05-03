@@ -24,7 +24,6 @@ using namespace std;
 
 wxImage* mrpt::gui::MRPTImage2wxImage(const mrpt::img::CImage& img)
 {
-#if MRPT_HAS_OPENCV
   using namespace std::string_literals;
 
   mrpt::img::CImage new_image(img, mrpt::img::SHALLOW_COPY);
@@ -63,21 +62,14 @@ wxImage* mrpt::gui::MRPTImage2wxImage(const mrpt::img::CImage& img)
 
   // create and return the object
   return new wxImage(w, h, data, false /* false=transfer mem ownership */);
-#else
-  THROW_EXCEPTION("MRPT compiled without OpenCV");
-#endif
 }
 
 wxBitmap* mrpt::gui::MRPTImage2wxBitmap(const mrpt::img::CImage& img)
 {
-#if MRPT_HAS_OPENCV
   auto* i = MRPTImage2wxImage(img);
   auto ret = new wxBitmap(*i);
   delete i;
   return ret;
-#else
-  THROW_EXCEPTION("MRPT compiled without OpenCV");
-#endif
 }
 
 //------------------------------------------------------------------------

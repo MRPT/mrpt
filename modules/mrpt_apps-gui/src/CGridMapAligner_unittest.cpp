@@ -15,11 +15,7 @@
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
 
-#if MRPT_HAS_OPENCV
 TEST(CGridMapAligner, alignGridMaps)
-#else
-TEST(CGridMapAligner, DISABLED_alignGridMaps)
-#endif
 {
   const std::string ini_fil =
       mrpt::UNITTEST_BASEDIR() +

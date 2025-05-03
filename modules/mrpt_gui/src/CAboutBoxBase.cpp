@@ -77,15 +77,6 @@ std::string CAboutBoxBase::information(
 #else
     str += "-ANSI build";
 #endif  // wxUSE_UNICODE
-
-    str += "\nOpenCV version:         ";
-#if MRPT_HAS_OPENCV
-    str += MRPT_OPENCV_VERSION;
-    str += "\n";
-#else
-    str += "None";
-    str += "\n";
-#endif
   }
 
   return str;

@@ -35,14 +35,6 @@ build_script:
   - dir
 
 install:
-  # ====== Install OpenCV
-  - choco upgrade chocolatey
-  - choco install opencv -y
-  - tree c:\tools\opencv\build /F
-  - set OPENCVDIR=C:\tools\opencv\build\
-  # This variable is parsed by MRPT/cmakemodules/script_opencv.cmake:
-  - set OPENCV_DLLS_TO_INSTALL_DIRS=%OPENCVDIR%bin;%OPENCVDIR%x64\vc16\bin
-  - set PATH=%PATH%;%OPENCVDIR%\bin;%OPENCVDIR%\x64\vc16\bin
   # ====== Install wxWidgets
   - cd c:\
   - ps: Start-FileDownload 'https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.3/wxMSW-3.1.3_vc14x_x64_Dev.7z'
@@ -69,7 +61,7 @@ before_build:
   # AppVeyor has a 90 minutes limit: disable some parts.
   - cmake -S. -Bbuild -G "Visual Studio 16 2019" \
     -DMRPT_EIGEN_USE_EMBEDDED_VERSION=ON -DMRPT_BUILD_ASSIMP=OFF \
-    -DOpenCV_DIR=%OPENCVDIR% -DwxWidgets_ROOT_DIR=%WXWIDGETSDIR% -DwxWidgets_LIB_DIR=%WXWIDGETSLIBDIR% \
+    -DwxWidgets_ROOT_DIR=%WXWIDGETSDIR% -DwxWidgets_LIB_DIR=%WXWIDGETSLIBDIR% \
     -DBUILD_APP_DifOdometry-Camera=OFF -DBUILD_APP_DifOdometry-Datasets=OFF \
     -DBUILD_APP_benchmarking-image-features=OFF \
     -DBUILD_APP_carmen2rawlog=OFF \

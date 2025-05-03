@@ -18,9 +18,6 @@ add_executable(${PROJECT_NAME}
 	 ${MRPT_VERSION_RC_FILE}
 	)
 
-# Add the required libraries for linking:
-target_link_libraries(${PROJECT_NAME} imp_opencv)
-
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
