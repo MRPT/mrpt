@@ -7,7 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/core/config.h>
 #include <mrpt/core/config.h>  // MRPT_OS_*()
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/format.h>
@@ -16,15 +15,23 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/version.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
-#include <algorithm>
 #include <cctype>
+#include <cerrno>
 #include <cfloat>
+#include <climits>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <ctime>
 #include <iostream>
+#include <limits>
+#include <map>
 #include <mutex>
+#include <sstream>
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -46,17 +53,11 @@
 
 #include <cerrno>
 #include <ctime>
-//	#include <signal.h>
 #endif
 
 #if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
 #include <dlfcn.h>
 #endif
-
-#include <sys/stat.h>
-#include <sys/types.h>
-
-#include <map>
 
 #ifdef MRPT_OS_LINUX
 #define _access access
@@ -64,17 +65,12 @@
 #define _stat   stat
 #endif
 
-#include <sstream>
-
-using namespace mrpt;
-using namespace mrpt::system;
-using namespace std;
-
 #ifndef _WIN32
+namespace
+{
 /** By ninjalj in
  * http://stackoverflow.com/questions/3962263/checking-if-a-key-was-pressed
  */
-void my_aux_sighandler(int) {}
 int myKbhit()
 {
   struct termios oldtio{}, curtio{};
@@ -83,11 +79,9 @@ int myKbhit()
   /* Save stdin terminal attributes */
   tcgetattr(0, &oldtio);
 
-  //		memset(&sa, 0, sizeof(struct sigaction));
-
   /* Set non-canonical no-echo for stdin */
   tcgetattr(0, &curtio);
-  curtio.c_lflag &= ~(ICANON | ECHO);
+  curtio.c_lflag &= static_cast<tcflag_t>(~(ICANON | ECHO));
   tcsetattr(0, TCSANOW, &curtio);
 
   struct pollfd pfds[1];
@@ -103,20 +97,64 @@ int myKbhit()
   return (ret > 0);
 }
 
+struct LoadedModuleInfo
+{
+#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
+  void* handle = nullptr;
+#endif
+#ifdef MRPT_OS_WINDOWS
+  HMODULE handle;
+#endif
+};
+
+struct ModulesRegistry
+{
+  static ModulesRegistry& Instance()
+  {
+    static ModulesRegistry obj;
+    return obj;
+  }
+
+  ModulesRegistry() = default;
+  ~ModulesRegistry()
+  {
+    try
+    {
+      // Make a copy, since each unload() call would invalidate iterators
+      // to the changing list "loadedModules":
+      loadedModules_mtx.lock();
+      auto lstCopy = loadedModules;
+      loadedModules_mtx.unlock();
+
+      for (auto& ent : lstCopy)
+      {
+        mrpt::system::unloadPluginModule(ent.first);
+      }
+    }
+    catch (const std::exception& e)
+    {
+      std::cerr << "[~ModulesRegistry] Exception: " << mrpt::exception_to_str(e);
+    }
+  }
+
+  // Delete copy and move constructors and assignment operators
+  ModulesRegistry(const ModulesRegistry&) = delete;
+  ModulesRegistry& operator=(const ModulesRegistry&) = delete;
+  ModulesRegistry(ModulesRegistry&&) = delete;
+  ModulesRegistry& operator=(ModulesRegistry&&) = delete;
+
+  using full_path_t = std::string;
+  std::map<full_path_t, LoadedModuleInfo> loadedModules;
+  std::mutex loadedModules_mtx;
+};
+
+}  // namespace
 #endif
 
-/*---------------------------------------------------------------
-          mrpt::system::MRPT_getCompilationDate
----------------------------------------------------------------*/
-#include <mrpt/version.h>
+namespace mrpt::system
+{
 
-#include <cerrno>
-#include <climits>
-#include <cstdlib>
-#include <ctime>
-#include <limits>
-
-string mrpt::system::MRPT_getCompilationDate()
+std::string MRPT_getCompilationDate()
 {
   time_t now;
   char* endptr;
@@ -133,7 +171,7 @@ string mrpt::system::MRPT_getCompilationDate()
   }
   else
   {
-    now = epoch;
+    now = static_cast<time_t>(epoch);
   }
   struct tm* build_time = gmtime(&now);
   const int year = build_time->tm_year + 1900;
@@ -145,10 +183,8 @@ string mrpt::system::MRPT_getCompilationDate()
       build_time->tm_sec);
 }
 
-/*---------------------------------------------------------------
-          mrpt::system::MRPT_getVersion
----------------------------------------------------------------*/
-string mrpt::system::MRPT_getVersion() { return string(::MRPT_version_str); }
+std::string MRPT_getVersion() { return {::MRPT_version_str}; }
+
 /*---------------------------------------------------------------
             sprintf
 ---------------------------------------------------------------*/
@@ -234,7 +270,7 @@ FILE* os::fopen(const char* fileName, const char* mode) noexcept
 ---------------------------------------------------------------*/
 void os::fclose(FILE* f)
 {
-  if (!f) THROW_EXCEPTION("Trying to close a nullptr 'FILE*' descriptor");
+  ASSERTMSG_(f, "Trying to close a nullptr 'FILE*' descriptor");
   ::fclose(f);
 }
 
@@ -326,14 +362,14 @@ int os::getch() noexcept
 #ifdef _WIN32
   return ::getch();  // cin.get();
 #else
-  struct termios oldt{}, newt{};
+  struct termios old_state{}, new_state{};
   int ch;
-  tcgetattr(STDIN_FILENO, &oldt);
-  newt = oldt;
-  newt.c_lflag &= ~(ICANON | ECHO);
-  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+  tcgetattr(STDIN_FILENO, &old_state);
+  new_state = old_state;
+  new_state.c_lflag &= static_cast<tcflag_t>(~(ICANON | ECHO));
+  tcsetattr(STDIN_FILENO, TCSANOW, &new_state);
   ch = getchar();
-  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+  tcsetattr(STDIN_FILENO, TCSANOW, &old_state);
   return ch;
 #endif
 }
@@ -379,7 +415,7 @@ int os::fprintf(FILE* fil, const char* frm, ...) noexcept
 /*---------------------------------------------------------------
           mrpt::system::pause
 ---------------------------------------------------------------*/
-void mrpt::system::pause(const std::string& msg) noexcept
+void pause(const std::string& msg) noexcept
 {
   std::cout << msg << std::endl;
   os::getch();
@@ -388,41 +424,44 @@ void mrpt::system::pause(const std::string& msg) noexcept
 /*---------------------------------------------------------------
           clearConsole
 ---------------------------------------------------------------*/
-void mrpt::system::clearConsole()
+void clearConsole()
 {
 #ifdef _WIN32
   int ret = ::system("cls");
 #else
   int ret = ::system("clear");
 #endif
-  if (ret) cerr << "[mrpt::system::clearConsole] Error invoking 'clear screen' " << endl;
+  if (ret)
+  {
+    std::cerr << "[mrpt::system::clearConsole] Error invoking 'clear screen' " << std::endl;
+  }
 }
 
 /*---------------------------------------------------------------
           _strtoll
   ---------------------------------------------------------------*/
-int64_t mrpt::system::os::_strtoll(const char* nptr, char** endptr, int base)
+int64_t os::_strtoll(const char* nptr, char** endptr, int base)
 {
 #ifdef _WIN32
-  return (int64_t)::strtol(nptr, endptr, base);
+  return static_cast<int64_t>(::strtol(nptr, endptr, base));
 #else
-  return (int64_t)::strtoll(nptr, endptr, base);
+  return static_cast<int64_t>(::strtoll(nptr, endptr, base));
 #endif
 }
 
 /*---------------------------------------------------------------
           _strtoull
   ---------------------------------------------------------------*/
-uint64_t mrpt::system::os::_strtoull(const char* nptr, char** endptr, int base)
+uint64_t os::_strtoull(const char* nptr, char** endptr, int base)
 {
 #ifdef _WIN32
-  return (uint64_t)::strtoul(nptr, endptr, base);
+  return static_cast<uint64_t>(::strtoul(nptr, endptr, base));
 #else
-  return (uint64_t)::strtoull(nptr, endptr, base);
+  return static_cast<uint64_t>(::strtoull(nptr, endptr, base));
 #endif
 }
 
-void mrpt::system::consoleColorAndStyle(
+void consoleColorAndStyle(
     ConsoleForegroundColor fg,
     ConsoleBackgroundColor bg,
     ConsoleTextStyle style,
@@ -456,7 +495,10 @@ void mrpt::system::consoleColorAndStyle(
   static ConsoleBackgroundColor last_bg = ConsoleBackgroundColor::DEFAULT;
   static ConsoleTextStyle last_style = ConsoleTextStyle::REGULAR;
 
-  if (fg == last_fg && bg == last_bg && style == last_style) return;
+  if (fg == last_fg && bg == last_bg && style == last_style)
+  {
+    return;
+  }
   last_fg = fg;
   last_bg = bg;
   last_style = style;
@@ -466,21 +508,39 @@ void mrpt::system::consoleColorAndStyle(
   const int fd = applyToStdErr ? STDOUT_FILENO : STDERR_FILENO;
 
   // No color support if it is not a real console:
-  if (!isatty(fd)) return;
+  if (!isatty(fd))
+  {
+    return;
+  }
 
   fflush(f);
 
   std::vector<int> codes;
-  if (int c = static_cast<int>(fg); c != 0) codes.push_back(c);
-  if (int c = static_cast<int>(bg); c != 0) codes.push_back(c);
-  if (int c = static_cast<int>(style); c != 0) codes.push_back(c);
-  if (codes.empty()) codes.push_back(0);
+  if (int c = static_cast<int>(fg); c != 0)
+  {
+    codes.push_back(c);
+  }
+  if (int c = static_cast<int>(bg); c != 0)
+  {
+    codes.push_back(c);
+  }
+  if (int c = static_cast<int>(style); c != 0)
+  {
+    codes.push_back(c);
+  }
+  if (codes.empty())
+  {
+    codes.push_back(0);
+  }
 
   std::string sFormat;
   for (size_t i = 0; i < codes.size(); i++)
   {
     sFormat.append(std::to_string(codes[i]));
-    if (i + 1 == codes.size()) continue;
+    if (i + 1 == codes.size())
+    {
+      continue;
+    }
     sFormat.append(";");
   }
 
@@ -488,27 +548,21 @@ void mrpt::system::consoleColorAndStyle(
 #endif
 }
 
-const char* sLicenseTextF =
-    "                     Mobile Robot Programming Toolkit (MRPT)              "
-    "  \n"
-    "                          https://www.mrpt.org/                           "
-    " "
-    "  \n"
-    "                                                                          "
-    "  \n"
-    " Copyright (c) 2005-%Y, Individual contributors, see AUTHORS file         "
-    "\n"
-    " See: https://www.mrpt.org/Authors - All rights reserved.                 "
-    " "
-    " \n"
-    " Released under BSD License. See details in https://www.mrpt.org/License  "
-    " "
-    " \n";
-
-const std::string& mrpt::system::getMRPTLicense()
+namespace
 {
-  static bool sLicenseTextReady = false;
-  static std::string sLicenseText;
+constexpr const char* const sLicenseTextF =
+    "                     Mobile Robot Programming Toolkit (MRPT)                \n"
+    "                          https://www.mrpt.org/                             \n"
+    "                                                                            \n"
+    " Copyright (c) 2005-%Y, Individual contributors, see AUTHORS file       \n"
+    " See: https://www.mrpt.org/Authors - All rights reserved.                   \n"
+    " Released under BSD License. See details in https://www.mrpt.org/License    \n";
+}
+
+const std::string& getMRPTLicense()
+{
+  thread_local bool sLicenseTextReady = false;
+  thread_local std::string sLicenseText;
 
   if (!sLicenseTextReady)
   {
@@ -530,7 +584,7 @@ const std::string& mrpt::system::getMRPTLicense()
 /*---------------------------------------------------------------
 launchProcess
 ---------------------------------------------------------------*/
-bool mrpt::system::launchProcess(const std::string& command)
+bool launchProcess(const std::string& command)
 {
 #ifdef _WIN32
   STARTUPINFOA SI;
@@ -557,7 +611,7 @@ bool mrpt::system::launchProcess(const std::string& command)
 
 }  // end launchProcess
 
-std::string mrpt::system::find_mrpt_shared_dir()
+std::string find_mrpt_shared_dir()
 {
   static bool mrpt_shared_first_call = true;
   static std::string found_mrpt_shared_dir;
@@ -572,10 +626,10 @@ std::string mrpt::system::find_mrpt_shared_dir()
       switch (attempt)
       {
         case 0:
-          dir = string(MRPT_SOURCE_BASE_DIRECTORY) + string("/share/mrpt/");
+          dir = std::string(MRPT_SOURCE_BASE_DIRECTORY) + std::string("/share/mrpt/");
           break;
         case 1:
-          dir = string(MRPT_INSTALL_PREFIX_DIRECTORY) + string("/share/mrpt/");
+          dir = std::string(MRPT_INSTALL_PREFIX_DIRECTORY) + std::string("/share/mrpt/");
           break;
 #ifdef _WIN32
         case 2:
@@ -592,17 +646,23 @@ std::string mrpt::system::find_mrpt_shared_dir()
           found_mrpt_shared_dir = ".";
           break;
       };
-      if (!dir.empty() && mrpt::system::directoryExists(dir)) found_mrpt_shared_dir = dir;
+      if (!dir.empty() && mrpt::system::directoryExists(dir))
+      {
+        found_mrpt_shared_dir = dir;
+      }
 
-      if (!found_mrpt_shared_dir.empty()) break;
+      if (!found_mrpt_shared_dir.empty())
+      {
+        break;
+      }
     }
   }
 
   return found_mrpt_shared_dir;
 }  // end of find_mrpt_shared_dir
 
-int mrpt::system::executeCommand(
-    const std::string& command, std::string* output /*=NULL*/, const std::string& mode /*="r"*/)
+int executeCommand(
+    const std::string& command, std::string* output /*=nullptr*/, const std::string& mode /*="r"*/)
 {
   using namespace std;
 
@@ -612,15 +672,14 @@ int mrpt::system::executeCommand(
 
 #ifndef _WIN32
   // Run Popen
-  FILE* in;
   char buff[512];
 
   // Test output
-  if (!(in = popen(command.c_str(), mode.c_str())))
+  FILE* in = popen(command.c_str(), mode.c_str());
+  if (!in)
   {
     sout << "Popen Execution failed!" << endl;
     *output = sout.str();
-
     return -1;
   }
 
@@ -753,49 +812,7 @@ int mrpt::system::executeCommand(
   return exit_code;
 }  // end of executeCommand
 
-struct LoadedModuleInfo
-{
-#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
-  void* handle = nullptr;
-#endif
-#ifdef MRPT_OS_WINDOWS
-  HMODULE handle;
-#endif
-};
-
-struct ModulesRegistry
-{
-  static ModulesRegistry& Instance()
-  {
-    static ModulesRegistry obj;
-    return obj;
-  }
-
-  ModulesRegistry() = default;
-  ~ModulesRegistry()
-  {
-    try
-    {
-      // Make a copy, since each unload() call would invalidate iterators
-      // to the changing list "loadedModules":
-      loadedModules_mtx.lock();
-      auto lstCopy = loadedModules;
-      loadedModules_mtx.unlock();
-
-      for (auto& ent : lstCopy) unloadPluginModule(ent.first);
-    }
-    catch (const std::exception& e)
-    {
-      std::cerr << "[~ModulesRegistry] Exception: " << mrpt::exception_to_str(e);
-    }
-  }
-
-  using full_path_t = std::string;
-  std::map<full_path_t, LoadedModuleInfo> loadedModules;
-  std::mutex loadedModules_mtx;
-};
-
-bool mrpt::system::loadPluginModule(
+bool loadPluginModule(
     const std::string& moduleFileName, mrpt::optional_ref<std::string> outErrorMsgs)
 {
   auto& md = ModulesRegistry::Instance();
@@ -827,13 +844,17 @@ bool mrpt::system::loadPluginModule(
 #endif
 
   if (outErrorMsgs)
+  {
     outErrorMsgs.value().get() += sError;
+  }
   else
+  {
     std::cerr << sError;
+  }
   return false;
 }
 
-bool mrpt::system::unloadPluginModule(
+bool unloadPluginModule(
     const std::string& moduleFileName, mrpt::optional_ref<std::string> outErrorMsgs)
 {
   auto& md = ModulesRegistry::Instance();
@@ -866,19 +887,39 @@ bool mrpt::system::unloadPluginModule(
   if (!sError.empty())
   {
     if (outErrorMsgs)
+    {
       outErrorMsgs.value().get() += sError;
+    }
     else
+    {
       std::cerr << sError;
+    }
     return false;
   }
-  else
+
+  md.loadedModules.erase(it);
+  return true;
+}
+
+bool loadPluginModules(
+    const std::string& moduleFileNames, mrpt::optional_ref<std::string> outErrorMsgs)
+{
+  std::vector<std::string> lstModules;
+  mrpt::system::tokenize(moduleFileNames, ",", lstModules);
+
+  bool allOk = true;
+  for (const auto& sLib : lstModules)
   {
-    md.loadedModules.erase(it);
-    return true;
+    if (!loadPluginModule(sLib, outErrorMsgs))
+    {
+      allOk = false;
+    }
   }
+
+  return allOk;
 }
 
-bool mrpt::system::loadPluginModules(
+bool unloadPluginModules(
     const std::string& moduleFileNames, mrpt::optional_ref<std::string> outErrorMsgs)
 {
   std::vector<std::string> lstModules;
@@ -886,20 +927,14 @@ bool mrpt::system::loadPluginModules(
 
   bool allOk = true;
   for (const auto& sLib : lstModules)
-    if (!loadPluginModule(sLib, outErrorMsgs)) allOk = false;
+  {
+    if (!unloadPluginModule(sLib, outErrorMsgs))
+    {
+      allOk = false;
+    }
+  }
 
   return allOk;
 }
 
-bool mrpt::system::unloadPluginModules(
-    const std::string& moduleFileNames, mrpt::optional_ref<std::string> outErrorMsgs)
-{
-  std::vector<std::string> lstModules;
-  mrpt::system::tokenize(moduleFileNames, ",", lstModules);
-
-  bool allOk = true;
-  for (const auto& sLib : lstModules)
-    if (!unloadPluginModule(sLib, outErrorMsgs)) allOk = false;
-
-  return allOk;
-}
+}  // namespace mrpt::system

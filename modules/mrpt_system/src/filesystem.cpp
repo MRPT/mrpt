@@ -109,7 +109,7 @@ string mrpt::system::extractFileExtension(const string& filePath, bool ignore_gz
 
   size_t i_end = filePath.size() - 1;
 
-  int i = (int)(i_end);
+  size_t i = i_end;
   while (i > 0)
   {
     if (filePath[i] == '.')
@@ -146,9 +146,7 @@ bool mrpt::system::directoryExists(const std::string& _path)
   }
 
   // Verify it's a directory:
-  struct stat buf
-  {
-  };
+  struct stat buf{};
   if (0 != stat(path.c_str(), &buf))
   {
     return false;
