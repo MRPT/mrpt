@@ -70,7 +70,6 @@ license is as follows:
 #include <string>
 #include <unordered_map>
 
-#if MRPT_HAS_OPENCV
 struct XPMColorMapData
 {
   unsigned char R{0}, G{0}, B{0};
@@ -457,7 +456,7 @@ bool GetRGBFromName(
         rgbVal = theRGBRecords[middle].rgb;
         *r = (unsigned char)((rgbVal >> 16) & 0xFF);
         *g = (unsigned char)((rgbVal >> 8) & 0xFF);
-        *b = (unsigned char)((rgbVal)&0xFF);
+        *b = (unsigned char)((rgbVal) & 0xFF);
         *isNone = false;
         found = true;
         break;
@@ -478,7 +477,6 @@ bool GetRGBFromName(
   return found;
 }
 }  // namespace
-#endif
 
 /** Loads the image from an XPM array, as included from a ".xpm" file.
  * \sa loadFromFile
@@ -486,7 +484,6 @@ bool GetRGBFromName(
 bool mrpt::img::CImage::loadFromXPM(
     [[maybe_unused]] const char* const* xpm_data, [[maybe_unused]] bool swap_rb)
 {
-#if MRPT_HAS_OPENCV
   try
   {
     ASSERTMSG_(xpm_data, "XPM data is nullptr");
@@ -564,8 +561,7 @@ bool mrpt::img::CImage::loadFromXPM(
         rgb = (data.R << 16) + (data.G << 8) + data.B;
         rgb_table[rgb];
       }
-      for (rgb = 0; rgb <= 0xffffff && rgb_table.count(rgb); ++rgb)
-        ;
+      for (rgb = 0; rgb <= 0xffffff && rgb_table.count(rgb); ++rgb);
       if (rgb > 0xffffff)
       {
         THROW_EXCEPTION("XPM: no colors left to use for mask!");
@@ -630,7 +626,5 @@ bool mrpt::img::CImage::loadFromXPM(
     std::cerr << "[CImage::loadFromXPM] " << e.what() << std::endl;
     return false;
   }
-#else
-  return false;
 #endif
 }

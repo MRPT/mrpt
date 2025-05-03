@@ -76,8 +76,6 @@ TEST(CImage, CtorDefault)
   EXPECT_THROW(img.getPixelDepth(), std::exception);
 }
 
-#if MRPT_HAS_OPENCV
-
 namespace
 {
 void CtorSized_gray(unsigned int w, unsigned int h)
@@ -590,5 +588,3 @@ TEST(CImage, DifferentAccessMethodsGray)
     }
   }
 }
-
-#endif  // MRPT_HAS_OPENCV

@@ -57,11 +57,6 @@ void generic_pf_test(
     app.fill_out_estimated_path = true;
     app.allow_quit_on_esc_key = false;
 
-#if !MRPT_HAS_OPENCV
-    app.params.write(MCL::sect, "3DSceneFrequency", -1);
-    app.params.write(MCL::sect, "LOG_FREQUENCY", 0);
-#endif
-
     cfg_changer(app.params);
     app.run();
 

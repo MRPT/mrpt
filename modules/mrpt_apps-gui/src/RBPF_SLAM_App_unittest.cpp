@@ -48,11 +48,6 @@ void generic_rbpf_slam_test(
         "MappingApplication", "logOutput_dir", mrpt::system::getTempFileName() + "_dir"s);
     app.params.write("MappingApplication", "SHOW_PROGRESS_IN_WINDOW", false);
 
-#if !MRPT_HAS_OPENCV
-    app.params.write("MappingApplication", "SAVE_3D_SCENE", false);
-    app.params.write("MappingApplication", "LOG_FREQUENCY", 0);
-#endif
-
     cfg_changer(app.params);
     app.run();
 

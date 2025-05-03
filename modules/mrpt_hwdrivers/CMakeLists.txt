@@ -82,10 +82,6 @@ if(TARGET mrpt_xsens)
 	target_link_libraries(hwdrivers PRIVATE mrpt_xsens)
 endif()
 
-if(CMAKE_MRPT_HAS_OPENCV)
-	target_link_libraries(hwdrivers PRIVATE imp_opencv)
-endif()
-
 if(CMAKE_MRPT_HAS_LIBPCAP)
 	target_link_libraries(hwdrivers PRIVATE ${PCAP_LIBRARY})
 

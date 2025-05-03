@@ -15,9 +15,7 @@
 
 struct mrpt::img::CImage::Impl
 {
-#if MRPT_HAS_OPENCV
   cv::Mat img;
-#endif
 
   ~Impl()
   {

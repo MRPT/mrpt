@@ -18,7 +18,7 @@
 #include <cstdlib>
 #include <thread>
 
-#if MRPT_HAS_FFMPEG && MRPT_HAS_OPENCV
+#if MRPT_HAS_FFMPEG
 TEST(RawlogGrabberApp, CGenericCamera_AVI)
 #else
 TEST(RawlogGrabberApp, DISABLED_CGenericCamera_AVI)

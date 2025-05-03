@@ -15,17 +15,6 @@ https://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_c
 
 ## 2. Optional but strongly recommended
 
-### `opencv`
-
-This is used for almost everything related to computer vision in MRPT.
-Even MRPT-specific computer vision functions or classes cannot work without
-OpenCV since the basic structure for holding images is OpenCV's `cv::Mat`.
-
-If not present, the following classes will raise an exception upon usage:
-- mrpt::img::CImage. Note that creating mrpt::img::CImage objects in the "external storage mode" will not raise an exception unless you really access the image contents.
-- Everything needing access to an image (loading, saving, processing, etc.).
-
-
 ### `wxwidgets`
 
 If this library is not present in the system, the following will raise an exception upon usage:

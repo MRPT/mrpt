@@ -12,19 +12,6 @@
 
 // clang-format off
 
-/** Has MRPT libjpeg? And whether it's in the system (Linux) or built-in (Windows, some rare cases in Linux). */
-#define MRPT_HAS_JPEG             ${CMAKE_MRPT_HAS_JPEG}
-#define MRPT_HAS_JPEG_SYSTEM      ${CMAKE_MRPT_HAS_JPEG_SYSTEM}
-
-/** Includes the OpenCV library, required for image manipulation. */
-#define MRPT_HAS_OPENCV          ${CMAKE_MRPT_HAS_OPENCV}
-
-// Version as text:
-#define MRPT_OPENCV_VERSION      "${MRPT_OPENCV_VERSION}"
-
-// Version as hexadecimal number: eg. 1.0.0 -> 0x100
-#define MRPT_OPENCV_VERSION_NUM  ${MRPT_OPENCV_VERSION_HEX}
-
 /** Enable Katakana, Hiragana & Kanji character sets in mrpt::img::CCanvas.
   *  Disable this to save executable sizes if these fonts will be not used. */
  #define MRPT_HAS_ASIAN_FONTS ${CMAKE_MRPT_HAS_ASIAN_FONTS}

@@ -151,12 +151,6 @@ foreach(_TSTLIB ${LST_LIB_TESTS})
 endforeach()
 
 # Special dependencies:
-if (TARGET test_mrpt_img)
-	if(CMAKE_MRPT_HAS_OPENCV)
-		target_link_libraries(test_mrpt_img imp_opencv)
-	endif()
-endif()
-
 if (TARGET test_mrpt_core)
 	if (MRPT_EXCEPTIONS_WITH_CALL_STACK)
 		target_compile_definitions(test_mrpt_core PRIVATE MRPT_EXCEPTIONS_WITH_CALL_STACK)

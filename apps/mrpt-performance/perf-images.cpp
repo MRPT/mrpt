@@ -159,10 +159,6 @@ double image_test_2(int w, int h)
 {
   CImage img(w, h, mrpt::img::CH_RGB), img2;
 
-#if MRPT_HAS_OPENCV
-//	int oldVal = cvUseOptimized(1);
-#endif
-
   for (int i = 0; i < 5000; i++)
     img.line(
         getRandomGenerator().drawUniform(0, w - 1), getRandomGenerator().drawUniform(0, h - 1),
@@ -178,9 +174,6 @@ double image_test_2(int w, int h)
 
   double R = tictac.Tac() / N;
 
-#if MRPT_HAS_OPENCV
-//	cvUseOptimized(oldVal);
-#endif
   return R;
 }
 

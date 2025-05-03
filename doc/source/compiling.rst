@@ -33,9 +33,8 @@ Minimum compiler requisites:
     
        # All Ubuntu versions:
        sudo apt install build-essential pkg-config cmake \
-         libopencv-dev libeigen3-dev zlib1g-dev \
-         libsuitesparse-dev libjpeg-dev
-         
+         libeigen3-dev zlib1g-dev
+
        # plus, only for Ubuntu < 22.10:
        sudo apt install libwxgtk3.0-gtk3-dev
 
@@ -126,12 +125,6 @@ Minimum compiler requisites:
 
            nmake -f makefile.vc BUILD=release SHARED=1 RUNTIME_LIBS=dynamic DEBUG_INFO=0 VENDOR=mrpt USE_OPENGL=1 TARGET_CPU=amd64
            nmake -f makefile.vc BUILD=debug SHARED=1 RUNTIME_LIBS=dynamic DEBUG_INFO=1 VENDOR=mrpt USE_OPENGL=1 TARGET_CPU=amd64
-
-    **OpenCV (Optional, but strongly recommended)**
-
-    Download the `latest OpenCV release <https://github.com/opencv/opencv/releases/latest>`_
-    either as source code and compile it, or (easier) install the provided
-    ``opencv-x.y.z-vcZZ.exe`` installer.
 
     **FFmpeg for Win32 (Optional)**
 

@@ -61,10 +61,6 @@ if (TARGET mrpt_glew) # Basically, for Windows
 	target_link_libraries(opengl PRIVATE mrpt_glew)
 endif()
 
-if(CMAKE_MRPT_HAS_OPENCV)
-	target_link_libraries(opengl PRIVATE imp_opencv)
-endif()
-
 # Link against assimp:
 if (CMAKE_MRPT_HAS_ASSIMP)
 	if(TARGET "EP_assimp")
@@ -74,8 +70,5 @@ if (CMAKE_MRPT_HAS_ASSIMP)
 endif ()
 if (MINGW)
 	target_link_libraries(opengl PRIVATE opengl32 GlU32)
-endif()
-if(CMAKE_MRPT_HAS_OPENCV)
-	target_link_libraries(opengl PRIVATE imp_opencv)
 endif()
 

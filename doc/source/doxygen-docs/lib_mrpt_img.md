@@ -19,10 +19,10 @@ Find below some examples of use.
 
 ## Image handling
 
-The class mrpt::img::CImage represents a wrapper around OpenCV images, plus
-extra functionality such as on-the-fly loading of images stored in disk upon
-first usage. The `cv::Mat` object is always available so
-OpenCV's functions can be still used to operate on MRPT images.
+The class mrpt::img::CImage is a custom, portable image container, including
+basic functionality like image loading, saving, and manipulation.
 
+In MRPT 3.0.0 it was ported away from OpenCV so we do not depend 
+on opencv at all for building or running.
 
 # Library contents
