@@ -89,7 +89,6 @@ class CExceptionExternalImageNotFound : public std::runtime_error
  *   the methods CImage::loadFromFile() and CImage::saveToFile(). This uses the [stb
  *   library](https://github.com/nothings/stb).
  * - Importing from an XPM array (.xpm file format) using CImage::loadFromXPM()
- * - Importing TGA images. See CImage::loadTGA()
  * - Binary dump using the CSerializable interface(<< and >> operators),
  *just as most objects in MRPT. This format is not compatible with any
  *standardized image format but it is fast.
@@ -825,10 +824,10 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    * (internally uses OpenCV).
    * \param fileName The file to read from.
    *
-   * MRPT also provides the special loaders loadFromXPM() and loadTGA().
+   * MRPT also provides the special loader loadFromXPM().
    *
    * \return False on any error
-   * \sa saveToFile, setExternalStorage,loadFromXPM, loadTGA
+   * \sa saveToFile, setExternalStorage,loadFromXPM
    */
   [[nodiscard]] bool loadFromFile(
       const std::string& fileName, TImageChannels loadChannels = CH_AS_IS);
@@ -841,13 +840,6 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    */
   [[nodiscard]] static mrpt::img::CImage LoadFromFile(
       const std::string& fileName, TImageChannels loadChannels = CH_AS_IS);
-
-  /** Loads a TGA true-color RGBA image as two CImage objects, one for the RGB
-   * channels plus a separate gray-level image with A channel.
-   * \return true on success
-   */
-  [[nodiscard]] static bool LoadTGA(
-      const std::string& fileName, mrpt::img::CImage& out_RGB, mrpt::img::CImage& out_alpha);
 
   /** Loads the image from an XPM array, as included from a ".xpm" file.
    * \param[in] swap_rb Swaps red/blue channels from loaded image. *Seems* to

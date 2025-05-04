@@ -89,21 +89,14 @@ class TexturesCache
     if (entry.load_attempted) return entry;
 
     // Load images:
-    // TGA is handled specially since it's not supported by OpenCV:
-    if (mrpt::system::lowerCase(mrpt::system::extractFileExtension(texturePath)) == "tga"s)
-    {
-      entry.img_alpha.emplace();
-
-      entry.load_ok = mrpt::img::CImage::loadTGA(texturePath, entry.img_rgb, *entry.img_alpha);
-    }
-    else
-    {
-      entry.load_ok = entry.img_rgb.loadFromFile(texturePath);
-    }
+    entry.load_ok = entry.img_rgb.loadFromFile(texturePath);
 
     if (entry.load_ok)
     {
-      if (verboseLoad) std::cout << "[CAssimpModel] Loaded texture: " << texturePath << "\n";
+      if (verboseLoad)
+      {
+        std::cout << "[CAssimpModel] Loaded texture: " << texturePath << "\n";
+      }
     }
 #if MRPT_HAS_ASSIMP && MRPT_HAS_OPENCV
     else if (scene->HasTextures())

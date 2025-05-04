@@ -250,13 +250,13 @@ void CCanvas::drawImage(const TPixelCoord& pt, const mrpt::img::CImage& img)
 
   if (img.isColor())
   {
-    for (unsigned int xx = 0; xx < img_lx; xx++)
+    for (int32_t xx = 0; xx < img_lx; xx++)
     {
-      for (unsigned int yy = 0; yy < img_ly; yy++)
+      for (int32_t yy = 0; yy < img_ly; yy++)
       {
         auto ptr = img.ptr<uint8_t>(xx, yy);
         const int p = ptr[0] | (ptr[1] << 8) | (ptr[2] << 16);
-        setPixel(x + xx, y + yy, p);
+        setPixel(pt.x + xx, pt.y + yy, p);
       }
     }
   }
@@ -264,13 +264,15 @@ void CCanvas::drawImage(const TPixelCoord& pt, const mrpt::img::CImage& img)
   {
     unsigned char c;
     int col;
-    for (int xx = 0; xx < img_lx; xx++)
-      for (int yy = 0; yy < img_ly; yy++)
+    for (int32_t xx = 0; xx < img_lx; xx++)
+    {
+      for (int32_t yy = 0; yy < img_ly; yy++)
       {
         c = *((unsigned char*)img(xx, yy));
         col = c | (c << 8) | (c << 16);
-        setPixel(x + xx, y + yy, col);
+        setPixel(pt.x + xx, pt.y + yy, col);
       }
+    }
   }
 
   MRPT_END
