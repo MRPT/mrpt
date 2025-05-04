@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "img-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/config.h>  // MRPT_ARCH_INTEL_COMPATIBLE
 
 // ---------------------------------------------------------------------------
@@ -129,7 +127,7 @@ void image_SSSE3_scale_half_3c8u(
 // image_SSSE3_bgr_to_gray_8u():
 template <bool IS_RGB, bool MemIsAligned>
 void impl_image_SSSE3_rgb_or_bgr_to_gray_8u(
-    const uint8_t* in, uint8_t* out, int w, int h, size_t step_in, size_t step_out)
+    const uint8_t* in, uint8_t* out, int w, int h, size_t step_in, size_t step_out)  // NOLINT
 {
   SSE_DISABLE_WARNINGS
   // clang-format off

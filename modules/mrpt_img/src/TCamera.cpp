@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "img-precomp.h"  // Precompiled headers
-//
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/containers/yaml.h>
 #include <mrpt/img/TCamera.h>

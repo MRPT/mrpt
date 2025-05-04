@@ -66,7 +66,6 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
   const double SAVE_VIDEO_FPS = 30;       // If DO_SAVE_VIDEO=true, the FPS of the video file
   const char* SAVE_VIDEO_CODEC = "XVID";  // "XVID", "PIM1", "MJPG"
 
-  bool DO_HIST_EQUALIZE_IN_GRAYSCALE = false;
   string VIDEO_OUTPUT_FILE = "./tracking_video.avi";
 
   const double MAX_FPS = 5000;  // 5.0;  // Hz (to slow down visualization).
@@ -221,8 +220,6 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
     // now that we're done with the image, we can directly write onto it
     //  for the display
     // ----------------------------------------------------------------
-    if (DO_HIST_EQUALIZE_IN_GRAYSCALE && !theImg.isColor()) theImg.equalizeHist(theImg);
-
     tracker->getProfiler().enter("Display");
 
     // Convert to color so we can draw color marks, etc.

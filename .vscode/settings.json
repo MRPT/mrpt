@@ -38,11 +38,18 @@
     },
     "cSpell.words": [
         "CArchive",
+        "Colorf",
+        "Coordf",
         "Eigen",
+        "idft",
+        "IFFT",
         "Kbhit",
         "mrpt",
         "MRPT",
-        "stbi"
+        "SSSE",
+        "stbi",
+        "undistort",
+        "undistortion"
     ],
     "ros.distro": "humble",
 }

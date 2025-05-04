@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "img-precomp.h"  // Precompiled headers
-//
 #include <mrpt/img/TColor.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
@@ -61,8 +59,6 @@ TColor& TColor::operator-=(const TColor& other)
 
   return *this;
 }
-
-TColor& TColor::operator=(const TColor& other) = default;
 
 bool mrpt::img::operator==(const TColor& first, const TColor& second)
 {

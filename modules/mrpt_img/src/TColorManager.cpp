@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "img-precomp.h"  // Precompiled headers
-//
 #include <mrpt/img/TColorManager.h>
 
 using namespace mrpt::img;

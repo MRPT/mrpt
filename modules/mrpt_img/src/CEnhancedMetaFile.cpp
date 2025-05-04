@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "img-precomp.h"  // Precompiled headers
-//
 #include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/config.h>

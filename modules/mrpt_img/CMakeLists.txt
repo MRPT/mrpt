@@ -26,7 +26,7 @@ set(LIB_SRCS
   src/CCanvas.cpp
   src/CEnhancedMetaFile.cpp
   src/CImage.cpp
-  src/CImage_JPEG_streams.cpp
+  src/CImage_impl.cpp
   src/CImage_loadXPM.cpp
   src/CImage.SSE2.cpp
   src/CImage.SSSE3.cpp
@@ -34,7 +34,6 @@ set(LIB_SRCS
   src/CMappedImage.cpp
   src/color_maps.cpp
   src/color_maps_unittest.cpp
-  src/img-precomp.cpp
   src/registerAllClasses.cpp
   src/TCamera.cpp
   src/TCamera_unittest.cpp
@@ -44,7 +43,6 @@ set(LIB_SRCS
 )
 
 set(LIB_PUBLIC_HDRS
-  include/mrpt/3rdparty/do_opencv_includes.h
   include/mrpt/img/CCanvas.h
   include/mrpt/img/CImage.h
   include/mrpt/img/CEnhancedMetaFile.h
