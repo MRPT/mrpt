@@ -61,14 +61,15 @@ license is as follows:
 %
 */
 
-#include "img-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/img/CImage.h>
 
 #include <cstring>
 #include <string>
 #include <unordered_map>
+
+namespace
+{
 
 struct XPMColorMapData
 {
@@ -77,7 +78,7 @@ struct XPMColorMapData
 using XPMColorMap = std::unordered_map<std::string, XPMColorMapData>;
 using Long2LongHash = std::unordered_map<int64_t, int64_t>;
 
-static const char* ParseColor(const char* data)
+const char* ParseColor(const char* data)
 {
   static const char* const targets[] = {"c ", "g ", "g4 ", "m ", "b ", "s ", nullptr};
 
@@ -125,7 +126,7 @@ typedef struct
 #define myRGB(r, g, b) \
   (static_cast<uint32_t>(r) << 16 | static_cast<uint32_t>(g) << 8 | static_cast<uint32_t>(b))
 
-static const rgbRecord theRGBRecords[] = {
+const rgbRecord theRGBRecords[] = {
     {           "aliceblue", myRGB(240, 248, 255)},
     {        "antiquewhite", myRGB(250, 235, 215)},
     {          "aquamarine",  myRGB(50, 191, 193)},
@@ -363,10 +364,8 @@ static const rgbRecord theRGBRecords[] = {
     {         "yellowgreen",  myRGB(50, 216,  56)},
     {               nullptr,   myRGB(0,   0,   0)}
 };
-static const int numTheRGBRecords = 235;
+const int numTheRGBRecords = 235;
 
-namespace
-{
 unsigned char ParseHexadecimal(char digit1, char digit2)
 {
   unsigned char i1, i2;
@@ -393,7 +392,7 @@ bool GetRGBFromName(
   int cmp;
   uint32_t rgbVal;
   char* name;
-  char *grey, *p;
+  char* p;
 
   // Neither #rrggbb nor #rrrrggggbbbb are in database, we parse them directly
   size_t inname_len = strlen(inname);
@@ -431,7 +430,11 @@ bool GetRGBFromName(
 
   // substitute Grey with Gray, else rgbtab.h would have more than 100
   // 'duplicate' entries
-  if ((grey = strstr(name, "grey")) != nullptr) grey[2] = 'a';
+  char* grey = strstr(name, "grey");
+  if (grey != nullptr)
+  {
+    grey[2] = 'a';
+  }
 
   // check for special 'none' colour:
   bool found;
@@ -454,14 +457,15 @@ bool GetRGBFromName(
       if (cmp == 0)
       {
         rgbVal = theRGBRecords[middle].rgb;
-        *r = (unsigned char)((rgbVal >> 16) & 0xFF);
-        *g = (unsigned char)((rgbVal >> 8) & 0xFF);
-        *b = (unsigned char)((rgbVal) & 0xFF);
+        *r = static_cast<unsigned char>((rgbVal >> 16) & 0xFF);
+        *g = static_cast<unsigned char>((rgbVal >> 8) & 0xFF);
+        *b = static_cast<unsigned char>((rgbVal) & 0xFF);
         *isNone = false;
         found = true;
         break;
       }
-      else if (cmp < 0)
+
+      if (cmp < 0)
       {
         right = middle - 1;
       }
@@ -478,11 +482,7 @@ bool GetRGBFromName(
 }
 }  // namespace
 
-/** Loads the image from an XPM array, as included from a ".xpm" file.
- * \sa loadFromFile
- * \return false on any error */
-bool mrpt::img::CImage::loadFromXPM(
-    [[maybe_unused]] const char* const* xpm_data, [[maybe_unused]] bool swap_rb)
+bool mrpt::img::CImage::loadFromXPM(const char* const* xpm_data, bool swap_rb)
 {
   try
   {
@@ -542,7 +542,10 @@ bool mrpt::img::CImage::loadFromXPM(
       }
 
       keyString = key;
-      if (isNone) maskKey = keyString;
+      if (isNone)
+      {
+        maskKey = keyString;
+      }
 
       clr_tbl[keyString] = clr_data;
     }
@@ -587,9 +590,9 @@ bool mrpt::img::CImage::loadFromXPM(
       for (size_t i = 0; i < width; i++, img_data += 3)
       {
         const char* xpmImgLine = xpm_data[1 + colors_cnt + j];
-        if (!xpmImgLine || strlen(xpmImgLine) < width * chars_per_pixel)
+        if (!xpmImgLine || strlen(xpmImgLine) < static_cast<size_t>(width) * chars_per_pixel)
         {
-          THROW_EXCEPTION_FMT("XPM: truncated image data at line %d!", (int)(1 + colors_cnt + j));
+          THROW_EXCEPTION_FMT("XPM: truncated image data at line %zu!", 1 + colors_cnt + j);
           return false;
         }
 
@@ -617,7 +620,10 @@ bool mrpt::img::CImage::loadFromXPM(
       }
     }
 
-    if (swap_rb) this->swapRB();
+    if (swap_rb)
+    {
+      this->swapRB();
+    }
 
     return true;
   }
@@ -626,5 +632,4 @@ bool mrpt::img::CImage::loadFromXPM(
     std::cerr << "[CImage::loadFromXPM] " << e.what() << std::endl;
     return false;
   }
-#endif
 }

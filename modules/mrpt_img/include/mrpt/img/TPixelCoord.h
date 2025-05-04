@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <cstdint>
 #include <iosfwd>
 #include <utility>
 
@@ -40,12 +41,12 @@ std::ostream& operator<<(std::ostream& o, const TPixelCoordf& p);
 struct TPixelCoord
 {
   /** The type of \a x and \a y */
-  using pixel_coord_t = int;
+  using pixel_coord_t = int32_t;
 
   TPixelCoord() = default;
-  TPixelCoord(const int _x, const int _y) : x(_x), y(_y) {}
-  inline bool operator==(const TPixelCoord& o) { return x == o.x && y == o.y; }
-  int x{0}, y{0};
+  TPixelCoord(const int32_t _x, const int32_t _y) : x(_x), y(_y) {}
+  bool operator==(const TPixelCoord& o) { return x == o.x && y == o.y; }
+  int32_t x{0}, y{0};
 };
 
 /** Prints TPixelCoord as "(x,y)" */

@@ -7,23 +7,28 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/core/get_env.h>
-#include <mrpt/img/CImage.h>
+#if defined(_MSC_VER)
+#define STB_DISABLE_WARNINGS __pragma(warning(push)) __pragma(warning(disable : 4309))
+#elif defined(__GNUC__)
+#define STB_DISABLE_WARNINGS                                                            \
+  _Pragma("GCC diagnostic push") _Pragma("GCC diagnostic ignored \"-Wold-style-cast\"") \
+      _Pragma("GCC diagnostic ignored \"-Wconversion\"")                                \
+          _Pragma("GCC diagnostic ignored \"-Wsign-conversion\"")                       \
+              _Pragma("GCC diagnostic ignored \"-Wdouble-promotion\"")                  \
+                  _Pragma("GCC diagnostic ignored \"-Wmissing-field-initializers\"")
+#elif defined(__clang__)
+#define STB_DISABLE_WARNINGS                                                                \
+  _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wold-style-cast\"") \
+      _Pragma("clang diagnostic ignored \"-Wconversion\"")                                  \
+          _Pragma("clang diagnostic ignored \"-Wsign-conversion\"")                         \
+              _Pragma("clang diagnostic ignored \"-Wdouble-promotion\"")                    \
+                  _Pragma("clang diagnostic ignored \"-Wmissing-field-initializers\"")
+#endif
 
-// Universal include for all versions of OpenCV
-#include <mrpt/3rdparty/do_opencv_includes.h>
-
-struct mrpt::img::CImage::Impl
-{
-  cv::Mat img;
-
-  ~Impl()
-  {
-    const thread_local bool SHOW_DEBUG_MSG = mrpt::get_env<bool>("MRPT_DEBUG_IMG_LAZY_LOAD", false);
-    if (SHOW_DEBUG_MSG)
-    {
-      std::cout << "[CImage::dtor] Called on this=" << reinterpret_cast<const void*>(this)
-                << std::endl;
-    }
-  }
-};
+#if defined(_MSC_VER)
+#define STB_RESTORE_WARNINGS __pragma(warning(pop))
+#elif defined(__GNUC__)
+#define STB_RESTORE_WARNINGS _Pragma("GCC diagnostic pop")
+#elif defined(__clang__)
+#define STB_RESTORE_WARNINGS _Pragma("clang diagnostic pop")
+#endif

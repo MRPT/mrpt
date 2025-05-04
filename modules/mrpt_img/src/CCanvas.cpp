@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "img-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/reverse_bytes.h>
 #include <mrpt/core/round.h>
 #include <mrpt/img/CCanvas.h>
@@ -118,12 +116,10 @@ void init_fonts_list()
             line
 ---------------------------------------------------------------*/
 void CCanvas::line(
-    int x0,
-    int y0,
-    int x1,
-    int y1,
-    const mrpt::img::TColor color,
-    [[maybe_unused]] unsigned int width,
+    const TPixelCoord& pt0,
+    const TPixelCoord& pt1,
+    const mrpt::img::TColor& color,
+    [[maybe_unused]] int32_t width,
     [[maybe_unused]] TPenStyle penStyle)
 {
   float x, y;
@@ -159,7 +155,7 @@ void CCanvas::line(
             rectangle
 ---------------------------------------------------------------*/
 void CCanvas::rectangle(
-    int x0, int y0, int x1, int y1, const mrpt::img::TColor color, unsigned int width)
+    const TPixelCoord& pt0, const TPixelCoord& pt1, const mrpt::img::TColor& color, int32_t width)
 {
   int w_min = (int)-ceil(((float)width) / 2);
   int w_max = (int)floor(((float)width) / 2);
@@ -173,10 +169,6 @@ void CCanvas::rectangle(
   }  // end for "w"
 }
 
-/*****************************************************AJOGD***************************************************/
-/*---------------------------------------------------------------
-            triangle
----------------------------------------------------------------*/
 void CCanvas::triangle(
     int x0, int y0, int size, const mrpt::img::TColor color, bool inferior, unsigned int width)
 {
@@ -195,12 +187,12 @@ void CCanvas::triangle(
     line(x0 + ts, y0 + tc, x0 - ts, y0 + tc, color, width);
   }
 }
-/************************************************************************************************************/
 
 /*---------------------------------------------------------------
             filledRectangle
 ---------------------------------------------------------------*/
-void CCanvas::filledRectangle(int x0, int y0, int x1, int y1, const mrpt::img::TColor color)
+void CCanvas::filledRectangle(
+    const TPixelCoord& pt0, const TPixelCoord& pt1, const mrpt::img::TColor& color)
 {
   int x_min = max(x0, 0);
   int x_max = min(x1, (int)getWidth() - 1);
@@ -248,23 +240,25 @@ void CCanvas::selectTextFont(const std::string& fontName)
 /*---------------------------------------------------------------
             drawImage
 ---------------------------------------------------------------*/
-void CCanvas::drawImage(int x, int y, const mrpt::img::CImage& img)
+void CCanvas::drawImage(const TPixelCoord& pt, const mrpt::img::CImage& img)
 {
   MRPT_START
   ASSERT_(img.getPixelDepth() == mrpt::img::PixelDepth::D8U);
 
-  int img_lx = img.getWidth();
-  int img_ly = img.getHeight();
+  const auto img_lx = img.getWidth();
+  const auto img_ly = img.getHeight();
 
   if (img.isColor())
   {
-    for (int xx = 0; xx < img_lx; xx++)
-      for (int yy = 0; yy < img_ly; yy++)
+    for (unsigned int xx = 0; xx < img_lx; xx++)
+    {
+      for (unsigned int yy = 0; yy < img_ly; yy++)
       {
-        auto ptr = img(xx, yy);
+        auto ptr = img.ptr<uint8_t>(xx, yy);
         const int p = ptr[0] | (ptr[1] << 8) | (ptr[2] << 16);
         setPixel(x + xx, y + yy, p);
       }
+    }
   }
   else
   {
@@ -282,25 +276,8 @@ void CCanvas::drawImage(int x, int y, const mrpt::img::CImage& img)
   MRPT_END
 }
 
-/*---------------------------------------------------------------
-            drawImage
----------------------------------------------------------------*/
-void CCanvas::drawImage(
-    [[maybe_unused]] int x,
-    [[maybe_unused]] int y,
-    [[maybe_unused]] const mrpt::img::CImage& img,
-    [[maybe_unused]] float rotation,
-    [[maybe_unused]] float scale)
-{
-  MRPT_START
-
-  THROW_EXCEPTION("Not implemented yet!! Try yourself! ;-)");
-
-  MRPT_END
-}
-
 void CCanvas::drawMark(
-    int x0, int y0, const mrpt::img::TColor color, char type, int size, unsigned int width)
+    const TPixelCoord& pt, const mrpt::img::TColor color, char type, int32_t size, int32_t width)
 {
   switch (type)
   {
@@ -333,7 +310,7 @@ void CCanvas::drawMark(
             drawCircle
 ---------------------------------------------------------------*/
 void CCanvas::drawCircle(
-    int x, int y, int radius, const mrpt::img::TColor& color, unsigned int width)
+    const TPixelCoord& center, int32_t radius, const mrpt::img::TColor& color, int32_t width)
 {
   if (radius < 0) radius = -radius;
 
@@ -367,7 +344,7 @@ void CCanvas::drawCircle(
 /*---------------------------------------------------------------
             textOut
 ---------------------------------------------------------------*/
-void CCanvas::textOut(int x0, int y0, const std::string& str, const mrpt::img::TColor color)
+void CCanvas::textOut(const TPixelCoord& pt, const std::string& str, const mrpt::img::TColor color)
 {
   MRPT_START
 
@@ -448,10 +425,9 @@ void CCanvas::ellipseGaussian(
     const double mean_y,
     double confIntervalStds,
     const mrpt::img::TColor& color,
-    unsigned int width,
+    int32_t width,
     int nEllipsePoints)
 {
-  MRPT_START
   int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
   double ang;
   mrpt::math::CMatrixFixed<double, 2, 2> eigVec, eigVals;
@@ -481,7 +457,4 @@ void CCanvas::ellipseGaussian(
     x1 = x2;
     y1 = y2;
   }  // end for points on ellipse
-
-  MRPT_END_WITH_CLEAN_UP(std::cout << "Covariance matrix leading to error is:" << std::endl
-                                   << cov2D << std::endl;);
 }

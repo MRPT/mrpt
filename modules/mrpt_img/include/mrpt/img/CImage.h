@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/pimpl.h>
 #include <mrpt/img/CCanvas.h>
 #include <mrpt/img/TCamera.h>
 #include <mrpt/img/TPixelCoord.h>
@@ -18,9 +17,6 @@
 
 // Forwards decls:
 // clang-format off
-struct _IplImage;
-using IplImage = struct _IplImage;
-namespace cv { class Mat; }
 namespace mrpt::io { class CStream; }
 // clang-format on
 
@@ -30,15 +26,10 @@ DECLARE_MEXPLUS_FROM(mrpt::img::CImage)
 /** Classes for image storage and manipulation \ingroup mrpt_img_grp */
 namespace mrpt::img
 {
-enum class PixelDepth : int32_t
+enum class PixelDepth : uint8_t
 {
-  D8U = 0,
-  D8S = 1,
-  D16U = 2,
-  D16S = 3,
-  D32S = 4,
-  D32F = 5,
-  D64F = 6
+  D8U = 1,
+  D16U = 2
 };
 
 /** Interpolation methods for images.
@@ -59,8 +50,13 @@ enum TInterpolationMethod
 /** For use in mrpt::img::CImage */
 enum TImageChannels : uint8_t
 {
+  // To define an image:
   CH_GRAY = 1,
-  CH_RGB = 3
+  CH_RGB = 3,
+  CH_RGBA = 4,
+
+  // Specifiers for loading from file/stream only:
+  CH_AS_IS = 0,  //!< Load as-is, no conversion
 };
 
 /** For usage in one of the CImage constructors */
@@ -86,64 +82,64 @@ class CExceptionExternalImageNotFound : public std::runtime_error
   CExceptionExternalImageNotFound(const std::string& s);
 };
 
-/** A class for storing images as grayscale or RGB bitmaps.
- * I/O is supported as:
- * - Binary dump using the CSerializable interface(<< and >> operators),
- *just as most objects in MRPT. This format is not compatible with any
- *standarized image format but it is fast.
- * - Saving/loading from files of different formats (bmp,jpg,png,...) using
- *the methods CImage::loadFromFile and CImage::saveToFile. See OpenCV for the
- *list of supported formats.
+/** A class for storing images as grayscale, RGB, or RGBA bitmaps.
+ *
+ * Supported I/O:
+ * - Saving/loading from files of different formats (JPG, PNG, TGA, BMP, PSD, GIF, HDR, PIC) using
+ *   the methods CImage::loadFromFile() and CImage::saveToFile(). This uses the [stb
+ *   library](https://github.com/nothings/stb).
  * - Importing from an XPM array (.xpm file format) using CImage::loadFromXPM()
  * - Importing TGA images. See CImage::loadTGA()
+ * - Binary dump using the CSerializable interface(<< and >> operators),
+ *just as most objects in MRPT. This format is not compatible with any
+ *standardized image format but it is fast.
  *
  *  How to create color/grayscale images:
  *  \code
  *    CImage  img1(width, height,  CH_GRAY );  // Grayscale image (8U1C)
- *    CImage  img2(width, height,  CH_RGB );  // RGB image (8U3C)
+ *    CImage  img2(width, height,  CH_RGB );   // RGB image (8U3C)
  *  \endcode
  *
  * Additional notes:
- * - The OpenCV `cv::Mat` format is used internally for compatibility with
- * all OpenCV functions. Use CImage::asCvMat() to retrieve it. Example:
- * \code
- * CImage  img;
- * ...
- * cv::Mat m = img.asCvMat()
- * \endcode
+ * - Since MRPT 3.0.0, the internal format for images is a raw memory buffer, handled manually by
+ *   this class. In the past, we used OpenCV's cv::Mat, but this was removed due to the huge amount
+ *   of dependencies it added to MRPT. The new implementation is much more lightweight.
+ *
  * - By default, all images use unsigned 8-bit storage format for pixels (on
- *each channel), but it can be changed by flags in the constructor.
+ *   each channel), but it can be changed by flags in the constructor.
+ *
  * - An **external storage mode** can be enabled by calling
- *CImage::setExternalStorage, useful for storing large collections of image
- *objects in memory while loading the image data itself only for the relevant
- *images at any time. See CImage::forceLoad() and CImage::unload().
- * - Operator = and copy ctor make shallow copies. For deep copies, see
- * CImage::makeDeepCopy() or CImage(const CImage&, copy_type_t), e.g:
+ *   CImage::setExternalStorage, useful for storing large collections of image
+ *   objects in memory while loading the image data itself only for the relevant
+ *   images at any time. See CImage::forceLoad() and CImage::unload().
+ *
+ * - Operator = and copy ctor make shallow copies. For deep copies, see CImage::makeDeepCopy() or
+ *   CImage(const CImage&, copy_type_t), e.g:
  * \code
  * CImage a(20, 10, CH_GRAY);
  * // Shallow copy ctor:
  * CImage b(a, mrpt::img::SHALLOW_COPY);
  * CImage c(a, mrpt::img::DEEP_COPY);
  * \endcode
+ *
  * - If you are interested in a smart pointer to an image, use:
  * \code
  * CImage::Ptr myImg = CImage::Create(); // optional ctor arguments
  * // or:
  * CImage::Ptr myImg = std::make_shared<CImage>(...);
  *  \endcode
- * - To set a CImage from an OpenCV `cv::Mat` use
- *CImage::CImage(cv::Mat,copy_type_t).
  *
- * Some functions are implemented in MRPT with highly optimized SSE2/SSE3
- *routines, in suitable platforms and compilers. To see the list of
- * optimizations refer to \ref sse_optimizations, falling back to default OpenCV
- *methods where unavailable.
+ * - [TODO] To set a CImage from an OpenCV `cv::Mat` use CImage::CImage(cv::Mat,copy_type_t)
  *
- * For computer vision functions that use CImage as its image data type,
- *see mrpt::vision.
+ * Some functions are implemented in MRPT with highly optimized SSE2/SSE3 routines, in suitable
+ * platforms and compilers. To see the list of optimizations refer to \ref sse_optimizations,
+ * falling back to default methods where unavailable.
  *
- * \sa mrpt::vision, mrpt::vision::CFeatureExtractor,
- *mrpt::vision::CImagePyramid, CSerializable, CCanvas
+ * For computer vision functions that use CImage as its image data type, see mrpt::vision.
+ *
+ * \sa mrpt::vision, mrpt::vision::CFeatureExtractor, mrpt::vision::CImagePyramid,
+ *     mrpt::serializable::CSerializable, mrpt::img::CCanvas
+ *
  * \ingroup mrpt_img_grp
  */
 class CImage : public mrpt::serialization::CSerializable, public CCanvas
@@ -172,7 +168,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    *    CImage  img2(width, height,  CH_RGB );  // RGB image (8U3C)
    *   \endcode
    */
-  CImage(unsigned int width, unsigned int height, TImageChannels nChannels = CH_RGB);
+  CImage(int32_t width, int32_t height, TImageChannels nChannels = CH_RGB);
 
   /** Fast constructor of a grayscale version of another image, making a
    * **shallow copy** from the original image if it already was grayscale, or
@@ -200,32 +196,9 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
     }
   }
 
-  /** Constructor from a cv::Mat image, making or not a deep copy of the data.
-   */
-  CImage(const cv::Mat& img, copy_type_t copy_type);
-
   /** Constructor from another CImage, making or not a deep copy of the data.
    */
   CImage(const CImage& img, copy_type_t copy_type);
-
-  /** @} */
-
-  /** @name Behavior-changing global flags
-    @{ */
-
-  /** By default, when storing images through the CSerializable interface, RGB
-   * images are JPEG-compressed to save space. If for some reason you prefer
-   * storing RAW image data, disable this feature by setting this flag to
-   * true.
-   *  (Default = true) */
-  static void DISABLE_JPEG_COMPRESSION(bool val);
-  static bool DISABLE_JPEG_COMPRESSION();
-
-  /** Unless DISABLE_JPEG_COMPRESSION=true, this sets the JPEG quality (range
-   * 1-100) of serialized RGB images.
-   *  (Default = 95) */
-  static void SERIALIZATION_JPEG_QUALITY(int q);
-  static int SERIALIZATION_JPEG_QUALITY();
 
   /** @} */
 
@@ -235,19 +208,15 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 
   /** Resets the image to the state after a default ctor. Accessing the image
    * after will throw an exception, unless it is formerly initialized somehow:
-   * loading an image from disk, calling rezize(), etc. */
+   * loading an image from disk, calling resize(), etc. */
   void clear();
 
-  /** Changes the size of the image, erasing previous contents (does NOT scale
-   * its current content, for that, see scaleImage).
-   *  - nChannels: Can be 3 for RGB images or 1 for grayscale images.
+  /** Changes the size of the image, erasing previous contents (does NOT scale its current content,
+   *   for that, see scaleImage).
    * \sa scaleImage
    */
   void resize(
-      std::size_t width,
-      std::size_t height,
-      TImageChannels nChannels,
-      PixelDepth depth = PixelDepth::D8U);
+      int32_t width, int32_t height, TImageChannels nChannels, PixelDepth depth = PixelDepth::D8U);
 
   PixelDepth getPixelDepth() const;
 
@@ -257,18 +226,18 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    */
   void scaleImage(
       CImage& out_img,
-      unsigned int width,
-      unsigned int height,
+      int32_t width,
+      int32_t height,
       TInterpolationMethod interp = IMG_INTERP_CUBIC) const;
 
   /** Rotates the image by the given angle (in radians) around the given center point, with
    * an optional scale factor.
    * The output image will have the same size as the input, except if angle is exactly ±90 degrees,
-   * in which case a quick image rotation (switching height and widht) will be performed instead.
+   * in which case a quick image rotation (switching height and width) will be performed instead.
    * \sa resize, scaleImage
    */
   void rotateImage(
-      CImage& out_img, double ang, unsigned int cx, unsigned int cy, double scale = 1.0) const;
+      CImage& out_img, double ang, const TPixelCoord& center, double scale = 1.0) const;
 
   /** Changes the value of the pixel (x,y).
    *  Pixel coordinates starts at the left-top corner of the image, and start
@@ -282,36 +251,14 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    *   raising exceptions, nor leading to memory access errors.
    * \sa at, ptr
    */
-  void setPixel(int x, int y, size_t color) override;
+  void setPixel(const TPixelCoord& pt, const mrpt::img::TColor& color) override;
 
   // See CCanvas docs
-  void line(
-      int x0,
-      int y0,
-      int x1,
-      int y1,
-      const mrpt::img::TColor color,
-      unsigned int width = 1,
-      TPenStyle penStyle = psSolid) override;
+  void drawImage(const TPixelCoord& pt, const mrpt::img::CImage& img) override;
 
   // See CCanvas docs
-  void drawCircle(
-      int x,
-      int y,
-      int radius,
-      const mrpt::img::TColor& color = mrpt::img::TColor(255, 255, 255),
-      unsigned int width = 1) override;
-
-  // See CCanvas docs
-  void drawImage(int x, int y, const mrpt::img::CImage& img) override;
-
-  // See CCanvas docs
-  void filledRectangle(int x0, int y0, int x1, int y1, const mrpt::img::TColor color) override;
-
-  /** Equalize the image histogram, saving the new image in the given output
-   * object.  \note RGB images are first converted to HSV color space, then
-   * equalized for brightness (V) */
-  void equalizeHist(CImage& out_img) const;
+  void filledRectangle(
+      const TPixelCoord& pt0, const TPixelCoord& pt1, const mrpt::img::TColor& color) override;
 
   /** Returns a new image scaled down to half its original size
    * \exception std::exception On odd size
@@ -342,26 +289,13 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   //! \overload
   void scaleDouble(CImage& out_image, TInterpolationMethod interp) const;
 
-  /** Update a part of this image with the "patch" given as argument.
-   * The "patch" will be "pasted" at the (col,row) coordinates of this image.
-   * \exception std::exception if patch pasted on the pixel (_row, _column)
-   * jut out
-   * of the image.
-   * \sa extract_patch
-   */
-  void update_patch(const CImage& patch, const unsigned int col, const unsigned int row);
-
   /** Extract a patch from this image, saveing it into "patch" (its previous
    * contents will be overwritten).
    *  The patch to extract starts at (col,row) and has the given dimensions.
    * \sa update_patch
    */
   void extract_patch(
-      CImage& patch,
-      const unsigned int col = 0,
-      const unsigned int row = 0,
-      const unsigned int width = 1,
-      const unsigned int height = 1) const;
+      CImage& patch, const TPixelCoord& top_left_corner, const TImageSize& patch_size) const;
 
   /** Computes the correlation coefficient (returned as val), between two
    *images
@@ -403,7 +337,6 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 
   /** Optimize the brightness range of an image without using histogram
    * Only for one channel images.
-   * \sa equalizeHist
    */
   void normalize();
 
@@ -478,8 +411,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    * optimizations of this method, but this graph shows a general view:
    *  <img src="KLT_response_performance_SSE2.png" >
    */
-  [[nodiscard]] float KLT_response(
-      const unsigned int x, const unsigned int y, const unsigned int half_window_size) const;
+  [[nodiscard]] float KLT_response(const TPixelCoord& pt, const int32_t half_window_size) const;
 
   /** @} */
 
@@ -496,7 +428,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   /** Returns a deep copy of this image.
    * If the image is externally-stored, there is no difference with a shallow
    * copy. \sa makeShallowCopy() */
-  [[nodiscard]] CImage makeDeepCopy() const;
+  [[nodiscard]] CImage makeDeepCopy() const { return CImage(*this, DEEP_COPY); }
 
   /** Copies from another image (shallow copy), and, if it is externally
    * stored, the image file will be actually loaded into memory in "this"
@@ -510,23 +442,13 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    * \sa operator =
    */
 
-  /** Assigns from an image in IplImage format */
-  inline void loadFromIplImage(const IplImage* iplImage, copy_type_t c = DEEP_COPY)
-  {
-    internal_fromIPL(iplImage, c);
-  }
-
   /** Efficiently swap of two images */
   void swap(CImage& o);
 
   /** @} */
 
-  /** @name Access to image contents (OpenCV data structure, and raw pixels)
+  /** @name Access to image contents
     @{ */
-
-  /** Makes a shallow or deep copy of this image into the provided cv::Mat.
-   * \sa asCvMatRef */
-  void asCvMat(cv::Mat& out_img, copy_type_t copy_type) const;
 
   template <typename CV_MAT>
   [[nodiscard]] CV_MAT asCvMat(copy_type_t copy_type) const
@@ -536,30 +458,18 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
     return ret;
   }
 
-  /** Get a reference to the internal cv::Mat, which can be resized, etc. and
-   * changes will be reflected in this CImage object. */
-  [[nodiscard]] cv::Mat& asCvMatRef();
-
-  /** \overload  */
-  [[nodiscard]] const cv::Mat& asCvMatRef() const;
-
-  /**  Access to pixels without checking boundaries - Use normally the ()
-  operator better, which checks the coordinates.
-  \sa CImage::operator()
-  */
-
   /**  Access to pixels without checking boundaries, and doing a
    * reinterpret_cast<> of the data as the given type.
    *\sa The CImage::operator() which does check for coordinate limits.
    */
   template <typename T>
-  [[nodiscard]] const T& at(unsigned int col, unsigned int row, unsigned int channel = 0) const
+  [[nodiscard]] const T& at(int32_t col, int32_t row, uint8_t channel = 0) const
   {
     return *reinterpret_cast<const T*>(internal_get(col, row, channel));
   }
   /** \overload Non-const case */
   template <typename T>
-  [[nodiscard]] T& at(unsigned int col, unsigned int row, unsigned int channel = 0)
+  [[nodiscard]] T& at(int32_t col, int32_t row, uint8_t channel = 0)
   {
     return *reinterpret_cast<T*>(internal_get(col, row, channel));
   }
@@ -568,26 +478,26 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    *\sa The CImage::operator() which does check for coordinate limits.
    */
   template <typename T>
-  [[nodiscard]] const T* ptr(unsigned int col, unsigned int row, unsigned int channel = 0) const
+  [[nodiscard]] const T* ptr(int32_t col, int32_t row, uint8_t channel = 0) const
   {
     return reinterpret_cast<const T*>(internal_get(col, row, channel));
   }
   /** \overload Non-const case */
   template <typename T>
-  [[nodiscard]] T* ptr(unsigned int col, unsigned int row, unsigned int channel = 0)
+  [[nodiscard]] T* ptr(int32_t col, int32_t row, uint8_t channel = 0)
   {
     return reinterpret_cast<T*>(internal_get(col, row, channel));
   }
 
   /** Returns a pointer to the first pixel of the given line.\sa ptr, at */
   template <typename T>
-  [[nodiscard]] const T* ptrLine(unsigned int row) const
+  [[nodiscard]] const T* ptrLine(int32_t row) const
   {
     return reinterpret_cast<const T*>(internal_get(0, row, 0));
   }
   /** \overload Non-const case */
   template <typename T>
-  [[nodiscard]] T* ptrLine(unsigned int row)
+  [[nodiscard]] T* ptrLine(int32_t row)
   {
     return reinterpret_cast<T*>(internal_get(0, row, 0));
   }
@@ -598,7 +508,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    * \exception std::exception On pixel coordinates out of bounds
    * \sa operator()
    */
-  [[nodiscard]] float getAsFloat(unsigned int col, unsigned int row, unsigned int channel) const;
+  [[nodiscard]] float getAsFloat(const TPixelCoord& pt, uint8_t channel) const;
 
   /** Returns the contents of a given pixel (for gray-scale images, in color
    * images the gray scale equivalent is computed for the pixel), in float
@@ -607,14 +517,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    * \exception std::exception On pixel coordinates out of bounds
    * \sa operator()
    */
-  [[nodiscard]] float getAsFloat(unsigned int col, unsigned int row) const;
-
-  /** Returns a pointer to a given pixel information.
-   *   The coordinate origin is pixel(0,0)=top-left corner of the image.
-   * \exception std::exception On pixel coordinates out of bounds
-   */
-  [[nodiscard]] unsigned char* operator()(
-      unsigned int col, unsigned int row, unsigned int channel = 0) const;
+  [[nodiscard]] float getAsFloat(const TPixelCoord& pt) const;
 
   /** @} */
 
@@ -622,21 +525,13 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
     @{ */
 
   /** Returns the width of the image in pixels \sa getSize */
-  [[nodiscard]] size_t getWidth() const override;
+  [[nodiscard]] int32_t getWidth() const override;
 
   /** Returns the height of the image in pixels \sa getSize */
-  [[nodiscard]] size_t getHeight() const override;
+  [[nodiscard]] int32_t getHeight() const override;
 
   /** Return the size of the image \sa getWidth, getHeight */
-  void getSize(TImageSize& s) const;
-
-  /** Return the size of the image \sa getWidth, getHeight */
-  [[nodiscard]] inline TImageSize getSize() const
-  {
-    TImageSize ret;
-    getSize(ret);
-    return ret;
-  }
+  [[nodiscard]] TImageSize getSize() const;
 
   /** Returns the row stride of the image: this is the number of *bytes*
    * between two consecutive rows. You can access the pointer to the first row
@@ -647,13 +542,8 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   /** As of mrpt 2.0.0, this returns either "GRAY" or "BGR". */
   [[nodiscard]] std::string getChannelsOrder() const;
 
-  /** Return the maximum pixel value of the image, as a float value in the
-   * range [0,1]
-   * \sa getAsFloat */
-  [[nodiscard]] float getMaxAsFloat() const;
-
-  /** Returns 1 (grayscale), 3 (RGB) or 4 (RGBA) [New in MRPT 2.1.1] */
-  [[nodiscard]] int channelCount() const;
+  /** Returns 1 (grayscale), 3 (RGB) or 4 (RGBA) */
+  [[nodiscard]] TImageChannels channels() const;
 
   /** Returns true if the image is RGB or RGBA, false if it is grayscale */
   [[nodiscard]] bool isColor() const;
@@ -666,11 +556,6 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 
   /** Returns true (as of MRPT v2.0.0, it's fixed) */
   [[nodiscard]] bool isOriginTopLeft() const;
-
-  /** Returns the number of channels, typically 1 (GRAY) or 3 (RGB)
-   * \sa isColor
-   */
-  [[nodiscard]] TImageChannels getChannelCount() const;
 
   /**	Returns the image as a matrix with pixel grayscale values in the range
    * [0,1]. Matrix indexes in this order: M(row,column)
@@ -797,13 +682,13 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   static void setImagesPathBase(const std::string& path);
 
   /** See setExternalStorage(). */
-  [[nodiscard]] bool isExternallyStored() const noexcept { return m_imgIsExternalStorage; }
+  [[nodiscard]] bool isExternallyStored() const noexcept { return m_state->imgIsExternalStorage; }
 
   /** Only if isExternallyStored() returns true. \sa
    * getExternalStorageFileAbsolutePath */
   [[nodiscard]] inline std::string getExternalStorageFile() const noexcept
   {
-    return m_externalFile;
+    return m_state->externalFile;
   }
 
   /** Only if isExternallyStored() returns true. \sa getExternalStorageFile */
@@ -844,23 +729,11 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   /** Reads the image from raw pixels buffer in memory.
    */
   void loadFromMemoryBuffer(
-      unsigned int width,
-      unsigned int height,
-      bool color,
-      unsigned char* rawpixels,
+      int32_t width,
+      int32_t height,
+      TImageChannels color_channels,
+      uint8_t* rawpixels,
       bool swapRedBlue = false);
-
-  /** Reads a color image from three raw pixels buffers in memory.
-   * bytesPerRow is the number of bytes per row per channel, i.e. the row
-   * increment.
-   */
-  void loadFromMemoryBuffer(
-      unsigned int width,
-      unsigned int height,
-      unsigned int bytesPerRow,
-      unsigned char* red,
-      unsigned char* green,
-      unsigned char* blue);
 
   /** Set the image from a matrix, interpreted as grayscale intensity values,
    *in the range [0,1] (normalized=true) or [0,255] (normalized=false)
@@ -871,16 +744,18 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   void setFromMatrix(const MAT& m, bool matrix_is_normalized = true, bool flip_vertically = false)
   {
     MRPT_START
-    const unsigned int lx = m.cols();
-    const unsigned int ly = m.rows();
+    const auto lx = m.cols();
+    const auto ly = m.rows();
     this->resize(lx, ly, CH_GRAY);
     if (matrix_is_normalized)
     {  // Matrix: [0,1]
-      for (unsigned int y = 0; y < ly; y++)
+      for (auto y = 0; y < ly; y++)
       {
         auto* pixels = ptrLine<uint8_t>(flip_vertically ? (ly - 1 - y) : y);
         for (unsigned int x = 0; x < lx; x++)
+        {
           (*pixels++) = static_cast<uint8_t>(m.coeff(y, x) * 255);
+        }
       }
     }
     else
@@ -888,7 +763,10 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
       for (unsigned int y = 0; y < ly; y++)
       {
         auto* pixels = ptrLine<uint8_t>(flip_vertically ? (ly - 1 - y) : y);
-        for (unsigned int x = 0; x < lx; x++) (*pixels++) = static_cast<uint8_t>(m.coeff(y, x));
+        for (unsigned int x = 0; x < lx; x++)
+        {
+          (*pixels++) = static_cast<uint8_t>(m.coeff(y, x));
+        }
       }
     }
     MRPT_END
@@ -946,29 +824,14 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   /** Load image from a file, whose format is determined from the extension
    * (internally uses OpenCV).
    * \param fileName The file to read from.
-   * \param isColor Specifies colorness of the loaded image:
-   *  - if ==1, the loaded image is forced to be color 3-channel image;
-   *  - if ==0, the loaded image is forced to be grayscale;
-   *  - if ==-1, the loaded image will be loaded as is (with number of
-   * channels depends on the file). The supported formats are:
-   *
-   * - Windows bitmaps - BMP, DIB;
-   * - JPEG files - JPEG, JPG, JPE;
-   * - Portable Network Graphics - PNG;
-   * - Portable image format - PBM, PGM, PPM;
-   * - Sun rasters - SR, RAS;
-   * - TIFF files - TIFF, TIF.
    *
    * MRPT also provides the special loaders loadFromXPM() and loadTGA().
-   *
-   * Note that this function uses cv::imdecode() internally to reuse the
-   * memory buffer used by the image already loaded into this CImage, if
-   * possible, minimizing the number of memory allocations.
    *
    * \return False on any error
    * \sa saveToFile, setExternalStorage,loadFromXPM, loadTGA
    */
-  [[nodiscard]] bool loadFromFile(const std::string& fileName, int isColor = -1);
+  [[nodiscard]] bool loadFromFile(
+      const std::string& fileName, TImageChannels loadChannels = CH_AS_IS);
 
   /** Static method to construct an CImage object from a file.
    * See CImage::loadFromFile() for meaning of parameters.
@@ -977,13 +840,13 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    * \note New in MRPT 2.4.2
    */
   [[nodiscard]] static mrpt::img::CImage LoadFromFile(
-      const std::string& fileName, int isColor = -1);
+      const std::string& fileName, TImageChannels loadChannels = CH_AS_IS);
 
   /** Loads a TGA true-color RGBA image as two CImage objects, one for the RGB
    * channels plus a separate gray-level image with A channel.
    * \return true on success
    */
-  [[nodiscard]] static bool loadTGA(
+  [[nodiscard]] static bool LoadTGA(
       const std::string& fileName, mrpt::img::CImage& out_RGB, mrpt::img::CImage& out_alpha);
 
   /** Loads the image from an XPM array, as included from a ".xpm" file.
@@ -993,23 +856,18 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    * \return false on any error */
   [[nodiscard]] bool loadFromXPM(const char* const* xpm_array, bool swap_rb = true);
 
-  /** Save the image to a file, whose format is determined from the extension
-   * (internally uses OpenCV).
+  /** Save the image to a file, whose format is determined from the extension (internally uses the
+   * stb library).
    * \param fileName The file to write to.
    *
    * The supported formats are:
+   * - `*.png`: Portable Network Graphics
+   * - `*.bmp`: Windows bitmaps
+   * - `*.tga`: TGA files
+   * - `*.jpeg|*.jpg`: JPEG files
    *
-   * - Windows bitmaps - BMP, DIB;
-   * - JPEG files - JPEG, JPG, JPE;
-   * - Portable Network Graphics - PNG;
-   * - Portable image format - PBM, PGM, PPM;
-   * - Sun rasters - SR, RAS;
-   * - TIFF files - TIFF, TIF.
-   *
-   * \param jpeg_quality Only for JPEG files, the quality of the compression
-   * in the range [0-100]. Larger is better quality but slower.
-   * \note jpeg_quality is only effective if MRPT is compiled against OpenCV
-   * 1.1.0 or newer.
+   * \param jpeg_quality Only for JPEG files, the quality of the compression in the range [0-100].
+   * Larger is better quality but slower.
    * \return False on any error
    * \sa loadFromFile
    */
@@ -1053,24 +911,85 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 
   /** @} */
 
-  /** (DEPRECATED, DO NOT USE - Kept here only to interface opencv 2.4) */
-  void getAsIplImage(IplImage* dest) const;
-
  protected:
   /** @name Data members
     @{ */
 
-  /** PIMPL to cv::Mat object actually holding the image */
-  struct Impl;
-  mrpt::pimpl<Impl> m_impl;
+  /** PIMPL actual struct holding the image data */
+  struct Impl
+  {
+    // Default constructor
+    Impl() = default;
 
-  /**  Set to true only when using setExternalStorage.
-   * \sa setExternalStorage
-   */
-  mutable bool m_imgIsExternalStorage{false};
+    // Destructor
+    ~Impl();
 
-  /** The file name of a external storage image. */
-  mutable std::string m_externalFile;
+    // Delete copy constructor and copy assignment operator
+    Impl(const Impl&) = delete;
+    Impl& operator=(const Impl&) = delete;
+
+    // Define move constructor and move assignment operator
+    Impl(Impl&&) noexcept = default;
+    Impl& operator=(Impl&&) noexcept = default;
+
+    // Data:
+    int32_t width = 0;
+    int32_t height = 0;
+    TImageChannels channels = TImageChannels::CH_GRAY;
+    PixelDepth depth = PixelDepth::D8U;
+    uint8_t* image_data = nullptr;  //!< Pointer to the loaded image data
+
+    /**  Set to true only when using setExternalStorage. \sa setExternalStorage  */
+    mutable bool imgIsExternalStorage{false};
+
+    /** The file name of a external storage image. */
+    mutable std::string externalFile;
+
+    [[nodiscard]] bool empty() const { return image_data == nullptr || width == 0 || height == 0; }
+    void clear();
+
+    void deep_copy(const Impl& o)
+    {
+      clear();
+
+      width = o.width;
+      height = o.height;
+      channels = o.channels;
+      depth = o.depth;
+      imgIsExternalStorage = o.imgIsExternalStorage;
+      externalFile = o.externalFile;
+
+      if (o.image_data)
+      {
+        const auto num_bytes = image_buffer_size_bytes();
+        image_data = reinterpret_cast<uint8_t*>(std::malloc(num_bytes));
+        std::memcpy(image_data, o.image_data, num_bytes);
+      }
+    }
+
+    /** Returns the image buffer size according to width, height, channels, and pixel depth.
+     * This function just computes the size of the image buffer in bytes from the properties filled
+     * in in the structure.
+     */
+    [[nodiscard]] std::size_t image_buffer_size_bytes() const
+    {
+      return static_cast<std::size_t>(width) * static_cast<std::size_t>(height) *
+             static_cast<std::size_t>(channels) * static_cast<std::size_t>(depth);
+    }
+
+    [[nodiscard]] std::size_t row_stride_in_bytes() const
+    {
+      return static_cast<std::size_t>(width) * static_cast<std::size_t>(channels) *
+             static_cast<std::size_t>(depth);
+    }
+
+    [[nodiscard]] std::size_t pixel_size_in_bytes() const
+    {
+      return static_cast<std::size_t>(channels) * static_cast<std::size_t>(depth);
+    }
+  };
+
+  std::shared_ptr<Impl> m_state;
 
   /** @} */
 
@@ -1078,7 +997,9 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    * loaded yet, load it.
    * \exception CExceptionExternalImageNotFound */
   void makeSureImageIsLoaded(bool allowNonInitialized = false) const;
-  uint8_t* internal_get(int col, int row, uint8_t channel = 0) const;
-  void internal_fromIPL(const IplImage* iplImage, copy_type_t c);
+
+  [[nodiscard]] uint8_t* internal_get(int32_t col, int32_t row, uint8_t channel = 0);
+  [[nodiscard]] const uint8_t* internal_get(int32_t col, int32_t row, uint8_t channel = 0) const;
+
 };  // End of class
 }  // namespace mrpt::img

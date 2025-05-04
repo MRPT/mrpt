@@ -26,7 +26,7 @@ namespace mrpt::img
 struct TColor
 {
   constexpr inline TColor() = default;
-  constexpr inline TColor(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha = 255) :
+  constexpr inline TColor(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha = 255) :  // NOLINT
       R(r), G(g), B(b), A(alpha)
   {
   }
@@ -39,7 +39,7 @@ struct TColor
   {
   }
 
-  constexpr inline TColor(const unsigned int color_RGB_24bit, const uint8_t alpha) :
+  constexpr inline TColor(const unsigned int color_RGB_24bit, const uint8_t alpha) :  // NOLINT
       R(uint8_t(color_RGB_24bit >> 16)),
       G(uint8_t(color_RGB_24bit >> 8)),
       B(uint8_t(color_RGB_24bit)),
@@ -49,15 +49,12 @@ struct TColor
 
   uint8_t R{0}, G{0}, B{0}, A{255};
 
-  /** Operator for implicit conversion into an int binary representation
-   * 0xRRGGBB */
+  /** Operator for implicit conversion into an int binary representation 0xRRGGBB */
   inline operator unsigned int() const
   {
-    return (((unsigned int)R) << 16) | (((unsigned int)G) << 8) | B;
+    return ((static_cast<unsigned int>(R)) << 16) | ((static_cast<unsigned int>(G)) << 8) | B;
   }
 
-  TColor(const TColor& other) { *this = other; }
-  TColor& operator=(const TColor& other);
   TColor& operator+=(const TColor& other);
   TColor& operator-=(const TColor& other);
 
@@ -86,7 +83,7 @@ struct TColorf
 {
   TColorf() = default;
 
-  TColorf(float r, float g, float b, float alpha = 1.0f) : R(r), G(g), B(b), A(alpha) {}
+  TColorf(float r, float g, float b, float alpha = 1.0f) : R(r), G(g), B(b), A(alpha) {}  // NOLINT
 
   explicit TColorf(const TColor& col) :
       R(u8tof(col.R)), G(u8tof(col.G)), B(u8tof(col.B)), A(u8tof(col.A))
