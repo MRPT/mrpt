@@ -10,49 +10,48 @@
 
 #include <cstdint>
 #include <iosfwd>
-#include <utility>
 
 namespace mrpt::img
 {
-/** A pair (x,y) of pixel coordinates (subpixel resolution). \ingroup
- * mrpt_img_grp  */
-struct TPixelCoordf
+/** Generic template for pixel coordinates
+ * \ingroup mrpt_img_grp
+ */
+template <typename T>
+struct TPixelCoordBase
 {
   /** The type of \a x and \a y */
-  using pixel_coord_t = float;
+  using pixel_coord_t = T;
 
-  float x{.0f}, y{.0f};
+  pixel_coord_t x{0}, y{0};
 
-  /** Default constructor: undefined values of x,y */
-  TPixelCoordf() = default;
-  /** Constructor from x,y values */
-  TPixelCoordf(const float _x, const float _y) : x(_x), y(_y) {}
-  template <typename T>
-  TPixelCoordf(const std::pair<T, T>& p) :
-      x(static_cast<float>(p.first)), y(static_cast<float>(p.second))
+  TPixelCoordBase() = default;
+
+  TPixelCoordBase(const T _x, const T _y) : x(_x), y(_y) {}
+  template <typename U>
+  explicit TPixelCoordBase(const TPixelCoordBase<U>& o) :
+      x(static_cast<T>(o.x)), y(static_cast<T>(o.y))
   {
   }
+
+  bool operator==(const TPixelCoordBase& o) const { return x == o.x && y == o.y; }
+  TPixelCoordBase operator+(const TPixelCoordBase& o) const { return {x + o.x, y + o.y}; }
+  TPixelCoordBase operator-(const TPixelCoordBase& o) const { return {x - o.x, y - o.y}; }
 };
 
-/** Prints TPixelCoordf as "(x,y)" */
-std::ostream& operator<<(std::ostream& o, const TPixelCoordf& p);
-
-/** A pair (x,y) of pixel coordinates (integer resolution). */
-struct TPixelCoord
+/** Prints TPixelCoordBase as "(x,y)" */
+template <typename T>
+std::ostream& operator<<(std::ostream& o, const TPixelCoordBase<T>& p)
 {
-  /** The type of \a x and \a y */
-  using pixel_coord_t = int32_t;
+  return o << "(" << p.x << "," << p.y << ")";
+}
 
-  TPixelCoord() = default;
-  TPixelCoord(const int32_t _x, const int32_t _y) : x(_x), y(_y) {}
-  bool operator==(const TPixelCoord& o) { return x == o.x && y == o.y; }
-  int32_t x{0}, y{0};
-};
+/** A pair (x,y) of pixel coordinates (integer resolution). \ingroup mrpt_img_grp  */
+using TPixelCoord = TPixelCoordBase<int32_t>;
 
-/** Prints TPixelCoord as "(x,y)" */
-std::ostream& operator<<(std::ostream& o, const TPixelCoord& p);
-
-/** A type for image sizes. */
+/** A type for image sizes. \ingroup mrpt_img_grp  */
 using TImageSize = TPixelCoord;
+
+/** A pair (x,y) of pixel coordinates (subpixel resolution). \ingroup mrpt_img_grp  */
+using TPixelCoordf = TPixelCoordBase<float>;
 
 }  // namespace mrpt::img
