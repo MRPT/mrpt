@@ -122,33 +122,48 @@ void CCanvas::line(
     [[maybe_unused]] int32_t width,
     [[maybe_unused]] TPenStyle penStyle)
 {
-  float x, y;
+  const auto delta = TPixelCoordf(pt1) - TPixelCoordf(pt0);
 
-  auto Ax = (float)(x1 - x0);
-  auto Ay = (float)(y1 - y0);
+  const auto img_width = getWidth();
+  const auto img_height = getHeight();
 
-  // In this cases, there is nothing to do!
-  if (Ax == 0 && Ay == 0) return;
-  if (x0 < 0 && x1 < 0) return;
-  if (y0 < 0 && y1 < 0) return;
-  if (x0 >= (int)getWidth() && x1 >= (int)getWidth()) return;
-  if (y0 >= (int)getHeight() && y1 >= (int)getHeight()) return;
+  // In these cases, there is nothing to do!
+  if (delta.x == 0 && delta.y == 0)
+  {
+    return;
+  }
+  if (pt0.x < 0 && pt1.x < 0)
+  {
+    return;
+  }
+  if (pt0.y < 0 && pt1.y < 0)
+  {
+    return;
+  }
+  if (pt0.x >= img_width && pt1.x >= img_width)
+  {
+    return;
+  }
+  if (pt0.y >= img_height && pt1.y >= img_height)
+  {
+    return;
+  }
 
-  float dist = sqrt(square(Ax) + square(Ay));
-  int i, N = (int)ceil(dist);
+  const float dist = std::sqrt(square(delta.x) + square(delta.y));
+  const auto Nf = std::ceil(dist);
+  const auto N = static_cast<int>(Nf);
 
   // The N steps to perform next:
-  Ax /= N;
-  Ay /= N;
-  x = (float)x0;
-  y = (float)y0;
+  const auto step = TPixelCoordf(delta.x / Nf, delta.y / Nf);
 
-  for (i = 0; i < N; i++)
+  auto pt = TPixelCoordf(pt0);
+
+  for (int i = 0; i < N; i++)
   {
-    x += Ax;
-    y += Ay;
-    setPixel((int)x, (int)y, color);
-  }  // end for i
+    setPixel(TPixelCoord{pt}, color);
+    pt.x += step.x;
+    pt.y += step.y;
+  }
 }
 
 /*---------------------------------------------------------------
@@ -157,34 +172,42 @@ void CCanvas::line(
 void CCanvas::rectangle(
     const TPixelCoord& pt0, const TPixelCoord& pt1, const mrpt::img::TColor& color, int32_t width)
 {
-  int w_min = (int)-ceil(((float)width) / 2);
-  int w_max = (int)floor(((float)width) / 2);
-  // Draw "width" rectangles one into another:
-  for (int w = w_min; w <= w_max; w++)
-  {
-    line(x0 - w, y0 - w, x1 + w, y0 - w, color);
-    line(x1 + w, y0 - w, x1 + w, y1 + w, color);
-    line(x1 + w, y1 + w, x0 - w, y1 + w, color);
-    line(x0 - w, y1 + w, x0 - w, y0 - w, color);
-  }  // end for "w"
+  const auto img_width = getWidth();
+  const auto img_height = getHeight();
+
+  // Clip to the image:
+  int x_min = max(pt0.x, 0);
+  int x_max = min(pt1.x, img_width - 1);
+  int y_min = max(pt0.y, 0);
+  int y_max = min(pt1.y, img_height - 1);
+
+  // Draw the four lines:
+  line({x_min, y_min}, {x_max, y_min}, color, width);
+  line({x_max, y_min}, {x_max, y_max}, color, width);
+  line({x_max, y_max}, {x_min, y_max}, color, width);
+  line({x_min, y_max}, {x_min, y_min}, color, width);
 }
 
 void CCanvas::triangle(
-    int x0, int y0, int size, const mrpt::img::TColor color, bool inferior, unsigned int width)
+    const TPixelCoord& pt,
+    int32_t size,
+    const mrpt::img::TColor color,
+    bool inferior,
+    int32_t width)
 {
-  int ts = round(0.866 * size);
-  int tc = round(0.5 * size);
+  const int ts = round(0.866 * size);
+  const int tc = round(0.5 * size);
   if (inferior)
   {
-    line(x0, y0 + size, x0 + ts, y0 - tc, color, width);
-    line(x0, y0 + size, x0 - ts, y0 - tc, color, width);
-    line(x0 + ts, y0 - tc, x0 - ts, y0 - tc, color, width);
+    line({pt.x, pt.y + size}, {pt.x + ts, pt.y - tc}, color, width);
+    line({pt.x, pt.y + size}, {pt.x - ts, pt.y - tc}, color, width);
+    line({pt.x + ts, pt.y - tc}, {pt.x - ts, pt.y - tc}, color, width);
   }
   else
   {
-    line(x0, y0 - size, x0 + ts, y0 + tc, color, width);
-    line(x0, y0 - size, x0 - ts, y0 + tc, color, width);
-    line(x0 + ts, y0 + tc, x0 - ts, y0 + tc, color, width);
+    line({pt.x, pt.y - size}, {pt.x + ts, pt.y + tc}, color, width);
+    line({pt.x, pt.y - size}, {pt.x - ts, pt.y + tc}, color, width);
+    line({pt.x + ts, pt.y + tc}, {pt.x - ts, pt.y + tc}, color, width);
   }
 }
 
@@ -194,13 +217,18 @@ void CCanvas::triangle(
 void CCanvas::filledRectangle(
     const TPixelCoord& pt0, const TPixelCoord& pt1, const mrpt::img::TColor& color)
 {
-  int x_min = max(x0, 0);
-  int x_max = min(x1, (int)getWidth() - 1);
-  int y_min = max(y0, 0);
-  int y_max = min(y1, (int)getHeight() - 1);
+  int x_min = max(pt0.x, 0);
+  int x_max = min(pt1.x, static_cast<int>(getWidth()) - 1);
+  int y_min = max(pt0.y, 0);
+  int y_max = min(pt1.y, static_cast<int>(getHeight()) - 1);
 
   for (int y = y_min; y <= y_max; y++)
-    for (int x = x_min; x <= x_max; x++) setPixel(x, y, color);
+  {
+    for (int x = x_min; x <= x_max; x++)
+    {
+      setPixel({x, y}, color);
+    }
+  }
 }
 
 /*---------------------------------------------------------------
@@ -218,23 +246,21 @@ void CCanvas::selectTextFont(const std::string& fontName)
     cerr << "[CCanvas::selectTextFont] Warning: Unknown font: " << fontName << endl;
     return;
   }
-  else
-  {
-    FontData& fd = it->second;
-    m_selectedFontBitmaps = reinterpret_cast<const uint32_t*>(&fd.data[0]);
-    m_selectedFont = fontName;
+
+  FontData& fd = it->second;
+  m_selectedFontBitmaps = reinterpret_cast<const uint32_t*>(&fd.data[0]);
+  m_selectedFont = fontName;
 
 #if MRPT_IS_BIG_ENDIAN
-    // Fix endianness of char tables:
-    if (!fd.prepared_to_big_endian)
-    {
-      fd.prepared_to_big_endian = true;  // Only do once
-      uint32_t* ptr = reinterpret_cast<uint32_t*>(&fd.data[0]);
-      for (size_t i = 0; i < fd.data.size() / sizeof(uint32_t); i++)
-        mrpt::reverseBytesInPlace(ptr[i]);
-    }
-#endif
+  // Fix endianness of char tables:
+  if (!fd.prepared_to_big_endian)
+  {
+    fd.prepared_to_big_endian = true;  // Only do once
+    uint32_t* ptr = reinterpret_cast<uint32_t*>(&fd.data[0]);
+    for (size_t i = 0; i < fd.data.size() / sizeof(uint32_t); i++)
+      mrpt::reverseBytesInPlace(ptr[i]);
   }
+#endif
 }
 
 /*---------------------------------------------------------------
@@ -255,22 +281,18 @@ void CCanvas::drawImage(const TPixelCoord& pt, const mrpt::img::CImage& img)
       for (int32_t yy = 0; yy < img_ly; yy++)
       {
         auto ptr = img.ptr<uint8_t>(xx, yy);
-        const int p = ptr[0] | (ptr[1] << 8) | (ptr[2] << 16);
-        setPixel(pt.x + xx, pt.y + yy, p);
+        setPixel({pt.x + xx, pt.y + yy}, {ptr[0], ptr[1], ptr[2]});
       }
     }
   }
   else
   {
-    unsigned char c;
-    int col;
     for (int32_t xx = 0; xx < img_lx; xx++)
     {
       for (int32_t yy = 0; yy < img_ly; yy++)
       {
-        c = *((unsigned char*)img(xx, yy));
-        col = c | (c << 8) | (c << 16);
-        setPixel(pt.x + xx, pt.y + yy, col);
+        const auto c = img.at<uint8_t>(xx, yy);
+        setPixel({pt.x + xx, pt.y + yy}, {c, c, c});
       }
     }
   }
@@ -279,29 +301,33 @@ void CCanvas::drawImage(const TPixelCoord& pt, const mrpt::img::CImage& img)
 }
 
 void CCanvas::drawMark(
-    const TPixelCoord& pt, const mrpt::img::TColor color, char type, int32_t size, int32_t width)
+    const TPixelCoord& pt,
+    const mrpt::img::TColor color,
+    char type,  // NOLINT
+    int32_t size,
+    int32_t width)
 {
   switch (type)
   {
     case '+':
-      line(x0 - size, y0, x0 + size, y0, color, width);
-      line(x0, y0 - size, x0, y0 + size, color, width);
+      line({pt.x - size, pt.y}, {pt.x + size, pt.y}, color, width);
+      line({pt.x, pt.y - size}, {pt.x, pt.y + size}, color, width);
       break;
     case 's':
-      line(x0 - size, y0 - size, x0 + size, y0 - size, color, width);
-      line(x0 + size, y0 - size, x0 + size, y0 + size, color, width);
-      line(x0 - size, y0 + size, x0 + size, y0 + size, color, width);
-      line(x0 - size, y0 - size, x0 - size, y0 + size, color, width);
+      line({pt.x - size, pt.y - size}, {pt.x + size, pt.y - size}, color, width);
+      line({pt.x + size, pt.y - size}, {pt.x + size, pt.y + size}, color, width);
+      line({pt.x - size, pt.y + size}, {pt.x + size, pt.y + size}, color, width);
+      line({pt.x - size, pt.y - size}, {pt.x - size, pt.y + size}, color, width);
       break;
     case 'x':
-      line(x0 - size, y0 - size, x0 + size, y0 + size, color, width);
-      line(x0 + size, y0 - size, x0 - size, y0 + size, color, width);
+      line({pt.x - size, pt.y - size}, {pt.x + size, pt.y + size}, color, width);
+      line({pt.x + size, pt.y - size}, {pt.x - size, pt.y + size}, color, width);
       break;
     case ':':
-      line(x0 - size, y0, x0 - 2, y0, color, width);
-      line(x0 + 2, y0, x0 + size, y0, color, width);
-      line(x0, y0 - size, x0, y0 - 2, color, width);
-      line(x0, y0 + 2, x0, y0 + size, color, width);
+      line({pt.x - size, pt.y}, {pt.x - 2, pt.y}, color, width);
+      line({pt.x + 2, pt.y}, {pt.x + size, pt.y}, color, width);
+      line({pt.x, pt.y - size}, {pt.x, pt.y - 2}, color, width);
+      line({pt.x, pt.y + 2}, {pt.x, pt.y + size}, color, width);
       break;
     default:
       THROW_EXCEPTION("Unexpected 'type' of cross to be drawn");
@@ -314,7 +340,10 @@ void CCanvas::drawMark(
 void CCanvas::drawCircle(
     const TPixelCoord& center, int32_t radius, const mrpt::img::TColor& color, int32_t width)
 {
-  if (radius < 0) radius = -radius;
+  if (radius < 0)
+  {
+    radius = -radius;
+  }
 
   int nSegments;
 
@@ -333,10 +362,13 @@ void CCanvas::drawCircle(
 
   for (i = 0, ang = 0; i < nSegments; i++, ang += Aa)
   {
-    x2 = round(x + radius * cos(ang));
-    y2 = round(y + radius * sin(ang));
+    x2 = round(center.x + radius * cos(ang));
+    y2 = round(center.y + radius * sin(ang));
 
-    if (i > 0) line(x1, y1, x2, y2, color, width);
+    if (i > 0)
+    {
+      line({x1, y1}, {x2, y2}, color, width);
+    }
 
     x1 = x2;
     y1 = y2;
@@ -356,7 +388,10 @@ void CCanvas::textOut(const TPixelCoord& pt, const std::string& str, const mrpt:
   // Am I an image?
   bool y_axis_reversed = false;
   auto* im_image = dynamic_cast<CImage*>(this);
-  if (im_image) y_axis_reversed = !im_image->isOriginTopLeft();
+  if (im_image)
+  {
+    y_axis_reversed = !im_image->isOriginTopLeft();
+  }
 
   // Decode UNICODE string:
   std::vector<uint16_t> uniStr;
@@ -395,7 +430,12 @@ void CCanvas::textOut(const TPixelCoord& pt, const std::string& str, const mrpt:
           memcpy(&row, char_bitmap, sizeof(row));
           char_bitmap++;
           for (int x = 0, pxx = px; x < char_w; x++, pxx++)
-            if (!!(row & (1 << x))) setPixel(pxx, pyy, color);
+          {
+            if (!!(row & (1 << x)))
+            {
+              setPixel(pxx, pyy, color);
+            }
+          }
         }
 
         // Advance the raster cursor:
@@ -404,16 +444,14 @@ void CCanvas::textOut(const TPixelCoord& pt, const std::string& str, const mrpt:
         // Next char!
         break;
       }
-      else
-      {
-        // No: Move to the next block and keep searching:
-        uint32_t n_chars = charset_end - charset_ini + 1;
-        table_ptr += 2 /* Header */ + n_chars * char_h;
 
-        // get new block header:
-        charset_ini = table_ptr[0];
-        charset_end = table_ptr[1];
-      }
+      // No: Move to the next block and keep searching:
+      uint32_t n_chars = charset_end - charset_ini + 1;
+      table_ptr += 2 /* Header */ + n_chars * char_h;
+
+      // get new block header:
+      charset_ini = table_ptr[0];
+      charset_end = table_ptr[1];
     }
     // Char not in the font!
   }
@@ -427,7 +465,7 @@ void CCanvas::ellipseGaussian(
     const double mean_y,
     double confIntervalStds,
     const mrpt::img::TColor& color,
-    int32_t width,
+    int32_t width,  // NOLINT
     int nEllipsePoints)
 {
   int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
