@@ -1,5 +1,5 @@
 # version format
-version: 2.14.8-{branch}-build{build}
+version: 2.14.9-{branch}-build{build}
 
 os: Visual Studio 2019
 
@@ -18,13 +18,13 @@ build_script:
   - copy cmakemodules\registerExtension.nsh "C:\Program Files (x86)\NSIS\Include\"
   - cd c:\projects\mrpt\build\
   # Build debug libraries
-#  - cmake --build . --config Debug --target all_mrpt_libs
+  #  - cmake --build . --config Debug --target all_mrpt_libs
   # re-call CMake to detect the debug libs and all them to the install package:
-#  - cmake .
+  #  - cmake .
   # Do unit tests:
   - cmake --build . --config Release --target test_legacy
   # All seem OK. Build all.
-#  - cmake --build . --config Release
+  #  - cmake --build . --config Release
   # Build package:
   - cmake --build . --config Release --target PACKAGE
   # Rename package:
@@ -91,7 +91,7 @@ on_failure:
 #      artifacts configuration    #
 #---------------------------------#
 artifacts:
-  - path: 'mrpt*.exe'
+  - path: "mrpt*.exe"
 
 #---------------------------------#
 #     deployment configuration    #
@@ -99,14 +99,14 @@ artifacts:
 deploy:
   - provider: GitHub
     release: "Release of v$(APPVEYOR_REPO_TAG_NAME) [Windows binaries]"
-    description: 'Windows binary releases (nightly builds) from AppVeyor.'
+    description: "Windows binary releases (nightly builds) from AppVeyor."
     auth_token:
       secure: vUzG+a7umHCzqv0eUNXZS/dczNSMiJ37Ivuv50aIPXhYQenlxUiua+Merj/pjCmy
     artifact: /.*\.exe/
     draft: false
     prerelease: false
     on:
-      APPVEYOR_REPO_TAG: true        # deploy on tag push only
+      APPVEYOR_REPO_TAG: true # deploy on tag push only
   - provider: GitHub
     release: "Windows nightly builds"
     description: '**Build timestamp: %APPVEYOR_REPO_COMMIT_TIMESTAMP%**\nWindows binary releases (develop) from AppVeyor CI.\nAPPVEYOR_BUILD_VERSION=%APPVEYOR_BUILD_VERSION%\nGit commit: %APPVEYOR_REPO_COMMIT% %APPVEYOR_REPO_COMMIT_MESSAGE%'

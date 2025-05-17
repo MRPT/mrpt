@@ -1,5 +1,9 @@
 \page changelog Change Log
 
+# Version 2.14.9: Released May 17th, 2025
+- BUG FIXES:
+  - Fix build with latest tf2 version.
+
 # Version 2.14.8: Released Apr 25th, 2025
 - Build system:
   - Fix build w/o OpenCV.
