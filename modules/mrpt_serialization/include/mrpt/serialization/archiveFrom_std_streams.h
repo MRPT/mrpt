@@ -26,18 +26,17 @@ class CArchiveStreamBase<std::istream> : public CArchive
   CArchiveStreamBase(std::istream& s) : m_s(s) {}
 
  protected:
-  size_t write(const void* d, size_t n) override
+  size_t write([[maybe_unused]] const void* d, [[maybe_unused]] size_t n) override
   {
-    throw std::runtime_error(
-        "CArchiveStreamBase<std::istream>:"
-        "cannot write to an input stream.");
+    throw std::runtime_error("CArchiveStreamBase<std::istream>: cannot write to an input stream.");
   }
   size_t read(void* d, size_t n) override
   {
     if (m_s.read(reinterpret_cast<char*>(d), n))
+    {
       return n;
-    else
-      return 0;
+    }
+    return 0;
   }
 };
 
@@ -53,16 +52,15 @@ class CArchiveStreamBase<std::ostream> : public CArchive
  protected:
   size_t write(const void* d, size_t n) override
   {
-    if (m_s.write(reinterpret_cast<const char*>(d), n))
+    if (m_s.write(reinterpret_cast<const char*>(d), static_cast<std::streamsize>(n)))
+    {
       return n;
-    else
-      return 0;
+    }
+    return 0;
   }
   size_t read(void* d, size_t n) override
   {
-    throw std::runtime_error(
-        "CArchiveStreamBase<std::ostream>:"
-        "cannot read from output stream.");
+    throw std::runtime_error("CArchiveStreamBase<std::ostream>: cannot read from output stream.");
   }
 };
 
@@ -78,17 +76,20 @@ class CArchiveStreamBase<std::iostream> : public CArchive
  protected:
   size_t write(const void* d, size_t n) override
   {
-    if (m_s.write(reinterpret_cast<const char*>(d), n))
+    if (m_s.write(reinterpret_cast<const char*>(d), static_cast<std::streamsize>(n)))
+    {
       return n;
-    else
-      return 0;
+    }
+
+    return 0;
   }
   size_t read(void* d, size_t n) override
   {
-    if (m_s.read(reinterpret_cast<char*>(d), n))
+    if (m_s.read(reinterpret_cast<char*>(d), static_cast<std::streamsize>(n)))
+    {
       return n;
-    else
-      return 0;
+    }
+    return 0;
   }
 };
 

@@ -16,6 +16,7 @@
 
 #include <array>
 #include <cstring>  // strlen()
+#include <iostream>
 
 using namespace mrpt::serialization;
 
@@ -31,13 +32,9 @@ size_t CArchive::ReadBuffer(void* Buffer, size_t Count)
     {
       THROW_EXCEPTION("(EOF?) Cannot read requested number of bytes from stream");
     }
-    else
-    {
-      return actuallyRead;
-    }
+    return actuallyRead;
   }
-  else
-    return 0;
+  return 0;
 }
 
 /*---------------------------------------------------------------
@@ -48,13 +45,17 @@ void CArchive::WriteBuffer(const void* Buffer, size_t Count)
 {
   ASSERT_(Buffer != nullptr);
   if (Count)
-    if (Count != this->write(Buffer, Count)) THROW_EXCEPTION("Cannot write bytes to stream!");
+  {
+    if (Count != this->write(Buffer, Count))
+    {
+      THROW_EXCEPTION("Cannot write bytes to stream!");
+    }
+  }
 }
 
 CArchive& mrpt::serialization::operator<<(CArchive& out, const mrpt::Clock::time_point& s)
 {
-  uint64_t rep = s.time_since_epoch().count();
-  return out << rep;
+  return out.WriteAs<uint64_t>(s.time_since_epoch().count());
 }
 
 CArchive& mrpt::serialization::operator>>(CArchive& in, mrpt::Clock::time_point& s)
@@ -67,32 +68,38 @@ CArchive& mrpt::serialization::operator>>(CArchive& in, mrpt::Clock::time_point&
 
 CArchive& mrpt::serialization::operator<<(CArchive& out, const std::vector<bool>& a)
 {
-  auto n = (uint32_t)a.size();
+  const auto n = static_cast<uint32_t>(a.size());
   out << n;
   if (n)
   {
     std::vector<uint8_t> b(n);
     std::vector<bool>::const_iterator it;
     std::vector<uint8_t>::iterator it2;
-    for (it = a.begin(), it2 = b.begin(); it != a.end(); ++it, ++it2) *it2 = *it ? 1 : 0;
-    out.WriteBuffer((void*)&b[0], (int)(sizeof(b[0]) * n));
+    for (it = a.begin(), it2 = b.begin(); it != a.end(); ++it, ++it2)
+    {
+      *it2 = *it ? 1 : 0;
+    }
+    out.WriteBuffer(reinterpret_cast<const void*>(b.data()), sizeof(b[0]) * n);
   }
   return out;
 }
 
 CArchive& mrpt::serialization::operator<<(CArchive& out, const std::string& str)
 {
-  auto n = (uint32_t)str.size();
+  const auto n = static_cast<uint32_t>(str.size());
   out << n;
-  if (n) out.WriteBuffer(str.c_str(), n);
+  if (n)
+  {
+    out.WriteBuffer(str.c_str(), n);
+  }
   return out;
 }
 
 CArchive& CArchive::operator<<(const std::monostate&)
 {
   const char* className = "std::monostate";
-  int8_t classNamLen = strlen(className);
-  int8_t classNamLen_mod = classNamLen | 0x80;
+  const auto classNamLen = ::strlen(className);
+  const int8_t classNamLen_mod = static_cast<int8_t>(classNamLen | 0x80);
 
   (*this) << classNamLen_mod;
   this->WriteBuffer(className, classNamLen);
@@ -118,8 +125,8 @@ void CArchive::WriteObject(const CSerializable* o)
     className = "nullptr";
   }
 
-  int8_t classNamLen = strlen(className);
-  int8_t classNamLen_mod = classNamLen | 0x80;
+  const auto classNamLen = ::strlen(className);
+  const int8_t classNamLen_mod = static_cast<int8_t>(classNamLen | 0x80);
 
   (*this) << classNamLen_mod;
   this->WriteBuffer(className, classNamLen);
@@ -179,7 +186,10 @@ inline CArchive& writeStdVectorToStream(CArchive& s, const VEC& v)
 {
   const auto n = static_cast<uint32_t>(v.size());
   s << n;
-  if (n) s.WriteBufferFixEndianness(&v[0], n);
+  if (n)
+  {
+    s.WriteBufferFixEndianness(&v[0], n);
+  }
   return s;
 }
 template <typename VEC>
@@ -188,7 +198,10 @@ inline CArchive& readStdVectorToStream(CArchive& s, VEC& v)
   uint32_t n;
   s >> n;
   v.resize(n);
-  if (n) s.ReadBufferFixEndianness(&v[0], n);
+  if (n)
+  {
+    s.ReadBufferFixEndianness(&v[0], n);
+  }
   return s;
 }
 }  // namespace detail
@@ -298,10 +311,13 @@ CArchive& mrpt::serialization::operator>>(CArchive& in, std::vector<bool>& a)
   if (n)
   {
     std::vector<uint8_t> b(n);
-    in.ReadBuffer((void*)&b[0], sizeof(b[0]) * n);
+    in.ReadBuffer(b.data(), sizeof(b[0]) * n);
     std::vector<uint8_t>::iterator it2;
     std::vector<bool>::iterator it;
-    for (it = a.begin(), it2 = b.begin(); it != a.end(); ++it, ++it2) *it = (*it2 != 0);
+    for (it = a.begin(), it2 = b.begin(); it != a.end(); ++it, ++it2)
+    {
+      *it = (*it2 != 0);
+    }
   }
   return in;
 }
@@ -311,15 +327,17 @@ CArchive& mrpt::serialization::operator>>(CArchive& in, std::string& str)
   uint32_t n;
   in >> n;
   str.resize(n);
-  if (n) in.ReadBuffer((void*)&str[0], n);
+  if (n)
+  {
+    in.ReadBuffer(str.data(), n);
+  }
   return in;
 }
 
-// #define CARCHIVE_VERBOSE     1
-#define CARCHIVE_VERBOSE 0
-
 void CArchive::internal_ReadObjectHeader(
-    std::string& strClassName, bool& isOldFormat, int8_t& version)
+    std::string& strClassName,
+    bool& isOldFormat,  // NOLINT(bugprone-easily-swappable-parameters)
+    uint8_t& version)
 {
   uint8_t lengthReadClassName = 255;
   char readClassName[260];
@@ -330,20 +348,27 @@ void CArchive::internal_ReadObjectHeader(
     // First, read the class name: (exception is raised here if ZERO bytes
     // read -> possibly an EOF)
     if (sizeof(lengthReadClassName) !=
-        ReadBuffer((void*)&lengthReadClassName, sizeof(lengthReadClassName)))
+        ReadBuffer(reinterpret_cast<void*>(&lengthReadClassName), sizeof(lengthReadClassName)))
+    {
       THROW_EXCEPTION("Cannot read object header from stream! (EOF?)");
+    }
 
     // Is in old format (< MRPT 0.5.5)?
     if (!(lengthReadClassName & 0x80))
     {
       isOldFormat = true;
       uint8_t buf[3];
-      if (3 != ReadBuffer(buf, 3)) THROW_EXCEPTION("Cannot read object header from stream! (EOF?)");
+      if (3 != ReadBuffer(buf, 3))
+      {
+        THROW_EXCEPTION("Cannot read object header from stream! (EOF?)");
+      }
       if (buf[0] || buf[1] || buf[2])
+      {
         THROW_EXCEPTION(
             "Expecting 0x00 00 00 while parsing old streaming header "
             "(Perhaps it's a gz-compressed stream? Use a GZ-stream for "
             "reading)");
+      }
     }
     else
     {
@@ -355,12 +380,15 @@ void CArchive::internal_ReadObjectHeader(
 
     // Sensible class name size?
     if (lengthReadClassName > 120)
+    {
       THROW_EXCEPTION(
-          "Class name has more than 120 chars. This probably means a "
-          "corrupted binary stream.");
+          "Class name has more than 120 chars. This probably means a corrupted binary stream.");
+    }
 
-    if (((size_t)lengthReadClassName) != ReadBuffer(readClassName, lengthReadClassName))
+    if (lengthReadClassName != ReadBuffer(readClassName, lengthReadClassName))
+    {
       THROW_EXCEPTION("Cannot read object class name from stream!");
+    }
 
     readClassName[lengthReadClassName] = '\0';
 
@@ -373,22 +401,18 @@ void CArchive::internal_ReadObjectHeader(
       int32_t version_old;
       // Handle big endian right:
       if (sizeof(version_old) != ReadBufferFixEndianness(&version_old, 1 /*element count*/))
+      {
         THROW_EXCEPTION("Cannot read object streaming version from stream!");
+      }
       ASSERT_(version_old >= 0 && version_old < 255);
-      version = int8_t(version_old);
+      version = static_cast<uint8_t>(version_old);
     }
     else if (
         strClassName != "nullptr" &&
-        sizeof(version) != ReadBuffer((void*)&version, sizeof(version)))
+        sizeof(version) != ReadBuffer(reinterpret_cast<void*>(&version), sizeof(version)))
     {
       THROW_EXCEPTION("Cannot read object streaming version from stream!");
     }
-
-// In MRPT 0.5.5 an end flag was introduced:
-#if CARCHIVE_VERBOSE
-    cerr << "[CArchive::ReadObject] readClassName:" << strClassName << " version: " << version
-         << endl;
-#endif
   }
   catch (const std::bad_alloc&)
   {
@@ -401,18 +425,15 @@ void CArchive::internal_ReadObjectHeader(
       THROW_TYPED_EXCEPTION_FMT(
           CExceptionEOF, "Cannot read object due to EOF in %s", getArchiveDescription().c_str());
     }
-    else
-    {
-      THROW_EXCEPTION_FMT(
-          "Exception while parsing typed object '%s' from "
-          "%s.\nOriginal exception:\n%s",
-          getArchiveDescription().c_str(), readClassName, e.what());
-    }
+
+    THROW_EXCEPTION_FMT(
+        "Exception while parsing typed object '%s' from %s.\nOriginal exception:\n%s",
+        getArchiveDescription().c_str(), readClassName, e.what());
   }
 }  // end method
 
 void CArchive::internal_ReadObject(
-    CSerializable* obj, const std::string& strClassName, bool isOldFormat, int8_t version)
+    CSerializable* obj, const std::string& strClassName, bool isOldFormat, uint8_t version)
 {
   try
   {
@@ -424,14 +445,17 @@ void CArchive::internal_ReadObject(
     if (!isOldFormat)
     {
       uint8_t endFlag;
-      if (sizeof(endFlag) != ReadBuffer((void*)&endFlag, sizeof(endFlag)))
+      if (sizeof(endFlag) != ReadBuffer(reinterpret_cast<void*>(&endFlag), sizeof(endFlag)))
+      {
         THROW_EXCEPTION_FMT(
             "Cannot read object streaming version from %s", getArchiveDescription().c_str());
+      }
       if (endFlag != SERIALIZATION_END_FLAG)
+      {
         THROW_EXCEPTION_FMT(
-            "end-flag missing: There is a bug in the deserialization "
-            "method of class: '%s'",
+            "end-flag missing: There is a bug in the deserialization method of class: '%s'",
             strClassName.c_str());
+      }
     }
   }
   catch (const std::bad_alloc&)
@@ -462,7 +486,7 @@ void CArchive::ReadObject(CSerializable* existingObj)
 
   std::string strClassName;
   bool isOldFormat{false};
-  int8_t version{-1};
+  uint8_t version = 0xff;
 
   internal_ReadObjectHeader(strClassName, isOldFormat, version);
 
@@ -473,13 +497,16 @@ void CArchive::ReadObject(CSerializable* existingObj)
   const TRuntimeClassId* id2 = mrpt::rtti::findRegisteredClass(strClassName);
 
   if (!id2)
+  {
     THROW_EXCEPTION_FMT(
         "Stored object has class '%s' which is not registered!", strClassName.c_str());
+  }
   if (id != id2)
+  {
     THROW_EXCEPTION(format(
-        "Stored class does not match with existing object!!:\n Stored: "
-        "%s\n Expected: %s",
+        "Stored class does not match with existing object!!:\n Stored: %s\n Expected: %s",
         id2->className, id->className));
+  }
 
   internal_ReadObject(existingObj, strClassName, isOldFormat, version);
 }
@@ -488,7 +515,10 @@ CArchive& mrpt::serialization::operator<<(CArchive& s, const std::vector<std::st
 {
   auto N = static_cast<uint32_t>(vec.size());
   s << N;
-  for (size_t i = 0; i < N; i++) s << vec[i];
+  for (size_t i = 0; i < N; i++)
+  {
+    s << vec[i];
+  }
   return s;
 }
 
@@ -497,7 +527,10 @@ CArchive& mrpt::serialization::operator>>(CArchive& s, std::vector<std::string>&
   uint32_t N;
   s >> N;
   vec.resize(N);
-  for (size_t i = 0; i < N; i++) s >> vec[i];
+  for (size_t i = 0; i < N; i++)
+  {
+    s >> vec[i];
+  }
   return s;
 }
 
@@ -505,18 +538,18 @@ void CArchive::sendMessage(const CMessage& msg)
 {
   MRPT_START
 
-  std::array<uint8_t, 0x10100> buf;
+  std::array<uint8_t, 0x10100> buf{};
   unsigned int nBytesTx = 0;
 
   const bool msg_format_is_tiny = msg.content.size() < 256;
 
   // Build frame -------------------------------------
   buf[nBytesTx++] = msg_format_is_tiny ? 0x69 : 0x79;
-  buf[nBytesTx++] = (unsigned char)(msg.type);
+  buf[nBytesTx++] = static_cast<uint8_t>(msg.type);
 
   if (msg_format_is_tiny)
   {
-    buf[nBytesTx++] = (unsigned char)msg.content.size();
+    buf[nBytesTx++] = static_cast<uint8_t>(msg.content.size());
   }
   else
   {
@@ -524,8 +557,11 @@ void CArchive::sendMessage(const CMessage& msg)
     buf[nBytesTx++] = (msg.content.size() >> 8) & 0xff;  // hi
   }
 
-  if (!msg.content.empty()) memcpy(&buf.at(nBytesTx), &msg.content[0], msg.content.size());
-  nBytesTx += (unsigned char)msg.content.size();
+  if (!msg.content.empty())
+  {
+    std::memcpy(&buf.at(nBytesTx), msg.content.data(), msg.content.size());
+  }
+  nBytesTx += msg.content.size();
   buf[nBytesTx++] = 0x96;
 
   // Send buffer -------------------------------------
@@ -547,7 +583,9 @@ bool CArchive::receiveMessage(CMessage& msg)
   for (;;)
   {
     if (nBytesInFrame < 4)
+    {
       nBytesToRx = 1;
+    }
     else
     {
       if (buf[0] == 0x69)
@@ -568,18 +606,25 @@ bool CArchive::receiveMessage(CMessage& msg)
     {
       nBytesRx = ReadBuffer(&buf[nBytesInFrame], nBytesToRx);
     }
-    catch (...)
+    catch (const std::exception& e)
     {
+      std::cerr << "Error reading from stream: " << e.what() << std::endl;
     }
 
     // No more data! (read timeout is already included in the call to
     // "Read")
-    if (!nBytesRx) return false;
+    if (!nBytesRx)
+    {
+      return false;
+    }
 
     if (!nBytesInFrame && buf[0] != 0x69 && buf[0] != 0x79)
     {
       // Start flag is invalid:
-      if (!tries--) return false;
+      if (!tries--)
+      {
+        return false;
+      }
     }
     else
     {
@@ -597,22 +642,26 @@ bool CArchive::receiveMessage(CMessage& msg)
           // Error in frame!
           return false;
         }
-        else
+
+        // copy out data:
+        msg.type = buf[1];
+        if (buf[0] == 0x69)
         {
-          // copy out data:
-          msg.type = buf[1];
-          if (buf[0] == 0x69)
+          msg.content.resize(payload_len);
+          if (!msg.content.empty())
           {
-            msg.content.resize(payload_len);
-            if (!msg.content.empty()) memcpy(&msg.content[0], &buf[3], payload_len);
-          }  // end if
-          if (buf[0] == 0x79)
+            std::memcpy(&msg.content[0], &buf[3], payload_len);
+          }
+        }  // end if
+        if (buf[0] == 0x79)
+        {
+          msg.content.resize(payload_len);
+          if (!msg.content.empty())
           {
-            msg.content.resize(payload_len);
-            if (!msg.content.empty()) memcpy(&msg.content[0], &buf[4], payload_len);
-          }  // end if
-          return true;
-        }
+            std::memcpy(&msg.content[0], &buf[4], payload_len);
+          }
+        }  // end if
+        return true;
       }
     }
   }

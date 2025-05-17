@@ -13,7 +13,6 @@
 #include <mrpt/typemeta/TTypeName.h>  // Used in all derived classes
 
 #include <iosfwd>  // std::ostream
-#include <stdexcept>
 #include <type_traits>
 
 namespace mrpt::math
@@ -90,7 +89,10 @@ template <
     typename = std::enable_if_t<std::is_base_of_v<mrpt::math::TPoseOrPoint, PoseOrPoint>>>
 mrpt::serialization::CArchive& operator>>(mrpt::serialization::CArchive& in, PoseOrPoint& o)
 {
-  for (int i = 0; i < o.static_size; i++) in >> o[i];
+  for (int i = 0; i < o.static_size; i++)
+  {
+    in >> o[i];
+  }
   return in;
 }
 
@@ -100,40 +102,11 @@ template <
     typename = std::enable_if_t<std::is_base_of_v<mrpt::math::TPoseOrPoint, PoseOrPoint>>>
 mrpt::serialization::CArchive& operator<<(mrpt::serialization::CArchive& out, const PoseOrPoint& o)
 {
-  for (int i = 0; i < o.static_size; i++) out << o[i];
+  for (int i = 0; i < o.static_size; i++)
+  {
+    out << o[i];
+  }
   return out;
 }
-
-/**
- * Object type identifier for TPoint2D or TPoint3D.
- * \sa TObject2D,TObject3D
- */
-static constexpr unsigned char GEOMETRIC_TYPE_POINT = 0;
-/**
- * Object type identifier for TSegment2D or TSegment3D.
- * \sa TObject2D,TObject3D
- */
-static constexpr unsigned char GEOMETRIC_TYPE_SEGMENT = 1;
-/**
- * Object type identifier for TLine2D or TLine3D.
- * \sa TObject2D,TObject3D
- */
-static constexpr unsigned char GEOMETRIC_TYPE_LINE = 2;
-/**
- * Object type identifier for TPolygon2D or TPolygon3D.
- * \sa TObject2D,TObject3D
- */
-static constexpr unsigned char GEOMETRIC_TYPE_POLYGON = 3;
-/**
- * Object type identifier for TPlane.
- * \sa TObject3D
- */
-static constexpr unsigned char GEOMETRIC_TYPE_PLANE = 4;
-/**
- * Object type identifier for empty TObject2D or TObject3D.
- * \sa TObject2D,TObject3D
- */
-static constexpr unsigned char GEOMETRIC_TYPE_UNDEFINED = 255;
-/** @} */
 
 }  // namespace mrpt::math
