@@ -42,7 +42,12 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussianInf.h>
 #include <mrpt/ros2bridge/pose.h>
+
+#if TF2_VERSION >= 0x004201
+#include <tf2/LinearMath/Matrix3x3.hpp>
+#else
 #include <tf2/LinearMath/Matrix3x3.h>
+#endif
 
 // MRPT -> ROS functions:
 tf2::Matrix3x3 mrpt::ros2bridge::toROS(const mrpt::math::CMatrixDouble33& src)
