@@ -237,7 +237,7 @@ TEST(Geometry, Segment2DIntersect)
     TObject2D inter;
     bool do_inter = intersect(s1, s2, inter);
 
-    // EXPECT_TRUE(do_inter && inter.getType()==GEOMETRIC_TYPE_SEGMENT);
+    // EXPECT_TRUE(do_inter && inter.getType()==GeometricEntity::SEGMENT);
     EXPECT_FALSE(do_inter);
   }
 }

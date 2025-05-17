@@ -141,6 +141,7 @@ set(LIB_PUBLIC_HDRS
   include/mrpt/math/fourier.h
   include/mrpt/math/fresnel.h
   include/mrpt/math/geometry.h
+  include/mrpt/math/GeometryEntity.h
   include/mrpt/math/gtsam_wrappers.h
   include/mrpt/math/homog_matrices.h
   include/mrpt/math/interp_fit.h

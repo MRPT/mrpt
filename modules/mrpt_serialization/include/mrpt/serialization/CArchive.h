@@ -393,10 +393,10 @@ class CArchive
 
   /** Read the object */
   void internal_ReadObject(
-      CSerializable* newObj, const std::string& className, bool isOldFormat, int8_t version);
+      CSerializable* newObj, const std::string& className, bool isOldFormat, uint8_t version);
 
   /** Read the object Header*/
-  void internal_ReadObjectHeader(std::string& className, bool& isOldFormat, int8_t& version);
+  void internal_ReadObjectHeader(std::string& className, bool& isOldFormat, uint8_t& version);
 };
 
 // Note: write op accepts parameters by value on purpose, to avoid misaligned
