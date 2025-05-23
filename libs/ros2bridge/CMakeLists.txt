@@ -43,25 +43,28 @@ define_mrpt_lib(
 	# Other imported targets,
 	# which will be mapped into find_package() commands
 	# in the xxx_config.cmake script.
-	rclcpp # find_package() lib names
-	nav_msgs
-	stereo_msgs
-	sensor_msgs
-	tf2
+	# find_package() lib names
 	cv_bridge
+	geometry_msgs
+	nav_msgs
+	rclcpp 
+	sensor_msgs
+	std_msgs
+	stereo_msgs
+	tf2
 	)
 
 if(BUILD_mrpt-ros2bridge)
 	# Add the required libraries:
-	ament_target_dependencies(ros2bridge PUBLIC
-		rclcpp
-		tf2
-		cv_bridge
-		sensor_msgs
-		std_msgs
-		geometry_msgs
-		stereo_msgs
-		nav_msgs
+  target_link_libraries(ros2bridge PUBLIC
+		${cv_bridge_TARGETS}
+		${geometry_msgs_TARGETS}
+		${nav_msgs_TARGETS}
+		${sensor_msgs_TARGETS}
+		${std_msgs_TARGETS}
+		${stereo_msgs_TARGETS}
+		${tf2_TARGETS}
+		rclcpp::rclcpp
 	)
 
 	target_compile_definitions(ros2bridge PRIVATE ${ROS_DEFINITIONS})
