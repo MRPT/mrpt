@@ -1,5 +1,9 @@
 \page changelog Change Log
 
+# Version 2.14.10: Released May 23rd, 2025
+- BUG FIXES:
+  - Fix build in ROS rolling: ``Unknown CMake command "ament_target_dependencies".``
+
 # Version 2.14.9: Released May 17th, 2025
 - BUG FIXES:
   - Fix build with latest tf2 version.
