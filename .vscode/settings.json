@@ -22,6 +22,9 @@
             100
         ]
     },
+    "[cmake]": { 
+        "editor.tabSize": 2,
+    },
     "cSpell.allowCompoundWords": true,
     "cSpell.ignorePaths": [
         "**/.git/objects/**",

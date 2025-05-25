@@ -30,7 +30,7 @@ endif()
 
 if (NOT CMAKE_MRPT_HAS_SIMPLEINI)
 	# Set to use embedded copy:
-	set(SIMPLEINI_INCLUDE_DIRS ${MRPT_SOURCE_DIR}/3rdparty/simpleini)
+	set(SIMPLEINI_INCLUDE_DIRS ${mrpt_config_SOURCE_DIR}/3rdparty/simpleini)
 
 	set(CMAKE_MRPT_HAS_SIMPLEINI 1)
 	set(CMAKE_MRPT_HAS_SIMPLEINI_SYSTEM 0)

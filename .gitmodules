@@ -14,11 +14,11 @@
 	path = modules/mrpt_io/3rdparty/zlib
 	url = https://github.com/madler/zlib.git
 [submodule "3rdparty/simpleini"]
-	path = 3rdparty/simpleini
+	path = modules/mrpt_config/3rdparty/simpleini
 	url = https://github.com/brofield/simpleini.git
 [submodule "3rdparty/nanoflann"]
-	path = 3rdparty/nanoflann
+	path = modules/mrpt_math/3rdparty/nanoflann
 	url = https://github.com/jlblancoc/nanoflann.git
 [submodule "3rdparty/libfyaml"]
-	path = 3rdparty/libfyaml
+	path = modules/mrpt_containers/3rdparty/libfyaml
 	url = https://github.com/pantoniou/libfyaml.git

@@ -195,7 +195,7 @@ class CArchive
     CSerializable::Ptr obj;
     std::string strClassName;
     bool isOldFormat{false};
-    int8_t version{-1};
+    uint8_t version = 0xff;
     internal_ReadObjectHeader(strClassName, isOldFormat, version);
     if (strClassName != "nullptr")
     {
@@ -207,9 +207,8 @@ class CArchive
       }
       obj = mrpt::ptr_cast<CSerializable>::from(classId->createObject());
     }
-    internal_ReadObject(
-        obj.get() /* may be nullptr */, strClassName, isOldFormat,
-        version);  // must be called to read the END FLAG byte
+    // must be called to read the END FLAG byte
+    internal_ReadObject(obj.get() /* may be nullptr */, strClassName, isOldFormat, version);
     if (!obj)
     {
       return typename T::Ptr();
@@ -267,7 +266,7 @@ class CArchive
     CSerializable::Ptr obj;
     std::string strClassName;
     bool isOldFormat;
-    int8_t version;
+    uint8_t version;
     internal_ReadObjectHeader(strClassName, isOldFormat, version);
     if (strClassName == "std::monostate")
     {

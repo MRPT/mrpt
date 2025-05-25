@@ -1,19 +1,6 @@
 
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_gridmap_options.cmake REQUIRED) # Gridmap options
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_octomap.cmake REQUIRED)     # Check for the octomap library
-
-
-# Lists of directories with source files:
-#  See "DeclareMRPTLib.cmake" for explanations
-# -------------------------------------------------
-list(APPEND maps_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/libs/maps/src/maps/*.cpp" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/maps/*.h" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/slam/*.h")
-list(APPEND maps_EXTRA_SRCS_NAME 	"maps" "maps" "back-compat-hdrs")
-
-list(APPEND maps_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/libs/maps/src/viz/*.cpp" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/viz/*.h")
-list(APPEND maps_EXTRA_SRCS_NAME 	"viz" "viz")
-
-list(APPEND maps_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/libs/maps/src/obs/*.cpp" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/obs/*.h")
-list(APPEND maps_EXTRA_SRCS_NAME 	"obs" "obs")
+include(./cmake/script_gridmap_options.cmake REQUIRED) # Gridmap options
+include(./cmake/script_octomap.cmake REQUIRED)     # Check for the octomap library
 
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":

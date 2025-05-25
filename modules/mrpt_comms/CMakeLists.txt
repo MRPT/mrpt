@@ -1,5 +1,5 @@
 
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_ftdi.cmake REQUIRED)        # Check for the FTDI headers (Linux only, in win32 we use built-in header & dynamic DLL load):
+include(./cmakemodules/script_ftdi.cmake REQUIRED)        # Check for the FTDI headers (Linux only, in win32 we use built-in header & dynamic DLL load):
 
 # extra dependencies required by unit tests in this module:
 set_property(GLOBAL PROPERTY mrpt_comms_UNIT_TEST_EXTRA_DEPS mrpt-poses)
