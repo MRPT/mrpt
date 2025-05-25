@@ -4,34 +4,34 @@
 set(CMAKE_MRPT_HAS_NANOFLANN 1) # nanoflann is a mandatory dependency
 
 # Where the embedded version would be built:
-set(nanoflann_EMBEDDED_BUILD_DIR "${MRPT_BINARY_DIR}/3rdparty/nanoflann")
+set(nanoflann_EMBEDDED_BUILD_DIR "${mrpt_math_BINARY_DIR}/3rdparty/nanoflann")
 
 find_package(nanoflann CONFIG QUIET)
 
 if (NOT nanoflann_FOUND)
-    message(STATUS "--- Running CMake on external submodule 'nanoflann'...")
-    file(MAKE_DIRECTORY "${nanoflann_EMBEDDED_BUILD_DIR}")
-    if(NOT ${CMAKE_VERSION} VERSION_LESS "3.15")
-        set(echo_flag COMMAND_ECHO STDOUT)
-    endif()
-    execute_process(COMMAND
-        ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" "${MRPT_SOURCE_DIR}/3rdparty/nanoflann"
-        -DNANOFLANN_BUILD_EXAMPLES=OFF
-        -DNANOFLANN_BUILD_TESTS=OFF
-        -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
-      RESULT_VARIABLE result
-      WORKING_DIRECTORY "${nanoflann_EMBEDDED_BUILD_DIR}"
-      ${echo_flag}
-      )
-    if(result)
-      message(FATAL_ERROR "CMake step for nanoflann failed: ${result}")
-    endif()
-    message(STATUS "--- End running CMake")
+message(STATUS "--- Running CMake on external submodule 'nanoflann'...")
+file(MAKE_DIRECTORY "${nanoflann_EMBEDDED_BUILD_DIR}")
+if(NOT ${CMAKE_VERSION} VERSION_LESS "3.15")
+    set(echo_flag COMMAND_ECHO STDOUT)
+endif()
+execute_process(COMMAND
+    ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" "${mrpt_math_SOURCE_DIR}/3rdparty/nanoflann"
+    -DNANOFLANN_BUILD_EXAMPLES=OFF
+    -DNANOFLANN_BUILD_TESTS=OFF
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+    RESULT_VARIABLE result
+    WORKING_DIRECTORY "${nanoflann_EMBEDDED_BUILD_DIR}"
+    ${echo_flag}
+    )
+if(result)
+    message(FATAL_ERROR "CMake step for nanoflann failed: ${result}")
+endif()
+message(STATUS "--- End running CMake")
 
-    # Search again:
-    set(nanoflann_DIR "${nanoflann_EMBEDDED_BUILD_DIR}" CACHE PATH "Path to nanoflann CMake config file" FORCE)
-    mark_as_advanced(nanoflann_DIR)
-    find_package(nanoflann CONFIG QUIET)
+# Search again:
+set(nanoflann_DIR "${nanoflann_EMBEDDED_BUILD_DIR}" CACHE PATH "Path to nanoflann CMake config file" FORCE)
+mark_as_advanced(nanoflann_DIR)
+find_package(nanoflann CONFIG QUIET)
 endif()
 
 if (NOT nanoflann_FOUND)

@@ -1,4 +1,4 @@
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_tinyxml2.cmake REQUIRED)    # tinyxml2 lib
+include(./cmake/script_tinyxml2.cmake REQUIRED)    # tinyxml2 lib
 
 # extra dependencies required by unit tests in this module:
 set_property(GLOBAL PROPERTY mrpt_obs_UNIT_TEST_EXTRA_DEPS mrpt-maps)
@@ -22,13 +22,13 @@ list(APPEND obs_EXTRA_SRCS_NAME
 # Built-in libtinyxml2?
 if(CMAKE_MRPT_HAS_TINYXML2 AND NOT CMAKE_MRPT_HAS_TINYXML2_SYSTEM)
 	list(APPEND obs_EXTRA_SRCS
-		"${MRPT_BINARY_DIR}/3rdparty/tinyxml2/*.cpp"
-		"${MRPT_BINARY_DIR}/3rdparty/tinyxml2/*.h"
+		"${mrpt_obs_BINARY_DIR}/3rdparty/tinyxml2/*.cpp"
+		"${mrpt_obs_BINARY_DIR}/3rdparty/tinyxml2/*.h"
 		)
 	list(APPEND obs_EXTRA_SRCS_NAME
 		"tinyxml2" "tinyxml2"
 		)
-	include_directories("${MRPT_BINARY_DIR}/3rdparty/tinyxml2/")
+	include_directories("${mrpt_obs_BINARY_DIR}/3rdparty/tinyxml2/")
 endif()
 
 #---------------------------------------------

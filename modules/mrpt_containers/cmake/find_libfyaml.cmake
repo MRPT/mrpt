@@ -29,8 +29,8 @@ if(MRPT_HAS_LIBFYAML)
     # Internal built-in:
     include(ExternalProject)
     
-    set(LIBFYAML_DIR ${MRPT_SOURCE_DIR}/3rdparty/libfyaml)
-    set(LIBFYAML_BIN ${MRPT_BINARY_DIR}/3rdparty/libfyaml)
+    set(LIBFYAML_DIR ${mrpt_containers_SOURCE_DIR}/3rdparty/libfyaml)
+    set(LIBFYAML_BIN ${mrpt_containers_BINARY_DIR}/3rdparty/libfyaml)
     set(LIBFYAML_INSTALL_DIR ${LIBFYAML_BIN}/install)
     set(LIBFYAML_INCLUDES ${LIBFYAML_DIR}/include)
     
