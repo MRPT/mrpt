@@ -539,7 +539,7 @@ void CArchive::sendMessage(const CMessage& msg)
   MRPT_START
 
   std::array<uint8_t, 0x10100> buf{};
-  unsigned int nBytesTx = 0;
+  std::size_t nBytesTx = 0;
 
   const bool msg_format_is_tiny = msg.content.size() < 256;
 
@@ -574,11 +574,11 @@ bool CArchive::receiveMessage(CMessage& msg)
 {
   MRPT_START
   std::vector<unsigned char> buf(66000);
-  unsigned int nBytesInFrame = 0;
-  unsigned long nBytesToRx = 0;
-  unsigned char tries = 2;
-  unsigned int payload_len = 0;
-  unsigned int expectedLen = 0;
+  std::size_t nBytesInFrame = 0;
+  std::size_t nBytesToRx = 0;
+  uint8_t tries = 2;
+  std::size_t payload_len = 0;
+  std::size_t expectedLen = 0;
 
   for (;;)
   {

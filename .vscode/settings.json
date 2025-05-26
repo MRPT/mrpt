@@ -17,12 +17,12 @@
         "--pretty"
     ],
     "[cpp]": {
-        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
+        "editor.defaultFormatter": "xaver.clang-format",
         "editor.rulers": [
             100
         ]
     },
-    "[cmake]": { 
+    "[cmake]": {
         "editor.tabSize": 2,
     },
     "cSpell.allowCompoundWords": true,
