@@ -32,7 +32,7 @@ class CArchiveStreamBase<std::istream> : public CArchive
   }
   size_t read(void* d, size_t n) override
   {
-    if (m_s.read(reinterpret_cast<char*>(d), n))
+    if (m_s.read(reinterpret_cast<char*>(d), static_cast<std::streamsize>(n)))
     {
       return n;
     }
@@ -58,7 +58,7 @@ class CArchiveStreamBase<std::ostream> : public CArchive
     }
     return 0;
   }
-  size_t read(void* d, size_t n) override
+  size_t read([[maybe_unused]] void* d, [[maybe_unused]] size_t n) override
   {
     throw std::runtime_error("CArchiveStreamBase<std::ostream>: cannot read from output stream.");
   }
