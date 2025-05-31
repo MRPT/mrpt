@@ -15,17 +15,11 @@
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/poses/poses_frwds.h>
 
-#if TF2_VERSION >= 0x004201
-#include <tf2/LinearMath/Matrix3x3.hpp>
-#include <tf2/LinearMath/Transform.hpp>
-#else
-#include <tf2/LinearMath/Matrix3x3.h>
-#include <tf2/LinearMath/Transform.h>
-#endif
-
 #include <cstring>  // size_t
 #include <geometry_msgs/msg/pose_with_covariance.hpp>
 #include <geometry_msgs/msg/quaternion.hpp>
+#include <tf2/LinearMath/Matrix3x3.hpp>
+#include <tf2/LinearMath/Transform.hpp>
 
 namespace mrpt::ros2bridge
 {
