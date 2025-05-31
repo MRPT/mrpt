@@ -146,7 +146,6 @@ if (NOT DISABLE_ROS)
 	# Convert package versions to hex so they can be used in preprocessor for wider
 	# versions compatibility of "one-source for all":
 	mrpt_version_to_hex(cv_bridge_VERSION  cv_bridge_VERSION_HEX)
-	mrpt_version_to_hex(tf2_VERSION  tf2_VERSION_HEX)
 
 
 	# Kinda hack to prevent build farm to time out for "dev" jobs:
