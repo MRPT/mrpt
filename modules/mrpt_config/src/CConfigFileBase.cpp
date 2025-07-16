@@ -53,7 +53,7 @@ void CConfigFileBase::write(
       section, name,
       format(
           ((std::abs(value) > 1e-4f && std::abs(value) < 1e4f) || value == .0f) ? "%f" : "%e",
-          value),
+          static_cast<double>(value)),
       name_padding_width, value_padding_width, comment);
 }
 
@@ -68,23 +68,31 @@ void CConfigFileBase::writeString(
     const std::string& comment)
 {
   if (name_padding_width < 1 && value_padding_width < 1 && comment.empty())
-    this->writeString(section, name, str);  // Default (old) behavior.
+  {
+    this->writeString(section, name, str);
+  }
 
   std::string name_pad;
   if (name_padding_width >= 1)
-    name_pad = mrpt::format(
-        "%*s", -name_padding_width,
-        name.c_str());  // negative width: printf right padding
+  {
+    // negative width: printf right padding
+    name_pad = mrpt::format("%*s", -name_padding_width, name.c_str());
+  }
   else
+  {
     name_pad = name;
+  }
 
   std::string value_pad;
   if (value_padding_width >= 1)
-    value_pad = mrpt::format(
-        " %*s", -value_padding_width,
-        str.c_str());  // negative width: printf right padding
+  {
+    // negative width: printf right padding
+    value_pad = mrpt::format(" %*s", -value_padding_width, str.c_str());
+  }
   else
+  {
     value_pad = str;
+  }
 
   if (!comment.empty())
   {
@@ -116,8 +124,9 @@ float CConfigFileBase::read_float(
     float defaultValue,
     bool failIfNotFound) const
 {
-  return (float)atof(
-      readString(section, name, format("%.10e", defaultValue), failIfNotFound).c_str());
+  return static_cast<float>(atof(
+      readString(section, name, format("%.10e", static_cast<double>(defaultValue)), failIfNotFound)
+          .c_str()));
 }
 
 /*---------------------------------------------------------------
@@ -141,8 +150,8 @@ uint64_t CConfigFileBase::read_uint64_t(
     uint64_t defaultValue,
     bool failIfNotFound) const
 {
-  string s =
-      readString(section, name, format("%lu", (long unsigned int)defaultValue), failIfNotFound);
+  string s = readString(
+      section, name, format("%lu", static_cast<long unsigned int>(defaultValue)), failIfNotFound);
   return mrpt::system::os::_strtoull(s.c_str(), nullptr, 0);
 }
 
@@ -157,10 +166,22 @@ bool CConfigFileBase::read_bool(
 {
   const string s = mrpt::system::lowerCase(
       trim(readString(section, name, string(defaultValue ? "1" : "0"), failIfNotFound)));
-  if (s == "true") return true;
-  if (s == "false") return false;
-  if (s == "yes") return true;
-  if (s == "no") return false;
+  if (s == "true")
+  {
+    return true;
+  }
+  if (s == "false")
+  {
+    return false;
+  }
+  if (s == "yes")
+  {
+    return true;
+  }
+  if (s == "no")
+  {
+    return false;
+  }
   return (0 != atoi(s.c_str()));
 }
 
@@ -197,11 +218,10 @@ std::string CConfigFileBase::read_string_first_word(
           "all whitespaces??",
           name.c_str(), section.c_str()));
     }
-    else
-      return "";
+    return "";
   }
-  else
-    return auxStrs[0];
+
+  return auxStrs[0];
 }
 
 bool CConfigFileBase::sectionExists(const std::string& section_name) const
@@ -209,7 +229,12 @@ bool CConfigFileBase::sectionExists(const std::string& section_name) const
   std::vector<std::string> sects;
   getAllSections(sects);
   for (auto& sect : sects)
-    if (!mrpt::system::os::_strcmpi(section_name.c_str(), sect.c_str())) return true;
+  {
+    if (!mrpt::system::os::_strcmpi(section_name.c_str(), sect.c_str()))
+    {
+      return true;
+    }
+  }
   return false;
 }
 
@@ -218,7 +243,10 @@ bool CConfigFileBase::keyExists(const std::string& section, const std::string& k
   std::vector<std::string> keys;
   getAllKeys(section, keys);
   for (auto& k : keys)
-    if (!mrpt::system::os::_strcmpi(key.c_str(), k.c_str())) return true;
+    if (!mrpt::system::os::_strcmpi(key.c_str(), k.c_str()))
+    {
+      return true;
+    }
   return false;
 }
 
@@ -261,10 +289,15 @@ void CConfigFileBase::setContentFromYAML(const std::string& yaml_block)
   }
 
   // 1st: unscoped:
-  for (const auto& kv : unscoped) this->write("", kv.first, kv.second);
+  for (const auto& kv : unscoped)
+  {
+    this->write("", kv.first, kv.second);
+  }
 
   for (const auto& sect : sections)
+  {
     for (const auto& kv : sect.second) this->write(sect.first, kv.first, kv.second);
+  }
 
   MRPT_END
 }
