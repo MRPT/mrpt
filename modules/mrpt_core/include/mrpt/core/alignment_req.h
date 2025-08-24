@@ -11,11 +11,7 @@
  See: https://www.mrpt.org/Authors - All rights reserved.
  SPDX-License-Identifier: BSD-3-Clause
 */
-
 #pragma once
 
 // This is to match Eigen expectations on alignment of dynamic objects:
 #include <mrpt/core/config.h>
-
-// #define MRPT_MAX_ALIGN_BYTES          XXX
-// #define MRPT_MAX_STATIC_ALIGN_BYTES   XXX
