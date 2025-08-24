@@ -17,7 +17,6 @@
 #include <mrpt/core/alignment_req.h>
 
 #include <memory>
-#include <type_traits>
 
 namespace mrpt
 {
@@ -38,7 +37,7 @@ void* aligned_calloc(size_t bytes, size_t alignment);
  * Anyway, this allocator class is left here just in case it is needed for
  * something else.
  */
-template <class T, size_t AligmentBytes = MRPT_MAX_ALIGN_BYTES>
+template <class T, size_t AlignmentBytes = MRPT_MAX_ALIGN_BYTES>
 class aligned_allocator_cpp11 : public std::allocator<T>
 {
  public:
@@ -58,6 +57,9 @@ class aligned_allocator_cpp11 : public std::allocator<T>
 
   aligned_allocator_cpp11() : std::allocator<T>() {}
   aligned_allocator_cpp11(const aligned_allocator_cpp11& other) : std::allocator<T>(other) {}
+  aligned_allocator_cpp11& operator=(const aligned_allocator_cpp11&) = default;
+  aligned_allocator_cpp11(aligned_allocator_cpp11&&) = default;
+  aligned_allocator_cpp11& operator=(aligned_allocator_cpp11&&) = default;
   template <class U>
   aligned_allocator_cpp11(const aligned_allocator_cpp11<U>& other) : std::allocator<T>(other)
   {
@@ -65,7 +67,7 @@ class aligned_allocator_cpp11 : public std::allocator<T>
   ~aligned_allocator_cpp11() = default;
   pointer allocate(size_type num, const void* /*hint*/ = nullptr)
   {
-    return static_cast<pointer>(mrpt::aligned_malloc(num * sizeof(T), AligmentBytes));
+    return static_cast<pointer>(mrpt::aligned_malloc(num * sizeof(T), AlignmentBytes));
   }
   void deallocate(pointer p, size_type /*num*/) { mrpt::aligned_free(p); }
 };
