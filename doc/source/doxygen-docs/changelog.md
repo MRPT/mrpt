@@ -1,5 +1,10 @@
 \page changelog Change Log
 
+# Version 2.14.12: UNRELEASED
+- Changes in libraries:
+  - \ref mrpt_opengl_grp
+    - New method mrpt::opengl::CPointCloudColoured::setAllPointsAlpha().
+
 # Version 2.14.11: Released May 31rd, 2025
 - BUG FIXES:
   - Fix build against all tf2 versions in all active ROS 2 distributions.
