@@ -146,6 +146,7 @@ class CPointCloudColoured :
     {
       pt.A = alpha_channel;
     }
+    markAllPointsAsNew();
   }
   /** Like \c getPointColor but without checking for out-of-index errors */
   void getPointColor_fast(size_t index, float& R, float& G, float& B) const
