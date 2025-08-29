@@ -24,19 +24,19 @@ find_package(GTest QUIET)
 # ===================================================
 # Default: dynamic libraries (except if building to JavaScript code)
 if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten")
-	set(_def_value OFF)
+  set(_def_value OFF)
 else()
-	set(_def_value ON)
+  set(_def_value ON)
 endif()
 set(BUILD_SHARED_LIBS ${_def_value} CACHE BOOL "Build shared libraries (.dll/.so) instead of static ones (.lib/.a)")
 unset(_def_value)
 
 if(BUILD_SHARED_LIBS)
-	set(CMAKE_MRPT_BUILD_SHARED_LIB "#define MRPT_BUILT_AS_DLL")
-	set(CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF 1)
+  set(CMAKE_MRPT_BUILD_SHARED_LIB "#define MRPT_BUILT_AS_DLL")
+  set(CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF 1)
 else()
-	set(CMAKE_MRPT_BUILD_SHARED_LIB "/* #define MRPT_BUILT_AS_DLL */")
-	set(CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF 0)
+  set(CMAKE_MRPT_BUILD_SHARED_LIB "/* #define MRPT_BUILT_AS_DLL */")
+  set(CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF 0)
 endif()
 
 
@@ -396,23 +396,23 @@ endfunction()
 #  remove_matching_files_from_list(".*_LIN.cpp" my_srcs)
 #
 macro(remove_matching_files_from_list match_expr lst_files)
-	set(lst_files_aux "")
-	foreach(FIL ${${lst_files}})
-		if(NOT ${FIL} MATCHES "${match_expr}")
-			set(lst_files_aux "${lst_files_aux}" "${FIL}")
-		endif()
-	endforeach()
-	set(${lst_files} ${lst_files_aux})
+  set(lst_files_aux "")
+  foreach(FIL ${${lst_files}})
+    if(NOT ${FIL} MATCHES "${match_expr}")
+      set(lst_files_aux "${lst_files_aux}" "${FIL}")
+    endif()
+  endforeach()
+  set(${lst_files} ${lst_files_aux})
 endmacro()
 
 macro(keep_matching_files_from_list match_expr lst_files)
-	set(lst_files_aux "")
-	foreach(FIL ${${lst_files}})
-		if(${FIL} MATCHES "${match_expr}")
-			set(lst_files_aux "${lst_files_aux}" "${FIL}")
-		endif()
-	endforeach()
-	set(${lst_files} ${lst_files_aux})
+  set(lst_files_aux "")
+  foreach(FIL ${${lst_files}})
+    if(${FIL} MATCHES "${match_expr}")
+      set(lst_files_aux "${lst_files_aux}" "${FIL}")
+    endif()
+  endforeach()
+  set(${lst_files} ${lst_files_aux})
 endmacro()
 
 # Rely on CMake to detect target system architecture:
@@ -430,9 +430,9 @@ endif()
 # Detect if we are in i386 / amd64:
 # Intel arch names in Linux & Windows.
 if (("${CMAKE_MRPT_ARCH}" MATCHES "^(x86_64|i686|AMD64|IA64|x86)$") AND (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten"))
-	set(MRPT_ARCH_INTEL_COMPATIBLE 1)
+  set(MRPT_ARCH_INTEL_COMPATIBLE 1)
 else()
-	set(MRPT_ARCH_INTEL_COMPATIBLE 0)
+  set(MRPT_ARCH_INTEL_COMPATIBLE 0)
 endif()
 
 # Define the helper variables:
@@ -442,13 +442,13 @@ endif()
 #---------------------------------------------------
 set(MRPT_COMPILER_IS_CLANG 0)
 if (${CMAKE_CXX_COMPILER_ID}  STREQUAL "Clang")
-	set(MRPT_COMPILER_IS_CLANG 1)
+  set(MRPT_COMPILER_IS_CLANG 1)
 endif()
 set(MRPT_COMPILER_IS_GCC ${CMAKE_COMPILER_IS_GNUCXX})
 if (MRPT_COMPILER_IS_GCC OR MRPT_COMPILER_IS_CLANG)
-	set(MRPT_COMPILER_IS_GCC_OR_CLANG 1)
+  set(MRPT_COMPILER_IS_GCC_OR_CLANG 1)
 else()
-	set(MRPT_COMPILER_IS_GCC_OR_CLANG 0)
+  set(MRPT_COMPILER_IS_GCC_OR_CLANG 0)
 endif()
 
 # handle_special_simd_flags(): Add custom flags to a set of source files
@@ -703,14 +703,45 @@ endmacro()
 # Minimize the time and memory required to build and load debug info:
 #-----------------------------------------------------------------------
 function(mrpt_reduced_debug_symbols TARGET_)
-	get_property(CUR_FLAGS_ TARGET ${TARGET_} PROPERTY COMPILE_OPTIONS)
-	set(cxxflags_ "$ENV{CXXFLAGS}")
-	separate_arguments(cxxflags_)
-	if (("-g" IN_LIST CUR_FLAGS_) OR ("-g" IN_LIST cxxflags_))
-		if (MRPT_COMPILER_IS_GCC)
-			target_compile_options(${TARGET_} PRIVATE -g1)
-		elseif(MRPT_COMPILER_IS_CLANG)
-			target_compile_options(${TARGET_} PRIVATE -gline-tables-only)
-		endif()
-	endif()
+  get_property(CUR_FLAGS_ TARGET ${TARGET_} PROPERTY COMPILE_OPTIONS)
+  set(cxxflags_ "$ENV{CXXFLAGS}")
+  separate_arguments(cxxflags_)
+  if (("-g" IN_LIST CUR_FLAGS_) OR ("-g" IN_LIST cxxflags_))
+    if (MRPT_COMPILER_IS_GCC)
+      target_compile_options(${TARGET_} PRIVATE -g1)
+    elseif(MRPT_COMPILER_IS_CLANG)
+      target_compile_options(${TARGET_} PRIVATE -gline-tables-only)
+    endif()
+  endif()
 endfunction()
+
+
+# Defined PYTHON_INSTALL_DIR() following ROS & Debian conventions depending on the detected build environment
+# From: https://github.com/ament/ament_cmake/blob/rolling/ament_cmake_python/ament_cmake_python-extras.cmake
+macro(mrpt_ament_cmake_python_get_python_install_dir)
+  if(NOT DEFINED PYTHON_INSTALL_DIR)
+  # (JLBC,June 2023): *Hack* to comply with ROS conventions of storing python pkgs differently than Debian/Ubuntu standards.
+  # (JLBC,Jan 2024): 
+  # - ROS 1:  lib/python3/dist-packages/
+  # - ROS 2:  lib/pythonX.Y/site-packages/
+  # - Debian: lib/pythonX.Y/
+  if(NOT DEFINED ENV{ROS_VERSION})
+    # Regular Debian package.
+    set(_output "lib/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/")  # this is prefixed with "/usr/"
+  elseif("$ENV{ROS_VERSION}" STREQUAL "1")
+    # ROS 1
+    set(_output "lib/python3/dist-packages/")  # this is prefixed with "/opt/ros/xxx/"
+  elseif("$ENV{ROS_VERSION}" STREQUAL "2")
+    # ROS 2
+    set(_output "lib/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/site-packages/")  # this is prefixed with "/opt/ros/xxx/"
+  else()
+    message(FATAL_ERROR "Unhandled value for ENV{ROS_VERSION}=$ENV{ROS_VERSION}")
+  endif()
+
+  set(PYTHON_INSTALL_DIR
+    "${_output}"
+    CACHE INTERNAL
+    "The directory for Python library installation. This needs to be in PYTHONPATH when 'setup.py install' is called.")
+  unset(_output)
+  endif()
+endmacro()
