@@ -21,9 +21,7 @@
 
 namespace mrpt::viz
 {
-/** A cloud of points, each one with an individual colour (R,G,B). The alpha
- * component is shared by all the points and is stored in the base member
- * m_color_A.
+/** A cloud of points, each one with an individual color (R,G,B,A).
  *
  * To load from a points-map, CPointCloudColoured::loadFromPointsMap().
  *
@@ -136,6 +134,16 @@ class CPointCloudColoured :
     m_point_colors[index].G = g;
     m_point_colors[index].B = b;
     m_point_colors[index].A = a;
+  }
+  /** Overwrites the alpha (transparency) channel for all existing points */
+  void setAllPointsAlpha(uint8_t alpha_channel)
+  {
+    std::unique_lock<std::shared_mutex> wfWriteLock(CRenderizableShaderPoints::m_pointsMtx.data);
+    for (auto& pt : m_point_colors)
+    {
+      pt.A = alpha_channel;
+    }
+    markAllPointsAsNew();
   }
   /** Like \c getPointColor but without checking for out-of-index errors */
   void getPointColor_fast(size_t index, float& R, float& G, float& B) const
