@@ -76,6 +76,12 @@ class WorkerThreadsPool
   }
   ~WorkerThreadsPool() { clear(); }
 
+  // Non-copyable and non-movable
+  WorkerThreadsPool(const WorkerThreadsPool&) = delete;
+  WorkerThreadsPool& operator=(const WorkerThreadsPool&) = delete;
+  WorkerThreadsPool(WorkerThreadsPool&&) = delete;
+  WorkerThreadsPool& operator=(WorkerThreadsPool&&) = delete;
+
   void resize(std::size_t num_threads);
   /** Get number of working threads \note (New in MRPT 2.4.2) */
   std::size_t size() const { return threads_.size(); }

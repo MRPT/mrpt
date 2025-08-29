@@ -17,6 +17,7 @@
   <buildtool_depend>cmake</buildtool_depend>
 
   <depend>mrpt_common</depend>
+  <depend>pybind11_catkin</depend>
 
   <export>
     <build_type>cmake</build_type>
