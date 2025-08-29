@@ -40,27 +40,28 @@ class mrptEvent
   virtual void do_nothing() {}
 
  public:
-  /** Default ctor */
-  inline mrptEvent() : timestamp(mrpt::Clock::now()) {}
+  mrptEvent() = default;
+  virtual ~mrptEvent() = default;
+
   template <class EVENTTYPE>
-  inline bool isOfType() const
+  bool isOfType() const
   {
     return dynamic_cast<const EVENTTYPE*>(this) != nullptr;
   }
 
   template <class EVENTTYPE>
-  inline const EVENTTYPE* getAs() const
+  const EVENTTYPE* getAs() const
   {
     return dynamic_cast<const EVENTTYPE*>(this);
   }
 
   template <class EVENTTYPE>
-  inline EVENTTYPE* getAsNonConst() const
+  EVENTTYPE* getAsNonConst() const
   {
     return const_cast<EVENTTYPE*>(dynamic_cast<const EVENTTYPE*>(this));
   }
 
-  mrpt::Clock::time_point timestamp;
+  mrpt::Clock::time_point timestamp{mrpt::Clock::now()};
 
 };  // End of class def.
 
@@ -75,7 +76,7 @@ class mrptEventOnDestroy : public mrptEvent
   void do_nothing() override {}
 
  public:
-  inline mrptEventOnDestroy(const CObservable* obj) : source_object(obj) {}
+  mrptEventOnDestroy(const CObservable* obj) : source_object(obj) {}
   const CObservable* source_object;
 
 };  // End of class def.
