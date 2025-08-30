@@ -133,13 +133,7 @@ if (MRPT_EXCEPTIONS_WITH_CALL_STACK)
 endif()
 
 # Python wrapper:
-set(PYBIND11_FINDPYTHON ON)
-find_package(Python3 COMPONENTS Interpreter Development) # the macro next line needs python versions
-find_package(pybind11)
-if (pybind11_FOUND)
-  mrpt_ament_cmake_python_get_python_install_dir()  # defines PYTHON_INSTALL_DIR
-  pybind11_add_module(${PROJECT_NAME}_py MODULE python_bindings/${PROJECT_NAME}_py.cpp)
-  target_link_libraries(${PROJECT_NAME}_py PRIVATE ${PROJECT_NAME})
-  target_include_directories(${PROJECT_NAME}_py PRIVATE include)
-  install(TARGETS ${PROJECT_NAME}_py LIBRARY DESTINATION ${PYTHON_INSTALL_DIR})
-endif()
+mrpt_add_python_module(${PROJECT_NAME}_py 
+  python_bindings/${PROJECT_NAME}_py.cpp
+)
+
