@@ -719,29 +719,27 @@ endfunction()
 # Defined PYTHON_INSTALL_DIR() following ROS & Debian conventions depending on the detected build environment
 # From: https://github.com/ament/ament_cmake/blob/rolling/ament_cmake_python/ament_cmake_python-extras.cmake
 macro(mrpt_ament_cmake_python_get_python_install_dir)
-  if(NOT DEFINED PYTHON_INSTALL_DIR)
-  # (JLBC,June 2023): *Hack* to comply with ROS conventions of storing python pkgs differently than Debian/Ubuntu standards.
-  # (JLBC,Jan 2024): 
-  # - ROS 1:  lib/python3/dist-packages/
-  # - ROS 2:  lib/pythonX.Y/site-packages/
-  # - Debian: lib/pythonX.Y/
-  if(NOT DEFINED ENV{ROS_VERSION})
-    # Regular Debian package.
-    set(_output "lib/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/")  # this is prefixed with "/usr/"
-  elseif("$ENV{ROS_VERSION}" STREQUAL "1")
-    # ROS 1
-    set(_output "lib/python3/dist-packages/")  # this is prefixed with "/opt/ros/xxx/"
-  elseif("$ENV{ROS_VERSION}" STREQUAL "2")
-    # ROS 2
-    set(_output "lib/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/site-packages/")  # this is prefixed with "/opt/ros/xxx/"
-  else()
-    message(FATAL_ERROR "Unhandled value for ENV{ROS_VERSION}=$ENV{ROS_VERSION}")
-  endif()
+  # Required for colcon to detect the python module and extend the PYTHONPATH env var:
+  set(_output "lib/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/site-packages/")  # this is prefixed with "/opt/ros/xxx/"
 
   set(PYTHON_INSTALL_DIR
     "${_output}"
     CACHE INTERNAL
     "The directory for Python library installation. This needs to be in PYTHONPATH when 'setup.py install' is called.")
   unset(_output)
-  endif()
+#  endif()
 endmacro()
+
+# Function to generalize Python module creation
+function(mrpt_add_python_module MODULE_NAME CPP_SOURCES)
+  set(PYBIND11_FINDPYTHON ON)
+  find_package(Python3 COMPONENTS Interpreter Development)
+  find_package(pybind11)
+  if (pybind11_FOUND)
+    mrpt_ament_cmake_python_get_python_install_dir()
+    pybind11_add_module(${MODULE_NAME} MODULE ${CPP_SOURCES})
+    target_link_libraries(${MODULE_NAME} PRIVATE ${PROJECT_NAME})
+    target_include_directories(${MODULE_NAME} PRIVATE include)
+    install(TARGETS ${MODULE_NAME} LIBRARY DESTINATION ${PYTHON_INSTALL_DIR})
+  endif()
+endfunction()
