@@ -13,7 +13,10 @@
 */
 
 // pybind11
+#include <pybind11/chrono.h>
+#include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 // MRPT headers
 #include <mrpt/core/Clock.h>
@@ -28,9 +31,7 @@
 #include <mrpt/core/reverse_bytes.h>
 
 #include <cstdint>
-#include <future>
 #include <string>
-#include <thread>
 
 namespace py = pybind11;
 
@@ -86,10 +87,16 @@ PYBIND11_MODULE(mrpt_core_py, m)
   // ------------------ Clock ------------------
   py::class_<mrpt::Clock>(m, "Clock")
       .def_static(
-          "now", []() { return mrpt::Clock::nowDouble(); }, "Current time in seconds (double)")
+          "nowDouble", []() { return mrpt::Clock::nowDouble(); },
+          "Current time in seconds (double)")
       .def_static(
-          "now_time_point", []() { return mrpt::Clock::now(); },
-          "Current time as std::chrono::time_point");
+          "now", []() { return mrpt::Clock::now(); }, "Current time as mrpt::Clock::time_point")
+      .def_static(
+          "toDouble", [](const mrpt::Clock::time_point& tp) { return mrpt::Clock::toDouble(tp); },
+          py::arg("time_point"), "Convert mrpt::Clock::time_point to double seconds")
+      .def_static(
+          "fromDouble", [](double t) { return mrpt::Clock::fromDouble(t); }, py::arg("seconds"),
+          "Convert double seconds to mrpt::Clock::time_point");
 
   // ------------------ WorkerThreadsPool ------------------
   py::class_<mrpt::WorkerThreadsPool>(m, "WorkerThreadsPool")
