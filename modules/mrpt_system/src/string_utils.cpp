@@ -12,6 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/core/config.h>  // HAVE_STRTOK_R
 #include <mrpt/core/format.h>
 #include <mrpt/system/os.h>  // strncmp(),...
 #include <mrpt/system/string_utils.h>
@@ -74,13 +75,13 @@ void mrpt::system::encodeUTF8(const std::vector<uint16_t>& input, std::string& o
     // 0xxxxxxx
     if (i < 0x80)
     {
-      output += (char)i;
+      output += static_cast<char>(i);
     }
     // 110xxxxx 10xxxxxx
     else if (i < 0x800)
     {
-      output += (char)(MASK2BYTES | i >> 6);
-      output += (char)(MASKBYTE | (i & MASKBITS));
+      output += static_cast<char>(MASK2BYTES | i >> 6);
+      output += static_cast<char>(MASKBYTE | (i & MASKBITS));
     }
     // 1110xxxx 10xxxxxx 10xxxxxx
     /*else if(input[i] < 0x10000)
@@ -109,19 +110,20 @@ void mrpt::system::decodeUTF8(const std::string& input, std::vector<uint16_t>& o
     // 1110xxxx 10xxxxxx 10xxxxxx
     if ((input[i] & MASK3BYTES) == MASK3BYTES)
     {
-      ch = ((input[i] & 0x0F) << 12) | ((input[i + 1] & MASKBITS) << 6) | (input[i + 2] & MASKBITS);
+      ch = static_cast<uint16_t>(
+          ((input[i] & 0x0F) << 12) | ((input[i + 1] & MASKBITS) << 6) | (input[i + 2] & MASKBITS));
       i += 3;
     }
     // 110xxxxx 10xxxxxx
     else if ((input[i] & MASK2BYTES) == MASK2BYTES)
     {
-      ch = ((input[i] & 0x1F) << 6) | (input[i + 1] & MASKBITS);
+      ch = static_cast<uint16_t>((input[i] & 0x1F) << 6) | (input[i + 1] & MASKBITS);
       i += 2;
     }
     // 0xxxxxxx
     else if (uint8_t(input[i]) < MASKBYTE)
     {
-      ch = input[i];
+      ch = static_cast<unsigned char>(input[i]);
       i += 1;
     }
     output.push_back(ch);
@@ -198,7 +200,8 @@ std::string mrpt::system::unitsFormat(const double val, int nDecimalDigits, bool
 /*---------------------------------------------------------------
             strtok
 ---------------------------------------------------------------*/
-char* mrpt::system::strtok(char* str, const char* strDelimit, char** context) noexcept
+char* mrpt::system::strtok(
+    char* str, const char* strDelimit, [[maybe_unused]] char** context) noexcept
 {
 #if defined(_MSC_VER) && (_MSC_VER >= 1400)
   // Use a secure version in Visual Studio 2005:
@@ -216,7 +219,7 @@ char* mrpt::system::strtok(char* str, const char* strDelimit, char** context) no
 
 template <class CONTAINER>
 void mrpt::system::tokenize(
-    const std::string& inString,
+    const std::string& inString,  // NOLINT
     const std::string& inDelimiters,
     CONTAINER& outTokens,
     bool skipBlankTokens) noexcept
@@ -289,9 +292,11 @@ std::string mrpt::system::trim(const std::string& str)
   size_t s = str.find_first_not_of(" \t");
   size_t e = str.find_last_not_of(" \t");
   if (s == std::string::npos || e == std::string::npos)
+  {
     return std::string();
-  else
-    return str.substr(s, e - s + 1);
+  }
+
+  return str.substr(s, e - s + 1);
 }
 
 /*---------------------------------------------------------------
