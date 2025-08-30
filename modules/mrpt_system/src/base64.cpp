@@ -13,6 +13,7 @@
 */
 
 #include <mrpt/core/common.h>
+#include <mrpt/core/exceptions.h>
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/system/string_utils.h>
 
@@ -33,7 +34,9 @@ const unsigned char alphabet[64 + 1] =
 void mrpt::system::encodeBase64(const std::vector<uint8_t>& inputData, std::string& outString)
 {
   outString.clear();
-  outString.reserve(inputData.size() * mrpt::round(4.0 / 3.0));
+  outString.reserve(inputData.size() * static_cast<std::size_t>(mrpt::round(4.0 / 3.0)));
+
+  const auto addChar = [&](const unsigned char c) { outString.push_back(static_cast<char>(c)); };
 
   int char_count = 0;
   int bits = 0;
@@ -46,14 +49,14 @@ void mrpt::system::encodeBase64(const std::vector<uint8_t>& inputData, std::stri
 
     if (char_count == 3)
     {
-      outString.push_back(alphabet[bits >> 18]);
-      outString.push_back(alphabet[(bits >> 12) & 0x3f]);
-      outString.push_back(alphabet[(bits >> 6) & 0x3f]);
-      outString.push_back(alphabet[bits & 0x3f]);
+      addChar(alphabet[bits >> 18]);
+      addChar(alphabet[(bits >> 12) & 0x3f]);
+      addChar(alphabet[(bits >> 6) & 0x3f]);
+      addChar(alphabet[bits & 0x3f]);
       cols += 4;
       if (cols == 72)
       {
-        outString.push_back('\n');
+        addChar('\n');
         cols = 0;
       }
       bits = 0;
@@ -68,22 +71,22 @@ void mrpt::system::encodeBase64(const std::vector<uint8_t>& inputData, std::stri
   if (char_count != 0)
   {
     bits <<= 16 - (8 * char_count);
-    outString.push_back(alphabet[bits >> 18]);
-    outString.push_back(alphabet[(bits >> 12) & 0x3f]);
+    addChar(alphabet[bits >> 18]);
+    addChar(alphabet[(bits >> 12) & 0x3f]);
 
     if (char_count == 1)
     {
-      outString.push_back('=');
-      outString.push_back('=');
+      addChar('=');
+      addChar('=');
     }
     else
     {
-      outString.push_back(alphabet[(bits >> 6) & 0x3f]);
-      outString.push_back('=');
+      addChar(alphabet[(bits >> 6) & 0x3f]);
+      addChar('=');
     }
     if (cols > 0)
     {
-      outString.push_back('\n');
+      addChar('\n');
     }
   }
 }
@@ -93,7 +96,7 @@ void mrpt::system::encodeBase64(const std::vector<uint8_t>& inputData, std::stri
 ---------------------------------------------------------------*/
 bool mrpt::system::decodeBase64(const std::string& inString, std::vector<uint8_t>& outData)
 {
-  static bool inalphabet[256];
+  static bool in_alphabet[256];
   static char decoder[256];
 
   static bool tablesBuilt = false;
@@ -103,13 +106,15 @@ bool mrpt::system::decodeBase64(const std::string& inString, std::vector<uint8_t
     tablesBuilt = true;
     for (int i = (sizeof(alphabet)) - 1; i >= 0; i--)
     {
-      inalphabet[alphabet[i]] = true;
+      in_alphabet[alphabet[i]] = true;
       decoder[alphabet[i]] = static_cast<char>(i);
     }
   }
 
   outData.clear();
-  outData.reserve(inString.size() * round(3.0 / 4.0));
+  outData.reserve((inString.size() * 3) / 4);
+
+  const auto addByte = [&](const int c) { outData.push_back(static_cast<uint8_t>(c)); };
 
   int errors = 0;
 
@@ -117,14 +122,16 @@ bool mrpt::system::decodeBase64(const std::string& inString, std::vector<uint8_t
   int bits = 0;
   bool finish_flag_found = false;
 
-  for (unsigned char c : inString)
+  for (const auto ch : inString)
   {
+    const auto c = static_cast<unsigned char>(ch);
+
     if (c == '=')
     {
       finish_flag_found = true;
       break;
     }
-    if (!inalphabet[c])
+    if (!in_alphabet[c])
     {
       continue;
     }
@@ -133,9 +140,9 @@ bool mrpt::system::decodeBase64(const std::string& inString, std::vector<uint8_t
     char_count++;
     if (char_count == 4)
     {
-      outData.push_back((bits >> 16));
-      outData.push_back(((bits >> 8) & 0xff));
-      outData.push_back((bits & 0xff));
+      addByte(bits >> 16);
+      addByte(((bits >> 8) & 0xff));
+      addByte((bits & 0xff));
       bits = 0;
       char_count = 0;
     }
@@ -149,8 +156,7 @@ bool mrpt::system::decodeBase64(const std::string& inString, std::vector<uint8_t
   {
     if (char_count)
     {
-      std::cerr << "[decodeBase64] ERROR: base64 encoding incomplete, at"
-                   "least "
+      std::cerr << "[decodeBase64] ERROR: base64 encoding incomplete, atleast "
                 << ((4 - char_count) * 6) << "bits truncated." << std::endl;
       errors++;
     }
@@ -160,18 +166,21 @@ bool mrpt::system::decodeBase64(const std::string& inString, std::vector<uint8_t
     switch (char_count)
     {
       case 1:
-        std::cerr << "[decodeBase64] ERROR: base64 encoding "
-                     "incomplete, at least 2 bits missing"
+        std::cerr << "[decodeBase64] ERROR: base64 encoding incomplete, at least 2 bits missing"
                   << std::endl;
         errors++;
         break;
       case 2:
-        outData.push_back((bits >> 10));
+        addByte(bits >> 10);
         break;
       case 3:
-        outData.push_back((bits >> 16));
-        outData.push_back(((bits >> 8) & 0xff));
+        addByte(bits >> 16);
+        addByte(((bits >> 8) & 0xff));
         break;
+      default:
+      {
+        THROW_EXCEPTION("Unexpected char count in decodeBase64()");
+      }
     }
   }
 
