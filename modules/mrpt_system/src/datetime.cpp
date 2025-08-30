@@ -77,13 +77,13 @@ void mrpt::system::timestampToParts(TTimeStamp t, TTimeParts& p, bool localTime)
 
   ASSERTMSG_(parts, "Malformed timestamp");
 
-  p.year = parts->tm_year + 1900;
-  p.month = parts->tm_mon + 1;
-  p.day = parts->tm_mday;
-  p.day_of_week = parts->tm_wday + 1;
+  p.year = static_cast<uint16_t>(parts->tm_year + 1900);
+  p.month = static_cast<uint8_t>(parts->tm_mon + 1);
+  p.day = static_cast<uint8_t>(parts->tm_mday);
+  p.day_of_week = static_cast<uint8_t>(parts->tm_wday + 1);
   p.daylight_saving = parts->tm_isdst;
-  p.hour = parts->tm_hour;
-  p.minute = parts->tm_min;
+  p.hour = static_cast<uint8_t>(parts->tm_hour);
+  p.minute = static_cast<uint8_t>(parts->tm_min);
   p.second = parts->tm_sec + sec_frac;
 }
 
@@ -138,7 +138,9 @@ time_t my_timegm(struct tm* tm)
   ---------------------------------------------------------------*/
 TTimeStamp mrpt::system::buildTimestampFromParts(const TTimeParts& p)
 {
-  struct tm parts{};
+  struct tm parts
+  {
+  };
 
   parts.tm_year = p.year - 1900;
   parts.tm_mon = p.month - 1;
@@ -161,7 +163,9 @@ TTimeStamp mrpt::system::buildTimestampFromParts(const TTimeParts& p)
   ---------------------------------------------------------------*/
 TTimeStamp mrpt::system::buildTimestampFromPartsLocalTime(const TTimeParts& p)
 {
-  struct tm parts{};
+  struct tm parts
+  {
+  };
 
   parts.tm_year = p.year - 1900;
   parts.tm_mon = p.month - 1;
@@ -229,9 +233,9 @@ string mrpt::system::dateTimeToString(const mrpt::system::TTimeStamp t)
     return string("INVALID_TIMESTAMP");
   }
 
-  uint64_t tmp = (t.time_since_epoch().count() - EPOCH_OFFSET);
-  time_t auxTime = tmp / (uint64_t)10000000;
-  auto secFractions = calcSecFractions(tmp);
+  const uint64_t tmp = static_cast<uint64_t>(t.time_since_epoch().count()) - EPOCH_OFFSET;
+  const time_t auxTime = static_cast<time_t>(tmp / 10000000U);
+  const auto secFractions = calcSecFractions(tmp);
   tm* ptm = gmtime(&auxTime);
 
   if (!ptm)
@@ -241,7 +245,7 @@ string mrpt::system::dateTimeToString(const mrpt::system::TTimeStamp t)
 
   return format(
       "%u/%02u/%02u,%02u:%02u:%02u.%06u", 1900 + ptm->tm_year, ptm->tm_mon + 1, ptm->tm_mday,
-      ptm->tm_hour, ptm->tm_min, (unsigned int)ptm->tm_sec, secFractions);
+      ptm->tm_hour, ptm->tm_min, static_cast<unsigned int>(ptm->tm_sec), secFractions);
 }
 
 /*---------------------------------------------------------------
@@ -255,9 +259,9 @@ string mrpt::system::dateTimeLocalToString(const mrpt::system::TTimeStamp t)
     return string("INVALID_TIMESTAMP");
   }
 
-  uint64_t tmp = (t.time_since_epoch().count() - EPOCH_OFFSET);
-  time_t auxTime = tmp / (uint64_t)10000000;
-  auto secFractions = calcSecFractions(tmp);
+  const uint64_t tmp = static_cast<uint64_t>(t.time_since_epoch().count()) - EPOCH_OFFSET;
+  const time_t auxTime = static_cast<time_t>(tmp / 10000000U);
+  const auto secFractions = calcSecFractions(tmp);
 
 #if !defined(HAVE_LOCALTIME_R)
   tm* ptm = localtime(&auxTime);
@@ -273,7 +277,7 @@ string mrpt::system::dateTimeLocalToString(const mrpt::system::TTimeStamp t)
 
   return format(
       "%u/%02u/%02u,%02u:%02u:%02u.%06u", 1900 + ptm->tm_year, ptm->tm_mon + 1, ptm->tm_mday,
-      ptm->tm_hour, ptm->tm_min, (unsigned int)ptm->tm_sec, secFractions);
+      ptm->tm_hour, ptm->tm_min, static_cast<unsigned int>(ptm->tm_sec), secFractions);
 }
 
 /*---------------------------------------------------------------
@@ -284,13 +288,14 @@ double mrpt::system::extractDayTimeFromTimestamp(const mrpt::system::TTimeStamp 
   MRPT_START
   ASSERT_(tt != INVALID_TIMESTAMP);
 
-  auto t = tt.time_since_epoch().count();
 #ifdef _WIN32
   SYSTEMTIME sysT;
   FileTimeToSystemTime((FILETIME*)&t, &sysT);
   return sysT.wHour * 3600.0 + sysT.wMinute * 60.0 + sysT.wSecond + sysT.wMilliseconds * 0.001;
 #else
-  time_t auxTime = (t - EPOCH_OFFSET) / (uint64_t)10000000;
+  const uint64_t tmp = static_cast<uint64_t>(tt.time_since_epoch().count()) - EPOCH_OFFSET;
+  const time_t auxTime = static_cast<time_t>(tmp / 10000000U);
+
   tm* ptm = gmtime(&auxTime);
   ASSERTMSG_(ptm, "Malformed timestamp");
   return ptm->tm_hour * 3600.0 + ptm->tm_min * 60.0 + ptm->tm_sec;
@@ -308,10 +313,9 @@ string mrpt::system::timeLocalToString(
   {
     return string("INVALID_TIMESTAMP");
   }
-  auto t = tt.time_since_epoch().count();
 
-  uint64_t tmp = (t - EPOCH_OFFSET);
-  const time_t auxTime = tmp / (uint64_t)10000000;
+  const uint64_t tmp = static_cast<uint64_t>(tt.time_since_epoch().count()) - EPOCH_OFFSET;
+  const time_t auxTime = static_cast<time_t>(tmp / 10000000U);
 
 #if !defined(HAVE_LOCALTIME_R)
   const tm* ptm = localtime(&auxTime);
@@ -329,7 +333,7 @@ string mrpt::system::timeLocalToString(
   }
 
   return format(
-      "%02u:%02u:%02u.%0*u", ptm->tm_hour, ptm->tm_min, (unsigned int)ptm->tm_sec,
+      "%02u:%02u:%02u.%0*u", ptm->tm_hour, ptm->tm_min, static_cast<unsigned int>(ptm->tm_sec),
       user_secondFractionDigits, secFractions);
 }
 
@@ -342,10 +346,10 @@ string mrpt::system::timeToString(const mrpt::system::TTimeStamp tt)
   {
     return string("INVALID_TIMESTAMP");
   }
-  auto t = tt.time_since_epoch().count();
 
-  uint64_t tmp = (t - EPOCH_OFFSET);
-  time_t auxTime = tmp / (uint64_t)10000000;
+  const uint64_t tmp = static_cast<uint64_t>(tt.time_since_epoch().count()) - EPOCH_OFFSET;
+  const time_t auxTime = static_cast<time_t>(tmp / 10000000U);
+
   auto secFractions = calcSecFractions(tmp);
   tm* ptm = gmtime(&auxTime);
   if (!ptm)
@@ -354,7 +358,8 @@ string mrpt::system::timeToString(const mrpt::system::TTimeStamp tt)
   }
 
   return format(
-      "%02u:%02u:%02u.%06u", ptm->tm_hour, ptm->tm_min, (unsigned int)ptm->tm_sec, secFractions);
+      "%02u:%02u:%02u.%06u", ptm->tm_hour, ptm->tm_min, static_cast<unsigned int>(ptm->tm_sec),
+      secFractions);
 }
 
 /*---------------------------------------------------------------
@@ -366,10 +371,10 @@ string mrpt::system::dateToString(const mrpt::system::TTimeStamp tt)
   {
     return string("INVALID_TIMESTAMP");
   }
-  auto t = tt.time_since_epoch().count();
 
-  uint64_t tmp = (t - EPOCH_OFFSET);
-  time_t auxTime = tmp / (uint64_t)10000000;
+  const uint64_t tmp = static_cast<uint64_t>(tt.time_since_epoch().count()) - EPOCH_OFFSET;
+  const time_t auxTime = static_cast<time_t>(tmp / 10000000U);
+
   tm* ptm = gmtime(&auxTime);
   if (!ptm)
   {
@@ -438,7 +443,7 @@ std::string mrpt::system::intervalFormat(const double seconds)
 
 std::ostream& mrpt::system::operator<<(std::ostream& o, const TTimeStamp& t)
 {
-  const uint64_t v = t.time_since_epoch().count();
+  const auto v = static_cast<uint64_t>(t.time_since_epoch().count());
   o << v;
   return o;
 }

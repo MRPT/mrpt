@@ -172,7 +172,9 @@ void CFileSystemWatcher::getChanges(TFileSystemChangeList& out_list)
   // Refer to:
   //  http://www.linuxjournal.com/article/8478
   //  http://inotify.aiken.cz/?section=common&page=home&lang=en
-  struct timeval time{};
+  struct timeval time
+  {
+  };
   fd_set rfds;
   int ret;
 
@@ -217,7 +219,9 @@ void CFileSystemWatcher::getChanges(TFileSystemChangeList& out_list)
       { /* need to reissue system call */
       }
       else
+      {
         perror("[CFileSystemWatcher::getChanges] read");
+      }
     }
     else if (!len)
     { /* BUF_LEN too small? */
@@ -227,13 +231,16 @@ void CFileSystemWatcher::getChanges(TFileSystemChangeList& out_list)
     {
       const inotify_event* event = reinterpret_cast<const inotify_event*>(&buf[i]);
 
-      i += EVENT_SIZE + static_cast<ssize_t>(event->len);
+      i += static_cast<ssize_t>(EVENT_SIZE) + static_cast<ssize_t>(event->len);
 
       // printf ("wd=%d mask=%u cookie=%u len=%u\n",event->wd,
       // event->mask,event->cookie, event->len);
 
       string eventName;
-      if (event->len) eventName = event->name;
+      if (event->len)
+      {
+        eventName = event->name;
+      }
 
       // Add event to output list:
       // ---------------------------------------------
