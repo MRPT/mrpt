@@ -19,6 +19,7 @@
   <depend>mrpt_common</depend>
   <depend>mrpt_typemeta</depend>
   <depend>mrpt_core</depend>
+  <depend>pybind11-dev</depend>
 
   <export>
     <build_type>cmake</build_type>

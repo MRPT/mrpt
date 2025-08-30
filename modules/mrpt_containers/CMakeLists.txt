@@ -84,3 +84,9 @@ else()
   target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${LIBFYAML_INCLUDES})
   target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBFYAML_LIB})
 endif()
+
+# Python wrapper:
+mrpt_add_python_module(${PROJECT_NAME}_py
+  python_bindings/${PROJECT_NAME}_py.cpp
+)
+
