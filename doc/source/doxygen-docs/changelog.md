@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.14.12: UNRELEASED
+# Version 2.14.12: Released Aug 31rd, 2025
 - Changes in libraries:
   - \ref mrpt_opengl_grp
     - New method mrpt::opengl::CPointCloudColoured::setAllPointsAlpha().
