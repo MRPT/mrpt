@@ -106,3 +106,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 if(UNIX)
   target_link_libraries(${PROJECT_NAME}  PRIVATE ${CMAKE_DL_LIBS})
 endif()
+
+
+# Python wrapper:
+mrpt_add_python_module(system
+  python_bindings/${PROJECT_NAME}_py.cpp
+)

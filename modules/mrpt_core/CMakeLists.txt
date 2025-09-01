@@ -133,7 +133,7 @@ if (MRPT_EXCEPTIONS_WITH_CALL_STACK)
 endif()
 
 # Python wrapper:
-mrpt_add_python_module(${PROJECT_NAME}_py
+mrpt_add_python_module(core
   python_bindings/${PROJECT_NAME}_py.cpp
 )
 

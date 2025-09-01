@@ -27,7 +27,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(mrpt_containers_py, m)
+PYBIND11_MODULE(_bindings, m)
 {
   using mrpt::containers::yaml;
 

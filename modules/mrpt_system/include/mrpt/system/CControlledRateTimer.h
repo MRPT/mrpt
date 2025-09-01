@@ -60,6 +60,12 @@ class CControlledRateTimer : public mrpt::system::COutputLogger
   /** Dtor */
   virtual ~CControlledRateTimer() = default;
 
+  // Delete copy and move constructors and assignment operators
+  CControlledRateTimer(const CControlledRateTimer&) = delete;
+  CControlledRateTimer& operator=(const CControlledRateTimer&) = delete;
+  CControlledRateTimer(CControlledRateTimer&&) = delete;
+  CControlledRateTimer& operator=(CControlledRateTimer&&) = delete;
+
   /** Changes the object loop rate (Hz) */
   void setRate(const double rate_hz);
 
