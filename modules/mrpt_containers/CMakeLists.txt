@@ -86,7 +86,7 @@ else()
 endif()
 
 # Python wrapper:
-mrpt_add_python_module(${PROJECT_NAME}_py
+mrpt_add_python_module(containers
   python_bindings/${PROJECT_NAME}_py.cpp
 )
 

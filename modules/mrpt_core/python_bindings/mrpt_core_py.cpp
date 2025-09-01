@@ -46,7 +46,7 @@ static inline T reverse_bytes_copy(T v)
 }
 }  // namespace detail
 
-PYBIND11_MODULE(mrpt_core_py, m)
+PYBIND11_MODULE(_bindings, m)
 {
   m.doc() = "Python bindings for mrpt_core";
 
