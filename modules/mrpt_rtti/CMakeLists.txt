@@ -40,3 +40,8 @@ mrpt_add_library(
     mrpt_core
     mrpt_typemeta
 )
+
+# Python wrapper:
+mrpt_add_python_module(rtti
+  python_bindings/${PROJECT_NAME}_py.cpp
+)

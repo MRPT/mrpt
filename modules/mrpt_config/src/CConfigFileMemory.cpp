@@ -70,7 +70,12 @@ void CConfigFileMemory::setContent(const std::string& str)
   m_impl->ini->LoadData(sOut);
 }
 
-void CConfigFileMemory::getContent(std::string& str) const { m_impl->ini->Save(str); }
+std::string CConfigFileMemory::getContent() const
+{
+  std::string str;
+  m_impl->ini->Save(str);
+  return str;
+}
 
 CConfigFileMemory::~CConfigFileMemory() = default;
 void CConfigFileMemory::writeString(
@@ -79,7 +84,10 @@ void CConfigFileMemory::writeString(
   MRPT_START
 
   SI_Error ret = m_impl->ini->SetValue(section.c_str(), name.c_str(), str.c_str(), nullptr);
-  if (ret < 0) THROW_EXCEPTION("Error changing value in INI-style file!");
+  if (ret < 0)
+  {
+    THROW_EXCEPTION("Error changing value in INI-style file!");
+  }
 
   MRPT_END
 }
@@ -110,7 +118,9 @@ std::string CConfigFileMemory::readString(
   std::string ret = aux;
   size_t pos;
   if ((pos = ret.find("//")) != string::npos && pos > 0 && isspace(ret[pos - 1]))
+  {
     ret = ret.substr(0, pos);
+  }
   return ret;
   MRPT_END
 }

@@ -25,36 +25,37 @@ set(MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in CMRPTCanvas (incre
 set(LIB_SRCS
   src/CCanvas.cpp
   src/CEnhancedMetaFile.cpp
-  src/CImage.cpp
   src/CImage_impl.cpp
   src/CImage_loadXPM.cpp
+  src/CImage_unittest.cpp
+  src/CImage.cpp
   src/CImage.SSE2.cpp
   src/CImage.SSSE3.cpp
-  src/CImage_unittest.cpp
   src/CMappedImage.cpp
-  src/color_maps.cpp
   src/color_maps_unittest.cpp
+  src/color_maps.cpp
   src/registerAllClasses.cpp
-  src/TCamera.cpp
   src/TCamera_unittest.cpp
+  src/TCamera.cpp
   src/TColor.cpp
   src/TColorManager.cpp
+  src/TPixelCoord.cpp
   src/TStereoCamera.cpp
 )
 
 set(LIB_PUBLIC_HDRS
   include/mrpt/img/CCanvas.h
-  include/mrpt/img/CImage.h
   include/mrpt/img/CEnhancedMetaFile.h
+  include/mrpt/img/CImage.h
+  include/mrpt/img/CMappedImage.h
+  include/mrpt/img/color_maps.h
   include/mrpt/img/DistortionModel.h
   include/mrpt/img/registerAllClasses.h
-  include/mrpt/img/TStereoCamera.h
-  include/mrpt/img/TColor.h
-  include/mrpt/img/CMappedImage.h
-  include/mrpt/img/TColorManager.h
   include/mrpt/img/TCamera.h
-  include/mrpt/img/color_maps.h
+  include/mrpt/img/TColor.h
+  include/mrpt/img/TColorManager.h
   include/mrpt/img/TPixelCoord.h
+  include/mrpt/img/TStereoCamera.h
 )
 
 mrpt_add_library(

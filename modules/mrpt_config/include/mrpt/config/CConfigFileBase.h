@@ -51,6 +51,13 @@ class CConfigFileBase
 {
   friend class CConfigFilePrefixer;
 
+ public:
+  CConfigFileBase() = default;
+  CConfigFileBase(const CConfigFileBase&) = default;
+  CConfigFileBase& operator=(const CConfigFileBase&) = default;
+  CConfigFileBase(CConfigFileBase&&) = default;
+  CConfigFileBase& operator=(CConfigFileBase&&) = default;
+
  protected:
   /** A virtual method to write a generic string.
    */

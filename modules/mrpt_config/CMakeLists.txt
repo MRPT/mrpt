@@ -54,3 +54,10 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${SIMPLEINI_INCLUDE_DIRS})
 if (SIMPLEINI_LIBRARY)
   target_link_libraries(${PROJECT_NAME} PRIVATE ${SIMPLEINI_LIBRARY})
 endif()
+
+
+# Python wrapper:
+mrpt_add_python_module(config
+  python_bindings/${PROJECT_NAME}_py.cpp
+)
+

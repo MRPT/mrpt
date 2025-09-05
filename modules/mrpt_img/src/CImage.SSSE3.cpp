@@ -137,9 +137,6 @@ void impl_image_SSSE3_rgb_or_bgr_to_gray_8u(
   SSE_DISABLE_WARNINGS
   // clang-format off
 
-  const auto s80 = static_cast<signed char>(0x80);
-  const auto s96 = static_cast<signed char>(0x96);
-
 	// Masks:                            0       1    2    3     4      5     6    7     8      9     A     B      C    D    E     F
 	// reds[0-7] from D0
 	const __m128i mask0 = _mm_setr_epi8(s80, 0x00, s80, 0x03, s80, 0x06, s80, 0x09, s80, 0x0C, s80, 0x0F, s80, s80, s80, s80);

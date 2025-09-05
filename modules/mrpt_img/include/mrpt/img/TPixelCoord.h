@@ -45,10 +45,7 @@ struct TPixelCoordBase
 
 /** Prints TPixelCoordBase as "(x,y)" */
 template <typename T>
-std::ostream& operator<<(std::ostream& o, const TPixelCoordBase<T>& p)
-{
-  return o << "(" << p.x << "," << p.y << ")";
-}
+std::ostream& operator<<(std::ostream& o, const TPixelCoordBase<T>& p);
 
 /** A pair (x,y) of pixel coordinates (integer resolution). \ingroup mrpt_img_grp  */
 using TPixelCoord = TPixelCoordBase<int32_t>;
