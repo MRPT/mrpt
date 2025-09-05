@@ -45,6 +45,12 @@ class CConfigFileMemory : public CConfigFileBase
   /** Empty constructor. Upon construction, call any of the "setContent"
    * method */
   CConfigFileMemory();
+
+  CConfigFileMemory(const CConfigFileMemory&) = default;
+  CConfigFileMemory& operator=(const CConfigFileMemory&) = default;
+  CConfigFileMemory(CConfigFileMemory&&) = default;
+  CConfigFileMemory& operator=(CConfigFileMemory&&) = default;
+
   /** Constructor and initialize from a list of strings */
   CConfigFileMemory(const std::vector<std::string>& stringList);
   /** Constructor and initialize from string with the whole "config file" */
@@ -57,14 +63,7 @@ class CConfigFileMemory : public CConfigFileBase
   /** Changes the contents of the virtual "config file" */
   void setContent(const std::string& str);
   /** Return the current contents of the virtual "config file" */
-  void getContent(std::string& str) const;
-  /** \overload */
-  inline std::string getContent() const
-  {
-    std::string s;
-    getContent(s);
-    return s;
-  }
+  std::string getContent() const;
 
   /** Empties the virtual "config file" */
   void clear() override;

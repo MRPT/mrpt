@@ -14,7 +14,6 @@
 #pragma once
 
 #include <iosfwd>
-#include <stdexcept>
 #include <string>
 
 namespace mrpt::config
@@ -38,6 +37,14 @@ class CLoadableOptions
   static void dumpVar_string(std::ostream& out, const char* varName, const std::string& v);
 
  public:
+  CLoadableOptions() = default;
+  virtual ~CLoadableOptions() = default;
+
+  CLoadableOptions(const CLoadableOptions&) = default;
+  CLoadableOptions& operator=(const CLoadableOptions&) = default;
+  CLoadableOptions(CLoadableOptions&&) = default;
+  CLoadableOptions& operator=(CLoadableOptions&&) = default;
+
   /** This method load the options from a ".ini"-like file or memory-stored
    * string list.
    *   Only those parameters found in the given "section" and having
@@ -88,8 +95,6 @@ class CLoadableOptions
    */
   virtual void dumpToTextStream(std::ostream& out) const;
 
-  /** Virtual destructor */
-  virtual ~CLoadableOptions() = default;
 };  // End of class def.
 
 /** Macro for dumping a variable to a stream, within the method

@@ -44,7 +44,7 @@ void impl_image_SSE2_scale_half_1c8u(
   SSE_DISABLE_WARNINGS
   // clang-format off
 
-	const __m128i m = _mm_set_epi8(0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff);
+	const __m128i m = _mm_set_epi8(0x00, sff, 0x00, sff, 0x00, sff, 0x00, sff, 0x00, sff, 0x00, sff, 0x00, sff, 0x00, sff);
 
   // clang-format on
   SSE_RESTORE_SIGN_WARNINGS
@@ -82,12 +82,12 @@ void impl_image_SSE2_scale_half_1c8u(
 
 template <bool MemIsAligned>
 void impl_image_SSE2_scale_half_smooth_1c8u(
-    const uint8_t* in, uint8_t* out, int w, int h, size_t step_in, size_t step_out)
+    const uint8_t* in, uint8_t* out, int w, int h, size_t step_in, size_t step_out)  // NOLINT
 {
   SSE_DISABLE_WARNINGS
   // clang-format off
 
-	const __m128i m = _mm_set_epi8(0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff);
+	const __m128i m = _mm_set_epi8(0x00, sff, 0x00, sff, 0x00, sff, 0x00, sff, 0x00, sff, 0x00, sff, 0x00, sff, 0x00, sff);
 
   // clang-format on
   SSE_RESTORE_SIGN_WARNINGS

@@ -1,0 +1,34 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2025, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/img/TPixelCoord.h>
+
+#include <iostream>
+
+namespace mrpt::img
+{
+
+/** Prints TPixelCoordBase as "(x,y)" */
+template <typename T>
+std::ostream& operator<<(std::ostream& o, const TPixelCoordBase<T>& p)
+{
+  return o << "(" << p.x << "," << p.y << ")";
+}
+
+template std::ostream& operator<< <int>(std::ostream&, const TPixelCoordBase<int>&);
+template std::ostream& operator<< <unsigned>(std::ostream&, const TPixelCoordBase<unsigned>&);
+template std::ostream& operator<< <float>(std::ostream&, const TPixelCoordBase<float>&);
+template std::ostream& operator<< <double>(std::ostream&, const TPixelCoordBase<double>&);
+
+}  // namespace mrpt::img

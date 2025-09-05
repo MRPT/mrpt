@@ -51,7 +51,7 @@ void CLoadableOptions::dumpVar_int(std::ostream& out, const char* varName, int v
 
 void CLoadableOptions::dumpVar_float(std::ostream& out, const char* varName, float v)
 {
-  out << mrpt::format("%-*s= %f\n", LOADABLEOPTS_COLUMN_WIDTH, varName, v);
+  out << mrpt::format("%-*s= %lf\n", LOADABLEOPTS_COLUMN_WIDTH, varName, static_cast<double>(v));
 }
 
 void CLoadableOptions::dumpVar_double(std::ostream& out, const char* varName, double v)

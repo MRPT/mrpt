@@ -18,6 +18,10 @@
 
 // See documentation in the .cpp files CImage_SSE*.cpp
 
+constexpr static auto s80 = static_cast<signed char>(0x80);
+constexpr static auto s96 = static_cast<signed char>(0x96);
+constexpr static auto sff = static_cast<signed char>(0xff);
+
 void image_SSE2_scale_half_1c8u(
     const uint8_t* in, uint8_t* out, int w, int h, size_t in_step, size_t out_step);
 void image_SSSE3_scale_half_3c8u(

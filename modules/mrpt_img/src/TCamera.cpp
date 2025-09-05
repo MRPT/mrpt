@@ -22,7 +22,6 @@
 
 using namespace mrpt::img;
 using namespace mrpt::math;
-using namespace std;
 
 /* Implements serialization for the TCamera struct as it will be included within
  * CObservations objects */
@@ -48,7 +47,10 @@ void TCamera::serializeTo(mrpt::serialization::CArchive& out) const
 {
   out << focalLengthMeters;
   // v3: from 5 to 8 dist params:
-  for (size_t k = 0; k < dist.size(); k++) out << dist[k];
+  for (size_t k = 0; k < dist.size(); k++)
+  {
+    out << dist[k];
+  }
   // v4: only store the 4 relevant values:
   out << fx() << fy() << cx() << cy();
   // version 0 did serialize here a "CMatrixDouble15"
@@ -77,7 +79,10 @@ void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
       }
       if (version >= 3)
       {
-        for (unsigned int k = 5; k < 8; k++) in >> dist[k];
+        for (unsigned int k = 5; k < 8; k++)
+        {
+          in >> dist[k];
+        }
       }
 
       if (version < 4)
@@ -192,9 +197,9 @@ void TCamera::loadFromConfigFile(
 {
   *this = TCamera();  // reset to defaults
 
-  vector<uint64_t> out_res;
-  cfg.read_vector(section, "resolution", vector<uint64_t>(), out_res, true);
-  if (out_res.size() != 2) THROW_EXCEPTION("Expected 2-length vector in field 'resolution'");
+  std::vector<uint64_t> out_res;
+  cfg.read_vector(section, "resolution", std::vector<uint64_t>(), out_res, true);
+  ASSERTMSG_(out_res.size() == 2, "Expected 2-length vector in field 'resolution'");
   ncols = out_res[0];
   nrows = out_res[1];
 
@@ -204,10 +209,22 @@ void TCamera::loadFromConfigFile(
   cx = cfg.read_double(section, "cx", 0, true);
   cy = cfg.read_double(section, "cy", 0, true);
 
-  if (fx < 2.0) fx *= ncols;
-  if (fy < 2.0) fy *= nrows;
-  if (cx < 2.0) cx *= ncols;
-  if (cy < 2.0) cy *= nrows;
+  if (fx < 2.0)
+  {
+    fx *= ncols;
+  }
+  if (fy < 2.0)
+  {
+    fy *= nrows;
+  }
+  if (cx < 2.0)
+  {
+    cx *= ncols;
+  }
+  if (cy < 2.0)
+  {
+    cy *= nrows;
+  }
 
   setIntrinsicParamsFromValues(fx, fy, cx, cy);
 
@@ -223,7 +240,10 @@ void TCamera::loadFromConfigFile(
     case DistortionModel::plumb_bob:
       ASSERTMSG_(
           v.size() == 5 || v.size() == 8, "Expected 5 or 8 distortion parameters for plumb_bob");
-      for (int i = 0; i < v.size(); i++) dist[i] = v[i];
+      for (int i = 0; i < v.size(); i++)
+      {
+        dist[i] = v[i];
+      }
       break;
     case DistortionModel::kannala_brandt:
       ASSERTMSG_(v.size() == 4, "Expected 4 distortion parameters for kannala_brandt");
@@ -248,7 +268,10 @@ void TCamera::loadFromConfigFile(
  */
 void TCamera::scaleToResolution(unsigned int new_ncols, unsigned int new_nrows)
 {
-  if (ncols == new_ncols && nrows == new_nrows) return;  // already done
+  if (ncols == new_ncols && nrows == new_nrows)
+  {
+    return;  // already done
+  }
 
   ASSERT_(new_nrows > 0 && new_ncols > 0);
 
@@ -311,7 +334,10 @@ TCamera TCamera::FromYAML(const mrpt::containers::yaml& p)
     case DistortionModel::plumb_bob:
       ASSERTMSG_(
           v.size() == 5 || v.size() == 8, "Expected 5 or 8 distortion parameters for plumb_bob");
-      for (size_t i = 0; i < v.size(); i++) c.dist[i] = v[i];
+      for (size_t i = 0; i < v.size(); i++)
+      {
+        c.dist[i] = v[i];
+      }
       break;
     case DistortionModel::kannala_brandt:
       ASSERTMSG_(v.size() == 4, "Expected 4 distortion parameters for kannala_brandt");
