@@ -287,7 +287,16 @@ class CGeneralizedEllipsoidTemplate :
       else
       {
         // A valid matrix:
-        m_cov.chol(m_U);
+        std::vector<double> eVals;
+        m_cov.eig(m_U, eVals);
+        for (size_t i = 0; i < DIM; i++)
+        {
+          const auto s = std::sqrt(eVals[i]);
+          for (size_t k = 0; k < DIM; k++)
+          {
+            m_U(k, i) *= s;
+          }
+        }
       }
     }
 

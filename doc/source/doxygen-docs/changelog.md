@@ -1,5 +1,9 @@
 \page changelog Change Log
 
+# Version 2.14.13: UNRELEASED
+- BUG FIXES:
+  - Fix mrpt::opengl::CEllipsoid3D wrong direction.
+
 # Version 2.14.12: Released Aug 31rd, 2025
 - Changes in libraries:
   - \ref mrpt_opengl_grp
