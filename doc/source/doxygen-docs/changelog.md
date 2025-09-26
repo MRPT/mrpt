@@ -3,6 +3,7 @@
 # Version 2.14.13: UNRELEASED
 - BUG FIXES:
   - Fix mrpt::opengl::CEllipsoid3D wrong direction.
+  - Fix potential race conditions in TBB-parallel particle filters with 2D gridmap.
 
 # Version 2.14.12: Released Aug 31rd, 2025
 - Changes in libraries:
