@@ -4,6 +4,7 @@
 - BUG FIXES:
   - Fix mrpt::opengl::CEllipsoid3D wrong direction.
   - Fix potential race conditions in TBB-parallel particle filters with 2D gridmap.
+  - Harden opengl unit tests against crashes on non-GPU runners.
 
 # Version 2.14.12: Released Aug 31rd, 2025
 - Changes in libraries:
