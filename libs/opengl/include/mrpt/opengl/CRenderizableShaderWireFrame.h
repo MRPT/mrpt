@@ -28,7 +28,14 @@ class CRenderizableShaderWireFrame : public virtual CRenderizable
   DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderWireFrame, mrpt::opengl)
 
  public:
-  CRenderizableShaderWireFrame() = default;
+  CRenderizableShaderWireFrame()
+  {
+    // The base class vptrs are now safely initialized! (prevents memory layout bug)
+    m_vertexBuffer.data = std::make_unique<Buffer>();
+    m_colorBuffer.data = std::make_unique<Buffer>();
+    m_vao.data = std::make_unique<VertexArrayObject>();
+  }
+
   virtual ~CRenderizableShaderWireFrame();
 
   virtual shader_list_t requiredShaders() const override { return {DefaultShaderID::WIREFRAME}; }
@@ -55,9 +62,9 @@ class CRenderizableShaderWireFrame : public virtual CRenderizable
   // See base docs
   void freeOpenGLResources() override
   {
-    m_vertexBuffer.destroy();
-    m_colorBuffer.destroy();
-    m_vao.destroy();
+    (*m_vertexBuffer)->destroy();
+    (*m_colorBuffer)->destroy();
+    (*m_vao)->destroy();
   }
 
   /** @name Raw access to wireframe shader buffer data
@@ -81,8 +88,9 @@ class CRenderizableShaderWireFrame : public virtual CRenderizable
   const mrpt::math::TBoundingBox wireframeVerticesBoundingBox() const;
 
  private:
-  mutable Buffer m_vertexBuffer, m_colorBuffer;
-  mutable VertexArrayObject m_vao;
+  mutable mrpt::containers::NonCopiableData<std::unique_ptr<Buffer>> m_vertexBuffer;
+  mutable mrpt::containers::NonCopiableData<std::unique_ptr<Buffer>> m_colorBuffer;
+  mutable mrpt::containers::NonCopiableData<std::unique_ptr<VertexArrayObject>> m_vao;
 };
 
 }  // namespace mrpt::opengl

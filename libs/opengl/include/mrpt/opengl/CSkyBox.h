@@ -33,7 +33,11 @@ class CSkyBox : public CRenderizable
   DEFINE_SERIALIZABLE(CSkyBox, mrpt::opengl)
 
  public:
-  CSkyBox() = default;
+  CSkyBox()
+  {
+    m_vbo.data = std::make_unique<Buffer>();
+    m_vao.data = std::make_unique<VertexArrayObject>();
+  }
   virtual ~CSkyBox() override;
 
   /** @name Renderizable shader API virtual methods
@@ -65,8 +69,8 @@ class CSkyBox : public CRenderizable
   mutable Texture m_cubeTexture;
   std::array<mrpt::img::CImage, 6> m_textureImages;
 
-  mutable Buffer m_vbo;
-  mutable VertexArrayObject m_vao;
+  mutable mrpt::containers::NonCopiableData<std::unique_ptr<Buffer>> m_vbo;
+  mutable mrpt::containers::NonCopiableData<std::unique_ptr<VertexArrayObject>> m_vao;
 };
 
 }  // namespace mrpt::opengl

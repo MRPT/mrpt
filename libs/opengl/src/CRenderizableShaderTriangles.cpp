@@ -37,12 +37,12 @@ void CRenderizableShaderTriangles::renderUpdateBuffers() const
   const auto n = tris.size();
 
   // Define OpenGL buffers:
-  m_trianglesBuffer.createOnce();
-  m_trianglesBuffer.bind();
-  m_trianglesBuffer.allocate(tris.data(), sizeof(tris[0]) * n);
+  (*m_trianglesBuffer)->createOnce();
+  (*m_trianglesBuffer)->bind();
+  (*m_trianglesBuffer)->allocate(tris.data(), sizeof(tris[0]) * n);
 
   // VAO: required to use glEnableVertexAttribArray()
-  m_vao.createOnce();
+  (*m_vao)->createOnce();
 #endif
 }
 
@@ -99,9 +99,9 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
   if (rc.shader->hasAttribute("position"))
   {
     attr_position = rc.shader->attributeId("position");
-    m_vao.bind();
+    (*m_vao)->bind();
     glEnableVertexAttribArray(*attr_position);
-    m_trianglesBuffer.bind();
+    (*m_trianglesBuffer)->bind();
     glVertexAttribPointer(
         *attr_position,            /* attribute */
         3,                         /* size */
@@ -118,7 +118,7 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
   {
     attr_color = rc.shader->attributeId("vertexColor");
     glEnableVertexAttribArray(*attr_color);
-    m_trianglesBuffer.bind();
+    (*m_trianglesBuffer)->bind();
     glVertexAttribPointer(
         *attr_color,               /* attribute */
         4,                         /* size */
@@ -135,7 +135,7 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
   {
     attr_normals = rc.shader->attributeId("vertexNormal");
     glEnableVertexAttribArray(*attr_normals);
-    m_trianglesBuffer.bind();
+    (*m_trianglesBuffer)->bind();
     glVertexAttribPointer(
         *attr_normals,             /* attribute */
         3,                         /* size */

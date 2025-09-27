@@ -3,6 +3,7 @@
 # Version 2.14.14: UNRELEASED
 - BUG FIXES:
   - Fix missing backported fix to build mrpt::lockHelper() on modern gcc
+  - Fix OpenGL crashes under specific build flags: OpenGL Buffers and VBO changed so they are initialized after constructor.
 
 # Version 2.14.13: Released Sep 27th, 2025
 - Changes in libraries:
