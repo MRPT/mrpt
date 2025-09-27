@@ -1,6 +1,9 @@
 \page changelog Change Log
 
-# Version 2.14.13: UNRELEASED
+# Version 2.14.13: Released Sep 27th, 2025
+- Changes in libraries:
+  - \ref mrpt_math_grp
+    - New classes mrpt::math::TOrientedBox, mrpt::math::TOrientedBoxf
 - BUG FIXES:
   - Fix mrpt::opengl::CEllipsoid3D wrong direction.
   - Fix potential race conditions in TBB-parallel particle filters with 2D gridmap.

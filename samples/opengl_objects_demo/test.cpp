@@ -132,6 +132,16 @@ void TestOpenGLObjects()
     obj3->setLocation(off_x, 8, 0);
     theScene->insert(obj3);
 
+    mrpt::math::TOrientedBox ob;
+    ob.setPose({off_x, 12.0, 0.0, 0, 0, 0});
+    ob.setSize({4.0, 2.0, 0.4});
+
+    auto obj4 = opengl::CBox::Create(ob);
+    obj4->enableBoxBorder(true);
+    obj4->setLineWidth(3);
+    obj4->setColor_u8(0xff, 0x00, 0x00, 0xa0);
+    theScene->insert(obj4);
+
     auto gl_txt = opengl::CText::Create("CBox");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
