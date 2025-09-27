@@ -40,7 +40,13 @@ class CRenderizableShaderPoints : public virtual CRenderizable
   DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderPoints, mrpt::opengl)
 
  public:
-  CRenderizableShaderPoints() = default;
+  CRenderizableShaderPoints()
+  {
+    m_vertexBuffer.data = std::make_unique<Buffer>();
+    m_colorBuffer.data = std::make_unique<Buffer>();
+    m_vao.data = std::make_unique<VertexArrayObject>();
+  }
+
   virtual ~CRenderizableShaderPoints() override;
 
   virtual shader_list_t requiredShaders() const override { return {DefaultShaderID::POINTS}; }
@@ -70,9 +76,9 @@ class CRenderizableShaderPoints : public virtual CRenderizable
   // See base docs
   void freeOpenGLResources() override
   {
-    m_vertexBuffer.destroy();
-    m_colorBuffer.destroy();
-    m_vao.destroy();
+    (*m_vertexBuffer)->destroy();
+    (*m_colorBuffer)->destroy();
+    (*m_vao)->destroy();
   }
 
   /** @name Raw access to point shader buffer data
@@ -101,8 +107,9 @@ class CRenderizableShaderPoints : public virtual CRenderizable
   void params_deserialize(mrpt::serialization::CArchive& in);
 
  private:
-  mutable Buffer m_vertexBuffer, m_colorBuffer;
-  mutable VertexArrayObject m_vao;
+  mutable mrpt::containers::NonCopiableData<std::unique_ptr<Buffer>> m_vertexBuffer;
+  mutable mrpt::containers::NonCopiableData<std::unique_ptr<Buffer>> m_colorBuffer;
+  mutable mrpt::containers::NonCopiableData<std::unique_ptr<VertexArrayObject>> m_vao;
 };
 
 }  // namespace mrpt::opengl

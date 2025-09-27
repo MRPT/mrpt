@@ -136,7 +136,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
   // The starting pose vehicle shape must be inserted independently, because
   // the rest are edges and we draw the END pose of each edge:
   {
-    mrpt::opengl::CSetOfLines::Ptr vehShape(new mrpt::opengl::CSetOfLines(*gl_veh_shape));
+    auto vehShape = std::make_shared<mrpt::opengl::CSetOfLines>(*gl_veh_shape);
     mrpt::poses::CPose3D shapePose(mrpt::math::TPose3D(pi.start_pose));
     shapePose.z_incr(options.vehicle_shape_z);
     vehShape->setPose(shapePose);

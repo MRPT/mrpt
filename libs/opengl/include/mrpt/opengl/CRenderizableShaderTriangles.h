@@ -29,7 +29,12 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
   DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderTriangles, mrpt::opengl)
 
  public:
-  CRenderizableShaderTriangles() = default;
+  CRenderizableShaderTriangles()
+  {
+    m_trianglesBuffer.data = std::make_unique<Buffer>();
+    m_vao.data = std::make_unique<VertexArrayObject>();
+  }
+
   virtual ~CRenderizableShaderTriangles() override;
 
   virtual shader_list_t requiredShaders() const override
@@ -46,8 +51,8 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
   // See base docs
   void freeOpenGLResources() override
   {
-    m_trianglesBuffer.destroy();
-    m_vao.destroy();
+    (*m_trianglesBuffer)->destroy();
+    (*m_vao)->destroy();
   }
 
   bool isLightEnabled() const { return m_enableLight; }
@@ -79,8 +84,8 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
   void params_deserialize(mrpt::serialization::CArchive& in);
 
  private:
-  mutable Buffer m_trianglesBuffer;
-  mutable VertexArrayObject m_vao;
+  mutable mrpt::containers::NonCopiableData<std::unique_ptr<Buffer>> m_trianglesBuffer;
+  mutable mrpt::containers::NonCopiableData<std::unique_ptr<VertexArrayObject>> m_vao;
 
   bool m_enableLight = true;
   TCullFace m_cullface = TCullFace::NONE;
