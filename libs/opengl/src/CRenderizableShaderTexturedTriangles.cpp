@@ -39,12 +39,12 @@ void CRenderizableShaderTexturedTriangles::renderUpdateBuffers() const
   const auto n = m_triangles.size();
 
   // Define OpenGL buffers:
-  m_vbo.createOnce();
-  m_vbo.bind();
-  m_vbo.allocate(m_triangles.data(), sizeof(m_triangles[0]) * n);
+  (*m_vbo)->createOnce();
+  (*m_vbo)->bind();
+  (*m_vbo)->allocate(m_triangles.data(), sizeof(m_triangles[0]) * n);
 
   // VAO: required to use glEnableVertexAttribArray()
-  m_vao.createOnce();
+  (*m_vao)->createOnce();
 
 #endif
 }
@@ -113,9 +113,9 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
   if (rc.shader->hasAttribute("position"))
   {
     attr_position = rc.shader->attributeId("position");
-    m_vao.bind();
+    (*m_vao)->bind();
     glEnableVertexAttribArray(*attr_position);
-    m_vbo.bind();
+    (*m_vbo)->bind();
     glVertexAttribPointer(
         *attr_position,            /* attribute */
         3,                         /* size */
@@ -132,7 +132,7 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
   {
     attr_normals = rc.shader->attributeId("vertexNormal");
     glEnableVertexAttribArray(*attr_normals);
-    m_vbo.bind();
+    (*m_vbo)->bind();
     glVertexAttribPointer(
         *attr_normals,             /* attribute */
         3,                         /* size */
@@ -149,7 +149,7 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
   {
     attr_uv = rc.shader->attributeId("vertexUV");
     glEnableVertexAttribArray(*attr_uv);
-    m_vbo.bind();
+    (*m_vbo)->bind();
     glVertexAttribPointer(
         *attr_uv,                  /* attribute */
         2,                         /* size */

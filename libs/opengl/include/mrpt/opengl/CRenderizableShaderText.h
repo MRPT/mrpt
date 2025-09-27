@@ -29,7 +29,14 @@ class CRenderizableShaderText : public virtual CRenderizable
   DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderText, mrpt::opengl)
 
  public:
-  CRenderizableShaderText() = default;
+  CRenderizableShaderText()
+  {
+    // This ensures the object's vptrs are safely established.
+    m_trianglesBuffer.data = std::make_unique<mrpt::opengl::Buffer>();
+    m_linesVertexBuffer.data = std::make_unique<mrpt::opengl::Buffer>();
+    m_linesColorBuffer.data = std::make_unique<mrpt::opengl::Buffer>();
+    m_vao.data = std::make_unique<mrpt::opengl::VertexArrayObject>();
+  }
   virtual ~CRenderizableShaderText() override;
 
   virtual shader_list_t requiredShaders() const override { return {DefaultShaderID::TEXT}; }
@@ -43,11 +50,10 @@ class CRenderizableShaderText : public virtual CRenderizable
   // See base docs
   void freeOpenGLResources() override
   {
-    m_trianglesBuffer.destroy();
-    m_trianglesColorBuffer.destroy();
-    m_linesVertexBuffer.destroy();
-    m_linesColorBuffer.destroy();
-    m_vao.destroy();
+    (*m_trianglesBuffer)->destroy();
+    (*m_linesVertexBuffer)->destroy();
+    (*m_linesColorBuffer)->destroy();
+    (*m_vao)->destroy();
   }
 
  protected:
@@ -60,9 +66,10 @@ class CRenderizableShaderText : public virtual CRenderizable
   mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_textDataMtx;
 
  private:
-  mutable Buffer m_trianglesBuffer, m_trianglesColorBuffer;
-  mutable Buffer m_linesVertexBuffer, m_linesColorBuffer;
-  mutable VertexArrayObject m_vao;
+  mutable mrpt::containers::NonCopiableData<std::unique_ptr<Buffer>> m_trianglesBuffer;
+  mutable mrpt::containers::NonCopiableData<std::unique_ptr<Buffer>> m_linesVertexBuffer;
+  mutable mrpt::containers::NonCopiableData<std::unique_ptr<Buffer>> m_linesColorBuffer;
+  mutable mrpt::containers::NonCopiableData<std::unique_ptr<VertexArrayObject>> m_vao;
 };
 
 }  // namespace mrpt::opengl
