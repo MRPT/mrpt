@@ -31,19 +31,22 @@ void CRenderizableShaderWireFrame::renderUpdateBuffers() const
   std::shared_lock<std::shared_mutex> wfReadLock(CRenderizableShaderWireFrame::m_wireframeMtx.data);
 
   // Define OpenGL buffers:
-  m_vertexBuffer.createOnce();
-  m_vertexBuffer.bind();
-  m_vertexBuffer.allocate(
-      m_vertex_buffer_data.data(), sizeof(m_vertex_buffer_data[0]) * m_vertex_buffer_data.size());
+  (*m_vertexBuffer)->createOnce();
+  (*m_vertexBuffer)->bind();
+  (*m_vertexBuffer)
+      ->allocate(
+          m_vertex_buffer_data.data(),
+          sizeof(m_vertex_buffer_data[0]) * m_vertex_buffer_data.size());
 
   // color buffer:
-  m_colorBuffer.createOnce();
-  m_colorBuffer.bind();
-  m_colorBuffer.allocate(
-      m_color_buffer_data.data(), sizeof(m_color_buffer_data[0]) * m_color_buffer_data.size());
+  (*m_colorBuffer)->createOnce();
+  (*m_colorBuffer)->bind();
+  (*m_colorBuffer)
+      ->allocate(
+          m_color_buffer_data.data(), sizeof(m_color_buffer_data[0]) * m_color_buffer_data.size());
 
   // VAO: required to use glEnableVertexAttribArray()
-  m_vao.createOnce();
+  (*m_vao)->createOnce();
 #endif
 }
 
@@ -63,9 +66,9 @@ void CRenderizableShaderWireFrame::render(const RenderContext& rc) const
   if (rc.shader->hasAttribute("position"))
   {
     attr_position = rc.shader->attributeId("position");
-    m_vao.bind();
+    (*m_vao)->bind();
     glEnableVertexAttribArray(*attr_position);
-    m_vertexBuffer.bind();
+    (*m_vertexBuffer)->bind();
     glVertexAttribPointer(
         *attr_position,  /* attribute */
         3,               /* size */
@@ -83,7 +86,7 @@ void CRenderizableShaderWireFrame::render(const RenderContext& rc) const
   {
     attr_color = rc.shader->attributeId("vertexColor");
     glEnableVertexAttribArray(*attr_color);
-    m_colorBuffer.bind();
+    (*m_colorBuffer)->bind();
     glVertexAttribPointer(
         *attr_color,      /* attribute */
         4,                /* size */

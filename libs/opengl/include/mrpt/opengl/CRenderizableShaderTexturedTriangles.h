@@ -30,7 +30,11 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
   DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderTexturedTriangles, mrpt::opengl)
 
  public:
-  CRenderizableShaderTexturedTriangles() = default;
+  CRenderizableShaderTexturedTriangles()
+  {
+    m_vbo.data = std::make_unique<Buffer>();
+    m_vao.data = std::make_unique<VertexArrayObject>();
+  }
   virtual ~CRenderizableShaderTexturedTriangles() override;
 
   virtual shader_list_t requiredShaders() const override
@@ -49,8 +53,8 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
   // See base docs
   void freeOpenGLResources() override
   {
-    m_vbo.destroy();
-    m_vao.destroy();
+    (*m_vbo)->destroy();
+    (*m_vao)->destroy();
   }
 
   /** Assigns a texture and a transparency image, and enables transparency (If
@@ -134,8 +138,8 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
   bool m_textureInterpolate = false;
   bool m_textureUseMipMaps = true;
 
-  mutable Buffer m_vbo;
-  mutable VertexArrayObject m_vao;
+  mutable mrpt::containers::NonCopiableData<std::unique_ptr<Buffer>> m_vbo;
+  mutable mrpt::containers::NonCopiableData<std::unique_ptr<VertexArrayObject>> m_vao;
 };
 
 }  // namespace mrpt::opengl
