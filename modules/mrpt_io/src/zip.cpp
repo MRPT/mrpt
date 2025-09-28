@@ -40,12 +40,11 @@ void mrpt::io::zip::compress(void* inData, size_t inDataSize, std::vector<unsign
   int ret = 0;
   MRPT_START
 
-  unsigned long resSize;
-
   outData.resize(inDataSize + inDataSize / 1000 + 50);
-  resSize = (unsigned long)outData.size();
+  auto resSize = static_cast<unsigned long>(outData.size());
   ret = ::compress(
-      &outData[0], &resSize, static_cast<unsigned char*>(inData), (unsigned long)inDataSize);
+      &outData[0], &resSize, static_cast<unsigned char*>(inData),
+      static_cast<unsigned long>(inDataSize));
   ASSERT_(ret == Z_OK);
 
   outData.resize(resSize);
@@ -66,7 +65,7 @@ void mrpt::io::zip::compress(
 
   outData.resize(inData.size() + inData.size() / 1000 + 50);
   resSize = (unsigned long)outData.size();
-  ret = ::compress(&outData[0], &resSize, &inData[0], (unsigned long)inData.size());
+  ret = ::compress(&outData[0], &resSize, &inData[0], static_cast<unsigned long>(inData.size()));
   ASSERT_(ret == Z_OK);
 
   outData.resize(resSize);
@@ -89,7 +88,8 @@ void mrpt::io::zip::compress(void* inData, size_t inDataSize, CStream& out)
   resSize = (unsigned long)outData.size();
 
   ret = ::compress(
-      &outData[0], &resSize, reinterpret_cast<unsigned char*>(inData), (unsigned long)inDataSize);
+      &outData[0], &resSize, reinterpret_cast<unsigned char*>(inData),
+      static_cast<unsigned long>(inDataSize));
   ASSERT_(ret == Z_OK);
 
   outData.resize(resSize);
@@ -140,8 +140,9 @@ void mrpt::io::zip::decompress(
   outData.resize(outDataEstimatedSize);
   unsigned long actualOutSize;
 
-  ret =
-      ::uncompress(&outData[0], &actualOutSize, (unsigned char*)inData, (unsigned long)inDataSize);
+  ret = ::uncompress(
+      &outData[0], &actualOutSize, reinterpret_cast<unsigned char*>(inData),
+      static_cast<unsigned long>(inDataSize));
 
   ASSERT_(ret == Z_OK);
 
@@ -159,10 +160,11 @@ size_t mrpt::io::zip::decompress(
   int ret = 0;
   MRPT_START
 
-  auto actualOutSize = (unsigned long)outDataBufferSize;
+  auto actualOutSize = static_cast<unsigned long>(outDataBufferSize);
 
   ret = ::uncompress(
-      (unsigned char*)outData, &actualOutSize, (unsigned char*)inData, (unsigned long)inDataSize);
+      reinterpret_cast<unsigned char*>(outData), &actualOutSize,
+      reinterpret_cast<unsigned char*>(inData), static_cast<unsigned long>(inDataSize));
 
   ASSERT_(ret == Z_OK);
 
