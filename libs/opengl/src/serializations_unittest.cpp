@@ -77,10 +77,10 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
         mrpt::serialization::archiveFrom(buf) << *o;
         o.reset();
       }
-
       CSerializable::Ptr recons;
       buf.Seek(0);
       mrpt::serialization::archiveFrom(buf) >> recons;
+      recons.reset();
     }
     catch (const std::exception& e)
     {

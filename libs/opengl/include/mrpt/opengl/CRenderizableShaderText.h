@@ -30,13 +30,10 @@ class CRenderizableShaderText : public virtual CRenderizable
 
  public:
   CRenderizableShaderText()
-  {
-    // This ensures the object's vptrs are safely established.
-    m_trianglesBuffer.data = std::make_unique<mrpt::opengl::Buffer>();
-    m_linesVertexBuffer.data = std::make_unique<mrpt::opengl::Buffer>();
-    m_linesColorBuffer.data = std::make_unique<mrpt::opengl::Buffer>();
-    m_vao.data = std::make_unique<mrpt::opengl::VertexArrayObject>();
+  {  // Initialize GlState
+    auto gh = gls();
   }
+
   virtual ~CRenderizableShaderText() override;
 
   virtual shader_list_t requiredShaders() const override { return {DefaultShaderID::TEXT}; }
@@ -50,10 +47,11 @@ class CRenderizableShaderText : public virtual CRenderizable
   // See base docs
   void freeOpenGLResources() override
   {
-    (*m_trianglesBuffer)->destroy();
-    (*m_linesVertexBuffer)->destroy();
-    (*m_linesColorBuffer)->destroy();
-    (*m_vao)->destroy();
+    auto gh = gls();
+    gh.state.trianglesBuffer->destroy();
+    gh.state.linesVertexBuffer->destroy();
+    gh.state.linesColorBuffer->destroy();
+    gh.state.vao->destroy();
   }
 
  protected:
@@ -66,10 +64,26 @@ class CRenderizableShaderText : public virtual CRenderizable
   mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_textDataMtx;
 
  private:
-  mutable mrpt::containers::NonCopiableData<std::unique_ptr<Buffer>> m_trianglesBuffer;
-  mutable mrpt::containers::NonCopiableData<std::unique_ptr<Buffer>> m_linesVertexBuffer;
-  mutable mrpt::containers::NonCopiableData<std::unique_ptr<Buffer>> m_linesColorBuffer;
-  mutable mrpt::containers::NonCopiableData<std::unique_ptr<VertexArrayObject>> m_vao;
+  struct GlState
+  {
+    std::unique_ptr<Buffer> trianglesBuffer = std::make_unique<Buffer>();
+    std::unique_ptr<Buffer> linesVertexBuffer = std::make_unique<Buffer>();
+    std::unique_ptr<Buffer> linesColorBuffer = std::make_unique<Buffer>();
+    std::unique_ptr<VertexArrayObject> vao = std::make_unique<VertexArrayObject>();
+  };
+  mutable mrpt::containers::NonCopiableData<GlState> m_gls;
+  mutable mrpt::containers::NonCopiableData<std::mutex> m_glsMtx;
+  struct GlsHandle
+  {
+    GlState& state;
+    std::unique_lock<std::mutex> lock;
+  };
+
+  [[nodiscard]] GlsHandle gls() const
+  {
+    std::unique_lock<std::mutex> lock(m_glsMtx.data);
+    return {m_gls.data, std::move(lock)};
+  }
 };
 
 }  // namespace mrpt::opengl
