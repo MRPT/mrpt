@@ -41,10 +41,8 @@ class CRenderizableShaderPoints : public virtual CRenderizable
 
  public:
   CRenderizableShaderPoints()
-  {
-    m_vertexBuffer.data = std::make_unique<Buffer>();
-    m_colorBuffer.data = std::make_unique<Buffer>();
-    m_vao.data = std::make_unique<VertexArrayObject>();
+  {  // Initialize GlState
+    auto gh = gls();
   }
 
   virtual ~CRenderizableShaderPoints() override;
@@ -76,9 +74,10 @@ class CRenderizableShaderPoints : public virtual CRenderizable
   // See base docs
   void freeOpenGLResources() override
   {
-    (*m_vertexBuffer)->destroy();
-    (*m_colorBuffer)->destroy();
-    (*m_vao)->destroy();
+    auto gh = gls();
+    gh.state.vertexBuffer->destroy();
+    gh.state.colorBuffer->destroy();
+    gh.state.vao->destroy();
   }
 
   /** @name Raw access to point shader buffer data
@@ -107,9 +106,25 @@ class CRenderizableShaderPoints : public virtual CRenderizable
   void params_deserialize(mrpt::serialization::CArchive& in);
 
  private:
-  mutable mrpt::containers::NonCopiableData<std::unique_ptr<Buffer>> m_vertexBuffer;
-  mutable mrpt::containers::NonCopiableData<std::unique_ptr<Buffer>> m_colorBuffer;
-  mutable mrpt::containers::NonCopiableData<std::unique_ptr<VertexArrayObject>> m_vao;
+  struct GlState
+  {
+    std::unique_ptr<Buffer> vertexBuffer = std::make_unique<Buffer>();
+    std::unique_ptr<Buffer> colorBuffer = std::make_unique<Buffer>();
+    std::unique_ptr<VertexArrayObject> vao = std::make_unique<VertexArrayObject>();
+  };
+  mutable mrpt::containers::NonCopiableData<GlState> m_gls;
+  mutable mrpt::containers::NonCopiableData<std::mutex> m_glsMtx;
+  struct GlsHandle
+  {
+    GlState& state;
+    std::unique_lock<std::mutex> lock;
+  };
+
+  [[nodiscard]] GlsHandle gls() const
+  {
+    std::unique_lock<std::mutex> lock(m_glsMtx.data);
+    return {m_gls.data, std::move(lock)};
+  }
 };
 
 }  // namespace mrpt::opengl
