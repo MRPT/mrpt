@@ -65,6 +65,14 @@ class CRenderizableShaderWireFrame : public virtual CRenderizable
     gh.state.vao->destroy();
   }
 
+  /** @name Raw access to wireframe shader buffer data
+   * @{ */
+  const auto& shaderWireframeVertexPointBuffer() const { return m_vertex_buffer_data; }
+  const auto& shaderWireframeVertexColorBuffer() const { return m_color_buffer_data; }
+  auto& shaderWireframeBuffersMutex() const { return m_wireframeMtx; }
+
+  /** @} */
+
  protected:
   mutable std::vector<mrpt::math::TPoint3Df> m_vertex_buffer_data;
   mutable std::vector<mrpt::img::TColor> m_color_buffer_data;
