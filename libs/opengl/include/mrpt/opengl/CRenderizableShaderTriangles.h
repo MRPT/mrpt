@@ -30,9 +30,8 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
 
  public:
   CRenderizableShaderTriangles()
-  {
-    m_trianglesBuffer.data = std::make_unique<Buffer>();
-    m_vao.data = std::make_unique<VertexArrayObject>();
+  {  // Initialize GlState
+    auto gh = gls();
   }
 
   virtual ~CRenderizableShaderTriangles() override;
@@ -51,8 +50,9 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
   // See base docs
   void freeOpenGLResources() override
   {
-    (*m_trianglesBuffer)->destroy();
-    (*m_vao)->destroy();
+    auto gh = gls();
+    gh.state.trianglesBuffer->destroy();
+    gh.state.vao->destroy();
   }
 
   bool isLightEnabled() const { return m_enableLight; }
@@ -84,11 +84,27 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
   void params_deserialize(mrpt::serialization::CArchive& in);
 
  private:
-  mutable mrpt::containers::NonCopiableData<std::unique_ptr<Buffer>> m_trianglesBuffer;
-  mutable mrpt::containers::NonCopiableData<std::unique_ptr<VertexArrayObject>> m_vao;
-
   bool m_enableLight = true;
   TCullFace m_cullface = TCullFace::NONE;
+
+  struct GlState
+  {
+    std::unique_ptr<Buffer> trianglesBuffer = std::make_unique<Buffer>();
+    std::unique_ptr<VertexArrayObject> vao = std::make_unique<VertexArrayObject>();
+  };
+  mutable mrpt::containers::NonCopiableData<GlState> m_gls;
+  mutable mrpt::containers::NonCopiableData<std::mutex> m_glsMtx;
+  struct GlsHandle
+  {
+    GlState& state;
+    std::unique_lock<std::mutex> lock;
+  };
+
+  [[nodiscard]] GlsHandle gls() const
+  {
+    std::unique_lock<std::mutex> lock(m_glsMtx.data);
+    return {m_gls.data, std::move(lock)};
+  }
 };
 
 }  // namespace mrpt::opengl
