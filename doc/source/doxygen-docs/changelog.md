@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.14.15: UNRELEASED
+# Version 2.14.15: Released Sep 29th, 2025
 - BUG FIXES:
   - Fix regression in OpenGL application crashing after last update.
 
