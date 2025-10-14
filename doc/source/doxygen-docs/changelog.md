@@ -1,5 +1,10 @@
 \page changelog Change Log
 
+# Version 2.14.16: UNRELEASED
+- BUG FIXES:
+  - Fix build building deprecated warnings in WorkerThreadsPool.
+  - Fix mrpt::opengl::CPointCloudColoured throwing if the source cloud map may have color and color/intensity channels are actually empty.
+
 # Version 2.14.15: Released Sep 29th, 2025
 - BUG FIXES:
   - Fix regression in OpenGL application crashing after last update.

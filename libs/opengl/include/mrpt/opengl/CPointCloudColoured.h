@@ -399,20 +399,22 @@ void CPointCloudColoured::loadFromPointsMap(const POINTSMAP* themap)
   const mrpt::opengl::PointCloudAdapter<POINTSMAP> pc_src(*themap);
   const size_t N = pc_src.size();
   pc_dst.resize(N);
+  const bool isColorFilled = themap->hasColorPoints();
   for (size_t i = 0; i < N; i++)
   {
     if constexpr (mrpt::opengl::PointCloudAdapter<POINTSMAP>::HAS_RGB)
     {
-      float x, y, z, r, g, b, a;
-      pc_src.getPointXYZ_RGBAf(i, x, y, z, r, g, b, a);
-      pc_dst.setPointXYZ_RGBAf(i, x, y, z, r, g, b, a);
+      if (isColorFilled)
+      {
+        float x, y, z, r, g, b, a;
+        pc_src.getPointXYZ_RGBAf(i, x, y, z, r, g, b, a);
+        pc_dst.setPointXYZ_RGBAf(i, x, y, z, r, g, b, a);
+        continue;
+      }
     }
-    else
-    {
-      float x, y, z;
-      pc_src.getPointXYZ(i, x, y, z);
-      pc_dst.setPointXYZ_RGBAf(i, x, y, z, 0, 0, 0, 1);
-    }
+    float x, y, z;
+    pc_src.getPointXYZ(i, x, y, z);
+    pc_dst.setPointXYZ_RGBAf(i, x, y, z, 0, 0, 0, 1);
   }
 }
 }  // namespace mrpt::opengl
