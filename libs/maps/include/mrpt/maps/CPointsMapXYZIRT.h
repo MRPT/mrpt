@@ -224,7 +224,7 @@ class CPointsMapXYZIRT : public CPointsMap
   inline float getPointIntensity_fast(size_t index) const { return m_intensity[index]; }
 
   /** Returns true if the point map has a color field for each point */
-  bool hasColorPoints() const override { return true; }
+  bool hasColorPoints() const override { return hasIntensityField(); }
 
   /** Override of the default 3D scene builder to account for the individual
    * points' color.
