@@ -1,6 +1,9 @@
 \page changelog Change Log
 
 # Version 2.14.16: UNRELEASED
+- Changes in libraries:
+  - \ref mrpt_rtti_grp
+    - More informative error message when calling clone() on a class without copy constructor.
 - BUG FIXES:
   - Fix build building deprecated warnings in WorkerThreadsPool.
   - Fix mrpt::opengl::CPointCloudColoured throwing if the source cloud map may have color and color/intensity channels are actually empty.
