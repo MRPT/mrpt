@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.14.16: UNRELEASED
+# Version 2.14.16: Released Oct 15th, 2025
 - Changes in libraries:
   - \ref mrpt_rtti_grp
     - More informative error message when calling clone() on a class without copy constructor.
