@@ -147,7 +147,7 @@ struct TPose2D : public TPoseOrPoint, public internal::ProvideStaticResize<TPose
   mrpt::math::TPoint2D inverseComposePoint(const TPoint2D g) const;
 
   /** Returns the (x,y) translational part of the SE(2) transformation. */
-  mrpt::math::TPoint2D translation() const { return {x, y}; }
+  [[nodiscard]] const mrpt::math::TPoint2D translation() const { return {x, y}; }
 
   /** Returns the norm of the (x,y) vector (phi is not used) */
   double norm() const { return mrpt::hypot_fast(x, y); }

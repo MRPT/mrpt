@@ -28,10 +28,14 @@ class CRenderizableShaderWireFrame : public virtual CRenderizable
   DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderWireFrame, mrpt::opengl)
 
  public:
-  CRenderizableShaderWireFrame() = default;
-  virtual ~CRenderizableShaderWireFrame();
+  CRenderizableShaderWireFrame()
+  {  // Initialize GlState
+    auto gh = gls();
+  }
 
-  virtual shader_list_t requiredShaders() const override { return {DefaultShaderID::WIREFRAME}; }
+  ~CRenderizableShaderWireFrame() override;
+
+  shader_list_t requiredShaders() const override { return {DefaultShaderID::WIREFRAME}; }
   void render(const RenderContext& rc) const override;
   void renderUpdateBuffers() const override;
 
@@ -55,9 +59,10 @@ class CRenderizableShaderWireFrame : public virtual CRenderizable
   // See base docs
   void freeOpenGLResources() override
   {
-    m_vertexBuffer.destroy();
-    m_colorBuffer.destroy();
-    m_vao.destroy();
+    auto gh = gls();
+    gh.state.vertexBuffer->destroy();
+    gh.state.colorBuffer->destroy();
+    gh.state.vao->destroy();
   }
 
   /** @name Raw access to wireframe shader buffer data
@@ -81,8 +86,25 @@ class CRenderizableShaderWireFrame : public virtual CRenderizable
   const mrpt::math::TBoundingBox wireframeVerticesBoundingBox() const;
 
  private:
-  mutable Buffer m_vertexBuffer, m_colorBuffer;
-  mutable VertexArrayObject m_vao;
+  struct GlState
+  {
+    std::unique_ptr<Buffer> vertexBuffer = std::make_unique<Buffer>();
+    std::unique_ptr<Buffer> colorBuffer = std::make_unique<Buffer>();
+    std::unique_ptr<VertexArrayObject> vao = std::make_unique<VertexArrayObject>();
+  };
+  mutable mrpt::containers::NonCopiableData<GlState> m_gls;
+  mutable mrpt::containers::NonCopiableData<std::mutex> m_glsMtx;
+  struct GlsHandle
+  {
+    GlState& state;
+    std::unique_lock<std::mutex> lock;
+  };
+
+  [[nodiscard]] GlsHandle gls() const
+  {
+    std::unique_lock<std::mutex> lock(m_glsMtx.data);
+    return {m_gls.data, std::move(lock)};
+  }
 };
 
 }  // namespace mrpt::opengl

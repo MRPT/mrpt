@@ -17,14 +17,9 @@
 
 namespace mrpt::opengl
 {
-/** A cloud of points, each one with an individual colour (R,G,B). The alpha
- * component is shared by all the points and is stored in the base member
- * m_color_A.
+/** A cloud of points, each one with an individual color (R,G,B,A).
  *
  * To load from a points-map, CPointCloudColoured::loadFromPointsMap().
- *
- * This class uses smart optimizations while rendering to efficiently draw
- * clouds of millions of points, using octrees.
  *
  * ![mrpt::opengl::CPointCloudColoured](preview_CPointCloudColoured.png)
  *
@@ -142,6 +137,16 @@ class CPointCloudColoured :
     m_point_colors[index].G = g;
     m_point_colors[index].B = b;
     m_point_colors[index].A = a;
+  }
+  /** Overwrites the alpha (transparency) channel for all existing points */
+  void setAllPointsAlpha(uint8_t alpha_channel)
+  {
+    std::unique_lock<std::shared_mutex> wfWriteLock(CRenderizableShaderPoints::m_pointsMtx.data);
+    for (auto& pt : m_point_colors)
+    {
+      pt.A = alpha_channel;
+    }
+    markAllPointsAsNew();
   }
   /** Like \c getPointColor but without checking for out-of-index errors */
   void getPointColor_fast(size_t index, float& R, float& G, float& B) const
@@ -394,20 +399,22 @@ void CPointCloudColoured::loadFromPointsMap(const POINTSMAP* themap)
   const mrpt::opengl::PointCloudAdapter<POINTSMAP> pc_src(*themap);
   const size_t N = pc_src.size();
   pc_dst.resize(N);
+  const bool isColorFilled = themap->hasColorPoints();
   for (size_t i = 0; i < N; i++)
   {
     if constexpr (mrpt::opengl::PointCloudAdapter<POINTSMAP>::HAS_RGB)
     {
-      float x, y, z, r, g, b, a;
-      pc_src.getPointXYZ_RGBAf(i, x, y, z, r, g, b, a);
-      pc_dst.setPointXYZ_RGBAf(i, x, y, z, r, g, b, a);
+      if (isColorFilled)
+      {
+        float x, y, z, r, g, b, a;
+        pc_src.getPointXYZ_RGBAf(i, x, y, z, r, g, b, a);
+        pc_dst.setPointXYZ_RGBAf(i, x, y, z, r, g, b, a);
+        continue;
+      }
     }
-    else
-    {
-      float x, y, z;
-      pc_src.getPointXYZ(i, x, y, z);
-      pc_dst.setPointXYZ_RGBAf(i, x, y, z, 0, 0, 0, 1);
-    }
+    float x, y, z;
+    pc_src.getPointXYZ(i, x, y, z);
+    pc_dst.setPointXYZ_RGBAf(i, x, y, z, 0, 0, 0, 1);
   }
 }
 }  // namespace mrpt::opengl
