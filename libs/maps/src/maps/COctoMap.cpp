@@ -84,7 +84,7 @@ void COctoMap::serializeTo(mrpt::serialization::CArchive& out) const
   this->renderingOptions.writeToStream(out);  // Added in v1
   out << genericMapParams;
   // v2->v3: remove CMemoryChunk
-  std::stringstream ss;
+  std::stringstream ss(std::ios::in | std::ios::out | std::ios::binary);
   const_cast<octomap::OcTree*>(&m_impl->m_octomap)->writeBinary(ss);
   const std::string& buf = ss.str();
   out << buf;
@@ -116,7 +116,7 @@ void COctoMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 
       if (!buf.empty())
       {
-        std::stringstream ss;
+        std::stringstream ss(std::ios::in | std::ios::out | std::ios::binary);
         ss.str(buf);
         ss.seekg(0);
         m_impl->m_octomap.readBinary(ss);

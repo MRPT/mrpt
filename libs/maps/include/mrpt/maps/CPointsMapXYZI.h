@@ -163,8 +163,10 @@ class CPointsMapXYZI : public CPointsMap
   /** Like \c getPointColor but without checking for out-of-index errors */
   inline float getPointIntensity_fast(size_t index) const { return m_intensity[index]; }
 
+  bool hasIntensityField() const { return !m_intensity.empty(); }
+
   /** Returns true if the point map has a color field for each point */
-  bool hasColorPoints() const override { return true; }
+  bool hasColorPoints() const override { return hasIntensityField(); }
 
   /** Override of the default 3D scene builder to account for the individual
    * points' color.
