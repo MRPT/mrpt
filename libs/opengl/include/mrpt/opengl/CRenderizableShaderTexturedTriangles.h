@@ -30,7 +30,11 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
   DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderTexturedTriangles, mrpt::opengl)
 
  public:
-  CRenderizableShaderTexturedTriangles() = default;
+  CRenderizableShaderTexturedTriangles()
+  {  // Initialize GlState
+    auto gh = gls();
+  }
+
   virtual ~CRenderizableShaderTexturedTriangles() override;
 
   virtual shader_list_t requiredShaders() const override
@@ -49,8 +53,9 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
   // See base docs
   void freeOpenGLResources() override
   {
-    m_vbo.destroy();
-    m_vao.destroy();
+    auto gh = gls();
+    gh.state.vbo->destroy();
+    gh.state.vao->destroy();
   }
 
   /** Assigns a texture and a transparency image, and enables transparency (If
@@ -134,8 +139,24 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
   bool m_textureInterpolate = false;
   bool m_textureUseMipMaps = true;
 
-  mutable Buffer m_vbo;
-  mutable VertexArrayObject m_vao;
+  struct GlState
+  {
+    std::unique_ptr<Buffer> vbo = std::make_unique<Buffer>();
+    std::unique_ptr<VertexArrayObject> vao = std::make_unique<VertexArrayObject>();
+  };
+  mutable mrpt::containers::NonCopiableData<GlState> m_gls;
+  mutable mrpt::containers::NonCopiableData<std::mutex> m_glsMtx;
+  struct GlsHandle
+  {
+    GlState& state;
+    std::unique_lock<std::mutex> lock;
+  };
+
+  [[nodiscard]] GlsHandle gls() const
+  {
+    std::unique_lock<std::mutex> lock(m_glsMtx.data);
+    return {m_gls.data, std::move(lock)};
+  }
 };
 
 }  // namespace mrpt::opengl

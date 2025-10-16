@@ -135,8 +135,9 @@ struct CopyCtor<false>
   static T* clone(const T& o)
   {
     throw std::runtime_error(
-        "clone(): Attempt to call copy ctor of non copy-constructible "
-        "class.");
+        std::string("mrpt::rtti::CObject::clone(): Attempt to call copy constructor of non "
+                    "copy-constructible class: ") +
+        std::string(o.GetRuntimeClass()->className));
   }
 };
 }  // namespace internal

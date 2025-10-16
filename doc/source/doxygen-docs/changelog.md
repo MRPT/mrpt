@@ -1,5 +1,37 @@
 \page changelog Change Log
 
+# Version 2.14.16: Released Oct 15th, 2025
+- Changes in libraries:
+  - \ref mrpt_rtti_grp
+    - More informative error message when calling clone() on a class without copy constructor.
+- BUG FIXES:
+  - Fix build building deprecated warnings in WorkerThreadsPool.
+  - Fix mrpt::opengl::CPointCloudColoured throwing if the source cloud map may have color and color/intensity channels are actually empty.
+
+# Version 2.14.15: Released Sep 29th, 2025
+- BUG FIXES:
+  - Fix regression in OpenGL application crashing after last update.
+
+# Version 2.14.14: Released Sep 27th, 2025
+- BUG FIXES:
+  - Fix missing backported fix to build mrpt::lockHelper() on modern gcc
+  - Fix OpenGL crashes under specific build flags: OpenGL Buffers and VBO changed so they are initialized after constructor.
+
+# Version 2.14.13: Released Sep 27th, 2025
+- Changes in libraries:
+  - \ref mrpt_math_grp
+    - New classes mrpt::math::TOrientedBox, mrpt::math::TOrientedBoxf
+- BUG FIXES:
+  - Fix mrpt::opengl::CEllipsoid3D wrong direction.
+  - Fix potential race conditions in TBB-parallel particle filters with 2D gridmap.
+  - Harden opengl unit tests against crashes on non-GPU runners.
+  - Fix build against ffmpeg 8.0 (Debian bug #1115064)
+
+# Version 2.14.12: Released Aug 31rd, 2025
+- Changes in libraries:
+  - \ref mrpt_opengl_grp
+    - New method mrpt::opengl::CPointCloudColoured::setAllPointsAlpha().
+
 # Version 2.14.11: Released May 31rd, 2025
 - BUG FIXES:
   - Fix build against all tf2 versions in all active ROS 2 distributions.

@@ -135,7 +135,7 @@ bool CFFMPEG_InputStream::openURL(
   if (avformat_open_input(&ctx->pFormatCtx, url.c_str(), nullptr, &options) != 0)
   {
     ctx->pFormatCtx = nullptr;
-    std::cerr << "[CFFMPEG_InputStream::openURL] Cannot open video: " << url << std::endl;
+    std::cerr << "[CFFMPEG_InputStream::openURL] Cannot open video: " << url << "\n";
     return false;
   }
 
@@ -144,7 +144,7 @@ bool CFFMPEG_InputStream::openURL(
   {
     std::cerr << "[CFFMPEG_InputStream::openURL] Couldn't find stream "
                  "information: "
-              << url << std::endl;
+              << url << "\n";
     return false;
   }
 
@@ -171,7 +171,7 @@ bool CFFMPEG_InputStream::openURL(
   }
   if (ctx->videoStream == -1)
   {
-    std::cerr << "[CFFMPEG_InputStream::openURL] Didn't find a video stream: " << url << std::endl;
+    std::cerr << "[CFFMPEG_InputStream::openURL] Didn't find a video stream: " << url << "\n";
     return false;
   }
 
@@ -187,7 +187,7 @@ bool CFFMPEG_InputStream::openURL(
 #endif
   if (codec == nullptr)
   {
-    std::cerr << "[CFFMPEG_InputStream::openURL] Codec not found: " << url << std::endl;
+    std::cerr << "[CFFMPEG_InputStream::openURL] Codec not found: " << url << "\n";
     return false;
   }
 
@@ -197,7 +197,7 @@ bool CFFMPEG_InputStream::openURL(
   {
     std::cerr << "[CFFMPEG_InputStream::openURL] Cannot alloc avcodec "
                  "context for: "
-              << url << std::endl;
+              << url << "\n";
     return false;
   }
 
@@ -207,7 +207,7 @@ bool CFFMPEG_InputStream::openURL(
   {
     std::cerr << "[CFFMPEG_InputStream::openURL] Failed "
                  "avcodec_parameters_to_context() for: "
-              << url << std::endl;
+              << url << "\n";
     return false;
   }
 
@@ -218,7 +218,7 @@ bool CFFMPEG_InputStream::openURL(
   // Open codec
   if (avcodec_open2(ctx->pCodecCtx, codec, nullptr) < 0)
   {
-    std::cerr << "[CFFMPEG_InputStream::openURL] avcodec_open2() failed for: " << url << std::endl;
+    std::cerr << "[CFFMPEG_InputStream::openURL] avcodec_open2() failed for: " << url << "\n";
     return false;
   }
 
@@ -231,7 +231,7 @@ bool CFFMPEG_InputStream::openURL(
   {
     std::cerr << "[CFFMPEG_InputStream::openURL] Could not alloc memory "
                  "for frame buffers: "
-              << url << std::endl;
+              << url << "\n";
     return false;
   }
 
@@ -247,7 +247,7 @@ bool CFFMPEG_InputStream::openURL(
   {
     std::cerr << "[CFFMPEG_InputStream::openURL] av_image_get_buffer_size "
                  "error code: "
-              << numBytes << std::endl;
+              << numBytes << "\n";
     return false;
   }
 
@@ -278,8 +278,7 @@ void CFFMPEG_InputStream::close()
   // Close the codec
   if (ctx->pCodecCtx)
   {
-    avcodec_close(ctx->pCodecCtx);
-    ctx->pCodecCtx = nullptr;
+    avcodec_free_context(&ctx->pCodecCtx);
   }
 
   // Close the video file
@@ -356,9 +355,9 @@ bool CFFMPEG_InputStream::retrieveFrame(mrpt::img::CImage& out_img, int64_t& out
     int ret = avcodec_send_packet(ctx->pCodecCtx, &packet);
     if (ret < 0)
     {
-      std::cerr << std::endl
-                << "[CFFMPEG_InputStream] avcodec_send_packet error code=" << ret << std::endl
-                << std::endl;
+      std::cerr << "\n"
+                << "[CFFMPEG_InputStream] avcodec_send_packet error code=" << ret << "\n"
+                << "\n";
       return false;
     }
     while (ret >= 0)
@@ -370,11 +369,11 @@ bool CFFMPEG_InputStream::retrieveFrame(mrpt::img::CImage& out_img, int64_t& out
         return false;
       else if (ret < 0)
       {
-        std::cerr << std::endl
+        std::cerr << "\n"
                   << "[CFFMPEG_InputStream] avcodec_receive_frame "
                      "error code="
-                  << ret << std::endl
-                  << std::endl;
+                  << ret << "\n"
+                  << "\n";
         return false;
       }
 
@@ -401,8 +400,8 @@ bool CFFMPEG_InputStream::retrieveFrame(mrpt::img::CImage& out_img, int64_t& out
 
       // std::cout << "[retrieveFrame] Generating image: " <<
       // ctx->pCodecPars->width << "x" << ctx->pCodecPars->height
-      // << std::endl; std::cout << "  linsize: " <<
-      // ctx->pFrameRGB->linesize[0] << std::endl;
+      // << "\n"; std::cout << "  linsize: " <<
+      // ctx->pFrameRGB->linesize[0] << "\n";
 
       if (ctx->pFrameRGB->linesize[0] != ((m_grab_as_grayscale ? 1 : 3) * width))
         THROW_EXCEPTION("FIXME: linesize!=width case not handled yet.");

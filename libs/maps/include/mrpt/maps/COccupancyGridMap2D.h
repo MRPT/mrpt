@@ -10,6 +10,7 @@
 
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/containers/CDynamicGrid.h>
+#include <mrpt/containers/NonCopiableData.h>
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/maps/CLogOddsGridMap2D.h>
@@ -24,6 +25,9 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/typemeta/TEnumType.h>
+
+#include <atomic>
+#include <mutex>
 
 namespace mrpt::maps
 {
@@ -92,8 +96,10 @@ class COccupancyGridMap2D :
   /** Auxiliary variables to speed up the computation of observation
    * likelihood values for LF method among others, at a high cost in memory
    * (see TLikelihoodOptions::enableLikelihoodCache). */
-  mutable std::vector<double> m_precomputedLikelihood;
+  mutable mrpt::containers::NonCopiableData<std::vector<std::atomic<double>>>
+      m_precomputedLikelihood;
   mutable bool m_likelihoodCacheOutDated{true};
+  mutable mrpt::containers::NonCopiableData<std::mutex> m_precomputedLikelihood_mtx;
 
   /** Used for Voronoi calculation.Same struct as "map", but contains a "0" if
    * not a basis point. */

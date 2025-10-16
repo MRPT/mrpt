@@ -30,21 +30,22 @@ void CRenderizableShaderPoints::renderUpdateBuffers() const
   const_cast<CRenderizableShaderPoints&>(*this).onUpdateBuffers_Points();
 
   std::shared_lock<std::shared_mutex> wfReadLock(CRenderizableShaderPoints::m_pointsMtx.data);
+  auto gh = gls();
 
   // Define OpenGL buffers:
-  m_vertexBuffer.createOnce();
-  m_vertexBuffer.bind();
-  m_vertexBuffer.allocate(
+  gh.state.vertexBuffer->createOnce();
+  gh.state.vertexBuffer->bind();
+  gh.state.vertexBuffer->allocate(
       m_vertex_buffer_data.data(), sizeof(m_vertex_buffer_data[0]) * m_vertex_buffer_data.size());
 
   // color buffer:
-  m_colorBuffer.createOnce();
-  m_colorBuffer.bind();
-  m_colorBuffer.allocate(
+  gh.state.colorBuffer->createOnce();
+  gh.state.colorBuffer->bind();
+  gh.state.colorBuffer->allocate(
       m_color_buffer_data.data(), sizeof(m_color_buffer_data[0]) * m_color_buffer_data.size());
 
   // VAO: required to use glEnableVertexAttribArray()
-  m_vao.createOnce();
+  gh.state.vao->createOnce();
 #endif
 }
 
@@ -56,6 +57,7 @@ void CRenderizableShaderPoints::render(const RenderContext& rc) const
   if (rc.state->is1stShadowMapPass) return;
 
   std::shared_lock<std::shared_mutex> wfReadLock(CRenderizableShaderPoints::m_pointsMtx.data);
+  auto gh = gls();
 
   // Point size as uniform:
   glUniform1f(rc.shader->uniformId("vertexPointSize"), m_pointSize);
@@ -71,9 +73,9 @@ void CRenderizableShaderPoints::render(const RenderContext& rc) const
   if (rc.shader->hasAttribute("position"))
   {
     attr_position = rc.shader->attributeId("position");
-    m_vao.bind();
+    gh.state.vao->bind();
     glEnableVertexAttribArray(*attr_position);
-    m_vertexBuffer.bind();
+    gh.state.vertexBuffer->bind();
     glVertexAttribPointer(
         *attr_position,  /* attribute */
         3,               /* size */
@@ -91,7 +93,7 @@ void CRenderizableShaderPoints::render(const RenderContext& rc) const
   {
     attr_color = rc.shader->attributeId("vertexColor");
     glEnableVertexAttribArray(*attr_color);
-    m_colorBuffer.bind();
+    gh.state.colorBuffer->bind();
     glVertexAttribPointer(
         *attr_color,      /* attribute */
         4,                /* size */
