@@ -31,11 +31,11 @@ class LockHelper
   LockHelper(const LockHelper& o) = delete;
   LockHelper& operator=(const LockHelper& o) = delete;
 
-  LockHelper(LockHelper&& o) : l_{o.l} { o.l = nullptr; }
+  LockHelper(LockHelper&& o) : l_{o.l_} { o.l_ = nullptr; }
   LockHelper& operator=(LockHelper&& o)
   {
-    l_ = o.l;
-    o.l = nullptr;
+    l_ = o.l_;
+    o.l_ = nullptr;
     return *this;
   }
 
