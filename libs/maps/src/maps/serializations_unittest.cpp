@@ -38,6 +38,7 @@ TEST_CLASS_MOVE_COPY_CTORS(CReflectivityGridMap2D);
 TEST_CLASS_MOVE_COPY_CTORS(COccupancyGridMap2D);
 TEST_CLASS_MOVE_COPY_CTORS(COccupancyGridMap3D);
 TEST_CLASS_MOVE_COPY_CTORS(CSimplePointsMap);
+TEST_CLASS_MOVE_COPY_CTORS(CGenericPointsMap);
 TEST_CLASS_MOVE_COPY_CTORS(CRandomFieldGridMap3D);
 TEST_CLASS_MOVE_COPY_CTORS(CWeightedPointsMap);
 TEST_CLASS_MOVE_COPY_CTORS(CPointsMapXYZI);
@@ -71,6 +72,7 @@ TEST(SerializeTestMaps, WriteReadToMem)
       CLASS_ID(CRandomFieldGridMap3D),
       CLASS_ID(CWeightedPointsMap),
       CLASS_ID(CPointsMapXYZI),
+      CLASS_ID(CGenericPointsMap),
       CLASS_ID(COctoMap),
       CLASS_ID(CColouredOctoMap),
       CLASS_ID(CVoxelMap),

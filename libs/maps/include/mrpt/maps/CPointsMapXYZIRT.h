@@ -245,6 +245,37 @@ class CPointsMapXYZIRT : public CPointsMap
 	void insertPointField_Timestamp(float t) override { m_time.push_back(t); }
 	/// clang-format on
 
+/** @name String-keyed field access virtual interface implementation
+	  @{ */
+	bool hasPointField(const std::string& fieldName) const override;
+	std::vector<std::string> getPointFieldNames_float() const override;
+	std::vector<std::string> getPointFieldNames_uint16() const override;
+
+	float getPointField_float(
+		size_t index, const std::string& fieldName) const override;
+	uint16_t getPointField_uint16(
+		size_t index, const std::string& fieldName) const override;
+
+	void setPointField_float(
+		size_t index, const std::string& fieldName, float value) override;
+	void setPointField_uint16(
+		size_t index, const std::string& fieldName, uint16_t value) override;
+
+	void insertPointField_float(
+		const std::string& fieldName, float value) override;
+	void insertPointField_uint16(
+		const std::string& fieldName, uint16_t value) override;
+
+	void reserveField_float(const std::string& fieldName, size_t n) override;
+	void reserveField_uint16(
+		const std::string& fieldName, size_t n) override;
+	void resizeField_float(const std::string& fieldName, size_t n) override;
+	void resizeField_uint16(
+		const std::string& fieldName, size_t n) override;
+	/** @} */
+
+
+
 	void saveMetricMapRepresentationToFile(
 		const std::string& filNamePrefix) const override
 	{

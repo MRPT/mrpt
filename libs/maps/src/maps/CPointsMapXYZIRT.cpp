@@ -576,6 +576,101 @@ void CPointsMapXYZIRT::loadFromRangeScan(
       *this, rangeScan, robotPose);
 }
 
+/* ------------------------------------------------------------------
+ String-keyed field access virtual interface implementation
+   ------------------------------------------------------------------ */
+bool CPointsMapXYZIRT::hasPointField(const std::string& fieldName) const
+{
+  if (fieldName == "i" && hasIntensityField()) return true;
+  if (fieldName == "r" && hasRingField()) return true;
+  if (fieldName == "t" && hasTimeField()) return true;
+  return false;
+}
+std::vector<std::string> CPointsMapXYZIRT::getPointFieldNames_float() const
+{
+  std::vector<std::string> names;
+  if (hasIntensityField()) names.push_back("i");
+  if (hasTimeField()) names.push_back("t");
+  return names;
+}
+std::vector<std::string> CPointsMapXYZIRT::getPointFieldNames_uint16() const
+{
+  std::vector<std::string> names;
+  if (hasRingField()) names.push_back("r");
+  return names;
+}
+
+float CPointsMapXYZIRT::getPointField_float(size_t index, const std::string& fieldName) const
+{
+  if (fieldName == "i")
+  {
+    if (!hasIntensityField()) return 0;
+    ASSERT_LT_(index, m_intensity.size());
+    return m_intensity[index];
+  }
+  if (fieldName == "t")
+  {
+    if (!hasTimeField()) return 0;
+    ASSERT_LT_(index, m_time.size());
+    return m_time[index];
+  }
+  return 0;
+}
+uint16_t CPointsMapXYZIRT::getPointField_uint16(size_t index, const std::string& fieldName) const
+{
+  if (fieldName == "r")
+  {
+    if (!hasRingField()) return 0;
+    ASSERT_LT_(index, m_ring.size());
+    return m_ring[index];
+  }
+  return 0;
+}
+
+void CPointsMapXYZIRT::setPointField_float(size_t index, const std::string& fieldName, float value)
+{
+  if (fieldName == "i" && hasIntensityField())
+    setPointIntensity(index, value);
+  else if (fieldName == "t" && hasTimeField())
+    setPointTime(index, value);
+}
+void CPointsMapXYZIRT::setPointField_uint16(
+    size_t index, const std::string& fieldName, uint16_t value)
+{
+  if (fieldName == "ring" && hasRingField()) setPointRing(index, value);
+}
+
+void CPointsMapXYZIRT::insertPointField_float(const std::string& fieldName, float value)
+{
+  if (fieldName == "i")
+    insertPointField_Intensity(value);
+  else if (fieldName == "t")
+    insertPointField_Timestamp(value);
+}
+void CPointsMapXYZIRT::insertPointField_uint16(const std::string& fieldName, uint16_t value)
+{
+  if (fieldName == "r") insertPointField_Ring(value);
+}
+
+void CPointsMapXYZIRT::reserveField_float(const std::string& fieldName, size_t n)
+{
+  if (fieldName == "i") m_intensity.reserve(n);
+  if (fieldName == "t") m_time.reserve(n);
+}
+void CPointsMapXYZIRT::reserveField_uint16(const std::string& fieldName, size_t n)
+{
+  if (fieldName == "r") m_ring.reserve(n);
+}
+void CPointsMapXYZIRT::resizeField_float(const std::string& fieldName, size_t n)
+{
+  if (fieldName == "i") m_intensity.resize(n, 0);
+  if (fieldName == "t") m_time.resize(n, 0);
+}
+void CPointsMapXYZIRT::resizeField_uint16(const std::string& fieldName, size_t n)
+{
+  if (fieldName == "r") m_ring.resize(n, 0);
+}
+
 // ====PLY files import & export virtual methods
 void CPointsMapXYZIRT::PLY_import_set_vertex_count(size_t N) { this->setSize(N); }
 

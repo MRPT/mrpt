@@ -580,6 +580,60 @@ class CPointsMap :
 	virtual void insertPointField_color_B([[maybe_unused]] float v)   { /* default: none*/ }
 	/// clang-format on
 
+	/** @name Generic, string-keyed field access virtual interface
+	 * @{ */
+
+	/** Returns true if the map has a data channel with the given name.
+	 * \sa getPointField_float, getPointField_uint16
+	 */
+	virtual bool hasPointField(const std::string& fieldName) const { return false; }
+
+	/** Get list of all float channel names */
+	virtual std::vector<std::string> getPointFieldNames_float() const { return {}; }
+	/** Get list of all uint16_t channel names */
+	virtual std::vector<std::string> getPointFieldNames_uint16() const { return {}; }
+
+	/** Read the value of a float channel for a given point.
+	 * Returns 0 if field does not exist.
+	 * \exception std::exception on index out of bounds or if field exists but
+	 * is not float.
+	 */
+	virtual float getPointField_float(
+		size_t index, const std::string& fieldName) const { return 0; }
+		
+	/** Read the value of a uint16_t channel for a given point.
+	 * Returns 0 if field does not exist.
+	 * \exception std::exception on index out of bounds or if field exists but
+	 * is not uint16_t.
+	 */
+virtual uint16_t getPointField_uint16(
+		size_t index, const std::string& fieldName) const { return 0; }
+
+	/** Sets the value of a float channel for a given point.
+	 * \exception std::exception on index out of bounds or if field does not
+	 * exist or is not float.
+	 */
+	virtual void setPointField_float(
+		size_t index, const std::string& fieldName, float value) {}
+	/** Sets the value of a uint16_t channel for a given point.
+	 * \exception std::exception on index out of bounds or if field does not
+	 * exist or is not uint16_t.
+	 */
+virtual void setPointField_uint16(
+		size_t index, const std::string& fieldName, uint16_t value) {}
+
+	/** Appends a value to a float channel (for use after insertPointFast()) */
+	virtual void insertPointField_float(const std::string& fieldName, float value) {}
+	/** Appends a value to a uint16_t channel (for use after insertPointFast()) */
+	virtual void insertPointField_uint16(const std::string& fieldName, uint16_t value) {}
+
+	virtual void reserveField_float(const std::string& fieldName, size_t n) {}
+	virtual void reserveField_uint16(const std::string& fieldName, size_t n) {}
+	virtual void resizeField_float(const std::string& fieldName, size_t n) {}
+	virtual void resizeField_uint16(const std::string& fieldName, size_t n) {}
+
+	/** @} */
+
 	/** Returns a copy of the 2D/3D points as a std::vector of float
 	 * coordinates.
 	 * If decimation is greater than 1, only 1 point out of that number will be
