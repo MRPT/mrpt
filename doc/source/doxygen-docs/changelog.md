@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.15.0: UNRELEASED
+- None yet
+
 # Version 2.14.16: Released Oct 15th, 2025
 - Changes in libraries:
   - \ref mrpt_rtti_grp
