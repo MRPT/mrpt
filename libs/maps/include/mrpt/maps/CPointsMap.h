@@ -578,6 +578,12 @@ class CPointsMap :
 	virtual void insertPointField_color_R([[maybe_unused]] float v)   { /* default: none*/ }
 	virtual void insertPointField_color_G([[maybe_unused]] float v)   { /* default: none*/ }
 	virtual void insertPointField_color_B([[maybe_unused]] float v)   { /* default: none*/ }
+
+	virtual auto getPointsBufferRef_float_field([[maybe_unused]] const std::string &fieldName) const  -> const mrpt::aligned_std_vector<float>* { return nullptr; }
+	virtual auto getPointsBufferRef_uint_field([[maybe_unused]] const std::string &fieldName) const  -> const mrpt::aligned_std_vector<uint16_t>* { return nullptr; }
+	
+	virtual auto getPointsBufferRef_float_field([[maybe_unused]] const std::string &fieldName) -> mrpt::aligned_std_vector<float>* { return nullptr; }
+	virtual auto getPointsBufferRef_uint_field([[maybe_unused]] const std::string &fieldName)  -> mrpt::aligned_std_vector<uint16_t>* { return nullptr; }
 	/// clang-format on
 
 	/** @name Generic, string-keyed field access virtual interface

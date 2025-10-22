@@ -42,7 +42,7 @@ class CPointsMapXYZIRT : public CPointsMap
  public:
   CPointsMapXYZIRT() = default;
 
-  CPointsMapXYZIRT(const CPointsMap& o) { CPointsMap::operator=(o); }
+  explicit CPointsMapXYZIRT(const CPointsMap& o) { CPointsMap::operator=(o); }
   CPointsMapXYZIRT(const CPointsMapXYZIRT& o);
   explicit CPointsMapXYZIRT(const CPointsMapXYZI& o);
   CPointsMapXYZIRT& operator=(const CPointsMap& o);

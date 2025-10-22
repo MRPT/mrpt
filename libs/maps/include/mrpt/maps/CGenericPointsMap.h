@@ -144,6 +144,45 @@ class CGenericPointsMap : public CPointsMap
   void reserveField_uint16(const std::string& fieldName, size_t n) override;
   void resizeField_float(const std::string& fieldName, size_t n) override;
   void resizeField_uint16(const std::string& fieldName, size_t n) override;
+
+  auto getPointsBufferRef_float_field(const std::string& fieldName) const
+      -> const mrpt::aligned_std_vector<float>* override
+  {
+    if (auto it = m_float_fields.find(fieldName); it != m_float_fields.end())
+    {
+      return &it->second;
+    }
+    return nullptr;
+  }
+  auto getPointsBufferRef_uint_field(const std::string& fieldName) const
+      -> const mrpt::aligned_std_vector<uint16_t>* override
+  {
+    if (auto it = m_uint16_fields.find(fieldName); it != m_uint16_fields.end())
+    {
+      return &it->second;
+    }
+    return nullptr;
+  }
+
+  auto getPointsBufferRef_float_field(const std::string& fieldName)
+      -> mrpt::aligned_std_vector<float>* override
+  {
+    if (auto it = m_float_fields.find(fieldName); it != m_float_fields.end())
+    {
+      return &it->second;
+    }
+    return nullptr;
+  }
+  auto getPointsBufferRef_uint_field(const std::string& fieldName)
+      -> mrpt::aligned_std_vector<uint16_t>* override
+  {
+    if (auto it = m_uint16_fields.find(fieldName); it != m_uint16_fields.end())
+    {
+      return &it->second;
+    }
+    return nullptr;
+  }
+
   /** @} */
 
  protected:
@@ -210,7 +249,7 @@ class PointCloudAdapter<mrpt::maps::CGenericPointsMap>
   static constexpr bool HAS_RGBu8 = false;
 
   /** Constructor (accept a const ref for convenience) */
-  inline PointCloudAdapter(const mrpt::maps::CGenericPointsMap& obj) :
+  explicit PointCloudAdapter(const mrpt::maps::CGenericPointsMap& obj) :
       m_obj(*const_cast<mrpt::maps::CGenericPointsMap*>(&obj))
   {
   }
