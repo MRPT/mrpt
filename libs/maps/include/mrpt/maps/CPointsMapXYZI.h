@@ -28,7 +28,7 @@ class CPointsMapXYZI : public CPointsMap
  public:
   CPointsMapXYZI() = default;
 
-  CPointsMapXYZI(const CPointsMap& o) { CPointsMap::operator=(o); }
+  explicit CPointsMapXYZI(const CPointsMap& o) { CPointsMap::operator=(o); }
   CPointsMapXYZI(const CPointsMapXYZI& o) : CPointsMap() { impl_copyFrom(o); }
   CPointsMapXYZI& operator=(const CPointsMap& o)
   {
