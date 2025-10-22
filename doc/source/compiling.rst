@@ -65,23 +65,6 @@ Minimum compiler requisites:
     If your Ubuntu distribution is old and does not have any of the packages
     above, do not worry and ignore it, MRPT CMake scripts will handle it.
 
-    **ROS1 support:** Install additional dependencies for ros1bridge using
-    official Ubuntu repositories. If you already have a ROS distribution installed,
-    doing ``source /opt/ros/xxx/setup.bash`` is enough, no further packages
-    must be installed. Do not install these packages if you do not need
-    the `mrpt::ros1bridge <group_mrpt_ros1bridge_grp.html>`_ module.
-
-    .. code-block:: bash
-
-       sudo apt install libcv-bridge-dev libgeometry-msgs-dev libnav-msgs-dev \
-            librosbag-storage-dev libroscpp-dev libsensor-msgs-dev \
-    		libstd-srvs-dev libstereo-msgs-dev libtf2-dev \
-    		libtf2-msgs-dev libbz2-dev
-
-    **ROS2 support:** Invoke your ROS2 distribution ``setup.bash`` as usual before
-    running MRPT cmake configure to enable building of
-    the `mrpt::ros2bridge <group_mrpt_ros2bridge_grp.html>`_ module.
-
 .. dropdown:: Windows
 
     **CMake (Mandatory)**

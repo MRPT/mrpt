@@ -75,7 +75,6 @@ before_build:
     -DBUILD_APP_carmen2rawlog=OFF \
     -DBUILD_APP_carmen2simplemap=OFF \
     -DBUILD_APP_map-partition=OFF \
-    -DBUILD_APP_rosbag2rawlog=OFF \
     -DBUILD_APP_simul-landmarks=OFF \
     -DBUILD_APP_simul-beacons=OFF \
     -DBUILD_APP_simul-gridmap=OFF \
