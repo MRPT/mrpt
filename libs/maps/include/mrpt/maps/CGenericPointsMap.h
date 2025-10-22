@@ -148,6 +148,10 @@ class CGenericPointsMap : public CPointsMap
   auto getPointsBufferRef_float_field(const std::string& fieldName) const
       -> const mrpt::aligned_std_vector<float>* override
   {
+    if (auto* f = CPointsMap::getPointsBufferRef_float_field(fieldName); f)
+    {
+      return f;
+    }
     if (auto it = m_float_fields.find(fieldName); it != m_float_fields.end())
     {
       return &it->second;
@@ -167,6 +171,10 @@ class CGenericPointsMap : public CPointsMap
   auto getPointsBufferRef_float_field(const std::string& fieldName)
       -> mrpt::aligned_std_vector<float>* override
   {
+    if (auto* f = CPointsMap::getPointsBufferRef_float_field(fieldName); f)
+    {
+      return f;
+    }
     if (auto it = m_float_fields.find(fieldName); it != m_float_fields.end())
     {
       return &it->second;
