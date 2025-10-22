@@ -68,8 +68,9 @@ void CObservationPointCloud::getDescriptionAsText(std::ostream& o) const
       }
       float Imin, Imax;
       mrpt::math::minimum_maximum(*data, Imin, Imax);
-      o << "Field '" << fieldName << "' (float32): min=" << Imin << " max=" << Imax << " ("
-        << data->size() << " entries)\n";
+      o << mrpt::format(
+          "Field: %-20s (float32): min=%7.02f max=%7.02f (%zu entries)\n", fieldName.c_str(), Imin,
+          Imax, data->size());
     }
     for (const auto& fieldName : pointcloud->getPointFieldNames_uint16())
     {
@@ -80,8 +81,9 @@ void CObservationPointCloud::getDescriptionAsText(std::ostream& o) const
       }
       uint16_t Imin, Imax;
       mrpt::math::minimum_maximum(*data, Imin, Imax);
-      o << "Field '" << fieldName << "' (uint16): min=" << Imin << " max=" << Imax << " ("
-        << data->size() << " entries)\n";
+      o << mrpt::format(
+          "Field: %-20s  (uint16): min=%7hu max=%7hu (%zu entries)\n", fieldName.c_str(), Imin,
+          Imax, data->size());
     }
   }
 
