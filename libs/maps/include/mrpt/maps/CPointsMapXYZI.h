@@ -173,17 +173,47 @@ class CPointsMapXYZI : public CPointsMap
    */
   void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
 
-  // clang-format off
-	auto getPointsBufferRef_intensity() const  -> const mrpt::aligned_std_vector<float>* override { return &m_intensity; }
-	auto getPointsBufferRef_intensity()        -> mrpt::aligned_std_vector<float>* override { return &m_intensity; }
-	void insertPointField_Intensity(float i) override { m_intensity.push_back(i); }
-  // clang-format on
-
   void saveMetricMapRepresentationToFile(const std::string& filNamePrefix) const override
   {
     std::string fil(filNamePrefix + std::string(".txt"));
     saveXYZI_to_text_file(fil);
   }
+
+  /** @name String-keyed field access virtual interface implementation
+      @{ */
+  constexpr static const char* POINT_FIELD_INTENSITY = "intensity";
+
+  bool hasPointField(const std::string& fieldName) const override;
+  std::vector<std::string> getPointFieldNames_float() const override;
+
+  float getPointField_float(size_t index, const std::string& fieldName) const override;
+  void setPointField_float(size_t index, const std::string& fieldName, float value) override;
+
+  void insertPointField_float(const std::string& fieldName, float value) override;
+  void reserveField_float(const std::string& fieldName, size_t n) override;
+  void resizeField_float(const std::string& fieldName, size_t n) override;
+
+  auto getPointsBufferRef_float_field(const std::string& fieldName) const
+      -> const mrpt::aligned_std_vector<float>* override
+  {
+    if (auto* f = CPointsMap::getPointsBufferRef_float_field(fieldName); f)
+    {
+      return f;
+    }
+    if (fieldName == POINT_FIELD_INTENSITY) return &m_intensity;
+    return nullptr;
+  }
+  auto getPointsBufferRef_float_field(const std::string& fieldName)
+      -> mrpt::aligned_std_vector<float>* override
+  {
+    if (auto* f = CPointsMap::getPointsBufferRef_float_field(fieldName); f)
+    {
+      return f;
+    }
+    if (fieldName == POINT_FIELD_INTENSITY) return &m_intensity;
+    return nullptr;
+  }
+  /** @} */
 
   /** @name PCL library support
     @{ */

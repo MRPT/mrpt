@@ -255,21 +255,21 @@ void CGenericPointsMap::setPointAllFieldsFast(size_t index, const std::vector<fl
 
 bool CGenericPointsMap::hasPointField(const std::string& fieldName) const
 {
-  return m_float_fields.count(fieldName) || m_uint16_fields.count(fieldName);
+  return CPointsMap::hasPointField(fieldName) ||  //
+         m_float_fields.count(fieldName) ||       //
+         m_uint16_fields.count(fieldName);
 }
 
 std::vector<std::string> CGenericPointsMap::getPointFieldNames_float() const
 {
-  std::vector<std::string> names;
-  names.reserve(m_float_fields.size());
+  std::vector<std::string> names = CPointsMap::getPointFieldNames_float();
   for (const auto& f : m_float_fields) names.push_back(f.first);
   return names;
 }
 
 std::vector<std::string> CGenericPointsMap::getPointFieldNames_uint16() const
 {
-  std::vector<std::string> names;
-  names.reserve(m_uint16_fields.size());
+  std::vector<std::string> names = = CPointsMap::getPointFieldNames_uint16();
   for (const auto& f : m_uint16_fields) names.push_back(f.first);
   return names;
 }
@@ -277,7 +277,10 @@ std::vector<std::string> CGenericPointsMap::getPointFieldNames_uint16() const
 float CGenericPointsMap::getPointField_float(size_t index, const std::string& fieldName) const
 {
   auto it = m_float_fields.find(fieldName);
-  if (it == m_float_fields.end()) return 0;
+  if (it == m_float_fields.end())
+  {
+    return CPointsMap::getPointField_float(index, fieldName);
+  }
   ASSERT_LT_(index, it->second.size());
   return it->second[index];
 }
@@ -285,7 +288,10 @@ float CGenericPointsMap::getPointField_float(size_t index, const std::string& fi
 uint16_t CGenericPointsMap::getPointField_uint16(size_t index, const std::string& fieldName) const
 {
   auto it = m_uint16_fields.find(fieldName);
-  if (it == m_uint16_fields.end()) return 0;
+  if (it == m_uint16_fields.end())
+  {
+    return CPointsMap::getPointField_uint16(index, fieldName);
+  }
   ASSERT_LT_(index, it->second.size());
   return it->second[index];
 }

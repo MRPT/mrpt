@@ -550,51 +550,6 @@ class CPointsMap :
   /** Provides a direct access to a read-only reference of the internal point
    * buffer. \sa getAllPoints */
   inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_z() const { return m_z; }
-  // clang-format off
-	virtual auto getPointsBufferRef_intensity() const  -> const mrpt::aligned_std_vector<float>* { return nullptr; }
-	virtual auto getPointsBufferRef_ring() const       -> const mrpt::aligned_std_vector<uint16_t>* { return nullptr; }
-	virtual auto getPointsBufferRef_timestamp() const  -> const mrpt::aligned_std_vector<float>* { return nullptr; }
-	virtual auto getPointsBufferRef_color_R() const    -> const mrpt::aligned_std_vector<float>* { return nullptr;}
-	virtual auto getPointsBufferRef_color_G() const    -> const mrpt::aligned_std_vector<float>* { return nullptr; }
-	virtual auto getPointsBufferRef_color_B() const    -> const mrpt::aligned_std_vector<float>* { return nullptr; }
-
-	virtual auto getPointsBufferRef_intensity()        -> mrpt::aligned_std_vector<float>* { return nullptr; }
-	virtual auto getPointsBufferRef_ring()             -> mrpt::aligned_std_vector<uint16_t>* { return nullptr; }
-	virtual auto getPointsBufferRef_timestamp()        -> mrpt::aligned_std_vector<float>* { return nullptr; }
-	virtual auto getPointsBufferRef_color_R()          -> mrpt::aligned_std_vector<float>* { return nullptr; }
-	virtual auto getPointsBufferRef_color_G()          -> mrpt::aligned_std_vector<float>* { return nullptr; }
-	virtual auto getPointsBufferRef_color_B()          -> mrpt::aligned_std_vector<float>* { return nullptr; }
-	
-	bool hasField_Intensity() const  { return getPointsBufferRef_intensity() != nullptr; }
-	bool hasField_Ring() const       { return getPointsBufferRef_ring() != nullptr; }
-	bool hasField_Timestamp() const  { return getPointsBufferRef_timestamp() != nullptr; }
-	bool hasField_color_R() const    { return getPointsBufferRef_color_R() != nullptr; }
-	bool hasField_color_G() const    { return getPointsBufferRef_color_G() != nullptr; }
-	bool hasField_color_B() const    { return getPointsBufferRef_color_B() != nullptr; }
-	
-	virtual void insertPointField_Intensity([[maybe_unused]] float i) { /* default: none*/ }
-	virtual void insertPointField_Ring([[maybe_unused]] uint16_t r)   { /* default: none*/ }
-	virtual void insertPointField_Timestamp([[maybe_unused]] float t) { /* default: none*/ }
-	virtual void insertPointField_color_R([[maybe_unused]] float v)   { /* default: none*/ }
-	virtual void insertPointField_color_G([[maybe_unused]] float v)   { /* default: none*/ }
-	virtual void insertPointField_color_B([[maybe_unused]] float v)   { /* default: none*/ }
-
-	virtual auto getPointsBufferRef_float_field(const std::string &fieldName) const  -> const mrpt::aligned_std_vector<float>* {
-		if (fieldName=="x") return &m_x;
-		if (fieldName=="y") return &m_y;
-		if (fieldName=="z") return &m_z;
-		return nullptr;
-	}
-	virtual auto getPointsBufferRef_uint_field([[maybe_unused]] const std::string &fieldName) const  -> const mrpt::aligned_std_vector<uint16_t>* { return nullptr; }
-	
-	virtual auto getPointsBufferRef_float_field(const std::string &fieldName) -> mrpt::aligned_std_vector<float>* {
-		if (fieldName=="x") return &m_x;
-		if (fieldName=="y") return &m_y;
-		if (fieldName=="z") return &m_z;
-		return nullptr;
-	}
-	virtual auto getPointsBufferRef_uint_field([[maybe_unused]] const std::string &fieldName)  -> mrpt::aligned_std_vector<uint16_t>* { return nullptr; }
-  // clang-format on
 
   /** @name Generic, string-keyed field access virtual interface
    * @{ */
@@ -602,10 +557,13 @@ class CPointsMap :
   /** Returns true if the map has a data channel with the given name.
    * \sa getPointField_float, getPointField_uint16
    */
-  virtual bool hasPointField(const std::string& fieldName) const { return false; }
+  virtual bool hasPointField(const std::string& fieldName) const
+  {
+    return (fieldName == "x") || (fieldName == "y") || (fieldName == "z");
+  }
 
   /** Get list of all float channel names */
-  virtual std::vector<std::string> getPointFieldNames_float() const { return {}; }
+  virtual std::vector<std::string> getPointFieldNames_float() const { return {"x", "y", "z"}; }
   /** Get list of all uint16_t channel names */
   virtual std::vector<std::string> getPointFieldNames_uint16() const { return {}; }
 
@@ -614,7 +572,13 @@ class CPointsMap :
    * \exception std::exception on index out of bounds or if field exists but
    * is not float.
    */
-  virtual float getPointField_float(size_t index, const std::string& fieldName) const { return 0; }
+  virtual float getPointField_float(size_t index, const std::string& fieldName) const
+  {
+    if (fieldName == "x") return m_x.at(index);
+    if (fieldName == "y") return m_y.at(index);
+    if (fieldName == "z") return m_z.at(index);
+    return 0;
+  }
 
   /** Read the value of a uint16_t channel for a given point.
    * Returns 0 if field does not exist.
@@ -630,7 +594,15 @@ class CPointsMap :
    * \exception std::exception on index out of bounds or if field does not
    * exist or is not float.
    */
-  virtual void setPointField_float(size_t index, const std::string& fieldName, float value) {}
+  virtual void setPointField_float(size_t index, const std::string& fieldName, float value)
+  {
+    if (fieldName == "x")
+      m_x.at(index) = value;
+    else if (fieldName == "y")
+      m_y.at(index) = value;
+    else if (fieldName == "z")
+      m_z.at(index) = value;
+  }
   /** Sets the value of a uint16_t channel for a given point.
    * \exception std::exception on index out of bounds or if field does not
    * exist or is not uint16_t.
@@ -646,6 +618,34 @@ class CPointsMap :
   virtual void reserveField_uint16(const std::string& fieldName, size_t n) {}
   virtual void resizeField_float(const std::string& fieldName, size_t n) {}
   virtual void resizeField_uint16(const std::string& fieldName, size_t n) {}
+
+  virtual auto getPointsBufferRef_float_field(const std::string& fieldName) const
+      -> const mrpt::aligned_std_vector<float>*
+  {
+    if (fieldName == "x") return &m_x;
+    if (fieldName == "y") return &m_y;
+    if (fieldName == "z") return &m_z;
+    return nullptr;
+  }
+  virtual auto getPointsBufferRef_uint_field([[maybe_unused]] const std::string& fieldName) const
+      -> const mrpt::aligned_std_vector<uint16_t>*
+  {
+    return nullptr;
+  }
+
+  virtual auto getPointsBufferRef_float_field(const std::string& fieldName)
+      -> mrpt::aligned_std_vector<float>*
+  {
+    if (fieldName == "x") return &m_x;
+    if (fieldName == "y") return &m_y;
+    if (fieldName == "z") return &m_z;
+    return nullptr;
+  }
+  virtual auto getPointsBufferRef_uint_field([[maybe_unused]] const std::string& fieldName)
+      -> mrpt::aligned_std_vector<uint16_t>*
+  {
+    return nullptr;
+  }
 
   /** @} */
 
@@ -744,33 +744,36 @@ class CPointsMap :
     insertPoint(x, y, z);
   }
 
+  /** Must be called before insertPointFrom() to make sure we have the required fields.
+   */
+  void copyPointFieldsFrom(const mrpt::maps::CPointsMap& source)
+  {
+    //
+    xx;
+  }
+
   /** Generic method to copy *all* applicable point properties from
    *  one map to another, e.g. timestamp, intensity, etc.
+   *  \note Before calling this in a loop, make sure of calling copyPointFieldsFrom()
    */
   void insertPointFrom(const mrpt::maps::CPointsMap& source, size_t sourcePointIndex)
   {
     const auto i = sourcePointIndex;  // shortcut
-    // mandatory fields:
+    // mandatory fields: XYZ
     const auto& xs = source.getPointsBufferRef_x();
     const auto& ys = source.getPointsBufferRef_y();
     const auto& zs = source.getPointsBufferRef_z();
-    // optional fields:
-    const auto* Is = source.getPointsBufferRef_intensity();
-    const auto* Rs = source.getPointsBufferRef_ring();
-    const auto* Ts = source.getPointsBufferRef_timestamp();
-    const auto* cR = source.getPointsBufferRef_color_R();
-    const auto* cG = source.getPointsBufferRef_color_G();
-    const auto* cB = source.getPointsBufferRef_color_B();
-
-    // XYZ:
     insertPointFast(xs[i], ys[i], zs[i]);
-    if (Is && !Is->empty() && hasField_Intensity()) insertPointField_Intensity((*Is)[i]);
-    if (Rs && !Rs->empty() && hasField_Ring()) insertPointField_Ring((*Rs)[i]);
-    if (Ts && !Ts->empty() && hasField_Timestamp()) insertPointField_Timestamp((*Ts)[i]);
-    if (cR && !cR->empty() && hasField_color_R()) insertPointField_color_R((*cR)[i]);
-    if (cG && !cG->empty() && hasField_color_G()) insertPointField_color_G((*cG)[i]);
-    if (cB && !cB->empty() && hasField_color_B()) insertPointField_color_B((*cB)[i]);
 
+    // Optional fields: only if they already exist on both maps:
+    for (const auto& f : this->getPointFieldNames_float())
+    {
+      insertPointField_float(f, this->getPointField_float(i, f));
+    }
+    for (const auto& f : this->getPointFieldNames_uint16())
+    {
+      insertPointField_uint16(f, this->getPointField_uint16(i, f));
+    }
     mark_as_modified();
   }
 
