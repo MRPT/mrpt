@@ -354,6 +354,8 @@ addFrom_classSpecific
 void CPointsMapXYZIRT::addFrom_classSpecific(
     const CPointsMap& anotherMap, size_t nPreviousPoints, const bool filterOutPointsAtZero)
 {
+  xx;
+
   const size_t nOther = anotherMap.size();
 
   const auto& oxs = anotherMap.getPointsBufferRef_x();
@@ -469,9 +471,10 @@ bool CPointsMapXYZIRT::internal_insertObservation(
     {
       const auto gp = robotPose3D.composePoint(mrpt::math::TPoint3D(pc.x[i], pc.y[i], pc.z[i]));
       insertPointFast(gp.x, gp.y, gp.z);
-      this->insertPointField_Intensity(mrpt::u8tof(pc.intensity[i]));
-      this->insertPointField_Ring(pc.laser_id[i]);
-      this->insertPointField_Timestamp(ts[i]);
+
+      insertPointField_float(POINT_FIELD_INTENSITY, mrpt::u8tof(pc.intensity[i]));
+      insertPointField_uint16(POINT_FIELD_RING_ID, pc.laser_id[i]);
+      insertPointField_float(POINT_FIELD_TIMESTAMP, ts[i]);
     }
 
     return true;
@@ -581,34 +584,34 @@ void CPointsMapXYZIRT::loadFromRangeScan(
    ------------------------------------------------------------------ */
 bool CPointsMapXYZIRT::hasPointField(const std::string& fieldName) const
 {
-  if (fieldName == "i" && hasIntensityField()) return true;
-  if (fieldName == "r" && hasRingField()) return true;
-  if (fieldName == "t" && hasTimeField()) return true;
-  return false;
+  if (fieldName == POINT_FIELD_INTENSITY && hasIntensityField()) return true;
+  if (fieldName == POINT_FIELD_RING_ID && hasRingField()) return true;
+  if (fieldName == POINT_FIELD_TIMESTAMP && hasTimeField()) return true;
+  return CPointsMap::hasPointField(fieldName);
 }
 std::vector<std::string> CPointsMapXYZIRT::getPointFieldNames_float() const
 {
-  std::vector<std::string> names;
-  if (hasIntensityField()) names.push_back("i");
-  if (hasTimeField()) names.push_back("t");
+  std::vector<std::string> names = CPointsMap::getPointFieldNames_float();
+  if (hasIntensityField()) names.push_back(POINT_FIELD_INTENSITY);
+  if (hasTimeField()) names.push_back(POINT_FIELD_TIMESTAMP);
   return names;
 }
 std::vector<std::string> CPointsMapXYZIRT::getPointFieldNames_uint16() const
 {
-  std::vector<std::string> names;
-  if (hasRingField()) names.push_back("r");
+  std::vector<std::string> names = CPointsMap::getPointFieldNames_uint16();
+  if (hasRingField()) names.push_back(POINT_FIELD_RING_ID);
   return names;
 }
 
 float CPointsMapXYZIRT::getPointField_float(size_t index, const std::string& fieldName) const
 {
-  if (fieldName == "i")
+  if (fieldName == POINT_FIELD_INTENSITY)
   {
     if (!hasIntensityField()) return 0;
     ASSERT_LT_(index, m_intensity.size());
     return m_intensity[index];
   }
-  if (fieldName == "t")
+  if (fieldName == POINT_FIELD_TIMESTAMP)
   {
     if (!hasTimeField()) return 0;
     ASSERT_LT_(index, m_time.size());
@@ -618,7 +621,7 @@ float CPointsMapXYZIRT::getPointField_float(size_t index, const std::string& fie
 }
 uint16_t CPointsMapXYZIRT::getPointField_uint16(size_t index, const std::string& fieldName) const
 {
-  if (fieldName == "r")
+  if (fieldName == POINT_FIELD_RING_ID)
   {
     if (!hasRingField()) return 0;
     ASSERT_LT_(index, m_ring.size());
@@ -629,46 +632,56 @@ uint16_t CPointsMapXYZIRT::getPointField_uint16(size_t index, const std::string&
 
 void CPointsMapXYZIRT::setPointField_float(size_t index, const std::string& fieldName, float value)
 {
-  if (fieldName == "i" && hasIntensityField())
+  if (fieldName == POINT_FIELD_INTENSITY && hasIntensityField())
     setPointIntensity(index, value);
-  else if (fieldName == "t" && hasTimeField())
+  else if (fieldName == POINT_FIELD_TIMESTAMP && hasTimeField())
     setPointTime(index, value);
+  else
+    CPointsMap::setPointField_float(index, fieldName, value);
 }
 void CPointsMapXYZIRT::setPointField_uint16(
     size_t index, const std::string& fieldName, uint16_t value)
 {
-  if (fieldName == "ring" && hasRingField()) setPointRing(index, value);
+  if (fieldName == POINT_FIELD_RING_ID && hasRingField())
+    setPointRing(index, value);
+  else
+    CPointsMap::setPointField_uint16(index, fieldName, value);
 }
 
 void CPointsMapXYZIRT::insertPointField_float(const std::string& fieldName, float value)
 {
-  if (fieldName == "i")
-    insertPointField_Intensity(value);
-  else if (fieldName == "t")
-    insertPointField_Timestamp(value);
+  if (fieldName == POINT_FIELD_INTENSITY)
+    m_intensity.push_back(value);
+  else if (fieldName == POINT_FIELD_TIMESTAMP)
+    m_time.push_back(value);
+  else
+    CPointsMap::insertPointField_float(fieldName, value);
 }
 void CPointsMapXYZIRT::insertPointField_uint16(const std::string& fieldName, uint16_t value)
 {
-  if (fieldName == "r") insertPointField_Ring(value);
+  if (fieldName == POINT_FIELD_RING_ID)
+    m_ring.push_back(value);
+  else
+    CPointsMap::insertPointField_uint16(fieldName, value);
 }
 
 void CPointsMapXYZIRT::reserveField_float(const std::string& fieldName, size_t n)
 {
-  if (fieldName == "i") m_intensity.reserve(n);
-  if (fieldName == "t") m_time.reserve(n);
+  if (fieldName == POINT_FIELD_INTENSITY) m_intensity.reserve(n);
+  if (fieldName == POINT_FIELD_TIMESTAMP) m_time.reserve(n);
 }
 void CPointsMapXYZIRT::reserveField_uint16(const std::string& fieldName, size_t n)
 {
-  if (fieldName == "r") m_ring.reserve(n);
+  if (fieldName == POINT_FIELD_RING_ID) m_ring.reserve(n);
 }
 void CPointsMapXYZIRT::resizeField_float(const std::string& fieldName, size_t n)
 {
-  if (fieldName == "i") m_intensity.resize(n, 0);
-  if (fieldName == "t") m_time.resize(n, 0);
+  if (fieldName == POINT_FIELD_INTENSITY) m_intensity.resize(n, 0);
+  if (fieldName == POINT_FIELD_TIMESTAMP) m_time.resize(n, 0);
 }
 void CPointsMapXYZIRT::resizeField_uint16(const std::string& fieldName, size_t n)
 {
-  if (fieldName == "r") m_ring.resize(n, 0);
+  if (fieldName == POINT_FIELD_RING_ID) m_ring.resize(n, 0);
 }
 
 // ====PLY files import & export virtual methods

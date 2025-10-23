@@ -49,9 +49,12 @@ class CPointsMapXYZIRT : public CPointsMap
   CPointsMapXYZIRT& operator=(const CPointsMapXYZIRT& o);
   CPointsMapXYZIRT& operator=(const CPointsMapXYZI& o);
 
-  /** @name Pure virtual interfaces to be implemented by any class derived
- from CPointsMap
+  /** @name Pure virtual interfaces to be implemented by any class derived from CPointsMap
   @{ */
+
+  constexpr static const char* POINT_FIELD_INTENSITY = "intensity";
+  constexpr static const char* POINT_FIELD_RING_ID = "ring";
+  constexpr static const char* POINT_FIELD_TIMESTAMP = "t";
 
   // By default, these method will grow all fields XYZIRT. See other methods
   // below.
@@ -231,20 +234,6 @@ class CPointsMapXYZIRT : public CPointsMap
    */
   void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
 
-  // clang-format off
-	auto getPointsBufferRef_intensity() const  -> const mrpt::aligned_std_vector<float>* override { return &m_intensity; }
-	auto getPointsBufferRef_ring() const       -> const mrpt::aligned_std_vector<uint16_t>* override { return &m_ring; }
-	auto getPointsBufferRef_timestamp() const  -> const mrpt::aligned_std_vector<float>* override { return &m_time; }
-
-	auto getPointsBufferRef_intensity()        -> mrpt::aligned_std_vector<float>* override { return &m_intensity; }
-	auto getPointsBufferRef_ring()             -> mrpt::aligned_std_vector<uint16_t>* override { return &m_ring; }
-	auto getPointsBufferRef_timestamp()        -> mrpt::aligned_std_vector<float>* override { return  &m_time; }
-
-	void insertPointField_Intensity(float i) override { m_intensity.push_back(i); }
-	void insertPointField_Ring(uint16_t r)   override { m_ring.push_back(r); }
-	void insertPointField_Timestamp(float t) override { m_time.push_back(t); }
-  // clang-format on
-
   /** @name String-keyed field access virtual interface implementation
       @{ */
   bool hasPointField(const std::string& fieldName) const override;
@@ -272,14 +261,14 @@ class CPointsMapXYZIRT : public CPointsMap
     {
       return f;
     }
-    if (fieldName == "i" and hasField_Intensity()) return &m_intensity;
-    if (fieldName == "t" and hasField_Timestamp()) return &m_time;
+    if (fieldName == POINT_FIELD_INTENSITY) return &m_intensity;
+    if (fieldName == POINT_FIELD_TIMESTAMP) return &m_time;
     return nullptr;
   }
   auto getPointsBufferRef_uint_field(const std::string& fieldName) const
       -> const mrpt::aligned_std_vector<uint16_t>* override
   {
-    if (fieldName == "r" and hasField_Ring()) return &m_ring;
+    if (fieldName == POINT_FIELD_RING_ID) return &m_ring;
     return nullptr;
   }
 
@@ -290,14 +279,14 @@ class CPointsMapXYZIRT : public CPointsMap
     {
       return f;
     }
-    if (fieldName == "i" and hasField_Intensity()) return &m_intensity;
-    if (fieldName == "t" and hasField_Timestamp()) return &m_time;
+    if (fieldName == POINT_FIELD_INTENSITY) return &m_intensity;
+    if (fieldName == POINT_FIELD_TIMESTAMP) return &m_time;
     return nullptr;
   }
   auto getPointsBufferRef_uint_field(const std::string& fieldName)
       -> mrpt::aligned_std_vector<uint16_t>* override
   {
-    if (fieldName == "r" and hasField_Ring()) return &m_ring;
+    if (fieldName == POINT_FIELD_RING_ID) return &m_ring;
     return nullptr;
   }
 

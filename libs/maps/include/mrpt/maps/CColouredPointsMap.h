@@ -212,20 +212,6 @@ class CColouredPointsMap : public CPointsMap
    * predefined value */
   void resetPointsMinDist(float defValue = 2000.0f);
 
-  // clang-format off
-	auto getPointsBufferRef_color_R() const    -> const mrpt::aligned_std_vector<float>* override { return &m_color_R;}
-	auto getPointsBufferRef_color_G() const    -> const mrpt::aligned_std_vector<float>* override { return &m_color_G; }
-	auto getPointsBufferRef_color_B() const    -> const mrpt::aligned_std_vector<float>* override { return &m_color_B; }
-
-	auto getPointsBufferRef_color_R()          -> mrpt::aligned_std_vector<float>* override { return &m_color_R; }
-	auto getPointsBufferRef_color_G()          -> mrpt::aligned_std_vector<float>* override { return &m_color_G; }
-	auto getPointsBufferRef_color_B()          -> mrpt::aligned_std_vector<float>* override { return &m_color_B; }
-
-	void insertPointField_color_R(float v) override { m_color_R.push_back(v); }
-	void insertPointField_color_G(float v) override { m_color_G.push_back(v); }
-	void insertPointField_color_B(float v) override { m_color_B.push_back(v); }
-  // clang-format on
-
   /** @name PCL library support
     @{ */
 
