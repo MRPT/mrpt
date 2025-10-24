@@ -199,13 +199,12 @@ class CPointsMap :
     const size_t N = obj.size();
     this->clear();
     this->reserve(N);
-    for (size_t i = 0; i < N; i++) insertPointFrom(obj, i);
+    this->registerPointFieldsFrom(obj);
+    for (size_t i = 0; i < N; i++)
+    {
+      insertPointFrom(obj, i);
+    }
   }
-
-  /** Auxiliary method called from within \a addFrom() automatically, to
-   * finish the copying of class-specific data  */
-  virtual void addFrom_classSpecific(
-      const CPointsMap& anotherMap, size_t nPreviousPoints, const bool filterOutPointsAtZero) = 0;
 
  public:
   /** @} */
@@ -356,6 +355,30 @@ class CPointsMap :
   {
     insertAnotherMap(&anotherMap, mrpt::poses::CPose3D::Identity());
   }
+
+  /** @name Register/unregister custom data fields
+    @{ */
+
+  /** Registers a new data channel of type `float`.
+   * If the map is not empty, the new channel is filled with default values (0)
+   * to match the current point count.
+   * \return true if the field could effectively be added to the underlying point map class.
+   * \sa hasPointField(), getPointFieldNames_float()
+   */
+  virtual bool registerField_float(const std::string& fieldName)
+  {
+    return fieldName == "x" || fieldName == "y" || fieldName == "z";
+  }
+
+  /** Registers a new data channel of type `uint16_t`.
+   * If the map is not empty, the new channel is filled with default values (0)
+   * to match the current point count.
+   * \return true if the field could effectively be added to the underlying point map class.
+   * \sa hasPointField(), getPointFieldNames_uint16()
+   */
+  virtual bool registerField_uint16(const std::string& fieldName) { return false; }
+
+  /** @} */
 
   // --------------------------------------------------
   /** @name File input/output methods
@@ -745,16 +768,34 @@ class CPointsMap :
   }
 
   /** Must be called before insertPointFrom() to make sure we have the required fields.
+   *  \return true if ALL fields could be added, false if some would be missing because the
+   *               underlying point cloud class cannot hold them.
    */
-  void copyPointFieldsFrom(const mrpt::maps::CPointsMap& source)
+  bool registerPointFieldsFrom(const mrpt::maps::CPointsMap& source)
   {
-    //
-    xx;
+    bool allAdded = true;
+    for (const auto& f : source.getPointFieldNames_float())
+    {
+      if (!this->hasPointField(f))
+      {
+        const bool added = registerField_float(f);
+        allAdded = allAdded && added;
+      }
+    }
+    for (const auto& f : source.getPointFieldNames_uint16())
+    {
+      if (!this->hasPointField(f))
+      {
+        const bool added = this->registerField_uint16(f);
+        allAdded = allAdded && added;
+      }
+    }
+    return allAdded;
   }
 
   /** Generic method to copy *all* applicable point properties from
    *  one map to another, e.g. timestamp, intensity, etc.
-   *  \note Before calling this in a loop, make sure of calling copyPointFieldsFrom()
+   *  \note Before calling this in a loop, make sure of calling registerPointFieldsFrom()
    */
   void insertPointFrom(const mrpt::maps::CPointsMap& source, size_t sourcePointIndex)
   {
@@ -768,11 +809,11 @@ class CPointsMap :
     // Optional fields: only if they already exist on both maps:
     for (const auto& f : this->getPointFieldNames_float())
     {
-      insertPointField_float(f, this->getPointField_float(i, f));
+      insertPointField_float(f, source.getPointField_float(i, f));
     }
     for (const auto& f : this->getPointFieldNames_uint16())
     {
-      insertPointField_uint16(f, this->getPointField_uint16(i, f));
+      insertPointField_uint16(f, source.getPointField_uint16(i, f));
     }
     mark_as_modified();
   }
@@ -1009,22 +1050,6 @@ class CPointsMap :
    */
   void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
 
-  /** This method returns the largest distance from the origin to any of the
-   * points, such as a sphere centered at the origin with this radius cover
-   * ALL the points in the map (the results are buffered, such as, if the map
-   * is not modified, the second call will be much faster than the first one).
-   */
-  float getLargestDistanceFromOrigin() const;
-
-  /** Like \a getLargestDistanceFromOrigin() but returns in \a output_is_valid
-   * = false if the distance was not already computed, skipping its
-   * computation then, unlike getLargestDistanceFromOrigin() */
-  float getLargestDistanceFromOriginNoRecompute(bool& output_is_valid) const
-  {
-    output_is_valid = m_largestDistanceFromOriginIsUpdated;
-    return m_largestDistanceFromOrigin;
-  }
-
   /** Computes the bounding box of all the points, or (0,0 ,0,0, 0,0) if there
    * are no points.
    *  Results are cached unless the map is somehow modified to avoid repeated
@@ -1212,7 +1237,6 @@ class CPointsMap :
    * kd-tree cache, and such. */
   inline void mark_as_modified() const
   {
-    m_largestDistanceFromOriginIsUpdated = false;
     m_boundingBoxIsUpdated = false;
     kdtree_mark_as_outdated();
   }
@@ -1277,16 +1301,6 @@ class CPointsMap :
   /** Cache of sin/cos values for the latest 2D scan geometries. */
   mrpt::obs::CSinCosLookUpTableFor2DScans m_scans_sincos_cache;
 
-  /** Auxiliary variables used in "getLargestDistanceFromOrigin"
-   * \sa getLargestDistanceFromOrigin
-   */
-  mutable float m_largestDistanceFromOrigin{0};
-
-  /** Auxiliary variables used in "getLargestDistanceFromOrigin"
-   * \sa getLargestDistanceFromOrigin
-   */
-  mutable bool m_largestDistanceFromOriginIsUpdated;
-
   mutable bool m_boundingBoxIsUpdated;
   mutable mrpt::math::TBoundingBoxf m_boundingBox;
 
@@ -1299,9 +1313,6 @@ class CPointsMap :
   bool internal_insertObservation(
       const mrpt::obs::CObservation& obs,
       const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
-
-  /** Helper method for ::copyFrom() */
-  void base_copyFrom(const CPointsMap& obj);
 
   /** @name PLY Import virtual methods to implement in base classes
     @{ */

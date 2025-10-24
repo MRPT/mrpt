@@ -768,28 +768,6 @@ float CPointsMap::compute3DMatchingRatio(
 }
 
 /*---------------------------------------------------------------
-            getLargestDistanceFromOrigin
----------------------------------------------------------------*/
-float CPointsMap::getLargestDistanceFromOrigin() const
-{
-  // Updated?
-  if (!m_largestDistanceFromOriginIsUpdated)
-  {
-    // NO: Update it:
-    float maxDistSq = 0, d;
-    for (auto X = m_x.begin(), Y = m_y.begin(), Z = m_z.begin(); X != m_x.end(); ++X, ++Y, ++Z)
-    {
-      d = square(*X) + square(*Y) + square(*Z);
-      maxDistSq = max(d, maxDistSq);
-    }
-
-    m_largestDistanceFromOrigin = sqrt(maxDistSq);
-    m_largestDistanceFromOriginIsUpdated = true;
-  }
-  return m_largestDistanceFromOrigin;
-}
-
-/*---------------------------------------------------------------
             getAllPoints
 ---------------------------------------------------------------*/
 void CPointsMap::getAllPoints(vector<float>& xs, vector<float>& ys, size_t decimation) const
@@ -1567,28 +1545,6 @@ void CPointsMap::insertAnotherMap(
       m_z.back() = g.z;
     }
   }
-}
-
-/** Helper method for ::copyFrom() */
-void CPointsMap::base_copyFrom(const CPointsMap& obj)
-{
-  MRPT_START
-
-  if (this == &obj) return;
-
-  m_x = obj.m_x;
-  m_y = obj.m_y;
-  m_z = obj.m_z;
-
-  m_largestDistanceFromOriginIsUpdated = obj.m_largestDistanceFromOriginIsUpdated;
-  m_largestDistanceFromOrigin = obj.m_largestDistanceFromOrigin;
-
-  // Fill missing fields (R,G,B,min_dist) with default values.
-  this->resize(m_x.size());
-
-  kdtree_mark_as_outdated();
-
-  MRPT_END
 }
 
 /*---------------------------------------------------------------

@@ -34,7 +34,7 @@ class CColouredPointsMap : public CPointsMap
  public:
   CColouredPointsMap() = default;
 
-  CColouredPointsMap(const CPointsMap& o) { CPointsMap::operator=(o); }
+  explicit CColouredPointsMap(const CPointsMap& o) { CPointsMap::operator=(o); }
   CColouredPointsMap(const CColouredPointsMap& o) : CPointsMap() { impl_copyFrom(o); }
   CColouredPointsMap& operator=(const CPointsMap& o)
   {
@@ -102,11 +102,6 @@ class CColouredPointsMap : public CPointsMap
       const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
 
  protected:
-  void addFrom_classSpecific(
-      const CPointsMap& anotherMap,
-      size_t nPreviousPoints,
-      const bool filterOutPointsAtZero) override;
-
   // Friend methods:
   template <class Derived>
   friend struct detail::loadFromRangeImpl;

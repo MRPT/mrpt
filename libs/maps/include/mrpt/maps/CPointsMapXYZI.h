@@ -99,12 +99,6 @@ class CPointsMapXYZI : public CPointsMap
       const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
 
  protected:
-  // See base class
-  void addFrom_classSpecific(
-      const CPointsMap& anotherMap,
-      size_t nPreviousPoints,
-      const bool filterOutPointsAtZero) override;
-
   // Friend methods:
   template <class Derived>
   friend struct detail::loadFromRangeImpl;

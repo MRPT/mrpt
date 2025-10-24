@@ -356,7 +356,7 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
   const auto microsecs_last_pkt = o.scan_packets.rbegin()->gps_timestamp();
   sweepDuration = 1e-6 * (microsecs_last_pkt - microsecs_1st_pkt) + timeBetweenLastTwoBlocks;
 
-  MRPT_TODO("populate organizedPoints");
+  // TODO: populate organizedPoints?
 
   // Decode model byte:
   switch (model)
