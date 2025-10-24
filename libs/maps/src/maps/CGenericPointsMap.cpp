@@ -120,14 +120,14 @@ void CGenericPointsMap::serializeTo(mrpt::serialization::CArchive& out) const
   out.WriteAs<uint32_t>(m_float_fields.size());
   for (const auto& [name, v] : m_float_fields)
   {
-    out << name << v;
+    out << std::string(name) << v;
   }
 
   // Uint16 fields
   out.WriteAs<uint32_t>(m_uint16_fields.size());
   for (const auto& [name, v] : m_uint16_fields)
   {
-    out << name << v;
+    out << std::string(name) << v;
   }
 
   insertionOptions.writeToStream(out);
@@ -197,27 +197,29 @@ void CGenericPointsMap::internal_clear()
   mark_as_modified();
 }
 
-bool CGenericPointsMap::registerField_float(const std::string& fieldName)
+bool CGenericPointsMap::registerField_float(const std::string_view& fieldName)
 {
   if (hasPointField(fieldName))
   {
-    THROW_EXCEPTION_FMT("Field '%s' already exists.", fieldName.c_str());
+    THROW_EXCEPTION_FMT(
+        "Field '%.*s' already exists.", static_cast<int>(fieldName.size()), fieldName.data());
   }
   m_float_fields[fieldName].resize(size(), 0);
   return true;
 }
 
-bool CGenericPointsMap::registerField_uint16(const std::string& fieldName)
+bool CGenericPointsMap::registerField_uint16(const std::string_view& fieldName)
 {
   if (hasPointField(fieldName))
   {
-    THROW_EXCEPTION_FMT("Field '%s' already exists.", fieldName.c_str());
+    THROW_EXCEPTION_FMT(
+        "Field '%.*s' already exists.", static_cast<int>(fieldName.size()), fieldName.data());
   }
   m_uint16_fields[fieldName].resize(size(), 0);
   return true;
 }
 
-bool CGenericPointsMap::unregisterField(const std::string& fieldName)
+bool CGenericPointsMap::unregisterField(const std::string_view& fieldName)
 {
   if (m_float_fields.erase(fieldName) > 0) return true;
   if (m_uint16_fields.erase(fieldName) > 0) return true;
@@ -259,28 +261,28 @@ void CGenericPointsMap::setPointAllFieldsFast(size_t index, const std::vector<fl
   for (auto& field : m_uint16_fields) field.second[index] = static_cast<uint16_t>(point_data[i++]);
 }
 
-bool CGenericPointsMap::hasPointField(const std::string& fieldName) const
+bool CGenericPointsMap::hasPointField(const std::string_view& fieldName) const
 {
   return CPointsMap::hasPointField(fieldName) ||  //
          m_float_fields.count(fieldName) ||       //
          m_uint16_fields.count(fieldName);
 }
 
-std::vector<std::string> CGenericPointsMap::getPointFieldNames_float() const
+std::vector<std::string_view> CGenericPointsMap::getPointFieldNames_float() const
 {
-  std::vector<std::string> names = CPointsMap::getPointFieldNames_float();
+  std::vector<std::string_view> names = CPointsMap::getPointFieldNames_float();
   for (const auto& f : m_float_fields) names.push_back(f.first);
   return names;
 }
 
-std::vector<std::string> CGenericPointsMap::getPointFieldNames_uint16() const
+std::vector<std::string_view> CGenericPointsMap::getPointFieldNames_uint16() const
 {
-  std::vector<std::string> names = CPointsMap::getPointFieldNames_uint16();
+  std::vector<std::string_view> names = CPointsMap::getPointFieldNames_uint16();
   for (const auto& f : m_uint16_fields) names.push_back(f.first);
   return names;
 }
 
-float CGenericPointsMap::getPointField_float(size_t index, const std::string& fieldName) const
+float CGenericPointsMap::getPointField_float(size_t index, const std::string_view& fieldName) const
 {
   auto it = m_float_fields.find(fieldName);
   if (it == m_float_fields.end())
@@ -291,7 +293,8 @@ float CGenericPointsMap::getPointField_float(size_t index, const std::string& fi
   return it->second[index];
 }
 
-uint16_t CGenericPointsMap::getPointField_uint16(size_t index, const std::string& fieldName) const
+uint16_t CGenericPointsMap::getPointField_uint16(
+    size_t index, const std::string_view& fieldName) const
 {
   auto it = m_uint16_fields.find(fieldName);
   if (it == m_uint16_fields.end())
@@ -302,61 +305,74 @@ uint16_t CGenericPointsMap::getPointField_uint16(size_t index, const std::string
   return it->second[index];
 }
 
-void CGenericPointsMap::setPointField_float(size_t index, const std::string& fieldName, float value)
+void CGenericPointsMap::setPointField_float(
+    size_t index, const std::string_view& fieldName, float value)
 {
   auto it = m_float_fields.find(fieldName);
   if (it == m_float_fields.end())
-    THROW_EXCEPTION_FMT("Field '%s' is not registered.", fieldName.c_str());
+  {
+    THROW_EXCEPTION_FMT(
+        "Field '%.*s' is not registered.", static_cast<int>(fieldName.size()), fieldName.data());
+  }
   ASSERT_LT_(index, it->second.size());
   it->second[index] = value;
 }
 
 void CGenericPointsMap::setPointField_uint16(
-    size_t index, const std::string& fieldName, uint16_t value)
+    size_t index, const std::string_view& fieldName, uint16_t value)
 {
   auto it = m_uint16_fields.find(fieldName);
   if (it == m_uint16_fields.end())
-    THROW_EXCEPTION_FMT("Field '%s' is not registered.", fieldName.c_str());
+  {
+    THROW_EXCEPTION_FMT(
+        "Field '%.*s' is not registered.", static_cast<int>(fieldName.size()), fieldName.data());
+  }
   ASSERT_LT_(index, it->second.size());
   it->second[index] = value;
 }
 
-void CGenericPointsMap::insertPointField_float(const std::string& fieldName, float value)
+void CGenericPointsMap::insertPointField_float(const std::string_view& fieldName, float value)
 {
   auto it = m_float_fields.find(fieldName);
   if (it == m_float_fields.end())
-    THROW_EXCEPTION_FMT("Field '%s' is not registered.", fieldName.c_str());
+  {
+    THROW_EXCEPTION_FMT(
+        "Field '%.*s' is not registered.", static_cast<int>(fieldName.size()), fieldName.data());
+  }
   auto& vec = it->second;
   if (vec.size() < m_x.size() - 1) vec.resize(m_x.size() - 1, 0);  // Pad
   ASSERT_EQUAL_(vec.size(), m_x.size() - 1);
   vec.push_back(value);
 }
 
-void CGenericPointsMap::insertPointField_uint16(const std::string& fieldName, uint16_t value)
+void CGenericPointsMap::insertPointField_uint16(const std::string_view& fieldName, uint16_t value)
 {
   auto it = m_uint16_fields.find(fieldName);
   if (it == m_uint16_fields.end())
-    THROW_EXCEPTION_FMT("Field '%s' is not registered.", fieldName.c_str());
+  {
+    THROW_EXCEPTION_FMT(
+        "Field '%.*s' is not registered.", static_cast<int>(fieldName.size()), fieldName.data());
+  }
   auto& vec = it->second;
   if (vec.size() < m_x.size() - 1) vec.resize(m_x.size() - 1, 0);  // Pad
   ASSERT_EQUAL_(vec.size(), m_x.size() - 1);
   vec.push_back(value);
 }
 
-void CGenericPointsMap::reserveField_float(const std::string& fieldName, size_t n)
+void CGenericPointsMap::reserveField_float(const std::string_view& fieldName, size_t n)
 {
   m_float_fields[fieldName].reserve(n);
 }
-void CGenericPointsMap::reserveField_uint16(const std::string& fieldName, size_t n)
+void CGenericPointsMap::reserveField_uint16(const std::string_view& fieldName, size_t n)
 {
   m_uint16_fields[fieldName].reserve(n);
 }
 
-void CGenericPointsMap::resizeField_float(const std::string& fieldName, size_t n)
+void CGenericPointsMap::resizeField_float(const std::string_view& fieldName, size_t n)
 {
   m_float_fields[fieldName].resize(n, 0);
 }
-void CGenericPointsMap::resizeField_uint16(const std::string& fieldName, size_t n)
+void CGenericPointsMap::resizeField_uint16(const std::string_view& fieldName, size_t n)
 {
   m_uint16_fields[fieldName].resize(n, 0);
 }
