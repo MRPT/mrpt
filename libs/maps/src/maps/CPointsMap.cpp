@@ -1511,10 +1511,12 @@ void CPointsMap::applyDeletionMask(const std::vector<bool>& mask)
 void CPointsMap::insertAnotherMap(
     const CPointsMap* otherMap, const CPose3D& otherPose, const bool filterOutPointsAtZero)
 {
+  ASSERT_(otherMap);
   const size_t N_this = size();
   const size_t N_other = otherMap->size();
 
   // Set the new size:
+  this->registerPointFieldsFrom(*otherMap);
   this->reserve(N_this + N_other);
 
   // Optimization: detect the case of no transformation needed and avoid the
@@ -1522,17 +1524,20 @@ void CPointsMap::insertAnotherMap(
   const bool identity_tf = (otherPose == CPose3D::Identity());
 
   mrpt::math::TPoint3Df pt;
-  for (size_t src = 0; src < N_other; src++)
+  for (size_t srcIdx = 0; srcIdx < N_other; srcIdx++)
   {
     // Load the next point:
-    otherMap->getPointFast(src, pt.x, pt.y, pt.z);
+    otherMap->getPointFast(srcIdx, pt.x, pt.y, pt.z);
 
-    if (filterOutPointsAtZero && pt.x == 0 && pt.y == 0 && pt.z == 0) continue;  // Skip
+    if (filterOutPointsAtZero && pt.x == 0 && pt.y == 0 && pt.z == 0)
+    {
+      continue;  // Skip
+    }
     // filter NANs:
     if (pt.x != pt.x) continue;
 
     // Add to this map:
-    this->insertPointFrom(*otherMap, src);
+    this->insertPointFrom(*otherMap, srcIdx);
 
     // and overwrite the XYZ, if needed:
     if (!identity_tf)
