@@ -362,19 +362,19 @@ void CPointsMapXYZI::loadFromRangeScan(
 /* ------------------------------------------------------------------
  String-keyed field access virtual interface implementation
    ------------------------------------------------------------------ */
-bool CPointsMapXYZI::hasPointField(const std::string& fieldName) const
+bool CPointsMapXYZI::hasPointField(const std::string_view& fieldName) const
 {
   if (fieldName == POINT_FIELD_INTENSITY) return true;
   return CPointsMap::hasPointField(fieldName);
 }
-std::vector<std::string> CPointsMapXYZI::getPointFieldNames_float() const
+std::vector<std::string_view> CPointsMapXYZI::getPointFieldNames_float() const
 {
-  std::vector<std::string> names = CPointsMap::getPointFieldNames_float();
+  std::vector<std::string_view> names = CPointsMap::getPointFieldNames_float();
   names.push_back(POINT_FIELD_INTENSITY);
   return names;
 }
 
-float CPointsMapXYZI::getPointField_float(size_t index, const std::string& fieldName) const
+float CPointsMapXYZI::getPointField_float(size_t index, const std::string_view& fieldName) const
 {
   if (fieldName == POINT_FIELD_INTENSITY)
   {
@@ -385,7 +385,8 @@ float CPointsMapXYZI::getPointField_float(size_t index, const std::string& field
   return 0;
 }
 
-void CPointsMapXYZI::setPointField_float(size_t index, const std::string& fieldName, float value)
+void CPointsMapXYZI::setPointField_float(
+    size_t index, const std::string_view& fieldName, float value)
 {
   if (fieldName == POINT_FIELD_INTENSITY && hasIntensityField())
   {
@@ -397,7 +398,7 @@ void CPointsMapXYZI::setPointField_float(size_t index, const std::string& fieldN
   }
 }
 
-void CPointsMapXYZI::insertPointField_float(const std::string& fieldName, float value)
+void CPointsMapXYZI::insertPointField_float(const std::string_view& fieldName, float value)
 {
   if (fieldName == POINT_FIELD_INTENSITY)
   {
@@ -409,11 +410,11 @@ void CPointsMapXYZI::insertPointField_float(const std::string& fieldName, float 
   }
 }
 
-void CPointsMapXYZI::reserveField_float(const std::string& fieldName, size_t n)
+void CPointsMapXYZI::reserveField_float(const std::string_view& fieldName, size_t n)
 {
   if (fieldName == POINT_FIELD_INTENSITY) m_intensity.reserve(n);
 }
-void CPointsMapXYZI::resizeField_float(const std::string& fieldName, size_t n)
+void CPointsMapXYZI::resizeField_float(const std::string_view& fieldName, size_t n)
 {
   if (fieldName == POINT_FIELD_INTENSITY) m_intensity.resize(n, 0);
 }

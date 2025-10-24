@@ -365,7 +365,7 @@ class CPointsMap :
    * \return true if the field could effectively be added to the underlying point map class.
    * \sa hasPointField(), getPointFieldNames_float()
    */
-  virtual bool registerField_float(const std::string& fieldName)
+  virtual bool registerField_float(const std::string_view& fieldName)
   {
     return fieldName == "x" || fieldName == "y" || fieldName == "z";
   }
@@ -376,7 +376,7 @@ class CPointsMap :
    * \return true if the field could effectively be added to the underlying point map class.
    * \sa hasPointField(), getPointFieldNames_uint16()
    */
-  virtual bool registerField_uint16(const std::string& fieldName) { return false; }
+  virtual bool registerField_uint16(const std::string_view& fieldName) { return false; }
 
   /** @} */
 
@@ -580,22 +580,22 @@ class CPointsMap :
   /** Returns true if the map has a data channel with the given name.
    * \sa getPointField_float, getPointField_uint16
    */
-  virtual bool hasPointField(const std::string& fieldName) const
+  virtual bool hasPointField(const std::string_view& fieldName) const
   {
     return (fieldName == "x") || (fieldName == "y") || (fieldName == "z");
   }
 
   /** Get list of all float channel names */
-  virtual std::vector<std::string> getPointFieldNames_float() const { return {"x", "y", "z"}; }
+  virtual std::vector<std::string_view> getPointFieldNames_float() const { return {"x", "y", "z"}; }
   /** Get list of all uint16_t channel names */
-  virtual std::vector<std::string> getPointFieldNames_uint16() const { return {}; }
+  virtual std::vector<std::string_view> getPointFieldNames_uint16() const { return {}; }
 
   /** Read the value of a float channel for a given point.
    * Returns 0 if field does not exist.
    * \exception std::exception on index out of bounds or if field exists but
    * is not float.
    */
-  virtual float getPointField_float(size_t index, const std::string& fieldName) const
+  virtual float getPointField_float(size_t index, const std::string_view& fieldName) const
   {
     if (fieldName == "x") return m_x.at(index);
     if (fieldName == "y") return m_y.at(index);
@@ -608,7 +608,7 @@ class CPointsMap :
    * \exception std::exception on index out of bounds or if field exists but
    * is not uint16_t.
    */
-  virtual uint16_t getPointField_uint16(size_t index, const std::string& fieldName) const
+  virtual uint16_t getPointField_uint16(size_t index, const std::string_view& fieldName) const
   {
     return 0;
   }
@@ -617,7 +617,7 @@ class CPointsMap :
    * \exception std::exception on index out of bounds or if field does not
    * exist or is not float.
    */
-  virtual void setPointField_float(size_t index, const std::string& fieldName, float value)
+  virtual void setPointField_float(size_t index, const std::string_view& fieldName, float value)
   {
     if (fieldName == "x")
       m_x.at(index) = value;
@@ -630,19 +630,21 @@ class CPointsMap :
    * \exception std::exception on index out of bounds or if field does not
    * exist or is not uint16_t.
    */
-  virtual void setPointField_uint16(size_t index, const std::string& fieldName, uint16_t value) {}
+  virtual void setPointField_uint16(size_t index, const std::string_view& fieldName, uint16_t value)
+  {
+  }
 
   /** Appends a value to a float channel (for use after insertPointFast()) */
-  virtual void insertPointField_float(const std::string& fieldName, float value) {}
+  virtual void insertPointField_float(const std::string_view& fieldName, float value) {}
   /** Appends a value to a uint16_t channel (for use after insertPointFast()) */
-  virtual void insertPointField_uint16(const std::string& fieldName, uint16_t value) {}
+  virtual void insertPointField_uint16(const std::string_view& fieldName, uint16_t value) {}
 
-  virtual void reserveField_float(const std::string& fieldName, size_t n) {}
-  virtual void reserveField_uint16(const std::string& fieldName, size_t n) {}
-  virtual void resizeField_float(const std::string& fieldName, size_t n) {}
-  virtual void resizeField_uint16(const std::string& fieldName, size_t n) {}
+  virtual void reserveField_float(const std::string_view& fieldName, size_t n) {}
+  virtual void reserveField_uint16(const std::string_view& fieldName, size_t n) {}
+  virtual void resizeField_float(const std::string_view& fieldName, size_t n) {}
+  virtual void resizeField_uint16(const std::string_view& fieldName, size_t n) {}
 
-  virtual auto getPointsBufferRef_float_field(const std::string& fieldName) const
+  virtual auto getPointsBufferRef_float_field(const std::string_view& fieldName) const
       -> const mrpt::aligned_std_vector<float>*
   {
     if (fieldName == "x") return &m_x;
@@ -650,13 +652,13 @@ class CPointsMap :
     if (fieldName == "z") return &m_z;
     return nullptr;
   }
-  virtual auto getPointsBufferRef_uint_field([[maybe_unused]] const std::string& fieldName) const
-      -> const mrpt::aligned_std_vector<uint16_t>*
+  virtual auto getPointsBufferRef_uint_field([[maybe_unused]] const std::string_view& fieldName)
+      const -> const mrpt::aligned_std_vector<uint16_t>*
   {
     return nullptr;
   }
 
-  virtual auto getPointsBufferRef_float_field(const std::string& fieldName)
+  virtual auto getPointsBufferRef_float_field(const std::string_view& fieldName)
       -> mrpt::aligned_std_vector<float>*
   {
     if (fieldName == "x") return &m_x;
@@ -664,7 +666,7 @@ class CPointsMap :
     if (fieldName == "z") return &m_z;
     return nullptr;
   }
-  virtual auto getPointsBufferRef_uint_field([[maybe_unused]] const std::string& fieldName)
+  virtual auto getPointsBufferRef_uint_field([[maybe_unused]] const std::string_view& fieldName)
       -> mrpt::aligned_std_vector<uint16_t>*
   {
     return nullptr;
