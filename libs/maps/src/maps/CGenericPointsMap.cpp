@@ -197,18 +197,24 @@ void CGenericPointsMap::internal_clear()
   mark_as_modified();
 }
 
-void CGenericPointsMap::registerField_float(const std::string& fieldName)
+bool CGenericPointsMap::registerField_float(const std::string& fieldName)
 {
   if (hasPointField(fieldName))
+  {
     THROW_EXCEPTION_FMT("Field '%s' already exists.", fieldName.c_str());
+  }
   m_float_fields[fieldName].resize(size(), 0);
+  return true;
 }
 
-void CGenericPointsMap::registerField_uint16(const std::string& fieldName)
+bool CGenericPointsMap::registerField_uint16(const std::string& fieldName)
 {
   if (hasPointField(fieldName))
+  {
     THROW_EXCEPTION_FMT("Field '%s' already exists.", fieldName.c_str());
+  }
   m_uint16_fields[fieldName].resize(size(), 0);
+  return true;
 }
 
 bool CGenericPointsMap::unregisterField(const std::string& fieldName)
@@ -269,7 +275,7 @@ std::vector<std::string> CGenericPointsMap::getPointFieldNames_float() const
 
 std::vector<std::string> CGenericPointsMap::getPointFieldNames_uint16() const
 {
-  std::vector<std::string> names = = CPointsMap::getPointFieldNames_uint16();
+  std::vector<std::string> names = CPointsMap::getPointFieldNames_uint16();
   for (const auto& f : m_uint16_fields) names.push_back(f.first);
   return names;
 }
@@ -353,45 +359,6 @@ void CGenericPointsMap::resizeField_float(const std::string& fieldName, size_t n
 void CGenericPointsMap::resizeField_uint16(const std::string& fieldName, size_t n)
 {
   m_uint16_fields[fieldName].resize(n, 0);
-}
-
-void CGenericPointsMap::addFrom_classSpecific(
-    const CPointsMap& anotherMap, size_t nPreviousPoints, const bool filterOutPointsAtZero)
-{
-  const size_t nOther = anotherMap.size();
-
-  const auto float_names = anotherMap.getPointFieldNames_float();
-  const auto uint16_names = anotherMap.getPointFieldNames_uint16();
-
-  // Register fields in this map
-  for (const auto& name : float_names)
-    if (!hasPointField(name)) registerField_float(name);
-  for (const auto& name : uint16_names)
-    if (!hasPointField(name)) registerField_uint16(name);
-
-  // Reserve space
-  for (const auto& name : float_names) m_float_fields[name].reserve(nPreviousPoints + nOther);
-  for (const auto& name : uint16_names) m_uint16_fields[name].reserve(nPreviousPoints + nOther);
-
-  // Copy data
-  // Note: This assumes XYZ points were already copied by the caller.
-  const auto& oxs = anotherMap.getPointsBufferRef_x();
-  const auto& oys = anotherMap.getPointsBufferRef_y();
-  const auto& ozs = anotherMap.getPointsBufferRef_z();
-
-  for (size_t i = 0; i < nOther; i++)
-  {
-    if (filterOutPointsAtZero && oxs[i] == 0 && oys[i] == 0 && ozs[i] == 0) continue;
-
-    for (const auto& name : float_names)
-    {
-      m_float_fields[name].push_back(anotherMap.getPointField_float(i, name));
-    }
-    for (const auto& name : uint16_names)
-    {
-      m_uint16_fields[name].push_back(anotherMap.getPointField_uint16(i, name));
-    }
-  }
 }
 
 // See base class docs

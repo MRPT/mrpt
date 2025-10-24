@@ -49,17 +49,11 @@ class CGenericPointsMap : public CPointsMap
   /** @name Register/unregister custom data fields
     @{ */
 
-  /** Registers a new data channel of type `float`.
-   * If the map is not empty, the new channel is filled with default values (0)
-   * to match the current point count.
-   */
-  void registerField_float(const std::string& fieldName);
+  // see docs in parent class
+  bool registerField_float(const std::string& fieldName) override;
 
-  /** Registers a new data channel of type `uint16_t`.
-   * If the map is not empty, the new channel is filled with default values (0)
-   * to match the current point count.
-   */
-  void registerField_uint16(const std::string& fieldName);
+  // see docs in parent class
+  bool registerField_uint16(const std::string& fieldName) override;
 
   /** Removes a data channel.
    * \return True if the field existed and was removed, false otherwise.
@@ -198,12 +192,6 @@ class CGenericPointsMap : public CPointsMap
   std::map<std::string, mrpt::aligned_std_vector<float>> m_float_fields;
   /** Map from field name to data vector */
   std::map<std::string, mrpt::aligned_std_vector<uint16_t>> m_uint16_fields;
-
-  // See base class
-  void addFrom_classSpecific(
-      const CPointsMap& anotherMap,
-      size_t nPreviousPoints,
-      const bool filterOutPointsAtZero) override;
 
   /** Clear the map, erasing all the points and all fields */
   void internal_clear() override;

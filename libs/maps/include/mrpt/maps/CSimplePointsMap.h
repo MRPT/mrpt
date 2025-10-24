@@ -34,7 +34,7 @@ class CSimplePointsMap : public CPointsMap
  public:
   /** Default constructor */
   CSimplePointsMap() = default;
-  CSimplePointsMap(const CPointsMap& o) { CPointsMap::operator=(o); }
+  explicit CSimplePointsMap(const CPointsMap& o) { CPointsMap::operator=(o); }
   CSimplePointsMap(const CSimplePointsMap& o) : CPointsMap() { CPointsMap::operator=(o); }
   CSimplePointsMap& operator=(const CPointsMap& o)
   {
@@ -92,14 +92,6 @@ class CSimplePointsMap : public CPointsMap
       const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
 
  protected:
-  void addFrom_classSpecific(
-      [[maybe_unused]] const CPointsMap& anotherMap,
-      [[maybe_unused]] size_t nPreviousPoints,
-      [[maybe_unused]] const bool filterOutPointsAtZero) override
-  {
-    // No extra data.
-  }
-
   // Friend methods:
   template <class Derived>
   friend struct detail::loadFromRangeImpl;

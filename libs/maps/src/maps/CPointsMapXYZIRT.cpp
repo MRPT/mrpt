@@ -70,21 +70,12 @@ CPointsMapXYZIRT::CPointsMapXYZIRT(const CPointsMapXYZIRT& o) : CPointsMap()
 {
   CPointsMapXYZIRT::impl_copyFrom(o);
 }
-CPointsMapXYZIRT::CPointsMapXYZIRT(const CPointsMapXYZI& o) : CPointsMap()
-{
-  CPointsMapXYZIRT::impl_copyFrom(o);
-}
 CPointsMapXYZIRT& CPointsMapXYZIRT::operator=(const CPointsMap& o)
 {
   impl_copyFrom(o);
   return *this;
 }
 CPointsMapXYZIRT& CPointsMapXYZIRT::operator=(const CPointsMapXYZIRT& o)
-{
-  impl_copyFrom(o);
-  return *this;
-}
-CPointsMapXYZIRT& CPointsMapXYZIRT::operator=(const CPointsMapXYZI& o)
 {
   impl_copyFrom(o);
   return *this;
@@ -346,66 +337,6 @@ bool CPointsMapXYZIRT::loadXYZIRT_from_text_file(const std::string& file)
   return true;
 
   MRPT_END
-}
-
-/*---------------------------------------------------------------
-addFrom_classSpecific
----------------------------------------------------------------*/
-void CPointsMapXYZIRT::addFrom_classSpecific(
-    const CPointsMap& anotherMap, size_t nPreviousPoints, const bool filterOutPointsAtZero)
-{
-  xx;
-
-  const size_t nOther = anotherMap.size();
-
-  const auto& oxs = anotherMap.getPointsBufferRef_x();
-  const auto& oys = anotherMap.getPointsBufferRef_y();
-  const auto& ozs = anotherMap.getPointsBufferRef_z();
-
-  // Specific data for this class:
-  if (const auto* o = dynamic_cast<const CPointsMapXYZIRT*>(&anotherMap); o)
-  {
-    bool any = false;
-    if (o->hasIntensityField())
-    {
-      m_intensity.reserve(nPreviousPoints + nOther);
-      any = true;
-    }
-    if (o->hasRingField())
-    {
-      m_ring.reserve(nPreviousPoints + nOther);
-      any = true;
-    }
-    if (o->hasTimeField())
-    {
-      m_time.reserve(nPreviousPoints + nOther);
-      any = true;
-    }
-    ASSERTMSG_(
-        any,
-        "Cannot insert a CPointsMapXYZIRT map without any of IRT fields "
-        "present.");
-
-    for (size_t i = 0; i < nOther; i++)
-    {
-      if (filterOutPointsAtZero && oxs[i] == 0 && oys[i] == 0 && ozs[i] == 0) continue;
-
-      if (o->hasIntensityField()) m_intensity.push_back(o->m_intensity[i]);
-      if (o->hasRingField()) m_ring.push_back(o->m_ring[i]);
-      if (o->hasTimeField()) m_time.push_back(o->m_time[i]);
-    }
-  }
-  else if (const auto* oi = dynamic_cast<const CPointsMapXYZI*>(&anotherMap); oi)
-  {
-    m_intensity.reserve(nPreviousPoints + nOther);
-
-    for (size_t i = 0; i < nOther; i++)
-    {
-      if (filterOutPointsAtZero && oxs[i] == 0 && oys[i] == 0 && ozs[i] == 0) continue;
-
-      m_intensity.push_back(oi->getPointIntensity_fast(i));
-    }
-  }
 }
 
 bool CPointsMapXYZIRT::internal_insertObservation(

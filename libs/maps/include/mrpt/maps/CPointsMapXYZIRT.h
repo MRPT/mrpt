@@ -15,8 +15,6 @@
 
 namespace mrpt::maps
 {
-class CPointsMapXYZI;
-
 /** A map of 3D points with channels: X,Y,Z,I (intensity), R (ring), T (time).
  *
  * - `ring` (`uint16_t`) holds the "ring number", or the "row index" for
@@ -44,10 +42,8 @@ class CPointsMapXYZIRT : public CPointsMap
 
   explicit CPointsMapXYZIRT(const CPointsMap& o) { CPointsMap::operator=(o); }
   CPointsMapXYZIRT(const CPointsMapXYZIRT& o);
-  explicit CPointsMapXYZIRT(const CPointsMapXYZI& o);
   CPointsMapXYZIRT& operator=(const CPointsMap& o);
   CPointsMapXYZIRT& operator=(const CPointsMapXYZIRT& o);
-  CPointsMapXYZIRT& operator=(const CPointsMapXYZI& o);
 
   /** @name Pure virtual interfaces to be implemented by any class derived from CPointsMap
   @{ */
@@ -118,12 +114,6 @@ class CPointsMapXYZIRT : public CPointsMap
       const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
 
  protected:
-  // See base class
-  void addFrom_classSpecific(
-      const CPointsMap& anotherMap,
-      size_t nPreviousPoints,
-      const bool filterOutPointsAtZero) override;
-
   // Friend methods:
   template <class Derived>
   friend struct detail::loadFromRangeImpl;
