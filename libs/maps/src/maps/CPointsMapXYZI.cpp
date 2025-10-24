@@ -364,13 +364,13 @@ void CPointsMapXYZI::loadFromRangeScan(
    ------------------------------------------------------------------ */
 bool CPointsMapXYZI::hasPointField(const std::string& fieldName) const
 {
-  if (fieldName == POINT_FIELD_INTENSITY && hasIntensityField()) return true;
+  if (fieldName == POINT_FIELD_INTENSITY) return true;
   return CPointsMap::hasPointField(fieldName);
 }
 std::vector<std::string> CPointsMapXYZI::getPointFieldNames_float() const
 {
   std::vector<std::string> names = CPointsMap::getPointFieldNames_float();
-  if (hasIntensityField()) names.push_back(POINT_FIELD_INTENSITY);
+  names.push_back(POINT_FIELD_INTENSITY);
   return names;
 }
 
@@ -388,17 +388,25 @@ float CPointsMapXYZI::getPointField_float(size_t index, const std::string& field
 void CPointsMapXYZI::setPointField_float(size_t index, const std::string& fieldName, float value)
 {
   if (fieldName == POINT_FIELD_INTENSITY && hasIntensityField())
+  {
     setPointIntensity(index, value);
+  }
   else
+  {
     CPointsMap::setPointField_float(index, fieldName, value);
+  }
 }
 
 void CPointsMapXYZI::insertPointField_float(const std::string& fieldName, float value)
 {
   if (fieldName == POINT_FIELD_INTENSITY)
+  {
     m_intensity.push_back(value);
+  }
   else
+  {
     CPointsMap::insertPointField_float(fieldName, value);
+  }
 }
 
 void CPointsMapXYZI::reserveField_float(const std::string& fieldName, size_t n)

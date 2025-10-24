@@ -25,10 +25,7 @@ namespace mrpt::maps
  *
  * All three fields I,R,T are optional. Empty vectors are used to represent that
  * any of these fields is empty, and trying to read them will silently read
- * zeros, but you can check their validity with:
- *  - `hasIntensityField()`
- *  - `hasRingField()`
- *  - `hasTimeField()`
+ * zeros.
  *
  * \sa mrpt::maps::CPointsMap, mrpt::maps::CMetricMap
  * \ingroup mrpt_maps_grp
@@ -83,9 +80,9 @@ class CPointsMapXYZIRT : public CPointsMap
     point_data[0] = m_x[index];
     point_data[1] = m_y[index];
     point_data[2] = m_z[index];
-    point_data[3] = hasIntensityField() ? m_intensity[index] : 0;
-    point_data[4] = hasRingField() ? m_ring[index] : 0;
-    point_data[5] = hasTimeField() ? m_time[index] : 0;
+    point_data[3] = !m_intensity.empty() ? m_intensity[index] : 0;
+    point_data[4] = !m_ring.empty() ? m_ring[index] : 0;
+    point_data[5] = !m_time.empty() ? m_time[index] : 0;
   }
 
   /** Set all the data fields for one point as a vector: [X Y Z I R T]
@@ -100,7 +97,7 @@ class CPointsMapXYZIRT : public CPointsMap
     m_y[index] = point_data[1];
     m_z[index] = point_data[2];
     if (hasIntensityField()) m_intensity[index] = point_data[3];
-    if (hasRingField()) m_ring[index] = point_data[4];
+    if (hasRingField()) m_ring[index] = static_cast<uint16_t>(point_data[4]);
     if (hasTimeField()) m_time[index] = point_data[5];
   }
 

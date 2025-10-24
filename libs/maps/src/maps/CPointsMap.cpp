@@ -1545,9 +1545,9 @@ void CPointsMap::insertAnotherMap(
       // Translation:
       mrpt::math::TPoint3D g;
       otherPose.composePoint(pt.x, pt.y, pt.z, g.x, g.y, g.z);
-      m_x.back() = g.x;
-      m_y.back() = g.y;
-      m_z.back() = g.z;
+      m_x.back() = static_cast<float>(g.x);
+      m_y.back() = static_cast<float>(g.y);
+      m_z.back() = static_cast<float>(g.z);
     }
   }
 }
