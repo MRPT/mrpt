@@ -29,6 +29,13 @@ using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::config;
 
+namespace
+{
+/// using string_view requires using a permanent storage somewhere in a place that outlives all
+/// possible accesses.
+thread_local std::set<std::string> fieldNamesCache;
+}  // namespace
+
 //  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER("mrpt::maps::CGenericPointsMap", mrpt::maps::CGenericPointsMap)
 
@@ -164,6 +171,7 @@ void CGenericPointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
         {
           std::string name;
           in >> name;
+          this->registerField_float(name);
           in >> m_float_fields[name];
         }
       }
@@ -174,6 +182,7 @@ void CGenericPointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
         {
           std::string name;
           in >> name;
+          this->registerField_uint16(name);
           in >> m_uint16_fields[name];
         }
       }
@@ -204,7 +213,8 @@ bool CGenericPointsMap::registerField_float(const std::string_view& fieldName)
     THROW_EXCEPTION_FMT(
         "Field '%.*s' already exists.", static_cast<int>(fieldName.size()), fieldName.data());
   }
-  m_float_fields[fieldName].resize(size(), 0);
+  const auto [itPermanentFieldName, _] = fieldNamesCache.insert(std::string(fieldName));
+  m_float_fields[*itPermanentFieldName].resize(size(), 0);
   return true;
 }
 
@@ -215,7 +225,8 @@ bool CGenericPointsMap::registerField_uint16(const std::string_view& fieldName)
     THROW_EXCEPTION_FMT(
         "Field '%.*s' already exists.", static_cast<int>(fieldName.size()), fieldName.data());
   }
-  m_uint16_fields[fieldName].resize(size(), 0);
+  const auto [itPermanentFieldName, _] = fieldNamesCache.insert(std::string(fieldName));
+  m_uint16_fields[*itPermanentFieldName].resize(size(), 0);
   return true;
 }
 
