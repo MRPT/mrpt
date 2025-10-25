@@ -136,12 +136,12 @@ struct TPose3D : public TPoseOrPoint, public internal::ProvideStaticResize<TPose
   }
 
   /** Returns the (x,y,z) translational part of the SE(3) transformation. */
-  mrpt::math::TPoint3D translation() const { return {x, y, z}; }
+  [[nodiscard]] const mrpt::math::TPoint3D translation() const { return {x, y, z}; }
 
   /**
    * Pose's spatial coordinates norm.
    */
-  double norm() const { return std::sqrt(square(x) + square(y) + square(z)); }
+  [[nodiscard]] double norm() const { return std::sqrt(square(x) + square(y) + square(z)); }
 
   /** Gets the pose as a vector of doubles: [x y z yaw pitch roll]
    * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.

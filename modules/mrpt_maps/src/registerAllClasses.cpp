@@ -39,6 +39,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
   registerClass(CLASS_ID(CWeightedPointsMap));
   registerClass(CLASS_ID(CPointsMapXYZI));
   registerClass(CLASS_ID(CPointsMapXYZIRT));
+  registerClass(CLASS_ID(CGenericPointsMap));
   registerClass(CLASS_ID(COccupancyGridMap2D));
   registerClass(CLASS_ID(COccupancyGridMap3D));
   registerClass(CLASS_ID(CGasConcentrationGridMap2D));

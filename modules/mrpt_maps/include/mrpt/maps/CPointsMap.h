@@ -27,9 +27,9 @@
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
 #include <mrpt/obs/obs_frwds.h>
+#include <mrpt/opengl/PLY_import_export.h>
+#include <mrpt/opengl/pointcloud_adapters.h>
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/viz/PLY_import_export.h>
-#include <mrpt/viz/pointcloud_adapters.h>
 
 #include <iosfwd>
 
@@ -64,8 +64,11 @@ struct pointmap_traits;
  *   - mrpt::obs::CObservationVelodyneScan
  *   - mrpt::obs::CObservationPointCloud
  *
- * Loading and saving in the standard LAS LiDAR point cloud format is possible
- * using MP2P_ICP, see that project documentation.
+ * Loading and saving in the standard LAS LiDAR point cloud format is supported
+ * by installing `libLAS` and including the
+ * header `<mrpt/maps/CPointsMaps_liblas.h>` in your program. Since MRPT 1.5.0
+ * there is no need to build MRPT against libLAS to use this feature.
+ * See LAS functions in \ref mrpt_maps_liblas_grp.
  *
  * \sa CMetricMap, CPoint, CSerializable
  * \ingroup mrpt_maps_grp
@@ -201,13 +204,12 @@ class CPointsMap :
     const size_t N = obj.size();
     this->clear();
     this->reserve(N);
-    for (size_t i = 0; i < N; i++) insertPointFrom(obj, i);
+    this->registerPointFieldsFrom(obj);
+    for (size_t i = 0; i < N; i++)
+    {
+      insertPointFrom(obj, i);
+    }
   }
-
-  /** Auxiliary method called from within \a addFrom() automatically, to
-   * finish the copying of class-specific data  */
-  virtual void addFrom_classSpecific(
-      const CPointsMap& anotherMap, size_t nPreviousPoints, const bool filterOutPointsAtZero) = 0;
 
  public:
   /** @} */
@@ -358,6 +360,30 @@ class CPointsMap :
   {
     insertAnotherMap(&anotherMap, mrpt::poses::CPose3D::Identity());
   }
+
+  /** @name Register/unregister custom data fields
+    @{ */
+
+  /** Registers a new data channel of type `float`.
+   * If the map is not empty, the new channel is filled with default values (0)
+   * to match the current point count.
+   * \return true if the field could effectively be added to the underlying point map class.
+   * \sa hasPointField(), getPointFieldNames_float()
+   */
+  virtual bool registerField_float(const std::string_view& fieldName)
+  {
+    return fieldName == "x" || fieldName == "y" || fieldName == "z";
+  }
+
+  /** Registers a new data channel of type `uint16_t`.
+   * If the map is not empty, the new channel is filled with default values (0)
+   * to match the current point count.
+   * \return true if the field could effectively be added to the underlying point map class.
+   * \sa hasPointField(), getPointFieldNames_uint16()
+   */
+  virtual bool registerField_uint16(const std::string_view& fieldName) { return false; }
+
+  /** @} */
 
   // --------------------------------------------------
   /** @name File input/output methods
@@ -552,736 +578,801 @@ class CPointsMap :
   /** Provides a direct access to a read-only reference of the internal point
    * buffer. \sa getAllPoints */
   inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_z() const { return m_z; }
-  // clang-format off
-	virtual auto getPointsBufferRef_intensity() const  -> const mrpt::aligned_std_vector<float>* { return nullptr; }
-	virtual auto getPointsBufferRef_ring() const       -> const mrpt::aligned_std_vector<uint16_t>* { return nullptr; }
-	virtual auto getPointsBufferRef_timestamp() const  -> const mrpt::aligned_std_vector<float>* { return nullptr; }
-	virtual auto getPointsBufferRef_color_R() const    -> const mrpt::aligned_std_vector<float>* { return nullptr;}
-	virtual auto getPointsBufferRef_color_G() const    -> const mrpt::aligned_std_vector<float>* { return nullptr; }
-	virtual auto getPointsBufferRef_color_B() const    -> const mrpt::aligned_std_vector<float>* { return nullptr; }
-
-	virtual auto getPointsBufferRef_intensity()        -> mrpt::aligned_std_vector<float>* { return nullptr; }
-	virtual auto getPointsBufferRef_ring()             -> mrpt::aligned_std_vector<uint16_t>* { return nullptr; }
-	virtual auto getPointsBufferRef_timestamp()        -> mrpt::aligned_std_vector<float>* { return nullptr; }
-	virtual auto getPointsBufferRef_color_R()          -> mrpt::aligned_std_vector<float>* { return nullptr; }
-	virtual auto getPointsBufferRef_color_G()          -> mrpt::aligned_std_vector<float>* { return nullptr; }
-	virtual auto getPointsBufferRef_color_B()          -> mrpt::aligned_std_vector<float>* { return nullptr; }
-	
-	bool hasField_Intensity() const  { return getPointsBufferRef_intensity() != nullptr; }
-	bool hasField_Ring() const       { return getPointsBufferRef_ring() != nullptr; }
-	bool hasField_Timestamp() const  { return getPointsBufferRef_timestamp() != nullptr; }
-	bool hasField_color_R() const    { return getPointsBufferRef_color_R() != nullptr; }
-	bool hasField_color_G() const    { return getPointsBufferRef_color_G() != nullptr; }
-	bool hasField_color_B() const    { return getPointsBufferRef_color_B() != nullptr; }
-	
-	virtual void insertPointField_Intensity([[maybe_unused]] float i) { /* default: none*/ }
-	virtual void insertPointField_Ring([[maybe_unused]] uint16_t r)   { /* default: none*/ }
-	virtual void insertPointField_Timestamp([[maybe_unused]] float t) { /* default: none*/ }
-	virtual void insertPointField_color_R([[maybe_unused]] float v)   { /* default: none*/ }
-	virtual void insertPointField_color_G([[maybe_unused]] float v)   { /* default: none*/ }
-	virtual void insertPointField_color_B([[maybe_unused]] float v)   { /* default: none*/ }
-	/// clang-format on
-
-	/** Returns a copy of the 2D/3D points as a std::vector of float
-	 * coordinates.
-	 * If decimation is greater than 1, only 1 point out of that number will be
-	 * saved in the output, effectively performing a subsampling of the points.
-	 * \sa getPointsBufferRef_x, getPointsBufferRef_y, getPointsBufferRef_z
-	 * \tparam VECTOR can be std::vector<float or double> or any row/column
-	 * Eigen::Array or Eigen::Matrix (this includes mrpt::math::CVectorFloat and
-	 * mrpt::math::CVectorDouble).
-	 */
-	template <class VECTOR>
-	void getAllPoints(
-		VECTOR& xs, VECTOR& ys, VECTOR& zs, size_t decimation = 1) const
-	{
-		MRPT_START
-		ASSERT_(decimation > 0);
-		const size_t Nout = m_x.size() / decimation;
-		xs.resize(Nout);
-		ys.resize(Nout);
-		zs.resize(Nout);
-		size_t idx_in, idx_out;
-		for (idx_in = 0, idx_out = 0; idx_out < Nout;
-			 idx_in += decimation, ++idx_out)
-		{
-			xs[idx_out] = m_x[idx_in];
-			ys[idx_out] = m_y[idx_in];
-			zs[idx_out] = m_z[idx_in];
-		}
-		MRPT_END
-	}
-
-	/** Gets all points as a STL-like container.
-	 * \tparam CONTAINER Any STL-like container of mrpt::math::TPoint3D,
-	 * mrpt::math::TPoint3Df or anything having members `x`,`y`,`z`.
-	 * Note that this method is not efficient for large point clouds. Fastest
-	 * methods are getPointsBuffer() or getPointsBufferRef_x(),
-	 * getPointsBufferRef_y(), getPointsBufferRef_z()
-	 */
-	template <class CONTAINER>
-	void getAllPoints(CONTAINER& ps, size_t decimation = 1) const
-	{
-		std::vector<float> dmy1, dmy2, dmy3;
-		getAllPoints(dmy1, dmy2, dmy3, decimation);
-		ps.resize(dmy1.size());
-		for (size_t i = 0; i < dmy1.size(); i++)
-		{
-			ps[i].x = dmy1[i];
-			ps[i].y = dmy2[i];
-			ps[i].z = dmy3[i];
-		}
-	}
-
-	/** Returns a copy of the 2D/3D points as a std::vector of float
-	 * coordinates.
-	 * If decimation is greater than 1, only 1 point out of that number will be
-	 * saved in the output, effectively performing a subsampling of the points.
-	 * \sa setAllPoints
-	 */
-	void getAllPoints(
-		std::vector<float>& xs, std::vector<float>& ys,
-		size_t decimation = 1) const;
-
-	inline void getAllPoints(
-		std::vector<mrpt::math::TPoint2D>& ps, size_t decimation = 1) const
-	{
-		std::vector<float> dmy1, dmy2;
-		getAllPoints(dmy1, dmy2, decimation);
-		ps.resize(dmy1.size());
-		for (size_t i = 0; i < dmy1.size(); i++)
-		{
-			ps[i].x = static_cast<double>(dmy1[i]);
-			ps[i].y = static_cast<double>(dmy2[i]);
-		}
-	}
-
-	/** Provides a way to insert (append) individual points into the map: the
-	 * missing fields of child
-	 * classes (color, weight, etc) are left to their default values
-	 */
-	inline void insertPoint(float x, float y, float z = 0)
-	{
-		insertPointFast(x, y, z);
-		mark_as_modified();
-	}
-	/// \overload
-	inline void insertPoint(const mrpt::math::TPoint3D& p)
-	{
-		insertPoint(d2f(p.x), d2f(p.y), d2f(p.z));
-	}
-	/// overload (RGB data is ignored in classes without color information)
-	virtual void insertPointRGB(
-		float x, float y, float z, [[maybe_unused]] float R,
-		[[maybe_unused]] float G, [[maybe_unused]] float B)
-	{
-		insertPoint(x, y, z);
-	}
-
-	/** Generic method to copy *all* applicable point properties from
-	 *  one map to another, e.g. timestamp, intensity, etc.
-	 */
-	void insertPointFrom(
-		const mrpt::maps::CPointsMap& source, size_t sourcePointIndex)
-	{
-		const auto i = sourcePointIndex;  // shortcut
-		// mandatory fields:
-		const auto& xs = source.getPointsBufferRef_x();
-		const auto& ys = source.getPointsBufferRef_y();
-		const auto& zs = source.getPointsBufferRef_z();
-		// optional fields:
-		const auto* Is = source.getPointsBufferRef_intensity();
-		const auto* Rs = source.getPointsBufferRef_ring();
-		const auto* Ts = source.getPointsBufferRef_timestamp();
-		const auto* cR = source.getPointsBufferRef_color_R();
-		const auto* cG = source.getPointsBufferRef_color_G();
-		const auto* cB = source.getPointsBufferRef_color_B();
-
-		// XYZ:
-		insertPointFast(xs[i], ys[i], zs[i]);
-		if (Is && !Is->empty() && hasField_Intensity()) insertPointField_Intensity((*Is)[i]);
-		if (Rs && !Rs->empty() && hasField_Ring()) insertPointField_Ring((*Rs)[i]);
-		if (Ts && !Ts->empty() && hasField_Timestamp()) insertPointField_Timestamp((*Ts)[i]);
-		if (cR && !cR->empty() && hasField_color_R()) insertPointField_color_R((*cR)[i]);
-		if (cG && !cG->empty() && hasField_color_G()) insertPointField_color_G((*cG)[i]);
-		if (cB && !cB->empty() && hasField_color_B()) insertPointField_color_B((*cB)[i]);
-
-		mark_as_modified();
-	}
-
-	/** Set all the points at once from vectors with X,Y and Z coordinates (if Z
-	 * is not provided, it will be set to all zeros).
-	 * \tparam VECTOR can be mrpt::math::CVectorFloat or std::vector<float> or
-	 * any other column or row Eigen::Matrix.
-	 */
-	template <typename VECTOR>
-	inline void setAllPointsTemplate(
-		const VECTOR& X, const VECTOR& Y, const VECTOR& Z = VECTOR())
-	{
-		const size_t N = X.size();
-		ASSERT_EQUAL_(X.size(), Y.size());
-		ASSERT_(Z.size() == 0 || Z.size() == X.size());
-		this->setSize(N);
-		const bool z_valid = !Z.empty();
-		if (z_valid)
-			for (size_t i = 0; i < N; i++)
-			{
-				this->setPointFast(i, X[i], Y[i], Z[i]);
-			}
-		else
-			for (size_t i = 0; i < N; i++)
-			{
-				this->setPointFast(i, X[i], Y[i], 0);
-			}
-		mark_as_modified();
-	}
-
-	/** Set all the points at once from vectors with X,Y and Z coordinates. \sa
-	 * getAllPoints */
-	inline void setAllPoints(
-		const std::vector<float>& X, const std::vector<float>& Y,
-		const std::vector<float>& Z)
-	{
-		setAllPointsTemplate(X, Y, Z);
-	}
-
-	/** Set all the points at once from vectors with X and Y coordinates (Z=0).
-	 * \sa getAllPoints */
-	inline void setAllPoints(
-		const std::vector<float>& X, const std::vector<float>& Y)
-	{
-		setAllPointsTemplate(X, Y);
-	}
-
-	/** Get all the data fields for one point as a vector: depending on the
-	 * implementation class this can be [X Y Z] or [X Y Z R G B], etc...
-	 * \sa getPointAllFieldsFast, setPointAllFields, setPointAllFieldsFast
-	 */
-	void getPointAllFields(size_t index, std::vector<float>& point_data) const
-	{
-		ASSERT_LT_(index, this->size());
-		getPointAllFieldsFast(index, point_data);
-	}
-
-	/** Set all the data fields for one point as a vector: depending on the
-	 * implementation class this can be [X Y Z] or [X Y Z R G B], etc...
-	 *  Unlike setPointAllFields(), this method does not check for index out of
-	 * bounds
-	 * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
-	 */
-	void setPointAllFields(size_t index, const std::vector<float>& point_data)
-	{
-		ASSERT_LT_(index, this->size());
-		setPointAllFieldsFast(index, point_data);
-	}
-
-	/** Delete points out of the given "z" axis range have been removed.
-	 */
-	void clipOutOfRangeInZ(float zMin, float zMax);
-
-	/** Delete points which are more far than "maxRange" away from the given
-	 * "point".
-	 */
-	void clipOutOfRange(const mrpt::math::TPoint2D& point, float maxRange);
-
-	/** Remove from the map the points marked in a bool's array as "true".
-	 * \exception std::exception If mask size is not equal to points count.
-	 */
-	void applyDeletionMask(const std::vector<bool>& mask);
-
-	// See docs in base class.
-	void determineMatching2D(
-		const mrpt::maps::CMetricMap* otherMap,
-		const mrpt::poses::CPose2D& otherMapPose,
-		mrpt::tfest::TMatchingPairList& correspondences,
-		const TMatchingParams& params,
-		TMatchingExtraResults& extraResults) const override;
-
-	// See docs in base class
-	void determineMatching3D(
-		const mrpt::maps::CMetricMap* otherMap,
-		const mrpt::poses::CPose3D& otherMapPose,
-		mrpt::tfest::TMatchingPairList& correspondences,
-		const TMatchingParams& params,
-		TMatchingExtraResults& extraResults) const override;
-
-	// See docs in base class
-	float compute3DMatchingRatio(
-		const mrpt::maps::CMetricMap* otherMap,
-		const mrpt::poses::CPose3D& otherMapPose,
-		const TMatchingRatioParams& params) const override;
-
-	/** Computes the matchings between this and another 3D points map.
-	   This method matches each point in the other map with the centroid of the
-	 3 closest points in 3D
-	   from this map (if the distance is below a defined threshold).
-	 * \param  otherMap					  [IN] The other map to compute the
-	 matching with.
-	 * \param  otherMapPose				  [IN] The pose of the other map as seen
-	 from "this".
-	 * \param  maxDistForCorrespondence   [IN] Maximum 2D linear distance
-	 between two points to be matched.
-	 * \param  correspondences			  [OUT] The detected matchings pairs.
-	 * \param  correspondencesRatio		  [OUT] The ratio [0,1] of points in
-	 otherMap with at least one correspondence.
-	 *
-	 * \sa determineMatching3D
-	 */
-	void compute3DDistanceToMesh(
-		const mrpt::maps::CMetricMap* otherMap2,
-		const mrpt::poses::CPose3D& otherMapPose,
-		float maxDistForCorrespondence,
-		mrpt::tfest::TMatchingPairList& correspondences,
-		float& correspondencesRatio);
-
-	/** Transform the range scan into a set of cartessian coordinated
-	 *	 points. The options in "insertionOptions" are considered in this
-	 *method.
-	 * \param rangeScan The scan to be inserted into this map
-	 * \param robotPose Default to (0,0,0|0deg,0deg,0deg). Changes the frame of
-	 *reference for the point cloud (i.e. the vehicle/robot pose in world
-	 *coordinates).
-	 *
-	 *  Only ranges marked as "valid=true" in the observation will be inserted
-	 *
-	 *  \note Each derived class may enrich points in different ways (color,
-	 *weight, etc..), so please refer to the description of the specific
-	 *         implementation of mrpt::maps::CPointsMap you are using.
-	 *  \note The actual generic implementation of this file lives in
-	 *<src>/CPointsMap_crtp_common.h, but specific instantiations are generated
-	 *at each derived class.
-	 *
-	 * \sa CObservation2DRangeScan, CObservation3DRangeScan
-	 */
-	virtual void loadFromRangeScan(
-		const mrpt::obs::CObservation2DRangeScan& rangeScan,
-		const std::optional<const mrpt::poses::CPose3D>& robotPose =
-			std::nullopt) = 0;
-
-	/** Overload of \a loadFromRangeScan() for 3D range scans (for example,
-	 * Kinect observations).
-	 *
-	 * \param rangeScan The scan to be inserted into this map
-	 * \param robotPose Default to (0,0,0|0deg,0deg,0deg). Changes the frame of
-	 * reference for the point cloud (i.e. the vehicle/robot pose in world
-	 * coordinates).
-	 *
-	 *  \note Each derived class may enrich points in different ways (color,
-	 * weight, etc..), so please refer to the description of the specific
-	 *         implementation of mrpt::maps::CPointsMap you are using.
-	 *  \note The actual generic implementation of this file lives in
-	 * <src>/CPointsMap_crtp_common.h, but specific instantiations are generated
-	 * at each derived class.
-	 * \sa loadFromVelodyneScan
-	 */
-	virtual void loadFromRangeScan(
-		const mrpt::obs::CObservation3DRangeScan& rangeScan,
-		const std::optional<const mrpt::poses::CPose3D>& robotPose =
-			std::nullopt) = 0;
-
-	/** Like \a loadFromRangeScan() for Velodyne 3D scans. Points are translated
-	 * and rotated according to the \a sensorPose field in the observation and,
-	 * if provided, to the \a robotPose parameter.
-	 *
-	 * \param scan The Raw LIDAR data to be inserted into this map. It MUST
-	 * contain point cloud data, generated by calling to \a
-	 * mrpt::obs::CObservationVelodyneScan::generatePointCloud() prior to
-	 * insertion in this map.
-	 * \param robotPose Default to (0,0,0|0deg,0deg,0deg). Changes the frame of
-	 * reference for the point cloud (i.e. the vehicle/robot pose in world
-	 * coordinates).
-	 * \sa loadFromRangeScan
-	 */
-	void loadFromVelodyneScan(
-		const mrpt::obs::CObservationVelodyneScan& scan,
-		const std::optional<const mrpt::poses::CPose3D>& robotPose =
-			std::nullopt);
-
-	/** Insert the contents of another map into this one, fusing the previous
-	 *content with the new one.
-	 *    This means that points very close to existing ones will be "fused",
-	 *rather than "added". This prevents
-	 *     the unbounded increase in size of these class of maps.
-	 *		NOTICE that "otherMap" is neither translated nor rotated here, so if
-	 *this is desired it must done
-	 *		 before calling this method.
-	 * \param otherMap The other map whose points are to be inserted into this
-	 *one.
-	 * \param minDistForFuse Minimum distance (in meters) between two points,
-	 *each one in a map, to be considered the same one and be fused rather than
-	 *added.
-	 * \param notFusedPoints If a pointer is supplied, this list will contain at
-	 *output a list with a "bool" value per point in "this" map. This will be
-	 *false/true according to that point having been fused or not.
-	 * \sa loadFromRangeScan, addFrom
-	 */
-	void fuseWith(
-		CPointsMap* anotherMap, float minDistForFuse = 0.02f,
-		std::vector<bool>* notFusedPoints = nullptr);
-
-	/** Replace each point \f$ p_i \f$ by \f$ p'_i = b \oplus p_i \f$ (pose
-	 * compounding operator).
-	 */
-	void changeCoordinatesReference(const mrpt::poses::CPose2D& b);
-
-	/** Replace each point \f$ p_i \f$ by \f$ p'_i = b \oplus p_i \f$ (pose
-	 * compounding operator).
-	 */
-	void changeCoordinatesReference(const mrpt::poses::CPose3D& b);
-
-	/** Copy all the points from "other" map to "this", replacing each point \f$
-	 * p_i \f$ by \f$ p'_i = b \oplus p_i \f$ (pose compounding operator).
-	 */
-	void changeCoordinatesReference(
-		const CPointsMap& other, const mrpt::poses::CPose3D& b);
-
-	/** Returns true if the map is empty/no observation has been inserted.
-	 */
-	bool isEmpty() const override;
-
-	/** STL-like method to check whether the map is empty: */
-	inline bool empty() const { return isEmpty(); }
-
-	/** Returns a 3D object representing the map.
-	 *  The color of the points is controlled by renderOptions
-	 */
-	void getVisualizationInto(
-		mrpt::viz::CSetOfObjects& outObj) const override;
-
-	/** This method returns the largest distance from the origin to any of the
-	 * points, such as a sphere centered at the origin with this radius cover
-	 * ALL the points in the map (the results are buffered, such as, if the map
-	 * is not modified, the second call will be much faster than the first one).
-	 */
-	float getLargestDistanceFromOrigin() const;
-
-	/** Like \a getLargestDistanceFromOrigin() but returns in \a output_is_valid
-	 * = false if the distance was not already computed, skipping its
-	 * computation then, unlike getLargestDistanceFromOrigin() */
-	float getLargestDistanceFromOriginNoRecompute(bool& output_is_valid) const
-	{
-		output_is_valid = m_largestDistanceFromOriginIsUpdated;
-		return m_largestDistanceFromOrigin;
-	}
-
-	/** Computes the bounding box of all the points, or (0,0 ,0,0, 0,0) if there
-	 * are no points.
-	 *  Results are cached unless the map is somehow modified to avoid repeated
-	 * calculations.
-	 */
-	mrpt::math::TBoundingBoxf boundingBox() const override;
-
-	/** Extracts the points in the map within a cylinder in 3D defined the
-	 * provided radius and zmin/zmax values.
-	 */
-	void extractCylinder(
-		const mrpt::math::TPoint2D& center, const double radius,
-		const double zmin, const double zmax, CPointsMap* outMap);
-
-	/** Extracts the points in the map within the area defined by two corners.
-	 *  The points are coloured according the R,G,B input data.
-	 */
-	void extractPoints(
-		const mrpt::math::TPoint3D& corner1,
-		const mrpt::math::TPoint3D& corner2, CPointsMap* outMap, double R = 1,
-		double G = 1, double B = 1);
-
-	/** @name Filter-by-height stuff
-		@{ */
-
-	/** Enable/disable the filter-by-height functionality \sa
-	 * setHeightFilterLevels \note Default upon construction is disabled. */
-	inline void enableFilterByHeight(bool enable = true)
-	{
-		m_heightfilter_enabled = enable;
-	}
-	/** Return whether filter-by-height is enabled \sa enableFilterByHeight */
-	inline bool isFilterByHeightEnabled() const
-	{
-		return m_heightfilter_enabled;
-	}
-
-	/** Set the min/max Z levels for points to be actually inserted in the map
-	 * (only if \a enableFilterByHeight() was called before). */
-	inline void setHeightFilterLevels(const double _z_min, const double _z_max)
-	{
-		m_heightfilter_z_min = _z_min;
-		m_heightfilter_z_max = _z_max;
-	}
-	/** Get the min/max Z levels for points to be actually inserted in the map
-	 * \sa enableFilterByHeight, setHeightFilterLevels */
-	inline void getHeightFilterLevels(double& _z_min, double& _z_max) const
-	{
-		_z_min = m_heightfilter_z_min;
-		_z_max = m_heightfilter_z_max;
-	}
-
-	/** @} */
-
-	// See docs in base class
-	double internal_computeObservationLikelihood(
-		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D& takenFrom) const override;
-
-	double internal_computeObservationLikelihoodPointCloud3D(
-		const mrpt::poses::CPose3D& pc_in_map, const float* xs, const float* ys,
-		const float* zs, const std::size_t num_pts) const;
-
-	/** @name PCL library support
-		@{ */
-
-	/** Use to convert this MRPT point cloud object into a PCL point cloud
-	 * object (PointCloud<PointXYZ>).
-	 *  Usage example:
-	 *  \code
-	 *    mrpt::maps::CPointsCloud       pc;
-	 *    pcl::PointCloud<pcl::PointXYZ> cloud;
-	 *
-	 *    pc.getPCLPointCloud(cloud);
-	 *  \endcode
-	 * \sa setFromPCLPointCloud, CColouredPointsMap::getPCLPointCloudXYZRGB
-	 * (for color data)
-	 */
-	template <class POINTCLOUD>
-	void getPCLPointCloud(POINTCLOUD& cloud) const
-	{
-		const size_t nThis = this->size();
-		// Fill in the cloud data
-		cloud.width = nThis;
-		cloud.height = 1;
-		cloud.is_dense = false;
-		cloud.points.resize(cloud.width * cloud.height);
-		for (size_t i = 0; i < nThis; ++i)
-		{
-			cloud.points[i].x = m_x[i];
-			cloud.points[i].y = m_y[i];
-			cloud.points[i].z = m_z[i];
-		}
-	}
-
-	/** Loads a PCL point cloud into this MRPT class (note: this method ignores
-	 * potential RGB information, see
-	 * CColouredPointsMap::setFromPCLPointCloudRGB() ).
-	 *  Usage example:
-	 *  \code
-	 *    pcl::PointCloud<pcl::PointXYZ> cloud;
-	 *    mrpt::maps::CPointsCloud       pc;
-	 *
-	 *    pc.setFromPCLPointCloud(cloud);
-	 *  \endcode
-	 * \sa getPCLPointCloud, CColouredPointsMap::setFromPCLPointCloudRGB()
-	 */
-	template <class POINTCLOUD>
-	void setFromPCLPointCloud(const POINTCLOUD& cloud)
-	{
-		const size_t N = cloud.points.size();
-		clear();
-		reserve(N);
-		for (size_t i = 0; i < N; ++i)
-			this->insertPointFast(
-				cloud.points[i].x, cloud.points[i].y, cloud.points[i].z);
-	}
-
-	/** @} */
-
-	/** @name Methods that MUST be implemented by children classes of
-	   KDTreeCapable
-		@{ */
-
-	/// Must return the number of data points
-	inline size_t kdtree_get_point_count() const { return this->size(); }
-	/// Returns the dim'th component of the idx'th point in the class:
-	inline float kdtree_get_pt(size_t idx, int dim) const
-	{
-		if (dim == 0) return m_x[idx];
-		else if (dim == 1)
-			return m_y[idx];
-		else if (dim == 2)
-			return m_z[idx];
-		else
-			return 0;
-	}
-
-	/// Returns the distance between the vector "p1[0:size-1]" and the data
-	/// point with index "idx_p2" stored in the class:
-	inline float kdtree_distance(
-		const float* p1, size_t idx_p2, size_t size) const
-	{
-		if (size == 2)
-		{
-			const float d0 = p1[0] - m_x[idx_p2];
-			const float d1 = p1[1] - m_y[idx_p2];
-			return d0 * d0 + d1 * d1;
-		}
-		else
-		{
-			const float d0 = p1[0] - m_x[idx_p2];
-			const float d1 = p1[1] - m_y[idx_p2];
-			const float d2 = p1[2] - m_z[idx_p2];
-			return d0 * d0 + d1 * d1 + d2 * d2;
-		}
-	}
-
-	// Optional bounding-box computation: return false to default to a standard
-	// bbox computation loop.
-	//   Return true if the BBOX was already computed by the class and returned
-	//   in "bb" so it can be avoided to redo it again.
-	//   Look at bb.size() to find out the expected dimensionality (e.g. 2 or 3
-	//   for point clouds)
-	template <typename BBOX>
-	bool kdtree_get_bbox(BBOX& bb) const
-	{
-		const auto bbox = this->boundingBox();
-		bb[0].low = bbox.min.x;
-		bb[1].low = bbox.min.y;
-		bb[0].high = bbox.max.x;
-		bb[1].high = bbox.max.y;
-		if (bb.size() == 3)
-		{
-			bb[2].low = bbox.min.z;
-			bb[2].high = bbox.max.z;
-		}
-		return true;
-	}
-	/** @} */
-
-	/** Users normally don't need to call this. Called by this class or children
-	 * classes, set m_largestDistanceFromOriginIsUpdated=false, invalidates the
-	 * kd-tree cache, and such. */
-	inline void mark_as_modified() const
-	{
-		m_largestDistanceFromOriginIsUpdated = false;
-		m_boundingBoxIsUpdated = false;
-		kdtree_mark_as_outdated();
-	}
-
-	/** Returns a short description of the map. */
-	std::string asString() const override
-	{
-		return mrpt::format(
-			"Pointcloud map of type %s with %u points, bounding box:%s",
-			this->GetRuntimeClass()->className,
-			static_cast<unsigned int>(size()),
-			boundingBox().asString().c_str());
-	}
-
-	/** @name API of the NearestNeighborsCapable virtual interface
-		@{ */
-	void nn_prepare_for_2d_queries() const override;
-	void nn_prepare_for_3d_queries() const override;
-	[[nodiscard]] bool nn_has_indices_or_ids() const override { return true; }
-	[[nodiscard]] size_t nn_index_count() const override { return size(); }
-	[[nodiscard]] bool nn_single_search(
-		const mrpt::math::TPoint3Df& query, mrpt::math::TPoint3Df& result,
-		float& out_dist_sqr, uint64_t& resultIndexOrID) const override;
-	[[nodiscard]] bool nn_single_search(
-		const mrpt::math::TPoint2Df& query, mrpt::math::TPoint2Df& result,
-		float& out_dist_sqr, uint64_t& resultIndexOrID) const override;
-	void nn_multiple_search(
-		const mrpt::math::TPoint3Df& query, const size_t N,
-		std::vector<mrpt::math::TPoint3Df>& results,
-		std::vector<float>& out_dists_sqr,
-		std::vector<uint64_t>& resultIndicesOrIDs) const override;
-	void nn_multiple_search(
-		const mrpt::math::TPoint2Df& query, const size_t N,
-		std::vector<mrpt::math::TPoint2Df>& results,
-		std::vector<float>& out_dists_sqr,
-		std::vector<uint64_t>& resultIndicesOrIDs) const override;
-	void nn_radius_search(
-		const mrpt::math::TPoint3Df& query, const float search_radius_sqr,
-		std::vector<mrpt::math::TPoint3Df>& results,
-		std::vector<float>& out_dists_sqr,
-		std::vector<uint64_t>& resultIndicesOrIDs,
-		size_t maxPoints) const override;
-	void nn_radius_search(
-		const mrpt::math::TPoint2Df& query, const float search_radius_sqr,
-		std::vector<mrpt::math::TPoint2Df>& results,
-		std::vector<float>& out_dists_sqr,
-		std::vector<uint64_t>& resultIndicesOrIDs,
-		size_t maxPoints) const override;
-	/** @} */
-
-   protected:
-	/** The point coordinates */
-	mrpt::aligned_std_vector<float> m_x, m_y, m_z;
-
-	/** Cache of sin/cos values for the latest 2D scan geometries. */
-	mrpt::obs::CSinCosLookUpTableFor2DScans m_scans_sincos_cache;
-
-	/** Auxiliary variables used in "getLargestDistanceFromOrigin"
-	 * \sa getLargestDistanceFromOrigin
-	 */
-	mutable float m_largestDistanceFromOrigin{0};
-
-	/** Auxiliary variables used in "getLargestDistanceFromOrigin"
-	 * \sa getLargestDistanceFromOrigin
-	 */
-	mutable bool m_largestDistanceFromOriginIsUpdated;
-
-	mutable bool m_boundingBoxIsUpdated;
-	mutable mrpt::math::TBoundingBoxf m_boundingBox;
-
-	/** This is a common version of CMetricMap::insertObservation() for point
-	 * maps (actually, CMetricMap::internal_insertObservation),
-	 *   so derived classes don't need to worry implementing that method unless
-	 * something special is really necessary.
-	 * See mrpt::maps::CPointsMap for the enumeration of types of observations
-	 * which are accepted. */
-	bool internal_insertObservation(
-		const mrpt::obs::CObservation& obs,
-		const std::optional<const mrpt::poses::CPose3D>& robotPose =
-			std::nullopt) override;
-
-	/** Helper method for ::copyFrom() */
-	void base_copyFrom(const CPointsMap& obj);
-
-	/** @name PLY Import virtual methods to implement in base classes
-		@{ */
-	/** In a base class, reserve memory to prepare subsequent calls to
-	 * PLY_import_set_face */
-	void PLY_import_set_face_count([[maybe_unused]] size_t N) override {}
-
-	/** In a base class, will be called after PLY_import_set_vertex_count() once
-	 * for each loaded point.
-	 *  \param pt_color Will be nullptr if the loaded file does not provide
-	 * color info.
-	 */
-	void PLY_import_set_vertex(
-		size_t idx, const mrpt::math::TPoint3Df& pt,
-		const mrpt::img::TColorf* pt_color = nullptr) override;
-	void PLY_import_set_vertex_timestamp(
-		[[maybe_unused]] size_t idx,
-		[[maybe_unused]] const double unixTimestamp) override
-	{
-		// do nothing, this class ignores timestamps
-	}
-	/** @} */
-
-	/** @name PLY Export virtual methods to implement in base classes
-		@{ */
-	size_t PLY_export_get_vertex_count() const override;
-	size_t PLY_export_get_face_count() const override { return 0; }
-	void PLY_export_get_vertex(
-		size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
-		mrpt::img::TColorf& pt_color) const override;
-	/** @} */
-
-	/** The minimum and maximum height for a certain laser scan to be inserted
-	 * into this map
-	 * \sa m_heightfilter_enabled */
-	double m_heightfilter_z_min{-10}, m_heightfilter_z_max{10};
-
-	/** Whether or not (default=not) filter the input points by height
-	 * \sa m_heightfilter_z_min, m_heightfilter_z_max */
-	bool m_heightfilter_enabled{false};
-
-	// Friend methods:
-	template <class Derived>
-	friend struct detail::loadFromRangeImpl;
-	template <class Derived>
-	friend struct detail::pointmap_traits;
-
-};	// End of class def.
+
+  /** @name Generic, string-keyed field access virtual interface
+   * @{ */
+
+  /** Returns true if the map has a data channel with the given name.
+   * \sa getPointField_float, getPointField_uint16
+   */
+  virtual bool hasPointField(const std::string_view& fieldName) const
+  {
+    return (fieldName == "x") || (fieldName == "y") || (fieldName == "z");
+  }
+
+  /** Get list of all float channel names */
+  virtual std::vector<std::string_view> getPointFieldNames_float() const { return {"x", "y", "z"}; }
+  /** Get list of all uint16_t channel names */
+  virtual std::vector<std::string_view> getPointFieldNames_uint16() const { return {}; }
+
+  /** Get list of all float channel names, except x,y,z */
+  std::vector<std::string_view> getPointFieldNames_float_except_xyz() const;
+
+  /** Read the value of a float channel for a given point.
+   * Returns 0 if field does not exist.
+   * \exception std::exception on index out of bounds or if field exists but
+   * is not float.
+   */
+  virtual float getPointField_float(size_t index, const std::string_view& fieldName) const
+  {
+    if (fieldName == "x") return m_x.at(index);
+    if (fieldName == "y") return m_y.at(index);
+    if (fieldName == "z") return m_z.at(index);
+    return 0;
+  }
+
+  /** Read the value of a uint16_t channel for a given point.
+   * Returns 0 if field does not exist.
+   * \exception std::exception on index out of bounds or if field exists but
+   * is not uint16_t.
+   */
+  virtual uint16_t getPointField_uint16(size_t index, const std::string_view& fieldName) const
+  {
+    return 0;
+  }
+
+  /** Sets the value of a float channel for a given point.
+   * \exception std::exception on index out of bounds or if field does not
+   * exist or is not float.
+   */
+  virtual void setPointField_float(size_t index, const std::string_view& fieldName, float value)
+  {
+    if (fieldName == "x")
+      m_x.at(index) = value;
+    else if (fieldName == "y")
+      m_y.at(index) = value;
+    else if (fieldName == "z")
+      m_z.at(index) = value;
+  }
+  /** Sets the value of a uint16_t channel for a given point.
+   * \exception std::exception on index out of bounds or if field does not
+   * exist or is not uint16_t.
+   */
+  virtual void setPointField_uint16(size_t index, const std::string_view& fieldName, uint16_t value)
+  {
+  }
+
+  /** Appends a value to a float channel (for use after insertPointFast()) */
+  virtual void insertPointField_float(const std::string_view& fieldName, float value) {}
+  /** Appends a value to a uint16_t channel (for use after insertPointFast()) */
+  virtual void insertPointField_uint16(const std::string_view& fieldName, uint16_t value) {}
+
+  virtual void reserveField_float(const std::string_view& fieldName, size_t n) {}
+  virtual void reserveField_uint16(const std::string_view& fieldName, size_t n) {}
+  virtual void resizeField_float(const std::string_view& fieldName, size_t n) {}
+  virtual void resizeField_uint16(const std::string_view& fieldName, size_t n) {}
+
+  virtual auto getPointsBufferRef_float_field(const std::string_view& fieldName) const
+      -> const mrpt::aligned_std_vector<float>*
+  {
+    if (fieldName == "x") return &m_x;
+    if (fieldName == "y") return &m_y;
+    if (fieldName == "z") return &m_z;
+    return nullptr;
+  }
+  virtual auto getPointsBufferRef_uint_field([[maybe_unused]] const std::string_view& fieldName)
+      const -> const mrpt::aligned_std_vector<uint16_t>*
+  {
+    return nullptr;
+  }
+
+  virtual auto getPointsBufferRef_float_field(const std::string_view& fieldName)
+      -> mrpt::aligned_std_vector<float>*
+  {
+    if (fieldName == "x") return &m_x;
+    if (fieldName == "y") return &m_y;
+    if (fieldName == "z") return &m_z;
+    return nullptr;
+  }
+  virtual auto getPointsBufferRef_uint_field([[maybe_unused]] const std::string_view& fieldName)
+      -> mrpt::aligned_std_vector<uint16_t>*
+  {
+    return nullptr;
+  }
+
+  /** @} */
+
+  /** Returns a copy of the 2D/3D points as a std::vector of float
+   * coordinates.
+   * If decimation is greater than 1, only 1 point out of that number will be
+   * saved in the output, effectively performing a subsampling of the points.
+   * \sa getPointsBufferRef_x, getPointsBufferRef_y, getPointsBufferRef_z
+   * \tparam VECTOR can be std::vector<float or double> or any row/column
+   * Eigen::Array or Eigen::Matrix (this includes mrpt::math::CVectorFloat and
+   * mrpt::math::CVectorDouble).
+   */
+  template <class VECTOR>
+  void getAllPoints(VECTOR& xs, VECTOR& ys, VECTOR& zs, size_t decimation = 1) const
+  {
+    MRPT_START
+    ASSERT_(decimation > 0);
+    const size_t Nout = m_x.size() / decimation;
+    xs.resize(Nout);
+    ys.resize(Nout);
+    zs.resize(Nout);
+    size_t idx_in, idx_out;
+    for (idx_in = 0, idx_out = 0; idx_out < Nout; idx_in += decimation, ++idx_out)
+    {
+      xs[idx_out] = m_x[idx_in];
+      ys[idx_out] = m_y[idx_in];
+      zs[idx_out] = m_z[idx_in];
+    }
+    MRPT_END
+  }
+
+  /** Gets all points as a STL-like container.
+   * \tparam CONTAINER Any STL-like container of mrpt::math::TPoint3D,
+   * mrpt::math::TPoint3Df or anything having members `x`,`y`,`z`.
+   * Note that this method is not efficient for large point clouds. Fastest
+   * methods are getPointsBuffer() or getPointsBufferRef_x(),
+   * getPointsBufferRef_y(), getPointsBufferRef_z()
+   */
+  template <class CONTAINER>
+  void getAllPoints(CONTAINER& ps, size_t decimation = 1) const
+  {
+    std::vector<float> dmy1, dmy2, dmy3;
+    getAllPoints(dmy1, dmy2, dmy3, decimation);
+    ps.resize(dmy1.size());
+    for (size_t i = 0; i < dmy1.size(); i++)
+    {
+      ps[i].x = dmy1[i];
+      ps[i].y = dmy2[i];
+      ps[i].z = dmy3[i];
+    }
+  }
+
+  /** Returns a copy of the 2D/3D points as a std::vector of float
+   * coordinates.
+   * If decimation is greater than 1, only 1 point out of that number will be
+   * saved in the output, effectively performing a subsampling of the points.
+   * \sa setAllPoints
+   */
+  void getAllPoints(std::vector<float>& xs, std::vector<float>& ys, size_t decimation = 1) const;
+
+  inline void getAllPoints(std::vector<mrpt::math::TPoint2D>& ps, size_t decimation = 1) const
+  {
+    std::vector<float> dmy1, dmy2;
+    getAllPoints(dmy1, dmy2, decimation);
+    ps.resize(dmy1.size());
+    for (size_t i = 0; i < dmy1.size(); i++)
+    {
+      ps[i].x = static_cast<double>(dmy1[i]);
+      ps[i].y = static_cast<double>(dmy2[i]);
+    }
+  }
+
+  /** Provides a way to insert (append) individual points into the map: the
+   * missing fields of child
+   * classes (color, weight, etc) are left to their default values
+   */
+  inline void insertPoint(float x, float y, float z = 0)
+  {
+    insertPointFast(x, y, z);
+    mark_as_modified();
+  }
+  /// \overload
+  inline void insertPoint(const mrpt::math::TPoint3D& p)
+  {
+    insertPoint(d2f(p.x), d2f(p.y), d2f(p.z));
+  }
+  /// overload (RGB data is ignored in classes without color information)
+  virtual void insertPointRGB(
+      float x,
+      float y,
+      float z,
+      [[maybe_unused]] float R,
+      [[maybe_unused]] float G,
+      [[maybe_unused]] float B)
+  {
+    insertPoint(x, y, z);
+  }
+
+  /** Must be called before insertPointFrom() to make sure we have the required fields.
+   *  \return true if ALL fields could be added, false if some would be missing because the
+   *               underlying point cloud class cannot hold them.
+   */
+  bool registerPointFieldsFrom(const mrpt::maps::CPointsMap& source)
+  {
+    bool allAdded = true;
+    for (const auto& f : source.getPointFieldNames_float())
+    {
+      if (!this->hasPointField(f))
+      {
+        const bool added = registerField_float(f);
+        allAdded = allAdded && added;
+      }
+    }
+    for (const auto& f : source.getPointFieldNames_uint16())
+    {
+      if (!this->hasPointField(f))
+      {
+        const bool added = this->registerField_uint16(f);
+        allAdded = allAdded && added;
+      }
+    }
+    return allAdded;
+  }
+
+  /** Generic method to copy *all* applicable point properties from
+   *  one map to another, e.g. timestamp, intensity, etc.
+   *  \note Before calling this in a loop, make sure of calling registerPointFieldsFrom()
+   */
+  void insertPointFrom(const mrpt::maps::CPointsMap& source, size_t sourcePointIndex)
+  {
+    const auto i = sourcePointIndex;  // shortcut
+    // mandatory fields: XYZ
+    const auto& xs = source.getPointsBufferRef_x();
+    const auto& ys = source.getPointsBufferRef_y();
+    const auto& zs = source.getPointsBufferRef_z();
+    insertPointFast(xs[i], ys[i], zs[i]);
+
+    // Optional fields: only if they already exist on both maps:
+    for (const auto& f : this->getPointFieldNames_float_except_xyz())
+    {
+      insertPointField_float(f, source.getPointField_float(i, f));
+    }
+    for (const auto& f : this->getPointFieldNames_uint16())
+    {
+      insertPointField_uint16(f, source.getPointField_uint16(i, f));
+    }
+    mark_as_modified();
+  }
+
+  /** Set all the points at once from vectors with X,Y and Z coordinates (if Z
+   * is not provided, it will be set to all zeros).
+   * \tparam VECTOR can be mrpt::math::CVectorFloat or std::vector<float> or
+   * any other column or row Eigen::Matrix.
+   */
+  template <typename VECTOR>
+  inline void setAllPointsTemplate(const VECTOR& X, const VECTOR& Y, const VECTOR& Z = VECTOR())
+  {
+    const size_t N = X.size();
+    ASSERT_EQUAL_(X.size(), Y.size());
+    ASSERT_(Z.size() == 0 || Z.size() == X.size());
+    this->setSize(N);
+    const bool z_valid = !Z.empty();
+    if (z_valid)
+      for (size_t i = 0; i < N; i++)
+      {
+        this->setPointFast(i, X[i], Y[i], Z[i]);
+      }
+    else
+      for (size_t i = 0; i < N; i++)
+      {
+        this->setPointFast(i, X[i], Y[i], 0);
+      }
+    mark_as_modified();
+  }
+
+  /** Set all the points at once from vectors with X,Y and Z coordinates. \sa
+   * getAllPoints */
+  inline void setAllPoints(
+      const std::vector<float>& X, const std::vector<float>& Y, const std::vector<float>& Z)
+  {
+    setAllPointsTemplate(X, Y, Z);
+  }
+
+  /** Set all the points at once from vectors with X and Y coordinates (Z=0).
+   * \sa getAllPoints */
+  inline void setAllPoints(const std::vector<float>& X, const std::vector<float>& Y)
+  {
+    setAllPointsTemplate(X, Y);
+  }
+
+  /** Get all the data fields for one point as a vector: depending on the
+   * implementation class this can be [X Y Z] or [X Y Z R G B], etc...
+   * \sa getPointAllFieldsFast, setPointAllFields, setPointAllFieldsFast
+   */
+  void getPointAllFields(size_t index, std::vector<float>& point_data) const
+  {
+    ASSERT_LT_(index, this->size());
+    getPointAllFieldsFast(index, point_data);
+  }
+
+  /** Set all the data fields for one point as a vector: depending on the
+   * implementation class this can be [X Y Z] or [X Y Z R G B], etc...
+   *  Unlike setPointAllFields(), this method does not check for index out of
+   * bounds
+   * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
+   */
+  void setPointAllFields(size_t index, const std::vector<float>& point_data)
+  {
+    ASSERT_LT_(index, this->size());
+    setPointAllFieldsFast(index, point_data);
+  }
+
+  /** Delete points out of the given "z" axis range have been removed.
+   */
+  void clipOutOfRangeInZ(float zMin, float zMax);
+
+  /** Delete points which are more far than "maxRange" away from the given
+   * "point".
+   */
+  void clipOutOfRange(const mrpt::math::TPoint2D& point, float maxRange);
+
+  /** Remove from the map the points marked in a bool's array as "true".
+   * \exception std::exception If mask size is not equal to points count.
+   */
+  void applyDeletionMask(const std::vector<bool>& mask);
+
+  // See docs in base class.
+  void determineMatching2D(
+      const mrpt::maps::CMetricMap* otherMap,
+      const mrpt::poses::CPose2D& otherMapPose,
+      mrpt::tfest::TMatchingPairList& correspondences,
+      const TMatchingParams& params,
+      TMatchingExtraResults& extraResults) const override;
+
+  // See docs in base class
+  void determineMatching3D(
+      const mrpt::maps::CMetricMap* otherMap,
+      const mrpt::poses::CPose3D& otherMapPose,
+      mrpt::tfest::TMatchingPairList& correspondences,
+      const TMatchingParams& params,
+      TMatchingExtraResults& extraResults) const override;
+
+  // See docs in base class
+  float compute3DMatchingRatio(
+      const mrpt::maps::CMetricMap* otherMap,
+      const mrpt::poses::CPose3D& otherMapPose,
+      const TMatchingRatioParams& params) const override;
+
+  /** Computes the matchings between this and another 3D points map.
+     This method matches each point in the other map with the centroid of the
+   3 closest points in 3D
+     from this map (if the distance is below a defined threshold).
+   * \param  otherMap					  [IN] The other map to compute the
+   matching with.
+   * \param  otherMapPose				  [IN] The pose of the other map as seen
+   from "this".
+   * \param  maxDistForCorrespondence   [IN] Maximum 2D linear distance
+   between two points to be matched.
+   * \param  correspondences			  [OUT] The detected matchings pairs.
+   * \param  correspondencesRatio		  [OUT] The ratio [0,1] of points in
+   otherMap with at least one correspondence.
+   *
+   * \sa determineMatching3D
+   */
+  void compute3DDistanceToMesh(
+      const mrpt::maps::CMetricMap* otherMap2,
+      const mrpt::poses::CPose3D& otherMapPose,
+      float maxDistForCorrespondence,
+      mrpt::tfest::TMatchingPairList& correspondences,
+      float& correspondencesRatio);
+
+  /** Transform the range scan into a set of cartessian coordinated
+   *	 points. The options in "insertionOptions" are considered in this
+   *method.
+   * \param rangeScan The scan to be inserted into this map
+   * \param robotPose Default to (0,0,0|0deg,0deg,0deg). Changes the frame of
+   *reference for the point cloud (i.e. the vehicle/robot pose in world
+   *coordinates).
+   *
+   *  Only ranges marked as "valid=true" in the observation will be inserted
+   *
+   *  \note Each derived class may enrich points in different ways (color,
+   *weight, etc..), so please refer to the description of the specific
+   *         implementation of mrpt::maps::CPointsMap you are using.
+   *  \note The actual generic implementation of this file lives in
+   *<src>/CPointsMap_crtp_common.h, but specific instantiations are generated
+   *at each derived class.
+   *
+   * \sa CObservation2DRangeScan, CObservation3DRangeScan
+   */
+  virtual void loadFromRangeScan(
+      const mrpt::obs::CObservation2DRangeScan& rangeScan,
+      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) = 0;
+
+  /** Overload of \a loadFromRangeScan() for 3D range scans (for example,
+   * Kinect observations).
+   *
+   * \param rangeScan The scan to be inserted into this map
+   * \param robotPose Default to (0,0,0|0deg,0deg,0deg). Changes the frame of
+   * reference for the point cloud (i.e. the vehicle/robot pose in world
+   * coordinates).
+   *
+   *  \note Each derived class may enrich points in different ways (color,
+   * weight, etc..), so please refer to the description of the specific
+   *         implementation of mrpt::maps::CPointsMap you are using.
+   *  \note The actual generic implementation of this file lives in
+   * <src>/CPointsMap_crtp_common.h, but specific instantiations are generated
+   * at each derived class.
+   * \sa loadFromVelodyneScan
+   */
+  virtual void loadFromRangeScan(
+      const mrpt::obs::CObservation3DRangeScan& rangeScan,
+      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) = 0;
+
+  /** Like \a loadFromRangeScan() for Velodyne 3D scans. Points are translated
+   * and rotated according to the \a sensorPose field in the observation and,
+   * if provided, to the \a robotPose parameter.
+   *
+   * \param scan The Raw LIDAR data to be inserted into this map. It MUST
+   * contain point cloud data, generated by calling to \a
+   * mrpt::obs::CObservationVelodyneScan::generatePointCloud() prior to
+   * insertion in this map.
+   * \param robotPose Default to (0,0,0|0deg,0deg,0deg). Changes the frame of
+   * reference for the point cloud (i.e. the vehicle/robot pose in world
+   * coordinates).
+   * \sa loadFromRangeScan
+   */
+  void loadFromVelodyneScan(
+      const mrpt::obs::CObservationVelodyneScan& scan,
+      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt);
+
+  /** Insert the contents of another map into this one, fusing the previous
+   *content with the new one.
+   *    This means that points very close to existing ones will be "fused",
+   *rather than "added". This prevents
+   *     the unbounded increase in size of these class of maps.
+   *		NOTICE that "otherMap" is neither translated nor rotated here, so if
+   *this is desired it must done
+   *		 before calling this method.
+   * \param otherMap The other map whose points are to be inserted into this
+   *one.
+   * \param minDistForFuse Minimum distance (in meters) between two points,
+   *each one in a map, to be considered the same one and be fused rather than
+   *added.
+   * \param notFusedPoints If a pointer is supplied, this list will contain at
+   *output a list with a "bool" value per point in "this" map. This will be
+   *false/true according to that point having been fused or not.
+   * \sa loadFromRangeScan, addFrom
+   */
+  void fuseWith(
+      CPointsMap* anotherMap,
+      float minDistForFuse = 0.02f,
+      std::vector<bool>* notFusedPoints = nullptr);
+
+  /** Replace each point \f$ p_i \f$ by \f$ p'_i = b \oplus p_i \f$ (pose
+   * compounding operator).
+   */
+  void changeCoordinatesReference(const mrpt::poses::CPose2D& b);
+
+  /** Replace each point \f$ p_i \f$ by \f$ p'_i = b \oplus p_i \f$ (pose
+   * compounding operator).
+   */
+  void changeCoordinatesReference(const mrpt::poses::CPose3D& b);
+
+  /** Copy all the points from "other" map to "this", replacing each point \f$
+   * p_i \f$ by \f$ p'_i = b \oplus p_i \f$ (pose compounding operator).
+   */
+  void changeCoordinatesReference(const CPointsMap& other, const mrpt::poses::CPose3D& b);
+
+  /** Returns true if the map is empty/no observation has been inserted.
+   */
+  bool isEmpty() const override;
+
+  /** STL-like method to check whether the map is empty: */
+  inline bool empty() const { return isEmpty(); }
+
+  /** Returns a 3D object representing the map.
+   *  The color of the points is controlled by renderOptions
+   */
+  void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
+
+  /** Computes the bounding box of all the points, or (0,0 ,0,0, 0,0) if there
+   * are no points.
+   *  Results are cached unless the map is somehow modified to avoid repeated
+   * calculations.
+   */
+  mrpt::math::TBoundingBoxf boundingBox() const override;
+
+  /** Extracts the points in the map within a cylinder in 3D defined the
+   * provided radius and zmin/zmax values.
+   */
+  void extractCylinder(
+      const mrpt::math::TPoint2D& center,
+      const double radius,
+      const double zmin,
+      const double zmax,
+      CPointsMap* outMap);
+
+  /** Extracts the points in the map within the area defined by two corners.
+   *  The points are coloured according the R,G,B input data.
+   */
+  void extractPoints(
+      const mrpt::math::TPoint3D& corner1,
+      const mrpt::math::TPoint3D& corner2,
+      CPointsMap* outMap,
+      double R = 1,
+      double G = 1,
+      double B = 1);
+
+  /** @name Filter-by-height stuff
+    @{ */
+
+  /** Enable/disable the filter-by-height functionality \sa
+   * setHeightFilterLevels \note Default upon construction is disabled. */
+  inline void enableFilterByHeight(bool enable = true) { m_heightfilter_enabled = enable; }
+  /** Return whether filter-by-height is enabled \sa enableFilterByHeight */
+  inline bool isFilterByHeightEnabled() const { return m_heightfilter_enabled; }
+
+  /** Set the min/max Z levels for points to be actually inserted in the map
+   * (only if \a enableFilterByHeight() was called before). */
+  inline void setHeightFilterLevels(const double _z_min, const double _z_max)
+  {
+    m_heightfilter_z_min = _z_min;
+    m_heightfilter_z_max = _z_max;
+  }
+  /** Get the min/max Z levels for points to be actually inserted in the map
+   * \sa enableFilterByHeight, setHeightFilterLevels */
+  inline void getHeightFilterLevels(double& _z_min, double& _z_max) const
+  {
+    _z_min = m_heightfilter_z_min;
+    _z_max = m_heightfilter_z_max;
+  }
+
+  /** @} */
+
+  // See docs in base class
+  double internal_computeObservationLikelihood(
+      const mrpt::obs::CObservation& obs, const mrpt::poses::CPose3D& takenFrom) const override;
+
+  double internal_computeObservationLikelihoodPointCloud3D(
+      const mrpt::poses::CPose3D& pc_in_map,
+      const float* xs,
+      const float* ys,
+      const float* zs,
+      const std::size_t num_pts) const;
+
+  /** @name PCL library support
+    @{ */
+
+  /** Use to convert this MRPT point cloud object into a PCL point cloud
+   * object (PointCloud<PointXYZ>).
+   *  Usage example:
+   *  \code
+   *    mrpt::maps::CPointsCloud       pc;
+   *    pcl::PointCloud<pcl::PointXYZ> cloud;
+   *
+   *    pc.getPCLPointCloud(cloud);
+   *  \endcode
+   * \sa setFromPCLPointCloud, CColouredPointsMap::getPCLPointCloudXYZRGB
+   * (for color data)
+   */
+  template <class POINTCLOUD>
+  void getPCLPointCloud(POINTCLOUD& cloud) const
+  {
+    const size_t nThis = this->size();
+    // Fill in the cloud data
+    cloud.width = nThis;
+    cloud.height = 1;
+    cloud.is_dense = false;
+    cloud.points.resize(cloud.width * cloud.height);
+    for (size_t i = 0; i < nThis; ++i)
+    {
+      cloud.points[i].x = m_x[i];
+      cloud.points[i].y = m_y[i];
+      cloud.points[i].z = m_z[i];
+    }
+  }
+
+  /** Loads a PCL point cloud into this MRPT class (note: this method ignores
+   * potential RGB information, see
+   * CColouredPointsMap::setFromPCLPointCloudRGB() ).
+   *  Usage example:
+   *  \code
+   *    pcl::PointCloud<pcl::PointXYZ> cloud;
+   *    mrpt::maps::CPointsCloud       pc;
+   *
+   *    pc.setFromPCLPointCloud(cloud);
+   *  \endcode
+   * \sa getPCLPointCloud, CColouredPointsMap::setFromPCLPointCloudRGB()
+   */
+  template <class POINTCLOUD>
+  void setFromPCLPointCloud(const POINTCLOUD& cloud)
+  {
+    const size_t N = cloud.points.size();
+    clear();
+    reserve(N);
+    for (size_t i = 0; i < N; ++i)
+      this->insertPointFast(cloud.points[i].x, cloud.points[i].y, cloud.points[i].z);
+  }
+
+  /** @} */
+
+  /** @name Methods that MUST be implemented by children classes of
+     KDTreeCapable
+    @{ */
+
+  /// Must return the number of data points
+  inline size_t kdtree_get_point_count() const { return this->size(); }
+  /// Returns the dim'th component of the idx'th point in the class:
+  inline float kdtree_get_pt(size_t idx, int dim) const
+  {
+    if (dim == 0)
+      return m_x[idx];
+    else if (dim == 1)
+      return m_y[idx];
+    else if (dim == 2)
+      return m_z[idx];
+    else
+      return 0;
+  }
+
+  /// Returns the distance between the vector "p1[0:size-1]" and the data
+  /// point with index "idx_p2" stored in the class:
+  inline float kdtree_distance(const float* p1, size_t idx_p2, size_t size) const
+  {
+    if (size == 2)
+    {
+      const float d0 = p1[0] - m_x[idx_p2];
+      const float d1 = p1[1] - m_y[idx_p2];
+      return d0 * d0 + d1 * d1;
+    }
+    else
+    {
+      const float d0 = p1[0] - m_x[idx_p2];
+      const float d1 = p1[1] - m_y[idx_p2];
+      const float d2 = p1[2] - m_z[idx_p2];
+      return d0 * d0 + d1 * d1 + d2 * d2;
+    }
+  }
+
+  // Optional bounding-box computation: return false to default to a standard
+  // bbox computation loop.
+  //   Return true if the BBOX was already computed by the class and returned
+  //   in "bb" so it can be avoided to redo it again.
+  //   Look at bb.size() to find out the expected dimensionality (e.g. 2 or 3
+  //   for point clouds)
+  template <typename BBOX>
+  bool kdtree_get_bbox(BBOX& bb) const
+  {
+    const auto bbox = this->boundingBox();
+    bb[0].low = bbox.min.x;
+    bb[1].low = bbox.min.y;
+    bb[0].high = bbox.max.x;
+    bb[1].high = bbox.max.y;
+    if (bb.size() == 3)
+    {
+      bb[2].low = bbox.min.z;
+      bb[2].high = bbox.max.z;
+    }
+    return true;
+  }
+  /** @} */
+
+  /** Users normally don't need to call this. Called by this class or children
+   * classes, set m_largestDistanceFromOriginIsUpdated=false, invalidates the
+   * kd-tree cache, and such. */
+  inline void mark_as_modified() const
+  {
+    m_boundingBoxIsUpdated = false;
+    kdtree_mark_as_outdated();
+  }
+
+  /** Returns a short description of the map. */
+  std::string asString() const override
+  {
+    return mrpt::format(
+        "Pointcloud map of type %s with %u points, bounding box:%s",
+        this->GetRuntimeClass()->className, static_cast<unsigned int>(size()),
+        boundingBox().asString().c_str());
+  }
+
+  /** @name API of the NearestNeighborsCapable virtual interface
+    @{ */
+  void nn_prepare_for_2d_queries() const override;
+  void nn_prepare_for_3d_queries() const override;
+  [[nodiscard]] bool nn_has_indices_or_ids() const override { return true; }
+  [[nodiscard]] size_t nn_index_count() const override { return size(); }
+  [[nodiscard]] bool nn_single_search(
+      const mrpt::math::TPoint3Df& query,
+      mrpt::math::TPoint3Df& result,
+      float& out_dist_sqr,
+      uint64_t& resultIndexOrID) const override;
+  [[nodiscard]] bool nn_single_search(
+      const mrpt::math::TPoint2Df& query,
+      mrpt::math::TPoint2Df& result,
+      float& out_dist_sqr,
+      uint64_t& resultIndexOrID) const override;
+  void nn_multiple_search(
+      const mrpt::math::TPoint3Df& query,
+      const size_t N,
+      std::vector<mrpt::math::TPoint3Df>& results,
+      std::vector<float>& out_dists_sqr,
+      std::vector<uint64_t>& resultIndicesOrIDs) const override;
+  void nn_multiple_search(
+      const mrpt::math::TPoint2Df& query,
+      const size_t N,
+      std::vector<mrpt::math::TPoint2Df>& results,
+      std::vector<float>& out_dists_sqr,
+      std::vector<uint64_t>& resultIndicesOrIDs) const override;
+  void nn_radius_search(
+      const mrpt::math::TPoint3Df& query,
+      const float search_radius_sqr,
+      std::vector<mrpt::math::TPoint3Df>& results,
+      std::vector<float>& out_dists_sqr,
+      std::vector<uint64_t>& resultIndicesOrIDs,
+      size_t maxPoints) const override;
+  void nn_radius_search(
+      const mrpt::math::TPoint2Df& query,
+      const float search_radius_sqr,
+      std::vector<mrpt::math::TPoint2Df>& results,
+      std::vector<float>& out_dists_sqr,
+      std::vector<uint64_t>& resultIndicesOrIDs,
+      size_t maxPoints) const override;
+  /** @} */
+
+ protected:
+  /** The point coordinates */
+  mrpt::aligned_std_vector<float> m_x, m_y, m_z;
+
+  /** Cache of sin/cos values for the latest 2D scan geometries. */
+  mrpt::obs::CSinCosLookUpTableFor2DScans m_scans_sincos_cache;
+
+  mutable bool m_boundingBoxIsUpdated;
+  mutable mrpt::math::TBoundingBoxf m_boundingBox;
+
+  /** This is a common version of CMetricMap::insertObservation() for point
+   * maps (actually, CMetricMap::internal_insertObservation),
+   *   so derived classes don't need to worry implementing that method unless
+   * something special is really necessary.
+   * See mrpt::maps::CPointsMap for the enumeration of types of observations
+   * which are accepted. */
+  bool internal_insertObservation(
+      const mrpt::obs::CObservation& obs,
+      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
+
+  /** @name PLY Import virtual methods to implement in base classes
+    @{ */
+  /** In a base class, reserve memory to prepare subsequent calls to
+   * PLY_import_set_face */
+  void PLY_import_set_face_count([[maybe_unused]] size_t N) override {}
+
+  /** In a base class, will be called after PLY_import_set_vertex_count() once
+   * for each loaded point.
+   *  \param pt_color Will be nullptr if the loaded file does not provide
+   * color info.
+   */
+  void PLY_import_set_vertex(
+      size_t idx,
+      const mrpt::math::TPoint3Df& pt,
+      const mrpt::img::TColorf* pt_color = nullptr) override;
+  void PLY_import_set_vertex_timestamp(
+      [[maybe_unused]] size_t idx, [[maybe_unused]] const double unixTimestamp) override
+  {
+    // do nothing, this class ignores timestamps
+  }
+  /** @} */
+
+  /** @name PLY Export virtual methods to implement in base classes
+    @{ */
+  size_t PLY_export_get_vertex_count() const override;
+  size_t PLY_export_get_face_count() const override { return 0; }
+  void PLY_export_get_vertex(
+      size_t idx,
+      mrpt::math::TPoint3Df& pt,
+      bool& pt_has_color,
+      mrpt::img::TColorf& pt_color) const override;
+  /** @} */
+
+  /** The minimum and maximum height for a certain laser scan to be inserted
+   * into this map
+   * \sa m_heightfilter_enabled */
+  double m_heightfilter_z_min{-10}, m_heightfilter_z_max{10};
+
+  /** Whether or not (default=not) filter the input points by height
+   * \sa m_heightfilter_z_min, m_heightfilter_z_max */
+  bool m_heightfilter_enabled{false};
+
+  // Friend methods:
+  template <class Derived>
+  friend struct detail::loadFromRangeImpl;
+  template <class Derived>
+  friend struct detail::pointmap_traits;
+
+};  // End of class def.
 
 }  // namespace maps
 
@@ -1292,47 +1383,43 @@ namespace viz
 template <>
 class PointCloudAdapter<mrpt::maps::CPointsMap>
 {
-   private:
-	mrpt::maps::CPointsMap& m_obj;
+ private:
+  mrpt::maps::CPointsMap& m_obj;
 
-   public:
-	/** The type of each point XYZ coordinates */
-	using coords_t = float;
-	/** Has any color RGB info? */
-	static constexpr bool HAS_RGB = false;
-	/** Has native RGB info (as floats)? */
-	static constexpr bool HAS_RGBf = false;
-	/** Has native RGB info (as uint8_t)? */
-	static constexpr bool HAS_RGBu8 = false;
+ public:
+  /** The type of each point XYZ coordinates */
+  using coords_t = float;
+  /** Has any color RGB info? */
+  static constexpr bool HAS_RGB = false;
+  /** Has native RGB info (as floats)? */
+  static constexpr bool HAS_RGBf = false;
+  /** Has native RGB info (as uint8_t)? */
+  static constexpr bool HAS_RGBu8 = false;
 
-	/** Constructor (accept a const ref for convenience) */
-	inline PointCloudAdapter(const mrpt::maps::CPointsMap& obj)
-		: m_obj(*const_cast<mrpt::maps::CPointsMap*>(&obj))
-	{
-	}
-	/** Get number of points */
-	inline size_t size() const { return m_obj.size(); }
-	/** Set number of points (to uninitialized values) */
-	inline void resize(size_t N) { m_obj.resize(N); }
-	/** Does nothing as of now */
-	inline void setDimensions(size_t height, size_t width) {}
-	/** Get XYZ coordinates of i'th point */
-	template <typename T>
-	inline void getPointXYZ(size_t idx, T& x, T& y, T& z) const
-	{
-		m_obj.getPointFast(idx, x, y, z);
-	}
-	/** Set XYZ coordinates of i'th point */
-	inline void setPointXYZ(
-		size_t idx, const coords_t x, const coords_t y, const coords_t z)
-	{
-		m_obj.setPointFast(idx, x, y, z);
-	}
-	/** Set XYZ coordinates of i'th point */
-	inline void setInvalidPoint(size_t idx)
-	{
-		m_obj.setPointFast(idx, 0, 0, 0);
-	}
-};	// end of PointCloudAdapter<mrpt::maps::CPointsMap>
+  /** Constructor (accept a const ref for convenience) */
+  inline PointCloudAdapter(const mrpt::maps::CPointsMap& obj) :
+      m_obj(*const_cast<mrpt::maps::CPointsMap*>(&obj))
+  {
+  }
+  /** Get number of points */
+  inline size_t size() const { return m_obj.size(); }
+  /** Set number of points (to uninitialized values) */
+  inline void resize(size_t N) { m_obj.resize(N); }
+  /** Does nothing as of now */
+  inline void setDimensions(size_t height, size_t width) {}
+  /** Get XYZ coordinates of i'th point */
+  template <typename T>
+  inline void getPointXYZ(size_t idx, T& x, T& y, T& z) const
+  {
+    m_obj.getPointFast(idx, x, y, z);
+  }
+  /** Set XYZ coordinates of i'th point */
+  inline void setPointXYZ(size_t idx, const coords_t x, const coords_t y, const coords_t z)
+  {
+    m_obj.setPointFast(idx, x, y, z);
+  }
+  /** Set XYZ coordinates of i'th point */
+  inline void setInvalidPoint(size_t idx) { m_obj.setPointFast(idx, 0, 0, 0); }
+};  // end of PointCloudAdapter<mrpt::maps::CPointsMap>
 }  // namespace viz
 }  // namespace mrpt

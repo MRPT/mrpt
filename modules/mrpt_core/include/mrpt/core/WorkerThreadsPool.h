@@ -93,11 +93,11 @@ class WorkerThreadsPool
    * available. */
   template <class F, class... Args>
   [[nodiscard]] auto enqueue(F&& f, Args&&... args)
-      -> std::future<typename std::result_of<F(Args...)>::type>;
+      -> std::future<std::invoke_result_t<F, Args...>>;
 
   /** Returns the number of enqueued tasks, currently waiting for a free
    * working thread to process them.  */
-  std::size_t pendingTasks() const noexcept;
+  [[nodiscard]] std::size_t pendingTasks() const noexcept;
 
   /** Sets the private thread names of threads in this pool.
    * Names can be seen from debuggers, profilers, etc. and will follow
@@ -107,7 +107,7 @@ class WorkerThreadsPool
   void name(const std::string& name);
 
   /** Returns the base name of threads in this pool */
-  std::string name() const { return name_; }
+  [[nodiscard]] std::string name() const { return name_; }
 
  private:
   std::vector<std::thread> threads_;
@@ -121,16 +121,16 @@ class WorkerThreadsPool
 
 template <class F, class... Args>
 auto WorkerThreadsPool::enqueue(F&& f, Args&&... args)
-    -> std::future<typename std::result_of<F(Args...)>::type>
+    -> std::future<std::invoke_result_t<F, Args...>>
 {
-  using return_type = typename std::result_of<F(Args...)>::type;
+  using return_type = std::invoke_result_t<F, Args...>;
 
   auto task = std::make_shared<std::packaged_task<return_type()>>(
       std::bind(std::forward<F>(f), std::forward<Args>(args)...));
 
   std::future<return_type> res = task->get_future();
   {
-    std::unique_lock<std::mutex> lock(queue_mutex_);
+    const std::unique_lock<std::mutex> lock(queue_mutex_);
 
     // don't allow enqueueing after stopping the pool
     if (do_stop_)

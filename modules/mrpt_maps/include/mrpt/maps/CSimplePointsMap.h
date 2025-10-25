@@ -39,7 +39,7 @@ class CSimplePointsMap : public CPointsMap
  public:
   /** Default constructor */
   CSimplePointsMap() = default;
-  CSimplePointsMap(const CPointsMap& o) { CPointsMap::operator=(o); }
+  explicit CSimplePointsMap(const CPointsMap& o) { CPointsMap::operator=(o); }
   CSimplePointsMap(const CSimplePointsMap& o) : CPointsMap() { CPointsMap::operator=(o); }
   CSimplePointsMap& operator=(const CPointsMap& o)
   {
@@ -97,14 +97,6 @@ class CSimplePointsMap : public CPointsMap
       const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
 
  protected:
-  void addFrom_classSpecific(
-      [[maybe_unused]] const CPointsMap& anotherMap,
-      [[maybe_unused]] size_t nPreviousPoints,
-      [[maybe_unused]] const bool filterOutPointsAtZero) override
-  {
-    // No extra data.
-  }
-
   // Friend methods:
   template <class Derived>
   friend struct detail::loadFromRangeImpl;
@@ -145,9 +137,9 @@ class CSimplePointsMap : public CPointsMap
 };  // End of class def.
 }  // namespace maps
 
-namespace viz
+namespace opengl
 {
-/** Specialization mrpt::viz::PointCloudAdapter<mrpt::maps::CSimplePointsMap>
+/** Specialization mrpt::opengl::PointCloudAdapter<mrpt::maps::CSimplePointsMap>
  * \ingroup mrpt_adapters_grp*/
 template <>
 class PointCloudAdapter<mrpt::maps::CSimplePointsMap>
@@ -191,6 +183,6 @@ class PointCloudAdapter<mrpt::maps::CSimplePointsMap>
   /** Set XYZ coordinates of i'th point */
   inline void setInvalidPoint(size_t idx) { m_obj.setPointFast(idx, 0, 0, 0); }
 };  // end of PointCloudAdapter<mrpt::maps::CPointsMap>
-}  // namespace viz
+}  // namespace opengl
 
 }  // namespace mrpt
