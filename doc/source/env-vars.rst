@@ -57,7 +57,8 @@ numerical value (e.g. ``1``) will be interpreted as "true".
 
 - ``MRPT_WXSUBSYS_TIMEOUT_MS``: The timeout in milliseconds to wait
   in mrpt::gui windows constructors until the wxWidgets thread processes and
-  really creates the window, before reporting an error.
+  really creates the window, before reporting an error. It's also used in
+  the function mrpt::hwdrivers::prepareVideoSourceFromUserSelection().
   Default: ``5000`` in Release builds, ``30000`` in Debug builds.
 
 - ``MRPT_YAML_PARSER_VERBOSE``: Set to ``1`` to show verbose debug information
