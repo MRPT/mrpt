@@ -33,8 +33,9 @@ Minimum compiler requisites:
     
        # All Ubuntu versions:
        sudo apt install build-essential pkg-config cmake \
-         libeigen3-dev zlib1g-dev
-
+         libopencv-dev libeigen3-dev zlib1g-dev \
+         libsuitesparse-dev libjpeg-dev
+         
        # plus, only for Ubuntu < 22.10:
        sudo apt install libwxgtk3.0-gtk3-dev
 
@@ -63,23 +64,6 @@ Minimum compiler requisites:
 
     If your Ubuntu distribution is old and does not have any of the packages
     above, do not worry and ignore it, MRPT CMake scripts will handle it.
-
-    **ROS1 support:** Install additional dependencies for ros1bridge using
-    official Ubuntu repositories. If you already have a ROS distribution installed,
-    doing ``source /opt/ros/xxx/setup.bash`` is enough, no further packages
-    must be installed. Do not install these packages if you do not need
-    the `mrpt::ros1bridge <group_mrpt_ros1bridge_grp.html>`_ module.
-
-    .. code-block:: bash
-
-       sudo apt install libcv-bridge-dev libgeometry-msgs-dev libnav-msgs-dev \
-            librosbag-storage-dev libroscpp-dev libsensor-msgs-dev \
-    		libstd-srvs-dev libstereo-msgs-dev libtf2-dev \
-    		libtf2-msgs-dev libbz2-dev
-
-    **ROS2 support:** Invoke your ROS2 distribution ``setup.bash`` as usual before
-    running MRPT cmake configure to enable building of
-    the `mrpt::ros2bridge <group_mrpt_ros2bridge_grp.html>`_ module.
 
 .. dropdown:: Windows
 
@@ -125,6 +109,12 @@ Minimum compiler requisites:
 
            nmake -f makefile.vc BUILD=release SHARED=1 RUNTIME_LIBS=dynamic DEBUG_INFO=0 VENDOR=mrpt USE_OPENGL=1 TARGET_CPU=amd64
            nmake -f makefile.vc BUILD=debug SHARED=1 RUNTIME_LIBS=dynamic DEBUG_INFO=1 VENDOR=mrpt USE_OPENGL=1 TARGET_CPU=amd64
+
+    **OpenCV (Optional, but strongly recommended)**
+
+    Download the `latest OpenCV release <https://github.com/opencv/opencv/releases/latest>`_
+    either as source code and compile it, or (easier) install the provided
+    ``opencv-x.y.z-vcZZ.exe`` installer.
 
     **FFmpeg for Win32 (Optional)**
 
@@ -192,8 +182,11 @@ For all platforms/compilers:
 - ``MRPT_WITH_KINECT``: By default ON. Uncheck if you don’t have the required dependencies (read above for your OS).
 - ``BUILD_SHARED_LIBS``: Build static libraries if set to OFF, or dynamic libraries (.so/.dll) otherwise. Default is ON, and it’s strongly recommended to always use shared libs unless you have special need for static ones.
 - ``MRPT_EIGEN_USE_EMBEDDED_VERSION``: By default O, instructs MRPT to use the Eigen headers in MRPT/otherlibs/eigen3/. Uncheck if you have Eigen installed in the system and it’s visible through pkg-config. It’s recommended to uncheck this option if you have eigen3 installed in your system (today, eigen3 it’s not yet in any distro repository, that’s why it’s ON by default).
+- ``MRPT_ALWAYS_CHECKS_DEBUG``: If set to ON, additional security checks will be performed at run-time in many classes. Default is OFF.
+- ``MRPT_ALWAYS_CHECKS_DEBUG_MATRICES``: If set to ON, additional security checks will be performed at run-time in several Matrix operations. Default is ON.
 - ``MRPT_ENABLE_EMBEDDED_ENABLED_PROFILER``: If enabled, all code blocks within macros "MRPT_BEGIN/MRPT_END" will be profiled and the statistics dumped to the console at the end of execution of any program. Default is OFF.
 - ``MRPT_HAS_ASIAN_FONTS``: Enables Asian fonts in mrpt::img::CCanvas (see this page), but increases library size by 1.5Mb. Default is ON.
+- ``MRPT_HAS_SVS``: To enable integration of the Videre SVS libraries to interface their stereo cameras. You’ll need the vendor libraries installed in the system before to enable this option. After setting this option to “ON”, the new configuration fields “SVS_ROOT_DIR” will appear and will be tried to be set pointing to the directory where the library is (As of Aug/2010, this option only works in GNU/Linux).
 - ``MRPT_OCCUPANCY_GRID_CELLSIZE``: Can be either 8 or 16 (bits). The size of each cell in the class mrpt::slam::COccupancyGridMap2D. Default is 8 bits. More on this here.
 
 For Windows only:
