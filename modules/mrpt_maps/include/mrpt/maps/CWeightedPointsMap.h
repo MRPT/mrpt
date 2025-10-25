@@ -38,7 +38,7 @@ class CWeightedPointsMap : public CPointsMap
  public:
   /** Default constructor */
   CWeightedPointsMap() = default;
-  CWeightedPointsMap(const CPointsMap& o) { impl_copyFrom(o); }
+  explicit CWeightedPointsMap(const CPointsMap& o) { impl_copyFrom(o); }
   CWeightedPointsMap(const CWeightedPointsMap& o) : CPointsMap() { impl_copyFrom(o); }
   CWeightedPointsMap& operator=(const CPointsMap& o)
   {
@@ -102,11 +102,6 @@ class CWeightedPointsMap : public CPointsMap
       const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
 
  protected:
-  void addFrom_classSpecific(
-      const CPointsMap& anotherMap,
-      size_t nPreviousPoints,
-      const bool filterOutPointsAtZero) override;
-
   // Friend methods:
   template <class Derived>
   friend struct detail::loadFromRangeImpl;

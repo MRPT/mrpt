@@ -35,6 +35,20 @@ class NonCopiableData
 
   T data;
 
+  NonCopiableData& operator=(const T& value)
+  {
+    data = value;
+    return *this;
+  }
+
+  NonCopiableData(T&& value) : data(std::move(value)) {}
+  NonCopiableData(const T& value) : data(value) {}
+
+  T& operator*() { return data; }
+  const T& operator*() const { return data; }
+  T* operator->() { return &data; }
+  const T* operator->() const { return &data; }
+
   NonCopiableData(const NonCopiableData&) {}
   NonCopiableData& operator=(const NonCopiableData&) { return *this; }
 
