@@ -2037,6 +2037,20 @@ void CPointsMap::loadFromVelodyneScan(
   }
 }
 
+std::vector<std::string_view> CPointsMap::getPointFieldNames_float_except_xyz() const
+{
+  const auto all = getPointFieldNames_float();
+  std::vector<std::string_view> result;
+  result.reserve(all.size());
+
+  for (auto name : all)
+  {
+    if (name != "x" && name != "y" && name != "z") result.push_back(name);
+  }
+
+  return result;
+}
+
 // =========== API of the NearestNeighborsCapable virtual interface ======
 // See docs in base class
 void CPointsMap::nn_prepare_for_2d_queries() const
