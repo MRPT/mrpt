@@ -590,6 +590,9 @@ class CPointsMap :
   /** Get list of all uint16_t channel names */
   virtual std::vector<std::string_view> getPointFieldNames_uint16() const { return {}; }
 
+  /** Get list of all float channel names, except x,y,z */
+  std::vector<std::string_view> getPointFieldNames_float_except_xyz() const;
+
   /** Read the value of a float channel for a given point.
    * Returns 0 if field does not exist.
    * \exception std::exception on index out of bounds or if field exists but
@@ -809,7 +812,7 @@ class CPointsMap :
     insertPointFast(xs[i], ys[i], zs[i]);
 
     // Optional fields: only if they already exist on both maps:
-    for (const auto& f : this->getPointFieldNames_float())
+    for (const auto& f : this->getPointFieldNames_float_except_xyz())
     {
       insertPointField_float(f, source.getPointField_float(i, f));
     }
