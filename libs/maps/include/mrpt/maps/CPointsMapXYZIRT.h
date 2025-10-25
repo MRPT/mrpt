@@ -231,7 +231,8 @@ class CPointsMapXYZIRT : public CPointsMap
   uint16_t getPointField_uint16(size_t index, const std::string_view& fieldName) const override;
 
   void setPointField_float(size_t index, const std::string_view& fieldName, float value) override;
-  void setPointField_uint16(size_t index, const std::string_view& fieldName, uint16_t value) override;
+  void setPointField_uint16(
+      size_t index, const std::string_view& fieldName, uint16_t value) override;
 
   void insertPointField_float(const std::string_view& fieldName, float value) override;
   void insertPointField_uint16(const std::string_view& fieldName, uint16_t value) override;
