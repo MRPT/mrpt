@@ -31,17 +31,17 @@ endif()
 set(LIB_SRCS
   src/A_MatrixBase_instantiate_CMatrixDynamic_d.cpp
   src/A_MatrixBase_instantiate_CMatrixDynamic_f.cpp
-  src/CAtan2LookUpTable.cpp
   src/CAtan2LookUpTable_unittest.cpp
+  src/CAtan2LookUpTable.cpp
   src/CHistogram.cpp
   src/CLevenbergMarquardt_unittest.cpp
   src/CMatrixB.cpp
   src/CMatrixD.cpp
-  src/CMatrixDynamic.cpp
   src/CMatrixDynamic_unittest.cpp
+  src/CMatrixDynamic.cpp
   src/CMatrixF.cpp
-  src/CMatrixFixed.cpp
   src/CMatrixFixed_unittest.cpp
+  src/CMatrixFixed.cpp
   src/container_ops_unittest.cpp
   src/CPolygon.cpp
   src/CSplineInterpolator1D.cpp
@@ -51,50 +51,52 @@ set(LIB_SRCS
   src/EigenAlignment_unittest.cpp
   src/filters.cpp
   src/fourier.cpp
-  src/fresnel.cpp
   src/fresnel_unittest.cpp
-  src/geometry.cpp
+  src/fresnel.cpp
   src/geometry_unittest.cpp
+  src/geometry.cpp
   src/KDTreeCapable_unittest.cpp
   src/kmeans.cpp
   src/kmeans++/KMeans.cpp
   src/kmeans++/KmTree.cpp
   src/kmeans++/KmUtils.cpp
   src/math.cpp
-  src/MatrixBase_instantiate_CMatrixFixed_22_d.cpp
-  src/MatrixBase_instantiate_CMatrixFixed_22_f.cpp
-  src/MatrixBase_instantiate_CMatrixFixed_33_d.cpp
-  src/MatrixBase_instantiate_CMatrixFixed_33_f.cpp
+  src/matrix_ops_unittest.cpp
   src/matrix_ops1_unittest.cpp
   src/matrix_ops2_unittest.cpp
   src/matrix_ops3_unittest.cpp
   src/matrix_ops4_unittest.cpp
   src/matrix_ops5_unittest.cpp
-  src/matrix_ops_unittest.cpp
+  src/matrix_yaml_unittest.cpp
+  src/MatrixBase_instantiate_CMatrixFixed_22_d.cpp
+  src/MatrixBase_instantiate_CMatrixFixed_22_f.cpp
+  src/MatrixBase_instantiate_CMatrixFixed_33_d.cpp
+  src/MatrixBase_instantiate_CMatrixFixed_33_f.cpp
   src/MatrixVectorBase_instantiate_CMatrixDynamic_d.cpp
   src/MatrixVectorBase_instantiate_CMatrixDynamic_f.cpp
   src/MatrixVectorBase_instantiate_CMatrixDynamic_ints.cpp
   src/MatrixVectorBase_instantiate_CMatrixFixed.cpp
   src/MatrixVectorBase_instantiate_CVectorDynamic.cpp
   src/MatrixVectorBase_instantiate_CVectorFixed.cpp
-  src/matrix_yaml_unittest.cpp
   src/model_search.cpp
-  src/poly_roots.cpp
   src/poly_roots_unittest.cpp
+  src/poly_roots.cpp
   src/ransac_applications.cpp
   src/registerAllClasses.cpp
   src/robust_kernels_unittest.cpp
-  src/slerp.cpp
-  src/slerp_unittest.cpp
   src/S_MatrixBase_instantiate_CMatrixFixed_66_d.cpp
   src/S_MatrixBase_instantiate_CMatrixFixed_66_f.cpp
   src/S_MatrixBase_instantiate_CMatrixFixed_77_d.cpp
-  src/TBoundingBox.cpp
+  src/slerp_unittest.cpp
+  src/slerp.cpp
   src/TBoundingBox_unittest.cpp
+  src/TBoundingBox.cpp
   src/TLine2D.cpp
   src/TLine3D.cpp
   src/TObject2D.cpp
   src/TObject3D.cpp
+  src/TOrientedBox_unittest.cpp
+  src/TOrientedBox.cpp
   src/TPlane.cpp
   src/TPoint2D.cpp
   src/TPoint3D.cpp
@@ -150,13 +152,13 @@ set(LIB_PUBLIC_HDRS
   include/mrpt/math/mat2eig.h
   include/mrpt/math/math_frwds.h
   include/mrpt/math/matrix_adaptors.h
-  include/mrpt/math/MatrixBase.h
-  include/mrpt/math/MatrixBlockSparseCols.h
   include/mrpt/math/matrix_serialization.h
   include/mrpt/math/matrix_size_t.h
+  include/mrpt/math/MatrixBase.h
+  include/mrpt/math/MatrixBlockSparseCols.h
   include/mrpt/math/MatrixVectorBase.h
-  include/mrpt/math/model_search.h
   include/mrpt/math/model_search_impl.h
+  include/mrpt/math/model_search.h
   include/mrpt/math/num_jacobian.h
   include/mrpt/math/ops_containers.h
   include/mrpt/math/ops_matrices.h
@@ -164,8 +166,8 @@ set(LIB_PUBLIC_HDRS
   include/mrpt/math/point_poses2vectors.h
   include/mrpt/math/poly_roots.h
   include/mrpt/math/ransac_applications.h
-  include/mrpt/math/ransac.h
   include/mrpt/math/ransac_impl.h
+  include/mrpt/math/ransac.h
   include/mrpt/math/registerAllClasses.h
   include/mrpt/math/robust_kernels.h
   include/mrpt/math/slerp.h
@@ -174,6 +176,7 @@ set(LIB_PUBLIC_HDRS
   include/mrpt/math/TLine3D.h
   include/mrpt/math/TObject2D.h
   include/mrpt/math/TObject3D.h
+  include/mrpt/math/TOrientedBox.h
   include/mrpt/math/TPlane.h
   include/mrpt/math/TPoint2D.h
   include/mrpt/math/TPoint3D.h
@@ -189,8 +192,8 @@ set(LIB_PUBLIC_HDRS
   include/mrpt/math/TSegment3D.h
   include/mrpt/math/TTwist2D.h
   include/mrpt/math/TTwist3D.h
-  include/mrpt/math/utils.h
   include/mrpt/math/utils_matlab.h
+  include/mrpt/math/utils.h
   include/mrpt/math/wrap2pi.h
 )
 
