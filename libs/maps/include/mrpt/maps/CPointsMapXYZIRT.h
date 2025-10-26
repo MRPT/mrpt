@@ -65,10 +65,6 @@ class CPointsMapXYZIRT : public CPointsMap
   bool hasRingField() const { return !m_ring.empty(); }
   bool hasTimeField() const { return !m_time.empty(); }
 
-  /** The virtual method for \a insertPoint() *without* calling
-   * mark_as_modified()   */
-  void insertPointFast(float x, float y, float z = 0) override;
-
   /** Get all the data fields for one point as a vector: [X Y Z I]
    *  Unlike getPointAllFields(), this method does not check for index out of
    * bounds

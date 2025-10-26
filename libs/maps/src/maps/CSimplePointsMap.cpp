@@ -252,13 +252,6 @@ void CSimplePointsMap::internal_clear()
   mark_as_modified();
 }
 
-void CSimplePointsMap::insertPointFast(float x, float y, float z)
-{
-  m_x.push_back(x);
-  m_y.push_back(y);
-  m_z.push_back(z);
-}
-
 namespace mrpt::maps::detail
 {
 using mrpt::maps::CSimplePointsMap;

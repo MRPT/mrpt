@@ -237,15 +237,6 @@ bool CGenericPointsMap::unregisterField(const std::string_view& fieldName)
   return false;
 }
 
-void CGenericPointsMap::insertPointFast(float x, float y, float z)
-{
-  m_x.push_back(x);
-  m_y.push_back(y);
-  m_z.push_back(z);
-  // NOTE: This intentionally makes field vectors one element shorter
-  // than m_x,y,z. User MUST call insertPointField_...() to fix this.
-}
-
 void CGenericPointsMap::getPointAllFieldsFast(size_t index, std::vector<float>& point_data) const
 {
   const size_t nFields = 3 + m_float_fields.size() + m_uint16_fields.size();

@@ -236,19 +236,6 @@ struct PyCallBack_mrpt_maps_CPointsMapXYZI : public mrpt::maps::CPointsMapXYZI {
 		}
 		return CPointsMapXYZI::setSize(a0);
 	}
-	void insertPointFast(float a0, float a1, float a2) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CPointsMapXYZI *>(this), "insertPointFast");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CPointsMapXYZI::insertPointFast(a0, a1, a2);
-	}
 	void setPointRGB(size_t a0, float a1, float a2, float a3, float a4, float a5, float a6) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CPointsMapXYZI *>(this), "setPointRGB");
@@ -757,8 +744,6 @@ void bind_mrpt_maps_CPointCloudFilterByDistance(std::function< pybind11::module 
 		cl.def("reserve", (void (mrpt::maps::CPointsMapXYZI::*)(size_t)) &mrpt::maps::CPointsMapXYZI::reserve, "from CPointsMap\n  @{ \n\nC++: mrpt::maps::CPointsMapXYZI::reserve(size_t) --> void", pybind11::arg("newLength"));
 		cl.def("resize", (void (mrpt::maps::CPointsMapXYZI::*)(size_t)) &mrpt::maps::CPointsMapXYZI::resize, "C++: mrpt::maps::CPointsMapXYZI::resize(size_t) --> void", pybind11::arg("newLength"));
 		cl.def("setSize", (void (mrpt::maps::CPointsMapXYZI::*)(size_t)) &mrpt::maps::CPointsMapXYZI::setSize, "C++: mrpt::maps::CPointsMapXYZI::setSize(size_t) --> void", pybind11::arg("newLength"));
-		cl.def("insertPointFast", [](mrpt::maps::CPointsMapXYZI &o, float const & a0, float const & a1) -> void { return o.insertPointFast(a0, a1); }, "", pybind11::arg("x"), pybind11::arg("y"));
-		cl.def("insertPointFast", (void (mrpt::maps::CPointsMapXYZI::*)(float, float, float)) &mrpt::maps::CPointsMapXYZI::insertPointFast, "The virtual method for  *without* calling\n mark_as_modified()   \n\nC++: mrpt::maps::CPointsMapXYZI::insertPointFast(float, float, float) --> void", pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"));
 		cl.def("loadFromKittiVelodyneFile", (bool (mrpt::maps::CPointsMapXYZI::*)(const std::string &)) &mrpt::maps::CPointsMapXYZI::loadFromKittiVelodyneFile, "Loads from a Kitti dataset Velodyne scan binary file.\n The file can be gz compressed (only enabled if the filename ends in \".gz\"\n to prevent spurious false autodetection of gzip files).\n \n\n true on success \n\nC++: mrpt::maps::CPointsMapXYZI::loadFromKittiVelodyneFile(const std::string &) --> bool", pybind11::arg("filename"));
 		cl.def("saveToKittiVelodyneFile", (bool (mrpt::maps::CPointsMapXYZI::*)(const std::string &) const) &mrpt::maps::CPointsMapXYZI::saveToKittiVelodyneFile, "C++: mrpt::maps::CPointsMapXYZI::saveToKittiVelodyneFile(const std::string &) const --> bool", pybind11::arg("filename"));
 		cl.def("saveXYZI_to_text_file", (bool (mrpt::maps::CPointsMapXYZI::*)(const std::string &) const) &mrpt::maps::CPointsMapXYZI::saveXYZI_to_text_file, "Save to a text file. In each line contains X Y Z (meters) I (intensity)\n Returns false if any error occurred, true elsewere.\n\nC++: mrpt::maps::CPointsMapXYZI::saveXYZI_to_text_file(const std::string &) const --> bool", pybind11::arg("file"));
