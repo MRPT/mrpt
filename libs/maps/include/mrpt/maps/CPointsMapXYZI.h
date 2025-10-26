@@ -28,7 +28,7 @@ class CPointsMapXYZI : public CPointsMap
  public:
   CPointsMapXYZI() = default;
 
-  CPointsMapXYZI(const CPointsMap& o) { CPointsMap::operator=(o); }
+  explicit CPointsMapXYZI(const CPointsMap& o) { CPointsMap::operator=(o); }
   CPointsMapXYZI(const CPointsMapXYZI& o) : CPointsMap() { impl_copyFrom(o); }
   CPointsMapXYZI& operator=(const CPointsMap& o)
   {
@@ -48,10 +48,6 @@ class CPointsMapXYZI : public CPointsMap
   void reserve(size_t newLength) override;  // See base class docs
   void resize(size_t newLength) override;   // See base class docs
   void setSize(size_t newLength) override;  // See base class docs
-
-  /** The virtual method for \a insertPoint() *without* calling
-   * mark_as_modified()   */
-  void insertPointFast(float x, float y, float z = 0) override;
 
   /** Get all the data fields for one point as a vector: [X Y Z I]
    *  Unlike getPointAllFields(), this method does not check for index out of
@@ -99,12 +95,6 @@ class CPointsMapXYZI : public CPointsMap
       const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
 
  protected:
-  // See base class
-  void addFrom_classSpecific(
-      const CPointsMap& anotherMap,
-      size_t nPreviousPoints,
-      const bool filterOutPointsAtZero) override;
-
   // Friend methods:
   template <class Derived>
   friend struct detail::loadFromRangeImpl;
@@ -173,127 +163,156 @@ class CPointsMapXYZI : public CPointsMap
    */
   void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
 
-  // clang-format off
-	auto getPointsBufferRef_intensity() const  -> const mrpt::aligned_std_vector<float>* override { return &m_intensity; }
-	auto getPointsBufferRef_intensity()        -> mrpt::aligned_std_vector<float>* override { return &m_intensity; }
-	void insertPointField_Intensity(float i) override { m_intensity.push_back(i); }
-	/// clang-format on
+  void saveMetricMapRepresentationToFile(const std::string& filNamePrefix) const override
+  {
+    std::string fil(filNamePrefix + std::string(".txt"));
+    saveXYZI_to_text_file(fil);
+  }
 
-	void saveMetricMapRepresentationToFile(
-		const std::string& filNamePrefix) const override
-	{
-		std::string fil(filNamePrefix + std::string(".txt"));
-		saveXYZI_to_text_file(fil);
-	}
+  /** @name String-keyed field access virtual interface implementation
+      @{ */
+  constexpr static std::string_view POINT_FIELD_INTENSITY = "intensity";
 
-	/** @name PCL library support
-		@{ */
+  bool hasPointField(const std::string_view& fieldName) const override;
+  std::vector<std::string_view> getPointFieldNames_float() const override;
 
-	/** Save the point cloud as a PCL PCD file, in either ASCII or binary format
-	 * \note This method requires user code to include PCL before MRPT headers.
-	 * \return false on any error */
+  float getPointField_float(size_t index, const std::string_view& fieldName) const override;
+  void setPointField_float(size_t index, const std::string_view& fieldName, float value) override;
+
+  void insertPointField_float(const std::string_view& fieldName, float value) override;
+  void reserveField_float(const std::string_view& fieldName, size_t n) override;
+  void resizeField_float(const std::string_view& fieldName, size_t n) override;
+
+  auto getPointsBufferRef_float_field(const std::string_view& fieldName) const
+      -> const mrpt::aligned_std_vector<float>* override
+  {
+    if (auto* f = CPointsMap::getPointsBufferRef_float_field(fieldName); f)
+    {
+      return f;
+    }
+    if (fieldName == POINT_FIELD_INTENSITY) return &m_intensity;
+    return nullptr;
+  }
+  auto getPointsBufferRef_float_field(const std::string_view& fieldName)
+      -> mrpt::aligned_std_vector<float>* override
+  {
+    if (auto* f = CPointsMap::getPointsBufferRef_float_field(fieldName); f)
+    {
+      return f;
+    }
+    if (fieldName == POINT_FIELD_INTENSITY) return &m_intensity;
+    return nullptr;
+  }
+  /** @} */
+
+  /** @name PCL library support
+    @{ */
+
+  /** Save the point cloud as a PCL PCD file, in either ASCII or binary format
+   * \note This method requires user code to include PCL before MRPT headers.
+   * \return false on any error */
 #if defined(PCL_LINEAR_VERSION)
-	inline bool savePCDFile(
-		const std::string& filename, bool save_as_binary) const
-	{
-		pcl::PointCloud<pcl::PointXYZI> cloud;
+  inline bool savePCDFile(const std::string& filename, bool save_as_binary) const
+  {
+    pcl::PointCloud<pcl::PointXYZI> cloud;
 
-		const size_t nThis = this->size();
+    const size_t nThis = this->size();
 
-		// Fill in the cloud data
-		cloud.width = nThis;
-		cloud.height = 1;
-		cloud.is_dense = false;
-		cloud.points.resize(cloud.width * cloud.height);
+    // Fill in the cloud data
+    cloud.width = nThis;
+    cloud.height = 1;
+    cloud.is_dense = false;
+    cloud.points.resize(cloud.width * cloud.height);
 
-		for (size_t i = 0; i < nThis; ++i)
-		{
-			cloud.points[i].x = m_x[i];
-			cloud.points[i].y = m_y[i];
-			cloud.points[i].z = m_z[i];
-			cloud.points[i].intensity = this->m_intensity[i];
-		}
+    for (size_t i = 0; i < nThis; ++i)
+    {
+      cloud.points[i].x = m_x[i];
+      cloud.points[i].y = m_y[i];
+      cloud.points[i].z = m_z[i];
+      cloud.points[i].intensity = this->m_intensity[i];
+    }
 
-		return 0 == pcl::io::savePCDFile(filename, cloud, save_as_binary);
-	}
+    return 0 == pcl::io::savePCDFile(filename, cloud, save_as_binary);
+  }
 #endif
 
-	/** Loads a PCL point cloud (WITH XYZI information) into this MRPT class.
-	 *  Usage example:
-	 *  \code
-	 *    pcl::PointCloud<pcl::PointXYZI> cloud;
-	 *    mrpt::maps::CPointsMapXYZI       pc;
-	 *
-	 *    pc.setFromPCLPointCloudXYZI(cloud);
-	 *  \endcode
-	 * \sa CPointsMap::setFromPCLPointCloud()
-	 */
-	template <class POINTCLOUD>
-	void setFromPCLPointCloudXYZI(const POINTCLOUD& cloud)
-	{
-		const size_t N = cloud.points.size();
-		clear();
-		reserve(N);
-		for (size_t i = 0; i < N; ++i)
-		{
-			const auto& pt = cloud.points[i];
-			m_x.push_back(pt.x);
-			m_y.push_back(pt.y);
-			m_z.push_back(pt.z);
-			m_intensity.push_back(pt.intensity);
-		}
-		mark_as_modified();
-	}
+  /** Loads a PCL point cloud (WITH XYZI information) into this MRPT class.
+   *  Usage example:
+   *  \code
+   *    pcl::PointCloud<pcl::PointXYZI> cloud;
+   *    mrpt::maps::CPointsMapXYZI       pc;
+   *
+   *    pc.setFromPCLPointCloudXYZI(cloud);
+   *  \endcode
+   * \sa CPointsMap::setFromPCLPointCloud()
+   */
+  template <class POINTCLOUD>
+  void setFromPCLPointCloudXYZI(const POINTCLOUD& cloud)
+  {
+    const size_t N = cloud.points.size();
+    clear();
+    reserve(N);
+    for (size_t i = 0; i < N; ++i)
+    {
+      const auto& pt = cloud.points[i];
+      m_x.push_back(pt.x);
+      m_y.push_back(pt.y);
+      m_z.push_back(pt.z);
+      m_intensity.push_back(pt.intensity);
+    }
+    mark_as_modified();
+  }
 
-	/** Like CPointsMap::getPCLPointCloud() but for PointCloud<PointXYZI> */
-	template <class POINTCLOUD>
-	void getPCLPointCloudXYZI(POINTCLOUD& cloud) const
-	{
-		const size_t nThis = this->size();
-		this->getPCLPointCloud(cloud);	// 1st: xyz data
-		// 2nd: I data
-		for (size_t i = 0; i < nThis; ++i)
-			cloud.points[i].intensity = m_intensity[i];
-	}
-	/** @} */
+  /** Like CPointsMap::getPCLPointCloud() but for PointCloud<PointXYZI> */
+  template <class POINTCLOUD>
+  void getPCLPointCloudXYZI(POINTCLOUD& cloud) const
+  {
+    const size_t nThis = this->size();
+    this->getPCLPointCloud(cloud);  // 1st: xyz data
+    // 2nd: I data
+    for (size_t i = 0; i < nThis; ++i) cloud.points[i].intensity = m_intensity[i];
+  }
+  /** @} */
 
-   protected:
-	/** The intensity/reflectance data */
-	mrpt::aligned_std_vector<float> m_intensity;
+ protected:
+  /** The intensity/reflectance data */
+  mrpt::aligned_std_vector<float> m_intensity;
 
-	/** Clear the map, erasing all the points */
-	void internal_clear() override;
+  /** Clear the map, erasing all the points */
+  void internal_clear() override;
 
-	/** @name Redefinition of PLY Import virtual methods from CPointsMap
-		@{ */
-	void PLY_import_set_vertex(
-		size_t idx, const mrpt::math::TPoint3Df& pt,
-		const mrpt::img::TColorf* pt_color = nullptr) override;
+  /** @name Redefinition of PLY Import virtual methods from CPointsMap
+    @{ */
+  void PLY_import_set_vertex(
+      size_t idx,
+      const mrpt::math::TPoint3Df& pt,
+      const mrpt::img::TColorf* pt_color = nullptr) override;
 
-	void PLY_import_set_vertex_count(size_t N) override;
+  void PLY_import_set_vertex_count(size_t N) override;
 
-	void PLY_import_set_vertex_timestamp(
-		[[maybe_unused]] size_t idx,
-		[[maybe_unused]] const double unixTimestamp) override
-	{
-		// do nothing, this class ignores timestamps
-	}
+  void PLY_import_set_vertex_timestamp(
+      [[maybe_unused]] size_t idx, [[maybe_unused]] const double unixTimestamp) override
+  {
+    // do nothing, this class ignores timestamps
+  }
 
-	/** @} */
+  /** @} */
 
-	/** @name Redefinition of PLY Export virtual methods from CPointsMap
-		@{ */
-	void PLY_export_get_vertex(
-		size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
-		mrpt::img::TColorf& pt_color) const override;
-	/** @} */
+  /** @name Redefinition of PLY Export virtual methods from CPointsMap
+    @{ */
+  void PLY_export_get_vertex(
+      size_t idx,
+      mrpt::math::TPoint3Df& pt,
+      bool& pt_has_color,
+      mrpt::img::TColorf& pt_color) const override;
+  /** @} */
 
-	MAP_DEFINITION_START(CPointsMapXYZI)
-	mrpt::maps::CPointsMap::TInsertionOptions insertionOpts;
-	mrpt::maps::CPointsMap::TLikelihoodOptions likelihoodOpts;
-	MAP_DEFINITION_END(CPointsMapXYZI)
+  MAP_DEFINITION_START(CPointsMapXYZI)
+  mrpt::maps::CPointsMap::TInsertionOptions insertionOpts;
+  mrpt::maps::CPointsMap::TLikelihoodOptions likelihoodOpts;
+  MAP_DEFINITION_END(CPointsMapXYZI)
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace maps
 
@@ -305,104 +324,109 @@ namespace opengl
 template <>
 class PointCloudAdapter<mrpt::maps::CPointsMapXYZI>
 {
-   private:
-	mrpt::maps::CPointsMapXYZI& m_obj;
+ private:
+  mrpt::maps::CPointsMapXYZI& m_obj;
 
-   public:
-	/** The type of each point XYZ coordinates */
-	using coords_t = float;
-	/** Has any color RGB info? */
-	static constexpr bool HAS_RGB = true;
-	/** Has native RGB info (as floats)? */
-	static constexpr bool HAS_RGBf = true;
-	/** Has native RGB info (as uint8_t)? */
-	static constexpr bool HAS_RGBu8 = false;
+ public:
+  /** The type of each point XYZ coordinates */
+  using coords_t = float;
+  /** Has any color RGB info? */
+  static constexpr bool HAS_RGB = true;
+  /** Has native RGB info (as floats)? */
+  static constexpr bool HAS_RGBf = true;
+  /** Has native RGB info (as uint8_t)? */
+  static constexpr bool HAS_RGBu8 = false;
 
-	/** Constructor (accept a const ref for convenience) */
-	inline PointCloudAdapter(const mrpt::maps::CPointsMapXYZI& obj)
-		: m_obj(*const_cast<mrpt::maps::CPointsMapXYZI*>(&obj))
-	{
-	}
-	/** Get number of points */
-	inline size_t size() const { return m_obj.size(); }
-	/** Set number of points (to uninitialized values) */
-	inline void resize(size_t N) { m_obj.resize(N); }
-	/** Does nothing as of now */
-	inline void setDimensions(size_t /*height*/, size_t /*width*/) {}
-	/** Get XYZ coordinates of i'th point */
-	template <typename T>
-	inline void getPointXYZ(size_t idx, T& x, T& y, T& z) const
-	{
-		m_obj.getPointFast(idx, x, y, z);
-	}
-	/** Set XYZ coordinates of i'th point */
-	inline void setPointXYZ(
-		size_t idx, const coords_t x, const coords_t y, const coords_t z)
-	{
-		m_obj.setPointFast(idx, x, y, z);
-	}
+  /** Constructor (accept a const ref for convenience) */
+  inline PointCloudAdapter(const mrpt::maps::CPointsMapXYZI& obj) :
+      m_obj(*const_cast<mrpt::maps::CPointsMapXYZI*>(&obj))
+  {
+  }
+  /** Get number of points */
+  inline size_t size() const { return m_obj.size(); }
+  /** Set number of points (to uninitialized values) */
+  inline void resize(size_t N) { m_obj.resize(N); }
+  /** Does nothing as of now */
+  inline void setDimensions(size_t /*height*/, size_t /*width*/) {}
+  /** Get XYZ coordinates of i'th point */
+  template <typename T>
+  inline void getPointXYZ(size_t idx, T& x, T& y, T& z) const
+  {
+    m_obj.getPointFast(idx, x, y, z);
+  }
+  /** Set XYZ coordinates of i'th point */
+  inline void setPointXYZ(size_t idx, const coords_t x, const coords_t y, const coords_t z)
+  {
+    m_obj.setPointFast(idx, x, y, z);
+  }
 
-	/** Get XYZ_RGBf coordinates of i'th point */
-	template <typename T>
-	inline void getPointXYZ_RGBAf(
-		size_t idx, T& x, T& y, T& z, float& r, float& g, float& b,
-		float& a) const
-	{
-		m_obj.getPointRGB(idx, x, y, z, r, g, b);
-		a = 1.0f;
-	}
-	/** Set XYZ_RGBf coordinates of i'th point */
-	inline void setPointXYZ_RGBAf(
-		size_t idx, const coords_t x, const coords_t y, const coords_t z,
-		const float r, const float g, const float b,
-		[[maybe_unused]] const float a)
-	{
-		m_obj.setPointRGB(idx, x, y, z, r, g, b);
-	}
+  /** Get XYZ_RGBf coordinates of i'th point */
+  template <typename T>
+  inline void getPointXYZ_RGBAf(
+      size_t idx, T& x, T& y, T& z, float& r, float& g, float& b, float& a) const
+  {
+    m_obj.getPointRGB(idx, x, y, z, r, g, b);
+    a = 1.0f;
+  }
+  /** Set XYZ_RGBf coordinates of i'th point */
+  inline void setPointXYZ_RGBAf(
+      size_t idx,
+      const coords_t x,
+      const coords_t y,
+      const coords_t z,
+      const float r,
+      const float g,
+      const float b,
+      [[maybe_unused]] const float a)
+  {
+    m_obj.setPointRGB(idx, x, y, z, r, g, b);
+  }
 
-	/** Get XYZ_RGBu8 coordinates of i'th point */
-	template <typename T>
-	inline void getPointXYZ_RGBu8(
-		size_t idx, T& x, T& y, T& z, uint8_t& r, uint8_t& g, uint8_t& b) const
-	{
-		float I, Gignrd, Bignrd;
-		m_obj.getPoint(idx, x, y, z, I, Gignrd, Bignrd);
-		r = g = b = I * 255;
-	}
-	/** Set XYZ_RGBu8 coordinates of i'th point */
-	inline void setPointXYZ_RGBu8(
-		size_t idx, const coords_t x, const coords_t y, const coords_t z,
-		const uint8_t r, const uint8_t g, const uint8_t b)
-	{
-		m_obj.setPointRGB(idx, x, y, z, r / 255.f, g / 255.f, b / 255.f);
-	}
+  /** Get XYZ_RGBu8 coordinates of i'th point */
+  template <typename T>
+  inline void getPointXYZ_RGBu8(
+      size_t idx, T& x, T& y, T& z, uint8_t& r, uint8_t& g, uint8_t& b) const
+  {
+    float I, Gignrd, Bignrd;
+    m_obj.getPoint(idx, x, y, z, I, Gignrd, Bignrd);
+    r = g = b = I * 255;
+  }
+  /** Set XYZ_RGBu8 coordinates of i'th point */
+  inline void setPointXYZ_RGBu8(
+      size_t idx,
+      const coords_t x,
+      const coords_t y,
+      const coords_t z,
+      const uint8_t r,
+      const uint8_t g,
+      const uint8_t b)
+  {
+    m_obj.setPointRGB(idx, x, y, z, r / 255.f, g / 255.f, b / 255.f);
+  }
 
-	/** Get RGBf color of i'th point */
-	inline void getPointRGBf(size_t idx, float& r, float& g, float& b) const
-	{
-		r = g = b = m_obj.getPointIntensity_fast(idx);
-	}
-	/** Set XYZ_RGBf coordinates of i'th point */
-	inline void setPointRGBf(
-		size_t idx, const float r, const float g, const float b)
-	{
-		m_obj.setPointColor_fast(idx, r, g, b);
-	}
+  /** Get RGBf color of i'th point */
+  inline void getPointRGBf(size_t idx, float& r, float& g, float& b) const
+  {
+    r = g = b = m_obj.getPointIntensity_fast(idx);
+  }
+  /** Set XYZ_RGBf coordinates of i'th point */
+  inline void setPointRGBf(size_t idx, const float r, const float g, const float b)
+  {
+    m_obj.setPointColor_fast(idx, r, g, b);
+  }
 
-	/** Get RGBu8 color of i'th point */
-	inline void getPointRGBu8(
-		size_t idx, uint8_t& r, uint8_t& g, uint8_t& b) const
-	{
-		float i = m_obj.getPointIntensity_fast(idx);
-		r = g = b = i * 255;
-	}
-	/** Set RGBu8 coordinates of i'th point */
-	inline void setPointRGBu8(
-		size_t idx, const uint8_t r, const uint8_t g, const uint8_t b)
-	{
-		m_obj.setPointColor_fast(idx, r / 255.f, g / 255.f, b / 255.f);
-	}
+  /** Get RGBu8 color of i'th point */
+  inline void getPointRGBu8(size_t idx, uint8_t& r, uint8_t& g, uint8_t& b) const
+  {
+    float i = m_obj.getPointIntensity_fast(idx);
+    r = g = b = i * 255;
+  }
+  /** Set RGBu8 coordinates of i'th point */
+  inline void setPointRGBu8(size_t idx, const uint8_t r, const uint8_t g, const uint8_t b)
+  {
+    m_obj.setPointColor_fast(idx, r / 255.f, g / 255.f, b / 255.f);
+  }
 
-};	// end of PointCloudAdapter<mrpt::maps::CPointsMapXYZI>
+};  // end of PointCloudAdapter<mrpt::maps::CPointsMapXYZI>
 }  // namespace opengl
 }  // namespace mrpt

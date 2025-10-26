@@ -34,7 +34,7 @@ class CSimplePointsMap : public CPointsMap
  public:
   /** Default constructor */
   CSimplePointsMap() = default;
-  CSimplePointsMap(const CPointsMap& o) { CPointsMap::operator=(o); }
+  explicit CSimplePointsMap(const CPointsMap& o) { CPointsMap::operator=(o); }
   CSimplePointsMap(const CSimplePointsMap& o) : CPointsMap() { CPointsMap::operator=(o); }
   CSimplePointsMap& operator=(const CPointsMap& o)
   {
@@ -54,9 +54,7 @@ class CSimplePointsMap : public CPointsMap
   void reserve(size_t newLength) override;  // See base class docs
   void resize(size_t newLength) override;   // See base class docs
   void setSize(size_t newLength) override;  // See base class docs
-  /** The virtual method for \a insertPoint() *without* calling
-   * mark_as_modified()   */
-  void insertPointFast(float x, float y, float z = 0) override;
+
   /** Get all the data fields for one point as a vector: [X Y Z]
    *  Unlike getPointAllFields(), this method does not check for index out of
    * bounds
@@ -92,14 +90,6 @@ class CSimplePointsMap : public CPointsMap
       const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
 
  protected:
-  void addFrom_classSpecific(
-      [[maybe_unused]] const CPointsMap& anotherMap,
-      [[maybe_unused]] size_t nPreviousPoints,
-      [[maybe_unused]] const bool filterOutPointsAtZero) override
-  {
-    // No extra data.
-  }
-
   // Friend methods:
   template <class Derived>
   friend struct detail::loadFromRangeImpl;

@@ -704,32 +704,6 @@ struct PyCallBack_mrpt_maps_CSimplePointsMap : public mrpt::maps::CSimplePointsM
 		}
 		return CSimplePointsMap::setSize(a0);
 	}
-	void insertPointFast(float a0, float a1, float a2) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "insertPointFast");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CSimplePointsMap::insertPointFast(a0, a1, a2);
-	}
-	void addFrom_classSpecific(const class mrpt::maps::CPointsMap & a0, size_t a1, const bool a2) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "addFrom_classSpecific");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CSimplePointsMap::addFrom_classSpecific(a0, a1, a2);
-	}
 	const class mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "getAsSimplePointsMap");
@@ -873,84 +847,7 @@ struct PyCallBack_mrpt_maps_CSimplePointsMap : public mrpt::maps::CSimplePointsM
 		}
 		return CPointsMap::getPointWeight(a0);
 	}
-	void insertPointField_Intensity(float a0) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "insertPointField_Intensity");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CPointsMap::insertPointField_Intensity(a0);
-	}
-	void insertPointField_Ring(uint16_t a0) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "insertPointField_Ring");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CPointsMap::insertPointField_Ring(a0);
-	}
-	void insertPointField_Timestamp(float a0) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "insertPointField_Timestamp");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CPointsMap::insertPointField_Timestamp(a0);
-	}
-	void insertPointField_color_R(float a0) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "insertPointField_color_R");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CPointsMap::insertPointField_color_R(a0);
-	}
-	void insertPointField_color_G(float a0) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "insertPointField_color_G");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CPointsMap::insertPointField_color_G(a0);
-	}
-	void insertPointField_color_B(float a0) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "insertPointField_color_B");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CPointsMap::insertPointField_color_B(a0);
-	}
+
 	void insertPointRGB(float a0, float a1, float a2, float a3, float a4, float a5) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "insertPointRGB");
@@ -1381,8 +1278,6 @@ void bind_mrpt_maps_COctoMap(std::function< pybind11::module &(std::string const
 		cl.def("reserve", (void (mrpt::maps::CSimplePointsMap::*)(size_t)) &mrpt::maps::CSimplePointsMap::reserve, "from CPointsMap\n    @{ \n\nC++: mrpt::maps::CSimplePointsMap::reserve(size_t) --> void", pybind11::arg("newLength"));
 		cl.def("resize", (void (mrpt::maps::CSimplePointsMap::*)(size_t)) &mrpt::maps::CSimplePointsMap::resize, "C++: mrpt::maps::CSimplePointsMap::resize(size_t) --> void", pybind11::arg("newLength"));
 		cl.def("setSize", (void (mrpt::maps::CSimplePointsMap::*)(size_t)) &mrpt::maps::CSimplePointsMap::setSize, "C++: mrpt::maps::CSimplePointsMap::setSize(size_t) --> void", pybind11::arg("newLength"));
-		cl.def("insertPointFast", [](mrpt::maps::CSimplePointsMap &o, float const & a0, float const & a1) -> void { return o.insertPointFast(a0, a1); }, "", pybind11::arg("x"), pybind11::arg("y"));
-		cl.def("insertPointFast", (void (mrpt::maps::CSimplePointsMap::*)(float, float, float)) &mrpt::maps::CSimplePointsMap::insertPointFast, "The virtual method for  *without* calling\n mark_as_modified()   \n\nC++: mrpt::maps::CSimplePointsMap::insertPointFast(float, float, float) --> void", pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"));
 		cl.def("getAsSimplePointsMap", (const class mrpt::maps::CSimplePointsMap * (mrpt::maps::CSimplePointsMap::*)() const) &mrpt::maps::CSimplePointsMap::getAsSimplePointsMap, "@} \n\nC++: mrpt::maps::CSimplePointsMap::getAsSimplePointsMap() const --> const class mrpt::maps::CSimplePointsMap *", pybind11::return_value_policy::automatic);
 
 		{ // mrpt::maps::CSimplePointsMap::TMapDefinitionBase file: line:74

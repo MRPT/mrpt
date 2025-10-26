@@ -127,10 +127,16 @@ ViewOptions3DPoints::ViewOptions3DPoints(wxWindow* parent, wxWindowID id)
   FlexGridSizer3->Add(
       cbOnlyPointsWithColor, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
 
-  rbColorByAxis = new wxRadioBox(
-      this, ID_RADIOBOX1, _("Otherwise, color from: "), wxDefaultPosition, wxDefaultSize, 4,
-      __wxRadioBoxChoices_1, 1, 0, wxDefaultValidator, _T("ID_RADIOBOX1"));
-  FlexGridSizer3->Add(rbColorByAxis, 1, wxEXPAND, 5);
+  const wxString colorOptions[] = {"x", "y", "z",    "i",         "intensity",   "ambient",
+                                   "r", "t", "time", "timestamp", "reflectivity"};
+
+  cbColorByAxis = new wxComboBox(
+      this, ID_RADIOBOX1, _("Otherwise, color from:"), wxDefaultPosition, wxDefaultSize,
+      WXSIZEOF(colorOptions), colorOptions,
+      wxCB_READONLY,  // prevents typing arbitrary values
+      wxDefaultValidator, _T("ID_COMBOBOX_COLORBY"));
+
+  FlexGridSizer3->Add(cbColorByAxis, 1, wxEXPAND, 5);
   wxString __wxRadioBoxChoices_2[3] = {_("cmGRAYSCALE"), _("cmJET"), _("cmHOT")};
   RadioBox1 = new wxRadioBox(
       this, ID_RADIOBOX2, _("Color map"), wxDefaultPosition, wxDefaultSize, 3,
@@ -215,7 +221,7 @@ ViewOptions3DPoints::ViewOptions3DPoints(wxWindow* parent, wxWindowID id)
   Bind(wxEVT_BUTTON, &Me::OnbtnApplyClick, this, ID_BUTTON1);
   Bind(wxEVT_CHECKBOX, &Me::OnbtnApplyClick, this, ID_CHECKBOX1);
   Bind(wxEVT_CHECKBOX, &Me::OnbtnApplyClick, this, ID_CHECKBOX2);
-  Bind(wxEVT_RADIOBOX, &Me::OnbtnApplyClick, this, ID_RADIOBOX1);
+  Bind(wxEVT_COMBOBOX, &Me::OnbtnApplyClick, this, ID_RADIOBOX1);
   Bind(wxEVT_RADIOBOX, &Me::OnbtnApplyClick, this, ID_RADIOBOX2);
   Bind(wxEVT_CHECKBOX, &Me::OnbtnApplyClick, this, ID_CHECKBOX3);
   Bind(wxEVT_SPINCTRL, &Me::OnbtnApplyClick, this, ID_SPINCTRL1);
@@ -245,7 +251,8 @@ void ParametersView3DPoints::to_UI(ViewOptions3DPoints& ui) const
   ui.edTickTextSize->SetValue(wxString::Format("%.03f", axisTickTextSize));
 
   ui.cbColorFromRGB->SetValue(colorFromRGBimage);
-  ui.rbColorByAxis->SetSelection(colorizeByAxis);
+  ui.cbColorByAxis->SetValue(colorizeByField);
+
   ui.cbInvertColormap->SetValue(invertColorMapping);
 
   ui.RadioBox1->SetSelection(static_cast<int>(colorMap));
@@ -275,7 +282,7 @@ void ParametersView3DPoints::from_UI(const ViewOptions3DPoints& ui)
 
   colorFromRGBimage = ui.cbColorFromRGB->IsChecked();
 
-  colorizeByAxis = ui.rbColorByAxis->GetSelection();
+  colorizeByField = ui.cbColorByAxis->GetValue();
 
   invertColorMapping = ui.cbInvertColormap->IsChecked();
 

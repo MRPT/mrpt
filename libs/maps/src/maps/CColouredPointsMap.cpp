@@ -317,14 +317,6 @@ void CColouredPointsMap::setPointColor(size_t index, float R, float G, float B)
   // mark_as_modified();  // No need to rebuild KD-trees, etc...
 }
 
-void CColouredPointsMap::insertPointFast(float x, float y, float z)
-{
-  m_x.push_back(x);
-  m_y.push_back(y);
-  m_z.push_back(z);
-  // mark_as_modified(); -> Fast
-}
-
 void CColouredPointsMap::insertPointRGB(float x, float y, float z, float R, float G, float B)
 {
   m_x.push_back(x);
@@ -575,33 +567,6 @@ void CColouredPointsMap::PLY_export_get_vertex(
   pt_color.R = m_color_R[idx];
   pt_color.G = m_color_G[idx];
   pt_color.B = m_color_B[idx];
-}
-
-/*---------------------------------------------------------------
-addFrom_classSpecific
----------------------------------------------------------------*/
-void CColouredPointsMap::addFrom_classSpecific(
-    const CPointsMap& anotherMap, size_t nPreviousPoints, const bool filterOutPointsAtZero)
-{
-  const size_t nOther = anotherMap.size();
-
-  // Specific data for this class:
-  const auto* anotheMap_col = dynamic_cast<const CColouredPointsMap*>(&anotherMap);
-
-  if (anotheMap_col)
-  {
-    for (size_t i = 0, j = nPreviousPoints; i < nOther; i++)
-    {
-      if (filterOutPointsAtZero && anotheMap_col->m_x[i] == 0 && anotheMap_col->m_y[i] == 0 &&
-          anotheMap_col->m_z[i] == 0)
-        continue;  // skip
-
-      m_color_R[j] = anotheMap_col->m_color_R[i];
-      m_color_G[j] = anotheMap_col->m_color_G[i];
-      m_color_B[j] = anotheMap_col->m_color_B[i];
-      j++;
-    }
-  }
 }
 
 namespace mrpt::maps::detail

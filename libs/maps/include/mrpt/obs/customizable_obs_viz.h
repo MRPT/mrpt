@@ -38,7 +38,7 @@ struct VisualizationParameters
   double axisLimits = 20.0;
   double axisTickTextSize = 0.075;
   bool colorFromRGBimage = true;
-  int colorizeByAxis = 0;  // 0:x,1:y,2:z, anything else = none.
+  std::string colorizeByField = "z";  // x,y,z,i,ring,t,ambient, etc.
   bool invertColorMapping = false;
   mrpt::img::TColormap colorMap = mrpt::img::cmJET;
   double pointSize = 4.0;
@@ -121,7 +121,9 @@ void obs2Dscan_to_viz(
 
 /// Recolorize a pointcloud according to the given parameters
 void recolorize3Dpc(
-    const mrpt::opengl::CPointCloudColoured::Ptr& pnts, const VisualizationParameters& p);
+    const mrpt::opengl::CPointCloudColoured::Ptr& pnts,
+    const mrpt::maps::CPointsMap* originalPts,
+    const VisualizationParameters& p);
 
 /** @} */
 

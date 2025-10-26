@@ -93,7 +93,7 @@ void bind_mrpt_obs_customizable_obs_viz(std::function< pybind11::module &(std::s
 		cl.def_readwrite("axisLimits", &mrpt::obs::VisualizationParameters::axisLimits);
 		cl.def_readwrite("axisTickTextSize", &mrpt::obs::VisualizationParameters::axisTickTextSize);
 		cl.def_readwrite("colorFromRGBimage", &mrpt::obs::VisualizationParameters::colorFromRGBimage);
-		cl.def_readwrite("colorizeByAxis", &mrpt::obs::VisualizationParameters::colorizeByAxis);
+		cl.def_readwrite("colorizeByField", &mrpt::obs::VisualizationParameters::colorizeByField);
 		cl.def_readwrite("invertColorMapping", &mrpt::obs::VisualizationParameters::invertColorMapping);
 		cl.def_readwrite("colorMap", &mrpt::obs::VisualizationParameters::colorMap);
 		cl.def_readwrite("pointSize", &mrpt::obs::VisualizationParameters::pointSize);
@@ -132,6 +132,6 @@ void bind_mrpt_obs_customizable_obs_viz(std::function< pybind11::module &(std::s
 	M("mrpt::obs").def("obs2Dscan_to_viz", (void (*)(const class std::shared_ptr<class mrpt::obs::CObservation2DRangeScan> &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &)) &mrpt::obs::obs2Dscan_to_viz, "Clears `out` and creates a visualization of the given observation.\n\nC++: mrpt::obs::obs2Dscan_to_viz(const class std::shared_ptr<class mrpt::obs::CObservation2DRangeScan> &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &) --> void", pybind11::arg("obs"), pybind11::arg("p"), pybind11::arg("out"));
 
 	// mrpt::obs::recolorize3Dpc(const class std::shared_ptr<class mrpt::opengl::CPointCloudColoured> &, const struct mrpt::obs::VisualizationParameters &) file:mrpt/obs/customizable_obs_viz.h line:123
-	M("mrpt::obs").def("recolorize3Dpc", (void (*)(const class std::shared_ptr<class mrpt::opengl::CPointCloudColoured> &, const struct mrpt::obs::VisualizationParameters &)) &mrpt::obs::recolorize3Dpc, "Recolorize a pointcloud according to the given parameters\n\nC++: mrpt::obs::recolorize3Dpc(const class std::shared_ptr<class mrpt::opengl::CPointCloudColoured> &, const struct mrpt::obs::VisualizationParameters &) --> void", pybind11::arg("pnts"), pybind11::arg("p"));
+	M("mrpt::obs").def("recolorize3Dpc", (void (*)(const class std::shared_ptr<class mrpt::opengl::CPointCloudColoured> &, const mrpt::maps::CPointsMap*, const struct mrpt::obs::VisualizationParameters &)) &mrpt::obs::recolorize3Dpc, "Recolorize a pointcloud according to the given parameters\n\nC++: mrpt::obs::recolorize3Dpc(const class std::shared_ptr<class mrpt::opengl::CPointCloudColoured> &, const struct mrpt::obs::VisualizationParameters &) --> void", pybind11::arg("pnts"), pybind11::arg("originalPts"), pybind11::arg("p"));
 
 }

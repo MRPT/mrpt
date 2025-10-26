@@ -84,41 +84,6 @@ void CWeightedPointsMap::setSize(size_t newLength)
   pointWeight.assign(newLength, 1);
 }
 
-void CWeightedPointsMap::insertPointFast(float x, float y, float z)
-{
-  m_x.push_back(x);
-  m_y.push_back(y);
-  m_z.push_back(z);
-  this->pointWeight.push_back(1);
-  // mark_as_modified(); -> Fast
-}
-
-/*---------------------------------------------------------------
-            addFrom_classSpecific
- ---------------------------------------------------------------*/
-void CWeightedPointsMap::addFrom_classSpecific(
-    const CPointsMap& anotherMap, size_t nPreviousPoints, const bool filterOutPointsAtZero)
-{
-  const size_t nOther = anotherMap.size();
-
-  // Specific data for this class:
-  const auto* anotheMap_w = dynamic_cast<const CWeightedPointsMap*>(&anotherMap);
-
-  if (anotheMap_w)
-  {
-    for (size_t i = 0, j = nPreviousPoints; i < nOther; i++)
-    {
-      if (filterOutPointsAtZero && anotheMap_w->getPointsBufferRef_x()[i] == 0 &&
-          anotheMap_w->getPointsBufferRef_y()[i] == 0 &&
-          anotheMap_w->getPointsBufferRef_z()[i] == 0)
-        continue;
-
-      pointWeight[j] = anotheMap_w->pointWeight[i];
-      j++;
-    }
-  }
-}
-
 uint8_t CWeightedPointsMap::serializeGetVersion() const { return 2; }
 void CWeightedPointsMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
