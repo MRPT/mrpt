@@ -14,7 +14,7 @@
 #include <mrpt/opengl/pointcloud_adapters.h>
 #include <mrpt/serialization/CSerializable.h>
 
-#include <map>
+#include <unordered_map>
 
 namespace mrpt::maps
 {
@@ -61,12 +61,13 @@ class CGenericPointsMap : public CPointsMap
   bool unregisterField(const std::string_view& fieldName);
 
   /** Returns the map of float fields: map<field_name, vector_of_data> */
-  const std::map<std::string_view, mrpt::aligned_std_vector<float>>& float_fields() const
+  const std::unordered_map<std::string_view, mrpt::aligned_std_vector<float>>& float_fields() const
   {
     return m_float_fields;
   }
   /** Returns the map of uint16_t fields: map<field_name, vector_of_data> */
-  const std::map<std::string_view, mrpt::aligned_std_vector<uint16_t>>& uint16_fields() const
+  const std::unordered_map<std::string_view, mrpt::aligned_std_vector<uint16_t>>& uint16_fields()
+      const
   {
     return m_uint16_fields;
   }
@@ -79,12 +80,6 @@ class CGenericPointsMap : public CPointsMap
   void reserve(size_t newLength) override;
   void resize(size_t newLength) override;
   void setSize(size_t newLength) override;
-
-  /** Inserts a new point (X,Y,Z).
-   * You **must** call `insertPointField_float()` or `insertPointField_uint16()`
-   * *after* this for each registered field to keep data vectors synchronized.
-   */
-  void insertPointFast(float x, float y, float z = 0) override;
 
   void getPointAllFieldsFast(size_t index, std::vector<float>& point_data) const override;
   void setPointAllFieldsFast(size_t index, const std::vector<float>& point_data) override;
@@ -190,9 +185,9 @@ class CGenericPointsMap : public CPointsMap
 
  protected:
   /** Map from field name to data vector */
-  std::map<std::string_view, mrpt::aligned_std_vector<float>> m_float_fields;
+  std::unordered_map<std::string_view, mrpt::aligned_std_vector<float>> m_float_fields;
   /** Map from field name to data vector */
-  std::map<std::string_view, mrpt::aligned_std_vector<uint16_t>> m_uint16_fields;
+  std::unordered_map<std::string_view, mrpt::aligned_std_vector<uint16_t>> m_uint16_fields;
 
   /** Clear the map, erasing all the points and all fields */
   void internal_clear() override;

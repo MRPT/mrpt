@@ -1523,6 +1523,8 @@ void CPointsMap::insertAnotherMap(
   // matrix multiplications:
   const bool identity_tf = (otherPose == CPose3D::Identity());
 
+  const auto ctx = this->prepareForInsertPointsFrom(*otherMap);
+
   mrpt::math::TPoint3Df pt;
   for (size_t srcIdx = 0; srcIdx < N_other; srcIdx++)
   {
@@ -1537,7 +1539,7 @@ void CPointsMap::insertAnotherMap(
     if (pt.x != pt.x) continue;
 
     // Add to this map:
-    this->insertPointFrom(*otherMap, srcIdx);
+    this->insertPointFrom(*otherMap, srcIdx, ctx);
 
     // and overwrite the XYZ, if needed:
     if (!identity_tf)
@@ -2049,6 +2051,48 @@ std::vector<std::string_view> CPointsMap::getPointFieldNames_float_except_xyz() 
   }
 
   return result;
+}
+
+CPointsMap::InsertCtx CPointsMap::prepareForInsertPointsFrom(const CPointsMap& source) const
+{
+  InsertCtx ctx;
+
+  // Mandatory XYZ
+  ctx.xs_src = &source.getPointsBufferRef_x();
+  ctx.ys_src = &source.getPointsBufferRef_y();
+  ctx.zs_src = &source.getPointsBufferRef_z();
+
+  // Optional fields: match by name but store direct pointers
+  const auto src_float_names = source.getPointFieldNames_float_except_xyz();
+  const auto dst_float_names = this->getPointFieldNames_float_except_xyz();
+
+  for (const auto& name : dst_float_names)
+  {
+    if (auto it = std::find(src_float_names.begin(), src_float_names.end(), name);
+        it != src_float_names.end())
+    {
+      ctx.float_fields.push_back(
+          {source.getPointsBufferRef_float_field(name),
+           const_cast<mrpt::aligned_std_vector<float>*>(
+               this->getPointsBufferRef_float_field(name))});
+    }
+  }
+
+  const auto src_u16_names = source.getPointFieldNames_uint16();
+  const auto dst_u16_names = this->getPointFieldNames_uint16();
+  for (const auto& name : dst_u16_names)
+  {
+    if (auto it = std::find(src_u16_names.begin(), src_u16_names.end(), name);
+        it != src_u16_names.end())
+    {
+      ctx.uint16_fields.push_back(
+          {source.getPointsBufferRef_uint_field(name),
+           const_cast<mrpt::aligned_std_vector<uint16_t>*>(
+               this->getPointsBufferRef_uint_field(name))});
+    }
+  }
+
+  return ctx;
 }
 
 // =========== API of the NearestNeighborsCapable virtual interface ======

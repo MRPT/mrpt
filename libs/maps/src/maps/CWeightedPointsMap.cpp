@@ -84,15 +84,6 @@ void CWeightedPointsMap::setSize(size_t newLength)
   pointWeight.assign(newLength, 1);
 }
 
-void CWeightedPointsMap::insertPointFast(float x, float y, float z)
-{
-  m_x.push_back(x);
-  m_y.push_back(y);
-  m_z.push_back(z);
-  this->pointWeight.push_back(1);
-  // mark_as_modified(); -> Fast
-}
-
 uint8_t CWeightedPointsMap::serializeGetVersion() const { return 2; }
 void CWeightedPointsMap::serializeTo(mrpt::serialization::CArchive& out) const
 {

@@ -54,9 +54,7 @@ class CSimplePointsMap : public CPointsMap
   void reserve(size_t newLength) override;  // See base class docs
   void resize(size_t newLength) override;   // See base class docs
   void setSize(size_t newLength) override;  // See base class docs
-  /** The virtual method for \a insertPoint() *without* calling
-   * mark_as_modified()   */
-  void insertPointFast(float x, float y, float z = 0) override;
+
   /** Get all the data fields for one point as a vector: [X Y Z]
    *  Unlike getPointAllFields(), this method does not check for index out of
    * bounds

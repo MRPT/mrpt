@@ -171,9 +171,16 @@ class CPointsMap :
     m_z[index] = z;
   }
 
-  /** The virtual method for \a insertPoint() *without* calling
-   * mark_as_modified()   */
-  virtual void insertPointFast(float x, float y, float z = 0) = 0;
+  /** Low-level method for \a insertPoint() *without* calling  mark_as_modified().
+   * Note that for derived classes having more per-point fields, you must ensure adding those fields
+   * after this to keep the length of all vectors consistent.
+   */
+  void insertPointFast(float x, float y, float z)
+  {
+    m_x.push_back(x);
+    m_y.push_back(y);
+    m_z.push_back(z);
+  }
 
   /** Get all the data fields for one point as a vector: depending on the
    * implementation class this can be [X Y Z] or [X Y Z R G B], etc...
@@ -200,9 +207,10 @@ class CPointsMap :
     this->clear();
     this->reserve(N);
     this->registerPointFieldsFrom(obj);
+    const auto ctx = this->prepareForInsertPointsFrom(obj);
     for (size_t i = 0; i < N; i++)
     {
-      insertPointFrom(obj, i);
+      insertPointFrom(obj, i, ctx);
     }
   }
 
@@ -798,28 +806,56 @@ class CPointsMap :
     return allAdded;
   }
 
+  /** Insert context for insertPointFrom().
+   * \sa prepareForInsertPointsFrom()
+   */
+  struct InsertCtx
+  {
+    // For XYZ
+    const mrpt::aligned_std_vector<float>* xs_src = nullptr;
+    const mrpt::aligned_std_vector<float>* ys_src = nullptr;
+    const mrpt::aligned_std_vector<float>* zs_src = nullptr;
+
+    // Optional field mappings (only fields present in both maps)
+    struct FloatFieldMapping
+    {
+      const mrpt::aligned_std_vector<float>* src_buf = nullptr;
+      mrpt::aligned_std_vector<float>* dst_buf = nullptr;
+    };
+    std::vector<FloatFieldMapping> float_fields;
+
+    struct UInt16FieldMapping
+    {
+      const mrpt::aligned_std_vector<uint16_t>* src_buf = nullptr;
+      mrpt::aligned_std_vector<uint16_t>* dst_buf = nullptr;
+    };
+    std::vector<UInt16FieldMapping> uint16_fields;
+  };
+
+  /** Prepare efficient data structures for repeated insertion from another point map with
+   * insertPointFrom()  */
+  InsertCtx prepareForInsertPointsFrom(const CPointsMap& source) const;
+
   /** Generic method to copy *all* applicable point properties from
    *  one map to another, e.g. timestamp, intensity, etc.
    *  \note Before calling this in a loop, make sure of calling registerPointFieldsFrom()
    */
-  void insertPointFrom(const mrpt::maps::CPointsMap& source, size_t sourcePointIndex)
+  void insertPointFrom(const CPointsMap& source, size_t sourcePointIndex, const InsertCtx& ctx)
   {
-    const auto i = sourcePointIndex;  // shortcut
-    // mandatory fields: XYZ
-    const auto& xs = source.getPointsBufferRef_x();
-    const auto& ys = source.getPointsBufferRef_y();
-    const auto& zs = source.getPointsBufferRef_z();
-    insertPointFast(xs[i], ys[i], zs[i]);
+    const size_t i = sourcePointIndex;
+    insertPointFast((*ctx.xs_src)[i], (*ctx.ys_src)[i], (*ctx.zs_src)[i]);
 
-    // Optional fields: only if they already exist on both maps:
-    for (const auto& f : this->getPointFieldNames_float_except_xyz())
+    // Optional fields
+    for (auto& f : ctx.float_fields)
     {
-      insertPointField_float(f, source.getPointField_float(i, f));
+      f.dst_buf->push_back((*f.src_buf)[i]);
     }
-    for (const auto& f : this->getPointFieldNames_uint16())
+
+    for (auto& f : ctx.uint16_fields)
     {
-      insertPointField_uint16(f, source.getPointField_uint16(i, f));
+      f.dst_buf->push_back((*f.src_buf)[i]);
     }
+
     mark_as_modified();
   }
 
@@ -1171,7 +1207,9 @@ class CPointsMap :
     clear();
     reserve(N);
     for (size_t i = 0; i < N; ++i)
+    {
       this->insertPointFast(cloud.points[i].x, cloud.points[i].y, cloud.points[i].z);
+    }
   }
 
   /** @} */

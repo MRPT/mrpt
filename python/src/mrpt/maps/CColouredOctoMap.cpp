@@ -686,19 +686,6 @@ struct PyCallBack_mrpt_maps_CColouredPointsMap : public mrpt::maps::CColouredPoi
 		}
 		return CColouredPointsMap::setSize(a0);
 	}
-	void insertPointFast(float a0, float a1, float a2) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CColouredPointsMap *>(this), "insertPointFast");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CColouredPointsMap::insertPointFast(a0, a1, a2);
-	}
 	void setPointRGB(size_t a0, float a1, float a2, float a3, float a4, float a5, float a6) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CColouredPointsMap *>(this), "setPointRGB");
@@ -1294,8 +1281,6 @@ void bind_mrpt_maps_CColouredOctoMap(std::function< pybind11::module &(std::stri
 		cl.def("reserve", (void (mrpt::maps::CColouredPointsMap::*)(size_t)) &mrpt::maps::CColouredPointsMap::reserve, "from CPointsMap\n    @{ \n\nC++: mrpt::maps::CColouredPointsMap::reserve(size_t) --> void", pybind11::arg("newLength"));
 		cl.def("resize", (void (mrpt::maps::CColouredPointsMap::*)(size_t)) &mrpt::maps::CColouredPointsMap::resize, "C++: mrpt::maps::CColouredPointsMap::resize(size_t) --> void", pybind11::arg("newLength"));
 		cl.def("setSize", (void (mrpt::maps::CColouredPointsMap::*)(size_t)) &mrpt::maps::CColouredPointsMap::setSize, "C++: mrpt::maps::CColouredPointsMap::setSize(size_t) --> void", pybind11::arg("newLength"));
-		cl.def("insertPointFast", [](mrpt::maps::CColouredPointsMap &o, float const & a0, float const & a1) -> void { return o.insertPointFast(a0, a1); }, "", pybind11::arg("x"), pybind11::arg("y"));
-		cl.def("insertPointFast", (void (mrpt::maps::CColouredPointsMap::*)(float, float, float)) &mrpt::maps::CColouredPointsMap::insertPointFast, "The virtual method for  *without* calling\n mark_as_modified()   \n\nC++: mrpt::maps::CColouredPointsMap::insertPointFast(float, float, float) --> void", pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"));
 		cl.def("save3D_and_colour_to_text_file", (bool (mrpt::maps::CColouredPointsMap::*)(const std::string &) const) &mrpt::maps::CColouredPointsMap::save3D_and_colour_to_text_file, "Save to a text file. In each line contains X Y Z (meters) R G B (range\n [0,1]) for each point in the map.\n     Returns false if any error occurred, true elsewere.\n\nC++: mrpt::maps::CColouredPointsMap::save3D_and_colour_to_text_file(const std::string &) const --> bool", pybind11::arg("file"));
 		cl.def("setPointRGB", (void (mrpt::maps::CColouredPointsMap::*)(size_t, float, float, float, float, float, float)) &mrpt::maps::CColouredPointsMap::setPointRGB, "Changes a given point from map. First index is 0.\n \n\n Throws std::exception on index out of bound.\n\nC++: mrpt::maps::CColouredPointsMap::setPointRGB(size_t, float, float, float, float, float, float) --> void", pybind11::arg("index"), pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"), pybind11::arg("R"), pybind11::arg("G"), pybind11::arg("B"));
 		cl.def("insertPointRGB", (void (mrpt::maps::CColouredPointsMap::*)(float, float, float, float, float, float)) &mrpt::maps::CColouredPointsMap::insertPointRGB, "Adds a new point given its coordinates and color (colors range is [0,1])\n\nC++: mrpt::maps::CColouredPointsMap::insertPointRGB(float, float, float, float, float, float) --> void", pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"), pybind11::arg("R"), pybind11::arg("G"), pybind11::arg("B"));

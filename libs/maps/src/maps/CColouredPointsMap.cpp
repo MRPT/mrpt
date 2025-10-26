@@ -317,14 +317,6 @@ void CColouredPointsMap::setPointColor(size_t index, float R, float G, float B)
   // mark_as_modified();  // No need to rebuild KD-trees, etc...
 }
 
-void CColouredPointsMap::insertPointFast(float x, float y, float z)
-{
-  m_x.push_back(x);
-  m_y.push_back(y);
-  m_z.push_back(z);
-  // mark_as_modified(); -> Fast
-}
-
 void CColouredPointsMap::insertPointRGB(float x, float y, float z, float R, float G, float B)
 {
   m_x.push_back(x);
