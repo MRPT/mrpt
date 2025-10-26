@@ -1,5 +1,17 @@
 \page changelog Change Log
 
+# Version 2.15.0: Released Oct 26th, 2025
+- Changes in apps:
+  - RawLogViewer: 
+    - Show stats for mrpt::maps::CGenericPoinsMap.
+    - GUI options to colorize clouds by any point cloud field.
+- Changes in libraries:
+  - \ref mrpt_maps_grp
+    - Add new mrpt::maps::CGenericPointsMap
+    - Refactor around mrpt::maps::CPointsMap for more efficient generic insertion of maps in others with arbitrary per-point fields.
+- Build system:
+  - Completely remove any connection to ROS1 in this repository.
+
 # Version 2.14.16: Released Oct 15th, 2025
 - Changes in libraries:
   - \ref mrpt_rtti_grp

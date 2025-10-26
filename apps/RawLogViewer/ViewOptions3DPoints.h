@@ -14,6 +14,7 @@
 #include <wx/button.h>
 #include <wx/checkbox.h>
 #include <wx/clrpicker.h>
+#include <wx/combobox.h>
 #include <wx/panel.h>
 #include <wx/radiobox.h>
 #include <wx/sizer.h>
@@ -51,7 +52,7 @@ class ViewOptions3DPoints : public wxPanel
   wxCheckBox* cb2DShowPoints;
   wxRadioBox* RadioBox1;
   wxCheckBox* cbColorFromRGB;
-  wxRadioBox* rbColorByAxis;
+  wxComboBox* cbColorByAxis;
   wxTextCtrl* edTickTextSize;
   wxCheckBox* cbShowAxes;
   wxSpinCtrl* edPointSize;

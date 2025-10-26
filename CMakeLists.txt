@@ -259,11 +259,6 @@ endif()
 include(cmakemodules/script_gl_glut.cmake REQUIRED)     # Check for the GL,GLUT libraries
 include(cmakemodules/script_jsoncpp.cmake REQUIRED)     # Check for jsoncpp
 
-# ----------------------------------------------------------------------------
-# ROS
-# ----------------------------------------------------------------------------
-include(cmakemodules/script_ros.cmake REQUIRED)        # Check for ROS1 / ROS2
-
 # Abort from ROS scripts? (special case for the build farm)
 if (MRPT_ABORT_CMAKE_SCRIPT)
 	return()

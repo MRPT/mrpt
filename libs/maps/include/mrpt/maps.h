@@ -21,6 +21,7 @@ MRPT_WARNING(
 #include <mrpt/maps/CColouredOctoMap.h>
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CGasConcentrationGridMap2D.h>
+#include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/maps/CHeightGridMap2D.h>
 #include <mrpt/maps/CHeightGridMap2D_MRF.h>
 #include <mrpt/maps/CMultiMetricMap.h>
