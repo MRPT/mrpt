@@ -34,7 +34,11 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
   DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderTriangles, mrpt::opengl)
 
  public:
-  CRenderizableShaderTriangles() = default;
+  CRenderizableShaderTriangles()
+  {  // Initialize GlState
+    auto gh = gls();
+  }
+
   virtual ~CRenderizableShaderTriangles() override;
 
   virtual shader_list_t requiredShaders() const override
@@ -51,9 +55,21 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
   // See base docs
   void freeOpenGLResources() override
   {
-    m_trianglesBuffer.destroy();
-    m_vao.destroy();
+    auto gh = gls();
+    gh.state.trianglesBuffer->destroy();
+    gh.state.vao->destroy();
   }
+
+  bool isLightEnabled() const { return m_enableLight; }
+  void enableLight(bool enable = true) { m_enableLight = enable; }
+
+  /** Control whether to render the FRONT, BACK, or BOTH (default) set of
+   * faces. Refer to docs for glCullFace().
+   * Example: If set to `cullFaces(TCullFace::BACK);`, back faces will not be
+   * drawn ("culled")
+   */
+  void cullFaces(const TCullFace& cf) { m_cullface = cf; }
+  TCullFace cullFaces() const { return m_cullface; }
 
   /** @name Raw access to triangle shader buffer data
    * @{ */
@@ -69,9 +85,31 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
   /** Returns the bounding box of m_triangles, or (0,0,0)-(0,0,0) if empty. */
   const mrpt::math::TBoundingBoxf trianglesBoundingBox() const;
 
+  void params_serialize(mrpt::serialization::CArchive& out) const;
+  void params_deserialize(mrpt::serialization::CArchive& in);
+
  private:
-  mutable Buffer m_trianglesBuffer;
-  mutable VertexArrayObject m_vao;
+  bool m_enableLight = true;
+  TCullFace m_cullface = TCullFace::NONE;
+
+  struct GlState
+  {
+    std::unique_ptr<Buffer> trianglesBuffer = std::make_unique<Buffer>();
+    std::unique_ptr<VertexArrayObject> vao = std::make_unique<VertexArrayObject>();
+  };
+  mutable mrpt::containers::NonCopiableData<GlState> m_gls;
+  mutable mrpt::containers::NonCopiableData<std::mutex> m_glsMtx;
+  struct GlsHandle
+  {
+    GlState& state;
+    std::unique_lock<std::mutex> lock;
+  };
+
+  [[nodiscard]] GlsHandle gls() const
+  {
+    std::unique_lock<std::mutex> lock(m_glsMtx.data);
+    return {m_gls.data, std::move(lock)};
+  }
 };
 
 }  // namespace mrpt::opengl

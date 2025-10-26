@@ -28,9 +28,6 @@ namespace mrpt::opengl
  *
  * To load from a points-map, CPointCloud::loadFromPointsMap().
  *
- * This class uses smart optimizations while rendering to efficiently draw
- * clouds of millions of points, using octrees.
- *
  * ![mrpt::opengl::CPointCloud](preview_CPointCloud.png)
  *
  *  \sa opengl::CPlanarLaserScan, opengl::Scene,

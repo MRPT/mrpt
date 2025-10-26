@@ -78,12 +78,12 @@ void CSkyBox::renderUpdateBuffers() const
   };
 
   // Define OpenGL buffers:
-  m_vbo.createOnce();
-  m_vbo.bind();
-  m_vbo.allocate(skyboxVertices, sizeof(skyboxVertices));
+  (*m_vbo)->createOnce();
+  (*m_vbo)->bind();
+  (*m_vbo)->allocate(skyboxVertices, sizeof(skyboxVertices));
 
   // VAO: required to use glEnableVertexAttribArray()
-  m_vao.createOnce();
+  (*m_vao)->createOnce();
 }
 
 void CSkyBox::render(const RenderContext& rc) const
@@ -111,9 +111,9 @@ void CSkyBox::render(const RenderContext& rc) const
   GLuint attr_position;
   {
     attr_position = rc.shader->attributeId("position");
-    m_vao.bind();
+    (*m_vao)->bind();
     glEnableVertexAttribArray(attr_position);
-    m_vbo.bind();
+    (*m_vbo)->bind();
     glVertexAttribPointer(
         attr_position,  // attribute
         3,              // size
