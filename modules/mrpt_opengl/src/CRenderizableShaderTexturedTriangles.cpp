@@ -40,16 +40,17 @@ void CRenderizableShaderTexturedTriangles::renderUpdateBuffers() const
   const_cast<CRenderizableShaderTexturedTriangles&>(*this).onUpdateBuffers_TexturedTriangles();
 
   std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
+  auto gh = gls();
 
   const auto n = m_triangles.size();
 
   // Define OpenGL buffers:
-  m_vbo.createOnce();
-  m_vbo.bind();
-  m_vbo.allocate(m_triangles.data(), sizeof(m_triangles[0]) * n);
+  gh.state.vbo->createOnce();
+  gh.state.vbo->bind();
+  gh.state.vbo->allocate(m_triangles.data(), sizeof(m_triangles[0]) * n);
 
   // VAO: required to use glEnableVertexAttribArray()
-  m_vao.createOnce();
+  gh.state.vao->createOnce();
 
 #endif
 }
@@ -63,6 +64,7 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
   ASSERT_(m_glTexture.initialized());
 
   std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
+  auto gh = gls();
 
   // Set the texture uniform:
   const Program& s = *rc.shader;
@@ -118,9 +120,9 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
   if (rc.shader->hasAttribute("position"))
   {
     attr_position = rc.shader->attributeId("position");
-    m_vao.bind();
+    gh.state.vao->bind();
     glEnableVertexAttribArray(*attr_position);
-    m_vbo.bind();
+    gh.state.vbo->bind();
     glVertexAttribPointer(
         *attr_position,            /* attribute */
         3,                         /* size */
@@ -137,7 +139,7 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
   {
     attr_normals = rc.shader->attributeId("vertexNormal");
     glEnableVertexAttribArray(*attr_normals);
-    m_vbo.bind();
+    gh.state.vbo->bind();
     glVertexAttribPointer(
         *attr_normals,             /* attribute */
         3,                         /* size */
@@ -154,7 +156,7 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
   {
     attr_uv = rc.shader->attributeId("vertexUV");
     glEnableVertexAttribArray(*attr_uv);
-    m_vbo.bind();
+    gh.state.vbo->bind();
     glVertexAttribPointer(
         *attr_uv,                  /* attribute */
         2,                         /* size */
@@ -188,6 +190,74 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
   if (attr_normals) glDisableVertexAttribArray(*attr_normals);
 
 #endif
+}
+
+void CRenderizableShaderTexturedTriangles::assignImage(const CImage& img, const CImage& imgAlpha)
+{
+  MRPT_START
+
+  CRenderizable::notifyChange();
+
+  m_glTexture.unloadTexture();
+
+  // Make a copy:
+  m_textureImage = img;
+  m_textureImageAlpha = imgAlpha;
+  m_textureImageAssigned = true;
+
+  m_enableTransparency = true;
+
+  MRPT_END
+}
+
+void CRenderizableShaderTexturedTriangles::assignImage(const CImage& img)
+{
+  MRPT_START
+
+  CRenderizable::notifyChange();
+
+  m_glTexture.unloadTexture();
+
+  // Make a shallow copy:
+  m_textureImage = img;
+  m_textureImageAssigned = true;
+
+  m_enableTransparency = false;
+
+  MRPT_END
+}
+
+void CRenderizableShaderTexturedTriangles::assignImage(CImage&& img, CImage&& imgAlpha)
+{
+  MRPT_START
+
+  CRenderizable::notifyChange();
+
+  m_glTexture.unloadTexture();
+
+  m_textureImage = std::move(img);
+  m_textureImageAlpha = std::move(imgAlpha);
+  m_textureImageAssigned = true;
+
+  m_enableTransparency = true;
+
+  MRPT_END
+}
+
+void CRenderizableShaderTexturedTriangles::assignImage(CImage&& img)
+{
+  MRPT_START
+
+  CRenderizable::notifyChange();
+
+  m_glTexture.unloadTexture();
+
+  m_textureImage = std::move(img);
+  m_textureImageAssigned = true;
+
+  m_enableTransparency = false;
+
+  MRPT_END
 }
 
 void CRenderizableShaderTexturedTriangles::initializeTextures() const

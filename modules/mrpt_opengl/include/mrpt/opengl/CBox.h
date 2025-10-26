@@ -13,6 +13,7 @@
 */
 #pragma once
 
+#include <mrpt/math/TOrientedBox.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/opengl/CRenderizableShaderTriangles.h>
 #include <mrpt/opengl/CRenderizableShaderWireFrame.h>
@@ -112,6 +113,22 @@ class CBox : public CRenderizableShaderTriangles, public CRenderizableShaderWire
 
   /** Destructor  */
   ~CBox() override = default;
+
+  /** Set box pose and size from an mrpt::math::TOrientedBox */
+  template <typename T>
+  explicit CBox(const mrpt::math::TOrientedBox_<T>& ob)
+  {
+    setFromOrientedBox(ob);
+  }
+
+  template <typename T>
+  void setFromOrientedBox(const mrpt::math::TOrientedBox_<T>& ob)
+  {
+    const auto size = ob.size().template cast<double>();
+    m_corner_min = size * (-0.5);
+    m_corner_max = size * (+0.5);
+    this->setPose(ob.pose());
+  }
 
  protected:
   /** Corners coordinates */

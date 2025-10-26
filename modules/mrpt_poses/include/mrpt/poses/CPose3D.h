@@ -316,7 +316,10 @@ class CPose3D :
   }
 
   /** Returns the (x,y,z) translational part of the SE(3) transformation. */
-  mrpt::math::TPoint3D translation() const { return {m_coords[0], m_coords[1], m_coords[2]}; }
+  [[nodiscard]] const mrpt::math::TPoint3D translation() const
+  {
+    return {m_coords[0], m_coords[1], m_coords[2]};
+  }
 
   /** @} */  // end rot and HM
 

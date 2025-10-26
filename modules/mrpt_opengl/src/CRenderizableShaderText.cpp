@@ -33,31 +33,31 @@ void CRenderizableShaderText::renderUpdateBuffers() const
   const_cast<CRenderizableShaderText&>(*this).onUpdateBuffers_Text();
 
   std::shared_lock<std::shared_mutex> readLock(m_textDataMtx.data);
+  auto gh = gls();
 
   // ======== LINES ========
   // Define OpenGL buffers:
-  m_linesVertexBuffer.createOnce();
-  m_linesVertexBuffer.bind();
-  m_linesVertexBuffer.allocate(
+  gh.state.linesVertexBuffer->createOnce();
+  gh.state.linesVertexBuffer->bind();
+  gh.state.linesVertexBuffer->allocate(
       m_vertex_buffer_data.data(), sizeof(m_vertex_buffer_data[0]) * m_vertex_buffer_data.size());
 
   // color buffer:
-  m_linesColorBuffer.createOnce();
-  m_linesColorBuffer.bind();
-  m_linesColorBuffer.allocate(
+  gh.state.linesColorBuffer->createOnce();
+  gh.state.linesColorBuffer->bind();
+  gh.state.linesColorBuffer->allocate(
       m_color_buffer_data.data(), sizeof(m_color_buffer_data[0]) * m_color_buffer_data.size());
 
   // ======== TRIANGLES ========
   const auto n = m_triangles.size();
 
   // Define OpenGL buffers:
-  m_trianglesBuffer.createOnce();
-  m_trianglesBuffer.bind();
-  m_trianglesBuffer.allocate(m_triangles.data(), sizeof(m_triangles[0]) * n);
+  gh.state.trianglesBuffer->createOnce();
+  gh.state.trianglesBuffer->bind();
+  gh.state.trianglesBuffer->allocate(m_triangles.data(), sizeof(m_triangles[0]) * n);
 
   // VAO: required to use glEnableVertexAttribArray()
-  m_vao.createOnce();
-
+  gh.state.vao->createOnce();
 #endif
 }
 
@@ -69,6 +69,7 @@ void CRenderizableShaderText::render(const RenderContext& rc) const
   if (rc.state->is1stShadowMapPass) return;
 
   std::shared_lock<std::shared_mutex> readLock(m_textDataMtx.data);
+  auto gh = gls();
 
   // === LINES ===
   std::optional<GLuint> attr_position;
@@ -79,9 +80,9 @@ void CRenderizableShaderText::render(const RenderContext& rc) const
   if (rc.shader->hasAttribute("position"))
   {
     attr_position = rc.shader->attributeId("position");
-    m_vao.bind();
+    gh.state.vao->bind();
     glEnableVertexAttribArray(*attr_position);
-    m_linesVertexBuffer.bind();
+    gh.state.linesVertexBuffer->bind();
     glVertexAttribPointer(
         *attr_position,  /* attribute */
         3,               /* size */
@@ -98,7 +99,7 @@ void CRenderizableShaderText::render(const RenderContext& rc) const
   {
     attr_color = rc.shader->attributeId("vertexColor");
     glEnableVertexAttribArray(*attr_color);
-    m_linesColorBuffer.bind();
+    gh.state.linesColorBuffer->bind();
     glVertexAttribPointer(
         *attr_color,      /* attribute */
         4,                /* size */
@@ -119,7 +120,7 @@ void CRenderizableShaderText::render(const RenderContext& rc) const
   if (attr_position)
   {
     // === TRIANGLES ===
-    m_trianglesBuffer.bind();
+    gh.state.trianglesBuffer->bind();
     glVertexAttribPointer(
         *attr_position,            /* attribute */
         3,                         /* size */
@@ -132,7 +133,7 @@ void CRenderizableShaderText::render(const RenderContext& rc) const
     if (attr_color)
     {
       // Set up the color array:
-      m_trianglesBuffer.bind();
+      gh.state.trianglesBuffer->bind();
       glVertexAttribPointer(
           *attr_color,               /* attribute */
           4,                         /* size */

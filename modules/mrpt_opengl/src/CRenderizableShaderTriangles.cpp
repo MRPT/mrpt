@@ -36,18 +36,19 @@ void CRenderizableShaderTriangles::renderUpdateBuffers() const
 
   std::shared_lock<std::shared_mutex> trisReadLock(
       CRenderizableShaderTriangles::m_trianglesMtx.data);
+  auto gh = gls();
 
   const auto& tris = shaderTrianglesBuffer();
 
   const auto n = tris.size();
 
   // Define OpenGL buffers:
-  m_trianglesBuffer.createOnce();
-  m_trianglesBuffer.bind();
-  m_trianglesBuffer.allocate(tris.data(), sizeof(tris[0]) * n);
+  gh.state.trianglesBuffer->createOnce();
+  gh.state.trianglesBuffer->bind();
+  gh.state.trianglesBuffer->allocate(tris.data(), sizeof(tris[0]) * n);
 
   // VAO: required to use glEnableVertexAttribArray()
-  m_vao.createOnce();
+  gh.state.vao->createOnce();
 #endif
 }
 
@@ -57,6 +58,7 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 
   std::shared_lock<std::shared_mutex> trisReadLock(
       CRenderizableShaderTriangles::m_trianglesMtx.data);
+  auto gh = gls();
 
   const Program& s = *rc.shader;
 
@@ -104,9 +106,9 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
   if (rc.shader->hasAttribute("position"))
   {
     attr_position = rc.shader->attributeId("position");
-    m_vao.bind();
+    gh.state.vao->bind();
     glEnableVertexAttribArray(*attr_position);
-    m_trianglesBuffer.bind();
+    gh.state.trianglesBuffer->bind();
     glVertexAttribPointer(
         *attr_position,            /* attribute */
         3,                         /* size */
@@ -123,7 +125,7 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
   {
     attr_color = rc.shader->attributeId("vertexColor");
     glEnableVertexAttribArray(*attr_color);
-    m_trianglesBuffer.bind();
+    gh.state.trianglesBuffer->bind();
     glVertexAttribPointer(
         *attr_color,               /* attribute */
         4,                         /* size */
@@ -140,7 +142,7 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
   {
     attr_normals = rc.shader->attributeId("vertexNormal");
     glEnableVertexAttribArray(*attr_normals);
-    m_trianglesBuffer.bind();
+    gh.state.trianglesBuffer->bind();
     glVertexAttribPointer(
         *attr_normals,             /* attribute */
         3,                         /* size */

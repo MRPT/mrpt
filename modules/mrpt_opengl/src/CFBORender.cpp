@@ -112,6 +112,7 @@ CFBORender::CFBORender(const Parameters& p) : m_params(p)
 
     PFNEGLGETPLATFORMDISPLAYEXTPROC eglGetPlatformDisplayEXT =
         (PFNEGLGETPLATFORMDISPLAYEXTPROC)eglGetProcAddress("eglGetPlatformDisplayEXT");
+    ASSERT_(eglGetPlatformDisplayEXT);
 
     m_eglDpy = eglGetPlatformDisplayEXT(EGL_PLATFORM_DEVICE_EXT, eglDevs[p.deviceIndexToUse], 0);
 
@@ -170,7 +171,11 @@ CFBORender::CFBORender(const Parameters& p) : m_params(p)
 
     ASSERT_(m_eglContext != EGL_NO_CONTEXT);
 
-    eglMakeCurrent(m_eglDpy, m_eglSurf, m_eglSurf, m_eglContext);
+    if (eglMakeCurrent(m_eglDpy, m_eglSurf, m_eglSurf, m_eglContext) == EGL_FALSE)
+    {
+      EGLint err = eglGetError();
+      THROW_EXCEPTION_FMT("eglMakeCurrent failed: 0x%X", err);
+    }
   }
 
   // -------------------------------
@@ -183,10 +188,10 @@ CFBORender::CFBORender(const Parameters& p) : m_params(p)
   // Create texture:
   // -------------------------------
   glGenTextures(1, &m_texRGB);
-  CHECK_OPENGL_ERROR_IN_DEBUG();
+  CHECK_OPENGL_ERROR();
 
   glBindTexture(GL_TEXTURE_2D, m_texRGB);
-  CHECK_OPENGL_ERROR_IN_DEBUG();
+  CHECK_OPENGL_ERROR();
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   CHECK_OPENGL_ERROR_IN_DEBUG();
