@@ -98,19 +98,7 @@ CLogOddsGridMapLUT<COccupancyGridMap2D::cellType>& COccupancyGridMap2D::get_logo
             Constructor
   ---------------------------------------------------------------*/
 COccupancyGridMap2D::COccupancyGridMap2D(
-    float min_x, float max_x, float min_y, float max_y, float res) :
-    m_map(),
-
-    m_precomputedLikelihood(),
-
-    m_basis_map(),
-    m_voronoi_diagram(),
-
-    updateInfoChangeOnly(),
-    insertionOptions(),
-    likelihoodOptions(),
-    likelihoodOutputs(),
-    CriticalPointsList()
+    float min_x, float max_x, float min_y, float max_y, float res)
 {
   MRPT_START
   setSize(min_x, max_x, min_y, max_y, res, 0.5f);

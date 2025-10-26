@@ -19,7 +19,9 @@
 #include <mrpt/maps/CWeightedPointsMap.h>
 #include <mrpt/poses/CPoint2D.h>
 
+#include <array>
 #include <sstream>
+#include <utility>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -28,10 +30,10 @@ using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
 
-const size_t demo9_N = 9;
-const float demo9_xs[demo9_N] = {0, 0, 0, 1, 1, 1, 2, 2, 2};
-const float demo9_ys[demo9_N] = {0, 1, 2, 0, 1, 2, 0, 1, 2};
-const float demo9_zs[demo9_N] = {0, 1, 2, 0, 1, 2, 0, 1, 2};
+constexpr size_t demo9_N = 9;
+constexpr std::array<float, demo9_N> demo9_xs{0, 0, 0, 1, 1, 1, 2, 2, 2};
+constexpr std::array<float, demo9_N> demo9_ys{0, 1, 2, 0, 1, 2, 0, 1, 2};
+constexpr std::array<float, demo9_N> demo9_zs{0, 1, 2, 0, 1, 2, 0, 1, 2};
 
 template <class MAP>
 void load_demo_9pts_map(MAP& pts)
@@ -52,8 +54,12 @@ void do_test_insertPoints()
 
     for (size_t i = 0; i < demo9_N; i++)
     {
-      float x, y, z;
-      pts.getPoint(i, x, y, z);
+      auto [x, y, z] = [&]()
+      {
+        float xi, yi, zi;
+        pts.getPoint(i, xi, yi, zi);
+        return std::tuple{xi, yi, zi};
+      }();
       EXPECT_EQ(x, demo9_xs[i]);
       EXPECT_EQ(y, demo9_ys[i]);
       EXPECT_EQ(z, demo9_zs[i]);

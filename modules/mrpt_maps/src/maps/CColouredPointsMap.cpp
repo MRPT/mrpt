@@ -1,16 +1,17 @@
-/* +------------------------------------------------------------------------+
-|                     Mobile Robot Programming Toolkit (MRPT)            |
-|                          https://www.mrpt.org/                         |
-|                                                                        |
-| Copyright (c) 2005-2025, Individual contributors, see AUTHORS file     |
-| See: https://www.mrpt.org/Authors - All rights reserved.               |
-| Released under BSD License. See: https://www.mrpt.org/License          |
-+------------------------------------------------------------------------+ */
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
 
-#include "maps-precomp.h"  // Precomp header
-//
-#include <mrpt/core/bits_mem.h>
-#include <mrpt/img/color_maps.h>
+ Copyright (c) 2005-2025, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
@@ -565,33 +566,6 @@ void CColouredPointsMap::PLY_export_get_vertex(
   pt_color.R = m_color_R[idx];
   pt_color.G = m_color_G[idx];
   pt_color.B = m_color_B[idx];
-}
-
-/*---------------------------------------------------------------
-addFrom_classSpecific
----------------------------------------------------------------*/
-void CColouredPointsMap::addFrom_classSpecific(
-    const CPointsMap& anotherMap, size_t nPreviousPoints, const bool filterOutPointsAtZero)
-{
-  const size_t nOther = anotherMap.size();
-
-  // Specific data for this class:
-  const auto* anotheMap_col = dynamic_cast<const CColouredPointsMap*>(&anotherMap);
-
-  if (anotheMap_col)
-  {
-    for (size_t i = 0, j = nPreviousPoints; i < nOther; i++)
-    {
-      if (filterOutPointsAtZero && anotheMap_col->m_x[i] == 0 && anotheMap_col->m_y[i] == 0 &&
-          anotheMap_col->m_z[i] == 0)
-        continue;  // skip
-
-      m_color_R[j] = anotheMap_col->m_color_R[i];
-      m_color_G[j] = anotheMap_col->m_color_G[i];
-      m_color_B[j] = anotheMap_col->m_color_B[i];
-      j++;
-    }
-  }
 }
 
 namespace mrpt::maps::detail

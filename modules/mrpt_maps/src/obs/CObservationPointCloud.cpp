@@ -63,27 +63,32 @@ void CObservationPointCloud::getDescriptionAsText(std::ostream& o) const
     o << pointcloud->GetRuntimeClass()->className << "\n";
     o << "Number of points: " << pointcloud->size() << "\n";
 
-    // Special cases: show IRT stats:
-    if (auto* ptrIs = pointcloud->getPointsBufferRef_intensity(); ptrIs && !ptrIs->empty())
+    // Show channel stats:
+    for (const auto& fieldName : pointcloud->getPointFieldNames_float())
     {
+      const auto* data = pointcloud->getPointsBufferRef_float_field(fieldName);
+      if (!data)
+      {
+        continue;
+      }
       float Imin, Imax;
-      mrpt::math::minimum_maximum(*ptrIs, Imin, Imax);
-      o << "Intensity channel values: min=" << Imin << " max=" << Imax << " (" << ptrIs->size()
-        << " entries)\n";
+      mrpt::math::minimum_maximum(*data, Imin, Imax);
+      o << mrpt::format(
+          "Field: %-20.*s (float32): min=%7.02f max=%7.02f (%zu entries)\n",
+          static_cast<int>(fieldName.size()), fieldName.data(), Imin, Imax, data->size());
     }
-    if (auto* ptrTs = pointcloud->getPointsBufferRef_timestamp(); ptrTs && !ptrTs->empty())
+    for (const auto& fieldName : pointcloud->getPointFieldNames_uint16())
     {
-      float Tmin, Tmax;
-      mrpt::math::minimum_maximum(*ptrTs, Tmin, Tmax);
-      o << mrpt::format("Timestamp channel values: min=%f max=%f", Tmin, Tmax);
-      o << "(" << ptrTs->size() << " entries)\n";
-    }
-    if (auto* ptrRs = pointcloud->getPointsBufferRef_ring(); ptrRs && !ptrRs->empty())
-    {
-      uint16_t Rmin, Rmax;
-      mrpt::math::minimum_maximum(*ptrRs, Rmin, Rmax);
-      o << "Ring channel values: min=" << Rmin << " max=" << Rmax << " (" << ptrRs->size()
-        << " entries)\n";
+      const auto* data = pointcloud->getPointsBufferRef_uint_field(fieldName);
+      if (!data)
+      {
+        continue;
+      }
+      uint16_t Imin, Imax;
+      mrpt::math::minimum_maximum(*data, Imin, Imax);
+      o << mrpt::format(
+          "Field: %-20.*s  (uint16): min=%7hu max=%7hu (%zu entries)\n",
+          static_cast<int>(fieldName.size()), fieldName.data(), Imin, Imax, data->size());
     }
   }
 

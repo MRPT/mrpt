@@ -28,13 +28,13 @@ void VisualizationParameters::save_to_ini_file(
     mrpt::config::CConfigFileBase& cfg, const std::string& section) const
 {
   auto& c = cfg;
-  const std::string s = section;
+  const std::string& s = section;
 
   MRPT_SAVE_CONFIG_VAR(axisTickFrequency, c, s);
   MRPT_SAVE_CONFIG_VAR(axisLimits, c, s);
   MRPT_SAVE_CONFIG_VAR(axisTickTextSize, c, s);
   MRPT_SAVE_CONFIG_VAR(colorFromRGBimage, c, s);
-  MRPT_SAVE_CONFIG_VAR(colorizeByAxis, c, s);
+  MRPT_SAVE_CONFIG_VAR(colorizeByField, c, s);
   MRPT_SAVE_CONFIG_VAR(invertColorMapping, c, s);
   MRPT_SAVE_CONFIG_VAR(pointSize, c, s);
   MRPT_SAVE_CONFIG_VAR(colorMap, c, s);
@@ -60,13 +60,13 @@ void VisualizationParameters::load_from_ini_file(
     const mrpt::config::CConfigFileBase& cfg, const std::string& section)
 {
   const auto& c = cfg;
-  const std::string s = section;
+  const std::string& s = section;
 
   MRPT_LOAD_CONFIG_VAR_CS(axisTickFrequency, double);
   MRPT_LOAD_CONFIG_VAR_CS(axisLimits, double);
   MRPT_LOAD_CONFIG_VAR_CS(axisTickTextSize, double);
   MRPT_LOAD_CONFIG_VAR_CS(colorFromRGBimage, bool);
-  MRPT_LOAD_CONFIG_VAR_CS(colorizeByAxis, int);
+  MRPT_LOAD_CONFIG_VAR_CS(colorizeByField, string);
   MRPT_LOAD_CONFIG_VAR_CS(invertColorMapping, bool);
   MRPT_LOAD_CONFIG_VAR_CS(pointSize, double);
   MRPT_LOAD_CONFIG_VAR_CS(drawSensorPose, bool);
@@ -89,49 +89,79 @@ void VisualizationParameters::load_from_ini_file(
 }
 
 // Bounding box memory so we have consistent coloring across different sensors:
-static thread_local std::optional<mrpt::math::TBoundingBox> bbMemory;
-double bbMemoryFading = 0.99;
+namespace
+{
+thread_local std::map<std::string, std::pair<float, float>> bbMemory;
+constexpr double bbMemoryFading = 0.99;
+}  // namespace
 
 void mrpt::obs::recolorize3Dpc(
     const mrpt::viz::CPointCloudColoured::Ptr& pnts, const VisualizationParameters& p)
 {
-  const auto newBb = pnts->getBoundingBox();
+  if (!originalPts)
+  {
+    return;
+  }
+
+  std::pair<float, float> dataLimits;
+  std::size_t dataPoints = 0;
+
+  const mrpt::aligned_std_vector<float>* fieldData_f = nullptr;
+  const mrpt::aligned_std_vector<uint16_t>* fieldData_u = nullptr;
+
+  if (fieldData_f = originalPts->getPointsBufferRef_float_field(p.colorizeByField); fieldData_f)
+  {
+    dataPoints = fieldData_f->size();
+    mrpt::math::minimum_maximum(*fieldData_f, dataLimits.first, dataLimits.second);
+  }
+  else if (fieldData_u = originalPts->getPointsBufferRef_uint_field(p.colorizeByField); fieldData_u)
+  {
+    dataPoints = fieldData_u->size();
+
+    uint16_t uMin, uMax;
+    mrpt::math::minimum_maximum(*fieldData_u, uMin, uMax);
+    dataLimits.first = static_cast<float>(uMin);
+    dataLimits.second = static_cast<float>(uMax);
+  }
+
+  if (!fieldData_f && !fieldData_u)
+  {
+    return;
+  }
+
+  if (dataPoints != pnts->size())
+  {
+    std::cerr << "[mrpt::obs::recolorize3Dpc] Warning: Skipping colorization due to mismatch in "
+                 "vector lengths.\n";
+    return;
+  }
 
   // Slowly update bb memory:
-  if (!bbMemory.has_value())
+  if (!bbMemory.count(p.colorizeByField))
   {
     // first time:
-    bbMemory = newBb;
+    bbMemory[p.colorizeByField] = dataLimits;
   }
   else
   {
-    bbMemory.value().min =
-        bbMemory.value().min * bbMemoryFading + newBb.min * (1.0 - bbMemoryFading);
-    bbMemory.value().max =
-        bbMemory.value().max * bbMemoryFading + newBb.max * (1.0 - bbMemoryFading);
+    auto& bb = bbMemory[p.colorizeByField];
+    bb.first = bb.first * bbMemoryFading + dataLimits.first * (1.0 - bbMemoryFading);
+    bb.second = bb.second * bbMemoryFading + dataLimits.second * (1.0 - bbMemoryFading);
   }
-  const auto& bb = bbMemory.value();
+  const auto& bb = bbMemory[p.colorizeByField];
 
-  // actual colorize:
-  switch (p.colorizeByAxis)
+  const float colMin = p.invertColorMapping ? bb.second : bb.first;
+  const float colMax = p.invertColorMapping ? bb.first : bb.second;
+
+  const float coord_range = colMax - colMin;
+  const float coord_range_1 = coord_range != 0.0f ? 1.0f / coord_range : 1.0f;
+  for (size_t i = 0; i < pnts->size(); i++)
   {
-    case 0:
-      pnts->recolorizeByCoordinate(
-          p.invertColorMapping ? bb.max.x : bb.min.x, p.invertColorMapping ? bb.min.x : bb.max.x,
-          0 /* x */, p.colorMap);
-      break;
-    case 1:
-      pnts->recolorizeByCoordinate(
-          p.invertColorMapping ? bb.max.y : bb.min.y, p.invertColorMapping ? bb.min.y : bb.max.y,
-          1 /* y */, p.colorMap);
-      break;
-    case 2:
-      pnts->recolorizeByCoordinate(
-          p.invertColorMapping ? bb.max.z : bb.min.z, p.invertColorMapping ? bb.min.z : bb.max.z,
-          2 /* z */, p.colorMap);
-      break;
-    default:
-      break;
+    float coord = fieldData_f ? fieldData_f->at(i) : static_cast<float>(fieldData_u->at(i));
+    const float col_idx = std::max(0.0f, std::min(1.0f, (coord - colMin) * coord_range_1));
+    float r, g, b;
+    mrpt::img::colormap(p.colorMap, col_idx, r, g, b);
+    pnts->setPointColor_fast(i, r, g, b);
   }
 }
 
@@ -217,7 +247,7 @@ void mrpt::obs::obs3Dscan_to_viz(
   else
   {
     gl_pnts->loadFromPointsMap(pointMap.get());
-    recolorize3Dpc(gl_pnts, p);
+    recolorize3Dpc(gl_pnts, pointMap.get(), p);
   }
 
   // No need to further transform 3D points
@@ -244,7 +274,10 @@ void mrpt::obs::obsVelodyne_to_viz(
   pnts->loadFromPointsMap(&pntsMap);
   pnts->setPointSize(p.pointSize);
 
-  if (!p.colorFromRGBimage) recolorize3Dpc(pnts, p);
+  if (!p.colorFromRGBimage)
+  {
+    recolorize3Dpc(pnts, &pntsMap, p);
+  }
 }
 
 void mrpt::obs::obsPointCloud_to_viz(
@@ -264,7 +297,10 @@ void mrpt::obs::obsPointCloud_to_viz(
 
   pnts->setPointSize(p.pointSize);
 
-  if (!p.colorFromRGBimage) recolorize3Dpc(pnts, p);
+  if (!p.colorFromRGBimage)
+  {
+    recolorize3Dpc(pnts, obs->pointcloud.get(), p);
+  }
 }
 
 void mrpt::obs::obsRotatingScan_to_viz(
@@ -287,7 +323,7 @@ void mrpt::obs::obsRotatingScan_to_viz(
 
   pnts->setPointSize(p.pointSize);
 
-  if (!p.colorFromRGBimage) recolorize3Dpc(pnts, p);
+  if (!p.colorFromRGBimage) recolorize3Dpc(pnts, nullptr, p);
 }
 
 void mrpt::obs::obs2Dscan_to_viz(

@@ -43,6 +43,7 @@ TEST_CLASS_MOVE_COPY_CTORS(CReflectivityGridMap2D);
 TEST_CLASS_MOVE_COPY_CTORS(COccupancyGridMap2D);
 TEST_CLASS_MOVE_COPY_CTORS(COccupancyGridMap3D);
 TEST_CLASS_MOVE_COPY_CTORS(CSimplePointsMap);
+TEST_CLASS_MOVE_COPY_CTORS(CGenericPointsMap);
 TEST_CLASS_MOVE_COPY_CTORS(CRandomFieldGridMap3D);
 TEST_CLASS_MOVE_COPY_CTORS(CWeightedPointsMap);
 TEST_CLASS_MOVE_COPY_CTORS(CPointsMapXYZI);
@@ -76,6 +77,7 @@ TEST(SerializeTestMaps, WriteReadToMem)
       CLASS_ID(CRandomFieldGridMap3D),
       CLASS_ID(CWeightedPointsMap),
       CLASS_ID(CPointsMapXYZI),
+      CLASS_ID(CGenericPointsMap),
       CLASS_ID(COctoMap),
       CLASS_ID(CColouredOctoMap),
       CLASS_ID(CVoxelMap),
@@ -88,25 +90,31 @@ TEST(SerializeTestMaps, WriteReadToMem)
       CLASS_ID(CPlanarLaserScan),
   };
 
-  for (auto& lstClasse : lstClasses)
+  for (auto& classInfo : lstClasses)
   {
     try
     {
       CMemoryStream buf;
       auto arch = mrpt::serialization::archiveFrom(buf);
+      std::cout << "Serializing " << classInfo->className << "...";
       {
-        auto o = mrpt::ptr_cast<CSerializable>::from(lstClasse->createObject());
+        auto o = mrpt::ptr_cast<CSerializable>::from(classInfo->createObject());
         arch << *o;
         o.reset();
       }
+      std::cout << "OK.\n";
+
+      std::cout << "  Deserializing it...";
 
       CSerializable::Ptr recons;
       buf.Seek(0);
       arch >> recons;
+
+      std::cout << "OK.\n";
     }
     catch (const std::exception& e)
     {
-      GTEST_FAIL() << "Exception during serialization test for class '" << lstClasse->className
+      GTEST_FAIL() << "Exception during serialization test for class '" << classInfo->className
                    << "':\n"
                    << e.what() << endl;
     }
