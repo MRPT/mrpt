@@ -95,7 +95,7 @@ void CColouredOctoMap::serializeTo(mrpt::serialization::CArchive& out) const
   out << genericMapParams;                    // v2
 
   // v2->v3: remove CMemoryChunk
-  std::stringstream ss;
+  std::stringstream ss(std::ios::in | std::ios::out | std::ios::binary);
   m_impl->m_octomap.writeBinaryConst(ss);
   const std::string& buf = ss.str();
   out << buf;
@@ -127,7 +127,7 @@ void CColouredOctoMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t 
 
       if (!buf.empty())
       {
-        std::stringstream ss;
+        std::stringstream ss(std::ios::in | std::ios::out | std::ios::binary);
         ss.str(buf);
         ss.seekg(0);
         m_impl->m_octomap.readBinary(ss);

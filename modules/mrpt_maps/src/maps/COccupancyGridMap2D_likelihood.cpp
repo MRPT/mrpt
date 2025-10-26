@@ -532,15 +532,27 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
   double minimumLik = zRandomTerm + zHit * exp(Q * maxCorrDist_sq);
   double ccos, ssin;
 
+  auto& precomputedCache = m_precomputedLikelihood.data;
+
   if (likelihoodOptions.enableLikelihoodCache)
   {
+    // the mutex ONLY protects the vector itself, not each cell
+    auto lck = std::lock_guard<std::mutex>(m_precomputedLikelihood_mtx.data);
     // Reset the precomputed likelihood values map
-    if (m_likelihoodCacheOutDated)
+    if (m_likelihoodCacheOutDated || precomputedCache.size() != m_map.size())
     {
       if (!m_map.empty())
-        m_precomputedLikelihood.assign(m_map.size(), LIK_LF_CACHE_INVALID);
+      {
+        precomputedCache = std::vector<std::atomic<double>>(m_map.size());
+        for (auto& v : precomputedCache)
+        {
+          v.store(LIK_LF_CACHE_INVALID, std::memory_order_relaxed);
+        }
+      }
       else
-        m_precomputedLikelihood.clear();
+      {
+        precomputedCache.clear();
+      }
 
       m_likelihoodCacheOutDated = false;
     }
@@ -596,7 +608,7 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
       // We are into the map limits:
       if (likelihoodOptions.enableLikelihoodCache)
       {
-        thisLik = m_precomputedLikelihood[cx + cy * m_size_x];
+        thisLik = precomputedCache[cx + cy * m_size_x].load(std::memory_order_relaxed);
       }
 
       if (!likelihoodOptions.enableLikelihoodCache || thisLik == LIK_LF_CACHE_INVALID)
@@ -652,7 +664,7 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 
         if (likelihoodOptions.enableLikelihoodCache)
           // And save it into the table and into "thisLik":
-          m_precomputedLikelihood[cx + cy * m_size_x] = thisLik;
+          precomputedCache[cx + cy * m_size_x].store(thisLik, std::memory_order_relaxed);
       }
     }
 

@@ -1,11 +1,16 @@
-/* +------------------------------------------------------------------------+
-|                     Mobile Robot Programming Toolkit (MRPT)            |
-|                          https://www.mrpt.org/                         |
-|                                                                        |
-| Copyright (c) 2005-2025, Individual contributors, see AUTHORS file     |
-| See: https://www.mrpt.org/Authors - All rights reserved.               |
-| Released under BSD License. See: https://www.mrpt.org/License          |
-+------------------------------------------------------------------------+ */
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2025, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
 
 #include "maps-precomp.h"  // Precomp header
 //
@@ -265,32 +270,6 @@ bool CPointsMapXYZI::loadXYZI_from_text_file(const std::string& file)
   MRPT_END
 }
 
-/*---------------------------------------------------------------
-addFrom_classSpecific
----------------------------------------------------------------*/
-void CPointsMapXYZI::addFrom_classSpecific(
-    const CPointsMap& anotherMap, size_t nPreviousPoints, const bool filterOutPointsAtZero)
-{
-  const size_t nOther = anotherMap.size();
-
-  // Specific data for this class:
-  const auto* anotheMap_col = dynamic_cast<const CPointsMapXYZI*>(&anotherMap);
-
-  if (anotheMap_col)
-  {
-    for (size_t i = 0, j = nPreviousPoints; i < nOther; i++)
-    {
-      if (filterOutPointsAtZero && anotheMap_col->getPointsBufferRef_x()[i] == 0 &&
-          anotheMap_col->getPointsBufferRef_y()[i] == 0 &&
-          anotheMap_col->getPointsBufferRef_z()[i] == 0)
-        continue;
-
-      m_intensity[j] = anotheMap_col->m_intensity[i];
-      j++;
-    }
-  }
-}
-
 namespace mrpt::maps::detail
 {
 using mrpt::maps::CPointsMapXYZI;
@@ -384,6 +363,66 @@ void CPointsMapXYZI::loadFromRangeScan(
 {
   mrpt::maps::detail::loadFromRangeImpl<CPointsMapXYZI>::templ_loadFromRangeScan(
       *this, rangeScan, robotPose);
+}
+
+/* ------------------------------------------------------------------
+ String-keyed field access virtual interface implementation
+   ------------------------------------------------------------------ */
+bool CPointsMapXYZI::hasPointField(const std::string_view& fieldName) const
+{
+  if (fieldName == POINT_FIELD_INTENSITY) return true;
+  return CPointsMap::hasPointField(fieldName);
+}
+std::vector<std::string_view> CPointsMapXYZI::getPointFieldNames_float() const
+{
+  std::vector<std::string_view> names = CPointsMap::getPointFieldNames_float();
+  names.push_back(POINT_FIELD_INTENSITY);
+  return names;
+}
+
+float CPointsMapXYZI::getPointField_float(size_t index, const std::string_view& fieldName) const
+{
+  if (fieldName == POINT_FIELD_INTENSITY)
+  {
+    if (!hasIntensityField()) return 0;
+    ASSERT_LT_(index, m_intensity.size());
+    return m_intensity[index];
+  }
+  return 0;
+}
+
+void CPointsMapXYZI::setPointField_float(
+    size_t index, const std::string_view& fieldName, float value)
+{
+  if (fieldName == POINT_FIELD_INTENSITY && hasIntensityField())
+  {
+    setPointIntensity(index, value);
+  }
+  else
+  {
+    CPointsMap::setPointField_float(index, fieldName, value);
+  }
+}
+
+void CPointsMapXYZI::insertPointField_float(const std::string_view& fieldName, float value)
+{
+  if (fieldName == POINT_FIELD_INTENSITY)
+  {
+    m_intensity.push_back(value);
+  }
+  else
+  {
+    CPointsMap::insertPointField_float(fieldName, value);
+  }
+}
+
+void CPointsMapXYZI::reserveField_float(const std::string_view& fieldName, size_t n)
+{
+  if (fieldName == POINT_FIELD_INTENSITY) m_intensity.reserve(n);
+}
+void CPointsMapXYZI::resizeField_float(const std::string_view& fieldName, size_t n)
+{
+  if (fieldName == POINT_FIELD_INTENSITY) m_intensity.resize(n, 0);
 }
 
 // ====PLY files import & export virtual methods

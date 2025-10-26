@@ -27,13 +27,12 @@
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/os.h>
-#include <mrpt/viz/CPointCloud.h>
-#include <mrpt/viz/CPointCloudColoured.h>
-#include <mrpt/viz/CSetOfObjects.h>
 
 #include <fstream>
 #include <sstream>
@@ -771,28 +770,6 @@ float CPointsMap::compute3DMatchingRatio(
       otherMap2->getAsSimplePointsMap(), otherMapPose, correspondences, params, extraResults);
 
   return extraResults.correspondencesRatio;
-}
-
-/*---------------------------------------------------------------
-            getLargestDistanceFromOrigin
----------------------------------------------------------------*/
-float CPointsMap::getLargestDistanceFromOrigin() const
-{
-  // Updated?
-  if (!m_largestDistanceFromOriginIsUpdated)
-  {
-    // NO: Update it:
-    float maxDistSq = 0, d;
-    for (auto X = m_x.begin(), Y = m_y.begin(), Z = m_z.begin(); X != m_x.end(); ++X, ++Y, ++Z)
-    {
-      d = square(*X) + square(*Y) + square(*Z);
-      maxDistSq = max(d, maxDistSq);
-    }
-
-    m_largestDistanceFromOrigin = sqrt(maxDistSq);
-    m_largestDistanceFromOriginIsUpdated = true;
-  }
-  return m_largestDistanceFromOrigin;
 }
 
 /*---------------------------------------------------------------
@@ -1539,10 +1516,12 @@ void CPointsMap::applyDeletionMask(const std::vector<bool>& mask)
 void CPointsMap::insertAnotherMap(
     const CPointsMap* otherMap, const CPose3D& otherPose, const bool filterOutPointsAtZero)
 {
+  ASSERT_(otherMap);
   const size_t N_this = size();
   const size_t N_other = otherMap->size();
 
   // Set the new size:
+  this->registerPointFieldsFrom(*otherMap);
   this->reserve(N_this + N_other);
 
   // Optimization: detect the case of no transformation needed and avoid the
@@ -1550,17 +1529,20 @@ void CPointsMap::insertAnotherMap(
   const bool identity_tf = (otherPose == CPose3D::Identity());
 
   mrpt::math::TPoint3Df pt;
-  for (size_t src = 0; src < N_other; src++)
+  for (size_t srcIdx = 0; srcIdx < N_other; srcIdx++)
   {
     // Load the next point:
-    otherMap->getPointFast(src, pt.x, pt.y, pt.z);
+    otherMap->getPointFast(srcIdx, pt.x, pt.y, pt.z);
 
-    if (filterOutPointsAtZero && pt.x == 0 && pt.y == 0 && pt.z == 0) continue;  // Skip
+    if (filterOutPointsAtZero && pt.x == 0 && pt.y == 0 && pt.z == 0)
+    {
+      continue;  // Skip
+    }
     // filter NANs:
     if (pt.x != pt.x) continue;
 
     // Add to this map:
-    this->insertPointFrom(*otherMap, src);
+    this->insertPointFrom(*otherMap, srcIdx);
 
     // and overwrite the XYZ, if needed:
     if (!identity_tf)
@@ -1568,33 +1550,11 @@ void CPointsMap::insertAnotherMap(
       // Translation:
       mrpt::math::TPoint3D g;
       otherPose.composePoint(pt.x, pt.y, pt.z, g.x, g.y, g.z);
-      m_x.back() = g.x;
-      m_y.back() = g.y;
-      m_z.back() = g.z;
+      m_x.back() = static_cast<float>(g.x);
+      m_y.back() = static_cast<float>(g.y);
+      m_z.back() = static_cast<float>(g.z);
     }
   }
-}
-
-/** Helper method for ::copyFrom() */
-void CPointsMap::base_copyFrom(const CPointsMap& obj)
-{
-  MRPT_START
-
-  if (this == &obj) return;
-
-  m_x = obj.m_x;
-  m_y = obj.m_y;
-  m_z = obj.m_z;
-
-  m_largestDistanceFromOriginIsUpdated = obj.m_largestDistanceFromOriginIsUpdated;
-  m_largestDistanceFromOrigin = obj.m_largestDistanceFromOrigin;
-
-  // Fill missing fields (R,G,B,min_dist) with default values.
-  this->resize(m_x.size());
-
-  kdtree_mark_as_outdated();
-
-  MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -2080,6 +2040,20 @@ void CPointsMap::loadFromVelodyneScan(
         inten, inten, inten            // RGB
     );
   }
+}
+
+std::vector<std::string_view> CPointsMap::getPointFieldNames_float_except_xyz() const
+{
+  const auto all = getPointFieldNames_float();
+  std::vector<std::string_view> result;
+  result.reserve(all.size());
+
+  for (auto name : all)
+  {
+    if (name != "x" && name != "y" && name != "z") result.push_back(name);
+  }
+
+  return result;
 }
 
 // =========== API of the NearestNeighborsCapable virtual interface ======
