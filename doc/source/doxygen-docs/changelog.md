@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.15.1: UNRELEASED
+(NONE)
+
 # Version 2.15.0: Released Oct 26th, 2025
 - Changes in apps:
   - RawLogViewer: 
