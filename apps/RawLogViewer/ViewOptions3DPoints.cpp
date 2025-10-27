@@ -132,8 +132,8 @@ ViewOptions3DPoints::ViewOptions3DPoints(wxWindow* parent, wxWindowID id)
   FlexGridSizer3->Add(
       cbOnlyPointsWithColor, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
 
-  const wxString colorOptions[] = {"x", "y", "z",    "i",         "intensity",   "ambient",
-                                   "r", "t", "time", "timestamp", "reflectivity"};
+  const wxString colorOptions[] = {"x",    "y", "z",    "i",         "intensity",   "ambient",
+                                   "ring", "t", "time", "timestamp", "reflectivity"};
 
   cbColorByAxis = new wxComboBox(
       this, ID_RADIOBOX1, _("Otherwise, color from:"), wxDefaultPosition, wxDefaultSize,
