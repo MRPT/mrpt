@@ -103,7 +103,7 @@ void mrpt::obs::recolorize3Dpc(
     return;
   }
 
-  std::pair<float, float> dataLimits;
+  std::pair<float, float> dataLimits{0, 0};
   std::size_t dataPoints = 0;
 
   const mrpt::aligned_std_vector<float>* fieldData_f = nullptr;
@@ -112,16 +112,22 @@ void mrpt::obs::recolorize3Dpc(
   if (fieldData_f = originalPts->getPointsBufferRef_float_field(p.colorizeByField); fieldData_f)
   {
     dataPoints = fieldData_f->size();
-    mrpt::math::minimum_maximum(*fieldData_f, dataLimits.first, dataLimits.second);
+    if (dataPoints)
+    {
+      mrpt::math::minimum_maximum(*fieldData_f, dataLimits.first, dataLimits.second);
+    }
   }
   else if (fieldData_u = originalPts->getPointsBufferRef_uint_field(p.colorizeByField); fieldData_u)
   {
     dataPoints = fieldData_u->size();
 
-    uint16_t uMin, uMax;
-    mrpt::math::minimum_maximum(*fieldData_u, uMin, uMax);
-    dataLimits.first = static_cast<float>(uMin);
-    dataLimits.second = static_cast<float>(uMax);
+    if (dataPoints)
+    {
+      uint16_t uMin = 0, uMax = 0;
+      mrpt::math::minimum_maximum(*fieldData_u, uMin, uMax);
+      dataLimits.first = static_cast<float>(uMin);
+      dataLimits.second = static_cast<float>(uMax);
+    }
   }
 
   if (!fieldData_f && !fieldData_u)
