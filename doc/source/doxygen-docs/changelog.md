@@ -1,7 +1,9 @@
 \page changelog Change Log
 
 # Version 2.15.1: UNRELEASED
-(NONE)
+- Bug fixes:
+  - FIX: Avoid throw when viewing and describing as text a PCD with an empty field.
+  - Avoid cmake errors when disabling libraries required by some unit tests.
 
 # Version 2.15.0: Released Oct 26th, 2025
 - Changes in apps:
