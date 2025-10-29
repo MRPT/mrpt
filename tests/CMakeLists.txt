@@ -101,19 +101,29 @@ foreach(_TSTLIB ${LST_LIB_TESTS})
 	# "error adding symbols: DSO missing from command line"
 	set(lst_deps ${_TSTLIB_DASH} ${lst_deps})
 	set(link_libs "") # Prepare a list so we can smoothly handle list of libs with "debug", "optimized", etc.
+	set(missing_deps 0)
 	foreach(_DEPLIB ${lst_deps})
 		# Include dirs:
 		if (_DEPLIB MATCHES "^mrpt-?:*(.*)")
 			string(REGEX REPLACE "mrpt-?:*(.*)" "\\1" _DEPLIB_DASH ${_DEPLIB})
 			# This link command automatically imports all required "include directories"
 			# and other PUBLIC dependencies of the linked target:
-			list(APPEND link_libs mrpt::${_DEPLIB_DASH})
+			if (TARGET mrpt::${_DEPLIB_DASH})
+				list(APPEND link_libs mrpt::${_DEPLIB_DASH})
+			else()
+				set(missing_deps 1)
+			endif()
 		else()
 			list(APPEND link_libs ${_DEPLIB})
 		endif()
 	endforeach()
 	target_link_libraries(test_${_TSTLIB} ${link_libs})
 	unset(link_libs)
+
+	if (missing_deps)
+		message(STATUS "Skipping tests for ${_TSTLIB} due to disabled building dependencies")
+		continue()
+	endif()
 
 	# Run it:
 	set(GENERATED_EXE "$<TARGET_FILE:test_${_TSTLIB}>")
