@@ -66,8 +66,11 @@ void CObservationPointCloud::getDescriptionAsText(std::ostream& o) const
       {
         continue;
       }
-      float Imin, Imax;
-      mrpt::math::minimum_maximum(*data, Imin, Imax);
+      float Imin = 0, Imax = 0;
+      if (!data->empty())
+      {
+        mrpt::math::minimum_maximum(*data, Imin, Imax);
+      }
       o << mrpt::format(
           "Field: %-20.*s (float32): min=%7.02f max=%7.02f (%zu entries)\n",
           static_cast<int>(fieldName.size()), fieldName.data(), Imin, Imax, data->size());
@@ -79,8 +82,11 @@ void CObservationPointCloud::getDescriptionAsText(std::ostream& o) const
       {
         continue;
       }
-      uint16_t Imin, Imax;
-      mrpt::math::minimum_maximum(*data, Imin, Imax);
+      uint16_t Imin = 0, Imax = 0;
+      if (!data->empty())
+      {
+        mrpt::math::minimum_maximum(*data, Imin, Imax);
+      }
       o << mrpt::format(
           "Field: %-20.*s  (uint16): min=%7hu max=%7hu (%zu entries)\n",
           static_cast<int>(fieldName.size()), fieldName.data(), Imin, Imax, data->size());
