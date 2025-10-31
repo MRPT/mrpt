@@ -292,7 +292,9 @@ include(cmakemodules/script_nanogui.cmake REQUIRED)     # Check for nanogui
 include(cmakemodules/script_nanoflann.cmake REQUIRED)   # Check for nanoflann
 include(cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
 include(cmakemodules/script_nite2.cmake REQUIRED)       # Check for NITE2 library
-include(cmakemodules/script_octomap.cmake REQUIRED)     # Check for the octomap library
+if(BUILD_mrpt-maps)
+        include(cmakemodules/script_octomap.cmake REQUIRED)     # Check for the octomap library
+endif()
 include(cmakemodules/script_opencv.cmake REQUIRED)      # Check for the OpenCV libraries (via pkg-config, CMake, with different options)
 include(cmakemodules/script_openni2.cmake REQUIRED)     # Check for the OpenNI2 library
 include(cmakemodules/script_pcap.cmake REQUIRED)        # Check for the libpcap library

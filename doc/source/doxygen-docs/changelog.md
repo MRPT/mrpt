@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+- Bug fixes:
+  - FIX: Don't require liboctomap-dev when not needed.
+
 # Version 2.15.1: Released Oct 29th, 2025
 - Bug fixes:
   - FIX: Avoid throw when viewing and describing as text a PCD with an empty field.
