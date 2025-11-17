@@ -2087,6 +2087,24 @@ CPointsMap::InsertCtx CPointsMap::prepareForInsertPointsFrom(const CPointsMap& s
     }
   }
 
+  const auto src_double_names = source.getPointFieldNames_double();
+  const auto dst_double_names = this->getPointFieldNames_double();
+  for (const auto& name : dst_double_names)
+  {
+    if (auto it = std::find(src_double_names.begin(), src_double_names.end(), name);
+        it != src_double_names.end())
+    {
+      const auto* srcVector = source.getPointsBufferRef_double_field(name);
+      if (!srcVector || srcVector->empty())
+      {
+        continue;
+      }
+      ctx.double_fields.push_back(
+          {srcVector, const_cast<mrpt::aligned_std_vector<double>*>(
+                          this->getPointsBufferRef_double_field(name))});
+    }
+  }
+
   const auto src_u16_names = source.getPointFieldNames_uint16();
   const auto dst_u16_names = this->getPointFieldNames_uint16();
   for (const auto& name : dst_u16_names)

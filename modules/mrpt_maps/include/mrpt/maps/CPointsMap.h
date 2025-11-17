@@ -391,6 +391,14 @@ class CPointsMap :
    */
   virtual bool registerField_uint16(const std::string_view& fieldName) { return false; }
 
+  /** Registers a new data channel of type `double`.
+   * If the map is not empty, the new channel is filled with default values (0)
+   * to match the current point count.
+   * \return true if the field could effectively be added to the underlying point map class.
+   * \sa hasPointField(), getPointFieldNames_double()
+   */
+  virtual bool registerField_double(const std::string_view& fieldName) { return false; }
+
   /** @} */
 
   // --------------------------------------------------
@@ -591,7 +599,7 @@ class CPointsMap :
    * @{ */
 
   /** Returns true if the map has a data channel with the given name.
-   * \sa getPointField_float, getPointField_uint16
+   * \sa getPointField_float, getPointField_double, getPointField_uint16
    */
   virtual bool hasPointField(const std::string_view& fieldName) const
   {
@@ -600,6 +608,8 @@ class CPointsMap :
 
   /** Get list of all float channel names */
   virtual std::vector<std::string_view> getPointFieldNames_float() const { return {"x", "y", "z"}; }
+  /** Get list of all double channel names */
+  virtual std::vector<std::string_view> getPointFieldNames_double() const { return {}; }
   /** Get list of all uint16_t channel names */
   virtual std::vector<std::string_view> getPointFieldNames_uint16() const { return {}; }
 
@@ -616,6 +626,16 @@ class CPointsMap :
     if (fieldName == "x") return m_x.at(index);
     if (fieldName == "y") return m_y.at(index);
     if (fieldName == "z") return m_z.at(index);
+    return 0;
+  }
+
+  /** Read the value of a double channel for a given point.
+   * Returns 0 if field does not exist.
+   * \exception std::exception on index out of bounds or if field exists but
+   * is not double.
+   */
+  virtual double getPointField_double(size_t index, const std::string_view& fieldName) const
+  {
     return 0;
   }
 
@@ -642,6 +662,14 @@ class CPointsMap :
     else if (fieldName == "z")
       m_z.at(index) = value;
   }
+  /** Sets the value of a double channel for a given point.
+   * \exception std::exception on index out of bounds or if field does not
+   * exist or is not double.
+   */
+  virtual void setPointField_double(size_t index, const std::string_view& fieldName, double value)
+  {
+  }
+
   /** Sets the value of a uint16_t channel for a given point.
    * \exception std::exception on index out of bounds or if field does not
    * exist or is not uint16_t.
@@ -652,12 +680,16 @@ class CPointsMap :
 
   /** Appends a value to a float channel (for use after insertPointFast()) */
   virtual void insertPointField_float(const std::string_view& fieldName, float value) {}
+  /** Appends a value to a double channel (for use after insertPointFast()) */
+  virtual void insertPointField_double(const std::string_view& fieldName, double value) {}
   /** Appends a value to a uint16_t channel (for use after insertPointFast()) */
   virtual void insertPointField_uint16(const std::string_view& fieldName, uint16_t value) {}
 
   virtual void reserveField_float(const std::string_view& fieldName, size_t n) {}
+  virtual void reserveField_double(const std::string_view& fieldName, size_t n) {}
   virtual void reserveField_uint16(const std::string_view& fieldName, size_t n) {}
   virtual void resizeField_float(const std::string_view& fieldName, size_t n) {}
+  virtual void resizeField_double(const std::string_view& fieldName, size_t n) {}
   virtual void resizeField_uint16(const std::string_view& fieldName, size_t n) {}
 
   virtual auto getPointsBufferRef_float_field(const std::string_view& fieldName) const
@@ -666,6 +698,11 @@ class CPointsMap :
     if (fieldName == "x") return &m_x;
     if (fieldName == "y") return &m_y;
     if (fieldName == "z") return &m_z;
+    return nullptr;
+  }
+  virtual auto getPointsBufferRef_double_field([[maybe_unused]] const std::string_view& fieldName)
+      const -> const mrpt::aligned_std_vector<double>*
+  {
     return nullptr;
   }
   virtual auto getPointsBufferRef_uint_field([[maybe_unused]] const std::string_view& fieldName)
@@ -680,6 +717,11 @@ class CPointsMap :
     if (fieldName == "x") return &m_x;
     if (fieldName == "y") return &m_y;
     if (fieldName == "z") return &m_z;
+    return nullptr;
+  }
+  virtual auto getPointsBufferRef_double_field([[maybe_unused]] const std::string_view& fieldName)
+      -> mrpt::aligned_std_vector<double>*
+  {
     return nullptr;
   }
   virtual auto getPointsBufferRef_uint_field([[maybe_unused]] const std::string_view& fieldName)
@@ -829,6 +871,13 @@ class CPointsMap :
     };
     std::vector<FloatFieldMapping> float_fields;
 
+    struct DoubleFieldMapping
+    {
+      const mrpt::aligned_std_vector<double>* src_buf = nullptr;
+      mrpt::aligned_std_vector<double>* dst_buf = nullptr;
+    };
+    std::vector<DoubleFieldMapping> double_fields;
+
     struct UInt16FieldMapping
     {
       const mrpt::aligned_std_vector<uint16_t>* src_buf = nullptr;
@@ -855,7 +904,10 @@ class CPointsMap :
     {
       f.dst_buf->push_back((*f.src_buf)[i]);
     }
-
+    for (auto& f : ctx.double_fields)
+    {
+      f.dst_buf->push_back((*f.src_buf)[i]);
+    }
     for (auto& f : ctx.uint16_fields)
     {
       f.dst_buf->push_back((*f.src_buf)[i]);
