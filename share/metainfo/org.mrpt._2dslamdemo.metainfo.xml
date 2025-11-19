@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>org.mrpt._2dslamdemo.desktop</id>
+  <id>org.mrpt._2dslamdemo</id>
   <metadata_license>MIT</metadata_license>
-  <name>2d-slam-demo</name>
+  <name>2D EKF-SLAM Demo</name>
   <summary>A didactic robotic SLAM simulator</summary>
   <content_rating type="oars-1.0" />
   <description>
