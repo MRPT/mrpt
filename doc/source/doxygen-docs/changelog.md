@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.15.2: UNRELEASED
+# Version 2.15.2: Released Nov 19th, 2025
 - Changes in libraries:
   - \ref mrpt_maps_grp
     - mrpt::maps::CGenericPointsMap now supports fields of type `double` too.
