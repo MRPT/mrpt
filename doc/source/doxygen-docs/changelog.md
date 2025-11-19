@@ -1,5 +1,12 @@
 \page changelog Change Log
 
+# Version 2.15.2: UNRELEASED
+- Changes in libraries:
+  - \ref mrpt_maps_grp
+    - mrpt::maps::CGenericPointsMap now supports fields of type `double` too.
+- Others:
+  - Fix appstreamcli warnings for metainfo files
+
 # Version 2.15.1: Released Oct 29th, 2025
 - Bug fixes:
   - FIX: Avoid throw when viewing and describing as text a PCD with an empty field.
