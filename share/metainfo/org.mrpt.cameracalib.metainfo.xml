@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>org.mrpt.cameracalib.desktop</id>
+  <id>org.mrpt.cameracalib</id>
   <metadata_license>MIT</metadata_license>
-  <name>camera-calib</name>
+  <name>Camera calibration</name>
   <summary>Tool for easy calibration of monocular cameras</summary>
   <content_rating type="oars-1.0" />
   <description>

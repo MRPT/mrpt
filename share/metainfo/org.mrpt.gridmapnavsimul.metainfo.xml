@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>org.mrpt.reactivenavdemo.desktop</id>
+  <id>org.mrpt.gridmapnavsimul</id>
   <metadata_license>MIT</metadata_license>
-  <name>ReactiveNavigationDemo</name>
-  <summary>Reactive Navigation Demo</summary>
+  <name>Gridmap-based 2D robot simulator</name>
+  <summary>Gridmap Navigation Simulator</summary>
   <content_rating type="oars-1.0" />
   <description>
-    <p>Interactive GUI that simulates a 2D world and a robot with a 2D LiDAR and runs reactive navigation algorithms.</p>
+    <p>Mobile robot navigation simulator for 2D wheeled robots equipped with a 2D LiDAR.</p>
   </description>
-  <launchable type="desktop-id">reactivenavdemo.desktop</launchable>
+  <launchable type="desktop-id">gridmapnavsimul.desktop</launchable>
   <screenshots>
     <screenshot type="default">
         <caption>Application screenshot</caption>
-        <image>https://static.mrpt.org/screenshots/reactivenavdemo.png</image>
+        <image>https://static.mrpt.org/screenshots/gridmapnavsimul.png</image>
     </screenshot>
   </screenshots>
   <url type="homepage">https://www.mrpt.org/</url>
