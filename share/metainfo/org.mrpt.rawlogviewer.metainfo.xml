@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>org.mrpt.rawlogviewer.desktop</id>
+  <id>org.mrpt.rawlogviewer</id>
   <metadata_license>MIT</metadata_license>
   <name>RawLogViewer</name>
   <summary>GUI to visualize and manipulate robotics datasets</summary>
