@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>org.mrpt.kinect_stereo_camera_calib_gui.desktop</id>
+  <id>org.mrpt.kinect_stereo_camera_calib_gui</id>
   <metadata_license>MIT</metadata_license>
-  <name>kinect-stereo-calib</name>
+  <name>Stereo camera calibration</name>
   <summary>Stereo Camera and Kinect Calibration GUI</summary>
   <content_rating type="oars-1.0" />
   <description>
-    <p>GUI tool to calibrate the intrinsic parameters of Kinect or Stereo cameras using checkerboards.</p>
+    <p>This application provides a graphical interface for calibrating the intrinsic
+       parameters of stereo cameras and Kinect devices using checkerboard patterns.
+       It guides the user through the capture, detection, and optimization steps
+       needed to obtain accurate calibration results.</p>
   </description>
   <launchable type="desktop-id">kinect_stereo_camera_calib_gui.desktop</launchable>
   <screenshots>

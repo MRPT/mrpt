@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>org.mrpt.robotic_arm_kinematics.desktop</id>
+  <id>org.mrpt.navlog_viewer</id>
   <metadata_license>MIT</metadata_license>
-  <name>robotic-arm-kinematics</name>
+  <name>MRPT NavLog viewer</name>
+  <summary>Navigation log viewer</summary>
   <content_rating type="oars-1.0" />
-  <summary>GUI to practice and learn the Denavit-Hartenberg (DH) parameters</summary>
   <description>
-    <p>GUI to practice and learn the Denavit-Hartenberg (DH) parameters for robotic arm manipulators.</p>
+    <p>GUI tool to browse and analize the contents of MRPT reactive navigation log files.</p>
   </description>
-  <launchable type="desktop-id">robotic_arm_kinematics.desktop</launchable>
+  <launchable type="desktop-id">navlog_viewer.desktop</launchable>
   <screenshots>
     <screenshot type="default">
         <caption>Application screenshot</caption>
-        <image>https://static.mrpt.org/screenshots/robotic-arm-kinematics.png</image>
+        <image>https://static.mrpt.org/screenshots/navlog-viewer.png</image>
     </screenshot>
   </screenshots>
   <url type="homepage">https://www.mrpt.org/</url>
