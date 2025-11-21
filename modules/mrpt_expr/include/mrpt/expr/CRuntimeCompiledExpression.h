@@ -70,7 +70,6 @@ class MRPT_EXPR_EXPORT CRuntimeCompiledExpression
  public:
   /** Default ctor */
   CRuntimeCompiledExpression();
-  ~CRuntimeCompiledExpression();
 
   /** Initializes the object by compiling an expression.
    * \exception std::runtime_error On any syntax error or undefined symbol

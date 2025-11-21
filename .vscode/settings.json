@@ -40,19 +40,22 @@
         "**/log": true
     },
     "cSpell.words": [
-        "CArchive",
-        "Colorf",
-        "Coordf",
         "Eigen",
-        "idft",
-        "IFFT",
-        "Kbhit",
         "mrpt",
         "MRPT",
         "SSSE",
-        "stbi",
         "undistort",
         "undistortion"
     ],
     "ros.distro": "humble",
+    "cSpell.ignoreWords": [
+        "CArchive",
+        "Colorf",
+        "Coordf",
+        "exprtk",
+        "idft",
+        "IFFT",
+        "Kbhit",
+        "stbi"
+    ],
 }

@@ -20,11 +20,32 @@ set(LIB_SRCS
   src/CRuntimeCompiledExpression_unittest.cpp
 )
 
+# Use system exprtk library?
+# Find the /usr/include/exprtk.hpp file:
+find_path(
+  EXPRTK_INCLUDE_DIR
+  NAMES exprtk.hpp
+  PATHS /usr/include /usr/local/include
+  NO_DEFAULT_PATH
+)
+if(EXPRTK_INCLUDE_DIR)
+  message(STATUS "Using system exprtk.hpp from: ${EXPRTK_INCLUDE_DIR}")
+  set(MRPT_USE_SYSTEM_EXPRTK ON)
+else()
+  message(STATUS "System exprtk.hpp not found, using bundled version.")
+  set(MRPT_USE_SYSTEM_EXPRTK OFF)
+endif()
+
 set(LIB_PUBLIC_HDRS
-  include/mrpt/3rdparty/exprtk.hpp
   include/mrpt/expr/mrpt-expr_export.h
   include/mrpt/expr/CRuntimeCompiledExpression.h
 )
+
+if (NOT MRPT_USE_SYSTEM_EXPRTK)
+  list(APPEND LIB_PUBLIC_HDRS
+    include/mrpt/expr/exprtk.hpp
+  )
+endif()
 
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
@@ -35,6 +56,12 @@ mrpt_add_library(
   CMAKE_DEPENDENCIES
     mrpt_system
 )
+
+if (MRPT_USE_SYSTEM_EXPRTK)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE MRPT_USE_SYSTEM_EXPRTK)
+  # Add include path as system path to avoid warnings from exprtk.hpp:
+  target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${EXPRTK_INCLUDE_DIR})
+endif()
 
 # Don't export ALL symbols for the huge exprtk lib
 set_target_properties(${PROJECT_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS 0)
