@@ -32,7 +32,7 @@
 #if defined(MRPT_USE_SYSTEM_EXPRTK)
 #include <exprtk.hpp>
 #else
-#include <mrpt/3rdparty/exprtk.hpp>
+#include <3rdparty/exprtk.hpp>
 #endif
 
 using namespace mrpt;
