@@ -28,7 +28,12 @@
 #define exprtk_disable_superscalar_unroll
 #define exprtk_disable_rtl_vecops
 #define exprtk_disable_rtl_io_file
+
+#if defined(MRPT_USE_SYSTEM_EXPRTK)
+#include <exprtk.hpp>
+#else
 #include <mrpt/3rdparty/exprtk.hpp>
+#endif
 
 using namespace mrpt;
 using namespace mrpt::expr;
@@ -48,7 +53,10 @@ struct CRuntimeCompiledExpression::ExprVerbose
   ExprVerbose()
   {
     const char* sp = ::getenv("MRPT_EXPR_VERBOSE");
-    if (nullptr == sp) return;
+    if (nullptr == sp)
+    {
+      return;
+    }
     const std::string s = mrpt::system::trim(std::string(sp));
 
     if (s == std::string("1"))
@@ -74,8 +82,6 @@ CRuntimeCompiledExpression::CRuntimeCompiledExpression() :
 {
 }
 
-CRuntimeCompiledExpression::~CRuntimeCompiledExpression() = default;
-
 void CRuntimeCompiledExpression::compile(
     const std::string& expression,
     const std::map<std::string, double>& variables,
@@ -95,28 +101,47 @@ void CRuntimeCompiledExpression::compile(
 
   // Convert from std::function<> to raw functors:
   for (const auto& kv : m_funcs_0)
-    if (auto ptr = kv.second.target<double (*)()>(); ptr) symbol_table.add_function(kv.first, *ptr);
+  {
+    if (auto ptr = kv.second.target<double (*)()>(); ptr)
+    {
+      symbol_table.add_function(kv.first, *ptr);
+    }
+  }
 
   for (const auto& kv : m_funcs_1)
+  {
     if (auto ptr = kv.second.target<double (*)(double)>(); ptr)
+    {
       symbol_table.add_function(kv.first, *ptr);
+    }
+  }
 
   for (const auto& kv : m_funcs_2)
+  {
     if (auto ptr = kv.second.target<double (*)(double, double)>(); ptr)
+    {
       symbol_table.add_function(kv.first, *ptr);
+    }
+  }
 
   for (const auto& kv : m_funcs_3)
+  {
     if (auto ptr = kv.second.target<double (*)(double, double, double)>(); ptr)
+    {
       symbol_table.add_function(kv.first, *ptr);
+    }
+  }
 
   m_impl->m_compiled_formula.register_symbol_table(symbol_table);
 
   // Compile user-given expressions:
   exprtk::parser<double> parser;
   if (!parser.compile(expression, m_impl->m_compiled_formula))
+  {
     THROW_EXCEPTION_FMT(
         "Error compiling expression (name=`%s`): `%s`. Error: `%s`",
         expr_name_for_error_reporting.c_str(), expression.c_str(), parser.error().c_str());
+  }
 
   m_impl->m_compiled = true;
 }
@@ -168,7 +193,10 @@ const std::string& CRuntimeCompiledExpression::get_original_expression() const
 void CRuntimeCompiledExpression::ExprVerbose::process(
     const CRuntimeCompiledExpression& rce, const double ret)
 {
-  if (!m_verbose_always_enabled && m_verbose_matches.empty()) return;
+  if (!m_verbose_always_enabled && m_verbose_matches.empty())
+  {
+    return;
+  }
 
   const auto& exp = *rce.m_impl.get();
 
@@ -183,7 +211,10 @@ void CRuntimeCompiledExpression::ExprVerbose::process(
         break;
       }
     }
-    if (!matched) return;
+    if (!matched)
+    {
+      return;
+    }
   }
 
   std::vector<std::pair<std::string, double>> lst;
@@ -195,5 +226,8 @@ void CRuntimeCompiledExpression::ExprVerbose::process(
                  "* Final value: " << ret << "\n"
                  "* Using these symbols:\n";
   // clang-format on
-  for (const auto& v : lst) std::cout << " * " << v.first << " = " << v.second << "\n";
+  for (const auto& v : lst)
+  {
+    std::cout << " * " << v.first << " = " << v.second << "\n";
+  }
 }
