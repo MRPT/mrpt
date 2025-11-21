@@ -41,12 +41,6 @@ set(LIB_PUBLIC_HDRS
   include/mrpt/expr/CRuntimeCompiledExpression.h
 )
 
-if (NOT MRPT_USE_SYSTEM_EXPRTK)
-  list(APPEND LIB_PUBLIC_HDRS
-    include/mrpt/expr/exprtk.hpp
-  )
-endif()
-
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SRCS} ${LIB_PUBLIC_HDRS}
@@ -61,6 +55,11 @@ if (MRPT_USE_SYSTEM_EXPRTK)
   target_compile_definitions(${PROJECT_NAME} PRIVATE MRPT_USE_SYSTEM_EXPRTK)
   # Add include path as system path to avoid warnings from exprtk.hpp:
   target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${EXPRTK_INCLUDE_DIR})
+else()
+  # Add include path as system path: src/3rdparty/exprtk:
+  target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/3rdparty/exprtk
+  )
 endif()
 
 # Don't export ALL symbols for the huge exprtk lib
