@@ -31,12 +31,4 @@ The application wiki page at https://www.mrpt.org/Kinect_and_MRPT
 B<kinect-stereo-calib> is part of the Mobile Robot Programming Toolkit (MRPT), 
 and was originally written by Jose Luis Blanco (University of Malaga).
 
-=head1 COPYRIGHT
-
-This program is free software; you can redistribute it and/or modify it
-under the terms of the BSD License.
-
-On Debian GNU/Linux systems, the complete text of the BSD License can be 
-found in `/usr/share/common-licenses/BSD'.
-
 =cut
