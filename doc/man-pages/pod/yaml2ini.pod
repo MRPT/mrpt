@@ -25,13 +25,5 @@ B<yaml2ini> is part of the Mobile Robot Programming Toolkit (MRPT).
 
 This manual page was written by Jose Luis Blanco <jlblanco@ual.es>.
 
-=head1 COPYRIGHT
-
-This program is free software; you can redistribute it and/or modify it
-under the terms of the BSD License.
-
-On Debian GNU/Linux systems, the complete text of the BSD License can be 
-found in `/usr/share/common-licenses/BSD'.
-
 =cut
 
