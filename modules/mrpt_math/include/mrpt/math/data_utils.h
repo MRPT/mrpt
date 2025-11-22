@@ -49,8 +49,7 @@ namespace mrpt::math
  * @return The squared Mahalanobis distance (scalar).
  */
 template <class VECTORLIKE1, class VECTORLIKE2, class MAT>
-[[nodiscard]]
-typename MAT::Scalar mahalanobisDistanceSq(
+[[nodiscard]] typename MAT::Scalar mahalanobisDistanceSq(
     const VECTORLIKE1& X, const VECTORLIKE2& MU, const MAT& COV)
 {
   MRPT_START
@@ -315,7 +314,7 @@ inline void covariancesAndMeanWeighted(  // Done inline to speed-up the special 
       elements.size() != 0, "No samples provided, so there is no way to deduce the output size.");
   using T = typename MATRIXLIKE::Scalar;
   using size_type = typename VECTORLIKE::size_type;
-  const auto DIM = elements[0].size();
+  const size_type DIM = elements[0].size();
   means.resize(DIM);
   covariances.resize(DIM, DIM);
   const auto nElms = elements.size();

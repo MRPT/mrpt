@@ -260,7 +260,9 @@ struct TPoint3D_ :
    */
   void asString(std::string& s) const
   {
-    s = mrpt::format("[%f %f %f]", TPoint3D_data<T>::x, TPoint3D_data<T>::y, TPoint3D_data<T>::z);
+    s = mrpt::format(
+        "[%f %f %f]", static_cast<double>(TPoint3D_data<T>::x),
+        static_cast<double>(TPoint3D_data<T>::y), static_cast<double>(TPoint3D_data<T>::z));
   }
   [[nodiscard]] std::string asString() const
   {
@@ -402,7 +404,8 @@ template <
     std::enable_if_t<std::is_convertible_v<Scalar, T>>* = nullptr>
 constexpr TPoint3D_<T> operator*(const Scalar scalar, const TPoint3D_<T>& p)
 {
-  return {scalar * p.x, scalar * p.y, scalar * p.z};
+  const auto s = static_cast<T>(scalar);
+  return {s * p.x, s * p.y, s * p.z};
 }
 
 /** Exact comparison between 3D points */
