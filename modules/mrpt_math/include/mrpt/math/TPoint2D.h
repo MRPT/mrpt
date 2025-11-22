@@ -267,7 +267,8 @@ template <
     std::enable_if_t<std::is_convertible_v<Scalar, T>>* = nullptr>
 constexpr TPoint2D_<T> operator*(const Scalar scalar, const TPoint2D_<T>& p)
 {
-  return {scalar * p.x, scalar * p.y};
+  const auto s = static_cast<T>(scalar);
+  return {s * p.x, s * p.y};
 }
 
 /** Exact comparison between 2D points */

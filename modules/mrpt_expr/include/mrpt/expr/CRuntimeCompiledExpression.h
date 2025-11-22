@@ -124,18 +124,20 @@ class MRPT_EXPR_EXPORT CRuntimeCompiledExpression
   /** Evaluates the current value of the precompiled formula.
    * \exception std::runtime_error If the formula has not been compiled yet.
    */
-  double eval() const;
+  [[nodiscard]] double eval() const;
 
   /** Returns true if compile() was called and ended without errors. */
-  bool is_compiled() const;
+  [[nodiscard]] bool is_compiled() const;
+
   /** Returns the original formula passed to compile(), or an empty string if
    * still not compiled. */
-  const std::string& get_original_expression() const;
+  [[nodiscard]] const std::string& get_original_expression() const;
 
   /** Access raw exprtk expression object. */
-  exprtk::expression<double>& get_raw_exprtk_expr();
+  [[nodiscard]] exprtk::expression<double>& get_raw_exprtk_expr();
+
   /** Access raw exprtk expression object. */
-  const exprtk::expression<double>& get_raw_exprtk_expr() const;
+  [[nodiscard]] const exprtk::expression<double>& get_raw_exprtk_expr() const;
 
  private:
   struct Impl;

@@ -52,10 +52,13 @@
         "CArchive",
         "Colorf",
         "Coordf",
-        "exprtk",
-        "idft",
+        "DPDF",
         "IFFT",
         "Kbhit",
-        "stbi"
+        "exprtk",
+        "idft",
+        "stbi",
+        "3DPDFSOG",
+        "PDFSOG"
     ],
 }

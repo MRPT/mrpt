@@ -129,7 +129,16 @@ class CPoseOrPoint :
     public mrpt::poses::detail::
         pose_point_impl<DERIVEDCLASS, mrpt::poses::detail::T3DTypeHelper<DERIVEDCLASS>::is_3D_val>
 {
+ protected:
+  // Make destructor protected and non-virtual
+  ~CPoseOrPoint() = default;
+
  public:
+  // Explicitly default copy/move constructors and assignment operators
+  CPoseOrPoint(const CPoseOrPoint&) = default;
+  CPoseOrPoint& operator=(const CPoseOrPoint&) = default;
+  CPoseOrPoint(CPoseOrPoint&&) = default;
+  CPoseOrPoint& operator=(CPoseOrPoint&&) = default;
   const DERIVEDCLASS& derived() const { return *static_cast<const DERIVEDCLASS*>(this); }
   DERIVEDCLASS& derived() { return *static_cast<DERIVEDCLASS*>(this); }
 

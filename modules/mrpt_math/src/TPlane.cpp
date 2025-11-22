@@ -52,14 +52,19 @@ double TPlane::signedDistance(const TPoint3D& point) const
 double TPlane::distance(const TLine3D& line) const
 {
   if (std::abs(getAngle(*this, line)) >= getEpsilon())
+  {
     return 0;  // Plane crosses with line
-  else
-    return distance(line.pBase);
+  }
+
+  return distance(line.pBase);
 }
 TVector3D TPlane::getNormalVector() const
 {
   TVector3D v;
-  for (int i = 0; i < 3; i++) v[i] = coefs[i];
+  for (unsigned int i = 0; i < 3; i++)
+  {
+    v[i] = coefs[i];
+  }
   return v;
 }
 
@@ -69,14 +74,20 @@ TVector3D TPlane::getUnitaryNormalVector() const
   const double s = sqrt(squareNorm<3, double>(coefs));
   ASSERT_GT_(s, getEpsilon());
   const double k = 1.0 / s;
-  for (int i = 0; i < 3; i++) vec[i] = coefs[i] * k;
+  for (unsigned int i = 0; i < 3; i++)
+  {
+    vec[i] = coefs[i] * k;
+  }
   return vec;
 }
 
 void TPlane::unitarize()
 {
   double s = sqrt(squareNorm<3, double>(coefs));
-  for (double& coef : coefs) coef /= s;
+  for (double& coef : coefs)
+  {
+    coef /= s;
+  }
 }
 
 // Returns a 6D pose such as its XY plane coincides with the plane
@@ -85,19 +96,27 @@ void TPlane::getAsPose3D(mrpt::math::TPose3D& outPose) const
   const TVector3D normal = getUnitaryNormalVector();
   CMatrixDouble44 AXIS = generateAxisBaseFromDirectionAndAxis(normal, 2);
   for (size_t i = 0; i < 3; i++)
+  {
     if (std::abs(coefs[i]) >= getEpsilon())
     {
       AXIS(i, 3) = -coefs[3] / coefs[i];
       break;
     }
+  }
   outPose.fromHomogeneousMatrix(AXIS);
 }
 void TPlane::getAsPose3DForcingOrigin(const TPoint3D& center, TPose3D& pose) const
 {
-  if (!contains(center)) throw std::logic_error("Base point is not in the plane.");
+  if (!contains(center))
+  {
+    throw std::logic_error("Base point is not in the plane.");
+  }
   const TVector3D normal = getUnitaryNormalVector();
   CMatrixDouble44 AXIS = generateAxisBaseFromDirectionAndAxis(normal, 2);
-  for (size_t i = 0; i < 3; i++) AXIS(i, 3) = center[i];
+  for (size_t i = 0; i < 3; i++)
+  {
+    AXIS(i, 3) = center[i];
+  }
   pose.fromHomogeneousMatrix(AXIS);
 }
 TPose3D TPlane::getAsPose3DForcingOrigin(const TPoint3D& center) const
@@ -120,7 +139,9 @@ TPlane::TPlane(const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3)
   coefs[2] = dx1 * dy2 - dx2 * dy1;
   if (std::abs(coefs[0]) < getEpsilon() && std::abs(coefs[1]) < getEpsilon() &&
       std::abs(coefs[2]) < getEpsilon())
+  {
     throw std::logic_error("Points are linearly dependent");
+  }
   coefs[3] = -coefs[0] * p1.x - coefs[1] * p1.y - coefs[2] * p1.z;
 }
 TPlane::TPlane(const TPoint3D& p1, const TLine3D& r2)
@@ -133,10 +154,12 @@ TPlane::TPlane(const TPoint3D& p1, const TLine3D& r2)
   coefs[2] = dx1 * r2.director[1] - dy1 * r2.director[0];
   if (std::abs(coefs[0]) < getEpsilon() && std::abs(coefs[1]) < getEpsilon() &&
       std::abs(coefs[2]) < getEpsilon())
+  {
     throw std::logic_error("Point is contained in the line");
+  }
   coefs[3] = -coefs[0] * p1.x - coefs[1] * p1.y - coefs[2] * p1.z;
 }
-TPlane::TPlane(const TPoint3D& p1, const TVector3D& normal)
+TPlane::TPlane(const TPoint3D& p1, const TVector3D& normal)  // NOLINT
 {
   const double normal_norm = normal.norm();
   ASSERT_GT_(normal_norm, getEpsilon());
@@ -156,7 +179,10 @@ TPlane::TPlane(const TLine3D& r1, const TLine3D& r2)
       std::abs(coefs[2]) < getEpsilon())
   {
     // Lines are parallel
-    if (r1.contains(r2.pBase)) throw std::logic_error("Lines are the same");
+    if (r1.contains(r2.pBase))
+    {
+      throw std::logic_error("Lines are the same");
+    }
     // Use a line's director vector and both pBase's difference to create
     // the plane.
     double d[3];
@@ -165,7 +191,9 @@ TPlane::TPlane(const TLine3D& r1, const TLine3D& r2)
     coefs[3] = -coefs[0] * r1.pBase.x - coefs[1] * r1.pBase.y - coefs[2] * r1.pBase.z;
   }
   else if (std::abs(evaluatePoint(r2.pBase)) >= getEpsilon())
+  {
     throw std::logic_error("Lines do not intersect");
+  }
 }
 
 mrpt::serialization::CArchive& mrpt::math::operator>>(
