@@ -1539,7 +1539,7 @@ void CPointsMap::insertAnotherMap(
     if (pt.x != pt.x) continue;
 
     // Add to this map:
-    this->insertPointFrom(*otherMap, srcIdx, ctx);
+    this->insertPointFrom(srcIdx, ctx);
 
     // and overwrite the XYZ, if needed:
     if (!identity_tf)

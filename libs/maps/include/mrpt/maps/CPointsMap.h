@@ -210,7 +210,7 @@ class CPointsMap :
     const auto ctx = this->prepareForInsertPointsFrom(obj);
     for (size_t i = 0; i < N; i++)
     {
-      insertPointFrom(obj, i, ctx);
+      insertPointFrom(i, ctx);
     }
   }
 
@@ -883,13 +883,13 @@ class CPointsMap :
 
   /** Prepare efficient data structures for repeated insertion from another point map with
    * insertPointFrom()  */
-  InsertCtx prepareForInsertPointsFrom(const CPointsMap& source) const;
+  [[nodiscard]] InsertCtx prepareForInsertPointsFrom(const CPointsMap& source) const;
 
   /** Generic method to copy *all* applicable point properties from
    *  one map to another, e.g. timestamp, intensity, etc.
    *  \note Before calling this in a loop, make sure of calling registerPointFieldsFrom()
    */
-  void insertPointFrom(const CPointsMap& source, size_t sourcePointIndex, const InsertCtx& ctx)
+  void insertPointFrom(size_t sourcePointIndex, const InsertCtx& ctx)
   {
     const size_t i = sourcePointIndex;
     insertPointFast((*ctx.xs_src)[i], (*ctx.ys_src)[i], (*ctx.zs_src)[i]);
