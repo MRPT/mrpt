@@ -1,7 +1,33 @@
 \page changelog Change Log
 
-# Version 2.15.0: UNRELEASED
-- None yet
+# Version 2.15.3: UNRELEASED
+- Changes in libraries:
+  - \ref mrpt_maps_grp
+    - mrpt::maps::CPointsMap::insertPointFrom() removed first argument (sourceMap) since it's now useless using the insertionContext.
+
+# Version 2.15.2: Released Nov 19th, 2025
+- Changes in libraries:
+  - \ref mrpt_maps_grp
+    - mrpt::maps::CGenericPointsMap now supports fields of type `double` too.
+- Others:
+  - Fix appstreamcli warnings for metainfo files
+
+# Version 2.15.1: Released Oct 29th, 2025
+- Bug fixes:
+  - FIX: Avoid throw when viewing and describing as text a PCD with an empty field.
+  - Avoid cmake errors when disabling libraries required by some unit tests.
+
+# Version 2.15.0: Released Oct 26th, 2025
+- Changes in apps:
+  - RawLogViewer: 
+    - Show stats for mrpt::maps::CGenericPoinsMap.
+    - GUI options to colorize clouds by any point cloud field.
+- Changes in libraries:
+  - \ref mrpt_maps_grp
+    - Add new mrpt::maps::CGenericPointsMap
+    - Refactor around mrpt::maps::CPointsMap for more efficient generic insertion of maps in others with arbitrary per-point fields.
+- Build system:
+  - Completely remove any connection to ROS1 in this repository.
 
 # Version 2.14.16: Released Oct 15th, 2025
 - Changes in libraries:
