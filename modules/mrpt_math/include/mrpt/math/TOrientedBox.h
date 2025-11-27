@@ -59,6 +59,8 @@ class TOrientedBox_
   /** The number of planes defined by a box */
   constexpr static std::size_t PLANES_PER_BOX = 6;
 
+  using plane_array_t = std::array<mrpt::math::TPlane, PLANES_PER_BOX>;
+
   TOrientedBox_() = default;
 
   /** Constructor pose of the center and dimensions in local coordinates */
@@ -115,7 +117,7 @@ class TOrientedBox_
    * The ordering of the planes is: [0]=front, [1]=left, [2]=right, [3]=top, [4]=back, [5]=bottom.
    * Plane normals are all pointing outwards
    */
-  [[nodiscard]] std::array<mrpt::math::TPlane, PLANES_PER_BOX> getBoxPlanes() const;
+  [[nodiscard]] plane_array_t getBoxPlanes() const;
 
   [[nodiscard]] bool operator==(const TOrientedBox_<T>& o) const
   {

@@ -112,7 +112,7 @@ TBoundingBox_<T> mrpt::math::TOrientedBox_<T>::getAxisAlignedBox() const
 }
 
 template <typename T>
-std::array<mrpt::math::TPlane, mrpt::math::TOrientedBox_<T>::PLANES_PER_BOX>
+typename mrpt::math::TOrientedBox_<T>::plane_array_t
 mrpt::math::TOrientedBox_<T>::getBoxPlanes() const
 {
   using mrpt::math::TPlane;
