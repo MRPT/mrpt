@@ -194,6 +194,7 @@ function(mrpt_set_target_build_options TARGETNAME HEADERS_ONLY_LIBRARY)
       _CRT_SECURE_NO_DEPRECATE
       _CRT_NONSTDC_NO_DEPRECATE
       _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+      NOMINMAX
     )
   else()
     # gcc & clang: C and C++:
