@@ -13,6 +13,8 @@
 */
 #pragma once
 
+#include <mrpt/core/bits_math.h>
+
 #include <cmath>
 #include <cstddef>  // size_t
 
