@@ -37,8 +37,6 @@ struct TObject2D
 
   variant_t data;
 
-  TObject2D(variant_t d) : data(std::move(d)) {}
-  TObject2D() = default;
   ~TObject2D() = default;
 
   /** Constructor from point, segment, line, polygon. */
