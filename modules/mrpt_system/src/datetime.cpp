@@ -288,18 +288,12 @@ double mrpt::system::extractDayTimeFromTimestamp(const mrpt::system::TTimeStamp 
   MRPT_START
   ASSERT_(tt != INVALID_TIMESTAMP);
 
-#ifdef _WIN32
-  SYSTEMTIME sysT;
-  FileTimeToSystemTime((FILETIME*)&t, &sysT);
-  return sysT.wHour * 3600.0 + sysT.wMinute * 60.0 + sysT.wSecond + sysT.wMilliseconds * 0.001;
-#else
   const uint64_t tmp = static_cast<uint64_t>(tt.time_since_epoch().count()) - EPOCH_OFFSET;
   const time_t auxTime = static_cast<time_t>(tmp / 10000000U);
 
   tm* ptm = gmtime(&auxTime);
   ASSERTMSG_(ptm, "Malformed timestamp");
   return ptm->tm_hour * 3600.0 + ptm->tm_min * 60.0 + ptm->tm_sec;
-#endif
   MRPT_END
 }
 
