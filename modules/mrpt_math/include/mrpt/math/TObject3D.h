@@ -38,6 +38,7 @@ struct TObject3D
 
   variant_t data;
 
+  TObject3D(variant_t d) : data(std::move(d)) {}
   TObject3D() = default;
   ~TObject3D() = default;
 
