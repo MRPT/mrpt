@@ -842,6 +842,14 @@ class CPointsMap :
         allAdded = allAdded && added;
       }
     }
+    for (const auto& f : source.getPointFieldNames_double())
+    {
+      if (!this->hasPointField(f))
+      {
+        const bool added = registerField_double(f);
+        allAdded = allAdded && added;
+      }
+    }
     for (const auto& f : source.getPointFieldNames_uint16())
     {
       if (!this->hasPointField(f))
