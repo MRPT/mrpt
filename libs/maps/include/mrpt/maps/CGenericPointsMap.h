@@ -24,11 +24,11 @@ namespace mrpt::maps
  * Supported channel data types are `float` and `uint16_t`.
  *
  * Before inserting points, you must register the fields you want to use via
- * `registerField_float()` or `registerField_uint16()`.
+ * `registerField_float()`, `registerField_double()`, or `registerField_uint16()`.
  *
  * When inserting points, you must call `insertPointFast()` (for X,Y,Z) and
- * then `insertPointField_float()` or `insertPointField_uint16()` for **each**
- * registered field to keep data vectors synchronized.
+ * then `insertPointField_float()`, `insertPointField_double()`, or `insertPointField_uint16()` for
+ * **each** registered field to keep data vectors synchronized.
  *
  * Alternatively, use `resize()` or `setSize()` to allocate space, then populate
  * data using `setPointFast()` and `setPointField_float()` /
@@ -67,6 +67,12 @@ class CGenericPointsMap : public CPointsMap
   const std::unordered_map<std::string_view, mrpt::aligned_std_vector<float>>& float_fields() const
   {
     return m_float_fields;
+  }
+  /** Returns the map of double fields: map<field_name, vector_of_data> */
+  const std::unordered_map<std::string_view, mrpt::aligned_std_vector<double>>& double_fields()
+      const
+  {
+    return m_double_fields;
   }
   /** Returns the map of uint16_t fields: map<field_name, vector_of_data> */
   const std::unordered_map<std::string_view, mrpt::aligned_std_vector<uint16_t>>& uint16_fields()
@@ -129,12 +135,14 @@ class CGenericPointsMap : public CPointsMap
    * (i.e. you just called `insertPointFast()`).
    */
   void insertPointField_float(const std::string_view& fieldName, float value) override;
+
   /** Appends a value to the given field.
    * The field must be registered.
    * Asserts that the field vector's size is exactly `this->size() - 1`
    * (i.e. you just called `insertPointFast()`).
    */
   void insertPointField_double(const std::string_view& fieldName, double value) override;
+
   /** Appends a value to the given field.
    * The field must be registered.
    * Asserts that the field vector's size is exactly `this->size() - 1`
