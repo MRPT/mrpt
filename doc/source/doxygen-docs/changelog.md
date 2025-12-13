@@ -4,6 +4,7 @@
 - Changes in libraries:
   - \ref mrpt_maps_grp
     - mrpt::maps::CPointsMap::insertPointFrom() removed first argument (sourceMap) since it's now useless using the insertionContext.
+    - Added missing mrpt::maps::CGenericPointsMap::double_fields() method for consistency.
 - Bug fixes:
   - mrpt::maps::CPointsMap::registerPointFieldsFrom() didn't handle "double" fields.
 
