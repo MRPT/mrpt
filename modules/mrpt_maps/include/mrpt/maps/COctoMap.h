@@ -133,7 +133,7 @@ class COctoMap : public COctoMapBase<octomap::OcTree, octomap::OcTreeNode>
   void internal_clear() override;
   bool internal_insertObservation(
       const mrpt::obs::CObservation& obs,
-      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
+      const std::optional<const mrpt::poses::CPose3D>& robotPose) override;
 };  // End of class def.
 }  // namespace maps
 }  // namespace mrpt

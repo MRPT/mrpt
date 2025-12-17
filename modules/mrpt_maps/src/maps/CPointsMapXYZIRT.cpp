@@ -243,36 +243,7 @@ void CPointsMapXYZIRT::internal_clear()
   mark_as_modified();
 }
 
-void CPointsMapXYZIRT::setPointRGB(
-    size_t index, float x, float y, float z, float R, float G, float B)
-{
-  if (index >= m_x.size()) THROW_EXCEPTION("Index out of bounds");
-  m_x[index] = x;
-  m_y[index] = y;
-  m_z[index] = z;
-  m_intensity[index] = R;
-  mark_as_modified();
-}
-
-void CPointsMapXYZIRT::insertPointFast(float x, float y, float z)
-{
-  m_x.push_back(x);
-  m_y.push_back(y);
-  m_z.push_back(z);
-  // mark_as_modified(); Don't, this is the "XXXFast()" method
-}
-
-void CPointsMapXYZIRT::insertPointRGB(
-    float x, float y, float z, float R_intensity, float G_ignored, float B_ignored)
-{
-  m_x.push_back(x);
-  m_y.push_back(y);
-  m_z.push_back(z);
-  m_intensity.push_back(R_intensity);
-  mark_as_modified();
-}
-
-void CPointsMapXYZIRT::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
+void CPointsMapXYZIRT::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
 {
   if (!genericMapParams.enableSaveAs3DObject) return;
 
@@ -283,26 +254,6 @@ void CPointsMapXYZIRT::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
   obj->setPointSize(this->renderOptions.point_size);
 
   o.insert(obj);
-}
-
-void CPointsMapXYZIRT::getPointRGB(
-    size_t index, float& x, float& y, float& z, float& R, float& G, float& B) const
-{
-  ASSERT_LT_(index, m_x.size());
-  x = m_x[index];
-  y = m_y[index];
-  z = m_z[index];
-
-  if (!m_intensity.empty())
-  {
-    ASSERT_LT_(index, m_intensity.size());
-    R = G = B = m_intensity[index];
-  }
-  else
-  {
-    // Default color if no intensity:
-    R = G = B = 1.0f;
-  }
 }
 
 bool CPointsMapXYZIRT::saveXYZIRT_to_text_file(const std::string& file) const
@@ -659,7 +610,15 @@ void CPointsMapXYZIRT::PLY_import_set_vertex(
     size_t idx, const mrpt::math::TPoint3Df& pt, const TColorf* pt_color)
 {
   if (pt_color)
-    this->setPointRGB(idx, pt.x, pt.y, pt.z, pt_color->R, pt_color->G, pt_color->B);
+  {
+    this->setPointFast(idx, pt.x, pt.y, pt.z);
+    if (pt_color)
+    {
+      this->setPointField_float(idx, POINT_FIELD_COLOR_Ru8, pt_color->R);
+      this->setPointField_float(idx, POINT_FIELD_COLOR_Gu8, pt_color->G);
+      this->setPointField_float(idx, POINT_FIELD_COLOR_Bu8, pt_color->B);
+    }
+  }
   else
     this->setPoint(idx, pt.x, pt.y, pt.z);
 }

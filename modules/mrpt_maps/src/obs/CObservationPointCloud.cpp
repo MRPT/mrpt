@@ -38,7 +38,7 @@ IMPLEMENTS_SERIALIZABLE(CObservationPointCloud, CObservation, mrpt::obs);
 CObservationPointCloud::CObservationPointCloud(const CObservation3DRangeScan& o)
 {
   pointcloud = mrpt::maps::CSimplePointsMap::Create();
-  pointcloud->loadFromRangeScan(o);
+  pointcloud->loadFromRangeScan(o, std::nullopt);
 }
 
 void CObservationPointCloud::getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const

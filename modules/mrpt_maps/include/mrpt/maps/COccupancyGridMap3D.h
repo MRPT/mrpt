@@ -81,7 +81,7 @@ class COccupancyGridMap3D :
    */
   bool internal_insertObservation(
       const mrpt::obs::CObservation& obs,
-      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
+      const std::optional<const mrpt::poses::CPose3D>& robotPose) override;
 
   void internal_insertObservationScan2D(
       const mrpt::obs::CObservation2DRangeScan& o, const mrpt::poses::CPose3D& robotPose);

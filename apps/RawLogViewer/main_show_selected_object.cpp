@@ -180,7 +180,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(const CSerializable::Ptr& sel_ob
     mrpt::maps::CSimplePointsMap pts;
     pts.insertionOptions.minDistBetweenLaserPoints = .0;
 
-    pts.loadFromRangeScan(*obs);
+    pts.loadFromRangeScan(*obs, std::nullopt);
 
     cout << "2D coordinates of valid points (wrt to "
             "robot/vehicle frame, "
