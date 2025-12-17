@@ -21,7 +21,7 @@ namespace maps
  * \sa mrpt::maps::CPointsMap, mrpt::maps::CMetricMap
  * \ingroup mrpt_maps_grp
  */
-class CPointsMapXYZI : public CPointsMap
+class [[deprecated("Use mrpt::maps::CGenericPointsMap")]] CPointsMapXYZI : public CPointsMap
 {
   DEFINE_SERIALIZABLE(CPointsMapXYZI, mrpt::maps)
 
@@ -54,7 +54,7 @@ class CPointsMapXYZI : public CPointsMap
    * bounds
    * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
    */
-  void getPointAllFieldsFast(size_t index, std::vector<float>& point_data) const override
+  void getPointAllFieldsFast(size_t index, std::vector<float> & point_data) const override
   {
     point_data.resize(4);
     point_data[0] = m_x[index];
@@ -139,12 +139,7 @@ class CPointsMapXYZI : public CPointsMap
   /** Retrieves a point and its color (colors range is [0,1])
    */
   void getPointRGB(
-      size_t index,
-      float& x,
-      float& y,
-      float& z,
-      float& R_intensity,
-      float& G_intensity,
+      size_t index, float& x, float& y, float& z, float& R_intensity, float& G_intensity,
       float& B_intensity) const override;
 
   /** Retrieves a point intensity (range [0,1]) */
@@ -161,7 +156,7 @@ class CPointsMapXYZI : public CPointsMap
   /** Override of the default 3D scene builder to account for the individual
    * points' color.
    */
-  void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
+  void getVisualizationInto(mrpt::opengl::CSetOfObjects & outObj) const override;
 
   void saveMetricMapRepresentationToFile(const std::string& filNamePrefix) const override
   {
@@ -183,8 +178,8 @@ class CPointsMapXYZI : public CPointsMap
   void reserveField_float(const std::string_view& fieldName, size_t n) override;
   void resizeField_float(const std::string_view& fieldName, size_t n) override;
 
-  auto getPointsBufferRef_float_field(const std::string_view& fieldName) const
-      -> const mrpt::aligned_std_vector<float>* override
+  auto getPointsBufferRef_float_field(const std::string_view& fieldName)
+      const->const mrpt::aligned_std_vector<float>* override
   {
     if (auto* f = CPointsMap::getPointsBufferRef_float_field(fieldName); f)
     {
@@ -194,7 +189,7 @@ class CPointsMapXYZI : public CPointsMap
     return nullptr;
   }
   auto getPointsBufferRef_float_field(const std::string_view& fieldName)
-      -> mrpt::aligned_std_vector<float>* override
+      ->mrpt::aligned_std_vector<float>* override
   {
     if (auto* f = CPointsMap::getPointsBufferRef_float_field(fieldName); f)
     {
@@ -265,7 +260,7 @@ class CPointsMapXYZI : public CPointsMap
 
   /** Like CPointsMap::getPCLPointCloud() but for PointCloud<PointXYZI> */
   template <class POINTCLOUD>
-  void getPCLPointCloudXYZI(POINTCLOUD& cloud) const
+  void getPCLPointCloudXYZI(POINTCLOUD & cloud) const
   {
     const size_t nThis = this->size();
     this->getPCLPointCloud(cloud);  // 1st: xyz data
@@ -284,9 +279,8 @@ class CPointsMapXYZI : public CPointsMap
   /** @name Redefinition of PLY Import virtual methods from CPointsMap
     @{ */
   void PLY_import_set_vertex(
-      size_t idx,
-      const mrpt::math::TPoint3Df& pt,
-      const mrpt::img::TColorf* pt_color = nullptr) override;
+      size_t idx, const mrpt::math::TPoint3Df& pt, const mrpt::img::TColorf* pt_color = nullptr)
+      override;
 
   void PLY_import_set_vertex_count(size_t N) override;
 
@@ -301,10 +295,8 @@ class CPointsMapXYZI : public CPointsMap
   /** @name Redefinition of PLY Export virtual methods from CPointsMap
     @{ */
   void PLY_export_get_vertex(
-      size_t idx,
-      mrpt::math::TPoint3Df& pt,
-      bool& pt_has_color,
-      mrpt::img::TColorf& pt_color) const override;
+      size_t idx, mrpt::math::TPoint3Df & pt, bool& pt_has_color, mrpt::img::TColorf& pt_color)
+      const override;
   /** @} */
 
   MAP_DEFINITION_START(CPointsMapXYZI)

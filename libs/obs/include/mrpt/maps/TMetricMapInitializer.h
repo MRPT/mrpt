@@ -126,10 +126,6 @@ class TSetOfMetricMapInitializers : public mrpt::config::CLoadableOptions
    *  heightMap_count=<Number of mrpt::maps::CHeightGridMap2D maps>
    *  reflectivityMap_count=<Number of mrpt::maps::CReflectivityGridMap2D
    *maps>
-   *  colourPointsMap_count=<0 or 1, for creating a
-   *mrpt::maps::CColouredPointsMap map>
-   *  weightedPointsMap_count=<0 or 1, for creating a
-   *mrpt::maps::CWeightedPointsMap map>
    *  mrpt::maps::CVoxelMap_count=[0|1]
    *  mrpt::maps::CVoxelMapRGB_count=[0|1]
    *
@@ -275,21 +271,6 @@ class TSetOfMetricMapInitializers : public mrpt::config::CLoadableOptions
    * // Insertion Options for HeightGridMap ##:
    * [<sectionName>+"_reflectivityMap_##_insertOpts"]
    *  <See CReflectivityGridMap2D::TInsertionOptions>
-   *
-   *
-   * // ====================================================
-   * // Insertion Options for CColouredPointsMap ##:
-   * [<sectionName>+"_colourPointsMap_##_insertOpts"]
-   *  <See CPointsMap::TInsertionOptions>
-   *
-   *
-   * // Color Options for CColouredPointsMap ##:
-   * [<sectionName>+"_colourPointsMap_##_colorOpts"]
-   *  <See CColouredPointsMap::TColourOptions>
-   *
-   * // Likelihood Options for mrpt::maps::CSimplePointsMap ##:
-   * [<sectionName>+"_colourPointsMap_##_likelihoodOpts"]
-   *  <See CPointsMap::TLikelihoodOptions>
    *
    *
    * // ====================================================

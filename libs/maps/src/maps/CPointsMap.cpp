@@ -28,6 +28,7 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/os.h>
+#include <mrpt/system/string_utils.h>  // unitsFormat()
 
 #include <fstream>
 #include <sstream>
@@ -47,25 +48,19 @@ using namespace std;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointsMap, CMetricMap, mrpt::maps)
 
-/*---------------------------------------------------------------
-            Constructor
-  ---------------------------------------------------------------*/
-CPointsMap::CPointsMap() : insertionOptions(), likelihoodOptions(), m_x(), m_y(), m_z()
-
-{
-  mark_as_modified();
-}
-
-/*---------------------------------------------------------------
-            Destructor
-  ---------------------------------------------------------------*/
 CPointsMap::~CPointsMap() = default;
 
 bool CPointsMap::save2D_to_text_file(const string& file) const
 {
   FILE* f = os::fopen(file.c_str(), "wt");
-  if (!f) return false;
-  for (size_t i = 0; i < m_x.size(); i++) os::fprintf(f, "%f %f\n", m_x[i], m_y[i]);
+  if (!f)
+  {
+    return false;
+  }
+  for (size_t i = 0; i < m_x.size(); i++)
+  {
+    os::fprintf(f, "%f %f\n", m_x[i], m_y[i]);
+  }
   os::fclose(f);
   return true;
 }
@@ -73,9 +68,15 @@ bool CPointsMap::save2D_to_text_file(const string& file) const
 bool CPointsMap::save3D_to_text_file(const string& file) const
 {
   FILE* f = os::fopen(file.c_str(), "wt");
-  if (!f) return false;
+  if (!f)
+  {
+    return false;
+  }
 
-  for (size_t i = 0; i < m_x.size(); i++) os::fprintf(f, "%f %f %f\n", m_x[i], m_y[i], m_z[i]);
+  for (size_t i = 0; i < m_x.size(); i++)
+  {
+    os::fprintf(f, "%f %f %f\n", m_x[i], m_y[i], m_z[i]);
+  }
 
   os::fclose(f);
   return true;
@@ -126,9 +127,13 @@ bool CPointsMap::load2Dor3D_from_text_stream(
              << linIdx << " for coordinate #" << (idxCoord + 1) << "\n";
 
         if (outErrorMsg)
+        {
           outErrorMsg.value().get() = sErr.str();
+        }
         else
+        {
           std::cerr << sErr.str();
+        }
 
         return false;
       }
@@ -149,7 +154,10 @@ bool CPointsMap::load2Dor3D_from_text_file(const std::string& file, const bool i
   this->clear();
 
   std::ifstream fi(file);
-  if (!fi.is_open()) return false;
+  if (!fi.is_open())
+  {
+    return false;
+  }
 
   return load2Dor3D_from_text_stream(fi, std::nullopt, is_3D);
 
@@ -211,63 +219,42 @@ void CPointsMap::getPoint(size_t index, double& x, double& y, double& z) const
   z = m_z[index];
 }
 
-/*---------------------------------------------------------------
-            getPointsBuffer
- ---------------------------------------------------------------*/
-void CPointsMap::getPointsBuffer(
-    size_t& outPointsCount, const float*& xs, const float*& ys, const float*& zs) const
-{
-  outPointsCount = size();
-
-  if (outPointsCount > 0)
-  {
-    xs = &m_x[0];
-    ys = &m_y[0];
-    zs = &m_z[0];
-  }
-  else
-  {
-    xs = ys = zs = nullptr;
-  }
-}
-
-/*---------------------------------------------------------------
-            clipOutOfRangeInZ
- ---------------------------------------------------------------*/
-void CPointsMap::clipOutOfRangeInZ(float zMin, float zMax)
+void CPointsMap::clipOutOfRangeInZ(float zMin, float zMax, mrpt::maps::CPointsMap& result) const
 {
   const size_t n = size();
-  vector<bool> deletionMask(n);
+  result.clear();
+  result.reserve(n);
+  auto ctx = result.prepareForInsertPointsFrom(*this);
 
   // Compute it:
-  for (size_t i = 0; i < n; i++) deletionMask[i] = (m_z[i] < zMin || m_z[i] > zMax);
-
-  // Perform deletion:
-  applyDeletionMask(deletionMask);
-
-  mark_as_modified();
+  for (size_t i = 0; i < n; i++)
+  {
+    if (m_z[i] >= zMin && m_z[i] <= zMax)
+    {
+      result.insertPointFrom(i, ctx);
+    }
+  }
 }
 
-/*---------------------------------------------------------------
-            clipOutOfRange
- ---------------------------------------------------------------*/
-void CPointsMap::clipOutOfRange(const TPoint2D& p, float maxRange)
+void CPointsMap::clipOutOfRange(
+    const TPoint2D& p, float maxRange, mrpt::maps::CPointsMap& result) const
 {
-  size_t i, n = size();
-  vector<bool> deletionMask;
+  const size_t n = size();
+  result.clear();
+  result.reserve(n);
+  auto ctx = result.prepareForInsertPointsFrom(*this);
 
-  // The deletion mask:
-  deletionMask.resize(n);
-
-  const auto max_sq = maxRange * maxRange;
+  const auto max_sq = mrpt::square(maxRange);
+  const auto pf = p.cast<float>();
 
   // Compute it:
-  for (i = 0; i < n; i++) deletionMask[i] = square(p.x - m_x[i]) + square(p.y - m_y[i]) > max_sq;
-
-  // Perform deletion:
-  applyDeletionMask(deletionMask);
-
-  mark_as_modified();
+  for (size_t i = 0; i < n; i++)
+  {
+    if ((pf - mrpt::math::TPoint2Df(m_x[i], m_y[i])).sqrNorm() <= max_sq)
+    {
+      result.insertPointFrom(i, ctx);
+    }
+  }
 }
 
 void CPointsMap::determineMatching2D(
@@ -568,11 +555,11 @@ CPointsMap::TInsertionOptions::TInsertionOptions() : horizontalTolerance(0.05_de
 // Binary dump to/read from stream - for usage in derived classes' serialization
 void CPointsMap::TInsertionOptions::writeToStream(mrpt::serialization::CArchive& out) const
 {
-  const int8_t version = 0;
+  const int8_t version = 1;
   out << version;
 
-  out << minDistBetweenLaserPoints << addToExistingPointsMap << also_interpolate << disableDeletion
-      << fuseWithExisting << isPlanarMap << horizontalTolerance << maxDistForInterpolatePoints
+  out << minDistBetweenLaserPoints << addToExistingPointsMap << also_interpolate << fuseWithExisting
+      << isPlanarMap << horizontalTolerance << maxDistForInterpolatePoints
       << insertInvalidPoints;  // v0
 }
 
@@ -583,10 +570,18 @@ void CPointsMap::TInsertionOptions::readFromStream(mrpt::serialization::CArchive
   switch (version)
   {
     case 0:
+    case 1:
     {
-      in >> minDistBetweenLaserPoints >> addToExistingPointsMap >> also_interpolate >>
-          disableDeletion >> fuseWithExisting >> isPlanarMap >> horizontalTolerance >>
-          maxDistForInterpolatePoints >> insertInvalidPoints;  // v0
+      in >> minDistBetweenLaserPoints >> addToExistingPointsMap >> also_interpolate;
+
+      if (version < 1)
+      {
+        bool dummy_disableDeletion;
+        in >> dummy_disableDeletion;
+      }
+
+      in >> fuseWithExisting >> isPlanarMap >> horizontalTolerance >> maxDistForInterpolatePoints >>
+          insertInvalidPoints;  // v0
     }
     break;
     default:
@@ -594,9 +589,7 @@ void CPointsMap::TInsertionOptions::readFromStream(mrpt::serialization::CArchive
   }
 }
 
-CPointsMap::TLikelihoodOptions::TLikelihoodOptions()
-
-    = default;
+CPointsMap::TLikelihoodOptions::TLikelihoodOptions() = default;
 
 void CPointsMap::TLikelihoodOptions::writeToStream(mrpt::serialization::CArchive& out) const
 {
@@ -655,7 +648,6 @@ void CPointsMap::TInsertionOptions::dumpToTextStream(std::ostream& out) const
 
   LOADABLEOPTS_DUMP_VAR(addToExistingPointsMap, bool);
   LOADABLEOPTS_DUMP_VAR(also_interpolate, bool);
-  LOADABLEOPTS_DUMP_VAR(disableDeletion, bool);
   LOADABLEOPTS_DUMP_VAR(fuseWithExisting, bool);
   LOADABLEOPTS_DUMP_VAR(isPlanarMap, bool);
 
@@ -694,7 +686,6 @@ void CPointsMap::TInsertionOptions::loadFromConfigFile(
 
   MRPT_LOAD_CONFIG_VAR(addToExistingPointsMap, bool, iniFile, section);
   MRPT_LOAD_CONFIG_VAR(also_interpolate, bool, iniFile, section);
-  MRPT_LOAD_CONFIG_VAR(disableDeletion, bool, iniFile, section);
   MRPT_LOAD_CONFIG_VAR(fuseWithExisting, bool, iniFile, section);
   MRPT_LOAD_CONFIG_VAR(isPlanarMap, bool, iniFile, section);
 
@@ -1480,32 +1471,6 @@ void CPointsMap::PLY_export_get_vertex(
 }
 
 /*---------------------------------------------------------------
-            applyDeletionMask
- ---------------------------------------------------------------*/
-void CPointsMap::applyDeletionMask(const std::vector<bool>& mask)
-{
-  ASSERT_EQUAL_(size(), mask.size());
-  // Remove marked points:
-  const size_t n = mask.size();
-  vector<float> Pt;
-  size_t i, j;
-  for (i = 0, j = 0; i < n; i++)
-  {
-    if (!mask[i])
-    {
-      // Pt[j] <---- Pt[i]
-      this->getPointAllFieldsFast(i, Pt);
-      this->setPointAllFieldsFast(j++, Pt);
-    }
-  }
-
-  // Set new correct size:
-  this->resize(j);
-
-  mark_as_modified();
-}
-
-/*---------------------------------------------------------------
           insertAnotherMap
  ---------------------------------------------------------------*/
 void CPointsMap::insertAnotherMap(
@@ -1618,40 +1583,6 @@ bool CPointsMap::internal_insertObservation(
                                                          // has
                                                          // been fused.
         );
-
-        if (!insertionOptions.disableDeletion)
-        {
-          // 2) Delete points in newly added free
-          //      region, thus dynamic areas:
-          // --------------------------------------
-          // Load scan as a polygon:
-          CPolygon pol;
-          const float *xs, *ys, *zs;
-          size_t n;
-          auxMap.getPointsBuffer(n, xs, ys, zs);
-          pol.setAllVertices(n, xs, ys);
-
-          // Check for deletion of points in "map"
-          n = size();
-          for (size_t i = 0; i < n; i++)
-          {
-            if (checkForDeletion[i])  // Default to true, unless
-                                      // a
-            // fused point, which must be
-            // kept.
-            {
-              float x, y;
-              getPoint(i, x, y);
-              if (!pol.PointIntoPolygon(x, y))
-                checkForDeletion[i] = false;  // Out of polygon, don't delete
-            }
-          }
-
-          // Create a new points list just with non-deleted
-          // points.
-          // ----------------------------------------------------------
-          applyDeletionMask(checkForDeletion);
-        }
       }
       else
       {
@@ -1666,8 +1597,7 @@ bool CPointsMap::internal_insertObservation(
       return true;
     }
     // A planar map and a non-horizontal scan.
-    else
-      return false;
+    return false;
   }
   else if (IS_CLASS(obs, CObservation3DRangeScan))
   {
@@ -1722,8 +1652,7 @@ bool CPointsMap::internal_insertObservation(
       return true;
     }
     // A planar map and a non-horizontal scan.
-    else
-      return false;
+    return false;
   }
   else if (IS_CLASS(obs, CObservationRange))
   {
@@ -1935,7 +1864,7 @@ void CPointsMap::fuseWith(
     // filter NANs:
     if (a.x != a.x) continue;
 
-    const unsigned long w_a = otherMap->getPointWeight(i);
+    const unsigned long w_a = 1;  // Was: otherMap->getPointWeight(i);
 
     // Find closest correspondence of "a":
     int closestCorr = -1;
@@ -1958,7 +1887,7 @@ void CPointsMap::fuseWith(
     if (closestCorr != -1)
     {  // Merge:		FUSION
       getPoint(closestCorr, b);
-      unsigned long w_b = getPointWeight(closestCorr);
+      unsigned long w_b = 1;  // Was: getPointWeight(closestCorr);
 
       ASSERT_((w_a + w_b) > 0);
 
@@ -1968,7 +1897,7 @@ void CPointsMap::fuseWith(
       m_y[closestCorr] = F * (w_a * a.y + w_b * b.y);
       m_z[closestCorr] = F * (w_a * a.z + w_b * b.z);
 
-      this->setPointWeight(closestCorr, w_a + w_b);
+      // Was: this->setPointWeight(closestCorr, w_a + w_b);
 
       // Append to fused points list
       if (notFusedPoints) (*notFusedPoints)[closestCorr] = false;
@@ -2275,4 +2204,49 @@ void CPointsMap::nn_radius_search(
       resultIndicesOrIDs[i] = indices_dist[i].first;
     }
   }
+}
+
+namespace
+{
+// Returns e.g. "x,y,z,intensity"
+std::string listAllFields(const mrpt::maps::CPointsMap& pcd)
+{
+  std::string ret;
+
+  auto appendFields = [&ret](const std::vector<std::string_view>& fields)
+  {
+    for (const auto& f : fields)
+    {
+      if (!ret.empty())
+      {
+        ret += ",";
+      }
+      ret += f;
+    }
+  };
+
+  appendFields(pcd.getPointFieldNames_float());
+  appendFields(pcd.getPointFieldNames_double());
+  appendFields(pcd.getPointFieldNames_uint16());
+
+  return ret;
+}
+}  // namespace
+
+std::string mrpt::maps::CPointsMap::asString() const
+{
+  return mrpt::format(
+      "Pointcloud map '%s', %s points, fields {%s} bounding box:%s",
+      this->GetRuntimeClass()->className,
+      mrpt::system::unitsFormat(static_cast<double>(size())).c_str(), listAllFields(*this).c_str(),
+      boundingBox().asString().c_str());
+}
+void mrpt::maps::CPointsMap::setAllPoints(
+    const std::vector<float>& X, const std::vector<float>& Y, const std::vector<float>& Z)
+{
+  setAllPointsTemplate(X, Y, Z);
+}
+void mrpt::maps::CPointsMap::setAllPoints(const std::vector<float>& X, const std::vector<float>& Y)
+{
+  setAllPointsTemplate(X, Y);
 }
