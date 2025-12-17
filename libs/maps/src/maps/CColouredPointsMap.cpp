@@ -217,8 +217,7 @@ void CColouredPointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_
         // version 2: options saved too
         in >> insertionOptions.minDistBetweenLaserPoints >>
             insertionOptions.addToExistingPointsMap >> insertionOptions.also_interpolate >>
-            insertionOptions.disableDeletion >> insertionOptions.fuseWithExisting >>
-            insertionOptions.isPlanarMap;
+            insertionOptions.fuseWithExisting >> insertionOptions.isPlanarMap;
 
         if (version < 6)
         {

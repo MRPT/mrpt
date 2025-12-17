@@ -58,7 +58,6 @@ void COccupancyGridMap3D::internal_insertObservationScan2D(
   mrpt::maps::CSimplePointsMap pts;
   pts.insertionOptions.also_interpolate = false;
   pts.insertionOptions.addToExistingPointsMap = true;
-  pts.insertionOptions.disableDeletion = true;
   pts.insertionOptions.fuseWithExisting = false;
   pts.insertionOptions.insertInvalidPoints = false;
   pts.insertionOptions.minDistBetweenLaserPoints = .0;  // insert all

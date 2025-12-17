@@ -68,10 +68,15 @@ void CPlanarLaserScan::onUpdateBuffers_Wireframe()
   vbd.clear();
   cbd.clear();
 
-  size_t n;
-  const float *x, *y, *z;
-  m_cache_points.getPointsBuffer(n, x, y, z);
-  if (!n) return;
+  const auto& x = m_cache_points.getPointsBufferRef_x();
+  const auto& y = m_cache_points.getPointsBufferRef_y();
+  const auto& z = m_cache_points.getPointsBufferRef_z();
+  const size_t n = m_cache_points.size();
+
+  if (!n)
+  {
+    return;
+  }
 
   for (size_t i = 0; i < n - 1; i++)
   {
@@ -90,10 +95,15 @@ void CPlanarLaserScan::onUpdateBuffers_Triangles()
 
   tris.clear();
 
-  size_t n;
-  const float *x, *y, *z;
-  m_cache_points.getPointsBuffer(n, x, y, z);
-  if (!n) return;
+  const auto& x = m_cache_points.getPointsBufferRef_x();
+  const auto& y = m_cache_points.getPointsBufferRef_y();
+  const auto& z = m_cache_points.getPointsBufferRef_z();
+  const size_t n = m_cache_points.size();
+
+  if (!n)
+  {
+    return;
+  }
 
   using P3f = mrpt::math::TPoint3Df;
 
@@ -119,11 +129,15 @@ void CPlanarLaserScan::onUpdateBuffers_Points()
 
   vbd.clear();
 
-  size_t n;
-  const float *x, *y, *z;
-  m_cache_points.getPointsBuffer(n, x, y, z);
+  const auto& x = m_cache_points.getPointsBufferRef_x();
+  const auto& y = m_cache_points.getPointsBufferRef_y();
+  const auto& z = m_cache_points.getPointsBufferRef_z();
+  const size_t n = m_cache_points.size();
 
-  for (size_t i = 0; i < n; i++) vbd.emplace_back(x[i], y[i], z[i]);
+  for (size_t i = 0; i < n; i++)
+  {
+    vbd.emplace_back(x[i], y[i], z[i]);
+  }
 
   cbd.assign(
       vbd.size(), mrpt::img::TColorf(m_points_R, m_points_G, m_points_B, m_points_A).asTColor());
