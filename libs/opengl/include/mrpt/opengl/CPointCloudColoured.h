@@ -274,10 +274,10 @@ class PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
  public:
   /** The type of each point XYZ coordinates */
   using coords_t = float;
-  /** Has any color RGB info? */
-  static constexpr bool HAS_RGB = true;
+
   /** Has native RGB info (as floats)? */
   static constexpr bool HAS_RGBf = true;
+
   /** Has native RGB info (as uint8_t)? */
   static constexpr bool HAS_RGBu8 = false;
 
@@ -399,18 +399,22 @@ void CPointCloudColoured::loadFromPointsMap(const POINTSMAP* themap)
   const mrpt::opengl::PointCloudAdapter<POINTSMAP> pc_src(*themap);
   const size_t N = pc_src.size();
   pc_dst.resize(N);
-  const bool isColorFilled = themap->hasColorPoints();
   for (size_t i = 0; i < N; i++)
   {
-    if constexpr (mrpt::opengl::PointCloudAdapter<POINTSMAP>::HAS_RGB)
+    if (pc_src.HAS_RGBf)
     {
-      if (isColorFilled)
-      {
-        float x, y, z, r, g, b, a;
-        pc_src.getPointXYZ_RGBAf(i, x, y, z, r, g, b, a);
-        pc_dst.setPointXYZ_RGBAf(i, x, y, z, r, g, b, a);
-        continue;
-      }
+      float x, y, z, r, g, b, a;
+      pc_src.getPointXYZ_RGBAf(i, x, y, z, r, g, b, a);
+      pc_dst.setPointXYZ_RGBAf(i, x, y, z, r, g, b, a);
+      continue;
+    }
+    if (pc_src.HAS_RGBu8)
+    {
+      float x, y, z;
+      uint8_t r, g, b;
+      pc_src.getPointXYZ_RGBu8(i, x, y, z, r, g, b);
+      pc_dst.setPointXYZ_RGBu8(i, x, y, z, r, g, b);
+      continue;
     }
     float x, y, z;
     pc_src.getPointXYZ(i, x, y, z);

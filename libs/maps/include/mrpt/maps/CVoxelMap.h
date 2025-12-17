@@ -58,7 +58,7 @@ class CVoxelMap : public CVoxelMapOccupancyBase<VoxelNodeOccupancy>
  protected:
   bool internal_insertObservation(
       const mrpt::obs::CObservation& obs,
-      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
+      const std::optional<const mrpt::poses::CPose3D>& robotPose) override;
   bool internal_insertObservation_Pts(
       const mrpt::obs::CObservationPointCloud& obs,
       const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt);

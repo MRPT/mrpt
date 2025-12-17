@@ -362,7 +362,7 @@ void Test_Kinect()
       // Load local points map from 3D points + color:
       CColouredPointsMap localPntsMap;
       localPntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
-      localPntsMap.loadFromRangeScan(*last_obs);
+      localPntsMap.loadFromRangeScan(*last_obs, std::nullopt);
 
       // Estimate our current camera pose from feature2feature matching:
       // --------------------------------------------------------------------

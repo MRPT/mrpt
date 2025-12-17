@@ -288,22 +288,6 @@ void CColouredPointsMap::internal_clear()
   mark_as_modified();
 }
 
-/** Changes a given point from map. First index is 0.
- * \exception Throws std::exception on index out of bound.
- */
-void CColouredPointsMap::setPointRGB(
-    size_t index, float x, float y, float z, float R, float G, float B)
-{
-  if (index >= m_x.size()) THROW_EXCEPTION("Index out of bounds");
-  m_x[index] = x;
-  m_y[index] = y;
-  m_z[index] = z;
-  this->m_color_R[index] = R;
-  this->m_color_G[index] = G;
-  this->m_color_B[index] = B;
-  mark_as_modified();
-}
-
 /** Changes just the color of a given point from the map. First index is 0.
  * \exception Throws std::exception on index out of bound.
  */
@@ -314,18 +298,6 @@ void CColouredPointsMap::setPointColor(size_t index, float R, float G, float B)
   this->m_color_G[index] = G;
   this->m_color_B[index] = B;
   // mark_as_modified();  // No need to rebuild KD-trees, etc...
-}
-
-void CColouredPointsMap::insertPointRGB(float x, float y, float z, float R, float G, float B)
-{
-  m_x.push_back(x);
-  m_y.push_back(y);
-  m_z.push_back(z);
-  m_color_R.push_back(R);
-  m_color_G.push_back(G);
-  m_color_B.push_back(B);
-
-  mark_as_modified();
 }
 
 void CColouredPointsMap::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
@@ -345,10 +317,6 @@ void CColouredPointsMap::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) co
 /*---------------------------------------------------------------
 TColourOptions
 ---------------------------------------------------------------*/
-CColouredPointsMap::TColourOptions::TColourOptions()
-
-    = default;
-
 void CColouredPointsMap::TColourOptions::loadFromConfigFile(
     const CConfigFileBase& source, const std::string& section)
 {
@@ -367,19 +335,6 @@ void CColouredPointsMap::TColourOptions::dumpToTextStream(std::ostream& out) con
   out << "z_min                                   = " << z_min << endl;
   out << "z_max                                   = " << z_max << endl;
   out << "d_max                                   = " << d_max << endl;
-}
-
-void CColouredPointsMap::getPointRGB(
-    size_t index, float& x, float& y, float& z, float& R, float& G, float& B) const
-{
-  if (index >= m_x.size()) THROW_EXCEPTION("Index out of bounds");
-
-  x = m_x[index];
-  y = m_y[index];
-  z = m_z[index];
-  R = m_color_R[index];
-  G = m_color_G[index];
-  B = m_color_B[index];
 }
 
 /** Retrieves a point color (colors range is [0,1])
@@ -544,9 +499,14 @@ void CColouredPointsMap::PLY_import_set_vertex(
     size_t idx, const mrpt::math::TPoint3Df& pt, const TColorf* pt_color)
 {
   if (pt_color)
-    this->setPointRGB(idx, pt.x, pt.y, pt.z, pt_color->R, pt_color->G, pt_color->B);
+  {
+    setPointFast(idx, pt.x, pt.y, pt.z);
+    setPointColor_fast(idx, pt_color->R, pt_color->G, pt_color->B);
+  }
   else
-    this->setPoint(idx, pt.x, pt.y, pt.z);
+  {
+    setPoint(idx, pt.x, pt.y, pt.z);
+  }
 }
 
 /** In a base class, will be called after PLY_export_get_vertex_count() once for
