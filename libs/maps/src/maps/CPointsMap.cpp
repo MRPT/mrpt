@@ -1047,41 +1047,33 @@ void CPointsMap::extractCylinder(
     const double radius,
     const double zmin,
     const double zmax,
-    CPointsMap* outMap)
+    CPointsMap& outMap)
 {
-  outMap->clear();
+  outMap.clear();
+  const auto ctx = outMap.prepareForInsertPointsFrom(*this);
   for (size_t k = 0; k < m_x.size(); k++)
   {
     if ((m_z[k] <= zmax && m_z[k] >= zmin) &&
         (sqrt(square(center.x - m_x[k]) + square(center.y - m_y[k])) < radius))
-      outMap->insertPoint(m_x[k], m_y[k], m_z[k]);
+    {
+      outMap.insertPointFrom(k, ctx);
+    }
   }
 }
 
 /*---------------------------------------------------------------
         extractPoints
 ---------------------------------------------------------------*/
-void CPointsMap::extractPoints(
-    const TPoint3D& corner1,
-    const TPoint3D& corner2,
-    CPointsMap* outMap,
-    double R,
-    double G,
-    double B)
+void CPointsMap::extractPoints(const TBoundingBoxf& bbox, CPointsMap& outMap)
 {
-  outMap->clear();
-  double minX, maxX, minY, maxY, minZ, maxZ;
-  minX = min(corner1.x, corner2.x);
-  maxX = max(corner1.x, corner2.x);
-  minY = min(corner1.y, corner2.y);
-  maxY = max(corner1.y, corner2.y);
-  minZ = min(corner1.z, corner2.z);
-  maxZ = max(corner1.z, corner2.z);
+  outMap.clear();
+  const auto ctx = outMap.prepareForInsertPointsFrom(*this);
   for (size_t k = 0; k < m_x.size(); k++)
   {
-    if ((m_x[k] >= minX && m_x[k] <= maxX) && (m_y[k] >= minY && m_y[k] <= maxY) &&
-        (m_z[k] >= minZ && m_z[k] <= maxZ))
-      outMap->insertPointRGB(m_x[k], m_y[k], m_z[k], R, G, B);
+    if (bbox.containsPoint({m_x[k], m_y[k], m_z[k]}))
+    {
+      outMap.insertPointFrom(k, ctx);
+    }
   }
 }
 
@@ -1918,7 +1910,10 @@ void CPointsMap::loadFromVelodyneScan(
   ASSERT_EQUAL_(scan.point_cloud.x.size(), scan.point_cloud.z.size());
   ASSERT_EQUAL_(scan.point_cloud.x.size(), scan.point_cloud.intensity.size());
 
-  if (scan.point_cloud.x.empty()) return;
+  if (scan.point_cloud.x.empty())
+  {
+    return;
+  }
 
   this->mark_as_modified();
 
@@ -1933,14 +1928,21 @@ void CPointsMap::loadFromVelodyneScan(
   const size_t nNewPtsCount = nOldPtsCount + nScanPts;
   this->resize(nNewPtsCount);
 
+  auto* Is = getPointsBufferRef_float_field(POINT_FIELD_INTENSITY);
+  ASSERT_(!Is || Is->size() == this->size());
+
   const float K = 1.0f / 255;  // Intensity scale.
 
   // global 3D pose:
   CPose3D sensorGlobalPose;
   if (robotPose)
+  {
     sensorGlobalPose = *robotPose + scan.sensorPose;
+  }
   else
+  {
     sensorGlobalPose = scan.sensorPose;
+  }
 
   mrpt::math::CMatrixDouble44 HM;
   sensorGlobalPose.getHomogeneousMatrix(HM);
@@ -1961,10 +1963,11 @@ void CPointsMap::loadFromVelodyneScan(
     const double gy = m10 * lx + m11 * ly + m12 * lz + m13;
     const double gz = m20 * lx + m21 * ly + m22 * lz + m23;
 
-    this->setPointRGB(
-        nOldPtsCount + i, gx, gy, gz,  // XYZ
-        inten, inten, inten            // RGB
-    );
+    this->setPointFast(nOldPtsCount + i, gx, gy, gz);
+    if (Is)
+    {
+      (*Is)[nOldPtsCount + i] = inten;
+    }
   }
 }
 
@@ -2233,7 +2236,7 @@ std::string listAllFields(const mrpt::maps::CPointsMap& pcd)
 }
 }  // namespace
 
-std::string mrpt::maps::CPointsMap::asString() const
+std::string CPointsMap::asString() const
 {
   return mrpt::format(
       "Pointcloud map '%s', %s points, fields {%s} bounding box:%s",
@@ -2241,12 +2244,24 @@ std::string mrpt::maps::CPointsMap::asString() const
       mrpt::system::unitsFormat(static_cast<double>(size())).c_str(), listAllFields(*this).c_str(),
       boundingBox().asString().c_str());
 }
-void mrpt::maps::CPointsMap::setAllPoints(
+void CPointsMap::setAllPoints(
     const std::vector<float>& X, const std::vector<float>& Y, const std::vector<float>& Z)
 {
   setAllPointsTemplate(X, Y, Z);
 }
-void mrpt::maps::CPointsMap::setAllPoints(const std::vector<float>& X, const std::vector<float>& Y)
+void CPointsMap::setAllPoints(const std::vector<float>& X, const std::vector<float>& Y)
 {
   setAllPointsTemplate(X, Y);
+}
+
+bool CPointsMap::hasColor_u8() const
+{
+  return hasPointField(POINT_FIELD_COLOR_Ru8) && hasPointField(POINT_FIELD_COLOR_Gu8) &&
+         hasPointField(POINT_FIELD_COLOR_Bu8);
+}
+
+bool CPointsMap::hasColor_f() const
+{
+  return hasPointField(POINT_FIELD_COLOR_Rf) && hasPointField(POINT_FIELD_COLOR_Gf) &&
+         hasPointField(POINT_FIELD_COLOR_Bf);
 }

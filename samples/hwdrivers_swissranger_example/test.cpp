@@ -181,7 +181,7 @@ void Test_SwissRanger()
       // mrpt::maps::CSimplePointsMap  pntsMap;
       CColouredPointsMap pntsMap;
       pntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
-      pntsMap.loadFromRangeScan(obs);
+      pntsMap.loadFromRangeScan(obs, std::nullopt);
 
       win3D.get3DSceneAndLock();
       gl_points->loadFromPointsMap(&pntsMap);

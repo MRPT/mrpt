@@ -164,7 +164,7 @@ class CColouredOctoMap : public COctoMapBase<octomap::ColorOcTree, octomap::Colo
 
   bool internal_insertObservation(
       const mrpt::obs::CObservation& obs,
-      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
+      const std::optional<const mrpt::poses::CPose3D>& robotPose) override;
 
   TColourUpdate m_colour_method{INTEGRATE};  //! Method used to updated voxels colour.
 
