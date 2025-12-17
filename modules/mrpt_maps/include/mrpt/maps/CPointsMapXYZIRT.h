@@ -35,7 +35,7 @@ namespace mrpt::maps
  * \sa mrpt::maps::CPointsMap, mrpt::maps::CMetricMap
  * \ingroup mrpt_maps_grp
  */
-class CPointsMapXYZIRT : public CPointsMap
+class [[deprecated("Use CGenericPointsMap instead")]] CPointsMapXYZIRT : public CPointsMap
 {
   DEFINE_SERIALIZABLE(CPointsMapXYZIRT, mrpt::maps)
 
@@ -79,7 +79,7 @@ class CPointsMapXYZIRT : public CPointsMap
    * bounds
    * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
    */
-  void getPointAllFieldsFast(size_t index, std::vector<float>& point_data) const override
+  void getPointAllFieldsFast(size_t index, std::vector<float> & point_data) const override
   {
     point_data.resize(6);
     point_data[0] = m_x[index];
@@ -185,12 +185,7 @@ class CPointsMapXYZIRT : public CPointsMap
   /** Retrieves a point and its color (colors range is [0,1])
    */
   void getPointRGB(
-      size_t index,
-      float& x,
-      float& y,
-      float& z,
-      float& R_intensity,
-      float& G_intensity,
+      size_t index, float& x, float& y, float& z, float& R_intensity, float& G_intensity,
       float& B_intensity) const override;
 
   /** Gets point intensity ([0,1]), or 0 if field is not present */
@@ -224,7 +219,7 @@ class CPointsMapXYZIRT : public CPointsMap
   /** Override of the default 3D scene builder to account for the individual
    * points' color.
    */
-  void getVisualizationInto(mrpt::viz::CSetOfObjects& outObj) const override;
+  void getVisualizationInto(mrpt::viz::CSetOfObjects & outObj) const override;
 
   /** @name String-keyed field access virtual interface implementation
       @{ */
@@ -236,8 +231,8 @@ class CPointsMapXYZIRT : public CPointsMap
   uint16_t getPointField_uint16(size_t index, const std::string_view& fieldName) const override;
 
   void setPointField_float(size_t index, const std::string_view& fieldName, float value) override;
-  void setPointField_uint16(
-      size_t index, const std::string_view& fieldName, uint16_t value) override;
+  void setPointField_uint16(size_t index, const std::string_view& fieldName, uint16_t value)
+      override;
 
   void insertPointField_float(const std::string_view& fieldName, float value) override;
   void insertPointField_uint16(const std::string_view& fieldName, uint16_t value) override;
@@ -247,26 +242,8 @@ class CPointsMapXYZIRT : public CPointsMap
   void resizeField_float(const std::string_view& fieldName, size_t n) override;
   void resizeField_uint16(const std::string_view& fieldName, size_t n) override;
 
-  auto getPointsBufferRef_float_field(const std::string_view& fieldName) const
-      -> const mrpt::aligned_std_vector<float>* override
-  {
-    if (auto* f = CPointsMap::getPointsBufferRef_float_field(fieldName); f)
-    {
-      return f;
-    }
-    if (fieldName == POINT_FIELD_INTENSITY) return &m_intensity;
-    if (fieldName == POINT_FIELD_TIMESTAMP) return &m_time;
-    return nullptr;
-  }
-  auto getPointsBufferRef_uint_field(const std::string_view& fieldName) const
-      -> const mrpt::aligned_std_vector<uint16_t>* override
-  {
-    if (fieldName == POINT_FIELD_RING_ID) return &m_ring;
-    return nullptr;
-  }
-
   auto getPointsBufferRef_float_field(const std::string_view& fieldName)
-      -> mrpt::aligned_std_vector<float>* override
+      const->const mrpt::aligned_std_vector<float>* override
   {
     if (auto* f = CPointsMap::getPointsBufferRef_float_field(fieldName); f)
     {
@@ -277,7 +254,25 @@ class CPointsMapXYZIRT : public CPointsMap
     return nullptr;
   }
   auto getPointsBufferRef_uint_field(const std::string_view& fieldName)
-      -> mrpt::aligned_std_vector<uint16_t>* override
+      const->const mrpt::aligned_std_vector<uint16_t>* override
+  {
+    if (fieldName == POINT_FIELD_RING_ID) return &m_ring;
+    return nullptr;
+  }
+
+  auto getPointsBufferRef_float_field(const std::string_view& fieldName)
+      ->mrpt::aligned_std_vector<float>* override
+  {
+    if (auto* f = CPointsMap::getPointsBufferRef_float_field(fieldName); f)
+    {
+      return f;
+    }
+    if (fieldName == POINT_FIELD_INTENSITY) return &m_intensity;
+    if (fieldName == POINT_FIELD_TIMESTAMP) return &m_time;
+    return nullptr;
+  }
+  auto getPointsBufferRef_uint_field(const std::string_view& fieldName)
+      ->mrpt::aligned_std_vector<uint16_t>* override
   {
     if (fieldName == POINT_FIELD_RING_ID) return &m_ring;
     return nullptr;
@@ -312,9 +307,8 @@ class CPointsMapXYZIRT : public CPointsMap
   /** @name Redefinition of PLY Import virtual methods from CPointsMap
     @{ */
   void PLY_import_set_vertex(
-      size_t idx,
-      const mrpt::math::TPoint3Df& pt,
-      const mrpt::img::TColorf* pt_color = nullptr) override;
+      size_t idx, const mrpt::math::TPoint3Df& pt, const mrpt::img::TColorf* pt_color = nullptr)
+      override;
 
   void PLY_import_set_vertex_count(size_t N) override;
 
@@ -328,10 +322,8 @@ class CPointsMapXYZIRT : public CPointsMap
   /** @name Redefinition of PLY Export virtual methods from CPointsMap
     @{ */
   void PLY_export_get_vertex(
-      size_t idx,
-      mrpt::math::TPoint3Df& pt,
-      bool& pt_has_color,
-      mrpt::img::TColorf& pt_color) const override;
+      size_t idx, mrpt::math::TPoint3Df & pt, bool& pt_has_color, mrpt::img::TColorf& pt_color)
+      const override;
   /** @} */
 
   MAP_DEFINITION_START(CPointsMapXYZIRT)
