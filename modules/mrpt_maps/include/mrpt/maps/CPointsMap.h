@@ -124,7 +124,8 @@ class CPointsMap :
 
  public:
   /** Ctor */
-  CPointsMap();
+  CPointsMap() = default;
+
   /** Virtual destructor. */
   ~CPointsMap() override;
 
@@ -257,10 +258,6 @@ class CPointsMap :
     /** If set to true, far points (<1m) are interpolated with samples at
      * "minDistSqrBetweenLaserPoints" intervals (Default is false). */
     bool also_interpolate{false};
-    /** If set to false (default=true) points in the same plane as the
-     * inserted scan and inside the free space, are erased: i.e. they don't
-     * exist yet. */
-    bool disableDeletion{true};
     /** If set to true (default=false), inserted points are "fused" with
      * previously existent ones. This shrink the size of the points map, but
      * its slower. */
@@ -570,21 +567,6 @@ class CPointsMap :
     setPoint(index, x, y, z);
   }
 
-  /// Sets the point weight, which is ignored in all classes but those which
-  /// actually store that field (Note: No checks are done for out-of-bounds
-  /// index). \sa getPointWeight
-  virtual void setPointWeight([[maybe_unused]] size_t index, [[maybe_unused]] unsigned long w) {}
-  /// Gets the point weight, which is ignored in all classes (defaults to 1)
-  /// but in those which actually store that field (Note: No checks are done
-  /// for out-of-bounds index).  \sa setPointWeight
-  virtual unsigned long getPointWeight([[maybe_unused]] size_t index) const { return 1; }
-
-  /** Provides a direct access to points buffer, or nullptr if there is no
-   * points in the map.
-   */
-  void getPointsBuffer(
-      size_t& outPointsCount, const float*& xs, const float*& ys, const float*& zs) const;
-
   /** Provides a direct access to a read-only reference of the internal point
    * buffer. \sa getAllPoints */
   inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_x() const { return m_x; }
@@ -760,27 +742,6 @@ class CPointsMap :
     MRPT_END
   }
 
-  /** Gets all points as a STL-like container.
-   * \tparam CONTAINER Any STL-like container of mrpt::math::TPoint3D,
-   * mrpt::math::TPoint3Df or anything having members `x`,`y`,`z`.
-   * Note that this method is not efficient for large point clouds. Fastest
-   * methods are getPointsBuffer() or getPointsBufferRef_x(),
-   * getPointsBufferRef_y(), getPointsBufferRef_z()
-   */
-  template <class CONTAINER>
-  void getAllPoints(CONTAINER& ps, size_t decimation = 1) const
-  {
-    std::vector<float> dmy1, dmy2, dmy3;
-    getAllPoints(dmy1, dmy2, dmy3, decimation);
-    ps.resize(dmy1.size());
-    for (size_t i = 0; i < dmy1.size(); i++)
-    {
-      ps[i].x = dmy1[i];
-      ps[i].y = dmy2[i];
-      ps[i].z = dmy3[i];
-    }
-  }
-
   /** Returns a copy of the 2D/3D points as a std::vector of float
    * coordinates.
    * If decimation is greater than 1, only 1 point out of that number will be
@@ -930,7 +891,8 @@ class CPointsMap :
    * any other column or row Eigen::Matrix.
    */
   template <typename VECTOR>
-  inline void setAllPointsTemplate(const VECTOR& X, const VECTOR& Y, const VECTOR& Z = VECTOR())
+  [[deprecated]] void setAllPointsTemplate(
+      const VECTOR& X, const VECTOR& Y, const VECTOR& Z = VECTOR())
   {
     const size_t N = X.size();
     ASSERT_EQUAL_(X.size(), Y.size());
@@ -952,24 +914,18 @@ class CPointsMap :
 
   /** Set all the points at once from vectors with X,Y and Z coordinates. \sa
    * getAllPoints */
-  inline void setAllPoints(
-      const std::vector<float>& X, const std::vector<float>& Y, const std::vector<float>& Z)
-  {
-    setAllPointsTemplate(X, Y, Z);
-  }
+  [[deprecated]] void setAllPoints(
+      const std::vector<float>& X, const std::vector<float>& Y, const std::vector<float>& Z);
 
   /** Set all the points at once from vectors with X and Y coordinates (Z=0).
    * \sa getAllPoints */
-  inline void setAllPoints(const std::vector<float>& X, const std::vector<float>& Y)
-  {
-    setAllPointsTemplate(X, Y);
-  }
+  [[deprecated]] void setAllPoints(const std::vector<float>& X, const std::vector<float>& Y);
 
   /** Get all the data fields for one point as a vector: depending on the
    * implementation class this can be [X Y Z] or [X Y Z R G B], etc...
    * \sa getPointAllFieldsFast, setPointAllFields, setPointAllFieldsFast
    */
-  void getPointAllFields(size_t index, std::vector<float>& point_data) const
+  [[deprecated]] void getPointAllFields(size_t index, std::vector<float>& point_data) const
   {
     ASSERT_LT_(index, this->size());
     getPointAllFieldsFast(index, point_data);
@@ -981,25 +937,21 @@ class CPointsMap :
    * bounds
    * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
    */
-  void setPointAllFields(size_t index, const std::vector<float>& point_data)
+  [[deprecated]] void setPointAllFields(size_t index, const std::vector<float>& point_data)
   {
     ASSERT_LT_(index, this->size());
     setPointAllFieldsFast(index, point_data);
   }
 
-  /** Delete points out of the given "z" axis range have been removed.
+  /** Stores into a new cloud all the points except those out of the given "z" azis range.
    */
-  void clipOutOfRangeInZ(float zMin, float zMax);
+  void clipOutOfRangeInZ(float zMin, float zMax, mrpt::maps::CPointsMap& result) const;
 
-  /** Delete points which are more far than "maxRange" away from the given
-   * "point".
+  /** Stores into a new cloud all the points except those farther than "maxRange" away
+   *  from the given "point".
    */
-  void clipOutOfRange(const mrpt::math::TPoint2D& point, float maxRange);
-
-  /** Remove from the map the points marked in a bool's array as "true".
-   * \exception std::exception If mask size is not equal to points count.
-   */
-  void applyDeletionMask(const std::vector<bool>& mask);
+  void clipOutOfRange(
+      const mrpt::math::TPoint2D& point, float maxRange, mrpt::maps::CPointsMap& result) const;
 
   // See docs in base class.
   void determineMatching2D(
@@ -1350,13 +1302,7 @@ class CPointsMap :
   }
 
   /** Returns a short description of the map. */
-  std::string asString() const override
-  {
-    return mrpt::format(
-        "Pointcloud map of type %s with %u points, bounding box:%s",
-        this->GetRuntimeClass()->className, static_cast<unsigned int>(size()),
-        boundingBox().asString().c_str());
-  }
+  std::string asString() const override;
 
   /** @name API of the NearestNeighborsCapable virtual interface
     @{ */
@@ -1409,7 +1355,7 @@ class CPointsMap :
   /** Cache of sin/cos values for the latest 2D scan geometries. */
   mrpt::obs::CSinCosLookUpTableFor2DScans m_scans_sincos_cache;
 
-  mutable bool m_boundingBoxIsUpdated;
+  mutable bool m_boundingBoxIsUpdated = false;
   mutable mrpt::math::TBoundingBoxf m_boundingBox;
 
   /** This is a common version of CMetricMap::insertObservation() for point

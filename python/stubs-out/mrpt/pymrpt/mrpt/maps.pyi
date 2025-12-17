@@ -2725,7 +2725,6 @@ class CPointsMap(CMetricMap, mrpt.pymrpt.mrpt.opengl.PLY_Importer, mrpt.pymrpt.m
     class TInsertionOptions(mrpt.pymrpt.mrpt.config.CLoadableOptions):
         addToExistingPointsMap: bool
         also_interpolate: bool
-        disableDeletion: bool
         fuseWithExisting: bool
         horizontalTolerance: float
         insertInvalidPoints: bool

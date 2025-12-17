@@ -29,8 +29,8 @@ namespace maps
  *  See mrpt::maps::CPointsMap and derived classes for other point cloud
  * classes.
  *
- * \sa CMetricMap, CWeightedPointsMap, CPoint,
- * mrpt::serialization::CSerializable \ingroup mrpt_maps_grp
+ * \sa CMetricMap, CPoint, mrpt::serialization::CSerializable
+ * \ingroup mrpt_maps_grp
  */
 class CSimplePointsMap : public CPointsMap
 {

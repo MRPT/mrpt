@@ -281,7 +281,6 @@ void bind_mrpt_maps_CPointsMap(std::function< pybind11::module &(std::string con
 			cl.def_readwrite("minDistBetweenLaserPoints", &mrpt::maps::CPointsMap::TInsertionOptions::minDistBetweenLaserPoints);
 			cl.def_readwrite("addToExistingPointsMap", &mrpt::maps::CPointsMap::TInsertionOptions::addToExistingPointsMap);
 			cl.def_readwrite("also_interpolate", &mrpt::maps::CPointsMap::TInsertionOptions::also_interpolate);
-			cl.def_readwrite("disableDeletion", &mrpt::maps::CPointsMap::TInsertionOptions::disableDeletion);
 			cl.def_readwrite("fuseWithExisting", &mrpt::maps::CPointsMap::TInsertionOptions::fuseWithExisting);
 			cl.def_readwrite("isPlanarMap", &mrpt::maps::CPointsMap::TInsertionOptions::isPlanarMap);
 			cl.def_readwrite("horizontalTolerance", &mrpt::maps::CPointsMap::TInsertionOptions::horizontalTolerance);

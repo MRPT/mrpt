@@ -255,13 +255,18 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::insertPointCloud(
 {
   MRPT_START
   const octomap::point3d sensorPt(sensor_x, sensor_y, sensor_z);
-  size_t N;
-  const float *xs, *ys, *zs;
-  ptMap.getPointsBuffer(N, xs, ys, zs);
+
+  const auto& xs = ptMap.getPointsBufferRef_x();
+  const auto& ys = ptMap.getPointsBufferRef_y();
+  const auto& zs = ptMap.getPointsBufferRef_z();
+  const size_t N = ptMap.size();
+
   for (size_t i = 0; i < N; i++)
+  {
     m_impl->m_octomap.insertRay(
         sensorPt, octomap::point3d(xs[i], ys[i], zs[i]), insertionOptions.maxrange,
         insertionOptions.pruning);
+  }
   MRPT_END
 }
 
