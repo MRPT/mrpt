@@ -256,11 +256,11 @@ void ParametersView3DPoints::to_UI(ViewOptions3DPoints& ui) const
   ui.edTickTextSize->SetValue(wxString::Format("%.03f", axisTickTextSize));
 
   ui.cbColorFromRGB->SetValue(colorFromRGBimage);
-  ui.cbColorByAxis->SetValue(colorizeByField);
+  ui.cbColorByAxis->SetValue(coloring.colorizeByField);
 
-  ui.cbInvertColormap->SetValue(invertColorMapping);
+  ui.cbInvertColormap->SetValue(coloring.invertColorMapping);
 
-  ui.RadioBox1->SetSelection(static_cast<int>(colorMap));
+  ui.RadioBox1->SetSelection(static_cast<int>(coloring.colorMap));
 
   ui.edPointSize->SetValue(pointSize);
 
@@ -287,11 +287,11 @@ void ParametersView3DPoints::from_UI(const ViewOptions3DPoints& ui)
 
   colorFromRGBimage = ui.cbColorFromRGB->IsChecked();
 
-  colorizeByField = ui.cbColorByAxis->GetValue();
+  coloring.colorizeByField = ui.cbColorByAxis->GetValue();
 
-  invertColorMapping = ui.cbInvertColormap->IsChecked();
+  coloring.invertColorMapping = ui.cbInvertColormap->IsChecked();
 
-  colorMap = mrpt::typemeta::TEnumType<mrpt::img::TColormap>::name2value(
+  coloring.colorMap = mrpt::typemeta::TEnumType<mrpt::img::TColormap>::name2value(
       ui.RadioBox1->GetStringSelection().ToStdString());
 
   pointSize = ui.edPointSize->GetValue();

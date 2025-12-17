@@ -160,39 +160,11 @@ void CPointsMapXYZI::internal_clear()
   mark_as_modified();
 }
 
-void CPointsMapXYZI::setPointRGB(size_t index, float x, float y, float z, float R, float G, float B)
-{
-  if (index >= m_x.size()) THROW_EXCEPTION("Index out of bounds");
-  m_x[index] = x;
-  m_y[index] = y;
-  m_z[index] = z;
-  m_intensity[index] = R;
-  mark_as_modified();
-}
-
 void CPointsMapXYZI::setPointIntensity(size_t index, float I)
 {
   if (index >= m_intensity.size()) THROW_EXCEPTION("Index out of bounds");
   this->m_intensity[index] = I;
   // mark_as_modified();  // No need to rebuild KD-trees, etc...
-}
-
-void CPointsMapXYZI::insertPointFast(float x, float y, float z)
-{
-  m_x.push_back(x);
-  m_y.push_back(y);
-  m_z.push_back(z);
-  // mark_as_modified(); Don't, this is the "XXXFast()" method
-}
-
-void CPointsMapXYZI::insertPointRGB(
-    float x, float y, float z, float R_intensity, float G_ignored, float B_ignored)
-{
-  m_x.push_back(x);
-  m_y.push_back(y);
-  m_z.push_back(z);
-  m_intensity.push_back(R_intensity);
-  mark_as_modified();
 }
 
 void CPointsMapXYZI::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
@@ -206,18 +178,6 @@ void CPointsMapXYZI::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
   obj->setPointSize(this->renderOptions.point_size);
 
   o.insert(obj);
-}
-
-void CPointsMapXYZI::getPointRGB(
-    size_t index, float& x, float& y, float& z, float& R, float& G, float& B) const
-{
-  ASSERT_LT_(index, m_x.size());
-  ASSERT_LT_(index, m_intensity.size());
-
-  x = m_x[index];
-  y = m_y[index];
-  z = m_z[index];
-  R = G = B = m_intensity[index];
 }
 
 float CPointsMapXYZI::getPointIntensity(size_t index) const
@@ -432,9 +392,14 @@ void CPointsMapXYZI::PLY_import_set_vertex(
     size_t idx, const mrpt::math::TPoint3Df& pt, const TColorf* pt_color)
 {
   if (pt_color)
-    this->setPointRGB(idx, pt.x, pt.y, pt.z, pt_color->R, pt_color->G, pt_color->B);
+  {
+    setPoint(idx, pt);
+    setPointIntensity(idx, pt_color->R);
+  }
   else
-    this->setPoint(idx, pt.x, pt.y, pt.z);
+  {
+    setPoint(idx, pt.x, pt.y, pt.z);
+  }
 }
 
 void CPointsMapXYZI::PLY_export_get_vertex(

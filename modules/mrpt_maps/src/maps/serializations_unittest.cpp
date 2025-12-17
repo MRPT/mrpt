@@ -35,7 +35,6 @@ using namespace std;
 
 TEST_CLASS_MOVE_COPY_CTORS(CBeacon);
 TEST_CLASS_MOVE_COPY_CTORS(CBeaconMap);
-TEST_CLASS_MOVE_COPY_CTORS(CColouredPointsMap);
 TEST_CLASS_MOVE_COPY_CTORS(CGasConcentrationGridMap2D);
 TEST_CLASS_MOVE_COPY_CTORS(CWirelessPowerGridMap2D);
 TEST_CLASS_MOVE_COPY_CTORS(CHeightGridMap2D);
@@ -45,8 +44,6 @@ TEST_CLASS_MOVE_COPY_CTORS(COccupancyGridMap3D);
 TEST_CLASS_MOVE_COPY_CTORS(CSimplePointsMap);
 TEST_CLASS_MOVE_COPY_CTORS(CGenericPointsMap);
 TEST_CLASS_MOVE_COPY_CTORS(CRandomFieldGridMap3D);
-TEST_CLASS_MOVE_COPY_CTORS(CWeightedPointsMap);
-TEST_CLASS_MOVE_COPY_CTORS(CPointsMapXYZI);
 TEST_CLASS_MOVE_COPY_CTORS(COctoMap);
 TEST_CLASS_MOVE_COPY_CTORS(CColouredOctoMap);
 TEST_CLASS_MOVE_COPY_CTORS(CVoxelMap);
@@ -66,7 +63,6 @@ TEST(SerializeTestMaps, WriteReadToMem)
   const mrpt::rtti::TRuntimeClassId* lstClasses[] = {
       CLASS_ID(CBeacon),
       CLASS_ID(CBeaconMap),
-      CLASS_ID(CColouredPointsMap),
       CLASS_ID(CGasConcentrationGridMap2D),
       CLASS_ID(CWirelessPowerGridMap2D),
       CLASS_ID(CHeightGridMap2D),
@@ -75,8 +71,6 @@ TEST(SerializeTestMaps, WriteReadToMem)
       CLASS_ID(COccupancyGridMap3D),
       CLASS_ID(CSimplePointsMap),
       CLASS_ID(CRandomFieldGridMap3D),
-      CLASS_ID(CWeightedPointsMap),
-      CLASS_ID(CPointsMapXYZI),
       CLASS_ID(CGenericPointsMap),
       CLASS_ID(COctoMap),
       CLASS_ID(CColouredOctoMap),

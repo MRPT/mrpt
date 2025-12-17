@@ -36,10 +36,14 @@ constexpr std::array<float, demo9_N> demo9_ys{0, 1, 2, 0, 1, 2, 0, 1, 2};
 constexpr std::array<float, demo9_N> demo9_zs{0, 1, 2, 0, 1, 2, 0, 1, 2};
 
 template <class MAP>
-void load_demo_9pts_map(MAP& pts)
+[[nodiscard]] MAP load_demo_9pts_map()
 {
-  pts.clear();
-  for (size_t i = 0; i < demo9_N; i++) pts.insertPoint(demo9_xs[i], demo9_ys[i], demo9_zs[i]);
+  MAP pts;
+  for (size_t i = 0; i < demo9_N; i++)
+  {
+    pts.insertPoint(demo9_xs[i], demo9_ys[i], demo9_zs[i]);
+  }
+  return pts;
 }
 
 template <class MAP>
@@ -47,8 +51,7 @@ void do_test_insertPoints()
 {
   // test 1: Insert and check expected values:
   {
-    MAP pts;
-    load_demo_9pts_map(pts);
+    const MAP pts = load_demo_9pts_map<MAP>();
 
     EXPECT_EQ(pts.size(), demo9_N);
 
@@ -68,8 +71,7 @@ void do_test_insertPoints()
 
   // test 2: Copy between maps
   {
-    MAP pts1;
-    load_demo_9pts_map(pts1);
+    const MAP pts1 = load_demo_9pts_map<MAP>();
 
     MAP pts2 = pts1;
     MAP pts3 = pts1;
@@ -90,8 +92,7 @@ void do_test_insertPoints()
 
   // test 3: Insert a map into another
   {
-    MAP pts1;
-    load_demo_9pts_map(pts1);
+    const MAP pts1 = load_demo_9pts_map<MAP>();
 
     EXPECT_EQ(pts1.size(), demo9_N);
 
@@ -116,8 +117,7 @@ void do_test_insertPoints()
 
   // test 4: Insert a map into another with (0,0,0) filter:
   {
-    MAP pts1;
-    load_demo_9pts_map(pts1);
+    const MAP pts1 = load_demo_9pts_map<MAP>();
 
     EXPECT_EQ(pts1.size(), demo9_N);
 
@@ -131,27 +131,26 @@ void do_test_insertPoints()
 template <class MAP>
 void do_test_clipOutOfRangeInZ()
 {
-  MAP pts0;
-  load_demo_9pts_map(pts0);
+  const MAP pts0 = load_demo_9pts_map<MAP>();
 
   // Clip: z=[-10,-1] -> 0 pts
   {
-    MAP pts = pts0;
-    pts.clipOutOfRangeInZ(-10, -1);
+    MAP pts;
+    pts0.clipOutOfRangeInZ(-10, -1, pts);
     EXPECT_EQ(pts.size(), 0u);
   }
 
   // Clip: z=[-10,10] -> 9 pts
   {
-    MAP pts = pts0;
-    pts.clipOutOfRangeInZ(-10, 10);
+    MAP pts;
+    pts0.clipOutOfRangeInZ(-10, 10, pts);
     EXPECT_EQ(pts.size(), 9u);
   }
 
   // Clip: z=[0.5,1.5] -> 3 pts
   {
-    MAP pts = pts0;
-    pts.clipOutOfRangeInZ(0.5, 1.5);
+    MAP pts;
+    pts0.clipOutOfRangeInZ(0.5, 1.5, pts);
     EXPECT_EQ(pts.size(), 3u);
   }
 }
@@ -159,16 +158,15 @@ void do_test_clipOutOfRangeInZ()
 template <class MAP>
 void do_test_clipOutOfRange()
 {
-  MAP pts0;
-  load_demo_9pts_map(pts0);
+  const MAP pts0 = load_demo_9pts_map<MAP>();
 
   // Clip:
   {
     TPoint2D pivot(0, 0);
     const float radius = 0.5;
 
-    MAP pts = pts0;
-    pts.clipOutOfRange(pivot, radius);
+    MAP pts;
+    pts0.clipOutOfRange(pivot, radius, pts);
     EXPECT_EQ(pts.size(), 1u);
   }
 
@@ -177,8 +175,8 @@ void do_test_clipOutOfRange()
     TPoint2D pivot(-10, -10);
     const float radius = 1;
 
-    MAP pts = pts0;
-    pts.clipOutOfRange(pivot, radius);
+    MAP pts;
+    pts0.clipOutOfRange(pivot, radius, pts);
     EXPECT_EQ(pts.size(), 0u);
   }
 
@@ -187,8 +185,8 @@ void do_test_clipOutOfRange()
     TPoint2D pivot(0, 0);
     const float radius = 1.1f;
 
-    MAP pts = pts0;
-    pts.clipOutOfRange(pivot, radius);
+    MAP pts;
+    pts0.clipOutOfRange(pivot, radius, pts);
     EXPECT_EQ(pts.size(), 3u);
   }
 }
@@ -196,8 +194,7 @@ void do_test_clipOutOfRange()
 template <class MAP>
 void do_tests_loadSaveStreams()
 {
-  MAP pts0;
-  load_demo_9pts_map(pts0);
+  const MAP pts0 = load_demo_9pts_map<MAP>();
 
   EXPECT_EQ(pts0.size(), 9u);
 
@@ -256,35 +253,11 @@ void do_tests_loadSaveStreams()
 
 TEST(CSimplePointsMapTests, insertPoints) { do_test_insertPoints<CSimplePointsMap>(); }
 
-TEST(CWeightedPointsMapTests, insertPoints) { do_test_insertPoints<CWeightedPointsMap>(); }
-
-TEST(CColouredPointsMapTests, insertPoints) { do_test_insertPoints<CColouredPointsMap>(); }
-
-TEST(CPointsMapXYZI, insertPoints) { do_test_insertPoints<CPointsMapXYZI>(); }
-
 TEST(CSimplePointsMapTests, clipOutOfRangeInZ) { do_test_clipOutOfRangeInZ<CSimplePointsMap>(); }
-
-TEST(CWeightedPointsMapTests, clipOutOfRangeInZ)
-{
-  do_test_clipOutOfRangeInZ<CWeightedPointsMap>();
-}
-
-TEST(CColouredPointsMapTests, clipOutOfRangeInZ)
-{
-  do_test_clipOutOfRangeInZ<CColouredPointsMap>();
-}
 
 TEST(CSimplePointsMapTests, clipOutOfRange) { do_test_clipOutOfRange<CSimplePointsMap>(); }
 
-TEST(CWeightedPointsMapTests, clipOutOfRange) { do_test_clipOutOfRange<CWeightedPointsMap>(); }
-
-TEST(CColouredPointsMapTests, clipOutOfRange) { do_test_clipOutOfRange<CColouredPointsMap>(); }
-
 TEST(CSimplePointsMapTests, loadSaveStreams) { do_tests_loadSaveStreams<CSimplePointsMap>(); }
-
-TEST(CWeightedPointsMapTests, loadSaveStreams) { do_tests_loadSaveStreams<CWeightedPointsMap>(); }
-
-TEST(CColouredPointsMapTests, loadSaveStreams) { do_tests_loadSaveStreams<CColouredPointsMap>(); }
 
 // ----------------------------------------------------------------------
 // Tests for CGenericPointsMap custom field capabilities

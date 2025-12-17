@@ -36,14 +36,24 @@ struct PointCloudRecoloringParameters
   PointCloudRecoloringParameters() = default;
 
   /** Any of the field names of a mrpt::maps::CPointsMap, like
-   * `x`,`y`,`z`,`intensity`,`ring`,`t`,`ambient`, etc. or `rgb` for `{color_r,color_g,color_b}`
+   * - `x`,`y`,`z`,`intensity`,`ring`,`t`,`ambient`, etc.
+   * - `rgb` for `{color_r,color_g,color_b}` (uint8_t, in range 0-255)
+   * - `rgbf` for `{color_rf,color_gf,color_bf}` (float, in range 0-1)
    */
   std::string colorizeByField = "z";
 
+  /// Whether to invert the colormap.
   bool invertColorMapping = false;
+
+  /// The color map to use:
   mrpt::img::TColormap colorMap = mrpt::img::cmJET;
 
+  /// If provided, this will be used as the coordinate for the lowest end of the color map. If not
+  /// set, it will be dynamically computed from the data.
   std::optional<float> colorMapMinCoord;
+
+  /// If provided, this will be used as the coordinate for the highest end of the color map. If not
+  /// set, it will be dynamically computed from the data.
   std::optional<float> colorMapMaxCoord;
 
   void save_to_ini_file(
@@ -149,6 +159,7 @@ void obs2Dscan_to_viz(
     mrpt::viz::CSetOfObjects& out);
 
 /// Recolorize a pointcloud according to the given parameters
+/// Check mrpt::maps::CGenericPointsMap docs for reserved cloud field names related to coloring.
 void recolorize3Dpc(
     const mrpt::viz::CPointCloudColoured::Ptr& pnts,
     const mrpt::maps::CPointsMap* originalPts,

@@ -64,7 +64,7 @@ class CVoxelMapRGB : public CVoxelMapOccupancyBase<VoxelNodeOccRGB>
  protected:
   bool internal_insertObservation(
       const mrpt::obs::CObservation& obs,
-      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
+      const std::optional<const mrpt::poses::CPose3D>& robotPose) override;
 
   bool internal_insertObservation_3DScan(
       const mrpt::obs::CObservation3DRangeScan& obs,

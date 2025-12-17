@@ -99,7 +99,7 @@ namespace mrpt::hwdrivers
  * mrpt::obs::CObservationRGBD360      obs3D;
  * mrpt::maps::CColouredPointsMap       pntsMap;
  * pntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
- * pntsMap.loadFromRangeScan(obs3D);
+ * pntsMap.loadFromRangeScan(obs3D, std::nullopt);
  * \endcode
  *
  *   Then the point cloud mrpt::maps::CColouredPointsMap can be converted into

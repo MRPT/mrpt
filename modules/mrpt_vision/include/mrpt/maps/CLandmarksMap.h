@@ -84,7 +84,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
   void internal_clear() override;
   bool internal_insertObservation(
       const mrpt::obs::CObservation& obs,
-      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
+      const std::optional<const mrpt::poses::CPose3D>& robotPose) override;
 
  public:
   /** Computes the (logarithmic) likelihood that a given observation was taken

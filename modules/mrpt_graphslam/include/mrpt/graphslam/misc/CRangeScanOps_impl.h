@@ -105,7 +105,11 @@ void CRangeScanOps<GRAPH_T>::decimatePointsMap(
 {
   MRPT_START
 
+  mrpt::maps::CSimplePointsMap origMap = *m;  // deep copy
   size_t map_size = m->size();
+
+  m->clear();
+  auto ctx = m->prepareForInsertPointsFrom(origMap);
 
   if (low_lim)
   {
@@ -114,19 +118,13 @@ void CRangeScanOps<GRAPH_T>::decimatePointsMap(
     keep_point_every = std::min(keep_point_every, conservative_keep_point_every);
   }
 
-  // insert a false every "keep_point_every" points
-  std::vector<bool> deletion_mask(map_size, true);
   for (size_t i = 0; i != map_size; ++i)
   {
     if (i % keep_point_every == 0)
     {
-      deletion_mask[i] = false;
+      m->insertPointFrom(i, ctx);
     }
   }
-  m->applyDeletionMask(deletion_mask);
-
-  // std::cout << "Map size: " << map_size << " => " << m->size() <<
-  // std::endl;
 
   MRPT_END
 }

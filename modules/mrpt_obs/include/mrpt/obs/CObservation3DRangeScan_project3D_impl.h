@@ -157,7 +157,7 @@ void unprojectInto(
       // The user DO want the transformed points
       pp.takeIntoAccountSensorPoseOnRobot &&
       // We don't have colors (local coordinates needed then)
-      (!pca.HAS_RGB || !src_obs.hasIntensityImage) &&
+      (!(pca.HAS_RGBf || pca.HAS_RGBu8) || !src_obs.hasIntensityImage) &&
       // and we are not to use a global pose in the world/map
       !pp.robotPoseInTheWorld;
 
@@ -201,7 +201,7 @@ void unprojectInto(
   // -------------------------------------------------------------
   // Stage 2/3: Project local points into RGB image to get colors
   // -------------------------------------------------------------
-  if constexpr (pca.HAS_RGB)
+  if (pca.HAS_RGBu8 || pca.HAS_RGBf)
   {
     if (src_obs.hasIntensityImage)
     {
@@ -296,7 +296,10 @@ void unprojectInto(
         else
         {
           pCol.R = pCol.G = pCol.B = 255;
-          if (pp.onlyPointsWithIntensityColor) ptValid = false;
+          if (pp.onlyPointsWithIntensityColor)
+          {
+            ptValid = false;
+          }
         }
 
         if (ptValid)
