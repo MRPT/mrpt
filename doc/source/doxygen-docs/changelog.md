@@ -5,6 +5,7 @@
   - \ref mrpt_maps_grp
     - mrpt::maps::CPointsMap::insertPointFrom() removed first argument (sourceMap) since it's now useless using the insertionContext.
     - Added missing mrpt::maps::CGenericPointsMap::double_fields() method for consistency.
+    - mrpt::obs::recolorize3Dpc() parameter changed to new subset struct mrpt::obs::PointCloudRecoloringParameters
 - Bug fixes:
   - mrpt::maps::CPointsMap::registerPointFieldsFrom() didn't handle "double" fields.
 
