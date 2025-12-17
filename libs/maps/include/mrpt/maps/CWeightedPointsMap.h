@@ -26,7 +26,7 @@ namespace maps
  * \sa CMetricMap, CPoint, mrpt::serialization::CSerializable, CSimplePointsMap
  * \ingroup mrpt_maps_grp
  */
-class CWeightedPointsMap : public CPointsMap
+class [[deprecated("Use CGenericPointsMap instead")]] CWeightedPointsMap : public CPointsMap
 {
   DEFINE_SERIALIZABLE(CWeightedPointsMap, mrpt::maps)
 
@@ -59,7 +59,7 @@ class CWeightedPointsMap : public CPointsMap
    * bounds
    * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
    */
-  void getPointAllFieldsFast(size_t index, std::vector<float>& point_data) const override
+  void getPointAllFieldsFast(size_t index, std::vector<float> & point_data) const override
   {
     point_data.resize(4);
     point_data[0] = m_x[index];

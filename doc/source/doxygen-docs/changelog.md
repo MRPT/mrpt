@@ -1,6 +1,9 @@
 \page changelog Change Log
 
 # Version 2.15.3: UNRELEASED
+- Marked as deprecated (to be removed in 3.0.0)
+  - mrpt::maps::CWeightedPointsMap
+  - mrpt::maps::CPointsMapXYZIRT
 - Changes in libraries:
   - \ref mrpt_maps_grp
     - mrpt::maps::CPointsMap::insertPointFrom() removed first argument (sourceMap) since it's now useless using the insertionContext.
