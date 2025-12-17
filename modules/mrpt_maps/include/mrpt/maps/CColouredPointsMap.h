@@ -32,7 +32,7 @@ namespace maps
  * mrpt::serialization::CSerializable
  * \ingroup mrpt_maps_grp
  */
-class CColouredPointsMap : public CPointsMap
+class [[deprecated("Use mrpt::maps::CGenericPointsMap")]] CColouredPointsMap : public CPointsMap
 {
   DEFINE_SERIALIZABLE(CColouredPointsMap, mrpt::maps)
 
@@ -70,7 +70,7 @@ class CColouredPointsMap : public CPointsMap
    * bounds
    * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
    */
-  void getPointAllFieldsFast(size_t index, std::vector<float>& point_data) const override
+  void getPointAllFieldsFast(size_t index, std::vector<float> & point_data) const override
   {
     point_data.resize(6);
     point_data[0] = m_x[index];
@@ -146,8 +146,8 @@ class CColouredPointsMap : public CPointsMap
 
   /** Retrieves a point and its color (colors range is [0,1])
    */
-  void getPointRGB(
-      size_t index, float& x, float& y, float& z, float& R, float& G, float& B) const override;
+  void getPointRGB(size_t index, float& x, float& y, float& z, float& R, float& G, float& B)
+      const override;
 
   /** Retrieves a point color (colors range is [0,1]) */
   void getPointColor(size_t index, float& R, float& G, float& B) const;
@@ -165,7 +165,7 @@ class CColouredPointsMap : public CPointsMap
   /** Override of the default 3D scene builder to account for the individual
    * points' color.
    */
-  void getVisualizationInto(mrpt::viz::CSetOfObjects& outObj) const override;
+  void getVisualizationInto(mrpt::viz::CSetOfObjects & outObj) const override;
 
   /** Colour a set of points from a CObservationImage and the global pose of
    * the robot */
@@ -277,7 +277,7 @@ class CColouredPointsMap : public CPointsMap
 
   /** Like CPointsMap::getPCLPointCloud() but for PointCloud<PointXYZRGB> */
   template <class POINTCLOUD>
-  void getPCLPointCloudXYZRGB(POINTCLOUD& cloud) const
+  void getPCLPointCloudXYZRGB(POINTCLOUD & cloud) const
   {
     const size_t nThis = this->size();
     this->getPCLPointCloud(cloud);  // 1st: xyz data
@@ -311,9 +311,8 @@ class CColouredPointsMap : public CPointsMap
    * color info.
    */
   void PLY_import_set_vertex(
-      size_t idx,
-      const mrpt::math::TPoint3Df& pt,
-      const mrpt::img::TColorf* pt_color = nullptr) override;
+      size_t idx, const mrpt::math::TPoint3Df& pt, const mrpt::img::TColorf* pt_color = nullptr)
+      override;
 
   /** In a base class, reserve memory to prepare subsequent calls to
    * PLY_import_set_vertex */
@@ -330,10 +329,8 @@ class CColouredPointsMap : public CPointsMap
   /** @name Redefinition of PLY Export virtual methods from CPointsMap
     @{ */
   void PLY_export_get_vertex(
-      size_t idx,
-      mrpt::math::TPoint3Df& pt,
-      bool& pt_has_color,
-      mrpt::img::TColorf& pt_color) const override;
+      size_t idx, mrpt::math::TPoint3Df & pt, bool& pt_has_color, mrpt::img::TColorf& pt_color)
+      const override;
   /** @} */
 
   MAP_DEFINITION_START(CColouredPointsMap)

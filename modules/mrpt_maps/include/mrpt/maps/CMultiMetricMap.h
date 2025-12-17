@@ -51,9 +51,7 @@ class TSetOfMetricMapInitializers;
  *	- mrpt::maps::CHeightGridMap2D_MRF: DEMs as Markov Random Field (MRF)
  *	- mrpt::maps::CReflectivityGridMap2D: For maps of "reflectivity" for
  *    each (x,y) location.
- *	- mrpt::maps::CColouredPointsMap: For point map with color.
- *	- mrpt::maps::CWeightedPointsMap: For point map with weights (capable of
- *    "fusing").
+ *	- mrpt::maps::CGenericPointsMap: For point clouds with arbitrary fields.
  *
  * See CMultiMetricMap::setListOfMaps() for the method for initializing this
  *class programmatically.

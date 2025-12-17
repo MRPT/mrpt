@@ -115,11 +115,12 @@ class [[deprecated("Use CGenericPointsMap instead")]] CWeightedPointsMap : publi
   /// Sets the point weight, which is ignored in all classes but those which
   /// actually store that field (Note: No checks are done for out-of-bounds
   /// index). \sa getPointWeight
-  void setPointWeight(size_t index, unsigned long w) override { pointWeight[index] = w; }
+  void setPointWeight(size_t index, unsigned long w) { pointWeight[index] = w; }
+
   /// Gets the point weight, which is ignored in all classes (defaults to 1)
   /// but in those which actually store that field (Note: No checks are done
   /// for out-of-bounds index).  \sa setPointWeight
-  unsigned long getPointWeight(size_t index) const override { return pointWeight[index]; }
+  unsigned long getPointWeight(size_t index) const { return pointWeight[index]; }
 
  protected:
   /** The points weights */

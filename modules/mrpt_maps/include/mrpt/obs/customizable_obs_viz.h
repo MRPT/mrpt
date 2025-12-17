@@ -43,6 +43,9 @@ struct PointCloudRecoloringParameters
   bool invertColorMapping = false;
   mrpt::img::TColormap colorMap = mrpt::img::cmJET;
 
+  std::optional<float> colorMapMinCoord;
+  std::optional<float> colorMapMaxCoord;
+
   void save_to_ini_file(
       mrpt::config::CConfigFileBase& cfg,
       const std::string& section = "ParametersView3DPoints") const;

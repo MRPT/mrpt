@@ -134,9 +134,10 @@ void PlannerTPS_VirtualBase::transformPointcloudWithSquareClipping(
     const mrpt::poses::CPose2D& asSeenFrom,
     const double MAX_DIST_XY)
 {
-  size_t nObs;
-  const float *obs_xs, *obs_ys, *obs_zs;
-  in_map.getPointsBuffer(nObs, obs_xs, obs_ys, obs_zs);
+  const size_t nObs = in_map.size();
+  const auto& obs_xs = in_map.getPointsBufferRef_x();
+  const auto& obs_ys = in_map.getPointsBufferRef_y();
+  const auto& obs_zs = in_map.getPointsBufferRef_z();
 
   out_map.clear();
   out_map.reserve(nObs);  // Prealloc mem for speed-up
@@ -176,10 +177,10 @@ void PlannerTPS_VirtualBase::spaceTransformer(
     // obstacles
     // in the "grid" of the given PT
     // --------------------------------------------------------------------
-    size_t nObs;
-    const float *obs_xs, *obs_ys, *obs_zs;
-    // = in_obstacles.getPointsCount();
-    in_obstacles.getPointsBuffer(nObs, obs_xs, obs_ys, obs_zs);
+    const auto obs_xs = in_obstacles.getPointsBufferRef_x();
+    const auto obs_ys = in_obstacles.getPointsBufferRef_y();
+    const auto obs_zs = in_obstacles.getPointsBufferRef_z();
+    const size_t nObs = obs_xs.size();
 
     // Init obs ranges:
     in_PTG->initTPObstacles(out_TPObstacles);
@@ -227,10 +228,10 @@ void PlannerTPS_VirtualBase::spaceTransformerOneDirectionOnly(
     // obstacles
     // in the "grid" of the given PT
     // --------------------------------------------------------------------
-    size_t nObs;
-    const float *obs_xs, *obs_ys, *obs_zs;
-    // = in_obstacles.getPointsCount();
-    in_obstacles.getPointsBuffer(nObs, obs_xs, obs_ys, obs_zs);
+    const auto obs_xs = in_obstacles.getPointsBufferRef_x();
+    const auto obs_ys = in_obstacles.getPointsBufferRef_y();
+    const auto obs_zs = in_obstacles.getPointsBufferRef_z();
+    const size_t nObs = obs_xs.size();
 
     // Init obs ranges:
     in_PTG->initTPObstacleSingle(tp_space_k_direction, out_TPObstacle_k);

@@ -105,12 +105,9 @@ double COccupancyGridMap2D::computeObservationLikelihood_Consensus(
   // Observation is a points map:
   // -------------------------------------------
   size_t Denom = 0;
-  //	int			Acells = 1;
   TPoint2D pointGlobal, pointLocal;
 
   // Get the points buffers:
-
-  //	compareMap.getPointsBuffer( n, xs, ys, zs );
   const size_t n = compareMap->size();
 
   for (size_t i = 0; i < n; i += likelihoodOptions.consensus_takeEachRange)

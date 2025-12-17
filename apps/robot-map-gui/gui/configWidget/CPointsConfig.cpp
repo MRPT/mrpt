@@ -38,7 +38,6 @@ void CPointsConfig::updateConfiguration(mrpt::maps::TMetricMapInitializer* optio
   mapDefination->insertionOpts.minDistBetweenLaserPoints = m_ui->minDistBetweenLaserPoints->value();
   mapDefination->insertionOpts.addToExistingPointsMap = m_ui->addToExistingPointsMap->isChecked();
   mapDefination->insertionOpts.also_interpolate = m_ui->also_interpolate->isChecked();
-  mapDefination->insertionOpts.disableDeletion = m_ui->disableDeletion->isChecked();
   mapDefination->insertionOpts.fuseWithExisting = m_ui->fuseWithExisting->isChecked();
   mapDefination->insertionOpts.isPlanarMap = m_ui->isPlanarMap->isChecked();
   mapDefination->insertionOpts.horizontalTolerance = m_ui->horizontalTolerance->value();
@@ -53,7 +52,6 @@ void CPointsConfig::setInsertOpt(const mrpt::maps::CPointsMap::TInsertionOptions
   m_ui->minDistBetweenLaserPoints->setValue(insertOpt.minDistBetweenLaserPoints);
   m_ui->addToExistingPointsMap->setChecked(insertOpt.addToExistingPointsMap);
   m_ui->also_interpolate->setChecked(insertOpt.also_interpolate);
-  m_ui->disableDeletion->setChecked(insertOpt.disableDeletion);
   m_ui->fuseWithExisting->setChecked(insertOpt.fuseWithExisting);
   m_ui->isPlanarMap->setChecked(insertOpt.isPlanarMap);
   m_ui->horizontalTolerance->setValue(insertOpt.horizontalTolerance);

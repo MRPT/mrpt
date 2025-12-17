@@ -23,6 +23,12 @@
 #include <mrpt/graphs/registerAllClasses.h>
 #include <mrpt/obs/registerAllClasses.h>
 
+// Deprecated (to be removed in mrpt 3.0.0)
+#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/CPointsMapXYZI.h>
+#include <mrpt/maps/CPointsMapXYZIRT.h>
+#include <mrpt/maps/CWeightedPointsMap.h>
+
 MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 {
   using namespace mrpt::maps;

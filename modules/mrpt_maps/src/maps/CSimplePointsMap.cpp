@@ -139,7 +139,9 @@ void CSimplePointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t 
         in.ReadBufferFixEndianness(&m_z[0], n);
       }
       if (version >= 9)
+      {
         in >> genericMapParams;
+      }
       else
       {
         bool disableSaveAs3DObject;
@@ -148,7 +150,10 @@ void CSimplePointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t 
       }
       insertionOptions.readFromStream(in);
       likelihoodOptions.readFromStream(in);
-      if (version >= 10) renderOptions.readFromStream(in);
+      if (version >= 10)
+      {
+        renderOptions.readFromStream(in);
+      }
     }
     break;
 
@@ -207,9 +212,10 @@ void CSimplePointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t 
       if (version >= 2)
       {
         // version 2: options saved too
+        bool dummy_disableDeletion;
         in >> insertionOptions.minDistBetweenLaserPoints >>
             insertionOptions.addToExistingPointsMap >> insertionOptions.also_interpolate >>
-            insertionOptions.disableDeletion >> insertionOptions.fuseWithExisting >>
+            dummy_disableDeletion >> insertionOptions.fuseWithExisting >>
             insertionOptions.isPlanarMap;
 
         if (version < 6)

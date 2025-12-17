@@ -197,17 +197,22 @@ bool CReactiveNavigationSystem3D::implementSenseObstacles(
   for (size_t i = 0; i < nSlices; i++) m_WS_Obstacles_inlevels[i].clear();
 
   // Sort obstacles in "slices":
-  size_t nPts;
-  const float *xs, *ys, *zs;
-  m_WS_Obstacles_unsorted.getPointsBuffer(nPts, xs, ys, zs);
+  const auto xs = m_WS_Obstacles_unsorted.getPointsBufferRef_x();
+  const auto ys = m_WS_Obstacles_unsorted.getPointsBufferRef_y();
+  const auto zs = m_WS_Obstacles_unsorted.getPointsBufferRef_z();
+  const size_t nObs = xs.size();
+
   const float OBS_MAX_XY = params_abstract_ptg_navigator.ref_distance * 1.1f;
 
-  for (size_t j = 0; j < nPts; j++)
+  for (size_t j = 0; j < nObs; j++)
   {
     float h = 0;
     for (size_t idxH = 0; idxH < nSlices; ++idxH)
     {
-      if (zs[j] < 0.01) break;  // skip this points
+      if (zs[j] < 0.01)
+      {
+        break;  // skip this points
+      }
 
       h += m_robotShape.getHeight(idxH);
       if (zs[j] < h)
@@ -245,9 +250,10 @@ void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
 
   for (size_t j = 0; j < m_robotShape.size(); j++)
   {
-    size_t nObs;
-    const float *xs, *ys, *zs;
-    m_WS_Obstacles_inlevels[j].getPointsBuffer(nObs, xs, ys, zs);
+    const auto xs = m_WS_Obstacles_inlevels[j].getPointsBufferRef_x();
+    const auto ys = m_WS_Obstacles_inlevels[j].getPointsBufferRef_y();
+    const auto zs = m_WS_Obstacles_inlevels[j].getPointsBufferRef_z();
+    const size_t nObs = xs.size();
 
     for (size_t obs = 0; obs < nObs; obs++)
     {
@@ -327,9 +333,10 @@ bool CReactiveNavigationSystem3D::checkCollisionWithLatestObstacles(
 
   for (size_t idxH = 0; idxH < nSlices; ++idxH)
   {
-    size_t nObs;
-    const float *xs, *ys, *zs;
-    m_WS_Obstacles_inlevels[idxH].getPointsBuffer(nObs, xs, ys, zs);
+    const auto xs = m_WS_Obstacles_inlevels[idxH].getPointsBufferRef_x();
+    const auto ys = m_WS_Obstacles_inlevels[idxH].getPointsBufferRef_y();
+    const auto zs = m_WS_Obstacles_inlevels[idxH].getPointsBufferRef_z();
+    const size_t nObs = xs.size();
 
     for (size_t i = 0; i < 1 /* assume all PTGs share the same robot shape! */; i++)
     {

@@ -95,6 +95,15 @@ void PointCloudRecoloringParameters::save_to_ini_file(
   MRPT_SAVE_CONFIG_VAR(colorizeByField, c, s);
   MRPT_SAVE_CONFIG_VAR(invertColorMapping, c, s);
   MRPT_SAVE_CONFIG_VAR(colorMap, c, s);
+
+  if (colorMapMinCoord)
+  {
+    c.write(s, "colorMapMinCoord", *colorMapMinCoord);
+  }
+  if (colorMapMaxCoord)
+  {
+    c.write(s, "colorMapMaxCoord", *colorMapMaxCoord);
+  }
 }
 
 void PointCloudRecoloringParameters::load_from_ini_file(
@@ -106,6 +115,15 @@ void PointCloudRecoloringParameters::load_from_ini_file(
   MRPT_LOAD_CONFIG_VAR_CS(colorizeByField, string);
   MRPT_LOAD_CONFIG_VAR_CS(invertColorMapping, bool);
   colorMap = c.read_enum(s, "colorMap", colorMap);
+
+  if (const auto sMin = c.read_string(s, "colorMapMinCoord", ""); !sMin.empty())
+  {
+    colorMapMinCoord = std::stof(sMin);
+  }
+  if (const auto sMax = c.read_string(s, "colorMapMaxCoord", ""); !sMax.empty())
+  {
+    colorMapMaxCoord = std::stof(sMax);
+  }
 }
 
 // Bounding box memory so we have consistent coloring across different sensors:

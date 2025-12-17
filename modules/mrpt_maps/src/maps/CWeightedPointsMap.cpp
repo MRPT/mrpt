@@ -161,9 +161,10 @@ void CWeightedPointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_
       else
       {
         insertionOptions = TInsertionOptions();
+        bool dummy_disableDeletion;
         in >> insertionOptions.minDistBetweenLaserPoints >>
             insertionOptions.addToExistingPointsMap >> insertionOptions.also_interpolate >>
-            insertionOptions.disableDeletion >> insertionOptions.fuseWithExisting >>
+            dummy_disableDeletion >> insertionOptions.fuseWithExisting >>
             insertionOptions.isPlanarMap >> insertionOptions.maxDistForInterpolatePoints;
         {
           bool disableSaveAs3DObject;
