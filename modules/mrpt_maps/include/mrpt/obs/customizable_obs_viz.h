@@ -29,6 +29,29 @@ namespace mrpt::obs
 /** @name customizable_obs_viz_grp Customizable obstacle to 3D visualization API
  *  @{ */
 
+/** Parameters for recolorize3Dpc(), or part of VisualizationParameters if using obs_to_viz()
+ */
+struct PointCloudRecoloringParameters
+{
+  PointCloudRecoloringParameters() = default;
+
+  /** Any of the field names of a mrpt::maps::CPointsMap, like
+   * `x`,`y`,`z`,`intensity`,`ring`,`t`,`ambient`, etc. or `rgb` for `{color_r,color_g,color_b}`
+   */
+  std::string colorizeByField = "z";
+
+  bool invertColorMapping = false;
+  mrpt::img::TColormap colorMap = mrpt::img::cmJET;
+
+  void save_to_ini_file(
+      mrpt::config::CConfigFileBase& cfg,
+      const std::string& section = "ParametersView3DPoints") const;
+
+  void load_from_ini_file(
+      const mrpt::config::CConfigFileBase& cfg,
+      const std::string& section = "ParametersView3DPoints");
+};
+
 /** Here we can customize the way observations will be rendered as 3D objects
  *  in obs_to_viz(), obs3Dscan_to_viz(), etc.
  *  \sa obs_to_viz(), obs3Dscan_to_viz()
@@ -36,16 +59,14 @@ namespace mrpt::obs
 struct VisualizationParameters
 {
   VisualizationParameters() = default;
-  ~VisualizationParameters() = default;
+
+  PointCloudRecoloringParameters coloring;
 
   bool showAxis = true;
   double axisTickFrequency = 1.0;
   double axisLimits = 20.0;
   double axisTickTextSize = 0.075;
   bool colorFromRGBimage = true;
-  std::string colorizeByField = "z";  // x,y,z,i,ring,t,ambient, etc.
-  bool invertColorMapping = false;
-  mrpt::img::TColormap colorMap = mrpt::img::cmJET;
   double pointSize = 4.0;
   bool drawSensorPose = true;
   double sensorPoseScale = 0.3;
@@ -128,7 +149,7 @@ void obs2Dscan_to_viz(
 void recolorize3Dpc(
     const mrpt::viz::CPointCloudColoured::Ptr& pnts,
     const mrpt::maps::CPointsMap* originalPts,
-    const VisualizationParameters& p);
+    const PointCloudRecoloringParameters& p);
 
 /** @} */
 

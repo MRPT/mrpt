@@ -34,10 +34,7 @@ void VisualizationParameters::save_to_ini_file(
   MRPT_SAVE_CONFIG_VAR(axisLimits, c, s);
   MRPT_SAVE_CONFIG_VAR(axisTickTextSize, c, s);
   MRPT_SAVE_CONFIG_VAR(colorFromRGBimage, c, s);
-  MRPT_SAVE_CONFIG_VAR(colorizeByField, c, s);
-  MRPT_SAVE_CONFIG_VAR(invertColorMapping, c, s);
   MRPT_SAVE_CONFIG_VAR(pointSize, c, s);
-  MRPT_SAVE_CONFIG_VAR(colorMap, c, s);
   MRPT_SAVE_CONFIG_VAR(drawSensorPose, c, s);
   MRPT_SAVE_CONFIG_VAR(sensorPoseScale, c, s);
   MRPT_SAVE_CONFIG_VAR(showAxis, c, s);
@@ -54,6 +51,8 @@ void VisualizationParameters::save_to_ini_file(
   MRPT_SAVE_CONFIG_VAR(points2DscansColor.G, c, s);
   MRPT_SAVE_CONFIG_VAR(points2DscansColor.B, c, s);
   MRPT_SAVE_CONFIG_VAR(points2DscansColor.A, c, s);
+
+  coloring.save_to_ini_file(cfg, section);
 }
 
 void VisualizationParameters::load_from_ini_file(
@@ -66,12 +65,9 @@ void VisualizationParameters::load_from_ini_file(
   MRPT_LOAD_CONFIG_VAR_CS(axisLimits, double);
   MRPT_LOAD_CONFIG_VAR_CS(axisTickTextSize, double);
   MRPT_LOAD_CONFIG_VAR_CS(colorFromRGBimage, bool);
-  MRPT_LOAD_CONFIG_VAR_CS(colorizeByField, string);
-  MRPT_LOAD_CONFIG_VAR_CS(invertColorMapping, bool);
   MRPT_LOAD_CONFIG_VAR_CS(pointSize, double);
   MRPT_LOAD_CONFIG_VAR_CS(drawSensorPose, bool);
   MRPT_LOAD_CONFIG_VAR_CS(sensorPoseScale, double);
-  colorMap = c.read_enum(s, "colorMap", colorMap);
   MRPT_LOAD_CONFIG_VAR_CS(showAxis, bool);
   MRPT_LOAD_CONFIG_VAR_CS(showSurfaceIn2Dscans, bool);
   MRPT_LOAD_CONFIG_VAR_CS(showPointsIn2Dscans, bool);
@@ -86,6 +82,30 @@ void VisualizationParameters::load_from_ini_file(
   MRPT_LOAD_CONFIG_VAR_CS(points2DscansColor.G, int);
   MRPT_LOAD_CONFIG_VAR_CS(points2DscansColor.B, int);
   MRPT_LOAD_CONFIG_VAR_CS(points2DscansColor.A, int);
+
+  coloring.load_from_ini_file(cfg, section);
+}
+
+void PointCloudRecoloringParameters::save_to_ini_file(
+    mrpt::config::CConfigFileBase& cfg, const std::string& section) const
+{
+  auto& c = cfg;
+  const std::string& s = section;
+
+  MRPT_SAVE_CONFIG_VAR(colorizeByField, c, s);
+  MRPT_SAVE_CONFIG_VAR(invertColorMapping, c, s);
+  MRPT_SAVE_CONFIG_VAR(colorMap, c, s);
+}
+
+void PointCloudRecoloringParameters::load_from_ini_file(
+    const mrpt::config::CConfigFileBase& cfg, const std::string& section)
+{
+  const auto& c = cfg;
+  const std::string& s = section;
+
+  MRPT_LOAD_CONFIG_VAR_CS(colorizeByField, string);
+  MRPT_LOAD_CONFIG_VAR_CS(invertColorMapping, bool);
+  colorMap = c.read_enum(s, "colorMap", colorMap);
 }
 
 // Bounding box memory so we have consistent coloring across different sensors:
@@ -96,7 +116,9 @@ constexpr double bbMemoryFading = 0.99;
 }  // namespace
 
 void mrpt::obs::recolorize3Dpc(
-    const mrpt::viz::CPointCloudColoured::Ptr& pnts, const VisualizationParameters& p)
+    const mrpt::opengl::CPointCloudColoured::Ptr& pnts,
+    const mrpt::maps::CPointsMap* originalPts,
+    const PointCloudRecoloringParameters& p)
 {
   if (!originalPts)
   {
@@ -253,7 +275,7 @@ void mrpt::obs::obs3Dscan_to_viz(
   else
   {
     gl_pnts->loadFromPointsMap(pointMap.get());
-    recolorize3Dpc(gl_pnts, pointMap.get(), p);
+    recolorize3Dpc(gl_pnts, pointMap.get(), p.coloring);
   }
 
   // No need to further transform 3D points
@@ -282,7 +304,7 @@ void mrpt::obs::obsVelodyne_to_viz(
 
   if (!p.colorFromRGBimage)
   {
-    recolorize3Dpc(pnts, &pntsMap, p);
+    recolorize3Dpc(pnts, &pntsMap, p.coloring);
   }
 }
 
@@ -305,7 +327,7 @@ void mrpt::obs::obsPointCloud_to_viz(
 
   if (!p.colorFromRGBimage)
   {
-    recolorize3Dpc(pnts, obs->pointcloud.get(), p);
+    recolorize3Dpc(pnts, obs->pointcloud.get(), p.coloring);
   }
 }
 
@@ -329,7 +351,10 @@ void mrpt::obs::obsRotatingScan_to_viz(
 
   pnts->setPointSize(p.pointSize);
 
-  if (!p.colorFromRGBimage) recolorize3Dpc(pnts, nullptr, p);
+  if (!p.colorFromRGBimage)
+  {
+    recolorize3Dpc(pnts, nullptr, p.coloring);
+  }
 }
 
 void mrpt::obs::obs2Dscan_to_viz(
