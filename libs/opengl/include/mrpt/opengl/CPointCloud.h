@@ -333,12 +333,11 @@ class PointCloudAdapter<mrpt::opengl::CPointCloud>
  public:
   /** The type of each point XYZ coordinates */
   using coords_t = float;
-  /** Has any color RGB info? */
-  static constexpr bool HAS_RGB = false;
+
   /** Has native RGB info (as floats)? */
-  static constexpr bool HAS_RGBf = false;
+  const bool HAS_RGBf = false;
   /** Has native RGB info (as uint8_t)? */
-  static constexpr bool HAS_RGBu8 = false;
+  const bool HAS_RGBu8 = false;
 
   /** Constructor (accept a const ref for convenience) */
   PointCloudAdapter(const mrpt::opengl::CPointCloud& obj) :
@@ -368,6 +367,41 @@ class PointCloudAdapter<mrpt::opengl::CPointCloud>
 
   /** Set XYZ coordinates of i'th point */
   void setInvalidPoint(size_t idx) { m_obj.setPoint_fast(idx, 0, 0, 0); }
+
+  /** Get XYZ_RGBf coordinates of i'th point */
+  template <typename T>
+  inline void getPointXYZ_RGBAf(
+      size_t idx, T& x, T& y, T& z, float& r, float& g, float& b, float& a) const
+  {
+    getPointXYZ(idx, x, y, z);
+    r = g = b = a = 1.0f;
+  }
+
+  /** Set XYZ_RGBf coordinates of i'th point */
+  inline void setPointXYZ_RGBAf(
+      size_t idx,
+      const coords_t x,
+      const coords_t y,
+      const coords_t z,
+      [[maybe_unused]] const float r,
+      [[maybe_unused]] const float g,
+      [[maybe_unused]] const float b,
+      [[maybe_unused]] const float a)
+  {
+    m_obj.setPoint(idx, x, y, z);
+  }
+
+  /** Get RGBu8 color of i'th point */
+  inline void getPointRGBu8(size_t idx, uint8_t& r, uint8_t& g, uint8_t& b) const { r = g = b = 0; }
+
+  /** Set RGBu8 coordinates of i'th point */
+  inline void setPointRGBu8(
+      [[maybe_unused]] size_t idx,
+      [[maybe_unused]] const uint8_t r,
+      [[maybe_unused]] const uint8_t g,
+      [[maybe_unused]] const uint8_t b)
+  {
+  }
 
 };  // end of PointCloudAdapter<mrpt::opengl::CPointCloud>
 

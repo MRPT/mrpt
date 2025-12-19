@@ -46,9 +46,7 @@ class TSetOfMetricMapInitializers;
  *	- mrpt::maps::CHeightGridMap2D_MRF: DEMs as Markov Random Field (MRF)
  *	- mrpt::maps::CReflectivityGridMap2D: For maps of "reflectivity" for
  *    each (x,y) location.
- *	- mrpt::maps::CColouredPointsMap: For point map with color.
- *	- mrpt::maps::CWeightedPointsMap: For point map with weights (capable of
- *    "fusing").
+ *	- mrpt::maps::CGenericPointsMap: For point clouds with arbitrary fields.
  *
  * See CMultiMetricMap::setListOfMaps() for the method for initializing this
  *class programmatically.
@@ -225,7 +223,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
   void internal_clear() override;
   bool internal_insertObservation(
       const mrpt::obs::CObservation& obs,
-      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
+      const std::optional<const mrpt::poses::CPose3D>& robotPose) override;
   bool internal_canComputeObservationLikelihood(const mrpt::obs::CObservation& obs) const override;
   double internal_computeObservationLikelihood(
       const mrpt::obs::CObservation& obs, const mrpt::poses::CPose3D& takenFrom) const override;

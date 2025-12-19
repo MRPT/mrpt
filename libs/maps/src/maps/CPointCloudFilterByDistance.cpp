@@ -146,17 +146,27 @@ void CPointCloudFilterByDistance::filter(
       const bool do_delete = !(ok_total);
       deletion_mask[i] = do_delete;
 
-      if (do_delete) del_count++;
+      if (do_delete)
+      {
+        del_count++;
+      }
     }
 
     // Remove points:
     if ((params == nullptr || params->do_not_delete == false) && N > 0 &&
-        del_count / double(N) < options.max_deletion_ratio  // If we are deleting too many
-                                                            // points, it may be that the filter
-                                                            // is plainly wrong
-    )
+        // If we are deleting too many points, it may be that the filter is plainly wrong
+        del_count / double(N) < options.max_deletion_ratio)
     {
-      pc->applyDeletionMask(deletion_mask);
+      // Apply mask:
+      pc->clear();
+      const auto ctx = pc->prepareForInsertPointsFrom(*original_pc);
+      for (size_t i = 0; i < original_pc->size(); i++)
+      {
+        if (!deletion_mask.at(i))
+        {
+          pc->insertPointFrom(i, ctx);
+        }
+      }
     }
   }  // we can do filter
 

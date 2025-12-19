@@ -141,30 +141,33 @@ class CRobotKinects
         z[i] = pint.z;
       }
     }
-    m_points.setAllPoints(x, y, z);
+
+    for (unsigned int i = 0; i < m_points.size(); i++)
+    {
+      m_points.setPoint(i, x[i], y[i], z[i]);
+    }
   }
 
   void CorrectRanges(const mrpt::poses::CPose3D& kinectrelpose)
   {
     using namespace std;
     vector<float> x, y, z;
-    vector<bool> deletion;
 
     m_points.getAllPoints(x, y, z, 1);
+    const size_t n = x.size();
 
-    for (unsigned int i = 0; i < m_points.size(); i++)
+    m_points.clear();
+
+    for (size_t i = 0; i < n; i++)
     {
       if ((kinectrelpose.distance3DTo(x[i], y[i], z[i]) < m_min_range) ||
           (kinectrelpose.distance3DTo(x[i], y[i], z[i]) > m_max_range))
       {
-        deletion.push_back(1);
+        // Remove.
+        continue;
       }
-      else
-      {
-        deletion.push_back(0);
-      }
+      m_points.insertPoint(x[i], y[i], z[i]);
     }
-    m_points.applyDeletionMask(deletion);
   }
 
   void KinectScan(

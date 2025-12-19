@@ -221,9 +221,10 @@ void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(
 
   // Merge all the (k,d) for which the robot collides with each obstacle
   // point:
-  size_t nObs;
-  const float *xs, *ys, *zs;
-  m_WS_Obstacles.getPointsBuffer(nObs, xs, ys, zs);
+  const auto xs = m_WS_Obstacles.getPointsBufferRef_x();
+  const auto ys = m_WS_Obstacles.getPointsBufferRef_y();
+  const auto zs = m_WS_Obstacles.getPointsBufferRef_z();
+  const size_t nObs = xs.size();
 
   for (size_t obs = 0; obs < nObs; obs++)
   {
@@ -291,9 +292,10 @@ bool CReactiveNavigationSystem::checkCollisionWithLatestObstacles(
     const mrpt::math::TPose2D& relative_robot_pose) const
 {
   ASSERT_(!PTGs.empty());
-  size_t nObs;
-  const float *xs, *ys, *zs;
-  m_WS_Obstacles.getPointsBuffer(nObs, xs, ys, zs);
+  const auto xs = m_WS_Obstacles.getPointsBufferRef_x();
+  const auto ys = m_WS_Obstacles.getPointsBufferRef_y();
+  const auto zs = m_WS_Obstacles.getPointsBufferRef_z();
+  const size_t nObs = xs.size();
 
   for (size_t i = 0; i < 1 /* assume all PTGs share the same robot shape! */; i++)
   {
