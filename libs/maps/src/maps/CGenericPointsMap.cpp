@@ -113,7 +113,7 @@ void CGenericPointsMap::setSize(size_t newLength)
   mark_as_modified();
 }
 
-uint8_t CGenericPointsMap::serializeGetVersion() const { return 2; }
+uint8_t CGenericPointsMap::serializeGetVersion() const { return 3; }
 void CGenericPointsMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
   // XYZ
@@ -130,28 +130,36 @@ void CGenericPointsMap::serializeTo(mrpt::serialization::CArchive& out) const
   out.WriteAs<uint32_t>(m_float_fields.size());
   for (const auto& [name, v] : m_float_fields)
   {
-    out << std::string(name) << v;
+    out << std::string(name);
+    out.WriteAs<uint32_t>(v.size());
+    out.WriteBufferFixEndianness(v.data(), v.size());
   }
 
   // Double fields (v1)
   out.WriteAs<uint32_t>(m_double_fields.size());
   for (const auto& [name, v] : m_double_fields)
   {
-    out << std::string(name) << v;
+    out << std::string(name);
+    out.WriteAs<uint32_t>(v.size());
+    out.WriteBufferFixEndianness(v.data(), v.size());
   }
 
   // Uint16 fields
   out.WriteAs<uint32_t>(m_uint16_fields.size());
   for (const auto& [name, v] : m_uint16_fields)
   {
-    out << std::string(name) << v;
+    out << std::string(name);
+    out.WriteAs<uint32_t>(v.size());
+    out.WriteBufferFixEndianness(v.data(), v.size());
   }
 
   // uint8 fields (v2)
   out.WriteAs<uint32_t>(m_uint8_fields.size());
   for (const auto& [name, v] : m_uint8_fields)
   {
-    out << std::string(name) << v;
+    out << std::string(name);
+    out.WriteAs<uint32_t>(v.size());                   // v3
+    out.WriteBufferFixEndianness(v.data(), v.size());  // v3
   }
 
   insertionOptions.writeToStream(out);
@@ -162,11 +170,26 @@ void CGenericPointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
 {
   internal_clear();
 
+  auto lambdaReadVector = [&](auto& v)
+  {
+    if (version < 3)
+    {
+      in >> v;
+    }
+    else
+    {
+      const auto n = in.ReadAs<uint32_t>();
+      v.resize(n);
+      in.ReadBufferFixEndianness(v.data(), n);
+    }
+  };
+
   switch (version)
   {
     case 0:
     case 1:
     case 2:
+    case 3:
     {
       mark_as_modified();
 
@@ -191,7 +214,7 @@ void CGenericPointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
           std::string name;
           in >> name;
           this->registerField_float(name);
-          in >> m_float_fields[name];
+          lambdaReadVector(m_float_fields[name]);
         }
       }
       // double fields
@@ -203,7 +226,7 @@ void CGenericPointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
           std::string name;
           in >> name;
           this->registerField_double(name);
-          in >> m_double_fields[name];
+          lambdaReadVector(m_double_fields[name]);
         }
       }
       // Uint16 fields
@@ -214,7 +237,7 @@ void CGenericPointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
           std::string name;
           in >> name;
           this->registerField_uint16(name);
-          in >> m_uint16_fields[name];
+          lambdaReadVector(m_uint16_fields[name]);
         }
       }
       // u8 fields
@@ -225,8 +248,8 @@ void CGenericPointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
         {
           std::string name;
           in >> name;
-          this->registerField_double(name);
-          in >> m_uint8_fields[name];
+          this->registerField_uint8(name);
+          lambdaReadVector(m_uint8_fields[name]);
         }
       }
 
