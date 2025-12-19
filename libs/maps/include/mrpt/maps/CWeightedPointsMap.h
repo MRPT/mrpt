@@ -14,9 +14,7 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/serialization/CSerializable.h>
 
-namespace mrpt
-{
-namespace maps
+namespace mrpt::maps
 {
 /** A cloud of points in 2D or 3D, which can be built from a sequence of laser
  * scans.
@@ -85,12 +83,12 @@ class [[deprecated("Use CGenericPointsMap instead")]] CWeightedPointsMap : publi
   /** See CPointsMap::loadFromRangeScan() */
   void loadFromRangeScan(
       const mrpt::obs::CObservation2DRangeScan& rangeScan,
-      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
+      const std::optional<const mrpt::poses::CPose3D>& robotPose) override;
 
   /** See CPointsMap::loadFromRangeScan() */
   void loadFromRangeScan(
       const mrpt::obs::CObservation3DRangeScan& rangeScan,
-      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
+      const std::optional<const mrpt::poses::CPose3D>& robotPose) override;
 
  protected:
   // Friend methods:
@@ -106,11 +104,12 @@ class [[deprecated("Use CGenericPointsMap instead")]] CWeightedPointsMap : publi
   /// Sets the point weight, which is ignored in all classes but those which
   /// actually store that field (Note: No checks are done for out-of-bounds
   /// index). \sa getPointWeight
-  void setPointWeight(size_t index, unsigned long w) override { pointWeight[index] = w; }
+  void setPointWeight(size_t index, unsigned long w) { pointWeight[index] = w; }
+
   /// Gets the point weight, which is ignored in all classes (defaults to 1)
   /// but in those which actually store that field (Note: No checks are done
   /// for out-of-bounds index).  \sa setPointWeight
-  unsigned long getPointWeight(size_t index) const override { return pointWeight[index]; }
+  unsigned long getPointWeight(size_t index) const { return pointWeight[index]; }
 
  protected:
   /** The points weights */
@@ -140,51 +139,4 @@ class [[deprecated("Use CGenericPointsMap instead")]] CWeightedPointsMap : publi
   mrpt::maps::CPointsMap::TLikelihoodOptions likelihoodOpts;
   MAP_DEFINITION_END(CWeightedPointsMap)
 };  // End of class def.
-}  // namespace maps
-
-namespace opengl
-{
-/** Specialization
- * mrpt::opengl::PointCloudAdapter<mrpt::maps::CWeightedPointsMap>
- * \ingroup mrpt_adapters_grp */
-template <>
-class PointCloudAdapter<mrpt::maps::CWeightedPointsMap>
-{
- private:
-  mrpt::maps::CWeightedPointsMap& m_obj;
-
- public:
-  /** The type of each point XYZ coordinates */
-  using coords_t = float;
-  /** Has any color RGB info? */
-  static constexpr bool HAS_RGB = false;
-  /** Has native RGB info (as floats)? */
-  static constexpr bool HAS_RGBf = false;
-  /** Has native RGB info (as uint8_t)? */
-  static constexpr bool HAS_RGBu8 = false;
-
-  /** Constructor (accept a const ref for convenience) */
-  inline PointCloudAdapter(const mrpt::maps::CWeightedPointsMap& obj) :
-      m_obj(*const_cast<mrpt::maps::CWeightedPointsMap*>(&obj))
-  {
-  }
-  /** Get number of points */
-  inline size_t size() const { return m_obj.size(); }
-  /** Set number of points (to uninitialized values) */
-  inline void resize(size_t N) { m_obj.resize(N); }
-  /** Does nothing as of now */
-  inline void setDimensions(size_t height, size_t width) {}
-  /** Get XYZ coordinates of i'th point */
-  template <typename T>
-  inline void getPointXYZ(size_t idx, T& x, T& y, T& z) const
-  {
-    m_obj.getPointFast(idx, x, y, z);
-  }
-  /** Set XYZ coordinates of i'th point */
-  inline void setPointXYZ(size_t idx, const coords_t x, const coords_t y, const coords_t z)
-  {
-    m_obj.setPointFast(idx, x, y, z);
-  }
-};  // end of PointCloudAdapter<mrpt::maps::CPointsMap>
-}  // namespace opengl
-}  // namespace mrpt
+}  // namespace mrpt::maps

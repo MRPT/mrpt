@@ -103,7 +103,7 @@ void run_rnav_test_impl(
       m_grid.laserScanSimulator(scan, mrpt::poses::CPose2D(curPose), 0.4f, 180);
 
       obstacles.insertionOptions.minDistBetweenLaserPoints = .0;
-      obstacles.loadFromRangeScan(scan);
+      obstacles.loadFromRangeScan(scan, std::nullopt);
 
       return true;
     }
