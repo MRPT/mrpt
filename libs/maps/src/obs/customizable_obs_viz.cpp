@@ -126,7 +126,14 @@ void PointCloudRecoloringParameters::load_from_ini_file(
 namespace
 {
 thread_local std::map<std::string, std::pair<float, float>> bbMemory;
-constexpr double bbMemoryFading = 0.99;
+constexpr float bbMemoryFading = 0.99f;
+
+void printRecolorLengthMismatchError()
+{
+  std::cerr << "[mrpt::obs::recolorize3Dpc] Warning: Skipping colorization due to mismatch in "
+               "vector lengths.\n";
+}
+
 }  // namespace
 
 void mrpt::obs::recolorize3Dpc(
@@ -134,7 +141,7 @@ void mrpt::obs::recolorize3Dpc(
     const mrpt::maps::CPointsMap* originalPts,
     const PointCloudRecoloringParameters& p)
 {
-  if (!originalPts)
+  if (!originalPts || p.colorMap == mrpt::img::cmNONE)
   {
     return;
   }
@@ -142,8 +149,77 @@ void mrpt::obs::recolorize3Dpc(
   std::pair<float, float> dataLimits{0, 0};
   std::size_t dataPoints = 0;
 
+  // Special RGB cases:
+  //    * - `rgb` for `{color_r,color_g,color_b}` (uint8_t, in range 0-255)
+  // -------------------------------------------------------------------------------------------
+  if (p.colorizeByField == "rgb")
+  {
+    const auto* data_r =
+        originalPts->getPointsBufferRef_uint8_field(mrpt::maps::CPointsMap::POINT_FIELD_COLOR_Ru8);
+    const auto* data_g =
+        originalPts->getPointsBufferRef_uint8_field(mrpt::maps::CPointsMap::POINT_FIELD_COLOR_Gu8);
+    const auto* data_b =
+        originalPts->getPointsBufferRef_uint8_field(mrpt::maps::CPointsMap::POINT_FIELD_COLOR_Bu8);
+
+    if (!data_r || !data_g || !data_b)
+    {
+      return;  // Missing fields!
+    }
+
+    if (data_r->size() != pnts->size() || data_g->size() != pnts->size() ||
+        data_b->size() != pnts->size())
+    {
+      printRecolorLengthMismatchError();
+      return;
+    }
+
+    for (size_t i = 0; i < pnts->size(); i++)
+    {
+      pnts->setPointColor_fast(
+          i, mrpt::f2u8((*data_r)[i]), mrpt::f2u8((*data_g)[i]), mrpt::f2u8((*data_b)[i]));
+    }
+
+    return;
+  }
+
+  // Special RGB cases:
+  //   * - `rgbf` for `{color_rf,color_gf,color_bf}` (float, in range 0-1)
+  // -------------------------------------------------------------------------------------------
+  if (p.colorizeByField == "rgbf")
+  {
+    const auto* data_r =
+        originalPts->getPointsBufferRef_float_field(mrpt::maps::CPointsMap::POINT_FIELD_COLOR_Rf);
+    const auto* data_g =
+        originalPts->getPointsBufferRef_float_field(mrpt::maps::CPointsMap::POINT_FIELD_COLOR_Gf);
+    const auto* data_b =
+        originalPts->getPointsBufferRef_float_field(mrpt::maps::CPointsMap::POINT_FIELD_COLOR_Bf);
+
+    if (!data_r || !data_g || !data_b)
+    {
+      return;  // Missing fields!
+    }
+
+    if (data_r->size() != pnts->size() || data_g->size() != pnts->size() ||
+        data_b->size() != pnts->size())
+    {
+      printRecolorLengthMismatchError();
+      return;
+    }
+
+    for (size_t i = 0; i < pnts->size(); i++)
+    {
+      pnts->setPointColor_fast(i, (*data_r)[i], (*data_g)[i], (*data_b)[i]);
+    }
+
+    return;
+  }
+
+  // Generic field coloring:
+  // -------------------------------------------------------------------------------------------
   const mrpt::aligned_std_vector<float>* fieldData_f = nullptr;
-  const mrpt::aligned_std_vector<uint16_t>* fieldData_u = nullptr;
+  const mrpt::aligned_std_vector<double>* fieldData_d = nullptr;
+  const mrpt::aligned_std_vector<uint16_t>* fieldData_u16 = nullptr;
+  const mrpt::aligned_std_vector<uint8_t>* fieldData_u8 = nullptr;
 
   if (fieldData_f = originalPts->getPointsBufferRef_float_field(p.colorizeByField); fieldData_f)
   {
@@ -153,28 +229,53 @@ void mrpt::obs::recolorize3Dpc(
       mrpt::math::minimum_maximum(*fieldData_f, dataLimits.first, dataLimits.second);
     }
   }
-  else if (fieldData_u = originalPts->getPointsBufferRef_uint_field(p.colorizeByField); fieldData_u)
+  else if (fieldData_d = originalPts->getPointsBufferRef_double_field(p.colorizeByField);
+           fieldData_d)
   {
-    dataPoints = fieldData_u->size();
+    dataPoints = fieldData_d->size();
+    if (dataPoints)
+    {
+      double uMin = 0, uMax = 0;
+      mrpt::math::minimum_maximum(*fieldData_d, uMin, uMax);
+      dataLimits.first = static_cast<float>(uMin);
+      dataLimits.second = static_cast<float>(uMax);
+    }
+  }
+  else if (fieldData_u16 = originalPts->getPointsBufferRef_uint_field(p.colorizeByField);
+           fieldData_u16)
+  {
+    dataPoints = fieldData_u16->size();
 
     if (dataPoints)
     {
       uint16_t uMin = 0, uMax = 0;
-      mrpt::math::minimum_maximum(*fieldData_u, uMin, uMax);
+      mrpt::math::minimum_maximum(*fieldData_u16, uMin, uMax);
+      dataLimits.first = static_cast<float>(uMin);
+      dataLimits.second = static_cast<float>(uMax);
+    }
+  }
+  else if (fieldData_u8 = originalPts->getPointsBufferRef_uint8_field(p.colorizeByField);
+           fieldData_u8)
+  {
+    dataPoints = fieldData_u8->size();
+
+    if (dataPoints)
+    {
+      uint8_t uMin = 0, uMax = 0;
+      mrpt::math::minimum_maximum(*fieldData_u8, uMin, uMax);
       dataLimits.first = static_cast<float>(uMin);
       dataLimits.second = static_cast<float>(uMax);
     }
   }
 
-  if (!fieldData_f && !fieldData_u)
+  if (!fieldData_f && !fieldData_u16 && !fieldData_d && !fieldData_u8)
   {
     return;
   }
 
   if (dataPoints != pnts->size())
   {
-    std::cerr << "[mrpt::obs::recolorize3Dpc] Warning: Skipping colorization due to mismatch in "
-                 "vector lengths.\n";
+    printRecolorLengthMismatchError();
     return;
   }
 
@@ -187,8 +288,8 @@ void mrpt::obs::recolorize3Dpc(
   else
   {
     auto& bb = bbMemory[p.colorizeByField];
-    bb.first = bb.first * bbMemoryFading + dataLimits.first * (1.0 - bbMemoryFading);
-    bb.second = bb.second * bbMemoryFading + dataLimits.second * (1.0 - bbMemoryFading);
+    bb.first = bb.first * bbMemoryFading + dataLimits.first * (1.0f - bbMemoryFading);
+    bb.second = bb.second * bbMemoryFading + dataLimits.second * (1.0f - bbMemoryFading);
   }
   const auto& bb = bbMemory[p.colorizeByField];
 
@@ -199,11 +300,33 @@ void mrpt::obs::recolorize3Dpc(
   const float coord_range_1 = coord_range != 0.0f ? 1.0f / coord_range : 1.0f;
   for (size_t i = 0; i < pnts->size(); i++)
   {
-    float coord = fieldData_f ? fieldData_f->at(i) : static_cast<float>(fieldData_u->at(i));
-    const float col_idx = std::max(0.0f, std::min(1.0f, (coord - colMin) * coord_range_1));
-    float r, g, b;
-    mrpt::img::colormap(p.colorMap, col_idx, r, g, b);
-    pnts->setPointColor_fast(i, r, g, b);
+    const float col_idx = [&]()
+    {
+      if (fieldData_d)
+      {
+        const double coord = fieldData_d->at(i);
+        return std::max(0.0f, std::min(1.0f, static_cast<float>(coord - colMin) * coord_range_1));
+      }
+      if (fieldData_f)
+      {
+        const float coord = fieldData_f->at(i);
+        return std::max(0.0f, std::min(1.0f, coord - colMin * coord_range_1));
+      }
+      if (fieldData_u8)
+      {
+        const float coord = static_cast<float>(fieldData_u8->at(i));
+        return std::max(0.0f, std::min(1.0f, coord - colMin * coord_range_1));
+      }
+      if (fieldData_u16)
+      {
+        const float coord = static_cast<float>(fieldData_u16->at(i));
+        return std::max(0.0f, std::min(1.0f, coord - colMin * coord_range_1));
+      }
+      return 0.0f;
+    }();
+
+    const auto rgb = mrpt::img::colormap(p.colorMap, col_idx);
+    pnts->setPointColor_fast(i, rgb.R, rgb.G, rgb.B);
   }
 }
 
