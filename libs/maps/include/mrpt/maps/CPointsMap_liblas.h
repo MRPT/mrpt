@@ -87,7 +87,7 @@ bool saveLASFile(
   // ---------------------------------
   liblas::Writer writer(ofs, header);
 
-  const bool has_color = ptmap.hasColorPoints();
+  const bool has_color = ptmap.hasColor_u8();
   const float col_fract = 255.0f;
 
   liblas::Point pt(&header);
@@ -166,7 +166,7 @@ bool loadLASFile(
 
   // Load points:
   // ---------------------
-  const bool has_color = ptmap.hasColorPoints();
+  const bool has_color = ptmap.hasColor_u8();
   const float col_fract = 1.0f / 255.0f;
   while (reader.ReadNextPoint())
   {

@@ -19,7 +19,6 @@ MRPT_WARNING(
 #include <mrpt/maps/CBeacon.h>
 #include <mrpt/maps/CBeaconMap.h>
 #include <mrpt/maps/CColouredOctoMap.h>
-#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CGasConcentrationGridMap2D.h>
 #include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/maps/CHeightGridMap2D.h>
@@ -29,14 +28,11 @@ MRPT_WARNING(
 #include <mrpt/maps/COccupancyGridMap3D.h>
 #include <mrpt/maps/COctoMap.h>
 #include <mrpt/maps/CPointsMap.h>
-#include <mrpt/maps/CPointsMapXYZI.h>
-#include <mrpt/maps/CPointsMapXYZIRT.h>
 #include <mrpt/maps/CRandomFieldGridMap3D.h>
 #include <mrpt/maps/CReflectivityGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CVoxelMap.h>
 #include <mrpt/maps/CVoxelMapRGB.h>
-#include <mrpt/maps/CWeightedPointsMap.h>
 #include <mrpt/maps/CWirelessPowerGridMap2D.h>
 
 //#include <mrpt/maps/PCL_adapters.h>  // NOTE: This file must be included from

@@ -1,5 +1,19 @@
 \page changelog Change Log
 
+# Version 2.15.3: Released Dec 20th, 2025
+- Marked as deprecated (to be removed in 3.0.0)
+  - mrpt::maps::CWeightedPointsMap
+  - mrpt::maps::CPointsMapXYZIRT
+  - mrpt::maps::CPointsMapXYZI
+  - mrpt::maps::CColouredPointsMap
+- Changes in libraries:
+  - \ref mrpt_maps_grp
+    - mrpt::maps::CPointsMap::insertPointFrom() removed first argument (sourceMap) since it's now useless using the insertionContext.
+    - mrpt::maps::CGenericPointsMap now has double, float, uint16_t and unit8_t fields.
+    - mrpt::obs::recolorize3Dpc() parameter changed to new subset struct mrpt::obs::PointCloudRecoloringParameters
+- Bug fixes:
+  - mrpt::maps::CPointsMap::registerPointFieldsFrom() didn't handle "double" fields.
+
 # Version 2.15.2: Released Nov 19th, 2025
 - Changes in libraries:
   - \ref mrpt_maps_grp

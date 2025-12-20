@@ -141,19 +141,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="disableDeletion">
-         <property name="text">
-          <string>disableDeletion</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-         <property name="autoExclusive">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QRadioButton" name="fuseWithExisting">
          <property name="text">
           <string>fuseWithExisting</string>

@@ -27,7 +27,7 @@ namespace maps
  * mrpt::serialization::CSerializable
  * \ingroup mrpt_maps_grp
  */
-class CColouredPointsMap : public CPointsMap
+class [[deprecated("Use mrpt::maps::CGenericPointsMap")]] CColouredPointsMap : public CPointsMap
 {
   DEFINE_SERIALIZABLE(CColouredPointsMap, mrpt::maps)
 
@@ -61,7 +61,7 @@ class CColouredPointsMap : public CPointsMap
    * bounds
    * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
    */
-  void getPointAllFieldsFast(size_t index, std::vector<float>& point_data) const override
+  void getPointAllFieldsFast(size_t index, std::vector<float> & point_data) const override
   {
     point_data.resize(6);
     point_data[0] = m_x[index];
@@ -91,11 +91,11 @@ class CColouredPointsMap : public CPointsMap
   /** See CPointsMap::loadFromRangeScan() */
   void loadFromRangeScan(
       const mrpt::obs::CObservation2DRangeScan& rangeScan,
-      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
+      const std::optional<const mrpt::poses::CPose3D>& robotPose) override;
   /** See CPointsMap::loadFromRangeScan() */
   void loadFromRangeScan(
       const mrpt::obs::CObservation3DRangeScan& rangeScan,
-      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
+      const std::optional<const mrpt::poses::CPose3D>& robotPose) override;
 
  protected:
   // Friend methods:
@@ -113,15 +113,6 @@ class CColouredPointsMap : public CPointsMap
    */
   bool save3D_and_colour_to_text_file(const std::string& file) const;
 
-  /** Changes a given point from map. First index is 0.
-   * \exception Throws std::exception on index out of bound.
-   */
-  void setPointRGB(size_t index, float x, float y, float z, float R, float G, float B) override;
-
-  /** Adds a new point given its coordinates and color (colors range is [0,1])
-   */
-  void insertPointRGB(float x, float y, float z, float R, float G, float B) override;
-
   /** Changes just the color of a given point from the map. First index is 0.
    * \exception Throws std::exception on index out of bound.
    */
@@ -135,11 +126,6 @@ class CColouredPointsMap : public CPointsMap
     m_color_B[index] = B;
   }
 
-  /** Retrieves a point and its color (colors range is [0,1])
-   */
-  void getPointRGB(
-      size_t index, float& x, float& y, float& z, float& R, float& G, float& B) const override;
-
   /** Retrieves a point color (colors range is [0,1]) */
   void getPointColor(size_t index, float& R, float& G, float& B) const;
 
@@ -151,12 +137,10 @@ class CColouredPointsMap : public CPointsMap
     B = m_color_B[index];
   }
 
-  /** Returns true if the point map has a color field for each point */
-  bool hasColorPoints() const override { return true; }
   /** Override of the default 3D scene builder to account for the individual
    * points' color.
    */
-  void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
+  void getVisualizationInto(mrpt::opengl::CSetOfObjects & outObj) const override;
 
   /** Colour a set of points from a CObservationImage and the global pose of
    * the robot */
@@ -185,7 +169,8 @@ class CColouredPointsMap : public CPointsMap
   struct TColourOptions : public mrpt::config::CLoadableOptions
   {
     /** Initialization of default parameters */
-    TColourOptions();
+    TColourOptions() = default;
+
     void loadFromConfigFile(
         const mrpt::config::CConfigFileBase& source,
         const std::string& section) override;                 // See base docs
@@ -272,7 +257,7 @@ class CColouredPointsMap : public CPointsMap
 
   /** Like CPointsMap::getPCLPointCloud() but for PointCloud<PointXYZRGB> */
   template <class POINTCLOUD>
-  void getPCLPointCloudXYZRGB(POINTCLOUD& cloud) const
+  void getPCLPointCloudXYZRGB(POINTCLOUD & cloud) const
   {
     const size_t nThis = this->size();
     this->getPCLPointCloud(cloud);  // 1st: xyz data
@@ -306,9 +291,8 @@ class CColouredPointsMap : public CPointsMap
    * color info.
    */
   void PLY_import_set_vertex(
-      size_t idx,
-      const mrpt::math::TPoint3Df& pt,
-      const mrpt::img::TColorf* pt_color = nullptr) override;
+      size_t idx, const mrpt::math::TPoint3Df& pt, const mrpt::img::TColorf* pt_color = nullptr)
+      override;
 
   /** In a base class, reserve memory to prepare subsequent calls to
    * PLY_import_set_vertex */
@@ -325,10 +309,8 @@ class CColouredPointsMap : public CPointsMap
   /** @name Redefinition of PLY Export virtual methods from CPointsMap
     @{ */
   void PLY_export_get_vertex(
-      size_t idx,
-      mrpt::math::TPoint3Df& pt,
-      bool& pt_has_color,
-      mrpt::img::TColorf& pt_color) const override;
+      size_t idx, mrpt::math::TPoint3Df & pt, bool& pt_has_color, mrpt::img::TColorf& pt_color)
+      const override;
   /** @} */
 
   MAP_DEFINITION_START(CColouredPointsMap)
@@ -355,15 +337,14 @@ class PointCloudAdapter<mrpt::maps::CColouredPointsMap>
  public:
   /** The type of each point XYZ coordinates */
   using coords_t = float;
-  /** Has any color RGB info? */
-  static constexpr bool HAS_RGB = true;
+
   /** Has native RGB info (as floats)? */
   static constexpr bool HAS_RGBf = true;
   /** Has native RGB info (as uint8_t)? */
   static constexpr bool HAS_RGBu8 = false;
 
   /** Constructor (accept a const ref for convenience) */
-  inline PointCloudAdapter(const mrpt::maps::CColouredPointsMap& obj) :
+  inline explicit PointCloudAdapter(const mrpt::maps::CColouredPointsMap& obj) :
       m_obj(*const_cast<mrpt::maps::CColouredPointsMap*>(&obj))
   {
   }
@@ -390,7 +371,8 @@ class PointCloudAdapter<mrpt::maps::CColouredPointsMap>
   inline void getPointXYZ_RGBAf(
       size_t idx, T& x, T& y, T& z, float& r, float& g, float& b, float& a) const
   {
-    m_obj.getPointRGB(idx, x, y, z, r, g, b);
+    m_obj.getPoint(idx, x, y, z);
+    m_obj.getPointColor(idx, r, g, b);
     a = 1.0f;
   }
   /** Set XYZ_RGBf coordinates of i'th point */
@@ -404,7 +386,8 @@ class PointCloudAdapter<mrpt::maps::CColouredPointsMap>
       const float b,
       [[maybe_unused]] const float a)
   {
-    m_obj.setPointRGB(idx, x, y, z, r, g, b);
+    m_obj.setPointFast(idx, x, y, z);
+    m_obj.setPointColor_fast(idx, r, g, b);
   }
 
   /** Get XYZ_RGBu8 coordinates of i'th point */
@@ -413,7 +396,8 @@ class PointCloudAdapter<mrpt::maps::CColouredPointsMap>
       size_t idx, T& x, T& y, T& z, uint8_t& r, uint8_t& g, uint8_t& b) const
   {
     float Rf, Gf, Bf;
-    m_obj.getPointRGB(idx, x, y, z, Rf, Gf, Bf);
+    m_obj.getPoint(idx, x, y, z);
+    m_obj.getPointColor(idx, Rf, Gf, Bf);
     r = Rf * 255;
     g = Gf * 255;
     b = Bf * 255;
@@ -428,7 +412,8 @@ class PointCloudAdapter<mrpt::maps::CColouredPointsMap>
       const uint8_t g,
       const uint8_t b)
   {
-    m_obj.setPointRGB(idx, x, y, z, r / 255.f, g / 255.f, b / 255.f);
+    m_obj.setPointFast(idx, x, y, z);
+    m_obj.setPointColor_fast(idx, r / 255.f, g / 255.f, b / 255.f);
   }
 
   /** Get RGBf color of i'th point */
