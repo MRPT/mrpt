@@ -607,15 +607,14 @@ class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
  public:
   /** The type of each point XYZ coordinates */
   using coords_t = float;
-  /** Has any color RGB info? */
-  static constexpr bool HAS_RGB = false;
+
   /** Has native RGB info (as floats)? */
   static constexpr bool HAS_RGBf = false;
   /** Has native RGB info (as uint8_t)? */
   static constexpr bool HAS_RGBu8 = false;
 
   /** Constructor (accept a const ref for convenience) */
-  inline PointCloudAdapter(const mrpt::obs::CObservation3DRangeScan& obj) :
+  inline explicit PointCloudAdapter(const mrpt::obs::CObservation3DRangeScan& obj) :
       m_obj(*const_cast<mrpt::obs::CObservation3DRangeScan*>(&obj))
   {
   }
@@ -650,6 +649,10 @@ class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
     m_obj.points3D_x[idx] = 0;
     m_obj.points3D_y[idx] = 0;
     m_obj.points3D_z[idx] = 0;
+  }
+  /** Set RGBu8 coordinates of i'th point */
+  inline void setPointRGBu8(size_t idx, const uint8_t r, const uint8_t g, const uint8_t b)
+  { /* Nothing */
   }
 
 };  // end of PointCloudAdapter<CObservation3DRangeScan>

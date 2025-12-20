@@ -27,13 +27,5 @@ and was originally written by the MAPIR laboratory (University of Malaga).
 
 This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
 
-=head1 COPYRIGHT
-
-This program is free software; you can redistribute it and/or modify it
-under the terms of the BSD License.
-
-On Debian GNU/Linux systems, the complete text of the BSD License can be 
-found in `/usr/share/common-licenses/BSD'.
-
 =cut
 

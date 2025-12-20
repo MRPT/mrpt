@@ -30,7 +30,7 @@ namespace mrpt::maps
  * \sa mrpt::maps::CPointsMap, mrpt::maps::CMetricMap
  * \ingroup mrpt_maps_grp
  */
-class CPointsMapXYZIRT : public CPointsMap
+class [[deprecated("Use CGenericPointsMap instead")]] CPointsMapXYZIRT : public CPointsMap
 {
   DEFINE_SERIALIZABLE(CPointsMapXYZIRT, mrpt::maps)
 
@@ -70,7 +70,7 @@ class CPointsMapXYZIRT : public CPointsMap
    * bounds
    * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
    */
-  void getPointAllFieldsFast(size_t index, std::vector<float>& point_data) const override
+  void getPointAllFieldsFast(size_t index, std::vector<float> & point_data) const override
   {
     point_data.resize(6);
     point_data[0] = m_x[index];
@@ -100,11 +100,11 @@ class CPointsMapXYZIRT : public CPointsMap
   /** See CPointsMap::loadFromRangeScan() */
   void loadFromRangeScan(
       const mrpt::obs::CObservation2DRangeScan& rangeScan,
-      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
+      const std::optional<const mrpt::poses::CPose3D>& robotPose) override;
   /** See CPointsMap::loadFromRangeScan() */
   void loadFromRangeScan(
       const mrpt::obs::CObservation3DRangeScan& rangeScan,
-      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
+      const std::optional<const mrpt::poses::CPose3D>& robotPose) override;
 
  protected:
   // Friend methods:
@@ -124,18 +124,6 @@ class CPointsMapXYZIRT : public CPointsMap
   /** Loads from a text file, each line having "X Y Z I", I in [0,1].
    * Returns false if any error occurred, true elsewere. */
   bool loadXYZIRT_from_text_file(const std::string& file);
-
-  /** Changes a given point from map. First index is 0.
-   * \exception Throws std::exception on index out of bound.
-   */
-  void setPointRGB(
-      size_t index, float x, float y, float z, float R_intensity, float G_ignored, float B_ignored)
-      override;
-
-  /** Adds a new point given its coordinates and color (colors range is [0,1])
-   */
-  void insertPointRGB(
-      float x, float y, float z, float R_intensity, float G_ignored, float B_ignored) override;
 
   /** Changes the intensity of a given point from the map. First index is 0.
    * \exception Throws std::exception on index out of bound.
@@ -173,17 +161,6 @@ class CPointsMapXYZIRT : public CPointsMap
     m_intensity[index] = R;
   }
 
-  /** Retrieves a point and its color (colors range is [0,1])
-   */
-  void getPointRGB(
-      size_t index,
-      float& x,
-      float& y,
-      float& z,
-      float& R_intensity,
-      float& G_intensity,
-      float& B_intensity) const override;
-
   /** Gets point intensity ([0,1]), or 0 if field is not present */
   float getPointIntensity(size_t index) const
   {
@@ -209,13 +186,10 @@ class CPointsMapXYZIRT : public CPointsMap
   /** Like \c getPointColor but without checking for out-of-index errors */
   inline float getPointIntensity_fast(size_t index) const { return m_intensity[index]; }
 
-  /** Returns true if the point map has a color field for each point */
-  bool hasColorPoints() const override { return hasIntensityField(); }
-
   /** Override of the default 3D scene builder to account for the individual
    * points' color.
    */
-  void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
+  void getVisualizationInto(mrpt::opengl::CSetOfObjects & outObj) const override;
 
   /** @name String-keyed field access virtual interface implementation
       @{ */
@@ -227,8 +201,8 @@ class CPointsMapXYZIRT : public CPointsMap
   uint16_t getPointField_uint16(size_t index, const std::string_view& fieldName) const override;
 
   void setPointField_float(size_t index, const std::string_view& fieldName, float value) override;
-  void setPointField_uint16(
-      size_t index, const std::string_view& fieldName, uint16_t value) override;
+  void setPointField_uint16(size_t index, const std::string_view& fieldName, uint16_t value)
+      override;
 
   void insertPointField_float(const std::string_view& fieldName, float value) override;
   void insertPointField_uint16(const std::string_view& fieldName, uint16_t value) override;
@@ -238,26 +212,8 @@ class CPointsMapXYZIRT : public CPointsMap
   void resizeField_float(const std::string_view& fieldName, size_t n) override;
   void resizeField_uint16(const std::string_view& fieldName, size_t n) override;
 
-  auto getPointsBufferRef_float_field(const std::string_view& fieldName) const
-      -> const mrpt::aligned_std_vector<float>* override
-  {
-    if (auto* f = CPointsMap::getPointsBufferRef_float_field(fieldName); f)
-    {
-      return f;
-    }
-    if (fieldName == POINT_FIELD_INTENSITY) return &m_intensity;
-    if (fieldName == POINT_FIELD_TIMESTAMP) return &m_time;
-    return nullptr;
-  }
-  auto getPointsBufferRef_uint_field(const std::string_view& fieldName) const
-      -> const mrpt::aligned_std_vector<uint16_t>* override
-  {
-    if (fieldName == POINT_FIELD_RING_ID) return &m_ring;
-    return nullptr;
-  }
-
   auto getPointsBufferRef_float_field(const std::string_view& fieldName)
-      -> mrpt::aligned_std_vector<float>* override
+      const->const mrpt::aligned_std_vector<float>* override
   {
     if (auto* f = CPointsMap::getPointsBufferRef_float_field(fieldName); f)
     {
@@ -268,7 +224,25 @@ class CPointsMapXYZIRT : public CPointsMap
     return nullptr;
   }
   auto getPointsBufferRef_uint_field(const std::string_view& fieldName)
-      -> mrpt::aligned_std_vector<uint16_t>* override
+      const->const mrpt::aligned_std_vector<uint16_t>* override
+  {
+    if (fieldName == POINT_FIELD_RING_ID) return &m_ring;
+    return nullptr;
+  }
+
+  auto getPointsBufferRef_float_field(const std::string_view& fieldName)
+      ->mrpt::aligned_std_vector<float>* override
+  {
+    if (auto* f = CPointsMap::getPointsBufferRef_float_field(fieldName); f)
+    {
+      return f;
+    }
+    if (fieldName == POINT_FIELD_INTENSITY) return &m_intensity;
+    if (fieldName == POINT_FIELD_TIMESTAMP) return &m_time;
+    return nullptr;
+  }
+  auto getPointsBufferRef_uint_field(const std::string_view& fieldName)
+      ->mrpt::aligned_std_vector<uint16_t>* override
   {
     if (fieldName == POINT_FIELD_RING_ID) return &m_ring;
     return nullptr;
@@ -298,14 +272,13 @@ class CPointsMapXYZIRT : public CPointsMap
   /** Redefinition to handle Velodyne Scan observations and generate per-point timestamps */
   bool internal_insertObservation(
       const mrpt::obs::CObservation& obs,
-      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) override;
+      const std::optional<const mrpt::poses::CPose3D>& robotPose) override;
 
   /** @name Redefinition of PLY Import virtual methods from CPointsMap
     @{ */
   void PLY_import_set_vertex(
-      size_t idx,
-      const mrpt::math::TPoint3Df& pt,
-      const mrpt::img::TColorf* pt_color = nullptr) override;
+      size_t idx, const mrpt::math::TPoint3Df& pt, const mrpt::img::TColorf* pt_color = nullptr)
+      override;
 
   void PLY_import_set_vertex_count(size_t N) override;
 
@@ -319,10 +292,8 @@ class CPointsMapXYZIRT : public CPointsMap
   /** @name Redefinition of PLY Export virtual methods from CPointsMap
     @{ */
   void PLY_export_get_vertex(
-      size_t idx,
-      mrpt::math::TPoint3Df& pt,
-      bool& pt_has_color,
-      mrpt::img::TColorf& pt_color) const override;
+      size_t idx, mrpt::math::TPoint3Df & pt, bool& pt_has_color, mrpt::img::TColorf& pt_color)
+      const override;
   /** @} */
 
   MAP_DEFINITION_START(CPointsMapXYZIRT)
@@ -336,114 +307,14 @@ class CPointsMapXYZIRT : public CPointsMap
 
 namespace mrpt::opengl
 {
-/** Specialization
- * mrpt::opengl::PointCloudAdapter<mrpt::maps::CPointsMapXYZIRT>
- * \ingroup mrpt_adapters_grp */
 template <>
-class PointCloudAdapter<mrpt::maps::CPointsMapXYZIRT>
+class PointCloudAdapter<mrpt::maps::CPointsMapXYZIRT> :
+    public PointCloudAdapter<mrpt::maps::CPointsMap>
 {
- private:
-  mrpt::maps::CPointsMapXYZIRT& m_obj;
-
  public:
-  /** The type of each point XYZ coordinates */
-  using coords_t = float;
-  /** Has any color RGB info? */
-  static constexpr bool HAS_RGB = true;
-  /** Has native RGB info (as floats)? */
-  static constexpr bool HAS_RGBf = true;
-  /** Has native RGB info (as uint8_t)? */
-  static constexpr bool HAS_RGBu8 = false;
-
-  /** Constructor (accept a const ref for convenience) */
-  inline PointCloudAdapter(const mrpt::maps::CPointsMapXYZIRT& obj) :
-      m_obj(*const_cast<mrpt::maps::CPointsMapXYZIRT*>(&obj))
+  explicit PointCloudAdapter(const mrpt::maps::CPointsMapXYZIRT& pts) :
+      PointCloudAdapter<mrpt::maps::CPointsMap>(pts)
   {
   }
-  /** Get number of points */
-  inline size_t size() const { return m_obj.size(); }
-  /** Set number of points (to uninitialized values) */
-  inline void resize(size_t N) { m_obj.resize(N); }
-  /** Does nothing as of now */
-  inline void setDimensions(size_t /*height*/, size_t /*width*/) {}
-  /** Get XYZ coordinates of i'th point */
-  template <typename T>
-  inline void getPointXYZ(size_t idx, T& x, T& y, T& z) const
-  {
-    m_obj.getPointFast(idx, x, y, z);
-  }
-  /** Set XYZ coordinates of i'th point */
-  inline void setPointXYZ(size_t idx, const coords_t x, const coords_t y, const coords_t z)
-  {
-    m_obj.setPointFast(idx, x, y, z);
-  }
-
-  /** Get XYZ_RGBf coordinates of i'th point */
-  template <typename T>
-  inline void getPointXYZ_RGBAf(
-      size_t idx, T& x, T& y, T& z, float& r, float& g, float& b, float& a) const
-  {
-    m_obj.getPointRGB(idx, x, y, z, r, g, b);
-    a = 1.0f;
-  }
-  /** Set XYZ_RGBf coordinates of i'th point */
-  inline void setPointXYZ_RGBAf(
-      size_t idx,
-      const coords_t x,
-      const coords_t y,
-      const coords_t z,
-      const float r,
-      const float g,
-      const float b,
-      [[maybe_unused]] const float a)
-  {
-    m_obj.setPointRGB(idx, x, y, z, r, g, b);
-  }
-
-  /** Get XYZ_RGBu8 coordinates of i'th point */
-  template <typename T>
-  inline void getPointXYZ_RGBu8(
-      size_t idx, T& x, T& y, T& z, uint8_t& r, uint8_t& g, uint8_t& b) const
-  {
-    float I, Gignrd, Bignrd;
-    m_obj.getPoint(idx, x, y, z, I, Gignrd, Bignrd);
-    r = g = b = I * 255;
-  }
-  /** Set XYZ_RGBu8 coordinates of i'th point */
-  inline void setPointXYZ_RGBu8(
-      size_t idx,
-      const coords_t x,
-      const coords_t y,
-      const coords_t z,
-      const uint8_t r,
-      const uint8_t g,
-      const uint8_t b)
-  {
-    m_obj.setPointRGB(idx, x, y, z, r / 255.f, g / 255.f, b / 255.f);
-  }
-
-  /** Get RGBf color of i'th point */
-  inline void getPointRGBf(size_t idx, float& r, float& g, float& b) const
-  {
-    r = g = b = m_obj.getPointIntensity_fast(idx);
-  }
-  /** Set XYZ_RGBf coordinates of i'th point */
-  inline void setPointRGBf(size_t idx, const float r, const float g, const float b)
-  {
-    m_obj.setPointColor_fast(idx, r, g, b);
-  }
-
-  /** Get RGBu8 color of i'th point */
-  inline void getPointRGBu8(size_t idx, uint8_t& r, uint8_t& g, uint8_t& b) const
-  {
-    float i = m_obj.getPointIntensity_fast(idx);
-    r = g = b = i * 255;
-  }
-  /** Set RGBu8 coordinates of i'th point */
-  inline void setPointRGBu8(size_t idx, const uint8_t r, const uint8_t g, const uint8_t b)
-  {
-    m_obj.setPointColor_fast(idx, r / 255.f, g / 255.f, b / 255.f);
-  }
-
-};  // end of PointCloudAdapter<mrpt::maps::CPointsMapXYZIRT>
+};
 }  // namespace mrpt::opengl
