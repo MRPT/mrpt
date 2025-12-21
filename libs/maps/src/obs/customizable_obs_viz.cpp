@@ -18,6 +18,8 @@
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/stock_objects.h>
 
+#include <algorithm>  // std::clamp
+
 using namespace mrpt::obs;
 
 void VisualizationParameters::save_to_ini_file(
@@ -305,27 +307,27 @@ void mrpt::obs::recolorize3Dpc(
       if (fieldData_d)
       {
         const double coord = fieldData_d->at(i);
-        return std::max(0.0f, std::min(1.0f, static_cast<float>(coord - colMin) * coord_range_1));
+        return std::clamp(static_cast<float>(coord - colMin) * coord_range_1, 0.0f, 1.0f);
       }
       if (fieldData_f)
       {
         const float coord = fieldData_f->at(i);
-        return std::max(0.0f, std::min(1.0f, coord - colMin * coord_range_1));
+        return std::clamp((coord - colMin) * coord_range_1, 0.0f, 1.0f);
       }
       if (fieldData_u8)
       {
         const float coord = static_cast<float>(fieldData_u8->at(i));
-        return std::max(0.0f, std::min(1.0f, coord - colMin * coord_range_1));
+        return std::clamp((coord - colMin) * coord_range_1, 0.0f, 1.0f);
       }
       if (fieldData_u16)
       {
         const float coord = static_cast<float>(fieldData_u16->at(i));
-        return std::max(0.0f, std::min(1.0f, coord - colMin * coord_range_1));
+        return std::clamp((coord - colMin) * coord_range_1, 0.0f, 1.0f);
       }
       return 0.0f;
     }();
 
-    const auto rgb = mrpt::img::colormap(p.colorMap, col_idx);
+    const auto rgb = mrpt::img::TColorf(mrpt::img::colormap(p.colorMap, col_idx));
     pnts->setPointColor_fast(i, rgb.R, rgb.G, rgb.B);
   }
 }
