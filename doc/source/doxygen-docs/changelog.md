@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.15.4: UNRELEASED
-(none yet)
+- Bug fixes:
+  - Fix regression in mrpt::obs::recolorize3Dpc()
 
 # Version 2.15.3: Released Dec 20th, 2025
 - Marked as deprecated (to be removed in 3.0.0)
