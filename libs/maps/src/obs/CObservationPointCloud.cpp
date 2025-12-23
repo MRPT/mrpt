@@ -30,6 +30,42 @@ using namespace mrpt::obs;
 
 IMPLEMENTS_SERIALIZABLE(CObservationPointCloud, CObservation, mrpt::obs);
 
+namespace
+{
+template <typename Iter>
+std::pair<Iter, Iter> minmax_ignore_nan(Iter begin, Iter end)
+{
+  // Find first non-NaN element
+  Iter first = std::find_if(begin, end, [](auto x) { return !std::isnan(x); });
+
+  if (first == end)
+  {
+    return {end, end};  // no valid elements
+  }
+
+  Iter itMin = first;
+  Iter itMax = first;
+
+  for (Iter it = std::next(first); it != end; ++it)
+  {
+    if (!std::isnan(*it))
+    {
+      if (*it < *itMin)
+      {
+        itMin = it;
+      }
+      if (*it > *itMax)
+      {
+        itMax = it;
+      }
+    }
+  }
+
+  return {itMin, itMax};
+}
+
+}  // namespace
+
 CObservationPointCloud::CObservationPointCloud(const CObservation3DRangeScan& o)
 {
   pointcloud = mrpt::maps::CSimplePointsMap::Create();
@@ -59,37 +95,46 @@ void CObservationPointCloud::getDescriptionAsText(std::ostream& o) const
     o << "Number of points: " << pointcloud->size() << "\n";
 
     // Show channel stats:
-    for (const auto& fieldName : pointcloud->getPointFieldNames_float())
+    for (const auto& field : pointcloud->getPointFieldNames_double())
     {
-      const auto* data = pointcloud->getPointsBufferRef_float_field(fieldName);
-      if (!data)
+      if (const auto* buf = pointcloud->getPointsBufferRef_double_field(field);
+          buf && !buf->empty())
       {
-        continue;
+        const auto [itMin, itMax] = minmax_ignore_nan(buf->begin(), buf->end());
+        o << mrpt::format(
+            "%-20.*s (float64) range: [%.02lf, %.02lf] (%zu entries)\n",
+            static_cast<int>(field.size()), field.data(), *itMin, *itMax, buf->size());
       }
-      float Imin = 0, Imax = 0;
-      if (!data->empty())
-      {
-        mrpt::math::minimum_maximum(*data, Imin, Imax);
-      }
-      o << mrpt::format(
-          "Field: %-20.*s (float32): min=%7.02f max=%7.02f (%zu entries)\n",
-          static_cast<int>(fieldName.size()), fieldName.data(), Imin, Imax, data->size());
     }
-    for (const auto& fieldName : pointcloud->getPointFieldNames_uint16())
+    for (const auto& field : pointcloud->getPointFieldNames_float())
     {
-      const auto* data = pointcloud->getPointsBufferRef_uint_field(fieldName);
-      if (!data)
+      if (const auto* buf = pointcloud->getPointsBufferRef_float_field(field); buf && !buf->empty())
       {
-        continue;
+        const auto [itMin, itMax] = minmax_ignore_nan(buf->begin(), buf->end());
+        o << mrpt::format(
+            "%-20.*s (float32) range: [%.02f, %.02f] (%zu entries)\n",
+            static_cast<int>(field.size()), field.data(), *itMin, *itMax, buf->size());
       }
-      uint16_t Imin = 0, Imax = 0;
-      if (!data->empty())
+    }
+    for (const auto& field : pointcloud->getPointFieldNames_uint16())
+    {
+      if (const auto* buf = pointcloud->getPointsBufferRef_uint_field(field); buf && !buf->empty())
       {
-        mrpt::math::minimum_maximum(*data, Imin, Imax);
+        const auto [itMin, itMax] = minmax_ignore_nan(buf->begin(), buf->end());
+        o << mrpt::format(
+            "%-20.*s (uint16)  range: [%hu, %hu] (%zu entries)\n", static_cast<int>(field.size()),
+            field.data(), *itMin, *itMax, buf->size());
       }
-      o << mrpt::format(
-          "Field: %-20.*s  (uint16): min=%7hu max=%7hu (%zu entries)\n",
-          static_cast<int>(fieldName.size()), fieldName.data(), Imin, Imax, data->size());
+    }
+    for (const auto& field : pointcloud->getPointFieldNames_uint8())
+    {
+      if (const auto* buf = pointcloud->getPointsBufferRef_uint8_field(field); buf && !buf->empty())
+      {
+        const auto [itMin, itMax] = minmax_ignore_nan(buf->begin(), buf->end());
+        o << mrpt::format(
+            "%-20.*s (uint8)   range: [%i, %i] (%zu entries)\n", static_cast<int>(field.size()),
+            field.data(), static_cast<int>(*itMin), static_cast<int>(*itMax), buf->size());
+      }
     }
   }
 
