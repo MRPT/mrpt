@@ -3,6 +3,10 @@
 # Version 2.15.4: UNRELEASED
 - Bug fixes:
   - Fix regression in mrpt::obs::recolorize3Dpc()
+- Changes in libraries:
+  - \ref mrpt_maps_grp
+    - mrpt::obs::CObservationPointCloud::getDescriptionAsText() now shows all cloud fields and ignores NaNs.
+
 
 # Version 2.15.3: Released Dec 20th, 2025
 - Marked as deprecated (to be removed in 3.0.0)
