@@ -892,7 +892,7 @@ class CPointsMap :
       const mrpt::aligned_std_vector<uint8_t>* src_buf = nullptr;
       mrpt::aligned_std_vector<uint8_t>* dst_buf = nullptr;
     };
-    std::vector<UInt16FieldMapping> uint8_fields;
+    std::vector<UInt8FieldMapping> uint8_fields;
   };
 
   /** Prepare efficient data structures for repeated insertion from another point map with
