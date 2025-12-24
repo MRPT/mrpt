@@ -199,7 +199,7 @@ class CGenericPointsMap : public CPointsMap
     }
     return nullptr;
   }
-  auto getPointsBufferRef_uint_field(const std::string_view& fieldName) const
+  auto getPointsBufferRef_uint16_field(const std::string_view& fieldName) const
       -> const mrpt::aligned_std_vector<uint16_t>* override
   {
     if (auto it = m_uint16_fields.find(fieldName); it != m_uint16_fields.end())
@@ -240,7 +240,7 @@ class CGenericPointsMap : public CPointsMap
     }
     return nullptr;
   }
-  auto getPointsBufferRef_uint_field(const std::string_view& fieldName)
+  auto getPointsBufferRef_uint16_field(const std::string_view& fieldName)
       -> mrpt::aligned_std_vector<uint16_t>* override
   {
     if (auto it = m_uint16_fields.find(fieldName); it != m_uint16_fields.end())

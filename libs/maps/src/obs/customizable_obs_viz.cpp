@@ -243,7 +243,7 @@ void mrpt::obs::recolorize3Dpc(
       dataLimits.second = static_cast<float>(uMax);
     }
   }
-  else if (fieldData_u16 = originalPts->getPointsBufferRef_uint_field(p.colorizeByField);
+  else if (fieldData_u16 = originalPts->getPointsBufferRef_uint16_field(p.colorizeByField);
            fieldData_u16)
   {
     dataPoints = fieldData_u16->size();

@@ -145,7 +145,6 @@ class [[deprecated("Use mrpt::maps::CGenericPointsMap")]] CPointsMapXYZI : publi
 
   /** @name String-keyed field access virtual interface implementation
       @{ */
-  constexpr static std::string_view POINT_FIELD_INTENSITY = "intensity";
 
   bool hasPointField(const std::string_view& fieldName) const override;
   std::vector<std::string_view> getPointFieldNames_float() const override;
