@@ -127,14 +127,14 @@ ViewOptions3DPoints::ViewOptions3DPoints(wxWindow* parent, wxWindowID id)
   FlexGridSizer3->Add(
       cbOnlyPointsWithColor, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
 
-  const wxString colorOptions[] = {"x",    "y", "z",    "i",         "intensity",   "ambient",
-                                   "ring", "t", "time", "timestamp", "reflectivity"};
+  const wxString colorOptions[] = {
+      "x",   "y",    "z",    "i", "intensity", "ambient", "ring", "t", "reflectivity",
+      "rgb", "rgbf", "range"};
 
   cbColorByAxis = new wxComboBox(
       this, ID_RADIOBOX1, _("Otherwise, color from:"), wxDefaultPosition, wxDefaultSize,
-      WXSIZEOF(colorOptions), colorOptions,
-      wxCB_DROPDOWN,
-      wxDefaultValidator, _T("ID_COMBOBOX_COLORBY"));
+      WXSIZEOF(colorOptions), colorOptions, wxCB_DROPDOWN, wxDefaultValidator,
+      _T("ID_COMBOBOX_COLORBY"));
 
   FlexGridSizer3->Add(cbColorByAxis, 1, wxEXPAND, 5);
   wxString __wxRadioBoxChoices_2[3] = {_("cmGRAYSCALE"), _("cmJET"), _("cmHOT")};
