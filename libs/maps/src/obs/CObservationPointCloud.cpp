@@ -118,7 +118,8 @@ void CObservationPointCloud::getDescriptionAsText(std::ostream& o) const
     }
     for (const auto& field : pointcloud->getPointFieldNames_uint16())
     {
-      if (const auto* buf = pointcloud->getPointsBufferRef_uint_field(field); buf && !buf->empty())
+      if (const auto* buf = pointcloud->getPointsBufferRef_uint16_field(field);
+          buf && !buf->empty())
       {
         const auto [itMin, itMax] = minmax_ignore_nan(buf->begin(), buf->end());
         o << mrpt::format(

@@ -708,7 +708,7 @@ class CPointsMap :
   {
     return nullptr;
   }
-  virtual auto getPointsBufferRef_uint_field([[maybe_unused]] const std::string_view& fieldName)
+  virtual auto getPointsBufferRef_uint16_field([[maybe_unused]] const std::string_view& fieldName)
       const -> const mrpt::aligned_std_vector<uint16_t>*
   {
     return nullptr;
@@ -732,7 +732,7 @@ class CPointsMap :
   {
     return nullptr;
   }
-  virtual auto getPointsBufferRef_uint_field([[maybe_unused]] const std::string_view& fieldName)
+  virtual auto getPointsBufferRef_uint16_field([[maybe_unused]] const std::string_view& fieldName)
       -> mrpt::aligned_std_vector<uint16_t>*
   {
     return nullptr;
@@ -892,7 +892,7 @@ class CPointsMap :
 
   /** Prepare efficient data structures for repeated insertion from another point map with
    * insertPointFrom()  */
-  [[nodiscard]] InsertCtx prepareForInsertPointsFrom(const CPointsMap& source) const;
+  [[nodiscard]] InsertCtx prepareForInsertPointsFrom(const CPointsMap& source);
 
   /** Generic method to copy *all* applicable point properties from
    *  one map to another, e.g. timestamp, intensity, etc.

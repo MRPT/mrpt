@@ -6,6 +6,8 @@
 - Changes in libraries:
   - \ref mrpt_maps_grp
     - mrpt::obs::CObservationPointCloud::getDescriptionAsText() now shows all cloud fields and ignores NaNs.
+    - mrpt::maps::CGenericPointsMap "uint" methods renamed "uint16" for consistency.
+    - mrpt::maps::CPointsMap::prepareForInsertPointsFrom() made "non const", since it implies changes.
 - Build system:
   - Updated embedded nanoflann to v1.9.0
 
