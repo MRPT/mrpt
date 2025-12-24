@@ -2050,6 +2050,24 @@ CPointsMap::InsertCtx CPointsMap::prepareForInsertPointsFrom(const CPointsMap& s
     }
   }
 
+  const auto src_u8_names = source.getPointFieldNames_uint8();
+  const auto dst_u8_names = this->getPointFieldNames_uint8();
+  for (const auto& name : dst_u8_names)
+  {
+    if (auto it = std::find(src_u8_names.begin(), src_u8_names.end(), name);
+        it != src_u8_names.end())
+    {
+      const auto* srcVector = source.getPointsBufferRef_uint8_field(name);
+      if (!srcVector || srcVector->empty())
+      {
+        continue;
+      }
+      ctx.uint8_fields.push_back(
+          {srcVector, const_cast<mrpt::aligned_std_vector<uint8_t>*>(
+                          this->getPointsBufferRef_uint8_field(name))});
+    }
+  }
+
   return ctx;
 }
 
@@ -2231,6 +2249,7 @@ std::string listAllFields(const mrpt::maps::CPointsMap& pcd)
   appendFields(pcd.getPointFieldNames_float());
   appendFields(pcd.getPointFieldNames_double());
   appendFields(pcd.getPointFieldNames_uint16());
+  appendFields(pcd.getPointFieldNames_uint8());
 
   return ret;
 }
