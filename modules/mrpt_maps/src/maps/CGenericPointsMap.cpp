@@ -135,7 +135,10 @@ void CGenericPointsMap::serializeTo(mrpt::serialization::CArchive& out) const
   {
     out << std::string(name);
     out.WriteAs<uint32_t>(v.size());
-    out.WriteBufferFixEndianness(v.data(), v.size());
+    if (!v.empty())
+    {
+      out.WriteBufferFixEndianness(v.data(), v.size());
+    }
   }
 
   // Double fields (v1)
@@ -144,7 +147,10 @@ void CGenericPointsMap::serializeTo(mrpt::serialization::CArchive& out) const
   {
     out << std::string(name);
     out.WriteAs<uint32_t>(v.size());
-    out.WriteBufferFixEndianness(v.data(), v.size());
+    if (!v.empty())
+    {
+      out.WriteBufferFixEndianness(v.data(), v.size());
+    }
   }
 
   // Uint16 fields
@@ -153,7 +159,10 @@ void CGenericPointsMap::serializeTo(mrpt::serialization::CArchive& out) const
   {
     out << std::string(name);
     out.WriteAs<uint32_t>(v.size());
-    out.WriteBufferFixEndianness(v.data(), v.size());
+    if (!v.empty())
+    {
+      out.WriteBufferFixEndianness(v.data(), v.size());
+    }
   }
 
   // uint8 fields (v2)
@@ -161,8 +170,11 @@ void CGenericPointsMap::serializeTo(mrpt::serialization::CArchive& out) const
   for (const auto& [name, v] : m_uint8_fields)
   {
     out << std::string(name);
-    out.WriteAs<uint32_t>(v.size());                   // v3
-    out.WriteBufferFixEndianness(v.data(), v.size());  // v3
+    out.WriteAs<uint32_t>(v.size());  // v3
+    if (!v.empty())
+    {
+      out.WriteBufferFixEndianness(v.data(), v.size());  // v3
+    }
   }
 
   insertionOptions.writeToStream(out);
@@ -183,7 +195,10 @@ void CGenericPointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
     {
       const auto n = in.ReadAs<uint32_t>();
       v.resize(n);
-      in.ReadBufferFixEndianness(v.data(), n);
+      if (n != 0)
+      {
+        in.ReadBufferFixEndianness(v.data(), n);
+      }
     }
   };
 
