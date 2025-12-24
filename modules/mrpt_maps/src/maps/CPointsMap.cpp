@@ -1990,7 +1990,7 @@ std::vector<std::string_view> CPointsMap::getPointFieldNames_float_except_xyz() 
   return result;
 }
 
-CPointsMap::InsertCtx CPointsMap::prepareForInsertPointsFrom(const CPointsMap& source) const
+CPointsMap::InsertCtx CPointsMap::prepareForInsertPointsFrom(const CPointsMap& source)
 {
   InsertCtx ctx;
 
@@ -2013,9 +2013,7 @@ CPointsMap::InsertCtx CPointsMap::prepareForInsertPointsFrom(const CPointsMap& s
       {
         continue;
       }
-      ctx.float_fields.push_back(
-          {srcVector, const_cast<mrpt::aligned_std_vector<float>*>(
-                          this->getPointsBufferRef_float_field(name))});
+      ctx.float_fields.push_back({srcVector, this->getPointsBufferRef_float_field(name)});
     }
   }
 
@@ -2031,9 +2029,7 @@ CPointsMap::InsertCtx CPointsMap::prepareForInsertPointsFrom(const CPointsMap& s
       {
         continue;
       }
-      ctx.double_fields.push_back(
-          {srcVector, const_cast<mrpt::aligned_std_vector<double>*>(
-                          this->getPointsBufferRef_double_field(name))});
+      ctx.double_fields.push_back({srcVector, this->getPointsBufferRef_double_field(name)});
     }
   }
 
@@ -2044,14 +2040,12 @@ CPointsMap::InsertCtx CPointsMap::prepareForInsertPointsFrom(const CPointsMap& s
     if (auto it = std::find(src_u16_names.begin(), src_u16_names.end(), name);
         it != src_u16_names.end())
     {
-      const auto* srcVector = source.getPointsBufferRef_uint_field(name);
+      const auto* srcVector = source.getPointsBufferRef_uint16_field(name);
       if (!srcVector || srcVector->empty())
       {
         continue;
       }
-      ctx.uint16_fields.push_back(
-          {srcVector, const_cast<mrpt::aligned_std_vector<uint16_t>*>(
-                          this->getPointsBufferRef_uint_field(name))});
+      ctx.uint16_fields.push_back({srcVector, this->getPointsBufferRef_uint16_field(name)});
     }
   }
 
@@ -2067,9 +2061,7 @@ CPointsMap::InsertCtx CPointsMap::prepareForInsertPointsFrom(const CPointsMap& s
       {
         continue;
       }
-      ctx.uint8_fields.push_back(
-          {srcVector, const_cast<mrpt::aligned_std_vector<uint8_t>*>(
-                          this->getPointsBufferRef_uint8_field(name))});
+      ctx.uint8_fields.push_back({srcVector, this->getPointsBufferRef_uint8_field(name)});
     }
   }
 

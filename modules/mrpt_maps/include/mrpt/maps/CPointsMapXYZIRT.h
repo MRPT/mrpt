@@ -50,10 +50,6 @@ class [[deprecated("Use CGenericPointsMap instead")]] CPointsMapXYZIRT : public 
   /** @name Pure virtual interfaces to be implemented by any class derived from CPointsMap
   @{ */
 
-  constexpr static std::string_view POINT_FIELD_INTENSITY = "intensity";
-  constexpr static std::string_view POINT_FIELD_RING_ID = "ring";
-  constexpr static std::string_view POINT_FIELD_TIMESTAMP = "t";
-
   // By default, these method will grow all fields XYZIRT. See other methods
   // below.
   void reserve(size_t newLength) override;  // See base class docs
@@ -232,7 +228,7 @@ class [[deprecated("Use CGenericPointsMap instead")]] CPointsMapXYZIRT : public 
     if (fieldName == POINT_FIELD_TIMESTAMP) return &m_time;
     return nullptr;
   }
-  auto getPointsBufferRef_uint_field(const std::string_view& fieldName)
+  auto getPointsBufferRef_uint16_field(const std::string_view& fieldName)
       const->const mrpt::aligned_std_vector<uint16_t>* override
   {
     if (fieldName == POINT_FIELD_RING_ID) return &m_ring;
@@ -250,7 +246,7 @@ class [[deprecated("Use CGenericPointsMap instead")]] CPointsMapXYZIRT : public 
     if (fieldName == POINT_FIELD_TIMESTAMP) return &m_time;
     return nullptr;
   }
-  auto getPointsBufferRef_uint_field(const std::string_view& fieldName)
+  auto getPointsBufferRef_uint16_field(const std::string_view& fieldName)
       ->mrpt::aligned_std_vector<uint16_t>* override
   {
     if (fieldName == POINT_FIELD_RING_ID) return &m_ring;
