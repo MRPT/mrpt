@@ -310,5 +310,10 @@ template <>
 class PointCloudAdapter<mrpt::maps::CGenericPointsMap> :
     public PointCloudAdapter<mrpt::maps::CPointsMap>
 {
+ public:
+  explicit PointCloudAdapter(const mrpt::maps::CGenericPointsMap& pts) :
+      PointCloudAdapter<mrpt::maps::CPointsMap>(pts)
+  {
+  }
 };
 }  // namespace mrpt::opengl
