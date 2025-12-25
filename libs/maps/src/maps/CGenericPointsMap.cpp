@@ -16,8 +16,6 @@
 #include <mrpt/serialization/aligned_serialization.h>
 #include <mrpt/serialization/stl_serialization.h>
 
-#include <iostream>
-
 #include "CPointsMap_crtp_common.h"
 #include "mrpt/core/bits_mem.h"
 

@@ -97,44 +97,77 @@ void CObservationPointCloud::getDescriptionAsText(std::ostream& o) const
     // Show channel stats:
     for (const auto& field : pointcloud->getPointFieldNames_double())
     {
-      if (const auto* buf = pointcloud->getPointsBufferRef_double_field(field);
-          buf && !buf->empty())
+      if (const auto* buf = pointcloud->getPointsBufferRef_double_field(field); buf)
       {
-        const auto [itMin, itMax] = minmax_ignore_nan(buf->begin(), buf->end());
-        o << mrpt::format(
-            "%-20.*s (float64) range: [%.02lf, %.02lf] (%zu entries)\n",
-            static_cast<int>(field.size()), field.data(), *itMin, *itMax, buf->size());
+        if (buf->empty())
+        {
+          o << mrpt::format(
+              "%-20.*s (float64) (0 entries)\n", static_cast<int>(field.size()), field.data());
+        }
+        else
+        {
+          const auto [itMin, itMax] = minmax_ignore_nan(buf->begin(), buf->end());
+          o << mrpt::format(
+              "%-20.*s (float64) range: [%.02lf, %.02lf] (%zu entries)\n",
+              static_cast<int>(field.size()), field.data(), *itMin, *itMax, buf->size());
+        }
       }
     }
+
     for (const auto& field : pointcloud->getPointFieldNames_float())
     {
-      if (const auto* buf = pointcloud->getPointsBufferRef_float_field(field); buf && !buf->empty())
+      if (const auto* buf = pointcloud->getPointsBufferRef_float_field(field); buf)
       {
-        const auto [itMin, itMax] = minmax_ignore_nan(buf->begin(), buf->end());
-        o << mrpt::format(
-            "%-20.*s (float32) range: [%.02f, %.02f] (%zu entries)\n",
-            static_cast<int>(field.size()), field.data(), *itMin, *itMax, buf->size());
+        if (buf->empty())
+        {
+          o << mrpt::format(
+              "%-20.*s (float32) (0 entries)\n", static_cast<int>(field.size()), field.data());
+        }
+        else
+        {
+          const auto [itMin, itMax] = minmax_ignore_nan(buf->begin(), buf->end());
+          o << mrpt::format(
+              "%-20.*s (float32) range: [%.02f, %.02f] (%zu entries)\n",
+              static_cast<int>(field.size()), field.data(), *itMin, *itMax, buf->size());
+        }
       }
     }
+
     for (const auto& field : pointcloud->getPointFieldNames_uint16())
     {
-      if (const auto* buf = pointcloud->getPointsBufferRef_uint16_field(field);
-          buf && !buf->empty())
+      if (const auto* buf = pointcloud->getPointsBufferRef_uint16_field(field); buf)
       {
-        const auto [itMin, itMax] = minmax_ignore_nan(buf->begin(), buf->end());
-        o << mrpt::format(
-            "%-20.*s (uint16)  range: [%hu, %hu] (%zu entries)\n", static_cast<int>(field.size()),
-            field.data(), *itMin, *itMax, buf->size());
+        if (buf->empty())
+        {
+          o << mrpt::format(
+              "%-20.*s (uint16)  (0 entries)\n", static_cast<int>(field.size()), field.data());
+        }
+        else
+        {
+          const auto [itMin, itMax] = minmax_ignore_nan(buf->begin(), buf->end());
+          o << mrpt::format(
+              "%-20.*s (uint16)  range: [%hu, %hu] (%zu entries)\n", static_cast<int>(field.size()),
+              field.data(), *itMin, *itMax, buf->size());
+        }
       }
     }
+
     for (const auto& field : pointcloud->getPointFieldNames_uint8())
     {
-      if (const auto* buf = pointcloud->getPointsBufferRef_uint8_field(field); buf && !buf->empty())
+      if (const auto* buf = pointcloud->getPointsBufferRef_uint8_field(field); buf)
       {
-        const auto [itMin, itMax] = minmax_ignore_nan(buf->begin(), buf->end());
-        o << mrpt::format(
-            "%-20.*s (uint8)   range: [%i, %i] (%zu entries)\n", static_cast<int>(field.size()),
-            field.data(), static_cast<int>(*itMin), static_cast<int>(*itMax), buf->size());
+        if (buf->empty())
+        {
+          o << mrpt::format(
+              "%-20.*s (uint8)   (0 entries)\n", static_cast<int>(field.size()), field.data());
+        }
+        else
+        {
+          const auto [itMin, itMax] = minmax_ignore_nan(buf->begin(), buf->end());
+          o << mrpt::format(
+              "%-20.*s (uint8)   range: [%i, %i] (%zu entries)\n", static_cast<int>(field.size()),
+              field.data(), static_cast<int>(*itMin), static_cast<int>(*itMax), buf->size());
+        }
       }
     }
   }
