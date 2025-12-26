@@ -92,6 +92,7 @@ void CGenericPointsMap::reserve(size_t newLength)
   for (auto& field : m_float_fields) field.second.reserve(newLength);
   for (auto& field : m_double_fields) field.second.reserve(newLength);
   for (auto& field : m_uint16_fields) field.second.reserve(newLength);
+  for (auto& field : m_uint8_fields) field.second.reserve(newLength);
 }
 
 void CGenericPointsMap::resize(size_t newLength)
@@ -102,6 +103,7 @@ void CGenericPointsMap::resize(size_t newLength)
   for (auto& field : m_float_fields) field.second.resize(newLength, 0);
   for (auto& field : m_double_fields) field.second.resize(newLength, 0);
   for (auto& field : m_uint16_fields) field.second.resize(newLength, 0);
+  for (auto& field : m_uint8_fields) field.second.resize(newLength, 0);
   mark_as_modified();
 }
 
@@ -113,6 +115,7 @@ void CGenericPointsMap::setSize(size_t newLength)
   for (auto& field : m_float_fields) field.second.assign(newLength, 0);
   for (auto& field : m_double_fields) field.second.assign(newLength, 0);
   for (auto& field : m_uint16_fields) field.second.assign(newLength, 0);
+  for (auto& field : m_uint8_fields) field.second.assign(newLength, 0);
   mark_as_modified();
 }
 
@@ -367,8 +370,8 @@ void CGenericPointsMap::getPointAllFieldsFast(size_t index, std::vector<float>& 
 
 void CGenericPointsMap::setPointAllFieldsFast(size_t index, const std::vector<float>& point_data)
 {
-  const size_t nFields =
-      3 + m_float_fields.size() + m_uint16_fields.size() + m_double_fields.size();
+  const size_t nFields = 3 + m_float_fields.size() + m_uint16_fields.size() +
+                         m_double_fields.size() + m_uint8_fields.size();
   ASSERT_EQUAL_(point_data.size(), nFields);
   m_x[index] = point_data[0];
   m_y[index] = point_data[1];
