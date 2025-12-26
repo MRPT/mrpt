@@ -1,5 +1,17 @@
 \page changelog Change Log
 
+# Version 2.15.4: Released Dec 26th, 2025
+- Bug fixes:
+  - Fix regression in mrpt::obs::recolorize3Dpc()
+- Changes in libraries:
+  - \ref mrpt_maps_grp
+    - mrpt::obs::CObservationPointCloud::getDescriptionAsText() now shows all cloud fields and ignores NaNs.
+    - mrpt::maps::CGenericPointsMap "uint" methods renamed "uint16" for consistency.
+    - mrpt::maps::CPointsMap::prepareForInsertPointsFrom() made "non const", since it implies changes.
+    - loadFromKittiVelodyneFile() moved from deprecated CPointsMapXYZI into mrpt::maps::CGenericPointsMap
+- Build system:
+  - Updated embedded nanoflann to v1.9.0
+
 # Version 2.15.3: Released Dec 20th, 2025
 - Marked as deprecated (to be removed in 3.0.0)
   - mrpt::maps::CWeightedPointsMap

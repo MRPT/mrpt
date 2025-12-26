@@ -197,6 +197,16 @@ class CPointsMap :
    */
   virtual void setPointAllFieldsFast(size_t index, const std::vector<float>& point_data) = 0;
 
+  /** Loads from a Kitti dataset Velodyne scan binary file with an XYZI point cloud.
+   * The file can be gz compressed (only enabled if the filename ends in ".gz"
+   * to prevent spurious false autodetection of gzip files).
+   * \return true on success */
+  bool loadFromKittiVelodyneFile(const std::string& filename);
+
+  /** Saves in a binary file compatible with the Kitti dataset, including XYZI fields.
+   * \return true on success */
+  bool saveToKittiVelodyneFile(const std::string& filename) const;
+
  protected:
   /** Virtual assignment operator, copies as much common data (XYZ, color,...)
    * as possible from the source map into this one. */
@@ -708,7 +718,7 @@ class CPointsMap :
   {
     return nullptr;
   }
-  virtual auto getPointsBufferRef_uint_field([[maybe_unused]] const std::string_view& fieldName)
+  virtual auto getPointsBufferRef_uint16_field([[maybe_unused]] const std::string_view& fieldName)
       const -> const mrpt::aligned_std_vector<uint16_t>*
   {
     return nullptr;
@@ -732,7 +742,7 @@ class CPointsMap :
   {
     return nullptr;
   }
-  virtual auto getPointsBufferRef_uint_field([[maybe_unused]] const std::string_view& fieldName)
+  virtual auto getPointsBufferRef_uint16_field([[maybe_unused]] const std::string_view& fieldName)
       -> mrpt::aligned_std_vector<uint16_t>*
   {
     return nullptr;
@@ -887,12 +897,12 @@ class CPointsMap :
       const mrpt::aligned_std_vector<uint8_t>* src_buf = nullptr;
       mrpt::aligned_std_vector<uint8_t>* dst_buf = nullptr;
     };
-    std::vector<UInt16FieldMapping> uint8_fields;
+    std::vector<UInt8FieldMapping> uint8_fields;
   };
 
   /** Prepare efficient data structures for repeated insertion from another point map with
    * insertPointFrom()  */
-  [[nodiscard]] InsertCtx prepareForInsertPointsFrom(const CPointsMap& source) const;
+  [[nodiscard]] InsertCtx prepareForInsertPointsFrom(const CPointsMap& source);
 
   /** Generic method to copy *all* applicable point properties from
    *  one map to another, e.g. timestamp, intensity, etc.

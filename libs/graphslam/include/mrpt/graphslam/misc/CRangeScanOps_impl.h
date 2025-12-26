@@ -100,7 +100,7 @@ void CRangeScanOps<GRAPH_T>::decimatePointsMap(
 {
   MRPT_START
 
-  mrpt::maps::CSimplePointsMap origMap = *m;  // deep copy
+  auto origMap = mrpt::maps::CSimplePointsMap(*m);  // deep copy
   size_t map_size = m->size();
 
   m->clear();
