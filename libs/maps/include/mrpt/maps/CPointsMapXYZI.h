@@ -77,14 +77,6 @@ class [[deprecated("Use mrpt::maps::CGenericPointsMap")]] CPointsMapXYZI : publi
     m_intensity[index] = point_data[3];
   }
 
-  /** Loads from a Kitti dataset Velodyne scan binary file.
-   * The file can be gz compressed (only enabled if the filename ends in ".gz"
-   * to prevent spurious false autodetection of gzip files).
-   * \return true on success */
-  bool loadFromKittiVelodyneFile(const std::string& filename);
-
-  bool saveToKittiVelodyneFile(const std::string& filename) const;
-
   /** See CPointsMap::loadFromRangeScan() */
   void loadFromRangeScan(
       const mrpt::obs::CObservation2DRangeScan& rangeScan,
@@ -145,7 +137,6 @@ class [[deprecated("Use mrpt::maps::CGenericPointsMap")]] CPointsMapXYZI : publi
 
   /** @name String-keyed field access virtual interface implementation
       @{ */
-  constexpr static std::string_view POINT_FIELD_INTENSITY = "intensity";
 
   bool hasPointField(const std::string_view& fieldName) const override;
   std::vector<std::string_view> getPointFieldNames_float() const override;

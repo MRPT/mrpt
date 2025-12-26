@@ -12,6 +12,9 @@
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/core/SSE_macros.h>
 #include <mrpt/core/SSE_types.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileInputStream.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/TPose2D.h>
@@ -27,6 +30,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>  // unitsFormat()
 
@@ -1985,7 +1989,7 @@ std::vector<std::string_view> CPointsMap::getPointFieldNames_float_except_xyz() 
   return result;
 }
 
-CPointsMap::InsertCtx CPointsMap::prepareForInsertPointsFrom(const CPointsMap& source) const
+CPointsMap::InsertCtx CPointsMap::prepareForInsertPointsFrom(const CPointsMap& source)
 {
   InsertCtx ctx;
 
@@ -2008,9 +2012,7 @@ CPointsMap::InsertCtx CPointsMap::prepareForInsertPointsFrom(const CPointsMap& s
       {
         continue;
       }
-      ctx.float_fields.push_back(
-          {srcVector, const_cast<mrpt::aligned_std_vector<float>*>(
-                          this->getPointsBufferRef_float_field(name))});
+      ctx.float_fields.push_back({srcVector, this->getPointsBufferRef_float_field(name)});
     }
   }
 
@@ -2026,9 +2028,7 @@ CPointsMap::InsertCtx CPointsMap::prepareForInsertPointsFrom(const CPointsMap& s
       {
         continue;
       }
-      ctx.double_fields.push_back(
-          {srcVector, const_cast<mrpt::aligned_std_vector<double>*>(
-                          this->getPointsBufferRef_double_field(name))});
+      ctx.double_fields.push_back({srcVector, this->getPointsBufferRef_double_field(name)});
     }
   }
 
@@ -2039,14 +2039,28 @@ CPointsMap::InsertCtx CPointsMap::prepareForInsertPointsFrom(const CPointsMap& s
     if (auto it = std::find(src_u16_names.begin(), src_u16_names.end(), name);
         it != src_u16_names.end())
     {
-      const auto* srcVector = source.getPointsBufferRef_uint_field(name);
+      const auto* srcVector = source.getPointsBufferRef_uint16_field(name);
       if (!srcVector || srcVector->empty())
       {
         continue;
       }
-      ctx.uint16_fields.push_back(
-          {srcVector, const_cast<mrpt::aligned_std_vector<uint16_t>*>(
-                          this->getPointsBufferRef_uint_field(name))});
+      ctx.uint16_fields.push_back({srcVector, this->getPointsBufferRef_uint16_field(name)});
+    }
+  }
+
+  const auto src_u8_names = source.getPointFieldNames_uint8();
+  const auto dst_u8_names = this->getPointFieldNames_uint8();
+  for (const auto& name : dst_u8_names)
+  {
+    if (auto it = std::find(src_u8_names.begin(), src_u8_names.end(), name);
+        it != src_u8_names.end())
+    {
+      const auto* srcVector = source.getPointsBufferRef_uint8_field(name);
+      if (!srcVector || srcVector->empty())
+      {
+        continue;
+      }
+      ctx.uint8_fields.push_back({srcVector, this->getPointsBufferRef_uint8_field(name)});
     }
   }
 
@@ -2231,6 +2245,7 @@ std::string listAllFields(const mrpt::maps::CPointsMap& pcd)
   appendFields(pcd.getPointFieldNames_float());
   appendFields(pcd.getPointFieldNames_double());
   appendFields(pcd.getPointFieldNames_uint16());
+  appendFields(pcd.getPointFieldNames_uint8());
 
   return ret;
 }
@@ -2264,4 +2279,89 @@ bool CPointsMap::hasColor_f() const
 {
   return hasPointField(POINT_FIELD_COLOR_Rf) && hasPointField(POINT_FIELD_COLOR_Gf) &&
          hasPointField(POINT_FIELD_COLOR_Bf);
+}
+
+bool CPointsMap::loadFromKittiVelodyneFile(const std::string& filename)
+{
+  try
+  {
+    mrpt::io::CFileGZInputStream f_gz;
+    mrpt::io::CFileInputStream f_normal;
+    mrpt::io::CStream* f = nullptr;
+
+    if (std::string("gz") == mrpt::system::extractFileExtension(filename))
+    {
+      if (f_gz.open(filename)) f = &f_gz;
+    }
+    else
+    {
+      if (f_normal.open(filename)) f = &f_normal;
+    }
+    if (!f)
+    {
+      THROW_EXCEPTION_FMT("Could not open thefile: `%s`", filename.c_str());
+    }
+
+    this->clear();
+    this->registerField_float(POINT_FIELD_INTENSITY);
+    this->reserve(100000);
+
+    for (;;)
+    {
+      constexpr std::size_t nToRead = sizeof(float) * 4;
+      float xyzi[4];
+      std::size_t nRead = f->Read(&xyzi, nToRead);
+      if (nRead == 0)
+      {
+        break;  // EOF
+      }
+      else if (nRead == nToRead)
+      {
+        m_x.push_back(xyzi[0]);
+        m_y.push_back(xyzi[1]);
+        m_z.push_back(xyzi[2]);
+        this->insertPointField_float(POINT_FIELD_INTENSITY, xyzi[3]);
+      }
+      else
+      {
+        THROW_EXCEPTION(
+            "Unexpected EOF at the middle of a XYZI record (truncated or corrupted file?)");
+      }
+    }
+    this->mark_as_modified();
+    return true;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "[loadFromKittiVelodyneFile] " << e.what() << std::endl;
+    return false;
+  }
+}
+
+bool CPointsMap::saveToKittiVelodyneFile(const std::string& filename) const
+{
+  try
+  {
+    ASSERT_(this->hasPointField(POINT_FIELD_INTENSITY));
+
+    auto* Is = this->getPointsBufferRef_float_field(POINT_FIELD_INTENSITY);
+    ASSERT_(Is);
+    ASSERT_EQUAL_(Is->size(), m_x.size());
+
+    mrpt::io::CFileGZOutputStream f(filename);
+
+    for (size_t i = 0; i < m_x.size(); i++)
+    {
+      const float xyzi[4] = {m_x[i], m_y[i], m_z[i], (*Is)[i]};
+      const auto toWrite = sizeof(float) * 4;
+      std::size_t nWr = f.Write(&xyzi, toWrite);
+      ASSERT_EQUAL_(nWr, toWrite);
+    }
+    return true;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "[saveToKittiVelodyneFile] " << e.what() << std::endl;
+    return false;
+  }
 }
