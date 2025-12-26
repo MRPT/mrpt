@@ -14,8 +14,7 @@
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/lazy_load_path.h>
-#include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/maps/CPointsMapXYZI.h>
+#include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/ops_containers.h>  // minimum_maximum()
 #include <mrpt/obs/CObservation3DRangeScan.h>
@@ -245,12 +244,11 @@ void CObservationPointCloud::load_impl() const
       break;
     case ExternalStorageFormat::KittiBinFile:
     {
-      auto pts = mrpt::maps::CPointsMapXYZI::Create();
+      auto pts = mrpt::maps::CGenericPointsMap::Create();
       bool ok = pts->loadFromKittiVelodyneFile(abs_filename);
       ASSERTMSG_(
           ok, mrpt::format(
-                  "[kitti format] Error loading lazy-load point cloud "
-                  "file: '%s'",
+                  "[kitti format] Error loading lazy-load point cloud file: '%s'",
                   abs_filename.c_str()));
       auto pc = std::dynamic_pointer_cast<mrpt::maps::CPointsMap>(pts);
       const_cast<mrpt::maps::CPointsMap::Ptr&>(pointcloud) = pc;
@@ -271,20 +269,12 @@ void CObservationPointCloud::load_impl() const
         pc = std::dynamic_pointer_cast<mrpt::maps::CPointsMap>(
             mrpt::maps::CSimplePointsMap::Create());
       }
-      else if (data.cols() == 6)
-      {
-        pc = std::dynamic_pointer_cast<mrpt::maps::CPointsMap>(
-            mrpt::maps::CColouredPointsMap::Create());
-      }
-      else if (data.cols() == 4)
-      {
-        pc =
-            std::dynamic_pointer_cast<mrpt::maps::CPointsMap>(mrpt::maps::CPointsMapXYZI::Create());
-      }
       else
+      {
         THROW_EXCEPTION_FMT(
             "Unexpected number of columns in point cloud file: cols=%u",
             static_cast<unsigned int>(data.cols()));
+      }
 
       pc->resize(data.rows());
       std::vector<float> vals(data.cols());
