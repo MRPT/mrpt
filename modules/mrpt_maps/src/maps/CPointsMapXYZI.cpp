@@ -15,17 +15,14 @@
 #include "maps-precomp.h"  // Precomp header
 //
 #include <mrpt/core/bits_mem.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/io/CFileInputStream.h>
 #include <mrpt/maps/CPointsMapXYZI.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/serialization/aligned_serialization.h>
-#include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/viz/CPointCloudColoured.h>
 #include <mrpt/viz/CSetOfObjects.h>
 
+#include <fstream>
 #include <iostream>
 
 #include "CPointsMap_crtp_common.h"
@@ -411,76 +408,4 @@ void CPointsMapXYZI::PLY_export_get_vertex(
   pt.y = m_y[idx];
   pt.z = m_z[idx];
   pt_color.R = pt_color.G = pt_color.B = m_intensity[idx];
-}
-
-bool CPointsMapXYZI::loadFromKittiVelodyneFile(const std::string& filename)
-{
-  try
-  {
-    mrpt::io::CFileGZInputStream f_gz;
-    mrpt::io::CFileInputStream f_normal;
-    mrpt::io::CStream* f = nullptr;
-
-    if (std::string("gz") == mrpt::system::extractFileExtension(filename))
-    {
-      if (f_gz.open(filename)) f = &f_gz;
-    }
-    else
-    {
-      if (f_normal.open(filename)) f = &f_normal;
-    }
-    if (!f) THROW_EXCEPTION_FMT("Could not open thefile: `%s`", filename.c_str());
-
-    this->clear();
-    this->reserve(10000);
-
-    for (;;)
-    {
-      constexpr std::size_t nToRead = sizeof(float) * 4;
-      float xyzi[4];
-      std::size_t nRead = f->Read(&xyzi, nToRead);
-      if (nRead == 0)
-        break;  // EOF
-      else if (nRead == nToRead)
-      {
-        m_x.push_back(xyzi[0]);
-        m_y.push_back(xyzi[1]);
-        m_z.push_back(xyzi[2]);
-        m_intensity.push_back(xyzi[3]);
-      }
-      else
-        throw std::runtime_error(
-            "Unexpected EOF at the middle of a XYZI record "
-            "(truncated or corrupted file?)");
-    }
-    this->mark_as_modified();
-    return true;
-  }
-  catch (const std::exception& e)
-  {
-    std::cerr << "[loadFromKittiVelodyneFile] " << e.what() << std::endl;
-    return false;
-  }
-}
-
-bool CPointsMapXYZI::saveToKittiVelodyneFile(const std::string& filename) const
-{
-  try
-  {
-    mrpt::io::CFileGZOutputStream f(filename);
-
-    for (size_t i = 0; i < m_x.size(); i++)
-    {
-      const float xyzi[4] = {m_x[i], m_y[i], m_z[i], m_intensity[i]};
-      const auto toWrite = sizeof(float) * 4;
-      std::size_t nWr = f.Write(&xyzi, toWrite);
-      ASSERT_EQUAL_(nWr, toWrite);
-    }
-    return true;
-  }
-  catch (const std::exception& e)
-  {
-    std::cerr << "[saveToKittiVelodyneFile] " << e.what() << std::endl;
-    return false;
-  }
 }
