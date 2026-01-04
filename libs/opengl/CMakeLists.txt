@@ -49,6 +49,11 @@ endif()
 set_source_files_properties(
   src/CRenderizableShaderTriangles.cpp
   src/CTexturedPlane.cpp
+  src/CEllipsoid2D.cpp
+  src/CEllipsoid3D.cpp
+  src/CEllipsoidInverseDepth2D.cpp
+  src/CEllipsoidInverseDepth3D.cpp
+  src/CEllipsoidRangeBearing2D.cpp
   PROPERTIES COMPILE_OPTIONS "-O1"
 )
 
