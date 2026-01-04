@@ -43,22 +43,25 @@
         "Eigen",
         "mrpt",
         "MRPT",
+        "parameterizations",
+        "parameterizing",
         "SSSE",
         "undistort",
         "undistortion"
     ],
     "ros.distro": "humble",
     "cSpell.ignoreWords": [
+        "3DPDFSOG",
         "CArchive",
         "Colorf",
         "Coordf",
         "DPDF",
         "IFFT",
         "Kbhit",
+        "PDFSOG",
         "exprtk",
         "idft",
-        "stbi",
-        "3DPDFSOG",
-        "PDFSOG"
+        "repr",
+        "stbi"
     ],
 }
