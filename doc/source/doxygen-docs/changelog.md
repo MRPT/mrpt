@@ -1,8 +1,10 @@
 \page changelog Change Log
 
 # Version 2.15.5: UNRELEASED
-(None yet)
-
+- Bug fixes:
+  - Workaround to opengl crashes in Ubuntu 26.04 (similar to Debian bug https://bugs.debian.org/1115155)
+- Build system:
+  - Updated embedded googletest to v1.17.0
 
 # Version 2.15.4: Released Dec 26th, 2025
 - Bug fixes:
