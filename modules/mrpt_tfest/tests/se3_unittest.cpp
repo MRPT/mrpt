@@ -86,13 +86,13 @@ void generate_list_of_points(const TPoints& pA, const TPoints& pB, TMatchingPair
   for (unsigned int i = 0; i < 5; ++i)
   {
     pair.globalIdx = pair.localIdx = i;
-    pair.global.x = d2f(pA[i][0]);
-    pair.global.y = d2f(pA[i][1]);
-    pair.global.z = d2f(pA[i][2]);
+    pair.global.x = static_cast<T>(pA[i][0]);
+    pair.global.y = static_cast<T>(pA[i][1]);
+    pair.global.z = static_cast<T>(pA[i][2]);
 
-    pair.local.x = d2f(pB[i][0]);
-    pair.local.y = d2f(pB[i][1]);
-    pair.local.z = d2f(pB[i][2]);
+    pair.local.x = static_cast<T>(pB[i][0]);
+    pair.local.y = static_cast<T>(pB[i][1]);
+    pair.local.z = static_cast<T>(pB[i][2]);
 
     list.push_back(pair);
   }
@@ -138,7 +138,10 @@ void se3_l2_MatchList_test()
       (qPose[3] * outQuat[3] < 0 && qPose[4] * outQuat[4] < 0 && qPose[5] * outQuat[5] < 0 &&
        qPose[6] * outQuat[6] < 0))
   {
-    for (unsigned int i = 0; i < 7; ++i) err += square(std::fabs(qPose[i]) - std::fabs(outQuat[i]));
+    for (unsigned int i = 0; i < 7; ++i)
+    {
+      err += square(std::fabs(qPose[i]) - std::fabs(outQuat[i]));
+    }
     err = sqrt(err);
     EXPECT_TRUE(err < 1e-6) << "Applied quaternion: " << endl
                             << qPose << endl
@@ -177,7 +180,10 @@ TEST(tfest, se3_l2_PtsLists)
       (qPose[3] * qu[3] < 0 && qPose[4] * qu[4] < 0 && qPose[5] * qu[5] < 0 &&
        qPose[6] * qu[6] < 0))
   {
-    for (unsigned int i = 0; i < 7; ++i) err += square(std::fabs(qPose[i]) - std::fabs(qu[i]));
+    for (unsigned int i = 0; i < 7; ++i)
+    {
+      err += square(std::fabs(qPose[i]) - std::fabs(qu[i]));
+    }
     err = sqrt(err);
     EXPECT_TRUE(err < 1e-6) << "Applied quaternion: " << endl
                             << qPose << endl
@@ -201,21 +207,24 @@ TEST(tfest, se3_l2_robust)
   TMatchingPairList list;
   generate_list_of_points(pA, pB, list);  // Generate a list of matched points
 
-  mrpt::tfest::TSE3RobustResult estim_result;
+  mrpt::tfest::TSE3RobustResult estimateResult;
   mrpt::tfest::TSE3RobustParams params;
   params.ransac_minSetSize = 3;
-  params.ransac_maxSetSizePct = 3.0 / list.size();
-  mrpt::tfest::se3_l2_robust(list, params, estim_result);
+  params.ransac_maxSetSizePct = 3.0 / static_cast<double>(list.size());
+  mrpt::tfest::se3_l2_robust(list, params, estimateResult);
 
-  EXPECT_GT(estim_result.inliers_idx.size(), 0u);
-  const CPose3DQuat& outQuat = estim_result.transformation;
+  EXPECT_GT(estimateResult.inliers_idx.size(), 0u);
+  const CPose3DQuat& outQuat = estimateResult.transformation;
   double err = 0.0;
   if ((qPose[3] * outQuat[3] > 0 && qPose[4] * outQuat[4] > 0 && qPose[5] * outQuat[5] > 0 &&
        qPose[6] * outQuat[6] > 0) ||
       (qPose[3] * outQuat[3] < 0 && qPose[4] * outQuat[4] < 0 && qPose[5] * outQuat[5] < 0 &&
        qPose[6] * outQuat[6] < 0))
   {
-    for (unsigned int i = 0; i < 7; ++i) err += square(std::fabs(qPose[i]) - std::fabs(outQuat[i]));
+    for (unsigned int i = 0; i < 7; ++i)
+    {
+      err += square(std::fabs(qPose[i]) - std::fabs(outQuat[i]));
+    }
     err = sqrt(err);
     EXPECT_TRUE(err < 1e-6) << "Applied quaternion: " << endl
                             << qPose << endl

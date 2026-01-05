@@ -229,9 +229,11 @@ template <typename T>
 bool operator<(const TMatchingPairTempl<T>& a, const TMatchingPairTempl<T>& b)
 {
   if (a.globalIdx == b.globalIdx)
+  {
     return (a.localIdx < b.localIdx);
-  else
-    return (a.globalIdx < b.globalIdx);
+  }
+
+  return (a.globalIdx < b.globalIdx);
 }
 
 /** A comparison operator  */
@@ -245,9 +247,17 @@ bool operator==(const TMatchingPairTempl<T>& a, const TMatchingPairTempl<T>& b)
 template <typename T>
 bool operator==(const TMatchingPairListTempl<T>& a, const TMatchingPairListTempl<T>& b)
 {
-  if (a.size() != b.size()) return false;
+  if (a.size() != b.size())
+  {
+    return false;
+  }
   for (auto it1 = a.begin(), it2 = b.begin(); it1 != a.end(); ++it1, ++it2)
-    if (!((*it1) == (*it2))) return false;
+  {
+    if (!((*it1) == (*it2)))
+    {
+      return false;
+    }
+  }
   return true;
 }
 

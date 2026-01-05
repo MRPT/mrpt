@@ -26,7 +26,10 @@ namespace mrpt::random
 template <class URBG>
 uint64_t portable_uniform_distribution(URBG&& g, uint64_t min, uint64_t max)
 {
-  if (min == max) return min;
+  if (min == max)
+  {
+    return min;
+  }
 
   const uint64_t sample = (static_cast<uint64_t>(g()) << 32) | g();
   return min + (sample % (max - min));

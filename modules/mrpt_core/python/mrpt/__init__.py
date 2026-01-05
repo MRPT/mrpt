@@ -12,14 +12,15 @@ __path__ = pkgutil.extend_path(__path__, __name__)
 
 # 2. Modules we expect to find in different install prefixes
 MRPT_MODULES = [
-    "core",
     "config",
-    "rtti",
-    "system",
-    "serialization",
+    "containers",
+    "core",
     "math",
     "poses",
-    "containers",
+    "rtti",
+    "serialization",
+    "system",
+    "tfest",
     "viz",
 ]
 

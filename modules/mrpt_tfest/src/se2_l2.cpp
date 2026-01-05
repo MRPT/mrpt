@@ -102,7 +102,10 @@ bool tfest::se2_l2(
 
   const size_t N = in_correspondences.size();
 
-  if (N < 2) return false;
+  if (N < 2)
+  {
+    return false;
+  }
 
   const float N_inv = 1.0f / N;  // For efficiency, keep this value.
 

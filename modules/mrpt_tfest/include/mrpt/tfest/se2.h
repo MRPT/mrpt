@@ -123,9 +123,7 @@ struct TSE2RobustParams
    */
   // std::function<bool(TPotentialMatch)>  user_individual_compat_callback; //
   // This could be used in the future when we enforce C++11 to users...
-  TFunctorCheckPotentialMatch user_individual_compat_callback;
-  /** User data to be passed to user_individual_compat_callback() */
-  void* user_individual_compat_callback_userdata;
+  TFunctorCheckPotentialMatch user_individual_compat_callback = {};
 
   /** Default values */
   TSE2RobustParams() = default;
@@ -139,7 +137,7 @@ struct TSE2RobustResult
   /** the largest consensus sub-set */
   mrpt::tfest::TMatchingPairList largestSubSet;
   /** Number of actual iterations executed  */
-  unsigned int ransac_iters{0};
+  unsigned int ransac_iters = 0;
 
   TSE2RobustResult() = default;
 };

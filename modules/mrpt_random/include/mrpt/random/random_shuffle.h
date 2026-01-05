@@ -17,9 +17,8 @@
 #include <mrpt/random/portable_uniform_distribution.h>
 
 #include <cstdint>
-#include <iterator>  // iterator_traits
-#include <random>    // uniform_int_distribution
-#include <utility>   // std::swap
+#include <random>   // uniform_int_distribution
+#include <utility>  // std::swap
 
 namespace mrpt::random
 {

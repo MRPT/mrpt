@@ -130,11 +130,30 @@ PYBIND11_MODULE(_bindings, m)
             return R;
           },
           "Returns the 3x3 Rotation Matrix")
+      .def(
+          "getInverseHomogeneousMatrix", [](const mrpt::poses::CPose3D &p)
+          { return p.getInverseHomogeneousMatrixVal<mrpt::math::CMatrixDouble44>(); })
       .def("setRotationMatrix", &mrpt::poses::CPose3D::setRotationMatrix)
       .def(
           "inverse", [](mrpt::poses::CPose3D &p) { p.inverse(); }, "Inverts the pose in place")
       .def("getOppositeScalar", &mrpt::poses::CPose3D::getOppositeScalar)
       .def("asString", &mrpt::poses::CPose3D::asString)
+      .def(
+          "composePoint", [](const mrpt::poses::CPose3D &p, const mrpt::math::TPoint3D &pt)
+          { return p.composePoint(pt); })
+      .def(
+          "composePoint",
+          [](const mrpt::poses::CPose3D &p, double localX, double localY, double localZ) {
+            return p.composePoint({localX, localY, localZ});
+          })
+      .def(
+          "inverseComposePoint", [](const mrpt::poses::CPose3D &p, const mrpt::math::TPoint3D &pt)
+          { return p.inverseComposePoint(pt); })
+      .def(
+          "inverseComposePoint",
+          [](const mrpt::poses::CPose3D &p, double globalX, double globalY, double globalZ) {
+            return p.inverseComposePoint({globalX, globalY, globalZ});
+          })
       // Operators
       .def(py::self + py::self)
       .def(py::self - py::self)

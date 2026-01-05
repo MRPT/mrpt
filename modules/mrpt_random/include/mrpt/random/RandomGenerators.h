@@ -15,7 +15,6 @@
 
 #include <mrpt/random/random_shuffle.h>
 
-#include <algorithm>
 #include <cstddef>
 #include <limits>
 #include <limits>  // numeric_limits
@@ -27,7 +26,7 @@
 // Frwd decl:
 namespace Eigen
 {
-template <typename _MatrixType>
+template <typename MatrixType>
 class SelfAdjointEigenSolver;
 }
 
@@ -57,14 +56,14 @@ class Generator_MT19937
   void seed(const uint32_t seed);
 
  private:
-  uint32_t m_MT[624];
+  uint32_t m_MT[624] = {};
   uint32_t m_index{0};
   bool m_seed_initialized{false};
 
   void generateNumbers();
 };
 
-/** A thred-safe pseudo random number generator, based on an internal MT19937
+/** A thread-safe pseudo random number generator, based on an internal MT19937
  * randomness generator.
  * The base algorithm for randomness is platform-independent. See
  * http://en.wikipedia.org/wiki/Mersenne_twister
@@ -144,23 +143,28 @@ class CRandomGenerator
    * \sa drawUniform
    */
   template <class MAT>
-  void drawUniformMatrix(MAT& matrix, const double unif_min = 0, const double unif_max = 1)
+  void drawUniformMatrix(MAT& matrix, const double min = 0, const double max = 1)
   {
     for (size_t r = 0; r < matrix.rows(); r++)
+    {
       for (size_t c = 0; c < matrix.cols(); c++)
-        matrix(r, c) = static_cast<typename MAT::Scalar>(drawUniform(unif_min, unif_max));
+      {
+        matrix(r, c) = static_cast<typename MAT::Scalar>(drawUniform(min, max));
+      }
+    }
   }
 
   /** Fills the given vector with independent, uniformly distributed samples.
    * \sa drawUniform
    */
   template <class VEC>
-  void drawUniformVector(VEC& v, const double unif_min = 0, const double unif_max = 1)
+  void drawUniformVector(VEC& v, const double min = 0, const double max = 1)
   {
     const size_t N = v.size();
     for (size_t c = 0; c < N; c++)
-      v[c] =
-          static_cast<typename std::decay<decltype(v[c])>::type>(drawUniform(unif_min, unif_max));
+    {
+      v[c] = static_cast<typename std::decay<decltype(v[c])>::type>(drawUniform(min, max));
+    }
   }
 
   /** @} */
@@ -195,8 +199,12 @@ class CRandomGenerator
   void drawGaussian1DMatrix(MAT& matrix, const double mean = 0, const double std = 1)
   {
     for (decltype(matrix.rows()) r = 0; r < matrix.rows(); r++)
+    {
       for (decltype(matrix.cols()) c = 0; c < matrix.cols(); c++)
+      {
         matrix(r, c) = static_cast<typename MAT::Scalar>(drawGaussian1D(mean, std));
+      }
+    }
   }
 
   /** Generates a random definite-positive matrix of the given size, using the
@@ -205,7 +213,9 @@ class CRandomGenerator
    */
   template <class MATRIX, class AUXVECTOR_T = MATRIX>
   MATRIX drawDefinitePositiveMatrix(
-      const size_t dim, const double std_scale = 1.0, const double diagonal_epsilon = 1e-8)
+      const size_t dim,  // NOLINT
+      const double std_scale = 1.0,
+      const double diagonal_epsilon = 1e-8)
   {
     AUXVECTOR_T r(dim, 1);
     drawGaussian1DMatrix(r, 0, std_scale);
@@ -213,7 +223,9 @@ class CRandomGenerator
     cov.resize(dim, dim);
     cov.matProductOf_AAt(r);  // random semi-definite positive matrix:
     for (size_t i = 0; i < dim; i++)
+    {
       cov(i, i) += diagonal_epsilon;  // make sure it's definite-positive
+    }
     return cov;
   }
 
@@ -226,7 +238,9 @@ class CRandomGenerator
   {
     const size_t N = v.size();
     for (size_t c = 0; c < N; c++)
+    {
       v[c] = static_cast<std::remove_reference_t<decltype(v[c])>>(drawGaussian1D(mean, std));
+    }
   }
 
   /** Generate multidimensional random samples according to a given covariance
@@ -241,9 +255,13 @@ class CRandomGenerator
   {
     const size_t dim = cov.cols();
     if (cov.rows() != cov.cols())
+    {
       throw std::runtime_error("drawGaussianMultivariate(): cov is not square.");
+    }
     if (mean && mean->size() != dim)
+    {
       throw std::runtime_error("drawGaussianMultivariate(): mean and cov sizes ");
+    }
     MATRIX Z, D;
     // Set size of output vector:
     out_result.clear();
@@ -260,10 +278,18 @@ class CRandomGenerator
     for (size_t i = 0; i < dim; i++)
     {
       T rnd = this->drawGaussian1D_normalized();
-      for (size_t d = 0; d < dim; d++) out_result[d] += (Z(d, i) * rnd);
+      for (size_t d = 0; d < dim; d++)
+      {
+        out_result[d] += (Z(d, i) * rnd);
+      }
     }
     if (mean)
-      for (size_t d = 0; d < dim; d++) out_result[d] += (*mean)[d];
+    {
+      for (size_t d = 0; d < dim; d++)
+      {
+        out_result[d] += (*mean)[d];
+      }
+    }
   }
 
   /** Generate multidimensional random samples according to a given covariance
@@ -278,9 +304,13 @@ class CRandomGenerator
   {
     const size_t N = cov.rows();
     if (cov.rows() != cov.cols())
+    {
       throw std::runtime_error("drawGaussianMultivariate(): cov is not square.");
+    }
     if (mean && size_t(mean->size()) != N)
+    {
       throw std::runtime_error("drawGaussianMultivariate(): mean and cov sizes ");
+    }
 
     // Compute eigenvalues/eigenvectors of cov:
     COVMATRIX eigVecs;
@@ -292,7 +322,10 @@ class CRandomGenerator
     for (typename COVMATRIX::Index c = 0; c < eigVecs.cols(); c++)
     {
       const auto s = std::sqrt(eigVals[c]);
-      for (typename COVMATRIX::Index r = 0; r < eigVecs.rows(); r++) eigVecs(r, c) *= s;
+      for (typename COVMATRIX::Index r = 0; r < eigVecs.rows(); r++)
+      {
+        eigVecs(r, c) *= s;
+      }
     }
 
     // Set size of output vector:
@@ -301,10 +334,18 @@ class CRandomGenerator
     for (size_t i = 0; i < N; i++)
     {
       typename COVMATRIX::Scalar rnd = drawGaussian1D_normalized();
-      for (size_t d = 0; d < N; d++) out_result[d] += eigVecs.coeff(d, i) * rnd;
+      for (size_t d = 0; d < N; d++)
+      {
+        out_result[d] += eigVecs.coeff(d, i) * rnd;
+      }
     }
     if (mean)
-      for (size_t d = 0; d < N; d++) out_result[d] += (*mean)[d];
+    {
+      for (size_t d = 0; d < N; d++)
+      {
+        out_result[d] += (*mean)[d];
+      }
+    }
   }
 
   /** Generate a given number of multidimensional random samples according to
@@ -323,9 +364,13 @@ class CRandomGenerator
   {
     const size_t N = cov.rows();
     if (cov.rows() != cov.cols())
+    {
       throw std::runtime_error("drawGaussianMultivariateMany(): cov is not square.");
+    }
     if (mean && size_t(mean->size()) != N)
+    {
       throw std::runtime_error("drawGaussianMultivariateMany(): mean and cov sizes ");
+    }
 
     // Compute eigenvalues/eigenvectors of cov:
     COVMATRIX eigVecs;
@@ -337,7 +382,10 @@ class CRandomGenerator
     for (typename COVMATRIX::Index c = 0; c < eigVecs.cols(); c++)
     {
       const auto s = std::sqrt(eigVals[c]);
-      for (typename COVMATRIX::Index r = 0; r < eigVecs.rows(); r++) eigVecs(r, c) *= s;
+      for (typename COVMATRIX::Index r = 0; r < eigVecs.rows(); r++)
+      {
+        eigVecs(r, c) *= s;
+      }
     }
 
     // Set size of output vector:
@@ -348,10 +396,18 @@ class CRandomGenerator
       for (size_t i = 0; i < N; i++)
       {
         typename COVMATRIX::Scalar rnd = drawGaussian1D_normalized();
-        for (size_t d = 0; d < N; d++) ret[k][d] += eigVecs.coeff(d, i) * rnd;
+        for (size_t d = 0; d < N; d++)
+        {
+          ret[k][d] += eigVecs.coeff(d, i) * rnd;
+        }
       }
       if (mean)
-        for (size_t d = 0; d < N; d++) ret[k][d] += (*mean)[d];
+      {
+        for (size_t d = 0; d < N; d++)
+        {
+          ret[k][d] += (*mean)[d];
+        }
+      }
     }
   }
 
@@ -368,7 +424,10 @@ class CRandomGenerator
   {
     out_result = in_vector;
     const size_t N = out_result.size();
-    if (N > 1) mrpt::random::shuffle(&out_result[0], &out_result[N - 1]);
+    if (N > 1)
+    {
+      mrpt::random::shuffle(out_result.begin(), out_result.end());
+    }
   }
 
   /** \overload  \note [New in MRPT 2.1.4] */
@@ -377,7 +436,10 @@ class CRandomGenerator
   {
     VEC out_result = in_vector;
     const size_t N = out_result.size();
-    if (N > 1) mrpt::random::shuffle(&out_result[0], &out_result[N - 1]);
+    if (N > 1)
+    {
+      mrpt::random::shuffle(out_result.begin(), out_result.end());
+    }
     return out_result;
   }
 
@@ -404,22 +466,28 @@ inline ptrdiff_t random_generator_for_STL(ptrdiff_t i)
  * \sa matrixRandomNormal
  */
 template <class MAT>
-void matrixRandomUni(MAT& matrix, const double unif_min = 0, const double unif_max = 1)
+void matrixRandomUni(MAT& matrix, const double min = 0, const double max = 1)
 {
   for (typename MAT::Index r = 0; r < matrix.rows(); r++)
+  {
     for (typename MAT::Index c = 0; c < matrix.cols(); c++)
-      matrix(r, c) =
-          static_cast<typename MAT::Scalar>(getRandomGenerator().drawUniform(unif_min, unif_max));
+    {
+      matrix(r, c) = static_cast<typename MAT::Scalar>(getRandomGenerator().drawUniform(min, max));
+    }
+  }
 }
 
 /** Fills the given matrix with independent, uniformly distributed samples.
  * \sa vectorRandomNormal
  */
 template <class T>
-void vectorRandomUni(std::vector<T>& v_out, const T& unif_min = 0, const T& unif_max = 1)
+void vectorRandomUni(std::vector<T>& v_out, const T& min = 0, const T& max = 1)
 {
   size_t n = v_out.size();
-  for (size_t r = 0; r < n; r++) v_out[r] = getRandomGenerator().drawUniform(unif_min, unif_max);
+  for (size_t r = 0; r < n; r++)
+  {
+    v_out[r] = static_cast<T>(getRandomGenerator().drawUniform(min, max));
+  }
 }
 
 /** Fills the given matrix with independent, normally distributed samples.
@@ -431,9 +499,13 @@ template <class MAT>
 void matrixRandomNormal(MAT& matrix, const double mean = 0, const double std = 1)
 {
   for (typename MAT::Index r = 0; r < matrix.rows(); r++)
+  {
     for (typename MAT::Index c = 0; c < matrix.cols(); c++)
+    {
       matrix(r, c) = static_cast<typename MAT::Scalar>(
           mean + std * getRandomGenerator().drawGaussian1D_normalized());
+    }
+  }
 }
 
 /** Generates a random vector with independent, normally distributed samples.
@@ -444,7 +516,9 @@ void vectorRandomNormal(std::vector<T>& v_out, const T& mean = 0, const T& std =
 {
   size_t n = v_out.size();
   for (size_t r = 0; r < n; r++)
+  {
     v_out[r] = mean + std * getRandomGenerator().drawGaussian1D_normalized();
+  }
 }
 
 /** Randomize the generators.

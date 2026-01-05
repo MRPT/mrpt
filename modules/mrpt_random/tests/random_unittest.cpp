@@ -16,6 +16,10 @@
 #include <mrpt/random/RandomGenerators.h>
 #include <mrpt/random/random_shuffle.h>
 
+#include <algorithm>
+#include <numeric>
+#include <vector>
+
 TEST(Random, Randomize)
 {
   using namespace mrpt::random;
@@ -177,5 +181,89 @@ TEST(Random, shuffle)
     auto list2 = listOrg;
     mrpt::random::partial_shuffle(list2.begin(), list2.end(), rnd, 10);
     EXPECT_EQ(list2, std::vector<int>({3, 5, 8, 0, 7, 1, 6, 2, 4, 9}));
+  }
+}
+
+/** Test for permuteVector (both versions) */
+TEST(Random, PermuteVector)
+{
+  using namespace mrpt::random;
+  CRandomGenerator rnd(123);  // Fixed seed for reproducibility
+
+  std::vector<int> original(10);
+  std::iota(original.begin(), original.end(), 0);  // 0, 1, 2, ..., 9
+
+  // Test version 1: void permuteVector(const VEC& in_vector, VEC& out_result)
+  std::vector<int> permuted1;
+  rnd.permuteVector(original, permuted1);
+
+  EXPECT_EQ(original.size(), permuted1.size());
+  // Ensure all elements are still there
+  for (int i = 0; i < 10; ++i)
+  {
+    EXPECT_TRUE(std::find(permuted1.begin(), permuted1.end(), i) != permuted1.end());
+  }
+  // With a fixed seed, we expect a change (statistically almost certain)
+  EXPECT_NE(original, permuted1);
+
+  // Test version 2: VEC permuteVector(const VEC& in_vector)
+  auto permuted2 = rnd.permuteVector(original);
+  EXPECT_EQ(original.size(), permuted2.size());
+  EXPECT_NE(original, permuted2);
+}
+
+/** Test for drawUniformUnsignedIntRange */
+TEST(Random, DrawUniformUnsignedIntRange)
+{
+  using namespace mrpt::random;
+  CRandomGenerator rnd(456);
+
+  uint32_t val;
+  const uint32_t min_v = 10;
+  const uint32_t max_v = 20;
+
+  // Run multiple times to check range constraints
+  for (int i = 0; i < 100; ++i)
+  {
+    rnd.drawUniformUnsignedIntRange(val, min_v, max_v);
+    EXPECT_GE(val, min_v);
+    EXPECT_LE(val, max_v);
+  }
+}
+
+/** Test for drawUniformVector */
+TEST(Random, DrawUniformVector)
+{
+  using namespace mrpt::random;
+  CRandomGenerator rnd;
+
+  std::vector<double> v(50);
+  const double min_v = -5.0;
+  const double max_v = 5.0;
+
+  rnd.drawUniformVector(v, min_v, max_v);
+
+  EXPECT_EQ(v.size(), 50U);
+  for (const double val : v)
+  {
+    EXPECT_GE(val, min_v);
+    EXPECT_LE(val, max_v);
+  }
+}
+
+/** Test for Global/Static Helper Functions (vectorRandomUni) */
+TEST(Random, GlobalHelpers)
+{
+  using namespace mrpt::random;
+
+  // Test the global Randomize and vectorRandomUni
+  Randomize(789);
+  std::vector<float> v(10);
+  vectorRandomUni(v, 0.0f, 1.0f);
+
+  for (const float val : v)
+  {
+    EXPECT_GE(val, 0.0f);
+    EXPECT_LE(val, 1.0f);
   }
 }
