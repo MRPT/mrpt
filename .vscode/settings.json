@@ -43,6 +43,7 @@
         "Eigen",
         "mrpt",
         "MRPT",
+        "multinomial",
         "parameterizations",
         "parameterizing",
         "SSSE",

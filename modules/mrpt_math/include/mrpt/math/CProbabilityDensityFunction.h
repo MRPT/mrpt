@@ -35,6 +35,14 @@ template <class TDATA, size_t STATE_LEN>
 class CProbabilityDensityFunction
 {
  public:
+  virtual ~CProbabilityDensityFunction() = default;
+
+  CProbabilityDensityFunction() = default;
+  CProbabilityDensityFunction(const CProbabilityDensityFunction&) = default;
+  CProbabilityDensityFunction(CProbabilityDensityFunction&&) = default;
+  CProbabilityDensityFunction& operator=(const CProbabilityDensityFunction&) = default;
+  CProbabilityDensityFunction& operator=(CProbabilityDensityFunction&&) = default;
+
   /** The length of the variable, for example, 3 for a 3D point, 6 for a 3D
    * pose (x y z yaw pitch roll). */
   static constexpr size_t state_length = STATE_LEN;

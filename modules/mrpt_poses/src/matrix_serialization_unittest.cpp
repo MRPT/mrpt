@@ -42,7 +42,7 @@ TEST(Matrices, SerializeCMatrixD)
   membuf.Seek(0);
   arch >> fA;
 
-  EXPECT_NEAR(0, fabs((CMatrixDouble(fA) - A).sum()), 1e-9);
+  EXPECT_NEAR(0, std::abs((CMatrixDouble(fA) - A).sum()), 1e-9);
 
   try
   {
@@ -54,7 +54,8 @@ TEST(Matrices, SerializeCMatrixD)
 
     GTEST_FAIL() << "Exception not launched when it was expected!";
   }
-  catch (...)
-  {  // OK, exception occurred, as expected
+  catch (...)  // NOLINT
+  {
+    // OK, exception occurred, as expected
   }
 }

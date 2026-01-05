@@ -19,6 +19,8 @@
   <depend>mrpt_common</depend>
   <depend>mrpt_bayes</depend>
 
+  <test_depend>mrpt_io</test_depend>
+
   <export>
     <build_type>cmake</build_type>
   </export>
