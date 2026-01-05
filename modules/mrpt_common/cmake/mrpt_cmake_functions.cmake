@@ -17,6 +17,7 @@
 
 include(GNUInstallDirs) # for install dirs in multilib
 include(CMakePackageConfigHelpers)
+include(CTest)
 
 find_package(GTest QUIET)
 
@@ -476,15 +477,18 @@ endfunction()
 #	[PRIVATE_LINK_LIBRARIES lib3 lib4]
 # [CMAKE_DEPENDENCIES pkg1 pkg2]
 # [ADDITIONAL_EXPORT_TARGETS target1 target2]
+# [UNITTEST_LINK_LIBRARIES lib5 lib6]
 #	)
 #
 # Defines a MRPT library. `CMAKE_DEPENDENCIES` enumerates those packages
 # that needs to be find_package'd in this library's xxx-config.cmake file.
+# `UNITTEST_LINK_LIBRARIES` specifies additional libraries that unit tests
+# should link against (beyond the library itself).
 # -----------------------------------------------------------------------------
 function(mrpt_add_library)
     set(options HEADERS_ONLY_LIBRARY)
     set(oneValueArgs TARGET)
-    set(multiValueArgs SOURCES PUBLIC_LINK_LIBRARIES PRIVATE_LINK_LIBRARIES CMAKE_DEPENDENCIES ADDITIONAL_EXPORT_TARGETS)
+    set(multiValueArgs SOURCES PUBLIC_LINK_LIBRARIES PRIVATE_LINK_LIBRARIES CMAKE_DEPENDENCIES ADDITIONAL_EXPORT_TARGETS UNITTEST_LINK_LIBRARIES)
     cmake_parse_arguments(MRPT_ADD_LIBRARY "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     # Remove _LIN files when compiling under Windows, and _WIN files when compiling under Linux.
@@ -499,14 +503,20 @@ function(mrpt_add_library)
     keep_matching_files_from_list(".*_unittest.cpp" lst_unittests)
     if(NOT "${lst_unittests}" STREQUAL "")
       # We have unit tests:
+      # Build the list of libraries to link: the library itself + optional additional dependencies
+      set(unittest_link_libs ${MRPT_ADD_LIBRARY_TARGET})
+      if(MRPT_ADD_LIBRARY_UNITTEST_LINK_LIBRARIES)
+        list(APPEND unittest_link_libs ${MRPT_ADD_LIBRARY_UNITTEST_LINK_LIBRARIES})
+      endif()
+      
       mrpt_add_test(
         TARGET test_${MRPT_ADD_LIBRARY_TARGET}
         SOURCES ${lst_unittests}
-        LINK_LIBRARIES ${MRPT_ADD_LIBRARY_TARGET}
+        LINK_LIBRARIES ${unittest_link_libs}
       )
     endif()
 
-    # Enable SIMD especial instructions in especialized source files, even if
+    # Enable SIMD special instructions in specialized source files, even if
     # those instructions are NOT enabled globally for the entire build:
     handle_special_simd_flags("${MRPT_ADD_LIBRARY_SOURCES}" ".*\.SSE2.cpp"  "-msse2")
     handle_special_simd_flags("${MRPT_ADD_LIBRARY_SOURCES}" ".*\.SSSE3.cpp"  "-msse3 -mssse3")
@@ -534,7 +544,7 @@ function(mrpt_add_library)
       # A hdr-only library: needs no real compiling
       add_library(${MRPT_ADD_LIBRARY_TARGET} INTERFACE)
 
-      # List of hdr files (for editing in IDEs,etc.):
+      # List of hdr files (for editing in IDEs, etc.):
       #target_sources(${MRPT_ADD_LIBRARY_TARGET} INTERFACE ${MRPT_ADD_LIBRARY_SOURCES})
     endif()
 
@@ -612,7 +622,10 @@ function(mrpt_add_test)
     set(multiValueArgs SOURCES LINK_LIBRARIES)
     cmake_parse_arguments(MRPT_ADD_TEST "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    enable_testing()
+    if(NOT BUILD_TESTING)
+      return()
+    endif()
+
     add_executable(${MRPT_ADD_TEST_TARGET}
       ${MRPT_ADD_TEST_SOURCES}
       ${mrpt_common_DIR}/../common_sources/mrpt_test_main.cpp

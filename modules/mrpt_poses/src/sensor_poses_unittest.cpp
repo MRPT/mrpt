@@ -13,7 +13,7 @@
 */
 
 #include <gtest/gtest.h>
-#include <mrpt/config.h>
+#include <mrpt/containers/config.h>
 #include <mrpt/poses/Lie/SE.h>
 #include <mrpt/poses/sensor_poses.h>
 

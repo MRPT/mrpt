@@ -31,7 +31,7 @@ namespace mrpt::math
 
 /** Read operator from a CStream. The format is compatible with that of CMatrixF
  * & CMatrixD */
-template <size_t NROWS, size_t NCOLS>
+template <mrpt::math::matrix_dim_t NROWS, mrpt::math::matrix_dim_t NCOLS>
 mrpt::serialization::CArchive& operator>>(
     mrpt::serialization::CArchive& in, CMatrixFixed<float, NROWS, NCOLS>& M)
 {
@@ -40,14 +40,15 @@ mrpt::serialization::CArchive& operator>>(
   ASSERTMSG_(
       M.cols() == aux.cols() && M.rows() == aux.rows(),
       format(
-          "Size mismatch: deserialized is %ux%u, expected is %ux%u", (unsigned)aux.rows(),
-          (unsigned)aux.cols(), (unsigned)NROWS, (unsigned)NCOLS));
+          "Size mismatch: deserialized is %ux%u, expected is %ux%u",
+          static_cast<unsigned>(aux.rows()), static_cast<unsigned>(aux.cols()),
+          static_cast<unsigned>(NROWS), static_cast<unsigned>(NCOLS)));
   M = aux;
   return in;
 }
 /** Read operator from a CStream. The format is compatible with that of CMatrixF
  * & CMatrixD */
-template <size_t NROWS, size_t NCOLS>
+template <mrpt::math::matrix_dim_t NROWS, mrpt::math::matrix_dim_t NCOLS>
 mrpt::serialization::CArchive& operator>>(
     mrpt::serialization::CArchive& in, CMatrixFixed<double, NROWS, NCOLS>& M)
 {
@@ -56,15 +57,16 @@ mrpt::serialization::CArchive& operator>>(
   ASSERTMSG_(
       M.cols() == aux.cols() && M.rows() == aux.rows(),
       format(
-          "Size mismatch: deserialized is %ux%u, expected is %ux%u", (unsigned)aux.rows(),
-          (unsigned)aux.cols(), (unsigned)NROWS, (unsigned)NCOLS));
+          "Size mismatch: deserialized is %ux%u, expected is %ux%u",
+          static_cast<unsigned>(aux.rows()), static_cast<unsigned>(aux.cols()),
+          static_cast<unsigned>(NROWS), static_cast<unsigned>(NCOLS)));
   M = aux;
   return in;
 }
 
 /** Write operator for writing into a CStream. The format is compatible with
  * that of CMatrixF & CMatrixD */
-template <size_t NROWS, size_t NCOLS>
+template <mrpt::math::matrix_dim_t NROWS, mrpt::math::matrix_dim_t NCOLS>
 mrpt::serialization::CArchive& operator<<(
     mrpt::serialization::CArchive& out, const CMatrixFixed<float, NROWS, NCOLS>& M)
 {
@@ -75,7 +77,7 @@ mrpt::serialization::CArchive& operator<<(
 }
 /** Write operator for writing into a CStream. The format is compatible with
  * that of CMatrixF & CMatrixD */
-template <size_t NROWS, size_t NCOLS>
+template <mrpt::math::matrix_dim_t NROWS, mrpt::math::matrix_dim_t NCOLS>
 mrpt::serialization::CArchive& operator<<(
     mrpt::serialization::CArchive& out, const CMatrixFixed<double, NROWS, NCOLS>& M)
 {
@@ -97,7 +99,10 @@ void deserializeSymmetricMatrixFrom(MAT& m, mrpt::serialization::CArchive& in)
 {
   ASSERT_EQUAL_(m.rows(), m.cols());
   auto N = m.cols();
-  for (decltype(N) i = 0; i < N; i++) in >> m(i, i);
+  for (decltype(N) i = 0; i < N; i++)
+  {
+    in >> m(i, i);
+  }
   for (decltype(N) r = 0; r < N - 1; r++)
   {
     for (decltype(N) c = r + 1; c < N; c++)
@@ -116,9 +121,17 @@ void serializeSymmetricMatrixTo(MAT& m, mrpt::serialization::CArchive& out)
 {
   ASSERT_EQUAL_(m.rows(), m.cols());
   auto N = m.cols();
-  for (decltype(N) i = 0; i < N; i++) out << m(i, i);
+  for (decltype(N) i = 0; i < N; i++)
+  {
+    out << m(i, i);
+  }
   for (decltype(N) r = 0; r < N - 1; r++)
-    for (decltype(N) c = r + 1; c < N; c++) out << m(r, c);
+  {
+    for (decltype(N) c = r + 1; c < N; c++)
+    {
+      out << m(r, c);
+    }
+  }
 }
 
 /** @} */  // end MRPT matrices stream operators

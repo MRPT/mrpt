@@ -131,6 +131,10 @@ set(LIB_PUBLIC_HDRS
   include/mrpt/poses/CPose3DQuatPDF.h
 )
 
+if (BUILD_TESTING)
+  find_package(mrpt_io REQUIRED) # for unit tests
+endif()
+
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SRCS} ${LIB_PUBLIC_HDRS}
@@ -140,6 +144,8 @@ mrpt_add_library(
   CMAKE_DEPENDENCIES
     mrpt_bayes
   # Other imported targets:
+  UNITTEST_LINK_LIBRARIES
+    mrpt::mrpt_io
 )
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE
@@ -148,7 +154,6 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     <memory>
     <mrpt/poses/CPose3D.h>
 )
-
 
 # Python wrapper:
 mrpt_add_python_module(poses

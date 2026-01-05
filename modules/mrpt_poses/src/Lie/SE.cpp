@@ -136,7 +136,7 @@ SE<3>::tang2mat_jacob SE<3>::jacob_dAexpeD_de(const CPose3D& A, const CPose3D& D
 }
 
 void SE<3>::jacob_dDinvP1invP2_de1e2(
-    const CPose3D& Dinv,
+    const CPose3D& Dinv,  // NOLINT
     const CPose3D& P1,
     const CPose3D& P2,
     mrpt::optional_ref<matrix_TxT> df_de1,
@@ -172,7 +172,7 @@ void SE<3>::jacob_dDinvP1invP2_de1e2(
   }
 }
 
-SE<3>::matrix_MxM SE<3>::jacob_dAB_dA(const SE<3>::type& A, const SE<3>::type& B)
+SE<3>::matrix_MxM SE<3>::jacob_dAB_dA(const SE<3>::type& A, const SE<3>::type& B)  // NOLINT
 {
   using namespace mrpt::math;
 
@@ -186,12 +186,15 @@ SE<3>::matrix_MxM SE<3>::jacob_dAB_dA(const SE<3>::type& A, const SE<3>::type& B
   return J;
 }
 
-SE<3>::matrix_MxM SE<3>::jacob_dAB_dB(const SE<3>::type& A, const SE<3>::type& B)
+SE<3>::matrix_MxM SE<3>::jacob_dAB_dB(const SE<3>::type& A, const SE<3>::type& B)  // NOLINT
 {
   matrix_MxM J = matrix_MxM::Zero();
   // J_wrt_B = kron(eye(3),A_rot);
   const auto& AR = A.getRotationMatrix();
-  for (int c = 0; c < 4; c++) J.block<3, 3>(c * 3, c * 3) = AR.asEigen();
+  for (int c = 0; c < 4; c++)
+  {
+    J.block<3, 3>(c * 3, c * 3) = AR.asEigen();
+  }
   return J;
 }
 
@@ -229,7 +232,7 @@ SE<2>::type SE<2>::fromManifoldVector(const SE<2>::manifold_vector& v)
   return type(v[0], v[1], mrpt::math::wrapToPi(v[2]));
 }
 
-SE<2>::matrix_MxM SE<2>::jacob_dAB_dA(const SE<2>::type& A, const SE<2>::type& B)
+SE<2>::matrix_MxM SE<2>::jacob_dAB_dA(const SE<2>::type& A, const SE<2>::type& B)  // NOLINT
 {
   const auto bx = B.x(), by = B.y();
   const auto cphia = A.phi_cos(), sphia = A.phi_sin();
@@ -240,7 +243,7 @@ SE<2>::matrix_MxM SE<2>::jacob_dAB_dA(const SE<2>::type& A, const SE<2>::type& B
   return J;
 }
 
-SE<2>::matrix_MxM SE<2>::jacob_dAB_dB(const SE<2>::type& A, const SE<2>::type& B)
+SE<2>::matrix_MxM SE<2>::jacob_dAB_dB(const SE<2>::type& A, const SE<2>::type& B)  // NOLINT
 {
   matrix_MxM J = matrix_MxM::Identity();
   const auto cphia = A.phi_cos(), sphia = A.phi_sin();
@@ -265,7 +268,7 @@ SE<2>::tang2mat_jacob SE<2>::jacob_dDexpe_de(const SE<2>::type& D)
 }
 
 void SE<2>::jacob_dDinvP1invP2_de1e2(
-    const CPose2D& Dinv,
+    const CPose2D& Dinv,  // NOLINT
     const CPose2D& P1,
     const CPose2D& P2,
     mrpt::optional_ref<matrix_TxT> df_de1,
