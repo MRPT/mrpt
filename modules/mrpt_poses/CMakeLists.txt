@@ -17,66 +17,67 @@ find_package(mrpt_bayes REQUIRED)
 
 # define lib:
 set(LIB_SRCS
-  src/CPoint2D.cpp
-  src/CPoint2DPDF.cpp
-  src/CPoint2DPDFGaussian.cpp
-  src/CPoint2DPDF_unittest.cpp
-  src/CPoint3D.cpp
-  src/CPoint.cpp
-  src/CPointPDF.cpp
-  src/CPointPDFGaussian.cpp
-  src/CPointPDFParticles.cpp
   src/CPointPDFSOG.cpp
-  src/CPoint_unittest.cpp
-  src/CPose2D.cpp
-  src/CPose2DInterpolator.cpp
-  src/CPose2DInterpolator_unittest.cpp
-  src/CPose3D.cpp
-  src/CPose3DInterpolator.cpp
-  src/CPose3DInterpolator_unittest.cpp
-  src/CPose3DPDF.cpp
-  src/CPose3DPDFGaussian.cpp
-  src/CPose3DPDFGaussianInf.cpp
-  src/CPose3DPDFGaussian_unittest.cpp
-  src/CPose3DPDFGrid.cpp
-  src/CPose3DPDFGrid_unittest.cpp
-  src/CPose3DPDFParticles.cpp
-  src/CPose3DPDFSOG.cpp
-  src/CPose3DQuat.cpp
-  src/CPose3DQuatPDF.cpp
-  src/CPose3DQuatPDFGaussian.cpp
-  src/CPose3DQuatPDFGaussianInf.cpp
-  src/CPose3DQuatPDFGaussian_unittest.cpp
-  src/CPose3DQuat_unittest.cpp
-  src/CPose3D_unittest.cpp
-  src/CPoseInterpolatorBase.hpp
-  src/CPosePDF.cpp
-  src/CPosePDFGaussian.cpp
-  src/CPosePDFGaussianInf.cpp
-  src/CPosePDFGaussian_unittest.cpp
-  src/CPosePDFGrid.cpp
-  src/CPosePDFGrid_unittest.cpp
   src/CPosePDFParticles.cpp
-  src/CPosePDFSOG.cpp
-  src/CPoseRandomSampler.cpp
-  src/CPoseRandomSampler_unittest.cpp
-  src/CPoses2DSequence.cpp
-  src/CPoses3DSequence.cpp
-  src/CQuaternion_unittest.cpp
-  src/CRobot2DPoseEstimator.cpp
-  src/CRobot2DPoseEstimator_unittest.cpp
-  src/CSchemeArchive_unittest.cpp
+  src/CPose2DInterpolator.cpp
+  src/sensor_poses.cpp
+  src/CPose3DPDFSOG.cpp
+  src/CPose3DPDFGaussian.cpp
+  src/CPose3DQuat.cpp
+  src/CPoint2D.cpp
   src/FrameTransformer.cpp
-  src/FrameTransformer_unittest.cpp
-  src/Lie/LieTraits_unittest.cpp
+  src/CPose3DPDFParticles.cpp
+  src/CPoseRandomSampler.cpp
+  src/CPointPDFParticles.cpp
+  src/CRobot2DPoseEstimator.cpp
+  src/CPoseInterpolatorBase.hpp
+  src/SO_SE_average.cpp
+  src/CPointPDFGaussian.cpp
+  src/CPosePDFGaussian.cpp
+  src/CPosePDF.cpp
+  src/CPoint.cpp
+  src/CPose2D.cpp
+  src/CPose3D.cpp
+  src/CPose3DPDFGaussianInf.cpp
+  src/CPoint2DPDF.cpp
+  src/CPose3DPDFGrid.cpp
+  src/CPose3DPDF.cpp
+  src/CPointPDF.cpp
+  src/CPose3DQuatPDF.cpp
+  src/registerAllClasses.cpp
+  src/CPosePDFGaussianInf.cpp
+  src/CPose3DQuatPDFGaussianInf.cpp
+  src/CPoint3D.cpp
+  src/CPose3DInterpolator.cpp
+  src/CPoses2DSequence.cpp
+  src/CPose3DQuatPDFGaussian.cpp
   src/Lie/SE.cpp
   src/Lie/SO.cpp
-  src/matrix_serialization_unittest.cpp
-  src/registerAllClasses.cpp
-  src/sensor_poses.cpp
-  src/sensor_poses_unittest.cpp
-  src/SO_SE_average.cpp
-  src/SO_SE_average_unittest.cpp
+  src/CPoint2DPDFGaussian.cpp
+  src/CPoses3DSequence.cpp
+  src/CPosePDFSOG.cpp
+  src/CPosePDFGrid.cpp
+  # tests
+  tests/CPosePDFGrid_unittest.cpp
+  tests/CQuaternion_unittest.cpp
+  tests/CPose3D_unittest.cpp
+  tests/CPoseRandomSampler_unittest.cpp
+  tests/CRobot2DPoseEstimator_unittest.cpp
+  tests/FrameTransformer_unittest.cpp
+  tests/CPoint_unittest.cpp
+  tests/CPose3DPDFGrid_unittest.cpp
+  tests/CPose2DInterpolator_unittest.cpp
+  tests/SO_SE_average_unittest.cpp
+  tests/CPoint2DPDF_unittest.cpp
+  tests/CPose3DQuat_unittest.cpp
+  tests/CPose3DInterpolator_unittest.cpp
+  tests/CPosePDFGaussian_unittest.cpp
+  tests/CSchemeArchive_unittest.cpp
+  tests/CPose3DQuatPDFGaussian_unittest.cpp
+  tests/sensor_poses_unittest.cpp
+  tests/CPose3DPDFGaussian_unittest.cpp
+  tests/matrix_serialization_unittest.cpp
+  tests/Lie_unittest.cpp
 )
 
 set(LIB_PUBLIC_HDRS
