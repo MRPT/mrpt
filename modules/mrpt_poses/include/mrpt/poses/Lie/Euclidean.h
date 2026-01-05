@@ -29,7 +29,7 @@ struct Euclidean;
 template <unsigned int N>
 struct EuclideanBase
 {
-  constexpr static size_t DOFs = N;
+  constexpr static mrpt::math::matrix_dim_t DOFs = N;
   using tangent_vector = mrpt::math::CVectorFixedDouble<DOFs>;
 };
 

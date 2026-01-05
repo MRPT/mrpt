@@ -16,10 +16,10 @@ find_package(mrpt_common REQUIRED)
 
 # define lib:
   set(LIB_SRCS
-  src/typename_unittest.cpp
-  src/enumtype_unittest.cpp
-  src/static_string_unittest.cpp
-  src/xassert_unittest.cpp
+  tests/typename_unittest.cpp
+  tests/enumtype_unittest.cpp
+  tests/static_string_unittest.cpp
+  tests/xassert_unittest.cpp
 )
 
 set(LIB_PUBLIC_HDRS

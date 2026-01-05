@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "maps-precomp.h"  // Precomp header
-//
 #include <mrpt/core/round.h>
 #include <mrpt/img/color_maps.h>
 #include <mrpt/io/CFileGZInputStream.h>

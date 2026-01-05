@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "maps-precomp.h"  // Precomp header
-//
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/config/CConfigFileBase.h>

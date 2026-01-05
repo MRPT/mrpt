@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "tfest-precomp.h"
-//
 #include <mrpt/core/initializer.h>
 #include <mrpt/tfest.h>
 #include <mrpt/tfest/registerAllClasses.h>

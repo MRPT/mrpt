@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "nav-precomp.h"  // Precomp header
-//
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/nav/reactive/CReactiveNavigationSystem.h>
 #include <mrpt/system/filesystem.h>

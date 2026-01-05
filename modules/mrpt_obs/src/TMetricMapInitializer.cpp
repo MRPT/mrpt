@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "obs-precomp.h"  // Precomp header
-//
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/serialization/CArchive.h>

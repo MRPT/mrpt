@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "maps-precomp.h"  // Precomp header
-//
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/core/SSE_macros.h>
 #include <mrpt/core/SSE_types.h>

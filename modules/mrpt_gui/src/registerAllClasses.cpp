@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "gui-precomp.h"
-//
 #include <mrpt/core/initializer.h>
 #include <mrpt/gui.h>
 #include <mrpt/gui/registerAllClasses.h>

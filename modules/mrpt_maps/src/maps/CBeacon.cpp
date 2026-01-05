@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "maps-precomp.h"  // Precomp header
-//
 #include <mrpt/maps/CBeacon.h>
 #include <mrpt/maps/CBeaconMap.h>
 #include <mrpt/math/geometry.h>

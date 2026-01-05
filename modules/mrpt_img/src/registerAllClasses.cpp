@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "img-precomp.h"
-//
 #include <mrpt/core/initializer.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/TCamera.h>

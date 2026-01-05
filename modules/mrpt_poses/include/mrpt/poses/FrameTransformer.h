@@ -51,7 +51,7 @@ enum FrameLookUpStatus
  * \ingroup poses_grp
  * \sa FrameTransformer, CPose3D
  */
-template <int DIM>
+template <size_t DIM>
 class FrameTransformerInterface
 {
  public:
@@ -63,6 +63,11 @@ class FrameTransformerInterface
 
   FrameTransformerInterface();
   virtual ~FrameTransformerInterface();
+
+  FrameTransformerInterface(const FrameTransformerInterface&) = default;
+  FrameTransformerInterface(FrameTransformerInterface&&) = default;
+  FrameTransformerInterface& operator=(const FrameTransformerInterface&) = default;
+  FrameTransformerInterface& operator=(FrameTransformerInterface&&) = default;
 
   /** Publish a time-stampped transform between two frames */
   virtual void sendTransform(
@@ -92,7 +97,7 @@ class FrameTransformerInterface
  * \ingroup poses_grp
  * \sa FrameTransformerInterface
  */
-template <int DIM>
+template <size_t DIM>
 class FrameTransformer : public FrameTransformerInterface<DIM>
 {
  public:
@@ -100,6 +105,11 @@ class FrameTransformer : public FrameTransformerInterface<DIM>
 
   FrameTransformer();
   ~FrameTransformer() override;
+
+  FrameTransformer(const FrameTransformer&) = default;
+  FrameTransformer(FrameTransformer&&) = default;
+  FrameTransformer& operator=(const FrameTransformer&) = default;
+  FrameTransformer& operator=(FrameTransformer&&) = default;
 
   // See base docs
   void sendTransform(
@@ -140,13 +150,13 @@ class FrameTransformer : public FrameTransformerInterface<DIM>
   {
     // TODO: CPose{2,3}DInterpolator?
     typename base_t::pose_t pose;
-    mrpt::system::TTimeStamp timestamp;
+    mrpt::system::TTimeStamp timestamp{};
 
     TF_TreeEdge(const typename base_t::pose_t& pose_, const mrpt::system::TTimeStamp& timestamp_) :
         pose(pose_), timestamp(timestamp_)
     {
     }
-    TF_TreeEdge() : timestamp(INVALID_TIMESTAMP) {}
+    TF_TreeEdge() = default;
   };
 
   // map: [parent] -> { [child] -> relPoseChildWRTParent }

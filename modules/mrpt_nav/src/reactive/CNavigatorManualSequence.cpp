@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "nav-precomp.h"  // Precomp header
-//
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>

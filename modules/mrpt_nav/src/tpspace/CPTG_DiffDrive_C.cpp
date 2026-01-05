@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "nav-precomp.h"  // Precomp header
-//
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_C.h>
 #include <mrpt/serialization/CArchive.h>

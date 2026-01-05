@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "nav-precomp.h"  // Precomp header
-//
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/nav/reactive/CWaypointsNavigator.h>

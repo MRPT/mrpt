@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "maps-precomp.h"  // Precomp header
-//
 #include <mrpt/core/bits_mem.h>
 #include <mrpt/maps/CPointsMapXYZI.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>

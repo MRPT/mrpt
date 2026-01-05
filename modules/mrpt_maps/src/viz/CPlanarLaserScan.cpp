@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "maps-precomp.h"  // Precomp header
-//
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/viz/CPlanarLaserScan.h>
 

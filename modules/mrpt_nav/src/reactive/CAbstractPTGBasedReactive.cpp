@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "nav-precomp.h"  // Precomp header
-//
 #include <mrpt/containers/copy_container_typecasting.h>
 #include <mrpt/containers/printf_vector.h>
 #include <mrpt/core/lock_helper.h>

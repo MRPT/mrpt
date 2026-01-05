@@ -20,19 +20,18 @@ include(./cmake/find_libfyaml.cmake REQUIRED)    # Defines embedded version of l
 
 # define lib:
 set(LIB_SRCS
-  src/ts_hash_map_unittest.cpp
-  src/vector_with_small_size_optimization_unittest.cpp
-  src/poly_ptr_unittest.cpp
-  src/containers-precomp.cpp
   src/ts_hash_map.cpp
-  src/bimap_unittest.cpp
-  src/CDynamicGrid_unittest.cpp
-  src/circularbuffer_unittest.cpp
-  src/yaml_unittest.cpp
-  src/visit_each_unittest.cpp
   src/yaml.cpp
   src/CDynamicGrid.cpp
-  src/find_closest_unittest.cpp
+  tests/ts_hash_map_unittest.cpp
+  tests/vector_with_small_size_optimization_unittest.cpp
+  tests/poly_ptr_unittest.cpp
+  tests/bimap_unittest.cpp
+  tests/CDynamicGrid_unittest.cpp
+  tests/circularbuffer_unittest.cpp
+  tests/yaml_unittest.cpp
+  tests/visit_each_unittest.cpp
+  tests/find_closest_unittest.cpp
 )
 
 set(LIB_PUBLIC_HDRS

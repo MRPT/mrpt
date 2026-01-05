@@ -14,6 +14,7 @@
 #pragma once
 
 #include <mrpt/core/Clock.h>
+#include <mrpt/math/math_frwds.h>
 #include <mrpt/poses/Lie/Euclidean.h>
 #include <mrpt/poses/Lie/SE.h>
 #include <mrpt/poses/poses_frwds.h>
@@ -51,7 +52,7 @@ enum TInterpolatorMethod
 /** Base class for SE(2)/SE(3) interpolators. See docs for derived classes.
  * \ingroup interpolation_grp poses_grp
  */
-template <int DIM>
+template <size_t DIM>
 class CPoseInterpolatorBase
 {
  public:

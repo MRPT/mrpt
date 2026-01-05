@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "topography-precomp.h"
-//
 #include <mrpt/core/initializer.h>
 #include <mrpt/topography.h>
 #include <mrpt/topography/registerAllClasses.h>

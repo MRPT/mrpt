@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "hwdrivers-precomp.h"  // Only for precomp. headers, include all libmrpt-core headers.
-//
 #include <mrpt/hwdrivers/CStereoGrabber_Bumblebee_libdc1394.h>
 
 #include <map>

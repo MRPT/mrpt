@@ -31,11 +31,11 @@ namespace mrpt::poses::Lie
 /** Traits for SE(n), rigid-body transformations in R^n space.
  * \ingroup mrpt_poses_lie_grp
  */
-template <unsigned int n>
+template <size_t n>
 struct SE;
 
 /** Traits for SE(3), rigid-body transformations in R^3 space.
- * See indidual members for documentation, or \cite blanco_se3_tutorial for a
+ * See invidual members for documentation, or \cite blanco_se3_tutorial for a
  * general overview.
  * \ingroup mrpt_poses_lie_grp
  */
@@ -46,7 +46,7 @@ struct SE<3>
   constexpr static size_t DOFs = 6;
 
   /** Dimensionality of the matrix manifold (3x4=12 upper part of the 4x4) */
-  constexpr static size_t MANIFOLD_DIM = 3 * 4;
+  constexpr static size_t MANIFOLD_DIM = 3UL * 4UL;
 
   using tangent_vector = mrpt::math::CVectorFixedDouble<DOFs>;
   using manifold_vector = mrpt::math::CVectorFixedDouble<MANIFOLD_DIM>;

@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "nav-precomp.h"  // Precomp header
-//
 #include <mrpt/nav/planners/PlannerRRT_SE2_TPS.h>
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
 #include <mrpt/random.h>

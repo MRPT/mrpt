@@ -36,29 +36,29 @@ include(./cmake/script_matlab.cmake REQUIRED)      # Support for Matlab MEX func
 
 # define lib:
 set(LIB_SRCS
-  src/constexpr_for_unittest.cpp
-  src/cpu_unittest.cpp
-  src/bits_math_unittest.cpp
-  src/reverse_bytes_unittest.cpp
   src/Clock.cpp
-  src/format_unittest.cpp
   src/demangle.cpp
   src/format.cpp
   src/exceptions.cpp
-  src/WorkerThreadsPool_unittest.cpp
   src/cpu.cpp
-  src/exception_unittest.cpp
   src/reverse_bytes.cpp
   src/backtrace.cpp
-  src/aligned_malloc_unittest.cpp
-  src/Clock_unittest.cpp
-  src/lock_helper_unittest.cpp
-  src/from_string_unittest.cpp
   src/aligned_malloc.cpp
   src/WorkerThreadsPool.cpp
-  src/is_defined_unittest.cpp
-  src/round_unittest.cpp
   src/winerror2str.cpp
+  tests/constexpr_for_unittest.cpp
+  tests/cpu_unittest.cpp
+  tests/bits_math_unittest.cpp
+  tests/reverse_bytes_unittest.cpp
+  tests/format_unittest.cpp
+  tests/WorkerThreadsPool_unittest.cpp
+  tests/exception_unittest.cpp
+  tests/aligned_malloc_unittest.cpp
+  tests/Clock_unittest.cpp
+  tests/lock_helper_unittest.cpp
+  tests/from_string_unittest.cpp
+  tests/is_defined_unittest.cpp
+  tests/round_unittest.cpp
 )
 
 set(LIB_PUBLIC_HDRS

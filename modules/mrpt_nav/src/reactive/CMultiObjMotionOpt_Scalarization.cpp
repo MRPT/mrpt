@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "nav-precomp.h"  // Precomp header
-//
 #include <mrpt/nav/reactive/CMultiObjMotionOpt_Scalarization.h>
 
 using namespace mrpt::nav;
