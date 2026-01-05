@@ -21,6 +21,8 @@
   <depend>mrpt_serialization</depend>
   <depend>mrpt_random</depend>
 
+  <test_depend>mrpt_io</test_depend>
+
   <export>
     <build_type>cmake</build_type>
   </export>
