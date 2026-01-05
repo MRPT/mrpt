@@ -240,7 +240,10 @@ void CPose3DPDFGaussian::serializeFrom(mrpt::serialization::CArchive& in, uint8_
 
 void CPose3DPDFGaussian::copyFrom(const CPose3DPDF& o)
 {
-  if (this == &o) return;  // It may be used sometimes
+  if (this == &o)
+  {
+    return;  // It may be used sometimes
+  }
 
   // Convert to gaussian pdf:
   o.getCovarianceAndMean(cov, mean);
