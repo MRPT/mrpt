@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "nav-precomp.h"  // Precomp header
-//
 #include <mrpt/nav/reactive/TWaypoint.h>
 #include <mrpt/viz/CArrow.h>
 #include <mrpt/viz/CDisk.h>

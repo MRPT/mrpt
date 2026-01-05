@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "nav-precomp.h"  // Precomp header
-//
 #include <mrpt/core/WorkerThreadsPool.h>
 #include <mrpt/core/get_env.h>
 #include <mrpt/io/CFileGZInputStream.h>

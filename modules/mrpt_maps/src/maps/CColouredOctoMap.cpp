@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "maps-precomp.h"  // Precomp header
-//
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/maps/CColouredOctoMap.h>
 #include <mrpt/maps/CPointsMap.h>

@@ -17,7 +17,7 @@ find_package(mrpt_system REQUIRED)
 # define lib:
 set(LIB_SRCS
   src/CRuntimeCompiledExpression.cpp
-  src/CRuntimeCompiledExpression_unittest.cpp
+  tests/CRuntimeCompiledExpression_unittest.cpp
 )
 
 # Use system exprtk library?

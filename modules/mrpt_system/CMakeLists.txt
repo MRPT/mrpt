@@ -33,17 +33,10 @@ set(LIB_SRCS
   src/hyperlink.cpp
   src/os.cpp
   src/string_utils.cpp
-  src/CTimeLogger_unittest.cpp
   src/filesystem.cpp
-  src/string_utils_unittest.cpp
-  src/filesystem_unittest.cpp
   src/CFileSystemWatcher.cpp
-  src/thread_name_unittest.cpp
   src/md5.cpp
-  src/datetime_unittest.cpp
   src/COutputLogger.cpp
-  src/base64_unittest.cpp
-  src/crc_unittest.cpp
   src/memory.cpp
   src/base64.cpp
   src/CTimeLogger.cpp
@@ -53,6 +46,13 @@ set(LIB_SRCS
   src/datetime.cpp
   src/CObserver.cpp
   src/CDirectoryExplorer.cpp
+  tests/CTimeLogger_unittest.cpp
+  tests/string_utils_unittest.cpp
+  tests/filesystem_unittest.cpp
+  tests/thread_name_unittest.cpp
+  tests/datetime_unittest.cpp
+  tests/base64_unittest.cpp
+  tests/crc_unittest.cpp
 )
 
 set(LIB_PUBLIC_HDRS

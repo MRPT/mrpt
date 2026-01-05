@@ -47,22 +47,23 @@ endif()
 
 # define lib:
 set(LIB_SRCS
-  src/CStream.cpp
-  src/CMemoryStream.cpp
-  src/CMemoryStream_unittest.cpp
-  src/CFileOutputStream.cpp
-  src/vector_loadsave_unittest.cpp
-  src/CPipe.cpp
-  src/CTextFileLinesParser.cpp
-  src/CTextFileLinesParser_unittest.cpp
-  src/CFileStream.cpp
-  src/CFileGZOutputStream.cpp
-  src/zip.cpp
-  src/CFileInputStream.cpp
-  src/zip_unittest.cpp
-  src/lazy_load_path.cpp
   src/CFileGZInputStream.cpp
+  src/CFileGZOutputStream.cpp
+  src/CFileInputStream.cpp
+  src/CFileOutputStream.cpp
+  src/CFileStream.cpp
+  src/CMemoryStream.cpp
+  src/CPipe.cpp
+  src/CStream.cpp
+  src/CTextFileLinesParser.cpp
+  src/lazy_load_path.cpp
   src/vector_loadsave.cpp
+  src/zip.cpp
+  tests/CMemoryStream_unittest.cpp
+  tests/CTextFileLinesParser_unittest.cpp
+  tests/sample_text_file.txt
+  tests/vector_loadsave_unittest.cpp
+  tests/zip_unittest.cpp
 )
 
 # These tests are moved to mrpt_viz since that's the lowest-level module that includes all dependencies.

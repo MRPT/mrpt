@@ -72,8 +72,6 @@ set(LIB_SRCS
   src/Lie/SE.cpp
   src/Lie/SO.cpp
   src/matrix_serialization_unittest.cpp
-  src/poses-precomp.cpp
-  src/poses-precomp.h
   src/registerAllClasses.cpp
   src/sensor_poses.cpp
   src/sensor_poses_unittest.cpp
@@ -143,6 +141,14 @@ mrpt_add_library(
     mrpt_bayes
   # Other imported targets:
 )
+
+target_precompile_headers(${PROJECT_NAME} PRIVATE
+    <vector>
+    <string>
+    <memory>
+    <mrpt/poses/CPose3D.h>
+)
+
 
 # Python wrapper:
 mrpt_add_python_module(poses

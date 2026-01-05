@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "maps-precomp.h"  // Precomp header
-//
 #include <mrpt/config.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/maps/CRandomFieldGridMap3D.h>

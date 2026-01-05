@@ -19,14 +19,14 @@ include(./cmake/script_simpleini.cmake REQUIRED)   # SimpleINI lib
 
 # define lib:
 set(LIB_SRCS
-  src/yaml2config_unittest.cpp
   src/config_parser.cpp
   src/CConfigFilePrefixer.cpp
   src/CConfigFileBase.cpp
   src/CLoadableOptions.cpp
   src/CConfigFileMemory.cpp
-  src/CConfigFileMemory_unittest.cpp
   src/CConfigFile.cpp
+  tests/yaml2config_unittest.cpp
+  tests/CConfigFileMemory_unittest.cpp
 )
 
 set(LIB_PUBLIC_HDRS

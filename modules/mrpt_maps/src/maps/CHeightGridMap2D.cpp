@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "maps-precomp.h"  // Precomp header
-//
 #include <mrpt/config/CConfigFileBase.h>  // MRPT_LOAD_CONFIG_VAR()
 #include <mrpt/img/color_maps.h>
 #include <mrpt/maps/CHeightGridMap2D.h>

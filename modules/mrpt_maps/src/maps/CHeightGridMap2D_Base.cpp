@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "maps-precomp.h"  // Precomp header
-//
 #include <mrpt/core/round.h>
 #include <mrpt/maps/CHeightGridMap2D_Base.h>
 #include <mrpt/maps/CSimplePointsMap.h>

@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "math-precomp.h"
-//
 #include <mrpt/core/initializer.h>
 #include <mrpt/math/CMatrixB.h>
 #include <mrpt/math/CMatrixD.h>

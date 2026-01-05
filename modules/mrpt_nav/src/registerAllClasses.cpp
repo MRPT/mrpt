@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "nav-precomp.h"  // Precomp header
-//
 #include <mrpt/core/initializer.h>
 #include <mrpt/nav.h>
 #include <mrpt/nav/registerAllClasses.h>

@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "nav-precomp.h"  // Precomp header
-//
 #include <mrpt/nav/holonomic/CHolonomicLogFileRecord.h>
 #include <mrpt/serialization/CArchive.h>
 

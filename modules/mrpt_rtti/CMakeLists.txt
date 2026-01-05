@@ -20,7 +20,7 @@ set(LIB_SRCS
   src/CListOfClasses.cpp
   src/CObject.cpp
   src/internal_class_registry.cpp
-  src/rtti_unittest.cpp
+  tests/rtti_unittest.cpp
 )
 
 set(LIB_PUBLIC_HDRS

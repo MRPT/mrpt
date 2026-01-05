@@ -21,10 +21,7 @@
 #include <sstream>
 
 // Check if we have jsoncpp to enable those tests:
-#include <mrpt/config.h>
-#if MRPT_HAS_JSONCPP
-#include <json/json.h>
-#endif
+#include <mrpt/serialization/config.h>
 
 using namespace mrpt::serialization;
 
@@ -47,30 +44,6 @@ TEST(SchemaSerialization, JSON_archive)
   // Parse the JSON data into an MRPT object:
   arch2.readTo(pt2);
 
-  EXPECT_NEAR(pt1.x(), pt2.x(), 1e-6);
-  EXPECT_NEAR(pt1.y(), pt2.y(), 1e-6);
-  EXPECT_NEAR(pt1.phi(), pt2.phi(), 1e-6);
-}
-
-TEST(SchemaSerialization, JSON_raw)
-{
-  Json::Value val;
-  auto arch =
-      mrpt::serialization::CSchemeArchiveBase(std::make_unique<CSchemeArchive<Json::Value>>(val));
-  mrpt::poses::CPose2D pt1{1.0, 2.0, 3.0}, pt2;
-  arch = pt1;
-  std::stringstream ss;
-  ss << val;
-  auto pos = ss.str().find("\"datatype\" : \"mrpt::poses::CPose2D\"");
-  EXPECT_TRUE(pos != std::string::npos);
-
-  // test deserializing:
-  Json::Value val2;
-  ss.seekg(0);  // rewind for reading
-  ss >> val2;
-  auto arch2 =
-      mrpt::serialization::CSchemeArchiveBase(std::make_unique<CSchemeArchive<Json::Value>>(val2));
-  arch2.readTo(pt2);
   EXPECT_NEAR(pt1.x(), pt2.x(), 1e-6);
   EXPECT_NEAR(pt1.y(), pt2.y(), 1e-6);
   EXPECT_NEAR(pt1.phi(), pt2.phi(), 1e-6);

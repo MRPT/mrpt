@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "maps-precomp.h"  // Precomp header
-//
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/customizable_obs_viz.h>

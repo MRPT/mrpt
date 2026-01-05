@@ -20,8 +20,7 @@ find_package(mrpt_common REQUIRED)
 # define lib:
 set(LIB_SRCS
   src/RandomGenerator.cpp
-  src/random_unittest.cpp
-  src/random-precomp.cpp
+  tests/random_unittest.cpp
 )
 
 set(LIB_PUBLIC_HDRS

@@ -31,47 +31,37 @@ endif()
 set(LIB_SRCS
   src/A_MatrixBase_instantiate_CMatrixDynamic_d.cpp
   src/A_MatrixBase_instantiate_CMatrixDynamic_f.cpp
-  src/CAtan2LookUpTable_unittest.cpp
   src/CAtan2LookUpTable.cpp
   src/CHistogram.cpp
-  src/CLevenbergMarquardt_unittest.cpp
   src/CMatrixB.cpp
   src/CMatrixD.cpp
-  src/CMatrixDynamic_unittest.cpp
   src/CMatrixDynamic.cpp
   src/CMatrixF.cpp
-  src/CMatrixFixed_unittest.cpp
+  src/CMatrixFixed_impl.h
   src/CMatrixFixed.cpp
-  src/container_ops_unittest.cpp
   src/CPolygon.cpp
   src/CSplineInterpolator1D.cpp
   src/CVectorDynamic.cpp
   src/CVectorFixed.cpp
-  src/distributions_unittest.cpp
-  src/EigenAlignment_unittest.cpp
   src/filters.cpp
   src/fourier.cpp
-  src/fresnel_unittest.cpp
   src/fresnel.cpp
-  src/geometry_unittest.cpp
   src/geometry.cpp
-  src/KDTreeCapable_unittest.cpp
   src/kmeans.cpp
   src/kmeans++/KMeans.cpp
+  src/kmeans++/KMeans.h
   src/kmeans++/KmTree.cpp
+  src/kmeans++/KmTree.h
   src/kmeans++/KmUtils.cpp
+  src/kmeans++/KmUtils.h
+  src/kmeans++/README.txt
   src/math.cpp
-  src/matrix_ops_unittest.cpp
-  src/matrix_ops1_unittest.cpp
-  src/matrix_ops2_unittest.cpp
-  src/matrix_ops3_unittest.cpp
-  src/matrix_ops4_unittest.cpp
-  src/matrix_ops5_unittest.cpp
-  src/matrix_yaml_unittest.cpp
+  src/MatrixBase_impl.h
   src/MatrixBase_instantiate_CMatrixFixed_22_d.cpp
   src/MatrixBase_instantiate_CMatrixFixed_22_f.cpp
   src/MatrixBase_instantiate_CMatrixFixed_33_d.cpp
   src/MatrixBase_instantiate_CMatrixFixed_33_f.cpp
+  src/MatrixVectorBase_impl.h
   src/MatrixVectorBase_instantiate_CMatrixDynamic_d.cpp
   src/MatrixVectorBase_instantiate_CMatrixDynamic_f.cpp
   src/MatrixVectorBase_instantiate_CMatrixDynamic_ints.cpp
@@ -79,23 +69,19 @@ set(LIB_SRCS
   src/MatrixVectorBase_instantiate_CVectorDynamic.cpp
   src/MatrixVectorBase_instantiate_CVectorFixed.cpp
   src/model_search.cpp
-  src/poly_roots_unittest.cpp
   src/poly_roots.cpp
+  src/polygons_utils.h
   src/ransac_applications.cpp
   src/registerAllClasses.cpp
-  src/robust_kernels_unittest.cpp
   src/S_MatrixBase_instantiate_CMatrixFixed_66_d.cpp
   src/S_MatrixBase_instantiate_CMatrixFixed_66_f.cpp
   src/S_MatrixBase_instantiate_CMatrixFixed_77_d.cpp
-  src/slerp_unittest.cpp
   src/slerp.cpp
-  src/TBoundingBox_unittest.cpp
   src/TBoundingBox.cpp
   src/TLine2D.cpp
   src/TLine3D.cpp
   src/TObject2D.cpp
   src/TObject3D.cpp
-  src/TOrientedBox_unittest.cpp
   src/TOrientedBox.cpp
   src/TPlane.cpp
   src/TPoint2D.cpp
@@ -106,14 +92,36 @@ set(LIB_SRCS
   src/TPose2D.cpp
   src/TPose3D.cpp
   src/TPose3DQuat.cpp
-  src/TPoseOrPoint_unittest.cpp
   src/TSegment2D.cpp
   src/TSegment3D.cpp
   src/Twist2D.cpp
   src/Twist3D.cpp
-  src/wrap2pi_unittest.cpp
   src/Z_MatrixBase_instantiate_CMatrixFixed_44_d.cpp
   src/Z_MatrixBase_instantiate_CMatrixFixed_44_f.cpp
+  tests/CAtan2LookUpTable_unittest.cpp
+  tests/CLevenbergMarquardt_unittest.cpp
+  tests/CMatrixDynamic_unittest.cpp
+  tests/CMatrixFixed_unittest.cpp
+  tests/container_ops_unittest.cpp
+  tests/distributions_unittest.cpp
+  tests/EigenAlignment_unittest.cpp
+  tests/fresnel_unittest.cpp
+  tests/geometry_unittest.cpp
+  tests/KDTreeCapable_unittest.cpp
+  tests/matrix_ops_unittest.cpp
+  tests/matrix_ops1_unittest.cpp
+  tests/matrix_ops2_unittest.cpp
+  tests/matrix_ops3_unittest.cpp
+  tests/matrix_ops4_unittest.cpp
+  tests/matrix_ops5_unittest.cpp
+  tests/matrix_yaml_unittest.cpp
+  tests/poly_roots_unittest.cpp
+  tests/robust_kernels_unittest.cpp
+  tests/slerp_unittest.cpp
+  tests/TBoundingBox_unittest.cpp
+  tests/TOrientedBox_unittest.cpp
+  tests/TPoseOrPoint_unittest.cpp
+  tests/wrap2pi_unittest.cpp
 )
 
 set(LIB_PUBLIC_HDRS

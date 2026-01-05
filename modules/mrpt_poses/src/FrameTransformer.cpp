@@ -23,9 +23,9 @@
 using namespace mrpt::poses;
 
 // ------- FrameTransformerInterface --------
-template <int DIM>
+template <size_t DIM>
 FrameTransformerInterface<DIM>::FrameTransformerInterface() = default;
-template <int DIM>
+template <size_t DIM>
 FrameTransformerInterface<DIM>::~FrameTransformerInterface() = default;
 
 namespace mrpt
@@ -39,12 +39,12 @@ template class FrameTransformerInterface<3>;
 }  // namespace mrpt
 
 // ------- FrameTransformer --------
-template <int DIM>
+template <size_t DIM>
 FrameTransformer<DIM>::FrameTransformer() = default;
-template <int DIM>
+template <size_t DIM>
 FrameTransformer<DIM>::~FrameTransformer() = default;
 
-template <int DIM>
+template <size_t DIM>
 void FrameTransformer<DIM>::sendTransform(
     const std::string& parent_frame,
     const std::string& child_frame,
@@ -58,7 +58,7 @@ void FrameTransformer<DIM>::sendTransform(
 // We dont need to replicate the full functionality of ROS tf, though... just
 // what we really need.
 
-template <int DIM>
+template <size_t DIM>
 FrameLookUpStatus FrameTransformer<DIM>::lookupTransform(
     const std::string& target_frame,
     const std::string& source_frame,

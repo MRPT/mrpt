@@ -12,9 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "maps-precomp.h"  // Precomp header
-//
-
 // Force size_x being a multiple of 16 cells
 //#define		ROWSIZE_MULTIPLE_16
 
