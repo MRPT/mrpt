@@ -28,7 +28,8 @@ namespace mrpt::tfest
  */
 struct TPotentialMatch
 {
-  size_t idx_this{0}, idx_other{0};
+  size_t idx_this = 0;
+  size_t idx_other = 0;
 };
 
 using TFunctorCheckPotentialMatch = std::function<bool(const TPotentialMatch&)>;

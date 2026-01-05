@@ -26,6 +26,10 @@
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/CVectorFixed.h>
+#include <mrpt/math/TPoint2D.h>
+#include <mrpt/math/TPoint3D.h>
+#include <mrpt/math/TPose2D.h>
+#include <mrpt/math/TPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
 
 namespace py = pybind11;
@@ -116,4 +120,132 @@ PYBIND11_MODULE(_bindings, m)
   bind_mrpt_fixed_type<mrpt::math::CVectorFixedDouble<2>>(m, "CVectorFixedDouble2");
   bind_mrpt_fixed_type<mrpt::math::CVectorFixedDouble<3>>(m, "CVectorFixedDouble3");
   bind_mrpt_fixed_type<mrpt::math::CVectorFixedDouble<6>>(m, "CVectorFixedDouble6");
+
+  // -------------------------------------------------------------------------
+  // Lightweight pose types
+  // -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // TPoint2D
+  // -------------------------------------------------------------------------
+  py::class_<mrpt::math::TPoint2D, std::shared_ptr<mrpt::math::TPoint2D>>(m, "TPoint2D")
+      .def(py::init<>())
+      .def(py::init<double, double>())
+      .def(py::init(
+          [](const std::vector<double>& v)
+          {
+            if (v.size() != 2)
+            {
+              throw std::invalid_argument("List must have 2 elements [x, y]");
+            }
+            return std::make_shared<mrpt::math::TPoint2D>(v[0], v[1]);
+          }))
+      .def_readwrite("x", &mrpt::math::TPoint2D::x)
+      .def_readwrite("y", &mrpt::math::TPoint2D::y)
+      .def("cast_float", [](const mrpt::math::TPoint2D& p) { return p.cast<float>(); })
+      .def("__repr__", [](const mrpt::math::TPoint2D& p) { return p.asString(); });
+
+  // -------------------------------------------------------------------------
+  // TPoint3D
+  // -------------------------------------------------------------------------
+  py::class_<mrpt::math::TPoint3D, std::shared_ptr<mrpt::math::TPoint3D>>(m, "TPoint3D")
+      .def(py::init<>())
+      .def(py::init<double, double, double>())
+      .def(py::init(
+          [](const std::vector<double>& v)
+          {
+            if (v.size() != 3)
+            {
+              throw std::invalid_argument("List must have 3 elements [x, y, z]");
+            }
+            return std::make_shared<mrpt::math::TPoint3D>(v[0], v[1], v[2]);
+          }))
+      .def_readwrite("x", &mrpt::math::TPoint3D::x)
+      .def_readwrite("y", &mrpt::math::TPoint3D::y)
+      .def_readwrite("z", &mrpt::math::TPoint3D::z)
+      .def("cast_float", [](const mrpt::math::TPoint3D& p) { return p.cast<float>(); })
+      .def("__repr__", [](const mrpt::math::TPoint3D& p) { return p.asString(); });
+
+  // -------------------------------------------------------------------------
+  // TPoint2Df
+  // -------------------------------------------------------------------------
+  py::class_<mrpt::math::TPoint2Df, std::shared_ptr<mrpt::math::TPoint2Df>>(m, "TPoint2Df")
+      .def(py::init<>())
+      .def(py::init<float, float>())
+      .def(py::init(
+          [](const std::vector<float>& v)
+          {
+            if (v.size() != 2)
+            {
+              throw std::invalid_argument("List must have 2 elements [x, y]");
+            }
+            return std::make_shared<mrpt::math::TPoint2Df>(v[0], v[1]);
+          }))
+      .def_readwrite("x", &mrpt::math::TPoint2Df::x)
+      .def_readwrite("y", &mrpt::math::TPoint2Df::y)
+      .def("cast_double", [](const mrpt::math::TPoint2Df& p) { return p.cast<double>(); })
+      .def("__repr__", [](const mrpt::math::TPoint2Df& p) { return p.asString(); });
+
+  // -------------------------------------------------------------------------
+  // TPoint3Df
+  // -------------------------------------------------------------------------
+  py::class_<mrpt::math::TPoint3Df, std::shared_ptr<mrpt::math::TPoint3Df>>(m, "TPoint3Df")
+      .def(py::init<>())
+      .def(py::init<float, float, float>())
+      .def(py::init(
+          [](const std::vector<float>& v)
+          {
+            if (v.size() != 3)
+            {
+              throw std::invalid_argument("List must have 3 elements [x, y, z]");
+            }
+            return std::make_shared<mrpt::math::TPoint3Df>(v[0], v[1], v[2]);
+          }))
+      .def_readwrite("x", &mrpt::math::TPoint3Df::x)
+      .def_readwrite("y", &mrpt::math::TPoint3Df::y)
+      .def_readwrite("z", &mrpt::math::TPoint3Df::z)
+      .def("cast_double", [](const mrpt::math::TPoint3Df& p) { return p.cast<double>(); })
+      .def("__repr__", [](const mrpt::math::TPoint3Df& p) { return p.asString(); });
+
+  // -------------------------------------------------------------------------
+  // TPose2D
+  // -------------------------------------------------------------------------
+  py::class_<mrpt::math::TPose2D, std::shared_ptr<mrpt::math::TPose2D>>(m, "TPose2D")
+      .def(py::init<>())
+      .def(py::init<double, double, double>())
+      .def(py::init(
+          [](const std::vector<double>& v)
+          {
+            if (v.size() != 3)
+            {
+              throw std::invalid_argument("List must have 3 elements [x, y, phi]");
+            }
+            return std::make_shared<mrpt::math::TPose2D>(v[0], v[1], v[2]);
+          }))
+      .def_readwrite("x", &mrpt::math::TPose2D::x)
+      .def_readwrite("y", &mrpt::math::TPose2D::y)
+      .def_readwrite("phi", &mrpt::math::TPose2D::phi)
+      .def("__repr__", [](const mrpt::math::TPose2D& p) { return p.asString(); });
+
+  // -------------------------------------------------------------------------
+  // TPose3D
+  // -------------------------------------------------------------------------
+  py::class_<mrpt::math::TPose3D, std::shared_ptr<mrpt::math::TPose3D>>(m, "TPose3D")
+      .def(py::init<>())
+      .def(py::init<double, double, double, double, double, double>())
+      .def(py::init(
+          [](const std::vector<double>& v)
+          {
+            if (v.size() != 6)
+            {
+              throw std::invalid_argument("List must have 6 elements [x, y, z, yaw, pitch, roll]");
+            }
+            return std::make_shared<mrpt::math::TPose3D>(v[0], v[1], v[2], v[3], v[4], v[5]);
+          }))
+      .def_readwrite("x", &mrpt::math::TPose3D::x)
+      .def_readwrite("y", &mrpt::math::TPose3D::y)
+      .def_readwrite("z", &mrpt::math::TPose3D::z)
+      .def_readwrite("yaw", &mrpt::math::TPose3D::yaw)
+      .def_readwrite("pitch", &mrpt::math::TPose3D::pitch)
+      .def_readwrite("roll", &mrpt::math::TPose3D::roll)
+      .def("__repr__", [](const mrpt::math::TPose3D& p) { return p.asString(); });
 }

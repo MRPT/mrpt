@@ -32,10 +32,13 @@ using namespace std;
 
 //#define AVOID_MULTIPLE_CORRESPONDENCES
 
+namespace
+{
+
 // mark this pair as "selected" so it won't be picked again:
 void markAsPicked(
     const TMatchingPair& c,
-    std::vector<bool>& alreadySelectedThis,
+    std::vector<bool>& alreadySelectedThis,  // NOLINT
     std::vector<bool>& alreadySelectedOther
 #ifdef AVOID_MULTIPLE_CORRESPONDENCES
     ,
@@ -58,6 +61,8 @@ void markAsPicked(
     alreadySelectedOther[*it2] = true;
 #endif
 }
+
+}  // namespace
 
 /*---------------------------------------------------------------
 
@@ -129,14 +134,14 @@ bool tfest::se2_l2_robust(
   // Fill out 2 arrays indicating whether each element has a correspondence:
   std::vector<bool> hasCorrThis(maxThis + 1, false);
   std::vector<bool> hasCorrOther(maxOther + 1, false);
-  unsigned int howManyDifCorrs = 0;
+  unsigned int howManyDifMatches = 0;
   for (const auto& in_correspondence : in_correspondences)
   {
     if (!hasCorrThis[in_correspondence.globalIdx] && !hasCorrOther[in_correspondence.localIdx])
     {
       hasCorrThis[in_correspondence.globalIdx] = true;
       hasCorrOther[in_correspondence.localIdx] = true;
-      howManyDifCorrs++;
+      howManyDifMatches++;
     }
   }
 #ifdef DO_PROFILING
@@ -148,7 +153,7 @@ bool tfest::se2_l2_robust(
 
   // If there are less different correspondences than the minimum required,
   // quit:
-  if (howManyDifCorrs < params.ransac_minSetSize)
+  if (howManyDifMatches < params.ransac_minSetSize)
   {
     // Nothing we can do here!!! :~$
     results.transformation.clear();
@@ -199,7 +204,7 @@ bool tfest::se2_l2_robust(
   CPoint2DPDFGaussian pt_this;
 
   const double ransac_consistency_test_chi2_quantile = 0.99;
-  const double chi2_thres_dim1 = mrpt::math::chi2inv(ransac_consistency_test_chi2_quantile, 1);
+  const double chi2_threshold_dim1 = mrpt::math::chi2inv(ransac_consistency_test_chi2_quantile, 1);
 
   // -------------------------
   //		The RANSAC loop
@@ -228,8 +233,12 @@ bool tfest::se2_l2_robust(
 
   // First: Build a permutation of the correspondences to pick from it
   // sequentially:
-  std::vector<size_t> corrsIdxs(nCorrs), corrsIdxsPermutation;
-  for (size_t i = 0; i < nCorrs; i++) corrsIdxs[i] = i;
+  std::vector<size_t> corrsIdxs(nCorrs);
+  std::vector<size_t> corrsIdxsPermutation;
+  for (size_t i = 0; i < nCorrs; i++)
+  {
+    corrsIdxs[i] = i;
+  }
 
   size_t iter_idx;
   for (iter_idx = 0; iter_idx < results.ransac_iters;
@@ -280,7 +289,10 @@ bool tfest::se2_l2_robust(
       const auto& corr_j = in_correspondences[idx];
 
       // Don't pick the same features twice!
-      if (alreadySelectedThis[corr_j.globalIdx] || alreadySelectedOther[corr_j.localIdx]) continue;
+      if (alreadySelectedThis[corr_j.globalIdx] || alreadySelectedOther[corr_j.localIdx])
+      {
+        continue;
+      }
 
       // Additional user-provided filter:
       if (params.user_individual_compat_callback)
@@ -288,7 +300,10 @@ bool tfest::se2_l2_robust(
         mrpt::tfest::TPotentialMatch pm;
         pm.idx_this = corr_j.globalIdx;
         pm.idx_other = corr_j.localIdx;
-        if (!params.user_individual_compat_callback(pm)) continue;  // Skip this one!
+        if (!params.user_individual_compat_callback(pm))
+        {
+          continue;  // Skip this one!
+        }
       }
 
       if (subSet.size() < 2)
@@ -305,22 +320,20 @@ bool tfest::se2_l2_robust(
           // Consistency Test: From
 
           // Check the feasibility of this pair "idx1"-"idx2":
-          //  The distance between the pair of points in MAP1 must be
-          //  very close
-          //   to that of their correspondences in MAP2:
-          const double corrs_dist1 = mrpt::math::distanceBetweenPoints(
-              subSet[0].global.x, subSet[0].global.y, subSet[1].global.x, subSet[1].global.y);
+          // The distance between the pair of points in MAP1 must be very close to that of their
+          // correspondences in MAP2:
 
-          const double corrs_dist2 = mrpt::math::distanceBetweenPoints(
-              subSet[0].local.x, subSet[0].local.y, subSet[1].local.x, subSet[1].local.y);
+          const auto match_dist1 =
+              static_cast<double>(subSet[0].global.distanceTo(subSet[1].global));
+          const auto match_dist2 = static_cast<double>(subSet[0].local.distanceTo(subSet[1].local));
 
           // Is is a consistent possibility?
           //  We use a chi2 test (see paper for the derivation)
-          const double corrs_dist_chi2 =
-              square(square(corrs_dist1) - square(corrs_dist2)) /
-              (8.0 * square(normalizationStd) * (square(corrs_dist1) + square(corrs_dist2)));
+          const double match_dist_chi2 =
+              square(square(match_dist1) - square(match_dist2)) /
+              (8.0 * square(normalizationStd) * (square(match_dist1) + square(match_dist2)));
 
-          bool is_acceptable = (corrs_dist_chi2 < chi2_thres_dim1);
+          bool is_acceptable = (match_dist_chi2 < chi2_threshold_dim1);
 
           if (is_acceptable)
           {
@@ -332,14 +345,13 @@ bool tfest::se2_l2_robust(
             // Additional filter:
             //  If the correspondences as such the transformation
             //  has a high ambiguity, we discard it!
-            is_acceptable = (referenceEstimation.cov(2, 2) < square(DEG2RAD(5.0f)));
+            is_acceptable = (referenceEstimation.cov(2, 2) < square(DEG2RAD(5.0)));
           }
 
           if (!is_acceptable)
           {
-            // Remove this correspondence & try again with a
-            // different pair:
-            subSet.erase(subSet.begin() + (subSet.size() - 1));
+            // Remove this correspondence & try again with a different pair:
+            subSet.erase(subSet.begin() + static_cast<int>(subSet.size() - 1));
           }
           else
           {
@@ -365,10 +377,10 @@ bool tfest::se2_l2_robust(
         // Test for the mahalanobis distance between:
         //  "referenceEstimation (+) point_other" AND "point_this"
         referenceEstimation.composePoint(
-            mrpt::math::TPoint2D(corr_j.local.x, corr_j.local.y), pt_this);
+            mrpt::math::TPoint2Df(corr_j.local.x, corr_j.local.y), pt_this);
 
-        const double maha_dist =
-            pt_this.mahalanobisDistanceToPoint(corr_j.global.x, corr_j.global.y);
+        const double maha_dist = pt_this.mahalanobisDistanceToPoint(
+            static_cast<double>(corr_j.global.x), static_cast<double>(corr_j.global.y));
 
         const bool passTest = maha_dist < params.ransac_mahalanobisDistanceThreshold;
 
@@ -408,13 +420,15 @@ bool tfest::se2_l2_robust(
 
       for (size_t k = 0; k < subSet.size(); k++)
       {
-        double gx, gy;
-        referenceEstimation.mean.composePoint(subSet[k].local.x, subSet[k].local.y, gx, gy);
+        mrpt::math::TPoint2D g;
+        referenceEstimation.mean.composePoint(
+            mrpt::math::TPoint2D(subSet[k].local.cast<double>()), g);
 
         this_subset_RMSE += mrpt::math::distanceSqrBetweenPoints<double>(
-            subSet[k].global.x, subSet[k].global.y, gx, gy);
+            static_cast<double>(subSet[k].global.x), static_cast<double>(subSet[k].global.y), g.x,
+            g.y);
       }
-      this_subset_RMSE /= std::max(static_cast<size_t>(1), subSet.size());
+      this_subset_RMSE /= std::max<double>(1.0, static_cast<double>(subSet.size()));
     }
     else
     {
@@ -429,7 +443,7 @@ bool tfest::se2_l2_robust(
       // If this subset was previously added to the SOG, just increment
       // its weight
       //  and do not add a new mode:
-      int indexFound = -1;
+      std::optional<size_t> indexFound;
 
       // JLBC Added DEC-2007: An alternative (optional) method to fuse
       // Gaussian modes:
@@ -470,15 +484,20 @@ bool tfest::se2_l2_robust(
         }
       }
 
-      if (indexFound != -1)
+      if (indexFound.has_value())
       {
         // This is an already added mode:
         if (params.ransac_algorithmForLandmarks)
-          results.transformation.get(indexFound).log_w =
-              log(1 + exp(results.transformation.get(indexFound).log_w));
+        {
+          results.transformation.get(*indexFound).log_w =
+              log(1 + exp(results.transformation.get(*indexFound).log_w));
+        }
         else
-          results.transformation.get(indexFound).log_w =
-              log(subSet.size() + exp(results.transformation.get(indexFound).log_w));
+        {
+          results.transformation.get(*indexFound).log_w =
+              log(static_cast<double>(subSet.size()) +
+                  exp(results.transformation.get(*indexFound).log_w));
+        }
       }
       else
       {
@@ -487,9 +506,13 @@ bool tfest::se2_l2_robust(
 
         CPosePDFSOG::TGaussianMode newSOGMode;
         if (params.ransac_algorithmForLandmarks)
+        {
           newSOGMode.log_w = 0;  // log(1);
+        }
         else
+        {
           newSOGMode.log_w = log(static_cast<double>(subSet.size()));
+        }
 
         newSOGMode.mean = referenceEstimation.mean;
         newSOGMode.cov = referenceEstimation.cov;
@@ -499,10 +522,10 @@ bool tfest::se2_l2_robust(
       }
     }  // end if subSet.size()>=ransac_minSetSize
 
-    const size_t ninliers = subSet.size();
-    if (largest_consensus_yet < ninliers)
+    const size_t numInliers = subSet.size();
+    if (largest_consensus_yet < numInliers)
     {
-      largest_consensus_yet = ninliers;
+      largest_consensus_yet = numInliers;
 
       // Dynamic # of steps:
       if (use_dynamic_iter_number)
@@ -510,10 +533,10 @@ bool tfest::se2_l2_robust(
         // Update estimate of nCorrs, the number of trials to ensure we
         // pick,
         // with probability p, a data set with no outliers.
-        const double fracinliers =
-            ninliers / static_cast<double>(howManyDifCorrs);  // corrsIdxs.size());
+        const double fracInliers =
+            static_cast<double>(numInliers) / static_cast<double>(howManyDifMatches);
         double pNoOutliers =
-            1 - pow(fracinliers, static_cast<double>(2.0 /*minimumSizeSamplesToFit*/));
+            1 - pow(fracInliers, static_cast<double>(2.0 /*minimumSizeSamplesToFit*/));
 
         pNoOutliers = std::max(
             std::numeric_limits<double>::epsilon(),
@@ -522,14 +545,16 @@ bool tfest::se2_l2_robust(
             1.0 - std::numeric_limits<double>::epsilon(),
             pNoOutliers);  // Avoid division by 0.
         // Number of
-        results.ransac_iters =
-            mrpt::round(log(1 - params.probability_find_good_model) / log(pNoOutliers));
+        results.ransac_iters = static_cast<unsigned int>(
+            mrpt::round(log(1 - params.probability_find_good_model) / log(pNoOutliers)));
 
         results.ransac_iters = std::max(results.ransac_iters, params.ransac_min_nSimulations);
 
         if (params.verbose)
+        {
           cout << "[tfest::RANSAC] Iter #" << iter_idx << ":est. # iters=" << results.ransac_iters
-               << " pNoOutliers=" << pNoOutliers << " #inliers: " << ninliers << endl;
+               << " pNoOutliers=" << pNoOutliers << " #inliers: " << numInliers << endl;
+        }
       }
     }
 
@@ -537,8 +562,10 @@ bool tfest::se2_l2_robust(
     if (subSet.size() >= params.ransac_minSetSize && this_subset_RMSE < largestSubSet_RMSE)
     {
       if (params.verbose)
+      {
         cout << "[tfest::RANSAC] Iter #" << iter_idx << " Better subset: " << subSet.size()
              << " inliers, RMSE=" << this_subset_RMSE << endl;
+      }
 
       results.largestSubSet = subSet;
       largestSubSet_RMSE = this_subset_RMSE;
@@ -555,19 +582,17 @@ bool tfest::se2_l2_robust(
 #endif
   }  // end for each iteration
 
-  if (params.verbose) cout << "[tfest::RANSAC] Finished after " << iter_idx << " iterations.\n";
+  if (params.verbose)
+  {
+    cout << "[tfest::RANSAC] Finished after " << iter_idx << " iterations.\n";
+  }
 
   // Set the weights of the particles to sum the unity:
   results.transformation.normalizeWeights();
 
   // Done!
 
-  MRPT_END_WITH_CLEAN_UP(printf("nCorrs=%u\n", static_cast<unsigned int>(nCorrs));
-                         printf("Saving '_debug_in_correspondences.txt'...");
-                         in_correspondences.dumpToFile("_debug_in_correspondences.txt");
-                         printf("Ok\n"); printf("Saving '_debug_results.transformation.txt'...");
-                         results.transformation.saveToTextFile("_debug_results.transformation.txt");
-                         printf("Ok\n"););
-
   return true;
+
+  MRPT_END
 }
