@@ -43,6 +43,18 @@ void CImage::Impl::clear()
   *this = {};
 }
 
+void CImage::Impl::clear_image_data()
+{
+  if (!image_data)
+  {
+    return;
+  }
+  stbi_image_free(image_data);
+  image_data = nullptr;
+  width = 0;
+  height = 0;
+}
+
 CImage::Impl::~Impl()
 {
   stbi_image_free(image_data);

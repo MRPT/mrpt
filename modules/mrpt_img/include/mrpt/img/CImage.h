@@ -20,10 +20,15 @@
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/serialization/CSerializable.h>
 
+#include <memory>
+#include <string>
+#include <vector>
+
 // Forwards decls:
-// clang-format off
-namespace mrpt::io { class CStream; }
-// clang-format on
+namespace mrpt::io
+{
+class CStream;
+}
 
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::img::CImage)
@@ -38,18 +43,15 @@ enum class PixelDepth : uint8_t
 };
 
 /** Interpolation methods for images.
- *  Used for OpenCV related operations with images, but also with MRPT native
- * classes.
- * \sa mrpt::img::CMappedImage, CImage::scaleImage
- * \note These are numerically compatible to cv::InterpolationFlags
+ * \sa CImage::scaleImage
  * \ingroup mrpt_img_grp
  */
 enum TInterpolationMethod
 {
-  IMG_INTERP_NN = 0,
-  IMG_INTERP_LINEAR = 1,
-  IMG_INTERP_CUBIC = 2,
-  IMG_INTERP_AREA = 3
+  IMG_INTERP_NN = 0,      //!< Nearest neighbor
+  IMG_INTERP_LINEAR = 1,  //!< Bilinear interpolation
+  IMG_INTERP_CUBIC = 2,   //!< Bicubic interpolation
+  IMG_INTERP_AREA = 3     //!< Area-based (for downsampling)
 };
 
 /** For use in mrpt::img::CImage */
@@ -75,8 +77,7 @@ enum copy_type_t
 {
   /** Shallow copy: the copied object is a reference to the original one */
   SHALLOW_COPY = 0,
-  /** Deep copy: the copied object has a duplicate of all data, becoming
-   independent  */
+  /** Deep copy: the copied object has a duplicate of all data, becoming independent  */
   DEEP_COPY = 1
 };
 
@@ -89,14 +90,13 @@ class CExceptionExternalImageNotFound : public std::runtime_error
 
 /** A class for storing images as grayscale, RGB, or RGBA bitmaps.
  *
- * Supported I/O:
+ * Supported I/O are:
  * - Saving/loading from files of different formats (JPG, PNG, TGA, BMP, PSD, GIF, HDR, PIC) using
  *   the methods CImage::loadFromFile() and CImage::saveToFile(). This uses the [stb
  *   library](https://github.com/nothings/stb).
  * - Importing from an XPM array (.xpm file format) using CImage::loadFromXPM()
- * - Binary dump using the CSerializable interface(<< and >> operators),
- *just as most objects in MRPT. This format is not compatible with any
- *standardized image format but it is fast.
+ * - Binary dump using the CSerializable interface (<< and >> operators), just as most objects in
+ *   MRPT. This format is not compatible with any standardized image format but it is fast.
  *
  *  How to create color/grayscale images:
  *  \code
@@ -105,17 +105,15 @@ class CExceptionExternalImageNotFound : public std::runtime_error
  *  \endcode
  *
  * Additional notes:
- * - Since MRPT 3.0.0, the internal format for images is a raw memory buffer, handled manually by
- *   this class. In the past, we used OpenCV's cv::Mat, but this was removed due to the huge amount
- *   of dependencies it added to MRPT. The new implementation is much more lightweight.
+ * - Since MRPT 3.0.0, the internal format for images is a raw memory buffer managed by the STB
+ *   library. Previous versions used OpenCV's cv::Mat, but this was removed to reduce dependencies.
  *
- * - By default, all images use unsigned 8-bit storage format for pixels (on
- *   each channel), but it can be changed by flags in the constructor.
+ * - By default, all images use unsigned 8-bit storage format for pixels (on each channel), but
+ *   16-bit depth is also supported via PixelDepth::D16U.
  *
- * - An **external storage mode** can be enabled by calling
- *   CImage::setExternalStorage, useful for storing large collections of image
- *   objects in memory while loading the image data itself only for the relevant
- *   images at any time. See CImage::forceLoad() and CImage::unload().
+ * - An **external storage mode** can be enabled by calling CImage::setExternalStorage, useful for
+ *   storing large collections of image objects in memory while loading the image data itself only
+ *   for the relevant images at any time. See CImage::forceLoad() and CImage::unload().
  *
  * - Operator = and copy ctor make shallow copies. For deep copies, see CImage::makeDeepCopy() or
  *   CImage(const CImage&, copy_type_t), e.g:
@@ -133,16 +131,7 @@ class CExceptionExternalImageNotFound : public std::runtime_error
  * CImage::Ptr myImg = std::make_shared<CImage>(...);
  *  \endcode
  *
- * - [TODO] To set a CImage from an OpenCV `cv::Mat` use CImage::CImage(cv::Mat,copy_type_t)
- *
- * Some functions are implemented in MRPT with highly optimized SSE2/SSE3 routines, in suitable
- * platforms and compilers. To see the list of optimizations refer to \ref sse_optimizations,
- * falling back to default methods where unavailable.
- *
- * For computer vision functions that use CImage as its image data type, see mrpt::vision.
- *
- * \sa mrpt::vision, mrpt::vision::CFeatureExtractor, mrpt::vision::CImagePyramid,
- *     mrpt::serializable::CSerializable, mrpt::img::CCanvas
+ * \sa mrpt::vision, mrpt::serialization::CSerializable, mrpt::img::CCanvas
  *
  * \ingroup mrpt_img_grp
  */
@@ -206,8 +195,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 
   /** @} */
 
-  /** @name Manipulate the image contents or size, various computer-vision
-   methods (image filters, undistortion, etc.)
+  /** @name Manipulate the image contents or size, various computer-vision methods
     @{ */
 
   /** Resets the image to the state after a default ctor. Accessing the image
@@ -225,8 +213,8 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   PixelDepth getPixelDepth() const;
 
   /** Scales this image to a new size, interpolating as needed, saving the new
-   * image in a different output object, or operating in-place if
-   * `out_img==this`. \sa resize, rotateImage
+   * image in a different output object, or operating in-place if `out_img==this`.
+   * \sa resize, rotateImage
    */
   void scaleImage(
       CImage& out_img,
@@ -236,22 +224,17 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 
   /** Rotates the image by the given angle (in radians) around the given center point, with
    * an optional scale factor.
-   * The output image will have the same size as the input, except if angle is exactly ±90 degrees,
-   * in which case a quick image rotation (switching height and width) will be performed instead.
+   * \note This method is marked as TODO - not yet implemented with STB.
    * \sa resize, scaleImage
    */
   void rotateImage(
       CImage& out_img, double ang, const TPixelCoord& center, double scale = 1.0) const;
 
   /** Changes the value of the pixel (x,y).
-   *  Pixel coordinates starts at the left-top corner of the image, and start
-   * in (0,0).
-   *  The meaning of the parameter "color" depends on the implementation: it
-   * will usually
-   *   be a 24bit RGB value (0x00RRGGBB), but it can also be just a 8bit gray
-   * level.
-   *  This method must support (x,y) values OUT of the actual image size
-   * without neither
+   *  Pixel coordinates starts at the left-top corner of the image, and start in (0,0).
+   *  The meaning of the parameter "color" depends on the implementation: it will usually
+   *   be a 24bit RGB value (0x00RRGGBB), but it can also be just a 8bit gray level.
+   *  This method must support (x,y) values OUT of the actual image size without neither
    *   raising exceptions, nor leading to memory access errors.
    * \sa at, ptr
    */
@@ -266,7 +249,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 
   /** Returns a new image scaled down to half its original size
    * \exception std::exception On odd size
-   * \sa scaleDouble, scaleImage, scaleHalfSmooth
+   * \sa scaleDouble, scaleImage
    */
   [[nodiscard]] inline CImage scaleHalf(TInterpolationMethod interp) const
   {
@@ -293,106 +276,46 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   //! \overload
   void scaleDouble(CImage& out_image, TInterpolationMethod interp) const;
 
-  /** Extract a patch from this image, saveing it into "patch" (its previous
+  /** Extract a patch from this image, saving it into "patch" (its previous
    * contents will be overwritten).
    *  The patch to extract starts at (col,row) and has the given dimensions.
-   * \sa update_patch
    */
   void extract_patch(
       CImage& patch, const TPixelCoord& top_left_corner, const TImageSize& patch_size) const;
 
-  /** Computes the correlation coefficient (returned as val), between two
-   *images
-   *	This function use grayscale images only
-   *	img1, img2 must be same size
-   * (by AJOGD @ DEC-2006)
-   */
-  [[nodiscard]] float correlate(
-      const CImage& img2int, int width_init = 0, int height_init = 0) const;
-
-  /**	Computes the correlation matrix between this image and another one.
-   *   This implementation uses the 2D FFT for achieving reduced computation
-   * time.
-   * \param in_img The "patch" image, which must be equal, or smaller than
-   * "this" image. This function supports gray-scale (1 channel only) images.
-   * \param u_search_ini The "x" coordinate of the search window.
-   * \param v_search_ini The "y" coordinate of the search window.
-   * \param u_search_size The width of the search window.
-   * \param v_search_size The height of the search window.
-   * \param out_corr The output for the correlation matrix, which will be
-   * "u_search_size" x "v_search_size"
-   * \param biasThisImg This optional parameter is a fixed "bias" value to be
-   * subtracted to the pixels of "this" image before performing correlation.
-   * \param biasInImg This optional parameter is a fixed "bias" value to be
-   * subtracted to the pixels of "in_img" image before performing
-   * correlation. Note: By default, the search area is the whole (this) image.
-   * (by JLBC @ JAN-2006)
-   * \sa cross_correlation
-   */
-  void cross_correlation_FFT(
-      const CImage& in_img,
-      math::CMatrixFloat& out_corr,
-      int u_search_ini = -1,
-      int v_search_ini = -1,
-      int u_search_size = -1,
-      int v_search_size = -1,
-      float biasThisImg = 0,
-      float biasInImg = 0) const;
-
-  /** Optimize the brightness range of an image without using histogram
+  /** Optimize the brightness range of an image without using histogram.
    * Only for one channel images.
+   * \note Marked as TODO - not yet implemented with STB.
    */
   void normalize();
 
   /** Flips the image vertically. \sa swapRB(), flipHorizontal() */
   void flipVertical();
+
   /** Flips the image horizontally \sa swapRB(), flipVertical() */
   void flipHorizontal();
 
   /** Swaps red and blue channels. */
   void swapRB();
 
-  /** Undistort the image according to some camera parameters, and
-   * returns an output undistorted image.
-   * \param out_img The output undistorted image
-   * \param cameraParams The input camera params (containing the intrinsic
-   * and distortion parameters of the camera)
-   * \note The intrinsic parameters (fx,fy,cx,cy) of the output image are the
-   * same than in the input image.
+  /** Undistort the image according to some camera parameters.
+   * \note Marked as TODO - not yet implemented with STB.
    * \sa mrpt::vision::CUndistortMap
    */
   void undistort(CImage& out_img, const mrpt::img::TCamera& cameraParams) const;
 
-  /** Rectify an image (undistorts and rectification) from a stereo pair
-   * according to a pair of precomputed rectification maps
-   * \param mapX, mapY   [IN] The pre-computed maps of the rectification
-   * (should be computed beforehand)
-   * \sa mrpt::vision::CStereoRectifyMap,
-   * mrpt::vision::computeStereoRectificationMaps
+  /** Filter the image with a Median filter with a window size WxW.
+   * \note Marked as TODO - not yet implemented with STB.
    */
-  void rectifyImageInPlace(void* mapX, void* mapY);
-
-  /** Filter the image with a Median filter with a window size WxW, returning
-   * the filtered image in out_img. For inplace operation, set out_img to
-   * this. */
   void filterMedian(CImage& out_img, int W = 3) const;
 
-  /** Filter the image with a Gaussian filter with a window size WxH,
-   * replacing "this" image by the filtered one. For inplace operation, set
-   * out_img to this. */
+  /** Filter the image with a Gaussian filter with a window size WxH.
+   * \note Marked as TODO - not yet implemented with STB.
+   */
   void filterGaussian(CImage& out_img, int W = 3, int H = 3, double sigma = 1.0) const;
 
-  /** Draw onto this image the detected corners of a chessboard. The length of
-   * cornerCoords must be the product of the two check_sizes.
-   *
-   * \param cornerCoords [IN] The pixel coordinates of all the corners.
-   * \param check_size_x [IN] The number of squares, in the X direction
-   * \param check_size_y [IN] The number of squares, in the Y direction
-   *
-   * \return false if the length of cornerCoords is inconsistent (nothing is
-   * drawn then).
-   *
-   * \sa mrpt::vision::findChessboardCorners
+  /** Draw onto this image the detected corners of a chessboard.
+   * \note Marked as TODO - not yet implemented with STB.
    */
   bool drawChessboardCorners(
       const std::vector<TPixelCoordf>& cornerCoords,
@@ -403,17 +326,10 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 
   /** Joins two images side-by-side horizontally. Both images must have the
    * same number of rows and be of the same type (i.e. depth and color mode)
-   *
-   * \param im1 [IN] The first image.
-   * \param im2 [IN] The other image.
    */
   void joinImagesHorz(const CImage& im1, const CImage& im2);
 
-  /** Compute the KLT response at a given pixel (x,y) - Only for grayscale
-   * images (for efficiency it avoids converting to grayscale internally).
-   *  See KLT_response() for more details on the internal
-   * optimizations of this method, but this graph shows a general view:
-   *  <img src="KLT_response_performance_SSE2.png" >
+  /** Compute the KLT response at a given pixel (x,y) - Only for grayscale images.
    */
   [[nodiscard]] float KLT_response(const TPixelCoord& pt, const int32_t half_window_size) const;
 
@@ -430,21 +346,17 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   }
 
   /** Returns a deep copy of this image.
-   * If the image is externally-stored, there is no difference with a shallow
-   * copy. \sa makeShallowCopy() */
+   * If the image is externally-stored, there is no difference with a shallow copy.
+   * \sa makeShallowCopy()
+   */
   [[nodiscard]] CImage makeDeepCopy() const { return CImage(*this, DEEP_COPY); }
 
-  /** Copies from another image (shallow copy), and, if it is externally
-   * stored, the image file will be actually loaded into memory in "this"
-   * object. \sa operator = \exception CExceptionExternalImageNotFound If the
-   * external image couldn't be loaded.
+  /** Copies from another image (shallow copy), and, if it is externally stored, the image file
+   * will be actually loaded into memory in "this" object.
+   * \sa operator =
+   * \exception CExceptionExternalImageNotFound If the external image couldn't be loaded.
    */
   void copyFromForceLoad(const CImage& o);
-
-  /** Moves an image from another object, erasing the origin image in the
-   * process.
-   * \sa operator =
-   */
 
   /** Efficiently swap of two images */
   void swap(CImage& o);
@@ -454,23 +366,16 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   /** @name Access to image contents
     @{ */
 
-  template <typename CV_MAT>
-  [[nodiscard]] CV_MAT asCvMat(copy_type_t copy_type) const
-  {
-    CV_MAT ret;
-    asCvMat(ret, copy_type);
-    return ret;
-  }
-
-  /**  Access to pixels without checking boundaries, and doing a
-   * reinterpret_cast<> of the data as the given type.
-   *\sa The CImage::operator() which does check for coordinate limits.
+  /**  Access to pixels without checking boundaries, and doing a reinterpret_cast<> of the data
+   * as the given type.
+   * \sa The CImage::operator() which does check for coordinate limits.
    */
   template <typename T>
   [[nodiscard]] const T& at(int32_t col, int32_t row, uint8_t channel = 0) const
   {
     return *reinterpret_cast<const T*>(internal_get(col, row, channel));
   }
+
   /** \overload Non-const case */
   template <typename T>
   [[nodiscard]] T& at(int32_t col, int32_t row, uint8_t channel = 0)
@@ -479,13 +384,14 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   }
 
   /** Returns a pointer to a given pixel, without checking for boundaries.
-   *\sa The CImage::operator() which does check for coordinate limits.
+   * \sa The CImage::operator() which does check for coordinate limits.
    */
   template <typename T>
   [[nodiscard]] const T* ptr(int32_t col, int32_t row, uint8_t channel = 0) const
   {
     return reinterpret_cast<const T*>(internal_get(col, row, channel));
   }
+
   /** \overload Non-const case */
   template <typename T>
   [[nodiscard]] T* ptr(int32_t col, int32_t row, uint8_t channel = 0)
@@ -499,6 +405,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   {
     return reinterpret_cast<const T*>(internal_get(0, row, 0));
   }
+
   /** \overload Non-const case */
   template <typename T>
   [[nodiscard]] T* ptrLine(int32_t row)
@@ -506,20 +413,16 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
     return reinterpret_cast<T*>(internal_get(0, row, 0));
   }
 
-  /** Returns the contents of a given pixel at the desired channel, in float
-   * format: [0,255]->[0,1]
+  /** Returns the contents of a given pixel at the desired channel, in float format: [0,255]->[0,1]
    *   The coordinate origin is pixel(0,0)=top-left corner of the image.
    * \exception std::exception On pixel coordinates out of bounds
-   * \sa operator()
    */
   [[nodiscard]] float getAsFloat(const TPixelCoord& pt, uint8_t channel) const;
 
-  /** Returns the contents of a given pixel (for gray-scale images, in color
-   * images the gray scale equivalent is computed for the pixel), in float
-   * format: [0,255]->[0,1]
+  /** Returns the contents of a given pixel (for gray-scale images, in color images the gray scale
+   * equivalent is computed for the pixel), in float format: [0,255]->[0,1]
    *   The coordinate origin is pixel(0,0)=top-left corner of the image.
    * \exception std::exception On pixel coordinates out of bounds
-   * \sa operator()
    */
   [[nodiscard]] float getAsFloat(const TPixelCoord& pt) const;
 
@@ -537,13 +440,13 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   /** Return the size of the image \sa getWidth, getHeight */
   [[nodiscard]] TImageSize getSize() const;
 
-  /** Returns the row stride of the image: this is the number of *bytes*
-   * between two consecutive rows. You can access the pointer to the first row
-   * with ptrLine(0)
-   * \sa getSize, as, ptr, ptrLine */
+  /** Returns the row stride of the image: this is the number of *bytes* between two consecutive
+   * rows. You can access the pointer to the first row with ptrLine(0)
+   * \sa getSize, as, ptr, ptrLine
+   */
   [[nodiscard]] size_t getRowStride() const;
 
-  /** As of mrpt 2.0.0, this returns either "GRAY" or "BGR". */
+  /** As of mrpt 3.0.0, this returns either "GRAY", "RGB", or "RGBA". */
   [[nodiscard]] std::string getChannelsOrder() const;
 
   /** Returns 1 (grayscale), 3 (RGB) or 4 (RGBA) */
@@ -553,31 +456,26 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   [[nodiscard]] bool isColor() const;
 
   /** Returns true if the object is in the state after default constructor.
-   * Returns false for delay-loaded images, disregarding whether the image is
-   * actually on disk or memory.
+   * Returns false for delay-loaded images, disregarding whether the image is actually on disk or
+   * memory.
    */
   [[nodiscard]] bool isEmpty() const;
 
-  /** Returns true (as of MRPT v2.0.0, it's fixed) */
+  /** Returns true (images are always stored with origin at top-left) */
   [[nodiscard]] bool isOriginTopLeft() const;
 
-  /**	Returns the image as a matrix with pixel grayscale values in the range
-   * [0,1]. Matrix indexes in this order: M(row,column)
-   *  \param doResize If set to true (default), the output matrix will be
-   * always the size of the image at output. If set to false, the matrix will
-   * be enlarged to the size of the image, but it will not be cropped if it
-   * has room enough (useful for FFT2D,...)
-   *  \param x_min The starting "x" coordinate to extract (default=0=the
-   * first column)
-   *  \param y_min The starting "y" coordinate to extract (default=0=the
-   * first row)
-   *  \param x_max The final "x" coordinate (inclusive) to extract
-   * (default=-1=the last column)
-   *  \param y_max The final "y" coordinate (inclusive) to extract
-   * (default=-1=the last row)
-   * \param normalize_01 Normalize the image values such that they fall in the
-   * range [0,1] (default: true). If set to false, the matrix will hold
-   * numbers in the range [0,255]. \sa setFromMatrix
+  /** Returns the image as a matrix with pixel grayscale values in the range [0,1].
+   * Matrix indexes in this order: M(row,column)
+   *  \param doResize If set to true (default), the output matrix will be always the size of the
+   * image at output. If set to false, the matrix will be enlarged to the size of the image, but it
+   * will not be cropped if it has room enough.
+   *  \param x_min The starting "x" coordinate to extract (default=0=the first column)
+   *  \param y_min The starting "y" coordinate to extract (default=0=the first row)
+   *  \param x_max The final "x" coordinate (inclusive) to extract (default=-1=the last column)
+   *  \param y_max The final "y" coordinate (inclusive) to extract (default=-1=the last row)
+   * \param normalize_01 Normalize the image values such that they fall in the range [0,1]
+   * (default: true). If set to false, the matrix will hold numbers in the range [0,255].
+   * \sa setFromMatrix
    */
   void getAsMatrix(
       mrpt::math::CMatrixFloat& outMatrix,
@@ -597,20 +495,15 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
       int x_max = -1,
       int y_max = -1) const;
 
-  /**	Returns the image as RGB matrices with pixel values in the range [0,1].
+  /** Returns the image as RGB matrices with pixel values in the range [0,1].
    * Matrix indexes in this order: M(row,column)
-   *  \param doResize If set to true (default), the output matrix will be
-   * always the size of the image at output. If set to false, the matrix will
-   * be enlarged to the size of the image, but it will not be cropped if it
-   * has room enough (useful for FFT2D,...)
-   *  \param x_min The starting "x" coordinate to extract (default=0=the
-   * first column)
-   *  \param y_min The starting "y" coordinate to extract (default=0=the
-   * first row)
-   *  \param x_max The final "x" coordinate (inclusive) to extract
-   * (default=-1=the last column)
-   *  \param y_max The final "y" coordinate (inclusive) to extract
-   * (default=-1=the last row)
+   *  \param doResize If set to true (default), the output matrix will be always the size of the
+   * image at output. If set to false, the matrix will be enlarged to the size of the image, but it
+   * will not be cropped if it has room enough.
+   *  \param x_min The starting "x" coordinate to extract (default=0=the first column)
+   *  \param y_min The starting "y" coordinate to extract (default=0=the first row)
+   *  \param x_max The final "x" coordinate (inclusive) to extract (default=-1=the last column)
+   *  \param y_max The final "y" coordinate (inclusive) to extract (default=-1=the last row)
    * \sa setFromRGBMatrices
    */
   void getAsRGBMatrices(
@@ -634,9 +527,8 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
       int x_max = -1,
       int y_max = -1) const;
 
-  /**	Returns the image as a matrix, where the image is "tiled" (repeated)
-   * the required number of times to fill the entire size of the matrix on
-   * input.
+  /** Returns the image as a matrix, where the image is "tiled" (repeated) the required number of
+   * times to fill the entire size of the matrix on input.
    */
   void getAsMatrixTiled(mrpt::math::CMatrixFloat& outMatrix) const;
 
@@ -645,51 +537,40 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   /** @name External storage-mode methods
     @{  */
 
-  /**  By using this method the image is marked as referenced to an external
-   * file, which will be loaded only under demand.
-   *   A CImage with external storage does not consume memory until some
-   * method trying to access the image is invoked (e.g. getWidth(),
-   * isColor(),...)
-   *   At any moment, the image can be unloaded from memory again by invoking
-   * unload.
-   *   An image becomes of type "external storage" only through calling
-   * setExternalStorage. This property remains after serializing the object.
-   *   File names can be absolute, or relative to the
-   * CImage::getImagesPathBase() directory. Filenames staring with "X:\" or
-   * "/"
-   * are considered absolute paths.
-   *   By calling this method the current contents of the image are NOT saved
-   * to that file, because this method can be also called
-   *    to let the object know where to load the image in case its contents
-   * are required. Thus, for saving images in this format (not when loading)
-   *    the proper order of commands should be:
+  /**  By using this method the image is marked as referenced to an external file, which will be
+   * loaded only under demand.
+   *   A CImage with external storage does not consume memory until some method trying to access
+   * the image is invoked (e.g. getWidth(), isColor(),...) At any moment, the image can be unloaded
+   * from memory again by invoking unload. An image becomes of type "external storage" only through
+   * calling setExternalStorage. This property remains after serializing the object. File names can
+   * be absolute, or relative to the CImage::getImagesPathBase() directory. Filenames staring with
+   * "X:\" or "/" are considered absolute paths. By calling this method the current contents of the
+   * image are NOT saved to that file, because this method can be also called to let the object
+   * know where to load the image in case its contents are required. Thus, for saving images in
+   * this format (not when loading) the proper order of commands should be:
    *   \code
    *   img.saveToFile( fileName );
    *   img.setExternalStorage( fileName );
    *   \endcode
    *
-   *   \note Modifications to the memory copy of the image are not
-   * automatically saved to disk.
+   *   \note Modifications to the memory copy of the image are not automatically saved to disk.
    *  \sa unload, isExternallyStored
    */
   void setExternalStorage(const std::string& fileName) noexcept;
 
-  /** By default, "."  \sa setExternalStorage
-   *  \note Since MRPT 2.3.3 this is a synonym
-   *        with mrpt::io::getLazyLoadPathBase()
+  /** By default, "."
+   *  \sa setExternalStorage
+   *  \note Since MRPT 2.3.3 this is a synonym with mrpt::io::getLazyLoadPathBase()
    */
   static const std::string& getImagesPathBase();
 
-  /**  \note Since MRPT 2.3.3 this is a synonym
-   *        with mrpt::io::setLazyLoadPathBase()
-   */
+  /**  \note Since MRPT 2.3.3 this is a synonym with mrpt::io::setLazyLoadPathBase() */
   static void setImagesPathBase(const std::string& path);
 
   /** See setExternalStorage(). */
   [[nodiscard]] bool isExternallyStored() const noexcept { return m_state->imgIsExternalStorage; }
 
-  /** Only if isExternallyStored() returns true. \sa
-   * getExternalStorageFileAbsolutePath */
+  /** Only if isExternallyStored() returns true. \sa getExternalStorageFileAbsolutePath */
   [[nodiscard]] inline std::string getExternalStorageFile() const noexcept
   {
     return m_state->externalFile;
@@ -706,27 +587,51 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
     return tmp;
   }
 
-  /** For external storage image objects only, this method makes sure the
-   * image is loaded in memory. Note that usually images are loaded on-the-fly
-   * on first access and there's no need to call this.
-   * \unload
+  /** For external storage image objects only, this method makes sure the image is loaded in
+   * memory. Note that usually images are loaded on-the-fly on first access and there's no need to
+   * call this.
+   * \sa unload
    */
   inline void forceLoad() const { makeSureImageIsLoaded(true); }
 
-  /** For external storage image objects only, this method unloads the image
-   * from memory (or does nothing if already unloaded).
-   *  It does not need to be called explicitly, unless the user wants to save
-   * memory for images that will not be used often.
-   *  If called for an image without the flag "external storage", it is
-   * simply ignored.
+  /** For external storage image objects only, this method unloads the image from memory (or does
+   * nothing if already unloaded). It does not need to be called explicitly, unless the user wants
+   * to save memory for images that will not be used often. If called for an image without the flag
+   * "external storage", it is simply ignored.
    * \sa setExternalStorage, forceLoad
    */
   void unload() const noexcept;
 
-  /** @}  */
-  // ================================================================
+  /**  Computes the correlation matrix between this image and another one.
+   *   This implementation uses the 2D FFT for achieving reduced computation
+   * time.
+   * \param in_img The "patch" image, which must be equal, or smaller than
+   * "this" image. This function supports gray-scale (1 channel only) images.
+   * \param u_search_ini The "x" coordinate of the search window.
+   * \param v_search_ini The "y" coordinate of the search window.
+   * \param u_search_size The width of the search window.
+   * \param v_search_size The height of the search window.
+   * \param out_corr The output for the correlation matrix, which will be
+   * "u_search_size" x "v_search_size"
+   * \param biasThisImg This optional parameter is a fixed "bias" value to be
+   * subtracted to the pixels of "this" image before performing correlation.
+   * \param biasInImg This optional parameter is a fixed "bias" value to be
+   * subtracted to the pixels of "in_img" image before performing
+   * correlation. Note: By default, the search area is the whole (this) image.
+   * (by JLBC @ JAN-2006)
+   */
+  void cross_correlation_FFT(
+      const CImage& in_img,
+      mrpt::math::CMatrixFloat& out_corr,
+      std::optional<int32_t> u_search_ini = std::nullopt,
+      std::optional<int32_t> v_search_ini = std::nullopt,
+      std::optional<int32_t> u_search_size = std::nullopt,
+      std::optional<int32_t> v_search_size = std::nullopt,
+      std::optional<float> biasThisImg = std::nullopt,
+      std::optional<float> biasInImg = std::nullopt) const;
 
-  // ================================================================
+  /** @}  */
+
   /** @name Set, load & save methods
     @{  */
 
@@ -739,9 +644,9 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
       uint8_t* rawpixels,
       bool swapRedBlue = false);
 
-  /** Set the image from a matrix, interpreted as grayscale intensity values,
-   *in the range [0,1] (normalized=true) or [0,255] (normalized=false)
-   *	Matrix indexes are assumed to be in this order: M(row,column)
+  /** Set the image from a matrix, interpreted as grayscale intensity values, in the range [0,1]
+   * (normalized=true) or [0,255] (normalized=false) Matrix indexes are assumed to be in this
+   * order: M(row,column)
    * \sa getAsMatrix
    */
   template <typename MAT>
@@ -943,7 +848,12 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
     mutable std::string externalFile;
 
     [[nodiscard]] bool empty() const { return image_data == nullptr || width == 0 || height == 0; }
+
+    /** Clears the image data, external image data, etc. To clear just the image data, use
+     * clear_image_data() */
     void clear();
+
+    void clear_image_data();
 
     void deep_copy(const Impl& o)
     {

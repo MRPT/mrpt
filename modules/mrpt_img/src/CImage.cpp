@@ -12,32 +12,26 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/core/config.h>  // MRPT_HAS_MATLAB
-#include <mrpt/core/cpu.h>
 #include <mrpt/core/get_env.h>
-#include <mrpt/core/round.h>  // for round()
+#include <mrpt/core/round.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/io/lazy_load_path.h>
-#include <mrpt/io/vector_loadsave.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/fourier.h>
-#include <mrpt/math/utils.h>  // for roundup()
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/system/memory.h>
 
+#include <algorithm>
+#include <cmath>
+#include <cstring>
 #include <iostream>
 
-#include "CImage.SSEx.h"
 #include "CImage_impl.h"
 
-// Define STB_IMAGE_IMPLEMENTATION in exactly one .c or .cpp file
-// before including the header to create the implementation.
+// STB library includes
 STB_DISABLE_WARNINGS
 #include "stb/stb_image.h"
 #include "stb/stb_image_resize2.h"
@@ -51,19 +45,11 @@ STB_RESTORE_WARNINGS
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CImage, CSerializable, mrpt::img)
 
-// Do performance time logging?
-#define IMAGE_ALLOC_PERFLOG 0
-
 namespace
 {
 const thread_local bool MRPT_DEBUG_IMG_LAZY_LOAD =
     mrpt::get_env<bool>("MRPT_DEBUG_IMG_LAZY_LOAD", false);
-
-#if IMAGE_ALLOC_PERFLOG
-mrpt::img::CTimeLogger alloc_times;
-#endif
-
-}  // namespace
+}
 
 namespace mrpt::img
 {
@@ -97,7 +83,6 @@ CImage::CImage(const CImage& img, copy_type_t copy_type) : CImage()
 {
   MRPT_START
 
-  // this new image is *not* lazy-load.
   if (copy_type == DEEP_COPY && !img.m_state->empty())
   {
     // deep copy
@@ -115,33 +100,26 @@ void CImage::resize(int32_t width, int32_t height, TImageChannels nChannels, Pix
 {
   MRPT_START
 
-  // Dont call makeSureImageIsLoaded() here,
-  // since it will throw if resize() is called from a ctor, where it's
-  // legit for the img to be uninitialized.
-
   // If we're resizing to exactly the current size, do nothing:
   if (m_state->width == width && m_state->height == height && m_state->channels == nChannels &&
       m_state->depth == depth)
   {
-    // Nothing to do:
     return;
   }
-
-#if IMAGE_ALLOC_PERFLOG
-  const std::string sLog = mrpt::format("resize %zux%zu", width, height);
-  alloc_times.enter(sLog.c_str());
-#endif
 
   m_state->clear();
   m_state->width = width;
   m_state->height = height;
   m_state->channels = nChannels;
   m_state->depth = depth;
-  m_state->image_data = reinterpret_cast<uint8_t*>(std::malloc(m_state->image_buffer_size_bytes()));
 
-#if IMAGE_ALLOC_PERFLOG
-  alloc_times.leave(sLog.c_str());
-#endif
+  const auto num_bytes = m_state->image_buffer_size_bytes();
+  m_state->image_data = reinterpret_cast<uint8_t*>(std::malloc(num_bytes));
+
+  if (!m_state->image_data)
+  {
+    THROW_EXCEPTION("Failed to allocate image memory");
+  }
 
   MRPT_END
 }
@@ -149,7 +127,7 @@ void CImage::resize(int32_t width, int32_t height, TImageChannels nChannels, Pix
 PixelDepth CImage::getPixelDepth() const
 {
   MRPT_START
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
+  makeSureImageIsLoaded();
   return m_state->depth;
   MRPT_END
 }
@@ -168,34 +146,43 @@ bool CImage::loadFromFile(const std::string& fileName, TImageChannels loadChanne
 
   m_state->clear();
 
-  // --- Loading ---
   int width = 0;
   int height = 0;
   int original_channels = 0;
   unsigned char* image_data = nullptr;
 
   // stbi_load loads the image from the file specified by filename.
-  // It returns a pointer to the loaded image data, or nullptr on failure.
-  // - filename: Path to the image file.
-  // - &width: Pointer to an int to store the image width.
-  // - &height: Pointer to an int to store the image height.
-  // - &original_channels: Pointer to an int to store the original number of color channels.
-  // - desired_channels: Forces stb_image to convert the image to have this many channels per pixel.
-  //                     Common values: 3 (RGB), 4 (RGBA). 0 means load original channels.
-  image_data = stbi_load(fileName.c_str(), &width, &height, &original_channels, loadChannels);
+  // desired_channels: 0=load original, 1=grayscale, 3=RGB, 4=RGBA
+  int desired_channels = static_cast<int>(loadChannels);
+
+  image_data = stbi_load(fileName.c_str(), &width, &height, &original_channels, desired_channels);
 
   if (image_data == nullptr)
   {
-    // std::cerr << "Reason: " << stbi_failure_reason() << std::endl;
-    return false;  // Indicate failure
+    // Image loading failed
+    if (MRPT_DEBUG_IMG_LAZY_LOAD)
+    {
+      std::cerr << "[CImage::loadFromFile] Failed to load: " << fileName
+                << " Reason: " << stbi_failure_reason() << std::endl;
+    }
+    return false;
   }
 
   // Store in image container:
   m_state->width = width;
   m_state->height = height;
-  m_state->channels = static_cast<TImageChannels>(original_channels);
   m_state->depth = PixelDepth::D8U;
   m_state->image_data = image_data;
+
+  // Determine actual channels loaded
+  if (loadChannels == CH_AS_IS)
+  {
+    m_state->channels = static_cast<TImageChannels>(original_channels);
+  }
+  else
+  {
+    m_state->channels = loadChannels;
+  }
 
   return true;
   MRPT_END
@@ -204,36 +191,31 @@ bool CImage::loadFromFile(const std::string& fileName, TImageChannels loadChanne
 bool CImage::saveToFile(const std::string& fileName, int jpeg_quality) const
 {
   MRPT_START
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
+  makeSureImageIsLoaded();
   ASSERT_(!m_state->empty());
 
   const auto ext = mrpt::system::lowerCase(mrpt::system::extractFileExtension(fileName));
 
+  const int w = static_cast<int>(m_state->width);
+  const int h = static_cast<int>(m_state->height);
+  const int comp = static_cast<int>(m_state->channels);
+  const int stride = static_cast<int>(m_state->row_stride_in_bytes());
+
   if (ext == "jpg" || ext == "jpeg")
   {
-    return 0 != stbi_write_jpg(
-                    fileName.c_str(), static_cast<int>(m_state->width),
-                    static_cast<int>(m_state->height), m_state->channels, m_state->image_data,
-                    jpeg_quality);
+    return 0 != stbi_write_jpg(fileName.c_str(), w, h, comp, m_state->image_data, jpeg_quality);
   }
   else if (ext == "png")
   {
-    return 0 != stbi_write_png(
-                    fileName.c_str(), static_cast<int>(m_state->width),
-                    static_cast<int>(m_state->height), m_state->channels, m_state->image_data,
-                    static_cast<int>(m_state->row_stride_in_bytes()));
+    return 0 != stbi_write_png(fileName.c_str(), w, h, comp, m_state->image_data, stride);
   }
   else if (ext == "bmp")
   {
-    return 0 != stbi_write_bmp(
-                    fileName.c_str(), static_cast<int>(m_state->width),
-                    static_cast<int>(m_state->height), m_state->channels, m_state->image_data);
+    return 0 != stbi_write_bmp(fileName.c_str(), w, h, comp, m_state->image_data);
   }
   else if (ext == "tga")
   {
-    return 0 != stbi_write_tga(
-                    fileName.c_str(), static_cast<int>(m_state->width),
-                    static_cast<int>(m_state->height), m_state->channels, m_state->image_data);
+    return 0 != stbi_write_tga(fileName.c_str(), w, h, comp, m_state->image_data);
   }
   else
   {
@@ -255,53 +237,71 @@ void CImage::loadFromMemoryBuffer(
 
   resize(width, height, color_channels);
 
-  const auto bytes_per_row_out = m_state->row_stride_in_bytes();
+  // const auto bytes_per_row = m_state->row_stride_in_bytes();
 
-  if (color_channels > 1 && swapRedBlue)
+  if (color_channels >= 3 && swapRedBlue)
   {
-    // Do copy & swap at once:
+    // Do copy & swap at once (RGB <-> BGR):
     uint8_t* ptr_src = rawpixels;
     auto* ptr_dest = m_state->image_data;
 
-    for (auto h = height; h--;)
+    for (int32_t h = 0; h < height; h++)
     {
-      for (int32_t i = 0; i < width; i++, ptr_src += 3, ptr_dest += 3)
+      for (int32_t w = 0; w < width; w++)
       {
-        uint8_t t0 = ptr_src[0], t1 = ptr_src[1], t2 = ptr_src[2];
-        ptr_dest[2] = t0;
+        const uint8_t t0 = ptr_src[0];
+        const uint8_t t1 = ptr_src[1];
+        const uint8_t t2 = ptr_src[2];
+        ptr_dest[0] = t2;  // Swap R and B
         ptr_dest[1] = t1;
-        ptr_dest[0] = t2;
+        ptr_dest[2] = t0;
+
+        if (color_channels == 4)
+        {
+          ptr_dest[3] = ptr_src[3];  // Alpha channel
+          ptr_src += 4;
+          ptr_dest += 4;
+        }
+        else
+        {
+          ptr_src += 3;
+          ptr_dest += 3;
+        }
       }
-      ptr_dest += bytes_per_row_out - static_cast<std::size_t>(width * 3);
     }
   }
   else
   {
-    // Copy the image data:
+    // Direct copy:
     std::memcpy(m_state->image_data, rawpixels, m_state->image_buffer_size_bytes());
   }
+
   MRPT_END
 }
 
 uint8_t* CImage::internal_get(int32_t col, int32_t row, uint8_t channel)
 {
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
+  makeSureImageIsLoaded();
   return m_state->image_data + m_state->row_stride_in_bytes() * static_cast<std::size_t>(row) +
-         m_state->pixel_size_in_bytes() * static_cast<std::size_t>(col) + channel;
-}
-const uint8_t* CImage::internal_get(int32_t col, int32_t row, uint8_t channel) const
-{
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
-  return m_state->image_data + m_state->row_stride_in_bytes() * static_cast<std::size_t>(row) +
-         m_state->pixel_size_in_bytes() * static_cast<std::size_t>(col) + channel;
+         m_state->pixel_size_in_bytes() * static_cast<std::size_t>(col) +
+         static_cast<std::size_t>(channel) * static_cast<std::size_t>(m_state->depth);
 }
 
-uint8_t CImage::serializeGetVersion() const { return 9; }
+const uint8_t* CImage::internal_get(int32_t col, int32_t row, uint8_t channel) const
+{
+  makeSureImageIsLoaded();
+  return m_state->image_data + m_state->row_stride_in_bytes() * static_cast<std::size_t>(row) +
+         m_state->pixel_size_in_bytes() * static_cast<std::size_t>(col) +
+         static_cast<std::size_t>(channel) * static_cast<std::size_t>(m_state->depth);
+}
+
+uint8_t CImage::serializeGetVersion() const { return 10; }
+
 void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 {
   ASSERT_(m_state);
 
-  // Added in version 6: possibility of being stored offline:
+  // External storage mode?
   out << m_state->imgIsExternalStorage;
 
   if (m_state->imgIsExternalStorage)
@@ -310,33 +310,21 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
     return;
   }
 
+  // Write image properties
   const bool hasColor = m_state->empty() ? false : isColor();
-
   out << hasColor;
 
-  const int32_t width = static_cast<int32_t>(m_state->width);
-  const int32_t height = static_cast<int32_t>(m_state->height);
+  const int32_t width = m_state->width;
+  const int32_t height = m_state->height;
+  const int32_t depth = static_cast<int32_t>(m_state->depth);
 
   if (!hasColor)
   {
-    // GRAY-SCALE: Raw bytes:
-    // Version 3: ZIP compression
-    // Version 4: Skip zip if the image size <= 16Kb
-    const int32_t origin = 0;  // not used mrpt v1.9.9
+    // GRAYSCALE
     const uint32_t imageSize = static_cast<uint32_t>(m_state->image_buffer_size_bytes());
-    // Version 10: depth
-    const int32_t depth = static_cast<int32_t>(m_state->depth);
+    out << width << height << imageSize << depth;
 
-    out << width << height << origin << imageSize << depth;
-
-    // Version 5: Use CImage::DISABLE_ZIP_COMPRESSION
-    // Dec 2019: Remove this feature since it's not worth.
-    // We still spend 1 byte for this constant bool just not to
-    // bump the serialization number.
-    bool imageStoredAsZip = false;
-
-    out << imageStoredAsZip;
-
+    // Raw bytes (no compression for now in v3.0.0)
     if (!m_state->empty())
     {
       out.WriteBuffer(m_state->image_data, m_state->image_buffer_size_bytes());
@@ -344,238 +332,103 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
   }
   else
   {
-    // COLOR: Save
+    // COLOR (RGB/RGBA)
+    out << width << height;
 
-    // v7: If size is 0xN or Nx0, don't call
-    // "saveToStreamAsJPEG"!!
-
-    // v8: If DISABLE_JPEG_COMPRESSION
-    // (feature removed in v3.0.0)
-    {  // (New in v8)
-      // Don't JPEG-compress behavior:
-      // Use negative image sizes to signal this behavior:
-      const int32_t neg_width = -width;
-      const int32_t neg_height = -height;
-
-      out << neg_width << neg_height;
-
-      // Dump raw image data:
-      if (!m_state->empty())
-      {
-        out.WriteBuffer(m_state->image_data, m_state->image_buffer_size_bytes());
-      }
+    // Raw bytes
+    if (!m_state->empty())
+    {
+      out.WriteBuffer(m_state->image_data, m_state->image_buffer_size_bytes());
     }
   }
 }
 
 void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-  // First, free current image.
   clear();
 
   switch (version)
   {
-    case 100:  // Saved from a legacy MRPT build without OpenCV:
+    case 10:  // MRPT 3.0.0 format
     {
       in >> m_state->imgIsExternalStorage;
+
       if (m_state->imgIsExternalStorage)
       {
         in >> m_state->externalFile;
       }
+      else
+      {
+        bool hasColor;
+        in >> hasColor;
+
+        if (!hasColor)
+        {
+          // GRAYSCALE
+          int32_t width, height;
+          uint32_t imageSize;
+          int32_t depth_int;
+
+          in >> width >> height >> imageSize >> depth_int;
+
+          const auto depth = static_cast<PixelDepth>(depth_int);
+          resize(width, height, CH_GRAY, depth);
+
+          ASSERT_EQUAL_(imageSize, static_cast<uint32_t>(m_state->image_buffer_size_bytes()));
+
+          if (imageSize > 0)
+          {
+            in.ReadBuffer(m_state->image_data, imageSize);
+          }
+        }
+        else
+        {
+          // COLOR
+          int32_t width, height;
+          in >> width >> height;
+
+          // For now, assume RGB (could be extended to detect RGBA)
+          resize(width, height, CH_RGB);
+
+          const auto imageSize = m_state->image_buffer_size_bytes();
+          if (imageSize > 0)
+          {
+            in.ReadBuffer(m_state->image_data, imageSize);
+          }
+        }
+      }
     }
     break;
-    case 0:
-    {
-      uint32_t width, height, nChannels, imgLength;
-      uint8_t originTopLeft;
 
-      in >> width >> height >> nChannels >> originTopLeft >> imgLength;
-
-      resize(
-          static_cast<int32_t>(width), static_cast<int32_t>(height),
-          static_cast<TImageChannels>(nChannels));
-      in.ReadBuffer(m_state->image_data, imgLength);
-    }
-    break;
-    case 1:
-    {
-      // Version 1: High quality JPEG image
-      uint32_t nBytes;
-      in >> nBytes;
-      std::vector<uint8_t> buf(nBytes);
-      in.ReadBuffer(buf.data(), nBytes);
-
-      mrpt::io::CMemoryStream aux;
-      aux.assignMemoryNotOwn(buf.data(), buf.size());
-      aux.Seek(0);
-      loadFromStreamAsJPEG(aux);
-    }
-    break;
-    case 2:
-    case 3:
-    case 4:
-    case 5:
+    // Support older versions for backward compatibility
     case 6:
     case 7:
     case 8:
     case 9:
     {
-      // Version 6: 	m_state->imgIsExternalStorage ??
-      if (version >= 6)
-      {
-        in >> m_state->imgIsExternalStorage;
-      }
-      else
-      {
-        m_state->imgIsExternalStorage = false;
-      }
-
-      if (m_state->imgIsExternalStorage)
-      {
-        // Just the file name:
-        in >> m_state->externalFile;
-      }
-      else
-      {  // Normal, the whole image data:
-
-        // Version 2: Color->JPEG, GrayScale->BYTE's array!
-        uint8_t hasColor;
-        in >> hasColor;
-        if (!hasColor)
-        {
-          // GRAY SCALE:
-          int32_t width, height, origin, imageSize;
-          in >> width >> height >> origin >> imageSize;
-          PixelDepth depth(PixelDepth::D8U);
-          if (version >= 9)
-          {
-            int32_t tempdepth;
-            in >> tempdepth;
-            depth = PixelDepth(tempdepth);
-          }
-          resize(static_cast<int32_t>(width), static_cast<int32_t>(height), CH_GRAY, depth);
-          ASSERT_EQUAL_(
-              static_cast<uint32_t>(imageSize),
-              static_cast<uint32_t>(m_state->image_buffer_size_bytes()));
-
-          if (version == 2)
-          {
-            if (imageSize)
-            {
-              in.ReadBuffer(m_state->image_data, static_cast<std::size_t>(imageSize));
-            }
-          }
-          else
-          {
-            // Version 3: ZIP compression!
-            bool imageIsZIP = true;
-
-            // Version 4: Skip zip if the image size <= 16Kb
-            // Version 5: Use CImage::DISABLE_ZIP_COMPRESSION
-            if (version == 4 && imageSize <= 16 * 1024) imageIsZIP = false;
-
-            if (version >= 5)
-            {
-              // It is stored int the stream:
-              in >> imageIsZIP;
-            }
-
-            if (imageIsZIP)
-            {
-              uint32_t zipDataLen;
-              in >> zipDataLen;
-              THROW_EXCEPTION("ZIP image deserialization not supported anymore");
-            }
-            else
-            {
-              // Raw bytes:
-              if (imageSize)
-              {
-                in.ReadBuffer(m_state->image_data, static_cast<std::size_t>(imageSize));
-              }
-            }
-          }
-        }
-        else
-        {
-          bool loadJPEG = true;
-
-          if (version >= 7)
-          {
-            int32_t width, height;
-            in >> width >> height;
-
-            if (width >= 1 && height >= 1)
-            {
-              loadJPEG = true;
-            }
-            else
-            {
-              loadJPEG = false;
-
-              if (width < 0 && height < 0)
-              {
-                // v8: raw image:
-                const auto real_w = static_cast<int32_t>(-width);
-                const auto real_h = static_cast<int32_t>(-height);
-
-                resize(real_w, real_h, CH_RGB);
-
-                const size_t bytes_per_row = m_state->row_stride_in_bytes();
-                for (int32_t y = 0; y < m_state->height; y++)
-                {
-                  const size_t nRead = in.ReadBuffer(ptrLine<void>(y), bytes_per_row);
-                  if (nRead != bytes_per_row)
-                  {
-                    THROW_EXCEPTION("Error: Truncated data stream while parsing raw image?");
-                  }
-                }
-              }
-              else
-              {
-                // it's a 0xN or Nx0 image: just resize and
-                // load nothing:
-                resize(width, height, CH_RGB);
-              }
-            }
-          }
-
-          // COLOR IMAGE: JPEG
-          if (loadJPEG)
-          {
-            uint32_t nBytes;
-            in >> nBytes;
-
-            std::vector<uint8_t> buf(nBytes);
-            in.ReadBuffer(buf.data(), nBytes);
-
-            mrpt::io::CMemoryStream aux;
-            aux.assignMemoryNotOwn(buf.data(), buf.size());
-            aux.Seek(0);
-
-            loadFromStreamAsJPEG(aux);
-          }
-        }
-      }
+      // Read with older format, then convert
+      // This would require parsing the old OpenCV-based format
+      // For now, throw an exception suggesting conversion
+      THROW_EXCEPTION(
+          "Reading CImage from MRPT <3.0 format not yet implemented. "
+          "Please convert images using MRPT 2.x first.");
     }
     break;
+
     default:
       MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
   };
 }
 
-/*---------------------------------------------------------------
-Implements the writing to a mxArray for Matlab
----------------------------------------------------------------*/
 #if MRPT_HAS_MATLAB
-// Add to implement mexplus::from template specialization
 IMPLEMENTS_MEXPLUS_FROM(mrpt::img::CImage)
 #endif
 
 mxArray* CImage::writeToMatlab() const
 {
 #if MRPT_HAS_MATLAB
-  return mexplus::from(this->asCvMatRef());
+  // TODO: Implement MATLAB export
+  THROW_EXCEPTION("MATLAB export not yet implemented for STB-based CImage");
 #else
   THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
 #endif
@@ -583,7 +436,7 @@ mxArray* CImage::writeToMatlab() const
 
 TImageSize CImage::getSize() const
 {
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
+  makeSureImageIsLoaded();
   return {static_cast<int>(m_state->width), static_cast<int>(m_state->height)};
 }
 
@@ -595,18 +448,19 @@ int32_t CImage::getWidth() const
 
 std::string CImage::getChannelsOrder() const
 {
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
+  makeSureImageIsLoaded();
 
   const auto chCount = m_state->channels;
   ASSERT_GE_(chCount, 1);
   ASSERT_LE_(chCount, 4);
-  const std::array<const char*, 4> orderNames = {"GRAY", "", "BGR", "BGRA"};
+
+  const std::array<const char*, 4> orderNames = {"GRAY", "", "RGB", "RGBA"};
   return std::string(orderNames.at(chCount - 1));
 }
 
 size_t CImage::getRowStride() const
 {
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
+  makeSureImageIsLoaded();
   return m_state->row_stride_in_bytes();
 }
 
@@ -618,42 +472,38 @@ int32_t CImage::getHeight() const
 
 bool CImage::isColor() const
 {
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
+  makeSureImageIsLoaded();
   return m_state->channels >= 3;
 }
 
 TImageChannels CImage::channels() const
 {
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
+  makeSureImageIsLoaded();
   return m_state->channels;
 }
 
 bool CImage::isEmpty() const { return !m_state->imgIsExternalStorage && m_state->empty(); }
 
-bool CImage::isOriginTopLeft() const
-{
-  return true;  // As of mrpt v1.9.9
-}
+bool CImage::isOriginTopLeft() const { return true; }
 
 float CImage::getAsFloat(const TPixelCoord& pt, uint8_t channel) const
 {
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
-  // [0,255]->[0,1]
+  makeSureImageIsLoaded();
   return at<uint8_t>(pt.x, pt.y, channel) / 255.0f;
 }
 
 float CImage::getAsFloat(const TPixelCoord& pt) const
 {
-  // Is a RGB image??
+  makeSureImageIsLoaded();
+
   if (isColor())
   {
-    // Luminance: Y = 0.3R + 0.59G + 0.11B
+    // Luminance: Y = 0.299R + 0.587G + 0.114B
     const uint8_t* pixels = ptr<uint8_t>(pt.x, pt.y, 0);
-    return (pixels[0] * 0.3f + pixels[1] * 0.59f + pixels[2] * 0.11f) / 255.0f;
+    return (pixels[0] * 0.299f + pixels[1] * 0.587f + pixels[2] * 0.114f) / 255.0f;
   }
   else
   {
-    // [0,255]->[0,1]
     return at<uint8_t>(pt.x, pt.y, 0) / 255.0f;
   }
 }
@@ -667,188 +517,217 @@ CImage CImage::grayscale() const
 
 bool CImage::grayscale(CImage& ret) const
 {
-  // The image is already grayscale??
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
-  if (m_state->img.channels() == 1)
+  makeSureImageIsLoaded();
+
+  if (m_state->channels == 1)
   {
     ret = *this;  // shallow copy
     return true;
   }
-  else
+
+  // Convert to grayscale
+  ret.resize(m_state->width, m_state->height, CH_GRAY, m_state->depth);
+
+  const auto* src = m_state->image_data;
+  auto* dst = ret.m_state->image_data;
+
+  for (int32_t y = 0; y < m_state->height; y++)
   {
-    // Convert to a single luminance channel image
-    cv::Mat src = m_state->img;
-    // Detect in-place op and make deep copy:
-    if (src.data == ret.m_state->img.data) src = src.clone();
-
-    return my_img_to_grayscale(src, ret.m_impl->img);
-
-    if (dest.size() != src.size() || dest.type() != src.type())
-      dest = cv::Mat(src.rows, src.cols, CV_8UC1);
-
-    // If possible, use SSE optimized version:
-#if MRPT_ARCH_INTEL_COMPATIBLE
-    if ((src.step[0] & 0x0f) == 0 && (dest.step[0] & 0x0f) == 0 &&
-        mrpt::cpu::supports(mrpt::cpu::feature::SSSE3))
+    for (int32_t x = 0; x < m_state->width; x++)
     {
-      image_SSSE3_bgr_to_gray_8u(
-          src.ptr<uint8_t>(), dest.ptr<uint8_t>(), src.cols, src.rows, src.step[0], dest.step[0]);
-      return true;
-    }
-#endif
+      // Luminance formula: Y = 0.299R + 0.587G + 0.114B
+      const float r = src[0];
+      const float g = src[1];
+      const float b = src[2];
 
-    // OpenCV Method:
-    cv::cvtColor(src, dest, cv::COLOR_BGR2GRAY);
-    return false;
+      *dst = static_cast<uint8_t>(0.299f * r + 0.587f * g + 0.114f * b);
+
+      src += m_state->channels;
+      dst++;
+    }
   }
+
+  return false;  // No SSE optimization used
 }
 
-bool CImage::scaleHalf(CImage& out, TInterpolationMethod interp) const
+void CImage::scaleImage(
+    CImage& out_img, int32_t width, int32_t height, TInterpolationMethod interp) const
 {
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
-  // Get this image size:
-  auto& img = m_state->img;
-  const int w = img.cols, h = img.rows;
+  MRPT_START
+  makeSureImageIsLoaded();
 
-  // Create target image:
-  out.resize(w >> 1, h >> 1, getChannelCount());
-  auto& img_out = out.m_state->img;
-
-// If possible, use SSE optimized version:
-#if MRPT_ARCH_INTEL_COMPATIBLE
-  if (img.channels() == 3 && interp == IMG_INTERP_NN &&
-      mrpt::cpu::supports(mrpt::cpu::feature::SSSE3))
+  // Check if already the right size
+  if (m_state->width == width && m_state->height == height)
   {
-    image_SSSE3_scale_half_3c8u(img.data, img_out.data, w, h, img.step[0], img_out.step[0]);
-    return true;
+    if (&out_img != this)
+    {
+      out_img = *this;
+    }
+    return;
   }
 
-  if (img.channels() == 1 && mrpt::cpu::supports(mrpt::cpu::feature::SSE2))
-  {
-    if (interp == IMG_INTERP_NN)
-    {
-      image_SSE2_scale_half_1c8u(img.data, img_out.data, w, h, img.step[0], img_out.step[0]);
-      return true;
-    }
-    else if (interp == IMG_INTERP_LINEAR)
-    {
-      image_SSE2_scale_half_smooth_1c8u(img.data, img_out.data, w, h, img.step[0], img_out.step[0]);
-      return true;
-    }
-  }
-#endif
+  // Prepare output image
+  out_img.resize(width, height, m_state->channels, m_state->depth);
 
-  // Fall back to slow method:
-  cv::resize(img, img_out, img_out.size(), 0, 0, interpolationMethod2Cv(interp));
-  return false;
+  // Map interpolation method to stbir
+  stbir_filter filter;
+  switch (interp)
+  {
+    case IMG_INTERP_NN:
+      filter = STBIR_FILTER_BOX;
+      break;
+    case IMG_INTERP_LINEAR:
+      filter = STBIR_FILTER_TRIANGLE;
+      break;
+    case IMG_INTERP_CUBIC:
+      filter = STBIR_FILTER_CUBICBSPLINE;
+      break;
+    case IMG_INTERP_AREA:
+      filter = STBIR_FILTER_BOX;
+      break;
+    default:
+      filter = STBIR_FILTER_DEFAULT;
+  }
+
+  // Perform resize using stbir
+  stbir_resize_uint8_linear(
+      m_state->image_data, m_state->width, m_state->height,
+      static_cast<int>(m_state->row_stride_in_bytes()), out_img.m_state->image_data, width, height,
+      static_cast<int>(out_img.m_state->row_stride_in_bytes()),
+      static_cast<stbir_pixel_layout>(m_state->channels));
+
+  MRPT_END
 }
 
-void CImage::scaleDouble(CImage& out, TInterpolationMethod interp) const
+bool CImage::scaleHalf(CImage& out_image, TInterpolationMethod interp) const
 {
-  out = *this;
-  const TImageSize siz = this->getSize();
-  out.scaleImage(out, siz.x * 2, siz.y * 2, interp);
+  scaleImage(out_image, m_state->width / 2, m_state->height / 2, interp);
+  return false;  // No SSE optimization
+}
+
+void CImage::scaleDouble(CImage& out_image, TInterpolationMethod interp) const
+{
+  scaleImage(out_image, m_state->width * 2, m_state->height * 2, interp);
 }
 
 void CImage::setPixel(const TPixelCoord& pt, const mrpt::img::TColor& color)
 {
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
+  makeSureImageIsLoaded();
 
-  ASSERT_(this->getPixelDepth() == mrpt::img::PixelDepth::D8U);
-
-  if (pt.x < 0 || pt.y < 0 || pt.y >= m_state->height || x >= m_state->width)
+  if (pt.x < 0 || pt.y < 0 || pt.y >= m_state->height || pt.x >= m_state->width)
   {
-    return;  // Invalid pixel coordinates
+    return;  // Out of bounds
   }
 
-  if (img.channels() == 1)
+  if (m_state->channels == 1)
   {
-    img.ptr<uint8_t>(y)[x] = color.R;
+    // Grayscale: use luminance
+    at<uint8_t>(pt.x, pt.y, 0) =
+        static_cast<uint8_t>(0.299f * color.R + 0.587f * color.G + 0.114f * color.B);
   }
-  else
+  else if (m_state->channels == 3)
   {
-#if defined(_DEBUG)
-    ASSERT_(img.channels() == 3);
-#endif
-    auto* dest = &img.ptr<uint8_t>(y)[3 * x];
-    *dest++ = color.R;
-    *dest++ = color.G;  // G
-    *dest++ = color.B;  // B
+    // RGB
+    auto* pixel = ptr<uint8_t>(pt.x, pt.y, 0);
+    pixel[0] = color.R;
+    pixel[1] = color.G;
+    pixel[2] = color.B;
+  }
+  else if (m_state->channels == 4)
+  {
+    // RGBA
+    auto* pixel = ptr<uint8_t>(pt.x, pt.y, 0);
+    pixel[0] = color.R;
+    pixel[1] = color.G;
+    pixel[2] = color.B;
+    pixel[3] = color.A;
   }
 }
 
-void CImage::filledRectangle(int x0, int y0, int x1, int y1, const mrpt::img::TColor color)
+void CImage::filledRectangle(
+    const TPixelCoord& pt0, const TPixelCoord& pt1, const mrpt::img::TColor& color)
 {
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
-  cv::rectangle(m_impl->img, {x0, y0}, {x1, y1}, CV_RGB(color.R, color.G, color.B), cv::FILLED);
+  makeSureImageIsLoaded();
+
+  const int x0 = std::max(0, std::min(pt0.x, pt1.x));
+  const int y0 = std::max(0, std::min(pt0.y, pt1.y));
+  const int x1 = std::min(m_state->width - 1, std::max(pt0.x, pt1.x));
+  const int y1 = std::min(m_state->height - 1, std::max(pt0.y, pt1.y));
+
+  for (int y = y0; y <= y1; y++)
+  {
+    for (int x = x0; x <= x1; x++)
+    {
+      setPixel({x, y}, color);
+    }
+  }
 }
 
-void CImage::drawImage(int x, int y, const mrpt::img::CImage& img)
+void CImage::drawImage(const TPixelCoord& pt, const mrpt::img::CImage& img)
 {
   makeSureImageIsLoaded();
   img.makeSureImageIsLoaded();
 
-  cv::Rect roi(cv::Point(x, y), cv::Size(img.getWidth(), img.getHeight()));
-  cv::Mat dest = m_impl->img(roi);
-  img.m_state->img.copyTo(dest);
+  const int dst_x = pt.x;
+  const int dst_y = pt.y;
+  const int src_w = img.getWidth();
+  const int src_h = img.getHeight();
+
+  // Clip to destination bounds
+  for (int y = 0; y < src_h; y++)
+  {
+    const int dst_row = dst_y + y;
+    if (dst_row < 0 || dst_row >= m_state->height) continue;
+
+    for (int x = 0; x < src_w; x++)
+    {
+      const int dst_col = dst_x + x;
+      if (dst_col < 0 || dst_col >= m_state->width) continue;
+
+      // Copy pixel
+      if (m_state->channels == img.m_state->channels)
+      {
+        std::memcpy(
+            ptr<uint8_t>(dst_col, dst_row, 0), img.ptr<uint8_t>(x, y, 0),
+            m_state->pixel_size_in_bytes());
+      }
+      else
+      {
+        // TODO: Handle channel conversion
+        // For now, just copy what we can
+      }
+    }
+  }
 }
 
 void CImage::extract_patch(
     CImage& patch, const TPixelCoord& top_left_corner, const TImageSize& patch_size) const
 {
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
-  const auto& src = m_state->img;
-  auto& dest = patch.m_state->img;
+  makeSureImageIsLoaded();
 
-  src(cv::Rect(col_, row_, col_num, row_num)).copyTo(dest);
-}
+  patch.resize(patch_size.x, patch_size.y, m_state->channels, m_state->depth);
 
-float CImage::correlate(const CImage& img2, int width_init, int height_init) const
-{
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
+  const int x0 = top_left_corner.x;
+  const int y0 = top_left_corner.y;
 
-  if ((img2.getWidth() + width_init > getWidth()) | (img2.getHeight() + height_init > getHeight()))
-    THROW_EXCEPTION("Correlation Error!, image to correlate out of bounds");
-
-  float x1, x2;
-  float syy = 0.0f, sxy = 0.0f, sxx = 0.0f, m1 = 0.0f, m2 = 0.0f,
-        n = (float)(img2.getHeight() * img2.getWidth());
-
-  // find the means
-  for (size_t i = 0; i < img2.getHeight(); i++)
+  for (int y = 0; y < patch_size.y; y++)
   {
-    for (size_t j = 0; j < img2.getWidth(); j++)
-    {
-      m1 += *(*this)(j + width_init, i + height_init);
-      m2 += *img2(j, i);
-    }
-  }
-  m1 /= n;
-  m2 /= n;
+    if (y0 + y >= m_state->height) break;
 
-  for (size_t i = 0; i < img2.getHeight(); i++)
-  {
-    for (size_t j = 0; j < img2.getWidth(); j++)
-    {
-      x1 = *(*this)(j + width_init, i + height_init) - m1;
-      x2 = *img2(j, i) - m2;
-      sxx += x1 * x1;
-      syy += x2 * x2;
-      sxy += x1 * x2;
-    }
+    std::memcpy(
+        patch.ptrLine<uint8_t>(y), ptrLine<uint8_t>(y0 + y) + x0 * m_state->pixel_size_in_bytes(),
+        patch_size.x * m_state->pixel_size_in_bytes());
   }
-
-  return sxy / sqrt(sxx * syy);
 }
 
 void CImage::normalize()
 {
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
-  cv::normalize(m_impl->img, m_impl->img, 255, 0, cv::NORM_MINMAX);
+  // TODO: Implement normalization
+  THROW_EXCEPTION("normalize() not yet implemented with STB library");
 }
 
 void CImage::getAsMatrix(
-    CMatrixFloat& outMatrix,
+    mrpt::math::CMatrixFloat& outMatrix,
     bool doResize,
     int x_min,
     int y_min,
@@ -857,89 +736,80 @@ void CImage::getAsMatrix(
     bool normalize_01) const
 {
   MRPT_START
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
+  makeSureImageIsLoaded();
 
-  const auto& img = m_state->img;
+  if (x_max == -1) x_max = m_state->width - 1;
+  if (y_max == -1) y_max = m_state->height - 1;
 
-  // Set sizes:
-  if (x_max == -1) x_max = img.cols - 1;
-  if (y_max == -1) y_max = img.rows - 1;
+  ASSERT_(x_min >= 0 && x_min < m_state->width && x_min <= x_max);
+  ASSERT_(y_min >= 0 && y_min < m_state->height && y_min <= y_max);
 
-  ASSERT_(x_min >= 0 && x_min < img.cols && x_min < x_max);
-  ASSERT_(y_min >= 0 && y_min < img.rows && y_min < y_max);
+  const int lx = (x_max - x_min + 1);
+  const int ly = (y_max - y_min + 1);
 
-  int lx = (x_max - x_min + 1);
-  int ly = (y_max - y_min + 1);
-
-  if (doResize || outMatrix.rows() < ly || outMatrix.cols() < lx)
-    outMatrix.setSize(y_max - y_min + 1, x_max - x_min + 1);
+  if (doResize || outMatrix.rows() < ly || outMatrix.cols() < lx) outMatrix.setSize(ly, lx);
 
   const bool is_color = isColor();
+  const float scale = normalize_01 ? (1.0f / 255.0f) : 1.0f;
 
-  // Luminance: Y = 0.3R + 0.59G + 0.11B
   for (int y = 0; y < ly; y++)
   {
-    const uint8_t* pixels = ptr<uint8_t>(x_min, y_min + y);
+    const uint8_t* pixels = ptr<uint8_t>(x_min, y_min + y, 0);
     for (int x = 0; x < lx; x++)
     {
-      float aux;
+      float value;
       if (is_color)
       {
-        aux = *pixels++ * 0.3f;
-        aux += *pixels++ * 0.59f;
-        aux += *pixels++ * 0.11f;
+        // Luminance
+        value = pixels[0] * 0.299f + pixels[1] * 0.587f + pixels[2] * 0.114f;
+        pixels += m_state->channels;
       }
       else
       {
-        aux = (*pixels++);
+        value = *pixels++;
       }
-      outMatrix.coeffRef(y, x) = aux;
+      outMatrix(y, x) = value * scale;
     }
   }
-  if (normalize_01) outMatrix *= (1.0f / 255);
 
   MRPT_END
 }
 
 void CImage::getAsMatrix(
-    CMatrix_u8& outMatrix, bool doResize, int x_min, int y_min, int x_max, int y_max) const
+    mrpt::math::CMatrix_u8& outMatrix, bool doResize, int x_min, int y_min, int x_max, int y_max)
+    const
 {
   MRPT_START
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
+  makeSureImageIsLoaded();
 
-  const auto& img = m_state->img;
+  if (x_max == -1) x_max = m_state->width - 1;
+  if (y_max == -1) y_max = m_state->height - 1;
 
-  // Set sizes:
-  if (x_max == -1) x_max = img.cols - 1;
-  if (y_max == -1) y_max = img.rows - 1;
+  ASSERT_(x_min >= 0 && x_min < m_state->width && x_min <= x_max);
+  ASSERT_(y_min >= 0 && y_min < m_state->height && y_min <= y_max);
 
-  ASSERT_(x_min >= 0 && x_min < img.cols && x_min < x_max);
-  ASSERT_(y_min >= 0 && y_min < img.rows && y_min < y_max);
+  const int lx = (x_max - x_min + 1);
+  const int ly = (y_max - y_min + 1);
 
-  int lx = (x_max - x_min + 1);
-  int ly = (y_max - y_min + 1);
-
-  if (doResize || outMatrix.rows() < ly || outMatrix.cols() < lx)
-    outMatrix.setSize(y_max - y_min + 1, x_max - x_min + 1);
+  if (doResize || outMatrix.rows() < ly || outMatrix.cols() < lx) outMatrix.setSize(ly, lx);
 
   const bool is_color = isColor();
 
-  // Luminance: Y = 0.3R + 0.59G + 0.11B
   for (int y = 0; y < ly; y++)
   {
-    const uint8_t* pixels = ptr<uint8_t>(x_min, y_min + y);
+    const uint8_t* pixels = ptr<uint8_t>(x_min, y_min + y, 0);
     for (int x = 0; x < lx; x++)
     {
       if (is_color)
       {
-        unsigned int aux = *pixels++ * 3000;  // 0.3f;
-        aux += *pixels++ * 5900;              // 0.59f;
-        aux += *pixels++ * 1100;              // 0.11f;
-        outMatrix.coeffRef(y, x) = static_cast<uint8_t>(aux / 1000);
+        // Luminance (integer arithmetic for speed)
+        const unsigned int value = pixels[0] * 299 + pixels[1] * 587 + pixels[2] * 114;  // * 1000
+        outMatrix(y, x) = static_cast<uint8_t>(value / 1000);
+        pixels += m_state->channels;
       }
       else
       {
-        outMatrix.coeffRef(y, x) = (*pixels++);
+        outMatrix(y, x) = *pixels++;
       }
     }
   }
@@ -959,6 +829,8 @@ void CImage::getAsRGBMatrices(
 {
   MRPT_START
 
+  THROW_EXCEPTION("TODO!");
+#if 0
   makeSureImageIsLoaded();  // For delayed loaded images stored externally
   const auto& img = m_state->img;
 
@@ -994,7 +866,7 @@ void CImage::getAsRGBMatrices(
       }
     }
   }
-
+#endif
   MRPT_END
 }
 
@@ -1010,6 +882,8 @@ void CImage::getAsRGBMatrices(
 {
   MRPT_START
 
+  THROW_EXCEPTION("TODO!");
+#if 0
   makeSureImageIsLoaded();  // For delayed loaded images stored externally
   const auto& img = m_state->img;
 
@@ -1045,68 +919,71 @@ void CImage::getAsRGBMatrices(
       }
     }
   }
+#endif
 
   MRPT_END
 }
 
 void CImage::cross_correlation_FFT(
     const CImage& in_img,
-    CMatrixFloat& out_corr,
-    int u_search_ini,
-    int v_search_ini,
-    int u_search_size,
-    int v_search_size,
-    float biasThisImg,
-    float biasInImg) const
+    mrpt::math::CMatrixFloat& out_corr,
+    std::optional<int32_t> u_search_ini,
+    std::optional<int32_t> v_search_ini,
+    std::optional<int32_t> u_search_size,
+    std::optional<int32_t> v_search_size,
+    std::optional<float> biasThisImg,
+    std::optional<float> biasInImg) const
 {
   MRPT_START
 
   makeSureImageIsLoaded();  // For delayed loaded images stored externally
 
   // Set limits:
-  if (u_search_ini == -1) u_search_ini = 0;
-  if (v_search_ini == -1) v_search_ini = 0;
-  if (u_search_size == -1) u_search_size = static_cast<int>(getWidth());
-  if (v_search_size == -1) v_search_size = static_cast<int>(getHeight());
+  const auto u_ini = u_search_ini ? *u_search_ini : 0;
+  const auto v_ini = v_search_ini ? *v_search_ini : 0;
+  const auto u_size = u_search_size ? *u_search_size : getWidth();
+  const auto v_size = v_search_size ? *v_search_size : getHeight();
 
-  int u_search_end = u_search_ini + u_search_size - 1;
-  int v_search_end = v_search_ini + v_search_size - 1;
+  const auto u_search_end = u_ini + u_size - 1;
+  const auto v_search_end = v_ini + v_size - 1;
 
-  ASSERT_(u_search_end < static_cast<int>(getWidth()));
-  ASSERT_(v_search_end < static_cast<int>(getHeight()));
+  ASSERT_(u_search_end < getWidth());
+  ASSERT_(v_search_end < getHeight());
 
   // Find smallest valid size:
   size_t x, y;
-  size_t actual_lx = std::max(static_cast<size_t>(u_search_size), in_img.getWidth());
-  size_t actual_ly = std::max(static_cast<size_t>(v_search_size), in_img.getHeight());
-  size_t lx = mrpt::round2up<size_t>(actual_lx);
-  size_t ly = mrpt::round2up<size_t>(actual_ly);
+  const auto actual_lx = std::max(u_size, in_img.getWidth());
+  const auto actual_ly = std::max(v_size, in_img.getHeight());
+  const auto lx = mrpt::round2up(actual_lx);
+  const auto ly = mrpt::round2up(actual_ly);
 
-  CMatrixF i1(ly, lx), i2(ly, lx);
+  mrpt::math::CMatrixF i1(ly, lx);
+  mrpt::math::CMatrixF i2(ly, lx);
 
   // We fill the images with the bias, such as when we substract the bias
   // later on,
   //  those pixels not really occupied by the image really becomes zero:
-  i1.fill(biasInImg);
-  i2.fill(biasThisImg);
+  const auto biasImg = biasInImg ? *biasInImg : .0f;
+  const auto biasThis = biasThisImg ? *biasThisImg : .0f;
+  i1.fill(biasImg);
+  i2.fill(biasThis);
 
   // Get as matrixes, padded with zeros up to power-of-two sizes:
-  getAsMatrix(
-      i2, false, u_search_ini, v_search_ini, u_search_ini + u_search_size - 1,
-      v_search_ini + v_search_size - 1);
+  getAsMatrix(i2, false, u_ini, v_ini, u_ini + u_size - 1, v_ini + v_size - 1);
   in_img.getAsMatrix(i1, false);
 
   // Remove the bias now:
-  i2 -= biasThisImg;
-  i1 -= biasInImg;
+  i2 -= biasThis;
+  i1 -= biasImg;
 
   // FFT:
-  CMatrixF I1_R, I1_I, I2_R, I2_I, ZEROS(ly, lx);
-  math::dft2_complex(i1, ZEROS, I1_R, I1_I);
-  math::dft2_complex(i2, ZEROS, I2_R, I2_I);
+  mrpt::math::CMatrixF I1_R, I1_I, I2_R, I2_I, ZEROS(ly, lx);
+  mrpt::math::dft2_complex(i1, ZEROS, I1_R, I1_I);
+  mrpt::math::dft2_complex(i2, ZEROS, I2_R, I2_I);
 
   // Compute the COMPLEX division of I2 by I1:
   for (y = 0; y < ly; y++)
+  {
     for (x = 0; x < lx; x++)
     {
       float r1 = I1_R(y, x);
@@ -1119,23 +996,30 @@ void CImage::cross_correlation_FFT(
       I2_R(y, x) = (r1 * r2 + ii1 * ii2) / den;
       I2_I(y, x) = (ii2 * r1 - r2 * ii1) / den;
     }
+  }
 
   // IFFT:
-  CMatrixF res_R, res_I;
+  mrpt::math::CMatrixF res_R, res_I;
   math::idft2_complex(I2_R, I2_I, res_R, res_I);
 
   out_corr.setSize(actual_ly, actual_lx);
   for (y = 0; y < actual_ly; y++)
+  {
     for (x = 0; x < actual_lx; x++)
+    {
       out_corr(y, x) = sqrt(square(res_R(y, x)) + square(res_I(y, x)));
+    }
+  }
 
   MRPT_END
 }
 
-void CImage::getAsMatrixTiled(CMatrixFloat& outMatrix) const
+void CImage::getAsMatrixTiled(mrpt::math::CMatrixFloat& outMatrix) const
 {
   MRPT_START
 
+  THROW_EXCEPTION("TODO!");
+#if 0
   makeSureImageIsLoaded();  // For delayed loaded images stored externally
   const auto& img = m_state->img;
 
@@ -1176,6 +1060,7 @@ void CImage::getAsMatrixTiled(CMatrixFloat& outMatrix) const
       }
     }
   }
+#endif
 
   MRPT_END
 }
@@ -1201,18 +1086,21 @@ void CImage::unload() const noexcept
       std::cout << "[CImage::unload()] Called on this=" << reinterpret_cast<const void*>(this)
                 << std::endl;
 
-    const_cast<cv::Mat&>(m_impl->img) = cv::Mat();
+    m_state->clear_image_data();
   }
 }
 
 void CImage::makeSureImageIsLoaded(bool allowNonInitialized) const
 {
-  if (!m_state->img.empty()) return;  // OK, continue
+  if (!m_state->empty())
+  {
+    return;  // OK, continue
+  }
 
   if (m_state->imgIsExternalStorage)
   {
     // Load the file:
-    string wholeFile;
+    std::string wholeFile;
     getExternalStorageFileAbsolutePath(wholeFile);
 
     const std::string tmpFile = m_state->externalFile;
@@ -1251,40 +1139,35 @@ void CImage::getExternalStorageFileAbsolutePath(std::string& out_path) const
 void CImage::flipVertical()
 {
   makeSureImageIsLoaded();
+  THROW_EXCEPTION("TODO!");
+#if 0
   cv::flip(m_impl->img, m_impl->img, 0 /* x-axis */);
+#endif
 }
 
 void CImage::flipHorizontal()
 {
   makeSureImageIsLoaded();
+  THROW_EXCEPTION("TODO!");
+#if 0
   cv::flip(m_impl->img, m_impl->img, 1 /* y-axis */);
+#endif
 }
 
 void CImage::swapRB()
 {
   makeSureImageIsLoaded();  // For delayed loaded images stored externally
+  THROW_EXCEPTION("TODO!");
+#if 0
   cv::cvtColor(m_impl->img, m_impl->img, cv::COLOR_RGB2BGR);
-}
-
-void CImage::rectifyImageInPlace(void* mapX, void* mapY)
-{
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
-
-  auto& srcImg = m_state->img;
-  cv::Mat outImg(srcImg.rows, srcImg.cols, srcImg.type());
-
-  auto mapXm = static_cast<cv::Mat*>(mapX);
-  auto mapYm = static_cast<cv::Mat*>(mapX);
-
-  cv::remap(srcImg, outImg, *mapXm, *mapYm, cv::INTER_CUBIC);
-
-  clear();
-  srcImg = outImg;
+#endif
 }
 
 void CImage::undistort(CImage& out_img, const mrpt::img::TCamera& cameraParams) const
 {
   makeSureImageIsLoaded();  // For delayed loaded images stored externally
+  THROW_EXCEPTION("TODO!");
+#if 0
 
   ASSERTMSG_(out_img.m_impl->img.data != m_impl->img.data, "In-place undistort() not supported");
 
@@ -1302,12 +1185,15 @@ void CImage::undistort(CImage& out_img, const mrpt::img::TCamera& cameraParams) 
     for (int j = 0; j < 3; j++) inMat.at<double>(i, j) = intrMat(i, j);
 
   cv::undistort(srcImg, out_img.m_impl->img, inMat, distM);
+#endif
 }
 
 void CImage::filterMedian(CImage& out_img, int W) const
 {
   makeSureImageIsLoaded();  // For delayed loaded images stored externally
 
+  THROW_EXCEPTION("TODO!");
+#if 0
   auto srcImg = const_cast<cv::Mat&>(m_state->img);
   if (this == &out_img)
     srcImg = srcImg.clone();
@@ -1315,11 +1201,14 @@ void CImage::filterMedian(CImage& out_img, int W) const
     out_img.resize(srcImg.cols, srcImg.rows, getChannelCount());
 
   cv::medianBlur(srcImg, out_img.m_impl->img, W);
+#endif
 }
 
 void CImage::filterGaussian(CImage& out_img, int W, int H, double sigma) const
 {
   makeSureImageIsLoaded();  // For delayed loaded images stored externally
+  THROW_EXCEPTION("TODO!");
+#if 0
   auto srcImg = const_cast<cv::Mat&>(m_state->img);
   if (this == &out_img)
     srcImg = srcImg.clone();
@@ -1327,34 +1216,15 @@ void CImage::filterGaussian(CImage& out_img, int W, int H, double sigma) const
     out_img.resize(srcImg.cols, srcImg.rows, getChannelCount());
 
   cv::GaussianBlur(srcImg, out_img.m_impl->img, cv::Size(W, H), sigma);
-}
-
-void CImage::scaleImage(
-    CImage& out_img, unsigned int width, unsigned int height, TInterpolationMethod interp) const
-{
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
-
-  auto srcImg = m_state->img;
-  // Detect in-place operation and make a deep copy if needed:
-  if (out_img.m_state->img.data == srcImg.data) srcImg = srcImg.clone();
-
-  // Already done?
-  if (srcImg.cols == static_cast<int>(width) && srcImg.rows == static_cast<int>(height))
-  {
-    out_img.m_state->img = srcImg;
-    return;
-  }
-  out_img.resize(width, height, getChannelCount());
-
-  // Resize:
-  cv::resize(
-      srcImg, out_img.m_impl->img, out_img.m_impl->img.size(), 0, 0,
-      interpolationMethod2Cv(interp));
+#endif
 }
 
 void CImage::rotateImage(CImage& out_img, double ang, const TPixelCoord& center, double scale) const
 {
   makeSureImageIsLoaded();  // For delayed loaded images stored externally
+
+  THROW_EXCEPTION("rotateImage() not yet implemented with STB library");
+#if 0
 
   auto srcImg = m_state->img;
   // Detect in-place operation and make a deep copy if needed:
@@ -1394,6 +1264,7 @@ void CImage::rotateImage(CImage& out_img, double ang, const TPixelCoord& center,
   cv::warpAffine(
       srcImg, out_img.m_impl->img, M, out_img.m_impl->img.size(),
       cv::INTER_LINEAR + cv::WARP_INVERSE_MAP, cv::BORDER_REPLICATE);
+#endif
 }
 
 bool CImage::drawChessboardCorners(
@@ -1403,7 +1274,13 @@ bool CImage::drawChessboardCorners(
     unsigned int lines_width,
     unsigned int r)
 {
-  if (cornerCoords.size() != check_size_x * check_size_y) return false;
+  if (cornerCoords.size() != check_size_x * check_size_y)
+  {
+    return false;
+  }
+
+  THROW_EXCEPTION("TODO!");
+#if 0
 
   auto& img = m_state->img;
 
@@ -1446,7 +1323,7 @@ bool CImage::drawChessboardCorners(
         CCanvas::textOut(pt.x + 5, pt.y - 5, mrpt::format("%u", i), mrpt::img::TColor::blue());
     }
   }
-
+#endif
   return true;
 }
 
@@ -1461,10 +1338,15 @@ void CImage::colorImage(CImage& ret) const
 {
   if (this->isColor())
   {
-    if (&ret != this) ret = *this;
+    if (&ret != this)
+    {
+      ret = *this;
+    }
     return;
   }
 
+  THROW_EXCEPTION("Not yet implemented");
+#if 0
   auto srcImg = m_state->img;
   // Detect in-place op. and make deep copy:
   if (srcImg.data == ret.m_state->img.data) srcImg = srcImg.clone();
@@ -1472,6 +1354,7 @@ void CImage::colorImage(CImage& ret) const
   ret.resize(getWidth(), getHeight(), CH_RGB);
 
   cv::cvtColor(srcImg, ret.m_impl->img, cv::COLOR_GRAY2BGR);
+#endif
 }
 
 void CImage::joinImagesHorz(const CImage& img1, const CImage& img2)
@@ -1523,14 +1406,14 @@ void image_KLT_response_template(
 float CImage::KLT_response(const TPixelCoord& pt, const int32_t half_window_size) const
 {
   const auto& im1 = m_state->img;
-  const auto img_w = static_cast<unsigned int>(im1.cols),
-             img_h = static_cast<unsigned int>(im1.rows);
+  const auto img_w = static_cast<unsigned int>(im1.cols);
+  const auto img_h = static_cast<unsigned int>(im1.rows);
 
   // If any of those predefined values worked, do the generic way:
-  const unsigned int min_x = x - half_window_size;
-  const unsigned int max_x = x + half_window_size;
-  const unsigned int min_y = y - half_window_size;
-  const unsigned int max_y = y + half_window_size;
+  const unsigned int min_x = pt.x - half_window_size;
+  const unsigned int max_x = pt.x + half_window_size;
+  const unsigned int min_y = pt.y - half_window_size;
+  const unsigned int max_y = pt.y + half_window_size;
 
   // Since min_* are "unsigned", checking "<" will detect negative
   // numbers:

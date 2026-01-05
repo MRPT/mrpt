@@ -402,12 +402,12 @@ void CCanvas::textOut(const TPixelCoord& pt, const std::string& str, const mrpt:
   std::vector<uint16_t> uniStr;
   mrpt::system::decodeUTF8(str, uniStr);
 
-  int px = x0;
-  int py = y0;
+  int px = pt.x;
+  int py = pt.y;
 
   // Char size:
-  int char_w = m_selectedFontBitmaps[0];
-  int char_h = m_selectedFontBitmaps[1];
+  const auto char_w = m_selectedFontBitmaps[0];
+  const auto char_h = m_selectedFontBitmaps[1];
 
   for (unsigned short unichar : uniStr)
   {
@@ -422,11 +422,12 @@ void CCanvas::textOut(const TPixelCoord& pt, const std::string& str, const mrpt:
       if (unichar <= charset_end && unichar >= charset_ini)
       {
         // Draw this character:
-        int pyy = y_axis_reversed ? (py + char_h - 1) : py;
+        int pyy = y_axis_reversed ? (py + static_cast<int>(char_h) - 1) : py;
 
-        const uint32_t* char_bitmap = table_ptr + 2 + char_h * (unichar - charset_ini);
+        const uint32_t* char_bitmap =
+            table_ptr + 2 + static_cast<size_t>(char_h) * (unichar - charset_ini);
 
-        for (int y = 0; y < char_h; y++, pyy += y_axis_reversed ? -1 : 1)
+        for (int y = 0; y < static_cast<int>(char_h); y++, pyy += y_axis_reversed ? -1 : 1)
         {
           // Use memcpy() here since directly dereferencing is an
           // invalid operation in architectures (S390X) where
@@ -434,17 +435,17 @@ void CCanvas::textOut(const TPixelCoord& pt, const std::string& str, const mrpt:
           uint32_t row;
           memcpy(&row, char_bitmap, sizeof(row));
           char_bitmap++;
-          for (int x = 0, pxx = px; x < char_w; x++, pxx++)
+          for (int x = 0, pxx = px; x < static_cast<int>(char_w); x++, pxx++)
           {
             if (!!(row & (1 << x)))
             {
-              setPixel(pxx, pyy, color);
+              setPixel({pxx, pyy}, color);
             }
           }
         }
 
         // Advance the raster cursor:
-        px += char_w;
+        px += static_cast<int>(char_w);
 
         // Next char!
         break;
@@ -497,7 +498,10 @@ void CCanvas::ellipseGaussian(
     x2 = round(mean_x + confIntervalStds * (ccos * M(0, 0) + ssin * M(1, 0)));
     y2 = round(mean_y + confIntervalStds * (ccos * M(0, 1) + ssin * M(1, 1)));
 
-    if (i > 0) line(x1, y1, x2, y2, color, width);
+    if (i > 0)
+    {
+      line({x1, y1}, {x2, y2}, color, width);
+    }
 
     x1 = x2;
     y1 = y2;

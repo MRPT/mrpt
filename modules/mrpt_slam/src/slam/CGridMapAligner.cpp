@@ -12,7 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
@@ -774,8 +773,6 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
         }
         MRPT_LOG_INFO_FMT(
             "Largest consensus: %u", static_cast<unsigned>(largestConsensusCorrs.size()));
-        CEnhancedMetaFile::LINUX_IMG_WIDTH(m1->getSizeX() + m2->getSizeX() + 50);
-        CEnhancedMetaFile::LINUX_IMG_HEIGHT(max(m1->getSizeY(), m2->getSizeY()) + 50);
 
         for (auto s = sog_modes.begin(); s != sog_modes.end(); ++s)
         {

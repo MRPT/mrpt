@@ -12,6 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/core/exceptions.h>
 #include <mrpt/img/TColorManager.h>
 
 using namespace mrpt::img;
@@ -23,14 +24,15 @@ TColorManager::TColorManager(bool use_standard_colors_first_in /* = true */) :
   this->reset();
 }
 
-TColorManager::~TColorManager() = default;
 TColor TColorManager::getNextTColor()
 {
   if (have_exceeded_colors)
   {
     // pick and return a random color triad
     return TColor(
-        rand() % (color_thresh + 1), rand() % (color_thresh + 1), rand() % (color_thresh + 1));
+        static_cast<uint8_t>(rand() % (color_thresh + 1)),
+        static_cast<uint8_t>(rand() % (color_thresh + 1)),
+        static_cast<uint8_t>(rand() % (color_thresh + 1)));
   }
 
   // start updating by the step if we don't use (or have already used) the
@@ -78,6 +80,7 @@ void TColorManager::advanceRGBCounters()
   ASSERT_(!use_standard_colors_first || have_used_standard_colors);
 
   THROW_EXCEPTION("Not yet implemented.");
+
   // if standard colors have already been used then at first color is
   // TColor::blue
   if (curr_color == TColor::blue())
