@@ -94,13 +94,25 @@ const char* ParseColor(const char* data)
     r = data;
     for (q = targets[i]; *r != '\0'; r++)
     {
-      if (*r != *q) continue;
-      if (!isspace(*(r - 1))) continue;
+      if (*r != *q)
+      {
+        continue;
+      }
+      if (!isspace(*(r - 1)))
+      {
+        continue;
+      }
       p = r;
       for (;;)
       {
-        if (*q == '\0') return p;
-        if (*p++ != *q++) break;
+        if (*q == '\0')
+        {
+          return p;
+        }
+        if (*p++ != *q++)
+        {
+          break;
+        }
       }
       q = targets[i];
     }
@@ -376,18 +388,30 @@ unsigned char ParseHexadecimal(char digit1, char digit2)
   unsigned char i1, i2;
 
   if (digit1 >= 'a')
-    i1 = (unsigned char)(digit1 - 'a' + 0x0A);
+  {
+    i1 = static_cast<unsigned char>(digit1 - 'a' + 0x0A);
+  }
   else if (digit1 >= 'A')
-    i1 = (unsigned char)(digit1 - 'A' + 0x0A);
+  {
+    i1 = static_cast<unsigned char>(digit1 - 'A' + 0x0A);
+  }
   else
-    i1 = (unsigned char)(digit1 - '0');
+  {
+    i1 = static_cast<unsigned char>(digit1 - '0');
+  }
   if (digit2 >= 'a')
-    i2 = (unsigned char)(digit2 - 'a' + 0x0A);
+  {
+    i2 = static_cast<unsigned char>(digit2 - 'a' + 0x0A);
+  }
   else if (digit2 >= 'A')
-    i2 = (unsigned char)(digit2 - 'A' + 0x0A);
+  {
+    i2 = static_cast<unsigned char>(digit2 - 'A' + 0x0A);
+  }
   else
-    i2 = (unsigned char)(digit2 - '0');
-  return (unsigned char)(0x10 * i1 + i2);
+  {
+    i2 = static_cast<unsigned char>(digit2 - '0');
+  }
+  return static_cast<unsigned char>(0x10 * i1 + i2);
 }
 
 bool GetRGBFromName(
@@ -429,7 +453,7 @@ bool GetRGBFromName(
   p = name;
   while (*p)
   {
-    *p = (char)tolower(*p);
+    *p = static_cast<char>(tolower(*p));
     p++;
   }
 
@@ -464,7 +488,7 @@ bool GetRGBFromName(
         rgbVal = theRGBRecords[middle].rgb;
         *r = static_cast<unsigned char>((rgbVal >> 16) & 0xFF);
         *g = static_cast<unsigned char>((rgbVal >> 8) & 0xFF);
-        *b = static_cast<unsigned char>((rgbVal) & 0xFF);
+        *b = static_cast<unsigned char>((rgbVal)&0xFF);
         *isNone = false;
         found = true;
         break;
@@ -513,7 +537,7 @@ bool mrpt::img::CImage::loadFromXPM(const char* const* xpm_data, bool swap_rb)
     // than 8bit RGB...
     ASSERTMSG_(chars_per_pixel < 64, "XPM colormaps this large not supported.");
 
-    this->resize(width, height, CH_RGB);
+    this->resize(static_cast<int32_t>(width), static_cast<int32_t>(height), CH_RGB);
     key[chars_per_pixel] = '\0';
 
     /*
@@ -527,23 +551,29 @@ bool mrpt::img::CImage::loadFromXPM(const char* const* xpm_data, bool swap_rb)
       // we must have at least " x y" after the colour index, hence +5
       if (!xmpColLine || strlen(xmpColLine) < chars_per_pixel + 5)
       {
-        THROW_EXCEPTION_FMT("XPM: incorrect colour description in line %d", (int)(1 + i));
+        THROW_EXCEPTION_FMT(
+            "XPM: incorrect colour description in line %d", static_cast<int>(i + 1));
       }
 
-      for (size_t i_key = 0; i_key < chars_per_pixel; i_key++) key[i_key] = xmpColLine[i_key];
+      for (size_t i_key = 0; i_key < chars_per_pixel; i_key++)
+      {
+        key[i_key] = xmpColLine[i_key];
+      }
       const char* clr_def = ParseColor(xmpColLine + chars_per_pixel);
 
       if (clr_def == nullptr)
       {
         THROW_EXCEPTION_FMT(
-            "XPM: malformed colour definition '%s' at line %d!", xmpColLine, (int)(1 + i));
+            "XPM: malformed colour definition '%s' at line %d!", xmpColLine,
+            static_cast<int>(i + 1));
       }
 
       bool isNone = false;
       if (!GetRGBFromName(clr_def, &isNone, &clr_data.R, &clr_data.G, &clr_data.B))
       {
         THROW_EXCEPTION_FMT(
-            "XPM: malformed colour definition '%s' at line %d!", xmpColLine, (int)(1 + i));
+            "XPM: malformed colour definition '%s' at line %d!", xmpColLine,
+            static_cast<int>(i + 1));
       }
 
       keyString = key;
@@ -569,7 +599,8 @@ bool mrpt::img::CImage::loadFromXPM(const char* const* xpm_data, bool swap_rb)
         rgb = (data.R << 16) + (data.G << 8) + data.B;
         rgb_table[rgb];
       }
-      for (rgb = 0; rgb <= 0xffffff && rgb_table.count(rgb); ++rgb);
+      for (rgb = 0; rgb <= 0xffffff && rgb_table.count(rgb); ++rgb)
+        ;
       if (rgb > 0xffffff)
       {
         THROW_EXCEPTION("XPM: no colors left to use for mask!");
@@ -587,7 +618,7 @@ bool mrpt::img::CImage::loadFromXPM(const char* const* xpm_data, bool swap_rb)
     /*
      *  Parse image data:
      */
-    unsigned char* img_data = (*this)(0, 0);
+    auto* img_data = this->ptr<uint8_t>(0, 0);
     auto end = clr_tbl.end();
 
     for (size_t j = 0; j < height; j++)

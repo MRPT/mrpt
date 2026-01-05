@@ -15,7 +15,6 @@
 #include <mrpt/config.h>
 #include <mrpt/containers/yaml.h>
 #include <mrpt/core/round.h>  // round()
-#include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/random.h>

@@ -16,9 +16,7 @@
 #include <mrpt/img/TColor.h>
 
 #include <cstdlib>
-#include <iostream>
 #include <set>
-#include <utility>
 
 namespace mrpt::img
 {
@@ -31,8 +29,7 @@ struct TColorManager
  public:
   /**\brief Constructor */
   TColorManager(bool use_standard_colors_first = true);
-  /**\brief Destructor */
-  ~TColorManager();
+
   /**\brief Get the next RGB triad in TColorf form.
    *
    * Method automatically advances the current counters for RGB.
@@ -45,9 +42,11 @@ struct TColorManager
   mrpt::img::TColor getNextTColor();
   mrpt::img::TColor curr_color;
   std::set<mrpt::img::TColor> used_colors;
+
   /** Indicates if the standard colors are to be returned first.
    */
-  bool use_standard_colors_first;
+  bool use_standard_colors_first = true;
+
   /** Indicates if the standard colors have already been used.
    *
    * This is a cached version of the value returned from the
@@ -58,16 +57,17 @@ struct TColorManager
    * \sa checkStdColorsUsed
    */
   bool have_used_standard_colors = false;
+
   /**\brief Check if the standard colors have already been used.
    *
    * \ret True if they have indeed been used.
    */
   bool checkStdColorsUsed();
 
-  uint8_t color_step;
+  uint8_t color_step = 0;
   const uint8_t color_thresh{255};
 
-  bool have_exceeded_colors;
+  bool have_exceeded_colors = false;
 
  private:
   // color triad with which to advance the current TColor instance

@@ -14,7 +14,6 @@
 
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/core/lock_helper.h>
-#include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservationOdometry.h>
@@ -571,11 +570,13 @@ void CMetricMapBuilderICP::saveCurrentEstimationToImage(const std::string& file,
   auto pGrid = metricMap.mapByClass<COccupancyGridMap2D>();
   if (pGrid) pGrid->getAsImage(img);
 
-  // Draw paths (using vectorial plots!) over the EMF file:
-  // -------------------------------------------------
+    // Draw paths (using vectorial plots!) over the EMF file:
+    // -------------------------------------------------
+#if 0
   CEnhancedMetaFile EMF(file, 1000);
 
   EMF.drawImage(0, 0, img);
+#endif
 
   unsigned int imgHeight = img.getHeight();
 

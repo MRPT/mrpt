@@ -14,7 +14,6 @@
 
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/core/round.h>
-#include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/obs/CObservationStereoImages.h>
