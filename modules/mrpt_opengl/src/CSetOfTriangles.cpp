@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "opengl-precomp.h"  // Precompiled header
-//
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include <mrpt/opengl/opengl_api.h>

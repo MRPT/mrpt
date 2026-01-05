@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "kinematics-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/initializer.h>
 #include <mrpt/kinematics.h>
 #include <mrpt/kinematics/registerAllClasses.h>

@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "slam-precomp.h"  // Precompiled headers
-//
 #include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/maps/CMultiMetricMap.h>

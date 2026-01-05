@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "comms-precomp.h"  // Precompiled headers
-//
 #include <mrpt/comms/CInterfaceFTDI.h>
 
 #include <algorithm>  // min()

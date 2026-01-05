@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/bit_cast.h>
 #include <mrpt/core/reverse_bytes.h>
 #include <mrpt/hwdrivers/CTaoboticsIMU.h>

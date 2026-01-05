@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "math-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/math/distributions.h>

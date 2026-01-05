@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "gui-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/gui/WxSubsystem.h>

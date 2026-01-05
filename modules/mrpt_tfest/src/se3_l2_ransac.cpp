@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "tfest-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/round.h>
 #include <mrpt/math/utils.h>  // linspace()
 #include <mrpt/poses/CPose3D.h>

@@ -12,11 +12,10 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "opengl-precomp.h"  // Precompiled header
-//
-
 // Stripped out version of libCVD gltext.cpp file, ported to OpenGL>=3
 // 2-BSD License.
+
+#include "gltext.h"
 
 #include <mrpt/math/TPoint2D.h>
 
@@ -24,8 +23,6 @@
 #include <cassert>
 #include <cmath>
 #include <map>
-
-#include "gltext.h"
 
 using namespace std;
 

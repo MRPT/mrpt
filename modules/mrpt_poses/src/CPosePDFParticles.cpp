@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "poses-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPosePDFGaussian.h>

@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "math-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/serialization/CArchive.h>
 

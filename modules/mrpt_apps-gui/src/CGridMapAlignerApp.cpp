@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "apps-precomp.h"  // Precompiled headers
-//
 #include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/apps/CGridMapAlignerApp.h>
 #include <mrpt/config/CConfigFile.h>

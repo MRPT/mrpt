@@ -32,15 +32,6 @@ define_mrpt_lib(
 	)
 
 if(BUILD_mrpt-gui)
-	# Ignore precompiled headers in some sources:
-	if(MRPT_ENABLE_PRECOMPILED_HDRS)
-		if (MSVC)
-			set_source_files_properties(
-				${mathplot_FILES}
-				PROPERTIES COMPILE_FLAGS "/Y-")
-		endif ()
-	endif()
-
 	if(CMAKE_MRPT_HAS_WXWIDGETS)
 		if (NOT TARGET imp_wxwidgets)
 			message(ERROR "imp_wxwidgets should be defined!")

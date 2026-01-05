@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "vision-lgpl-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/CSparseMatrix.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/system/CTimeLogger.h>

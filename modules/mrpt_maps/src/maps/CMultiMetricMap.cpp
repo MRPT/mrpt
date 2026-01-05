@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "maps-precomp.h"  // Precompiled headers
-//
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/maps/CMultiMetricMap.h>

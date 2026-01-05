@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "math-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/CSplineInterpolator1D.h>  // for CSplineInterpolator1D
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/serialization/CSerializable.h>      // for CSerializable, CSeriali...

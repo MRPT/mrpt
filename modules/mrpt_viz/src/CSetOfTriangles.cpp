@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "viz-precomp.h"  // Precompiled header
-//
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/viz/CSetOfTriangles.h>

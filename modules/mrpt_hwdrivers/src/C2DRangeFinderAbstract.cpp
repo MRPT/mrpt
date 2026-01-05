@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-//
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
 #include <mrpt/system/os.h>
 #include <mrpt/viz/CAxis.h>

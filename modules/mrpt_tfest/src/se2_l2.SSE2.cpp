@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "tfest-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/config.h>  // MRPT_ARCH_INTEL_COMPATIBLE
 
 #include "se2_l2_internal.h"

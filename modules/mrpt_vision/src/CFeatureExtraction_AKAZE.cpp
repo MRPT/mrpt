@@ -18,9 +18,6 @@
   AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
   ---------------------------------------------------------------*/
 
-#include "vision-precomp.h"  // Precompiled headers
-//
-
 // Universal include for all versions of OpenCV
 #include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/io/CMemoryStream.h>

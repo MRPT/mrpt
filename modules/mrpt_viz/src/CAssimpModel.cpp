@@ -15,8 +15,6 @@
 // This file contains portions of code from Assimp's example:
 // "Sample_SimpleOpenGL.c"
 
-#include "viz-precomp.h"  // Precompiled header
-//
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/core/round.h>
 #include <mrpt/serialization/CArchive.h>

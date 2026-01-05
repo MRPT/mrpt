@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "poses-precomp.h"  // Precompiled headers
-//
 #include <mrpt/poses/CPointPDF.h>
 #include <mrpt/serialization/CArchive.h>
 

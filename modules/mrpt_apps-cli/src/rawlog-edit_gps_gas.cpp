@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "apps-cli-precomp.h"  // Precompiled headers
-//
 #include <mrpt/img/color_maps.h>
 #include <mrpt/math/interp_fit.h>
 #include <mrpt/obs/CObservationGPS.h>

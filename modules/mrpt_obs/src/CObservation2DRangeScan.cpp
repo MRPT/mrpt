@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "obs-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/round.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/wrap2pi.h>

@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "opengl-precomp.h"  // Precompiled header
-//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/opengl/VertexArrayObject.h>
 #include <mrpt/opengl/opengl_api.h>

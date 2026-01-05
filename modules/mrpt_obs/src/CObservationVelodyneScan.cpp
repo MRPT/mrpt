@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "obs-precomp.h"  // Precompiled headers
-//
 #include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/core/round.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>

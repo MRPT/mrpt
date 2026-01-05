@@ -12,12 +12,10 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "vision-precomp.h"  // Precompiled headers
-//
+#include "polynom_solver.h"
+
 #include <cmath>
 #include <iostream>
-
-#include "polynom_solver.h"
 
 #define CV_PI 3.14159265358979323846
 

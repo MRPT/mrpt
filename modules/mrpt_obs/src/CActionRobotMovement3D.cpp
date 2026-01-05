@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "obs-precomp.h"  // Precompiled headers
-//
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/random.h>

@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "graphs-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/initializer.h>
 #include <mrpt/graphs/registerAllClasses.h>
 // Deps:

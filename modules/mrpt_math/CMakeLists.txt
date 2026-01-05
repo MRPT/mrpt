@@ -216,22 +216,14 @@ mrpt_add_library(
     ${eigen_dep}
 )
 
+target_precompile_headers(${PROJECT_NAME} PRIVATE
+    <vector>
+    <string>
+    <memory>
+    <mrpt/core/common.h>
+    <mrpt/math/CMatrixD.h>
+)
+
 # extra dependencies required by unit tests in this module:
 #set_property(GLOBAL PROPERTY mrpt_math_UNIT_TEST_EXTRA_DEPS mrpt-io)
 
-
-# Ignore precompiled headers in some sources:
-#if(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-#  set_source_files_properties(
-#    ${math/CSparse_FILES}
-#    ${math/kmeans_FILES}
-#    PROPERTIES COMPILE_FLAGS "/Y-"
-#    )
-#endif()
-
-# Still needed?
-#if (MSVC)
-#  # This is to prevent the error (in Debug builds):
-#  # LNK1189：library limit of 65535 objects exceeded
-#  target_compile_options(math PRIVATE /Ob2)
-#endif()

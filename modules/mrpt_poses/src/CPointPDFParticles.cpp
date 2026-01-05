@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "poses-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/ops_containers.h>  // maximum()
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPointPDFParticles.h>

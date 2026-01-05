@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "vision-precomp.h"  // Precompiled headers
-//
 #include <mrpt/obs/CObservationVisualLandmarks.h>
 #include <mrpt/serialization/CArchive.h>
 

@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "apps-precomp.h"  // Precompiled headers
-//
 #include <mrpt/apps/RBPF_SLAM_App.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/io/CFileGZOutputStream.h>

@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "apps-precomp.h"  // Precompiled headers
-//
 #include <mrpt/apps/MonteCarloLocalization_App.h>
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/config/CConfigFile.h>

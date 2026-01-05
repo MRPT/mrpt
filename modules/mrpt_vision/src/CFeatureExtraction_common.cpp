@@ -8,8 +8,6 @@
    +---------------------------------------------------------------------------+
    */
 
-#include "vision-precomp.h"  // Precompiled headers
-//
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/vision/CFeatureExtraction.h>

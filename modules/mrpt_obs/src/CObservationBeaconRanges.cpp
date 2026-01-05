@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "obs-precomp.h"  // Precompiled headers
-//
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>

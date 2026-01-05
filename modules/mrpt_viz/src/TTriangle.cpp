@@ -12,10 +12,8 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "viz-precomp.h"  // Precompiled header
-//
-#include <mrpt/viz/TTriangle.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/viz/TTriangle.h>
 
 using namespace mrpt::viz;
 

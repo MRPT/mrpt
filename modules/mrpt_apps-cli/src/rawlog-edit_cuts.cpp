@@ -12,9 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "apps-cli-precomp.h"  // Precompiled headers
-//
-
 #include "rawlog-edit-declarations.h"
 
 using namespace mrpt;

@@ -324,7 +324,6 @@ class CPose2D :
   static constexpr bool is_PDF() { return is_PDF_val != 0; }
   inline const type_value& getPoseMean() const { return *this; }
   inline type_value& getPoseMean() { return *this; }
-  void setToNaN() override;
 
   /** @name STL-like methods and typedefs
    @{   */

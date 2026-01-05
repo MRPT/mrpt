@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "poses-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/wrap2pi.h>

@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "comms-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/config.h>  // MRPT_OS_LINUX
 //
 #include <mrpt/comms/CSerialPort.h>

@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "topography-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/poses/CPoint3D.h>

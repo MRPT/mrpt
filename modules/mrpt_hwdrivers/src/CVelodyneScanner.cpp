@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-//
 #include <mrpt/comms/net_utils.h>
 #include <mrpt/core/reverse_bytes.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>

@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "vision-precomp.h"  // Precompiled headers
-//
 #include <iostream>
 
 //#include <mrpt/math/types_math.h>  // Eigen must be included first via MRPT to

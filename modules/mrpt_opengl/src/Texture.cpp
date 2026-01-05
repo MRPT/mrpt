@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "opengl-precomp.h"  // Precompiled header
-//
 #include <mrpt/containers/bimap.h>
 #include <mrpt/core/get_env.h>
 #include <mrpt/core/lock_helper.h>

@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "graphslam-precomp.h"  // Precompiled headers
-//
 #include <mrpt/graphslam/misc/CEdgeCounter.h>
 
 // implementation file of CEdgeCounter class

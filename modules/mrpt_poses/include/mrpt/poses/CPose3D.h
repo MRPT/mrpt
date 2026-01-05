@@ -730,8 +730,6 @@ class CPose3D :
 
   /** @} */  // modif. components
 
-  void setToNaN() override;
-
   /** Used to emulate CPosePDF types, for example, in
    * mrpt::graphs::CNetworkOfPoses */
   using type_value = CPose3D;

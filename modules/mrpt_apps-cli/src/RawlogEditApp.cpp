@@ -28,8 +28,6 @@
 //  Started: JLBC @ Jul-2010
 // ===========================================================================
 
-#include "apps-cli-precomp.h"  // Precompiled headers
-//
 #include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/apps-cli/RawlogEditApp.h>
 #include <mrpt/system/os.h>

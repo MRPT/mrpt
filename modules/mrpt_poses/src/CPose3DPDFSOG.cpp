@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "poses-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/poses/CPose3DPDFSOG.h>
 #include <mrpt/poses/SO_SE_average.h>

@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "viz-precomp.h"  // Precompiled header
-//
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/viz/CArrow.h>
 #include <mrpt/viz/CBox.h>

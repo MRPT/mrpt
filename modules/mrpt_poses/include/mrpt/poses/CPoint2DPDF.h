@@ -42,6 +42,13 @@ class CPoint2DPDF :
   DEFINE_VIRTUAL_SERIALIZABLE(CPoint2DPDF, mrpt::poses)
 
  public:
+  CPoint2DPDF() = default;
+  CPoint2DPDF(const CPoint2DPDF&) = default;
+  CPoint2DPDF(CPoint2DPDF&&) = default;
+  CPoint2DPDF& operator=(const CPoint2DPDF&) = default;
+  CPoint2DPDF& operator=(CPoint2DPDF&&) = default;
+  virtual ~CPoint2DPDF() = default;
+
   /** Copy operator, translating if necessary (for example, between particles
    * and gaussian representations)
    */

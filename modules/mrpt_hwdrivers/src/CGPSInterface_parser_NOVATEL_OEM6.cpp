@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-//
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/system/crc.h>

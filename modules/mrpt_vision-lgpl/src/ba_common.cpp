@@ -21,8 +21,6 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "vision-lgpl-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/robust_kernels.h>
 #include <mrpt/poses/Lie/SE.h>
 #include <mrpt/vision/bundle_adjustment.h>

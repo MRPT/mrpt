@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "obs-precomp.h"  // Precompiled headers
-//
 #include <mrpt/containers/yaml.h>
 #include <mrpt/core/get_env.h>
 #include <mrpt/math/ops_vectors.h>  // << of std::vector()

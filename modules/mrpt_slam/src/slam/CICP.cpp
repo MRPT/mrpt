@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "slam-precomp.h"  // Precompiled headers
-//
 #include <mrpt/config/CConfigFileBase.h>  // MRPT_LOAD_*()
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/ops_containers.h>

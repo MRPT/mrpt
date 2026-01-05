@@ -12,10 +12,8 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "viz-precomp.h"  // Precompiled header
-//
-#include <mrpt/viz/TLightParameters.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/viz/TLightParameters.h>
 
 using namespace mrpt;
 using namespace mrpt::viz;

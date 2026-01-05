@@ -12,13 +12,11 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "vision-precomp.h"  // Precompiled headers
-//
+#include "ppnp.h"
+
 #include <Eigen/Dense>
 #include <Eigen/SVD>
 #include <iostream>
-
-#include "ppnp.h"
 
 mrpt::vision::pnp::ppnp::ppnp(
     const Eigen::MatrixXd& obj_pts,

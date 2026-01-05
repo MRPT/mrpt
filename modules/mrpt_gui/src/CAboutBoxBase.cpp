@@ -12,15 +12,13 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "gui-precomp.h"  // Precompiled headers
-//
+#include "CAboutBoxBase.h"
+
 #include <mrpt/core/format.h>
 #include <mrpt/gui/config.h>
 #include <mrpt/system/os.h>
 
 #include <Eigen/Dense>
-
-#include "CAboutBoxBase.h"
 
 using namespace mrpt;
 using namespace mrpt::system;

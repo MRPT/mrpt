@@ -141,9 +141,8 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // PDFs Base Classes
   // -------------------------------------------------------------------------
-  py::class_<mrpt::poses::CPosePDF, mrpt::serialization::CSerializable>(m, "CPosePDF");  // Abstract
-  py::class_<mrpt::poses::CPose3DPDF, mrpt::serialization::CSerializable>(
-      m, "CPose3DPDF");  // Abstract
+  py::class_<mrpt::poses::CPosePDF, mrpt::serialization::CSerializable> cl2DPDF(m, "CPosePDF");
+  py::class_<mrpt::poses::CPose3DPDF, mrpt::serialization::CSerializable> cl3DPDF(m, "CPose3DPDF");
 
   // -------------------------------------------------------------------------
   // CPose3DPDFGaussian

@@ -49,11 +49,4 @@ endif()
 if (TARGET imp_tinyxml2)
 	target_link_libraries(obs PRIVATE imp_tinyxml2)
 endif()
-#
-# Ignore precompiled headers in built-in tinyxml2 (for Windows, etc.):
-if(CMAKE_MRPT_HAS_TINYXML2 AND NOT CMAKE_MRPT_HAS_TINYXML2_SYSTEM)
-	if(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-		set_source_files_properties(${tinyxml2_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
-	endif()
-endif()
 

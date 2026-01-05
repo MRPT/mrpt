@@ -7,8 +7,6 @@
 | Released under BSD License. See: https://www.mrpt.org/License          |
 +------------------------------------------------------------------------+ */
 
-#include "math-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CVectorDynamic.h>
 

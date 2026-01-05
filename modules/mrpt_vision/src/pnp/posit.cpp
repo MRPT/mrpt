@@ -12,13 +12,11 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "vision-precomp.h"  // Precompiled headers
-//
+#include "posit.h"
+
 #include <Eigen/Dense>
 #include <Eigen/SVD>
 #include <iostream>
-
-#include "posit.h"
 
 mrpt::vision::pnp::posit::posit(
     Eigen::MatrixXd obj_pts_, Eigen::MatrixXd img_pts_, Eigen::MatrixXd camera_intrinsic_, int n0)

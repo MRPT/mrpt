@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "topography-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/data_utils.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/tfest/se3.h>

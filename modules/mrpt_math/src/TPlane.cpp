@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "math-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/TPlane.h>
 #include <mrpt/math/TPoint3D.h>

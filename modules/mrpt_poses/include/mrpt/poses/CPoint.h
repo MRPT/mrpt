@@ -33,6 +33,8 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS, DIM>, public mrpt::Stringifyabl
   const DERIVEDCLASS& derived() const { return *static_cast<const DERIVEDCLASS*>(this); }
 
  public:
+  CPoint() = default;
+
   /** @name Methods common to all 2D or 3D points
     @{ */
 
@@ -46,13 +48,18 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS, DIM>, public mrpt::Stringifyabl
     const int dims =
         std::min(size_t(DERIVEDCLASS::static_size), size_t(OTHERCLASS::is3DPoseOrPoint() ? 3 : 2));
     for (int i = 0; i < dims; i++)
+    {
       derived().m_coords[i] += static_cast<const OTHERCLASS*>(&b)->m_coords[i];
+    }
   }
 
   /** Scalar multiplication. */
   inline void operator*=(const double s)
   {
-    for (int i = 0; i < DERIVEDCLASS::static_size; i++) derived().m_coords[i] *= s;
+    for (int i = 0; i < DERIVEDCLASS::static_size; i++)
+    {
+      derived().m_coords[i] *= s;
+    }
   }
 
   /** Returns the corresponding 4x4 homogeneous transformation matrix for the
@@ -66,7 +73,9 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS, DIM>, public mrpt::Stringifyabl
     out_HM(0, 3) = static_cast<const DERIVEDCLASS*>(this)->x();
     out_HM(1, 3) = static_cast<const DERIVEDCLASS*>(this)->y();
     if (DERIVEDCLASS::is3DPoseOrPoint())
+    {
       out_HM(2, 3) = static_cast<const DERIVEDCLASS*>(this)->m_coords[2];
+    }
   }
 
   /** Returns a human-readable textual representation of the object (eg:
@@ -96,23 +105,30 @@ template <class DERIVEDCLASS, std::size_t DIM>
 bool operator<(const CPoint<DERIVEDCLASS, DIM>& a, const CPoint<DERIVEDCLASS, DIM>& b)
 {
   if (a.x() < b.x())
-    return true;
-  else
   {
-    if (!a.is3DPoseOrPoint())
-      return a.y() < b.y();
-    else if (a.y() < b.y())
-      return true;
-    else
-      return a[2] < b[2];
+    return true;
   }
+  if (!a.is3DPoseOrPoint())
+  {
+    return a.y() < b.y();
+  }
+  if (a.y() < b.y())
+  {
+    return true;
+  }
+  return a[2] < b[2];
 }
 
 template <class DERIVEDCLASS, std::size_t DIM>
 bool operator==(const CPoint<DERIVEDCLASS, DIM>& p1, const CPoint<DERIVEDCLASS, DIM>& p2)
 {
   for (int i = 0; i < DERIVEDCLASS::static_size; i++)
-    if (p1[i] != p2[i]) return false;  //-V550
+  {
+    if (p1[i] != p2[i])
+    {
+      return false;
+    }
+  }
   return true;
 }
 
@@ -120,7 +136,12 @@ template <class DERIVEDCLASS, std::size_t DIM>
 bool operator!=(const CPoint<DERIVEDCLASS, DIM>& p1, const CPoint<DERIVEDCLASS, DIM>& p2)
 {
   for (int i = 0; i < DERIVEDCLASS::static_size; i++)
-    if (p1[i] != p2[i]) return true;  //-V550
+  {
+    if (p1[i] != p2[i])
+    {
+      return true;
+    }
+  }
   return false;
 }
 }  // namespace mrpt::poses

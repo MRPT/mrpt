@@ -130,6 +130,7 @@ class CPoseOrPoint :
         pose_point_impl<DERIVEDCLASS, mrpt::poses::detail::T3DTypeHelper<DERIVEDCLASS>::is_3D_val>
 {
  protected:
+  CPoseOrPoint() = default;
   // Make destructor protected and non-virtual
   ~CPoseOrPoint() = default;
 
@@ -144,7 +145,7 @@ class CPoseOrPoint :
 
   /** Fixed-size vector of the correct size to hold all the coordinates of the
    * point/pose */
-  using vector_t = mrpt::math::CVectorFixedDouble<DIM>;
+  using vector_t = mrpt::math::CVectorFixedDouble<static_cast<mrpt::math::matrix_dim_t>(DIM)>;
 
   /** Common members of all points & poses classes.
     @{ */
@@ -174,20 +175,20 @@ class CPoseOrPoint :
     if (b.is3DPoseOrPoint())
     {
       if (is3DPoseOrPoint())
+      {
         return square(x() - b.x()) + square(y() - b.y()) +
                square(derived().m_coords[2] - static_cast<const OTHERCLASS*>(&b)->m_coords[2]);
-      else
-        return square(x() - b.x()) + square(y() - b.y()) +
-               square(static_cast<const OTHERCLASS*>(&b)->m_coords[2]);
+      }
+      return square(x() - b.x()) + square(y() - b.y()) +
+             square(static_cast<const OTHERCLASS*>(&b)->m_coords[2]);
     }
-    else
+
+    if (is3DPoseOrPoint())
     {
-      if (is3DPoseOrPoint())
-        return square(x() - b.x()) + square(y() - b.y()) +
-               square(static_cast<const OTHERCLASS*>(&b)->m_coords[2]);
-      else
-        return square(x() - b.x()) + square(y() - b.y());
+      return square(x() - b.x()) + square(y() - b.y()) +
+             square(static_cast<const OTHERCLASS*>(&b)->m_coords[2]);
     }
+    return square(x() - b.x()) + square(y() - b.y());
   }
 
   /** Returns the Euclidean distance to another pose/point: */
@@ -281,9 +282,6 @@ class CPoseOrPoint :
     getInverseHomogeneousMatrix(M);
     return M;
   }
-
-  /** Set all data fields to quiet NaN */
-  virtual void setToNaN() = 0;
 
   /** @} */
 };  // End of class def.

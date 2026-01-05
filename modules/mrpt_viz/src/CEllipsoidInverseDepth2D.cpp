@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "viz-precomp.h"  // Precompiled header
-//
 #include <mrpt/math/matrix_serialization.h>  // for << >> ops of matrices
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/viz/CEllipsoidInverseDepth2D.h>

@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "containers-precomp.h"  // Precompiled headers
-//
 #include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/core/format.h>
 

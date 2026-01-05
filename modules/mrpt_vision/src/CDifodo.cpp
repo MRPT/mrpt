@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "vision-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/round.h>
 #include <mrpt/poses/Lie/SE.h>
 #include <mrpt/system/CTicTac.h>

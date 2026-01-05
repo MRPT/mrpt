@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "kinematics-precomp.h"  // Precompiled header
-//
 #include <mrpt/kinematics/CVehicleVelCmd.h>
 #include <mrpt/serialization/CArchive.h>
 

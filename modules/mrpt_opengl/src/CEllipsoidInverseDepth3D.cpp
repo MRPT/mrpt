@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "opengl-precomp.h"  // Precompiled header
-//
 #include <mrpt/opengl/CEllipsoidInverseDepth3D.h>
 #include <mrpt/serialization/CArchive.h>
 

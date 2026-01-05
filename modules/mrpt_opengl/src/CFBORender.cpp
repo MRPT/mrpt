@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "opengl-precomp.h"  // Precompiled header
-//
 #include <mrpt/core/get_env.h>
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/opengl/OpenGLDepth2LinearLUTs.h>

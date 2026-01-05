@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "kinematics-precomp.h"  // Precompiled header
-//
 #include <mrpt/kinematics/CVehicleSimulVirtualBase.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/random.h>

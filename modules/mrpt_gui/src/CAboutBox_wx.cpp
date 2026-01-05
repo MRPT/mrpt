@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "gui-precomp.h"  // Precompiled headers
-//
 #if MRPT_HAS_WXWIDGETS
 
 #include "CAboutBox_wx.h"

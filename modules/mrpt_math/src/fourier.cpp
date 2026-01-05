@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "math-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/bits_math.h>
 #include <mrpt/math/fourier.h>
 
@@ -1226,14 +1224,14 @@ static void myGeneralDFT(
 
           phase += ang2 * k2;
         }  // end for k2
-      }  // end for k1
+      }    // end for k1
 
       // Save result:
       out_real(k1, k2) = R * scale;
       out_imag(k1, k2) = I * scale;
 
     }  // end for k2
-  }  // end for k1
+  }    // end for k1
 }
 
 /*---------------------------------------------------------------

@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "poses-precomp.h"  // Precompiled headers
-//
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPosePDFGrid.h>
 #include <mrpt/poses/CPosePDFParticles.h>
