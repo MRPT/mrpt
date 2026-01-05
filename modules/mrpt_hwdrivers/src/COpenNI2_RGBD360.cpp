@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "hwdrivers-precomp.h"  // Precompiled header
-//
 #include <mrpt/hwdrivers/COpenNI2_RGBD360.h>
 #include <mrpt/obs/CObservationRGBD360.h>
 #include <mrpt/system/CTimeLogger.h>

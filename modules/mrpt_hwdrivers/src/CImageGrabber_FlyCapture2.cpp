@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-//
 #include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/string_utils.h>

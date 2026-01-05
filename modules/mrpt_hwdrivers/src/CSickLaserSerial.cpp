@@ -14,8 +14,6 @@
 
 // This file contains portions of code from sicklms200.cc from the Player/Stage
 // project.
-#include "hwdrivers-precomp.h"  // Precompiled headers
-//
 
 #include <mrpt/hwdrivers/CSickLaserSerial.h>
 #include <mrpt/system/CTicTac.h>

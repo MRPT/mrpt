@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "slam-precomp.h"  // Precompiled headers
-//
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>

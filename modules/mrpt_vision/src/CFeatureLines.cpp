@@ -8,8 +8,6 @@
    +---------------------------------------------------------------------------+
  */
 
-#include "vision-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/vision/CFeatureLines.h>
 #include <mrpt/vision/utils.h>

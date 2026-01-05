@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "opengl-precomp.h"  // Precompiled header
-//
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/opengl/CArrow.h>
 #include <mrpt/opengl/CBox.h>

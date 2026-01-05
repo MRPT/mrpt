@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "obs-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>

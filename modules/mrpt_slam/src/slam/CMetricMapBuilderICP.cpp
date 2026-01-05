@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "slam-precomp.h"  // Precompiled headers
-//
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/img/CEnhancedMetaFile.h>

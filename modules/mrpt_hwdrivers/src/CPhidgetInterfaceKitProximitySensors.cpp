@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-//
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
 #include <mrpt/system/os.h>

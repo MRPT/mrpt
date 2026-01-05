@@ -588,8 +588,6 @@ class CPose3DQuat :
 
   /** @} */
 
-  void setToNaN() override;
-
 };  // End of class def.
 
 std::ostream& operator<<(std::ostream& o, const CPose3DQuat& p);

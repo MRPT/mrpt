@@ -12,9 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-//
-#include <mrpt/hwdrivers/CIbeoLuxETH.h>  // Precompiled headers
+#include <mrpt/hwdrivers/CIbeoLuxETH.h>
 
 #include <bitset>
 #include <chrono>

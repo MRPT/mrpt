@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "containers-precomp.h"  // Precompiled headers
-//
 #include <mrpt/containers/ts_hash_map.h>
 #include <mrpt/core/byte_manip.h>  // MAKEWORD16B(), etc.
 

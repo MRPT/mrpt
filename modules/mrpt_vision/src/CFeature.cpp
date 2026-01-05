@@ -8,8 +8,6 @@
    +---------------------------------------------------------------------------+
    */
 
-#include "vision-precomp.h"  // Precompiled headers
-//
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CTextFileLinesParser.h>

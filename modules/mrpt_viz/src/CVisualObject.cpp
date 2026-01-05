@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "viz-precomp.h"  // Precompiled header
-//
 #include <mrpt/containers/yaml.h>
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/math/utils.h>

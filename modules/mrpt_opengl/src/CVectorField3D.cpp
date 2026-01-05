@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "opengl-precomp.h"  // Precompiled header
-//
 #include <mrpt/opengl/CVectorField3D.h>
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>

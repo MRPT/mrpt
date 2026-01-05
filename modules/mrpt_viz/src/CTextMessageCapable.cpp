@@ -12,10 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "viz-precomp.h"  // Precompiled header
-//
 #include <mrpt/viz/CTextMessageCapable.h>
-
 
 using namespace std;
 using namespace mrpt;

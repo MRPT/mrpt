@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "opengl-precomp.h"  // Precompiled header
-//
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/opengl/CEllipsoid2D.h>
 #include <mrpt/serialization/CArchive.h>

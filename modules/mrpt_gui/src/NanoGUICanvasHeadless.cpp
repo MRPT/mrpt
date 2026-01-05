@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "gui-precomp.h"  // Precompiled headers
-//
 #include <mrpt/gui/internal/NanoGUICanvasHeadless.h>
 
 using namespace mrpt::gui;

@@ -12,13 +12,12 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "vision-precomp.h"  // Precompiled headers
-//
+#include "p3p.h"
+
 #include <cmath>
 #include <cstring>
 #include <iostream>
 
-#include "p3p.h"
 #include "polynom_solver.h"
 
 void mrpt::vision::pnp::p3p::init_inverse_parameters()

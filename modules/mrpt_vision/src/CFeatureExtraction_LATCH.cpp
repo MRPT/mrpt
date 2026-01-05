@@ -18,8 +18,6 @@
   AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
   ---------------------------------------------------------------*/
 
-#include "vision-precomp.h"  // Precompiled headers
-//
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/system/os.h>
 #include <mrpt/vision/CFeatureExtraction.h>  // important import

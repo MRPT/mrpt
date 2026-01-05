@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "math-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/kmeans.h>
 
 // This file is just a stub for the k-means++ library so MRPT users don't need

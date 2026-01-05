@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-//
 #include <mrpt/hwdrivers/CGillAnemometer.h>
 #include <mrpt/system/datetime.h>
 

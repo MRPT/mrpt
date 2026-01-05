@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "opengl-precomp.h"  // Precompiled header
-//
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/serialization/CArchive.h>

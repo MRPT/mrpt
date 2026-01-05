@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "graphslam-precomp.h"  // Precompiled headers
-//
 // Implementattion file for TSlidingWindow struct
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/graphslam/misc/TSlidingWindow.h>

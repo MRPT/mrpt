@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "opengl-precomp.h"  // Precompiled header
-//
 #include <mrpt/img/color_maps.h>
 #include <mrpt/opengl/CMesh3D.h>
 #include <mrpt/opengl/opengl_api.h>

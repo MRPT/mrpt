@@ -12,9 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "obs-precomp.h"  // Precompiled headers
-//
-
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/core/initializer.h>
 #include <mrpt/math/registerAllClasses.h>

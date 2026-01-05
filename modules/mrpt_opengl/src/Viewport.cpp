@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "opengl-precomp.h"  // Precompiled header
-//
 #include <Eigen/Dense>  // First! to avoid conflicts with X.h
 //
 #include <mrpt/core/get_env.h>

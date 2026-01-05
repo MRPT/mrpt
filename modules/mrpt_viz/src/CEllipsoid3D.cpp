@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "viz-precomp.h"  // Precompiled header
-//
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/matrix_serialization.h>

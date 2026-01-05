@@ -12,9 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "slam-precomp.h"  // Precompiled headers
-//
-
 // ----------------------------------------------------------------------------------------
 // For the theory behind this implementation, see the
 // technical report cited in the .h file.

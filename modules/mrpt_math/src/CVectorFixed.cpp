@@ -7,8 +7,6 @@
 | Released under BSD License. See: https://www.mrpt.org/License          |
 +------------------------------------------------------------------------+ */
 
-#include "math-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/CVectorFixed.h>
 
 #include "CMatrixFixed_impl.h"

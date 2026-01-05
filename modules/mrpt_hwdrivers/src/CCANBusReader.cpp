@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-//
 // This file contains portions of code from sicklms200.cc from the Player/Stage
 // project.
 

@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "opengl-precomp.h"  // Precompiled header
-//
 #include <mrpt/core/Clock.h>
 #include <mrpt/core/backtrace.h>
 #include <mrpt/core/exceptions.h>

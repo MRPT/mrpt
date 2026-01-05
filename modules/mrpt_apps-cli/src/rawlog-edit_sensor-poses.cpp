@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "apps-cli-precomp.h"  // Precompiled headers
-//
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/poses/sensor_poses.h>
 

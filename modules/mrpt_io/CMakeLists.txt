@@ -110,11 +110,6 @@ if(CMAKE_MRPT_HAS_ZLIB)
   endif()
 
   if (NOT "${io_EXTRA_SRCS}" STREQUAL "")
-    # Ignore precompiled headers in some sources:
-    if(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-      set(extra_flags_ "/Y-")
-    endif()
-
     if (HAVE_UNISTD_H)
       set(extra_flags2_ "-include unistd.h")
     endif()

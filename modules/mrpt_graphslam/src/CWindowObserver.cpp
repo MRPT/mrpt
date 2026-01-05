@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "graphslam-precomp.h"  // Precompiled headers
-//
 // Implementation file for CWindowObserver class
 #include <mrpt/graphslam/misc/CWindowObserver.h>
 #include <mrpt/gui/CBaseGUIWindow.h>

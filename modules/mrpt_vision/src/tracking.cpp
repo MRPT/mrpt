@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "vision-precomp.h"  // Precompiled headers
-//
 #include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/vision/CFeatureExtraction.h>

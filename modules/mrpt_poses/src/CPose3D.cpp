@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "poses-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/bits_math.h>       // for square
 #include <mrpt/core/config.h>          // for HAVE_SINCOS
 #include <mrpt/math/CMatrixDynamic.h>  // for CMatrixD...
@@ -39,12 +37,10 @@
 #include <mrpt/serialization/CSerializable.h>  // for CSeriali...
 
 #include <Eigen/Dense>
-#include <algorithm>  // for move
-#include <cmath>      // for fabs
-#include <iomanip>    // for setprecision(), etc.
-#include <limits>     // for numeric_...
-#include <ostream>    // for operator<<
-#include <string>     // for allocator
+#include <cmath>    // for fabs
+#include <iomanip>  // for setprecision(), etc.
+#include <ostream>  // for operator<<
+#include <string>   // for allocator
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -766,14 +762,6 @@ void CPose3D::inverseComposePoint(
   }
 }
 
-void CPose3D::setToNaN()
-{
-  for (int i = 0; i < 3; i++)
-    for (int j = 0; j < 3; j++) m_ROT(i, j) = std::numeric_limits<double>::quiet_NaN();
-
-  for (int i = 0; i < 3; i++) m_coords[i] = std::numeric_limits<double>::quiet_NaN();
-}
-
 mrpt::math::TPose3D CPose3D::asTPose() const
 {
   return mrpt::math::TPose3D(x(), y(), z(), yaw(), pitch(), roll());
@@ -784,7 +772,9 @@ void CPose3D::fromString(const std::string& s)
   using mrpt::DEG2RAD;
   mrpt::math::CMatrixDouble m;
   if (!m.fromMatlabStringFormat(s))
+  {
     THROW_EXCEPTION_FMT("Malformed expression in ::fromString, s=\"%s\"", s.c_str());
+  }
   ASSERTMSG_(m.rows() == 1 && m.cols() == 6, "Expected vector length=6");
   this->setFromValues(
       m(0, 0), m(0, 1), m(0, 2), DEG2RAD(m(0, 3)), DEG2RAD(m(0, 4)), DEG2RAD(m(0, 5)));
@@ -796,7 +786,10 @@ void CPose3D::getHomogeneousMatrix(mrpt::math::CMatrixDouble44& out_HM) const
 {
   auto M = out_HM.asEigen();
   M.block<3, 3>(0, 0) = m_ROT.asEigen();
-  for (int i = 0; i < 3; i++) out_HM(i, 3) = m_coords[i];
+  for (int i = 0; i < 3; i++)
+  {
+    out_HM(i, 3) = m_coords[i];
+  }
   out_HM(3, 0) = out_HM(3, 1) = out_HM(3, 2) = 0.;
   out_HM(3, 3) = 1.;
 }

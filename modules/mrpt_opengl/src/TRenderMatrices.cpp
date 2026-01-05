@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "opengl-precomp.h"  // Precompiled header
-//
 #include <mrpt/containers/yaml.h>
 #include <mrpt/math/geometry.h>        // crossProduct3D()
 #include <mrpt/math/ops_containers.h>  // dotProduct()

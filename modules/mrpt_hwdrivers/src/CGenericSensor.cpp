@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-//
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CObservation.h>

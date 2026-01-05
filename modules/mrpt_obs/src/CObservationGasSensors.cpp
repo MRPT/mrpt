@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "obs-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/serialization/CArchive.h>

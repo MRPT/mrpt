@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "poses-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/config.h>  // HAVE_SINCOS
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/wrap2pi.h>
@@ -430,11 +428,6 @@ CPose2D CPose2D::getOppositeScalar() const { return CPose2D(-m_coords[0], -m_coo
 std::string CPose2D::asString() const
 {
   return mrpt::format("[%f %f %fdeg]", x(), y(), mrpt::RAD2DEG(m_phi));
-}
-
-void CPose2D::setToNaN()
-{
-  for (int i = 0; i < 3; i++) (*this)[i] = std::numeric_limits<double>::quiet_NaN();
 }
 
 void CPose2D::update_cached_cos_sin() const

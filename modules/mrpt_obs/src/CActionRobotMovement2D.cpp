@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "obs-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/point_poses2vectors.h>
 #include <mrpt/math/wrap2pi.h>

@@ -50,8 +50,6 @@ WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
-#include "viz-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/reverse_bytes.h>
 #include <mrpt/system/string_utils.h>

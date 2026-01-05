@@ -15,8 +15,6 @@
 // This file contains portions of code from Assimp's example:
 // "Sample_SimpleOpenGL.c"
 
-#include "opengl-precomp.h"  // Precompiled header
-//
 #include <mrpt/opengl/CAssimpModel.h>
 
 #if MRPT_HAS_ASSIMP

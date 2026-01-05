@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "kinematics-precomp.h"  // Precompiled headers
-//
 #include <mrpt/kinematics/CKinematicChain.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>

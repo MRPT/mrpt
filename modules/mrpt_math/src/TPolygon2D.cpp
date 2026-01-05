@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "math-precomp.h"  // Precompiled headers
-//
 #include <mrpt/containers/yaml.h>
 #include <mrpt/math/TLine2D.h>
 #include <mrpt/math/TPolygon2D.h>

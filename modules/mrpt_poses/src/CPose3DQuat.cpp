@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "poses-precomp.h"  // Precompiled headers
-//
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/serialization/CArchive.h>
@@ -500,13 +498,6 @@ void CPose3DQuat::inverse()
   m_quat[1] = -m_quat[1];
   m_quat[2] = -m_quat[2];
   m_quat[3] = -m_quat[3];
-}
-
-void CPose3DQuat::setToNaN()
-{
-  for (int i = 0; i < 3; i++) m_coords[i] = std::numeric_limits<double>::quiet_NaN();
-
-  for (int i = 0; i < 4; i++) quat()[i] = std::numeric_limits<double>::quiet_NaN();
 }
 
 bool mrpt::poses::operator==(const CPose3DQuat& p1, const CPose3DQuat& p2)

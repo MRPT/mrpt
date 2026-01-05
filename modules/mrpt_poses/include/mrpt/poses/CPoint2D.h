@@ -112,8 +112,6 @@ class CPoint2D : public CPoint<CPoint2D, 2>, public mrpt::serialization::CSerial
   }
   /** @} */
 
-  void setToNaN() override;
-
 };  // End of class def.
 
 /** Dumps a point as a string (x,y) */

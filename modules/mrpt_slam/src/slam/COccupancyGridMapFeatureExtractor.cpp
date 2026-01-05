@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "slam-precomp.h"  // Precompiled headers
-//
 #include <mrpt/slam/COccupancyGridMapFeatureExtractor.h>
 
 using namespace mrpt;

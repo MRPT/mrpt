@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "obs-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/distributions.h>
 #include <mrpt/obs/CObservation2DRangeScanWithUncertainty.h>
 

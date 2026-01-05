@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "slam-precomp.h"  // Precompiled headers
-//
 #include <mrpt/config/CConfigFilePrefixer.h>
 #include <mrpt/graphs/CGraphPartitioner.h>
 #include <mrpt/maps/CMultiMetricMap.h>

@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "poses-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/poses/CPoint2D.h>
@@ -92,11 +90,6 @@ CPoint2D CPoint2D::operator-(const CPose2D& b) const
   const double Ay = y() - b.y();
 
   return CPoint2D(Ax * ccos + Ay * ssin, -Ax * ssin + Ay * ccos);
-}
-
-void CPoint2D::setToNaN()
-{
-  for (int i = 0; i < 2; i++) m_coords[i] = std::numeric_limits<double>::quiet_NaN();
 }
 
 mrpt::math::TPoint2D CPoint2D::asTPoint() const { return mrpt::math::TPoint2D(x(), y()); }

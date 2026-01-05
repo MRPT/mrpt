@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "poses-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/CMatrixFixed.h>  // for CMatrixF...
 #include <mrpt/math/CQuaternion.h>   // for CQuatern...
 #include <mrpt/math/distributions.h>

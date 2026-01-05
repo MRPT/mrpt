@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "hwdrivers-precomp.h"  // Precompiled header
-//
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/system/CTimeLogger.h>

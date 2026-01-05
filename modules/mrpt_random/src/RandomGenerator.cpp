@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "random-precomp.h"  // Precompiled headers
-//
 #include <mrpt/random/RandomGenerators.h>
 
 using namespace mrpt::random;

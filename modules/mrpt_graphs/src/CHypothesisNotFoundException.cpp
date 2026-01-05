@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "graphs-precomp.h"  // Precompiled headers
-//
 #include <mrpt/graphs/CHypothesisNotFoundException.h>
 
 using namespace mrpt::graphs;

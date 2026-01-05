@@ -63,13 +63,6 @@ endif()
 # We need pthread's on unices
 target_link_libraries(hwdrivers PRIVATE Threads::Threads)
 
-# Ignore precompiled headers in intersense sources:
-if(CMAKE_MRPT_HAS_INTERSENSE)
-	if(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-		set_source_files_properties(${isense_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
-	endif()
-endif()
-
 # Link to NITE2 libraries:
 if(CMAKE_MRPT_HAS_NITE2)
 	# link_directories() was added in the configuration script under /cmakemodules/*_ni.cmake

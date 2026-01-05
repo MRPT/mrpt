@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "poses-precomp.h"  // Precompiled headers
-//
 #include <mrpt/core/exceptions.h>  // for ASSERTMSG_
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>

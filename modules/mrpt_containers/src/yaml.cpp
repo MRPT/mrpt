@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "containers-precomp.h"  // Precompiled headers
-//
 #include <mrpt/containers/config.h>
 #include <mrpt/containers/yaml.h>
 #include <mrpt/core/exceptions.h>
@@ -1096,7 +1094,9 @@ void yaml::loadFromText(const std::string& yamlTextBlock)
   // Reset:
   *this = yaml();
 
-  struct fy_parse_cfg cfg{};
+  struct fy_parse_cfg cfg
+  {
+  };
   cfg.search_path = "";
   cfg.diag = nullptr;
   cfg.flags = FYPCF_PARSE_COMMENTS;

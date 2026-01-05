@@ -17,8 +17,7 @@
 #define __STDC_CONSTANT_MACROS  // Needed for having "UINT64_C" and so
 #endif
 //
-#include "hwdrivers-precomp.h"  // Precompiled headers
-//
+
 #include <mrpt/hwdrivers/config.h>
 
 #if MRPT_HAS_FFMPEG

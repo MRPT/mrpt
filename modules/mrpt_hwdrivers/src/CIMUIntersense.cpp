@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-//
 #include <mrpt/hwdrivers/CIMUIntersense.h>
 #include <mrpt/obs/CObservationIMU.h>
 

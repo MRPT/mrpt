@@ -12,9 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "apps-cli-precomp.h"  // Precompiled headers
-//
-
 #include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 

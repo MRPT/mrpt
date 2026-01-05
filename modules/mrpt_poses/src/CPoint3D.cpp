@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "poses-precomp.h"  // Precompiled headers
-//
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
@@ -156,11 +154,6 @@ CPose3D CPoint3D::operator+(const CPose3D& b) const
 {
   return CPose3D(
       m_coords[0] + b.x(), m_coords[1] + b.y(), m_coords[2] + b.z(), b.yaw(), b.pitch(), b.roll());
-}
-
-void CPoint3D::setToNaN()
-{
-  for (int i = 0; i < 3; i++) m_coords[i] = std::numeric_limits<double>::quiet_NaN();
 }
 
 mrpt::math::TPoint3D CPoint3D::asTPoint() const { return mrpt::math::TPoint3D(x(), y(), z()); }

@@ -12,9 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "vision-precomp.h"  // Precompiled headers
-//
-
 // M*//////////////////////////////////////////////////////////////////////////////////////
 //
 // IMPORTANT: READ BEFORE DOWNLOADING, COPYING, INSTALLING OR USING.

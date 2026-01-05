@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "math-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/TOrientedBox.h>
 #include <mrpt/serialization/CArchive.h>  // impl of << operator
 
@@ -112,8 +110,8 @@ TBoundingBox_<T> mrpt::math::TOrientedBox_<T>::getAxisAlignedBox() const
 }
 
 template <typename T>
-typename mrpt::math::TOrientedBox_<T>::plane_array_t
-mrpt::math::TOrientedBox_<T>::getBoxPlanes() const
+typename mrpt::math::TOrientedBox_<T>::plane_array_t mrpt::math::TOrientedBox_<T>::getBoxPlanes()
+    const
 {
   using mrpt::math::TPlane;
 

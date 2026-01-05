@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "slam-precomp.h"  // Precompiled headers
-//
 #include <mrpt/math/KDTreeCapable.h>  // For kd-tree's
 #include <mrpt/math/data_utils.h>
 #include <mrpt/math/distributions.h>  // for chi2inv
@@ -440,7 +438,7 @@ void mrpt::slam::data_association_full_covariance(
         if (IC) results.indiv_compatibility_counts[j]++;
       }
     }  // end use KD-Tree
-  }  // end for
+  }    // end for
 
 #if 0
 	cout << "Distances: " << endl << results.indiv_distances << endl;
