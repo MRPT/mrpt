@@ -165,7 +165,15 @@ PYBIND11_MODULE(_bindings, m)
       .def(py::init<const mrpt::poses::CPose3D &, const mrpt::math::CMatrixDouble66 &>())
       .def_readwrite("mean", &mrpt::poses::CPose3DPDFGaussian::mean)
       .def_readwrite("cov", &mrpt::poses::CPose3DPDFGaussian::cov)
-      .def("drawSingleSample", &mrpt::poses::CPose3DPDFGaussian::drawSingleSample)
+      .def(
+          "drawSingleSample",
+          [](const mrpt::poses::CPose3DPDFGaussian &self)
+          {
+            mrpt::poses::CPose3D p;
+            self.drawSingleSample(p);
+            return p;
+          },
+          "Draws a single sample from the Gaussian distribution and returns it as a CPose3D.")
       .def("saveToTextFile", &mrpt::poses::CPose3DPDFGaussian::saveToTextFile)
       .def("evaluatePDF", &mrpt::poses::CPose3DPDFGaussian::evaluatePDF)
       .def("evaluateNormalizedPDF", &mrpt::poses::CPose3DPDFGaussian::evaluateNormalizedPDF)
