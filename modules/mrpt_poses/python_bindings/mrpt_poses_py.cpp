@@ -38,7 +38,9 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // CPose2D
   // -------------------------------------------------------------------------
-  py::class_<mrpt::poses::CPose2D, mrpt::serialization::CSerializable>(m, "CPose2D")
+  py::class_<
+      mrpt::poses::CPose2D, mrpt::serialization::CSerializable,
+      std::shared_ptr<mrpt::poses::CPose2D>>(m, "CPose2D")
       .def(py::init<>(), "Default constructor (0,0,0).")
       .def(
           py::init<double, double, double>(), py::arg("x"), py::arg("y"), py::arg("phi"),
@@ -81,7 +83,9 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // CPose3D
   // -------------------------------------------------------------------------
-  py::class_<mrpt::poses::CPose3D, mrpt::serialization::CSerializable>(m, "CPose3D")
+  py::class_<
+      mrpt::poses::CPose3D, mrpt::serialization::CSerializable,
+      std::shared_ptr<mrpt::poses::CPose3D>>(m, "CPose3D")
       .def(py::init<>())
       .def(
           py::init<double, double, double, double, double, double>(), py::arg("x"), py::arg("y"),
@@ -141,13 +145,21 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // PDFs Base Classes
   // -------------------------------------------------------------------------
-  py::class_<mrpt::poses::CPosePDF, mrpt::serialization::CSerializable> cl2DPDF(m, "CPosePDF");
-  py::class_<mrpt::poses::CPose3DPDF, mrpt::serialization::CSerializable> cl3DPDF(m, "CPose3DPDF");
+  py::class_<
+      mrpt::poses::CPosePDF, mrpt::serialization::CSerializable,
+      std::shared_ptr<mrpt::poses::CPosePDF>>
+      cl2DPDF(m, "CPosePDF");
+  py::class_<
+      mrpt::poses::CPose3DPDF, mrpt::serialization::CSerializable,
+      std::shared_ptr<mrpt::poses::CPose3DPDF>>
+      cl3DPDF(m, "CPose3DPDF");
 
   // -------------------------------------------------------------------------
   // CPose3DPDFGaussian
   // -------------------------------------------------------------------------
-  py::class_<mrpt::poses::CPose3DPDFGaussian, mrpt::poses::CPose3DPDF>(m, "CPose3DPDFGaussian")
+  py::class_<
+      mrpt::poses::CPose3DPDFGaussian, mrpt::poses::CPose3DPDF,
+      std::shared_ptr<mrpt::poses::CPose3DPDFGaussian>>(m, "CPose3DPDFGaussian")
       .def(py::init<>())
       .def(py::init<const mrpt::poses::CPose3D &>())
       .def(py::init<const mrpt::poses::CPose3D &, const mrpt::math::CMatrixDouble66 &>())
@@ -164,8 +176,9 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // CPose3DPDFGaussianInf
   // -------------------------------------------------------------------------
-  py::class_<mrpt::poses::CPose3DPDFGaussianInf, mrpt::poses::CPose3DPDF>(
-      m, "CPose3DPDFGaussianInf")
+  py::class_<
+      mrpt::poses::CPose3DPDFGaussianInf, mrpt::poses::CPose3DPDF,
+      std::shared_ptr<mrpt::poses::CPose3DPDFGaussianInf>>(m, "CPose3DPDFGaussianInf")
       .def(py::init<>())
       .def(py::init<const mrpt::poses::CPose3D &>())
       .def(

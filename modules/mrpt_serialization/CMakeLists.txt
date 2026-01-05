@@ -77,4 +77,9 @@ if (tst_json_dep)
 endif()
 
 
+# Python wrapper:
+mrpt_add_python_module(serialization
+  python_bindings/${PROJECT_NAME}_py.cpp
+)
+
 

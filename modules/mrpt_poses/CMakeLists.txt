@@ -143,7 +143,6 @@ mrpt_add_library(
 #  PRIVATE_LINK_LIBRARIES
   CMAKE_DEPENDENCIES
     mrpt_bayes
-  # Other imported targets:
   UNITTEST_LINK_LIBRARIES
     mrpt::mrpt_io
 )

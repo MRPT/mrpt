@@ -205,6 +205,11 @@ set(LIB_PUBLIC_HDRS
   include/mrpt/math/wrap2pi.h
 )
 
+if (BUILD_TESTING)
+  find_package(mrpt_io REQUIRED) # for unit tests
+endif()
+
+
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SRCS} ${LIB_PUBLIC_HDRS}
@@ -222,6 +227,8 @@ mrpt_add_library(
   # Other imported targets:
     nanoflann # find_package() lib name
     ${eigen_dep}
+  UNITTEST_LINK_LIBRARIES
+    mrpt::mrpt_io
 )
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE
@@ -232,6 +239,8 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     <mrpt/math/CMatrixD.h>
 )
 
-# extra dependencies required by unit tests in this module:
-#set_property(GLOBAL PROPERTY mrpt_math_UNIT_TEST_EXTRA_DEPS mrpt-io)
+# Python wrapper:
+mrpt_add_python_module(math
+  python_bindings/${PROJECT_NAME}_py.cpp
+)
 
