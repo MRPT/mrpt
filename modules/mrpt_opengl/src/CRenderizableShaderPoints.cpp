@@ -22,6 +22,11 @@ using namespace mrpt::opengl;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CRenderizableShaderPoints, CRenderizable, mrpt::opengl)
 
+CRenderizableShaderPoints::CRenderizableShaderPoints()
+{  // Initialize GlState
+  auto gh = gls();
+}
+
 // Dtor:
 CRenderizableShaderPoints::~CRenderizableShaderPoints() = default;
 

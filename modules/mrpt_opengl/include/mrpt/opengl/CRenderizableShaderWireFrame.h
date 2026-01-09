@@ -33,10 +33,7 @@ class CRenderizableShaderWireFrame : public virtual CRenderizable
   DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderWireFrame, mrpt::opengl)
 
  public:
-  CRenderizableShaderWireFrame()
-  {  // Initialize GlState
-    auto gh = gls();
-  }
+  CRenderizableShaderWireFrame();
 
   ~CRenderizableShaderWireFrame() override;
 

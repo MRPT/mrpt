@@ -23,6 +23,11 @@ using namespace mrpt::opengl;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CRenderizableShaderTriangles, CRenderizable, mrpt::opengl)
 
+CRenderizableShaderTriangles::CRenderizableShaderTriangles()
+{  // Initialize GlState
+  auto gh = gls();
+}
+
 // Dtor:
 CRenderizableShaderTriangles::~CRenderizableShaderTriangles() = default;
 

@@ -34,10 +34,7 @@ class CRenderizableShaderText : public virtual CRenderizable
   DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderText, mrpt::opengl)
 
  public:
-  CRenderizableShaderText()
-  {  // Initialize GlState
-    auto gh = gls();
-  }
+  CRenderizableShaderText();
 
   virtual ~CRenderizableShaderText() override;
 

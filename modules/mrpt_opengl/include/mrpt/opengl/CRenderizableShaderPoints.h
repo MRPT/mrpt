@@ -45,10 +45,7 @@ class CRenderizableShaderPoints : public virtual CRenderizable
   DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderPoints, mrpt::opengl)
 
  public:
-  CRenderizableShaderPoints()
-  {  // Initialize GlState
-    auto gh = gls();
-  }
+  CRenderizableShaderPoints();
 
   virtual ~CRenderizableShaderPoints() override;
 
