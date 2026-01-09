@@ -43,8 +43,6 @@ if(BUILD_mrpt-gui)
 		target_link_libraries(gui PRIVATE Qt5::Widgets Qt5::OpenGL)
 	endif()
 
-	target_link_libraries(gui PRIVATE imp_opencv)
-	
 	if(MRPT_OPENGL_LIBS)
 		# Link against glut:
 		target_link_libraries(gui PRIVATE ${MRPT_OPENGL_LIBS})

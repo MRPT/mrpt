@@ -12,7 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
 
 #include <chrono>

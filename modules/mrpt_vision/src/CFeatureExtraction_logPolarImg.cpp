@@ -14,9 +14,6 @@
 
 #include <mrpt/vision/CFeatureExtraction.h>
 
-// Universal include for all versions of OpenCV
-#include <mrpt/3rdparty/do_opencv_includes.h>
-
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::img;
@@ -40,7 +37,7 @@ void CFeatureExtraction::internal_computeLogPolarImageDescriptors(
   const double rho_scale = options.LogPolarImagesOptions.rho_scale;
   const unsigned int patch_w = mrpt::round(rho_scale * std::log(static_cast<double>(radius)));
 
-  mrpt::img::CImage logpolar_frame(patch_w, patch_h, in_img.getChannelCount());
+  mrpt::img::CImage logpolar_frame(patch_w, patch_h, in_img.channels());
 
   // Compute intensity-domain spin images
   for (auto& f : in_features)

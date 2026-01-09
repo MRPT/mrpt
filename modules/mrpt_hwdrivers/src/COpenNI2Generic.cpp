@@ -16,9 +16,6 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/system/CTimeLogger.h>
 
-// Universal include for all versions of OpenCV
-#include <mrpt/3rdparty/do_opencv_includes.h>
-
 #include <atomic>
 #include <chrono>
 #include <mutex>

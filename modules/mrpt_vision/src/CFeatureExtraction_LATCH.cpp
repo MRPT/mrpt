@@ -22,9 +22,6 @@
 #include <mrpt/system/os.h>
 #include <mrpt/vision/CFeatureExtraction.h>  // important import
 
-// Universal include for all versions of OpenCV
-#include <mrpt/3rdparty/do_opencv_includes.h>
-
 #ifdef HAVE_OPENCV_NONFREE  // MRPT_HAS_OPENCV_NONFREE
 #include <opencv2/nonfree/nonfree.hpp>
 #endif

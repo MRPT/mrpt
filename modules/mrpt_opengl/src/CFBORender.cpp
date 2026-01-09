@@ -277,7 +277,7 @@ void CFBORender::internal_render_RGBD(
     auto& outRGB = optoutRGB.value().get();
     // resize the outRGB if it is necessary
     if (outRGB.isEmpty() || outRGB.getWidth() != static_cast<size_t>(m_fb.width()) ||
-        outRGB.getHeight() != static_cast<size_t>(m_fb.height()) || outRGB.getChannelCount() != 3)
+        outRGB.getHeight() != static_cast<size_t>(m_fb.height()) || outRGB.channels() != 3)
     {  // resize:
       outRGB.resize(m_fb.width(), m_fb.height(), mrpt::img::CH_RGB);
     }
@@ -286,7 +286,7 @@ void CFBORender::internal_render_RGBD(
     ASSERT_(!outRGB.isEmpty());
     ASSERT_EQUAL_(outRGB.getWidth(), static_cast<size_t>(m_fb.width()));
     ASSERT_EQUAL_(outRGB.getHeight(), static_cast<size_t>(m_fb.height()));
-    ASSERT_EQUAL_(outRGB.getChannelCount(), 3);
+    ASSERT_EQUAL_(outRGB.channels(), 3);
 
 #ifdef FBO_PROFILER
     auto tle1 = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".glReadPixels_rgb"s);

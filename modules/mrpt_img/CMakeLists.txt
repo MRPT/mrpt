@@ -65,9 +65,6 @@ mrpt_add_library(
     mrpt::mrpt_config
     mrpt::mrpt_io
     mrpt::mrpt_math
-  PRIVATE_LINK_LIBRARIES
-    imp_opencv
-    ${JPEG_LIBRARIES}
   CMAKE_DEPENDENCIES
     mrpt_config
     mrpt_io
@@ -79,7 +76,4 @@ if (OpenCV_INCLUDE_DIRS)
   target_include_directories(${PROJECT_NAME} PUBLIC ${OpenCV_INCLUDE_DIRS})
 endif()
 
-if(TARGET test_${PROJECT_NAME})
-  target_link_libraries(test_${PROJECT_NAME} imp_opencv)
-endif()
 

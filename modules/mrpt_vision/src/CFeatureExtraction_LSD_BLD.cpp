@@ -18,7 +18,6 @@
   AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
   ---------------------------------------------------------------*/
 
-#include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/system/os.h>
 #include <mrpt/vision/CFeatureExtraction.h>  // important import

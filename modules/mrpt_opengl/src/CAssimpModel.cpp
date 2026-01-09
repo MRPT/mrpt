@@ -41,9 +41,8 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 
-// Universal include for all versions of OpenCV
 #if MRPT_HAS_OPENCV
-#include <mrpt/3rdparty/do_opencv_includes.h>
+
 #endif
 
 #include <mutex>

@@ -19,8 +19,6 @@
 
 #if MRPT_HAS_WXWIDGETS
 
-#include <mrpt/3rdparty/do_opencv_includes.h>
-
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace std;
@@ -46,7 +44,7 @@ wxImage* mrpt::gui::MRPTImage2wxImage(const mrpt::img::CImage& img)
   }
 
   const int row_in_bytes =
-      new_image.getWidth() * (new_image.getChannelCount() == mrpt::img::CH_RGB ? 3 : 1);
+      new_image.getWidth() * (new_image.channels() == mrpt::img::CH_RGB ? 3 : 1);
   uint8_t* data = static_cast<uint8_t*>(malloc(row_in_bytes * new_image.getHeight()));
 
   const int w = new_image.getWidth(), h = new_image.getHeight(), rs = new_image.getRowStride();

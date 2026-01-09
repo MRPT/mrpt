@@ -371,14 +371,14 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    * \sa The CImage::operator() which does check for coordinate limits.
    */
   template <typename T>
-  [[nodiscard]] const T& at(int32_t col, int32_t row, uint8_t channel = 0) const
+  [[nodiscard]] const T& at(int32_t col, int32_t row, int8_t channel = 0) const
   {
     return *reinterpret_cast<const T*>(internal_get(col, row, channel));
   }
 
   /** \overload Non-const case */
   template <typename T>
-  [[nodiscard]] T& at(int32_t col, int32_t row, uint8_t channel = 0)
+  [[nodiscard]] T& at(int32_t col, int32_t row, int8_t channel = 0)
   {
     return *reinterpret_cast<T*>(internal_get(col, row, channel));
   }
@@ -387,14 +387,14 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    * \sa The CImage::operator() which does check for coordinate limits.
    */
   template <typename T>
-  [[nodiscard]] const T* ptr(int32_t col, int32_t row, uint8_t channel = 0) const
+  [[nodiscard]] const T* ptr(int32_t col, int32_t row, int8_t channel = 0) const
   {
     return reinterpret_cast<const T*>(internal_get(col, row, channel));
   }
 
   /** \overload Non-const case */
   template <typename T>
-  [[nodiscard]] T* ptr(int32_t col, int32_t row, uint8_t channel = 0)
+  [[nodiscard]] T* ptr(int32_t col, int32_t row, int8_t channel = 0)
   {
     return reinterpret_cast<T*>(internal_get(col, row, channel));
   }
@@ -417,7 +417,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    *   The coordinate origin is pixel(0,0)=top-left corner of the image.
    * \exception std::exception On pixel coordinates out of bounds
    */
-  [[nodiscard]] float getAsFloat(const TPixelCoord& pt, uint8_t channel) const;
+  [[nodiscard]] float getAsFloat(const TPixelCoord& pt, int8_t channel) const;
 
   /** Returns the contents of a given pixel (for gray-scale images, in color images the gray scale
    * equivalent is computed for the pixel), in float format: [0,255]->[0,1]
@@ -698,10 +698,10 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 
     if (matrix_is_normalized)
     {  // Matrix: [0,1]
-      for (unsigned int y = 0; y < ly; y++)
+      for (int y = 0; y < ly; y++)
       {
         auto* pixels = ptrLine<uint8_t>(y);
-        for (unsigned int x = 0; x < lx; x++)
+        for (int x = 0; x < lx; x++)
         {
           (*pixels++) = static_cast<uint8_t>(r.coeff(y, x) * 255);
           (*pixels++) = static_cast<uint8_t>(g.coeff(y, x) * 255);
@@ -711,10 +711,10 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
     }
     else
     {  // Matrix: [0,255]
-      for (unsigned int y = 0; y < ly; y++)
+      for (int y = 0; y < ly; y++)
       {
         auto* pixels = ptrLine<uint8_t>(y);
-        for (unsigned int x = 0; x < lx; x++)
+        for (int x = 0; x < lx; x++)
         {
           (*pixels++) = static_cast<uint8_t>(r.coeff(y, x));
           (*pixels++) = static_cast<uint8_t>(g.coeff(y, x));
@@ -905,8 +905,8 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    * \exception CExceptionExternalImageNotFound */
   void makeSureImageIsLoaded(bool allowNonInitialized = false) const;
 
-  [[nodiscard]] uint8_t* internal_get(int32_t col, int32_t row, uint8_t channel = 0);
-  [[nodiscard]] const uint8_t* internal_get(int32_t col, int32_t row, uint8_t channel = 0) const;
+  [[nodiscard]] uint8_t* internal_get(int32_t col, int32_t row, int8_t channel = 0);
+  [[nodiscard]] const uint8_t* internal_get(int32_t col, int32_t row, int8_t channel = 0) const;
 
 };  // End of class
 }  // namespace mrpt::img

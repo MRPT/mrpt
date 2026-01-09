@@ -12,7 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/vision/CStereoRectifyMap.h>
 
 #include <Eigen/Dense>
@@ -263,8 +262,8 @@ void CStereoRectifyMap::rectify(
   const CvSize trg_size = m_resize_output ? cvSize(m_resize_output_value.x, m_resize_output_value.y)
                                           : cvSize(ncols, nrows);
 
-  out_left_image.resize(trg_size.width, trg_size.height, in_left_image.getChannelCount());
-  out_right_image.resize(trg_size.width, trg_size.height, in_left_image.getChannelCount());
+  out_left_image.resize(trg_size.width, trg_size.height, in_left_image.channels());
+  out_right_image.resize(trg_size.width, trg_size.height, in_left_image.channels());
 
   const cv::Mat in_left = in_left_image.asCvMat<cv::Mat>(SHALLOW_COPY);
   const cv::Mat in_right = in_right_image.asCvMat<cv::Mat>(SHALLOW_COPY);

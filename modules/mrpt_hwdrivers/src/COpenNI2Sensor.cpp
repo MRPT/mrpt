@@ -19,9 +19,6 @@
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/system/CTimeLogger.h>
 
-// Universal include for all versions of OpenCV
-#include <mrpt/3rdparty/do_opencv_includes.h>
-
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
 using namespace mrpt::obs;

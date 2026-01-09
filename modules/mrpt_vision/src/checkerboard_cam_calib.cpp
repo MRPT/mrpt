@@ -12,7 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/vision/chessboard_camera_calib.h>

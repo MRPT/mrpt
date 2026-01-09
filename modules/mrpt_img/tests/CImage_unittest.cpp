@@ -24,26 +24,23 @@
 #include <mrpt/system/memory.h>
 #include <test_mrpt_common.h>
 
-// Universal include for all versions of OpenCV
-#include <mrpt/3rdparty/do_opencv_includes.h>
-
 template class mrpt::CTraitsTest<mrpt::img::CImage>;
 
 using namespace std::string_literals;
 const auto tstImgFileColor =
-    mrpt::UNITTEST_BASEDIR() + "/samples/img_basic_example/frame_color.jpg"s;
+    mrpt::UNITTEST_BASEDIR() + "/../../samples/img_basic_example/frame_color.jpg"s;
 
 // Generate random img:
 namespace
 {
-void fillImagePseudoRandom(uint32_t seed, mrpt::img::CImage& img)
+void fillImagePseudoRandom(int32_t seed, mrpt::img::CImage& img)
 {
-  mrpt::random::Randomize(seed);
+  mrpt::random::Randomize(static_cast<unsigned int>(seed));
   auto& rnd = mrpt::random::getRandomGenerator();
 
-  for (unsigned y = 0; y < img.getHeight(); y++)
+  for (int y = 0; y < img.getHeight(); y++)
   {
-    for (unsigned x = 0; x < img.getWidth(); x++)
+    for (int x = 0; x < img.getWidth(); x++)
     {
       const uint8_t c = static_cast<uint8_t>(rnd.drawUniform32bit());
       img.at<uint8_t>(x, y) = c;
@@ -57,12 +54,17 @@ bool expect_identical(
 {
   EXPECT_EQ(a.getWidth(), b.getWidth());
   EXPECT_EQ(a.getHeight(), b.getHeight());
-  for (unsigned int y = 0; y < a.getHeight(); y++)
-    for (unsigned int x = 0; x < a.getWidth(); x++)
+  for (int y = 0; y < a.getHeight(); y++)
+  {
+    for (int x = 0; x < a.getWidth(); x++)
     {
       EXPECT_EQ(a.at<uint8_t>(x, y), b.at<uint8_t>(x, y)) << s;
-      if (a.at<uint8_t>(x, y) != b.at<uint8_t>(x, y)) return false;
+      if (a.at<uint8_t>(x, y) != b.at<uint8_t>(x, y))
+      {
+        return false;
+      }
     }
+  }
   return true;
 }
 }  // namespace
@@ -83,13 +85,13 @@ TEST(CImage, CtorDefault)
 
 namespace
 {
-void CtorSized_gray(unsigned int w, unsigned int h)
+void CtorSized_gray(int w, int h)
 {
   using namespace mrpt::img;
   CImage img(w, h, CH_GRAY);
   EXPECT_EQ(img.getWidth(), w);
   EXPECT_EQ(img.getHeight(), 48U);
-  EXPECT_EQ(img.getChannelCount(), 1U);
+  EXPECT_EQ(img.channels(), 1U);
   EXPECT_EQ(img.getPixelDepth(), PixelDepth::D8U);
   EXPECT_FALSE(img.isColor());
 }
@@ -102,11 +104,11 @@ TEST(CImage, CtorSized)
     CImage img(64, 48, CH_RGB);
     EXPECT_EQ(img.getWidth(), 64U);
     EXPECT_EQ(img.getHeight(), 48U);
-    EXPECT_EQ(img.getChannelCount(), 3U);
+    EXPECT_EQ(img.channels(), 3U);
     EXPECT_EQ(img.getPixelDepth(), PixelDepth::D8U);
     EXPECT_TRUE(img.isColor());
   }
-  for (unsigned w = 64; w < 70; w++)
+  for (int w = 64; w < 70; w++)
   {
     CtorSized_gray(w, 48);
   }
@@ -116,14 +118,13 @@ TEST(CImage, GetSetPixel)
 {
   using namespace mrpt::img;
   CImage img(20, 10, CH_GRAY);
-  img.setPixel(10, 2, TColor(0x80, 0x80, 0x80));
+  img.setPixel({10, 2}, TColor(0x80, 0x80, 0x80));
   EXPECT_EQ(img.at<uint8_t>(10, 2), 0x80);
-  EXPECT_EQ(*img(10, 2), 0x80);
 
-  img.setPixel(11, 2, TColor(0x0, 0x0, 0x0));
+  img.setPixel({11, 2}, TColor(0x0, 0x0, 0x0));
   EXPECT_EQ(img.at<uint8_t>(11, 2), 0x00);
 
-  img.setPixel(12, 2, TColor(0xff, 0xff, 0xff));
+  img.setPixel({12, 2}, TColor(0xff, 0xff, 0xff));
   EXPECT_EQ(img.at<uint8_t>(12, 2), 0xff);
 
   img.at<uint8_t>(13, 2) = 0x70;
@@ -318,53 +319,11 @@ TEST(CImage, getChannelsOrder)
     CImage a;
     bool load_ok = a.loadFromFile(tstImgFileColor);
     EXPECT_TRUE(load_ok);
-    EXPECT_EQ(std::string("BGR"), a.getChannelsOrder());
+    EXPECT_EQ(std::string("RGB"), a.getChannelsOrder());
   }
   {
     CImage a(32, 10, CH_GRAY);
     EXPECT_EQ(std::string("GRAY"), a.getChannelsOrder());
-  }
-}
-
-TEST(CImage, ChangeCvMatCopies)
-{
-  using namespace mrpt::img;
-
-  {
-    CImage a(20, 10, CH_GRAY);
-    a.at<uint8_t>(1, 2) = 0x80;
-    // change shallow copy:
-    cv::Mat m = a.asCvMat<cv::Mat>(SHALLOW_COPY);
-    m.at<uint8_t>(2, 1) = 0x70;
-    // Expect change in source:
-    EXPECT_EQ(a.at<uint8_t>(1, 2), 0x70);
-
-    // size:
-    cv::Mat& m2 = a.asCvMatRef();
-    cv::Mat& m3 = a.asCvMatRef();
-    EXPECT_EQ(&m2, &m3);
-
-    m2 = cv::Mat(40, 40, CV_8UC1);
-
-    cv::Mat& m4 = a.asCvMatRef();
-    EXPECT_EQ(&m2, &m4);
-
-    EXPECT_EQ(a.getWidth(), 40U);
-    EXPECT_EQ(a.getHeight(), 40U);
-  }
-  {
-    CImage a(20, 10, CH_GRAY);
-    a.at<uint8_t>(1, 2) = 0x80;
-    // change deep copy:
-    cv::Mat m = a.asCvMat<cv::Mat>(DEEP_COPY);
-    m.at<uint8_t>(2, 1) = 0x70;
-    // Expect NO change in source:
-    EXPECT_EQ(a.at<uint8_t>(1, 2), 0x80);
-
-    // size:
-    m = cv::Mat(40, 40, CV_8UC1);
-    EXPECT_EQ(a.getWidth(), 20U);
-    EXPECT_EQ(a.getHeight(), 10U);
   }
 }
 
@@ -396,9 +355,13 @@ TEST(CImage, ScaleImage)
   {
     CImage c;
     if (pass == 0)
+    {
       c = a.makeDeepCopy();
+    }
     else
+    {
       a.scaleImage(c, 311, 211);
+    }
     const auto cw = c.getWidth(), ch = c.getHeight();
 
     {
@@ -484,15 +447,15 @@ TEST(CImage, KLT_response)
 
   {
     CImage a(100, 90, CH_GRAY);
-    a.filledRectangle(0, 0, 99, 99, TColor(0x10));
-    a.filledRectangle(40, 30, 41, 31, TColor(0x20));
+    a.filledRectangle({0, 0}, {99, 99}, TColor(0x10));
+    a.filledRectangle({40, 30}, {41, 31}, TColor(0x20));
 
     for (int w = 2; w < 12; w++)
     {
-      const auto resp = a.KLT_response(40, 30, w);
+      const auto resp = a.KLT_response({40, 30}, w);
       EXPECT_GT(resp, 0.9f) << " w=" << w;
 
-      const auto flatResp = a.KLT_response(20, 20, w);
+      const auto flatResp = a.KLT_response({20, 20}, w);
       EXPECT_LT(flatResp, 0.1f) << " w=" << w;
     }
   }
@@ -503,7 +466,7 @@ TEST(CImage, LoadAndComparePseudoRnd)
   using namespace mrpt::img;
   using namespace std::string_literals;
 
-  const auto tstimg = mrpt::UNITTEST_BASEDIR() + "/tests/test_pseudorandom_img_seed70.png"s;
+  const auto tstimg = mrpt::UNITTEST_BASEDIR() + "/../../tests/test_pseudorandom_img_seed70.png"s;
 
   CImage a;
   bool load_ok = a.loadFromFile(tstimg);
@@ -520,9 +483,9 @@ TEST(CImage, LoadAndSave)
   using namespace mrpt::img;
   using namespace std::string_literals;
 
-  for (unsigned h = 7; h < 20; h += 17)
+  for (int h = 7; h < 20; h += 17)
   {
-    for (unsigned w = 10; w < 33; w++)
+    for (int w = 10; w < 33; w++)
     {
       CImage a(w, h, CH_GRAY);
       fillImagePseudoRandom(w * h, a);
@@ -540,7 +503,7 @@ TEST(CImage, LoadAndSave)
 
       if (!expect_identical(a, b, tstName))
       {
-        GTEST_FAIL() << "a:\n" << a.asCvMatRef() << "\nb:\n" << b.asCvMatRef() << "\n";
+        GTEST_FAIL();
       }
     }
   }
@@ -554,20 +517,17 @@ TEST(CImage, DifferentAccessMethodsColor)
   EXPECT_TRUE(load_ok);
   EXPECT_TRUE(a.isColor());
 
-  for (unsigned r = 0; r < 3; r++)
+  for (int r = 0; r < 3; r++)
   {
-    for (unsigned c = 0; c < 3; c++)
+    for (int c = 0; c < 3; c++)
     {
-      for (int ch = 0; ch < 3; ch++)
+      for (int8_t ch = 0; ch < 3; ch++)
       {
-        EXPECT_EQ(*a(c, r, ch), a.at<uint8_t>(c, r, ch)) << "ch=" << ch << "\n";
-        EXPECT_EQ(*a(c, r, ch), *a.ptr<uint8_t>(c, r, ch)) << "ch=" << ch << "\n";
-        EXPECT_EQ(*a(c, r, ch), a.ptrLine<uint8_t>(r)[c * 3 + ch])
+        EXPECT_EQ(a.at<uint8_t>(c, r, ch), *a.ptr<uint8_t>(c, r, ch)) << "ch=" << ch << "\n";
+        EXPECT_EQ(a.at<uint8_t>(c, r, ch), a.ptrLine<uint8_t>(r)[c * 3 + ch])
             << "(c,r,ch)=(" << c << "," << r << "," << ch << ")"
-            << "\n a(c, r, ch)=" << static_cast<void*>(a(c, r, ch))
             << "\n &a.ptrLine<uint8_t>(r)[c * 3 + ch] = "
             << static_cast<void*>(&a.ptrLine<uint8_t>(r)[c * 3 + ch])
-            << "\n a(0, r, ch)=" << static_cast<void*>(a(0, r, ch))
             << "\n a.ptrLine<uint8_t>(r) = " << static_cast<void*>(a.ptrLine<uint8_t>(r)) << "\n";
       }
     }
@@ -583,13 +543,12 @@ TEST(CImage, DifferentAccessMethodsGray)
   a = a.grayscale();
   EXPECT_FALSE(a.isColor());
 
-  for (unsigned r = 5; r < 7; r++)
+  for (int r = 5; r < 7; r++)
   {
-    for (unsigned c = 10; c < 12; c++)
+    for (int c = 10; c < 12; c++)
     {
-      EXPECT_EQ(*a(c, r), a.at<uint8_t>(c, r));
-      EXPECT_EQ(*a(c, r), *a.ptr<uint8_t>(c, r));
-      EXPECT_EQ(*a(c, r), a.ptrLine<uint8_t>(r)[c]);
+      EXPECT_EQ(a.at<uint8_t>(c, r), *a.ptr<uint8_t>(c, r));
+      EXPECT_EQ(a.at<uint8_t>(c, r), a.ptrLine<uint8_t>(r)[c]);
     }
   }
 }

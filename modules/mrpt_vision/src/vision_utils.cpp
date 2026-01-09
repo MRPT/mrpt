@@ -12,7 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_matrices.h>
@@ -262,8 +261,8 @@ float vision::computeMainOrientation(const CImage& image, unsigned int x, unsign
 -------------------------------------------------------------*/
 void vision::normalizeImage(const CImage& image, CImage& nimage)
 {
-  ASSERT_(image.getChannelCount() == 1);
-  nimage.resize(image.getWidth(), image.getHeight(), image.getChannelCount());
+  ASSERT_(image.channels() == 1);
+  nimage.resize(image.getWidth(), image.getHeight(), image.channels());
 
   CMatrixFloat im, nim;
   nim.resize(image.getHeight(), image.getWidth());
