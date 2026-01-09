@@ -27,15 +27,6 @@ define_mrpt_lib(
 	)
 
 if(BUILD_mrpt-maps)
-  # Workaround to Debian bug https://bugs.debian.org/1115155
-  # Apparently caused by memory corruption in the vtable of these classes,
-  # but neither sanitizers, nor valgrind detect anything wrong.
-  set_source_files_properties(
-      src/opengl/CPlanarLaserScan.cpp
-      src/opengl/CAngularObservationMesh.cpp
-      PROPERTIES COMPILE_OPTIONS "-O1"
-  )
-
 	if(CMAKE_MRPT_HAS_LIBLAS)
 		target_link_libraries(maps PRIVATE ${LAS_LIBS})
 	endif()

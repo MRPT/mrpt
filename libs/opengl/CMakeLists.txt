@@ -43,20 +43,6 @@ if(NOT BUILD_mrpt-opengl)
   return()
 endif()
 
-# Workaround to Debian bug https://bugs.debian.org/1115155
-# Apparently caused by memory corruption in the vtable of these classes,
-# but neither sanitizers, nor valgrind detect anything wrong.
-set_source_files_properties(
-  src/CRenderizableShaderTriangles.cpp
-  src/CTexturedPlane.cpp
-  src/CEllipsoid2D.cpp
-  src/CEllipsoid3D.cpp
-  src/CEllipsoidInverseDepth2D.cpp
-  src/CEllipsoidInverseDepth3D.cpp
-  src/CEllipsoidRangeBearing2D.cpp
-  PROPERTIES COMPILE_OPTIONS "-O1"
-)
-
 if (MRPT_OPENGL_PROFILER)
 	target_compile_definitions(opengl PRIVATE MRPT_OPENGL_PROFILER)
 endif()
