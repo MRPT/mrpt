@@ -18,6 +18,11 @@ using namespace mrpt::opengl;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CRenderizableShaderText, CRenderizable, mrpt::opengl)
 
+CRenderizableShaderText::CRenderizableShaderText()
+{  // Initialize GlState
+  auto gh = gls();
+}
+
 // Dtor:
 CRenderizableShaderText::~CRenderizableShaderText() = default;
 
