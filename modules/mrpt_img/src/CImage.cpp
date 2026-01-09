@@ -49,7 +49,45 @@ namespace
 {
 const thread_local bool MRPT_DEBUG_IMG_LAZY_LOAD =
     mrpt::get_env<bool>("MRPT_DEBUG_IMG_LAZY_LOAD", false);
+
+stbir_pixel_layout mrpt_image_channel_to_stbir_layout(const mrpt::img::TImageChannels channels)
+{
+  using mrpt::img::TImageChannels;
+
+  switch (channels)
+  {
+    case TImageChannels::CH_GRAY:
+      return STBIR_1CHANNEL;
+
+    case TImageChannels::CH_RGB:
+      return STBIR_RGB;
+
+    case TImageChannels::CH_RGBA:
+      return STBIR_RGBA;
+
+    default:
+      THROW_EXCEPTION("Invalid TImageChannels value");
+  };
 }
+
+stbir_datatype mrpt_pixel_depth_to_stbir_type(const mrpt::img::PixelDepth depth)
+{
+  using mrpt::img::PixelDepth;
+
+  switch (depth)
+  {
+    case PixelDepth::D8U:
+      return STBIR_TYPE_UINT8;
+
+    case PixelDepth::D16U:
+      return STBIR_TYPE_UINT16;
+
+    default:
+      THROW_EXCEPTION("Invalid PixelDepth value");
+  };
+}
+
+}  // namespace
 
 namespace mrpt::img
 {
@@ -136,7 +174,10 @@ mrpt::img::CImage CImage::LoadFromFile(const std::string& fileName, TImageChanne
 {
   CImage im;
   bool ok = im.loadFromFile(fileName, loadChannels);
-  if (!ok) THROW_EXCEPTION_FMT("Error loading image from '%s'", fileName.c_str());
+  if (!ok)
+  {
+    THROW_EXCEPTION_FMT("Error loading image from '%s'", fileName.c_str());
+  }
   return im;
 }
 
@@ -205,23 +246,21 @@ bool CImage::saveToFile(const std::string& fileName, int jpeg_quality) const
   {
     return 0 != stbi_write_jpg(fileName.c_str(), w, h, comp, m_state->image_data, jpeg_quality);
   }
-  else if (ext == "png")
+  if (ext == "png")
   {
     return 0 != stbi_write_png(fileName.c_str(), w, h, comp, m_state->image_data, stride);
   }
-  else if (ext == "bmp")
+  if (ext == "bmp")
   {
     return 0 != stbi_write_bmp(fileName.c_str(), w, h, comp, m_state->image_data);
   }
-  else if (ext == "tga")
+  if (ext == "tga")
   {
     return 0 != stbi_write_tga(fileName.c_str(), w, h, comp, m_state->image_data);
   }
-  else
-  {
-    THROW_EXCEPTION_FMT(
-        "Unknown image format extension '%s' (file: '%s')", ext.c_str(), fileName.c_str());
-  }
+
+  THROW_EXCEPTION_FMT(
+      "Unknown image format extension '%s' (file: '%s')", ext.c_str(), fileName.c_str());
 
   MRPT_END
 }
@@ -279,7 +318,7 @@ void CImage::loadFromMemoryBuffer(
   MRPT_END
 }
 
-uint8_t* CImage::internal_get(int32_t col, int32_t row, uint8_t channel)
+uint8_t* CImage::internal_get(int32_t col, int32_t row, int8_t channel)
 {
   makeSureImageIsLoaded();
   return m_state->image_data + m_state->row_stride_in_bytes() * static_cast<std::size_t>(row) +
@@ -287,7 +326,7 @@ uint8_t* CImage::internal_get(int32_t col, int32_t row, uint8_t channel)
          static_cast<std::size_t>(channel) * static_cast<std::size_t>(m_state->depth);
 }
 
-const uint8_t* CImage::internal_get(int32_t col, int32_t row, uint8_t channel) const
+const uint8_t* CImage::internal_get(int32_t col, int32_t row, int8_t channel) const
 {
   makeSureImageIsLoaded();
   return m_state->image_data + m_state->row_stride_in_bytes() * static_cast<std::size_t>(row) +
@@ -486,10 +525,10 @@ bool CImage::isEmpty() const { return !m_state->imgIsExternalStorage && m_state-
 
 bool CImage::isOriginTopLeft() const { return true; }
 
-float CImage::getAsFloat(const TPixelCoord& pt, uint8_t channel) const
+float CImage::getAsFloat(const TPixelCoord& pt, int8_t channel) const
 {
   makeSureImageIsLoaded();
-  return at<uint8_t>(pt.x, pt.y, channel) / 255.0f;
+  return static_cast<float>(at<uint8_t>(pt.x, pt.y, channel)) / 255.0f;
 }
 
 float CImage::getAsFloat(const TPixelCoord& pt) const
@@ -500,12 +539,12 @@ float CImage::getAsFloat(const TPixelCoord& pt) const
   {
     // Luminance: Y = 0.299R + 0.587G + 0.114B
     const uint8_t* pixels = ptr<uint8_t>(pt.x, pt.y, 0);
-    return (pixels[0] * 0.299f + pixels[1] * 0.587f + pixels[2] * 0.114f) / 255.0f;
+    return (static_cast<float>(pixels[0]) * 0.299f + static_cast<float>(pixels[1]) * 0.587f +
+            static_cast<float>(pixels[2]) * 0.114f) /
+           255.0f;
   }
-  else
-  {
-    return at<uint8_t>(pt.x, pt.y, 0) / 255.0f;
-  }
+
+  return static_cast<float>(at<uint8_t>(pt.x, pt.y, 0)) / 255.0f;
 }
 
 CImage CImage::grayscale() const
@@ -589,12 +628,15 @@ void CImage::scaleImage(
       filter = STBIR_FILTER_DEFAULT;
   }
 
+  const auto filterEdge = STBIR_EDGE_CLAMP;
+
   // Perform resize using stbir
-  stbir_resize_uint8_linear(
+  stbir_resize(
       m_state->image_data, m_state->width, m_state->height,
       static_cast<int>(m_state->row_stride_in_bytes()), out_img.m_state->image_data, width, height,
       static_cast<int>(out_img.m_state->row_stride_in_bytes()),
-      static_cast<stbir_pixel_layout>(m_state->channels));
+      mrpt_image_channel_to_stbir_layout(m_state->channels),
+      mrpt_pixel_depth_to_stbir_type(m_state->depth), filterEdge, filter);
 
   MRPT_END
 }
@@ -622,8 +664,10 @@ void CImage::setPixel(const TPixelCoord& pt, const mrpt::img::TColor& color)
   if (m_state->channels == 1)
   {
     // Grayscale: use luminance
-    at<uint8_t>(pt.x, pt.y, 0) =
-        static_cast<uint8_t>(0.299f * color.R + 0.587f * color.G + 0.114f * color.B);
+    const int y = 77 * static_cast<int>(color.R)     // 0.299 * 256 ≈ 77
+                  + 150 * static_cast<int>(color.G)  // 0.587 * 256 ≈ 150
+                  + 29 * static_cast<int>(color.B);  // 0.114 * 256 ≈ 29
+    at<uint8_t>(pt.x, pt.y, 0) = static_cast<uint8_t>(y >> 8);
   }
   else if (m_state->channels == 3)
   {
@@ -677,12 +721,18 @@ void CImage::drawImage(const TPixelCoord& pt, const mrpt::img::CImage& img)
   for (int y = 0; y < src_h; y++)
   {
     const int dst_row = dst_y + y;
-    if (dst_row < 0 || dst_row >= m_state->height) continue;
+    if (dst_row < 0 || dst_row >= m_state->height)
+    {
+      continue;
+    }
 
     for (int x = 0; x < src_w; x++)
     {
       const int dst_col = dst_x + x;
-      if (dst_col < 0 || dst_col >= m_state->width) continue;
+      if (dst_col < 0 || dst_col >= m_state->width)
+      {
+        continue;
+      }
 
       // Copy pixel
       if (m_state->channels == img.m_state->channels)
@@ -694,7 +744,7 @@ void CImage::drawImage(const TPixelCoord& pt, const mrpt::img::CImage& img)
       else
       {
         // TODO: Handle channel conversion
-        // For now, just copy what we can
+        THROW_EXCEPTION("Case not implemented");
       }
     }
   }
@@ -712,11 +762,15 @@ void CImage::extract_patch(
 
   for (int y = 0; y < patch_size.y; y++)
   {
-    if (y0 + y >= m_state->height) break;
+    if (y0 + y >= m_state->height)
+    {
+      break;
+    }
 
     std::memcpy(
-        patch.ptrLine<uint8_t>(y), ptrLine<uint8_t>(y0 + y) + x0 * m_state->pixel_size_in_bytes(),
-        patch_size.x * m_state->pixel_size_in_bytes());
+        patch.ptrLine<uint8_t>(y),
+        ptrLine<uint8_t>(y0 + y) + static_cast<size_t>(x0) * m_state->pixel_size_in_bytes(),
+        static_cast<size_t>(patch_size.x) * m_state->pixel_size_in_bytes());
   }
 }
 
@@ -738,8 +792,14 @@ void CImage::getAsMatrix(
   MRPT_START
   makeSureImageIsLoaded();
 
-  if (x_max == -1) x_max = m_state->width - 1;
-  if (y_max == -1) y_max = m_state->height - 1;
+  if (x_max == -1)
+  {
+    x_max = m_state->width - 1;
+  }
+  if (y_max == -1)
+  {
+    y_max = m_state->height - 1;
+  }
 
   ASSERT_(x_min >= 0 && x_min < m_state->width && x_min <= x_max);
   ASSERT_(y_min >= 0 && y_min < m_state->height && y_min <= y_max);
@@ -747,7 +807,10 @@ void CImage::getAsMatrix(
   const int lx = (x_max - x_min + 1);
   const int ly = (y_max - y_min + 1);
 
-  if (doResize || outMatrix.rows() < ly || outMatrix.cols() < lx) outMatrix.setSize(ly, lx);
+  if (doResize || outMatrix.rows() < ly || outMatrix.cols() < lx)
+  {
+    outMatrix.setSize(ly, lx);
+  }
 
   const bool is_color = isColor();
   const float scale = normalize_01 ? (1.0f / 255.0f) : 1.0f;
@@ -761,7 +824,8 @@ void CImage::getAsMatrix(
       if (is_color)
       {
         // Luminance
-        value = pixels[0] * 0.299f + pixels[1] * 0.587f + pixels[2] * 0.114f;
+        value = static_cast<float>(pixels[0]) * 0.299f + static_cast<float>(pixels[1]) * 0.587f +
+                static_cast<float>(pixels[2]) * 0.114f;
         pixels += m_state->channels;
       }
       else
@@ -782,8 +846,14 @@ void CImage::getAsMatrix(
   MRPT_START
   makeSureImageIsLoaded();
 
-  if (x_max == -1) x_max = m_state->width - 1;
-  if (y_max == -1) y_max = m_state->height - 1;
+  if (x_max == -1)
+  {
+    x_max = m_state->width - 1;
+  }
+  if (y_max == -1)
+  {
+    y_max = m_state->height - 1;
+  }
 
   ASSERT_(x_min >= 0 && x_min < m_state->width && x_min <= x_max);
   ASSERT_(y_min >= 0 && y_min < m_state->height && y_min <= y_max);
@@ -791,7 +861,10 @@ void CImage::getAsMatrix(
   const int lx = (x_max - x_min + 1);
   const int ly = (y_max - y_min + 1);
 
-  if (doResize || outMatrix.rows() < ly || outMatrix.cols() < lx) outMatrix.setSize(ly, lx);
+  if (doResize || outMatrix.rows() < ly || outMatrix.cols() < lx)
+  {
+    outMatrix.setSize(ly, lx);
+  }
 
   const bool is_color = isColor();
 
@@ -803,7 +876,7 @@ void CImage::getAsMatrix(
       if (is_color)
       {
         // Luminance (integer arithmetic for speed)
-        const unsigned int value = pixels[0] * 299 + pixels[1] * 587 + pixels[2] * 114;  // * 1000
+        const unsigned int value = pixels[0] * 299U + pixels[1] * 587U + pixels[2] * 114U;
         outMatrix(y, x) = static_cast<uint8_t>(value / 1000);
         pixels += m_state->channels;
       }
@@ -818,14 +891,14 @@ void CImage::getAsMatrix(
 }
 
 void CImage::getAsRGBMatrices(
-    mrpt::math::CMatrixFloat& R,
-    mrpt::math::CMatrixFloat& G,
-    mrpt::math::CMatrixFloat& B,
-    bool doResize,
-    int x_min,
-    int y_min,
-    int x_max,
-    int y_max) const
+    [[maybe_unused]] mrpt::math::CMatrixFloat& R,
+    [[maybe_unused]] mrpt::math::CMatrixFloat& G,
+    [[maybe_unused]] mrpt::math::CMatrixFloat& B,
+    [[maybe_unused]] bool doResize,
+    [[maybe_unused]] int x_min,
+    [[maybe_unused]] int y_min,
+    [[maybe_unused]] int x_max,
+    [[maybe_unused]] int y_max) const
 {
   MRPT_START
 
@@ -871,14 +944,14 @@ void CImage::getAsRGBMatrices(
 }
 
 void CImage::getAsRGBMatrices(
-    mrpt::math::CMatrix_u8& R,
-    mrpt::math::CMatrix_u8& G,
-    mrpt::math::CMatrix_u8& B,
-    bool doResize,
-    int x_min,
-    int y_min,
-    int x_max,
-    int y_max) const
+    [[maybe_unused]] mrpt::math::CMatrix_u8& R,
+    [[maybe_unused]] mrpt::math::CMatrix_u8& G,
+    [[maybe_unused]] mrpt::math::CMatrix_u8& B,
+    [[maybe_unused]] bool doResize,
+    [[maybe_unused]] int x_min,
+    [[maybe_unused]] int y_min,
+    [[maybe_unused]] int x_max,
+    [[maybe_unused]] int y_max) const
 {
   MRPT_START
 
@@ -951,11 +1024,10 @@ void CImage::cross_correlation_FFT(
   ASSERT_(v_search_end < getHeight());
 
   // Find smallest valid size:
-  size_t x, y;
   const auto actual_lx = std::max(u_size, in_img.getWidth());
   const auto actual_ly = std::max(v_size, in_img.getHeight());
-  const auto lx = mrpt::round2up(actual_lx);
-  const auto ly = mrpt::round2up(actual_ly);
+  const auto lx = static_cast<size_t>(mrpt::round2up(actual_lx));
+  const auto ly = static_cast<size_t>(mrpt::round2up(actual_ly));
 
   mrpt::math::CMatrixF i1(ly, lx);
   mrpt::math::CMatrixF i2(ly, lx);
@@ -982,9 +1054,9 @@ void CImage::cross_correlation_FFT(
   mrpt::math::dft2_complex(i2, ZEROS, I2_R, I2_I);
 
   // Compute the COMPLEX division of I2 by I1:
-  for (y = 0; y < ly; y++)
+  for (int y = 0; y < static_cast<int>(ly); y++)
   {
-    for (x = 0; x < lx; x++)
+    for (int x = 0; x < static_cast<int>(lx); x++)
     {
       float r1 = I1_R(y, x);
       float r2 = I2_R(y, x);
@@ -1003,18 +1075,18 @@ void CImage::cross_correlation_FFT(
   math::idft2_complex(I2_R, I2_I, res_R, res_I);
 
   out_corr.setSize(actual_ly, actual_lx);
-  for (y = 0; y < actual_ly; y++)
+  for (int y = 0; y < actual_ly; y++)
   {
-    for (x = 0; x < actual_lx; x++)
+    for (int x = 0; x < actual_lx; x++)
     {
-      out_corr(y, x) = sqrt(square(res_R(y, x)) + square(res_I(y, x)));
+      out_corr(y, x) = std::sqrt(square(res_R(y, x)) + square(res_I(y, x)));
     }
   }
 
   MRPT_END
 }
 
-void CImage::getAsMatrixTiled(mrpt::math::CMatrixFloat& outMatrix) const
+void CImage::getAsMatrixTiled([[maybe_unused]] mrpt::math::CMatrixFloat& outMatrix) const
 {
   MRPT_START
 
@@ -1083,8 +1155,10 @@ void CImage::unload() const noexcept
   if (m_state->imgIsExternalStorage)
   {
     if (MRPT_DEBUG_IMG_LAZY_LOAD)
+    {
       std::cout << "[CImage::unload()] Called on this=" << reinterpret_cast<const void*>(this)
                 << std::endl;
+    }
 
     m_state->clear_image_data();
   }
@@ -1163,7 +1237,8 @@ void CImage::swapRB()
 #endif
 }
 
-void CImage::undistort(CImage& out_img, const mrpt::img::TCamera& cameraParams) const
+void CImage::undistort(
+    [[maybe_unused]] CImage& out_img, [[maybe_unused]] const mrpt::img::TCamera& cameraParams) const
 {
   makeSureImageIsLoaded();  // For delayed loaded images stored externally
   THROW_EXCEPTION("TODO!");
@@ -1173,7 +1248,7 @@ void CImage::undistort(CImage& out_img, const mrpt::img::TCamera& cameraParams) 
 
   auto& srcImg = const_cast<cv::Mat&>(m_state->img);
   // This will avoid re-alloc if size already matches.
-  out_img.resize(srcImg.cols, srcImg.rows, getChannelCount());
+  out_img.resize(srcImg.cols, srcImg.rows, channels());
 
   const auto& intrMat = cameraParams.intrinsicParams;
   const auto& dist = cameraParams.dist;
@@ -1188,7 +1263,7 @@ void CImage::undistort(CImage& out_img, const mrpt::img::TCamera& cameraParams) 
 #endif
 }
 
-void CImage::filterMedian(CImage& out_img, int W) const
+void CImage::filterMedian([[maybe_unused]] CImage& out_img, [[maybe_unused]] int W) const
 {
   makeSureImageIsLoaded();  // For delayed loaded images stored externally
 
@@ -1198,13 +1273,17 @@ void CImage::filterMedian(CImage& out_img, int W) const
   if (this == &out_img)
     srcImg = srcImg.clone();
   else
-    out_img.resize(srcImg.cols, srcImg.rows, getChannelCount());
+    out_img.resize(srcImg.cols, srcImg.rows, channels());
 
   cv::medianBlur(srcImg, out_img.m_impl->img, W);
 #endif
 }
 
-void CImage::filterGaussian(CImage& out_img, int W, int H, double sigma) const
+void CImage::filterGaussian(
+    [[maybe_unused]] CImage& out_img,
+    [[maybe_unused]] int W,
+    [[maybe_unused]] int H,
+    [[maybe_unused]] double sigma) const
 {
   makeSureImageIsLoaded();  // For delayed loaded images stored externally
   THROW_EXCEPTION("TODO!");
@@ -1213,13 +1292,17 @@ void CImage::filterGaussian(CImage& out_img, int W, int H, double sigma) const
   if (this == &out_img)
     srcImg = srcImg.clone();
   else
-    out_img.resize(srcImg.cols, srcImg.rows, getChannelCount());
+    out_img.resize(srcImg.cols, srcImg.rows, channels());
 
   cv::GaussianBlur(srcImg, out_img.m_impl->img, cv::Size(W, H), sigma);
 #endif
 }
 
-void CImage::rotateImage(CImage& out_img, double ang, const TPixelCoord& center, double scale) const
+void CImage::rotateImage(
+    [[maybe_unused]] CImage& out_img,
+    [[maybe_unused]] double ang,
+    [[maybe_unused]] const TPixelCoord& center,
+    [[maybe_unused]] double scale) const
 {
   makeSureImageIsLoaded();  // For delayed loaded images stored externally
 
@@ -1246,7 +1329,7 @@ void CImage::rotateImage(CImage& out_img, double ang, const TPixelCoord& center,
   }
   // else: general rotation:
 
-  out_img.resize(getWidth(), getHeight(), getChannelCount());
+  out_img.resize(getWidth(), getHeight(), channels());
 
   // Based on the blog entry:
   // http://blog.weisu.org/2007/12/opencv-image-rotate-and-zoom-rotation.html
@@ -1268,13 +1351,13 @@ void CImage::rotateImage(CImage& out_img, double ang, const TPixelCoord& center,
 }
 
 bool CImage::drawChessboardCorners(
-    const std::vector<TPixelCoordf>& cornerCoords,
-    unsigned int check_size_x,
-    unsigned int check_size_y,
-    unsigned int lines_width,
-    unsigned int r)
+    [[maybe_unused]] const std::vector<TPixelCoordf>& cornerCoords,
+    [[maybe_unused]] unsigned int check_size_x,
+    [[maybe_unused]] unsigned int check_size_y,
+    [[maybe_unused]] unsigned int lines_width,
+    [[maybe_unused]] unsigned int r)
 {
-  if (cornerCoords.size() != check_size_x * check_size_y)
+  if (cornerCoords.size() != static_cast<size_t>(check_size_x) * check_size_y)
   {
     return false;
   }
@@ -1361,18 +1444,21 @@ void CImage::joinImagesHorz(const CImage& img1, const CImage& img2)
 {
   ASSERT_(img1.getHeight() == img2.getHeight());
 
+  THROW_EXCEPTION("Not yet implemented");
+#if 0
   auto im1 = img1.m_state->img, im2 = img2.m_state->img;
   ASSERT_(im1.type() == im2.type());
 
-  this->resize(im1.cols + im2.cols, im1.rows, img1.getChannelCount());
+  this->resize(im1.cols + im2.cols, im1.rows, img1.channels());
 
   im1.copyTo(m_impl->img(cv::Rect(0, 0, im1.cols, im1.rows)));
   im2.copyTo(m_impl->img(cv::Rect(im1.cols, 0, im2.cols, im2.rows)));
+#endif
 }  // end
 
-template <unsigned int HALF_WIN_SIZE>
+template <int HALF_WIN_SIZE>
 void image_KLT_response_template(
-    const cv::Mat& im, unsigned int x, unsigned int y, int32_t& _gxx, int32_t& _gyy, int32_t& _gxy)
+    const mrpt::img::CImage& im, int x, int y, int32_t& _gxx, int32_t& _gyy, int32_t& _gxy)
 {
   const auto min_x = x - HALF_WIN_SIZE;
   const auto min_y = y - HALF_WIN_SIZE;
@@ -1383,11 +1469,11 @@ void image_KLT_response_template(
 
   const unsigned int WIN_SIZE = 1 + 2 * HALF_WIN_SIZE;
 
-  unsigned int yy = min_y;
-  for (unsigned int iy = WIN_SIZE; iy; --iy, ++yy)
+  int yy = min_y;
+  for (int iy = WIN_SIZE; iy; --iy, ++yy)
   {
-    unsigned int xx = min_x;
-    for (unsigned int ix = WIN_SIZE; ix; --ix, ++xx)
+    int xx = min_x;
+    for (int ix = WIN_SIZE; ix; --ix, ++xx)
     {
       const int32_t dx = static_cast<int32_t>(im.at<uint8_t>(yy, xx + 1)) -
                          static_cast<int32_t>(im.at<uint8_t>(yy, xx - 1));
@@ -1405,15 +1491,15 @@ void image_KLT_response_template(
 
 float CImage::KLT_response(const TPixelCoord& pt, const int32_t half_window_size) const
 {
-  const auto& im1 = m_state->img;
-  const auto img_w = static_cast<unsigned int>(im1.cols);
-  const auto img_h = static_cast<unsigned int>(im1.rows);
+  const auto& im1 = *this;
+  const auto img_w = m_state->width;
+  const auto img_h = m_state->height;
 
   // If any of those predefined values worked, do the generic way:
-  const unsigned int min_x = pt.x - half_window_size;
-  const unsigned int max_x = pt.x + half_window_size;
-  const unsigned int min_y = pt.y - half_window_size;
-  const unsigned int max_y = pt.y + half_window_size;
+  const auto min_x = pt.x - half_window_size;
+  const auto max_x = pt.x + half_window_size;
+  const auto min_y = pt.y - half_window_size;
+  const auto max_y = pt.y + half_window_size;
 
   // Since min_* are "unsigned", checking "<" will detect negative
   // numbers:
@@ -1426,6 +1512,9 @@ float CImage::KLT_response(const TPixelCoord& pt, const int32_t half_window_size
   int32_t gxx = 0;
   int32_t gxy = 0;
   int32_t gyy = 0;
+
+  const auto x = pt.x;
+  const auto y = pt.y;
 
   switch (half_window_size)
   {
@@ -1479,9 +1568,9 @@ float CImage::KLT_response(const TPixelCoord& pt, const int32_t half_window_size
       break;
 
     default:
-      for (unsigned int yy = min_y; yy <= max_y; yy++)
+      for (int yy = min_y; yy <= max_y; yy++)
       {
-        for (unsigned int xx = min_x; xx <= max_x; xx++)
+        for (int xx = min_x; xx <= max_x; xx++)
         {
           const int32_t dx = static_cast<int32_t>(im1.at<uint8_t>(yy, xx + 1)) -
                              static_cast<int32_t>(im1.at<uint8_t>(yy, xx - 1));
@@ -1496,10 +1585,10 @@ float CImage::KLT_response(const TPixelCoord& pt, const int32_t half_window_size
       break;
   }
   // Convert to float's and normalize in the way:
-  const float K = 0.5f / ((max_y - min_y + 1) * (max_x - min_x + 1));
-  const float Gxx = gxx * K;
-  const float Gxy = gxy * K;
-  const float Gyy = gyy * K;
+  const float K = 0.5f / static_cast<float>((max_y - min_y + 1) * (max_x - min_x + 1));
+  const float Gxx = static_cast<float>(gxx) * K;
+  const float Gxy = static_cast<float>(gxy) * K;
+  const float Gyy = static_cast<float>(gyy) * K;
 
   // Return the minimum eigenvalue of:
   //    ( gxx  gxy )
@@ -1508,9 +1597,9 @@ float CImage::KLT_response(const TPixelCoord& pt, const int32_t half_window_size
   // mrpt::math::detail::eigenVectorsMatrix_special_2x2():
   const float t = Gxx + Gyy;               // Trace
   const float de = Gxx * Gyy - Gxy * Gxy;  // Det
-  const float discr = std::max<float>(.0f, t * t - 4.0f * de);
+  const float discriminant = std::max<float>(.0f, t * t - 4.0f * de);
   // The smallest eigenvalue is:
-  return 0.5f * (t - std::sqrt(discr));
+  return 0.5f * (t - std::sqrt(discriminant));
 }
 
 std::ostream& operator<<(std::ostream& o, const TPixelCoordf& p)

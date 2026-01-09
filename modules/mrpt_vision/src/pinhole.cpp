@@ -15,9 +15,6 @@
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/vision/pinhole.h>
 
-// Universal include for all versions of OpenCV
-#include <mrpt/3rdparty/do_opencv_includes.h>
-
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::img;

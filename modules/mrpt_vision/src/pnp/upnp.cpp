@@ -65,8 +65,6 @@
 * Contributed by Edgar Riba
 \****************************************************************************************/
 
-#include <mrpt/3rdparty/do_opencv_includes.h>
-
 #include <iostream>
 #include <limits>
 using namespace std;

@@ -13,7 +13,6 @@
 */
 
 #pragma once
-#include <mrpt/3rdparty/do_opencv_includes.h>
 
 #if MRPT_HAS_OPENCV
 

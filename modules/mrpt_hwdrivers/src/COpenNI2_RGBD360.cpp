@@ -16,9 +16,6 @@
 #include <mrpt/obs/CObservationRGBD360.h>
 #include <mrpt/system/CTimeLogger.h>
 
-// Universal include for all versions of OpenCV
-#include <mrpt/3rdparty/do_opencv_includes.h>
-
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
 using namespace mrpt::obs;

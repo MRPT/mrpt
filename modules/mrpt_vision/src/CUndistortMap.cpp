@@ -14,9 +14,6 @@
 
 #include <mrpt/vision/CUndistortMap.h>
 
-// Universal include for all versions of OpenCV
-#include <mrpt/3rdparty/do_opencv_includes.h>
-
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::img;
@@ -71,7 +68,7 @@ void CUndistortMap::undistort(const mrpt::img::CImage& in_img, mrpt::img::CImage
       m_camera_params.nrows, m_camera_params.ncols, CV_16UC1,
       const_cast<uint16_t*>(&m_dat_mapy[0]));
 
-  out_img.resize(in_img.getWidth(), in_img.getHeight(), in_img.getChannelCount());
+  out_img.resize(in_img.getWidth(), in_img.getHeight(), in_img.channels());
 
   cv::remap(
       in_img.asCvMat<Mat>(SHALLOW_COPY), out_img.asCvMat<Mat>(SHALLOW_COPY), mapx, mapy,

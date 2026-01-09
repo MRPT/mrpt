@@ -41,6 +41,7 @@
     },
     "cSpell.words": [
         "Eigen",
+        "JLBC",
         "mrpt",
         "MRPT",
         "multinomial",
@@ -61,6 +62,7 @@
         "IFFT",
         "Kbhit",
         "PDFSOG",
+        "STBIR",
         "exprtk",
         "idft",
         "repr",

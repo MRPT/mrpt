@@ -18,9 +18,6 @@
 #include <mrpt/opengl/Texture.h>
 #include <mrpt/opengl/opengl_api.h>
 
-// Universal include for all versions of OpenCV
-#include <mrpt/3rdparty/do_opencv_includes.h>
-
 #include <iostream>
 #include <mutex>
 #include <set>

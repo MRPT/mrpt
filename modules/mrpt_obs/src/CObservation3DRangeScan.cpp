@@ -12,7 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/core/bits_mem.h>  // vector_strong_clear
 #include <mrpt/io/CFileGZInputStream.h>
