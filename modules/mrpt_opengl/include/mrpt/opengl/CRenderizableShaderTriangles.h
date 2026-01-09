@@ -34,10 +34,7 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
   DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderTriangles, mrpt::opengl)
 
  public:
-  CRenderizableShaderTriangles()
-  {  // Initialize GlState
-    auto gh = gls();
-  }
+  CRenderizableShaderTriangles();
 
   virtual ~CRenderizableShaderTriangles() override;
 

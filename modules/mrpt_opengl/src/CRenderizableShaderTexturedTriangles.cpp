@@ -31,6 +31,11 @@ using mrpt::img::CImage;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CRenderizableShaderTexturedTriangles, CRenderizable, mrpt::opengl)
 
+CRenderizableShaderTexturedTriangles::CRenderizableShaderTexturedTriangles()
+{  // Initialize GlState
+  auto gh = gls();
+}
+
 void CRenderizableShaderTexturedTriangles::renderUpdateBuffers() const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
