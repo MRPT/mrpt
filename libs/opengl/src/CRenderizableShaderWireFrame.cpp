@@ -18,6 +18,11 @@ using namespace mrpt::opengl;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CRenderizableShaderWireFrame, CRenderizable, mrpt::opengl)
 
+CRenderizableShaderWireFrame::CRenderizableShaderWireFrame()
+{  // Initialize GlState
+  auto gh = gls();
+}
+
 // Dtor:
 CRenderizableShaderWireFrame::~CRenderizableShaderWireFrame() = default;
 
