@@ -43,105 +43,108 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	if (argc != 2)
-	{
-		printf("usage: %s <C++ source file>\n", argv[0]);
-		return 1;
-	}
+  if (argc != 2)
+  {
+    printf("usage: %s <C++ source file>\n", argv[0]);
+    return 1;
+  }
 
-	const char* in_file_name = argv[1];
+  const char* in_file_name = argv[1];
 
-	const char* out_file_name = "replace-header.tmp";
+  const char* out_file_name = "replace-header.tmp";
 
-	printf("replace-header: working on %s...", in_file_name);
+  printf("replace-header: working on %s...", in_file_name);
 
-	ifstream f(in_file_name);
-	if (f.fail())
-	{
-		cerr << "ERROR: cannot open " << in_file_name << endl;
-		return 1;
-	}
+  ifstream f(in_file_name);
+  if (f.fail())
+  {
+    cerr << "ERROR: cannot open " << in_file_name << endl;
+    return 1;
+  }
 
-	ofstream of(out_file_name);
-	if (of.fail())
-	{
-		cerr << "ERROR: cannot create " << out_file_name << endl;
-		return 1;
-	}
+  ofstream of(out_file_name);
+  if (of.fail())
+  {
+    cerr << "ERROR: cannot create " << out_file_name << endl;
+    return 1;
+  }
 
-	int nLines = 0;
-	string inLine;
-	bool copyThisLine, insertMyHeading, lookingForHeadEnd = false;
-	while (!f.eof() && !f.fail())
-	{
-		copyThisLine = true;
-		insertMyHeading = false;
+  int nLines = 0;
+  string inLine;
+  bool copyThisLine, insertMyHeading, lookingForHeadEnd = false;
+  while (!f.eof() && !f.fail())
+  {
+    copyThisLine = true;
+    insertMyHeading = false;
 
-		std::getline(f, inLine);
-		if (!f.fail())
-		{
-			// Still looking for header start?
-			if (nLines == 0)
-			{
-				// Started??
-				if (inLine.find("/*") != string::npos)
-				{
-					lookingForHeadEnd = true;
-					copyThisLine = false;
-				}
-				else
-				{
-					// Seems there is no heading: add ours:
-					insertMyHeading = true;
-				}
-			}
+    std::getline(f, inLine);
+    if (!f.fail())
+    {
+      // Still looking for header start?
+      if (nLines == 0)
+      {
+        // Started??
+        if (inLine.find("/*") != string::npos)
+        {
+          lookingForHeadEnd = true;
+          copyThisLine = false;
+        }
+        else
+        {
+          // Seems there is no heading: add ours:
+          insertMyHeading = true;
+        }
+      }
 
-			// Looking for end?
-			if (lookingForHeadEnd)
-			{
-				copyThisLine = false;
+      // Looking for end?
+      if (lookingForHeadEnd)
+      {
+        copyThisLine = false;
 
-				if (inLine.find("*/") != string::npos)
-				{
-					lookingForHeadEnd = false;
-					insertMyHeading = true;
-				}
-			}
+        if (inLine.find("*/") != string::npos)
+        {
+          lookingForHeadEnd = false;
+          insertMyHeading = true;
+        }
+      }
 
-			// Insert comment block:
-			if (insertMyHeading)
-			{
-				of << "/* "
-					  "+-------------------------------------------------------"
-					  "-----------------+\n";
-				of << "   |                Mobile Robot Programming Toolkit "
-					  "(MRPT)                 |\n";
-				of << "   |                         https://www.mrpt.org/      "
-					  "                     |\n";
-				of << "   |                                                    "
-					  "                    |\n";
-				of << "   | Copyright (c) 2005-2024, Individual contributors, "
-					  "see AUTHORS file     |\n";
-				of << "   | See: https://www.mrpt.org/Authors - All rights "
-					  "reserved.               |\n";
-				of << "   | Released under BSD License. See: "
-					  "https://www.mrpt.org/License          |\n";
-				of << "   "
-					  "+-------------------------------------------------------"
-					  "-----------------+ */\n";
-			}
+      // Insert comment block:
+      if (insertMyHeading)
+      {
+        of << "/* "
+              "+-------------------------------------------------------"
+              "-----------------+\n";
+        of << "   |                Mobile Robot Programming Toolkit "
+              "(MRPT)                 |\n";
+        of << "   |                         https://www.mrpt.org/      "
+              "                     |\n";
+        of << "   |                                                    "
+              "                    |\n";
+        of << "   | Copyright (c) 2005-2026, Individual contributors, "
+              "see AUTHORS file     |\n";
+        of << "   | See: https://www.mrpt.org/Authors - All rights "
+              "reserved.               |\n";
+        of << "   | Released under BSD License. See: "
+              "https://www.mrpt.org/License          |\n";
+        of << "   "
+              "+-------------------------------------------------------"
+              "-----------------+ */\n";
+      }
 
-			// Normal copy:
-			if (copyThisLine) { of << inLine << "\n"; }
-		}
-		nLines++;
-	}
+      // Normal copy:
+      if (copyThisLine)
+      {
+        of << inLine << "\n";
+      }
+    }
+    nLines++;
+  }
 
-	f.close();
-	of.close();
+  f.close();
+  of.close();
 
-	system((string("mv replace-header.tmp ") + string(in_file_name)).c_str());
-	printf("done (%i lines)\n", nLines);
+  system((string("mv replace-header.tmp ") + string(in_file_name)).c_str());
+  printf("done (%i lines)\n", nLines);
 
-	return 0;
+  return 0;
 }
