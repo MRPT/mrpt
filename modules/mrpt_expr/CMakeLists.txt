@@ -66,3 +66,8 @@ endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS 0)
 # Minimize debug info for this module:
 mrpt_reduced_debug_symbols(${PROJECT_NAME})
+
+# Python wrapper:
+mrpt_add_python_module(expr
+  python_bindings/${PROJECT_NAME}_py.cpp
+)

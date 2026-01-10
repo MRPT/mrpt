@@ -34,13 +34,16 @@ TEST(RuntimeCompiledExpression, SimpleTest)
   EXPECT_NEAR(expr.eval(), vars["x"] * vars["x"] + vars["x"] * vars["y"] + 1.0, 1e-9);
 }
 
-static double myNullary() { return 10.0; }
+namespace
+{
+double myNullary() { return 10.0; }
 
-static double myNeg(double x) { return -x; }
+double myNeg(double x) { return -x; }
 
-static double myAdd(double x, double y) { return x + y; }
+double myAdd(double x, double y) { return x + y; }
 
-static double myDiff(double x, double y, double z) { return (y - x) / z; }
+double myDiff(double x, double y, double z) { return (y - x) / z; }
+}  // namespace
 
 TEST(RuntimeCompiledExpression, CustomFunctions)
 {
