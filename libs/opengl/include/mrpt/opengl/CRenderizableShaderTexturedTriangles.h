@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2024, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2026, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -30,10 +30,7 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
   DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderTexturedTriangles, mrpt::opengl)
 
  public:
-  CRenderizableShaderTexturedTriangles()
-  {  // Initialize GlState
-    auto gh = gls();
-  }
+  CRenderizableShaderTexturedTriangles();
 
   virtual ~CRenderizableShaderTexturedTriangles() override;
 
