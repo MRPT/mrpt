@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2024, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2026, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -19,6 +19,11 @@ using namespace mrpt;
 using namespace mrpt::opengl;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CRenderizableShaderTriangles, CRenderizable, mrpt::opengl)
+
+CRenderizableShaderTriangles::CRenderizableShaderTriangles()
+{  // Initialize GlState
+  auto gh = gls();
+}
 
 // Dtor:
 CRenderizableShaderTriangles::~CRenderizableShaderTriangles() = default;
