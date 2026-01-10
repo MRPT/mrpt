@@ -7,7 +7,7 @@
                | |
                |_|
 
- Copyright (c) 2005-2025, Individual contributors, see AUTHORS file
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
  See: https://www.mrpt.org/Authors - All rights reserved.
  SPDX-License-Identifier: BSD-3-Clause
 */
