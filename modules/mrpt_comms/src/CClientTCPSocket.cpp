@@ -108,12 +108,18 @@ CClientTCPSocket::~CClientTCPSocket()
 
 #if defined(MRPT_OS_LINUX)
   // Clean up epoll:
-  if (m_epoll4read_fd != -1) ::close(m_epoll4read_fd);
-  if (m_epoll4write_fd != -1) ::close(m_epoll4write_fd);
+  if (m_epoll4read_fd != -1)
+  {
+    ::close(m_epoll4read_fd);
+  }
+  if (m_epoll4write_fd != -1)
+  {
+    ::close(m_epoll4write_fd);
+  }
 #endif
 
 #if defined(MRPT_OS_APPLE)
-    // Nothing to do.
+  // Nothing to do.
 #endif
 }
 
@@ -179,11 +185,15 @@ void CClientTCPSocket::internal_attach_epoll_to_hsock()
 
   event.events = EPOLLOUT;  // EPOLLERR is always waited for.
   if (0 != epoll_ctl(m_epoll4write_fd, EPOLL_CTL_ADD, m_hSock, &event))
+  {
     THROW_EXCEPTION("epoll_ctl() for write events returned error.");
+  }
 
   event.events = EPOLLIN;
   if (0 != epoll_ctl(m_epoll4read_fd, EPOLL_CTL_ADD, m_hSock, &event))
+  {
     THROW_EXCEPTION("epoll_ctl() for read events returned error.");
+  }
 }
 #endif
 
@@ -196,11 +206,16 @@ void CClientTCPSocket::connect(
   MRPT_START
 
   // Close existing socket, if any.
-  if (m_hSock != INVALID_SOCKET) close();
+  if (m_hSock != INVALID_SOCKET)
+  {
+    close();
+  }
 
   // Create the socket:
   if (INVALID_SOCKET == (m_hSock = socket(AF_INET, SOCK_STREAM, 0)))
+  {
     THROW_EXCEPTION(format("Error creating new client socket:\n%s", getLastErrorStr().c_str()));
+  }
 
   struct sockaddr_in otherAddress;
 
@@ -210,12 +225,16 @@ void CClientTCPSocket::connect(
   // Resolve the IP address of the given host name
   std::string solved_IP;
   if (!net::DNS_resolve_async(remotePartAddress, solved_IP, DNS_LOOKUP_TIMEOUT_MS))
+  {
     THROW_EXCEPTION_FMT("DNS lookup failed for '%s'", remotePartAddress.c_str());
+  }
 
   // Fill out from IP address text:
   otherAddress.sin_addr.s_addr = inet_addr(solved_IP.c_str());
   if (INADDR_NONE == otherAddress.sin_addr.s_addr)
+  {
     THROW_EXCEPTION_FMT("Invalid IP address provided: %s", solved_IP.c_str());
+  }
 
 // Set to NON-BLOCKING:
 #ifdef _WIN32
@@ -224,10 +243,15 @@ void CClientTCPSocket::connect(
     THROW_EXCEPTION("Error entering non-blocking mode with ioctlsocket();");
 #else
   int oldflags = fcntl(m_hSock, F_GETFL, 0);
-  if (oldflags == -1) THROW_EXCEPTION("Error retrieving fcntl();of socket.");
+  if (oldflags == -1)
+  {
+    THROW_EXCEPTION("Error retrieving fcntl();of socket.");
+  }
   oldflags |= O_NONBLOCK;  // Set NON-BLOCKING
   if (-1 == fcntl(m_hSock, F_SETFL, oldflags))
+  {
     THROW_EXCEPTION("Error entering non-blocking mode with fcntl();");
+  }
 #endif
 
   // Try to connect:
@@ -239,6 +263,7 @@ void CClientTCPSocket::connect(
   int er = errno;
   if (r < 0 && er != EINPROGRESS)
 #endif
+
     THROW_EXCEPTION_FMT(
         "Error connecting to %s:%hu. Error: %s [%d]", remotePartAddress.c_str(), remotePartTCPPort,
         strerror(er), er);
@@ -259,14 +284,19 @@ void CClientTCPSocket::connect(
   } while (event_count < 0 && errno == EINTR);
 
   if (event_count == 0)
+  {
     THROW_EXCEPTION(format(
         "Timeout connecting to '%s:%hu':\n%s", remotePartAddress.c_str(), remotePartTCPPort,
         getLastErrorStr().c_str()));
+  }
 
   if (event_count == -1)
+  {
     THROW_EXCEPTION(format(
         "Error connecting to '%s:%hu':\n%s", remotePartAddress.c_str(), remotePartTCPPort,
         getLastErrorStr().c_str()));
+  }
+
 #elif defined(MRPT_OS_APPLE)
   // OSX: Older select() API:
   // Wait for connect:
@@ -314,9 +344,11 @@ void CClientTCPSocket::connect(
         valopt));
 #else
   if (valopt)
+  {
     THROW_EXCEPTION(format(
         "Error connecting to %s:%hu. Error: %s.", remotePartAddress.c_str(), remotePartTCPPort,
         strerror(valopt)));
+  }
 #endif
 // Connected!
 
@@ -328,7 +360,9 @@ void CClientTCPSocket::connect(
 #else
   oldflags &= ~O_NONBLOCK;  // Set BLOCKING
   if (-1 == fcntl(m_hSock, F_SETFL, oldflags))
+  {
     THROW_EXCEPTION("Error entering blocking mode with fcntl();");
+  }
 #endif
 
   // Save the IP of the other part.
@@ -337,19 +371,17 @@ void CClientTCPSocket::connect(
   MRPT_END
 }
 
-/*---------------------------------------------------------------
-            isConnected
- ---------------------------------------------------------------*/
-bool CClientTCPSocket::isConnected() { return (m_hSock != INVALID_SOCKET); }
-/*---------------------------------------------------------------
-            readAsync
- ---------------------------------------------------------------*/
+bool CClientTCPSocket::isConnected() const { return (m_hSock != INVALID_SOCKET); }
+
 size_t CClientTCPSocket::readAsync(
     void* Buffer, const size_t Count, const int timeoutStart_ms, const int timeoutBetween_ms)
 {
   MRPT_START
 
-  if (m_hSock == INVALID_SOCKET) return 0;  // The socket is not connected!
+  if (m_hSock == INVALID_SOCKET)
+  {
+    return 0;  // The socket is not connected!
+  }
 
   size_t remainToRead, alreadyRead = 0;
   int readNow;
@@ -394,7 +426,9 @@ size_t CClientTCPSocket::readAsync(
     } while (event_count < 0 && errno == EINTR);
 
     if (event_count < 0)
+    {
       THROW_EXCEPTION_FMT("Error reading from socket: %s", getLastErrorStr().c_str());
+    }
 #else
     int event_count = ::select(
         m_hSock + 1,  // __nfds
@@ -546,7 +580,10 @@ size_t CClientTCPSocket::writeAsync(const void* Buffer, const size_t Count, cons
  ---------------------------------------------------------------*/
 size_t CClientTCPSocket::getReadPendingBytes()
 {
-  if (m_hSock == INVALID_SOCKET) return 0;  // The socket is not connected!
+  if (m_hSock == INVALID_SOCKET)
+  {
+    return 0;  // The socket is not connected!
+  }
   unsigned long ret = 0;
   if (
 #ifdef _WIN32
@@ -558,8 +595,8 @@ size_t CClientTCPSocket::getReadPendingBytes()
   {
     THROW_EXCEPTION("Error invoking ioctlsocket(FIONREAD)");
   }
-  else
-    return ret;
+
+  return ret;
 }
 
 /*---------------------------------------------------------------
@@ -586,9 +623,11 @@ int CClientTCPSocket::getTCPNoDelay()
   int res = getsockopt(m_hSock, IPPROTO_TCP, TCP_NODELAY, (char*)&value, &length);
 
   if (res == -1)
+  {
     return -1;
-  else
-    return value;
+  }
+
+  return value;
 }
 
 /*---------------------------------------------------------------

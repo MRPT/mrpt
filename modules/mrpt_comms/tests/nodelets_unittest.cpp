@@ -16,7 +16,7 @@
 
 // Reuse code from example:
 //#define NODELETS_TEST_VERBOSE
-#include "samples/comms_nodelets_example/NodeletsTest_impl.cpp"
+#include "../../../samples/comms_nodelets_example/NodeletsTest_impl.cpp"
 
 TEST(NodeletsTests, pub_sub_multithread_test)
 {

@@ -109,7 +109,7 @@ class CClientTCPSocket : public mrpt::io::CStream
 
   /** Returns true if this objects represents a successfully connected socket
    */
-  bool isConnected();
+  [[nodiscard]] bool isConnected() const;
 
   /** Closes the connection */
   void close();

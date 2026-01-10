@@ -16,7 +16,7 @@
 
 // Reuse code from example:
 //#define SOCKET_TEST_VERBOSE
-#include "samples/comms_socket_example/SocketsTest_impl.cpp"
+#include "../../../samples/comms_socket_example/SocketsTest_impl.cpp"
 
 TEST(SocketTests, send_receive_object)
 {
