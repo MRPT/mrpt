@@ -17,9 +17,8 @@ find_package(mrpt_io REQUIRED)
 find_package(mrpt_config REQUIRED)
 find_package(mrpt_math REQUIRED)
 
-
-# Include Asian fonts in CMRPTCanvas ?
-set(MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in CMRPTCanvas (increases library size).")
+# Include Asian fonts in mrpt::img::CCanvas ?
+set(MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in mrpt::img::CCanvas (increases library size).")
 
 # define lib:
 set(LIB_SRCS
@@ -72,8 +71,8 @@ mrpt_add_library(
   # Other imported targets:
 )
 
-if (OpenCV_INCLUDE_DIRS)
-  target_include_directories(${PROJECT_NAME} PUBLIC ${OpenCV_INCLUDE_DIRS})
-endif()
-
+# Python wrapper:
+mrpt_add_python_module(img
+  python_bindings/${PROJECT_NAME}_py.cpp
+)
 
