@@ -16,45 +16,55 @@
 
 #include <mrpt/core/from_string.h>
 
-#include <cstdlib>
+#include <string>
 #include <string_view>
 
 namespace mrpt
 {
+namespace detail
+{
+// Thread-safe environment variable retrieval
+std::string get_env_string_threadsafe(const std::string_view& varname);
+}  // namespace detail
+
 /** Reads an environment variable, with a default value if not present.
+ * Thread-safe implementation using mutex protection and secure_getenv() on Linux.
  * \ingroup mrpt_core_grp
  */
 template <class T>
 inline T get_env(const std::string_view& varname, const T& defValue = T())
 {
-  const std::string v(varname.data(), varname.size());
-  auto s = ::getenv(v.c_str());
-  if (!s)
+  const std::string env_value = detail::get_env_string_threadsafe(varname);
+
+  if (env_value.empty())
   {
     return defValue;
   }
-  return mrpt::from_string<T>(s, defValue, false /*dont throw*/);
+
+  return mrpt::from_string<T>(env_value, defValue, false /*dont throw*/);
 }
 
 /** Specialization for bool: understands "true", "True", number!=0 as `true` */
 template <>
 inline bool get_env(const std::string_view& varname, const bool& defValue)
 {
-  const std::string v(varname.data(), varname.size());
-  auto s = ::getenv(v.c_str());
-  if (!s)
+  const std::string env_value = detail::get_env_string_threadsafe(varname);
+
+  if (env_value.empty())
   {
     return defValue;
   }
-  const std::string str(s);
-  if (str == "true" || str == "TRUE" || str == "True")
+
+  if (env_value == "true" || env_value == "TRUE" || env_value == "True")
   {
     return true;
   }
-  if (0 != mrpt::from_string<int>(s, 0, false /*dont throw*/))
+
+  if (0 != mrpt::from_string<int>(env_value, 0, false /*dont throw*/))
   {
     return true;
   }
+
   return false;
 }
 

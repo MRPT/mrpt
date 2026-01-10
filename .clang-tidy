@@ -36,8 +36,9 @@ Checks: [
     "-bugprone-easily-swappable-parameters",
     "-modernize-use-trailing-return-type",
     "-readability-uppercase-literal-suffix",
-    "cppcoreguidelines-avoid-do-while",
+    "-cppcoreguidelines-avoid-do-while",
     "-modernize-avoid-c-arrays",
+    "-readability-math-missing-parentheses",
   ]
 
 WarningsAsErrors: >

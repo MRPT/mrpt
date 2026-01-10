@@ -39,6 +39,7 @@ set(LIB_SRCS
   src/Clock.cpp
   src/demangle.cpp
   src/format.cpp
+  src/get_env.cpp
   src/exceptions.cpp
   src/cpu.cpp
   src/reverse_bytes.cpp
@@ -46,6 +47,7 @@ set(LIB_SRCS
   src/aligned_malloc.cpp
   src/WorkerThreadsPool.cpp
   src/winerror2str.cpp
+  # tests ---------------
   tests/constexpr_for_unittest.cpp
   tests/cpu_unittest.cpp
   tests/bits_math_unittest.cpp

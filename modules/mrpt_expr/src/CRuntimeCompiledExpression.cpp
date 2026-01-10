@@ -13,6 +13,7 @@
 */
 
 #include <mrpt/core/exceptions.h>
+#include <mrpt/core/get_env.h>
 #include <mrpt/expr/CRuntimeCompiledExpression.h>
 #include <mrpt/system/string_utils.h>
 
@@ -45,19 +46,15 @@ struct CRuntimeCompiledExpression::ExprVerbose
     static CRuntimeCompiledExpression::ExprVerbose obj;
     return obj;
   }
-  void process(const CRuntimeCompiledExpression& rce, const double ret);
+  void process(const CRuntimeCompiledExpression& rce, double ret);
 
  private:
-  bool m_verbose_always_enabled{false};
+  bool m_verbose_always_enabled = false;
   std::vector<std::string> m_verbose_matches;
+
   ExprVerbose()
   {
-    const char* sp = ::getenv("MRPT_EXPR_VERBOSE");
-    if (nullptr == sp)
-    {
-      return;
-    }
-    const std::string s = mrpt::system::trim(std::string(sp));
+    const std::string s = mrpt::system::trim(mrpt::get_env<std::string>("MRPT_EXPR_VERBOSE"));
 
     if (s == std::string("1"))
     {
@@ -102,7 +99,7 @@ void CRuntimeCompiledExpression::compile(
   // Convert from std::function<> to raw functors:
   for (const auto& kv : m_funcs_0)
   {
-    if (auto ptr = kv.second.target<double (*)()>(); ptr)
+    if (const auto* ptr = kv.second.target<double (*)()>(); ptr)
     {
       symbol_table.add_function(kv.first, *ptr);
     }
@@ -110,7 +107,7 @@ void CRuntimeCompiledExpression::compile(
 
   for (const auto& kv : m_funcs_1)
   {
-    if (auto ptr = kv.second.target<double (*)(double)>(); ptr)
+    if (const auto* ptr = kv.second.target<double (*)(double)>(); ptr)
     {
       symbol_table.add_function(kv.first, *ptr);
     }
@@ -118,7 +115,7 @@ void CRuntimeCompiledExpression::compile(
 
   for (const auto& kv : m_funcs_2)
   {
-    if (auto ptr = kv.second.target<double (*)(double, double)>(); ptr)
+    if (const auto* ptr = kv.second.target<double (*)(double, double)>(); ptr)
     {
       symbol_table.add_function(kv.first, *ptr);
     }
@@ -126,7 +123,7 @@ void CRuntimeCompiledExpression::compile(
 
   for (const auto& kv : m_funcs_3)
   {
-    if (auto ptr = kv.second.target<double (*)(double, double, double)>(); ptr)
+    if (const auto* ptr = kv.second.target<double (*)(double, double, double)>(); ptr)
     {
       symbol_table.add_function(kv.first, *ptr);
     }
