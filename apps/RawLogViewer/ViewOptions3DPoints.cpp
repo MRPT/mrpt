@@ -137,9 +137,8 @@ ViewOptions3DPoints::ViewOptions3DPoints(wxWindow* parent, wxWindowID id)
 
   cbColorByAxis = new wxComboBox(
       this, ID_RADIOBOX1, _("Otherwise, color from:"), wxDefaultPosition, wxDefaultSize,
-      WXSIZEOF(colorOptions), colorOptions,
-      wxCB_DROPDOWN,
-      wxDefaultValidator, _T("ID_COMBOBOX_COLORBY"));
+      WXSIZEOF(colorOptions), colorOptions, wxCB_DROPDOWN, wxDefaultValidator,
+      _T("ID_COMBOBOX_COLORBY"));
 
   FlexGridSizer3->Add(cbColorByAxis, 1, wxEXPAND, 5);
   wxString __wxRadioBoxChoices_2[3] = {_("cmGRAYSCALE"), _("cmJET"), _("cmHOT")};
