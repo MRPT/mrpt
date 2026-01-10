@@ -15,30 +15,39 @@
 #include <mrpt/img/color_maps.h>
 
 #include <Eigen/Dense>
+#include <algorithm>
+#include <cmath>
 #include <mrpt/math/interp_fit.hpp>
-
-using namespace mrpt;
-using namespace mrpt::img;
-using namespace std;
 
 /*-------------------------------------------------------------
           hsv2rgb
 -------------------------------------------------------------*/
-void mrpt::img::hsv2rgb(float h, float s, float v, float& r, float& g, float& b)
+mrpt::img::TColorf mrpt::img::hsv2rgb(float h, float s, float v)
 {
   // See: http://en.wikipedia.org/wiki/HSV_color_space
-  h = max(0.0f, min(1.0f, h));
-  s = max(0.0f, min(1.0f, s));
-  v = max(0.0f, min(1.0f, v));
 
-  int Hi = ((int)floor(h * 6)) % 6;
-  float f = (h * 6) - Hi;
-  float p = v * (1 - s);
-  float q = v * (1 - f * s);
-  float t = v * (1 - (1 - f) * s);
+  h = std::clamp(h, 0.0f, 1.0f);
+  s = std::clamp(s, 0.0f, 1.0f);
+  v = std::clamp(v, 0.0f, 1.0f);
 
-  switch (Hi)
+  const float hf = h * 6.0f;
+  const int hi = static_cast<int>(hf) % 6;  // h ∈ [0,1], so truncation == floor
+  const float f = hf - static_cast<float>(hi);
+
+  const float p = v * (1.0f - s);
+  const float q = v * (1.0f - f * s);
+  const float t = v * (1.0f - (1.0f - f) * s);
+
+  mrpt::img::TColorf ret;
+  auto& r = ret.R;
+  auto& g = ret.G;
+  auto& b = ret.B;
+
+  switch (hi)
   {
+    default:
+      THROW_EXCEPTION("Should not reach here");
+
     case 0:
       r = v;
       g = t;
@@ -70,20 +79,26 @@ void mrpt::img::hsv2rgb(float h, float s, float v, float& r, float& g, float& b)
       b = q;
       break;
   }
+
+  return ret;
 }
 
 /*-------------------------------------------------------------
           rgb2hsv
 -------------------------------------------------------------*/
-void mrpt::img::rgb2hsv(float r, float g, float b, float& h, float& s, float& v)
+std::tuple<float, float, float> mrpt::img::rgb2hsv(float r, float g, float b)
 {
   // See: http://en.wikipedia.org/wiki/HSV_color_space
-  r = max(0.0f, min(1.0f, r));
-  g = max(0.0f, min(1.0f, g));
-  b = max(0.0f, min(1.0f, b));
+  r = std::clamp(r, 0.0f, 1.0f);
+  g = std::clamp(g, 0.0f, 1.0f);
+  b = std::clamp(b, 0.0f, 1.0f);
 
-  float Max = max3(r, g, b);
-  float Min = min3(r, g, b);
+  const float Max = max3(r, g, b);
+  const float Min = min3(r, g, b);
+
+  float h = 0;
+  float s = 0;
+  float v = 0;
 
   if (Max == Min)
   {
@@ -94,58 +109,73 @@ void mrpt::img::rgb2hsv(float r, float g, float b, float& h, float& s, float& v)
     if (Max == r)
     {
       if (g >= b)
+      {
         h = (g - b) / (6 * (Max - Min));
+      }
       else
-        h = 1 - (g - b) / (6 * (Max - Min));
+      {
+        h = 1 - ((g - b) / (6 * (Max - Min)));
+      }
     }
     else if (Max == g)
-      h = 1 / 3.0f + (b - r) / (6 * (Max - Min));
+    {
+      h = (1 / 3.0f) + ((b - r) / (6 * (Max - Min)));
+    }
     else
-      h = 2 / 3.0f + (r - g) / (6 * (Max - Min));
+    {
+      h = (2 / 3.0f) + ((r - g) / (6 * (Max - Min)));
+    }
   }
 
   if (Max == 0)
+  {
     s = 0;
+  }
   else
-    s = 1 - Min / Max;
+  {
+    s = 1 - (Min / Max);
+  }
 
   v = Max;
+
+  return {h, s, v};
 }
 
 /*-------------------------------------------------------------
           colormap
 -------------------------------------------------------------*/
-void mrpt::img::colormap(
-    const TColormap& color_map, const float col_indx_in, float& r, float& g, float& b)
+mrpt::img::TColorf mrpt::img::colormap(const TColormap& color_map, float color_index)
 {
-  MRPT_START
+  color_index = std::clamp(color_index, 0.0f, 1.0f);
 
-  const float color_index = std::min(1.0f, std::max(.0f, col_indx_in));
+  mrpt::img::TColorf col;
 
   switch (color_map)
   {
     case cmJET:
-      jet2rgb(color_index, r, g, b);
+      col = jet2rgb(color_index);
       break;
     case cmGRAYSCALE:
-      r = g = b = color_index;
+      col.R = col.G = col.B = color_index;
       break;
     case cmHOT:
-      hot2rgb(color_index, r, g, b);
+      col = hot2rgb(color_index);
       break;
     default:
       THROW_EXCEPTION("Invalid color_map");
   };
-  MRPT_END
+  return col;
 }
 
 /*-------------------------------------------------------------
           jet2rgb
 -------------------------------------------------------------*/
-void mrpt::img::jet2rgb(const float color_index, float& r, float& g, float& b)
+mrpt::img::TColorf mrpt::img::jet2rgb(const float color_index)
 {
-  static bool jet_table_done = false;
-  static Eigen::VectorXf jet_r, jet_g, jet_b;
+  thread_local bool jet_table_done = false;
+  thread_local Eigen::VectorXf jet_r;
+  thread_local Eigen::VectorXf jet_g;
+  thread_local Eigen::VectorXf jet_b;
 
   // Initialize tables
   if (!jet_table_done)
@@ -153,30 +183,30 @@ void mrpt::img::jet2rgb(const float color_index, float& r, float& g, float& b)
     jet_table_done = true;
 
     // Refer to source code of "jet" in MATLAB:
-    float JET_R[] = {0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
-                     0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
-                     0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
-                     0.0625f, 0.125f, 0.1875f, 0.250f, 0.3125f, 0.375f, 0.4375f, 0.5f,
-                     0.5625f, 0.625f, 0.6875f, 0.750f, 0.8125f, 0.875f, 0.9375f, 1.0f,
-                     1.0f,    1.0f,   1.0f,    1.0f,   1.0f,    1.0f,   1.0f,    1.0f,
-                     1.0f,    1.0f,   1.0f,    1.0f,   1.0f,    1.0f,   1.0f,    1.0f,
-                     0.9375f, 0.875f, 0.8125f, 0.750f, 0.6875f, 0.625f, 0.5625f, 0.500000};
-    float JET_G[] = {0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
-                     0.0625f, 0.125f, 0.1875f, 0.250f, 0.3125f, 0.375f, 0.4375f, 0.5f,
-                     0.5625f, 0.625f, 0.6875f, 0.750f, 0.8125f, 0.875f, 0.9375f, 1.0f,
-                     1.0f,    1.0f,   1.0f,    1.0f,   1.0f,    1.0f,   1.0f,    1.0f,
-                     1.0f,    1.0f,   1.0f,    1.0f,   1.0f,    1.0f,   1.0f,    1.0f,
-                     0.9375f, 0.875f, 0.8125f, 0.750f, 0.6875f, 0.625f, 0.5625f, 0.5f,
-                     0.4375f, 0.375f, 0.3125f, 0.250f, 0.1875f, 0.125f, 0.0625f, 0.0f,
-                     0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.000000};
-    float JET_B[] = {0.5625f, 0.625f, 0.6875f, 0.750f, 0.8125f, 0.875f, 0.9375f, 1.0f,
-                     1.0f,    1.0f,   1.0f,    1.0f,   1.0f,    1.0f,   1.0f,    1.0f,
-                     1.0f,    1.0f,   1.0f,    1.0f,   1.0f,    1.0f,   1.0f,    1.0f,
-                     0.9375f, 0.875f, 0.8125f, 0.750f, 0.6875f, 0.625f, 0.5625f, 0.5f,
-                     0.4375f, 0.375f, 0.3125f, 0.250f, 0.1875f, 0.125f, 0.0625f, 0.0f,
-                     0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
-                     0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
-                     0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.000000};
+    constexpr float JET_R[] = {
+        0.0f,    0.0f,   0.0f,    0.0f,    0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
+        0.0f,    0.0f,   0.0f,    0.0f,    0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
+        0.0f,    0.0f,   0.0f,    0.0f,    0.0625f, 0.125f, 0.1875f, 0.250f, 0.3125f, 0.375f,
+        0.4375f, 0.5f,   0.5625f, 0.625f,  0.6875f, 0.750f, 0.8125f, 0.875f, 0.9375f, 1.0f,
+        1.0f,    1.0f,   1.0f,    1.0f,    1.0f,    1.0f,   1.0f,    1.0f,   1.0f,    1.0f,
+        1.0f,    1.0f,   1.0f,    1.0f,    1.0f,    1.0f,   0.9375f, 0.875f, 0.8125f, 0.750f,
+        0.6875f, 0.625f, 0.5625f, 0.500000};
+    constexpr float JET_G[] = {
+        0.0f,    0.0f,   0.0f,    0.0f,    0.0f,    0.0f,   0.0f,    0.0f,   0.0625f, 0.125f,
+        0.1875f, 0.250f, 0.3125f, 0.375f,  0.4375f, 0.5f,   0.5625f, 0.625f, 0.6875f, 0.750f,
+        0.8125f, 0.875f, 0.9375f, 1.0f,    1.0f,    1.0f,   1.0f,    1.0f,   1.0f,    1.0f,
+        1.0f,    1.0f,   1.0f,    1.0f,    1.0f,    1.0f,   1.0f,    1.0f,   1.0f,    1.0f,
+        0.9375f, 0.875f, 0.8125f, 0.750f,  0.6875f, 0.625f, 0.5625f, 0.5f,   0.4375f, 0.375f,
+        0.3125f, 0.250f, 0.1875f, 0.125f,  0.0625f, 0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
+        0.0f,    0.0f,   0.0f,    0.000000};
+    constexpr float JET_B[] = {
+        0.5625f, 0.625f, 0.6875f, 0.750f,  0.8125f, 0.875f, 0.9375f, 1.0f,   1.0f,    1.0f,
+        1.0f,    1.0f,   1.0f,    1.0f,    1.0f,    1.0f,   1.0f,    1.0f,   1.0f,    1.0f,
+        1.0f,    1.0f,   1.0f,    1.0f,    0.9375f, 0.875f, 0.8125f, 0.750f, 0.6875f, 0.625f,
+        0.5625f, 0.5f,   0.4375f, 0.375f,  0.3125f, 0.250f, 0.1875f, 0.125f, 0.0625f, 0.0f,
+        0.0f,    0.0f,   0.0f,    0.0f,    0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
+        0.0f,    0.0f,   0.0f,    0.0f,    0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
+        0.0f,    0.0f,   0.0f,    0.000000};
     const int N = sizeof(JET_B) / sizeof(JET_B[0]);
 
     jet_r.resize(N);
@@ -191,15 +221,18 @@ void mrpt::img::jet2rgb(const float color_index, float& r, float& g, float& b)
   }
 
   // Return interpolate value:
-  r = math::interpolate(color_index, jet_r, 0.0f, 1.0f);
-  g = math::interpolate(color_index, jet_g, 0.0f, 1.0f);
-  b = math::interpolate(color_index, jet_b, 0.0f, 1.0f);
+  return {
+      math::interpolate(color_index, jet_r, 0.0f, 1.0f),
+      math::interpolate(color_index, jet_g, 0.0f, 1.0f),
+      math::interpolate(color_index, jet_b, 0.0f, 1.0f)};
 }
 
-void mrpt::img::hot2rgb(const float color_index, float& r, float& g, float& b)
+mrpt::img::TColorf mrpt::img::hot2rgb(const float color_index)
 {
-  static bool table_done = false;
-  static Eigen::VectorXf hot_r, hot_g, hot_b;
+  thread_local bool table_done = false;
+  thread_local Eigen::VectorXf hot_r;
+  thread_local Eigen::VectorXf hot_g;
+  thread_local Eigen::VectorXf hot_b;
 
   // Initialize tables
   if (!table_done)
@@ -207,7 +240,7 @@ void mrpt::img::hot2rgb(const float color_index, float& r, float& g, float& b)
     table_done = true;
 
     // Refer to source code of "hot" in MATLAB:
-    float HOT_R[] = {
+    constexpr float HOT_R[] = {
         0.041667f, 0.0833f,   0.125f,    0.166667f, 0.2083f,   0.250f,    0.291667f, 0.3333f,
         0.375f,    0.416667f, 0.4583f,   0.5f,      0.541667f, 0.5833f,   0.625f,    0.666667f,
         0.7083f,   0.750f,    0.791667f, 0.8333f,   0.875f,    0.916667f, 0.9583f,   1.0f,
@@ -216,7 +249,7 @@ void mrpt::img::hot2rgb(const float color_index, float& r, float& g, float& b)
         1.0f,      1.0f,      1.0f,      1.0f,      1.0f,      1.0f,      1.0f,      1.0f,
         1.0f,      1.0f,      1.0f,      1.0f,      1.0f,      1.0f,      1.0f,      1.0f,
         1.0f,      1.0f,      1.0f,      1.0f,      1.0f,      1.0f,      1.0f,      1.0f};
-    float HOT_G[] = {
+    constexpr float HOT_G[] = {
         0.0f,      0.0f,      0.0f,      0.0f,      0.0f,      0.0f,      0.0f,      0.0f,
         0.0f,      0.0f,      0.0f,      0.0f,      0.0f,      0.0f,      0.0f,      0.0f,
         0.0f,      0.0f,      0.0f,      0.0f,      0.0f,      0.0f,      0.0f,      0.0f,
@@ -225,14 +258,14 @@ void mrpt::img::hot2rgb(const float color_index, float& r, float& g, float& b)
         0.7083f,   0.750f,    0.791667f, 0.8333f,   0.875f,    0.916667f, 0.9583f,   1.0f,
         1.0f,      1.0f,      1.0f,      1.0f,      1.0f,      1.0f,      1.0f,      1.0f,
         1.0f,      1.0f,      1.0f,      1.0f,      1.0f,      1.0f,      1.0f,      1.0f};
-    float HOT_B[] = {0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
-                     0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
-                     0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
-                     0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
-                     0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
-                     0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
-                     0.0625f, 0.125f, 0.1875f, 0.250f, 0.3125f, 0.375f, 0.4375f, 0.5f,
-                     0.5625f, 0.625f, 0.6875f, 0.750f, 0.8125f, 0.875f, 0.9375f, 1.0f};
+    constexpr float HOT_B[] = {0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
+                               0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
+                               0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
+                               0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
+                               0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
+                               0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,   0.0f,    0.0f,
+                               0.0625f, 0.125f, 0.1875f, 0.250f, 0.3125f, 0.375f, 0.4375f, 0.5f,
+                               0.5625f, 0.625f, 0.6875f, 0.750f, 0.8125f, 0.875f, 0.9375f, 1.0f};
     const int N = sizeof(HOT_B) / sizeof(HOT_B[0]);
 
     hot_r.resize(N);
@@ -247,14 +280,8 @@ void mrpt::img::hot2rgb(const float color_index, float& r, float& g, float& b)
   }
 
   // Return interpolate value:
-  r = math::interpolate(color_index, hot_r, 0.0f, 1.0f);
-  g = math::interpolate(color_index, hot_g, 0.0f, 1.0f);
-  b = math::interpolate(color_index, hot_b, 0.0f, 1.0f);
-}
-
-mrpt::img::TColor mrpt::img::colormap(const TColormap& color_map, const float color_index)
-{
-  float r, g, b;
-  colormap(color_map, color_index, r, g, b);
-  return mrpt::img::TColorf(r, g, b).asTColor();
+  return {
+      math::interpolate(color_index, hot_r, 0.0f, 1.0f),
+      math::interpolate(color_index, hot_g, 0.0f, 1.0f),
+      math::interpolate(color_index, hot_b, 0.0f, 1.0f)};
 }

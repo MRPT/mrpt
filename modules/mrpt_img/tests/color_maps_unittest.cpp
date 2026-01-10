@@ -20,39 +20,34 @@ TEST(color_maps, cmGRAYSCALE)
   using namespace mrpt::img;
 
   {
-    float r, g, b;
-    colormap(cmGRAYSCALE, .0f, r, g, b);
-    EXPECT_NEAR(r, .0f, 1e-3f);
-    EXPECT_NEAR(g, .0f, 1e-3f);
-    EXPECT_NEAR(b, .0f, 1e-3f);
+    const auto c = colormap(cmGRAYSCALE, .0f);
+    EXPECT_NEAR(c.R, .0f, 1e-3f);
+    EXPECT_NEAR(c.G, .0f, 1e-3f);
+    EXPECT_NEAR(c.B, .0f, 1e-3f);
   }
   {
-    float r, g, b;
-    colormap(cmGRAYSCALE, 1.0f, r, g, b);
-    EXPECT_NEAR(r, 1.0f, 1e-3f);
-    EXPECT_NEAR(g, 1.0f, 1e-3f);
-    EXPECT_NEAR(b, 1.0f, 1e-3f);
+    const auto c = colormap(cmGRAYSCALE, 1.0f);
+    EXPECT_NEAR(c.R, 1.0f, 1e-3f);
+    EXPECT_NEAR(c.G, 1.0f, 1e-3f);
+    EXPECT_NEAR(c.B, 1.0f, 1e-3f);
   }
   {
-    float r, g, b;
-    colormap(cmGRAYSCALE, -0.1f, r, g, b);
-    EXPECT_NEAR(r, .0f, 1e-3f);
-    EXPECT_NEAR(g, .0f, 1e-3f);
-    EXPECT_NEAR(b, .0f, 1e-3f);
+    const auto c = colormap(cmGRAYSCALE, -0.1f);
+    EXPECT_NEAR(c.R, .0f, 1e-3f);
+    EXPECT_NEAR(c.G, .0f, 1e-3f);
+    EXPECT_NEAR(c.B, .0f, 1e-3f);
   }
   {
-    float r, g, b;
-    colormap(cmGRAYSCALE, 1.2f, r, g, b);
-    EXPECT_NEAR(r, 1.0f, 1e-3f);
-    EXPECT_NEAR(g, 1.0f, 1e-3f);
-    EXPECT_NEAR(b, 1.0f, 1e-3f);
+    const auto c = colormap(cmGRAYSCALE, 1.2f);
+    EXPECT_NEAR(c.R, 1.0f, 1e-3f);
+    EXPECT_NEAR(c.G, 1.0f, 1e-3f);
+    EXPECT_NEAR(c.B, 1.0f, 1e-3f);
   }
   {
-    float r, g, b;
-    colormap(cmGRAYSCALE, 0.8f, r, g, b);
-    EXPECT_NEAR(r, 0.8f, 1e-3f);
-    EXPECT_NEAR(g, 0.8f, 1e-3f);
-    EXPECT_NEAR(b, 0.8f, 1e-3f);
+    const auto c = colormap(cmGRAYSCALE, 0.8f);
+    EXPECT_NEAR(c.R, 0.8f, 1e-3f);
+    EXPECT_NEAR(c.G, 0.8f, 1e-3f);
+    EXPECT_NEAR(c.B, 0.8f, 1e-3f);
   }
 }
 
@@ -61,25 +56,22 @@ TEST(color_maps, cmJET)
   using namespace mrpt::img;
 
   {
-    float r, g, b;
-    colormap(cmJET, .0f, r, g, b);
-    EXPECT_NEAR(r, 0.0f, 1e-3f);
-    EXPECT_NEAR(g, 0.0f, 1e-3f);
-    EXPECT_NEAR(b, 0.5625f, 1e-3f);
+    const auto c = colormap(cmJET, .0f);
+    EXPECT_NEAR(c.R, 0.0f, 1e-3f);
+    EXPECT_NEAR(c.G, 0.0f, 1e-3f);
+    EXPECT_NEAR(c.B, 0.5625f, 1e-3f);
   }
   {
-    float r, g, b;
-    colormap(cmJET, 1.0f, r, g, b);
-    EXPECT_NEAR(r, 0.5f, 1e-3f);
-    EXPECT_NEAR(g, 0.0f, 1e-3f);
-    EXPECT_NEAR(b, 0.0f, 1e-3f);
+    const auto c = colormap(cmJET, 1.0f);
+    EXPECT_NEAR(c.R, 0.5f, 1e-3f);
+    EXPECT_NEAR(c.G, 0.0f, 1e-3f);
+    EXPECT_NEAR(c.B, 0.0f, 1e-3f);
   }
   {
-    float r, g, b;
-    colormap(cmJET, 0.8f, r, g, b);
-    EXPECT_NEAR(r, 1.0f, 1e-3f);
-    EXPECT_NEAR(g, 0.2375f, 1e-3f);
-    EXPECT_NEAR(b, 0.0f, 1e-3f);
+    const auto c = colormap(cmJET, 0.8f);
+    EXPECT_NEAR(c.R, 1.0f, 1e-3f);
+    EXPECT_NEAR(c.G, 0.2375f, 1e-3f);
+    EXPECT_NEAR(c.B, 0.0f, 1e-3f);
   }
 }
 
@@ -88,24 +80,21 @@ TEST(color_maps, cmHOT)
   using namespace mrpt::img;
 
   {
-    float r, g, b;
-    colormap(cmHOT, .0f, r, g, b);
-    EXPECT_NEAR(r, 0.04166f, 1e-3f);
-    EXPECT_NEAR(g, 0.0f, 1e-3f);
-    EXPECT_NEAR(b, 0.0f, 1e-3f);
+    const auto c = colormap(cmHOT, .0f);
+    EXPECT_NEAR(c.R, 0.04166f, 1e-3f);
+    EXPECT_NEAR(c.G, 0.0f, 1e-3f);
+    EXPECT_NEAR(c.B, 0.0f, 1e-3f);
   }
   {
-    float r, g, b;
-    colormap(cmHOT, 1.0f, r, g, b);
-    EXPECT_NEAR(r, 1.0f, 1e-3f);
-    EXPECT_NEAR(g, 1.0f, 1e-3f);
-    EXPECT_NEAR(b, 1.0f, 1e-3f);
+    const auto c = colormap(cmHOT, 1.0f);
+    EXPECT_NEAR(c.R, 1.0f, 1e-3f);
+    EXPECT_NEAR(c.G, 1.0f, 1e-3f);
+    EXPECT_NEAR(c.B, 1.0f, 1e-3f);
   }
   {
-    float r, g, b;
-    colormap(cmHOT, 0.8f, r, g, b);
-    EXPECT_NEAR(r, 1.0f, 1e-3f);
-    EXPECT_NEAR(g, 1.0f, 1e-3f);
-    EXPECT_NEAR(b, 0.2625f, 1e-3f);
+    const auto c = colormap(cmHOT, 0.8f);
+    EXPECT_NEAR(c.R, 1.0f, 1e-3f);
+    EXPECT_NEAR(c.G, 1.0f, 1e-3f);
+    EXPECT_NEAR(c.B, 0.2625f, 1e-3f);
   }
 }

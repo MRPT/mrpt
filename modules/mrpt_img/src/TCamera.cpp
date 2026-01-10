@@ -177,7 +177,7 @@ mxArray* TCamera::writeToMatlab() const
 void TCamera::saveToConfigFile(const std::string& section, mrpt::config::CConfigFileBase& cfg) const
 {
   cfg.write(section, "camera_name", cameraName);
-  cfg.write(section, "resolution", format("[%u %u]", (unsigned int)ncols, (unsigned int)nrows));
+  cfg.write(section, "resolution", format("[%u %u]", ncols, nrows));
   cfg.write(section, "cx", format("%.05f", cx()));
   cfg.write(section, "cy", format("%.05f", cy()));
   cfg.write(section, "fx", format("%.05f", fx()));
@@ -186,7 +186,10 @@ void TCamera::saveToConfigFile(const std::string& section, mrpt::config::CConfig
   cfg.write(section, "distortion_model", distortion);
   cfg.write(section, "dist", getDistortionParamsAsRowVector().inMatlabFormat());
 
-  if (focalLengthMeters != 0) cfg.write(section, "focal_length", focalLengthMeters);
+  if (focalLengthMeters != 0)
+  {
+    cfg.write(section, "focal_length", focalLengthMeters);
+  }
 }
 
 /**  Load all the params from a config source, in the format described in
@@ -200,8 +203,8 @@ void TCamera::loadFromConfigFile(
   std::vector<uint64_t> out_res;
   cfg.read_vector(section, "resolution", std::vector<uint64_t>(), out_res, true);
   ASSERTMSG_(out_res.size() == 2, "Expected 2-length vector in field 'resolution'");
-  ncols = out_res[0];
-  nrows = out_res[1];
+  ncols = static_cast<uint32_t>(out_res[0]);
+  nrows = static_cast<uint32_t>(out_res[1]);
 
   double fx, fy, cx, cy;
   fx = cfg.read_double(section, "fx", 0, true);
@@ -242,7 +245,7 @@ void TCamera::loadFromConfigFile(
           v.size() == 5 || v.size() == 8, "Expected 5 or 8 distortion parameters for plumb_bob");
       for (int i = 0; i < v.size(); i++)
       {
-        dist[i] = v[i];
+        dist[static_cast<unsigned int>(i)] = v[i];
       }
       break;
     case DistortionModel::kannala_brandt:
@@ -334,9 +337,9 @@ TCamera TCamera::FromYAML(const mrpt::containers::yaml& p)
     case DistortionModel::plumb_bob:
       ASSERTMSG_(
           v.size() == 5 || v.size() == 8, "Expected 5 or 8 distortion parameters for plumb_bob");
-      for (size_t i = 0; i < v.size(); i++)
+      for (int i = 0; i < v.size(); i++)
       {
-        c.dist[i] = v[i];
+        c.dist[static_cast<size_t>(i)] = v[i];
       }
       break;
     case DistortionModel::kannala_brandt:
@@ -429,8 +432,11 @@ mrpt::math::CMatrixDouble TCamera::getDistortionParamsAsRowVector() const
   mrpt::math::CMatrixDouble v;
   if (!vals.empty())
   {
-    v.resize(1, vals.size());
-    for (size_t i = 0; i < vals.size(); i++) v(0, i) = vals[i];
+    v.resize(1, static_cast<mrpt::math::matrix_index_t>(vals.size()));
+    for (size_t i = 0; i < vals.size(); i++)
+    {
+      v(0, static_cast<mrpt::math::matrix_index_t>(i)) = vals[i];
+    }
   }
   return v;
 }

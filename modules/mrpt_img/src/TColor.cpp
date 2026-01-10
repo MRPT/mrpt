@@ -106,7 +106,9 @@ CArchive& mrpt::img::operator>>(CArchive& i, TColor& c)
 std::ostream& mrpt::img::operator<<(std::ostream& o, const TColorf& c)
 {
   char buf[200];
-  mrpt::system::os::sprintf(buf, sizeof(buf), "RGBAf=[%f,%f,%f,%f]", c.R, c.G, c.B, c.A);
+  mrpt::system::os::sprintf(
+      buf, sizeof(buf), "RGBAf=[%lf,%lf,%lf,%lf]", static_cast<double>(c.R),
+      static_cast<double>(c.G), static_cast<double>(c.B), static_cast<double>(c.A));
   o << buf;
   return o;
 }

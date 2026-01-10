@@ -66,10 +66,10 @@ void CConfigFilePrefixer::getAllKeys(
 {
   ensureIsBound();
   m_bound_object->getAllKeys(section, keys);
-  for (auto& key : keys) k
-    {
-      ey = m_prefix_keys + key;
-    }
+  for (auto& key : keys)
+  {
+    key = m_prefix_keys + key;
+  }
 }
 void CConfigFilePrefixer::clear()
 {

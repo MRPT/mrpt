@@ -30,21 +30,20 @@ namespace mrpt::img
  * \ingroup mrpt_img_grp */
 struct TColor
 {
-  constexpr inline TColor() = default;
-  constexpr inline TColor(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha = 255) :  // NOLINT
+  constexpr TColor() = default;
+  constexpr TColor(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha = 255) :
       R(r), G(g), B(b), A(alpha)
   {
   }
 
-  constexpr inline explicit TColor(const unsigned int color_RGB_24bit) :
+  constexpr explicit TColor(const unsigned int color_RGB_24bit) :
       R(uint8_t(color_RGB_24bit >> 16)),
       G(uint8_t(color_RGB_24bit >> 8)),
-      B(uint8_t(color_RGB_24bit)),
-      A(255)
+      B(uint8_t(color_RGB_24bit))
   {
   }
 
-  constexpr inline TColor(const unsigned int color_RGB_24bit, const uint8_t alpha) :  // NOLINT
+  constexpr TColor(const unsigned int color_RGB_24bit, const uint8_t alpha) :
       R(uint8_t(color_RGB_24bit >> 16)),
       G(uint8_t(color_RGB_24bit >> 8)),
       B(uint8_t(color_RGB_24bit)),
@@ -55,7 +54,7 @@ struct TColor
   uint8_t R{0}, G{0}, B{0}, A{255};
 
   /** Operator for implicit conversion into an int binary representation 0xRRGGBB */
-  inline operator unsigned int() const
+  operator unsigned int() const
   {
     return ((static_cast<unsigned int>(R)) << 16) | ((static_cast<unsigned int>(G)) << 8) | B;
   }
@@ -64,12 +63,12 @@ struct TColor
   TColor& operator-=(const TColor& other);
 
   /** Predefined colors */
-  static constexpr TColor red() { return TColor(255, 0, 0); }
-  static constexpr TColor green() { return TColor(0, 255, 0); }
-  static constexpr TColor blue() { return TColor(0, 0, 255); }
-  static constexpr TColor black() { return TColor(0, 0, 0); }
-  static constexpr TColor white() { return TColor(255, 255, 255); }
-  static constexpr TColor gray() { return TColor(127, 127, 127); }
+  [[nodiscard]] static constexpr TColor red() { return {255, 0, 0}; }
+  [[nodiscard]] static constexpr TColor green() { return {0, 255, 0}; }
+  [[nodiscard]] static constexpr TColor blue() { return {0, 0, 255}; }
+  [[nodiscard]] static constexpr TColor black() { return {0, 0, 0}; }
+  [[nodiscard]] static constexpr TColor white() { return {255, 255, 255}; }
+  [[nodiscard]] static constexpr TColor gray() { return {127, 127, 127}; }
 };
 #pragma pack(pop)
 
@@ -88,7 +87,7 @@ struct TColorf
 {
   TColorf() = default;
 
-  TColorf(float r, float g, float b, float alpha = 1.0f) : R(r), G(g), B(b), A(alpha) {}  // NOLINT
+  TColorf(float r, float g, float b, float alpha = 1.0f) : R(r), G(g), B(b), A(alpha) {}
 
   explicit TColorf(const TColor& col) :
       R(u8tof(col.R)), G(u8tof(col.G)), B(u8tof(col.B)), A(u8tof(col.A))
@@ -96,9 +95,9 @@ struct TColorf
   }
 
   /** Returns the 0-255 integer version of this color: RGBA_u8  */
-  TColor asTColor() const
+  [[nodiscard]] TColor asTColor() const
   {
-    return TColor(mrpt::f2u8(R), mrpt::f2u8(G), mrpt::f2u8(B), mrpt::f2u8(A));
+    return {mrpt::f2u8(R), mrpt::f2u8(G), mrpt::f2u8(B), mrpt::f2u8(A)};
   }
 
   float R = .0f, G = .0f, B = .0f, A = 1.0f;

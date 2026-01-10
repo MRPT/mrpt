@@ -55,19 +55,19 @@ void impl_image_SSE2_scale_half_1c8u(
 
   for (int i = 0; i < sh; i++)
   {
-    auto inp = reinterpret_cast<const __m128i*>(in);
+    const auto* inp = reinterpret_cast<const __m128i*>(in);  // NOLINT
     uint8_t* outp = out;
     for (int j = 0; j < sw; j++)
     {
       const __m128i x = _mm_and_si128(mm_load_si128<MemIsAligned>(inp++), m);
-      auto o = reinterpret_cast<__m128i*>(outp);
+      auto* o = reinterpret_cast<__m128i*>(outp);  // NOLINT
       _mm_storel_epi64(o, _mm_packus_epi16(x, x));
       outp += 8;
     }
     // Extra pixels? (w mod 16 != 0)
     if (rest_w != 0)
     {
-      const uint8_t* in_rest = in + 16 * sw;
+      const uint8_t* in_rest = in + static_cast<std::ptrdiff_t>(16 * sw);
       for (int p = 0; p < rest_w / 2; p++)
       {
         *outp++ = in_rest[0];
@@ -82,7 +82,7 @@ void impl_image_SSE2_scale_half_1c8u(
 
 template <bool MemIsAligned>
 void impl_image_SSE2_scale_half_smooth_1c8u(
-    const uint8_t* in, uint8_t* out, int w, int h, size_t step_in, size_t step_out)  // NOLINT
+    const uint8_t* in, uint8_t* out, int w, int h, size_t step_in, size_t step_out)
 {
   SSE_DISABLE_WARNINGS
   // clang-format off
@@ -98,8 +98,8 @@ void impl_image_SSE2_scale_half_smooth_1c8u(
 
   for (int i = 0; i < sh; i++)
   {
-    auto inp = reinterpret_cast<const __m128i*>(in);
-    auto nextRow = reinterpret_cast<const __m128i*>(in + step_in);
+    const auto* inp = reinterpret_cast<const __m128i*>(in);                // NOLINT
+    const auto* nextRow = reinterpret_cast<const __m128i*>(in + step_in);  // NOLINT
     uint8_t* outp = out;
 
     for (int j = 0; j < sw; j++)
@@ -110,18 +110,18 @@ void impl_image_SSE2_scale_half_smooth_1c8u(
       next = _mm_and_si128(_mm_srli_si128(here, 1), m);
       here = _mm_and_si128(here, m);
       here = _mm_avg_epu16(here, next);
-      _mm_storel_epi64(reinterpret_cast<__m128i*>(outp), _mm_packus_epi16(here, here));
+      _mm_storel_epi64(reinterpret_cast<__m128i*>(outp), _mm_packus_epi16(here, here));  // NOLINT
       outp += 8;
     }
 
     // Extra pixels? (w mod 16 != 0)
     if (rest_w != 0)
     {
-      const uint8_t* ir = in + 16 * sw;
+      const uint8_t* ir = in + static_cast<std::ptrdiff_t>(16 * sw);
       const uint8_t* irr = in + step_in;
       for (int p = 0; p < rest_w / 2; p++)
       {
-        *outp++ = (ir[0] + ir[1] + irr[0] + irr[1]) / 4;
+        *outp++ = static_cast<uint8_t>((ir[0] + ir[1] + irr[0] + irr[1]) / 4);
         ir += 2;
         irr += 2;
       }

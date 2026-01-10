@@ -220,16 +220,16 @@ void CCanvas::triangle(
             filledRectangle
 ---------------------------------------------------------------*/
 void CCanvas::filledRectangle(
-    const TPixelCoord& pt0, const TPixelCoord& pt1, const mrpt::img::TColor& color)
+    const TPixelCoord& pt0, const TPixelCoord& pt1, const mrpt::img::TColor color)
 {
-  int x_min = max(pt0.x, 0);
-  int x_max = min(pt1.x, static_cast<int>(getWidth()) - 1);
-  int y_min = max(pt0.y, 0);
-  int y_max = min(pt1.y, static_cast<int>(getHeight()) - 1);
+  const int x0 = std::max(0, std::min(pt0.x, pt1.x));
+  const int y0 = std::max(0, std::min(pt0.y, pt1.y));
+  const int x1 = std::min(getWidth() - 1, std::max(pt0.x, pt1.x));
+  const int y1 = std::min(getHeight() - 1, std::max(pt0.y, pt1.y));
 
-  for (int y = y_min; y <= y_max; y++)
+  for (int y = y0; y <= y1; y++)
   {
-    for (int x = x_min; x <= x_max; x++)
+    for (int x = x0; x <= x1; x++)
     {
       setPixel({x, y}, color);
     }
@@ -387,15 +387,9 @@ void CCanvas::textOut(const TPixelCoord& pt, const std::string& str, const mrpt:
 {
   MRPT_START
 
-  if (!m_selectedFontBitmaps)  // First call: load fonts
+  if (m_selectedFontBitmaps == nullptr)
+  {  // First call: load fonts
     this->selectTextFont("9x15");
-
-  // Am I an image?
-  bool y_axis_reversed = false;
-  auto* im_image = dynamic_cast<CImage*>(this);
-  if (im_image)
-  {
-    y_axis_reversed = !im_image->isOriginTopLeft();
   }
 
   // Decode UNICODE string:
@@ -416,18 +410,18 @@ void CCanvas::textOut(const TPixelCoord& pt, const std::string& str, const mrpt:
     uint32_t charset_ini = table_ptr[0];
     uint32_t charset_end = table_ptr[1];
 
-    while (charset_end)
+    while (charset_end != 0)
     {
       // Is in this range?
       if (unichar <= charset_end && unichar >= charset_ini)
       {
         // Draw this character:
-        int pyy = y_axis_reversed ? (py + static_cast<int>(char_h) - 1) : py;
+        int pyy = py;
 
         const uint32_t* char_bitmap =
-            table_ptr + 2 + static_cast<size_t>(char_h) * (unichar - charset_ini);
+            table_ptr + 2 + (static_cast<size_t>(char_h) * (unichar - charset_ini));
 
-        for (int y = 0; y < static_cast<int>(char_h); y++, pyy += y_axis_reversed ? -1 : 1)
+        for (int y = 0; y < static_cast<int>(char_h); y++, pyy += 1)
         {
           // Use memcpy() here since directly dereferencing is an
           // invalid operation in architectures (S390X) where
