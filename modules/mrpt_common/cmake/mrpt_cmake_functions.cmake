@@ -57,6 +57,10 @@ if(NOT MSVC AND NOT XCODE_VERSION)
     endif()
 endif()
 
+# Static library options:
+set(DISABLE_MRPT_AUTO_CLASS_REGISTRATION OFF CACHE BOOL "Enable to reduce the footprint of MRPT statically libraries linked; caution: all deserialized classes must be registered by hand by the user!")
+mark_as_advanced(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
+
 # mrpt_foo => foo
 function(strip_mrpt_name TARGETNAME OUTPUT_VAR)
     set(name "${TARGETNAME}")
@@ -561,6 +565,10 @@ function(mrpt_add_library)
       PRIVATE
       ${MRPT_ADD_LIBRARY_PRIVATE_LINK_LIBRARIES}
     )
+
+    if(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
+      target_compile_definitions(${MRPT_ADD_LIBRARY_TARGET} PRIVATE DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
+    endif()
 
    #TODO: install
 
