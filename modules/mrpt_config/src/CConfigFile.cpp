@@ -54,13 +54,16 @@ std::string local_file_get_contents(const std::string& fileName)
   // Note: Add "binary" to make sure the "tellg" file size matches the actual
   // number of read bytes afterwards:
   std::ifstream t(fileName, ios::binary);
-  if (!t.is_open()) return {};
+  if (!t.is_open())
+  {
+    return {};
+  }
 
   t.seekg(0, std::ios::end);
-  std::size_t size = t.tellg();
+  const auto size = static_cast<std::size_t>(t.tellg());
   std::string buffer(size, ' ');
   t.seekg(0);
-  t.read(&buffer[0], size);
+  t.read(&buffer[0], static_cast<std::streamsize>(size));
   return buffer;
 }
 }  // namespace
@@ -149,7 +152,9 @@ void CConfigFile::writeString(
   m_modified = true;
 
   if (0 > m_impl->ini->SetValue(section.c_str(), name.c_str(), str.c_str(), nullptr))
+  {
     THROW_EXCEPTION("Error changing value in INI-style file!");
+  }
 
   MRPT_END
 }
@@ -181,9 +186,11 @@ std::string CConfigFile::readString(
 
   // Remove possible comments: "//"
   std::string ret = aux;
-  size_t pos;
-  if ((pos = ret.find("//")) != string::npos && pos > 0 && isspace(ret[pos - 1]))
+  size_t pos = ret.find("//");
+  if (pos != string::npos && pos > 0 && isspace(ret[pos - 1]))
+  {
     ret = ret.substr(0, pos);
+  }
   return ret;
 
   MRPT_END
@@ -200,7 +207,10 @@ void CConfigFile::getAllSections(std::vector<std::string>& sections) const
   CSimpleIniA::TNamesDepend::iterator n;
   std::vector<std::string>::iterator s;
   sections.resize(names.size());
-  for (n = names.begin(), s = sections.begin(); n != names.end(); ++n, ++s) *s = n->pItem;
+  for (n = names.begin(), s = sections.begin(); n != names.end(); ++n, ++s)
+  {
+    *s = n->pItem;
+  }
 }
 
 /*---------------------------------------------------------------
@@ -214,7 +224,10 @@ void CConfigFile::getAllKeys(const string& section, std::vector<std::string>& ke
   CSimpleIniA::TNamesDepend::iterator n;
   std::vector<std::string>::iterator s;
   keys.resize(names.size());
-  for (n = names.begin(), s = keys.begin(); n != names.end(); ++n, ++s) *s = n->pItem;
+  for (n = names.begin(), s = keys.begin(); n != names.end(); ++n, ++s)
+  {
+    *s = n->pItem;
+  }
 }
 
 void CConfigFile::clear() { m_impl->ini->Reset(); }

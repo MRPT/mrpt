@@ -248,10 +248,12 @@ bool CConfigFileBase::keyExists(const std::string& section, const std::string& k
   std::vector<std::string> keys;
   getAllKeys(section, keys);
   for (auto& k : keys)
+  {
     if (!mrpt::system::os::_strcmpi(key.c_str(), k.c_str()))
     {
       return true;
     }
+  }
   return false;
 }
 
@@ -301,7 +303,10 @@ void CConfigFileBase::setContentFromYAML(const std::string& yaml_block)
 
   for (const auto& sect : sections)
   {
-    for (const auto& kv : sect.second) this->write(sect.first, kv.first, kv.second);
+    for (const auto& kv : sect.second)
+    {
+      this->write(sect.first, kv.first, kv.second);
+    }
   }
 
   MRPT_END
@@ -329,9 +334,13 @@ std::string CConfigFileBase::getContentAsYAML() const
     {
       const auto val = this->readString(sect, k, "");
       if (sect.empty())
+      {
         n[k] = val;
+      }
       else
+      {
         n[sect][k] = val;
+      }
     }
   }
 
