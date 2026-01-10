@@ -24,7 +24,7 @@ using namespace mrpt::math;
  ---------------------------------------------------------------*/
 CMappedImage::CMappedImage(
     CImage::Ptr img, double x0, double x1, double y0, double y1, TInterpolationMethod method) :
-    m_img(img), m_x0(x0), m_x1(x1), m_y0(y0), m_y1(y1), m_pixel_size(0), m_method(method)
+    m_img(std::move(img)), m_x0(x0), m_x1(x1), m_y0(y0), m_y1(y1), m_pixel_size(0), m_method(method)
 {
   if (m_img->isColor())
   {
@@ -68,8 +68,8 @@ void CMappedImage::changeCoordinates(double x0, double x1, double y0, double y1)
 double CMappedImage::getPixel(double x, double y) const
 {
   // Image size:
-  const size_t W = m_img->getWidth();
-  const size_t H = m_img->getHeight();
+  const auto W = m_img->getWidth();
+  const auto H = m_img->getHeight();
 
   // the sub-pixel pixel coordinates:
   const double px = (x - m_x0) / m_pixel_size;
@@ -85,8 +85,8 @@ double CMappedImage::getPixel(double x, double y) const
     case IMG_INTERP_NN:
     {
       // The closest pixel:
-      const unsigned int px0 = mrpt::round(px);
-      const unsigned int py0 = mrpt::round(py);
+      const auto px0 = mrpt::round(px);
+      const auto py0 = mrpt::round(py);
       return static_cast<double>((*m_img).at<uint8_t>(px0, py0));
     }
     break;
@@ -95,20 +95,20 @@ double CMappedImage::getPixel(double x, double y) const
       // See: http://en.wikipedia.org/wiki/Bilinear_interpolation
 
       // The four pixels around:
-      const int px0 = (int)floor(px);
-      const int px1 = (int)ceil(px);
-      const int py0 = (int)floor(py);
-      const int py1 = (int)ceil(py);
+      const int px0 = static_cast<int>(floor(px));
+      const int px1 = static_cast<int>(ceil(px));
+      const int py0 = static_cast<int>(floor(py));
+      const int py1 = static_cast<int>(ceil(py));
 
       const auto P11 = static_cast<double>((*m_img).at<uint8_t>(px0, py0));
       const auto P12 = static_cast<double>((*m_img).at<uint8_t>(px0, py1));
       const auto P21 = static_cast<double>((*m_img).at<uint8_t>(px1, py0));
       const auto P22 = static_cast<double>((*m_img).at<uint8_t>(px1, py1));
 
-      const double R1 = P11 * (px1 - px) /* /(px1-px0)*/ + P21 * (px - px0) /* /(px1-px0) */;
-      const double R2 = P12 * (px1 - px) /* /(px1-px0)*/ + P22 * (px - px0) /* /(px1-px0) */;
+      const double R1 = (P11 * (px1 - px)) /* /(px1-px0)*/ + (P21 * (px - px0)) /* /(px1-px0) */;
+      const double R2 = (P12 * (px1 - px)) /* /(px1-px0)*/ + (P22 * (px - px0)) /* /(px1-px0) */;
 
-      return R1 * (py1 - py) + R2 * (py - py0);
+      return (R1 * (py1 - py)) + (R2 * (py - py0));
     }
     break;
 

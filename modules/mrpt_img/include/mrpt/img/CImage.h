@@ -46,7 +46,7 @@ enum class PixelDepth : uint8_t
  * \sa CImage::scaleImage
  * \ingroup mrpt_img_grp
  */
-enum TInterpolationMethod
+enum TInterpolationMethod : uint8_t
 {
   IMG_INTERP_NN = 0,      //!< Nearest neighbor
   IMG_INTERP_LINEAR = 1,  //!< Bilinear interpolation
@@ -67,13 +67,13 @@ enum TImageChannels : uint8_t
 };
 
 /** For usage in one of the CImage constructors */
-enum ctor_CImage_ref_or_gray
+enum ctor_CImage_ref_or_gray : uint8_t
 {
   FAST_REF_OR_CONVERT_TO_GRAY = 1
 };
 
 /** Define kind of copies  */
-enum copy_type_t
+enum copy_type_t : uint8_t
 {
   /** Shallow copy: the copied object is a reference to the original one */
   SHALLOW_COPY = 0,
@@ -175,7 +175,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    *     }
    *   \endcode
    */
-  inline CImage(const CImage& other_img, ctor_CImage_ref_or_gray)
+  CImage(const CImage& other_img, [[maybe_unused]] ctor_CImage_ref_or_gray _)
   {
     if (other_img.isColor())
     {
@@ -210,7 +210,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   void resize(
       int32_t width, int32_t height, TImageChannels nChannels, PixelDepth depth = PixelDepth::D8U);
 
-  PixelDepth getPixelDepth() const;
+  [[nodiscard]] PixelDepth getPixelDepth() const;
 
   /** Scales this image to a new size, interpolating as needed, saving the new
    * image in a different output object, or operating in-place if `out_img==this`.
@@ -236,6 +236,9 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    *   be a 24bit RGB value (0x00RRGGBB), but it can also be just a 8bit gray level.
    *  This method must support (x,y) values OUT of the actual image size without neither
    *   raising exceptions, nor leading to memory access errors.
+   * If writing into an grayscale image, only the BLUE channel (least significant byte) will be used
+   *  from the incoming RGBA color.
+   *
    * \sa at, ptr
    */
   void setPixel(const TPixelCoord& pt, const mrpt::img::TColor& color) override;
@@ -245,13 +248,13 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 
   // See CCanvas docs
   void filledRectangle(
-      const TPixelCoord& pt0, const TPixelCoord& pt1, const mrpt::img::TColor& color) override;
+      const TPixelCoord& pt0, const TPixelCoord& pt1, mrpt::img::TColor color) override;
 
   /** Returns a new image scaled down to half its original size
    * \exception std::exception On odd size
    * \sa scaleDouble, scaleImage
    */
-  [[nodiscard]] inline CImage scaleHalf(TInterpolationMethod interp) const
+  [[nodiscard]] CImage scaleHalf(TInterpolationMethod interp) const
   {
     CImage ret;
     this->scaleHalf(ret, interp);
@@ -266,7 +269,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    * \exception std::exception On odd size
    * \sa scaleHalf, scaleImage
    */
-  [[nodiscard]] inline CImage scaleDouble(TInterpolationMethod interp) const
+  [[nodiscard]] CImage scaleDouble(TInterpolationMethod interp) const
   {
     CImage ret;
     this->scaleDouble(ret, interp);
@@ -331,7 +334,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 
   /** Compute the KLT response at a given pixel (x,y) - Only for grayscale images.
    */
-  [[nodiscard]] float KLT_response(const TPixelCoord& pt, const int32_t half_window_size) const;
+  [[nodiscard]] float KLT_response(const TPixelCoord& pt, int32_t half_window_size) const;
 
   /** @} */
 
@@ -339,7 +342,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
     @{ */
 
   /** Returns a shallow copy of the original image */
-  [[nodiscard]] inline CImage makeShallowCopy() const
+  [[nodiscard]] CImage makeShallowCopy() const
   {
     CImage r = *this;
     return r;
@@ -349,7 +352,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    * If the image is externally-stored, there is no difference with a shallow copy.
    * \sa makeShallowCopy()
    */
-  [[nodiscard]] CImage makeDeepCopy() const { return CImage(*this, DEEP_COPY); }
+  [[nodiscard]] CImage makeDeepCopy() const { return {*this, DEEP_COPY}; }
 
   /** Copies from another image (shallow copy), and, if it is externally stored, the image file
    * will be actually loaded into memory in "this" object.
@@ -359,7 +362,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   void copyFromForceLoad(const CImage& o);
 
   /** Efficiently swap of two images */
-  void swap(CImage& o);
+  void swap(CImage& o) noexcept;
 
   /** @} */
 
@@ -373,14 +376,14 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   template <typename T>
   [[nodiscard]] const T& at(int32_t col, int32_t row, int8_t channel = 0) const
   {
-    return *reinterpret_cast<const T*>(internal_get(col, row, channel));
+    return *reinterpret_cast<const T*>(internal_get(col, row, channel));  // NOLINT
   }
 
   /** \overload Non-const case */
   template <typename T>
   [[nodiscard]] T& at(int32_t col, int32_t row, int8_t channel = 0)
   {
-    return *reinterpret_cast<T*>(internal_get(col, row, channel));
+    return *reinterpret_cast<T*>(internal_get(col, row, channel));  // NOLINT
   }
 
   /** Returns a pointer to a given pixel, without checking for boundaries.
@@ -389,28 +392,28 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   template <typename T>
   [[nodiscard]] const T* ptr(int32_t col, int32_t row, int8_t channel = 0) const
   {
-    return reinterpret_cast<const T*>(internal_get(col, row, channel));
+    return reinterpret_cast<const T*>(internal_get(col, row, channel));  // NOLINT
   }
 
   /** \overload Non-const case */
   template <typename T>
   [[nodiscard]] T* ptr(int32_t col, int32_t row, int8_t channel = 0)
   {
-    return reinterpret_cast<T*>(internal_get(col, row, channel));
+    return reinterpret_cast<T*>(internal_get(col, row, channel));  // NOLINT
   }
 
   /** Returns a pointer to the first pixel of the given line.\sa ptr, at */
   template <typename T>
   [[nodiscard]] const T* ptrLine(int32_t row) const
   {
-    return reinterpret_cast<const T*>(internal_get(0, row, 0));
+    return reinterpret_cast<const T*>(internal_get(0, row, 0));  // NOLINT
   }
 
   /** \overload Non-const case */
   template <typename T>
   [[nodiscard]] T* ptrLine(int32_t row)
   {
-    return reinterpret_cast<T*>(internal_get(0, row, 0));
+    return reinterpret_cast<T*>(internal_get(0, row, 0));  // NOLINT
   }
 
   /** Returns the contents of a given pixel at the desired channel, in float format: [0,255]->[0,1]
@@ -460,9 +463,6 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    * memory.
    */
   [[nodiscard]] bool isEmpty() const;
-
-  /** Returns true (images are always stored with origin at top-left) */
-  [[nodiscard]] bool isOriginTopLeft() const;
 
   /** Returns the image as a matrix with pixel grayscale values in the range [0,1].
    * Matrix indexes in this order: M(row,column)
@@ -571,7 +571,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   [[nodiscard]] bool isExternallyStored() const noexcept { return m_state->imgIsExternalStorage; }
 
   /** Only if isExternallyStored() returns true. \sa getExternalStorageFileAbsolutePath */
-  [[nodiscard]] inline std::string getExternalStorageFile() const noexcept
+  [[nodiscard]] std::string getExternalStorageFile() const noexcept
   {
     return m_state->externalFile;
   }
@@ -580,7 +580,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   void getExternalStorageFileAbsolutePath(std::string& out_path) const;
 
   /** Only if isExternallyStored() returns true. \sa getExternalStorageFile */
-  [[nodiscard]] inline std::string getExternalStorageFileAbsolutePath() const
+  [[nodiscard]] std::string getExternalStorageFileAbsolutePath() const
   {
     std::string tmp;
     getExternalStorageFileAbsolutePath(tmp);
@@ -592,7 +592,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    * call this.
    * \sa unload
    */
-  inline void forceLoad() const { makeSureImageIsLoaded(true); }
+  void forceLoad() const { makeSureImageIsLoaded(true); }
 
   /** For external storage image objects only, this method unloads the image from memory (or does
    * nothing if already unloaded). It does not need to be called explicitly, unless the user wants
@@ -693,7 +693,8 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
     MRPT_START
     makeSureImageIsLoaded();  // For delayed loaded images stored externally
     ASSERT_((r.size() == g.size()) && (r.size() == b.size()));
-    const unsigned int lx = r.cols(), ly = r.rows();
+    const unsigned int lx = r.cols();
+    const unsigned int ly = r.rows();
     this->resize(lx, ly, CH_RGB);
 
     if (matrix_is_normalized)
@@ -780,7 +781,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    * other errors.
    * \sa saveToJPEG
    */
-  void saveToStreamAsJPEG(mrpt::io::CStream& out, const int jpeg_quality = 95) const;
+  void saveToStreamAsJPEG(mrpt::io::CStream& out, int jpeg_quality = 95) const;
 
   /** @}  */
   // ================================================================
@@ -866,10 +867,10 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
       imgIsExternalStorage = o.imgIsExternalStorage;
       externalFile = o.externalFile;
 
-      if (o.image_data)
+      if (o.image_data != nullptr)
       {
         const auto num_bytes = image_buffer_size_bytes();
-        image_data = reinterpret_cast<uint8_t*>(std::malloc(num_bytes));
+        image_data = reinterpret_cast<uint8_t*>(std::malloc(num_bytes));  // NOLINT
         std::memcpy(image_data, o.image_data, num_bytes);
       }
     }

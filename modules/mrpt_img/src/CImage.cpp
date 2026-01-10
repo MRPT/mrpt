@@ -109,7 +109,7 @@ CImage::CImage(int32_t width, int32_t height, TImageChannels nChannels) : CImage
   resize(width, height, nChannels);
 }
 
-void CImage::swap(CImage& o) { std::swap(m_state, o.m_state); }
+void CImage::swap(CImage& o) noexcept { std::swap(m_state, o.m_state); }
 
 void CImage::copyFromForceLoad(const CImage& o)
 {
@@ -152,9 +152,9 @@ void CImage::resize(int32_t width, int32_t height, TImageChannels nChannels, Pix
   m_state->depth = depth;
 
   const auto num_bytes = m_state->image_buffer_size_bytes();
-  m_state->image_data = reinterpret_cast<uint8_t*>(std::malloc(num_bytes));
+  m_state->image_data = reinterpret_cast<uint8_t*>(std::malloc(num_bytes));  // NOLINT
 
-  if (!m_state->image_data)
+  if (m_state->image_data == nullptr)
   {
     THROW_EXCEPTION("Failed to allocate image memory");
   }
@@ -204,7 +204,7 @@ bool CImage::loadFromFile(const std::string& fileName, TImageChannels loadChanne
     if (MRPT_DEBUG_IMG_LAZY_LOAD)
     {
       std::cerr << "[CImage::loadFromFile] Failed to load: " << fileName
-                << " Reason: " << stbi_failure_reason() << std::endl;
+                << " Reason: " << stbi_failure_reason() << "\n";
     }
     return false;
   }
@@ -321,17 +321,17 @@ void CImage::loadFromMemoryBuffer(
 uint8_t* CImage::internal_get(int32_t col, int32_t row, int8_t channel)
 {
   makeSureImageIsLoaded();
-  return m_state->image_data + m_state->row_stride_in_bytes() * static_cast<std::size_t>(row) +
-         m_state->pixel_size_in_bytes() * static_cast<std::size_t>(col) +
-         static_cast<std::size_t>(channel) * static_cast<std::size_t>(m_state->depth);
+  return m_state->image_data + (m_state->row_stride_in_bytes() * static_cast<std::size_t>(row)) +
+         (m_state->pixel_size_in_bytes() * static_cast<std::size_t>(col)) +
+         (static_cast<std::size_t>(channel) * static_cast<std::size_t>(m_state->depth));
 }
 
 const uint8_t* CImage::internal_get(int32_t col, int32_t row, int8_t channel) const
 {
   makeSureImageIsLoaded();
-  return m_state->image_data + m_state->row_stride_in_bytes() * static_cast<std::size_t>(row) +
-         m_state->pixel_size_in_bytes() * static_cast<std::size_t>(col) +
-         static_cast<std::size_t>(channel) * static_cast<std::size_t>(m_state->depth);
+  return m_state->image_data + (m_state->row_stride_in_bytes() * static_cast<std::size_t>(row)) +
+         (m_state->pixel_size_in_bytes() * static_cast<std::size_t>(col)) +
+         (static_cast<std::size_t>(channel) * static_cast<std::size_t>(m_state->depth));
 }
 
 uint8_t CImage::serializeGetVersion() const { return 10; }
@@ -355,12 +355,12 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 
   const int32_t width = m_state->width;
   const int32_t height = m_state->height;
-  const int32_t depth = static_cast<int32_t>(m_state->depth);
+  const auto depth = static_cast<int32_t>(m_state->depth);
 
   if (!hasColor)
   {
     // GRAYSCALE
-    const uint32_t imageSize = static_cast<uint32_t>(m_state->image_buffer_size_bytes());
+    const auto imageSize = static_cast<uint32_t>(m_state->image_buffer_size_bytes());
     out << width << height << imageSize << depth;
 
     // Raw bytes (no compression for now in v3.0.0)
@@ -398,15 +398,16 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
       }
       else
       {
-        bool hasColor;
+        bool hasColor = false;
         in >> hasColor;
 
         if (!hasColor)
         {
           // GRAYSCALE
-          int32_t width, height;
-          uint32_t imageSize;
-          int32_t depth_int;
+          int32_t width = 0;
+          int32_t height = 0;
+          uint32_t imageSize = 0;
+          int32_t depth_int = 0;
 
           in >> width >> height >> imageSize >> depth_int;
 
@@ -423,7 +424,8 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
         else
         {
           // COLOR
-          int32_t width, height;
+          int32_t width = 0;
+          int32_t height = 0;
           in >> width >> height;
 
           // For now, assume RGB (could be extended to detect RGBA)
@@ -523,8 +525,6 @@ TImageChannels CImage::channels() const
 
 bool CImage::isEmpty() const { return !m_state->imgIsExternalStorage && m_state->empty(); }
 
-bool CImage::isOriginTopLeft() const { return true; }
-
 float CImage::getAsFloat(const TPixelCoord& pt, int8_t channel) const
 {
   makeSureImageIsLoaded();
@@ -538,7 +538,7 @@ float CImage::getAsFloat(const TPixelCoord& pt) const
   if (isColor())
   {
     // Luminance: Y = 0.299R + 0.587G + 0.114B
-    const uint8_t* pixels = ptr<uint8_t>(pt.x, pt.y, 0);
+    const auto* pixels = ptr<uint8_t>(pt.x, pt.y, 0);
     return (static_cast<float>(pixels[0]) * 0.299f + static_cast<float>(pixels[1]) * 0.587f +
             static_cast<float>(pixels[2]) * 0.114f) /
            255.0f;
@@ -579,7 +579,7 @@ bool CImage::grayscale(CImage& ret) const
       const float g = src[1];
       const float b = src[2];
 
-      *dst = static_cast<uint8_t>(0.299f * r + 0.587f * g + 0.114f * b);
+      *dst = static_cast<uint8_t>((0.299f * r) + (0.587f * g) + (0.114f * b));
 
       src += m_state->channels;
       dst++;
@@ -609,7 +609,7 @@ void CImage::scaleImage(
   out_img.resize(width, height, m_state->channels, m_state->depth);
 
   // Map interpolation method to stbir
-  stbir_filter filter;
+  stbir_filter filter = STBIR_FILTER_DEFAULT;
   switch (interp)
   {
     case IMG_INTERP_NN:
@@ -663,11 +663,8 @@ void CImage::setPixel(const TPixelCoord& pt, const mrpt::img::TColor& color)
 
   if (m_state->channels == 1)
   {
-    // Grayscale: use luminance
-    const int y = 77 * static_cast<int>(color.R)     // 0.299 * 256 ≈ 77
-                  + 150 * static_cast<int>(color.G)  // 0.587 * 256 ≈ 150
-                  + 29 * static_cast<int>(color.B);  // 0.114 * 256 ≈ 29
-    at<uint8_t>(pt.x, pt.y, 0) = static_cast<uint8_t>(y >> 8);
+    // Grayscale: just use the B channel
+    at<uint8_t>(pt.x, pt.y, 0) = color.B;
   }
   else if (m_state->channels == 3)
   {
@@ -689,22 +686,10 @@ void CImage::setPixel(const TPixelCoord& pt, const mrpt::img::TColor& color)
 }
 
 void CImage::filledRectangle(
-    const TPixelCoord& pt0, const TPixelCoord& pt1, const mrpt::img::TColor& color)
+    const TPixelCoord& pt0, const TPixelCoord& pt1, const mrpt::img::TColor color)
 {
   makeSureImageIsLoaded();
-
-  const int x0 = std::max(0, std::min(pt0.x, pt1.x));
-  const int y0 = std::max(0, std::min(pt0.y, pt1.y));
-  const int x1 = std::min(m_state->width - 1, std::max(pt0.x, pt1.x));
-  const int y1 = std::min(m_state->height - 1, std::max(pt0.y, pt1.y));
-
-  for (int y = y0; y <= y1; y++)
-  {
-    for (int x = x0; x <= x1; x++)
-    {
-      setPixel({x, y}, color);
-    }
-  }
+  CCanvas::filledRectangle(pt0, pt1, color);
 }
 
 void CImage::drawImage(const TPixelCoord& pt, const mrpt::img::CImage& img)
@@ -769,7 +754,7 @@ void CImage::extract_patch(
 
     std::memcpy(
         patch.ptrLine<uint8_t>(y),
-        ptrLine<uint8_t>(y0 + y) + static_cast<size_t>(x0) * m_state->pixel_size_in_bytes(),
+        ptrLine<uint8_t>(y0 + y) + (static_cast<size_t>(x0) * m_state->pixel_size_in_bytes()),
         static_cast<size_t>(patch_size.x) * m_state->pixel_size_in_bytes());
   }
 }
@@ -817,15 +802,15 @@ void CImage::getAsMatrix(
 
   for (int y = 0; y < ly; y++)
   {
-    const uint8_t* pixels = ptr<uint8_t>(x_min, y_min + y, 0);
+    const auto* pixels = ptr<uint8_t>(x_min, y_min + y, 0);
     for (int x = 0; x < lx; x++)
     {
-      float value;
+      float value = 0;
       if (is_color)
       {
         // Luminance
-        value = static_cast<float>(pixels[0]) * 0.299f + static_cast<float>(pixels[1]) * 0.587f +
-                static_cast<float>(pixels[2]) * 0.114f;
+        value = (static_cast<float>(pixels[0]) * 0.299f) +
+                (static_cast<float>(pixels[1]) * 0.587f) + (static_cast<float>(pixels[2]) * 0.114f);
         pixels += m_state->channels;
       }
       else
@@ -870,13 +855,13 @@ void CImage::getAsMatrix(
 
   for (int y = 0; y < ly; y++)
   {
-    const uint8_t* pixels = ptr<uint8_t>(x_min, y_min + y, 0);
+    const auto* pixels = ptr<uint8_t>(x_min, y_min + y, 0);
     for (int x = 0; x < lx; x++)
     {
       if (is_color)
       {
         // Luminance (integer arithmetic for speed)
-        const unsigned int value = pixels[0] * 299U + pixels[1] * 587U + pixels[2] * 114U;
+        const unsigned int value = (pixels[0] * 299U) + (pixels[1] * 587U) + (pixels[2] * 114U);
         outMatrix(y, x) = static_cast<uint8_t>(value / 1000);
         pixels += m_state->channels;
       }
@@ -1156,8 +1141,9 @@ void CImage::unload() const noexcept
   {
     if (MRPT_DEBUG_IMG_LAZY_LOAD)
     {
-      std::cout << "[CImage::unload()] Called on this=" << reinterpret_cast<const void*>(this)
-                << std::endl;
+      std::cout << "[CImage::unload()] Called on this="
+                << reinterpret_cast<const void*>(this)  // NOLINT
+                << "\n";
     }
 
     m_state->clear_image_data();
@@ -1196,7 +1182,7 @@ void CImage::makeSureImageIsLoaded(bool allowNonInitialized) const
     if (MRPT_DEBUG_IMG_LAZY_LOAD)
     {
       std::cout << "[CImage] Loaded lazy-load image file '" << wholeFile
-                << "' on this=" << reinterpret_cast<const void*>(this) << std::endl;
+                << "' on this=" << reinterpret_cast<const void*>(this) << "\n";  // NOLINT
     }
   }
   else if (!allowNonInitialized)
@@ -1456,6 +1442,8 @@ void CImage::joinImagesHorz(const CImage& img1, const CImage& img2)
 #endif
 }  // end
 
+namespace
+{
 template <int HALF_WIN_SIZE>
 void image_KLT_response_template(
     const mrpt::img::CImage& im, int x, int y, int32_t& _gxx, int32_t& _gyy, int32_t& _gxy)
@@ -1467,7 +1455,7 @@ void image_KLT_response_template(
   int32_t gxy = 0;
   int32_t gyy = 0;
 
-  const unsigned int WIN_SIZE = 1 + 2 * HALF_WIN_SIZE;
+  const unsigned int WIN_SIZE = 1 + (2 * HALF_WIN_SIZE);
 
   int yy = min_y;
   for (int iy = WIN_SIZE; iy; --iy, ++yy)
@@ -1475,10 +1463,10 @@ void image_KLT_response_template(
     int xx = min_x;
     for (int ix = WIN_SIZE; ix; --ix, ++xx)
     {
-      const int32_t dx = static_cast<int32_t>(im.at<uint8_t>(yy, xx + 1)) -
-                         static_cast<int32_t>(im.at<uint8_t>(yy, xx - 1));
-      const int32_t dy = static_cast<int32_t>(im.at<uint8_t>(yy + 1, xx)) -
-                         static_cast<int32_t>(im.at<uint8_t>(yy - 1, xx));
+      const int32_t dx = static_cast<int32_t>(im.at<uint8_t>(xx + 1, yy)) -
+                         static_cast<int32_t>(im.at<uint8_t>(xx - 1, yy));
+      const int32_t dy = static_cast<int32_t>(im.at<uint8_t>(xx, yy + 1)) -
+                         static_cast<int32_t>(im.at<uint8_t>(xx, yy - 1));
       gxx += dx * dx;
       gxy += dx * dy;
       gyy += dy * dy;
@@ -1488,6 +1476,7 @@ void image_KLT_response_template(
   _gyy = gyy;
   _gxy = gxy;
 }
+}  // namespace
 
 float CImage::KLT_response(const TPixelCoord& pt, const int32_t half_window_size) const
 {
@@ -1572,10 +1561,10 @@ float CImage::KLT_response(const TPixelCoord& pt, const int32_t half_window_size
       {
         for (int xx = min_x; xx <= max_x; xx++)
         {
-          const int32_t dx = static_cast<int32_t>(im1.at<uint8_t>(yy, xx + 1)) -
-                             static_cast<int32_t>(im1.at<uint8_t>(yy, xx - 1));
-          const int32_t dy = static_cast<int32_t>(im1.at<uint8_t>(yy + 1, xx)) -
-                             static_cast<int32_t>(im1.at<uint8_t>(yy - 1, xx));
+          const int32_t dx = static_cast<int32_t>(im1.at<uint8_t>(xx + 1, yy)) -
+                             static_cast<int32_t>(im1.at<uint8_t>(xx - 1, yy));
+          const int32_t dy = static_cast<int32_t>(im1.at<uint8_t>(xx, yy + 1)) -
+                             static_cast<int32_t>(im1.at<uint8_t>(xx, yy - 1));
 
           gxx += dx * dx;
           gxy += dx * dy;
@@ -1595,22 +1584,11 @@ float CImage::KLT_response(const TPixelCoord& pt, const int32_t half_window_size
   //    ( gxy  gyy )
   // See, for example:
   // mrpt::math::detail::eigenVectorsMatrix_special_2x2():
-  const float t = Gxx + Gyy;               // Trace
-  const float de = Gxx * Gyy - Gxy * Gxy;  // Det
-  const float discriminant = std::max<float>(.0f, t * t - 4.0f * de);
+  const float t = Gxx + Gyy;                   // Trace
+  const float de = (Gxx * Gyy) - (Gxy * Gxy);  // Det
+  const float discriminant = std::max<float>(.0f, (t * t) - (4.0f * de));
   // The smallest eigenvalue is:
   return 0.5f * (t - std::sqrt(discriminant));
-}
-
-std::ostream& operator<<(std::ostream& o, const TPixelCoordf& p)
-{
-  o << "(" << p.x << "," << p.y << ")";
-  return o;
-}
-std::ostream& operator<<(std::ostream& o, const TPixelCoord& p)
-{
-  o << "(" << p.x << "," << p.y << ")";
-  return o;
 }
 
 }  // namespace mrpt::img

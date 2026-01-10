@@ -64,7 +64,7 @@ class CCanvas
   CCanvas& operator=(CCanvas&& other) noexcept = default;
 
   /** Definition of pen styles */
-  enum TPenStyle
+  enum TPenStyle : uint8_t
   {
     psSolid = 0,
     psDash,      /* -------  */
@@ -93,11 +93,11 @@ class CCanvas
 
   /** Returns the width of the image in pixels
    */
-  virtual int32_t getWidth() const = 0;
+  [[nodiscard]] virtual int32_t getWidth() const = 0;
 
   /** Returns the height of the image in pixels
    */
-  virtual int32_t getHeight() const = 0;
+  [[nodiscard]] virtual int32_t getHeight() const = 0;
 
   /** Draws a line.
    * \param pt0 The starting point
@@ -139,7 +139,7 @@ class CCanvas
   void triangle(
       const TPixelCoord& pt,
       int32_t size,
-      const mrpt::img::TColor color,
+      mrpt::img::TColor color,
       bool inferior = true,
       int32_t width = 1);
 
@@ -152,7 +152,7 @@ class CCanvas
    * \sa rectangle
    */
   virtual void filledRectangle(
-      const TPixelCoord& pt0, const TPixelCoord& pt1, const mrpt::img::TColor& color);
+      const TPixelCoord& pt0, const TPixelCoord& pt1, mrpt::img::TColor color);
 
   /** Renders 2D text using bitmap fonts.
    * \param pt The point where the text is to be drawn
@@ -162,8 +162,7 @@ class CCanvas
    *
    * \sa selectTextFont
    */
-  virtual void textOut(
-      const TPixelCoord& pt, const std::string& str, const mrpt::img::TColor color);
+  virtual void textOut(const TPixelCoord& pt, const std::string& str, mrpt::img::TColor color);
 
   /** Select the current font used when drawing text.
    * \param fontName The name of the font

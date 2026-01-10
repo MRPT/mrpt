@@ -80,7 +80,9 @@ TEST(CImage, CtorDefault)
 	EXPECT_THROW([&img]() { auto b = img.getHeight(); ((void)b);}(), std::exception);
   // clang-format on
 
-  EXPECT_THROW(img.getPixelDepth(), std::exception);
+  mrpt::img::PixelDepth p = mrpt::img::PixelDepth::D8U;
+  EXPECT_THROW(p = img.getPixelDepth(), std::exception);
+  (void)p;
 }
 
 namespace
@@ -211,9 +213,10 @@ TEST(CImage, CopyMoveSwap)
   }
 
   {
-    CImage a(20, 10, CH_GRAY), b;
+    CImage a(20, 10, CH_GRAY);
     a.at<uint8_t>(1, 2) = 0x80;
     // swap:
+    CImage b;
     a.swap(b);
     EXPECT_EQ(b.getWidth(), 20U);
     EXPECT_EQ(b.getHeight(), 10U);
@@ -362,7 +365,8 @@ TEST(CImage, ScaleImage)
     {
       a.scaleImage(c, 311, 211);
     }
-    const auto cw = c.getWidth(), ch = c.getHeight();
+    const auto cw = c.getWidth();
+    const auto ch = c.getHeight();
 
     {
       CImage b;
@@ -447,8 +451,8 @@ TEST(CImage, KLT_response)
 
   {
     CImage a(100, 90, CH_GRAY);
-    a.filledRectangle({0, 0}, {99, 99}, TColor(0x10));
-    a.filledRectangle({40, 30}, {41, 31}, TColor(0x20));
+    a.filledRectangle({0, 0}, {99, 99}, TColor(0, 0, 0x10));
+    a.filledRectangle({40, 30}, {41, 31}, TColor(0, 0, 0x90));
 
     for (int w = 2; w < 12; w++)
     {
@@ -524,10 +528,10 @@ TEST(CImage, DifferentAccessMethodsColor)
       for (int8_t ch = 0; ch < 3; ch++)
       {
         EXPECT_EQ(a.at<uint8_t>(c, r, ch), *a.ptr<uint8_t>(c, r, ch)) << "ch=" << ch << "\n";
-        EXPECT_EQ(a.at<uint8_t>(c, r, ch), a.ptrLine<uint8_t>(r)[c * 3 + ch])
+        EXPECT_EQ(a.at<uint8_t>(c, r, ch), a.ptrLine<uint8_t>(r)[(c * 3) + ch])
             << "(c,r,ch)=(" << c << "," << r << "," << ch << ")"
             << "\n &a.ptrLine<uint8_t>(r)[c * 3 + ch] = "
-            << static_cast<void*>(&a.ptrLine<uint8_t>(r)[c * 3 + ch])
+            << static_cast<void*>(&a.ptrLine<uint8_t>(r)[(c * 3) + ch])
             << "\n a.ptrLine<uint8_t>(r) = " << static_cast<void*>(a.ptrLine<uint8_t>(r)) << "\n";
       }
     }

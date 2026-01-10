@@ -17,7 +17,6 @@
 #include <cstdint>
 
 // See documentation in the .cpp files CImage_SSE*.cpp
-
 constexpr static auto s80 = static_cast<signed char>(0x80);
 constexpr static auto s96 = static_cast<signed char>(0x96);
 constexpr static auto sff = static_cast<signed char>(0xff);
