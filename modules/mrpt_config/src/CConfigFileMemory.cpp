@@ -116,8 +116,8 @@ std::string CConfigFileMemory::readString(
 
   // Remove possible comments: "//"
   std::string ret = aux;
-  size_t pos;
-  if ((pos = ret.find("//")) != string::npos && pos > 0 && isspace(ret[pos - 1]))
+  const size_t pos = ret.find("//");
+  if (pos != string::npos && pos > 0 && isspace(ret[pos - 1]))
   {
     ret = ret.substr(0, pos);
   }
@@ -133,7 +133,10 @@ void CConfigFileMemory::getAllSections(std::vector<std::string>& sections) const
   CSimpleIniA::TNamesDepend::iterator n;
   std::vector<std::string>::iterator s;
   sections.resize(names.size());
-  for (n = names.begin(), s = sections.begin(); n != names.end(); ++n, ++s) *s = n->pItem;
+  for (n = names.begin(), s = sections.begin(); n != names.end(); ++n, ++s)
+  {
+    *s = n->pItem;
+  }
 }
 
 void CConfigFileMemory::getAllKeys(const string& section, std::vector<std::string>& keys) const
@@ -144,7 +147,10 @@ void CConfigFileMemory::getAllKeys(const string& section, std::vector<std::strin
   CSimpleIniA::TNamesDepend::iterator n;
   std::vector<std::string>::iterator s;
   keys.resize(names.size());
-  for (n = names.begin(), s = keys.begin(); n != names.end(); ++n, ++s) *s = n->pItem;
+  for (n = names.begin(), s = keys.begin(); n != names.end(); ++n, ++s)
+  {
+    *s = n->pItem;
+  }
 }
 
 void CConfigFileMemory::clear() { m_impl->ini->Reset(); }
