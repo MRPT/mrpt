@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          https://www.mrpt.org/                            |
    |                                                                           |
-   | Copyright (c) 2005-2024, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2026, Individual contributors, see AUTHORS file        |
    | See: https://www.mrpt.org/Authors - All rights reserved.                  |
    | Released under BSD License. See details in https://www.mrpt.org/License   |
    +---------------------------------------------------------------------------+
@@ -15,7 +15,7 @@ std::string mrpt::UNITTEST_BASEDIR() { return CMAKE_UNITTEST_BASEDIR; }
 
 int main(int argc, char** argv)
 {
-	testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest(&argc, argv);
 
-	return RUN_ALL_TESTS();
+  return RUN_ALL_TESTS();
 }
