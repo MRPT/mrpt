@@ -12,13 +12,11 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include "dls.h"
+
 #include <mrpt/config.h>
 
 #include <iostream>
-
-#if MRPT_HAS_OPENCV
-
-#include "dls.h"
 
 mrpt::vision::pnp::dls::dls(const cv::Mat& opoints, const cv::Mat& ipoints)
 {
@@ -2694,4 +2692,3 @@ bool mrpt::vision::pnp::dls::positive_eigenvalues(const cv::Mat* eigenvalues)
   cv::MatConstIterator_<double> it = eigenvalues->begin<double>();
   return *(it) > 0 && *(it + 1) > 0 && *(it + 2) > 0;
 }
-#endif

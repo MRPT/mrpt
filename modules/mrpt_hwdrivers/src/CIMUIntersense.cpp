@@ -214,14 +214,16 @@ void CIMUIntersense::initialize()
   cout << "Opening trackers... ";
   openSuccess = ISD_OpenAllTrackers((Hwnd) nullptr, isense_handles, FALSE, TRUE);
   if (openSuccess < 1)
-    cout << "ERROR" << endl;
+    cout << "ERROR"
+         << "\n";
   else
   {
-    cout << "DONE" << endl;
+    cout << "DONE"
+         << "\n";
 
     WORD numOpenTrackers = 0;
     ISD_NumOpenTrackers(&numOpenTrackers);
-    cout << "Number of opened trackers: " << numOpenTrackers << endl;
+    cout << "Number of opened trackers: " << numOpenTrackers << "\n";
     vector<ISD_STATION_INFO_TYPE> station_info(numOpenTrackers);
     for (int i = 0; i < ISD_MAX_TRACKERS; ++i)
     {
@@ -237,12 +239,15 @@ void CIMUIntersense::initialize()
 
         if (!res_ok)
         {
-          cout << " ERROR" << endl;
-          cout << "Sensor " << i << " is working with default configuration!" << endl;
+          cout << " ERROR"
+               << "\n";
+          cout << "Sensor " << i << " is working with default configuration!"
+               << "\n";
         }
         else
         {
-          cout << " DONE" << endl;
+          cout << " DONE"
+               << "\n";
           // set custom configuration ...
           // station.Sensitivity = m_sensitivity;
           // station.Enhancement = m_enhancement;
@@ -262,7 +267,9 @@ void CIMUIntersense::initialize()
               &station_info[i],  // & station,
               i + 1 /*from 1 to ISD_MAX_TRACKERS*/, FALSE);
 
-          res_ok ? cout << " DONE" << endl : cout << " ERROR" << endl;
+          res_ok ? cout << " DONE" << endl
+                 : cout << " ERROR"
+                        << "\n";
 
 #if 0  // set ring buffer to avoid data loss and start it:
 	   // 180 samples is ~1 second at maximum data rate for wired devices
@@ -282,7 +289,8 @@ void CIMUIntersense::initialize()
       }  // end-if
     }    // end-for
 
-    cout << "Found (and opened) " << m_nSensors << " sensors." << endl;
+    cout << "Found (and opened) " << m_nSensors << " sensors."
+         << "\n";
     m_state = ssInitializing;
   }  // end-else
 #else
@@ -312,13 +320,16 @@ void CIMUIntersense::loadConfig_sensorSpecific(
   m_useBuffer = configSource.read_bool(iniSection, "useBuffer", m_useBuffer, false);
 
   // dump parameters to console
-  cout << "---------------------------" << endl;
-  cout << "Intersense IMU parameters: " << endl;
-  cout << "---------------------------" << endl;
-  cout << "Sensitivity:	" << m_sensitivity << endl;
-  cout << "Enhancement:	" << m_enhancement << endl;
-  cout << "Prediction:	" << m_prediction << endl;
-  cout << "Use buffer:	" << m_useBuffer << endl;
-  cout << m_sensorPose << endl;
-  cout << "---------------------------" << endl << endl;
+  cout << "---------------------------"
+       << "\n";
+  cout << "Intersense IMU parameters: "
+       << "\n";
+  cout << "---------------------------"
+       << "\n";
+  cout << "Sensitivity:	" << m_sensitivity << "\n";
+  cout << "Enhancement:	" << m_enhancement << "\n";
+  cout << "Prediction:	" << m_prediction << "\n";
+  cout << "Use buffer:	" << m_useBuffer << "\n";
+  cout << m_sensorPose << "\n";
+  cout << "---------------------------" << endl << "\n";
 }

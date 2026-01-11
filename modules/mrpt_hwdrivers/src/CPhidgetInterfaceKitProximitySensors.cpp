@@ -132,21 +132,23 @@ void CPhidgetInterfaceKitProximitySensors::loadConfig_sensorSpecific(
     cout.fill(' ');
     cout << "+-------------------------------------------------------------"
             "-----------------+"
-         << endl;
+         << "\n";
     cout.width(79);
     cout << "|  Phidget interfaceKit board number : " << m_serialNumber;
-    cout << "|" << endl;
+    cout << "|"
+         << "\n";
     cout << "| Process rate : " << m_process_rate;
-    cout << "|" << endl;
+    cout << "|"
+         << "\n";
     cout << "+---------+---------------------+-----------------------------"
             "-----------------+"
-         << endl;
+         << "\n";
     cout << "|    #    + Sensor type         | Sensor 3D pose              "
             "                 |"
-         << endl;
+         << "\n";
     cout << "+---------+---------------------+-----------------------------"
             "-----------------+"
-         << endl;
+         << "\n";
     for (int i = 0; i < 8; i++)
     {
       cout << "|";
@@ -171,11 +173,12 @@ void CPhidgetInterfaceKitProximitySensors::loadConfig_sensorSpecific(
       }
       cout.width(43);
       cout << m_sensorPoses[i];
-      cout << "|" << endl;
+      cout << "|"
+           << "\n";
     }
     cout << "+-------------------------------------------------------------"
             "-----------------+"
-         << endl;
+         << "\n";
   }
 #endif
 }

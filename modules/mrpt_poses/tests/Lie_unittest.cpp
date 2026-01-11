@@ -145,7 +145,7 @@ class SE_traits_tests : public ::testing::Test
         << "Implemented J1:\n"
         << J1 << endl
         << "Error:\n"
-        << J1 - num_J1 << endl;
+        << J1 - num_J1 << "\n";
 
     EXPECT_NEAR(0, (num_J2 - J2).sum_abs(), max_eror) << "p1: " << P1 << endl
                                                       << "d: " << Pd << endl
@@ -155,7 +155,7 @@ class SE_traits_tests : public ::testing::Test
                                                       << "Implemented J2:\n"
                                                       << J2 << endl
                                                       << "Error:\n"
-                                                      << J2 - num_J2 << endl;
+                                                      << J2 - num_J2 << "\n";
   }
 
   static void func_numeric_dAB_dA(
@@ -245,7 +245,7 @@ class SE_traits_tests : public ::testing::Test
         << "Implemented dAB_A:\n"
         << dAB_A << endl
         << "Error:\n"
-        << dAB_A - num_dAB_A << endl;
+        << dAB_A - num_dAB_A << "\n";
 
     EXPECT_NEAR(0, (num_dAB_B - dAB_B).sum_abs(), max_eror)
         << std::setprecision(3) << "A: " << A << endl
@@ -255,7 +255,7 @@ class SE_traits_tests : public ::testing::Test
         << "Implemented dAB_B:\n"
         << dAB_B << endl
         << "Error:\n"
-        << dAB_B - num_dAB_B << endl;
+        << dAB_B - num_dAB_B << "\n";
   }
 
   void tests_jacobs_DinvP1InvP2()

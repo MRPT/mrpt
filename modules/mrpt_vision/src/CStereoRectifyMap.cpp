@@ -22,9 +22,6 @@ using namespace mrpt::vision;
 using namespace mrpt::img;
 using namespace mrpt::math;
 
-#if MRPT_HAS_OPENCV
-#include <opencv2/core/eigen.hpp>
-
 static void do_rectify(
     const CStereoRectifyMap& me,
     const cv::Mat& src_left,
@@ -64,7 +61,6 @@ static void do_rectify(
   cv::remap(src_right, out_right, mapx2, mapy2, interp_method, cv::BORDER_CONSTANT, cvScalarAll(0));
   MRPT_END
 }
-#endif
 
 void CStereoRectifyMap::internal_invalidate()
 {
@@ -105,7 +101,6 @@ void CStereoRectifyMap::enableBothCentersCoincide(bool enable)
 void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
 {
   MRPT_START
-#if MRPT_HAS_OPENCV
   const mrpt::img::TCamera& cam1 = params.leftCamera;
   const mrpt::img::TCamera& cam2 = params.rightCamera;
 
@@ -241,9 +236,6 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
 
   m_rectified_image_params.rightCameraPose = params.rightCameraPose;
 
-#else
-  THROW_EXCEPTION("MRPT built without OpenCV >=2.0.0!");
-#endif
   MRPT_END
 }
 
@@ -255,7 +247,6 @@ void CStereoRectifyMap::rectify(
 {
   MRPT_START
 
-#if MRPT_HAS_OPENCV
   const uint32_t ncols = m_camera_params.leftCamera.ncols;
   const uint32_t nrows = m_camera_params.leftCamera.nrows;
 
@@ -276,7 +267,6 @@ void CStereoRectifyMap::rectify(
       const_cast<int16_t*>(&m_dat_mapx_right[0]), const_cast<uint16_t*>(&m_dat_mapy_left[0]),
       const_cast<uint16_t*>(&m_dat_mapy_right[0]), static_cast<int>(m_interpolation_method));
 
-#endif
   MRPT_END
 }
 

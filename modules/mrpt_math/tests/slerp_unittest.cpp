@@ -35,7 +35,7 @@ TEST(SLERP_tests, correctShortestPath)
       pose_interp.getHomogeneousMatrix(HM);
       expected.getHomogeneousMatrix(HMe);
       EXPECT_NEAR(0, (HM - HMe).sum_abs(), 1e-4)
-          << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+          << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << "\n";
     }
     {
       TPose3D pose_interp;
@@ -44,7 +44,7 @@ TEST(SLERP_tests, correctShortestPath)
       pose_interp.getHomogeneousMatrix(HM);
       expected.getHomogeneousMatrix(HMe);
       EXPECT_NEAR(0, (HM - HMe).sum_abs(), 1e-4)
-          << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+          << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << "\n";
     }
     {
       TPose3D pose_interp;
@@ -53,7 +53,7 @@ TEST(SLERP_tests, correctShortestPath)
       pose_interp.getHomogeneousMatrix(HM);
       expected.getHomogeneousMatrix(HMe);
       EXPECT_NEAR(0, (HM - HMe).sum_abs(), 1e-4)
-          << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+          << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << "\n";
     }
   }
 
@@ -66,7 +66,7 @@ TEST(SLERP_tests, correctShortestPath)
     pose_interp.getHomogeneousMatrix(HM);
     expected.getHomogeneousMatrix(HMe);
     EXPECT_NEAR(0, (HM - HMe).sum_abs(), 1e-4)
-        << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+        << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << "\n";
   }
   {  // Poses at yaw=-+179deg
     const TPose3D pose_a(0, 0, 0, -179.0_deg, 0.0_deg, 0.0_deg);
@@ -77,7 +77,7 @@ TEST(SLERP_tests, correctShortestPath)
     pose_interp.getHomogeneousMatrix(HM);
     expected.getHomogeneousMatrix(HMe);
     EXPECT_NEAR(0, (HM - HMe).sum_abs(), 1e-4)
-        << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+        << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << "\n";
   }
   {  // Poses at yaw=-+179deg
     const TPose3D pose_a(0, 0, 0, -179.0_deg, 0.0_deg, 0.0_deg);
@@ -89,7 +89,7 @@ TEST(SLERP_tests, correctShortestPath)
     expected.getHomogeneousMatrix(HMe);
     EXPECT_NEAR(0, (HM - HMe).sum_abs(), 1e-4)
         << "pose_a: " << pose_a.asString() << "\npose_b: " << pose_b.asString()
-        << "\ninterp: " << pose_interp.asString() << endl;
+        << "\ninterp: " << pose_interp.asString() << "\n";
   }
 
   {  // Poses at yaw=+-40
@@ -101,7 +101,7 @@ TEST(SLERP_tests, correctShortestPath)
     pose_interp.getHomogeneousMatrix(HM);
     expected.getHomogeneousMatrix(HMe);
     EXPECT_NEAR(0, (HM - HMe).sum_abs(), 1e-4)
-        << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+        << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << "\n";
   }
   {  // Poses at yaw=-+40
     const TPose3D pose_a(0, 0, 0, -40.0_deg, 0.0_deg, 0.0_deg);
@@ -112,7 +112,7 @@ TEST(SLERP_tests, correctShortestPath)
     pose_interp.getHomogeneousMatrix(HM);
     expected.getHomogeneousMatrix(HMe);
     EXPECT_NEAR(0, (HM - HMe).sum_abs(), 1e-4)
-        << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+        << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << "\n";
   }
 
   {  // Poses at pitch=+-40
@@ -124,7 +124,7 @@ TEST(SLERP_tests, correctShortestPath)
     pose_interp.getHomogeneousMatrix(HM);
     expected.getHomogeneousMatrix(HMe);
     EXPECT_NEAR(0, (HM - HMe).sum_abs(), 1e-4)
-        << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+        << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << "\n";
   }
   {  // Poses at pitch=-+40
     const TPose3D pose_a(0, 0, 0, 0.0_deg, -40.0_deg, 0.0_deg);
@@ -135,7 +135,7 @@ TEST(SLERP_tests, correctShortestPath)
     pose_interp.getHomogeneousMatrix(HM);
     expected.getHomogeneousMatrix(HMe);
     EXPECT_NEAR(0, (HM - HMe).sum_abs(), 1e-4)
-        << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+        << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << "\n";
   }
 
   {  // Poses at roll=-+40
@@ -147,7 +147,7 @@ TEST(SLERP_tests, correctShortestPath)
     pose_interp.getHomogeneousMatrix(HM);
     expected.getHomogeneousMatrix(HMe);
     EXPECT_NEAR(0, (HM - HMe).sum_abs(), 1e-4)
-        << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+        << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << "\n";
   }
   {  // Poses at roll=+-40
     const TPose3D pose_a(0, 0, 0, 0.0_deg, 0.0_deg, 40.0_deg);
@@ -158,6 +158,6 @@ TEST(SLERP_tests, correctShortestPath)
     pose_interp.getHomogeneousMatrix(HM);
     expected.getHomogeneousMatrix(HMe);
     EXPECT_NEAR(0, (HM - HMe).sum_abs(), 1e-4)
-        << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+        << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << "\n";
   }
 }

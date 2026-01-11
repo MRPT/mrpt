@@ -33,7 +33,7 @@ TEST(CGPSInterface, parse_NMEA_GGA)
         "47.4,M,5.0,0120*58";
     mrpt::obs::CObservationGPS obsGPS;
     const bool parse_ret = CGPSInterface::parse_NMEA(test_cmd, obsGPS);
-    EXPECT_TRUE(parse_ret) << "Failed parse of: " << test_cmd << endl;
+    EXPECT_TRUE(parse_ret) << "Failed parse of: " << test_cmd << "\n";
 
     const gnss::Message_NMEA_GGA* msg = obsGPS.getMsgByClassPtr<gnss::Message_NMEA_GGA>();
     EXPECT_TRUE(msg != nullptr);
@@ -56,7 +56,7 @@ TEST(CGPSInterface, parse_NMEA_RMC)
   const char* test_cmd = "$GPRMC,161229.487,A,3723.2475,N,12158.3416,W,0.13,309.62,120598, ,*10";
   mrpt::obs::CObservationGPS obsGPS;
   const bool parse_ret = CGPSInterface::parse_NMEA(test_cmd, obsGPS);
-  EXPECT_TRUE(parse_ret) << "Failed parse of: " << test_cmd << endl;
+  EXPECT_TRUE(parse_ret) << "Failed parse of: " << test_cmd << "\n";
 
   const gnss::Message_NMEA_RMC* msg = obsGPS.getMsgByClassPtr<gnss::Message_NMEA_RMC>();
 
@@ -71,7 +71,7 @@ TEST(CGPSInterface, parse_NMEA_GLL)
   const char* test_cmd = "$GPGLL,3723.2475,N,12158.3416,W,161229.487,A,A*41";
   mrpt::obs::CObservationGPS obsGPS;
   const bool parse_ret = CGPSInterface::parse_NMEA(test_cmd, obsGPS);
-  EXPECT_TRUE(parse_ret) << "Failed parse of: " << test_cmd << endl;
+  EXPECT_TRUE(parse_ret) << "Failed parse of: " << test_cmd << "\n";
 
   const gnss::Message_NMEA_GLL* msg = obsGPS.getMsgByClassPtr<gnss::Message_NMEA_GLL>();
 
@@ -86,7 +86,7 @@ TEST(CGPSInterface, parse_NMEA_VTG)
   const char* test_cmd = "$GPVTG,054.7,T,034.4,M,005.5,N,010.2,K*48";
   mrpt::obs::CObservationGPS obsGPS;
   const bool parse_ret = CGPSInterface::parse_NMEA(test_cmd, obsGPS);
-  EXPECT_TRUE(parse_ret) << "Failed parse of: " << test_cmd << endl;
+  EXPECT_TRUE(parse_ret) << "Failed parse of: " << test_cmd << "\n";
 
   const gnss::Message_NMEA_VTG* msg = obsGPS.getMsgByClassPtr<gnss::Message_NMEA_VTG>();
 
@@ -103,7 +103,7 @@ TEST(CGPSInterface, parse_NMEA_ZDA)
   const char* test_cmd = "$GPZDA,181813,14,10,2003,00,00*4F";
   mrpt::obs::CObservationGPS obsGPS;
   const bool parse_ret = CGPSInterface::parse_NMEA(test_cmd, obsGPS);
-  EXPECT_TRUE(parse_ret) << "Failed parse of: " << test_cmd << endl;
+  EXPECT_TRUE(parse_ret) << "Failed parse of: " << test_cmd << "\n";
 
   const gnss::Message_NMEA_ZDA* msg = obsGPS.getMsgByClassPtr<gnss::Message_NMEA_ZDA>();
 

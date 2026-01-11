@@ -108,23 +108,27 @@ void CObservationStereoImagesFeatures::getDescriptionAsText(std::ostream& o) con
 
   o << "Homogeneous matrix for the RIGHT camera's 3D pose, relative to LEFT "
        "camera reference system:\n";
-  o << rightCameraPose.getHomogeneousMatrixVal<CMatrixDouble44>() << rightCameraPose << endl;
+  o << rightCameraPose.getHomogeneousMatrixVal<CMatrixDouble44>() << rightCameraPose << "\n";
 
-  o << "Intrinsic parameters matrix for the LEFT camera:" << endl;
+  o << "Intrinsic parameters matrix for the LEFT camera:"
+    << "\n";
   CMatrixDouble33 aux = cameraLeft.intrinsicParams;
-  o << aux.inMatlabFormat() << endl << aux << endl;
+  o << aux.inMatlabFormat() << endl << aux << "\n";
 
   o << "Distortion parameters vector for the LEFT camera:" << endl << "[ ";
   for (unsigned int i = 0; i < 5; ++i) o << cameraLeft.dist[i] << " ";
-  o << "]" << endl;
+  o << "]"
+    << "\n";
 
-  o << "Intrinsic parameters matrix for the RIGHT camera:" << endl;
+  o << "Intrinsic parameters matrix for the RIGHT camera:"
+    << "\n";
   aux = cameraRight.intrinsicParams;
-  o << aux.inMatlabFormat() << endl << aux << endl;
+  o << aux.inMatlabFormat() << endl << aux << "\n";
 
   o << "Distortion parameters vector for the RIGHT camera:" << endl << "[ ";
   for (unsigned int i = 0; i < 5; ++i) o << cameraRight.dist[i] << " ";
-  o << "]" << endl;
+  o << "]"
+    << "\n";
 
   o << endl
     << format(

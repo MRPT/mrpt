@@ -71,7 +71,7 @@ void init_fonts_list()
   {                                                                                    \
     list_registered_fonts[#ARR].resize(sizeof(mrpt_font_##ARR));                       \
     memcpy(&list_registered_fonts[#ARR][0], mrpt_font_##ARR, sizeof(mrpt_font_##ARR)); \
-    cout << #ARR << " -> " << sizeof(mrpt_font_##ARR) << endl;                         \
+    cout << #ARR << " -> " << sizeof(mrpt_font_##ARR) << "\n";                         \
     CFileGZOutputStream f(string("mrpt_font_") + string(#ARR) + string(".gz"));        \
     f.WriteBuffer(mrpt_font_##ARR, sizeof(mrpt_font_##ARR));                           \
     /*mrpt::compress::zip::compress( list_registered_fonts[#ARR], f ); */              \
@@ -248,7 +248,7 @@ void CCanvas::selectTextFont(const std::string& fontName)
   if (it == list_registered_fonts.end())
   {
     // Error
-    cerr << "[CCanvas::selectTextFont] Warning: Unknown font: " << fontName << endl;
+    cerr << "[CCanvas::selectTextFont] Warning: Unknown font: " << fontName << "\n";
     return;
   }
 

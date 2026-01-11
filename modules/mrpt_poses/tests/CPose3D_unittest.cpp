@@ -46,7 +46,7 @@ class Pose3DTests : public ::testing::Test
         << "HM:\n"
         << HM << "inv(HM):\n"
         << HMi << "inv(HM)*HM:\n"
-        << (HM * HMi) << endl;
+        << (HM * HMi) << "\n";
 
     CPose3D p1_inv_inv = p1;
 
@@ -57,11 +57,11 @@ class Pose3DTests : public ::testing::Test
 
     EXPECT_NEAR(
         (p1.asVectorVal() - p1_inv_inv.asVectorVal()).asEigen().array().abs().sum(), 0, 1e-3)
-        << "p1: " << p1 << "p1_inv_inv: " << p1_inv_inv << endl;
+        << "p1: " << p1 << "p1_inv_inv: " << p1_inv_inv << "\n";
 
     EXPECT_NEAR((HMi_from_p1_inv - HMi).sum_abs(), 0, 1e-4) << "HMi_from_p1_inv:\n"
                                                             << HMi_from_p1_inv << "HMi:\n"
-                                                            << HMi << endl;
+                                                            << HMi << "\n";
   }
 
   void test_compose(const CPose3D& p1, const CPose3D& p2)
@@ -75,7 +75,7 @@ class Pose3DTests : public ::testing::Test
     EXPECT_NEAR(
         0, (p1_c_p2_i_p2.asVectorVal() - p2.asVectorVal()).asEigen().array().abs().sum(), 1e-5)
         << "p2          : " << p2 << endl
-        << "p1_c_p2_i_p2: " << p1_c_p2_i_p2 << endl;
+        << "p1_c_p2_i_p2: " << p1_c_p2_i_p2 << "\n";
 
     EXPECT_NEAR(
         0, (p2_c_p1_i_p2.asVectorVal() - p1.asVectorVal()).asEigen().array().abs().sum(), 1e-5)
@@ -86,7 +86,7 @@ class Pose3DTests : public ::testing::Test
         << "p1_i_p2     : " << p1_i_p2 << endl
         << "p1_i_p2 matrix: " << endl
         << p1_i_p2.getHomogeneousMatrixVal<CMatrixDouble44>() << endl
-        << "p2_c_p1_i_p2: " << p2_c_p1_i_p2 << endl;
+        << "p2_c_p1_i_p2: " << p2_c_p1_i_p2 << "\n";
 
     // Test + operator: trg new var
     {
@@ -115,11 +115,11 @@ class Pose3DTests : public ::testing::Test
 
     const CPose2D p2d_bis = CPose2D(p3d);
 
-    EXPECT_DOUBLE_EQ(p2d.x(), p2d_bis.x()) << "p2d: " << p2d << endl;
-    EXPECT_DOUBLE_EQ(p2d.y(), p2d_bis.y()) << "p2d: " << p2d << endl;
-    EXPECT_DOUBLE_EQ(p2d.phi(), p2d_bis.phi()) << "p2d: " << p2d << endl;
+    EXPECT_DOUBLE_EQ(p2d.x(), p2d_bis.x()) << "p2d: " << p2d << "\n";
+    EXPECT_DOUBLE_EQ(p2d.y(), p2d_bis.y()) << "p2d: " << p2d << "\n";
+    EXPECT_DOUBLE_EQ(p2d.phi(), p2d_bis.phi()) << "p2d: " << p2d << "\n";
 
-    EXPECT_DOUBLE_EQ(p2d.phi(), p3d.yaw()) << "p2d: " << p2d << endl;
+    EXPECT_DOUBLE_EQ(p2d.phi(), p3d.yaw()) << "p2d: " << p2d << "\n";
   }
 
   void test_composeFrom(const CPose3D& p1, const CPose3D& p2)
@@ -136,7 +136,7 @@ class Pose3DTests : public ::testing::Test
           << "p2 : " << p2 << endl
           << "p1 : " << p1 << endl
           << "p1_plus_p2    : " << p1_plus_p2 << endl
-          << "p1_plus_p2bis : " << p1_plus_p2bis << endl;
+          << "p1_plus_p2bis : " << p1_plus_p2bis << "\n";
     }
 
     {
@@ -149,7 +149,7 @@ class Pose3DTests : public ::testing::Test
           << "p2 : " << p2 << endl
           << "p1 : " << p1 << endl
           << "p1_plus_p2    : " << p1_plus_p2 << endl
-          << "p1_plus_p2bis : " << p1_plus_p2bis << endl;
+          << "p1_plus_p2bis : " << p1_plus_p2bis << "\n";
     }
 
     {
@@ -162,7 +162,7 @@ class Pose3DTests : public ::testing::Test
           << "p2 : " << p2 << endl
           << "p1 : " << p1 << endl
           << "p1_plus_p2    : " << p1_plus_p2 << endl
-          << "p1_plus_p2bis : " << p1_plus_p2bis << endl;
+          << "p1_plus_p2bis : " << p1_plus_p2bis << "\n";
     }
   }
 
@@ -274,7 +274,7 @@ class Pose3DTests : public ::testing::Test
         << "Implemented method: " << endl
         << df_dpoint << endl
         << "Error: " << endl
-        << df_dpoint - num_df_dpoint << endl;
+        << df_dpoint - num_df_dpoint << "\n";
 
     EXPECT_NEAR(0, (df_dpose.asEigen() - num_df_dpose.asEigen()).array().abs().sum(), max_error)
         << "p1: " << p1 << endl
@@ -284,13 +284,13 @@ class Pose3DTests : public ::testing::Test
         << "Implemented method: " << endl
         << df_dpose.asEigen() << endl
         << "Error: " << endl
-        << df_dpose.asEigen() - num_df_dpose.asEigen() << endl;
+        << df_dpose.asEigen() - num_df_dpose.asEigen() << "\n";
   }
 
   void test_ExpLnEqual(const CPose3D& p1)
   {
     const CPose3D p2 = Lie::SE<3>::exp(Lie::SE<3>::log(p1));
-    EXPECT_NEAR((p1.asVectorVal() - p2.asVectorVal()).sum_abs(), 0, 1e-5) << "p1: " << p1 << endl;
+    EXPECT_NEAR((p1.asVectorVal() - p2.asVectorVal()).sum_abs(), 0, 1e-5) << "p1: " << p1 << "\n";
   }
 
   void test_invComposePointJacob(const CPose3D& p1, double x, double y, double z)
@@ -336,7 +336,7 @@ class Pose3DTests : public ::testing::Test
         << "Implemented method: " << endl
         << df_dpoint << endl
         << "Error: " << endl
-        << df_dpoint - num_df_dpoint << endl;
+        << df_dpoint - num_df_dpoint << "\n";
 
     EXPECT_NEAR(0, (df_dpose.asEigen() - num_df_dpose.asEigen()).array().abs().sum(), 3e-3)
         << "p1: " << p1 << endl
@@ -346,7 +346,7 @@ class Pose3DTests : public ::testing::Test
         << "Implemented method: " << endl
         << df_dpose.asEigen() << endl
         << "Error: " << endl
-        << df_dpose.asEigen() - num_df_dpose.asEigen() << endl;
+        << df_dpose.asEigen() - num_df_dpose.asEigen() << "\n";
   }
 
   void test_default_values(const CPose3D& p, const std::string& label)
@@ -363,7 +363,7 @@ class Pose3DTests : public ::testing::Test
             << "Failed for (i,j)=" << i << "," << j << endl
             << "Matrix is: " << endl
             << p.getHomogeneousMatrixVal<CMatrixDouble44>() << endl
-            << "case was: " << label << endl;
+            << "case was: " << label << "\n";
   }
 
   static void func_compose_point_se3(
@@ -418,7 +418,7 @@ class Pose3DTests : public ::testing::Test
         << "Implemented method: " << endl
         << df_dse3.asEigen() << endl
         << "Error: " << endl
-        << df_dse3.asEigen() - num_df_dse3.asEigen() << endl;
+        << df_dse3.asEigen() - num_df_dse3.asEigen() << "\n";
   }
 
   void test_invComposePointJacob_se3(const CPose3D& p, const TPoint3D x_g)
@@ -456,7 +456,7 @@ class Pose3DTests : public ::testing::Test
         << "Implemented method: " << endl
         << df_dse3.asEigen() << endl
         << "Error: " << endl
-        << df_dse3.asEigen() - num_df_dse3.asEigen() << endl;
+        << df_dse3.asEigen() - num_df_dse3.asEigen() << "\n";
   }
 
   static void func_jacob_expe_e(
@@ -553,7 +553,7 @@ class Pose3DTests : public ::testing::Test
         << "Theor. Jacob:\n"
         << theor_jacob.asEigen() << endl
         << "ERR:\n"
-        << theor_jacob.asEigen() - numJacobs.asEigen() << endl;
+        << theor_jacob.asEigen() - numJacobs.asEigen() << "\n";
   }
 
   static void func_jacob_expe_D(
@@ -593,7 +593,7 @@ class Pose3DTests : public ::testing::Test
         << "Theor. Jacob:\n"
         << theor_jacob.asEigen() << endl
         << "ERR:\n"
-        << theor_jacob.asEigen() - numJacobs.asEigen() << endl;
+        << theor_jacob.asEigen() - numJacobs.asEigen() << "\n";
   }
 
   static void func_jacob_D_expe(
@@ -633,7 +633,7 @@ class Pose3DTests : public ::testing::Test
         << "Theor. Jacob:\n"
         << theor_jacob.asEigen() << endl
         << "ERR:\n"
-        << theor_jacob.asEigen() - numJacobs.asEigen() << endl;
+        << theor_jacob.asEigen() - numJacobs.asEigen() << "\n";
   }
 
   struct TParams_func_jacob_Aexpe_D
@@ -684,7 +684,7 @@ class Pose3DTests : public ::testing::Test
         << "Theor. Jacob:\n"
         << theor_jacob.asEigen() << endl
         << "ERR:\n"
-        << theor_jacob.asEigen() - numJacobs.asEigen() << endl;
+        << theor_jacob.asEigen() - numJacobs.asEigen() << "\n";
   }
 };
 

@@ -20,10 +20,6 @@
 
 #include <Eigen/Dense>
 
-#if MRPT_HAS_OPENCV
-#include <opencv2/core/eigen.hpp>
-#endif
-
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::img;
@@ -72,7 +68,6 @@ bool mrpt::vision::checkerBoardCameraCalibration(
     double* out_MSE,
     [[maybe_unused]] bool skipDrawDetectedImgs)
 {
-#if MRPT_HAS_OPENCV
   try
   {
     ASSERT_(check_size_x > 2);
@@ -416,7 +411,4 @@ bool mrpt::vision::checkerBoardCameraCalibration(
     std::cout << e.what() << std::endl;
     return false;
   }
-#else
-  THROW_EXCEPTION("Function not available: MRPT was compiled without OpenCV");
-#endif
 }

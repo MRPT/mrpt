@@ -18,7 +18,7 @@ find_package(mrpt_expr REQUIRED)
 include(./cmake/script_simpleini.cmake REQUIRED)   # SimpleINI lib
 
 # define lib:
-set(LIB_SRCS
+set(LIB_SOURCES
   src/config_parser.cpp
   src/CConfigFilePrefixer.cpp
   src/CConfigFileBase.cpp
@@ -29,7 +29,7 @@ set(LIB_SRCS
   tests/CConfigFileMemory_unittest.cpp
 )
 
-set(LIB_PUBLIC_HDRS
+set(LIB_PUBLIC_HEADERS
   include/mrpt/config/config_parser.h
   include/mrpt/config/CConfigFileBase.h
   include/mrpt/config/registerAllClasses.h
@@ -41,7 +41,7 @@ set(LIB_PUBLIC_HDRS
 
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
-  SOURCES ${LIB_SRCS} ${LIB_PUBLIC_HDRS}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_expr
 #  PRIVATE_LINK_LIBRARIES

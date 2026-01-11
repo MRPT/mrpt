@@ -56,7 +56,8 @@ void CGPS_NTRIP::doProcess()
   if (!sLastGGA.empty())
   {
     if (m_verbose)
-      cout << "[CGPS_NTRIP] Redirecting GGA frame from GPS->NTRIP: '" << sLastGGA << "'" << endl;
+      cout << "[CGPS_NTRIP] Redirecting GGA frame from GPS->NTRIP: '" << sLastGGA << "'"
+           << "\n";
 
     ntrip.getNTRIPClient().sendBackToServer(sLastGGA + std::string("\r\n"));
   }

@@ -15,14 +15,14 @@ project(mrpt_typemeta LANGUAGES C CXX)
 find_package(mrpt_common REQUIRED)
 
 # define lib:
-  set(LIB_SRCS
+  set(LIB_SOURCES
   tests/typename_unittest.cpp
   tests/enumtype_unittest.cpp
   tests/static_string_unittest.cpp
   tests/xassert_unittest.cpp
 )
 
-set(LIB_PUBLIC_HDRS
+set(LIB_PUBLIC_HEADERS
   include/mrpt/typemeta/static_string.h
   include/mrpt/typemeta/xassert.h
   include/mrpt/typemeta/TTypeName.h
@@ -33,7 +33,7 @@ set(LIB_PUBLIC_HDRS
 
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
-  SOURCES ${LIB_SRCS} ${LIB_PUBLIC_HDRS}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
   HEADERS_ONLY_LIBRARY
 #  PUBLIC_LINK_LIBRARIES
 #   xxx

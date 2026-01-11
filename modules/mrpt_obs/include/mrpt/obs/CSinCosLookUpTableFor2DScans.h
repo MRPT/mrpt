@@ -21,7 +21,7 @@
 
 namespace mrpt::obs
 {
-// Frwd decl:
+// Forward decl:
 class CObservation2DRangeScan;
 
 /** A smart look-up-table (LUT) of sin/cos values for 2D laser scans.

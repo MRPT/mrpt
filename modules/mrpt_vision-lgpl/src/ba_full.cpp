@@ -137,7 +137,7 @@ double mrpt::vision::bundle_adj_full(
 
   MRPT_CHECK_NORMAL_NUMBER(res);
 
-  VERBOSE_COUT << "res: " << res << endl;
+  VERBOSE_COUT << "res: " << res << "\n";
 
   // Auxiliary vars:
   Array_F arrF_zeros;
@@ -189,7 +189,7 @@ double mrpt::vision::bundle_adj_full(
 
   for (size_t iter = 0; iter < max_iters; iter++)
   {
-    VERBOSE_COUT << "iteration: " << iter << endl;
+    VERBOSE_COUT << "iteration: " << iter << "\n";
 
     // provide feedback to the user:
     if (user_feedback)
@@ -200,7 +200,7 @@ double mrpt::vision::bundle_adj_full(
     {
       profiler.enter("COMPLETE_ITER");
 
-      VERBOSE_COUT << "mu: " << mu << endl;
+      VERBOSE_COUT << "mu: " << mu << "\n";
 
       I_muFrame.setDiagonal(FrameDof, mu);
       I_muPoint.setDiagonal(PointDof, mu);
@@ -293,7 +293,7 @@ double mrpt::vision::bundle_adj_full(
       profiler.enter("sS:ALL");
       profiler.enter("sS:fill");
 
-      VERBOSE_COUT << "Entries in YW_map:" << YW_map.size() << endl;
+      VERBOSE_COUT << "Entries in YW_map:" << YW_map.size() << "\n";
 
       CSparseMatrix sS(len_free_frames, len_free_frames);
 
@@ -407,7 +407,7 @@ double mrpt::vision::bundle_adj_full(
         // Good: Accept new values
         VERBOSE_COUT << "new total sqr.err=" << res_new
                      << " avr.err(px):" << std::sqrt(res / num_obs) << "->"
-                     << std::sqrt(res_new / num_obs) << endl;
+                     << std::sqrt(res_new / num_obs) << "\n";
 
         // swap is faster than "="
         frame_poses.swap(new_frame_poses);
@@ -443,7 +443,7 @@ double mrpt::vision::bundle_adj_full(
       }
       else
       {
-        VERBOSE_COUT << "no update: res vs.res_new " << res << " vs. " << res_new << endl;
+        VERBOSE_COUT << "no update: res vs.res_new " << res << " vs. " << res_new << "\n";
         mu *= nu;
         nu *= 2.0;
         stop = (mu > 1e9);

@@ -25,7 +25,7 @@
 
 namespace mrpt::slam
 {
-// Frwd decl:
+// Forward decl:
 template <class PARTICLETYPE, class BINTYPE>
 void KLF_loadBinFromParticle(
     BINTYPE& outBin,

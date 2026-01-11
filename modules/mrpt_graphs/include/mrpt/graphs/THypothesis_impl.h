@@ -41,9 +41,9 @@ void THypothesis<GRAPH_T>::getAsString(std::string* str, bool oneline /*=true*/)
   stringstream ss;
   if (!oneline)
   {  // multiline report
-    ss << "Hypothesis #" << id << endl;
-    ss << from << " => " << to << endl;
-    ss << edge << endl;
+    ss << "Hypothesis #" << id << "\n";
+    ss << from << " => " << to << "\n";
+    ss << edge << "\n";
   }
   else
   {

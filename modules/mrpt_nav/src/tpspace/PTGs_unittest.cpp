@@ -43,7 +43,7 @@ TEST(NavTests, PTGs_tests)
     const string sPTGName = cfg.read_string("PTG_UNIT_TESTS", format("PTG%u_Type", n), "", true);
     PTGs[n] = CParameterizedTrajectoryGenerator::CreatePTG(
         sPTGName, cfg, "PTG_UNIT_TESTS", format("PTG%u_", n));
-    EXPECT_TRUE(PTGs[n] != nullptr) << "Failed creating PTG #" << n << endl;
+    EXPECT_TRUE(PTGs[n] != nullptr) << "Failed creating PTG #" << n << "\n";
 
     try
     {
@@ -51,7 +51,7 @@ TEST(NavTests, PTGs_tests)
     }
     catch (const std::exception& e)
     {
-      GTEST_FAIL() << "Failed initializing PTG #" << n << endl << e.what() << endl;
+      GTEST_FAIL() << "Failed initializing PTG #" << n << endl << e.what() << "\n";
     }
   }
 
@@ -80,12 +80,12 @@ TEST(NavTests, PTGs_tests)
             any_good = true;
             double d = ptg->getPathDist(k, step);
             EXPECT_NEAR(d, dist, 0.05) << "Test: step <-> dist match\n PTG: " << sPTGDesc << endl
-                                       << "dist:" << dist << endl;
+                                       << "dist:" << dist << "\n";
             num_tests_run++;
           }
         }
         EXPECT_TRUE(any_good) << "Test: step <-> dist match\n PTG: " << sPTGDesc << endl
-                              << "dist:" << dist << endl;
+                              << "dist:" << dist << "\n";
       }
     }
 
@@ -115,18 +115,18 @@ TEST(NavTests, PTGs_tests)
             bool step_ok = ptg->getPathStepForDist(k, normalized_d * refDist, step);
             EXPECT_TRUE(step_ok) << "PTG: " << sPTGDesc << endl
                                  << "(tx,ty): " << tx << " " << ty << " k= " << k
-                                 << " normalized_d=" << normalized_d << endl;
+                                 << " normalized_d=" << normalized_d << "\n";
             if (step_ok)
             {
               const mrpt::math::TPose2D pose = ptg->getPathPose(k, step);
               EXPECT_NEAR(pose.x, tx, tolerance_dist)
                   << "Test: inverseMap_WS2TP\n PTG#" << n << ": " << sPTGDesc << endl
                   << "(tx,ty): " << tx << " " << ty << " k= " << k
-                  << " normalized_d=" << normalized_d << endl;
+                  << " normalized_d=" << normalized_d << "\n";
               EXPECT_NEAR(pose.y, ty, tolerance_dist)
                   << "Test: inverseMap_WS2TP\n PTG#" << n << ": " << sPTGDesc << endl
                   << "(tx,ty): " << tx << " " << ty << " k= " << k
-                  << " normalized_d=" << normalized_d << endl;
+                  << " normalized_d=" << normalized_d << "\n";
 
               if (std::abs(pose.x - tx) >= tolerance_dist ||
                   std::abs(pose.y - ty) >= tolerance_dist)
@@ -137,7 +137,7 @@ TEST(NavTests, PTGs_tests)
           }
         }
       }
-      EXPECT_TRUE(any_ok) << "PTG: " << sPTGDesc << endl;
+      EXPECT_TRUE(any_ok) << "PTG: " << sPTGDesc << "\n";
     }
 
     // TEST: TP_obstacles

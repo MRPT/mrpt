@@ -18,7 +18,7 @@ include(./cmake/script_jsoncpp.cmake REQUIRED)     # Check for jsoncpp
 
 
 # define lib:
-set(LIB_SRCS
+set(LIB_SOURCES
   src/CSerializable.cpp
   src/CArchive.cpp
   src/CMessage.cpp
@@ -26,7 +26,7 @@ set(LIB_SRCS
   src/CSchemeArchive.cpp
 )
 
-set(LIB_PUBLIC_HDRS
+set(LIB_PUBLIC_HEADERS
   include/mrpt/serialization/metaprogramming_serialization.h
   include/mrpt/serialization/optional_serialization.h
   include/mrpt/serialization/registerAllClasses.h
@@ -46,7 +46,7 @@ set(LIB_PUBLIC_HDRS
 
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
-  SOURCES ${LIB_SRCS} ${LIB_PUBLIC_HDRS}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_rtti
 #  PRIVATE_LINK_LIBRARIES

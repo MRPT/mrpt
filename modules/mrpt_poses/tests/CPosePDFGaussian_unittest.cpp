@@ -80,7 +80,7 @@ class PosePDFGaussTests : public ::testing::Test
         << "Numeric approximation of covariance: " << endl
         << y_cov << endl
         << "Returned covariance: " << endl
-        << pdf1_inv.cov << endl;
+        << pdf1_inv.cov << "\n";
   }
 };
 

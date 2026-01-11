@@ -71,7 +71,7 @@ DECLARE_OP_FUNCTION(op_externalize)
             string("\n. Select a different output path or "
                    "remove the directory."));
 
-      VERBOSE_COUT << "Creating directory: " << outDir << endl;
+      VERBOSE_COUT << "Creating directory: " << outDir << "\n";
 
       mrpt::system::createDirectory(outDir);
       if (!fileExists(outDir))

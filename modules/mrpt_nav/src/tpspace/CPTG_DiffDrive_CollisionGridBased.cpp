@@ -669,7 +669,7 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
     cout << endl
          << "[CPTG_DiffDrive_CollisionGridBased::initialize] Starting... "
             "*** THIS MAY TAKE A WHILE, BUT MUST BE COMPUTED ONLY ONCE!! **"
-         << endl;
+         << "\n";
 
   // Sanity checks:
   ASSERTMSG_(!m_robotShape.empty(), "Robot shape was not defined");
@@ -707,7 +707,9 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
   // Load the cached version, if possible
   if (loadColGridsFromFile(cacheFilename, m_robotShape))
   {
-    if (verbose) cout << "loaded from file OK" << endl;
+    if (verbose)
+      cout << "loaded from file OK"
+           << "\n";
   }
   else
   {

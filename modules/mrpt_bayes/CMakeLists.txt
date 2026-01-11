@@ -18,12 +18,12 @@ find_package(mrpt_math REQUIRED)
 
 
 # define lib:
-set(LIB_SRCS
+set(LIB_SOURCES
   src/CParticleFilter.cpp
   src/CParticleFilterCapable.cpp
 )
 
-set(LIB_PUBLIC_HDRS
+set(LIB_PUBLIC_HEADERS
   include/mrpt/bayes/CRejectionSamplingCapable.h
   include/mrpt/bayes/CKalmanFilterCapable.h
   include/mrpt/bayes/registerAllClasses.h
@@ -36,7 +36,7 @@ set(LIB_PUBLIC_HDRS
 
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
-  SOURCES ${LIB_SRCS} ${LIB_PUBLIC_HDRS}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_config
     mrpt::mrpt_math

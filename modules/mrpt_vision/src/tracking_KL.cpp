@@ -39,7 +39,6 @@ void CFeatureTracker_KL::trackFeatures_impl_templ(
 {
   MRPT_START
 
-#if MRPT_HAS_OPENCV
   const int window_width = extra_params.getOrDefault<int>("window_width", 15);
   const int window_height = extra_params.getOrDefault<int>("window_height", 15);
 
@@ -106,10 +105,6 @@ void CFeatureTracker_KL::trackFeatures_impl_templ(
     // In case it needs to rebuild a kd-tree or whatever
     featureList.mark_as_outdated();
   }
-
-#else
-  THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
-#endif
 
   MRPT_END
 }  // end trackFeatures

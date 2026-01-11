@@ -64,11 +64,11 @@ class Pose3DQuatTests : public ::testing::Test
 
     EXPECT_NEAR(0, (p1_c_p2.asVectorVal() - p_q1_c_q2.asVectorVal()).array().abs().sum(), 1e-5)
         << "p1_c_p2: " << p1_c_p2 << endl
-        << "q1_c_p2: " << p_q1_c_q2 << endl;
+        << "q1_c_p2: " << p_q1_c_q2 << "\n";
 
     EXPECT_NEAR(0, (p1_i_p2.asVectorVal() - p_q1_i_q2.asVectorVal()).array().abs().sum(), 1e-5)
         << "p1_i_p2: " << p1_i_p2 << endl
-        << "q1_i_p2: " << p_q1_i_q2 << endl;
+        << "q1_i_p2: " << p_q1_i_q2 << "\n";
 
     // Test + operator: trg new var
     {
@@ -113,7 +113,7 @@ class Pose3DQuatTests : public ::testing::Test
         << "q1: " << q1 << endl
         << "p: " << p << endl
         << "p1_plus_p: " << p1_plus_p << endl
-        << "q1_plus_p: " << q1_plus_p << endl;
+        << "q1_plus_p: " << q1_plus_p << "\n";
   }
 
   static void func_compose_point(
@@ -182,7 +182,7 @@ class Pose3DQuatTests : public ::testing::Test
         << "Implemented method: " << endl
         << df_dpoint << endl
         << "Error: " << endl
-        << df_dpoint.asEigen() - num_df_dpoint.asEigen() << endl;
+        << df_dpoint.asEigen() - num_df_dpoint.asEigen() << "\n";
 
     EXPECT_NEAR(0, (df_dpose.asEigen() - num_df_dpose.asEigen()).array().abs().sum(), 3e-3)
         << "q1: " << q1 << endl
@@ -192,7 +192,7 @@ class Pose3DQuatTests : public ::testing::Test
         << "Implemented method: " << endl
         << df_dpose.asEigen() << endl
         << "Error: " << endl
-        << df_dpose.asEigen() - num_df_dpose.asEigen() << endl;
+        << df_dpose.asEigen() - num_df_dpose.asEigen() << "\n";
   }
 
   void test_invComposePoint(
@@ -217,11 +217,11 @@ class Pose3DQuatTests : public ::testing::Test
 
     EXPECT_NEAR(0, (p_minus_p1.asVectorVal() - p_minus_q1.asVectorVal()).array().abs().sum(), 1e-5)
         << "p_minus_p1: " << p_minus_p1 << endl
-        << "p_minus_q1: " << p_minus_q1 << endl;
+        << "p_minus_q1: " << p_minus_q1 << "\n";
 
     EXPECT_NEAR(0, (p_rec.asVectorVal() - p.asVectorVal()).array().abs().sum(), 1e-5)
         << "p_rec: " << p_rec << endl
-        << "p: " << p << endl;
+        << "p: " << p << "\n";
   }
 
   static void func_inv_compose_point(
@@ -315,7 +315,7 @@ class Pose3DQuatTests : public ::testing::Test
         << "Implemented method: " << endl
         << df_dpoint.asEigen() << endl
         << "Error: " << endl
-        << df_dpoint - num_df_dpoint << endl;
+        << df_dpoint - num_df_dpoint << "\n";
 
     EXPECT_NEAR(0, (df_dpose.asEigen() - num_df_dpose.asEigen()).array().abs().sum(), 3e-3)
         << "q1: " << q1 << endl
@@ -327,7 +327,7 @@ class Pose3DQuatTests : public ::testing::Test
         << "Implemented method: " << endl
         << df_dpose.asEigen() << endl
         << "Error: " << endl
-        << df_dpose.asEigen() - num_df_dpose.asEigen() << endl;
+        << df_dpose.asEigen() - num_df_dpose.asEigen() << "\n";
   }
 
   void test_fromYPRAndBack(
@@ -348,12 +348,12 @@ class Pose3DQuatTests : public ::testing::Test
         << "p1.getHomogeneousMatrixVal<CMatrixDouble44>():\n"
         << p1.getHomogeneousMatrixVal<CMatrixDouble44>() << endl
         << "q1.getHomogeneousMatrixVal<CMatrixDouble44>():\n"
-        << q1.getHomogeneousMatrixVal<CMatrixDouble44>() << endl;
+        << q1.getHomogeneousMatrixVal<CMatrixDouble44>() << "\n";
 
     EXPECT_NEAR(0, (p1.asVectorVal() - p1r.asVectorVal()).array().abs().sum(), 1e-5)
         << "p1: " << p1 << endl
         << "q1: " << q1 << endl
-        << "p1r: " << p1r << endl;
+        << "p1r: " << p1r << "\n";
   }
 
   void test_unaryInverse(double x1, double y1, double z1, double yaw1, double pitch1, double roll1)
@@ -375,7 +375,7 @@ class Pose3DQuatTests : public ::testing::Test
         << "p1_inv.getHomogeneousMatrixVal<CMatrixDouble44>():\n"
         << p1_inv.getHomogeneousMatrixVal<CMatrixDouble44>() << endl
         << "q1_inv.getHomogeneousMatrixVal<CMatrixDouble44>():\n"
-        << q1_inv.getHomogeneousMatrixVal<CMatrixDouble44>() << endl;
+        << q1_inv.getHomogeneousMatrixVal<CMatrixDouble44>() << "\n";
   }
 
   void test_copy(double x1, double y1, double z1, double yaw1, double pitch1, double roll1)
@@ -396,7 +396,7 @@ class Pose3DQuatTests : public ::testing::Test
         << "q1.getHomogeneousMatrixVal<CMatrixDouble44>():\n"
         << q1.getHomogeneousMatrixVal<CMatrixDouble44>() << endl
         << "q2.getHomogeneousMatrixVal<CMatrixDouble44>():\n"
-        << q2.getHomogeneousMatrixVal<CMatrixDouble44>() << endl;
+        << q2.getHomogeneousMatrixVal<CMatrixDouble44>() << "\n";
   }
 
   void test_composeAndInvComposePoint(
@@ -548,7 +548,7 @@ class Pose3DQuatTests : public ::testing::Test
         << "Implemented method: " << endl
         << df_dpoint.asEigen() << endl
         << "Error: " << endl
-        << df_dpoint.asEigen() - num_df_dpoint.asEigen() << endl;
+        << df_dpoint.asEigen() - num_df_dpoint.asEigen() << "\n";
 
     EXPECT_NEAR(0, (df_dpose.asEigen() - num_df_dpose.asEigen()).array().abs().sum(), 3e-3)
         << "q1: " << q1 << endl
@@ -558,7 +558,7 @@ class Pose3DQuatTests : public ::testing::Test
         << "Implemented method: " << endl
         << df_dpose.asEigen() << endl
         << "Error: " << endl
-        << df_dpose.asEigen() - num_df_dpose.asEigen() << endl;
+        << df_dpose.asEigen() - num_df_dpose.asEigen() << "\n";
   }
 
   static void func_normalizeJacob(
@@ -609,7 +609,7 @@ class Pose3DQuatTests : public ::testing::Test
         << "Implemented method: " << endl
         << df_dpose.asEigen() << endl
         << "Error: " << endl
-        << df_dpose.asEigen() - num_df_dpose.asEigen() << endl;
+        << df_dpose.asEigen() - num_df_dpose.asEigen() << "\n";
   }
 };
 

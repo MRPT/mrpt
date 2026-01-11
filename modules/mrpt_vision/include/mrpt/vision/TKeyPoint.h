@@ -60,12 +60,12 @@ struct TKeyPoint_templ
   /** Constructor that only sets the pt.{x,y} values, leaving all other values
    * to *undefined values*. */
   template <typename COORD_TYPE>
-  inline TKeyPoint_templ(const COORD_TYPE x, const COORD_TYPE y) : pt(x, y)
+  TKeyPoint_templ(const COORD_TYPE x, const COORD_TYPE y) : pt(x, y)
   {
   }
 
   /** Default constructor, leaves all fields uninitialized */
-  inline TKeyPoint_templ() = default;
+  TKeyPoint_templ() = default;
   template <typename OTHER_TKeyPoint>
   explicit TKeyPoint_templ(const OTHER_TKeyPoint& o) :
       pt(o.pt.x, o.pt.y),
@@ -94,7 +94,7 @@ struct TKeyPointTraits<TKeyPoint>
 {
   using coord_t = int;
 
-  static inline coord_t f2coord(float f) { return mrpt::round(f); }
+  static coord_t f2coord(float f) { return mrpt::round(f); }
 };
 
 template <>
@@ -102,7 +102,7 @@ struct TKeyPointTraits<TKeyPointf>
 {
   using coord_t = float;
 
-  static inline coord_t f2coord(float f) { return f; }
+  static coord_t f2coord(float f) { return f; }
 };
 
 /** A list of image features using the structure TKeyPoint for each feature
@@ -127,7 +127,10 @@ struct TKeyPointList_templ
     if (this->empty()) return 0;
     TFeatureID maxID = m_feats[0].ID;
     size_t N = m_feats.size() - 1;
-    for (; N; --N) mrpt::keep_max(maxID, m_feats[N].ID);
+    for (; N; --N)
+    {
+      mrpt::keep_max(maxID, m_feats[N].ID);
+    }
     return maxID;
   }
 

@@ -1041,11 +1041,11 @@ void CGraphSlamEngine<GRAPH_T>::getParamsAsString(std::string* params_out) const
          << std::endl;
 
   ss_out << "Enable curr. position viewport  = " << (m_enable_curr_pos_viewport ? "TRUE" : "FALSE")
-         << endl;
+         << "\n";
   ss_out << "Enable range img viewport       = " << (m_enable_range_viewport ? "TRUE" : "FALSE")
-         << endl;
+         << "\n";
   ss_out << "Enable intensity img viewport   = " << (m_enable_intensity_viewport ? "TRUE" : "FALSE")
-         << endl;
+         << "\n";
 
   ss_out << "-----------------------------------------------------------" << std::endl;
   ss_out << std::endl;
@@ -1491,14 +1491,16 @@ void CGraphSlamEngine<GRAPH_T>::alignOpticalWithMRPTFrame()
   CMatrixDouble rotx(3, 3, tmpx);
 
   stringstream ss_out;
-  ss_out << "\nConstructing the rotation matrix for the GroundTruth Data..." << endl;
+  ss_out << "\nConstructing the rotation matrix for the GroundTruth Data..."
+         << "\n";
   m_rot_TUM_to_MRPT = rotz * roty * rotx;
 
-  ss_out << "Rotation matrices for optical=>MRPT transformation" << endl;
-  ss_out << "rotz: " << endl << rotz << endl;
-  ss_out << "roty: " << endl << roty << endl;
-  ss_out << "rotx: " << endl << rotx << endl;
-  ss_out << "Full rotation matrix: " << endl << m_rot_TUM_to_MRPT << endl;
+  ss_out << "Rotation matrices for optical=>MRPT transformation"
+         << "\n";
+  ss_out << "rotz: " << endl << rotz << "\n";
+  ss_out << "roty: " << endl << roty << "\n";
+  ss_out << "rotx: " << endl << rotx << "\n";
+  ss_out << "Full rotation matrix: " << endl << m_rot_TUM_to_MRPT << "\n";
 
   MRPT_LOG_DEBUG_STREAM(ss_out);
 

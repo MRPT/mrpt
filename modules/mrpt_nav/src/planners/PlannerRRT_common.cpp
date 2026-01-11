@@ -200,15 +200,16 @@ void PlannerTPS_VirtualBase::spaceTransformer(
   }
   catch (const std::exception& e)
   {
-    cerr << "[PT_RRT::SpaceTransformer] Exception:" << endl;
-    cerr << e.what() << endl;
+    cerr << "[PT_RRT::SpaceTransformer] Exception:"
+         << "\n";
+    cerr << e.what() << "\n";
   }
   catch (...)
   {
     cerr << "\n[PT_RRT::SpaceTransformer] Unexpected exception!:\n";
     cerr << format("*in_PTG = %p\n", (void*)in_PTG);
     if (in_PTG) cerr << format("PTG = %s\n", in_PTG->getDescription().c_str());
-    cerr << endl;
+    cerr << "\n";
   }
 }
 
@@ -251,14 +252,15 @@ void PlannerTPS_VirtualBase::spaceTransformerOneDirectionOnly(
   }
   catch (const std::exception& e)
   {
-    cerr << "[PT_RRT::SpaceTransformer] Exception:" << endl;
-    cerr << e.what() << endl;
+    cerr << "[PT_RRT::SpaceTransformer] Exception:"
+         << "\n";
+    cerr << e.what() << "\n";
   }
   catch (...)
   {
     cerr << "\n[PT_RRT::SpaceTransformer] Unexpected exception!:\n";
     cerr << format("*in_PTG = %p\n", (void*)in_PTG);
     if (in_PTG) cerr << format("PTG = %s\n", in_PTG->getDescription().c_str());
-    cerr << endl;
+    cerr << "\n";
   }
 }

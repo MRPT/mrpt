@@ -51,7 +51,8 @@ CStereoGrabber_Bumblebee_libdc1394::CStereoGrabber_Bumblebee_libdc1394(
   m_firewire_capture = new CImageGrabber_dc1394(cameraGUID, cameraUnit, opt1394);
 
   if (!m_firewire_capture->isOpen())
-    cerr << "[CStereoGrabber_Bumblebee] The camera couldn't be open" << endl;
+    cerr << "[CStereoGrabber_Bumblebee] The camera couldn't be open"
+         << "\n";
 
   MRPT_TRY_END
 }
@@ -76,7 +77,8 @@ bool CStereoGrabber_Bumblebee_libdc1394::getStereoObservation(
 {
   if (!m_firewire_capture->isOpen())
   {
-    cerr << "[CStereoGrabber_Bumblebee] The camera couldn't be open" << endl;
+    cerr << "[CStereoGrabber_Bumblebee] The camera couldn't be open"
+         << "\n";
     return false;
   }
 

@@ -31,30 +31,28 @@ using namespace mrpt::io;
 using namespace mrpt::serialization;
 using namespace std;
 
-#define TEST_CLASS_MOVE_COPY_CTORS(_classname) template class mrpt::CTraitsTest<_classname>
-
-TEST_CLASS_MOVE_COPY_CTORS(CBeacon);
-TEST_CLASS_MOVE_COPY_CTORS(CBeaconMap);
-TEST_CLASS_MOVE_COPY_CTORS(CGasConcentrationGridMap2D);
-TEST_CLASS_MOVE_COPY_CTORS(CWirelessPowerGridMap2D);
-TEST_CLASS_MOVE_COPY_CTORS(CHeightGridMap2D);
-TEST_CLASS_MOVE_COPY_CTORS(CReflectivityGridMap2D);
-TEST_CLASS_MOVE_COPY_CTORS(COccupancyGridMap2D);
-TEST_CLASS_MOVE_COPY_CTORS(COccupancyGridMap3D);
-TEST_CLASS_MOVE_COPY_CTORS(CSimplePointsMap);
-TEST_CLASS_MOVE_COPY_CTORS(CGenericPointsMap);
-TEST_CLASS_MOVE_COPY_CTORS(CRandomFieldGridMap3D);
-TEST_CLASS_MOVE_COPY_CTORS(COctoMap);
-TEST_CLASS_MOVE_COPY_CTORS(CColouredOctoMap);
-TEST_CLASS_MOVE_COPY_CTORS(CVoxelMap);
-TEST_CLASS_MOVE_COPY_CTORS(CVoxelMapRGB);
-TEST_CLASS_MOVE_COPY_CTORS(CSinCosLookUpTableFor2DScans);
+template class mrpt::CTraitsTest<CBeacon>;
+template class mrpt::CTraitsTest<CBeaconMap>;
+template class mrpt::CTraitsTest<CGasConcentrationGridMap2D>;
+template class mrpt::CTraitsTest<CWirelessPowerGridMap2D>;
+template class mrpt::CTraitsTest<CHeightGridMap2D>;
+template class mrpt::CTraitsTest<CReflectivityGridMap2D>;
+template class mrpt::CTraitsTest<COccupancyGridMap2D>;
+template class mrpt::CTraitsTest<COccupancyGridMap3D>;
+template class mrpt::CTraitsTest<CSimplePointsMap>;
+template class mrpt::CTraitsTest<CGenericPointsMap>;
+template class mrpt::CTraitsTest<CRandomFieldGridMap3D>;
+template class mrpt::CTraitsTest<COctoMap>;
+template class mrpt::CTraitsTest<CColouredOctoMap>;
+template class mrpt::CTraitsTest<CVoxelMap>;
+template class mrpt::CTraitsTest<CVoxelMapRGB>;
+template class mrpt::CTraitsTest<CSinCosLookUpTableFor2DScans>;
 // obs:
-TEST_CLASS_MOVE_COPY_CTORS(CObservationPointCloud);
-TEST_CLASS_MOVE_COPY_CTORS(CObservationRotatingScan);
+template class mrpt::CTraitsTest<CObservationPointCloud>;
+template class mrpt::CTraitsTest<CObservationRotatingScan>;
 // opengl:
-TEST_CLASS_MOVE_COPY_CTORS(CAngularObservationMesh);
-TEST_CLASS_MOVE_COPY_CTORS(CPlanarLaserScan);
+template class mrpt::CTraitsTest<CAngularObservationMesh>;
+template class mrpt::CTraitsTest<CPlanarLaserScan>;
 
 // Create a set of classes, then serialize and deserialize to test possible
 // bugs:
@@ -110,7 +108,7 @@ TEST(SerializeTestMaps, WriteReadToMem)
     {
       GTEST_FAIL() << "Exception during serialization test for class '" << classInfo->className
                    << "':\n"
-                   << e.what() << endl;
+                   << e.what() << "\n";
     }
   }
 }

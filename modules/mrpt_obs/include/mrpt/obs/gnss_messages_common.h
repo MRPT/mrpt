@@ -53,10 +53,10 @@ struct gnss_message
    * factory). Launches an exception upon error */
   static gnss_message* readAndBuildFromStream(mrpt::serialization::CArchive& in);
   /** Creates message \return nullptr on unknown msg type */
-  static gnss_message* Factory(const gnss_message_type_t msg_id);
+  static gnss_message* Factory(gnss_message_type_t msg_id);
   /** Returns true if Factory() has a registered constructor for this msg type
    */
-  static bool FactoryKnowsMsgType(const gnss_message_type_t msg_id);
+  static bool FactoryKnowsMsgType(gnss_message_type_t msg_id);
 
   /** Dumps the contents of the observation in a human-readable form to a
    * given output stream \sa dumpToConsole() */
@@ -79,7 +79,7 @@ struct gnss_message
    * implemented for this message type */
   virtual bool getAllFieldValues([[maybe_unused]] std::ostream& o) const { return false; }
   /** Returns "NMEA_GGA", etc. */
-  const std::string& getMessageTypeAsString() const;
+  [[nodiscard]] const std::string& getMessageTypeAsString() const;
   virtual ~gnss_message() = default;
 
  protected:

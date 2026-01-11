@@ -566,7 +566,7 @@ void CLoopCloserERD<GRAPH_T>::evalPWConsistenciesMatrix(
   bool valid_lambda_ratio = this->computeDominantEigenVector(consist_matrix, &u, false);
   if (!valid_lambda_ratio) return;
 
-  // cout << "Dominant eigenvector: " << u.transpose() << endl;
+  // cout << "Dominant eigenvector: " << u.transpose() << "\n";
 
   // discretize the indicator vector - maximize the dot product of
   // w_unit .* u
@@ -594,10 +594,10 @@ void CLoopCloserERD<GRAPH_T>::evalPWConsistenciesMatrix(
       ss << " ==>  REJECT";
       w[i] = 0;  // revert the change
     }
-    ss << endl;
+    ss << "\n";
     // MRPT_LOG_DEBUG_STREAM(ss.str());
   }
-  cout << "Outcome of discretization: " << w.transpose() << endl;
+  cout << "Outcome of discretization: " << w.transpose() << "\n";
   // mrpt::system::pause();
 
   // Current hypothesis is to be registered.
@@ -1136,9 +1136,9 @@ double CLoopCloserERD<GRAPH_T>::generatePWConsistencyElement(
   double exponent = -mrpt::math::multiply_HtCH_scalar(T, cov_mat);
   double consistency_elem = exp(exponent);
 
-  // cout << "T = " << endl << T << endl;
-  // cout << "exponent = " << exponent << endl;
-  // cout << "consistency_elem = " << consistency_elem << endl;
+  // cout << "T = " << endl << T << "\n";
+  // cout << "exponent = " << exponent << "\n";
+  // cout << "consistency_elem = " << consistency_elem << "\n";
   // mrpt::system::pause();
 
   return consistency_elem;
@@ -1190,7 +1190,7 @@ mrpt::graphs::detail::THypothesis<GRAPH_T>* CLoopCloserERD<GRAPH_T>::findHypotBy
     if ((*v_cit)->hasEnds(from, to))
     {
       // cout << "findHypotByEnds: Found hypot " << from
-      //<< " => " << to << " : " << (*v_cit)->getAsString() << endl;
+      //<< " => " << to << " : " << (*v_cit)->getAsString() << "\n";
       return *v_cit;
     }
   }
@@ -1260,11 +1260,12 @@ void CLoopCloserERD<GRAPH_T>::execDijkstraProjection(
   ss_debug << "Executing Dijkstra Projection: " << starting_node << " => ";
   if (ending_node == mrpt::graphs::INVALID_NODEID)
   {
-    ss_debug << "..." << endl;
+    ss_debug << "..."
+             << "\n";
   }
   else
   {
-    ss_debug << ending_node << endl;
+    ss_debug << ending_node << "\n";
   }
 
   if (this->m_graph->nodeCount() < m_dijkstra_node_count_thresh)
@@ -1298,13 +1299,13 @@ void CLoopCloserERD<GRAPH_T>::execDijkstraProjection(
 
   //// TODO Remove these - >>>>>>>>>>>>>>>>>>>>
   //// printing the pool for verification
-  // cout << "Pool of Paths: " << endl;
+  // cout << "Pool of Paths: " << "\n";
   // for (typename std::set<path_t*>::const_iterator it =
   // pool_of_paths.begin();
   // it != pool_of_paths.end(); ++it) {
   // printSTLContainer((*it)->nodes_traversed);
   //}
-  // cout << "------ Done with the starting node ... ------" << endl;
+  // cout << "------ Done with the starting node ... ------" << "\n";
   // int iters = 0;
   //// TODO Remove these - <<<<<<<<<<<<<<<<<<<<< vvvUNCOMMENT BELOW AS WELLvvv
 
@@ -1337,23 +1338,23 @@ void CLoopCloserERD<GRAPH_T>::execDijkstraProjection(
 
     //// TODO Remove these - >>>>>>>>>>>>>>>>>>>> ^^^UNCOMMENT ABOVE AS
     /// WELL^^^
-    // cout << iters << " " << std::string(40, '>') << endl;
-    // cout << "current path Destination: " << dest << endl;
+    // cout << iters << " " << std::string(40, '>') << "\n";
+    // cout << "current path Destination: " << dest << "\n";
     //// printing the pool for verification
-    // cout << "Pool of Paths: " << endl;
+    // cout << "Pool of Paths: " << "\n";
     // for (typename std::set<path_t*>::const_iterator
     // it = pool_of_paths.begin();
     // it != pool_of_paths.end(); ++it) {
     // printSTLContainer((*it)->nodes_traversed);
     //}
-    // cout << "Nodes visited: " << endl;
+    // cout << "Nodes visited: " << "\n";
     // std::vector<int> tmp_vec;
     // for (int i = 0; i != visited_nodes.size(); ++i) {
     // tmp_vec.push_back(i);
     //}
-    // printSTLContainer(tmp_vec); cout << endl; // indices of numbers
+    // printSTLContainer(tmp_vec); cout << "\n"; // indices of numbers
     // printSTLContainer(visited_nodes);         // actual flags
-    // cout << std::string(40, '<') << " " << iters++ << endl;
+    // cout << std::string(40, '<') << " " << iters++ << "\n";
     // mrpt::system::pause();
     //// TODO Remove these - <<<<<<<<<<<<<<<<<<<<<
 
@@ -1448,7 +1449,7 @@ void CLoopCloserERD<GRAPH_T>::getMinUncertaintyPath(
           from, to));
   ASSERTDEB_(path_between_nodes);
 
-  // cout << "getMinUncertaintyPath: " << from << " => " << to << endl;
+  // cout << "getMinUncertaintyPath: " << from << " => " << to << "\n";
 
   // don't add to the path_between_nodes, just fill it in afterwards
   path_between_nodes->clear();
@@ -1459,11 +1460,11 @@ void CLoopCloserERD<GRAPH_T>::getMinUncertaintyPath(
   // forward edges from -> to
   std::pair<edges_citerator, edges_citerator> fwd_edges_pair = this->m_graph->getEdges(from, to);
 
-  // cout << "Forward edges: " << endl;
+  // cout << "Forward edges: " << "\n";
   // for (edges_citerator e_it = fwd_edges_pair.first; e_it !=
   // fwd_edges_pair.second;
   //++e_it) {
-  // cout << e_it->second << endl;
+  // cout << e_it->second << "\n";
   //}
 
   for (auto edges_it = fwd_edges_pair.first; edges_it != fwd_edges_pair.second; ++edges_it)
@@ -1497,11 +1498,11 @@ void CLoopCloserERD<GRAPH_T>::getMinUncertaintyPath(
   // backwards edges to -> from
   std::pair<edges_citerator, edges_citerator> bwd_edges_pair = this->m_graph->getEdges(to, from);
 
-  // cout << "Backwards edges: " << endl;
+  // cout << "Backwards edges: " << "\n";
   // for (edges_citerator e_it = bwd_edges_pair.first; e_it !=
   // bwd_edges_pair.second;
   //++e_it) {
-  // cout << e_it->second << endl;
+  // cout << e_it->second << "\n";
   //}
 
   for (auto edges_it = bwd_edges_pair.first; edges_it != bwd_edges_pair.second; ++edges_it)
@@ -1602,7 +1603,7 @@ bool CLoopCloserERD<GRAPH_T>::mahalanobisDistanceOdometryToICPEdge(
   // Estim.: " << initial_estim
   //<< "|\tMahalanobis Dist: " << mahal_distance << "|\tThresh.: " <<
   // threshold
-  //<< " => " << (accept_edge? "ACCEPT": "REJECT") << endl;
+  //<< " => " << (accept_edge? "ACCEPT": "REJECT") << "\n";
 
   return accept_edge;
   MRPT_END
@@ -2228,15 +2229,15 @@ void CLoopCloserERD<GRAPH_T>::printParams() const
 
   cout << "------------------[Pair-wise Consistency of ICP Edges - "
           "Registration Procedure Summary]------------------"
-       << endl;
+       << "\n";
 
   parent_t::printParams();
   m_partitioner.options.dumpToConsole();
   m_laser_params.dumpToConsole();
   m_lc_params.dumpToConsole();
 
-  cout << "Scan-matching ICP Constraint factor: " << m_consec_icp_constraint_factor << endl;
-  cout << "Loop-closure ICP Constraint factor:  " << m_lc_icp_constraint_factor << endl;
+  cout << "Scan-matching ICP Constraint factor: " << m_consec_icp_constraint_factor << "\n";
+  cout << "Loop-closure ICP Constraint factor:  " << m_lc_icp_constraint_factor << "\n";
 
   MRPT_LOG_DEBUG_STREAM("Printed the relevant parameters");
   MRPT_END
@@ -2433,16 +2434,16 @@ void CLoopCloserERD<GRAPH_T>::TLoopClosureParams::dumpToTextStream(std::ostream&
   using namespace std;
 
   stringstream ss;
-  ss << "Min. node difference for loop closure                 = " << LC_min_nodeid_diff << endl;
-  ss << "Remote NodeIDs to consider the potential loop closure = " << LC_min_remote_nodes << endl;
+  ss << "Min. node difference for loop closure                 = " << LC_min_nodeid_diff << "\n";
+  ss << "Remote NodeIDs to consider the potential loop closure = " << LC_min_remote_nodes << "\n";
   ss << "Min EigenValues ratio for accepting a hypotheses set  = " << LC_eigenvalues_ratio_thresh
-     << endl;
+     << "\n";
   ss << "Check only current node's partition for loop closures = "
-     << (LC_check_curr_partition_only ? "TRUE" : "FALSE") << endl;
+     << (LC_check_curr_partition_only ? "TRUE" : "FALSE") << "\n";
   ss << "New registered nodes required for full partitioning   = " << full_partition_per_nodes
-     << endl;
+     << "\n";
   ss << "Visualize map partitions                              = "
-     << (visualize_map_partitions ? "TRUE" : "FALSE") << endl;
+     << (visualize_map_partitions ? "TRUE" : "FALSE") << "\n";
 
   out << mrpt::format("%s", ss.str().c_str());
 

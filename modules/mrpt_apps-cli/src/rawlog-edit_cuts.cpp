@@ -58,14 +58,14 @@ DECLARE_OP_FUNCTION(op_cut)
 
       if (verbose)
       {
-        if (has_from_index) cout << "Using cut filter: from-index=" << m_from_index << endl;
-        if (has_to_index) cout << "Using cut filter:   to-index=" << m_to_index << endl;
+        if (has_from_index) cout << "Using cut filter: from-index=" << m_from_index << "\n";
+        if (has_to_index) cout << "Using cut filter:   to-index=" << m_to_index << "\n";
         if (has_from_time)
           cout << "Using cut filter: from-time ="
-               << dateTimeLocalToString(mrpt::Clock::fromDouble(m_from_time)) << endl;
+               << dateTimeLocalToString(mrpt::Clock::fromDouble(m_from_time)) << "\n";
         if (has_to_time)
           cout << "Using cut filter:   to-time ="
-               << dateTimeLocalToString(mrpt::Clock::fromDouble(m_to_time)) << endl;
+               << dateTimeLocalToString(mrpt::Clock::fromDouble(m_to_time)) << "\n";
       }
     }
 

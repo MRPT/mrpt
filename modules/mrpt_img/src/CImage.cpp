@@ -652,6 +652,19 @@ void CImage::scaleDouble(CImage& out_image, TInterpolationMethod interp) const
   scaleImage(out_image, m_state->width * 2, m_state->height * 2, interp);
 }
 
+void CImage::setPixelGray(const TPixelCoord& pt, const uint8_t& grayLevel)
+{
+  makeSureImageIsLoaded();
+  if (pt.x < 0 || pt.y < 0 || pt.y >= m_state->height || pt.x >= m_state->width)
+  {
+    return;  // Out of bounds
+  }
+  ASSERT_(!isColor());
+  ASSERT_(getPixelDepth() == PixelDepth::D8U);
+
+  at<uint8_t>(pt.x, pt.y, 0) = grayLevel;
+}
+
 void CImage::setPixel(const TPixelCoord& pt, const mrpt::img::TColor& color)
 {
   makeSureImageIsLoaded();

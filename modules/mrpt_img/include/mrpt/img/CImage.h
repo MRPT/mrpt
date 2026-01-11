@@ -243,6 +243,9 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
    */
   void setPixel(const TPixelCoord& pt, const mrpt::img::TColor& color) override;
 
+  /// \overload For usage on 1-channel 8-depth images only, more efficient than setPixel()
+  void setPixelGray(const TPixelCoord& pt, const uint8_t& grayLevel);
+
   // See CCanvas docs
   void drawImage(const TPixelCoord& pt, const mrpt::img::CImage& img) override;
 

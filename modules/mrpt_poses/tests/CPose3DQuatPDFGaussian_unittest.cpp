@@ -81,7 +81,7 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
               << "p2ypr : " << endl
               << p2ypr << endl
               << "USE_SUT_QUAT2EULER_CONVERSION: "
-              << mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION() << endl;
+              << mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION() << "\n";
 
     EXPECT_NEAR(0, (p2ypr.cov - p1ypr.cov).array().abs().maxCoeff(), usesSUT ? 1e-2 : 1e-6)
         << onFailMsg.str();
@@ -165,7 +165,7 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
         << "Numeric approximation of covariance: " << endl
         << y_cov << endl
         << "Returned covariance: " << endl
-        << p7_comp.cov << endl;
+        << p7_comp.cov << "\n";
   }
 
   static void func_inverse(
@@ -235,7 +235,7 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
         << "Implemented method: " << endl
         << df_dx << endl
         << "Error: " << endl
-        << df_dx - num_df_dx << endl;
+        << df_dx - num_df_dx << "\n";
 
     EXPECT_NEAR(0, (df_du - num_df_du).array().abs().maxCoeff(), 1e-6)
         << "q1: " << q1 << endl
@@ -245,7 +245,7 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
         << "Implemented method: " << endl
         << df_du << endl
         << "Error: " << endl
-        << df_du - num_df_du << endl;
+        << df_du - num_df_du << "\n";
   }
 
   void testInverse(
@@ -281,7 +281,7 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
         << "Returned covariance: " << endl
         << p7_inv.cov << endl
         << "Error: " << endl
-        << y_cov - p7_inv.cov << endl;
+        << y_cov - p7_inv.cov << "\n";
   }
 
   void testPoseInverseComposition(
@@ -331,7 +331,7 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
         << "Numeric approximation of covariance: " << endl
         << y_cov << endl
         << "Returned covariance: " << endl
-        << p7_comp.cov << endl;
+        << p7_comp.cov << "\n";
   }
 
   void testInverseCompositionCrossCorrelation(
@@ -368,7 +368,7 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
         << "Computed displacement covariance: " << endl
         << p7_displacement_computed.cov << endl
         << "True displacement covariance: " << endl
-        << p7_displacement.cov << endl;
+        << p7_displacement.cov << "\n";
   }
 
   void testChangeCoordsRef(
@@ -398,12 +398,12 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
     // Compare:
     EXPECT_NEAR(0, (p7_new_base_pdf.cov - p7pdf1.cov).array().abs().maxCoeff(), 1e-2)
         << "p1 mean: " << p7pdf1.mean << endl
-        << "new_base: " << new_base << endl;
+        << "new_base: " << new_base << "\n";
     EXPECT_NEAR(
         0, (p7_new_base_pdf.mean.asVectorVal() - p7pdf1.mean.asVectorVal()).array().abs().mean(),
         1e-2)
         << "p1 mean: " << p7pdf1.mean << endl
-        << "new_base: " << new_base << endl;
+        << "new_base: " << new_base << "\n";
   }
 };
 

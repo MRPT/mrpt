@@ -36,38 +36,35 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
 #endif
 
   const mrpt::rtti::TRuntimeClassId* lstClasses[] = {
-    CLASS_ID(CAxis),
-    CLASS_ID(CBox),
-    CLASS_ID(CFrustum),
-    CLASS_ID(CDisk),
-    CLASS_ID(CGridPlaneXY),
-#if MRPT_HAS_OPENCV  // These classes need CImage serialization
-    CLASS_ID(CMesh),
-    CLASS_ID(CTexturedPlane),
-    CLASS_ID(CSkyBox),
-#endif
-    CLASS_ID(Viewport),
-    CLASS_ID(CPointCloud),
-    CLASS_ID(CPointCloudColoured),
-    CLASS_ID(CSetOfLines),
-    CLASS_ID(CSetOfTriangles),
-    CLASS_ID(CSphere),
-    CLASS_ID(CCylinder),
-    CLASS_ID(CPolyhedron),
-    CLASS_ID(CArrow),
-    CLASS_ID(CCamera),
-    CLASS_ID(CEllipsoid3D),
-    CLASS_ID(CGridPlaneXZ),
-    CLASS_ID(Scene),
-    CLASS_ID(CSetOfObjects),
-    CLASS_ID(CSimpleLine),
-    CLASS_ID(CText),
-    CLASS_ID(CText3D),
-    CLASS_ID(CEllipsoidInverseDepth2D),
-    CLASS_ID(CEllipsoidInverseDepth3D),
-    CLASS_ID(CEllipsoidRangeBearing2D),
-    CLASS_ID(COctoMapVoxels)
-  };
+      CLASS_ID(CAxis),
+      CLASS_ID(CBox),
+      CLASS_ID(CFrustum),
+      CLASS_ID(CDisk),
+      CLASS_ID(CGridPlaneXY),
+      CLASS_ID(CMesh),
+      CLASS_ID(CTexturedPlane),
+      CLASS_ID(CSkyBox),
+      CLASS_ID(Viewport),
+      CLASS_ID(CPointCloud),
+      CLASS_ID(CPointCloudColoured),
+      CLASS_ID(CSetOfLines),
+      CLASS_ID(CSetOfTriangles),
+      CLASS_ID(CSphere),
+      CLASS_ID(CCylinder),
+      CLASS_ID(CPolyhedron),
+      CLASS_ID(CArrow),
+      CLASS_ID(CCamera),
+      CLASS_ID(CEllipsoid3D),
+      CLASS_ID(CGridPlaneXZ),
+      CLASS_ID(Scene),
+      CLASS_ID(CSetOfObjects),
+      CLASS_ID(CSimpleLine),
+      CLASS_ID(CText),
+      CLASS_ID(CText3D),
+      CLASS_ID(CEllipsoidInverseDepth2D),
+      CLASS_ID(CEllipsoidInverseDepth3D),
+      CLASS_ID(CEllipsoidRangeBearing2D),
+      CLASS_ID(COctoMapVoxels)};
 
   for (auto& cl : lstClasses)
   {
@@ -87,7 +84,7 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
     catch (const std::exception& e)
     {
       GTEST_FAIL() << "Exception during serialization test for class '" << cl->className << "':\n"
-                   << e.what() << endl;
+                   << e.what() << "\n";
     }
   }
 }

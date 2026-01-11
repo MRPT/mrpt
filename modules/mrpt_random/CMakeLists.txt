@@ -18,12 +18,12 @@ find_package(mrpt_common REQUIRED)
 #...
 
 # define lib:
-set(LIB_SRCS
+set(LIB_SOURCES
   src/RandomGenerator.cpp
   tests/random_unittest.cpp
 )
 
-set(LIB_PUBLIC_HDRS
+set(LIB_PUBLIC_HEADERS
   include/mrpt/random.h
   include/mrpt/random/RandomGenerators.h
   include/mrpt/random/random_shuffle.h
@@ -32,7 +32,7 @@ set(LIB_PUBLIC_HDRS
 
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
-  SOURCES ${LIB_SRCS} ${LIB_PUBLIC_HDRS}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
 #  PUBLIC_LINK_LIBRARIES
 #   xxx
 #  PRIVATE_LINK_LIBRARIES

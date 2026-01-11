@@ -113,7 +113,7 @@ void CObservationIMU::getDescriptionAsText(std::ostream& o) const
   ;
   CObservation::getDescriptionAsText(o);
 
-  o << "Sensor pose on the robot: " << sensorPose << endl;
+  o << "Sensor pose on the robot: " << sensorPose << "\n";
 
   o << format(
       "Orientation (degrees): (yaw,pitch,roll)=(%.06f, %.06f, %.06f)\n\n",

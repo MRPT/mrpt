@@ -421,7 +421,7 @@ void CSerialPort::setConfig(
 
     if (actual_rate != baudRate)
       cout << "[CSerialPort::setConfig] Setting custom baud rate to " << actual_rate
-           << ", the closer I can make to " << baudRate << endl;
+           << ", the closer I can make to " << baudRate << "\n";
 #else
     THROW_EXCEPTION("Custom serial port baud rates require linux/serial.h");
 #endif
@@ -686,7 +686,7 @@ size_t CSerialPort::Read(void* Buffer, size_t Count)
 
       if ((nRead = ::read(hCOM, ((char*)Buffer) + alreadyRead, nToRead)) < 0)
       {
-        cerr << "[CSerialPort] read() returned " << nRead << ", errno=" << errno << endl;
+        cerr << "[CSerialPort] read() returned " << nRead << ", errno=" << errno << "\n";
       }
       else
       {
@@ -709,7 +709,7 @@ size_t CSerialPort::Read(void* Buffer, size_t Count)
     if (nRead > 0) leftTime = max(leftTime, m_interBytesTimeout_ms);
   }
 
-  //    cout << "READ DONE: "<< alreadyRead << endl;
+  //    cout << "READ DONE: "<< alreadyRead << "\n";
   return alreadyRead;
 #endif
   MRPT_END
@@ -783,7 +783,8 @@ std::string CSerialPort::ReadString(
       char buf[1];
       if ((nRead = ::read(hCOM, buf, 1)) < 0)
       {
-        cerr << "[CSerialPort] Error reading from port..." << endl;
+        cerr << "[CSerialPort] Error reading from port..."
+             << "\n";
       }
       if (nRead)
       {  // Append to string, if it's not a control char:
@@ -838,7 +839,7 @@ size_t CSerialPort::Write(const void* Buffer, size_t Count)
         hCOM, reinterpret_cast<const char*>(Buffer) + total_bytes_written,
         Count - total_bytes_written);
     // cout << "wr: " << num_of_bytes_written << " tot: " <<
-    // total_bytes_written << " of " << Count << " err: " << errno << endl;
+    // total_bytes_written << " of " << Count << " err: " << errno << "\n";
     if (num_of_bytes_written > 0) total_bytes_written += num_of_bytes_written;
 
     if (num_of_bytes_written < (int)Count)

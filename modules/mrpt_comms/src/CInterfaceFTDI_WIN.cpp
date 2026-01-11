@@ -447,7 +447,7 @@ std::ostream& mrpt::comms::operator<<(std::ostream& o, const TFTDIDevice& d)
     << "FTDI serial             : " << d.ftdi_serial << endl
     << "USB ID (Vendor/Product) : " << format("%04X / %04X", d.usb_idVendor, d.usb_idProduct)
     << endl
-    << "USB serial              : " << d.usb_serialNumber << endl;
+    << "USB serial              : " << d.usb_serialNumber << "\n";
 
   return o;
 }

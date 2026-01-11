@@ -51,7 +51,7 @@ TEST(NavTests, Serialization_WriteReadToMem)
     catch (const std::exception& e)
     {
       GTEST_FAIL() << "Exception during serialization test for class '" << cl->className << "':\n"
-                   << e.what() << endl;
+                   << e.what() << "\n";
     }
   }
 }
@@ -75,7 +75,7 @@ TEST(SerializeTestObs, WriteReadToOctectVectors)
     catch (const std::exception& e)
     {
       GTEST_FAIL() << "Exception during serialization test for class '" << cl->className << "':\n"
-                   << e.what() << endl;
+                   << e.what() << "\n";
     }
   }
 }
@@ -104,6 +104,6 @@ TEST(NavTests, NavLogLoadFromTestFile)
   }
   catch (const std::exception& e)
   {
-    FAIL() << "Failed to parse stored navlog. Exception was:\n" << e.what() << endl;
+    FAIL() << "Failed to parse stored navlog. Exception was:\n" << e.what() << "\n";
   }
 }

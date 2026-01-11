@@ -58,14 +58,14 @@ class QuaternionTests : public ::testing::Test
         << "ypr->quat->ypr failed with:" << endl
         << "  p1:" << p1 << endl
         << "  q1:" << q1 << endl
-        << "  p2:" << p2 << endl;
+        << "  p2:" << p2 << "\n";
 
     CPose3D p3(q1.quat(), q1[0], q1[1], q1[2]);
     EXPECT_NEAR(0, (p1.getRotationMatrix() - p3.getRotationMatrix()).array().abs().sum(), 1e-4)
         << "pose constructor from quat failed with:" << endl
         << "  p1:" << p1 << endl
         << "  q1:" << q1 << endl
-        << "  p3:" << p3 << endl;
+        << "  p3:" << p3 << "\n";
   }
 
   void test_lnAndExpMatches(double yaw1, double pitch1, double roll1)
@@ -83,7 +83,7 @@ class QuaternionTests : public ::testing::Test
                                                          << "q2:\n"
                                                          << q2 << endl
                                                          << "Error:\n"
-                                                         << (q1 - q2) << endl;
+                                                         << (q1 - q2) << "\n";
   }
 
   void test_ExpAndLnMatches(double v0, double v1, double v2)
@@ -102,7 +102,7 @@ class QuaternionTests : public ::testing::Test
                                                            << "q1_ln:\n"
                                                            << q1_ln << endl
                                                            << "Error:\n"
-                                                           << (q1_ln - v) << endl;
+                                                           << (q1_ln - v) << "\n";
   }
 };
 
@@ -129,7 +129,7 @@ TEST_F(QuaternionTests, crossProduct)
       << "q2 as CPose3D = " << CPose3D(q2, 0, 0, 0) << endl
       << "q3 = q1 * q2 = " << q3 << endl
       << "q3 as CPose3D = " << CPose3D(q3, 0, 0, 0) << endl
-      << "Should be equal to p3 = p1 (+) p2 = " << p3 << endl;
+      << "Should be equal to p3 = p1 (+) p2 = " << p3 << "\n";
 }
 
 // Use special cases: gimbal lock:

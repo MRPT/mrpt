@@ -333,10 +333,10 @@ void CColouredPointsMap::TColourOptions::dumpToTextStream(std::ostream& out) con
   out << "\n----------- [CColouredPointsMap::TColourOptions] ------------ "
          "\n\n";
 
-  out << "scheme                                  = " << scheme << endl;
-  out << "z_min                                   = " << z_min << endl;
-  out << "z_max                                   = " << z_max << endl;
-  out << "d_max                                   = " << d_max << endl;
+  out << "scheme                                  = " << scheme << "\n";
+  out << "z_min                                   = " << z_min << "\n";
+  out << "z_max                                   = " << z_max << "\n";
+  out << "d_max                                   = " << d_max << "\n";
 }
 
 /** Retrieves a point color (colors range is [0,1])

@@ -21,7 +21,7 @@ find_package(mrpt_math REQUIRED)
 set(MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in mrpt::img::CCanvas (increases library size).")
 
 # define lib:
-set(LIB_SRCS
+set(LIB_SOURCES
   src/CCanvas.cpp
   src/CImage.cpp
   src/CImage_impl.cpp
@@ -31,6 +31,7 @@ set(LIB_SRCS
   src/CImage.SSEx.h
   src/CImage.SSSE3.cpp
   src/CMappedImage.cpp
+  src/camera_geometry.cpp
   src/color_maps.cpp
   src/registerAllClasses.cpp
   src/TCamera.cpp
@@ -43,11 +44,12 @@ set(LIB_SRCS
   tests/TCamera_unittest.cpp
 )
 
-set(LIB_PUBLIC_HDRS
+set(LIB_PUBLIC_HEADERS
   include/mrpt/img/CCanvas.h
   include/mrpt/img/CImage.h
   include/mrpt/img/CMappedImage.h
   include/mrpt/img/color_maps.h
+  include/mrpt/img/camera_geometry.h
   include/mrpt/img/DistortionModel.h
   include/mrpt/img/registerAllClasses.h
   include/mrpt/img/TCamera.h
@@ -59,7 +61,7 @@ set(LIB_PUBLIC_HDRS
 
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
-  SOURCES ${LIB_SRCS} ${LIB_PUBLIC_HDRS}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_config
     mrpt::mrpt_io

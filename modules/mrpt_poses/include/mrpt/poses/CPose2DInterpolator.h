@@ -38,7 +38,7 @@ namespace mrpt::poses
  * mrpt::math::TPose2D p;
  * bool valid;
  *
- * cout << "Pose at t: " << path.interpolate(t,p,valid).asString() << endl;
+ * cout << "Pose at t: " << path.interpolate(t,p,valid).asString() << "\n";
  * \endcode
  *
  *  Time is represented with mrpt::Clock::time_point.

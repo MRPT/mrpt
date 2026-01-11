@@ -90,7 +90,7 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
             string("\n. Select a different output path or "
                    "remove the directory."));
 
-      VERBOSE_COUT << "Creating directory: " << outDir << endl;
+      VERBOSE_COUT << "Creating directory: " << outDir << "\n";
 
       mrpt::system::createDirectory(outDir);
       if (!fileExists(outDir))
@@ -185,7 +185,7 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
               cerr << "\n *WARNING*: Dropping one observation "
                       "due to missing external image file at "
                       "rawlog entry "
-                   << m_rawlogEntry << endl;
+                   << m_rawlogEntry << "\n";
             }
             else
             {

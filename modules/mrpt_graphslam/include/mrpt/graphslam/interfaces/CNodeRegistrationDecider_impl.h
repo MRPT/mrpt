@@ -38,7 +38,8 @@ void CNodeRegistrationDecider<GRAPH_T>::getDescriptiveReport(std::string* report
   stringstream ss("");
   parent_t::getDescriptiveReport(report_str);
 
-  ss << "Node Registration Decider Strategy [NRD]: " << endl;
+  ss << "Node Registration Decider Strategy [NRD]: "
+     << "\n";
   *report_str += ss.str();
 
   MRPT_END

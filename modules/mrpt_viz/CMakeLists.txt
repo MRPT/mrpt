@@ -16,7 +16,7 @@ find_package(mrpt_poses REQUIRED)
 find_package(mrpt_img REQUIRED)
 
 # define lib:
-set(LIB_SRCS
+set(LIB_SOURCES
   src/CArrow.cpp
   src/CAssimpModel.cpp
   src/CAxis.cpp
@@ -72,7 +72,7 @@ set(LIB_SRCS
   tests/stl_serialize_unittest.cpp
 )
 
-set(LIB_PUBLIC_HDRS
+set(LIB_PUBLIC_HEADERS
   include/mrpt/viz/opengl_fonts.h
   include/mrpt/viz/CVisualObject.h
   include/mrpt/viz/CBox.h
@@ -130,7 +130,7 @@ set(LIB_PUBLIC_HDRS
 
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
-  SOURCES ${LIB_SRCS} ${LIB_PUBLIC_HDRS}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_poses
     mrpt::mrpt_img

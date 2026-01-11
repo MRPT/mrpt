@@ -38,7 +38,6 @@ bool mrpt::vision::findChessboardCorners(
     unsigned int check_size_y,
     bool normalize_image)
 {
-#if MRPT_HAS_OPENCV
   MRPT_START
 
   ASSERT_(check_size_y > 0 && check_size_x > 0);
@@ -99,7 +98,4 @@ bool mrpt::vision::findChessboardCorners(
   return corners_found;
 
   MRPT_END
-#else
-  return false;
-#endif
 }

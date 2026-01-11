@@ -263,7 +263,8 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling(
         else
           // ASSERT_(fabs(incT - fixed_incT) < (double)(0.05));
           if (fabs(incT - fixed_incT) > (double)(0.05))
-            cout << "IncT is not constant by HW." << endl;
+            cout << "IncT is not constant by HW."
+                 << "\n";
       }
       else
       {
@@ -306,7 +307,7 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling(
   {
     cerr << "**Exception in "
             "CObservationGasSensors::CMOSmodel::inverse_MOSmodeling** "
-         << e.what() << endl;
+         << e.what() << "\n";
   }
 }
 
@@ -355,7 +356,7 @@ void CObservationGasSensors::getDescriptionAsText(std::ostream& o) const
          it != m_readings[j].readingsVoltage.end(); it++, itKind++)
       o << format("%04X: %.03f ", *itKind, *it);
 
-    o << endl;
+    o << "\n";
 
     o << format(
         "  Sensor pose on robot: (x,y,z)=(%.02f,%.02f,%.02f)\n",

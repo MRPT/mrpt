@@ -88,7 +88,7 @@ struct TUncertaintyPath : public mrpt::config::CLoadableOptions
 
   friend std::ostream& operator<<(std::ostream& o, const self_t& obj)
   {
-    o << obj.getAsString() << endl;
+    o << obj.getAsString() << "\n";
     return o;
   }
 

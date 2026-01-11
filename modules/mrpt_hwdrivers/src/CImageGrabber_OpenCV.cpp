@@ -81,7 +81,7 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(
     if (!m_capture->cap.set(cv::CAP_PROP_GAIN, options.gain))
       cerr << "[CImageGrabber_OpenCV] Warning: Could not set the "
               "capturing gain property!"
-           << endl;
+           << "\n";
   }
 
   // Settings only for firewire
@@ -117,24 +117,25 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(
         if (!m_capture->cap.set(cv::CAP_PROP_MODE, cvMode1394))
           cerr << "[CImageGrabber_OpenCV] Warning: Could not set the "
                   "capturing mode "
-               << cvMode1394 << " property!" << endl;
+               << cvMode1394 << " property!"
+               << "\n";
       }
       else
         cerr << "[CImageGrabber_OpenCV] Warning: Not valid combination "
                 "of width x height x color mode for OpenCV/IEEE1394 "
                 "interface"
-             << endl;
+             << "\n";
     }
 
     // Not needed: Default seems to be = 1
     // if(cvSetCaptureProperty(M_CAPTURE,CV_CAP_PROP_CONVERT_RGB,_capture_convert.value())<1)
     //	cerr << "[CImageGrabber_OpenCV] Warning: Could not set the RGB
-    // conversion property!" << endl;
+    // conversion property!" << "\n";
 
     if (!m_capture->cap.set(cv::CAP_PROP_FPS, options.ieee1394_fps))
       cerr << "[CImageGrabber_OpenCV] Warning: Could not set the fps "
               "property!"
-           << endl;
+           << "\n";
   }
 
   // Settings only for V4L
@@ -149,7 +150,7 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(
       if (!m_capture->cap.set(cv::CAP_PROP_FRAME_HEIGHT, options.frame_height))
         cerr << "[CImageGrabber_OpenCV] Warning: Could not set the "
                 "frame width & height property!"
-             << endl;
+             << "\n";
     }
   }
 
@@ -223,7 +224,8 @@ bool CImageGrabber_OpenCV::getObservation(mrpt::obs::CObservationImage& out_obse
       return true;
     }
     cerr << "[CImageGrabber_OpenCV] WARNING: Ignoring error #" << nTries + 1
-         << " retrieving frame..." << endl;
+         << " retrieving frame..."
+         << "\n";
     std::this_thread::sleep_for(1ms);
   }
   return false;

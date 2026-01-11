@@ -91,8 +91,6 @@ struct LUT_Storage
 
 const CObservation3DRangeScan::unproject_LUT_t& CObservation3DRangeScan::get_unproj_lut() const
 {
-#if MRPT_HAS_OPENCV
-
   LUT_Storage& ls = LUT_Storage::Instance();
 
   // Access to, or create upon first usage:
@@ -138,30 +136,43 @@ const CObservation3DRangeScan::unproject_LUT_t& CObservation3DRangeScan::get_unp
   cv::Mat cv_distortion(1, dist.size(), CV_64F, const_cast<double*>(&dist[0]));
   cv::Mat cv_intrinsics(3, 3, CV_64F);
   for (int i = 0; i < 3; i++)
-    for (int j = 0; j < 3; j++) cv_intrinsics.at<double>(i, j) = intrMat(i, j);
+  {
+    for (int j = 0; j < 3; j++)
+    {
+      cv_intrinsics.at<double>(i, j) = intrMat(i, j);
+    }
+  }
 
   for (unsigned int r = 0; r < H; r++)
+  {
     for (unsigned int c = 0; c < W; c++)
     {
       auto& p = pts.at<cv::Vec2f>(r * W + c);
       p[0] = c;
       p[1] = r;
     }
+  }
 
   switch (cameraParams.distortion)
   {
     case mrpt::img::DistortionModel::none:
+    {
       cv_distortion = cv::Mat::zeros(1, dist.size(), CV_64F);
       cv::undistortPoints(pts, undistort_pts, cv_intrinsics, cv_distortion);
-      break;
+    }
+    break;
 
     case mrpt::img::DistortionModel::plumb_bob:
+    {
       cv::undistortPoints(pts, undistort_pts, cv_intrinsics, cv_distortion);
-      break;
+    }
+    break;
 
     case mrpt::img::DistortionModel::kannala_brandt:
+    {
       cv::fisheye::undistortPoints(pts, undistort_pts, cv_intrinsics, cv_distortion);
-      break;
+    }
+    break;
 
     default:
       THROW_EXCEPTION_FMT(
@@ -205,9 +216,6 @@ const CObservation3DRangeScan::unproject_LUT_t& CObservation3DRangeScan::get_unp
   }
 
   return ret;
-#else
-  THROW_EXCEPTION("This method requires MRPT built against OpenCV");
-#endif
 }
 
 static bool EXTERNALS_AS_TEXT_value = false;
@@ -599,7 +607,7 @@ void CObservation3DRangeScan::serializeFrom(mrpt::serialization::CArchive& in, u
   };
 }
 
-void CObservation3DRangeScan::swap(CObservation3DRangeScan& o)
+void CObservation3DRangeScan::swap(CObservation3DRangeScan& o) noexcept
 {
   CObservation::swap(o);
 
@@ -1023,72 +1031,13 @@ double CObservation3DRangeScan::recoverCameraCalibrationParameters(
   MRPT_END
 }
 
-void CObservation3DRangeScan::getZoneAsObs(
-    CObservation3DRangeScan& obs,
-    const unsigned int& r1,
-    const unsigned int& r2,
-    const unsigned int& c1,
-    const unsigned int& c2)
-{
-  unsigned int cols = cameraParams.ncols;
-  unsigned int rows = cameraParams.nrows;
-
-  ASSERT_((r1 < r2) && (c1 < c2));
-  ASSERT_((r2 < rows) && (c2 < cols));
-  // Maybe we needed to copy more base obs atributes
-
-  // Copy zone of range image
-  obs.hasRangeImage = hasRangeImage;
-  if (hasRangeImage) obs.rangeImage = rangeImage.asEigen().block(r2 - r1, c2 - c1, r1, c1);
-
-  // Copy zone of intensity image
-  obs.hasIntensityImage = hasIntensityImage;
-  obs.intensityImageChannel = intensityImageChannel;
-  if (hasIntensityImage) intensityImage.extract_patch(obs.intensityImage, c1, r1, c2 - c1, r2 - r1);
-
-  // Copy zone of confidence image
-  obs.hasConfidenceImage = hasConfidenceImage;
-  if (hasConfidenceImage)
-    confidenceImage.extract_patch(obs.confidenceImage, c1, r1, c2 - c1, r2 - r1);
-
-  // Zone labels: It's too complex, just document that pixel labels are NOT
-  // extracted.
-
-  // Copy zone of scanned points
-  obs.hasPoints3D = hasPoints3D;
-  if (hasPoints3D)
-  {
-    // Erase a possible previous content
-    if (obs.points3D_x.size() > 0)
-    {
-      obs.points3D_x.clear();
-      obs.points3D_y.clear();
-      obs.points3D_z.clear();
-    }
-
-    for (unsigned int i = r1; i < r2; i++)
-      for (unsigned int j = c1; j < c2; j++)
-      {
-        obs.points3D_x.push_back(points3D_x.at(cols * i + j));
-        obs.points3D_y.push_back(points3D_y.at(cols * i + j));
-        obs.points3D_z.push_back(points3D_z.at(cols * i + j));
-      }
-  }
-
-  obs.maxRange = maxRange;
-  obs.sensorPose = sensorPose;
-  obs.stdError = stdError;
-
-  obs.cameraParams = cameraParams;
-}
-
 /** Use this method instead of resizing all three \a points3D_x, \a points3D_y &
  * \a points3D_z to allow the usage of the internal memory pool. */
-void CObservation3DRangeScan::resizePoints3DVectors(const size_t WH)
+void CObservation3DRangeScan::resizePoints3DVectors(const size_t nPoints)
 {
 #ifdef COBS3DRANGE_USE_MEMPOOL
   // If WH=0 this is a clear:
-  if (!WH)
+  if (nPoints == 0)
   {
     vector_strong_clear(points3D_x);
     vector_strong_clear(points3D_y);
@@ -1098,26 +1047,26 @@ void CObservation3DRangeScan::resizePoints3DVectors(const size_t WH)
     return;
   }
 
-  if (WH <= points3D_x.size())  // reduce size, don't realloc
+  if (nPoints <= points3D_x.size())  // reduce size, don't realloc
   {
-    points3D_x.resize(WH);
-    points3D_y.resize(WH);
-    points3D_z.resize(WH);
-    points3D_idxs_x.resize(WH);
-    points3D_idxs_y.resize(WH);
+    points3D_x.resize(nPoints);
+    points3D_y.resize(nPoints);
+    points3D_z.resize(nPoints);
+    points3D_idxs_x.resize(nPoints);
+    points3D_idxs_y.resize(nPoints);
     return;
   }
 
   // Request memory for the X,Y,Z buffers from the memory pool:
   TMyPointsMemPool* pool = TMyPointsMemPool::getInstance();
-  if (pool)
+  if (pool != nullptr)
   {
     CObservation3DRangeScan_Points_MemPoolParams mem_params;
-    mem_params.WH = WH;
+    mem_params.WH = nPoints;
 
     CObservation3DRangeScan_Points_MemPoolData* mem_block = pool->request_memory(mem_params);
 
-    if (mem_block)
+    if (mem_block != nullptr)
     {  // Take the memory via swaps:
       points3D_x.swap(mem_block->pts_x);
       points3D_y.swap(mem_block->pts_y);
@@ -1131,11 +1080,11 @@ void CObservation3DRangeScan::resizePoints3DVectors(const size_t WH)
 
   // Either if there was no pool memory or we got it, make sure the size of
   // vectors is OK:
-  points3D_x.resize(WH);
-  points3D_y.resize(WH);
-  points3D_z.resize(WH);
-  points3D_idxs_x.resize(WH);
-  points3D_idxs_y.resize(WH);
+  points3D_x.resize(nPoints);
+  points3D_y.resize(nPoints);
+  points3D_z.resize(nPoints);
+  points3D_idxs_x.resize(nPoints);
+  points3D_idxs_y.resize(nPoints);
 }
 
 size_t CObservation3DRangeScan::getScanSize() const
@@ -1473,73 +1422,6 @@ T3DPointsTo2DScanParams::T3DPointsTo2DScanParams() :
 {
 }
 
-void CObservation3DRangeScan::undistort()
-{
-#if MRPT_HAS_OPENCV
-
-  // DEPTH image:
-  {
-    // OpenCV wrapper (copy-less) for rangeImage:
-
-    const cv::Mat distortion(1, cameraParams.dist.size(), CV_64F, &cameraParams.dist[0]);
-    const cv::Mat intrinsics(3, 3, CV_64F, &cameraParams.intrinsicParams(0, 0));
-
-    const auto imgSize = cv::Size(rangeImage.rows(), rangeImage.cols());
-
-    double alpha = 0;  // all depth pixels are visible in the output
-    const cv::Mat newIntrinsics =
-        cv::getOptimalNewCameraMatrix(intrinsics, distortion, imgSize, alpha);
-
-    cv::Mat outRangeImg(rangeImage.rows(), rangeImage.cols(), CV_16UC1);
-
-    // Undistort:
-    const cv::Mat R_eye = cv::Mat::eye(3, 3, CV_32FC1);
-
-    cv::Mat m1, m2;
-
-    cv::initUndistortRectifyMap(
-        intrinsics, distortion, R_eye, newIntrinsics, imgSize, CV_32FC1, m1, m2);
-
-    for (size_t idx = 0; idx < 1 + rangeImageOtherLayers.size(); idx++)
-    {
-      mrpt::math::CMatrix_u16* ri = nullptr;
-      if (idx == 0)
-        ri = &rangeImage;
-      else
-      {
-        auto it = rangeImageOtherLayers.begin();
-        std::advance(it, idx - 1);
-        ri = &it->second;
-      }
-      cv::Mat rangeImg(ri->rows(), ri->cols(), CV_16UC1, ri->data());
-
-      // Remap:
-      cv::remap(rangeImg, outRangeImg, m1, m2, cv::INTER_NEAREST);
-      // Overwrite:
-      outRangeImg.copyTo(rangeImg);
-    }
-
-    cameraParams.dist.fill(0);
-    for (int r = 0; r < 3; r++)
-      for (int c = 0; c < 3; c++)
-        cameraParams.intrinsicParams(r, c) = newIntrinsics.at<double>(r, c);
-  }
-
-  // RGB image:
-  if (hasIntensityImage)
-  {
-    mrpt::img::CImage newIntImg;
-    intensityImage.undistort(newIntImg, cameraParamsIntensity);
-
-    intensityImage = std::move(newIntImg);
-    cameraParamsIntensity.dist.fill(0);
-  }
-
-#else
-  THROW_EXCEPTION("This method requires OpenCV");
-#endif
-}
-
 mrpt::img::CImage CObservation3DRangeScan::rangeImageAsImage(
     const mrpt::math::CMatrix_u16& ri,
     float val_min,
@@ -1547,7 +1429,6 @@ mrpt::img::CImage CObservation3DRangeScan::rangeImageAsImage(
     float rangeUnits,
     const std::optional<mrpt::img::TColormap> color)
 {
-#if MRPT_HAS_OPENCV
   if (val_max < 1e-4f) val_max = ri.maxCoeff() * rangeUnits;
 
   ASSERT_GT_(val_max, val_min);
@@ -1574,26 +1455,16 @@ mrpt::img::CImage CObservation3DRangeScan::rangeImageAsImage(
       const float val_01 = (ri.coeff(r, c) - val_min) * range_inv;
       if (is_gray)
       {
-        img.setPixel(c, r, static_cast<uint8_t>(val_01 * 255));
+        img.setPixelGray({c, r}, static_cast<uint8_t>(val_01 * 255));
       }
       else
       {
-        float R, G, B;
-        mrpt::img::colormap(col, val_01, R, G, B);
-
-        img.setPixel(
-            c, r,
-            mrpt::img::TColor(
-                static_cast<uint8_t>(R * 255), static_cast<uint8_t>(G * 255),
-                static_cast<uint8_t>(B * 255)));
+        img.setPixel({c, r}, mrpt::img::colormap(col, val_01));
       }
     }
   }
 
   return img;
-#else
-  THROW_EXCEPTION("This method requires OpenCV");
-#endif
 }
 
 mrpt::img::CImage CObservation3DRangeScan::rangeImage_getAsImage(

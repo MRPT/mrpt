@@ -130,10 +130,6 @@ TEST(COccupancyGridMap3DTests, NearestNeighborsCapable)
   }
 }
 
-// We need OPENCV to read the image internal to CObservation3DRangeScan,
-// so skip this test if built without opencv.
-#if MRPT_HAS_OPENCV
-
 TEST(COccupancyGridMap3DTests, insertScan3D)
 {
   using namespace std::string_literals;
@@ -160,5 +156,3 @@ TEST(COccupancyGridMap3DTests, insertScan3D)
     EXPECT_GT(grid.getFreenessByPos(0.2f, 0.2f, 0.1f), 0.53f);
   }
 }
-
-#endif

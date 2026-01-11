@@ -46,7 +46,7 @@ void TSequenceFeatureObservations::saveToTextFile(
 
   for (const auto& it : *this)
     f << setw(7) << it.id_frame << setw(7) << it.id_feature << setw(13) << it.px.x << setw(11)
-      << it.px.y << endl;
+      << it.px.y << "\n";
 
   MRPT_END
 }
@@ -115,7 +115,7 @@ bool TSequenceFeatureObservations::saveAsSBAFiles(
     f << pts[it->first].x << " " << pts[it->first].y << " " << pts[it->first].z << " " << m.size()
       << " ";
     for (auto itO : m) f << itO.first << " " << itO.second.x << " " << itO.second.y << " ";
-    f << endl;
+    f << "\n";
   }
 
   ofstream fc(cams_file.c_str());
@@ -125,7 +125,7 @@ bool TSequenceFeatureObservations::saveAsSBAFiles(
   {
     const mrpt::poses::CPose3DQuat p(pos);
     fc << p.m_quat[0] << " " << p.m_quat[1] << " " << p.m_quat[2] << " " << p.m_quat[3] << " "
-       << p.x() << " " << p.y() << " " << p.z() << endl;
+       << p.x() << " " << p.y() << " " << p.z() << "\n";
   }
 
   return true;

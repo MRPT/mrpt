@@ -96,16 +96,18 @@ void CObservationSkeleton::getDescriptionAsText(std::ostream& o) const
   using namespace std;
   CObservation::getDescriptionAsText(o);
 
-  o << "Sensor pose on the robot: " << sensorPose << endl;
+  o << "Sensor pose on the robot: " << sensorPose << "\n";
 
   // ----------------------------------------------------------------------
   //              CObservationSkeleton
   // ----------------------------------------------------------------------
-  o << endl << "Joint Positions (x, y, z) [mm] -- confidence" << endl;
+  o << endl
+    << "Joint Positions (x, y, z) [mm] -- confidence"
+    << "\n";
 
 #define PRINT_JOINT(_J)                                                                   \
   cout << "\t" << #_J << ":\t(" << this->_J.x << ", " << this->_J.y << ", " << this->_J.z \
-       << ") -- " << this->_J.conf << endl;
+       << ") -- " << this->_J.conf << "\n";
 
   PRINT_JOINT(head)
   PRINT_JOINT(neck)

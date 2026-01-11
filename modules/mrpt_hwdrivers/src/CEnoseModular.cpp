@@ -127,7 +127,8 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
 
     if (!comms)
     {
-      cout << "ERORR: Problem connecting to Device." << endl;
+      cout << "ERORR: Problem connecting to Device."
+           << "\n";
       return false;
     }
 
@@ -155,7 +156,8 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
 
     if (time_out)
     {
-      cout << "[CEnoseModular - getObservation] measurement Timed-Out" << endl;
+      cout << "[CEnoseModular - getObservation] measurement Timed-Out"
+           << "\n";
       return false;
     }
 
@@ -214,7 +216,8 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
     }
     else
     {
-      cout << "Message was empty" << endl;
+      cout << "Message was empty"
+           << "\n";
       return false;
     }
   }
@@ -222,8 +225,8 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
   {
     cerr << "[CEnoseModular::getObservation] Returning false due to "
             "exception: "
-         << endl;
-    cerr << e.what() << endl;
+         << "\n";
+    cerr << e.what() << "\n";
     return false;
   }
   catch (...)
@@ -252,7 +255,8 @@ void CEnoseModular::doProcess()
   else
   {
     m_state = ssError;
-    cout << "No observation received from the USB board!" << endl;
+    cout << "No observation received from the USB board!"
+         << "\n";
     // THROW_EXCEPTION("No observation received from the USB board!");
   }
 }

@@ -660,7 +660,7 @@ void CPointsMap::TInsertionOptions::dumpToTextStream(std::ostream& out) const
 
   LOADABLEOPTS_DUMP_VAR(insertInvalidPoints, bool);
 
-  out << endl;
+  out << "\n";
 }
 
 void CPointsMap::TLikelihoodOptions::dumpToTextStream(std::ostream& out) const

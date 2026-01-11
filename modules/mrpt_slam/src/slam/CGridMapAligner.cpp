@@ -697,7 +697,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
             sog_modes[tentativeSubSet] = newGauss;
 
             // cout << "ITER: " << iter << " #inliers: " << ninliers
-            // << " q: " << temptPose.mean << endl;
+            // << " q: " << temptPose.mean << "\n";
           }
 
           // Keep the largest consensus & dynamic # of steps:
@@ -727,7 +727,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
             // if (verbose)
             //	cout << "[Align] Iter #" << iter << " Est. #iters: "
             //<< ransac_nSimulations << "  pNoOutliers=" <<
-            // pNoOutliers << " #inliers: " << ninliers << endl;
+            // pNoOutliers << " #inliers: " << ninliers << "\n";
           }
 
         }  // end of RANSAC loop

@@ -93,20 +93,22 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
         obsGas = dynamic_cast<CObservationGasSensors*>(o.get());
         if (obsGas->m_readings.size() < 1)
         {
-          cout << "Empty Gas Sensor" << endl;
+          cout << "Empty Gas Sensor"
+               << "\n";
           obsGas = nullptr;
           return true;  // Nothing to do...
         }
 
         if (obsGas->m_readings[0].readingsVoltage.size() < 1)
         {
-          cout << "Empty Gas Obs" << endl;
+          cout << "Empty Gas Obs"
+               << "\n";
           obsGas = nullptr;
           return true;  // Nothing to do...
         }
         // cout << "new observations has: "<<
         // obsGas->m_readings[0].readingsVoltage.size() << " elements."
-        // << endl;
+        // << "\n";
         gasConcentration = obsGas->m_readings[0].readingsVoltage[0];
         hasGAS = true;
       }
@@ -141,7 +143,7 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
       const bool save_altitude = false;
 
       const string outfilname = mrpt::system::fileNameChangeExtension(m_inFile, "kml");
-      VERBOSE_COUT << "Writing KML file: " << outfilname << endl;
+      VERBOSE_COUT << "Writing KML file: " << outfilname << "\n";
 
       CFileOutputStream f(outfilname);
 

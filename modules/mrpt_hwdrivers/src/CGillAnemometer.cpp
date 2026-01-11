@@ -59,7 +59,7 @@ bool CGillAnemometer::tryToOpenTheCOM()
 {
   if (COM.isOpen()) return true;  // Already open
 
-  if (m_verbose) cout << "[CGillAnemometer] Opening " << com_port << " @ " << com_bauds << endl;
+  if (m_verbose) cout << "[CGillAnemometer] Opening " << com_port << " @ " << com_bauds << "\n";
 
   try
   {
@@ -123,7 +123,7 @@ void CGillAnemometer::doProcess()
       if (time_out)
       {
         cout << "[CGillAnemometer] " << com_port << " @ " << com_bauds << " - measurement Timed-Out"
-             << endl;
+             << "\n";
         std::this_thread::sleep_for(10ms);
       }
       else

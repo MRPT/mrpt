@@ -751,16 +751,18 @@ bool COpenNI2Generic::CDevice::open(int w, int h, int fps)
     if (m_device.setImageRegistrationMode(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR) !=
         openni::STATUS_OK)
     {
-      m_log << " setImageRegistrationMode() Failed:" << openni::OpenNI::getExtendedError() << endl;
+      m_log << " setImageRegistrationMode() Failed:" << openni::OpenNI::getExtendedError() << "\n";
     }
     else
     {
-      m_log << " setImageRegistrationMode() Success" << endl;
+      m_log << " setImageRegistrationMode() Success"
+            << "\n";
     }
   }
   else
   {
-    m_log << "  Device doesn't do image registration!" << endl;
+    m_log << "  Device doesn't do image registration!"
+          << "\n";
   }
 
   if (false)  // hasColor())

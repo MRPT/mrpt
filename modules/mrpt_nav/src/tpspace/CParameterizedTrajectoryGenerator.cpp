@@ -274,16 +274,16 @@ bool CParameterizedTrajectoryGenerator::debugDumpInFiles(const std::string& ptg_
   // Text version:
   fx << "% PTG data file for 'x'. Each row is the trajectory for a different "
         "'alpha' parameter value."
-     << endl;
+     << "\n";
   fy << "% PTG data file for 'y'. Each row is the trajectory for a different "
         "'alpha' parameter value."
-     << endl;
+     << "\n";
   fp << "% PTG data file for 'phi'. Each row is the trajectory for a "
         "different 'alpha' parameter value."
-     << endl;
+     << "\n";
   fd << "% PTG data file for 'd'. Each row is the trajectory for a different "
         "'alpha' parameter value."
-     << endl;
+     << "\n";
 
   vector<size_t> path_length(nPaths);
   for (size_t k = 0; k < nPaths; k++) path_length[k] = getPathStepCount(k);
@@ -302,10 +302,10 @@ bool CParameterizedTrajectoryGenerator::debugDumpInFiles(const std::string& ptg_
       fp << p.phi << " ";
       fd << this->getPathDist(k, nn) << " ";
     }
-    fx << endl;
-    fy << endl;
-    fp << endl;
-    fd << endl;
+    fx << "\n";
+    fy << "\n";
+    fp << "\n";
+    fd << "\n";
   }
 
   return true;

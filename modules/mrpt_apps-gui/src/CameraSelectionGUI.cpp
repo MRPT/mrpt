@@ -67,7 +67,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
   {
     cerr << "[prepareVideoSourceFromUserSelection] Timeout waiting window "
             "creation."
-         << endl;
+         << "\n";
     return CCameraSensor::Ptr();
   }
 
@@ -114,7 +114,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromPanel(void* _panel)
   }
   catch (const std::exception& e)
   {
-    cerr << endl << e.what() << endl;
+    cerr << endl << e.what() << "\n";
     wxMessageBox(_("Couldn't open video source"), _("Error"));
     return CCameraSensor::Ptr();
   }

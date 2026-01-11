@@ -441,8 +441,8 @@ void mrpt::slam::data_association_full_covariance(
   }    // end for
 
 #if 0
-	cout << "Distances: " << endl << results.indiv_distances << endl;
-	//cout << "indiv compat: " << endl << results.indiv_compatibility << endl;
+	cout << "Distances: " << endl << results.indiv_distances << "\n";
+	//cout << "indiv compat: " << endl << results.indiv_compatibility << "\n";
 #endif
 
   // Do associations:

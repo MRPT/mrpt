@@ -135,7 +135,7 @@ void CObservationBeaconRanges::getDescriptionAsText(std::ostream& o) const
   using namespace std;
   CObservation::getDescriptionAsText(o);
 
-  o << "Auxiliary estimated pose (if available): " << auxEstimatePose << endl;
+  o << "Auxiliary estimated pose (if available): " << auxEstimatePose << "\n";
 
   o << format("minSensorDistance=%f m\n", minSensorDistance);
   o << format("maxSensorDistance=%f m\n", maxSensorDistance);

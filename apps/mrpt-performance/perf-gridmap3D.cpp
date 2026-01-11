@@ -82,7 +82,7 @@ double grid3d_test_insert2DScan(int res_cm, int a2)
   return tictac.Tac() / N;
 }
 
-double grid3d_test_insert3DScan(int res_cm, int DECIM)
+double grid3d_test_insert3DScan(int res_cm, int decimation)
 {
   auto& rn = mrpt::random::getRandomGenerator();
   rn.randomize(333);
@@ -104,7 +104,7 @@ double grid3d_test_insert3DScan(int res_cm, int DECIM)
   mrpt::maps::COccupancyGridMap3D gridmap(
       mrpt::math::TPoint3D(-3.0, -5.0, -2.0), mrpt::math::TPoint3D(10.0, 5.0, 2.0), 0.01f * res_cm);
 
-  gridmap.insertionOptions.decimation_3d_range = DECIM;
+  gridmap.insertionOptions.decimation_3d_range = decimation;
 
   const long N = 10;
   CTicTac tictac;
@@ -144,10 +144,10 @@ void register_tests_grid3D()
 
 
 #define TESTS_3DSCAN_FOR_DECIM(DECIM_)	\
-	lstTests.emplace_back("gridmap3D: insert 3Dscan (voxels=5cm, DECIM=" #DECIM_ ")", grid3d_test_insert3DScan, 5, DECIM_); \
-	lstTests.emplace_back("gridmap3D: insert 3Dscan (voxels=10cm, DECIM=" #DECIM_ ")", grid3d_test_insert3DScan, 10, DECIM_); \
-	lstTests.emplace_back("gridmap3D: insert 3Dscan (voxels=15cm, DECIM=" #DECIM_ ")", grid3d_test_insert3DScan, 15, DECIM_); \
-	lstTests.emplace_back("gridmap3D: insert 3Dscan (voxels=20cm, DECIM=" #DECIM_ ")", grid3d_test_insert3DScan, 20, DECIM_)
+	lstTests.emplace_back("gridmap3D: insert 3Dscan (voxels=5cm, decimation=" #DECIM_ ")", grid3d_test_insert3DScan, 5, DECIM_); \
+	lstTests.emplace_back("gridmap3D: insert 3Dscan (voxels=10cm, decimation=" #DECIM_ ")", grid3d_test_insert3DScan, 10, DECIM_); \
+	lstTests.emplace_back("gridmap3D: insert 3Dscan (voxels=15cm, decimation=" #DECIM_ ")", grid3d_test_insert3DScan, 15, DECIM_); \
+	lstTests.emplace_back("gridmap3D: insert 3Dscan (voxels=20cm, decimation=" #DECIM_ ")", grid3d_test_insert3DScan, 20, DECIM_)
   // clang-format on
 
   TESTS_3DSCAN_FOR_DECIM(1);

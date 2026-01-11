@@ -562,7 +562,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
               {
                 cout << "#modes bef: " << fusedObsModels.size() << " ESS: " << fusedObsModels.ESS()
-                     << endl;
+                     << "\n";
                 double max_w = -1e100;
                 // int idx;
 
@@ -581,7 +581,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
                     it++;
                 }
 
-                cout << "#modes after: " << fusedObsModels.size() << endl;
+                cout << "#modes after: " << fusedObsModels.size() << "\n";
               }
 
               // Shall we simplify the PDF?
@@ -769,9 +769,9 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
       }
       else
       {
-        cout << "Drawn: " << newDrawnPosition << endl;
+        cout << "Drawn: " << newDrawnPosition << "\n";
         // cout << "Final cov was:\n" <<
-        // fusedObsModels.getEstimatedCovariance() << endl << endl;
+        // fusedObsModels.getEstimatedCovariance() << endl << "\n";
 
         // Make sure it was initialized
         ASSERT_(firstEstimateRobotHeading != std::numeric_limits<float>::max());

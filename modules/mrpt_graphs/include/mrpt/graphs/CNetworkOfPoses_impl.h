@@ -90,7 +90,7 @@ struct graph_ops
     f << "EDGE_SE2 " << edgeIDs.first << " " << edgeIDs.second << " " << edge.mean.x() << " "
       << edge.mean.y() << " " << edge.mean.phi() << " " << edge.cov_inv(0, 0) << " "
       << edge.cov_inv(0, 1) << " " << edge.cov_inv(0, 2) << " " << edge.cov_inv(1, 1) << " "
-      << edge.cov_inv(1, 2) << " " << edge.cov_inv(2, 2) << endl;
+      << edge.cov_inv(1, 2) << " " << edge.cov_inv(2, 2) << "\n";
   }
   static void write_EDGE_line(
       const TPairNodeIDs& edgeIDs, const CPose3DPDFGaussianInf& edge, std::ostream& f)
@@ -110,7 +110,7 @@ struct graph_ops
       << edge.cov_inv(1, 3) << " " << edge.cov_inv(2, 2) << " " << edge.cov_inv(2, 5) << " "
       << edge.cov_inv(2, 4) << " " << edge.cov_inv(2, 3) << " " << edge.cov_inv(5, 5) << " "
       << edge.cov_inv(5, 4) << " " << edge.cov_inv(5, 3) << " " << edge.cov_inv(4, 4) << " "
-      << edge.cov_inv(4, 3) << " " << edge.cov_inv(3, 3) << endl;
+      << edge.cov_inv(4, 3) << " " << edge.cov_inv(3, 3) << "\n";
   }
   static void write_EDGE_line(
       const TPairNodeIDs& edgeIDs, const CPosePDFGaussian& edge, std::ostream& f)
@@ -152,9 +152,9 @@ struct graph_ops
       // Node annotations:
       const auto sAnnot = n.second.retAnnotsAsString();
       if (!sAnnot.empty()) f << " | " << sAnnot;
-      f << endl;
+      f << "\n";
       // Root?
-      if (n.first == g->root) f << "FIX " << n.first << endl;
+      if (n.first == g->root) f << "FIX " << n.first << "\n";
     }
 
     // 2nd: Edges:
@@ -607,7 +607,7 @@ struct graph_ops
         {
           alreadyWarnedUnknowns.insert(key);
           cerr << "[CNetworkOfPoses::loadFromTextFile] " << fil << ":" << lineNum
-               << ": Warning: unknown entry type: " << key << endl;
+               << ": Warning: unknown entry type: " << key << "\n";
         }
       }
     }  // end while
