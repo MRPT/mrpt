@@ -41,15 +41,14 @@ class CAssimpModel : public CVisualObject
   DEFINE_SERIALIZABLE(CAssimpModel, mrpt::viz)
 
  public:
-  CAssimpModel();
-  virtual ~CAssimpModel() override;
+  CAssimpModel() = default;
 
   /** Import flags for loadScene
    *  \note Not defined as ``enum class`` to allow C++-valid or-wise combinations
    */
   struct LoadFlags
   {
-    enum flags_t : uint32_t
+    enum flags_t : uint16_t
     {
       /** See: aiProcessPreset_TargetRealtime_Fast */
       RealTimeFast = 0x0001,
@@ -81,7 +80,7 @@ class CAssimpModel : public CVisualObject
    */
   void loadScene(
       const std::string& file_name,
-      const int flags = LoadFlags::RealTimeMaxQuality | LoadFlags::FlipUVs | LoadFlags::Verbose);
+      int flags = LoadFlags::RealTimeMaxQuality | LoadFlags::FlipUVs | LoadFlags::Verbose);
 
   /** Empty the object */
   void clear();
@@ -95,7 +94,7 @@ class CAssimpModel : public CVisualObject
    *  are split into different renderizable smaller objects.
    *  This is required only for semitransparent objects with overlaping regions.
    */
-  void split_triangles_rendering_bbox(const float bbox_size);
+  void split_triangles_rendering_bbox(float bbox_size);
 
   [[nodiscard]] float split_triangles_rendering_bbox() const
   {
@@ -104,7 +103,7 @@ class CAssimpModel : public CVisualObject
 
  private:
   filepath_t m_modelPath;
-  uint32_t m_modelLoadFlags = 0;
+  uint16_t m_modelLoadFlags = 0;
   float m_split_triangles_rendering_bbox = .0f;
 };
 

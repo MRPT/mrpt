@@ -21,10 +21,8 @@
 #include <cstring>  // strlen()
 #include <string>
 
-namespace mrpt
-{
 /** Serial and networking devices and utilities */
-namespace comms
+namespace mrpt::comms
 {
 class CServerTCPSocket;
 
@@ -143,7 +141,7 @@ class CClientTCPSocket : public mrpt::io::CStream
    *  \return The number of actually read bytes.
    */
   size_t readAsync(
-      void* Buffer, size_t Count, const int timeoutStart_ms = -1, const int timeoutBetween_ms = -1);
+      void* Buffer, size_t Count, int timeoutStart_ms = -1, int timeoutBetween_ms = -1);
 
   /** A method for writing to the socket with optional timeouts.
    *  The method supports writing block by block as the socket allows us to
@@ -156,7 +154,7 @@ class CClientTCPSocket : public mrpt::io::CStream
    * written, or an error happens.
    *  \return The number of actually written bytes.
    */
-  size_t writeAsync(const void* Buffer, size_t Count, const int timeout_ms = -1);
+  size_t writeAsync(const void* Buffer, size_t Count, int timeout_ms = -1);
 
   /** Send a message through the TCP stream.
    * \param outMsg The message to be shown.
@@ -255,5 +253,4 @@ class CClientTCPSocket : public mrpt::io::CStream
 
 };  // End of class def.
 
-}  // namespace comms
-}  // namespace mrpt
+}  // namespace mrpt::comms
