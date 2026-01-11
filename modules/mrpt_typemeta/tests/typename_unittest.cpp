@@ -44,7 +44,7 @@ DECLARE_CUSTOM_TTYPENAME(MyNS::MyBarClass);
   if (std::string(#__TSTTYPE "," #__TSTTYPE2ndpart) !=                                        \
       TTypeName<__TSTTYPE, __TSTTYPE2ndpart>::get().c_str())                                  \
     GTEST_FAIL() << "Failed: " << #__TSTTYPE "," #__TSTTYPE2ndpart << "\n Computed type is: " \
-                 << TTypeName<__TSTTYPE, __TSTTYPE2ndpart>::get().c_str() << endl;
+                 << TTypeName<__TSTTYPE, __TSTTYPE2ndpart>::get().c_str() << "\n";
 
 TEST(TTypeName, types2str)
 {

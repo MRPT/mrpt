@@ -76,7 +76,8 @@ CCameraSensor::CCameraSensor() :
    ----------------------------------------------------- */
 void CCameraSensor::initialize()
 {
-  cout << "[CCameraSensor::initialize] Opening camera..." << endl;
+  cout << "[CCameraSensor::initialize] Opening camera..."
+       << "\n";
   close();
 
   // Select type of device
@@ -296,7 +297,8 @@ void CCameraSensor::initialize()
     THROW_EXCEPTION_FMT("Unknown 'grabber_type' found: %s", m_grabber_type.c_str());
 
   // Change state:
-  cout << "[CCameraSensor::initialize] Done!" << endl;
+  cout << "[CCameraSensor::initialize] Done!"
+       << "\n";
   m_state = CGenericSensor::ssWorking;
 
   // Launch independent thread?
@@ -1048,7 +1050,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
                                 format(
                                     "_D_%f.%s", (double)mrpt::Clock::toDouble(stObs->timestamp),
                                     m_external_images_format.c_str());
-        // cout << "[CCameraSensor] Saving " << filName << endl;
+        // cout << "[CCameraSensor] Saving " << filName << "\n";
         if (!stObs->imageLeft.saveToFile(
                 m_path_for_external_images + string("/") + filNameL,
                 m_external_images_jpeg_quality))
@@ -1104,7 +1106,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
                          format(
                              "_%f.%s", (double)mrpt::Clock::toDouble(obs->timestamp),
                              m_external_images_format.c_str());
-        // cout << "[CCameraSensor] Saving " << filName << endl;
+        // cout << "[CCameraSensor] Saving " << filName << "\n";
         if (!obs->image.saveToFile(
                 m_path_for_external_images + string("/") + filName, m_external_images_jpeg_quality))
         {

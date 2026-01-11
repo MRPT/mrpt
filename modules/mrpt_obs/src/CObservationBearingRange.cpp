@@ -163,22 +163,23 @@ void CObservationBearingRange::getDescriptionAsText(std::ostream& o) const
 
   o << "Do observations have individual covariance matrices? " << (validCovariances ? "YES" : "NO")
     << endl
-    << endl;
+    << "\n";
 
-  o << "Default noise sigmas:" << endl;
-  o << "sensor_std_range (m)   : " << sensor_std_range << endl;
-  o << "sensor_std_yaw   (deg) : " << RAD2DEG(sensor_std_yaw) << endl;
-  o << "sensor_std_pitch (deg) : " << RAD2DEG(sensor_std_pitch) << endl;
+  o << "Default noise sigmas:"
+    << "\n";
+  o << "sensor_std_range (m)   : " << sensor_std_range << "\n";
+  o << "sensor_std_yaw   (deg) : " << RAD2DEG(sensor_std_yaw) << "\n";
+  o << "sensor_std_pitch (deg) : " << RAD2DEG(sensor_std_pitch) << "\n";
 
-  o << endl;
+  o << "\n";
 
   // For each entry in this sequence:
   o << "  LANDMARK_ID    RANGE (m)    YAW (deg)    PITCH (deg)   COV. MATRIX "
        "(optional)"
-    << endl;
+    << "\n";
   o << "---------------------------------------------------------------------"
        "-----------------"
-    << endl;
+    << "\n";
   for (const auto& q : sensedData)
   {
     o << "      ";
@@ -192,7 +193,7 @@ void CObservationBearingRange::getDescriptionAsText(std::ostream& o) const
         RAD2DEG(mrpt::math::wrapToPi(q.pitch)));
 
     if (validCovariances)
-      o << q.covariance.inMatlabFormat() << endl;
+      o << q.covariance.inMatlabFormat() << "\n";
     else
       o << "  (N/A)\n";
   }

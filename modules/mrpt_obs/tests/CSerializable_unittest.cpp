@@ -26,38 +26,35 @@ using namespace mrpt::obs;
 using namespace mrpt::io;
 using namespace mrpt::math;
 using namespace mrpt::serialization;
-using namespace std;
 
-#define TEST_CLASS_MOVE_COPY_CTORS(_classname) template class mrpt::CTraitsTest<_classname>
+template class mrpt::CTraitsTest<CObservation2DRangeScan>;
+template class mrpt::CTraitsTest<CObservation3DRangeScan>;
+template class mrpt::CTraitsTest<CObservation3DScene>;
+template class mrpt::CTraitsTest<CObservationRGBD360>;
+template class mrpt::CTraitsTest<CObservationBearingRange>;
+template class mrpt::CTraitsTest<CObservationBatteryState>;
+template class mrpt::CTraitsTest<CObservationWirelessPower>;
+template class mrpt::CTraitsTest<CObservationRFID>;
+template class mrpt::CTraitsTest<CObservationBeaconRanges>;
+template class mrpt::CTraitsTest<CObservationComment>;
+template class mrpt::CTraitsTest<CObservationGasSensors>;
+template class mrpt::CTraitsTest<CObservationGPS>;
+template class mrpt::CTraitsTest<CObservationReflectivity>;
+template class mrpt::CTraitsTest<CObservationIMU>;
+template class mrpt::CTraitsTest<CObservationOdometry>;
+template class mrpt::CTraitsTest<CObservationRange>;
+template class mrpt::CTraitsTest<CObservationImage>;
+template class mrpt::CTraitsTest<CObservationStereoImages>;
+template class mrpt::CTraitsTest<CObservationCANBusJ1939>;
+template class mrpt::CTraitsTest<CObservationRawDAQ>;
+template class mrpt::CTraitsTest<CObservation6DFeatures>;
+template class mrpt::CTraitsTest<CObservationVelodyneScan>;
+template class mrpt::CTraitsTest<CObservationRotatingScan>;
+template class mrpt::CTraitsTest<CActionRobotMovement2D>;
+template class mrpt::CTraitsTest<CActionRobotMovement3D>;
 
-TEST_CLASS_MOVE_COPY_CTORS(CObservation2DRangeScan);
-TEST_CLASS_MOVE_COPY_CTORS(CObservation3DRangeScan);
-TEST_CLASS_MOVE_COPY_CTORS(CObservation3DScene);
-TEST_CLASS_MOVE_COPY_CTORS(CObservationRGBD360);
-TEST_CLASS_MOVE_COPY_CTORS(CObservationBearingRange);
-TEST_CLASS_MOVE_COPY_CTORS(CObservationBatteryState);
-TEST_CLASS_MOVE_COPY_CTORS(CObservationWirelessPower);
-TEST_CLASS_MOVE_COPY_CTORS(CObservationRFID);
-TEST_CLASS_MOVE_COPY_CTORS(CObservationBeaconRanges);
-TEST_CLASS_MOVE_COPY_CTORS(CObservationComment);
-TEST_CLASS_MOVE_COPY_CTORS(CObservationGasSensors);
-TEST_CLASS_MOVE_COPY_CTORS(CObservationGPS);
-TEST_CLASS_MOVE_COPY_CTORS(CObservationReflectivity);
-TEST_CLASS_MOVE_COPY_CTORS(CObservationIMU);
-TEST_CLASS_MOVE_COPY_CTORS(CObservationOdometry);
-TEST_CLASS_MOVE_COPY_CTORS(CObservationRange);
-#if MRPT_HAS_OPENCV  // These classes need CImage serialization
-TEST_CLASS_MOVE_COPY_CTORS(CObservationImage);
-TEST_CLASS_MOVE_COPY_CTORS(CObservationStereoImages);
-#endif
-TEST_CLASS_MOVE_COPY_CTORS(CObservationCANBusJ1939);
-TEST_CLASS_MOVE_COPY_CTORS(CObservationRawDAQ);
-TEST_CLASS_MOVE_COPY_CTORS(CObservation6DFeatures);
-TEST_CLASS_MOVE_COPY_CTORS(CObservationVelodyneScan);
-TEST_CLASS_MOVE_COPY_CTORS(CObservationRotatingScan);
-TEST_CLASS_MOVE_COPY_CTORS(CActionRobotMovement2D);
-TEST_CLASS_MOVE_COPY_CTORS(CActionRobotMovement3D);
-
+namespace
+{
 const mrpt::rtti::TRuntimeClassId* lstClasses[] = {
     // Observations:
     CLASS_ID(CObservation2DRangeScan), CLASS_ID(CObservation3DRangeScan),
@@ -67,14 +64,14 @@ const mrpt::rtti::TRuntimeClassId* lstClasses[] = {
     CLASS_ID(CObservationRFID), CLASS_ID(CObservationBeaconRanges), CLASS_ID(CObservationComment),
     CLASS_ID(CObservationGasSensors), CLASS_ID(CObservationGPS), CLASS_ID(CObservationReflectivity),
     CLASS_ID(CObservationIMU), CLASS_ID(CObservationOdometry), CLASS_ID(CObservationRange),
-#if MRPT_HAS_OPENCV  // These classes need CImage serialization
     CLASS_ID(CObservationImage), CLASS_ID(CObservationStereoImages),
-#endif
     CLASS_ID(CObservationCANBusJ1939), CLASS_ID(CObservationRawDAQ),
     CLASS_ID(CObservation6DFeatures), CLASS_ID(CObservationVelodyneScan),
     CLASS_ID(CObservationRotatingScan),
     // Actions:
     CLASS_ID(CActionRobotMovement2D), CLASS_ID(CActionRobotMovement3D)};
+
+}
 
 // Create a set of classes, then serialize and deserialize to test possible
 // bugs:
@@ -99,7 +96,7 @@ TEST(Observations, WriteReadToMem)
     catch (const std::exception& e)
     {
       GTEST_FAIL() << "Exception during serialization test for class '" << cl->className << "':\n"
-                   << e.what() << endl;
+                   << e.what() << "\n";
     }
   }
 }
@@ -124,7 +121,7 @@ TEST(Observations, WriteReadToOctectVectors)
     catch (const std::exception& e)
     {
       GTEST_FAIL() << "Exception during serialization test for class '" << cl->className << "':\n"
-                   << e.what() << endl;
+                   << e.what() << "\n";
     }
   }
 }
@@ -182,7 +179,12 @@ void run_copy_tests()
     T obj1;
 
     if (round == 1)
-      if (!aux_get_sample_data(obj1)) break;
+    {
+      if (!aux_get_sample_data(obj1))
+      {
+        break;
+      }
+    }
 
     arch << obj1;
     buf.Seek(0);
@@ -217,10 +219,8 @@ TEST(Observations, CopyCtorAssignOp)
   run_copy_tests<CObservationGasSensors>();
   run_copy_tests<CObservationReflectivity>();
   run_copy_tests<CObservationRange>();
-#if MRPT_HAS_OPENCV  // These classes need CImage serialization
   run_copy_tests<CObservationImage>();
   run_copy_tests<CObservationStereoImages>();
-#endif
   run_copy_tests<CObservationCANBusJ1939>();
   run_copy_tests<CObservationRawDAQ>();
   run_copy_tests<CObservation6DFeatures>();

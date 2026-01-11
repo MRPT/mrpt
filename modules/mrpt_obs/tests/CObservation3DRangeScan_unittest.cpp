@@ -13,7 +13,6 @@
 */
 
 #include <gtest/gtest.h>
-#include <mrpt/config.h>
 #include <mrpt/containers/copy_container_typecasting.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -26,11 +25,6 @@
 
 using namespace mrpt;
 using namespace std;
-
-// We need OPENCV to read the image internal to CObservation3DRangeScan,
-// and to build the unprojected points LUTs, so skip tests if we don't have
-// opencv.
-#if MRPT_HAS_OPENCV
 
 constexpr unsigned int TEST_RANGEIMG_WIDTH = 32;
 constexpr unsigned int TEST_RANGEIMG_HEIGHT = 24;
@@ -384,4 +378,3 @@ TEST(CObservation3DRangeScan, SyntheticDepth)
     }
   }
 }
-#endif

@@ -16,7 +16,7 @@ find_package(mrpt_common REQUIRED)
 find_package(mrpt_bayes REQUIRED)
 
 # define lib:
-set(LIB_SRCS
+set(LIB_SOURCES
   src/CPointPDFSOG.cpp
   src/CPosePDFParticles.cpp
   src/CPose2DInterpolator.cpp
@@ -80,7 +80,7 @@ set(LIB_SRCS
   tests/Lie_unittest.cpp
 )
 
-set(LIB_PUBLIC_HDRS
+set(LIB_PUBLIC_HEADERS
   include/mrpt/poses/poses_frwds.h
   include/mrpt/poses/CPoint2DPDF.h
   include/mrpt/poses/CPose2D.h
@@ -138,7 +138,7 @@ endif()
 
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
-  SOURCES ${LIB_SRCS} ${LIB_PUBLIC_HDRS}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_bayes
 #  PRIVATE_LINK_LIBRARIES

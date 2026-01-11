@@ -117,7 +117,7 @@ bool CGPSInterface::parse_NMEA(
   // a date.
   static mrpt::system::TTimeStamp last_known_time = mrpt::Clock::now();
 
-  if (verbose) cout << "[CGPSInterface] GPS raw string: " << s << endl;
+  if (verbose) cout << "[CGPSInterface] GPS raw string: " << s << "\n";
 
   // Firstly! If the string does not start with "$GP" it is not valid:
   if (s.size() < 7) return false;

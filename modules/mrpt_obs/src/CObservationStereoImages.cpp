@@ -261,9 +261,6 @@ void CObservationStereoImages::getDescriptionAsText(std::ostream& o) const
         (unsigned int)imageLeft.getHeight());
 
     o << " Channels order: " << imageLeft.getChannelsOrder() << "\n";
-
-    o << format(
-        " Rows are stored in top-bottom order: %s\n", imageLeft.isOriginTopLeft() ? "YES" : "NO");
   }
 
   o << "\n# Left camera calibration:\n" << stParams.leftCamera.asYAML();

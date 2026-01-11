@@ -16,7 +16,7 @@ find_package(mrpt_common REQUIRED)
 find_package(mrpt_poses REQUIRED)
 
 # define lib:
-set(LIB_SRCS
+set(LIB_SOURCES
   src/registerAllClasses.cpp
   src/se2_l2_internal.h
   src/se2_l2_ransac.cpp
@@ -28,7 +28,7 @@ set(LIB_SRCS
   tests/se3_unittest.cpp
 )
 
-set(LIB_PUBLIC_HDRS
+set(LIB_PUBLIC_HEADERS
   include/mrpt/tfest.h
   include/mrpt/tfest/indiv-compat-decls.h
   include/mrpt/tfest/registerAllClasses.h
@@ -43,7 +43,7 @@ endif()
 
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
-  SOURCES ${LIB_SRCS} ${LIB_PUBLIC_HDRS}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_poses
 #  PRIVATE_LINK_LIBRARIES

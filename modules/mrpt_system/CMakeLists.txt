@@ -23,7 +23,7 @@ find_package(Filesystem REQUIRED)  # Use C++17 filesystem lib
 include(./cmake/find_inotify.cmake REQUIRED)     # Check for the sys/inotify headers (Linux only, in win32 we use the equivalent API for file system monitoring):
 
 # define lib:
-set(LIB_SRCS
+set(LIB_SOURCES
   src/progress.cpp
   src/CTicTac.cpp
   src/crc.cpp
@@ -55,7 +55,7 @@ set(LIB_SRCS
   tests/crc_unittest.cpp
 )
 
-set(LIB_PUBLIC_HDRS
+set(LIB_PUBLIC_HEADERS
   include/mrpt/system/CRateTimer.h
   include/mrpt/system/CControlledRateTimer.h
   include/mrpt/system/hyperlink.h
@@ -84,7 +84,7 @@ set(LIB_PUBLIC_HDRS
 
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
-  SOURCES ${LIB_SRCS} ${LIB_PUBLIC_HDRS}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_core
     mrpt::mrpt_typemeta

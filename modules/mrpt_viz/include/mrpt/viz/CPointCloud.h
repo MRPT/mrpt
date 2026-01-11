@@ -322,11 +322,11 @@ class PointCloudAdapter<mrpt::viz::CPointCloud>
   {
   }
   /** Get number of points */
-  size_t size() const { return m_obj.size(); }
+  [[nodiscard]] size_t size() const { return m_obj.size(); }
   /** Set number of points (to uninitialized values) */
   void resize(size_t N) { m_obj.resize(N); }
   /** Does nothing as of now */
-  void setDimensions(size_t height, size_t width) {}
+  void setDimensions([[maybe_unused]] size_t height, [[maybe_unused]] size_t width) {}
   /** Get XYZ coordinates of i'th point */
   template <typename T>
   void getPointXYZ(size_t idx, T& x, T& y, T& z) const
@@ -337,13 +337,23 @@ class PointCloudAdapter<mrpt::viz::CPointCloud>
     z = pt.z;
   }
   /** Set XYZ coordinates of i'th point */
-  void setPointXYZ(size_t idx, const coords_t x, const coords_t y, const coords_t z)
+  void setPointXYZ(size_t idx, coords_t x, coords_t y, coords_t z)
   {
     m_obj.setPoint_fast(idx, x, y, z);
   }
 
   /** Set XYZ coordinates of i'th point */
   void setInvalidPoint(size_t idx) { m_obj.setPoint_fast(idx, 0, 0, 0); }
+
+  /** Set RGBu8 coordinates of i'th point */
+  void setPointRGBu8(
+      [[maybe_unused]] size_t idx,
+      [[maybe_unused]] uint8_t r,
+      [[maybe_unused]] uint8_t g,
+      [[maybe_unused]] uint8_t b)
+  {
+    // Ignored for this class
+  }
 
 };  // end of PointCloudAdapter<mrpt::viz::CPointCloud>
 
@@ -359,7 +369,7 @@ void CPointCloud::loadFromPointsMap(const POINTSMAP* themap)
   pc_dst.resize(N);
   for (size_t i = 0; i < N; i++)
   {
-    float x, y, z;
+    float x, y, z;  // NOLINT
     pc_src.getPointXYZ(i, x, y, z);
     pc_dst.setPointXYZ(i, x, y, z);
   }

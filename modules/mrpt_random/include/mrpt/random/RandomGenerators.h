@@ -23,7 +23,7 @@
 #include <type_traits>  // remove_reference
 #include <vector>
 
-// Frwd decl:
+// Forward decl:
 namespace Eigen
 {
 template <typename MatrixType>

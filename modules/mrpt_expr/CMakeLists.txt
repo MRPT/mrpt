@@ -15,7 +15,7 @@ find_package(mrpt_common REQUIRED)
 find_package(mrpt_system REQUIRED)
 
 # define lib:
-set(LIB_SRCS
+set(LIB_SOURCES
   src/CRuntimeCompiledExpression.cpp
   tests/CRuntimeCompiledExpression_unittest.cpp
 )
@@ -36,14 +36,14 @@ else()
   set(MRPT_USE_SYSTEM_EXPRTK OFF)
 endif()
 
-set(LIB_PUBLIC_HDRS
+set(LIB_PUBLIC_HEADERS
   include/mrpt/expr/mrpt-expr_export.h
   include/mrpt/expr/CRuntimeCompiledExpression.h
 )
 
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
-  SOURCES ${LIB_SRCS} ${LIB_PUBLIC_HDRS}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_system
 #  PRIVATE_LINK_LIBRARIES

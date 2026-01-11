@@ -86,7 +86,7 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
       const bool save_altitude = false;
 
       const string outfilname = mrpt::system::fileNameChangeExtension(m_inFile, "kml");
-      VERBOSE_COUT << "Writing KML file: " << outfilname << endl;
+      VERBOSE_COUT << "Writing KML file: " << outfilname << "\n";
 
       CFileOutputStream f(outfilname);
 
@@ -302,7 +302,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
       }
 
       VERBOSE_COUT << "Number of timestamps in ALL the " << gpsKindLabel
-                   << " GPSs     : " << lstxyz.size() << endl;
+                   << " GPSs     : " << lstxyz.size() << "\n";
 
       CMatrixDouble MAT(lstxyz.size(), 1 + 3 * lstlabels.size());
       int nLabels = 0;
@@ -329,7 +329,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
       const string jointFilName =
           format("%s_JOINT%s_%s.txt", m_filPrefix.c_str(), gpsKindLabel, joint_name.c_str());
 
-      VERBOSE_COUT << "Writing joint GPS file: " << jointFilName << endl;
+      VERBOSE_COUT << "Writing joint GPS file: " << jointFilName << "\n";
 
       MAT.saveToTextFile(
           jointFilName, MATRIX_FORMAT_ENG, false,
@@ -382,7 +382,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
         const std::string fileName = m_filPrefix + string("_") +
                                      fileNameStripInvalidChars(obs->sensorLabel) + string(".txt");
 
-        VERBOSE_COUT << "Writing GPS TXT file: " << fileName << endl;
+        VERBOSE_COUT << "Writing GPS TXT file: " << fileName << "\n";
 
         f_this = lstFiles[obs->sensorLabel] = os::fopen(fileName.c_str(), "wt");
         if (!f_this) THROW_EXCEPTION_FMT("Cannot open output file for write: %s", fileName.c_str());
@@ -511,9 +511,9 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
       // Save the joint file:
       // -------------------------
       VERBOSE_COUT << "Number of different GPS sensorLabels     : " << lstAllGPSlabels.size()
-                   << endl;
+                   << "\n";
       VERBOSE_COUT << "Number of different RTK GPS sensorLabels : " << lstAllGPSlabels_RTK.size()
-                   << endl;
+                   << "\n";
 
       if (!lstAllGPSlabels.empty()) doSaveJointFile(lstXYZallGPS, lstAllGPSlabels, "");
 
@@ -583,7 +583,7 @@ DECLARE_OP_FUNCTION(op_export_gps_all)
           const std::string fileName =
               m_filPrefix + string("_") + fileNameStripInvalidChars(sLabelMsg) + string(".txt");
 
-          VERBOSE_COUT << "Writing GPS TXT file: " << fileName << endl;
+          VERBOSE_COUT << "Writing GPS TXT file: " << fileName << "\n";
 
           f_this = lstFiles[sLabelMsg] = os::fopen(fileName.c_str(), "wt");
           if (!f_this)
@@ -613,7 +613,7 @@ DECLARE_OP_FUNCTION(op_export_gps_all)
     // Destructor: close files and generate summary files:
     ~CRawlogProcessor_ExportGPS_ALL()
     {
-      VERBOSE_COUT << "Number of different files saved   : " << lstFiles.size() << endl;
+      VERBOSE_COUT << "Number of different files saved   : " << lstFiles.size() << "\n";
 
       for (auto it = lstFiles.begin(); it != lstFiles.end(); ++it)
       {

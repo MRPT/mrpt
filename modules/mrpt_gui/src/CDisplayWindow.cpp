@@ -525,7 +525,7 @@ void CDisplayWindow::resize(
 #if MRPT_HAS_WXWIDGETS
   if (!isOpen())
   {
-    cerr << "[CDisplayWindow::resize] Window closed!: " << m_caption << endl;
+    cerr << "[CDisplayWindow::resize] Window closed!: " << m_caption << "\n";
     return;
   }
 
@@ -547,7 +547,7 @@ void CDisplayWindow::setPos([[maybe_unused]] int x, [[maybe_unused]] int y)
 #if MRPT_HAS_WXWIDGETS
   if (!isOpen())
   {
-    cerr << "[CDisplayWindow::setPos] Window closed!: " << m_caption << endl;
+    cerr << "[CDisplayWindow::setPos] Window closed!: " << m_caption << "\n";
     return;
   }
 
@@ -569,7 +569,7 @@ void CDisplayWindow::setWindowTitle([[maybe_unused]] const std::string& str)
 #if MRPT_HAS_WXWIDGETS
   if (!isOpen())
   {
-    cerr << "[CDisplayWindow::setWindowTitle] Window closed!: " << m_caption << endl;
+    cerr << "[CDisplayWindow::setWindowTitle] Window closed!: " << m_caption << "\n";
     return;
   }
 

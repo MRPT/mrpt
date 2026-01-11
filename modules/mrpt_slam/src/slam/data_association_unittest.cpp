@@ -53,7 +53,7 @@ TEST(DataAssociation, TestNoICs)
           metricMaha, 0.0);
 
       EXPECT_EQ(0u, DAresults.associations.size())
-          << "For da_method=" << da_method << " and da_metric=" << da_metric << endl;
+          << "For da_method=" << da_method << " and da_metric=" << da_metric << "\n";
     }
   }
 }

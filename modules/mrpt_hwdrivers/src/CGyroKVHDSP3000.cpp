@@ -99,7 +99,7 @@ void CGyroKVHDSP3000::initialize()
   */
   m_serialPort = std::make_unique<CSerialPort>(m_com_port);
   if (!(m_serialPort->isOpen())) THROW_EXCEPTION("can't open serial port");
-  cout << "m_COMbaud " << m_COMbauds << endl;
+  cout << "m_COMbaud " << m_COMbauds << "\n";
   m_serialPort->setConfig(m_COMbauds);
 
   changeMode(m_mode);
@@ -121,21 +121,24 @@ void CGyroKVHDSP3000::loadConfig_sensorSpecific(
       DEG2RAD(configSource.read_float(iniSection, "pose_pitch", 0, false)),
       DEG2RAD(configSource.read_float(iniSection, "pose_roll", 0, false)));
   string operatingMode = configSource.read_string(iniSection, "operatingMode", "rate", false);
-  cout << "Operating mode : " << operatingMode << endl;
+  cout << "Operating mode : " << operatingMode << "\n";
   if (operatingMode == "incremental")
   {
     m_mode = INCREMENTAL_ANGLE;
-    cout << "Incremental mode" << endl;
+    cout << "Incremental mode"
+         << "\n";
   }
   else if (operatingMode == "integral")
   {
     m_mode = INTEGRATED_ANGLE;
-    cout << "Integrated mode" << endl;
+    cout << "Integrated mode"
+         << "\n";
   }
   else
   {
     m_mode = RATE;
-    cout << "Rate mode" << endl;
+    cout << "Rate mode"
+         << "\n";
   }
   m_com_port = configSource.read_string(iniSection, "COM_port_LIN", m_com_port, false);
 }

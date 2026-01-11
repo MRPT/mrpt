@@ -334,8 +334,8 @@ bool CVelodyneScanner::getNextObservation(
   {
     cerr << "[CVelodyneScanner::getObservation] Returning false due to "
             "exception: "
-         << endl;
-    cerr << e.what() << endl;
+         << "\n";
+    cerr << e.what() << "\n";
     return false;
   }
 }
@@ -354,7 +354,8 @@ void CVelodyneScanner::doProcess()
   else
   {
     m_state = ssError;
-    cerr << "ERROR receiving data from Velodyne devic!" << endl;
+    cerr << "ERROR receiving data from Velodyne devic!"
+         << "\n";
   }
 }
 

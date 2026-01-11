@@ -43,7 +43,7 @@ DECLARE_OP_FUNCTION(op_list_images)
         CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose)
     {
       getArgValue<std::string>(cmdline, "text-file-output", m_out_file);
-      VERBOSE_COUT << "Writing list to: " << m_out_file << endl;
+      VERBOSE_COUT << "Writing list to: " << m_out_file << "\n";
 
       m_out.open(m_out_file.c_str());
 

@@ -145,9 +145,6 @@ void CObservationImage::getDescriptionAsText(std::ostream& o) const
         (unsigned int)image.getHeight());
 
     o << " Channels order: " << image.getChannelsOrder() << "\n";
-
-    o << format(
-        " Rows are stored in top-bottom order: %s\n", image.isOriginTopLeft() ? "YES" : "NO");
   }
 
   o << "\n# Camera calibration parameters\n"
@@ -160,8 +157,10 @@ void CObservationImage::load_impl() const
   const thread_local bool MRPT_DEBUG_OBSIMG_LAZY_LOAD =
       mrpt::get_env<bool>("MRPT_DEBUG_OBSIMG_LAZY_LOAD", false);
   if (MRPT_DEBUG_OBSIMG_LAZY_LOAD)
+  {
     std::cout << "[CObservationImage::load()] Called on this="
-              << reinterpret_cast<const void*>(this) << std::endl;
+              << reinterpret_cast<const void*>(this) << "\n";  // NOLINT
+  }
 
   image.forceLoad();
 }
@@ -170,8 +169,10 @@ void CObservationImage::unload() const
   const thread_local bool MRPT_DEBUG_OBSIMG_LAZY_LOAD =
       mrpt::get_env<bool>("MRPT_DEBUG_OBSIMG_LAZY_LOAD", false);
   if (MRPT_DEBUG_OBSIMG_LAZY_LOAD)
+  {
     std::cout << "[CObservationImage::unload()] Called on this="
-              << reinterpret_cast<const void*>(this) << std::endl;
+              << reinterpret_cast<const void*>(this) << "\n";  // NOLINT
+  }
 
   image.unload();
 }

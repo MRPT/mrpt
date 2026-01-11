@@ -214,7 +214,7 @@ bool CGPSInterface::tryToOpenTheCOM()
       std::lock_guard<std::mutex> lock(*m_data_stream_cs);
       if (serial->isOpen()) return true;  // Already open
 
-      if (m_verbose) cout << "[CGPSInterface] Opening " << m_COMname << " @ " << m_COMbauds << endl;
+      if (m_verbose) cout << "[CGPSInterface] Opening " << m_COMname << " @ " << m_COMbauds << "\n";
     }
     try
     {
@@ -345,7 +345,7 @@ void CGPSInterface::doProcess()
     {
       if (m_verbose)
         cout << "[CGPSInterface] Initial timestamp: "
-             << mrpt::system::timeToString(m_parsed_messages->timestamp) << endl;
+             << mrpt::system::timeToString(m_parsed_messages->timestamp) << "\n";
       // Check if the initial timestamp seems to be OK (not a spurio one)
       TTimeStamp tmNow = mrpt::Clock::now();
       const double tdif = mrpt::system::timeDifference(m_parsed_messages->timestamp, tmNow);
@@ -356,7 +356,7 @@ void CGPSInterface::doProcess()
         if (m_verbose)
           cout << "[CGPSInterface] Warning: The initial timestamp "
                   "seems to be wrong! : "
-               << tdif << endl;
+               << tdif << "\n";
       }
     }  // end-if
     else
@@ -369,7 +369,9 @@ void CGPSInterface::doProcess()
       // than 5 minutes later ->
       // remove spurious
       {
-        if (m_verbose) cout << "[CGPSInterface ] Bad timestamp difference" << endl;
+        if (m_verbose)
+          cout << "[CGPSInterface ] Bad timestamp difference"
+               << "\n";
         return;
       }
 
@@ -378,7 +380,7 @@ void CGPSInterface::doProcess()
         if (m_verbose)
           cout << "[CGPSInterface] WARNING: According to the "
                   "timestamps, we probably skipped one frame!"
-               << endl;
+               << "\n";
       }
 
       // a. These GPS data have both synched RMC and GGA data
@@ -656,7 +658,7 @@ bool CGPSInterface::setJAVAD_AIM_mode()
     // as normal
 
     ASSERT_(!m_JAVAD_rtk_format.empty());
-    cout << "Formato de correcciones para GR3: " << m_JAVAD_rtk_format << endl;
+    cout << "Formato de correcciones para GR3: " << m_JAVAD_rtk_format << "\n";
     if (m_JAVAD_rtk_format == "cmr")
     {
       JAVAD_sendMessage(format(
@@ -691,7 +693,7 @@ bool CGPSInterface::setJAVAD_AIM_mode()
     {
       cout << "Unknown RTK corrections format. Only supported: CMR, RTCM "
               "or RTCM3"
-           << endl;
+           << "\n";
       return false;
     }
     JAVAD_sendMessage("%%set,/par/cur/term/imode,jps\r\n");  // sets current
@@ -730,7 +732,9 @@ bool CGPSInterface::legacy_topcon_setup_commands()
   }
 
   // Configure RTK mode and source:
-  if (m_verbose) cout << "[CGPSInterface] Configure RTK options" << endl;
+  if (m_verbose)
+    cout << "[CGPSInterface] Configure RTK options"
+         << "\n";
 
   if (!m_JAVAD_rtk_src_port.empty())
   {
@@ -788,7 +792,9 @@ bool CGPSInterface::legacy_topcon_setup_commands()
   {
     if (m_verbose) cout << "[CGPSInterface] Using Advanced Input Mode";
     m_topcon_AIMConfigured = setJAVAD_AIM_mode();
-    if (m_verbose) cout << "... done" << endl;
+    if (m_verbose)
+      cout << "... done"
+           << "\n";
   }
   JAVAD_sendMessage(format("%%%%em,,/msg/nmea/GGA:%.1f\r\n", m_topcon_data_period).c_str());
   JAVAD_sendMessage(
@@ -799,14 +805,14 @@ bool CGPSInterface::legacy_topcon_setup_commands()
     if (m_verbose)
       cout << "[CGPSInterface::OnConnectionEstablished] JAVAD/TopCon "
               "commands sent successfully with AIM."
-           << endl;
+           << "\n";
   }
   else
   {
     if (m_verbose)
       cout << "[CGPSInterface::OnConnectionEstablished] JAVAD/TopCon "
               "commands sent successfully."
-           << endl;
+           << "\n";
   }
 
   return true;

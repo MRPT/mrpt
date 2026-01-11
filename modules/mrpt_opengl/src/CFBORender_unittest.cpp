@@ -28,7 +28,7 @@
 #include <mrpt/config.h>  // for MRPT_HAS_*
 #include <test_mrpt_common.h>
 
-#if MRPT_HAS_OPENCV && MRPT_HAS_OPENGL_GLUT && MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_EGL
 #define RUN_OFFSCREEN_RENDER_TESTS
 #endif
 

@@ -23,7 +23,7 @@ include(./cmake/script_ftdi.cmake REQUIRED)
 
 
 # define lib:
-set(LIB_SRCS
+set(LIB_SOURCES
   src/CClientTCPSocket.cpp
   src/CInterfaceFTDI_common.cpp
   src/CInterfaceFTDI_LIN.cpp
@@ -38,7 +38,7 @@ set(LIB_SRCS
   tests/sockets_unittest.cpp
 )
 
-set(LIB_PUBLIC_HDRS
+set(LIB_PUBLIC_HEADERS
   include/mrpt/comms.h
   include/mrpt/comms/CServerTCPSocket.h
   include/mrpt/comms/nodelets.h
@@ -51,7 +51,7 @@ set(LIB_PUBLIC_HDRS
 
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
-  SOURCES ${LIB_SRCS} ${LIB_PUBLIC_HDRS}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_io
   CMAKE_DEPENDENCIES

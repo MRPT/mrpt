@@ -41,10 +41,6 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 
-#if MRPT_HAS_OPENCV
-
-#endif
-
 #include <mutex>
 #include <optional>
 

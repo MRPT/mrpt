@@ -305,7 +305,8 @@ void CWindowDialogPlots::plot(
     if (!lyPlot2D)
     {
       cerr << "[CWindowDialogPlots::plot] Plot name '" << plotName
-           << "' is not of expected class mpFXYVector!." << endl;
+           << "' is not of expected class mpFXYVector!."
+           << "\n";
       return;
     }
 
@@ -451,7 +452,7 @@ void CWindowDialogPlots::plotEllipse(
   {
     cerr << "[CWindowDialogPlots::plotEllipse] vectors do not have "
             "expected size!!"
-         << endl;
+         << "\n";
     return;
   }
 
@@ -470,7 +471,8 @@ void CWindowDialogPlots::plotEllipse(
     if (!lyPlotEllipse)
     {
       cerr << "[CWindowDialogPlots::plotEllipse] Plot name '" << plotName
-           << "' is not of expected class mpCovarianceEllipse!." << endl;
+           << "' is not of expected class mpCovarianceEllipse!."
+           << "\n";
       return;
     }
 
@@ -616,7 +618,8 @@ void CWindowDialogPlots::image(
     if (!ly)
     {
       cerr << "[CWindowDialogPlots::image] Plot name '" << plotName
-           << "' is not of expected class mpBitmapLayer!." << endl;
+           << "' is not of expected class mpBitmapLayer!."
+           << "\n";
       return;
     }
 
@@ -704,7 +707,7 @@ void CDisplayWindowPlots::resize(
 #if MRPT_HAS_WXWIDGETS
   if (!isOpen())
   {
-    cerr << "[CDisplayWindowPlots::resize] Window closed!: " << m_caption << endl;
+    cerr << "[CDisplayWindowPlots::resize] Window closed!: " << m_caption << "\n";
     return;
   }
 
@@ -726,7 +729,7 @@ void CDisplayWindowPlots::setPos([[maybe_unused]] int x, [[maybe_unused]] int y)
 #if MRPT_HAS_WXWIDGETS
   if (!isOpen())
   {
-    cerr << "[CDisplayWindowPlots::setPos] Window closed!: " << m_caption << endl;
+    cerr << "[CDisplayWindowPlots::setPos] Window closed!: " << m_caption << "\n";
     return;
   }
 
@@ -748,7 +751,7 @@ void CDisplayWindowPlots::setWindowTitle([[maybe_unused]] const std::string& str
 #if MRPT_HAS_WXWIDGETS
   if (!isOpen())
   {
-    cerr << "[CDisplayWindowPlots::setWindowTitle] Window closed!: " << m_caption << endl;
+    cerr << "[CDisplayWindowPlots::setWindowTitle] Window closed!: " << m_caption << "\n";
     return;
   }
 

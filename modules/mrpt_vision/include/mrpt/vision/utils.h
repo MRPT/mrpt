@@ -44,38 +44,6 @@ namespace vision
 /** \addtogroup mrpt_vision_grp
  *  @{ */
 
-/**	Computes the correlation between this image and another one, encapsulating
- * the openCV function cvMatchTemplate
- *   This implementation reduced computation time.
- * \param img            [IN]    The imput image. This function supports
- * gray-scale (1 channel only) images.
- * \param patch_img      [IN]    The "patch" image, which must be equal, or
- * smaller than "this" image. This function supports gray-scale (1 channel only)
- * images.
- * \param x_max          [OUT]   The x coordinate where it was found the maximun
- * cross correlation value.
- * \param y_max          [OUT]   The y coordinate where it was found the maximun
- * cross correlation value.
- * \param max_val        [OUT]   The maximun value of cross correlation which we
- * can find
- * \param x_search_ini   [IN]    The "x" coordinate of the search window.
- * \param y_search_ini   [IN]    The "y" coordinate of the search window.
- * \param x_search_size  [IN]    The width of the search window.
- * \param y_search_size  [IN]    The height of the search window.
- *  Note: By default, the search area is the whole (this) image.
- * \sa cross_correlation
- */
-void openCV_cross_correlation(
-    const mrpt::img::CImage& img,
-    const mrpt::img::CImage& patch_img,
-    size_t& x_max,
-    size_t& y_max,
-    double& max_val,
-    int x_search_ini = -1,
-    int y_search_ini = -1,
-    int x_search_size = -1,
-    int y_search_size = -1);
-
 /** Extract a UNITARY 3D vector in the direction of a 3D point, given from its
  * (x,y) pixels coordinates, and the camera intrinsic coordinates.
  *  \param xy  [IN]   Pixels coordinates, from the top-left corner of the

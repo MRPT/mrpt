@@ -30,28 +30,29 @@ namespace mrpt::obs::detail
 // cloud:
 template <class POINTMAP>
 void do_project_3d_pointcloud(
-    const int H,
-    const int W,
+    int H,
+    int W,
     const float* kxs,
     const float* kys,
     const float* kzs,
     mrpt::math::CMatrix_u16& rangeImage,
-    const float rangeUnits,
+    float rangeUnits,
     mrpt::viz::PointCloudAdapter<POINTMAP>& pca,
     std::vector<uint16_t>& idxs_x,
     std::vector<uint16_t>& idxs_y,
     const mrpt::obs::TRangeImageFilterParams& fp,
     bool MAKE_ORGANIZED,
-    const int DECIM);
+    int decimation);
+
 template <class POINTMAP>
 void do_project_3d_pointcloud_SSE2(
-    const int H,
-    const int W,
+    int H,
+    int W,
     const float* kxs,
     const float* kys,
     const float* kzs,
     mrpt::math::CMatrix_u16& rangeImage,
-    const float rangeUnits,
+    float rangeUnits,
     mrpt::viz::PointCloudAdapter<POINTMAP>& pca,
     std::vector<uint16_t>& idxs_x,
     std::vector<uint16_t>& idxs_y,
@@ -66,7 +67,7 @@ inline void range2XYZ_LUT(
     const mrpt::obs::TRangeImageFilterParams& fp,
     const int H,
     const int W,
-    const int DECIM,
+    const int decimation,
     const bool use_rotated_LUT)
 {
   const size_t WH = W * H;
@@ -100,7 +101,8 @@ inline void range2XYZ_LUT(
 
 #if MRPT_HAS_SSE2
   // if image width is not 8*N, use standard method
-  if ((W & 0x07) == 0 && pp.USE_SSE2 && DECIM == 1 && mrpt::cpu::supports(mrpt::cpu::feature::SSE2))
+  if ((W & 0x07) == 0 && pp.USE_SSE2 && decimation == 1 &&
+      mrpt::cpu::supports(mrpt::cpu::feature::SSE2))
     do_project_3d_pointcloud_SSE2(
         H, W, kxs, kys, kzs, *ri, src_obs.rangeUnits, pca, src_obs.points3D_idxs_x,
         src_obs.points3D_idxs_y, fp, pp.MAKE_ORGANIZED);
@@ -108,7 +110,7 @@ inline void range2XYZ_LUT(
 #endif
     do_project_3d_pointcloud(
         H, W, kxs, kys, kzs, *ri, src_obs.rangeUnits, pca, src_obs.points3D_idxs_x,
-        src_obs.points3D_idxs_y, fp, pp.MAKE_ORGANIZED, DECIM);
+        src_obs.points3D_idxs_y, fp, pp.MAKE_ORGANIZED, decimation);
 
   // Do final traslation, if we were generating points in the vehicle frame:
   if (use_rotated_LUT)
@@ -169,7 +171,7 @@ void unprojectInto(
   ASSERT_(W != 0 && H != 0);
   const size_t WH = W * H;
 
-  const auto DECIM = pp.decimation;
+  const auto decimation = pp.decimation;
   if (pp.decimation == 1)
   {
     // No decimation: one point per range image pixel
@@ -179,16 +181,19 @@ void unprojectInto(
     // Reserve memory for 3D points. It will be later resized again to the
     // actual number of valid points
     pca.resize(WH);
-    if (pp.MAKE_ORGANIZED) pca.setDimensions(H, W);
+    if (pp.MAKE_ORGANIZED)
+    {
+      pca.setDimensions(H, W);
+    }
   }
   else
   {
     // Decimate range image:
     ASSERTMSG_(
-        (W % DECIM) == 0 && (H % DECIM == 0),
+        (W % decimation) == 0 && (H % decimation == 0),
         "Width/Height are not an exact multiple of decimation");
-    const int Wd = W / DECIM;
-    const int Hd = H / DECIM;
+    const int Wd = W / decimation;
+    const int Hd = H / decimation;
     ASSERT_(Wd != 0 && Hd != 0);
     const size_t WHd = Wd * Hd;
 
@@ -196,7 +201,7 @@ void unprojectInto(
     pca.resize(WHd);
     if (pp.MAKE_ORGANIZED) pca.setDimensions(Hd, Wd);
   }
-  range2XYZ_LUT<POINTMAP>(pca, src_obs, pp, fp, H, W, DECIM, use_rotated_LUT);
+  range2XYZ_LUT<POINTMAP>(pca, src_obs, pp, fp, H, W, decimation, use_rotated_LUT);
 
   // -------------------------------------------------------------
   // Stage 2/3: Project local points into RGB image to get colors
@@ -268,7 +273,7 @@ void unprojectInto(
           pt_wrt_color = T_inv * pt_wrt_depth;
 
           // Project to image plane:
-          if (pt_wrt_color[2])
+          if (pt_wrt_color[2] > 0)
           {
             img_idx_x = mrpt::round(cx + fx * pt_wrt_color[0] / pt_wrt_color[2]);
             img_idx_y = mrpt::round(cy + fy * pt_wrt_color[1] / pt_wrt_color[2]);
@@ -326,9 +331,14 @@ void unprojectInto(
     mrpt::poses::CPose3D transf_to_apply;  // Either ROBOTPOSE or
     // ROBOTPOSE(+)SENSORPOSE or
     // SENSORPOSE
-    if (pp.takeIntoAccountSensorPoseOnRobot) transf_to_apply = src_obs.sensorPose;
+    if (pp.takeIntoAccountSensorPoseOnRobot)
+    {
+      transf_to_apply = src_obs.sensorPose;
+    }
     if (pp.robotPoseInTheWorld)
+    {
       transf_to_apply.composeFrom(*pp.robotPoseInTheWorld, mrpt::poses::CPose3D(transf_to_apply));
+    }
 
     const auto HM =
         transf_to_apply.getHomogeneousMatrixVal<mrpt::math::CMatrixDouble44>().cast_float();
@@ -360,14 +370,15 @@ inline void do_project_3d_pointcloud(
     std::vector<uint16_t>& idxs_y,
     const mrpt::obs::TRangeImageFilterParams& fp,
     bool MAKE_ORGANIZED,
-    const int DECIM)
+    const int decimation)
 {
   TRangeImageFilter rif(fp);
   // Preconditions: minRangeMask() has the right size
   size_t idx = 0;
-  if (DECIM == 1)
+  if (decimation == 1)
   {
     for (int r = 0; r < H; r++)
+    {
       for (int c = 0; c < W; c++)
       {
         const float D = rangeImage.coeff(r, c) * rangeUnits;
@@ -375,8 +386,14 @@ inline void do_project_3d_pointcloud(
         const auto kx = *kxs++, ky = *kys++, kz = *kzs++;
         if (!rif.do_range_filter(r, c, D))
         {
-          if (MAKE_ORGANIZED) pca.setInvalidPoint(idx++);
-          if (fp.mark_invalid_ranges) rangeImage.coeffRef(r, c) = 0;
+          if (MAKE_ORGANIZED)
+          {
+            pca.setInvalidPoint(idx++);
+          }
+          if (fp.mark_invalid_ranges)
+          {
+            rangeImage.coeffRef(r, c) = 0;
+          }
           continue;
         }
         pca.setPointXYZ(idx, kx * D, ky * D /*y*/, kz * D /*z*/);
@@ -384,20 +401,21 @@ inline void do_project_3d_pointcloud(
         idxs_y[idx] = r;
         ++idx;
       }
+    }
   }
   else
   {
-    const int Hd = H / DECIM, Wd = W / DECIM;
+    const int Hd = H / decimation, Wd = W / decimation;
 
     for (int rd = 0; rd < Hd; rd++)
       for (int cd = 0; cd < Wd; cd++)
       {
         bool valid_pt = false;
         float min_d = std::numeric_limits<float>::max();
-        for (int rb = 0; rb < DECIM; rb++)
-          for (int cb = 0; cb < DECIM; cb++)
+        for (int rb = 0; rb < decimation; rb++)
+          for (int cb = 0; cb < decimation; cb++)
           {
-            const auto r = rd * DECIM + rb, c = cd * DECIM + cb;
+            const auto r = rd * decimation + rb, c = cd * decimation + cb;
             const float D = rangeImage.coeff(r, c) * rangeUnits;
             if (rif.do_range_filter(r, c, D))
             {
@@ -414,7 +432,7 @@ inline void do_project_3d_pointcloud(
           if (MAKE_ORGANIZED) pca.setInvalidPoint(idx++);
           continue;
         }
-        const auto eq_r = rd * DECIM + DECIM / 2, eq_c = cd * DECIM + DECIM / 2;
+        const auto eq_r = rd * decimation + decimation / 2, eq_c = cd * decimation + decimation / 2;
         const auto eq_idx = eq_c + eq_r * W;
         const auto kx = kxs[eq_idx], ky = kys[eq_idx], kz = kzs[eq_idx];
         pca.setPointXYZ(idx, kx * min_d /*x*/, ky * min_d /*y*/, kz * min_d /*z*/);

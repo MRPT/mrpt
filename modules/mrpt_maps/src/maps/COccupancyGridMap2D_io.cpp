@@ -42,17 +42,9 @@ using namespace std;
 bool COccupancyGridMap2D::saveAsBitmapFile(const std::string& file) const
 {
   MRPT_START
-#if MRPT_HAS_OPENCV
-
   CImage img;
   getAsImage(img);
   return img.saveToFile(file);
-
-#else
-  std::cerr << "[COccupancyGridMap2D::saveAsBitmapFile] Doing nothing, since "
-               "MRPT was built without OpenCV.\n";
-  return true;
-#endif
   MRPT_END
 }
 

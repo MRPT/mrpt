@@ -199,5 +199,5 @@ TEST_F(ICPTests, RayTracingICP3D)
   // Checks:
   EXPECT_NEAR(0, (mean.asVectorVal() - SCAN2_POSE_ERROR.asVectorVal()).array().abs().mean(), 0.02)
       << "ICP output: mean= " << mean << endl
-      << "Real displacement: " << SCAN2_POSE_ERROR << endl;
+      << "Real displacement: " << SCAN2_POSE_ERROR << "\n";
 }

@@ -67,7 +67,10 @@ void CVisualObject::writeToStreamRender(mrpt::serialization::CArchive& out) cons
   // "m_name"
   const auto nameLen = static_cast<uint16_t>(_.name.size());
   out << nameLen;
-  if (nameLen) out.WriteBuffer(_.name.c_str(), _.name.size());
+  if (nameLen != 0)
+  {
+    out.WriteBuffer(_.name.c_str(), _.name.size());
+  }
 
   // Color, as u8:
   out << _.color.R << _.color.G << _.color.B << _.color.A;
@@ -79,9 +82,13 @@ void CVisualObject::writeToStreamRender(mrpt::serialization::CArchive& out) cons
   if (!all_scales_unity)
   {
     if (all_scales_equal)
+    {
       out << _.scale_x;
+    }
     else
+    {
       out << _.scale_x << _.scale_y << _.scale_z;
+    }
   }
 
   out << _.show_name << _.visible;
@@ -127,10 +134,13 @@ void CVisualObject::readFromStreamRender(mrpt::serialization::CArchive& in)
       case 2:
       {
         // "m_name"
-        uint16_t nameLen;
+        uint16_t nameLen = 0;
         in >> nameLen;
         _.name.resize(nameLen);
-        if (nameLen) in.ReadBuffer((void*)(&_.name[0]), _.name.size());
+        if (nameLen)
+        {
+          in.ReadBuffer((void*)(&_.name[0]), _.name.size());
+        }
 
         // Color, as u8:
         in >> _.color.R >> _.color.G >> _.color.B >> _.color.A;
@@ -153,17 +163,25 @@ void CVisualObject::readFromStreamRender(mrpt::serialization::CArchive& in)
             _.scale_y = _.scale_z = _.scale_x;
           }
           else
+          {
             in >> _.scale_x >> _.scale_y >> _.scale_z;
+          }
         }
 
         in >> _.show_name >> _.visible;
         if (serialization_version >= 1)
+        {
           in >> _.representativePoint;
+        }
         else
+        {
           _.representativePoint = mrpt::math::TPoint3Df(0, 0, 0);
+        }
 
         if (serialization_version >= 2)
+        {
           in >> _.materialShininess >> _.castShadows;
+        }
         else
         {
           // default
@@ -383,18 +401,26 @@ const math::TBoundingBoxf VisualObjectParams_Points::verticesBoundingBox() const
   return bb;
 }
 
-const mrpt::math::TBoundingBoxf VisualObjectParams_TexturedTriangles::trianglesBoundingBox() const
+mrpt::math::TBoundingBoxf VisualObjectParams_TexturedTriangles::trianglesBoundingBox() const
 {
   mrpt::math::TBoundingBoxf bb;
 
   std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
 
-  if (m_triangles.empty()) return bb;
+  if (m_triangles.empty())
+  {
+    return bb;
+  }
 
   bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
 
   for (const auto& t : m_triangles)
-    for (int i = 0; i < 3; i++) bb.updateWithPoint(t.vertices[i].xyzrgba.pt);
+  {
+    for (int i = 0; i < 3; i++)
+    {
+      bb.updateWithPoint(t.vertices[i].xyzrgba.pt);
+    }
+  }
 
   return bb;
 }
@@ -407,14 +433,17 @@ void VisualObjectParams_TexturedTriangles::writeToStreamTexturedObject(
   out << ver;
   out << m_enableTransparency << m_textureInterpolate << m_textureUseMipMaps;
   out << m_textureImage;
-  if (m_enableTransparency) out << m_textureImageAlpha;
+  if (m_enableTransparency)
+  {
+    out << m_textureImageAlpha;
+  }
   out << m_textureImageAssigned;
   out << m_enableLight << static_cast<uint8_t>(m_cullface);  // v2
 }
 
 void VisualObjectParams_TexturedTriangles::readFromStreamTexturedObject(serialization::CArchive& in)
 {
-  uint8_t version;
+  uint8_t version = 0;
   in >> version;
 
   switch (version)
@@ -444,9 +473,13 @@ void VisualObjectParams_TexturedTriangles::readFromStreamTexturedObject(serializ
         assignImage(m_textureImage);
       }
       if (version >= 1)
+      {
         in >> m_textureImageAssigned;
+      }
       else
+      {
         m_textureImageAssigned = true;
+      }
 
       if (version >= 2)
       {

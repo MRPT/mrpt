@@ -280,7 +280,8 @@ TEST(MonteCarlo2D, RunSampleDataset)
               "after all it's nondeterministic!\n";
     }
 
-    FAIL() << "Failed to converge after 3 opportunities!!" << endl;
+    FAIL() << "Failed to converge after 3 opportunities!!"
+           << "\n";
   }
   catch (const std::exception& e)
   {

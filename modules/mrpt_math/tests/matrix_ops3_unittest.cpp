@@ -92,7 +92,7 @@ TEST(Matrices, det_3x3_dyn)
   CMatrixDouble A(3, 3, dat_A);
   const double d = A.det();
   const double d_R = 0.476380435871666;
-  // cout << "d: " << d << endl;
+  // cout << "d: " << d << "\n";
   CHECK_AND_RET_ERROR(fabs(d - d_R) > 1e-4, "Error in Determinant: 3x3 dyn")
 }
 

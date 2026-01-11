@@ -353,7 +353,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
             cout << "LM iter#" << iter
                  << ": Couldn't solve LLt, retrying with larger "
                     "lambda="
-                 << lambda << endl;
+                 << lambda << "\n";
           continue;
         }
         const auto eps = mrpt::math::CVectorDynamic<double>(llt.solve(minus_g.asEigen()).eval());
@@ -364,7 +364,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
           if (p.verbose)
             cout << "Termination criterion: eps_norm < "
                     "t2*(eps_norm+t2): "
-                 << eps_norm << " < " << t2 * (eps_norm + t2) << endl;
+                 << eps_norm << " < " << t2 * (eps_norm + t2) << "\n";
           done = true;
           break;
         }
@@ -389,7 +389,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
           // Good: Accept new values
           if (p.verbose)
             cout << "LM iter#" << iter << ": Avr.err(px):" << std::sqrt(err / nObs) << "->"
-                 << std::sqrt(err_new / nObs) << " lambda:" << lambda << endl;
+                 << std::sqrt(err_new / nObs) << " lambda:" << lambda << "\n";
 
           // swap: faster than "lm_stat <- new_lm_stat"
           lm_stat.swap(new_lm_stat);
@@ -412,7 +412,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
           lambda *= nu;
           if (p.verbose)
             cout << "LM iter#" << iter << ": No update: err=" << err << " -> err_new=" << err_new
-                 << " retrying with larger lambda=" << lambda << endl;
+                 << " retrying with larger lambda=" << lambda << "\n";
           nu *= 2.0;
           done = (lambda > MAX_LAMBDA);
         }
@@ -1171,7 +1171,7 @@ double mrpt::vision::recompute_errors_and_Jacobians(
           << J_num - J_theor << endl
           << "diff (ratio):\n"
           << (J_num - J_theor).cwiseQuotient(J_num) << endl
-          << endl;
+          << "\n";
       }
 #endif
     }  // for i

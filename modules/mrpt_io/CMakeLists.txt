@@ -46,7 +46,7 @@ endif()
 
 
 # define lib:
-set(LIB_SRCS
+set(LIB_SOURCES
   src/CFileGZInputStream.cpp
   src/CFileGZOutputStream.cpp
   src/CFileInputStream.cpp
@@ -73,7 +73,7 @@ set(LIB_SRCS
 #src/CFileGZStreams_unittest.cpp 
 
 
-set(LIB_PUBLIC_HDRS
+set(LIB_PUBLIC_HEADERS
   include/mrpt/io/CTextFileLinesParser.h
   include/mrpt/io/CFileGZOutputStream.h
   include/mrpt/io/zip.h
@@ -93,7 +93,7 @@ set(LIB_PUBLIC_HDRS
 
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
-  SOURCES ${LIB_SRCS} ${LIB_PUBLIC_HDRS}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
     # Add the optional extra sources:
     ${io_EXTRA_SRCS}
   PUBLIC_LINK_LIBRARIES

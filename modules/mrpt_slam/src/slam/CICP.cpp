@@ -774,7 +774,7 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
         }  // end iterative LM
 
 #if 0  // Debuggin'
-				cout << "ICP loop: " << lastMeanPose  << " -> " << q << " LM iters: " << nLMiters  << " threshold: " << matchParams.maxDistForCorrespondence << endl;
+				cout << "ICP loop: " << lastMeanPose  << " -> " << q << " LM iters: " << nLMiters  << " threshold: " << matchParams.maxDistForCorrespondence << "\n";
 #endif
         // --------------------------------------------------------
         // now the conditions for the outer ICP loop

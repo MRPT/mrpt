@@ -195,7 +195,7 @@ void COpenNI2Sensor::loadConfig_sensorSpecific(
   m_width = configSource.read_int(iniSection, "width", 0);
   m_height = configSource.read_int(iniSection, "height", 0);
   m_fps = configSource.read_float(iniSection, "fps", 0);
-  std::cout << "width " << m_width << " height " << m_height << " fps " << m_fps << endl;
+  std::cout << "width " << m_width << " height " << m_height << " fps " << m_fps << "\n";
 
   bool hasRightCameraSection = configSource.sectionExists(iniSection + string("_RIGHT"));
   bool hasLeftCameraSection = configSource.sectionExists(iniSection + string("_LEFT"));
@@ -230,7 +230,7 @@ void COpenNI2Sensor::loadConfig_sensorSpecific(
 
   // Id:
   m_user_device_number = configSource.read_int(iniSection, "device_number", m_user_device_number);
-  // cout << "LOAD m_user_device_number " << m_user_device_number << endl;
+  // cout << "LOAD m_user_device_number " << m_user_device_number << "\n";
   m_serial_number = configSource.read_int(iniSection, "serial_number", m_serial_number);
 
   m_grab_image = configSource.read_bool(iniSection, "grab_image", m_grab_image);

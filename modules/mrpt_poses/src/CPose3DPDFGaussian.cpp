@@ -155,13 +155,13 @@ void CPose3DPDFGaussian::copyFrom(const CPose3DQuatPDFGaussian& o)
       Ax.assign(1e-7);
       CMatrixDouble H;
       jacobians::jacob_numeric_estimate(x, ffff, Ax, o.mean.quat(), H);
-      cout << "num:" << endl << H << endl << endl;
+      cout << "num:" << endl << H << endl << "\n";
       CMatrixDouble J;
       double a, b, c;
       o.mean.quat().rpy_and_jacobian(a, b, c, &J);
       CMatrixDouble NJ;
       o.mean.quat().normalizationJacobian(NJ);
-      cout << "lin:" << endl << J * NJ << endl << endl;
+      cout << "lin:" << endl << J * NJ << endl << "\n";
     }
 #endif
 

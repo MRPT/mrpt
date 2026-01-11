@@ -300,7 +300,7 @@ C3DWindowDialog::C3DWindowDialog(
   // Increment number of windows:
   // int winCount =
   WxSubsystem::CWXMainFrame::notifyWindowCreation();
-// cout << "[C3DWindowDialog] Notifying new window: " << winCount << endl;
+// cout << "[C3DWindowDialog] Notifying new window: " << winCount << "\n";
 #else
   THROW_EXCEPTION("MRPT was compiled without OpenGL support");
 #endif
@@ -310,7 +310,7 @@ C3DWindowDialog::C3DWindowDialog(
 // Destructor
 C3DWindowDialog::~C3DWindowDialog()
 {
-  //	cout << "[C3DWindowDialog::~C3DWindowDialog]" << endl;
+  //	cout << "[C3DWindowDialog::~C3DWindowDialog]" << "\n";
 }
 
 // OnClose event:
@@ -329,7 +329,7 @@ void C3DWindowDialog::OnClose(wxCloseEvent& event)
   }
   if (!allow_close) return;  // Don't process this close event.
 
-  //	cout << "[C3DWindowDialog::OnClose]" << endl;
+  //	cout << "[C3DWindowDialog::OnClose]" << "\n";
   // Set the m_hwnd=nullptr in our parent object.
   m_win3D->notifyChildWindowDestruction();
 
@@ -423,7 +423,7 @@ void CDisplayWindow3D::resize(
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
   if (!isOpen())
   {
-    cerr << "[CDisplayWindow3D::setPos] Window closed!: " << m_caption << endl;
+    cerr << "[CDisplayWindow3D::setPos] Window closed!: " << m_caption << "\n";
     return;
   }
 
@@ -445,7 +445,7 @@ void CDisplayWindow3D::setPos([[maybe_unused]] int x, [[maybe_unused]] int y)
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
   if (!isOpen())
   {
-    cerr << "[CDisplayWindow3D::setPos] Window closed!: " << m_caption << endl;
+    cerr << "[CDisplayWindow3D::setPos] Window closed!: " << m_caption << "\n";
     return;
   }
 
@@ -467,7 +467,7 @@ void CDisplayWindow3D::setWindowTitle([[maybe_unused]] const std::string& str)
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
   if (!isOpen())
   {
-    cerr << "[CDisplayWindow3D::setWindowTitle] Window closed!: " << m_caption << endl;
+    cerr << "[CDisplayWindow3D::setWindowTitle] Window closed!: " << m_caption << "\n";
     return;
   }
 

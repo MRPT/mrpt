@@ -367,7 +367,7 @@ bool CSickLaserSerial::waitContinuousSampleFrame(
                 "[CSickLaserSerial::waitContinuousSampleFrame] bad CRC "
                 "len=%u nptns=%u: %i != %i",
                 unsigned(lengthField), unsigned(n_points), CRC_packet, CRC)
-         << endl;
+         << "\n";
     return false;  // Bad CRC
   }
 
@@ -384,7 +384,7 @@ void CSickLaserSerial::initialize()
   memset(m_received_frame_buffer, 0, sizeof(m_received_frame_buffer));
   if (!tryToOpenComms(&err_str))
   {
-    cerr << err_str << endl;
+    cerr << err_str << "\n";
     throw std::logic_error(err_str);
   }
 }
@@ -784,7 +784,7 @@ bool CSickLaserSerial::SendCommandToSICK(const uint8_t* cmd, const uint16_t cmd_
     {
       cout << "[CSickLaserSerial::SendCommandToSICK] Error writing data "
               "to serial port."
-           << endl;
+           << "\n";
       return false;
     }
     std::this_thread::sleep_for(15ms);

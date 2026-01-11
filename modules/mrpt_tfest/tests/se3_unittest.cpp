@@ -146,14 +146,15 @@ void se3_l2_MatchList_test()
     EXPECT_TRUE(err < 1e-6) << "Applied quaternion: " << endl
                             << qPose << endl
                             << "Out CPose3DQuat: " << endl
-                            << outQuat << " [Err: " << err << "]" << endl;
+                            << outQuat << " [Err: " << err << "]"
+                            << "\n";
   }
   else
   {
     GTEST_FAIL() << "Applied quaternion: " << endl
                  << qPose << endl
                  << "Out CPose3DQuat: " << endl
-                 << outQuat << endl;
+                 << outQuat << "\n";
   }
 }
 
@@ -188,14 +189,15 @@ TEST(tfest, se3_l2_PtsLists)
     EXPECT_TRUE(err < 1e-6) << "Applied quaternion: " << endl
                             << qPose << endl
                             << "Out CPose3DQuat: " << endl
-                            << qu << " [Err: " << err << "]" << endl;
+                            << qu << " [Err: " << err << "]"
+                            << "\n";
   }
   else
   {
     GTEST_FAIL() << "Applied quaternion: " << endl
                  << qPose << endl
                  << "Out CPose3DQuat: " << endl
-                 << qu << endl;
+                 << qu << "\n";
   }
 }  // end
 
@@ -229,13 +231,14 @@ TEST(tfest, se3_l2_robust)
     EXPECT_TRUE(err < 1e-6) << "Applied quaternion: " << endl
                             << qPose << endl
                             << "Out CPose3DQuat: " << endl
-                            << outQuat << " [Err: " << err << "]" << endl;
+                            << outQuat << " [Err: " << err << "]"
+                            << "\n";
   }
   else
   {
     GTEST_FAIL() << "Applied quaternion: " << endl
                  << qPose << endl
                  << "Out CPose3DQuat: " << endl
-                 << outQuat << endl;
+                 << outQuat << "\n";
   }
 }

@@ -50,17 +50,17 @@ class Pose3DPDFGaussTests : public ::testing::Test
       double x, double y, double z, double yaw, double pitch, double roll, double std_scale)
   {
     CPose3DPDFGaussian p6pdf = generateRandomPose3DPDF(x, y, z, yaw, pitch, roll, std_scale);
-    // cout << "p6pdf: " << p6pdf << endl;
+    // cout << "p6pdf: " << p6pdf << "\n";
     CPose3DQuatPDFGaussian p7pdf = CPose3DQuatPDFGaussian(p6pdf);
-    // cout << "p7pdf: " << p7pdf << endl;
+    // cout << "p7pdf: " << p7pdf << "\n";
     CPose3DPDFGaussian p6pdf_recov = CPose3DPDFGaussian(p7pdf);
-    // cout << "p6pdf_recov: " << p6pdf_recov  << endl;
+    // cout << "p6pdf_recov: " << p6pdf_recov  << "\n";
 
     const double val_mean_error =
         (p6pdf_recov.mean.asVectorVal() - p6pdf.mean.asVectorVal()).sum_abs();
     const double cov_mean_error = (p6pdf_recov.cov - p6pdf.cov).sum_abs();
     // cout << "cov err: " << cov_mean_error << " " << "val_mean_error: " <<
-    // val_mean_error << endl;
+    // val_mean_error << "\n";
     EXPECT_TRUE(val_mean_error < 1e-8);
     EXPECT_TRUE(cov_mean_error < 1e-8);
   }
@@ -131,11 +131,11 @@ class Pose3DPDFGaussTests : public ::testing::Test
     // Compare mean:
     EXPECT_NEAR(0, (y_mean - p6_comp.mean.asVectorVal()).sum_abs(), 1e-2)
         << "p1 mean: " << p6pdf1.mean << endl
-        << "p2 mean: " << p6pdf2.mean << endl;
+        << "p2 mean: " << p6pdf2.mean << "\n";
 
     // Compare cov:
     EXPECT_NEAR(0, (y_cov - p6_comp.cov).sum_abs(), 1e-2) << "p1 mean: " << p6pdf1.mean << endl
-                                                          << "p2 mean: " << p6pdf2.mean << endl;
+                                                          << "p2 mean: " << p6pdf2.mean << "\n";
 
     // Test +=
     p6_comp = p6pdf1;
@@ -144,11 +144,11 @@ class Pose3DPDFGaussTests : public ::testing::Test
     // Compare mean:
     EXPECT_NEAR(0, (y_mean - p6_comp.mean.asVectorVal()).sum_abs(), 1e-2)
         << "p1 mean: " << p6pdf1.mean << endl
-        << "p2 mean: " << p6pdf2.mean << endl;
+        << "p2 mean: " << p6pdf2.mean << "\n";
 
     // Compare cov:
     EXPECT_NEAR(0, (y_cov - p6_comp.cov).sum_abs(), 1e-2) << "p1 mean: " << p6pdf1.mean << endl
-                                                          << "p2 mean: " << p6pdf2.mean << endl;
+                                                          << "p2 mean: " << p6pdf2.mean << "\n";
   }
 
   void testCompositionJacobian(
@@ -206,7 +206,7 @@ class Pose3DPDFGaussTests : public ::testing::Test
         << "Implemented method: " << endl
         << df_dx << endl
         << "Error: " << endl
-        << df_dx - num_df_dx << endl;
+        << df_dx - num_df_dx << "\n";
 
     EXPECT_NEAR(0, (df_du - num_df_du).sum_abs(), 3e-3)
         << "q1: " << q1 << endl
@@ -216,7 +216,7 @@ class Pose3DPDFGaussTests : public ::testing::Test
         << "Implemented method: " << endl
         << df_du << endl
         << "Error: " << endl
-        << df_du - num_df_du << endl;
+        << df_du - num_df_du << "\n";
   }
 
   // Test the "-" & "-=" operator
@@ -263,11 +263,11 @@ class Pose3DPDFGaussTests : public ::testing::Test
     // Compare mean:
     EXPECT_NEAR(0, (y_mean - p6_comp.mean.asVectorVal()).sum_abs(), 1e-2)
         << "p1 mean: " << p6pdf1.mean << endl
-        << "p2 mean: " << p6pdf2.mean << endl;
+        << "p2 mean: " << p6pdf2.mean << "\n";
 
     // Compare cov:
     EXPECT_NEAR(0, (y_cov - p6_comp.cov).sum_abs(), 1e-2) << "p1 mean: " << p6pdf1.mean << endl
-                                                          << "p2 mean: " << p6pdf2.mean << endl;
+                                                          << "p2 mean: " << p6pdf2.mean << "\n";
 
     // With the "-=" operator
     p6_comp = p6pdf1;
@@ -276,11 +276,11 @@ class Pose3DPDFGaussTests : public ::testing::Test
     // Compare mean:
     EXPECT_NEAR(0, (y_mean - p6_comp.mean.asVectorVal()).sum_abs(), 1e-2)
         << "p1 mean: " << p6pdf1.mean << endl
-        << "p2 mean: " << p6pdf2.mean << endl;
+        << "p2 mean: " << p6pdf2.mean << "\n";
 
     // Compare cov:
     EXPECT_NEAR(0, (y_cov - p6_comp.cov).sum_abs(), 1e-2) << "p1 mean: " << p6pdf1.mean << endl
-                                                          << "p2 mean: " << p6pdf2.mean << endl;
+                                                          << "p2 mean: " << p6pdf2.mean << "\n";
   }
 
   // Test the unary "-" operator
@@ -300,10 +300,10 @@ class Pose3DPDFGaussTests : public ::testing::Test
     // Compare mean:
     EXPECT_NEAR(
         0, (p6_inv.mean.asVectorVal() - p6_comp.mean.asVectorVal()).array().abs().sum(), 1e-2)
-        << "p mean: " << p6pdf2.mean << endl;
+        << "p mean: " << p6pdf2.mean << "\n";
 
     // Compare cov:
-    EXPECT_NEAR(0, (p6_inv.cov - p6_comp.cov).sum_abs(), 1e-2) << "p mean: " << p6pdf2.mean << endl;
+    EXPECT_NEAR(0, (p6_inv.cov - p6_comp.cov).sum_abs(), 1e-2) << "p mean: " << p6pdf2.mean << "\n";
 
     // Compare to the "inverse()" method:
     CPose3DPDFGaussian p6_inv2;
@@ -314,13 +314,13 @@ class Pose3DPDFGaussTests : public ::testing::Test
         0, (p6_inv2.mean.asVectorVal() - p6_comp.mean.asVectorVal()).array().abs().sum(), 1e-2)
         << "p mean: " << p6pdf2.mean << endl
         << "p6_inv2 mean: " << p6_inv2.mean << endl
-        << "p6_comp mean: " << p6_comp.mean << endl;
+        << "p6_comp mean: " << p6_comp.mean << "\n";
 
     // Compare cov:
     EXPECT_NEAR(0, (p6_inv2.cov - p6_comp.cov).sum_abs(), 1e-2)
         << "p mean: " << p6pdf2.mean << endl
         << "p6_inv2 mean: " << p6_inv2.mean << endl
-        << "p6_comp mean: " << p6_comp.mean << endl;
+        << "p6_comp mean: " << p6_comp.mean << "\n";
   }
 
   // Test all operators
@@ -377,12 +377,12 @@ class Pose3DPDFGaussTests : public ::testing::Test
     // Compare:
     EXPECT_NEAR(0, (p6_new_base_pdf.cov - p6pdf1.cov).array().abs().mean(), 1e-2)
         << "p1 mean: " << p6pdf1.mean << endl
-        << "new_base: " << new_base << endl;
+        << "new_base: " << new_base << "\n";
     EXPECT_NEAR(
         0, (p6_new_base_pdf.mean.asVectorVal() - p6pdf1.mean.asVectorVal()).array().abs().mean(),
         1e-2)
         << "p1 mean: " << p6pdf1.mean << endl
-        << "new_base: " << new_base << endl;
+        << "new_base: " << new_base << "\n";
   }
 };
 

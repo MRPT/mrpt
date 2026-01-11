@@ -30,7 +30,7 @@ IMPLEMENTS_GENERIC_SENSOR(CCANBusReader, mrpt::hwdrivers)
 
 #define RET_ERROR(msg)                                               \
   {                                                                  \
-    cout << "[" << __CURRENT_FUNCTION_NAME__ << "] " << msg << endl; \
+    cout << "[" << __CURRENT_FUNCTION_NAME__ << "] " << msg << "\n"; \
     return false;                                                    \
   }
 
@@ -95,7 +95,8 @@ void CCANBusReader::doProcess()
   if (thereIsObservation)
     appendObservation(obs);
   else
-    cout << "No frame received" << endl;
+    cout << "No frame received"
+         << "\n";
 }
 
 /*-------------------------------------------------------------
@@ -128,7 +129,7 @@ void CCANBusReader::doProcessSimple(
     return;
 
   // Yes, we have a new scan:
-  //    cout << "we've got a frame" << endl;
+  //    cout << "we've got a frame" << "\n";
   // -----------------------------------------------
   //   Extract the observation:
   // -----------------------------------------------
@@ -186,7 +187,7 @@ bool CCANBusReader::tryToOpenComms(std::string* err_msg)
       // There is no COMMS port open yet...
       if (!m_com_port.empty())
       {
-        //			    cout << "Creating port" << endl;
+        //			    cout << "Creating port" << "\n";
         m_mySerialPort = new mrpt::comms::CSerialPort();  // Create the port myself:
       }
       else
@@ -224,32 +225,36 @@ bool CCANBusReader::tryToOpenComms(std::string* err_msg)
     // ==================================================================
     cout << "Setting up serial comms in port " << m_com_port;
     if (!setupSerialComms()) RET_ERROR("error");
-    cout << " ... done" << endl;
+    cout << " ... done"
+         << "\n";
 
     // initialize
     // set CAN Bus speed
     /**/
     bool res;
-    cout << "Setting up CAN BUS Speed at: " << m_canbus_speed << endl;
+    cout << "Setting up CAN BUS Speed at: " << m_canbus_speed << "\n";
     for (int nTry = 0; nTry < 250000 /*4*/; nTry++)
       if (true == (res = sendCANBusReaderSpeed())) break;
     if (!res) return false;
-    cout << " ... done" << endl;
+    cout << " ... done"
+         << "\n";
 
     // open the CAN channel. If true, at this point, frames should be poping
     // out the CAN Bus
-    cout << "Opening CAN BUS and starting to receive." << endl;
+    cout << "Opening CAN BUS and starting to receive."
+         << "\n";
     for (int nTry = 0; nTry < 250000 /*4*/; nTry++)
       if (true == (res = CANBusOpenChannel())) break;
     if (!res) return false;
-    cout << " ... done" << endl;
+    cout << " ... done"
+         << "\n";
 
-    //        cout << "Autopoll" << endl;
+    //        cout << "Autopoll" << "\n";
     //        for (int nTry=0;nTry<250000/*4*/;nTry++)
     //            if (true==(res=CANBusAutoPoll()))
     //                break;
     //        if(!res) return false;
-    //        cout << " ... done" << endl;
+    //        cout << " ... done" << "\n";
 
     return res;
     /**/
@@ -380,7 +385,7 @@ bool CCANBusReader::waitContinuousSampleFrame(
   uint8_t dlc = 0;
   while (nFrameBytes < (lengthField = (10U + dlc + 1U)))
   {
-    //	    cout << "trying to receive" << endl;
+    //	    cout << "trying to receive" << "\n";
     if (lengthField > 30)
     {
       cout << "#" << int(dlc) << " ";
@@ -394,7 +399,7 @@ bool CCANBusReader::waitContinuousSampleFrame(
     else
     {
       dlc = 2 * uint8_t(hexCharToInt(buf[9]));
-      //		    cout << "dlc: " << int(dlc) << endl;
+      //		    cout << "dlc: " << int(dlc) << "\n";
       nBytesToRead = (lengthField)-nFrameBytes;
     }
 
@@ -405,7 +410,7 @@ bool CCANBusReader::waitContinuousSampleFrame(
       // nRead << " -> ";
       //			for( uint8_t k = 0; k < nRead; ++k )
       //                cout << int(buf[k+nFrameBytes]);
-      //            cout << endl;
+      //            cout << "\n";
     }
     catch (const std::exception& e)
     {
@@ -456,7 +461,7 @@ bool CCANBusReader::waitContinuousSampleFrame(
                 "[CCANBusReader::waitContinuousSampleFrame] expected 0x0D "
                 "ending flag, 0x%X found instead",
                 buf[nFrameBytes])
-         << endl;
+         << "\n";
     return false;  // Bad ending flag
   }
 
@@ -473,7 +478,7 @@ void CCANBusReader::initialize()
   memset(m_received_frame_buffer, 0, sizeof(m_received_frame_buffer));
   if (!tryToOpenComms(&err_str))
   {
-    cerr << err_str << endl;
+    cerr << err_str << "\n";
     throw std::logic_error(err_str);
   }
 }
@@ -513,10 +518,13 @@ bool CCANBusReader::setupSerialComms()
 
       // close the connection
       /**/
-      cout << endl << "Closing CAN Channel " << endl;
+      cout << endl
+           << "Closing CAN Channel "
+           << "\n";
       for (int nTry = 0; nTry < 250000 /*4*/; nTry++)
         if (true == CANBusCloseChannel()) break;
-      cout << " ... done" << endl;
+      cout << " ... done"
+           << "\n";
       /**/
 
       std::this_thread::sleep_for(100ms);
@@ -584,7 +592,7 @@ bool CCANBusReader::waitACK(uint16_t timeout_ms)
       // Byte rx:
       if (b == 0x0D /*0x30*/)
       {
-        cout << int(b) << endl;
+        cout << int(b) << "\n";
         return true;  // [CR]
       }
     }
@@ -624,7 +632,8 @@ bool CCANBusReader::waitForVersion(uint16_t timeout, bool printOutVersion)
     }
     if (tictac.Tac() >= maxTime)
     {
-      cout << "Version timeout" << endl;
+      cout << "Version timeout"
+           << "\n";
       return false;  // Timeout
     }
   }
@@ -643,7 +652,7 @@ bool CCANBusReader::waitForVersion(uint16_t timeout, bool printOutVersion)
   {
     cout << "Version: ";
     for (uint8_t k = 0; k < nBytes; ++k) cout << char(m_received_frame_buffer[k]);
-    cout << endl;
+    cout << "\n";
   }
   return true;
 }
@@ -725,7 +734,7 @@ bool CCANBusReader::sendCommandToCANReader(
   {
     cout << "[CCANBusReader::SendCommandToCANReader] Error writing data to "
             "serial port."
-         << endl;
+         << "\n";
     return false;
   }
   return true;

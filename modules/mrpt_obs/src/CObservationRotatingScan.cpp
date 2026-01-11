@@ -156,7 +156,7 @@ void RotScan::getDescriptionAsText(std::ostream& o) const
   o << "Homogeneous matrix for the sensor 3D pose, relative to "
        "robot base:\n";
   o << sensorPose.getHomogeneousMatrixVal<mrpt::math::CMatrixDouble44>() << "\n"
-    << sensorPose << endl;
+    << sensorPose << "\n";
 
   o << "lidarModel: " << lidarModel << "\n";
   o << "Range rows=" << rowCount << " cols=" << columnCount << "\n";

@@ -35,7 +35,7 @@ include(./cmake/script_matlab.cmake REQUIRED)      # Support for Matlab MEX func
 
 
 # define lib:
-set(LIB_SRCS
+set(LIB_SOURCES
   src/Clock.cpp
   src/demangle.cpp
   src/format.cpp
@@ -63,7 +63,7 @@ set(LIB_SRCS
   tests/round_unittest.cpp
 )
 
-set(LIB_PUBLIC_HDRS
+set(LIB_PUBLIC_HEADERS
   include/mrpt/3rdparty/spimpl.h
   include/mrpt/registerAllClasses.h
   include/mrpt/core/optional_ref.h
@@ -104,7 +104,7 @@ set(LIB_PUBLIC_HDRS
 
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
-  SOURCES ${LIB_SRCS} ${LIB_PUBLIC_HDRS}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
 #  PUBLIC_LINK_LIBRARIES
 #   xxx
 #  PRIVATE_LINK_LIBRARIES

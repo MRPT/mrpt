@@ -81,23 +81,27 @@ void CObservationCANBusJ1939::getDescriptionAsText(std::ostream& o) const
 {
   CObservation::getDescriptionAsText(o);
 
-  o << "Priority: " << format("0x%02X", m_priority) << " [Dec: " << int(m_priority) << "]" << endl;
+  o << "Priority: " << format("0x%02X", m_priority) << " [Dec: " << int(m_priority) << "]"
+    << "\n";
   o << "Parameter Group Number (PGN): " << format("0x%04X", m_pgn) << " [Dec: " << int(m_pgn) << "]"
-    << endl;
+    << "\n";
   o << "PDU Format: " << format("0x%02X", m_pdu_format) << " [Dec: " << int(m_pdu_format) << "]"
-    << endl;
-  o << "PDU Spec: " << format("0x%02X", m_pdu_spec) << " [Dec: " << int(m_pdu_spec) << "]" << endl;
+    << "\n";
+  o << "PDU Spec: " << format("0x%02X", m_pdu_spec) << " [Dec: " << int(m_pdu_spec) << "]"
+    << "\n";
   o << "Source address: " << format("0x%02X", m_src_address) << " [Dec: " << int(m_src_address)
-    << "]" << endl;
+    << "]"
+    << "\n";
   o << "Data length: " << format("0x%02X", m_data_length) << " [Dec: " << int(m_data_length) << "]"
-    << endl;
+    << "\n";
   o << "Data: ";
   for (unsigned char k : m_data) o << format("0x%02X", k) << " ";
   o << " [Dec: ";
   for (unsigned char k : m_data) o << int(k) << " ";
-  o << "]" << endl;
+  o << "]"
+    << "\n";
 
   o << "Raw frame: ";
   for (char k : m_raw_frame) o << k;
-  o << endl;
+  o << "\n";
 }

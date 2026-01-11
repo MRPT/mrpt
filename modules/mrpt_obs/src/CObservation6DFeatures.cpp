@@ -87,16 +87,16 @@ void CObservation6DFeatures::getDescriptionAsText(std::ostream& o) const
   using namespace std;
   CObservation::getDescriptionAsText(o);
 
-  o << "Sensor pose: " << sensorPose << endl;
-  o << "Min range  : " << minSensorDistance << endl;
-  o << "Max range  : " << maxSensorDistance << endl << endl;
+  o << "Sensor pose: " << sensorPose << "\n";
+  o << "Min range  : " << minSensorDistance << "\n";
+  o << "Max range  : " << maxSensorDistance << endl << "\n";
 
-  o << "Observation count : " << sensedFeatures.size() << endl << endl;
+  o << "Observation count : " << sensedFeatures.size() << endl << "\n";
 
   for (size_t k = 0; k < sensedFeatures.size(); k++)
   {
     const CObservation6DFeatures::TMeasurement& m = sensedFeatures[k];
     o << "#" << k << ": ID=" << m.id << "; value=" << m.pose
-      << "; inf=" << m.inf_matrix.inMatlabFormat() << endl;
+      << "; inf=" << m.inf_matrix.inMatlabFormat() << "\n";
   }
 }

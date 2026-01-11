@@ -113,7 +113,7 @@ TUncertaintyPath<GRAPH_T>& TUncertaintyPath<GRAPH_T>::operator+=(const self_t& o
 
   //////// TODO Remove these - >>>>>>>>>>>>>>>>>>>>>
   // cout << string(20, '-') << "Aggregating 2 paths.."
-  //<< string(20, '-') << endl;
+  //<< string(20, '-') << "\n";
   // this->dumpToConsole(); other.dumpToConsole();
   ////// TODO Remove these - <<<<<<<<<<<<<<<<<<<<<
 
@@ -125,9 +125,9 @@ TUncertaintyPath<GRAPH_T>& TUncertaintyPath<GRAPH_T>::operator+=(const self_t& o
       this->nodes_traversed.end(), other.nodes_traversed.begin() + 1, other.nodes_traversed.end());
 
   ////// TODO Remove these - >>>>>>>>>>>>>>>>>>>>>
-  // cout << std::string(10, '%') << endl << "AFTER Aggregation..." << endl;
+  // cout << std::string(10, '%') << endl << "AFTER Aggregation..." << "\n";
   // this->dumpToConsole();
-  // cout << string(50, '-') << endl;
+  // cout << string(50, '-') << "\n";
   // mrpt::system::pause();
   ////// TODO Remove these - <<<<<<<<<<<<<<<<<<<<<
 
@@ -190,15 +190,17 @@ void TUncertaintyPath<GRAPH_T>::getAsString(std::string* str) const
   stringstream ss;
   string header_sep(30, '=');
 
-  ss << "Path properties: " << endl;
-  ss << header_sep << endl << endl;
+  ss << "Path properties: "
+     << "\n";
+  ss << header_sep << endl << "\n";
 
-  ss << "- CPosePDFGaussianInf: " << (curr_pose_pdf.isInfType() ? "TRUE" : "FALSE") << endl;
-  ss << "- Nodes list: \n\t< " << getSTLContainerAsString(nodes_traversed) << "\b\b>" << endl;
+  ss << "- CPosePDFGaussianInf: " << (curr_pose_pdf.isInfType() ? "TRUE" : "FALSE") << "\n";
+  ss << "- Nodes list: \n\t< " << getSTLContainerAsString(nodes_traversed) << "\b\b>"
+     << "\n";
 
-  ss << endl;
-  ss << curr_pose_pdf << endl;
-  ss << endl;
+  ss << "\n";
+  ss << curr_pose_pdf << "\n";
+  ss << "\n";
 
   CMatrixDouble33 mat;
   if (curr_pose_pdf.isInfType())

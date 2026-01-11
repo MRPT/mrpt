@@ -556,7 +556,7 @@ void RawlogEditApp::run(int argc, const char** argv)
         "Use --help to see the list of possible operations.");
   }
 
-  VERBOSE_COUT << "Operation to perform: " << selected_op << endl;
+  VERBOSE_COUT << "Operation to perform: " << selected_op << "\n";
 
   // This will be done for any operation: open the input rawlog
   // ------------------------------------------------------------

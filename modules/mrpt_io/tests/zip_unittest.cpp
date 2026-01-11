@@ -32,13 +32,13 @@ TEST(Compress, DataBlockGZ)
   // Compress it:
   std::vector<uint8_t> compress_data;
 
-  //	cout << "[test_compress_main] Invoking compress_gz_data_block" << endl;
+  //	cout << "[test_compress_main] Invoking compress_gz_data_block" << "\n";
 
   if (!mrpt::io::zip::compress_gz_data_block(in_data, compress_data))
     GTEST_FAIL() << "Error in compress_gz_data_block\n";
 
   //	cout << "Compressed gz-data: " << N << " -> " << compress_data.size() <<
-  //" bytes." << endl;
+  //" bytes." << "\n";
 
   std::vector<uint8_t> recovered_data;
   if (!mrpt::io::zip::decompress_gz_data_block(compress_data, recovered_data))

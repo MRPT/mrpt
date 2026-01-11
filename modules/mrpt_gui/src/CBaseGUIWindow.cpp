@@ -89,7 +89,8 @@ void CBaseGUIWindow::createWxWindow(
   if (future.wait_for(std::chrono::milliseconds(maxTimeout)) ==
       std::future_status::timeout)  // 2 secs should be enough...
   {
-    cerr << "[CBaseGUIWindow::ctor] Timeout waiting window creation." << endl;
+    cerr << "[CBaseGUIWindow::ctor] Timeout waiting window creation."
+         << "\n";
   }
 #else
   THROW_EXCEPTION("MRPT compiled without wxWidgets!");
@@ -136,7 +137,8 @@ void CBaseGUIWindow::destroyWxWindow()
     if (m_windowDestroyed.get_future().wait_for(std::chrono::milliseconds(maxTimeout)) ==
         std::future_status::timeout)
     {
-      cerr << "[CBaseGUIWindow::dtor] Timeout waiting window destruction." << endl;
+      cerr << "[CBaseGUIWindow::dtor] Timeout waiting window destruction."
+           << "\n";
     }
   }
   WxSubsystem::waitWxShutdownsIfNoWindows();

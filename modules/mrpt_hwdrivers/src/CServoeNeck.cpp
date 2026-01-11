@@ -72,7 +72,7 @@ unsigned int CServoeNeck::angle2RegValue(const double angle /* rad */)
   const uint16_t reg = 1250 + (1000 / M_PI) * (angle - M_PI * 0.5);  // equation: v = s*(a-a0)
   // + v0 where s = 450/pi;
   // a0 = 0 and v0 = 750
-  // cout << "Reg: " << reg << endl;
+  // cout << "Reg: " << reg << "\n";
   return (reg);
 
   // return ( (uint16_t)( (m_MaxValue/20)*(-2*angle/M_PI+1.5) ) ); //
@@ -278,7 +278,7 @@ bool CServoeNeck::setAngleAndSpeed(double angle, const uint8_t servo, const uint
   unsigned int reg = angle2RegValue(m_offsets[servo] + angle);
   uint8_t thisSpeed = speed < 15 ? 15 : speed > 250 ? 250 : speed;
   auto delSpeed = uint16_t(0.25 * 1000000 / (500 + 1000 * (thisSpeed / 180.0f - 0.5)));
-  // cout << "Speed: " << int(speed) << " -> " << delSpeed << endl;
+  // cout << "Speed: " << int(speed) << " -> " << delSpeed << "\n";
   // std::cout << "Angle: " << RAD2DEG( angle ) << " - Reg: " << reg <<
   // std::endl;
   return setRegisterValueAndSpeed(reg, servo, delSpeed);

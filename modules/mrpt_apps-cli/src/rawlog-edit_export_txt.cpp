@@ -73,7 +73,7 @@ DECLARE_OP_FUNCTION(op_export_txt)
                 obs->sensorLabel.empty() ? string("ODOMETRY") : obs->sensorLabel) +
             string(".txt");
 
-        VERBOSE_COUT << "Writing TXT/CSV file: " << fileName << endl;
+        VERBOSE_COUT << "Writing TXT/CSV file: " << fileName << "\n";
 
         f_this = lstFiles[obs->sensorLabel] = os::fopen(fileName.c_str(), "wt");
         if (!f_this) THROW_EXCEPTION_FMT("Cannot open output file for write: %s", fileName.c_str());
@@ -111,7 +111,7 @@ DECLARE_OP_FUNCTION(op_export_txt)
       // Save the joint file:
       // -------------------------
       VERBOSE_COUT << "Number of different sensorLabels exported to TXT/CSV: " << lstFiles.size()
-                   << endl;
+                   << "\n";
 
       lstFiles.clear();
     }  // end of destructor

@@ -522,7 +522,8 @@ void CRandomFieldGridMap2D::internal_clear()
     }  // end case
     break;
     default:
-      cerr << "MAP TYPE NOT RECOGNIZED... QUITTING" << endl;
+      cerr << "MAP TYPE NOT RECOGNIZED... QUITTING"
+           << "\n";
       break;
   }  // end switch
 }
@@ -1177,11 +1178,9 @@ void CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
 {
   std::string fil;
 
-// Save as a bitmap:
-#if MRPT_HAS_OPENCV
+  // Save as a bitmap:
   fil = filNamePrefix + std::string("_mean.png");
   saveAsBitmapFile(fil);
-#endif
 
   // Save dimensions of the grid (for any mapping algorithm):
   CMatrixF DIMs(1, 4);
@@ -2323,7 +2322,7 @@ void CRandomFieldGridMap2D::insertObservation_GMRF(
   }
   catch (const std::exception& e)
   {
-    cerr << "Exception while Inserting new Observation: " << e.what() << endl;
+    cerr << "Exception while Inserting new Observation: " << e.what() << "\n";
   }
 
   // Solve system and update map estimation
@@ -2407,13 +2406,13 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
   if ((seed_cxo < cxo_min) || (seed_cxo >= cxo_max) || (seed_cyo < cyo_min) ||
       (seed_cyo >= cyo_max))
   {
-    // cout << "Seed out of bounds (false)" << endl;
+    // cout << "Seed out of bounds (false)" << "\n";
     return false;
   }
   if ((objective_cxo < cxo_min) || (objective_cxo >= cxo_max) || (objective_cyo < cyo_min) ||
       (objective_cyo >= cyo_max))
   {
-    // cout << "Objective out of bounds (false)" << endl;
+    // cout << "Objective out of bounds (false)" << "\n";
     return false;
   }
 
@@ -2421,14 +2420,14 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
   if ((m_Ocgridmap->getCell(seed_cxo, seed_cyo) < 0.5) !=
       (m_Ocgridmap->getCell(objective_cxo, objective_cyo) < 0.5))
   {
-    // cout << "Seed and objective have diff occupation (false)" << endl;
+    // cout << "Seed and objective have diff occupation (false)" << "\n";
     return false;
   }
 
   // Create Matrix for region growing (row,col)
   mrpt::math::CMatrixUInt matExp(cxo_max - cxo_min + 1, cyo_max - cyo_min + 1);
   // cout << "Matrix creted with dimension:" << matExp.rows() << " x "
-  // << matExp.cols() << endl;
+  // << matExp.cols() << "\n";
   // CMatrixF matExp(cxo_max-cxo_min+1, cyo_max-cyo_min+1);
   matExp.fill(0);
 
@@ -2469,7 +2468,7 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
                         (col + i + cyo_min == objective_cyo))
                     {
                       // cout << "Connection Success
-                      // (true)" << endl;
+                      // (true)" << "\n";
                       return true;  // Objective connected
                     }
                     matExp(row + j, col + i) = 1;
@@ -2484,7 +2483,7 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
     }
   }
   // if not connection to he objective is found, then return false
-  // cout << "Connection not found (false)" << endl;
+  // cout << "Connection not found (false)" << "\n";
   return false;
 }
 

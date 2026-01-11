@@ -53,13 +53,14 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
   {
     cerr << "[CImageGrabber_dc1394] ERROR: Failed to enumerate cameras "
             "(Maybe your user has no rights to access IEEE1394?)."
-         << endl;
+         << "\n";
     return;
   }
 
   if (!list->num)
   {
-    cerr << "[CImageGrabber_dc1394] ERROR: No cameras found." << endl;
+    cerr << "[CImageGrabber_dc1394] ERROR: No cameras found."
+         << "\n";
     return;
   }
 
@@ -118,7 +119,8 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
   err = dc1394_video_get_supported_modes(THE_CAMERA, &modes);
   if (err != DC1394_SUCCESS)
   {
-    cerr << "[CImageGrabber_dc1394] ERROR: Could not get list of modes." << endl;
+    cerr << "[CImageGrabber_dc1394] ERROR: Could not get list of modes."
+         << "\n";
     return;
   }
 
@@ -126,7 +128,7 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
   if (options.mode7 >= 0)
   {
     m_desired_mode = DC1394_VIDEO_MODE_FORMAT7_MIN + options.mode7;
-    if (verbose) cout << "[CImageGrabber_dc1394] Mode is mode7: " << options.mode7 << endl;
+    if (verbose) cout << "[CImageGrabber_dc1394] Mode is mode7: " << options.mode7 << "\n";
   }
   else
   {
@@ -164,7 +166,9 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
     TEST_MODE(1600, 1200, MONO16)
   }
   // Display all supported modes and chosen:
-  if (verbose) cout << "------ Supported video modes ------" << endl;
+  if (verbose)
+    cout << "------ Supported video modes ------"
+         << "\n";
   bool valid_video_mode = false;
   for (uint32_t i = 0; i < modes.num; i++)
   {
@@ -270,16 +274,17 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
       default:
         cerr << "[CImageGrabber_dc1394] ERROR: Requested video mode is "
                 "not valid."
-             << endl;
+             << "\n";
         return;
     }
     if (modes.modes[i] == m_desired_mode) valid_video_mode = true;
     if (verbose)
     {
       if (modes.modes[i] == m_desired_mode)
-        cout << mode << " (*)" << endl;
+        cout << mode << " (*)"
+             << "\n";
       else
-        cout << mode << endl;
+        cout << mode << "\n";
     }
   }
   if (!valid_video_mode)
@@ -288,7 +293,7 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
                 "[CImageGrabber_dc1394] ERROR: Requested mode %ix%i "
                 "color_model:%i is not available for this camera.",
                 options.frame_width, options.frame_height, int(options.color_coding))
-         << endl;
+         << "\n";
     return;
   }
 
@@ -309,7 +314,8 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
   err = dc1394_video_set_iso_speed(THE_CAMERA, DC1394_ISO_SPEED_400);
   if (err != DC1394_SUCCESS)
   {
-    cerr << "[CImageGrabber_dc1394] ERROR: Could not set iso speed." << endl;
+    cerr << "[CImageGrabber_dc1394] ERROR: Could not set iso speed."
+         << "\n";
     return;
   }
 
@@ -318,7 +324,8 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
   // dc1394video_mode_t enum range
   if (err != DC1394_SUCCESS)
   {
-    cerr << "[CImageGrabber_dc1394] ERROR: Could not set video mode." << endl;
+    cerr << "[CImageGrabber_dc1394] ERROR: Could not set video mode."
+         << "\n";
     return;
   }
 
@@ -353,14 +360,15 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
     default:
       cerr << "[CImageGrabber_dc1394] ERROR: Requested framerate is not "
               "valid."
-           << endl;
+           << "\n";
       return;
   }
 
   err = dc1394_video_set_framerate(THE_CAMERA, the_framerate);
   if (err != DC1394_SUCCESS)
   {
-    cerr << "[CImageGrabber_dc1394] ERROR: Could not set framerate." << endl;
+    cerr << "[CImageGrabber_dc1394] ERROR: Could not set framerate."
+         << "\n";
     return;
   }
 
@@ -370,18 +378,19 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
     cerr << "[CImageGrabber_dc1394] ERROR: Could not setup camera-\nmake "
             "sure that the video mode and framerate are\nsupported by your "
             "camera."
-         << endl;
+         << "\n";
     return;
   }
 
-  cout << "------ Other options ------" << endl;
+  cout << "------ Other options ------"
+       << "\n";
   uint32_t iso_chan;
   if ((err = dc1394_video_get_iso_channel(THE_CAMERA, &iso_chan)) == DC1394_SUCCESS)
-    if (verbose) cout << "ISO Channel: " << iso_chan << endl;
+    if (verbose) cout << "ISO Channel: " << iso_chan << "\n";
 
   dc1394speed_t iso_speed;
   if ((err = dc1394_video_get_iso_speed(THE_CAMERA, &iso_speed)) == DC1394_SUCCESS)
-    if (verbose) cout << "ISO Speed: " << iso_speed << endl;
+    if (verbose) cout << "ISO Speed: " << iso_speed << "\n";
 
 // set trigger options:
 #define SET_TRIGGER(opt, OPT, TYPE)                                            \
@@ -416,7 +425,7 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
   {
     cerr << "[CImageGrabber_dc1394] ERROR: Could not start camera iso "
             "transmission."
-         << endl;
+         << "\n";
     return;
   }
 
@@ -489,7 +498,7 @@ bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationImage& out_obse
   {
     cerr << "[CImageGrabber_dc1394] ERROR: Could not start camera iso "
             "transmission."
-         << endl;
+         << "\n";
     return false;
   }
 
@@ -499,7 +508,8 @@ bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationImage& out_obse
   // DC1394_CAPTURE_POLICY_POLL, &frame);
   if (err != DC1394_SUCCESS)
   {
-    cerr << "[CImageGrabber_dc1394] ERROR: Could not capture a frame" << endl;
+    cerr << "[CImageGrabber_dc1394] ERROR: Could not capture a frame"
+         << "\n";
     return false;
   }
 
@@ -539,7 +549,7 @@ bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationImage& out_obse
     {
       cerr << "[CImageGrabber_dc1394] ERROR: Could not deinterlace "
               "stereo images: "
-           << err << endl;
+           << err << "\n";
       return false;
     }
 
@@ -551,7 +561,7 @@ bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationImage& out_obse
     {
       cerr << "[CImageGrabber_dc1394] ERROR: Could not apply Bayer "
               "conversion: "
-           << err << endl;
+           << err << "\n";
       return false;
     }
 
@@ -570,7 +580,7 @@ bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationImage& out_obse
   {
     cerr << "[CImageGrabber_dc1394] ERROR: Could not enqueue the ring "
             "buffer frame"
-         << endl;
+         << "\n";
     return false;
   }
 
@@ -597,7 +607,8 @@ bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationStereoImages& o
   dc1394error_t err = dc1394_capture_dequeue(THE_CAMERA, DC1394_CAPTURE_POLICY_WAIT, &frame);
   if (err != DC1394_SUCCESS)
   {
-    cerr << "[CImageGrabber_dc1394] ERROR: Could not capture a frame" << endl;
+    cerr << "[CImageGrabber_dc1394] ERROR: Could not capture a frame"
+         << "\n";
     return false;
   }
 
@@ -623,7 +634,7 @@ bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationStereoImages& o
     {
       cerr << "[CImageGrabber_dc1394] ERROR: Could not deinterlace "
               "stereo images: "
-           << err << endl;
+           << err << "\n";
       return false;
     }
 
@@ -635,7 +646,7 @@ bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationStereoImages& o
     {
       cerr << "[CImageGrabber_dc1394] ERROR: Could not apply Bayer "
               "conversion: "
-           << err << endl;
+           << err << "\n";
       return false;
     }
 

@@ -148,7 +148,7 @@ TEST(Matrices, loadFromTextFile)
     {
       std::cerr << e.what() << std::endl;
     }
-    EXPECT_TRUE(retval) << "string:\n" << s1 << endl;
+    EXPECT_TRUE(retval) << "string:\n" << s1 << "\n";
     EXPECT_EQ(M.rows(), 2);
     EXPECT_EQ(M.cols(), 3);
   }
@@ -168,7 +168,7 @@ TEST(Matrices, loadFromTextFile)
     {
       std::cerr << e.what() << std::endl;
     }
-    EXPECT_TRUE(retval) << "string:\n" << s1 << endl;
+    EXPECT_TRUE(retval) << "string:\n" << s1 << "\n";
     EXPECT_EQ(M.rows(), 2);
     EXPECT_EQ(M.cols(), 2);
   }
@@ -186,7 +186,7 @@ TEST(Matrices, loadFromTextFile)
     {
       std::cerr << e.what() << std::endl;
     }
-    EXPECT_TRUE(retval) << "string:\n" << s1 << endl;
+    EXPECT_TRUE(retval) << "string:\n" << s1 << "\n";
     EXPECT_EQ(M.rows(), 1);
     EXPECT_EQ(M.cols(), 2);
   }
@@ -207,7 +207,7 @@ TEST(Matrices, loadFromTextFile)
     {
       std::cerr << e.what() << std::endl;
     }
-    EXPECT_TRUE(retval) << "string:\n" << s1 << endl;
+    EXPECT_TRUE(retval) << "string:\n" << s1 << "\n";
     EXPECT_EQ(M.rows(), 3);
     EXPECT_EQ(M.cols(), 3);
   }
@@ -226,7 +226,7 @@ TEST(Matrices, loadFromTextFile)
     catch (std::exception&)
     {
     }
-    EXPECT_FALSE(retval) << "string:\n" << s1 << endl;
+    EXPECT_FALSE(retval) << "string:\n" << s1 << "\n";
   }
   {
     const std::string s1 =
@@ -243,7 +243,7 @@ TEST(Matrices, loadFromTextFile)
     catch (std::exception&)
     {
     }
-    EXPECT_FALSE(retval) << "string:\n" << s1 << endl;
+    EXPECT_FALSE(retval) << "string:\n" << s1 << "\n";
   }
   {
     const std::string s1 = "  \n";
@@ -258,7 +258,7 @@ TEST(Matrices, loadFromTextFile)
     catch (std::exception&)
     {
     }
-    EXPECT_FALSE(retval) << "string:\n" << s1 << endl;
+    EXPECT_FALSE(retval) << "string:\n" << s1 << "\n";
   }
   {
     const std::string s1 =
@@ -276,6 +276,6 @@ TEST(Matrices, loadFromTextFile)
     catch (std::exception&)
     {
     }
-    EXPECT_FALSE(retval) << "string:\n" << s1 << endl;
+    EXPECT_FALSE(retval) << "string:\n" << s1 << "\n";
   }
 }

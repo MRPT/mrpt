@@ -574,13 +574,13 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
                      Wj * log(m_modes[j].cov.det());
         if (verbose)
         {
-          cout << "try merge[" << i << ", " << j << "] -> Bij: " << Bij << endl;
+          cout << "try merge[" << i << ", " << j << "] -> Bij: " << Bij << "\n";
           // cout << "AUX: " << endl << AUX;
           // cout << "Wi: " << Wi << " Wj:" << Wj << " Wij_: " << Wij_
-          // << endl;
+          // << "\n";
           cout << "Pij: " << Pij << endl
                << " Pi: " << m_modes[i].cov << endl
-               << " Pj: " << m_modes[j].cov << endl;
+               << " Pj: " << m_modes[j].cov << "\n";
         }
 
         if (Bij < min_Bij)
@@ -596,7 +596,9 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
 
     if (min_Bij < max_KLd)
     {
-      if (verbose) cout << " Accepted." << endl;
+      if (verbose)
+        cout << " Accepted."
+             << "\n";
 
       // Do the merge (i,j):
       TGaussianMode Mij;
@@ -625,7 +627,9 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
     }                                           // end merge
     else
     {
-      if (verbose) cout << " Nope." << endl;
+      if (verbose)
+        cout << " Nope."
+             << "\n";
 
       i++;
     }

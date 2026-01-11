@@ -78,7 +78,9 @@ namespace
  */
 int myKbhit()
 {
-  struct termios oldtio{}, curtio{};
+  struct termios oldtio
+  {
+  }, curtio{};
   //		struct sigaction sa;
 
   /* Save stdin terminal attributes */
@@ -367,7 +369,9 @@ int os::getch() noexcept
 #ifdef _WIN32
   return ::getch();  // cin.get();
 #else
-  struct termios old_state{}, new_state{};
+  struct termios old_state
+  {
+  }, new_state{};
   int ch;
   tcgetattr(STDIN_FILENO, &old_state);
   new_state = old_state;
@@ -683,7 +687,8 @@ int executeCommand(
   FILE* in = popen(command.c_str(), mode.c_str());
   if (!in)
   {
-    sout << "Popen Execution failed!" << endl;
+    sout << "Popen Execution failed!"
+         << "\n";
     *output = sout.str();
     return -1;
   }

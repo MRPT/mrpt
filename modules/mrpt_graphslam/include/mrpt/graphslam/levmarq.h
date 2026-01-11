@@ -152,7 +152,7 @@ void optimize_graph_spa_levmarq(
       ostream_iterator<TNodeID> out_it(cout, ", ");
       std::copy(nodes_to_optimize->begin(), nodes_to_optimize->end(), out_it);
     }
-    cout << endl;
+    cout << "\n";
   }
 
   // The list of those edges that will be considered in this optimization
@@ -434,7 +434,7 @@ void optimize_graph_spa_levmarq(
     if (verbose)
       cout << "[optimize_graph_spa_levmarq] Iter: " << iter << " ,total sqr. err: " << total_sqr_err
            << ", avrg. err per edge: " << std::sqrt(total_sqr_err / nObservations)
-           << " lambda: " << lambda << endl;
+           << " lambda: " << lambda << "\n";
 
     // Feedback to the user:
     if (functor_feedback)

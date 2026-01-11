@@ -315,10 +315,16 @@ class CObservation3DRangeScan : public CObservation
 
   /** \name Point cloud external storage functions
    * @{ */
-  inline bool points3D_isExternallyStored() const { return m_points3D_external_stored; }
-  inline std::string points3D_getExternalStorageFile() const { return m_points3D_external_file; }
+  [[nodiscard]] bool points3D_isExternallyStored() const { return m_points3D_external_stored; }
+
+  [[nodiscard]] std::string points3D_getExternalStorageFile() const
+  {
+    return m_points3D_external_file;
+  }
+
   void points3D_getExternalStorageFileAbsolutePath(std::string& out_path) const;
-  inline std::string points3D_getExternalStorageFileAbsolutePath() const
+
+  [[nodiscard]] std::string points3D_getExternalStorageFileAbsolutePath() const
   {
     std::string tmp;
     points3D_getExternalStorageFileAbsolutePath(tmp);
@@ -328,8 +334,9 @@ class CObservation3DRangeScan : public CObservation
    * MRPT programs. \sa EXTERNALS_AS_TEXT */
   void points3D_convertToExternalStorage(
       const std::string& fileName, const std::string& use_this_base_dir);
+
   /** Users normally won't need to use this */
-  inline void points3D_overrideExternalStoredFlag(bool isExternal)
+  void points3D_overrideExternalStoredFlag(bool isExternal)
   {
     m_points3D_external_stored = isExternal;
   }
@@ -385,10 +392,10 @@ class CObservation3DRangeScan : public CObservation
    * \sa rangeImageAsImage
    */
   mrpt::img::CImage rangeImage_getAsImage(
-      const std::optional<mrpt::img::TColormap> color = std::nullopt,
-      const std::optional<float> normMinRange = std::nullopt,
-      const std::optional<float> normMaxRange = std::nullopt,
-      const std::optional<std::string> additionalLayerName = std::nullopt) const;
+      std::optional<mrpt::img::TColormap> color = std::nullopt,
+      std::optional<float> normMinRange = std::nullopt,
+      std::optional<float> normMaxRange = std::nullopt,
+      std::optional<std::string> additionalLayerName = std::nullopt) const;
 
   /** Static method to convert a range matrix into an image.
    * If val_max is left to zero, the maximum range in the matrix will be
@@ -399,20 +406,20 @@ class CObservation3DRangeScan : public CObservation
       float val_min,
       float val_max,
       float rangeUnits,
-      const std::optional<mrpt::img::TColormap> color = std::nullopt);
+      std::optional<mrpt::img::TColormap> color = std::nullopt);
 
   /** @} */
 
   /** \name Range Matrix external storage functions
    * @{ */
-  inline bool rangeImage_isExternallyStored() const { return m_rangeImage_external_stored; }
+  [[nodiscard]] bool rangeImage_isExternallyStored() const { return m_rangeImage_external_stored; }
   std::string rangeImage_getExternalStorageFile(const std::string& rangeImageLayer) const;
 
   /** rangeImageLayer: Empty for the main rangeImage matrix, otherwise, a key
    * of rangeImageOtherLayers */
   void rangeImage_getExternalStorageFileAbsolutePath(
       std::string& out_path, const std::string& rangeImageLayer) const;
-  inline std::string rangeImage_getExternalStorageFileAbsolutePath(
+  [[nodiscard]] std::string rangeImage_getExternalStorageFileAbsolutePath(
       const std::string& rangeImageLayer) const
   {
     std::string tmp;
@@ -433,7 +440,7 @@ class CObservation3DRangeScan : public CObservation
   /** \name Intensity (RGB) channels
    * @{ */
   /** Enum type for intensityImageChannel */
-  enum TIntensityChannelID
+  enum TIntensityChannelID : uint8_t
   {
     /** Grayscale or RGB visible channel of the camera sensor. */
     CH_VISIBLE = 0,
@@ -469,7 +476,7 @@ class CObservation3DRangeScan : public CObservation
    * To enhance a 3D point cloud with labeling info, just assign an
    * appropriate object to \a pixelLabels
    */
-  bool hasPixelLabels() const { return pixelLabels ? true : false; }
+  [[nodiscard]] bool hasPixelLabels() const { return !!pixelLabels; }
 
   /** All information about pixel labeling is stored in this (smart pointer
    * to) structure; refer to TPixelLabelInfo for details on the contents
@@ -526,24 +533,11 @@ class CObservation3DRangeScan : public CObservation
 
   /** @} */  // end sensor params
 
-  /** Removes the distortion in both, depth and intensity images. Intrinsics
-   * (fx,fy,cx,cy) remains the same for each image after undistortion.
-   */
-  void undistort();
-
   // See base class docs
   void getDescriptionAsText(std::ostream& o) const override;
 
   /** Very efficient method to swap the contents of two observations. */
-  void swap(CObservation3DRangeScan& o);
-  /** Extract a ROI of the 3D observation as a new one. \note PixelLabels are
-   * *not* copied to the output subimage. */
-  void getZoneAsObs(
-      CObservation3DRangeScan& obs,
-      const unsigned int& r1,
-      const unsigned int& r2,
-      const unsigned int& c1,
-      const unsigned int& c2);
+  void swap(CObservation3DRangeScan& o) noexcept;
 
   /** A Levenberg-Marquart-based optimizer to recover the calibration
    * parameters of a 3D camera given a range (depth) image and the
@@ -555,7 +549,7 @@ class CObservation3DRangeScan : public CObservation
   static double recoverCameraCalibrationParameters(
       const CObservation3DRangeScan& in_obs,
       mrpt::img::TCamera& out_camParams,
-      const double camera_offset = 0.01);
+      double camera_offset = 0.01);
 
   /** Look-up-table struct for unprojectInto() */
   struct unproject_LUT_t

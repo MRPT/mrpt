@@ -19,7 +19,7 @@ find_package(mrpt_typemeta REQUIRED)
 include(./cmake/find_libfyaml.cmake REQUIRED)    # Defines embedded version of libfyaml
 
 # define lib:
-set(LIB_SRCS
+set(LIB_SOURCES
   src/ts_hash_map.cpp
   src/yaml.cpp
   src/CDynamicGrid.cpp
@@ -34,7 +34,7 @@ set(LIB_SRCS
   tests/find_closest_unittest.cpp
 )
 
-set(LIB_PUBLIC_HDRS
+set(LIB_PUBLIC_HEADERS
   include/mrpt/containers/vector_with_small_size_optimization.h
   include/mrpt/containers/internal_yaml_fwrds.h
   include/mrpt/containers/deepcopy_ptr.h
@@ -67,7 +67,7 @@ set(LIB_PUBLIC_HDRS
 
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
-  SOURCES ${LIB_SRCS} ${LIB_PUBLIC_HDRS}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_core
     mrpt::mrpt_typemeta

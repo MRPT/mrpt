@@ -111,7 +111,7 @@ DECLARE_OP_FUNCTION(op_export_rawdaq_txt)
         const std::string fileName = m_filPrefix + string("_") +
                                      fileNameStripInvalidChars(obs->sensorLabel) + string(".txt");
 
-        VERBOSE_COUT << "Writing RAW DAQ TXT file: " << fileName << endl;
+        VERBOSE_COUT << "Writing RAW DAQ TXT file: " << fileName << "\n";
 
         f_this = lstFiles[obs->sensorLabel] = os::fopen(fileName.c_str(), "wt");
         if (!f_this) THROW_EXCEPTION_FMT("Cannot open output file for write: %s", fileName.c_str());

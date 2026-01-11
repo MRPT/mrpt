@@ -17,11 +17,7 @@
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
 #include <test_mrpt_common.h>
 
-#if MRPT_HAS_OPENCV
 TEST(Vision, checkerBoardStereoCalibration)
-#else
-TEST(Vision, DISABLED_checkerBoardStereoCalibration)
-#endif
 {
   using namespace std::string_literals;
 
@@ -91,11 +87,7 @@ TEST(Vision, DISABLED_checkerBoardStereoCalibration)
   EXPECT_TRUE(ok);
 }
 
-#if MRPT_HAS_OPENCV
 TEST(Vision, checkerBoardStereoCalibration_empty)
-#else
-TEST(Vision, DISABLED_checkerBoardStereoCalibration_empty)
-#endif
 {
   mrpt::vision::TCalibrationStereoImageList images;
   mrpt::vision::TStereoCalibParams params;

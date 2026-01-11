@@ -232,7 +232,7 @@ void mrpt::topography::path_from_rtk_gps(
 
     D_cov_1 = D_cov.inverse_LLt();
 
-    // cout << D_cov.inMatlabFormat() << endl;
+    // cout << D_cov.inMatlabFormat() << "\n";
 
     D_mean[0] = square(Ad_ij[make_set(D_cov_rev_indexes[0], D_cov_rev_indexes[1])]);
     D_mean[1] = square(Ad_ij[make_set(D_cov_rev_indexes[0], D_cov_rev_indexes[2])]);
@@ -300,7 +300,7 @@ void mrpt::topography::path_from_rtk_gps(
               // << " " <<
               // mrpt::system::timeLocalToString(GPS_a1->timestamp)
               // << " " << *l;
-              // cout << endl;
+              // cout << "\n";
 
               new_gps->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees =
                   0.5 * (GPS_a1->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees +
@@ -407,7 +407,7 @@ void mrpt::topography::path_from_rtk_gps(
           outInfoTemp.mahalabis_quality_measure[i->first] = mahaD;
 
           // cout << "x: " << iGPSdist2 << " MU: " <<  D_mean << " ->
-          // " << mahaD  << endl;
+          // " << mahaD  << "\n";
         }  // end consistency
 
         // Use a 6D matching method to estimate the location of the
@@ -420,7 +420,7 @@ void mrpt::topography::path_from_rtk_gps(
         mrpt::tfest::se3_l2(corrs, optimal_pose, optimal_scale,
                             true);  // Force scale=1
         // cout << "optimal pose: " << optimal_pose << " " <<
-        // optimal_scale << endl;
+        // optimal_scale << "\n";
         MRPT_CHECK_NORMAL_NUMBER(optimal_pose.x());
         MRPT_CHECK_NORMAL_NUMBER(optimal_pose.y());
         MRPT_CHECK_NORMAL_NUMBER(optimal_pose.z());

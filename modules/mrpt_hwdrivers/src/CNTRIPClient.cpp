@@ -220,7 +220,7 @@ void CNTRIPClient::private_ntrip_thread()
         }
         catch (std::exception&)
         {
-          // cout << e.what() << endl;
+          // cout << e.what() << "\n";
           connect_res = connError;
         }
 
@@ -298,11 +298,12 @@ void CNTRIPClient::private_ntrip_thread()
   }  // end try
   catch (exception& e)
   {
-    cerr << "[CNTRIPClient] Exception in working thread: " << endl << e.what() << endl;
+    cerr << "[CNTRIPClient] Exception in working thread: " << endl << e.what() << "\n";
   }
   catch (...)
   {
-    cerr << "[CNTRIPClient] Runtime exception in working thread." << endl;
+    cerr << "[CNTRIPClient] Runtime exception in working thread."
+         << "\n";
   }
 
 }  // end working thread

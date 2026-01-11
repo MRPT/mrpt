@@ -553,7 +553,7 @@ bool tfest::se2_l2_robust(
         if (params.verbose)
         {
           cout << "[tfest::RANSAC] Iter #" << iter_idx << ":est. # iters=" << results.ransac_iters
-               << " pNoOutliers=" << pNoOutliers << " #inliers: " << numInliers << endl;
+               << " pNoOutliers=" << pNoOutliers << " #inliers: " << numInliers << "\n";
         }
       }
     }
@@ -564,7 +564,7 @@ bool tfest::se2_l2_robust(
       if (params.verbose)
       {
         cout << "[tfest::RANSAC] Iter #" << iter_idx << " Better subset: " << subSet.size()
-             << " inliers, RMSE=" << this_subset_RMSE << endl;
+             << " inliers, RMSE=" << this_subset_RMSE << "\n";
       }
 
       results.largestSubSet = subSet;

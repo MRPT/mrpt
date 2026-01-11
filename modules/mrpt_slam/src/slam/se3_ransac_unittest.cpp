@@ -165,7 +165,7 @@ bool ransac_data_assoc_run()
         std::abs(solution_pose.mean.phi() - GT_pose.phi()) < 10.0_deg))
   {
     std::cerr << "Solution pose: " << solution_pose.mean << endl
-              << "Ground truth pose: " << GT_pose << endl;
+              << "Ground truth pose: " << GT_pose << "\n";
     return false;
   }
   return true;

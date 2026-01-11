@@ -166,7 +166,8 @@ WxSubsystem::CWXMainFrame::CWXMainFrame(wxWindow* parent, wxWindowID id)
 
   if (oneInstance)
   {
-    cerr << "[CWXMainFrame] More than one instance running!" << endl;
+    cerr << "[CWXMainFrame] More than one instance running!"
+         << "\n";
   }
   oneInstance = this;
 
@@ -183,7 +184,8 @@ WxSubsystem::CWXMainFrame::CWXMainFrame(wxWindow* parent, wxWindowID id)
 WxSubsystem::CWXMainFrame::~CWXMainFrame()
 {
 #ifdef WXSUBSYSTEM_VERBOSE
-  cout << "[CWXMainFrame] Destructor." << endl;
+  cout << "[CWXMainFrame] Destructor."
+       << "\n";
 #endif
   delete m_theTimer;
   oneInstance = nullptr;
@@ -224,7 +226,7 @@ int WxSubsystem::CWXMainFrame::notifyWindowDestruction()
 #ifdef WXSUBSYSTEM_VERBOSE
       cout << "[CWXMainFrame::notifyWindowDestruction] numWindows=0. "
               "me->Close() called."
-           << endl;
+           << "\n";
 #endif
     }
   }
@@ -284,7 +286,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
     TRequestToWxMainThread* msg;
 
 #ifdef WXSUBSYSTEM_VERBOSE
-    cout << "[OnTimerProcessRequests] Entering" << endl;
+    cout << "[OnTimerProcessRequests] Entering"
+         << "\n";
 #endif
 
     // For each pending request:
@@ -659,13 +662,15 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
         case 999:
         {
 #ifdef WXSUBSYSTEM_VERBOSE
-          cout << "[WxSubsystem:999] Shutdown" << endl;
+          cout << "[WxSubsystem:999] Shutdown"
+               << "\n";
 #endif
           app_closed = true;  // Do NOT launch a timer again
           if (WxSubsystem::CWXMainFrame::oneInstance)
             ((WxSubsystem::CWXMainFrame*)(WxSubsystem::CWXMainFrame::oneInstance))->Close();
 #ifdef WXSUBSYSTEM_VERBOSE
-          cout << "[WxSubsystem:999] Shutdown done" << endl;
+          cout << "[WxSubsystem:999] Shutdown done"
+               << "\n";
 #endif
         }
         break;
@@ -754,14 +759,14 @@ bool CDisplayWindow_WXAPP::OnInit()
 
   wxInitAllImageHandlers();
 
-  // cout << "[wxApp::OnInit] wxApplication OnInit called." << endl;
+  // cout << "[wxApp::OnInit] wxApplication OnInit called." << "\n";
 
   // Create a dummy frame:
   auto* Frame = new WxSubsystem::CWXMainFrame(nullptr);
   Frame->Hide();
 
   // We are ready!!
-  // cout << "[wxMainThread] Signaling semaphore." << endl;
+  // cout << "[wxMainThread] Signaling semaphore." << "\n";
   WxSubsystem::GetWxMainThreadInstance().m_semWxMainThreadReady.set_value();
 
   return true;
@@ -771,7 +776,8 @@ bool CDisplayWindow_WXAPP::OnInit()
 int CDisplayWindow_WXAPP::OnExit()
 {
 #ifdef WXSUBSYSTEM_VERBOSE
-  cout << "[wxApp::OnExit] wxApplication OnExit called." << endl;
+  cout << "[wxApp::OnExit] wxApplication OnExit called."
+       << "\n";
 #endif
 
   std::lock_guard<std::mutex> lock(WxSubsystem::GetWxMainThreadInstance().m_csWxMainThreadId);
@@ -825,7 +831,7 @@ void WxSubsystem::waitWxShutdownsIfNoWindows()
     {
       cerr << "[WxSubsystem::waitWxShutdownsIfNoWindows] Timeout waiting "
               "for WxWidgets thread to shutdown!"
-           << endl;
+           << "\n";
     }
   }
 #endif
@@ -892,7 +898,8 @@ void WxSubsystem::wxMainThread()
   MRPT_START
   // Prepare wxWidgets:
 #ifdef WXSUBSYSTEM_VERBOSE
-  cout << "[wxMainThread] Starting..." << endl;
+  cout << "[wxMainThread] Starting..."
+       << "\n";
 #endif
 
   // Are we in a console or wxGUI application????
@@ -902,7 +909,8 @@ void WxSubsystem::wxMainThread()
 // We are NOT in a wx application (it's a console program)
 // ---------------------------------------------------------
 #ifdef WXSUBSYSTEM_VERBOSE
-    cout << "[wxMainThread] I am in a console app" << endl;
+    cout << "[wxMainThread] I am in a console app"
+         << "\n";
 #endif
     //  Start a new wx application object:
 
@@ -912,7 +920,8 @@ void WxSubsystem::wxMainThread()
     mrpt_wxEntryReal();
 
 #ifdef WXSUBSYSTEM_VERBOSE
-    cout << "[wxMainThread] Finished" << endl;
+    cout << "[wxMainThread] Finished"
+         << "\n";
 #endif
 
     // Now this thread is ready. The main thread is free to end now:
@@ -923,7 +932,8 @@ void WxSubsystem::wxMainThread()
 // We are ALREADY in a wx application:
 // ---------------------------------------------------------
 #ifdef WXSUBSYSTEM_VERBOSE
-    cout << "[wxMainThread] I am in a GUI app" << endl;
+    cout << "[wxMainThread] I am in a GUI app"
+         << "\n";
 #endif
     wxWindow* topWin = static_cast<wxApp*>(app_gui)->GetTopWindow();
 
@@ -932,7 +942,8 @@ void WxSubsystem::wxMainThread()
 
 // We are ready!!
 #ifdef WXSUBSYSTEM_VERBOSE
-    cout << "[wxMainThread] Signaling semaphore." << endl;
+    cout << "[wxMainThread] Signaling semaphore."
+         << "\n";
 #endif
     WxSubsystem::GetWxMainThreadInstance().m_semWxMainThreadReady.set_value();
   }
@@ -969,7 +980,7 @@ bool WxSubsystem::createOneInstanceMainThread()
     // We are NOT in a console application: There is already a wxApp
     // instance running and it's not us.
     isConsoleApp_value = false;
-    // cout << "[createOneInstanceMainThread] Mode: User GUI." << endl;
+    // cout << "[createOneInstanceMainThread] Mode: User GUI." << "\n";
     if (!WxSubsystem::CWXMainFrame::oneInstance)
     {
       // Create our main hidden frame:
@@ -983,7 +994,7 @@ bool WxSubsystem::createOneInstanceMainThread()
   }
   else
   {
-    // cout << "[createOneInstanceMainThread] Mode: Console." << endl;
+    // cout << "[createOneInstanceMainThread] Mode: Console." << "\n";
     isConsoleApp_value = true;
     if (wxmtd.m_wxMainThreadId.get_id() == std::thread::id())
     {
@@ -1015,7 +1026,7 @@ bool WxSubsystem::createOneInstanceMainThread()
       {
         cerr << "[WxSubsystem::createOneInstanceMainThread] Timeout "
                 "waiting wxApplication to start up!"
-             << endl;
+             << "\n";
         return false;
       }
     }

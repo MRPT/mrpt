@@ -28,7 +28,7 @@ else()
 endif()
 
 # define lib:
-set(LIB_SRCS
+set(LIB_SOURCES
   src/A_MatrixBase_instantiate_CMatrixDynamic_d.cpp
   src/A_MatrixBase_instantiate_CMatrixDynamic_f.cpp
   src/CAtan2LookUpTable.cpp
@@ -124,7 +124,7 @@ set(LIB_SRCS
   tests/wrap2pi_unittest.cpp
 )
 
-set(LIB_PUBLIC_HDRS
+set(LIB_PUBLIC_HEADERS
   include/mrpt/3rdparty/CSparse/cs.h
   include/mrpt/math/CAtan2LookUpTable.h
   include/mrpt/math/CBinaryRelation.h
@@ -212,7 +212,7 @@ endif()
 
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
-  SOURCES ${LIB_SRCS} ${LIB_PUBLIC_HDRS}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_system
     mrpt::mrpt_serialization

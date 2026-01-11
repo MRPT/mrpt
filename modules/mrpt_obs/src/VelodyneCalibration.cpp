@@ -182,7 +182,7 @@ bool VelodyneCalibration::loadFromXMLText(const std::string& xml_file_contents)
   }
   catch (exception& e)
   {
-    cerr << "[VelodyneCalibration::loadFromXMLFile] Exception:" << endl << e.what() << endl;
+    cerr << "[VelodyneCalibration::loadFromXMLFile] Exception:" << endl << e.what() << "\n";
     return false;
   }
 }
@@ -217,7 +217,7 @@ bool VelodyneCalibration::loadFromXMLFile(const std::string& velodyne_calibratio
   }
   catch (exception& e)
   {
-    cerr << "[VelodyneCalibration::loadFromXMLFile] Exception:" << endl << e.what() << endl;
+    cerr << "[VelodyneCalibration::loadFromXMLFile] Exception:" << endl << e.what() << "\n";
     return false;
   }
 }

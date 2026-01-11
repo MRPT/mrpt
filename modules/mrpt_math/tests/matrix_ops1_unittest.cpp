@@ -50,7 +50,7 @@ TEST(Matrices, A_times_B_dyn)
   CMatrixDouble C = CMatrixDouble(A * B);
   CMatrixDouble C_ok(3, 2, dat_Cok);
   CMatrixDouble err = C - C_ok;
-  EXPECT_NEAR(0, fabs(err.sum()), 1e-5) << "A:   " << A << "B:   " << B << "A*B: " << C << endl;
+  EXPECT_NEAR(0, fabs(err.sum()), 1e-5) << "A:   " << A << "B:   " << B << "A*B: " << C << "\n";
 }
 
 TEST(Matrices, A_times_B_fix)

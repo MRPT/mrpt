@@ -472,7 +472,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
       sub_graph->nodes.insert(make_pair(node_IDs_it, curr_node));
     }
     // cout << "Extracting subgraph for nodeIDs: " <<
-    // getSTLContainerAsString(node_IDs_real) << endl;
+    // getSTLContainerAsString(node_IDs_real) << "\n";
 
     // set the root of the extracted graph
     if (root_node == INVALID_NODEID)
@@ -551,7 +551,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
           ex.getUnconnectedNodeIDs(&unconnected_nodeIDs);
           // cout << "Unconnected nodeIDs: " <<
           // mrpt::math::getSTLContainerAsString(unconnected_nodeIDs)
-          // << endl;
+          // << "\n";
           // mainland: set of nodes that the root nodeID is in
           // island: set of nodes that the Dijkstra graph traversal
           // can't
@@ -562,9 +562,9 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
           // set::begin() is the element with the lowest value
           const TNodeID& island_highest = *unconnected_nodeIDs.rbegin();
           const TNodeID& island_lowest = *unconnected_nodeIDs.begin();
-          // cout << "island_highest: " << island_highest << endl;
-          // cout << "island_lowest: " << island_lowest << endl;
-          // cout << "root: " << sub_graph->root << endl;
+          // cout << "island_highest: " << island_highest << "\n";
+          // cout << "island_lowest: " << island_lowest << "\n";
+          // cout << "root: " << sub_graph->root << "\n";
 
           // find out which nodes are in the same partition with the
           // root
@@ -644,7 +644,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
             // getSTLContainerAsString(vec_of_islands.back()) <<
             // endl;
             // cout << "mainland: " <<
-            // getSTLContainerAsString(mainland) << endl;
+            // getSTLContainerAsString(mainland) << "\n";
             this->connectGraphPartitions(sub_graph, vec_of_islands.back(), mainland);
           }
         }
@@ -717,7 +717,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
     }
     TNodeID renum_start = max_nodeID + 1;
     size_t renum_counter = 0;
-    // cout << "renum_start: " << renum_start << endl;
+    // cout << "renum_start: " << renum_start << "\n";
 
     // Renumber nodeIDs of other graph so that they don't overlap with own
     // graph nodeIDs
@@ -741,20 +741,20 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
     old_to_new_nodeID_mappings->clear();
 
     // add all nodes of other graph - Take care of renumbering them
-    // cout << "Adding nodes of other graph" << endl;
-    // cout << "====================" << endl;
+    // cout << "Adding nodes of other graph" << "\n";
+    // cout << "====================" << "\n";
     for (nodes_cit_t n_cit = other.nodes.begin(); n_cit != other.nodes.end(); ++n_cit)
     {
       TNodeID new_nodeID = renum_start + renum_counter++;
       old_to_new_nodeID_mappings->insert(make_pair(n_cit->first, new_nodeID));
       this->nodes.insert(make_pair(new_nodeID, n_cit->second));
 
-      // cout << "Adding nodeID: " << new_nodeID << endl;
+      // cout << "Adding nodeID: " << new_nodeID << "\n";
     }
 
     // add common constraints
-    // cout << "Adding common constraints" << endl;
-    // cout << "====================" << endl;
+    // cout << "Adding common constraints" << "\n";
+    // cout << "====================" << "\n";
     for (hypots_cit_t h_cit = common_hypots.begin(); h_cit != common_hypots.end(); ++h_cit)
     {
       TNodeID from, to;
@@ -774,8 +774,8 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
     }
 
     // add all constraints of the other graph
-    // cout << "Adding constraints of other graph" << endl;
-    // cout << "====================" << endl;
+    // cout << "Adding constraints of other graph" << "\n";
+    // cout << "====================" << "\n";
     for (typename self_t::const_iterator g_cit = other.begin(); g_cit != other.end(); ++g_cit)
     {
       TNodeID new_from = old_to_new_nodeID_mappings->at(g_cit->first.first);
@@ -783,7 +783,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
       this->insertEdge(new_from, new_to, g_cit->second);
 
       // cout << "[" << new_from << "] -> [" << new_to << "]" << " => " <<
-      // g_cit->second << endl;
+      // g_cit->second << "\n";
     }
 
     // run Dijkstra to update the node positions

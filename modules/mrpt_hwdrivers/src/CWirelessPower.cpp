@@ -524,8 +524,8 @@ bool CWirelessPower::getObservation(mrpt::obs::CObservationWirelessPower& outObs
   {
     cerr << "[CWirelessPower::getObservation] Returning false due to "
             "exception: "
-         << endl;
-    cerr << e.what() << endl;
+         << "\n";
+    cerr << e.what() << "\n";
     return false;
   }
 }

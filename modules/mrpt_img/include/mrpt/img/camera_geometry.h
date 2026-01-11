@@ -15,18 +15,14 @@
 #pragma once
 
 #include <mrpt/img/TCamera.h>
-#include <mrpt/poses/poses_frwds.h>
-#include <mrpt/vision/utils.h>
+#include <mrpt/img/TPixelCoord.h>
+#include <mrpt/math/TPose3D.h>
 
-namespace mrpt
+/** Functions related to pinhole camera models, point projections, etc.
+ * \ingroup mrpt_img_grp */
+namespace mrpt::img::camera_geometry
 {
-namespace vision
-{
-/** Functions related to pinhole camera models, point projections, etc. \ingroup
- * mrpt_vision_grp */
-namespace pinhole
-{
-/** \addtogroup mrpt_vision_grp
+/** \addtogroup mrpt_img_grp
  * @{ */
 
 /** Project a set of 3D points into a camera at an arbitrary 6D pose using its
@@ -50,7 +46,7 @@ namespace pinhole
  */
 void projectPoints_no_distortion(
     const std::vector<mrpt::math::TPoint3D>& in_points_3D,
-    const mrpt::poses::CPose3D& cameraPose,
+    const mrpt::math::TPose3D& cameraPose,
     const mrpt::math::CMatrixDouble33& intrinsicParams,
     std::vector<mrpt::img::TPixelCoordf>& projectedPoints,
     bool accept_points_behind = false);
@@ -67,33 +63,38 @@ void projectPoints_no_distortion(
 template <bool INVERSE_CAM_POSE>
 inline mrpt::img::TPixelCoordf projectPoint_no_distortion(
     const mrpt::img::TCamera& cam_params,
-    const mrpt::poses::CPose3D& F,
+    const mrpt::math::TPose3D& F,
     const mrpt::math::TPoint3D& P)
 {
-  double x, y, z;  // wrt cam (local coords)
+  mrpt::math::TPoint3D pt_wrt_cam;
   if (INVERSE_CAM_POSE)
-    F.composePoint(P.x, P.y, P.z, x, y, z);
+  {
+    pt_wrt_cam = F.composePoint(P);
+  }
   else
-    F.inverseComposePoint(P.x, P.y, P.z, x, y, z);
-  ASSERT_(z != 0);
+  {
+    pt_wrt_cam = F.inverseComposePoint(P);
+  }
+  ASSERT_(pt_wrt_cam.z != 0);
+
   // Pinhole model:
-  return mrpt::img::TPixelCoordf(
-      cam_params.cx() + cam_params.fx() * x / z, cam_params.cy() + cam_params.fy() * y / z);
+  return {
+      static_cast<float>(cam_params.cx() + cam_params.fx() * pt_wrt_cam.x / pt_wrt_cam.z),
+      static_cast<float>(cam_params.cy() + cam_params.fy() * pt_wrt_cam.y / pt_wrt_cam.z)};
 }
 
 //! \overload
 template <typename POINT>
-inline void projectPoint_no_distortion(
-    const POINT& in_point_wrt_cam,
-    const mrpt::img::TCamera& cam_params,
-    mrpt::img::TPixelCoordf& out_projectedPoints)
+mrpt::img::TPixelCoordf projectPoint_no_distortion(
+    const POINT& in_point_wrt_cam, const mrpt::img::TCamera& cam_params)
 {
   ASSERT_(in_point_wrt_cam.z != 0);
   // Pinhole model:
-  out_projectedPoints.x =
-      cam_params.cx() + cam_params.fx() * in_point_wrt_cam.x / in_point_wrt_cam.z;
-  out_projectedPoints.y =
-      cam_params.cy() + cam_params.fy() * in_point_wrt_cam.y / in_point_wrt_cam.z;
+  return {
+      static_cast<float>(
+          cam_params.cx() + cam_params.fx() * in_point_wrt_cam.x / in_point_wrt_cam.z),
+      static_cast<float>(
+          cam_params.cy() + cam_params.fy() * in_point_wrt_cam.y / in_point_wrt_cam.z)};
 }
 
 /** Project a set of 3D points into a camera at an arbitrary 6D pose using its
@@ -120,7 +121,7 @@ inline void projectPoint_no_distortion(
  */
 void projectPoints_with_distortion(
     const std::vector<mrpt::math::TPoint3D>& in_points_3D,
-    const mrpt::poses::CPose3D& cameraPose,
+    const mrpt::math::TPose3D& cameraPose,
     const mrpt::math::CMatrixDouble33& intrinsicParams,
     const std::vector<double>& distortionParams,
     std::vector<mrpt::img::TPixelCoordf>& projectedPoints,
@@ -153,7 +154,7 @@ void projectPoint_with_distortion(
 void projectPoints_with_distortion(
     const std::vector<mrpt::math::TPoint3D>& P,
     const mrpt::img::TCamera& params,
-    const mrpt::poses::CPose3DQuat& cameraPose,
+    const mrpt::math::TPose3DQuat& cameraPose,
     std::vector<mrpt::img::TPixelCoordf>& pixels,
     bool accept_points_behind = false);
 
@@ -199,6 +200,5 @@ void undistort_point(
     const mrpt::img::TCamera& cameraModel);
 
 /** @} */  // end of grouping
-}  // namespace pinhole
-}  // namespace vision
-}  // namespace mrpt
+
+}  // namespace mrpt::img::camera_geometry
