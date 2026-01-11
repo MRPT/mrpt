@@ -76,7 +76,7 @@ class CVisualObject : public mrpt::serialization::CSerializable
  protected:
   struct State
   {
-    std::string name = {};
+    std::string name;
     bool show_name = false;
 
     /** RGBA components in the range [0,255] */

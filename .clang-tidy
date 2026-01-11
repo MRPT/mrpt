@@ -39,6 +39,7 @@ Checks: [
     "-cppcoreguidelines-avoid-do-while",
     "-modernize-avoid-c-arrays",
     "-readability-math-missing-parentheses",
+    "-cppcoreguidelines-avoid-const-or-ref-data-members",
   ]
 
 WarningsAsErrors: >

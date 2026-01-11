@@ -108,9 +108,6 @@ void CPointCloud::onUpdateBuffers_Points()
   m_col_slop_inv.G = m_col_slop.G != 0 ? 1.0f / m_col_slop.G : 0;
   m_col_slop_inv.B = m_col_slop.B != 0 ? 1.0f / m_col_slop.B : 0;
 
-  // TODO: Restore rendering using octrees?
-  // octree_render(*rc.state);  // Render all points recursively:
-
   // ------------------------------
   // Fill the shader buffers
   // ------------------------------
@@ -157,35 +154,6 @@ inline void CPointCloud::internal_render_one_point([[maybe_unused]] size_t i) co
 #endif
 }
 
-/** Render a subset of points (required by octree renderer) */
-void CPointCloud::render_subset(
-    [[maybe_unused]] const bool all,
-    [[maybe_unused]] const std::vector<size_t>& idxs,
-    [[maybe_unused]] const float render_area_sqpixels) const
-{
-#if 0 && MRPT_HAS_OPENGL_GLUT
-	// Disabled for now... (Feb 2020)
-
-	const size_t N = (all ? m_xs.size() : idxs.size());
-	const size_t decimation = mrpt::round(std::max(
-		1.0f, d2f(
-				  N / (OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL_value *
-					   render_area_sqpixels))));
-
-	m_last_rendered_count_ongoing += N / decimation;
-
-	if (all)
-	{
-		for (size_t i = 0; i < N; i++) internal_render_one_point(i);
-	}
-	else
-	{
-		const size_t Np = idxs.size();
-		for (size_t i = 0; i < Np; i += decimation)
-			internal_render_one_point(idxs[i]);
-	}
-#endif
-}
 void CPointCloud::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
 {
   SCHEMA_SERIALIZE_DATATYPE_VERSION(1);

@@ -224,10 +224,6 @@ class CPointCloudColoured :
 
   /** @} */
 
-  /** Render a subset of points (required by octree renderer) */
-  void render_subset(
-      const bool all, const std::vector<size_t>& idxs, const float render_area_sqpixels) const;
-
   void toYAMLMap(mrpt::containers::yaml& propertiesMap) const override;
 
  protected:
