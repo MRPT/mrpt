@@ -171,7 +171,10 @@ CVisualObject& CSetOfObjects::setColor_u8(const mrpt::img::TColor& c)
   }
   for (auto& o : m_objects)
   {
-    if (!o) continue;
+    if (!o)
+    {
+      continue;
+    }
     o->setColor_u8(c);
   }
   return *this;
@@ -185,7 +188,10 @@ CVisualObject& CSetOfObjects::setColorA_u8(const uint8_t a)
   }
   for (auto& o : m_objects)
   {
-    if (!o) continue;
+    if (!o)
+    {
+      continue;
+    }
     o->setColorA_u8(a);
   }
   return *this;
@@ -198,13 +204,22 @@ CVisualObject::Ptr CSetOfObjects::getByName(const string& str)
 {
   for (auto& o : m_objects)
   {
-    if (!o) continue;
+    if (!o)
+    {
+      continue;
+    }
     if (o->getName() == str)
+    {
       return o;
-    else if (auto objs = dynamic_cast<CSetOfObjects*>(o.get()))
+    }
+
+    if (auto* objs = dynamic_cast<CSetOfObjects*>(o.get()))
     {
       CVisualObject::Ptr ret = objs->getByName(str);
-      if (ret) return ret;
+      if (ret)
+      {
+        return ret;
+      }
     }
   }
   return {};
@@ -217,14 +232,19 @@ auto CSetOfObjects::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBox
 
   for (const auto& o : m_objects)
   {
-    if (!o) continue;
+    if (!o)
+    {
+      continue;
+    }
     if (first)
     {
       bb = o->getBoundingBoxLocalf();
       first = false;
     }
     else
+    {
       bb = bb.unionWith(o->getBoundingBoxLocalf());
+    }
   }
 
   return bb;

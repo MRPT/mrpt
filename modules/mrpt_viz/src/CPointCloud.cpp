@@ -51,7 +51,7 @@ void CPointCloud::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) cons
 }
 void CPointCloud::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 {
-  uint8_t version;
+  uint8_t version = 0;
   SCHEMA_DESERIALIZE_DATATYPE_VERSION();
   switch (version)
   {
@@ -94,7 +94,10 @@ void CPointCloud::serializeTo(mrpt::serialization::CArchive& out) const
 
   // out << m_xs << m_ys << m_zs;// was: v4
   out.WriteAs<uint32_t>(m_points.size());
-  for (const auto& pt : m_points) out << pt;
+  for (const auto& pt : m_points)
+  {
+    out << pt;
+  }
 
   // New in version 2:
   out << m_colorFromDepth_min.R << m_colorFromDepth_min.G << m_colorFromDepth_min.B;
@@ -122,19 +125,19 @@ void CPointCloud::serializeFrom(mrpt::serialization::CArchive& in, uint8_t versi
       readFromStreamRender(in);
       if (version >= 3)
       {
-        int32_t axis;
+        int32_t axis = 0;
         in >> axis;
         m_colorFromDepth = Axis(axis);
       }
       else
       {
-        bool colorFromZ;
+        bool colorFromZ = false;
         in >> colorFromZ;
         m_colorFromDepth = colorFromZ ? CPointCloud::colZ : CPointCloud::colNone;
       }
       if (version < 5)
       {
-        std::vector<float> xs, ys, zs;
+        std::vector<float> xs, ys, zs;  // NOLINT
         in >> xs >> ys >> zs;
         wfWriteLock.unlock();  // avoid recursive lock
         this->setAllPoints(xs, ys, zs);
@@ -145,10 +148,16 @@ void CPointCloud::serializeFrom(mrpt::serialization::CArchive& in, uint8_t versi
         // New in v5:
         auto N = in.ReadAs<uint32_t>();
         m_points.resize(N);
-        for (auto& pt : m_points) in >> pt;
+        for (auto& pt : m_points)
+        {
+          in >> pt;
+        }
       }
 
-      if (version >= 1 && version < 6) setPointSize(in.ReadAs<float>());
+      if (version >= 1 && version < 6)
+      {
+        setPointSize(in.ReadAs<float>());
+      }
 
       if (version >= 2)
       {
@@ -163,11 +172,14 @@ void CPointCloud::serializeFrom(mrpt::serialization::CArchive& in, uint8_t versi
 
       if (version >= 4 && version < 7)
       {
-        bool m_pointSmooth_ignored;
+        bool m_pointSmooth_ignored = false;
         in >> m_pointSmooth_ignored;
       }
 
-      if (version >= 6) VisualObjectParams_Points::params_deserialize(in);
+      if (version >= 6)
+      {
+        VisualObjectParams_Points::params_deserialize(in);
+      }
     }
     break;
     default:
@@ -203,7 +215,6 @@ void CPointCloud::insertPoint(float x, float y, float z)
   // but...I don't have time! :-(
   wfWriteLock.unlock();
   markAllPointsAsNew();
-  CVisualObject::notifyChange();
 }
 
 /** Write an individual point (checks for "i" in the valid range only in
@@ -281,9 +292,15 @@ void CPointCloud::PLY_export_get_vertex(
 TBoundingBoxf CPointCloud::internalBoundingBoxLocal() const
 {
   // m_pointsMtx.data: already held by calls inside.
-  if (empty()) return {};
+  if (empty())
+  {
+    return {};
+  }
   auto bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
-  for (const auto& pt : m_points) bb.updateWithPoint(pt);
+  for (const auto& pt : m_points)
+  {
+    bb.updateWithPoint(pt);
+  }
 
   return bb;
 }
@@ -294,7 +311,10 @@ void CPointCloud::setAllPoints(const std::vector<mrpt::math::TPoint3D>& pts)
 
   const auto N = pts.size();
   m_points.resize(N);
-  for (size_t i = 0; i < N; i++) m_points[i] = pts[i];
+  for (size_t i = 0; i < N; i++)
+  {
+    m_points[i] = pts[i];
+  }
   m_minmax_valid = false;
   wfWriteLock.unlock();
   markAllPointsAsNew();

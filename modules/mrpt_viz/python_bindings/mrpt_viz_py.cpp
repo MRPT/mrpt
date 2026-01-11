@@ -99,6 +99,11 @@ PYBIND11_MODULE(_bindings, m)
           "setPoints",
           [](CPointCloud& self, const py::array_t<float>& pts)
           {
+            if (pts.ndim() != 2 || pts.shape(1) < 3)
+            {
+              throw std::runtime_error("Expected Nx3 float array");
+            }
+
             auto r = pts.unchecked<2>();
             self.clear();
             for (ssize_t i = 0; i < r.shape(0); i++)
