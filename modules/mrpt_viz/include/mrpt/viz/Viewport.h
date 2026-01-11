@@ -42,7 +42,7 @@ namespace mrpt::viz
  *		- Cloned: It clones the objects from another viewport. See \a
  *setCloneView()
  *		- Image mode: It renders an image (e.g. from a video stream) efficiently
- *using a textued quad. See \a setImageView().
+ *using a textured quad. See \a setImageView().
  *
  * In any case, the viewport can be resized to only fit a part of the entire
  *parent viewport.
@@ -83,7 +83,7 @@ class Viewport :
   /** Set this viewport into "image view"-mode, where an image is efficiently
    * drawn (fitting the viewport area) using an OpenGL textured quad.
    *  Call this method with the new image to update the displayed image (but
-   * recall to first lock the parent openglscene's critical section, then do
+   * recall to first lock the parent Scene's critical section, then do
    * the update, then release the lock, and then issue a window repaint).
    *  Internally, the texture is drawn using a mrpt::viz::CTexturedPlane
    *  The viewport can be reverted to behave like a normal viewport by
@@ -175,7 +175,7 @@ class Viewport :
    * \note (x,y) specify the lower left corner of the viewport rectangle.
    * \sa getViewportPosition
    */
-  void setViewportPosition(const double x, const double y, const double width, const double height);
+  void setViewportPosition(double x, double y, double width, double height);
 
   /** Get the current viewport position and dimension on the rendering window.
    *  X & Y coordinates here can have two interpretations:
@@ -192,7 +192,7 @@ class Viewport :
    * 0.1 - 1000)
    * \sa getViewportClipDistances
    */
-  void setViewportClipDistances(const float clip_min, const float clip_max);
+  void setViewportClipDistances(float clip_min, float clip_max);
 
   /** Get the current min/max clip depth distances of the rendering frustum
    * (default: 0.1 - 1000)
@@ -200,7 +200,7 @@ class Viewport :
    */
   void getViewportClipDistances(float& clip_min, float& clip_max) const;
 
-  void setLightShadowClipDistances(const float clip_min, const float clip_max);
+  void setLightShadowClipDistances(float clip_min, float clip_max);
   void getLightShadowClipDistances(float& clip_min, float& clip_max) const;
 
   /** Set the border size ("frame") of the viewport (default=0) */
@@ -213,7 +213,7 @@ class Viewport :
   /** Return whether the viewport will be rendered transparent over previous
    * viewports.
    */
-  [[nodiscard]] bool isTransparent() { return m_isTransparent; }
+  [[nodiscard]] bool isTransparent() const { return m_isTransparent; }
 
   /** Set the transparency, that is, whether the viewport will be rendered
    * transparent over previous viewports (default=false).
@@ -254,7 +254,7 @@ class Viewport :
   [[nodiscard]] iterator begin() { return m_objects.begin(); }
   [[nodiscard]] iterator end() { return m_objects.end(); }
 
-  /** Delete all internal obejcts * \sa insert */
+  /** Delete all internal objects * \sa insert */
   void clear();
 
   /** Insert a new object into the list.
@@ -283,24 +283,30 @@ class Viewport :
   template <typename T>
   [[nodiscard]] typename T::Ptr getByClass(size_t ith = 0) const
   {
-    MRPT_START
     size_t foundCount = 0;
     for (const auto& o : m_objects)
+    {
       if (const auto f = std::dynamic_pointer_cast<T>(o); f)
       {
-        if (foundCount++ == ith) return f;
+        if (foundCount++ == ith)
+        {
+          return f;
+        }
       }
+    }
 
     // If not found directly, search recursively:
     for (const auto& o : m_objects)
     {
       if (auto obj = std::dynamic_pointer_cast<CSetOfObjects>(o); obj)
       {
-        if (auto f = obj->template getByClass<T>(ith); f) return f;
+        if (auto f = obj->template getByClass<T>(ith); f)
+        {
+          return f;
+        }
       }
     }
-    return typename T::Ptr();  // Not found: return empty smart pointer
-    MRPT_END
+    return {};  // Not found: return empty smart pointer
   }
 
   /** Removes the given object from the scene (it also deletes the object to
@@ -319,7 +325,7 @@ class Viewport :
   /** Get a reference to the camera associated with this viewport. */
   [[nodiscard]] const mrpt::viz::CCamera& getCamera() const { return m_camera; }
 
-  mrpt::math::TBoundingBox getBoundingBox() const;
+  [[nodiscard]] mrpt::math::TBoundingBox getBoundingBox() const;
 
   /** @} */  // end of Contained objects set/get/search
 
@@ -330,12 +336,17 @@ class Viewport :
    */
   Viewport(Scene* parent = nullptr, const std::string& name = std::string(""));
 
+  Viewport(const Viewport&) = default;
+  Viewport(Viewport&&) = default;
+  Viewport& operator=(const Viewport&) = default;
+  Viewport& operator=(Viewport&&) = default;
+
   /** Render the objects in this viewport (called from Scene) */
   void render(
-      const int render_width,
-      const int render_height,
-      const int render_offset_x = 0,
-      const int render_offset_y = 0,
+      int render_width,
+      int render_height,
+      int render_offset_x = 0,
+      int render_offset_y = 0,
       const CCamera* forceThisCamera = nullptr) const;
 
  protected:

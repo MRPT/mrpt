@@ -74,7 +74,8 @@ class CSetOfObjects : public CVisualObject
   void clear();
 
   /** Returns number of objects.  */
-  size_t size() { return m_objects.size(); }
+  size_t size() const { return m_objects.size(); }
+
   /** Returns true if there are no objects.  */
   bool empty() const { return m_objects.empty(); }
 

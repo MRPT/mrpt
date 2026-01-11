@@ -55,16 +55,14 @@ void CAssimpModel::serializeFrom(mrpt::serialization::CArchive& in, uint8_t vers
   CVisualObject::notifyChange();
 }
 
-CAssimpModel::CAssimpModel() {}
-
-CAssimpModel::~CAssimpModel() { clear(); }
-
 void CAssimpModel::clear() { m_modelPath.clear(); }
 
 void CAssimpModel::loadScene(const std::string& filepath, int flags)
 {
   clear();
   CVisualObject::notifyChange();
+
+  THROW_EXCEPTION("todo for mrpt 3.0!");
 
   m_modelLoadFlags = flags;
   m_modelPath = filepath;

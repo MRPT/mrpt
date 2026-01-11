@@ -141,6 +141,6 @@ mrpt_add_library(
 )
 
 # Python wrapper:
-#mrpt_add_python_module(viz
-#  python_bindings/${PROJECT_NAME}_py.cpp
-#)
+mrpt_add_python_module(viz
+  python_bindings/${PROJECT_NAME}_py.cpp
+)
