@@ -40,7 +40,9 @@ struct TLightParameters
   mrpt::math::TVector3Df direction = {-0.40825f, -0.40825f, -0.81650f};
 
   /** Shadow tuning parameters ("anti shadow acne") */
-  float shadow_bias = 1e-5, shadow_bias_cam2frag = 1e-5, shadow_bias_normal = 1e-4;
+  float shadow_bias = 1e-5f;
+  float shadow_bias_cam2frag = 1e-5f;
+  float shadow_bias_normal = 1e-4f;
 
   /** Multiplier from eye distance to the length size of the squared area in
    * which to evaluate shadow casting by unidirectional light.

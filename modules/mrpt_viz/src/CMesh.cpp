@@ -140,16 +140,15 @@ void CMesh::updateTriangles() const
 
         if (m_colorFromZ)
         {
-          mrpt::img::TColorf col(0, 0, 0, 1);
-          colormap(m_colorMap, C(iX, iY), col.R, col.G, col.B);
+          auto col = colormap(m_colorMap, C(iX, iY));
           tri.r(0) = f2u8(col.R);
           tri.g(0) = f2u8(col.G);
           tri.b(0) = f2u8(col.B);
-          colormap(m_colorMap, C(iX + 1, iY), col.R, col.G, col.B);
+          col = colormap(m_colorMap, C(iX + 1, iY));
           tri.r(1) = f2u8(col.R);
           tri.g(1) = f2u8(col.G);
           tri.b(1) = f2u8(col.B);
-          colormap(m_colorMap, C(iX + 1, iY + 1), col.R, col.G, col.B);
+          col = colormap(m_colorMap, C(iX + 1, iY + 1));
           tri.r(2) = f2u8(col.R);
           tri.g(2) = f2u8(col.G);
           tri.b(2) = f2u8(col.B);
@@ -224,17 +223,15 @@ void CMesh::updateTriangles() const
         tri.z(2) = Z(iX, iY + 1);
         if (m_colorFromZ)
         {
-          mrpt::img::TColorf col(0, 0, 0, 1);
-
-          colormap(m_colorMap, C(iX, iY), col.R, col.G, col.B);
+          auto col = colormap(m_colorMap, C(iX, iY));
           tri.r(0) = f2u8(col.R);
           tri.g(0) = f2u8(col.G);
           tri.b(0) = f2u8(col.B);
-          colormap(m_colorMap, C(iX + 1, iY + 1), col.R, col.G, col.B);
+          col = colormap(m_colorMap, C(iX + 1, iY + 1));
           tri.r(1) = f2u8(col.R);
           tri.g(1) = f2u8(col.G);
           tri.b(1) = f2u8(col.B);
-          colormap(m_colorMap, C(iX, iY + 1), col.R, col.G, col.B);
+          col = colormap(m_colorMap, C(iX, iY + 1));
           tri.r(2) = f2u8(col.R);
           tri.g(2) = f2u8(col.G);
           tri.b(2) = f2u8(col.B);

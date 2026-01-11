@@ -25,9 +25,6 @@ namespace mrpt::viz
  *
  * To load from a points-map, CPointCloudColoured::loadFromPointsMap().
  *
- * This class uses smart optimizations while rendering to efficiently draw
- * clouds of millions of points, using octrees.
- *
  * ![mrpt::viz::CPointCloudColoured](preview_CPointCloudColoured.png)
  *
  * \sa opengl::Scene, opengl::CPointCloud
@@ -51,12 +48,8 @@ class CPointCloudColoured :
   mutable size_t m_last_rendered_count{0}, m_last_rendered_count_ongoing{0};
 
  public:
-  CPointCloudColoured() = default;
-  virtual ~CPointCloudColoured() override = default;
-
   void markAllPointsAsNew();
 
- public:
   auto internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf override;
 
   /** @name Read/Write of the list of points to render
@@ -138,7 +131,7 @@ class CPointCloudColoured :
   /** Overwrites the alpha (transparency) channel for all existing points */
   void setAllPointsAlpha(uint8_t alpha_channel)
   {
-    std::unique_lock<std::shared_mutex> wfWriteLock(CRenderizableShaderPoints::m_pointsMtx.data);
+    std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
     for (auto& pt : m_point_colors)
     {
       pt.A = alpha_channel;
@@ -209,16 +202,12 @@ class CPointCloudColoured :
   /** Regenerates the color of each point according the one coordinate
    * (coord_index:0,1,2 for X,Y,Z) and the given color map. */
   void recolorizeByCoordinate(
-      const float coord_min,
-      const float coord_max,
-      const int coord_index = 2,
-      const mrpt::img::TColormap color_map = mrpt::img::cmJET);
+      float coord_min,
+      float coord_max,
+      int coord_index = 2,
+      mrpt::img::TColormap color_map = mrpt::img::cmJET);
 
   /** @} */
-
-  /** Render a subset of points (required by octree renderer) */
-  void render_subset(
-      const bool all, const std::vector<size_t>& idxs, const float render_area_sqpixels) const;
 
   void toYAMLMap(mrpt::containers::yaml& propertiesMap) const override;
 
@@ -266,7 +255,7 @@ template <>
 class PointCloudAdapter<mrpt::viz::CPointCloudColoured>
 {
  private:
-  mrpt::viz::CPointCloudColoured& m_obj;
+  mrpt::viz::CPointCloudColoured& m_obj;  // NOLINT
 
  public:
   /** The type of each point XYZ coordinates */
@@ -284,11 +273,10 @@ class PointCloudAdapter<mrpt::viz::CPointCloudColoured>
   {
   }
   /** Get number of points */
-  size_t size() const { return m_obj.size(); }
+  [[nodiscard]] size_t size() const { return m_obj.size(); }
   /** Set number of points (to uninitialized values) */
   void resize(size_t N) { m_obj.resize(N); }
-  /** Does nothing as of now */
-  void setDimensions(size_t height, size_t width) {}
+
   /** Get XYZ coordinates of i'th point */
   template <typename T>
   void getPointXYZ(size_t idx, T& x, T& y, T& z) const

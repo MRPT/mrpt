@@ -61,46 +61,6 @@ void CPointCloudColoured::onUpdateBuffers_Points()
   m_last_rendered_count = m_last_rendered_count_ongoing;
 }
 
-/** Render a subset of points (required by octree renderer) */
-void CPointCloudColoured::render_subset(
-    [[maybe_unused]] const bool all,
-    [[maybe_unused]] const std::vector<size_t>& idxs,
-    [[maybe_unused]] const float render_area_sqpixels) const
-{
-#if 0 && MRPT_HAS_OPENGL_GLUT
-	// Disabled for now... (Feb 2020)
-	const size_t N = all ? m_points.size() : idxs.size();
-	const size_t decimation = mrpt::round(std::max(
-		1.0f, d2f(N / (mrpt::global_settings::
-						   OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL() *
-					   render_area_sqpixels))));
-
-	m_last_rendered_count_ongoing += N / decimation;
-
-	m_last_rendered_count_ongoing +=
-		(all ? m_points.size() : idxs.size()) / decimation;
-
-	if (all)
-	{
-		for (size_t i = 0; i < N; i += decimation)
-		{
-			const TPointColour& p = m_points[i];
-			glColor4ub(p.r, p.g, p.b, m_color.A);
-			glVertex3f(p.pt.x, p.pt.y, p.pt.z);
-		}
-	}
-	else
-	{
-		for (size_t i = 0; i < N; i += decimation)
-		{
-			const TPointColour& p = m_points[idxs[i]];
-			glColor4ub(p.r, p.g, p.b, m_color.A);
-			glVertex3f(p.pt.x, p.pt.y, p.pt.z);
-		}
-	}
-#endif
-}
-
 uint8_t CPointCloudColoured::serializeGetVersion() const { return 4; }
 void CPointCloudColoured::serializeTo(mrpt::serialization::CArchive& out) const
 {

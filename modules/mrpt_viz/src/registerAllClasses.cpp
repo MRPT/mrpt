@@ -72,44 +72,55 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_viz)
   using namespace mrpt::viz;
 
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
-  // Opengl classes:
-  registerClass(CLASS_ID(Scene));
-  registerClass(CLASS_ID(Viewport));
-  registerClass(CLASS_ID(CArrow));
-  registerClass(CLASS_ID(CAssimpModel));
-  registerClass(CLASS_ID(CAxis));
-  registerClass(CLASS_ID(CBox));
-  registerClass(CLASS_ID(CCamera));
-  registerClass(CLASS_ID(CColorBar));
-  registerClass(CLASS_ID(CCylinder));
-  registerClass(CLASS_ID(CDisk));
-  registerClass(CLASS_ID(CEllipsoid2D));
-  registerClass(CLASS_ID(CEllipsoid3D));
-  registerClass(CLASS_ID(CEllipsoidInverseDepth2D));
-  registerClass(CLASS_ID(CEllipsoidInverseDepth3D));
-  registerClass(CLASS_ID(CEllipsoidRangeBearing2D));
-  registerClass(CLASS_ID(CFrustum));
-  registerClass(CLASS_ID(CGridPlaneXY));
-  registerClass(CLASS_ID(CGridPlaneXZ));
-  registerClass(CLASS_ID(CMesh));
-  registerClass(CLASS_ID(CMesh3D));
-  registerClass(CLASS_ID(CMeshFast));
-  registerClass(CLASS_ID(COctoMapVoxels));
-  registerClass(CLASS_ID(CPointCloud));
-  registerClass(CLASS_ID(CPointCloudColoured));
-  registerClass(CLASS_ID(CPolyhedron));
-  registerClass(CLASS_ID(CSetOfLines));
-  registerClass(CLASS_ID(CSetOfObjects));
-  registerClass(CLASS_ID(CSetOfTriangles));
-  registerClass(CLASS_ID(CSetOfTexturedTriangles));
-  registerClass(CLASS_ID(CSkyBox));
-  registerClass(CLASS_ID(CSimpleLine));
-  registerClass(CLASS_ID(CSphere));
-  registerClass(CLASS_ID(CText));
-  registerClass(CLASS_ID(CText3D));
-  registerClass(CLASS_ID(CTexturedPlane));
-  registerClass(CLASS_ID(CVectorField2D));
-  registerClass(CLASS_ID(CVectorField3D));
+
+// Register the actual new mrpt 3.0 mrpt::viz class, plus the legacy 2.x versions for backwards
+// compatibility:
+#define DO_REGISTER(CLASS_NAME)        \
+  registerClass(CLASS_ID(CLASS_NAME)); \
+  registerClassCustomName("mrpt::opengl::" #CLASS_NAME, CLASS_ID(CLASS_NAME));
+
+  // mrpt::viz classes:
+  DO_REGISTER(Scene);
+  DO_REGISTER(Viewport);
+  DO_REGISTER(CArrow);
+  DO_REGISTER(CAssimpModel);
+  DO_REGISTER(CAxis);
+  DO_REGISTER(CBox);
+  DO_REGISTER(CCamera);
+  DO_REGISTER(CColorBar);
+  DO_REGISTER(CCylinder);
+  DO_REGISTER(CDisk);
+  DO_REGISTER(CEllipsoid2D);
+  DO_REGISTER(CEllipsoid3D);
+  DO_REGISTER(CEllipsoidInverseDepth2D);
+  DO_REGISTER(CEllipsoidInverseDepth3D);
+  DO_REGISTER(CEllipsoidRangeBearing2D);
+  DO_REGISTER(CFrustum);
+  DO_REGISTER(CGridPlaneXY);
+  DO_REGISTER(CGridPlaneXZ);
+  DO_REGISTER(CMesh);
+  DO_REGISTER(CMesh3D);
+  DO_REGISTER(CMeshFast);
+  DO_REGISTER(COctoMapVoxels);
+  DO_REGISTER(CPointCloud);
+  DO_REGISTER(CPointCloudColoured);
+  DO_REGISTER(CPolyhedron);
+  DO_REGISTER(CSetOfLines);
+  DO_REGISTER(CSetOfObjects);
+  DO_REGISTER(CSetOfTriangles);
+  DO_REGISTER(CSetOfTexturedTriangles);
+  DO_REGISTER(CSkyBox);
+  DO_REGISTER(CSimpleLine);
+  DO_REGISTER(CSphere);
+  DO_REGISTER(CText);
+  DO_REGISTER(CText3D);
+  DO_REGISTER(CTexturedPlane);
+  DO_REGISTER(CVectorField2D);
+  DO_REGISTER(CVectorField3D);
+
+  // backwards compatibility de-serialization:
+  registerClassCustomName("mrpt::opengl::COpenGLScene", CLASS_ID(Scene));
+  registerClassCustomName("mrpt::opengl::COpenGLViewport", CLASS_ID(Viewport));
 
 // These ones are in the lib: mrpt-obsmaps
 // registerClass( CLASS_ID( CPlanarLaserScan ) );

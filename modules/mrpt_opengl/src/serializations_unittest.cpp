@@ -15,27 +15,24 @@
 #define MRPT_NO_WARN_BIG_HDR
 #include <gtest/gtest.h>
 #include <mrpt/io/CMemoryStream.h>
-#include <mrpt/opengl.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/viz/viz_frwds.h>
 #include <test_mrpt_common.h>
 //
-#include <mrpt/config.h>
+#include <mrpt/core/config.h>
 #ifndef MRPT_BUILT_AS_DLL
-#include <mrpt/opengl/registerAllClasses.h>
+#include <mrpt/viz/registerAllClasses.h>
 #endif
-
-using namespace mrpt;
-using namespace mrpt::opengl;
-using namespace mrpt::serialization;
-using namespace std;
 
 // Create a set of classes, then serialize and deserialize to test possible
 // bugs:
 TEST(SerializeTestOpenGL, WriteReadToMem)
 {
+  using namespace mrpt::viz;
+
 #ifndef MRPT_BUILT_AS_DLL
-  mrpt::opengl::registerAllClasses_mrpt_opengl();
+  mrpt::viz::registerAllClasses_mrpt_opengl();
 #endif
 
   const mrpt::rtti::TRuntimeClassId* lstClasses[] = {

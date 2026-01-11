@@ -196,11 +196,12 @@ void CPointCloudColoured::recolorizeByCoordinate(
       case 2:
         coord = m_points[i].z;
         break;
+      default:
+        THROW_EXCEPTION("Should not reach here");
     };
     const float col_idx = std::max(0.0f, std::min(1.0f, (coord - coord_min) * coord_range_1));
-    float r, g, b;
-    mrpt::img::colormap(color_map, col_idx, r, g, b);
-    this->setPointColor_fast(i, r, g, b);
+    const auto col = mrpt::img::colormap(color_map, col_idx);
+    this->setPointColor_fast(i, col.R, col.G, col.B);
   }
 }
 

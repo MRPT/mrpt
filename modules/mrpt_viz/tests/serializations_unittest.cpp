@@ -19,7 +19,7 @@
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
 //
-#include <mrpt/config.h>
+#include <mrpt/core/config.h>
 #ifndef MRPT_BUILT_AS_DLL
 #include <mrpt/viz/registerAllClasses.h>
 #endif
@@ -72,15 +72,13 @@
 #include <mrpt/viz/registerAllClasses.h>
 #include <mrpt/viz/stock_objects.h>
 
-using namespace mrpt;
-using namespace mrpt::viz;
-using namespace mrpt::serialization;
-using namespace std;
-
 // Create a set of classes, then serialize and deserialize to test possible
 // bugs:
 TEST(SerializeTestOpenGL, WriteReadToMem)
 {
+  using namespace mrpt::viz;
+  using namespace mrpt::serialization;
+
 #ifndef MRPT_BUILT_AS_DLL
   mrpt::viz::registerAllClasses_mrpt_viz();
 #endif
@@ -134,7 +132,7 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
     catch (const std::exception& e)
     {
       GTEST_FAIL() << "Exception during serialization test for class '" << cl->className << "':\n"
-                   << e.what() << endl;
+                   << e.what() << "\n";
     }
   }
 }

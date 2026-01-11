@@ -30,6 +30,8 @@ namespace mrpt::viz
 class PLY_Importer
 {
  public:
+  virtual ~PLY_Importer() = default;
+
   /** Loads from a PLY file.
    * \param[in]  filename The filename to open. It can be either in binary or
    * text format.
@@ -89,6 +91,8 @@ class PLY_Importer
 class PLY_Exporter
 {
  public:
+  virtual ~PLY_Exporter() = default;
+
   /** Saves to a PLY file.
    * \param[in]  filename The filename to be saved.
    * \param[in] file_comments If provided (!=nullptr) the list of comment

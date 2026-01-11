@@ -87,33 +87,6 @@ class COctreePointRenderer
     const_cast<COctreePointRenderer<Derived>*>(this)->internal_octree_assure_uptodate();
   }
 
-  /** Render the entire octree recursively.
-   * Should be called from children's render() method.
-   */
-  void octree_render(const mrpt::opengl::TRenderMatrices& ri) const
-  {
-    m_visible_octree_nodes_ongoing = 0;
-
-    // Stage 1: Build list of visible octrees
-    m_render_queue.clear();
-    m_render_queue.reserve(m_octree_nodes.size());
-
-    mrpt::img::TPixelCoordf cr_px[8];
-    float cr_z[8];
-    octree_recursive_render(
-        OCTREE_ROOT_NODE, ri, cr_px, cr_z,
-        false /* corners are not computed for this first iteration */);
-
-    m_visible_octree_nodes = m_visible_octree_nodes_ongoing;
-
-    // Stage 2: Render them all
-    for (size_t i = 0; i < m_render_queue.size(); i++)
-    {
-      const TNode& node = m_octree_nodes[m_render_queue[i].node_id];
-      octree_derived().render_subset(node.all, node.pts, m_render_queue[i].render_area_sqpixels);
-    }
-  }
-
   std::optional<mrpt::math::TBoundingBox> octree_getBoundingBox() const
   {
     octree_assure_uptodate();
