@@ -23,10 +23,7 @@ namespace mrpt::math
  */
 struct TTwist3D : public internal::ProvideStaticResize<TTwist3D>
 {
-  enum
-  {
-    static_size = 6
-  };
+  static constexpr std::size_t static_size = 6;
 
   /** Velocity components: X,Y (m/s) */
   double vx{.0}, vy{.0}, vz{.0};

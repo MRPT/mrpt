@@ -30,10 +30,8 @@ namespace mrpt::math
  */
 struct TPose3D : public TPoseOrPoint, public internal::ProvideStaticResize<TPose3D>
 {
-  enum
-  {
-    static_size = 6
-  };
+  static constexpr std::size_t static_size = 6;
+
   /** X,Y,Z, coords */
   double x{.0}, y{.0}, z{.0};
   /** Yaw coordinate (rotation angle over Z axis). */
@@ -198,10 +196,10 @@ struct TPose3D : public TPoseOrPoint, public internal::ProvideStaticResize<TPose
       mrpt::optional_ref<mrpt::math::CMatrixFixed<double, 4, 3>> out_dq_dr = std::nullopt) const;
 
   void composePoint(const TPoint3D& l, TPoint3D& g) const;
-  TPoint3D composePoint(const TPoint3D& l) const;
+  [[nodiscard]] TPoint3D composePoint(const TPoint3D& l) const;
   void inverseComposePoint(const TPoint3D& g, TPoint3D& l) const;
-  TPoint3D inverseComposePoint(const TPoint3D& g) const;
-  void composePose(const TPose3D other, TPose3D& result) const;
+  [[nodiscard]] TPoint3D inverseComposePoint(const TPoint3D& g) const;
+  void composePose(const TPose3D& other, TPose3D& result) const;
 
   /** Operator "oplus" pose composition: "ret=this \oplus b"  \sa CPose3D
    * \note [Added in MRPT 2.1.5] */
@@ -213,21 +211,21 @@ struct TPose3D : public TPoseOrPoint, public internal::ProvideStaticResize<TPose
   }
 
   void getRotationMatrix(mrpt::math::CMatrixDouble33& R) const;
-  inline mrpt::math::CMatrixDouble33 getRotationMatrix() const
+  [[nodiscard]] mrpt::math::CMatrixDouble33 getRotationMatrix() const
   {
     mrpt::math::CMatrixDouble33 R;
     getRotationMatrix(R);
     return R;
   }
   void getHomogeneousMatrix(mrpt::math::CMatrixDouble44& HG) const;
-  inline mrpt::math::CMatrixDouble44 getHomogeneousMatrix() const
+  [[nodiscard]] mrpt::math::CMatrixDouble44 getHomogeneousMatrix() const
   {
     mrpt::math::CMatrixDouble44 H;
     getHomogeneousMatrix(H);
     return H;
   }
   void getInverseHomogeneousMatrix(mrpt::math::CMatrixDouble44& HG) const;
-  mrpt::math::CMatrixDouble44 getInverseHomogeneousMatrix() const
+  [[nodiscard]] mrpt::math::CMatrixDouble44 getInverseHomogeneousMatrix() const
   {
     mrpt::math::CMatrixDouble44 H;
     getInverseHomogeneousMatrix(H);

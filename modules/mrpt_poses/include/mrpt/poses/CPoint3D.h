@@ -108,14 +108,11 @@ class CPoint3D : public CPoint<CPoint3D, 3>, public mrpt::serialization::CSerial
   using difference_type = std::ptrdiff_t;
 
   // size is constant
-  enum
-  {
-    static_size = 3
-  };
+  static constexpr std::size_t static_size = 3;
   static constexpr size_type size() { return static_size; }
   static constexpr bool empty() { return false; }
   static constexpr size_type max_size() { return static_size; }
-  static inline void resize(const size_t n)
+  static void resize(const size_t n)
   {
     if (n != static_size)
     {
