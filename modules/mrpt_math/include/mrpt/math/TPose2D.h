@@ -29,10 +29,8 @@ namespace mrpt::math
  */
 struct TPose2D : public TPoseOrPoint, public internal::ProvideStaticResize<TPose2D>
 {
-  enum
-  {
-    static_size = 3
-  };
+  static constexpr std::size_t static_size = 3;
+
   /** X,Y coordinates */
   double x{.0}, y{.0};
   /** Orientation (rads) */

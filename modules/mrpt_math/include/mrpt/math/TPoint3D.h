@@ -52,10 +52,7 @@ struct TPoint3D_ :
     public TPoint3D_data<T>,
     public internal::ProvideStaticResize<TPoint3D_<T>>
 {
-  enum
-  {
-    static_size = 3
-  };
+  static constexpr std::size_t static_size = 3;
 
   /** Default constructor. Initializes to zeros. */
   constexpr TPoint3D_() : TPoint3D_data<T>{0, 0, 0} {}

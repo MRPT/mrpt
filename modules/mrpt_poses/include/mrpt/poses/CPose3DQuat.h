@@ -64,35 +64,35 @@ class CPose3DQuat :
 
  public:
   /** Read/Write access to the quaternion representing the 3D rotation. */
-  inline mrpt::math::CQuaternionDouble& quat() { return m_quat; }
+  mrpt::math::CQuaternionDouble& quat() { return m_quat; }
 
   /** Read-only access to the quaternion representing the 3D rotation. */
-  inline const mrpt::math::CQuaternionDouble& quat() const { return m_quat; }
+  const mrpt::math::CQuaternionDouble& quat() const { return m_quat; }
 
   /** Read/Write access to the translation vector in R^3. */
-  inline mrpt::math::CVectorFixedDouble<3>& xyz() { return m_coords; }
+  mrpt::math::CVectorFixedDouble<3>& xyz() { return m_coords; }
 
   /** Read-only access to the translation vector in R^3. */
-  inline const mrpt::math::CVectorFixedDouble<3>& xyz() const { return m_coords; }
+  const mrpt::math::CVectorFixedDouble<3>& xyz() const { return m_coords; }
 
   /** Default constructor, initialize translation to zeros and quaternion to
    * no rotation. */
-  inline CPose3DQuat() : m_quat() { m_coords[0] = m_coords[1] = m_coords[2] = 0.; }
+  CPose3DQuat() : m_quat() { m_coords[0] = m_coords[1] = m_coords[2] = 0.; }
 
   /** Constructor which leaves all the quaternion members uninitialized, for
    * use when speed is critical; Use UNINITIALIZED_POSE as argument to this
    * constructor. */
-  inline CPose3DQuat(mrpt::math::TConstructorFlags_Quaternions) :
+  CPose3DQuat(mrpt::math::TConstructorFlags_Quaternions) :
       m_quat(mrpt::math::UNINITIALIZED_QUATERNION)
   {
   }
 
   /** \overload */
-  inline CPose3DQuat(TConstructorFlags_Poses) : m_quat(mrpt::math::UNINITIALIZED_QUATERNION) {}
+  CPose3DQuat(TConstructorFlags_Poses) : m_quat(mrpt::math::UNINITIALIZED_QUATERNION) {}
 
   /** Constructor with initialization of the pose - the quaternion is
    * normalized to ensure it's unitary. */
-  inline CPose3DQuat(
+  CPose3DQuat(
       const double x,  // NOLINT
       const double y,
       const double z,
@@ -175,7 +175,7 @@ class CPose3DQuat :
    * \sa composePoint
    */
   template <class POINT1, class POINT2>
-  inline void composePoint(const POINT1& L, POINT2& G) const
+  void composePoint(const POINT1& L, POINT2& G) const
   {
     composePoint(L[0], L[1], L[2], G[0], G[1], G[2]);
   }
@@ -184,7 +184,7 @@ class CPose3DQuat :
    * \sa inverseComposePoint
    */
   template <class POINT1, class POINT2>
-  inline void inverseComposePoint(const POINT1& G, POINT2& L) const
+  void inverseComposePoint(const POINT1& G, POINT2& L) const
   {
     inverseComposePoint(G[0], G[1], G[2], L[0], L[1], L[2]);
   }
@@ -192,7 +192,7 @@ class CPose3DQuat :
   /** Computes the 3D point G such as \f$ G = this \oplus L \f$.
    * \sa composePoint
    */
-  inline CPoint3D operator+(const CPoint3D& L) const
+  CPoint3D operator+(const CPoint3D& L) const
   {
     CPoint3D G;
     composePoint(L[0], L[1], L[2], G[0], G[1], G[2]);
@@ -202,7 +202,7 @@ class CPose3DQuat :
   /** Computes the 3D point G such as \f$ G = this \oplus L \f$.
    * \sa composePoint
    */
-  inline mrpt::math::TPoint3D operator+(const mrpt::math::TPoint3D& L) const
+  mrpt::math::TPoint3D operator+(const mrpt::math::TPoint3D& L) const
   {
     mrpt::math::TPoint3D G;
     composePoint(L[0], L[1], L[2], G[0], G[1], G[2]);
@@ -214,14 +214,14 @@ class CPose3DQuat :
   virtual void operator*=(const double s);
 
   /** Make \f$ this = this \oplus b \f$ */
-  inline CPose3DQuat& operator+=(const CPose3DQuat& b)
+  CPose3DQuat& operator+=(const CPose3DQuat& b)
   {
     composeFrom(*this, b);
     return *this;
   }
 
   /** Return the composed pose \f$ ret = this \oplus p \f$ */
-  inline CPose3DQuat operator+(const CPose3DQuat& p) const
+  CPose3DQuat operator+(const CPose3DQuat& p) const
   {
     CPose3DQuat ret;
     ret.composeFrom(*this, p);
@@ -229,14 +229,14 @@ class CPose3DQuat :
   }
 
   /** Make \f$ this = this \ominus b \f$ */
-  inline CPose3DQuat& operator-=(const CPose3DQuat& b)
+  CPose3DQuat& operator-=(const CPose3DQuat& b)
   {
     inverseComposeFrom(*this, b);
     return *this;
   }
 
   /** Return the composed pose \f$ ret = this \ominus p \f$ */
-  inline CPose3DQuat operator-(const CPose3DQuat& p) const
+  CPose3DQuat operator-(const CPose3DQuat& p) const
   {
     CPose3DQuat ret;
     ret.inverseComposeFrom(*this, p);
@@ -278,7 +278,7 @@ class CPose3DQuat :
   }
 
   /** Read-only [] operator */
-  inline double operator[](const std::size_t i) const
+  double operator[](const std::size_t i) const
   {
     switch (i)
     {
@@ -302,7 +302,7 @@ class CPose3DQuat :
   }
 
   /** Read/write [] operator */
-  inline double& operator[](const std::size_t i)
+  double& operator[](const std::size_t i)
   {
     switch (i)
     {
@@ -339,7 +339,6 @@ class CPose3DQuat :
       mrpt::math::CMatrixFixed<double, 3, 3>* out_jacob_dryp_dpoint = nullptr,
       mrpt::math::CMatrixFixed<double, 3, 7>* out_jacob_dryp_dpose = nullptr) const;
 
- public:
   /** Used to emulate CPosePDF types, for example, in
    * mrpt::graphs::CNetworkOfPoses */
   using type_value = CPose3DQuat;
@@ -358,8 +357,8 @@ class CPose3DQuat :
   };
   static constexpr bool is_PDF() { return is_PDF_val != 0; }
 
-  inline const type_value& getPoseMean() const { return *this; }
-  inline type_value& getPoseMean() { return *this; }
+  [[nodiscard]] const type_value& getPoseMean() const { return *this; }
+  [[nodiscard]] type_value& getPoseMean() { return *this; }
 
   /** @name STL-like methods and typedefs
    * @{ */
@@ -372,14 +371,11 @@ class CPose3DQuat :
   using difference_type = std::ptrdiff_t;
 
   // Size is constant
-  enum
-  {
-    static_size = 7
-  };
+  static constexpr std::size_t static_size = 7;
   static constexpr size_type size() { return static_size; }
   static constexpr bool empty() { return false; }
   static constexpr size_type max_size() { return static_size; }
-  static inline void resize(size_t n)
+  static void resize(size_t n)
   {
     if (n != static_size)
     {
@@ -388,7 +384,7 @@ class CPose3DQuat :
     }
   }
 
-  inline void assign(size_t N, const double val)
+  void assign(size_t N, const double val)
   {
     if (N != 7)
     {
@@ -428,7 +424,7 @@ class CPose3DQuat :
     /** The iterator points to this element. */
     difference_type m_cur_idx = 0;
 
-    inline void check_limits([[maybe_unused]] bool allow_end = false) const
+    void check_limits([[maybe_unused]] bool allow_end = false) const
     {
 #ifdef _DEBUG
       ASSERTMSG_(m_obj != nullptr, "Non-initialized iterator");
@@ -438,52 +434,51 @@ class CPose3DQuat :
 
    public:
     // Constructors
-    inline iterator_impl() = default;
-    inline iterator_impl(PoseType& obj, difference_type start_idx) :
-        m_obj(&obj), m_cur_idx(start_idx)
+    iterator_impl() = default;
+    iterator_impl(PoseType& obj, difference_type start_idx) : m_obj(&obj), m_cur_idx(start_idx)
     {
       check_limits(true); /* Don't report as error an iterator to end() */
     }
 
     // Allow conversion from non-const to const iterator
     template <bool WasConst, typename = std::enable_if_t<IsConst && !WasConst>>
-    inline iterator_impl(const iterator_impl<WasConst>& other) :
+    iterator_impl(const iterator_impl<WasConst>& other) :
         m_obj(other.m_obj), m_cur_idx(other.m_cur_idx)
     {
     }
 
     // Dereference operators
-    inline reference operator*() const
+    reference operator*() const
     {
       check_limits();
       return (*m_obj)[m_cur_idx];
     }
 
-    inline reference operator[](difference_type off) const { return (*m_obj)[m_cur_idx + off]; }
+    reference operator[](difference_type off) const { return (*m_obj)[m_cur_idx + off]; }
 
     // Increment/Decrement operators
-    inline iterator_impl& operator++()
+    iterator_impl& operator++()
     {
       check_limits();
       ++m_cur_idx;
       return *this;
     }
 
-    inline iterator_impl operator++(int)
+    iterator_impl operator++(int)
     {
       iterator_impl it = *this;
       ++*this;
       return it;
     }
 
-    inline iterator_impl& operator--()
+    iterator_impl& operator--()
     {
       --m_cur_idx;
       check_limits();
       return *this;
     }
 
-    inline iterator_impl operator--(int)
+    iterator_impl operator--(int)
     {
       iterator_impl it = *this;
       --*this;
@@ -491,49 +486,46 @@ class CPose3DQuat :
     }
 
     // Arithmetic operators
-    inline iterator_impl& operator+=(difference_type off)
+    iterator_impl& operator+=(difference_type off)
     {
       m_cur_idx += off;
       check_limits(true);
       return *this;
     }
 
-    inline iterator_impl operator+(difference_type off) const
+    iterator_impl operator+(difference_type off) const
     {
       iterator_impl it = *this;
       it += off;
       return it;
     }
 
-    inline iterator_impl& operator-=(difference_type off) { return (*this) += (-off); }
+    iterator_impl& operator-=(difference_type off) { return (*this) += (-off); }
 
-    inline iterator_impl operator-(difference_type off) const
+    iterator_impl operator-(difference_type off) const
     {
       iterator_impl it = *this;
       it -= off;
       return it;
     }
 
-    inline difference_type operator-(const iterator_impl& it) const
-    {
-      return m_cur_idx - it.m_cur_idx;
-    }
+    difference_type operator-(const iterator_impl& it) const { return m_cur_idx - it.m_cur_idx; }
 
     // Comparison operators
-    inline bool operator==(const iterator_impl& it) const
+    bool operator==(const iterator_impl& it) const
     {
       return m_obj == it.m_obj && m_cur_idx == it.m_cur_idx;
     }
 
-    inline bool operator!=(const iterator_impl& it) const { return !(*this == it); }
+    bool operator!=(const iterator_impl& it) const { return !(*this == it); }
 
-    inline bool operator<(const iterator_impl& it) const { return m_cur_idx < it.m_cur_idx; }
+    bool operator<(const iterator_impl& it) const { return m_cur_idx < it.m_cur_idx; }
 
-    inline bool operator>(const iterator_impl& it) const { return m_cur_idx > it.m_cur_idx; }
+    bool operator>(const iterator_impl& it) const { return m_cur_idx > it.m_cur_idx; }
 
-    inline bool operator<=(const iterator_impl& it) const { return !(*this > it); }
+    bool operator<=(const iterator_impl& it) const { return !(*this > it); }
 
-    inline bool operator>=(const iterator_impl& it) const { return !(*this < it); }
+    bool operator>=(const iterator_impl& it) const { return !(*this < it); }
 
     // Friend declaration to allow conversion constructor access
     template <bool>
@@ -541,18 +533,18 @@ class CPose3DQuat :
   };  // end iterator_impl
 
   // Iterator access methods
-  inline iterator begin() { return iterator(*this, 0); }
-  inline iterator end() { return iterator(*this, static_size); }
-  inline const_iterator begin() const { return const_iterator(*this, 0); }
-  inline const_iterator end() const { return const_iterator(*this, static_size); }
-  inline const_iterator cbegin() const { return const_iterator(*this, 0); }
-  inline const_iterator cend() const { return const_iterator(*this, static_size); }
-  inline reverse_iterator rbegin() { return reverse_iterator(end()); }
-  inline const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
-  inline reverse_iterator rend() { return reverse_iterator(begin()); }
-  inline const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
-  inline const_reverse_iterator crbegin() const { return const_reverse_iterator(end()); }
-  inline const_reverse_iterator crend() const { return const_reverse_iterator(begin()); }
+  iterator begin() { return iterator(*this, 0); }
+  iterator end() { return iterator(*this, static_size); }
+  const_iterator begin() const { return const_iterator(*this, 0); }
+  const_iterator end() const { return const_iterator(*this, static_size); }
+  const_iterator cbegin() const { return const_iterator(*this, 0); }
+  const_iterator cend() const { return const_iterator(*this, static_size); }
+  reverse_iterator rbegin() { return reverse_iterator(end()); }
+  const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
+  reverse_iterator rend() { return reverse_iterator(begin()); }
+  const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
+  const_reverse_iterator crbegin() const { return const_reverse_iterator(end()); }
+  const_reverse_iterator crend() const { return const_reverse_iterator(begin()); }
 
   void swap(CPose3DQuat& o)
   {

@@ -185,7 +185,7 @@ void TPose3D::fromHomogeneousMatrix(const mrpt::math::CMatrixDouble44& HG)
   y = HG(1, 3);
   z = HG(2, 3);
 }
-void TPose3D::composePose(const TPose3D other, TPose3D& result) const
+void TPose3D::composePose(const TPose3D& other, TPose3D& result) const
 {
   CMatrixDouble44 me_H, o_H;
   this->getHomogeneousMatrix(me_H);

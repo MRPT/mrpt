@@ -114,7 +114,7 @@ class CPose3D :
   void rebuildRotationMatrix();
 
   /** Updates Yaw/pitch/roll members from the m_ROT  */
-  inline void updateYawPitchRoll() const
+  void updateYawPitchRoll() const
   {
     if (!m_ypr_uptodate)
     {
@@ -198,7 +198,7 @@ class CPose3D :
   /** Constructor from a 3x3 rotation matrix and a the translation given as a
    * 3-vector, a 3-array, a CPoint3D or a mrpt::math::TPoint3D */
   template <class MATRIX33, class VECTOR3>
-  inline CPose3D(const MATRIX33& rot, const VECTOR3& xyz) :
+  CPose3D(const MATRIX33& rot, const VECTOR3& xyz) :
       m_ROT(mrpt::math::UNINITIALIZED_MATRIX), m_ypr_uptodate(false)
   {
     ASSERT_EQUAL_(rot.rows(), 3);
@@ -209,8 +209,7 @@ class CPose3D :
     for (int r = 0; r < 3; r++) m_coords[r] = xyz[r];
   }
   //! \overload
-  inline CPose3D(
-      const mrpt::math::CMatrixDouble33& rot, const mrpt::math::CVectorFixedDouble<3>& xyz) :
+  CPose3D(const mrpt::math::CMatrixDouble33& rot, const mrpt::math::CVectorFixedDouble<3>& xyz) :
       m_coords(xyz), m_ROT(rot), m_ypr_uptodate(false)
   {
   }
@@ -274,8 +273,7 @@ class CPose3D :
 
   /** Fast constructor that leaves all the data uninitialized - call with
    * UNINITIALIZED_POSE as argument */
-  inline CPose3D(TConstructorFlags_Poses) :
-      m_ROT(mrpt::math::UNINITIALIZED_MATRIX), m_ypr_uptodate(false)
+  CPose3D(TConstructorFlags_Poses) : m_ROT(mrpt::math::UNINITIALIZED_MATRIX), m_ypr_uptodate(false)
   {
   }
 
@@ -285,7 +283,7 @@ class CPose3D :
    * the 3D translation of the pose
    *  \sa setFrom12Vector, getAs12Vector
    */
-  inline explicit CPose3D(const mrpt::math::CVectorFixedDouble<12>& vec12) :
+  explicit CPose3D(const mrpt::math::CVectorFixedDouble<12>& vec12) :
       m_ROT(mrpt::math::UNINITIALIZED_MATRIX), m_ypr_uptodate(false)
   {
     setFrom12Vector(vec12);
@@ -303,13 +301,13 @@ class CPose3D :
   void getHomogeneousMatrix(mrpt::math::CMatrixDouble44& out_HM) const;
 
   /** Get the 3x3 rotation matrix \sa getHomogeneousMatrix  */
-  inline void getRotationMatrix(mrpt::math::CMatrixDouble33& ROT) const { ROT = m_ROT; }
+  void getRotationMatrix(mrpt::math::CMatrixDouble33& ROT) const { ROT = m_ROT; }
   //! \overload
-  inline const mrpt::math::CMatrixDouble33& getRotationMatrix() const { return m_ROT; }
+  const mrpt::math::CMatrixDouble33& getRotationMatrix() const { return m_ROT; }
 
   /** Sets the 3x3 rotation matrix \sa getRotationMatrix, getHomogeneousMatrix
    */
-  inline void setRotationMatrix(const mrpt::math::CMatrixDouble33& ROT)
+  void setRotationMatrix(const mrpt::math::CMatrixDouble33& ROT)
   {
     m_ROT = ROT;
     m_ypr_uptodate = false;
@@ -327,7 +325,7 @@ class CPose3D :
     @{ */
 
   /** The operator \f$ a \oplus b \f$ is the pose compounding operator. */
-  inline CPose3D operator+(const CPose3D& b) const
+  CPose3D operator+(const CPose3D& b) const
   {
     CPose3D ret(UNINITIALIZED_POSE);
     ret.composeFrom(*this, b);
@@ -377,7 +375,7 @@ class CPose3D :
    * \note local_point is passed by value to allow global and local point to
    * be the same variable
    */
-  inline void composePoint(
+  void composePoint(
       const mrpt::math::TPoint3D& local_point, mrpt::math::TPoint3D& global_point) const
   {
     composePoint(
@@ -385,7 +383,7 @@ class CPose3D :
         global_point.z);
   }
   /** \overload Returns global point: "this \oplus l" */
-  inline mrpt::math::TPoint3D composePoint(const mrpt::math::TPoint3D& l) const
+  mrpt::math::TPoint3D composePoint(const mrpt::math::TPoint3D& l) const
   {
     mrpt::math::TPoint3D g;
     composePoint(l, g);
@@ -394,7 +392,7 @@ class CPose3D :
 
   /** This version of the method assumes that the resulting point has no Z
    * component (use with caution!) */
-  inline void composePoint(
+  void composePoint(
       const mrpt::math::TPoint3D& local_point, mrpt::math::TPoint2D& global_point) const
   {
     double dummy_z;
@@ -404,7 +402,7 @@ class CPose3D :
 
   /** An alternative, slightly more efficient way of doing \f$ G = P \oplus L
    * \f$ with G and L being 3D points and P this 6D pose.  */
-  inline void composePoint(double lx, double ly, double lz, float& gx, float& gy, float& gz) const
+  void composePoint(double lx, double ly, double lz, float& gx, float& gy, float& gz) const
   {
     double ggx, ggy, ggz;
     composePoint(lx, ly, lz, ggx, ggy, ggz);
@@ -440,12 +438,12 @@ class CPose3D :
       mrpt::optional_ref<mrpt::math::CMatrixDouble36> out_jacobian_df_dse3 = std::nullopt) const;
 
   /** \overload */
-  inline void inverseComposePoint(const mrpt::math::TPoint3D& g, mrpt::math::TPoint3D& l) const
+  void inverseComposePoint(const mrpt::math::TPoint3D& g, mrpt::math::TPoint3D& l) const
   {
     inverseComposePoint(g.x, g.y, g.z, l.x, l.y, l.z);
   }
   /** \overload Returns local point: `g` as seen from `this` pose */
-  inline mrpt::math::TPoint3D inverseComposePoint(const mrpt::math::TPoint3D& g) const
+  mrpt::math::TPoint3D inverseComposePoint(const mrpt::math::TPoint3D& g) const
   {
     mrpt::math::TPoint3D l;
     inverseComposePoint(g, l);
@@ -454,7 +452,7 @@ class CPose3D :
 
   /** overload for 2D points \exception If the z component of the result is
    * greater than some epsilon */
-  inline void inverseComposePoint(
+  void inverseComposePoint(
       const mrpt::math::TPoint2D& g, mrpt::math::TPoint2D& l, const double eps = 1e-6) const
   {
     double lz;
@@ -470,7 +468,7 @@ class CPose3D :
 
   /** Make \f$ this = this \oplus b \f$  (\a b can be "this" without problems)
    */
-  inline CPose3D& operator+=(const CPose3D& b)
+  CPose3D& operator+=(const CPose3D& b)
   {
     composeFrom(*this, b);
     return *this;
@@ -484,7 +482,7 @@ class CPose3D :
   void inverseComposeFrom(const CPose3D& A, const CPose3D& B);
 
   /** Compute \f$ RET = this \oplus b \f$  */
-  inline CPose3D operator-(const CPose3D& b) const
+  CPose3D operator-(const CPose3D& b) const
   {
     CPose3D ret(UNINITIALIZED_POSE);
     ret.inverseComposeFrom(*this, b);
@@ -496,7 +494,7 @@ class CPose3D :
   void inverse();
 
   /** makes: this = p (+) this */
-  inline void changeCoordinatesReference(const CPose3D& p) { composeFrom(p, CPose3D(*this)); }
+  void changeCoordinatesReference(const CPose3D& p) { composeFrom(p, CPose3D(*this)); }
 
   /** @} */  // compositions
 
@@ -542,7 +540,7 @@ class CPose3D :
    * getAsQuaternion
    */
   template <typename VECTORLIKE>
-  inline void setFromXYZQ(const VECTORLIKE& v, size_t index_offset = 0)
+  void setFromXYZQ(const VECTORLIKE& v, size_t index_offset = 0)
   {
     ASSERT_GE_(v.size(), 7 + index_offset);
     // The 3x3 rotation part:
@@ -559,7 +557,7 @@ class CPose3D :
    * the internal rotation coordinates matrix.
    * \sa getYawPitchRoll, setFromValues
    */
-  inline void setYawPitchRoll(const double yaw_, const double pitch_, const double roll_)
+  void setYawPitchRoll(const double yaw_, const double pitch_, const double roll_)
   {
     setFromValues(x(), y(), z(), yaw_, pitch_, roll_);
   }
@@ -571,7 +569,7 @@ class CPose3D :
    *  \sa getAs12Vector
    */
   template <class ARRAYORVECTOR>
-  inline void setFrom12Vector(const ARRAYORVECTOR& vec12)
+  void setFrom12Vector(const ARRAYORVECTOR& vec12)
   {
     m_ROT(0, 0) = vec12[0];
     m_ROT(0, 1) = vec12[3];
@@ -595,7 +593,7 @@ class CPose3D :
    *  \sa setFrom12Vector
    */
   template <class ARRAYORVECTOR>
-  inline void getAs12Vector(ARRAYORVECTOR& vec12) const
+  void getAs12Vector(ARRAYORVECTOR& vec12) const
   {
     vec12[0] = m_ROT(0, 0);
     vec12[3] = m_ROT(0, 1);
@@ -618,19 +616,19 @@ class CPose3D :
   void getYawPitchRoll(double& yaw, double& pitch, double& roll) const;
 
   /** Get the YAW angle (in radians)  \sa setFromValues */
-  inline double yaw() const
+  double yaw() const
   {
     updateYawPitchRoll();
     return m_yaw;
   }
   /** Get the PITCH angle (in radians) \sa setFromValues */
-  inline double pitch() const
+  double pitch() const
   {
     updateYawPitchRoll();
     return m_pitch;
   }
   /** Get the ROLL angle (in radians) \sa setFromValues */
-  inline double roll() const
+  double roll() const
   {
     updateYawPitchRoll();
     return m_roll;
@@ -662,7 +660,7 @@ class CPose3D :
 
   mrpt::math::CMatrixDouble66 jacobian_pose_rodrigues_from_YPR() const;
 
-  inline double operator[](unsigned int i) const
+  double operator[](unsigned int i) const
   {
     updateYawPitchRoll();
     switch (i)
@@ -686,7 +684,7 @@ class CPose3D :
   // CPose3D CANNOT have a write [] operator, since it'd leave the object in
   // an inconsistent state (outdated rotation matrix).
   // Use setFromValues() instead.
-  // inline double &operator[](unsigned int i)
+  // double &operator[](unsigned int i)
 
   /** Returns a human-readable textual representation of the object (eg: "[x y
    * z yaw pitch roll]", angles in degrees.)
@@ -747,8 +745,8 @@ class CPose3D :
     is_PDF_val = 0
   };
   static constexpr bool is_PDF() { return is_PDF_val != 0; }
-  inline const type_value& getPoseMean() const { return *this; }
-  inline type_value& getPoseMean() { return *this; }
+  const type_value& getPoseMean() const { return *this; }
+  type_value& getPoseMean() { return *this; }
   /** @name STL-like methods and typedefs
    @{   */
   /** The type of the elements */
@@ -759,18 +757,17 @@ class CPose3D :
   using difference_type = std::ptrdiff_t;
 
   // size is constant
-  enum
-  {
-    static_size = 6
-  };
+  static constexpr std::size_t static_size = 6;
   static constexpr size_type size() { return static_size; }
   static constexpr bool empty() { return false; }
   static constexpr size_type max_size() { return static_size; }
-  static inline void resize(size_t n)
+  static void resize(size_t n)
   {
     if (n != static_size)
+    {
       throw std::logic_error(
           format("Try to change the size of CPose3D to %u.", static_cast<unsigned>(n)));
+    }
   }
   /** @} */
 

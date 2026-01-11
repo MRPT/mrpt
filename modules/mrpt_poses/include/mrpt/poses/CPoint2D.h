@@ -97,18 +97,17 @@ class CPoint2D : public CPoint<CPoint2D, 2>, public mrpt::serialization::CSerial
   using difference_type = std::ptrdiff_t;
 
   // size is constant
-  enum
-  {
-    static_size = 2
-  };
+  static constexpr std::size_t static_size = 2;
   static constexpr size_type size() { return static_size; }
   static constexpr bool empty() { return false; }
   static constexpr size_type max_size() { return static_size; }
-  static inline void resize(size_t n)
+  static void resize(size_t n)
   {
     if (n != static_size)
+    {
       throw std::logic_error(
           format("Try to change the size of CPoint2D to %u.", static_cast<unsigned>(n)));
+    }
   }
   /** @} */
 

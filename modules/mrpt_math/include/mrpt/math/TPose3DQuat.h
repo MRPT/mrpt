@@ -24,10 +24,8 @@ namespace mrpt::math
  */
 struct TPose3DQuat : public TPoseOrPoint, public internal::ProvideStaticResize<TPose3DQuat>
 {
-  enum
-  {
-    static_size = 7
-  };
+  static constexpr std::size_t static_size = 7;
+
   /** Translation in x,y,z */
   double x{.0}, y{.0}, z{.0};
   /** Unit quaternion part, qr,qx,qy,qz */

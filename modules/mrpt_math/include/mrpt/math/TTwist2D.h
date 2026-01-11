@@ -15,8 +15,6 @@
 
 #include <mrpt/math/TPoseOrPoint.h>
 
-#include <vector>
-
 namespace mrpt::math
 {
 /** 2D twist: 2D velocity vector (vx,vy) + planar angular velocity (omega)
@@ -25,10 +23,8 @@ namespace mrpt::math
  */
 struct TTwist2D : public internal::ProvideStaticResize<TTwist2D>
 {
-  enum
-  {
-    static_size = 3
-  };
+  static constexpr std::size_t static_size = 3;
+
   /** Velocity components: X,Y (m/s) */
   double vx{.0}, vy{.0};
   /** Angular velocity (rad/s) */

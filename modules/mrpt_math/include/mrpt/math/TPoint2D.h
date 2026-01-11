@@ -45,10 +45,8 @@ struct TPoint2D_ :
     public TPoint2D_data<T>,
     public internal::ProvideStaticResize<TPoint2D_<T>>
 {
-  enum
-  {
-    static_size = 2
-  };
+  static constexpr std::size_t static_size = 2;
+
   /** Default constructor. Initializes to zeros  */
   constexpr TPoint2D_() : TPoint2D_data<T>{0, 0} {}
   /** Constructor from coordinates  */
