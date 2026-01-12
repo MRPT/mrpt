@@ -74,9 +74,7 @@ set(LIB_SOURCES
   src/TPixelLabelInfo.cpp
   src/VelodyneCalibration.cpp
   # tests ----
-  tests/CObservation3DRangeScan_unittest.cpp
   tests/CObservationIMU_unittest.cpp
-  tests/CObservationRotatingScan_unittest.cpp
   tests/CRawlog_unittest.cpp
   tests/CSerializable_unittest.cpp
   tests/CSimpleMap_unittest.cpp

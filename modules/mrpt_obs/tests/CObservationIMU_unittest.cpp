@@ -14,7 +14,6 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/serialization/CArchive.h>
