@@ -1436,7 +1436,7 @@ mrpt::img::CImage CObservation3DRangeScan::rangeImageAsImage(
       }
       else
       {
-        img.setPixel({c, r}, mrpt::img::colormap(col, val_01));
+        img.setPixel({c, r}, mrpt::img::colormap(col, val_01).asTColor());
       }
     }
   }
@@ -1448,7 +1448,7 @@ mrpt::img::CImage CObservation3DRangeScan::rangeImage_getAsImage(
     const std::optional<mrpt::img::TColormap> color,
     const std::optional<float> normMinRange,
     const std::optional<float> normMaxRange,
-    const std::optional<std::string> additionalLayerName) const
+    const std::optional<std::string>& additionalLayerName) const
 {
   ASSERT_(this->hasRangeImage);
   const mrpt::math::CMatrix_u16* ri = (!additionalLayerName || additionalLayerName->empty())

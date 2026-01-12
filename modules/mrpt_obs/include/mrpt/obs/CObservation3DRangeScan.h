@@ -395,7 +395,7 @@ class CObservation3DRangeScan : public CObservation
       std::optional<mrpt::img::TColormap> color = std::nullopt,
       std::optional<float> normMinRange = std::nullopt,
       std::optional<float> normMaxRange = std::nullopt,
-      std::optional<std::string> additionalLayerName = std::nullopt) const;
+      const std::optional<std::string>& additionalLayerName = std::nullopt) const;
 
   /** Static method to convert a range matrix into an image.
    * If val_max is left to zero, the maximum range in the matrix will be
