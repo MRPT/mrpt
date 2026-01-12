@@ -14,6 +14,7 @@
 
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/core/bits_mem.h>  // vector_strong_clear
+#include <mrpt/img/camera_geometry.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/lazy_load_path.h>
@@ -116,7 +117,10 @@ const CObservation3DRangeScan::unproject_LUT_t& CObservation3DRangeScan::get_unp
   // already existed and was filled?
   unsigned int H = cameraParams.nrows, W = cameraParams.ncols;
   const size_t WH = W * H;
-  if (ret.Kxs.size() == WH) return ret;
+  if (ret.Kxs.size() == WH)
+  {
+    return ret;
+  }
 
   // fill LUT upon first use:
   auto& lut = const_cast<unproject_LUT_t&>(ret);
@@ -128,62 +132,31 @@ const CObservation3DRangeScan::unproject_LUT_t& CObservation3DRangeScan::get_unp
   lut.Kys_rot.resize(WH);
   lut.Kzs_rot.resize(WH);
 
-  // Undistort all points:
-  cv::Mat pts(1, WH, CV_32FC2), undistort_pts(1, WH, CV_32FC2);
-
-  const auto& intrMat = cameraParams.intrinsicParams;
-  const auto& dist = cameraParams.dist;
-  cv::Mat cv_distortion(1, dist.size(), CV_64F, const_cast<double*>(&dist[0]));
-  cv::Mat cv_intrinsics(3, 3, CV_64F);
-  for (int i = 0; i < 3; i++)
-  {
-    for (int j = 0; j < 3; j++)
-    {
-      cv_intrinsics.at<double>(i, j) = intrMat(i, j);
-    }
-  }
-
+  // Create list of all pixel coordinates
+  std::vector<mrpt::img::TPixelCoordf> distortedPixels(WH);
   for (unsigned int r = 0; r < H; r++)
   {
     for (unsigned int c = 0; c < W; c++)
     {
-      auto& p = pts.at<cv::Vec2f>(r * W + c);
-      p[0] = c;
-      p[1] = r;
+      auto& p = distortedPixels[r * W + c];
+      p.x = static_cast<float>(c);
+      p.y = static_cast<float>(r);
     }
   }
 
-  switch (cameraParams.distortion)
-  {
-    case mrpt::img::DistortionModel::none:
-    {
-      cv_distortion = cv::Mat::zeros(1, dist.size(), CV_64F);
-      cv::undistortPoints(pts, undistort_pts, cv_intrinsics, cv_distortion);
-    }
-    break;
+  // Undistort all pixels to normalized image plane coordinates
+  std::vector<mrpt::math::TPoint2D> normalizedCoords;
+  mrpt::img::camera_geometry::undistort_points_to_unit_plane(
+      distortedPixels, normalizedCoords, cameraParams);
 
-    case mrpt::img::DistortionModel::plumb_bob:
-    {
-      cv::undistortPoints(pts, undistort_pts, cv_intrinsics, cv_distortion);
-    }
-    break;
-
-    case mrpt::img::DistortionModel::kannala_brandt:
-    {
-      cv::fisheye::undistortPoints(pts, undistort_pts, cv_intrinsics, cv_distortion);
-    }
-    break;
-
-    default:
-      THROW_EXCEPTION_FMT(
-          "Unknown cameraParams.distortion=%d", static_cast<int>(cameraParams.distortion));
-  };
+  // Note: normalizedCoords now holds point coordinates on the unit plane (z=1)
+  // where a 3D point (X,Y,Z) in camera frame projects to (X/Z, Y/Z) on this plane.
+  // These are the same as what OpenCV's undistortPoints returns.
 
   // Note: undistort_pts now holds point coordinates with (-1,-1)=top left,
   // (1,1)=bottom-right
 
-  ASSERT_EQUAL_(undistort_pts.size().area(), static_cast<int>(WH));
-  undistort_pts.reshape(WH);
+  ASSERT_EQUAL_(normalizedCoords.size(), WH);
 
   float* kxs = &lut.Kxs[0];
   float* kys = &lut.Kys[0];
@@ -194,14 +167,18 @@ const CObservation3DRangeScan::unproject_LUT_t& CObservation3DRangeScan::get_unp
 
   for (size_t idx = 0; idx < WH; idx++)
   {
-    const auto& p = undistort_pts.at<cv::Vec2f>(idx);
-    const float c = p[0], r = p[1];
+    const auto p = normalizedCoords[idx].cast<float>();
+    const float c = p.x;
+    const float r = p.y;
 
     // XYZ -> (-Y,-Z, X)
     auto v = mrpt::math::TPoint3Df(1.0f, -c, -r);
 
     // Range instead of depth? Use a unit vector:
-    if (!this->range_is_depth) v *= 1.0f / v.norm();
+    if (!this->range_is_depth)
+    {
+      v *= 1.0f / v.norm();
+    }
 
     // compute also the rotated version:
     auto v_rot = sensorPose.rotateVector(v);

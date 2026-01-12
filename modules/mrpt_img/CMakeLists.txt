@@ -39,9 +39,11 @@ set(LIB_SOURCES
   src/TColorManager.cpp
   src/TPixelCoord.cpp
   src/TStereoCamera.cpp
+  # tests ----
   tests/CImage_unittest.cpp
   tests/color_maps_unittest.cpp
   tests/TCamera_unittest.cpp
+  tests/camera_geometry_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS
