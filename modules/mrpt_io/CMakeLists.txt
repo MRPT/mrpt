@@ -56,6 +56,7 @@ set(LIB_SOURCES
   src/CPipe.cpp
   src/CStream.cpp
   src/CTextFileLinesParser.cpp
+  src/detect_compression.cpp
   src/lazy_load_path.cpp
   src/vector_loadsave.cpp
   src/zip.cpp
@@ -81,6 +82,7 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/io/CPipe.h
   include/mrpt/io/registerAllClasses.h
   include/mrpt/io/CStream.h
+  include/mrpt/io/detect_compression.h
   include/mrpt/io/vector_loadsave.h
   include/mrpt/io/lazy_load_path.h
   include/mrpt/io/CFileStream.h
