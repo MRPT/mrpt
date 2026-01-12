@@ -17,187 +17,341 @@
 #include <mrpt/img/TCamera.h>
 #include <mrpt/img/TPixelCoord.h>
 #include <mrpt/math/TPose3D.h>
+#include <mrpt/math/TPose3DQuat.h>
 
-/** Functions related to pinhole camera models, point projections, etc.
+/** Functions for pinhole camera models: point projection, distortion, and undistortion.
  * \ingroup mrpt_img_grp */
 namespace mrpt::img::camera_geometry
 {
 /** \addtogroup mrpt_img_grp
  * @{ */
 
-/** Project a set of 3D points into a camera at an arbitrary 6D pose using its
- * calibration matrix (undistorted projection model)
- * \param in_points_3D [IN] The list of 3D points in world coordinates (meters)
- * to project.
- * \param cameraPose [IN] The pose of the camera in the world.
- * \param intrinsicParams [IN] The 3x3 calibration matrix. See
- * https://www.mrpt.org/Camera_Parameters
- * \param projectedPoints [OUT] The list of image coordinates (in pixels) for
- * the projected points. At output this list is resized to the same number of
- * input points.
- * \param accept_points_behind [IN] See the note below.
+// ============================================================================
+//  PROJECTION FUNCTIONS (3D -> 2D)
+// ============================================================================
+
+/** Project 3D points to image plane without distortion (pinhole model only).
  *
- * \note Points "behind" the camera (which couldn't be physically seen in the
- * real world) are marked with pixel coordinates (-1,-1) to detect them as
- * invalid, unless accept_points_behind is true. In that case they'll be
- * projected normally.
+ * This applies only the intrinsic camera matrix transformation:
+ * \f[ u = f_x \frac{X}{Z} + c_x, \quad v = f_y \frac{Y}{Z} + c_y \f]
  *
- * \sa projectPoints_with_distortion, projectPoint_no_distortion
+ * \param points3D [IN] 3D points in world coordinates (meters)
+ * \param cameraPose [IN] Camera pose in world coordinates
+ * \param intrinsicParams [IN] 3x3 camera calibration matrix K
+ * \param projectedPoints [OUT] Projected pixel coordinates (resized automatically)
+ * \param acceptPointsBehind [IN] If false, points with Z≤0 are marked as (-1,-1)
+ *
+ * \note Points behind the camera (Z≤0 in camera frame) are marked with
+ *       pixel coordinates (-1,-1) unless acceptPointsBehind=true.
+ *
+ * \sa projectPoints_with_distortion
  */
-void projectPoints_no_distortion(
-    const std::vector<mrpt::math::TPoint3D>& in_points_3D,
+void projectPoints(
+    const std::vector<mrpt::math::TPoint3D>& points3D,
     const mrpt::math::TPose3D& cameraPose,
     const mrpt::math::CMatrixDouble33& intrinsicParams,
     std::vector<mrpt::img::TPixelCoordf>& projectedPoints,
-    bool accept_points_behind = false);
+    bool acceptPointsBehind = false);
 
-/** Project a single 3D point with global coordinates P into a camera at pose F,
- *without distortion parameters.
- *  The template argument INVERSE_CAM_POSE is related on how the camera pose
- *"F" is stored:
- *		- INVERSE_CAM_POSE:false -> The local coordinates of the feature wrt the
- *camera F are: \f$ P \ominus F \f$
- *		- INVERSE_CAM_POSE:true  -> The local coordinates of the feature wrt the
- *camera F are: \f$ F \oplus P \f$
- */
-template <bool INVERSE_CAM_POSE>
-inline mrpt::img::TPixelCoordf projectPoint_no_distortion(
-    const mrpt::img::TCamera& cam_params,
-    const mrpt::math::TPose3D& F,
-    const mrpt::math::TPoint3D& P)
-{
-  mrpt::math::TPoint3D pt_wrt_cam;
-  if (INVERSE_CAM_POSE)
-  {
-    pt_wrt_cam = F.composePoint(P);
-  }
-  else
-  {
-    pt_wrt_cam = F.inverseComposePoint(P);
-  }
-  ASSERT_(pt_wrt_cam.z != 0);
-
-  // Pinhole model:
-  return {
-      static_cast<float>(cam_params.cx() + cam_params.fx() * pt_wrt_cam.x / pt_wrt_cam.z),
-      static_cast<float>(cam_params.cy() + cam_params.fy() * pt_wrt_cam.y / pt_wrt_cam.z)};
-}
-
-//! \overload
-template <typename POINT>
-mrpt::img::TPixelCoordf projectPoint_no_distortion(
-    const POINT& in_point_wrt_cam, const mrpt::img::TCamera& cam_params)
-{
-  ASSERT_(in_point_wrt_cam.z != 0);
-  // Pinhole model:
-  return {
-      static_cast<float>(
-          cam_params.cx() + cam_params.fx() * in_point_wrt_cam.x / in_point_wrt_cam.z),
-      static_cast<float>(
-          cam_params.cy() + cam_params.fy() * in_point_wrt_cam.y / in_point_wrt_cam.z)};
-}
-
-/** Project a set of 3D points into a camera at an arbitrary 6D pose using its
- * calibration matrix and distortion parameters (radial and tangential
- * distortions projection model)
- * \param in_points_3D [IN] The list of 3D points in world coordinates (meters)
- * to project.
- * \param cameraPose [IN] The pose of the camera in the world.
- * \param intrinsicParams [IN] The 3x3 calibration matrix. See
- * https://www.mrpt.org/Camera_Parameters
- * \param distortionParams [IN] The 4-length vector with the distortion
- * parameters [k1 k2 p1 p2]. See https://www.mrpt.org/Camera_Parameters
- * \param projectedPoints [OUT] The list of image coordinates (in pixels) for
- * the projected points. At output this list is resized to the same number of
- * input points.
- * \param accept_points_behind [IN] See the note below.
+/** Project 3D points to image plane with lens distortion.
  *
- * \note Points "behind" the camera (which couldn't be physically seen in the
- * real world) are marked with pixel coordinates (-1,-1) to detect them as
- * invalid, unless accept_points_behind is true. In that case they'll be
- * projected normally.
+ * Applies the full camera model:
+ * 1. Transform point to camera frame: P_cam = cameraPose^{-1} * P_world
+ * 2. Normalize: (x,y) = (X/Z, Y/Z)
+ * 3. Apply distortion: (x_d, y_d) = distort(x, y)
+ * 4. Project to pixels: (u,v) = (f_x*x_d + c_x, f_y*y_d + c_y)
  *
- * \sa projectPoint_with_distortion, projectPoints_no_distortion
+ * \param points3D [IN] 3D points in world coordinates (meters)
+ * \param cameraPose [IN] Camera pose in world coordinates
+ * \param cameraParams [IN] Complete camera model (intrinsics + distortion)
+ * \param projectedPoints [OUT] Projected pixel coordinates (resized automatically)
+ * \param acceptPointsBehind [IN] If false, points with Z≤0 are marked as (-1,-1)
+ *
+ * \sa projectPoint_with_distortion, projectPoints
  */
 void projectPoints_with_distortion(
-    const std::vector<mrpt::math::TPoint3D>& in_points_3D,
+    const std::vector<mrpt::math::TPoint3D>& points3D,
     const mrpt::math::TPose3D& cameraPose,
-    const mrpt::math::CMatrixDouble33& intrinsicParams,
-    const std::vector<double>& distortionParams,
+    const mrpt::img::TCamera& cameraParams,
     std::vector<mrpt::img::TPixelCoordf>& projectedPoints,
-    bool accept_points_behind = false);
+    bool acceptPointsBehind = false);
 
-/** Project one 3D point into a camera using its calibration matrix and
- * distortion parameters (radial and tangential distortions projection model)
- * \param in_point_wrt_cam [IN] The 3D point wrt the camera focus, with
- * +Z=optical axis, +X=righthand in the image plane, +Y=downward in the image
- * plane.
- * \param in_cam_params [IN] The camera parameters. See
- * https://www.mrpt.org/Camera_Parameters
- * \param out_projectedPoints [OUT] The projected point, in pixel units.
- * \param accept_points_behind [IN] See the note below.
+/** \overload Using TPose3DQuat for camera pose */
+void projectPoints_with_distortion(
+    const std::vector<mrpt::math::TPoint3D>& points3D,
+    const mrpt::img::TCamera& cameraParams,
+    const mrpt::math::TPose3D& cameraPose,
+    std::vector<mrpt::img::TPixelCoordf>& projectedPoints,
+    bool acceptPointsBehind = false);
+
+/** Project a single 3D point (in camera frame) to image plane with distortion.
  *
- * \note Points "behind" the camera (which couldn't be physically seen in the
- * real world) are marked with pixel coordinates (-1,-1) to detect them as
- * invalid, unless accept_points_behind is true. In that case they'll be
- * projected normally.
+ * \param pointInCamFrame [IN] 3D point in camera coordinate frame (X right, Y down, Z forward)
+ * \param cameraParams [IN] Complete camera model (intrinsics + distortion)
+ * \param pixel [OUT] Projected pixel coordinates
+ * \param acceptPointsBehind [IN] If false, points with Z≤0 are marked as (-1,-1)
  *
  * \sa projectPoints_with_distortion
  */
 void projectPoint_with_distortion(
-    const mrpt::math::TPoint3D& in_point_wrt_cam,
-    const mrpt::img::TCamera& in_cam_params,
-    mrpt::img::TPixelCoordf& out_projectedPoints,
-    bool accept_points_behind = false);
+    const mrpt::math::TPoint3D& pointInCamFrame,
+    const mrpt::img::TCamera& cameraParams,
+    mrpt::img::TPixelCoordf& pixel,
+    bool acceptPointsBehind = false);
 
-//! \overload
-void projectPoints_with_distortion(
-    const std::vector<mrpt::math::TPoint3D>& P,
-    const mrpt::img::TCamera& params,
-    const mrpt::math::TPose3DQuat& cameraPose,
-    std::vector<mrpt::img::TPixelCoordf>& pixels,
-    bool accept_points_behind = false);
+/** Project a single 3D point without distortion (template version).
+ *
+ * \tparam INVERSE_CAM_POSE How camera pose F is interpreted:
+ *         - false: Point in camera = P ⊖ F (inverse composition, typical use)
+ *         - true:  Point in camera = F ⊕ P (direct composition)
+ *
+ * \param cameraParams [IN] Camera intrinsic parameters
+ * \param cameraPose [IN] Camera pose
+ * \param point3D [IN] 3D point in world coordinates
+ * \return Projected pixel coordinates
+ */
+template <bool INVERSE_CAM_POSE>
+inline mrpt::img::TPixelCoordf projectPoint(
+    const mrpt::img::TCamera& cameraParams,
+    const mrpt::math::TPose3D& cameraPose,
+    const mrpt::math::TPoint3D& point3D)
+{
+  mrpt::math::TPoint3D pt;
+  if (INVERSE_CAM_POSE)
+  {
+    pt = cameraPose.composePoint(point3D);
+  }
+  else
+  {
+    pt = cameraPose.inverseComposePoint(point3D);
+  }
 
-/** Undistort a list of points given by their pixel coordinates, provided the
- * camera matrix and distortion coefficients.
- * \param srcDistortedPixels [IN] The pixel coordinates as in the distorted
- * image.
- * \param dstUndistortedPixels [OUT] The computed pixel coordinates without
- * distortion.
- * \param intrinsicParams [IN] The 3x3 calibration matrix. See
- * https://www.mrpt.org/Camera_Parameters
- * \param distortionParams [IN] The 4-length vector with the distortion
- * parameters [k1 k2 p1 p2]. See https://www.mrpt.org/Camera_Parameters
- * \sa undistort_point
+  ASSERT_(pt.z != 0);
+
+  return {
+      static_cast<float>(cameraParams.cx() + cameraParams.fx() * pt.x / pt.z),
+      static_cast<float>(cameraParams.cy() + cameraParams.fy() * pt.y / pt.z)};
+}
+
+/** Project a single 3D point (already in camera frame) without distortion.
+ *
+ * \tparam POINT Any type with .x, .y, .z members
+ * \param pointInCamFrame [IN] 3D point in camera coordinate frame
+ * \param cameraParams [IN] Camera intrinsic parameters
+ * \return Projected pixel coordinates
+ */
+template <typename POINT>
+mrpt::img::TPixelCoordf projectPoint(
+    const POINT& pointInCamFrame, const mrpt::img::TCamera& cameraParams)
+{
+  ASSERT_(pointInCamFrame.z != 0);
+  return {
+      static_cast<float>(
+          cameraParams.cx() + cameraParams.fx() * pointInCamFrame.x / pointInCamFrame.z),
+      static_cast<float>(
+          cameraParams.cy() + cameraParams.fy() * pointInCamFrame.y / pointInCamFrame.z)};
+}
+
+// ============================================================================
+//  UNDISTORTION FUNCTIONS (Remove lens distortion)
+// ============================================================================
+
+/** Remove lens distortion from pixel coordinates (batch version).
+ *
+ * Converts distorted pixel coordinates to undistorted pixel coordinates
+ * using iterative refinement. The output pixels can be used with the
+ * undistorted camera model (distortion=none).
+ *
+ * \param distortedPixels [IN] Distorted pixel coordinates as captured by camera
+ * \param undistortedPixels [OUT] Undistorted pixel coordinates (resized automatically)
+ * \param cameraParams [IN] Complete camera model including distortion parameters
+ *
+ * \sa undistort_point, undistort_points_to_unit_plane
  */
 void undistort_points(
-    const std::vector<mrpt::img::TPixelCoordf>& srcDistortedPixels,
-    std::vector<mrpt::img::TPixelCoordf>& dstUndistortedPixels,
+    const std::vector<mrpt::img::TPixelCoordf>& distortedPixels,
+    std::vector<mrpt::img::TPixelCoordf>& undistortedPixels,
+    const mrpt::img::TCamera& cameraParams);
+
+/** \overload Using separate intrinsic matrix and distortion vector
+ *
+ * \note The distortion model is inferred from the size of distortionParams:
+ *       4-5 elements: plumb_bob, 8 elements: plumb_bob with all coefficients
+ */
+void undistort_points(
+    const std::vector<mrpt::img::TPixelCoordf>& distortedPixels,
+    std::vector<mrpt::img::TPixelCoordf>& undistortedPixels,
     const mrpt::math::CMatrixDouble33& intrinsicParams,
     const std::vector<double>& distortionParams);
 
-/** Undistort a list of points given by their pixel coordinates, provided the
- * camera matrix and distortion coefficients.
- * \param srcDistortedPixels [IN] The pixel coordinates as in the distorted
- * image.
- * \param dstUndistortedPixels [OUT] The computed pixel coordinates without
- * distortion.
- * \param cameraModel [IN] The camera parameters.
- * \sa undistort_point
- */
-void undistort_points(
-    const std::vector<mrpt::img::TPixelCoordf>& srcDistortedPixels,
-    std::vector<mrpt::img::TPixelCoordf>& dstUndistortedPixels,
-    const mrpt::img::TCamera& cameraModel);
-
-/** Undistort one point given by its pixel coordinates and the camera
- * parameters.
+/** Remove lens distortion from a single pixel coordinate.
+ *
+ * \param distortedPt [IN] Distorted pixel coordinates
+ * \param undistortedPt [OUT] Undistorted pixel coordinates
+ * \param cameraParams [IN] Complete camera model
+ *
  * \sa undistort_points
  */
 void undistort_point(
-    const mrpt::img::TPixelCoordf& inPt,
-    mrpt::img::TPixelCoordf& outPt,
-    const mrpt::img::TCamera& cameraModel);
+    const mrpt::img::TPixelCoordf& distortedPt,
+    mrpt::img::TPixelCoordf& undistortedPt,
+    const mrpt::img::TCamera& cameraParams);
+
+/** Convert distorted pixels to normalized image plane coordinates.
+ *
+ * This is the key function for 3D reconstruction and ray casting. It:
+ * 1. Removes lens distortion
+ * 2. Converts to normalized coordinates on the z=1 plane
+ * 3. Returns coordinates that satisfy: pixel ray direction = (x, y, 1)
+ *
+ * The output normalized coordinates (x,y) represent the intersection of the
+ * pixel's ray with the z=1 plane in the camera coordinate system. For a 3D
+ * point P=(X,Y,Z) in camera frame, it projects to normalized coords (X/Z, Y/Z).
+ *
+ * **Usage example for 3D ray computation:**
+ * \code
+ * TPoint2D norm = normalizedCoords[i];
+ * TPoint3D ray_direction(norm.x, norm.y, 1.0);
+ * // Ray from camera origin: P(t) = camera_origin + t * ray_direction
+ * \endcode
+ *
+ * \param distortedPixels [IN] Distorted pixel coordinates from camera
+ * \param normalizedCoords [OUT] Normalized coordinates on z=1 plane (resized automatically)
+ * \param cameraParams [IN] Complete camera model
+ *
+ * \note Output are NOT pixel coordinates but normalized 3D ray parameters
+ *
+ * \sa undistort_points
+ */
+void undistort_points_to_unit_plane(
+    const std::vector<mrpt::img::TPixelCoordf>& distortedPixels,
+    std::vector<mrpt::math::TPoint2D>& normalizedCoords,
+    const mrpt::img::TCamera& cameraParams);
+
+// ============================================================================
+//  LOW-LEVEL DISTORTION FUNCTIONS
+// ============================================================================
+
+/** Low-level distortion and undistortion functions operating on normalized coordinates.
+ *
+ * These functions work with normalized image coordinates (x,y) where a 3D point
+ * (X,Y,Z) in camera frame projects to (x,y) = (X/Z, Y/Z).
+ *
+ * **Use these functions when:**
+ * - Implementing custom projection pipelines
+ * - Testing distortion models in isolation
+ * - Porting code from other computer vision libraries
+ * - Need fine-grained control over the distortion process
+ *
+ * **For typical use cases, prefer the high-level functions above.**
+ */
+namespace distortion
+{
+/** Apply plumb_bob (radial-tangential) distortion to normalized coordinates.
+ *
+ * Implements the Brown-Conrady distortion model:
+ * \f[
+ * \begin{aligned}
+ * r^2 &= x^2 + y^2 \\
+ * \text{radial} &= \frac{1 + k_1 r^2 + k_2 r^4 + k_3 r^6}{1 + k_4 r^2 + k_5 r^4 + k_6 r^6} \\
+ * x_d &= x \cdot \text{radial} + 2p_1 xy + p_2(r^2 + 2x^2) \\
+ * y_d &= y \cdot \text{radial} + p_1(r^2 + 2y^2) + 2p_2 xy
+ * \end{aligned}
+ * \f]
+ *
+ * \param x [IN] Normalized x coordinate (X/Z)
+ * \param y [IN] Normalized y coordinate (Y/Z)
+ * \param dist [IN] Distortion coefficients [k1,k2,p1,p2,k3,k4,k5,k6]
+ * \param xd [OUT] Distorted x coordinate
+ * \param yd [OUT] Distorted y coordinate
+ *
+ * \sa remove_plumb_bob, apply_kannala_brandt
+ */
+void apply_plumb_bob(double x, double y, const std::array<double, 8>& dist, double& xd, double& yd);
+
+/** Apply Kannala-Brandt fish-eye distortion to normalized coordinates.
+ *
+ * Implements the model from "A Generic Camera Model and Calibration Method
+ * for Conventional, Wide-Angle, and Fish-Eye Lenses" (Kannala & Brandt, 2006):
+ * \f[
+ * \begin{aligned}
+ * r &= \sqrt{x^2 + y^2} \\
+ * \theta &= \arctan(r) \\
+ * \theta_d &= \theta(1 + k_1\theta^2 + k_2\theta^4 + k_3\theta^6 + k_4\theta^8) \\
+ * x_d &= \frac{\theta_d}{r} x, \quad y_d = \frac{\theta_d}{r} y
+ * \end{aligned}
+ * \f]
+ *
+ * \param x [IN] Normalized x coordinate
+ * \param y [IN] Normalized y coordinate
+ * \param dist [IN] Distortion coefficients [k1,k2,_,_,k3,k4,_,_] (indices 2,3,6,7 unused)
+ * \param xd [OUT] Distorted x coordinate
+ * \param yd [OUT] Distorted y coordinate
+ *
+ * \sa remove_kannala_brandt, apply_plumb_bob
+ */
+void apply_kannala_brandt(
+    double x, double y, const std::array<double, 8>& dist, double& xd, double& yd);
+
+/** Remove plumb_bob distortion using iterative refinement.
+ *
+ * Given distorted normalized coordinates (x_d, y_d), finds undistorted
+ * coordinates (x, y) such that apply_plumb_bob(x,y) ≈ (x_d, y_d).
+ *
+ * Uses fixed-point iteration:
+ * 1. Start with x = x_d, y = y_d
+ * 2. Compute expected distortion at (x,y)
+ * 3. Update: x_new = (x_d - tangential_x) / radial_factor
+ * 4. Repeat until convergence or max iterations
+ *
+ * \param xd [IN] Distorted x coordinate
+ * \param yd [IN] Distorted y coordinate
+ * \param dist [IN] Distortion coefficients [k1,k2,p1,p2,k3,k4,k5,k6]
+ * \param x [OUT] Undistorted x coordinate
+ * \param y [OUT] Undistorted y coordinate
+ * \param iterations [IN] Number of refinement iterations (default: 5, typically sufficient)
+ *
+ * \note 5 iterations typically achieve sub-pixel accuracy for typical distortion magnitudes
+ *
+ * \sa apply_plumb_bob, remove_kannala_brandt
+ */
+void remove_plumb_bob(
+    double xd,
+    double yd,
+    const std::array<double, 8>& dist,
+    double& x,
+    double& y,
+    int iterations = 5);
+
+/** Remove Kannala-Brandt fish-eye distortion using Newton-Raphson method.
+ *
+ * Solves the nonlinear equation to invert the fish-eye model:
+ * \f[ \theta_d = \theta(1 + k_1\theta^2 + k_2\theta^4 + k_3\theta^6 + k_4\theta^8) \f]
+ *
+ * Uses Newton-Raphson iteration:
+ * \f[ \theta_{n+1} = \theta_n - \frac{f(\theta_n)}{f'(\theta_n)} \f]
+ * where \f$f(\theta) = \theta \cdot \text{poly}(\theta) - \theta_d\f$
+ *
+ * \param xd [IN] Distorted x coordinate
+ * \param yd [IN] Distorted y coordinate
+ * \param dist [IN] Distortion coefficients [k1,k2,_,_,k3,k4,_,_]
+ * \param x [OUT] Undistorted x coordinate
+ * \param y [OUT] Undistorted y coordinate
+ * \param iterations [IN] Number of Newton-Raphson iterations (default: 10)
+ *
+ * \note Fish-eye models require more iterations than plumb_bob due to higher nonlinearity
+ *
+ * \sa apply_kannala_brandt, remove_plumb_bob
+ */
+void remove_kannala_brandt(
+    double xd,
+    double yd,
+    const std::array<double, 8>& dist,
+    double& x,
+    double& y,
+    int iterations = 10);
+
+}  // namespace distortion
 
 /** @} */  // end of grouping
 
