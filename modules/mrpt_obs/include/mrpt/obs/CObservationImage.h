@@ -37,8 +37,6 @@ namespace mrpt::obs
 class CObservationImage : public CObservation
 {
   DEFINE_SERIALIZABLE(CObservationImage, mrpt::obs)
-  // This must be added for declaration of MEX-related functions
-  DECLARE_MEX_CONVERSION
 
  public:
   /** Constructor.
@@ -95,5 +93,3 @@ class CObservationImage : public CObservation
 };  // End of class def.
 
 }  // namespace mrpt::obs
-// Add for declaration of mexplus::from template specialization
-DECLARE_MEXPLUS_FROM(mrpt::obs::CObservationImage)

@@ -23,9 +23,6 @@
 #include <mrpt/poses/CPose.h>
 #include <mrpt/system/string_utils.h>
 
-// Add for declaration of mexplus::from template specialization
-DECLARE_MEXPLUS_FROM(mrpt::poses::CPose3D)
-
 namespace mrpt::poses
 {
 class CPose3DQuat;
@@ -88,9 +85,6 @@ class CPose3D :
 {
   DEFINE_SERIALIZABLE(CPose3D, mrpt::poses)
   DEFINE_SCHEMA_SERIALIZABLE()
-
-  // This must be added for declaration of MEX-related functions
-  DECLARE_MEX_CONVERSION
 
  public:
   /** The translation vector [x,y,z] access directly or with x(), y(), z()

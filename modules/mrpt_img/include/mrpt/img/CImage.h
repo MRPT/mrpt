@@ -30,9 +30,6 @@ namespace mrpt::io
 class CStream;
 }
 
-// Add for declaration of mexplus::from template specialization
-DECLARE_MEXPLUS_FROM(mrpt::img::CImage)
-
 /** Classes for image storage and manipulation \ingroup mrpt_img_grp */
 namespace mrpt::img
 {
@@ -138,9 +135,6 @@ class CExceptionExternalImageNotFound : public std::runtime_error
 class CImage : public mrpt::serialization::CSerializable, public CCanvas
 {
   DEFINE_SERIALIZABLE(CImage, mrpt::img)
-
-  // This must be added for declaration of MEX-related functions
-  DECLARE_MEX_CONVERSION
 
  public:
   /** @name Constructors & destructor

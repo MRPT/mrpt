@@ -178,33 +178,6 @@ void OctetVectorToObject(const std::vector<uint8_t>& in_data, CSerializable::Ptr
 #define IMPLEMENTS_VIRTUAL_SERIALIZABLE_NS_PREFIX(class_name, base_class, NS) \
   IMPLEMENTS_VIRTUAL_MRPT_OBJECT_NS_PREFIX(class_name, base_class, NS)
 
-/** This must be inserted if a custom conversion method for MEX API is
- * implemented in the class */
-#define DECLARE_MEX_CONVERSION                         \
-  /*! @name Virtual methods for MRPT-MEX conversion */ \
-  /*! @{ */                                            \
- public:                                               \
-  mxArray* writeToMatlab() const override;             \
 /*! @} */
 
-/** This must be inserted if a custom conversion method for MEX API is
- * implemented in the class */
-#define DECLARE_MEXPLUS_FROM(complete_type)  \
-  namespace mexplus                          \
-  {                                          \
-  template <typename T>                      \
-  mxArray* from(const T& value);             \
-  template <>                                \
-  mxArray* from(const complete_type& value); \
-  }
-
-#define IMPLEMENTS_MEXPLUS_FROM(complete_type) \
-  namespace mexplus                            \
-  {                                            \
-  template <>                                  \
-  mxArray* from(const complete_type& var)      \
-  {                                            \
-    return var.writeToMatlab();                \
-  }                                            \
-  }
 }  // namespace mrpt::serialization

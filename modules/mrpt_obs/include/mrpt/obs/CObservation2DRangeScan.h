@@ -25,9 +25,6 @@
 
 #include <mutex>
 
-// Add for declaration of mexplus::from template specialization
-DECLARE_MEXPLUS_FROM(mrpt::obs::CObservation2DRangeScan)
-
 namespace mrpt
 {
 namespace obs
@@ -64,8 +61,6 @@ namespace obs
 class CObservation2DRangeScan : public CObservation
 {
   DEFINE_SERIALIZABLE(CObservation2DRangeScan, mrpt::obs)
-  // This must be added for declaration of MEX-related functions
-  DECLARE_MEX_CONVERSION
  private:
   /** The range values of the scan, in meters. Must have same length than \a
    * validRange */
