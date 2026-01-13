@@ -33,9 +33,6 @@
 
 #include <iosfwd>
 
-// Add for declaration of mexplus::from template specialization
-DECLARE_MEXPLUS_FROM(mrpt::maps::CPointsMap)
-
 namespace mrpt::maps
 {
 /** \ingroup mrpt_maps_grp */
@@ -79,8 +76,6 @@ class CPointsMap :
     public mrpt::maps::NearestNeighborsCapable
 {
   DEFINE_VIRTUAL_SERIALIZABLE(CPointsMap, mrpt::maps)
-  // This must be added for declaration of MEX-related functions
-  DECLARE_MEX_CONVERSION
 
  protected:
   /** Helper struct used for \a internal_loadFromRangeScan2D_prepareOneRange()

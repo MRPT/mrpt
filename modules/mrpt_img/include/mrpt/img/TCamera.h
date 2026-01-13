@@ -50,9 +50,6 @@ class TCamera : public mrpt::serialization::CSerializable
 {
   DEFINE_SERIALIZABLE(TCamera, mrpt::img)
 
-  // This must be added for declaration of MEX-related functions
-  DECLARE_MEX_CONVERSION
-
  public:
   /** Default constructor: all intrinsic parameters set to zero. */
   TCamera();
@@ -296,9 +293,6 @@ bool operator==(const mrpt::img::TCamera& a, const mrpt::img::TCamera& b);
 bool operator!=(const mrpt::img::TCamera& a, const mrpt::img::TCamera& b);
 
 }  // namespace mrpt::img
-
-// Add for declaration of mexplus::from template specialization
-DECLARE_MEXPLUS_FROM(mrpt::img::TCamera)
 
 namespace std
 {
