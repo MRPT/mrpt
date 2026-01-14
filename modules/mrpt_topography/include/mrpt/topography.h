@@ -15,4 +15,3 @@
 #pragma once
 
 #include <mrpt/topography/conversions.h>
-#include <mrpt/topography/path_from_rtk_gps.h>

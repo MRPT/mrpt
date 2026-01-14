@@ -96,6 +96,7 @@ digraph MRPT_LIBS {
 	slam       [label="mrpt_slam",URL="group_mrpt_slam_grp.html"];
 	slam -> maps;
 	slam -> vision;
+	slam -> topography;
 
 	system     [label="mrpt_system",URL="group_mrpt_system_grp.html"];
 	system -> containers;
@@ -104,7 +105,7 @@ digraph MRPT_LIBS {
 	tfest -> poses;
 
 	topography [label="mrpt_topography",URL="group_mrpt_topography_grp.html"];
-	topography -> obs;
+	topography -> math;
 
 	typemeta [label="mrpt_typemeta (.h)",URL="group_mrpt_typemeta_grp.html"];
 	typemeta -> common;

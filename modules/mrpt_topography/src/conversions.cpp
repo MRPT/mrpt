@@ -14,8 +14,6 @@
 
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/utils.h>
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/poses/CPose3D.h>
 #include <mrpt/topography/conversions.h>
 
 using namespace std;
@@ -36,9 +34,6 @@ bool mrpt::topography::operator!=(const TGeodeticCoords& a, const TGeodeticCoord
 {
   return !(a == o);
 }
-
-//#define M_PI_TOPO 3.141592653589793
-// inline double DEG2RAD(const double x) { return x*M_PI_TOPO/180.0;	}
 
 // Define a generic type for "precission numbers":
 #ifdef HAVE_LONG_DOUBLE
@@ -192,16 +187,12 @@ void mrpt::topography::geodeticToGeocentric_WGS84(
   //  Constants are for WGS84
   // --------------------------------------------------------------------
 
-  static const precnum_t a = 6378137L;       // Semi-major axis of the Earth (meters)
-  static const precnum_t b = 6356752.3142L;  // Semi-minor axis:
+  static constexpr precnum_t a = 6378137L;       // Semi-major axis of the Earth (meters)
+  static constexpr precnum_t b = 6356752.3142L;  // Semi-minor axis:
 
-  static const precnum_t ae = acos(b / a);  // eccentricity:
-  static const precnum_t cos2_ae_earth =
-      square(cos(ae));  // The cos^2 of the angular eccentricity of the Earth:
-  // // 0.993305619995739L;
-  static const precnum_t sin2_ae_earth =
-      square(sin(ae));  // The sin^2 of the angular eccentricity of the Earth:
-  // // 0.006694380004261L;
+  static constexpr precnum_t ae = acos(b / a);  // angular eccentricity of the Earth
+  static constexpr precnum_t cos2_ae_earth = square(cos(ae));
+  static constexpr precnum_t sin2_ae_earth = square(sin(ae));
 
   const precnum_t lon = DEG2RAD(precnum_t(in_coords.lon));
   const precnum_t lat = DEG2RAD(precnum_t(in_coords.lat));
