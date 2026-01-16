@@ -166,9 +166,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #cmakedefine HAVE_DECL_BFD_SECTION_VMA 1
 #cmakedefine HAVE_1_ARG_BFD_SECTION_SIZE 1
 
-/** Matlab wrapper is available */
-#define MRPT_HAS_MATLAB           ${CMAKE_MRPT_HAS_MATLAB}
-
 // -------------------------------
 //			Some checks:
 // -------------------------------

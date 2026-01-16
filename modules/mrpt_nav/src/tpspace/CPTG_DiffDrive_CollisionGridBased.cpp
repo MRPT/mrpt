@@ -744,10 +744,10 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
 
         for (size_t m = 0; m < nVerts; m++)
         {
-          transf_shape[m].x = p.x + cos(p.phi) * m_robotShape.GetVertex_x(m) -
-                              sin(p.phi) * m_robotShape.GetVertex_y(m);
-          transf_shape[m].y = p.y + sin(p.phi) * m_robotShape.GetVertex_x(m) +
-                              cos(p.phi) * m_robotShape.GetVertex_y(m);
+          transf_shape[m].x = p.x + cos(p.phi) * m_robotShape.get_vertex_x(m) -
+                              sin(p.phi) * m_robotShape.get_vertex_y(m);
+          transf_shape[m].y = p.y + sin(p.phi) * m_robotShape.get_vertex_x(m) +
+                              cos(p.phi) * m_robotShape.get_vertex_y(m);
           mrpt::keep_max(bb_max.x, transf_shape[m].x);
           mrpt::keep_max(bb_max.y, transf_shape[m].y);
           mrpt::keep_min(bb_min.x, transf_shape[m].x);

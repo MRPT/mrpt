@@ -404,10 +404,10 @@ TEST(Geometry, PolygonConvexContainsPoint)
 
   {
     mrpt::math::CPolygon p;
-    p.AddVertex(0, -0.322);
-    p.AddVertex(-0.644, -0.322);
-    p.AddVertex(-0.210377, -0.324673);
-    p.AddVertex(0.433623, -0.324673);
+    p.add_vertex(0, -0.322);
+    p.add_vertex(-0.644, -0.322);
+    p.add_vertex(-0.210377, -0.324673);
+    p.add_vertex(0.433623, -0.324673);
 
     EXPECT_FALSE(p.contains(TPoint2D(0.73175, -0.325796)));
   }

@@ -26,13 +26,16 @@ uint8_t CPolygon::serializeGetVersion() const { return 2; }
 void CPolygon::serializeTo(mrpt::serialization::CArchive& out) const
 {
   // The number of vertexs:
-  const auto n = (uint32_t)TPolygon2D::size();
+  const auto n = static_cast<uint32_t>(TPolygon2D::size());
 
   // Size:
   out << n;
 
   // Vertices:
-  if (n) out.WriteBufferFixEndianness<double>((double*)&TPolygon2D::operator[](0), 2 * n);
+  if (n != 0)
+  {
+    out.WriteBufferFixEndianness<double>(&begin()->x, 2UL * n);
+  }
 }
 
 void CPolygon::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -41,7 +44,7 @@ void CPolygon::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
   {
     case 0:  // floats
     {
-      // The number of vertexs:
+      // The number of vertices:
       uint32_t i, n;
       float f;
 
@@ -106,7 +109,10 @@ void CPolygon::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
       TPolygon2D::resize(n);
 
       // The vertexs arrays:
-      if (n > 0) in.ReadBufferFixEndianness<double>((double*)&TPolygon2D::operator[](0), 2 * n);
+      if (n > 0)
+      {
+        in.ReadBufferFixEndianness<double>(&begin()->x, 2UL * n);
+      }
     }
     break;
     default:
@@ -117,16 +123,16 @@ void CPolygon::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 /*---------------------------------------------------------------
   Set all vertices at once, not to be used normally.
   ---------------------------------------------------------------*/
-void CPolygon::setAllVertices(const std::vector<double>& x, const std::vector<double>& y)
+void CPolygon::set_vertices(const std::vector<double>& x, const std::vector<double>& y)
 {
   ASSERT_(x.size() == y.size() && !x.empty());
-  setAllVertices(x.size(), &x[0], &y[0]);
+  set_vertices(x.size(), x.data(), y.data());
 }
 
 /*---------------------------------------------------------------
   Set all vertices at once, not to be used normally.
   ---------------------------------------------------------------*/
-void CPolygon::setAllVertices(size_t nVertices, const double* xs, const double* ys)
+void CPolygon::set_vertices(size_t nVertices, const double* xs, const double* ys)
 {
   // Resize:
   TPolygon2D::resize(nVertices);
@@ -140,7 +146,7 @@ void CPolygon::setAllVertices(size_t nVertices, const double* xs, const double* 
 /*---------------------------------------------------------------
   Set all vertices at once, not to be used normally.
   ---------------------------------------------------------------*/
-void CPolygon::setAllVertices(size_t nVertices, const float* xs, const float* ys)
+void CPolygon::set_vertices(size_t nVertices, const float* xs, const float* ys)
 {
   // Resize:
   TPolygon2D::resize(nVertices);
@@ -151,7 +157,7 @@ void CPolygon::setAllVertices(size_t nVertices, const float* xs, const float* ys
   }
 }
 
-void CPolygon::getAllVertices(std::vector<double>& x, std::vector<double>& y) const
+void CPolygon::get_vertices(std::vector<double>& x, std::vector<double>& y) const
 {
   // Resize:
   const size_t n = TPolygon2D::size();

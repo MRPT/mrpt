@@ -262,8 +262,8 @@ void CReactiveNavigationSystem::loggingGetWSObstaclesAndShape(CLogFileRecord& ou
 
   for (size_t i = 0; i < nVerts; i++)
   {
-    out_log.robotShape_x[i] = m_robotShape.GetVertex_x(i);
-    out_log.robotShape_y[i] = m_robotShape.GetVertex_y(i);
+    out_log.robotShape_x[i] = m_robotShape.get_vertex_x(i);
+    out_log.robotShape_y[i] = m_robotShape.get_vertex_y(i);
   }
 }
 

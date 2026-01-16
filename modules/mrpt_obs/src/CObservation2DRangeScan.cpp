@@ -19,10 +19,6 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/serialization/CArchive.h>
 
-#if MRPT_HAS_MATLAB
-#include <mexplus.h>
-#endif
-
 using namespace std;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
@@ -183,59 +179,6 @@ void CObservation2DRangeScan::serializeFrom(mrpt::serialization::CArchive& in, u
 
   auto lck = mrpt::lockHelper(m_cachedMapMtx.data);
   m_cachedMap.reset();
-}
-
-/*---------------------------------------------------------------
-  Implements the writing to a mxArray for Matlab
- ---------------------------------------------------------------*/
-#if MRPT_HAS_MATLAB
-// Add to implement mexplus::from template specialization
-IMPLEMENTS_MEXPLUS_FROM(mrpt::obs::CObservation2DRangeScan)
-#endif
-
-mxArray* CObservation2DRangeScan::writeToMatlab() const
-{
-#if MRPT_HAS_MATLAB
-  const char* fields[] = {
-      "class",  // Data common to any MRPT class
-      "ts",
-      "sensorLabel",  // Data common to any observation
-      "scan",
-      "validRange",
-      "intensity"  // Received raw data
-      "aperture",
-      "rightToLeft",
-      "maxRange",  // Scan plane geometry and properties
-      "stdError",
-      "beamAperture",
-      "deltaPitch",  // Ray properties
-      "pose",        // Sensor pose
-      "map"};        // Points map
-  mexplus::MxArray obs_struct(mexplus::MxArray::Struct(sizeof(fields) / sizeof(fields[0]), fields));
-
-  obs_struct.set("class", this->GetRuntimeClass()->className);
-
-  obs_struct.set("ts", mrpt::Clock::toDouble(timestamp));
-  obs_struct.set("sensorLabel", this->sensorLabel);
-
-  obs_struct.set("scan", this->m_scan);
-  // TODO: "validRange should be a vector<bool> for Matlab instead of
-  // vector<char>" ==> JLBC: It cannot be done like that since serializing
-  // "bool" is not cross-platform safe, while "char" is...
-  obs_struct.set("validRange", this->m_validRange);
-  obs_struct.set("intensity", this->m_intensity);
-  obs_struct.set("aperture", this->aperture);
-  obs_struct.set("rightToLeft", this->rightToLeft);
-  obs_struct.set("maxRange", this->maxRange);
-  obs_struct.set("stdError", this->stdError);
-  obs_struct.set("beamAperture", this->beamAperture);
-  obs_struct.set("deltaPitch", this->deltaPitch);
-  obs_struct.set("pose", this->sensorPose);
-  // TODO: obs_struct.set("map", ...)
-  return obs_struct.release();
-#else
-  THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
-#endif
 }
 
 /*---------------------------------------------------------------

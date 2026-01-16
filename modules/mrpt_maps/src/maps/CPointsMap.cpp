@@ -40,10 +40,6 @@
 #include <fstream>
 #include <sstream>
 
-#if MRPT_HAS_MATLAB
-#include <mexplus.h>
-#endif
-
 using namespace mrpt::poses;
 using namespace mrpt::maps;
 using namespace mrpt::math;
@@ -169,30 +165,6 @@ bool CPointsMap::load2Dor3D_from_text_file(const std::string& file, const bool i
   return load2Dor3D_from_text_stream(fi, std::nullopt, is_3D);
 
   MRPT_END
-}
-
-/*---------------------------------------------------------------
-  Implements the writing to a mxArray for Matlab
- ---------------------------------------------------------------*/
-#if MRPT_HAS_MATLAB
-// Add to implement mexplus::from template specialization
-IMPLEMENTS_MEXPLUS_FROM(mrpt::maps::CPointsMap)
-#endif
-
-mxArray* CPointsMap::writeToMatlab() const
-{
-#if MRPT_HAS_MATLAB
-  MRPT_TODO("Create 3xN array xyz of points coordinates")
-  const char* fields[] = {"x", "y", "z"};
-  mexplus::MxArray map_struct(mexplus::MxArray::Struct(sizeof(fields) / sizeof(fields[0]), fields));
-
-  map_struct.set("x", m_x);
-  map_struct.set("y", m_y);
-  map_struct.set("z", m_z);
-  return map_struct.release();
-#else
-  THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
-#endif
 }
 
 /*---------------------------------------------------------------
