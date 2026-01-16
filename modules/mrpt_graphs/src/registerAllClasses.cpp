@@ -15,9 +15,9 @@
 #include <mrpt/core/initializer.h>
 #include <mrpt/graphs/registerAllClasses.h>
 // Deps:
-#include <mrpt/viz/registerAllClasses.h>
+#include <mrpt/poses/registerAllClasses.h>
 
-MRPT_INITIALIZER(registerAllClasses_mrpt_graphs)
+MRPT_INITIALIZER(registerAllClasses_mrpt_graphs)  // NOLINT(misc-use-anonymous-namespace)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
   //	registerClass( CLASS_ID( ... ) );
@@ -29,5 +29,5 @@ void mrpt::graphs::registerAllClasses_mrpt_graphs()
 {
   ::registerAllClasses_mrpt_graphs();
   // deps:
-  mrpt::viz::registerAllClasses_mrpt_viz();
+  mrpt::poses::registerAllClasses_mrpt_poses();
 }
