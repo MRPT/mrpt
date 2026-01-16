@@ -46,19 +46,22 @@ int CStream::printf(const char* fmt, ...)
     va_list args;  // This must be done WITHIN the loop
     va_start(args, fmt);
 #if defined(_MSC_VER)
-    result = ::vsnprintf_s(&buffer[0], static_cast<size_t>(length), _TRUNCATE, fmt, args);
+    result = ::vsnprintf_s(buffer.data(), static_cast<size_t>(length), _TRUNCATE, fmt, args);
 #else
-    result = ::vsnprintf(&buffer[0], static_cast<size_t>(length), fmt, args);
+    result = ::vsnprintf(buffer.data(), static_cast<size_t>(length), fmt, args);
 #endif
     va_end(args);
 
     // Truncated?
-    if (result >= length) result = -1;
+    if (result >= length)
+    {
+      result = -1;
+    }
     length *= 2;
   }
 
-  size_t l = strlen(&buffer[0]);
-  this->Write(&buffer[0], l);
+  size_t l = strlen(buffer.data());
+  this->Write(buffer.data(), l);
 
   return result;
 
