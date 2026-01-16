@@ -49,6 +49,7 @@
         "multinomial",
         "parameterizations",
         "parameterizing",
+        "Partitioner",
         "Raphson",
         "recolorize",
         "renderizable",

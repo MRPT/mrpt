@@ -33,7 +33,7 @@ digraph MRPT_LIBS {
 	expr -> system;
 
 	graphs     [label="mrpt_graphs",URL="group_mrpt_graphs_grp.html"];
-	graphs -> viz;
+	graphs -> poses;
 
 	graphslam  [label="mrpt_graphslam",URL="group_mrpt_graphslam_grp.html"];
 	graphslam -> slam;
