@@ -95,7 +95,9 @@ size_t CFileGZOutputStream::Write(const void* Buffer, size_t Count)
   {
     THROW_EXCEPTION("File is not open.");
   }
-  return gzwrite(m_f->f, const_cast<void*>(Buffer), Count);
+  const auto bytes_written =
+      gzwrite(m_f->f, const_cast<void*>(Buffer), static_cast<unsigned int>(Count));
+  return bytes_written < 0 ? 0 : static_cast<size_t>(bytes_written);
 }
 
 uint64_t CFileGZOutputStream::getPosition() const
@@ -104,7 +106,7 @@ uint64_t CFileGZOutputStream::getPosition() const
   {
     THROW_EXCEPTION("File is not open.");
   }
-  return gztell(m_f->f);
+  return static_cast<uint64_t>(gztell(m_f->f));
 }
 
 bool CFileGZOutputStream::fileOpenCorrectly() const { return m_f->f != nullptr; }

@@ -41,14 +41,14 @@ int CStream::printf(const char* fmt, ...)
   vector<char> buffer;
   while (result == -1)
   {
-    buffer.resize(length + 10);
+    buffer.resize(static_cast<size_t>(length + 10));
 
     va_list args;  // This must be done WITHIN the loop
     va_start(args, fmt);
 #if defined(_MSC_VER)
-    result = ::vsnprintf_s(&buffer[0], length, _TRUNCATE, fmt, args);
+    result = ::vsnprintf_s(&buffer[0], static_cast<size_t>(length), _TRUNCATE, fmt, args);
 #else
-    result = ::vsnprintf(&buffer[0], length, fmt, args);
+    result = ::vsnprintf(&buffer[0], static_cast<size_t>(length), fmt, args);
 #endif
     va_end(args);
 
@@ -58,7 +58,7 @@ int CStream::printf(const char* fmt, ...)
   }
 
   size_t l = strlen(&buffer[0]);
-  this->Write(&buffer[0], (int)l);
+  this->Write(&buffer[0], l);
 
   return result;
 

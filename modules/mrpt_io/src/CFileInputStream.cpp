@@ -70,7 +70,7 @@ size_t CFileInputStream::Read(void* Buffer, size_t Count)
 {
   if (!m_if.is_open()) return 0;
 
-  m_if.read(static_cast<char*>(Buffer), Count);
+  m_if.read(static_cast<char*>(Buffer), static_cast<std::streamsize>(Count));
   return m_if.fail() ? 0 : Count;
 }
 
@@ -124,10 +124,10 @@ uint64_t CFileInputStream::getTotalBytesCount() const
 
   auto& f = const_cast<std::ifstream&>(m_if);
 
-  const uint64_t previousPos = f.tellg();
+  const uint64_t previousPos = static_cast<uint64_t>(f.tellg());
   f.seekg(0, ios_base::end);
-  uint64_t fileSize = f.tellg();
-  f.seekg(previousPos, ios_base::beg);
+  uint64_t fileSize = static_cast<uint64_t>(f.tellg());
+  f.seekg(static_cast<std::streamoff>(previousPos), ios_base::beg);
   return fileSize;
 }
 
@@ -138,7 +138,7 @@ uint64_t CFileInputStream::getPosition() const
 {
   auto& f = const_cast<std::ifstream&>(m_if);
   if (m_if.is_open())
-    return f.tellg();
+    return static_cast<uint64_t>(f.tellg());
   else
     return 0;
 }
