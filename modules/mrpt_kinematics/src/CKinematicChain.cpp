@@ -38,7 +38,7 @@ void CKinematicChain::addLink(double theta, double d, double a, double alpha, bo
 void CKinematicChain::removeLink(size_t idx)
 {
   ASSERT_LT_(idx, m_links.size());
-  m_links.erase(m_links.begin() + idx);
+  m_links.erase(m_links.begin() + static_cast<int>(idx));
 }
 
 const TKinematicLink& CKinematicChain::getLink(size_t idx) const

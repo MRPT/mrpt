@@ -4,9 +4,9 @@
      side-by-side to ROS packages in a catkin/ament environment.
 -->
 <package format="3">
-  <name>mrpt_graphs</name>
+  <name>mrpt_kinematics</name>
   <version>2.20.0</version>
-  <description>The MRPT C++ library mrpt_graphs</description>
+  <description>The MRPT C++ library mrpt_kinematics</description>
 
   <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
   <license file="LICENSE">BSD</license>
@@ -17,7 +17,7 @@
   <buildtool_depend>cmake</buildtool_depend>
 
   <depend>mrpt_common</depend>
-  <depend>mrpt_poses</depend>
+  <depend>mrpt_viz/depend>
 
   <export>
     <build_type>cmake</build_type>
