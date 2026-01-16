@@ -22,6 +22,14 @@
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/typemeta/num_to_string.h>
 
+// Suppress sign-conversion warnings in template instantiations
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wsign-compare"
+#pragma GCC diagnostic ignored "-Wdouble-promotion"
+#endif
+
 namespace mrpt::math
 {
 /** A compile-time fixed-size numeric matrix container.

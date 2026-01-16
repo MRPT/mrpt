@@ -39,6 +39,14 @@
  *
  */
 
+// Suppress sign-conversion warnings in template instantiations
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wsign-compare"
+#pragma GCC diagnostic ignored "-Wdouble-promotion"
+#endif
+
 namespace mrpt::math
 {
 /** ContainerType<T>::element_t exposes the value of any STL or Eigen container

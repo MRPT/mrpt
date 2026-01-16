@@ -20,6 +20,12 @@
 
 #include <cstddef>
 
+// Suppress sign-conversion warnings in template instantiations with size_t parameters
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#endif
+
 namespace mrpt::math
 {
 /** \addtogroup stats_grp
@@ -206,7 +212,7 @@ T productIntegralTwoGaussians(
   CMatrixFixed<T, DIM, DIM> C_inv(mrpt::math::UNINITIALIZED_MATRIX);
   C.inverse_LLt(C_inv);
 
-  return std::pow(M_2PI, -0.5 * DIM) * (1.0 / std::sqrt(cov_det)) *
+  return std::pow(M_2PI, -0.5 * static_cast<double>(DIM)) * (1.0 / std::sqrt(cov_det)) *
          exp(-0.5 * mean_diffs.multiply_HCHt_scalar(C_inv));
 }
 
@@ -627,3 +633,7 @@ double averageLogLikelihood(const CVectorDouble& logWeights, const CVectorDouble
 /**  @} */  // end of grouping container_ops_grp
 
 }  // namespace mrpt::math
+
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic pop
+#endif

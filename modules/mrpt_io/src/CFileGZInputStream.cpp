@@ -94,7 +94,7 @@ size_t CFileGZInputStream::Read(void* Buffer, size_t Count)
     THROW_EXCEPTION("File is not open.");
   }
 
-  return gzread(m_f->f, Buffer, Count);
+  return static_cast<size_t>(gzread(m_f->f, Buffer, static_cast<unsigned int>(Count)));
 }
 
 size_t CFileGZInputStream::Write([[maybe_unused]] const void* Buffer, [[maybe_unused]] size_t Count)
@@ -117,7 +117,7 @@ uint64_t CFileGZInputStream::getPosition() const
   {
     THROW_EXCEPTION("File is not open.");
   }
-  return gztell(m_f->f);
+  return static_cast<uint64_t>(gztell(m_f->f));
 }
 
 bool CFileGZInputStream::fileOpenCorrectly() const { return m_f->f != nullptr; }
