@@ -24,6 +24,14 @@
  * This file implements miscelaneous matrix and matrix/vector operations, and
  * internal functions in mrpt::math::detail
  */
+// Suppress sign-conversion warnings in template instantiations
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wsign-compare"
+#pragma GCC diagnostic ignored "-Wdouble-promotion"
+#endif
+
 namespace mrpt::math
 {
 /** R = H * C * H^t */
