@@ -42,7 +42,7 @@ void mrpt::io::zip::compress(void* inData, size_t inDataSize, std::vector<unsign
   outData.resize(inDataSize + inDataSize / 1000 + 50);
   auto resSize = static_cast<unsigned long>(outData.size());
   ret = ::compress(
-      &outData[0], &resSize, static_cast<unsigned char*>(inData),
+      outData.data(), &resSize, static_cast<const unsigned char*>(inData),
       static_cast<unsigned long>(inDataSize));
   ASSERT_(ret == Z_OK);
 
@@ -64,7 +64,8 @@ void mrpt::io::zip::compress(
 
   outData.resize(inData.size() + inData.size() / 1000 + 50);
   resSize = static_cast<unsigned long>(outData.size());
-  ret = ::compress(&outData[0], &resSize, &inData[0], static_cast<unsigned long>(inData.size()));
+  ret = ::compress(
+      outData.data(), &resSize, inData.data(), static_cast<unsigned long>(inData.size()));
   ASSERT_(ret == Z_OK);
 
   outData.resize(resSize);
@@ -87,14 +88,14 @@ void mrpt::io::zip::compress(void* inData, size_t inDataSize, CStream& out)
   resSize = static_cast<unsigned long>(outData.size());
 
   ret = ::compress(
-      &outData[0], &resSize, reinterpret_cast<unsigned char*>(inData),
+      outData.data(), &resSize, reinterpret_cast<unsigned char*>(inData),
       static_cast<unsigned long>(inDataSize));
   ASSERT_(ret == Z_OK);
 
   outData.resize(resSize);
 
   // Write to stream:
-  out.Write(&outData[0], resSize);
+  out.Write(outData.data(), resSize);
 
   MRPT_END_WITH_CLEAN_UP(printf("[zlib] Error code=%i\n", ret););
 }
@@ -112,14 +113,15 @@ void mrpt::io::zip::compress(const std::vector<unsigned char>& inData, CStream& 
   outData.resize(inData.size() + inData.size() / 1000 + 50);
   resSize = static_cast<unsigned long>(outData.size());
 
-  ret = ::compress(&outData[0], &resSize, &inData[0], static_cast<unsigned int>(inData.size()));
+  ret =
+      ::compress(outData.data(), &resSize, inData.data(), static_cast<unsigned int>(inData.size()));
 
   ASSERT_(ret == Z_OK);
 
   outData.resize(resSize);
 
   // Write to stream:
-  out.Write(&outData[0], resSize);
+  out.Write(outData.data(), resSize);
 
   MRPT_END_WITH_CLEAN_UP(printf("[zlib] Error code=%i\n", ret););
 }
@@ -140,7 +142,7 @@ void mrpt::io::zip::decompress(
   unsigned long actualOutSize;
 
   ret = ::uncompress(
-      &outData[0], &actualOutSize, reinterpret_cast<unsigned char*>(inData),
+      outData.data(), &actualOutSize, reinterpret_cast<unsigned char*>(inData),
       static_cast<unsigned long>(inDataSize));
 
   ASSERT_(ret == Z_OK);
@@ -185,10 +187,10 @@ size_t mrpt::io::zip::decompress(
   std::vector<unsigned char> inData;
 
   inData.resize(inDataSize);
-  inStream.Read(&inData[0], inDataSize);
+  inStream.Read(inData.data(), inDataSize);
 
   ret = ::uncompress(
-      reinterpret_cast<unsigned char*>(outData), &actualOutSize, &inData[0],
+      reinterpret_cast<unsigned char*>(outData), &actualOutSize, inData.data(),
       static_cast<unsigned int>(inDataSize));
 
   ASSERT_(ret == Z_OK);

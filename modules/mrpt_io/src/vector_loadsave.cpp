@@ -31,13 +31,13 @@ bool mrpt::io::loadBinaryFile(std::vector<uint8_t>& out_data, const std::string&
     size_t N = fi.getTotalBytesCount();
 
     out_data.resize(N);
-    if (N)
+    if (!N)
     {
-      size_t NN = fi.Read(&out_data[0], N);
-      return NN == N;
-    }
-    else
       return true;
+    }
+
+    size_t NN = fi.Read(out_data.data(), N);
+    return NN == N;
   }
   catch (...)
   {
@@ -50,7 +50,7 @@ bool mrpt::io::vectorToBinaryFile(const std::vector<uint8_t>& vec, const std::st
   try
   {
     mrpt::io::CFileOutputStream of(fileName);
-    if (!vec.empty()) of.Write(&vec[0], sizeof(vec[0]) * vec.size());
+    if (!vec.empty()) of.Write(vec.data(), sizeof(vec[0]) * vec.size());
     return true;
   }
   catch (...)
@@ -82,7 +82,7 @@ std::string mrpt::io::file_get_contents(const std::string& fileName)
   std::size_t size = static_cast<std::size_t>(t.tellg());
   std::string buffer(size, ' ');
   t.seekg(0);
-  t.read(&buffer[0], static_cast<std::streamsize>(size));
+  t.read(buffer.data(), static_cast<std::streamsize>(size));
   return buffer;
 }
 
