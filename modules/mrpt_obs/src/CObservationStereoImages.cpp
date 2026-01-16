@@ -17,9 +17,6 @@
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/serialization/CArchive.h>
 
-#if MRPT_HAS_MATLAB
-#include <mexplus/mxarray.h>
-#endif
 #include <algorithm>  // all_of
 
 using namespace mrpt::obs;
@@ -134,37 +131,6 @@ void CObservationStereoImages::serializeFrom(mrpt::serialization::CArchive& in, 
     default:
       MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
   };
-}
-
-/*---------------------------------------------------------------
-  Implements the writing to a mxArray for Matlab
- ---------------------------------------------------------------*/
-#if MRPT_HAS_MATLAB
-// Add to implement mexplus::from template specialization
-IMPLEMENTS_MEXPLUS_FROM(mrpt::obs::CObservationStereoImages)
-#endif
-
-mxArray* CObservationStereoImages::writeToMatlab() const
-{
-#if MRPT_HAS_MATLAB
-  const char* fields[] = {"class", "ts",     "sensorLabel", "imageL",  "imageR",
-                          "poseL", "poseLR", "poseR",       "paramsL", "paramsR"};
-  mexplus::MxArray obs_struct(mexplus::MxArray::Struct(sizeof(fields) / sizeof(fields[0]), fields));
-
-  obs_struct.set("class", this->GetRuntimeClass()->className);
-  obs_struct.set("ts", mrpt::Clock::toDouble(timestamp));
-  obs_struct.set("sensorLabel", this->sensorLabel);
-  obs_struct.set("imageL", this->imageLeft);
-  obs_struct.set("imageR", this->imageRight);
-  obs_struct.set("poseL", this->cameraPose);
-  obs_struct.set("poseR", this->cameraPose + this->rightCameraPose);
-  obs_struct.set("poseLR", this->rightCameraPose);
-  obs_struct.set("paramsL", this->leftCamera);
-  obs_struct.set("paramsR", this->rightCamera);
-  return obs_struct.release();
-#else
-  THROW_EXCEPTION("MRPT was built without MEX (Matlab) support!");
-#endif
 }
 
 /** Populates a TStereoCamera structure with the parameters in \a leftCamera, \a

@@ -159,10 +159,10 @@ bool math::RectanglesIntersection(
   if (R1_x_min <= xs[3] && xs[3] <= R1_x_max && R1_y_min <= ys[3] && ys[3] <= R1_y_max) return true;
 
   CPolygon poly;
-  poly.AddVertex(xs[0], ys[0]);
-  poly.AddVertex(xs[1], ys[1]);
-  poly.AddVertex(xs[2], ys[2]);
-  poly.AddVertex(xs[3], ys[3]);
+  poly.add_vertex(xs[0], ys[0]);
+  poly.add_vertex(xs[1], ys[1]);
+  poly.add_vertex(xs[2], ys[2]);
+  poly.add_vertex(xs[3], ys[3]);
 
   if (poly.PointIntoPolygon(R1_x_min, R1_y_min)) return true;
   if (poly.PointIntoPolygon(R1_x_max, R1_y_min)) return true;

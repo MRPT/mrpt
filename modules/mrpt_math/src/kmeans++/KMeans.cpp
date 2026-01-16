@@ -28,15 +28,16 @@ using namespace std;
 // Logging
 static vector<ostream*> gLogOutputs;
 static vector<ostream*> gVerboseLogOutputs;
-#define LOG(verbose, text)                                                                \
-  {                                                                                       \
-    vector<ostream*>& outputs = ((verbose) ? gVerboseLogOutputs : gLogOutputs);           \
-    if (outputs.size() > 0)                                                               \
-    {                                                                                     \
-      ostringstream string_stream;                                                        \
-      string_stream << text;                                                              \
-      for (int i = 0; i < (int)outputs.size(); i++) *(outputs[i]) << string_stream.str(); \
-    }                                                                                     \
+#define LOG(verbose, text)                                                      \
+  {                                                                             \
+    vector<ostream*>& outputs = ((verbose) ? gVerboseLogOutputs : gLogOutputs); \
+    if (outputs.size() > 0)                                                     \
+    {                                                                           \
+      ostringstream string_stream;                                              \
+      string_stream << text;                                                    \
+      for (int i = 0; i < static_cast<int>(outputs.size()); i++)                \
+        *(outputs[i]) << string_stream.str();                                   \
+    }                                                                           \
   }
 void AddKMeansLogging(std::ostream* out, bool verbose)
 {

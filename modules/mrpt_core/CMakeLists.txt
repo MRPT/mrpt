@@ -27,12 +27,6 @@ include(./cmake/tbb.cmake REQUIRED)
 
 include(./cmake/script_create_version_h.cmake REQUIRED)
 
-set(MRPT_WITH_MATLAB_WRAPPER OFF CACHE BOOL "Build with compatibility options for MEX wrapper?.")
-include(./cmake/script_matlab.cmake REQUIRED)      # Support for Matlab MEX functions generation
-#if(MRPT_WITH_MATLAB_WRAPPER)
-#    add_subdirectory(mex/apps)# The MEX applications
-#endif()
-
 
 # define lib:
 set(LIB_SOURCES

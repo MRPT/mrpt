@@ -18,11 +18,6 @@
 
 #include <cstdint>
 
-// Make this frwd decl independent of MRPT_HAS_MATLAB in config.h:
-/** Forward declaration for mxArray (avoid including as much as possible to
- * speed up compiling) */
-using mxArray = struct mxArray_tag;
-
 namespace mrpt::serialization
 {
 /** The virtual base class which provides a unified interface for all persistent
@@ -81,15 +76,6 @@ class CSerializable : public mrpt::rtti::CObject
     THROW_EXCEPTION(err);
   }
   /** @} */
-
- public:
-  /** Introduces a pure virtual method responsible for writing to a `mxArray`
-   * Matlab object, typically a MATLAB `struct` whose contents are documented
-   * in each derived class. \return A new `mxArray` (caller is responsible of
-   * memory freeing) or nullptr is class does not support conversion to
-   * MATLAB.
-   */
-  virtual mxArray* writeToMatlab() const { return nullptr; }
 };  // End of class def.
 
 /** \addtogroup noncstream_serialization Non-CStream serialization functions (in

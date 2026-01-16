@@ -2092,7 +2092,6 @@ INCLUDE_FILE_PATTERNS  =
 PREDEFINED             = MRPT_HAS_SSE2 \
                          MRPT_HAS_SSE3 \
                          MRPT_HAS_SSE4 \
-                         MRPT_HAS_MATLAB=1 \
                          MRPT_HAS_WXWIDGETS=1 \
                          MRPT_HAS_NANOGUI=1
 

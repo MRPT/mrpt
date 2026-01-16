@@ -147,13 +147,15 @@ bool RANSAC_Template<NUMTYPE, DATASET, MODEL>::execute(
       MRPT_LOG_DEBUG_FMT(
           "Iter #%u Estimated number of iters: %u  pNoOutliers = %f  "
           "#inliers: %u",
-          (unsigned)trialcount, (unsigned)N, pNoOutliers, (unsigned)ninliers);
+          static_cast<unsigned>(trialcount), static_cast<unsigned>(N), pNoOutliers,
+          static_cast<unsigned>(ninliers));
     }
 
     ++trialcount;
 
     MRPT_LOG_DEBUG_FMT(
-        "trial %u out of %u", (unsigned int)trialcount, (unsigned int)ceil(static_cast<double>(N)));
+        "trial %u out of %u", static_cast<unsigned int>(trialcount),
+        static_cast<unsigned int>(ceil(static_cast<double>(N))));
 
     // Safeguard against being stuck in this loop forever
     if (trialcount > maxIter)

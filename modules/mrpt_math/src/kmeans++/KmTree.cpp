@@ -26,8 +26,8 @@ KmTree::KmTree(int n, int d, Scalar* points) : n_(n), d_(d), points_(points)
 {
   // Initialize memory
   int node_size = sizeof(Node) + d_ * 3 * sizeof(Scalar);
-  node_data_ = (char*)malloc((2 * n - 1) * node_size);
-  point_indices_ = (int*)malloc(n * sizeof(int));
+  node_data_ = static_cast<char*>malloc((2 * n - 1) * node_size);
+  point_indices_ = static_cast<int*>malloc(n * sizeof(int));
   for (int i = 0; i < n; i++) point_indices_[i] = i;
   KM_ASSERT(node_data_ != nullptr && point_indices_ != nullptr);
 
@@ -67,10 +67,10 @@ Scalar KmTree::DoKMeansStep(int k, Scalar* centers, int* assignment) const
   memset(bad_center, 0xff, d_ * sizeof(Scalar));
 
   // Allocate data
-  auto* sums = (Scalar*)calloc(k * d_, sizeof(Scalar));
-  int* counts = (int*)calloc(k, sizeof(int));
+  auto* sums = static_cast<Scalar*>calloc(k * d_, sizeof(Scalar));
+  int* counts = static_cast<int*>calloc(k, sizeof(int));
   int num_candidates = 0;
-  int* candidates = (int*)malloc(k * sizeof(int));
+  int* candidates = static_cast<int*>malloc(k * sizeof(int));
   KM_ASSERT(sums != nullptr && counts != nullptr && candidates != nullptr);
   for (int i = 0; i < k; i++)
     if (memcmp(centers + i * d_, bad_center, d_ * sizeof(Scalar)) != 0)
@@ -110,13 +110,13 @@ KmTree::Node* KmTree::BuildNodes(
     Scalar* points, int first_index, int last_index, char** next_node_data)
 {
   // Allocate the node
-  Node* node = (Node*)(*next_node_data);
+  Node* node = static_cast<Node*>(*next_node_data);
   (*next_node_data) += sizeof(Node);
-  node->sum = (Scalar*)(*next_node_data);
+  node->sum = static_cast<Scalar*>(*next_node_data);
   (*next_node_data) += sizeof(Scalar) * d_;
-  node->median = (Scalar*)(*next_node_data);
+  node->median = static_cast<Scalar*>(*next_node_data);
   (*next_node_data) += sizeof(Scalar) * d_;
-  node->radius = (Scalar*)(*next_node_data);
+  node->radius = static_cast<Scalar*>(*next_node_data);
   (*next_node_data) += sizeof(Scalar) * d_;
 
   // Fill in basic info
@@ -273,7 +273,7 @@ Scalar KmTree::DoKMeansStepAtNode(
   {
     // Build the new list of candidates
     int new_k = 0;
-    int* new_candidates = (int*)malloc(k * sizeof(int));
+    int* new_candidates = static_cast<int*>malloc(k * sizeof(int));
     KM_ASSERT(new_candidates != nullptr);
     for (int i = 0; i < k; i++)
       if (!ShouldBePruned(node->median, node->radius, centers, closest_i, candidates[i]))
@@ -340,7 +340,7 @@ bool KmTree::ShouldBePruned(
 
 Scalar KmTree::SeedKMeansPlusPlus(int k, Scalar* centers) const
 {
-  auto* dist_sq = (Scalar*)malloc(n_ * sizeof(Scalar));
+  auto* dist_sq = static_cast<Scalar*>malloc(n_ * sizeof(Scalar));
   KM_ASSERT(dist_sq != nullptr);
 
   // Choose an initial center uniformly at random

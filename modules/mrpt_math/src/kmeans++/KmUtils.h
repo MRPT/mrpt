@@ -52,7 +52,7 @@ using Scalar = double;
 // ===============
 
 // Point creation and deletion
-inline Scalar* PointAllocate(int d) { return (Scalar*)malloc(d * sizeof(Scalar)); }
+inline Scalar* PointAllocate(int d) { return static_cast<Scalar*>(malloc(d * sizeof(Scalar))); }
 
 inline void PointFree(Scalar* p) { free(p); }
 inline void PointCopy(Scalar* p1, const Scalar* p2, int d) { memcpy(p1, p2, d * sizeof(Scalar)); }

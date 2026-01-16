@@ -235,28 +235,6 @@ std::ostream& mrpt::poses::operator<<(std::ostream& o, const CPose3D& p)
 }
 
 /*---------------------------------------------------------------
-  Implements the writing to a mxArray for Matlab
- ---------------------------------------------------------------*/
-#if MRPT_HAS_MATLAB
-// Add to implement mexplus::from template specialization
-IMPLEMENTS_MEXPLUS_FROM(mrpt::poses::CPose3D)
-#endif
-
-mxArray* CPose3D::writeToMatlab() const
-{
-#if MRPT_HAS_MATLAB
-  const char* fields[] = {"R", "t"};
-  mexplus::MxArray pose_struct(
-      mexplus::MxArray::Struct(sizeof(fields) / sizeof(fields[0]), fields));
-  pose_struct.set("R", mrpt::math::convertToMatlab(this->m_ROT));
-  pose_struct.set("t", mrpt::math::convertToMatlab(this->m_coords));
-  return pose_struct.release();
-#else
-  THROW_EXCEPTION("MRPT was built without MEX (Matlab) support!");
-#endif
-}
-
-/*---------------------------------------------------------------
         normalizeAngles
 ---------------------------------------------------------------*/
 void CPose3D::normalizeAngles() { updateYawPitchRoll(); }

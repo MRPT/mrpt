@@ -208,7 +208,7 @@ bool math::loadVector(std::istream& f, ::std::vector<int>& d)
   const char* delim = " \t";
 
   d.clear();
-  nextTok = mrpt::system::strtok((char*)s, delim, &context);
+  nextTok = mrpt::system::strtok( static_cast<char*>s, delim, &context);
   while (nextTok != nullptr)
   {
     d.push_back(atoi(nextTok));
@@ -232,7 +232,7 @@ bool math::loadVector(std::istream& f, ::std::vector<double>& d)
   const char* delim = " \t";
 
   d.clear();
-  nextTok = mrpt::system::strtok((char*)s, delim, &context);
+  nextTok = mrpt::system::strtok( static_cast<char*>s, delim, &context);
   while (nextTok != nullptr)
   {
     d.push_back(atof(nextTok));

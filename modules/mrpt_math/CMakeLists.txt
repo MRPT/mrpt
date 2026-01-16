@@ -200,7 +200,6 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/math/TSegment3D.h
   include/mrpt/math/TTwist2D.h
   include/mrpt/math/TTwist3D.h
-  include/mrpt/math/utils_matlab.h
   include/mrpt/math/utils.h
   include/mrpt/math/wrap2pi.h
 )

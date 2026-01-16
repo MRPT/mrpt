@@ -21,10 +21,6 @@
 #include <Eigen/Dense>
 #include <iostream>
 
-#if MRPT_HAS_MATLAB
-#include <mexplus/mxarray.h>
-#endif
-
 using namespace mrpt::obs;
 using namespace mrpt::math;
 using namespace mrpt::poses;
@@ -93,32 +89,6 @@ void CObservationImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
     default:
       MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
   };
-}
-
-/*---------------------------------------------------------------
-  Implements the writing to a mxArray for Matlab
- ---------------------------------------------------------------*/
-#if MRPT_HAS_MATLAB
-// Add to implement mexplus::from template specialization
-IMPLEMENTS_MEXPLUS_FROM(mrpt::obs::CObservationImage)
-#endif
-
-mxArray* CObservationImage::writeToMatlab() const
-{
-#if MRPT_HAS_MATLAB
-  const char* fields[] = {"class", "ts", "sensorLabel", "image", "pose", "params"};
-  mexplus::MxArray obs_struct(mexplus::MxArray::Struct(sizeof(fields) / sizeof(fields[0]), fields));
-
-  obs_struct.set("class", this->GetRuntimeClass()->className);
-  obs_struct.set("ts", mrpt::Clock::toDouble(timestamp));
-  obs_struct.set("sensorLabel", this->sensorLabel);
-  obs_struct.set("image", this->image);
-  obs_struct.set("pose", this->cameraPose);
-  obs_struct.set("params", this->cameraParams);
-  return obs_struct.release();
-#else
-  THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
-#endif
 }
 
 void CObservationImage::getUndistortedImage(CImage& out_img) const

@@ -38,10 +38,6 @@ STB_DISABLE_WARNINGS
 #include "stb/stb_image_write.h"
 STB_RESTORE_WARNINGS
 
-#if MRPT_HAS_MATLAB
-#include <mexplus/mxarray.h>
-#endif
-
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CImage, CSerializable, mrpt::img)
 
@@ -459,20 +455,6 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
     default:
       MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
   };
-}
-
-#if MRPT_HAS_MATLAB
-IMPLEMENTS_MEXPLUS_FROM(mrpt::img::CImage)
-#endif
-
-mxArray* CImage::writeToMatlab() const
-{
-#if MRPT_HAS_MATLAB
-  // TODO: Implement MATLAB export
-  THROW_EXCEPTION("MATLAB export not yet implemented for STB-based CImage");
-#else
-  THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
-#endif
 }
 
 TImageSize CImage::getSize() const
