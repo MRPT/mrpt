@@ -69,7 +69,7 @@ size_t CFileOutputStream::Write(const void* Buffer, size_t Count)
     return 0;
   }
 
-  m_of.write(static_cast<const char*>(Buffer), Count);
+  m_of.write(static_cast<const char*>(Buffer), static_cast<std::streamsize>(Count));
   return m_of.fail() ? 0 : Count;
 }
 

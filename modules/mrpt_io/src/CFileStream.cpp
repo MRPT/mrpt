@@ -90,7 +90,7 @@ CFileStream::~CFileStream() { m_f.close(); }
 size_t CFileStream::Read(void* Buffer, size_t Count)
 {
   if (!m_f.is_open()) return 0;
-  m_f.read(static_cast<char*>(Buffer), Count);
+  m_f.read(static_cast<char*>(Buffer), static_cast<std::streamsize>(Count));
   return m_f.fail() ? 0 : Count;
 }
 
@@ -102,7 +102,7 @@ size_t CFileStream::Write(const void* Buffer, size_t Count)
 {
   if (!m_f.is_open()) return 0;
 
-  m_f.write(static_cast<const char*>(Buffer), Count);
+  m_f.write(static_cast<const char*>(Buffer), static_cast<std::streamsize>(Count));
   return m_f.fail() ? 0 : Count;
 }
 
@@ -145,10 +145,10 @@ uint64_t CFileStream::getTotalBytesCount() const
 
   auto& f = const_cast<std::fstream&>(m_f);
 
-  const uint64_t previousPos = f.tellg();
+  const uint64_t previousPos = static_cast<uint64_t>(f.tellg());
   f.seekg(0, ios_base::end);
-  uint64_t fileSize = f.tellg();
-  f.seekg(previousPos, ios_base::beg);
+  uint64_t fileSize = static_cast<uint64_t>(f.tellg());
+  f.seekg(static_cast<std::streamoff>(previousPos), ios_base::beg);
   return fileSize;
 }
 
@@ -156,7 +156,7 @@ uint64_t CFileStream::getPosition() const
 {
   auto& f = const_cast<std::fstream&>(m_f);
   if (m_f.is_open())
-    return f.tellg();
+    return static_cast<uint64_t>(f.tellg());
   else
     return 0;
 }
@@ -167,7 +167,7 @@ uint64_t CFileStream::getPosition() const
 uint64_t CFileStream::getPositionI()
 {
   if (m_f.is_open())
-    return m_f.tellg();
+    return static_cast<uint64_t>(m_f.tellg());
   else
     return 0;
 }
@@ -178,7 +178,7 @@ uint64_t CFileStream::getPositionI()
 uint64_t CFileStream::getPositionO()
 {
   if (m_f.is_open())
-    return m_f.tellp();
+    return static_cast<uint64_t>(m_f.tellp());
   else
     return 0;
 }

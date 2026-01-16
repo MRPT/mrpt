@@ -134,7 +134,8 @@ size_t CPipeBaseEndPoint::Read(void* Buffer, size_t Count)
   if (!timeout_read_start_us && !timeout_read_between_us)
   {
     // Read without timeout:
-    return ::read(m_pipe_file, Buffer, Count);
+    const auto bytes_read = ::read(m_pipe_file, Buffer, Count);
+    return bytes_read < 0 ? 0 : static_cast<size_t>(bytes_read);
   }
   else
   {
@@ -142,7 +143,9 @@ size_t CPipeBaseEndPoint::Read(void* Buffer, size_t Count)
     size_t alreadyRead = 0;
     bool timeoutExpired = false;
 
-    struct timeval timeoutSelect{};
+    struct timeval timeoutSelect
+    {
+    };
     struct timeval* ptrTimeout{nullptr};
 
     // Init fd_set structure & add our socket to it:
@@ -183,8 +186,9 @@ size_t CPipeBaseEndPoint::Read(void* Buffer, size_t Count)
         const size_t remainToRead = Count - alreadyRead;
 
         // Receive bytes:
-        const size_t readNow =
-            ::read(m_pipe_file, reinterpret_cast<char*>(Buffer) + alreadyRead, (int)remainToRead);
+        const auto bytes_read =
+            ::read(m_pipe_file, reinterpret_cast<char*>(Buffer) + alreadyRead, remainToRead);
+        const size_t readNow = bytes_read < 0 ? 0 : static_cast<size_t>(bytes_read);
 
         if (readNow != static_cast<size_t>(-1))
         {
@@ -228,7 +232,8 @@ size_t CPipeBaseEndPoint::Write(const void* Buffer, size_t Count)
     return static_cast<size_t>(nActuallyWritten);
 #else
   // UNIX pipes
-  return ::write(m_pipe_file, Buffer, Count);
+  const auto bytes_written = ::write(m_pipe_file, Buffer, Count);
+  return bytes_written < 0 ? 0 : static_cast<size_t>(bytes_written);
 #endif
 }
 

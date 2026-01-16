@@ -89,8 +89,8 @@ void CMemoryStream::resize(uint64_t newSize)
 size_t CMemoryStream::Read(void* Buffer, size_t Count)
 {
   // enough bytes?
-  long maxAvail = (((long)m_bytesWritten)) - ((long)m_position);
-  size_t nToRead = std::min<size_t>(Count, maxAvail);
+  const long maxAvail = static_cast<long>(m_bytesWritten) - static_cast<long>(m_position);
+  size_t nToRead = std::min<size_t>(Count, maxAvail > 0 ? static_cast<size_t>(maxAvail) : 0);
 
   // Copy the memory block:
   if (nToRead > 0) memcpy(Buffer, reinterpret_cast<char*>(m_memory.get()) + m_position, nToRead);
@@ -128,13 +128,13 @@ uint64_t CMemoryStream::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
   switch (Origin)
   {
     case sFromBeginning:
-      m_position = Offset;
+      m_position = static_cast<uint64_t>(Offset);
       break;
     case sFromCurrent:
-      m_position += Offset;
+      m_position += static_cast<uint64_t>(Offset);
       break;
     case sFromEnd:
-      m_position = m_bytesWritten - 1 + Origin;
+      m_position = m_bytesWritten - 1 + static_cast<uint64_t>(Origin);
       break;
   };
 

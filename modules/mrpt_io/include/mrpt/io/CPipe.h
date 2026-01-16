@@ -138,7 +138,7 @@ class CPipeReadEndPoint : public CPipeBaseEndPoint
   explicit CPipeReadEndPoint(const std::string& serialized);
 
   /** Read-only pipe, don't call this method */
-  size_t Write(const void* Buffer, size_t Count) override
+  size_t Write([[maybe_unused]] const void* Buffer, [[maybe_unused]] size_t Count) override
   {
     throw std::runtime_error("CPipeReadEndPoint::Write() cant be called.");
   }
@@ -161,7 +161,7 @@ class CPipeWriteEndPoint : public CPipeBaseEndPoint
   explicit CPipeWriteEndPoint(const std::string& serialized);
 
   /** Write-only pipe: read launches exception */
-  size_t Read(void* Buffer, size_t Count) override
+  size_t Read([[maybe_unused]] void* Buffer, [[maybe_unused]] size_t Count) override
   {
     throw std::runtime_error("CPipeWriteEndPoint::Read() cant be called.");
   }

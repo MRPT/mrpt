@@ -79,10 +79,10 @@ std::string mrpt::io::file_get_contents(const std::string& fileName)
     THROW_EXCEPTION_FMT("file_get_contents(): Error opening for read file `%s`", fileName.c_str());
 
   t.seekg(0, std::ios::end);
-  std::size_t size = t.tellg();
+  std::size_t size = static_cast<std::size_t>(t.tellg());
   std::string buffer(size, ' ');
   t.seekg(0);
-  t.read(&buffer[0], size);
+  t.read(&buffer[0], static_cast<std::streamsize>(size));
   return buffer;
 }
 
@@ -92,7 +92,7 @@ bool mrpt::io::vectorToTextFile(
   FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
   if (!f) return false;
 
-  for (float it : vec) os::fprintf(f, byRows ? "%e " : "%e\n", it);
+  for (float it : vec) os::fprintf(f, byRows ? "%e " : "%e\n", static_cast<double>(it));
 
   if (byRows) os::fprintf(f, "\n");
 
@@ -153,7 +153,7 @@ bool mrpt::io::vectorNumericFromTextFile(
 
   while (!feof(f))
   {
-    size_t readed = fscanf(f, byRows ? "%lf" : "%lf\n", &number);
+    int readed = fscanf(f, byRows ? "%lf" : "%lf\n", &number);
     if ((!byRows) || (readed == 1)) vec.push_back(number);
   }
 
