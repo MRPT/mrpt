@@ -577,7 +577,10 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
 {
   /* 1- Ensure we can use Wind Information
   -------------------------------------------------*/
-  if (!insertionOptions.useWindInformation) return false;
+  if (!insertionOptions.useWindInformation)
+  {
+    return false;
+  }
 
   // Get time since last simulation
   double At = mrpt::system::timeDifference(timeLastSimulated, mrpt::Clock::now());

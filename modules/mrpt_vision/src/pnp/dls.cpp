@@ -2682,7 +2682,10 @@ bool mrpt::vision::pnp::dls::is_empty(const cv::Mat* M)
   cv::MatConstIterator_<double> it = M->begin<double>(), it_end = M->end<double>();
   for (; it != it_end; ++it)
   {
-    if (*it < 0) return false;
+    if (*it < 0)
+    {
+      return false;
+    }
   }
   return true;
 }

@@ -174,7 +174,10 @@ bool CPointPDFParticles::saveToTextFile(const std::string& file) const
   MRPT_START
 
   FILE* f = os::fopen(file.c_str(), "wt");
-  if (!f) return false;
+  if (!f)
+  {
+    return false;
+  }
 
   size_t i, N = m_particles.size();
   for (i = 0; i < N; i++)

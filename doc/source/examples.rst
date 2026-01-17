@@ -80,7 +80,6 @@ Python examples are `here <python_examples.html>`_.
   page_maps_voxelmap_simple.rst
   page_maps_voxelmap_from_tum_dataset.rst
   page_math_csparse_example.rst
-  page_math_kmeans_example.rst
   page_math_leastsquares_example.rst
   page_math_matrix_example.rst
   page_math_model_search_example.rst

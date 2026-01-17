@@ -329,7 +329,10 @@ bool TIMECONV_GetJulianDateFromGPSTime(
     const unsigned int utc_offset,
     double* julian_date)
 {
-  if (gps_tow < 0.0 || gps_tow > 604800.0) return false;
+  if (gps_tow < 0.0 || gps_tow > 604800.0)
+  {
+    return false;
+  }
   // GPS time is ahead of UTC time and Julian time by the UTC offset
   *julian_date =
       (gps_week + (gps_tow - utc_offset) / 604800.0) * 7.0 + TIMECONV_JULIAN_DATE_START_OF_GPS_TIME;
@@ -433,7 +436,10 @@ bool TIMECONV_GetUTCTimeFromJulianDate(const double julian_date, mrpt::system::T
   bool result;
 
   // Check the input.
-  if (julian_date < 0.0) return false;
+  if (julian_date < 0.0)
+  {
+    return false;
+  }
 
   a = lround(julian_date);
   b = a + 1537;
@@ -468,7 +474,10 @@ bool TIMECONV_GetUTCTimeFromJulianDate(const double julian_date, mrpt::system::T
         hour -= 24;
         day++;
         result = TIMECONV_GetNumberOfDaysInMonth(year, month, &days_in_month);
-        if (result == false) return false;
+        if (result == false)
+        {
+          return false;
+        }
         if (day > days_in_month)
         {
           day = 1;
@@ -499,7 +508,10 @@ bool CObservationGPS::GPS_time_to_UTC(
     mrpt::system::TTimeStamp& utc_out)
 {
   mrpt::system::TTimeParts tim;
-  if (!GPS_time_to_UTC(gps_week, gps_sec, leap_seconds_count, tim)) return false;
+  if (!GPS_time_to_UTC(gps_week, gps_sec, leap_seconds_count, tim))
+  {
+    return false;
+  }
   utc_out = mrpt::system::buildTimestampFromParts(tim);
   return true;
 }
@@ -511,9 +523,15 @@ bool CObservationGPS::GPS_time_to_UTC(
     mrpt::system::TTimeParts& utc_out)
 {
   double julian_date = 0.0;
-  if (gps_sec < 0.0 || gps_sec > 604800.0) return false;
+  if (gps_sec < 0.0 || gps_sec > 604800.0)
+  {
+    return false;
+  }
   if (!TIMECONV_GetJulianDateFromGPSTime(gps_week, gps_sec, leap_seconds_count, &julian_date))
     return false;
-  if (!TIMECONV_GetUTCTimeFromJulianDate(julian_date, utc_out)) return false;
+  if (!TIMECONV_GetUTCTimeFromJulianDate(julian_date, utc_out))
+  {
+    return false;
+  }
   return true;
 }

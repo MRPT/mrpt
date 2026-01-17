@@ -182,7 +182,10 @@ template <size_t DIM>
 bool CPoseInterpolatorBase<DIM>::getPreviousPoseWithMinDistance(
     const mrpt::Clock::time_point& t, double distance, pose_t& out_pose)
 {
-  if (m_path.size() == 0 || distance <= 0) return false;
+  if (m_path.size() == 0 || distance <= 0)
+  {
+    return false;
+  }
 
   pose_t myPose;
 
@@ -229,7 +232,10 @@ bool CPoseInterpolatorBase<DIM>::saveToTextFile(const std::string& s) const
   {
     std::ofstream f;
     f.open(s);
-    if (!f.is_open()) return false;
+    if (!f.is_open())
+    {
+      return false;
+    }
     std::string str;
     for (auto i = m_path.begin(); i != m_path.end(); ++i)
     {
@@ -257,7 +263,10 @@ bool CPoseInterpolatorBase<DIM>::saveToTextFile_TUM(const std::string& s) const
   {
     std::ofstream f;
     f.open(s);
-    if (!f.is_open()) return false;
+    if (!f.is_open())
+    {
+      return false;
+    }
     std::string str;
     for (auto i = m_path.begin(); i != m_path.end(); ++i)
     {
@@ -288,8 +297,14 @@ bool CPoseInterpolatorBase<DIM>::saveInterpolatedToTextFile(
   {
     std::ofstream f;
     f.open(s);
-    if (!f.is_open()) return false;
-    if (m_path.empty()) return true;
+    if (!f.is_open())
+    {
+      return false;
+    }
+    if (m_path.empty())
+    {
+      return true;
+    }
 
     std::string str;
 
@@ -334,7 +349,10 @@ bool CPoseInterpolatorBase<DIM>::loadFromTextFile(const std::string& s)
   }
 
   // Check valid format:
-  if (M.rows() == 0) return false;
+  if (M.rows() == 0)
+  {
+    return false;
+  }
   ASSERT_(M.cols() == pose_t::static_size + 1);
 
   // load into the path:
@@ -367,7 +385,10 @@ bool CPoseInterpolatorBase<DIM>::loadFromTextFile_TUM(const std::string& s)
   }
 
   // Check valid format:
-  if (M.rows() == 0) return false;
+  if (M.rows() == 0)
+  {
+    return false;
+  }
   ASSERT_(M.cols() == 3 + 4 + 1);
 
   // load into the path:

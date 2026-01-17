@@ -191,14 +191,20 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 
       // Process "obs_indiv":
       ASSERT_(obs_indiv);
-      if (!processOneObservation(obs_indiv)) return false;
+      if (!processOneObservation(obs_indiv))
+      {
+        return false;
+      }
     }
 
     if (actions)
     {
       for (auto& act : *actions)
       {
-        if (!processOneAction(act.get_ptr())) return false;
+        if (!processOneAction(act.get_ptr()))
+        {
+          return false;
+        }
       }
     }
 

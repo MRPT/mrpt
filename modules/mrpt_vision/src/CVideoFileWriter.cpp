@@ -101,7 +101,10 @@ const CVideoFileWriter& CVideoFileWriter::operator<<(const mrpt::img::CImage& im
 
 bool CVideoFileWriter::writeImage(const mrpt::img::CImage& img)
 {
-  if (!m_video.get()) return false;
+  if (!m_video.get())
+  {
+    return false;
+  }
 
   if ((size_t)m_img_size.x != img.getWidth() || (size_t)m_img_size.y != img.getHeight())
   {

@@ -338,7 +338,10 @@ bool CDisplayWindow::getLastMousePosition([[maybe_unused]] int& x, [[maybe_unuse
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
   const auto* win = (const CWindowDialog*)m_hwnd.get();
-  if (!win) return false;
+  if (!win)
+  {
+    return false;
+  }
   x = win->m_image->m_last_mouse_point.x;
   y = win->m_image->m_last_mouse_point.y;
   return true;

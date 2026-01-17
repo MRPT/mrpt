@@ -31,7 +31,10 @@ bool TRuntimeClassId::derivedFrom(const TRuntimeClassId* pBaseClass) const
   ASSERT_(pBaseClass != nullptr);
 
   // The same class??
-  if (pBaseClass == this) return true;
+  if (pBaseClass == this)
+  {
+    return true;
+  }
 
   // Automatically register all pending classes, just in case:
   registerAllPendingClasses();
@@ -40,7 +43,10 @@ bool TRuntimeClassId::derivedFrom(const TRuntimeClassId* pBaseClass) const
   const TRuntimeClassId* pClassThis = this;
   while (pClassThis != nullptr)
   {
-    if (pClassThis == pBaseClass) return true;
+    if (pClassThis == pBaseClass)
+    {
+      return true;
+    }
 
     if (pClassThis->getBaseClass)
       pClassThis = (*pClassThis->getBaseClass)();
@@ -61,13 +67,19 @@ bool TRuntimeClassId::derivedFrom(const char* pBaseClass_name) const
   ASSERTMSG_(pBaseClass != nullptr, format("Class %s not registered??", pBaseClass_name));
 
   // The same class??
-  if (pBaseClass == this) return true;
+  if (pBaseClass == this)
+  {
+    return true;
+  }
 
   // Check heritage:
   const TRuntimeClassId* pClassThis = this;
   while (pClassThis != nullptr)
   {
-    if (pClassThis == pBaseClass) return true;
+    if (pClassThis == pBaseClass)
+    {
+      return true;
+    }
 
     if (pClassThis->getBaseClass)
       pClassThis = (*pClassThis->getBaseClass)();

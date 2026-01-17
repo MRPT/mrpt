@@ -200,15 +200,19 @@ bool math::loadVector(std::istream& f, ::std::vector<int>& d)
   MRPT_START
 
   std::string str;
-  if (!std::getline(f, str)) return false;
+  if (!std::getline(f, str))
+  {
+    return false;
+  }
 
   const char* s = str.c_str();
 
-  char *nextTok, *context;
+  char* nextTok = nullptr;
+  char* context = nullptr;
   const char* delim = " \t";
 
   d.clear();
-  nextTok = mrpt::system::strtok( static_cast<char*>s, delim, &context);
+  nextTok = mrpt::system::strtok(const_cast<char*>(s), delim, &context);
   while (nextTok != nullptr)
   {
     d.push_back(atoi(nextTok));
@@ -224,7 +228,10 @@ bool math::loadVector(std::istream& f, ::std::vector<double>& d)
   MRPT_START
 
   std::string str;
-  if (!std::getline(f, str)) return false;
+  if (!std::getline(f, str))
+  {
+    return false;
+  }
 
   const char* s = str.c_str();
 
@@ -232,7 +239,7 @@ bool math::loadVector(std::istream& f, ::std::vector<double>& d)
   const char* delim = " \t";
 
   d.clear();
-  nextTok = mrpt::system::strtok( static_cast<char*>s, delim, &context);
+  nextTok = mrpt::system::strtok(static_cast<char*> s, delim, &context);
   while (nextTok != nullptr)
   {
     d.push_back(atof(nextTok));

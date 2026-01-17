@@ -75,7 +75,10 @@ bool CSphere::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
   double x = transf.x(), y = transf.y(), z = transf.z();
   double r2 = m_radius * m_radius;
   double dyz = y * y + z * z;
-  if (dyz > r2) return false;
+  if (dyz > r2)
+  {
+    return false;
+  }
   double dx = sqrt(r2 - dyz);
   if (x - dx >= 0)
   {

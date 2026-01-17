@@ -47,14 +47,6 @@ set(LIB_SOURCES
   src/fourier.cpp
   src/fresnel.cpp
   src/geometry.cpp
-  src/kmeans.cpp
-  src/kmeans++/KMeans.cpp
-  src/kmeans++/KMeans.h
-  src/kmeans++/KmTree.cpp
-  src/kmeans++/KmTree.h
-  src/kmeans++/KmUtils.cpp
-  src/kmeans++/KmUtils.h
-  src/kmeans++/README.txt
   src/math.cpp
   src/MatrixBase_impl.h
   src/MatrixBase_instantiate_CMatrixFixed_22_d.cpp
@@ -156,7 +148,6 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/math/homog_matrices.h
   include/mrpt/math/interp_fit.h
   include/mrpt/math/KDTreeCapable.h
-  include/mrpt/math/kmeans.h
   include/mrpt/math/mat2eig.h
   include/mrpt/math/math_frwds.h
   include/mrpt/math/matrix_adaptors.h
@@ -174,7 +165,6 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/math/point_poses2vectors.h
   include/mrpt/math/poly_roots.h
   include/mrpt/math/ransac_applications.h
-  include/mrpt/math/ransac_impl.h
   include/mrpt/math/ransac.h
   include/mrpt/math/registerAllClasses.h
   include/mrpt/math/robust_kernels.h

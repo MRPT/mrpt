@@ -285,7 +285,10 @@ void CGlWidget::setVisibleGrid(bool is)
 
 bool CGlWidget::setBot(int value)
 {
-  if (!m_map) return false;
+  if (!m_map)
+  {
+    return false;
+  }
 
   math::TPose3D pose;
 

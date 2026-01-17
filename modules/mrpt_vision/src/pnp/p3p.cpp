@@ -130,7 +130,10 @@ bool mrpt::vision::pnp::p3p::solve(
 
   int n = solve(Rs, ts, mu0, mv0, X0, Y0, Z0, mu1, mv1, X1, Y1, Z1, mu2, mv2, X2, Y2, Z2);
 
-  if (n == 0) return false;
+  if (n == 0)
+  {
+    return false;
+  }
 
   int ns = 0;
   double min_reproj = 0;
@@ -449,7 +452,10 @@ bool mrpt::vision::pnp::p3p::jacobi_4x4(double* A, double* D, double* U)
   {
     double sum = fabs(A[1]) + fabs(A[2]) + fabs(A[3]) + fabs(A[6]) + fabs(A[7]) + fabs(A[11]);
 
-    if (sum == 0.0) return true;
+    if (sum == 0.0)
+    {
+      return true;
+    }
 
     double tresh = (iter < 3) ? 0.2 * sum / 16. : 0.0;
     for (int i = 0; i < 3; i++)

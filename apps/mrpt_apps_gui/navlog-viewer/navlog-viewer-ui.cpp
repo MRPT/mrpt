@@ -497,7 +497,10 @@ void NavlogViewerApp::OnMainIdleLoop()
 bool NavlogViewerApp::OnKeyboardCallback(
     int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int modifiers)
 {
-  if (action != GLFW_PRESS && action != GLFW_REPEAT) return false;
+  if (action != GLFW_PRESS && action != GLFW_REPEAT)
+  {
+    return false;
+  }
 
   switch (key)
   {

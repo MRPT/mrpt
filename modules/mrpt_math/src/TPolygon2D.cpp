@@ -119,7 +119,10 @@ void TPolygon2D::getCenter(TPoint2D& p) const
 bool TPolygon2D::isConvex() const
 {
   size_t N = size();
-  if (N <= 3) return true;
+  if (N <= 3)
+  {
+    return true;
+  }
   vector<TSegment2D> sgms;
   getAsSegmentList(sgms);
   for (size_t i = 0; i < N; i++)

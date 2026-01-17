@@ -691,7 +691,10 @@ bool CDisplayWindow3D::getLastMousePosition([[maybe_unused]] int& x, [[maybe_unu
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
   const auto* win = (const C3DWindowDialog*)m_hwnd.get();
-  if (!win) return false;
+  if (!win)
+  {
+    return false;
+  }
   win->m_canvas->getLastMousePosition(x, y);
   return true;
 #else
@@ -860,7 +863,10 @@ bool CDisplayWindow3D::is_GL_context_created() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
   auto* win = (C3DWindowDialog*)m_hwnd.get();
-  if (!win || !win->m_canvas) return false;
+  if (!win || !win->m_canvas)
+  {
+    return false;
+  }
   return win->m_canvas->is_GL_context_created();
 #else
   THROW_EXCEPTION("This function requires wxWidgets and OpenGL");

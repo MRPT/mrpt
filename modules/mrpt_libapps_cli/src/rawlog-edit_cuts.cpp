@@ -88,12 +88,18 @@ DECLARE_OP_FUNCTION(op_cut)
        is */
     bool tellIfThisOnePasses(mrpt::system::TTimeStamp t)
     {
-      if (has_from_index && m_rawlogEntry < m_from_index) return false;
+      if (has_from_index && m_rawlogEntry < m_from_index)
+      {
+        return false;
+      }
 
       if (has_from_time)
       {
         ASSERT_(t != INVALID_TIMESTAMP);
-        if (mrpt::Clock::toDouble(t) < m_from_time) return false;
+        if (mrpt::Clock::toDouble(t) < m_from_time)
+        {
+          return false;
+        }
       }
       if (has_to_index && m_rawlogEntry > m_to_index)
       {

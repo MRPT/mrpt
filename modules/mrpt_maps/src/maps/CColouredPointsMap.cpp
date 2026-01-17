@@ -463,7 +463,10 @@ bool CColouredPointsMap::colourFromObservation(
 bool CColouredPointsMap::save3D_and_colour_to_text_file(const std::string& file) const
 {
   FILE* f = os::fopen(file.c_str(), "wt");
-  if (!f) return false;
+  if (!f)
+  {
+    return false;
+  }
 
   for (size_t i = 0; i < m_x.size(); i++)
     os::fprintf(

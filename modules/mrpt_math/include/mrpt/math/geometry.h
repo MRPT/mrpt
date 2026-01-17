@@ -884,8 +884,14 @@ inline bool vectorsAreParallel2D(const T& v1, const U& v2)
 template <class T, class U>
 inline bool vectorsAreParallel3D(const T& v1, const U& v2)
 {
-  if (std::abs(v1[0] * v2[1] - v2[0] * v1[1]) >= getEpsilon()) return false;
-  if (std::abs(v1[1] * v2[2] - v2[1] * v1[2]) >= getEpsilon()) return false;
+  if (std::abs(v1[0] * v2[1] - v2[0] * v1[1]) >= getEpsilon())
+  {
+    return false;
+  }
+  if (std::abs(v1[1] * v2[2] - v2[1] * v1[2]) >= getEpsilon())
+  {
+    return false;
+  }
   return std::abs(v1[2] * v2[0] - v2[2] * v1[0]) < getEpsilon();
 }
 
@@ -1002,10 +1008,16 @@ bool pointIntoQuadrangle(T x, T y, T v1x, T v1y, T v2x, T v2y, T v3x, T v3y, T v
   //  and the next one are equal.
   const T da1 = mrpt::math::wrapToPi(a2 - a1);
   const T da2 = mrpt::math::wrapToPi(a3 - a2);
-  if (sign(da1) != sign(da2)) return false;
+  if (sign(da1) != sign(da2))
+  {
+    return false;
+  }
 
   const T da3 = mrpt::math::wrapToPi(a4 - a3);
-  if (sign(da2) != sign(da3)) return false;
+  if (sign(da2) != sign(da3))
+  {
+    return false;
+  }
 
   const T da4 = mrpt::math::wrapToPi(a1 - a4);
   return (sign(da3) == sign(da4) && (sign(da4) == sign(da1)));

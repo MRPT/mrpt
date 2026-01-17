@@ -56,7 +56,10 @@ bool ModelSearch::ransacSingleModel(
       pickRandomIndex(nSamples, p_kernelSize, ind);
       degenerate = !p_state.fitModel(ind, currentModel);
       i++;
-      if (i > 100) return false;
+      if (i > 100)
+      {
+        return false;
+      }
     }
 
     std::vector<size_t> inliers;

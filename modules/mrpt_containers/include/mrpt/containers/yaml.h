@@ -225,7 +225,10 @@ class yaml
     bool hasComment() const
     {
       for (const auto& c : comments)
-        if (c.has_value()) return true;
+        if (c.has_value())
+        {
+          return true;
+        }
       return false;
     }
     bool hasComment(CommentPosition pos) const

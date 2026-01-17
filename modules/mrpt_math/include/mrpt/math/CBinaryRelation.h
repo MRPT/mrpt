@@ -165,7 +165,10 @@ class CBinaryRelation
   {
     typename std::set<T>::const_iterator b = elements.begin(), e = elements.end();
     typename std::set<T>::const_iterator it1 = std::find(b, e, t1), it2 = std::find(b, e, t2);
-    if (it1 == e || it2 == e) return false;
+    if (it1 == e || it2 == e)
+    {
+      return false;
+    }
     setRelationValue(
         static_cast<size_t>(std::distance(b, it1)), static_cast<size_t>(std::distance(b, it2)),
         newVal);
@@ -356,7 +359,10 @@ class CBinaryRelation
   {
     typename std::set<T>::const_iterator b = elements.begin(), e = elements.end();
     typename std::set<T>::const_iterator it = std::find(e, b, el);
-    if (it == e) return false;
+    if (it == e)
+    {
+      return false;
+    }
     removeElementAt(std::distance(b, it));
     return true;
   }

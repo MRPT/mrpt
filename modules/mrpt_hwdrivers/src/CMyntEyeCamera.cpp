@@ -125,7 +125,10 @@ bool CMyntEyeCamera::getObservation(mrpt::obs::CObservation3DRangeScan& out)
   // Empty output obs:
   out = mrpt::obs::CObservation3DRangeScan();
 
-  if (!image_color.img && !image_depth.img) return false;
+  if (!image_color.img && !image_depth.img)
+  {
+    return false;
+  }
 
   // all is good:
   out.timestamp = mrpt::Clock::now();

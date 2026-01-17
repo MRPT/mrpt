@@ -498,7 +498,10 @@ class CPointsMap :
   inline bool loadPCDFile(const std::string& filename)
   {
     pcl::PointCloud<pcl::PointXYZ> cloud;
-    if (0 != pcl::io::loadPCDFile(filename, cloud)) return false;
+    if (0 != pcl::io::loadPCDFile(filename, cloud))
+    {
+      return false;
+    }
     this->getPCLPointCloud(cloud);
     return true;
   }

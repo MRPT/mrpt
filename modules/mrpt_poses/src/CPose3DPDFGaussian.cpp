@@ -275,7 +275,10 @@ void CPose3DPDFGaussian::copyFrom(const CPosePDF& o)
 bool CPose3DPDFGaussian::saveToTextFile(const string& file) const
 {
   FILE* f = os::fopen(file.c_str(), "wt");
-  if (!f) return false;
+  if (!f)
+  {
+    return false;
+  }
 
   os::fprintf(
       f, "%e %e %e %e %e %e\n", mean.x(), mean.y(), mean.z(), mean.yaw(), mean.pitch(),

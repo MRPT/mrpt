@@ -203,12 +203,18 @@ bool CImageGrabber_OpenCV::getObservation(mrpt::obs::CObservationImage& out_obse
 {
   MRPT_START
 
-  if (!m_bInitialized) return false;
+  if (!m_bInitialized)
+  {
+    return false;
+  }
 
 #if MRPT_HAS_OPENCV
 
   // Capture the image:
-  if (!m_capture->cap.grab()) return false;
+  if (!m_capture->cap.grab())
+  {
+    return false;
+  }
 
   // JL: Sometimes there're errors in some frames: try not to return an error
   // unless it seems

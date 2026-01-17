@@ -695,12 +695,21 @@ std::optional<std::pair<double, size_t>> xRawLogViewerFrame::timeLineMouseXYToTr
       const auto lambdaTest =
           [&treeIndex, this, clickedSensorLabel, lastIdx, &matchedClickSensorLabel](int i)
       {
-        if (i < 0) return false;
-        if (i > lastIdx) return false;
+        if (i < 0)
+        {
+          return false;
+        }
+        if (i > lastIdx)
+        {
+          return false;
+        }
 
         const auto& sl = m_treeView->treeNodes().at(i).sensorLabel;
 
-        if (!sl.has_value()) return false;
+        if (!sl.has_value())
+        {
+          return false;
+        }
 
         bool found = sl.value() == clickedSensorLabel;
 

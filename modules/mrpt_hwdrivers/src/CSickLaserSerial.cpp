@@ -230,7 +230,10 @@ bool CSickLaserSerial::tryToOpenComms(std::string* err_msg)
     }
 
     // It seems the port was open and working so we are done here.
-    if (!just_open) return true;
+    if (!just_open)
+    {
+      return true;
+    }
 
     // ==================================================================
     // Otherwise, it was just opened now, we must send the
@@ -245,7 +248,10 @@ bool CSickLaserSerial::tryToOpenComms(std::string* err_msg)
       for (int nTry = 0; nTry < 4; nTry++)
         if (true == (res = LMS_sendMeasuringMode_cm_mm())) break;
 
-      if (!res) return false;
+      if (!res)
+      {
+        return false;
+      }
 
       for (int nTry = 0; nTry < 4; nTry++)
         if (true == (res = LMS_startContinuousMode())) break;
@@ -312,7 +318,10 @@ bool CSickLaserSerial::waitContinuousSampleFrame(
       return false;
     }
 
-    if (!nRead && !nFrameBytes) return false;
+    if (!nRead && !nFrameBytes)
+    {
+      return false;
+    }
 
     if (nRead < nBytesToRead) std::this_thread::sleep_for(1ms);
 
@@ -339,7 +348,10 @@ bool CSickLaserSerial::waitContinuousSampleFrame(
 
   // Trama completa:
   //  Checkear que el byte de comando es 0xB0:
-  if (buf[4] != 0xB0) return false;
+  if (buf[4] != 0xB0)
+  {
+    return false;
+  }
 
   // GET FRAME INFO
   int info = buf[5] | (buf[6] << 8);  // Little Endian
@@ -398,7 +410,10 @@ bool CSickLaserSerial::LMS_setupSerialComms()
   ASSERT_(m_com_baudRate == 9600 || m_com_baudRate == 38400 || m_com_baudRate == 500000);
 
   auto* COM = dynamic_cast<CSerialPort*>(m_stream.get());
-  if (COM == nullptr) return true;
+  if (COM == nullptr)
+  {
+    return true;
+  }
 
   int detected_rate = 0;
   for (size_t reps = 0; !detected_rate && reps < m_nTries_connect; reps++)
@@ -447,7 +462,10 @@ bool CSickLaserSerial::LMS_setupSerialComms()
   }
 
   // Are we connected at the right rate?
-  if (detected_rate == m_com_baudRate) return true;
+  if (detected_rate == m_com_baudRate)
+  {
+    return true;
+  }
 
   // Switch to the desired rate now
   if (!this->LMS_setupBaudrate(m_com_baudRate)) RET_ERROR("error");
@@ -498,7 +516,10 @@ bool CSickLaserSerial::LMS_setupBaudrate(int baud)
 
   uint16_t cmd_len = 2;
 
-  if (!SendCommandToSICK(cmd, cmd_len)) return false;
+  if (!SendCommandToSICK(cmd, cmd_len))
+  {
+    return false;
+  }
   return LMS_waitIncomingFrame(500);
 }
 
@@ -514,7 +535,10 @@ bool CSickLaserSerial::LMS_statusQuery()
   cmd[0] = 0x31;
   uint16_t cmd_len = 1;
 
-  if (!SendCommandToSICK(cmd, cmd_len)) return false;
+  if (!SendCommandToSICK(cmd, cmd_len))
+  {
+    return false;
+  }
   return LMS_waitIncomingFrame(500);
 }
 
@@ -532,7 +556,10 @@ bool CSickLaserSerial::LMS_waitACK(uint16_t timeout_ms)
   {
     if (COM->Read(&b, 1))
     {  // Byte rx:
-      if (b == 0x06) return true;
+      if (b == 0x06)
+      {
+        return true;
+      }
     }
   } while (tictac.Tac() < timeout_ms * 1e-3);
 
@@ -743,7 +770,10 @@ bool CSickLaserSerial::LMS_endContinuousMode()
   cmd[0] = 0x20;
   cmd[1] = 0x25;
   uint16_t cmd_len = 2;
-  if (!SendCommandToSICK(cmd, cmd_len)) return false;
+  if (!SendCommandToSICK(cmd, cmd_len))
+  {
+    return false;
+  }
   return LMS_waitIncomingFrame(50);
 }
 
@@ -788,7 +818,10 @@ bool CSickLaserSerial::SendCommandToSICK(const uint8_t* cmd, const uint16_t cmd_
       return false;
     }
     std::this_thread::sleep_for(15ms);
-    if (LMS_waitACK(50)) return true;
+    if (LMS_waitACK(50))
+    {
+      return true;
+    }
     std::this_thread::sleep_for(10ms);
   }
 

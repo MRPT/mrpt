@@ -77,7 +77,10 @@ template <typename T>
 bool TMatchingPairListTempl<T>::indexOtherMapHasCorrespondence(size_t idx) const
 {
   for (const auto& it : *this)
-    if (it.localIdx == idx) return true;
+    if (it.localIdx == idx)
+    {
+      return true;
+    }
   return false;
 }
 
@@ -110,7 +113,10 @@ template <typename T>
 bool TMatchingPairListTempl<T>::contains(const TMatchingPairTempl<T>& p) const
 {
   for (const auto& corresp : *this)
-    if (corresp == p) return true;
+    if (corresp == p)
+    {
+      return true;
+    }
   return false;
 }
 

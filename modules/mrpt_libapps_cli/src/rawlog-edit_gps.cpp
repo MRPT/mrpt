@@ -63,7 +63,10 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
     // return false on any error.
     bool processOneObservation(CObservation::Ptr& o) override
     {
-      if (!IS_CLASS(*o, CObservationGPS)) return true;
+      if (!IS_CLASS(*o, CObservationGPS))
+      {
+        return true;
+      }
 
       const CObservationGPS* obs = dynamic_cast<CObservationGPS*>(o.get());
 
@@ -369,7 +372,10 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
     // return false on any error.
     bool processOneObservation(CObservation::Ptr& o) override
     {
-      if (!IS_CLASS(*o, CObservationGPS)) return true;
+      if (!IS_CLASS(*o, CObservationGPS))
+      {
+        return true;
+      }
 
       const CObservationGPS* obs = dynamic_cast<CObservationGPS*>(o.get());
 
@@ -561,7 +567,10 @@ DECLARE_OP_FUNCTION(op_export_gps_all)
     // return false on any error.
     bool processOneObservation(CObservation::Ptr& o) override
     {
-      if (!IS_CLASS(*o, CObservationGPS)) return true;
+      if (!IS_CLASS(*o, CObservationGPS))
+      {
+        return true;
+      }
 
       const CObservationGPS* obs = dynamic_cast<CObservationGPS*>(o.get());
 

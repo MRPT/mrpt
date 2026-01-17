@@ -330,7 +330,10 @@ bool CFFMPEG_InputStream::retrieveFrame(mrpt::img::CImage& out_img, int64_t& out
 #if MRPT_HAS_FFMPEG
   outPTS = 0;
 
-  if (!this->isOpen()) return false;
+  if (!this->isOpen())
+  {
+    return false;
+  }
 
   TFFMPEGContext* ctx = &m_impl->m_state;
 

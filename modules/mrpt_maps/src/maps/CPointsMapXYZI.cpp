@@ -184,7 +184,10 @@ float CPointsMapXYZI::getPointIntensity(size_t index) const
 bool CPointsMapXYZI::saveXYZI_to_text_file(const std::string& file) const
 {
   FILE* f = os::fopen(file.c_str(), "wt");
-  if (!f) return false;
+  if (!f)
+  {
+    return false;
+  }
   for (unsigned int i = 0; i < m_x.size(); i++)
     os::fprintf(f, "%f %f %f %f\n", m_x[i], m_y[i], m_z[i], m_intensity[i]);
   os::fclose(f);
@@ -201,7 +204,10 @@ bool CPointsMapXYZI::loadXYZI_from_text_file(const std::string& file)
 
   std::ifstream f;
   f.open(file);
-  if (!f.is_open()) return false;
+  if (!f.is_open())
+  {
+    return false;
+  }
 
   while (!f.eof())
   {
@@ -325,7 +331,10 @@ void CPointsMapXYZI::loadFromRangeScan(
    ------------------------------------------------------------------ */
 bool CPointsMapXYZI::hasPointField(const std::string_view& fieldName) const
 {
-  if (fieldName == POINT_FIELD_INTENSITY) return true;
+  if (fieldName == POINT_FIELD_INTENSITY)
+  {
+    return true;
+  }
   return CPointsMap::hasPointField(fieldName);
 }
 std::vector<std::string_view> CPointsMapXYZI::getPointFieldNames_float() const

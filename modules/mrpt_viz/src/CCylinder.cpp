@@ -141,7 +141,10 @@ bool CCylinder::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
   // line to its base is exactly equal to the "t".
   if (std::abs(lin.director[2]) < getEpsilon())
   {
-    if (!reachesHeight(zz)) return false;
+    if (!reachesHeight(zz))
+    {
+      return false;
+    }
     float r;
     return getRadius(zz, r) ? solveEqn(
                                   square(lin.director[0]) + square(lin.director[1]),

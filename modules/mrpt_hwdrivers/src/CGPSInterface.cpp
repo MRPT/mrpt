@@ -536,7 +536,10 @@ bool CGPSInterface::OnConnectionShutdown()
 {
   auto* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream.get());
 
-  if (stream_serial && !stream_serial->isOpen()) return false;
+  if (stream_serial && !stream_serial->isOpen())
+  {
+    return false;
+  }
 
   // Send commands:
   for (const auto& m_shutdown_cmd : m_shutdown_cmds)

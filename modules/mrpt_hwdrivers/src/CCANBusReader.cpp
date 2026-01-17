@@ -216,7 +216,10 @@ bool CCANBusReader::tryToOpenComms(std::string* err_msg)
     }
 
     // It seems the port was open and working so we are done here.
-    if (!just_open) return true;
+    if (!just_open)
+    {
+      return true;
+    }
 
     // ==================================================================
     // Otherwise, it was just opened now, we must send the
@@ -235,7 +238,10 @@ bool CCANBusReader::tryToOpenComms(std::string* err_msg)
     cout << "Setting up CAN BUS Speed at: " << m_canbus_speed << "\n";
     for (int nTry = 0; nTry < 250000 /*4*/; nTry++)
       if (true == (res = sendCANBusReaderSpeed())) break;
-    if (!res) return false;
+    if (!res)
+    {
+      return false;
+    }
     cout << " ... done"
          << "\n";
 
@@ -245,7 +251,10 @@ bool CCANBusReader::tryToOpenComms(std::string* err_msg)
          << "\n";
     for (int nTry = 0; nTry < 250000 /*4*/; nTry++)
       if (true == (res = CANBusOpenChannel())) break;
-    if (!res) return false;
+    if (!res)
+    {
+      return false;
+    }
     cout << " ... done"
          << "\n";
 
@@ -253,7 +262,7 @@ bool CCANBusReader::tryToOpenComms(std::string* err_msg)
     //        for (int nTry=0;nTry<250000/*4*/;nTry++)
     //            if (true==(res=CANBusAutoPoll()))
     //                break;
-    //        if(!res) return false;
+    //        if(!res) { return false; }
     //        cout << " ... done" << "\n";
 
     return res;
@@ -420,7 +429,10 @@ bool CCANBusReader::waitContinuousSampleFrame(
       return false;
     }
 
-    if (!nRead) return false;
+    if (!nRead)
+    {
+      return false;
+    }
 
     if (nRead < nBytesToRead) std::this_thread::sleep_for(30ms);
 
@@ -493,7 +505,10 @@ bool CCANBusReader::setupSerialComms()
       m_com_baudRate == 9600 || m_com_baudRate == 38400 || m_com_baudRate == 57600 ||
       m_com_baudRate == 500000);
 
-  if (m_mySerialPort == nullptr) return true;
+  if (m_mySerialPort == nullptr)
+  {
+    return true;
+  }
 
   int detected_rate = 0;
   for (size_t reps = 0; !detected_rate && reps < m_nTries_connect; reps++)
@@ -574,7 +589,10 @@ bool CCANBusReader::queryVersion(bool printOutVersion)
   cmd[0] = 'V';
   uint16_t cmd_len = 1;
 
-  if (!sendCommandToCANReader(cmd, cmd_len, false)) return false;
+  if (!sendCommandToCANReader(cmd, cmd_len, false))
+  {
+    return false;
+  }
   return waitForVersion(500, printOutVersion);
 }
 

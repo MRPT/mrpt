@@ -143,7 +143,10 @@ bool CSickLaserUSB::turnOff() { return true; }
 bool CSickLaserUSB::checkControllerIsConnected()
 {
   // If device is already open, thats ok:
-  if (m_usbConnection->isOpen()) return true;
+  if (m_usbConnection->isOpen())
+  {
+    return true;
+  }
 
   // If it isn't, try to open it now:
   try
@@ -214,7 +217,10 @@ bool CSickLaserUSB::waitContinuousSampleFrame(
       return false;
     }
 
-    if (nRead == 0 && nFrameBytes == 0) return false;
+    if (nRead == 0 && nFrameBytes == 0)
+    {
+      return false;
+    }
 
     if (nRead > 0)
     {
@@ -239,7 +245,10 @@ bool CSickLaserUSB::waitContinuousSampleFrame(
 
   // Trama completa:
   //  Checkear que el byte de comando es 0xB0:
-  if (buf[4] != 0xB0) return false;
+  if (buf[4] != 0xB0)
+  {
+    return false;
+  }
 
   // GET FRAME INFO
   int info = buf[5] | (buf[6] << 8);  // Little Endian

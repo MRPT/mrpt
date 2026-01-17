@@ -547,7 +547,10 @@ bool RotScan::saveToTextFile(const std::string& filename) const
   }
 
   std::ofstream f(filename);
-  if (!f.is_open()) return false;
+  if (!f.is_open())
+  {
+    return false;
+  }
 
   for (size_t r = 0; r < rowCount; r++)
   {

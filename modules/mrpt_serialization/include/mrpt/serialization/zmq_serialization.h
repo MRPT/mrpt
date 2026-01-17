@@ -115,14 +115,14 @@ bool mrpt_recv_from_zmq_buf(
 	{
 		// Init rx msg:
 		zmq_msg_t* msg = new zmq_msg_t();
-		if (0 != zmq_msg_init(msg)) return false;
+		if (0 != zmq_msg_init(msg)) { return false; }
 		out_lst_msgs.push_back(msg);
 		// Recv:
 		int rc = zmq_msg_recv(msg, zmq_socket, dont_wait ? ZMQ_DONTWAIT : 0);
-		if (rc == -1) return false;
+		if (rc == -1) { return false; }
 		// Determine if more message parts are to follow
 		rc = zmq_getsockopt(zmq_socket, ZMQ_RCVMORE, &more, &more_size);
-		if (rc != 0) return false;
+		if (rc != 0) { return false; }
 		// Only one part?
 		if (out_lst_msgs.size() == 1 && !more)
 		{

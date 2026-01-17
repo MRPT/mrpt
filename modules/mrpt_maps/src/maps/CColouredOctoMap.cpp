@@ -267,7 +267,10 @@ bool CColouredOctoMap::getPointColour(
   if (m_impl->m_octomap.coordToKeyChecked(octomap::point3d(x, y, z), key))
   {
     octomap::ColorOcTreeNode* node = m_impl->m_octomap.search(key, 0 /*depth*/);
-    if (!node) return false;
+    if (!node)
+    {
+      return false;
+    }
 
     const octomap::ColorOcTreeNode::Color& col = node->getColor();
     r = col.r;

@@ -708,7 +708,10 @@ class CPolyhedron :
   bool isClosed() const
   {
     for (size_t i = 0; i < m_Vertices.size(); i++)
-      if (edgesInVertex(i) != facesInVertex(i)) return false;
+      if (edgesInVertex(i) != facesInVertex(i))
+      {
+        return false;
+      }
     return true;
   }
   /**

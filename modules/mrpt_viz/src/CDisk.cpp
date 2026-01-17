@@ -75,12 +75,18 @@ bool CDisk::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
   // this normal and (1,0,0) (which happens to be the beam's vector) equals
   // coef. And if it's 0, then both
   // are orthogonal, that is, the beam is parallel to the plane.
-  if (coef == 0) return false;
+  if (coef == 0)
+  {
+    return false;
+  }
   // The following expression yields the collision point between the plane and
   // the beam (the y and z
   // coordinates are zero).
   dist = x + (y * (sin(p) * sin(w) * cos(r) - cos(w) * sin(r)) + z * cos(p) * cos(r)) / coef;
-  if (dist < 0) return false;
+  if (dist < 0)
+  {
+    return false;
+  }
   // Euclidean distance is invariant to rotations...
   double d2 = (x - dist) * (x - dist) + y * y + z * z;
   return d2 >= (m_radiusIn * m_radiusIn) && d2 <= (m_radiusOut * m_radiusOut);

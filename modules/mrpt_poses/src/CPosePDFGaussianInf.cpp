@@ -171,7 +171,10 @@ void CPosePDFGaussianInf::copyFrom(const CPose3DPDF& o)
 bool CPosePDFGaussianInf::saveToTextFile(const std::string& file) const
 {
   FILE* f = os::fopen(file.c_str(), "wt");
-  if (!f) return false;
+  if (!f)
+  {
+    return false;
+  }
 
   os::fprintf(f, "%f %f %f\n", mean.x(), mean.y(), mean.phi());
 

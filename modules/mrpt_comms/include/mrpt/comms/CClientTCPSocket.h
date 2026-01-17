@@ -210,7 +210,10 @@ class CClientTCPSocket : public mrpt::io::CStream
     if (actRead != toRead) return false;  // Error!
     magic[actRead] = 0;                   // Null-term string
     // Check magic:
-    if (0 != ::strcmp("MRPTMessage", magic)) return false;
+    if (0 != ::strcmp("MRPTMessage", magic))
+    {
+      return false;
+    }
     // (2) Read the message type:
     toRead = sizeof(inMsg.type);
     actRead = readAsync(&inMsg.type, toRead, timeoutBetween_ms, timeoutBetween_ms);

@@ -106,7 +106,10 @@ bool TSequenceFeatureObservations::saveAsSBAFiles(
 
   // # X Y Z  nframes  frame0 x0 y0  frame1 x1 y1 ...
   ofstream f(pts_file.c_str());
-  if (!f.is_open()) return false;
+  if (!f.is_open())
+  {
+    return false;
+  }
 
   f << "# X Y Z  nframes  frame0 x0 y0  frame1 x1 y1 ...\n";
   for (auto it = obs_by_point.begin(); it != obs_by_point.end(); ++it)
@@ -119,7 +122,10 @@ bool TSequenceFeatureObservations::saveAsSBAFiles(
   }
 
   ofstream fc(cams_file.c_str());
-  if (!fc.is_open()) return false;
+  if (!fc.is_open())
+  {
+    return false;
+  }
 
   for (const auto& pos : cams)
   {

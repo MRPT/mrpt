@@ -18,40 +18,43 @@
 #include <Eigen/Dense>
 #include <algorithm>
 #include <cmath>
+#include <vector>
 
 using namespace mrpt;
-using namespace std;
 using namespace mrpt::math;
 
-// Next we declare some auxiliary functions:
-namespace mrpt::math
+namespace
 {
-// Replaces data[1..2*nn] by its discrete Fourier transform, if isign is input
-// as 1; or replaces
-// data[1..2*nn] by nn times its inverse discrete Fourier transform, if isign is
-// input as -1.
-// data is a complex array of length nn or, equivalently, a real array of length
-// 2*nn. nn MUST
-// be an integer power of 2 (this is not checked for!).
-static void four1(float data[], unsigned long nn, int isign)  // NOLINT
+// Type definitions
+using FftType = float;
 
+// Constants
+constexpr double kPi = 3.141592653589793;
+constexpr double kTwoPi = 6.28318530717959;
+
+/**
+ * @brief Bit-reversal permutation for FFT
+ *
+ * Performs in-place bit-reversal of complex array elements.
+ * This is required for the Cooley-Tukey FFT algorithm.
+ *
+ * @param numPoints Number of complex values (array length = 2*numPoints)
+ * @param data Complex array [real0, imag0, real1, imag1, ...]
+ */
+void bitReversal(size_t numPoints, float data[])
 {
-  unsigned long n, mmax, m, j, i;
-  // Double precision for the trigonometric recurrences.
-  double wtemp, wr, wpr, wpi, wi, theta;
-  float tempr, tempi;
+  size_t j = 1;
+  const size_t n = numPoints << 1;
 
-  n = nn << 1;
-  j = 1;
-
-  for (i = 1; i < n; i += 2)  // This is the bit-reversal section of the routine.
+  for (size_t i = 1; i < n; i += 2)
   {
     if (j > i)
     {
-      std::swap(data[j], data[i]);  // Exchange the two complex numbers.
+      std::swap(data[j], data[i]);
       std::swap(data[j + 1], data[i + 1]);
     }
-    m = nn;
+
+    size_t m = numPoints;
     while (m >= 2 && j > m)
     {
       j -= m;
@@ -59,125 +62,159 @@ static void four1(float data[], unsigned long nn, int isign)  // NOLINT
     }
     j += m;
   }
-  // Here begins the Danielson-Lanczos section of the routine.
-  mmax = 2;
-  while (n > mmax)  // Outer loop executed log2 nn times.
+}
+
+/**
+ * @brief Cooley-Tukey FFT (radix-2 decimation-in-time)
+ *
+ * Computes FFT or inverse FFT of complex data.
+ * Data must be bit-reversed before calling (unless already in correct order).
+ *
+ * @param data Complex array [real0, imag0, real1, imag1, ...], length 2*numPoints
+ * @param numPoints Number of complex values (must be power of 2)
+ * @param isign +1 for forward FFT, -1 for inverse FFT
+ */
+void four1(float data[], size_t numPoints, int isign)
+{
+  const size_t n = numPoints << 1;
+  size_t j = 1;
+
+  // Bit-reversal section
+  for (size_t i = 1; i < n; i += 2)
   {
-    unsigned long istep = mmax << 1;
-    theta = isign * (6.28318530717959 / mmax);  // Initialize the trigonometric recurrence.
-    wtemp = sin(0.5 * theta);
-    wpr = -2.0 * wtemp * wtemp;
-    wpi = sin(theta);
-    wr = 1.0;
-    wi = 0.0;
-    for (m = 1; m < mmax; m += 2)  // Here are the two nested inner loops.
+    if (j > i)
     {
-      for (i = m; i <= n; i += istep)
+      std::swap(data[j], data[i]);
+      std::swap(data[j + 1], data[i + 1]);
+    }
+    size_t m = numPoints;
+    while (m >= 2 && j > m)
+    {
+      j -= m;
+      m >>= 1;
+    }
+    j += m;
+  }
+
+  // Danielson-Lanczos section
+  size_t mmax = 2;
+  while (n > mmax)
+  {
+    const size_t istep = mmax << 1;
+    const double theta = static_cast<double>(isign) * (kTwoPi / static_cast<double>(mmax));
+    const double wtemp = std::sin(0.5 * theta);
+    const double wpr = -2.0 * wtemp * wtemp;
+    const double wpi = std::sin(theta);
+    double wr = 1.0;
+    double wi = 0.0;
+
+    for (size_t m = 1; m < mmax; m += 2)
+    {
+      for (size_t i = m; i <= n; i += istep)
       {
-        j = i + mmax;  // This is the Danielson-Lanczos formula:
-        tempr = (float)(wr * data[j] - wi * data[j + 1]);
-        tempi = (float)(wr * data[j + 1] + wi * data[j]);
+        const size_t j = i + mmax;
+        const float tempr = static_cast<float>(wr * data[j] - wi * data[j + 1]);
+        const float tempi = static_cast<float>(wr * data[j + 1] + wi * data[j]);
         data[j] = data[i] - tempr;
         data[j + 1] = data[i + 1] - tempi;
         data[i] += tempr;
         data[i + 1] += tempi;
       }
-      wr = (wtemp = wr) * wpr - wi * wpi + wr;  // Trigonometric recurrence.
-      wi = wi * wpr + wtemp * wpi + wi;
+      const double wrOld = wr;
+      wr = wrOld * wpr - wi * wpi + wr;
+      wi = wi * wpr + wrOld * wpi + wi;
     }
     mmax = istep;
   }
 }
 
-// Calculates the Fourier transform of a set of n real-valued data points.
-// Replaces this data (which
-// is stored in array data[1..n]) by the positive frequency half of its complex
-// Fourier transform.
-// The real-valued first and last components of the complex transform are
-// returned as elements
-// data[1] and data[2], respectively. n must be a power of 2. This routine also
-// calculates the
-// inverse transform of a complex data array if it is the transform of real
-// data. (Result in this case
-// must be multiplied by 2/n.)
-static void realft(float data[], unsigned long n)
+/**
+ * @brief Real FFT using complex FFT
+ *
+ * Computes FFT of real-valued data or inverse FFT.
+ * For forward transform: input is real data, output is half-complex format.
+ * For inverse transform: input is half-complex format, output is real data.
+ *
+ * @param data Real data array (length n), modified in-place
+ * @param n Number of real values (must be power of 2)
+ */
+void realft(float data[], size_t n)
 {
-  unsigned long i, i1, i2, i3, i4, np3;
-  float c1 = 0.5, c2, h1r, h1i, h2r, h2i;
-  double wr, wi, wpr, wpi, wtemp,
-      theta;  // Double precision for the trigonometric recurrences.
-  theta = 3.141592653589793 / (double)(n >> 1);  // Initialize the recurrence.
+  const double theta = kPi / static_cast<double>(n >> 1);
+  constexpr float c1 = 0.5f;
+  constexpr float c2 = -0.5f;
 
-  c2 = -0.5;
-  four1(data, n >> 1, 1);  // The forward transform is here.
+  // Forward transform
+  four1(data, n >> 1, 1);
 
-  wtemp = sin(0.5 * theta);
-  wpr = -2.0 * wtemp * wtemp;
-  wpi = sin(theta);
-  wr = 1.0 + wpr;
-  wi = wpi;
-  np3 = n + 3;
-  for (i = 2; i <= (n >> 2); i++)  // Case i=1 done separately below.
+  const double wtemp = std::sin(0.5 * theta);
+  const double wpr = -2.0 * wtemp * wtemp;
+  const double wpi = std::sin(theta);
+  double wr = 1.0 + wpr;
+  double wi = wpi;
+  const size_t np3 = n + 3;
+
+  for (size_t i = 2; i <= (n >> 2); i++)
   {
-    i4 = 1 + (i3 = np3 - (i2 = 1 + (i1 = i + i - 1)));
-    h1r = c1 * (data[i1] + data[i3]);  // The two separate transforms are
-    // separated out of data.
-    h1i = c1 * (data[i2] - data[i4]);
-    h2r = -c2 * (data[i2] + data[i4]);
-    h2i = c2 * (data[i1] - data[i3]);
-    data[i1] = (float)(h1r + wr * h2r - wi * h2i);  // Here they are recombined to
-    // form the true transform of
-    // the original real data.
-    data[i2] = (float)(h1i + wr * h2i + wi * h2r);
-    data[i3] = (float)(h1r - wr * h2r + wi * h2i);
-    data[i4] = (float)(-h1i + wr * h2i + wi * h2r);
-    wr = (wtemp = wr) * wpr - wi * wpi + wr;  // The recurrence.
-    wi = wi * wpr + wtemp * wpi + wi;
+    const size_t i1 = i + i - 1;
+    const size_t i2 = 1 + i1;
+    const size_t i3 = np3 - i2;
+    const size_t i4 = 1 + i3;
+
+    const float h1r = c1 * (data[i1] + data[i3]);
+    const float h1i = c1 * (data[i2] - data[i4]);
+    const float h2r = -c2 * (data[i2] + data[i4]);
+    const float h2i = c2 * (data[i1] - data[i3]);
+
+    data[i1] = static_cast<float>(h1r + wr * h2r - wi * h2i);
+    data[i2] = static_cast<float>(h1i + wr * h2i + wi * h2r);
+    data[i3] = static_cast<float>(h1r - wr * h2r + wi * h2i);
+    data[i4] = static_cast<float>(-h1i + wr * h2i + wi * h2r);
+
+    const double wrOld = wr;
+    wr = wrOld * wpr - wi * wpi + wr;
+    wi = wi * wpr + wrOld * wpi + wi;
   }
 
-  data[1] = (h1r = data[1]) + data[2];
-  // Squeeze the first and last data together to get them all within the
-  // original array.
+  const float h1r = data[1];
+  data[1] = h1r + data[2];
   data[2] = h1r - data[2];
 }
 
+// ============================================================================
+// Ooura FFT routines (Copyright(C) 1997 Takuya OOURA)
+// You may use, copy, modify this code for any purpose without fee.
+// ============================================================================
+
+void makewt(int nw, int* ip, FftType* w);
+void bitrv2(int n, int* ip, FftType* a);
+void cftbsub(int n, FftType* a, FftType* w);
+void cftfsub(int n, FftType* a, FftType* w);
+void rftfsub(int n, FftType* a, int nc, FftType* c);
+void rftbsub(int n, FftType* a, int nc, FftType* c);
+
 /**
-  Copyright(C) 1997 Takuya OOURA (email: ooura@mmm.t.u-tokyo.ac.jp).
-  You may use, copy, modify this code for any purpose and
-  without fee. You may distribute this ORIGINAL package.
-  */
-using FFT_TYPE = float;
-
-static void makewt(int nw, int* ip, FFT_TYPE* w);
-static void bitrv2(int n, int* ip, FFT_TYPE* a);
-static void cftbsub(int n, FFT_TYPE* a, FFT_TYPE* w);
-static void cftfsub(int n, FFT_TYPE* a, FFT_TYPE* w);
-static void rftfsub(int n, FFT_TYPE* a, int nc, FFT_TYPE* c);
-static void rftbsub(int n, FFT_TYPE* a, int nc, FFT_TYPE* c);
-
-static void cftbsub(int n, FFT_TYPE* a, FFT_TYPE* w)
+ * @brief Complex FFT (backward transform)
+ */
+void cftbsub(int n, FftType* a, FftType* w)
 {
-  int j, j1, j2, j3, k, k1, ks, l, m;
-  FFT_TYPE wk1r, wk1i, wk2r, wk2i, wk3r, wk3i;
-  FFT_TYPE x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i;
-
-  l = 2;
+  int l = 2;
   while ((l << 1) < n)
   {
-    m = l << 2;
-    for (j = 0; j <= l - 2; j += 2)
+    const int m = l << 2;
+    for (int j = 0; j <= l - 2; j += 2)
     {
-      j1 = j + l;
-      j2 = j1 + l;
-      j3 = j2 + l;
-      x0r = a[j] + a[j1];
-      x0i = a[j + 1] + a[j1 + 1];
-      x1r = a[j] - a[j1];
-      x1i = a[j + 1] - a[j1 + 1];
-      x2r = a[j2] + a[j3];
-      x2i = a[j2 + 1] + a[j3 + 1];
-      x3r = a[j2] - a[j3];
-      x3i = a[j2 + 1] - a[j3 + 1];
+      const int j1 = j + l;
+      const int j2 = j1 + l;
+      const int j3 = j2 + l;
+      const FftType x0r = a[j] + a[j1];
+      const FftType x0i = a[j + 1] + a[j1 + 1];
+      const FftType x1r = a[j] - a[j1];
+      const FftType x1i = a[j + 1] - a[j1 + 1];
+      const FftType x2r = a[j2] + a[j3];
+      const FftType x2i = a[j2 + 1] + a[j3 + 1];
+      const FftType x3r = a[j2] - a[j3];
+      const FftType x3i = a[j2 + 1] - a[j3 + 1];
       a[j] = x0r + x2r;
       a[j + 1] = x0i + x2i;
       a[j2] = x0r - x2r;
@@ -189,72 +226,72 @@ static void cftbsub(int n, FFT_TYPE* a, FFT_TYPE* w)
     }
     if (m < n)
     {
-      wk1r = w[2];
-      for (j = m; j <= l + m - 2; j += 2)
+      const FftType wk1r = w[2];
+      for (int j = m; j <= l + m - 2; j += 2)
       {
-        j1 = j + l;
-        j2 = j1 + l;
-        j3 = j2 + l;
-        x0r = a[j] + a[j1];
-        x0i = a[j + 1] + a[j1 + 1];
-        x1r = a[j] - a[j1];
-        x1i = a[j + 1] - a[j1 + 1];
-        x2r = a[j2] + a[j3];
-        x2i = a[j2 + 1] + a[j3 + 1];
-        x3r = a[j2] - a[j3];
-        x3i = a[j2 + 1] - a[j3 + 1];
+        const int j1 = j + l;
+        const int j2 = j1 + l;
+        const int j3 = j2 + l;
+        const FftType x0r = a[j] + a[j1];
+        const FftType x0i = a[j + 1] + a[j1 + 1];
+        const FftType x1r = a[j] - a[j1];
+        const FftType x1i = a[j + 1] - a[j1 + 1];
+        const FftType x2r = a[j2] + a[j3];
+        const FftType x2i = a[j2 + 1] + a[j3 + 1];
+        const FftType x3r = a[j2] - a[j3];
+        const FftType x3i = a[j2 + 1] - a[j3 + 1];
         a[j] = x0r + x2r;
         a[j + 1] = x0i + x2i;
         a[j2] = x2i - x0i;
         a[j2 + 1] = x0r - x2r;
-        x0r = x1r - x3i;
-        x0i = x1i + x3r;
-        a[j1] = wk1r * (x0r - x0i);
-        a[j1 + 1] = wk1r * (x0r + x0i);
-        x0r = x3i + x1r;
-        x0i = x3r - x1i;
-        a[j3] = wk1r * (x0i - x0r);
-        a[j3 + 1] = wk1r * (x0i + x0r);
+        FftType x0rTemp = x1r - x3i;
+        FftType x0iTemp = x1i + x3r;
+        a[j1] = wk1r * (x0rTemp - x0iTemp);
+        a[j1 + 1] = wk1r * (x0rTemp + x0iTemp);
+        x0rTemp = x3i + x1r;
+        x0iTemp = x3r - x1i;
+        a[j3] = wk1r * (x0iTemp - x0rTemp);
+        a[j3 + 1] = wk1r * (x0iTemp + x0rTemp);
       }
-      k1 = 1;
-      ks = -1;
-      for (k = (m << 1); k <= n - m; k += m)
+      int k1 = 1;
+      int ks = -1;
+      for (int k = (m << 1); k <= n - m; k += m)
       {
         k1++;
         ks = -ks;
-        wk1r = w[k1 << 1];
-        wk1i = w[(k1 << 1) + 1];
-        wk2r = ks * w[k1];
-        wk2i = w[k1 + ks];
-        wk3r = wk1r - 2 * wk2i * wk1i;
-        wk3i = 2 * wk2i * wk1r - wk1i;
-        for (j = k; j <= l + k - 2; j += 2)
+        const FftType wk1r = w[k1 << 1];
+        const FftType wk1i = w[(k1 << 1) + 1];
+        const FftType wk2r = static_cast<FftType>(ks) * w[k1];
+        const FftType wk2i = w[k1 + ks];
+        const FftType wk3r = wk1r - 2.0f * wk2i * wk1i;
+        const FftType wk3i = 2.0f * wk2i * wk1r - wk1i;
+        for (int j = k; j <= l + k - 2; j += 2)
         {
-          j1 = j + l;
-          j2 = j1 + l;
-          j3 = j2 + l;
-          x0r = a[j] + a[j1];
-          x0i = a[j + 1] + a[j1 + 1];
-          x1r = a[j] - a[j1];
-          x1i = a[j + 1] - a[j1 + 1];
-          x2r = a[j2] + a[j3];
-          x2i = a[j2 + 1] + a[j3 + 1];
-          x3r = a[j2] - a[j3];
-          x3i = a[j2 + 1] - a[j3 + 1];
+          const int j1 = j + l;
+          const int j2 = j1 + l;
+          const int j3 = j2 + l;
+          const FftType x0r = a[j] + a[j1];
+          const FftType x0i = a[j + 1] + a[j1 + 1];
+          const FftType x1r = a[j] - a[j1];
+          const FftType x1i = a[j + 1] - a[j1 + 1];
+          const FftType x2r = a[j2] + a[j3];
+          const FftType x2i = a[j2 + 1] + a[j3 + 1];
+          const FftType x3r = a[j2] - a[j3];
+          const FftType x3i = a[j2 + 1] - a[j3 + 1];
           a[j] = x0r + x2r;
           a[j + 1] = x0i + x2i;
-          x0r -= x2r;
-          x0i -= x2i;
-          a[j2] = wk2r * x0r - wk2i * x0i;
-          a[j2 + 1] = wk2r * x0i + wk2i * x0r;
-          x0r = x1r - x3i;
-          x0i = x1i + x3r;
-          a[j1] = wk1r * x0r - wk1i * x0i;
-          a[j1 + 1] = wk1r * x0i + wk1i * x0r;
-          x0r = x1r + x3i;
-          x0i = x1i - x3r;
-          a[j3] = wk3r * x0r - wk3i * x0i;
-          a[j3 + 1] = wk3r * x0i + wk3i * x0r;
+          FftType x0rTemp = x0r - x2r;
+          FftType x0iTemp = x0i - x2i;
+          a[j2] = wk2r * x0rTemp - wk2i * x0iTemp;
+          a[j2 + 1] = wk2r * x0iTemp + wk2i * x0rTemp;
+          x0rTemp = x1r - x3i;
+          x0iTemp = x1i + x3r;
+          a[j1] = wk1r * x0rTemp - wk1i * x0iTemp;
+          a[j1 + 1] = wk1r * x0iTemp + wk1i * x0rTemp;
+          x0rTemp = x1r + x3i;
+          x0iTemp = x1i - x3r;
+          a[j3] = wk3r * x0rTemp - wk3i * x0iTemp;
+          a[j3 + 1] = wk3r * x0iTemp + wk3i * x0rTemp;
         }
       }
     }
@@ -262,11 +299,11 @@ static void cftbsub(int n, FFT_TYPE* a, FFT_TYPE* w)
   }
   if (l < n)
   {
-    for (j = 0; j <= l - 2; j += 2)
+    for (int j = 0; j <= l - 2; j += 2)
     {
-      j1 = j + l;
-      x0r = a[j] - a[j1];
-      x0i = a[j + 1] - a[j1 + 1];
+      const int j1 = j + l;
+      const FftType x0r = a[j] - a[j1];
+      const FftType x0i = a[j + 1] - a[j1 + 1];
       a[j] += a[j1];
       a[j + 1] += a[j1 + 1];
       a[j1] = x0r;
@@ -275,29 +312,28 @@ static void cftbsub(int n, FFT_TYPE* a, FFT_TYPE* w)
   }
 }
 
-static void cftfsub(int n, FFT_TYPE* a, FFT_TYPE* w)
+/**
+ * @brief Complex FFT (forward transform)
+ */
+void cftfsub(int n, FftType* a, FftType* w)
 {
-  int j, j1, j2, j3, k, k1, ks, l, m;
-  FFT_TYPE wk1r, wk1i, wk2r, wk2i, wk3r, wk3i;
-  FFT_TYPE x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i;
-
-  l = 2;
+  int l = 2;
   while ((l << 1) < n)
   {
-    m = l << 2;
-    for (j = 0; j <= l - 2; j += 2)
+    const int m = l << 2;
+    for (int j = 0; j <= l - 2; j += 2)
     {
-      j1 = j + l;
-      j2 = j1 + l;
-      j3 = j2 + l;
-      x0r = a[j] + a[j1];
-      x0i = a[j + 1] + a[j1 + 1];
-      x1r = a[j] - a[j1];
-      x1i = a[j + 1] - a[j1 + 1];
-      x2r = a[j2] + a[j3];
-      x2i = a[j2 + 1] + a[j3 + 1];
-      x3r = a[j2] - a[j3];
-      x3i = a[j2 + 1] - a[j3 + 1];
+      const int j1 = j + l;
+      const int j2 = j1 + l;
+      const int j3 = j2 + l;
+      const FftType x0r = a[j] + a[j1];
+      const FftType x0i = a[j + 1] + a[j1 + 1];
+      const FftType x1r = a[j] - a[j1];
+      const FftType x1i = a[j + 1] - a[j1 + 1];
+      const FftType x2r = a[j2] + a[j3];
+      const FftType x2i = a[j2 + 1] + a[j3 + 1];
+      const FftType x3r = a[j2] - a[j3];
+      const FftType x3i = a[j2 + 1] - a[j3 + 1];
       a[j] = x0r + x2r;
       a[j + 1] = x0i + x2i;
       a[j2] = x0r - x2r;
@@ -309,72 +345,72 @@ static void cftfsub(int n, FFT_TYPE* a, FFT_TYPE* w)
     }
     if (m < n)
     {
-      wk1r = w[2];
-      for (j = m; j <= l + m - 2; j += 2)
+      const FftType wk1r = w[2];
+      for (int j = m; j <= l + m - 2; j += 2)
       {
-        j1 = j + l;
-        j2 = j1 + l;
-        j3 = j2 + l;
-        x0r = a[j] + a[j1];
-        x0i = a[j + 1] + a[j1 + 1];
-        x1r = a[j] - a[j1];
-        x1i = a[j + 1] - a[j1 + 1];
-        x2r = a[j2] + a[j3];
-        x2i = a[j2 + 1] + a[j3 + 1];
-        x3r = a[j2] - a[j3];
-        x3i = a[j2 + 1] - a[j3 + 1];
+        const int j1 = j + l;
+        const int j2 = j1 + l;
+        const int j3 = j2 + l;
+        const FftType x0r = a[j] + a[j1];
+        const FftType x0i = a[j + 1] + a[j1 + 1];
+        const FftType x1r = a[j] - a[j1];
+        const FftType x1i = a[j + 1] - a[j1 + 1];
+        const FftType x2r = a[j2] + a[j3];
+        const FftType x2i = a[j2 + 1] + a[j3 + 1];
+        const FftType x3r = a[j2] - a[j3];
+        const FftType x3i = a[j2 + 1] - a[j3 + 1];
         a[j] = x0r + x2r;
         a[j + 1] = x0i + x2i;
         a[j2] = x0i - x2i;
         a[j2 + 1] = x2r - x0r;
-        x0r = x1r + x3i;
-        x0i = x1i - x3r;
-        a[j1] = wk1r * (x0i + x0r);
-        a[j1 + 1] = wk1r * (x0i - x0r);
-        x0r = x3i - x1r;
-        x0i = x3r + x1i;
-        a[j3] = wk1r * (x0r + x0i);
-        a[j3 + 1] = wk1r * (x0r - x0i);
+        FftType x0rTemp = x1r + x3i;
+        FftType x0iTemp = x1i - x3r;
+        a[j1] = wk1r * (x0iTemp + x0rTemp);
+        a[j1 + 1] = wk1r * (x0iTemp - x0rTemp);
+        x0rTemp = x3i - x1r;
+        x0iTemp = x3r + x1i;
+        a[j3] = wk1r * (x0rTemp + x0iTemp);
+        a[j3 + 1] = wk1r * (x0rTemp - x0iTemp);
       }
-      k1 = 1;
-      ks = -1;
-      for (k = (m << 1); k <= n - m; k += m)
+      int k1 = 1;
+      int ks = -1;
+      for (int k = (m << 1); k <= n - m; k += m)
       {
         k1++;
         ks = -ks;
-        wk1r = w[k1 << 1];
-        wk1i = w[(k1 << 1) + 1];
-        wk2r = ks * w[k1];
-        wk2i = w[k1 + ks];
-        wk3r = wk1r - 2 * wk2i * wk1i;
-        wk3i = 2 * wk2i * wk1r - wk1i;
-        for (j = k; j <= l + k - 2; j += 2)
+        const FftType wk1r = w[k1 << 1];
+        const FftType wk1i = w[(k1 << 1) + 1];
+        const FftType wk2r = static_cast<FftType>(ks) * w[k1];
+        const FftType wk2i = w[k1 + ks];
+        const FftType wk3r = wk1r - 2.0f * wk2i * wk1i;
+        const FftType wk3i = 2.0f * wk2i * wk1r - wk1i;
+        for (int j = k; j <= l + k - 2; j += 2)
         {
-          j1 = j + l;
-          j2 = j1 + l;
-          j3 = j2 + l;
-          x0r = a[j] + a[j1];
-          x0i = a[j + 1] + a[j1 + 1];
-          x1r = a[j] - a[j1];
-          x1i = a[j + 1] - a[j1 + 1];
-          x2r = a[j2] + a[j3];
-          x2i = a[j2 + 1] + a[j3 + 1];
-          x3r = a[j2] - a[j3];
-          x3i = a[j2 + 1] - a[j3 + 1];
+          const int j1 = j + l;
+          const int j2 = j1 + l;
+          const int j3 = j2 + l;
+          const FftType x0r = a[j] + a[j1];
+          const FftType x0i = a[j + 1] + a[j1 + 1];
+          const FftType x1r = a[j] - a[j1];
+          const FftType x1i = a[j + 1] - a[j1 + 1];
+          const FftType x2r = a[j2] + a[j3];
+          const FftType x2i = a[j2 + 1] + a[j3 + 1];
+          const FftType x3r = a[j2] - a[j3];
+          const FftType x3i = a[j2 + 1] - a[j3 + 1];
           a[j] = x0r + x2r;
           a[j + 1] = x0i + x2i;
-          x0r -= x2r;
-          x0i -= x2i;
-          a[j2] = wk2r * x0r + wk2i * x0i;
-          a[j2 + 1] = wk2r * x0i - wk2i * x0r;
-          x0r = x1r + x3i;
-          x0i = x1i - x3r;
-          a[j1] = wk1r * x0r + wk1i * x0i;
-          a[j1 + 1] = wk1r * x0i - wk1i * x0r;
-          x0r = x1r - x3i;
-          x0i = x1i + x3r;
-          a[j3] = wk3r * x0r + wk3i * x0i;
-          a[j3 + 1] = wk3r * x0i - wk3i * x0r;
+          FftType x0rTemp = x0r - x2r;
+          FftType x0iTemp = x0i - x2i;
+          a[j2] = wk2r * x0rTemp + wk2i * x0iTemp;
+          a[j2 + 1] = wk2r * x0iTemp - wk2i * x0rTemp;
+          x0rTemp = x1r + x3i;
+          x0iTemp = x1i - x3r;
+          a[j1] = wk1r * x0rTemp + wk1i * x0iTemp;
+          a[j1 + 1] = wk1r * x0iTemp - wk1i * x0rTemp;
+          x0rTemp = x1r - x3i;
+          x0iTemp = x1i + x3r;
+          a[j3] = wk3r * x0rTemp + wk3i * x0iTemp;
+          a[j3 + 1] = wk3r * x0iTemp - wk3i * x0rTemp;
         }
       }
     }
@@ -382,11 +418,11 @@ static void cftfsub(int n, FFT_TYPE* a, FFT_TYPE* w)
   }
   if (l < n)
   {
-    for (j = 0; j <= l - 2; j += 2)
+    for (int j = 0; j <= l - 2; j += 2)
     {
-      j1 = j + l;
-      x0r = a[j] - a[j1];
-      x0i = a[j + 1] - a[j1 + 1];
+      const int j1 = j + l;
+      const FftType x0r = a[j] - a[j1];
+      const FftType x0i = a[j + 1] - a[j1 + 1];
       a[j] += a[j1];
       a[j + 1] += a[j1 + 1];
       a[j1] = x0r;
@@ -395,26 +431,22 @@ static void cftfsub(int n, FFT_TYPE* a, FFT_TYPE* w)
   }
 }
 
-static void makewt(int nw, int* ip, FFT_TYPE* w)
+void makewt(int nw, int* ip, FftType* w)
 {
-  void bitrv2(int n, int* ip, FFT_TYPE* a);
-  int nwh, j;
-  FFT_TYPE delta, x, y;
-
   ip[0] = nw;
   ip[1] = 1;
   if (nw > 2)
   {
-    nwh = nw >> 1;
-    delta = atan(1.0f) / nwh;
-    w[0] = 1;
-    w[1] = 0;
-    w[nwh] = cos(delta * nwh);
+    const int nwh = nw >> 1;
+    const FftType delta = std::atan(1.0f) / static_cast<FftType>(nwh);
+    w[0] = 1.0f;
+    w[1] = 0.0f;
+    w[nwh] = std::cos(delta * static_cast<FftType>(nwh));
     w[nwh + 1] = w[nwh];
-    for (j = 2; j <= nwh - 2; j += 2)
+    for (int j = 2; j <= nwh - 2; j += 2)
     {
-      x = cos(delta * j);
-      y = sin(delta * j);
+      const FftType x = std::cos(delta * static_cast<FftType>(j));
+      const FftType y = std::sin(delta * static_cast<FftType>(j));
       w[j] = x;
       w[j + 1] = y;
       w[nw - j] = y;
@@ -424,48 +456,32 @@ static void makewt(int nw, int* ip, FFT_TYPE* w)
   }
 }
 
-/**
-  Copyright(C) 1997 Takuya OOURA (email: ooura@mmm.t.u-tokyo.ac.jp).
-  You may use, copy, modify this code for any purpose and
-  without fee. You may distribute this ORIGINAL package.
-  */
-static void makect(int nc, int* ip, FFT_TYPE* c)
+void makect(int nc, int* ip, FftType* c)
 {
-  int nch, j;
-  FFT_TYPE delta;
-
   ip[1] = nc;
   if (nc > 1)
   {
-    nch = nc >> 1;
-    delta = atan(1.0f) / nch;
+    const int nch = nc >> 1;
+    const FftType delta = std::atan(1.0f) / static_cast<FftType>(nch);
     c[0] = 0.5f;
-    c[nch] = 0.5f * cos(delta * nch);
-    for (j = 1; j <= nch - 1; j++)
+    c[nch] = 0.5f * std::cos(delta * static_cast<FftType>(nch));
+    for (int j = 1; j <= nch - 1; j++)
     {
-      c[j] = 0.5f * cos(delta * j);
-      c[nc - j] = 0.5f * sin(delta * j);
+      c[j] = 0.5f * std::cos(delta * static_cast<FftType>(j));
+      c[nc - j] = 0.5f * std::sin(delta * static_cast<FftType>(j));
     }
   }
 }
 
-/**
-  Copyright(C) 1997 Takuya OOURA (email: ooura@mmm.t.u-tokyo.ac.jp).
-  You may use, copy, modify this code for any purpose and
-  without fee. You may distribute this ORIGINAL package.
-  */
-static void bitrv2(int n, int* ip, FFT_TYPE* a)
+void bitrv2(int n, int* ip, FftType* a)
 {
-  int j, j1, k, k1, l, m, m2;
-  FFT_TYPE xr, xi;
-
   ip[0] = 0;
-  l = n;
-  m = 1;
+  int l = n;
+  int m = 1;
   while ((m << 2) < l)
   {
     l >>= 1;
-    for (j = 0; j <= m - 1; j++)
+    for (int j = 0; j <= m - 1; j++)
     {
       ip[m + j] = ip[j] + l;
     }
@@ -473,14 +489,14 @@ static void bitrv2(int n, int* ip, FFT_TYPE* a)
   }
   if ((m << 2) > l)
   {
-    for (k = 1; k <= m - 1; k++)
+    for (int k = 1; k <= m - 1; k++)
     {
-      for (j = 0; j <= k - 1; j++)
+      for (int j = 0; j <= k - 1; j++)
       {
-        j1 = (j << 1) + ip[k];
-        k1 = (k << 1) + ip[j];
-        xr = a[j1];
-        xi = a[j1 + 1];
+        const int j1 = (j << 1) + ip[k];
+        const int k1 = (k << 1) + ip[j];
+        const FftType xr = a[j1];
+        const FftType xi = a[j1 + 1];
         a[j1] = a[k1];
         a[j1 + 1] = a[k1 + 1];
         a[k1] = xr;
@@ -490,15 +506,15 @@ static void bitrv2(int n, int* ip, FFT_TYPE* a)
   }
   else
   {
-    m2 = m << 1;
-    for (k = 1; k <= m - 1; k++)
+    const int m2 = m << 1;
+    for (int k = 1; k <= m - 1; k++)
     {
-      for (j = 0; j <= k - 1; j++)
+      for (int j = 0; j <= k - 1; j++)
       {
-        j1 = (j << 1) + ip[k];
-        k1 = (k << 1) + ip[j];
-        xr = a[j1];
-        xi = a[j1 + 1];
+        int j1 = (j << 1) + ip[k];
+        int k1 = (k << 1) + ip[j];
+        FftType xr = a[j1];
+        FftType xi = a[j1 + 1];
         a[j1] = a[k1];
         a[j1 + 1] = a[k1 + 1];
         a[k1] = xr;
@@ -516,12 +532,7 @@ static void bitrv2(int n, int* ip, FFT_TYPE* a)
   }
 }
 
-/**
-  Copyright(C) 1997 Takuya OOURA (email: ooura@mmm.t.u-tokyo.ac.jp).
-  You may use, copy, modify this code for any purpose and
-  without fee. You may distribute this ORIGINAL package.
-  */
-static void cdft(int n, int isgn, FFT_TYPE* a, int* ip, FFT_TYPE* w)
+void cdft(int n, int isgn, FftType* a, int* ip, FftType* w)
 {
   if (n > (ip[0] << 2))
   {
@@ -541,23 +552,20 @@ static void cdft(int n, int isgn, FFT_TYPE* a, int* ip, FFT_TYPE* w)
   }
 }
 
-static void rftfsub(int n, FFT_TYPE* a, int nc, FFT_TYPE* c)
+void rftfsub(int n, FftType* a, int nc, FftType* c)
 {
-  int j, k, kk, ks;
-  FFT_TYPE wkr, wki, xr, xi, yr, yi;
-
-  ks = (nc << 2) / n;
-  kk = 0;
-  for (k = (n >> 1) - 2; k >= 2; k -= 2)
+  const int ks = (nc << 2) / n;
+  int kk = 0;
+  for (int k = (n >> 1) - 2; k >= 2; k -= 2)
   {
-    j = n - k;
+    const int j = n - k;
     kk += ks;
-    wkr = 0.5f - c[kk];
-    wki = c[nc - kk];
-    xr = a[k] - a[j];
-    xi = a[k + 1] + a[j + 1];
-    yr = wkr * xr + wki * xi;
-    yi = wkr * xi - wki * xr;
+    const FftType wkr = 0.5f - c[kk];
+    const FftType wki = c[nc - kk];
+    const FftType xr = a[k] - a[j];
+    const FftType xi = a[k + 1] + a[j + 1];
+    const FftType yr = wkr * xr + wki * xi;
+    const FftType yi = wkr * xi - wki * xr;
     a[k] -= yr;
     a[k + 1] -= yi;
     a[j] += yr;
@@ -565,18 +573,36 @@ static void rftfsub(int n, FFT_TYPE* a, int nc, FFT_TYPE* c)
   }
 }
 
-static void rdft(int n, int isgn, FFT_TYPE* a, int* ip, FFT_TYPE* w)
+void rftbsub(int n, FftType* a, int nc, FftType* c)
 {
-  int nw, nc;
-  FFT_TYPE xi;
+  const int ks = (nc << 2) / n;
+  int kk = 0;
+  for (int k = (n >> 1) - 2; k >= 2; k -= 2)
+  {
+    const int j = n - k;
+    kk += ks;
+    const FftType wkr = 0.5f - c[kk];
+    const FftType wki = c[nc - kk];
+    const FftType xr = a[k] - a[j];
+    const FftType xi = a[k + 1] + a[j + 1];
+    const FftType yr = wkr * xr - wki * xi;
+    const FftType yi = wkr * xi + wki * xr;
+    a[k] -= yr;
+    a[k + 1] -= yi;
+    a[j] += yr;
+    a[j + 1] -= yi;
+  }
+}
 
-  nw = ip[0];
+void rdft(int n, int isgn, FftType* a, int* ip, FftType* w)
+{
+  int nw = ip[0];
   if (n > (nw << 2))
   {
     nw = n >> 2;
     makewt(nw, ip, w);
   }
-  nc = ip[1];
+  int nc = ip[1];
   if (n > (nc << 2))
   {
     nc = n >> 2;
@@ -604,216 +630,90 @@ static void rdft(int n, int isgn, FFT_TYPE* a, int* ip, FFT_TYPE* w)
     {
       rftbsub(n, a, nc, w + nw);
     }
-    xi = a[0] - a[1];
+    const FftType xi = a[0] - a[1];
     a[0] += a[1];
     a[1] = xi;
   }
 }
 
-static void rftbsub(int n, FFT_TYPE* a, int nc, FFT_TYPE* c)
+void rdft2d(int n1, int n2, int isgn, FftType** a, FftType* t, int* ip, FftType* w)
 {
-  int j, k, kk, ks;
-  FFT_TYPE wkr, wki, xr, xi, yr, yi;
-
-  ks = (nc << 2) / n;
-  kk = 0;
-  for (k = (n >> 1) - 2; k >= 2; k -= 2)
-  {
-    j = n - k;
-    kk += ks;
-    wkr = 0.5f - c[kk];
-    wki = c[nc - kk];
-    xr = a[k] - a[j];
-    xi = a[k + 1] + a[j + 1];
-    yr = wkr * xr - wki * xi;
-    yi = wkr * xi + wki * xr;
-    a[k] -= yr;
-    a[k + 1] -= yi;
-    a[j] += yr;
-    a[j + 1] -= yi;
-  }
-}
-
-/**
-  Copyright(C) 1997 Takuya OOURA (email: ooura@mmm.t.u-tokyo.ac.jp).
-  You may use, copy, modify this code for any purpose and
-  without fee. You may distribute this ORIGINAL package.
-
--------- Real DFT / Inverse of Real DFT --------
-  [definition]
-    <case1> RDFT
-      R[k1][k2] = sum_j1=0^n1-1 sum_j2=0^n2-1 a[j1][j2] *
-              cos(2*pi*j1*k1/n1 + 2*pi*j2*k2/n2),
-              0<=k1<n1, 0<=k2<n2
-      I[k1][k2] = sum_j1=0^n1-1 sum_j2=0^n2-1 a[j1][j2] *
-              sin(2*pi*j1*k1/n1 + 2*pi*j2*k2/n2),
-              0<=k1<n1, 0<=k2<n2
-    <case2> IRDFT (excluding scale)
-      a[k1][k2] = (1/2) * sum_j1=0^n1-1 sum_j2=0^n2-1
-              (R[j1][j2] *
-              cos(2*pi*j1*k1/n1 + 2*pi*j2*k2/n2) +
-              I[j1][j2] *
-              sin(2*pi*j1*k1/n1 + 2*pi*j2*k2/n2)),
-              0<=k1<n1, 0<=k2<n2
-    (notes: R[n1-k1][n2-k2] = R[k1][k2],
-        I[n1-k1][n2-k2] = -I[k1][k2],
-        R[n1-k1][0] = R[k1][0],
-        I[n1-k1][0] = -I[k1][0],
-        R[0][n2-k2] = R[0][k2],
-        I[0][n2-k2] = -I[0][k2],
-        0<k1<n1, 0<k2<n2)
-  [usage]
-    <case1>
-      ip[0] = 0; // first time only
-      rdft2d(n1, n2, 1, a, t, ip, w);
-    <case2>
-      ip[0] = 0; // first time only
-      rdft2d(n1, n2, -1, a, t, ip, w);
-  [parameters]
-    n1     :data length (int)
-        n1 >= 2, n1 = power of 2
-    n2     :data length (int)
-        n2 >= 2, n2 = power of 2
-    a[0...n1-1][0...n2-1]
-         :input/output data (FFT_TYPE **)
-        <case1>
-          output data
-            a[k1][2*k2] = R[k1][k2] = R[n1-k1][n2-k2],
-            a[k1][2*k2+1] = I[k1][k2] = -I[n1-k1][n2-k2],
-              0<k1<n1, 0<k2<n2/2,
-            a[0][2*k2] = R[0][k2] = R[0][n2-k2],
-            a[0][2*k2+1] = I[0][k2] = -I[0][n2-k2],
-              0<k2<n2/2,
-            a[k1][0] = R[k1][0] = R[n1-k1][0],
-            a[k1][1] = I[k1][0] = -I[n1-k1][0],
-            a[n1-k1][1] = R[k1][n2/2] = R[n1-k1][n2/2],
-            a[n1-k1][0] = -I[k1][n2/2] = I[n1-k1][n2/2],
-              0<k1<n1/2,
-            a[0][0] = R[0][0],
-            a[0][1] = R[0][n2/2],
-            a[n1/2][0] = R[n1/2][0],
-            a[n1/2][1] = R[n1/2][n2/2]
-        <case2>
-          input data
-            a[j1][2*j2] = R[j1][j2] = R[n1-j1][n2-j2],
-            a[j1][2*j2+1] = I[j1][j2] = -I[n1-j1][n2-j2],
-              0<j1<n1, 0<j2<n2/2,
-            a[0][2*j2] = R[0][j2] = R[0][n2-j2],
-            a[0][2*j2+1] = I[0][j2] = -I[0][n2-j2],
-              0<j2<n2/2,
-            a[j1][0] = R[j1][0] = R[n1-j1][0],
-            a[j1][1] = I[j1][0] = -I[n1-j1][0],
-            a[n1-j1][1] = R[j1][n2/2] = R[n1-j1][n2/2],
-            a[n1-j1][0] = -I[j1][n2/2] = I[n1-j1][n2/2],
-              0<j1<n1/2,
-            a[0][0] = R[0][0],
-            a[0][1] = R[0][n2/2],
-            a[n1/2][0] = R[n1/2][0],
-            a[n1/2][1] = R[n1/2][n2/2]
-    t[0...2*n1-1]
-         :work area (FFT_TYPE *)
-    ip[0...*]
-         :work area for bit reversal (int *)
-        length of ip >= 2+sqrt(n)  ; if n % 4 == 0
-                2+sqrt(n/2); otherwise
-        (n = max(n1, n2/2))
-        ip[0],ip[1] are pointers of the cos/sin table.
-    w[0...*]
-         :cos/sin table (FFT_TYPE *)
-        length of w >= max(n1/2, n2/4) + n2/4
-        w[],ip[] are initialized if ip[0] == 0.
-  [remark]
-    Inverse of
-      rdft2d(n1, n2, 1, a, t, ip, w);
-    is
-      rdft2d(n1, n2, -1, a, t, ip, w);
-      for (j1 = 0; j1 <= n1 - 1; j1++) {
-        for (j2 = 0; j2 <= n2 - 1; j2++) {
-          a[j1][j2] *= 2.0 / (n1 * n2);
-        }
-      }
-  */
-static void rdft2d(int n1, int n2, int isgn, FFT_TYPE** a, FFT_TYPE* t, int* ip, FFT_TYPE* w)
-{
-  int n, nw, nc, n1h, i, j, i2;
-  FFT_TYPE xi;
-
-  n = n1 << 1;
+  int n = n1 << 1;
   if (n < n2)
   {
     n = n2;
   }
-  nw = ip[0];
+  int nw = ip[0];
   if (n > (nw << 2))
   {
     nw = n >> 2;
     makewt(nw, ip, w);
   }
-  nc = ip[1];
+  int nc = ip[1];
   if (n2 > (nc << 2))
   {
     nc = n2 >> 2;
     makect(nc, ip, w + nw);
   }
-  n1h = n1 >> 1;
+  const int n1h = n1 >> 1;
   if (isgn < 0)
   {
-    for (i = 1; i <= n1h - 1; i++)
+    for (int i = 1; i <= n1h - 1; i++)
     {
-      j = n1 - i;
-      xi = a[i][0] - a[j][0];
+      const int j = n1 - i;
+      FftType xi = a[i][0] - a[j][0];
       a[i][0] += a[j][0];
       a[j][0] = xi;
       xi = a[j][1] - a[i][1];
       a[i][1] += a[j][1];
       a[j][1] = xi;
     }
-    for (j = 0; j <= n2 - 2; j += 2)
+    for (int j = 0; j <= n2 - 2; j += 2)
     {
-      for (i = 0; i <= n1 - 1; i++)
+      for (int i = 0; i <= n1 - 1; i++)
       {
-        i2 = i << 1;
+        const int i2 = i << 1;
         t[i2] = a[i][j];
         t[i2 + 1] = a[i][j + 1];
       }
       cdft(n1 << 1, isgn, t, ip, w);
-      for (i = 0; i <= n1 - 1; i++)
+      for (int i = 0; i <= n1 - 1; i++)
       {
-        i2 = i << 1;
+        const int i2 = i << 1;
         a[i][j] = t[i2];
         a[i][j + 1] = t[i2 + 1];
       }
     }
-    for (i = 0; i <= n1 - 1; i++)
+    for (int i = 0; i <= n1 - 1; i++)
     {
       rdft(n2, isgn, a[i], ip, w);
     }
   }
   else
   {
-    for (i = 0; i <= n1 - 1; i++)
+    for (int i = 0; i <= n1 - 1; i++)
     {
       rdft(n2, isgn, a[i], ip, w);
     }
-    for (j = 0; j <= n2 - 2; j += 2)
+    for (int j = 0; j <= n2 - 2; j += 2)
     {
-      for (i = 0; i <= n1 - 1; i++)
+      for (int i = 0; i <= n1 - 1; i++)
       {
-        i2 = i << 1;
+        const int i2 = i << 1;
         t[i2] = a[i][j];
         t[i2 + 1] = a[i][j + 1];
       }
       cdft(n1 << 1, isgn, t, ip, w);
-      for (i = 0; i <= n1 - 1; i++)
+      for (int i = 0; i <= n1 - 1; i++)
       {
-        i2 = i << 1;
+        const int i2 = i << 1;
         a[i][j] = t[i2];
         a[i][j + 1] = t[i2 + 1];
       }
     }
-    for (i = 1; i <= n1h - 1; i++)
+    for (int i = 1; i <= n1h - 1; i++)
     {
-      j = n1 - i;
+      const int j = n1 - i;
       a[j][0] = 0.5f * (a[i][0] - a[j][0]);
       a[i][0] -= a[j][0];
       a[j][1] = 0.5f * (a[i][1] + a[j][1]);
@@ -822,75 +722,9 @@ static void rdft2d(int n1, int n2, int isgn, FFT_TYPE** a, FFT_TYPE* t, int* ip,
   }
 }
 
-/**
-  Copyright(C) 1997 Takuya OOURA (email: ooura@mmm.t.u-tokyo.ac.jp).
-  You may use, copy, modify this code for any purpose and
-  without fee. You may distribute this ORIGINAL package.
-
--------- Complex DFT (Discrete Fourier Transform) --------
-  [definition]
-    <case1>
-      X[k1][k2] = sum_j1=0^n1-1 sum_j2=0^n2-1 x[j1][j2] *
-              exp(2*pi*i*j1*k1/n1) *
-              exp(2*pi*i*j2*k2/n2), 0<=k1<n1, 0<=k2<n2
-    <case2>
-      X[k1][k2] = sum_j1=0^n1-1 sum_j2=0^n2-1 x[j1][j2] *
-              exp(-2*pi*i*j1*k1/n1) *
-              exp(-2*pi*i*j2*k2/n2), 0<=k1<n1, 0<=k2<n2
-    (notes: sum_j=0^n-1 is a summation from j=0 to n-1)
-  [usage]
-    <case1>
-      ip[0] = 0; // first time only
-      cdft2d(n1, 2*n2, 1, a, t, ip, w);
-    <case2>
-      ip[0] = 0; // first time only
-      cdft2d(n1, 2*n2, -1, a, t, ip, w);
-  [parameters]
-    n1     :data length (int)
-        n1 >= 1, n1 = power of 2
-    2*n2   :data length (int)
-        n2 >= 1, n2 = power of 2
-    a[0...n1-1][0...2*n2-1]
-         :input/output data (double **)
-        input data
-          a[j1][2*j2] = Re(x[j1][j2]),
-          a[j1][2*j2+1] = Im(x[j1][j2]),
-          0<=j1<n1, 0<=j2<n2
-        output data
-          a[k1][2*k2] = Re(X[k1][k2]),
-          a[k1][2*k2+1] = Im(X[k1][k2]),
-          0<=k1<n1, 0<=k2<n2
-    t[0...2*n1-1]
-         :work area (double *)
-    ip[0...*]
-         :work area for bit reversal (int *)
-        length of ip >= 2+sqrt(n)  ; if n % 4 == 0
-                2+sqrt(n/2); otherwise
-        (n = max(n1, n2))
-        ip[0],ip[1] are pointers of the cos/sin table.
-    w[0...*]
-         :cos/sin table (double *)
-        length of w >= max(n1/2, n2/2)
-        w[],ip[] are initialized if ip[0] == 0.
-  [remark]
-    Inverse of
-      cdft2d(n1, 2*n2, -1, a, t, ip, w);
-    is
-      cdft2d(n1, 2*n2, 1, a, t, ip, w);
-      for (j1 = 0; j1 <= n1 - 1; j1++) {
-        for (j2 = 0; j2 <= 2 * n2 - 1; j2++) {
-          a[j1][j2] *= 1.0 / (n1 * n2);
-        }
-      }
-
-*/
-static void cdft2d(int n1, int n2, int isgn, FFT_TYPE** a, FFT_TYPE* t, int* ip, FFT_TYPE* w)
+void cdft2d(int n1, int n2, int isgn, FftType** a, FftType* t, int* ip, FftType* w)
 {
-  void makewt(int nw, int* ip, FFT_TYPE* w);
-  void cdft(int n, int isgn, FFT_TYPE* a, int* ip, FFT_TYPE* w);
-  int n, i, j, i2;
-
-  n = n1 << 1;
+  int n = n1 << 1;
   if (n < n2)
   {
     n = n2;
@@ -899,609 +733,573 @@ static void cdft2d(int n1, int n2, int isgn, FFT_TYPE** a, FFT_TYPE* t, int* ip,
   {
     makewt(n >> 2, ip, w);
   }
-  for (i = 0; i <= n1 - 1; i++)
+  for (int i = 0; i <= n1 - 1; i++)
   {
     cdft(n2, isgn, a[i], ip, w);
   }
-  for (j = 0; j <= n2 - 2; j += 2)
+  for (int j = 0; j <= n2 - 2; j += 2)
   {
-    for (i = 0; i <= n1 - 1; i++)
+    for (int i = 0; i <= n1 - 1; i++)
     {
-      i2 = i << 1;
+      const int i2 = i << 1;
       t[i2] = a[i][j];
       t[i2 + 1] = a[i][j + 1];
     }
     cdft(n1 << 1, isgn, t, ip, w);
-    for (i = 0; i <= n1 - 1; i++)
+    for (int i = 0; i <= n1 - 1; i++)
     {
-      i2 = i << 1;
+      const int i2 = i << 1;
       a[i][j] = t[i2];
       a[i][j + 1] = t[i2 + 1];
     }
   }
 }
 
-}  // namespace mrpt::math
+/**
+ * @brief General DFT implementation (non-power-of-2 sizes)
+ *
+ * @param sign -1 for DFT, +1 for IDFT
+ * @param inReal Real part of input
+ * @param inImag Imaginary part of input
+ * @param outReal Real part of output
+ * @param outImag Imaginary part of output
+ */
+void generalDFT(
+    int sign,
+    const CMatrixFloat& inReal,
+    const CMatrixFloat& inImag,
+    CMatrixFloat& outReal,
+    CMatrixFloat& outImag)
+{
+  ASSERT_(inReal.rows() == inImag.rows());
+  ASSERT_(inReal.cols() == inImag.cols());
 
-void mrpt::math::fft_real(
-    CVectorFloat& in_realData,
-    CVectorFloat& out_FFT_Re,
-    CVectorFloat& out_FFT_Im,
-    CVectorFloat& out_FFT_Mag)
+  const size_t dim1 = static_cast<size_t>(inReal.rows());
+  const size_t dim2 = static_cast<size_t>(inReal.cols());
+
+  const float ang1 =
+      static_cast<float>(sign) * static_cast<float>(M_2PI) / static_cast<float>(dim1);
+  const float ang2 =
+      static_cast<float>(sign) * static_cast<float>(M_2PI) / static_cast<float>(dim2);
+  const float scale = (sign == 1) ? (1.0f / static_cast<float>(dim1 * dim2)) : 1.0f;
+
+  outReal.setSize(static_cast<Eigen::Index>(dim1), static_cast<Eigen::Index>(dim2));
+  outImag.setSize(static_cast<Eigen::Index>(dim1), static_cast<Eigen::Index>(dim2));
+
+  for (size_t k1 = 0; k1 < dim1; k1++)
+  {
+    for (size_t k2 = 0; k2 < dim2; k2++)
+    {
+      float sumReal = 0.0f;
+      float sumImag = 0.0f;
+
+      for (size_t n1 = 0; n1 < dim1; n1++)
+      {
+        float phase = ang1 * static_cast<float>(n1 * k1);
+        for (size_t n2 = 0; n2 < dim2; n2++)
+        {
+          const float wr = std::cos(phase);
+          const float wi = std::sin(phase);
+
+          sumReal += wr * inReal(static_cast<Eigen::Index>(n1), static_cast<Eigen::Index>(n2)) -
+                     wi * inImag(static_cast<Eigen::Index>(n1), static_cast<Eigen::Index>(n2));
+          sumImag += wi * inReal(static_cast<Eigen::Index>(n1), static_cast<Eigen::Index>(n2)) +
+                     wr * inImag(static_cast<Eigen::Index>(n1), static_cast<Eigen::Index>(n2));
+
+          phase += ang2 * static_cast<float>(k2);
+        }
+      }
+
+      outReal(static_cast<Eigen::Index>(k1), static_cast<Eigen::Index>(k2)) = sumReal * scale;
+      outImag(static_cast<Eigen::Index>(k1), static_cast<Eigen::Index>(k2)) = sumImag * scale;
+    }
+  }
+}
+
+}  // anonymous namespace
+
+// ============================================================================
+// Public API implementations
+// ============================================================================
+
+namespace mrpt::math
+{
+/**
+ * @brief Computes real FFT of input data
+ *
+ * @param inRealData Input real-valued signal (must be power of 2 length)
+ * @param outFftRe Real part of FFT output
+ * @param outFftIm Imaginary part of FFT output
+ * @param outFftMag Magnitude of FFT output
+ */
+void fft_real(
+    CVectorFloat& inRealData,
+    CVectorFloat& outFftRe,
+    CVectorFloat& outFftIm,
+    CVectorFloat& outFftMag)
 {
   MRPT_START
 
-  auto n = (unsigned long)in_realData.size();
+  const size_t n = static_cast<size_t>(inRealData.size());
 
-  // TODO: Test data length is 2^N...
-
+  // Create auxiliary vector (1-indexed for compatibility with legacy code)
   CVectorFloat auxVect(n + 1);
-
-  memcpy(&auxVect[1], &in_realData[0], n * sizeof(auxVect[0]));
+  std::copy(inRealData.begin(), inRealData.end(), auxVect.begin() + 1);
 
   realft(&auxVect[0], n);
 
-  unsigned int n_2 = 1 + (n / 2);
+  const size_t n2 = 1 + (n / 2);
 
-  out_FFT_Re.resize(n_2);
-  out_FFT_Im.resize(n_2);
-  out_FFT_Mag.resize(n_2);
+  outFftRe.resize(static_cast<Eigen::Index>(n2));
+  outFftIm.resize(static_cast<Eigen::Index>(n2));
+  outFftMag.resize(static_cast<Eigen::Index>(n2));
 
-  for (unsigned int i = 0; i < n_2; i++)
+  for (size_t i = 0; i < n2; i++)
   {
-    if (i == (n_2 - 1))
-      out_FFT_Re[i] = auxVect[2];
-    else
-      out_FFT_Re[i] = auxVect[1 + i * 2];
+    const auto idx = static_cast<Eigen::Index>(i);
 
-    if (i == 0 || i == (n_2 - 1))
-      out_FFT_Im[i] = 0;
+    if (i == (n2 - 1))
+      outFftRe[idx] = auxVect[2];
     else
-      out_FFT_Im[i] = auxVect[1 + i * 2 + 1];
+      outFftRe[idx] = auxVect[1 + 2 * i];
 
-    out_FFT_Mag[i] = std::sqrt(square(out_FFT_Re[i]) + square(out_FFT_Im[i]));
+    if (i == 0 || i == (n2 - 1))
+      outFftIm[idx] = 0.0f;
+    else
+      outFftIm[idx] = auxVect[1 + 2 * i + 1];
+
+    outFftMag[idx] = std::sqrt(mrpt::square(outFftRe[idx]) + mrpt::square(outFftIm[idx]));
   }
 
   MRPT_END
 }
 
-void math::dft2_real(const CMatrixFloat& in_data, CMatrixFloat& out_real, CMatrixFloat& out_imag)
+/**
+ * @brief 2D real DFT
+ *
+ * @param inData Input 2D real data (must be power of 2 dimensions)
+ * @param outReal Real part of output
+ * @param outImag Imaginary part of output
+ */
+void dft2_real(const CMatrixFloat& inData, CMatrixFloat& outReal, CMatrixFloat& outImag)
 {
   MRPT_START
 
-  size_t i, j;
-  using float_ptr = FFT_TYPE*;
+  using FloatPtr = FftType*;
 
-  // The dimensions:
-  size_t dim1 = in_data.rows();
-  size_t dim2 = in_data.cols();
+  const size_t dim1 = static_cast<size_t>(inData.rows());
+  const size_t dim2 = static_cast<size_t>(inData.cols());
 
-  // Transform to format compatible with C routines:
-  // ------------------------------------------------------------
-  FFT_TYPE** a;
-  FFT_TYPE* t;
-  int* ip;
-  FFT_TYPE* w;
-
-  // Reserve memory and copy data:
-  // --------------------------------------
-  a = new float_ptr[dim1];
-  for (i = 0; i < dim1; i++)
+  // Allocate arrays
+  std::vector<FloatPtr> a(dim1);
+  for (size_t i = 0; i < dim1; i++)
   {
-    a[i] = new FFT_TYPE[dim2];
-    for (j = 0; j < dim2; j++) a[i][j] = in_data(i, j);
-  }
-
-  t = new FFT_TYPE[2 * dim1 + 20];
-  ip = new int[(int)ceil(20 + 2 + sqrt((FFT_TYPE)max(dim1, dim2 / 2)))];
-  ip[0] = 0;
-  w = new FFT_TYPE[max(dim1 / 2, dim2 / 4) + dim2 / 4 + 20];
-
-  // Do the job!
-  // --------------------------------------
-  rdft2d((int)dim1, (int)dim2, 1, a, t, ip, w);
-
-  // Transform back to MRPT matrix format:
-  // --------------------------------------
-  out_real.setSize(dim1, dim2);
-  out_imag.setSize(dim1, dim2);
-
-  // a[k1][2*k2] = R[k1][k2] = R[n1-k1][n2-k2],
-  // a[k1][2*k2+1] = I[k1][k2] = -I[n1-k1][n2-k2],
-  //       0<k1<n1, 0<k2<n2/2,
-  for (i = 1; i < dim1; i++)
-    for (j = 1; j < dim2 / 2; j++)
+    a[i] = new FftType[dim2];
+    for (size_t j = 0; j < dim2; j++)
     {
-      out_real(i, j) = (float)a[i][j * 2];
-      out_real(dim1 - i, dim2 - j) = (float)a[i][j * 2];
-      out_imag(i, j) = (float)-a[i][j * 2 + 1];
-      out_imag(dim1 - i, dim2 - j) = (float)a[i][j * 2 + 1];
+      a[i][j] = inData(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j));
     }
-  // a[0][2*k2] = R[0][k2] = R[0][n2-k2],
-  // a[0][2*k2+1] = I[0][k2] = -I[0][n2-k2],
-  //     0<k2<n2/2,
-  for (j = 1; j < dim2 / 2; j++)
-  {
-    out_real(0, j) = (float)a[0][j * 2];
-    out_real(0, dim2 - j) = (float)a[0][j * 2];
-    out_imag(0, j) = (float)-a[0][j * 2 + 1];
-    out_imag(0, dim2 - j) = (float)a[0][j * 2 + 1];
   }
 
-  // a[k1][0] = R[k1][0] = R[n1-k1][0],
-  // a[k1][1] = I[k1][0] = -I[n1-k1][0],
-  // a[n1-k1][1] = R[k1][n2/2] = R[n1-k1][n2/2],
-  // a[n1-k1][0] = -I[k1][n2/2] = I[n1-k1][n2/2],
-  //    0<k1<n1/2,
-  for (i = 1; i < dim1 / 2; i++)
+  const size_t maxDim = std::max(dim1, dim2 / 2);
+  std::vector<FftType> t(2 * dim1 + 20);
+  std::vector<int> ip(
+      static_cast<size_t>(std::ceil(20 + 2 + std::sqrt(static_cast<double>(maxDim)))));
+  ip[0] = 0;
+  std::vector<FftType> w(std::max(dim1 / 2, dim2 / 4) + dim2 / 4 + 20);
+
+  // Compute 2D real DFT
+  rdft2d(
+      static_cast<int>(dim1), static_cast<int>(dim2), 1, a.data(), t.data(), ip.data(), w.data());
+
+  // Extract results
+  outReal.setSize(static_cast<Eigen::Index>(dim1), static_cast<Eigen::Index>(dim2));
+  outImag.setSize(static_cast<Eigen::Index>(dim1), static_cast<Eigen::Index>(dim2));
+
+  // Pack results according to format
+  for (size_t i = 1; i < dim1; i++)
   {
-    out_real(i, 0) = (float)a[i][0];
-    out_real(dim1 - i, 0) = (float)a[i][0];
-    out_imag(i, 0) = (float)-a[i][1];
-    out_imag(dim1 - i, 0) = (float)a[i][1];
-    out_real(i, dim2 / 2) = (float)a[dim1 - i][1];
-    out_real(dim1 - i, dim2 / 2) = (float)a[dim1 - i][1];
-    out_imag(i, dim2 / 2) = (float)a[dim1 - i][0];
-    out_imag(dim1 - i, dim2 / 2) = (float)-a[dim1 - i][0];
+    for (size_t j = 1; j < dim2 / 2; j++)
+    {
+      const auto i_idx = static_cast<Eigen::Index>(i);
+      const auto j_idx = static_cast<Eigen::Index>(j);
+      const auto i_sym = static_cast<Eigen::Index>(dim1 - i);
+      const auto j_sym = static_cast<Eigen::Index>(dim2 - j);
+
+      outReal(i_idx, j_idx) = a[i][j * 2];
+      outReal(i_sym, j_sym) = a[i][j * 2];
+      outImag(i_idx, j_idx) = -a[i][j * 2 + 1];
+      outImag(i_sym, j_sym) = a[i][j * 2 + 1];
+    }
   }
 
-  // a[0][0] = R[0][0],
-  // a[0][1] = R[0][n2/2],
-  // a[n1/2][0] = R[n1/2][0],
-  // a[n1/2][1] = R[n1/2][n2/2]
-  out_real(0, 0) = (float)a[0][0];
-  out_real(0, dim2 / 2) = (float)a[0][1];
-  out_real(dim1 / 2, 0) = (float)a[dim1 / 2][0];
-  out_real(dim1 / 2, dim2 / 2) = (float)a[dim1 / 2][1];
+  for (size_t j = 1; j < dim2 / 2; j++)
+  {
+    const auto j_idx = static_cast<Eigen::Index>(j);
+    const auto j_sym = static_cast<Eigen::Index>(dim2 - j);
 
-  // Free temporary memory:
-  for (i = 0; i < dim1; i++) delete[] a[i];
-  delete[] a;
-  delete[] t;
-  delete[] ip;
-  delete[] w;
+    outReal(0, j_idx) = a[0][j * 2];
+    outReal(0, j_sym) = a[0][j * 2];
+    outImag(0, j_idx) = -a[0][j * 2 + 1];
+    outImag(0, j_sym) = a[0][j * 2 + 1];
+  }
+
+  for (size_t i = 1; i < dim1 / 2; i++)
+  {
+    const auto i_idx = static_cast<Eigen::Index>(i);
+    const auto i_sym = static_cast<Eigen::Index>(dim1 - i);
+    const auto half_dim2 = static_cast<Eigen::Index>(dim2 / 2);
+
+    outReal(i_idx, 0) = a[i][0];
+    outReal(i_sym, 0) = a[i][0];
+    outImag(i_idx, 0) = -a[i][1];
+    outImag(i_sym, 0) = a[i][1];
+    outReal(i_idx, half_dim2) = a[dim1 - i][1];
+    outReal(i_sym, half_dim2) = a[dim1 - i][1];
+    outImag(i_idx, half_dim2) = a[dim1 - i][0];
+    outImag(i_sym, half_dim2) = -a[dim1 - i][0];
+  }
+
+  outReal(0, 0) = a[0][0];
+  outReal(0, static_cast<Eigen::Index>(dim2 / 2)) = a[0][1];
+  outReal(static_cast<Eigen::Index>(dim1 / 2), 0) = a[dim1 / 2][0];
+  outReal(static_cast<Eigen::Index>(dim1 / 2), static_cast<Eigen::Index>(dim2 / 2)) =
+      a[dim1 / 2][1];
+
+  // Free memory
+  for (size_t i = 0; i < dim1; i++) delete[] a[i];
 
   MRPT_END
 }
 
-void math::idft2_real(
-    const CMatrixFloat& in_real, const CMatrixFloat& in_imag, CMatrixFloat& out_data)
+/**
+ * @brief 2D inverse real DFT
+ */
+void idft2_real(const CMatrixFloat& inReal, const CMatrixFloat& inImag, CMatrixFloat& outData)
 {
   MRPT_START
 
-  CMatrixFloat::Index i, j;
-  using float_ptr = FFT_TYPE*;
+  using FloatPtr = FftType*;
 
-  ASSERT_(in_real.rows() == in_imag.rows());
-  ASSERT_(in_real.cols() == in_imag.cols());
+  ASSERT_(inReal.rows() == inImag.rows());
+  ASSERT_(inReal.cols() == inImag.cols());
 
-  // The dimensions:
-  const auto dim1 = in_real.rows();
-  const auto dim2 = in_real.cols();
+  const auto dim1 = static_cast<size_t>(inReal.rows());
+  const auto dim2 = static_cast<size_t>(inReal.cols());
 
   if (mrpt::round2up(dim1) != dim1 || mrpt::round2up(dim2) != dim2)
   {
     THROW_EXCEPTION("Matrix sizes are not a power of two!");
   }
 
-  // Transform to format compatible with C routines:
-  // ------------------------------------------------------------
-  FFT_TYPE** a;
-  FFT_TYPE* t;
-  int* ip;
-  FFT_TYPE* w;
+  // Allocate arrays
+  std::vector<FloatPtr> a(dim1);
+  for (size_t i = 0; i < dim1; i++) a[i] = new FftType[dim2];
 
-  // Reserve memory and copy data:
-  // --------------------------------------
-  a = new float_ptr[dim1];
-  for (i = 0; i < dim1; i++) a[i] = new FFT_TYPE[dim2];
-
-  // a[j1][2*j2] = R[j1][j2] = R[n1-j1][n2-j2],
-  // a[j1][2*j2+1] = I[j1][j2] = -I[n1-j1][n2-j2],
-  //    0<j1<n1, 0<j2<n2/2,
-  for (i = 1; i < dim1; i++)
+  // Pack input data
+  for (size_t i = 1; i < dim1; i++)
   {
-    for (j = 1; j < dim2 / 2; j++)
+    for (size_t j = 1; j < dim2 / 2; j++)
     {
-      a[i][2 * j] = in_real(i, j);
-      a[i][2 * j + 1] = -in_imag(i, j);
+      a[i][2 * j] = inReal(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j));
+      a[i][2 * j + 1] = -inImag(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j));
     }
   }
 
-  // a[0][2*j2] = R[0][j2] = R[0][n2-j2],
-  // a[0][2*j2+1] = I[0][j2] = -I[0][n2-j2],
-  //    0<j2<n2/2,
-  for (j = 1; j < dim2 / 2; j++)
+  for (size_t j = 1; j < dim2 / 2; j++)
   {
-    a[0][2 * j] = in_real(0, j);
-    a[0][2 * j + 1] = -in_imag(0, j);
+    a[0][2 * j] = inReal(0, static_cast<Eigen::Index>(j));
+    a[0][2 * j + 1] = -inImag(0, static_cast<Eigen::Index>(j));
   }
 
-  // a[j1][0] = R[j1][0] = R[n1-j1][0],
-  // a[j1][1] = I[j1][0] = -I[n1-j1][0],
-  // a[n1-j1][1] = R[j1][n2/2] = R[n1-j1][n2/2],
-  // a[n1-j1][0] = -I[j1][n2/2] = I[n1-j1][n2/2],
-  //    0<j1<n1/2,
-  for (i = 1; i < dim1 / 2; i++)
+  for (size_t i = 1; i < dim1 / 2; i++)
   {
-    a[i][0] = in_real(i, 0);
-    a[i][1] = -in_imag(i, 0);
-    a[dim1 - i][1] = in_real(i, dim2 / 2);
-    a[dim1 - i][0] = in_imag(i, dim2 / 2);
+    const auto i_idx = static_cast<Eigen::Index>(i);
+    const auto half_dim2 = static_cast<Eigen::Index>(dim2 / 2);
+
+    a[i][0] = inReal(i_idx, 0);
+    a[i][1] = -inImag(i_idx, 0);
+    a[dim1 - i][1] = inReal(i_idx, half_dim2);
+    a[dim1 - i][0] = inImag(i_idx, half_dim2);
   }
 
-  // a[0][0] = R[0][0],
-  // a[0][1] = R[0][n2/2],
-  // a[n1/2][0] = R[n1/2][0],
-  // a[n1/2][1] = R[n1/2][n2/2]
-  a[0][0] = in_real(0, 0);
-  a[0][1] = in_real(0, dim2 / 2);
-  a[dim1 / 2][0] = in_real(dim1 / 2, 0);
-  a[dim1 / 2][1] = in_real(dim1 / 2, dim2 / 2);
+  a[0][0] = inReal(0, 0);
+  a[0][1] = inReal(0, static_cast<Eigen::Index>(dim2 / 2));
+  a[dim1 / 2][0] = inReal(static_cast<Eigen::Index>(dim1 / 2), 0);
+  a[dim1 / 2][1] = inReal(static_cast<Eigen::Index>(dim1 / 2), static_cast<Eigen::Index>(dim2 / 2));
 
-  t = new FFT_TYPE[2 * dim1 + 20];
-  ip = new int[(int)ceil(20 + 2 + sqrt((FFT_TYPE)max(dim1, dim2 / 2)))];
+  const size_t maxDim = std::max(dim1, dim2 / 2);
+  std::vector<FftType> t(2 * dim1 + 20);
+  std::vector<int> ip(
+      static_cast<size_t>(std::ceil(20 + 2 + std::sqrt(static_cast<double>(maxDim)))));
   ip[0] = 0;
-  w = new FFT_TYPE[max(dim1 / 2, dim2 / 4) + dim2 / 4 + 20];
+  std::vector<FftType> w(std::max(dim1 / 2, dim2 / 4) + dim2 / 4 + 20);
 
-  // Do the job!
-  // --------------------------------------
-  rdft2d((int)dim1, (int)dim2, -1, a, t, ip, w);
+  // Compute inverse 2D real DFT
+  rdft2d(
+      static_cast<int>(dim1), static_cast<int>(dim2), -1, a.data(), t.data(), ip.data(), w.data());
 
-  // Transform back to MRPT matrix format:
-  // --------------------------------------
-  out_data.setSize(dim1, dim2);
+  // Extract results with scaling
+  outData.setSize(static_cast<Eigen::Index>(dim1), static_cast<Eigen::Index>(dim2));
+  const FftType scale = 2.0f / static_cast<FftType>(dim1 * dim2);
 
-  FFT_TYPE scale = 2.0f / (dim1 * dim2);
-
-  for (i = 0; i < dim1; i++)
+  for (size_t i = 0; i < dim1; i++)
   {
-    for (j = 0; j < dim2; j++)
+    for (size_t j = 0; j < dim2; j++)
     {
-      out_data(i, j) = (float)(a[i][j] * scale);
+      outData(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j)) = a[i][j] * scale;
     }
   }
 
-  // Free temporary memory:
-  for (i = 0; i < dim1; i++)
-  {
-    delete[] a[i];
-  }
-  delete[] a;
-  delete[] t;
-  delete[] ip;
-  delete[] w;
+  // Free memory
+  for (size_t i = 0; i < dim1; i++) delete[] a[i];
 
   MRPT_END
 }
 
-/*---------------------------------------------------------------
-            myGeneralDFT
-
-  sign ->  -1: DFT, 1:IDFT
- ---------------------------------------------------------------*/
-static void myGeneralDFT(
-    int sign,
-    const CMatrixFloat& in_real,
-    const CMatrixFloat& in_imag,
-    CMatrixFloat& out_real,
-    CMatrixFloat& out_imag)
-{
-  ASSERT_(in_real.rows() == in_imag.rows());
-  ASSERT_(in_real.cols() == in_imag.cols());
-
-  // The dimensions:
-  size_t dim1 = in_real.rows();
-  size_t dim2 = in_real.cols();
-
-  size_t k1, k2, n1, n2;
-  float w_r, w_i;
-  auto ang1 = (float)(sign * M_2PI / dim1);
-  auto ang2 = (float)(sign * M_2PI / dim2);
-  float phase;
-  float R, I;
-  float scale = sign == 1 ? (1.0f / (dim1 * dim2)) : 1;
-
-  out_real.setSize(dim1, dim2);
-  out_imag.setSize(dim1, dim2);
-
-  for (k1 = 0; k1 < dim1; k1++)
-  {
-    for (k2 = 0; k2 < dim2; k2++)
-    {
-      R = I = 0;  // Accum:
-
-      for (n1 = 0; n1 < dim1; n1++)
-      {
-        phase = ang1 * n1 * k1;
-        for (n2 = 0; n2 < dim2; n2++)
-        {
-          w_r = cos(phase);
-          w_i = sin(phase);
-
-          R += w_r * in_real(n1, n2) - w_i * in_imag(n1, n2);
-          I += w_i * in_real(n1, n2) + w_r * in_imag(n1, n2);
-
-          phase += ang2 * k2;
-        }  // end for k2
-      }    // end for k1
-
-      // Save result:
-      out_real(k1, k2) = R * scale;
-      out_imag(k1, k2) = I * scale;
-
-    }  // end for k2
-  }    // end for k1
-}
-
-/*---------------------------------------------------------------
-            dft2_complex
- ---------------------------------------------------------------*/
-void math::dft2_complex(
-    const CMatrixFloat& in_real,
-    const CMatrixFloat& in_imag,
-    CMatrixFloat& out_real,
-    CMatrixFloat& out_imag)
+/**
+ * @brief 2D complex DFT
+ */
+void dft2_complex(
+    const CMatrixFloat& inReal,
+    const CMatrixFloat& inImag,
+    CMatrixFloat& outReal,
+    CMatrixFloat& outImag)
 {
   MRPT_START
 
-  ASSERT_(in_real.rows() == in_imag.rows());
-  ASSERT_(in_real.cols() == in_imag.cols());
+  ASSERT_(inReal.rows() == inImag.rows());
+  ASSERT_(inReal.cols() == inImag.cols());
 
-  // The dimensions:
-  size_t dim1 = in_real.rows();
-  size_t dim2 = in_real.cols();
-  size_t i, j;
+  const size_t dim1 = static_cast<size_t>(inReal.rows());
+  const size_t dim2 = static_cast<size_t>(inReal.cols());
 
-  bool dim1IsPower2 = (mrpt::round2up(dim1) == dim1);
-  bool dim2IsPower2 = (mrpt::round2up(dim2) == dim2);
+  const bool dim1IsPower2 = (mrpt::round2up(dim1) == dim1);
+  const bool dim2IsPower2 = (mrpt::round2up(dim2) == dim2);
 
-  // FFT or DFT??
   if (dim1IsPower2 && dim2IsPower2)
   {
-    // ----------------------------------------
-    //			Optimized FFT:
-    // ----------------------------------------
-    using float_ptr = FFT_TYPE*;
+    // Use optimized FFT
+    using FloatPtr = FftType*;
 
-    // Transform to format compatible with C routines:
-    // ------------------------------------------------------------
-    static FFT_TYPE** a = nullptr;
-    static FFT_TYPE* t = nullptr;
-    static int* ip = nullptr;
-    static FFT_TYPE* w = nullptr;
+    static std::vector<FloatPtr> a;
+    static std::vector<FftType> t;
+    static std::vector<int> ip;
+    static std::vector<FftType> w;
+    static size_t lastDim1 = 0;
+    static size_t lastDim2 = 0;
 
-    // Reserve memory
-    // --------------------------------------
-    static int alreadyInitSize1 = -1, alreadyInitSize2 = -1;
-
-    if (alreadyInitSize1 != (int)dim1 || alreadyInitSize2 != (int)dim2)
+    if (lastDim1 != dim1 || lastDim2 != dim2)
     {
-      // Create/realloc buffers:
-      if (a)
-      {
-        for (i = 0; i < dim1; i++) delete[] a[i];
-        delete[] a;
-      }
-      if (ip) delete[] ip;
-      if (t) delete[] t;
-      if (w) delete[] w;
+      // Reallocate buffers
+      for (auto& row : a) delete[] row;
+      a.clear();
 
-      alreadyInitSize1 = (int)dim1;
-      alreadyInitSize2 = (int)dim2;
+      a.resize(dim1);
+      for (size_t i = 0; i < dim1; i++) a[i] = new FftType[2 * dim2];
 
-      a = new float_ptr[dim1];
-      for (i = 0; i < dim1; i++) a[i] = new FFT_TYPE[2 * dim2];
-
-      t = new FFT_TYPE[2 * dim1 + 20];
-      ip = new int[(int)ceil(20 + 2 + sqrt((FFT_TYPE)max(dim1, dim2 / 2)))];
+      const size_t maxDim = std::max(dim1, dim2 / 2);
+      t.resize(2 * dim1 + 20);
+      ip.resize(static_cast<size_t>(std::ceil(20 + 2 + std::sqrt(static_cast<double>(maxDim)))));
       ip[0] = 0;
-      w = new FFT_TYPE[max(dim1 / 2, dim2 / 4) + dim2 / 4 + 20];
+      w.resize(std::max(dim1 / 2, dim2 / 4) + dim2 / 4 + 20);
+
+      lastDim1 = dim1;
+      lastDim2 = dim2;
     }
 
-    // and copy data:
-    // --------------------------------------
-    for (i = 0; i < dim1; i++)
-      for (j = 0; j < dim2; j++)
+    // Copy data
+    for (size_t i = 0; i < dim1; i++)
+    {
+      for (size_t j = 0; j < dim2; j++)
       {
-        a[i][2 * j + 0] = in_real(i, j);
-        a[i][2 * j + 1] = in_imag(i, j);
+        a[i][2 * j + 0] = inReal(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j));
+        a[i][2 * j + 1] = inImag(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j));
       }
+    }
 
-    // Do the job!
-    // --------------------------------------
-    cdft2d((int)dim1, (int)(2 * dim2), 1, a, t, ip, w);
+    // Compute 2D complex DFT
+    cdft2d(
+        static_cast<int>(dim1), static_cast<int>(2 * dim2), 1, a.data(), t.data(), ip.data(),
+        w.data());
 
-    // Transform back to MRPT matrix format:
-    // --------------------------------------
-    out_real.setSize(dim1, dim2);
-    out_imag.setSize(dim1, dim2);
+    // Extract results
+    outReal.setSize(static_cast<Eigen::Index>(dim1), static_cast<Eigen::Index>(dim2));
+    outImag.setSize(static_cast<Eigen::Index>(dim1), static_cast<Eigen::Index>(dim2));
 
-    // a[k1][2*k2] = Re(X[k1][k2]),
-    // a[k1][2*k2+1] = Im(X[k1][k2]),
-    // 0<=k1<n1, 0<=k2<n2
-    for (i = 0; i < dim1; i++)
-      for (j = 0; j < dim2; j++)
+    for (size_t i = 0; i < dim1; i++)
+    {
+      for (size_t j = 0; j < dim2; j++)
       {
-        out_real(i, j) = (float)a[i][j * 2 + 0];
-        out_imag(i, j) = (float)a[i][j * 2 + 1];
+        outReal(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j)) = a[i][j * 2 + 0];
+        outImag(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j)) = a[i][j * 2 + 1];
       }
-
-  }  // end FFT
+    }
+  }
   else
   {
-    // ----------------------------------------
-    //			General DFT:
-    // ----------------------------------------
-    printf("Using general DFT...\n");
-    myGeneralDFT(-1, in_real, in_imag, out_real, out_imag);
+    // Use general DFT
+    generalDFT(-1, inReal, inImag, outReal, outImag);
   }
 
   MRPT_END
 }
 
-/*---------------------------------------------------------------
-            idft2_complex
- ---------------------------------------------------------------*/
-void math::idft2_complex(
-    const CMatrixFloat& in_real,
-    const CMatrixFloat& in_imag,
-    CMatrixFloat& out_real,
-    CMatrixFloat& out_imag)
+/**
+ * @brief 2D inverse complex DFT
+ */
+void idft2_complex(
+    const CMatrixFloat& inReal,
+    const CMatrixFloat& inImag,
+    CMatrixFloat& outReal,
+    CMatrixFloat& outImag)
 {
   MRPT_START
 
-  ASSERT_(in_real.rows() == in_imag.rows());
-  ASSERT_(in_real.cols() == in_imag.cols());
+  ASSERT_(inReal.rows() == inImag.rows());
+  ASSERT_(inReal.cols() == inImag.cols());
 
-  // The dimensions:
-  size_t dim1 = in_real.rows();
-  size_t dim2 = in_real.cols();
-  size_t i, j;
+  const size_t dim1 = static_cast<size_t>(inReal.rows());
+  const size_t dim2 = static_cast<size_t>(inReal.cols());
 
-  bool dim1IsPower2 = (mrpt::round2up(dim1) == dim1);
-  bool dim2IsPower2 = (mrpt::round2up(dim2) == dim2);
+  const bool dim1IsPower2 = (mrpt::round2up(dim1) == dim1);
+  const bool dim2IsPower2 = (mrpt::round2up(dim2) == dim2);
 
-  // FFT or DFT??
   if (dim1IsPower2 && dim2IsPower2)
   {
-    using float_ptr = FFT_TYPE*;
-    // ----------------------------------------
-    //			Optimized FFT:
-    // ----------------------------------------
+    // Use optimized FFT
+    using FloatPtr = FftType*;
 
-    // Transform to format compatible with C routines:
-    // ------------------------------------------------------------
-    static FFT_TYPE** a = nullptr;
-    static FFT_TYPE* t = nullptr;
-    static int* ip = nullptr;
-    static FFT_TYPE* w = nullptr;
+    static std::vector<FloatPtr> a;
+    static std::vector<FftType> t;
+    static std::vector<int> ip;
+    static std::vector<FftType> w;
+    static size_t lastDim1 = 0;
+    static size_t lastDim2 = 0;
 
-    // Reserve memory
-    // --------------------------------------
-
-    // and copy data:
-    // --------------------------------------
-    static int alreadyInitSize1 = -1, alreadyInitSize2 = -1;
-
-    if (alreadyInitSize1 != (int)dim1 || alreadyInitSize2 != (int)dim2)
+    if (lastDim1 != dim1 || lastDim2 != dim2)
     {
-      // Create/realloc buffers:
-      if (a)
-      {
-        for (i = 0; i < dim1; i++) delete[] a[i];
-        delete[] a;
-      }
-      if (ip) delete[] ip;
-      if (t) delete[] t;
-      if (w) delete[] w;
+      // Reallocate buffers
+      for (auto& row : a) delete[] row;
+      a.clear();
 
-      alreadyInitSize1 = (int)dim1;
-      alreadyInitSize2 = (int)dim2;
+      a.resize(dim1);
+      for (size_t i = 0; i < dim1; i++) a[i] = new FftType[2 * dim2];
 
-      a = new float_ptr[dim1];
-      for (i = 0; i < dim1; i++) a[i] = new FFT_TYPE[2 * dim2];
-      t = new FFT_TYPE[2 * dim1 + 20];
-      ip = new int[(int)ceil(20 + 2 + sqrt((FFT_TYPE)max(dim1, dim2 / 2)))];
+      const size_t maxDim = std::max(dim1, dim2 / 2);
+      t.resize(2 * dim1 + 20);
+      ip.resize(static_cast<size_t>(std::ceil(20 + 2 + std::sqrt(static_cast<double>(maxDim)))));
       ip[0] = 0;
-      w = new FFT_TYPE[max(dim1 / 2, dim2 / 4) + dim2 / 4 + 20];
+      w.resize(std::max(dim1 / 2, dim2 / 4) + dim2 / 4 + 20);
+
+      lastDim1 = dim1;
+      lastDim2 = dim2;
     }
 
-    // and copy data:
-    // --------------------------------------
-    for (i = 0; i < dim1; i++)
-      for (j = 0; j < dim2; j++)
+    // Copy data
+    for (size_t i = 0; i < dim1; i++)
+    {
+      for (size_t j = 0; j < dim2; j++)
       {
-        a[i][2 * j + 0] = in_real(i, j);
-        a[i][2 * j + 1] = in_imag(i, j);
+        a[i][2 * j + 0] = inReal(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j));
+        a[i][2 * j + 1] = inImag(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j));
       }
+    }
 
-    // Do the job!
-    // --------------------------------------
-    cdft2d((int)dim1, (int)(2 * dim2), -1, a, t, ip, w);
+    // Compute inverse 2D complex DFT
+    cdft2d(
+        static_cast<int>(dim1), static_cast<int>(2 * dim2), -1, a.data(), t.data(), ip.data(),
+        w.data());
 
-    // Transform back to MRPT matrix format:
-    // --------------------------------------
-    out_real.setSize(dim1, dim2);
-    out_imag.setSize(dim1, dim2);
+    // Extract results with scaling
+    outReal.setSize(static_cast<Eigen::Index>(dim1), static_cast<Eigen::Index>(dim2));
+    outImag.setSize(static_cast<Eigen::Index>(dim1), static_cast<Eigen::Index>(dim2));
 
-    FFT_TYPE scale = 1.0f / (dim1 * dim2);
+    const FftType scale = 1.0f / static_cast<FftType>(dim1 * dim2);
 
-    // a[k1][2*k2] = Re(X[k1][k2]),
-    // a[k1][2*k2+1] = Im(X[k1][k2]),
-    // 0<=k1<n1, 0<=k2<n2
-    for (i = 0; i < dim1; i++)
-      for (j = 0; j < dim2; j++)
+    for (size_t i = 0; i < dim1; i++)
+    {
+      for (size_t j = 0; j < dim2; j++)
       {
-        //				out_real(i,j)=(float)(a[i][j*2+0]*scale);
-        //				out_imag(i,j)=(float)(a[i][j*2+1]*scale);
-        out_real(i, j) = (float)(a[i][j * 2 + 0]);
-        out_imag(i, j) = (float)(a[i][j * 2 + 1]);
+        outReal(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j)) =
+            a[i][j * 2 + 0] * scale;
+        outImag(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j)) =
+            a[i][j * 2 + 1] * scale;
       }
+    }
 
-    out_real.asEigen() *= scale;
-    out_imag.asEigen() *= scale;
-
-    // The element (0,0) is purely real!
-    out_imag(0, 0) = 0;
-
-  }  // end FFT
+    // Element (0,0) is purely real
+    outImag(0, 0) = 0.0f;
+  }
   else
   {
-    // ----------------------------------------
-    //			General DFT:
-    // ----------------------------------------
-    printf("Using general DFT...\n");
-    myGeneralDFT(1, in_real, in_imag, out_real, out_imag);
+    // Use general DFT
+    generalDFT(1, inReal, inImag, outReal, outImag);
   }
 
   MRPT_END
 }
 
-void mrpt::math::cross_correlation_FFT(
-    const CMatrixFloat& A, const CMatrixFloat& B, CMatrixFloat& out_corr)
+/**
+ * @brief Cross-correlation using FFT
+ */
+void cross_correlation_FFT(const CMatrixFloat& A, const CMatrixFloat& B, CMatrixFloat& outCorr)
 {
   MRPT_START
 
   ASSERT_(A.cols() == B.cols() && A.rows() == B.rows());
-  if (mrpt::round2up(A.rows()) != A.rows() || mrpt::round2up(A.cols()) != A.cols())
+
+  const size_t lx = static_cast<size_t>(A.cols());
+  const size_t ly = static_cast<size_t>(A.rows());
+
+  if (mrpt::round2up(ly) != ly || mrpt::round2up(lx) != lx)
     THROW_EXCEPTION("Size of input matrices must be powers of two.");
 
-  // Find smallest valid size:
-  size_t x, y;
-  const size_t lx = A.cols();
-  const size_t ly = A.rows();
+  // Compute FFTs
+  CMatrixFloat I1Real, I1Imag, I2Real, I2Imag;
+  const CMatrixFloat zeros(static_cast<Eigen::Index>(ly), static_cast<Eigen::Index>(lx));
 
-  const CMatrixFloat& i1 = A;
-  const CMatrixFloat& i2 = B;
+  dft2_complex(A, zeros, I1Real, I1Imag);
+  dft2_complex(B, zeros, I2Real, I2Imag);
 
-  // FFT:
-  CMatrixFloat I1_R, I1_I, I2_R, I2_I, ZEROS(ly, lx);
-  math::dft2_complex(i1, ZEROS, I1_R, I1_I);
-  math::dft2_complex(i2, ZEROS, I2_R, I2_I);
-
-  // Compute the COMPLEX division of I2 by I1:
-  for (y = 0; y < ly; y++)
-    for (x = 0; x < lx; x++)
+  // Complex division: I2 / I1
+  for (size_t y = 0; y < ly; y++)
+  {
+    for (size_t x = 0; x < lx; x++)
     {
-      float r1 = I1_R(y, x);
-      float r2 = I2_R(y, x);
+      const auto y_idx = static_cast<Eigen::Index>(y);
+      const auto x_idx = static_cast<Eigen::Index>(x);
 
-      float ii1 = I1_I(y, x);
-      float ii2 = I2_I(y, x);
+      const float r1 = I1Real(y_idx, x_idx);
+      const float r2 = I2Real(y_idx, x_idx);
+      const float i1 = I1Imag(y_idx, x_idx);
+      const float i2 = I2Imag(y_idx, x_idx);
 
-      float den = square(r1) + square(ii1);
-      I2_R(y, x) = (r1 * r2 + ii1 * ii2) / den;
-      I2_I(y, x) = (ii2 * r1 - r2 * ii1) / den;
+      const float den = mrpt::square(r1) + mrpt::square(i1);
+      I2Real(y_idx, x_idx) = (r1 * r2 + i1 * i2) / den;
+      I2Imag(y_idx, x_idx) = (i2 * r1 - r2 * i1) / den;
     }
+  }
 
-  // IFFT:
-  CMatrixFloat res_R, res_I;
-  math::idft2_complex(I2_R, I2_I, res_R, res_I);
+  // Inverse FFT
+  CMatrixFloat resReal, resImag;
+  idft2_complex(I2Real, I2Imag, resReal, resImag);
 
-  out_corr.setSize(ly, lx);
-  for (y = 0; y < ly; y++)
-    for (x = 0; x < lx; x++) out_corr(y, x) = sqrt(square(res_R(y, x)) + square(res_I(y, x)));
+  // Compute magnitude
+  outCorr.setSize(static_cast<Eigen::Index>(ly), static_cast<Eigen::Index>(lx));
+  for (size_t y = 0; y < ly; y++)
+  {
+    for (size_t x = 0; x < lx; x++)
+    {
+      const auto y_idx = static_cast<Eigen::Index>(y);
+      const auto x_idx = static_cast<Eigen::Index>(x);
+
+      outCorr(y_idx, x_idx) =
+          std::sqrt(mrpt::square(resReal(y_idx, x_idx)) + mrpt::square(resImag(y_idx, x_idx)));
+    }
+  }
 
   MRPT_END
 }
+
+}  // namespace mrpt::math

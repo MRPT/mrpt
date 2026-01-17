@@ -55,7 +55,10 @@ bool CGPSInterface::implement_parser_NMEA(size_t& out_minimum_rx_buf_to_decide)
     }
   }
   // Not the start of a NMEA string, skip 1 char:
-  if (!recognized) return false;
+  if (!recognized)
+  {
+    return false;
+  }
 
   // It starts OK: try to find the end of the line
   std::string line;
@@ -120,12 +123,21 @@ bool CGPSInterface::parse_NMEA(
   if (verbose) cout << "[CGPSInterface] GPS raw string: " << s << "\n";
 
   // Firstly! If the string does not start with "$GP" it is not valid:
-  if (s.size() < 7) return false;
-  if (s[0] != '$') return false;
+  if (s.size() < 7)
+  {
+    return false;
+  }
+  if (s[0] != '$')
+  {
+    return false;
+  }
 
   std::vector<std::string> lstTokens;
   mrpt::system::tokenize(s, "*,\t\r\n", lstTokens, false /* do not skip blank tokens */);
-  if (lstTokens.size() < 3) return false;
+  if (lstTokens.size() < 3)
+  {
+    return false;
+  }
 
   for (auto& lstToken : lstTokens) lstToken = mrpt::system::trim(lstToken);  // Trim whitespaces
 

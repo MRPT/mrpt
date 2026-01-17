@@ -82,7 +82,10 @@ bool CStream::getline(std::string& out_str)
     {
       size_t N = out_str.size();
       out_str.resize(N + 1);
-      if (!Read(&out_str[N], 1)) return false;
+      if (!Read(&out_str[N], 1))
+      {
+        return false;
+      }
 
       // New char read:
       if (out_str[N] == '\r')

@@ -341,9 +341,15 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
    */
   bool updateTextMessage(const size_t unique_index, const std::string& text)
   {
-    if (!m_3Dscene) return false;
+    if (!m_3Dscene)
+    {
+      return false;
+    }
     auto gl_view = m_3Dscene->getViewport();
-    if (!gl_view) return false;
+    if (!gl_view)
+    {
+      return false;
+    }
     return gl_view->updateTextMessage(unique_index, text);
   }
 

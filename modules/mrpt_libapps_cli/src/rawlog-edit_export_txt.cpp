@@ -52,7 +52,10 @@ DECLARE_OP_FUNCTION(op_export_txt)
     // return false on any error.
     bool processOneObservation(CObservation::Ptr& obs) override
     {
-      if (!obs->exportTxtSupported()) return true;
+      if (!obs->exportTxtSupported())
+      {
+        return true;
+      }
 
       ASSERTMSG_(
           !obs->sensorLabel.empty(), mrpt::format(
