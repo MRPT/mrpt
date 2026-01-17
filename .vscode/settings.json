@@ -59,7 +59,8 @@
         "TBoundingBoxf",
         "tfest",
         "undistort",
-        "undistortion"
+        "undistortion",
+        "Visualizable"
     ],
     "ros.distro": "humble",
     "cSpell.ignoreWords": [
