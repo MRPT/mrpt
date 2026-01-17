@@ -28,7 +28,10 @@ using namespace mrpt::math;
 
 double TPolygon2D::distance(const TPoint2D& point) const
 {
-  if (contains(point)) return 0;
+  if (contains(point))
+  {
+    return 0;
+  }
   std::vector<TSegment2D> sgs;
   getAsSegmentList(sgs);
 

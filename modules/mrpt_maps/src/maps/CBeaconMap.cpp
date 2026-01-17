@@ -1070,7 +1070,10 @@ float CBeaconMap::compute3DMatchingRatio(
   if (otherMap2->GetRuntimeClass() == CLASS_ID(CBeaconMap))
     otherMap = dynamic_cast<const CBeaconMap*>(otherMap2);
 
-  if (!otherMap) return 0;
+  if (!otherMap)
+  {
+    return 0;
+  }
 
   TMatchingPairList matchList;
   vector<bool> otherCorrespondences;

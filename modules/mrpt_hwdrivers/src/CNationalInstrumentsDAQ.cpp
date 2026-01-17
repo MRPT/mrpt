@@ -542,7 +542,9 @@ void CNationalInstrumentsDAQ::initialize()
     }
     catch (std::exception const& e)
     {
-      std::cerr << "[CNationalInstrumentsDAQ] Error:" << std::endl << e.what() << std::endl;
+      std::cerr << "[CNationalInstrumentsDAQ] Error:"
+                << "\n"
+                << e.what() << "\n";
       if (ipt.taskHandle != nullptr)
       {
         TaskHandle& taskHandle = *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
@@ -829,7 +831,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask& ipt)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "[CNationalInstrumentsDAQ::grabbing_thread] Exception:\n" << e.what() << std::endl;
+    std::cerr << "[CNationalInstrumentsDAQ::grabbing_thread] Exception:\n" << e.what() << "\n";
   }
 #endif  // MRPT_HAS_SOME_NIDAQMX
 

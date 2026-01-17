@@ -63,7 +63,7 @@ void CImpinjRFID::startDriver()
   const int ret = ::system(cmdline.str().c_str());
   if (0 != ret)
     std::cerr << "[CImpinjRFID::startDriver] Error (" << ret << ") invoking command:\n"
-              << cmdline.str() << std::endl;
+              << cmdline.str() << "\n";
 }
 
 void CImpinjRFID::loadConfig_sensorSpecific(
@@ -167,16 +167,18 @@ bool CImpinjRFID::getObservation(mrpt::obs::CObservationRFID& obs)
 
       // std::cout << "mrpt::hwdrivers::CImpinjRFID::getObservation() " <<
       // "\n\tRXPWR: " << atof(rx_pwr) << " PWR READ: " << rx_pwr <<
-      // std::endl;
+      // "\n";
     }
     if (receivedSomething)
+    {
       return true;
+    }
     else
       return false;
   }
   catch (const std::exception& e)
   {
-    std::cerr << e.what() << std::endl;
+    std::cerr << e.what() << "\n";
     return false;
   }
 }

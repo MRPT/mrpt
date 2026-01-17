@@ -1514,49 +1514,73 @@ int get_binary_item(
   switch (type)
   {
     case PLY_CHAR:
-      if (fread(ptr, 1, 1, fp) != 1) return 0;
+      if (fread(ptr, 1, 1, fp) != 1)
+      {
+        return 0;
+      }
       *int_val = *((char*)ptr);
       *uint_val = *int_val;
       *double_val = *int_val;
       break;
     case PLY_UCHAR:
-      if (fread(ptr, 1, 1, fp) != 1) return 0;
+      if (fread(ptr, 1, 1, fp) != 1)
+      {
+        return 0;
+      }
       *uint_val = *((unsigned char*)ptr);
       *int_val = *uint_val;
       *double_val = *uint_val;
       break;
     case PLY_SHORT:
-      if (fread(ptr, 2, 1, fp) != 1) return 0;
+      if (fread(ptr, 2, 1, fp) != 1)
+      {
+        return 0;
+      }
       *int_val = *((short int*)ptr);
       *uint_val = *int_val;
       *double_val = *int_val;
       break;
     case PLY_USHORT:
-      if (fread(ptr, 2, 1, fp) != 1) return 0;
+      if (fread(ptr, 2, 1, fp) != 1)
+      {
+        return 0;
+      }
       *uint_val = *((unsigned short int*)ptr);
       *int_val = *uint_val;
       *double_val = *uint_val;
       break;
     case PLY_INT:
-      if (fread(ptr, 4, 1, fp) != 1) return 0;
+      if (fread(ptr, 4, 1, fp) != 1)
+      {
+        return 0;
+      }
       *int_val = *((int*)ptr);
       *uint_val = *int_val;
       *double_val = *int_val;
       break;
     case PLY_UINT:
-      if (fread(ptr, 4, 1, fp) != 1) return 0;
+      if (fread(ptr, 4, 1, fp) != 1)
+      {
+        return 0;
+      }
       *uint_val = *((unsigned int*)ptr);
       *int_val = *uint_val;
       *double_val = *uint_val;
       break;
     case PLY_FLOAT:
-      if (fread(ptr, 4, 1, fp) != 1) return 0;
+      if (fread(ptr, 4, 1, fp) != 1)
+      {
+        return 0;
+      }
       *double_val = *((float*)ptr);
       *int_val = static_cast<int>(*double_val);
       *uint_val = static_cast<unsigned int>(*double_val);
       break;
     case PLY_DOUBLE:
-      if (fread(ptr, 8, 1, fp) != 1) return 0;
+      if (fread(ptr, 8, 1, fp) != 1)
+      {
+        return 0;
+      }
       *double_val = *((double*)ptr);
       *int_val = static_cast<int>(*double_val);
       *uint_val = static_cast<unsigned int>(*double_val);

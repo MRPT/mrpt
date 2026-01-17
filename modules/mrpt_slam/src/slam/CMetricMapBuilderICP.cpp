@@ -315,7 +315,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
           // Debug output to console:
           MRPT_LOG_INFO_STREAM(
               "processObservation: previousPose=" << previousKnownRobotPose << "-> currentPose="
-                                                  << pEst2D.getMeanVal() << std::endl);
+                                                  << pEst2D.getMeanVal() << "\n");
           MRPT_LOG_INFO(format(
               "[CMetricMapBuilderICP]   Fit:%.1f%% Itr:%i In "
               "%.02fms \n",
@@ -323,8 +323,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
         }
         else
         {
-          MRPT_LOG_WARN_STREAM(
-              "Ignoring ICP of low quality: " << icpReturn.goodness * 100 << std::endl);
+          MRPT_LOG_WARN_STREAM("Ignoring ICP of low quality: " << icpReturn.goodness * 100 << "\n");
         }
 
         // Compute the transversed length:
@@ -413,8 +412,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
       SF_Poses_seq.insert(pose3D, sf);
 
       MRPT_LOG_INFO_STREAM(
-          "Map updated OK. Done in " << mrpt::system::formatTimeInterval(tictac.Tac())
-                                     << std::endl);
+          "Map updated OK. Done in " << mrpt::system::formatTimeInterval(tictac.Tac()) << "\n");
     }
 
   }  // end other observation

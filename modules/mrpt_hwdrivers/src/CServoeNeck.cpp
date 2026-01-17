@@ -269,7 +269,7 @@ bool CServoeNeck::setAngle(double angle, const uint8_t servo, bool fast)
   // unsigned int reg = angle2RegValue( nangle );
 
   // std::cout << "Angle: " << RAD2DEG( nangle ) << " - Reg: " << reg <<
-  // std::endl;
+  // "\n";
   // return setRegisterValue( reg, servo );
 
   if (angle < -m_TruncateFactor * M_PI / 2) angle = -m_TruncateFactor * M_PI / 2;
@@ -295,7 +295,7 @@ bool CServoeNeck::setAngleAndSpeed(double angle, const uint8_t servo, const uint
   auto delSpeed = uint16_t(0.25 * 1000000 / (500 + 1000 * (thisSpeed / 180.0f - 0.5)));
   // cout << "Speed: " << int(speed) << " -> " << delSpeed << "\n";
   // std::cout << "Angle: " << RAD2DEG( angle ) << " - Reg: " << reg <<
-  // std::endl;
+  // "\n";
   return setRegisterValueAndSpeed(reg, servo, delSpeed);
 
 }  // end-getCurrentAngle

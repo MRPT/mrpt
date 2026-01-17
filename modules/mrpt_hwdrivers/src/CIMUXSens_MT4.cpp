@@ -447,7 +447,9 @@ void CIMUXSens_MT4::initialize()
     }
 
     // Put the device in measurement mode
-    if (m_verbose) cout << "[CIMUXSens_MT4] Putting device into measurement mode..." << std::endl;
+    if (m_verbose)
+      cout << "[CIMUXSens_MT4] Putting device into measurement mode..."
+           << "\n";
 
     if (!m_impl->m_device->gotoMeasurement())
       THROW_EXCEPTION("Could not put device into measurement mode");
@@ -467,7 +469,8 @@ void CIMUXSens_MT4::initialize()
   catch (std::exception&)
   {
     m_state = ssError;
-    std::cerr << "[CIMUXSens_MT4] Error Could not initialize the device" << std::endl;
+    std::cerr << "[CIMUXSens_MT4] Error Could not initialize the device"
+              << "\n";
     throw;
   }
 

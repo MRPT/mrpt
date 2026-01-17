@@ -559,7 +559,8 @@ void ICP_SLAM_App_Live::SensorThread(ICP_SLAM_App_Live::TThreadParams tp)
     // Load common & sensor specific parameters:
     sensor->loadConfig(*tp.cfgFile, tp.section_name);
     std::cout << mrpt::format("[thread_%s] Starting...", tp.section_name.c_str()) << " at "
-              << sensor->getProcessRate() << " Hz" << std::endl;
+              << sensor->getProcessRate() << " Hz"
+              << "\n";
 
     ASSERTMSG_(sensor->getProcessRate() > 0, "process_rate must be set to a valid value (>0 Hz).");
 
@@ -584,13 +585,13 @@ void ICP_SLAM_App_Live::SensorThread(ICP_SLAM_App_Live::TThreadParams tp)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "[SensorThread]  Closing due to exception:\n"
-              << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "[SensorThread]  Closing due to exception:\n" << mrpt::exception_to_str(e) << "\n";
     m_allThreadsMustExit = true;
   }
   catch (...)
   {
-    std::cerr << "[SensorThread] Untyped exception! Closing." << std::endl;
+    std::cerr << "[SensorThread] Untyped exception! Closing."
+              << "\n";
     m_allThreadsMustExit = true;
   }
 }

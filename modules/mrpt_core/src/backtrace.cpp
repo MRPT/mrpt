@@ -314,7 +314,7 @@ class WindowsSymResources
     if (!SymInitialize(m_hProcess, nullptr /* UserSearchPath  */, TRUE /*fInvadeProcess*/))
     {
       std::cerr << mrpt::winerror2str("mrpt::callStackBackTrace", " Error in SymInitialize(): ")
-                << std::endl;
+                << "\n";
       return;
     }
     m_init_ok = true;

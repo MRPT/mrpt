@@ -2255,8 +2255,8 @@ void CLoopCloserERD<GRAPH_T>::getDescriptiveReport(std::string* report_str) cons
   std::stringstream class_props_ss;
   class_props_ss << "Pair-wise Consistency of ICP Edges - Registration "
                     "Procedure Summary: "
-                 << std::endl;
-  class_props_ss << header_sep << std::endl;
+                 << "\n";
+  class_props_ss << header_sep << "\n";
 
   // time and output logging
   const std::string time_res = this->m_time_logger.getStatsAsText();
@@ -2388,10 +2388,10 @@ void CLoopCloserERD<GRAPH_T>::TLaserParams::dumpToTextStream(std::ostream& out) 
   MRPT_START
 
   out << "Use scan-matching constraints               = " << (use_scan_matching ? "TRUE" : "FALSE")
-      << std::endl;
-  out << "Num. of previous nodes to check ICP against =  " << prev_nodes_for_ICP << std::endl;
+      << "\n";
+  out << "Num. of previous nodes to check ICP against =  " << prev_nodes_for_ICP << "\n";
   out << "Visualize laser scans                       = "
-      << (visualize_laser_scans ? "TRUE" : "FALSE") << std::endl;
+      << (visualize_laser_scans ? "TRUE" : "FALSE") << "\n";
 
   MRPT_END
 }

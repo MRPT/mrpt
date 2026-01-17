@@ -274,7 +274,7 @@ TEST(OpenGL, DISABLED_CFBORender_camera_intrinsics)
   {
     std::cerr << "***** WARNING ****: Ignoring exception in test, likely due to limited rendering "
                  "capabilities on this device (?):\n"
-              << e.what() << std::endl;
+              << e.what() << "\n";
   }
 }
 
@@ -292,6 +292,6 @@ TEST(OpenGL, DISABLED_CFBORender_camera_fov)
   {
     std::cerr << "***** WARNING ****: Ignoring exception in test, likely due to limited rendering "
                  "capabilities on this device (?):\n"
-              << e.what() << std::endl;
+              << e.what() << "\n";
   }
 }

@@ -75,7 +75,7 @@ class Topic : public std::enable_shared_from_this<Topic>
           catch (std::bad_any_cast&)
           {
             std::cerr << "Subscriber has wrong type: " << mrpt::typemeta::TTypeName<ARG>::get()
-                      << std::endl;
+                      << "\n";
           }
         },
         // cleanup function

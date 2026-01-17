@@ -75,7 +75,7 @@ class TextureResourceHandler
     if (rgbDataForAssociation) m_textureToRGBdata.insert(textureID, rgbDataForAssociation);
 
     if (MRPT_OPENGL_VERBOSE)
-      std::cout << "[mrpt generateTextureID] textureName:" << textureID << std::endl;
+      std::cout << "[mrpt generateTextureID] textureName:" << textureID << "\n";
 
     return textureID;
 #else
@@ -105,7 +105,7 @@ class TextureResourceHandler
     auto lck = mrpt::lockHelper(m_texturesMtx);
 
     if (MRPT_OPENGL_VERBOSE)
-      std::cout << "[mrpt releaseTextureID] textureName: " << texName << std::endl;
+      std::cout << "[mrpt releaseTextureID] textureName: " << texName << "\n";
 
     m_destroyQueue[m_textureReservedFrom.at(texName)].push_back(texName);
     processDestroyQueue();
@@ -119,8 +119,7 @@ class TextureResourceHandler
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
     glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &m_maxTextureUnits);
     if (MRPT_OPENGL_VERBOSE)
-      std::cout << "[mrpt TextureResourceHandler] maxTextureUnits:" << m_maxTextureUnits
-                << std::endl;
+      std::cout << "[mrpt TextureResourceHandler] maxTextureUnits:" << m_maxTextureUnits << "\n";
 #endif
   }
 

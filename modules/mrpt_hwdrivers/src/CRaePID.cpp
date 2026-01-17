@@ -79,7 +79,7 @@ bool CRaePID::tryToOpenTheCOM()
   {
     std::cerr << "[CRaePID::tryToOpenTheCOM] Error opening or configuring "
                  "the serial port:"
-              << std::endl
+              << "\n"
               << e.what();
     COM.close();
     return false;
@@ -88,7 +88,7 @@ bool CRaePID::tryToOpenTheCOM()
   {
     std::cerr << "[CRaePID::tryToOpenTheCOM] Error opening or configuring "
                  "the serial port."
-              << std::endl;
+              << "\n";
     COM.close();
     return false;
   }

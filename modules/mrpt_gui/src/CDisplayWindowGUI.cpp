@@ -63,7 +63,7 @@ void CDisplayWindowGUI::onIdleLoopTasks()
     }
     catch (const std::exception& e)
     {
-      std::cerr << "[CDisplayWindowGUI] Exception in loop callback:\n" << e.what() << std::endl;
+      std::cerr << "[CDisplayWindowGUI] Exception in loop callback:\n" << e.what() << "\n";
     }
   }
 }
@@ -227,7 +227,7 @@ bool CDisplayWindowGUI::dropEvent(const std::vector<std::string>& filenames)
     {
       std::cerr << "[CDisplayWindowGUI] Exception in drop file event "
                    "callback:\n"
-                << e.what() << std::endl;
+                << e.what() << "\n";
     }
   }
 
@@ -248,7 +248,7 @@ bool CDisplayWindowGUI::keyboardEvent(int key, int scancode, int action, int mod
     catch (const std::exception& e)
     {
       std::cerr << "[CDisplayWindowGUI] Exception in keyboard event callback:\n"
-                << e.what() << std::endl;
+                << e.what() << "\n";
     }
   }
 

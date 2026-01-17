@@ -192,7 +192,10 @@ int CBaseGUIWindow::waitForKey(bool ignoreControlKeys, mrptKeyModifier* out_push
 
     std::this_thread::sleep_for(10ms);
     // Are we still alive?
-    if (!isOpen()) return 0;
+    if (!isOpen())
+    {
+      return 0;
+    }
   }
 }
 
@@ -205,7 +208,10 @@ int CBaseGUIWindow::getPushedKey(mrptKeyModifier* out_pushModifier)
 
   if (out_pushModifier) *out_pushModifier = MRPTKMOD_NONE;
 
-  if (!m_keyPushed) return 0;
+  if (!m_keyPushed)
+  {
+    return 0;
+  }
 
   int k = m_keyPushedCode;
   m_keyPushed = false;

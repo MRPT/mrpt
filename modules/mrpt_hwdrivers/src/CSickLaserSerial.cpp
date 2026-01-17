@@ -25,10 +25,10 @@
 
 IMPLEMENTS_GENERIC_SENSOR(CSickLaserSerial, mrpt::hwdrivers)
 
-#define RET_ERROR(msg)                                                         \
-  {                                                                            \
-    std::cout << "[" << __CURRENT_FUNCTION_NAME__ << "] " << msg << std::endl; \
-    return false;                                                              \
+#define RET_ERROR(msg)                                                    \
+  {                                                                       \
+    std::cout << "[" << __CURRENT_FUNCTION_NAME__ << "] " << msg << "\n"; \
+    return false;                                                         \
   }
 
 using namespace std;

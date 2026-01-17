@@ -63,7 +63,7 @@ bool CIncrementalNodeRegistrationDecider<GRAPH_T>::checkRegistrationConditionPos
   using namespace mrpt::math;
 
   std::cout << "In checkRegistrationConditionPose:\np1: " << p1.asString()
-            << "\np2: " << p1.asString() << std::endl;
+            << "\np2: " << p1.asString() << "\n";
 
   bool res = false;
   if ((p1.distanceTo(p2) > params.registration_max_distance) ||

@@ -89,7 +89,7 @@ TEST(poly_roots, solve_poly3)
       for (int j = 0; j < num_roots; j++)
         if (std::abs(roots[k] - roots_good[j]) < eps) match = true;
 
-      EXPECT_TRUE(match) << sTestStr << "k: " << k << std::endl;
+      EXPECT_TRUE(match) << sTestStr << "k: " << k << "\n";
     }
   }
 }
@@ -125,7 +125,7 @@ TEST(poly_roots, solve_poly4)
       for (int j = 0; j < num_roots; j++)
         if (std::abs(roots[k] - roots_good[j]) < eps) match = true;
 
-      EXPECT_TRUE(match) << sTestStr << "k: " << k << std::endl;
+      EXPECT_TRUE(match) << sTestStr << "k: " << k << "\n";
     }
   }
 }

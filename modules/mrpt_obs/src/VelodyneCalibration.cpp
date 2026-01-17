@@ -171,7 +171,7 @@ bool VelodyneCalibration::loadFromXMLText(const std::string& xml_file_contents)
 #else
                 << doc.ErrorName()
 #endif
-                << std::endl;
+                << "\n";
       return false;
     }
 
@@ -207,7 +207,7 @@ bool VelodyneCalibration::loadFromXMLFile(const std::string& velodyne_calibratio
 #else
                 << doc.ErrorName()
 #endif
-                << std::endl;
+                << "\n";
       return false;
     }
     return internal_loadFromXMLNode(reinterpret_cast<void*>(&doc));

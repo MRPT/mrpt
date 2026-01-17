@@ -17,7 +17,6 @@
 #include <mrpt/img/TCamera.h>
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/matrix_serialization.h>  // For "<<" ">>" operators.
-#include <mrpt/math/utils_matlab.h>
 #include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::img;

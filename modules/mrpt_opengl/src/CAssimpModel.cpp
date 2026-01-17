@@ -139,7 +139,7 @@ class TexturesCache
       /* Error occurred */
       const std::string sError =
           mrpt::format("[CAssimpModel] Couldn't load texture image: '%s'", texturePath.c_str());
-      std::cerr << sError << std::endl;
+      std::cerr << sError << "\n";
     }
 
     entry.load_attempted = true;
@@ -365,7 +365,7 @@ void CAssimpModel::serializeTo(mrpt::serialization::CArchive& out) const
 				m_assimp_scene->exporter.GetExportFormatDescription(i);
 			std::cout << "format #" << i << ": " << d->description << " *."
 					  << d->fileExtension << " id: '" << d->id << "'"
-					  << std::endl;
+					  << "\n";
 		}
 #endif
     // new in v2: save as blob:

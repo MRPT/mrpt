@@ -31,8 +31,8 @@ hist.add(86);
 hist.add(7);
 hist.add(45);
 
-std::cout << hist.getBinCount(0) << std::endl;		// Result: "1"
-std::cout << hist.getBinRatio(0) << std::endl;		// Result: "0.33"
+std::cout << hist.getBinCount(0) << "\n";		// Result: "1"
+std::cout << hist.getBinRatio(0) << "\n";		// Result: "0.33"
 \endcode
  * \ingroup mrpt_math_grp
  */

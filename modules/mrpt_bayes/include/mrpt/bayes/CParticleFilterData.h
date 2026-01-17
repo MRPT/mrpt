@@ -57,7 +57,10 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
   double normalizeWeights(double* out_max_log_w = nullptr) override
   {
     MRPT_START
-    if (derived().m_particles.empty()) return 0;
+    if (derived().m_particles.empty())
+    {
+      return 0;
+    }
     double minW = derived().m_particles[0].log_w;
     double maxW = minW;
 

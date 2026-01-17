@@ -125,14 +125,15 @@ void TPixelLabelInfo<BYTES_REQUIRED_>::Print(std::ostream& out) const
     {
       for (uint32_t r = 0; r < nR; r++) out << pixelLabels.coeff(r, c) << " ";
 
-      out << std::endl;
+      out << "\n";
     }
   }
-  out << std::endl;
-  out << "Label indices and names: " << std::endl;
+  out << "\n";
+  out << "Label indices and names: "
+      << "\n";
   std::map<uint32_t, std::string>::const_iterator it;
   for (it = pixelLabelNames.begin(); it != pixelLabelNames.end(); it++)
-    out << it->first << " " << it->second << std::endl;
+    out << it->first << " " << it->second << "\n";
 }
 
 // Explicit instantiations:

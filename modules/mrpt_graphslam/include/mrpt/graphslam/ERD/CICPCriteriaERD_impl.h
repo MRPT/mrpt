@@ -198,7 +198,7 @@ void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition2D(
             ">>>>>>>>>");
         MRPT_LOG_DEBUG_STREAM(
             "ICP constraint between NON-successive nodes: "
-            << node_it << " => " << curr_nodeID << std::endl
+            << node_it << " => " << curr_nodeID << "\n"
             << "\tnIterations = " << icp_info.nIterations << "\tgoodness = " << icp_info.goodness);
         MRPT_LOG_DEBUG_STREAM("ICP_goodness_thresh: " << params.ICP_goodness_thresh);
         MRPT_LOG_DEBUG_STREAM(
@@ -559,8 +559,9 @@ void CICPCriteriaERD<GRAPH_T>::getDescriptiveReport(std::string* report_str) con
 
   // Report on graph
   stringstream class_props_ss;
-  class_props_ss << "ICP Goodness-based Registration Procedure Summary: " << std::endl;
-  class_props_ss << header_sep << std::endl;
+  class_props_ss << "ICP Goodness-based Registration Procedure Summary: "
+                 << "\n";
+  class_props_ss << header_sep << "\n";
 
   // time and output logging
   const std::string time_res = this->m_time_logger.getStatsAsText();

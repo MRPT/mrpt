@@ -58,7 +58,8 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 
     if (images.size() < 1 && p.verbose)
     {
-      std::cout << "ERROR: No input images." << std::endl;
+      std::cout << "ERROR: No input images."
+                << "\n";
       return false;
     }
 
@@ -110,7 +111,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
           {
             std::cout << "ERROR: All the images in each left/right "
                          "channel must have the same size."
-                      << std::endl;
+                      << "\n";
             return false;
           }
         }
@@ -524,7 +525,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
   }
   catch (const std::exception& e)
   {
-    std::cout << e.what() << std::endl;
+    std::cout << e.what() << "\n";
     return false;
   }
 }

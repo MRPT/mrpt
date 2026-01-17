@@ -60,7 +60,7 @@ mrpt::poses::SensorToPoseMap mrpt::poses::sensor_poses_from_yaml(
 #if 0
 		std::cout << "sensor: " << sensorLabel << " tr: " << t
 				  << " q: " << q.inMatlabFormat() << " parent: " << parentFrame
-				  << std::endl;
+				  << "\n";
 #endif
 
     // Store data in temporary graph structure for spanning tree:

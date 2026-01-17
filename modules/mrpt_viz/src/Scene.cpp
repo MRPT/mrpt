@@ -276,7 +276,7 @@ bool Scene::loadFromFile(const std::string& fil)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "[mrpt::viz::Scene] Error loading '" << fil << "': " << e.what() << std::endl;
+    std::cerr << "[mrpt::viz::Scene] Error loading '" << fil << "': " << e.what() << "\n";
     return false;
   }
 }

@@ -28,7 +28,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
   {
     std::cerr << "[mrpt::hwdrivers::prepareVideoSourceFromUserSelection] "
                  "Error initiating Wx subsystem."
-              << std::endl;
+              << "\n";
     return CCameraSensor::Ptr();  // Error!
   }
 

@@ -146,7 +146,7 @@ TEST(Matrices, loadFromTextFile)
     }
     catch (const std::exception& e)
     {
-      std::cerr << e.what() << std::endl;
+      std::cerr << e.what() << "\n";
     }
     EXPECT_TRUE(retval) << "string:\n" << s1 << "\n";
     EXPECT_EQ(M.rows(), 2);
@@ -166,7 +166,7 @@ TEST(Matrices, loadFromTextFile)
     }
     catch (const std::exception& e)
     {
-      std::cerr << e.what() << std::endl;
+      std::cerr << e.what() << "\n";
     }
     EXPECT_TRUE(retval) << "string:\n" << s1 << "\n";
     EXPECT_EQ(M.rows(), 2);
@@ -184,7 +184,7 @@ TEST(Matrices, loadFromTextFile)
     }
     catch (const std::exception& e)
     {
-      std::cerr << e.what() << std::endl;
+      std::cerr << e.what() << "\n";
     }
     EXPECT_TRUE(retval) << "string:\n" << s1 << "\n";
     EXPECT_EQ(M.rows(), 1);
@@ -205,7 +205,7 @@ TEST(Matrices, loadFromTextFile)
     }
     catch (const std::exception& e)
     {
-      std::cerr << e.what() << std::endl;
+      std::cerr << e.what() << "\n";
     }
     EXPECT_TRUE(retval) << "string:\n" << s1 << "\n";
     EXPECT_EQ(M.rows(), 3);

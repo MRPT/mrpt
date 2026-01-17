@@ -90,7 +90,8 @@ void CObservationOdometry::getDescriptionAsText(std::ostream& o) const
 {
   CObservation::getDescriptionAsText(o);
 
-  o << std::endl << "Odometry reading: " << odometry << std::endl;
+  o << "\n"
+    << "Odometry reading: " << odometry << "\n";
 
   // Additional data:
   if (hasEncodersInfo)

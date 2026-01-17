@@ -284,7 +284,10 @@ double CVoxelMapRGB::internal_computeObservationLikelihood(
   mrpt::maps::CSimplePointsMap pts;
   pts.insertObservation(obs, takenFrom);
 
-  if (pts.empty()) return 0;
+  if (pts.empty())
+  {
+    return 0;
+  }
 
   double log_lik = .0;  // cummulative log likelihoo
 

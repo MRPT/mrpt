@@ -51,7 +51,7 @@ DECLARE_OP_FUNCTION(op_remap_timestamps)
         m_labels(labels)
     {
       VERBOSE_COUT << mrpt::format("Applying timestamps remap a*t+b with: a=%f b=%f", m_a, m_b)
-                   << std::endl;
+                   << "\n";
 
       std::string sLog = "Applying to sensor labels: ";
       if (m_labels.empty())

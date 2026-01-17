@@ -249,14 +249,15 @@ bool RANSAC_Template<NUMTYPE, DATASET, MODEL>::execute(
     // Safeguard against being stuck in this loop forever
     if (trialcount > maxIter)
     {
-      MRPT_LOG_WARN_FMT("Warning: maximum number of trials (%u) reached\n", (unsigned)maxIter);
+      MRPT_LOG_WARN_FMT(
+          "Warning: maximum number of trials (%u) reached\n", static_cast<unsigned>(maxIter));
       break;
     }
   }
 
   if (!out_best_inliers.empty())
   {  // We got a solution
-    MRPT_LOG_INFO_FMT("Finished in %u iterations.", (unsigned)trialcount);
+    MRPT_LOG_INFO_FMT("Finished in %u iterations.", static_cast<unsigned>(trialcount));
     return true;
   }
 

@@ -348,7 +348,10 @@ float CPointsMapXYZI::getPointField_float(size_t index, const std::string_view& 
 {
   if (fieldName == POINT_FIELD_INTENSITY)
   {
-    if (!hasIntensityField()) return 0;
+    if (!hasIntensityField())
+    {
+      return 0;
+    }
     ASSERT_LT_(index, m_intensity.size());
     return m_intensity[index];
   }

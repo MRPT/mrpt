@@ -349,7 +349,10 @@ inline size_t trackFeatures_deleteOOB_impl_simple_feat(
     const size_t img_height,
     const int MIN_DIST_MARGIN_TO_STOP_TRACKING)
 {
-  if (trackedFeats.empty()) return 0;
+  if (trackedFeats.empty())
+  {
+    return 0;
+  }
 
   std::vector<size_t> survival_idxs;
   const size_t N = trackedFeats.size();

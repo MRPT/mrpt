@@ -1022,23 +1022,22 @@ void CGraphSlamEngine<GRAPH_T>::getParamsAsString(std::string* params_out) const
 
   stringstream ss_out;
 
-  ss_out << "\n------------[ Graphslam_engine Problem Parameters ]------------" << std::endl;
-  ss_out << "Config filename                 = " << m_config_fname << std::endl;
+  ss_out << "\n------------[ Graphslam_engine Problem Parameters ]------------"
+         << "\n";
+  ss_out << "Config filename                 = " << m_config_fname << "\n";
 
-  ss_out << "Ground Truth File format        = " << m_GT_file_format << std::endl;
-  ss_out << "Ground Truth filename           = " << m_fname_GT << std::endl;
+  ss_out << "Ground Truth File format        = " << m_GT_file_format << "\n";
+  ss_out << "Ground Truth filename           = " << m_fname_GT << "\n";
 
   ss_out << "Visualize odometry              = " << (m_visualize_odometry_poses ? "TRUE" : "FALSE")
-         << std::endl;
+         << "\n";
   ss_out << "Visualize estimated trajectory  = "
-         << (m_visualize_estimated_trajectory ? "TRUE" : "FALSE") << std::endl;
-  ss_out << "Visualize map                   = " << (m_visualize_map ? "TRUE" : "FALSE")
-         << std::endl;
-  ss_out << "Visualize Ground Truth          = " << (m_visualize_GT ? "TRUE" : "FALSE")
-         << std::endl;
+         << (m_visualize_estimated_trajectory ? "TRUE" : "FALSE") << "\n";
+  ss_out << "Visualize map                   = " << (m_visualize_map ? "TRUE" : "FALSE") << "\n";
+  ss_out << "Visualize Ground Truth          = " << (m_visualize_GT ? "TRUE" : "FALSE") << "\n";
 
   ss_out << "Visualize SLAM metric plot      = " << (m_visualize_SLAM_metric ? "TRUE" : "FALSE")
-         << std::endl;
+         << "\n";
 
   ss_out << "Enable curr. position viewport  = " << (m_enable_curr_pos_viewport ? "TRUE" : "FALSE")
          << "\n";
@@ -1047,8 +1046,9 @@ void CGraphSlamEngine<GRAPH_T>::getParamsAsString(std::string* params_out) const
   ss_out << "Enable intensity img viewport   = " << (m_enable_intensity_viewport ? "TRUE" : "FALSE")
          << "\n";
 
-  ss_out << "-----------------------------------------------------------" << std::endl;
-  ss_out << std::endl;
+  ss_out << "-----------------------------------------------------------"
+         << "\n";
+  ss_out << "\n";
 
   // copy the stringstream contents to the passed in string
   *params_out = ss_out.str();
@@ -2469,16 +2469,17 @@ void CGraphSlamEngine<GRAPH_T>::getDescriptiveReport(std::string* report_str) co
 
   // Summary of Results
   stringstream results_ss;
-  results_ss << "Summary: " << std::endl;
-  results_ss << header_sep << std::endl;
-  results_ss << "\tProcessing time: " << m_time_logger.getMeanTime("proc_time") << std::endl;
+  results_ss << "Summary: "
+             << "\n";
+  results_ss << header_sep << "\n";
+  results_ss << "\tProcessing time: " << m_time_logger.getMeanTime("proc_time") << "\n";
   ;
-  results_ss << "\tDataset Grab time: " << m_dataset_grab_time << std::endl;
+  results_ss << "\tDataset Grab time: " << m_dataset_grab_time << "\n";
   results_ss << "\tReal-time capable: "
              << (m_time_logger.getMeanTime("proc_time") < m_dataset_grab_time ? "TRUE" : "FALSE")
-             << std::endl;
+             << "\n";
   results_ss << m_edge_counter.getAsString();
-  results_ss << "\tNum of Nodes: " << m_graph.nodeCount() << std::endl;
+  results_ss << "\tNum of Nodes: " << m_graph.nodeCount() << "\n";
   ;
 
   // Class configuration parameters

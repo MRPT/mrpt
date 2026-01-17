@@ -63,7 +63,10 @@ struct Font
   float getAdvance(const char c) const
   {
     const Char* ch = findChar(c);
-    if (!ch) return 0;
+    if (!ch)
+    {
+      return 0;
+    }
     return ch->advance;
   }
 

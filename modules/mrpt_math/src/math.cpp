@@ -36,7 +36,7 @@ using mrpt::serialization::CArchive;
  ---------------------------------------------------------------*/
 double math::normalPDF(double x, double mu, double std)
 {
-  return ::exp(-0.5 * square((x - mu) / std)) / (std * 2.506628274631000502415765284811);
+  return std::exp(-0.5 * square((x - mu) / std)) / (std * 2.506628274631000502415765284811);
 }
 
 /*---------------------------------------------------------------
@@ -46,9 +46,11 @@ double math::chi2inv(double P, unsigned int dim)
 {
   ASSERT_(P >= 0 && P < 1);
   if (P == 0)
+  {
     return 0;
-  else
-    return dim * pow(1.0 - 2.0 / (9 * dim) + sqrt(2.0 / (9 * dim)) * normalQuantile(P), 3);
+  }
+
+  return dim * pow(1.0 - 2.0 / (9 * dim) + sqrt(2.0 / (9 * dim)) * normalQuantile(P), 3);
 }
 
 /*---------------------------------------------------------------
@@ -58,7 +60,10 @@ uint64_t math::factorial64(unsigned int n)
 {
   uint64_t ret = 1;
 
-  for (unsigned int i = 2; i <= n; i++) ret *= i;
+  for (unsigned int i = 2; i <= n; i++)
+  {
+    ret *= i;
+  }
 
   return ret;
 }
@@ -70,9 +75,12 @@ double math::factorial(unsigned int n)
 {
   double retLog = 0;
 
-  for (unsigned int i = 2; i <= n; i++) retLog += ::log((double)n);
+  for (unsigned int i = 2; i <= n; i++)
+  {
+    retLog += std::log(static_cast<double>(n));
+  }
 
-  return ::exp(retLog);
+  return std::exp(retLog);
 }
 
 /*---------------------------------------------------------------
@@ -80,7 +88,9 @@ double math::factorial(unsigned int n)
  ---------------------------------------------------------------*/
 double math::normalQuantile(double p)
 {
-  double q, t, u;
+  double q = 0;
+  double t = 0;
+  double u = 0;
 
   static const double a[6] = {-3.969683028665376e+01, 2.209460984245205e+02,
                               -2.759285104469687e+02, 1.383577518672690e+02,
@@ -110,7 +120,7 @@ double math::normalQuantile(double p)
   else
   {
     /* Rational approximation for tail region. */
-    t = sqrt(-2 * ::log(q));
+    t = sqrt(-2 * std::log(q));
     u = (((((c[0] * t + c[1]) * t + c[2]) * t + c[3]) * t + c[4]) * t + c[5]) /
         ((((d[0] * t + d[1]) * t + d[2]) * t + d[3]) * t + 1);
   }
@@ -118,9 +128,9 @@ double math::normalQuantile(double p)
   /* The relative error of the approximation has absolute value less
   than 1.15e-9.  One iteration of Halley's rational method (third
   order) gives full machine precision... */
-  t = normalCDF(u) - q;                                        /* error */
-  t = t * 2.506628274631000502415765284811 * ::exp(u * u / 2); /* f(u)/df(u) */
-  u = u - t / (1 + u * t / 2);                                 /* Halley's method */
+  t = normalCDF(u) - q;                                           /* error */
+  t = t * 2.506628274631000502415765284811 * std::exp(u * u / 2); /* f(u)/df(u) */
+  u = u - t / (1 + u * t / 2);                                    /* Halley's method */
 
   return (p > 0.5 ? -u : u);
 }
@@ -150,7 +160,8 @@ double math::normalCDF(double u)
   static const double q[6] = {1.00000000000000000e00, 2.56852019228982242e00,
                               1.87295284992346047e00, 5.27905102951428412e-1,
                               6.05183413124413191e-2, 2.33520497626869185e-3};
-  double y, z;
+  double y = 0;
+  double z = 0;
 
   ASSERT_(!std::isnan(u));
   ASSERT_(std::isfinite(u));
@@ -165,7 +176,7 @@ double math::normalCDF(double u)
     return 0.5 + y;
   }
 
-  z = ::exp(-y * y / 2) / 2;
+  z = std::exp(-y * y / 2) / 2;
   if (y <= 4.0)
   {
     /* evaluate erfc() for sqrt(2)*0.46875 <= |u| <= sqrt(2)*4.0 */
@@ -235,11 +246,12 @@ bool math::loadVector(std::istream& f, ::std::vector<double>& d)
 
   const char* s = str.c_str();
 
-  char *nextTok, *context;
+  char* nextTok = nullptr;
+  char* context = nullptr;
   const char* delim = " \t";
 
   d.clear();
-  nextTok = mrpt::system::strtok(static_cast<char*> s, delim, &context);
+  nextTok = mrpt::system::strtok(const_cast<char*>(s), delim, &context);
   while (nextTok != nullptr)
   {
     d.push_back(atof(nextTok));
@@ -260,12 +272,18 @@ double math::averageLogLikelihood(
   // https://www.mrpt.org/Averaging_Log-Likelihood_Values:Numerical_Stability
   ASSERT_(logWeights.size() == logLikelihoods.size());
 
-  if (!logWeights.size()) THROW_EXCEPTION("ERROR: logWeights vector is empty!");
+  if (logWeights.empty())
+  {
+    THROW_EXCEPTION("ERROR: logWeights vector is empty!");
+  }
 
-  CVectorDouble::const_iterator itLW, itLL;
+  CVectorDouble::const_iterator itLW;
+  CVectorDouble::const_iterator itLL;
   double lw_max = math::maximum(logWeights);
   double ll_max = math::maximum(logLikelihoods);
-  double SUM1 = 0, SUM2 = 0, tmpVal;
+  double SUM1 = 0;
+  double SUM2 = 0;
+  double tmpVal = 0;
 
   for (itLW = logWeights.begin(), itLL = logLikelihoods.begin(); itLW != logWeights.end();
        itLW++, itLL++)
@@ -289,12 +307,18 @@ double math::averageLogLikelihood(const CVectorDouble& logLikelihoods)
   // Explained in:
   // https://www.mrpt.org/Averaging_Log-Likelihood_Values:Numerical_Stability
   size_t N = logLikelihoods.size();
-  if (!N) THROW_EXCEPTION("ERROR: logLikelihoods vector is empty!");
+  if (N == 0)
+  {
+    THROW_EXCEPTION("ERROR: logLikelihoods vector is empty!");
+  }
 
   double ll_max = math::maximum(logLikelihoods);
   double SUM1 = 0;
 
-  for (size_t i = 0; i < N; i++) SUM1 += exp(logLikelihoods[i] - ll_max);
+  for (size_t i = 0; i < N; i++)
+  {
+    SUM1 += exp(logLikelihoods[i] - ll_max);
+  }
 
   double res = log(SUM1) - log(static_cast<double>(N)) + ll_max;
 
@@ -306,7 +330,10 @@ double math::averageLogLikelihood(const CVectorDouble& logLikelihoods)
 // Wrapped angles average:
 double math::averageWrap2Pi(const CVectorDouble& angles)
 {
-  if (angles.empty()) return 0;
+  if (angles.empty())
+  {
+    return 0;
+  }
 
   int W_phi_R = 0, W_phi_L = 0;
   double phi_R = 0, phi_L = 0;
@@ -427,8 +454,9 @@ string math::MATLAB_plotCovariance2D(
   str += format("],'%s');\n", style.c_str());
 
   return str;
-  MRPT_END_WITH_CLEAN_UP(std::cerr << "The matrix that led to error was: " << std::endl
-                                   << cov.asEigen() << std::endl;)
+  MRPT_END_WITH_CLEAN_UP(std::cerr << "The matrix that led to error was: "
+                                   << "\n"
+                                   << cov.asEigen() << "\n";)
 }
 
 double mrpt::math::interpolate2points(

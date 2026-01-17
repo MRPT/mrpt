@@ -613,7 +613,7 @@ bool CArchive::receiveMessage(CMessage& msg)
     }
     catch (const std::exception& e)
     {
-      std::cerr << "Error reading from stream: " << e.what() << std::endl;
+      std::cerr << "Error reading from stream: " << e.what() << "\n";
     }
 
     // No more data! (read timeout is already included in the call to

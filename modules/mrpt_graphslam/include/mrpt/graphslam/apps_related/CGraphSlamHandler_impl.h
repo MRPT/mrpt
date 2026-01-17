@@ -120,13 +120,16 @@ void CGraphSlamHandler<GRAPH_T>::initOutputDir(const std::string& output_dir_fna
       string answer;
 
       question << "Directory exists. Choose between the "
-               << "following options" << std::endl;
+               << "following options"
+               << "\n";
       question << "\t 1: Rename current folder and start new "
-               << "output directory (default)" << std::endl;
-      question << "\t 2: Remove existing contents and continue execution " << std::endl;
+               << "output directory (default)"
+               << "\n";
+      question << "\t 2: Remove existing contents and continue execution "
+               << "\n";
       question << "\t 3: Handle potential conflict manually "
                   "(Halts program execution)"
-               << std::endl;
+               << "\n";
       question << "\t [ 1 | 2 | 3 ] --> ";
       std::cout << question.str();
 
@@ -258,7 +261,7 @@ void CGraphSlamHandler<GRAPH_T>::initEngine(
 template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::printParams() const
 {
-  std::cout << this->getParamsAsString() << std::endl;
+  std::cout << this->getParamsAsString() << "\n";
   m_engine->printParams();
 }
 
@@ -271,24 +274,24 @@ void CGraphSlamHandler<GRAPH_T>::getParamsAsString(std::string* str) const
 
   stringstream ss_out("");
 
-  ss_out << "\n------------[ graphslam-engine_app Parameters ]------------" << std::endl;
+  ss_out << "\n------------[ graphslam-engine_app Parameters ]------------"
+         << "\n";
 
   // general configuration parameters
   ss_out << "User decides about output dir?  = "
-         << (m_user_decides_about_output_dir ? "TRUE" : "FALSE") << std::endl;
-  ss_out << "Output directory                = " << m_output_dir_fname << std::endl;
-  ss_out << "Generate .graph file?           = " << (m_save_graph ? "TRUE" : "FALSE") << std::endl;
-  ss_out << "Generate .3DScene file?         = " << (m_save_3DScene ? "TRUE" : "FALSE")
-         << std::endl;
+         << (m_user_decides_about_output_dir ? "TRUE" : "FALSE") << "\n";
+  ss_out << "Output directory                = " << m_output_dir_fname << "\n";
+  ss_out << "Generate .graph file?           = " << (m_save_graph ? "TRUE" : "FALSE") << "\n";
+  ss_out << "Generate .3DScene file?         = " << (m_save_3DScene ? "TRUE" : "FALSE") << "\n";
   if (m_save_graph)
   {
-    ss_out << "Generated .graph filename       = " << m_save_graph_fname << std::endl;
+    ss_out << "Generated .graph filename       = " << m_save_graph_fname << "\n";
   }
   if (m_save_3DScene)
   {
-    ss_out << "Generated .3DScene filename     = " << m_save_3DScene_fname << std::endl;
+    ss_out << "Generated .3DScene filename     = " << m_save_3DScene_fname << "\n";
   }
-  ss_out << "Rawlog filename                 = " << m_rawlog_fname << std::endl;
+  ss_out << "Rawlog filename                 = " << m_rawlog_fname << "\n";
 
   *str = ss_out.str();
 }

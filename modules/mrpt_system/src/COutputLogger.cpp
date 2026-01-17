@@ -18,12 +18,12 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
 
+#include <array>
 #include <cstdarg>  // for logFmt
 #include <cstdio>
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <vector>
 
 #ifdef _MSC_VER
 #define WIN32_LEAN_AND_MEAN
@@ -41,7 +41,7 @@ using namespace std;
 // COutputLogger
 // ////////////////////////////////////////////////////////////
 
-static std::array<
+thread_local std::array<
     mrpt::system::ConsoleForegroundColor,
     NUMBER_OF_VERBOSITY_LEVELS>
     logging_levels_to_colors = {
@@ -57,13 +57,14 @@ COutputLogger::logging_levels_to_colors()
   return ::logging_levels_to_colors;
 }
 
-static std::array<std::string, NUMBER_OF_VERBOSITY_LEVELS> logging_levels_to_names = {
+static constexpr std::array<const char*, NUMBER_OF_VERBOSITY_LEVELS> logging_levels_to_names = {
     "DEBUG",  // LVL_DEBUG
     "INFO ",  // LVL_INFO
     "WARN ",  // LVL_WARN
     "ERROR"   // LVL_ERROR
 };
-std::array<std::string, NUMBER_OF_VERBOSITY_LEVELS>& COutputLogger::logging_levels_to_names()
+
+const std::array<const char*, NUMBER_OF_VERBOSITY_LEVELS>& COutputLogger::logging_levels_to_names()
 {
   return ::logging_levels_to_names;
 }
@@ -98,7 +99,7 @@ void COutputLogger::logStr(const VerbosityLevel level, std::string_view msg_str)
 void COutputLogger::logFmt(const VerbosityLevel level, const char* fmt, ...) const
 {
   // check for nullptr pointer
-  if (!fmt)
+  if (fmt == nullptr)
   {
     return;
   }
@@ -107,13 +108,13 @@ void COutputLogger::logFmt(const VerbosityLevel level, const char* fmt, ...) con
   // http://c-faq.com/varargs/handoff.html
   va_list argp;
   va_start(argp, fmt);
-  std::string str = this->generateStringFromFormat(fmt, argp);
+  std::string str = GenerateStringFromFormat(fmt, argp);
   va_end(argp);
 
   this->logStr(level, str);
 }
 
-std::string COutputLogger::generateStringFromFormat(std::string_view fmt, va_list argp) const
+std::string COutputLogger::GenerateStringFromFormat(std::string_view fmt, va_list argp)
 {
   // --- Step 1: Determine required buffer size ---
 
@@ -195,13 +196,13 @@ void COutputLogger::setVerbosityLevelForCallbacks(const VerbosityLevel level)
   m_min_verbosity_level_callbacks = level;
 }
 
-void COutputLogger::getLogAsString(std::string& fname) const
+void COutputLogger::getLogAsString(std::string& log_contents) const
 {
-  fname.clear();
+  log_contents.clear();
   auto lck = mrpt::lockHelper(*m_historyMtx);
   for (const auto& h : m_history)
   {
-    fname += h.getAsString();
+    log_contents += h.getAsString();
   }
 }
 std::string COutputLogger::getLogAsString() const
@@ -210,7 +211,7 @@ std::string COutputLogger::getLogAsString() const
   this->getLogAsString(str);
   return str;
 }
-void COutputLogger::writeLogToFile(const std::optional<string> fname_in) const
+void COutputLogger::writeLogToFile(const std::optional<string>& fname_in) const
 {
   using namespace std::string_literals;
 
@@ -274,7 +275,7 @@ std::string COutputLogger::TMsg::getAsString() const
       << COutputLogger::logging_levels_to_names()[level] << "|" << name << "] " << body;
   if (!body.empty() && *body.rbegin() != '\n')
   {
-    out << std::endl;
+    out << "\n";
   }
 
   return out.str();

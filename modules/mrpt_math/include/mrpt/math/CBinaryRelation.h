@@ -434,7 +434,10 @@ class CBinaryRelation
    */
   size_t insertElements(const std::set<T>& els)
   {
-    if (els.empty()) return 0;
+    if (els.empty())
+    {
+      return 0;
+    }
     // This code is much more complex than it should! Trying, for
     // efficiency, to avoid multiple calls to insertElement makes things a
     // lot harder.
@@ -472,7 +475,10 @@ class CBinaryRelation
   template <typename FunctionType>
   size_t insertElements(const std::set<T>& els, FunctionType fun)
   {
-    if (els.empty()) return 0;
+    if (els.empty())
+    {
+      return 0;
+    }
     size_t howMany = insertElements(els);
     std::set<size_t> poss;
     {

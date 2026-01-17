@@ -163,7 +163,9 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
   // Is it a useful partition?
   if (cut_value > threshold_Ncut || p1.size() < minSizeClusters || p2.size() < minSizeClusters)
   {
-    if (verbose) std::cout << "->NO!" << std::endl;
+    if (verbose)
+      std::cout << "->NO!"
+                << "\n";
 
     // No:
     p1.clear();
@@ -172,7 +174,9 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
   }
   else
   {
-    if (verbose) std::cout << "->YES!" << std::endl;
+    if (verbose)
+      std::cout << "->YES!"
+                << "\n";
 
     // Yes:
     std::vector<std::vector<uint32_t>> p1_parts, p2_parts;

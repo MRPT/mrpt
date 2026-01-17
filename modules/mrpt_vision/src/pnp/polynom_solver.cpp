@@ -23,7 +23,10 @@ int solve_deg2(double a, double b, double c, double& x1, double& x2)
 {
   double delta = b * b - 4 * a * c;
 
-  if (delta < 0) return 0;
+  if (delta < 0)
+  {
+    return 0;
+  }
 
   double inv_2a = 0.5 / a;
 
@@ -52,7 +55,10 @@ int solve_deg3(double a, double b, double c, double d, double& x0, double& x1, d
     if (b == 0)
     {
       // Solve first order system
-      if (c == 0) return 0;
+      if (c == 0)
+      {
+        return 0;
+      }
 
       x0 = -d / c;
       return 1;
@@ -143,11 +149,17 @@ int solve_deg4(
   // Solve resultant cubic
   double r0, r1, r2;
   int n = solve_deg3(1, -c, d * b - 4 * e, 4 * c * e - d * d - b2 * e, r0, r1, r2);
-  if (n == 0) return 0;
+  if (n == 0)
+  {
+    return 0;
+  }
 
   // Calculate R^2
   double R2 = 0.25 * b2 - c + r0, R;
-  if (R2 < 0) return 0;
+  if (R2 < 0)
+  {
+    return 0;
+  }
 
   R = sqrt(R2);
   double inv_R = 1. / R;

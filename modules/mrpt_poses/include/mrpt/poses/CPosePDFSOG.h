@@ -57,10 +57,11 @@ class CPosePDFSOG : public CPosePDF
    public:
     friend std::ostream& operator<<(std::ostream& o, const TGaussianMode& mode)
     {
-      o << "Mean: " << mode.mean << std::endl
-        << "Covariance: " << std::endl
-        << mode.cov << std::endl
-        << "Log-weight: " << mode.log_w << std::endl;
+      o << "Mean: " << mode.mean << "\n"
+        << "Covariance: "
+        << "\n"
+        << mode.cov << "\n"
+        << "Log-weight: " << mode.log_w << "\n";
       return o;
     }
   };

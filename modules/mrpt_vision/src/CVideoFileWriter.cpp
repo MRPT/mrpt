@@ -58,7 +58,7 @@ bool CVideoFileWriter::open(
   {
     std::cerr << "[CVideoFileWriter::open] fourcc string must be four "
                  "character length or empty for default."
-              << std::endl;
+              << "\n";
     return false;
   }
 
@@ -69,7 +69,7 @@ bool CVideoFileWriter::open(
 #else
   std::cerr << "[CVideoFileWriter::open] ERROR: MRPT was compiled without "
                "OpenCV support "
-            << std::endl;
+            << "\n";
   return false;
 #endif
 }
@@ -113,7 +113,7 @@ bool CVideoFileWriter::writeImage(const mrpt::img::CImage& img)
                      "size is %ix%i but image is %ux%u",
                      m_img_size.x, m_img_size.y, (unsigned)img.getWidth(),
                      (unsigned)img.getHeight())
-              << std::endl;
+              << "\n";
     return false;
   }
 

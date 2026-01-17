@@ -274,14 +274,20 @@ int mrpt::vision::pnp::p3p::solve_for_lengths(
   double pr = p * r, pqr = q * pr;
 
   // Check reality condition (the four points should not be coplanar)
-  if (p2 + q2 + r2 - pqr - 1 == 0) return 0;
+  if (p2 + q2 + r2 - pqr - 1 == 0)
+  {
+    return 0;
+  }
 
   double ab = a * b, a_2 = 2 * a;
 
   double A = -2 * b + b2 + a2 + 1 + ab * (2 - r2) - a_2;
 
   // Check reality condition
-  if (A == 0) return 0;
+  if (A == 0)
+  {
+    return 0;
+  }
 
   double a_4 = 4 * a;
 
@@ -293,12 +299,18 @@ int mrpt::vision::pnp::p3p::solve_for_lengths(
   double temp = (p2 * (a - 1 + b) + r2 * (a - 1 - b) + pqr - a * pqr);
   double b0 = b * temp * temp;
   // Check reality condition
-  if (b0 == 0) return 0;
+  if (b0 == 0)
+  {
+    return 0;
+  }
 
   double real_roots[4];
   int n = solve_deg4(A, B, C, D, E, real_roots[0], real_roots[1], real_roots[2], real_roots[3]);
 
-  if (n == 0) return 0;
+  if (n == 0)
+  {
+    return 0;
+  }
 
   int nb_solutions = 0;
   double r3 = r2 * r, pr2 = p * r2, r3q = r3 * q;

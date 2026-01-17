@@ -70,7 +70,7 @@ CMyntEyeCamera::CMyntEyeCamera(const TMyntEyeCameraParameters& p) :
 
   mynteyed::StreamMode stream_mode = params.stream_mode;
   m_capture->cam->Open(params);
-  std::cout << std::endl;
+  std::cout << "\n";
   if (!m_capture->cam->IsOpened())
   {
     THROW_EXCEPTION("Error: Open camera failed");

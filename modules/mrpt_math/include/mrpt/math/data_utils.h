@@ -265,8 +265,8 @@ void mahalanobisDistanceSqAndLogPDF(
   log_pdf_out = static_cast<typename MATRIXLIKE::Scalar>(-0.5) *
                 (maha2_out +
                  static_cast<typename MATRIXLIKE::Scalar>(cov.cols()) *
-                     ::log(static_cast<typename MATRIXLIKE::Scalar>(M_2PI)) +
-                 ::log(cov.det()));
+                     std::log(static_cast<typename MATRIXLIKE::Scalar>(M_2PI)) +
+                 std::log(cov.det()));
   MRPT_END
 }
 

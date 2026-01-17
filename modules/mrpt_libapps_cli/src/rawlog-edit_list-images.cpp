@@ -60,17 +60,17 @@ DECLARE_OP_FUNCTION(op_list_images)
             std::dynamic_pointer_cast<CObservationStereoImages>(obs);
         // save image to file & convert into external storage:
         if (obsSt->imageLeft.isExternallyStored())
-          m_out << obsSt->imageLeft.getExternalStorageFile() << std::endl;
+          m_out << obsSt->imageLeft.getExternalStorageFile() << "\n";
 
         if (obsSt->imageRight.isExternallyStored())
-          m_out << obsSt->imageRight.getExternalStorageFile() << std::endl;
+          m_out << obsSt->imageRight.getExternalStorageFile() << "\n";
       }
       else if (IS_CLASS(*obs, CObservationImage))
       {
         CObservationImage::Ptr obsIm = std::dynamic_pointer_cast<CObservationImage>(obs);
 
         if (obsIm->image.isExternallyStored())
-          m_out << obsIm->image.getExternalStorageFile() << std::endl;
+          m_out << obsIm->image.getExternalStorageFile() << "\n";
       }
       else if (IS_CLASS(*obs, CObservation3DRangeScan))
       {
@@ -78,7 +78,7 @@ DECLARE_OP_FUNCTION(op_list_images)
             std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
 
         if (obs3D->intensityImage.isExternallyStored())
-          m_out << obs3D->intensityImage.getExternalStorageFile() << std::endl;
+          m_out << obs3D->intensityImage.getExternalStorageFile() << "\n";
       }
 
       return true;

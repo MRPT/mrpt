@@ -297,7 +297,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
     catch (const std::exception& e)
     {
       std::cerr << "Exception while declaring Uniform of shader ID #" << static_cast<int>(id)
-                << std::endl;
+                << "\n";
       throw;
     }
   }

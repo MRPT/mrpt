@@ -38,7 +38,7 @@ struct MyGlobalProfiler : public mrpt::system::CTimeLogger
       {
         const std::string sFil("mrpt-global-profiler.csv");
         this->saveToCSVFile(sFil);
-        std::cout << "[MRPT global profiler] Write stats to: " << sFil << std::endl;
+        std::cout << "[MRPT global profiler] Write stats to: " << sFil << "\n";
       }
     }
     catch (...)

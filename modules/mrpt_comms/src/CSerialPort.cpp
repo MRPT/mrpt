@@ -653,7 +653,10 @@ size_t CSerialPort::Read(void* Buffer, size_t Count)
   // Port must be open!
   if (!isOpen()) THROW_EXCEPTION("The port is not open yet!");
 
-  if (!Count) return 0;
+  if (!Count)
+  {
+    return 0;
+  }
 
   // Use the "m_totalTimeout_ms" global timeout
   //  and the "m_interBytesTimeout_ms" for inter-bytes:

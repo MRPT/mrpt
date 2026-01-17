@@ -77,7 +77,7 @@ TEST(CObservation3DRangeScan, Project3D_noFilter)
     fillSampleObs(o, pp, i);
 
     o.unprojectInto(o, pp, fp);
-    EXPECT_EQ(o.points3D_x.size(), 21U) << " testcase flags: i=" << i << std::endl;
+    EXPECT_EQ(o.points3D_x.size(), 21U) << " testcase flags: i=" << i << "\n";
   }
 }
 
@@ -103,7 +103,7 @@ TEST(CObservation3DRangeScan, Project3D_filterMinMax1)
     fp.rangeCheckBetween = (i & 4) != 0;
 
     o.unprojectInto(o, pp, fp);
-    EXPECT_EQ(o.points3D_x.size(), 20U) << " testcase flags: i=" << i << std::endl;
+    EXPECT_EQ(o.points3D_x.size(), 20U) << " testcase flags: i=" << i << "\n";
   }
 }
 
@@ -121,7 +121,7 @@ TEST(CObservation3DRangeScan, Project3D_additionalLayers)
 
     o.unprojectInto(o, pp, fp);
     EXPECT_EQ(o.points3D_x.size(), TEST_RANGEIMG_HEIGHT * TEST_RANGEIMG_WIDTH)
-        << " testcase flags: i=" << i << std::endl;
+        << " testcase flags: i=" << i << "\n";
   }
 }
 
@@ -150,7 +150,7 @@ TEST(CObservation3DRangeScan, Project3D_filterMinMaxAllBetween)
 
     o.unprojectInto(o, pp, fp);
     EXPECT_EQ(o.points3D_x.size(), fp.rangeCheckBetween ? 21U : 0U)
-        << " testcase flags: i=" << i << std::endl;
+        << " testcase flags: i=" << i << "\n";
   }
 }
 
@@ -179,7 +179,7 @@ TEST(CObservation3DRangeScan, Project3D_filterMinMaxNoneBetween)
 
     o.unprojectInto(o, pp, fp);
     EXPECT_EQ(o.points3D_x.size(), fp.rangeCheckBetween ? 0U : 21U)
-        << " testcase flags: i=" << i << std::endl;
+        << " testcase flags: i=" << i << "\n";
   }
 }
 
@@ -201,7 +201,7 @@ TEST(CObservation3DRangeScan, Project3D_filterMin)
     fillSampleObs(o, pp, i);
 
     o.unprojectInto(o, pp, fp);
-    EXPECT_EQ(o.points3D_x.size(), 6U) << " testcase flags: i=" << i << std::endl;
+    EXPECT_EQ(o.points3D_x.size(), 6U) << " testcase flags: i=" << i << "\n";
   }
 }
 
@@ -223,7 +223,7 @@ TEST(CObservation3DRangeScan, Project3D_filterMax)
     fillSampleObs(o, pp, i);
 
     o.unprojectInto(o, pp, fp);
-    EXPECT_EQ(o.points3D_x.size(), 3U) << " testcase flags: i=" << i << std::endl;
+    EXPECT_EQ(o.points3D_x.size(), 3U) << " testcase flags: i=" << i << "\n";
   }
 }
 
@@ -262,7 +262,7 @@ TEST(CObservation3DRangeScan, LoadAndCheckFloorPoints)
     /*
     //for (unsigned int i=0;i<bin_x.size();i++)
     //std::cout << "Hist[" << i << "] x=" << bin_x[i] << " count= " <<
-    bin_count[i] << std::endl;
+    bin_count[i] << "\n";
     */
 
     EXPECT_LE(bin_count[11], 100);
@@ -285,7 +285,7 @@ TEST(CObservation3DRangeScan, LoadAndCheckFloorPoints)
 
     // for (unsigned int i = 0; i < bin_x.size(); i++)
     //	std::cout << "Hist[" << i << "] x=" << bin_x[i]
-    //   << " count= " << bin_count[i] << std::endl;
+    //   << " count= " << bin_count[i] << "\n";
     /*
     Hist[11] x=-0.0362069 count= 0
     Hist[12] x=-0.0258621 count= 7
