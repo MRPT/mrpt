@@ -53,6 +53,6 @@ void mrpt::gui::showErrorMessage(const std::string& str)
 #elif MRPT_HAS_WXWIDGETS
   wxMessageBox(sErr.c_str(), _("Exception"));
 #else
-  std::cerr << str << std::endl;
+  std::cerr << str << "\n";
 #endif  // MRPT_HAS_Qt5
 }

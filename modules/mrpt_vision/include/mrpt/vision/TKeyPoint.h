@@ -124,7 +124,10 @@ struct TKeyPointList_templ
    */
   TFeatureID getMaxID() const
   {
-    if (this->empty()) return 0;
+    if (this->empty())
+    {
+      return 0;
+    }
     TFeatureID maxID = m_feats[0].ID;
     size_t N = m_feats.size() - 1;
     for (; N; --N)

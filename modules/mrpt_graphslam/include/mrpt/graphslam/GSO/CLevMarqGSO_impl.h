@@ -650,8 +650,9 @@ void CLevMarqGSO<GRAPH_T>::getDescriptiveReport(std::string* report_str) const
 
   // Report on graph
   stringstream class_props_ss;
-  class_props_ss << "Levenberg Marquardt Optimization Summary: " << std::endl;
-  class_props_ss << header_sep << std::endl;
+  class_props_ss << "Levenberg Marquardt Optimization Summary: "
+                 << "\n";
+  class_props_ss << header_sep << "\n";
 
   // time and output logging
   const std::string time_res = this->m_time_logger.getStatsAsText();
@@ -688,10 +689,10 @@ void CLevMarqGSO<GRAPH_T>::OptimizationParams::dumpToTextStream(std::ostream& ou
   MRPT_START
   out << "-----------[ Levenberg-Marquardt Optimization ] -------\n";
   out << "Optimization on second thread  = " << (optimization_on_second_thread ? "TRUE" : "FALSE")
-      << std::endl;
+      << "\n";
   out << "Optimize nodes in distance     = " << optimization_distance << "\n";
   out << "Min. node difference for LC    = " << LC_min_nodeid_diff << "\n";
-  // out << cfg.getAsString() << std::endl;
+  // out << cfg.getAsString() << "\n";
   MRPT_END
 }
 template <class GRAPH_T>
@@ -736,7 +737,7 @@ void CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::dumpToTextStream(std::ostre
 
   // out << mrpt::format("%s", cfg.getAsString().c_str());
 
-  std::cout << std::endl;
+  std::cout << "\n";
 
   MRPT_END
 }

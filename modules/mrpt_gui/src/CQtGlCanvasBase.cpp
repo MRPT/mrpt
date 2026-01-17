@@ -29,7 +29,7 @@ CQtGlCanvasBase::CQtGlCanvasBase(QWidget* parent) :
 #else
   std::cerr << "[mrpt::gui::CQtGlCanvasBase] *Warning*: MRPT built without "
                "OpenGL support."
-            << std::endl;
+            << "\n";
 #endif
 }
 

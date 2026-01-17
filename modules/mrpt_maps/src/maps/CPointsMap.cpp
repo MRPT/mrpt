@@ -2308,7 +2308,7 @@ bool CPointsMap::loadFromKittiVelodyneFile(const std::string& filename)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "[loadFromKittiVelodyneFile] " << e.what() << std::endl;
+    std::cerr << "[loadFromKittiVelodyneFile] " << e.what() << "\n";
     return false;
   }
 }
@@ -2336,7 +2336,7 @@ bool CPointsMap::saveToKittiVelodyneFile(const std::string& filename) const
   }
   catch (const std::exception& e)
   {
-    std::cerr << "[saveToKittiVelodyneFile] " << e.what() << std::endl;
+    std::cerr << "[saveToKittiVelodyneFile] " << e.what() << "\n";
     return false;
   }
 }

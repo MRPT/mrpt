@@ -21,7 +21,10 @@ using namespace mrpt::comms;
 
 size_t CInterfaceFTDI::Read(void* Buffer, size_t Count)
 {
-  if (!Count) return 0;
+  if (!Count)
+  {
+    return 0;
+  }
 
   // Employ a circular_buffer to speed-up lots of small readings:
   if (m_readBuffer.size() >= Count)

@@ -37,7 +37,10 @@ QItemSelection CObservationTreeModel::changeSelected(const std::vector<size_t>& 
 int CObservationTreeModel::rowCount(const QModelIndex& parent) const
 {
   CNode* parentNode;
-  if (parent.column() > 0) return 0;
+  if (parent.column() > 0)
+  {
+    return 0;
+  }
 
   parentNode = getNodeFromIndexSafe(parent);
 

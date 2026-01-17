@@ -665,7 +665,7 @@ bool mrpt::img::CImage::loadFromXPM(const char* const* xpm_data, bool swap_rb)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "[CImage::loadFromXPM] " << e.what() << std::endl;
+    std::cerr << "[CImage::loadFromXPM] " << e.what() << "\n";
     return false;
   }
 }

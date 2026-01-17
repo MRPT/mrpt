@@ -50,8 +50,9 @@ void CObservationReflectivity::getDescriptionAsText(std::ostream& o) const
 {
   CObservation::getDescriptionAsText(o);
 
-  o << "reflectivityLevel=" << reflectivityLevel << std::endl;
-  o << "channel=" << channel << " (-1=any)" << std::endl;
+  o << "reflectivityLevel=" << reflectivityLevel << "\n";
+  o << "channel=" << channel << " (-1=any)"
+    << "\n";
 }
 
 std::string CObservationReflectivity::exportTxtHeader() const

@@ -88,7 +88,7 @@ wxSize GetScaledClientSize(const wxWindow* w);
   {                                                                                          \
     const size_t maxLines = 7;                                                               \
     const std::string sErr = mrpt::system::firstNLines(mrpt::exception_to_str(e), maxLines); \
-    std::cerr << e.what() << std::endl;                                                      \
+    std::cerr << e.what() << "\n";                                                           \
     wxMessageBox(sErr, wxT("Exception"), wxOK, nullptr);                                     \
   }                                                                                          \
   catch (...) { wxMessageBox(_("Untyped exception!"), _("Exception"), wxOK, nullptr); }

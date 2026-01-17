@@ -72,7 +72,7 @@ void Buffer::RAII_Impl::destroy()
       std::cerr << "[Buffer::RAII_Impl] *Warning* Leaking memory "
                    "since Buffer was acquired from a different thread "
                    "and cannot free it from this thread, call stack:"
-                << bt.asString() << std::endl;
+                << bt.asString() << "\n";
     }
   }
 #endif

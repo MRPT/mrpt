@@ -74,7 +74,7 @@ bool CGillAnemometer::tryToOpenTheCOM()
   {
     std::cerr << "[CGillAnemometer::tryToOpenTheCOM] Error opening or "
                  "configuring the serial port:"
-              << std::endl
+              << "\n"
               << e.what();
     COM.close();
     return false;
@@ -83,7 +83,7 @@ bool CGillAnemometer::tryToOpenTheCOM()
   {
     std::cerr << "[CGillAnemometer::tryToOpenTheCOM] Error opening or "
                  "configuring the serial port."
-              << std::endl;
+              << "\n";
     COM.close();
     return false;
   }
@@ -214,10 +214,13 @@ void CGillAnemometer::doProcess()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "[CGillAnemometer::doProcess] Error:" << std::endl << e.what();
+    std::cerr << "[CGillAnemometer::doProcess] Error:"
+              << "\n"
+              << e.what();
   }
   catch (...)
   {
-    std::cerr << "[CGillAnemometer::doProcess] Unknown Error" << std::endl;
+    std::cerr << "[CGillAnemometer::doProcess] Unknown Error"
+              << "\n";
   }
 }

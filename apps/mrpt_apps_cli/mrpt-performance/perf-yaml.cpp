@@ -65,7 +65,10 @@ static bool prepareYamlTestFile()
 
 double yaml_loadFromFile(int, int)
 {
-  if (!prepareYamlTestFile()) return 0;
+  if (!prepareYamlTestFile())
+  {
+    return 0;
+  }
   mrpt::system::CTimeLogger tl;
   for (unsigned int i = 0; i < 10; i++)
   {
@@ -80,7 +83,10 @@ double yaml_loadFromFile(int, int)
 }
 double yaml_FromFile(int, int)
 {
-  if (!prepareYamlTestFile()) return 0;
+  if (!prepareYamlTestFile())
+  {
+    return 0;
+  }
   mrpt::system::CTimeLogger tl;
   for (unsigned int i = 0; i < 10; i++)
   {
@@ -95,7 +101,10 @@ double yaml_FromFile(int, int)
 
 double yaml_loadFromText(int, int)
 {
-  if (!prepareYamlTestFile()) return 0;
+  if (!prepareYamlTestFile())
+  {
+    return 0;
+  }
   mrpt::system::CTimeLogger tl;
   for (unsigned int i = 0; i < 10000; i++)
   {
@@ -110,7 +119,10 @@ double yaml_loadFromText(int, int)
 }
 double yaml_FromText(int, int)
 {
-  if (!prepareYamlTestFile()) return 0;
+  if (!prepareYamlTestFile())
+  {
+    return 0;
+  }
   mrpt::system::CTimeLogger tl;
   for (unsigned int i = 0; i < 10000; i++)
   {
@@ -125,7 +137,10 @@ double yaml_FromText(int, int)
 
 double yaml_query(int, int)
 {
-  if (!prepareYamlTestFile()) return 0;
+  if (!prepareYamlTestFile())
+  {
+    return 0;
+  }
 
   const auto doc = mrpt::containers::yaml::FromFile(fil);
   std::string sTotal;
@@ -148,7 +163,10 @@ double yaml_query(int, int)
 }
 double yaml_iterate(int, int)
 {
-  if (!prepareYamlTestFile()) return 0;
+  if (!prepareYamlTestFile())
+  {
+    return 0;
+  }
 
   const auto doc = mrpt::containers::yaml::FromFile(fil);
   size_t visits = 0, allEntries = 0;
@@ -178,7 +196,10 @@ double yaml_iterate(int, int)
 #ifdef RUN_YAMLCPP_COMPARISON
 double yaml_yamlcpp_FromFile(int, int)
 {
-  if (!prepareYamlTestFile()) return 0;
+  if (!prepareYamlTestFile())
+  {
+    return 0;
+  }
   mrpt::system::CTimeLogger tl;
   for (unsigned int i = 0; i < 10; i++)
   {
@@ -192,7 +213,10 @@ double yaml_yamlcpp_FromFile(int, int)
 }
 double yaml_yamlcpp_Load(int, int)
 {
-  if (!prepareYamlTestFile()) return 0;
+  if (!prepareYamlTestFile())
+  {
+    return 0;
+  }
   mrpt::system::CTimeLogger tl;
   for (unsigned int i = 0; i < 10000; i++)
   {
@@ -206,7 +230,10 @@ double yaml_yamlcpp_Load(int, int)
 }
 double yaml_yamlcpp_query(int, int)
 {
-  if (!prepareYamlTestFile()) return 0;
+  if (!prepareYamlTestFile())
+  {
+    return 0;
+  }
 
   const auto doc = YAML::LoadFile(fil);
   std::string sTotal;
@@ -229,7 +256,10 @@ double yaml_yamlcpp_query(int, int)
 }
 double yaml_yamlcpp_iterate(int, int)
 {
-  if (!prepareYamlTestFile()) return 0;
+  if (!prepareYamlTestFile())
+  {
+    return 0;
+  }
 
   const auto doc = YAML::LoadFile(fil);
   size_t visits = 0, allEntries = 0;

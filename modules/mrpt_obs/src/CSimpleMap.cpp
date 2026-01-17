@@ -138,7 +138,7 @@ bool CSimpleMap::loadFromFile(const std::string& filName)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "[CSimpleMap::loadFromFile]" << e.what() << std::endl;
+    std::cerr << "[CSimpleMap::loadFromFile]" << e.what() << "\n";
     return false;
   }
 }

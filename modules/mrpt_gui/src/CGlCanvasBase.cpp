@@ -269,7 +269,7 @@ double CGlCanvasBase::renderCanvas(int width, int height)
         {
           std::cerr << "[CGlCanvasBase::renderCanvas] Warning: there "
                        "is no 'main' viewport in the 3D scene!"
-                    << std::endl;
+                    << "\n";
         }
       }
 
@@ -347,5 +347,5 @@ CGlCanvasBase::CamaraParams CGlCanvasBase::CamaraParams::FromCamera(const mrpt::
 
 void CGlCanvasBaseHeadless::renderError(const std::string& e)
 {
-  std::cerr << "[CGlCanvasBaseHeadless::renderError] Error:" << e << std::endl;
+  std::cerr << "[CGlCanvasBaseHeadless::renderError] Error:" << e << "\n";
 }

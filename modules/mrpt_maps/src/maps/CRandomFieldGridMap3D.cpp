@@ -123,7 +123,7 @@ void CRandomFieldGridMap3D::internal_initialize(bool erase_prev_contents)
 
   MRPT_LOG_DEBUG_STREAM(
       "[internal_initialize] Creating priors for GMRF with " << nodeCount << " nodes."
-                                                             << std::endl);
+                                                             << "\n");
   CTicTac tictac;
   tictac.Tic();
 
@@ -188,7 +188,7 @@ void CRandomFieldGridMap3D::internal_initialize(bool erase_prev_contents)
 
   MRPT_LOG_DEBUG_STREAM(
       "[internal_initialize] Prior built in " << tictac.Tac() << " s\n"
-                                              << std::endl);
+                                              << "\n");
 }
 
 /*---------------------------------------------------------------

@@ -302,8 +302,7 @@ bool mrpt::io::zip::compress_gz_data_block(
       }
       else
       {
-        std::cerr << "[compress_gz_data_block] Error writing to pipe: " << pipe_file_name
-                  << std::endl;
+        std::cerr << "[compress_gz_data_block] Error writing to pipe: " << pipe_file_name << "\n";
       }
     }
     // Read it all:

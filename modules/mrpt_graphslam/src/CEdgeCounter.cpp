@@ -124,7 +124,7 @@ void CEdgeCounter::addEdge(
           name.c_str());
       THROW_EXCEPTION(str_err);
       // std::stringstream ss_warn;
-      // ss_warn << "Commencing with the increment normally" << std::endl;
+      // ss_warn << "Commencing with the increment normally" << "\n";
     }
     if (is_loop_closure)
     {
@@ -192,26 +192,27 @@ void CEdgeCounter::clearAllEdges()
 void CEdgeCounter::dumpToConsole() const
 {
   std::string str(getAsString());
-  std::cout << str << std::endl;
+  std::cout << str << "\n";
 }
 
 void CEdgeCounter::getAsString(std::string* str_out) const
 {
   std::stringstream ss_out;
   std::string sep(80, '#');
-  ss_out << "Summary of Edges: " << std::endl;
-  ss_out << sep << std::endl;
+  ss_out << "Summary of Edges: "
+         << "\n";
+  ss_out << sep << "\n";
 
-  ss_out << "\tTotal registered edges: " << this->getTotalNumOfEdges() << std::endl;
+  ss_out << "\tTotal registered edges: " << this->getTotalNumOfEdges() << "\n";
   ss_out << "\tUnique edges (after removal of multiple edges connecting the "
             "same nodes): "
-         << m_unique_edges << std::endl;
+         << m_unique_edges << "\n";
 
   for (const auto& it : m_name_to_edges_num)
   {
-    ss_out << "\t" << it.first << " edges: " << it.second << std::endl;
+    ss_out << "\t" << it.first << " edges: " << it.second << "\n";
   }
-  ss_out << "\tLoop closure edges: " << this->getLoopClosureEdges() << std::endl;
+  ss_out << "\tLoop closure edges: " << this->getLoopClosureEdges() << "\n";
 
   // dump the contents to the provided string
   *str_out = ss_out.str();
@@ -246,7 +247,8 @@ void CEdgeCounter::setTextMessageParams(
     if (search == m_name_to_edges_num.end())
     {
       std::stringstream ss_err;
-      ss_err << "Name " << name << " is not recognized as an Edge type." << std::endl;
+      ss_err << "Name " << name << " is not recognized as an Edge type."
+             << "\n";
       THROW_EXCEPTION(ss_err.str());
     }
     // name exists ...
@@ -293,7 +295,7 @@ void CEdgeCounter::updateTextMessages() const
   std::stringstream title;
   title << "Total edges: " << this->getTotalNumOfEdges();
   // if (m_unique_edges) {
-  // title << " |Unique: " << m_unique_edges << std::endl;
+  // title << " |Unique: " << m_unique_edges << "\n";
   //}
   if (m_display_total_edges && m_win_manager)
   {
@@ -311,7 +313,7 @@ void CEdgeCounter::updateTextMessages() const
     int edges_num = m_name_to_edges_num.find(name)->second;
 
     std::stringstream ss;
-    ss << "  " << name << ": " << edges_num << std::endl;
+    ss << "  " << name << ": " << edges_num << "\n";
     m_win_manager->addTextMessage(
         5, -offset_y, ss.str(), mrpt::img::TColorf(1.0, 1.0, 1.0),
         /* unique_index = */ text_index);
@@ -322,7 +324,7 @@ void CEdgeCounter::updateTextMessages() const
   {
     std::stringstream ss;
     ss << "  "
-       << "Loop closures: " << m_num_loop_closures << std::endl;
+       << "Loop closures: " << m_num_loop_closures << "\n";
     m_win_manager->addTextMessage(
         5, -m_offset_y_loop_closures, ss.str(), mrpt::img::TColorf(1.0, 1.0, 1.0),
         /* unique_index = */ m_text_index_loop_closures);

@@ -127,7 +127,9 @@ bool mrpt::vision::pnp::posit::compute_pose(
 
     if (iCount == LOOP_MAX_COUNT)
     {
-      std::cout << "Solution Not converged" << std::endl << std::endl;
+      std::cout << "Solution Not converged"
+                << "\n"
+                << "\n";
       break;
     }
   }

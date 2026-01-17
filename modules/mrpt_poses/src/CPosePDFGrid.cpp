@@ -161,7 +161,7 @@ bool CPosePDFGrid::saveToTextFile(const std::string& dataFile) const
     {
       for (unsigned int x = 0; x < m_sizeX; x++)
         f_d << mrpt::format("%.5e ", *getByIndex(x, y, phiInd));
-      f_d << std::endl;
+      f_d << "\n";
     }
   }
 

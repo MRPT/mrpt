@@ -141,7 +141,7 @@ class COutputLogger
   /** Map from VerbosityLevels to their corresponding names. Handy for
    * printing the current message VerbosityLevel along with the actual content
    */
-  static std::array<std::string, NUMBER_OF_VERBOSITY_LEVELS>& logging_levels_to_names();
+  static const std::array<const char*, NUMBER_OF_VERBOSITY_LEVELS>& logging_levels_to_names();
 
   /** @name Logging methods
    * @{ */
@@ -168,7 +168,7 @@ class COutputLogger
   /** \brief Main method to add the specified message string to the logger.
    * \sa logCond, logFmt */
   void logStr(const VerbosityLevel level, std::string_view msg_str)
-      const;  // renamed from log() to avoid conflict with math ::log()
+      const;  // renamed from log() to avoid conflict with math std::log()
 
   /** \brief Alternative logging method, which mimics the printf behavior.
    *
@@ -250,7 +250,7 @@ class COutputLogger
    *
    * \sa dumpToConsole, getAsString
    */
-  void writeLogToFile(const std::optional<std::string> fname_in = std::nullopt) const;
+  void writeLogToFile(const std::optional<std::string>& fname_in = std::nullopt) const;
   /** \brief Dump the current contents of the COutputLogger instance in the
    * terminal window.
    *
@@ -336,7 +336,7 @@ class COutputLogger
 
   /** Helper method for generating a std::string instance from printf-like
    * arguments */
-  std::string generateStringFromFormat(std::string_view fmt, va_list argp) const;
+  static std::string GenerateStringFromFormat(std::string_view fmt, va_list argp);
 
   std::string m_logger_name = "COutputLogger";
   // deque is better than vector to avoid memory reallocs

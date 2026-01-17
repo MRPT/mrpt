@@ -259,9 +259,15 @@ int COccupancyGridMap2D::computeClearance(
   static const cellType thresholdCellValue = p2l(0.5f);
 
   // Si la celda esta ocupada, clearance de cero!
-  if (static_cast<unsigned>(cx) >= m_size_x || static_cast<unsigned>(cy) >= m_size_y) return 0;
+  if (static_cast<unsigned>(cx) >= m_size_x || static_cast<unsigned>(cy) >= m_size_y)
+  {
+    return 0;
+  }
 
-  if (m_map[cx + cy * m_size_y] < thresholdCellValue) return 0;
+  if (m_map[cx + cy * m_size_y] < thresholdCellValue)
+  {
+    return 0;
+  }
 
   // Truco para acelerar MUCHO:
   //  Si miramos un punto junto al mirado antes,
@@ -572,7 +578,10 @@ float COccupancyGridMap2D::computeClearance(float x, float y, float maxSearchDis
     for (yy = cy - 1; !atLeastOneFree && yy <= cy + 1; yy++)
       if (getCell(xx, yy) > 0.505f) atLeastOneFree = true;
 
-  if (!atLeastOneFree) return 0;
+  if (!atLeastOneFree)
+  {
+    return 0;
+  }
 
   for (xx = xx1; xx <= xx2; xx++)
     for (yy = yy1; yy <= yy2; yy++)

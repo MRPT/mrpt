@@ -157,10 +157,10 @@ void CGridMapAlignerApp::initialize(int argc, const char** argv)
   if (((!is_match && !is_detect_test) || (is_match && is_detect_test)) &&
       !SAVE_CORR_AND_NONCORR_DISTS)
   {
-    std::cerr << std::endl
+    std::cerr << "\n"
               << "Error: One operation mode 'match' or 'detect-test' or "
                  "'save-corr-dists' must be selected."
-              << std::endl;
+              << "\n";
     TCLAP::StdOutput so;
     so.usage(cmd);
     THROW_EXCEPTION("Wrong CLI parameters.");
@@ -171,10 +171,10 @@ void CGridMapAlignerApp::initialize(int argc, const char** argv)
     // maps:
     if (!arg_filgrid1.isSet() || !arg_filgrid2.isSet())
     {
-      std::cerr << std::endl
+      std::cerr << "\n"
                 << "Error: Two maps must be passed: --map1=xxx and "
                    "--map2=xxx"
-                << std::endl;
+                << "\n";
       TCLAP::StdOutput so;
       so.usage(cmd);
       THROW_EXCEPTION("Wrong CLI parameters.");

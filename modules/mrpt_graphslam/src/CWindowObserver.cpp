@@ -64,19 +64,20 @@ void CWindowObserver::OnEvent(const mrpt::system::mrptEvent& e)
   {
     const auto& ev = dynamic_cast<const mrpt::system::mrptEventOnDestroy&>(e);
     (void)ev;
-    std::cout << "Event received: mrptEventOnDestroy" << std::endl;
+    std::cout << "Event received: mrptEventOnDestroy"
+              << "\n";
   }
   else if (e.isOfType<mrpt::gui::mrptEventWindowResize>())
   {
     const auto& ev = static_cast<const mrpt::gui::mrptEventWindowResize&>(e);
     std::cout << "Resize event received from: " << ev.source_object
-              << ", new size: " << ev.new_width << " x " << ev.new_height << std::endl;
+              << ", new size: " << ev.new_width << " x " << ev.new_height << "\n";
   }
   else if (e.isOfType<mrpt::gui::mrptEventWindowChar>())
   {
     const auto& ev = dynamic_cast<const mrpt::gui::mrptEventWindowChar&>(e);
     std::cout << "Char event received from: " << ev.source_object << ". Char code: " << ev.char_code
-              << " modif: " << ev.key_modifiers << std::endl;
+              << " modif: " << ev.key_modifiers << "\n";
     ;
 
     switch (ev.char_code)
@@ -90,7 +91,8 @@ void CWindowObserver::OnEvent(const mrpt::system::mrptEvent& e)
         // case 3: // <C-c>
         if (ev.key_modifiers == 8192)
         {
-          std::cout << "Pressed C-c inside CDisplayWindow3D" << std::endl;
+          std::cout << "Pressed C-c inside CDisplayWindow3D"
+                    << "\n";
           m_key_codes_to_pressed["Ctrl+c"] = true;
         }
         break;

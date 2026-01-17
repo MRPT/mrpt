@@ -479,7 +479,9 @@ bool searchForEdge(
   {
     const CPolyhedron::TPolyhedronEdge& e = es[where];
     if (e.v1 == v1 && e.v2 == v2)
+    {
       return true;
+    }
     else if (e.v1 == v2 && e.v2 == v1)
       return false;
   }

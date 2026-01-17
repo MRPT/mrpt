@@ -152,8 +152,8 @@ TEST(TBoundingBox, inverseCompose)
     const auto bb2 = bb1.inverseCompose(mrpt::math::TPose3D(10, 20, 30, 180.0_deg, 0, 0));
 
     EXPECT_NEAR((bb2.min - mrpt::math::TPoint3D(7.0, 16.0, -28.0)).norm(), 0.0, 1e-4)
-        << bb2.min << std::endl;
+        << bb2.min << "\n";
     EXPECT_NEAR((bb2.max - mrpt::math::TPoint3D(10.0, 19.0, -25.0)).norm(), 0.0, 1e-4)
-        << bb2.max << std::endl;
+        << bb2.max << "\n";
   }
 }

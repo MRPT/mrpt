@@ -520,13 +520,19 @@ float CPointsMapXYZIRT::getPointField_float(size_t index, const std::string_view
 {
   if (fieldName == POINT_FIELD_INTENSITY)
   {
-    if (m_intensity.empty()) return 0;
+    if (m_intensity.empty())
+    {
+      return 0;
+    }
     ASSERT_LT_(index, m_intensity.size());
     return m_intensity[index];
   }
   if (fieldName == POINT_FIELD_TIMESTAMP)
   {
-    if (m_time.empty()) return 0;
+    if (m_time.empty())
+    {
+      return 0;
+    }
     ASSERT_LT_(index, m_time.size());
     return m_time[index];
   }
@@ -537,7 +543,10 @@ uint16_t CPointsMapXYZIRT::getPointField_uint16(
 {
   if (fieldName == POINT_FIELD_RING_ID)
   {
-    if (!hasRingField()) return 0;
+    if (!hasRingField())
+    {
+      return 0;
+    }
     ASSERT_LT_(index, m_ring.size());
     return m_ring[index];
   }

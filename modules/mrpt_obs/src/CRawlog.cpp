@@ -235,7 +235,7 @@ bool CRawlog::loadFromRawLogFile(const std::string& fileName, bool non_obs_objec
     }
     catch (const std::exception& e)
     {
-      std::cerr << mrpt::exception_to_str(e) << std::endl;
+      std::cerr << mrpt::exception_to_str(e) << "\n";
       keepReading = false;
     }
     catch (...)
@@ -275,7 +275,7 @@ bool CRawlog::saveToRawLogFile(const std::string& fileName) const
   }
   catch (const std::exception& e)
   {
-    std::cerr << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << mrpt::exception_to_str(e) << "\n";
     return false;
   }
 }
@@ -336,13 +336,15 @@ bool CRawlog::readActionObservationPair(
   }
   catch (const std::exception& e)
   {
-    std::cerr << "[CRawlog::readActionObservationPair] Found exception:" << std::endl
-              << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "[CRawlog::readActionObservationPair] Found exception:"
+              << "\n"
+              << mrpt::exception_to_str(e) << "\n";
     return false;
   }
   catch (...)
   {
-    std::cerr << "Untyped exception reading rawlog file!!" << std::endl;
+    std::cerr << "Untyped exception reading rawlog file!!"
+              << "\n";
     return false;
   }
 }
@@ -399,13 +401,15 @@ bool CRawlog::getActionObservationPairOrObservation(
   }
   catch (const std::exception& e)
   {
-    std::cerr << "[CRawlog::readActionObservationPair] Found exception:" << std::endl
-              << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "[CRawlog::readActionObservationPair] Found exception:"
+              << "\n"
+              << mrpt::exception_to_str(e) << "\n";
     return false;
   }
   catch (...)
   {
-    std::cerr << "Untyped exception reading rawlog file!!" << std::endl;
+    std::cerr << "Untyped exception reading rawlog file!!"
+              << "\n";
     return false;
   }
 }
@@ -509,12 +513,13 @@ bool CRawlog::getActionObservationPair(
   }
   catch (const std::exception& e)
   {
-    std::cerr << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << mrpt::exception_to_str(e) << "\n";
     return false;
   }
   catch (...)
   {
-    std::cerr << "Untyped exception getting act-obs pair from rawlog!!" << std::endl;
+    std::cerr << "Untyped exception getting act-obs pair from rawlog!!"
+              << "\n";
     return false;
   }
 }

@@ -77,7 +77,8 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 
     if (images.size() < 1)
     {
-      std::cout << "ERROR: No input images." << std::endl;
+      std::cout << "ERROR: No input images."
+                << "\n";
       return false;
     }
 
@@ -153,7 +154,8 @@ bool mrpt::vision::checkerBoardCameraCalibration(
         if (imgSize.height != (int)img_gray.getHeight() ||
             imgSize.width != (int)img_gray.getWidth())
         {
-          std::cout << "ERROR: All the images must have the same size" << std::endl;
+          std::cout << "ERROR: All the images must have the same size"
+                    << "\n";
           return false;
         }
       }
@@ -252,12 +254,13 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 
     }  // end find corners
 
-    std::cout << valid_detected_imgs << " valid images." << std::endl;
+    std::cout << valid_detected_imgs << " valid images."
+              << "\n";
     if (!valid_detected_imgs)
     {
       std::cout << "ERROR: No valid images. Perhaps the checkerboard "
                    "size is incorrect?"
-                << std::endl;
+                << "\n";
       return false;
     }
 
@@ -310,13 +313,13 @@ bool mrpt::vision::checkerBoardCameraCalibration(
       images[pointsIdx2imageFile[i]].reconstructed_camera_pose = p;
 
       std::cout << "Img: " << mrpt::system::extractFileName(pointsIdx2imageFile[i]) << ": " << p
-                << std::endl;
+                << "\n";
     }
 
     {
       CConfigFileMemory cfg;
       out_camera_params.saveToConfigFile("CAMERA_PARAMS", cfg);
-      std::cout << cfg.getContent() << std::endl;
+      std::cout << cfg.getContent() << "\n";
     }
 
     // ----------------------------------------
@@ -408,7 +411,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
   }
   catch (const std::exception& e)
   {
-    std::cout << e.what() << std::endl;
+    std::cout << e.what() << "\n";
     return false;
   }
 }

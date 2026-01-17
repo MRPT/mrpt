@@ -242,7 +242,7 @@ void CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers(double At, wxPaintDC& 
       if (!savedOk)
         std::cerr << "[CMyGLCanvas_DisplayWindow3D] Error saving "
                      "screenshot to "
-                  << grabFile << std::endl;
+                  << grabFile << "\n";
 
       m_win3D->internal_emitGrabImageEvent(grabFile);
     }

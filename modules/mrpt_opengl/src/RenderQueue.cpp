@@ -480,7 +480,7 @@ void mrpt::opengl::checkOpenGLErr_impl(unsigned int glErrorCode, const char* fil
   // w/o glu:
   const std::string sErr = mrpt::format("[%s:%i] OpenGL error: %u", filename, lineno, glErrorCode);
 #endif
-  std::cerr << "[gl_utils::checkOpenGLError] " << sErr << std::endl;
+  std::cerr << "[gl_utils::checkOpenGLError] " << sErr << "\n";
   THROW_EXCEPTION(sErr);
 }
 #endif

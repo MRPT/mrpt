@@ -55,13 +55,16 @@ void mrpt::system::changeCurrentThreadPriority(TThreadPriority priority)
   const pthread_t tid = pthread_self();
 
   int ret, policy;
-  struct sched_param param{};
+  struct sched_param param
+  {
+  };
 
   if (0 != (ret = pthread_getschedparam(tid, &policy, &param)))
   {
     std::cerr << "[mrpt::system::changeThreadPriority] Warning: Failed call to "
                  "pthread_getschedparam (error: `"
-              << strerror(ret) << "`)" << std::endl;
+              << strerror(ret) << "`)"
+              << "\n";
     return;
   }
 
@@ -107,7 +110,8 @@ void mrpt::system::changeCurrentThreadPriority(TThreadPriority priority)
   {
     std::cerr << "[mrpt::system::changeThreadPriority] Warning: Failed call to "
                  "pthread_setschedparam (error: `"
-              << strerror(ret) << "`)" << std::endl;
+              << strerror(ret) << "`)"
+              << "\n";
     return;
   }
 #endif

@@ -14,7 +14,6 @@
 
   <depend>mrpt_hwdrivers</depend>
   <depend>mrpt_slam</depend>
-  <depend>mrpt_tclap</depend>
   <depend>mrpt_topography</depend>
 
   <export>

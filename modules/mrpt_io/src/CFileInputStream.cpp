@@ -68,7 +68,10 @@ CFileInputStream::~CFileInputStream() { close(); }
  ---------------------------------------------------------------*/
 size_t CFileInputStream::Read(void* Buffer, size_t Count)
 {
-  if (!m_if.is_open()) return 0;
+  if (!m_if.is_open())
+  {
+    return 0;
+  }
 
   m_if.read(static_cast<char*>(Buffer), static_cast<std::streamsize>(Count));
   return m_if.fail() ? 0 : Count;
@@ -90,7 +93,10 @@ size_t CFileInputStream::Write([[maybe_unused]] const void* Buffer, [[maybe_unus
  ---------------------------------------------------------------*/
 uint64_t CFileInputStream::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
 {
-  if (!m_if.is_open()) return 0;
+  if (!m_if.is_open())
+  {
+    return 0;
+  }
 
   ifstream::off_type offset = Offset;
   ifstream::seekdir way;
@@ -120,7 +126,10 @@ uint64_t CFileInputStream::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
  ---------------------------------------------------------------*/
 uint64_t CFileInputStream::getTotalBytesCount() const
 {
-  if (!fileOpenCorrectly()) return 0;
+  if (!fileOpenCorrectly())
+  {
+    return 0;
+  }
 
   auto& f = const_cast<std::ifstream&>(m_if);
 

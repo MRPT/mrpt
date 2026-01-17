@@ -209,9 +209,9 @@ class CDirectedTree
                    const size_t depth_level)
     {
       s << std::string(depth_level * 5, ' ') << (edge_to_child.reverse ? "<-" : "->")  //;
-        << edge_to_child.id << std::endl;
+        << edge_to_child.id << "\n";
     };
-    s << root << std::endl;
+    s << root << "\n";
     visitDepthFirst(root, lmb);
     return s.str();
   }

@@ -71,7 +71,7 @@ void* ConnectWlanServerW()
   {
     // if an error ocurred
     std::stringstream excmsg;
-    excmsg << "WlanOpenHandle failed with error: " << dwResult << std::endl;
+    excmsg << "WlanOpenHandle failed with error: " << dwResult << "\n";
 
     // You can use FormatMessage here to find out why the function failed
     THROW_EXCEPTION(excmsg.str());
@@ -108,7 +108,7 @@ std::vector<PWLAN_INTERFACE_INFO> ListInterfacesW(HANDLE hClient)
   {
     // In case of error, raise an exception
     std::stringstream excmsg;
-    excmsg << "WlanEnumInterfaces failed with error: " << dwResult << std::endl;
+    excmsg << "WlanEnumInterfaces failed with error: " << dwResult << "\n";
 
     THROW_EXCEPTION(excmsg.str());
     // You can use FormatMessage here to find out why the function failed
@@ -248,7 +248,7 @@ std::vector<PWLAN_AVAILABLE_NETWORK> ListNetworksW(PWLAN_INTERFACE_INFO iface, H
   {
     // In case an error ocurred
     std::stringstream excmsg;
-    excmsg << "WlanGetAvailableNetworkList failed with error: " << dwResult << std::endl;
+    excmsg << "WlanGetAvailableNetworkList failed with error: " << dwResult << "\n";
     //	THROW_EXCEPTION(excmsg.str();;
   }
   else
@@ -517,7 +517,7 @@ bool CWirelessPower::getObservation(mrpt::obs::CObservationWirelessPower& outObs
     //	std::cout << "mrpt::hwdrivers::CWirelessPower::getObservation() " <<
     //"\n\tsensorLabel: " << outObservation.sensorLabel << "\n\ttimestamp: "
     //<< outObservation.timestamp << "\n\tpower: " << outObservation.power
-    //<< std::endl;
+    //<< "\n";
     return true;
   }
   catch (exception& e)

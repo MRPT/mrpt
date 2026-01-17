@@ -19,7 +19,6 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::poses;
 
 bool mrpt::topography::operator==(const TCoords& a, const TCoords& o)
 {
@@ -149,21 +148,21 @@ void mrpt::topography::ENU_axes_from_WGS84(
           in_height_reference_meters),
       PPref);
 
-  const double clat = cos(DEG2RAD(in_latitude_reference_degrees)),
-               slat = sin(DEG2RAD(in_latitude_reference_degrees));
-  const double clon = cos(DEG2RAD(in_longitude_reference_degrees)),
-               slon = sin(DEG2RAD(in_longitude_reference_degrees));
+  const double cLat = cos(DEG2RAD(in_latitude_reference_degrees));
+  const double sLat = sin(DEG2RAD(in_latitude_reference_degrees));
+  const double cLon = cos(DEG2RAD(in_longitude_reference_degrees));
+  const double sLon = sin(DEG2RAD(in_longitude_reference_degrees));
 
   CMatrixDouble44 HM;  // zeros by default
-  HM(0, 0) = -slon;
-  HM(0, 1) = -clon * slat;
-  HM(0, 2) = clon * clat;
-  HM(1, 0) = clon;
-  HM(1, 1) = -slon * slat;
-  HM(1, 2) = slon * clat;
+  HM(0, 0) = -sLon;
+  HM(0, 1) = -cLon * sLat;
+  HM(0, 2) = cLon * cLat;
+  HM(1, 0) = cLon;
+  HM(1, 1) = -sLon * sLat;
+  HM(1, 2) = sLon * cLat;
   HM(2, 0) = 0;
-  HM(2, 1) = clat;
-  HM(2, 2) = slat;
+  HM(2, 1) = cLat;
+  HM(2, 2) = sLat;
   HM(3, 3) = 1;
 
   if (!only_angles)
@@ -173,7 +172,7 @@ void mrpt::topography::ENU_axes_from_WGS84(
     HM(2, 3) = PPref.z;
   }
 
-  out_ENU = CPose3D(HM).asTPose();
+  out_ENU.fromHomogeneousMatrix(HM);
 }
 
 //*---------------------------------------------------------------
@@ -190,9 +189,9 @@ void mrpt::topography::geodeticToGeocentric_WGS84(
   static constexpr precnum_t a = 6378137L;       // Semi-major axis of the Earth (meters)
   static constexpr precnum_t b = 6356752.3142L;  // Semi-minor axis:
 
-  static constexpr precnum_t ae = acos(b / a);  // angular eccentricity of the Earth
-  static constexpr precnum_t cos2_ae_earth = square(cos(ae));
-  static constexpr precnum_t sin2_ae_earth = square(sin(ae));
+  static const precnum_t ae = std::acos(b / a);  // angular eccentricity of the Earth
+  static const precnum_t cos2_ae_earth = square(std::cos(ae));
+  static const precnum_t sin2_ae_earth = square(std::sin(ae));
 
   const precnum_t lon = DEG2RAD(precnum_t(in_coords.lon));
   const precnum_t lat = DEG2RAD(precnum_t(in_coords.lat));
@@ -210,10 +209,10 @@ void mrpt::topography::geodeticToGeocentric_WGS84(
       geodeticToGeocentric_WGS84
  ---------------------------------------------------------------*/
 void mrpt::topography::geodeticToGeocentric(
-    const TGeodeticCoords& in_coords, TGeocentricCoords& out_point, const TEllipsoid& ellip)
+    const TGeodeticCoords& in_coords, TGeocentricCoords& out_point, const TEllipsoid& ellipsoid)
 {
-  static const precnum_t a = ellip.sa;  // Semi-major axis of the Earth (meters)
-  static const precnum_t b = ellip.sb;  // Semi-minor axis:
+  static const precnum_t a = ellipsoid.sa;  // Semi-major axis of the Earth (meters)
+  static const precnum_t b = ellipsoid.sb;  // Semi-minor axis:
 
   static const precnum_t ae = acos(b / a);  // eccentricity:
   static const precnum_t cos2_ae_earth =
@@ -239,20 +238,20 @@ void mrpt::topography::geodeticToGeocentric(
       geocentricToGeodetic
  ---------------------------------------------------------------*/
 void mrpt::topography::geocentricToGeodetic(
-    const TGeocentricCoords& in_point, TGeodeticCoords& out_coords, const TEllipsoid& ellip)
+    const TGeocentricCoords& in_point, TGeodeticCoords& out_coords, const TEllipsoid& ellipsoid)
 {
-  const double sa2 = ellip.sa * ellip.sa;
-  const double sb2 = ellip.sb * ellip.sb;
+  const double sa2 = ellipsoid.sa * ellipsoid.sa;
+  const double sb2 = ellipsoid.sb * ellipsoid.sb;
 
   const double e2 = (sa2 - sb2) / sa2;
   const double ep2 = (sa2 - sb2) / sb2;
   const double p = sqrt(in_point.x * in_point.x + in_point.y * in_point.y);
-  const double theta = atan2(in_point.z * ellip.sa, p * ellip.sb);
+  const double theta = atan2(in_point.z * ellipsoid.sa, p * ellipsoid.sb);
 
   out_coords.lon = atan2(in_point.y, in_point.x);
   out_coords.lat = atan2(
-      in_point.z + ep2 * ellip.sb * sin(theta) * sin(theta) * sin(theta),
-      p - e2 * ellip.sa * cos(theta) * cos(theta) * cos(theta));
+      in_point.z + ep2 * ellipsoid.sb * sin(theta) * sin(theta) * sin(theta),
+      p - e2 * ellipsoid.sa * cos(theta) * cos(theta) * cos(theta));
 
   const double clat = cos(out_coords.lat);
   const double slat = sin(out_coords.lat);

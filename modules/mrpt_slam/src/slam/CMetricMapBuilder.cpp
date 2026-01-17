@@ -62,7 +62,8 @@ void CMetricMapBuilder::loadCurrentMapFromFile(const std::string& fileName)
     MRPT_LOG_INFO_STREAM(
         "[CMetricMapBuilder::loadCurrentMapFromFile] Loading current map "
         "from '"
-        << fileName << "' ..." << std::endl);
+        << fileName << "' ..."
+        << "\n");
     CFileGZInputStream f(fileName);
 
     // Load from file:
@@ -73,7 +74,8 @@ void CMetricMapBuilder::loadCurrentMapFromFile(const std::string& fileName)
     MRPT_LOG_WARN_STREAM(
         "[CMetricMapBuilder::loadCurrentMapFromFile] Loading current map "
         "from '"
-        << fileName << "' ..." << std::endl);
+        << fileName << "' ..."
+        << "\n");
     map.clear();
   }
 
@@ -92,7 +94,7 @@ void CMetricMapBuilder::saveCurrentMapToFile(const std::string& fileName, bool c
 
   MRPT_LOG_INFO_STREAM(
       "[CMetricMapBuilder::saveCurrentMapToFile] Saving current map to '" << fileName << "' ..."
-                                                                          << std::endl);
+                                                                          << "\n");
 
   // Save to file:
   if (compressGZ)

@@ -810,7 +810,7 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
       }
     }  // k
 
-    if (verbose) cout << format("Done! [%.03f sec]", tictac.Tac()) << std::endl;
+    if (verbose) cout << format("Done! [%.03f sec]", tictac.Tac()) << "\n";
 
     // save it to the cache file for the next run:
     saveColGridsToFile(cacheFilename, m_robotShape);

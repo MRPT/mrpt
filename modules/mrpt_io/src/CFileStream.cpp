@@ -89,7 +89,10 @@ CFileStream::~CFileStream() { m_f.close(); }
  ---------------------------------------------------------------*/
 size_t CFileStream::Read(void* Buffer, size_t Count)
 {
-  if (!m_f.is_open()) return 0;
+  if (!m_f.is_open())
+  {
+    return 0;
+  }
   m_f.read(static_cast<char*>(Buffer), static_cast<std::streamsize>(Count));
   return m_f.fail() ? 0 : Count;
 }
@@ -100,7 +103,10 @@ size_t CFileStream::Read(void* Buffer, size_t Count)
  ---------------------------------------------------------------*/
 size_t CFileStream::Write(const void* Buffer, size_t Count)
 {
-  if (!m_f.is_open()) return 0;
+  if (!m_f.is_open())
+  {
+    return 0;
+  }
 
   m_f.write(static_cast<const char*>(Buffer), static_cast<std::streamsize>(Count));
   return m_f.fail() ? 0 : Count;
@@ -113,7 +119,10 @@ size_t CFileStream::Write(const void* Buffer, size_t Count)
  ---------------------------------------------------------------*/
 uint64_t CFileStream::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
 {
-  if (!m_f.is_open()) return 0;
+  if (!m_f.is_open())
+  {
+    return 0;
+  }
 
   fstream::off_type offset = Offset;
   fstream::seekdir way;
@@ -141,7 +150,10 @@ uint64_t CFileStream::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
 
 uint64_t CFileStream::getTotalBytesCount() const
 {
-  if (!fileOpenCorrectly()) return 0;
+  if (!fileOpenCorrectly())
+  {
+    return 0;
+  }
 
   auto& f = const_cast<std::fstream&>(m_f);
 

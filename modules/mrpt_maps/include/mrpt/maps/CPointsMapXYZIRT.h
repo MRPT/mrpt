@@ -169,21 +169,30 @@ class [[deprecated("Use CGenericPointsMap instead")]] CPointsMapXYZIRT : public 
   /** Gets point intensity ([0,1]), or 0 if field is not present */
   float getPointIntensity(size_t index) const
   {
-    if (m_intensity.empty()) return 0;
+    if (m_intensity.empty())
+    {
+      return 0;
+    }
     ASSERT_LT_(index, m_intensity.size());
     return m_intensity[index];
   }
   /** Gets point ring number, or 0 if field is not present */
   uint16_t getPointRing(size_t index) const
   {
-    if (m_ring.empty()) return 0;
+    if (m_ring.empty())
+    {
+      return 0;
+    }
     ASSERT_LT_(index, m_ring.size());
     return m_ring[index];
   }
   /** Gets point time, or 0 if field is not present */
   float getPointTime(size_t index) const
   {
-    if (m_time.empty()) return 0;
+    if (m_time.empty())
+    {
+      return 0;
+    }
     ASSERT_LT_(index, m_time.size());
     return m_time[index];
   }

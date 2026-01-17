@@ -52,7 +52,7 @@ DECLARE_OP_FUNCTION(op_list_poses)
     {
       mrpt::poses::CPose3D pose;
       obs->getSensorPose(pose);
-      m_out << pose.asString() << std::endl;
+      m_out << pose.asString() << "\n";
 
       return true;
     }

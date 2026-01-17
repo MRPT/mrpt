@@ -157,7 +157,8 @@ bool mrpt::system::decodeBase64(const std::string& inString, std::vector<uint8_t
     if (char_count)
     {
       std::cerr << "[decodeBase64] ERROR: base64 encoding incomplete, atleast "
-                << ((4 - char_count) * 6) << "bits truncated." << std::endl;
+                << ((4 - char_count) * 6) << "bits truncated."
+                << "\n";
       errors++;
     }
   }
@@ -167,7 +168,7 @@ bool mrpt::system::decodeBase64(const std::string& inString, std::vector<uint8_t
     {
       case 1:
         std::cerr << "[decodeBase64] ERROR: base64 encoding incomplete, at least 2 bits missing"
-                  << std::endl;
+                  << "\n";
         errors++;
         break;
       case 2:

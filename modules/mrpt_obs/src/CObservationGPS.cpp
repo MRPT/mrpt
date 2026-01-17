@@ -282,12 +282,12 @@ void CObservationGPS::getDescriptionAsText(std::ostream& o) const
   CObservation::getDescriptionAsText(o);
 
   o << "Timestamp (UTC) of reception at the computer: "
-    << mrpt::system::dateTimeToString(originalReceivedTimestamp) << std::endl;
+    << mrpt::system::dateTimeToString(originalReceivedTimestamp) << "\n";
   o << "  (as time_t): " << std::fixed << std::setprecision(5)
-    << mrpt::Clock::toDouble(originalReceivedTimestamp) << std::endl;
-  o << "  (as TTimestamp): " << originalReceivedTimestamp << std::endl;
+    << mrpt::Clock::toDouble(originalReceivedTimestamp) << "\n";
+  o << "  (as TTimestamp): " << originalReceivedTimestamp << "\n";
 
-  o << "Sensor position on the robot/vehicle: " << sensorPose << std::endl;
+  o << "Sensor position on the robot/vehicle: " << sensorPose << "\n";
 
   this->dumpToConsole(o);
 }

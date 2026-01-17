@@ -24,13 +24,12 @@
 #include <mrpt/math/homog_matrices.h>        // for homogene...
 #include <mrpt/math/matrix_serialization.h>  // for operator>>
 #include <mrpt/math/ops_containers.h>        // for dotProduct
-#include <mrpt/math/utils_matlab.h>
-#include <mrpt/math/wrap2pi.h>       // for wrapToPi
-#include <mrpt/poses/CPoint2D.h>     // for CPoint2D
-#include <mrpt/poses/CPoint3D.h>     // for CPoint3D
-#include <mrpt/poses/CPose2D.h>      // for CPose2D
-#include <mrpt/poses/CPose3D.h>      // for CPose3D
-#include <mrpt/poses/CPose3DQuat.h>  // for CPose3DQuat
+#include <mrpt/math/wrap2pi.h>               // for wrapToPi
+#include <mrpt/poses/CPoint2D.h>             // for CPoint2D
+#include <mrpt/poses/CPoint3D.h>             // for CPoint3D
+#include <mrpt/poses/CPose2D.h>              // for CPose2D
+#include <mrpt/poses/CPose3D.h>              // for CPose3D
+#include <mrpt/poses/CPose3DQuat.h>          // for CPose3DQuat
 #include <mrpt/poses/Lie/SO.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>

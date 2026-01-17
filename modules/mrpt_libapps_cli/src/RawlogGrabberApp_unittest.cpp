@@ -106,7 +106,7 @@ TEST(RawlogGrabberApp, DISABLED_CGenericCamera_AVI)
     runEnded = true;
 
     // Check expected results:
-    std::cout << "Rawlog grabbed objects: " << app.rawlog_saved_objects << std::endl;
+    std::cout << "Rawlog grabbed objects: " << app.rawlog_saved_objects << "\n";
     if (tWatchDog.joinable()) tWatchDog.join();
 
     EXPECT_GE(app.rawlog_saved_objects, REQUIRED_GRAB_OBS);

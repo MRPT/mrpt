@@ -233,7 +233,7 @@ void CObservationPointCloud::load_impl() const
       mrpt::get_env<bool>("MRPT_DEBUG_OBSPTS_LAZY_LOAD", false);
   if (MRPT_DEBUG_OBSPTS_LAZY_LOAD)
     std::cout << "[CObservationPointCloud::load()] Called on this="
-              << reinterpret_cast<const void*>(this) << std::endl;
+              << reinterpret_cast<const void*>(this) << "\n";
 
   // Already loaded?
   if (!isExternallyStored() || (isExternallyStored() && pointcloud)) return;
@@ -318,7 +318,7 @@ void CObservationPointCloud::unload() const
       mrpt::get_env<bool>("MRPT_DEBUG_OBSPTS_LAZY_LOAD", false);
   if (MRPT_DEBUG_OBSPTS_LAZY_LOAD)
     std::cout << "[CObservationPointCloud::unload()] Called on this="
-              << reinterpret_cast<const void*>(this) << std::endl;
+              << reinterpret_cast<const void*>(this) << "\n";
 
   if (!isExternallyStored() || !pointcloud) return;
 

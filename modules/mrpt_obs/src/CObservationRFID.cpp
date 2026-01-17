@@ -111,6 +111,6 @@ void CObservationRFID::getDescriptionAsText(std::ostream& o) const
   {
     const auto& rfid = tag_readings[i];
     o << "#" << i << ": Power=" << rfid.power << " (dBm) | AntennaPort=" << rfid.antennaPort
-      << " | EPC=" << rfid.epc << std::endl;
+      << " | EPC=" << rfid.epc << "\n";
   }
 }

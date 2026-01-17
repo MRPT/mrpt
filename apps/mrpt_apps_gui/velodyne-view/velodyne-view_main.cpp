@@ -237,7 +237,10 @@ int VelodyneView(int argc, char** argv)
   } while (!thrPar.quit);
 
   // Check error condition:
-  if (thrPar.quit) return 0;
+  if (thrPar.quit)
+  {
+    return 0;
+  }
 
   // Create window and prepare OpenGL object in the scene:
   // --------------------------------------------------------

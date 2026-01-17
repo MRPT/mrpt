@@ -235,7 +235,7 @@ bool CGPSInterface::tryToOpenTheCOM()
     {
       std::cerr << "[CGPSInterface::tryToOpenTheCOM] Error opening or "
                    "configuring serial port:"
-                << std::endl
+                << "\n"
                 << e.what();
       serial->close();
       return false;
@@ -519,7 +519,7 @@ void CGPSInterface::JAVAD_sendMessage(const char* str, bool waitForAnswer)
       nRead = stream_serial->Read(buf, sizeof(buf));
     }
 
-    if (m_verbose) std::cout << "[CGPSInterface] RX: " << buf << std::endl;
+    if (m_verbose) std::cout << "[CGPSInterface] RX: " << buf << "\n";
 
     if (nRead < 3)
       throw std::runtime_error(format("ERROR: Invalid response '%s' for command '%s'", buf, str));
@@ -606,7 +606,7 @@ bool CGPSInterface::OnConnectionEstablished()
     {
       std::cerr << "[CGPSInterface::OnConnectionEstablished] Error "
                    "sending setup cmds: "
-                << e.what() << std::endl;
+                << e.what() << "\n";
       return false;
     }
     std::this_thread::sleep_for(
@@ -833,7 +833,7 @@ bool CGPSInterface::sendCustomCommand(const void* data, size_t datalen)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "[CGPSInterface::sendCustomCommand] Error sending cmd: " << e.what() << std::endl;
+    std::cerr << "[CGPSInterface::sendCustomCommand] Error sending cmd: " << e.what() << "\n";
     return false;
   }
 }

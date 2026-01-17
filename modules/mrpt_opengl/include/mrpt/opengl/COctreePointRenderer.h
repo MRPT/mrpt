@@ -670,7 +670,7 @@ class COctreePointRenderer
   /** Used for debug only */
   void octree_debug_dump_tree(std::ostream& o) const
   {
-    o << "Octree nodes: " << m_octree_nodes.size() << std::endl;
+    o << "Octree nodes: " << m_octree_nodes.size() << "\n";
     size_t total_elements = 0;
     for (size_t i = 0; i < m_octree_nodes.size(); i++)
     {
@@ -701,7 +701,7 @@ class COctreePointRenderer
       o << " bb: (" << node.bb_min.x << "," << node.bb_min.y << "," << node.bb_min.z << ")-("
         << node.bb_max.x << "," << node.bb_max.y << "," << node.bb_max.z << ")\n";
     }
-    o << "Total elements in all nodes: " << total_elements << std::endl;
+    o << "Total elements in all nodes: " << total_elements << "\n";
   }  // end of octree_debug_dump_tree
 
 };  // namespace opengl

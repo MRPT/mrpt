@@ -68,8 +68,8 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>, public ::testing::T
 
     const double err_init = graph_initial.chi2();
     const double err_end = graph.chi2();
-    std::cout << "err_init: " << err_init << std::endl;
-    std::cout << "err_end: " << err_end << std::endl;
+    std::cout << "err_init: " << err_init << "\n";
+    std::cout << "err_end: " << err_end << "\n";
     //		graph_initial.saveToTextFile(
     //			string("in_") + string(className) + string(".graph"));
 
@@ -114,9 +114,10 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>, public ::testing::T
         EXPECT_EQ(itn1->first, itn2->first);
         EXPECT_NEAR(
             0, (itn1->second.asVectorVal() - itn2->second.asVectorVal()).sum_abs(), eps_node_pos)
-            << "Poses of keyframe #" << itn1->first << " do not match:" << std::endl
-            << "- Expected: " << itn2->second << std::endl
-            << "- Got     : " << itn1->second << std::endl;
+            << "Poses of keyframe #" << itn1->first << " do not match:"
+            << "\n"
+            << "- Expected: " << itn2->second << "\n"
+            << "- Got     : " << itn1->second << "\n";
       }
     }
   }
@@ -161,7 +162,7 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>, public ::testing::T
     for (const auto& tst : files_it->second)
     {
       std::cout << "Testing graph type `" << type << "`, in_file=`" << std::get<0>(tst) << "`"
-                << std::endl;
+                << "\n";
 
       const string in_f = prefix + std::get<0>(tst);
       ASSERT_FILE_EXISTS_(in_f);
@@ -190,9 +191,9 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>, public ::testing::T
       const double err_init = graph_initial.chi2();
       const double err_end = graph.chi2();
       const double err_good = graph_good.chi2();
-      std::cout << "err_init: " << err_init << std::endl;
-      std::cout << "err_end: " << err_end << std::endl;
-      std::cout << "err_good: " << err_good << std::endl;
+      std::cout << "err_init: " << err_init << "\n";
+      std::cout << "err_end: " << err_end << "\n";
+      std::cout << "err_good: " << err_good << "\n";
 
       // Do some basic checks on the results:
       EXPECT_GE(levmarq_info.num_iters, 2U);

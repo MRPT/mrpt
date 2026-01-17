@@ -77,7 +77,7 @@ void CTaoboticsIMU::doProcess()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "[CTaobotics] Error readingopen serial port " << m_com_port << std::endl;
+    std::cerr << "[CTaobotics] Error readingopen serial port " << m_com_port << "\n";
     m_state = ssError;
   }
 
@@ -119,7 +119,7 @@ void CTaoboticsIMU::initialize()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "[CTaobotics] Can't open serial port " << m_com_port << std::endl;
+    std::cerr << "[CTaobotics] Can't open serial port " << m_com_port << "\n";
     m_state = ssError;
   }
 }

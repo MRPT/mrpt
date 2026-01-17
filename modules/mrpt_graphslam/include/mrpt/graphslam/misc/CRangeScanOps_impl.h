@@ -150,7 +150,8 @@ bool CRangeScanOps<GRAPH_T>::convert3DTo2DRangeScan(
   }
   else
   {
-    std::cout << "No valid rangeImage found" << std::endl;
+    std::cout << "No valid rangeImage found"
+              << "\n";
     success = false;
   }
 

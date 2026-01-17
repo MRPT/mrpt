@@ -16,9 +16,9 @@
 #include <mrpt/topography.h>
 #include <mrpt/topography/registerAllClasses.h>
 // deps:
-#include <mrpt/obs/registerAllClasses.h>
+#include <mrpt/math/registerAllClasses.h>
 
-MRPT_INITIALIZER(registerAllClasses_mrpt_topography)
+MRPT_INITIALIZER(registerAllClasses_mrpt_topography)  // NOLINT(misc-use-anonymous-namespace)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 //	registerClass( CLASS_ID( XXXX ) );
@@ -29,5 +29,5 @@ void mrpt::topography::registerAllClasses_mrpt_topography()
 {
   ::registerAllClasses_mrpt_topography();
   // deps:
-  mrpt::obs::registerAllClasses_mrpt_obs();
+  mrpt::math::registerAllClasses_mrpt_math();
 }

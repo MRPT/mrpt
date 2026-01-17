@@ -426,7 +426,7 @@ int os::fprintf(FILE* fil, const char* frm, ...) noexcept
 ---------------------------------------------------------------*/
 void pause(const std::string& msg) noexcept
 {
-  std::cout << msg << std::endl;
+  std::cout << msg << "\n";
   os::getch();
 }
 
@@ -442,7 +442,8 @@ void clearConsole()
 #endif
   if (ret)
   {
-    std::cerr << "[mrpt::system::clearConsole] Error invoking 'clear screen' " << std::endl;
+    std::cerr << "[mrpt::system::clearConsole] Error invoking 'clear screen' "
+              << "\n";
   }
 }
 

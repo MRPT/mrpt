@@ -51,9 +51,9 @@ inline typename MATRIXLIKE::Scalar normalPDFInf(
   ASSERTDEB_(cov_inv.isSquare());
   ASSERTDEB_(
       size_t(cov_inv.cols()) == size_t(x.size()) && size_t(cov_inv.cols()) == size_t(mu.size()));
-  T ret = ::exp(static_cast<T>(-0.5) * mrpt::math::multiply_HtCH_scalar(x - mu, cov_inv));
+  T ret = std::exp(static_cast<T>(-0.5) * mrpt::math::multiply_HtCH_scalar(x - mu, cov_inv));
   return scaled_pdf ? ret
-                    : ret * ::sqrt(
+                    : ret * std::sqrt(
                                 cov_inv.det() /
                                 ::pow(static_cast<T>(M_2PI), static_cast<T>(cov_inv.rows())));
   MRPT_END
@@ -93,7 +93,7 @@ typename MATRIXLIKE::Scalar normalPDF(const VECTORLIKE& d, const MATRIXLIKE& cov
          (::pow(
               static_cast<typename MATRIXLIKE::Scalar>(M_2PI),
               static_cast<typename MATRIXLIKE::Scalar>(0.5 * cov.cols())) *
-          ::sqrt(cov.det()));
+          std::sqrt(cov.det()));
   MRPT_END
 }
 

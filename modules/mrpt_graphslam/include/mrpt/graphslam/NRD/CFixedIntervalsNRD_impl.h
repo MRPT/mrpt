@@ -190,8 +190,9 @@ void CFixedIntervalsNRD<GRAPH_T>::getDescriptiveReport(std::string* report_str) 
   // Report on graph
   stringstream class_props_ss;
   class_props_ss << "Strategy: "
-                 << "Fixed Odometry-based Intervals" << std::endl;
-  class_props_ss << header_sep << std::endl;
+                 << "Fixed Odometry-based Intervals"
+                 << "\n";
+  class_props_ss << header_sep << "\n";
 
   // time and output logging
   const std::string time_res = this->m_time_logger.getStatsAsText();

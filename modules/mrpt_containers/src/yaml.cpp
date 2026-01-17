@@ -591,7 +591,7 @@ bool yaml::internalPrintAsYAML(
     for (const auto& e : v)
       if (!e.isScalar() && !e.isNullNode())
       {
-        std::cerr << "\nSkip short format for: " << e.typeName() << std::endl;
+        std::cerr << "\nSkip short format for: " << e.typeName() << "\n";
         doUseShortFormat = false;
         break;
       }

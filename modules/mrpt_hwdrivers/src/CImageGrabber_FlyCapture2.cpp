@@ -242,7 +242,7 @@ void CImageGrabber_FlyCapture2::open(
   FlyCapture2::Error fe;
 
   cout << "[CImageGrabber_FlyCapture2::open] FlyCapture2 version: "
-       << CImageGrabber_FlyCapture2::getFC2version() << std::endl;
+       << CImageGrabber_FlyCapture2::getFC2version() << "\n";
 
   this->close();
   this->m_options = options;
@@ -690,7 +690,7 @@ bool CImageGrabber_FlyCapture2::getObservation(mrpt::obs::CObservationImage& out
   }
   catch (const std::exception& e)
   {
-    std::cerr << "[CImageGrabber_FlyCapture2::getObservation] Error:\n" << e.what() << std::endl;
+    std::cerr << "[CImageGrabber_FlyCapture2::getObservation] Error:\n" << e.what() << "\n";
     return false;
   }
 #else
@@ -801,7 +801,7 @@ bool CImageGrabber_FlyCapture2::getObservation(mrpt::obs::CObservationStereoImag
   }
   catch (const std::exception& e)
   {
-    std::cerr << "[CImageGrabber_FlyCapture2::getObservation] Error:\n" << e.what() << std::endl;
+    std::cerr << "[CImageGrabber_FlyCapture2::getObservation] Error:\n" << e.what() << "\n";
     return false;
   }
 #else

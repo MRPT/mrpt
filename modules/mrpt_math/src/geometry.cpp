@@ -176,19 +176,19 @@ bool math::RectanglesIntersection(
   poly.add_vertex(xs[2], ys[2]);
   poly.add_vertex(xs[3], ys[3]);
 
-  if (poly.PointIntoPolygon(R1_x_min, R1_y_min))
+  if (poly.contains({R1_x_min, R1_y_min}))
   {
     return true;
   }
-  if (poly.PointIntoPolygon(R1_x_max, R1_y_min))
+  if (poly.contains({R1_x_max, R1_y_min}))
   {
     return true;
   }
-  if (poly.PointIntoPolygon(R1_x_max, R1_y_max))
+  if (poly.contains({R1_x_max, R1_y_max}))
   {
     return true;
   }
-  if (poly.PointIntoPolygon(R1_x_min, R1_y_max))
+  if (poly.contains({R1_x_min, R1_y_max}))
   {
     return true;
   }
@@ -204,16 +204,24 @@ bool math::RectanglesIntersection(
 
     if (mrpt::math::intersect(
             TSegment2D::FromPoints({R1_x_min, R1_y_min}, {R1_x_max, R1_y_min}), seg2, intersectObj))
+    {
       return true;
+    }
     if (mrpt::math::intersect(
             TSegment2D::FromPoints({R1_x_max, R1_y_min}, {R1_x_max, R1_y_max}), seg2, intersectObj))
+    {
       return true;
+    }
     if (mrpt::math::intersect(
             TSegment2D::FromPoints({R1_x_max, R1_y_max}, {R1_x_min, R1_y_max}), seg2, intersectObj))
+    {
       return true;
+    }
     if (mrpt::math::intersect(
             TSegment2D::FromPoints({R1_x_min, R1_y_max}, {R1_x_min, R1_y_min}), seg2, intersectObj))
+    {
       return true;
+    }
   }
 
   // No intersections:
@@ -375,26 +383,28 @@ bool intersect(const TPolygonWithPlane& p1, const TPolygonWithPlane& p2, TObject
       }
       TPoint3D po2;
       if (obj3D2.getPoint(po2))
+      {
         s2 = TSegment3D(po2, po2);
+      }
       else
+      {
         obj3D2.getSegment(s2);
+      }
       return intersectInCommonLine(s1, s2, lin3D, obj);
     }
-    else
-      return false;
+
+    return false;
   }
-  else
+
+  TObject2D obj2D;
+  if (intersect(p1.poly2D, p2.poly2D, obj2D))
   {
-    TObject2D obj2D;
-    if (intersect(p1.poly2D, p2.poly2D, obj2D))
-    {
-      aux = obj2D.generate3DObject();
-      project3D(aux, p1.pose, obj);
-      return true;
-    }
-    else
-      return false;
+    aux = obj2D.generate3DObject();
+    project3D(aux, p1.pose, obj);
+    return true;
   }
+
+  return false;
 }
 // End of auxiliary methods
 
@@ -416,11 +426,10 @@ bool math::intersect(const TSegment3D& s1, const TSegment3D& s2, TObject3D& obj)
       obj.data = p;
       return true;
     }
-    else
-      return false;
+
+    return false;
   }
-  else
-    return intersectInCommonLine(s1, s2, l, obj);
+  return intersectInCommonLine(s1, s2, l, obj);
 }
 
 bool math::intersect(const TSegment3D& s1, const TPlane& p1, TObject3D& obj)
@@ -435,17 +444,15 @@ bool math::intersect(const TSegment3D& s1, const TPlane& p1, TObject3D& obj)
     obj.data = s1;
     return true;
   }
-  else
+
+  // Segment's line intersects the plane in a point. This may be or not be
+  // part of the segment.
+  TPoint3D p;
+  if (!obj.getPoint(p))
   {
-    // Segment's line intersects the plane in a point. This may be or not be
-    // part of the segment.
-    TPoint3D p;
-    if (!obj.getPoint(p))
-    {
-      return false;
-    }
-    return s1.contains(p);
+    return false;
   }
+  return s1.contains(p);
 }
 
 bool math::intersect(const TSegment3D& s1, const TLine3D& r1, TObject3D& obj)
@@ -460,17 +467,15 @@ bool math::intersect(const TSegment3D& s1, const TLine3D& r1, TObject3D& obj)
     obj.data = s1;
     return true;
   }
-  else
+
+  // Segment's line and the other line cross in a point, which may be or
+  // not be inside the segment.
+  TPoint3D p;
+  if (!obj.getPoint(p))
   {
-    // Segment's line and the other line cross in a point, which may be or
-    // not be inside the segment.
-    TPoint3D p;
-    if (!obj.getPoint(p))
-    {
-      return false;
-    }
-    return s1.contains(p);
+    return false;
   }
+  return s1.contains(p);
 }
 
 bool math::intersect(const TPlane& p1, const TPlane& p2, TObject3D& obj)
@@ -489,26 +494,24 @@ bool math::intersect(const TPlane& p1, const TPlane& p2, TObject3D& obj)
     obj.data = p1;
     return true;
   }
-  else
-  {
-    // Planes cross in a line whose director vector is already calculated
-    // (normal to both planes' normal).
-    // The following process manages to create a random point in the line
-    // without loss of generality and almost without conditional sentences.
-    size_t i1 = 0;
-    while (std::abs(lin.director[i1]) < geometryEpsilon) i1++;
-    // At this point, i1 points to a coordinate (0->x, 1->y, 2->z) in which
-    // we can move freely.
-    // If we arbitrarily assign this coordinate to 0, we'll find a suitable
-    // base point by solving both planes' equations.
-    size_t c1 = (i1 + 1) % 3, c2 = (i1 + 2) % 3;
-    lin.pBase[i1] = 0.0;
-    lin.pBase[c1] = (p2.coefs[3] * p1.coefs[c2] - p1.coefs[3] * p2.coefs[c2]) / lin.director[i1];
-    lin.pBase[c2] = (p2.coefs[c1] * p1.coefs[3] - p1.coefs[c1] * p2.coefs[3]) / lin.director[i1];
-    lin.unitarize();
-    obj.data = lin;
-    return true;
-  }
+
+  // Planes cross in a line whose director vector is already calculated
+  // (normal to both planes' normal).
+  // The following process manages to create a random point in the line
+  // without loss of generality and almost without conditional sentences.
+  size_t i1 = 0;
+  while (std::abs(lin.director[i1]) < geometryEpsilon) i1++;
+  // At this point, i1 points to a coordinate (0->x, 1->y, 2->z) in which
+  // we can move freely.
+  // If we arbitrarily assign this coordinate to 0, we'll find a suitable
+  // base point by solving both planes' equations.
+  size_t c1 = (i1 + 1) % 3, c2 = (i1 + 2) % 3;
+  lin.pBase[i1] = 0.0;
+  lin.pBase[c1] = (p2.coefs[3] * p1.coefs[c2] - p1.coefs[3] * p2.coefs[c2]) / lin.director[i1];
+  lin.pBase[c2] = (p2.coefs[c1] * p1.coefs[3] - p1.coefs[c1] * p2.coefs[3]) / lin.director[i1];
+  lin.unitarize();
+  obj.data = lin;
+  return true;
 }
 
 bool math::intersect(const TPlane& p1, const TLine3D& r2, TObject3D& obj)
@@ -527,20 +530,18 @@ bool math::intersect(const TPlane& p1, const TLine3D& r2, TObject3D& obj)
       obj.data = r2;
       return true;
     }
-    else
-      return false;
+
+    return false;
   }
-  else
-  {
-    // Plane and line cross in a point.
-    double t = e / n;
-    TPoint3D p;
-    p.x = r2.pBase.x - t * r2.director[0];
-    p.y = r2.pBase.y - t * r2.director[1];
-    p.z = r2.pBase.z - t * r2.director[2];
-    obj.data = p;
-    return true;
-  }
+
+  // Plane and line cross in a point.
+  double t = e / n;
+  TPoint3D p;
+  p.x = r2.pBase.x - t * r2.director[0];
+  p.y = r2.pBase.y - t * r2.director[1];
+  p.z = r2.pBase.z - t * r2.director[2];
+  obj.data = p;
+  return true;
 }
 
 bool math::intersect(const TLine3D& r1, const TLine3D& r2, TObject3D& obj)
@@ -565,9 +566,10 @@ bool math::intersect(const TLine3D& r1, const TLine3D& r2, TObject3D& obj)
       obj.data = p;
       return true;
     }
-    else
-      return false;
+
+    return false;
   }
+
   // Lines are parallel
   if (r1.contains(r2.pBase))
   {
@@ -575,8 +577,8 @@ bool math::intersect(const TLine3D& r1, const TLine3D& r2, TObject3D& obj)
     obj.data = r1;
     return true;
   }
-  else
-    return false;
+
+  return false;
 }
 
 bool math::intersect(const TLine2D& r1, const TLine2D& r2, TObject2D& obj)
@@ -591,17 +593,17 @@ bool math::intersect(const TLine2D& r1, const TLine2D& r2, TObject2D& obj)
     obj.data = p;
     return true;
   }
-  else
-  {
-    // Lines are parallel
-    if (std::abs(r1.coefs[0] * r2.coefs[2] - r1.coefs[2] * r2.coefs[0]) >= geometryEpsilon ||
-        std::abs(r1.coefs[1] * r2.coefs[2] - r1.coefs[2] * r2.coefs[1]) >= geometryEpsilon)
-      return false;
 
-    // Lines are the same
-    obj.data = r1;
-    return true;
+  // Lines are parallel
+  if (std::abs(r1.coefs[0] * r2.coefs[2] - r1.coefs[2] * r2.coefs[0]) >= geometryEpsilon ||
+      std::abs(r1.coefs[1] * r2.coefs[2] - r1.coefs[2] * r2.coefs[1]) >= geometryEpsilon)
+  {
+    return false;
   }
+
+  // Lines are the same
+  obj.data = r1;
+  return true;
 }
 
 bool math::intersect(const TLine2D& r1, const TSegment2D& s2, TObject2D& obj)
@@ -617,8 +619,11 @@ bool math::intersect(const TLine2D& r1, const TSegment2D& s2, TObject2D& obj)
     obj.data = s2;
     return true;
   }
-  else if (obj.getPoint(p))
+
+  if (obj.getPoint(p))
+  {
     return s2.contains(p);  // Both lines cross in a point.
+  }
   return false;
 }
 
@@ -631,10 +636,15 @@ bool math::intersect(const TSegment2D& s1, const TSegment2D& s2, TObject2D& obj)
   }
   TPoint2D p;
   if (obj.isLine())
-    return intersectInCommonLine(s1, s2, lin,
-                                 obj);  // Segments' lines are parallel
-  else if (obj.getPoint(p))
+  {
+    // Segments' lines are parallel
+    return intersectInCommonLine(s1, s2, lin, obj);
+  }
+
+  if (obj.getPoint(p))
+  {
     return s1.contains(p) && s2.contains(p);  // Segments' lines cross in a point
+  }
   return false;
 }
 
@@ -648,11 +658,16 @@ double math::getAngle(const TPlane& s1, const TPlane& s2)
     n2 += s2.coefs[i] * s2.coefs[i];
   }
   double s = sqrt(n1 * n2);
-  if (s < geometryEpsilon) THROW_EXCEPTION("Invalid plane(s)");
+  if (s < geometryEpsilon)
+  {
+    THROW_EXCEPTION("Invalid plane(s)");
+  }
   if (std::abs(s) < std::abs(c))
+  {
     return (c > 0) ? 0 : M_PI;
-  else
-    return acos(c / s);
+  }
+
+  return acos(c / s);
 }
 
 double math::getAngle(const TPlane& s1, const TLine3D& r2)
@@ -665,11 +680,16 @@ double math::getAngle(const TPlane& s1, const TLine3D& r2)
     n2 += r2.director[i] * r2.director[i];
   }
   double s = sqrt(n1 * n2);
-  if (s < geometryEpsilon) THROW_EXCEPTION("Invalid plane or line");
+  if (s < geometryEpsilon)
+  {
+    THROW_EXCEPTION("Invalid plane or line");
+  }
   if (std::abs(s) < std::abs(c))
+  {
     return (c > 0) ? 0 : M_PI;
-  else
-    return asin(c / s);
+  }
+
+  return asin(c / s);
 }
 
 double math::getAngle(const TLine3D& r1, const TLine3D& r2)
@@ -682,11 +702,16 @@ double math::getAngle(const TLine3D& r1, const TLine3D& r2)
     n2 += r2.director[i] * r2.director[i];
   }
   double s = sqrt(n1 * n2);
-  if (s < geometryEpsilon) THROW_EXCEPTION("Invalid line(s)");
+  if (s < geometryEpsilon)
+  {
+    THROW_EXCEPTION("Invalid line(s)");
+  }
   if (std::abs(s) < std::abs(c))
+  {
     return (c / s < 0) ? M_PI : 0;
-  else
-    return acos(c / s);
+  }
+
+  return acos(c / s);
 }
 
 double math::getAngle(const TLine2D& r1, const TLine2D& r2)
@@ -1096,7 +1121,10 @@ bool math::intersect(const TPolygon2D& subject, const TPolygon2D& clipping, TObj
 
 double mrpt::math::signedArea(const mrpt::math::TPolygon2D& p)
 {
-  if (p.size() <= 2) return 0;
+  if (p.size() <= 2)
+  {
+    return 0;
+  }
   double sa = 0;
 
   for (int i = 0; i < static_cast<int>(p.size()); i++)

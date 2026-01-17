@@ -66,7 +66,10 @@ int main(int argc, char** argv)
     // cout << "Calling COpenNI2Sensor::initialize()...";
     rgbd_sensor.initialize();
 
-    if (rgbd_sensor.getNumDevices() == 0) return 0;
+    if (rgbd_sensor.getNumDevices() == 0)
+    {
+      return 0;
+    }
 
     cout << "OK " << rgbd_sensor.getNumDevices() << " available devices." << endl;
     cout << "\nUse device " << sensor_id_or_serial << endl << endl;

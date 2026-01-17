@@ -300,7 +300,10 @@ static double SolveP5_1(
     double e)  // return real root of x^5 + a*x^4 + b*x^3 + c*x^2 + d*x + e = 0
 {
   int cnt;
-  if (std::abs(e) < eps) return 0;
+  if (std::abs(e) < eps)
+  {
+    return 0;
+  }
 
   double brd = std::abs(a);  // brd - border of real roots
   if (std::abs(b) > brd) brd = std::abs(b);
@@ -408,7 +411,10 @@ int mrpt::math::solve_poly2(double a, double b, double c, double& r1, double& r2
   if (std::abs(a) < eps)
   {
     // b*x+c=0
-    if (std::abs(b) < eps) return 0;
+    if (std::abs(b) < eps)
+    {
+      return 0;
+    }
     r1 = -c / b;
     r2 = 1e99;
     return 1;

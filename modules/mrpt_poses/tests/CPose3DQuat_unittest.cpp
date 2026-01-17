@@ -638,7 +638,7 @@ static void quat_vs_YPR(
   EXPECT_NEAR(0, (R_gt.asEigen() - p.getRotationMatrix().asEigen()).array().abs().maxCoeff(), eps)
       << "R_gt=\n"
       << R_gt << "\np.R=\n"
-      << p.getRotationMatrix() << std::endl;
+      << p.getRotationMatrix() << "\n";
 
   // Convert to quat:
   const auto q_gt = mrpt::math::CQuaternionDouble(qw, qx, qy, qz);
@@ -654,7 +654,7 @@ static void quat_vs_YPR(
   auto R = q.rotationMatrix<mrpt::math::CMatrixDouble33>();
   EXPECT_NEAR(0, (R.asEigen() - p.getRotationMatrix().asEigen()).array().abs().maxCoeff(), eps)
       << "q.R=\n"
-      << R << "\np.R=" << p.getRotationMatrix() << std::endl;
+      << R << "\np.R=" << p.getRotationMatrix() << "\n";
 }
 
 // Check yaw-pitch-roll vs its [qx,qy,qz,qw] representation:
