@@ -160,7 +160,10 @@ class CCylinder : public CRenderizableShaderTriangles
    */
   inline bool getRadius(float Z, float& r) const
   {
-    if (!reachesHeight(Z)) return false;
+    if (!reachesHeight(Z))
+    {
+      return false;
+    }
     r = (Z / m_height) * (m_topRadius - m_baseRadius) + m_baseRadius;
     return true;
   }

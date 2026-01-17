@@ -1241,7 +1241,10 @@ bool yaml::keyHasComment(const std::string& key) const
   const yaml::node_t& n = findKeyNode(dereferenceProxy(), key);
 
   for (const auto& c : n.comments)
-    if (c.has_value()) return true;
+    if (c.has_value())
+    {
+      return true;
+    }
   return false;
   MRPT_END
 }

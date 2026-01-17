@@ -102,7 +102,10 @@ bool CHeightGridMap2D_MRF::insertIndividualPoint(
     const CHeightGridMap2D_Base::TPointInsertParams& params)
 {
   const TRandomFieldCell* cell = cellByPos(x, y);
-  if (!cell) return false;
+  if (!cell)
+  {
+    return false;
+  }
   this->insertIndividualReading(
       z, mrpt::math::TPoint2D(x, y), params.update_map_after_insertion, true /*time invariant*/,
       params.pt_z_std);

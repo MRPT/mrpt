@@ -263,7 +263,10 @@ bool CPosePDFParticles::saveToTextFile(const std::string& file) const
   using namespace mrpt::system;
 
   FILE* f = os::fopen(file.c_str(), "wt");
-  if (!f) return false;
+  if (!f)
+  {
+    return false;
+  }
 
   os::fprintf(f, "%% x  y  yaw[rad] log_weight\n");
 

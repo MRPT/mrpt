@@ -117,7 +117,10 @@ DECLARE_OP_FUNCTION(op_camera_params)
     {
       ASSERT_(obs);
 
-      if (!strCmpI(obs->sensorLabel, target_label)) return true;
+      if (!strCmpI(obs->sensorLabel, target_label))
+      {
+        return true;
+      }
 
       if (auto obsMono = std::dynamic_pointer_cast<CObservationImage>(obs); obsMono)
       {

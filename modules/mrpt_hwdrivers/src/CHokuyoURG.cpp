@@ -267,7 +267,10 @@ bool CHokuyoURG::turnOn()
   MRPT_START
 
   // Bound?
-  if (!ensureStreamIsOpen()) return false;
+  if (!ensureStreamIsOpen())
+  {
+    return false;
+  }
 
   // If we are over a serial link, set it up:
   if (m_ip_dir.empty())
@@ -322,20 +325,32 @@ bool CHokuyoURG::turnOn()
     }
   }
 
-  if (!enableSCIP20()) return false;
+  if (!enableSCIP20())
+  {
+    return false;
+  }
 
   // Turn on the laser:
-  if (!switchLaserOn()) return false;
+  if (!switchLaserOn())
+  {
+    return false;
+  }
 
   // Set the motor speed:
   if (m_motorSpeed_rpm)
-    if (!setMotorSpeed(m_motorSpeed_rpm)) return false;
+    if (!setMotorSpeed(m_motorSpeed_rpm))
+    {
+      return false;
+    }
 
   // Set HS mode:
   setHighSensitivityMode(m_highSensMode);
 
   // Display sensor information:
-  if (!displaySensorInfo(&m_sensor_info)) return false;
+  if (!displaySensorInfo(&m_sensor_info))
+  {
+    return false;
+  }
 
   // Set for scanning angles:
   m_firstRange = m_sensor_info.scan_first;
@@ -360,7 +375,10 @@ bool CHokuyoURG::turnOn()
   }
 
   // Start!
-  if (!startScanningMode()) return false;
+  if (!startScanningMode())
+  {
+    return false;
+  }
 
   return true;
 
@@ -373,14 +391,20 @@ bool CHokuyoURG::turnOn()
 bool CHokuyoURG::turnOff()
 {
   // Turn off the laser:
-  if (!switchLaserOff()) return false;
+  if (!switchLaserOff())
+  {
+    return false;
+  }
 
   return true;
 }
 
 bool CHokuyoURG::setHighBaudrate()
 {
-  if (!ensureStreamIsOpen()) return false;
+  if (!ensureStreamIsOpen())
+  {
+    return false;
+  }
 
   MRPT_LOG_DEBUG("[CHokuyoURG::setHighBaudrate] Changing baudrate to 115200...");
 
@@ -405,7 +429,10 @@ bool CHokuyoURG::ensureBufferHasBytes(size_t nDesiredBytes, bool additionalWaitF
 {
   ASSERT_LT_(nDesiredBytes, m_rx_buffer.capacity());
 
-  if (m_rx_buffer.size() >= nDesiredBytes) return true;
+  if (m_rx_buffer.size() >= nDesiredBytes)
+  {
+    return true;
+  }
 
   // Try to read more bytes:
   std::array<uint8_t, 512> buf;
@@ -446,7 +473,10 @@ bool CHokuyoURG::parseResponse(bool additionalWaitForData)
   m_rcv_status1 = '\0';
   m_rcv_data.clear();
 
-  if (!ensureStreamIsOpen()) return false;
+  if (!ensureStreamIsOpen())
+  {
+    return false;
+  }
   ASSERT_(!m_lastSentMeasCmd.empty());
 
   try
@@ -464,7 +494,10 @@ bool CHokuyoURG::parseResponse(bool additionalWaitForData)
       unsigned int i = 0;
       do
       {
-        if (!ensureBufferHasBytes(verifLen - i, additionalWaitForData)) return false;
+        if (!ensureBufferHasBytes(verifLen - i, additionalWaitForData))
+        {
+          return false;
+        }
 
         // If matches the echo, go on:
         if (m_rx_buffer.peek(peekIdx++) == m_lastSentMeasCmd[i])
@@ -483,7 +516,10 @@ bool CHokuyoURG::parseResponse(bool additionalWaitForData)
     }
 
     // Now, the status bytes:
-    if (!ensureBufferHasBytes(peekIdx + 2, additionalWaitForData)) return false;
+    if (!ensureBufferHasBytes(peekIdx + 2, additionalWaitForData))
+    {
+      return false;
+    }
 
     tmp_rcv_status0 = m_rx_buffer.peek(peekIdx++);
     tmp_rcv_status1 = m_rx_buffer.peek(peekIdx++);
@@ -492,7 +528,10 @@ bool CHokuyoURG::parseResponse(bool additionalWaitForData)
     if (tmp_rcv_status1 != 0x0A)
     {
       // Yes, it is SCIP2.0
-      if (!ensureBufferHasBytes(peekIdx + 1, additionalWaitForData)) return false;
+      if (!ensureBufferHasBytes(peekIdx + 1, additionalWaitForData))
+      {
+        return false;
+      }
       // Ignore this byte: sumStatus
       peekIdx++;
     }
@@ -502,9 +541,15 @@ bool CHokuyoURG::parseResponse(bool additionalWaitForData)
     }
 
     // After the status bytes, there must be a LF:
-    if (!ensureBufferHasBytes(peekIdx + 1, additionalWaitForData)) return false;
+    if (!ensureBufferHasBytes(peekIdx + 1, additionalWaitForData))
+    {
+      return false;
+    }
     char nextChar = m_rx_buffer.peek(peekIdx++);
-    if (nextChar != 0x0A) return false;
+    if (nextChar != 0x0A)
+    {
+      return false;
+    }
 
     // -----------------------------------------------------------------------------
     // Now the data:
@@ -593,7 +638,10 @@ bool CHokuyoURG::parseResponse(bool additionalWaitForData)
 
 bool CHokuyoURG::enableSCIP20()
 {
-  if (!ensureStreamIsOpen()) return false;
+  if (!ensureStreamIsOpen())
+  {
+    return false;
+  }
 
   MRPT_LOG_DEBUG("[CHokuyoURG::enableSCIP20] Changing protocol to SCIP2.0...");
 
@@ -613,7 +661,10 @@ bool CHokuyoURG::enableSCIP20()
 
 bool CHokuyoURG::switchLaserOn()
 {
-  if (!ensureStreamIsOpen()) return false;
+  if (!ensureStreamIsOpen())
+  {
+    return false;
+  }
 
   MRPT_LOG_DEBUG("[CHokuyoURG::switchLaserOn] Switching laser ON...");
 
@@ -633,7 +684,10 @@ bool CHokuyoURG::switchLaserOn()
 
 bool CHokuyoURG::switchLaserOff()
 {
-  if (!ensureStreamIsOpen()) return false;
+  if (!ensureStreamIsOpen())
+  {
+    return false;
+  }
 
   MRPT_LOG_DEBUG("[CHokuyoURG::switchLaserOff] Switching laser OFF...");
 
@@ -655,7 +709,10 @@ void CHokuyoURG::setScanInterval(unsigned int skipScanCount) { m_scan_interval =
 unsigned int CHokuyoURG::getScanInterval() const { return m_scan_interval; }
 bool CHokuyoURG::setMotorSpeed(int motoSpeed_rpm)
 {
-  if (!ensureStreamIsOpen()) return false;
+  if (!ensureStreamIsOpen())
+  {
+    return false;
+  }
 
   MRPT_LOG_DEBUG_FMT("[CHokuyoURG::setMotorSpeed] Setting to %i rpm...", motoSpeed_rpm);
 
@@ -688,7 +745,10 @@ bool CHokuyoURG::setMotorSpeed(int motoSpeed_rpm)
 -------------------------------------------------------------*/
 bool CHokuyoURG::setHighSensitivityMode(bool enabled)
 {
-  if (!ensureStreamIsOpen()) return false;
+  if (!ensureStreamIsOpen())
+  {
+    return false;
+  }
 
   MRPT_LOG_DEBUG_FMT(
       "[CHokuyoURG::setHighSensitivityMode] Setting HS mode to: %s...", enabled ? "true" : "false");
@@ -720,7 +780,10 @@ bool CHokuyoURG::setIntensityMode(bool enabled)
 
 bool CHokuyoURG::displayVersionInfo()
 {
-  if (!ensureStreamIsOpen()) return false;
+  if (!ensureStreamIsOpen())
+  {
+    return false;
+  }
 
   MRPT_LOG_DEBUG("[CHokuyoURG::displayVersionInfo] Asking info...");
 
@@ -757,7 +820,10 @@ bool CHokuyoURG::displayVersionInfo()
 -------------------------------------------------------------*/
 bool CHokuyoURG::displaySensorInfo(TSensorInfo* out_data)
 {
-  if (!ensureStreamIsOpen()) return false;
+  if (!ensureStreamIsOpen())
+  {
+    return false;
+  }
 
   MRPT_LOG_DEBUG("[CHokuyoURG::displaySensorInfo] Asking for info...");
 
@@ -842,7 +908,10 @@ bool CHokuyoURG::displaySensorInfo(TSensorInfo* out_data)
 
 bool CHokuyoURG::startScanningMode()
 {
-  if (!ensureStreamIsOpen()) return false;
+  if (!ensureStreamIsOpen())
+  {
+    return false;
+  }
 
   MRPT_LOG_DEBUG("[CHokuyoURG::startScanningMode] Starting scanning mode...");
 
@@ -887,7 +956,10 @@ bool CHokuyoURG::ensureStreamIsOpen()
 
       if (COM != nullptr)
       {
-        if (COM->isConnected()) return true;
+        if (COM->isConnected())
+        {
+          return true;
+        }
 
         // It has been disconnected... try to reconnect:
         MRPT_LOG_ERROR(
@@ -918,7 +990,10 @@ bool CHokuyoURG::ensureStreamIsOpen()
       auto* COM = dynamic_cast<CSerialPort*>(m_stream.get());
       if (COM != nullptr)
       {
-        if (COM->isOpen()) return true;
+        if (COM->isOpen())
+        {
+          return true;
+        }
 
         // It has been disconnected... try to reconnect:
         MRPT_LOG_ERROR_STREAM(

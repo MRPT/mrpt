@@ -43,7 +43,10 @@ bool CServoeNeck::queryFirmwareVersion(std::string& out_firmwareVersion)
     mrpt::serialization::CMessage msg, msgRx;
 
     // Try to connect to the device:
-    if (!checkConnectionAndConnect()) return false;
+    if (!checkConnectionAndConnect())
+    {
+      return false;
+    }
 
     msg.type = 0x10;
     archiveFrom(*this).sendMessage(msg);
@@ -118,7 +121,10 @@ bool CServoeNeck::setRegisterValue(const uint16_t value, const uint8_t servo, bo
 {
   try
   {
-    if (!isOpen()) return false;
+    if (!isOpen())
+    {
+      return false;
+    }
 
     mrpt::serialization::CMessage msg, msgRx;
 
@@ -156,7 +162,10 @@ bool CServoeNeck::setRegisterValueAndSpeed(
 {
   try
   {
-    if (!isOpen()) return false;
+    if (!isOpen())
+    {
+      return false;
+    }
 
     mrpt::serialization::CMessage msg, msgRx;
 
@@ -192,7 +201,10 @@ bool CServoeNeck::getRegisterValue(uint16_t& value, const uint8_t servo)
 {
   try
   {
-    if (!isOpen()) return false;
+    if (!isOpen())
+    {
+      return false;
+    }
 
     mrpt::serialization::CMessage msg, msgRx;
 
@@ -205,7 +217,10 @@ bool CServoeNeck::getRegisterValue(uint16_t& value, const uint8_t servo)
     archiveFrom(*this).sendMessage(msg);
     if (archiveFrom(*this).receiveMessage(msgRx))
     {
-      if (msgRx.content.size() != 2) return false;
+      if (msgRx.content.size() != 2)
+      {
+        return false;
+      }
 
       value = (msgRx.content[0] << 8) + msgRx.content[1];
       return true;
@@ -313,7 +328,10 @@ bool CServoeNeck::disableServo(const uint8_t servo)
 {
   try
   {
-    if (!isOpen()) return false;
+    if (!isOpen())
+    {
+      return false;
+    }
 
     mrpt::serialization::CMessage msg, msgRx;
 
@@ -344,7 +362,10 @@ bool CServoeNeck::enableServo(const uint8_t servo)
 {
   try
   {
-    if (!isOpen()) return false;
+    if (!isOpen())
+    {
+      return false;
+    }
 
     mrpt::serialization::CMessage msg, msgRx;
 
@@ -382,7 +403,10 @@ bool CServoeNeck::center(const uint8_t servo)
 -------------------------------------------------------------*/
 bool CServoeNeck::checkConnectionAndConnect()
 {
-  if (isOpen()) return true;
+  if (isOpen())
+  {
+    return true;
+  }
 
   try
   {

@@ -92,7 +92,10 @@ struct TObject3D
    */
   bool getPoint(TPoint3D& out) const
   {
-    if (!isPoint()) return false;
+    if (!isPoint())
+    {
+      return false;
+    }
     out = getAs<TPoint3D>();
     return true;
   }
@@ -102,7 +105,10 @@ struct TObject3D
    */
   bool getSegment(TSegment3D& out) const
   {
-    if (!isSegment()) return false;
+    if (!isSegment())
+    {
+      return false;
+    }
     out = getAs<TSegment3D>();
     return true;
   }
@@ -112,7 +118,10 @@ struct TObject3D
    */
   bool getLine(TLine3D& out) const
   {
-    if (!isLine()) return false;
+    if (!isLine())
+    {
+      return false;
+    }
     out = getAs<TLine3D>();
     return true;
   }
@@ -122,7 +131,10 @@ struct TObject3D
    */
   bool getPolygon(TPolygon3D& out) const
   {
-    if (!isPolygon()) return false;
+    if (!isPolygon())
+    {
+      return false;
+    }
     out = getAs<TPolygon3D>();
     return true;
   }
@@ -132,7 +144,10 @@ struct TObject3D
    */
   bool getPlane(TPlane& out) const
   {
-    if (!isPlane()) return false;
+    if (!isPlane())
+    {
+      return false;
+    }
     out = getAs<TPlane>();
     return true;
   }

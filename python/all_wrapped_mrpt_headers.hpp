@@ -218,7 +218,6 @@
 //#include <mrpt/math/gtsam_wrappers.h>
 #include <mrpt/math/homog_matrices.h>
 #include <mrpt/math/interp_fit.h>
-#include <mrpt/math/kmeans.h>
 //#include <mrpt/math/lightweight_geom_data.h>
 //#include <mrpt/math/lightweight_geom_data_frwds.h>
 //#include <mrpt/math/mat2eig.h>

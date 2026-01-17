@@ -185,7 +185,10 @@ void CPosePDFSOG::copyFrom(const CPosePDF& o)
 bool CPosePDFSOG::saveToTextFile(const std::string& file) const
 {
   FILE* f = os::fopen(file.c_str(), "wt");
-  if (!f) return false;
+  if (!f)
+  {
+    return false;
+  }
 
   for (const auto& m : m_modes)
     os::fprintf(

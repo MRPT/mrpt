@@ -159,7 +159,10 @@ class CCylinder : virtual public CVisualObject, public VisualObjectParams_Triang
    */
   [[nodiscard]] bool getRadius(float Z, float& r) const
   {
-    if (!reachesHeight(Z)) return false;
+    if (!reachesHeight(Z))
+    {
+      return false;
+    }
     r = (Z / m_height) * (m_topRadius - m_baseRadius) + m_baseRadius;
     return true;
   }

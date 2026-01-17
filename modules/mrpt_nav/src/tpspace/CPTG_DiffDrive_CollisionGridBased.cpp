@@ -328,7 +328,10 @@ bool CPTG_DiffDrive_CollisionGridBased::saveColGridsToFile(
   try
   {
     mrpt::io::CFileGZOutputStream fo(filename);
-    if (!fo.fileOpenCorrectly()) return false;
+    if (!fo.fileOpenCorrectly())
+    {
+      return false;
+    }
 
     const uint32_t n = 1;  // for backwards compatibility...
     auto arch = mrpt::serialization::archiveFrom(fo);
@@ -350,7 +353,10 @@ bool CPTG_DiffDrive_CollisionGridBased::loadColGridsFromFile(
   try
   {
     mrpt::io::CFileGZInputStream fi(filename);
-    if (!fi.fileOpenCorrectly()) return false;
+    if (!fi.fileOpenCorrectly())
+    {
+      return false;
+    }
     auto arch = mrpt::serialization::archiveFrom(fi);
 
     uint32_t n;
@@ -376,7 +382,10 @@ bool CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::saveToFile(
 {
   try
   {
-    if (!f) return false;
+    if (!f)
+    {
+      return false;
+    }
 
     const uint8_t serialize_version = 2;  // v1: As of jun 2012, v2: As of dec-2013
 
@@ -419,7 +428,10 @@ bool CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::loadFromFile(
 {
   try
   {
-    if (!f) return false;
+    if (!f)
+    {
+      return false;
+    }
 
     // Return false if the file contents doesn't match what we expected:
     uint32_t file_magic;
@@ -427,7 +439,10 @@ bool CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::loadFromFile(
 
     // It doesn't seem to be a valid file or was in an old format, just
     // recompute the grid:
-    if (COLGRID_FILE_MAGIC != file_magic) return false;
+    if (COLGRID_FILE_MAGIC != file_magic)
+    {
+      return false;
+    }
 
     uint8_t serialized_version;
     *f >> serialized_version;
@@ -459,7 +474,10 @@ bool CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::loadFromFile(
     const std::string expected_desc = m_parent->getDescription();
     std::string desc;
     *f >> desc;
-    if (desc != expected_desc) return false;
+    if (desc != expected_desc)
+    {
+      return false;
+    }
 
 // and standard PTG data:
 #define READ_UINT16_CHECK_IT_MATCHES_STORED(_VAR) \

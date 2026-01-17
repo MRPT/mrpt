@@ -25,7 +25,10 @@ using namespace mrpt::rtti;
 bool CListOfClasses::containsDerivedFrom(const mrpt::rtti::TRuntimeClassId* id) const
 {
   for (const auto& i : data)
-    if (i->derivedFrom(id)) return true;
+    if (i->derivedFrom(id))
+    {
+      return true;
+    }
   return false;
 }
 

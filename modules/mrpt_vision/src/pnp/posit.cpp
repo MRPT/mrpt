@@ -85,7 +85,10 @@ bool mrpt::vision::pnp::posit::compute_pose(
     Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<Eigen::Vector3d> t_)
 {
   Eigen::FullPivLU<Eigen::MatrixXd> lu(obj_pts);
-  if (lu.rank() < 3) return false;
+  if (lu.rank() < 3)
+  {
+    return false;
+  }
 
   int i, iCount;
   long imageDiff = 1000;

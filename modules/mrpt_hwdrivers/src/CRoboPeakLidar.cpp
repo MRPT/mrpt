@@ -212,7 +212,10 @@ bool CRoboPeakLidar::turnOff()
 bool CRoboPeakLidar::getDeviceHealth() const
 {
 #if MRPT_HAS_ROBOPEAK_LIDAR
-  if (!RPLIDAR_DRV) return false;
+  if (!RPLIDAR_DRV)
+  {
+    return false;
+  }
 
   rplidar_response_device_health_t healthinfo;
 
@@ -248,7 +251,10 @@ bool CRoboPeakLidar::checkCOMMs()
 {
   MRPT_START
 #if MRPT_HAS_ROBOPEAK_LIDAR
-  if (RPLIDAR_DRV) return true;
+  if (RPLIDAR_DRV)
+  {
+    return true;
+  }
 
   // create the driver instance
   m_rplidar_drv = RPlidarDriver::CreateDriver(DRIVER_TYPE_SERIALPORT);
@@ -299,7 +305,10 @@ bool CRoboPeakLidar::checkCOMMs()
   }
 
   // check health:
-  if (!getDeviceHealth()) return false;
+  if (!getDeviceHealth())
+  {
+    return false;
+  }
 
   // start scan...
   u_result res = RPLIDAR_DRV->startScan(false, true);

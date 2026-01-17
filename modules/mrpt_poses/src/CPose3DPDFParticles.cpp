@@ -216,7 +216,10 @@ bool CPose3DPDFParticles::saveToTextFile(const std::string& file) const
   using namespace mrpt::system;
 
   FILE* f = os::fopen(file.c_str(), "wt");
-  if (!f) return false;
+  if (!f)
+  {
+    return false;
+  }
 
   os::fprintf(f, "%% x  y  z  yaw[rad] pitch[rad] roll[rad] log_weight\n");
 

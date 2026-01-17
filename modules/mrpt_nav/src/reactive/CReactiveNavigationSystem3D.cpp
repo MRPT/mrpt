@@ -186,7 +186,10 @@ bool CReactiveNavigationSystem3D::implementSenseObstacles(
 
   {
     CTimeLoggerEntry tle(m_timlog_delays, "senseObstacles()");
-    if (!m_robot.senseObstacles(m_WS_Obstacles_unsorted, obstacles_timestamp)) return false;
+    if (!m_robot.senseObstacles(m_WS_Obstacles_unsorted, obstacles_timestamp))
+    {
+      return false;
+    }
   }
 
   // Empty slice maps:

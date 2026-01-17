@@ -170,7 +170,10 @@ bool CRawlog::loadFromRawLogFile(const std::string& fileName, bool non_obs_objec
 {
   // Open for read.
   CFileGZInputStream fi;
-  if (!fi.open(fileName)) return false;
+  if (!fi.open(fileName))
+  {
+    return false;
+  }
   auto fs = archiveFrom(fi);
 
   clear();  // Clear first

@@ -343,10 +343,22 @@ bool CGenericPointsMap::registerField_uint8(const std::string_view& fieldName)
 
 bool CGenericPointsMap::unregisterField(const std::string_view& fieldName)
 {
-  if (m_float_fields.erase(fieldName) > 0) return true;
-  if (m_double_fields.erase(fieldName) > 0) return true;
-  if (m_uint16_fields.erase(fieldName) > 0) return true;
-  if (m_uint8_fields.erase(fieldName) > 0) return true;
+  if (m_float_fields.erase(fieldName) > 0)
+  {
+    return true;
+  }
+  if (m_double_fields.erase(fieldName) > 0)
+  {
+    return true;
+  }
+  if (m_uint16_fields.erase(fieldName) > 0)
+  {
+    return true;
+  }
+  if (m_uint8_fields.erase(fieldName) > 0)
+  {
+    return true;
+  }
   return false;
 }
 

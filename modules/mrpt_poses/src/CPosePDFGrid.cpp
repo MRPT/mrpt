@@ -144,7 +144,10 @@ bool CPosePDFGrid::saveToTextFile(const std::string& dataFile) const
   const auto dimsFile = dataFile + std::string("_dims.txt");
 
   std::ofstream f_d(dataFile), f_s(dimsFile);
-  if (!f_d.is_open() || !f_s.is_open()) return false;
+  if (!f_d.is_open() || !f_s.is_open())
+  {
+    return false;
+  }
 
   // Save dims:
   f_s << mrpt::format(

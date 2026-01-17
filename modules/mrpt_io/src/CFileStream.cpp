@@ -193,7 +193,10 @@ bool CFileStream::fileOpenCorrectly() const { return m_f.is_open(); }
 bool CFileStream::readLine(string& str)
 {
   str = string();  // clear() is not defined in VC6
-  if (!m_f.is_open()) return false;
+  if (!m_f.is_open())
+  {
+    return false;
+  }
 
   std::getline(m_f, str);
   return !m_f.fail() && !m_f.eof();
@@ -204,7 +207,10 @@ bool CFileStream::readLine(string& str)
  ---------------------------------------------------------------*/
 bool CFileStream::checkEOF()
 {
-  if (!m_f.is_open()) return true;
+  if (!m_f.is_open())
+  {
+    return true;
+  }
   return m_f.eof();
 }
 

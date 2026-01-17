@@ -38,7 +38,10 @@ class CAtan2LookUpTable
   [[nodiscard]] bool atan2(double y, double x, double& out_atan2) const noexcept
   {
     const double* cp = m_grid.cellByPos(x, y);
-    if (!cp) return false;
+    if (!cp)
+    {
+      return false;
+    }
     out_atan2 = *cp;
     return true;
   }
@@ -49,7 +52,10 @@ class CAtan2LookUpTable
       unsigned int iy, unsigned int ix, double& out_atan2) const noexcept
   {
     const double* cp = m_grid.cellByIndex(ix, iy);
-    if (!cp) return false;
+    if (!cp)
+    {
+      return false;
+    }
     out_atan2 = *cp;
     return true;
   }

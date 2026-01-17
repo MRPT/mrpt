@@ -87,7 +87,10 @@ struct TObject2D
    */
   bool getPoint(TPoint2D& out) const
   {
-    if (!isPoint()) return false;
+    if (!isPoint())
+    {
+      return false;
+    }
     out = getAs<TPoint2D>();
     return true;
   }
@@ -97,7 +100,10 @@ struct TObject2D
    */
   bool getSegment(TSegment2D& out) const
   {
-    if (!isSegment()) return false;
+    if (!isSegment())
+    {
+      return false;
+    }
     out = getAs<TSegment2D>();
     return true;
   }
@@ -107,7 +113,10 @@ struct TObject2D
    */
   bool getLine(TLine2D& out) const
   {
-    if (!isLine()) return false;
+    if (!isLine())
+    {
+      return false;
+    }
     out = getAs<TLine2D>();
     return true;
   }
@@ -117,7 +126,10 @@ struct TObject2D
    */
   bool getPolygon(TPolygon2D& out) const
   {
-    if (!isPolygon()) return false;
+    if (!isPolygon())
+    {
+      return false;
+    }
     out = getAs<TPolygon2D>();
     return true;
   }

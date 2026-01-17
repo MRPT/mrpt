@@ -69,7 +69,10 @@ DECLARE_OP_FUNCTION(op_recalc_odometry)
     // return false on any error.
     bool processOneObservation(CObservation::Ptr& o) override
     {
-      if (!IS_CLASS(*o, CObservationOdometry)) return true;
+      if (!IS_CLASS(*o, CObservationOdometry))
+      {
+        return true;
+      }
 
       auto* obs = dynamic_cast<CObservationOdometry*>(o.get());
 

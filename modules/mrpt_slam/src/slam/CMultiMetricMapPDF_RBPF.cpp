@@ -857,7 +857,10 @@ void CMultiMetricMapPDF::PF_SLAM_implementation_custom_update_particle_with_new_
 bool CMultiMetricMapPDF::PF_SLAM_implementation_doWeHaveValidObservations(
     const CMultiMetricMapPDF::CParticleList& particles, const CSensoryFrame* sf) const
 {
-  if (sf == nullptr) return false;
+  if (sf == nullptr)
+  {
+    return false;
+  }
   ASSERT_(!particles.empty());
   return particles.begin()->d.get()->mapTillNow.canComputeObservationsLikelihood(*sf);
 }

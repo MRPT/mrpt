@@ -110,7 +110,10 @@ bool CVoxelMap::internal_insertObservation_Pts(
     const mrpt::obs::CObservationPointCloud& obs,
     const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
-  if (!obs.pointcloud || obs.pointcloud->empty()) return false;
+  if (!obs.pointcloud || obs.pointcloud->empty())
+  {
+    return false;
+  }
 
   mrpt::math::TPoint3D sensorPt;
   mrpt::poses::CPose3D localSensorPose, globalSensorPose;
@@ -167,7 +170,10 @@ bool CVoxelMap::internal_insertObservation(
   mrpt::maps::CSimplePointsMap pts;
   pts.insertObservation(obs, robotPose);
 
-  if (pts.empty()) return false;
+  if (pts.empty())
+  {
+    return false;
+  }
 
   mrpt::math::TPoint3D sensorPt;
   mrpt::poses::CPose3D localSensorPose;

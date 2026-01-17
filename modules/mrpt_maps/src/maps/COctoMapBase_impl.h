@@ -98,9 +98,18 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::internal_build_PointCloud_for_observatio
     const auto* o_velo = dynamic_cast<const CObservationVelodyneScan*>(&obs);
 
     // No points?
-    if (o_scan3D && !o_scan3D->hasPoints3D) return false;
-    if (o_pc && (!o_pc->pointcloud || !o_pc->pointcloud->size())) return false;
-    if (o_velo && !o_velo->point_cloud.size()) return false;
+    if (o_scan3D && !o_scan3D->hasPoints3D)
+    {
+      return false;
+    }
+    if (o_pc && (!o_pc->pointcloud || !o_pc->pointcloud->size()))
+    {
+      return false;
+    }
+    if (o_velo && !o_velo->point_cloud.size())
+    {
+      return false;
+    }
 
     // Build a points-map representation of the points from the scan
     // (coordinates are wrt the robot base)
@@ -240,7 +249,10 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::getPointOccupancy(
   if (m_impl->m_octomap.coordToKeyChecked(octomap::point3d(x, y, z), key))
   {
     OCTREE_NODE* node = m_impl->m_octomap.search(key, 0 /*depth*/);
-    if (!node) return false;
+    if (!node)
+    {
+      return false;
+    }
 
     prob_occupancy = node->getOccupancy();
     return true;

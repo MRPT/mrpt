@@ -256,7 +256,10 @@ bool saveEigenSparseTripletsToFile(const std::string& sFile, std::vector<TRIPLET
   FILE* f = ::fopen(sFile.c_str(), "wt");
 #endif
 
-  if (!f) return false;
+  if (!f)
+  {
+    return false;
+  }
 
   for (size_t i = 0; i < tri.size(); i++)
     fprintf(f, "%u %u %e\n", 1 + tri[i].row(), 1 + tri[i].col(), tri[i].value());

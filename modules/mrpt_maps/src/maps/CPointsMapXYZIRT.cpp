@@ -257,7 +257,10 @@ void CPointsMapXYZIRT::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) cons
 bool CPointsMapXYZIRT::saveXYZIRT_to_text_file(const std::string& file) const
 {
   FILE* f = os::fopen(file.c_str(), "wt");
-  if (!f) return false;
+  if (!f)
+  {
+    return false;
+  }
   for (unsigned int i = 0; i < m_x.size(); i++)
     os::fprintf(
         f, "%f %f %f %f %i %f\n", m_x[i], m_y[i], m_z[i], getPointIntensity(i),
@@ -276,7 +279,10 @@ bool CPointsMapXYZIRT::loadXYZIRT_from_text_file(const std::string& file)
 
   std::ifstream f;
   f.open(file);
-  if (!f.is_open()) return false;
+  if (!f.is_open())
+  {
+    return false;
+  }
 
   while (!f.eof())
   {
@@ -334,7 +340,10 @@ bool CPointsMapXYZIRT::internal_insertObservation(
     ASSERT_EQUAL_(pc.x.size(), pc.laser_id.size());
 
     const size_t n = pc.x.size();
-    if (!n) return true;
+    if (!n)
+    {
+      return true;
+    }
 
     const size_t n0 = this->size();
     resize_XYZIRT(n0 + pc.x.size(), true /*I*/, true /*R*/, true /*T*/);
@@ -479,9 +488,18 @@ void CPointsMapXYZIRT::loadFromRangeScan(
    ------------------------------------------------------------------ */
 bool CPointsMapXYZIRT::hasPointField(const std::string_view& fieldName) const
 {
-  if (fieldName == POINT_FIELD_INTENSITY) return true;
-  if (fieldName == POINT_FIELD_RING_ID) return true;
-  if (fieldName == POINT_FIELD_TIMESTAMP) return true;
+  if (fieldName == POINT_FIELD_INTENSITY)
+  {
+    return true;
+  }
+  if (fieldName == POINT_FIELD_RING_ID)
+  {
+    return true;
+  }
+  if (fieldName == POINT_FIELD_TIMESTAMP)
+  {
+    return true;
+  }
   return CPointsMap::hasPointField(fieldName);
 }
 std::vector<std::string_view> CPointsMapXYZIRT::getPointFieldNames_float() const

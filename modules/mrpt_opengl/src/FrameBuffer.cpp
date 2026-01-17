@@ -31,7 +31,10 @@ bool isExtensionSupported(const std::string& extension)
     if (!extName) break;
     const auto sExt = std::string(reinterpret_cast<const char*>(extName));
     // std::cout << sExt << "\n";
-    if (sExt == extension) return true;
+    if (sExt == extension)
+    {
+      return true;
+    }
   }
   MRPT_END
   return false;

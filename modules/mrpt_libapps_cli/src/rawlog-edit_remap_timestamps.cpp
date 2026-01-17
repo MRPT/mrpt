@@ -78,14 +78,20 @@ DECLARE_OP_FUNCTION(op_remap_timestamps)
 
     bool checkSensorLabel(const CObservation::Ptr& obs)
     {
-      if (m_labels.empty()) return true;
+      if (m_labels.empty())
+      {
+        return true;
+      }
       return m_labels.count(obs->sensorLabel) != 0;
     }
 
     bool processOneObservation(CObservation::Ptr& obs) override
     {
       // does it apply?
-      if (!checkSensorLabel(obs)) return true;
+      if (!checkSensorLabel(obs))
+      {
+        return true;
+      }
 
       // T_NEW = a * T_OLD + b
       const double t = mrpt::Clock::toDouble(obs->timestamp);

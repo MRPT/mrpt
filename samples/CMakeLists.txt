@@ -120,7 +120,6 @@ if(MRPT_BUILD_EXAMPLES)
 	# === Depending on: mrpt::math mrpt::random mrpt::gui ===
 	set(LIST_EXAMPLES_IN_THIS_DIR
 		math_csparse_example
-		math_kmeans_example
 		math_matrix_example
 		math_optimize_lm_example
 		math_slerp_example

@@ -313,7 +313,10 @@ bool CRandomFieldGridMap3D::insertIndividualReading(
       "Trying to insert observation in uninitialized map (!)");
 
   const size_t cell_idx = cellAbsIndexFromCXCYCZ(x2idx(point.x), y2idx(point.y), z2idx(point.z));
-  if (cell_idx == INVALID_VOXEL_IDX) return false;
+  if (cell_idx == INVALID_VOXEL_IDX)
+  {
+    return false;
+  }
 
   TObservationGMRF new_obs(*this);
   new_obs.node_id = cell_idx;

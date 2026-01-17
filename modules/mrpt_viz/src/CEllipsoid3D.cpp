@@ -93,7 +93,7 @@ static bool quickSolveEqn(double a, double b_2, double c, double& t)
 bool CEllipsoid3D::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
 #if 0  // Update, someday...
-	if (m_cov.rows() != 3) return false;
+	if (m_cov.rows() != 3) { return false; }
 	TLine3D lin, lin2;
 	createFromPoseX((o - getCPose()).asTPose(), lin);
 	lin.unitarize();  // By adding this line, distance from any point of the

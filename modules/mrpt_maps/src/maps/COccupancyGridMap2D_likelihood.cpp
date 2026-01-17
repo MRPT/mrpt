@@ -909,7 +909,10 @@ bool COccupancyGridMap2D::internal_canComputeObservationLikelihood(
   {
     const auto& scan = dynamic_cast<const CObservation2DRangeScan&>(obs);
 
-    if (!scan.isPlanarScan(insertionOptions.horizontalTolerance)) return false;
+    if (!scan.isPlanarScan(insertionOptions.horizontalTolerance))
+    {
+      return false;
+    }
     if (insertionOptions.useMapAltitude &&
         fabs(insertionOptions.mapAltitude - scan.sensorPose.z()) > 0.01)
       return false;

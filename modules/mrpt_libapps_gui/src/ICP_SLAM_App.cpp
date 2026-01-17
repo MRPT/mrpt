@@ -501,7 +501,10 @@ bool ICP_SLAM_App_Live::impl_get_next_observations(
   using mrpt::obs::CObservation2DRangeScan;
 
   // Check if we had any hardware failure:
-  if (m_allThreadsMustExit) return false;
+  if (m_allThreadsMustExit)
+  {
+    return false;
+  }
 
   const auto t0 = mrpt::Clock::now();
 

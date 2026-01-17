@@ -59,7 +59,10 @@ bool getVerticesAndFaces(
   for (const auto& poly : polys)
   {
     size_t N = poly.size();
-    if (N < 3) return false;
+    if (N < 3)
+    {
+      return false;
+    }
     CPolyhedron::TPolyhedronFace f;
     f.vertices.resize(N);
     for (size_t i = 0; i < N; i++)
@@ -112,19 +115,31 @@ bool analyzeJohnsonPartsString(
         break;
       case 'C':
       case 'c':
-        if (numBaseEdges & 1) return false;
-        if (i == N - 1) return false;
+        if (numBaseEdges & 1)
+        {
+          return false;
+        }
+        if (i == N - 1)
+        {
+          return false;
+        }
         i++;
         if (components[i] == '+')
         {
-          if (i != N - 1) return false;
+          if (i != N - 1)
+          {
+            return false;
+          }
           if (parts.size() == 0) parts.push_back(INF_NO_BODY);
           parts.push_back(rot ? ROTATED_UPWARDS_CUPOLA : UPWARDS_CUPOLA);
           rot = false;
         }
         else if (components[i] == '-')
         {
-          if (parts.size() > 0) return false;
+          if (parts.size() > 0)
+          {
+            return false;
+          }
           parts.push_back(rot ? ROTATED_DOWNWARDS_CUPOLA : DOWNWARDS_CUPOLA);
           rot = false;
         }
@@ -133,19 +148,31 @@ bool analyzeJohnsonPartsString(
         break;
       case 'R':
       case 'r':
-        if (numBaseEdges != 10) return false;
-        if (i == N - 1) return false;
+        if (numBaseEdges != 10)
+        {
+          return false;
+        }
+        if (i == N - 1)
+        {
+          return false;
+        }
         i++;
         if (components[i] == '+')
         {
-          if (i != N - 1) return false;
+          if (i != N - 1)
+          {
+            return false;
+          }
           if (parts.size() == 0) parts.push_back(INF_NO_BODY);
           parts.push_back(rot ? ROTATED_UPWARDS_ROTUNDA : UPWARDS_ROTUNDA);
           rot = false;
         }
         else if (components[i] == '-')
         {
-          if (parts.size() > 0) return false;
+          if (parts.size() > 0)
+          {
+            return false;
+          }
           parts.push_back(rot ? ROTATED_DOWNWARDS_ROTUNDA : DOWNWARDS_ROTUNDA);
           rot = false;
         }
@@ -154,7 +181,10 @@ bool analyzeJohnsonPartsString(
         break;
       case 'G':
       case 'g':
-        if (i == N - 1) return false;
+        if (i == N - 1)
+        {
+          return false;
+        }
         i++;
         if (components[i] == 'C' || components[i] == 'R')
         {
@@ -165,24 +195,42 @@ bool analyzeJohnsonPartsString(
           return false;
       case 'P':
       case 'p':
-        if (i == N - 1) return false;
+        if (i == N - 1)
+        {
+          return false;
+        }
         i++;
         switch (components[i])
         {
           case '+':
-            if (numBaseEdges > 5) return false;
-            if (i != N - 1) return false;
+            if (numBaseEdges > 5)
+            {
+              return false;
+            }
+            if (i != N - 1)
+            {
+              return false;
+            }
             if (parts.size() == 0) parts.push_back(INF_NO_BODY);
             parts.push_back(UPWARDS_PYRAMID);
             break;
           case '-':
-            if (numBaseEdges > 5) return false;
-            if (i != 1) return false;
+            if (numBaseEdges > 5)
+            {
+              return false;
+            }
+            if (i != 1)
+            {
+              return false;
+            }
             parts.push_back(DOWNWARDS_PYRAMID);
             break;
           case 'R':
           case 'r':
-            if (parts.size() > 0 && (*parts.rbegin() == PRISM)) return false;
+            if (parts.size() > 0 && (*parts.rbegin() == PRISM))
+            {
+              return false;
+            }
             if (parts.size() == 0) parts.push_back(INF_NO_BODY);
             parts.push_back(PRISM);
             break;
@@ -195,7 +243,10 @@ bool analyzeJohnsonPartsString(
     }
     i++;
   }
-  if (parts.size() == 0) return false;
+  if (parts.size() == 0)
+  {
+    return false;
+  }
   JohnsonBodyPart p = *parts.rbegin();
   if (p != UPWARDS_PYRAMID && p != UPWARDS_CUPOLA && p != ROTATED_UPWARDS_CUPOLA &&
       p != UPWARDS_ROTUNDA && p != ROTATED_UPWARDS_ROTUNDA)
@@ -351,7 +402,10 @@ inline bool faceContainsEdge(
 
 bool getPlanesIntersection(const vector<const TPlane*>& planes, TPoint3D& pnt)
 {
-  if (planes.size() < 3) return false;
+  if (planes.size() < 3)
+  {
+    return false;
+  }
   char o = 0;
   TPlane pl = *planes[0];
   TLine3D l;
@@ -359,7 +413,10 @@ bool getPlanesIntersection(const vector<const TPlane*>& planes, TPoint3D& pnt)
   for (size_t i = 1; i < planes.size(); i++) switch (o)
     {
       case 0:
-        if (!intersect(pl, *planes[i], obj)) return false;
+        if (!intersect(pl, *planes[i], obj))
+        {
+          return false;
+        }
         if (obj.getPlane(pl))
           o = 0;
         else if (obj.getLine(l))
@@ -370,7 +427,10 @@ bool getPlanesIntersection(const vector<const TPlane*>& planes, TPoint3D& pnt)
           return false;
         break;
       case 1:
-        if (!intersect(l, *planes[i], obj)) return false;
+        if (!intersect(l, *planes[i], obj))
+        {
+          return false;
+        }
         if (obj.getLine(l))
           o = 1;
         else if (obj.getPoint(pnt))
@@ -379,7 +439,10 @@ bool getPlanesIntersection(const vector<const TPlane*>& planes, TPoint3D& pnt)
           return false;
         break;
       case 2:
-        if (!planes[i]->contains(pnt)) return false;
+        if (!planes[i]->contains(pnt))
+        {
+          return false;
+        }
         break;
       default:
         return false;
@@ -403,7 +466,10 @@ bool searchForFace(
       else if (it2 == v3)
         hmf |= 4;
     }
-    if (hmf == 7) return true;
+    if (hmf == 7)
+    {
+      return true;
+    }
   }
   return false;
 }
@@ -435,7 +501,10 @@ bool searchForEdge(
         res |= 1;
       else if (it2 == v2)
         res |= 2;
-    if (res == 3) return true;
+    if (res == 3)
+    {
+      return true;
+    }
   }
   return false;
 }
@@ -1765,7 +1834,10 @@ bool CPolyhedron::setNormal(TPolyhedronFace& f, bool doCheck)
   TPolygon3D poly(N);
   for (size_t i = 0; i < N; i++) poly[i] = m_Vertices[f.vertices[i]];
   TPlane tmp;
-  if (!poly.getPlane(tmp)) return false;
+  if (!poly.getPlane(tmp))
+  {
+    return false;
+  }
   f.normal = tmp.getNormalVector();
   TPoint3D c;
   getCenter(c);
@@ -1797,12 +1869,18 @@ bool CPolyhedron::checkConsistence(
   if (vertices.size() > 0)
     for (auto it = vertices.begin(); it != vertices.end() - 1; ++it)
       for (auto it2 = it + 1; it2 != vertices.end(); ++it2)
-        if (*it == *it2) return false;
+        if (*it == *it2)
+        {
+          return false;
+        }
   for (const auto& face : faces)
   {
     const vector<uint32_t>& e = face.vertices;
     for (unsigned int it2 : e)
-      if (it2 >= N) return false;
+      if (it2 >= N)
+      {
+        return false;
+      }
   }
   return true;
 }

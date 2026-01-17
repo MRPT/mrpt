@@ -53,13 +53,19 @@ bool mrpt::nav::collision_free_dist_segment_circ_robot(
   double r1, r2;
   const int nsols = mrpt::math::solve_poly2(a, b, c, r1, r2);
 
-  if (nsols <= 0) return false;
+  if (nsols <= 0)
+  {
+    return false;
+  }
   double r_min;
   if (nsols == 1)
     r_min = r1;
   else
   {
-    if (r1 < 0 && r2 < 0) return false;
+    if (r1 < 0 && r2 < 0)
+    {
+      return false;
+    }
     if (r1 < 0)
     {
       r_min = r2;
@@ -74,7 +80,10 @@ bool mrpt::nav::collision_free_dist_segment_circ_robot(
     }
   }
 
-  if (r_min > L) return false;
+  if (r_min > L)
+  {
+    return false;
+  }
 
   // A real, valid collision:
   out_col_dist = r_min;
@@ -89,13 +98,19 @@ bool mrpt::nav::collision_free_dist_arc_circ_robot(
 
   const mrpt::math::TPoint2D ptArcCenter(.0, arc_radius);
   const double center2obs_dist = (ptArcCenter - o).norm();
-  if (std::abs(center2obs_dist - std::abs(arc_radius)) > R) return false;
+  if (std::abs(center2obs_dist - std::abs(arc_radius)) > R)
+  {
+    return false;
+  }
 
   // x:
   const double r = arc_radius;
   const double discr = (R * r * 2.0 - o.y * r * 2.0 - R * R + o.x * o.x + o.y * o.y) *
                        (R * r * 2.0 + o.y * r * 2.0 + R * R - o.x * o.x - o.y * o.y);
-  if (discr < 0) return false;
+  if (discr < 0)
+  {
+    return false;
+  }
   const double sol_x0 =
       ((R * R) * (-1.0 / 2.0) + (o.x * o.x) * (1.0 / 2.0) + (o.y * o.y) * (1.0 / 2.0) -
        (o.y *

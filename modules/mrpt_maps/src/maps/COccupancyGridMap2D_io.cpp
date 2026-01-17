@@ -246,7 +246,10 @@ bool COccupancyGridMap2D::loadFromBitmapFile(
   MRPT_START
 
   CImage imgFl;
-  if (!imgFl.loadFromFile(file, 0)) return false;
+  if (!imgFl.loadFromFile(file, 0))
+  {
+    return false;
+  }
 
   m_is_empty = false;
   return loadFromBitmap(imgFl, res, origin);

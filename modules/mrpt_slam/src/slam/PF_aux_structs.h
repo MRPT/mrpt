@@ -35,10 +35,22 @@ struct TPoseBin2D
   {
     inline bool operator()(const TPoseBin2D& s1, const TPoseBin2D& s2) const
     {
-      if (s1.x < s2.x) return true;
-      if (s1.x > s2.x) return false;
-      if (s1.y < s2.y) return true;
-      if (s1.y > s2.y) return false;
+      if (s1.x < s2.x)
+      {
+        return true;
+      }
+      if (s1.x > s2.x)
+      {
+        return false;
+      }
+      if (s1.y < s2.y)
+      {
+        return true;
+      }
+      if (s1.y > s2.y)
+      {
+        return false;
+      }
       return s1.phi < s2.phi;
     }
   };
@@ -57,12 +69,30 @@ struct TPathBin2D
       ASSERT_(s1.bins.size() == s2.bins.size());
       for (size_t i = 0; i < s1.bins.size(); i++)
       {
-        if (s1.bins[i].x < s2.bins[i].x) return true;
-        if (s1.bins[i].x > s2.bins[i].x) return false;
-        if (s1.bins[i].y < s2.bins[i].y) return true;
-        if (s1.bins[i].y > s2.bins[i].y) return false;
-        if (s1.bins[i].phi < s2.bins[i].phi) return true;
-        if (s1.bins[i].phi > s2.bins[i].phi) return false;
+        if (s1.bins[i].x < s2.bins[i].x)
+        {
+          return true;
+        }
+        if (s1.bins[i].x > s2.bins[i].x)
+        {
+          return false;
+        }
+        if (s1.bins[i].y < s2.bins[i].y)
+        {
+          return true;
+        }
+        if (s1.bins[i].y > s2.bins[i].y)
+        {
+          return false;
+        }
+        if (s1.bins[i].phi < s2.bins[i].phi)
+        {
+          return true;
+        }
+        if (s1.bins[i].phi > s2.bins[i].phi)
+        {
+          return false;
+        }
         // else, keep comparing:
       }
       return false;  // If they're exactly equal, s1 is NOT < s2.
@@ -83,16 +113,46 @@ struct TPoseBin3D
   {
     bool operator()(const TPoseBin3D& s1, const TPoseBin3D& s2) const
     {
-      if (s1.x < s2.x) return true;
-      if (s1.x > s2.x) return false;
-      if (s1.y < s2.y) return true;
-      if (s1.y > s2.y) return false;
-      if (s1.z < s2.z) return true;
-      if (s1.z > s2.z) return false;
-      if (s1.yaw < s2.yaw) return true;
-      if (s1.yaw > s2.yaw) return false;
-      if (s1.pitch < s2.pitch) return true;
-      if (s1.pitch > s2.pitch) return false;
+      if (s1.x < s2.x)
+      {
+        return true;
+      }
+      if (s1.x > s2.x)
+      {
+        return false;
+      }
+      if (s1.y < s2.y)
+      {
+        return true;
+      }
+      if (s1.y > s2.y)
+      {
+        return false;
+      }
+      if (s1.z < s2.z)
+      {
+        return true;
+      }
+      if (s1.z > s2.z)
+      {
+        return false;
+      }
+      if (s1.yaw < s2.yaw)
+      {
+        return true;
+      }
+      if (s1.yaw > s2.yaw)
+      {
+        return false;
+      }
+      if (s1.pitch < s2.pitch)
+      {
+        return true;
+      }
+      if (s1.pitch > s2.pitch)
+      {
+        return false;
+      }
       return s1.roll < s2.roll;
     }
   };

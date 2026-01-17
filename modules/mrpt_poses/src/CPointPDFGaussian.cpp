@@ -124,7 +124,10 @@ bool CPointPDFGaussian::saveToTextFile(const std::string& file) const
 {
   MRPT_START
   FILE* f = os::fopen(file.c_str(), "wt");
-  if (!f) return false;
+  if (!f)
+  {
+    return false;
+  }
   os::fprintf(f, "%f %f %f\n", mean.x(), mean.y(), mean.z());
   os::fprintf(f, "%f %f %f\n", cov(0, 0), cov(0, 1), cov(0, 2));
   os::fprintf(f, "%f %f %f\n", cov(1, 0), cov(1, 1), cov(1, 2));

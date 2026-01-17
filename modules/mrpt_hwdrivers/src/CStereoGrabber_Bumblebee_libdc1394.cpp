@@ -82,7 +82,10 @@ bool CStereoGrabber_Bumblebee_libdc1394::getStereoObservation(
     return false;
   }
 
-  if (!m_firewire_capture->getObservation(out_observation)) return false;
+  if (!m_firewire_capture->getObservation(out_observation))
+  {
+    return false;
+  }
 
   return true;  // All ok
 }

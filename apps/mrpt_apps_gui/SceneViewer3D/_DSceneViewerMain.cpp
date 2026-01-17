@@ -1855,7 +1855,10 @@ class OpenGlObjectsFilter_ByClass : public OpenGlObjectsFilterVirtual
   {
     for (auto m_selected_classe : m_selected_classes)
     {
-      if (obj->GetRuntimeClass() == m_selected_classe) return true;
+      if (obj->GetRuntimeClass() == m_selected_classe)
+      {
+        return true;
+      }
     }
     return false;
   }

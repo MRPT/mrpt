@@ -119,10 +119,16 @@ bool CRobot2DPoseEstimator::getCurrentEstimate(
     mrpt::math::TTwist2D& velGlobal,
     mrpt::Clock::time_point tim_query) const
 {
-  if (!m_last_odo_time || !m_last_loc_time) return false;
+  if (!m_last_odo_time || !m_last_loc_time)
+  {
+    return false;
+  }
 
   const double dTimeLoc = timeDifference(m_last_loc_time.value(), tim_query);
-  if (dTimeLoc > params.max_localiz_age) return false;
+  if (dTimeLoc > params.max_localiz_age)
+  {
+    return false;
+  }
 
   //  Overall estimate:
   // last_loc (+) [ last_odo (-) odo_ref ] (+) extrapolation_from_vw
@@ -131,7 +137,10 @@ bool CRobot2DPoseEstimator::getCurrentEstimate(
 
   // Add the extrapolation:
   const double dTimeOdo = timeDifference(m_last_odo_time.value(), tim_query);
-  if (dTimeOdo > params.max_odometry_age) return false;
+  if (dTimeOdo > params.max_odometry_age)
+  {
+    return false;
+  }
 
   extrapolateRobotPose(p, m_robot_vel_local, dTimeOdo, pose);
 

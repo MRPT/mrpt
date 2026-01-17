@@ -487,7 +487,10 @@ bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationImage& out_obse
 {
   MRPT_START
 
-  if (!m_bInitialized) return false;
+  if (!m_bInitialized)
+  {
+    return false;
+  }
 
 #if MRPT_HAS_LIBDC1394_2
   dc1394video_frame_t* frame = nullptr;
@@ -598,7 +601,10 @@ bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationStereoImages& o
 {
   MRPT_START
 
-  if (!m_bInitialized) return false;
+  if (!m_bInitialized)
+  {
+    return false;
+  }
 
 #if MRPT_HAS_LIBDC1394_2
   dc1394video_frame_t* frame = nullptr;
@@ -678,7 +684,10 @@ bool CImageGrabber_dc1394::changeCaptureOptions(const TCaptureOptions_dc1394& op
 {
   MRPT_START
 
-  if (!m_bInitialized) return false;
+  if (!m_bInitialized)
+  {
+    return false;
+  }
 
 #if MRPT_HAS_LIBDC1394_2
   dc1394error_t err;
@@ -736,7 +745,10 @@ bool CImageGrabber_dc1394::setSoftwareTriggerLevel(bool level)
 {
   MRPT_START
 
-  if (!m_bInitialized) return false;
+  if (!m_bInitialized)
+  {
+    return false;
+  }
 
 #if MRPT_HAS_LIBDC1394_2
   dc1394error_t err;

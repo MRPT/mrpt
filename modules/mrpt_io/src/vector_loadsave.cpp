@@ -63,7 +63,10 @@ bool mrpt::io::loadTextFile(std::vector<std::string>& o, const std::string& file
 {
   o.clear();
   std::ifstream f(fileName);
-  if (!f.is_open()) return false;
+  if (!f.is_open())
+  {
+    return false;
+  }
   std::string s;
   while (std::getline(f, s)) o.emplace_back(std::move(s));
   return true;
@@ -90,7 +93,10 @@ bool mrpt::io::vectorToTextFile(
     const vector<float>& vec, const string& fileName, bool append, bool byRows)
 {
   FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
-  if (!f) return false;
+  if (!f)
+  {
+    return false;
+  }
 
   for (float it : vec) os::fprintf(f, byRows ? "%e " : "%e\n", static_cast<double>(it));
 
@@ -104,7 +110,10 @@ bool mrpt::io::vectorToTextFile(
     const vector<double>& vec, const string& fileName, bool append, bool byRows)
 {
   FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
-  if (!f) return false;
+  if (!f)
+  {
+    return false;
+  }
 
   for (double it : vec) os::fprintf(f, byRows ? "%e " : "%e\n", it);
 
@@ -118,7 +127,10 @@ bool mrpt::io::vectorToTextFile(
     const vector<int>& vec, const string& fileName, bool append, bool byRows)
 {
   FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
-  if (!f) return false;
+  if (!f)
+  {
+    return false;
+  }
 
   for (int it : vec) os::fprintf(f, byRows ? "%i " : "%i\n", it);
 
@@ -132,7 +144,10 @@ bool mrpt::io::vectorToTextFile(
     const vector<size_t>& vec, const string& fileName, bool append, bool byRows)
 {
   FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
-  if (!f) return false;
+  if (!f)
+  {
+    return false;
+  }
 
   for (unsigned long it : vec)
     os::fprintf(f, byRows ? "%u " : "%u\n", static_cast<unsigned int>(it));
@@ -147,7 +162,10 @@ bool mrpt::io::vectorNumericFromTextFile(
     std::vector<double>& vec, const std::string& fileName, bool byRows)
 {
   FILE* f = os::fopen(fileName.c_str(), "r");
-  if (!f) return false;
+  if (!f)
+  {
+    return false;
+  }
 
   double number = 0;
 

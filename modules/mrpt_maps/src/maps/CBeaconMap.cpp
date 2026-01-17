@@ -828,7 +828,10 @@ bool CBeaconMap::saveToMATLABScript3D(
     [[maybe_unused]] float confInterval) const
 {
   FILE* f = os::fopen(file.c_str(), "wt");
-  if (!f) return false;
+  if (!f)
+  {
+    return false;
+  }
 
   // Header:
   os::fprintf(f, "%%-------------------------------------------------------\n");

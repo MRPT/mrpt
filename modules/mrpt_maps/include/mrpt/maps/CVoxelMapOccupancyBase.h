@@ -523,7 +523,10 @@ bool CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::getPointOccupancy(
   voxel_node_t* cell = base_t::m_impl->accessor.value(
       Bonxai::PosToCoord({x, y, z}, base_t::m_impl->grid.inv_resolution), false /*create*/);
 
-  if (!cell) return false;
+  if (!cell)
+  {
+    return false;
+  }
 
   prob_occupancy = 1.0 - l2p(cell->occupancyRef());
   return true;

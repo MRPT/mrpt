@@ -184,7 +184,10 @@ void CPointPDFSOG::copyFrom(const CPointPDF& o)
 bool CPointPDFSOG::saveToTextFile(const std::string& file) const
 {
   FILE* f = os::fopen(file.c_str(), "wt");
-  if (!f) return false;
+  if (!f)
+  {
+    return false;
+  }
 
   for (const auto& m_mode : m_modes)
     os::fprintf(

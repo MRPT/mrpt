@@ -347,7 +347,10 @@ class CDirectedGraph
       const std::string& fileName, const TGraphvizExportParams& p = TGraphvizExportParams()) const
   {
     std::ofstream f(fileName.c_str());
-    if (!f.is_open()) return false;
+    if (!f.is_open())
+    {
+      return false;
+    }
     return saveAsDot(f, p);
   }
   /** @} */

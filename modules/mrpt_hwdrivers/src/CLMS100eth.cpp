@@ -133,7 +133,10 @@ bool CLMS100Eth::turnOn()
         MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
         MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
 
-        if (!read) return false;
+        if (!read)
+        {
+          return false;
+        }
       }
       {
         char msg[] = {"sMN mLMPsetscancfg +2500 +1 +2500 -450000 +2250000"};
@@ -146,7 +149,10 @@ bool CLMS100Eth::turnOn()
         MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
         MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
 
-        if (!read) return false;
+        if (!read)
+        {
+          return false;
+        }
       }
       {
         char msg[] = {"sWN LMDscandatacfg 01 00 0 1 0 00 00 0 0 0 0 +1"};
@@ -159,7 +165,10 @@ bool CLMS100Eth::turnOn()
         MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
         MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
 
-        if (!read) return false;
+        if (!read)
+        {
+          return false;
+        }
       }
       {
         char msg[] = {"sMN LMCstartmeas"};
@@ -169,7 +178,10 @@ bool CLMS100Eth::turnOn()
 
         msgIn[read - 1] = 0;
         MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
-        if (!read) return false;
+        if (!read)
+        {
+          return false;
+        }
       }
       {
         char msgIn[100];
@@ -183,7 +195,10 @@ bool CLMS100Eth::turnOn()
           msgIn[read - 1] = 0;
           MRPT_LOG_DEBUG_FMT("message : %s\n", &msgIn[1]);
           MRPT_LOG_DEBUG_FMT("%c\n", msgIn[11]);
-          if (!read) return false;
+          if (!read)
+          {
+            return false;
+          }
         } while (msgIn[11] != '7');
       }
       m_turnedOn = true;
@@ -236,10 +251,16 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
     switch (++idx)
     {
       case 1:
-        if (strncmp(&next[1], "sRA", 3) != 0 && strncmp(&next[1], "sSN", 3) != 0) return false;
+        if (strncmp(&next[1], "sRA", 3) != 0 && strncmp(&next[1], "sSN", 3) != 0)
+        {
+          return false;
+        }
         break;
       case 2:
-        if (strcmp(next, "LMDscandata")) return false;
+        if (strcmp(next, "LMDscandata"))
+        {
+          return false;
+        }
         break;
       case 6:
         if (!strcmp(next, "1"))

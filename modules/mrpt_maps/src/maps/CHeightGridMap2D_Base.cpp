@@ -68,7 +68,10 @@ bool CHeightGridMap2D_Base::intersectLine3D(
 
   const double resolution = dem_get_resolution();
   float z_min, z_max;
-  if (!getMinMaxHeight(z_min, z_max)) return false;
+  if (!getMinMaxHeight(z_min, z_max))
+  {
+    return false;
+  }
 
   // 1st: intersections with 2 horizontal planes at the grid Z limits:
   const TPlane horz_plane_above(
@@ -81,7 +84,10 @@ bool CHeightGridMap2D_Base::intersectLine3D(
     intersect(ray, horz_plane_above, int_ab);
     intersect(ray, horz_plane_below, int_be);
 
-    if (!int_ab.getPoint(pt_ab) || !int_be.getPoint(pt_be)) return false;
+    if (!int_ab.getPoint(pt_ab) || !int_be.getPoint(pt_be))
+    {
+      return false;
+    }
   }
 
   // Now, go from pt_ab -> pt_be doing "ray-tracing" and find the collision
@@ -89,7 +95,10 @@ bool CHeightGridMap2D_Base::intersectLine3D(
   TPoint3D pt = pt_ab;
   TPoint3D Apt = pt_be - pt_ab;
   const double totalDist = Apt.norm();
-  if (totalDist == 0) return false;
+  if (totalDist == 0)
+  {
+    return false;
+  }
   // The step:
   Apt *= resolution * 0.99 / totalDist;
 

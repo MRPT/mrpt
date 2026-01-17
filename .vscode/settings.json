@@ -41,6 +41,8 @@
     },
     "cSpell.words": [
         "3Dscene",
+        "Chebyshev",
+        "Clenshaw",
         "Eigen",
         "JLBC",
         "kannala",
@@ -72,8 +74,10 @@
         "PDFSOG",
         "STBIR",
         "Simul",
+        "coeffs",
         "exprtk",
         "idft",
+        "lfresnel",
         "repr",
         "stbi"
     ],

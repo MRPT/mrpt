@@ -406,10 +406,16 @@ class MatrixVectorBase
   bool operator==(const OTHERMATVEC& o) const
   {
     const auto& d = mvbDerived();
-    if (d.cols() != o.cols() || d.rows() != o.rows()) return false;
+    if (d.cols() != o.cols() || d.rows() != o.rows())
+    {
+      return false;
+    }
     for (typename OTHERMATVEC::Index r = 0; r < d.rows(); r++)
       for (typename OTHERMATVEC::Index c = 0; c < d.cols(); c++)
-        if (d(r, c) != o(r, c)) return false;
+        if (d(r, c) != o(r, c))
+        {
+          return false;
+        }
     return true;
   }
   template <typename OTHERMATVEC>

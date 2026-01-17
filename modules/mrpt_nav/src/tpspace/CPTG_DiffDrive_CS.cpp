@@ -106,7 +106,10 @@ void CPTG_DiffDrive_CS::ptgDiffDriveSteeringFunction(
 bool CPTG_DiffDrive_CS::PTG_IsIntoDomain(double x, double y) const
 {
   // If signs of K and X are different, it is not into the domain:
-  if ((K * x) < 0) return false;
+  if ((K * x) < 0)
+  {
+    return false;
+  }
 
   if (fabs(y) >= R)
   {

@@ -144,8 +144,14 @@ bool CAngularObservationMesh::setScanSet(
     bool rToL = scans[0].rightToLeft;
     for (auto it = scans.begin() + 1; it != scans.end(); ++it)
     {
-      if (it->getScanSize() != setSize) return false;
-      if (it->rightToLeft != rToL) return false;
+      if (it->getScanSize() != setSize)
+      {
+        return false;
+      }
+      if (it->rightToLeft != rToL)
+      {
+        return false;
+      }
     }
   }
   scanSet = scans;

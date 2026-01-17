@@ -74,7 +74,10 @@ bool CMetricMap::canComputeObservationsLikelihood(const CSensoryFrame& sf) const
 bool CMetricMap::insertObservation(
     const CObservation& obs, const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
-  if (!genericMapParams.enableObservationInsertion) return false;
+  if (!genericMapParams.enableObservationInsertion)
+  {
+    return false;
+  }
 
   bool done = internal_insertObservation(obs, robotPose);
   if (done)

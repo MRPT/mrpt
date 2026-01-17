@@ -225,8 +225,14 @@ struct PoseDistanceMetric<TNodeSE2>
 {
   bool cannotBeNearerThan(const TNodeSE2& a, const TNodeSE2& b, const double d) const
   {
-    if (std::abs(a.state.x - b.state.x) > d) return true;
-    if (std::abs(a.state.y - b.state.y) > d) return true;
+    if (std::abs(a.state.x - b.state.x) > d)
+    {
+      return true;
+    }
+    if (std::abs(a.state.y - b.state.y) > d)
+    {
+      return true;
+    }
     return false;
   }
 
@@ -253,8 +259,14 @@ struct PoseDistanceMetric<TNodeSE2_TP>
 {
   bool cannotBeNearerThan(const TNodeSE2_TP& a, const TNodeSE2_TP& b, const double d) const
   {
-    if (std::abs(a.state.x - b.state.x) > d) return true;
-    if (std::abs(a.state.y - b.state.y) > d) return true;
+    if (std::abs(a.state.x - b.state.x) > d)
+    {
+      return true;
+    }
+    if (std::abs(a.state.y - b.state.y) > d)
+    {
+      return true;
+    }
     return false;
   }
   double distance(const TNodeSE2_TP& src, const TNodeSE2_TP& dst) const

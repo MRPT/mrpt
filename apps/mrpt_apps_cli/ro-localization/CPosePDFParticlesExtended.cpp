@@ -691,7 +691,10 @@ void CPosePDFParticlesExtended::resetUniform(
 bool CPosePDFParticlesExtended::saveToTextFile(const std::string& file) const
 {
   FILE* f = os::fopen(file.c_str(), "wt");
-  if (!f) return false;
+  if (!f)
+  {
+    return false;
+  }
 
   for (const auto& m_particle : m_particles)
     os::fprintf(

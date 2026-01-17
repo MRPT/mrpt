@@ -218,7 +218,10 @@ bool CDisplayWindowGUI::dropEvent(const std::vector<std::string>& filenames)
   {
     try
     {
-      if (callback(filenames)) return true;
+      if (callback(filenames))
+      {
+        return true;
+      }
     }
     catch (const std::exception& e)
     {
@@ -237,7 +240,10 @@ bool CDisplayWindowGUI::keyboardEvent(int key, int scancode, int action, int mod
   {
     try
     {
-      if (callback(key, scancode, action, modifiers)) return true;
+      if (callback(key, scancode, action, modifiers))
+      {
+        return true;
+      }
     }
     catch (const std::exception& e)
     {
@@ -246,7 +252,10 @@ bool CDisplayWindowGUI::keyboardEvent(int key, int scancode, int action, int mod
     }
   }
 
-  if (Screen::keyboardEvent(key, scancode, action, modifiers)) return true;
+  if (Screen::keyboardEvent(key, scancode, action, modifiers))
+  {
+    return true;
+  }
 
   // Process special key events?
   return false;

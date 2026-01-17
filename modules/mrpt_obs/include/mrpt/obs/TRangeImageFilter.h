@@ -63,7 +63,10 @@ struct TRangeImageFilter
 bool TRangeImageFilter::do_range_filter(size_t r, size_t c, const float D) const
 {
   // Filters:
-  if (D <= .0f) return false;
+  if (D <= .0f)
+  {
+    return false;
+  }
   // Greater-than/Less-than filters:
   bool pass_gt = true, pass_lt = true;
   bool has_min_filter = false, has_max_filter = false;

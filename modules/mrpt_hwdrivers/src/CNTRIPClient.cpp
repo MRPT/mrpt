@@ -336,7 +336,10 @@ bool CNTRIPClient::retrieveListOfMountpoints(
   out_errmsg = httpOut.errormsg;
 
   // Parse contents:
-  if (ret != net::http_errorcode::Ok) return false;
+  if (ret != net::http_errorcode::Ok)
+  {
+    return false;
+  }
 
   std::stringstream ss(content);
   string lin;

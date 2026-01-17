@@ -122,7 +122,10 @@ bool CVoxelMapRGB::internal_insertObservation_3DScan(
   auto& oobs = const_cast<mrpt::obs::CObservation3DRangeScan&>(obs);
   oobs.unprojectInto(colPts, pp);
 
-  if (colPts.empty()) return false;
+  if (colPts.empty())
+  {
+    return false;
+  }
 
   // Insert occupancy info + RGB color:
   markAsChanged();
@@ -248,7 +251,10 @@ bool CVoxelMapRGB::internal_insertObservation_default(
   mrpt::maps::CSimplePointsMap pts;
   pts.insertObservation(obs, robotPose);
 
-  if (pts.empty()) return false;
+  if (pts.empty())
+  {
+    return false;
+  }
 
   mrpt::math::TPoint3D sensorPt;
   mrpt::poses::CPose3D localSensorPose;

@@ -261,13 +261,25 @@ bool CParameterizedTrajectoryGenerator::debugDumpInFiles(const std::string& ptg_
   const string sFilTxt_d = mrpt::format("%s/PTGs/PTG%s_d.txt", sPath, ptg_name.c_str());
 
   ofstream fx(sFilTxt_x.c_str());
-  if (!fx.is_open()) return false;
+  if (!fx.is_open())
+  {
+    return false;
+  }
   ofstream fy(sFilTxt_y.c_str());
-  if (!fy.is_open()) return false;
+  if (!fy.is_open())
+  {
+    return false;
+  }
   ofstream fp(sFilTxt_phi.c_str());
-  if (!fp.is_open()) return false;
+  if (!fp.is_open())
+  {
+    return false;
+  }
   ofstream fd(sFilTxt_d.c_str());
-  if (!fd.is_open()) return false;
+  if (!fd.is_open())
+  {
+    return false;
+  }
 
   const size_t nPaths = getAlphaValuesCount();
 

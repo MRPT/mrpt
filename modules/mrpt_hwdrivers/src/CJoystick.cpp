@@ -162,7 +162,10 @@ bool CJoystick::getJoystickPosition(int nJoy, State& output)
     if (m_joy_fd != -1) close(m_joy_fd);
 
     // Go, try open joystick:
-    if ((m_joy_fd = open(format("/dev/input/js%i", nJoy).c_str(), O_RDONLY)) < 0) return false;
+    if ((m_joy_fd = open(format("/dev/input/js%i", nJoy).c_str(), O_RDONLY)) < 0)
+    {
+      return false;
+    }
 
     // Perfect!
     m_joy_index = nJoy;
