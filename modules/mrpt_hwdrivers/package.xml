@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>mrpt_hwdrivers</name>
+  <version>2.20.0</version>
+  <description>The MRPT C++ library mrpt_hwdrivers</description>
+
+  <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
+  <license file="LICENSE">BSD</license>
+
+  <url type="website">https://github.com/MRPT/</url>
+
+  <buildtool_depend>cmake</buildtool_depend>
+
+  <depend>mrpt_comms</depend>
+  <depend>mrpt_maps</depend>
+
+  <export>
+    <build_type>cmake</build_type>
+  </export>
+
+</package>

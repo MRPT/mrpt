@@ -1,27 +1,28 @@
 # Lists of directories with source files:
 #  See "DeclareMRPTLib.cmake" for explanations
 # -------------------------------------------------
-set(NAVDIR "${MRPT_SOURCE_DIR}/libs/nav")
+cmake_minimum_required(VERSION 3.16)
+project(mrpt_nav LANGUAGES C CXX)
 
-list(APPEND nav_EXTRA_SRCS	      "${NAVDIR}/src/tpspace/*.cpp" "${NAVDIR}/include/mrpt/nav/tpspace/*.h")
-list(APPEND nav_EXTRA_SRCS_NAME   "PTGs_TPSpace" "PTGs_TPSpace")
+find_package(mrpt_maps REQUIRED)
+find_package(mrpt_kinematics REQUIRED)
 
-list(APPEND nav_EXTRA_SRCS	      "${NAVDIR}/src/holonomic/*.cpp" "${NAVDIR}/include/mrpt/nav/holonomic/*.h")
-list(APPEND nav_EXTRA_SRCS_NAME   "HolonomicNav" "HolonomicNav")
+# define lib:
+set(LIB_SOURCES
+  src/TPTGAllowedBackStop.cpp
+)
 
-list(APPEND nav_EXTRA_SRCS	      "${NAVDIR}/src/reactive/*.cpp" "${NAVDIR}/include/mrpt/nav/reactive/*.h")
-list(APPEND nav_EXTRA_SRCS_NAME   "ReactiveNav" "ReactiveNav")
+set(LIB_PUBLIC_HEADERS
+  include/mrpt/nav/TPTGAllowedBackStop.h
+)
 
-list(APPEND nav_EXTRA_SRCS	      "${NAVDIR}/src/planners/*.cpp" "${NAVDIR}/include/mrpt/nav/planners/*.h")
-list(APPEND nav_EXTRA_SRCS_NAME   "Planners" "Planners")
-
-#---------------------------------------------
-# Macro declared in "DeclareMRPTLib.cmake":
-#---------------------------------------------
-define_mrpt_lib(
-	# Lib name
-	nav
-	# Dependencies
-	mrpt-maps
-	mrpt-kinematics
-	)
+mrpt_add_library(
+  TARGET ${PROJECT_NAME}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  PUBLIC_LINK_LIBRARIES
+    mrpt::mrpt_maps
+    mrpt::mrpt_kinematics
+  CMAKE_DEPENDENCIES
+    mrpt_maps
+    mrpt_kinematics
+)

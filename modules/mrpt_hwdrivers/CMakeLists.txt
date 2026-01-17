@@ -1,3 +1,10 @@
+cmake_minimum_required(VERSION 3.16)
+project(mrpt_hwdrivers LANGUAGES C CXX)
+
+# Ensure dependent MRPT packages are available to CMake
+find_package(mrpt_comms REQUIRED)
+find_package(mrpt_maps REQUIRED)
+
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_flycapture2.cmake REQUIRED) # Check for PointGreyResearch (PGR) FlyCapture2 library
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_isense.cmake REQUIRED)      # Support for INTERSENSE Sensors
@@ -47,14 +54,26 @@ if(CMAKE_MRPT_HAS_LIBPCAP)
 	include_directories(${PCAP_INCLUDE_DIR})
 endif()
 
-# Macro declared in "DeclareMRPTLib.cmake":
-define_mrpt_lib(
-	# Lib name
-	hwdrivers
-	# Dependencies
-	mrpt-comms # serial ports, etc.
-	mrpt-maps  # used to laser preview, etc.
-	)
+# define lib:
+set(LIB_SOURCES
+  src/CActivMediaRobotBase.cpp
+  src/CBoardSonars.cpp
+  src/CEyeBot.cpp
+  src/CEnose.cpp
+)
+
+set(LIB_PUBLIC_HEADERS "")
+
+mrpt_add_library(
+  TARGET ${PROJECT_NAME}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  PUBLIC_LINK_LIBRARIES
+    mrpt::mrpt_comms
+    mrpt::mrpt_maps
+  CMAKE_DEPENDENCIES
+    mrpt_comms
+    mrpt_maps
+)
 
 if(NOT BUILD_mrpt-hwdrivers)
 	return()

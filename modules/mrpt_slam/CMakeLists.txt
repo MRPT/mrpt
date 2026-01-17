@@ -1,37 +1,40 @@
+
+cmake_minimum_required(VERSION 3.16)
+project(mrpt_slam LANGUAGES C CXX)
+
+find_package(mrpt_vision REQUIRED)
+find_package(mrpt_maps REQUIRED)
+
 include(${MRPT_SOURCE_DIR}/cmakemodules/script_tbb.cmake REQUIRED)         # TBB
 
+# define lib:
+set(LIB_SOURCES
+  src/CICP.cpp
+)
 
-# Lists of directories with source files:
-#  See "DeclareMRPTLib.cmake" for explanations
-# -------------------------------------------------
-
-list(APPEND slam_EXTRA_SRCS
-	"${MRPT_LIBS_ROOT}/slam/src/maps/*.cpp"
-	"${MRPT_LIBS_ROOT}/slam/src/slam/*.cpp"
-	"${MRPT_LIBS_ROOT}/slam/include/mrpt/slam/*.h"
-	)
-list(APPEND slam_EXTRA_SRCS_NAME
-	"slam" "slam" "slam-headers")
+set(LIB_PUBLIC_HEADERS
+  include/mrpt/slam/CICP.h
+)
 
 if(CMAKE_MRPT_HAS_TBB)
 	set(EXTRA_CONFIG_CMDS
 		"find_dependency(TBB CONFIG)")
 endif()
 
-#---------------------------------------------
-# Macro declared in "DeclareMRPTLib.cmake":
-#---------------------------------------------
-define_mrpt_lib(
-	# Lib name
-	slam
-	# Dependencies
-	mrpt-vision
-	mrpt-maps
-	)
+mrpt_add_library(
+  TARGET ${PROJECT_NAME}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  PUBLIC_LINK_LIBRARIES
+    mrpt::mrpt_vision
+    mrpt::mrpt_maps
+  CMAKE_DEPENDENCIES
+    mrpt_vision
+    mrpt_maps
+)
 
 if(BUILD_mrpt-slam)
 
 	if (CMAKE_MRPT_HAS_TBB)
-		target_link_libraries(slam PUBLIC TBB::tbb)
+		target_link_libraries(${PROJECT_NAME} PUBLIC TBB::tbb)
 	endif()
 endif()
