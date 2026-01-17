@@ -8,6 +8,8 @@ CMakeLists.txt.user*
 SOURCE_DATE_EPOCH
 *.backup
 
+./my*.ini  # examples leftovers
+
 share/mrpt/config_files/rawlog-grabber/*.rawlog
 
 # OSX
