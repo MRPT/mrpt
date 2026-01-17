@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>mrpt_vision_lgpl</name>
+  <version>2.20.0</version>
+  <description>The MRPT optional LGPLv3 components for vision (mrpt_vision-lgpl)</description>
+
+  <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
+  <license file="LICENSE">LGPL-3.0-or-later</license>
+
+  <url type="website">https://github.com/MRPT/</url>
+
+  <buildtool_depend>cmake</buildtool_depend>
+
+  <depend>mrpt_vision</depend>
+
+  <export>
+    <build_type>cmake</build_type>
+  </export>
+
+</package>

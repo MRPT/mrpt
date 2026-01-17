@@ -1,4 +1,11 @@
 
+cmake_minimum_required(VERSION 3.16)
+project(mrpt_opengl LANGUAGES C CXX)
+
+find_package(mrpt_viz REQUIRED)
+find_package(mrpt_poses REQUIRED)
+find_package(mrpt_img REQUIRED)
+
 # Lists of directories with source files:
 #  See "DeclareMRPTLib.cmake" for explanations
 # -------------------------------------------------
@@ -28,47 +35,59 @@ endif ()
 
 option(MRPT_OPENGL_PROFILER OFF)
 
-#---------------------------------------------
-# Macro declared in "DeclareMRPTLib.cmake":
-#---------------------------------------------
-define_mrpt_lib(
-	# Lib name
-	opengl
-	# Dependencies:
-	mrpt-viz
-	mrpt-poses
-	mrpt-img
-	)
+# define lib:
+set(LIB_SOURCES
+  src/COpenGLScene.cpp
+  src/COpenGLBuffer.cpp
+)
+
+set(LIB_PUBLIC_HEADERS
+  include/mrpt/opengl/COpenGLScene.h
+  include/mrpt/opengl/COpenGLBuffer.h
+)
+
+mrpt_add_library(
+  TARGET ${PROJECT_NAME}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  PUBLIC_LINK_LIBRARIES
+    mrpt::mrpt_viz
+    mrpt::mrpt_poses
+    mrpt::mrpt_img
+  CMAKE_DEPENDENCIES
+    mrpt_viz
+    mrpt_poses
+    mrpt_img
+)
 
 if(NOT BUILD_mrpt-opengl)
   return()
 endif()
 
 if (MRPT_OPENGL_PROFILER)
-	target_compile_definitions(opengl PRIVATE MRPT_OPENGL_PROFILER)
+	target_compile_definitions(${PROJECT_NAME} PRIVATE MRPT_OPENGL_PROFILER)
 endif()
 
 # https://developer.apple.com/macos/whats-new/#deprecationofopenglandopencl
 if (APPLE)
-	target_compile_definitions(opengl PRIVATE GL_SILENCE_DEPRECATION)
+	target_compile_definitions(${PROJECT_NAME} PRIVATE GL_SILENCE_DEPRECATION)
 endif()
 
 # Link against gl, glu, glut:
-target_link_libraries(opengl PRIVATE
+target_link_libraries(${PROJECT_NAME} PRIVATE
 	${MRPT_OPENGL_LIBS}
 	)
 if (TARGET mrpt_glew) # Basically, for Windows
-	target_link_libraries(opengl PRIVATE mrpt_glew)
+	target_link_libraries(${PROJECT_NAME} PRIVATE mrpt_glew)
 endif()
 
 # Link against assimp:
 if (CMAKE_MRPT_HAS_ASSIMP)
 	if(TARGET "EP_assimp")
-		add_dependencies(opengl EP_assimp)
+		add_dependencies(${PROJECT_NAME} EP_assimp)
 	endif()
-	target_link_libraries(opengl PRIVATE ${ASSIMP_LIBRARIES})
+	target_link_libraries(${PROJECT_NAME} PRIVATE ${ASSIMP_LIBRARIES})
 endif ()
 if (MINGW)
-	target_link_libraries(opengl PRIVATE opengl32 GlU32)
+	target_link_libraries(${PROJECT_NAME} PRIVATE opengl32 GlU32)
 endif()
 
