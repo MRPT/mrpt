@@ -27,7 +27,12 @@ class Visualizable
 {
  public:
   Visualizable() = default;
-  ~Visualizable() = default;
+  virtual ~Visualizable() = default;
+
+  Visualizable(const Visualizable&) = default;
+  Visualizable& operator=(const Visualizable&) = default;
+  Visualizable(Visualizable&&) = default;
+  Visualizable& operator=(Visualizable&&) = default;
 
   /** Inserts 3D primitives representing this object into the provided
    * container.
@@ -37,12 +42,12 @@ class Visualizable
    */
   virtual void getVisualizationInto(mrpt::viz::CSetOfObjects& o) const = 0;
 
-  /** Creates 3D primitives representing this objects.
+  /** Creates 3D primitives representing this object.
    * This is equivalent to getVisualizationInto() but creating, and returning
    * by value, a new rpt::opengl::CSetOfObjects::Ptr shared pointer.
    * \sa getVisualizationInto()
    */
-  std::shared_ptr<mrpt::viz::CSetOfObjects> getVisualization() const;
+  [[nodiscard]] std::shared_ptr<mrpt::viz::CSetOfObjects> getVisualization() const;
 };
 
 }  // namespace mrpt::viz
