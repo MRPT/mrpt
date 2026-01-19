@@ -1,6 +1,16 @@
+# ------------------------------------------------------------------------------
+#        Mobile Robot Programming Toolkit (MRPT)
+#
+# Copyright (c) 2005-2026, Jose Luis Blanco-Claraco, contributors (see Git history)
+# All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------------------------------------------
 
 cmake_minimum_required(VERSION 3.16)
 project(mrpt_opengl LANGUAGES C CXX)
+
+# MRPT CMake scripts: "mrpt_xxx()"
+find_package(mrpt_common REQUIRED)
 
 find_package(mrpt_viz REQUIRED)
 find_package(mrpt_poses REQUIRED)
@@ -9,9 +19,9 @@ find_package(mrpt_img REQUIRED)
 # Lists of directories with source files:
 #  See "DeclareMRPTLib.cmake" for explanations
 # -------------------------------------------------
-
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_assimp.cmake REQUIRED)      # Check for system assimp lib (3D models)
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_gl_glut.cmake REQUIRED)     # Check for the GL,GLUT libraries
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(./cmake/script_assimp.cmake REQUIRED)      # Check for system assimp lib (3D models)
+include(./cmake/script_gl_glut.cmake REQUIRED)     # Check for the GL,GLUT libraries
 
 # Assimp:
 if (CMAKE_MRPT_HAS_ASSIMP)
@@ -37,13 +47,19 @@ option(MRPT_OPENGL_PROFILER OFF)
 
 # define lib:
 set(LIB_SOURCES
-  src/COpenGLScene.cpp
-  src/COpenGLBuffer.cpp
+  src/Buffer.cpp
+  src/VertexArrayObject.cpp
+  src/Shader.cpp
+  src/Texture.cpp
+  src/TRenderMatrices.cpp
 )
 
 set(LIB_PUBLIC_HEADERS
-  include/mrpt/opengl/COpenGLScene.h
-  include/mrpt/opengl/COpenGLBuffer.h
+  include/mrpt/opengl/Buffer.h
+  include/mrpt/opengl/VertexArrayObject.h
+  include/mrpt/opengl/Shader.h
+  include/mrpt/opengl/Texture.h
+  include/mrpt/opengl/TRenderMatrices.h
 )
 
 mrpt_add_library(

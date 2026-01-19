@@ -581,7 +581,7 @@ void Texture::assignCubeImages(const std::array<mrpt::img::CImage, 6>& imgs, int
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
   // just in case they are lazy-load imgs
-  for (auto& im : imgs)
+  for (const auto& im : imgs)
   {
     im.forceLoad();
     ASSERT_(im.getPixelDepth() == mrpt::img::PixelDepth::D8U);
@@ -623,7 +623,7 @@ void Texture::assignCubeImages(const std::array<mrpt::img::CImage, 6>& imgs, int
 
     // Prepare image data types:
     const GLenum img_type = GL_UNSIGNED_BYTE;
-    const int nBytesPerPixel = rgb.channelCount();
+    const int nBytesPerPixel = rgb.channels();
     // Reverse RGB <-> BGR order?
     const bool is_RGB_order = (rgb.getChannelsOrder() == std::string("RGB"));
     const GLenum img_format = [=]()

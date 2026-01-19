@@ -78,28 +78,7 @@ class CArrow : virtual public CVisualObject, public VisualObjectParams_Triangles
 
   mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
-  /** Constructor */
-  CArrow(
-      float x0 = 0,
-      float y0 = 0,
-      float z0 = 0,
-      float x1 = 1,
-      float y1 = 1,
-      float z1 = 1,
-      float headRatio = 0.2f,
-      float smallRadius = 0.05f,
-      float largeRadius = 0.2f) :
-      m_x0(x0),
-      m_y0(y0),
-      m_z0(z0),
-      m_x1(x1),
-      m_y1(y1),
-      m_z1(z1),
-      m_headRatio(headRatio),
-      m_smallRadius(smallRadius),
-      m_largeRadius(largeRadius)
-  {
-  }
+  CArrow() = default;
 
   CArrow(
       const mrpt::math::TPoint3Df& from,
@@ -118,11 +97,10 @@ class CArrow : virtual public CVisualObject, public VisualObjectParams_Triangles
       m_largeRadius(largeRadius)
   {
   }
-  ~CArrow() override = default;
 
  protected:
-  mutable float m_x0, m_y0, m_z0;
-  mutable float m_x1, m_y1, m_z1;
+  mutable float m_x0 = 0, m_y0 = 0, m_z0 = 0;
+  mutable float m_x1 = 0, m_y1 = 0, m_z1 = 0;
   float m_headRatio;
   float m_smallRadius, m_largeRadius;
   /** Number of radial divisions. */

@@ -17,8 +17,6 @@
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/viz/CArrow.h>
 
-#include <memory>
-
 using namespace mrpt;
 using namespace mrpt::viz;
 using namespace mrpt::math;

@@ -104,6 +104,9 @@ class CVisualObject : public mrpt::serialization::CSerializable
   mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_stateMtx;
 
  public:
+  /** Default constructor:  */
+  CVisualObject() = default;
+
   /** @name Changes the appearance of the object to render
     @{ */
 
@@ -329,10 +332,6 @@ class CVisualObject : public mrpt::serialization::CSerializable
    * \note (New in MRPT 2.4.2) */
   virtual void toYAMLMap(mrpt::containers::yaml& propertiesMap) const;
 
-  /** Default constructor:  */
-  CVisualObject() = default;
-  ~CVisualObject() override;
-
   /** Should return true if enqueueForRenderRecursive() is defined since
    *  the object has inner children. Examples: CSetOfObjects, CAssimpModel.
    */
@@ -443,7 +442,6 @@ class VisualObjectParams_Triangles : public virtual CVisualObject
 {
  public:
   VisualObjectParams_Triangles() = default;
-  virtual ~VisualObjectParams_Triangles() = default;
 
   [[nodiscard]] bool isLightEnabled() const { return m_enableLight; }
   void enableLight(bool enable = true)
@@ -490,7 +488,6 @@ class VisualObjectParams_TexturedTriangles : public virtual CVisualObject
 {
  public:
   VisualObjectParams_TexturedTriangles() = default;
-  virtual ~VisualObjectParams_TexturedTriangles() = default;
 
   /** Assigns a texture and a transparency image, and enables transparency (If
    * the images are not 2^N x 2^M, they will be internally filled to its
@@ -584,7 +581,6 @@ class VisualObjectParams_Lines : public virtual CVisualObject
 {
  public:
   VisualObjectParams_Lines() = default;
-  virtual ~VisualObjectParams_Lines() = default;
 
   void setLineWidth(float w)
   {
@@ -612,7 +608,6 @@ class VisualObjectParams_Points : public virtual CVisualObject
 {
  public:
   VisualObjectParams_Points() = default;
-  virtual ~VisualObjectParams_Points() = default;
 
   /** By default is 1.0. \sa enableVariablePointSize() */
   void setPointSize(float p) { m_pointSize = p; }
