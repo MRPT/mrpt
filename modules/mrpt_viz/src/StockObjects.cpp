@@ -140,18 +140,23 @@ CSetOfObjects::Ptr stock_objects::CornerXYZ(float scale)
 {
   CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
 
-  CArrow::Ptr obj =
-      CArrow::Create(0, 0, 0, scale, 0, 0, 0.25f * scale, 0.02f * scale, 0.05f * scale);
+  CArrow::Ptr obj = CArrow::Create(
+      mrpt::math::TPoint3Df(0, 0, 0), mrpt::math::TPoint3Df(scale, 0, 0), 0.25f * scale,
+      0.02f * scale, 0.05f * scale);
 
   obj->setColor(1, 0, 0);
   ret->insert(obj);
 
-  obj = CArrow::Create(0, 0, 0, 0, scale, 0, 0.25f * scale, 0.02f * scale, 0.05f * scale);
+  obj = CArrow::Create(
+      mrpt::math::TPoint3Df(0, 0, 0), mrpt::math::TPoint3Df(0, scale, 0), 0.25f * scale,
+      0.02f * scale, 0.05f * scale);
   obj->setColor(0, 1, 0);
 
   ret->insert(obj);
 
-  obj = CArrow::Create(0, 0, 0, 0, 0, scale, 0.25f * scale, 0.02f * scale, 0.05f * scale);
+  obj = CArrow::Create(
+      mrpt::math::TPoint3Df(0, 0, 0), mrpt::math::TPoint3Df(0, 0, scale), 0.25f * scale,
+      0.02f * scale, 0.05f * scale);
   obj->setColor(0, 0, 1);
 
   ret->insert(obj);
@@ -287,18 +292,21 @@ CSetOfObjects::Ptr stock_objects::CornerXYZEye()
   CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
   CPose3D rotation;
 
-  CArrow::Ptr obj = CArrow::Create(0, 0, 0, 1.0, 0, 0, 0.25f, 0.02f, 0.05f);
+  CArrow::Ptr obj = CArrow::Create(
+      mrpt::math::TPoint3Df(0, 0, 0), mrpt::math::TPoint3Df(1, 0, 0), 0.25f, 0.02f, 0.05f);
 
   obj->setColor(1, 0, 0);
 
   ret->insert(obj);
 
-  obj = CArrow::Create(0, 0, 0, 0, 1.0, 0, 0.25f, 0.02f, 0.05f);
+  obj = CArrow::Create(
+      mrpt::math::TPoint3Df(0, 0, 0), mrpt::math::TPoint3Df(0, 1, 0), 0.25f, 0.02f, 0.05f);
   obj->setColor(0, 1, 0);
 
   ret->insert(obj);
 
-  obj = CArrow::Create(0, 0, -1.0, 0, 0, 0, 0.25f, 0.02f, 0.05f);
+  obj = CArrow::Create(
+      mrpt::math::TPoint3Df(0, 0, -1), mrpt::math::TPoint3Df(0, 0, 0), 0.25f, 0.02f, 0.05f);
   obj->setColor(0, 0, 1);
 
   ret->insert(obj);
@@ -336,8 +344,8 @@ CSetOfObjects::Ptr stock_objects::CornerXYZSimple(float scale, float lineWidth)
   CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
 
   // Using OpenGL shaders, it's more complicated to set line widths.
-  // So, let's use cylinders of a diameter proportional to "scale":
-  const float R = scale * 0.01f;
+  // So, let's use cylinders of a diameter proportional to "lineWidth":
+  const float R = lineWidth * 0.01f;
   const int nSlices = 6;
 
   {  // X:
@@ -366,7 +374,7 @@ CSetOfObjects::Ptr stock_objects::CornerXYSimple(float scale, float lineWidth)
 
   // Using OpenGL shaders, it's more complicated to set line widths.
   // So, let's use cylinders of a diameter proportional to "scale":
-  const float R = scale * 0.01f;
+  const float R = lineWidth * 0.01f;
   const int nSlices = 6;
 
   {  // X:

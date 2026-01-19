@@ -30,9 +30,6 @@ using namespace mrpt::viz;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CVisualObject, CSerializable, mrpt::viz)
 
-// Destructor:
-CVisualObject::~CVisualObject() = default;
-
 void CVisualObject::writeToStreamRender(mrpt::serialization::CArchive& out) const
 {
   std::shared_lock<std::shared_mutex> lckRead(m_stateMtx.data);

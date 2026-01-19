@@ -26,5 +26,7 @@
 #cmakedefine HAVE_GLES3_GL3_H 1
 #cmakedefine HAVE_GLES3_GL3EXT_H 1
 
+#define MRPT_HAS_ASSIMP ${CMAKE_MRPT_HAS_ASSIMP}
+#define MRPT_HAS_ASSIMP_SYSTEM ${CMAKE_MRPT_HAS_ASSIMP_SYSTEM}
 
 // clang-format on

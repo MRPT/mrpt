@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2005-2026, Jose Luis Blanco-Claraco, contributors (see Git history)
 # All rights reserved.
-# Released under BSD-3 license. See LICENSE file
+# SPDX-License-Identifier: BSD-3-Clause
 # ------------------------------------------------------------------------------
 cmake_minimum_required(VERSION 3.16)
 
