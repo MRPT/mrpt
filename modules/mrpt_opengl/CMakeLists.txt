@@ -48,18 +48,22 @@ option(MRPT_OPENGL_PROFILER OFF)
 # define lib:
 set(LIB_SOURCES
   src/Buffer.cpp
-  src/VertexArrayObject.cpp
+  src/CompiledScene.cpp
+  src/CompiledViewport.cpp
   src/Shader.cpp
   src/Texture.cpp
   src/TRenderMatrices.cpp
+  src/VertexArrayObject.cpp
 )
 
 set(LIB_PUBLIC_HEADERS
   include/mrpt/opengl/Buffer.h
-  include/mrpt/opengl/VertexArrayObject.h
+  include/mrpt/opengl/CompiledScene.h
+  include/mrpt/opengl/CompiledViewport.h
   include/mrpt/opengl/Shader.h
   include/mrpt/opengl/Texture.h
   include/mrpt/opengl/TRenderMatrices.h
+  include/mrpt/opengl/VertexArrayObject.h
 )
 
 mrpt_add_library(
