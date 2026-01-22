@@ -72,10 +72,7 @@ jobs:
             --event-handlers console_direct+ \
             --cmake-args \
               -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-              -DMRPT_BUILD_EXAMPLES=ON \
-              -DMRPT_BUILD_TESTING=ON \
-              -DMRPT_ENABLE_COVERAGE=${{ matrix.coverage }} \
-              -DMRPT_ALLOW_LGPLV3=ON \
+              -DENABLE_COVERAGE=${{ matrix.coverage }} \
               -DCMAKE_VERBOSE_MAKEFILE=ON
 
       - name: Colcon Test
