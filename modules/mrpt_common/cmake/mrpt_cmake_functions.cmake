@@ -530,6 +530,11 @@ function(mrpt_add_library)
     # Don't include here the unit testing code:
     remove_matching_files_from_list(".*_unittest.cpp" MRPT_ADD_LIBRARY_SOURCES)
 
+    if(ENABLE_COVERAGE)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage")
+    endif()
+
     # Library type: 
     # - HEADERS_ONLY_LIBRARY: `INTERFACE`
     # - Regular lib: (none: default to SHARED / STATIC)
@@ -540,7 +545,6 @@ function(mrpt_add_library)
       add_library(${MRPT_ADD_LIBRARY_TARGET}
         ${MRPT_ADD_LIBRARY_SOURCES}
       )
-      #add_coverage(${name})
 
       mrpt_set_target_build_options(${MRPT_ADD_LIBRARY_TARGET} ${MRPT_ADD_LIBRARY_HEADERS_ONLY_LIBRARY})
 
