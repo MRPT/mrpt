@@ -43,35 +43,28 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          #sudo apt-mark hold grub-efi-amd64-signed
+          #sudo apt-mark hold grub-efi-amd64-signed 
           sudo apt-get -y update
           sudo apt-get -y upgrade
 
           # MRPT Dependencies + Colcon Tooling
-          sudo apt install -y \
-            cmake build-essential \
-            python3-colcon-common-extensions \
-            lcov \
-            libwxgtk3.0-gtk3-dev libopencv-dev libeigen3-dev libgtest-dev \
-            freeglut3-dev libglfw3-dev libassimp-dev libglu1-mesa-dev \
-            libqt5opengl5-dev qtbase5-dev libxrandr-dev libxxf86vm-dev \
-            libftdi-dev libusb-1.0-0-dev libudev-dev libfreenect-dev \
-            libavformat-dev libswscale-dev libpcap-dev liboctomap-dev \
-            libopenni2-dev libtinyxml2-dev libdc1394-dev yamllint
+          sudo apt install -y cmake build-essential libwxgtk3.2-dev \
+                           libopencv-dev libeigen3-dev libgtest-dev \
+                           freeglut3-dev libglfw3-dev libassimp-dev \
+                           libglu1-mesa-dev libqt5opengl5-dev qtbase5-dev \
+                           libxrandr-dev libxxf86vm-dev \
+                           libftdi-dev libusb-1.0-0-dev libudev-dev libfreenect-dev \
+                           libavformat-dev libswscale-dev libpcap-dev \
+                           liboctomap-dev libopenni2-dev \
+                           libtinyxml2-dev \
+                           libdc1394-dev \
+                           lcov yamllint
 
-          if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
-            sudo apt install -y libicu-dev libsimpleini-dev pybind11-dev python3-dev
-          fi
+          sudo apt install -y libicu-dev libsimpleini-dev
 
-          if [ "${{ matrix.compiler }}" = "gcc" ]; then
-            sudo apt-get install -y g++
-            echo "CC=gcc" >> $GITHUB_ENV
-            echo "CXX=g++" >> $GITHUB_ENV
-          else
-            sudo apt-get install -y clang g++-multilib
-            echo "CC=clang" >> $GITHUB_ENV
-            echo "CXX=clang++" >> $GITHUB_ENV
-          fi
+          # Added: python3-pip and colcon installation via pip
+          sudo apt install -y pybind11-dev python3-dev python3-pip
+          pip3 install --break-system-packages colcon-common-extensions colcon-lcov-result
 
       - name: Colcon Build
         run: |
