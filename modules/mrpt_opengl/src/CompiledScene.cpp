@@ -13,6 +13,7 @@
 */
 
 #include <mrpt/core/exceptions.h>
+#include <mrpt/core/get_env.h>
 #include <mrpt/opengl/CompiledScene.h>
 #include <mrpt/opengl/LinesProxy.h>
 #include <mrpt/opengl/PointsProxy.h>
@@ -68,7 +69,7 @@ void CompiledScene::compile(const mrpt::viz::Scene& scene, CompilationStats* sta
   // Clear any previous compilation
   clear();
 
-  // Store reference to source scene (shallow copy to keep it alive)
+  // Store reference to source scene (strong reference to keep it alive)
   m_sourceScene = std::make_shared<mrpt::viz::Scene>(scene);
 
   // Compile each viewport
@@ -114,26 +115,26 @@ void CompiledScene::compileViewport(
     if (!obj) continue;
 
     stats.numObjectsTotal++;
-    compileObject(obj.get(), compiledViewport, stats);
+    compileObject(obj, compiledViewport, stats);
   }
 
   MRPT_END
 }
 
 void CompiledScene::compileObject(
-    const mrpt::viz::CVisualObject* obj,
+    const std::shared_ptr<mrpt::viz::CVisualObject>& objPtr,
     CompiledViewport& compiledViewport,
     CompilationStats& stats)
 {
   MRPT_START
 
-  if (!obj) return;
+  if (!objPtr) return;
 
   // Check if this object is a composite (has children)
-  if (obj->isCompositeObject())
+  if (objPtr->isCompositeObject())
   {
     // For composite objects (like CSetOfObjects), recurse into children
-    const auto* setOfObjs = dynamic_cast<const CSetOfObjects*>(obj);
+    const auto* setOfObjs = dynamic_cast<const CSetOfObjects*>(objPtr.get());
     if (setOfObjs)
     {
       for (const auto& child : *setOfObjs)
@@ -141,7 +142,7 @@ void CompiledScene::compileObject(
         if (child)
         {
           stats.numObjectsTotal++;
-          compileObject(child.get(), compiledViewport, stats);
+          compileObject(child, compiledViewport, stats);
         }
       }
     }
@@ -149,7 +150,7 @@ void CompiledScene::compileObject(
   }
 
   // Create proxy for this object
-  auto proxy = createProxyByType(obj);
+  auto proxy = createProxyByType(objPtr);
 
   if (!proxy)
   {
@@ -157,14 +158,14 @@ void CompiledScene::compileObject(
     return;
   }
 
-  // Register the proxy in our tracking maps
-  registerProxy(obj, proxy);
+  // Register the proxy in our tracking maps (using weak_ptr)
+  registerProxy(objPtr, proxy);
 
   // Perform initial compilation (upload to GPU)
-  proxy->compile(obj);
+  proxy->compile(objPtr.get());
 
   // Add proxy to the viewport's rendering structures
-  compiledViewport.addProxy(proxy, obj);
+  compiledViewport.addProxy(proxy, objPtr);
 
   stats.numObjectsCompiled++;
   stats.numProxiesCreated++;
@@ -172,22 +173,23 @@ void CompiledScene::compileObject(
   if (COMPILED_SCENE_VERBOSE)
   {
     std::cout << "[CompiledScene::compileObject] Created proxy for: "
-              << obj->GetRuntimeClass()->className;
-    if (!obj->getName().empty()) std::cout << " ('" << obj->getName() << "')";
+              << objPtr->GetRuntimeClass()->className;
+    if (!objPtr->getName().empty()) std::cout << " ('" << objPtr->getName() << "')";
     std::cout << "\n";
   }
 
   MRPT_END
 }
 
-RenderableProxy::Ptr CompiledScene::createProxyByType(const mrpt::viz::CVisualObject* obj)
+RenderableProxy::Ptr CompiledScene::createProxyByType(
+    const std::shared_ptr<mrpt::viz::CVisualObject>& objPtr)
 {
   MRPT_START
 
-  if (!obj) return nullptr;
+  if (!objPtr) return nullptr;
 
   // Determine which shaders this object uses
-  const auto requiredShaders = obj->requiredShaders();
+  const auto requiredShaders = objPtr->requiredShaders();
 
   if (requiredShaders.empty() ||
       (requiredShaders.size() == 1 && requiredShaders[0] == DefaultShaderID::NONE))
@@ -225,32 +227,40 @@ RenderableProxy::Ptr CompiledScene::createProxyByType(const mrpt::viz::CVisualOb
     default:
       std::cerr << "[CompiledScene::createProxyByType] Warning: Unknown shader type "
                 << static_cast<int>(primaryShader) << " for object "
-                << obj->GetRuntimeClass()->className << "\n";
+                << objPtr->GetRuntimeClass()->className << "\n";
       return nullptr;
   }
 
   MRPT_END
 }
 
-void CompiledScene::registerProxy(const mrpt::viz::CVisualObject* obj, RenderableProxy::Ptr proxy)
+void CompiledScene::registerProxy(
+    const std::shared_ptr<mrpt::viz::CVisualObject>& objPtr, RenderableProxy::Ptr proxy)
 {
   MRPT_START
 
-  ASSERT_(obj != nullptr);
+  ASSERT_(objPtr != nullptr);
   ASSERT_(proxy != nullptr);
 
+  // Create weak_ptr for safe tracking
+  std::weak_ptr<mrpt::viz::CVisualObject> objWeak = objPtr;
+
   // Add to both tracking maps
-  m_objectToProxy[obj] = proxy;
-  m_proxyToObject[proxy.get()] = obj;
+  m_objectToProxy[objWeak] = proxy;
+  m_proxyToObject[proxy.get()] = objWeak;
 
   MRPT_END
 }
 
-void CompiledScene::unregisterProxy(const mrpt::viz::CVisualObject* obj)
+void CompiledScene::unregisterProxy(const std::shared_ptr<mrpt::viz::CVisualObject>& objPtr)
 {
   MRPT_START
 
-  auto it = m_objectToProxy.find(obj);
+  if (!objPtr) return;
+
+  std::weak_ptr<mrpt::viz::CVisualObject> objWeak = objPtr;
+
+  auto it = m_objectToProxy.find(objWeak);
   if (it != m_objectToProxy.end())
   {
     // Remove from reverse map
@@ -263,9 +273,13 @@ void CompiledScene::unregisterProxy(const mrpt::viz::CVisualObject* obj)
   MRPT_END
 }
 
-RenderableProxy::Ptr CompiledScene::getProxyFor(const mrpt::viz::CVisualObject* obj) const
+RenderableProxy::Ptr CompiledScene::getProxyFor(
+    const std::shared_ptr<mrpt::viz::CVisualObject>& objPtr) const
 {
-  auto it = m_objectToProxy.find(obj);
+  if (!objPtr) return nullptr;
+
+  std::weak_ptr<mrpt::viz::CVisualObject> objWeak = objPtr;
+  auto it = m_objectToProxy.find(objWeak);
   return it != m_objectToProxy.end() ? it->second : nullptr;
 }
 
@@ -284,25 +298,42 @@ bool CompiledScene::updateIfNeeded(CompilationStats* stats)
 
   bool anyUpdates = false;
 
-  // Check each tracked object for changes
-  for (auto& [obj, proxy] : m_objectToProxy)
+  // First pass: Clean up orphaned proxies (objects that were deleted)
+  cleanupOrphanedProxies(localStats);
+
+  if (localStats.numOrphanedProxies > 0)
   {
-    if (needsUpdate(obj))
+    anyUpdates = true;
+  }
+
+  // Second pass: Check each tracked object for changes
+  for (auto it = m_objectToProxy.begin(); it != m_objectToProxy.end(); ++it)
+  {
+    const auto& objWeak = it->first;
+    auto& proxy = it->second;
+
+    // Try to lock the weak_ptr to access the object
+    if (auto objPtr = objWeak.lock())
     {
-      // Recompile this object's GPU data
-      proxy->updateBuffers(obj);
-
-      localStats.numObjectsRecompiled++;
-      anyUpdates = true;
-
-      if (COMPILED_SCENE_VERBOSE)
+      if (needsUpdate(objWeak))
       {
-        std::cout << "[CompiledScene::updateIfNeeded] Updated: "
-                  << obj->GetRuntimeClass()->className;
-        if (!obj->getName().empty()) std::cout << " ('" << obj->getName() << "')";
-        std::cout << "\n";
+        // Recompile this object's GPU data
+        proxy->updateBuffers(objPtr.get());
+
+        localStats.numObjectsRecompiled++;
+        anyUpdates = true;
+
+        if (COMPILED_SCENE_VERBOSE)
+        {
+          std::cout << "[CompiledScene::updateIfNeeded] Updated: "
+                    << objPtr->GetRuntimeClass()->className;
+          if (!objPtr->getName().empty()) std::cout << " ('" << objPtr->getName() << "')";
+          std::cout << "\n";
+        }
       }
     }
+    // If lock() fails, the object was deleted - will be cleaned up in next
+    // cleanupOrphanedProxies() call
   }
 
   // Update viewport cameras/lighting if needed
@@ -313,9 +344,6 @@ bool CompiledScene::updateIfNeeded(CompilationStats* stats)
       anyUpdates = true;
     }
   }
-
-  // Clean up proxies for objects that have been removed from the scene
-  cleanupOrphanedProxies(localStats);
 
   if (anyUpdates)
   {
@@ -330,14 +358,20 @@ bool CompiledScene::updateIfNeeded(CompilationStats* stats)
   MRPT_END
 }
 
-bool CompiledScene::needsUpdate(const mrpt::viz::CVisualObject* obj) const
+bool CompiledScene::needsUpdate(const std::weak_ptr<mrpt::viz::CVisualObject>& objWeak) const
 {
   MRPT_START
 
-  if (!obj) return false;
+  // Try to lock the weak_ptr
+  auto objPtr = objWeak.lock();
+  if (!objPtr)
+  {
+    // Object was deleted
+    return false;
+  }
 
   // Check the object's dirty flag
-  return obj->hasToUpdateBuffers();
+  return objPtr->hasToUpdateBuffers();
 
   MRPT_END
 }
@@ -346,13 +380,63 @@ void CompiledScene::cleanupOrphanedProxies(CompilationStats& stats)
 {
   MRPT_START
 
-  // This would require the Scene to notify us when objects are removed.
-  // For now, we keep all proxies alive until clear() is called.
-  //
-  // Future enhancement: Scene could maintain a list of removed objects,
-  // or we could periodically scan the scene to detect deletions.
+  // Find and remove proxies whose source objects have been deleted
+  std::vector<std::weak_ptr<mrpt::viz::CVisualObject>> toRemove;
 
-  // TODO: Implement orphan detection and cleanup
+  for (auto it = m_objectToProxy.begin(); it != m_objectToProxy.end();)
+  {
+    const auto& objWeak = it->first;
+
+    // Try to lock the weak_ptr
+    if (objWeak.expired())
+    {
+      // Object was deleted - mark proxy for removal
+      auto& proxy = it->second;
+
+      // Remove from reverse map
+      m_proxyToObject.erase(proxy.get());
+
+      // Remove from all viewports
+      for (auto& [name, compiledVp] : m_viewports)
+      {
+        compiledVp->removeProxy(proxy);
+      }
+
+      // Remove from primary map
+      it = m_objectToProxy.erase(it);
+
+      stats.numOrphanedProxies++;
+      stats.numProxiesDeleted++;
+
+      if (COMPILED_SCENE_VERBOSE)
+      {
+        std::cout << "[CompiledScene::cleanupOrphanedProxies] Removed orphaned proxy\n";
+      }
+    }
+    else
+    {
+      ++it;
+    }
+  }
+
+  MRPT_END
+}
+
+size_t CompiledScene::getOrphanedProxyCount() const
+{
+  MRPT_START
+
+  size_t count = 0;
+
+  for (const auto& [objWeak, proxy] : m_objectToProxy)
+  {
+    if (objWeak.expired())
+    {
+      count++;
+    }
+  }
+
+  return count;
 
   MRPT_END
 }
@@ -367,7 +451,7 @@ void CompiledScene::render(int renderWidth, int renderHeight, int renderOffsetX,
     THROW_EXCEPTION("Cannot render: scene has not been compiled yet. Call compile() first.");
   }
 
-  // Auto-update if enabled
+  // Auto-update if enabled (includes orphan cleanup)
   if (m_autoUpdate)
   {
     updateIfNeeded();
@@ -434,63 +518,51 @@ void CompiledScene::clear()
 
   // Clear all viewports (this also releases their GPU resources)
   m_viewports.clear();
-
-  // Clear proxy tracking maps (this destroys all proxies)
+  // Clear proxy tracking maps (this destroys all proxies and releases weak_ptrs)
   m_objectToProxy.clear();
   m_proxyToObject.clear();
-
   // Release source scene reference
   m_sourceScene.reset();
-
   // Reset state
   m_isCompiled = false;
   m_lastStats.reset();
-
   if (COMPILED_SCENE_VERBOSE)
   {
     std::cout << "[CompiledScene::clear] Clear complete.\n";
   }
-
   MRPT_END
 }
-
 bool CompiledScene::hasPendingUpdates() const
 {
   MRPT_START
-
   if (!m_isCompiled) return false;
-
-  // Check if any tracked object is dirty
-  for (const auto& [obj, proxy] : m_objectToProxy)
+  // Check if any tracked object is dirty (skip expired weak_ptrs)
+  for (const auto& [objWeak, proxy] : m_objectToProxy)
   {
-    if (needsUpdate(obj)) return true;
+    if (needsUpdate(objWeak)) return true;
   }
-
+  // Check for orphaned proxies
+  if (getOrphanedProxyCount() > 0) return true;
   // Check viewports
   for (const auto& [name, compiledVp] : m_viewports)
   {
     if (compiledVp->hasPendingUpdates()) return true;
   }
-
   return false;
-
   MRPT_END
 }
-
-RenderableProxy::Ptr CompiledScene::createProxyFor(const mrpt::viz::CVisualObject* obj)
+RenderableProxy::Ptr CompiledScene::createProxyFor(
+    const std::shared_ptrmrpt::viz::CVisualObject& objPtr)
 {
   MRPT_START
   checkContextThread();
-
-  auto proxy = createProxyByType(obj);
-
+  if (!objPtr) return nullptr;
+  auto proxy = createProxyByType(objPtr);
   if (proxy)
   {
-    registerProxy(obj, proxy);
-    proxy->compile(obj);
+    registerProxy(objPtr, proxy);
+    proxy->compile(objPtr.get());
   }
-
   return proxy;
-
   MRPT_END
 }
