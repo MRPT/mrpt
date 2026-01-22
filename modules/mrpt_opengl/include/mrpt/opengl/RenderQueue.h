@@ -16,36 +16,33 @@
 #include <mrpt/opengl/Shader.h>
 #include <mrpt/opengl/TRenderMatrices.h>
 
-#include <cstdint>
-#include <deque>
 #include <map>
 
 namespace mrpt::opengl
 {
 class CRenderizable;
 
-/** Each element in the queue to be rendered for each keyframe
+/** Element in a render queue: a proxy plus its rendering state.
  * \ingroup mrpt_opengl_grp
  */
 struct RenderQueueElement
 {
-  RenderQueueElement() = default;
+  /** The object to render (non-owning pointer, owned by CompiledViewport) */
+  class RenderableProxy* proxy = nullptr;
 
-  RenderQueueElement(
-      const mrpt::opengl::CRenderizable* obj, const mrpt::opengl::TRenderMatrices& state) :
-      object(obj), renderState(state)
+  /** Rendering state for this object */
+  TRenderMatrices renderState;
+
+  RenderQueueElement() = default;
+  RenderQueueElement(RenderableProxy* p, const TRenderMatrices& state) :
+      proxy(p), renderState(state)
   {
   }
-
-  const mrpt::opengl::CRenderizable* object = nullptr;
-  mrpt::opengl::TRenderMatrices renderState = {};
 };
 
-/** A queue for rendering, sorted by shader program to minimize changes of
- * OpenGL shader programs while rendering a scene.
- * Within each shader, objects are sorted by eye-to-object distance, so we can
- * later render them from back to front to render transparencies properly Filled
- * by sortRenderObjectsByShader() \ingroup mrpt_opengl_grp
+/** A render queue: map from shader_id to sorted list of objects to render.
+ * Objects are sorted by depth for correct transparency rendering.
+ * \ingroup mrpt_opengl_grp
  */
 using RenderQueue = std::map<shader_id_t, std::multimap<float, RenderQueueElement>>;
 
@@ -67,8 +64,6 @@ struct RenderQueueStats
  *  - bool: the whole bbox is visible (only checked for CSetOfObjects)
  * \ingroup mrpt_opengl_grp */
 std::tuple<double, bool, bool> depthAndVisibleInView(
-    const CRenderizable* obj,
-    const mrpt::opengl::TRenderMatrices& objState,
-    const bool skipCullChecks);
+    const CRenderizable* obj, const mrpt::opengl::TRenderMatrices& objState, bool skipCullChecks);
 
 }  // namespace mrpt::opengl

@@ -113,9 +113,15 @@ class CompiledViewport
   /** Adds a renderable proxy to this viewport.
    *
    * \param proxy The GPU-side representation of an object
-   * \param sourceObj The original viz object (for tracking updates)
+   * \param sourceObj The original viz object (tracked via weak_ptr)
    */
-  void addProxy(RenderableProxy::Ptr proxy, const mrpt::viz::CVisualObject* sourceObj);
+  void addProxy(
+      RenderableProxy::Ptr proxy, const std::shared_ptr<mrpt::viz::CVisualObject>& sourceObj);
+
+  /** Removes proxies whose source objects have been deleted.
+   * \return Number of orphaned proxies removed
+   */
+  size_t cleanupOrphanedProxies();
 
   /** Removes a proxy from this viewport */
   void removeProxy(RenderableProxy::Ptr proxy);
@@ -299,8 +305,9 @@ class CompiledViewport
   /** All proxies in insertion order (for debug/iteration) */
   std::vector<RenderableProxy::Ptr> m_proxies;
 
-  /** Mapping from source objects to their proxies (for updates) */
-  std::map<const mrpt::viz::CVisualObject*, RenderableProxy::Ptr> m_objectToProxy;
+  /** Mapping from source objects to their proxies (using weak_ptr for safety) */
+  std::map std::weak_ptr<mrpt::viz::CVisualObject>, RenderableProxy::Ptr,
+      std::owner_less < std::weak_ptr < mrpt::viz::CVisualObject >>> m_objectToProxy;
 
   /** @name Viewport Configuration
    * @{ */
