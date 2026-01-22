@@ -51,6 +51,7 @@ set(LIB_SOURCES
   src/CompiledScene.cpp
   src/CompiledViewport.cpp
   src/Shader.cpp
+  src/ShaderProgramManager.cpp
   src/Texture.cpp
   src/TRenderMatrices.cpp
   src/VertexArrayObject.cpp
