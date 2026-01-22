@@ -69,7 +69,7 @@ jobs:
       - name: Colcon Build
         run: |
           colcon build \
-            --parallel-workers 1 \
+            --merge-install \
             --event-handlers console_direct+ \
             --cmake-args \
               -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
