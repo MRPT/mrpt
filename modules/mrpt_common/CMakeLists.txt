@@ -7,8 +7,7 @@
 # Released under BSD-3. See LICENSE file
 # ------------------------------------------------------------------------------
 
-# Minimum CMake version: deprecated if <3.5 (as of Apr 2024)
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.16)
 
 if("$ENV{ROS_VERSION}" STREQUAL "2")
 	set(DETECTED_ROS2 TRUE)
