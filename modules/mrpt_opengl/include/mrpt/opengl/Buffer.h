@@ -16,7 +16,6 @@
 #include <mrpt/containers/NonCopiableData.h>
 #include <mrpt/core/lock_helper.h>
 
-#include <memory>
 #include <mutex>
 #include <thread>
 
@@ -32,7 +31,7 @@ namespace mrpt::opengl
 class Buffer
 {
  public:
-  enum class Type : unsigned int
+  enum class Type : uint16_t
   {
     Vertex = 0x8892,        // GL_ARRAY_BUFFER (Default)
     ElementIndex = 0x8893,  // GL_ELEMENT_ARRAY_BUFFER
@@ -40,7 +39,7 @@ class Buffer
     PixelUnpack = 0x88EC    // GL_PIXEL_UNPACK_BUFFER
   };
 
-  enum class Usage : unsigned int
+  enum class Usage : uint16_t
   {
     StreamDraw = 0x88E0,   // GL_STREAM_DRAW
     StreamRead = 0x88E1,   // GL_STREAM_READ
@@ -53,17 +52,17 @@ class Buffer
     DynamicCopy = 0x88EA   // GL_DYNAMIC_COPY
   };
 
-  explicit Buffer(const Type type);
+  explicit Buffer(Type type);
   Buffer() : Buffer(Type::Vertex) {}
   ~Buffer() = default;
 
-  Type type() const
+  [[nodiscard]] Type type() const
   {
     auto lck = mrpt::lockHelper(m_implMtx.data);
     return m_impl.type;
   }
 
-  Usage usage() const
+  [[nodiscard]] Usage usage() const
   {
     auto lck = mrpt::lockHelper(m_implMtx.data);
     return m_impl.usage;
@@ -78,9 +77,12 @@ class Buffer
   void createOnce()
   {
     auto lck = mrpt::lockHelper(m_implMtx.data);
-    if (!m_impl.created) m_impl.create();
+    if (!m_impl.created)
+    {
+      m_impl.create();
+    }
   }
-  bool initialized() const
+  [[nodiscard]] bool initialized() const
   {
     auto lck = mrpt::lockHelper(m_implMtx.data);
     return m_impl.created;
@@ -105,7 +107,7 @@ class Buffer
     m_impl.unbind();
   }
 
-  unsigned int bufferId() const
+  [[nodiscard]] unsigned int bufferId() const
   {
     auto lck = mrpt::lockHelper(m_implMtx.data);
     return m_impl.buffer_id;
