@@ -1,11 +1,15 @@
-# ------------------------------------------------------------------------------
-#        A Modular Optimization framework for Localization and mApping
-#                               (MOLA)
+#                      _
+#                     | |    Mobile Robot Programming Toolkit (MRPT)
+# _ __ ___  _ __ _ __ | |_
+#| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+#| | | | | | |  | |_) | |_
+#|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+#               | |
+#               |_|
 #
-# Copyright (C) 2018-2025, Jose Luis Blanco-Claraco, contributors (AUTHORS.md)
-# All rights reserved.
-# Released under BSD-3. See LICENSE file
-# ------------------------------------------------------------------------------
+# Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+# See: https://www.mrpt.org/Authors - All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause
 
 # mrpt_common: Defined common CMake variables and functions to unify building
 # of all MRPT modules.
