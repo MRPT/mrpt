@@ -500,6 +500,16 @@ std::unique_ptr<ShaderProgramManager> mrpt::opengl::createAndPreloadShaders()
   auto manager = std::make_unique<ShaderProgramManager>();
 
   std::vector<std::string> errors;
-  // ----
-  return {};
+
+  size_t loaded = manager->preloadAllDefaultShaders(&errors);
+  if (!errors.empty())
+  {
+    std::cerr << "[createAndPreloadShaders] Errors during preload:\n";
+    for (const auto& err : errors)
+    {
+      std::cerr << "  - " << err << "\n";
+    }
+  }
+  std::cout << "[createAndPreloadShaders] Preloaded " << loaded << " shaders\n";
+  return manager;
 }
