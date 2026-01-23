@@ -43,7 +43,7 @@ class VertexArrayObject
    * normal situations. */
   void destroy() { m_impl.destroy(); }
 
-  void bind() { m_impl.bind(); }
+  void bind() const { m_impl.bind(); }
   void release() { m_impl.bind(); }
 
   unsigned int bufferId() const { return m_impl.m_state.get().buffer_id; }
@@ -56,7 +56,7 @@ class VertexArrayObject
 
     void create();
     void destroy();
-    void bind();
+    void bind() const;
     void release();
 
     struct State

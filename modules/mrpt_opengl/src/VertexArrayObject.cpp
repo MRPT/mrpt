@@ -51,7 +51,7 @@ void VertexArrayObject::RAII_Impl::destroy()
   m_state.get().created = false;
 }
 
-void VertexArrayObject::RAII_Impl::bind()
+void VertexArrayObject::RAII_Impl::bind() const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   ASSERT_(m_state.get().created);

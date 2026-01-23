@@ -50,6 +50,8 @@ set(LIB_SOURCES
   src/Buffer.cpp
   src/CompiledScene.cpp
   src/CompiledViewport.cpp
+  src/PointsProxy.cpp
+  src/TrianglesProxy.cpp
   src/Shader.cpp
   src/ShaderProgramManager.cpp
   src/Texture.cpp
