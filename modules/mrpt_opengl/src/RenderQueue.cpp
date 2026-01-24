@@ -12,9 +12,8 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/opengl/RenderQueue.h>
-
 #include <mrpt/math/geometry.h>
+#include <mrpt/opengl/RenderQueue.h>
 #include <mrpt/opengl/RenderableProxy.h>
 
 using namespace mrpt::opengl;
@@ -22,7 +21,8 @@ using namespace mrpt::math;
 using namespace mrpt::poses;
 
 /** Helper: Transform a point from local to eye space */
-static TPoint3Df toEyeSpace(const TPoint3Df& localPt, const CPose3D& objPose, const TRenderMatrices& state)
+static TPoint3Df toEyeSpace(
+    const TPoint3Df& localPt, const CPose3D& objPose, const TRenderMatrices& state)
 {
   // Transform to world space
   TPoint3D worldPt;
@@ -60,7 +60,8 @@ static bool isPointInFrustum(const TPoint3Df& eyePt, const TRenderMatrices& stat
 }
 
 /** Helper: Check if a bounding box intersects the view frustum */
-static bool bboxIntersectsFrustum(const TBoundingBoxf& bbox, const CPose3D& objPose, const TRenderMatrices& state)
+static bool bboxIntersectsFrustum(
+    const TBoundingBoxf& bbox, const CPose3D& objPose, const TRenderMatrices& state)
 {
   // Get the 8 corners of the bounding box
   const auto& minPt = bbox.min;
@@ -69,9 +70,15 @@ static bool bboxIntersectsFrustum(const TBoundingBoxf& bbox, const CPose3D& objP
   // Transform each corner to eye space and check if any is inside frustum
   // This is a conservative test - if any corner is inside, the bbox might be visible
   TPoint3Df corners[8] = {
-      {minPt.x, minPt.y, minPt.z}, {maxPt.x, minPt.y, minPt.z}, {minPt.x, maxPt.y, minPt.z},
-      {maxPt.x, maxPt.y, minPt.z}, {minPt.x, minPt.y, maxPt.z}, {maxPt.x, minPt.y, maxPt.z},
-      {minPt.x, maxPt.y, maxPt.z}, {maxPt.x, maxPt.y, maxPt.z}};
+      {minPt.x, minPt.y, minPt.z},
+      {maxPt.x, minPt.y, minPt.z},
+      {minPt.x, maxPt.y, minPt.z},
+      {maxPt.x, maxPt.y, minPt.z},
+      {minPt.x, minPt.y, maxPt.z},
+      {maxPt.x, minPt.y, maxPt.z},
+      {minPt.x, maxPt.y, maxPt.z},
+      {maxPt.x, maxPt.y, maxPt.z}
+  };
 
   bool anyInside = false;
   bool allInside = true;
@@ -146,9 +153,15 @@ std::tuple<double, bool, bool> mrpt::opengl::depthAndVisibleInView(
       const auto& maxPt = localBBox.max;
 
       TPoint3Df corners[8] = {
-          {minPt.x, minPt.y, minPt.z}, {maxPt.x, minPt.y, minPt.z}, {minPt.x, maxPt.y, minPt.z},
-          {maxPt.x, maxPt.y, minPt.z}, {minPt.x, minPt.y, maxPt.z}, {maxPt.x, minPt.y, maxPt.z},
-          {minPt.x, maxPt.y, maxPt.z}, {maxPt.x, maxPt.y, maxPt.z}};
+          {minPt.x, minPt.y, minPt.z},
+          {maxPt.x, minPt.y, minPt.z},
+          {minPt.x, maxPt.y, minPt.z},
+          {maxPt.x, maxPt.y, minPt.z},
+          {minPt.x, minPt.y, maxPt.z},
+          {maxPt.x, minPt.y, maxPt.z},
+          {minPt.x, maxPt.y, maxPt.z},
+          {maxPt.x, maxPt.y, maxPt.z}
+      };
 
       fullyVisible = true;
       for (const auto& corner : corners)

@@ -30,8 +30,4 @@ mrpt_add_library(
     mrpt_topography
 )
 
-if(NOT BUILD_mrpt-apps-cli)
-  return()
-endif()
-
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)

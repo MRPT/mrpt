@@ -15,6 +15,29 @@ find_package(mrpt_common REQUIRED)
 find_package(mrpt_poses REQUIRED)
 find_package(mrpt_img REQUIRED)
 
+include(./cmake/script_assimp.cmake REQUIRED)      # Check for system assimp lib (3D models)
+
+# Assimp:
+if (CMAKE_MRPT_HAS_ASSIMP)
+	# ASSIMP_ROOT_DIR - the root directory where the installation can be found
+	# ASSIMP_CXX_FLAGS - extra flags for compilation
+	# ASSIMP_LINK_FLAGS - extra flags for linking
+	# ASSIMP_INCLUDE_DIRS - include directories
+	# ASSIMP_LIBRARY_DIRS - link directories
+	# ASSIMP_LIBRARIES - libraries to link plugins with
+	if (NOT ${ASSIMP_CXX_FLAGS} STREQUAL "")
+		add_definitions("${ASSIMP_CXX_FLAGS}")
+	endif()
+	if (NOT "${ASSIMP_INCLUDE_DIRS}" STREQUAL "")
+		include_directories("${ASSIMP_INCLUDE_DIRS}")
+	endif()
+	if(NOT "${ASSIMP_VERSION}" STREQUAL "")
+		string(SUBSTRING "${ASSIMP_VERSION}" 0 1 MRPT_ASSIMP_VERSION_MAJOR)
+		add_definitions(-DMRPT_ASSIMP_VERSION_MAJOR=${MRPT_ASSIMP_VERSION_MAJOR})
+	endif()
+endif ()
+
+
 # define lib:
 set(LIB_SOURCES
   src/CArrow.cpp
@@ -139,6 +162,15 @@ mrpt_add_library(
     mrpt_poses
     mrpt_img
 )
+
+
+# Link against assimp:
+if (CMAKE_MRPT_HAS_ASSIMP)
+  if(TARGET "EP_assimp")
+    add_dependencies(${PROJECT_NAME} EP_assimp)
+  endif()
+  target_link_libraries(${PROJECT_NAME} PRIVATE ${ASSIMP_LIBRARIES})
+endif ()
 
 # Python wrapper:
 mrpt_add_python_module(viz

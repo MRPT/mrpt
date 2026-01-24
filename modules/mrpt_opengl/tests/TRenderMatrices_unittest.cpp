@@ -14,10 +14,11 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/opengl/TRenderMatrices.h>
+#include <mrpt/poses/CPose3D.h>
 
 #include <Eigen/Dense>
 
-//#define USE_GLM_GROUND_TRUTH
+// #define USE_GLM_GROUND_TRUTH
 
 #if defined(USE_GLM_GROUND_TRUTH)
 #define GLM_ENABLE_EXPERIMENTAL
@@ -146,4 +147,47 @@ TEST(OpenGL, perspectiveMatrixFromPinhole)
     EXPECT_NEAR(pt1v[0], -1, 1e-3f);
     EXPECT_NEAR(pt1v[1], -1, 1e-3f);
   }
+}
+
+TEST(OpenGL, TRenderMatrices_clipPlanes)
+{
+  mrpt::opengl::TRenderMatrices rm;
+
+  const float zNear = 0.5f;
+  const float zFar = 50.0f;
+
+  rm.viewport_width = 640;
+  rm.viewport_height = 480;
+  rm.FOV = 45.0f;
+  rm.is_projective = true;
+  rm.computeProjectionMatrix(zNear, zFar);
+
+  // Verify stored clip planes
+  EXPECT_NEAR(rm.getLastClipZNear(), zNear, 1e-5f);
+  EXPECT_NEAR(rm.getLastClipZFar(), zFar, 1e-5f);
+}
+
+TEST(OpenGL, TRenderMatrices_orthographicNDC)
+{
+  // Test that orthographic projection maps corners correctly to NDC
+  float left = 0.0f, right = 100.0f;
+  float bottom = 0.0f, top = 100.0f;
+  float zNear = -1.0f, zFar = 1.0f;
+
+  mrpt::opengl::TRenderMatrices rm;
+  rm.computeOrthoProjectionMatrix(left, right, bottom, top, zNear, zFar);
+
+  // Center of the ortho box should map to (0,0,0) in NDC
+  Eigen::Vector4f center(50.0f, 50.0f, 0.0f, 1.0f);
+  Eigen::Vector4f ndc = rm.p_matrix.asEigen() * center;
+
+  EXPECT_NEAR(ndc[0], 0.0f, 1e-5f);
+  EXPECT_NEAR(ndc[1], 0.0f, 1e-5f);
+
+  // Corner (right, top) should map to (1, 1) in NDC
+  Eigen::Vector4f corner(right, top, 0.0f, 1.0f);
+  Eigen::Vector4f cornerNdc = rm.p_matrix.asEigen() * corner;
+
+  EXPECT_NEAR(cornerNdc[0], 1.0f, 1e-5f);
+  EXPECT_NEAR(cornerNdc[1], 1.0f, 1e-5f);
 }
