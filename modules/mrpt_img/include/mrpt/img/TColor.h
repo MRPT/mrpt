@@ -106,12 +106,16 @@ struct TColorf
 
 /**\brief Pairwise addition of their corresponding RGBA members
  */
-TColor operator+(const TColor& first, const TColor& second);
+TColor operator+(const TColor& a, const TColor& b);
 /**\brief Pairwise substraction of their corresponding RGBA members
  */
-TColor operator-(const TColor& first, const TColor& second);
-bool operator==(const TColor& first, const TColor& second);
-// bool operator!=(const TColor& first, const TColor& second);
+TColor operator-(const TColor& a, const TColor& b);
+
+bool operator==(const TColor& a, const TColor& b);
+inline bool operator!=(const TColor& a, const TColor& b) { return !(a == b); }
+
+bool operator==(const TColorf& a, const TColorf& b);
+inline bool operator!=(const TColorf& a, const TColorf& b) { return !(a == b); }
 
 // Text streaming:
 std::ostream& operator<<(std::ostream& o, const TColorf& c);

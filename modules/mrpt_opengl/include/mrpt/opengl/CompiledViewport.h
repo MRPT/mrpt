@@ -16,6 +16,7 @@
 #include <mrpt/containers/NonCopiableData.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/math/TBoundingBox.h>
+#include <mrpt/opengl/FrameBuffer.h>
 #include <mrpt/opengl/RenderQueue.h>
 #include <mrpt/opengl/RenderableProxy.h>
 #include <mrpt/opengl/TRenderMatrices.h>
@@ -32,7 +33,6 @@
 namespace mrpt::opengl
 {
 class ShaderProgramManager;
-class FramebufferObject;
 
 /** Rendering statistics for a single viewport.
  * \ingroup mrpt_opengl_grp
@@ -415,7 +415,7 @@ class CompiledViewport
   unsigned int m_shadowMapSizeY = 2048;
 
   /** Shadow map framebuffer (created on demand) */
-  std::unique_ptr<FramebufferObject> m_shadowMapFBO;
+  std::unique_ptr<FrameBuffer> m_shadowMapFBO;
 
   /** @} */
 

@@ -17,6 +17,7 @@
 #include <mrpt/io/vector_loadsave.h>
 #include <mrpt/opengl/DefaultShaders.h>
 #include <mrpt/opengl/ShaderProgramManager.h>
+#include <mrpt/opengl/opengl_api.h>
 
 #include <iostream>
 
@@ -24,10 +25,9 @@ using namespace mrpt::opengl;
 
 static const bool SHADER_VERBOSE = mrpt::get_env<bool>("MRPT_SHADER_VERBOSE", false);
 
-ShaderProgramManager::ShaderProgramManager()
+ShaderProgramManager::ShaderProgramManager() : m_verbose(SHADER_VERBOSE)
 {
   m_contextThread = std::this_thread::get_id();
-  m_verbose = SHADER_VERBOSE;
 
   // Build shader variant mapping for shadow rendering
   buildShaderVariantMap();

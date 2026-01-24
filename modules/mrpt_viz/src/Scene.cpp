@@ -212,8 +212,13 @@ Viewport::Ptr Scene::getViewport(const std::string& viewportName) const
 {
   MRPT_START
   for (const auto& m_viewport : m_viewports)
-    if (m_viewport->m_name == viewportName) return m_viewport;
-  return Viewport::Ptr();
+  {
+    if (m_viewport->m_name == viewportName)
+    {
+      return m_viewport;
+    }
+  }
+  return {};
   MRPT_END
 }
 

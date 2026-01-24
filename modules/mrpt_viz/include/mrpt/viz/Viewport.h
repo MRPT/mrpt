@@ -121,6 +121,11 @@ class Viewport :
     m_clonedCameraViewport = viewPortName;
   }
 
+  [[nodiscard]] bool isCloned() const { return m_isCloned; }
+  [[nodiscard]] bool isClonedCamera() const { return m_isClonedCamera; }
+
+  [[nodiscard]] std::string isClonedCameraFrom() const { return m_clonedCameraViewport; }
+
   /** Resets the viewport to a normal 3D viewport \sa setCloneView,
    * setImageView */
   void setNormalMode();
@@ -149,7 +154,7 @@ class Viewport :
     @{ */
 
   /** Returns the name of the viewport */
-  [[nodiscard]] std::string getName() { return m_name; }
+  [[nodiscard]] std::string getName() const { return m_name; }
 
   /** Change the viewport position and dimension on the rendering window.
    *  X & Y coordinates here can have two interpretations:
@@ -186,7 +191,7 @@ class Viewport :
    * \note (x,y) specify the lower left corner of the viewport rectangle.
    * \sa setViewportPosition
    */
-  void getViewportPosition(double& x, double& y, double& width, double& height);
+  void getViewportPosition(double& x, double& y, double& width, double& height) const;
 
   /** Set the min/max clip depth distances of the rendering frustum (default:
    * 0.1 - 1000)

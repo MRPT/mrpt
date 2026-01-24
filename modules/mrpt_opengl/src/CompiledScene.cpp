@@ -65,9 +65,10 @@ void CompiledScene::compile(const Scene& scene, CompilationStats* stats)
   }
 
   // Iterate over all viewports in the scene
-  for (auto it = scene.viewportsBegin(); it != scene.viewportsEnd(); ++it)
+  for (const Viewport::Ptr& vizViewportPtr : scene.viewports())
   {
-    const Viewport& vizViewport = **it;
+    ASSERT_(vizViewportPtr);
+    const auto& vizViewport = *vizViewportPtr;
     const std::string& vpName = vizViewport.getName();
 
     // Create compiled viewport
@@ -108,9 +109,9 @@ void CompiledScene::compileViewport(
   MRPT_START
 
   // Handle cloned viewport mode
-  if (vizViewport.isClonedFrom())
+  if (vizViewport.isClonedCamera())
   {
-    compiledViewport.setCloneMode(vizViewport.getClonedFromName(), vizViewport.isClonedCamera());
+    compiledViewport.setCloneMode(vizViewport.isClonedCameraFrom(), vizViewport.isClonedCamera());
     return;
   }
 
@@ -121,9 +122,8 @@ void CompiledScene::compileViewport(
   }
 
   // Compile all objects in viewport
-  for (auto it = vizViewport.objectsBegin(); it != vizViewport.objectsEnd(); ++it)
+  for (const auto& obj : vizViewport)
   {
-    const auto& obj = *it;
     if (!obj)
     {
       continue;
@@ -346,9 +346,10 @@ void CompiledScene::compileNewObjects(CompilationStats& stats)
   }
 
   // Iterate all viewports and their objects to find new ones
-  for (auto vpIt = m_sourceScene->viewportsBegin(); vpIt != m_sourceScene->viewportsEnd(); ++vpIt)
+  for (const auto& vpPtr : m_sourceScene->viewports())
   {
-    const Viewport& vizViewport = **vpIt;
+    ASSERT_(vpPtr);
+    const Viewport& vizViewport = *vpPtr;
     const std::string& vpName = vizViewport.getName();
 
     // Get or create compiled viewport
@@ -369,15 +370,14 @@ void CompiledScene::compileNewObjects(CompilationStats& stats)
     compiledViewport.updateFromVizViewport(vizViewport);
 
     // Skip cloned/image viewports
-    if (vizViewport.isClonedFrom() || vizViewport.isImageViewMode())
+    if (vizViewport.isCloned() || vizViewport.isImageViewMode())
     {
       continue;
     }
 
     // Check each object in the viewport
-    for (auto objIt = vizViewport.objectsBegin(); objIt != vizViewport.objectsEnd(); ++objIt)
+    for (const auto& obj : vizViewport)
     {
-      const auto& obj = *objIt;
       if (!obj || !obj->isVisible())
       {
         continue;
@@ -385,7 +385,7 @@ void CompiledScene::compileNewObjects(CompilationStats& stats)
 
       // Handle containers recursively
       const auto* setOfObjects = dynamic_cast<const CSetOfObjects*>(obj.get());
-      if (setOfObjects)
+      if (setOfObjects != nullptr)
       {
         // Use a stack to avoid recursion
         std::vector<const CSetOfObjects*> containers;
@@ -396,16 +396,15 @@ void CompiledScene::compileNewObjects(CompilationStats& stats)
           const CSetOfObjects* container = containers.back();
           containers.pop_back();
 
-          for (auto childIt = container->begin(); childIt != container->end(); ++childIt)
+          for (const auto& child : *container)
           {
-            const auto& child = *childIt;
             if (!child || !child->isVisible())
             {
               continue;
             }
 
             const auto* childContainer = dynamic_cast<const CSetOfObjects*>(child.get());
-            if (childContainer)
+            if (childContainer != nullptr)
             {
               containers.push_back(childContainer);
             }

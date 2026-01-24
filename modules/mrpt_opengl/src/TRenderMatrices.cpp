@@ -79,7 +79,8 @@ void TRenderMatrices::computeProjectionMatrix(float znear, float zfar)
     ASSERT_EQUAL_(viewport_width, pinhole_model->ncols);
     ASSERT_EQUAL_(viewport_height, pinhole_model->nrows);
 
-    const int W = pinhole_model->ncols, H = pinhole_model->nrows;
+    const auto W = pinhole_model->ncols;
+    const auto H = pinhole_model->nrows;
 
     // See: e.g.
     // http://ksimek.github.io/2013/06/03/calibrated_cameras_in_opengl/
@@ -129,10 +130,15 @@ void TRenderMatrices::computeProjectionMatrix(float znear, float zfar)
     float Ay = eyeDistance * 0.5f;
 
     if (ratio > 1)
+    {
       Ax *= ratio;
+    }
     else
     {
-      if (ratio != 0) Ay /= ratio;
+      if (ratio != 0)
+      {
+        Ay /= ratio;
+      }
     }
 
     const auto left = -.5f * Ax, right = .5f * Ax;
@@ -147,18 +153,22 @@ void azimuthElevationFromDirection(
     const mrpt::math::TVector3Df& v, float& elevation, float& azimuth)
 {
   // Compute the elevation angle
-  elevation = atan2(v.z, sqrt(v.x * v.x + v.y * v.y));
+  elevation = std::atan2(v.z, sqrt(v.x * v.x + v.y * v.y));
 
   // Compute the azimuth angle
   if (v.x == 0 && v.y == 0)
+  {
     azimuth = 0;
+  }
   else
-    azimuth = atan2(v.y, v.x);
+  {
+    azimuth = std::atan2(v.y, v.x);
+  }
 }
 }  // namespace
 
 void TRenderMatrices::computeLightProjectionMatrix(
-    float zmin, float zmax, const TLightParameters& lp)
+    float zmin, float zmax, const mrpt::viz::TLightParameters& lp)
 {
   m_last_light_z_near = zmin;
   m_last_light_z_far = zmax;
