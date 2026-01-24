@@ -16,15 +16,15 @@
 #include <mrpt/containers/NonCopiableData.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/math/TBoundingBox.h>
+#include <mrpt/opengl/RenderQueue.h>
 #include <mrpt/opengl/RenderableProxy.h>
-#include <mrpt/opengl/TLightParameters.h>
 #include <mrpt/opengl/TRenderMatrices.h>
 #include <mrpt/viz/CCamera.h>
+#include <mrpt/viz/TLightParameters.h>
 #include <mrpt/viz/Viewport.h>
 
 #include <map>
 #include <memory>
-#include <optional>
 #include <shared_mutex>
 #include <string>
 #include <vector>
@@ -305,9 +305,14 @@ class CompiledViewport
   /** All proxies in insertion order (for debug/iteration) */
   std::vector<RenderableProxy::Ptr> m_proxies;
 
-  /** Mapping from source objects to their proxies (using weak_ptr for safety) */
-  std::map std::weak_ptr<mrpt::viz::CVisualObject>, RenderableProxy::Ptr,
-      std::owner_less < std::weak_ptr < mrpt::viz::CVisualObject >>> m_objectToProxy;
+  /** Mapping from source objects to their proxies (using weak_ptr for safety).
+   * This allows detection of deleted source objects for cleanup.
+   */
+  std::map<
+      std::weak_ptr<mrpt::viz::CVisualObject>,
+      RenderableProxy::Ptr,
+      std::owner_less<std::weak_ptr<mrpt::viz::CVisualObject>>>
+      m_objectToProxy;
 
   /** @name Viewport Configuration
    * @{ */

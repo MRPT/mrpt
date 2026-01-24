@@ -17,7 +17,7 @@
 #include <mrpt/img/TCamera.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/TPoint3D.h>
-#include <mrpt/opengl/opengl_frwds.h>
+#include <mrpt/viz/TLightParameters.h>
 
 namespace mrpt::opengl
 {

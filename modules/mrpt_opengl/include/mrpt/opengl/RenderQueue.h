@@ -15,12 +15,15 @@
 
 #include <mrpt/opengl/Shader.h>
 #include <mrpt/opengl/TRenderMatrices.h>
+#include <mrpt/poses/CPose3D.h>
 
 #include <map>
+#include <tuple>
 
 namespace mrpt::opengl
 {
-class CRenderizable;
+// Forward declarations
+class RenderableProxy;
 
 /** Element in a render queue: a proxy plus its rendering state.
  * \ingroup mrpt_opengl_grp
@@ -28,9 +31,9 @@ class CRenderizable;
 struct RenderQueueElement
 {
   /** The object to render (non-owning pointer, owned by CompiledViewport) */
-  class RenderableProxy* proxy = nullptr;
+  RenderableProxy* proxy = nullptr;
 
-  /** Rendering state for this object */
+  /** Rendering state for this object (model matrix, etc.) */
   TRenderMatrices renderState;
 
   RenderQueueElement() = default;
@@ -42,6 +45,7 @@ struct RenderQueueElement
 
 /** A render queue: map from shader_id to sorted list of objects to render.
  * Objects are sorted by depth for correct transparency rendering.
+ * The multimap key is the depth (eye-space Z) for back-to-front ordering.
  * \ingroup mrpt_opengl_grp
  */
 using RenderQueue = std::map<shader_id_t, std::multimap<float, RenderQueueElement>>;
@@ -53,17 +57,37 @@ struct RenderQueueStats
 {
   RenderQueueStats() = default;
 
-  size_t numObjTotal = 0, numObjRendered = 0;
+  size_t numObjTotal = 0;
+  size_t numObjRendered = 0;
+  size_t numObjCulled = 0;
+
+  void reset()
+  {
+    numObjTotal = 0;
+    numObjRendered = 0;
+    numObjCulled = 0;
+  }
 };
 
-/** Computes the eye-view depth of an object, and whether any part of its
+/** Computes the eye-view depth of a proxy, and whether any part of its
  * bounding box is visible by the camera in the current state.
- * Return:
- *  - double: Depth of representative point.
- *  - bool: visible (at least in part)
- *  - bool: the whole bbox is visible (only checked for CSetOfObjects)
- * \ingroup mrpt_opengl_grp */
+ *
+ * \param proxy The renderable proxy to check
+ * \param objState Current render matrices (for view frustum)
+ * \param objPose The object's world pose
+ * \param skipCullChecks If true, skip frustum culling (always return visible)
+ *
+ * \return Tuple of:
+ *  - double: Depth of representative point (for sorting)
+ *  - bool: visible (at least partially in view frustum)
+ *  - bool: fully visible (entire bbox inside frustum)
+ *
+ * \ingroup mrpt_opengl_grp
+ */
 std::tuple<double, bool, bool> depthAndVisibleInView(
-    const CRenderizable* obj, const mrpt::opengl::TRenderMatrices& objState, bool skipCullChecks);
+    const RenderableProxy* proxy,
+    const TRenderMatrices& objState,
+    const mrpt::poses::CPose3D& objPose,
+    bool skipCullChecks);
 
 }  // namespace mrpt::opengl

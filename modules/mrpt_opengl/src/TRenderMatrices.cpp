@@ -15,8 +15,8 @@
 #include <mrpt/containers/yaml.h>
 #include <mrpt/math/geometry.h>        // crossProduct3D()
 #include <mrpt/math/ops_containers.h>  // dotProduct()
-#include <mrpt/opengl/TLightParameters.h>
 #include <mrpt/opengl/TRenderMatrices.h>
+#include <mrpt/viz/TLightParameters.h>
 
 #include <Eigen/Dense>
 #include <cmath>  // atan2
