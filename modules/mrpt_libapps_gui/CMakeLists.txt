@@ -26,8 +26,4 @@ mrpt_add_library(
     mrpt_gui
 )
 
-if(NOT BUILD_mrpt-apps-gui)
-  return()
-endif()
-
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)

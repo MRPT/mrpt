@@ -49,3 +49,4 @@ doc/source/doxygen-index.rst
 doc/venv
 .pc
 .cache
+my_config.ini

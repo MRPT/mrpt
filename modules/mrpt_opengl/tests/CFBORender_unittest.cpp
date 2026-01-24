@@ -13,20 +13,25 @@
 */
 
 #include <gtest/gtest.h>
-#include <mrpt/opengl/CBox.h>
+
+// mrpt::opengl (rendering)
 #include <mrpt/opengl/CFBORender.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CMesh.h>
-#include <mrpt/opengl/CMeshFast.h>
-#include <mrpt/opengl/CSphere.h>
-#include <mrpt/opengl/CText3D.h>
-#include <mrpt/opengl/stock_objects.h>
+
+// mrpt::viz (scene graph)
+#include <mrpt/opengl/config.h>  // for MRPT_HAS_*
 #include <mrpt/system/filesystem.h>
-//
-#include <Eigen/Dense>
-//
-#include <mrpt/config.h>  // for MRPT_HAS_*
+#include <mrpt/viz/CBox.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CMesh.h>
+#include <mrpt/viz/CMeshFast.h>
+#include <mrpt/viz/CSphere.h>
+#include <mrpt/viz/CText3D.h>
+#include <mrpt/viz/CTexturedPlane.h>
+#include <mrpt/viz/Scene.h>
+#include <mrpt/viz/stock_objects.h>
 #include <test_mrpt_common.h>
+
+#include <Eigen/Dense>
 
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_EGL
 #define RUN_OFFSCREEN_RENDER_TESTS
@@ -73,66 +78,67 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
 {
   using namespace mrpt;                  // _deg
   using namespace std::string_literals;  // s
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;             // Scene graph classes
 
   const std::string expected_RGB_img_file =
-      UNITTEST_BASEDIR() + "/tests/CFBORender_expected_rgb_"s +
+      UNITTEST_BASEDIR() + "/../../tests/CFBORender_expected_rgb_"s +
       (useCameraFromIntrinsics ? "camInt"s : "camFOV"s) + ".png"s;
 
   const std::string expected_depth_img_file =
-      UNITTEST_BASEDIR() + "/tests/CFBORender_expected_depth_"s +
+      UNITTEST_BASEDIR() + "/../../tests/CFBORender_expected_depth_"s +
       (useCameraFromIntrinsics ? "camInt"s : "camFOV"s) + ".png"s;
 
-  Scene scene;
+  // Create a viz::Scene (abstract scene graph, no OpenGL dependency)
+  auto scene = mrpt::viz::Scene::Create();
 
+  // Add objects to the scene
   {
-    auto obj = mrpt::opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 5);
+    auto obj = mrpt::viz::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 5);
     obj->setColor(0.4f, 0.4f, 0.4f);
-    scene.insert(obj);
+    scene->insert(obj);
   }
   {
     auto obj =
-        mrpt::opengl::CBox::Create(mrpt::math::TPoint3D(0, 0, 0), mrpt::math::TPoint3D(.1, .1, .1));
+        mrpt::viz::CBox::Create(mrpt::math::TPoint3D(0, 0, 0), mrpt::math::TPoint3D(.1, .1, .1));
     obj->setColor(1.0f, 0.f, 0.f);
     obj->setName("x");
     obj->enableShowName(true);
     obj->setLocation(1.0, 0, 0);
-    scene.insert(obj);
+    scene->insert(obj);
   }
   {
-    auto obj = mrpt::opengl::CTexturedPlane::Create();
+    auto obj = mrpt::viz::CTexturedPlane::Create();
     obj->setPlaneCorners(-10, 10, -10, 10);
     obj->setColor_u8(0x00, 0xff, 0xff, 0xff);
     obj->setLocation(0, 0, -14);
-    scene.insert(obj);
+    scene->insert(obj);
   }
   {
-    auto obj = mrpt::opengl::CSphere::Create();
+    auto obj = mrpt::viz::CSphere::Create();
     obj->setColor(0, 0, 1);
     obj->setRadius(1.0f);
     obj->setLocation(0, 1, 0);
     obj->setName("ball_1");
-    scene.insert(obj);
+    scene->insert(obj);
   }
-
   {
-    auto obj = mrpt::opengl::CText3D::Create("Hi there!");
+    auto obj = mrpt::viz::CText3D::Create("Hi there!");
     obj->setLocation(5.0, 3.0, 1.0);
-    scene.insert(obj);
+    scene->insert(obj);
   }
   {
-    auto obj = opengl::stock_objects::CornerXYZ(2.0f);
+    auto obj = mrpt::viz::stock_objects::CornerXYZ(2.0f);
     obj->setLocation(-3, -2, 0.5);
-    scene.insert(obj);
+    scene->insert(obj);
   }
 
   // CMeshFast, CMesh:
   {
     double off_x = -5.0, STEP_X = 1.0;
-    opengl::CMeshFast::Ptr obj1 = opengl::CMeshFast::Create();
-    opengl::CMeshFast::Ptr obj2 = opengl::CMeshFast::Create();
-    opengl::CMesh::Ptr obj3 = opengl::CMesh::Create();
-    opengl::CMesh::Ptr obj4 = opengl::CMesh::Create();
+    auto obj1 = mrpt::viz::CMeshFast::Create();
+    auto obj2 = mrpt::viz::CMeshFast::Create();
+    auto obj3 = mrpt::viz::CMesh::Create();
+    auto obj4 = mrpt::viz::CMesh::Create();
 
     obj1->setXBounds(-1, 1);
     obj1->setYBounds(-1, 1);
@@ -142,7 +148,12 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
     mrpt::math::CMatrixDynamic<float> Z(H, W);
 
     for (int r = 0; r < H; r++)
-      for (int c = 0; c < W; c++) Z(r, c) = sin(0.05 * (c + r) - 0.5) * cos(0.9 - 0.03 * r);
+    {
+      for (int c = 0; c < W; c++)
+      {
+        Z(r, c) = std::sin(0.05 * (c + r) - 0.5) * cos(0.9 - 0.03 * r);
+      }
+    }
 
     const std::string texture_file =
         mrpt::system::getShareMRPTDir() + "datasets/sample-texture-terrain.jpg"s;
@@ -154,34 +165,34 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
     obj1->enableColorFromZ(true);
     obj1->setPointSize(2.0);
     obj1->setLocation(off_x, 0, 0);
-    scene.insert(obj1);
+    scene->insert(obj1);
 
-    // obj 2:
+    // obj2:
     if (im.loadFromFile(texture_file))
     {
       obj2->assignImageAndZ(im, Z);
       obj2->setPointSize(2.0);
       obj2->setLocation(off_x, 3, 0);
-      scene.insert(obj2);
+      scene->insert(obj2);
     }
 
     off_x += STEP_X;
 
-    // obj 3:
+    // obj3:
     obj3->setZ(Z);
     obj3->enableColorFromZ(true, mrpt::img::cmJET);
     obj3->enableWireFrame(true);
     obj3->setLocation(off_x, 0, 0);
-    obj3->cullFaces(mrpt::opengl::TCullFace::BACK);
-    scene.insert(obj3);
+    obj3->cullFaces(mrpt::viz::TCullFace::BACK);
+    scene->insert(obj3);
 
-    // obj 4:
+    // obj4:
     if (im.getWidth() > 1)
     {
       obj4->assignImageAndZ(im, Z);
       obj4->setLocation(off_x, 3, 0);
-      obj4->cullFaces(mrpt::opengl::TCullFace::BACK);
-      scene.insert(obj4);
+      obj4->cullFaces(mrpt::viz::TCullFace::BACK);
+      scene->insert(obj4);
     }
   }
 
@@ -190,16 +201,21 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
 
   ::setenv("MRPT_FBORENDER_SHOW_DEVICES", "1", 1);
 
-  CFBORender renderer(width, height);
+  // Create the FBO renderer (mrpt::opengl)
+  mrpt::opengl::CFBORender renderer(width, height);
   mrpt::img::CImage frame(width, height, mrpt::img::CH_RGB);
   mrpt::math::CMatrixFloat depth;
 
-  scene.getViewport()->setCustomBackgroundColor({0.3f, 0.3f, 0.3f, 1.0f});
+  // Configure viewport
+  auto viewport = scene->getViewport();
+  viewport->setCustomBackgroundColor({0.3f, 0.3f, 0.3f, 1.0f});
   const float clipMax = 25.0f;
-  scene.getViewport()->setViewportClipDistances(0.1, clipMax);
+  viewport->setViewportClipDistances(0.1, clipMax);
 
+  // Configure camera
   {
-    CCamera& camera = renderer.getCamera(scene);
+    // Create camera and set it as override in the renderer
+    mrpt::viz::CCamera camera;
 
     if (useCameraFromIntrinsics)
     {
@@ -230,10 +246,15 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
                                    90.0_deg /*yaw*/, 0.0_deg /*pitch*/, 90.0_deg /*roll*/);
 
     camera.setPose(camPose);
+
+    // Set camera override in renderer
+    renderer.setCamera(camera);
   }
 
-  renderer.render_RGBD(scene, frame, depth);
+  // Render the scene
+  renderer.render_RGBD(*scene, frame, depth);
 
+  // Compare with ground truth
   mrpt::img::CImage gt_frame;
   bool readOk_rgb = gt_frame.loadFromFile(expected_RGB_img_file);
 
@@ -258,6 +279,7 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
     EXPECT_LT(depth_diff, 3000.0f);
   }
 }
+
 }  // namespace
 
 #if defined(RUN_OFFSCREEN_RENDER_TESTS)
@@ -272,8 +294,8 @@ TEST(OpenGL, DISABLED_CFBORender_camera_intrinsics)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "***** WARNING ****: Ignoring exception in test, likely due to limited rendering "
-                 "capabilities on this device (?):\n"
+    std::cerr << "***** WARNING ****: Ignoring exception in test, likely due to limited "
+                 "rendering capabilities on this device (?):\n"
               << e.what() << "\n";
   }
 }
@@ -290,8 +312,8 @@ TEST(OpenGL, DISABLED_CFBORender_camera_fov)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "***** WARNING ****: Ignoring exception in test, likely due to limited rendering "
-                 "capabilities on this device (?):\n"
+    std::cerr << "***** WARNING ****: Ignoring exception in test, likely due to limited "
+                 "rendering capabilities on this device (?):\n"
               << e.what() << "\n";
   }
 }

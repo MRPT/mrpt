@@ -75,7 +75,7 @@ mrpt_add_library(
     mrpt_maps
 )
 
-if(NOT BUILD_mrpt-hwdrivers)
+if(NOT BUILD_${PROJECT_NAME})
 	return()
 endif()
 
