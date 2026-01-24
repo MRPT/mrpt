@@ -13,10 +13,7 @@
 */
 #pragma once
 
-#include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/Shader.h>
-
-#include <cstdint>
 
 namespace mrpt::opengl
 {
@@ -54,7 +51,7 @@ struct DefaultShaderID
  * \sa CRenderizable
  * \ingroup mrpt_opengl_grp
  */
-Program::Ptr LoadDefaultShader(const shader_id_t id);
+Program::Ptr LoadDefaultShader(shader_id_t id);
 
 // Use GL_TEXTURE0 for diffuse map material textures:
 static constexpr int MATERIAL_DIFFUSE_TEXTURE_UNIT = 0;

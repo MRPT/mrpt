@@ -13,15 +13,19 @@
 */
 #pragma once
 
+#include <mrpt/img/TColor.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/TBoundingBox.h>
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/opengl/Buffer.h>
 #include <mrpt/opengl/DefaultShaders.h>
-#include <mrpt/opengl/RenderQueue.h>
 #include <mrpt/opengl/TRenderMatrices.h>
 #include <mrpt/opengl/VertexArrayObject.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/viz/CVisualObject.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 namespace mrpt::opengl
@@ -47,6 +51,9 @@ struct RenderContext
 
   /** Lighting parameters */
   const TLightParameters* lights = nullptr;
+
+  /** Is this a shadow map generation pass? */
+  bool isShadowMapPass = false;
 };
 
 /** Base class for GPU-side representations of mrpt::viz::CVisualObject instances.
@@ -148,7 +155,7 @@ class RenderableProxy
    *
    * \return Vector of shader IDs, typically with 1 element
    */
-  virtual std::vector<shader_id_t> requiredShaders() const = 0;
+  [[nodiscard]] virtual std::vector<shader_id_t> requiredShaders() const = 0;
 
   /** Does this object cast shadows?
    *
@@ -157,7 +164,7 @@ class RenderableProxy
    *
    * \return true if object casts shadows (default: true)
    */
-  virtual bool castsShadows() const { return true; }
+  [[nodiscard]] virtual bool castsShadows() const { return true; }
 
   /** Should this object be checked for frustum culling?
    *
@@ -166,7 +173,7 @@ class RenderableProxy
    *
    * \return true if eligible for culling (default: true)
    */
-  virtual bool cullEligible() const { return true; }
+  [[nodiscard]] virtual bool cullEligible() const { return true; }
 
   /** @} */
 
@@ -182,7 +189,7 @@ class RenderableProxy
    *
    * \note This is in the object's local frame, before applying pose transform
    */
-  virtual mrpt::math::TBoundingBoxf getBoundingBoxLocal() const
+  [[nodiscard]] virtual mrpt::math::TBoundingBoxf getBoundingBoxLocal() const
   {
     return mrpt::math::TBoundingBoxf();
   }
@@ -194,7 +201,7 @@ class RenderableProxy
    * \param objPose The object's SE(3) pose in world frame
    * \return Transformed bounding box
    */
-  mrpt::math::TBoundingBoxf getBoundingBox(const mrpt::poses::CPose3D& objPose) const
+  [[nodiscard]] mrpt::math::TBoundingBoxf getBoundingBox(const mrpt::poses::CPose3D& objPose) const
   {
     return getBoundingBoxLocal().compose(objPose);
   }
@@ -207,9 +214,42 @@ class RenderableProxy
   /** Returns a human-readable type name for this proxy.
    * Used for debugging and logging.
    */
-  virtual const char* typeName() const { return "RenderableProxy"; }
+  [[nodiscard]] virtual const char* typeName() const { return "RenderableProxy"; }
 
   /** @} */
+
+ protected:
+  /** Weak reference to the source viz object.
+   * Used to:
+   * - Check if source still exists (weak_ptr::expired())
+   * - Access source data during updateBuffers() if needed
+   * - Query dirty flags
+   * Set by CompiledScene during proxy creation.
+   */
+  std::weak_ptr<mrpt::viz::CVisualObject> m_sourceObject;
+
+ public:
+  /** Sets the source object reference. Called by CompiledScene during compilation. */
+  void setSourceObject(std::weak_ptr<mrpt::viz::CVisualObject> obj)
+  {
+    m_sourceObject = std::move(obj);
+  }
+
+  /** Returns the source object, or nullptr if it has been deleted. */
+  [[nodiscard]] std::shared_ptr<mrpt::viz::CVisualObject> getSourceObject() const
+  {
+    return m_sourceObject.lock();
+  }
+
+  /** Check if source object still exists */
+  [[nodiscard]] bool isSourceValid() const { return !m_sourceObject.expired(); }
+
+  /** Check if source object has pending changes (dirty flag) */
+  [[nodiscard]] bool sourceNeedsUpdate() const
+  {
+    auto src = m_sourceObject.lock();
+    return src && src->hasToUpdateBuffers();
+  }
 
  protected:
   /** @name Helper Methods for Derived Classes
@@ -282,7 +322,6 @@ class PointsProxyBase : public RenderableProxy
 {
  public:
   PointsProxyBase() = default;
-  ~PointsProxyBase() override = default;
 
   void compile(const mrpt::viz::CVisualObject* sourceObj) override;
   void updateBuffers(const mrpt::viz::CVisualObject* sourceObj) override;
@@ -296,10 +335,10 @@ class PointsProxyBase : public RenderableProxy
 
  protected:
   /** Vertex buffer (positions) */
-  Buffer m_vertexBuffer{Buffer::Type::ARRAY};
+  Buffer m_vertexBuffer{Buffer::Type::Vertex};
 
   /** Color buffer (per-vertex colors) */
-  Buffer m_colorBuffer{Buffer::Type::ARRAY};
+  Buffer m_colorBuffer{Buffer::Type::Vertex};
 
   /** Vertex Array Object (caches attribute bindings) */
   VertexArrayObject m_vao;
@@ -323,7 +362,6 @@ class LinesProxyBase : public RenderableProxy
 {
  public:
   LinesProxyBase() = default;
-  ~LinesProxyBase() override = default;
 
   void compile(const mrpt::viz::CVisualObject* sourceObj) override;
   void updateBuffers(const mrpt::viz::CVisualObject* sourceObj) override;
@@ -337,10 +375,10 @@ class LinesProxyBase : public RenderableProxy
 
  protected:
   /** Vertex buffer (line endpoints) */
-  Buffer m_vertexBuffer{Buffer::Type::ARRAY};
+  Buffer m_vertexBuffer{Buffer::Type::Vertex};
 
   /** Color buffer (per-vertex colors) */
-  Buffer m_colorBuffer{Buffer::Type::ARRAY};
+  Buffer m_colorBuffer{Buffer::Type::Vertex};
 
   /** Vertex Array Object */
   VertexArrayObject m_vao;
@@ -369,7 +407,6 @@ class TrianglesProxyBase : public RenderableProxy
 {
  public:
   TrianglesProxyBase() = default;
-  ~TrianglesProxyBase() override = default;
 
   void compile(const mrpt::viz::CVisualObject* sourceObj) override;
   void updateBuffers(const mrpt::viz::CVisualObject* sourceObj) override;
@@ -383,13 +420,13 @@ class TrianglesProxyBase : public RenderableProxy
 
  protected:
   /** Vertex buffer (triangle vertices) */
-  Buffer m_vertexBuffer{Buffer::Type::ARRAY};
+  Buffer m_vertexBuffer{Buffer::Type::Vertex};
 
   /** Normal buffer (per-vertex normals) */
-  Buffer m_normalBuffer{Buffer::Type::ARRAY};
+  Buffer m_normalBuffer{Buffer::Type::Vertex};
 
   /** Color buffer (per-vertex colors) */
-  Buffer m_colorBuffer{Buffer::Type::ARRAY};
+  Buffer m_colorBuffer{Buffer::Type::Vertex};
 
   /** Vertex Array Object */
   VertexArrayObject m_vao;
@@ -421,7 +458,6 @@ class TexturedTrianglesProxyBase : public TrianglesProxyBase
 {
  public:
   TexturedTrianglesProxyBase() = default;
-  ~TexturedTrianglesProxyBase() override = default;
 
   void compile(const mrpt::viz::CVisualObject* sourceObj) override;
   void updateBuffers(const mrpt::viz::CVisualObject* sourceObj) override;
@@ -433,9 +469,9 @@ class TexturedTrianglesProxyBase : public TrianglesProxyBase
 
  protected:
   /** Texture coordinate buffer (UV coordinates) */
-  Buffer m_texCoordBuffer{Buffer::Type::ARRAY};
+  Buffer m_texCoordBuffer{Buffer::Type::Vertex};
 
-  /** Texture object */
+  /** Texture object (owned externally, managed by TextureCache) */
   class Texture* m_texture = nullptr;
 
   /** Texture interpolation (linear vs nearest) */

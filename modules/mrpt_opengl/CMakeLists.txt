@@ -47,6 +47,10 @@ option(MRPT_OPENGL_PROFILER OFF)
 
 # define lib:
 set(LIB_SOURCES
+  src/LinesProxy.cpp
+  src/RenderableProxy.cpp
+  src/RenderQueue.cpp
+  src/TexturedTrianglesProxy.cpp
   src/Buffer.cpp
   src/CompiledScene.cpp
   src/CompiledViewport.cpp
