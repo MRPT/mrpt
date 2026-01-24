@@ -15,7 +15,7 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/get_env.h>
 #include <mrpt/opengl/CompiledViewport.h>
-#include <mrpt/opengl/FramebufferObject.h>
+#include <mrpt/opengl/FrameBuffer.h>
 #include <mrpt/opengl/RenderQueue.h>
 #include <mrpt/opengl/ShaderProgramManager.h>
 #include <mrpt/opengl/opengl_api.h>
@@ -32,7 +32,10 @@ static const bool VIEWPORT_VERBOSE = mrpt::get_env<bool>("MRPT_VIEWPORT_VERBOSE"
 
 CompiledViewport::CompiledViewport(const std::string& name) : m_name(name)
 {
-  if (VIEWPORT_VERBOSE) std::cout << "[CompiledViewport] Created: '" << m_name << "'\n";
+  if (VIEWPORT_VERBOSE)
+  {
+    std::cout << "[CompiledViewport] Created: '" << m_name << "'\n";
+  }
 }
 
 CompiledViewport::~CompiledViewport()
@@ -95,11 +98,14 @@ void CompiledViewport::updateFromVizViewport(const mrpt::viz::Viewport& vizVp)
 }
 
 void CompiledViewport::addProxy(
-    RenderableProxy::Ptr proxy, const std::shared_ptr<mrpt::viz::CVisualObject>& sourceObj)
+    const RenderableProxy::Ptr& proxy, const std::shared_ptr<mrpt::viz::CVisualObject>& sourceObj)
 {
   MRPT_START
 
-  if (!proxy) return;
+  if (!proxy)
+  {
+    return;
+  }
 
   std::unique_lock<std::shared_mutex> lock(m_stateMtx.data);
 
@@ -174,11 +180,14 @@ size_t CompiledViewport::cleanupOrphanedProxies()
   MRPT_END
 }
 
-void CompiledViewport::removeProxy(RenderableProxy::Ptr proxy)
+void CompiledViewport::removeProxy(const RenderableProxy::Ptr& proxy)
 {
   MRPT_START
 
-  if (!proxy) return;
+  if (!proxy)
+  {
+    return;
+  }
 
   std::unique_lock<std::shared_mutex> lock(m_stateMtx.data);
 
@@ -195,9 +204,13 @@ void CompiledViewport::removeProxy(RenderableProxy::Ptr proxy)
   for (auto it = m_objectToProxy.begin(); it != m_objectToProxy.end();)
   {
     if (it->second == proxy)
+    {
       it = m_objectToProxy.erase(it);
+    }
     else
+    {
       ++it;
+    }
   }
 
   MRPT_END
@@ -225,8 +238,10 @@ void CompiledViewport::setImageViewMode(RenderableProxy::Ptr imageProxy)
   m_imageViewProxy = imageProxy;
 
   if (VIEWPORT_VERBOSE)
+  {
     std::cout << "[CompiledViewport::setImageViewMode] '" << m_name
               << "' entered image view mode\n";
+  }
 
   MRPT_END
 }
@@ -240,8 +255,10 @@ void CompiledViewport::clearImageViewMode()
   m_imageViewProxy.reset();
 
   if (VIEWPORT_VERBOSE)
+  {
     std::cout << "[CompiledViewport::clearImageViewMode] '" << m_name
               << "' exited image view mode\n";
+  }
 
   MRPT_END
 }
@@ -257,8 +274,10 @@ void CompiledViewport::setCloneMode(const std::string& clonedViewportName, bool 
   m_clonedViewportName = clonedViewportName;
 
   if (VIEWPORT_VERBOSE)
+  {
     std::cout << "[CompiledViewport::setCloneMode] '" << m_name << "' cloning from '"
               << clonedViewportName << "'" << (cloneCamera ? " (with camera)" : "") << "\n";
+  }
 
   MRPT_END
 }
@@ -285,8 +304,14 @@ void CompiledViewport::enableShadows(
 
   m_shadowsEnabled = enabled;
 
-  if (shadowMapSizeX > 0) m_shadowMapSizeX = shadowMapSizeX;
-  if (shadowMapSizeY > 0) m_shadowMapSizeY = shadowMapSizeY;
+  if (shadowMapSizeX > 0)
+  {
+    m_shadowMapSizeX = shadowMapSizeX;
+  }
+  if (shadowMapSizeY > 0)
+  {
+    m_shadowMapSizeY = shadowMapSizeY;
+  }
 
   if (enabled && !m_shadowMapFBO)
   {
@@ -298,8 +323,10 @@ void CompiledViewport::enableShadows(
   }
 
   if (VIEWPORT_VERBOSE)
+  {
     std::cout << "[CompiledViewport::enableShadows] '" << m_name << "' shadows "
               << (enabled ? "enabled" : "disabled") << "\n";
+  }
 
   MRPT_END
 }
@@ -645,7 +672,7 @@ void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
   // Create shadow FBO if needed
   if (!m_shadowMapFBO)
   {
-    m_shadowMapFBO = std::make_unique<FramebufferObject>();
+    m_shadowMapFBO = std::make_unique<FrameBuffer>();
     m_shadowMapFBO->createDepthMap(m_shadowMapSizeX, m_shadowMapSizeY);
   }
   glEnable(GL_DEPTH_TEST);
@@ -756,6 +783,7 @@ void CompiledViewport::processRenderQueue(
 #endif
   MRPT_END
 }
+
 void CompiledViewport::renderBorder(ShaderProgramManager& shaderManager)
 {
   MRPT_START
@@ -765,4 +793,3 @@ void CompiledViewport::renderBorder(ShaderProgramManager& shaderManager)
 #endif
   MRPT_END
 }
-#endif  // MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL

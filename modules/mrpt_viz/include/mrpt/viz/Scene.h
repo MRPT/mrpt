@@ -62,7 +62,7 @@ namespace mrpt::viz
  *
  * \ingroup mrpt_viz_grp
  */
-class Scene : public mrpt::serialization::CSerializable
+class Scene : public mrpt::serialization::CSerializable, public std::enable_shared_from_this<Scene>
 {
   DEFINE_SERIALIZABLE(Scene, mrpt::viz)
  public:
@@ -72,6 +72,8 @@ class Scene : public mrpt::serialization::CSerializable
   ~Scene() override;
   Scene& operator=(const Scene& obj);
   Scene(const Scene& obj);
+  Scene& operator=(Scene&& obj) = default;
+  Scene(Scene&& obj) = default;
 
   /**
    * Inserts a set of objects into the scene, in the given viewport ("main"
@@ -101,7 +103,10 @@ class Scene : public mrpt::serialization::CSerializable
   template <class T_it>
   void insert(const T_it& begin, const T_it& end, const std::string& vpn = std::string("main"))
   {
-    for (T_it it = begin; it != end; it++) insert(*it, vpn);
+    for (T_it it = begin; it != end; it++)
+    {
+      insert(*it, vpn);
+    }
   }
 
   /** Creates a new viewport, adding it to the scene and returning a pointer
@@ -160,7 +165,10 @@ class Scene : public mrpt::serialization::CSerializable
     for (const auto& m_viewport : m_viewports)
     {
       typename T::Ptr o = m_viewport->getByClass<T>(ith);
-      if (o) return o;
+      if (o)
+      {
+        return o;
+      }
     }
     return typename T::Ptr();  // Not found: return empty smart pointer
     MRPT_END
@@ -219,7 +227,12 @@ class Scene : public mrpt::serialization::CSerializable
   {
     MRPT_START
     for (const auto& viewport : m_viewports)
-      for (auto& o : *viewport) internal_visitAllObjects(functor, o);
+    {
+      for (auto& o : *viewport)
+      {
+        internal_visitAllObjects(functor, o);
+      }
+    }
     MRPT_END
   }
 
@@ -235,7 +248,10 @@ class Scene : public mrpt::serialization::CSerializable
     functor(o);
     if (auto objs = std::dynamic_pointer_cast<CSetOfObjects>(o); objs)
     {
-      for (auto& obj : *objs) internal_visitAllObjects(functor, obj);
+      for (auto& obj : *objs)
+      {
+        internal_visitAllObjects(functor, obj);
+      }
     }
   }
 };

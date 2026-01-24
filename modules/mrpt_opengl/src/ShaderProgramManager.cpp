@@ -14,7 +14,7 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/get_env.h>
-#include <mrpt/io/CFileInputStream.h>
+#include <mrpt/io/vector_loadsave.h>
 #include <mrpt/opengl/DefaultShaders.h>
 #include <mrpt/opengl/ShaderProgramManager.h>
 
@@ -227,17 +227,31 @@ Program::Ptr ShaderProgramManager::loadCustomProgramFromFiles(
 
   // Read vertex shader
   std::string vertexSrc;
-  if (!mrpt::io::CFileInputStream::readFileIntoString(vertexShaderFile, vertexSrc))
+  try
   {
-    if (outErrorMsg) *outErrorMsg = "Failed to read vertex shader file: " + vertexShaderFile;
+    vertexSrc = mrpt::io::file_get_contents(vertexShaderFile);
+  }
+  catch (const std::exception& e)
+  {
+    if (outErrorMsg != nullptr)
+    {
+      *outErrorMsg = "Failed to read vertex shader file: " + vertexShaderFile;
+    }
     return nullptr;
   }
 
   // Read fragment shader
   std::string fragmentSrc;
-  if (!mrpt::io::CFileInputStream::readFileIntoString(fragmentShaderFile, fragmentSrc))
+  try
   {
-    if (outErrorMsg) *outErrorMsg = "Failed to read fragment shader file: " + fragmentShaderFile;
+    fragmentSrc = mrpt::io::file_get_contents(fragmentShaderFile);
+  }
+  catch (const std::exception& e)
+  {
+    if (outErrorMsg != nullptr)
+    {
+      *outErrorMsg = "Failed to read fragment shader file: " + fragmentShaderFile;
+    }
     return nullptr;
   }
 
@@ -245,9 +259,16 @@ Program::Ptr ShaderProgramManager::loadCustomProgramFromFiles(
   std::string geometrySrc;
   if (!geometryShaderFile.empty())
   {
-    if (!mrpt::io::CFileInputStream::readFileIntoString(geometryShaderFile, geometrySrc))
+    try
     {
-      if (outErrorMsg) *outErrorMsg = "Failed to read geometry shader file: " + geometryShaderFile;
+      geometrySrc = mrpt::io::file_get_contents(geometryShaderFile);
+    }
+    catch (const std::exception& e)
+    {
+      if (outErrorMsg != nullptr)
+      {
+        *outErrorMsg = "Failed to read geometry shader file: " + geometryShaderFile;
+      }
       return nullptr;
     }
   }

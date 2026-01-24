@@ -23,6 +23,7 @@
 #include <mrpt/opengl/VertexArrayObject.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/viz/CVisualObject.h>
+#include <mrpt/viz/TLightParameters.h>
 
 #include <memory>
 #include <optional>
@@ -32,7 +33,6 @@ namespace mrpt::opengl
 {
 // Forward declarations
 class Program;
-struct TLightParameters;
 
 /** Rendering context passed to RenderableProxy::render().
  * Contains all state needed for rendering an object.
@@ -50,7 +50,7 @@ struct RenderContext
   const TRenderMatrices* state = nullptr;
 
   /** Lighting parameters */
-  const TLightParameters* lights = nullptr;
+  const mrpt::viz::TLightParameters* lights = nullptr;
 
   /** Is this a shadow map generation pass? */
   bool isShadowMapPass = false;

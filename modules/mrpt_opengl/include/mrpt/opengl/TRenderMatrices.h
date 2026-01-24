@@ -121,7 +121,7 @@ struct TRenderMatrices
   void computeProjectionMatrix(float zmin, float zmax);
 
   /** Updates light_pv */
-  void computeLightProjectionMatrix(float zmin, float zmax, const TLightParameters& lp);
+  void computeLightProjectionMatrix(float zmin, float zmax, const mrpt::viz::TLightParameters& lp);
 
   /** Especial case for custom parameters of Orthographic projection.
    *  Equivalent to `p_matrix = ortho(...);`.
