@@ -176,13 +176,13 @@ std::pair<double, double> glDrawText(
       std::vector<mrpt::math::TPoint3Df>& lines, const mrpt::math::TPoint2Df& cursor) const;
   switch (style)
   {
-    case FILL:
+    case mrpt::viz::FILL:
       operation = &Font::fill;
       break;
-    case OUTLINE:
+    case mrpt::viz::OUTLINE:
       operation = &Font::outline;
       break;
-    case NICE:
+    case mrpt::viz::NICE:
       // operation = &Font::draw; (See comments in definition of "NICE")
       operation = &Font::fill;
       break;

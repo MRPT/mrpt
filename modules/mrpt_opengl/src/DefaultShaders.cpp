@@ -15,7 +15,11 @@
 #include <mrpt/opengl/DefaultShaders.h>
 #include <mrpt/opengl/opengl_api.h>
 
+#if defined(__EMSCRIPTEN__)
 #include <regex>
+#endif
+
+#include <iostream>
 
 using namespace mrpt::opengl;
 
@@ -27,7 +31,8 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
   const char* vertex_shader = nullptr;
   const char* fragment_shader = nullptr;
   const char* fragShaderIncludes = nullptr;
-  std::vector<std::string> attribs, uniforms;
+  std::vector<std::string> attribs;
+  std::vector<std::string> uniforms;
 
   switch (id)
   {
