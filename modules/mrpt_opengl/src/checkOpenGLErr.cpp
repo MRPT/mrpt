@@ -20,22 +20,42 @@
 
 using namespace mrpt::opengl;
 
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+namespace
+{
+const char* getGLErrorString(GLenum err)
+{
+  switch (err)
+  {
+    case GL_NO_ERROR:
+      return "GL_NO_ERROR";
+    case GL_INVALID_ENUM:
+      return "GL_INVALID_ENUM";
+    case GL_INVALID_VALUE:
+      return "GL_INVALID_VALUE";
+    case GL_INVALID_OPERATION:
+      return "GL_INVALID_OPERATION";
+    case GL_STACK_OVERFLOW:
+      return "GL_STACK_OVERFLOW";
+    case GL_STACK_UNDERFLOW:
+      return "GL_STACK_UNDERFLOW";
+    case GL_OUT_OF_MEMORY:
+      return "GL_OUT_OF_MEMORY";
+    case GL_INVALID_FRAMEBUFFER_OPERATION:
+      return "GL_INVALID_FRAMEBUFFER_OPERATION";
+    default:
+      return "Unknown OpenGL error";
+  }
+}
+}  // namespace
+
 void mrpt::opengl::checkOpenGLErr_impl(unsigned int glErrorCode, const char* filename, int lineno)
 {
-  if (glErrorCode == GL_NO_ERROR)
+  if (glErrorCode == 0 /*GL_NO_ERROR*/)
   {
     return;
   }
-#if MRPT_HAS_OPENGL_GLUT
-  const std::string sErr = mrpt::format(
-      "[%s:%i] OpenGL error: %s", filename, lineno,
-      reinterpret_cast<const char*>(gluErrorString(glErrorCode)));
-#else
-  // w/o glu:
-  const std::string sErr = mrpt::format("[%s:%i] OpenGL error: %u", filename, lineno, glErrorCode);
-#endif
+  const std::string sErr =
+      mrpt::format("[%s:%i] OpenGL error: %s", filename, lineno, getGLErrorString(glErrorCode));
   std::cerr << "[gl_utils::checkOpenGLError] " << sErr << "\n";
   THROW_EXCEPTION(sErr);
 }
-#endif
