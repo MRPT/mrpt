@@ -71,7 +71,7 @@ void Viewport::setViewportPosition(
 /*--------------------------------------------------------------
           getViewportPosition
   ---------------------------------------------------------------*/
-void Viewport::getViewportPosition(double& x, double& y, double& width, double& height)
+void Viewport::getViewportPosition(double& x, double& y, double& width, double& height) const
 {
   x = m_view_x;
   y = m_view_y;

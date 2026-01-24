@@ -15,7 +15,6 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/get_env.h>
 #include <mrpt/opengl/CompiledViewport.h>
-#include <mrpt/opengl/FrameBuffer.h>
 #include <mrpt/opengl/RenderQueue.h>
 #include <mrpt/opengl/ShaderProgramManager.h>
 #include <mrpt/opengl/opengl_api.h>
@@ -444,14 +443,16 @@ bool CompiledViewport::updateIfNeeded()
     anyUpdates = true;
 
     if (VIEWPORT_VERBOSE)
+    {
       std::cout << "[CompiledViewport::updateIfNeeded] '" << m_name << "' camera changed\n";
+    }
   }
 
   // Check lighting changes
   LightState currentLight;
   currentLight.direction = m_lightParams.direction;
-  currentLight.ambient = m_lightParams.ambient;
-  currentLight.diffuse = m_lightParams.diffuse;
+  currentLight.ambient = {m_lightParams.ambient, m_lightParams.ambient, m_lightParams.ambient};
+  currentLight.diffuse = {m_lightParams.diffuse, m_lightParams.diffuse, m_lightParams.diffuse};
 
   if (currentLight != m_lastLightState)
   {
@@ -459,7 +460,9 @@ bool CompiledViewport::updateIfNeeded()
     anyUpdates = true;
 
     if (VIEWPORT_VERBOSE)
+    {
       std::cout << "[CompiledViewport::updateIfNeeded] '" << m_name << "' lighting changed\n";
+    }
   }
 
   return anyUpdates;
@@ -475,7 +478,7 @@ bool CompiledViewport::hasPendingUpdates() const
 }
 
 void CompiledViewport::computePixelViewport(
-    int windowWidth, int window Height, int offsetX, int offsetY)
+    int windowWidth, int windowHeight, int offsetX, int offsetY)
 {
   m_pixelX = offsetX + startFromRatio(m_viewX, windowWidth);
   m_pixelY = offsetY + startFromRatio(m_viewY, windowHeight);
@@ -491,23 +494,33 @@ int CompiledViewport::startFromRatio(double frac, int dimension)
 }
 int CompiledViewport::sizeFromRatio(int startCoord, double dSize, int dimension)
 {
-  if (dSize > 1)  // >1 -> absolute pixels
+  if (dSize > 1)
+  {  // >1 -> absolute pixels
     return static_cast<int>(dSize);
-  else if (dSize < 0)
+  }
+
+  if (dSize < 0)
   {
     // Negative: specify right/bottom edge instead of size
     if (dSize >= -1)
+    {
       return static_cast<int>(-dimension * dSize - startCoord + 1);
-    else
-      return static_cast<int>(dimension + dSize - startCoord + 1);
+    }
+
+    return static_cast<int>(dimension + dSize - startCoord + 1);
   }
+
   // Otherwise: a fraction
   return static_cast<int>(dimension * dSize);
 }
 void CompiledViewport::updateMatrices()
 {
   MRPT_START
-  if (!m_matricesNeedUpdate) return;
+  if (!m_matricesNeedUpdate)
+  {
+    return;
+  }
+
   // Update viewport dimensions in matrices
   m_renderMatrices.viewport_width = m_pixelWidth;
   m_renderMatrices.viewport_height = m_pixelHeight;
@@ -528,7 +541,7 @@ void CompiledViewport::updateMatrices()
 
       // Compute pointing direction
       const auto viewDir = mrpt::poses::CPose3D::FromTranslation(0, 0, 1);
-      const auto at = pose + viewDir;
+      const auto at = pose + viewDir.asTPose();
       m_renderMatrices.pointing = at.translation();
 
       // Extract up vector from rotation matrix
@@ -546,7 +559,7 @@ void CompiledViewport::updateMatrices()
           cos(m_renderMatrices.azimuth) * cos(m_renderMatrices.elev),
           sin(m_renderMatrices.azimuth) * cos(m_renderMatrices.elev), sin(m_renderMatrices.elev));
 
-      const double dis = std::max(0.001, m_camera.getZoomDistance());
+      const double dis = std::max<double>(0.001, m_camera.getZoomDistance());
       m_renderMatrices.eye = m_renderMatrices.pointing + c2m_u * dis;
 
       m_renderMatrices.up.x = -cos(m_renderMatrices.azimuth) * sin(m_renderMatrices.elev);
@@ -576,10 +589,13 @@ void CompiledViewport::render(
 {
   MRPT_START
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-  if (!m_isVisible) return;
+  if (!m_isVisible)
+  {
+    return;
+  }
   m_lastStats.reset();
   const auto tStart = mrpt::Clock::nowDouble();
-  std::shared_lockstd::shared_mutex lock(m_stateMtx.data);
+  std::shared_lock<std::shared_mutex> lock(m_stateMtx.data);
   // Compute pixel viewport
   computePixelViewport(renderWidth, renderHeight, renderOffsetX, renderOffsetY);
   // Update matrices if needed
@@ -646,7 +662,10 @@ void CompiledViewport::renderImageView(ShaderProgramManager& shaderManager)
 {
   MRPT_START
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-  if (!m_imageViewProxy) return;
+  if (!m_imageViewProxy)
+  {
+    return;
+  }
   glDisable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -677,6 +696,7 @@ void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
   }
   glEnable(GL_DEPTH_TEST);
   glViewport(0, 0, m_shadowMapSizeX, m_shadowMapSizeY);
+
   const auto oldFBs = m_shadowMapFBO->bind();
   glClear(GL_DEPTH_BUFFER_BIT);
   // Render scene from light's perspective (1st pass)
@@ -698,7 +718,10 @@ void CompiledViewport::renderNormalScene(ShaderProgramManager& shaderManager, bo
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_MULTISAMPLE);
 #if !defined(EMSCRIPTEN)
-  if (m_enablePolygonSmooth) glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+  if (m_enablePolygonSmooth)
+  {
+    glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+  }
   glEnable(GL_LINE_SMOOTH);
 #endif
 #if !defined(EMSCRIPTEN) && defined(GL_PROGRAM_POINT_SIZE)
@@ -723,9 +746,15 @@ void CompiledViewport::buildRenderQueue(
   MRPT_START
   for (const auto& proxy : m_proxies)
   {
-    if (!proxy) continue;
+    if (!proxy)
+    {
+      continue;
+    }
     // Skip if in shadow map pass and object doesn't cast shadows
-    if (isShadowMapPass && !proxy->castsShadows()) continue;
+    if (isShadowMapPass && !proxy->castsShadows())
+    {
+      continue;
+    }
 
     // TODO: Implement frustum culling using proxy->getBoundingBox()
     // For now, render everything
@@ -752,7 +781,10 @@ void CompiledViewport::processRenderQueue(
   for (const auto& [shaderID, proxyMap] : queue)
   {
     auto shader = shaderManager.getProgram(shaderID);
-    if (!shader) continue;
+    if (!shader)
+    {
+      continue;
+    }
     shader->use();
     stats.numDrawCalls++;
 
@@ -760,13 +792,19 @@ void CompiledViewport::processRenderQueue(
     const auto IS_TRANSPOSED = GL_TRUE;
 
     if (shader->hasUniform("p_matrix"))
+    {
       glUniformMatrix4fv(shader->uniformId("p_matrix"), 1, IS_TRANSPOSED, matrices.p_matrix.data());
+    }
 
     if (shader->hasUniform("v_matrix"))
+    {
       glUniformMatrix4fv(shader->uniformId("v_matrix"), 1, IS_TRANSPOSED, matrices.v_matrix.data());
+    }
 
     if (shader->hasUniform("m_matrix"))
+    {
       glUniformMatrix4fv(shader->uniformId("m_matrix"), 1, IS_TRANSPOSED, matrices.m_matrix.data());
+    }
 
     // Render all proxies using this shader
     RenderContext rc;

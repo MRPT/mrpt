@@ -23,24 +23,24 @@ using mrpt::serialization::CArchive;
 static_assert(sizeof(TColor) == 4 * sizeof(uint8_t));
 static_assert(sizeof(TColorf) == 4 * sizeof(float));
 
-TColor mrpt::img::operator+(const TColor& first, const TColor& second)
+TColor mrpt::img::operator+(const TColor& a, const TColor& b)
 {
   TColor ret;
-  ret.R = first.R + second.R;
-  ret.G = first.G + second.G;
-  ret.B = first.B + second.B;
-  ret.A = first.A + second.A;
+  ret.R = a.R + b.R;
+  ret.G = a.G + b.G;
+  ret.B = a.B + b.B;
+  ret.A = a.A + b.A;
 
   return ret;
 }
 
-TColor mrpt::img::operator-(const TColor& first, const TColor& second)
+TColor mrpt::img::operator-(const TColor& a, const TColor& b)
 {
   TColor ret;
-  ret.R = first.R - second.R;
-  ret.G = first.G - second.G;
-  ret.B = first.B - second.B;
-  ret.A = first.A - second.A;
+  ret.R = a.R - b.R;
+  ret.G = a.G - b.G;
+  ret.B = a.B - b.B;
+  ret.A = a.A - b.A;
 
   return ret;
 }
@@ -65,17 +65,15 @@ TColor& TColor::operator-=(const TColor& other)
   return *this;
 }
 
-bool mrpt::img::operator==(const TColor& first, const TColor& second)
+bool mrpt::img::operator==(const TColor& a, const TColor& b)
 {
-  bool ret =
-      first.R == second.R && first.G == second.G && first.B == second.B && first.A == second.A;
-
-  return ret;
+  return a.R == b.R && a.G == b.G && a.B == b.B && a.A == b.A;
 }
 
-// bool operator!=(const TColor& first, const TColor& second) {
-// return (!(first == second));
-//}
+bool mrpt::img::operator==(const TColorf& a, const TColorf& b)
+{
+  return a.R == b.R && a.G == b.G && a.B == b.B && a.A == b.A;
+}
 
 // Text streaming:
 std::ostream& mrpt::img::operator<<(std::ostream& o, const TColor& c)

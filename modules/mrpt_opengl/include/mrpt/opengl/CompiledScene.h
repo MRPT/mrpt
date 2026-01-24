@@ -137,7 +137,7 @@ class CompiledScene
    * \note This is called automatically by render() if auto-update is enabled.
    * \note The source Scene is re-queried each time to detect new objects.
    */
-  [[nodiscard]] bool updateIfNeeded(CompilationStats* stats = nullptr);
+  bool updateIfNeeded(CompilationStats* stats = nullptr);
 
   /** Forces a full recompilation of the entire scene.
    *
