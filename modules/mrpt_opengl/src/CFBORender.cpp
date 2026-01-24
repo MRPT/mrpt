@@ -15,12 +15,11 @@
 #include <mrpt/core/get_env.h>
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/opengl/OpenGLDepth2LinearLUTs.h>
+#include <mrpt/opengl/config.h>
 #include <mrpt/opengl/opengl_api.h>
-//
-#include <mrpt/config.h>
 
 #define FBO_USE_LUT
-//#define FBO_PROFILER
+// #define FBO_PROFILER
 
 #ifdef FBO_PROFILER
 #include <mrpt/system/CTimeLogger.h>
@@ -38,11 +37,14 @@ using namespace mrpt;
 using namespace mrpt::opengl;
 using mrpt::img::CImage;
 
+namespace
+{
 const thread_local bool MRPT_FBORENDER_SHOW_DEVICES =
     mrpt::get_env<bool>("MRPT_FBORENDER_SHOW_DEVICES");
 
 const thread_local bool MRPT_FBORENDER_USE_LUT =
     mrpt::get_env<bool>("MRPT_FBORENDER_USE_LUT", true);
+}  // namespace
 
 CFBORender::CFBORender(const Parameters& p) : m_params(p)
 {
@@ -53,14 +55,15 @@ CFBORender::CFBORender(const Parameters& p) : m_params(p)
   if (p.create_EGL_context)
   {
     // clang-format off
-		std::vector<EGLint> configAttribs = {
-			EGL_SURFACE_TYPE,    EGL_PBUFFER_BIT,
-			EGL_BLUE_SIZE,       p.blueSize,
-			EGL_GREEN_SIZE,      p.greenSize,
-			EGL_RED_SIZE,        p.redSize,
-			EGL_DEPTH_SIZE,      p.depthSize
-		};
+    std::vector<EGLint> configAttribs = {
+        EGL_SURFACE_TYPE,    EGL_PBUFFER_BIT,
+        EGL_BLUE_SIZE,       p.blueSize,
+        EGL_GREEN_SIZE,      p.greenSize,
+        EGL_RED_SIZE,        p.redSize,
+        EGL_DEPTH_SIZE,      p.depthSize
+    };
     // clang-format on
+
     if (p.conformantOpenGLES2)
     {
       configAttribs.push_back(EGL_CONFORMANT);
@@ -101,7 +104,6 @@ CFBORender::CFBORender(const Parameters& p) : m_params(p)
       for (int i = 0; i < numDevices; i++)
       {
         const char* devExts = eglQueryDeviceStringEXT(eglDevs[i], EGL_EXTENSIONS);
-
         printf("[mrpt EGL] Device #%i. Extensions: %s\n", i, devExts ? devExts : "(None)");
       }
     }
@@ -127,8 +129,6 @@ CFBORender::CFBORender(const Parameters& p) : m_params(p)
       THROW_EXCEPTION_FMT("Failed to initialize EGL display: %x\n", eglGetError());
     }
 
-    // printf("[mrpt EGL] version: %i.%i\n", major, minor);
-
     // 2. Select an appropriate configuration
     EGLint numConfigs;
 
@@ -144,18 +144,17 @@ CFBORender::CFBORender(const Parameters& p) : m_params(p)
     // 4. Bind the API
     if (!eglBindAPI(p.bindOpenGLES_API ? EGL_OPENGL_ES_API : EGL_OPENGL_API))
     {
-      // error:
       THROW_EXCEPTION("no opengl api in egl");
     }
 
     // 5. Create a context and make it current
-
     // clang-format off
-		std::vector<EGLint> ctxAttribs = {
-			EGL_CONTEXT_OPENGL_PROFILE_MASK, EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
-			EGL_CONTEXT_OPENGL_DEBUG, p.contextDebug ? EGL_TRUE: EGL_FALSE
-		};
+    std::vector<EGLint> ctxAttribs = {
+        EGL_CONTEXT_OPENGL_PROFILE_MASK, EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
+        EGL_CONTEXT_OPENGL_DEBUG, p.contextDebug ? EGL_TRUE : EGL_FALSE
+    };
     // clang-format on
+
     if (p.contextMajorVersion != 0 && p.contextMinorVersion != 0)
     {
       ctxAttribs.push_back(EGL_CONTEXT_MAJOR_VERSION);
@@ -179,7 +178,7 @@ CFBORender::CFBORender(const Parameters& p) : m_params(p)
   // -------------------------------
   // Create frame buffer object:
   // -------------------------------
-  m_fb.create(p.width, p.height);  // TODO: Multisample doesn't work...
+  m_fb.create(p.width, p.height);
   const auto oldFB = m_fb.bind();
 
   // -------------------------------
@@ -200,34 +199,62 @@ CFBORender::CFBORender(const Parameters& p) : m_params(p)
       GL_TEXTURE_2D, 0, GL_RGB, m_fb.width(), m_fb.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
   CHECK_OPENGL_ERROR_IN_DEBUG();
 
-  // bind this texture to the current framebuffer obj. as color_attachement_0
-  glFramebufferTexture2D(
-      GL_FRAMEBUFFER,  // DRAW + READ FB
-      GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texRGB, 0);
+  // Bind this texture to the current framebuffer obj. as color_attachment_0
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texRGB, 0);
   CHECK_OPENGL_ERROR();
 
-  // unbind:
+  // Unbind
   FrameBuffer::Bind(oldFB);
 
   MRPT_END
 #else
-  THROW_EXCEPTION("This class requires MRPT built with: OpenCV; OpenGL, and EGL.");
+  THROW_EXCEPTION("This class requires MRPT built with: OpenCV, OpenGL, and EGL.");
 #endif
 }
 
 CFBORender::~CFBORender()
 {
 #if HAVE_FBO
-  // delete the current texture, the framebuffer object and the EGL context
-  glDeleteTextures(1, &m_texRGB);
+  // Clear compiled scene first (releases GPU resources)
+  m_compiledScene.reset();
+
+  // Delete the current texture and framebuffer object
+  if (m_texRGB != 0)
+  {
+    glDeleteTextures(1, &m_texRGB);
+  }
   m_fb.destroy();
-  // Terminate EGL when finished:
-  if (m_eglDpy) eglTerminate(m_eglDpy);
+
+  // Terminate EGL when finished
+  if (m_eglDpy)
+  {
+    eglTerminate(m_eglDpy);
+  }
 #endif
 }
 
+void CFBORender::ensureCompiledScene(const mrpt::viz::Scene& scene)
+{
+  // Check if we need to create or recreate the compiled scene
+  auto scenePtr = scene.shared_from_this();
+  auto lastScenePtr = m_lastScene.lock();
+
+  if (!m_compiledScene || lastScenePtr.get() != scenePtr.get())
+  {
+    // Different scene or first time - create new compiled scene
+    m_compiledScene = std::make_unique<CompiledScene>();
+    m_compiledScene->compile(scene);
+    m_lastScene = scenePtr;
+  }
+  else
+  {
+    // Same scene - just update if needed
+    m_compiledScene->updateIfNeeded();
+  }
+}
+
 void CFBORender::internal_render_RGBD(
-    [[maybe_unused]] const Scene& scene,
+    [[maybe_unused]] const mrpt::viz::Scene& scene,
     [[maybe_unused]] const mrpt::optional_ref<mrpt::img::CImage>& optoutRGB,
     [[maybe_unused]] const mrpt::optional_ref<mrpt::math::CMatrixFloat>& optoutDepth)
 {
@@ -246,13 +273,22 @@ void CFBORender::internal_render_RGBD(
   auto tleR = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".prepAndRender"s);
 #endif
 
+  // Ensure compiled scene is ready
+  ensureCompiledScene(scene);
+
+  // Apply camera override if set
+  if (m_useCameraOverride)
+  {
+    auto mainVp = m_compiledScene->getViewport("main");
+    if (mainVp)
+    {
+      mainVp->updateCamera(m_cameraOverride);
+    }
+  }
+
+  // Bind the framebuffer
   const auto oldFBs = m_fb.bind();
 
-  // change viewport size (in pixels)
-  // glViewport(0, 0, m_fb.width(), m_fb.height());
-  // CHECK_OPENGL_ERROR_IN_DEBUG();
-
-  // bind the framebuffer, fbo, so operations will now occur on it
   glBindTexture(GL_TEXTURE_2D, m_texRGB);
   CHECK_OPENGL_ERROR_IN_DEBUG();
 
@@ -260,29 +296,32 @@ void CFBORender::internal_render_RGBD(
   CHECK_OPENGL_ERROR_IN_DEBUG();
 
   // ---------------------------
-  // Render:
+  // Render using CompiledScene
   // ---------------------------
-  for (const auto& viewport : scene.viewports())
-    viewport->render(m_fb.width(), m_fb.height(), 0, 0, &m_renderFromCamera);
+  m_compiledScene->render(
+      static_cast<int>(m_fb.width()), static_cast<int>(m_fb.height()),
+      0,  // offsetX
+      0   // offsetY
+  );
 
 #ifdef FBO_PROFILER
   tleR.stop();
 #endif
 
   // ---------------------------
-  // RGB
+  // RGB output
   // ---------------------------
   if (optoutRGB.has_value())
   {
     auto& outRGB = optoutRGB.value().get();
-    // resize the outRGB if it is necessary
+
+    // Resize the outRGB if necessary
     if (outRGB.isEmpty() || outRGB.getWidth() != static_cast<size_t>(m_fb.width()) ||
         outRGB.getHeight() != static_cast<size_t>(m_fb.height()) || outRGB.channels() != 3)
-    {  // resize:
+    {
       outRGB.resize(m_fb.width(), m_fb.height(), mrpt::img::CH_RGB);
     }
 
-    // check the outRGB size
     ASSERT_(!outRGB.isEmpty());
     ASSERT_EQUAL_(outRGB.getWidth(), static_cast<size_t>(m_fb.width()));
     ASSERT_EQUAL_(outRGB.getHeight(), static_cast<size_t>(m_fb.height()));
@@ -292,8 +331,6 @@ void CFBORender::internal_render_RGBD(
     auto tle1 = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".glReadPixels_rgb"s);
 #endif
 
-    // TODO NOTE: This should fail if the image has padding bytes. See
-    // glPixelStore() etc.
     glReadPixels(0, 0, m_fb.width(), m_fb.height(), GL_BGR_EXT, GL_UNSIGNED_BYTE, outRGB(0, 0));
     CHECK_OPENGL_ERROR();
 
@@ -302,12 +339,12 @@ void CFBORender::internal_render_RGBD(
     auto tle2 = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".flip_rgb"s);
 #endif
 
-    // Flip vertically:
+    // Flip vertically (OpenGL has origin at bottom-left)
     outRGB.flipVertical();
   }
 
   // ---------------------------
-  // Depth
+  // Depth output
   // ---------------------------
   if (optoutDepth.has_value())
   {
@@ -326,76 +363,29 @@ void CFBORender::internal_render_RGBD(
     tle1.stop();
 #endif
 
-    using depth_lut_t = OpenGLDepth2LinearLUTs<18>;
-
-    // Dont create LUT if we are not about to use it anyway:
+    // Convert to linear depth if requested
     if (!m_params.raw_depth)
     {
-      // Transform from OpenGL clip depths into linear distances:
-      const auto mats = scene.getViewport()->getRenderMatrices();
-      const float zn = mats.getLastClipZNear();
-      const float zf = mats.getLastClipZFar();
+      // Get clip planes from the compiled viewport's render matrices
+      auto mainVp = m_compiledScene->getViewport("main");
+      float zn = 0.01f;
+      float zf = 1000.0f;
 
-      const depth_lut_t::lut_t* lut = nullptr;
-
-#if !defined(FBO_USE_LUT)
-      const bool do_use_lut = false;
-#else
-      bool do_use_lut = MRPT_FBORENDER_USE_LUT;
-      // dont use LUT for really small image areas:
-      if (m_fb.height() * m_fb.width() < 10000)
+      if (mainVp)
       {
-        do_use_lut = false;
-      }
-#endif
-
-      if (do_use_lut)
-      {
-#ifdef FBO_PROFILER
-        auto tle_lut = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".get_lut"s);
-#endif
-        lut = &depth_lut_t::Instance().lut_from_zn_zf(zn, zf);
+        const auto& mats = mainVp->getRenderMatrices();
+        zn = mats.getLastClipZNear();
+        zf = mats.getLastClipZFar();
       }
 
-#ifdef FBO_PROFILER
-      auto tle2 = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".linear"s);
-#endif
-
-      if (!do_use_lut)
-      {
-        // Depth buffer -> linear depth:
-        const auto linearDepth = [zn, zf](float depthSample) -> float
-        {
-          depthSample = 2.0 * depthSample - 1.0;
-          float zLinear = 2.0 * zn * zf / (zf + zn - depthSample * (zf - zn));
-          return zLinear;
-        };
-        for (auto& d : outDepth)
-        {
-          if (d == 1)
-            d = 0;  // no "echo return"
-          else
-            d = linearDepth(d);
-        }
-      }
-      else
-      {
-        // map d in [-1.0f,+1.0f] ==> real depth values:
-        for (auto& d : outDepth)
-        {
-          d = (*lut)[(d + 1.0f) * (depth_lut_t::NUM_ENTRIES - 1) / 2];
-        }
-      }
-#ifdef FBO_PROFILER
-      tle2.stop();
-#endif
+      convertDepthToLinear(outDepth, zn, zf);
     }
 
 #ifdef FBO_PROFILER
     auto tle3 = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".flip"s);
 #endif
 
-    // flip lines:
+    // Flip lines (OpenGL has origin at bottom-left)
     std::vector<float> bufLine(m_fb.width());
     const auto bytesPerLine = sizeof(float) * m_fb.width();
     for (unsigned int y = 0; y < m_fb.height() / 2; y++)
@@ -405,30 +395,92 @@ void CFBORender::internal_render_RGBD(
       ::memcpy(&outDepth(y, 0), &outDepth(yFlipped, 0), bytesPerLine);
       ::memcpy(&outDepth(yFlipped, 0), bufLine.data(), bytesPerLine);
     }
+
 #ifdef FBO_PROFILER
     tle3.stop();
 #endif
   }
 
-  //'unbind' the frambuffer object, so subsequent drawing ops are not
-  // drawn into the FBO.
+  // Unbind the framebuffer object
   FrameBuffer::Bind(oldFBs);
 
   MRPT_END
 #endif
 }
 
-void CFBORender::render_RGB(const Scene& scene, CImage& outRGB)
+void CFBORender::convertDepthToLinear(mrpt::math::CMatrixFloat& depth, float zn, float zf) const
+{
+  using depth_lut_t = OpenGLDepth2LinearLUTs<18>;
+
+  const depth_lut_t::lut_t* lut = nullptr;
+
+#if !defined(FBO_USE_LUT)
+  const bool do_use_lut = false;
+#else
+  bool do_use_lut = MRPT_FBORENDER_USE_LUT;
+  // Don't use LUT for really small image areas
+  if (m_fb.height() * m_fb.width() < 10000)
+  {
+    do_use_lut = false;
+  }
+#endif
+
+  if (do_use_lut)
+  {
+#ifdef FBO_PROFILER
+    auto tle_lut = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".get_lut"s);
+#endif
+    lut = &depth_lut_t::Instance().lut_from_zn_zf(zn, zf);
+  }
+
+#ifdef FBO_PROFILER
+  auto tle2 = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".linear"s);
+#endif
+
+  if (!do_use_lut)
+  {
+    // Depth buffer -> linear depth (no LUT)
+    const auto linearDepth = [zn, zf](float depthSample) -> float
+    {
+      depthSample = 2.0f * depthSample - 1.0f;
+      float zLinear = 2.0f * zn * zf / (zf + zn - depthSample * (zf - zn));
+      return zLinear;
+    };
+
+    for (auto& d : depth)
+    {
+      if (d == 1.0f)
+      {
+        d = 0.0f;  // No "echo return" - max depth
+      }
+      else
+      {
+        d = linearDepth(d);
+      }
+    }
+  }
+  else
+  {
+    // Map d in [0,1] ==> real depth values using LUT
+    for (auto& d : depth)
+    {
+      d = (*lut)[static_cast<size_t>((d + 1.0f) * (depth_lut_t::NUM_ENTRIES - 1) / 2)];
+    }
+  }
+}
+
+void CFBORender::render_RGB(const mrpt::viz::Scene& scene, CImage& outRGB)
 {
   internal_render_RGBD(scene, outRGB, std::nullopt);
 }
 
 void CFBORender::render_RGBD(
-    const Scene& scene, mrpt::img::CImage& outRGB, mrpt::math::CMatrixFloat& outDepth)
+    const mrpt::viz::Scene& scene, mrpt::img::CImage& outRGB, mrpt::math::CMatrixFloat& outDepth)
 {
   internal_render_RGBD(scene, outRGB, outDepth);
 }
-void CFBORender::render_depth(const Scene& scene, mrpt::math::CMatrixFloat& outDepth)
+
+void CFBORender::render_depth(const mrpt::viz::Scene& scene, mrpt::math::CMatrixFloat& outDepth)
 {
   internal_render_RGBD(scene, std::nullopt, outDepth);
 }

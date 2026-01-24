@@ -47,30 +47,50 @@ option(MRPT_OPENGL_PROFILER OFF)
 
 # define lib:
 set(LIB_SOURCES
-  src/LinesProxy.cpp
-  src/RenderableProxy.cpp
   src/RenderQueue.cpp
-  src/TexturedTrianglesProxy.cpp
-  src/Buffer.cpp
+  src/gltext.cpp
   src/CompiledScene.cpp
-  src/CompiledViewport.cpp
-  src/PointsProxy.cpp
-  src/TrianglesProxy.cpp
+  src/LinesProxy.cpp
   src/Shader.cpp
-  src/ShaderProgramManager.cpp
-  src/Texture.cpp
+  src/TTriangle.cpp
+  src/TexturedTrianglesProxy.cpp
+  src/DefaultShaders.cpp
   src/TRenderMatrices.cpp
+  src/CFBORender.cpp
+  src/Texture.cpp
+  src/TrianglesProxy.cpp
+  src/ShaderProgramManager.cpp
+  src/CompiledViewport.cpp
+  src/Buffer.cpp
   src/VertexArrayObject.cpp
+  src/FrameBuffer.cpp
+  src/RenderableProxy.cpp
+  src/PointsProxy.cpp
 )
 
 set(LIB_PUBLIC_HEADERS
-  include/mrpt/opengl/Buffer.h
+  include/mrpt/opengl/RenderableProxy.h
+  include/mrpt/opengl/VertexArrayObject.h
   include/mrpt/opengl/CompiledScene.h
-  include/mrpt/opengl/CompiledViewport.h
   include/mrpt/opengl/Shader.h
   include/mrpt/opengl/Texture.h
+  include/mrpt/opengl/ShaderProgramManager.h
+  include/mrpt/opengl/PointsProxy.h
+  include/mrpt/opengl/registerAllClasses.h
+  include/mrpt/opengl/CompiledViewport.h
+  include/mrpt/opengl/TrianglesProxy.h
+  include/mrpt/opengl/pointcloud_adapters.h
+  include/mrpt/opengl/CFBORender.h
+  include/mrpt/opengl/LinesProxy.h
+  include/mrpt/opengl/TTriangle.h
+  include/mrpt/opengl/TexturedTrianglesProxy.h
+  include/mrpt/opengl/DefaultShaders.h
+  include/mrpt/opengl/FrameBuffer.h
   include/mrpt/opengl/TRenderMatrices.h
-  include/mrpt/opengl/VertexArrayObject.h
+  include/mrpt/opengl/opengl_api.h
+  include/mrpt/opengl/OpenGLDepth2LinearLUTs.h
+  include/mrpt/opengl/RenderQueue.h
+  include/mrpt/opengl/Buffer.h
 )
 
 mrpt_add_library(
