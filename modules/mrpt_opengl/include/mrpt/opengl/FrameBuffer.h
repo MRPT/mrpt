@@ -43,7 +43,6 @@ class FrameBuffer
 {
  public:
   FrameBuffer() = default;
-  ~FrameBuffer() = default;
 
   /** @name Main API
    *  @{ */

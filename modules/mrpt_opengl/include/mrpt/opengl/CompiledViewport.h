@@ -116,7 +116,8 @@ class CompiledViewport
    * \param sourceObj The original viz object (tracked via weak_ptr)
    */
   void addProxy(
-      RenderableProxy::Ptr proxy, const std::shared_ptr<mrpt::viz::CVisualObject>& sourceObj);
+      const RenderableProxy::Ptr& proxy,
+      const std::shared_ptr<mrpt::viz::CVisualObject>& sourceObj);
 
   /** Removes proxies whose source objects have been deleted.
    * \return Number of orphaned proxies removed
@@ -124,7 +125,7 @@ class CompiledViewport
   size_t cleanupOrphanedProxies();
 
   /** Removes a proxy from this viewport */
-  void removeProxy(RenderableProxy::Ptr proxy);
+  void removeProxy(const RenderableProxy::Ptr& proxy);
 
   /** Removes all proxies */
   void clearProxies();
@@ -284,8 +285,8 @@ class CompiledViewport
   bool isVisible() const { return m_isVisible; }
 
   /** Access lighting parameters */
-  TLightParameters& lightParameters() { return m_lightParams; }
-  const TLightParameters& lightParameters() const { return m_lightParams; }
+  mrpt::viz::TLightParameters& lightParameters() { return m_lightParams; }
+  const mrpt::viz::TLightParameters& lightParameters() const { return m_lightParams; }
 
   /** Last rendering statistics */
   const ViewportRenderStats& lastRenderStats() const { return m_lastStats; }
@@ -369,7 +370,7 @@ class CompiledViewport
   CameraState m_lastCameraState;
 
   /** Lighting parameters */
-  TLightParameters m_lightParams;
+  mrpt::viz::TLightParameters m_lightParams;
 
   /** Cached lighting state (for detecting changes) */
   struct LightState
@@ -470,6 +471,7 @@ class CompiledViewport
 
   /** @} */
 
+ public:
   // Disable copy/move
   CompiledViewport(const CompiledViewport&) = delete;
   CompiledViewport& operator=(const CompiledViewport&) = delete;
