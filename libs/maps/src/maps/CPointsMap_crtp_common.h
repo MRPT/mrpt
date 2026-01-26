@@ -210,6 +210,23 @@ struct loadFromRangeImpl
 #endif  // MRPT_HAS_SSE2
     }
 
+    // Check if the target point map has a timestamp field registered
+    // and if the scan has a non-zero sweep duration:
+    const bool hasTimestampField = obj.hasPointField(mrpt::maps::CPointsMap::POINT_FIELD_TIMESTAMP);
+    const bool scanHasSweepDuration = (rangeScan.sweepDuration > 0.0f);
+    const bool fillTimestamps = hasTimestampField && scanHasSweepDuration;
+
+    // Reserve space for timestamp field if needed (only for maps that support it)
+    auto* ts =
+        obj.getPointsBufferRef_float_field(mrpt::maps::CPointsMap::POINT_FIELD_TIMESTAMP);
+    if (fillTimestamps)
+    {
+      ASSERT_(ts!=nullptr);
+      const size_t expectedMaxSize =
+          nPointsAtStart + (sizeRangeScan * (obj.insertionOptions.also_interpolate ? 3 : 1));
+      ts->reserve(expectedMaxSize);
+    }
+
     for (int i = 0; i < sizeRangeScan; i++)
     {
       if (rangeScan.getScanRangeValidity(i))
@@ -272,6 +289,17 @@ struct loadFromRangeImpl
                   obj.m_x.push_back(i_x);
                   obj.m_y.push_back(i_y);
                   obj.m_z.push_back(i_z);
+
+                  // Insert interpolated timestamp if the target map has the field
+                  if (fillTimestamps)
+                  {
+                    // Interpolated timestamp between point i-1 and i
+                    const float t_prev = rangeScan.getScanRelativeTimestamp(i - 1);
+                    const float t_curr = rangeScan.getScanRelativeTimestamp(i);
+                    const float t_interp = t_prev + q * (t_curr - t_prev) / nInterpol;
+                    ts->push_back(t_interp);
+                  }
+
                   // Allow derived classes to add any other
                   // information to that point:
                   pointmap_traits<Derived>::internal_loadFromRangeScan2D_postPushBack(obj, lric);
@@ -287,6 +315,12 @@ struct loadFromRangeImpl
             obj.m_y[nextPtIdx] = ly;
             obj.m_z[nextPtIdx] = lz;
             nextPtIdx++;
+
+            // Insert per-point timestamp if the target map has the field
+            if (fillTimestamps)
+            {
+              ts->push_back(rangeScan.getScanRelativeTimestamp(i));
+            }
 
             // Allow derived classes to add any other information to
             // that point:
@@ -320,6 +354,13 @@ struct loadFromRangeImpl
         obj.m_y[nextPtIdx] = ly;
         obj.m_z[nextPtIdx] = lz;
         nextPtIdx++;
+
+        // Insert per-point timestamp for the last point
+        if (fillTimestamps)
+        {
+          ts->push_back(rangeScan.getScanRelativeTimestamp(sizeRangeScan - 1));
+        }
+
         // Allow derived classes to add any other information to that
         // point:
         pointmap_traits<Derived>::internal_loadFromRangeScan2D_postPushBack(obj, lric);
