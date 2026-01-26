@@ -217,11 +217,10 @@ struct loadFromRangeImpl
     const bool fillTimestamps = hasTimestampField && scanHasSweepDuration;
 
     // Reserve space for timestamp field if needed (only for maps that support it)
-    auto* ts =
-        obj.getPointsBufferRef_float_field(mrpt::maps::CPointsMap::POINT_FIELD_TIMESTAMP);
+    auto* ts = obj.getPointsBufferRef_float_field(mrpt::maps::CPointsMap::POINT_FIELD_TIMESTAMP);
     if (fillTimestamps)
     {
-      ASSERT_(ts!=nullptr);
+      ASSERT_(ts != nullptr);
       const size_t expectedMaxSize =
           nPointsAtStart + (sizeRangeScan * (obj.insertionOptions.also_interpolate ? 3 : 1));
       ts->reserve(expectedMaxSize);
