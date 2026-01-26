@@ -15,9 +15,9 @@
 #include <gtest/gtest.h>
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CGenericPointsMap.h>
-#include <mrpt/maps/CPointsMapXYZI.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/maps/CWeightedPointsMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/stock_observations.h>
 #include <mrpt/poses/CPoint2D.h>
 
 #include <array>
@@ -400,4 +400,36 @@ TEST(CSimplePointsMapTests, RejectCustomFields)
   EXPECT_TRUE(pts.hasPointField("x"));
   EXPECT_TRUE(pts.hasPointField("y"));
   EXPECT_TRUE(pts.hasPointField("z"));
+}
+
+TEST(CSimplePointsMapTests, insert2DScan)
+{
+  mrpt::obs::CObservation2DRangeScan scan1;
+  mrpt::obs::stock_observations::example2DRangeScan(scan1);
+
+  // Insert the scan:
+  mrpt::maps::CSimplePointsMap pnt;
+  pnt.insertObservation(scan1);
+  EXPECT_EQ(pnt.size(), 267UL);
+}
+
+TEST(CGenericPointsMapTests, insert2DScan)
+{
+  mrpt::obs::CObservation2DRangeScan scan1;
+  mrpt::obs::stock_observations::example2DRangeScan(scan1);
+
+  // Insert the scan:
+  mrpt::maps::CGenericPointsMap pnt;
+  pnt.registerField_float(mrpt::maps::CPointsMap::POINT_FIELD_TIMESTAMP);
+
+  pnt.insertObservation(scan1);
+  ASSERT_EQUAL_(pnt.size(), 267UL);
+
+  const auto* ts =
+      pnt.getPointsBufferRef_float_field(mrpt::maps::CPointsMap::POINT_FIELD_TIMESTAMP);
+  ASSERT_(ts != nullptr);
+
+  EXPECT_EQ(ts->size(), pnt.size());
+  EXPECT_NEAR((*ts).at(0), 0.0f, 1e-3f);
+  EXPECT_NEAR(*(*ts).rbegin(), 0.025f, 1e-3f);
 }

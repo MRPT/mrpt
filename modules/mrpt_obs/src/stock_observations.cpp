@@ -172,6 +172,7 @@ void stock_observations::example2DRangeScan(mrpt::obs::CObservation2DRangeScan& 
 
   s.aperture = M_PIf;
   s.rightToLeft = true;
+  s.sweepDuration = 1.0f / 40.0f;
   s.loadFromVectors(SCAN_RANGES.at(i).size(), &SCAN_RANGES.at(i).at(0), &SCAN_VALID.at(i).at(0));
 }
 

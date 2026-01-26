@@ -113,6 +113,8 @@ class CObservation2DRangeScan : public CObservation
   bool getScanRangeValidity(size_t i) const;
   void setScanRangeValidity(size_t i, const bool val);
 
+  float getScanRelativeTimestamp(size_t idx) const;
+
   /** Returns the computed direction (relative heading in radians, with
    * 0=forward) of the given ray index, following the following formula:
    * \code
@@ -154,6 +156,10 @@ class CObservation2DRangeScan : public CObservation
    * the end of the scan (the sensorPose member stands for the pose at the
    * beginning of the scan). */
   double deltaPitch{0};
+
+  /** Time that takes one LIDAR rotation (in seconds). 0=means, not available.
+   *  This is used to compute per-point timestamps */
+  float sweepDuration{.0f};
 
   /** Fill out a T2DScanProperties structure with the parameters of this scan
    */
