@@ -63,6 +63,19 @@ enum class TCullFace : uint8_t
  *
  * See the main class opengl::Scene
  *
+ *
+ * RENDERING FLOW
+ * ===============
+ * 1. User modifies a viz object (e.g., box.setBoxCorners(...))
+ *    → This calls notifyChange() which sets the dirty flag
+ *
+ * 2. CompiledScene::updateIfNeeded() is called before rendering
+ *    → For each tracked object with hasToUpdateBuffers() == true:
+ *       a) Call sourceObj->updateBuffers()  ← populates viz buffers
+ *       b) Call proxy->updateBuffers(sourceObj)  ← Uploads to GPU
+ *
+ * 3. Rendering proceeds with the updated GPU buffers
+ *
  *  \sa opengl::Scene, mrpt::viz
  * \ingroup mrpt_viz_grp
  */
@@ -338,13 +351,22 @@ class CVisualObject : public mrpt::serialization::CSerializable
   virtual bool isCompositeObject() const { return false; }
 
   /** Call to enable calling renderUpdateBuffers() before the next
-   * render() rendering iteration. */
+   * render() rendering iteration. \sa clearChangedFlag() */
   void notifyChange() const
   {
     std::unique_lock<std::shared_mutex> lckWrite(m_outdatedStateMtx.data);
     m_cachedLocalBBox.reset();
     const_cast<CVisualObject&>(*this).m_outdatedBuffersState.run_on_all(
         [](auto& state) { state.outdatedBuffers = true; });
+  }
+
+  /** Reset the dirty flag set with notifyChange() */
+  void clearChangedFlag() const
+  {
+    std::unique_lock<std::shared_mutex> lckWrite(m_outdatedStateMtx.data);
+    m_cachedLocalBBox.reset();
+    const_cast<CVisualObject&>(*this).m_outdatedBuffersState.run_on_all(
+        [](auto& state) { state.outdatedBuffers = false; });
   }
 
   void notifyBBoxChange() const { m_cachedLocalBBox.reset(); }
@@ -358,6 +380,20 @@ class CVisualObject : public mrpt::serialization::CSerializable
     std::shared_lock<std::shared_mutex> lckWrite(m_outdatedStateMtx.data);
     return m_outdatedBuffersState.get().outdatedBuffers;
   }
+
+  /// Called by the rendering system to update internal geometry buffers.
+  ///
+  /// Derived classes should override this to populate their data buffers
+  /// (triangles, points, lines) when the object geometry changes.
+  ///
+  /// This is called automatically when hasToUpdateBuffers() returns true,
+  /// which happens after notifyChange() was called.
+  ///
+  /// The base implementation does nothing; derived classes should override.
+  ///
+  /// \note Thread safety: implementations should lock the appropriate mutexes
+  /// when writing to shared buffers.
+  virtual void updateBuffers() const {}
 
   /** Simulation of ray-trace, given a pose. Returns true if the ray
    * effectively collisions with the object (returning the distance to the
@@ -588,6 +624,7 @@ class VisualObjectParams_Lines : public virtual CVisualObject
     CVisualObject::notifyChange();
   }
   [[nodiscard]] float getLineWidth() const { return m_lineWidth; }
+
   void enableAntiAliasing(bool enable = true)
   {
     m_antiAliasing = enable;
@@ -595,9 +632,26 @@ class VisualObjectParams_Lines : public virtual CVisualObject
   }
   [[nodiscard]] bool isAntiAliasingEnabled() const { return m_antiAliasing; }
 
+  /// @name Raw access to line shader buffer data
+  /// @{
+  [[nodiscard]] const auto& shaderLinesVertexPointBuffer() const { return m_vertex_buffer_data; }
+  [[nodiscard]] const auto& shaderLinesVertexColorBuffer() const { return m_color_buffer_data; }
+  [[nodiscard]] auto& shaderLinesBufferMutex() const { return m_linesMtx; }
+  /// @}
+
  protected:
   void params_serialize(mrpt::serialization::CArchive& out) const;
   void params_deserialize(mrpt::serialization::CArchive& in);
+
+  /// Line segment vertices (pairs of points form line segments)
+  mutable std::vector<mrpt::math::TPoint3Df> m_vertex_buffer_data;
+  /// Per-vertex colors
+  mutable std::vector<mrpt::img::TColor> m_color_buffer_data;
+  /// Mutex for thread-safe access to buffers
+  mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_linesMtx;
+
+  /// Returns the bounding box of m_vertex_buffer_data, or empty if no lines.
+  [[nodiscard]] mrpt::math::TBoundingBoxf linesBoundingBox() const;
 
  private:
   float m_lineWidth = 1.0f;

@@ -198,26 +198,74 @@ TBoundingBoxf PointsProxyBase::getBoundingBoxLocal() const
 // LinesProxyBase implementation
 // ============================================================================
 
+// CHANGE TO:
 void LinesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   MRPT_START
 
-  if (!sourceObj) return;
+  if (!sourceObj)
+  {
+    return;
+  }
 
   // Try to cast to VisualObjectParams_Lines
   const auto* linesObj = dynamic_cast<const mrpt::viz::VisualObjectParams_Lines*>(sourceObj);
-  if (linesObj)
+  if (!linesObj)
   {
-    m_lineWidth = linesObj->getLineWidth();
-    m_antiAliasing = linesObj->isAntiAliasingEnabled();
+    return;
   }
 
-  // Note: The actual line vertex data needs to come from the concrete object
-  // (e.g., CSetOfLines). This base class sets up the infrastructure.
-  // Derived classes should call this and then populate the buffers.
+  // Extract line parameters
+  m_lineWidth = linesObj->getLineWidth();
+  m_antiAliasing = linesObj->isAntiAliasingEnabled();
 
+  // Lock the source object's buffer data
+  std::shared_lock<std::shared_mutex> lck(linesObj->shaderLinesBufferMutex().data);
+
+  const auto& vertices = linesObj->shaderLinesVertexPointBuffer();
+  const auto& colors = linesObj->shaderLinesVertexColorBuffer();
+
+  m_vertexCount = vertices.size();
+  if (m_vertexCount == 0)
+  {
+    return;
+  }
+
+  // Create VAO
   m_vao.createOnce();
+  m_vao.bind();
+
+  // Upload vertex positions
+  m_vertexBuffer.createOnce();
+  m_vertexBuffer.bind();
+  m_vertexBuffer.allocate(vertices.data(), sizeof(TPoint3Df) * m_vertexCount);
+
+  // Attribute 0: position (vec3)
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TPoint3Df), nullptr);
+
+  // Upload colors
+  if (!colors.empty() && colors.size() == m_vertexCount)
+  {
+    m_colorBuffer.createOnce();
+    m_colorBuffer.bind();
+    m_colorBuffer.allocate(colors.data(), sizeof(TColor) * m_vertexCount);
+
+    // Attribute 1: color (vec4 as unsigned bytes, normalized)
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(TColor), nullptr);
+  }
+  else
+  {
+    glDisableVertexAttribArray(1);
+  }
+
+  // Unbind
+  glBindVertexArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  m_cachedBBox.reset();
 
   CHECK_OPENGL_ERROR_IN_DEBUG();
 
@@ -282,11 +330,20 @@ void TrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   MRPT_START
 
-  if (!sourceObj) return;
+  if (!sourceObj)
+  {
+    return;
+  }
+
+  // NOTE: Caller must have called sourceObj->updateBuffers() before this
+  // to ensure m_triangles is populated from the object's geometry parameters.
 
   // Try to cast to VisualObjectParams_Triangles
   const auto* triObj = dynamic_cast<const mrpt::viz::VisualObjectParams_Triangles*>(sourceObj);
-  if (!triObj) return;
+  if (!triObj)
+  {
+    return;
+  }
 
   m_lightEnabled = triObj->isLightEnabled();
   m_cullFace = triObj->cullFaces();
@@ -297,7 +354,10 @@ void TrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   const auto& triangles = triObj->shaderTrianglesBuffer();
 
   m_triangleCount = triangles.size();
-  if (m_triangleCount == 0) return;
+  if (m_triangleCount == 0)
+  {
+    return;
+  }
 
   // Extract flat arrays from TTriangle structures
   // Each TTriangle has 3 vertices, each with position, normal, and color
@@ -464,7 +524,13 @@ void TexturedTrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceO
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   MRPT_START
 
-  if (!sourceObj) return;
+  if (!sourceObj)
+  {
+    return;
+  }
+
+  // NOTE: Caller must have called sourceObj->updateBuffers() before this
+  // to ensure m_triangles and texture data are populated.
 
   // First compile base triangle data
   TrianglesProxyBase::compile(sourceObj);
@@ -472,7 +538,10 @@ void TexturedTrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceO
   // Try to cast to VisualObjectParams_TexturedTriangles
   const auto* texTriObj =
       dynamic_cast<const mrpt::viz::VisualObjectParams_TexturedTriangles*>(sourceObj);
-  if (!texTriObj) return;
+  if (!texTriObj)
+  {
+    return;
+  }
 
   m_textureInterpolate = texTriObj->textureLinearInterpolation();
   m_textureMipMaps = texTriObj->textureMipMap();
@@ -482,7 +551,10 @@ void TexturedTrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceO
 
   const auto& triangles = texTriObj->shaderTexturedTrianglesBuffer();
 
-  if (triangles.empty()) return;
+  if (triangles.empty())
+  {
+    return;
+  }
 
   // Extract texture coordinates
   const size_t vertexCount = triangles.size() * 3;

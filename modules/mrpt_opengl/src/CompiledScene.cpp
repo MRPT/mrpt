@@ -185,6 +185,8 @@ void CompiledScene::compileObject(
     return;
   }
 
+  obj->updateBuffers();  // Populate viz buffers first
+
   // Set the source object reference in the proxy
   proxy->setSourceObject(obj);
 
@@ -192,7 +194,7 @@ void CompiledScene::compileObject(
   proxy->compile(obj.get());
 
   // Clear dirty flag after successful compile
-  obj->notifyChange();
+  obj->clearChangedFlag();
 
   // Register in our tracking map
   std::weak_ptr<CVisualObject> weakObj = obj;
@@ -446,8 +448,10 @@ void CompiledScene::updateDirtyObjects(CompilationStats& stats)
     // Check if object needs update via its dirty flag
     if (obj->hasToUpdateBuffers())
     {
+      // First: let the viz object populate its internal buffers from geometry
+      obj->updateBuffers();
       proxy->updateBuffers(obj.get());
-      obj->notifyChange();  // Clear dirty flag
+      obj->clearChangedFlag();  // Clear dirty flag
       stats.numObjectsUpdated++;
 
       if (SCENE_VERBOSE)

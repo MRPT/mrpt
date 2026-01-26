@@ -48,7 +48,10 @@ void LinesProxy::updateBuffers(const CVisualObject* sourceObj)
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   MRPT_START
 
-  if (!sourceObj) return;
+  if (!sourceObj)
+  {
+    return;
+  }
 
   // Update cached parameters
   extractLineParams(sourceObj);
@@ -65,7 +68,10 @@ void LinesProxy::render(const RenderContext& rc) const
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   MRPT_START
 
-  if (m_vertexCount == 0) return;
+  if (m_vertexCount == 0)
+  {
+    return;
+  }
 
   // Setup OpenGL line state
   setupLineState();
