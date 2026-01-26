@@ -1,5 +1,9 @@
 \page changelog Change Log
 
+# Version 2.15.6: UNRELEASED
+- nanogui: Updated to new version (DockablePanel)
+
+
 # Version 2.15.5: Released Jan 10th, 2026
 - Bug fixes:
   - Workaround to opengl crashes in Ubuntu 26.04 (similar to Debian bug https://bugs.debian.org/1115155)
