@@ -459,12 +459,22 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 
 TImageSize CImage::getSize() const
 {
+  if (this->isEmpty())
+  {
+    return {0, 0};
+  }
+
   makeSureImageIsLoaded();
   return {static_cast<int>(m_state->width), static_cast<int>(m_state->height)};
 }
 
 int32_t CImage::getWidth() const
 {
+  if (this->isEmpty())
+  {
+    return 0;
+  }
+
   makeSureImageIsLoaded();
   return m_state->width;
 }
@@ -478,7 +488,7 @@ std::string CImage::getChannelsOrder() const
   ASSERT_LE_(chCount, 4);
 
   const std::array<const char*, 4> orderNames = {"GRAY", "", "RGB", "RGBA"};
-  return std::string(orderNames.at(chCount - 1));
+  return {orderNames.at(chCount - 1)};
 }
 
 size_t CImage::getRowStride() const
@@ -489,6 +499,11 @@ size_t CImage::getRowStride() const
 
 int32_t CImage::getHeight() const
 {
+  if (this->isEmpty())
+  {
+    return 0;
+  }
+
   makeSureImageIsLoaded();
   return m_state->height;
 }

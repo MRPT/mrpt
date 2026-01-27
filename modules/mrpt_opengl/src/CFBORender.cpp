@@ -30,7 +30,7 @@
 #include <EGL/eglext.h>
 #endif
 
-#define HAVE_FBO (MRPT_HAS_OPENCV && MRPT_HAS_OPENGL_GLUT && MRPT_HAS_EGL)
+#define HAVE_FBO (MRPT_HAS_OPENGL_GLUT && MRPT_HAS_EGL)
 
 using namespace std;
 using namespace mrpt;
@@ -87,8 +87,8 @@ CFBORender::CFBORender(const Parameters& p) : m_params(p)
     EGLDeviceEXT eglDevs[MAX_DEVICES];
     EGLint numDevices = 0;
 
-    PFNEGLQUERYDEVICESEXTPROC eglQueryDevicesEXT =
-        (PFNEGLQUERYDEVICESEXTPROC)eglGetProcAddress("eglQueryDevicesEXT");
+    auto eglQueryDevicesEXT = reinterpret_cast<PFNEGLQUERYDEVICESEXTPROC>(  // NOLINT
+        eglGetProcAddress("eglQueryDevicesEXT"));
     ASSERT_(eglQueryDevicesEXT);
 
     eglQueryDevicesEXT(MAX_DEVICES, eglDevs, &numDevices);
@@ -97,21 +97,22 @@ CFBORender::CFBORender(const Parameters& p) : m_params(p)
     {
       printf("[mrpt EGL] Detected %d devices\n", numDevices);
 
-      PFNEGLQUERYDEVICESTRINGEXTPROC eglQueryDeviceStringEXT =
-          (PFNEGLQUERYDEVICESTRINGEXTPROC)eglGetProcAddress("eglQueryDeviceStringEXT");
+      auto eglQueryDeviceStringEXT = reinterpret_cast<PFNEGLQUERYDEVICESTRINGEXTPROC>(  // NOLINT
+          eglGetProcAddress("eglQueryDeviceStringEXT"));
       ASSERT_(eglQueryDeviceStringEXT);
 
       for (int i = 0; i < numDevices; i++)
       {
         const char* devExts = eglQueryDeviceStringEXT(eglDevs[i], EGL_EXTENSIONS);
-        printf("[mrpt EGL] Device #%i. Extensions: %s\n", i, devExts ? devExts : "(None)");
+        printf(
+            "[mrpt EGL] Device #%i. Extensions: %s\n", i, devExts != nullptr ? devExts : "(None)");
       }
     }
 
     ASSERT_LT_(p.deviceIndexToUse, numDevices);
 
-    PFNEGLGETPLATFORMDISPLAYEXTPROC eglGetPlatformDisplayEXT =
-        (PFNEGLGETPLATFORMDISPLAYEXTPROC)eglGetProcAddress("eglGetPlatformDisplayEXT");
+    auto eglGetPlatformDisplayEXT = reinterpret_cast<PFNEGLGETPLATFORMDISPLAYEXTPROC>(  // NOLINT
+        eglGetProcAddress("eglGetPlatformDisplayEXT"));
     ASSERT_(eglGetPlatformDisplayEXT);
 
     m_eglDpy = eglGetPlatformDisplayEXT(EGL_PLATFORM_DEVICE_EXT, eglDevs[p.deviceIndexToUse], 0);
@@ -122,7 +123,8 @@ CFBORender::CFBORender(const Parameters& p) : m_params(p)
       THROW_EXCEPTION("Failed to get EGL display");
     }
 
-    EGLint major, minor;
+    EGLint major = 0;
+    EGLint minor = 0;
 
     if (eglInitialize(m_eglDpy, &major, &minor) == EGL_FALSE)
     {
@@ -130,7 +132,7 @@ CFBORender::CFBORender(const Parameters& p) : m_params(p)
     }
 
     // 2. Select an appropriate configuration
-    EGLint numConfigs;
+    EGLint numConfigs = 0;
 
     eglChooseConfig(m_eglDpy, configAttribs.data(), &m_eglCfg, 1, &numConfigs);
     if (numConfigs != 1)
@@ -142,7 +144,7 @@ CFBORender::CFBORender(const Parameters& p) : m_params(p)
     m_eglSurf = eglCreatePbufferSurface(m_eglDpy, m_eglCfg, pbufferAttribs);
 
     // 4. Bind the API
-    if (!eglBindAPI(p.bindOpenGLES_API ? EGL_OPENGL_ES_API : EGL_OPENGL_API))
+    if (0 == eglBindAPI(p.bindOpenGLES_API ? EGL_OPENGL_ES_API : EGL_OPENGL_API))
     {
       THROW_EXCEPTION("no opengl api in egl");
     }
@@ -331,7 +333,9 @@ void CFBORender::internal_render_RGBD(
     auto tle1 = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".glReadPixels_rgb"s);
 #endif
 
-    glReadPixels(0, 0, m_fb.width(), m_fb.height(), GL_BGR_EXT, GL_UNSIGNED_BYTE, outRGB(0, 0));
+    glReadPixels(
+        0, 0, m_fb.width(), m_fb.height(), GL_BGR_EXT, GL_UNSIGNED_BYTE,
+        outRGB.ptrLine<uint8_t>(0));
     CHECK_OPENGL_ERROR();
 
 #ifdef FBO_PROFILER
