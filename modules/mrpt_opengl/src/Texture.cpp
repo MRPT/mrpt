@@ -67,15 +67,20 @@ class TextureResourceHandler
     processDestroyQueue();
 
     // Create one OpenGL texture
-    GLuint textureID;
+    GLuint textureID = 0;
     glGenTextures(1, &textureID);
     CHECK_OPENGL_ERROR_IN_DEBUG();
     m_textureReservedFrom[textureID] = std::this_thread::get_id();
 
-    if (rgbDataForAssociation) m_textureToRGBdata.insert(textureID, rgbDataForAssociation);
+    if (rgbDataForAssociation != nullptr)
+    {
+      m_textureToRGBdata.insert(textureID, rgbDataForAssociation);
+    }
 
     if (MRPT_OPENGL_VERBOSE)
+    {
       std::cout << "[mrpt generateTextureID] textureName:" << textureID << "\n";
+    }
 
     return textureID;
 #else
@@ -85,14 +90,16 @@ class TextureResourceHandler
 
   std::optional<texture_name_t> checkIfTextureAlreadyExists(const mrpt::img::CImage& rgb)
   {
-#if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL) && MRPT_HAS_OPENCV
+#if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL)
     auto lck = mrpt::lockHelper(m_texturesMtx);
 
-    auto it = m_textureToRGBdata.getInverseMap().find(rgb.asCvMatRef().data);
+    auto it = m_textureToRGBdata.getInverseMap().find(rgb.ptrLine<uint8_t>(0));
     if (it != m_textureToRGBdata.getInverseMap().end())
+    {
       return it->second;
-    else
-      return {};
+    }
+
+    return {};
 #else
     return {};
 #endif
@@ -138,7 +145,10 @@ class TextureResourceHandler
       // delete in rgb data container too:
       for (const auto id : lst)
       {
-        if (m_textureToRGBdata.hasKey(id)) m_textureToRGBdata.erase_by_key(id);
+        if (m_textureToRGBdata.hasKey(id))
+        {
+          m_textureToRGBdata.erase_by_key(id);
+        }
       }
 
       if (MRPT_OPENGL_VERBOSE)
@@ -247,13 +257,13 @@ unsigned char* reserveDataBuffer(size_t len, std::vector<uint8_t>& data)
 {
 #ifdef TEXTUREOBJ_USE_MEMPOOL
   TMyMemPool* pool = TMyMemPool::getInstance();
-  if (pool)
+  if (pool != nullptr)
   {
     CRenderizableShaderTexturedTriangles_MemPoolParams mem_params;
     mem_params.len = len;
 
     CRenderizableShaderTexturedTriangles_MemPoolData* mem_block = pool->request_memory(mem_params);
-    if (mem_block)
+    if (mem_block != nullptr)
     {
       // Recover the memory block via a swap:
       data.swap(mem_block->data);
@@ -262,7 +272,7 @@ unsigned char* reserveDataBuffer(size_t len, std::vector<uint8_t>& data)
   }
 #endif
   data.resize(len);
-  void* ptr = &data[0];
+  void* ptr = data.data();
   size_t space = len;
   return reinterpret_cast<unsigned char*>(std::align(16, 1 /*dummy size*/, ptr, space));
 }
@@ -274,7 +284,7 @@ void Texture::internalAssignImage_2D(
     const Options& o,
     int textureUnit)
 {
-#if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL) && MRPT_HAS_OPENCV
+#if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL)
   unsigned char* dataAligned = nullptr;
   std::vector<uint8_t> data;
 
@@ -285,7 +295,10 @@ void Texture::internalAssignImage_2D(
   ASSERT_(in_rgb);
 
   in_rgb->forceLoad();  // just in case they are lazy-load imgs
-  if (in_alpha) in_alpha->forceLoad();
+  if (in_alpha != nullptr)
+  {
+    in_alpha->forceLoad();
+  }
 
   // Check if we already have this texture loaded in GPU and avoid creating
   // duplicated texture ID:
@@ -296,8 +309,10 @@ void Texture::internalAssignImage_2D(
     get()->unit = textureUnit;
 
     if (MRPT_OPENGL_VERBOSE)
+    {
       std::cout << "[mrpt internalAssignImage_2D] Reusing existing textureName:" << get()->name
                 << "\n";
+    }
 
     return;
   }
@@ -313,22 +328,12 @@ void Texture::internalAssignImage_2D(
 
     case mrpt::img::PixelDepth::D16U:
     {
-      double ratio;
-      if (o.autoScale16to8bitConversion)
-      {
-        // enhance brigthness:
-
-        cv::Scalar meanColor = cv::mean(in_rgb->asCvMatRef());
-        const double avrVal = meanColor.val[0];
-        ratio = std::max<double>(1.0, 2 * avrVal);
-      }
-      else
-      {
-        ratio = 65536.0;
-      }
-
+      THROW_EXCEPTION("todo: textures with D16U depth");
+#if 0
+      double ratio = 65536.0;
       rgb.resize(in_rgb->getWidth(), in_rgb->getHeight(), mrpt::img::CH_RGB);
       cv::convertScaleAbs(in_rgb->asCvMatRef(), rgb.asCvMatRef(), 255.0 / ratio);
+#endif
     }
     break;
 
@@ -340,10 +345,13 @@ void Texture::internalAssignImage_2D(
   // Shallow copy of the images, for the case we need to downsample them
   // below:
   mrpt::img::CImage alpha;
-  if (in_alpha) alpha = mrpt::img::CImage(*in_alpha, mrpt::img::SHALLOW_COPY);
+  if (in_alpha != nullptr)
+  {
+    alpha = mrpt::img::CImage(*in_alpha, mrpt::img::SHALLOW_COPY);
+  }
 
   // allocate texture names:
-  get() = getNewTextureNumber(in_rgb->asCvMatRef().data);
+  get() = getNewTextureNumber(in_rgb->ptrLine<uint8_t>(0));
   get()->unit = textureUnit;
 
   // activate the texture unit first before binding texture
@@ -392,7 +400,7 @@ void Texture::internalAssignImage_2D(
   // Ensure that the images do not overpass the maximum dimensions allowed
   // by OpenGL:
   // ------------------------------------------------------------------------------------
-  GLint texSize;
+  GLint texSize = 0;
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &texSize);
   while (rgb.getHeight() > (unsigned int)texSize || rgb.getWidth() > (unsigned int)texSize)
   {
@@ -410,7 +418,10 @@ void Texture::internalAssignImage_2D(
     }
 
     rgb = rgb.scaleHalf(mrpt::img::IMG_INTERP_LINEAR);
-    if (in_alpha) alpha = alpha.scaleHalf(mrpt::img::IMG_INTERP_LINEAR);
+    if (in_alpha != nullptr)
+    {
+      alpha = alpha.scaleHalf(mrpt::img::IMG_INTERP_LINEAR);
+    }
   }
 
   const int width = rgb.getWidth();
@@ -452,9 +463,9 @@ void Texture::internalAssignImage_2D(
 
     for (int y = 0; y < height; y++)
     {
-      unsigned char* ptrSrcCol = rgb(0, y, 0);
-      unsigned char* ptrSrcAlfa = alpha(0, y);
-      unsigned char* ptr = dataAligned + y * width * 4;
+      const auto* ptrSrcCol = rgb.ptrLine<uint8_t>(y);
+      const auto* ptrSrcAlfa = alpha.ptrLine<uint8_t>(y);
+      auto* ptr = dataAligned + static_cast<ptrdiff_t>(y * width * 4);
 
       for (int x = 0; x < width; x++)
       {
@@ -489,7 +500,7 @@ void Texture::internalAssignImage_2D(
     // --------------------------------------
     // Prepare image data types:
     const GLenum img_type = GL_UNSIGNED_BYTE;
-    const int nBytesPerPixel = rgb.channelCount();
+    const int nBytesPerPixel = rgb.channels();
     // Reverse RGB <-> BGR order?
     const bool is_RGB_order = (rgb.getChannelsOrder() == std::string("RGB"));
     const GLenum img_format = [=]()
@@ -502,14 +513,15 @@ void Texture::internalAssignImage_2D(
           return (is_RGB_order ? GL_RGB : GL_BGR);
         case 4:
           return GL_BGRA;
+        default:
+          THROW_EXCEPTION("Invalid texture image channel count.");
       };
-      THROW_EXCEPTION("Invalid texture image channel count.");
     }();
 
     // Send image data to OpenGL:
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     CHECK_OPENGL_ERROR_IN_DEBUG();
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, rgb.getRowStride() / nBytesPerPixel);
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, static_cast<GLint>(rgb.getRowStride() / nBytesPerPixel));
     CHECK_OPENGL_ERROR_IN_DEBUG();
     glTexImage2D(
         GL_TEXTURE_2D, 0 /*level*/, nBytesPerPixel == 3 ? GL_RGB8 : GL_RGBA8 /* RGB components */,
@@ -543,7 +555,7 @@ void Texture::internalAssignImage_2D(
   if (!data.empty())
   {
     TMyMemPool* pool = TMyMemPool::getInstance();
-    if (pool)
+    if (pool != nullptr)
     {
       CRenderizableShaderTexturedTriangles_MemPoolParams mem_params;
       mem_params.len = data.size();

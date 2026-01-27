@@ -76,11 +76,6 @@ class Texture
 
     /** How to repeat texture coordinate "T" */
     Wrapping wrappingModeT = Wrapping::Repeat;
-
-    /** If enabled, 16-bit images will be automatically bright-adjusted so they are visible
-     *  as 8-bit image textures. Set to false to disable adjustment.
-     */
-    bool autoScale16to8bitConversion = true;
   };
 
   /** This is how an 2D texture image is loaded into this object, and a
