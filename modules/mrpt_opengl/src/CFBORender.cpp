@@ -275,6 +275,24 @@ void CFBORender::internal_render_RGBD(
   auto tleR = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".prepAndRender"s);
 #endif
 
+  // Ensure we have a valid context
+  ASSERT_(m_eglContext != EGL_NO_CONTEXT);
+
+  // Make context current if not already
+  if (eglGetCurrentContext() != m_eglContext)
+  {
+    if (eglMakeCurrent(m_eglDpy, m_eglSurf, m_eglSurf, m_eglContext) == EGL_FALSE)
+    {
+      EGLint err = eglGetError();
+      THROW_EXCEPTION_FMT("eglMakeCurrent failed: 0x%X", err);
+    }
+  }
+
+  // Clear any stale errors after context switch
+  while (glGetError() != GL_NO_ERROR)
+  {
+  }
+
   // Ensure compiled scene is ready
   ensureCompiledScene(scene);
 
@@ -297,6 +315,12 @@ void CFBORender::internal_render_RGBD(
   glEnable(GL_DEPTH_TEST);
   CHECK_OPENGL_ERROR_IN_DEBUG();
 
+  // Enable y-flip projection to avoid having to flip the final images:
+  for (const auto& [_, viewport] : m_compiledScene->getViewports())
+  {
+    viewport->flipVerticalProjection(true);
+  }
+
   // ---------------------------
   // Render using CompiledScene
   // ---------------------------
@@ -305,6 +329,11 @@ void CFBORender::internal_render_RGBD(
       0,  // offsetX
       0   // offsetY
   );
+
+  for (const auto& [_, viewport] : m_compiledScene->getViewports())
+  {
+    viewport->flipVerticalProjection(false);
+  }
 
 #ifdef FBO_PROFILER
   tleR.stop();
@@ -342,9 +371,6 @@ void CFBORender::internal_render_RGBD(
     tle1.stop();
     auto tle2 = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".flip_rgb"s);
 #endif
-
-    // Flip vertically (OpenGL has origin at bottom-left)
-    outRGB.flipVertical();
   }
 
   // ---------------------------
