@@ -12,16 +12,12 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/core/StackAlloc.h>
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/system/memory.h>  // alloca()
-
-#if HAVE_ALLOCA_H
-#include <alloca.h>
-#endif
 
 using namespace mrpt;
 using namespace mrpt::maps;

@@ -93,6 +93,7 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/core/common.h
   include/mrpt/core/initializer.h
   include/mrpt/core/SSE_macros.h
+  include/mrpt/core/StackAlloc.h
   include/mrpt/core/byte_manip.h
 )
 
