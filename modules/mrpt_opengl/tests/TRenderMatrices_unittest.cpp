@@ -100,7 +100,8 @@ TEST(OpenGL, orthoMatrix)
 
 TEST(OpenGL, perspectiveMatrixFromPinhole)
 {
-  float zmin = 0.1f, zmax = 100.0f;
+  float zmin = 0.1f;
+  float zmax = 100.0f;
 
   mrpt::img::TCamera c1;
   c1.ncols = 800;

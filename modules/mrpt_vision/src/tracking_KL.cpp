@@ -16,10 +16,6 @@
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/vision/tracking.h>
 
-#if HAVE_ALLOCA_H
-#include <alloca.h>
-#endif
-
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::img;

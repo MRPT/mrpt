@@ -27,6 +27,11 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
+  // Clear any pending OpenGL errors from previous operations
+  while (glGetError() != GL_NO_ERROR)
+  {
+  }
+
   // Vertex shader:
   const char* vertex_shader = nullptr;
   const char* fragment_shader = nullptr;

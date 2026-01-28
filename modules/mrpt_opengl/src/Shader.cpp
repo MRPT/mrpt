@@ -159,7 +159,10 @@ bool Shader::compile(
   }
 
   glShaderSource(m_data->shader, nShaderCodes, sources.data(), lengths.data());
+  CHECK_OPENGL_ERROR();
+
   glCompileShader(m_data->shader);
+  CHECK_OPENGL_ERROR();
 
   GLint shader_ok;
   glGetShaderiv(m_data->shader, GL_COMPILE_STATUS, &shader_ok);
@@ -262,7 +265,11 @@ bool Program::linkProgram(
   m_data->shaders = std::move(shaders);
   m_data->linkedThread = std::this_thread::get_id();
 
-  for (const auto& shader : m_data->shaders) glAttachShader(m_data->program, shader.handle());
+  for (const auto& shader : m_data->shaders)
+  {
+    glAttachShader(m_data->program, shader.handle());
+    CHECK_OPENGL_ERROR();
+  }
 
   glLinkProgram(m_data->program);
   CHECK_OPENGL_ERROR();
