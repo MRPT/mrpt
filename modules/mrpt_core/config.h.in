@@ -78,10 +78,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #cmakedefine HAVE_WINSOCK2_H 1
 #endif
 
-#ifndef HAVE_ALLOCA_H
-#cmakedefine HAVE_ALLOCA_H 1
-#endif
-
 #ifndef HAVE_LINUX_SERIAL_H
 #cmakedefine HAVE_LINUX_SERIAL_H 1
 #endif
@@ -123,10 +119,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 
 #ifndef HAVE_MKGMTIME
 #cmakedefine HAVE_MKGMTIME
-#endif
-
-#ifndef HAVE_ALLOCA
-#cmakedefine HAVE_ALLOCA
 #endif
 
 #ifndef HAVE_GETTID
