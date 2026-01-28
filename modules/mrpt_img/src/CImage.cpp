@@ -12,6 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/core/StackAlloc.h>
 #include <mrpt/core/get_env.h>
 #include <mrpt/core/round.h>
 #include <mrpt/img/CImage.h>
@@ -886,93 +887,120 @@ void CImage::getAsMatrix(
 }
 
 void CImage::getAsRGBMatrices(
-    [[maybe_unused]] mrpt::math::CMatrixFloat& R,
-    [[maybe_unused]] mrpt::math::CMatrixFloat& G,
-    [[maybe_unused]] mrpt::math::CMatrixFloat& B,
-    [[maybe_unused]] bool doResize,
-    [[maybe_unused]] int x_min,
-    [[maybe_unused]] int y_min,
-    [[maybe_unused]] int x_max,
-    [[maybe_unused]] int y_max) const
+    mrpt::math::CMatrixFloat& R,
+    mrpt::math::CMatrixFloat& G,
+    mrpt::math::CMatrixFloat& B,
+    bool doResize,
+    int x_min,
+    int y_min,
+    int x_max,
+    int y_max) const
 {
   MRPT_START
 
-  THROW_EXCEPTION("TODO!");
-#if 0
   makeSureImageIsLoaded();  // For delayed loaded images stored externally
-  const auto& img = m_state->img;
 
   // Set sizes:
-  if (x_max == -1) x_max = img.cols - 1;
-  if (y_max == -1) y_max = img.rows - 1;
+  if (x_max == -1)
+  {
+    x_max = m_state->width - 1;
+  }
+  if (y_max == -1)
+  {
+    y_max = m_state->height - 1;
+  }
 
-  ASSERT_(x_min >= 0 && x_min < img.cols && x_min < x_max);
-  ASSERT_(y_min >= 0 && y_min < img.rows && y_min < y_max);
+  ASSERT_(x_min >= 0 && x_min < m_state->width && x_min <= x_max);
+  ASSERT_(y_min >= 0 && y_min < m_state->height && y_min <= y_max);
 
-  int lx = (x_max - x_min + 1);
-  int ly = (y_max - y_min + 1);
+  const int lx = (x_max - x_min + 1);
+  const int ly = (y_max - y_min + 1);
 
-  if (doResize || R.rows() < ly || R.cols() < lx) R.setSize(ly, lx);
-  if (doResize || G.rows() < ly || G.cols() < lx) G.setSize(ly, lx);
-  if (doResize || B.rows() < ly || B.cols() < lx) B.setSize(ly, lx);
+  if (doResize || R.rows() < ly || R.cols() < lx)
+  {
+    R.setSize(ly, lx);
+  }
+  if (doResize || G.rows() < ly || G.cols() < lx)
+  {
+    G.setSize(ly, lx);
+  }
+  if (doResize || B.rows() < ly || B.cols() < lx)
+  {
+    B.setSize(ly, lx);
+  }
 
   const bool is_color = isColor();
   for (int y = 0; y < ly; y++)
   {
-    const uint8_t* pixels = ptr<uint8_t>(x_min, y_min + y);
+    const auto* pixels = ptr<uint8_t>(x_min, y_min + y, 0);
     for (int x = 0; x < lx; x++)
     {
       if (is_color)
       {
-        R.coeffRef(y, x) = u8tof(*pixels++);
-        G.coeffRef(y, x) = u8tof(*pixels++);
-        B.coeffRef(y, x) = u8tof(*pixels++);
+        R.coeffRef(y, x) = static_cast<float>(*pixels++) / 255.0f;
+        G.coeffRef(y, x) = static_cast<float>(*pixels++) / 255.0f;
+        B.coeffRef(y, x) = static_cast<float>(*pixels++) / 255.0f;
       }
       else
       {
-        R.coeffRef(y, x) = G.coeffRef(y, x) = B.coeffRef(y, x) = u8tof(*pixels++);
+        const float grayValue = static_cast<float>(*pixels++) / 255.0f;
+        R.coeffRef(y, x) = grayValue;
+        G.coeffRef(y, x) = grayValue;
+        B.coeffRef(y, x) = grayValue;
       }
     }
   }
-#endif
+
   MRPT_END
 }
 
 void CImage::getAsRGBMatrices(
-    [[maybe_unused]] mrpt::math::CMatrix_u8& R,
-    [[maybe_unused]] mrpt::math::CMatrix_u8& G,
-    [[maybe_unused]] mrpt::math::CMatrix_u8& B,
-    [[maybe_unused]] bool doResize,
-    [[maybe_unused]] int x_min,
-    [[maybe_unused]] int y_min,
-    [[maybe_unused]] int x_max,
-    [[maybe_unused]] int y_max) const
+    mrpt::math::CMatrix_u8& R,
+    mrpt::math::CMatrix_u8& G,
+    mrpt::math::CMatrix_u8& B,
+    bool doResize,
+    int x_min,
+    int y_min,
+    int x_max,
+    int y_max) const
 {
   MRPT_START
 
-  THROW_EXCEPTION("TODO!");
-#if 0
   makeSureImageIsLoaded();  // For delayed loaded images stored externally
-  const auto& img = m_state->img;
 
   // Set sizes:
-  if (x_max == -1) x_max = img.cols - 1;
-  if (y_max == -1) y_max = img.rows - 1;
+  if (x_max == -1)
+  {
+    x_max = m_state->width - 1;
+  }
+  if (y_max == -1)
+  {
+    y_max = m_state->height - 1;
+  }
 
-  ASSERT_(x_min >= 0 && x_min < img.cols && x_min < x_max);
-  ASSERT_(y_min >= 0 && y_min < img.rows && y_min < y_max);
+  ASSERT_(x_min >= 0 && x_min < m_state->width && x_min <= x_max);
+  ASSERT_(y_min >= 0 && y_min < m_state->height && y_min <= y_max);
 
-  int lx = (x_max - x_min + 1);
-  int ly = (y_max - y_min + 1);
+  const int lx = (x_max - x_min + 1);
+  const int ly = (y_max - y_min + 1);
 
-  if (doResize || R.rows() < ly || R.cols() < lx) R.setSize(ly, lx);
-  if (doResize || G.rows() < ly || G.cols() < lx) G.setSize(ly, lx);
-  if (doResize || B.rows() < ly || B.cols() < lx) B.setSize(ly, lx);
+  if (doResize || R.rows() < ly || R.cols() < lx)
+  {
+    R.setSize(ly, lx);
+  }
+  if (doResize || G.rows() < ly || G.cols() < lx)
+  {
+    G.setSize(ly, lx);
+  }
+  if (doResize || B.rows() < ly || B.cols() < lx)
+  {
+    B.setSize(ly, lx);
+  }
 
   const bool is_color = isColor();
   for (int y = 0; y < ly; y++)
   {
-    const uint8_t* pixels = ptr<uint8_t>(x_min, y_min + y);
+    const auto* pixels = ptr<uint8_t>(x_min, y_min + y, 0);
     for (int x = 0; x < lx; x++)
     {
       if (is_color)
@@ -983,11 +1011,13 @@ void CImage::getAsRGBMatrices(
       }
       else
       {
-        R.coeffRef(y, x) = G.coeffRef(y, x) = B.coeffRef(y, x) = *pixels++;
+        const uint8_t grayValue = *pixels++;
+        R.coeffRef(y, x) = grayValue;
+        G.coeffRef(y, x) = grayValue;
+        B.coeffRef(y, x) = grayValue;
       }
     }
   }
-#endif
 
   MRPT_END
 }
@@ -1209,10 +1239,24 @@ void CImage::getExternalStorageFileAbsolutePath(std::string& out_path) const
 void CImage::flipVertical()
 {
   makeSureImageIsLoaded();
-  THROW_EXCEPTION("TODO!");
-#if 0
-  cv::flip(m_impl->img, m_impl->img, 0 /* x-axis */);
-#endif
+  auto& impl = *m_state;
+
+  if (impl.height < 2 || impl.width == 0)
+  {
+    return;
+  }
+
+  const auto bytesPerRow = impl.row_stride_in_bytes();
+
+  mrpt::StackAlloc<std::byte> tempRow(bytesPerRow);
+
+  // Swap rows:
+  for (int row = 0; row < impl.height / 2; row++)
+  {
+    std::memcpy(tempRow.get(), ptrLine<std::byte>(row), bytesPerRow);
+    std::memcpy(ptrLine<std::byte>(row), ptrLine<std::byte>(impl.height - 1 - row), bytesPerRow);
+    std::memcpy(ptrLine<std::byte>(impl.height - 1 - row), tempRow.get(), bytesPerRow);
+  }
 }
 
 void CImage::flipHorizontal()
