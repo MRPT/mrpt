@@ -21,7 +21,6 @@
 #include <map>
 #include <memory>
 #include <thread>
-#include <vector>
 
 namespace mrpt::opengl
 {
@@ -96,6 +95,7 @@ class CompiledScene
   using Ptr = std::shared_ptr<CompiledScene>;
 
   CompiledScene();
+  ~CompiledScene() = default;
 
   // Non-copyable, non-movable (owns GPU resources)
   CompiledScene(const CompiledScene&) = delete;

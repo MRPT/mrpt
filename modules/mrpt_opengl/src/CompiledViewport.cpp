@@ -600,6 +600,19 @@ void CompiledViewport::render(
   computePixelViewport(renderWidth, renderHeight, renderOffsetX, renderOffsetY);
   // Update matrices if needed
   updateMatrices();
+
+  if (m_flipYProjection)
+  {
+    // Negate Y row of projection matrix
+    for (mrpt::math::matrix_index_t c = 0; c < m_renderMatrices.p_matrix.cols(); c++)
+    {
+      m_renderMatrices.p_matrix(1, c) *= -1.0f;
+    }
+
+    // Compensate for winding order change
+    glFrontFace(GL_CW);
+  }
+
   // Save previous viewport
   GLint oldViewport[4];
   glGetIntegerv(GL_VIEWPORT, oldViewport);
@@ -646,6 +659,11 @@ void CompiledViewport::render(
   if (m_borderWidth > 0)
   {
     renderBorder(shaderManager);
+  }
+
+  if (m_flipYProjection)
+  {
+    glFrontFace(GL_CCW);  // Restore default
   }
   // Restore viewport
   glViewport(oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3]);

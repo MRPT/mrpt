@@ -291,6 +291,12 @@ class CompiledViewport
   /** Last rendering statistics */
   const ViewportRenderStats& lastRenderStats() const { return m_lastStats; }
 
+  /** Flip vertically at projection level (useful for FBO rendering) */
+  void flipVerticalProjection(bool flipEnabled) { m_flipYProjection = flipEnabled; }
+
+  /** Flip vertically at projection level (useful for FBO rendering) */
+  [[nodiscard]] bool flipVerticalProjection() const { return m_flipYProjection; }
+
   /** @} */
 
  private:
@@ -346,6 +352,9 @@ class CompiledViewport
 
   /** OpenGL rendering options */
   bool m_enablePolygonSmooth = true;
+
+  /**  Flip vertically at projection level */
+  bool m_flipYProjection = false;
 
   /** @} */
 
