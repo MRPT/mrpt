@@ -4,10 +4,12 @@ project(mrpt_gui LANGUAGES C CXX)
 
 # Ensure core MRPT packages used here are available to CMake
 find_package(mrpt_opengl REQUIRED)
-find_package(mrpt_nanogui)
 
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_qt.cmake REQUIRED)          # Check for wxWidgets + GL
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + GL
+include(./cmake/script_nanogui.cmake REQUIRED)          # Check for wxWidgets + GL
+include(./cmake/script_qt.cmake REQUIRED)          # Check for wxWidgets + GL
+include(./cmake/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + GL
+
+find_package(mrpt_nanogui)
 
 # Embedded version of mathplot:
 if(CMAKE_MRPT_HAS_WXWIDGETS)
