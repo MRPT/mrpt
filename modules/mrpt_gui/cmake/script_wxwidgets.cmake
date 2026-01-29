@@ -19,6 +19,25 @@ if((CMAKE_BUILD_TYPE MATCHES "Debug") OR (NOT UNIX))
 	set(wxWidgets_USE_DEBUG ON CACHE BOOL "Use wxWidgets debug libs" FORCE)
 endif()
 
+
+# GOOD & BAD are single strings, INPUT is a list wrapped in string
+# OUTPUT is a name for a list
+# Based on: https://stackoverflow.com/a/30680445
+macro(mrpt_split_lib_list INPUT OUTPUT GOOD BAD)
+  set(LST ${${INPUT}})   # can we avoid this?
+  set(PICKME YES)
+  foreach(ELEMENT IN LISTS LST)
+    if(${ELEMENT} STREQUAL general OR ${ELEMENT} STREQUAL ${GOOD})
+      set(PICKME YES)
+    elseif(${ELEMENT} STREQUAL ${BAD})
+      set(PICKME NO)
+    elseif(PICKME)
+      list(APPEND ${OUTPUT} ${ELEMENT})
+    endif()
+  endforeach()
+endmacro()
+
+
 # Select wx toolkit options, like GTK2 vs GTK3, etc.
 if(UNIX)
 	# If available, prefer gtk3:
