@@ -28,7 +28,7 @@ using namespace mrpt::math;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservation2DRangeScan, CObservation, mrpt::obs)
 
-uint8_t CObservation2DRangeScan::serializeGetVersion() const { return 7; }
+uint8_t CObservation2DRangeScan::serializeGetVersion() const { return 8; }
 void CObservation2DRangeScan::serializeTo(mrpt::serialization::CArchive& out) const
 {
   // The data
@@ -51,6 +51,9 @@ void CObservation2DRangeScan::serializeTo(mrpt::serialization::CArchive& out) co
 
   out << hasIntensity();
   if (hasIntensity()) out.WriteBufferFixEndianness(&m_intensity[0], N);
+
+  // New in version 8:
+  out << sweepDuration;
 }
 
 void CObservation2DRangeScan::truncateByDistanceAndAngle(
@@ -125,6 +128,7 @@ void CObservation2DRangeScan::serializeFrom(mrpt::serialization::CArchive& in, u
 
       deltaPitch = 0;
       sensorLabel = "";
+      sweepDuration = 0;  // Default for older versions
     }
     break;
 
@@ -132,6 +136,7 @@ void CObservation2DRangeScan::serializeFrom(mrpt::serialization::CArchive& in, u
     case 5:
     case 6:
     case 7:
+    case 8:
     {
       uint32_t N;
 
@@ -172,6 +177,14 @@ void CObservation2DRangeScan::serializeFrom(mrpt::serialization::CArchive& in, u
           in.ReadBufferFixEndianness(&m_intensity[0], N);
         }
       }
+      if (version >= 8)
+      {
+        in >> sweepDuration;
+      }
+      else
+      {
+        sweepDuration = 0;  // Default for older versions
+      }
     }
     break;
     default:
@@ -205,9 +218,10 @@ mxArray* CObservation2DRangeScan::writeToMatlab() const
       "maxRange",  // Scan plane geometry and properties
       "stdError",
       "beamAperture",
-      "deltaPitch",  // Ray properties
-      "pose",        // Sensor pose
-      "map"};        // Points map
+      "deltaPitch",
+      "sweepDuration",  // Ray properties
+      "pose",           // Sensor pose
+      "map"};           // Points map
   mexplus::MxArray obs_struct(mexplus::MxArray::Struct(sizeof(fields) / sizeof(fields[0]), fields));
 
   obs_struct.set("class", this->GetRuntimeClass()->className);
@@ -227,6 +241,7 @@ mxArray* CObservation2DRangeScan::writeToMatlab() const
   obs_struct.set("stdError", this->stdError);
   obs_struct.set("beamAperture", this->beamAperture);
   obs_struct.set("deltaPitch", this->deltaPitch);
+  obs_struct.set("sweepDuration", this->sweepDuration);
   obs_struct.set("pose", this->sensorPose);
   // TODO: obs_struct.set("map", ...)
   return obs_struct.release();
@@ -276,35 +291,40 @@ void CObservation2DRangeScan::filterByExclusionAreas(const TListExclusionAreasWi
     dA = -aperture / (sizeRangeScan - 1);
   }
 
-  auto valid_it = m_validRange.begin();
-  for (auto scan_it = m_scan.begin(); scan_it != m_scan.end(); scan_it++, valid_it++)
+  // For each exclusion area:
+  for (const auto& area : areas)
   {
-    if (!*valid_it)
+    const auto& poly = area.first;
+    const double z_min = area.second.first;
+    const double z_max = area.second.second;
+
+    // For each point in the scan:
+    for (size_t i = 0; i < sizeRangeScan; i++, Ang += dA)
     {
-      Ang += dA;
-      continue;  // Already it's invalid
-    }
+      if (!m_validRange[i]) continue;  // skip already invalid
 
-    // Compute point in 2D, local to the laser center:
-    const auto Lx = *scan_it * cos(Ang);
-    const auto Ly = *scan_it * sin(Ang);
-    Ang += dA;
+      const float R = m_scan[i];
+      const float x = R * cosf(Ang);
+      const float y = R * sinf(Ang);
 
-    // To real 3D pose:
-    double Gx, Gy, Gz;
-    this->sensorPose.composePoint(Lx, Ly, 0, Gx, Gy, Gz);
+      // Apply sensorPose:
+      mrpt::math::TPoint3D pt3D;
+      sensorPose.composePoint(x, y, 0, pt3D.x, pt3D.y, pt3D.z);
 
-    // Filter by X,Y:
-    for (const auto& area : areas)
-    {
-      if (area.first.PointIntoPolygon(Gx, Gy) &&
-          (Gz >= area.second.first && Gz <= area.second.second))
+      if (pt3D.z >= z_min && pt3D.z <= z_max)
       {
-        *valid_it = false;
-        break;  // Go for next point
+        if (poly.contains(mrpt::math::TPoint2D(pt3D.x, pt3D.y)))
+        {
+          m_validRange[i] = false;
+        }
       }
-    }  // for each area
-  }    // for each point
+    }
+    // Reset angle for next polygon
+    if (rightToLeft)
+      Ang = -0.5f * aperture;
+    else
+      Ang = +0.5f * aperture;
+  }
 
   MRPT_END
 }
@@ -320,6 +340,14 @@ float CObservation2DRangeScan::getScanAngle(size_t idx) const
     dA = -dA;
   }
   return Ang + dA * idx;
+}
+
+float CObservation2DRangeScan::getScanRelativeTimestamp(size_t idx) const
+{
+  ASSERT_LT_(idx, m_scan.size());
+  const size_t N = m_scan.size();
+  if (N <= 1 || sweepDuration <= 0.0f) return 0.0f;
+  return sweepDuration * static_cast<float>(idx) / static_cast<float>(N - 1);
 }
 
 /*---------------------------------------------------------------
@@ -461,6 +489,7 @@ void CObservation2DRangeScan::getDescriptionAsText(std::ostream& o) const
   o << "Points in the scan: " << m_scan.size() << "\n";
   o << format("Estimated sensor 'sigma': %f\n", stdError);
   o << format("Increment in pitch during the scan: %f deg\n", RAD2DEG(deltaPitch));
+  o << format("Sweep duration: %f s\n", sweepDuration);
 
   size_t i, inval = 0;
   for (i = 0; i < m_scan.size(); i++)
