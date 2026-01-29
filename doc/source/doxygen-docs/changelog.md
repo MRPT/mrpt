@@ -1,5 +1,11 @@
 \page changelog Change Log
 
+# Version 2.15.6: Released Jan 29th, 2026
+- nanogui: Updated to new version (DockablePanel)
+- Changes in libraries:
+  - \ref mrpt_maps_grp
+    - All point cloud classes: now gets per-point timestamps from 2D LiDAR range scans.
+
 # Version 2.15.5: Released Jan 10th, 2026
 - Bug fixes:
   - Workaround to opengl crashes in Ubuntu 26.04 (similar to Debian bug https://bugs.debian.org/1115155)
