@@ -1,6 +1,11 @@
 \page changelog Change Log
 
-# Version 2.15.6: UNRELEASED
+# Version 2.15.7: UNRELEASED
+- Changes in libraries:
+  - \ref mrpt_io_grp
+    - Support for ZStd compression with mrpt::io::CCompressedInputStream and mrpt::io::CCompressedOutputStream
+
+# Version 2.15.6: Released Jan 29th, 2026
 - nanogui: Updated to new version (DockablePanel)
 - Changes in libraries:
   - \ref mrpt_maps_grp

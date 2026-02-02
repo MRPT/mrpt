@@ -47,6 +47,8 @@ endif()
 
 # define lib:
 set(LIB_SOURCES
+  src/CCompressedInputStream.cpp
+  src/CCompressedOutputStream.cpp
   src/CFileGZInputStream.cpp
   src/CFileGZOutputStream.cpp
   src/CFileInputStream.cpp
@@ -75,6 +77,8 @@ set(LIB_SOURCES
 
 
 set(LIB_PUBLIC_HEADERS
+  include/mrpt/io/CCompressedInputStream.h
+  include/mrpt/io/CCompressedOutputStream.h
   include/mrpt/io/CTextFileLinesParser.h
   include/mrpt/io/CFileGZOutputStream.h
   include/mrpt/io/zip.h
@@ -105,6 +109,19 @@ mrpt_add_library(
     mrpt_system
   # Other imported targets:
 )
+
+
+find_path(ZSTD_INCLUDE_DIRS
+  NAMES zstd.h
+  HINTS ${zstd_ROOT_DIR}/include)
+
+find_library(ZSTD_LIBRARIES
+  NAMES zstd
+  HINTS ${zstd_ROOT_DIR}/lib)
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${ZSTD_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${ZSTD_LIBRARIES})
+
 
 if(CMAKE_MRPT_HAS_ZLIB)
   if(NOT CMAKE_MRPT_HAS_ZLIB_SYSTEM_IS_WX AND CMAKE_MRPT_HAS_ZLIB_SYSTEM)
