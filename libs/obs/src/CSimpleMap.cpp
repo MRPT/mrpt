@@ -9,8 +9,8 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 //
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/metaprogramming_serialization.h>
@@ -111,11 +111,12 @@ void CSimpleMap::changeCoordinatesOrigin(const CPose3D& newOrigin)
   }
 }
 
-bool CSimpleMap::saveToFile(const std::string& filName) const
+bool CSimpleMap::saveToFile(
+    const std::string& filName, const mrpt::io::CompressionOptions& co) const
 {
   try
   {
-    mrpt::io::CFileGZOutputStream fo(filName);
+    mrpt::io::CCompressedOutputStream fo(filName, mrpt::io::OpenMode::TRUNCATE, co);
     archiveFrom(fo) << *this;
     return true;
   }
@@ -129,7 +130,7 @@ bool CSimpleMap::loadFromFile(const std::string& filName)
 {
   try
   {
-    mrpt::io::CFileGZInputStream fi(filName);
+    mrpt::io::CCompressedInputStream fi(filName);
     archiveFrom(fi) >> *this;
     return true;
   }

@@ -10,7 +10,7 @@
 
 #include <mrpt/apps/CRawlogProcessor.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/obs/CObservation.h>
@@ -21,7 +21,7 @@
   if (verbose) std::cout << "[rawlog-edit] "
 
 #define DECLARE_OP_FUNCTION(_NAME) \
-  void _NAME(mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool verbose)
+  void _NAME(mrpt::io::CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool verbose)
 
 /** Auxiliary struct that performs all the checks and create the
    output rawlog stream, publishing it as "out_rawlog"

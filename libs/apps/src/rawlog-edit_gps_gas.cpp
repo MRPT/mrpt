@@ -59,7 +59,7 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 
    public:
     CRawlogProcessor_ExportGPSGAS_KML(
-        CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool _verbose) :
+        CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool _verbose) :
         CRawlogProcessorOnEachObservation(in_rawlog, cmdline, _verbose)
     {
       getArgValue<string>(cmdline, "input", m_inFile);

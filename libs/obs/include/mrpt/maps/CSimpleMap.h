@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/io/compression_options.h>
 #include <mrpt/math/TTwist3D.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/obs_frwds.h>
@@ -93,7 +94,9 @@ class CSimpleMap : public mrpt::serialization::CSerializable
    * See [Robotics file formats](robotics_file_formats.html).
    * \sa loadFromFile()
    * \return false on any error. */
-  bool saveToFile(const std::string& filName) const;
+  bool saveToFile(
+      const std::string& filName,
+      const mrpt::io::CompressionOptions& co = {mrpt::io::CompressionType::Zstd}) const;
 
   /** Load the contents of this object from a .simplemap binary file (possibly
    * compressed with gzip)
