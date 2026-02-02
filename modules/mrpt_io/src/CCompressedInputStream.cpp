@@ -7,9 +7,9 @@
                | |
                |_|
 
- Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
- See: https://www.mrpt.org/Authors - All rights reserved.
- SPDX-License-Identifier: BSD-3-Clause
+Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+See: https://www.mrpt.org/Authors - All rights reserved.
+SPDX-License-Identifier: BSD-3-Clause
 */
 
 #include <mrpt/core/config.h>
@@ -47,13 +47,16 @@ struct CCompressedInputStream::Impl
   CompressionType compressionType = CompressionType::None;
 
   // Gzip state
+  FILE* gz_raw_file = nullptr;  // Underlying FILE* for compressed position tracking
   gzFile gz_file = nullptr;
+  uint64_t gzCompressedBytesRead = 0;
 
   // Zstd state
   FILE* rawFile = nullptr;
   ZSTD_DStream* zstdStream = nullptr;
   std::vector<uint8_t> zstdInBuffer;
   ZSTD_inBuffer zstdInput = {nullptr, 0, 0};
+  uint64_t zstdCompressedBytesRead = 0;
 
   // Plain file state
   std::ifstream plainFile;
@@ -151,9 +154,23 @@ bool CCompressedInputStream::open(
   {
     case CompressionType::Gzip:
     {
-      m_impl->gz_file = gzopen(fileName.c_str(), "rb");
+      // Open FILE* first to track compressed position
+      m_impl->gz_raw_file = fopen(fileName.c_str(), "rb");
+      if (m_impl->gz_raw_file == nullptr)
+      {
+        if (error_msg)
+        {
+          error_msg.value().get() = std::string(strerror(errno));
+        }
+        return false;
+      }
+
+      // Use gzdopen to wrap the FILE* for decompression
+      m_impl->gz_file = gzdopen(fileno(m_impl->gz_raw_file), "rb");
       if (m_impl->gz_file == nullptr)
       {
+        fclose(m_impl->gz_raw_file);
+        m_impl->gz_raw_file = nullptr;
         if (error_msg)
         {
           error_msg.value().get() = std::string(strerror(errno));
@@ -253,6 +270,8 @@ bool CCompressedInputStream::open(
   }
 
   m_impl->bytesReadUncompressed = 0;
+  m_impl->gzCompressedBytesRead = 0;
+  m_impl->zstdCompressedBytesRead = 0;
   return true;
 
   MRPT_END
@@ -264,6 +283,8 @@ void CCompressedInputStream::close()
   {
     gzclose(m_impl->gz_file);
     m_impl->gz_file = nullptr;
+    // Note: gzclose also closes the underlying FILE*, so don't close gz_raw_file separately
+    m_impl->gz_raw_file = nullptr;
   }
 
   if (m_impl->zstdStream)
@@ -287,6 +308,8 @@ void CCompressedInputStream::close()
   m_impl->compressionType = CompressionType::None;
   m_impl->bytesReadUncompressed = 0;
   m_impl->uncompressedSizeHint = 0;
+  m_impl->gzCompressedBytesRead = 0;
+  m_impl->zstdCompressedBytesRead = 0;
 }
 
 CCompressedInputStream::~CCompressedInputStream() { close(); }
@@ -304,14 +327,31 @@ size_t CCompressedInputStream::Read(void* Buffer, size_t Count)
   {
     case CompressionType::Gzip:
     {
+      // Track compressed position before read
+      const uint64_t compressedPosBefore =
+          m_impl->gz_raw_file ? static_cast<uint64_t>(ftell(m_impl->gz_raw_file)) : 0;
+
       const int result = gzread(m_impl->gz_file, Buffer, static_cast<unsigned int>(Count));
       bytesRead = (result < 0) ? 0 : static_cast<size_t>(result);
+
+      // Track compressed position after read
+      const uint64_t compressedPosAfter =
+          m_impl->gz_raw_file ? static_cast<uint64_t>(ftell(m_impl->gz_raw_file)) : 0;
+
+      // Update compressed bytes read based on actual file position change
+      if (bytesRead > 0 && compressedPosAfter >= compressedPosBefore)
+      {
+        const uint64_t compressedBytesConsumed = compressedPosAfter - compressedPosBefore;
+        m_impl->gzCompressedBytesRead += compressedBytesConsumed;
+      }
+
       break;
     }
 
     case CompressionType::Zstd:
     {
       ZSTD_outBuffer output = {Buffer, Count, 0};
+      uint64_t compressedBytesConsumed = 0;
 
       while (output.pos < output.size)
       {
@@ -327,10 +367,18 @@ size_t CCompressedInputStream::Read(void* Buffer, size_t Count)
           {
             break;  // EOF
           }
+
+          // Track how many compressed bytes we read from file
+          compressedBytesConsumed += m_impl->zstdInput.size;
         }
+
+        // const size_t inputPosBefore = m_impl->zstdInput.pos;
 
         const size_t result =
             ZSTD_decompressStream(m_impl->zstdStream, &output, &m_impl->zstdInput);
+
+        // Track how many bytes from the input buffer were consumed
+        // const size_t inputBytesConsumed = m_impl->zstdInput.pos - inputPosBefore;
 
         if (ZSTD_isError(result))
         {
@@ -344,6 +392,7 @@ size_t CCompressedInputStream::Read(void* Buffer, size_t Count)
       }
 
       bytesRead = output.pos;
+      m_impl->zstdCompressedBytesRead += compressedBytesConsumed;
       break;
     }
 
@@ -385,7 +434,11 @@ uint64_t CCompressedInputStream::getPosition() const
   switch (m_impl->compressionType)
   {
     case CompressionType::Gzip:
-      return static_cast<uint64_t>(gztell(m_impl->gz_file));
+      if (m_impl->gz_raw_file)
+      {
+        return static_cast<uint64_t>(ftell(m_impl->gz_raw_file));
+      }
+      return 0;
 
     case CompressionType::Zstd:
       if (m_impl->rawFile)
@@ -483,10 +536,88 @@ CompressionType CCompressedInputStream::getCompressionType() const
 
 uint64_t CCompressedInputStream::getUncompressedSize() const
 {
-  return m_impl->uncompressedSizeHint;
+  // If we have a stored size hint, return it
+  if (m_impl->uncompressedSizeHint > 0)
+  {
+    return m_impl->uncompressedSizeHint;
+  }
+
+  // For uncompressed files, return file size
+  if (m_impl->compressionType == CompressionType::None)
+  {
+    return m_file_size;
+  }
+
+  // Otherwise, estimate based on compression ratio observed so far
+  uint64_t compressedBytesRead = 0;
+
+  switch (m_impl->compressionType)
+  {
+    case CompressionType::Gzip:
+      compressedBytesRead = m_impl->gzCompressedBytesRead;
+      break;
+
+    case CompressionType::Zstd:
+      compressedBytesRead = m_impl->zstdCompressedBytesRead;
+      break;
+
+    default:
+      break;
+  }
+
+  // Need some data to have been read to make an estimate
+  if (compressedBytesRead == 0 || m_impl->bytesReadUncompressed == 0)
+  {
+    return 0;
+  }
+
+  // Calculate compression ratio: uncompressed / compressed
+  const double ratio =
+      static_cast<double>(m_impl->bytesReadUncompressed) / static_cast<double>(compressedBytesRead);
+
+  // Extrapolate to total file size
+  const uint64_t estimatedTotal = static_cast<uint64_t>(static_cast<double>(m_file_size) * ratio);
+
+  return estimatedTotal;
 }
 
 uint64_t CCompressedInputStream::getUncompressedPosition() const
 {
   return m_impl->bytesReadUncompressed;
+}
+
+double CCompressedInputStream::getCompressionRatio() const
+{
+  if (m_impl->bytesReadUncompressed == 0)
+  {
+    return 0.0;
+  }
+
+  uint64_t compressedBytesRead = 0;
+
+  switch (m_impl->compressionType)
+  {
+    case CompressionType::Gzip:
+      compressedBytesRead = m_impl->gzCompressedBytesRead;
+      break;
+
+    case CompressionType::Zstd:
+      compressedBytesRead = m_impl->zstdCompressedBytesRead;
+      break;
+
+    case CompressionType::None:
+      // For uncompressed, ratio is 1.0
+      return 1.0;
+
+    default:
+      break;
+  }
+
+  if (compressedBytesRead == 0)
+  {
+    return 0.0;
+  }
+
+  return static_cast<double>(m_impl->bytesReadUncompressed) /
+         static_cast<double>(compressedBytesRead);
 }
