@@ -12,7 +12,7 @@
 #include <mrpt/apps/KFSLAMApp.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/vector_loadsave.h>
 #include <mrpt/math/ops_containers.h>
@@ -269,7 +269,7 @@ void KFSLAMApp::Run_KF_SLAM()
 
   MRPT_LOG_INFO_STREAM("RAWLOG FILE: " << rawlogFileName);
   ASSERT_FILE_EXISTS_(rawlogFileName);
-  CFileGZInputStream rawlogFile(rawlogFileName);
+  CCompressedInputStream rawlogFile(rawlogFileName);
 
   deleteFilesInDirectory(OUT_DIR);
   createDirectory(OUT_DIR);

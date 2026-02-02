@@ -35,7 +35,7 @@ DECLARE_OP_FUNCTION(op_generate_3d_pointclouds)
     size_t entries_modified;
 
     CRawlogProcessor_Generate3DPointClouds(
-        CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool Verbose) :
+        CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool Verbose) :
         CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose)
     {
       entries_modified = 0;

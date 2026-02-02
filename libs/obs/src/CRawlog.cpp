@@ -9,9 +9,8 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 //
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/io/CFileInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
@@ -166,7 +165,7 @@ void CRawlog::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 bool CRawlog::loadFromRawLogFile(const std::string& fileName, bool non_obs_objects_are_legal)
 {
   // Open for read.
-  CFileGZInputStream fi;
+  CCompressedInputStream fi;
   if (!fi.open(fileName)) return false;
   auto fs = archiveFrom(fi);
 
@@ -257,11 +256,13 @@ void CRawlog::remove(size_t first_index, size_t last_index)
   MRPT_END
 }
 
-bool CRawlog::saveToRawLogFile(const std::string& fileName) const
+bool CRawlog::saveToRawLogFile(
+    const std::string& fileName, const mrpt::io::CompressionOptions& co) const
 {
   try
   {
-    CFileGZOutputStream fo(fileName);
+    CCompressedOutputStream fo(fileName, mrpt::io::OpenMode::TRUNCATE, co);
+
     auto f = archiveFrom(fo);
     if (!m_commentTexts.text.empty()) f << m_commentTexts;
     for (const auto& m_seqOfActOb : m_seqOfActObs) f << *m_seqOfActOb;

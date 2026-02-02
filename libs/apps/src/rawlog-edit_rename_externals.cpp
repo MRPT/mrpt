@@ -44,7 +44,7 @@ DECLARE_OP_FUNCTION(op_rename_externals)
     size_t entries_skipped;  // Already external
 
     CRawlogProcessor_RenameExternals(
-        CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool Verbose) :
+        CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool Verbose) :
         CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose)
     {
       entries_converted = 0;
