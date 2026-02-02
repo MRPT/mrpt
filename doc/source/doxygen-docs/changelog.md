@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.15.7: UNRELEASED
+(none yet)
+
 # Version 2.15.6: Released Jan 29th, 2026
 - nanogui: Updated to new version (DockablePanel)
 - Changes in libraries:
