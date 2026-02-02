@@ -104,9 +104,19 @@ class CCompressedInputStream : public CStream
    * \note For Gzip files, this reads the size from the footer if available.
    * For Zstd files with frame content size, returns that value.
    * For uncompressed files, returns the actual file size.
-   * May return 0 if the size cannot be determined (e.g., streaming Gzip).
+   * If the exact size is not available, returns an estimate based on the
+   * compression ratio measured so far (compressed bytes read vs uncompressed
+   * bytes served). This estimate improves as more data is read.
+   * Returns 0 only if no data has been read yet and no size hint is available.
    */
   [[nodiscard]] uint64_t getUncompressedSize() const;
+
+  /** Returns the compression ratio measured so far.
+   * \return Ratio of uncompressed to compressed bytes, or 0.0 if no data read.
+   * \note This is the ratio: uncompressed_bytes / compressed_bytes.
+   * A ratio of 3.0 means the data compressed to 1/3 of its original size.
+   */
+  [[nodiscard]] double getCompressionRatio() const;
 
   /** Estimates the current position in the uncompressed data stream.
    * \return Estimated position in uncompressed data, or 0 if it cannot be

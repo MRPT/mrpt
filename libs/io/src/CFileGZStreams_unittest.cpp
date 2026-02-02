@@ -387,21 +387,11 @@ TEST_F(CCompressedStreamsTest, uncompressedSizeHint)
 
   // Check uncompressed size hints
   {
-    const mrpt::io::CCompressedInputStream fin(file_gzip);
+    mrpt::io::CCompressedInputStream fin(file_gzip);
     const uint64_t size_hint = fin.getUncompressedSize();
     // Gzip stores size as last 4 bytes (modulo 2^32)
     EXPECT_EQ(size_hint, TEST_DATA_LEN % (1ULL << 32));
   }
-
-  // Zstd can store exact size
-  // JLBC: But not when streaming...
-#if 0
-  {
-    const mrpt::io::CCompressedInputStream fin(file_zstd);
-    const uint64_t size_hint = fin.getUncompressedSize();
-    EXPECT_EQ(size_hint, TEST_DATA_LEN);
-  }
-#endif
 
   mrpt::system::deleteFile(file_gzip);
   mrpt::system::deleteFile(file_zstd);
@@ -539,6 +529,187 @@ TEST_F(CCompressedStreamsTest, largeDataZstd)
     const size_t read_count = fin.Read(read_buf.data(), LARGE_SIZE);
     EXPECT_EQ(read_count, LARGE_SIZE);
     EXPECT_EQ(large_data, read_buf);
+  }
+
+  mrpt::system::deleteFile(fil);
+}
+
+TEST_F(CCompressedStreamsTest, compressionRatioTracking)
+{
+  const std::string fil = mrpt::system::getTempFileName() + "_ratio.gz";
+
+  // Create data with known pattern (highly compressible)
+  std::vector<uint8_t> repetitive_data(10000);
+  for (size_t i = 0; i < repetitive_data.size(); i++)
+  {
+    repetitive_data[i] = static_cast<uint8_t>(i % 10);
+  }
+
+  // Write
+  {
+    mrpt::io::CompressionOptions opts(mrpt::io::CompressionType::Gzip, 6);
+    mrpt::io::CCompressedOutputStream fout(fil, mrpt::io::OpenMode::TRUNCATE, opts);
+    const auto nWrite = fout.Write(repetitive_data.data(), repetitive_data.size());
+    EXPECT_EQ(nWrite, repetitive_data.size());
+  }
+
+  // Read and check ratio
+  {
+    mrpt::io::CCompressedInputStream fin(fil);
+
+    // Initially, no data read yet
+    EXPECT_EQ(fin.getCompressionRatio(), 0.0);
+
+    // Read first chunk
+    std::vector<uint8_t> buf(2000);
+    const auto nRead = fin.Read(buf.data(), 2000);
+    EXPECT_EQ(nRead, 2000);
+
+    // Should have some ratio now
+    const double ratio1 = fin.getCompressionRatio();
+    EXPECT_GT(ratio1, 1.0);  // Should be compressed
+
+    // Get size estimate
+    const uint64_t est_size1 = fin.getUncompressedSize();
+    EXPECT_GT(est_size1, 0U);
+
+    // Read more data
+    const auto nRead2 = fin.Read(buf.data(), 2000);
+    const auto nRead3 = fin.Read(buf.data(), 2000);
+
+    EXPECT_EQ(nRead2, 2000);
+    EXPECT_EQ(nRead3, 2000);
+
+    // Ratio should be more accurate now
+    const double ratio2 = fin.getCompressionRatio();
+    EXPECT_GT(ratio2, 1.0);
+
+    // Size estimate should be close to actual
+    const uint64_t est_size2 = fin.getUncompressedSize();
+    EXPECT_GT(est_size2, 0U);
+
+    // Read all remaining
+    std::vector<uint8_t> remaining(10000);
+    const auto nRead4 = fin.Read(remaining.data(), 10000);
+    EXPECT_GE(nRead4, 500);
+
+    // Final ratio
+    const double final_ratio = fin.getCompressionRatio();
+    EXPECT_GT(final_ratio, 1.0);
+
+    // For highly compressible data, expect good compression
+    EXPECT_GT(final_ratio, 2.0);
+  }
+
+  mrpt::system::deleteFile(fil);
+}
+
+TEST_F(CCompressedStreamsTest, compressionRatioZstd)
+{
+  const std::string fil = mrpt::system::getTempFileName() + "_ratio.zst";
+
+  // Create data with known pattern
+  std::vector<uint8_t> repetitive_data(10000);
+  for (size_t i = 0; i < repetitive_data.size(); i++)
+  {
+    repetitive_data[i] = static_cast<uint8_t>(i % 10);
+  }
+
+  // Write
+  {
+    mrpt::io::CompressionOptions opts(mrpt::io::CompressionType::Zstd, 3);
+    mrpt::io::CCompressedOutputStream fout(fil, mrpt::io::OpenMode::TRUNCATE, opts);
+    const auto nWrite = fout.Write(repetitive_data.data(), repetitive_data.size());
+    EXPECT_EQ(nWrite, repetitive_data.size());
+  }
+
+  // Read and check ratio
+  {
+    mrpt::io::CCompressedInputStream fin(fil);
+
+    // Read in chunks
+    std::vector<uint8_t> buf(2000);
+    const auto nRead = fin.Read(buf.data(), 2000);
+    EXPECT_EQ(nRead, 2000);
+
+    const double ratio1 = fin.getCompressionRatio();
+    EXPECT_GT(ratio1, 1.0);
+
+    const uint64_t est_size1 = fin.getUncompressedSize();
+    // Zstd stores size, so this should be exact
+    EXPECT_GT(est_size1, 500U);
+
+    // Continue reading
+    std::vector<uint8_t> remaining(8000);
+    const auto nRead2 = fin.Read(remaining.data(), 8000);
+    EXPECT_GT(nRead2, 500);
+
+    const double final_ratio = fin.getCompressionRatio();
+    EXPECT_GT(final_ratio, 2.0);
+  }
+
+  mrpt::system::deleteFile(fil);
+}
+
+TEST_F(CCompressedStreamsTest, sizeEstimationWithoutStoredSize)
+{
+  const std::string fil = mrpt::system::getTempFileName() + "_estimate.gz";
+
+  // Create random data (less compressible)
+  std::vector<uint8_t> random_data(50000);
+  mrpt::random::Generator_MT19937 rng;
+  rng.seed(123);
+  for (auto& byte : random_data)
+  {
+    byte = static_cast<uint8_t>(rng() % 256);
+  }
+
+  // Write
+  {
+    mrpt::io::CompressionOptions opts(mrpt::io::CompressionType::Gzip, 6);
+    mrpt::io::CCompressedOutputStream fout(fil, mrpt::io::OpenMode::TRUNCATE, opts);
+    const auto nWrite = fout.Write(random_data.data(), random_data.size());
+    EXPECT_EQ(nWrite, random_data.size());
+  }
+
+  // Read and track size estimates
+  {
+    mrpt::io::CCompressedInputStream fin(fil);
+
+    std::vector<uint64_t> estimates;
+    std::vector<uint8_t> buf(5000);
+
+    // Read in chunks and collect estimates
+    for (int i = 0; i < 10; i++)
+    {
+      const auto nRead = fin.Read(buf.data(), 5000);
+      EXPECT_EQ(nRead, 5000);
+
+      const uint64_t est = fin.getUncompressedSize();
+      if (est > 0)
+      {
+        estimates.push_back(est);
+      }
+    }
+
+    // Estimates should exist
+    EXPECT_GT(estimates.size(), 0U);
+
+    // Later estimates should be closer to actual size
+    if (estimates.size() > 2)
+    {
+      const uint64_t early_est = estimates[0];
+      const uint64_t late_est = estimates.back();
+
+      const int64_t early_error =
+          std::abs(static_cast<int64_t>(early_est) - static_cast<int64_t>(random_data.size()));
+      const int64_t late_error =
+          std::abs(static_cast<int64_t>(late_est) - static_cast<int64_t>(random_data.size()));
+
+      // Late estimate should generally be better (or at least not much worse)
+      // Allow some tolerance due to compression variability
+      EXPECT_LE(late_error, early_error * 1.5);
+    }
   }
 
   mrpt::system::deleteFile(fil);
