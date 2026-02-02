@@ -32,7 +32,7 @@ DECLARE_OP_FUNCTION(op_describe)
   {
    public:
     CRawlogProcessor_Describe(
-        CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool Verbose) :
+        CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool Verbose) :
         CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose)
     {
       std::cout << "total bytes: " << CRawlogProcessor::m_filSize << "\n";

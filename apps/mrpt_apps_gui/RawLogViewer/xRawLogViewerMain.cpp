@@ -18,8 +18,8 @@
 #include <mrpt/core/config.h>  // MRPT_OS_*()
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/gui/about_box.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -1652,7 +1652,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 
   wxBusyCursor waitCursor;
 
-  CFileGZInputStream fil(str);
+  CCompressedInputStream fil(str);
 
   uint64_t filSize = fil.getTotalBytesCount();
 
@@ -2678,7 +2678,7 @@ void xRawLogViewerFrame::OnFileCountEntries(wxCommandEvent&)
   if (!AskForOpenRawlog(str)) return;
 
   wxBusyCursor waitCursor;
-  CFileGZInputStream fil(str);
+  CCompressedInputStream fil(str);
   auto filSize = (unsigned int)fil.getTotalBytesCount();
 
   wxString auxStr;
@@ -2762,7 +2762,7 @@ void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent&)
   if (imgFileExtension.empty()) return;
 
   wxBusyCursor waitCursor;
-  CFileGZInputStream fil(str);
+  CCompressedInputStream fil(str);
   auto filSize = (unsigned int)fil.getTotalBytesCount();
 
   wxString auxStr;

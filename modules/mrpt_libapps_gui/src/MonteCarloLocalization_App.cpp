@@ -17,7 +17,7 @@
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/vector_loadsave.h>
@@ -288,7 +288,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
       // -------------------------
       MRPT_LOG_INFO_STREAM("Loading '.simplemap' file: " << MAP_FILE);
       {
-        CFileGZInputStream f(MAP_FILE);
+        CCompressedInputStream f(MAP_FILE);
         archiveFrom(f) >> simpleMap;
       }
       MRPT_LOG_INFO_STREAM("Map loaded ok, with " << simpleMap.size() << " frames.");
@@ -309,7 +309,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
       auto grid = metricMap->mapByClass<COccupancyGridMap2D>();
       ASSERT_(grid);
       {
-        CFileGZInputStream f(MAP_FILE);
+        CCompressedInputStream f(MAP_FILE);
         archiveFrom(f) >> (*grid);
       }
       MRPT_LOG_INFO("Done.");

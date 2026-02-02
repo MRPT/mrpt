@@ -14,8 +14,8 @@
 
 #include <mrpt/core/get_env.h>
 #include <mrpt/core/lock_helper.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/lazy_load_path.h>
 #include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -293,7 +293,7 @@ void CObservationPointCloud::load_impl() const
     break;
     case ExternalStorageFormat::MRPT_Serialization:
     {
-      mrpt::io::CFileGZInputStream f(abs_filename);
+      mrpt::io::CCompressedInputStream f(abs_filename);
       auto ar = mrpt::serialization::archiveFrom(f);
       auto obj = ar.ReadObject();
       auto pc = std::dynamic_pointer_cast<mrpt::maps::CPointsMap>(obj);
@@ -350,7 +350,9 @@ void CObservationPointCloud::unload() const
       break;
       case ExternalStorageFormat::MRPT_Serialization:
       {
-        mrpt::io::CFileGZOutputStream f(abs_filename);
+        const mrpt::io::CompressionOptions co(mrpt::io::CompressionType::Zstd);
+
+        mrpt::io::CCompressedOutputStream f(abs_filename, mrpt::io::OpenMode::TRUNCATE, co);
         auto ar = mrpt::serialization::archiveFrom(f);
         ar << *pointcloud;
       }
