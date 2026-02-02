@@ -17,6 +17,16 @@ endif()
 set_property(GLOBAL PROPERTY mrpt_io_UNIT_TEST_EXTRA_DEPS mrpt-random)
 
 
+find_path(ZSTD_INCLUDE_DIRS
+  NAMES zstd.h
+  HINTS ${zstd_ROOT_DIR}/include)
+
+find_library(ZSTD_LIBRARIES
+  NAMES zstd
+  HINTS ${zstd_ROOT_DIR}/lib)
+
+
+
 define_mrpt_lib(
 	io 		# Lib name
 	# Dependencies:
@@ -29,6 +39,9 @@ if(BUILD_mrpt-io)
 		    target_link_libraries(io PRIVATE ${ZLIB_LIBRARIES})
 			target_include_directories(io PRIVATE ${ZLIB_INCLUDE_DIR})
 		endif()
+
+	target_include_directories(io PRIVATE ${ZSTD_INCLUDE_DIRS})
+	target_link_libraries(io PRIVATE ${ZSTD_LIBRARIES})
 
 		if (NOT "${io/zlib_FILES}" STREQUAL "")
 			# Ignore precompiled headers in some sources:
