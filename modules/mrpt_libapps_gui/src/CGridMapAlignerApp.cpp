@@ -15,7 +15,7 @@
 #include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/apps/CGridMapAlignerApp.h>
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CFileStream.h>
@@ -312,14 +312,14 @@ void CGridMapAlignerApp::run()
 
   // Load maps:
   {
-    CFileGZInputStream f(fil_grid1);
+    CCompressedInputStream f(fil_grid1);
     archiveFrom(f) >> map1;
   }
 
   // If it's detect_test only load one map:
   if (is_match || mrpt::system::fileExists(fil_grid2))
   {
-    CFileGZInputStream f(fil_grid2);
+    CCompressedInputStream f(fil_grid2);
     archiveFrom(f) >> map2;
   }
 

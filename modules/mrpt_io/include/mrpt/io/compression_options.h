@@ -13,6 +13,8 @@
 */
 #pragma once
 
+#include <mrpt/typemeta/TEnumType.h>
+
 #include <cstdint>
 
 namespace mrpt::io
@@ -50,3 +52,9 @@ struct CompressionOptions
 };
 
 }  // namespace mrpt::io
+
+MRPT_ENUM_TYPE_BEGIN_NAMESPACE(mrpt::io, mrpt::io::CompressionType)
+MRPT_FILL_ENUM(CompressionType::None);
+MRPT_FILL_ENUM(CompressionType::Gzip);
+MRPT_FILL_ENUM(CompressionType::Zstd);
+MRPT_ENUM_TYPE_END()

@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/serialization/CArchive.h>
@@ -40,7 +40,7 @@ namespace mrpt::apps
 class CRawlogProcessor
 {
  protected:
-  mrpt::io::CFileGZInputStream& m_in_rawlog;
+  mrpt::io::CCompressedInputStream& m_in_rawlog;
   TCLAP::CmdLine& m_cmdline;
   bool verbose;
   mrpt::system::TTimeStamp m_last_console_update;
@@ -53,7 +53,7 @@ class CRawlogProcessor
 
   // Ctor
   CRawlogProcessor(
-      mrpt::io::CFileGZInputStream& _in_rawlog, TCLAP::CmdLine& _cmdline, bool _verbose) :
+      mrpt::io::CCompressedInputStream& _in_rawlog, TCLAP::CmdLine& _cmdline, bool _verbose) :
       m_in_rawlog(_in_rawlog),
       m_cmdline(_cmdline),
       verbose(_verbose),
@@ -161,7 +161,7 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 {
  public:
   CRawlogProcessorOnEachObservation(
-      mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool enable_verbose) :
+      mrpt::io::CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool enable_verbose) :
       CRawlogProcessor(in_rawlog, cmdline, enable_verbose)
   {
   }
@@ -233,7 +233,7 @@ class CRawlogProcessorFilterObservations : public CRawlogProcessorOnEachObservat
   bool m_we_are_done_with_this_rawlog;
 
   CRawlogProcessorFilterObservations(
-      mrpt::io::CFileGZInputStream& in_rawlog,
+      mrpt::io::CCompressedInputStream& in_rawlog,
       TCLAP::CmdLine& cmdline,
       bool enable_verbose,
       mrpt::io::CFileGZOutputStream& out_rawlog) :

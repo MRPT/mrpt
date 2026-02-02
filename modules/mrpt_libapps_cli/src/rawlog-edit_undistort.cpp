@@ -38,7 +38,7 @@ DECLARE_OP_FUNCTION(op_undistort)
 
    public:
     CRawlogProcessor_Undistort(
-        CFileGZInputStream& in_rawlog,
+        CCompressedInputStream& in_rawlog,
         TCLAP::CmdLine& cmdline,
         bool Verbose,
         mrpt::io::CFileGZOutputStream& out_rawlog) :

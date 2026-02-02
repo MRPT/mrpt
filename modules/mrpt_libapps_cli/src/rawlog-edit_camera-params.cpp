@@ -52,7 +52,7 @@ DECLARE_OP_FUNCTION(op_camera_params)
     size_t m_changedCams;
 
     CRawlogProcessor_CamParams(
-        CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool Verbose) :
+        CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool Verbose) :
         CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose)
     {
       m_changedCams = 0;

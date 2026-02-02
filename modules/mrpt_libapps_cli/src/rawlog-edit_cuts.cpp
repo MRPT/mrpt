@@ -36,7 +36,7 @@ DECLARE_OP_FUNCTION(op_cut)
 
    public:
     CRawlogProcessor_Cut(
-        mrpt::io::CFileGZInputStream& in_rawlog,
+        mrpt::io::CCompressedInputStream& in_rawlog,
         TCLAP::CmdLine& cmdline,
         bool Verbose,
         mrpt::io::CFileGZOutputStream& out_rawlog) :

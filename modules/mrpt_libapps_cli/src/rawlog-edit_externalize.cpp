@@ -48,7 +48,7 @@ DECLARE_OP_FUNCTION(op_externalize)
     size_t entries_skipped;  // Already external
 
     CRawlogProcessor_Externalize(
-        CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool _verbose) :
+        CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool _verbose) :
         CRawlogProcessorOnEachObservation(in_rawlog, cmdline, _verbose)
     {
       entries_converted = 0;

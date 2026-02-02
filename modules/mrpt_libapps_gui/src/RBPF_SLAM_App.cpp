@@ -183,7 +183,7 @@ void RBPF_SLAM_App_Base::run()
 
     mrpt::maps::COccupancyGridMap2D gridmap;
     {
-      mrpt::io::CFileGZInputStream f(METRIC_MAP_CONTINUATION_GRIDMAP_FILE);
+      mrpt::io::CCompressedInputStream f(METRIC_MAP_CONTINUATION_GRIDMAP_FILE);
       mrpt::serialization::archiveFrom(f) >> gridmap;
     }
 
@@ -205,7 +205,7 @@ void RBPF_SLAM_App_Base::run()
   if (!SIMPLEMAP_CONTINUATION.empty())
   {
     mrpt::maps::CSimpleMap init_map;
-    mrpt::io::CFileGZInputStream f(SIMPLEMAP_CONTINUATION);
+    mrpt::io::CCompressedInputStream f(SIMPLEMAP_CONTINUATION);
     mrpt::serialization::archiveFrom(f) >> init_map;
     mapBuilder->initialize(init_map);
   }
