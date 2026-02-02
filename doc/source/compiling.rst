@@ -34,13 +34,10 @@ Minimum compiler requisites:
        # All Ubuntu versions:
        sudo apt install build-essential pkg-config cmake \
          libopencv-dev libeigen3-dev zlib1g-dev \
-         libsuitesparse-dev libjpeg-dev
-         
-       # plus, only for Ubuntu < 22.10:
-       sudo apt install libwxgtk3.0-gtk3-dev
-
-       # plus, only for Ubuntu >= 22.10:
-       sudo apt install libwxgtk3.2-dev
+         libsuitesparse-dev libjpeg-dev \
+         libwxgtk3.2-dev \
+         libicu-dev libsimpleini-dev \
+         libzstd-dev
 
     **Recommended additional** packages to enable most MRPT features:
 
@@ -58,9 +55,6 @@ Minimum compiler requisites:
 
        # Support showing debug information in call stacks upon exceptions:
        sudo apt install binutils-dev libiberty-dev
-
-       # Support using system SimpleINI library (only Ubuntu >=20.04 focal)
-       sudo apt install libicu-dev libsimpleini-dev
 
     If your Ubuntu distribution is old and does not have any of the packages
     above, do not worry and ignore it, MRPT CMake scripts will handle it.
