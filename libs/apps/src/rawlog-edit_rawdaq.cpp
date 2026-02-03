@@ -84,7 +84,7 @@ DECLARE_OP_FUNCTION(op_export_rawdaq_txt)
     size_t m_entriesSaved;
 
     CRawlogProcessor_ExportRAWDAQ_TXT(
-        CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool Verbose) :
+        CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool Verbose) :
         CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose), m_entriesSaved(0)
     {
       getArgValue<string>(cmdline, "input", m_inFile);

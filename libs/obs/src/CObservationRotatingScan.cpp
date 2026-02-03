@@ -9,8 +9,8 @@
 
 #include "obs-precomp.h"  // Precomp header
 //
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/lazy_load_path.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CObservation.h>
@@ -474,7 +474,7 @@ void RotScan::load_impl() const
     break;
     case ExternalStorageFormat::MRPT_Serialization:
     {
-      mrpt::io::CFileGZInputStream f(abs_filename);
+      mrpt::io::CCompressedInputStream f(abs_filename);
       auto ar = mrpt::serialization::archiveFrom(f);
       readMatricesFrom(me, ar);
     }
@@ -503,7 +503,7 @@ void RotScan::unload() const
       break;
       case ExternalStorageFormat::MRPT_Serialization:
       {
-        mrpt::io::CFileGZOutputStream f(abs_filename);
+        mrpt::io::CCompressedOutputStream f(abs_filename);
         auto ar = mrpt::serialization::archiveFrom(f);
         writeMatricesTo(*this, ar);
       }

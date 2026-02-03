@@ -50,7 +50,7 @@ DECLARE_OP_FUNCTION(op_recalc_odometry)
     size_t m_entriesSaved;
 
     CRawlogProcessor_RecalcODO(
-        CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool Verbose) :
+        CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool Verbose) :
         CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose),
         m_odo_accum_valid(false),
         m_entriesSaved(0)

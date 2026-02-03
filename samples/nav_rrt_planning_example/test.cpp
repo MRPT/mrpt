@@ -9,7 +9,7 @@
 
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/nav.h>
 #include <mrpt/random.h>
@@ -46,7 +46,7 @@ void TestRRT1()
 
   cout << "Loading map...";
   {
-    mrpt::io::CFileGZInputStream f(mySimpleMap);
+    mrpt::io::CCompressedInputStream f(mySimpleMap);
     auto arch = mrpt::serialization::archiveFrom(f);
     arch >> simplemap;
   }

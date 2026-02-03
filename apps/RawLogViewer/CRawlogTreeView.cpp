@@ -41,7 +41,7 @@ std::atomic_bool CRawlogTreeView::RAWLOG_UNDERGOING_CHANGES{false};
 #define MRPT_NO_WARN_BIG_HDR  // It's ok here
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/WxUtils.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/obs.h>
 #include <mrpt/obs/CObservationPointCloud.h>  // this one is in mrpt-maps
 #include <mrpt/serialization/CArchive.h>
@@ -609,7 +609,7 @@ void CRawlogTreeView::onMnuExportToOtherFile(wxCommandEvent&)
 
   if (dialog.ShowModal() != wxID_OK) return;
 
-  mrpt::io::CFileGZOutputStream fs(dialog.GetPath().ToStdString());
+  mrpt::io::CCompressedOutputStream fs(dialog.GetPath().ToStdString());
   auto a = mrpt::serialization::archiveFrom(fs);
 
   a << obj;
@@ -625,7 +625,7 @@ void CRawlogTreeView::onMnuAppendSaveFile(wxCommandEvent&)
   const auto& obj = m_tree_nodes[m_selectedItem].data;
 
   // open GZ file for append:
-  mrpt::io::CFileGZOutputStream fs(m_last_exported_rawlog_file, mrpt::io::OpenMode::APPEND);
+  mrpt::io::CCompressedOutputStream fs(m_last_exported_rawlog_file, mrpt::io::OpenMode::APPEND);
 
   auto a = mrpt::serialization::archiveFrom(fs);
 

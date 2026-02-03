@@ -11,6 +11,8 @@
 //
 #include <mrpt/obs/CObservationBearingRange.h>
 
+#include <fstream>
+
 #include "rawlog-edit-declarations.h"
 
 using namespace mrpt;
@@ -34,7 +36,7 @@ DECLARE_OP_FUNCTION(op_list_rangebearing)
 
    public:
     CRawlogProcessor_RangeBearing(
-        CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool Verbose) :
+        CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool Verbose) :
         CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose)
     {
       getArgValue<std::string>(cmdline, "text-file-output", m_out_file);

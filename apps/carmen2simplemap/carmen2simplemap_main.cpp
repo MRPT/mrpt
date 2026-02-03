@@ -23,7 +23,7 @@
 // ===========================================================================
 
 #include <mrpt/3rdparty/tclap/CmdLine.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/carmen_log_tools.h>
@@ -176,8 +176,8 @@ int main(int argc, char** argv)
 
     // Save final map object:
     {
-      mrpt::io::CFileGZOutputStream out_map;
-      if (!out_map.open(output_file, compress_level))
+      mrpt::io::CCompressedOutputStream out_map;
+      if (!out_map.open(output_file, {mrpt::io::CompressionType::Zstd, compress_level}))
         throw runtime_error(format("Error opening for write: '%s'", output_file.c_str()));
 
       cout << "Dumping simplemap object to file...";

@@ -27,8 +27,8 @@
 #include "xRawLogViewerMain.h"
 
 // General global variables:
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/serialization/CArchive.h>
@@ -682,8 +682,8 @@ void CFormMotionModel::applyToRawlogFile()
   if (!fileName_OUT.compare(fileName_IN))
     THROW_EXCEPTION("Input and output files must be different!");
 
-  CFileGZInputStream in_fil(fileName_IN);
-  CFileGZOutputStream out_fil(fileName_OUT);
+  CCompressedInputStream in_fil(fileName_IN);
+  CCompressedOutputStream out_fil(fileName_OUT);
 
   auto filSize = (unsigned int)in_fil.getTotalBytesCount();
 
@@ -1087,7 +1087,7 @@ void CFormMotionModel::OnbtnGetFromFileClick(wxCommandEvent& event)
   string fileName(txtInputFile->GetValue().mbc_str());
   ASSERT_FILE_EXISTS_(fileName);
 
-  CFileGZInputStream fil(fileName);
+  CCompressedInputStream fil(fileName);
   auto arch = mrpt::serialization::archiveFrom(fil);
 
   bool keepLoading = true;

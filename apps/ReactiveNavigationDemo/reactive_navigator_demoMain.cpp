@@ -28,8 +28,8 @@
 #include <mrpt/config/CConfigFilePrefixer.h>
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/gui/about_box.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/TObject3D.h>
 #include <mrpt/poses/CPoint2D.h>
@@ -1742,7 +1742,7 @@ void reactive_navigator_demoframe::OnbtnLoadMapClick(wxCommandEvent& event)
 
   if (mrpt::system::lowerCase(fil_ext) == "gridmap")
   {
-    CFileGZInputStream f(fil);
+    CCompressedInputStream f(fil);
     archiveFrom(f) >> m_gridMap;
   }
   else
@@ -1914,7 +1914,7 @@ void reactive_navigator_demoframe::OnbtnSaveMapClick(wxCommandEvent& event)
 
   if (dlg.ShowModal() != wxID_OK) return;
 
-  CFileGZOutputStream f(std::string(dlg.GetPath().mb_str()));
+  CCompressedOutputStream f(std::string(dlg.GetPath().mb_str()));
   archiveFrom(f) << m_gridMap;
 
   WX_END_TRY

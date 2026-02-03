@@ -151,7 +151,7 @@ void display_graph(const GRAPHTYPE& g)
 
             mrpt::opengl::Scene scene;
             scene.insert(m_new_3dobj);
-            mrpt::io::CFileGZOutputStream f(sFil);
+            mrpt::io::CCompressedOutputStream f(sFil);
             mrpt::serialization::archiveFrom(f) << scene;
           }
           break;

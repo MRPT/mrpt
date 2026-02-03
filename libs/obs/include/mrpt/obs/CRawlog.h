@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/io/compression_options.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CObservationComment.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -144,7 +145,9 @@ class CRawlog : public mrpt::serialization::CSerializable
    * \returns It returns false if any error is found while writing/creating
    * the target file.
    */
-  bool saveToRawLogFile(const std::string& fileName) const;
+  bool saveToRawLogFile(
+      const std::string& fileName,
+      const mrpt::io::CompressionOptions& co = {mrpt::io::CompressionType::Zstd}) const;
 
   /** Returns the number of actions / observations object in the sequence. */
   size_t size() const;

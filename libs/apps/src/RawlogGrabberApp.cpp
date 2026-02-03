@@ -16,7 +16,7 @@
 #include <mrpt/core/round.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/vector_loadsave.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
@@ -159,11 +159,11 @@ void RawlogGrabberApp::runImpl()
   // ----------------------------------------------
   // Run:
   // ----------------------------------------------
-  mrpt::io::CFileGZOutputStream out_file;
+  mrpt::io::CCompressedOutputStream out_file;
   auto out_arch_obj = archiveFrom(out_file);
   m_out_arch_ptr = &out_arch_obj;
 
-  out_file.open(rawlog_filename, rawlog_GZ_compress_level);
+  out_file.open(rawlog_filename, {mrpt::io::CompressionType::Zstd, rawlog_GZ_compress_level});
 
   CGenericSensor::TListObservations copy_of_m_global_list_obs;
 

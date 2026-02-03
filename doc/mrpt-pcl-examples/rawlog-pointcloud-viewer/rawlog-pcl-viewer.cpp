@@ -34,9 +34,9 @@
    +---------------------------------------------------------------------------+
  */
 
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/maps.h>	// For converting into point maps
-#include <mrpt/obs.h>  // For loading from the rawlog
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/maps.h>  // For converting into point maps
+#include <mrpt/obs.h>   // For loading from the rawlog
 #include <mrpt/synch.h>
 #include <mrpt/system.h>
 #include <pcl/io/io.h>
@@ -49,10 +49,10 @@ size_t rawlogEntry = 0;
 
 struct ThreadData
 {
-	ThreadData() : new_timestamp(INVALID_TIMESTAMP) {}
+  ThreadData() : new_timestamp(INVALID_TIMESTAMP) {}
 
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud;
-	mrpt::system::TTimeStamp new_timestamp;
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud;
+  mrpt::system::TTimeStamp new_timestamp;
 };
 
 ThreadData td;
@@ -60,32 +60,31 @@ std::mutex td_cs;
 
 void viewerUpdate(pcl::visualization::PCLVisualizer& viewer)
 {
-	std::stringstream ss;
-	ss << "Rawlog entry: " << rawlogEntry;
-	viewer.removeShape("text", 0);
-	viewer.addText(ss.str(), 10, 50, "text", 0);
+  std::stringstream ss;
+  ss << "Rawlog entry: " << rawlogEntry;
+  viewer.removeShape("text", 0);
+  viewer.addText(ss.str(), 10, 50, "text", 0);
 
-	static mrpt::system::TTimeStamp last_time = INVALID_TIMESTAMP;
+  static mrpt::system::TTimeStamp last_time = INVALID_TIMESTAMP;
 
-	{  // Mutex protected
-		std::lock_guard<std::mutex> lock(td_cs);
-		if (td.new_timestamp != last_time)
-		{
-			last_time = td.new_timestamp;
-			viewer.removePointCloud("cloud", 0);
-			viewer.addPointCloud(td.new_cloud, "cloud", 0);
-			viewer.setPointCloudRenderingProperties(
-				pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3.0);
+  {  // Mutex protected
+    std::lock_guard<std::mutex> lock(td_cs);
+    if (td.new_timestamp != last_time)
+    {
+      last_time = td.new_timestamp;
+      viewer.removePointCloud("cloud", 0);
+      viewer.addPointCloud(td.new_cloud, "cloud", 0);
+      viewer.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3.0);
 
-			const size_t N = td.new_cloud->size();
-			std::cout << "Showing new point cloud of size=" << N << std::endl;
+      const size_t N = td.new_cloud->size();
+      std::cout << "Showing new point cloud of size=" << N << std::endl;
 
-			static bool first = true;
-			if (N && first)
-			{
-				first = false;
-				// viewer.resetCameraViewpoint("cloud");
-			}
+      static bool first = true;
+      if (N && first)
+      {
+        first = false;
+        // viewer.resetCameraViewpoint("cloud");
+      }
 
 #if 0
 			std::cout << mrpt::format(
@@ -98,108 +97,102 @@ void viewerUpdate(pcl::visualization::PCLVisualizer& viewer)
 				viewer.camera_.pos[0],viewer.camera_.pos[1],viewer.camera_.pos[2],
 				viewer.camera_.view[0],viewer.camera_.view[1],viewer.camera_.view[2]);
 #endif
-		}
-	}
+    }
+  }
 }
 
 void viewerOneOff(pcl::visualization::PCLVisualizer& viewer)
 {
-	viewer.setBackgroundColor(0.3, 0.3, 0.3);
-	viewer.addCoordinateSystem(1.0, 0);
-	viewer.initCameraParameters();
-	viewer.camera_.pos[2] = 30;
-	viewer.updateCamera();
+  viewer.setBackgroundColor(0.3, 0.3, 0.3);
+  viewer.addCoordinateSystem(1.0, 0);
+  viewer.initCameraParameters();
+  viewer.camera_.pos[2] = 30;
+  viewer.updateCamera();
 }
 
 int main(int argc, char** argv)
 {
-	try
-	{
-		if (argc != 2)
-		{
-			std::cerr << "Usage: " << argv[0] << " <DATASET.rawlog>\n";
-			return 1;
-		}
+  try
+  {
+    if (argc != 2)
+    {
+      std::cerr << "Usage: " << argv[0] << " <DATASET.rawlog>\n";
+      return 1;
+    }
 
-		std::cout << "Opening: " << argv[1] << std::endl;
-		mrpt::io::CFileGZInputStream fil(argv[1]);
-		bool rawlog_eof = false;
+    std::cout << "Opening: " << argv[1] << std::endl;
+    mrpt::io::CCompressedInputStream fil(argv[1]);
+    bool rawlog_eof = false;
 
-		pcl::visualization::CloudViewer viewer(
-			"Cloud Viewer from MRPT's rawlog");
+    pcl::visualization::CloudViewer viewer("Cloud Viewer from MRPT's rawlog");
 
-		// This will only get called once
-		viewer.runOnVisualizationThreadOnce(viewerOneOff);
+    // This will only get called once
+    viewer.runOnVisualizationThreadOnce(viewerOneOff);
 
-		// This will get called once per visualization iteration
-		viewer.runOnVisualizationThread(viewerUpdate);
+    // This will get called once per visualization iteration
+    viewer.runOnVisualizationThread(viewerUpdate);
 
-		while (!viewer.wasStopped())
-		{
-			mrpt::obs::CActionCollection::Ptr actions;
-			mrpt::obs::CSensoryFrame::Ptr SF;
-			mrpt::obs::CObservation::Ptr obs;
+    while (!viewer.wasStopped())
+    {
+      mrpt::obs::CActionCollection::Ptr actions;
+      mrpt::obs::CSensoryFrame::Ptr SF;
+      mrpt::obs::CObservation::Ptr obs;
 
-			if (!rawlog_eof)
-			{
-				if (!mrpt::obs::CRawlog::getActionObservationPairOrObservation(
-						fil, actions, SF, obs, rawlogEntry))
-				{
-					rawlog_eof = true;
-					std::cerr
-						<< "End of rawlog file!! Close the window to exit\n";
-				}
-				else
-				{
-					// Can generate a point cloud from this data?
-					// TODO: Process Kinect observations differently to extract
-					// RGB data.
-					mrpt::maps::CPointsMap::Ptr new_map;
-					if (SF)
-					{
-						new_map = mrpt::make_aligned_shared<
-							mrpt::maps::CSimplePointsMap>();
-						// new_map->insertionOptions.minDistBetweenLaserPoints =
-						// 0;
-						SF->insertObservationsInto(new_map);
-					}
-					else if (obs)
-					{
-						new_map = mrpt::make_aligned_shared<
-							mrpt::maps::CSimplePointsMap>();
-						// new_map->insertionOptions.minDistBetweenLaserPoints =
-						// 0;
-						new_map->insertObservation(obs.get());
-					}
+      if (!rawlog_eof)
+      {
+        if (!mrpt::obs::CRawlog::getActionObservationPairOrObservation(
+                fil, actions, SF, obs, rawlogEntry))
+        {
+          rawlog_eof = true;
+          std::cerr << "End of rawlog file!! Close the window to exit\n";
+        }
+        else
+        {
+          // Can generate a point cloud from this data?
+          // TODO: Process Kinect observations differently to extract
+          // RGB data.
+          mrpt::maps::CPointsMap::Ptr new_map;
+          if (SF)
+          {
+            new_map = mrpt::make_aligned_shared<mrpt::maps::CSimplePointsMap>();
+            // new_map->insertionOptions.minDistBetweenLaserPoints =
+            // 0;
+            SF->insertObservationsInto(new_map);
+          }
+          else if (obs)
+          {
+            new_map = mrpt::make_aligned_shared<mrpt::maps::CSimplePointsMap>();
+            // new_map->insertionOptions.minDistBetweenLaserPoints =
+            // 0;
+            new_map->insertObservation(obs.get());
+          }
 
-					if (new_map)
-					{
-						pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(
-							new pcl::PointCloud<pcl::PointXYZRGB>);
+          if (new_map)
+          {
+            pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
 
-						// Convert MRPT point maps -> PCL point cloud.
-						new_map->getPCLPointCloud(*cloud);
+            // Convert MRPT point maps -> PCL point cloud.
+            new_map->getPCLPointCloud(*cloud);
 
-						{  // Mutex protected
-							std::lock_guard<std::mutex> lock(td_cs);
-							td.new_timestamp = mrpt::Clock::now();
-							td.new_cloud = cloud;
-						}
+            {  // Mutex protected
+              std::lock_guard<std::mutex> lock(td_cs);
+              td.new_timestamp = mrpt::Clock::now();
+              td.new_cloud = cloud;
+            }
 
-						std::this_thread::sleep_for(
-							30ms);	// Delay to allow the point cloud to show
-									// up.
-					}
-				}
-			}
+            std::this_thread::sleep_for(30ms);  // Delay to allow the point cloud to show
+                                                // up.
+          }
+        }
+      }
 
-			std::this_thread::sleep_for(1ms);
-		}
-		return 0;
-	}
-	catch (std::exception& e)
-	{
-		std::cerr << e.what() << std::endl;
-		return 1;
-	}
+      std::this_thread::sleep_for(1ms);
+    }
+    return 0;
+  }
+  catch (std::exception& e)
+  {
+    std::cerr << e.what() << std::endl;
+    return 1;
+  }
 }

@@ -12,19 +12,16 @@ jobs:
       CTEST_OUTPUT_ON_FAILURE: ON
       CTEST_PARALLEL_LEVEL: 1
       CMAKE_BUILD_TYPE: ${{ matrix.build_type }}
-      VERBOSE: 1  # to show all cmake scripts debug info
+      VERBOSE: 1 # to show all cmake scripts debug info
 
     strategy:
       fail-fast: false
       matrix:
         # Github Actions requires a single row to be added to the build matrix.
         # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
-        name: [
-          ubuntu-latest-clang,
-          ubuntu-latest-gcc
-        ]
+        name: [ubuntu-latest-clang, ubuntu-latest-gcc]
 
-        build_type: [ Release ]
+        build_type: [Release]
         include:
           - name: ubuntu-latest-clang
             os: ubuntu-latest
@@ -63,7 +60,9 @@ jobs:
                            liboctomap-dev libopenni2-dev \
                            libtinyxml2-dev \
                            libdc1394-dev \
-                           yamllint
+                           yamllint libicu-dev libsimpleini-dev \
+                           libzstd-dev
+
 
           if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
             sudo apt install libicu-dev libsimpleini-dev

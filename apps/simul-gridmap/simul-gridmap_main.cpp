@@ -9,8 +9,8 @@
 
 #include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
@@ -128,7 +128,7 @@ void do_simulation()
 
   // Load the grid:
   COccupancyGridMap2D the_grid;
-  CFileGZInputStream f(grid_file);
+  CCompressedInputStream f(grid_file);
   mrpt::serialization::archiveFrom(f) >> the_grid;
 
   // GT file rows are:

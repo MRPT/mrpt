@@ -15,7 +15,7 @@
 #include <OpenNI.h>
 #include <PS1080.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/opengl.h>
 #include <mrpt/serialization/CArchive.h>
@@ -175,7 +175,7 @@ int main(int argc, char** argv)
     // Create rawlog file ----------------------------------------------
     const string out_rawlog_fil = out_name + string(".rawlog");
     cout << "Creating rawlog: " << out_rawlog_fil << endl;
-    mrpt::io::CFileGZOutputStream f_out(out_rawlog_fil);
+    mrpt::io::CCompressedOutputStream f_out(out_rawlog_fil);
 
     // Fill out the common field to all entries:
     mrpt::obs::CObservation3DRangeScan obs;

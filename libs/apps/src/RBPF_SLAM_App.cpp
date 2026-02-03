@@ -11,7 +11,7 @@
 //
 #include <mrpt/apps/RBPF_SLAM_App.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/vector_loadsave.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
@@ -180,7 +180,7 @@ void RBPF_SLAM_App_Base::run()
 
     mrpt::maps::COccupancyGridMap2D gridmap;
     {
-      mrpt::io::CFileGZInputStream f(METRIC_MAP_CONTINUATION_GRIDMAP_FILE);
+      mrpt::io::CCompressedInputStream f(METRIC_MAP_CONTINUATION_GRIDMAP_FILE);
       mrpt::serialization::archiveFrom(f) >> gridmap;
     }
 
@@ -202,7 +202,7 @@ void RBPF_SLAM_App_Base::run()
   if (!SIMPLEMAP_CONTINUATION.empty())
   {
     mrpt::maps::CSimpleMap init_map;
-    mrpt::io::CFileGZInputStream f(SIMPLEMAP_CONTINUATION);
+    mrpt::io::CCompressedInputStream f(SIMPLEMAP_CONTINUATION);
     mrpt::serialization::archiveFrom(f) >> init_map;
     mapBuilder->initialize(init_map);
   }
@@ -481,7 +481,7 @@ void RBPF_SLAM_App_Base::run()
 
       if (SAVE_3D_SCENE)
       {  // Save as file:
-        CFileGZOutputStream f(format("%s/buildingmap_%05u.3Dscene", OUT_DIR_3D.c_str(), step));
+        CCompressedOutputStream f(format("%s/buildingmap_%05u.3Dscene", OUT_DIR_3D.c_str(), step));
         mrpt::serialization::archiveFrom(f) << *scene;
       }
 

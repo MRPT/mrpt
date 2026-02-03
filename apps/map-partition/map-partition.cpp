@@ -18,8 +18,8 @@
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/about_box.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/serialization/CArchive.h>
@@ -87,7 +87,7 @@ void Test()
   // Load map from the input file:
   printf("Loading input map:\n%s\n...", MAP_FILE.c_str());
   {
-    CFileGZInputStream f(MAP_FILE);
+    CCompressedInputStream f(MAP_FILE);
     mrpt::serialization::archiveFrom(f) >> in_map;
   }
   printf("Ok\n");
@@ -150,7 +150,8 @@ void Test()
     }
 
     {
-      CFileOutputStream ff(format("MAP-PARTITION_RESULTS/out_part#%03u.simplemap", (unsigned)i));
+      mrpt::io::CCompressedOutputStream ff(
+          format("MAP-PARTITION_RESULTS/out_part#%03u.simplemap", static_cast<unsigned>(i)));
       mrpt::serialization::archiveFrom(ff) << out_map;
     }
   }
