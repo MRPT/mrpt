@@ -9,6 +9,8 @@
 
 #include "apps-precomp.h"  // Precompiled headers
 //
+#include <fstream>
+
 #include "rawlog-edit-declarations.h"
 
 using namespace mrpt;

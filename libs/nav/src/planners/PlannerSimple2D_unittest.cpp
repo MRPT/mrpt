@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/nav/planners/PlannerSimple2D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <test_mrpt_common.h>
@@ -23,7 +23,7 @@ TEST(PlannerSimple2D, findPath)
   mrpt::maps::COccupancyGridMap2D gridmap;
 
   {
-    mrpt::io::CFileGZInputStream f(fil);
+    mrpt::io::CCompressedInputStream f(fil);
     auto arch = mrpt::serialization::archiveFrom(f);
     arch >> gridmap;
   }

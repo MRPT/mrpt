@@ -9,8 +9,8 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 //
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/Scene.h>
 #include <mrpt/opengl/opengl_api.h>
@@ -292,7 +292,7 @@ bool Scene::saveToFile(const std::string& fil) const
 {
   try
   {
-    mrpt::io::CFileGZOutputStream f(fil);
+    mrpt::io::CCompressedOutputStream f(fil);
     mrpt::serialization::archiveFrom(f) << *this;
     return true;
   }
@@ -306,7 +306,7 @@ bool Scene::loadFromFile(const std::string& fil)
 {
   try
   {
-    mrpt::io::CFileGZInputStream f(fil);
+    mrpt::io::CCompressedInputStream f(fil);
     mrpt::serialization::archiveFrom(f) >> *this;
     return true;
   }

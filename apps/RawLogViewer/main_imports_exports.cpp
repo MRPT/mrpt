@@ -19,8 +19,8 @@
 #include "xRawLogViewerMain.h"
 
 // General global variables:
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CTextFileLinesParser.h>
 #include <mrpt/io/vector_loadsave.h>
 #include <mrpt/math/data_utils.h>
@@ -998,7 +998,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 
   wxBusyCursor waitCursor;
 
-  CFileGZOutputStream filOut(target_filename);
+  CCompressedOutputStream filOut(target_filename);
 
   CPose2D lastOdometry;
   bool firstOdo = true;

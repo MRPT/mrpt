@@ -11,10 +11,11 @@
 #include <mrpt/apps/CRawlogProcessor.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/io/CCompressedInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/system/filesystem.h>
+
+#include <fstream>
 
 // Declarations:
 #define VERBOSE_COUT \
@@ -28,7 +29,7 @@
 */
 struct TOutputRawlogCreator
 {
-  mrpt::io::CFileGZOutputStream out_rawlog_io;
+  mrpt::io::CCompressedOutputStream out_rawlog_io;
   std::unique_ptr<mrpt::serialization::CArchive> out_rawlog;
   std::string out_rawlog_filename;
 

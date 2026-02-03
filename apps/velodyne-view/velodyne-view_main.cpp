@@ -18,7 +18,7 @@
 #include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CVelodyneScanner.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
@@ -106,7 +106,7 @@ void thread_grabbing(TThreadParam& p)
 {
   try
   {
-    CFileGZOutputStream f_out_rawlog;
+    CCompressedOutputStream f_out_rawlog;
     if (arg_out_rawlog.isSet())
     {
       if (!f_out_rawlog.open(arg_out_rawlog.getValue()))

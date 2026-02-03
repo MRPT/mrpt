@@ -12,7 +12,7 @@
 #include <mrpt/containers/copy_container_typecasting.h>
 #include <mrpt/containers/printf_vector.h>
 #include <mrpt/core/lock_helper.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/maps/CPointCloudFilterByDistance.h>
 #include <mrpt/math/geometry.h>
@@ -158,8 +158,8 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 
       // Open log file:
       {
-        std::unique_ptr<CFileGZOutputStream> fil(new CFileGZOutputStream);
-        bool ok = fil->open(filToOpen, 1 /* compress level */);
+        auto fil = std::make_unique<CCompressedOutputStream>();
+        bool ok = fil->open(filToOpen);
         if (!ok)
         {
           THROW_EXCEPTION_FMT("Error opening log file: `%s`", filToOpen.c_str());

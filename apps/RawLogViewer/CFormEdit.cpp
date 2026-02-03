@@ -24,8 +24,8 @@
 
 // General global variables:
 #include <mrpt/containers/stl_containers_utils.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
@@ -800,8 +800,8 @@ void CFormEdit::executeOperationOnRawlog(TRawlogFilter operation, const char* en
 
   unsigned int processMax;
   bool isInMemory;
-  CFileGZInputStream* in_fil = nullptr;
-  CFileGZOutputStream* out_fil = nullptr;
+  CCompressedInputStream* in_fil = nullptr;
+  CCompressedOutputStream* out_fil = nullptr;
   size_t first = 0, last = 0;
 
   if (rbLoaded->GetValue())
@@ -833,8 +833,8 @@ void CFormEdit::executeOperationOnRawlog(TRawlogFilter operation, const char* en
     if (!fileName_OUT.compare(fileName_IN))
       THROW_EXCEPTION("Input and output files must be different!");
 
-    in_fil = new CFileGZInputStream(fileName_IN);
-    out_fil = new CFileGZOutputStream(fileName_OUT);
+    in_fil = new CCompressedInputStream(fileName_IN);
+    out_fil = new CCompressedOutputStream(fileName_OUT);
 
     processMax = (unsigned int)in_fil->getTotalBytesCount();
   }

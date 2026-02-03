@@ -23,8 +23,8 @@
 //*)
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/gui/wx28-fixes.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CText.h>
@@ -873,7 +873,7 @@ void robotic_arm_kinematicsFrame::OnLoadBinary(wxCommandEvent& event)
   const wxString sFil = dlg.GetPath();
   const std::string fil = std::string(sFil.mb_str());
 
-  mrpt::io::CFileGZInputStream f(fil);
+  mrpt::io::CCompressedInputStream f(fil);
   mrpt::serialization::archiveFrom(f) >> m_robot;
 
   this->RegenerateDOFPanels();

@@ -28,7 +28,7 @@
 #include <wx/numdlg.h>
 
 // General global variables:
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CMultiMetricMap.h>
@@ -724,7 +724,7 @@ void CFormRawMap::OnbtnSave3DClick(wxCommandEvent&)
     {
       wxBusyCursor waitCursor;
 
-      CFileGZOutputStream fil(std::string(dialog.GetPath().mb_str()));
+      CCompressedOutputStream fil(std::string(dialog.GetPath().mb_str()));
       Scene scene;
 
       loadMapInto3DScene(scene);
@@ -1145,7 +1145,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
     if (dialog.ShowModal() != wxID_OK) return;
 
     wxBusyCursor waitCursor;
-    CFileGZOutputStream f(string(dialog.GetPath().mb_str()));
+    CCompressedOutputStream f(string(dialog.GetPath().mb_str()));
     archiveFrom(f) << robot_path;
   }
 

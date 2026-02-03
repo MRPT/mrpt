@@ -31,7 +31,7 @@ Output files:
 
    ------------------------------------------------------ */
 
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CTextFileLinesParser.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationIMU.h>
@@ -129,7 +129,7 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
   // Create rawlog file ----------------------------------------------
   const string out_rawlog_fil = out_name + string(".rawlog");
   cout << "Creating rawlog: " << out_rawlog_fil << endl;
-  mrpt::io::CFileGZOutputStream f_out(out_rawlog_fil);
+  mrpt::io::CCompressedOutputStream f_out(out_rawlog_fil);
 
   // Fill out the common field to all entries:
   CObservation3DRangeScan obs;

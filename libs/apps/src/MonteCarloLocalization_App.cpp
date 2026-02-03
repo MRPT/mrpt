@@ -15,7 +15,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/io/CCompressedInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/vector_loadsave.h>
 #include <mrpt/maps/CMultiMetricMap.h>
@@ -942,7 +942,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
         if (!SAVE_STATS_ONLY && SCENE3D_FREQ != -1 && ((step + 1) % SCENE3D_FREQ) == 0)
         {
           // Save 3D scene:
-          CFileGZOutputStream f(
+          CCompressedOutputStream f(
               format("%s/progress_%05u.3Dscene", sOUT_DIR_3D.c_str(), (unsigned)step));
           archiveFrom(f) << scene;
 

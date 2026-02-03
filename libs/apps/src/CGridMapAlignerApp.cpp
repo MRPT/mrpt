@@ -13,7 +13,7 @@
 #include <mrpt/apps/CGridMapAlignerApp.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/io/CCompressedInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CFileStream.h>
 #include <mrpt/io/vector_loadsave.h>

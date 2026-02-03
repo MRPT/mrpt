@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/img/CImage.h>
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -42,7 +42,7 @@ int TestOffscreenRender(int argc, char* argv[])
   ASSERT_GT_(height, 0);
 
   Scene scene;
-  CFileGZInputStream f(sFil);
+  CCompressedInputStream f(sFil);
   archiveFrom(f) >> scene;
 
   CFBORender render(width, height);

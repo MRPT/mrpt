@@ -25,7 +25,7 @@
 //*)
 
 #include <mrpt/gui/WxUtils.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/slam/CRangeBearingKFSLAM2D.h>
 
@@ -275,7 +275,7 @@ class slamdemoFrame : public wxFrame
   std::set<size_t> m_realIDX_already_mapped;
 
   /** The output rawlog file to save simulated sensor obs (if enabled) */
-  mrpt::io::CFileGZOutputStream m_rawlog_out_file;
+  mrpt::io::CCompressedOutputStream m_rawlog_out_file;
 
   /** Historic data */
   struct THistoric
