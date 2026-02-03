@@ -9,6 +9,7 @@
 
 #include "apps-precomp.h"  // Precompiled headers
 //
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/topography.h>
 
@@ -51,7 +52,7 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
 
    public:
     CRawlogProcessor_ExportGPS_KML(
-        CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool _verbose) :
+        CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool _verbose) :
         CRawlogProcessorOnEachObservation(in_rawlog, cmdline, _verbose)
     {
       getArgValue<string>(cmdline, "input", m_inFile);
@@ -85,7 +86,7 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
       const string outfilname = mrpt::system::fileNameChangeExtension(m_inFile, "kml");
       VERBOSE_COUT << "Writing KML file: " << outfilname << endl;
 
-      CFileOutputStream f(outfilname);
+      mrpt::io::CFileOutputStream f(outfilname);
 
       // Header:
       f.printf(
@@ -356,7 +357,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
     size_t m_GPS_entriesSaved;
 
     CRawlogProcessor_ExportGPS_TXT(
-        CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool _verbose) :
+        CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool _verbose) :
         CRawlogProcessorOnEachObservation(in_rawlog, cmdline, _verbose), m_GPS_entriesSaved(0)
     {
       getArgValue<string>(cmdline, "input", m_inFile);
@@ -548,7 +549,7 @@ DECLARE_OP_FUNCTION(op_export_gps_all)
     size_t m_GPS_entriesSaved;
 
     CRawlogProcessor_ExportGPS_ALL(
-        CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool _verbose) :
+        CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool _verbose) :
         CRawlogProcessorOnEachObservation(in_rawlog, cmdline, _verbose), m_GPS_entriesSaved(0)
     {
       getArgValue<string>(cmdline, "input", m_inFile);

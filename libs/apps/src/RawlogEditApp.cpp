@@ -34,7 +34,7 @@
 #include "rawlog-edit-declarations.h"
 
 using TOperationFunctor =
-    void (*)(mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool verbose);
+    void (*)(mrpt::io::CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool verbose);
 
 using namespace mrpt;
 using namespace mrpt::img;
@@ -561,7 +561,7 @@ void RawlogEditApp::run(int argc, const char** argv)
     throw runtime_error(format("Input file doesn't exist: '%s'", input_rawlog.c_str()));
 
   // Open input rawlog:
-  CFileGZInputStream fil_input;
+  CCompressedInputStream fil_input;
   VERBOSE_COUT << "Opening '" << input_rawlog << "'...\n";
   fil_input.open(input_rawlog);
   VERBOSE_COUT << "Open OK.\n";
@@ -612,7 +612,7 @@ TOutputRawlogCreator::TOutputRawlogCreator()
   if (!out_rawlog_io.open(out_rawlog_filename))
     throw runtime_error(string("*ABORTING*: Cannot open output file: ") + out_rawlog_filename);
   out_rawlog =
-      std::make_unique<mrpt::serialization::CArchiveStreamBase<mrpt::io::CFileGZOutputStream>>(
+      std::make_unique<mrpt::serialization::CArchiveStreamBase<mrpt::io::CCompressedOutputStream>>(
           out_rawlog_io);
 }
 

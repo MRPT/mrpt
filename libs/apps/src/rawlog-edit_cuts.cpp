@@ -34,10 +34,10 @@ DECLARE_OP_FUNCTION(op_cut)
 
    public:
     CRawlogProcessor_Cut(
-        mrpt::io::CFileGZInputStream& in_rawlog,
+        mrpt::io::CCompressedInputStream& in_rawlog,
         TCLAP::CmdLine& cmdline,
         bool Verbose,
-        mrpt::io::CFileGZOutputStream& out_rawlog) :
+        mrpt::io::CCompressedOutputStream& out_rawlog) :
         CRawlogProcessorFilterObservations(in_rawlog, cmdline, Verbose, out_rawlog),
         m_from_index(0),
         m_to_index(0),

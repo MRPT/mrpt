@@ -10,6 +10,7 @@
 #include "apps-precomp.h"  // Precompiled headers
 //
 #include <mrpt/img/color_maps.h>
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/math/interp_fit.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/obs/CObservationGasSensors.h>
@@ -59,7 +60,7 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 
    public:
     CRawlogProcessor_ExportGPSGAS_KML(
-        CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool _verbose) :
+        CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool _verbose) :
         CRawlogProcessorOnEachObservation(in_rawlog, cmdline, _verbose)
     {
       getArgValue<string>(cmdline, "input", m_inFile);
@@ -140,7 +141,7 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
       const string outfilname = mrpt::system::fileNameChangeExtension(m_inFile, "kml");
       VERBOSE_COUT << "Writing KML file: " << outfilname << endl;
 
-      CFileOutputStream f(outfilname);
+      mrpt::io::CFileOutputStream f(outfilname);
 
       // Header:
       f.printf(

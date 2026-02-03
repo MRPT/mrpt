@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
@@ -35,27 +35,26 @@ namespace mrpt::apps
 class CRawlogProcessor
 {
  protected:
-  mrpt::io::CFileGZInputStream& m_in_rawlog;
+  mrpt::io::CCompressedInputStream& m_in_rawlog;
   TCLAP::CmdLine& m_cmdline;
   bool verbose;
   mrpt::system::TTimeStamp m_last_console_update;
   mrpt::system::CTicTac m_timParse;
 
  public:
-  uint64_t m_filSize;
-  size_t m_rawlogEntry;
+  uint64_t m_physicalFileSize = 0;
+  size_t m_rawlogEntry = 0;
   double m_timToParse;  // Public variable, at end will hold ellapsed time.
 
   // Ctor
   CRawlogProcessor(
-      mrpt::io::CFileGZInputStream& _in_rawlog, TCLAP::CmdLine& _cmdline, bool _verbose) :
+      mrpt::io::CCompressedInputStream& _in_rawlog, TCLAP::CmdLine& _cmdline, bool _verbose) :
       m_in_rawlog(_in_rawlog),
       m_cmdline(_cmdline),
       verbose(_verbose),
-      m_last_console_update(mrpt::Clock::now()),
-      m_rawlogEntry(0)
+      m_last_console_update(mrpt::Clock::now())
   {
-    m_filSize = _in_rawlog.getTotalBytesCount();
+    m_physicalFileSize = _in_rawlog.getTotalBytesCount();
   }
 
   // The main method:
@@ -95,8 +94,10 @@ class CRawlogProcessor
         {
           std::cout << mrpt::format(
               "Progress: %7u objects --- Pos: %9sB/%c%9sB \r", (unsigned int)(m_rawlogEntry + 1),
-              mrpt::system::unitsFormat(fil_pos).c_str(), (fil_pos > m_filSize ? '>' : ' '),
-              mrpt::system::unitsFormat(m_filSize).c_str());  // \r -> don't go to the next line...
+              mrpt::system::unitsFormat(fil_pos).c_str(),
+              (fil_pos > m_physicalFileSize ? '>' : ' '),
+              mrpt::system::unitsFormat(m_physicalFileSize)
+                  .c_str());  // \r -> don't go to the next line...
 
           std::cout.flush();
         }
@@ -156,7 +157,7 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 {
  public:
   CRawlogProcessorOnEachObservation(
-      mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool enable_verbose) :
+      mrpt::io::CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool enable_verbose) :
       CRawlogProcessor(in_rawlog, cmdline, enable_verbose)
   {
   }
@@ -215,17 +216,17 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 class CRawlogProcessorFilterObservations : public CRawlogProcessorOnEachObservation
 {
  public:
-  mrpt::io::CFileGZOutputStream& m_out_rawlog;
+  mrpt::io::CCompressedOutputStream& m_out_rawlog;
   size_t m_entries_removed, m_entries_parsed;
   /** Set to true to indicate that we are sure we don't have to keep on
    * reading. */
   bool m_we_are_done_with_this_rawlog;
 
   CRawlogProcessorFilterObservations(
-      mrpt::io::CFileGZInputStream& in_rawlog,
+      mrpt::io::CCompressedInputStream& in_rawlog,
       TCLAP::CmdLine& cmdline,
       bool enable_verbose,
-      mrpt::io::CFileGZOutputStream& out_rawlog) :
+      mrpt::io::CCompressedOutputStream& out_rawlog) :
       CRawlogProcessorOnEachObservation(in_rawlog, cmdline, enable_verbose),
       m_out_rawlog(out_rawlog),
       m_entries_removed(0),

@@ -9,8 +9,8 @@
 
 #include "slam-precomp.h"  // Precompiled headers
 //
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
@@ -60,7 +60,7 @@ void CMetricMapBuilder::loadCurrentMapFromFile(const std::string& fileName)
         "[CMetricMapBuilder::loadCurrentMapFromFile] Loading current map "
         "from '"
         << fileName << "' ..." << std::endl);
-    CFileGZInputStream f(fileName);
+    CCompressedInputStream f(fileName);
 
     // Load from file:
     archiveFrom(f) >> map;
@@ -94,7 +94,7 @@ void CMetricMapBuilder::saveCurrentMapToFile(const std::string& fileName, bool c
   // Save to file:
   if (compressGZ)
   {
-    CFileGZOutputStream f(fileName);
+    CCompressedOutputStream f(fileName);
     archiveFrom(f) << curmap;
   }
   else

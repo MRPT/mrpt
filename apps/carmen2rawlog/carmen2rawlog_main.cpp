@@ -21,7 +21,7 @@
 // ===========================================================================
 
 #include <mrpt/3rdparty/tclap/CmdLine.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/carmen_log_tools.h>
@@ -107,8 +107,8 @@ int main(int argc, char** argv)
     if (!input_stream.is_open())
       throw runtime_error(format("Error opening for read: '%s'", input_log.c_str()));
 
-    mrpt::io::CFileGZOutputStream out_rawlog;
-    if (!out_rawlog.open(output_rawlog, compress_level))
+    mrpt::io::CCompressedOutputStream out_rawlog;
+    if (!out_rawlog.open(output_rawlog, {mrpt::io::CompressionType::Zstd, compress_level}))
       throw runtime_error(format("Error opening for write: '%s'", output_rawlog.c_str()));
 
     // --------------------------------
