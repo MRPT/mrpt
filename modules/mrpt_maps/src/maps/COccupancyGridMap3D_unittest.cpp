@@ -13,7 +13,7 @@
 */
 
 #include <gtest/gtest.h>
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/maps/COccupancyGridMap3D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
@@ -142,7 +142,7 @@ TEST(COccupancyGridMap3DTests, insertScan3D)
 
   // Load sample 3D scan from file:
   mrpt::obs::CSensoryFrame sf;
-  mrpt::io::CFileGZInputStream f(fil);
+  mrpt::io::CCompressedInputStream f(fil);
   mrpt::serialization::archiveFrom(f) >> sf;
 
   auto obs = sf.getObservationByClass<mrpt::obs::CObservation3DRangeScan>();

@@ -91,7 +91,7 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
       const string outfilname = mrpt::system::fileNameChangeExtension(m_inFile, "kml");
       VERBOSE_COUT << "Writing KML file: " << outfilname << "\n";
 
-      CFileOutputStream f(outfilname);
+      mrpt::io::CFileOutputStream f(outfilname);
 
       // Header:
       f.printf(

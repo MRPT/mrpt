@@ -15,7 +15,7 @@
 #pragma once
 
 #include <mrpt/io/CCompressedInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
@@ -227,7 +227,7 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 class CRawlogProcessorFilterObservations : public CRawlogProcessorOnEachObservation
 {
  public:
-  mrpt::io::CFileGZOutputStream& m_out_rawlog;
+  mrpt::io::CCompressedOutputStream& m_out_rawlog;
   size_t m_entries_removed, m_entries_parsed;
   /** Set to true to indicate that we are sure we don't have to keep on
    * reading. */
@@ -237,7 +237,7 @@ class CRawlogProcessorFilterObservations : public CRawlogProcessorOnEachObservat
       mrpt::io::CCompressedInputStream& in_rawlog,
       TCLAP::CmdLine& cmdline,
       bool enable_verbose,
-      mrpt::io::CFileGZOutputStream& out_rawlog) :
+      mrpt::io::CCompressedOutputStream& out_rawlog) :
       CRawlogProcessorOnEachObservation(in_rawlog, cmdline, enable_verbose),
       m_out_rawlog(out_rawlog),
       m_entries_removed(0),

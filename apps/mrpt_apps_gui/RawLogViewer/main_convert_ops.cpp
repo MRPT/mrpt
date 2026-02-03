@@ -21,8 +21,8 @@
 #include "xRawLogViewerMain.h"
 
 // General global variables:
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CObservationStereoImages.h>
@@ -331,8 +331,8 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
   string filToSave;
   AskForSaveRawlog(filToSave);
 
-  CFileGZInputStream fil(filToOpen);
-  CFileGZOutputStream f_out(filToSave);
+  CCompressedInputStream fil(filToOpen);
+  CCompressedOutputStream f_out(filToSave);
 
   wxBusyCursor waitCursor;
   auto filSize = (unsigned int)fil.getTotalBytesCount();
@@ -523,10 +523,10 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
   if (imgFileExtension.empty()) return;
 
   wxBusyCursor waitCursor;
-  CFileGZInputStream fil(str);
+  CCompressedInputStream fil(str);
   auto filSize = (unsigned int)fil.getTotalBytesCount();
 
-  CFileGZOutputStream f_out(filToSave);
+  CCompressedOutputStream f_out(filToSave);
 
   wxString auxStr;
   wxProgressDialog progDia(
@@ -650,10 +650,10 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
   if (!AskForSaveRawlog(filToSave)) return;
 
   wxBusyCursor waitCursor;
-  CFileGZInputStream fil(str);
+  CCompressedInputStream fil(str);
   auto filSize = (unsigned int)fil.getTotalBytesCount();
 
-  CFileGZOutputStream f_out(filToSave);
+  CCompressedOutputStream f_out(filToSave);
 
   wxString auxStr;
   wxProgressDialog progDia(

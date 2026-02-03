@@ -36,7 +36,7 @@ Output files:
   ------------------------------------------------------ */
 
 #include <mrpt/img/TCamera.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CTextFileLinesParser.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/serialization/CArchive.h>
@@ -124,7 +124,7 @@ void stereo2rawlog(
   const string out_rawlog_fil = out_name + string(".rawlog");
   const string out_imgs_dir = out_name + string("_Images");
   cout << "Creating rawlog: " << out_rawlog_fil << endl;
-  mrpt::io::CFileGZOutputStream f_out(out_rawlog_fil);
+  mrpt::io::CCompressedOutputStream f_out(out_rawlog_fil);
 
   if (is_kitti_dataset)
   {

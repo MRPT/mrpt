@@ -15,8 +15,8 @@
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/core/bits_mem.h>  // vector_strong_clear
 #include <mrpt/img/camera_geometry.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/lazy_load_path.h>
 #include <mrpt/math/CLevenbergMarquardt.h>
 #include <mrpt/math/CMatrixF.h>
@@ -647,7 +647,7 @@ void CObservation3DRangeScan::load_impl() const
     }
     else
     {
-      mrpt::io::CFileGZInputStream fi(fil);
+      mrpt::io::CCompressedInputStream fi(fil);
       auto f = mrpt::serialization::archiveFrom(fi);
       f >> const_cast<std::vector<float>&>(points3D_x) >>
           const_cast<std::vector<float>&>(points3D_y) >>
@@ -683,7 +683,7 @@ void CObservation3DRangeScan::load_impl() const
       {
         auto& me = const_cast<CObservation3DRangeScan&>(*this);
 
-        mrpt::io::CFileGZInputStream fi(fil);
+        mrpt::io::CCompressedInputStream fi(fil);
         auto f = mrpt::serialization::archiveFrom(fi);
 
         if (!m_deserializedFromVersionOlder_v9)
@@ -795,7 +795,7 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage(
   }
   else
   {
-    mrpt::io::CFileGZOutputStream fo(real_absolute_path);
+    mrpt::io::CCompressedOutputStream fo(real_absolute_path);
     auto f = mrpt::serialization::archiveFrom(fo);
     f << points3D_x << points3D_y << points3D_z;
   }
@@ -844,7 +844,7 @@ void CObservation3DRangeScan::rangeImage_convertToExternalStorage(
     }
     else
     {
-      mrpt::io::CFileGZOutputStream fo(real_absolute_path);
+      mrpt::io::CCompressedOutputStream fo(real_absolute_path);
       auto f = mrpt::serialization::archiveFrom(fo);
 
       f.WriteAs<uint32_t>(ri->rows());

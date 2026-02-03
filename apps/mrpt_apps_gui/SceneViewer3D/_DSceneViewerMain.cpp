@@ -74,8 +74,8 @@ const std::string iniFileSect("CONF_LIN");
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CWxGLCanvasBase.h>
 #include <mrpt/gui/about_box.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/opengl/CAngularObservationMesh.h>  // It's in lib mrpt-maps
@@ -805,7 +805,7 @@ void _DSceneViewerFrame::loadFromFile(const std::string& fil, bool isInASequence
     // Save the path
     saveLastUsedDirectoryToCfgFile(fil);
 
-    CFileGZInputStream f(fil);
+    CCompressedInputStream f(fil);
 
     const auto oldCanvasCamera = m_canvas->cameraParams();
 
@@ -1141,7 +1141,7 @@ void _DSceneViewerFrame::OnMenuSave(wxCommandEvent& event)
 
     wxString fileName = dialog.GetPath();
 
-    CFileGZOutputStream fo(string(fileName.mb_str()));
+    CCompressedOutputStream fo(string(fileName.mb_str()));
     mrpt::serialization::archiveFrom(fo) << *m_canvas->getOpenGLSceneRef();
   }
   catch (const std::exception& e)

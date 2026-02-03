@@ -14,8 +14,8 @@
 
 #include <mrpt/core/WorkerThreadsPool.h>
 #include <mrpt/core/get_env.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
@@ -327,7 +327,7 @@ bool CPTG_DiffDrive_CollisionGridBased::saveColGridsToFile(
 {
   try
   {
-    mrpt::io::CFileGZOutputStream fo(filename);
+    mrpt::io::CCompressedOutputStream fo(filename);
     if (!fo.fileOpenCorrectly())
     {
       return false;
@@ -352,7 +352,7 @@ bool CPTG_DiffDrive_CollisionGridBased::loadColGridsFromFile(
 {
   try
   {
-    mrpt::io::CFileGZInputStream fi(filename);
+    mrpt::io::CCompressedInputStream fi(filename);
     if (!fi.fileOpenCorrectly())
     {
       return false;

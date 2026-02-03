@@ -15,8 +15,8 @@
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/core/SSE_macros.h>
 #include <mrpt/core/SSE_types.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -2260,7 +2260,7 @@ bool CPointsMap::loadFromKittiVelodyneFile(const std::string& filename)
 {
   try
   {
-    mrpt::io::CFileGZInputStream f_gz;
+    mrpt::io::CCompressedInputStream f_gz;
     mrpt::io::CFileInputStream f_normal;
     mrpt::io::CStream* f = nullptr;
 
@@ -2323,7 +2323,7 @@ bool CPointsMap::saveToKittiVelodyneFile(const std::string& filename) const
     ASSERT_(Is);
     ASSERT_EQUAL_(Is->size(), m_x.size());
 
-    mrpt::io::CFileGZOutputStream f(filename);
+    mrpt::io::CCompressedOutputStream f(filename);
 
     for (size_t i = 0; i < m_x.size(); i++)
     {

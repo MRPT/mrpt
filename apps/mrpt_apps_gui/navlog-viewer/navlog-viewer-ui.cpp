@@ -20,8 +20,8 @@
 #include <mrpt/containers/yaml.h>
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/gui/about_box.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/TObject3D.h>
 #include <mrpt/math/geometry.h>  // intersect()
@@ -366,7 +366,7 @@ void NavlogViewerApp::loadLogfile(const std::string& fileName)
   m_openedFileName = fileName;
   m_winMain->setTitle("Control ["s + mrpt::system::extractFileName(fileName) + "]"s);
 
-  mrpt::io::CFileGZInputStream f(fileName);
+  mrpt::io::CCompressedInputStream f(fileName);
 
   m_logdata.clear();
   m_logdata_ptg_paths.clear();
@@ -1792,7 +1792,7 @@ void NavlogViewerApp::OnmnuExportSelected(std::string filename)
         true /*save*/);
   if (filename.empty()) return;
 
-  mrpt::io::CFileGZOutputStream f(filename);
+  mrpt::io::CCompressedOutputStream f(filename);
   ASSERT_(f.is_open());
   auto a = mrpt::serialization::archiveFrom(f);
 

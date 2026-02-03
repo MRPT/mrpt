@@ -14,7 +14,7 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimpleMap.h>
@@ -122,7 +122,7 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
     {
       // It's a ".simplemap":
       // -------------------------
-      CFileGZInputStream f(MAP_FILE);
+      CCompressedInputStream f(MAP_FILE);
       mrpt::serialization::archiveFrom(f) >> simpleMap;
       ASSERT_(simpleMap.size() > 0);
       // Build metric map:

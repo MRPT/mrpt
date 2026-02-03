@@ -14,8 +14,8 @@
 
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
@@ -237,7 +237,7 @@ int main(int argc, char** argv)
     opts.gaussianModel.minStdPHI = odometryNoisePhi_std;
 
     // Output rawlog, gz-compressed.
-    CFileGZOutputStream fil(format("%s/%s", outDir.c_str(), outFile.c_str()));
+    CCompressedOutputStream fil(format("%s/%s", outDir.c_str(), outFile.c_str()));
     CPose3D realPose;
 
     const size_t N_STEPS_STOP_AT_THE_BEGINNING = 4;

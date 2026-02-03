@@ -13,7 +13,7 @@
 */
 
 #include <gtest/gtest.h>
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/nav/reactive/CLogFileRecord.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
@@ -91,7 +91,7 @@ TEST(NavTests, NavLogLoadFromTestFile)
     return;
   }
 
-  CFileGZInputStream f(navlog_file);
+  CCompressedInputStream f(navlog_file);
   auto arch = archiveFrom(f);
 
   try

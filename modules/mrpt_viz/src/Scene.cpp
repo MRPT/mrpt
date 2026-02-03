@@ -12,8 +12,8 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/metaprogramming_serialization.h>
 #include <mrpt/viz/Scene.h>
@@ -54,7 +54,10 @@ void Scene::clear(bool createMainViewport)
 {
   m_viewports.clear();
 
-  if (createMainViewport) createViewport("main");
+  if (createMainViewport)
+  {
+    createViewport("main");
+  }
 }
 
 /*---------------------------------------------------------------
@@ -87,7 +90,10 @@ void Scene::serializeTo(mrpt::serialization::CArchive& out) const
   uint32_t n;
   n = (uint32_t)m_viewports.size();
   out << n;
-  for (const auto& m_viewport : m_viewports) out << *m_viewport;
+  for (const auto& m_viewport : m_viewports)
+  {
+    out << *m_viewport;
+  }
 }
 
 void Scene::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -239,10 +245,11 @@ void Scene::removeObject(const CVisualObject::Ptr& obj, const std::string& viewp
 bool Scene::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
   bool found = false;
-  double tmp;
+  double tmp = 0;
   for (const auto& vp : m_viewports)
   {
     for (auto it2 = vp->m_objects.begin(); it2 != vp->m_objects.end(); ++it2)
+    {
       if ((*it2)->traceRay(o, tmp))
       {
         if (!found)
@@ -251,8 +258,11 @@ bool Scene::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
           dist = tmp;
         }
         else if (tmp < dist)
+        {
           dist = tmp;
+        }
       }
+    }
   }
   return found;
 }
@@ -261,7 +271,7 @@ bool Scene::saveToFile(const std::string& fil) const
 {
   try
   {
-    mrpt::io::CFileGZOutputStream f(fil);
+    mrpt::io::CCompressedOutputStream f(fil);
     mrpt::serialization::archiveFrom(f) << *this;
     return true;
   }
@@ -275,7 +285,7 @@ bool Scene::loadFromFile(const std::string& fil)
 {
   try
   {
-    mrpt::io::CFileGZInputStream f(fil);
+    mrpt::io::CCompressedInputStream f(fil);
     mrpt::serialization::archiveFrom(f) >> *this;
     return true;
   }

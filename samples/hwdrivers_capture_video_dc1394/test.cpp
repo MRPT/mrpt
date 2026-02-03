@@ -57,7 +57,7 @@ void TestCapture_1394()
   cout << "Press any key to stop capture to 'capture.rawlog'..." << endl;
 
 #if DO_CAPTURE
-  CFileGZOutputStream fil("./capture.rawlog");
+  CCompressedOutputStream fil("./capture.rawlog");
 #endif
 
   CDisplayWindow win("Capturing...");

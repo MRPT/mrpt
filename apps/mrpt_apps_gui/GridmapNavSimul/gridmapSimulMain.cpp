@@ -26,8 +26,8 @@
 //*)
 
 #include <mrpt/gui/about_box.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
@@ -816,7 +816,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 
     // Save rawlog?
     // ----------------------------
-    static CFileGZOutputStream outs;
+    static CCompressedOutputStream outs;
     static CFileOutputStream out_GT;
 
     if (!btnStart->IsEnabled())
@@ -840,7 +840,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
         }
 
         // Save also the gridmap:
-        CFileGZOutputStream out_grid;
+        CCompressedOutputStream out_grid;
         string grid_file = edOutFile->GetValue().ToStdString() + string("_grid.gridmap.gz");
         if (!out_grid.open(grid_file))
         {
@@ -1041,7 +1041,7 @@ void gridmapSimulFrame::OnMenuLoadMap(wxCommandEvent& event)
 
   if (mrpt::system::lowerCase(fil_ext) == "gridmap")
   {
-    CFileGZInputStream f(fil);
+    CCompressedInputStream f(fil);
     archiveFrom(f) >> the_grid;
     update_grid_map_3d();
   }
@@ -1192,7 +1192,7 @@ void gridmapSimulFrame::OnbtnResimulateClick(wxCommandEvent& event)
   }
 
   // Save the new rawlog:
-  CFileGZOutputStream f(out_raw_file);
+  CCompressedOutputStream f(out_raw_file);
   archiveFrom(f) << rawlog;
   // rawlog.saveToRawLogFile(out_raw_file);
 

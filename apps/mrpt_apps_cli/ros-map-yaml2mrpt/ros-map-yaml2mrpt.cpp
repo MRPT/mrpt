@@ -13,8 +13,8 @@
 */
 
 #include <mrpt/3rdparty/tclap/CmdLine.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/opengl/Scene.h>
 #include <mrpt/serialization/CArchive.h>
@@ -108,7 +108,7 @@ int main(int argc, char** argv)
     }
 
     {
-      mrpt::io::CFileGZOutputStream f(outGridFil);
+      mrpt::io::CCompressedInputStream f(outGridFil);
       mrpt::serialization::archiveFrom(f) << grid;
     }
 

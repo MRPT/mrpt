@@ -12,7 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/maps/COccupancyGridMap3D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
@@ -93,7 +93,7 @@ double grid3d_test_insert3DScan(int res_cm, int decimation)
 
   mrpt::obs::CObservation3DRangeScan obs1;
   {
-    mrpt::io::CFileGZInputStream f(rgbd_test_rawlog_file);
+    mrpt::io::CCompressedInputStream f(rgbd_test_rawlog_file);
     auto arch = mrpt::serialization::archiveFrom(f);
     arch >> obs1;
   }

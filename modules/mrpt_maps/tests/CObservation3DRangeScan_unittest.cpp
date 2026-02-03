@@ -14,7 +14,7 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/containers/copy_container_typecasting.h>
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/CHistogram.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
@@ -238,7 +238,7 @@ TEST(CObservation3DRangeScan, LoadAndCheckFloorPoints)
 
   // Load sample 3D scan from file:
   mrpt::obs::CSensoryFrame sf;
-  mrpt::io::CFileGZInputStream f(rawlog_fil);
+  mrpt::io::CCompressedInputStream f(rawlog_fil);
   mrpt::serialization::archiveFrom(f) >> sf;
 
   auto obs = sf.getObservationByClass<mrpt::obs::CObservation3DRangeScan>();
