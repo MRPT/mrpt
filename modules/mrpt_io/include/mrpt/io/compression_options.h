@@ -17,6 +17,8 @@
 
 #include <cstdint>
 
+#undef None  // From X11 headers (sigh)
+
 namespace mrpt::io
 {
 /** Compression algorithm types supported by compressed streams.
@@ -38,7 +40,7 @@ enum class CompressionType : uint8_t
 struct CompressionOptions
 {
   /** Compression algorithm to use */
-  CompressionType type = CompressionType::Gzip;
+  CompressionType type = CompressionType::Zstd;
 
   /** Compression level.
    * - For Gzip: 0 = no compression, 1 = fastest, 9 = best compression
@@ -48,7 +50,7 @@ struct CompressionOptions
   int level = 1;
 
   CompressionOptions() = default;
-  CompressionOptions(CompressionType t, int l = 1) : type(t), level(l) {}
+  CompressionOptions(CompressionType t, int l = 1) : type(t), level(l) {}  // NOLINT
 };
 
 }  // namespace mrpt::io

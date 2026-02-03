@@ -48,7 +48,8 @@ DECLARE_OP_FUNCTION(op_info)
     double firstTimestamp = 0;
     double lastTimestamp = 0;
 
-    CRawlogProcessor_Info(CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool _verbose) :
+    CRawlogProcessor_Info(
+        CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool _verbose) :
         CRawlogProcessor(in_rawlog, cmdline, _verbose)
     {
     }
@@ -118,12 +119,12 @@ DECLARE_OP_FUNCTION(op_info)
   // Dump statistics:
   // ---------------------------------
   cout << "Time to parse file (sec)          : " << proc.m_timToParse << "\n";
-  cout << "Physical file size                : " << mrpt::system::unitsFormat(proc.m_filSize)
-       << "B\n";
+  cout << "Physical file size                : "
+       << mrpt::system::unitsFormat(static_cast<double>(proc.m_physicalFileSize)) << "B\n";
   cout << "Uncompressed file size            : "
-       << mrpt::system::unitsFormat(in_rawlog.getPosition()) << "B\n";
+       << mrpt::system::unitsFormat(static_cast<double>(in_rawlog.getUncompressedSize())) << "B\n";
   cout << "Compression ratio                 : "
-       << format("%.02f%%\n", 100.0 * double(proc.m_filSize) / double(in_rawlog.getPosition()));
+       << format("%.02f%%\n", 100.0 * in_rawlog.getCompressionRatio());
   cout << "Overall number of objects         : " << (proc.m_rawlogEntry + 1) << "\n";
   cout << "Actions/SensoryFrame format       : " << (proc.has_actSF_format ? "Yes" : "No") << "\n";
   cout << "Observations format               : " << (proc.has_obs_format ? "Yes" : "No") << "\n";

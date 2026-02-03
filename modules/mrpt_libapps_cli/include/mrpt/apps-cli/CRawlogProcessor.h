@@ -47,8 +47,8 @@ class CRawlogProcessor
   mrpt::system::CTicTac m_timParse;
 
  public:
-  uint64_t m_filSize;
-  size_t m_rawlogEntry;
+  uint64_t m_physicalFileSize = 0;
+  size_t m_rawlogEntry = 0;
   double m_timToParse;  // Public variable, at end will hold ellapsed time.
 
   // Ctor
@@ -57,10 +57,9 @@ class CRawlogProcessor
       m_in_rawlog(_in_rawlog),
       m_cmdline(_cmdline),
       verbose(_verbose),
-      m_last_console_update(mrpt::Clock::now()),
-      m_rawlogEntry(0)
+      m_last_console_update(mrpt::Clock::now())
   {
-    m_filSize = _in_rawlog.getTotalBytesCount();
+    m_physicalFileSize = _in_rawlog.getTotalBytesCount();
   }
 
   // The main method:
@@ -100,8 +99,10 @@ class CRawlogProcessor
         {
           std::cout << mrpt::format(
               "Progress: %7u objects --- Pos: %9sB/%c%9sB \r", (unsigned int)(m_rawlogEntry + 1),
-              mrpt::system::unitsFormat(fil_pos).c_str(), (fil_pos > m_filSize ? '>' : ' '),
-              mrpt::system::unitsFormat(m_filSize).c_str());  // \r -> don't go to the next line...
+              mrpt::system::unitsFormat(fil_pos).c_str(),
+              (fil_pos > m_physicalFileSize ? '>' : ' '),
+              mrpt::system::unitsFormat(m_physicalFileSize)
+                  .c_str());  // \r -> don't go to the next line...
 
           std::cout.flush();
         }
