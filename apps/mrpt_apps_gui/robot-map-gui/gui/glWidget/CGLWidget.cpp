@@ -11,8 +11,8 @@
 
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CGlCanvasBase.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/TObject3D.h>

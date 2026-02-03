@@ -16,7 +16,7 @@
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/io/CCompressedInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/vector_loadsave.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/obs/CRawlog.h>
@@ -725,7 +725,7 @@ void KFSLAMApp::Run_KF_SLAM()
         if (SAVE_3D_SCENES && !(step % SAVE_LOG_FREQUENCY))
         {
           // Save to file:
-          CFileGZOutputStream f(OUT_DIR + format("/kf_state_%05u.3Dscene", (unsigned int)step));
+          CCompressedOutputStream f(OUT_DIR + format("/kf_state_%05u.3Dscene", (unsigned int)step));
           mrpt::serialization::archiveFrom(f) << *scene3D;
         }
       }

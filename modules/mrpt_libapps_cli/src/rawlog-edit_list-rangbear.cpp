@@ -14,6 +14,8 @@
 
 #include <mrpt/obs/CObservationBearingRange.h>
 
+#include <fstream>
+
 #include "rawlog-edit-declarations.h"
 
 using namespace mrpt;

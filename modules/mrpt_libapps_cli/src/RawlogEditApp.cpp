@@ -615,7 +615,7 @@ TOutputRawlogCreator::TOutputRawlogCreator()
   if (!out_rawlog_io.open(out_rawlog_filename))
     throw runtime_error(string("*ABORTING*: Cannot open output file: ") + out_rawlog_filename);
   out_rawlog =
-      std::make_unique<mrpt::serialization::CArchiveStreamBase<mrpt::io::CFileGZOutputStream>>(
+      std::make_unique<mrpt::serialization::CArchiveStreamBase<mrpt::io::CCompressedOutputStream>>(
           out_rawlog_io);
 }
 

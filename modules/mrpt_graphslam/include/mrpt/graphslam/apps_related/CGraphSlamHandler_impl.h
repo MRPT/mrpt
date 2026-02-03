@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -356,7 +356,7 @@ void CGraphSlamHandler<GRAPH_T>::execute()
   ASSERTDEB_(m_engine);
 
   // Variables initialization
-  mrpt::io::CFileGZInputStream rawlog_stream(m_rawlog_fname);
+  mrpt::io::CCompressedInputStream rawlog_stream(m_rawlog_fname);
   CActionCollection::Ptr action;
   CSensoryFrame::Ptr observations;
   CObservation::Ptr observation;

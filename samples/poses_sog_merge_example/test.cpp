@@ -13,7 +13,7 @@
 */
 
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/serialization/CArchive.h>
@@ -69,7 +69,7 @@ void Test_SoG_Merge()
     scene.insert(o);
     scene.insert(CGridPlaneXY::Create(-5, 5, -5, 5, 0, 1));
 
-    CFileGZOutputStream f("sog_before.3Dscene");
+    CCompressedOutputStream f("sog_before.3Dscene");
     archiveFrom(f) << scene;
 
 #if MRPT_HAS_WXWIDGETS
@@ -96,7 +96,7 @@ void Test_SoG_Merge()
     scene.insert(o);
     scene.insert(CGridPlaneXY::Create(-5, 5, -5, 5, 0, 1));
 
-    CFileGZOutputStream f("sog_after.3Dscene");
+    CCompressedOutputStream f("sog_after.3Dscene");
     archiveFrom(f) << scene;
 
 #if MRPT_HAS_WXWIDGETS

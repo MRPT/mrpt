@@ -14,8 +14,8 @@
 
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/img/color_maps.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/maps/CGasConcentrationGridMap2D.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/ops_containers.h>
@@ -1079,7 +1079,7 @@ bool CGasConcentrationGridMap2D::save_Gaussian_Wind_Grid_To_File()
   // Save LUT to file
   cout << "Saving to File ....";
 
-  CFileGZOutputStream fo(format(
+  CCompressedOutputStream fo(format(
       "Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz", LUT.resolution, LUT.std_phi,
       LUT.std_r));
   if (!fo.fileOpenCorrectly())
@@ -1145,7 +1145,7 @@ bool CGasConcentrationGridMap2D::load_Gaussian_Wind_Grid_From_File()
 
   try
   {
-    CFileGZInputStream fi(format(
+    CCompressedInputStream fi(format(
         "Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz", LUT.resolution, LUT.std_phi,
         LUT.std_r));
     if (!fi.fileOpenCorrectly())

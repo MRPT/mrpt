@@ -217,7 +217,7 @@ void CCameraSensor::initialize()
   {
     // m_cap_rawlog
     cout << format("[CCameraSensor::initialize] Rawlog stream: %s...\n", m_rawlog_file.c_str());
-    m_cap_rawlog = std::make_unique<CFileGZInputStream>();
+    m_cap_rawlog = std::make_unique<CCompressedInputStream>();
 
     if (!m_cap_rawlog->open(m_rawlog_file))
     {

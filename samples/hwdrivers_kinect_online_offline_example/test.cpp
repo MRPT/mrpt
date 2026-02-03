@@ -25,7 +25,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/img/TColor.h>
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/CFrustum.h>
@@ -105,7 +105,7 @@ void thread_grabbing(TThreadParam& p)
 
     // Only one of these will be actually used:
     CKinectPtr kinect;
-    CFileGZInputStream dataset;
+    CCompressedInputStream dataset;
 
     mrpt::system::TTimeStamp dataset_prev_tim = INVALID_TIMESTAMP;
     mrpt::system::TTimeStamp my_last_read_obs_tim = INVALID_TIMESTAMP;

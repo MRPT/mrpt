@@ -12,7 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
@@ -47,7 +47,7 @@ double obs3d_test_depth_to_3d(int a, int b)
 {
   CObservation3DRangeScan obs1;
   {
-    CFileGZInputStream f(rgbd_test_rawlog_file);
+    CCompressedInputStream f(rgbd_test_rawlog_file);
     archiveFrom(f) >> obs1;
   }
 
@@ -88,7 +88,7 @@ double obs3d_test_depth_to_2d_scan(int useMinFilter, int useMaxFilter)
 {
   CObservation3DRangeScan obs1;
   {
-    CFileGZInputStream f(rgbd_test_rawlog_file);
+    CCompressedInputStream f(rgbd_test_rawlog_file);
     archiveFrom(f) >> obs1;
   }
 

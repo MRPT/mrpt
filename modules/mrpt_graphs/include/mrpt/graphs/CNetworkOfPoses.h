@@ -25,8 +25,8 @@
 #include <mrpt/graphs/TMRSlamNodeAnnotations.h>
 #include <mrpt/graphs/TNodeAnnotations.h>
 #include <mrpt/graphs/dijkstra.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/serialization/CSerializable.h>

@@ -21,8 +21,8 @@
   ---------------------------------------------------------------*/
 
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimpleMap.h>
@@ -80,7 +80,7 @@ int main(int argc, char** argv)
     // Load simplemap:
     cout << "Loading simplemap...";
     mrpt::maps::CSimpleMap simplemap;
-    mrpt::io::CFileGZInputStream f(inputFile.c_str());
+    mrpt::io::CCompressedInputStream f(inputFile.c_str());
     mrpt::serialization::archiveFrom(f) >> simplemap;
     cout << "done: " << simplemap.size() << " observations." << endl;
 
@@ -120,7 +120,7 @@ int main(int argc, char** argv)
 
       std::cout << "Saving map #" << i << " to " << str << std::endl;
 
-      CFileGZOutputStream fo(str);
+      CCompressedOutputStream fo(str);
       mrpt::serialization::archiveFrom(fo) << m;
 
       cout << "Done." << endl;

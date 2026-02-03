@@ -13,7 +13,7 @@
 */
 
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/maps/CBeaconMap.h>
 #include <mrpt/obs/CActionCollection.h>

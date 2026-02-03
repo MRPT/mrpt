@@ -13,8 +13,8 @@
 */
 
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/serialization/CArchive.h>
@@ -80,8 +80,8 @@ int main(int argc, char** argv)
   cout << "Processing Rawlog " << rawlog_file << endl;
   cout << "Obtaining MOXmodel from " << sensorLabel << "(" << enoseID << ") - sensor " << sensorType
        << endl;
-  CFileGZInputStream file_input;
-  CFileGZOutputStream file_output;
+  CCompressedInputStream file_input;
+  CCompressedOutputStream file_output;
 
   file_input.open(rawlog_file);
   file_output.open("MOX_model_output.rawlog");

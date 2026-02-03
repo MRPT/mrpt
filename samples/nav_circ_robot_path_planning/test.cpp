@@ -13,7 +13,7 @@
 */
 
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/nav/planners/PlannerSimple2D.h>
 #include <mrpt/poses/CPose2D.h>
@@ -52,7 +52,7 @@ void TestPathPlanning()
 
   printf("Loading gridmap...");
   {
-    CFileGZInputStream f(myGridMap);
+    CCompressedInputStream f(myGridMap);
     auto arch = archiveFrom(f);
     arch >> gridmap;
   }

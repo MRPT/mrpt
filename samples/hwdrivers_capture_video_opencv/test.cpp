@@ -14,7 +14,7 @@
 
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
 
@@ -59,7 +59,7 @@ void TestCapture_OpenCV()
 
   cout << "Press any key to stop capture to 'capture.rawlog'..." << endl;
 
-  CFileGZOutputStream fil("./capture.rawlog");
+  CCompressedOutputStream fil("./capture.rawlog");
 
   CDisplayWindow win("Capturing...");
 
