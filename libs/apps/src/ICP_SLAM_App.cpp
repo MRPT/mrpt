@@ -11,7 +11,7 @@
 //
 #include <mrpt/apps/ICP_SLAM_App.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/vector_loadsave.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
@@ -354,7 +354,7 @@ void ICP_SLAM_App_Base::run()
       // Save as file:
       if (LOG_FREQUENCY > 0 && 0 == (step % LOG_FREQUENCY) && SAVE_3D_SCENE)
       {
-        CFileGZOutputStream f(mrpt::format("%s/buildingmap_%05u.3Dscene", OUT_DIR, step));
+        CCompressedOutputStream f(mrpt::format("%s/buildingmap_%05u.3Dscene", OUT_DIR, step));
         mrpt::serialization::archiveFrom(f) << *scene;
       }
 

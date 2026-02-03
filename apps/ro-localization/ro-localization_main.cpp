@@ -26,8 +26,8 @@
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileStream.h>
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -291,7 +291,7 @@ void TestParticlesLocalization()
       {
         COccupancyGridMap2D grid2d;
         {
-          CFileGZInputStream f(MAP_FILE);
+          CCompressedInputStream f(MAP_FILE);
           archiveFrom(f) >> grid2d;
         }
 

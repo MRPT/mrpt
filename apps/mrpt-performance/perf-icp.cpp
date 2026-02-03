@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -42,7 +42,7 @@ double icp_test_1(int a1, int a2)
 
   int step = 0;
   size_t rawlogEntry = 0;
-  mrpt::io::CFileGZInputStream rawlogFile(rawlog_file);
+  mrpt::io::CCompressedInputStream rawlogFile(rawlog_file);
 
   TSetOfMetricMapInitializers metricMapsOpts;
 

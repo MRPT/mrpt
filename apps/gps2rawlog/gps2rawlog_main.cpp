@@ -17,8 +17,8 @@
 
 #include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 
@@ -61,7 +61,7 @@ int main(int argc, char** argv)
     ASSERT_FILE_EXISTS_(input_gps_file);
 
     // Open input rawlog:
-    auto fil_input = std::make_shared<CFileGZInputStream>();
+    auto fil_input = std::make_shared<CCompressedInputStream>();
     cout << "Opening for reading: '" << input_gps_file << "'...\n";
     fil_input->open(input_gps_file);
     cout << "Open OK.\n";
@@ -74,7 +74,7 @@ int main(int argc, char** argv)
       return 1;
     }
 
-    CFileGZOutputStream fil_out;
+    CCompressedOutputStream fil_out;
     cout << "Opening for writing: '" << output_rawlog_file << "'...\n";
     if (!fil_out.open(output_rawlog_file)) throw std::runtime_error("Error writing file!");
 

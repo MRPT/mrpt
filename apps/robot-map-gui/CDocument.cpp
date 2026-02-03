@@ -17,8 +17,8 @@
 #include <mrpt/serialization/CArchive.h>
 
 #include "mrpt/config/CConfigFile.h"
+#include "mrpt/io/CCompressedOutputStream.h"
 #include "mrpt/io/CFileGZInputStream.h"
-#include "mrpt/io/CFileGZOutputStream.h"
 #include "mrpt/io/CFileOutputStream.h"
 
 const std::string METRIC_MAP_CONFIG_SECTION = "MappingApplication";
@@ -69,7 +69,7 @@ void CDocument::saveMetricmapInBinaryFormat(
 
   auto mapIter = iter->second.begin() + index;
 
-  mrpt::io::CFileGZOutputStream fil(fileName);
+  mrpt::io::CCompressedOutputStream fil(fileName);
   mrpt::serialization::archiveFrom(fil) << **mapIter;
 }
 

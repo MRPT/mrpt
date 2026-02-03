@@ -34,7 +34,7 @@ DECLARE_OP_FUNCTION(op_remove_label)
         mrpt::io::CCompressedInputStream& in_rawlog,
         TCLAP::CmdLine& cmdline,
         bool _verbose,
-        mrpt::io::CFileGZOutputStream& out_rawlog,
+        mrpt::io::CCompressedOutputStream& out_rawlog,
         const std::string& filter_label) :
         CRawlogProcessorFilterObservations(in_rawlog, cmdline, _verbose, out_rawlog)
     {
@@ -91,7 +91,7 @@ DECLARE_OP_FUNCTION(op_keep_label)
         mrpt::io::CCompressedInputStream& in_rawlog,
         TCLAP::CmdLine& cmdline,
         bool _verbose,
-        mrpt::io::CFileGZOutputStream& out_rawlog,
+        mrpt::io::CCompressedOutputStream& out_rawlog,
         const std::string& filter_label) :
         CRawlogProcessorFilterObservations(in_rawlog, cmdline, _verbose, out_rawlog)
     {

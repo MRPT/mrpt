@@ -24,7 +24,7 @@
 //*)
 
 #include <mrpt/gui/WxUtils.h>
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/TObject3D.h>
 #include <mrpt/poses/CPoint2D.h>
@@ -915,7 +915,7 @@ void holonomic_navigator_demoFrame::OnbtnLoadMapClick(wxCommandEvent& event)
 
   if (mrpt::system::lowerCase(fil_ext) == "gridmap")
   {
-    CFileGZInputStream f(fil);
+    CCompressedInputStream f(fil);
     archiveFrom(f) >> m_gridMap;
   }
   else

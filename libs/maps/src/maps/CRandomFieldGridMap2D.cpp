@@ -11,7 +11,7 @@
 //
 #include <mrpt/core/round.h>
 #include <mrpt/img/color_maps.h>
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CRandomFieldGridMap2D.h>
 #include <mrpt/maps/CSimpleMap.h>
@@ -248,7 +248,7 @@ void CRandomFieldGridMap2D::internal_clear()
         if (!m_insertOptions_common->GMRF_simplemap_file.empty())
         {
           mrpt::maps::CSimpleMap simpleMap;
-          CFileGZInputStream fi(this->m_insertOptions_common->GMRF_simplemap_file);
+          CCompressedInputStream fi(this->m_insertOptions_common->GMRF_simplemap_file);
           mrpt::serialization::archiveFrom(fi) >> simpleMap;
           ASSERT_(!simpleMap.empty());
           m_Ocgridmap.loadFromSimpleMap(simpleMap);

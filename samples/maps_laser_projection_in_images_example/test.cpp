@@ -16,7 +16,7 @@
 // -----------------------------------------------------------------------------------------------------------------------
 
 #include <mrpt/gui/CDisplayWindow.h>
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
@@ -68,7 +68,7 @@ void TestLaser2Imgs()
   rawlog_images_path += "/Images";
   CImage::setImagesPathBase(rawlog_images_path);  // Set it.
 
-  mrpt::io::CFileGZInputStream rawlogFile(RAWLOG_FILE);
+  mrpt::io::CCompressedInputStream rawlogFile(RAWLOG_FILE);
 
   for (;;)
   {

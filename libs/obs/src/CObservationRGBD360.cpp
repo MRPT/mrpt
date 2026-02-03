@@ -9,8 +9,7 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 //
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/obs/CObservationRGBD360.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/serialization/CArchive.h>

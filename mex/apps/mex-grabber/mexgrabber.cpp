@@ -22,7 +22,7 @@
 #include <mrpt/core/round.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 

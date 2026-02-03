@@ -10,6 +10,7 @@
 #include "apps-precomp.h"  // Precompiled headers
 //
 #include <mrpt/img/color_maps.h>
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/math/interp_fit.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/obs/CObservationGasSensors.h>
@@ -140,7 +141,7 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
       const string outfilname = mrpt::system::fileNameChangeExtension(m_inFile, "kml");
       VERBOSE_COUT << "Writing KML file: " << outfilname << endl;
 
-      CFileOutputStream f(outfilname);
+      mrpt::io::CFileOutputStream f(outfilname);
 
       // Header:
       f.printf(

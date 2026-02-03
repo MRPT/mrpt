@@ -9,7 +9,7 @@
 
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
-#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
@@ -47,7 +47,7 @@ void TestCapture_FlyCapture2()
   CTicTac tictac;
   cout << "Press any key to stop capture to 'capture.rawlog'..." << endl;
 
-  CFileGZOutputStream fil("./capture.rawlog");
+  CCompressedOutputStream fil("./capture.rawlog");
 
   CDisplayWindow win("Capturing...");
 

@@ -70,7 +70,7 @@ END_EVENT_TABLE()
 
 // Global variables:
 #include <mrpt/gui/WxUtils.h>
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
@@ -396,12 +396,12 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent&)
     long delay_ms = 0;
     edDelay->GetValue().ToLong(&delay_ms);
 
-    CFileGZInputStream* fil;
+    CCompressedInputStream* fil;
 
     if (rbFile->GetValue())
     {
       // Load from file:
-      fil = new CFileGZInputStream(std::string(edFile->GetValue().mb_str()));
+      fil = new CCompressedInputStream(std::string(edFile->GetValue().mb_str()));
     }
     else
     {
