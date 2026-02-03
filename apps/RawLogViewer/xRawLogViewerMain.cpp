@@ -1494,12 +1494,12 @@ void xRawLogViewerFrame::OnSaveFile(wxCommandEvent&)
     // Save the path
     WX_START_TRY
 
-    iniFile->write(iniFileSect, "LastDir", string(filePath.mb_str()));
+    iniFile->write(iniFileSect, "LastDir", std::string(filePath.mb_str()));
 
     // Save the file:
     loadedFileName = fileName.mb_str();
 
-    CFileGZOutputStream fs(loadedFileName.c_str());
+    mrpt::io::CCompressedOutputStream fs(loadedFileName.c_str());
 
     int countLoop = 0, i, n = (int)rawlog.size();
 
@@ -1648,10 +1648,10 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 
   CCompressedInputStream fil(str);
 
-  uint64_t filSize = fil.getTotalBytesCount();
+  uint64_t filSize = std::max(fil.getUncompressedSize(), fil.getTotalBytesCount());
 
-  const uint64_t progDialogMax =
-      filSize >> 10;  // Size, in Kb's (to avoid saturatin the "int" in wxProgressDialog)
+  // Size, in Kb's (to avoid saturatin the "int" in wxProgressDialog)
+  uint64_t progDialogMax = filSize >> 10;
 
   loadedFileName = str;
   StatusBar1->SetStatusText((mrpt::format("Loading file: %s", str.c_str()).c_str()));
@@ -1678,7 +1678,6 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
   size_t countLoop = 0;
   int entryIndex = 0;
   bool keepLoading = true;
-  bool alreadyWarnedTooLargeFile = false;
   string errorMsg;
 
   double last_ratio = -1;
@@ -1686,7 +1685,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
   {
     if (countLoop++ % 10 == 0)
     {
-      uint64_t fil_pos = fil.getPosition();
+      uint64_t fil_pos = fil.getUncompressedPosition();
       double ratio = fil_pos / (1.0 * filSize);
 
       if (ratio - last_ratio >= 0.006)
@@ -1701,26 +1700,17 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
         auxStr.sprintf(
             wxT("Loading... %u objects / Memory usage: %.03fMb"),
             static_cast<unsigned int>(rawlog.size()), memUsg_Mb);
+
+        filSize = std::max(fil.getUncompressedSize(), fil.getTotalBytesCount());
+        progDialogMax = filSize >> 10;
+        progDia.SetRange(progDialogMax);
+
         if (!progDia.Update(progPos < (progDialogMax - 1) ? progPos : (progDialogMax - 1), auxStr))
+        {
           keepLoading = false;
+        }
         progDia.Fit();
         wxTheApp->Yield();  // Let the app. process messages
-
-        if (memUsg_Mb > 8000 && !alreadyWarnedTooLargeFile)
-        {
-          alreadyWarnedTooLargeFile = true;
-          string msg;
-          msg +=
-              "It seems that the file you are loading will consume a "
-              "large amount of memory if loaded in memory "
-              "completely.\n";
-          msg +=
-              "This is just a warning to make you watch whether your "
-              "system runs out of memory while still loading.\n";
-          msg += "Do you want to continue loading this file?";
-          if (wxNO == wxMessageBox(msg.c_str(), _("Warning"), wxYES_NO | wxICON_EXCLAMATION))
-            keepLoading = false;
-        }
       }
     }
 
