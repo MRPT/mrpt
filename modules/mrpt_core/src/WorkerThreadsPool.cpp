@@ -11,44 +11,47 @@
  See: https://www.mrpt.org/Authors - All rights reserved.
  SPDX-License-Identifier: BSD-3-Clause
 */
+
 /**
  * @file   WorkerThreadsPool.cpp
- * @brief  Simple thread pool
+ * @brief  Simple thread pool for parallel task execution
  * @author Jose Luis Blanco Claraco
  * @date   Dec 6, 2018
  */
 
 #include <mrpt/core/WorkerThreadsPool.h>
 #include <mrpt/core/config.h>
-#include <mrpt/core/config.h>  // MRPT_OS_*()
 #include <mrpt/core/exceptions.h>
 
 #include <iostream>
 
-// for SetThreadDescription()
+// For SetThreadDescription() on Windows
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
 
-using namespace mrpt;
+namespace mrpt
+{
 
 void WorkerThreadsPool::clear()
 {
   {
-    std::unique_lock<std::mutex> lock(queue_mutex_);
+    std::scoped_lock lock(queue_mutex_);
     do_stop_ = true;
   }
   condition_.notify_all();
 
-  if (!tasks_.empty())
+  // Warn about discarded tasks (but only if there are any)
+  if (const auto pending = tasks_.size(); pending > 0)
   {
-    std::cerr << "[WorkerThreadsPool name=`" << name_
-              << "`] Warning: clear() called (probably from a "
-                 "dtor) while having "
-              << tasks_.size() << " pending tasks. Aborting them.\n";
+    std::cerr << "[WorkerThreadsPool name='" << name_
+              << "'] Warning: clear() called (probably from destructor) "
+                 "while having "
+              << pending << " pending task(s). Discarding them.\n";
   }
 
+  // Join all threads
   for (auto& t : threads_)
   {
     if (t.joinable())
@@ -61,50 +64,64 @@ void WorkerThreadsPool::clear()
 
 std::size_t WorkerThreadsPool::pendingTasks() const noexcept
 {
-  std::unique_lock<std::mutex> lock(const_cast<WorkerThreadsPool*>(this)->queue_mutex_);
-
+  std::scoped_lock lock(queue_mutex_);
   return tasks_.size();
 }
 
 void WorkerThreadsPool::resize(std::size_t num_threads)
 {
+  threads_.reserve(threads_.size() + num_threads);
+
   for (std::size_t i = 0; i < num_threads; ++i)
   {
-    threads_.emplace_back(
-        [this]
-        {
-          for (;;)
-          {
-            try
-            {
-              std::function<void()> task;
-              {
-                std::unique_lock<std::mutex> lock(queue_mutex_);
-                condition_.wait(lock, [this] { return do_stop_ || !tasks_.empty(); });
-                if (do_stop_)
-                {
-                  return;
-                }
-                task = std::move(tasks_.front());
-                tasks_.pop();
-              }
-              // Execute:
-              task();
-            }
-            catch (std::exception& e)
-            {
-              std::cerr << "[WorkerThreadsPool name=`" << name_ << "`] Exception:\n"
-                        << mrpt::exception_to_str(e) << "\n";
-            }
-          }
-        });
+    threads_.emplace_back([this] { workerLoop(); });
   }
 }
 
-// code partially replicated from mrpt::system for convenience (avoid dep)
+void WorkerThreadsPool::workerLoop() noexcept
+{
+  for (;;)
+  {
+    try
+    {
+      std::function<void()> task;
+
+      // Wait for a task or stop signal
+      {
+        std::unique_lock<std::mutex> lock(queue_mutex_);
+        condition_.wait(lock, [this] { return do_stop_ || !tasks_.empty(); });
+
+        if (do_stop_ && tasks_.empty())
+        {
+          return;
+        }
+
+        task = std::move(tasks_.front());
+        tasks_.pop();
+      }
+
+      // Execute the task outside the lock
+      task();
+    }
+    catch (const std::exception& e)
+    {
+      std::cerr << "[WorkerThreadsPool name='" << name_
+                << "'] Unhandled exception in worker thread:\n"
+                << mrpt::exception_to_str(e) << "\n";
+    }
+    catch (...)
+    {
+      std::cerr << "[WorkerThreadsPool name='" << name_
+                << "'] Unknown exception in worker thread.\n";
+    }
+  }
+}
+
+// Platform-specific thread naming implementation
 namespace
 {
-void mySetThreadName(const std::string& name, std::thread& theThread)
+void setThreadName(
+    [[maybe_unused]] const std::string& name, [[maybe_unused]] std::thread& theThread)
 {
 #if defined(MRPT_OS_WINDOWS) && !defined(__MINGW32_MAJOR_VERSION)
   wchar_t wName[50];
@@ -112,20 +129,21 @@ void mySetThreadName(const std::string& name, std::thread& theThread)
   SetThreadDescription(theThread.native_handle(), wName);
 #elif defined(MRPT_OS_LINUX) && !MRPT_IN_EMSCRIPTEN
   auto handle = theThread.native_handle();
-  pthread_setname_np(handle, name.c_str());
+  // Note: pthread_setname_np has a 16-char limit (including null terminator)
+  pthread_setname_np(handle, name.substr(0, 15).c_str());
 #endif
 }
 }  // namespace
 
 void WorkerThreadsPool::name(const std::string& name)
 {
-  using namespace std::string_literals;
-
   name_ = name;
 
   for (std::size_t i = 0; i < threads_.size(); ++i)
   {
-    const std::string str = name + "["s + std::to_string(i) + "]"s;
-    mySetThreadName(str, threads_.at(i));
+    const std::string threadName = name + "[" + std::to_string(i) + "]";
+    setThreadName(threadName, threads_[i]);
   }
 }
+
+}  // namespace mrpt
