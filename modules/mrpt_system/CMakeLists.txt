@@ -42,7 +42,6 @@ set(LIB_SOURCES
   src/CTimeLogger.cpp
   src/CRateTimer.cpp
   src/scheduler.cpp
-  src/WorkerThreadsPool.cpp
   src/datetime.cpp
   src/CObserver.cpp
   src/CDirectoryExplorer.cpp
