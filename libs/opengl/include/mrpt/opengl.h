@@ -10,6 +10,7 @@
 #pragma once
 
 #include <mrpt/config.h>
+#include <mrpt/opengl/CAnimatedAssimpModel.h>
 #include <mrpt/opengl/CArrow.h>
 #include <mrpt/opengl/CAssimpModel.h>
 #include <mrpt/opengl/CAxis.h>
