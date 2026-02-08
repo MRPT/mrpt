@@ -34,6 +34,7 @@ uint8_t CAnimatedAssimpModel::serializeGetVersion() const { return 0; }
 void CAnimatedAssimpModel::serializeTo(mrpt::serialization::CArchive& out) const
 {
   // Delegate to base class which stores the assimp blob:
+  out << CAssimpModel::serializeGetVersion();
   CAssimpModel::serializeTo(out);
   // Animation state (cheap to store):
   out << activeAnimation_ << currentTime_ << looping_;
@@ -45,7 +46,8 @@ void CAnimatedAssimpModel::serializeFrom(mrpt::serialization::CArchive& in, uint
   {
     case 0:
     {
-      CAssimpModel::serializeFrom(in, CAssimpModel::serializeGetVersion());
+      uint8_t baseVersion = in.ReadAs<uint8_t>();
+      CAssimpModel::serializeFrom(in, baseVersion);
       in >> activeAnimation_ >> currentTime_ >> looping_;
       // Skeleton will be re-extracted via onAfterLoadScene() triggered
       // by the base class deserialization path.

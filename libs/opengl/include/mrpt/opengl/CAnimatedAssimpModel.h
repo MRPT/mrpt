@@ -234,6 +234,7 @@ class CAnimatedAssimpModel : public CAssimpModel
   /** Encode a (mesh, vertex) pair into a single lookup key. */
   static uint64_t vertexKey(unsigned int meshIdx, unsigned int vertIdx)
   {
+    ASSERT_GT_(vertIdx, 1u << 20);
     return (static_cast<uint64_t>(meshIdx) << 20) | static_cast<uint64_t>(vertIdx);
   }
 };
