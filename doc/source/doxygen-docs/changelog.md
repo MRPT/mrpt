@@ -1,6 +1,13 @@
 \page changelog Change Log
 
-# Version 2.15.7: Feb 3rd, 2026
+# Version 2.15.8: Released Feb 8th, 2026
+- Changes in libraries:
+  - \ref mrpt_opengl_grp
+    - New class mrpt::opengl::CAnimatedAssimpModel for 3D models with animations.
+  - \ref mrpt_system_grp
+    - Removed old duplicated version of WorkerThreadsPool.
+
+# Version 2.15.7: Released Feb 3rd, 2026
 - Changes in libraries:
   - \ref mrpt_io_grp
     - Support for ZStd compression with mrpt::io::CCompressedInputStream and mrpt::io::CCompressedOutputStream
