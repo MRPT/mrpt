@@ -54,7 +54,7 @@ class CAssimpModel :
   void render(const RenderContext& rc) const override;
   void renderUpdateBuffers() const override;
 
-  virtual shader_list_t requiredShaders() const override
+  shader_list_t requiredShaders() const override
   {
     // May use up to two shaders (triangles and lines):
     return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES_LIGHT, DefaultShaderID::POINTS};
@@ -62,7 +62,7 @@ class CAssimpModel :
   void onUpdateBuffers_Wireframe() override;
   void onUpdateBuffers_Triangles() override;
   void onUpdateBuffers_Points() override;
-  void onUpdateBuffers_all();  // special case for assimp
+  virtual void onUpdateBuffers_all();  // special case for assimp
   void freeOpenGLResources() override
   {
     CRenderizableShaderTriangles::freeOpenGLResources();
@@ -78,12 +78,12 @@ class CAssimpModel :
   /** @} */
 
   CAssimpModel();
-  virtual ~CAssimpModel() override;
+  ~CAssimpModel() override;
 
   /** Import flags for loadScene */
   struct LoadFlags
   {
-    enum flags_t : uint32_t
+    enum flags_t : uint32_t  // NOLINT
     {
       /** See: aiProcessPreset_TargetRealtime_Fast */
       RealTimeFast = 0x0001,
@@ -144,6 +144,19 @@ class CAssimpModel :
   {
     return m_texturedObjects;
   }
+
+ protected:
+  // -- Skeleton / animation support for derived classes ---------
+
+  /** Provide read-only access to the Assimp scene pointer.
+   *  Returns nullptr when no model has been loaded or Assimp is unavailable.
+   *  \note Intended for CAnimatedAssimpModel and similar subclasses. */
+  const aiScene* getAssimpScene() const;
+
+  /** Hook called at the end of loadScene() / deserialization, after
+   *  onUpdateBuffers_all().  Override in derived classes to extract
+   *  skeleton data, etc.  Default implementation does nothing. */
+  virtual void onAfterLoadScene() {}
 
  private:
   /** The interface to the file: */
