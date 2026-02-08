@@ -196,6 +196,15 @@ struct CAssimpModel::Impl
 #endif
 };
 
+const aiScene* CAssimpModel::getAssimpScene() const
+{
+#if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL) && MRPT_HAS_ASSIMP
+  return m_assimp_scene->scene;
+#else
+  return nullptr;
+#endif
+}
+
 #if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL) && MRPT_HAS_ASSIMP
 
 // Just return the diffuse color:
@@ -514,6 +523,8 @@ void CAssimpModel::after_load_model()
   // This populates the structures that will be attached to opengl
   // buffers
   const_cast<CAssimpModel&>(*this).onUpdateBuffers_all();
+
+  onAfterLoadScene();
 #endif
 }
 

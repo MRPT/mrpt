@@ -32,6 +32,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_opengl)
 
   registerClass(CLASS_ID(CArrow));
   registerClass(CLASS_ID(CAssimpModel));
+  registerClass(CLASS_ID(CAnimatedAssimpModel));
   registerClass(CLASS_ID(CAxis));
   registerClass(CLASS_ID(CBox));
   registerClass(CLASS_ID(CCamera));
