@@ -424,7 +424,6 @@
 #include <mrpt/system/CRateTimer.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <mrpt/system/WorkerThreadsPool.h>
 #include <mrpt/system/crc.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
