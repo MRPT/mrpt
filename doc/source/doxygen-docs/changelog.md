@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.15.9: UNRELEASED
+(None yet)
+
 # Version 2.15.8: Released Feb 8th, 2026
 - Changes in libraries:
   - \ref mrpt_opengl_grp
