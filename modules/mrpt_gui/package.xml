@@ -13,7 +13,6 @@
   <buildtool_depend>cmake</buildtool_depend>
 
   <depend>mrpt_opengl</depend>
-  <depend>mrpt_nanogui</depend>
 
   <export>
     <build_type>cmake</build_type>

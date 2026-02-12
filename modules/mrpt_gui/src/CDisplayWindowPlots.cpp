@@ -144,8 +144,6 @@ CWindowDialogPlots::CWindowDialogPlots(
 #endif
 }
 
-// Destructor
-CWindowDialogPlots::~CWindowDialogPlots() = default;
 // OnClose event:
 void CWindowDialogPlots::OnClose(wxCloseEvent& event)
 {
