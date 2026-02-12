@@ -93,7 +93,10 @@ void CWindowDialog::wxMRPTImageControl::OnPaint(wxPaintEvent& ev)
 void CWindowDialog::wxMRPTImageControl::GetBitmap(wxBitmap& bmp)
 {
   std::lock_guard<std::mutex> lock(m_img_cs);
-  if (!m_img) return;
+  if (!m_img)
+  {
+    return;
+  }
   bmp = *m_img;
 }
 
@@ -383,9 +386,16 @@ void CDisplayWindow::showImageAndPoints(
     const TColor& color,
     bool showNumbers)
 {
-  std::vector<float> x(x_.size()), y(y_.size());
-  for (size_t i = 0; i < x.size(); i++) x[i] = x_[i];
-  for (size_t i = 0; i < y.size(); i++) y[i] = y_[i];
+  std::vector<float> x(x_.size());
+  std::vector<float> y(y_.size());
+  for (size_t i = 0; i < x.size(); i++)
+  {
+    x[i] = x_[i];
+  }
+  for (size_t i = 0; i < y.size(); i++)
+  {
+    y[i] = y_[i];
+  }
   showImageAndPoints(img, x, y, color, showNumbers);
 }
 
@@ -403,13 +413,13 @@ void CDisplayWindow::showImageAndPoints(
   CImage imgColor = img.colorImage();  // Create a colorimage
   for (size_t i = 0; i < x.size(); i++)
   {
-    imgColor.drawMark(round(x[i]), round(y[i]), color, '+');
+    imgColor.drawMark({round(x[i]), round(y[i])}, color, '+');
 
     if (showNumbers)
     {
       char buf[15];
       mrpt::system::os::sprintf(buf, 15, "%d", int(i));
-      imgColor.textOut(round(x[i]) - 10, round(y[i]), buf, color);
+      imgColor.textOut({round(x[i]) - 10, round(y[i])}, buf, color);
     }
   }  // end-for
   showImage(imgColor);
@@ -432,33 +442,34 @@ void CDisplayWindow::plot(const CVectorFloat& x, const CVectorFloat& y)
   // Suboptimal but...
   CImage imgColor(640, 480, mrpt::img::CH_RGB);
   // Draw axis:
-  imgColor.filledRectangle(0, 0, 640, 480, TColor(255, 255, 255));
-  imgColor.line(40, 40, 560, 40, TColor::black(), 3);
-  imgColor.line(40, 40, 40, 440, TColor::black(), 3);
-  imgColor.line(560, 40, 555, 45, TColor::black(), 3);
-  imgColor.line(560, 40, 555, 35, TColor::black(), 3);
-  imgColor.line(40, 440, 35, 435, TColor::black(), 3);
-  imgColor.line(40, 440, 45, 435, TColor::black(), 3);
+  imgColor.filledRectangle({0, 0}, {640, 480}, TColor(255, 255, 255));
+  imgColor.line({40, 40}, {560, 40}, TColor::black(), 3);
+  imgColor.line({40, 40}, {40, 440}, TColor::black(), 3);
+  imgColor.line({560, 40}, {555, 45}, TColor::black(), 3);
+  imgColor.line({560, 40}, {555, 35}, TColor::black(), 3);
+  imgColor.line({40, 440}, {35, 435}, TColor::black(), 3);
+  imgColor.line({40, 440}, {45, 435}, TColor::black(), 3);
 
   // imgColor.textOut( 550, 25, "x", TColor::black );
   // imgColor.textOut( 25, 430, "y", TColor::black );
 
-  CVectorFloat::const_iterator itx, ity;
-  CVectorFloat::const_iterator itymx, itymn;
-  itymx = std::max_element(y.begin(), y.end());
-  itymn = std::min_element(y.begin(), y.end());
+  const auto itymx = std::max_element(y.begin(), y.end());
+  const auto itymn = std::min_element(y.begin(), y.end());
   float px = (x[x.size() - 1] - x[0]) / 520;
   float py = (*itymx - *itymn) / 400;
 
-  float tpxA = 0, tpyA = 0;
+  float tpxA = 0;
+  float tpyA = 0;
 
-  for (itx = x.begin(), ity = y.begin(); itx != x.end(); ++itx, ++ity)
+  for (auto itx = x.begin(), ity = y.begin(); itx != x.end(); ++itx, ++ity)
   {
     float tpx = (*itx - x[0]) / px + ox;
     float tpy = (*ity - *itymn) / py + oy;
-    imgColor.drawMark(round(tpx), round(tpy), TColor(255, 0, 0), 'x');
+    imgColor.drawMark({round(tpx), round(tpy)}, TColor(255, 0, 0), 'x');
     if (itx != x.begin())
-      imgColor.line(round(tpxA), round(tpyA), round(tpx), round(tpy), TColor(0, 0, 255), 3);
+    {
+      imgColor.line({round(tpxA), round(tpyA)}, {round(tpx), round(tpy)}, TColor(0, 0, 255), 3);
+    }
     tpxA = tpx;
     tpyA = tpy;
   }  // end for
@@ -483,24 +494,24 @@ void CDisplayWindow::plot(const CVectorFloat& y)
   // Suboptimal but...
   CImage imgColor(640, 480, mrpt::img::CH_RGB);
   // Draw axis:
-  imgColor.filledRectangle(0, 0, 640, 480, TColor::white());
-  imgColor.line(40, 40, 560, 40, TColor::black(), 3);
-  imgColor.line(40, 40, 40, 440, TColor::black(), 3);
-  imgColor.line(560, 40, 555, 45, TColor::black(), 3);
-  imgColor.line(560, 40, 555, 35, TColor::black(), 3);
-  imgColor.line(40, 440, 35, 435, TColor::black(), 3);
-  imgColor.line(40, 440, 45, 435, TColor::black(), 3);
+  imgColor.filledRectangle({0, 0}, {640, 480}, TColor::white());
+  imgColor.line({40, 40}, {560, 40}, TColor::black(), 3);
+  imgColor.line({40, 40}, {40, 440}, TColor::black(), 3);
+  imgColor.line({560, 40}, {555, 45}, TColor::black(), 3);
+  imgColor.line({560, 40}, {555, 35}, TColor::black(), 3);
+  imgColor.line({40, 440}, {35, 435}, TColor::black(), 3);
+  imgColor.line({40, 440}, {45, 435}, TColor::black(), 3);
 
-  imgColor.textOut(550, 25, "x", TColor::black());
-  imgColor.textOut(25, 430, "y", TColor::black());
+  imgColor.textOut({550, 25}, "x", TColor::black());
+  imgColor.textOut({25, 430}, "y", TColor::black());
 
   CVectorFloat::const_iterator ity;
-  CVectorFloat::const_iterator itymx, itymn;
-  itymx = std::max_element(y.begin(), y.end());
-  itymn = std::min_element(y.begin(), y.end());
+  auto itymx = std::max_element(y.begin(), y.end());
+  auto itymn = std::min_element(y.begin(), y.end());
   float px = y.size() / 520.0f;
   float py = (*itymx - *itymn) / 400.0f;
-  int tpxA = 0, tpyA = 0;
+  int tpxA = 0;
+  int tpyA = 0;
 
   unsigned int k = 0;
 
@@ -508,8 +519,11 @@ void CDisplayWindow::plot(const CVectorFloat& y)
   {
     auto tpx = round(k / px + ox);
     auto tpy = round((*ity - *itymn) / py + oy);
-    imgColor.drawMark(tpx, tpy, TColor::red(), 'x');
-    if (k > 0) imgColor.line(tpxA, tpyA, tpx, tpy, TColor::blue(), 3);
+    imgColor.drawMark({tpx, tpy}, TColor::red(), 'x');
+    if (k > 0)
+    {
+      imgColor.line({tpxA, tpyA}, {tpx, tpy}, TColor::blue(), 3);
+    }
     tpxA = tpx;
     tpyA = tpy;
   }  // end for

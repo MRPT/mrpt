@@ -14,7 +14,7 @@
 
 #include <mrpt/core/round.h>
 #include <mrpt/gui/CGlCanvasBase.h>
-#include <mrpt/viz/opengl_api.h>
+#include <mrpt/opengl/opengl_api.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -49,7 +49,10 @@ float CGlCanvasBase::SENSIBILITY_DEG_PER_PIXEL = 0.1f;
 CGlCanvasBase::~CGlCanvasBase()
 {
   // Ensure all OpenGL resources are freed before the opengl context is gone:
-  if (m_openGLScene) m_openGLScene->unloadShaders();
+  if (m_openGLScene)
+  {
+    m_openGLScene->unloadShaders();
+  }
 }
 
 void CGlCanvasBase::setMinimumZoom(float zoom) { m_minZoom = zoom; }
@@ -87,8 +90,14 @@ void CGlCanvasBase::updateZoom(CamaraParams& params, float delta) const
 inline void mouseGlitchFilter(
     const int x, const int y, const int& mouseClickX, const int& mouseClickY)
 {
-  if (std::abs(x - mouseClickX) > 60) const_cast<int&>(mouseClickX) = x;
-  if (std::abs(y - mouseClickY) > 60) const_cast<int&>(mouseClickY) = y;
+  if (std::abs(x - mouseClickX) > 60)
+  {
+    const_cast<int&>(mouseClickX) = x;
+  }
+  if (std::abs(y - mouseClickY) > 60)
+  {
+    const_cast<int&>(mouseClickY) = y;
+  }
 }
 
 void CGlCanvasBase::updateRotate(CamaraParams& params, int x, int y) const
@@ -134,7 +143,10 @@ void CGlCanvasBase::updateLastPos(int x, int y)
 void CGlCanvasBase::resizeViewport(int w, int h)
 {
 #if MRPT_HAS_OPENGL_GLUT
-  if (w == -1 || h == -1) return;
+  if (w == -1 || h == -1)
+  {
+    return;
+  }
 
   glViewport(0, 0, (GLint)w, (GLint)h);
 #endif
@@ -324,9 +336,13 @@ void CGlCanvasBase::CamaraParams::setElevationDeg(float deg)
   cameraElevationDeg = deg;
 
   if (cameraElevationDeg < -90.0f)
+  {
     cameraElevationDeg = -90.0f;
+  }
   else if (cameraElevationDeg > 90.0f)
+  {
     cameraElevationDeg = 90.0f;
+  }
 }
 
 CGlCanvasBase::CamaraParams CGlCanvasBase::CamaraParams::FromCamera(const mrpt::viz::CCamera& c)

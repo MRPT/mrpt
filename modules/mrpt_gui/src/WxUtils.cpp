@@ -47,14 +47,19 @@ wxImage* mrpt::gui::MRPTImage2wxImage(const mrpt::img::CImage& img)
       new_image.getWidth() * (new_image.channels() == mrpt::img::CH_RGB ? 3 : 1);
   uint8_t* data = static_cast<uint8_t*>(malloc(row_in_bytes * new_image.getHeight()));
 
-  const int w = new_image.getWidth(), h = new_image.getHeight(), rs = new_image.getRowStride();
+  const int w = new_image.getWidth();
+  const int h = new_image.getHeight();
+  const auto rs = new_image.getRowStride();
 
   // Copy row by row only if necessary:
   if (row_in_bytes != rs)
   {
     auto* trg = data;
     const auto* src = new_image.ptrLine<uint8_t>(0);
-    for (int y = 0; y < h; y++, src += rs, trg += row_in_bytes) memcpy(trg, src, row_in_bytes);
+    for (int y = 0; y < h; y++, src += rs, trg += row_in_bytes)
+    {
+      memcpy(trg, src, row_in_bytes);
+    }
   }
   else
   {
@@ -68,7 +73,7 @@ wxImage* mrpt::gui::MRPTImage2wxImage(const mrpt::img::CImage& img)
 wxBitmap* mrpt::gui::MRPTImage2wxBitmap(const mrpt::img::CImage& img)
 {
   auto* i = MRPTImage2wxImage(img);
-  auto ret = new wxBitmap(*i);
+  auto* ret = new wxBitmap(*i);
   delete i;
   return ret;
 }
@@ -80,10 +85,10 @@ mrpt::img::CImage* mrpt::gui::wxImage2MRPTImage(const wxImage& img)
 {
   auto* newImg = new mrpt::img::CImage();
 
-  const size_t lx = img.GetWidth();
-  const size_t ly = img.GetHeight();
+  const auto lx = img.GetWidth();
+  const auto ly = img.GetHeight();
 
-  newImg->loadFromMemoryBuffer(lx, ly, true, img.GetData(), true /* swap RB */);
+  newImg->loadFromMemoryBuffer(lx, ly, mrpt::img::CH_RGB, img.GetData(), true /* swap RB */);
 
   return newImg;
 }
@@ -113,7 +118,7 @@ wxMRPTImageControl::wxMRPTImageControl(
 wxMRPTImageControl::~wxMRPTImageControl()
 {
   std::lock_guard<std::mutex> lock(m_img_cs);
-  if (m_img)
+  if (m_img != nullptr)
   {
     delete m_img;
     m_img = nullptr;
@@ -135,7 +140,7 @@ void wxMRPTImageControl::OnMouseClick(wxMouseEvent& ev)
 void wxMRPTImageControl::AssignImage(wxBitmap* img)
 {
   std::lock_guard<std::mutex> lock(m_img_cs);
-  if (m_img)
+  if (m_img != nullptr)
   {
     delete m_img;
     m_img = nullptr;
@@ -149,7 +154,7 @@ void wxMRPTImageControl::AssignImage(const mrpt::img::CImage& img)
   wxBitmap* wxImg = MRPTImage2wxBitmap(img);
 
   std::lock_guard<std::mutex> lock(m_img_cs);
-  if (m_img)
+  if (m_img != nullptr)
   {
     delete m_img;
     m_img = nullptr;
@@ -163,7 +168,7 @@ void wxMRPTImageControl::OnPaint(wxPaintEvent& ev)
   wxPaintDC dc(this);
 
   std::lock_guard<std::mutex> lock(m_img_cs);
-  if (!m_img)
+  if (m_img == nullptr)
   {
     // Erase background:
     return;
@@ -175,7 +180,10 @@ void wxMRPTImageControl::OnPaint(wxPaintEvent& ev)
 void wxMRPTImageControl::GetBitmap(wxBitmap& bmp)
 {
   std::lock_guard<std::mutex> lock(m_img_cs);
-  if (!m_img) return;
+  if (m_img == nullptr)
+  {
+    return;
+  }
   bmp = *m_img;
 }
 

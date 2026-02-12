@@ -307,12 +307,6 @@ C3DWindowDialog::C3DWindowDialog(
   // this->Iconize(false);
 }
 
-// Destructor
-C3DWindowDialog::~C3DWindowDialog()
-{
-  //	cout << "[C3DWindowDialog::~C3DWindowDialog]" << "\n";
-}
-
 // OnClose event:
 void C3DWindowDialog::OnClose(wxCloseEvent& event)
 {
@@ -707,15 +701,19 @@ bool CDisplayWindow3D::getLastMousePosition([[maybe_unused]] int& x, [[maybe_unu
  ---------------------------------------------------------------*/
 bool CDisplayWindow3D::getLastMousePositionRay(TLine3D& ray) const
 {
-  int x, y;
+  int x = 0;
+  int y = 0;
   if (getLastMousePosition(x, y))
   {
     std::lock_guard<std::recursive_timed_mutex> lck(m_csAccess3DScene);
-    m_3Dscene->getViewport("main")->get3DRayForPixelCoord(x, y, ray);
+
+    MRPT_TODO("get3DRayForPixelCoord()! ");
+    // m_3Dscene->getViewport("main")->get3DRayForPixelCoord(x, y, ray);
+
     return true;
   }
-  else
-    return false;
+
+  return false;
 }
 
 /*---------------------------------------------------------------

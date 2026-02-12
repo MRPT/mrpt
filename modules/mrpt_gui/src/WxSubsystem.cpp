@@ -637,7 +637,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
             // Parse selection as a config text block:
             mrpt::config::CConfigFileMemory c;
             dlg->panel->writeConfigFromVideoSourcePanel("CONFIG", &c);
-            c.getContent(ret.selectedConfig);
+            ret.selectedConfig = c.getContent();
             ret.accepted_by_user = wasOk;
 
             promise->set_value(std::move(ret));

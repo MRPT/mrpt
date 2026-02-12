@@ -17,12 +17,15 @@
 #include <mrpt/gui/registerAllClasses.h>
 #include <mrpt/serialization/CSerializable.h>
 // deps:
-#include <mrpt/viz/registerAllClasses.h>
+#include <mrpt/opengl/registerAllClasses.h>
 
-MRPT_INITIALIZER(registerAllClasses_mrpt_gui) {}
+MRPT_INITIALIZER(registerAllClasses_mrpt_gui)  // NOLINT(misc-use-anonymous-namespace)
+{
+  //
+}
 
 void mrpt::gui::registerAllClasses_mrpt_gui()
 {
   ::registerAllClasses_mrpt_gui();
-  mrpt::viz::registerAllClasses_mrpt_opengl();
+  mrpt::opengl::registerAllClasses_mrpt_opengl();
 }

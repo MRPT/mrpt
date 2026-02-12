@@ -342,7 +342,6 @@ class CWindowDialog : public wxFrame
     }
   };
 
- public:
   CWindowDialog(
       CDisplayWindow* win2D,
       WxSubsystem::CWXMainFrame* parent,
@@ -352,10 +351,10 @@ class CWindowDialog : public wxFrame
   ~CWindowDialog() override;
 
   CDisplayWindow* m_win2D = nullptr;
-  WxSubsystem::CWXMainFrame* m_mainFrame;
+  WxSubsystem::CWXMainFrame* m_mainFrame = nullptr;
 
   // wxStaticBitmap      *m_image;
-  wxMRPTImageControl* m_image;
+  wxMRPTImageControl* m_image = nullptr;
 
   static const long ID_IMAGE_BITMAP;
 
@@ -384,12 +383,11 @@ class C3DWindowDialog : public wxFrame
       wxWindowID id = -1,
       const std::string& caption = std::string("[MRPT-CDisplayWindow3D]"),
       wxSize initialSize = wxDefaultSize);
-  ~C3DWindowDialog() override;
 
-  CDisplayWindow3D* m_win3D;
-  WxSubsystem::CWXMainFrame* m_mainFrame;
+  CDisplayWindow3D* m_win3D = nullptr;
+  WxSubsystem::CWXMainFrame* m_mainFrame = nullptr;
 
-  CMyGLCanvas_DisplayWindow3D* m_canvas;
+  CMyGLCanvas_DisplayWindow3D* m_canvas = nullptr;
 
  private:
   void OnClose(wxCloseEvent& event);
@@ -415,12 +413,11 @@ class CWindowDialogPlots : public wxFrame
       wxWindowID id = -1,
       const std::string& caption = std::string("[MRPT-CDisplayWindowPlots]"),
       wxSize initialSize = wxDefaultSize);
-  ~CWindowDialogPlots() override;
 
   CDisplayWindowPlots* m_winPlots;
   WxSubsystem::CWXMainFrame* m_mainFrame;
 
-  mpWindow* m_plot;
+  mpWindow* m_plot = nullptr;
   // wxChartPanel 			*m_chartPanel;
   static const long ID_PLOT;
   static const long ID_MENU_PRINT;

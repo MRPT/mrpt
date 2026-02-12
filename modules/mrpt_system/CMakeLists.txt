@@ -63,7 +63,6 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/system/thread_name.h
   include/mrpt/system/filesystem.h
   include/mrpt/system/CTicTac.h
-  include/mrpt/system/WorkerThreadsPool.h
   include/mrpt/system/md5.h
   include/mrpt/system/scheduler.h
   include/mrpt/system/CTimeLogger.h
