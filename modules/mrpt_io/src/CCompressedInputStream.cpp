@@ -178,15 +178,19 @@ bool CCompressedInputStream::open(
         return false;
       }
 
-      // Try to read uncompressed size from Gzip footer (last 4 bytes)
+      // Try to read uncompressed size from Gzip footer (last 4 bytes).
+      // Per RFC 1952, ISIZE is stored as a 32-bit little-endian integer.
       if (m_file_size >= 8)
       {
         std::ifstream f(fileName, std::ios::binary);
         f.seekg(-4, std::ios::end);
-        uint32_t size32;
-        f.read(reinterpret_cast<char*>(&size32), 4);
+        uint8_t buf[4];
+        f.read(reinterpret_cast<char*>(buf), 4);
         if (f.gcount() == 4)
         {
+          const uint32_t size32 =
+              static_cast<uint32_t>(buf[0]) | (static_cast<uint32_t>(buf[1]) << 8) |
+              (static_cast<uint32_t>(buf[2]) << 16) | (static_cast<uint32_t>(buf[3]) << 24);
           m_impl->uncompressedSizeHint = size32;
         }
       }
