@@ -17,11 +17,14 @@ if(MRPT_HAS_LIBFYAML)
 	set(CMAKE_MRPT_HAS_LIBFYAML 1)
 	
 	# system version found?
-        find_package(libfyaml QUIET)
-        if (libfyaml_FOUND)
+	find_package(libfyaml QUIET)  # to find the version
+
+	find_library(LIBFYAML_LIB NAMES fyaml libfyaml)
+	find_path(LIBFYAML_INCLUDES NAMES libfyaml.h)
+	if (LIBFYAML_LIB AND LIBFYAML_INCLUDES)
 		set(CMAKE_MRPT_HAS_LIBFYAML_SYSTEM 1)
 		if ($ENV{VERBOSE})
-                        message(STATUS "LIBFYAML_LIB      : ${LIBFYAML_LIB}")
+			message(STATUS "LIBFYAML_LIB      : ${LIBFYAML_LIB}")
 			message(STATUS "LIBFYAML_INCLUDES : ${LIBFYAML_INCLUDES}")
 		endif()
 	else()
@@ -66,7 +69,7 @@ if(MRPT_HAS_LIBFYAML)
 		target_link_libraries(mrpt_libfyaml INTERFACE ${LIBFYAML_LIB})
 	endif()
 
-        if ($ENV{VERBOSE})
-            message(STATUS "libfyaml_VERSION  : ${libfyaml_VERSION}")
-        endif()
+	if ($ENV{VERBOSE})
+			message(STATUS "libfyaml_VERSION  : ${libfyaml_VERSION}")
+	endif()
 endif()
