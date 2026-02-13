@@ -17,6 +17,8 @@ if(MRPT_HAS_LIBFYAML)
   set(CMAKE_MRPT_HAS_LIBFYAML 1)
   
   # system version found?
+  find_package(libfyaml QUIET)  # to find the version
+
   find_library(LIBFYAML_LIB NAMES fyaml libfyaml)
   find_path(LIBFYAML_INCLUDES NAMES libfyaml.h)
   if (LIBFYAML_LIB AND LIBFYAML_INCLUDES)
