@@ -27,6 +27,7 @@ enum class CommentPosition : uint8_t
 {
   TOP = 0,
   RIGHT,
+  BOTTOM,
   //
   MAX
 };

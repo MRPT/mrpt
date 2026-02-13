@@ -21,7 +21,6 @@
 #include <fstream>
 #include <iostream>
 #include <istream>
-#include <type_traits>
 #include <utility>
 
 #if MRPT_HAS_FYAML
@@ -125,9 +124,10 @@ size_t yaml::node_t::size() const
     return 1;
   }
   if (isMap())
+  {
     return asMap().size();
-  else
-    return asSequence().size();
+  }
+  return asSequence().size();
 }
 
 // ============ class: yaml =======
@@ -662,7 +662,10 @@ bool yaml::internalPrintAsYAML(
     ps2.needsSpace = true;
     bool r = internalPrintNodeAsYAML(v, o, ps2);
 
-    if (!r) o << "\n";
+    if (!r)
+    {
+      o << "\n";
+    }
   }
   return true;
 }
@@ -696,10 +699,8 @@ bool yaml::internalPrintStringScalar(
         }
         return false;  // \n not emitted
       }
-      else
-      {
-        nextLN = s.size();
-      }
+
+      nextLN = s.size();
     }
 
     if (i == 0)
@@ -879,21 +880,20 @@ namespace
 
 std::optional<std::string> extractComment(struct fy_token* t, enum fy_comment_placement cp)
 {
-  std::array<char, 2048> str{};
-
 #if MRPT_LIBFYAML_VERSION >= 0x094  // 0.9.4
   const char* strRet = fy_token_get_comment(t, cp);
 #else
+  std::array<char, 2048> str = {};
   const char* strRet = fy_token_get_comment(t, str.data(), str.size(), cp);
 #endif
 
-  if (!strRet || strRet[0] == '\0')
+  if (strRet == nullptr || strRet[0] == '\0')
   {
     return {};
   }
 
   // str is already a 0-terminated string:
-  const std::string c(str.data());
+  auto c = std::string(strRet);
 
   PARSER_DBG_OUT(
       "token: " << reinterpret_cast<void*>(t) << " comment [" << static_cast<int>(cp) << "]: '" << c
@@ -904,25 +904,24 @@ std::optional<std::string> extractComment(struct fy_token* t, enum fy_comment_pl
 
 void parseTokenCommentsAndMarks(struct fy_token* tk, yaml::node_t& n)
 {
-  if (!tk)
+  if (tk == nullptr)
   {
     return;
   }
 
+  if (auto cT = extractComment(tk, fycp_top); cT)
   {
-    auto cT = extractComment(tk, fycp_top);
-    if (cT)
-    {
-      n.comments[static_cast<size_t>(CommentPosition::TOP)] = std::move(cT.value());
-    }
+    n.comments[static_cast<size_t>(CommentPosition::TOP)] = cT.value();
   }
 
+  if (auto cR = extractComment(tk, fycp_right); cR)
   {
-    auto cR = extractComment(tk, fycp_right);
-    if (cR)
-    {
-      n.comments[static_cast<size_t>(CommentPosition::RIGHT)] = std::move(cR.value());
-    }
+    n.comments[static_cast<size_t>(CommentPosition::RIGHT)] = cR.value();
+  }
+
+  if (auto cB = extractComment(tk, fycp_bottom); cB)
+  {
+    n.comments[static_cast<size_t>(CommentPosition::BOTTOM)] = cB.value();
   }
 
   if (const struct fy_mark* mrk = fy_token_start_mark(tk); mrk)
@@ -1297,7 +1296,7 @@ void yaml::keyComment(const std::string& key, const std::string& c, CommentPosit
   const auto posIndex = static_cast<unsigned int>(position);
   ASSERT_LT_(posIndex, static_cast<unsigned int>(CommentPosition::MAX));
 
-  yaml::node_t& n = const_cast<node_t&>(findKeyNode(dereferenceProxy(), key));
+  auto& n = const_cast<node_t&>(findKeyNode(dereferenceProxy(), key));
 
   n.comments[posIndex].emplace(c);
 }

@@ -592,8 +592,7 @@ myMap4:
   ~
 # Top comment for myMap5
 myMap5:
-  # top comment for a4
-  a4: 1
+  a4: 1 # right comment for a4
 )xxx";
 
 // clang-format on
@@ -667,7 +666,7 @@ MRPT_TEST(yaml, fromYAML)
 
     EXPECT_EQ(p["myMap"]["e1"].comment(), "Right comment for e1 value");
     EXPECT_FALSE(p["myMap4"].hasComment());
-    EXPECT_TRUE(p["myMap5"].asMap().find("a4")->first.hasComment());
+    EXPECT_TRUE(p["myMap5"].asMap().find("a4")->second.hasComment());
     EXPECT_TRUE(p.asMap().find("myMap5")->first.hasComment());
   }
 }
