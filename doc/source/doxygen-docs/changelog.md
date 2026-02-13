@@ -1,5 +1,14 @@
 \page changelog Change Log
 
+# Version 2.15.9: Release Feb 13rd, 2026
+- Changes in libraries:
+  - \ref mrpt_containers_grp
+    - Fix build against libfyaml 0.9.4
+  - \ref mrpt_io_grp
+    - Fix CCompressedInputStream uncompressed size hint in big endian architectures
+  - Python bindings:
+    - Fix remove deleted classes in mrpt::system
+
 # Version 2.15.8: Released Feb 8th, 2026
 - Changes in libraries:
   - \ref mrpt_opengl_grp

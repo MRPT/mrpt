@@ -17,6 +17,8 @@ if(MRPT_HAS_LIBFYAML)
 	set(CMAKE_MRPT_HAS_LIBFYAML 1)
 	
 	# system version found?
+	find_package(libfyaml QUIET)  # to find the version
+
 	find_library(LIBFYAML_LIB NAMES fyaml libfyaml)
 	find_path(LIBFYAML_INCLUDES NAMES libfyaml.h)
 	if (LIBFYAML_LIB AND LIBFYAML_INCLUDES)
@@ -52,8 +54,10 @@ if(MRPT_HAS_LIBFYAML)
 			-DCMAKE_POSITION_INDEPENDENT_CODE=ON
 			BUILD_BYPRODUCTS ${LIBFYAML_LIB}
 			)
+                file(READ "${LIBFYAML_DIR}/.tarball-version" libfyaml_VERSION)
+                string(STRIP "${libfyaml_VERSION}" libfyaml_VERSION)
 	endif()
-		
+
 	if (NOT CMAKE_MRPT_HAS_LIBFYAML_SYSTEM)
 		add_library(mrpt_libfyaml STATIC IMPORTED GLOBAL)
 		add_dependencies(mrpt_libfyaml mrpt_liblibfyaml)
@@ -65,4 +69,7 @@ if(MRPT_HAS_LIBFYAML)
 		target_link_libraries(mrpt_libfyaml INTERFACE ${LIBFYAML_LIB})
 	endif()
 
+	if ($ENV{VERBOSE})
+			message(STATUS "libfyaml_VERSION  : ${libfyaml_VERSION}")
+	endif()
 endif()
