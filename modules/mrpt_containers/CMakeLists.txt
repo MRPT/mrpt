@@ -84,6 +84,12 @@ else()
   target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBFYAML_LIB})
 endif()
 
+if (DEFINED libfyaml_VERSION)
+    VERSION_TO_HEXADECIMAL(MRPT_LIBFYAML_VERSION_HEX ${libfyaml_VERSION})
+    target_compile_definitions(${PROJECT_NAME} PRIVATE -DMRPT_LIBFYAML_VERSION=${MRPT_LIBFYAML_VERSION_HEX})
+    message(STATUS "MRPT_LIBFYAML_VERSION_HEX  : ${MRPT_LIBFYAML_VERSION_HEX}")
+endif()
+
 # Python wrapper:
 mrpt_add_python_module(containers
   python_bindings/${PROJECT_NAME}_py.cpp

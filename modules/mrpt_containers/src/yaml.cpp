@@ -21,7 +21,8 @@
 #include <fstream>
 #include <iostream>
 #include <istream>
-#include <stack>
+#include <type_traits>
+#include <utility>
 
 #if MRPT_HAS_FYAML
 #include <libfyaml.h>
@@ -875,10 +876,17 @@ static bool MRPT_YAML_PARSER_VERBOSE = mrpt::get_env<bool>("MRPT_YAML_PARSER_VER
 
 namespace
 {
+
 std::optional<std::string> extractComment(struct fy_token* t, enum fy_comment_placement cp)
 {
   std::array<char, 2048> str{};
+
+#if MRPT_LIBFYAML_VERSION >= 0x094  // 0.9.4
+  const char* strRet = fy_token_get_comment(t, cp);
+#else
   const char* strRet = fy_token_get_comment(t, str.data(), str.size(), cp);
+#endif
+
   if (!strRet || strRet[0] == '\0')
   {
     return {};
