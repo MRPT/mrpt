@@ -15,7 +15,12 @@ set_property(GLOBAL PROPERTY mrpt_containers_UNIT_TEST_EXTRA_DEPS "mrpt-random;m
 if(BUILD_mrpt-containers)
 
 	if (TARGET mrpt_libfyaml)
-		target_link_libraries(containers PRIVATE mrpt_libfyaml)
-	endif()
+            target_link_libraries(containers PRIVATE mrpt_libfyaml)
+        endif()
 
+        if (DEFINED libfyaml_VERSION)
+            VERSION_TO_HEXADECIMAL(MRPT_LIBFYAML_VERSION_HEX ${libfyaml_VERSION})
+            target_compile_definitions(containers PRIVATE -DMRPT_LIBFYAML_VERSION=${MRPT_LIBFYAML_VERSION_HEX})
+            message(STATUS "MRPT_LIBFYAML_VERSION_HEX  : ${MRPT_LIBFYAML_VERSION_HEX}")
+        endif()
 endif()
