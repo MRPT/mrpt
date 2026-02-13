@@ -19,6 +19,12 @@ if(BUILD_mrpt-containers)
         endif()
 
         if (DEFINED libfyaml_VERSION)
+            string(LENGTH "${libfyaml_VERSION}" _len)
+            if(_len LESS 5)
+              set(libfyaml_VERSION "0.${libfyaml_VERSION}")
+            endif()
+            unset(_len)
+
             VERSION_TO_HEXADECIMAL(MRPT_LIBFYAML_VERSION_HEX ${libfyaml_VERSION})
             target_compile_definitions(containers PRIVATE -DMRPT_LIBFYAML_VERSION=${MRPT_LIBFYAML_VERSION_HEX})
             message(STATUS "MRPT_LIBFYAML_VERSION_HEX  : ${MRPT_LIBFYAML_VERSION_HEX}")
