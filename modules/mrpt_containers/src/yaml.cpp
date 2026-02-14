@@ -880,7 +880,7 @@ namespace
 
 std::optional<std::string> extractComment(struct fy_token* t, enum fy_comment_placement cp)
 {
-#if MRPT_LIBFYAML_VERSION >= 0x094  // 0.9.4
+#if MRPT_LIBFYAML_VERSION >= 0x000904  // 0.9.4
   const char* strRet = fy_token_get_comment(t, cp);
 #else
   std::array<char, 2048> str = {};
