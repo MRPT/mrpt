@@ -16,7 +16,7 @@ find_package(mrpt_common REQUIRED)
 find_package(mrpt_core REQUIRED)
 find_package(mrpt_typemeta REQUIRED)
 
-include(./cmake/find_libfyaml.cmake REQUIRED)    # Defines embedded version of libfyaml
+include(./cmake/find_libfyaml.cmake REQUIRED)    # Defines system or embedded version of libfyaml
 
 # define lib:
 set(LIB_SOURCES
@@ -78,22 +78,19 @@ mrpt_add_library(
 )
 
 if (TARGET mrpt_libfyaml)
-  target_link_libraries(${PROJECT_NAME} PRIVATE mrpt_libfyaml)
-else()
-  target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${LIBFYAML_INCLUDES})
-  target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBFYAML_LIB})
+		target_link_libraries(${PROJECT_NAME} PRIVATE mrpt_libfyaml)
 endif()
 
-if (DEFINED libfyaml_VERSION)
-    string(LENGTH "${libfyaml_VERSION}" _len)
-    if(_len LESS 5)
-      set(libfyaml_VERSION "0.${libfyaml_VERSION}")
-    endif()
-    unset(_len)
+if (DEFINED LIBFYAML_VERSION)
+	string(LENGTH "${LIBFYAML_VERSION}" _len)
+	if(_len LESS 5)
+		set(LIBFYAML_VERSION "0.${LIBFYAML_VERSION}")
+	endif()
+	unset(_len)
 
-    VERSION_TO_HEXADECIMAL(MRPT_LIBFYAML_VERSION_HEX ${libfyaml_VERSION})
-    target_compile_definitions(${PROJECT_NAME} PRIVATE -DMRPT_LIBFYAML_VERSION=${MRPT_LIBFYAML_VERSION_HEX})
-    message(STATUS "MRPT_LIBFYAML_VERSION_HEX  : ${MRPT_LIBFYAML_VERSION_HEX}")
+	VERSION_TO_HEXADECIMAL(MRPT_LIBFYAML_VERSION_HEX ${LIBFYAML_VERSION})
+	target_compile_definitions(${PROJECT_NAME} PRIVATE -DMRPT_LIBFYAML_VERSION=${MRPT_LIBFYAML_VERSION_HEX})
+	message(STATUS "MRPT_LIBFYAML_VERSION_HEX  : ${MRPT_LIBFYAML_VERSION_HEX}")
 endif()
 
 # Python wrapper:
