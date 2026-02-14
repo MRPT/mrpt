@@ -4,30 +4,21 @@
 set(CMAKE_MRPT_HAS_LIBFYAML 0)
 set(CMAKE_MRPT_HAS_LIBFYAML_SYSTEM 0)
 
-if (WIN32)
-	# libfyaml does not support Windows (as of Aug 2020)
-	set(initial_has_libfyaml OFF)
-else()
-	set(initial_has_libfyaml ON)
-endif()
-OPTION(MRPT_HAS_LIBFYAML "Use libfyaml, from the system or built-in (for YAML & JSON parsing in mrpt::containers::yaml)" ${initial_has_libfyaml})
-unset(initial_has_libfyaml)
+OPTION(MRPT_HAS_LIBFYAML "Use libfyaml, from the system or built-in (for YAML & JSON parsing in mrpt::containers::yaml)" ON)
 
 if(MRPT_HAS_LIBFYAML)
 	set(CMAKE_MRPT_HAS_LIBFYAML 1)
 	
 	# system version found?
-	find_package(libfyaml QUIET)  # to find the version
-
-	find_library(LIBFYAML_LIB NAMES fyaml libfyaml)
-	find_path(LIBFYAML_INCLUDES NAMES libfyaml.h)
-	if (LIBFYAML_LIB AND LIBFYAML_INCLUDES)
-		set(CMAKE_MRPT_HAS_LIBFYAML_SYSTEM 1)
-		if ($ENV{VERBOSE})
-			message(STATUS "LIBFYAML_LIB      : ${LIBFYAML_LIB}")
-			message(STATUS "LIBFYAML_INCLUDES : ${LIBFYAML_INCLUDES}")
+	find_package(PkgConfig QUIET)
+	if (PkgConfig_FOUND)
+		pkg_check_modules(LIBFYAML IMPORTED_TARGET libfyaml)
+		if (LIBFYAML_FOUND)
+			set(CMAKE_MRPT_HAS_LIBFYAML_SYSTEM 1)
 		endif()
-	else()
+	endif()
+
+	if (NOT CMAKE_MRPT_HAS_LIBFYAML_SYSTEM)
 		# Internal built-in:
 		include(ExternalProject)
 		
@@ -54,8 +45,8 @@ if(MRPT_HAS_LIBFYAML)
 			-DCMAKE_POSITION_INDEPENDENT_CODE=ON
 			BUILD_BYPRODUCTS ${LIBFYAML_LIB}
 			)
-                file(READ "${LIBFYAML_DIR}/.tarball-version" libfyaml_VERSION)
-                string(STRIP "${libfyaml_VERSION}" libfyaml_VERSION)
+		file(READ "${LIBFYAML_DIR}/.tarball-version" LIBFYAML_VERSION)
+		string(STRIP "${LIBFYAML_VERSION}" LIBFYAML_VERSION)
 	endif()
 
 	if (NOT CMAKE_MRPT_HAS_LIBFYAML_SYSTEM)
@@ -64,12 +55,10 @@ if(MRPT_HAS_LIBFYAML)
 		set_target_properties(mrpt_libfyaml PROPERTIES IMPORTED_LOCATION ${LIBFYAML_LIB})
 		set_target_properties(mrpt_libfyaml PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${LIBFYAML_INCLUDES})
 	else()
-		add_library(mrpt_libfyaml INTERFACE)
-		target_include_directories(mrpt_libfyaml SYSTEM INTERFACE ${LIBFYAML_INCLUDES})
-		target_link_libraries(mrpt_libfyaml INTERFACE ${LIBFYAML_LIB})
+		add_library(mrpt_libfyaml ALIAS PkgConfig::LIBFYAML)
 	endif()
 
 	if ($ENV{VERBOSE})
-			message(STATUS "libfyaml_VERSION  : ${libfyaml_VERSION}")
+			message(STATUS "LIBFYAML_VERSION  : ${LIBFYAML_VERSION}")
 	endif()
 endif()
