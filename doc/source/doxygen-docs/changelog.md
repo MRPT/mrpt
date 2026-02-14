@@ -1,5 +1,10 @@
 \page changelog Change Log
 
+# Version 2.15.10: Release Feb 14th, 2026
+- Changes in libraries:
+  - \ref mrpt_containers_grp
+    - Hotfix to build against all versions of libfyaml
+
 # Version 2.15.9: Release Feb 13rd, 2026
 - Changes in libraries:
   - \ref mrpt_containers_grp
