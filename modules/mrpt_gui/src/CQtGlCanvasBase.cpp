@@ -52,7 +52,7 @@ void CQtGlCanvasBase::resizeGL(int width, int height)
 #endif
 }
 
-opengl::Viewport::Ptr CQtGlCanvasBase::mainViewport() const { return m_mainViewport; }
+viz::Viewport::Ptr CQtGlCanvasBase::mainViewport() const { return m_mainViewport; }
 
 float CQtGlCanvasBase::getCameraZoomDistance() const
 {
@@ -146,13 +146,13 @@ void CQtGlCanvasBase::updateCamerasParams()
   updateCameraParams(cam);
 }
 
-void CQtGlCanvasBase::insertToMap(const opengl::CRenderizable::Ptr& newObject)
+void CQtGlCanvasBase::insertToMap(const viz::CVisualObject::Ptr& newObject)
 {
   assert(m_mainViewport);
   m_mainViewport->insert(newObject);
 }
 
-void CQtGlCanvasBase::removeFromMap(const opengl::CRenderizable::Ptr& newObject)
+void CQtGlCanvasBase::removeFromMap(const viz::CVisualObject::Ptr& newObject)
 {
   assert(m_mainViewport);
   m_mainViewport->removeObject(newObject);

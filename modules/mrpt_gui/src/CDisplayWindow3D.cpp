@@ -194,12 +194,8 @@ void CMyGLCanvas_DisplayWindow3D::OnMouseMove(wxMouseEvent& event)
 
 CMyGLCanvas_DisplayWindow3D::~CMyGLCanvas_DisplayWindow3D()
 {
-  // Ensure all OpenGL resources are freed before the opengl context is gone:
-  if (getOpenGLSceneRef()) getOpenGLSceneRef()->unloadShaders();
-
-  // Unbind all objects, free all buffers:
-  auto& scene = getOpenGLSceneRef();
-  if (scene) scene->freeOpenGLResources();
+  // OpenGL resource cleanup is handled by CGlCanvasBase destructor
+  // (which clears the CompiledScene).
 }
 
 void CMyGLCanvas_DisplayWindow3D::OnPreRender()
@@ -474,7 +470,7 @@ void CDisplayWindow3D::setWindowTitle([[maybe_unused]] const std::string& str)
 #endif
 }
 
-opengl::Scene::Ptr& CDisplayWindow3D::get3DSceneAndLock()
+viz::Scene::Ptr& CDisplayWindow3D::get3DSceneAndLock()
 {
   m_csAccess3DScene.lock();
   return m_3Dscene;

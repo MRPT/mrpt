@@ -49,10 +49,7 @@ float CGlCanvasBase::SENSIBILITY_DEG_PER_PIXEL = 0.1f;
 CGlCanvasBase::~CGlCanvasBase()
 {
   // Ensure all OpenGL resources are freed before the opengl context is gone:
-  if (m_openGLScene)
-  {
-    m_openGLScene->unloadShaders();
-  }
+  m_compiledScene.reset();
 }
 
 void CGlCanvasBase::setMinimumZoom(float zoom) { m_minZoom = zoom; }
@@ -285,8 +282,20 @@ double CGlCanvasBase::renderCanvas(int width, int height)
         }
       }
 
-      // Draw primitives:
-      m_openGLScene->render();
+      // Compile/update and render via CompiledScene:
+      auto scenePtr = m_openGLScene;
+      auto lastPtr = m_lastCompiledScenePtr.lock();
+      if (!m_compiledScene || lastPtr.get() != scenePtr.get())
+      {
+        m_compiledScene = std::make_unique<mrpt::opengl::CompiledScene>();
+        m_compiledScene->compile(*m_openGLScene);
+        m_lastCompiledScenePtr = scenePtr;
+      }
+      else
+      {
+        m_compiledScene->updateIfNeeded();
+      }
+      m_compiledScene->render(width, height);
 
     }  // end if "m_openGLScene!=nullptr"
 

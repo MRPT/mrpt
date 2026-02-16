@@ -16,9 +16,11 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/gui/MRPT2NanoguiGLCanvas.h>
 #include <mrpt/gui/internal/NanoGUICanvasHeadless.h>
+#include <mrpt/opengl/CompiledScene.h>
 #include <mrpt/system/string_utils.h>  // firstNLines()
 #include <mrpt/viz/Scene.h>
 
+#include <memory>
 #include <mutex>
 #include <string>
 
@@ -320,6 +322,9 @@ class CDisplayWindowGUI : public nanogui::Screen
 
   /** Used to keep track of mouse events on the camera */
   internal::NanoGUICanvasHeadless m_background_canvas;
+
+  std::unique_ptr<mrpt::opengl::CompiledScene> m_compiledScene;
+  std::weak_ptr<mrpt::viz::Scene> m_lastCompiledScenePtr;
 
   std::vector<loop_callback_t> m_loopCallbacks;
   std::vector<drop_files_callback_t> m_dropFilesCallbacks;

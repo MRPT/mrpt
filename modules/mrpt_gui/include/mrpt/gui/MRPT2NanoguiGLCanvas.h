@@ -15,7 +15,9 @@
 
 #include <mrpt/gui/CGlCanvasBase.h>
 #include <mrpt/gui/internal/NanoGUICanvasHeadless.h>
+#include <mrpt/opengl/CompiledScene.h>
 
+#include <memory>
 #include <mutex>
 
 // Expose nanogui API to mrpt users, for direct use of nanogui classes.
@@ -66,6 +68,9 @@ class MRPT2NanoguiGLCanvas : public nanogui::GLCanvas
 
   /** Used to keep track of mouse events on the camera */
   internal::NanoGUICanvasHeadless m_headless_canvas;
+
+  std::unique_ptr<mrpt::opengl::CompiledScene> m_compiledScene;
+  std::weak_ptr<mrpt::viz::Scene> m_lastCompiledScenePtr;
 };
 
 }  // namespace mrpt::gui
