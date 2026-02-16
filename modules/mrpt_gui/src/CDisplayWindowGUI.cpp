@@ -118,32 +118,50 @@ void CDisplayWindowGUI::setWindowTitle(const std::string& str) { Screen::setCapt
 
 void CDisplayWindowGUI::setIcon(const mrpt::img::CImage& img)
 {
-  const cv::Mat& cvIn = img.asCvMatRef();
+  const int w = img.getWidth();
+  const int h = img.getHeight();
+  const auto nCh = img.channels();
 
   // We need the image to be in RGBA format:
-  cv::Mat icon;
-  if (cvIn.channels() == 3)
+  std::vector<uint8_t> rgbaData(w * h * 4);
+
+  if (nCh == mrpt::img::CH_RGB)
   {
-    // BGR: add alpha
-    cv::cvtColor(cvIn, icon, cv::ColorConversionCodes::COLOR_BGR2RGBA);
+    // RGB -> RGBA: add alpha=255
+    for (int y = 0; y < h; y++)
+    {
+      const auto* src = img.ptrLine<uint8_t>(y);
+      auto* dst = rgbaData.data() + y * w * 4;
+      for (int x = 0; x < w; x++)
+      {
+        dst[0] = src[0];  // R
+        dst[1] = src[1];  // G
+        dst[2] = src[2];  // B
+        dst[3] = 255;     // A
+        src += 3;
+        dst += 4;
+      }
+    }
   }
-  else if (cvIn.channels() == 4)
+  else if (nCh == mrpt::img::CH_RGBA)
   {
-    // BGR: add alpha
-    cv::cvtColor(cvIn, icon, cv::ColorConversionCodes::COLOR_BGRA2RGBA);
+    // RGBA: copy directly
+    for (int y = 0; y < h; y++)
+    {
+      const auto* src = img.ptrLine<uint8_t>(y);
+      auto* dst = rgbaData.data() + y * w * 4;
+      std::memcpy(dst, src, w * 4);
+    }
   }
   else
   {
     THROW_EXCEPTION("Icon image: expected either RGB or RGBA input image.");
   }
 
-  // Set MRPT icon:
-  const cv::Size iconSize = icon.size();
-
   GLFWimage images;
-  images.width = iconSize.width;
-  images.height = iconSize.height;
-  images.pixels = icon.data;
+  images.width = w;
+  images.height = h;
+  images.pixels = rgbaData.data();
 
 // glfwSetWindowIcon added in glfw 3.2
 #if GLFW_VERSION_MAJOR > 3 || (GLFW_VERSION_MAJOR == 3 && GLFW_VERSION_MINOR >= 2)
