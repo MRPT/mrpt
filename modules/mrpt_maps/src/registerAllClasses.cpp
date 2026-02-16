@@ -21,11 +21,6 @@
 #include <mrpt/graphs/registerAllClasses.h>
 #include <mrpt/obs/registerAllClasses.h>
 
-// Deprecated (to be removed in mrpt 3.0.0)
-#include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/maps/CPointsMapXYZI.h>
-#include <mrpt/maps/CPointsMapXYZIRT.h>
-#include <mrpt/maps/CWeightedPointsMap.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 {
@@ -39,10 +34,6 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 
   registerClass(CLASS_ID(CPointsMap));
   registerClass(CLASS_ID(CSimplePointsMap));
-  registerClass(CLASS_ID(CColouredPointsMap));
-  registerClass(CLASS_ID(CWeightedPointsMap));
-  registerClass(CLASS_ID(CPointsMapXYZI));
-  registerClass(CLASS_ID(CPointsMapXYZIRT));
   registerClass(CLASS_ID(CGenericPointsMap));
   registerClass(CLASS_ID(COccupancyGridMap2D));
   registerClass(CLASS_ID(COccupancyGridMap3D));

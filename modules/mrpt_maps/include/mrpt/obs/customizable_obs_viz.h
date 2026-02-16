@@ -21,8 +21,8 @@
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 namespace mrpt::obs
 {

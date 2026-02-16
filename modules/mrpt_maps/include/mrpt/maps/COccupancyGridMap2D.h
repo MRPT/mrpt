@@ -953,15 +953,15 @@ class COccupancyGridMap2D :
     MRPT_START
     mrpt::img::CImage img;
     getAsImageFiltered(img, false, true);  // in RGB
-    const bool topleft = img.isOriginTopLeft();
+    // CImage origin is always top-left:
     for (unsigned int i = 0; i < landmarks->landmarks.size(); i++)
     {
       const typename CLANDMARKSMAP::landmark_type* lm = landmarks->landmarks.get(i);
       int px = x2idx(lm->pose_mean.x);
-      int py = topleft ? m_size_y - 1 - y2idx(lm->pose_mean.y) : y2idx(lm->pose_mean.y);
-      img.rectangle(px - 7, (py + 7), px + 7, (py - 7), marks_color);
-      img.rectangle(px - 6, (py + 6), px + 6, (py - 6), marks_color);
-      if (addTextLabels) img.textOut(px, py - 8, format("%u", i), mrpt::img::TColor::black());
+      int py = m_size_y - 1 - y2idx(lm->pose_mean.y);
+      img.rectangle({px - 7, py - 7}, {px + 7, py + 7}, marks_color);
+      img.rectangle({px - 6, py - 6}, {px + 6, py + 6}, marks_color);
+      if (addTextLabels) img.textOut({px, py - 8}, format("%u", i), mrpt::img::TColor::black());
     }
     return img.saveToFile(file.c_str());
     MRPT_END
@@ -994,7 +994,7 @@ class COccupancyGridMap2D :
    * transparency proportional to "uncertainty" (i.e. a value of 0.5 is fully
    * transparent)
    */
-  void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
+  void getVisualizationInto(mrpt::viz::CSetOfObjects& outObj) const override;
 
   /** Get a point cloud with all (border) occupied cells as points */
   void getAsPointCloud(mrpt::maps::CSimplePointsMap& pm, const float occup_threshold = 0.5f) const;

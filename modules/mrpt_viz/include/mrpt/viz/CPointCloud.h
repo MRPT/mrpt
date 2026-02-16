@@ -309,8 +309,6 @@ class PointCloudAdapter<mrpt::viz::CPointCloud>
  public:
   /** The type of each point XYZ coordinates */
   using coords_t = float;
-  /** Has any color RGB info? */
-  static constexpr bool HAS_RGB = false;
   /** Has native RGB info (as floats)? */
   static constexpr bool HAS_RGBf = false;
   /** Has native RGB info (as uint8_t)? */

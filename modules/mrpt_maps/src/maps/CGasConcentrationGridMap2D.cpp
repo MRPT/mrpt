@@ -539,11 +539,14 @@ void CGasConcentrationGridMap2D::getWindAs3DObject(mrpt::viz::CSetOfObjects::Ptr
       double mod_xy = *windGrid_module.cellByPos(xs[cx], ys[cy]);
 
       auto obj = mrpt::viz::CArrow::Create(
-          xs[cx], ys[cy], 0.f, xs[cx] + scale * (float)cos(dir_xy),
-          ys[cy] + scale * (float)sin(dir_xy), 0.f, 1.15f * scale, 0.3f * scale, 0.35f * scale);
+          mrpt::math::TPoint3Df(xs[cx], ys[cy], 0.f),
+          mrpt::math::TPoint3Df(
+              xs[cx] + scale * (float)cos(dir_xy),
+              ys[cy] + scale * (float)sin(dir_xy), 0.f),
+          1.15f * scale, 0.3f * scale, 0.35f * scale);
 
-      float r, g, b;
-      jet2rgb(mod_xy, r, g, b);
+      const auto rgb = jet2rgb(static_cast<float>(mod_xy));
+      float r = rgb.R, g = rgb.G, b = rgb.B;
       obj->setColor(r, g, b);
 
       windObj->insert(obj);

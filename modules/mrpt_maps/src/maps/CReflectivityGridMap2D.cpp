@@ -295,15 +295,15 @@ void CReflectivityGridMap2D::getAsImage(CImage& img, bool verticalFlip, bool for
 {
   if (!forceRGB)
   {  // 8bit gray-scale
-    img.resize(m_size_x, m_size_y, CH_GRAY);
+    img.resize(int(m_size_x), int(m_size_y), CH_GRAY);
     const cell_t* srcPtr = &m_map[0];
     unsigned char* destPtr;
     for (unsigned int y = 0; y < m_size_y; y++)
     {
       if (!verticalFlip)
-        destPtr = img(0, m_size_y - 1 - y);
+        destPtr = img.ptr<uint8_t>(0, int(m_size_y - 1 - y));
       else
-        destPtr = img(0, y);
+        destPtr = img.ptr<uint8_t>(0, int(y));
       for (unsigned int x = 0; x < m_size_x; x++)
       {
         *destPtr++ = m_logodd_lut.l2p_255(*srcPtr++);
@@ -312,15 +312,15 @@ void CReflectivityGridMap2D::getAsImage(CImage& img, bool verticalFlip, bool for
   }
   else
   {  // 24bit RGB:
-    img.resize(m_size_x, m_size_y, CH_RGB);
+    img.resize(int(m_size_x), int(m_size_y), CH_RGB);
     const cell_t* srcPtr = &m_map[0];
     unsigned char* destPtr;
     for (unsigned int y = 0; y < m_size_y; y++)
     {
       if (!verticalFlip)
-        destPtr = img(0, m_size_y - 1 - y);
+        destPtr = img.ptr<uint8_t>(0, int(m_size_y - 1 - y));
       else
-        destPtr = img(0, y);
+        destPtr = img.ptr<uint8_t>(0, int(y));
       for (unsigned int x = 0; x < m_size_x; x++)
       {
         uint8_t c = m_logodd_lut.l2p_255(*srcPtr++);
@@ -343,8 +343,8 @@ void CReflectivityGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) c
   outObj->setPlaneCorners(m_x_min, m_x_max, m_y_min, m_y_max);
 
   // Create the color & transparecy (alpha) images:
-  CImage imgColor(m_size_x, m_size_y, CH_GRAY);
-  CImage imgTrans(m_size_x, m_size_y, CH_GRAY);
+  CImage imgColor(int(m_size_x), int(m_size_y), CH_GRAY);
+  CImage imgTrans(int(m_size_x), int(m_size_y), CH_GRAY);
 
   const cell_t* srcPtr = &m_map[0];
   unsigned char* destPtr_color;
@@ -352,8 +352,8 @@ void CReflectivityGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) c
 
   for (unsigned int y = 0; y < m_size_y; y++)
   {
-    destPtr_color = imgColor(0, y);
-    destPtr_trans = imgTrans(0, y);
+    destPtr_color = imgColor.ptr<uint8_t>(0, int(y));
+    destPtr_trans = imgTrans.ptr<uint8_t>(0, int(y));
     for (unsigned int x = 0; x < m_size_x; x++)
     {
       uint8_t cell255 = m_logodd_lut.l2p_255(*srcPtr++);

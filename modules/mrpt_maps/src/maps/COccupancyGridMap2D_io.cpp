@@ -12,7 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/config.h>
+#include <mrpt/maps/config.h>
 #include <mrpt/containers/yaml.h>
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/maps/COccupancyGridMap2D.h>
@@ -246,7 +246,7 @@ bool COccupancyGridMap2D::loadFromBitmapFile(
   MRPT_START
 
   CImage imgFl;
-  if (!imgFl.loadFromFile(file, 0))
+  if (!imgFl.loadFromFile(file))
   {
     return false;
   }
@@ -290,7 +290,7 @@ bool COccupancyGridMap2D::loadFromBitmap(
   for (size_t x = 0; x < bmpWidth; x++)
     for (size_t y = 0; y < bmpHeight; y++)
     {
-      float f = imgFl.getAsFloat(x, bmpHeight - 1 - y);
+      float f = imgFl.getAsFloat({int(x), int(bmpHeight - 1 - y)});
       f = std::max(0.01f, f);
       f = std::min(0.99f, f);
       setCell(x, y, f);
@@ -341,12 +341,12 @@ bool COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 
   // Compute the size of the composite image:
   // ---------------------------------------------
-  CImage img(lx1 + lx2 + 1, max(ly1, ly2), mrpt::img::CH_RGB);
+  CImage img(int32_t(lx1 + lx2 + 1), int32_t(max(ly1, ly2)), mrpt::img::CH_RGB);
   img.filledRectangle(
-      0, 0, img.getWidth() - 1, img.getHeight() - 1,
+      {0, 0}, {int(img.getWidth() - 1), int(img.getHeight() - 1)},
       TColor::black());  // background: black
-  img.drawImage(0, Ay1, img1);
-  img.drawImage(lx1 + 1, Ay2, img2);
+  img.drawImage({0, int(Ay1)}, img1);
+  img.drawImage({int(lx1 + 1), int(Ay2)}, img2);
 
   // Draw the features:
   // ---------------------------------------------
@@ -357,14 +357,14 @@ bool COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
     // In M1:
     px = m1->x2idx(corrs[i].global.x);
     py = Ay1 + ly1 - 1 - m1->y2idx(corrs[i].global.y);
-    img.rectangle(px - 10, py - 10, px + 10, py + 10, lineColor);
-    img.rectangle(px - 11, py - 11, px + 11, py + 11, lineColor);
+    img.rectangle({int(px - 10), int(py - 10)}, {int(px + 10), int(py + 10)}, lineColor);
+    img.rectangle({int(px - 11), int(py - 11)}, {int(px + 11), int(py + 11)}, lineColor);
 
     // In M2:
     px = lx1 + 1 + m2->x2idx(corrs[i].local.x);
     py = Ay2 + ly2 - 1 - m2->y2idx(corrs[i].local.y);
-    img.rectangle(px - 10, py - 10, px + 10, py + 10, lineColor);
-    img.rectangle(px - 11, py - 11, px + 11, py + 11, lineColor);
+    img.rectangle({int(px - 10), int(py - 10)}, {int(px + 10), int(py + 10)}, lineColor);
+    img.rectangle({int(px - 11), int(py - 11)}, {int(px + 11), int(py + 11)}, lineColor);
   }
 
   // Draw the correspondences as lines:
@@ -377,10 +377,11 @@ bool COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
         static_cast<long>(getRandomGenerator().drawUniform(0, 255.0f)));
 
     img.line(
-        m1->x2idx(corrs[i].global.x),
-        //				lx1+1+ m1->x2idx( corrs[i].global.x ),
-        Ay1 + ly1 - 1 - m1->y2idx(corrs[i].global.y), lx1 + 1 + m2->x2idx(corrs[i].local.x),
-        Ay2 + ly2 - 1 - m2->y2idx(corrs[i].local.y), lineColor);
+        {int(m1->x2idx(corrs[i].global.x)),
+         int(Ay1 + ly1 - 1 - m1->y2idx(corrs[i].global.y))},
+        {int(lx1 + 1 + m2->x2idx(corrs[i].local.x)),
+         int(Ay2 + ly2 - 1 - m2->y2idx(corrs[i].local.y))},
+        lineColor);
   }  // i
 
   return img.saveToFile(fileName.c_str());
@@ -467,7 +468,7 @@ bool COccupancyGridMap2D::loadFromROSMapServerYAML(const std::string& yamlFilePa
     for (size_t y = 0; y < h; y++)
       for (size_t x = 0; x < w; x++)
       {
-        float v = im.getAsFloat(x, h - 1 - y);
+        float v = im.getAsFloat({int(x), int(h - 1 - y)});
         if (negate) v = 1.0f - v;
         v = std::max(0.01f, v);
         v = std::min(0.99f, v);

@@ -15,6 +15,7 @@
 #include <mrpt/maps/../obs/CObservationPointCloud.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CVoxelMap.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <mrpt/maps/bonxai/serialization.hpp>
 

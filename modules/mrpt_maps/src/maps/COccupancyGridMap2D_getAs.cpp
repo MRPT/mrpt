@@ -42,9 +42,9 @@ void COccupancyGridMap2D::getAsImage(
       for (unsigned int y = 0; y < m_size_y; y++)
       {
         if (!verticalFlip)
-          destPtr = img(0, m_size_y - 1 - y);
+          destPtr = img.ptr<uint8_t>(0, m_size_y - 1 - y);
         else
-          destPtr = img(0, y);
+          destPtr = img.ptr<uint8_t>(0, y);
         for (unsigned int x = 0; x < m_size_x; x++)
         {
           *destPtr++ = l2p_255(*srcPtr++);
@@ -59,9 +59,9 @@ void COccupancyGridMap2D::getAsImage(
       for (unsigned int y = 0; y < m_size_y; y++)
       {
         if (!verticalFlip)
-          destPtr = img(0, m_size_y - 1 - y);
+          destPtr = img.ptr<uint8_t>(0, m_size_y - 1 - y);
         else
-          destPtr = img(0, y);
+          destPtr = img.ptr<uint8_t>(0, y);
         for (unsigned int x = 0; x < m_size_x; x++)
         {
           uint8_t c = l2p_255(*srcPtr++);
@@ -83,9 +83,9 @@ void COccupancyGridMap2D::getAsImage(
       for (unsigned int y = 0; y < m_size_y; y++)
       {
         if (!verticalFlip)
-          destPtr = img(0, m_size_y - 1 - y);
+          destPtr = img.ptr<uint8_t>(0, m_size_y - 1 - y);
         else
-          destPtr = img(0, y);
+          destPtr = img.ptr<uint8_t>(0, y);
         for (unsigned int x = 0; x < m_size_x; x++)
         {
           uint8_t c = l2p_255(*srcPtr++);
@@ -107,9 +107,9 @@ void COccupancyGridMap2D::getAsImage(
       for (unsigned int y = 0; y < m_size_y; y++)
       {
         if (!verticalFlip)
-          destPtr = img(0, m_size_y - 1 - y);
+          destPtr = img.ptr<uint8_t>(0, m_size_y - 1 - y);
         else
-          destPtr = img(0, y);
+          destPtr = img.ptr<uint8_t>(0, y);
         for (unsigned int x = 0; x < m_size_x; x++)
         {
           uint8_t c = l2p_255(*srcPtr++);
@@ -163,8 +163,8 @@ void COccupancyGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) cons
 
   for (unsigned int y = 0; y < m_size_y; y++)
   {
-    unsigned char* destPtr_color = imgColor(0, y);
-    unsigned char* destPtr_trans = imgTrans(0, y);
+    unsigned char* destPtr_color = imgColor.ptr<uint8_t>(0, y);
+    unsigned char* destPtr_trans = imgTrans.ptr<uint8_t>(0, y);
     for (unsigned int x = 0; x < m_size_x; x++)
     {
       uint8_t cell255 = l2p_255(*srcPtr++);

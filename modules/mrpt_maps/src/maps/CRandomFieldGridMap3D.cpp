@@ -12,7 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/config.h>
+#include <mrpt/maps/config.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/maps/CRandomFieldGridMap3D.h>
 #include <mrpt/serialization/CArchive.h>

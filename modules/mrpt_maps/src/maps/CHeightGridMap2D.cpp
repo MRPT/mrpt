@@ -330,12 +330,11 @@ void CHeightGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
         ASSERTDEB_(c);
         if (c->w)
         {
-          float r, g, b;
           const float col_idx = (c->h - z_min) * K;
-          colormap(
+          const auto rgb = colormap(
               insertionOptions.colorMap,  // cmJET, //cmGRAYSCALE,
-              col_idx, r, g, b);
-          obj->push_back(idx2x(x), idx2y(y), c->h, r, g, b);
+              col_idx);
+          obj->push_back(idx2x(x), idx2y(y), c->h, rgb.R, rgb.G, rgb.B);
         }
       }
 

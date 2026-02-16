@@ -59,7 +59,7 @@ class CSimplePointsMap : public CPointsMap
   void setSize(size_t newLength) override;  // See base class docs
   /** The virtual method for \a insertPoint() *without* calling
    * mark_as_modified()   */
-  void insertPointFast(float x, float y, float z = 0) override;
+  void insertPointFast(float x, float y, float z = 0);
   /** Get all the data fields for one point as a vector: [X Y Z]
    *  Unlike getPointAllFields(), this method does not check for index out of
    * bounds
@@ -135,7 +135,7 @@ class CSimplePointsMap : public CPointsMap
 };  // End of class def.
 }  // namespace mrpt::maps
 
-namespace mrpt::opengl
+namespace mrpt::viz
 {
 template <>
 class PointCloudAdapter<mrpt::maps::CSimplePointsMap> :
@@ -147,4 +147,4 @@ class PointCloudAdapter<mrpt::maps::CSimplePointsMap> :
   {
   }
 };
-}  // namespace mrpt::opengl
+}  // namespace mrpt::viz

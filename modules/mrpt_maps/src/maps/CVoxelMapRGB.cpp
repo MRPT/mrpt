@@ -12,10 +12,11 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CVoxelMapRGB.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <mrpt/maps/bonxai/serialization.hpp>
 
@@ -112,7 +113,7 @@ bool CVoxelMapRGB::internal_insertObservation_3DScan(
     const mrpt::obs::CObservation3DRangeScan& obs,
     const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
-  mrpt::maps::CColouredPointsMap colPts;
+  mrpt::maps::CGenericPointsMap colPts;
 
   mrpt::obs::T3DPointsProjectionParams pp;
   pp.takeIntoAccountSensorPoseOnRobot = true;
@@ -168,7 +169,9 @@ bool CVoxelMapRGB::internal_insertObservation_3DScan(
 
     // and merge color:
     mrpt::img::TColorf colF;
-    colPts.getPointColor(i, colF.R, colF.G, colF.B);
+    colF.R = colPts.getPointField_float(i, CPointsMap::POINT_FIELD_COLOR_Rf);
+    colF.G = colPts.getPointField_float(i, CPointsMap::POINT_FIELD_COLOR_Gf);
+    colF.B = colPts.getPointField_float(i, CPointsMap::POINT_FIELD_COLOR_Bf);
 #if 1  // fuse colors:
     mrpt::img::TColorf oldCol(mrpt::img::TColor(cell->color.R, cell->color.G, cell->color.B));
 

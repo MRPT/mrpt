@@ -28,8 +28,9 @@
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
-#include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/CSetOfObjects.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
