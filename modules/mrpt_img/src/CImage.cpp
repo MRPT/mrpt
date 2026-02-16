@@ -438,18 +438,261 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
     }
     break;
 
-    // Support older versions for backward compatibility
+    // ===================================================================
+    // Backward compatibility: MRPT 2.x serialization formats (versions
+    // 0-9 and 100). These were originally OpenCV-based. We reimplement
+    // deserialization here using stb_image for JPEG decoding and manual
+    // BGR→RGB conversion for raw color data.
+    // ===================================================================
+    case 100:  // Saved from an MRPT 2.x build without OpenCV
+    {
+      in >> m_state->imgIsExternalStorage;
+      if (m_state->imgIsExternalStorage)
+      {
+        in >> m_state->externalFile;
+      }
+      // else: no image data was serialized in this case
+    }
+    break;
+
+    case 0:
+    {
+      // v0: raw image data with explicit dimensions
+      uint32_t width, height, nChannels, imgLength;  // NOLINT
+      uint8_t originTopLeft = 0;
+
+      in >> width >> height >> nChannels >> originTopLeft >> imgLength;
+
+      if (nChannels == 1)
+      {
+        resize(width, height, CH_GRAY);
+        ASSERT_EQUAL_(imgLength, static_cast<uint32_t>(m_state->image_buffer_size_bytes()));
+        if (imgLength > 0) in.ReadBuffer(m_state->image_data, imgLength);
+      }
+      else
+      {
+        // v0 stored BGR (OpenCV convention). Read into temp, then
+        // convert BGR→RGB.
+        std::vector<uint8_t> buf(imgLength);
+        if (imgLength > 0) in.ReadBuffer(buf.data(), imgLength);
+
+        resize(width, height, nChannels >= 4 ? CH_RGBA : CH_RGB);
+
+        // Swap R and B channels
+        loadFromMemoryBuffer(
+            static_cast<int32_t>(width), static_cast<int32_t>(height),
+            nChannels >= 4 ? CH_RGBA : CH_RGB, buf.data(), true /* swapRedBlue: BGR→RGB */);
+      }
+    }
+    break;
+
+    case 1:
+    {
+      // v1: entire image as JPEG blob
+      uint32_t nBytes = 0;
+      in >> nBytes;
+      std::vector<uint8_t> buf(nBytes);
+      in.ReadBuffer(buf.data(), nBytes);
+
+      // Decode JPEG using stb_image
+      int w = 0, h = 0, channels = 0;  // NOLINT
+      unsigned char* decoded =
+          stbi_load_from_memory(buf.data(), static_cast<int>(nBytes), &w, &h, &channels, 0);
+
+      if (decoded == nullptr)
+      {
+        THROW_EXCEPTION("Error decoding JPEG from legacy v1 CImage serialization");
+      }
+
+      resize(w, h, channels == 1 ? CH_GRAY : (channels >= 4 ? CH_RGBA : CH_RGB));
+      std::memcpy(m_state->image_data, decoded, m_state->image_buffer_size_bytes());
+      stbi_image_free(decoded);
+    }
+    break;
+
+    case 2:
+    case 3:
+    case 4:
+    case 5:
     case 6:
     case 7:
     case 8:
     case 9:
     {
-      // Read with older format, then convert
-      // This would require parsing the old OpenCV-based format
-      // For now, throw an exception suggesting conversion
-      THROW_EXCEPTION(
-          "Reading CImage from MRPT <3.0 format not yet implemented. "
-          "Please convert images using MRPT 2.x first.");
+      // v6+: external storage flag
+      if (version >= 6)
+      {
+        in >> m_state->imgIsExternalStorage;
+      }
+      else
+      {
+        m_state->imgIsExternalStorage = false;
+      }
+
+      if (m_state->imgIsExternalStorage)
+      {
+        in >> m_state->externalFile;
+      }
+      else
+      {
+        // v2+: Color→JPEG, GrayScale→raw bytes
+        uint8_t hasColor = 0;
+        in >> hasColor;
+
+        if (!hasColor)
+        {
+          // GRAYSCALE
+          int32_t width, height, origin, imageSize;  // NOLINT
+          in >> width >> height >> origin >> imageSize;
+
+          PixelDepth depth = PixelDepth::D8U;
+          if (version >= 9)
+          {
+            int32_t tempdepth = 0;
+            in >> tempdepth;
+            depth = static_cast<PixelDepth>(tempdepth);
+          }
+
+          resize(static_cast<uint32_t>(width), static_cast<uint32_t>(height), CH_GRAY, depth);
+
+          ASSERT_EQUAL_(
+              static_cast<uint32_t>(imageSize),
+              static_cast<uint32_t>(m_state->image_buffer_size_bytes()));
+
+          if (version == 2)
+          {
+            // v2: raw bytes directly
+            if (imageSize > 0)
+            {
+              in.ReadBuffer(m_state->image_data, imageSize);
+            }
+          }
+          else
+          {
+            // v3+: possible ZIP compression
+            bool imageIsZIP = true;
+
+            // v4: skip zip if image size <= 16Kb
+            if (version == 4 && imageSize <= 16 * 1024)
+            {
+              imageIsZIP = false;
+            }
+
+            // v5+: stored in stream
+            if (version >= 5)
+            {
+              in >> imageIsZIP;
+            }
+
+            if (imageIsZIP)
+            {
+              uint32_t zipDataLen = 0;
+              in >> zipDataLen;
+
+              // We must consume the zip data from the stream even
+              // though we can't decompress it, to keep the archive
+              // position correct.
+              std::vector<uint8_t> zipBuf(zipDataLen);
+              in.ReadBuffer(zipBuf.data(), zipDataLen);
+
+              THROW_EXCEPTION(
+                  "ZIP-compressed grayscale images from MRPT 2.x "
+                  "serialization cannot be deserialized in MRPT 3.x. "
+                  "Please re-save the data using MRPT 2.x without "
+                  "ZIP compression first.");
+            }
+
+            // Raw bytes
+            if (imageSize > 0)
+            {
+              in.ReadBuffer(m_state->image_data, imageSize);
+            }
+          }
+        }
+        else
+        {
+          // COLOR IMAGE
+          bool loadJPEG = true;
+
+          int32_t width = 0, height = 0;  // NOLINT
+
+          if (version >= 7)
+          {
+            in >> width >> height;
+
+            if (width >= 1 && height >= 1)
+            {
+              loadJPEG = true;
+            }
+            else
+            {
+              loadJPEG = false;
+
+              if (width < 0 && height < 0)
+              {
+                // v8: raw BGR image (negative dims signal this)
+                const int32_t real_w = -width;
+                const int32_t real_h = -height;
+
+                // Read raw BGR data, then convert to RGB
+                const size_t bytes_per_row = static_cast<size_t>(real_w) * 3;
+                const size_t total_bytes = bytes_per_row * static_cast<size_t>(real_h);
+                std::vector<uint8_t> bgrBuf(total_bytes);
+
+                for (int32_t y = 0; y < real_h; y++)
+                {
+                  const size_t nRead =
+                      in.ReadBuffer(bgrBuf.data() + y * bytes_per_row, bytes_per_row);
+                  if (nRead != bytes_per_row)
+                  {
+                    THROW_EXCEPTION(
+                        "Error: Truncated data stream while parsing "
+                        "raw color image from legacy format");
+                  }
+                }
+
+                // Load with BGR→RGB swap
+                loadFromMemoryBuffer(real_w, real_h, CH_RGB, bgrBuf.data(), true /* swapRedBlue */);
+              }
+              else
+              {
+                // 0xN or Nx0 image: just create an empty image
+                resize(std::max(width, 0), std::max(height, 0), CH_RGB);
+              }
+            }
+          }
+
+          // COLOR IMAGE: JPEG
+          if (loadJPEG)
+          {
+            uint32_t nBytes;
+            in >> nBytes;
+
+            std::vector<uint8_t> buf(nBytes);
+            in.ReadBuffer(buf.data(), nBytes);
+
+            // Decode JPEG using stb_image (replaces OpenCV's
+            // loadFromStreamAsJPEG). stb_image outputs RGB
+            // natively, so no BGR→RGB conversion needed.
+            int dec_w = 0, dec_h = 0, dec_channels = 0;  // NOLINT
+            // Request 3 channels (RGB) since this was a color image
+            unsigned char* decoded = stbi_load_from_memory(
+                buf.data(), static_cast<int>(nBytes), &dec_w, &dec_h, &dec_channels, 3);
+
+            if (decoded == nullptr)
+            {
+              THROW_EXCEPTION_FMT(
+                  "Error decoding JPEG from legacy v%u CImage "
+                  "serialization. stbi error: %s",
+                  static_cast<unsigned>(version), stbi_failure_reason());
+            }
+
+            resize(dec_w, dec_h, CH_RGB);
+            std::memcpy(m_state->image_data, decoded, m_state->image_buffer_size_bytes());
+            stbi_image_free(decoded);
+          }
+        }
+      }
     }
     break;
 

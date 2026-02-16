@@ -13,12 +13,10 @@
 */
 #pragma once
 
-#include <cstdint>
-
 namespace mrpt::opengl
 {
 // clang-format off
-/** \defgroup mrpt_adapters_grp Pointcloud adapter (wrapper) template classes (in #include <mrpt/opengl/pointcloud_adapters.h>)
+/** \defgroup mrpt_adapters_grp Pointcloud adapter (wrapper) template classes (in #include <mrpt/viz/pointcloud_adapters.h>)
  * \ingroup mrpt_opengl_grp
  */
 // clang-format on
