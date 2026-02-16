@@ -17,8 +17,8 @@
 #include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/obs/obs_frwds.h>
-#include <mrpt/opengl/pointcloud_adapters.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/viz/pointcloud_adapters.h>
 
 #include <string_view>
 #include <unordered_map>
@@ -65,6 +65,7 @@ class CGenericPointsMap : public CPointsMap
 
  public:
   CGenericPointsMap() = default;
+
   CGenericPointsMap(const CGenericPointsMap& o);
   CGenericPointsMap& operator=(const CGenericPointsMap& o);
 

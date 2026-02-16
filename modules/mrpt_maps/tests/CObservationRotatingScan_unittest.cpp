@@ -23,7 +23,12 @@
 TEST(CObservationRotatingScan, fromVelodyne)
 {
   using namespace std::string_literals;
-  const auto fil = mrpt::system::getShareMRPTDir() + "/datasets/test_velodyne_VLP16.rawlog"s;
+  // TODO: Update to use mrpt_data package?
+  // const auto fil = mrpt::system::getShareMRPTDir() + "/datasets/test_velodyne_VLP16.rawlog"s;
+  const auto fil =
+      mrpt::UNITTEST_BASEDIR() + "/../../share/mrpt/datasets/test_velodyne_VLP16.rawlog"s;
+
+  ASSERT_FILE_EXISTS_(fil);
 
   mrpt::obs::CRawlog rawlog;
   bool load_ok = rawlog.loadFromRawLogFile(fil);
@@ -46,7 +51,11 @@ TEST(CObservationRotatingScan, fromVelodyne)
 TEST(CObservationRotatingScan, from2DScan)
 {
   using namespace std::string_literals;
-  const auto fil = mrpt::system::getShareMRPTDir() + "/datasets/localization_demo.rawlog"s;
+  // TODO: Update to use mrpt_data package?
+  // const auto fil = mrpt::system::getShareMRPTDir() + "/datasets/localization_demo.rawlog"s;
+  const auto fil =
+      mrpt::UNITTEST_BASEDIR() + "/../../share/mrpt/datasets/localization_demo.rawlog"s;
+  ASSERT_FILE_EXISTS_(fil);
 
   mrpt::obs::CRawlog rawlog;
   bool load_ok = rawlog.loadFromRawLogFile(fil);

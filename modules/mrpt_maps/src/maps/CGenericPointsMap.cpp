@@ -15,9 +15,9 @@
 #include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/viz/CPointCloudColoured.h>
 #include <mrpt/serialization/aligned_serialization.h>
 #include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/viz/CPointCloudColoured.h>
 
 #include "CPointsMap_crtp_common.h"
 #include "mrpt/core/bits_mem.h"
@@ -71,8 +71,8 @@ mrpt::maps::CMetricMap::Ptr CGenericPointsMap::internal_CreateFromMapDefinition(
 
 IMPLEMENTS_SERIALIZABLE(CGenericPointsMap, CPointsMap, mrpt::maps)
 
-CGenericPointsMap::CGenericPointsMap(const CGenericPointsMap& o) : CPointsMap()
-{
+CGenericPointsMap::CGenericPointsMap(const CGenericPointsMap& o)
+{  //
   impl_copyFrom(o);
 }
 
@@ -87,10 +87,22 @@ void CGenericPointsMap::reserve(size_t newLength)
   m_x.reserve(newLength);
   m_y.reserve(newLength);
   m_z.reserve(newLength);
-  for (auto& field : m_float_fields) field.second.reserve(newLength);
-  for (auto& field : m_double_fields) field.second.reserve(newLength);
-  for (auto& field : m_uint16_fields) field.second.reserve(newLength);
-  for (auto& field : m_uint8_fields) field.second.reserve(newLength);
+  for (auto& field : m_float_fields)
+  {
+    field.second.reserve(newLength);
+  }
+  for (auto& field : m_double_fields)
+  {
+    field.second.reserve(newLength);
+  }
+  for (auto& field : m_uint16_fields)
+  {
+    field.second.reserve(newLength);
+  }
+  for (auto& field : m_uint8_fields)
+  {
+    field.second.reserve(newLength);
+  }
 }
 
 void CGenericPointsMap::resize(size_t newLength)
@@ -98,10 +110,22 @@ void CGenericPointsMap::resize(size_t newLength)
   m_x.resize(newLength, 0);
   m_y.resize(newLength, 0);
   m_z.resize(newLength, 0);
-  for (auto& field : m_float_fields) field.second.resize(newLength, 0);
-  for (auto& field : m_double_fields) field.second.resize(newLength, 0);
-  for (auto& field : m_uint16_fields) field.second.resize(newLength, 0);
-  for (auto& field : m_uint8_fields) field.second.resize(newLength, 0);
+  for (auto& field : m_float_fields)
+  {
+    field.second.resize(newLength, 0);
+  }
+  for (auto& field : m_double_fields)
+  {
+    field.second.resize(newLength, 0);
+  }
+  for (auto& field : m_uint16_fields)
+  {
+    field.second.resize(newLength, 0);
+  }
+  for (auto& field : m_uint8_fields)
+  {
+    field.second.resize(newLength, 0);
+  }
   mark_as_modified();
 }
 
@@ -110,10 +134,22 @@ void CGenericPointsMap::setSize(size_t newLength)
   m_x.assign(newLength, 0);
   m_y.assign(newLength, 0);
   m_z.assign(newLength, 0);
-  for (auto& field : m_float_fields) field.second.assign(newLength, 0);
-  for (auto& field : m_double_fields) field.second.assign(newLength, 0);
-  for (auto& field : m_uint16_fields) field.second.assign(newLength, 0);
-  for (auto& field : m_uint8_fields) field.second.assign(newLength, 0);
+  for (auto& field : m_float_fields)
+  {
+    field.second.assign(newLength, 0);
+  }
+  for (auto& field : m_double_fields)
+  {
+    field.second.assign(newLength, 0);
+  }
+  for (auto& field : m_uint16_fields)
+  {
+    field.second.assign(newLength, 0);
+  }
+  for (auto& field : m_uint8_fields)
+  {
+    field.second.assign(newLength, 0);
+  }
   mark_as_modified();
 }
 
@@ -121,7 +157,7 @@ uint8_t CGenericPointsMap::serializeGetVersion() const { return 3; }
 void CGenericPointsMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
   // XYZ
-  uint32_t n = m_x.size();
+  const auto n = static_cast<uint32_t>(m_x.size());
   out << n;
   if (n > 0)
   {
@@ -372,10 +408,22 @@ void CGenericPointsMap::getPointAllFieldsFast(size_t index, std::vector<float>& 
   point_data[2] = m_z[index];
 
   size_t i = 3;
-  for (const auto& field : m_float_fields) point_data[i++] = field.second[index];
-  for (const auto& field : m_double_fields) point_data[i++] = field.second[index];
-  for (const auto& field : m_uint16_fields) point_data[i++] = field.second[index];
-  for (const auto& field : m_uint8_fields) point_data[i++] = field.second[index];
+  for (const auto& field : m_float_fields)
+  {
+    point_data[i++] = field.second[index];
+  }
+  for (const auto& field : m_double_fields)
+  {
+    point_data[i++] = field.second[index];
+  }
+  for (const auto& field : m_uint16_fields)
+  {
+    point_data[i++] = field.second[index];
+  }
+  for (const auto& field : m_uint8_fields)
+  {
+    point_data[i++] = field.second[index];
+  }
 }
 
 void CGenericPointsMap::setPointAllFieldsFast(size_t index, const std::vector<float>& point_data)
@@ -388,10 +436,22 @@ void CGenericPointsMap::setPointAllFieldsFast(size_t index, const std::vector<fl
   m_z[index] = point_data[2];
 
   size_t i = 3;
-  for (auto& field : m_float_fields) field.second[index] = point_data[i++];
-  for (auto& field : m_double_fields) field.second[index] = point_data[i++];
-  for (auto& field : m_uint16_fields) field.second[index] = static_cast<uint16_t>(point_data[i++]);
-  for (auto& field : m_uint8_fields) field.second[index] = static_cast<uint8_t>(point_data[i++]);
+  for (auto& field : m_float_fields)
+  {
+    field.second[index] = point_data[i++];
+  }
+  for (auto& field : m_double_fields)
+  {
+    field.second[index] = point_data[i++];
+  }
+  for (auto& field : m_uint16_fields)
+  {
+    field.second[index] = static_cast<uint16_t>(point_data[i++]);
+  }
+  for (auto& field : m_uint8_fields)
+  {
+    field.second[index] = static_cast<uint8_t>(point_data[i++]);
+  }
 }
 
 bool CGenericPointsMap::hasPointField(const std::string_view& fieldName) const
