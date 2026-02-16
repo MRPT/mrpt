@@ -17,11 +17,11 @@ if (PKG_CONFIG_FOUND)
   pkg_search_module(GLFW glfw3)
 endif()
 
-if (MRPT_WITH_NANOGUI AND
-    (NOT CMAKE_MRPT_HAS_OPENGL_GLUT AND NOT CMAKE_MRPT_HAS_EGL))
-    message(STATUS "Warning: Disabling MRPT_WITH_NANOGUI since requirements were not found.")
-    set(MRPT_WITH_NANOGUI OFF CACHE BOOL "" FORCE)
-endif()
+# if (MRPT_WITH_NANOGUI)
+# Was:    (NOT CMAKE_MRPT_HAS_OPENGL_GLUT AND NOT CMAKE_MRPT_HAS_EGL))
+#    message(STATUS "Warning: Disabling MRPT_WITH_NANOGUI since requirements were not found.")
+#    set(MRPT_WITH_NANOGUI OFF CACHE BOOL "" FORCE)
+#endif()
 
 if (NOT MRPT_WITH_NANOGUI)
 return()
