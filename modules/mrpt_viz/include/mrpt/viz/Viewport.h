@@ -346,14 +346,6 @@ class Viewport :
   Viewport& operator=(const Viewport&) = default;
   Viewport& operator=(Viewport&&) = default;
 
-  /** Render the objects in this viewport (called from Scene) */
-  void render(
-      int render_width,
-      int render_height,
-      int render_offset_x = 0,
-      int render_offset_y = 0,
-      const CCamera* forceThisCamera = nullptr) const;
-
  protected:
   /** Retrieves a list of all objects in text form.
    * 	\deprecated Prefer asYAML() (since MRPT 2.1.3) */

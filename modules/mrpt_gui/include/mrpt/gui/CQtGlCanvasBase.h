@@ -55,8 +55,8 @@ class CQtGlCanvasBase : public QOpenGLWidget, public mrpt::gui::CGlCanvasBase
   void renderError(const std::string& err_msg) override;
 
   virtual void updateCamerasParams();
-  virtual void insertToMap(const opengl::CRenderizable::Ptr& newObject);
-  virtual void removeFromMap(const opengl::CRenderizable::Ptr& newObject);
+  virtual void insertToMap(const viz::CVisualObject::Ptr& newObject);
+  virtual void removeFromMap(const viz::CVisualObject::Ptr& newObject);
 
   bool isPressLMouseButton() const;
   bool isPressMMouseButton() const;

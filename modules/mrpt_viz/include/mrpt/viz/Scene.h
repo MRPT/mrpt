@@ -125,9 +125,6 @@ class Scene : public mrpt::serialization::CSerializable, public std::enable_shar
 
   const TListViewports& viewports() const { return m_viewports; }
 
-  /** Render this scene */
-  void render() const;
-
   size_t viewportsCount() const { return m_viewports.size(); }
   /** Clear the list of objects and viewports in the scene, deleting objects'
    * memory, and leaving just the default viewport with the default values.

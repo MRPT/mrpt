@@ -3167,8 +3167,8 @@ void mpBitmapLayer::Plot(wxDC& dc, mpWindow& w)
     // 2nd step -------------------------------
     // Precompute the size of the actual bitmap pixel on the screen (e.g.
     // will be >1 if zoomed in)
-    double screenPixelX = (x1 - x0) / static_cast<double>(m_bitmap.GetWidth();
-    double screenPixelY = (y1 - y0) / static_cast<double>(m_bitmap.GetHeight();
+    double screenPixelX = (x1 - x0) / static_cast<double>(m_bitmap.GetWidth());
+    double screenPixelY = (y1 - y0) / static_cast<double>(m_bitmap.GetHeight());
 
     // The minimum number of pixels that the streched image will overpass
     // the actual mpWindow borders:

@@ -13,6 +13,7 @@
 */
 
 #pragma once
+#include <mrpt/opengl/CompiledScene.h>
 #include <mrpt/viz/Scene.h>
 
 namespace mrpt::viz
@@ -251,6 +252,8 @@ class CGlCanvasBase
  private:
   bool useCameraFromScene = false;
   mrpt::viz::Scene::Ptr m_openGLScene = mrpt::viz::Scene::Create();
+  std::unique_ptr<mrpt::opengl::CompiledScene> m_compiledScene;
+  std::weak_ptr<mrpt::viz::Scene> m_lastCompiledScenePtr;
   int m_mouseLastX = 0, m_mouseLastY = 0;
   int m_mouseClickX = 0, m_mouseClickY = 0;
   bool mouseClicked = false;

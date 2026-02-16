@@ -86,8 +86,20 @@ void CDisplayWindowGUI::drawContents()
     mrpt::viz::CCamera& cam = view->getCamera();
     m_background_canvas.updateCameraParams(cam);
 
-    for (const auto& m_viewport : background_scene->viewports())
-      m_viewport->render(win_dims[2], win_dims[3], win_dims[0], win_dims[1]);
+    // Compile/update and render via CompiledScene:
+    auto scenePtr = background_scene;
+    auto lastPtr = m_lastCompiledScenePtr.lock();
+    if (!m_compiledScene || lastPtr.get() != scenePtr.get())
+    {
+      m_compiledScene = std::make_unique<mrpt::opengl::CompiledScene>();
+      m_compiledScene->compile(*background_scene);
+      m_lastCompiledScenePtr = scenePtr;
+    }
+    else
+    {
+      m_compiledScene->updateIfNeeded();
+    }
+    m_compiledScene->render(win_dims[2], win_dims[3], win_dims[0], win_dims[1]);
   }
   catch (const std::exception& e)
   {
