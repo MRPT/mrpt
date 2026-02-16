@@ -304,7 +304,7 @@ class CGenericPointsMap : public CPointsMap
 
 }  // namespace mrpt::maps
 
-namespace mrpt::opengl
+namespace mrpt::viz
 {
 template <>
 class PointCloudAdapter<mrpt::maps::CGenericPointsMap> :
@@ -316,4 +316,4 @@ class PointCloudAdapter<mrpt::maps::CGenericPointsMap> :
   {
   }
 };
-}  // namespace mrpt::opengl
+}  // namespace mrpt::viz

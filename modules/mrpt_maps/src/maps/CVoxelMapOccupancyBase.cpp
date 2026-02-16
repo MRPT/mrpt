@@ -13,6 +13,7 @@
 */
 
 #include <mrpt/maps/CVoxelMapOccupancyBase.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::maps;
 

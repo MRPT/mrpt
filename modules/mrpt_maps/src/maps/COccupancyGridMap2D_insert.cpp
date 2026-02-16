@@ -144,8 +144,10 @@ bool COccupancyGridMap2D::internal_insertObservation(
         // Reserve a temporary block of memory on the stack with
         // "alloca": this memory has NOT to be deallocated,
         //  so it's ideal for an efficient, small buffer:
-        auto* scanPoints_x = (float*)mrpt_alloca(sizeof(float) * nRanges);
-        auto* scanPoints_y = (float*)mrpt_alloca(sizeof(float) * nRanges);
+        mrpt::StackAlloc<float> scanPoints_x_alloc(nRanges);
+        mrpt::StackAlloc<float> scanPoints_y_alloc(nRanges);
+        auto* scanPoints_x = scanPoints_x_alloc.get();
+        auto* scanPoints_y = scanPoints_y_alloc.get();
 
         float *scanPoint_x, *scanPoint_y;
 
@@ -297,8 +299,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 
         }  // End of each range
 
-        mrpt_alloca_free(scanPoints_x);
-        mrpt_alloca_free(scanPoints_y);
+        // scanPoints_x/y freed automatically by StackAlloc destructor
 
       }  // end insert with simple rays
       else

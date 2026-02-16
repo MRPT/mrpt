@@ -15,7 +15,7 @@
 #include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/viz/CPointCloudColoured.h>
 #include <mrpt/serialization/aligned_serialization.h>
 #include <mrpt/serialization/stl_serialization.h>
 

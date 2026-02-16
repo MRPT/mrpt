@@ -412,7 +412,7 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::getAsOctoMapVoxels(
           break;
 
         case COctoMapVoxels::COLOR_FROM_HEIGHT:
-          vx_color = mrpt::img::colormap(gl_obj.colorMap(), (pt.z - bbox.min.z) * bbox_span_z_inv);
+          vx_color = mrpt::img::colormap(gl_obj.colorMap(), (pt.z - bbox.min.z) * bbox_span_z_inv).asTColor();
           break;
 
         case COctoMapVoxels::COLOR_FROM_OCCUPANCY:

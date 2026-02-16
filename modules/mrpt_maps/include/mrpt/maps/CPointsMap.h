@@ -27,9 +27,9 @@
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
 #include <mrpt/obs/obs_frwds.h>
-#include <mrpt/opengl/PLY_import_export.h>
-#include <mrpt/opengl/pointcloud_adapters.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/viz/PLY_import_export.h>
+#include <mrpt/viz/pointcloud_adapters.h>
 
 #include <iosfwd>
 
@@ -163,7 +163,7 @@ class CPointsMap :
   /** Changes the coordinates of the given point (0-based index), *without*
    * checking for out-of-bounds and *without* calling mark_as_modified().
    * Also, color, intensity, or other data is left unchanged. \sa setPoint */
-  inline void setPointFast(size_t index, float x, float y, float z)
+  void setPointFast(size_t index, float x, float y, float z)
   {
     m_x[index] = x;
     m_y[index] = y;
@@ -525,21 +525,15 @@ class CPointsMap :
   /// \overload
   void getPoint(size_t index, double& x, double& y) const;
   /// \overload
-  inline void getPoint(size_t index, mrpt::math::TPoint2D& p) const { getPoint(index, p.x, p.y); }
+  void getPoint(size_t index, mrpt::math::TPoint2D& p) const { getPoint(index, p.x, p.y); }
   /// \overload
-  inline void getPoint(size_t index, mrpt::math::TPoint3D& p) const
-  {
-    getPoint(index, p.x, p.y, p.z);
-  }
-  inline void getPoint(size_t index, mrpt::math::TPoint3Df& p) const
-  {
-    getPoint(index, p.x, p.y, p.z);
-  }
+  void getPoint(size_t index, mrpt::math::TPoint3D& p) const { getPoint(index, p.x, p.y, p.z); }
+  void getPoint(size_t index, mrpt::math::TPoint3Df& p) const { getPoint(index, p.x, p.y, p.z); }
 
   /** Just like \a getPoint() but without checking out-of-bound index and
    * without returning the point weight, just XYZ.
    */
-  inline void getPointFast(size_t index, float& x, float& y, float& z) const  // NOLINT
+  void getPointFast(size_t index, float& x, float& y, float& z) const  // NOLINT
   {
     x = m_x[index];
     y = m_y[index];
@@ -557,24 +551,24 @@ class CPointsMap :
   /** Changes a given point from map, with Z defaulting to 0 if not provided.
    * \exception Throws std::exception on index out of bound.
    */
-  inline void setPoint(size_t index, float x, float y, float z)
+  void setPoint(size_t index, float x, float y, float z)
   {
     ASSERT_LT_(index, this->size());
     setPointFast(index, x, y, z);
     mark_as_modified();
   }
   /// \overload
-  inline void setPoint(size_t index, const mrpt::math::TPoint2D& p)
+  void setPoint(size_t index, const mrpt::math::TPoint2D& p)
   {
     setPoint(index, d2f(p.x), d2f(p.y), 0);
   }
   /// \overload
-  inline void setPoint(size_t index, const mrpt::math::TPoint3D& p)
+  void setPoint(size_t index, const mrpt::math::TPoint3D& p)
   {
     setPoint(index, d2f(p.x), d2f(p.y), d2f(p.z));
   }
   /// \overload
-  inline void setPoint(size_t index, float x, float y) { setPoint(index, x, y, 0); }
+  void setPoint(size_t index, float x, float y) { setPoint(index, x, y, 0); }
 
   /** Provides a direct access to a read-only reference of the internal point
    * buffer. \sa getAllPoints */
@@ -794,7 +788,7 @@ class CPointsMap :
    */
   void getAllPoints(std::vector<float>& xs, std::vector<float>& ys, size_t decimation = 1) const;
 
-  inline void getAllPoints(std::vector<mrpt::math::TPoint2D>& ps, size_t decimation = 1) const
+  void getAllPoints(std::vector<mrpt::math::TPoint2D>& ps, size_t decimation = 1) const
   {
     std::vector<float> dmy1, dmy2;
     getAllPoints(dmy1, dmy2, decimation);
@@ -810,16 +804,13 @@ class CPointsMap :
    * missing fields of child
    * classes (color, weight, etc) are left to their default values
    */
-  inline void insertPoint(float x, float y, float z = 0)
+  void insertPoint(float x, float y, float z = 0)
   {
     insertPointFast(x, y, z);
     mark_as_modified();
   }
   /// \overload
-  inline void insertPoint(const mrpt::math::TPoint3D& p)
-  {
-    insertPoint(d2f(p.x), d2f(p.y), d2f(p.z));
-  }
+  void insertPoint(const mrpt::math::TPoint3D& p) { insertPoint(d2f(p.x), d2f(p.y), d2f(p.z)); }
 
   /** Must be called before insertPointFrom() to make sure we have the required fields.
    *  \return true if ALL fields could be added, false if some would be missing because the
@@ -1158,7 +1149,7 @@ class CPointsMap :
   /** Returns a 3D object representing the map.
    *  The color of the points is controlled by renderOptions
    */
-  void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
+  void getVisualizationInto(mrpt::viz::CSetOfObjects& outObj) const override;
 
   /** Computes the bounding box of all the points, or (0,0 ,0,0, 0,0) if there
    * are no points.
@@ -1187,20 +1178,20 @@ class CPointsMap :
 
   /** Enable/disable the filter-by-height functionality \sa
    * setHeightFilterLevels \note Default upon construction is disabled. */
-  inline void enableFilterByHeight(bool enable = true) { m_heightfilter_enabled = enable; }
+  void enableFilterByHeight(bool enable = true) { m_heightfilter_enabled = enable; }
   /** Return whether filter-by-height is enabled \sa enableFilterByHeight */
   inline bool isFilterByHeightEnabled() const { return m_heightfilter_enabled; }
 
   /** Set the min/max Z levels for points to be actually inserted in the map
    * (only if \a enableFilterByHeight() was called before). */
-  inline void setHeightFilterLevels(const double _z_min, const double _z_max)
+  void setHeightFilterLevels(const double _z_min, const double _z_max)
   {
     m_heightfilter_z_min = _z_min;
     m_heightfilter_z_max = _z_max;
   }
   /** Get the min/max Z levels for points to be actually inserted in the map
    * \sa enableFilterByHeight, setHeightFilterLevels */
-  inline void getHeightFilterLevels(double& _z_min, double& _z_max) const
+  void getHeightFilterLevels(double& _z_min, double& _z_max) const
   {
     _z_min = m_heightfilter_z_min;
     _z_max = m_heightfilter_z_max;
@@ -1341,7 +1332,7 @@ class CPointsMap :
   /** Users normally don't need to call this. Called by this class or children
    * classes, set m_largestDistanceFromOriginIsUpdated=false, invalidates the
    * kd-tree cache, and such. */
-  inline void mark_as_modified() const
+  void mark_as_modified() const
   {
     m_boundingBoxIsUpdated = false;
     kdtree_mark_as_outdated();
@@ -1466,7 +1457,7 @@ class CPointsMap :
 
 }  // namespace mrpt::maps
 
-namespace viz
+namespace mrpt::viz
 {
 /** Specialization mrpt::viz::PointCloudAdapter<mrpt::maps::CPointsMap>
  * \ingroup mrpt_adapters_grp*/
@@ -1496,27 +1487,26 @@ class PointCloudAdapter<mrpt::maps::CPointsMap>
   [[nodiscard]] inline size_t size() const { return m_obj.size(); }
 
   /** Set number of points (to uninitialized values) */
-  inline void resize(size_t N) { m_obj.resize(N); }
+  void resize(size_t N) { m_obj.resize(N); }
 
   /** Does nothing as of now */
-  inline void setDimensions(size_t /*height*/, size_t /*width*/) {}
+  void setDimensions(size_t /*height*/, size_t /*width*/) {}
 
   /** Get XYZ coordinates of i'th point */
   template <typename T>
-  inline void getPointXYZ(size_t idx, T& x, T& y, T& z) const
+  void getPointXYZ(size_t idx, T& x, T& y, T& z) const
   {
     m_obj.getPointFast(idx, x, y, z);
   }
   /** Set XYZ coordinates of i'th point */
-  inline void setPointXYZ(size_t idx, const coords_t x, const coords_t y, const coords_t z)
+  void setPointXYZ(size_t idx, const coords_t x, const coords_t y, const coords_t z)
   {
     m_obj.setPointFast(idx, x, y, z);
   }
 
   /** Get XYZ_RGBu8 coordinates of i'th point */
   template <typename T>
-  inline void getPointXYZ_RGBu8(
-      size_t idx, T& x, T& y, T& z, uint8_t& r, uint8_t& g, uint8_t& b) const
+  void getPointXYZ_RGBu8(size_t idx, T& x, T& y, T& z, uint8_t& r, uint8_t& g, uint8_t& b) const
   {
     mrpt::img::TColorf c;
     getPointXYZ_RGBAf(idx, x, y, z, c.R, c.G, c.B, c.A);
@@ -1526,7 +1516,7 @@ class PointCloudAdapter<mrpt::maps::CPointsMap>
     b = cc.B;
   }
   /** Set XYZ_RGBu8 coordinates of i'th point */
-  inline void setPointXYZ_RGBu8(
+  void setPointXYZ_RGBu8(
       size_t idx,
       const coords_t x,
       const coords_t y,
@@ -1535,13 +1525,12 @@ class PointCloudAdapter<mrpt::maps::CPointsMap>
       const uint8_t g,
       const uint8_t b)
   {
-    setPointXYZ_RGBAf(idx, x, y, z, u8tof(r), u8tof(g), u8tof(b), 1.0f);
+    setPointXYZ_RGBAf(idx, x, y, z, mrpt::u8tof(r), mrpt::u8tof(g), mrpt::u8tof(b), 1.0f);
   }
 
   /** Get XYZ_RGBf coordinates of i'th point */
   template <typename T>
-  inline void getPointXYZ_RGBAf(
-      size_t idx, T& x, T& y, T& z, float& r, float& g, float& b, float& a) const
+  void getPointXYZ_RGBAf(size_t idx, T& x, T& y, T& z, float& r, float& g, float& b, float& a) const
   {
     using mrpt::maps::CPointsMap;
     m_obj.getPoint(idx, x, y, z);
@@ -1561,7 +1550,7 @@ class PointCloudAdapter<mrpt::maps::CPointsMap>
   }
 
   /** Set XYZ_RGBf coordinates of i'th point */
-  inline void setPointXYZ_RGBAf(
+  void setPointXYZ_RGBAf(
       size_t idx,
       const coords_t x,
       const coords_t y,
@@ -1577,21 +1566,21 @@ class PointCloudAdapter<mrpt::maps::CPointsMap>
 
   // Color getters/setters:
   // (Get) Tries to read "R","G","B" or "intensity"
-  inline void getPointRGBf(size_t idx, float& r, float& g, float& b) const
+  void getPointRGBf(size_t idx, float& r, float& g, float& b) const
   {
     float x, y, z, a;
     getPointXYZ_RGBAf(idx, x, y, z, r, g, b, a);
   }
 
   // (Set) Tries to write "R","G","B"
-  inline void setPointRGBu8(size_t idx, const uint8_t r, const uint8_t g, const uint8_t b)
+  void setPointRGBu8(size_t idx, const uint8_t r, const uint8_t g, const uint8_t b)
   {
     using mrpt::maps::CPointsMap;
     if (HAS_RGBf)
     {
-      m_obj.setPointField_float(idx, CPointsMap::POINT_FIELD_COLOR_Rf, u8tof(r));
-      m_obj.setPointField_float(idx, CPointsMap::POINT_FIELD_COLOR_Gf, u8tof(g));
-      m_obj.setPointField_float(idx, CPointsMap::POINT_FIELD_COLOR_Bf, u8tof(b));
+      m_obj.setPointField_float(idx, CPointsMap::POINT_FIELD_COLOR_Rf, mrpt::u8tof(r));
+      m_obj.setPointField_float(idx, CPointsMap::POINT_FIELD_COLOR_Gf, mrpt::u8tof(g));
+      m_obj.setPointField_float(idx, CPointsMap::POINT_FIELD_COLOR_Bf, mrpt::u8tof(b));
     }
     else if (HAS_RGBu8)
     {
@@ -1602,7 +1591,7 @@ class PointCloudAdapter<mrpt::maps::CPointsMap>
   }
 
   // (Set) Tries to write "R","G","B"
-  inline void setPointRGBf(size_t idx, const float r, const float g, const float b)
+  void setPointRGBf(size_t idx, const float r, const float g, const float b)
   {
     using mrpt::maps::CPointsMap;
     if (HAS_RGBf)
@@ -1613,13 +1602,12 @@ class PointCloudAdapter<mrpt::maps::CPointsMap>
     }
     else if (HAS_RGBu8)
     {
-      m_obj.setPointField_uint8(idx, CPointsMap::POINT_FIELD_COLOR_Rf, f2u8(r));
-      m_obj.setPointField_uint8(idx, CPointsMap::POINT_FIELD_COLOR_Gf, f2u8(g));
-      m_obj.setPointField_uint8(idx, CPointsMap::POINT_FIELD_COLOR_Bf, f2u8(b));
+      m_obj.setPointField_uint8(idx, CPointsMap::POINT_FIELD_COLOR_Rf, mrpt::f2u8(r));
+      m_obj.setPointField_uint8(idx, CPointsMap::POINT_FIELD_COLOR_Gf, mrpt::f2u8(g));
+      m_obj.setPointField_uint8(idx, CPointsMap::POINT_FIELD_COLOR_Bf, mrpt::f2u8(b));
     }
   }
 
-  inline void setInvalidPoint(size_t idx) { m_obj.setPointFast(idx, 0, 0, 0); }
+  void setInvalidPoint(size_t idx) { m_obj.setPointFast(idx, 0, 0, 0); }
 };  // end of PointCloudAdapter<mrpt::maps::CPointsMap>
-}  // namespace viz
-}  // namespace mrpt
+}  // namespace mrpt::viz

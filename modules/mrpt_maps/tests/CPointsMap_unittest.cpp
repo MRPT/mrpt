@@ -13,7 +13,6 @@
 */
 
 #include <gtest/gtest.h>
-#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>

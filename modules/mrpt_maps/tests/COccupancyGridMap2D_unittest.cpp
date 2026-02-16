@@ -19,6 +19,9 @@
 //
 #include <test_mrpt_common.h>
 
+using namespace mrpt::maps;
+using namespace mrpt::obs;
+
 TEST(COccupancyGridMap2DTests, insert2DScan)
 {
   mrpt::obs::CObservation2DRangeScan scan1;

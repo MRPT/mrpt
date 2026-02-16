@@ -260,12 +260,11 @@ class PointCloudAdapter<mrpt::viz::CPointCloudColoured>
  public:
   /** The type of each point XYZ coordinates */
   using coords_t = float;
-  /** Has any color RGB info? */
-  static constexpr bool HAS_RGB = true;
+
   /** Has native RGB info (as floats)? */
-  static constexpr bool HAS_RGBf = true;
+  const bool HAS_RGBf = true;
   /** Has native RGB info (as uint8_t)? */
-  static constexpr bool HAS_RGBu8 = false;
+  const bool HAS_RGBu8 = false;
 
   /** Constructor (accept a const ref for convenience) */
   PointCloudAdapter(const mrpt::viz::CPointCloudColoured& obj) :
@@ -276,6 +275,9 @@ class PointCloudAdapter<mrpt::viz::CPointCloudColoured>
   [[nodiscard]] size_t size() const { return m_obj.size(); }
   /** Set number of points (to uninitialized values) */
   void resize(size_t N) { m_obj.resize(N); }
+
+  /** Does nothing as of now */
+  void setDimensions(size_t /*height*/, size_t /*width*/) {}
 
   /** Get XYZ coordinates of i'th point */
   template <typename T>
@@ -384,9 +386,10 @@ void CPointCloudColoured::loadFromPointsMap(const POINTSMAP* themap)
   const mrpt::viz::PointCloudAdapter<POINTSMAP> pc_src(*themap);
   const size_t N = pc_src.size();
   pc_dst.resize(N);
+
   for (size_t i = 0; i < N; i++)
   {
-    if constexpr (mrpt::viz::PointCloudAdapter<POINTSMAP>::HAS_RGB)
+    if (pc_dst.HAS_RGBf)
     {
       float x, y, z, r, g, b, a;
       pc_src.getPointXYZ_RGBAf(i, x, y, z, r, g, b, a);

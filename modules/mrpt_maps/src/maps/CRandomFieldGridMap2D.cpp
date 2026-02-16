@@ -23,6 +23,7 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/os.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/viz/CSetOfObjects.h>
 #include <mrpt/viz/CSetOfTriangles.h>
 
@@ -1551,9 +1552,9 @@ void CRandomFieldGridMap2D::getAs3DObject(
           triag.y(2) = ys[cy - 1];
           triag.z(2) = c_x_1y_1;
 
-          triag.vertices[0].setColor(colormap(cmJET, col_xy));
-          triag.vertices[1].setColor(colormap(cmJET, col_xy_1));
-          triag.vertices[2].setColor(colormap(cmJET, col_x_1y_1));
+          triag.vertices[0].setColor(colormap(cmJET, col_xy).asTColor());
+          triag.vertices[1].setColor(colormap(cmJET, col_xy_1).asTColor());
+          triag.vertices[2].setColor(colormap(cmJET, col_x_1y_1).asTColor());
 
           obj_m->insertTriangle(triag);
 
@@ -1567,9 +1568,9 @@ void CRandomFieldGridMap2D::getAs3DObject(
           triag.x(2) = xs[cx - 1];
           triag.y(2) = ys[cy];
           triag.z(2) = c_x_1y;
-          triag.vertices[0].setColor(colormap(cmJET, col_xy));
-          triag.vertices[1].setColor(colormap(cmJET, col_x_1y_1));
-          triag.vertices[2].setColor(colormap(cmJET, col_x_1y));
+          triag.vertices[0].setColor(colormap(cmJET, col_xy).asTColor());
+          triag.vertices[1].setColor(colormap(cmJET, col_x_1y_1).asTColor());
+          triag.vertices[2].setColor(colormap(cmJET, col_x_1y).asTColor());
           obj_m->insertTriangle(triag);
 
           // VARIANCE values
@@ -1598,9 +1599,9 @@ void CRandomFieldGridMap2D::getAs3DObject(
           triag.y(2) = ys[cy - 1];
           triag.z(2) = c_x_1y_1 + v_x_1y_1;
 
-          triag.vertices[0].setColor(colormap(cmJET, col_xy));
-          triag.vertices[1].setColor(colormap(cmJET, col_xy_1));
-          triag.vertices[2].setColor(colormap(cmJET, col_x_1y_1));
+          triag.vertices[0].setColor(colormap(cmJET, col_xy).asTColor());
+          triag.vertices[1].setColor(colormap(cmJET, col_xy_1).asTColor());
+          triag.vertices[2].setColor(colormap(cmJET, col_x_1y_1).asTColor());
 
           obj_v->insertTriangle(triag);
 
@@ -1615,9 +1616,9 @@ void CRandomFieldGridMap2D::getAs3DObject(
           triag.y(2) = ys[cy];
           triag.z(2) = c_x_1y + v_x_1y;
 
-          triag.vertices[0].setColor(colormap(cmJET, col_xy));
-          triag.vertices[1].setColor(colormap(cmJET, col_x_1y_1));
-          triag.vertices[2].setColor(colormap(cmJET, col_x_1y));
+          triag.vertices[0].setColor(colormap(cmJET, col_xy).asTColor());
+          triag.vertices[1].setColor(colormap(cmJET, col_x_1y_1).asTColor());
+          triag.vertices[2].setColor(colormap(cmJET, col_x_1y).asTColor());
 
           obj_v->insertTriangle(triag);
 
@@ -1711,9 +1712,9 @@ void CRandomFieldGridMap2D::getAs3DObject(
           triag.y(2) = ys[cy - 1];
           triag.z(2) = c_x_1y_1;
 
-          triag.vertices[0].setColor(colormap(cmJET, col_xy));
-          triag.vertices[1].setColor(colormap(cmJET, col_xy_1));
-          triag.vertices[2].setColor(colormap(cmJET, col_x_1y_1));
+          triag.vertices[0].setColor(colormap(cmJET, col_xy).asTColor());
+          triag.vertices[1].setColor(colormap(cmJET, col_xy_1).asTColor());
+          triag.vertices[2].setColor(colormap(cmJET, col_x_1y_1).asTColor());
 
           obj_m->insertTriangle(triag);
 
@@ -1728,9 +1729,9 @@ void CRandomFieldGridMap2D::getAs3DObject(
           triag.y(2) = ys[cy];
           triag.z(2) = c_x_1y;
 
-          triag.vertices[0].setColor(colormap(cmJET, col_xy));
-          triag.vertices[1].setColor(colormap(cmJET, col_x_1y_1));
-          triag.vertices[2].setColor(colormap(cmJET, col_x_1y));
+          triag.vertices[0].setColor(colormap(cmJET, col_xy).asTColor());
+          triag.vertices[1].setColor(colormap(cmJET, col_x_1y_1).asTColor());
+          triag.vertices[2].setColor(colormap(cmJET, col_x_1y).asTColor());
 
           obj_m->insertTriangle(triag);
 
@@ -1757,9 +1758,9 @@ void CRandomFieldGridMap2D::getAs3DObject(
           triag.y(2) = ys[cy - 1];
           triag.z(2) = v_x_1y_1;
 
-          triag.vertices[0].setColor(colormap(cmJET, col_xy));
-          triag.vertices[1].setColor(colormap(cmJET, col_xy_1));
-          triag.vertices[2].setColor(colormap(cmJET, col_x_1y_1));
+          triag.vertices[0].setColor(colormap(cmJET, col_xy).asTColor());
+          triag.vertices[1].setColor(colormap(cmJET, col_xy_1).asTColor());
+          triag.vertices[2].setColor(colormap(cmJET, col_x_1y_1).asTColor());
 
           obj_v->insertTriangle(triag);
 
@@ -1774,9 +1775,9 @@ void CRandomFieldGridMap2D::getAs3DObject(
           triag.y(2) = ys[cy];
           triag.z(2) = v_x_1y;
 
-          triag.vertices[0].setColor(colormap(cmJET, col_xy));
-          triag.vertices[1].setColor(colormap(cmJET, col_x_1y_1));
-          triag.vertices[2].setColor(colormap(cmJET, col_x_1y));
+          triag.vertices[0].setColor(colormap(cmJET, col_xy).asTColor());
+          triag.vertices[1].setColor(colormap(cmJET, col_x_1y_1).asTColor());
+          triag.vertices[2].setColor(colormap(cmJET, col_x_1y).asTColor());
 
           obj_v->insertTriangle(triag);
 

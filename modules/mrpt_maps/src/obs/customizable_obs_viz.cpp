@@ -12,7 +12,8 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/CGenericPointsMap.h>
+#include <mrpt/math/ops_containers.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/customizable_obs_viz.h>
 #include <mrpt/viz/CAxis.h>
@@ -141,7 +142,7 @@ void printRecolorLengthMismatchError()
 }  // namespace
 
 void mrpt::obs::recolorize3Dpc(
-    const mrpt::opengl::CPointCloudColoured::Ptr& pnts,
+    const mrpt::viz::CPointCloudColoured::Ptr& pnts,
     const mrpt::maps::CPointsMap* originalPts,
     const PointCloudRecoloringParameters& p)
 {
@@ -378,7 +379,6 @@ void mrpt::obs::obs3Dscan_to_viz(
   // Generate/load 3D points
   // ----------------------
   mrpt::maps::CPointsMap::Ptr pointMap;
-  mrpt::maps::CColouredPointsMap::Ptr pointMapCol;
   mrpt::obs::T3DPointsProjectionParams pp;
   pp.takeIntoAccountSensorPoseOnRobot = true;
   pp.onlyPointsWithIntensityColor = p.onlyPointsWithColor;
@@ -386,11 +386,9 @@ void mrpt::obs::obs3Dscan_to_viz(
   // Color from intensity image?
   if (p.colorFromRGBimage && obs->hasRangeImage && obs->hasIntensityImage)
   {
-    pointMapCol = mrpt::maps::CColouredPointsMap::Create();
-    pointMapCol->colorScheme.scheme = mrpt::maps::CColouredPointsMap::cmFromIntensityImage;
-
-    obs->unprojectInto(*pointMapCol, pp);
-    pointMap = pointMapCol;
+    auto pointMapGen = mrpt::maps::CGenericPointsMap::Create();
+    obs->unprojectInto(*pointMapGen, pp);
+    pointMap = pointMapGen;
   }
   else
   {
@@ -410,14 +408,9 @@ void mrpt::obs::obs3Dscan_to_viz(
   add_common_to_viz(*obs, p, out);
 
   auto gl_pnts = mrpt::viz::CPointCloudColoured::Create();
-  // Load as RGB or grayscale points:
-  if (pointMapCol)
-    gl_pnts->loadFromPointsMap(pointMapCol.get());
-  else
-  {
-    gl_pnts->loadFromPointsMap(pointMap.get());
-    recolorize3Dpc(gl_pnts, pointMap.get(), p.coloring);
-  }
+  // Load points:
+  gl_pnts->loadFromPointsMap(pointMap.get());
+  recolorize3Dpc(gl_pnts, pointMap.get(), p.coloring);
 
   // No need to further transform 3D points
   gl_pnts->setPose(mrpt::poses::CPose3D());
@@ -438,7 +431,7 @@ void mrpt::obs::obsVelodyne_to_viz(
   auto pnts = mrpt::viz::CPointCloudColoured::Create();
   out.insert(pnts);
 
-  mrpt::maps::CColouredPointsMap pntsMap;
+  mrpt::maps::CGenericPointsMap pntsMap;
   pntsMap.loadFromVelodyneScan(*obs);
   pnts->loadFromPointsMap(&pntsMap);
   pnts->setPointSize(p.pointSize);

@@ -13,39 +13,12 @@
 */
 
 #include <gtest/gtest.h>
-#include <mrpt/maps/CPointsMapXYZI.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
-
-TEST(CObservationRotatingScan, fromKittiUndistorted)
-{
-  using namespace std::string_literals;
-  const auto fil = mrpt::UNITTEST_BASEDIR() + "/tests/kitti_00_000000.bin.gz"s;
-
-  auto pts = mrpt::maps::CPointsMapXYZI::Create();
-  bool read_ok = pts->loadFromKittiVelodyneFile(fil);
-  EXPECT_TRUE(read_ok);
-
-  //	read_ok = pts->loadXYZI_from_text_file("0000000060.txt");
-  EXPECT_TRUE(read_ok);
-
-  const auto filBin = mrpt::system::getTempFileName();
-  const auto filTxt = mrpt::system::getTempFileName();
-
-  pts->saveToKittiVelodyneFile(filBin);
-  pts->saveXYZI_to_text_file(filTxt);
-
-  mrpt::obs::CObservationPointCloud obsPcl;
-  //	obsPcl.
-
-  mrpt::obs::CObservationRotatingScan rs;
-  //	rs.fromPointCloud()
-}
 
 TEST(CObservationRotatingScan, fromVelodyne)
 {
