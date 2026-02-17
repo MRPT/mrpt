@@ -50,6 +50,7 @@
         "mrpt",
         "MRPT",
         "multinomial",
+        "NOLINTNEXTLINE",
         "parameterizations",
         "parameterizing",
         "Partitioner",

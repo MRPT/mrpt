@@ -1491,7 +1491,7 @@ void CImage::flipVertical()
 
   const auto bytesPerRow = impl.row_stride_in_bytes();
 
-  mrpt::StackAlloc<std::byte> tempRow(bytesPerRow);
+  MRPT_STACK_ALLOC(std::byte, tempRow, bytesPerRow);
 
   // Swap rows:
   for (int row = 0; row < impl.height / 2; row++)
