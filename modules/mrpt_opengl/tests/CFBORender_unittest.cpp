@@ -255,7 +255,8 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
   renderer.render_RGBD(*scene, frame, depth);
 
   // DEBUG: save rendered image for inspection
-  frame.saveToFile("/tmp/mrpt_fbo_debug_" + std::string(useCameraFromIntrinsics ? "camInt" : "camFOV") + ".png");
+  // frame.saveToFile(      "/tmp/mrpt_fbo_debug_" + std::string(useCameraFromIntrinsics ? "camInt"
+  // : "camFOV") + ".png");
 
   // Compare with ground truth
   mrpt::img::CImage gt_frame;

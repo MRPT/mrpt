@@ -539,7 +539,6 @@ void CompiledViewport::updateMatrices()
       m_renderMatrices.pinhole_model = m_camera.getPinholeModel();
     else
       m_renderMatrices.pinhole_model.reset();
-    std::cerr << "[DEBUG updateMatrices] is6DOF=" << m_camera.is6DOFMode() << " FOV=" << m_camera.getProjectiveFOVdeg() << " hasPinhole=" << m_camera.hasPinholeModel() << "\n";
     if (m_camera.is6DOFMode())
     {
       const auto pose = m_camera.getPose();
@@ -768,7 +767,6 @@ void CompiledViewport::buildRenderQueue(
     ViewportRenderStats& stats)
 {
   MRPT_START
-  std::cerr << "[DEBUG buildRenderQueue] m_proxies.size()=" << m_proxies.size() << "\n";
   for (const auto& proxy : m_proxies)
   {
     if (!proxy)
@@ -785,8 +783,6 @@ void CompiledViewport::buildRenderQueue(
     // For now, render everything
 
     const auto shaderIDs = proxy->requiredShaders();
-    std::cerr << "[DEBUG buildRenderQueue] proxy type=" << proxy->typeName()
-              << " shaders=" << shaderIDs.size() << "\n";
     for (auto shaderID : shaderIDs)
     {
       // Create per-object render state with the object's model matrix
@@ -815,31 +811,14 @@ void CompiledViewport::processRenderQueue(
 {
   MRPT_START
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-  std::cerr << "[DEBUG processRenderQueue] queue has " << queue.size() << " shader groups\n";
-  std::cerr << "[DEBUG] p_matrix diag: " << matrices.p_matrix(0,0) << " " << matrices.p_matrix(1,1) << " " << matrices.p_matrix(2,2) << " " << matrices.p_matrix(3,3) << "\n";
-  std::cerr << "[DEBUG] v_matrix diag: " << matrices.v_matrix(0,0) << " " << matrices.v_matrix(1,1) << " " << matrices.v_matrix(2,2) << " " << matrices.v_matrix(3,3) << "\n";
-  std::cerr << "[DEBUG] eye=" << matrices.eye << " pointing=" << matrices.pointing << " is_proj=" << matrices.is_projective << " FOV=" << matrices.FOV << "\n";
-  std::cerr << "[DEBUG] viewport=" << matrices.viewport_width << "x" << matrices.viewport_height << "\n";
-  // Check for GL errors before rendering
-  {
-    GLenum err = glGetError();
-    if (err != GL_NO_ERROR) std::cerr << "[DEBUG] GL error before render: 0x" << std::hex << err << std::dec << "\n";
-  }
   for (const auto& [shaderID, proxyMap] : queue)
   {
-    std::cerr << "[DEBUG] Processing shader ID " << static_cast<int>(shaderID)
-              << " with " << proxyMap.size() << " objects\n";
     auto shader = shaderManager.getProgram(shaderID);
     if (!shader)
     {
-      std::cerr << "[DEBUG] Shader program is null!\n";
       continue;
     }
     shader->use();
-    {
-      GLenum err = glGetError();
-      if (err != GL_NO_ERROR) std::cerr << "[DEBUG] GL error after shader->use(): 0x" << std::hex << err << std::dec << "\n";
-    }
     stats.numDrawCalls++;
 
     const auto IS_TRANSPOSED = GL_TRUE;

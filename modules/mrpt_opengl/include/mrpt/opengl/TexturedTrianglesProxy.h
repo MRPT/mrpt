@@ -89,6 +89,10 @@ class TexturedTrianglesProxy : public TexturedTrianglesProxyBase
   /** Owned texture object (created from source image) */
   std::unique_ptr<Texture> m_ownedTexture;
 
+  /** Default 1x1 white GL texture ID (raw GL, bypasses MRPT tracking).
+   *  Used when no texture is assigned so vertex color passes through. */
+  mutable unsigned int m_defaultWhiteGLTexId = 0;
+
   /** Helper: Extract texture rendering parameters from source object */
   void extractTextureParams(const mrpt::viz::CVisualObject* sourceObj);
 

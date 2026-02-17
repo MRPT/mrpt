@@ -364,14 +364,14 @@ void CFBORender::internal_render_RGBD(
 #endif
 
     glReadPixels(
-        0, 0, m_fb.width(), m_fb.height(), GL_BGR_EXT, GL_UNSIGNED_BYTE,
+        0, 0, m_fb.width(), m_fb.height(), GL_RGB, GL_UNSIGNED_BYTE,
         outRGB.ptrLine<uint8_t>(0));
     CHECK_OPENGL_ERROR();
 
 #ifdef FBO_PROFILER
     tle1.stop();
-    auto tle2 = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".flip_rgb"s);
 #endif
+    // No manual flip needed: flipVerticalProjection(true) already handles it.
   }
 
   // ---------------------------

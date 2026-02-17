@@ -7,12 +7,14 @@ R"XXX(#version 300 es
 uniform mediump sampler2D textureSampler;
 
 in mediump vec2 frag_UV; // Interpolated values from the vertex shaders
+in lowp vec4 frag_vertexColor;
 
 out lowp vec4 color;
 
 void main()
 {
-    color = texture( textureSampler, frag_UV );
+    lowp vec4 texColor = texture(textureSampler, frag_UV);
+    color = texColor * frag_vertexColor;
 }
 
 )XXX"

@@ -15,6 +15,7 @@ uniform lowp float materialSpecular;
 
 in highp vec3 frag_position, frag_normal;
 in mediump vec2 frag_UV; // Interpolated values from the vertex shaders
+in lowp vec4 frag_vertexColor;
 
 out lowp vec4 color;
 
@@ -24,17 +25,17 @@ void main()
     mediump vec3 normal = normalize(frag_normal);
     mediump float diff = max(dot(normal, -light_direction), 0.0);
     mediump float diffuse_factor = diff * light_diffuse;
-    
+
     // specular lighting
     highp vec3 viewDirection = normalize(cam_position - frag_position);
     highp vec3 reflectionDirection = reflect(light_direction, normal);
     mediump float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16.0f);
     mediump float specular_factor = specAmount * materialSpecular * light_specular;
 
-    // material texture color:
-    lowp vec4 texCol = texture(textureSampler,frag_UV);
+    // material texture color modulated by vertex color:
+    lowp vec4 texCol = texture(textureSampler, frag_UV) * frag_vertexColor;
     mediump vec3 finalLight = (light_ambient + (diffuse_factor+specular_factor))*light_color;
-    
+
     color = vec4(texCol.rgb * finalLight, texCol.a);
 }
 
