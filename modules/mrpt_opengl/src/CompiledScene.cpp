@@ -14,14 +14,17 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/get_env.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/opengl/CompiledScene.h>
 #include <mrpt/opengl/LinesProxy.h>
 #include <mrpt/opengl/PointsProxy.h>
 #include <mrpt/opengl/TexturedTrianglesProxy.h>
 #include <mrpt/opengl/TrianglesProxy.h>
 #include <mrpt/opengl/opengl_api.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/viz/CSetOfObjects.h>
 
+#include <Eigen/Dense>
 #include <iostream>
 
 using namespace mrpt::opengl;
@@ -135,10 +138,33 @@ void CompiledScene::compileViewport(
   MRPT_END
 }
 
+mrpt::math::CMatrixFloat44 CompiledScene::computeModelMatrix(
+    const CVisualObject& obj, const mrpt::math::CMatrixFloat44& parentModelMatrix)
+{
+  mrpt::math::CMatrixFloat44 HM =
+      obj.getCPose().getHomogeneousMatrixVal<mrpt::math::CMatrixDouble44>().cast_float();
+
+  // Apply scaling if any axis differs from 1.0
+  if (obj.getScaleX() != 1 || obj.getScaleY() != 1 || obj.getScaleZ() != 1)
+  {
+    auto scale = mrpt::math::CMatrixFloat44::Identity();
+    scale(0, 0) = obj.getScaleX();
+    scale(1, 1) = obj.getScaleY();
+    scale(2, 2) = obj.getScaleZ();
+    HM.asEigen() = HM.asEigen() * scale.asEigen();
+  }
+
+  // Compose with parent transform
+  mrpt::math::CMatrixFloat44 result;
+  result.asEigen() = parentModelMatrix.asEigen() * HM.asEigen();
+  return result;
+}
+
 void CompiledScene::compileObject(
     const std::shared_ptr<CVisualObject>& obj,
     CompiledViewport& compiledViewport,
-    CompilationStats& stats)
+    CompilationStats& stats,
+    const mrpt::math::CMatrixFloat44& parentModelMatrix)
 {
   MRPT_START
 
@@ -155,14 +181,17 @@ void CompiledScene::compileObject(
     return;
   }
 
+  // Compute model matrix for this object (pose + scale + parent)
+  const auto modelMatrix = computeModelMatrix(*obj, parentModelMatrix);
+
   // Check if this is a container (CSetOfObjects)
   const auto* setOfObjects = dynamic_cast<const CSetOfObjects*>(obj.get());
   if (setOfObjects)
   {
-    // Recursively compile children
+    // Recursively compile children, passing this container's model matrix
     for (auto it = setOfObjects->begin(); it != setOfObjects->end(); ++it)
     {
-      compileObject(*it, compiledViewport, stats);
+      compileObject(*it, compiledViewport, stats, modelMatrix);
     }
     return;
   }
@@ -189,6 +218,9 @@ void CompiledScene::compileObject(
 
   // Set the source object reference in the proxy
   proxy->setSourceObject(obj);
+
+  // Set the model matrix (object local frame -> world frame)
+  proxy->m_modelMatrix = modelMatrix;
 
   // Compile the proxy (upload data to GPU)
   proxy->compile(obj.get());

@@ -235,6 +235,11 @@ class RenderableProxy
     m_sourceObject = std::move(obj);
   }
 
+  /** Model matrix: object local frame -> world frame.
+   * Composed from the object's pose (and parent container poses).
+   * Set during compilation by CompiledScene. */
+  mrpt::math::CMatrixFloat44 m_modelMatrix = mrpt::math::CMatrixFloat44::Identity();
+
   /** Returns the source object, or nullptr if it has been deleted. */
   [[nodiscard]] std::shared_ptr<mrpt::viz::CVisualObject> getSourceObject() const
   {

@@ -181,6 +181,8 @@ class CMesh :
     CVisualObject::notifyChange();
   }
 
+  void updateBuffers() const override;
+
   mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
   /** Assigns a texture image.

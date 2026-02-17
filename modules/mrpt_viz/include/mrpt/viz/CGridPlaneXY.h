@@ -67,6 +67,8 @@ class CGridPlaneXY : virtual public CVisualObject, public VisualObjectParams_Lin
   }
   float getGridFrequency() const { return m_frequency; }
 
+  void updateBuffers() const override;
+
   mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
   /** Constructor  */

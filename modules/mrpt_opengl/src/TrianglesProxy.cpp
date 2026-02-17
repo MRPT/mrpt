@@ -82,22 +82,12 @@ void TrianglesProxy::render(const RenderContext& rc) const
 
 std::vector<shader_id_t> TrianglesProxy::requiredShaders() const
 {
-  // Override to potentially return shadow shaders too
-  std::vector<shader_id_t> shaders;
-
+  // Only return the base shader here. Shadow shader variants are selected
+  // at render time based on the rendering pass (shadow map vs normal).
   if (m_params.lightEnabled)
-  {
-    shaders.push_back(DefaultShaderID::TRIANGLES_LIGHT);
-    // Also need shadow shaders if shadows are enabled globally
-    shaders.push_back(DefaultShaderID::TRIANGLES_SHADOW_1ST);
-    shaders.push_back(DefaultShaderID::TRIANGLES_SHADOW_2ND);
-  }
+    return {DefaultShaderID::TRIANGLES_LIGHT};
   else
-  {
-    shaders.push_back(DefaultShaderID::TRIANGLES_NO_LIGHT);
-  }
-
-  return shaders;
+    return {DefaultShaderID::TRIANGLES_NO_LIGHT};
 }
 
 void TrianglesProxy::extractTriangleParams(const CVisualObject* sourceObj)
@@ -119,10 +109,19 @@ void TrianglesProxy::uploadTriangleUniforms(const RenderContext& rc) const
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   if (!rc.shader) return;
 
-  // Material shininess
-  if (rc.shader->hasUniform("materialShininess"))
+  // Material specular (shininess)
+  if (rc.shader->hasUniform("materialSpecular"))
   {
-    uploadFloat(rc, "materialShininess", m_params.materialShininess);
+    uploadFloat(rc, "materialSpecular", m_params.materialShininess);
+  }
+
+  // Camera position (needed for specular lighting)
+  if (rc.shader->hasUniform("cam_position") && rc.state != nullptr)
+  {
+    const auto& e = rc.state->eye;
+    uploadVector3(
+        rc, "cam_position",
+        mrpt::math::TVector3Df(static_cast<float>(e.x), static_cast<float>(e.y), static_cast<float>(e.z)));
   }
 
   // Light parameters (if lighting enabled)

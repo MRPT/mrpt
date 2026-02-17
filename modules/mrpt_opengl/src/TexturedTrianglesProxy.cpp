@@ -132,21 +132,16 @@ void TexturedTrianglesProxy::render(const RenderContext& rc) const
 
 [[nodiscard]] std::vector<shader_id_t> TexturedTrianglesProxy::requiredShaders() const
 {
-  std::vector<shader_id_t> shaders;
-
+  // Only return the base shader here. Shadow shader variants are selected
+  // at render time based on the rendering pass (shadow map vs normal).
   if (m_params.lightEnabled)
   {
-    shaders.push_back(DefaultShaderID::TEXTURED_TRIANGLES_LIGHT);
-    // Shadow shaders for two-pass rendering
-    shaders.push_back(DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_1ST);
-    shaders.push_back(DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_2ND);
+    return {DefaultShaderID::TEXTURED_TRIANGLES_LIGHT};
   }
   else
   {
-    shaders.push_back(DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT);
+    return {DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT};
   }
-
-  return shaders;
 }
 
 void TexturedTrianglesProxy::extractTextureParams(const CVisualObject* sourceObj)

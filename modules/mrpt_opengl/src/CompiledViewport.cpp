@@ -19,6 +19,7 @@
 #include <mrpt/opengl/ShaderProgramManager.h>
 #include <mrpt/opengl/opengl_api.h>
 
+#include <Eigen/Dense>
 #include <iostream>
 
 using namespace mrpt::opengl;
@@ -534,6 +535,11 @@ void CompiledViewport::updateMatrices()
     m_renderMatrices.is_projective = m_camera.isProjective();
     m_renderMatrices.FOV = m_camera.getProjectiveFOVdeg();
     m_renderMatrices.eyeDistance = m_camera.getZoomDistance();
+    if (m_camera.hasPinholeModel())
+      m_renderMatrices.pinhole_model = m_camera.getPinholeModel();
+    else
+      m_renderMatrices.pinhole_model.reset();
+    std::cerr << "[DEBUG updateMatrices] is6DOF=" << m_camera.is6DOFMode() << " FOV=" << m_camera.getProjectiveFOVdeg() << " hasPinhole=" << m_camera.hasPinholeModel() << "\n";
     if (m_camera.is6DOFMode())
     {
       const auto pose = m_camera.getPose();
@@ -762,6 +768,7 @@ void CompiledViewport::buildRenderQueue(
     ViewportRenderStats& stats)
 {
   MRPT_START
+  std::cerr << "[DEBUG buildRenderQueue] m_proxies.size()=" << m_proxies.size() << "\n";
   for (const auto& proxy : m_proxies)
   {
     if (!proxy)
@@ -778,10 +785,22 @@ void CompiledViewport::buildRenderQueue(
     // For now, render everything
 
     const auto shaderIDs = proxy->requiredShaders();
+    std::cerr << "[DEBUG buildRenderQueue] proxy type=" << proxy->typeName()
+              << " shaders=" << shaderIDs.size() << "\n";
     for (auto shaderID : shaderIDs)
     {
+      // Create per-object render state with the object's model matrix
+      auto objMatrices = matrices;
+      objMatrices.m_matrix = proxy->m_modelMatrix;
+
+      // Precompute derived matrices
+      objMatrices.mv_matrix.asEigen() =
+          objMatrices.v_matrix.asEigen() * objMatrices.m_matrix.asEigen();
+      objMatrices.pmv_matrix.asEigen() =
+          objMatrices.p_matrix.asEigen() * objMatrices.mv_matrix.asEigen();
+
       // Use depth of 0 for now (proper depth sorting would go here)
-      queue[shaderID].emplace(0.0f, RenderQueueElement{proxy.get(), matrices});
+      queue[shaderID].emplace(0.0f, RenderQueueElement{proxy.get(), objMatrices});
     }
 
     stats.numProxiesRendered++;
@@ -796,43 +815,81 @@ void CompiledViewport::processRenderQueue(
 {
   MRPT_START
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+  std::cerr << "[DEBUG processRenderQueue] queue has " << queue.size() << " shader groups\n";
+  std::cerr << "[DEBUG] p_matrix diag: " << matrices.p_matrix(0,0) << " " << matrices.p_matrix(1,1) << " " << matrices.p_matrix(2,2) << " " << matrices.p_matrix(3,3) << "\n";
+  std::cerr << "[DEBUG] v_matrix diag: " << matrices.v_matrix(0,0) << " " << matrices.v_matrix(1,1) << " " << matrices.v_matrix(2,2) << " " << matrices.v_matrix(3,3) << "\n";
+  std::cerr << "[DEBUG] eye=" << matrices.eye << " pointing=" << matrices.pointing << " is_proj=" << matrices.is_projective << " FOV=" << matrices.FOV << "\n";
+  std::cerr << "[DEBUG] viewport=" << matrices.viewport_width << "x" << matrices.viewport_height << "\n";
+  // Check for GL errors before rendering
+  {
+    GLenum err = glGetError();
+    if (err != GL_NO_ERROR) std::cerr << "[DEBUG] GL error before render: 0x" << std::hex << err << std::dec << "\n";
+  }
   for (const auto& [shaderID, proxyMap] : queue)
   {
+    std::cerr << "[DEBUG] Processing shader ID " << static_cast<int>(shaderID)
+              << " with " << proxyMap.size() << " objects\n";
     auto shader = shaderManager.getProgram(shaderID);
     if (!shader)
     {
+      std::cerr << "[DEBUG] Shader program is null!\n";
       continue;
     }
     shader->use();
+    {
+      GLenum err = glGetError();
+      if (err != GL_NO_ERROR) std::cerr << "[DEBUG] GL error after shader->use(): 0x" << std::hex << err << std::dec << "\n";
+    }
     stats.numDrawCalls++;
 
-    // Upload common uniforms
     const auto IS_TRANSPOSED = GL_TRUE;
 
-    if (shader->hasUniform("p_matrix"))
+    // Cache uniform locations for this shader
+    const bool has_p = shader->hasUniform("p_matrix");
+    const bool has_v = shader->hasUniform("v_matrix");
+    const bool has_m = shader->hasUniform("m_matrix");
+    const bool has_mv = shader->hasUniform("mv_matrix");
+    const bool has_pmv = shader->hasUniform("pmv_matrix");
+
+    // Upload per-shader uniforms that don't change per object (p, v)
+    if (has_p)
     {
       glUniformMatrix4fv(shader->uniformId("p_matrix"), 1, IS_TRANSPOSED, matrices.p_matrix.data());
     }
 
-    if (shader->hasUniform("v_matrix"))
+    if (has_v)
     {
       glUniformMatrix4fv(shader->uniformId("v_matrix"), 1, IS_TRANSPOSED, matrices.v_matrix.data());
     }
 
-    if (shader->hasUniform("m_matrix"))
-    {
-      glUniformMatrix4fv(shader->uniformId("m_matrix"), 1, IS_TRANSPOSED, matrices.m_matrix.data());
-    }
-
     // Render all proxies using this shader
-    RenderContext rc;
-    rc.shader = shader.get();
-    rc.shader_id = shaderID;
-    rc.state = &matrices;
-    rc.lights = &m_lightParams;
-
     for (const auto& [depth, element] : proxyMap)
     {
+      const auto& objState = element.renderState;
+
+      // Upload per-object matrix uniforms
+      if (has_m)
+      {
+        glUniformMatrix4fv(
+            shader->uniformId("m_matrix"), 1, IS_TRANSPOSED, objState.m_matrix.data());
+      }
+      if (has_mv)
+      {
+        glUniformMatrix4fv(
+            shader->uniformId("mv_matrix"), 1, IS_TRANSPOSED, objState.mv_matrix.data());
+      }
+      if (has_pmv)
+      {
+        glUniformMatrix4fv(
+            shader->uniformId("pmv_matrix"), 1, IS_TRANSPOSED, objState.pmv_matrix.data());
+      }
+
+      RenderContext rc;
+      rc.shader = shader.get();
+      rc.shader_id = shaderID;
+      rc.state = &objState;
+      rc.lights = &m_lightParams;
+
       element.proxy->render(rc);
     }
   }

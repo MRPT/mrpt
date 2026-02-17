@@ -76,6 +76,33 @@ void CGridPlaneXY::serializeFrom(mrpt::serialization::CArchive& in, uint8_t vers
   CVisualObject::notifyChange();
 }
 
+void CGridPlaneXY::updateBuffers() const
+{
+  ASSERT_GT_(m_frequency, 0);
+
+  std::unique_lock<std::shared_mutex> lck(
+      VisualObjectParams_Lines::m_linesMtx.data);
+
+  auto& vbd = VisualObjectParams_Lines::m_vertex_buffer_data;
+  auto& cbd = VisualObjectParams_Lines::m_color_buffer_data;
+  vbd.clear();
+  cbd.clear();
+
+  for (float y = m_yMin; y <= m_yMax; y += m_frequency)
+  {
+    vbd.emplace_back(m_xMin, y, m_plane_z);
+    vbd.emplace_back(m_xMax, y, m_plane_z);
+  }
+
+  for (float x = m_xMin; x <= m_xMax; x += m_frequency)
+  {
+    vbd.emplace_back(x, m_yMin, m_plane_z);
+    vbd.emplace_back(x, m_yMax, m_plane_z);
+  }
+  // The same color to all vertices:
+  cbd.assign(vbd.size(), getColor_u8());
+}
+
 auto CGridPlaneXY::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
   return mrpt::math::TBoundingBoxf::FromUnsortedPoints({m_xMin, m_yMin, 0}, {m_xMax, m_yMax, 0});

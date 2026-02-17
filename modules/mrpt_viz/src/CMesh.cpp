@@ -530,6 +530,75 @@ void CMesh::updatePolygons() const
   CVisualObject::notifyChange();
 }
 
+void CMesh::updateBuffers() const
+{
+  if (!m_trianglesUpToDate) updateTriangles();
+  if (m_modified_Z || m_modified_Image) updateColorsMatrix();
+
+  // Populate the textured triangles buffer
+  {
+    auto& tris = VisualObjectParams_TexturedTriangles::m_triangles;
+    std::unique_lock<std::shared_mutex> writeLock(
+        VisualObjectParams_TexturedTriangles::m_trianglesMtx.data);
+
+    tris.clear();
+
+    std::shared_lock<std::shared_mutex> lckRead(m_meshDataMtx.data);
+
+    // Default: texture over the whole extension.
+    const float textureSizeX = (m_textureSize_x != 0) ? m_textureSize_x : (m_xMax - m_xMin);
+    const float textureSizeY = (m_textureSize_y != 0) ? m_textureSize_y : (m_yMax - m_yMin);
+
+    for (const auto& meshEntry : actualMesh)
+    {
+      mrpt::viz::TTriangle tri = meshEntry.first;
+      const TTriangleVertexIndices& tvi = meshEntry.second;
+
+      const auto& n0 = vertex_normals.at(tvi.vind[0]).first;
+      const auto& n1 = vertex_normals.at(tvi.vind[1]).first;
+      const auto& n2 = vertex_normals.at(tvi.vind[2]).first;
+
+      tri.vertices[0].normal = n0;
+      tri.vertices[1].normal = n1;
+      tri.vertices[2].normal = n2;
+
+      for (int k = 0; k < 3; k++)
+      {
+        tri.vertices[k].uv.y = (tri.vertices[k].xyzrgba.pt.x - m_xMin) / textureSizeX;
+        tri.vertices[k].uv.x = (tri.vertices[k].xyzrgba.pt.y - m_yMin) / textureSizeY;
+      }
+
+      tris.emplace_back(tri);
+    }
+  }
+
+  // Populate wireframe lines if wireframe mode is enabled
+  if (m_isWireFrame)
+  {
+    auto& vbd = VisualObjectParams_Lines::m_vertex_buffer_data;
+    auto& cbd = VisualObjectParams_Lines::m_color_buffer_data;
+    std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Lines::m_linesMtx.data);
+
+    vbd.clear();
+    cbd.clear();
+
+    std::shared_lock<std::shared_mutex> lckRead(m_meshDataMtx.data);
+
+    for (const auto& meshEntry : actualMesh)
+    {
+      const auto& tri = meshEntry.first;
+      for (int e = 0; e < 3; e++)
+      {
+        const int ep = (e + 1) % 3;
+        vbd.emplace_back(tri.vertices[e].xyzrgba.pt);
+        vbd.emplace_back(tri.vertices[ep].xyzrgba.pt);
+      }
+    }
+
+    cbd.assign(vbd.size(), getColor_u8());
+  }
+}
+
 auto CMesh::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
   return mrpt::math::TBoundingBoxf::FromUnsortedPoints(

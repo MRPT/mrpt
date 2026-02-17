@@ -112,3 +112,195 @@ void CGeneralizedEllipsoidTemplate<3>::generatePoints(
 
   MRPT_END
 }
+
+// ============================================================================
+// implUpdate_Wireframe specializations
+// ============================================================================
+template <>
+void CGeneralizedEllipsoidTemplate<2>::implUpdate_Wireframe() const
+{
+  const auto& pts = m_render_pts;
+
+  auto& vbd = VisualObjectParams_Lines::m_vertex_buffer_data;
+  auto& cbd = VisualObjectParams_Lines::m_color_buffer_data;
+  std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Lines::m_linesMtx.data);
+
+  vbd.clear();
+
+  // Line loop:
+  const auto N = pts.size();
+  for (size_t i = 0; i < N; i++)
+  {
+    const auto ip = (i + 1) % N;
+    vbd.emplace_back(pts[i][0], pts[i][1], .0f);
+    vbd.emplace_back(pts[ip][0], pts[ip][1], .0f);
+  }
+
+  // All lines, same color:
+  cbd.assign(vbd.size(), getColor_u8());
+}
+
+template <>
+void CGeneralizedEllipsoidTemplate<3>::implUpdate_Wireframe() const
+{
+  const auto& pts = m_render_pts;
+
+  auto& vbd = VisualObjectParams_Lines::m_vertex_buffer_data;
+  auto& cbd = VisualObjectParams_Lines::m_color_buffer_data;
+  std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Lines::m_linesMtx.data);
+
+  vbd.clear();
+
+  const auto slices = m_numSegments;
+  const auto stacks = m_numSegments;
+
+  // Points in the ellipsoid:
+  //  * "#slices" slices, with "#stacks" points each, but for the two ends
+  //  * 1 point at each end slice
+  // #total points = stacks*(slices-2) + 2
+  ASSERT_EQUAL_(static_cast<size_t>(slices - 2) * stacks + 2, pts.size());
+  const size_t idx_1st_slice = 1;
+
+  // 1st slice: lines from pole to first ring
+  for (size_t i = 0; i < stacks; i++)
+  {
+    const auto idx = idx_1st_slice + i;
+    vbd.emplace_back(pts[0]);
+    vbd.emplace_back(pts[idx]);
+  }
+
+  // Middle slices
+  for (size_t s = 0; s < slices - 3; s++)
+  {
+    size_t idx0 = idx_1st_slice + stacks * s;
+    size_t idx1 = idx0 + stacks;
+
+    for (size_t i = 0; i < stacks; i++)
+    {
+      const size_t ii = (i == (stacks - 1) ? 0 : i + 1);
+
+      vbd.emplace_back(pts[idx0 + i]);
+      vbd.emplace_back(pts[idx1 + ii]);
+
+      vbd.emplace_back(pts[idx1 + ii]);
+      vbd.emplace_back(pts[idx1 + i]);
+
+      vbd.emplace_back(pts[idx1 + i]);
+      vbd.emplace_back(pts[idx0 + i]);
+
+      vbd.emplace_back(pts[idx0 + i]);
+      vbd.emplace_back(pts[idx0 + ii]);
+
+      vbd.emplace_back(pts[idx0 + ii]);
+      vbd.emplace_back(pts[idx1 + ii]);
+    }
+  }
+
+  // Last slice: lines from last ring to pole
+  const size_t idxN = pts.size() - 1;
+  const size_t idx_last_slice = idx_1st_slice + (slices - 3) * stacks;
+
+  for (size_t i = 0; i < stacks; i++)
+  {
+    vbd.emplace_back(pts[idxN]);
+    vbd.emplace_back(pts[idx_last_slice + i]);
+  }
+
+  // All lines, same color:
+  cbd.assign(vbd.size(), getColor_u8());
+}
+
+// ============================================================================
+// implUpdate_Triangles specializations
+// ============================================================================
+template <>
+void CGeneralizedEllipsoidTemplate<2>::implUpdate_Triangles() const
+{
+  using P3f = mrpt::math::TPoint3Df;
+  const auto& pts = m_render_pts;
+
+  std::unique_lock<std::shared_mutex> trisWriteLock(
+      VisualObjectParams_Triangles::m_trianglesMtx.data);
+  auto& tris = VisualObjectParams_Triangles::m_triangles;
+
+  tris.clear();
+
+  const auto N = pts.size();
+  for (size_t i = 0; i < N; i++)
+  {
+    const auto ip = (i + 1) % N;
+    tris.emplace_back(
+        P3f(0, 0, 0), P3f(pts[i][0], pts[i][1], .0f), P3f(pts[ip][0], pts[ip][1], .0f));
+  }
+
+  // All faces, all vertices, same color:
+  for (auto& t : tris)
+    t.setColor(getColor_u8());
+}
+
+template <>
+void CGeneralizedEllipsoidTemplate<3>::implUpdate_Triangles() const
+{
+  using P3f = mrpt::math::TPoint3Df;
+
+  const auto& pts = m_render_pts;
+
+  std::unique_lock<std::shared_mutex> trisWriteLock(
+      VisualObjectParams_Triangles::m_trianglesMtx.data);
+  auto& tris = VisualObjectParams_Triangles::m_triangles;
+
+  tris.clear();
+
+  const auto slices = m_numSegments, stacks = m_numSegments;
+
+  ASSERT_EQUAL_(static_cast<size_t>(slices - 2) * stacks + 2, pts.size());
+  const size_t idx_1st_slice = 1;
+
+  // 1st slice: triangle fan
+  for (size_t i = 0; i < stacks; i++)
+  {
+    const auto idx = idx_1st_slice + i;
+    const auto idxp = idx_1st_slice + ((i + 1) % stacks);
+
+    tris.emplace_back(
+        P3f(pts[0]), P3f(pts[idxp]), P3f(pts[idx]),
+        P3f(pts[0]), P3f(pts[idxp]), P3f(pts[idx]));
+  }
+
+  // Middle slices: triangle strip
+  for (size_t s = 0; s < slices - 3; s++)
+  {
+    size_t idx0 = idx_1st_slice + stacks * s;
+    size_t idx1 = idx0 + stacks;
+
+    for (size_t i = 0; i < stacks; i++)
+    {
+      const size_t ii = (i == (stacks - 1) ? 0 : i + 1);
+
+      tris.emplace_back(
+          P3f(pts[idx0 + i]), P3f(pts[idx0 + ii]), P3f(pts[idx1 + i]),
+          P3f(pts[idx0 + i]), P3f(pts[idx0 + ii]), P3f(pts[idx1 + i]));
+      tris.emplace_back(
+          P3f(pts[idx1 + ii]), P3f(pts[idx1 + i]), P3f(pts[idx0 + ii]),
+          P3f(pts[idx1 + ii]), P3f(pts[idx1 + i]), P3f(pts[idx0 + ii]));
+    }
+  }
+
+  // Last slice: triangle fan
+  const size_t idxN = pts.size() - 1;
+  const size_t idx_last_slice = idx_1st_slice + (slices - 3) * stacks;
+
+  for (size_t i = 0; i < stacks; i++)
+  {
+    const auto idx = idx_last_slice + i;
+    const auto idxp = idx_last_slice + ((i + 1) % stacks);
+
+    tris.emplace_back(
+        P3f(pts[idx]), P3f(pts[idxp]), P3f(pts[idxN]),
+        P3f(pts[idx]), P3f(pts[idxp]), P3f(pts[idxN]));
+  }
+
+  // All faces, all vertices, same color:
+  for (auto& t : tris)
+    t.setColor(getColor_u8());
+}
