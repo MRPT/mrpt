@@ -23,6 +23,9 @@
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/CText3D.h>
+
+#include "gltext.h"
 
 #include <Eigen/Dense>
 #include <iostream>
@@ -31,6 +34,98 @@ using namespace mrpt::opengl;
 using namespace mrpt::viz;
 
 static const bool SCENE_VERBOSE = mrpt::get_env<bool>("MRPT_SCENE_VERBOSE", false);
+
+// ============================================================================
+// Text3DProxy: generates text geometry from CText3D using the gltext system
+// ============================================================================
+namespace
+{
+class Text3DProxy : public TrianglesProxyBase
+{
+ public:
+  void compile(const mrpt::viz::CVisualObject* sourceObj) override
+  {
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+    MRPT_START
+
+    const auto* text3d = dynamic_cast<const mrpt::viz::CText3D*>(sourceObj);
+    if (text3d == nullptr) { return; }
+
+    m_lightEnabled = false;
+    m_cullFace = mrpt::viz::TCullFace::NONE;
+
+    // Generate text geometry using gltext
+    std::vector<mrpt::viz::TTriangle> tris;
+    std::vector<mrpt::math::TPoint3Df> lineVerts;
+    std::vector<mrpt::img::TColor> lineColors;
+
+    internal::glSetFont(text3d->getFont());
+    internal::glDrawTextTransformed(
+        text3d->getString(), tris, lineVerts, lineColors, mrpt::poses::CPose3D(),
+        text3d->getScaleX(), text3d->getColor_u8(), text3d->getTextStyle(),
+        text3d->setTextSpacing(), text3d->setTextKerning());
+
+    m_triangleCount = tris.size();
+    if (m_triangleCount == 0) { return; }
+
+    const size_t vertexCount = m_triangleCount * 3;
+
+    std::vector<mrpt::math::TPoint3Df> vertices;
+    std::vector<mrpt::math::TVector3Df> normals;
+    std::vector<mrpt::img::TColor> colors;
+    vertices.reserve(vertexCount);
+    normals.reserve(vertexCount);
+    colors.reserve(vertexCount);
+
+    for (const auto& tri : tris)
+    {
+      for (int i = 0; i < 3; ++i)
+      {
+        vertices.push_back(tri.vertices[i].xyzrgba.pt);
+        normals.push_back(tri.vertices[i].normal);
+        const auto& rgba = tri.vertices[i].xyzrgba;
+        colors.emplace_back(rgba.r, rgba.g, rgba.b, rgba.a);
+      }
+    }
+
+    // Create VAO and upload to GPU
+    m_vao.createOnce();
+    m_vao.bind();
+
+    m_vertexBuffer.createOnce();
+    m_vertexBuffer.bind();
+    m_vertexBuffer.allocate(
+        vertices.data(), static_cast<int>(sizeof(mrpt::math::TPoint3Df) * vertexCount));
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(mrpt::math::TPoint3Df), nullptr);
+
+    m_colorBuffer.createOnce();
+    m_colorBuffer.bind();
+    m_colorBuffer.allocate(
+        colors.data(), static_cast<int>(sizeof(mrpt::img::TColor) * vertexCount));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(mrpt::img::TColor), nullptr);
+
+    m_normalBuffer.createOnce();
+    m_normalBuffer.bind();
+    m_normalBuffer.allocate(
+        normals.data(), static_cast<int>(sizeof(mrpt::math::TVector3Df) * vertexCount));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(mrpt::math::TVector3Df), nullptr);
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    m_cachedBBox.reset();
+    CHECK_OPENGL_ERROR_IN_DEBUG();
+
+    MRPT_END
+#endif
+  }
+
+  const char* typeName() const override { return "Text3DProxy"; }
+};
+}  // namespace
 
 // ============================================================================
 // CompiledScene Implementation
@@ -281,6 +376,12 @@ RenderableProxy::Ptr CompiledScene::createProxyByType(const std::shared_ptr<CVis
   if (dynamic_cast<const VisualObjectParams_Lines*>(obj.get()))
   {
     return std::make_shared<LinesProxy>();
+  }
+
+  // Check for CText3D (uses gltext to generate geometry in the proxy)
+  if (dynamic_cast<const mrpt::viz::CText3D*>(obj.get()) != nullptr)
+  {
+    return std::make_shared<Text3DProxy>();
   }
 
   // Unknown type - return null

@@ -18,6 +18,8 @@
 #include <mrpt/opengl/config.h>
 #include <mrpt/opengl/opengl_api.h>
 
+#include <Eigen/Dense>
+
 #define FBO_USE_LUT
 // #define FBO_PROFILER
 
@@ -389,6 +391,10 @@ void CFBORender::internal_render_RGBD(
 
     glReadPixels(0, 0, m_fb.width(), m_fb.height(), GL_DEPTH_COMPONENT, GL_FLOAT, outDepth.data());
     CHECK_OPENGL_ERROR();
+
+    // Flip vertically: glReadPixels reads bottom-to-top, but the flipped
+    // projection means row 0 in the matrix is the bottom of the scene.
+    outDepth.asEigen() = outDepth.asEigen().colwise().reverse().eval();
 
 #ifdef FBO_PROFILER
     tle1.stop();

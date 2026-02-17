@@ -31,7 +31,6 @@ set(LIB_SOURCES
   src/CompiledScene.cpp
   src/LinesProxy.cpp
   src/Shader.cpp
-  src/TTriangle.cpp
   src/TexturedTrianglesProxy.cpp
   src/DefaultShaders.cpp
   src/TRenderMatrices.cpp
@@ -65,7 +64,6 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/opengl/pointcloud_adapters.h
   include/mrpt/opengl/CFBORender.h
   include/mrpt/opengl/LinesProxy.h
-  include/mrpt/opengl/TTriangle.h
   include/mrpt/opengl/TexturedTrianglesProxy.h
   include/mrpt/opengl/DefaultShaders.h
   include/mrpt/opengl/FrameBuffer.h
