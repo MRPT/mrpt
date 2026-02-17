@@ -102,6 +102,98 @@ void CArrow::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
       MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
   }
 }
+void CArrow::updateBuffers() const
+{
+  using P3f = mrpt::math::TPoint3Df;
+  using V3f = mrpt::math::TVector3Df;
+
+  std::unique_lock<std::shared_mutex> trisWriteLock(
+      VisualObjectParams_Triangles::m_trianglesMtx.data);
+  auto& tris = VisualObjectParams_Triangles::m_triangles;
+
+  tris.clear();
+
+  // Compute the XYZ local frame of reference for the arrow:
+  const P3f p0(m_x0, m_y0, m_z0), p1(m_x1, m_y1, m_z1);
+  auto p = p1 - p0;
+  const float P10_norm = p.norm();
+  if (P10_norm < 1e-6f) return;
+
+  // Unit vector:
+  p *= (1.0f / P10_norm);
+
+  // each column is a unit vector:
+  const CMatrixDouble44 HM =
+      mrpt::math::generateAxisBaseFromDirectionAndAxis(p, 2 /* provided vector is "z"*/);
+
+  // Transformation:
+  const mrpt::poses::CPose3D T(HM.blockCopy<3, 3>(0, 0), mrpt::math::TPoint3D(m_x0, m_y0, m_z0));
+
+  // precomputed table:
+  ASSERT_GT_(m_slices, 2u);
+
+  const float dAng = 2 * M_PIf / static_cast<float>(m_slices);
+  float a = 0;
+  std::vector<mrpt::math::TPoint2Df> cc(m_slices);
+  for (unsigned int i = 0; i < m_slices; i++, a += dAng)
+  {
+    cc[i].x = cos(a);
+    cc[i].y = sin(a);
+  }
+
+  ASSERT_GE_(m_headRatio, .0f);
+  ASSERT_LE_(m_headRatio, 1.0f);
+
+  const float r0 = m_smallRadius, r1 = m_largeRadius, h0 = P10_norm * (1.0f - m_headRatio),
+              h1 = P10_norm;
+
+  const float wall_tilt = 0;
+  const float coswt = std::cos(wall_tilt), sinwt = std::sin(wall_tilt);
+
+  const float head_tilt = std::atan2(r1, P10_norm * m_headRatio);
+  const float cosht = std::cos(head_tilt), sinht = std::sin(head_tilt);
+
+  // cylinder walls:
+  for (unsigned int i = 0; i < m_slices; i++)
+  {
+    const auto ip = (i + 1) % m_slices;
+
+    tris.emplace_back(
+        T.composePoint(P3f(r0 * cc[i].x, r0 * cc[i].y, .0f)),
+        T.composePoint(P3f(r0 * cc[ip].x, r0 * cc[ip].y, .0f)),
+        T.composePoint(P3f(r0 * cc[i].x, r0 * cc[i].y, h0)),
+        T.rotateVector(V3f(coswt * cc[i].x, coswt * cc[i].y, sinwt)),
+        T.rotateVector(V3f(coswt * cc[ip].x, coswt * cc[ip].y, sinwt)),
+        T.rotateVector(V3f(coswt * cc[i].x, coswt * cc[i].y, sinwt)));
+
+    tris.emplace_back(
+        T.composePoint(P3f(r0 * cc[ip].x, r0 * cc[ip].y, .0f)),
+        T.composePoint(P3f(r0 * cc[ip].x, r0 * cc[ip].y, h0)),
+        T.composePoint(P3f(r0 * cc[i].x, r0 * cc[i].y, h0)),
+        T.rotateVector(V3f(coswt * cc[ip].x, coswt * cc[ip].y, sinwt)),
+        T.rotateVector(V3f(coswt * cc[ip].x, coswt * cc[ip].y, sinwt)),
+        T.rotateVector(V3f(coswt * cc[i].x, coswt * cc[i].y, sinwt)));
+  }
+
+  // top cone:
+  if (m_headRatio > 0)
+  {
+    for (unsigned int i = 0; i < m_slices; i++)
+    {
+      const auto ip = (i + 1) % m_slices;
+      tris.emplace_back(
+          T.composePoint(P3f(r1 * cc[i].x, r1 * cc[i].y, h0)),
+          T.composePoint(P3f(r1 * cc[ip].x, r1 * cc[ip].y, h0)), T.composePoint(P3f(.0f, .0f, h1)),
+          T.rotateVector(V3f(cosht * cc[i].x, cosht * cc[i].y, sinht)),
+          T.rotateVector(V3f(cosht * cc[ip].x, cosht * cc[ip].y, sinht)),
+          T.rotateVector(V3f(0, 0, 1)));
+    }
+  }
+
+  // All faces, same color:
+  for (auto& t : tris) t.setColor(getColor_u8());
+}
+
 auto CArrow::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
   return mrpt::math::TBoundingBoxf::FromUnsortedPoints(

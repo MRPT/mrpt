@@ -77,6 +77,7 @@ class CTexturedPlane :
     VisualObjectParams_Triangles::enableLight(enable);
   }
 
+  void updateBuffers() const override;
   bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
   mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 };

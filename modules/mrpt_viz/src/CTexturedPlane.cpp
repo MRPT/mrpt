@@ -64,6 +64,98 @@ void CTexturedPlane::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ve
   CVisualObject::notifyChange();
 }
 
+void CTexturedPlane::updateBuffers() const
+{
+  using P2f = mrpt::math::TPoint2Df;
+  using P3f = mrpt::math::TPoint3Df;
+
+  // Populate textured triangles buffer
+  {
+    auto& tris = VisualObjectParams_TexturedTriangles::m_triangles;
+    std::unique_lock<std::shared_mutex> writeLock(
+        VisualObjectParams_TexturedTriangles::m_trianglesMtx.data);
+
+    tris.clear();
+
+    const auto col = getColor_u8();
+
+    {
+      TTriangle t;
+      t.vertices[0].xyzrgba.pt = P3f(m_xMin, m_yMin, 0);
+      t.vertices[1].xyzrgba.pt = P3f(m_xMax, m_yMin, 0);
+      t.vertices[2].xyzrgba.pt = P3f(m_xMax, m_yMax, 0);
+
+      t.vertices[0].uv = P2f(0, 0);
+      t.vertices[1].uv = P2f(1, 0);
+      t.vertices[2].uv = P2f(1, 1);
+
+      for (int i = 0; i < 3; i++)
+      {
+        t.vertices[i].xyzrgba.r = col.R / 255.0f;
+        t.vertices[i].xyzrgba.g = col.G / 255.0f;
+        t.vertices[i].xyzrgba.b = col.B / 255.0f;
+        t.vertices[i].xyzrgba.a = col.A / 255.0f;
+      }
+
+      t.computeNormals();
+      tris.emplace_back(t);
+    }
+    {
+      TTriangle t;
+      t.vertices[0].xyzrgba.pt = P3f(m_xMin, m_yMin, 0);
+      t.vertices[1].xyzrgba.pt = P3f(m_xMax, m_yMax, 0);
+      t.vertices[2].xyzrgba.pt = P3f(m_xMin, m_yMax, 0);
+
+      t.vertices[0].uv = P2f(0, 0);
+      t.vertices[1].uv = P2f(1, 1);
+      t.vertices[2].uv = P2f(0, 1);
+
+      for (int i = 0; i < 3; i++)
+      {
+        t.vertices[i].xyzrgba.r = col.R / 255.0f;
+        t.vertices[i].xyzrgba.g = col.G / 255.0f;
+        t.vertices[i].xyzrgba.b = col.B / 255.0f;
+        t.vertices[i].xyzrgba.a = col.A / 255.0f;
+      }
+
+      t.computeNormals();
+      tris.emplace_back(t);
+    }
+  }
+
+  // Populate plain triangles buffer (used when no texture is assigned)
+  {
+    std::unique_lock<std::shared_mutex> trisWriteLock(
+        VisualObjectParams_Triangles::m_trianglesMtx.data);
+    auto& tris = VisualObjectParams_Triangles::m_triangles;
+    tris.clear();
+
+    const auto col = getColor_u8();
+    TTriangle t;
+    for (int i = 0; i < 3; i++)
+    {
+      t.vertices[i].xyzrgba.r = col.R;
+      t.vertices[i].xyzrgba.g = col.G;
+      t.vertices[i].xyzrgba.b = col.B;
+      t.vertices[i].xyzrgba.a = col.A;
+    }
+
+    t.vertices[0].xyzrgba.pt = P3f(m_xMin, m_yMin, 0);
+    t.vertices[1].xyzrgba.pt = P3f(m_xMax, m_yMin, 0);
+    t.vertices[2].xyzrgba.pt = P3f(m_xMax, m_yMax, 0);
+
+    t.computeNormals();
+    tris.emplace_back(t);
+
+    t.vertices[0].xyzrgba.pt = P3f(m_xMin, m_yMin, 0);
+    t.vertices[1].xyzrgba.pt = P3f(m_xMax, m_yMax, 0);
+    t.vertices[2].xyzrgba.pt = P3f(m_xMin, m_yMax, 0);
+
+    t.computeNormals();
+    tris.emplace_back(t);
+  }
+}
+
 bool CTexturedPlane::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
   if (!polygonUpToDate) updatePoly();

@@ -153,6 +153,8 @@ class CMeshFast : virtual public CVisualObject, public VisualObjectParams_Points
     CVisualObject::notifyChange();
   }
 
+  void updateBuffers() const override;
+
   mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
   /** Assigns a texture image, and disable transparency.

@@ -62,7 +62,8 @@ void RenderableProxy::uploadColor(
   const int loc = rc.shader->uniformId(uniformName);
   if (loc >= 0)
   {
-    glUniform4f(loc, color.R, color.G, color.B, color.A);
+    // Use glUniform3f since light_color and similar are vec3 in shaders
+    glUniform3f(loc, color.R, color.G, color.B);
   }
 #endif
 }
@@ -354,6 +355,7 @@ void TrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   const auto& triangles = triObj->shaderTrianglesBuffer();
 
   m_triangleCount = triangles.size();
+  std::cerr << "[DEBUG TrianglesProxyBase::compile] triangleCount=" << m_triangleCount << "\n";
   if (m_triangleCount == 0)
   {
     return;
@@ -396,26 +398,27 @@ void TrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   m_vertexBuffer.allocate(vertices.data(), sizeof(TPoint3Df) * vertexCount);
 
   // Attribute 0: position (vec3)
+  // Shader attrib order: position(0), vertexColor(1), vertexNormal(2)
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TPoint3Df), nullptr);
-
-  // Upload normals
-  m_normalBuffer.createOnce();
-  m_normalBuffer.bind();
-  m_normalBuffer.allocate(normals.data(), sizeof(TVector3Df) * vertexCount);
-
-  // Attribute 1: normal (vec3)
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(TVector3Df), nullptr);
 
   // Upload colors
   m_colorBuffer.createOnce();
   m_colorBuffer.bind();
   m_colorBuffer.allocate(colors.data(), sizeof(TColor) * vertexCount);
 
-  // Attribute 2: color (vec4 as unsigned bytes, normalized)
+  // Attribute 1: vertexColor (vec4 as unsigned bytes, normalized)
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(TColor), nullptr);
+
+  // Upload normals
+  m_normalBuffer.createOnce();
+  m_normalBuffer.bind();
+  m_normalBuffer.allocate(normals.data(), sizeof(TVector3Df) * vertexCount);
+
+  // Attribute 2: vertexNormal (vec3)
   glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(TColor), nullptr);
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(TVector3Df), nullptr);
 
   // Unbind
   glBindVertexArray(0);
@@ -440,8 +443,9 @@ void TrianglesProxyBase::render(const RenderContext& rc) const
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   MRPT_START
 
-  if (m_triangleCount == 0) return;
-  if (!m_vao.isCreated()) return;
+  if (m_triangleCount == 0) { std::cerr << "[DEBUG TriRender] 0 triangles, skip\n"; return; }
+  if (!m_vao.isCreated()) { std::cerr << "[DEBUG TriRender] VAO not created, skip\n"; return; }
+  std::cerr << "[DEBUG TriRender] Drawing " << m_triangleCount << " triangles, VAO=" << m_vao.bufferId() << "\n";
 
   // Setup face culling
   bool cullingWasEnabled = glIsEnabled(GL_CULL_FACE);
@@ -529,55 +533,90 @@ void TexturedTrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceO
     return;
   }
 
-  // NOTE: Caller must have called sourceObj->updateBuffers() before this
-  // to ensure m_triangles and texture data are populated.
-
-  // First compile base triangle data
-  TrianglesProxyBase::compile(sourceObj);
-
   // Try to cast to VisualObjectParams_TexturedTriangles
   const auto* texTriObj =
       dynamic_cast<const mrpt::viz::VisualObjectParams_TexturedTriangles*>(sourceObj);
   if (!texTriObj)
   {
+    // Fallback: compile as plain triangles
+    TrianglesProxyBase::compile(sourceObj);
     return;
   }
 
   m_textureInterpolate = texTriObj->textureLinearInterpolation();
   m_textureMipMaps = texTriObj->textureMipMap();
+  m_lightEnabled = texTriObj->isLightEnabled();
+  m_cullFace = texTriObj->cullFaces();
 
   // Lock the source object's buffer data
   std::shared_lock<std::shared_mutex> lck(texTriObj->shaderTexturedTrianglesBufferMutex().data);
 
   const auto& triangles = texTriObj->shaderTexturedTrianglesBuffer();
 
-  if (triangles.empty())
+  m_triangleCount = triangles.size();
+  if (m_triangleCount == 0)
   {
     return;
   }
 
-  // Extract texture coordinates
-  const size_t vertexCount = triangles.size() * 3;
+  // Extract flat arrays from TTriangle structures
+  const size_t vertexCount = m_triangleCount * 3;
+
+  std::vector<TPoint3Df> vertices;
+  std::vector<TVector3Df> normals;
+  std::vector<TColor> colors;
   std::vector<mrpt::math::TPoint2Df> texCoords;
+
+  vertices.reserve(vertexCount);
+  normals.reserve(vertexCount);
+  colors.reserve(vertexCount);
   texCoords.reserve(vertexCount);
 
   for (const auto& tri : triangles)
   {
     for (int i = 0; i < 3; ++i)
     {
+      vertices.push_back(tri.vertices[i].xyzrgba.pt);
+      normals.push_back(tri.vertices[i].normal);
       texCoords.emplace_back(tri.vertices[i].uv.x, tri.vertices[i].uv.y);
+
+      const auto& rgba = tri.vertices[i].xyzrgba;
+      colors.emplace_back(
+          static_cast<uint8_t>(rgba.r * 255), static_cast<uint8_t>(rgba.g * 255),
+          static_cast<uint8_t>(rgba.b * 255), static_cast<uint8_t>(rgba.a * 255));
     }
   }
 
-  // Bind VAO to add texture coordinate attribute
+  // Create VAO
+  m_vao.createOnce();
   m_vao.bind();
 
-  // Upload texture coordinates
-  m_texCoordBuffer.createOnce();
-  m_texCoordBuffer.bind();
-  m_texCoordBuffer.allocate(texCoords.data(), sizeof(mrpt::math::TPoint2Df) * vertexCount);
+  // Attribute 0: position (vec3)
+  m_vertexBuffer.createOnce();
+  m_vertexBuffer.bind();
+  m_vertexBuffer.allocate(vertices.data(), static_cast<int>(sizeof(TPoint3Df) * vertexCount));
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TPoint3Df), nullptr);
+
+  // Attribute 1: vertexColor (vec4 as unsigned bytes, normalized)
+  m_colorBuffer.createOnce();
+  m_colorBuffer.bind();
+  m_colorBuffer.allocate(colors.data(), static_cast<int>(sizeof(TColor) * vertexCount));
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(TColor), nullptr);
+
+  // Attribute 2: vertexNormal (vec3)
+  m_normalBuffer.createOnce();
+  m_normalBuffer.bind();
+  m_normalBuffer.allocate(normals.data(), static_cast<int>(sizeof(TVector3Df) * vertexCount));
+  glEnableVertexAttribArray(2);
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(TVector3Df), nullptr);
 
   // Attribute 3: texture coordinates (vec2)
+  m_texCoordBuffer.createOnce();
+  m_texCoordBuffer.bind();
+  m_texCoordBuffer.allocate(
+      texCoords.data(), static_cast<int>(sizeof(mrpt::math::TPoint2Df) * vertexCount));
   glEnableVertexAttribArray(3);
   glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(mrpt::math::TPoint2Df), nullptr);
 
@@ -585,9 +624,8 @@ void TexturedTrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceO
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  // TODO: Handle texture upload via Texture class
-  // This would need access to the image data from the source object
-  // m_texture = TextureCache::getOrCreate(texTriObj->getTextureImage(), ...);
+  // Invalidate cached bounding box
+  m_cachedBBox.reset();
 
   CHECK_OPENGL_ERROR_IN_DEBUG();
 

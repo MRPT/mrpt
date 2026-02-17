@@ -76,6 +76,8 @@ class CArrow : virtual public CVisualObject, public VisualObjectParams_Triangles
   /** Number of radial divisions  */
   uint32_t getSlicesCount() const { return m_slices; }
 
+  void updateBuffers() const override;
+
   mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
   CArrow() = default;

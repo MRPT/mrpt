@@ -245,6 +245,7 @@ void CFBORender::ensureCompiledScene(const mrpt::viz::Scene& scene)
   {
     // Different scene or first time - create new compiled scene
     m_compiledScene = std::make_unique<CompiledScene>();
+    m_compiledScene->setAutoUpdate(false);  // We manage updates explicitly
     m_compiledScene->compile(scene);
     m_lastScene = scenePtr;
   }

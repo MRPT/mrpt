@@ -216,6 +216,50 @@ void CMeshFast::setZ(const mrpt::math::CMatrixDynamic<float>& in_Z)
   CVisualObject::notifyChange();
 }
 
+void CMeshFast::updateBuffers() const
+{
+  using mrpt::img::TColor;
+  using mrpt::img::TColorf;
+
+  if (!pointsUpToDate) updatePoints();
+
+  ASSERT_EQUAL_(X.size(), Y.size());
+  ASSERT_EQUAL_(X.size(), Z.size());
+
+  auto& vbd = VisualObjectParams_Points::m_vertex_buffer_data;
+  auto& cbd = VisualObjectParams_Points::m_color_buffer_data;
+  std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
+
+  vbd.clear();
+  cbd.clear();
+
+  const auto myColor = getColor_u8();
+
+  for (int i = 0; i < X.rows(); i++)
+  {
+    for (int j = 0; j < X.cols(); j++)
+    {
+      TColor col;
+
+      if (m_isImage && m_textureImage.isColor())
+        col = TColor(C_r(i, j), C_g(i, j), C_b(i, j), myColor.A);
+      else if (m_isImage)
+        col = TColor(C(i, j), C(i, j), C(i, j), myColor.A);
+      else if (m_colorFromZ)
+      {
+        auto cf = mrpt::img::colormap(m_colorMap, static_cast<float>(C(i, j)) / 255.0f);
+        cf.A = static_cast<float>(myColor.A) / 255.f;
+        col = cf.asTColor();
+      }
+      else
+        col = myColor;
+
+      cbd.emplace_back(col);
+      vbd.emplace_back(X(i, j), Y(i, j), Z(i, j));
+    }
+  }
+}
+
 auto CMeshFast::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
   return verticesBoundingBox();

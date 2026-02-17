@@ -42,7 +42,10 @@ namespace mrpt::viz
  * \ingroup mrpt_viz_grp
  */
 template <int DIM>
-class CGeneralizedEllipsoidTemplate : virtual public CVisualObject, public VisualObjectParams_Lines
+class CGeneralizedEllipsoidTemplate :
+    virtual public CVisualObject,
+    public VisualObjectParams_Lines,
+    public VisualObjectParams_Triangles
 {
  public:
   /** The type of fixed-size covariance matrices for this representation
@@ -281,7 +284,19 @@ class CGeneralizedEllipsoidTemplate : virtual public CVisualObject, public Visua
     return {m_bb_min, m_bb_max};
   }
 
+  void implUpdate_Wireframe() const;
+  void implUpdate_Triangles() const;
+
  public:
+  void updateBuffers() const override
+  {
+    recomputeRenderPoints();
+    if (m_drawSolid3D)
+      implUpdate_Triangles();
+    else
+      implUpdate_Wireframe();
+  }
+
   // Solve virtual public inheritance ambiguity:
   virtual const mrpt::rtti::TRuntimeClassId* GetRuntimeClass() const override
   {
