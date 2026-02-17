@@ -46,7 +46,12 @@ class Texture
 {
  public:
   Texture() = default;
-  ~Texture() = default;
+  ~Texture() { unloadTexture(); }
+
+  Texture(const Texture&) = delete;
+  Texture& operator=(const Texture&) = delete;
+  Texture(Texture&&) noexcept = default;
+  Texture& operator=(Texture&&) noexcept = default;
 
   enum class Wrapping : uint8_t
   {

@@ -18,7 +18,7 @@
 #pragma once
 
 #include <mrpt/math/TPoint3D.h>
-#include <mrpt/opengl/TTriangle.h>
+#include <mrpt/viz/TTriangle.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/viz/opengl_fonts.h>
 
@@ -55,7 +55,7 @@ using TEXT_STYLE = mrpt::viz::TOpenGLFontStyle;
 /// @param kerning distance between characters
 std::pair<double, double> glDrawText(
     const std::string& text,
-    std::vector<mrpt::opengl::TTriangle>& tris,
+    std::vector<mrpt::viz::TTriangle>& tris,
     std::vector<mrpt::math::TPoint3Df>& lines,
     TEXT_STYLE style = mrpt::viz::NICE,
     double spacing = 1.5,
@@ -67,7 +67,7 @@ std::pair<double, double> glDrawText(
 /// It calls glDrawText() and appends its results to the provided buffers.
 void glDrawTextTransformed(
     const std::string& text,
-    std::vector<mrpt::opengl::TTriangle>& tris,
+    std::vector<mrpt::viz::TTriangle>& tris,
     std::vector<mrpt::math::TPoint3Df>& lines,
     std::vector<mrpt::img::TColor>& line_colors,
     const mrpt::poses::CPose3D& text_pose,

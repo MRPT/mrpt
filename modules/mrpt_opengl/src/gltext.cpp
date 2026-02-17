@@ -72,7 +72,7 @@ struct Font
 
   void fill(
       const char c,
-      std::vector<mrpt::opengl::TTriangle>& tris,
+      std::vector<mrpt::viz::TTriangle>& tris,
       std::vector<mrpt::math::TPoint3Df>& lines,
       const mrpt::math::TPoint2Df& cursor) const
   {
@@ -97,7 +97,7 @@ struct Font
 
   void outline(
       const char c,
-      std::vector<mrpt::opengl::TTriangle>& tris,
+      std::vector<mrpt::viz::TTriangle>& tris,
       std::vector<mrpt::math::TPoint3Df>& lines,
       const mrpt::math::TPoint2Df& cursor) const
   {
@@ -117,7 +117,7 @@ struct Font
 
   void draw(
       const char c,
-      std::vector<mrpt::opengl::TTriangle>& tris,
+      std::vector<mrpt::viz::TTriangle>& tris,
       std::vector<mrpt::math::TPoint3Df>& lines,
       const mrpt::math::TPoint2Df& cursor) const
   {
@@ -160,7 +160,7 @@ const std::string& glGetFont() { return data.currentFontName; }
 
 std::pair<double, double> glDrawText(
     const std::string& text,
-    std::vector<mrpt::opengl::TTriangle>& tris,
+    std::vector<mrpt::viz::TTriangle>& tris,
     std::vector<mrpt::math::TPoint3Df>& render_lines,
     TEXT_STYLE style,
     double spacing,
@@ -172,7 +172,7 @@ std::pair<double, double> glDrawText(
   // figure out which operation to do on the Char (yes, this is a pointer to
   // member function :)
   void (Font::*operation)(
-      const char c, std::vector<mrpt::opengl::TTriangle>& tris,
+      const char c, std::vector<mrpt::viz::TTriangle>& tris,
       std::vector<mrpt::math::TPoint3Df>& lines, const mrpt::math::TPoint2Df& cursor) const;
   switch (style)
   {
@@ -276,7 +276,7 @@ std::pair<double, double> glGetExtends(const std::string& text, double spacing, 
 
 void glDrawTextTransformed(
     const std::string& text,
-    std::vector<mrpt::opengl::TTriangle>& tris,
+    std::vector<mrpt::viz::TTriangle>& tris,
     std::vector<mrpt::math::TPoint3Df>& lines,
     std::vector<mrpt::img::TColor>& line_colors,
     const mrpt::poses::CPose3D& text_pose,
@@ -287,7 +287,7 @@ void glDrawTextTransformed(
     double kerning)
 {
   // Raw text primitives:
-  std::vector<mrpt::opengl::TTriangle> new_tris;
+  std::vector<mrpt::viz::TTriangle> new_tris;
   std::vector<mrpt::math::TPoint3Df> new_lines;
   glDrawText(text, new_tris, new_lines, style, spacing, kerning);
 

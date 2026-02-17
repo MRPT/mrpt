@@ -81,11 +81,11 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
   using namespace mrpt::viz;             // Scene graph classes
 
   const std::string expected_RGB_img_file =
-      UNITTEST_BASEDIR() + "/../../tests/CFBORender_expected_rgb_"s +
+      UNITTEST_BASEDIR() + "/tests/CFBORender_expected_rgb_"s +
       (useCameraFromIntrinsics ? "camInt"s : "camFOV"s) + ".png"s;
 
   const std::string expected_depth_img_file =
-      UNITTEST_BASEDIR() + "/../../tests/CFBORender_expected_depth_"s +
+      UNITTEST_BASEDIR() + "/tests/CFBORender_expected_depth_"s +
       (useCameraFromIntrinsics ? "camInt"s : "camFOV"s) + ".png"s;
 
   // Create a viz::Scene (abstract scene graph, no OpenGL dependency)
@@ -156,7 +156,7 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
     }
 
     const std::string texture_file =
-        mrpt::system::getShareMRPTDir() + "datasets/sample-texture-terrain.jpg"s;
+        UNITTEST_BASEDIR() + "/../../share/mrpt/datasets/sample-texture-terrain.jpg"s;
 
     mrpt::img::CImage im;
 
@@ -174,6 +174,10 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
       obj2->setPointSize(2.0);
       obj2->setLocation(off_x, 3, 0);
       scene->insert(obj2);
+    }
+    else
+    {
+      THROW_EXCEPTION("Texture not found!");
     }
 
     off_x += STEP_X;
@@ -253,10 +257,6 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
 
   // Render the scene
   renderer.render_RGBD(*scene, frame, depth);
-
-  // DEBUG: save rendered image for inspection
-  // frame.saveToFile(      "/tmp/mrpt_fbo_debug_" + std::string(useCameraFromIntrinsics ? "camInt"
-  // : "camFOV") + ".png");
 
   // Compare with ground truth
   mrpt::img::CImage gt_frame;

@@ -157,22 +157,24 @@ void CMesh::updateTriangles() const
         {
           if (getTextureImage().isColor())
           {
-            tri.r(0) = tri.r(1) = tri.r(2) = C_r(iX, iY);
-            tri.g(0) = tri.g(1) = tri.g(2) = C_g(iX, iY);
-            tri.b(0) = tri.b(1) = tri.b(2) = C_b(iX, iY);
+            // C_r/C_g/C_b are float [0,1], convert to uint8_t [0,255]:
+            tri.r(0) = tri.r(1) = tri.r(2) = f2u8(C_r(iX, iY));
+            tri.g(0) = tri.g(1) = tri.g(2) = f2u8(C_g(iX, iY));
+            tri.b(0) = tri.b(1) = tri.b(2) = f2u8(C_b(iX, iY));
           }
           else
           {
-            tri.r(0) = tri.r(1) = tri.r(2) = C(iX, iY);
-            tri.g(0) = tri.g(1) = tri.g(2) = C(iX, iY);
-            tri.b(0) = tri.b(1) = tri.b(2) = C(iX, iY);
+            tri.r(0) = tri.r(1) = tri.r(2) = f2u8(C(iX, iY));
+            tri.g(0) = tri.g(1) = tri.g(2) = f2u8(C(iX, iY));
+            tri.b(0) = tri.b(1) = tri.b(2) = f2u8(C(iX, iY));
           }
         }
         else
         {
-          tri.r(0) = tri.r(1) = tri.r(2) = u8tof(myColor.R);
-          tri.g(0) = tri.g(1) = tri.g(2) = u8tof(myColor.G);
-          tri.b(0) = tri.b(1) = tri.b(2) = u8tof(myColor.B);
+          // myColor.R/G/B are already uint8_t:
+          tri.r(0) = tri.r(1) = tri.r(2) = myColor.R;
+          tri.g(0) = tri.g(1) = tri.g(2) = myColor.G;
+          tri.b(0) = tri.b(1) = tri.b(2) = myColor.B;
         }
 
         // Compute normal of this triangle, and add it up to the 3
@@ -240,22 +242,24 @@ void CMesh::updateTriangles() const
         {
           if (getTextureImage().isColor())
           {
-            tri.r(0) = tri.r(1) = tri.r(2) = C_r(iX, iY);
-            tri.g(0) = tri.g(1) = tri.g(2) = C_g(iX, iY);
-            tri.b(0) = tri.b(1) = tri.b(2) = C_b(iX, iY);
+            // C_r/C_g/C_b are float [0,1], convert to uint8_t [0,255]:
+            tri.r(0) = tri.r(1) = tri.r(2) = f2u8(C_r(iX, iY));
+            tri.g(0) = tri.g(1) = tri.g(2) = f2u8(C_g(iX, iY));
+            tri.b(0) = tri.b(1) = tri.b(2) = f2u8(C_b(iX, iY));
           }
           else
           {
-            tri.r(0) = tri.r(1) = tri.r(2) = C(iX, iY);
-            tri.g(0) = tri.g(1) = tri.g(2) = C(iX, iY);
-            tri.b(0) = tri.b(1) = tri.b(2) = C(iX, iY);
+            tri.r(0) = tri.r(1) = tri.r(2) = f2u8(C(iX, iY));
+            tri.g(0) = tri.g(1) = tri.g(2) = f2u8(C(iX, iY));
+            tri.b(0) = tri.b(1) = tri.b(2) = f2u8(C(iX, iY));
           }
         }
         else
         {
-          tri.r(0) = tri.r(1) = tri.r(2) = u8tof(myColor.R);
-          tri.g(0) = tri.g(1) = tri.g(2) = u8tof(myColor.G);
-          tri.b(0) = tri.b(1) = tri.b(2) = u8tof(myColor.B);
+          // myColor.R/G/B are already uint8_t:
+          tri.r(0) = tri.r(1) = tri.r(2) = myColor.R;
+          tri.g(0) = tri.g(1) = tri.g(2) = myColor.G;
+          tri.b(0) = tri.b(1) = tri.b(2) = myColor.B;
         }
 
         // Compute normal of this triangle, and add it up to the 3
