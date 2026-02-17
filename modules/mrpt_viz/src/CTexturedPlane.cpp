@@ -91,10 +91,10 @@ void CTexturedPlane::updateBuffers() const
 
       for (int i = 0; i < 3; i++)
       {
-        t.vertices[i].xyzrgba.r = col.R / 255.0f;
-        t.vertices[i].xyzrgba.g = col.G / 255.0f;
-        t.vertices[i].xyzrgba.b = col.B / 255.0f;
-        t.vertices[i].xyzrgba.a = col.A / 255.0f;
+        t.vertices[i].xyzrgba.r = col.R;
+        t.vertices[i].xyzrgba.g = col.G;
+        t.vertices[i].xyzrgba.b = col.B;
+        t.vertices[i].xyzrgba.a = col.A;
       }
 
       t.computeNormals();
@@ -112,10 +112,10 @@ void CTexturedPlane::updateBuffers() const
 
       for (int i = 0; i < 3; i++)
       {
-        t.vertices[i].xyzrgba.r = col.R / 255.0f;
-        t.vertices[i].xyzrgba.g = col.G / 255.0f;
-        t.vertices[i].xyzrgba.b = col.B / 255.0f;
-        t.vertices[i].xyzrgba.a = col.A / 255.0f;
+        t.vertices[i].xyzrgba.r = col.R;
+        t.vertices[i].xyzrgba.g = col.G;
+        t.vertices[i].xyzrgba.b = col.B;
+        t.vertices[i].xyzrgba.a = col.A;
       }
 
       t.computeNormals();

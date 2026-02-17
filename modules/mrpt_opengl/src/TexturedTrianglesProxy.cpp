@@ -12,6 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/img/CImage.h>
 #include <mrpt/opengl/DefaultShaders.h>
 #include <mrpt/opengl/Shader.h>
 #include <mrpt/opengl/TexturedTrianglesProxy.h>
@@ -259,10 +260,26 @@ void TexturedTrianglesProxy::updateTexture(const VisualObjectParams_TexturedTria
 void TexturedTrianglesProxy::bindTexture() const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+  glActiveTexture(GL_TEXTURE0 + MATERIAL_DIFFUSE_TEXTURE_UNIT);
   if (m_ownedTexture)
   {
-    glActiveTexture(GL_TEXTURE0 + MATERIAL_DIFFUSE_TEXTURE_UNIT);
     m_ownedTexture->bindAsTexture2D();
+  }
+  else
+  {
+    // No texture assigned: create a 1x1 white texture so vertex color passes
+    // through (texColor=white, final=white*vertexColor=vertexColor)
+    // Create a 1x1 white GL texture bypassing MRPT tracking to avoid ID conflicts
+    if (m_defaultWhiteGLTexId == 0)
+    {
+      glGenTextures(1, &m_defaultWhiteGLTexId);
+      glBindTexture(GL_TEXTURE_2D, m_defaultWhiteGLTexId);
+      const uint8_t white[3] = {255, 255, 255};
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, white);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    }
+    glBindTexture(GL_TEXTURE_2D, m_defaultWhiteGLTexId);
   }
 #endif
 }

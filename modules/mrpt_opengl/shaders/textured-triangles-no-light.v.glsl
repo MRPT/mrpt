@@ -5,16 +5,19 @@ R"XXX(#version 300 es
 // Part of the MRPT project
 
 
-in vec3 position;
-in vec2 vertexUV;
+layout(location = 0) in vec3 position;
+layout(location = 1) in vec4 vertexColor;
+layout(location = 3) in vec2 vertexUV;
 
 uniform highp mat4 pmv_matrix;
 
 out mediump vec2 frag_UV; // Interpolated UV texture coords
+out lowp vec4 frag_vertexColor;
 
 void main()
 {
     frag_UV = vertexUV;
+    frag_vertexColor = vertexColor;
 
     gl_Position = pmv_matrix * vec4(position, 1.0);
 }

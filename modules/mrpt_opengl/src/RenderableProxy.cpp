@@ -355,7 +355,6 @@ void TrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   const auto& triangles = triObj->shaderTrianglesBuffer();
 
   m_triangleCount = triangles.size();
-  std::cerr << "[DEBUG TrianglesProxyBase::compile] triangleCount=" << m_triangleCount << "\n";
   if (m_triangleCount == 0)
   {
     return;
@@ -380,11 +379,9 @@ void TrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
       vertices.push_back(tri.vertices[i].xyzrgba.pt);
       normals.push_back(tri.vertices[i].normal);
 
-      // Convert float RGBA to TColor (0-255)
+      // rgba.r/g/b/a are uint8_t (TPointXYZfRGBAu8):
       const auto& rgba = tri.vertices[i].xyzrgba;
-      colors.emplace_back(
-          static_cast<uint8_t>(rgba.r * 255), static_cast<uint8_t>(rgba.g * 255),
-          static_cast<uint8_t>(rgba.b * 255), static_cast<uint8_t>(rgba.a * 255));
+      colors.emplace_back(rgba.r, rgba.g, rgba.b, rgba.a);
     }
   }
 
@@ -443,9 +440,14 @@ void TrianglesProxyBase::render(const RenderContext& rc) const
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   MRPT_START
 
-  if (m_triangleCount == 0) { std::cerr << "[DEBUG TriRender] 0 triangles, skip\n"; return; }
-  if (!m_vao.isCreated()) { std::cerr << "[DEBUG TriRender] VAO not created, skip\n"; return; }
-  std::cerr << "[DEBUG TriRender] Drawing " << m_triangleCount << " triangles, VAO=" << m_vao.bufferId() << "\n";
+  if (m_triangleCount == 0)
+  {
+    return;
+  }
+  if (!m_vao.isCreated())
+  {
+    return;
+  }
 
   // Setup face culling
   bool cullingWasEnabled = glIsEnabled(GL_CULL_FACE);
@@ -580,10 +582,9 @@ void TexturedTrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceO
       normals.push_back(tri.vertices[i].normal);
       texCoords.emplace_back(tri.vertices[i].uv.x, tri.vertices[i].uv.y);
 
+      // rgba.r/g/b/a are uint8_t (TPointXYZfRGBAu8), use directly:
       const auto& rgba = tri.vertices[i].xyzrgba;
-      colors.emplace_back(
-          static_cast<uint8_t>(rgba.r * 255), static_cast<uint8_t>(rgba.g * 255),
-          static_cast<uint8_t>(rgba.b * 255), static_cast<uint8_t>(rgba.a * 255));
+      colors.emplace_back(rgba.r, rgba.g, rgba.b, rgba.a);
     }
   }
 

@@ -106,7 +106,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
       uniforms = {"p_matrix",        "v_matrix",       "m_matrix",        "light_diffuse",
                   "light_ambient",   "light_specular", "light_color",     "cam_position",
                   "light_direction", "textureSampler", "materialSpecular"};
-      attribs = {"position", "vertexUV", "vertexNormal"};
+      attribs = {"position", "vertexColor", "vertexUV", "vertexNormal"};
       break;
 
     case DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT:
@@ -117,7 +117,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 #include "../shaders/textured-triangles-no-light.f.glsl"
           ;
       uniforms = {"pmv_matrix", "textureSampler"};
-      attribs = {"position", "vertexUV"};
+      attribs = {"position", "vertexColor", "vertexUV"};
       break;
 
     case DefaultShaderID::TEXT:

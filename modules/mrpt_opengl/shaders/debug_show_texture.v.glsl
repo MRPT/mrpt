@@ -4,8 +4,8 @@ R"XXX(#version 300 es
 // Jose Luis Blanco Claraco (C) 2019-2023
 // Part of the MRPT project
 
-in vec3 position;
-in vec2 vertexUV;
+layout(location = 0) in vec3 position;
+layout(location = 3) in vec2 vertexUV;
 
 out mediump vec2 frag_UV; // Interpolated UV texture coords
 
