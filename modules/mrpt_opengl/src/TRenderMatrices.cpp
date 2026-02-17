@@ -79,8 +79,8 @@ void TRenderMatrices::computeProjectionMatrix(float znear, float zfar)
     ASSERT_EQUAL_(viewport_width, pinhole_model->ncols);
     ASSERT_EQUAL_(viewport_height, pinhole_model->nrows);
 
-    const auto W = pinhole_model->ncols;
-    const auto H = pinhole_model->nrows;
+    const float W = static_cast<float>(pinhole_model->ncols);
+    const float H = static_cast<float>(pinhole_model->nrows);
 
     // See: e.g.
     // http://ksimek.github.io/2013/06/03/calibrated_cameras_in_opengl/
