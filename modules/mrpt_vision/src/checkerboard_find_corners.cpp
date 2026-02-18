@@ -21,16 +21,6 @@ using namespace mrpt::img;
 using namespace mrpt::math;
 using namespace std;
 
-/** Look for the corners of a chessboard in the image
- * \param cornerCoords [OUT] The pixel coordinates of all the corners.
- * \param check_size_x [IN] The number of squares, in the X direction
- * \param check_size_y [IN] The number of squares, in the Y direction
- * \param normalize_image [IN] Whether to normalize the image before detection
- * \param useScaramuzzaMethod [IN] Whether to use the alternative, more robust
- * method by M. Rufli, D. Scaramuzza, and R. Siegwart.
- *
- * \return true on success
- */
 bool mrpt::vision::findChessboardCorners(
     const mrpt::img::CImage& in_img,
     std::vector<TPixelCoordf>& cornerCoords,
@@ -38,6 +28,7 @@ bool mrpt::vision::findChessboardCorners(
     unsigned int check_size_y,
     bool normalize_image)
 {
+#if MRPT_HAS_OPENCV
   MRPT_START
 
   ASSERT_(check_size_y > 0 && check_size_x > 0);
@@ -98,4 +89,7 @@ bool mrpt::vision::findChessboardCorners(
   return corners_found;
 
   MRPT_END
+#else
+  THROW_EXCEPTION("findChessboardCorners requires OpenCV. Not available in this build.");
+#endif
 }

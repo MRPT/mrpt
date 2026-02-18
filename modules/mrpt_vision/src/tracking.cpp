@@ -13,13 +13,11 @@
 */
 
 #include <mrpt/math/ops_matrices.h>
-#include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/vision/tracking.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::img;
-using namespace mrpt::tfest;
 using namespace mrpt::math;
 using namespace std;
 
@@ -35,40 +33,6 @@ inline void trackFeatures_checkResponses(
     const unsigned int KLT_response_half_win,
     const unsigned int max_x,
     const unsigned int max_y);
-
-template <>
-inline void trackFeatures_checkResponses<CFeatureList>(
-    CFeatureList& featureList,
-    const CImage& cur_gray,
-    const float minimum_KLT_response,
-    const unsigned int KLT_response_half_win,
-    const unsigned int max_x,
-    const unsigned int max_y)
-{
-  for (auto& ft : featureList)
-  {
-    if (ft.track_status != status_TRACKED) continue;  // Skip if it's not correctly tracked.
-
-    const unsigned int x = ft.keypoint.pt.x;
-    const unsigned int y = ft.keypoint.pt.y;
-    if (x > KLT_response_half_win && y > KLT_response_half_win && x < max_x && y < max_y)
-    {  // Update response:
-      ft.response = cur_gray.KLT_response(x, y, KLT_response_half_win);
-
-      // Is it good enough?
-      // http://grooveshark.com/s/Goonies+Are+Good+Enough/2beBfO?src=5
-      if (ft.response < minimum_KLT_response)
-      {  // Nope!
-        ft.track_status = status_LOST;
-      }
-    }
-    else
-    {  // Out of bounds
-      ft.response = 0;
-      ft.track_status = status_OOB;
-    }
-  }
-}  // end of trackFeatures_checkResponses<>
 
 template <class FEAT_LIST>
 inline void trackFeatures_checkResponses_impl_simple(
@@ -93,7 +57,7 @@ inline void trackFeatures_checkResponses_impl_simple(
 
     if (ft.pt.x > half_win && ft.pt.y > half_win && ft.pt.x < max_x && ft.pt.y < max_y)
     {  // Update response:
-      ft.response = cur_gray.KLT_response(ft.pt.x, ft.pt.y, KLT_response_half_win);
+      ft.response = cur_gray.KLT_response(TPixelCoord(ft.pt.x, ft.pt.y), KLT_response_half_win);
 
       // Is it good enough?
       // http://grooveshark.com/s/Goonies+Are+Good+Enough/2beBfO?src=5
@@ -139,33 +103,6 @@ template <typename FEATLIST>
 inline void trackFeatures_updatePatch(FEATLIST& featureList, const CImage& cur_gray);
 
 template <>
-inline void trackFeatures_updatePatch<CFeatureList>(
-    CFeatureList& featureList, const CImage& cur_gray)
-{
-  for (auto& ft : featureList)
-  {
-    if (ft.track_status != status_TRACKED) continue;  // Skip if it's not correctly tracked.
-
-    const size_t patch_width = ft.patch->getWidth();
-    const size_t patch_height = ft.patch->getHeight();
-    if (patch_width > 0 && patch_height > 0)
-    {
-      try
-      {
-        const int offset = (int)patch_width / 2;  // + 1;
-        ft.patch.emplace();
-        cur_gray.extract_patch(
-            *ft.patch, round(ft.keypoint.pt.x) - offset, round(ft.keypoint.pt.y) - offset,
-            patch_width, patch_height);
-      }
-      catch (std::exception&)
-      {
-        ft.track_status = status_OOB;  // Out of bounds!
-      }
-    }
-  }
-}  // end of trackFeatures_updatePatch<>
-template <>
 inline void trackFeatures_updatePatch<TKeyPointList>(
     [[maybe_unused]] TKeyPointList& featureList, [[maybe_unused]] const CImage& cur_gray)
 {
@@ -190,64 +127,6 @@ inline void trackFeatures_addNewFeats(
     const size_t patchSize,
     const CImage& cur_gray,
     TFeatureID& max_feat_ID_at_input);
-
-template <>
-inline void trackFeatures_addNewFeats<CFeatureList>(
-    CFeatureList& featureList,
-    const TKeyPointList& new_feats,
-    const std::vector<size_t>& sorted_indices,
-    const size_t nNewToCheck,
-    const size_t maxNumFeatures,
-    const float minimum_KLT_response_to_add,
-    const double threshold_sqr_dist_to_add_new,
-    const size_t patchSize,
-    const CImage& cur_gray,
-    TFeatureID& max_feat_ID_at_input)
-{
-  const TImageSize imgSize = cur_gray.getSize();
-  const int offset = (int)patchSize / 2 + 1;
-  const int w_off = int(imgSize.x - offset);
-  const int h_off = int(imgSize.y - offset);
-
-  for (size_t i = 0; i < nNewToCheck && featureList.size() < maxNumFeatures; i++)
-  {
-    const TKeyPoint& feat = new_feats[sorted_indices[i]];
-
-    if (feat.response < minimum_KLT_response_to_add) continue;
-
-    double min_dist_sqr = square(10000);
-
-    if (!featureList.empty())
-    {
-      min_dist_sqr = featureList.kdTreeClosestPoint2DsqrError(feat.pt.x, feat.pt.y);
-    }
-
-    if (min_dist_sqr > threshold_sqr_dist_to_add_new && feat.pt.x > offset && feat.pt.y > offset &&
-        feat.pt.x < w_off && feat.pt.y < h_off)
-    {
-      // Add new feature:
-      CFeature ft;
-      ft.type = featFAST;
-      ft.keypoint.ID = ++max_feat_ID_at_input;
-      ft.keypoint.pt.x = feat.pt.x;
-      ft.keypoint.pt.y = feat.pt.y;
-      ft.response = feat.response;
-      ft.orientation = 0;
-      ft.keypoint.octave = 1;
-      ft.patchSize = patchSize;  // The size of the feature patch
-
-      // Image patch surronding the feature
-      if (patchSize > 0)
-      {
-        ft.patch.emplace();
-        cur_gray.extract_patch(
-            *ft.patch, round(feat.pt.x) - offset, round(feat.pt.y) - offset, patchSize, patchSize);
-      }
-
-      featureList.emplace_back(std::move(ft));
-    }
-  }
-}  // end of trackFeatures_addNewFeats<>
 
 template <class FEAT_LIST>
 inline void trackFeatures_addNewFeats_simple_list(
@@ -411,41 +290,6 @@ inline size_t trackFeatures_deleteOOB(
       trackedFeats, img_width, img_height, MIN_DIST_MARGIN_TO_STOP_TRACKING);
 }
 
-template <>
-inline size_t trackFeatures_deleteOOB(
-    CFeatureList& trackedFeats,
-    const size_t img_width,
-    const size_t img_height,
-    const int MIN_DIST_MARGIN_TO_STOP_TRACKING)
-{
-  auto itFeat = trackedFeats.begin();
-  size_t n_removed = 0;
-  while (itFeat != trackedFeats.end())
-  {
-    const TFeatureTrackStatus status = itFeat->track_status;
-    bool eras = (status_TRACKED != status && status_IDLE != status);
-    if (!eras)
-    {
-      // Also, check if it's too close to the image border:
-      const float x = itFeat->keypoint.pt.x;
-      const float y = itFeat->keypoint.pt.y;
-      if (x < MIN_DIST_MARGIN_TO_STOP_TRACKING || y < MIN_DIST_MARGIN_TO_STOP_TRACKING ||
-          x > (img_width - MIN_DIST_MARGIN_TO_STOP_TRACKING) ||
-          y > (img_height - MIN_DIST_MARGIN_TO_STOP_TRACKING))
-      {
-        eras = true;
-      }
-    }
-    if (eras)  // Erase or keep?
-    {
-      itFeat = trackedFeats.erase(itFeat);
-      n_removed++;
-    }
-    else
-      ++itFeat;
-  }
-  return n_removed;
-}  // end of trackFeatures_deleteOOB
 }  // namespace mrpt::vision::detail
 // ---------------------------- end of internal helper templates
 // -------------------------------
@@ -585,22 +429,8 @@ void CGenericFeatureTracker::internal_trackFeatures(
     // they're not already computed:
     if (m_newly_detected_feats.empty())
     {
-      // Do the detection
-      CFeatureExtraction fe;
-      fe.options.featsType = featFAST;
-      fe.options.FASTOptions.threshold = m_detector_adaptive_thres;
-
-      CFeatureList new_feats;
-
-      fe.detectFeatures(cur_gray, new_feats);
-
-      m_newly_detected_feats.clear();
-      m_newly_detected_feats.reserve(new_feats.size());
-
-      for (const CFeature& f : new_feats)
-      {
-        m_newly_detected_feats.push_back(TKeyPoint(f.keypoint));
-      }
+      // TODO: Implement FAST feature detection here (without OpenCV).
+      // For now, no new features will be detected in empty areas.
     }
 
     // Extra out info.
@@ -618,10 +448,10 @@ void CGenericFeatureTracker::internal_trackFeatures(
       const unsigned int max_y = img_height - KLT_response_half_win;
       for (size_t i = 0; i < N; i++)
       {
-        const unsigned int x = m_newly_detected_feats[i].pt.x;
-        const unsigned int y = m_newly_detected_feats[i].pt.y;
+        const int x = m_newly_detected_feats[i].pt.x;
+        const int y = m_newly_detected_feats[i].pt.y;
         if (x > KLT_response_half_win && y > KLT_response_half_win && x < max_x && y < max_y)
-          m_newly_detected_feats[i].response = cur_gray.KLT_response(x, y, KLT_response_half_win);
+          m_newly_detected_feats[i].response = cur_gray.KLT_response(TPixelCoord(x, y), KLT_response_half_win);
         else
           m_newly_detected_feats[i].response = 0;  // Out of bounds
       }

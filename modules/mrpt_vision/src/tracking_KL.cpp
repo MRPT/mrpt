@@ -13,7 +13,6 @@
 */
 
 #include <mrpt/system/memory.h>
-#include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/vision/tracking.h>
 
 using namespace mrpt;
@@ -35,6 +34,7 @@ void CFeatureTracker_KL::trackFeatures_impl_templ(
 {
   MRPT_START
 
+#if MRPT_HAS_OPENCV
   const int window_width = extra_params.getOrDefault<int>("window_width", 15);
   const int window_height = extra_params.getOrDefault<int>("window_height", 15);
 
@@ -101,6 +101,10 @@ void CFeatureTracker_KL::trackFeatures_impl_templ(
     // In case it needs to rebuild a kd-tree or whatever
     featureList.mark_as_outdated();
   }
+#else
+  // TODO: Implement KLT tracking without OpenCV dependency.
+  THROW_EXCEPTION("CFeatureTracker_KL requires OpenCV. Not available in this build.");
+#endif
 
   MRPT_END
 }  // end trackFeatures

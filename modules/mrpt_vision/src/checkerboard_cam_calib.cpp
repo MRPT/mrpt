@@ -13,10 +13,10 @@
 */
 
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/img/camera_geometry.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
 #include <mrpt/vision/chessboard_find_corners.h>
-#include <mrpt/vision/pinhole.h>
 
 #include <Eigen/Dense>
 
@@ -68,6 +68,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
     double* out_MSE,
     [[maybe_unused]] bool skipDrawDetectedImgs)
 {
+#if MRPT_HAS_OPENCV
   try
   {
     ASSERT_(check_size_x > 2);
@@ -356,14 +357,14 @@ bool mrpt::vision::checkerBoardCameraCalibration(
       vector<TPixelCoordf>& projectedPoints = dat.projectedPoints_undistorted;
       vector<TPixelCoordf>& projectedPoints_distorted = dat.projectedPoints_distorted;
 
-      vision::pinhole::projectPoints_no_distortion(
+      mrpt::img::camera_geometry::projectPoints(
           lstPatternPoints,  // Input points
           dat.reconstructed_camera_pose,
           out_camera_params.intrinsicParams,  // calib matrix
           projectedPoints                     // Output points in pixels
       );
 
-      vision::pinhole::projectPoints_with_distortion(
+      mrpt::img::camera_geometry::projectPoints_with_distortion(
           lstPatternPoints,  // Input points
           dat.reconstructed_camera_pose,
           out_camera_params.intrinsicParams,  // calib matrix
@@ -391,11 +392,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 
         // Accumulate error:
         sqrErr += square(px_d - dat.detected_corners[p].x) +
-                  square(py_d - dat.detected_corners[p].y);  // Error relative
-                                                             // to the
-                                                             // original
-                                                             // (distorted)
-                                                             // image.
+                  square(py_d - dat.detected_corners[p].y);
       }
     }
 
@@ -414,4 +411,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
     std::cout << e.what() << "\n";
     return false;
   }
+#else
+  THROW_EXCEPTION("checkerBoardCameraCalibration requires OpenCV. Not available in this build.");
+#endif
 }
