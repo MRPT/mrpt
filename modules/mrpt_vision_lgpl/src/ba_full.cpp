@@ -12,11 +12,12 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/math/CSparseMatrix.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/vision/bundle_adjustment.h>
 
+#include <Eigen/Sparse>
+#include <Eigen/SparseCholesky>
 #include <map>
 #include <memory>  // unique_ptr
 
@@ -182,10 +183,9 @@ double mrpt::vision::bundle_adj_full(
   Matrix_FxF I_muFrame(UNINITIALIZED_MATRIX);
   Matrix_PxP I_muPoint(UNINITIALIZED_MATRIX);
 
-  // Cholesky object, as a pointer to reuse it between iterations:
-  using SparseCholDecompPtr = std::unique_ptr<CSparseMatrix::CholeskyDecomp>;
-
-  SparseCholDecompPtr ptrCh;
+  // Cholesky solver, reused between iterations:
+  using EigenSparseLLT = Eigen::SimplicialLLT<Eigen::SparseMatrix<double>>;
+  std::unique_ptr<EigenSparseLLT> ptrCh;
 
   for (size_t iter = 0; iter < max_iters; iter++)
   {
@@ -295,42 +295,42 @@ double mrpt::vision::bundle_adj_full(
 
       VERBOSE_COUT << "Entries in YW_map:" << YW_map.size() << "\n";
 
-      CSparseMatrix sS(len_free_frames, len_free_frames);
+      // Build sparse matrix from block entries using Eigen triplets:
+      using Triplet = Eigen::Triplet<double>;
+      std::vector<Triplet> triplets;
+      triplets.reserve(YW_map.size() * FrameDof * FrameDof);
 
       for (auto it = YW_map.begin(); it != YW_map.end(); ++it)
       {
         const pair<TCameraPoseID, TLandmarkID>& ids = it->first;
         const Matrix_FxF& YW = it->second;
-        sS.insert_submatrix(ids.first * FrameDof, ids.second * FrameDof, YW);
+        const size_t row0 = ids.first * FrameDof;
+        const size_t col0 = ids.second * FrameDof;
+        for (size_t r = 0; r < FrameDof; ++r)
+          for (size_t c = 0; c < FrameDof; ++c)
+            triplets.emplace_back(row0 + r, col0 + c, YW(r, c));
       }
       profiler.leave("sS:fill");
 
-      // Compress the sparse matrix:
+      // Build the Eigen sparse matrix:
       profiler.enter("sS:compress");
-      sS.compressFromTriplet();
+      Eigen::SparseMatrix<double> sS(len_free_frames, len_free_frames);
+      sS.setFromTriplets(triplets.begin(), triplets.end());
+      sS.makeCompressed();
       profiler.leave("sS:compress");
 
-      try
-      {
-        profiler.enter("sS:chol");
-        if (!ptrCh.get())
-          ptrCh.reset(new CSparseMatrix::CholeskyDecomp(sS));
-        else
-          ptrCh.get()->update(sS);
-        profiler.leave("sS:chol");
+      // Map the MRPT vector to Eigen:
+      Eigen::Map<Eigen::VectorXd> e_eigen(&e[0], len_free_frames);
 
-        profiler.enter("sS:backsub");
-        CVectorDouble bck_res;
-        ptrCh->backsub(e, bck_res);  // Ax = b -->  delta= x*
-        ::memcpy(
-            &delta[0], &bck_res[0],
-            bck_res.size() * sizeof(bck_res[0]));  // delta.slice(0,...)
-        // = Ch.backsub(e);
-        profiler.leave("sS:backsub");
-        profiler.leave("sS:ALL");
-      }
-      catch (CExceptionNotDefPos&)
+      profiler.enter("sS:chol");
+      if (!ptrCh)
+        ptrCh = std::make_unique<EigenSparseLLT>(sS);
+      else
+        ptrCh->factorize(sS);
+
+      if (ptrCh->info() != Eigen::Success)
       {
+        profiler.leave("sS:chol");
         profiler.leave("sS:ALL");
         // not positive definite so increase mu and try again
         mu *= nu;
@@ -338,6 +338,15 @@ double mrpt::vision::bundle_adj_full(
         stop = (mu > 999999999.f);
         continue;
       }
+      profiler.leave("sS:chol");
+
+      profiler.enter("sS:backsub");
+      Eigen::VectorXd bck_res = ptrCh->solve(e_eigen);
+      ::memcpy(
+          &delta[0], bck_res.data(),
+          bck_res.size() * sizeof(double));
+      profiler.leave("sS:backsub");
+      profiler.leave("sS:ALL");
 
       profiler.enter("PostSchur.landmarks");
 
