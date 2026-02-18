@@ -89,11 +89,6 @@ if(CMAKE_MRPT_HAS_NITE2)
 	target_link_libraries(hwdrivers PRIVATE ${NITE2_LIB_FILE_RELEASE})
 endif()
 
-# XSens libs:
-if(TARGET mrpt_xsens)
-	target_link_libraries(hwdrivers PRIVATE mrpt_xsens)
-endif()
-
 if(CMAKE_MRPT_HAS_LIBPCAP)
 	target_link_libraries(hwdrivers PRIVATE ${PCAP_LIBRARY})
 
