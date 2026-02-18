@@ -24,7 +24,7 @@
 #include <mrpt/math/robust_kernels.h>
 #include <mrpt/poses/Lie/SE.h>
 #include <mrpt/vision/bundle_adjustment.h>
-#include <mrpt/vision/pinhole.h>
+#include <mrpt/img/camera_geometry.h>
 
 #include "ba_internals.h"
 
@@ -126,7 +126,7 @@ inline void reprojectionResidualsElement(
     double* out_kernel_1st_deriv)
 {
   const TPixelCoordf z_pred =
-      mrpt::vision::pinhole::projectPoint_no_distortion<POSES_INVERSE>(camera_params, frame, point);
+      mrpt::img::camera_geometry::projectPoint<POSES_INVERSE>(camera_params, frame, point);
   const TPixelCoordf& z_meas = OBS.px;
 
   out_residual[0] = z_meas.x - z_pred.x;
