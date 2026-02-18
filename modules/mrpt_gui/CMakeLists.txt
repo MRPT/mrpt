@@ -11,7 +11,7 @@ include(./cmake/script_qt.cmake REQUIRED)
 include(./cmake/script_wxwidgets.cmake REQUIRED)
 
 if (CMAKE_MRPT_HAS_NANOGUI)
-	set(nanogui_dep mrpt-nanogui)
+	set(nanogui_dep mrpt_nanogui)
 else()
 	set(nanogui_dep "")
 endif()
@@ -101,7 +101,7 @@ if (TARGET mrpt_glew) # Basically, for Windows
 endif()
 
 if (CMAKE_MRPT_HAS_NANOGUI)
-  target_link_libraries(${PROJECT_NAME} PUBLIC mrpt::nanogui)
+  target_link_libraries(${PROJECT_NAME} PUBLIC mrpt_nanogui)
 endif()
 
 # Use the mrpt::opengl profiler option here too for the opengl GUIs:

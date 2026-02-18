@@ -34,7 +34,7 @@ mark_as_advanced(MRPT_BUILD_nanogui)
 if(MRPT_BUILD_nanogui)
   add_subdirectory(3rdparty/nanogui)
 
-  set_target_properties(mrpt-nanogui PROPERTIES FOLDER "3rd party")
+  set_target_properties(mrpt_nanogui PROPERTIES FOLDER "3rd party")
   if (TARGET glfw)
     set_target_properties(glfw PROPERTIES FOLDER "3rd party")
   endif()
