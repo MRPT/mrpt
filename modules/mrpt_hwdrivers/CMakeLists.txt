@@ -82,12 +82,6 @@ endif()
 # We need pthread's on unices
 target_link_libraries(hwdrivers PRIVATE Threads::Threads)
 
-# Link to NITE2 libraries:
-if(CMAKE_MRPT_HAS_NITE2)
-	# link_directories() was added in the configuration script under /cmakemodules/*_ni.cmake
-	include_directories(${NITE2_INCLUDE_DIR})
-	target_link_libraries(hwdrivers PRIVATE ${NITE2_LIB_FILE_RELEASE})
-endif()
 
 if(CMAKE_MRPT_HAS_LIBPCAP)
 	target_link_libraries(hwdrivers PRIVATE ${PCAP_LIBRARY})
