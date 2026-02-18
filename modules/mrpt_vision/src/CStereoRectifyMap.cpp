@@ -22,6 +22,8 @@ using namespace mrpt::vision;
 using namespace mrpt::img;
 using namespace mrpt::math;
 
+#if MRPT_HAS_OPENCV
+
 static void do_rectify(
     const CStereoRectifyMap& me,
     const cv::Mat& src_left,
@@ -62,6 +64,8 @@ static void do_rectify(
   MRPT_END
 }
 
+#endif  // MRPT_HAS_OPENCV
+
 void CStereoRectifyMap::internal_invalidate()
 {
   // don't do a "strong clear" since memory is likely to be reasigned soon.
@@ -95,11 +99,9 @@ void CStereoRectifyMap::enableBothCentersCoincide(bool enable)
   this->internal_invalidate();
 }
 
-/** Prepares the mapping from the distortion parameters of a camera.
- * Must be called before invoking \a undistort().
- */
 void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
 {
+#if MRPT_HAS_OPENCV
   MRPT_START
   const mrpt::img::TCamera& cam1 = params.leftCamera;
   const mrpt::img::TCamera& cam2 = params.rightCamera;
@@ -237,6 +239,9 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
   m_rectified_image_params.rightCameraPose = params.rightCameraPose;
 
   MRPT_END
+#else
+  THROW_EXCEPTION("CStereoRectifyMap requires OpenCV. Not available in this build.");
+#endif
 }
 
 void CStereoRectifyMap::rectify(
@@ -245,6 +250,7 @@ void CStereoRectifyMap::rectify(
     mrpt::img::CImage& out_left_image,
     mrpt::img::CImage& out_right_image) const
 {
+#if MRPT_HAS_OPENCV
   MRPT_START
 
   const uint32_t ncols = m_camera_params.leftCamera.ncols;
@@ -268,11 +274,15 @@ void CStereoRectifyMap::rectify(
       const_cast<uint16_t*>(&m_dat_mapy_right[0]), static_cast<int>(m_interpolation_method));
 
   MRPT_END
+#else
+  THROW_EXCEPTION("CStereoRectifyMap requires OpenCV. Not available in this build.");
+#endif
 }
 
 void CStereoRectifyMap::rectify(
     mrpt::obs::CObservationStereoImages& o, const bool use_internal_mem_cache) const
 {
+#if MRPT_HAS_OPENCV
   MRPT_START
   ASSERT_(o.hasImageRight);
 
@@ -303,6 +313,9 @@ void CStereoRectifyMap::rectify(
   o.rightCameraPose = CPose3DQuat(d, .0, .0, mrpt::math::CQuaternionDouble());
 
   MRPT_END
+#else
+  THROW_EXCEPTION("CStereoRectifyMap requires OpenCV. Not available in this build.");
+#endif
 }
 
 const mrpt::img::TStereoCamera& CStereoRectifyMap::getRectifiedImageParams() const

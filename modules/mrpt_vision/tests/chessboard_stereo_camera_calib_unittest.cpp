@@ -13,7 +13,6 @@
 */
 
 #include <gtest/gtest.h>
-#include <mrpt/config.h>
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
 #include <test_mrpt_common.h>
 

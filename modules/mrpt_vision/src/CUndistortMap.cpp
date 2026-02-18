@@ -21,11 +21,9 @@ using namespace mrpt::img;
 // Ctor: Leave all vectors empty
 CUndistortMap::CUndistortMap() = default;
 
-/** Prepares the mapping from the distortion parameters of a camera.
- * Must be called before invoking \a undistort().
- */
 void CUndistortMap::setFromCamParams(const mrpt::img::TCamera& campar)
 {
+#if MRPT_HAS_OPENCV
   MRPT_START
   m_camera_params = campar;
 
@@ -46,13 +44,14 @@ void CUndistortMap::setFromCamParams(const mrpt::img::TCamera& campar)
 
   cv::initUndistortRectifyMap(inMat, distM, cv::Mat(), inMat, mapx.size(), mapx.type(), mapx, mapy);
   MRPT_END
+#else
+  THROW_EXCEPTION("CUndistortMap requires OpenCV. Not available in this build.");
+#endif
 }
 
-/** Undistort the input image and saves the result in-place- \a
- * setFromCamParams() must have been set prior to calling this.
- */
 void CUndistortMap::undistort(const mrpt::img::CImage& in_img, mrpt::img::CImage& out_img) const
 {
+#if MRPT_HAS_OPENCV
   MRPT_START
   if (m_dat_mapx.empty())
     THROW_EXCEPTION("Error: setFromCamParams() must be called prior to undistort().");
@@ -70,13 +69,14 @@ void CUndistortMap::undistort(const mrpt::img::CImage& in_img, mrpt::img::CImage
       in_img.asCvMat<Mat>(SHALLOW_COPY), out_img.asCvMat<Mat>(SHALLOW_COPY), mapx, mapy,
       INTER_LINEAR);
   MRPT_END
+#else
+  THROW_EXCEPTION("CUndistortMap requires OpenCV. Not available in this build.");
+#endif
 }
 
-/** Undistort the input image and saves the result in-place- \a
- * setFromCamParams() must have been set prior to calling this.
- */
 void CUndistortMap::undistort(mrpt::img::CImage& in_out_img) const
 {
+#if MRPT_HAS_OPENCV
   MRPT_START
   if (m_dat_mapx.empty())
     THROW_EXCEPTION("Error: setFromCamParams() must be called prior to undistort().");
@@ -95,4 +95,7 @@ void CUndistortMap::undistort(mrpt::img::CImage& in_out_img) const
   in_out_img = CImage(out, SHALLOW_COPY);
 
   MRPT_END
+#else
+  THROW_EXCEPTION("CUndistortMap requires OpenCV. Not available in this build.");
+#endif
 }
