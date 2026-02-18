@@ -126,7 +126,7 @@ inline void reprojectionResidualsElement(
     double* out_kernel_1st_deriv)
 {
   const TPixelCoordf z_pred =
-      mrpt::img::camera_geometry::projectPoint<POSES_INVERSE>(camera_params, frame, point);
+      mrpt::img::camera_geometry::projectPoint<POSES_INVERSE>(camera_params, frame.asTPose(), point);
   const TPixelCoordf& z_meas = OBS.px;
 
   out_residual[0] = z_meas.x - z_pred.x;
