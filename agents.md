@@ -10,6 +10,8 @@ Welcome, AI Agent! This file contains the architectural context and coding guide
 ## 2. Build System (CMake) Conventions
 MRPT 3.0 abstracts away standard CMake boilerplate using `mrpt_common`. Use standard CMake commands but prefer mrpt_common cmake helpers when possible for consistency.
 
+* **Compiling a module**: Use ``colcon build --packages-up-to mrpt_XXX``, then ``. install/setup.bash`` then you can run the executables or unit tests.
+
 * **Minimum CMake Version:** `cmake_minimum_required(VERSION 3.16)`
 * **Always include the MRPT common scripts:**
 
@@ -38,6 +40,8 @@ Link against namespaced targets (e.g., mrpt::mrpt_poses, Eigen3::Eigen).
 Standard: Use Modern C++ features where appropriate (C++17/C++20).
 
 Namespaces: All core code must reside within the mrpt:: namespace or its sub-namespaces (e.g., mrpt::opengl::).
+
+Unit tests: test files are in a "tests" subdirectory in each module, and their name must end in `_unittest.cpp`, then they will be catched automatically for inclusion as unit tests.
 
 License Headers: Every new .cpp, .h, and CMakeLists.txt file must start with the standard MRPT SPDX-License-Identifier header:
 
