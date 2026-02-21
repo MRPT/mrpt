@@ -12,9 +12,9 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/core/initializer.h>
-#include <mrpt/slam.h>
+#include <mrpt/maps/CMultiMetricMapPDF.h>
+#include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/registerAllClasses.h>
 // deps:
 #include <mrpt/maps/registerAllClasses.h>

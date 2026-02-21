@@ -387,7 +387,7 @@ void CMetricMapBuilderRBPF::drawCurrentEstimationToImage(CCanvas* img)
     // ----------------------------------
     g->getAsImage(imgGrid);
 
-    img->drawImage(0, 0, imgGrid);
+    img->drawImage({0, 0}, imgGrid);
     imgHeight = imgGrid.getHeight();
   }
 
@@ -424,7 +424,8 @@ void CMetricMapBuilderRBPF::drawCurrentEstimationToImage(CCanvas* img)
 
         // Draw line:
         img->line(
-            x1, round((imgHeight - 1) - y1), x2, round((imgHeight - 1) - y2),
+            {x1, round(static_cast<int>(imgHeight) - 1 - y1)},
+            {x2, round(static_cast<int>(imgHeight) - 1 - y2)},
             i == M ? TColor(0, 0, 0) : TColor(0x50, 0x50, 0x50),  // Color, gray levels,
             i == M ? 3 : 1                                        // Line width
         );
@@ -443,20 +444,10 @@ void CMetricMapBuilderRBPF::saveCurrentEstimationToImage(
 {
   MRPT_START
 
-  if (formatEMF_BMP)
-  {
-    // Draw paths (using vectorial plots!) over the EMF file:
-    // --------------------------------------------------------
-    CEnhancedMetaFile EMF(file, 100 /* Scale */);
-    drawCurrentEstimationToImage(&EMF);
-  }
-  else
-  {
-    CImage img(1, 1, CH_GRAY);
-    drawCurrentEstimationToImage(&img);
-    bool savedOk = img.saveToFile(file);
-    ASSERT_(savedOk);
-  }
+  CImage img(1, 1, CH_GRAY);
+  drawCurrentEstimationToImage(&img);
+  bool savedOk = img.saveToFile(file);
+  ASSERT_(savedOk);
 
   MRPT_END
 }

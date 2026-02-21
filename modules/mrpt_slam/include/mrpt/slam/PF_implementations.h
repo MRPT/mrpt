@@ -14,9 +14,9 @@
 
 #pragma once
 
+#include <mrpt/slam/config.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
-#include <mrpt/config.h>
 #include <mrpt/math/data_utils.h>     // averageLogLikelihood()
 #include <mrpt/math/distributions.h>  // chi2inv
 #include <mrpt/obs/CActionCollection.h>

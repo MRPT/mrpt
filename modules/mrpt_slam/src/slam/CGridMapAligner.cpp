@@ -254,9 +254,11 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
         CImage img_compose(FEAT_W * 2 + 15, 10 + (5 + FEAT_H) * nF);
         img_compose.filledRectangle(
-            0, 0, img_compose.getWidth() - 1, img_compose.getHeight() - 1, TColor::black());
+            {0, 0},
+            {static_cast<int>(img_compose.getWidth()) - 1, static_cast<int>(img_compose.getHeight()) - 1},
+            TColor::black());
 
-        img_compose.drawImage(5, 5, im1);
+        img_compose.drawImage({5, 5}, im1);
 
         size_t j;
         std::set<size_t>::iterator it_j;
@@ -269,7 +271,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
           CMatrixFloat descriptor2;
           lm2->landmarks.get(*it_j)->features[0].getFirstDescriptorAsMatrix(descriptor2);
           im2.setFromMatrix(descriptor2, true);
-          img_compose.drawImage(10 + FEAT_W, 5 + j * (FEAT_H + 5), im2);
+          img_compose.drawImage({static_cast<int>(10 + FEAT_W), static_cast<int>(5 + j * (FEAT_H + 5))}, im2);
         }
         fil += ".png";
         bool savedOk = img_compose.saveToFile(fil);
@@ -985,7 +987,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 #endif
 
   // Transform the best corr matrix peak into coordinates:
-  std::size_t uMax, vMax;
+  mrpt::math::matrix_index_t uMax, vMax;
   currentMaxCorr = bestCrossCorr.maxCoeff(uMax, vMax);
 
   PDF->mean.x(m1->idx2x(uMax));

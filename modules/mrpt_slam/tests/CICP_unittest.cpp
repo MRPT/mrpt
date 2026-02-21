@@ -86,14 +86,14 @@ class ICPTests : public ::testing::Test
     sph->setColor(1, 0, 0);
     world->insert(sph);
 
-    CDisk::Ptr pln = std::make_shared<opengl::CDisk>();
+    CDisk::Ptr pln = std::make_shared<CDisk>();
     pln->setDiskRadius(2);
     pln->setPose(CPose3D(0, 0, 0, 0, 5.0_deg, 5.0_deg));
     pln->setColor(0.8, 0, 0);
     world->insert(pln);
 
     {
-      CDisk::Ptr pln2 = std::make_shared<opengl::CDisk>();
+      CDisk::Ptr pln2 = std::make_shared<CDisk>();
       pln2->setDiskRadius(2);
       pln2->setPose(CPose3D(0, 0, 0, 30.0_deg, -20.0_deg, -2.0_deg));
       pln2->setColor(0.9, 0, 0);
@@ -123,7 +123,7 @@ TEST_F(ICPTests, RayTracingICP3D)
   Scene::Ptr scene2 = std::make_shared<Scene>();
   Scene::Ptr scene3 = std::make_shared<Scene>();
 
-  opengl::CGridPlaneXY::Ptr plane1 = std::make_shared<CGridPlaneXY>(-20, 20, -20, 20, 0, 1);
+  CGridPlaneXY::Ptr plane1 = std::make_shared<CGridPlaneXY>(-20, 20, -20, 20, 0, 1);
   plane1->setColor(0.3f, 0.3f, 0.3f);
   scene1->insert(plane1);
   scene2->insert(plane1);
@@ -148,14 +148,14 @@ TEST_F(ICPTests, RayTracingICP3D)
 
   // Put the viewpoints origins:
   {
-    CSetOfObjects::Ptr origin1 = opengl::stock_objects::CornerXYZ();
+    CSetOfObjects::Ptr origin1 = stock_objects::CornerXYZ();
     origin1->setPose(viewpoint1);
     origin1->setScale(0.6f);
     scene1->insert(origin1);
     scene2->insert(origin1);
   }
   {
-    CSetOfObjects::Ptr origin2 = opengl::stock_objects::CornerXYZ();
+    CSetOfObjects::Ptr origin2 = stock_objects::CornerXYZ();
     origin2->setPose(viewpoint2);
     origin2->setScale(0.6f);
     scene1->insert(origin2);

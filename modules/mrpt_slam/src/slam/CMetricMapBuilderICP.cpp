@@ -562,21 +562,11 @@ void CMetricMapBuilderICP::saveCurrentEstimationToImage(const std::string& file,
   CImage img;
   const size_t nPoses = m_estRobotPath.size();
 
-  if (!formatEMF_BMP) THROW_EXCEPTION("Not implemented yet for BMP!");
-
   // grid map as bitmap:
   auto pGrid = metricMap.mapByClass<COccupancyGridMap2D>();
   if (pGrid) pGrid->getAsImage(img);
 
-    // Draw paths (using vectorial plots!) over the EMF file:
-    // -------------------------------------------------
-#if 0
-  CEnhancedMetaFile EMF(file, 1000);
-
-  EMF.drawImage(0, 0, img);
-#endif
-
-  unsigned int imgHeight = img.getHeight();
+  int imgHeight = static_cast<int>(img.getHeight());
 
   // Path hypothesis:
   // ----------------------------------
@@ -598,8 +588,10 @@ void CMetricMapBuilderICP::saveCurrentEstimationToImage(const std::string& file,
     y2 = pGrid->y2idx(m_estRobotPath[j].y);
 
     // Draw line:
-    EMF.line(x1, imgHeight - 1 - y1, x2, imgHeight - 1 - y2, TColor::black());
+    img.line({x1, imgHeight - 1 - y1}, {x2, imgHeight - 1 - y2}, TColor::black());
   }
+
+  img.saveToFile(file);
 
   MRPT_END
 }
