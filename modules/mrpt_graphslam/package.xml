@@ -13,6 +13,7 @@
   <buildtool_depend>cmake</buildtool_depend>
 
   <depend>mrpt_slam</depend>
+  <depend>mrpt_gui</depend>
 
   <export>
     <build_type>cmake</build_type>
