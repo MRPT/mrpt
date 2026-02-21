@@ -143,7 +143,7 @@ void C2DRangeFinderAbstract::loadCommonParams(
       ASSERT_(x.size() == y.size());
       CObservation2DRangeScan::TListExclusionAreasWithRanges::value_type dat;
 
-      dat.first.setAllVertices(x, y);
+      dat.first.set_vertices(x, y);
       if (z_range.empty())
       {
         dat.second.first = -std::numeric_limits<double>::max();

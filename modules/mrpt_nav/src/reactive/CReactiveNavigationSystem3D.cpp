@@ -53,7 +53,7 @@ void CReactiveNavigationSystem3D::changeRobotShape(TRobotShape robotShape)
 
   for (unsigned int i = 0; i < robotShape.size(); i++)
   {
-    if (robotShape.polygon(i).verticesCount() < 3)
+    if (robotShape.polygon(i).size() < 3)
       THROW_EXCEPTION("The robot shape has less than 3 vertices!!");
   }
 
@@ -94,7 +94,7 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::config::CConfigFile
     c.read_vector(s, format("LEVEL%d_VECTORY", i), vector<float>(0), yaux, false);
     ASSERT_(xaux.size() == yaux.size());
     for (unsigned int j = 0; j < xaux.size(); j++)
-      m_robotShape.polygon(i - 1).AddVertex(xaux[j], yaux[j]);
+      m_robotShape.polygon(i - 1).add_vertex(xaux[j], yaux[j]);
   }
 
   // Load PTGs from file:

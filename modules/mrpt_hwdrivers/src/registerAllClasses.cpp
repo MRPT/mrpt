@@ -12,10 +12,35 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/core/initializer.h>
-#include <mrpt/hwdrivers.h>
+#include <mrpt/hwdrivers/CCANBusReader.h>
+#include <mrpt/hwdrivers/CCameraSensor.h>
+#include <mrpt/hwdrivers/CEnoseModular.h>
+#include <mrpt/hwdrivers/CGPSInterface.h>
+#include <mrpt/hwdrivers/CGPS_NTRIP.h>
+#include <mrpt/hwdrivers/CGillAnemometer.h>
+#include <mrpt/hwdrivers/CGyroKVHDSP3000.h>
+#include <mrpt/hwdrivers/CHokuyoURG.h>
+#include <mrpt/hwdrivers/CIbeoLuxETH.h>
+#include <mrpt/hwdrivers/CIMUXSens_MT4.h>
+#include <mrpt/hwdrivers/CImpinjRFID.h>
+#include <mrpt/hwdrivers/CKinect.h>
+#include <mrpt/hwdrivers/CLMS100eth.h>
+#include <mrpt/hwdrivers/CNTRIPEmitter.h>
+#include <mrpt/hwdrivers/CNationalInstrumentsDAQ.h>
+#include <mrpt/hwdrivers/COpenNI2Sensor.h>
+#include <mrpt/hwdrivers/COpenNI2_RGBD360.h>
+#include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
+#include <mrpt/hwdrivers/CRaePID.h>
+#include <mrpt/hwdrivers/CRoboPeakLidar.h>
+#include <mrpt/hwdrivers/CSICKTim561Eth_2050101.h>
+#include <mrpt/hwdrivers/CSickLaserSerial.h>
+#include <mrpt/hwdrivers/CSickLaserUSB.h>
+#include <mrpt/hwdrivers/CTaoboticsIMU.h>
+#include <mrpt/hwdrivers/CVelodyneScanner.h>
+#include <mrpt/hwdrivers/CWirelessPower.h>
 #include <mrpt/hwdrivers/registerAllClasses.h>
+#include <mrpt/serialization/CSerializable.h>
 // deps:
 #include <mrpt/comms/registerAllClasses.h>
 #include <mrpt/maps/registerAllClasses.h>
@@ -49,8 +74,6 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_hwdrivers)
   CCANBusReader::doRegister();
   CNationalInstrumentsDAQ::doRegister();
   CGPS_NTRIP::doRegister();
-  CIMUIntersense::doRegister();
-  CSkeletonTracker::doRegister();
   CVelodyneScanner::doRegister();
   CSICKTim561Eth::doRegister();
   CTaoboticsIMU::doRegister();

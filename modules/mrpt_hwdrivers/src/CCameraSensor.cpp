@@ -55,8 +55,6 @@ CCameraSensor::CCameraSensor() :
 
     m_dc1394_options(),
 
-    m_svs_options(),
-
     // ---
     m_img_dir_url(""),
     m_img_dir_left_format("imL_%04d.jpg"),
@@ -139,12 +137,6 @@ void CCameraSensor::initialize()
     m_cap_bumblebee_dc1394 = std::make_unique<CStereoGrabber_Bumblebee_libdc1394>(
         m_bumblebee_dc1394_camera_guid, m_bumblebee_dc1394_camera_unit,
         m_bumblebee_dc1394_framerate);
-  }
-  else if (m_grabber_type == "svs")
-  {
-    cout << format(
-        "[CCameraSensor::initialize] SVS camera: %u...\n", (unsigned int)(m_svs_camera_index));
-    m_cap_svs = std::make_unique<CStereoGrabber_SVS>(m_svs_camera_index, m_svs_options);
   }
   else if (m_grabber_type == "ffmpeg")
   {
@@ -335,7 +327,6 @@ void CCameraSensor::close()
   m_cap_ffmpeg.reset();
   m_cap_rawlog.reset();
   m_cap_kinect.reset();
-  m_cap_svs.reset();
   m_cap_image_dir.reset();
 
   m_state = CGenericSensor::ssInitializing;
@@ -447,29 +438,6 @@ void CCameraSensor::loadConfig_sensorSpecific(
       bumblebee_dc1394_camera_unit, int, m_bumblebee_dc1394_camera_unit, configSource, iniSection)
   MRPT_LOAD_HERE_CONFIG_VAR(
       bumblebee_dc1394_framerate, double, m_bumblebee_dc1394_framerate, configSource, iniSection)
-
-  // SVS options:
-  m_svs_camera_index = configSource.read_int(iniSection, "svs_camera_index", m_svs_camera_index);
-  m_svs_options.frame_width =
-      configSource.read_int(iniSection, "svs_frame_width", m_svs_options.frame_width);
-  m_svs_options.frame_height =
-      configSource.read_int(iniSection, "svs_frame_height", m_svs_options.frame_height);
-  m_svs_options.framerate =
-      configSource.read_double(iniSection, "svs_framerate", m_svs_options.framerate);
-  m_svs_options.m_NDisp = configSource.read_int(iniSection, "svs_NDisp", m_svs_options.m_NDisp);
-  m_svs_options.m_Corrsize =
-      configSource.read_int(iniSection, "svs_Corrsize", m_svs_options.m_Corrsize);
-  m_svs_options.m_LR = configSource.read_int(iniSection, "svs_LR", m_svs_options.m_LR);
-  m_svs_options.m_Thresh = configSource.read_int(iniSection, "svs_Thresh", m_svs_options.m_Thresh);
-  m_svs_options.m_Unique = configSource.read_int(iniSection, "svs_Unique", m_svs_options.m_Unique);
-  m_svs_options.m_Horopter =
-      configSource.read_int(iniSection, "svs_Horopter", m_svs_options.m_Horopter);
-  m_svs_options.m_SpeckleSize =
-      configSource.read_int(iniSection, "svs_SpeckleSize", m_svs_options.m_SpeckleSize);
-  m_svs_options.m_procesOnChip =
-      configSource.read_bool(iniSection, "svs_procesOnChip", m_svs_options.m_procesOnChip);
-  m_svs_options.m_calDisparity =
-      configSource.read_bool(iniSection, "svs_calDisparity", m_svs_options.m_calDisparity);
 
   // FFmpeg options:
   m_ffmpeg_url =
@@ -687,19 +655,6 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
     {
       capture_ok = true;
     }
-  }
-  else if (m_cap_svs)
-  {
-    stObs = std::make_shared<CObservationStereoImages>();
-
-    if (!m_cap_svs->getStereoObservation(*stObs))
-    {
-      // Error
-      m_state = CGenericSensor::ssError;
-      THROW_EXCEPTION("Error grabbing disparity images");
-    }
-    else
-      capture_ok = true;
   }
   else if (m_cap_ffmpeg)
   {

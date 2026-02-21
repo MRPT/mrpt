@@ -14,7 +14,7 @@
 #pragma once
 
 #include <mrpt/serialization/serialization_frwds.h>
-#include <mrpt/viz/opengl_frwds.h>
+#include <mrpt/viz/viz_frwds.h>
 
 #include <cstdint>
 #include <map>

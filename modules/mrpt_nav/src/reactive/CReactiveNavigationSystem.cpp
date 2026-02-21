@@ -45,7 +45,7 @@ CReactiveNavigationSystem::~CReactiveNavigationSystem() { this->preDestructor();
 void CReactiveNavigationSystem::changeRobotShape(const math::CPolygon& shape)
 {
   m_PTGsMustBeReInitialized = true;
-  if (shape.verticesCount() < 3)
+  if (shape.size() < 3)
   {
     THROW_EXCEPTION("The robot shape has less than 3 vertices!!");
   }
@@ -91,7 +91,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::config::CConfigFileBa
   if (!xs.empty())
   {
     math::CPolygon shape;
-    for (size_t i = 0; i < xs.size(); i++) shape.AddVertex(xs[i], ys[i]);
+    for (size_t i = 0; i < xs.size(); i++) shape.add_vertex(xs[i], ys[i]);
     changeRobotShape(shape);
   }
 

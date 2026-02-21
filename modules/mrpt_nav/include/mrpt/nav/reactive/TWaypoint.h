@@ -19,7 +19,7 @@
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/TSegment2D.h>
 #include <mrpt/system/datetime.h>
-#include <mrpt/viz/opengl_frwds.h>
+#include <mrpt/viz/viz_frwds.h>
 
 #include <any>
 #include <optional>

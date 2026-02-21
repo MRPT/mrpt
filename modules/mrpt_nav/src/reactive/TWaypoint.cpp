@@ -148,7 +148,7 @@ void TWaypointSequence::getAsOpenglVisualization(
 
     if (p.target_heading.has_value())
     {
-      auto o = mrpt::viz::CArrow::Create(0, 0, 0, params.heading_arrow_len, 0.0f, 0.0f);
+      auto o = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df(0, 0, 0), mrpt::math::TPoint3Df(static_cast<float>(params.heading_arrow_len), 0, 0));
       o->setPose(
           mrpt::poses::CPose3D(p.target.x, p.target.y, 0.02, p.target_heading.value(), 0, 0));
       obj.insert(o);
@@ -186,7 +186,7 @@ void TWaypointStatusSequence::getAsOpenglVisualization(
 
       if (p.target_heading.has_value())
       {
-        auto o = mrpt::viz::CArrow::Create(0, 0, 0, params.heading_arrow_len, 0.0f, 0.0f);
+        auto o = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df(0, 0, 0), mrpt::math::TPoint3Df(static_cast<float>(params.heading_arrow_len), 0, 0));
         o->setPose(
             mrpt::poses::CPose3D(p.target.x, p.target.y, 0.02, p.target_heading.value(), 0, 0));
         obj.insert(o);
