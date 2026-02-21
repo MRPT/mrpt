@@ -12,7 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/3rdparty/tclap/CmdLine.h>
+#include <CLI/CLI.hpp>
 #include <mrpt/apps-cli/RawlogGrabberApp.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/core/lock_helper.h>
@@ -54,23 +54,34 @@ void RawlogGrabberApp::initialize(int argc, const char** argv)
       mrpt::system::MRPT_getCompilationDate().c_str());
 
   // Declare the supported options.
-  TCLAP::CmdLine cmd("rawlog-grabber", ' ', mrpt::system::MRPT_getVersion().c_str());
+  CLI::App cmd{"rawlog-grabber"};
+  cmd.set_version_flag("--version", mrpt::system::MRPT_getVersion());
 
-  TCLAP::UnlabeledValueArg<std::string> argConfigFile(
-      "config", "Config file", true, "", "<configFile.ini>", cmd);
-  TCLAP::ValueArg<std::string> argPlugins(
-      "p", "plugins",
+  std::string configFile;
+  cmd.add_option("config", configFile, "Config file")->required();
+
+  std::string plugins;
+  cmd.add_option(
+      "-p,--plugins", plugins,
       "Load one or more plug-in modules (.so/.dll) with additional sensor "
-      "drivers (comma-separated list)",
-      false, "", "myModule.so", cmd);
+      "drivers (comma-separated list)");
 
   // Process arguments:
-  if (!cmd.parse(argc, argv)) THROW_EXCEPTION("CLI arguments parsing tells we should exit.");
+  try
+  {
+    cmd.parse(argc, argv);
+  }
+  catch (const CLI::ParseError& e)
+  {
+    int ret = cmd.exit(e);
+    if (ret == 0) return;  // --help or --version
+    THROW_EXCEPTION("CLI arguments parsing tells we should exit.");
+  }
 
-  ASSERT_FILE_EXISTS_(argConfigFile.getValue());
-  params.setContent(mrpt::io::file_get_contents(argConfigFile.getValue()));
+  ASSERT_FILE_EXISTS_(configFile);
+  params.setContent(mrpt::io::file_get_contents(configFile));
 
-  if (argPlugins.isSet()) mrpt::system::loadPluginModules(argPlugins.getValue());
+  if (!plugins.empty()) mrpt::system::loadPluginModules(plugins);
 
   MRPT_END
 }

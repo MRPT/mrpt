@@ -35,7 +35,7 @@ DECLARE_OP_FUNCTION(op_remove_label)
    public:
     CRawlogProcessor_RemoveLabel(
         mrpt::io::CCompressedInputStream& in_rawlog,
-        TCLAP::CmdLine& cmdline,
+        CLI::App& cmdline,
         bool _verbose,
         mrpt::io::CCompressedOutputStream& out_rawlog,
         const std::string& filter_label) :
@@ -92,7 +92,7 @@ DECLARE_OP_FUNCTION(op_keep_label)
    public:
     CRawlogProcessor_KeepLabel(
         mrpt::io::CCompressedInputStream& in_rawlog,
-        TCLAP::CmdLine& cmdline,
+        CLI::App& cmdline,
         bool _verbose,
         mrpt::io::CCompressedOutputStream& out_rawlog,
         const std::string& filter_label) :

@@ -49,7 +49,7 @@ DECLARE_OP_FUNCTION(op_info)
     double lastTimestamp = 0;
 
     CRawlogProcessor_Info(
-        CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool _verbose) :
+        CCompressedInputStream& in_rawlog, CLI::App& cmdline, bool _verbose) :
         CRawlogProcessor(in_rawlog, cmdline, _verbose)
     {
     }

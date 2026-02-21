@@ -27,7 +27,7 @@
   if (verbose) std::cout << "[rawlog-edit] "
 
 #define DECLARE_OP_FUNCTION(_NAME) \
-  void _NAME(mrpt::io::CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool verbose)
+  void _NAME(mrpt::io::CCompressedInputStream& in_rawlog, CLI::App& cmdline, bool verbose)
 
 /** Auxiliary struct that performs all the checks and create the
    output rawlog stream, publishing it as "out_rawlog"
@@ -46,5 +46,5 @@ struct TOutputRawlogCreator
 // Return false if not not set, an exception if args doesn't exist
 // ======================================================================
 template <typename T>
-bool getArgValue(TCLAP::CmdLine& cmdline, const std::string& arg_name, T& out_val);
-bool isFlagSet(TCLAP::CmdLine& cmdline, const std::string& arg_name);
+bool getArgValue(CLI::App& cmdline, const std::string& arg_name, T& out_val);
+bool isFlagSet(CLI::App& cmdline, const std::string& arg_name);

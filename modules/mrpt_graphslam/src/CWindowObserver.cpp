@@ -122,14 +122,5 @@ void CWindowObserver::OnEvent(const mrpt::system::mrptEvent& e)
     std::cout << "Mouse down event received from: " << ev.source_object << "pt: " << ev.coords.x
               << "," << ev.coords.y << "\n";
   }
-  else if (e.isOfType<mrpt::viz::mrptEventGLPostRender>())
-  {
-    /*
-     * An event sent by an mrpt::viz::Viewport AFTER calling
-     * the
-     * SCENE OPENGL DRAWING PRIMITIVES and before doing a glSwapBuffers.
-     */
-
-    // was: show m_help_msg.c_str()
-  }
+  // mrptEventGLPostRender was removed in v3.0
 }
