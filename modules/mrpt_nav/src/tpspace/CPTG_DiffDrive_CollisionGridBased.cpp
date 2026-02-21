@@ -741,7 +741,7 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
     const int grid_cy_max = m_collisionGrid.getSizeY() - 1;
     const double half_cell = m_collisionGrid.getResolution() * 0.5;
 
-    const size_t nVerts = m_robotShape.verticesCount();
+    const size_t nVerts = m_robotShape.size();
     std::vector<mrpt::math::TPoint2D> transf_shape(nVerts);  // The robot shape at each location
 
     // RECOMPUTE THE COLLISION GRIDS:

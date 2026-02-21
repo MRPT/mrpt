@@ -1,40 +1,24 @@
 cmake_minimum_required(VERSION 3.16)
 project(mrpt_hwdrivers LANGUAGES C CXX)
 
-# Ensure dependent MRPT packages are available to CMake
+find_package(mrpt_common REQUIRED)
 find_package(mrpt_comms REQUIRED)
 find_package(mrpt_maps REQUIRED)
+find_package(mrpt_viz REQUIRED)
 
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_flycapture2.cmake REQUIRED) # Check for PointGreyResearch (PGR) FlyCapture2 library
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_isense.cmake REQUIRED)      # Support for INTERSENSE Sensors
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_kinect.cmake REQUIRED)      # Kinect support in a set of different ways
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_mynteye.cmake REQUIRED)     # Support for MYNT EYE cameras
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_openni2.cmake REQUIRED)     # Check for the OpenNI2 library
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_pcap.cmake REQUIRED)        # Check for the libpcap library
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_phidget.cmake REQUIRED)     # Support for phidget Interface Kit with proximity sensor device :
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_triclops.cmake REQUIRED)    # Check for PointGreyResearch (PGR) Triclops library
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_xsens.cmake REQUIRED)       # XSens Motion trackers / IMU drivers
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_libdc1394.cmake REQUIRED)   # Check for libdc1394-2
-
-
-# Lists of directories with source files:
-#  See "DeclareMRPTLib.cmake" for explanations
-# -------------------------------------------------
-
-# Build Intersense devices?
-if(CMAKE_MRPT_HAS_INTERSENSE)
-   list(APPEND hwdrivers_EXTRA_SRCS
-      "${MRPT_LIBS_ROOT}/hwdrivers/src/isense/*.c"
-      "${MRPT_LIBS_ROOT}/hwdrivers/src/isense/*.h"
-      )
-
-   list(APPEND hwdrivers_EXTRA_SRCS_NAME "isense" "isense" )
-endif()
+# Optional dependency detection scripts:
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/script_ffmpeg.cmake REQUIRED)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/script_flycapture2.cmake REQUIRED)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/script_kinect.cmake REQUIRED)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/script_mynteye.cmake REQUIRED)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/script_openni2.cmake REQUIRED)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/script_pcap.cmake REQUIRED)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/script_phidget.cmake REQUIRED)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/script_triclops.cmake REQUIRED)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/script_libdc1394.cmake REQUIRED)
 
 # Build Kinect support via libfreenect?
 if(CMAKE_MRPT_HAS_FREENECT AND CMAKE_MRPT_HAS_FREENECT_SYSTEM)
-	# No need to build if it's already built in the system:
 	if(NOT "${OPENKINECT_FREENECT_INCLUDE_DIR}" STREQUAL "")
 		include_directories("${OPENKINECT_FREENECT_INCLUDE_DIR}")
 	endif()
@@ -49,20 +33,100 @@ if(CMAKE_MRPT_HAS_LIBDC1394_2)
 	endif ()
 endif()
 
-
 if(CMAKE_MRPT_HAS_LIBPCAP)
 	include_directories(${PCAP_INCLUDE_DIR})
 endif()
 
-# define lib:
 set(LIB_SOURCES
-  src/CActivMediaRobotBase.cpp
-  src/CBoardSonars.cpp
-  src/CEyeBot.cpp
-  src/CEnose.cpp
+  src/C2DRangeFinderAbstract.cpp
+  src/CCANBusReader.cpp
+  src/CCameraSensor.cpp
+  src/CEnoseModular.cpp
+  src/CFFMPEG_InputStream.cpp
+  src/CGenericSensor.cpp
+  src/CGillAnemometer.cpp
+  src/CGPSInterface.cpp
+  src/CGPSInterface_parser_NMEA.cpp
+  src/CGPSInterface_parser_NOVATEL_OEM6.cpp
+  src/CGPS_NTRIP.cpp
+  src/CGyroKVHDSP3000.cpp
+  src/CHokuyoURG.cpp
+  src/CIbeoLuxETH.cpp
+  src/CImageGrabber_dc1394.cpp
+  src/CImageGrabber_FlyCapture2.cpp
+  src/CImageGrabber_OpenCV.cpp
+  src/CIMUXSens_MT4.cpp
+  src/CImpinjRFID.cpp
+  src/CJoystick.cpp
+  src/CKinect.cpp
+  src/CLMS100eth.cpp
+  src/CMyntEyeCamera.cpp
+  src/CNationalInstrumentsDAQ.cpp
+  src/CNTRIPClient.cpp
+  src/CNTRIPEmitter.cpp
+  src/COpenNI2Generic.cpp
+  src/COpenNI2_RGBD360.cpp
+  src/COpenNI2Sensor.cpp
+  src/CPhidgetInterfaceKitProximitySensors.cpp
+  src/CRaePID.cpp
+  src/CRoboPeakLidar.cpp
+  src/CServoeNeck.cpp
+  src/CSickLaserSerial.cpp
+  src/CSickLaserUSB.cpp
+  src/CSICKTim561Eth_2050101.cpp
+  src/CStereoGrabber_Bumblebee_libdc1394.cpp
+  src/CTaoboticsIMU.cpp
+  src/CVelodyneScanner.cpp
+  src/CWirelessPower.cpp
+  src/registerAllClasses.cpp
+  # Tests:
+  tests/CGPSInterface_unittest.cpp
+  tests/CVelodyneScanner_unittest.cpp
 )
 
-set(LIB_PUBLIC_HEADERS "")
+set(LIB_PUBLIC_HEADERS
+  include/mrpt/hwdrivers/C2DRangeFinderAbstract.h
+  include/mrpt/hwdrivers/CCANBusReader.h
+  include/mrpt/hwdrivers/CCameraSensor.h
+  include/mrpt/hwdrivers/CEnoseModular.h
+  include/mrpt/hwdrivers/CFFMPEG_InputStream.h
+  include/mrpt/hwdrivers/CGenericSensor.h
+  include/mrpt/hwdrivers/CGillAnemometer.h
+  include/mrpt/hwdrivers/CGPSInterface.h
+  include/mrpt/hwdrivers/CGPS_NTRIP.h
+  include/mrpt/hwdrivers/CGyroKVHDSP3000.h
+  include/mrpt/hwdrivers/CHokuyoURG.h
+  include/mrpt/hwdrivers/CIbeoLuxETH.h
+  include/mrpt/hwdrivers/CImageGrabber_dc1394.h
+  include/mrpt/hwdrivers/CImageGrabber_FlyCapture2.h
+  include/mrpt/hwdrivers/CImageGrabber_OpenCV.h
+  include/mrpt/hwdrivers/CIMUXSens_MT4.h
+  include/mrpt/hwdrivers/CImpinjRFID.h
+  include/mrpt/hwdrivers/CJoystick.h
+  include/mrpt/hwdrivers/CKinect.h
+  include/mrpt/hwdrivers/CLMS100eth.h
+  include/mrpt/hwdrivers/CMyntEyeCamera.h
+  include/mrpt/hwdrivers/CNationalInstrumentsDAQ.h
+  include/mrpt/hwdrivers/CNTRIPClient.h
+  include/mrpt/hwdrivers/CNTRIPEmitter.h
+  include/mrpt/hwdrivers/COpenNI2Generic.h
+  include/mrpt/hwdrivers/COpenNI2Generic_CDevice.h
+  include/mrpt/hwdrivers/COpenNI2_RGBD360.h
+  include/mrpt/hwdrivers/COpenNI2Sensor.h
+  include/mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h
+  include/mrpt/hwdrivers/CPtuBase.h
+  include/mrpt/hwdrivers/CRaePID.h
+  include/mrpt/hwdrivers/CRoboPeakLidar.h
+  include/mrpt/hwdrivers/CServoeNeck.h
+  include/mrpt/hwdrivers/CSickLaserSerial.h
+  include/mrpt/hwdrivers/CSickLaserUSB.h
+  include/mrpt/hwdrivers/CSICKTim561Eth_2050101.h
+  include/mrpt/hwdrivers/CStereoGrabber_Bumblebee_libdc1394.h
+  include/mrpt/hwdrivers/CTaoboticsIMU.h
+  include/mrpt/hwdrivers/CVelodyneScanner.h
+  include/mrpt/hwdrivers/CWirelessPower.h
+  include/mrpt/hwdrivers/registerAllClasses.h
+)
 
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
@@ -70,9 +134,11 @@ mrpt_add_library(
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_comms
     mrpt::mrpt_maps
+    mrpt::mrpt_viz
   CMAKE_DEPENDENCIES
     mrpt_comms
     mrpt_maps
+    mrpt_viz
 )
 
 if(NOT BUILD_${PROJECT_NAME})
@@ -80,118 +146,89 @@ if(NOT BUILD_${PROJECT_NAME})
 endif()
 
 # We need pthread's on unices
-target_link_libraries(hwdrivers PRIVATE Threads::Threads)
-
+target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
 if(CMAKE_MRPT_HAS_LIBPCAP)
-	target_link_libraries(hwdrivers PRIVATE ${PCAP_LIBRARY})
-
-	# Windows:
-	# Set wpcap.dll as DELAYLOAD, so users without that driver can use binaries compiled with wpcap support:
+	target_link_libraries(${PROJECT_NAME} PRIVATE ${PCAP_LIBRARY})
 	if (MSVC)
-		set_property(TARGET hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"wpcap.dll\"")
+		set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"wpcap.dll\"")
 	endif ()
 endif()
 
 # XSens MT4 required libs:
 if (MRPT_WITH_XSENS)
-	target_link_libraries(hwdrivers PRIVATE ${XSENS4_LIBS})
+	target_link_libraries(${PROJECT_NAME} PRIVATE ${XSENS4_LIBS})
 endif ()
 
 if(UNIX)
-    target_link_libraries(hwdrivers PRIVATE dl)
+    target_link_libraries(${PROJECT_NAME} PRIVATE dl)
 endif()
 
 if(CMAKE_MRPT_HAS_OPENNI2)
-	target_link_libraries(hwdrivers PRIVATE ${MRPT_OPENNI2_LIBRARIES})
+	target_link_libraries(${PROJECT_NAME} PRIVATE ${MRPT_OPENNI2_LIBRARIES})
 endif()
 
-# Seems to be required to link against prebuilt libavcodec, etc.
 if (MSVC)
-	#set_target_properties()
-	set_property(TARGET hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /SAFESEH:NO")
-
-	set_target_properties(hwdrivers PROPERTIES LINK_FLAGS "/DELAYLOAD:wlanapi.dll")
+	set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS " /SAFESEH:NO")
+	set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/DELAYLOAD:wlanapi.dll")
 endif()
 
 if(CMAKE_MRPT_HAS_FREENECT)
-	# Add linking against these libs:
 	if(NOT "${FREENECT_LIBS}" STREQUAL "")
-		target_link_libraries(hwdrivers PRIVATE ${FREENECT_LIBS})
-
-		# Windows:
-		# Set libusb0.dll as DELAYLOAD, so users without that driver
-		# still can use binaries compiled with libusb support:
+		target_link_libraries(${PROJECT_NAME} PRIVATE ${FREENECT_LIBS})
 		if (MSVC)
-			set_property(TARGET hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"libusb0.dll\"")
+			set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"libusb0.dll\"")
 		endif ()
 	endif()
-
 	if(NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
-		target_link_libraries(hwdrivers PRIVATE mrpt_freenect)
+		target_link_libraries(${PROJECT_NAME} PRIVATE mrpt_freenect)
 	endif()
-
-	# In theory, the exported targets should take care of everything... but I still 
-	# find missing linking against -ludev here after upgrading to u22.04 (?). 
-	# workaround: 
-	#target_link_directories(hwdrivers PRIVATE "${PKG_LIBUDEV_LIBDIR}")
-
 endif()
-
-# Was: target_link_libraries(hwdrivers PRIVATE ${LIBUSB10_LIBS})
-# But: It's not really required since deps of freenect are already exposed
-#      via cmake public link deps.
 
 # build with link on Phidget21 lib
 if(CMAKE_MRPT_HAS_PHIDGET)
 	include_directories(${PHIDGETS_INCLUDE_DIR})
-	target_link_libraries(hwdrivers PRIVATE ${PHIDGETS_LIBRARIES})
+	target_link_libraries(${PROJECT_NAME} PRIVATE ${PHIDGETS_LIBRARIES})
 endif()
 
 if(CMAKE_MRPT_HAS_LIBDC1394_2)
-	target_link_libraries(hwdrivers PRIVATE ${LIBDC1394_2_LIBRARIES})
+	target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBDC1394_2_LIBRARIES})
 endif()
 
 # Link to National Instrument libraries:
 if(MRPT_HAS_NI_DAQmxBASE)
-	# link_directories() was added in the configuration script under /cmakemodules/*_ni.cmake
 	include_directories(${NI_DAQmxBASE_INCLUDE_DIR})
-	target_link_libraries(hwdrivers PRIVATE ${NI_DAQmxBASE_LIB_FILE})
+	target_link_libraries(${PROJECT_NAME} PRIVATE ${NI_DAQmxBASE_LIB_FILE})
 endif()
 if(MRPT_HAS_NI_DAQmx)
-	# link_directories() was added in the configuration script under /cmakemodules/*_ni.cmake
 	include_directories(${NI_DAQmx_INCLUDE_DIR})
-	target_link_libraries(hwdrivers PRIVATE ${NI_DAQmx_LIB_FILE})
+	target_link_libraries(${PROJECT_NAME} PRIVATE ${NI_DAQmx_LIB_FILE})
 endif()
 
 # Link to PGR FlyCapture2 libraries:
 if(CMAKE_MRPT_HAS_FLYCAPTURE2)
-	# link_directories() was added in the configuration script under /cmakemodules/*_ni.cmake
 	include_directories(${PGR_FLYCAPTURE2_INCLUDE_DIR})
-	target_link_libraries(hwdrivers PRIVATE ${PGR_FLYCAPTURE2_LIB_FILE_RELEASE})
-	# Windows: Set dll as DELAYLOAD, so users without that driver can use precompiled binaries:
+	target_link_libraries(${PROJECT_NAME} PRIVATE ${PGR_FLYCAPTURE2_LIB_FILE_RELEASE})
 	if(MSVC)
-		set_property(TARGET hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"FLYCAPTURE2.DLL\"")
+		set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"FLYCAPTURE2.DLL\"")
 	endif()
 endif()
 
 # Link to PGR Triclops libraries:
 if(CMAKE_MRPT_HAS_TRICLOPS)
-	# link_directories() was added in the configuration script under /cmakemodules/*_ni.cmake
 	include_directories(${PGR_TRICLOPS_INCLUDE_DIR})
-	target_link_libraries(hwdrivers PRIVATE ${PGR_TRICLOPS_LIB_FILE_RELEASE})
-	target_link_libraries(hwdrivers PRIVATE ${PGR_FC2BRIDGE_LIB_FILE_RELEASE})
-	# Windows: Set dll as DELAYLOAD, so users without that driver can use precompiled binaries:
+	target_link_libraries(${PROJECT_NAME} PRIVATE ${PGR_TRICLOPS_LIB_FILE_RELEASE})
+	target_link_libraries(${PROJECT_NAME} PRIVATE ${PGR_FC2BRIDGE_LIB_FILE_RELEASE})
 	if(MSVC)
 		get_filename_component(PGR_TRICLOPS_LIBNAME ${PGR_TRICLOPS_LIB_FILE_RELEASE} NAME_WE)
 		get_filename_component(PGR_FC2BRIDGE_LIBNAME ${PGR_FC2BRIDGE_LIB_FILE_RELEASE} NAME_WE)
-		set_property(TARGET hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"${PGR_TRICLOPS_LIBNAME}.DLL\"")
-		set_property(TARGET hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"${PGR_FC2BRIDGE_LIBNAME}.DLL\"")
+		set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"${PGR_TRICLOPS_LIBNAME}.DLL\"")
+		set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"${PGR_FC2BRIDGE_LIBNAME}.DLL\"")
 	endif()
 endif()
 
 if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
-	target_link_libraries(hwdrivers PRIVATE mrpt_rplidar)
+	target_link_libraries(${PROJECT_NAME} PRIVATE mrpt_rplidar)
 endif()
 
 # Remove the "--pedantic" flag for the file "CFFMPEG_InputStream.cpp" since headers
@@ -201,22 +238,18 @@ if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_MRPT_HAS_FFMPEG_SYSTEM)
 	if(EXISTS "${LIBAVCODEC_INCLUDEDIR}")
 		set(EXTRA_ISYSTEMS "-isystem ${LIBAVCODEC_INCLUDEDIR} ")
 	endif()
-
 	if(EXISTS "${LIBAVCODEC_INCLUDEDIR}/ffmpeg")
 		set(EXTRA_ISYSTEMS "-isystem ${LIBAVCODEC_INCLUDEDIR}/ffmpeg ")
 	endif()
-
 	if(EXISTS "${LIBAVCODEC_INCLUDEDIR}/libavcodec")
 		set(EXTRA_ISYSTEMS "-isystem ${LIBAVCODEC_INCLUDEDIR}/libavcodec ")
 	endif()
-
 	if(EXISTS "${LIBAVCODEC_INCLUDEDIR}/libavformat")
 		set(EXTRA_ISYSTEMS "-isystem ${LIBAVCODEC_INCLUDEDIR}/libavformat ")
 	endif()
-
 	if (NOT "${EXTRA_ISYSTEMS}" STREQUAL "")
 		set_source_files_properties(
-			${MRPT_LIBS_ROOT}/hwdrivers/src/CFFMPEG_InputStream.cpp
+			${CMAKE_CURRENT_SOURCE_DIR}/src/CFFMPEG_InputStream.cpp
 			PROPERTIES COMPILE_FLAGS ${EXTRA_ISYSTEMS}
 			)
 	endif ()
@@ -226,20 +259,21 @@ if (CMAKE_MRPT_HAS_FFMPEG)
   if (NOT TARGET imp_ffmpeg)
 	  message(ERROR "imp_ffmpeg should be defined!")
   endif()
-  target_link_libraries(hwdrivers PRIVATE imp_ffmpeg)
+  target_link_libraries(${PROJECT_NAME} PRIVATE imp_ffmpeg)
 endif()
 
 if(CMAKE_MRPT_HAS_WXWIDGETS)
 	if (NOT TARGET imp_wxwidgets)
 		message(ERROR "imp_wxwidgets should be defined!")
 	endif()
-	target_link_libraries(hwdrivers PRIVATE imp_wxwidgets)
+	target_link_libraries(${PROJECT_NAME} PRIVATE imp_wxwidgets)
 endif()
 
 if (CMAKE_MRPT_HAS_MYNTEYE_D)
-	target_link_libraries(hwdrivers PRIVATE mynteye_depth)
+	target_link_libraries(${PROJECT_NAME} PRIVATE mynteye_depth)
 endif()
+
 # For velodyne driver:
 if (MINGW)
-	target_link_libraries(hwdrivers PRIVATE WS2_32 winmm)
+	target_link_libraries(${PROJECT_NAME} PRIVATE WS2_32 winmm)
 endif()

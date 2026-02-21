@@ -24,7 +24,6 @@
 #include <mrpt/hwdrivers/CMyntEyeCamera.h>
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
 #include <mrpt/hwdrivers/CStereoGrabber_Bumblebee_libdc1394.h>
-#include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
 #include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
@@ -364,10 +363,6 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
   int m_bumblebee_dc1394_camera_unit{0};
   double m_bumblebee_dc1394_framerate{15};
 
-  // Options for grabber type= svs -----------------------------------------
-  int m_svs_camera_index{0};
-  TCaptureOptions_SVS m_svs_options;
-
   // Options for grabber_type= ffmpeg -------------------------------------
   std::string m_ffmpeg_url;
 
@@ -429,8 +424,6 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
   /** The FlyCapture2 object for stereo pairs */
   std::unique_ptr<CImageGrabber_FlyCapture2> m_cap_flycap_stereo_l, m_cap_flycap_stereo_r;
   std::unique_ptr<CStereoGrabber_Bumblebee_libdc1394> m_cap_bumblebee_dc1394;
-  /** The svs capture object. */
-  std::unique_ptr<CStereoGrabber_SVS> m_cap_svs;
   /** The FFMPEG capture object */
   std::unique_ptr<CFFMPEG_InputStream> m_cap_ffmpeg;
   /** The input file for rawlogs */

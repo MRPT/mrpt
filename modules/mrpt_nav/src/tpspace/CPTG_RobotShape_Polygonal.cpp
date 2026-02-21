@@ -35,10 +35,10 @@ void CPTG_RobotShape_Polygonal::setRobotShape(const mrpt::math::CPolygon& robotS
 void CPTG_RobotShape_Polygonal::loadDefaultParams()
 {
   m_robotShape.clear();
-  m_robotShape.AddVertex(-0.15, 0.15);
-  m_robotShape.AddVertex(0.2, 0.1);
-  m_robotShape.AddVertex(0.2, -0.1);
-  m_robotShape.AddVertex(-0.15, -0.15);
+  m_robotShape.add_vertex(-0.15, 0.15);
+  m_robotShape.add_vertex(0.2, 0.1);
+  m_robotShape.add_vertex(0.2, -0.1);
+  m_robotShape.add_vertex(-0.15, -0.15);
 }
 
 void CPTG_RobotShape_Polygonal::loadShapeFromConfigFile(
@@ -66,7 +66,7 @@ void CPTG_RobotShape_Polygonal::loadShapeFromConfigFile(
       any_pt = true;
     }
 
-    m_robotShape.AddVertex(ptx, pty);
+    m_robotShape.add_vertex(ptx, pty);
   }
 
   if (any_pt) internal_processNewRobotShape();

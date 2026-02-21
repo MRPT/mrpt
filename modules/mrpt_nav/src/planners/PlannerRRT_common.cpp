@@ -45,7 +45,7 @@ void PlannerTPS_VirtualBase::internal_initialize_PTG()
   {
     vector<double> xm, ym;
     params.robot_shape.getPlotData(xm, ym);
-    poly_robot_shape.setAllVertices(xm, ym);
+    poly_robot_shape.set_vertices(xm, ym);
   }
 
   for (size_t i = 0; i < m_PTGs.size(); i++)
