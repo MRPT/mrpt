@@ -14,6 +14,7 @@
 
   <depend>mrpt_vision</depend>
   <depend>mrpt_maps</depend>
+  <depend>mrpt_topography</depend>
 
   <export>
     <build_type>cmake</build_type>

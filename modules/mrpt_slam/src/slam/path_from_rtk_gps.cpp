@@ -17,7 +17,7 @@
 #include <mrpt/tfest/se3.h>
 #include <mrpt/topography/conversions.h>
 #include <mrpt/topography/data_types.h>
-#include <mrpt/topography/path_from_rtk_gps.h>
+#include <mrpt/slam/path_from_rtk_gps.h>
 
 #include <memory>
 

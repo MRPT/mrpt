@@ -13,9 +13,11 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/math/CVectorDynamic.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/topography.h>
+#include <mrpt/slam/path_from_rtk_gps.h>
 #include <test_mrpt_common.h>
 
 using namespace mrpt;

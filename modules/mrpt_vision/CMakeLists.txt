@@ -33,6 +33,7 @@ set(LIB_SOURCES
 
 set(LIB_PUBLIC_HEADERS
   include/mrpt/vision/CDifodo.h
+  include/mrpt/vision/CFeatureExtraction.h
   include/mrpt/vision/chessboard_camera_calib.h
   include/mrpt/vision/chessboard_find_corners.h
   include/mrpt/vision/chessboard_stereo_camera_calib.h
