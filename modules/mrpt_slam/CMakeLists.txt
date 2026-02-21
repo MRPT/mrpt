@@ -73,6 +73,11 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/slam/registerAllClasses.h
 )
 
+# Ensure downstream consumers can find TBB::tbb (exported as PUBLIC):
+if (TBB_FOUND)
+	set(EXTRA_CONFIG_CMDS "find_dependency(TBB QUIET)")
+endif()
+
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}

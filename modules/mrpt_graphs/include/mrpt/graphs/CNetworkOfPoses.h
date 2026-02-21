@@ -21,8 +21,6 @@
 #include <mrpt/containers/yaml.h>
 #include <mrpt/graphs/CDirectedGraph.h>
 #include <mrpt/graphs/CDirectedTree.h>
-#include <mrpt/graphs/THypothesis.h>
-#include <mrpt/graphs/TMRSlamNodeAnnotations.h>
 #include <mrpt/graphs/TNodeAnnotations.h>
 #include <mrpt/graphs/dijkstra.h>
 #include <mrpt/io/CCompressedInputStream.h>
@@ -50,20 +48,6 @@ namespace detail
 template <class GRAPH_T>
 struct graph_ops;
 
-// forward declaration of CVisualizer
-template <
-    class CPOSE,  // Type of edges
-    class MAPS_IMPLEMENTATION,
-    class NODE_ANNOTATIONS,
-    class EDGE_ANNOTATIONS>
-class CVisualizer;
-// forward declaration of CMRVisualizer
-template <
-    class CPOSE,  // Type of edges
-    class MAPS_IMPLEMENTATION,
-    class NODE_ANNOTATIONS,
-    class EDGE_ANNOTATIONS>
-class CMRVisualizer;
 }  // namespace detail
 
 /** A directed graph of pose constraints, with edges being the relative poses between pairs of nodes
@@ -301,24 +285,9 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
   inline void getAs3DObject(
       mrpt::viz::CSetOfObjects::Ptr object, const mrpt::containers::yaml& viz_params) const
   {
-    using visualizer_t = mrpt::graphs::detail::CVisualizer<
-        CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>;
-    using visualizer_multirobot_t = mrpt::graphs::detail::CMRVisualizer<
-        CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>;
-
-    bool is_multirobot = false;
-    std::unique_ptr<visualizer_t> viz;
-    is_multirobot =
-        (std::is_base_of_v<mrpt::graphs::detail::TMRSlamNodeAnnotations, global_pose_t>);
-    if (is_multirobot)
-    {
-      viz.reset(new visualizer_multirobot_t(*this));
-    }
-    else
-    {
-      viz.reset(new visualizer_t(*this));
-    }
-    viz->getAs3DObject(object, viz_params);
+    (void)object;
+    (void)viz_params;
+    THROW_EXCEPTION("CNetworkOfPoses::getAs3DObject: CVisualizer was removed in v3.0");
   }
 
   /** Spanning tree computation of a simple estimation of the global
@@ -658,140 +627,6 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
 
   }  // end of extractSubGraph
 
-  /**\brief Integrate given graph into own graph using the list of provided
-   * common THypotheses. Nodes of the other graph are renumbered upon
-   * integration in own graph.
-   *
-   * \param[in] other Graph (of the same type) that is to be integrated with
-   * own graph.
-   * \param[in] Hypotheses that join own and other graph.
-   * \param[in] hypots_from_other_to_self Specify the direction of the
-   * THypothesis objects in the common_hypots. If true (default) they are
-   * directed from other to own graph (other \rightarrow own),
-   *
-   * \param[out] old_to_new_nodeID_mappings_out Map from the old nodeIDs
-   * that are in the given graph to the new nodeIDs that have been inserted
-   * (by this method) in own graph.
-   */
-  inline void mergeGraph(
-      const self_t& other,
-      const typename std::vector<detail::THypothesis<self_t>>& common_hypots,
-      const bool hypots_from_other_to_self = true,
-      std::map<TNodeID, TNodeID>* old_to_new_nodeID_mappings_out = nullptr)
-  {
-    MRPT_START
-    using namespace mrpt::graphs;
-    using namespace mrpt::graphs::detail;
-    using namespace std;
-
-    using hypots_cit_t = typename vector<THypothesis<self_t>>::const_iterator;
-    using nodes_cit_t = typename global_poses_t::const_iterator;
-
-    const self_t& graph_from = (hypots_from_other_to_self ? other : *this);
-    const self_t& graph_to = (hypots_from_other_to_self ? *this : other);
-
-    // assert that both own and other graph have at least two nodes.
-    ASSERT_(graph_from.nodes.size() >= 2);
-    ASSERT_(graph_to.nodes.size() >= 2);
-
-    // Assert that from-nodeIds, to-nodeIDs in common_hypots exist in own
-    // and other graph respectively
-    for (hypots_cit_t h_cit = common_hypots.begin(); h_cit != common_hypots.end(); ++h_cit)
-    {
-      ASSERTMSG_(
-          graph_from.nodes.find(h_cit->from) != graph_from.nodes.end(),
-          format("NodeID %lu is not found in (from) graph", h_cit->from));
-      ASSERTMSG_(
-          graph_to.nodes.find(h_cit->to) != graph_to.nodes.end(),
-          format("NodeID %lu is not found in (to) graph", h_cit->to));
-    }
-
-    // find the max nodeID in existing graph
-    TNodeID max_nodeID = 0;
-    for (nodes_cit_t n_cit = this->nodes.begin(); n_cit != this->nodes.end(); ++n_cit)
-    {
-      if (n_cit->first > max_nodeID)
-      {
-        max_nodeID = n_cit->first;
-      }
-    }
-    TNodeID renum_start = max_nodeID + 1;
-    size_t renum_counter = 0;
-    // cout << "renum_start: " << renum_start << "\n";
-
-    // Renumber nodeIDs of other graph so that they don't overlap with own
-    // graph nodeIDs
-    std::map<TNodeID, TNodeID>* old_to_new_nodeID_mappings;
-
-    // map of TNodeID->TNodeID correspondences to address to if the
-    // old_to_new_nodeID_mappings_out is not given.
-    // Handy for not having to allocate old_to_new_nodeID_mappings in the
-    // heap
-    std::map<TNodeID, TNodeID> mappings_tmp;
-
-    // If given, use the old_to_new_nodeID_mappings map.
-    if (old_to_new_nodeID_mappings_out)
-    {
-      old_to_new_nodeID_mappings = old_to_new_nodeID_mappings_out;
-    }
-    else
-    {
-      old_to_new_nodeID_mappings = &mappings_tmp;
-    }
-    old_to_new_nodeID_mappings->clear();
-
-    // add all nodes of other graph - Take care of renumbering them
-    // cout << "Adding nodes of other graph" << "\n";
-    // cout << "====================" << "\n";
-    for (nodes_cit_t n_cit = other.nodes.begin(); n_cit != other.nodes.end(); ++n_cit)
-    {
-      TNodeID new_nodeID = renum_start + renum_counter++;
-      old_to_new_nodeID_mappings->insert(make_pair(n_cit->first, new_nodeID));
-      this->nodes.insert(make_pair(new_nodeID, n_cit->second));
-
-      // cout << "Adding nodeID: " << new_nodeID << "\n";
-    }
-
-    // add common constraints
-    // cout << "Adding common constraints" << "\n";
-    // cout << "====================" << "\n";
-    for (hypots_cit_t h_cit = common_hypots.begin(); h_cit != common_hypots.end(); ++h_cit)
-    {
-      TNodeID from, to;
-      if (hypots_from_other_to_self)
-      {
-        from = old_to_new_nodeID_mappings->at(h_cit->from);
-        to = h_cit->to;
-      }
-      else
-      {
-        from = h_cit->from;
-        to = old_to_new_nodeID_mappings->at(h_cit->to);
-      }
-      this->insertEdge(from, to, h_cit->getEdge());
-      // cout << from << " -> " << to << " => " << h_cit->getEdge() <<
-      // endl;
-    }
-
-    // add all constraints of the other graph
-    // cout << "Adding constraints of other graph" << "\n";
-    // cout << "====================" << "\n";
-    for (typename self_t::const_iterator g_cit = other.begin(); g_cit != other.end(); ++g_cit)
-    {
-      TNodeID new_from = old_to_new_nodeID_mappings->at(g_cit->first.first);
-      TNodeID new_to = old_to_new_nodeID_mappings->at(g_cit->first.second);
-      this->insertEdge(new_from, new_to, g_cit->second);
-
-      // cout << "[" << new_from << "] -> [" << new_to << "]" << " => " <<
-      // g_cit->second << "\n";
-    }
-
-    // run Dijkstra to update the node positions
-    this->dijkstra_nodes_estimate();
-
-    MRPT_END
-  }
-
   /**\brief Add an edge between the last node of the group with the lower
    * nodeIDs and the first node of the higher nodeIDs.
    *
@@ -945,18 +780,6 @@ using CNetworkOfPoses2DInf = CNetworkOfPoses<mrpt::poses::CPosePDFGaussianInf>;
  * CPose3DPDFGaussianInf, also implementing serialization. */
 using CNetworkOfPoses3DInf = CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussianInf>;
 
-/**\brief Specializations of CNetworkOfPoses for graphs whose nodes inherit from
- * TMRSlamNodeAnnotations struct */
-/**\{ */
-using CNetworkOfPoses2DInf_NA = CNetworkOfPoses<
-    mrpt::poses::CPosePDFGaussianInf,
-    mrpt::containers::map_traits_stdmap,
-    mrpt::graphs::detail::TMRSlamNodeAnnotations>;
-using CNetworkOfPoses3DInf_NA = CNetworkOfPoses<
-    mrpt::poses::CPose3DPDFGaussianInf,
-    mrpt::containers::map_traits_stdmap,
-    mrpt::graphs::detail::TMRSlamNodeAnnotations>;
-/**\} */
 
 /** @} */  // end of grouping
 
@@ -976,6 +799,3 @@ MRPT_DECLARE_TTYPENAME(mrpt::containers::map_traits_map_as_vector)
 // Implementation of templates (in a separate file for clarity)
 #include "CNetworkOfPoses_impl.h"
 
-// Visualization related template classes
-#include <mrpt/graphs/CMRVisualizer.h>
-#include <mrpt/graphs/CVisualizer.h>

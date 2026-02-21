@@ -49,7 +49,7 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
     size_t m_changedCams;
 
     CRawlogProcessor_StereoRectify(
-        CCompressedInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool Verbose) :
+        CCompressedInputStream& in_rawlog, CLI::App& cmdline, bool Verbose) :
         CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose)
     {
       m_changedCams = 0;

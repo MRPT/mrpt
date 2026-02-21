@@ -5,6 +5,7 @@ find_package(mrpt_common REQUIRED)
 find_package(mrpt_hwdrivers REQUIRED)
 find_package(mrpt_slam REQUIRED)
 find_package(mrpt_topography REQUIRED)
+find_package(CLI11 REQUIRED)
 
 # define lib:
 set(LIB_SOURCES
@@ -67,4 +68,4 @@ mrpt_add_library(
     mrpt_topography
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
+target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads CLI11::CLI11)

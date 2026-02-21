@@ -70,6 +70,11 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/gui/WxUtils.h
 )
 
+# Ensure downstream consumers can find mrpt_nanogui (exported as PUBLIC):
+if (CMAKE_MRPT_HAS_NANOGUI)
+	set(EXTRA_CONFIG_CMDS "find_dependency(mrpt_nanogui QUIET)")
+endif()
+
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}

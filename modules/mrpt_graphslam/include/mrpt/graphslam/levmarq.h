@@ -16,8 +16,10 @@
 #include <mrpt/containers/stl_containers_utils.h>  // find_in_vector()
 #include <mrpt/containers/yaml.h>
 #include <mrpt/graphslam/types.h>
-#include <mrpt/math/CSparseMatrix.h>
 #include <mrpt/system/CTimeLogger.h>
+
+#include <Eigen/Sparse>
+#include <Eigen/SparseCholesky>
 // (Must come *after* "types.h" above)
 #include <mrpt/graphslam/levmarq_impl.h>  // Aux classes
 
@@ -195,10 +197,10 @@ void optimize_graph_spa_levmarq(
   // problem:
   const size_t nObservations = lstObservationData.size();
   ASSERTDEB_GT_(nObservations, 0);
-  // Cholesky object, as a pointer to reuse it between iterations:
-
-  using SparseCholeskyDecompPtr = std::unique_ptr<CSparseMatrix::CholeskyDecomp>;
-  SparseCholeskyDecompPtr ptrCh;
+  // Cholesky decomposition object, reused between iterations:
+  using SparseMat = Eigen::SparseMatrix<double>;
+  using SparseTriplet = Eigen::Triplet<double>;
+  std::unique_ptr<Eigen::SimplicialLLT<SparseMat>> ptrCh;
 
   // The list of Jacobians: for each constraint i->j,
   //  we need the pair of Jacobians: { dh(xi,xj)_dxi, dh(xi,xj)_dxj },
@@ -443,10 +445,9 @@ void optimize_graph_spa_levmarq(
     }
 
     profiler.enter("optimize_graph_spa_levmarq.sp_H:build");
-    // Now, build the actual sparse matrix H:
-    // Note: we only need to fill out the upper diagonal part, since
-    // Cholesky will later on ignore the other part.
-    CSparseMatrix sp_H(nFreeNodes * DIMS_POSE, nFreeNodes * DIMS_POSE);
+    // Now, build the actual sparse matrix H using Eigen triplets:
+    const auto dim = static_cast<Eigen::Index>(nFreeNodes * DIMS_POSE);
+    std::vector<SparseTriplet> triplets;
     for (size_t i = 0; i < nFreeNodes; i++)
     {
       const size_t i_offset = i * DIMS_POSE;
@@ -456,66 +457,73 @@ void optimize_graph_spa_levmarq(
         const size_t j = it->first;  // entry submatrix is for (i,j).
         const size_t j_offset = j * DIMS_POSE;
 
-        // For i==j (diagonal blocks), it's different, since we only
-        // need to insert their
-        // upper-diagonal half and also we have to add the lambda*I to
-        // the diagonal from the Lev-Marq. algorithm:
         if (i == j)
         {
           for (size_t r = 0; r < DIMS_POSE; r++)
           {
-            // c=r: add lambda from LM
-            sp_H.insert_entry_fast(j_offset + r, i_offset + r, it->second(r, r) + lambda);
-            // c>r:
+            // Diagonal: add lambda from LM
+            triplets.emplace_back(j_offset + r, i_offset + r, it->second(r, r) + lambda);
+            // Upper triangle:
             for (size_t c = r + 1; c < DIMS_POSE; c++)
             {
-              sp_H.insert_entry_fast(j_offset + r, i_offset + c, it->second(r, c));
+              const double val = it->second(r, c);
+              triplets.emplace_back(j_offset + r, i_offset + c, val);
+              triplets.emplace_back(i_offset + c, j_offset + r, val);  // symmetric
             }
           }
         }
         else
         {
-          sp_H.insert_submatrix(j_offset, i_offset, it->second);
+          // Insert full submatrix block and its transpose for symmetry
+          for (size_t r = 0; r < DIMS_POSE; r++)
+            for (size_t c = 0; c < DIMS_POSE; c++)
+            {
+              const double val = it->second(r, c);
+              triplets.emplace_back(j_offset + r, i_offset + c, val);
+              triplets.emplace_back(i_offset + c, j_offset + r, val);
+            }
         }
       }
-    }  // end for each free node, build sp_H
+    }  // end for each free node, build triplets
 
-    sp_H.compressFromTriplet();
+    SparseMat sp_H(dim, dim);
+    sp_H.setFromTriplets(triplets.begin(), triplets.end());
     profiler.leave("optimize_graph_spa_levmarq.sp_H:build");
 
-    // Use the cparse Cholesky decomposition to efficiently solve:
+    // Use Eigen Cholesky decomposition to efficiently solve:
     //   (H+\lambda*I) \delta = -J^t * (f(x)-z)
     //          A         x   =  b         -->       x = A^{-1} * b
     //
     CVectorDouble delta;  // The (minus) increment to be added to the
     // current solution in this step
-    try
     {
       profiler.enter("optimize_graph_spa_levmarq.sp_H:chol");
-      if (!ptrCh.get())
-        ptrCh = std::make_unique<CSparseMatrix::CholeskyDecomp>(sp_H);
+      if (!ptrCh)
+        ptrCh = std::make_unique<Eigen::SimplicialLLT<SparseMat>>(sp_H);
       else
-        ptrCh.get()->update(sp_H);
+        ptrCh->compute(sp_H);
       profiler.leave("optimize_graph_spa_levmarq.sp_H:chol");
 
-      profiler.enter("optimize_graph_spa_levmarq.sp_H:backsub");
-      ptrCh->backsub(grad, delta);
-      profiler.leave("optimize_graph_spa_levmarq.sp_H:backsub");
-    }
-    catch (CExceptionNotDefPos&)
-    {
-      // not positive definite so increase mu and try again
-      if (verbose)
-        cout << "[optimize_graph_spa_levmarq] Got non-definite "
-                "positive matrix, retrying with a "
-                "larger lambda...\n";
-      lambda *= v;
-      v *= 2;
-      if (lambda > 1e9)
-      {  // enough!
-        break;
+      if (ptrCh->info() != Eigen::Success)
+      {
+        // not positive definite so increase mu and try again
+        if (verbose)
+          cout << "[optimize_graph_spa_levmarq] Got non-definite "
+                  "positive matrix, retrying with a "
+                  "larger lambda...\n";
+        lambda *= v;
+        v *= 2;
+        if (lambda > 1e9)
+        {  // enough!
+          break;
+        }
+        continue;  // try again with this params
       }
-      continue;  // try again with this params
+
+      profiler.enter("optimize_graph_spa_levmarq.sp_H:backsub");
+      Eigen::VectorXd delta_eigen = ptrCh->solve(grad.asEigen());
+      delta = delta_eigen;
+      profiler.leave("optimize_graph_spa_levmarq.sp_H:backsub");
     }
 
     // Compute norm of the increment vector:
