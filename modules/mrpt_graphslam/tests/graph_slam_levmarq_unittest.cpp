@@ -158,7 +158,7 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>, public ::testing::T
     auto files_it = inout_graph_files.find(type);
     if (files_it == inout_graph_files.end()) return;  // No tests for this type
 
-    const string prefix = UNITTEST_BASEDIR() + string("/tests/");
+    const string prefix = mrpt::mrpt_data_dir() + string("/tests/");
     for (const auto& tst : files_it->second)
     {
       std::cout << "Testing graph type `" << type << "`, in_file=`" << std::get<0>(tst) << "`"

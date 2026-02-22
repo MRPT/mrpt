@@ -470,7 +470,7 @@ TEST(CImage, LoadAndComparePseudoRnd)
   using namespace mrpt::img;
   using namespace std::string_literals;
 
-  const auto tstimg = mrpt::UNITTEST_BASEDIR() + "/../../tests/test_pseudorandom_img_seed70.png"s;
+  const auto tstimg = mrpt::mrpt_data_dir() + "/tests/test_pseudorandom_img_seed70.png"s;
 
   CImage a;
   bool load_ok = a.loadFromFile(tstimg);

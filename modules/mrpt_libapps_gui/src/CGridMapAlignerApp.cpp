@@ -12,7 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <CLI/CLI.hpp>
 #include <mrpt/apps_gui/CGridMapAlignerApp.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/io/CCompressedInputStream.h>
@@ -37,6 +36,8 @@
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CSetOfLines.h>
 #include <mrpt/viz/Scene.h>
+
+#include <CLI/CLI.hpp>
 
 using namespace mrpt::apps;
 
@@ -77,8 +78,10 @@ void CGridMapAlignerApp::initialize(int argc, const char** argv)
 
   double arg_noise_std_xy = 0, arg_noise_std_phi = 0, arg_noise_std_laser = 0;
   cmd.add_option("-x,--noise-std-xy", arg_noise_std_xy, "In detect-test mode, std. noise in XY");
-  cmd.add_option("-p,--noise-std-phi", arg_noise_std_phi, "In detect-test mode, std. noise in PHI (deg)");
-  cmd.add_option("-l,--noise-std-laser", arg_noise_std_laser, "In detect-test mode, std. noise range (m)");
+  cmd.add_option(
+      "-p,--noise-std-phi", arg_noise_std_phi, "In detect-test mode, std. noise in PHI (deg)");
+  cmd.add_option(
+      "-l,--noise-std-laser", arg_noise_std_laser, "In detect-test mode, std. noise range (m)");
   unsigned int arg_niters = 1;
   cmd.add_option("-N,--iters", arg_niters, "In detect-test mode, number of trials");
 
@@ -97,10 +100,14 @@ void CGridMapAlignerApp::initialize(int argc, const char** argv)
   cmd.add_flag("-g,--nologo", arg_nologo, "skip the logo at startup");
   cmd.add_flag("-n,--nosave", arg_nosave, "skip saving map images");
   cmd.add_flag("-s,--noicp", arg_skip_icp, "skip ICP optimization stage");
-  cmd.add_flag("--most-likely-only", arg_most_likely, "Keep the most-likely Gaussian mode from the SOG");
+  cmd.add_flag(
+      "--most-likely-only", arg_most_likely, "Keep the most-likely Gaussian mode from the SOG");
 
   // Parse arguments:
-  try { cmd.parse(argc, argv); }
+  try
+  {
+    cmd.parse(argc, argv);
+  }
   catch (const CLI::ParseError& e)
   {
     int ret = cmd.exit(e);
@@ -694,7 +701,11 @@ void CGridMapAlignerApp::run()
           {
             double minVal = dErrs[0];
             for (size_t k = 1; k < dErrs.size(); k++)
-              if (dErrs[k] < minVal) { minVal = dErrs[k]; best_match = k; }
+              if (dErrs[k] < minVal)
+              {
+                minVal = dErrs[k];
+                best_match = k;
+              }
           }
           double MIN_DESCR_DIST = mrpt::math::minimum(D);
           if (dErrs[best_match] < 0.20)

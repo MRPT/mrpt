@@ -156,7 +156,7 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
     }
 
     const std::string texture_file =
-        UNITTEST_BASEDIR() + "/../../share/mrpt/datasets/sample-texture-terrain.jpg"s;
+        mrpt::mrpt_data_dir() + "/datasets/sample-texture-terrain.jpg"s;
 
     mrpt::img::CImage im;
 

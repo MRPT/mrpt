@@ -49,8 +49,7 @@ class CRawlogProcessor
   double m_timToParse;  // Public variable, at end will hold ellapsed time.
 
   // Ctor
-  CRawlogProcessor(
-      mrpt::io::CFileGZInputStream& _in_rawlog, CLI::App& _cmdline, bool _verbose) :
+  CRawlogProcessor(mrpt::io::CFileGZInputStream& _in_rawlog, CLI::App& _cmdline, bool _verbose) :
       m_in_rawlog(_in_rawlog),
       m_cmdline(_cmdline),
       verbose(_verbose),

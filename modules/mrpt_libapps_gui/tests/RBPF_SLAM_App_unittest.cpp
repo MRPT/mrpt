@@ -32,11 +32,10 @@ void generic_rbpf_slam_test(
 {
   using namespace std::string_literals;
 
-  const auto ini_fil =
-      mrpt::UNITTEST_BASEDIR() + "/share/mrpt/config_files/rbpf-slam/"s + ini_filename;
+  const auto ini_fil = mrpt::mrpt_data_dir() + "/config_files/rbpf-slam/"s + ini_filename;
   EXPECT_TRUE(mrpt::system::fileExists(ini_fil));
 
-  const auto rawlog_fil = mrpt::UNITTEST_BASEDIR() + "/share/mrpt/datasets/"s + rawlog_filename;
+  const auto rawlog_fil = mrpt::mrpt_data_dir() + "/datasets/"s + rawlog_filename;
   EXPECT_TRUE(mrpt::system::fileExists(rawlog_fil));
 
   try
