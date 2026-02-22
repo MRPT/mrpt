@@ -23,12 +23,9 @@
 
 #include <iostream>
 
-// Aparently, TCLAP headers can't be included in more than one source file
-//  or duplicated linking symbols appear! -> Use forward declarations instead:
-// #include <mrpt/3rdparty/tclap/CmdLine.h>
-namespace TCLAP
+namespace CLI
 {
-class CmdLine;
+class App;
 }
 
 namespace mrpt::apps
@@ -41,7 +38,7 @@ class CRawlogProcessor
 {
  protected:
   mrpt::io::CFileGZInputStream& m_in_rawlog;
-  TCLAP::CmdLine& m_cmdline;
+  CLI::App& m_cmdline;
   bool verbose;
   mrpt::system::TTimeStamp m_last_console_update;
   mrpt::system::CTicTac m_timParse;
@@ -53,7 +50,7 @@ class CRawlogProcessor
 
   // Ctor
   CRawlogProcessor(
-      mrpt::io::CFileGZInputStream& _in_rawlog, TCLAP::CmdLine& _cmdline, bool _verbose) :
+      mrpt::io::CFileGZInputStream& _in_rawlog, CLI::App& _cmdline, bool _verbose) :
       m_in_rawlog(_in_rawlog),
       m_cmdline(_cmdline),
       verbose(_verbose),
@@ -161,7 +158,7 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 {
  public:
   CRawlogProcessorOnEachObservation(
-      mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, bool enable_verbose) :
+      mrpt::io::CFileGZInputStream& in_rawlog, CLI::App& cmdline, bool enable_verbose) :
       CRawlogProcessor(in_rawlog, cmdline, enable_verbose)
   {
   }
@@ -234,7 +231,7 @@ class CRawlogProcessorFilterObservations : public CRawlogProcessorOnEachObservat
 
   CRawlogProcessorFilterObservations(
       mrpt::io::CFileGZInputStream& in_rawlog,
-      TCLAP::CmdLine& cmdline,
+      CLI::App& cmdline,
       bool enable_verbose,
       mrpt::io::CFileGZOutputStream& out_rawlog) :
       CRawlogProcessorOnEachObservation(in_rawlog, cmdline, enable_verbose),

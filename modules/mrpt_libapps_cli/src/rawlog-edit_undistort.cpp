@@ -68,10 +68,7 @@ DECLARE_OP_FUNCTION(op_undistort)
         obsIm->image.undistort(tmp, obsIm->cameraParams);
         obsIm->image = std::move(tmp);
       }
-      else if (auto obs3D = std::dynamic_pointer_cast<CObservation3DRangeScan>(obs); obs3D)
-      {
-        obs3D->undistort();
-      }
+      // CObservation3DRangeScan::undistort() was removed in v3.0
 
       obs->unload();
       return true;

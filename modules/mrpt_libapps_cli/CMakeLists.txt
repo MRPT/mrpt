@@ -44,15 +44,15 @@ set(LIB_SOURCES
 )
 
 set(LIB_PUBLIC_HEADERS
-  include/mrpt/apps-cli/BaseAppDataSource.h
-  include/mrpt/apps-cli/BaseAppInitializableCLI.h
-  include/mrpt/apps-cli/BaseAppInitializableConfig.h
-  include/mrpt/apps-cli/CRawlogProcessor.h
-  include/mrpt/apps-cli/DataSourceRawlog.h
-  include/mrpt/apps-cli/MonteCarloLocalization_App.h
-  include/mrpt/apps-cli/RawlogEditApp.h
-  include/mrpt/apps-cli/RawlogGrabberApp.h
-  include/mrpt/apps-cli/registerAllClasses.h
+  include/mrpt/apps_cli/BaseAppDataSource.h
+  include/mrpt/apps_cli/BaseAppInitializableCLI.h
+  include/mrpt/apps_cli/BaseAppInitializableConfig.h
+  include/mrpt/apps_cli/CRawlogProcessor.h
+  include/mrpt/apps_cli/DataSourceRawlog.h
+  include/mrpt/apps_cli/MonteCarloLocalization_App.h
+  include/mrpt/apps_cli/RawlogEditApp.h
+  include/mrpt/apps_cli/RawlogGrabberApp.h
+  include/mrpt/apps_cli/registerAllClasses.h
 )
 
 mrpt_add_library(

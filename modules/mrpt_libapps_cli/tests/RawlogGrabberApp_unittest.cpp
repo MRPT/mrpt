@@ -13,7 +13,7 @@
 */
 
 #include <gtest/gtest.h>
-#include <mrpt/apps-cli/RawlogGrabberApp.h>
+#include <mrpt/apps_cli/RawlogGrabberApp.h>
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/hwdrivers/config.h>
 #include <mrpt/img/config.h>

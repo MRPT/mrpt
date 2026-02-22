@@ -13,7 +13,7 @@
 */
 
 #include <gtest/gtest.h>
-#include <mrpt/apps/RBPF_SLAM_App.h>
+#include <mrpt/apps_gui/RBPF_SLAM_App.h>
 #include <mrpt/maps/CBeaconMap.h>
 #include <mrpt/poses/Lie/SE.h>
 #include <mrpt/system/filesystem.h>

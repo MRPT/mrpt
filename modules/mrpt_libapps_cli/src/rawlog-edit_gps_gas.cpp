@@ -184,8 +184,9 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
           const TGPSGASDataPoint& d = itP->second;
 
           // Decode gas concentration [0,1] to color RGBA
-          float r, g, b;
-          mrpt::img::jet2rgb((d.color - minGasValue) / (maxGasValue - minGasValue), r, g, b);
+          const auto col =
+              mrpt::img::jet2rgb((d.color - minGasValue) / (maxGasValue - minGasValue));
+          float r = col.R, g = col.G, b = col.B;
 
           f.printf(
               "        <Placemark>\n"

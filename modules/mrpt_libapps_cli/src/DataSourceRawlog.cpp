@@ -12,7 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/apps-cli/DataSourceRawlog.h>
+#include <mrpt/apps_cli/DataSourceRawlog.h>
 #include <mrpt/obs/CRawlog.h>
 
 using namespace mrpt::apps;

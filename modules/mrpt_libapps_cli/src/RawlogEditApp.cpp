@@ -29,7 +29,7 @@
 // ===========================================================================
 
 #include <CLI/CLI.hpp>
-#include <mrpt/apps-cli/RawlogEditApp.h>
+#include <mrpt/apps_cli/RawlogEditApp.h>
 #include <mrpt/system/os.h>
 
 #include <memory>
@@ -184,15 +184,15 @@ void RawlogEditApp::run(int argc, const char** argv)
   std::vector<OpEntry> ops;
   map<string, TOperationFunctor> ops_functors;
 
-  auto addSwitchOp = [&](const std::string& name, const std::string& desc,
-                         TOperationFunctor func) {
+  auto addSwitchOp = [&](const std::string& name, TOperationFunctor func,
+                         const std::string& desc) {
     auto* opt = cmd.add_flag("--" + name, desc);
     ops.push_back({name, func, opt});
     ops_functors[name] = func;
   };
 
-  auto addValueOp = [&](const std::string& name, std::string& storage, const std::string& desc,
-                        TOperationFunctor func) {
+  auto addValueOp = [&](const std::string& name, std::string& storage, TOperationFunctor func,
+                        const std::string& desc) {
     auto* opt = cmd.add_option("--" + name, storage, desc);
     ops.push_back({name, func, opt});
     ops_functors[name] = func;
@@ -508,7 +508,7 @@ TOutputRawlogCreator::TOutputRawlogCreator()
 bool isFlagSet(CLI::App& app, const std::string& arg_name)
 {
   auto* opt = app.get_option_no_throw("--" + arg_name);
-  return opt && opt->count() > 0;
+  return opt != nullptr && opt->count() > 0;
 }
 
 template <typename T>

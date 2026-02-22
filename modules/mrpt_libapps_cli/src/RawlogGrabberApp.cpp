@@ -13,7 +13,7 @@
 */
 
 #include <CLI/CLI.hpp>
-#include <mrpt/apps-cli/RawlogGrabberApp.h>
+#include <mrpt/apps_cli/RawlogGrabberApp.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/core/round.h>

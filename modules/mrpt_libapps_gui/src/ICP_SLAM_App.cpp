@@ -12,7 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/apps/ICP_SLAM_App.h>
+#include <mrpt/apps_gui/ICP_SLAM_App.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
@@ -306,7 +306,7 @@ void ICP_SLAM_App_Base::run()
           mrpt::viz::CGridPlaneXY::Create(-200, 200, -200, 200, 0, 5);
       groundPlane->setColor(0.4f, 0.4f, 0.4f);
       view->insert(groundPlane);
-      view_map->insert(CRenderizable::Ptr(groundPlane));  // A copy
+      view_map->insert(CVisualObject::Ptr(groundPlane));  // A copy
 
       // The camera pointing to the current robot pose:
       if (CAMERA_3DSCENE_FOLLOWS_ROBOT)
@@ -328,12 +328,12 @@ void ICP_SLAM_App_Base::run()
 
       // Draw the robot path:
       {
-        auto obj = opengl::stock_objects::RobotPioneer();
+        auto obj = viz::stock_objects::RobotPioneer();
         obj->setPose(robotPose);
         view->insert(obj);
       }
       {
-        auto obj = opengl::stock_objects::RobotPioneer();
+        auto obj = viz::stock_objects::RobotPioneer();
         obj->setPose(robotPose);
         view_map->insert(obj);
       }
@@ -345,7 +345,7 @@ void ICP_SLAM_App_Base::run()
         {
           // Create opengl object and load scan data from the scan
           // observation:
-          auto obj = opengl::CPlanarLaserScan::Create();
+          auto obj = viz::CPlanarLaserScan::Create();
           obj->setScan(*lst_current_laser_scan);
           obj->setPose(robotPose);
           obj->setSurfaceColor(1.0f, 0.0f, 0.0f, 0.5f);
@@ -364,7 +364,7 @@ void ICP_SLAM_App_Base::run()
       // Show 3D?
       if (win3D)
       {
-        opengl::Scene::Ptr& ptrScene = win3D->get3DSceneAndLock();
+        viz::Scene::Ptr& ptrScene = win3D->get3DSceneAndLock();
         ptrScene = scene;
 
         win3D->unlockAccess3DScene();

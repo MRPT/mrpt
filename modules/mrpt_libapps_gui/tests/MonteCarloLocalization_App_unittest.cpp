@@ -13,7 +13,7 @@
 */
 
 #include <gtest/gtest.h>
-#include <mrpt/apps/MonteCarloLocalization_App.h>
+#include <mrpt/apps_gui/MonteCarloLocalization_App.h>
 #include <mrpt/poses/Lie/SE.h>
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>

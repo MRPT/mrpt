@@ -13,7 +13,7 @@
 */
 #pragma once
 
-#include <mrpt/apps-cli/CRawlogProcessor.h>
+#include <mrpt/apps_cli/CRawlogProcessor.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CCompressedOutputStream.h>

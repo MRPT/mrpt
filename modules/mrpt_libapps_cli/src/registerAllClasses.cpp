@@ -12,7 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/apps-cli/registerAllClasses.h>
+#include <mrpt/apps_cli/registerAllClasses.h>
 #include <mrpt/core/initializer.h>
 // Deps:
 #include <mrpt/hwdrivers/registerAllClasses.h>
