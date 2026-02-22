@@ -25,7 +25,7 @@ TEST(Vision, checkerBoardStereoCalibration)
   mrpt::vision::TStereoCalibResults out;
 
   // Test: calib with real data:
-  const auto dir = mrpt::UNITTEST_BASEDIR() + "/share/mrpt/datasets/stereo-calib/"s;
+  const auto dir = mrpt::mrpt_data_dir() + "/datasets/stereo-calib/"s;
 
   const unsigned int NUM_IMGS = 4;
   images.resize(NUM_IMGS);

@@ -15,4 +15,5 @@
 namespace mrpt
 {
 std::string UNITTEST_BASEDIR();
+std::string mrpt_data_dir();
 }

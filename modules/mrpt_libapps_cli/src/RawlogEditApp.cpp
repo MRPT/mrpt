@@ -28,10 +28,10 @@
 //  Started: JLBC @ Jul-2010
 // ===========================================================================
 
-#include <CLI/CLI.hpp>
 #include <mrpt/apps_cli/RawlogEditApp.h>
 #include <mrpt/system/os.h>
 
+#include <CLI/CLI.hpp>
 #include <memory>
 
 #include "rawlog-edit-declarations.h"
@@ -120,10 +120,9 @@ std::string val_op_stereo_rectify;
 void RawlogEditApp::run(int argc, const char** argv)
 {
   cmd.set_version_flag(
-      "--version",
-      mrpt::format(
-          "%s - Sources timestamp: %s\n", MRPT_getVersion().c_str(),
-          MRPT_getCompilationDate().c_str()));
+      "--version", mrpt::format(
+                       "%s - Sources timestamp: %s\n", MRPT_getVersion().c_str(),
+                       MRPT_getCompilationDate().c_str()));
 
   // Global options:
   cmd.add_option("-i,--input", val_input_file, "Input dataset (required) (*.rawlog)")->required();
@@ -184,15 +183,16 @@ void RawlogEditApp::run(int argc, const char** argv)
   std::vector<OpEntry> ops;
   map<string, TOperationFunctor> ops_functors;
 
-  auto addSwitchOp = [&](const std::string& name, TOperationFunctor func,
-                         const std::string& desc) {
+  auto addSwitchOp = [&](const std::string& name, TOperationFunctor func, const std::string& desc)
+  {
     auto* opt = cmd.add_flag("--" + name, desc);
     ops.push_back({name, func, opt});
     ops_functors[name] = func;
   };
 
   auto addValueOp = [&](const std::string& name, std::string& storage, TOperationFunctor func,
-                        const std::string& desc) {
+                        const std::string& desc)
+  {
     auto* opt = cmd.add_option("--" + name, storage, desc);
     ops.push_back({name, func, opt});
     ops_functors[name] = func;

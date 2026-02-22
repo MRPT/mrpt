@@ -26,7 +26,7 @@ TEST(CObservationRotatingScan, fromVelodyne)
   // TODO: Update to use mrpt_data package?
   // const auto fil = mrpt::system::getShareMRPTDir() + "/datasets/test_velodyne_VLP16.rawlog"s;
   const auto fil =
-      mrpt::UNITTEST_BASEDIR() + "/../../share/mrpt/datasets/test_velodyne_VLP16.rawlog"s;
+      mrpt::mrpt_data_dir() + "/datasets/test_velodyne_VLP16.rawlog"s;
 
   ASSERT_FILE_EXISTS_(fil);
 
@@ -54,7 +54,7 @@ TEST(CObservationRotatingScan, from2DScan)
   // TODO: Update to use mrpt_data package?
   // const auto fil = mrpt::system::getShareMRPTDir() + "/datasets/localization_demo.rawlog"s;
   const auto fil =
-      mrpt::UNITTEST_BASEDIR() + "/../../share/mrpt/datasets/localization_demo.rawlog"s;
+      mrpt::mrpt_data_dir() + "/datasets/localization_demo.rawlog"s;
   ASSERT_FILE_EXISTS_(fil);
 
   mrpt::obs::CRawlog rawlog;

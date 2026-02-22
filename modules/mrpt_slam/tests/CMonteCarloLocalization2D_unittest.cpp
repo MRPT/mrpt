@@ -44,7 +44,7 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
   // ------------------------------------------------------
   // The code below is a simplification of the program "pf-localization"
   // ------------------------------------------------------
-  const string ini_fil = UNITTEST_BASEDIR() + string("/tests/montecarlo_test1.ini");
+  const string ini_fil = mrpt::mrpt_data_dir() + string("/tests/montecarlo_test1.ini");
   if (!mrpt::system::fileExists(ini_fil))
   {
     cerr << "WARNING: Skipping test due to missing file: " << ini_fil << "\n";
@@ -67,12 +67,12 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
       iniSectionName, "rawlog_file", "",
       /*Fail if not found*/ true);
 
-  RAWLOG_FILE = UNITTEST_BASEDIR() + string("/") + RAWLOG_FILE;
+  RAWLOG_FILE = mrpt::mrpt_data_dir() + string("/") + RAWLOG_FILE;
 
   // Non-mandatory entries:
   string MAP_FILE = iniFile.read_string(iniSectionName, "map_file", "");
 
-  MAP_FILE = UNITTEST_BASEDIR() + string("/") + MAP_FILE;
+  MAP_FILE = mrpt::mrpt_data_dir() + string("/") + MAP_FILE;
 
   size_t rawlog_offset = iniFile.read_int(iniSectionName, "rawlog_offset", 0);
   int NUM_REPS = iniFile.read_int(iniSectionName, "experimentRepetitions", 1);

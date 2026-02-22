@@ -665,7 +665,25 @@ function(mrpt_add_test)
       # Use relative paths for embedded files:
       target_compile_definitions(${MRPT_ADD_TEST_TARGET} PRIVATE CMAKE_UNITTEST_BASEDIR=".")
     endif()
-  
+
+    # Path to mrpt_data shared test data (config_files/, datasets/, tests/):
+    if (NOT DEFINED MRPT_DATA_SOURCE_DIR)
+      # Try to find it as a sibling module (colcon layout):
+      if (EXISTS "${CMAKE_SOURCE_DIR}/../mrpt_data")
+        get_filename_component(MRPT_DATA_SOURCE_DIR "${CMAKE_SOURCE_DIR}/../mrpt_data" ABSOLUTE)
+        set(MRPT_DATA_SOURCE_DIR "${MRPT_DATA_SOURCE_DIR}" CACHE PATH "Path to mrpt_data module")
+      else()
+        # Fallback: try installed package:
+        find_package(mrpt_data QUIET)
+        if (mrpt_data_FOUND)
+          set(MRPT_DATA_SOURCE_DIR "${mrpt_data_DATA_DIR}" CACHE PATH "Path to mrpt_data (installed)")
+        endif()
+      endif()
+    endif()
+    if (MRPT_DATA_SOURCE_DIR)
+      target_compile_definitions(${MRPT_ADD_TEST_TARGET} PRIVATE MRPT_DATA_DIR="${MRPT_DATA_SOURCE_DIR}")
+    endif()
+
     # Run it:
     #add_custom_target(run_${MRPT_ADD_TEST_TARGET} COMMAND $<TARGET_FILE:${MRPT_ADD_TEST_TARGET}>)
     add_test(${MRPT_ADD_TEST_TARGET}_build "${CMAKE_COMMAND}" --build ${CMAKE_CURRENT_BINARY_DIR} --target ${MRPT_ADD_TEST_TARGET})

@@ -29,8 +29,8 @@ TEST(CIncrementalMapPartitioner, test_dataset)
   imp.options.simil_method = mrpt::slam::smMETRIC_MAP_MATCHING;
 
   const std::string map_file =
-      mrpt::UNITTEST_BASEDIR() +
-      std::string("/share/mrpt/datasets/malaga-cs-fac-building.simplemap.gz");
+      mrpt::mrpt_data_dir() +
+      std::string("/datasets/malaga-cs-fac-building.simplemap.gz");
   ASSERT_FILE_EXISTS_(map_file);
 
   mrpt::maps::CSimpleMap in_map, out_map;

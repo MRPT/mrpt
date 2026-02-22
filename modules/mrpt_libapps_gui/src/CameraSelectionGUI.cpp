@@ -75,8 +75,8 @@ CCameraSensor::Ptr mrpt::apps::prepareVideoSourceFromUserSelection()
       std::future_status::timeout)
   {
     std::cerr << "[prepareVideoSourceFromUserSelection] Timeout waiting window "
-            "creation."
-         << "\n";
+                 "creation."
+              << "\n";
     return CCameraSensor::Ptr();
   }
 

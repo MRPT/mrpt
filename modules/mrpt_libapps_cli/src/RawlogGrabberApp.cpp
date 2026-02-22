@@ -12,7 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <CLI/CLI.hpp>
 #include <mrpt/apps_cli/RawlogGrabberApp.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/core/lock_helper.h>
@@ -33,6 +32,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/thread_name.h>
 
+#include <CLI/CLI.hpp>
 #include <thread>
 
 using namespace mrpt::apps;
