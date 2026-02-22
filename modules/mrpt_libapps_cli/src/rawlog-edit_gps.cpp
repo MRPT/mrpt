@@ -12,6 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/topography.h>

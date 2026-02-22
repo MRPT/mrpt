@@ -12,21 +12,30 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/apps/CameraSelectionGUI.h>
+#include <mrpt/apps_gui/CameraSelectionGUI.h>
+#include <mrpt/gui/config.h>
+#if MRPT_HAS_WXWIDGETS
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>
+#endif
 #include <mrpt/hwdrivers/CCameraSensor.h>
+
+using namespace mrpt::hwdrivers;
+#if MRPT_HAS_WXWIDGETS
+using namespace mrpt::gui;
+using namespace std::chrono_literals;
+#endif
 
 /* ------------------------------------------------------------------------
             prepareVideoSourceFromUserSelection
    ------------------------------------------------------------------------ */
-CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
+CCameraSensor::Ptr mrpt::apps::prepareVideoSourceFromUserSelection()
 {
 #if MRPT_HAS_WXWIDGETS
   // Create the main wxThread, if it doesn't exist yet:
   if (!mrpt::gui::WxSubsystem::createOneInstanceMainThread())
   {
-    std::cerr << "[mrpt::hwdrivers::prepareVideoSourceFromUserSelection] "
+    std::cerr << "[mrpt::apps::prepareVideoSourceFromUserSelection] "
                  "Error initiating Wx subsystem."
               << "\n";
     return CCameraSensor::Ptr();  // Error!
@@ -65,7 +74,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
   if (semDlg.get_future().wait_for(std::chrono::milliseconds(maxTimeout)) ==
       std::future_status::timeout)
   {
-    cerr << "[prepareVideoSourceFromUserSelection] Timeout waiting window "
+    std::cerr << "[prepareVideoSourceFromUserSelection] Timeout waiting window "
             "creation."
          << "\n";
     return CCameraSensor::Ptr();
@@ -94,13 +103,13 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 /* ------------------------------------------------------------------------
             prepareVideoSourceFromPanel
    ------------------------------------------------------------------------ */
-CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromPanel(void* _panel)
+CCameraSensor::Ptr mrpt::apps::prepareVideoSourceFromPanel(void* _panel)
 {
 #if MRPT_HAS_WXWIDGETS
 
   try
   {
-    CConfigFileMemory cfg;
+    mrpt::config::CConfigFileMemory cfg;
     writeConfigFromVideoSourcePanel(_panel, "CONFIG", &cfg);
 
     // Try to open the camera:
@@ -114,7 +123,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromPanel(void* _panel)
   }
   catch (const std::exception& e)
   {
-    cerr << endl << e.what() << "\n";
+    std::cerr << std::endl << e.what() << "\n";
     wxMessageBox(_("Couldn't open video source"), _("Error"));
     return CCameraSensor::Ptr();
   }
@@ -126,7 +135,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromPanel(void* _panel)
 /* ------------------------------------------------------------------------
             writeConfigFromVideoSourcePanel
    ------------------------------------------------------------------------ */
-void mrpt::hwdrivers::writeConfigFromVideoSourcePanel(
+void mrpt::apps::writeConfigFromVideoSourcePanel(
     void* _panel, const std::string& sect, mrpt::config::CConfigFileBase* cfg)
 {
   MRPT_START
@@ -145,7 +154,7 @@ void mrpt::hwdrivers::writeConfigFromVideoSourcePanel(
 /* ------------------------------------------------------------------------
             readConfigIntoVideoSourcePanel
    ------------------------------------------------------------------------ */
-void mrpt::hwdrivers::readConfigIntoVideoSourcePanel(
+void mrpt::apps::readConfigIntoVideoSourcePanel(
     void* _panel, const std::string& sect, const mrpt::config::CConfigFileBase* cfg)
 {
   MRPT_START

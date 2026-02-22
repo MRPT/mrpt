@@ -13,7 +13,7 @@
 */
 
 #include <gtest/gtest.h>
-#include <mrpt/apps/ICP_SLAM_App.h>
+#include <mrpt/apps_gui/ICP_SLAM_App.h>
 #include <mrpt/poses/Lie/SE.h>
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>

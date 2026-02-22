@@ -12,7 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/apps/MonteCarloLocalization_App.h>
+#include <mrpt/apps_gui/MonteCarloLocalization_App.h>
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
@@ -632,13 +632,13 @@ void MonteCarloLocalization_Base::do_pf_localization()
 
             // The particles' cov:
             {
-              CRenderizable::Ptr ellip = scene.getByName("parts_cov");
+              CVisualObject::Ptr ellip = scene.getByName("parts_cov");
               if (!ellip)
               {
                 if (pf2gauss_t<MONTECARLO_TYPE>::PF_IS_3D)
                 {
                   auto el = CEllipsoid3D::Create();
-                  ellip = mrpt::ptr_cast<CRenderizable>::from(el);
+                  ellip = mrpt::ptr_cast<CVisualObject>::from(el);
                   el->setLineWidth(2);
                   el->setQuantiles(3);
                   el->enableDrawSolid3D(false);
@@ -646,7 +646,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
                 else
                 {
                   auto el = CEllipsoid2D::Create();
-                  ellip = mrpt::ptr_cast<CRenderizable>::from(el);
+                  ellip = mrpt::ptr_cast<CVisualObject>::from(el);
                   el->setLineWidth(2);
                   el->setQuantiles(3);
                   el->enableDrawSolid3D(false);
@@ -878,7 +878,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
           // The Ground Truth (GT):
           if (GT.rows() > 0)
           {
-            CRenderizable::Ptr GTpt = scene.getByName("GT");
+            CVisualObject::Ptr GTpt = scene.getByName("GT");
             if (!GTpt)
             {
               GTpt = std::make_shared<CDisk>();
@@ -895,7 +895,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 
           // The particles:
           {
-            CRenderizable::Ptr parts = scene.getByName("particles");
+            CVisualObject::Ptr parts = scene.getByName("particles");
             if (parts) scene.removeObject(parts);
 
             auto p = pdf.template getAs3DObject<CSetOfObjects::Ptr>();
@@ -905,7 +905,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 
           // The laser scan:
           {
-            CRenderizable::Ptr scanPts = scene.getByName("scan");
+            CVisualObject::Ptr scanPts = scene.getByName("scan");
             if (!scanPts)
             {
               scanPts = std::make_shared<CPointCloud>();

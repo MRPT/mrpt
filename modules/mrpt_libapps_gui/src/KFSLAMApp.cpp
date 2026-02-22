@@ -12,7 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/apps/KFSLAMApp.h>
+#include <mrpt/apps_gui/KFSLAMApp.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/io/CCompressedInputStream.h>
@@ -567,15 +567,15 @@ void KFSLAMApp::Run_KF_SLAM()
       {
         Scene::Ptr scene3D = std::make_shared<Scene>();
         {
-          opengl::CGridPlaneXY::Ptr grid =
-              std::make_shared<opengl::CGridPlaneXY>(-1000, 1000, -1000, 1000, 0, 5);
+          viz::CGridPlaneXY::Ptr grid =
+              std::make_shared<viz::CGridPlaneXY>(-1000, 1000, -1000, 1000, 0, 5);
           grid->setColor(0.4f, 0.4f, 0.4f);
           scene3D->insert(grid);
         }
 
         // Robot path:
         {
-          opengl::CSetOfLines::Ptr linesPath = std::make_shared<opengl::CSetOfLines>();
+          viz::CSetOfLines::Ptr linesPath = std::make_shared<viz::CSetOfLines>();
           linesPath->setColor(1, 0, 0);
 
           TPose3D init_pose;
@@ -616,7 +616,7 @@ void KFSLAMApp::Run_KF_SLAM()
         // Do we have a ground truth?
         if (GT_PATH.cols() == 6 || GT_PATH.cols() == 3)
         {
-          opengl::CSetOfLines::Ptr GT_path = std::make_shared<opengl::CSetOfLines>();
+          viz::CSetOfLines::Ptr GT_path = std::make_shared<viz::CSetOfLines>();
           GT_path->setColor(0, 0, 0);
           size_t N = std::min((int)GT_PATH.rows(), (int)meanPath.size());
 
@@ -678,7 +678,7 @@ void KFSLAMApp::Run_KF_SLAM()
 
         // The current state of KF-SLAM:
         {
-          opengl::CSetOfObjects::Ptr objs = std::make_shared<opengl::CSetOfObjects>();
+          viz::CSetOfObjects::Ptr objs = std::make_shared<viz::CSetOfObjects>();
           mapping.getAs3DObject(objs);
           scene3D->insert(objs);
         }

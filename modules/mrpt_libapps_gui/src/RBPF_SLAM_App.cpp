@@ -12,7 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/apps/RBPF_SLAM_App.h>
+#include <mrpt/apps_gui/RBPF_SLAM_App.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
@@ -460,7 +460,7 @@ void RBPF_SLAM_App_Base::run()
 
             if (COV3(2, 2) == 0)
             {
-              auto objEllip = opengl::CEllipsoid2D::Create();
+              auto objEllip = viz::CEllipsoid2D::Create();
               objEllip->setLocation(meanPose.x(), meanPose.y(), meanPose.z() + 0.001);
               objEllip->setCovMatrix(COV3.blockCopy<2, 2>());
               objEllip->setColor(0, 0, 1);
@@ -469,7 +469,7 @@ void RBPF_SLAM_App_Base::run()
             }
             else
             {
-              auto objEllip = opengl::CEllipsoid3D::Create();
+              auto objEllip = viz::CEllipsoid3D::Create();
               objEllip->setLocation(meanPose.x(), meanPose.y(), meanPose.z() + 0.001);
               objEllip->setCovMatrix(COV3);
               objEllip->setColor(0, 0, 1);

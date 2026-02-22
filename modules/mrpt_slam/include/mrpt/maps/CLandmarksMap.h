@@ -34,6 +34,8 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
   DEFINE_SERIALIZABLE(CLandmarksMap, mrpt::maps)
 
  public:
+  using landmark_type = CLandmark;
+
   CLandmarksMap() = default;
 
   /** Inner container with helper accessors. */

@@ -13,7 +13,7 @@
 */
 #pragma once
 
-#include <mrpt/apps-cli/BaseAppDataSource.h>
+#include <mrpt/apps_cli/BaseAppDataSource.h>
 #include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/COutputLogger.h>

@@ -13,9 +13,9 @@
 */
 #pragma once
 
-#include <mrpt/apps/BaseAppDataSource.h>
-#include <mrpt/apps/BaseAppInitializableCLI.h>
-#include <mrpt/apps/DataSourceRawlog.h>
+#include <mrpt/apps_cli/BaseAppDataSource.h>
+#include <mrpt/apps_cli/BaseAppInitializableCLI.h>
+#include <mrpt/apps_cli/DataSourceRawlog.h>
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/poses/CPose2DInterpolator.h>
 #include <mrpt/poses/CPose3DInterpolator.h>

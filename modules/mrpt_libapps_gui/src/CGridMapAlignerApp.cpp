@@ -12,8 +12,8 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/3rdparty/tclap/CmdLine.h>
-#include <mrpt/apps/CGridMapAlignerApp.h>
+#include <CLI/CLI.hpp>
+#include <mrpt/apps_gui/CGridMapAlignerApp.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CCompressedOutputStream.h>
@@ -47,96 +47,93 @@ void CGridMapAlignerApp::initialize(int argc, const char** argv)
   MRPT_START
 
   // Declare the supported options.
-  TCLAP::CmdLine cmd("grid-matching", ' ', mrpt::system::MRPT_getVersion().c_str());
+  CLI::App cmd{"grid-matching"};
+  cmd.set_version_flag("--version", mrpt::system::MRPT_getVersion());
 
-  TCLAP::SwitchArg arg_match("m", "match", "Operation: match two maps", cmd, false);
-  TCLAP::SwitchArg arg_detect(
-      "d", "detect-test", "Operation: Quality of match with one map", cmd, false);
+  bool arg_match = false, arg_detect = false;
+  cmd.add_flag("-m,--match", arg_match, "Operation: match two maps");
+  cmd.add_flag("-d,--detect-test", arg_detect, "Operation: Quality of match with one map");
 
-  TCLAP::ValueArg<std::string> arg_filgrid1(
-      "1", "map1", "Map #1 to align (*.simplemap)", true, "", "map1.simplemap", cmd);
-  TCLAP::ValueArg<std::string> arg_filgrid2(
-      "2", "map2", "Map #2 to align (*.simplemap)", false, "", "map2.simplemap", cmd);
+  std::string arg_filgrid1, arg_filgrid2;
+  cmd.add_option("-1,--map1", arg_filgrid1, "Map #1 to align (*.simplemap)")->required();
+  auto* opt_map2 = cmd.add_option("-2,--map2", arg_filgrid2, "Map #2 to align (*.simplemap)");
 
-  TCLAP::ValueArg<std::string> arg_out(
-      "o", "out", "Output file for the results", false, "gridmatching_out.txt", "result_outfile",
-      cmd);
-  TCLAP::ValueArg<std::string> arg_config(
-      "c", "config", "Optional config. file with more params", false, "", "config.ini", cmd);
+  std::string arg_out = "gridmatching_out.txt";
+  cmd.add_option("-o,--out", arg_out, "Output file for the results");
+  std::string arg_config;
+  cmd.add_option("-c,--config", arg_config, "Optional config. file with more params");
 
-  TCLAP::ValueArg<std::string> arg_aligner_method(
-      "", "aligner", "The method to use for map aligning", false, "amModifiedRANSAC",
-      "[amCorrelation|amRobustMatch|amModifiedRANSAC]", cmd);
-  TCLAP::ValueArg<std::string> arg_out_dir(
-      "", "out-dir", "The output directory", false, "GRID-MATCHING_RESULTS",
-      "GRID-MATCHING_RESULTS", cmd);
+  std::string arg_aligner_method = "amModifiedRANSAC";
+  cmd.add_option("--aligner", arg_aligner_method, "The method to use for map aligning");
+  std::string arg_out_dir = "GRID-MATCHING_RESULTS";
+  cmd.add_option("--out-dir", arg_out_dir, "The output directory");
 
-  TCLAP::SwitchArg arg_savesog3d(
-      "3", "save-sog-3d", "Save a 3D view of all the SOG modes", cmd, false);
-  TCLAP::SwitchArg arg_savesogall("a", "save-sog-all", "Save all the map overlaps", cmd, false);
-  TCLAP::SwitchArg arg_savecorrdists(
-      "t", "save-corr-dists", "Save corr & non-corr distances", cmd, false);
-  TCLAP::ValueArg<std::string> arg_icpgoodness(
-      "i", "save-icp-goodness", "Append all ICP goodness values here", false, "",
-      "icp_goodness.txt", cmd);
+  bool arg_savesog3d = false, arg_savesogall = false, arg_savecorrdists = false;
+  cmd.add_flag("-3,--save-sog-3d", arg_savesog3d, "Save a 3D view of all the SOG modes");
+  cmd.add_flag("-a,--save-sog-all", arg_savesogall, "Save all the map overlaps");
+  cmd.add_flag("-t,--save-corr-dists", arg_savecorrdists, "Save corr & non-corr distances");
+  std::string arg_icpgoodness;
+  cmd.add_option("-i,--save-icp-goodness", arg_icpgoodness, "Append all ICP goodness values here");
 
-  TCLAP::ValueArg<double> arg_noise_std_xy(
-      "x", "noise-std-xy", "In detect-test mode,std. noise in XY", false, 0, "sigma", cmd);
-  TCLAP::ValueArg<double> arg_noise_std_phi(
-      "p", "noise-std-phi", "In detect-test mode,std. noise in PHI (deg)", false, 0, "sigma", cmd);
-  TCLAP::ValueArg<double> arg_noise_std_laser(
-      "l", "noise-std-laser", "In detect-test mode,std. noise range (m)", false, 0, "sigma", cmd);
-  TCLAP::ValueArg<unsigned int> arg_niters(
-      "N", "iters", "In detect-test mode,number of trials", false, 1, "rep.count", cmd);
+  double arg_noise_std_xy = 0, arg_noise_std_phi = 0, arg_noise_std_laser = 0;
+  cmd.add_option("-x,--noise-std-xy", arg_noise_std_xy, "In detect-test mode, std. noise in XY");
+  cmd.add_option("-p,--noise-std-phi", arg_noise_std_phi, "In detect-test mode, std. noise in PHI (deg)");
+  cmd.add_option("-l,--noise-std-laser", arg_noise_std_laser, "In detect-test mode, std. noise range (m)");
+  unsigned int arg_niters = 1;
+  cmd.add_option("-N,--iters", arg_niters, "In detect-test mode, number of trials");
 
-  TCLAP::ValueArg<double> arg_Ax(
-      "X", "Ax", "In detect-test mode, displacement in X (m)", false, 4, "X", cmd);
-  TCLAP::ValueArg<double> arg_Ay(
-      "Y", "Ay", "In detect-test mode, displacement in Y (m)", false, 2, "Y", cmd);
-  TCLAP::ValueArg<double> arg_Aphi(
-      "P", "Aphi", "In detect-test mode, displacement in PHI (deg)", false, 30, "PHI", cmd);
+  double arg_Ax = 4, arg_Ay = 2, arg_Aphi = 30;
+  cmd.add_option("-X,--Ax", arg_Ax, "In detect-test mode, displacement in X (m)");
+  cmd.add_option("-Y,--Ay", arg_Ay, "In detect-test mode, displacement in Y (m)");
+  cmd.add_option("-P,--Aphi", arg_Aphi, "In detect-test mode, displacement in PHI (deg)");
 
-  TCLAP::SwitchArg arg_noise_pose(
-      "O", "noise-pose", "detect-test mode: enable noise in pose", cmd, false);
-  TCLAP::SwitchArg arg_noise_laser(
-      "L", "noise-laser", "detect-test mode: enable noise in laser", cmd, false);
+  bool arg_noise_pose = false, arg_noise_laser = false;
+  cmd.add_flag("-O,--noise-pose", arg_noise_pose, "detect-test mode: enable noise in pose");
+  cmd.add_flag("-L,--noise-laser", arg_noise_laser, "detect-test mode: enable noise in laser");
 
-  TCLAP::SwitchArg arg_verbose("v", "verbose", "Verbose output", cmd, false);
-  TCLAP::SwitchArg arg_nologo("g", "nologo", "skip the logo at startup", cmd, false);
-  TCLAP::SwitchArg arg_nosave("n", "nosave", "skip saving map images", cmd, false);
-  TCLAP::SwitchArg arg_skip_icp("s", "noicp", "skip ICP optimization stage", cmd, false);
-  TCLAP::SwitchArg arg_most_likely(
-      "", "most-likely-only", "Keep the most-likely Gaussian mode from the SOG", cmd, false);
+  bool arg_verbose = false, arg_nologo = false, arg_nosave = false;
+  bool arg_skip_icp = false, arg_most_likely = false;
+  cmd.add_flag("-v,--verbose", arg_verbose, "Verbose output");
+  cmd.add_flag("-g,--nologo", arg_nologo, "skip the logo at startup");
+  cmd.add_flag("-n,--nosave", arg_nosave, "skip saving map images");
+  cmd.add_flag("-s,--noicp", arg_skip_icp, "skip ICP optimization stage");
+  cmd.add_flag("--most-likely-only", arg_most_likely, "Keep the most-likely Gaussian mode from the SOG");
 
   // Parse arguments:
-  if (!cmd.parse(argc, argv)) THROW_EXCEPTION("CLI arguments parsing tells we should exit.");
+  try { cmd.parse(argc, argv); }
+  catch (const CLI::ParseError& e)
+  {
+    int ret = cmd.exit(e);
+    if (ret == 0) return;  // --help or --version
+    THROW_EXCEPTION("CLI argument parsing error.");
+  }
 
-  fil_grid1 = arg_filgrid1.getValue();
-  fil_grid2 = arg_filgrid2.getValue();
-  OUTPUT_FIL = arg_out.getValue();
-  CONFIG_FIL = arg_config.getValue();
-  SAVE_ICP_GOODNESS_FIL = arg_icpgoodness.getValue();
+  fil_grid1 = arg_filgrid1;
+  fil_grid2 = arg_filgrid2;
+  OUTPUT_FIL = arg_out;
+  CONFIG_FIL = arg_config;
+  SAVE_ICP_GOODNESS_FIL = arg_icpgoodness;
 
   aligner_method =
       mrpt::typemeta::TEnumType<mrpt::slam::CGridMapAligner::TAlignerMethod>::name2value(
-          arg_aligner_method.getValue());
+          arg_aligner_method);
 
-  STD_NOISE_XY = arg_noise_std_xy.getValue();
-  STD_NOISE_PHI = DEG2RAD(arg_noise_std_phi.getValue());
-  STD_NOISE_LASER = arg_noise_std_laser.getValue();
-  N_ITERS = arg_niters.getValue();
+  STD_NOISE_XY = arg_noise_std_xy;
+  STD_NOISE_PHI = DEG2RAD(arg_noise_std_phi);
+  STD_NOISE_LASER = arg_noise_std_laser;
+  N_ITERS = arg_niters;
 
-  GT_Ax = arg_Ax.getValue();
-  GT_Ay = arg_Ay.getValue();
-  GT_Aphi_rad = DEG2RAD(arg_Aphi.getValue());
+  GT_Ax = arg_Ax;
+  GT_Ay = arg_Ay;
+  GT_Aphi_rad = DEG2RAD(arg_Aphi);
 
-  SAVE_SOG_3DSCENE = arg_savesog3d.getValue();
-  SAVE_SOG_ALL_MAPS_OVERLAP_HYPOTHESES = arg_savesogall.getValue();
-  IS_VERBOSE = arg_verbose.getValue();
-  NOSAVE = arg_nosave.getValue();
-  SAVE_CORR_AND_NONCORR_DISTS = arg_savecorrdists.getValue();
+  SAVE_SOG_3DSCENE = arg_savesog3d;
+  SAVE_SOG_ALL_MAPS_OVERLAP_HYPOTHESES = arg_savesogall;
+  IS_VERBOSE = arg_verbose;
+  NOSAVE = arg_nosave;
+  SAVE_CORR_AND_NONCORR_DISTS = arg_savecorrdists;
 
-  if (!arg_nologo.getValue())
+  if (!arg_nologo)
   {
     printf(" grid-matching - Part of the MRPT\n");
     printf(
@@ -144,15 +141,15 @@ void CGridMapAlignerApp::initialize(int argc, const char** argv)
         mrpt::system::MRPT_getCompilationDate().c_str());
   }
 
-  SKIP_ICP_STAGE = arg_skip_icp.getValue();
-  MOST_LIKELY_SOG_MODE_ONLY = arg_most_likely.getValue();
-  NOISE_IN_POSE = arg_noise_pose.getValue();
-  NOISE_IN_LASER = arg_noise_laser.getValue();
+  SKIP_ICP_STAGE = arg_skip_icp;
+  MOST_LIKELY_SOG_MODE_ONLY = arg_most_likely;
+  NOISE_IN_POSE = arg_noise_pose;
+  NOISE_IN_LASER = arg_noise_laser;
 
-  RESULTS_DIR = arg_out_dir.getValue();
+  RESULTS_DIR = arg_out_dir;
 
-  is_match = arg_match.getValue();
-  is_detect_test = arg_detect.getValue();
+  is_match = arg_match;
+  is_detect_test = arg_detect;
 
   if (((!is_match && !is_detect_test) || (is_match && is_detect_test)) &&
       !SAVE_CORR_AND_NONCORR_DISTS)
@@ -161,22 +158,20 @@ void CGridMapAlignerApp::initialize(int argc, const char** argv)
               << "Error: One operation mode 'match' or 'detect-test' or "
                  "'save-corr-dists' must be selected."
               << "\n";
-    TCLAP::StdOutput so;
-    so.usage(cmd);
+    std::cerr << cmd.help() << "\n";
     THROW_EXCEPTION("Wrong CLI parameters.");
   }
 
   if (is_match)
   {
     // maps:
-    if (!arg_filgrid1.isSet() || !arg_filgrid2.isSet())
+    if (opt_map2->count() == 0)
     {
       std::cerr << "\n"
                 << "Error: Two maps must be passed: --map1=xxx and "
                    "--map2=xxx"
                 << "\n";
-      TCLAP::StdOutput so;
-      so.usage(cmd);
+      std::cerr << cmd.help() << "\n";
       THROW_EXCEPTION("Wrong CLI parameters.");
     }
   }
@@ -502,10 +497,10 @@ void CGridMapAlignerApp::run()
           if (SAVE_SOG_3DSCENE)
           {
             Scene scene3D;
-            opengl::CSetOfObjects::Ptr thePDF3D = std::make_shared<opengl::CSetOfObjects>();
+            viz::CSetOfObjects::Ptr thePDF3D = std::make_shared<viz::CSetOfObjects>();
             pdf_SOG->getAs3DObject(thePDF3D);
-            opengl::CGridPlaneXY::Ptr gridXY =
-                std::make_shared<opengl::CGridPlaneXY>(-10, 10, -10, 10, 0, 1);
+            viz::CGridPlaneXY::Ptr gridXY =
+                std::make_shared<viz::CGridPlaneXY>(-10, 10, -10, 10, 0, 1);
             scene3D.insert(gridXY);
             scene3D.insert(thePDF3D);
             scene3D.saveToFile("_out_SoG.3Dscene");
@@ -553,17 +548,17 @@ void CGridMapAlignerApp::run()
 
               // Draw the overlaped the_map2:
               imgCanvas.line(
-                  grid1->x2idx(pp1.x), imgGrid1LY - 1 - grid1->y2idx(pp1.y), grid1->x2idx(pp2.x),
-                  imgGrid1LY - 1 - grid1->y2idx(pp2.y), TColor::black());
+                  {grid1->x2idx(pp1.x), imgGrid1LY - 1 - grid1->y2idx(pp1.y)},
+                  {grid1->x2idx(pp2.x), imgGrid1LY - 1 - grid1->y2idx(pp2.y)}, TColor::black());
               imgCanvas.line(
-                  grid1->x2idx(pp2.x), imgGrid1LY - 1 - grid1->y2idx(pp2.y), grid1->x2idx(pp3.x),
-                  imgGrid1LY - 1 - grid1->y2idx(pp3.y), TColor::black());
+                  {grid1->x2idx(pp2.x), imgGrid1LY - 1 - grid1->y2idx(pp2.y)},
+                  {grid1->x2idx(pp3.x), imgGrid1LY - 1 - grid1->y2idx(pp3.y)}, TColor::black());
               imgCanvas.line(
-                  grid1->x2idx(pp3.x), imgGrid1LY - 1 - grid1->y2idx(pp3.y), grid1->x2idx(pp4.x),
-                  imgGrid1LY - 1 - grid1->y2idx(pp4.y), TColor::black());
+                  {grid1->x2idx(pp3.x), imgGrid1LY - 1 - grid1->y2idx(pp3.y)},
+                  {grid1->x2idx(pp4.x), imgGrid1LY - 1 - grid1->y2idx(pp4.y)}, TColor::black());
               imgCanvas.line(
-                  grid1->x2idx(pp4.x), imgGrid1LY - 1 - grid1->y2idx(pp4.y), grid1->x2idx(pp1.x),
-                  imgGrid1LY - 1 - grid1->y2idx(pp1.y), TColor::black());
+                  {grid1->x2idx(pp4.x), imgGrid1LY - 1 - grid1->y2idx(pp4.y)},
+                  {grid1->x2idx(pp1.x), imgGrid1LY - 1 - grid1->y2idx(pp1.y)}, TColor::black());
 
               bool savedOk = imgCanvas.saveToFile(format(
                   "%s/_OVERLAP_MAPS_SOG_MODE_%04u.png", RESULTS_DIR.c_str(), (unsigned int)nNode));
@@ -696,7 +691,11 @@ void CGridMapAlignerApp::run()
           }
 
           size_t best_match = 0;
-          dErrs.minCoeff(best_match);
+          {
+            double minVal = dErrs[0];
+            for (size_t k = 1; k < dErrs.size(); k++)
+              if (dErrs[k] < minVal) { minVal = dErrs[k]; best_match = k; }
+          }
           double MIN_DESCR_DIST = mrpt::math::minimum(D);
           if (dErrs[best_match] < 0.20)
           {

@@ -13,7 +13,7 @@
 */
 
 #include <gtest/gtest.h>
-#include <mrpt/apps/KFSLAMApp.h>
+#include <mrpt/apps_gui/KFSLAMApp.h>
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
 
