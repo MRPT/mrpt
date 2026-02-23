@@ -32,3 +32,8 @@ unset(_mrpt_data_CONFIG_DIR)
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/mrpt_dataConfig.cmake"
   DESTINATION lib/cmake/${PROJECT_NAME}
 )
+
+
+# Silent cmake warning on unused variable:
+set(dummy_ ${CMAKE_EXPORT_COMPILE_COMMANDS})
+unset(dummy_)
