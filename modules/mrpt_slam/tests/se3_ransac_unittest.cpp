@@ -14,7 +14,7 @@
 
 // ------------------------------------------------------
 // This test file is a subset of a complete example. See:
-//   [MRPT]/samples/ransac-data-association/
+//   [MRPT]/mrpt_examples_cpp/ransac-data-association/
 // ------------------------------------------------------
 
 #include <gtest/gtest.h>

@@ -859,7 +859,7 @@ EXCLUDE_SYMBOLS        = A B YAML Eigen MyNS cv exprtk literals cv_bridge
 # that contain example code fragments that are included (see the \include
 # command).
 
-EXAMPLE_PATH           = ../../samples/
+EXAMPLE_PATH           = ../../mrpt_examples_cpp/
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp and

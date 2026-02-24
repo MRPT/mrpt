@@ -37,7 +37,7 @@ namespace mrpt::maps
  *
  * The octomap library was presented in \cite wurm2010octomap
  *
- * \sa CMetricMap, the example in "MRPT/samples/octomap_simple"
+ * \sa CMetricMap, the example in "MRPT/mrpt_examples_cpp/octomap_simple"
  * \ingroup mrpt_maps_grp
  */
 template <class octree_t, class octree_node_t>

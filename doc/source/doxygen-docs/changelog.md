@@ -2581,8 +2581,8 @@ mrpt::reactivenav::build_PTG_collision_grids() to become more generic for 2D
     - mrpt::hwdrivers::CInterfaceNI845x has been deleted. It didn't offer
 features enough to justify a class.
   - New examples:
-    - [MRPT]/samples/threadsPipe
-    - [MRPT]/samples/NIDAQ_test
+    - [MRPT]/mrpt_examples_cpp/threadsPipe
+    - [MRPT]/mrpt_examples_cpp/NIDAQ_test
     - [MRPT]/openNI2_RGBD_demo (by Mariano Jaimez Tarifa)
     - [MRPT]/openNI2_proximity_demo (by Mariano Jaimez Tarifa)
   - Build system:

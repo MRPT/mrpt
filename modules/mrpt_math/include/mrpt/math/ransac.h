@@ -42,7 +42,7 @@ size_t ransacDatasetSize(const CMatrixDynamic<T>& dataset)
  * any user-defined type. Define ransacDatasetSize() for your custom data types.
  *
  * See \a RANSAC_Template::execute for more info on usage, and examples under
- * `[MRPT]/samples/math_ransac_*`.
+ * `[MRPT]/mrpt_examples_cpp/math_ransac_*`.
  *
  * \sa mrpt::math::ModelSearch, another RANSAC implementation where
  * models can be anything else, not only matrices, and capable of genetic

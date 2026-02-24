@@ -28,7 +28,7 @@ template class mrpt::CTraitsTest<mrpt::img::CImage>;
 
 using namespace std::string_literals;
 const auto tstImgFileColor =
-    mrpt::UNITTEST_BASEDIR() + "/../../samples/img_basic_example/frame_color.jpg"s;
+    mrpt::UNITTEST_BASEDIR() + "/../../mrpt_examples_cpp/img_basic_example/frame_color.jpg"s;
 
 // Generate random img:
 namespace

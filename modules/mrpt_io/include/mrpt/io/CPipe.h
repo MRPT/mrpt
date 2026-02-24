@@ -38,7 +38,7 @@ class CPipeWriteEndPoint;
  *
  *  \endcode
  *
- * See also the example: MRPT/samples/threadsPipe/
+ * See also the example: MRPT/mrpt_examples_cpp/threadsPipe/
  *
  * \ingroup mrpt_io_grp
  */

@@ -8,7 +8,7 @@ F1=$(find ../src/ -name '*.cpp')
 F2=$(find ../include/mrpt/ -name '*.h' | grep -v  3rdparty)
 F3=$(find ../apps/ -name '*.cpp')
 F4=$(find ../apps/ -name '*.h')
-F5=$(find ../samples/ -name '*.cpp')
+F5=$(find ../mrpt_examples_cpp/ -name '*.cpp')
 
 
 for F in $F1 $F2 $F3 $F4 $F5

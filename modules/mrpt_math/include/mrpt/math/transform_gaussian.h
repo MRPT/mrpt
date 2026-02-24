@@ -43,7 +43,7 @@ namespace mrpt::math
  * \param elem_do_wrap2pi If !=nullptr; it must point to an array of "bool" of
  * size()==dimension of each element, stating if it's needed to do a wrap to
  * [-pi,pi] to each dimension.
- * \sa The example in MRPT/samples/unscented_transform_test
+ * \sa The example in MRPT/mrpt_examples_cpp/unscented_transform_test
  * \sa transform_gaussian_montecarlo, transform_gaussian_linear
  */
 template <
@@ -118,7 +118,7 @@ void transform_gaussian_unscented(
  * \param out_samples_y If !=nullptr, this vector will contain, upon return,
  * the sequence of random samples generated and propagated through the
  * functor().
- * \sa The example in MRPT/samples/unscented_transform_test
+ * \sa The example in MRPT/mrpt_examples_cpp/unscented_transform_test
  * \sa transform_gaussian_unscented, transform_gaussian_linear
  */
 template <
@@ -160,7 +160,7 @@ void transform_gaussian_montecarlo(
  * parameter ("fixed_param") which remains constant.
  *  The Jacobians are estimated numerically using the vector of small
  * increments "x_increments".
- * \sa The example in MRPT/samples/unscented_transform_test
+ * \sa The example in MRPT/mrpt_examples_cpp/unscented_transform_test
  * \sa transform_gaussian_unscented, transform_gaussian_montecarlo
  * \note This function requires `#include <Eigen/Dense>`
  */
