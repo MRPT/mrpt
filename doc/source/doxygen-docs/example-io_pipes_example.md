@@ -12,4 +12,4 @@ RX pose: (x,y,z,yaw,pitch,roll)=(1.0000,2.0000,3.0000,5.73deg,11.46deg,17.19deg)
 ```
 
 C++ example source code:
-\include io_pipes_example/test.cpp
+\include io_pipes_example/main.cpp

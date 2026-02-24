@@ -14,7 +14,7 @@
 
 #include <mrpt/core/exceptions.h>
 
-/** \example containers_yaml_example/test.cpp */
+/** \example containers_yaml_example/main.cpp */
 
 //! [example-yaml]
 #include <mrpt/containers/yaml.h>

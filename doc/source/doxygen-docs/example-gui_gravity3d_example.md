@@ -8,4 +8,4 @@ simulator:
 [![Video](https://img.youtube.com/vi/jACGlPgWESw/0.jpg)](https://www.youtube.com/watch?v=jACGlPgWESw)
 
 C++ example source code:
-\include gui_gravity3d_example/test.cpp
+\include gui_gravity3d_example/main.cpp

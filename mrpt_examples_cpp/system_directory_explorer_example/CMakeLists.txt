@@ -1,58 +1,23 @@
 #-----------------------------------------------------------------------------------------------
-# CMake file for the MRPT example:  /system_directory_explorer_example
-#
-#  Run with "ccmake ." at the root directory, or use it as a template for
-#   starting your own programs
+# CMake file for the MRPT example: system_directory_explorer_example
+# Generated automatically - Manual changes may be overwritten.
 #-----------------------------------------------------------------------------------------------
-set(sampleName system_directory_explorer_example)
-project(EXAMPLE_${sampleName})
-
 cmake_minimum_required(VERSION 3.16)
 
-# ---------------------------------------------------------------------------
-# Set the output directory of each example to its corresponding subdirectory
-#  in the binary tree:
-# ---------------------------------------------------------------------------
-set(EXECUTABLE_OUTPUT_PATH ".")
+project(system_directory_explorer_example)
 
-# The list of "libs" which can be included can be found in:
-#  https://www.mrpt.org/Libraries
-# Add the top-level dependencies only.
-# --------------------------------------------------------------------------
-foreach(dep system;poses;io)
-  find_package(mrpt_${dep} REQUIRED)
-endforeach()
+# Basic MRPT infrastructure
+find_package(mrpt_common REQUIRED)
+
+# Dependencies
+find_package(mrpt_system REQUIRED)
+find_package(mrpt_poses REQUIRED)
+find_package(mrpt_io REQUIRED)
+
 
 # Define the executable target:
-add_executable(${sampleName} test.cpp  )
-
-if(TARGET examples)
-	add_dependencies(examples ${sampleName})
-endif()
-
-set_target_properties(
-	${sampleName}
-	PROPERTIES
-	PROJECT_LABEL "(EXAMPLE) ${sampleName}")
-
-# Add special defines needed by this example, if any:
-set(MY_DEFS )
-if(MY_DEFS) # If not empty
-	add_definitions("-D${MY_DEFS}")
-endif()
-
-# Add the required libraries for linking:
-foreach(dep system;poses;io)
-	target_link_libraries(${sampleName} mrpt::mrpt_${dep})
-endforeach()
-
-# Set optimized building:
-if((${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX) AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
-	add_compile_options(-O3)
-endif()
-
-# This part can be removed if you are compiling this program outside of
-#  the MRPT tree:
-if(DEFINED MRPT_LIBS_ROOT) # Fails if build outside of MRPT project.
-	DeclareAppDependencies(${sampleName} mrpt::system;mrpt::poses;mrpt::io) # Dependencies
-endif()
+mrpt_add_executable(
+  TARGET system_directory_explorer_example
+  SOURCES main.cpp
+  LINK_LIBRARIES mrpt::mrpt_system mrpt::mrpt_poses mrpt::mrpt_io 
+)

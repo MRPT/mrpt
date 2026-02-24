@@ -5,4 +5,4 @@ Example console output:
 \include serialization_json_example/console.out
 
 C++ example source code:
-\include serialization_json_example/test.cpp
+\include serialization_json_example/main.cpp

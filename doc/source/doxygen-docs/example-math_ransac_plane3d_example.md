@@ -8,4 +8,4 @@ See also the [RANSAC tutorial page](tutorial-ransac.html).
 
 ![math_ransac_plane3d_example screenshot](doc/source/images/math_ransac_plane3d_example_screenshot.gif)
 C++ example source code:
-\include math_ransac_plane3d_example/test.cpp
+\include math_ransac_plane3d_example/main.cpp

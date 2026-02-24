@@ -7,4 +7,4 @@ Console output:
 \include containers_yaml_example/console.out
 
 C++ example source code:
-\include containers_yaml_example/test.cpp
+\include containers_yaml_example/main.cpp

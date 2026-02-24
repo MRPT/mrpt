@@ -2,4 +2,4 @@
 
 ![graphslam_example screenshot](doc/source/images/graphslam_example_screenshot.png)
 C++ example source code:
-\include graphslam_example/test.cpp
+\include graphslam_example/main.cpp

@@ -9,4 +9,4 @@ See the bundle adjustment module documentation on the C++ API.
 
 ![vision_bundle_adj_example screenshot](doc/source/images/vision_bundle_adj_example_screenshot.png)
 C++ example source code:
-\include vision_bundle_adj_example/test.cpp
+\include vision_bundle_adj_example/main.cpp

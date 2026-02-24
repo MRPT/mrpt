@@ -11,7 +11,7 @@
  See: https://www.mrpt.org/Authors - All rights reserved.
  SPDX-License-Identifier: BSD-3-Clause
 */
-/** \example typemeta_StaticString/test.cpp */
+/** \example typemeta_StaticString/main.cpp */
 
 //! [example sstring]
 #include <mrpt/typemeta/static_string.h>

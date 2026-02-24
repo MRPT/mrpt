@@ -7,4 +7,4 @@ This example demonstrates the C++ API to read from Taobotics IMU sensors (e.g. R
 Short video: [https://www.youtube.com/shorts/qaaP9BmZYmo](https://www.youtube.com/shorts/qaaP9BmZYmo)
 
 C++ example source code:
-\include hwdrivers_taobotics_imu/test.cpp
+\include hwdrivers_taobotics_imu/main.cpp

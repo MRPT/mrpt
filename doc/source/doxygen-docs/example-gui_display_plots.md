@@ -6,4 +6,4 @@ show MATLAB/Octave-like plots directly from your C++ program.
 
 ![gui_display_plots screenshot](doc/source/images/gui_display_plots_screenshot.png)
 C++ example source code:
-\include gui_display_plots/test.cpp
+\include gui_display_plots/main.cpp

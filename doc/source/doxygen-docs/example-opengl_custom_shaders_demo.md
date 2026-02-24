@@ -11,4 +11,4 @@ with respect to the eye is visualized as grayscale levels.
 
 ![opengl_custom_shaders_demo screenshot](doc/source/images/opengl_custom_shaders_demo_screenshot.png)
 C++ example source code:
-\include opengl_custom_shaders_demo/test.cpp
+\include opengl_custom_shaders_demo/main.cpp

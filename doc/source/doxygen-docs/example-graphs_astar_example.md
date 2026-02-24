@@ -15,4 +15,4 @@ An optimal solution has been found:
 ```
 
 C++ example source code:
-\include graphs_astar_example/test.cpp
+\include graphs_astar_example/main.cpp

@@ -51,15 +51,15 @@ factory (see \a mrpt_rtti_grp and mrpt::serialization::CSerializable).
 
 ### Example #1: serialize STL container via MRPT `CStream`s
 
-See: \ref serialization_stl/test.cpp
-\snippet serialization_stl/test.cpp example
+See: \ref serialization_stl/main.cpp
+\snippet serialization_stl/main.cpp example
 Output:
 \include serialization_stl/console.out
 
 ### Example #2: serialize STL container via `std::ostream` and `std::istream`
 
-See: \ref serialization_stl/test.cpp
-\snippet serialization_stl/test.cpp example_stdio
+See: \ref serialization_stl/main.cpp
+\snippet serialization_stl/main.cpp example_stdio
 Output:
 \include serialization_stl/console.out
 
@@ -84,8 +84,8 @@ For now (Aug 2018) only JSON is implemented.
 This method only requires having MRPT built against jsoncpp, but does not
 enforce the user to also depend on that library.
 
-See: \ref serialization_json_example/test.cpp
-\snippet serialization_json_example/test.cpp example
+See: \ref serialization_json_example/main.cpp
+\snippet serialization_json_example/main.cpp example
 Output:
 \include serialization_json_example/console.out
 
@@ -95,7 +95,7 @@ If you want to have full control on the JSON formatting and other details,
 you may directly depend on jsoncpp and use the following, template-based access
 to MRPT serialization:
 
-See: \ref serialization_json_example/test.cpp
-\snippet serialization_json_example/test.cpp example_raw
+See: \ref serialization_json_example/main.cpp
+\snippet serialization_json_example/main.cpp example_raw
 
 # Library contents

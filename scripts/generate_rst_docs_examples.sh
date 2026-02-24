@@ -22,7 +22,7 @@ for d in samples/*/ ; do
     fi
 
     echo "C++ example source code:" >> $F
-    echo "\include $NAME/test.cpp" >> $F
+    echo "\include $NAME/main.cpp" >> $F
 
     echo "  page_$NAME.rst"
 done

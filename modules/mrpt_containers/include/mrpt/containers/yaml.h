@@ -76,8 +76,8 @@ namespace mrpt::containers
  * - *Parsing* comments is limited to right-hand comments for *sequence* or
  *   *map* entries.
  *
- * See examples below (\ref containers_yaml_example/test.cpp):
- * \snippet containers_yaml_example/test.cpp example-yaml
+ * See examples below (\ref containers_yaml_example/main.cpp):
+ * \snippet containers_yaml_example/main.cpp example-yaml
  * Output:
  *  \include containers_yaml_example/console.out
  *

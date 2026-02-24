@@ -30,4 +30,4 @@ threshold: 3.05
 ~~~~~~~~~~~~~
 
 C++ example source code:
-\include containers_params_by_name/test.cpp
+\include containers_params_by_name/main.cpp

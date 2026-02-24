@@ -6,4 +6,4 @@ Example implementation source code `LevMarqTest_impl.cpp`:
 \include math_optimize_lm_example/LevMarqTest_impl.cpp
 
 C++ example source code:
-\include math_optimize_lm_example/test.cpp
+\include math_optimize_lm_example/main.cpp

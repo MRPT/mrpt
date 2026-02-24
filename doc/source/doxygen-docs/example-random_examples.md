@@ -11,4 +11,4 @@ The following example demonstrates:
 
 ![random_examples screenshot](doc/source/images/random_examples_screenshot.png)
 C++ example source code:
-\include random_examples/test.cpp
+\include random_examples/main.cpp

@@ -2,4 +2,4 @@
 
 ![maps_voxelmap_simple screenshot](doc/source/images/maps_voxelmap_simple_screenshot.png)
 C++ example source code:
-\include maps_voxelmap_simple/test.cpp
+\include maps_voxelmap_simple/main.cpp

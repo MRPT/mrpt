@@ -1,53 +1,22 @@
 #-----------------------------------------------------------------------------------------------
-# CMake file for the MRPT example:  /hwdrivers_sick_eth_example
-#
-#  Run with "ccmake ." at the root directory, or use it as a template for
-#   starting your own programs
+# CMake file for the MRPT example: hwdrivers_sick_eth_example
+# Generated automatically - Manual changes may be overwritten.
 #-----------------------------------------------------------------------------------------------
-set(sampleName hwdrivers_sick_eth_example)
-project(EXAMPLE_${sampleName})
-
 cmake_minimum_required(VERSION 3.16)
 
-# ---------------------------------------------------------------------------
-# Set the output directory of each example to its corresponding subdirectory
-#  in the binary tree:
-# ---------------------------------------------------------------------------
-set(EXECUTABLE_OUTPUT_PATH ".")
+project(hwdrivers_sick_eth_example)
 
-# The list of "libs" which can be included can be found in:
-#  https://www.mrpt.org/Libraries
-# Add the top-level dependencies only.
-# --------------------------------------------------------------------------
-foreach(dep hwdrivers;maps)
-  find_package(mrpt_${dep} REQUIRED)
-endforeach()
+# Basic MRPT infrastructure
+find_package(mrpt_common REQUIRED)
+
+# Dependencies
+find_package(mrpt_hwdrivers REQUIRED)
+find_package(mrpt_maps REQUIRED)
+
 
 # Define the executable target:
-add_executable(${sampleName} test.cpp  )
-
-if(TARGET examples)
-	add_dependencies(examples ${sampleName})
-endif()
-
-set_target_properties(
-	${sampleName}
-	PROPERTIES
-	PROJECT_LABEL "(EXAMPLE) ${sampleName}")
-
-# Add special defines needed by this example, if any:
-set(MY_DEFS )
-if(MY_DEFS) # If not empty
-	add_definitions("-D${MY_DEFS}")
-endif()
-
-# Add the required libraries for linking:
-foreach(dep hwdrivers;maps)
-	target_link_libraries(${sampleName} mrpt::mrpt_${dep})
-endforeach()
-
-# Set optimized building:
-if((${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX) AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
-	add_compile_options(-O3)
-endif()
-
+mrpt_add_executable(
+  TARGET hwdrivers_sick_eth_example
+  SOURCES main.cpp
+  LINK_LIBRARIES mrpt::mrpt_hwdrivers mrpt::mrpt_maps 
+)

@@ -10,4 +10,4 @@ Console output (for a GNU/Linux build, without debug symbols):
 ```
 
 C++ example source code:
-\include core_backtrace_example/test.cpp
+\include core_backtrace_example/main.cpp

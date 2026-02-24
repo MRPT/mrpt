@@ -12,7 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-/** \example core_exceptions_example/test.cpp */
+/** \example core_exceptions_example/main.cpp */
 
 //! [example-nested-exceptions]
 

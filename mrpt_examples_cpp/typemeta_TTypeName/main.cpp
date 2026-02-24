@@ -11,7 +11,7 @@
  See: https://www.mrpt.org/Authors - All rights reserved.
  SPDX-License-Identifier: BSD-3-Clause
 */
-/** \example typemeta_TTypeName/test.cpp */
+/** \example typemeta_TTypeName/main.cpp */
 
 //! [example typename]
 #include <mrpt/typemeta/TTypeName.h>

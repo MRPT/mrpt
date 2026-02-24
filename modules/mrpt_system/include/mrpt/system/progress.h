@@ -25,8 +25,8 @@ namespace mrpt::system
  * 50%  => "[████    ]"
  * \endcode
  *
- * See example: \ref system_progress_bar/test.cpp
- * \snippet system_progress_bar/test.cpp example-system-progress-bar
+ * See example: \ref system_progress_bar/main.cpp
+ * \snippet system_progress_bar/main.cpp example-system-progress-bar
  *
  * \ingroup mrpt_system_grp
  * \note (New in MRPT 2.3.0)

@@ -7,4 +7,4 @@ Console output:
 \include core_exceptions_example/console.out
 
 C++ example source code:
-\include core_exceptions_example/test.cpp
+\include core_exceptions_example/main.cpp
