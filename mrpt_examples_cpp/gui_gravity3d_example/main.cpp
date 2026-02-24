@@ -14,101 +14,167 @@
 
 #include <mrpt/core/round.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CSphere.h>
 #include <mrpt/random.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CSphere.h>
 
-#include <chrono>
 #include <iostream>
 #include <thread>
+#include <vector>
 
-using namespace mrpt;
-using namespace std;
-using namespace mrpt::gui;
-using namespace mrpt::random;
-using namespace mrpt::opengl;
-
-const size_t N_MASSES = 1500;
-
-const double BOX = 1000;
-const double V0 = 300;
-const double MASS_MIN = log(300.0), MASS_MAX = log(5000.0);
-const double M2R = 0.5;
-const double LARGEST_STEP = 0.0005;
-const double G = 300;
-const double COLLIS_LOSS = 0.99;
+namespace
+{
+constexpr size_t N_MASSES = 1500;
+constexpr double BOX = 1000;
+constexpr double V0 = 300;
+const double MASS_MIN = std::log(300.0);
+const double MASS_MAX = std::log(5000.0);
+constexpr double M2R = 0.5;
+constexpr double LARGEST_STEP = 0.0005;
+constexpr double G = 300;
+constexpr double COLLIS_LOSS = 0.99;
 
 struct TMass
 {
-  TMass() : obj3d() {}
-  double x{0}, y{0}, z{0};
-  double vx{0}, vy{0}, vz{0};
+  mrpt::math::TVector3D pos = {0, 0, 0};
+  mrpt::math::TVector3D vel = {0, 0, 0};
   double mass{1};
   double radius;
-  opengl::CSphere::Ptr obj3d;
+  mrpt::viz::CSphere::Ptr obj3d;
 };
 
-void simulateGravity(vector<TMass>& objs, double At);
+using TForce = mrpt::math::TVector3D;
 
-// ------------------------------------------------------
-//				GravityDemo
-// ------------------------------------------------------
+void simulateGravity(std::vector<TMass>& objs, double At)
+{
+  const size_t N = objs.size();
+  std::vector<TForce> forces(N);
+
+  // Index in the array must be larger than its content!!
+  std::vector<std::pair<size_t, double>> lstMass_i_joins_j(N, {std::string::npos, 10000.0});
+
+  for (size_t i = 0; i < (N - 1); i++)
+  {
+    const double Ri = objs[i].radius;
+
+    for (size_t j = i + 1; j < N; j++)
+    {
+      const double D = (objs[j].pos - objs[i].pos).norm();
+
+      auto delta = objs[j].pos - objs[i].pos;
+
+      if (D == 0)
+      {
+        continue;
+      }
+
+      const double Rj = objs[j].radius;
+
+      if (D < (Ri + Rj))  // Collision!!
+      {
+        if (D < lstMass_i_joins_j[j].second)
+        {
+          lstMass_i_joins_j[j].first = i;
+          lstMass_i_joins_j[j].second = D;
+        }
+      }
+      else
+      {
+        const double K = G * objs[i].mass * objs[j].mass / mrpt::square(std::max(D, 1.0));
+        const double D_1 = 1.0 / D;
+        delta *= D_1;
+
+        forces[i] += delta * K;
+        forces[j] -= delta * K;
+      }
+    }
+  }
+
+  for (size_t i = 0; i < N; i++)
+  {
+    const double M_1 = 1.0 / objs[i].mass;
+
+    forces[i] *= M_1;
+
+    objs[i].vel += forces[i] * At;
+    objs[i].pos += objs[i].vel * At;
+  }
+
+  for (int i = static_cast<int>(N) - 1; i >= 0; i--)
+  {
+    const size_t newObj = lstMass_i_joins_j[i].first;
+    if (newObj == std::string::npos)
+    {
+      continue;
+    }
+
+    const double Mi = objs[i].mass;
+    const double Mj = objs[newObj].mass;
+    const double newMass = Mi + Mj;
+    const double newMass_1 = 1.0 / newMass;
+
+    objs[newObj].vel = COLLIS_LOSS * newMass_1 * (Mj * objs[newObj].vel + Mi * objs[i].vel);
+    objs[newObj].pos = newMass_1 * (Mj * objs[newObj].pos + Mi * objs[i].pos);
+
+    objs[newObj].mass = newMass;
+    objs[newObj].radius = M2R * std::pow(newMass, 1.0 / 3.0);
+    objs[newObj].obj3d->setRadius(mrpt::d2f(objs[newObj].radius));
+
+    objs[i].obj3d->setVisibility(false);
+    objs.erase(objs.begin() + i);
+  }
+}
+
 void GravityDemo()
 {
-  CDisplayWindow3D win("MRPT example: 3D gravity simulator- JLBC 2008", 1000, 700);
+  mrpt::gui::CDisplayWindow3D win("MRPT example: 3D gravity simulator- JLBC 2008", 1000, 700);
 
-  getRandomGenerator().randomize();
+  mrpt::random::getRandomGenerator().randomize();
 
   win.setCameraElevationDeg(50.0f);
   win.setCameraZoom(1000);
   win.getDefaultViewport()->setViewportClipDistances(1, 10000);
 
-  Scene::Ptr& theScene = win.get3DSceneAndLock();
+  auto& theScene = win.get3DSceneAndLock();
 
-  // Modify the scene:
-  // ------------------------------------------------------
   {
-    opengl::CGridPlaneXY::Ptr obj = opengl::CGridPlaneXY::Create(-2000, 2000, -2000, 2000, 0, 100);
+    auto obj = mrpt::viz::CGridPlaneXY::Create(-2000, 2000, -2000, 2000, 0, 100);
     obj->setColor(0.3f, 0.3f, 0.3f);
     theScene->insert(obj);
   }
 
-  // Create the masses:
-  // ----------------------------------------------------
+  std::vector<TMass> masses(N_MASSES);
 
-  vector<TMass> masses(N_MASSES);
-
-  // Init at random poses & create opengl objects:
   for (size_t i = 0; i < N_MASSES; i++)
   {
-    masses[i].x = getRandomGenerator().drawUniform(-BOX, BOX);
-    masses[i].y = getRandomGenerator().drawUniform(-BOX, BOX);
-    masses[i].z = getRandomGenerator().drawUniform(-BOX, BOX) / 10;
+    masses[i].pos.x = mrpt::random::getRandomGenerator().drawUniform(-BOX, BOX);
+    masses[i].pos.y = mrpt::random::getRandomGenerator().drawUniform(-BOX, BOX);
+    masses[i].pos.z = mrpt::random::getRandomGenerator().drawUniform(-BOX, BOX) / 10;
 
-    double a = atan2(masses[i].y, masses[i].x);
+    const double a = std::atan2(masses[i].pos.y, masses[i].pos.x);
 
-    masses[i].vx = -V0 * sin(a) + getRandomGenerator().drawUniform(-V0 * 0.05, V0 * 0.05);
-    masses[i].vy = V0 * cos(a) + getRandomGenerator().drawUniform(-V0 * 0.05, V0 * 0.05);
-    masses[i].vz = 0;  // getRandomGenerator().drawUniform(-V0,V0);
+    masses[i].vel.x =
+        -V0 * std::sin(a) + mrpt::random::getRandomGenerator().drawUniform(-V0 * 0.05, V0 * 0.05);
+    masses[i].vel.y =
+        V0 * std::cos(a) + mrpt::random::getRandomGenerator().drawUniform(-V0 * 0.05, V0 * 0.05);
+    masses[i].vel.z = 0;
 
-    masses[i].mass = exp(getRandomGenerator().drawUniform(MASS_MIN, MASS_MAX));
-    opengl::CSphere::Ptr& obj = masses[i].obj3d = opengl::CSphere::Create();
+    masses[i].mass = std::exp(mrpt::random::getRandomGenerator().drawUniform(MASS_MIN, MASS_MAX));
+    auto& obj = masses[i].obj3d = mrpt::viz::CSphere::Create();
 
     obj->setColor(
-        getRandomGenerator().drawUniform<float>(0.1, 0.9),
-        getRandomGenerator().drawUniform<float>(0.1, 0.9),
-        getRandomGenerator().drawUniform<float>(0.1, 0.9));
+        mrpt::random::getRandomGenerator().drawUniform<float>(0.1, 0.9),
+        mrpt::random::getRandomGenerator().drawUniform<float>(0.1, 0.9),
+        mrpt::random::getRandomGenerator().drawUniform<float>(0.1, 0.9));
 
-    masses[i].radius = M2R * pow(masses[i].mass, 1.0 / 3.0);
-    obj->setRadius(mrpt::d2f(masses[i].radius));  // Guess why ^(1/3) ;-)
-
-    obj->setLocation(masses[i].x, masses[i].y, masses[i].z);
+    masses[i].radius = M2R * std::pow(masses[i].mass, 1.0 / 3.0);
+    obj->setRadius(mrpt::d2f(masses[i].radius));
+    obj->setLocation(masses[i].pos);
     theScene->insert(obj);
   }
 
-  // IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
   win.unlockAccess3DScene();
 
   mrpt::system::CTicTac tictac;
@@ -118,148 +184,32 @@ void GravityDemo()
 
   while (!mrpt::system::os::kbhit() && win.isOpen())
   {
-    // Move the scene:
     double t1 = tictac.Tac();
     double At = t1 - t0;
     t0 = t1;
 
-    // Simulate a At, possibly in several small steps:
-    // Update the 3D scene:
     win.get3DSceneAndLock();
 
-    size_t n_steps = mrpt::round(ceil(At / LARGEST_STEP) + 1);
-    double At_steps = At / n_steps;
-    n_steps = min(n_steps, size_t(3));
-    for (size_t j = 0; j < n_steps; j++) simulateGravity(masses, At_steps);
-
-    for (size_t i = 0; i < masses.size(); i++)
+    size_t n_steps = mrpt::round(std::ceil(At / LARGEST_STEP) + 1);
+    double At_steps = At / static_cast<double>(n_steps);
+    n_steps = std::min(n_steps, static_cast<size_t>(3));
+    for (size_t j = 0; j < n_steps; j++)
     {
-      opengl::CSphere::Ptr& obj = masses[i].obj3d;
-      obj->setLocation(masses[i].x, masses[i].y, masses[i].z);
+      simulateGravity(masses, At_steps);
     }
-    // IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
+
+    for (auto& m : masses)
+    {
+      m.obj3d->setLocation(m.pos);
+    }
     win.unlockAccess3DScene();
 
-    // Update window:
     win.forceRepaint();
-    std::this_thread::sleep_for(1ms);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
   };
 }
+}  // namespace
 
-struct TForce
-{
-  TForce() { f[0] = f[1] = f[2] = 0; }
-  double f[3];
-};
-
-void simulateGravity(vector<TMass>& objs, double At)
-{
-  const size_t N = objs.size();
-
-  vector<TForce> forces(N);
-
-  // Index in the array must be larger than its content!!
-  vector<pair<size_t, double>> lstMass_i_joins_j(N, pair<size_t, double>(string::npos, 10000.0));
-
-  for (size_t i = 0; i < (N - 1); i++)
-  {
-    const double Ri = objs[i].radius;
-
-    // Compute overall gravity force:
-    for (size_t j = i + 1; j < N; j++)
-    {
-      double Ax = objs[j].x - objs[i].x;
-      double Ay = objs[j].y - objs[i].y;
-      double Az = objs[j].z - objs[i].z;
-      double D2 = square(Ax) + square(Ay) + square(Az);
-
-      double D = sqrt(D2);
-      if (D == 0) continue;
-
-      const double Rj = objs[j].radius;
-
-      if (D < (Ri + Rj))  // Collission!!
-      {
-        // Index in the array must be larger than its content!!
-        if (D < lstMass_i_joins_j[j].second)
-        {
-          lstMass_i_joins_j[j].first = i;
-          lstMass_i_joins_j[j].second = D;
-        }
-      }
-      else
-      {
-        double K = G * objs[i].mass * objs[j].mass / square(max(D, 1.0));
-        double D_1 = 1.0 / D;
-        Ax *= D_1;
-        Ay *= D_1;
-        Az *= D_1;
-
-        const double fx = Ax * K;
-        const double fy = Ay * K;
-        const double fz = Az * K;
-
-        forces[i].f[0] += fx;
-        forces[i].f[1] += fy;
-        forces[i].f[2] += fz;
-
-        forces[j].f[0] -= fx;
-        forces[j].f[1] -= fy;
-        forces[j].f[2] -= fz;
-      }
-    }
-  }
-
-  // F = m a
-  for (size_t i = 0; i < N; i++)
-  {
-    const double M_1 = 1.0 / objs[i].mass;
-
-    forces[i].f[0] *= M_1;
-    forces[i].f[1] *= M_1;
-    forces[i].f[2] *= M_1;
-
-    objs[i].vx += forces[i].f[0] * At;
-    objs[i].vy += forces[i].f[1] * At;
-    objs[i].vz += forces[i].f[2] * At;
-
-    objs[i].x += objs[i].vx * At;
-    objs[i].y += objs[i].vy * At;
-    objs[i].z += objs[i].vz * At;
-  }
-
-  //	return;
-  // Join masses that collided:
-  for (int i = N - 1; i >= 0; i--)
-  {
-    const size_t newObj = lstMass_i_joins_j[i].first;
-    if (newObj == string::npos) continue;
-
-    const double Mi = objs[i].mass;
-    const double Mj = objs[newObj].mass;
-    const double newMass = Mi + Mj;
-    const double newMass_1 = 1.0 / newMass;
-
-    objs[newObj].vx = COLLIS_LOSS * newMass_1 * (Mj * objs[newObj].vx + Mi * objs[i].vx);
-    objs[newObj].vy = COLLIS_LOSS * newMass_1 * (Mj * objs[newObj].vy + Mi * objs[i].vy);
-    objs[newObj].vz = COLLIS_LOSS * newMass_1 * (Mj * objs[newObj].vz + Mi * objs[i].vz);
-
-    objs[newObj].x = newMass_1 * (Mj * objs[newObj].x + Mi * objs[i].x);
-    objs[newObj].y = newMass_1 * (Mj * objs[newObj].y + Mi * objs[i].y);
-    objs[newObj].z = newMass_1 * (Mj * objs[newObj].z + Mi * objs[i].z);
-
-    objs[newObj].mass = newMass;
-    objs[newObj].radius = M2R * pow(newMass, 1.0 / 3.0);
-    objs[newObj].obj3d->setRadius(mrpt::d2f(objs[newObj].radius));
-
-    objs[i].obj3d->setVisibility(false);  // Hide sphere
-    objs.erase(objs.begin() + i);
-  }
-}
-
-// ------------------------------------------------------
-//						MAIN
-// ------------------------------------------------------
 int main()
 {
   try
@@ -269,7 +219,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
-    return -1;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
+    return 1;
   }
 }
