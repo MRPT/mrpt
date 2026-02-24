@@ -26,4 +26,4 @@ Contents of `comms_socket_example/SocketsTest_impl.cpp`:
 \include comms_socket_example/SocketsTest_impl.cpp
 
 C++ example source code:
-\include comms_socket_example/test.cpp
+\include comms_socket_example/main.cpp

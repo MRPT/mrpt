@@ -24,17 +24,17 @@ loading the module (if dynamically linked).
 
 ## Example #1: defining new user classes
 
-See: \ref rtti_example1/test.cpp
-\snippet rtti_example1/test.cpp example-define-class
-\snippet rtti_example1/test.cpp example-define-class-test
+See: \ref rtti_example1/main.cpp
+\snippet rtti_example1/main.cpp example-define-class
+\snippet rtti_example1/main.cpp example-define-class-test
 Output:
 \include rtti_example1/console-ex1.out
 
 ## Example #2: using the class factory
 
-See: \ref rtti_example1/test.cpp
-\snippet rtti_example1/test.cpp example-define-class
-\snippet rtti_example1/test.cpp example-factory
+See: \ref rtti_example1/main.cpp
+\snippet rtti_example1/main.cpp example-define-class
+\snippet rtti_example1/main.cpp example-factory
 Output:
 \include rtti_example1/console-ex2.out
 

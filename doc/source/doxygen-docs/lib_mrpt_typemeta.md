@@ -24,26 +24,26 @@ compiler-independent representation of arbitrarily-complex types and STL
 containers. Note that creating objects from a run-time string representation of
 its type is handled in a different library (\ref mrpt_serialization_grp).
 
-See: \ref typemeta_TTypeName/test.cpp
-\snippet typemeta_TTypeName/test.cpp example typename
+See: \ref typemeta_TTypeName/main.cpp
+\snippet typemeta_TTypeName/main.cpp example typename
 Output:
 \include typemeta_TTypeName/console.out
 
 ## Example #2: compile-time constexpr strings manipulation
-See: \ref typemeta_StaticString/test.cpp
-\snippet typemeta_StaticString/test.cpp example sstring
+See: \ref typemeta_StaticString/main.cpp
+\snippet typemeta_StaticString/main.cpp example sstring
 Output:
 \include typemeta_StaticString/console-sstring.out
 
 ## Example #3: compile-time numbers to strings
-See: \ref typemeta_StaticString/test.cpp
-\snippet typemeta_StaticString/test.cpp example num2str
+See: \ref typemeta_StaticString/main.cpp
+\snippet typemeta_StaticString/main.cpp example num2str
 Output:
 \include typemeta_StaticString/console-num2str.out
 
 ## Example #4: enum values to/from strings
-See: \ref typemeta_TEnumType/test.cpp
-\snippet typemeta_TEnumType/test.cpp example
+See: \ref typemeta_TEnumType/main.cpp
+\snippet typemeta_TEnumType/main.cpp example
 Output:
 \include typemeta_TEnumType/console.out
 

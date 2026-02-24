@@ -10,4 +10,4 @@ See: \ref tutorial_3D_scenes
 
 
 C++ example source code:
-\include opengl_skybox_example/test.cpp
+\include opengl_skybox_example/main.cpp

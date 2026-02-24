@@ -11,7 +11,7 @@
  See: https://www.mrpt.org/Authors - All rights reserved.
  SPDX-License-Identifier: BSD-3-Clause
 */
-/** \example typemeta_TEnumType/test.cpp */
+/** \example typemeta_TEnumType/main.cpp */
 
 //! [example]
 #include <mrpt/typemeta/TEnumType.h>

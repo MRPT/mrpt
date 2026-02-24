@@ -13,4 +13,4 @@ The equations of this example and the theory behind them are explained in [this 
 
 ![bayes_tracking_example screenshot](doc/source/images/bayes_tracking_example_screenshot.png)
 C++ example source code:
-\include bayes_tracking_example/test.cpp
+\include bayes_tracking_example/main.cpp

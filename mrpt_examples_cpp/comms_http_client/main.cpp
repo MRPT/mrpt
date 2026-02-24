@@ -12,7 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-/** \example comms_http_client/test.cpp */
+/** \example comms_http_client/main.cpp */
 
 //! [example-http-get]
 

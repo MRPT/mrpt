@@ -11,7 +11,7 @@
  See: https://www.mrpt.org/Authors - All rights reserved.
  SPDX-License-Identifier: BSD-3-Clause
 */
-/** \example rtti_example1/test.cpp */
+/** \example rtti_example1/main.cpp */
 
 //! [example-define-class]
 #include <mrpt/rtti/CObject.h>

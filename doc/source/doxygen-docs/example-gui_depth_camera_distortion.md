@@ -2,4 +2,4 @@
 
 ![gui_depth_camera_distortion screenshot](doc/source/images/gui_depth_camera_distortion_screenshot.png)
 C++ example source code:
-\include gui_depth_camera_distortion/test.cpp
+\include gui_depth_camera_distortion/main.cpp

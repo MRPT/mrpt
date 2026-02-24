@@ -9,4 +9,4 @@ Part 2:
 \include rtti_example1/console-ex2.out
 
 C++ example source code:
-\include rtti_example1/test.cpp
+\include rtti_example1/main.cpp

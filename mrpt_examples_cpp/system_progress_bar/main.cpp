@@ -12,7 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-/** \example system_progress_bar/test.cpp */
+/** \example system_progress_bar/main.cpp */
 
 //! [example-system-progress-bar]
 

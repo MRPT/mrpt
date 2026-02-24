@@ -11,7 +11,7 @@
  See: https://www.mrpt.org/Authors - All rights reserved.
  SPDX-License-Identifier: BSD-3-Clause
 */
-/** \example serialization_stl/test.cpp */
+/** \example serialization_stl/main.cpp */
 
 #include <iostream>  // cout
 

@@ -7,4 +7,4 @@ for polygon clipping or intersection using the [Sutherland-Hodgman algorithm](ht
 
 ![math_polygon_intersection screenshot](doc/source/images/math_polygon_intersection_screenshot.png)
 C++ example source code:
-\include math_polygon_intersection/test.cpp
+\include math_polygon_intersection/main.cpp

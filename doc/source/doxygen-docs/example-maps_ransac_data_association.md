@@ -2,4 +2,4 @@
 
 ![maps_ransac_data_association screenshot](doc/source/images/maps_ransac_data_association_screenshot.png)
 C++ example source code:
-\include maps_ransac_data_association/test.cpp
+\include maps_ransac_data_association/main.cpp

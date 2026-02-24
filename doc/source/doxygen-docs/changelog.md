@@ -1586,7 +1586,7 @@ for improved performance.
 SICK TIM series lidar including Tim55x, Tim56x
       - mrpt::hwdrivers::CSICKTim561Eth
     - A new test sample for SICK TIM561(TIM55x/TIM56x) lidar:
-      - sample/SICK_tim561eth_test/test.cpp
+      - sample/SICK_tim561eth_test/main.cpp
   - BUG FIXES:
     - Fix likelihood computation in mrpt::maps::CReflectivityGridMap2D
 (which led to crash)

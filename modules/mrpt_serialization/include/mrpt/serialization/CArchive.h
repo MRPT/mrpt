@@ -628,7 +628,7 @@ class CArchiveStreamBase : public CArchive
  * `<mrpt/serialization/archiveFrom_std_streams.h>` and explicitly
  * specifying the template parameter like: `archiveFrom<std::istream>` or
  * `archiveFrom<std::ostream>`.
- * \sa \ref mrpt_serialization_grp, and example serialization_stl/test.cpp
+ * \sa \ref mrpt_serialization_grp, and example serialization_stl/main.cpp
  */
 template <class STREAM>
 CArchiveStreamBase<STREAM> archiveFrom(STREAM& s)

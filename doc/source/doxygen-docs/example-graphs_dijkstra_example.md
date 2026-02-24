@@ -7,4 +7,4 @@ See also the docs for the class mrpt::graphs::CDijkstra
 
 ![graphs_dijkstra_example screenshot](doc/source/images/graphs_dijkstra_example_screenshot.png)
 C++ example source code:
-\include graphs_dijkstra_example/test.cpp
+\include graphs_dijkstra_example/main.cpp
