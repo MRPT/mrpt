@@ -1287,7 +1287,7 @@ struct PyCallBack_mrpt_maps_CSimplePointsMap_TMapDefinition : public mrpt::maps:
 void bind_mrpt_maps_COctoMap(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
 	{ // mrpt::maps::COctoMap file:mrpt/maps/COctoMap.h line:41
-		pybind11::class_<mrpt::maps::COctoMap, std::shared_ptr<mrpt::maps::COctoMap>, PyCallBack_mrpt_maps_COctoMap, mrpt::maps::COctoMapBase<octomap::OcTree,octomap::OcTreeNode>> cl(M("mrpt::maps"), "COctoMap", "A three-dimensional probabilistic occupancy grid, implemented as an\n octo-tree with the \"octomap\" C++ library.\n  This version only stores occupancy information at each octree node. See the\n base class mrpt::maps::COctoMapBase.\n\n The octomap library was presented in \n\n \n CMetricMap, the example in \"MRPT/samples/octomap_simple\"\n \n\n\n ");
+		pybind11::class_<mrpt::maps::COctoMap, std::shared_ptr<mrpt::maps::COctoMap>, PyCallBack_mrpt_maps_COctoMap, mrpt::maps::COctoMapBase<octomap::OcTree,octomap::OcTreeNode>> cl(M("mrpt::maps"), "COctoMap", "A three-dimensional probabilistic occupancy grid, implemented as an\n octo-tree with the \"octomap\" C++ library.\n  This version only stores occupancy information at each octree node. See the\n base class mrpt::maps::COctoMapBase.\n\n The octomap library was presented in \n\n \n CMetricMap, the example in \"MRPT/mrpt_examples_cpp/octomap_simple\"\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::maps::COctoMap(); }, [](){ return new PyCallBack_mrpt_maps_COctoMap(); } ), "doc");
 		cl.def( pybind11::init<const double>(), pybind11::arg("resolution") );
 

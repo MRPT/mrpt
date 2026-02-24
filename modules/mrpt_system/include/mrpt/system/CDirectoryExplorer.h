@@ -27,7 +27,7 @@ namespace mrpt::system
  * given path.
  *  The only existing method is "explore" and returns the list of found files &
  * directories.
- *  Refer to the example in /samples/UTILS/directoryExplorer
+ *  Refer to the example in /mrpt_examples_cpp/UTILS/directoryExplorer
  *
  *  \sa CFileSystemWatcher
  * \ingroup mrpt_system_grp

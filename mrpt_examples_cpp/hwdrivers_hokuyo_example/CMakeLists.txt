@@ -20,11 +20,7 @@ set(EXECUTABLE_OUTPUT_PATH ".")
 # Add the top-level dependencies only.
 # --------------------------------------------------------------------------
 foreach(dep hwdrivers;maps)
-	# if not building from inside MRPT source tree, find it as a cmake
-	# imported project:
-	if (NOT TARGET mrpt::${dep})
-		find_package(mrpt-${dep} REQUIRED)
-	endif()
+  find_package(mrpt_${dep} REQUIRED)
 endforeach()
 
 # Define the executable target:
@@ -47,7 +43,7 @@ endif()
 
 # Add the required libraries for linking:
 foreach(dep hwdrivers;maps)
-	target_link_libraries(${sampleName} mrpt::${dep})
+	target_link_libraries(${sampleName} mrpt::mrpt_${dep})
 endforeach()
 
 # Set optimized building:
@@ -55,8 +51,3 @@ if((${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX) AND N
 	add_compile_options(-O3)
 endif()
 
-# This part can be removed if you are compiling this program outside of
-#  the MRPT tree:
-if(DEFINED MRPT_LIBS_ROOT) # Fails if build outside of MRPT project.
-	DeclareAppDependencies(${sampleName} mrpt::hwdrivers;mrpt::maps) # Dependencies
-endif()

@@ -37,7 +37,7 @@ namespace mrpt::hwdrivers
  *
  *  This class can be used as a sensor from the application "rawlog-grabber", or
  * directly as a C++ class from a user program.
- *  Refer to the example:  [MRPT]/samples/NIDAQ_test
+ *  Refer to the example:  [MRPT]/mrpt_examples_cpp/NIDAQ_test
  *
  *  Samples will be returned inside mrpt::obs::CObservationRawDAQ in "packets"
  * of a predefined number of samples, which can be changed by the user through
@@ -187,7 +187,7 @@ namespace mrpt::hwdrivers
  *  \endcode
  *
  * See also:
- *  - [MRPT]/samples/NIDAQ_test
+ *  - [MRPT]/mrpt_examples_cpp/NIDAQ_test
  *  - Sample .ini files for rawlog-grabber in
  * [MRPT]/share/mrpt/config_files/rawlog-grabber/
  *  - NI DAQmx C reference:

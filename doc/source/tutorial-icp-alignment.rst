@@ -35,7 +35,7 @@ The output is a pdf (probability density function) of the relative pose
 between the maps, that is, an uncertainty bound is also computed
 associated to the optimal registration. An example of typical usage is
 (see also the example in the directory
-`MRPT/samples/icp <https://github.com/MRPT/mrpt/tree/master/samples/slam_icp_simple_example>`__):
+`MRPT/mrpt_examples_cpp/icp <https://github.com/MRPT/mrpt/tree/master/mrpt_examples_cpp/slam_icp_simple_example>`__):
 
 .. code-block:: cpp
 
@@ -80,10 +80,10 @@ Examples of usage
 ------------------------------
 
 -  For **2D alignment**, refer to the example:
-   `https://raw.github.com/MRPT/mrpt/master/samples/icp/ <https://github.com/MRPT/mrpt/tree/master/samples/slam_icp_simple_example>`__
+   `https://raw.github.com/MRPT/mrpt/master/mrpt_examples_cpp/icp/ <https://github.com/MRPT/mrpt/tree/master/mrpt_examples_cpp/slam_icp_simple_example>`__
 -  For **`3D aligment <http://www.mrpt.org/3D-ICP_Example>`__** (full 6D
    poses), see the example:
-   `https://raw.github.com/MRPT/mrpt/master/samples/icp3D/ <https://github.com/MRPT/mrpt/tree/master/samples/slam_icp_simple_example>`__
+   `https://raw.github.com/MRPT/mrpt/master/mrpt_examples_cpp/icp3D/ <https://github.com/MRPT/mrpt/tree/master/mrpt_examples_cpp/slam_icp_simple_example>`__
 
 Provided algorithms
 -------------------------------

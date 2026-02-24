@@ -42,7 +42,7 @@ namespace mrpt::maps
  *
  * No multi-threading protection is applied at all in the API.
  *
- * \sa CMetricMap, the example in "MRPT/samples/maps_voxelmap_simple",
+ * \sa CMetricMap, the example in "MRPT/mrpt_examples_cpp/maps_voxelmap_simple",
  * \ingroup mrpt_maps_grp
  */
 template <typename node_t>

@@ -13,7 +13,7 @@ This C++ library is part of MRPT and can be installed in Debian-based systems wi
 Read also [how to import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 Refer to classes in the namespace mrpt::bayes and these examples:
- - [bayes_tracking_example](https://github.com/MRPT/mrpt/tree/master/samples/bayes_tracking_example)
+ - [bayes_tracking_example](https://github.com/MRPT/mrpt/tree/master/mrpt_examples_cpp/bayes_tracking_example)
 
 ## Kalman filters
 

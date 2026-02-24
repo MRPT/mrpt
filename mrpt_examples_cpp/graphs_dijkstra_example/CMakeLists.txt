@@ -20,11 +20,7 @@ set(EXECUTABLE_OUTPUT_PATH ".")
 # Add the top-level dependencies only.
 # --------------------------------------------------------------------------
 foreach(dep graphs;gui)
-	# if not building from inside MRPT source tree, find it as a cmake
-	# imported project:
-	if (NOT TARGET mrpt::${dep})
-		find_package(mrpt-${dep} REQUIRED)
-	endif()
+  find_package(mrpt_${dep} REQUIRED)
 endforeach()
 
 # Define the executable target:
@@ -47,7 +43,7 @@ endif()
 
 # Add the required libraries for linking:
 foreach(dep graphs;gui)
-	target_link_libraries(${sampleName} mrpt::${dep})
+	target_link_libraries(${sampleName} mrpt::mrpt_${dep})
 endforeach()
 
 # Set optimized building:

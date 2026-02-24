@@ -7,7 +7,7 @@
 set(sampleName vision_bundle_adj_example)
 project(EXAMPLE_${sampleName})
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.16)
 
 # ---------------------------------------------------------------------------
 # Set the output directory of each example to its corresponding subdirectory
@@ -19,12 +19,8 @@ set(EXECUTABLE_OUTPUT_PATH ".")
 #  https://www.mrpt.org/Libraries
 # Add the top-level dependencies only.
 # --------------------------------------------------------------------------
-foreach(dep vision-lgpl;gui)
-	# if not building from inside MRPT source tree, find it as a cmake
-	# imported project:
-	if (NOT TARGET mrpt::${dep})
-		find_package(mrpt-${dep} REQUIRED)
-	endif()
+foreach(dep vision_lgpl;gui)
+  find_package(mrpt_${dep} REQUIRED)
 endforeach()
 
 # Define the executable target:
@@ -46,8 +42,8 @@ if(MY_DEFS) # If not empty
 endif()
 
 # Add the required libraries for linking:
-foreach(dep vision-lgpl;gui)
-	target_link_libraries(${sampleName} mrpt::${dep})
+foreach(dep vision_lgpl;gui)
+	target_link_libraries(${sampleName} mrpt::mrpt_${dep})
 endforeach()
 
 # Set optimized building:
@@ -58,5 +54,5 @@ endif()
 # This part can be removed if you are compiling this program outside of
 #  the MRPT tree:
 if(DEFINED MRPT_LIBS_ROOT) # Fails if build outside of MRPT project.
-	DeclareAppDependencies(${sampleName} mrpt::vision-lgpl;mrpt::gui) # Dependencies
+	DeclareAppDependencies(${sampleName} mrpt::vision_lgpl;mrpt::gui) # Dependencies
 endif()
