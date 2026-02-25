@@ -16,6 +16,8 @@
   <depend>mrpt_poses</depend>
   <depend>mrpt_img</depend>
 
+  <build_depend>opengl</build_depend>
+
   <export>
     <build_type>cmake</build_type>
   </export>

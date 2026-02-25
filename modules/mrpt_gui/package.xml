@@ -14,6 +14,16 @@
 
   <depend>mrpt_opengl</depend>
 
+  <build_depend>libxrandr</build_depend>
+  <build_depend>libxxf86vm</build_depend>
+  <build_depend>opengl</build_depend>
+
+  <build_depend>wx-common</build_depend>
+  <build_depend>wxwidgets</build_depend>
+
+  <build_depend>libqt5-opengl-dev</build_depend>
+  <build_depend>qtbase5-dev</build_depend>
+
   <export>
     <build_type>cmake</build_type>
   </export>
