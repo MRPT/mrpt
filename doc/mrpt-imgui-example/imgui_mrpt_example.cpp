@@ -153,7 +153,7 @@ int main() {
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGuiIO &io = ImGui::GetIO();
-  // io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+  io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
   ImGui::StyleColorsDark();
 
@@ -189,6 +189,9 @@ int main() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+
+    // Create a dockspace in main viewport.
+    ImGui::DockSpaceOverViewport();
 
     // --- Animate the sphere ---
     sphereAngle += 0.01f;
