@@ -193,6 +193,9 @@ int main()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
+    // Create a dockspace in main viewport.
+    ImGui::DockSpaceOverViewport();
+
     // --- Animate the sphere ---
     sphereAngle += 0.01f;
     if (auto vp = scene->getViewport("main"); vp)
