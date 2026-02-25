@@ -50,9 +50,9 @@ class CBaseGUIWindow : public mrpt::system::CObservable
 
  private:
   /** can be 200,300,400... See WxSubsystem */
-  const int m_CMD_CREATE_WIN;
+  const std::uint16_t m_CMD_CREATE_WIN;
   /** can be 299,399,499... See WxSubsystem */
-  const int m_CMD_DESTROY_WIN;
+  const std::uint16_t m_CMD_DESTROY_WIN;
   void* m_winobj_voidptr;
 
  protected:
@@ -67,12 +67,12 @@ class CBaseGUIWindow : public mrpt::system::CObservable
   /** The caption of the window */
   std::string m_caption;
   /** The window handle */
-  mrpt::void_ptr_noncopy m_hwnd;
+  mrpt::void_ptr_noncopy m_hwnd = nullptr;
 
   /* Auxiliary */
   bool m_keyPushed = false;
   int m_keyPushedCode = 0;
-  mrptKeyModifier m_keyPushedModifier;
+  mrptKeyModifier m_keyPushedModifier = MRPTKMOD_NONE;
 
   /** Must be called by child classes just within the constructor. */
   void createWxWindow(unsigned int initialWidth, unsigned int initialHeight);
@@ -89,15 +89,19 @@ class CBaseGUIWindow : public mrpt::system::CObservable
    * built and ready. */
   void notifySemThreadReady();
 
- public:
   /** CMD_DESTROY_WIN can be 299,399,499... See WxSubsystem */
 
   CBaseGUIWindow(
       void* winobj_voidptr,
-      int CMD_CREATE_WIN,
-      int CMD_DESTROY_WIN,
-      const std::string& initial_caption = std::string());
+      uint16_t CMD_CREATE_WIN,
+      uint16_t CMD_DESTROY_WIN,
+      std::string initial_caption = {});
   ~CBaseGUIWindow() override;
+
+  CBaseGUIWindow(const CBaseGUIWindow&) = delete;
+  CBaseGUIWindow& operator=(const CBaseGUIWindow&) = delete;
+  CBaseGUIWindow(CBaseGUIWindow&&) = delete;
+  CBaseGUIWindow& operator=(CBaseGUIWindow&&) = delete;
 
   /** Returns false if the user has already closed the window.
    */
@@ -177,7 +181,7 @@ class mrptEventWindowChar : public mrpt::system::mrptEvent
   void do_nothing() override {}
 
  public:
-  inline mrptEventWindowChar(CBaseGUIWindow* obj, int _char_code, mrptKeyModifier _key_mod) :
+  mrptEventWindowChar(CBaseGUIWindow* obj, int _char_code, mrptKeyModifier _key_mod) :
       source_object(obj), char_code(_char_code), key_modifiers(_key_mod)
   {
   }
@@ -203,7 +207,7 @@ class mrptEventWindowResize : public mrpt::system::mrptEvent
   void do_nothing() override {}
 
  public:
-  inline mrptEventWindowResize(CBaseGUIWindow* obj, size_t _new_width, size_t _new_height) :
+  mrptEventWindowResize(CBaseGUIWindow* obj, size_t _new_width, size_t _new_height) :
       source_object(obj), new_width(_new_width), new_height(_new_height)
   {
   }
@@ -228,7 +232,7 @@ class mrptEventMouseDown : public mrpt::system::mrptEvent
   void do_nothing() override {}
 
  public:
-  inline mrptEventMouseDown(
+  mrptEventMouseDown(
       CBaseGUIWindow* obj, mrpt::img::TPixelCoord _coords, bool _leftButton, bool _rightButton) :
       source_object(obj), coords(_coords), leftButton(_leftButton), rightButton(_rightButton)
   {
@@ -253,7 +257,7 @@ class mrptEventMouseMove : public mrpt::system::mrptEvent
   void do_nothing() override {}
 
  public:
-  inline mrptEventMouseMove(
+  mrptEventMouseMove(
       CBaseGUIWindow* obj, mrpt::img::TPixelCoord _coords, bool _leftButton, bool _rightButton) :
       source_object(obj), coords(_coords), leftButton(_leftButton), rightButton(_rightButton)
   {
@@ -285,7 +289,7 @@ class mrptEventWindowClosed : public mrpt::system::mrptEvent
   void do_nothing() override {}
 
  public:
-  inline mrptEventWindowClosed(CBaseGUIWindow* obj, bool _allow_close = true) :
+  mrptEventWindowClosed(CBaseGUIWindow* obj, bool _allow_close = true) :
       source_object(obj), allow_close(_allow_close)
   {
   }

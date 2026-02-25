@@ -715,7 +715,7 @@ void CDisplayWindowPlots::resize(
   // Send a request to destroy this object:
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
   REQ->sourcePlots = this;
-  REQ->OPCODE = 403;
+  REQ->OPCODE = WxSubsystem::OpCode::PLOTS_SET_SIZE;
   REQ->x = width;
   REQ->y = height;
   WxSubsystem::pushPendingWxRequest(REQ);
@@ -737,7 +737,7 @@ void CDisplayWindowPlots::setPos([[maybe_unused]] int x, [[maybe_unused]] int y)
   // Send a request to destroy this object:
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
   REQ->sourcePlots = this;
-  REQ->OPCODE = 402;
+  REQ->OPCODE = WxSubsystem::OpCode::PLOTS_SET_POS;
   REQ->x = x;
   REQ->y = y;
   WxSubsystem::pushPendingWxRequest(REQ);
@@ -759,7 +759,7 @@ void CDisplayWindowPlots::setWindowTitle([[maybe_unused]] const std::string& str
   // Send a request to destroy this object:
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
   REQ->sourcePlots = this;
-  REQ->OPCODE = 404;
+  REQ->OPCODE = WxSubsystem::OpCode::PLOTS_SET_TITLE;
   REQ->str = str;
   WxSubsystem::pushPendingWxRequest(REQ);
 #endif
@@ -776,7 +776,7 @@ void CDisplayWindowPlots::enableMousePanZoom([[maybe_unused]] bool enabled)
   // Send a request to destroy this object:
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
   REQ->sourcePlots = this;
-  REQ->OPCODE = 410;
+  REQ->OPCODE = WxSubsystem::OpCode::PLOTS_SET_MOUSE_PANZOOM;
   REQ->boolVal = enabled;
   WxSubsystem::pushPendingWxRequest(REQ);
 #endif
@@ -788,12 +788,15 @@ void CDisplayWindowPlots::enableMousePanZoom([[maybe_unused]] bool enabled)
 void CDisplayWindowPlots::axis_equal([[maybe_unused]] bool enabled)
 {
 #if MRPT_HAS_WXWIDGETS
-  if (!isOpen()) return;
+  if (!isOpen())
+  {
+    return;
+  }
 
   // Send a request to destroy this object:
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
   REQ->sourcePlots = this;
-  REQ->OPCODE = 411;
+  REQ->OPCODE = WxSubsystem::OpCode::PLOTS_AXIS_FIT;
   REQ->boolVal = enabled;
   WxSubsystem::pushPendingWxRequest(REQ);
 #endif
@@ -810,12 +813,15 @@ void CDisplayWindowPlots::axis(
     [[maybe_unused]] bool aspectRatioFix)
 {
 #if MRPT_HAS_WXWIDGETS
-  if (!isOpen()) return;
+  if (!isOpen())
+  {
+    return;
+  }
 
   // Send a request to destroy this object:
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
   REQ->sourcePlots = this;
-  REQ->OPCODE = 412;
+  REQ->OPCODE = WxSubsystem::OpCode::PLOTS_ZOOM_RECT;
   REQ->vector_x.resize(2);
   REQ->vector_x[0] = x_min;
   REQ->vector_x[1] = x_max;
@@ -833,12 +839,15 @@ void CDisplayWindowPlots::axis(
 void CDisplayWindowPlots::axis_fit([[maybe_unused]] bool aspectRatioFix)
 {
 #if MRPT_HAS_WXWIDGETS
-  if (!isOpen()) return;
+  if (!isOpen())
+  {
+    return;
+  }
 
   // Send a request to destroy this object:
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
   REQ->sourcePlots = this;
-  REQ->OPCODE = 413;
+  REQ->OPCODE = WxSubsystem::OpCode::PLOTS_AXIS_FIT;
   REQ->boolVal = aspectRatioFix;
   WxSubsystem::pushPendingWxRequest(REQ);
 #endif
@@ -859,7 +868,10 @@ void CDisplayWindowPlots::plotEllipse(
 {
 #if MRPT_HAS_WXWIDGETS
   MRPT_START
-  if (!isOpen()) return;
+  if (!isOpen())
+  {
+    return;
+  }
 
   ASSERT_(cov22.cols() == 2 && cov22.rows() == 2);
   ASSERT_(cov22(0, 0) >= 0);
@@ -872,12 +884,15 @@ void CDisplayWindowPlots::plotEllipse(
     this->clf();
   }
   std::string holdon_post;
-  if (m_holdon) holdon_post = format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
+  if (m_holdon)
+  {
+    holdon_post = format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
+  }
 
   // Send a request to destroy this object:
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
   REQ->sourcePlots = this;
-  REQ->OPCODE = 421;
+  REQ->OPCODE = WxSubsystem::OpCode::PLOTS_ADD_ELLIPSE;
   // 421: Add/update a 2D ellipse: format string=str, plot name =plotName,
   // vector_x[0,1]:X/Y center,  vector_y[0,1,2]: Covariance matrix entries
   // 00,11,01.
@@ -934,7 +949,10 @@ void CDisplayWindowPlots::plotEllipse(
 {
 #if MRPT_HAS_WXWIDGETS
   MRPT_START
-  if (!isOpen()) return;
+  if (!isOpen())
+  {
+    return;
+  }
 
   ASSERT_(cov22(0, 0) >= 0);
   ASSERT_(cov22(1, 1) >= 0);
@@ -946,12 +964,15 @@ void CDisplayWindowPlots::plotEllipse(
     this->clf();
   }
   std::string holdon_post;
-  if (m_holdon) holdon_post = format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
+  if (m_holdon)
+  {
+    holdon_post = format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
+  }
 
   // Send a request to destroy this object:
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
   REQ->sourcePlots = this;
-  REQ->OPCODE = 421;
+  REQ->OPCODE = WxSubsystem::OpCode::PLOTS_ADD_ELLIPSE;
   // 421: Add/update a 2D ellipse: format string=str, plot name =plotName,
   // vector_x[0,1]:X/Y center,  vector_y[0,1,2]: Covariance matrix entries
   // 00,11,01.
@@ -1006,7 +1027,10 @@ void CDisplayWindowPlots::image(
 {
 #if MRPT_HAS_WXWIDGETS
   MRPT_START
-  if (!isOpen()) return;
+  if (!isOpen())
+  {
+    return;
+  }
 
   if (m_holdon_just_disabled)
   {
@@ -1014,12 +1038,15 @@ void CDisplayWindowPlots::image(
     this->clf();
   }
   std::string holdon_post;
-  if (m_holdon) holdon_post = format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
+  if (m_holdon)
+  {
+    holdon_post = format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
+  }
 
   // Send a request to destroy this object:
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
   REQ->sourcePlots = this;
-  REQ->OPCODE = 422;
+  REQ->OPCODE = WxSubsystem::OpCode::PLOTS_ADD_BITMAP;
 
   // 422: Add/update a bitmap: plot name =plotName, vector_x[0,1]:X/Y corner,
   // vector_x[2,3]: X/Y widths, voidPtr2: pointer to a newly created wxImage
@@ -1050,7 +1077,10 @@ void CDisplayWindowPlots::internal_plot(
 {
 #if MRPT_HAS_WXWIDGETS
   MRPT_START
-  if (!isOpen()) return;
+  if (!isOpen())
+  {
+    return;
+  }
 
   ASSERT_EQUAL_(x.size(), y.size());
 
@@ -1060,15 +1090,21 @@ void CDisplayWindowPlots::internal_plot(
     this->clf();
   }
 
-  if (x.empty()) return;
+  if (x.empty())
+  {
+    return;
+  }
 
   std::string holdon_post;
-  if (m_holdon) holdon_post = format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
+  if (m_holdon)
+  {
+    holdon_post = format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
+  }
 
   // Send a request to destroy this object:
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
   REQ->sourcePlots = this;
-  REQ->OPCODE = 420;
+  REQ->OPCODE = WxSubsystem::OpCode::PLOTS_ADD_LINE;
   REQ->str = lineFormat;
   REQ->plotName = plotName + holdon_post;
   REQ->vector_x.swap(x);
@@ -1086,12 +1122,15 @@ void CDisplayWindowPlots::clear()
 {
   MRPT_START
 #if MRPT_HAS_WXWIDGETS
-  if (!isOpen()) return;
+  if (!isOpen())
+  {
+    return;
+  }
 
   // Send a request to destroy this object:
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
   REQ->sourcePlots = this;
-  REQ->OPCODE = 414;
+  REQ->OPCODE = WxSubsystem::OpCode::PLOTS_CLEAR;
 
   // 414: Clear all plot objects.
 
@@ -1124,11 +1163,14 @@ void CDisplayWindowPlots::addPopupMenuEntry(
 {
 #if MRPT_HAS_WXWIDGETS
   MRPT_START
-  if (!isOpen()) return;
+  if (!isOpen())
+  {
+    return;
+  }
 
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
   REQ->sourcePlots = this;
-  REQ->OPCODE = 440;
+  REQ->OPCODE = WxSubsystem::OpCode::PLOTS_INSERT_SUBMENU;
   REQ->plotName = label;
   REQ->x = menuID;
   // 440: Inser submenu in the popup menu.

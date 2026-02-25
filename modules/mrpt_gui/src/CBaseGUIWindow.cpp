@@ -29,17 +29,13 @@ using namespace std;
  ---------------------------------------------------------------*/
 CBaseGUIWindow::CBaseGUIWindow(
     void* winobj_voidptr,
-    int CMD_CREATE_WIN,
-    int CMD_DESTROY_WIN,
-    const std::string& initial_caption) :
+    uint16_t CMD_CREATE_WIN,
+    uint16_t CMD_DESTROY_WIN,
+    std::string initial_caption) :
     m_CMD_CREATE_WIN(CMD_CREATE_WIN),
     m_CMD_DESTROY_WIN(CMD_DESTROY_WIN),
     m_winobj_voidptr(winobj_voidptr),
-    m_caption(initial_caption),
-    m_hwnd(nullptr),
-    m_keyPushed(false),
-    m_keyPushedCode(0),
-    m_keyPushedModifier(MRPTKMOD_NONE)
+    m_caption(std::move(initial_caption))
 {
 }
 
@@ -53,7 +49,10 @@ void CBaseGUIWindow::createWxWindow(
 #if MRPT_HAS_WXWIDGETS
   // Create the main wxThread:
   // -------------------------------
-  if (!WxSubsystem::createOneInstanceMainThread()) return;  // Error!
+  if (!WxSubsystem::createOneInstanceMainThread())
+  {
+    return;  // Error!
+  }
 
   // Create window:
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
@@ -61,8 +60,8 @@ void CBaseGUIWindow::createWxWindow(
   REQ->source3D = static_cast<gui::CDisplayWindow3D*>(m_winobj_voidptr);
   REQ->sourcePlots = static_cast<gui::CDisplayWindowPlots*>(m_winobj_voidptr);
   REQ->str = m_caption;
-  REQ->OPCODE = m_CMD_CREATE_WIN;
-  REQ->voidPtr = m_hwnd.getPtrToPtr();
+  REQ->OPCODE = static_cast<WxSubsystem::OpCode>(m_CMD_CREATE_WIN);
+  REQ->voidPtr = static_cast<void*>(m_hwnd.getPtrToPtr());
   REQ->x = initialWidth;
   REQ->y = initialHeight;
 
@@ -82,8 +81,10 @@ void CBaseGUIWindow::createWxWindow(
 #endif
   // If we have an "MRPT_WXSUBSYS_TIMEOUT_MS" environment variable, use that
   // timeout instead:
-  const char* envVal = getenv("MRPT_WXSUBSYS_TIMEOUT_MS");
-  if (envVal) maxTimeout = atoi(envVal);
+  if (const char* envVal = getenv("MRPT_WXSUBSYS_TIMEOUT_MS"); envVal != nullptr)
+  {
+    maxTimeout = atoi(envVal);
+  }
 
   auto future = m_threadReady.get_future();
   if (future.wait_for(std::chrono::milliseconds(maxTimeout)) ==
@@ -113,7 +114,7 @@ void CBaseGUIWindow::destroyWxWindow()
   if (m_hwnd.get())
   {
     auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
-    REQ->OPCODE = m_CMD_DESTROY_WIN;
+    REQ->OPCODE = static_cast<WxSubsystem::OpCode>(m_CMD_DESTROY_WIN);
     REQ->source2D = static_cast<gui::CDisplayWindow*>(m_winobj_voidptr);
     REQ->source3D = static_cast<gui::CDisplayWindow3D*>(m_winobj_voidptr);
     REQ->sourcePlots = static_cast<gui::CDisplayWindowPlots*>(m_winobj_voidptr);
@@ -161,7 +162,10 @@ void CBaseGUIWindow::notifyChildWindowDestruction()
 int CBaseGUIWindow::waitForKey(bool ignoreControlKeys, mrptKeyModifier* out_pushModifier)
 {
   int k = 0;
-  if (out_pushModifier) *out_pushModifier = MRPTKMOD_NONE;
+  if (out_pushModifier)
+  {
+    *out_pushModifier = MRPTKMOD_NONE;
+  }
 
   {
     auto lck = mrpt::lockHelper(m_mtx);
@@ -183,7 +187,10 @@ int CBaseGUIWindow::waitForKey(bool ignoreControlKeys, mrptKeyModifier* out_push
       m_keyPushed = false;
       if (m_keyPushedCode < 256 || !ignoreControlKeys)
       {
-        if (out_pushModifier) *out_pushModifier = m_keyPushedModifier;
+        if (out_pushModifier)
+        {
+          *out_pushModifier = m_keyPushedModifier;
+        }
         return k;
       }
       // Ignore and keep waiting
@@ -206,7 +213,10 @@ int CBaseGUIWindow::getPushedKey(mrptKeyModifier* out_pushModifier)
 {
   auto lck = mrpt::lockHelper(m_mtx);
 
-  if (out_pushModifier) *out_pushModifier = MRPTKMOD_NONE;
+  if (out_pushModifier)
+  {
+    *out_pushModifier = MRPTKMOD_NONE;
+  }
 
   if (!m_keyPushed)
   {
@@ -215,15 +225,13 @@ int CBaseGUIWindow::getPushedKey(mrptKeyModifier* out_pushModifier)
 
   int k = m_keyPushedCode;
   m_keyPushed = false;
-  if (out_pushModifier) *out_pushModifier = m_keyPushedModifier;
+  if (out_pushModifier)
+  {
+    *out_pushModifier = m_keyPushedModifier;
+  }
   return k;
 }
 
-/*---------------------------------------------------------------
-          isOpen
- ---------------------------------------------------------------*/
 bool CBaseGUIWindow::isOpen() { return m_hwnd != nullptr; }
-/*---------------------------------------------------------------
-          notifySemThreadReady
- ---------------------------------------------------------------*/
+
 void CBaseGUIWindow::notifySemThreadReady() { m_threadReady.set_value(); }
