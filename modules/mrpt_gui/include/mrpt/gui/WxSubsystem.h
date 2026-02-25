@@ -295,13 +295,13 @@ class WxSubsystem
   /** Thread-safe method to return the next pending request, or nullptr if
    * there is none.  The caller takes ownership and must delete the object.
    */
-  static TRequestToWxMainThread* popPendingWxRequest();
+  static std::unique_ptr<TRequestToWxMainThread> popPendingWxRequest();
 
   /** Thread-safe method to insert a new pending request.
    *  Ownership of \a data is transferred; it will be deleted by the receiver.
    *  \a data must have been allocated with \c new (single object).
    */
-  static void pushPendingWxRequest(TRequestToWxMainThread* data);
+  static void pushPendingWxRequest(std::unique_ptr<TRequestToWxMainThread>&& data);
 
   /** Thread-safe method to create one single instance of the main wxWidgets
    * thread: it will create the thread only if it is not running yet.
