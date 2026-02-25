@@ -19,11 +19,8 @@
 #include <wx/thread.h>
 
 #include <cstdio>
-#include <functional>
 #include <iostream>
 #include <streambuf>
-
-#include "wx28-fixes.h"
 
 /** This auxiliary class redirects the output sent to a streambuf to a
  * wxTextCtrl object.

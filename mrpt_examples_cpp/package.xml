@@ -13,8 +13,10 @@
   <buildtool_depend>cmake</buildtool_depend>
 
   <depend>mrpt_common</depend>
-  <depend>mrpt_libapps_cli</depend>
   <depend>mrpt_gui</depend>
+  <depend>mrpt_graphslam</depend>
+  <depend>mrpt_libapps_cli</depend>
+  <depend>mrpt_nav</depend>
 
   <export>
     <build_type>cmake</build_type>

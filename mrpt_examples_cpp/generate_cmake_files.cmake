@@ -248,14 +248,6 @@ set(LIST_EXAMPLES_IN_THIS_DIR
 set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_vision mrpt::mrpt_gui)
 GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
-#if(MRPT_ALLOW_LGPLV3)
-# === Depending on: vision_lgpl ===
-set(LIST_EXAMPLES_IN_THIS_DIR
-  vision_bundle_adj_example
-  )
-set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_vision_lgpl mrpt::mrpt_gui)
-GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
-#endif()
 
 # === Depending on: obs ===
 set(LIST_EXAMPLES_IN_THIS_DIR

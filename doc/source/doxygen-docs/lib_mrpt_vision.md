@@ -19,8 +19,6 @@ original classes:
 - The namespace mrpt::vision::pinhole contains several projection and Jacobian
 auxiliary functions for projective cameras.
 
-- Sparse Bundle Adjustment algorithms. See \ref mrpt_vision_lgpl_grp
-
 - A versatile feature tracker. See mrpt::vision::CGenericFeatureTracker and the
 implementation mrpt::vision::CFeatureTracker_KL
 
