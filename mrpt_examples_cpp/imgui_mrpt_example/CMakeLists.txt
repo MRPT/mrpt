@@ -54,6 +54,10 @@ target_link_libraries(imgui_lib PUBLIC
     OpenGL::GL
 )
 
+target_compile_definitions(imgui_lib PUBLIC
+  IMGUI_IMPL_OPENGL_ES3
+)
+
 # ImGui needs to know which loader to use — we rely on the system GL
 # headers directly (GL 3.3 core is enough).
 target_compile_definitions(imgui_lib PUBLIC
@@ -70,7 +74,7 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} PRIVATE
     mrpt::mrpt_opengl
     mrpt::mrpt_imgui
-    glfw
-    OpenGL::GL
+    #glfw        # transitive from imgui_lib
+    #OpenGL::GL  # transitive from imgui_lib
     imgui_lib
 )

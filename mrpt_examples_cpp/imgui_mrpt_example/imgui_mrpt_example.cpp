@@ -34,11 +34,16 @@
 #include <mrpt/viz/Scene.h>
 #include <mrpt/viz/stock_objects.h>
 
+// This must come before imgui
+#include <mrpt/opengl/opengl_api.h>
+
 // Dear ImGui + GLFW + OpenGL3 backend
-#include <GLFW/glfw3.h>
 #include <imgui.h>
+//
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+//
+#include <GLFW/glfw3.h>
 
 #include <cmath>
 #include <cstdio>
