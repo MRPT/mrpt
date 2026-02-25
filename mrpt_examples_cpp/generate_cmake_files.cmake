@@ -20,6 +20,21 @@ macro(GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY)
   foreach(CMAKE_MRPT_EXAMPLE_NAME ${LIST_EXAMPLES_IN_THIS_DIR})
     message(STATUS "Configuring example: ${CMAKE_MRPT_EXAMPLE_NAME}")
     
+    # Check if this example needs the mrpt_data package
+    set(CMAKE_MRPT_EXAMPLE_EXTRA_CODE "")
+    if (EXAMPLES_NEEDING_DATA_DIR)
+      list(FIND EXAMPLES_NEEDING_DATA_DIR "${CMAKE_MRPT_EXAMPLE_NAME}" _FOUND_IDX)
+      if (NOT _FOUND_IDX EQUAL -1)
+        # This example needs mrpt_data, generate the find_package and compile definition
+        string(APPEND CMAKE_MRPT_EXAMPLE_EXTRA_CODE "# After find_package(mrpt_data), the following variable is defined:\n")
+        string(APPEND CMAKE_MRPT_EXAMPLE_EXTRA_CODE "#   mrpt_data_DATA_DIR  - Absolute path to the installed data root directory\n")
+        string(APPEND CMAKE_MRPT_EXAMPLE_EXTRA_CODE "find_package(mrpt_data REQUIRED)\n")
+        string(APPEND CMAKE_MRPT_EXAMPLE_EXTRA_CODE "\n")
+        string(APPEND CMAKE_MRPT_EXAMPLE_EXTRA_CODE "# Define C++ macro with the data directory path\n")
+        string(APPEND CMAKE_MRPT_EXAMPLE_EXTRA_CODE "add_compile_definitions(MRPT_EXAMPLE_DATA_DIR=\"${mrpt_data_DATA_DIR}\")\n")
+      endif()
+    endif()
+    
     # Generate the file
     configure_file(
       "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists_template.txt.in"
@@ -31,6 +46,9 @@ macro(GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY)
        add_subdirectory("${CMAKE_MRPT_EXAMPLE_NAME}")
     endif()
   endforeach()
+  
+  # Reset the list for the next macro call
+  unset(EXAMPLES_NEEDING_DATA_DIR)
 endmacro()
 
 
@@ -103,6 +121,7 @@ set(LIST_EXAMPLES_IN_THIS_DIR
   opengl_skybox_example
   )
 set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_system mrpt::mrpt_math mrpt::mrpt_gui)
+set(EXAMPLES_NEEDING_DATA_DIR opengl_texture_sizes_test)
 GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 # === Depending on: mrpt::mrpt_math mrpt::mrpt_random mrpt::mrpt_gui ===
@@ -176,6 +195,7 @@ set(LIST_EXAMPLES_IN_THIS_DIR
   gui_depth_camera_distortion
   )
 set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_gui mrpt::mrpt_maps)
+set(EXAMPLES_NEEDING_DATA_DIR img_basic_example img_convolution_fft img_fft_example img_gauss_filtering_example gui_windows_events)
 GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 # === Depending on: mrpt::mrpt_gui, mrpt::mrpt_hwdrivers ===
@@ -216,7 +236,8 @@ set(LIST_EXAMPLES_IN_THIS_DIR
   maps_gridmap_voronoi_example
   obs_motion_model_demo
 )
-  set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_maps mrpt::mrpt_gui)
+set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_maps mrpt::mrpt_gui)
+set(EXAMPLES_NEEDING_DATA_DIR maps_gridmap_likelihood_characterization maps_gridmap_voronoi_example obs_motion_model_demo)
 GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 # === Depending on: slam ===
@@ -226,7 +247,8 @@ set(LIST_EXAMPLES_IN_THIS_DIR
   slam_icp3d_simple_example
   slam_range_only_localization_rej_sampling_example
 )
-  set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_slam mrpt::mrpt_gui)
+set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_slam mrpt::mrpt_gui)
+set(EXAMPLES_NEEDING_DATA_DIR maps_gridmap_benchmark)
 GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 # === Depending on: topography ===
@@ -234,7 +256,8 @@ set(LIST_EXAMPLES_IN_THIS_DIR
   topography_gps_coords_example
   topography_coordinate_conversion_example
 )
-  set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_topography)
+set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_topography)
+set(EXAMPLES_NEEDING_DATA_DIR topography_coordinate_conversion_example)
 GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 # === Depending on: vision ===
@@ -246,6 +269,7 @@ set(LIST_EXAMPLES_IN_THIS_DIR
   vision_stereo_calib_example
   )
 set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_vision mrpt::mrpt_gui)
+set(EXAMPLES_NEEDING_DATA_DIR vision_checkerboard_detectors vision_feature_extraction vision_keypoint_matching_example)
 GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 
@@ -271,6 +295,7 @@ set(LIST_EXAMPLES_IN_THIS_DIR
   maps_ransac_data_association
   )
 set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_maps mrpt::mrpt_gui)
+set(EXAMPLES_NEEDING_DATA_DIR maps_laser_projection_in_images_example)
 GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 # === Depending on: graphs & gui ===
@@ -347,6 +372,7 @@ set(LIST_EXAMPLES_IN_THIS_DIR
   nav_rrt_planning_example
   )
 set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_nav mrpt::mrpt_gui)
+set(EXAMPLES_NEEDING_DATA_DIR nav_circ_robot_path_planning nav_rrt_planning_example)
 GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 message(STATUS "Done.")

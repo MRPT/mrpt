@@ -13,6 +13,7 @@
 */
 
 #include <mrpt/gui/CQtGlCanvasBase.h>
+#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL_GLUT
 
 #if MRPT_HAS_Qt5
 #include <QMouseEvent>

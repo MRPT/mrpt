@@ -18,6 +18,7 @@
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL_GLUT
 #include <mrpt/system/os.h>
 
 using namespace mrpt;
@@ -332,7 +333,10 @@ void CDisplayWindow::setCursorCross([[maybe_unused]] bool cursorIsCross)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
   const auto* win = (const CWindowDialog*)m_hwnd.get();
-  if (!win) return;
+  if (!win)
+  {
+    return;
+  }
   win->m_image->SetCursor(*(cursorIsCross ? wxCROSS_CURSOR : wxSTANDARD_CURSOR));
 #endif
 }

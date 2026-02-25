@@ -16,6 +16,7 @@
 
 #include <mrpt/gui/CGlCanvasBase.h>
 #include <mrpt/gui/config.h>
+#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL_GLUT
 #include <mrpt/viz/Scene.h>
 #include <mrpt/viz/opengl_fonts.h>
 

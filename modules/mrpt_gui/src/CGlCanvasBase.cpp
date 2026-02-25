@@ -14,6 +14,7 @@
 
 #include <mrpt/core/round.h>
 #include <mrpt/gui/CGlCanvasBase.h>
+#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL_GLUT
 #include <mrpt/opengl/opengl_api.h>
 
 #include <cstdlib>
