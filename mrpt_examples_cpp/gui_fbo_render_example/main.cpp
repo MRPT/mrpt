@@ -14,15 +14,14 @@
 
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/CBox.h>
 #include <mrpt/opengl/CFBORender.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CSphere.h>
-#include <mrpt/opengl/Scene.h>
 #include <mrpt/system/CTimeLogger.h>
+#include <mrpt/viz/CAxis.h>
+#include <mrpt/viz/CBox.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CSphere.h>
+#include <mrpt/viz/Scene.h>
 
-#include <chrono>
 #include <iostream>
 #include <thread>
 
@@ -37,18 +36,18 @@ using namespace std::literals;
 // ------------------------------------------------------
 void TestDisplay3D()
 {
-  Scene scene;
+  mrpt::viz::Scene scene;
 
   // Modify the scene:
   // ------------------------------------------------------
   {
-    auto obj = mrpt::opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
+    auto obj = mrpt::viz::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
     obj->setColor(0.4f, 0.4f, 0.4f);
     scene.insert(obj);
   }
   {
     auto obj =
-        mrpt::opengl::CBox::Create(mrpt::math::TPoint3D(0, 0, 0), mrpt::math::TPoint3D(.1, .1, .1));
+        mrpt::viz::CBox::Create(mrpt::math::TPoint3D(0, 0, 0), mrpt::math::TPoint3D(.1, .1, .1));
     obj->setColor(1.0f, 0.f, 0.f);
     obj->setName("x");
     obj->enableShowName(true);
@@ -57,7 +56,7 @@ void TestDisplay3D()
   }
   {
     auto obj =
-        mrpt::opengl::CBox::Create(mrpt::math::TPoint3D(0, 0, 0), mrpt::math::TPoint3D(.1, .1, .1));
+        mrpt::viz::CBox::Create(mrpt::math::TPoint3D(0, 0, 0), mrpt::math::TPoint3D(.1, .1, .1));
     obj->setColor(0.0f, 1.f, 0.f);
     obj->setName("y");
     obj->enableShowName(true);
@@ -65,14 +64,14 @@ void TestDisplay3D()
     scene.insert(obj);
   }
   {
-    auto obj = mrpt::opengl::CTexturedPlane::Create();
+    auto obj = mrpt::viz::CTexturedPlane::Create();
     obj->setPlaneCorners(-10, 10, -10, 10);
     obj->setColor_u8(0x00, 0xff, 0xff, 0xff);
     obj->setLocation(0, 0, -14);
     scene.insert(obj);
   }
   {
-    auto obj = mrpt::opengl::CSphere::Create();
+    auto obj = mrpt::viz::CSphere::Create();
     obj->setColor(0, 0, 1);
     obj->setRadius(1.0f);
     obj->setLocation(0, 1, 0);
@@ -80,7 +79,7 @@ void TestDisplay3D()
     scene.insert(obj);
   }
   {
-    auto obj = mrpt::opengl::CSphere::Create();
+    auto obj = mrpt::viz::CSphere::Create();
     obj->setColor(1, 0, 0);
     obj->setRadius(2.f);
     obj->setLocation(-3, -1, 1);
@@ -88,11 +87,13 @@ void TestDisplay3D()
     scene.insert(obj);
   }
 
-  CDisplayWindow win("RGB"), winDepth("Depth");
+  mrpt::gui::CDisplayWindow win("RGB");
+  mrpt::gui::CDisplayWindow winDepth("Depth");
 
   mrpt::system::CTimeLogger tl;
 
-  int width = 500, height = 400;
+  int width = 500;
+  int height = 400;
   const double cameraFOVdeg = 90.0;
 
   mrpt::opengl::CFBORender renderer(width, height);
@@ -104,7 +105,7 @@ void TestDisplay3D()
   scene.getViewport()->setViewportClipDistances(0.1, clipMax);
 
   {
-    CCamera& camera = renderer.getCamera(scene);
+    mrpt::viz::CCamera& camera = renderer.getCameraOverride();
 
 #if 0
 		mrpt::img::TCamera c1;
@@ -149,7 +150,7 @@ void TestDisplay3D()
 
   while (win.isOpen())
   {
-    CRenderizable::Ptr obj = scene.getByName("ball_1");
+    mrpt::viz::CVisualObject::Ptr obj = scene.getByName("ball_1");
 
     const double t = mrpt::Clock::nowDouble();
     obj->setLocation(1 + cos(t + 0.2) * 2, -2 + sin(t + 0.9) * 4, sin(t + 1.2) * 5);
@@ -170,7 +171,7 @@ void TestDisplay3D()
     if (!depth.empty())
     {
       std::cout << "minDepth (0=no echo): " << depth.minCoeff() << " maxDepth: " << depth.maxCoeff()
-                << std::endl;
+                << "\n";
 
       mrpt::img::CImage imDepth;
       depth *= (1.0f / clipMax);
@@ -185,7 +186,7 @@ void TestDisplay3D()
 // ------------------------------------------------------
 //						MAIN
 // ------------------------------------------------------
-int main(int argc, char* argv[])
+int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 {
   try
   {
@@ -194,7 +195,7 @@ int main(int argc, char* argv[])
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }
