@@ -19,7 +19,6 @@
 #include <wx/string.h>
 //*)
 
-#include <mrpt/gui/wx28-fixes.h>
 #include <wx/app.h>
 #include <wx/busyinfo.h>
 #include <wx/filedlg.h>

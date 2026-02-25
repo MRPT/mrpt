@@ -26,7 +26,6 @@
 #include <wx/settings.h>
 #include <wx/string.h>
 //*)
-#include <mrpt/gui/wx28-fixes.h>
 
 #include <chrono>
 #include <thread>

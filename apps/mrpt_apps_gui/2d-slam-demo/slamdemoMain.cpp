@@ -31,7 +31,6 @@
 #include <wx/string.h>
 //*)
 #include <mrpt/gui/about_box.h>
-#include <mrpt/gui/wx28-fixes.h>
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/vector_loadsave.h>
 #include <mrpt/math/ops_matrices.h>
