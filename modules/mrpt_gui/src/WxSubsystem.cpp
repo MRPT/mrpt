@@ -12,6 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/core/get_env.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
@@ -21,11 +22,16 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/thread_name.h>
 
-//#define  WXSUBSYSTEM_VERBOSE
+#include <queue>
+
+namespace
+{
+const auto WX_SUBSYSTEM_VERBOSE = mrpt::get_env<bool>("MRPT_WX_SUBSYSTEM_VERBOSE", false);
+}
 
 // ------------------------------------------------------------------------
 // Defined: Try to wait for all windows & the thread to exit cleanly.
-// Undefined: Just to a std::this_thread::sleep_for(ms) and quit crossing our
+// Undefined: Just do a std::this_thread::sleep_for(ms) and quit crossing our
 // fingers.
 //
 //  Problem with the "clean way" is: As of feb/2011, I get this error
@@ -41,6 +47,17 @@ using namespace mrpt;
 using namespace mrpt::gui;
 using namespace std;
 
+// Convenience alias so switch cases stay readable.
+using OpCode = WxSubsystem::OpCode;
+
+namespace
+{
+bool isConsoleApp_value = true;
+}
+
+// ---------------------------------------------------------------------------
+// Module-local singleton holding mutable global state.
+// ---------------------------------------------------------------------------
 class WxSubSystemGlobalData
 {
  public:
@@ -50,7 +67,7 @@ class WxSubSystemGlobalData
     return d;
   }
 
-  int windowCount = 0;
+  int windowCount{0};
   std::mutex cs_windowCount;
 
   std::queue<WxSubsystem::TRequestToWxMainThread*> listPendingWxRequests;
@@ -61,51 +78,57 @@ class WxSubSystemGlobalData
 };
 
 volatile WxSubsystem::CWXMainFrame* WxSubsystem::CWXMainFrame::oneInstance = nullptr;
-bool isConsoleApp_value = true;
+
 bool WxSubsystem::isConsoleApp() { return isConsoleApp_value; }
 WxSubsystem::CAuxWxSubsystemShutdowner WxSubsystem::global_wxsubsystem_shutdown;
 
-// Auxiliary class implementation:
+// ---------------------------------------------------------------------------
+// CAuxWxSubsystemShutdowner
+// ---------------------------------------------------------------------------
 WxSubsystem::CAuxWxSubsystemShutdowner::CAuxWxSubsystemShutdowner() = default;
+
 WxSubsystem::CAuxWxSubsystemShutdowner::~CAuxWxSubsystemShutdowner()
 {
   if (WxSubsystem::isConsoleApp())
   {
-#ifdef WXSUBSYSTEM_VERBOSE
-    printf("[~CAuxWxSubsystemShutdowner] Sending 999...\n");
-#endif
-    // Shut down:
+    if (WX_SUBSYSTEM_VERBOSE)
+    {
+      printf("[~CAuxWxSubsystemShutdowner] Sending SHUTDOWN request...\n");
+    }
+
     try
     {
-      auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
-      REQ->OPCODE = 999;
+      auto* REQ = new WxSubsystem::TRequestToWxMainThread;
+      REQ->OPCODE = OpCode::SHUTDOWN;
       WxSubsystem::pushPendingWxRequest(REQ);
 
-      // std::this_thread::sleep_for(100ms); // JL: I found no better way
-      // of doing this, sorry :-(  See
-      // WxSubsystem::waitWxShutdownsIfNoWindows()
       WxSubsystem::waitWxShutdownsIfNoWindows();
     }
-    catch (...)
+    catch (const std::exception& e)
     {
-    }  // Just in case we got an out-of-mem error.
-  }    // is console app.
+      // Swallow: may be an out-of-memory condition at program exit.
+      std::cerr << "[WxSubsystem::CAuxWxSubsystemShutdowner::~CAuxWxSubsystemShutdowner()] Error "
+                   "sending shutdown request: "
+                << e.what() << "\n";
+    }
+  }  // is console app.
 
-#ifdef WXSUBSYSTEM_VERBOSE
-  printf("[~CAuxWxSubsystemShutdowner] Deleting static objects.\n");
-#endif
+  if (WX_SUBSYSTEM_VERBOSE)
+  {
+    printf("[~CAuxWxSubsystemShutdowner] Deleting static objects.\n");
+  }
 }
 
-// ---------------------------------------------------------------------------------------
-// Auxiliary dialog class for the "ask user to open a camera":
-// ---------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Auxiliary dialog: ask user to open a camera
+// ---------------------------------------------------------------------------
 class CDialogAskUserForCamera : public wxDialog
 {
  public:
-  mrpt::gui::CPanelCameraSelection* panel;
+  mrpt::gui::CPanelCameraSelection* panel{nullptr};
 
-  static const long ID_BTN_OK;
-  static const long ID_BTN_CANCEL;
+  static const wxWindowID ID_BTN_OK;
+  static const wxWindowID ID_BTN_CANCEL;
 
   CDialogAskUserForCamera() :
       wxDialog(
@@ -115,18 +138,18 @@ class CDialogAskUserForCamera : public wxDialog
           wxDefaultPosition,
           wxDefaultSize,
           wxDEFAULT_DIALOG_STYLE,
-          wxDialogNameStr)
+          wxDialogNameStr),
+      panel(new mrpt::gui::CPanelCameraSelection(this, wxID_ANY))
   {
     auto* f1 = new wxFlexGridSizer(2, 1, 0, 0);
-    panel = new mrpt::gui::CPanelCameraSelection(this, wxID_ANY);
+
     f1->Add(panel, 1, wxALL | wxALIGN_BOTTOM | wxALIGN_CENTER_HORIZONTAL, 5);
 
     auto* f2 = new wxFlexGridSizer(1, 2, 0, 0);
-    wxButton* btnOk = new wxButton(this, ID_BTN_OK, wxT("Ok"), wxDefaultPosition, wxDefaultSize);
-    wxButton* btnCancel =
+    auto* btnOk = new wxButton(this, ID_BTN_OK, wxT("Ok"), wxDefaultPosition, wxDefaultSize);
+    auto* btnCancel =
         new wxButton(this, ID_BTN_CANCEL, wxT("Cancel"), wxDefaultPosition, wxDefaultSize);
     f1->Add(f2, 1, wxALL | wxALIGN_BOTTOM | wxALIGN_CENTER_HORIZONTAL, 5);
-
     f2->Add(btnOk, 1, wxALL | wxALIGN_BOTTOM | wxALIGN_CENTER_HORIZONTAL, 5);
     f2->Add(btnCancel, 1, wxALL | wxALIGN_BOTTOM | wxALIGN_CENTER_HORIZONTAL, 5);
 
@@ -136,69 +159,62 @@ class CDialogAskUserForCamera : public wxDialog
     SetSizer(f1);
     Fit();
 
-    btnOk->SetFocus();  // So the default params can be accepted by just
-                        // pressing ENTER.
+    // Allow default params to be accepted by pressing ENTER.
+    btnOk->SetFocus();
   }
 
   ~CDialogAskUserForCamera() override = default;
-  void OnBtnOk(wxCommandEvent& event) { EndModal(wxID_OK); }
-  void OnBtnCancel(wxCommandEvent& event) { EndModal(wxID_CANCEL); }
+  void OnBtnOk(wxCommandEvent& /*event*/) { EndModal(wxID_OK); }
+  void OnBtnCancel(wxCommandEvent& /*event*/) { EndModal(wxID_CANCEL); }
 };
 
-const long CDialogAskUserForCamera::ID_BTN_OK = wxNewId();
-const long CDialogAskUserForCamera::ID_BTN_CANCEL = wxNewId();
+const wxWindowID CDialogAskUserForCamera::ID_BTN_OK = wxNewId();
+const wxWindowID CDialogAskUserForCamera::ID_BTN_CANCEL = wxNewId();
 
-// ---------------------------------------------------------------------------------------
-// The wx dummy frame:
-// ---------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// CWXMainFrame
+// ---------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(WxSubsystem::CWXMainFrame, wxFrame)
-
 END_EVENT_TABLE()
 
-const long ID_TIMER_WX_PROCESS_REQUESTS = wxNewId();
+const auto ID_TIMER_WX_PROCESS_REQUESTS = wxNewId();
 
 WxSubsystem::CWXMainFrame::CWXMainFrame(wxWindow* parent, wxWindowID id)
 {
-  Create(
-      parent, id, _("MRPT-dummy frame window"), wxDefaultPosition, wxSize(1, 1),
-      0,  // wxDEFAULT_FRAME_STYLE,
-      _T("id"));
+  Create(parent, id, _("MRPT-dummy frame window"), wxDefaultPosition, wxSize(1, 1), 0, _T("id"));
 
-  if (oneInstance)
+  if (oneInstance != nullptr)
   {
-    cerr << "[CWXMainFrame] More than one instance running!"
-         << "\n";
+    cerr << "[CWXMainFrame] More than one instance running!\n";
   }
   oneInstance = this;
 
-  // ------------------------------------------------------------------------------------------
-  // Create a timer so requests from the main application thread can be
-  // processed regularly:
-  // ------------------------------------------------------------------------------------------
   Bind(wxEVT_TIMER, &CWXMainFrame::OnTimerProcessRequests, this, ID_TIMER_WX_PROCESS_REQUESTS);
   m_theTimer = new wxTimer(this, ID_TIMER_WX_PROCESS_REQUESTS);
-
   m_theTimer->Start(10, true);  // One-shot
 }
 
 WxSubsystem::CWXMainFrame::~CWXMainFrame()
 {
-#ifdef WXSUBSYSTEM_VERBOSE
-  cout << "[CWXMainFrame] Destructor."
-       << "\n";
-#endif
+  if (WX_SUBSYSTEM_VERBOSE)
+  {
+    cout << "[CWXMainFrame] Destructor.\n";
+  }
   delete m_theTimer;
+  m_theTimer = nullptr;
   oneInstance = nullptr;
 
-  // Purge all pending requests:
+  // Purge all pending requests.
   TRequestToWxMainThread* msg;
-  while (nullptr != (msg = popPendingWxRequest())) delete[] msg;
+  while (nullptr != (msg = popPendingWxRequest()))
+  {
+    delete msg;
+  }
 }
 
 int WxSubsystem::CWXMainFrame::notifyWindowCreation()
 {
   auto& wxd = WxSubSystemGlobalData::Instance();
-
   std::lock_guard<std::mutex> lock(wxd.cs_windowCount);
   return ++wxd.windowCount;
 }
@@ -207,7 +223,7 @@ int WxSubsystem::CWXMainFrame::notifyWindowDestruction()
 {
   auto& wxd = WxSubSystemGlobalData::Instance();
 
-  int ret;
+  int ret = 0;
   {
     std::lock_guard<std::mutex> lock(wxd.cs_windowCount);
     ret = --wxd.windowCount;
@@ -215,114 +231,116 @@ int WxSubsystem::CWXMainFrame::notifyWindowDestruction()
 
   if (ret == 0)
   {
-    // That was the last window... we should close the wx subsystem:
-    if (oneInstance)
+    // Last window closed; request shutdown of the wx subsystem.
+    if (oneInstance != nullptr)
     {
 #ifdef WXSHUTDOWN_DO_IT_CLEAN
-      CWXMainFrame* me = (CWXMainFrame*)(oneInstance);  // cast away the "volatile".
+      // Cast away volatile: safe here because we are in the wx thread.
+      auto* me = const_cast<CWXMainFrame*>(static_cast<const CWXMainFrame*>(oneInstance));
       me->Close();
 #endif
 
-#ifdef WXSUBSYSTEM_VERBOSE
-      cout << "[CWXMainFrame::notifyWindowDestruction] numWindows=0. "
-              "me->Close() called."
-           << "\n";
-#endif
+      if (WX_SUBSYSTEM_VERBOSE)
+      {
+        cout << "[CWXMainFrame::notifyWindowDestruction] numWindows=0. "
+                "me->Close() called.\n";
+      }
     }
   }
 
   return ret;
 }
 
-/** Thread-safe method to return the next pending request, or nullptr if there
- * is none (After usage, FREE the memory!)
- */
+// ---------------------------------------------------------------------------
+// Request queue helpers
+// ---------------------------------------------------------------------------
 WxSubsystem::TRequestToWxMainThread* WxSubsystem::popPendingWxRequest()
 {
   auto& wxd = WxSubSystemGlobalData::Instance();
-
   std::lock_guard<std::mutex> locker(wxd.cs_listPendingWxRequests);
 
-  // Is empty?
-  if (wxd.listPendingWxRequests.empty()) return nullptr;
+  if (wxd.listPendingWxRequests.empty())
+  {
+    return nullptr;
+  }
 
   TRequestToWxMainThread* ret = wxd.listPendingWxRequests.front();
-  wxd.listPendingWxRequests.pop();  // Remove from the queue
-
+  wxd.listPendingWxRequests.pop();
   return ret;
 }
 
-/** Thread-safe method to insert a new pending request (The memory must be
- * dinamically allocated with "new T[1]", will be freed by receiver.)
- */
 void WxSubsystem::pushPendingWxRequest(WxSubsystem::TRequestToWxMainThread* data)
 {
-  if (!WxSubsystem::CWXMainFrame::oneInstance)
+  if (WxSubsystem::CWXMainFrame::oneInstance == nullptr)
   {
-#ifdef WXSUBSYSTEM_VERBOSE
-    cout << "[WxSubsystem::pushPendingWxRequest] IGNORING request since "
-            "app seems already closed.\n";
-#endif
-    delete[] data;
-    return;  // wx subsystem already closed, ignore.
+    if (WX_SUBSYSTEM_VERBOSE)
+    {
+      cout << "[WxSubsystem::pushPendingWxRequest] IGNORING request since "
+              "app seems already closed.\n";
+    }
+    delete data;
+    return;
   }
 
   auto& wxd = WxSubSystemGlobalData::Instance();
-
   std::lock_guard<std::mutex> locker(wxd.cs_listPendingWxRequests);
   wxd.listPendingWxRequests.push(data);
 }
 
-/** This method processes the pending requests from the main MRPT application
- * thread.
- *  The requests may be to create a new window, close another one, change
- * title, etc...
- */
-void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
+// ---------------------------------------------------------------------------
+// Timer callback: process all pending inter-thread requests
+// ---------------------------------------------------------------------------
+void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& /*event*/)
 {
   bool app_closed = false;
   try
   {
-    TRequestToWxMainThread* msg;
+    if (WX_SUBSYSTEM_VERBOSE)
+    {
+      cout << "[OnTimerProcessRequests] Entering\n";
+    }
 
-#ifdef WXSUBSYSTEM_VERBOSE
-    cout << "[OnTimerProcessRequests] Entering"
-         << "\n";
-#endif
-
-    // For each pending request:
+    TRequestToWxMainThread* msg = nullptr;
     while (nullptr != (msg = popPendingWxRequest()))
     {
-      // Process it:
       switch (msg->OPCODE)
       {
-        // CREATE NEW WINDOW
-        case 200:
-          if (msg->source2D)
+        // ----------------------------------------------------------------
+        // CDisplayWindow (2D)
+        // ----------------------------------------------------------------
+        case OpCode::WIN2D_CREATE:
+        {
+          if (msg->source2D != nullptr)
           {
-            auto* wnd = new CWindowDialog(
-                msg->source2D, this, (wxWindowID)-1, msg->str, wxSize(msg->x, msg->y));
+            auto* wnd =
+                new CWindowDialog(msg->source2D, this, wxID_ANY, msg->str, wxSize(msg->x, msg->y));
 
-            // Set the "m_hwnd" member of the window:
-            *((void**)msg->voidPtr) = (void*)wnd;
+            // Hand the new wxFrame pointer back to the waiting caller.
+            auto** outPtr = static_cast<void**>(msg->voidPtr);
+            *outPtr = static_cast<void*>(wnd);
 
-            // Signal to the constructor (still waiting) that the
-            // window is now ready so it can continue:
             msg->source2D->notifySemThreadReady();
-
             wnd->Show();
           }
-          break;
-        // UPDATE IMAGE
-        case 201:
-          if (msg->source2D)
-          {
-            auto* wnd = (CWindowDialog*)msg->voidPtr;  // msg->source2D->getWxObject();
-            if (!wnd) break;
-            auto* img = (wxImage*)msg->voidPtr2;
-            if (!img) break;
+        }
+        break;
 
-            wnd->m_image->AssignImage(new wxBitmap(*img));  // Memory will be freed by the object.
+        case OpCode::WIN2D_UPDATE_IMAGE:
+        {
+          if (msg->source2D != nullptr)
+          {
+            auto* wnd = static_cast<CWindowDialog*>(msg->voidPtr);
+            if (wnd == nullptr)
+            {
+              break;
+            }
+            auto* img = static_cast<wxImage*>(msg->voidPtr2);
+            if (img == nullptr)
+            {
+              break;
+            }
+
+            wnd->m_image->AssignImage(new wxBitmap(*img));
 
             if (wnd->m_image->GetSize().GetX() != img->GetWidth() &&
                 wnd->m_image->GetSize().GetY() != img->GetHeight())
@@ -331,182 +349,240 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
               wnd->m_image->SetMinSize(wxSize(img->GetWidth(), img->GetHeight()));
               wnd->m_image->SetMaxSize(wxSize(img->GetWidth(), img->GetHeight()));
               wnd->Fit();
-              // wnd->SetClientSize(img->GetWidth(),
-              // img->GetHeight());
             }
             delete img;
-            // false: Do NOT erase background: avoid flickering
-            wnd->m_image->Refresh(false);
+            wnd->m_image->Refresh(false);  // false: don't erase bg (avoids flicker)
             wnd->m_image->Update();
           }
-          break;
-        // Set position
-        case 202:
-          if (msg->source2D)
+        }
+        break;
+
+        case OpCode::WIN2D_SET_POS:
+        {
+          if (msg->source2D != nullptr)
           {
-            auto* wnd = (CWindowDialog*)msg->source2D->getWxObject();
-            if (wnd) wnd->SetSize(msg->x, msg->y, wxDefaultCoord, wxDefaultCoord);
-          }
-          break;
-        // Set size
-        case 203:
-          if (msg->source2D)
-          {
-            auto* wnd = (CWindowDialog*)msg->source2D->getWxObject();
-            if (wnd) wnd->SetClientSize(msg->x, msg->y);
-          }
-          break;
-        // Set window's title:
-        case 204:
-          if (msg->source2D)
-          {
-            auto* wnd = (CWindowDialog*)msg->source2D->getWxObject();
-            if (wnd) wnd->SetTitle(msg->str.c_str());
-          }
-          break;
-        // DESTROY EXISTING WINDOW:
-        case 299:
-          if (msg->source2D)
-          {
-            auto* wnd = (CWindowDialog*)msg->source2D->getWxObject();
-            if (wnd)
+            auto* wnd = static_cast<CWindowDialog*>(msg->source2D->getWxObject());
+            if (wnd != nullptr)
             {
-              // delete wnd;
+              wnd->SetSize(msg->x, msg->y, wxDefaultCoord, wxDefaultCoord);
+            }
+          }
+        }
+        break;
+
+        case OpCode::WIN2D_SET_SIZE:
+        {
+          if (msg->source2D != nullptr)
+          {
+            auto* wnd = static_cast<CWindowDialog*>(msg->source2D->getWxObject());
+            if (wnd != nullptr)
+            {
+              wnd->SetClientSize(msg->x, msg->y);
+            }
+          }
+        }
+        break;
+
+        case OpCode::WIN2D_SET_TITLE:
+        {
+          if (msg->source2D != nullptr)
+          {
+            auto* wnd = static_cast<CWindowDialog*>(msg->source2D->getWxObject());
+            if (wnd != nullptr)
+            {
+              wnd->SetTitle(msg->str.c_str());
+            }
+          }
+        }
+        break;
+
+        case OpCode::WIN2D_DESTROY:
+        {
+          if (msg->source2D != nullptr)
+          {
+            auto* wnd = static_cast<CWindowDialog*>(msg->source2D->getWxObject());
+            if (wnd != nullptr)
+            {
               wnd->Close();
             }
           }
-          break;
+        }
+        break;
 
-        // CREATE NEW WINDOW
-        case 300:
-          if (msg->source3D)
+        // ----------------------------------------------------------------
+        // CDisplayWindow3D
+        // ----------------------------------------------------------------
+        case OpCode::WIN3D_CREATE:
+        {
+          if (msg->source3D != nullptr)
           {
             auto* wnd = new C3DWindowDialog(
-                msg->source3D, this, (wxWindowID)-1, msg->str, wxSize(msg->x, msg->y));
+                msg->source3D, this, wxID_ANY, msg->str, wxSize(msg->x, msg->y));
 
-            // Set the "m_hwnd" member of the window:
-            *((void**)msg->voidPtr) = (void*)wnd;
+            auto** outPtr = static_cast<void**>(msg->voidPtr);
+            *outPtr = static_cast<void*>(wnd);
 
-            // Signal to the constructor (still waiting) that the
-            // window is now ready so it can continue:
             msg->source3D->notifySemThreadReady();
-
             wnd->Show();
           }
-          break;
-        // Set position
-        case 302:
-          if (msg->source3D)
+        }
+        break;
+
+        case OpCode::WIN3D_SET_POS:
+        {
+          if (msg->source3D != nullptr)
           {
-            auto* wnd = (C3DWindowDialog*)msg->source3D->getWxObject();
-            if (wnd) wnd->SetSize(msg->x, msg->y, wxDefaultCoord, wxDefaultCoord);
+            auto* wnd = static_cast<C3DWindowDialog*>(msg->source3D->getWxObject());
+            if (wnd != nullptr)
+            {
+              wnd->SetSize(msg->x, msg->y, wxDefaultCoord, wxDefaultCoord);
+            }
           }
-          break;
-        // Set size
-        case 303:
-          if (msg->source3D)
+        }
+        break;
+
+        case OpCode::WIN3D_SET_SIZE:
+        {
+          if (msg->source3D != nullptr)
           {
-            auto* wnd = (C3DWindowDialog*)msg->source3D->getWxObject();
-            if (wnd) wnd->SetClientSize(msg->x, msg->y);
+            auto* wnd = static_cast<C3DWindowDialog*>(msg->source3D->getWxObject());
+            if (wnd != nullptr)
+            {
+              wnd->SetClientSize(msg->x, msg->y);
+            }
           }
-          break;
-        // Set window's title:
-        case 304:
-          if (msg->source3D)
+        }
+        break;
+
+        case OpCode::WIN3D_SET_TITLE:
+        {
+          if (msg->source3D != nullptr)
           {
-            auto* wnd = (C3DWindowDialog*)msg->source3D->getWxObject();
-            if (wnd) wnd->SetTitle(msg->str.c_str());
+            auto* wnd = static_cast<C3DWindowDialog*>(msg->source3D->getWxObject());
+            if (wnd != nullptr)
+            {
+              wnd->SetTitle(msg->str.c_str());
+            }
           }
-          break;
-        // FORCE REPAINT
-        case 350:
-          if (msg->source3D)
+        }
+        break;
+
+        case OpCode::WIN3D_FORCE_REPAINT:
+        {
+          if (msg->source3D != nullptr)
           {
-            auto* wnd = (C3DWindowDialog*)msg->source3D->getWxObject();
-            if (wnd)
+            auto* wnd = static_cast<C3DWindowDialog*>(msg->source3D->getWxObject());
+            if (wnd != nullptr)
             {
               wnd->Refresh(false);
             }
           }
-          break;
+        }
+        break;
 
-        // DESTROY EXISTING WINDOW:
-        case 399:
-          if (msg->source3D)
+        case OpCode::WIN3D_DESTROY:
+        {
+          if (msg->source3D != nullptr)
           {
-            auto* wnd = (C3DWindowDialog*)msg->source3D->getWxObject();
-            if (wnd)
+            auto* wnd = static_cast<C3DWindowDialog*>(msg->source3D->getWxObject());
+            if (wnd != nullptr)
             {
-              // delete wnd;
               wnd->Close();
             }
           }
-          break;
+        }
+        break;
 
-        // CREATE NEW WINDOW
-        case 400:
-          if (msg->sourcePlots)
+        // ----------------------------------------------------------------
+        // CDisplayWindowPlots
+        // ----------------------------------------------------------------
+        case OpCode::PLOTS_CREATE:
+        {
+          if (msg->sourcePlots != nullptr)
           {
             auto* wnd = new CWindowDialogPlots(
-                msg->sourcePlots, this, (wxWindowID)-1, msg->str, wxSize(msg->x, msg->y));
+                msg->sourcePlots, this, wxID_ANY, msg->str, wxSize(msg->x, msg->y));
 
-            // Set the "m_hwnd" member of the window:
-            *((void**)msg->voidPtr) = (void*)wnd;
+            auto** outPtr = static_cast<void**>(msg->voidPtr);
+            *outPtr = static_cast<void*>(wnd);
 
-            // Signal to the constructor (still waiting) that the
-            // window is now ready so it can continue:
             msg->sourcePlots->notifySemThreadReady();
-
             wnd->Show();
           }
-          break;
-        // Set position
-        case 402:
-          if (msg->sourcePlots)
-          {
-            auto* wnd = (CWindowDialogPlots*)msg->sourcePlots->getWxObject();
-            if (wnd) wnd->SetSize(msg->x, msg->y, wxDefaultCoord, wxDefaultCoord);
-          }
-          break;
-        // Set size
-        case 403:
-          if (msg->sourcePlots)
-          {
-            auto* wnd = (CWindowDialogPlots*)msg->sourcePlots->getWxObject();
-            if (wnd) wnd->SetClientSize(msg->x, msg->y);
-          }
-          break;
-        // Set window's title:
-        case 404:
-          if (msg->sourcePlots)
-          {
-            auto* wnd = (CWindowDialogPlots*)msg->sourcePlots->getWxObject();
-            if (wnd) wnd->SetTitle(msg->str.c_str());
-          }
-          break;
-        // Mouse pan
-        case 410:
-          if (msg->sourcePlots)
-          {
-            auto* wnd = (CWindowDialogPlots*)msg->sourcePlots->getWxObject();
-            if (wnd) wnd->m_plot->EnableMousePanZoom(msg->boolVal);
-          }
-          break;
-        // Aspect ratio
-        case 411:
-          if (msg->sourcePlots)
-          {
-            auto* wnd = (CWindowDialogPlots*)msg->sourcePlots->getWxObject();
-            if (wnd) wnd->m_plot->LockAspect(msg->boolVal);
-          }
-          break;
+        }
+        break;
 
-        // Zoom over a rectangle vectorx[0-1] & vectory[0-1]
-        case 412:
-          if (msg->sourcePlots)
+        case OpCode::PLOTS_SET_POS:
+        {
+          if (msg->sourcePlots != nullptr)
           {
-            auto* wnd = (CWindowDialogPlots*)msg->sourcePlots->getWxObject();
-            if (wnd)
+            auto* wnd = static_cast<CWindowDialogPlots*>(msg->sourcePlots->getWxObject());
+            if (wnd != nullptr)
+            {
+              wnd->SetSize(msg->x, msg->y, wxDefaultCoord, wxDefaultCoord);
+            }
+          }
+        }
+        break;
+
+        case OpCode::PLOTS_SET_SIZE:
+        {
+          if (msg->sourcePlots != nullptr)
+          {
+            auto* wnd = static_cast<CWindowDialogPlots*>(msg->sourcePlots->getWxObject());
+            if (wnd != nullptr)
+            {
+              wnd->SetClientSize(msg->x, msg->y);
+            }
+          }
+        }
+        break;
+
+        case OpCode::PLOTS_SET_TITLE:
+        {
+          if (msg->sourcePlots != nullptr)
+          {
+            auto* wnd = static_cast<CWindowDialogPlots*>(msg->sourcePlots->getWxObject());
+            if (wnd != nullptr)
+            {
+              wnd->SetTitle(msg->str.c_str());
+            }
+          }
+        }
+        break;
+
+        case OpCode::PLOTS_SET_MOUSE_PANZOOM:
+        {
+          if (msg->sourcePlots != nullptr)
+          {
+            auto* wnd = static_cast<CWindowDialogPlots*>(msg->sourcePlots->getWxObject());
+            if (wnd != nullptr)
+            {
+              wnd->m_plot->EnableMousePanZoom(msg->boolVal);
+            }
+          }
+        }
+        break;
+
+        case OpCode::PLOTS_SET_ASPECT_RATIO:
+        {
+          if (msg->sourcePlots != nullptr)
+          {
+            auto* wnd = static_cast<CWindowDialogPlots*>(msg->sourcePlots->getWxObject());
+            if (wnd != nullptr)
+            {
+              wnd->m_plot->LockAspect(msg->boolVal);
+            }
+          }
+        }
+        break;
+
+        case OpCode::PLOTS_ZOOM_RECT:
+        {
+          if (msg->sourcePlots != nullptr)
+          {
+            auto* wnd = static_cast<CWindowDialogPlots*>(msg->sourcePlots->getWxObject());
+            if (wnd != nullptr)
             {
               if (msg->vector_x.size() == 2 && msg->vector_y.size() == 2)
               {
@@ -516,74 +592,87 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
               }
             }
           }
-          break;
-        // Axis fit, with aspect ratio fix to boolVal.
-        case 413:
-          if (msg->sourcePlots)
+        }
+        break;
+
+        case OpCode::PLOTS_AXIS_FIT:
+        {
+          if (msg->sourcePlots != nullptr)
           {
-            auto* wnd = (CWindowDialogPlots*)msg->sourcePlots->getWxObject();
-            if (wnd)
+            auto* wnd = static_cast<CWindowDialogPlots*>(msg->sourcePlots->getWxObject());
+            if (wnd != nullptr)
             {
               wnd->m_plot->LockAspect(msg->boolVal);
               wnd->m_plot->Fit();
             }
           }
-          break;
-        // Clear all objects:
-        case 414:
-          if (msg->sourcePlots)
+        }
+        break;
+
+        case OpCode::PLOTS_CLEAR:
+        {
+          if (msg->sourcePlots != nullptr)
           {
-            auto* wnd = (CWindowDialogPlots*)msg->sourcePlots->getWxObject();
-            if (wnd)
+            auto* wnd = static_cast<CWindowDialogPlots*>(msg->sourcePlots->getWxObject());
+            if (wnd != nullptr)
             {
               wnd->m_plot->DelAllLayers(true, true);
               wnd->m_plot->AddLayer(new mpScaleX());
               wnd->m_plot->AddLayer(new mpScaleY());
             }
           }
-          break;
+        }
+        break;
 
-        // Create/modify 2D plot
-        case 420:
-          if (msg->sourcePlots)
+        case OpCode::PLOTS_ADD_LINE:
+        {
+          if (msg->sourcePlots != nullptr)
           {
-            auto* wnd = (CWindowDialogPlots*)msg->sourcePlots->getWxObject();
-            if (wnd) wnd->plot(msg->vector_x, msg->vector_y, msg->str, msg->plotName);
+            auto* wnd = static_cast<CWindowDialogPlots*>(msg->sourcePlots->getWxObject());
+            if (wnd != nullptr)
+            {
+              wnd->plot(msg->vector_x, msg->vector_y, msg->str, msg->plotName);
+            }
           }
-          break;
+        }
+        break;
 
-        // Create/modify 2D ellipse
-        case 421:
-          if (msg->sourcePlots)
+        case OpCode::PLOTS_ADD_ELLIPSE:
+        {
+          if (msg->sourcePlots != nullptr)
           {
-            auto* wnd = (CWindowDialogPlots*)msg->sourcePlots->getWxObject();
-            if (wnd)
+            auto* wnd = static_cast<CWindowDialogPlots*>(msg->sourcePlots->getWxObject());
+            if (wnd != nullptr)
+            {
               wnd->plotEllipse(msg->vector_x, msg->vector_y, msg->str, msg->plotName, msg->boolVal);
+            }
           }
-          break;
+        }
+        break;
 
-        // Create/modify bitmap image
-        case 422:
-          if (msg->sourcePlots)
+        case OpCode::PLOTS_ADD_BITMAP:
+        {
+          if (msg->sourcePlots != nullptr)
           {
-            auto* wnd = (CWindowDialogPlots*)msg->sourcePlots->getWxObject();
-            if (wnd)
+            auto* wnd = static_cast<CWindowDialogPlots*>(msg->sourcePlots->getWxObject());
+            if (wnd != nullptr)
+            {
               wnd->image(
                   msg->voidPtr2, msg->vector_x[0], msg->vector_x[1], msg->vector_x[2],
                   msg->vector_x[3], msg->plotName);
+            }
           }
-          break;
+        }
+        break;
 
-        // 440: Insert submenu in the popup menu. name=menu label, x=ID
-        case 440:
-          if (msg->sourcePlots)
+        case OpCode::PLOTS_INSERT_SUBMENU:
+        {
+          if (msg->sourcePlots != nullptr)
           {
-            auto* wnd = (CWindowDialogPlots*)msg->sourcePlots->getWxObject();
-            if (wnd)
+            auto* wnd = static_cast<CWindowDialogPlots*>(msg->sourcePlots->getWxObject());
+            if (wnd != nullptr)
             {
-              const long MENUITEM_ID = wxNewId();
-              // Remember the association between this ID and the
-              // user ID:
+              const auto MENUITEM_ID = wxNewId();
               wnd->m_ID2ID[MENUITEM_ID] = msg->x;
 
               wxMenu* popupMnu = wnd->m_plot->GetPopupMenu();
@@ -592,60 +681,68 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
                 wnd->m_firstSubmenu = false;
                 popupMnu->InsertSeparator(0);
               }
-              wxMenuItem* mnuTarget = new wxMenuItem(
+              auto* mnuTarget = new wxMenuItem(
                   popupMnu, MENUITEM_ID, msg->plotName.c_str(), wxEmptyString, wxITEM_NORMAL);
               popupMnu->Insert(0, mnuTarget);
 
               wnd->Bind(wxEVT_MENU, &CWindowDialogPlots::OnMenuSelected, wnd, MENUITEM_ID);
             }
           }
-          break;
+        }
+        break;
 
-        // DESTROY EXISTING WINDOW:
-        case 499:
-          if (msg->sourcePlots)
+        case OpCode::PLOTS_DESTROY:
+        {
+          if (msg->sourcePlots != nullptr)
           {
-            auto* wnd = (CWindowDialogPlots*)msg->sourcePlots->getWxObject();
-            if (wnd)
+            auto* wnd = static_cast<CWindowDialogPlots*>(msg->sourcePlots->getWxObject());
+            if (wnd != nullptr)
             {
-              // delete wnd;
               wnd->Close();
             }
           }
-          break;
+        }
+        break;
 
-        // CREATE NEW WINDOW
-        case 700:
+        // ----------------------------------------------------------------
+        // Camera-selection dialog
+        // ----------------------------------------------------------------
+        case OpCode::CAMERA_SELECT_DIALOG:
+        {
           if (msg->sourceCameraSelectDialog)
           {
-            auto* sem = reinterpret_cast<std::promise<void>*>(msg->voidPtr);
+            // voidPtr and voidPtr2 carry std::promise pointers that were
+            // created in the calling thread.  We receive them as void*
+            // and use static_cast (they were stored via static_cast in
+            // the sender, so the types match exactly — no UB).
+            auto* readySem = static_cast<std::promise<void>*>(msg->voidPtr);
+            auto* resultPromise =
+                static_cast<std::promise<mrpt::gui::detail::TReturnAskUserOpenCamera>*>(
+                    msg->voidPtr2);
 
             auto dlg = std::make_unique<CDialogAskUserForCamera>();
 
-            // Signal that the window is ready:
-            sem->set_value();
+            // Signal that the dialog window is now up.
+            readySem->set_value();
 
-            // Show
             const bool wasOk = (dlg->ShowModal() == wxID_OK);
 
-            // send selection to caller:
-            auto* promise =
-                reinterpret_cast<std::promise<mrpt::gui::detail::TReturnAskUserOpenCamera>*>(
-                    msg->voidPtr2);
             mrpt::gui::detail::TReturnAskUserOpenCamera ret;
-
-            // Parse selection as a config text block:
             mrpt::config::CConfigFileMemory c;
             dlg->panel->writeConfigFromVideoSourcePanel("CONFIG", &c);
             ret.selectedConfig = c.getContent();
             ret.accepted_by_user = wasOk;
 
-            promise->set_value(std::move(ret));
+            resultPromise->set_value(std::move(ret));
             dlg->Close();
           }
-          break;
+        }
+        break;
 
-        case 800:
+        // ----------------------------------------------------------------
+        // Execute arbitrary callable in the GUI thread
+        // ----------------------------------------------------------------
+        case OpCode::RUN_USER_FUNCTION:
         {
           try
           {
@@ -653,44 +750,59 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
           }
           catch (const std::exception& e)
           {
-            std::cerr << "[WxSubsystem] Exception with userFunction():\n" << e.what();
+            std::cerr << "[WxSubsystem] Exception in userFunction():\n" << e.what() << "\n";
           }
         }
         break;
 
-        // wxSubsystem shutdown:
-        case 999:
+        // ----------------------------------------------------------------
+        // Shutdown
+        // ----------------------------------------------------------------
+        case OpCode::SHUTDOWN:
         {
-#ifdef WXSUBSYSTEM_VERBOSE
-          cout << "[WxSubsystem:999] Shutdown"
-               << "\n";
-#endif
-          app_closed = true;  // Do NOT launch a timer again
-          if (WxSubsystem::CWXMainFrame::oneInstance)
-            ((WxSubsystem::CWXMainFrame*)(WxSubsystem::CWXMainFrame::oneInstance))->Close();
-#ifdef WXSUBSYSTEM_VERBOSE
-          cout << "[WxSubsystem:999] Shutdown done"
-               << "\n";
-#endif
+          if (WX_SUBSYSTEM_VERBOSE)
+          {
+            cout << "[WxSubsystem::SHUTDOWN] Initiating shutdown\n";
+          }
+          app_closed = true;
+          if (WxSubsystem::CWXMainFrame::oneInstance != nullptr)
+          {
+            // Cast away volatile: safe here because we are executing in
+            // the wx thread that owns this object.
+            auto* frame = const_cast<CWXMainFrame*>(
+                static_cast<volatile const CWXMainFrame*>(WxSubsystem::CWXMainFrame::oneInstance));
+            ASSERT_(frame);
+            frame->Close();
+          }
+          if (WX_SUBSYSTEM_VERBOSE)
+          {
+            cout << "[WxSubsystem::SHUTDOWN] Done\n";
+          }
         }
         break;
 
-      }  // end switch OPCODE
+      }  // end switch (msg->OPCODE)
 
-      // Free the memory:
-      delete[] msg;
-    }  // end while
+      delete msg;
+    }  // end while (pending requests)
   }
-  catch (...)
+  catch (const std::exception& e)
   {
+    // Swallow so the timer loop is never broken by an unexpected exception.
+    std::cerr << "[WxSubsystem] Exception in main loop: " << e.what() << "\n";
   }
 
-  if (!app_closed) m_theTimer->Start(10, true);  // One-shot
+  if (!app_closed)
+  {
+    m_theTimer->Start(10, true);
+  }  // Restart one-shot timer.
 }
 
-// ---------------------------------------------------------------------------------------
-// MRPT Icons
-// ---------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// MRPT default icon (XPM)
+// ---------------------------------------------------------------------------
+namespace
+{
 const char* mrpt_default_icon_xpm[] = {
     "32 32 2 1",
     " 	c None",
@@ -727,10 +839,10 @@ const char* mrpt_default_icon_xpm[] = {
     "                                ",
     "                                ",
     "                                "};
+}
 
 wxBitmap WxSubsystem::getMRPTDefaultIcon()
 {
-// To avoid an error in wx, always resize the icon to the expected size:
 #ifdef _WIN32
   const wxSize iconsSize(::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON));
   return wxBitmap(wxBitmap(mrpt_default_icon_xpm).ConvertToImage().Scale(iconsSize.x, iconsSize.y));
@@ -739,9 +851,9 @@ wxBitmap WxSubsystem::getMRPTDefaultIcon()
 #endif
 }
 
-// ---------------------------------------------------------------------------------------
-// The wx app:
-// ---------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// The wx application object
+// ---------------------------------------------------------------------------
 class CDisplayWindow_WXAPP : public wxApp
 {
  public:
@@ -751,34 +863,25 @@ class CDisplayWindow_WXAPP : public wxApp
 
 bool CDisplayWindow_WXAPP::OnInit()
 {
-  // Starting in wxWidgets 2.9.0, we must reset numerics locale to "C",
-  //  if we want numbers to use "." in all countries. The App::OnInit() is a
-  //  perfect place to undo
-  //  the default wxWidgets settings. (JL @ Sep-2009)
+  // Reset numeric locale to "C" so floating-point I/O uses '.' everywhere.
   wxSetlocale(LC_NUMERIC, wxString(wxT("C")));
-
   wxInitAllImageHandlers();
 
-  // cout << "[wxApp::OnInit] wxApplication OnInit called." << "\n";
-
-  // Create a dummy frame:
   auto* Frame = new WxSubsystem::CWXMainFrame(nullptr);
   Frame->Hide();
 
-  // We are ready!!
-  // cout << "[wxMainThread] Signaling semaphore." << "\n";
+  // Signal the waiting main thread.
   WxSubsystem::GetWxMainThreadInstance().m_semWxMainThreadReady.set_value();
 
   return true;
 }
 
-// This will be called when all the windows / frames are closed.
 int CDisplayWindow_WXAPP::OnExit()
 {
-#ifdef WXSUBSYSTEM_VERBOSE
-  cout << "[wxApp::OnExit] wxApplication OnExit called."
-       << "\n";
-#endif
+  if (WX_SUBSYSTEM_VERBOSE)
+  {
+    cout << "[wxApp::OnExit] wxApplication OnExit called.\n";
+  }
 
   std::lock_guard<std::mutex> lock(WxSubsystem::GetWxMainThreadInstance().m_csWxMainThreadId);
 
@@ -787,93 +890,87 @@ int CDisplayWindow_WXAPP::OnExit()
   return 0;
 }
 
-/** This method must be called in the destructor of the user class FROM THE MAIN
- * THREAD, in order to wait for the shutdown of the wx thread if this was the
- * last open window.
- */
+// ---------------------------------------------------------------------------
+// waitWxShutdownsIfNoWindows
+// ---------------------------------------------------------------------------
 void WxSubsystem::waitWxShutdownsIfNoWindows()
 {
 #ifndef WXSHUTDOWN_DO_IT_CLEAN
 
-#ifdef WXSUBSYSTEM_VERBOSE
-  cout << "[WxSubsystem::waitWxShutdownsIfNoWindows] Doing a quick "
-          "std::this_thread::sleep_for(ms) and returning.\n";
-#endif
+  if (WX_SUBSYSTEM_VERBOSE)
+  {
+    cout << "[WxSubsystem::waitWxShutdownsIfNoWindows] Quick sleep and return.\n";
+  }
   std::this_thread::sleep_for(100ms);
-  return;
+
 #else
-  // Just let know a global object that, at its destruction, it must  ....
-  // Any open windows?
+
+  auto& wxd = WxSubSystemGlobalData::Instance();
   int nOpenWnds;
   {
-    std::lock_guard<std::mutex> lock(CWXMainFrame::cs_windowCount);
-    nOpenWnds = CWXMainFrame::m_windowCount;
+    std::lock_guard<std::mutex> lock(wxd.cs_windowCount);
+    nOpenWnds = wxd.windowCount;
   }
 
   if (!nOpenWnds && WxSubsystem::isConsoleApp())
   {
-#ifdef WXSUBSYSTEM_VERBOSE
-    cout << "[WxSubsystem::waitWxShutdownsIfNoWindows] Waiting for "
-            "WxWidgets thread to shutdown...\n";
-#endif
+    if (WXSUBSYSTEM_VERBOSE)
+    {
+      cout << "[WxSubsystem::waitWxShutdownsIfNoWindows] Waiting for "
+              "WxWidgets thread to shut down...\n";
+    }
 
-    // Then we must be shutting down in the wx thread (we are in the main
-    // MRPT application thread)...
-    // Wait until wx is safely shut down:
-    bool done = false;
-    int maxTimeout =
+    const int maxTimeout =
 #ifdef _DEBUG
         30000;
 #else
         5000;
 #endif
-    if (m_done.wait_for(std::chrono::milliseconds(maxTimeout)) == std::future_status::timeout)
+    if (GetWxMainThreadInstance().m_done.get_future().wait_for(
+            std::chrono::milliseconds(maxTimeout)) == std::future_status::timeout)
     {
       cerr << "[WxSubsystem::waitWxShutdownsIfNoWindows] Timeout waiting "
-              "for WxWidgets thread to shutdown!"
-           << "\n";
+              "for WxWidgets thread to shut down!\n";
     }
   }
 #endif
 }
 
+// ---------------------------------------------------------------------------
+// wxEntry helpers
+// ---------------------------------------------------------------------------
+extern CDisplayWindow_WXAPP& wxGetApp();
+
+namespace
+{
 wxAppConsole* mrpt_wxCreateApp()
 {
   wxAppConsole::CheckBuildOptions(WX_BUILD_OPTIONS_SIGNATURE, "your program");
   return new CDisplayWindow_WXAPP;
 }
 
-// DECLARE_APP(CDisplayWindow_WXAPP)
-extern CDisplayWindow_WXAPP& wxGetApp();
-
-// Aux. funcs used in WxSubsystem::wxMainThread
-// --------------------------------------------------
 int mrpt_wxEntryReal()
 {
-  // library initialization
   if (!wxInitialize())
   {
 #if wxUSE_LOG
-    // flush any log messages explaining why we failed
     delete wxLog::SetActiveTarget(nullptr);
 #endif
     return -1;
   }
 
-  // if wxEntryStart succeeded, we must call wxEntryCleanup even if the code
-  // below returns or throws
   try
   {
-    // app initialization
-    if (!wxTheApp->CallOnInit()) return -1;  // don't call OnExit() if OnInit() failed
+    if (!wxTheApp->CallOnInit())
+    {
+      return -1;
+    }
 
-    // app execution
-    int ret = wxTheApp->OnRun();
+    const int ret = wxTheApp->OnRun();
 
     {
-      wxLogNull logNo;  // Skip any warning in this scope.
-
-      wxTheApp->OnExit();  // This replaces the above callOnExit class
+      wxLogNull logNo;
+      wxTheApp->OnExit();
       wxEntryCleanup();
     }
 
@@ -887,75 +984,71 @@ int mrpt_wxEntryReal()
   }
 }
 
-/*---------------------------------------------------------------
-          wxMainThread
- This will be the "MAIN" of wxWidgets: It starts an application
-   object and does not end until all the windows are closed.
- Only for console apps, not for user GUI apps already with wx.
- ---------------------------------------------------------------*/
+}  // namespace
+
+// ---------------------------------------------------------------------------
+// wxMainThread — the dedicated wx message-loop thread for console apps
+// ---------------------------------------------------------------------------
 void WxSubsystem::wxMainThread()
 {
   MRPT_START
-  // Prepare wxWidgets:
-#ifdef WXSUBSYSTEM_VERBOSE
-  cout << "[wxMainThread] Starting..."
-       << "\n";
-#endif
 
-  // Are we in a console or wxGUI application????
-  wxAppConsole* app_gui = wxApp::GetInstance();
-  if (!app_gui)
+  if (WX_SUBSYSTEM_VERBOSE)
   {
-// We are NOT in a wx application (it's a console program)
-// ---------------------------------------------------------
-#ifdef WXSUBSYSTEM_VERBOSE
-    cout << "[wxMainThread] I am in a console app"
-         << "\n";
-#endif
-    //  Start a new wx application object:
+    cout << "[wxMainThread] Starting...\n";
+  }
 
-    // JLBC OCT2008: wxWidgets little hack to enable console/gui mixed
-    // applications:
-    wxApp::SetInitializerFunction((wxAppInitializerFunction)mrpt_wxCreateApp);
+  wxAppConsole* app_gui = wxApp::GetInstance();
+  if (app_gui == nullptr)
+  {
+    // Console application: spin up our own wx app instance.
+    if (WX_SUBSYSTEM_VERBOSE)
+    {
+      cout << "[wxMainThread] Running as console app\n";
+    }
+
+    wxApp::SetInitializerFunction(static_cast<wxAppInitializerFunction>(mrpt_wxCreateApp));
     mrpt_wxEntryReal();
 
-#ifdef WXSUBSYSTEM_VERBOSE
-    cout << "[wxMainThread] Finished"
-         << "\n";
-#endif
+    if (WX_SUBSYSTEM_VERBOSE)
+    {
+      cout << "[wxMainThread] Finished\n";
+    }
 
-    // Now this thread is ready. The main thread is free to end now:
-    WxSubsystem::GetWxMainThreadInstance().m_done.set_value();
+    GetWxMainThreadInstance().m_done.set_value();
   }
   else
   {
-// We are ALREADY in a wx application:
-// ---------------------------------------------------------
-#ifdef WXSUBSYSTEM_VERBOSE
-    cout << "[wxMainThread] I am in a GUI app"
-         << "\n";
-#endif
-    wxWindow* topWin = static_cast<wxApp*>(app_gui)->GetTopWindow();
+    // GUI application: a wxApp already exists; just create our hidden frame.
+    if (WX_SUBSYSTEM_VERBOSE)
+    {
+      cout << "[wxMainThread] Running inside an existing wxApp\n";
+    }
 
+    wxWindow* topWin = static_cast<wxApp*>(app_gui)->GetTopWindow();
     auto* Frame = new WxSubsystem::CWXMainFrame(topWin);
     Frame->Hide();
 
-// We are ready!!
-#ifdef WXSUBSYSTEM_VERBOSE
-    cout << "[wxMainThread] Signaling semaphore."
-         << "\n";
-#endif
-    WxSubsystem::GetWxMainThreadInstance().m_semWxMainThreadReady.set_value();
+    if (WX_SUBSYSTEM_VERBOSE)
+    {
+      cout << "[wxMainThread] Signaling semaphore.\n";
+    }
+
+    GetWxMainThreadInstance().m_semWxMainThreadReady.set_value();
   }
 
   MRPT_END
 }
 
+// ---------------------------------------------------------------------------
+// GetWxMainThreadInstance
+//
+// NOTE: This intentionally leaks the TWxMainThreadData object so that it
+// outlives any static destructors that might still use it.  This is a
+// known pre-existing design choice in the original code.
+// ---------------------------------------------------------------------------
 WxSubsystem::TWxMainThreadData& WxSubsystem::GetWxMainThreadInstance()
 {
-  // static TWxMainThreadData dat;
-  // Create as dynamic memory, since it'll be deleted in
-  // CAuxWxSubsystemShutdowner:
   static TWxMainThreadData* dat = nullptr;
   static bool first_creat = true;
   if (!dat && first_creat)
@@ -966,46 +1059,40 @@ WxSubsystem::TWxMainThreadData& WxSubsystem::GetWxMainThreadInstance()
   return *dat;
 }
 
-/*---------------------------------------------------------------
-          createOneInstanceMainThread
- ---------------------------------------------------------------*/
+// ---------------------------------------------------------------------------
+// createOneInstanceMainThread
+// ---------------------------------------------------------------------------
 bool WxSubsystem::createOneInstanceMainThread()
 {
-  WxSubsystem::TWxMainThreadData& wxmtd = WxSubsystem::GetWxMainThreadInstance();
+  TWxMainThreadData& wxmtd = GetWxMainThreadInstance();
   std::lock_guard<std::mutex> lock(wxmtd.m_csWxMainThreadId);
 
   wxAppConsole* app_con = wxApp::GetInstance();
-  if (app_con && wxmtd.m_wxMainThreadId.get_id() == std::thread::id())
+  if (app_con != nullptr && wxmtd.m_wxMainThreadId.get_id() == std::thread::id())
   {
-    // We are NOT in a console application: There is already a wxApp
-    // instance running and it's not us.
+    // A wxApp instance already exists (user GUI app); don't create our own.
     isConsoleApp_value = false;
-    // cout << "[createOneInstanceMainThread] Mode: User GUI." << "\n";
-    if (!WxSubsystem::CWXMainFrame::oneInstance)
+    if (CWXMainFrame::oneInstance == nullptr)
     {
-      // Create our main hidden frame:
-      wxWindow* topWin = static_cast<wxApp*>(app_con)->GetTopWindow();
-
-      auto* Frame = new WxSubsystem::CWXMainFrame(topWin);
-      // Frame->Show();
-      // SetTopWindow(Frame);
+      wxWindow* topWin = dynamic_cast<wxApp*>(app_con)->GetTopWindow();
+      ASSERT_(topWin);
+      auto* Frame = new CWXMainFrame(topWin);
       Frame->Hide();
     }
   }
   else
   {
-    // cout << "[createOneInstanceMainThread] Mode: Console." << "\n";
     isConsoleApp_value = true;
     if (wxmtd.m_wxMainThreadId.get_id() == std::thread::id())
     {
-#ifdef WXSUBSYSTEM_VERBOSE
-      printf(
-          "[WxSubsystem::createOneInstanceMainThread] Launching "
-          "wxMainThread() thread...\n");
-#endif
-      // Create a thread for message processing there:
-      wxmtd.m_wxMainThreadId = std::thread(wxMainThread);
+      if (WX_SUBSYSTEM_VERBOSE)
+      {
+        printf(
+            "[WxSubsystem::createOneInstanceMainThread] Launching "
+            "wxMainThread() thread...\n");
+      }
 
+      wxmtd.m_wxMainThreadId = std::thread(wxMainThread);
       mrpt::system::thread_name("wxMainThread", wxmtd.m_wxMainThreadId);
 
       int maxTimeout =
@@ -1015,24 +1102,22 @@ bool WxSubsystem::createOneInstanceMainThread()
           5000;
 #endif
 
-      // If we have an "MRPT_WXSUBSYS_TIMEOUT_MS" environment variable,
-      // use that timeout instead:
-      const char* envVal = getenv("MRPT_WXSUBSYS_TIMEOUT_MS");
-      if (envVal) maxTimeout = atoi(envVal);
+      if (const char* envVal = getenv("MRPT_WXSUBSYS_TIMEOUT_MS"))
+      {
+        maxTimeout = atoi(envVal);
+      }
 
-      // A few secs should be enough...
       if (wxmtd.m_semWxMainThreadReady.get_future().wait_for(
               std::chrono::milliseconds(maxTimeout)) == std::future_status::timeout)
       {
         cerr << "[WxSubsystem::createOneInstanceMainThread] Timeout "
-                "waiting wxApplication to start up!"
-             << "\n";
+                "waiting for wxApplication to start up!\n";
         return false;
       }
     }
   }
 
-  return true;  // OK
+  return true;
 }
 
 #endif  // MRPT_HAS_WXWIDGETS

@@ -33,10 +33,10 @@ BEGIN_EVENT_TABLE(CWindowDialog, wxFrame)
 
 END_EVENT_TABLE()
 
-const long CWindowDialog::ID_IMAGE_BITMAP = wxNewId();
-const long ID_MENUITEM1 = wxNewId();
-const long ID_MENUITEM2 = wxNewId();
-const long ID_MENUITEM3 = wxNewId();
+const wxWindowID CWindowDialog::ID_IMAGE_BITMAP = wxNewId();
+const wxWindowID ID_MENUITEM1 = wxNewId();
+const wxWindowID ID_MENUITEM2 = wxNewId();
+const wxWindowID ID_MENUITEM3 = wxNewId();
 
 CWindowDialog::wxMRPTImageControl::wxMRPTImageControl(
     wxWindow* parent, wxWindowID winID, int x, int y, int width, int height) :
@@ -179,7 +179,10 @@ void CWindowDialog::OnClose(wxCloseEvent& event)
   catch (...)
   {
   }
-  if (!allow_close) return;  // Don't process this close event.
+  if (!allow_close)
+  {
+    return;  // Don't process this close event.
+  }
 
   // Set the m_hwnd=nullptr in our parent object.
   m_win2D->notifyChildWindowDestruction();
@@ -367,9 +370,9 @@ void CDisplayWindow::showImage([[maybe_unused]] const CImage& img)
   // Send a request to destroy this object:
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
   REQ->source2D = this;
-  REQ->OPCODE = 201;
+  REQ->OPCODE = WxSubsystem::OpCode::WIN2D_UPDATE_IMAGE;
   REQ->voidPtr = m_hwnd.get();
-  REQ->voidPtr2 = (void*)newImg;
+  REQ->voidPtr2 = newImg;
   WxSubsystem::pushPendingWxRequest(REQ);
 
   MRPT_END
@@ -549,7 +552,7 @@ void CDisplayWindow::resize(
   // Send a request to destroy this object:
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
   REQ->source2D = this;
-  REQ->OPCODE = 203;
+  REQ->OPCODE = WxSubsystem::OpCode::WIN2D_SET_SIZE;
   REQ->x = width;
   REQ->y = height;
   WxSubsystem::pushPendingWxRequest(REQ);
@@ -571,7 +574,7 @@ void CDisplayWindow::setPos([[maybe_unused]] int x, [[maybe_unused]] int y)
   // Send a request to destroy this object:
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
   REQ->source2D = this;
-  REQ->OPCODE = 202;
+  REQ->OPCODE = WxSubsystem::OpCode::WIN2D_SET_POS;
   REQ->x = x;
   REQ->y = y;
   WxSubsystem::pushPendingWxRequest(REQ);
@@ -593,7 +596,7 @@ void CDisplayWindow::setWindowTitle([[maybe_unused]] const std::string& str)
   // Send a request to destroy this object:
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
   REQ->source2D = this;
-  REQ->OPCODE = 204;
+  REQ->OPCODE = WxSubsystem::OpCode::WIN2D_SET_TITLE;
   REQ->str = str;
   WxSubsystem::pushPendingWxRequest(REQ);
 #endif
