@@ -70,7 +70,7 @@ class WxSubSystemGlobalData
   int windowCount{0};
   std::mutex cs_windowCount;
 
-  std::queue<WxSubsystem::TRequestToWxMainThread*> listPendingWxRequests;
+  std::queue<std::unique_ptr<WxSubsystem::TRequestToWxMainThread>> listPendingWxRequests;
   std::mutex cs_listPendingWxRequests;
 
  private:
@@ -98,9 +98,9 @@ WxSubsystem::CAuxWxSubsystemShutdowner::~CAuxWxSubsystemShutdowner()
 
     try
     {
-      auto* REQ = new WxSubsystem::TRequestToWxMainThread;
+      auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
       REQ->OPCODE = OpCode::SHUTDOWN;
-      WxSubsystem::pushPendingWxRequest(REQ);
+      WxSubsystem::pushPendingWxRequest(std::move(REQ));
 
       WxSubsystem::waitWxShutdownsIfNoWindows();
     }
@@ -205,10 +205,9 @@ WxSubsystem::CWXMainFrame::~CWXMainFrame()
   oneInstance = nullptr;
 
   // Purge all pending requests.
-  TRequestToWxMainThread* msg;
+  std::unique_ptr<TRequestToWxMainThread> msg;
   while (nullptr != (msg = popPendingWxRequest()))
   {
-    delete msg;
   }
 }
 
@@ -254,7 +253,7 @@ int WxSubsystem::CWXMainFrame::notifyWindowDestruction()
 // ---------------------------------------------------------------------------
 // Request queue helpers
 // ---------------------------------------------------------------------------
-WxSubsystem::TRequestToWxMainThread* WxSubsystem::popPendingWxRequest()
+std::unique_ptr<WxSubsystem::TRequestToWxMainThread> WxSubsystem::popPendingWxRequest()
 {
   auto& wxd = WxSubSystemGlobalData::Instance();
   std::lock_guard<std::mutex> locker(wxd.cs_listPendingWxRequests);
@@ -264,12 +263,12 @@ WxSubsystem::TRequestToWxMainThread* WxSubsystem::popPendingWxRequest()
     return nullptr;
   }
 
-  TRequestToWxMainThread* ret = wxd.listPendingWxRequests.front();
+  auto ret = std::move(wxd.listPendingWxRequests.front());
   wxd.listPendingWxRequests.pop();
   return ret;
 }
 
-void WxSubsystem::pushPendingWxRequest(WxSubsystem::TRequestToWxMainThread* data)
+void WxSubsystem::pushPendingWxRequest(std::unique_ptr<TRequestToWxMainThread>&& data)
 {
   if (WxSubsystem::CWXMainFrame::oneInstance == nullptr)
   {
@@ -278,13 +277,12 @@ void WxSubsystem::pushPendingWxRequest(WxSubsystem::TRequestToWxMainThread* data
       cout << "[WxSubsystem::pushPendingWxRequest] IGNORING request since "
               "app seems already closed.\n";
     }
-    delete data;
     return;
   }
 
   auto& wxd = WxSubSystemGlobalData::Instance();
   std::lock_guard<std::mutex> locker(wxd.cs_listPendingWxRequests);
-  wxd.listPendingWxRequests.push(data);
+  wxd.listPendingWxRequests.emplace(std::move(data));
 }
 
 // ---------------------------------------------------------------------------
@@ -300,9 +298,15 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& /*event*/)
       cout << "[OnTimerProcessRequests] Entering\n";
     }
 
-    TRequestToWxMainThread* msg = nullptr;
-    while (nullptr != (msg = popPendingWxRequest()))
+    std::unique_ptr<TRequestToWxMainThread> msg;
+    while ((msg = popPendingWxRequest()) != nullptr)
     {
+      if (WX_SUBSYSTEM_VERBOSE)
+      {
+        cout << "[OnTimerProcessRequests] Processing request " << static_cast<int>(msg->OPCODE)
+             << "\n";
+      }
+
       switch (msg->OPCODE)
       {
         // ----------------------------------------------------------------
@@ -783,7 +787,6 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& /*event*/)
 
       }  // end switch (msg->OPCODE)
 
-      delete msg;
     }  // end while (pending requests)
   }
   catch (const std::exception& e)

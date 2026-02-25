@@ -372,12 +372,12 @@ void CDisplayWindow::showImage([[maybe_unused]] const CImage& img)
   wxImage* newImg = mrpt::gui::MRPTImage2wxImage(img);
 
   // Send a request to destroy this object:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->source2D = this;
   REQ->OPCODE = WxSubsystem::OpCode::WIN2D_UPDATE_IMAGE;
   REQ->voidPtr = m_hwnd.get();
   REQ->voidPtr2 = newImg;
-  WxSubsystem::pushPendingWxRequest(REQ);
+  WxSubsystem::pushPendingWxRequest(std::move(REQ));
 
   MRPT_END
 #endif
@@ -554,12 +554,12 @@ void CDisplayWindow::resize(
   }
 
   // Send a request to destroy this object:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->source2D = this;
   REQ->OPCODE = WxSubsystem::OpCode::WIN2D_SET_SIZE;
   REQ->x = width;
   REQ->y = height;
-  WxSubsystem::pushPendingWxRequest(REQ);
+  WxSubsystem::pushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -576,12 +576,12 @@ void CDisplayWindow::setPos([[maybe_unused]] int x, [[maybe_unused]] int y)
   }
 
   // Send a request to destroy this object:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->source2D = this;
   REQ->OPCODE = WxSubsystem::OpCode::WIN2D_SET_POS;
   REQ->x = x;
   REQ->y = y;
-  WxSubsystem::pushPendingWxRequest(REQ);
+  WxSubsystem::pushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -598,10 +598,10 @@ void CDisplayWindow::setWindowTitle([[maybe_unused]] const std::string& str)
   }
 
   // Send a request to destroy this object:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->source2D = this;
   REQ->OPCODE = WxSubsystem::OpCode::WIN2D_SET_TITLE;
   REQ->str = str;
-  WxSubsystem::pushPendingWxRequest(REQ);
+  WxSubsystem::pushPendingWxRequest(std::move(REQ));
 #endif
 }

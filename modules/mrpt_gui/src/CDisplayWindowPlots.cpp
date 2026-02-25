@@ -713,12 +713,12 @@ void CDisplayWindowPlots::resize(
   }
 
   // Send a request to destroy this object:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->sourcePlots = this;
   REQ->OPCODE = WxSubsystem::OpCode::PLOTS_SET_SIZE;
   REQ->x = width;
   REQ->y = height;
-  WxSubsystem::pushPendingWxRequest(REQ);
+  WxSubsystem::pushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -735,12 +735,12 @@ void CDisplayWindowPlots::setPos([[maybe_unused]] int x, [[maybe_unused]] int y)
   }
 
   // Send a request to destroy this object:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->sourcePlots = this;
   REQ->OPCODE = WxSubsystem::OpCode::PLOTS_SET_POS;
   REQ->x = x;
   REQ->y = y;
-  WxSubsystem::pushPendingWxRequest(REQ);
+  WxSubsystem::pushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -757,11 +757,11 @@ void CDisplayWindowPlots::setWindowTitle([[maybe_unused]] const std::string& str
   }
 
   // Send a request to destroy this object:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->sourcePlots = this;
   REQ->OPCODE = WxSubsystem::OpCode::PLOTS_SET_TITLE;
   REQ->str = str;
-  WxSubsystem::pushPendingWxRequest(REQ);
+  WxSubsystem::pushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -774,11 +774,11 @@ void CDisplayWindowPlots::enableMousePanZoom([[maybe_unused]] bool enabled)
   if (!isOpen()) return;
 
   // Send a request to destroy this object:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->sourcePlots = this;
   REQ->OPCODE = WxSubsystem::OpCode::PLOTS_SET_MOUSE_PANZOOM;
   REQ->boolVal = enabled;
-  WxSubsystem::pushPendingWxRequest(REQ);
+  WxSubsystem::pushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -794,11 +794,11 @@ void CDisplayWindowPlots::axis_equal([[maybe_unused]] bool enabled)
   }
 
   // Send a request to destroy this object:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->sourcePlots = this;
   REQ->OPCODE = WxSubsystem::OpCode::PLOTS_AXIS_FIT;
   REQ->boolVal = enabled;
-  WxSubsystem::pushPendingWxRequest(REQ);
+  WxSubsystem::pushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -819,7 +819,7 @@ void CDisplayWindowPlots::axis(
   }
 
   // Send a request to destroy this object:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->sourcePlots = this;
   REQ->OPCODE = WxSubsystem::OpCode::PLOTS_ZOOM_RECT;
   REQ->vector_x.resize(2);
@@ -829,7 +829,7 @@ void CDisplayWindowPlots::axis(
   REQ->vector_y[0] = y_min;
   REQ->vector_y[1] = y_max;
   REQ->boolVal = aspectRatioFix;
-  WxSubsystem::pushPendingWxRequest(REQ);
+  WxSubsystem::pushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -845,11 +845,11 @@ void CDisplayWindowPlots::axis_fit([[maybe_unused]] bool aspectRatioFix)
   }
 
   // Send a request to destroy this object:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->sourcePlots = this;
   REQ->OPCODE = WxSubsystem::OpCode::PLOTS_AXIS_FIT;
   REQ->boolVal = aspectRatioFix;
-  WxSubsystem::pushPendingWxRequest(REQ);
+  WxSubsystem::pushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -890,7 +890,7 @@ void CDisplayWindowPlots::plotEllipse(
   }
 
   // Send a request to destroy this object:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->sourcePlots = this;
   REQ->OPCODE = WxSubsystem::OpCode::PLOTS_ADD_ELLIPSE;
   // 421: Add/update a 2D ellipse: format string=str, plot name =plotName,
@@ -911,7 +911,7 @@ void CDisplayWindowPlots::plotEllipse(
 
   REQ->boolVal = showName;
 
-  WxSubsystem::pushPendingWxRequest(REQ);
+  WxSubsystem::pushPendingWxRequest(std::move(REQ));
   MRPT_END
 #endif
 }
@@ -970,7 +970,7 @@ void CDisplayWindowPlots::plotEllipse(
   }
 
   // Send a request to destroy this object:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->sourcePlots = this;
   REQ->OPCODE = WxSubsystem::OpCode::PLOTS_ADD_ELLIPSE;
   // 421: Add/update a 2D ellipse: format string=str, plot name =plotName,
@@ -991,7 +991,7 @@ void CDisplayWindowPlots::plotEllipse(
 
   REQ->boolVal = showName;
 
-  WxSubsystem::pushPendingWxRequest(REQ);
+  WxSubsystem::pushPendingWxRequest(std::move(REQ));
   MRPT_END
 #endif
 }
@@ -1044,7 +1044,7 @@ void CDisplayWindowPlots::image(
   }
 
   // Send a request to destroy this object:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->sourcePlots = this;
   REQ->OPCODE = WxSubsystem::OpCode::PLOTS_ADD_BITMAP;
 
@@ -1061,7 +1061,7 @@ void CDisplayWindowPlots::image(
 
   REQ->voidPtr2 = mrpt::gui::MRPTImage2wxImage(img);
 
-  WxSubsystem::pushPendingWxRequest(REQ);
+  WxSubsystem::pushPendingWxRequest(std::move(REQ));
   MRPT_END
 #endif
 }
@@ -1102,7 +1102,7 @@ void CDisplayWindowPlots::internal_plot(
   }
 
   // Send a request to destroy this object:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->sourcePlots = this;
   REQ->OPCODE = WxSubsystem::OpCode::PLOTS_ADD_LINE;
   REQ->str = lineFormat;
@@ -1110,7 +1110,7 @@ void CDisplayWindowPlots::internal_plot(
   REQ->vector_x.swap(x);
   REQ->vector_y.swap(y);
 
-  WxSubsystem::pushPendingWxRequest(REQ);
+  WxSubsystem::pushPendingWxRequest(std::move(REQ));
   MRPT_END
 #endif
 }
@@ -1128,13 +1128,13 @@ void CDisplayWindowPlots::clear()
   }
 
   // Send a request to destroy this object:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->sourcePlots = this;
   REQ->OPCODE = WxSubsystem::OpCode::PLOTS_CLEAR;
 
   // 414: Clear all plot objects.
 
-  WxSubsystem::pushPendingWxRequest(REQ);
+  WxSubsystem::pushPendingWxRequest(std::move(REQ));
 #endif
   MRPT_END
 }
@@ -1168,14 +1168,14 @@ void CDisplayWindowPlots::addPopupMenuEntry(
     return;
   }
 
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->sourcePlots = this;
   REQ->OPCODE = WxSubsystem::OpCode::PLOTS_INSERT_SUBMENU;
   REQ->plotName = label;
   REQ->x = menuID;
   // 440: Inser submenu in the popup menu.
 
-  WxSubsystem::pushPendingWxRequest(REQ);
+  WxSubsystem::pushPendingWxRequest(std::move(REQ));
   MRPT_END
 #endif
 }

@@ -434,12 +434,12 @@ void CDisplayWindow3D::resize(
   }
 
   // Send a request to destroy this object:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->source3D = this;
   REQ->OPCODE = WxSubsystem::OpCode::WIN3D_SET_SIZE;
   REQ->x = width;
   REQ->y = height;
-  WxSubsystem::pushPendingWxRequest(REQ);
+  WxSubsystem::pushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -456,12 +456,12 @@ void CDisplayWindow3D::setPos([[maybe_unused]] int x, [[maybe_unused]] int y)
   }
 
   // Send a request to destroy this object:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->source3D = this;
   REQ->OPCODE = WxSubsystem::OpCode::WIN3D_SET_POS;
   REQ->x = x;
   REQ->y = y;
-  WxSubsystem::pushPendingWxRequest(REQ);
+  WxSubsystem::pushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -478,11 +478,11 @@ void CDisplayWindow3D::setWindowTitle([[maybe_unused]] const std::string& str)
   }
 
   // Send a request to destroy this object:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->source3D = this;
   REQ->OPCODE = WxSubsystem::OpCode::WIN3D_SET_TITLE;
   REQ->str = str;
-  WxSubsystem::pushPendingWxRequest(REQ);
+  WxSubsystem::pushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -500,10 +500,10 @@ void CDisplayWindow3D::forceRepaint()
   if (auto* win = static_cast<C3DWindowDialog*>(m_hwnd.get()); win)
   {
     // Send refresh request:
-    auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+    auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
     REQ->source3D = this;
     REQ->OPCODE = WxSubsystem::OpCode::WIN3D_FORCE_REPAINT;
-    WxSubsystem::pushPendingWxRequest(REQ);
+    WxSubsystem::pushPendingWxRequest(std::move(REQ));
   }
 #endif
 }
@@ -881,11 +881,11 @@ void CDisplayWindow3D::sendFunctionToRunOnGUIThread(const std::function<void(voi
   }
 
   // Send refresh request:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->source3D = this;
   REQ->OPCODE = WxSubsystem::OpCode::RUN_USER_FUNCTION;
   REQ->userFunction = f;
-  WxSubsystem::pushPendingWxRequest(REQ);
+  WxSubsystem::pushPendingWxRequest(std::move(REQ));
 
 #endif
 }
