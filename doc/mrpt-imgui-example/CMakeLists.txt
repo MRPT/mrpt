@@ -19,7 +19,7 @@ include(FetchContent)
 FetchContent_Declare(
     imgui
     GIT_REPOSITORY https://github.com/ocornut/imgui.git
-    GIT_TAG        v1.92.6  # adjust to latest stable
+    GIT_TAG        docking  # adjust to latest stable
 )
 FetchContent_MakeAvailable(imgui)
 
