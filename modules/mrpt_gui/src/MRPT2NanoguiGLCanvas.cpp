@@ -14,6 +14,7 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/gui/MRPT2NanoguiGLCanvas.h>
+#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL_GLUT
 
 using namespace mrpt::gui;
 

@@ -34,10 +34,7 @@ using namespace mrpt::io;
 using namespace mrpt::system;
 using namespace std;
 
-#include <mrpt/examples_config.h>
-
-string myGridMap(
-    MRPT_EXAMPLES_BASE_DIRECTORY + string("../share/mrpt/datasets/2006-MalagaCampus.gridmap.gz"));
+const std::string myGridMap = MRPT_EXAMPLE_DATA_DIR + "/datasets/2006-MalagaCampus.gridmap.gz";
 
 // ------------------------------------------------------
 //				TestPathPlanning
@@ -48,7 +45,9 @@ void TestPathPlanning()
   COccupancyGridMap2D gridmap;
 
   if (!mrpt::system::fileExists(myGridMap))
+  {
     THROW_EXCEPTION_FMT("Map file '%s' not found", myGridMap.c_str());
+  }
 
   printf("Loading gridmap...");
   {

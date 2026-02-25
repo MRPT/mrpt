@@ -10,6 +10,9 @@ include(./cmake/script_nanogui.cmake REQUIRED)
 include(./cmake/script_qt.cmake REQUIRED)
 include(./cmake/script_wxwidgets.cmake REQUIRED)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(./cmake/script_gl_glut.cmake REQUIRED)     # Check for the GL,GLUT libraries
+
 if (CMAKE_MRPT_HAS_NANOGUI)
 	set(nanogui_dep mrpt_nanogui)
 else()
@@ -46,7 +49,7 @@ set(LIB_SOURCES
   src/WxUtils.cpp
 )
 set(LIB_PUBLIC_HEADERS
-  include/mrpt/3rdparty/mathplot/mathplot.h
+  3rdparty/mathplot/mathplot.h
   include/mrpt/gui.h
   include/mrpt/gui/about_box.h
   include/mrpt/gui/CBaseGUIWindow.h
@@ -82,6 +85,11 @@ mrpt_add_library(
     ${nanogui_dep}
   CMAKE_DEPENDENCIES
     mrpt_opengl
+)
+
+# quiet warnings for 3rdparty sources:
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/3rdparty/>
 )
 
 if(CMAKE_MRPT_HAS_WXWIDGETS)

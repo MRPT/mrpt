@@ -11,7 +11,7 @@ find_package(mrpt_common REQUIRED)
 
 # Dependencies
 @TPL_FIND_PACKAGES@
-
+@CMAKE_MRPT_EXAMPLE_EXTRA_CODE@
 # Define the executable target:
 mrpt_add_executable(
   TARGET @CMAKE_MRPT_EXAMPLE_NAME@

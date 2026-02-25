@@ -672,7 +672,7 @@ CDisplayWindowPlots::~CDisplayWindowPlots() { CBaseGUIWindow::destroyWxWindow();
  * (cursorIsCross=true) */
 void CDisplayWindowPlots::setCursorCross([[maybe_unused]] bool cursorIsCross)
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS
   const auto* win = (const CWindowDialogPlots*)m_hwnd.get();
   if (!win) return;
   win->m_plot->SetCursor(*(cursorIsCross ? wxCROSS_CURSOR : wxSTANDARD_CURSOR));
@@ -685,7 +685,7 @@ void CDisplayWindowPlots::setCursorCross([[maybe_unused]] bool cursorIsCross)
 bool CDisplayWindowPlots::getLastMousePosition(
     [[maybe_unused]] int& x, [[maybe_unused]] int& y) const
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS
   const auto* win = (const CWindowDialogPlots*)m_hwnd.get();
   if (!win)
   {

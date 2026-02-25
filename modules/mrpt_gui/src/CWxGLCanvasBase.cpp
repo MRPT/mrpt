@@ -16,6 +16,7 @@
 #include <mrpt/gui/CWxGLCanvasBase.h>
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL_GLUT
 #include <mrpt/system/CTicTac.h>
 
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
@@ -272,8 +273,8 @@ void CWxGLCanvasBase::InitGL()
      endl;*/
     return;
   }
-  else
-    SetCurrent(*m_gl_context);
+
+  SetCurrent(*m_gl_context);
 
   static bool GLUT_INIT_DONE = false;
 
