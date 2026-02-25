@@ -65,7 +65,6 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/gui/keycodes.h
   include/mrpt/gui/MRPT2NanoguiGLCanvas.h
   include/mrpt/gui/registerAllClasses.h
-  include/mrpt/gui/wx28-fixes.h
   include/mrpt/gui/WxSubsystem.h
   include/mrpt/gui/WxUtils.h
 )
