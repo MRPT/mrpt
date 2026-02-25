@@ -14,7 +14,6 @@
 
 #include "CRawlogTreeView.h"
 
-#include <mrpt/gui/wx28-fixes.h>
 #include <wx/artprov.h>
 #include <wx/bitmap.h>
 #include <wx/dcbuffer.h>

@@ -27,7 +27,6 @@
 #include <wx/string.h>
 //*)
 #include <mrpt/gui/WxUtils.h>
-#include <mrpt/gui/wx28-fixes.h>
 #include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
