@@ -51,7 +51,7 @@ void CDifodoDatasets::loadConfiguration(const mrpt::config::CConfigFileBase& ini
 
   //						Open Rawlog File
   //==================================================================
-  std::cout << "Loading dataset from: " << filename << std::endl;
+  std::cout << "Loading dataset from: " << filename << "\n";
   if (!dataset.loadFromRawLogFile(filename))
     throw std::runtime_error("\nCouldn't open rawlog dataset file for input...");
 

@@ -15,6 +15,7 @@
   <depend>mrpt_hwdrivers</depend>
   <depend>mrpt_slam</depend>
   <depend>mrpt_topography</depend>
+  <depend>cli11</depend>
 
   <export>
     <build_type>cmake</build_type>

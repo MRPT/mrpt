@@ -12,51 +12,57 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 
+#include <CLI/CLI.hpp>
+
 int main(int argc, char** argv)
 {
   try
   {
-    // Declare the supported command line switches ===========
-    TCLAP::CmdLine cmd("image2gridmap", ' ', mrpt::system::MRPT_getVersion().c_str());
+    CLI::App app("image2gridmap");
+    app.set_version_flag("--version", mrpt::system::MRPT_getVersion());
 
-    TCLAP::ValueArg<std::string> arg_input_file(
-        "i", "input", "Input image file (required) (*.png,*.jpg,...)", true, "", "map_image.png",
-        cmd);
-    TCLAP::ValueArg<std::string> arg_output_file(
-        "o", "output", "Name of the output file (*.gridmap, *.gridmap.gz)", false, "",
-        "map.gridmap.gz", cmd);
-    TCLAP::ValueArg<double> arg_res(
-        "r", "res", "Resolution: size (in meters) of one pixel in the image (required)", true, 0.1,
-        "0.1", cmd);
-    TCLAP::ValueArg<double> arg_cx(
-        "", "cx",
-        "(Use either --cx or --px) X coordinate of the image central pixel "
-        "(Default:0)",
-        false, 0.0, "0.0", cmd);
-    TCLAP::ValueArg<double> arg_cy(
-        "", "cy",
-        "(Use either --cy or --py) Y coordinate of the image central pixel "
-        "(Default:0)",
-        false, 0.0, "0.0", cmd);
-    TCLAP::ValueArg<double> arg_px(
-        "", "px",
-        "(Use either --cx or --px) Pixel horizontal coordinate of the "
-        "origin of coordinates in the image",
-        false, 0.0, "0.0", cmd);
-    TCLAP::ValueArg<double> arg_py(
-        "", "py",
-        "(Use either --cx or --px) Pixel verticl coordinate of the origin "
-        "of coordinates in the image",
-        false, 0.0, "0.0", cmd);
-    TCLAP::SwitchArg arg_overwrite(
-        "w", "overwrite", "Force overwrite target file without prompting.", cmd, false);
+    std::string input_file;
+    app.add_option("-i,--input", input_file, "Input image file (required) (*.png,*.jpg,...)")
+        ->required();
+
+    std::string output_file;
+    app.add_option("-o,--output", output_file, "Name of the output file (*.gridmap, *.gridmap.gz)");
+
+    double res = 0.1;
+    app.add_option(
+           "-r,--res", res, "Resolution: size (in meters) of one pixel in the image (required)")
+        ->required();
+
+    double cx = 0.0;
+    auto opt_cx = app.add_option(
+        "--cx", cx,
+        "(Use either --cx or --px) X coordinate of the image central pixel (Default:0)");
+
+    double cy = 0.0;
+    auto opt_cy = app.add_option(
+        "--cy", cy,
+        "(Use either --cy or --py) Y coordinate of the image central pixel (Default:0)");
+
+    double px = 0.0;
+    auto opt_px = app.add_option(
+        "--px", px,
+        "(Use either --cx or --px) Pixel horizontal coordinate of the origin of coordinates in the "
+        "image");
+
+    double py = 0.0;
+    auto opt_py = app.add_option(
+        "--py", py,
+        "(Use either --cx or --px) Pixel verticl coordinate of the origin of coordinates in the "
+        "image");
+
+    bool overwrite = false;
+    app.add_flag("-w,--overwrite", overwrite, "Force overwrite target file without prompting.");
 
     printf(" image2gridmap - Part of the MRPT\n");
     printf(
@@ -67,46 +73,43 @@ int main(int argc, char** argv)
         "-\n");
 
     // Parse arguments:
-    if (!cmd.parse(argc, argv)) throw std::runtime_error("");  // should exit.
-
-    const std::string inputFile = arg_input_file.getValue();
-    const double cell_res = arg_res.getValue();
+    CLI11_PARSE(app, argc, argv);
 
     mrpt::img::CImage img;
-    if (!img.loadFromFile(inputFile))
+    if (!img.loadFromFile(input_file))
       throw std::runtime_error(
-          mrpt::format("Cannot load the map image file `%s`!", inputFile.c_str()));
+          mrpt::format("Cannot load the map image file `%s`!", input_file.c_str()));
 
-    double px, py;
-    if ((arg_px.isSet() && !arg_py.isSet()) || (!arg_px.isSet() && arg_py.isSet()))
+    // Check if px/py or cx/cy were set
+    bool px_set = opt_px->count() > 0;
+    bool py_set = opt_py->count() > 0;
+    bool cx_set = opt_cx->count() > 0;
+    bool cy_set = opt_cy->count() > 0;
+
+    if ((px_set && !py_set) || (!px_set && py_set))
       throw std::runtime_error("You cannot set only one of --px & --py arguments!");
 
-    if ((arg_cx.isSet() && !arg_cy.isSet()) || (!arg_cx.isSet() && arg_cy.isSet()))
+    if ((cx_set && !cy_set) || (!cx_set && cy_set))
       throw std::runtime_error("You cannot set only one of --cx & --cy arguments!");
 
-    if (arg_cx.isSet() && arg_px.isSet())
-      throw std::runtime_error("You cannot set BOTH --cx & --px arguments!");
+    if (cx_set && px_set) throw std::runtime_error("You cannot set BOTH --cx & --px arguments!");
 
-    if (arg_px.isSet())
+    if (!px_set)
     {
-      px = arg_px.getValue();
-      py = arg_py.getValue();
-    }
-    else
-    {
-      px = -arg_cx.getValue() / cell_res + img.getWidth() / 2;
-      py = -arg_cy.getValue() / cell_res + img.getHeight() / 2;
+      // Use cx, cy instead
+      px = -cx / res + img.getWidth() / 2;
+      py = -cy / res + img.getHeight() / 2;
     }
 
     mrpt::maps::COccupancyGridMap2D grid;
-    grid.loadFromBitmap(img, cell_res, {px, py});
+    grid.loadFromBitmap(img, res, {px, py});
 
     const std::string sOutFile =
-        arg_output_file.isSet() ? arg_output_file.getValue()
-                                : mrpt::system::fileNameChangeExtension(inputFile, "gridmap.gz");
-    std::cout << "Output map file: " << sOutFile << std::endl;
+        !output_file.empty() ? output_file
+                             : mrpt::system::fileNameChangeExtension(input_file, "gridmap.gz");
+    std::cout << "Output map file: " << sOutFile << "\n";
 
-    if (mrpt::system::fileExists(sOutFile) && !arg_overwrite.isSet())
+    if (mrpt::system::fileExists(sOutFile) && !overwrite)
     {
       std::cerr << "Output file already exists, aborting. Use `-w` flag "
                    "to overwrite.\n";
@@ -124,7 +127,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << mrpt::exception_to_str(e) << "\n";
     return 1;
   }
 }

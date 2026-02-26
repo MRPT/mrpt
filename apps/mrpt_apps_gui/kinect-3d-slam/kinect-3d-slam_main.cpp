@@ -620,7 +620,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cout << "EXCEPCION: " << mrpt::exception_to_str(e) << std::endl;
+    std::cout << "EXCEPCION: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
   catch (...)

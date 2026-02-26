@@ -1,18 +1,22 @@
-
+#-----------------------------------------------------------------------------------------------
+# CMake file for MRPT app
+#-----------------------------------------------------------------------------------------------
+cmake_minimum_required(VERSION 3.16)
 
 project(image2gridmap)
 
+# Basic MRPT infrastructure
+find_package(mrpt_common REQUIRED)
+
+# Dependencies
+find_package(mrpt_maps REQUIRED)
+find_package(CLI11 REQUIRED)
+
 # Define the executable target:
-add_executable(${PROJECT_NAME}
-               image2gridmap.cpp
-		${MRPT_VERSION_RC_FILE})
-
-# Add the required libraries for linking:
-
-
-# Dependencies on MRPT libraries:
-#  Just mention the top-level dependency, the rest will be detected automatically,
-#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${PROJECT_NAME} mrpt::maps mrpt::tclap)
-
-DeclareAppForInstall(${PROJECT_NAME})
+mrpt_add_executable(
+  TARGET ${PROJECT_NAME}
+  SOURCES image2gridmap.cpp
+  LINK_LIBRARIES 
+    mrpt::mrpt_maps
+    CLI11::CLI11
+)

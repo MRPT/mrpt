@@ -1,30 +1,20 @@
+#-----------------------------------------------------------------------------------------------
+# CMake file for MRPT app
+#-----------------------------------------------------------------------------------------------
+cmake_minimum_required(VERSION 3.16)
 
-
-#-----------------------------------------------------------------
-# CMake file for the MRPT application:  simul-beacons
-#
-#  Run with "cmake ." at the root directory
-#
-#  October 2007, Jose Luis Blanco <jlblanco@ctima.uma.es>
-#-----------------------------------------------------------------
 project(simul-beacons)
 
+# Basic MRPT infrastructure
+find_package(mrpt_common REQUIRED)
 
+# Dependencies
+find_package(mrpt_maps REQUIRED)
 
-# ---------------------------------------------
-# TARGET:
-# ---------------------------------------------
 # Define the executable target:
-add_executable(${PROJECT_NAME}
-               simul-beacons-main.cpp
-			    ${MRPT_VERSION_RC_FILE})
-
-# Add the required libraries for linking:
-
-
-# Dependencies on MRPT libraries:
-#  Just mention the top-level dependency, the rest will be detected automatically,
-#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${PROJECT_NAME} mrpt::maps)
-
-DeclareAppForInstall(${PROJECT_NAME})
+mrpt_add_executable(
+  TARGET ${PROJECT_NAME}
+  SOURCES simul-beacons-main.cpp
+  LINK_LIBRARIES 
+    mrpt::mrpt_maps
+)

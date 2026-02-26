@@ -27,7 +27,6 @@
 //  Started: JLBC @ Aug-2010
 // ===========================================================================
 
-#include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/obs/CObservationOdometry.h>
@@ -38,6 +37,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 
+#include <CLI/CLI.hpp>
 #include <fstream>
 
 using namespace mrpt;
@@ -47,26 +47,6 @@ using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace std;
-
-// Declare the supported command line switches ===========
-TCLAP::CmdLine cmd("carmen2simplemap", ' ', MRPT_getVersion().c_str());
-
-TCLAP::SwitchArg arg_overwrite(
-    "w", "overwrite", "Force overwrite target file without prompting.", cmd, false);
-TCLAP::SwitchArg arg_quiet("q", "quiet", "Terse output", cmd, false);
-TCLAP::ValueArg<std::string> arg_output_file(
-    "o", "output", "Output file (*.simplemap)", true, "", "map.simplemap", cmd);
-TCLAP::ValueArg<std::string> arg_input_file(
-    "i", "input", "Input dataset (required) (*.log)", true, "", "carmen.log", cmd);
-
-TCLAP::ValueArg<int> arg_gz_level(
-    "z",
-    "compress-level",
-    "Output GZ-compress level (optional)",
-    false,
-    5,
-    "0: none, 1-9: min-max",
-    cmd);
 
 // Declarations:
 #define VERBOSE_COUT \
@@ -79,14 +59,34 @@ int main(int argc, char** argv)
 {
   try
   {
-    // Parse arguments:
-    if (!cmd.parse(argc, argv)) throw std::runtime_error("");  // should exit.
+    // Declare the supported command line switches ===========
+    CLI::App app("carmen2simplemap");
+    app.set_version_flag("--version", MRPT_getVersion());
 
-    const string input_log = arg_input_file.getValue();
-    const string output_file = arg_output_file.getValue();
-    const bool verbose = !arg_quiet.getValue();
-    const bool overwrite = arg_overwrite.getValue();
-    const int compress_level = arg_gz_level.getValue();
+    bool arg_overwrite = false;
+    app.add_flag("-w,--overwrite", arg_overwrite, "Force overwrite target file without prompting.");
+
+    bool arg_quiet = false;
+    app.add_flag("-q,--quiet", arg_quiet, "Terse output");
+
+    std::string arg_output_file;
+    app.add_option("-o,--output", arg_output_file, "Output file (*.simplemap)")->required();
+
+    std::string arg_input_file;
+    app.add_option("-i,--input", arg_input_file, "Input dataset (required) (*.log)")->required();
+
+    int arg_gz_level = 5;
+    app.add_option(
+        "-z,--compress-level", arg_gz_level, "Output GZ-compress level (0: none, 1-9: min-max)");
+
+    // Parse arguments:
+    CLI11_PARSE(app, argc, argv);
+
+    const string input_log = arg_input_file;
+    const string output_file = arg_output_file;
+    const bool verbose = !arg_quiet;
+    const bool overwrite = arg_overwrite;
+    const int compress_level = arg_gz_level;
 
     // Check files:
     if (!mrpt::system::fileExists(input_log))
@@ -197,7 +197,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

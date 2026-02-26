@@ -1,43 +1,36 @@
-#-----------------------------------------------------------------
-# CMake file for the MRPT application:  2d-slam-demo
-#
-#  Run with "cmake ." at the root directory
-#
-#  October 2007, Jose Luis Blanco <jlblanco@ctima.uma.es>
-#-----------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------
+# CMake file for MRPT app
+#-----------------------------------------------------------------------------------------------
+cmake_minimum_required(VERSION 3.16)
+
 project(2d-slam-demo)
 
-mrpt_return_if_not_wxwidgets()
+# Basic MRPT infrastructure
+find_package(mrpt_common REQUIRED)
 
-# ---------------------------------------------
-# TARGET:
-# ---------------------------------------------
-set(SRCS
-	slamdemoApp.cpp   slamdemoApp.h
-	slamdemoMain.cpp  slamdemoMain.h
-	batch_experiments.cpp
-	CDlgParams.cpp CDlgParams.h
-	CLogView.cpp CLogView.h
-	)
-
-if(WIN32)
-	set(SRCS ${SRCS} resource.rc)
-endif()
+# Dependencies
+find_package(mrpt_gui REQUIRED)
+find_package(mrpt_slam REQUIRED)
+find_package(CLI11 REQUIRED)
 
 # Define the executable target:
-add_executable(${PROJECT_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
-
-# Add the required libraries for linking:
-target_link_libraries(${PROJECT_NAME} imp_wxwidgets)
-
-# Dependencies on MRPT libraries:
-#  Just mention the top-level dependency, the rest will be detected automatically,
-#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${PROJECT_NAME}
-	mrpt::gui
-	mrpt::slam
-	mrpt::tclap
-	)
+mrpt_add_executable(
+  TARGET ${PROJECT_NAME}
+  SOURCES 
+    slamdemoApp.cpp
+    slamdemoApp.h
+    slamdemoMain.cpp
+    slamdemoMain.h
+    batch_experiments.cpp
+    CDlgParams.cpp
+    CDlgParams.h
+    CLogView.cpp
+    CLogView.h
+  LINK_LIBRARIES
+    mrpt::mrpt_gui
+    mrpt::mrpt_slam
+    CLI11::CLI11
+)
 
 DeclareAppForInstall(${PROJECT_NAME})
 

@@ -1,16 +1,22 @@
+#-----------------------------------------------------------------------------------------------
+# CMake file for MRPT app
+#-----------------------------------------------------------------------------------------------
+cmake_minimum_required(VERSION 3.16)
+
 project(carmen2rawlog)
 
-# ================================================
-# TARGET: carmen2rawlog
-# ================================================
-# Define the executable target:
-add_executable(${PROJECT_NAME}
-	carmen2rawlog_main.cpp
-	 ${MRPT_VERSION_RC_FILE}
-	)
-# Add the required libraries for linking:
+# Basic MRPT infrastructure
+find_package(mrpt_common REQUIRED)
 
-DeclareAppForInstall(${PROJECT_NAME})
-# Dependencies on MRPT libraries: Just mention the top-level dependency, the rest will be detected automatically,
-#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${PROJECT_NAME} mrpt::obs mrpt::tclap)
+# Dependencies
+find_package(mrpt_libapps_cli REQUIRED)
+find_package(CLI11 REQUIRED)
+
+# Define the executable target:
+mrpt_add_executable(
+  TARGET ${PROJECT_NAME}
+  SOURCES carmen2rawlog_main.cpp
+  LINK_LIBRARIES 
+    mrpt::mrpt_libapps_cli
+    CLI11::CLI11
+)

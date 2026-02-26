@@ -62,10 +62,11 @@ mrpt_add_library(
     mrpt::mrpt_hwdrivers
     mrpt::mrpt_slam
     mrpt::mrpt_topography
+  PRIVATE_LINK_LIBRARIES
+    Threads::Threads
+    CLI11::CLI11
   CMAKE_DEPENDENCIES
     mrpt_hwdrivers
     mrpt_slam
     mrpt_topography
 )
-
-target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads CLI11::CLI11)

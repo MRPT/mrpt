@@ -12,7 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CCompressedOutputStream.h>
@@ -24,6 +23,8 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+
+#include <CLI/CLI.hpp>
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -54,44 +55,54 @@ int main(int argc, char** argv)
   try
   {
     // Declare the supported options.
-    TCLAP::CmdLine cmd("simul-gridmap", ' ', MRPT_getVersion().c_str());
+    CLI::App app("simul-gridmap");
+    app.set_version_flag("--version", MRPT_getVersion());
 
-    TCLAP::ValueArg<std::string> arg_grid(
-        "g", "grid", "grid map file (*.gridmap or *.gridmap.gz)", true, "", "icp_goodness.txt",
-        cmd);
-    TCLAP::ValueArg<std::string> arg_poses(
-        "p", "poses", "poses text file, one 'time x y phi' line per pose", true, "", "poses.txt",
-        cmd);
-    TCLAP::ValueArg<std::string> arg_out_rawlog(
-        "o", "out-rawlog", "the output rawlog to generate  from which to take noisy odometry", true,
-        "", "out.rawlog", cmd);
-    TCLAP::ValueArg<std::string> arg_in_rawlog(
-        "i", "in-rawlog", "(optional) the rawlog from which to take noisy odometry", false, "",
-        "input.rawlog", cmd);
-    TCLAP::ValueArg<int> arg_ranges(
-        "r", "ranges", "number of laser ranges per scan (default=361)", false, 361,
-        "icp_goodness.txt", cmd);
-    TCLAP::ValueArg<double> arg_span(
-        "s", "span", "span of the laser scans (default=180 degrees)", false, 180, "span", cmd);
-    TCLAP::ValueArg<double> arg_std_r(
-        "R", "std_r", "range noise sigma (default=0.01 meters)", false, 0.01, "std_r", cmd);
-    TCLAP::ValueArg<double> arg_std_b(
-        "B", "std_b", "bearing noise sigma (default=0.05 degrees)", false, 0.05, "std_b", cmd);
+    std::string grid_file_arg;
+    app.add_option("-g,--grid", grid_file_arg, "grid map file (*.gridmap or *.gridmap.gz)")
+        ->required();
 
-    TCLAP::SwitchArg arg_nologo("n", "nologo", "skip the logo at startup", cmd, false);
+    std::string poses_arg;
+    app.add_option("-p,--poses", poses_arg, "poses text file, one 'time x y phi' line per pose")
+        ->required();
+
+    std::string out_rawlog_arg;
+    app.add_option(
+           "-o,--out-rawlog", out_rawlog_arg,
+           "the output rawlog to generate from which to take noisy odometry")
+        ->required();
+
+    std::string in_rawlog_arg;
+    app.add_option(
+        "-i,--in-rawlog", in_rawlog_arg, "(optional) the rawlog from which to take noisy odometry");
+
+    int ranges = 361;
+    app.add_option("-r,--ranges", ranges, "number of laser ranges per scan (default=361)");
+
+    double span = 180.0;
+    app.add_option("-s,--span", span, "span of the laser scans (default=180 degrees)");
+
+    double std_r = 0.01;
+    app.add_option("-R,--std_r", std_r, "range noise sigma (default=0.01 meters)");
+
+    double std_b = 0.05;
+    app.add_option("-B,--std_b", std_b, "bearing noise sigma (default=0.05 degrees)");
+
+    bool nologo = false;
+    app.add_flag("-n,--nologo", nologo, "skip the logo at startup");
 
     // Parse arguments:
-    if (!cmd.parse(argc, argv)) return 0;  // should exit.
+    CLI11_PARSE(app, argc, argv);
 
-    grid_file = arg_grid.getValue();
-    gt_file = arg_poses.getValue();
-    out_rawlog_file = arg_out_rawlog.getValue();
-    in_rawlog_file = arg_in_rawlog.getValue();
-    LASER_N_RANGES = arg_ranges.getValue();
-    LASER_STD_ERROR = arg_std_r.getValue();
-    LASER_BEARING_STD_ERROR = DEG2RAD(arg_std_b.getValue());
+    grid_file = grid_file_arg;
+    gt_file = poses_arg;
+    out_rawlog_file = out_rawlog_arg;
+    in_rawlog_file = in_rawlog_arg;
+    LASER_N_RANGES = ranges;
+    LASER_STD_ERROR = std_r;
+    LASER_BEARING_STD_ERROR = DEG2RAD(std_b);
 
-    if (arg_nologo.getValue())
+    if (!nologo)
     {
       printf(" simul-gridmap - Part of the MRPT\n");
       printf(

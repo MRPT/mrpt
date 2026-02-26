@@ -495,14 +495,16 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << mrpt::exception_to_str(e) << std::endl
-              << "Program finished for an exception!!" << std::endl;
+    std::cerr << mrpt::exception_to_str(e) << "\n"
+              << "Program finished for an exception!!"
+              << "\n";
     mrpt::system::pause();
     return -1;
   }
   catch (...)
   {
-    std::cerr << "Untyped exception!!" << std::endl;
+    std::cerr << "Untyped exception!!"
+              << "\n";
     mrpt::system::pause();
     return -1;
   }
