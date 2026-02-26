@@ -52,7 +52,7 @@
 #include <wx/toolbar.h>
 
 // The wxMathPlot library
-#include <mrpt/3rdparty/mathplot/mathplot.h>
+#include <mathplot/mathplot.h>
 
 #endif
 

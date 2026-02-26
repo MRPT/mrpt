@@ -39,9 +39,7 @@ set(LIB_SOURCES
   src/CWxGLCanvasBase.cpp
   src/default_mrpt_glfw_icon.cpp
   src/error_box.cpp
-  src/mathplots/mathplot.cpp
-  src/mathplots/README
-  src/mathplots/README.txt
+  src/mathplot/mathplot.cpp
   src/MRPT2NanoguiGLCanvas.cpp
   src/NanoGUICanvasHeadless.cpp
   src/registerAllClasses.cpp
@@ -89,7 +87,7 @@ mrpt_add_library(
 
 # quiet warnings for 3rdparty sources:
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/3rdparty/>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/>
 )
 
 if(CMAKE_MRPT_HAS_WXWIDGETS)
