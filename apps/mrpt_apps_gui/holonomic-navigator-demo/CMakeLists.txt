@@ -27,4 +27,4 @@ mrpt_add_executable(
     mrpt::mrpt_gui
 )
 
-AppStartMenuLink(${PROJECT_NAME} "Holonomic navigation simulator")   # Add link to the Start menu (in Windows Installable packages)
+#AppStartMenuLink(${PROJECT_NAME} "Holonomic navigation simulator")   # Add link to the Start menu (in Windows Installable packages)

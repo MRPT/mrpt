@@ -21,7 +21,7 @@
      https://www.mrpt.org/list-of-mrpt-apps/application-rbpf-slam
   ---------------------------------------------------------------*/
 
-#include <mrpt/apps/RBPF_SLAM_App.h>
+#include <mrpt/apps_gui/RBPF_SLAM_App.h>
 
 #include <iostream>
 

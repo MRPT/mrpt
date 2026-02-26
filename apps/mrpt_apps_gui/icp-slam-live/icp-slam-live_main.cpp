@@ -22,7 +22,7 @@
    https://www.mrpt.org/list-of-mrpt-apps/application-icp-slam-live/
   ---------------------------------------------------------------*/
 
-#include <mrpt/apps/ICP_SLAM_App.h>
+#include <mrpt/apps_gui/ICP_SLAM_App.h>
 
 #include <iostream>
 

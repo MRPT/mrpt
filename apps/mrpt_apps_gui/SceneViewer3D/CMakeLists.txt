@@ -35,5 +35,5 @@ mrpt_add_executable(
     mrpt::mrpt_maps
 )
 
-AppStartMenuLink(${PROJECT_NAME} "Scene Viewer 3D")   # Add link to the Start menu (in Windows Installable packages)
+#AppStartMenuLink(${PROJECT_NAME} "Scene Viewer 3D")   # Add link to the Start menu (in Windows Installable packages)
 

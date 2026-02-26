@@ -31,10 +31,10 @@
 
 #include <mrpt/containers/yaml.h>
 #include <mrpt/gui/WxUtils.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/vision/pnp_algos.h>
+#include <mrpt/viz/CGridPlaneXY.h>
 #include <wx/filedlg.h>
 #include <wx/msgdlg.h>
 #include <wx/progdlg.h>

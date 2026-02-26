@@ -81,9 +81,7 @@ const std::string iniFileSect("CONF_LIN");
 #include <mrpt/opengl/CAngularObservationMesh.h>  // It's in lib mrpt-maps
 #include <mrpt/opengl/CAssimpModel.h>
 #include <mrpt/opengl/CFBORender.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // It's in lib mrpt-maps
-#include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/Scene.h>
 #include <mrpt/opengl/stock_objects.h>
@@ -92,6 +90,8 @@ const std::string iniFileSect("CONF_LIN");
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CPointCloud.h>
 
 const mrpt::maps::CColouredPointsMap dummy_map;  // this is to enforce to load
 // the mrpt-maps DLL, then

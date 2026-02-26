@@ -56,9 +56,9 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/gui/WxUtils.h>
-#include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CSimpleLine.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/viz/CPointCloud.h>
 
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1

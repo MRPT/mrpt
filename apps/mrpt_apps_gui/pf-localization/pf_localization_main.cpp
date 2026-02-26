@@ -21,7 +21,7 @@
    https://www.mrpt.org/list-of-mrpt-apps/application-pf-localization
   ---------------------------------------------------------------*/
 
-#include <mrpt/apps/MonteCarloLocalization_App.h>
+#include <mrpt/apps_gui/MonteCarloLocalization_App.h>
 
 #include <iostream>
 

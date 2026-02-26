@@ -32,6 +32,5 @@ mrpt_add_executable(
     CLI11::CLI11
 )
 
-DeclareAppForInstall(${PROJECT_NAME})
 
-AppStartMenuLink(${PROJECT_NAME} "2D KF-SLAM Simulator")   # Add link to the Start menu (in Windows Installable packages)
+#AppStartMenuLink(${PROJECT_NAME} "2D KF-SLAM Simulator")   # Add link to the Start menu (in Windows Installable packages)

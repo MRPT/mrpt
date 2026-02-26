@@ -29,19 +29,9 @@ extern void getTestImage(unsigned int img_index, mrpt::img::CImage& out_img);
 template <TKeyPointMethod FEAT_TYPE>
 double benchmark_detectFeatures(int N, [[maybe_unused]] int h)
 {
-  // Generate a random image
-  CImage img;
-  getTestImage(0, img);
-  CFeatureExtraction fExt;
-  fExt.profiler.enable();
-  fExt.options.featsType = FEAT_TYPE;
-  for (int i = 0; i < N; i++)
-  {
-    CFeatureList fs;
-    fExt.detectFeatures(img, fs);
-    if (i == (N - 1)) std::cout << "(" << std::setw(4) << fs.size() << " found)\n";
-  }
-  return fExt.profiler.getMeanTime("detectFeatures");
+  // Note: CFeatureExtraction is not yet implemented in v3.0
+  // This is a stub that returns 0
+  return 0;
 }
 
 // ------------------------------------------------------
@@ -50,21 +40,9 @@ double benchmark_detectFeatures(int N, [[maybe_unused]] int h)
 template <TDescriptorType DESCRIPTOR_TYPE>
 double benchmark_computeDescriptor(int N, int num_feats)
 {
-  CImage img;
-  getTestImage(0, img);
-
-  CFeatureExtraction fExt;
-  fExt.profiler.enable();
-  fExt.options.featsType = featFAST;
-
-  for (int i = 0; i < N; i++)
-  {
-    CFeatureList fs;
-    fExt.detectFeatures(img, fs, 0 /*id*/, num_feats);
-    fExt.computeDescriptors(img, fs, DESCRIPTOR_TYPE);
-  }
-
-  return fExt.profiler.getMeanTime("computeDescriptors");
+  // Note: CFeatureExtraction is not yet implemented in v3.0
+  // This is a stub that returns 0
+  return 0;
 }
 
 // ------------------------------------------------------
@@ -73,26 +51,9 @@ double benchmark_computeDescriptor(int N, int num_feats)
 template <mrpt::vision::TKeyPointMethod TYP, int MAX_N_FEATS>
 double benchmark_detectFeatures_FASTER(int N, int threshold)
 {
-  CTicTac tictac;
-
-  // Generate a random image
-  CImage img;
-  getTestImage(0, img);
-
-  CFeatureExtraction fExt;
-  CFeatureList feats;
-
-  fExt.options.featsType = TYP;
-  fExt.options.FASTOptions.threshold = threshold;
-  fExt.options.patchSize = 0;
-
-  img = img.grayscale();
-
-  tictac.Tic();
-  for (int i = 0; i < N; i++) fExt.detectFeatures(img, feats, 0, MAX_N_FEATS);
-
-  const double T = tictac.Tac() / N;
-  return T;
+  // Note: CFeatureExtraction is not yet implemented in v3.0
+  // This is a stub that returns 0
+  return 0;
 }
 
 // ------------------------------------------------------

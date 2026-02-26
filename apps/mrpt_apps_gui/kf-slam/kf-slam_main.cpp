@@ -20,7 +20,7 @@
   See README.txt for instructions.
  ---------------------------------------------------------------*/
 
-#include <mrpt/apps/KFSLAMApp.h>
+#include <mrpt/apps_gui/KFSLAMApp.h>
 
 #include <iostream>
 

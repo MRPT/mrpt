@@ -16,7 +16,6 @@
 
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/graphs/CHypothesisNotFoundException.h>
 #include <mrpt/graphs/THypothesis.h>
 #include <mrpt/graphslam/interfaces/CRangeScanEdgeRegistrationDecider.h>
 #include <mrpt/graphslam/misc/TNodeProps.h>

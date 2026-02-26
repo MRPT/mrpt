@@ -45,12 +45,12 @@
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CEllipsoid2D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CPointCloud.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;

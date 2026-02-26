@@ -58,8 +58,10 @@ double image_test_1(int w, int img_quality)
 
   for (int i = 0; i < 5000; i++)
     img.line(
-        getRandomGenerator().drawUniform(0, w - 1), getRandomGenerator().drawUniform(0, h - 1),
-        getRandomGenerator().drawUniform(0, w - 1), getRandomGenerator().drawUniform(0, h - 1),
+        (int)getRandomGenerator().drawUniform(0, w - 1),
+        (int)getRandomGenerator().drawUniform(0, h - 1),
+        (int)getRandomGenerator().drawUniform(0, w - 1),
+        (int)getRandomGenerator().drawUniform(0, h - 1),
         TColor(getRandomGenerator().drawUniform32bit()));
 
   CTicTac tictac;
@@ -106,8 +108,10 @@ double image_saveload(int iFormat, int to_shm)
   CImage img(w, h, mrpt::img::CH_RGB);
   for (int i = 0; i < 5000; i++)
     img.line(
-        getRandomGenerator().drawUniform(0, w - 1), getRandomGenerator().drawUniform(0, h - 1),
-        getRandomGenerator().drawUniform(0, w - 1), getRandomGenerator().drawUniform(0, h - 1),
+        (int)getRandomGenerator().drawUniform(0, w - 1),
+        (int)getRandomGenerator().drawUniform(0, h - 1),
+        (int)getRandomGenerator().drawUniform(0, w - 1),
+        (int)getRandomGenerator().drawUniform(0, h - 1),
         TColor(getRandomGenerator().drawUniform32bit()));
 
   CTicTac tictac;
@@ -166,8 +170,10 @@ double image_test_2(int w, int h)
 
   for (int i = 0; i < 5000; i++)
     img.line(
-        getRandomGenerator().drawUniform(0, w - 1), getRandomGenerator().drawUniform(0, h - 1),
-        getRandomGenerator().drawUniform(0, w - 1), getRandomGenerator().drawUniform(0, h - 1),
+        (int)getRandomGenerator().drawUniform(0, w - 1),
+        (int)getRandomGenerator().drawUniform(0, h - 1),
+        (int)getRandomGenerator().drawUniform(0, w - 1),
+        (int)getRandomGenerator().drawUniform(0, h - 1),
         TColor(getRandomGenerator().drawUniform32bit()));
 
   CTicTac tictac;

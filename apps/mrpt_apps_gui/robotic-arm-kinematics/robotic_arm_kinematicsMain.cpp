@@ -30,10 +30,10 @@
 #include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CText.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/viz/CGridPlaneXY.h>
 
 #include "../wx-common/mrpt_logo.xpm"
 #include "CAboutBox.h"
