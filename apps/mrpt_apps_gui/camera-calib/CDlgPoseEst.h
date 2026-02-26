@@ -33,12 +33,12 @@
 #include <mrpt/gui/CMyRedirector.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/math/CQuaternion.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
 #include <mrpt/vision/pnp_algos.h>
 #include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/stock_objects.h>
 
 #include "MyGLCanvas.h"
 
@@ -140,9 +140,9 @@ class CDlgPoseEst : public wxDialog
   mrpt::vision::pnp::CPnP pnp_algos;
   Eigen::MatrixXd obj_pts, img_pts, pose_mat, cam_intrinsic, I3;
 
-  mrpt::opengl::Scene::Ptr scene;
-  mrpt::opengl::CSetOfObjects::Ptr cor, cor1;
-  mrpt::opengl::CGridPlaneXY::Ptr grid;
+  mrpt::viz::Scene::Ptr scene;
+  mrpt::viz::CSetOfObjects::Ptr cor, cor1;
+  mrpt::viz::CGridPlaneXY::Ptr grid;
 
  public:
   using CPNP_PTR = bool (mrpt::vision::pnp::CPnP::*)(

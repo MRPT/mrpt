@@ -28,11 +28,11 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
-#include <mrpt/opengl/CEllipsoid2D.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/slam/CICP.h>
+#include <mrpt/viz/CEllipsoid2D.h>
 #include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/stock_objects.h>
 #include <wx/app.h>
 #include <wx/busyinfo.h>
 #include <wx/log.h>
@@ -434,12 +434,12 @@ CScanMatching::CScanMatching(wxWindow* parent, wxWindowID)
   // Initialize 3D view:
   auto openGLSceneRef = m_plot3D->getOpenGLSceneRef();
   openGLSceneRef->insert(
-      mrpt::opengl::CGridPlaneXY::Create(-150, 150, -150, 150, 0 /* z */, 5 /* freq */));
+      mrpt::viz::CGridPlaneXY::Create(-150, 150, -150, 150, 0 /* z */, 5 /* freq */));
   openGLSceneRef->insert(
-      mrpt::opengl::stock_objects::CornerXYZSimple(1.0 /*scale*/, 3.0 /*line width*/));
+      mrpt::viz::stock_objects::CornerXYZSimple(1.0 /*scale*/, 3.0 /*line width*/));
 
-  m_gl_map_ref = mrpt::opengl::CSetOfObjects::Create();
-  m_gl_map_new = mrpt::opengl::CSetOfObjects::Create();
+  m_gl_map_ref = mrpt::viz::CSetOfObjects::Create();
+  m_gl_map_new = mrpt::viz::CSetOfObjects::Create();
   openGLSceneRef->insert(m_gl_map_ref);
   openGLSceneRef->insert(m_gl_map_new);
 
@@ -624,7 +624,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
   m_gl_map_new->clear();
   m_gl_map_new->insert(newMapPt.getVisualization());
 
-  auto gl_ellipse = mrpt::opengl::CEllipsoid2D::Create();
+  auto gl_ellipse = mrpt::viz::CEllipsoid2D::Create();
   gl_ellipse->setQuantiles(3.0f);
   gl_ellipse->setColor_u8(0, 0, 0);
   m_gl_map_new->insert(gl_ellipse);

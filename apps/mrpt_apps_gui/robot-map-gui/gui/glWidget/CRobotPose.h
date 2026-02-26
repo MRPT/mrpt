@@ -10,7 +10,7 @@
 #pragma once
 #include "mrpt/opengl/CSetOfObjects.h"
 
-class CRobotPose : public mrpt::opengl::CSetOfObjects
+class CRobotPose : public mrpt::viz::CSetOfObjects
 {
  public:
   using Ptr = std::shared_ptr<CRobotPose>;

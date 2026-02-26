@@ -26,28 +26,28 @@
 #include <mrpt/math/TObject3D.h>
 #include <mrpt/math/geometry.h>  // intersect()
 #include <mrpt/math/utils.h>
-#include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CMesh.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/rtti/CListOfClasses.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/viz/CDisk.h>
 #include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CMesh.h>
 #include <mrpt/viz/CPointCloud.h>
 #include <mrpt/viz/CSetOfLines.h>
+#include <mrpt/viz/stock_objects.h>
 
 #include <algorithm>  // replace()
 #include <fstream>
 
 // Configure look:
-static const mrpt::opengl::TFontParams& getFontParams()
+static const mrpt::viz::TFontParams& getFontParams()
 {
-  static mrpt::opengl::TFontParams fp;
+  static mrpt::viz::TFontParams fp;
   static bool init = false;
   if (!init)
   {
-    fp.vfont_style = mrpt::opengl::FILL;
+    fp.vfont_style = mrpt::viz::FILL;
     fp.vfont_name = "mono";
     fp.vfont_scale = 10.0f;  // pixels
     fp.draw_shadow = true;
@@ -295,7 +295,7 @@ NavlogViewerApp::NavlogViewerApp()
   // Add a background scene:
   // -----------------------------
   {
-    mrpt::opengl::Scene::Ptr scene = mrpt::opengl::Scene::Create();
+    mrpt::viz::Scene::Ptr scene = mrpt::viz::Scene::Create();
 
     m_win->camera().setAzimuthDegrees(-90.0f);
     m_win->camera().setElevationDegrees(90.0f);
@@ -306,18 +306,18 @@ NavlogViewerApp::NavlogViewerApp()
       vi->setViewportPosition(-0.1, 0.0, 0.1, 0.1);
       vi->setTransparent(true);
 
-      auto glCorners = mrpt::opengl::stock_objects::CornerXYZSimple(1.0f, 1.0f);
+      auto glCorners = mrpt::viz::stock_objects::CornerXYZSimple(1.0f, 1.0f);
       scene->insert(glCorners, "xyz");
     }
 
     // XY ground plane:
-    mrpt::opengl::CGridPlaneXY::Ptr gl_grid =
-        mrpt::opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1, 0.75f);
+    mrpt::viz::CGridPlaneXY::Ptr gl_grid =
+        mrpt::viz::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1, 0.75f);
     gl_grid->setColor_u8(mrpt::img::TColor(0xa0a0a0, 0x90));
     scene->insert(gl_grid);
 
     // XYZ corner at origin:
-    scene->insert(mrpt::opengl::stock_objects::CornerXYZSimple(1.0, 2.0));
+    scene->insert(mrpt::viz::stock_objects::CornerXYZSimple(1.0, 2.0));
 
     auto lck = mrpt::lockHelper(m_win->background_scene_mtx);
     m_win->background_scene = std::move(scene);
@@ -593,24 +593,24 @@ void NavlogViewerApp::updateVisualization()
   // Update 3D view:
   {
     auto lck = mrpt::lockHelper(m_win->background_scene_mtx);
-    mrpt::opengl::Scene::Ptr& scene = m_win->background_scene;
+    mrpt::viz::Scene::Ptr& scene = m_win->background_scene;
 
     const CVectorFloat shap_x = log.robotShape_x, shap_y = log.robotShape_y;
 
     // Robot frame of reference:
-    mrpt::opengl::CSetOfObjects::Ptr gl_robot_frame;
+    mrpt::viz::CSetOfObjects::Ptr gl_robot_frame;
     {
-      mrpt::opengl::CRenderizable::Ptr gl_rbframe_r =
+      mrpt::viz::CRenderizable::Ptr gl_rbframe_r =
           scene->getByName("robot_frame");  // Get or create if new
       if (!gl_rbframe_r)
       {
-        gl_robot_frame = mrpt::opengl::CSetOfObjects::Create();
+        gl_robot_frame = mrpt::viz::CSetOfObjects::Create();
         gl_robot_frame->setName("robot_frame");
         scene->insert(gl_robot_frame);
       }
       else
       {
-        gl_robot_frame = std::dynamic_pointer_cast<mrpt::opengl::CSetOfObjects>(gl_rbframe_r);
+        gl_robot_frame = std::dynamic_pointer_cast<mrpt::viz::CSetOfObjects>(gl_rbframe_r);
       }
 
       // Global or local coordinates?
@@ -654,19 +654,19 @@ void NavlogViewerApp::updateVisualization()
 
     // custom visuals:
     {
-      mrpt::opengl::CSetOfObjects::Ptr gl_custom_vizs;
+      mrpt::viz::CSetOfObjects::Ptr gl_custom_vizs;
       {
         // Get or create if new
         auto gl_r = gl_robot_frame->getByName("custom_viz");
         if (!gl_r)
         {
-          gl_custom_vizs = mrpt::opengl::CSetOfObjects::Create();
+          gl_custom_vizs = mrpt::viz::CSetOfObjects::Create();
           gl_custom_vizs->setName("custom_viz");
           gl_robot_frame->insert(gl_custom_vizs);
         }
         else
         {
-          gl_custom_vizs = std::dynamic_pointer_cast<mrpt::opengl::CSetOfObjects>(gl_r);
+          gl_custom_vizs = std::dynamic_pointer_cast<mrpt::viz::CSetOfObjects>(gl_r);
         }
 
         gl_custom_vizs->clear();
@@ -676,34 +676,34 @@ void NavlogViewerApp::updateVisualization()
 
     // Extrapolated poses from delay models:
     {
-      mrpt::opengl::CSetOfObjects::Ptr gl_relposes;
-      mrpt::opengl::CRenderizable::Ptr gl_relposes_r =
+      mrpt::viz::CSetOfObjects::Ptr gl_relposes;
+      mrpt::viz::CRenderizable::Ptr gl_relposes_r =
           gl_robot_frame->getByName("relposes");  // Get or create if new
       if (!gl_relposes_r)
       {
-        gl_relposes = mrpt::opengl::CSetOfObjects::Create();
+        gl_relposes = mrpt::viz::CSetOfObjects::Create();
         gl_relposes->setName("relposes");
         gl_robot_frame->insert(gl_relposes);
       }
       else
       {
-        gl_relposes = std::dynamic_pointer_cast<mrpt::opengl::CSetOfObjects>(gl_relposes_r);
+        gl_relposes = std::dynamic_pointer_cast<mrpt::viz::CSetOfObjects>(gl_relposes_r);
       }
 
       gl_relposes->clear();
       if (m_cbShowDelays->checked())
       {
         {
-          mrpt::opengl::CSetOfObjects::Ptr gl_relpose_sense =
-              mrpt::opengl::stock_objects::CornerXYSimple(0.3f, 1);
+          mrpt::viz::CSetOfObjects::Ptr gl_relpose_sense =
+              mrpt::viz::stock_objects::CornerXYSimple(0.3f, 1);
           gl_relpose_sense->setName("sense");
           gl_relpose_sense->enableShowName(true);
           gl_relpose_sense->setPose(log.relPoseSense);
           gl_relposes->insert(gl_relpose_sense);
         }
         {
-          mrpt::opengl::CSetOfObjects::Ptr gl_relpose_cmdvel =
-              mrpt::opengl::stock_objects::CornerXYSimple(0.3f, 1);
+          mrpt::viz::CSetOfObjects::Ptr gl_relpose_cmdvel =
+              mrpt::viz::stock_objects::CornerXYSimple(0.3f, 1);
           gl_relpose_cmdvel->setName("cmdVel");
           gl_relpose_cmdvel->enableShowName(true);
           gl_relpose_cmdvel->setPose(log.relPoseVelCmd);
@@ -715,24 +715,24 @@ void NavlogViewerApp::updateVisualization()
     // track of past poses:
     if (!m_pastPoses.empty())
     {
-      mrpt::opengl::CSetOfObjects::Ptr gl_poses;
-      mrpt::opengl::CRenderizable::Ptr gl_track =
+      mrpt::viz::CSetOfObjects::Ptr gl_poses;
+      mrpt::viz::CRenderizable::Ptr gl_track =
           scene->getByName("past_poses");  // Get or create if new
       if (!gl_track)
       {
-        gl_poses = mrpt::opengl::CSetOfObjects::Create();
+        gl_poses = mrpt::viz::CSetOfObjects::Create();
         gl_poses->setName("past_poses");
         scene->insert(gl_poses);
       }
       else
       {
-        gl_poses = dynamic_pointer_cast<mrpt::opengl::CSetOfObjects>(gl_track);
+        gl_poses = dynamic_pointer_cast<mrpt::viz::CSetOfObjects>(gl_track);
       }
       ASSERT_(gl_poses);
       gl_poses->clear();
       for (const auto& p : m_pastPoses)
       {
-        auto glCorner = mrpt::opengl::stock_objects::CornerXYSimple(0.3f, 1.0f);
+        auto glCorner = mrpt::viz::stock_objects::CornerXYSimple(0.3f, 1.0f);
         glCorner->setPose(p);
         gl_poses->insert(glCorner);
       }
@@ -746,12 +746,12 @@ void NavlogViewerApp::updateVisualization()
 
     {
       // Obstacles: original
-      mrpt::opengl::CPointCloud::Ptr gl_obs;
-      mrpt::opengl::CRenderizable::Ptr gl_obs_r =
+      mrpt::viz::CPointCloud::Ptr gl_obs;
+      mrpt::viz::CRenderizable::Ptr gl_obs_r =
           gl_robot_frame->getByName("obs-raw");  // Get or create if new
       if (!gl_obs_r)
       {
-        gl_obs = mrpt::opengl::CPointCloud::Create();
+        gl_obs = mrpt::viz::CPointCloud::Create();
         gl_obs->setName("obs-raw");
         gl_obs->setPointSize(3);
         gl_obs->setColor_u8(mrpt::img::TColor(0xff, 0xff, 0x00));
@@ -759,7 +759,7 @@ void NavlogViewerApp::updateVisualization()
       }
       else
       {
-        gl_obs = dynamic_pointer_cast<mrpt::opengl::CPointCloud>(gl_obs_r);
+        gl_obs = dynamic_pointer_cast<mrpt::viz::CPointCloud>(gl_obs_r);
       }
       gl_obs->loadFromPointsMap(&log.WS_Obstacles_original);
       if (m_cbShowDelays->checked())
@@ -769,12 +769,12 @@ void NavlogViewerApp::updateVisualization()
     }
     {
       // Obstacles: after optional filtering
-      mrpt::opengl::CPointCloud::Ptr gl_obs;
-      mrpt::opengl::CRenderizable::Ptr gl_obs_r =
+      mrpt::viz::CPointCloud::Ptr gl_obs;
+      mrpt::viz::CRenderizable::Ptr gl_obs_r =
           gl_robot_frame->getByName("obs");  // Get or create if new
       if (!gl_obs_r)
       {
-        gl_obs = mrpt::opengl::CPointCloud::Create();
+        gl_obs = mrpt::viz::CPointCloud::Create();
         gl_obs->setName("obs");
         gl_obs->setPointSize(1.5);
         gl_obs->setLocation(0, 0, 0.001);
@@ -783,7 +783,7 @@ void NavlogViewerApp::updateVisualization()
       }
       else
       {
-        gl_obs = std::dynamic_pointer_cast<mrpt::opengl::CPointCloud>(gl_obs_r);
+        gl_obs = std::dynamic_pointer_cast<mrpt::viz::CPointCloud>(gl_obs_r);
       }
       gl_obs->loadFromPointsMap(&log.WS_Obstacles);
       if (m_cbShowDelays->checked())
@@ -794,19 +794,19 @@ void NavlogViewerApp::updateVisualization()
 
     {
       // Selected PTG path:
-      mrpt::opengl::CSetOfLines::Ptr gl_path;
-      mrpt::opengl::CRenderizable::Ptr gl_path_r =
+      mrpt::viz::CSetOfLines::Ptr gl_path;
+      mrpt::viz::CRenderizable::Ptr gl_path_r =
           gl_robot_frame->getByName("path");  // Get or create if new
       if (!gl_path_r)
       {
-        gl_path = mrpt::opengl::CSetOfLines::Create();
+        gl_path = mrpt::viz::CSetOfLines::Create();
         gl_path->setName("path");
         gl_path->setLineWidth(2.0);
         gl_path->setColor_u8(mrpt::img::TColor(0xff, 0x00, 0x00));
         gl_robot_frame->insert(gl_path);
       }
       else
-        gl_path = mrpt::ptr_cast<mrpt::opengl::CSetOfLines>::from(gl_path_r);
+        gl_path = mrpt::ptr_cast<mrpt::viz::CSetOfLines>::from(gl_path_r);
       gl_path->clear();
 
       if (sel_ptg_idx < int(m_logdata_ptg_paths.size()) && sel_ptg_idx >= 0)
@@ -857,12 +857,12 @@ void NavlogViewerApp::updateVisualization()
           }
           {
             // Robot shape:
-            mrpt::opengl::CSetOfLines::Ptr gl_shape;
-            mrpt::opengl::CRenderizable::Ptr gl_shape_r =
+            mrpt::viz::CSetOfLines::Ptr gl_shape;
+            mrpt::viz::CRenderizable::Ptr gl_shape_r =
                 gl_robot_frame->getByName("shape");  // Get or create if new
             if (!gl_shape_r)
             {
-              gl_shape = std::make_shared<mrpt::opengl::CSetOfLines>();
+              gl_shape = std::make_shared<mrpt::viz::CSetOfLines>();
               gl_shape->setName("shape");
               gl_shape->setLineWidth(4.0);
               gl_shape->setColor_u8(mrpt::img::TColor(0xff, 0x00, 0x00));
@@ -870,18 +870,18 @@ void NavlogViewerApp::updateVisualization()
             }
             else
             {
-              gl_shape = std::dynamic_pointer_cast<mrpt::opengl::CSetOfLines>(gl_shape_r);
+              gl_shape = std::dynamic_pointer_cast<mrpt::viz::CSetOfLines>(gl_shape_r);
             }
             gl_shape->clear();
             ptg->add_robotShape_to_setOfLines(*gl_shape);
           }
           {
-            mrpt::opengl::CSetOfLines::Ptr gl_shape;
-            mrpt::opengl::CRenderizable::Ptr gl_shape_r =
+            mrpt::viz::CSetOfLines::Ptr gl_shape;
+            mrpt::viz::CRenderizable::Ptr gl_shape_r =
                 gl_robot_frame->getByName("velocity");  // Get or create if new
             if (!gl_shape_r)
             {
-              gl_shape = std::make_shared<mrpt::opengl::CSetOfLines>();
+              gl_shape = std::make_shared<mrpt::viz::CSetOfLines>();
               gl_shape->setName("velocity");
               gl_shape->setLineWidth(4.0);
               gl_shape->setColor_u8(mrpt::img::TColor(0x00, 0xff, 0xff));
@@ -889,7 +889,7 @@ void NavlogViewerApp::updateVisualization()
             }
             else
             {
-              gl_shape = std::dynamic_pointer_cast<mrpt::opengl::CSetOfLines>(gl_shape_r);
+              gl_shape = std::dynamic_pointer_cast<mrpt::viz::CSetOfLines>(gl_shape_r);
             }
             gl_shape->clear();
             const mrpt::math::TTwist2D& velLocal = log.cur_vel_local;
@@ -901,19 +901,19 @@ void NavlogViewerApp::updateVisualization()
 
     {
       // Manually-picked PTG path:
-      mrpt::opengl::CSetOfLines::Ptr gl_path;
-      mrpt::opengl::CRenderizable::Ptr gl_path_r =
+      mrpt::viz::CSetOfLines::Ptr gl_path;
+      mrpt::viz::CRenderizable::Ptr gl_path_r =
           gl_robot_frame->getByName("manual-path");  // Get or create if new
       if (!gl_path_r)
       {
-        gl_path = mrpt::opengl::CSetOfLines::Create();
+        gl_path = mrpt::viz::CSetOfLines::Create();
         gl_path->setName("manual-path");
         gl_path->setLineWidth(2.0);
         gl_path->setColor_u8(mrpt::img::TColor(0x00, 0xff, 0x00));
         gl_robot_frame->insert(gl_path);
       }
       else
-        gl_path = mrpt::ptr_cast<mrpt::opengl::CSetOfLines>::from(gl_path_r);
+        gl_path = mrpt::ptr_cast<mrpt::viz::CSetOfLines>::from(gl_path_r);
       gl_path->clear();
 
       if (m_manualPickPTGIdx >= 0 && m_manualPickPTGIdx < int(m_logdata_ptg_paths.size()) &&
@@ -968,12 +968,12 @@ void NavlogViewerApp::updateVisualization()
           }
           {
             // Robot shape:
-            mrpt::opengl::CSetOfLines::Ptr gl_shape;
-            mrpt::opengl::CRenderizable::Ptr gl_shape_r =
+            mrpt::viz::CSetOfLines::Ptr gl_shape;
+            mrpt::viz::CRenderizable::Ptr gl_shape_r =
                 gl_robot_frame->getByName("shape");  // Get or create if new
             if (!gl_shape_r)
             {
-              gl_shape = std::make_shared<mrpt::opengl::CSetOfLines>();
+              gl_shape = std::make_shared<mrpt::viz::CSetOfLines>();
               gl_shape->setName("shape");
               gl_shape->setLineWidth(4.0);
               gl_shape->setColor_u8(mrpt::img::TColor(0xff, 0x00, 0x00));
@@ -981,7 +981,7 @@ void NavlogViewerApp::updateVisualization()
             }
             else
             {
-              gl_shape = std::dynamic_pointer_cast<mrpt::opengl::CSetOfLines>(gl_shape_r);
+              gl_shape = std::dynamic_pointer_cast<mrpt::viz::CSetOfLines>(gl_shape_r);
             }
             gl_shape->clear();
             ptg->add_robotShape_to_setOfLines(*gl_shape);
@@ -992,30 +992,30 @@ void NavlogViewerApp::updateVisualization()
 
     {
       // Target:
-      mrpt::opengl::CSetOfObjects::Ptr gl_trgCorners;
-      mrpt::opengl::CRenderizable::Ptr gl_trgC_r =
+      mrpt::viz::CSetOfObjects::Ptr gl_trgCorners;
+      mrpt::viz::CRenderizable::Ptr gl_trgC_r =
           gl_robot_frame->getByName("target_corners");  // Get or create if new
 
-      mrpt::opengl::CPointCloud::Ptr gl_trg;
-      mrpt::opengl::CRenderizable::Ptr gl_trg_r =
+      mrpt::viz::CPointCloud::Ptr gl_trg;
+      mrpt::viz::CRenderizable::Ptr gl_trg_r =
           gl_robot_frame->getByName("target");  // Get or create if new
       if (!gl_trg_r)
       {
-        gl_trg = mrpt::opengl::CPointCloud::Create();
+        gl_trg = mrpt::viz::CPointCloud::Create();
         gl_trg->setName("target");
         gl_trg->enableShowName(true);
         gl_trg->setPointSize(9.0);
         gl_trg->setColor_u8(mrpt::img::TColor(0x00, 0x00, 0x00));
         gl_robot_frame->insert(gl_trg);
 
-        gl_trgCorners = mrpt::opengl::CSetOfObjects::Create();
+        gl_trgCorners = mrpt::viz::CSetOfObjects::Create();
         gl_trgCorners->setName("target_corners");
         gl_robot_frame->insert(gl_trgCorners);
       }
       else
       {
-        gl_trg = std::dynamic_pointer_cast<mrpt::opengl::CPointCloud>(gl_trg_r);
-        gl_trgCorners = std::dynamic_pointer_cast<mrpt::opengl::CSetOfObjects>(gl_trgC_r);
+        gl_trg = std::dynamic_pointer_cast<mrpt::viz::CPointCloud>(gl_trg_r);
+        gl_trgCorners = std::dynamic_pointer_cast<mrpt::viz::CSetOfObjects>(gl_trgC_r);
         ASSERT_(gl_trg);
         ASSERT_(gl_trgCorners);
       }
@@ -1031,7 +1031,7 @@ void NavlogViewerApp::updateVisualization()
         for (const auto& t : log.WS_targets_relative)
         {
           gl_trg->insertPoint(t.x - t0.x, t.y - t0.y, tz);
-          auto glCorner = mrpt::opengl::stock_objects::CornerXYZ(0.25f);
+          auto glCorner = mrpt::viz::stock_objects::CornerXYZ(0.25f);
           glCorner->setPose(t);
           gl_trgCorners->insert(glCorner);
         }
@@ -1231,7 +1231,7 @@ void NavlogViewerApp::updateVisualization()
                 m_win->performLayout();
               });
 
-      viz.glCanvas->scene = mrpt::opengl::Scene::Create();
+      viz.glCanvas->scene = mrpt::viz::Scene::Create();
       auto& scene = viz.glCanvas->scene;
 
       // win
@@ -1239,8 +1239,8 @@ void NavlogViewerApp::updateVisualization()
           4, 4, format("[%u]:%s", nPTG, log.infoPerPTG[nPTG].PTG_desc.c_str()), 0 /*id*/,
           getFontParams());
 
-      scene->insert(mrpt::opengl::CGridPlaneXY::Create(-1.0f, 1.0f, -1.0f, 1.0f, .0f, 1.0f));
-      scene->insert(mrpt::opengl::stock_objects::CornerXYSimple(0.4f, 2.0f));
+      scene->insert(mrpt::viz::CGridPlaneXY::Create(-1.0f, 1.0f, -1.0f, 1.0f, .0f, 1.0f));
+      scene->insert(mrpt::viz::stock_objects::CornerXYSimple(0.4f, 2.0f));
 
       auto& cam = viz.glCanvas->camera();
       cam.setAzimuthDegrees(-90.0f);
@@ -1249,14 +1249,14 @@ void NavlogViewerApp::updateVisualization()
       cam.setCameraProjective(false);
 
       {
-        auto gl_obj = mrpt::opengl::CDisk::Create();
+        auto gl_obj = mrpt::viz::CDisk::Create();
         gl_obj->setDiskRadius(1.01f, 1.0);
         gl_obj->setSlicesCount(30);
         gl_obj->setColor_u8(mrpt::img::TColor(0x30, 0x30, 0x30, 0xff));
         scene->insert(gl_obj);
       }
       {
-        auto gl_obj = mrpt::opengl::CSetOfLines::Create();
+        auto gl_obj = mrpt::viz::CSetOfLines::Create();
         gl_obj->setName("tp_obstacles");
         gl_obj->setLineWidth(1.0f);
         gl_obj->setVerticesPointSize(4.0f);
@@ -1264,7 +1264,7 @@ void NavlogViewerApp::updateVisualization()
         scene->insert(gl_obj);
       }
       {
-        auto gl_obj = mrpt::opengl::CSetOfLines::Create();
+        auto gl_obj = mrpt::viz::CSetOfLines::Create();
         gl_obj->setName("score_phase1");
         gl_obj->setLineWidth(1.0f);
         gl_obj->setVerticesPointSize(2.0f);
@@ -1272,7 +1272,7 @@ void NavlogViewerApp::updateVisualization()
         scene->insert(gl_obj);
       }
       {
-        auto gl_obj = mrpt::opengl::CSetOfLines::Create();
+        auto gl_obj = mrpt::viz::CSetOfLines::Create();
         gl_obj->setName("score_phase2");
         gl_obj->setLineWidth(1.0f);
         gl_obj->setVerticesPointSize(2.0f);
@@ -1280,20 +1280,20 @@ void NavlogViewerApp::updateVisualization()
         scene->insert(gl_obj);
       }
       {
-        auto gl_obj = mrpt::opengl::CSetOfLines::Create();
+        auto gl_obj = mrpt::viz::CSetOfLines::Create();
         gl_obj->setName("tp_selected_dir");
         gl_obj->setLineWidth(3.0f);
         gl_obj->setColor_u8(mrpt::img::TColor(0x00, 0xff, 0x00, 0xd0));
         scene->insert(gl_obj);
       }
       {
-        auto gl_obj = mrpt::opengl::CSetOfObjects::Create();
+        auto gl_obj = mrpt::viz::CSetOfObjects::Create();
         gl_obj->setName("tp_target");
         gl_obj->setLocation(0, 0, 0.02f);
         scene->insert(gl_obj);
       }
       {
-        auto gl_obj = mrpt::opengl::CPointCloud::Create();
+        auto gl_obj = mrpt::viz::CPointCloud::Create();
         gl_obj->setName("tp_robot");
         gl_obj->setPointSize(4.0f);
         gl_obj->setColor_u8(mrpt::img::TColor(0xff, 0x00, 0x00, 0xa0));
@@ -1303,7 +1303,7 @@ void NavlogViewerApp::updateVisualization()
 #if 0  // should be re-done with CMesh3D?
 			{
 				auto gl_obj =
-					mrpt::opengl::CMesh::Create(true /*transparency*/);
+					mrpt::viz::CMesh::Create(true /*transparency*/);
 				gl_obj->setName("tp_clearance");
 				gl_obj->setScale(1.0f, 1.0f, 5.0f);
 				scene->insert(gl_obj);
@@ -1311,7 +1311,7 @@ void NavlogViewerApp::updateVisualization()
 #endif
     }
 
-    mrpt::opengl::Scene::Ptr& scene = viz.glCanvas->scene;
+    mrpt::viz::Scene::Ptr& scene = viz.glCanvas->scene;
     auto view = scene->getViewport();
 
     // Draw dynamic stuff:
@@ -1332,7 +1332,7 @@ void NavlogViewerApp::updateVisualization()
       const double aDir = pI.desiredDirection;
 
       auto gl_obj =
-          std::dynamic_pointer_cast<mrpt::opengl::CSetOfLines>(scene->getByName("tp_selected_dir"));
+          std::dynamic_pointer_cast<mrpt::viz::CSetOfLines>(scene->getByName("tp_selected_dir"));
       gl_obj->clear();
       gl_obj->appendLine(0, 0, 0, pI.desiredSpeed * cos(aDir), pI.desiredSpeed * sin(aDir), 0);
     }
@@ -1351,7 +1351,7 @@ void NavlogViewerApp::updateVisualization()
     }
     {
       auto gl_obj =
-          std::dynamic_pointer_cast<mrpt::opengl::CSetOfLines>(scene->getByName("tp_obstacles"));
+          std::dynamic_pointer_cast<mrpt::viz::CSetOfLines>(scene->getByName("tp_obstacles"));
       gl_obj->clear();
       if (nAlphas > 2)
       {
@@ -1363,15 +1363,15 @@ void NavlogViewerApp::updateVisualization()
     // Target:
     {
       auto gl_obj =
-          std::dynamic_pointer_cast<mrpt::opengl::CSetOfObjects>(scene->getByName("tp_target"));
+          std::dynamic_pointer_cast<mrpt::viz::CSetOfObjects>(scene->getByName("tp_target"));
       gl_obj->clear();
-      auto glTargetPts = mrpt::opengl::CPointCloud::Create();
+      auto glTargetPts = mrpt::viz::CPointCloud::Create();
       glTargetPts->setPointSize(5);
       glTargetPts->setColor_u8(0, 0, 0);
       gl_obj->insert(glTargetPts);
       for (const auto& p : pI.TP_Targets)
       {
-        auto glCorner = mrpt::opengl::stock_objects::CornerXYZ(0.15f);
+        auto glCorner = mrpt::viz::stock_objects::CornerXYZ(0.15f);
         glCorner->setPose(p);
         gl_obj->insert(glCorner);
         glTargetPts->insertPoint(p.x, p.y, 0.02);
@@ -1415,8 +1415,7 @@ void NavlogViewerApp::updateVisualization()
 
     // Current robot pt (normally in pure reactive, at (0,0)):
     {
-      auto gl_obj =
-          std::dynamic_pointer_cast<mrpt::opengl::CPointCloud>(scene->getByName("tp_robot"));
+      auto gl_obj = std::dynamic_pointer_cast<mrpt::viz::CPointCloud>(scene->getByName("tp_robot"));
       gl_obj->clear();
       gl_obj->insertPoint(pI.TP_Robot.x, pI.TP_Robot.y, 0);
     }
@@ -1424,7 +1423,7 @@ void NavlogViewerApp::updateVisualization()
     // Clearance-diagram:
 #if 0
 		{
-			auto gl_obj = std::dynamic_pointer_cast<mrpt::opengl::CMesh>(
+			auto gl_obj = std::dynamic_pointer_cast<mrpt::viz::CMesh>(
 				scene->getByName("tp_clearance"));
 			if (pI.clearance.empty())
 				gl_obj->setVisibility(false);
@@ -1440,9 +1439,9 @@ void NavlogViewerApp::updateVisualization()
     // Scores
     {
       auto gl_obj1 =
-          std::dynamic_pointer_cast<mrpt::opengl::CSetOfLines>(scene->getByName("score_phase1"));
+          std::dynamic_pointer_cast<mrpt::viz::CSetOfLines>(scene->getByName("score_phase1"));
       auto gl_obj2 =
-          std::dynamic_pointer_cast<mrpt::opengl::CSetOfLines>(scene->getByName("score_phase2"));
+          std::dynamic_pointer_cast<mrpt::viz::CSetOfLines>(scene->getByName("score_phase2"));
       const bool visible1 = m_rbPerPTGPlots->selectedIndex() >= 1;
       const bool visible2 = m_rbPerPTGPlots->selectedIndex() >= 2;
       gl_obj1->clear();
@@ -1467,7 +1466,7 @@ void NavlogViewerApp::updateVisualization()
             pts.emplace_back(r * cos(a), r * sin(a));
           }
 
-          mrpt::opengl::CSetOfLines::Ptr& gl_obj = iScore == (num_scores - 1) ? gl_obj1 : gl_obj2;
+          mrpt::viz::CSetOfLines::Ptr& gl_obj = iScore == (num_scores - 1) ? gl_obj1 : gl_obj2;
 
           gl_obj->appendLine(pts[0].x, pts[0].y, 0, pts[1].x, pts[1].y, 0);
           for (size_t i = 2; i < nAlphas; i++) gl_obj->appendLineStrip(pts[i].x, pts[i].y, 0);

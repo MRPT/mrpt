@@ -44,7 +44,7 @@ using namespace std;
 
 namespace
 {
-void showImageInGLView(mrpt::opengl::Viewport& view, const mrpt::img::CImage& im)
+void showImageInGLView(mrpt::viz::Viewport& view, const mrpt::img::CImage& im)
 {
   view.setImageView(im, true);
 }
@@ -194,7 +194,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(const CSerializable::Ptr& sel_ob
     // The plot:
     obs->load();
     const auto& p = pnViewOptions->m_params;
-    auto glPts = mrpt::opengl::CSetOfObjects::Create();
+    auto glPts = mrpt::viz::CSetOfObjects::Create();
     obs2Dscan_to_viz(obs, p, *glPts);
 
 // Update 3D view ==========
@@ -360,7 +360,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(const CSerializable::Ptr& sel_ob
     // --------------------------------
     const auto& p = pnViewOptions->m_params;
 
-    auto glPts = mrpt::opengl::CSetOfObjects::Create();
+    auto glPts = mrpt::viz::CSetOfObjects::Create();
 
     obs3Dscan_to_viz(obs, p, *glPts);
 
@@ -422,7 +422,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(const CSerializable::Ptr& sel_ob
     obs->generatePointCloud();
     const auto& p = pnViewOptions->m_params;
 
-    auto glPts = mrpt::opengl::CSetOfObjects::Create();
+    auto glPts = mrpt::viz::CSetOfObjects::Create();
     obsVelodyne_to_viz(obs, p, *glPts);
 
 // Update 3D view ==========
@@ -452,7 +452,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(const CSerializable::Ptr& sel_ob
 
     const auto& p = pnViewOptions->m_params;
 
-    auto glPts = mrpt::opengl::CSetOfObjects::Create();
+    auto glPts = mrpt::viz::CSetOfObjects::Create();
     obsPointCloud_to_viz(obs, p, *glPts);
 
 // Update 3D view ==========
@@ -466,7 +466,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(const CSerializable::Ptr& sel_ob
   }
 
   // Generic visualizable object:
-  if (auto viz = std::dynamic_pointer_cast<mrpt::opengl::Visualizable>(sel_obj); viz)
+  if (auto viz = std::dynamic_pointer_cast<mrpt::viz::Visualizable>(sel_obj); viz)
   {
     // ----------------------------------------------------------------------
     //              Generic visualizable object:
@@ -545,7 +545,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(const CSerializable::Ptr& sel_ob
     // 3D points:
     const auto& p = pnViewOptions->m_params;
 
-    auto glPts = mrpt::opengl::CSetOfObjects::Create();
+    auto glPts = mrpt::viz::CSetOfObjects::Create();
     obsRotatingScan_to_viz(obs, p, *glPts);
 
     bmp3Dobs_3dcloud->clear();

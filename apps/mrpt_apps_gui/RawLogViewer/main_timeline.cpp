@@ -90,7 +90,7 @@ void xRawLogViewerFrame::createTimeLineObjects(wxFlexGridSizer* fgzMain)
 
   // Set-up bottom timeline view opengl objects:
   {
-    mrpt::opengl::Scene::Ptr& scene = m_glTimeLine->getOpenGLSceneRef();
+    mrpt::viz::Scene::Ptr& scene = m_glTimeLine->getOpenGLSceneRef();
     scene->clear();
 
     // Enable no-projection mode in this viewport:
@@ -99,31 +99,31 @@ void xRawLogViewerFrame::createTimeLineObjects(wxFlexGridSizer* fgzMain)
     m_glTimeLine->setUseCameraFromScene(true);
 
     {
-      auto glCam = mrpt::opengl::CCamera::Create();
+      auto glCam = mrpt::viz::CCamera::Create();
       glCam->setNoProjection();  // work with pixel coordinates
       scene->insert(glCam);
     }
 
-    m_timeline.borderBox = mrpt::opengl::CBox::Create(
+    m_timeline.borderBox = mrpt::viz::CBox::Create(
         mrpt::math::TPoint3D(-1.0, 0., 0.), mrpt::math::TPoint3D(0.9, 1., 0.), true);
     scene->insert(m_timeline.borderBox);
 
-    m_timeline.xTicks = mrpt::opengl::CSetOfObjects::Create();
+    m_timeline.xTicks = mrpt::viz::CSetOfObjects::Create();
     scene->insert(m_timeline.xTicks);
 
-    m_timeline.ySensorLabels = mrpt::opengl::CSetOfObjects::Create();
+    m_timeline.ySensorLabels = mrpt::viz::CSetOfObjects::Create();
     scene->insert(m_timeline.ySensorLabels);
 
-    m_timeline.allSensorDots = mrpt::opengl::CSetOfObjects::Create();
+    m_timeline.allSensorDots = mrpt::viz::CSetOfObjects::Create();
     scene->insert(m_timeline.allSensorDots);
 
-    m_timeline.cursor = mrpt::opengl::CBox::Create();
+    m_timeline.cursor = mrpt::viz::CBox::Create();
     scene->insert(m_timeline.cursor);
 
-    m_timeline.horizontalCursor = mrpt::opengl::CBox::Create();
+    m_timeline.horizontalCursor = mrpt::viz::CBox::Create();
     scene->insert(m_timeline.horizontalCursor);
 
-    m_timeline.visiblePage = mrpt::opengl::CBox::Create();
+    m_timeline.visiblePage = mrpt::viz::CBox::Create();
     scene->insert(m_timeline.visiblePage);
   }
 
@@ -222,7 +222,7 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
   for (int i = 0; i < (TL_X_TICK_COUNT - 1); i++)
   {
     // tick label:
-    auto glLb = mrpt::opengl::CText::Create();
+    auto glLb = mrpt::viz::CText::Create();
     glLb->setFont("mono", XTICKS_FONT_SIZE);
     glLb->setString(mrpt::system::formatTimeInterval(
         i * (max_t_d - min_t_d) / (TL_X_TICK_COUNT - 1) + min_t_d - abs_min_t_d));
@@ -234,7 +234,7 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
     tl.xTicks->insert(glLb);
 
     // tick line:
-    auto glTick = mrpt::opengl::CSimpleLine::Create();
+    auto glTick = mrpt::viz::CSimpleLine::Create();
     glTick->setColor_u8(0xa0, 0xa0, 0xa0, 0x80);
     glTick->setLineCoords(      //
         ptX, yLowerBorder1, 0,  //
@@ -258,7 +258,7 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
     {
       if (e.second.timOccurs.empty()) continue;
 
-      auto glDots = mrpt::opengl::CPointCloud::Create();
+      auto glDots = mrpt::viz::CPointCloud::Create();
       tl.allSensorDots->insert(glDots);
 
       glDots->setColor_u8(0x00, 0x00, 0xff, 0xff);
@@ -288,7 +288,7 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
       // and add its visualization:
       if (!e.first.empty())
       {
-        auto glLb = mrpt::opengl::CText::Create();
+        auto glLb = mrpt::viz::CText::Create();
         glLb->setFont("mono", XTICKS_FONT_SIZE);
         glLb->setString(e.first);
         glLb->setColor_u8(0x00, 0x00, 0x00, 0xff);
@@ -627,7 +627,7 @@ std::optional<std::pair<double, size_t>> xRawLogViewerFrame::timeLineMouseXYToTr
   // vertical line highlight:
   for (size_t i = 0;; i++)
   {
-    auto glLb = tl.ySensorLabels->getByClass<mrpt::opengl::CText>(i);
+    auto glLb = tl.ySensorLabels->getByClass<mrpt::viz::CText>(i);
     if (!glLb) break;
 
     if (trackedSensorLabel.has_value() && glLb->getString() == *trackedSensorLabel)
@@ -643,7 +643,7 @@ std::optional<std::pair<double, size_t>> xRawLogViewerFrame::timeLineMouseXYToTr
   // bold dots in selected line:
   for (size_t i = 0;; i++)
   {
-    auto glPts = tl.allSensorDots->getByClass<mrpt::opengl::CPointCloud>(i);
+    auto glPts = tl.allSensorDots->getByClass<mrpt::viz::CPointCloud>(i);
     if (!glPts) break;
 
     glPts->setPointSize(

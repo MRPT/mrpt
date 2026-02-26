@@ -123,8 +123,8 @@ class kinect_calibrate_guiDialog : public wxDialog
   mrpt::vision::TStereoCalibResults m_calib_result;
   mrpt::vision::TStereoCalibParams m_calib_params;
 
-  mrpt::opengl::CPointCloudColoured::Ptr m_gl_3d_points;  // For live Kinect tests
-  mrpt::opengl::CSetOfObjects::Ptr m_gl_corner_left,
+  mrpt::viz::CPointCloudColoured::Ptr m_gl_3d_points;  // For live Kinect tests
+  mrpt::viz::CSetOfObjects::Ptr m_gl_corner_left,
       m_gl_corner_right;  // For live Kinect tests
 
   void thread_grabbing();

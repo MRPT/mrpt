@@ -56,9 +56,9 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/gui/WxUtils.h>
-#include <mrpt/opengl/CSimpleLine.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CSimpleLine.h>
 
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1
@@ -396,9 +396,9 @@ class xRawLogViewerFrame : public wxFrame
   wxTextCtrl* edSelectedTimeInfo = nullptr;
   CMyGLCanvas* m_glTimeLine = nullptr;
 
-  mrpt::opengl::Viewport::Ptr bmp3Dobs_depth;
-  mrpt::opengl::Viewport::Ptr bmp3Dobs_int;
-  mrpt::opengl::Viewport::Ptr bmp3Dobs_3dcloud;
+  mrpt::viz::Viewport::Ptr bmp3Dobs_depth;
+  mrpt::viz::Viewport::Ptr bmp3Dobs_int;
+  mrpt::viz::Viewport::Ptr bmp3Dobs_3dcloud;
 
   void OnComboImageDirsChange(wxCommandEvent& event);
   void On3DObsPagesChange(wxBookCtrlEvent& event);
@@ -462,14 +462,14 @@ class xRawLogViewerFrame : public wxFrame
     double scrollBarZoomVisiblePercent = 1.0;  // [0-1]: visible range
     double scrollBarStartPercent = 0.0;        // [0-1]: left-most part
 
-    mrpt::opengl::CBox::Ptr borderBox;
-    mrpt::opengl::CSetOfObjects::Ptr xTicks;
+    mrpt::viz::CBox::Ptr borderBox;
+    mrpt::viz::CSetOfObjects::Ptr xTicks;
     /// one pointcloud per sensorLabel
-    mrpt::opengl::CSetOfObjects::Ptr allSensorDots;
-    mrpt::opengl::CBox::Ptr cursor;
-    mrpt::opengl::CBox::Ptr visiblePage;
-    mrpt::opengl::CSetOfObjects::Ptr ySensorLabels;
-    mrpt::opengl::CBox::Ptr horizontalCursor;
+    mrpt::viz::CSetOfObjects::Ptr allSensorDots;
+    mrpt::viz::CBox::Ptr cursor;
+    mrpt::viz::CBox::Ptr visiblePage;
+    mrpt::viz::CSetOfObjects::Ptr ySensorLabels;
+    mrpt::viz::CBox::Ptr horizontalCursor;
 
     mrpt::containers::bimap<double, std::string> yCoordToSensorLabel;
   };

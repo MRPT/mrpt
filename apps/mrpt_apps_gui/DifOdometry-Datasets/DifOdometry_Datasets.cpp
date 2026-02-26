@@ -14,15 +14,15 @@
 
 #include "DifOdometry_Datasets.h"
 
-#include <mrpt/opengl/CBox.h>
-#include <mrpt/opengl/CEllipsoid3D.h>
-#include <mrpt/opengl/CFrustum.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/viz/CBox.h>
+#include <mrpt/viz/CEllipsoid3D.h>
+#include <mrpt/viz/CFrustum.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CPointCloudColoured.h>
 #include <mrpt/viz/CSetOfLines.h>
+#include <mrpt/viz/stock_objects.h>
 
 #include "legend.xpm"
 

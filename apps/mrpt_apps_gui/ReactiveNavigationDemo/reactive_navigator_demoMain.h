@@ -40,12 +40,12 @@
 #include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/nav.h>
-#include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>  // It's in the lib mrpt-maps
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CSimpleLine.h>
+#include <mrpt/viz/CDisk.h>
+#include <mrpt/viz/CPlanarLaserScan.h>  // It's in the lib mrpt-maps
 #include <mrpt/viz/CPointCloud.h>
 #include <mrpt/viz/CSetOfLines.h>
+#include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/CSimpleLine.h>
 
 #include <memory>  // unique_ptr<>
 
@@ -331,19 +331,19 @@ class reactive_navigator_demoframe : public wxFrame
   std::unique_ptr<CMyRedirector> m_myRedirector;
 
   // ========= Opengl View: Map & robot  =======
-  mrpt::opengl::CSetOfObjects::Ptr gl_grid;
-  mrpt::opengl::CSetOfObjects::Ptr gl_robot, gl_robot_local, gl_target;
-  mrpt::opengl::CSetOfObjects::Ptr m_gl_placing_nav_target, m_gl_placing_robot, m_gl_drawing_obs;
-  mrpt::opengl::CDisk::Ptr gl_robot_sensor_range;
-  mrpt::opengl::CSetOfLines::Ptr gl_robot_path;
-  mrpt::opengl::CPlanarLaserScan::Ptr gl_scan3D;
-  mrpt::opengl::CSetOfLines::Ptr gl_robot_ptg_prediction;
-  mrpt::opengl::CSetOfObjects::Ptr gl_waypoints_clicking, gl_waypoints_status;
+  mrpt::viz::CSetOfObjects::Ptr gl_grid;
+  mrpt::viz::CSetOfObjects::Ptr gl_robot, gl_robot_local, gl_target;
+  mrpt::viz::CSetOfObjects::Ptr m_gl_placing_nav_target, m_gl_placing_robot, m_gl_drawing_obs;
+  mrpt::viz::CDisk::Ptr gl_robot_sensor_range;
+  mrpt::viz::CSetOfLines::Ptr gl_robot_path;
+  mrpt::viz::CPlanarLaserScan::Ptr gl_scan3D;
+  mrpt::viz::CSetOfLines::Ptr gl_robot_ptg_prediction;
+  mrpt::viz::CSetOfObjects::Ptr gl_waypoints_clicking, gl_waypoints_status;
 
   // ========= Opengl View: Local view (holonomic)  =======
-  mrpt::opengl::CSimpleLine::Ptr gl_line_direction;
-  mrpt::opengl::CPointCloud::Ptr gl_rel_target, gl_rel_robot;
-  mrpt::opengl::CSetOfLines::Ptr gl_nd_gaps, gl_tp_obstacles;
+  mrpt::viz::CSimpleLine::Ptr gl_line_direction;
+  mrpt::viz::CPointCloud::Ptr gl_rel_target, gl_rel_robot;
+  mrpt::viz::CSetOfLines::Ptr gl_nd_gaps, gl_tp_obstacles;
 };
 
 #endif  // HOLONOMIC_NAVIGATOR_DEMOMAIN_H

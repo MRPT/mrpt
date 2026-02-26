@@ -243,9 +243,9 @@ CDlgPoseEst::CDlgPoseEst(wxWindow* parent, wxWindowID id, const wxPoint& pos, co
   pose_mat << -25, 25, 100, -0.1, 0.25, 0.5;
   //*)
 
-  scene = mrpt::opengl::Scene::Create();
-  cor = mrpt::opengl::stock_objects::CornerXYZ();
-  cor1 = mrpt::opengl::stock_objects::CornerXYZ();
+  scene = mrpt::viz::Scene::Create();
+  cor = mrpt::viz::stock_objects::CornerXYZ();
+  cor1 = mrpt::viz::stock_objects::CornerXYZ();
 
   const unsigned int check_size_x = edSizeX->GetValue();
   const unsigned int check_size_y = edSizeY->GetValue();

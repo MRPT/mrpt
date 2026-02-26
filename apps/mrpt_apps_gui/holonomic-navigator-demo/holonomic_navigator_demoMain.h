@@ -33,12 +33,12 @@
 
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/nav.h>
-#include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>  // It's in the lib mrpt-maps
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CSimpleLine.h>
+#include <mrpt/viz/CDisk.h>
+#include <mrpt/viz/CPlanarLaserScan.h>  // It's in the lib mrpt-maps
 #include <mrpt/viz/CPointCloud.h>
 #include <mrpt/viz/CSetOfLines.h>
+#include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/CSimpleLine.h>
 
 #include <memory>  // unique_ptr
 
@@ -184,19 +184,19 @@ class holonomic_navigator_demoFrame : public wxFrame
   TCursorPickState m_cursorPickState;
 
   // ========= Opengl View: Map & robot  =======
-  mrpt::opengl::CSetOfObjects::Ptr gl_grid;
-  mrpt::opengl::CSetOfObjects::Ptr gl_robot, gl_target;
-  mrpt::opengl::CSetOfObjects::Ptr m_gl_placing_nav_target;
-  mrpt::opengl::CSetOfObjects::Ptr m_gl_placing_robot;
-  mrpt::opengl::CDisk::Ptr gl_robot_sensor_range;
-  mrpt::opengl::CSetOfLines::Ptr gl_robot_path;
-  mrpt::opengl::CPlanarLaserScan::Ptr gl_scan3D, gl_scan2D;
-  mrpt::opengl::CPointCloud::Ptr gl_path;
+  mrpt::viz::CSetOfObjects::Ptr gl_grid;
+  mrpt::viz::CSetOfObjects::Ptr gl_robot, gl_target;
+  mrpt::viz::CSetOfObjects::Ptr m_gl_placing_nav_target;
+  mrpt::viz::CSetOfObjects::Ptr m_gl_placing_robot;
+  mrpt::viz::CDisk::Ptr gl_robot_sensor_range;
+  mrpt::viz::CSetOfLines::Ptr gl_robot_path;
+  mrpt::viz::CPlanarLaserScan::Ptr gl_scan3D, gl_scan2D;
+  mrpt::viz::CPointCloud::Ptr gl_path;
 
   // ========= Opengl View: Local view (holonomic)  =======
-  mrpt::opengl::CSimpleLine::Ptr gl_line_direction;
-  mrpt::opengl::CPointCloud::Ptr gl_rel_target;
-  mrpt::opengl::CSetOfLines::Ptr gl_nd_gaps;
+  mrpt::viz::CSimpleLine::Ptr gl_line_direction;
+  mrpt::viz::CPointCloud::Ptr gl_rel_target;
+  mrpt::viz::CSetOfLines::Ptr gl_nd_gaps;
 };
 
 #endif  // HOLONOMIC_NAVIGATOR_DEMOMAIN_H

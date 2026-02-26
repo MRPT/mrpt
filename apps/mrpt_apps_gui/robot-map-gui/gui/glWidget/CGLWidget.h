@@ -30,14 +30,14 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
   CGlWidget(bool is2D, QWidget* parent = nullptr);
   ~CGlWidget() override;
 
-  void fillMap(const mrpt::opengl::CSetOfObjects::Ptr& renderizableMap);
+  void fillMap(const mrpt::viz::CSetOfObjects::Ptr& renderizableMap);
   void setDocument(CDocument* doc);
 
   void updateObservations();
 
   void setSelected(const mrpt::math::TPose3D& pose);
   void setSelectedObservation(bool is);
-  void setLaserScan(mrpt::opengl::CPlanarLaserScan::Ptr laserScan);
+  void setLaserScan(mrpt::viz::CPlanarLaserScan::Ptr laserScan);
 
   void setZoom(float zoom);
   float getZoom() const;
@@ -76,8 +76,8 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
  protected:
   void resizeGL(int width, int height) override;
   void updateCamerasParams() override;
-  void insertToMap(const mrpt::opengl::CRenderizable::Ptr& newObject) override;
-  void removeFromMap(const mrpt::opengl::CRenderizable::Ptr& newObject) override;
+  void insertToMap(const mrpt::viz::CRenderizable::Ptr& newObject) override;
+  void removeFromMap(const mrpt::viz::CRenderizable::Ptr& newObject) override;
   void mouseMoveEvent(QMouseEvent* event) override;
   void mousePressEvent(QMouseEvent* event) override;
   void mouseReleaseEvent(QMouseEvent* event) override;
@@ -93,8 +93,7 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 
   template <class Container>
   int searchPoseFromList(float x, float y, double maxDist, Container list) const;
-  CRobotPose::Ptr removePoseFromPointsCloud(
-      mrpt::opengl::CSetOfObjects::Ptr points, int index) const;
+  CRobotPose::Ptr removePoseFromPointsCloud(mrpt::viz::CSetOfObjects::Ptr points, int index) const;
 
   void removeRobotDirection();
   void updateMinimapPos();
@@ -105,9 +104,9 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
   bool deselectAll();
   CRobotPose::Ptr getRobotPose(size_t index);
 
-  mrpt::opengl::Viewport::Ptr m_miniMapViewport;
-  mrpt::opengl::CSetOfObjects::Ptr m_map;
-  mrpt::opengl::CGridPlaneXY::Ptr m_groundPlane;
+  mrpt::viz::Viewport::Ptr m_miniMapViewport;
+  mrpt::viz::CSetOfObjects::Ptr m_map;
+  mrpt::viz::CGridPlaneXY::Ptr m_groundPlane;
 
   CDocument* m_doc;
   float m_miniMapSize;
@@ -118,11 +117,11 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
   mrpt::img::TColorf m_selectedColor;
 
   bool m_isShowObs;
-  mrpt::opengl::CSetOfObjects::Ptr m_visiblePoints;
+  mrpt::viz::CSetOfObjects::Ptr m_visiblePoints;
   std::vector<CRobotPose::Ptr> m_selectedPoints;
-  mrpt::opengl::CPlanarLaserScan::Ptr m_currentLaserScan;
-  mrpt::opengl::CRenderizable::Ptr m_currentObs;
-  mrpt::opengl::CSetOfLines::Ptr m_line;
+  mrpt::viz::CPlanarLaserScan::Ptr m_currentLaserScan;
+  mrpt::viz::CRenderizable::Ptr m_currentObs;
+  mrpt::viz::CSetOfLines::Ptr m_line;
 
   bool m_is2D;
   bool m_showRobot;

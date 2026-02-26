@@ -615,10 +615,10 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id) :
   gl_view_WS = m_plot->getOpenGLSceneRef()->getViewport();
   gl_view_TPSpace = m_plotTPSpace->getOpenGLSceneRef()->getViewport();
 
-  gl_TPSpace_TP_obstacles = mrpt::opengl::CSetOfObjects::Create();
-  gl_TPSpace_clearance = mrpt::opengl::CMesh::Create(true, -5.0f, 5.0f, -5.0f, 5.0f);
+  gl_TPSpace_TP_obstacles = mrpt::viz::CSetOfObjects::Create();
+  gl_TPSpace_clearance = mrpt::viz::CMesh::Create(true, -5.0f, 5.0f, -5.0f, 5.0f);
   gl_TPSpace_clearance->setVisibility(false);
-  gl_TPSpace_clearance_interp = mrpt::opengl::CMesh::Create(true, -5.0f, 5.0f, -5.0f, 5.0f);
+  gl_TPSpace_clearance_interp = mrpt::viz::CMesh::Create(true, -5.0f, 5.0f, -5.0f, 5.0f);
   gl_TPSpace_clearance_interp->setVisibility(false);
 
   gl_view_TPSpace->insert(gl_TPSpace_TP_obstacles);
@@ -628,26 +628,26 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id) :
   m_plot->getOpenGLSceneRef()->getViewport()->addTextMessage(0.01, 5, "Workspace", 1);
   m_plotTPSpace->getOpenGLSceneRef()->getViewport()->addTextMessage(0.01, 5, "TP-Space", 2);
 
-  gl_robot_ptg_prediction = mrpt::opengl::CSetOfLines::Create();
+  gl_robot_ptg_prediction = mrpt::viz::CSetOfLines::Create();
   gl_robot_ptg_prediction->setName("ptg_prediction");
   gl_robot_ptg_prediction->setLineWidth(1.0);
   gl_robot_ptg_prediction->setColor_u8(mrpt::img::TColor(0x00, 0x00, 0xff, 0x90));
   gl_view_WS->insert(gl_robot_ptg_prediction);
 
-  gl_robot_ptg_prediction_highlight = mrpt::opengl::CSetOfLines::Create();
+  gl_robot_ptg_prediction_highlight = mrpt::viz::CSetOfLines::Create();
   gl_robot_ptg_prediction_highlight->setName("ptg_prediction_highlight");
   gl_robot_ptg_prediction_highlight->setLineWidth(3.0);
   gl_robot_ptg_prediction_highlight->setColor_u8(mrpt::img::TColor(0xff, 0x00, 0x00, 0xff));
   gl_view_WS->insert(gl_robot_ptg_prediction_highlight);
 
-  gl_WS_obs = mrpt::opengl::CPointCloud::Create();
+  gl_WS_obs = mrpt::viz::CPointCloud::Create();
   gl_WS_obs->setPointSize(7.0);
   gl_WS_obs->setColor_u8(0, 0, 0);
   gl_view_WS->insert(gl_WS_obs);
 
-  gl_WS_target = mrpt::opengl::CSetOfObjects::Create();
+  gl_WS_target = mrpt::viz::CSetOfObjects::Create();
   {
-    auto glShape = mrpt::opengl::CSetOfLines::Create();
+    auto glShape = mrpt::viz::CSetOfLines::Create();
     glShape->setColor_u8(0xff, 0, 0);
     mrpt::nav::CPTG_RobotShape_Circular::static_add_robotShape_to_setOfLines(*glShape, {}, 0.2);
     gl_WS_target->insert(glShape);
@@ -656,9 +656,9 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id) :
   gl_WS_target->enableShowName(true);
   gl_view_WS->insert(gl_WS_target);
 
-  gl_WS_target_reprojected = mrpt::opengl::CSetOfObjects::Create();
+  gl_WS_target_reprojected = mrpt::viz::CSetOfObjects::Create();
   {
-    auto glShape = mrpt::opengl::CSetOfLines::Create();
+    auto glShape = mrpt::viz::CSetOfLines::Create();
     glShape->setColor_u8(0xff, 0xff, 0x00, 0xe0);
     mrpt::nav::CPTG_RobotShape_Circular::static_add_robotShape_to_setOfLines(*glShape, {}, 0.15);
     gl_WS_target_reprojected->insert(glShape);
@@ -667,7 +667,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id) :
   gl_WS_target_reprojected->enableShowName(true);
   gl_view_WS->insert(gl_WS_target_reprojected);
 
-  gl_TP_target = mrpt::opengl::CPointCloud::Create();
+  gl_TP_target = mrpt::viz::CPointCloud::Create();
   gl_TP_target->setPointSize(7.0);
   gl_TP_target->setColor_u8(0xff, 0, 0);
   gl_TP_target->insertPoint(0, 0, 0);
@@ -676,7 +676,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id) :
   gl_view_TPSpace->insert(gl_TP_target);
 
   {
-    gl_axis_WS = mrpt::opengl::CAxis::Create(-10.0, -10.0, 0, 10.0, 10.0, 0.0, 1.0, 2.0);
+    gl_axis_WS = mrpt::viz::CAxis::Create(-10.0, -10.0, 0, 10.0, 10.0, 0.0, 1.0, 2.0);
     gl_axis_WS->setTextScale(0.10f);
     gl_axis_WS->enableTickMarks(true, true, true);
     gl_axis_WS->setColor_u8(mrpt::img::TColor(30, 30, 30, 50));
@@ -686,7 +686,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id) :
     gl_view_WS->insert(gl_axis_WS);
   }
   {
-    gl_axis_TPS = mrpt::opengl::CAxis::Create(-1.0, -1.0, 0, 1.0, 1.0, 0.0, 0.25, 2.0);
+    gl_axis_TPS = mrpt::viz::CAxis::Create(-1.0, -1.0, 0, 1.0, 1.0, 0.0, 0.25, 2.0);
     gl_axis_TPS->setTextScale(0.025f);
     gl_axis_TPS->enableTickMarks(true, true, false);
     gl_axis_TPS->setColor_u8(mrpt::img::TColor(30, 30, 30, 50));
@@ -695,7 +695,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id) :
     gl_view_TPSpace->insert(gl_axis_TPS);
   }
 
-  gl_tp_obstacles = mrpt::opengl::CSetOfLines::Create();
+  gl_tp_obstacles = mrpt::viz::CSetOfLines::Create();
   gl_tp_obstacles->setName("tp_obstacles");
   gl_tp_obstacles->setLineWidth(2.0f);
   gl_tp_obstacles->setColor_u8(mrpt::img::TColor(0x00, 0x00, 0x00, 0xff));
@@ -711,7 +711,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id) :
 
 #if 0
 	// Fixed camera:
-	gl_view_TPSpace_cam = mrpt::opengl::CCamera::Create();
+	gl_view_TPSpace_cam = mrpt::viz::CCamera::Create();
 	gl_view_TPSpace->insert ( gl_view_TPSpace_cam );
 	gl_view_TPSpace_cam->setAzimuthDegrees( -90 );
 	gl_view_TPSpace_cam->setElevationDegrees(90);
@@ -964,7 +964,7 @@ void ptgConfiguratorframe::rebuild3Dview()
         mrpt::keep_min(max_dist, maxRenderDist);
       }
 
-      mrpt::opengl::CSetOfLines& sol =
+      mrpt::viz::CSetOfLines& sol =
           cbHighlightOnePath->IsChecked() && k == size_t(edIndexHighlightPath->GetValue())
               ? *gl_robot_ptg_prediction_highlight
               : *gl_robot_ptg_prediction;
