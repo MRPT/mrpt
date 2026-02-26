@@ -1,28 +1,24 @@
 
 
-#-----------------------------------------------------------------
-# CMake file for the MRPT application:  features_matching
-#
-#  Run with "cmake ." at the root directory
-#
-#  Feb 2008, Jose Luis Blanco <jlblanco@ctima.uma.es>
-#-----------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------
+# CMake file for MRPT app
+#-----------------------------------------------------------------------------------------------
+cmake_minimum_required(VERSION 3.16)
+
 project(features-matching)
 
-# ---------------------------------------------
-# TARGET:
-# ---------------------------------------------
+# Basic MRPT infrastructure
+find_package(mrpt_common REQUIRED)
+
+# Dependencies
+find_package(mrpt_gui REQUIRED)
+find_package(mrpt_vision REQUIRED)
+
 # Define the executable target:
-add_executable(${PROJECT_NAME}
-	features_matching_main.cpp
-	 ${MRPT_VERSION_RC_FILE}
+mrpt_add_executable(
+  TARGET ${PROJECT_NAME}
+  SOURCES features_matching_main.cpp
+  LINK_LIBRARIES
+    mrpt::mrpt_gui
+    mrpt::mrpt_vision
 )
-
-# Dependencies on MRPT libraries:
-#  Just mention the top-level dependency, the rest will be detected automatically,
-#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${PROJECT_NAME} mrpt::gui mrpt::vision)
-
-DeclareAppForInstall(${PROJECT_NAME})
-
-AppStartMenuLink(${PROJECT_NAME} "Visual feature matching demo")   # Add link to the Start menu (in Windows Installable packages)

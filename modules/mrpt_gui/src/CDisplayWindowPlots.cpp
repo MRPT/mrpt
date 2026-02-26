@@ -21,6 +21,9 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/system/os.h>
 
+// The wxMathPlot library:
+#include <mathplot/mathplot.h>
+
 #include <cstring>
 
 using namespace mrpt;
@@ -55,7 +58,7 @@ CWindowDialogPlots::CWindowDialogPlots(
   SetClientSize(initialSize);
 
   wxIcon FrameIcon;
-  FrameIcon.CopyFromBitmap(mrpt::gui::WxSubsystem::getMRPTDefaultIcon());
+  FrameIcon.CopyFromBitmap(mrpt::gui::WxSubsystem::GetMRPTDefaultIcon());
   SetIcon(FrameIcon);
 
   // Create the mpWindow object:
@@ -718,7 +721,7 @@ void CDisplayWindowPlots::resize(
   REQ->OPCODE = WxSubsystem::OpCode::PLOTS_SET_SIZE;
   REQ->x = width;
   REQ->y = height;
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -740,7 +743,7 @@ void CDisplayWindowPlots::setPos([[maybe_unused]] int x, [[maybe_unused]] int y)
   REQ->OPCODE = WxSubsystem::OpCode::PLOTS_SET_POS;
   REQ->x = x;
   REQ->y = y;
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -761,7 +764,7 @@ void CDisplayWindowPlots::setWindowTitle([[maybe_unused]] const std::string& str
   REQ->sourcePlots = this;
   REQ->OPCODE = WxSubsystem::OpCode::PLOTS_SET_TITLE;
   REQ->str = str;
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -778,7 +781,7 @@ void CDisplayWindowPlots::enableMousePanZoom([[maybe_unused]] bool enabled)
   REQ->sourcePlots = this;
   REQ->OPCODE = WxSubsystem::OpCode::PLOTS_SET_MOUSE_PANZOOM;
   REQ->boolVal = enabled;
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -798,7 +801,7 @@ void CDisplayWindowPlots::axis_equal([[maybe_unused]] bool enabled)
   REQ->sourcePlots = this;
   REQ->OPCODE = WxSubsystem::OpCode::PLOTS_AXIS_FIT;
   REQ->boolVal = enabled;
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -829,7 +832,7 @@ void CDisplayWindowPlots::axis(
   REQ->vector_y[0] = y_min;
   REQ->vector_y[1] = y_max;
   REQ->boolVal = aspectRatioFix;
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -849,7 +852,7 @@ void CDisplayWindowPlots::axis_fit([[maybe_unused]] bool aspectRatioFix)
   REQ->sourcePlots = this;
   REQ->OPCODE = WxSubsystem::OpCode::PLOTS_AXIS_FIT;
   REQ->boolVal = aspectRatioFix;
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -911,7 +914,7 @@ void CDisplayWindowPlots::plotEllipse(
 
   REQ->boolVal = showName;
 
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
   MRPT_END
 #endif
 }
@@ -991,7 +994,7 @@ void CDisplayWindowPlots::plotEllipse(
 
   REQ->boolVal = showName;
 
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
   MRPT_END
 #endif
 }
@@ -1061,7 +1064,7 @@ void CDisplayWindowPlots::image(
 
   REQ->voidPtr2 = mrpt::gui::MRPTImage2wxImage(img);
 
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
   MRPT_END
 #endif
 }
@@ -1110,7 +1113,7 @@ void CDisplayWindowPlots::internal_plot(
   REQ->vector_x.swap(x);
   REQ->vector_y.swap(y);
 
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
   MRPT_END
 #endif
 }
@@ -1134,7 +1137,7 @@ void CDisplayWindowPlots::clear()
 
   // 414: Clear all plot objects.
 
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
 #endif
   MRPT_END
 }
@@ -1175,7 +1178,7 @@ void CDisplayWindowPlots::addPopupMenuEntry(
   REQ->x = menuID;
   // 440: Inser submenu in the popup menu.
 
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
   MRPT_END
 #endif
 }

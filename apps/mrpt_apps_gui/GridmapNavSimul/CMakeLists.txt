@@ -1,41 +1,30 @@
 
 
-#-----------------------------------------------------------------
-# CMake file for the MRPT application:  GridmapNavSimul
-#
-#  Run with "cmake ." at the root directory
-#
-#  May 2008, Jose Luis Blanco <jlblanco@ctima.uma.es>
-#-----------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------
+# CMake file for MRPT app
+#-----------------------------------------------------------------------------------------------
+cmake_minimum_required(VERSION 3.16)
+
 project(GridmapNavSimul)
 
-if(NOT (CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT))
-	message(STATUS "wxWidgets and/or GL/GLUT not found!: **This target will not be included in the Makefiles**")
-	return()
-endif()
+# Basic MRPT infrastructure
+find_package(mrpt_common REQUIRED)
 
-# ---------------------------------------------
-# TARGET:
-# ---------------------------------------------
-set(SRCS
-	gridmapSimulApp.cpp gridmapSimulApp.h
-	gridmapSimulMain.cpp gridmapSimulMain.h
-	)
-if(WIN32)
-	set(SRCS ${SRCS} resource.rc)
-endif()
+# Dependencies
+find_package(mrpt_maps REQUIRED)
+find_package(mrpt_hwdrivers REQUIRED)
+find_package(mrpt_kinematics REQUIRED)
 
 # Define the executable target:
-add_executable(${PROJECT_NAME} WIN32 ${SRCS}  ${MRPT_VERSION_RC_FILE})
-
-# Add the required libraries for linking:
-target_link_libraries(${PROJECT_NAME} imp_wxwidgets )
-
-# Dependencies on MRPT libraries:
-#  Just mention the top-level dependency, the rest will be detected automatically,
-#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${PROJECT_NAME} mrpt::maps mrpt::hwdrivers mrpt::kinematics)
-
-DeclareAppForInstall(${PROJECT_NAME})
-
-AppStartMenuLink(${PROJECT_NAME} "Gridmap navigation dataset generator")   # Add link to the Start menu (in Windows Installable packages)
+mrpt_add_executable(
+  TARGET ${PROJECT_NAME}
+  SOURCES
+    gridmapSimulApp.cpp
+    gridmapSimulApp.h
+    gridmapSimulMain.cpp
+    gridmapSimulMain.h
+  LINK_LIBRARIES
+    mrpt::mrpt_maps
+    mrpt::mrpt_hwdrivers
+    mrpt::mrpt_kinematics
+)

@@ -33,24 +33,24 @@ CCameraSensor::Ptr mrpt::apps::prepareVideoSourceFromUserSelection()
 {
 #if MRPT_HAS_WXWIDGETS
   // Create the main wxThread, if it doesn't exist yet:
-  if (!mrpt::gui::WxSubsystem::createOneInstanceMainThread())
+  if (!mrpt::gui::WxSubsystem::CreateOneInstanceMainThread())
   {
     std::cerr << "[mrpt::apps::prepareVideoSourceFromUserSelection] "
                  "Error initiating Wx subsystem."
               << "\n";
-    return CCameraSensor::Ptr();  // Error!
+    return {};  // Error!
   }
 
   std::promise<void> semDlg;
   std::promise<mrpt::gui::detail::TReturnAskUserOpenCamera> dlgSelection;
 
   // Create window:
-  auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
-  REQ->OPCODE = 700;
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
+  REQ->OPCODE = WxSubsystem::OpCode::CAMERA_SELECT_DIALOG;
   REQ->sourceCameraSelectDialog = true;
-  REQ->voidPtr = reinterpret_cast<void*>(&semDlg);
-  REQ->voidPtr2 = reinterpret_cast<void*>(&dlgSelection);
-  WxSubsystem::pushPendingWxRequest(REQ);
+  REQ->voidPtr = reinterpret_cast<void*>(&semDlg);         // NOLINT
+  REQ->voidPtr2 = reinterpret_cast<void*>(&dlgSelection);  // NOLINT
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
 
   // Wait for the window to realize and signal it's alive:
   if (!WxSubsystem::isConsoleApp())
@@ -69,7 +69,10 @@ CCameraSensor::Ptr mrpt::apps::prepareVideoSourceFromUserSelection()
   // If we have an "MRPT_WXSUBSYS_TIMEOUT_MS" environment variable, use that
   // timeout instead:
   const char* envVal = getenv("MRPT_WXSUBSYS_TIMEOUT_MS");
-  if (envVal) maxTimeout = atoi(envVal);
+  if (envVal)
+  {
+    maxTimeout = atoi(envVal);
+  }
 
   if (semDlg.get_future().wait_for(std::chrono::milliseconds(maxTimeout)) ==
       std::future_status::timeout)
