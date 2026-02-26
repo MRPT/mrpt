@@ -1,41 +1,33 @@
-#-----------------------------------------------------------------
-# CMake file for the MRPT application:  kinect-calibrate
-#
-#  Run with "cmake ." at the root directory
-#
-#  March 2012, Jose Luis Blanco <joseluisblancoc@gmail.com>
-#-----------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------
+# CMake file for MRPT app
+#-----------------------------------------------------------------------------------------------
+cmake_minimum_required(VERSION 3.16)
+
 project(kinect-stereo-calib)
 
-mrpt_return_if_not_wxwidgets()
-if (NOT CMAKE_MRPT_HAS_OPENGL_GLUT)
-	return()
-endif()
-# ---------------------------------------------
-# TARGET:
-# ---------------------------------------------
-set(SRCS
-	kinect_calibrate_guiApp.cpp kinect_calibrate_guiApp.h
-	kinect_calibrate_guiMain.cpp kinect_calibrate_guiMain.h
-	MyGLCanvas.cpp MyGLCanvas.h
-	)
+# Basic MRPT infrastructure
+find_package(mrpt_common REQUIRED)
 
-if(WIN32)
-	set(SRCS ${SRCS} resource.rc)
-endif()
+# Dependencies
+find_package(mrpt_hwdrivers REQUIRED)
+find_package(mrpt_gui REQUIRED)
+find_package(mrpt_vision REQUIRED)
 
 # Define the executable target:
-add_executable(${PROJECT_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
-
-# Add the required libraries for linking:
-target_link_libraries(${PROJECT_NAME} imp_wxwidgets )
-
-# Dependencies on MRPT libraries:
-#  Just mention the top-level dependency, the rest will be detected automatically,
-#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${PROJECT_NAME} mrpt::hwdrivers mrpt::gui mrpt::vision)
-
-DeclareAppForInstall(${PROJECT_NAME})
+mrpt_add_executable(
+  TARGET ${PROJECT_NAME}
+  SOURCES
+    kinect_calibrate_guiApp.cpp
+    kinect_calibrate_guiApp.h
+    kinect_calibrate_guiMain.cpp
+    kinect_calibrate_guiMain.h
+    MyGLCanvas.cpp
+    MyGLCanvas.h
+  LINK_LIBRARIES
+    mrpt::mrpt_hwdrivers
+    mrpt::mrpt_gui
+    mrpt::mrpt_vision
+)
 
 AppStartMenuLink(${PROJECT_NAME} "Kinect (and generic stereo cams) calibration tool")   # Add link to the Start menu (in Windows Installable packages)
 

@@ -114,7 +114,7 @@ CWindowDialog::CWindowDialog(
   SetClientSize(initialSize);
 
   wxIcon FrameIcon;
-  FrameIcon.CopyFromBitmap(mrpt::gui::WxSubsystem::getMRPTDefaultIcon());
+  FrameIcon.CopyFromBitmap(mrpt::gui::WxSubsystem::GetMRPTDefaultIcon());
   SetIcon(FrameIcon);
 
   // Create the image object:
@@ -377,7 +377,7 @@ void CDisplayWindow::showImage([[maybe_unused]] const CImage& img)
   REQ->OPCODE = WxSubsystem::OpCode::WIN2D_UPDATE_IMAGE;
   REQ->voidPtr = m_hwnd.get();
   REQ->voidPtr2 = newImg;
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
 
   MRPT_END
 #endif
@@ -559,7 +559,7 @@ void CDisplayWindow::resize(
   REQ->OPCODE = WxSubsystem::OpCode::WIN2D_SET_SIZE;
   REQ->x = width;
   REQ->y = height;
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -581,7 +581,7 @@ void CDisplayWindow::setPos([[maybe_unused]] int x, [[maybe_unused]] int y)
   REQ->OPCODE = WxSubsystem::OpCode::WIN2D_SET_POS;
   REQ->x = x;
   REQ->y = y;
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -602,6 +602,6 @@ void CDisplayWindow::setWindowTitle([[maybe_unused]] const std::string& str)
   REQ->source2D = this;
   REQ->OPCODE = WxSubsystem::OpCode::WIN2D_SET_TITLE;
   REQ->str = str;
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
 #endif
 }

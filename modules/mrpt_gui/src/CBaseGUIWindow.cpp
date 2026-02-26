@@ -49,7 +49,7 @@ void CBaseGUIWindow::createWxWindow(
 #if MRPT_HAS_WXWIDGETS
   // Create the main wxThread:
   // -------------------------------
-  if (!WxSubsystem::createOneInstanceMainThread())
+  if (!WxSubsystem::CreateOneInstanceMainThread())
   {
     return;  // Error!
   }
@@ -65,7 +65,7 @@ void CBaseGUIWindow::createWxWindow(
   REQ->x = initialWidth;
   REQ->y = initialHeight;
 
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
 
   // Wait for the window to realize and signal it's alive:
   if (!WxSubsystem::isConsoleApp())
@@ -119,7 +119,7 @@ void CBaseGUIWindow::destroyWxWindow()
     REQ->source3D = static_cast<gui::CDisplayWindow3D*>(m_winobj_voidptr);
     REQ->sourcePlots = static_cast<gui::CDisplayWindowPlots*>(m_winobj_voidptr);
 
-    WxSubsystem::pushPendingWxRequest(std::move(REQ));
+    WxSubsystem::PushPendingWxRequest(std::move(REQ));
 
     // Wait until the thread ends:
     if (!WxSubsystem::isConsoleApp())

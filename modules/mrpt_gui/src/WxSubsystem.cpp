@@ -22,6 +22,9 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/thread_name.h>
 
+// The wxMathPlot library:
+#include <mathplot/mathplot.h>
+
 #include <queue>
 
 namespace
@@ -80,11 +83,15 @@ class WxSubSystemGlobalData
 volatile WxSubsystem::CWXMainFrame* WxSubsystem::CWXMainFrame::oneInstance = nullptr;
 
 bool WxSubsystem::isConsoleApp() { return isConsoleApp_value; }
-WxSubsystem::CAuxWxSubsystemShutdowner WxSubsystem::global_wxsubsystem_shutdown;
 
 // ---------------------------------------------------------------------------
 // CAuxWxSubsystemShutdowner
 // ---------------------------------------------------------------------------
+namespace
+{
+WxSubsystem::CAuxWxSubsystemShutdowner global_wx_subsystem_shutdown;
+}
+
 WxSubsystem::CAuxWxSubsystemShutdowner::CAuxWxSubsystemShutdowner() = default;
 
 WxSubsystem::CAuxWxSubsystemShutdowner::~CAuxWxSubsystemShutdowner()
@@ -100,7 +107,7 @@ WxSubsystem::CAuxWxSubsystemShutdowner::~CAuxWxSubsystemShutdowner()
     {
       auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
       REQ->OPCODE = OpCode::SHUTDOWN;
-      WxSubsystem::pushPendingWxRequest(std::move(REQ));
+      WxSubsystem::PushPendingWxRequest(std::move(REQ));
 
       WxSubsystem::waitWxShutdownsIfNoWindows();
     }
@@ -206,7 +213,7 @@ WxSubsystem::CWXMainFrame::~CWXMainFrame()
 
   // Purge all pending requests.
   std::unique_ptr<TRequestToWxMainThread> msg;
-  while (nullptr != (msg = popPendingWxRequest()))
+  while (nullptr != (msg = PopPendingWxRequest()))
   {
   }
 }
@@ -253,7 +260,7 @@ int WxSubsystem::CWXMainFrame::notifyWindowDestruction()
 // ---------------------------------------------------------------------------
 // Request queue helpers
 // ---------------------------------------------------------------------------
-std::unique_ptr<WxSubsystem::TRequestToWxMainThread> WxSubsystem::popPendingWxRequest()
+std::unique_ptr<WxSubsystem::TRequestToWxMainThread> WxSubsystem::PopPendingWxRequest()
 {
   auto& wxd = WxSubSystemGlobalData::Instance();
   std::lock_guard<std::mutex> locker(wxd.cs_listPendingWxRequests);
@@ -268,13 +275,13 @@ std::unique_ptr<WxSubsystem::TRequestToWxMainThread> WxSubsystem::popPendingWxRe
   return ret;
 }
 
-void WxSubsystem::pushPendingWxRequest(std::unique_ptr<TRequestToWxMainThread>&& data)
+void WxSubsystem::PushPendingWxRequest(std::unique_ptr<TRequestToWxMainThread>&& data)
 {
   if (WxSubsystem::CWXMainFrame::oneInstance == nullptr)
   {
     if (WX_SUBSYSTEM_VERBOSE)
     {
-      cout << "[WxSubsystem::pushPendingWxRequest] IGNORING request since "
+      cout << "[WxSubsystem::PushPendingWxRequest] IGNORING request since "
               "app seems already closed.\n";
     }
     return;
@@ -299,7 +306,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& /*event*/)
     }
 
     std::unique_ptr<TRequestToWxMainThread> msg;
-    while ((msg = popPendingWxRequest()) != nullptr)
+    while ((msg = PopPendingWxRequest()) != nullptr)
     {
       if (WX_SUBSYSTEM_VERBOSE)
       {
@@ -718,7 +725,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& /*event*/)
             // voidPtr and voidPtr2 carry std::promise pointers that were
             // created in the calling thread.  We receive them as void*
             // and use static_cast (they were stored via static_cast in
-            // the sender, so the types match exactly — no UB).
+            // the sender, so the types match exactly - no UB).
             auto* readySem = static_cast<std::promise<void>*>(msg->voidPtr);
             auto* resultPromise =
                 static_cast<std::promise<mrpt::gui::detail::TReturnAskUserOpenCamera>*>(
@@ -844,7 +851,7 @@ const char* mrpt_default_icon_xpm[] = {
     "                                "};
 }
 
-wxBitmap WxSubsystem::getMRPTDefaultIcon()
+wxBitmap WxSubsystem::GetMRPTDefaultIcon()
 {
 #ifdef _WIN32
   const wxSize iconsSize(::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON));
@@ -987,12 +994,10 @@ int mrpt_wxEntryReal()
   }
 }
 
-}  // namespace
-
 // ---------------------------------------------------------------------------
-// wxMainThread — the dedicated wx message-loop thread for console apps
+// wxMainThread - the dedicated wx message-loop thread for console apps
 // ---------------------------------------------------------------------------
-void WxSubsystem::wxMainThread()
+void wxMainThread()
 {
   MRPT_START
 
@@ -1018,7 +1023,7 @@ void WxSubsystem::wxMainThread()
       cout << "[wxMainThread] Finished\n";
     }
 
-    GetWxMainThreadInstance().m_done.set_value();
+    WxSubsystem::GetWxMainThreadInstance().m_done.set_value();
   }
   else
   {
@@ -1028,7 +1033,8 @@ void WxSubsystem::wxMainThread()
       cout << "[wxMainThread] Running inside an existing wxApp\n";
     }
 
-    wxWindow* topWin = static_cast<wxApp*>(app_gui)->GetTopWindow();
+    wxWindow* topWin = dynamic_cast<wxApp*>(app_gui)->GetTopWindow();
+    ASSERT_(topWin != nullptr);
     auto* Frame = new WxSubsystem::CWXMainFrame(topWin);
     Frame->Hide();
 
@@ -1037,24 +1043,24 @@ void WxSubsystem::wxMainThread()
       cout << "[wxMainThread] Signaling semaphore.\n";
     }
 
-    GetWxMainThreadInstance().m_semWxMainThreadReady.set_value();
+    WxSubsystem::GetWxMainThreadInstance().m_semWxMainThreadReady.set_value();
   }
 
   MRPT_END
 }
+}  // namespace
 
 // ---------------------------------------------------------------------------
 // GetWxMainThreadInstance
 //
 // NOTE: This intentionally leaks the TWxMainThreadData object so that it
-// outlives any static destructors that might still use it.  This is a
-// known pre-existing design choice in the original code.
+// outlives any static destructors that might still use it.
 // ---------------------------------------------------------------------------
 WxSubsystem::TWxMainThreadData& WxSubsystem::GetWxMainThreadInstance()
 {
   static TWxMainThreadData* dat = nullptr;
   static bool first_creat = true;
-  if (!dat && first_creat)
+  if (dat == nullptr && first_creat)
   {
     first_creat = false;
     dat = new TWxMainThreadData;
@@ -1063,9 +1069,9 @@ WxSubsystem::TWxMainThreadData& WxSubsystem::GetWxMainThreadInstance()
 }
 
 // ---------------------------------------------------------------------------
-// createOneInstanceMainThread
+// CreateOneInstanceMainThread
 // ---------------------------------------------------------------------------
-bool WxSubsystem::createOneInstanceMainThread()
+bool WxSubsystem::CreateOneInstanceMainThread()
 {
   TWxMainThreadData& wxmtd = GetWxMainThreadInstance();
   std::lock_guard<std::mutex> lock(wxmtd.m_csWxMainThreadId);
@@ -1091,7 +1097,7 @@ bool WxSubsystem::createOneInstanceMainThread()
       if (WX_SUBSYSTEM_VERBOSE)
       {
         printf(
-            "[WxSubsystem::createOneInstanceMainThread] Launching "
+            "[WxSubsystem::CreateOneInstanceMainThread] Launching "
             "wxMainThread() thread...\n");
       }
 
@@ -1113,7 +1119,7 @@ bool WxSubsystem::createOneInstanceMainThread()
       if (wxmtd.m_semWxMainThreadReady.get_future().wait_for(
               std::chrono::milliseconds(maxTimeout)) == std::future_status::timeout)
       {
-        cerr << "[WxSubsystem::createOneInstanceMainThread] Timeout "
+        cerr << "[WxSubsystem::CreateOneInstanceMainThread] Timeout "
                 "waiting for wxApplication to start up!\n";
         return false;
       }

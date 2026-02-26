@@ -1,33 +1,29 @@
 
 
-#-----------------------------------------------------------------
-# CMake file for the MRPT application:  ReactiveNav3D-Demo
-#
-#  Run with "cmake ." at the root directory
-#
-#  January 2014, Mariano Jaimez Tarifa <marianojt@uma.es>
-#-----------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------
+# CMake file for MRPT app
+#-----------------------------------------------------------------------------------------------
+cmake_minimum_required(VERSION 3.16)
+
 project(DifOdometry-Datasets)
 
+# Basic MRPT infrastructure
+find_package(mrpt_common REQUIRED)
 
+# Dependencies
+find_package(mrpt_gui REQUIRED)
+find_package(mrpt_opengl REQUIRED)
+find_package(mrpt_vision REQUIRED)
 
-# ---------------------------------------------
-# TARGET:
-# ---------------------------------------------
 # Define the executable target:
-add_executable(${PROJECT_NAME}
-			   DifOdometry_Datasets_main.cpp
-			   DifOdometry_Datasets.cpp
-			   DifOdometry_Datasets.h
-			    ${MRPT_VERSION_RC_FILE})
-
-# Dependencies on MRPT libraries:
-#  Just mention the top-level dependency, the rest will be detected automatically,
-#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${PROJECT_NAME}
-	mrpt::gui
-	mrpt::opengl
-	mrpt::vision
-	)
-
-DeclareAppForInstall(${PROJECT_NAME})
+mrpt_add_executable(
+  TARGET ${PROJECT_NAME}
+  SOURCES
+    DifOdometry_Datasets_main.cpp
+    DifOdometry_Datasets.cpp
+    DifOdometry_Datasets.h
+  LINK_LIBRARIES
+    mrpt::mrpt_gui
+    mrpt::mrpt_opengl
+    mrpt::mrpt_vision
+)

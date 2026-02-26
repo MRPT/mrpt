@@ -1,28 +1,28 @@
 
 
-#-----------------------------------------------------------------
-# CMake file for the MRPT application:  kinect-3d-slam
-#
-#  Run with "cmake ." at the root directory
-#-----------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------
+# CMake file for MRPT app
+#-----------------------------------------------------------------------------------------------
+cmake_minimum_required(VERSION 3.16)
+
 project(kinect-3d-slam)
 
-# ---------------------------------------------
-# TARGET:
-# ---------------------------------------------
+# Basic MRPT infrastructure
+find_package(mrpt_common REQUIRED)
+
+# Dependencies
+find_package(mrpt_gui REQUIRED)
+find_package(mrpt_slam REQUIRED)
+find_package(mrpt_hwdrivers REQUIRED)
+find_package(mrpt_vision REQUIRED)
+
 # Define the executable target:
-add_executable(${PROJECT_NAME}
-               kinect-3d-slam_main.cpp
-			    ${MRPT_VERSION_RC_FILE})
-
-# Add the required libraries for linking:
-
-
-# Dependencies on MRPT libraries:
-#  Just mention the top-level dependency, the rest will be detected automatically,
-#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${PROJECT_NAME} mrpt::gui mrpt::slam mrpt::hwdrivers mrpt::vision)
-
-DeclareAppForInstall(${PROJECT_NAME})
-
-AppStartMenuLink(${PROJECT_NAME} "Very simple live 3D-SLAM with Kinect")   # Add link to the Start menu (in Windows Installable packages)
+mrpt_add_executable(
+  TARGET ${PROJECT_NAME}
+  SOURCES kinect-3d-slam_main.cpp
+  LINK_LIBRARIES
+    mrpt::mrpt_gui
+    mrpt::mrpt_slam
+    mrpt::mrpt_hwdrivers
+    mrpt::mrpt_vision
+)

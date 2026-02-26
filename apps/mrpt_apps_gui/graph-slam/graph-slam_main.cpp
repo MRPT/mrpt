@@ -165,7 +165,9 @@ int main(int argc, char** argv)
 
     // Exactly 1 of --2d & --3d must be specified:
     if ((use_2d && use_3d) || (!use_2d && !use_3d))
+    {
       throw std::runtime_error("Exactly one --2d or --3d must be used.");
+    }
 
     const bool is3d = use_3d;
 

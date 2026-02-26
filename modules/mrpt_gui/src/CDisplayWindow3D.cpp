@@ -295,7 +295,7 @@ C3DWindowDialog::C3DWindowDialog(
       parent, id, caption.c_str(), wxDefaultPosition, initialSize, wxDEFAULT_FRAME_STYLE, _T("id"));
 
   wxIcon FrameIcon;
-  FrameIcon.CopyFromBitmap(mrpt::gui::WxSubsystem::getMRPTDefaultIcon());
+  FrameIcon.CopyFromBitmap(mrpt::gui::WxSubsystem::GetMRPTDefaultIcon());
   SetIcon(FrameIcon);
 
   // Create the wxCanvas object:
@@ -439,7 +439,7 @@ void CDisplayWindow3D::resize(
   REQ->OPCODE = WxSubsystem::OpCode::WIN3D_SET_SIZE;
   REQ->x = width;
   REQ->y = height;
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -461,7 +461,7 @@ void CDisplayWindow3D::setPos([[maybe_unused]] int x, [[maybe_unused]] int y)
   REQ->OPCODE = WxSubsystem::OpCode::WIN3D_SET_POS;
   REQ->x = x;
   REQ->y = y;
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -482,7 +482,7 @@ void CDisplayWindow3D::setWindowTitle([[maybe_unused]] const std::string& str)
   REQ->source3D = this;
   REQ->OPCODE = WxSubsystem::OpCode::WIN3D_SET_TITLE;
   REQ->str = str;
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
 #endif
 }
 
@@ -503,7 +503,7 @@ void CDisplayWindow3D::forceRepaint()
     auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
     REQ->source3D = this;
     REQ->OPCODE = WxSubsystem::OpCode::WIN3D_FORCE_REPAINT;
-    WxSubsystem::pushPendingWxRequest(std::move(REQ));
+    WxSubsystem::PushPendingWxRequest(std::move(REQ));
   }
 #endif
 }
@@ -885,7 +885,7 @@ void CDisplayWindow3D::sendFunctionToRunOnGUIThread(const std::function<void(voi
   REQ->source3D = this;
   REQ->OPCODE = WxSubsystem::OpCode::RUN_USER_FUNCTION;
   REQ->userFunction = f;
-  WxSubsystem::pushPendingWxRequest(std::move(REQ));
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
 
 #endif
 }
