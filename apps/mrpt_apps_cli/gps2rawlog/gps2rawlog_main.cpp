@@ -20,12 +20,13 @@
 //  Started: JLBC @ Feb-2016
 // ===========================================================================
 
-#include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+
+#include <CLI/CLI.hpp>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
@@ -34,17 +35,6 @@ using namespace mrpt::io;
 using namespace mrpt::serialization;
 using namespace mrpt::system;
 using namespace std;
-
-// Declare the supported command line switches ===========
-TCLAP::CmdLine cmd("gps2rawlog", ' ', MRPT_getVersion().c_str());
-
-TCLAP::ValueArg<std::string> arg_input_file(
-    "i", "input", "Input raw file (required) (*.raw,*.gps,...)", true, "", "log.gps", cmd);
-TCLAP::ValueArg<std::string> arg_output_file(
-    "o", "output", "Output dataset (*.rawlog)", false, "", "dataset_out.rawlog", cmd);
-
-TCLAP::SwitchArg arg_overwrite(
-    "w", "overwrite", "Force overwrite target file without prompting.", cmd, false);
 
 int main(int argc, char** argv)
 {
@@ -55,24 +45,37 @@ int main(int argc, char** argv)
         " MRPT C++ Library: %s - Sources timestamp: %s\n", MRPT_getVersion().c_str(),
         MRPT_getCompilationDate().c_str());
 
+    // Declare the supported command line switches ===========
+    CLI::App app("gps2rawlog");
+    app.set_version_flag("--version", MRPT_getVersion());
+
+    std::string input_file;
+    app.add_option("-i,--input", input_file, "Input raw file (required) (*.raw,*.gps,...)")
+        ->required();
+
+    std::string output_file;
+    app.add_option("-o,--output", output_file, "Output dataset (*.rawlog)");
+
+    bool overwrite = false;
+    app.add_flag("-w,--overwrite", overwrite, "Force overwrite target file without prompting.");
+
     // Parse arguments:
-    if (!cmd.parse(argc, argv)) throw std::runtime_error("");  // should exit.
+    CLI11_PARSE(app, argc, argv);
 
-    const string input_gps_file = arg_input_file.getValue();
-    string output_rawlog_file = arg_output_file.getValue();
+    string output_rawlog_file = output_file;
     if (output_rawlog_file.empty())
-      output_rawlog_file = mrpt::system::fileNameChangeExtension(input_gps_file, "rawlog");
+      output_rawlog_file = mrpt::system::fileNameChangeExtension(input_file, "rawlog");
 
-    ASSERT_FILE_EXISTS_(input_gps_file);
+    ASSERT_FILE_EXISTS_(input_file);
 
     // Open input rawlog:
     auto fil_input = std::make_shared<CCompressedInputStream>();
-    cout << "Opening for reading: '" << input_gps_file << "'...\n";
-    fil_input->open(input_gps_file);
+    cout << "Opening for reading: '" << input_file << "'...\n";
+    fil_input->open(input_file);
     cout << "Open OK.\n";
 
     // Open output:
-    if (mrpt::system::fileExists(output_rawlog_file) && !arg_overwrite.isSet())
+    if (mrpt::system::fileExists(output_rawlog_file) && !overwrite)
     {
       cout << "Output file already exists: `" << output_rawlog_file
            << "`, aborting. Use `-w` flag to overwrite.\n";
@@ -110,7 +113,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << mrpt::exception_to_str(e) << "\n";
     return 1;
   }
 }  // end of main()

@@ -565,7 +565,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(const CSerializable::Ptr& sel_ob
   {
     std::cout << "Generic object textual description from "
                  "mrpt::Stringifyable::asString():\n\n"
-              << s->asString() << std::endl;
+              << s->asString() << "\n";
   }
 
   myRedirector.reset();   // ensures cout is redirected to text box

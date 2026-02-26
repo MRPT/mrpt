@@ -32,7 +32,6 @@
 
 using namespace mrpt;
 using namespace mrpt::maps;
-using namespace mrpt::opengl;
 using namespace mrpt::io;
 using namespace mrpt::system;
 using namespace mrpt::config;
@@ -96,7 +95,8 @@ int main(int argc, char** argv)
     metricMap.setListOfMaps(mapCfg);
 
     // Build metric maps:
-    cout << "Building metric maps..." << std::endl;
+    cout << "Building metric maps..."
+         << "\n";
 
     metricMap.loadFromSimpleMap(simplemap);
 
@@ -118,7 +118,7 @@ int main(int argc, char** argv)
                        mrpt::system::fileNameStripInvalidChars(m->GetRuntimeClass()->className) +
                        ".bin"s;
 
-      std::cout << "Saving map #" << i << " to " << str << std::endl;
+      std::cout << "Saving map #" << i << " to " << str << "\n";
 
       CCompressedOutputStream fo(str);
       mrpt::serialization::archiveFrom(fo) << m;
@@ -130,14 +130,16 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << mrpt::exception_to_str(e) << std::endl
-              << "Program finished for an exception!!" << std::endl;
+    std::cerr << mrpt::exception_to_str(e) << "\n"
+              << "Program finished for an exception!!"
+              << "\n";
     mrpt::system::pause();
     return -1;
   }
   catch (...)
   {
-    std::cerr << "Untyped exception!!" << std::endl;
+    std::cerr << "Untyped exception!!"
+              << "\n";
     mrpt::system::pause();
     return -1;
   }

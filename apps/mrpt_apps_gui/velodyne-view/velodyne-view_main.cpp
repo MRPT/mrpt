@@ -20,7 +20,6 @@
        multi-threading and live 3D rendering.
 */
 
-#include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CVelodyneScanner.h>
 #include <mrpt/io/CCompressedOutputStream.h>
@@ -30,6 +29,8 @@
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>  // MRPT_getVersion()
+
+#include <CLI/CLI.hpp>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
@@ -44,54 +45,6 @@ using namespace mrpt::serialization;
 using namespace mrpt::opengl;
 using namespace std;
 
-// Declare the supported options.
-TCLAP::CmdLine cmd("velodyne-view", ' ', mrpt::system::MRPT_getVersion().c_str());
-
-TCLAP::ValueArg<std::string> arg_out_rawlog(
-    "o", "out-rawlog", "If set, grab dataset in rawlog format", false, "", "out.rawlog", cmd);
-TCLAP::ValueArg<std::string> arg_in_pcap(
-    "i",
-    "in-pcap",
-    "Instead of listening to a live sensor, read data from a PCAP file",
-    false,
-    "",
-    "in_dataset.pcap",
-    cmd);
-TCLAP::ValueArg<std::string> arg_out_pcap(
-    "",
-    "out-pcap",
-    "If set, grab all packets to a PCAP log file. Set name prefix only.",
-    false,
-    "",
-    "out",
-    cmd);
-TCLAP::ValueArg<std::string> arg_ip_filter(
-    "",
-    "ip-filter",
-    "Only listen to a LIDAR emitting commands from a given IP",
-    false,
-    "",
-    "192.168.1.201",
-    cmd);
-TCLAP::ValueArg<std::string> arg_calib_file(
-    "c",
-    "calib",
-    "Optionally, select the calibration XML file for the LIDAR",
-    false,
-    "",
-    "calib.xml",
-    cmd);
-TCLAP::ValueArg<std::string> arg_model(
-    "m",
-    "model",
-    "If no calibration file is specified, set the model to load default values",
-    false,
-    "VLP16",
-    CVelodyneScanner::TModelPropertiesFactory::getListKnownModels(),
-    cmd);
-TCLAP::SwitchArg arg_nologo("n", "nologo", "Skip the logo at startup", cmd, false);
-TCLAP::SwitchArg arg_verbose("v", "verbose", "Verbose debug output", cmd, false);
-
 // Thread for grabbing: Do this is another thread so we divide rendering and
 // grabbing
 //   and exploit multicore CPUs.
@@ -105,6 +58,15 @@ struct TThreadParam
 
   CObservationVelodyneScan::Ptr new_obs;  // Raw scans
   CObservationGPS::Ptr new_obs_gps;       // GPS, if any
+
+  // Command-line parameters
+  std::string out_rawlog;
+  std::string in_pcap;
+  std::string out_pcap;
+  std::string ip_filter;
+  std::string calib_file;
+  std::string model;
+  bool verbose{false};
 };
 
 void thread_grabbing(TThreadParam& p)
@@ -112,32 +74,29 @@ void thread_grabbing(TThreadParam& p)
   try
   {
     CCompressedOutputStream f_out_rawlog;
-    if (arg_out_rawlog.isSet())
+    if (!p.out_rawlog.empty())
     {
-      if (!f_out_rawlog.open(arg_out_rawlog.getValue()))
-        THROW_EXCEPTION_FMT(
-            "Error creating output rawlog file: %s", arg_out_rawlog.getValue().c_str());
+      if (!f_out_rawlog.open(p.out_rawlog))
+        THROW_EXCEPTION_FMT("Error creating output rawlog file: %s", p.out_rawlog.c_str());
     }
     auto arch = mrpt::serialization::archiveFrom(f_out_rawlog);
 
     mrpt::hwdrivers::CVelodyneScanner velodyne;
 
-    if (arg_verbose.isSet()) velodyne.enableVerbose(true);
+    if (p.verbose) velodyne.enableVerbose(true);
 
     // Set params:
     velodyne.setModelName(
-        mrpt::typemeta::TEnumType<mrpt::hwdrivers::CVelodyneScanner::model_t>::name2value(
-            arg_model.getValue()));
-    if (arg_ip_filter.isSet())
-      velodyne.setDeviceIP(arg_ip_filter.getValue());  // Default: from any IP
-    if (arg_in_pcap.isSet()) velodyne.setPCAPInputFile(arg_in_pcap.getValue());
-    if (arg_out_pcap.isSet()) velodyne.setPCAPOutputFile(arg_out_pcap.getValue());
+        mrpt::typemeta::TEnumType<mrpt::hwdrivers::CVelodyneScanner::model_t>::name2value(p.model));
+    if (!p.ip_filter.empty()) velodyne.setDeviceIP(p.ip_filter);  // Default: from any IP
+    if (!p.in_pcap.empty()) velodyne.setPCAPInputFile(p.in_pcap);
+    if (!p.out_pcap.empty()) velodyne.setPCAPOutputFile(p.out_pcap);
 
     // If you have a calibration file, better than default values:
-    if (arg_calib_file.isSet())
+    if (!p.calib_file.empty())
     {
       mrpt::obs::VelodyneCalibration calib;
-      if (!calib.loadFromXMLFile(arg_calib_file.getValue()))
+      if (!calib.loadFromXMLFile(p.calib_file))
         throw std::runtime_error("Aborting: error loading calibration file.");
       velodyne.setCalibration(calib);
     }
@@ -206,12 +165,17 @@ void thread_grabbing(TThreadParam& p)
 // ------------------------------------------------------
 //				VelodyneView main entry point
 // ------------------------------------------------------
-int VelodyneView(int argc, char** argv)
+int VelodyneView(
+    const std::string& out_rawlog,
+    const std::string& in_pcap,
+    const std::string& out_pcap,
+    const std::string& ip_filter,
+    const std::string& calib_file,
+    const std::string& model,
+    bool verbose,
+    bool nologo)
 {
-  // Parse arguments:
-  if (!cmd.parse(argc, argv)) return 1;  // should exit.
-
-  if (!arg_nologo.isSet())
+  if (!nologo)
   {
     printf(" velodyne-view - Part of the MRPT\n");
     printf(
@@ -222,6 +186,14 @@ int VelodyneView(int argc, char** argv)
   // Launch grabbing thread:
   // --------------------------------------------------------
   TThreadParam thrPar;
+  thrPar.out_rawlog = out_rawlog;
+  thrPar.in_pcap = in_pcap;
+  thrPar.out_pcap = out_pcap;
+  thrPar.ip_filter = ip_filter;
+  thrPar.calib_file = calib_file;
+  thrPar.model = model;
+  thrPar.verbose = verbose;
+
   std::thread thHandle(thread_grabbing, std::ref(thrPar));
 
   // Wait until data stream starts so we can say for sure the sensor has been
@@ -415,13 +387,52 @@ int main(int argc, char** argv)
 {
   try
   {
-    int ret = VelodyneView(argc, argv);
+    CLI::App app("velodyne-view");
+    app.set_version_flag("--version", mrpt::system::MRPT_getVersion());
+
+    std::string out_rawlog;
+    app.add_option("-o,--out-rawlog", out_rawlog, "If set, grab dataset in rawlog format");
+
+    std::string in_pcap;
+    app.add_option(
+        "-i,--in-pcap", in_pcap,
+        "Instead of listening to a live sensor, read data from a PCAP file");
+
+    std::string out_pcap;
+    app.add_option(
+        "--out-pcap", out_pcap,
+        "If set, grab all packets to a PCAP log file. Set name prefix only.");
+
+    std::string ip_filter;
+    app.add_option(
+        "--ip-filter", ip_filter, "Only listen to a LIDAR emitting commands from a given IP");
+
+    std::string calib_file;
+    app.add_option(
+        "-c,--calib", calib_file, "Optionally, select the calibration XML file for the LIDAR");
+
+    std::string model = "VLP16";
+    app.add_option(
+        "-m,--model", model,
+        "If no calibration file is specified, set the model to load default values");
+
+    bool nologo = false;
+    app.add_flag("-n,--nologo", nologo, "Skip the logo at startup");
+
+    bool verbose = false;
+    app.add_flag("-v,--verbose", verbose, "Verbose debug output");
+
+    // Parse arguments:
+    CLI11_PARSE(app, argc, argv);
+
+    int ret =
+        VelodyneView(out_rawlog, in_pcap, out_pcap, ip_filter, calib_file, model, verbose, nologo);
     std::this_thread::sleep_for(50ms);  // to allow GUI threads to end gracefully.
     return ret;
   }
   catch (const std::exception& e)
   {
-    std::cout << "EXCEPCION: " << mrpt::exception_to_str(e) << std::endl;
+    std::cout << "EXCEPCION: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
   catch (...)

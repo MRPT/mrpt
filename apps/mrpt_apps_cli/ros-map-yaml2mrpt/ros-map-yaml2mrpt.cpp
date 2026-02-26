@@ -12,47 +12,50 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/opengl/Scene.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/Scene.h>
+
+#include <CLI/CLI.hpp>
 
 int main(int argc, char** argv)
 {
   try
   {
     // Declare the supported command line switches ===========
-    TCLAP::CmdLine cmd("ros-map-yaml2mrpt", ' ', mrpt::system::MRPT_getVersion().c_str());
+    CLI::App app("ros-map-yaml2mrpt");
+    app.set_version_flag("--version", mrpt::system::MRPT_getVersion());
 
-    TCLAP::ValueArg<std::string> argInputFile(
-        "i", "input", "Input map yaml file (required) (*.yaml)", true, "<map.yaml>", "map.yaml",
-        cmd);
+    std::string inputFile;
+    app.add_option("-i,--input", inputFile, "Input map yaml file (required) (*.yaml)")->required();
 
-    TCLAP::ValueArg<std::string> argOutputDirectory(
-        "d", "output-directory",
-        "If provided, output files will be written to the specified "
-        "directory, instead of the same directory of the input file, which "
-        "is the default behavior. The output directory must exist, it will "
-        "not be created.",
-        false, "", ".", cmd);
+    std::string outputDirectory;
+    app.add_option(
+        "-d,--output-directory", outputDirectory,
+        "If provided, output files will be written to the specified directory, "
+        "instead of the same directory of the input file, which is the default "
+        "behavior. The output directory must exist, it will not be created.");
 
-    TCLAP::SwitchArg argOverwrite(
-        "w", "overwrite", "Force overwrite target file without prompting.", cmd, false);
+    bool overwrite = false;
+    app.add_flag("-w,--overwrite", overwrite, "Force overwrite target file without prompting.");
 
-    TCLAP::SwitchArg argQuiet(
-        "q", "quiet", "Do not print info messages to cout, only errors to cerr", cmd, false);
+    bool quiet = false;
+    app.add_flag("-q,--quiet", quiet, "Do not print info messages to cout, only errors to cerr");
 
-    TCLAP::SwitchArg argGenerate3D(
-        "", "generate-3d",
-        "Create a .3Dscene view of the gridmap, suitable for quick "
-        "visualization in the SceneViewer3D program.",
-        cmd, false);
+    bool generate_3d = false;
+    app.add_flag(
+        "--generate-3d", generate_3d,
+        "Create a .3Dscene view of the gridmap, suitable for quick visualization in the "
+        "SceneViewer3D program.");
 
-    if (!argQuiet.isSet())
+    // Parse arguments:
+    CLI11_PARSE(app, argc, argv);
+
+    if (!quiet)
     {
       printf(  //
           " ros-map-yaml2mrpt - Part of %s\n"
@@ -61,49 +64,43 @@ int main(int argc, char** argv)
           mrpt::system::MRPT_getVersion().c_str());
     }
 
-    // Parse arguments:
-    if (!cmd.parse(argc, argv)) throw std::runtime_error("");  // should exit.
-
-    const std::string inputFile = argInputFile.getValue();
-
     const auto grid = mrpt::maps::COccupancyGridMap2D::FromROSMapServerYAML(inputFile);
 
-    const std::string outDir = argOutputDirectory.isSet()
-                                   ? argOutputDirectory.getValue()
-                                   : mrpt::system::extractFileDirectory(inputFile);
+    const std::string outDir =
+        !outputDirectory.empty() ? outputDirectory : mrpt::system::extractFileDirectory(inputFile);
 
     const std::string outGridFil = mrpt::system::pathJoin(
         {outDir, mrpt::system::fileNameChangeExtension(
                      mrpt::system::extractFileName(inputFile), "gridmap.gz")});
 
     std::string out3D;
-    if (argGenerate3D.isSet())
+    if (generate_3d)
     {
       out3D = mrpt::system::pathJoin(
           {outDir, mrpt::system::fileNameChangeExtension(
                        mrpt::system::extractFileName(inputFile), "3Dscene")});
     }
 
-    if (!argQuiet.isSet())
+    if (!quiet)
     {
       std::cout << "Input file        : " << inputFile << "\n";
-      std::cout << "Output gridmap    : " << outGridFil << std::endl;
-      if (!out3D.empty()) std::cout << "Output 3D view    : " << out3D << std::endl;
+      std::cout << "Output gridmap    : " << outGridFil << "\n";
+      if (!out3D.empty()) std::cout << "Output 3D view    : " << out3D << "\n";
     }
 
-    if (mrpt::system::fileExists(outGridFil) && !argOverwrite.isSet())
+    if (mrpt::system::fileExists(outGridFil) && !overwrite)
     {
       std::cerr << "Output gridmap file already exists, aborting. Use "
                    "`-w` flag "
                    "to overwrite."
-                << std::endl;
+                << "\n";
       return 1;
     }
-    if (mrpt::system::fileExists(out3D) && !argOverwrite.isSet())
+    if (mrpt::system::fileExists(out3D) && !overwrite)
     {
       std::cerr << "Output 3D file already exists, aborting. Use `-w` flag "
                    "to overwrite."
-                << std::endl;
+                << "\n";
       return 1;
     }
 
@@ -114,7 +111,7 @@ int main(int argc, char** argv)
 
     if (!out3D.empty())
     {
-      mrpt::opengl ::Scene scene;
+      mrpt::viz::Scene scene;
       scene.insert(grid.getVisualization());
       scene.saveToFile(out3D);
     }
@@ -125,7 +122,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << mrpt::exception_to_str(e) << "\n";
     return 1;
   }
 }

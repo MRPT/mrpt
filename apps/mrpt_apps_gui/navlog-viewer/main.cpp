@@ -12,11 +12,11 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/system/os.h>
 #include <mrpt/version.h>
 
+#include <CLI/CLI.hpp>
 #include <iostream>
 
 #include "navlog-viewer-ui.h"
@@ -26,31 +26,29 @@ int main(int argc, char** argv)
   try
   {
     // Declare the supported command line switches ===========
-    TCLAP::CmdLine cmd("navlog-viewer", ' ', MRPT_version_str);
+    CLI::App app("navlog-viewer");
+    app.set_version_flag("--version", MRPT_version_str);
 
-    TCLAP::UnlabeledMultiArg<std::string> argInputFile(
-        "LogFiles", "Input navlog files (*.reactivenavlog)", false, "log.reactivenavlog", cmd);
+    std::vector<std::string> inputFiles;
+    app.add_option("LogFiles", inputFiles, "Input navlog files (*.reactivenavlog)");
 
-    TCLAP::ValueArg<std::string> argExtraModuleToLoad(
-        "l", "load", "Load an additional DLL/SO module (*.so/*.dll)", false, "", "myModule.so",
-        cmd);
+    std::string extraModuleToLoad;
+    app.add_option("-l,--load", extraModuleToLoad, "Load an additional DLL/SO module (*.so/*.dll)");
 
-    if (!cmd.parse(argc, argv)) throw std::runtime_error("");
+    CLI11_PARSE(app, argc, argv);
 
-    if (argExtraModuleToLoad.isSet())
+    if (!extraModuleToLoad.empty())
     {
-      const std::string sLib = argExtraModuleToLoad.getValue();
-      std::cout << "Loading plugin modules: " << sLib << "...\n";
-      mrpt::system::loadPluginModules(sLib);
+      std::cout << "Loading plugin modules: " << extraModuleToLoad << "...\n";
+      mrpt::system::loadPluginModules(extraModuleToLoad);
     }
 
     // UI setup:
     nanogui::init();
 
-    NavlogViewerApp app;
+    NavlogViewerApp viewer_app;
 
-    if (argInputFile.isSet() && argInputFile.getValue().size() > 0)
-      app.loadLogfile(argInputFile.getValue().at(0));
+    if (!inputFiles.empty()) viewer_app.loadLogfile(inputFiles.at(0));
 
     nanogui::mainloop();
 
@@ -60,7 +58,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    if (strlen(e.what()) > 0) std::cerr << mrpt::exception_to_str(e) << std::endl;
+    if (strlen(e.what()) > 0) std::cerr << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

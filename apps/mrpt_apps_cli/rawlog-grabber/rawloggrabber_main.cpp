@@ -21,7 +21,7 @@
    https://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/
   -----------------------------------------------------------------------------*/
 
-#include <mrpt/apps/RawlogGrabberApp.h>
+#include <mrpt/apps_cli/RawlogGrabberApp.h>
 
 #include <iostream>
 

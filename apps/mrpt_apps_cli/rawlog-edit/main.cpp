@@ -17,7 +17,7 @@
    For instructions and more: see manpage of rawlog-edit
   ---------------------------------------------------------------*/
 
-#include <mrpt/apps-cli/RawlogEditApp.h>
+#include <mrpt/apps_cli/RawlogEditApp.h>
 
 #include <iostream>
 
@@ -33,7 +33,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << e.what() << std::endl;
+    std::cerr << e.what() << "\n";
     return 1;
   }
 }

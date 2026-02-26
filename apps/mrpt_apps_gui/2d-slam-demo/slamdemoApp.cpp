@@ -23,10 +23,11 @@
 
 IMPLEMENT_APP(slamdemoApp)
 
-#include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/core/config.h>  // MRPT_OS_*()
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+
+#include <CLI/CLI.hpp>
 
 using namespace std;
 
@@ -62,94 +63,76 @@ bool slamdemoApp::OnInit()
   }
 }
 
-// Auxiliary class to allow text output in Win32 (in Linux the console keeps
-// working for GUIs).
-#ifdef MRPT_OS_WINDOWS
-
-std::ostringstream out_cmdLine;
-
-class CMyCmdLineOut : public TCLAP::StdOutput
-{
- public:
-  CMyCmdLineOut() : StdOutput(out_cmdLine) {}
-};
-
-#endif
-
 // Executes the program in "batch" mode, where the user passes some command-line
 // args
 bool slamdemoApp::doCommandLineProcess()
 {
-  // Declare the supported options.
-  TCLAP::CmdLine cmd("2d-slam-demo", ' ', mrpt::system::MRPT_getVersion().c_str());
+  try
+  {
+    // Declare the supported options.
+    CLI::App app("2d-slam-demo");
+    app.set_version_flag("--version", mrpt::system::MRPT_getVersion());
 
-  TCLAP::ValueArg<std::string> arg_cfgFil(
-      "c", "config", "Config file to load", false, "", "params.ini", cmd);
-  TCLAP::SwitchArg arg_nogui(
-      "n", "nogui", "Don't stay in the GUI, exit after the experiment.", cmd, false);
-  TCLAP::SwitchArg arg_norun("r", "norun", "Just load the config file, don't run it.", cmd, false);
+    std::string cfgFil;
+    app.add_option("-c,--config", cfgFil, "Config file to load");
 
+    bool nogui = false;
+    app.add_flag("-n,--nogui", nogui, "Don't stay in the GUI, exit after the experiment.");
+
+    bool norun = false;
+    app.add_flag("-r,--norun", norun, "Just load the config file, don't run it.");
+
+    // Parse arguments:
+    CLI11_PARSE(app, argc, argv);
+
+    if (cfgFil.empty())
+    {
+      // No config file specified, continue with GUI
+      return true;
+    }
+
+    if (!mrpt::system::fileExists(cfgFil))
+    {
+      cerr << "The indicated config file does not exist: " << cfgFil << endl;
 #ifdef MRPT_OS_WINDOWS
-  CMyCmdLineOut out_buf;
-  cmd.setOutput(&out_buf);
+      wxMessageBox(wxT("The indicated config file does not exist"), _("2d-slam-demo"));
 #endif
+      return false;
+    }
+    else
+    {
+      m_option_norun = norun;
 
-  vector<char*> auxArgs(argc);
-  for (int i = 0; i < argc; i++)
-  {
-    wxString s(argv[i]);
-    auxArgs[i] = new char[s.size() + 10];
-    strcpy(auxArgs[i], s.ToUTF8().data());
-  }
+      if (!nogui)
+      {
+        win->Show();
+        SetTopWindow(win);
+      }
 
-  // Parse arguments:
-  bool res_parse = cmd.parse(argc, &auxArgs[0]);
-
-  // Free aux mem:
-  for (int i = 0; i < argc; i++) delete[] auxArgs[i];
-
-  if (!res_parse)
-  {
+      try
+      {
+        DoBatchExperiments(cfgFil);
+      }
+      catch (const std::exception& e)
+      {
+        cerr << mrpt::exception_to_str(e) << endl;
 #ifdef MRPT_OS_WINDOWS
-    if (!out_cmdLine.str().empty()) wxMessageBox(out_cmdLine.str().c_str(), _("2d-slam-demo"));
+        wxMessageBox(mrpt::exception_to_str(e), _("2d-slam-demo"));
+#endif
+      }
+    }
+
+    // return false to exit the program now and NOT proceed with the GUI.
+    // return true to continue with the program:
+    return !nogui;
+  }
+  catch (const std::exception& e)
+  {
+    cerr << "Error parsing command line: " << mrpt::exception_to_str(e) << endl;
+#ifdef MRPT_OS_WINDOWS
+    wxMessageBox(
+        wxString("Error parsing command line: ") + mrpt::exception_to_str(e), _("2d-slam-demo"));
 #endif
     return false;
   }
-
-  const std::string cfgFil = arg_cfgFil.getValue();
-
-  if (!mrpt::system::fileExists(cfgFil))
-  {
-    cerr << "The indicated config file does not exist: " << cfgFil << endl;
-#ifdef MRPT_OS_WINDOWS
-    wxMessageBox(wxT("The indicated config file does not exist"), _("2d-slam-demo"));
-#endif
-    return false;
-  }
-  else
-  {
-    m_option_norun = arg_norun.getValue();
-
-    if (!arg_nogui.getValue())
-    {
-      win->Show();
-      SetTopWindow(win);
-    }
-
-    try
-    {
-      DoBatchExperiments(cfgFil);
-    }
-    catch (const std::exception& e)
-    {
-      cerr << mrpt::exception_to_str(e) << endl;
-#ifdef MRPT_OS_WINDOWS
-      wxMessageBox(mrpt::exception_to_str(e), _("2d-slam-demo"));
-#endif
-    }
-  }
-
-  // return false to exit the program now and NOT proceed with the GUI.
-  // return true to continue with the program:
-  return !arg_nogui.getValue();
 }

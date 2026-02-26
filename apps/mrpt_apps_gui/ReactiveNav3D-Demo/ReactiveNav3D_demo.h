@@ -551,7 +551,8 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
     grid.loadFromBitmap(myImg, resolution);
     maps.push_back(grid);
 
-    std::cout << std::endl << "Maps have been loaded successfully.";
+    std::cout << "\n"
+              << "Maps have been loaded successfully.";
   }
 
   void loadConfiguration(const mrpt::config::CConfigFileBase& ini)

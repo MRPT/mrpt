@@ -307,7 +307,7 @@ void CMyGLCanvas::OnCharCustom(wxKeyEvent& event)
     }
     catch (const std::exception& e)
     {
-      std::cerr << "*EXCEPTION* while determining next/previous file:\n" << e.what() << std::endl;
+      std::cerr << "*EXCEPTION* while determining next/previous file:\n" << e.what() << "\n";
     }
   }
 }
@@ -931,7 +931,7 @@ void _DSceneViewerFrame::OntimLoadFileCmdLineTrigger(wxTimerEvent&)
     }
     catch (const std::exception& e)
     {
-      std::cerr << mrpt::exception_to_str(e) << std::endl;
+      std::cerr << mrpt::exception_to_str(e) << "\n";
       wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
     }
   }
@@ -1114,7 +1114,7 @@ void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
   }
   catch (const std::exception& e)
   {
-    std::cerr << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << mrpt::exception_to_str(e) << "\n";
     btnAutoplay->SetValue(false);
     wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
   }
@@ -1146,7 +1146,7 @@ void _DSceneViewerFrame::OnMenuSave(wxCommandEvent& event)
   }
   catch (const std::exception& e)
   {
-    std::cerr << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << mrpt::exception_to_str(e) << "\n";
     btnAutoplay->SetValue(false);
     wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
   }
@@ -1232,7 +1232,7 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
   }
   catch (const std::exception& e)
   {
-    std::cerr << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << mrpt::exception_to_str(e) << "\n";
     wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
   }
   catch (...)
@@ -1292,7 +1292,7 @@ void _DSceneViewerFrame::OnStartCameraTravelling(wxCommandEvent& event)
   }
   catch (const std::exception& e)
   {
-    std::cerr << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << mrpt::exception_to_str(e) << "\n";
     wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
   }
   catch (...)
@@ -1312,7 +1312,7 @@ void _DSceneViewerFrame::OnMenuAddSICK(wxCommandEvent& event)
   }
   catch (const std::exception& e)
   {
-    std::cerr << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << mrpt::exception_to_str(e) << "\n";
     wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
   }
   catch (...)

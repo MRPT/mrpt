@@ -341,7 +341,7 @@ void Test_Kinect()
           if (last_obs->hasIntensityImage)
           {
             const std::string s = mrpt::format("kinect_image_%04i.png", cnt++);
-            std::cout << "Writing intensity/IR image to disk: " << s << std::endl;
+            std::cout << "Writing intensity/IR image to disk: " << s << "\n";
             if (!last_obs->intensityImage.saveToFile(s)) std::cerr << "(error writing file!)\n";
           }
         }
@@ -391,7 +391,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cout << "EXCEPCION: " << mrpt::exception_to_str(e) << std::endl;
+    std::cout << "EXCEPCION: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

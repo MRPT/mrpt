@@ -48,7 +48,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }
