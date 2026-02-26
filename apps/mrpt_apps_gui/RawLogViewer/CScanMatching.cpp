@@ -29,10 +29,10 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/opengl/CEllipsoid2D.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/slam/CICP.h>
+#include <mrpt/viz/CGridPlaneXY.h>
 #include <wx/app.h>
 #include <wx/busyinfo.h>
 #include <wx/log.h>

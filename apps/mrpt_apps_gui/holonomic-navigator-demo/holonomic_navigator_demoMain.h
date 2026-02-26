@@ -35,10 +35,10 @@
 #include <mrpt/nav.h>
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // It's in the lib mrpt-maps
-#include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CSimpleLine.h>
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CSetOfLines.h>
 
 #include <memory>  // unique_ptr
 

@@ -33,14 +33,12 @@
 #include <mrpt/gui/CMyRedirector.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/math/CQuaternion.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
 #include <mrpt/vision/pnp_algos.h>
-
-#include <fstream>
+#include <mrpt/viz/CGridPlaneXY.h>
 
 #include "MyGLCanvas.h"
 

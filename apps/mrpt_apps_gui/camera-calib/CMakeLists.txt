@@ -33,4 +33,4 @@ mrpt_add_executable(
     mrpt::mrpt_hwdrivers
 )
 
-AppStartMenuLink(${PROJECT_NAME} "Camera calibration GUI")   # Add link to the Start menu (in Windows Installable packages)
+#AppStartMenuLink(${PROJECT_NAME} "Camera calibration GUI")   # Add link to the Start menu (in Windows Installable packages)

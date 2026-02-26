@@ -27,12 +27,12 @@
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationIMU.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/viz/CGridPlaneXY.h>
 
 #include <chrono>
 #include <thread>

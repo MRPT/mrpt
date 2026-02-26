@@ -12,7 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/apps/CGridMapAlignerApp.h>
+#include <mrpt/apps_gui/CGridMapAlignerApp.h>
 
 int main(int argc, char** argv)
 {

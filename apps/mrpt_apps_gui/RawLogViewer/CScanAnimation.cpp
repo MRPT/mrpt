@@ -26,9 +26,9 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // in library mrpt-maps
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/viz/CGridPlaneXY.h>
 #include <wx/app.h>
 #include <wx/busyinfo.h>
 #include <wx/log.h>

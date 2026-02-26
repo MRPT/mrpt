@@ -59,11 +59,11 @@ wxBitmap MyArtProvider::CreateBitmap(
 #include <mrpt/config/CConfigFilePrefixer.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
-#include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CAxis.h>
+#include <mrpt/viz/CGridPlaneXY.h>
 
 mrpt::nav::CParameterizedTrajectoryGenerator::Ptr ptg;
 

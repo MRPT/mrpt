@@ -30,5 +30,5 @@ mrpt_add_executable(
     mrpt::mrpt_kinematics
 )
 
-AppStartMenuLink(${PROJECT_NAME} "Reactive navigation demo")   # Add link to the Start menu (in Windows Installable packages)
+#AppStartMenuLink(${PROJECT_NAME} "Reactive navigation demo")   # Add link to the Start menu (in Windows Installable packages)
 

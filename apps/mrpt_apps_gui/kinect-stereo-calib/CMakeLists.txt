@@ -29,5 +29,5 @@ mrpt_add_executable(
     mrpt::mrpt_vision
 )
 
-AppStartMenuLink(${PROJECT_NAME} "Kinect (and generic stereo cams) calibration tool")   # Add link to the Start menu (in Windows Installable packages)
+#AppStartMenuLink(${PROJECT_NAME} "Kinect (and generic stereo cams) calibration tool")   # Add link to the Start menu (in Windows Installable packages)
 

@@ -27,15 +27,15 @@
 #include <mrpt/math/geometry.h>  // intersect()
 #include <mrpt/math/utils.h>
 #include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CMesh.h>
-#include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/rtti/CListOfClasses.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CSetOfLines.h>
 
 #include <algorithm>  // replace()
 #include <fstream>

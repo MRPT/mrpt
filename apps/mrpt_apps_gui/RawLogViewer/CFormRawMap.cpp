@@ -41,13 +41,13 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/obs/CObservationOdometry.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/topography.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CSetOfLines.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;

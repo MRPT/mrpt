@@ -34,12 +34,12 @@
 
 #include <mrpt/3rdparty/mathplot/mathplot.h>
 #include <mrpt/gui/CMyRedirector.h>
-#include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CMesh.h>
-#include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/Viewport.h>
+#include <mrpt/viz/CAxis.h>
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CSetOfLines.h>
 
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1

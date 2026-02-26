@@ -27,12 +27,12 @@
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/obs/CObservationGPS.h>
-#include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/topography.h>
+#include <mrpt/viz/CAxis.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CPointCloud.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;

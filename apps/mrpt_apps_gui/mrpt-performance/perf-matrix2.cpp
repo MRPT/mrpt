@@ -14,7 +14,6 @@
 
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
-#include <mrpt/math/CSparseMatrix.h>
 #include <mrpt/math/CVectorFixed.h>
 #include <mrpt/random.h>
 

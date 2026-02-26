@@ -17,9 +17,9 @@
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/TObject3D.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/viz/CPointCloud.h>
 
 #include <QApplication>
 #include <QMouseEvent>
