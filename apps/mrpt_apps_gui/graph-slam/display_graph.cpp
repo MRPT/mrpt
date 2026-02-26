@@ -14,15 +14,15 @@
 
 #include <mrpt/graphs.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CSimpleLine.h>
-#include <mrpt/opengl/graph_tools.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CObserver.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CPointCloud.h>
 #include <mrpt/viz/CSetOfLines.h>
+#include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/CSimpleLine.h>
+#include <mrpt/viz/graph_tools.h>
+#include <mrpt/viz/stock_objects.h>
 
 #include <chrono>
 #include <thread>
@@ -59,7 +59,7 @@ template <class GRAPHTYPE>
 void display_graph(const GRAPHTYPE& g)
 {
   // Convert into a 3D representation:
-  CSetOfObjects::Ptr objGraph = mrpt::opengl::graph_tools::graph_visualize(g);
+  CSetOfObjects::Ptr objGraph = mrpt::viz::graph_tools::graph_visualize(g);
 
   // Show in a window:
   mrpt::gui::CDisplayWindow3D win("graph-slam - Graph visualization", 700, 600);
@@ -81,7 +81,7 @@ void display_graph(const GRAPHTYPE& g)
     }
   }
 
-  mrpt::opengl::Scene::Ptr& scene = win.get3DSceneAndLock();
+  mrpt::viz::Scene::Ptr& scene = win.get3DSceneAndLock();
   scene->insert(objGraph);
 
   win.unlockAccess3DScene();
@@ -154,7 +154,7 @@ void display_graph(const GRAPHTYPE& g)
             const std::string sFil = mrpt::format("dump_graph_%05i.3Dscene", ++cnt);
             std::cout << "Dumping scene to file: " << sFil << "\n";
 
-            mrpt::opengl::Scene scene;
+            mrpt::viz::Scene scene;
             scene.insert(m_new_3dobj);
             mrpt::io::CCompressedOutputStream f(sFil);
             mrpt::serialization::archiveFrom(f) << scene;
@@ -201,7 +201,7 @@ void display_graph(const GRAPHTYPE& g)
 
         if (rebuild_3d_obj)
         {
-          m_new_3dobj = mrpt::opengl::graph_tools::graph_visualize(m_graph, params);
+          m_new_3dobj = mrpt::viz::graph_tools::graph_visualize(m_graph, params);
           request_to_refresh_3D_view = true;
         }
       }

@@ -34,12 +34,12 @@
 
 #include <mrpt/3rdparty/mathplot/mathplot.h>
 #include <mrpt/gui/CMyRedirector.h>
-#include <mrpt/opengl/CMesh.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/Viewport.h>
 #include <mrpt/viz/CAxis.h>
+#include <mrpt/viz/CMesh.h>
 #include <mrpt/viz/CPointCloud.h>
 #include <mrpt/viz/CSetOfLines.h>
+#include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/Viewport.h>
 
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1
@@ -250,16 +250,16 @@ class ptgConfiguratorframe : public wxFrame
   TCursorPickState m_cursorPickState;
 
   // ========= Opengl View =======
-  mrpt::opengl::Viewport::Ptr gl_view_WS, gl_view_TPSpace;
-  mrpt::opengl::CSetOfObjects::Ptr gl_TPSpace_TP_obstacles;
-  mrpt::opengl::CMesh::Ptr gl_TPSpace_clearance, gl_TPSpace_clearance_interp;
-  mrpt::opengl::CCamera::Ptr gl_view_TPSpace_cam;
-  mrpt::opengl::CAxis::Ptr gl_axis_WS, gl_axis_TPS;
-  mrpt::opengl::CSetOfLines::Ptr gl_robot_ptg_prediction, gl_robot_ptg_prediction_highlight,
+  mrpt::viz::Viewport::Ptr gl_view_WS, gl_view_TPSpace;
+  mrpt::viz::CSetOfObjects::Ptr gl_TPSpace_TP_obstacles;
+  mrpt::viz::CMesh::Ptr gl_TPSpace_clearance, gl_TPSpace_clearance_interp;
+  mrpt::viz::CCamera::Ptr gl_view_TPSpace_cam;
+  mrpt::viz::CAxis::Ptr gl_axis_WS, gl_axis_TPS;
+  mrpt::viz::CSetOfLines::Ptr gl_robot_ptg_prediction, gl_robot_ptg_prediction_highlight,
       gl_tp_obstacles;
-  mrpt::opengl::CPointCloud::Ptr gl_WS_obs;
-  mrpt::opengl::CPointCloud::Ptr gl_TP_target;
-  mrpt::opengl::CSetOfObjects::Ptr gl_WS_target, gl_WS_target_reprojected;
+  mrpt::viz::CPointCloud::Ptr gl_WS_obs;
+  mrpt::viz::CPointCloud::Ptr gl_TP_target;
+  mrpt::viz::CSetOfObjects::Ptr gl_WS_target, gl_WS_target_reprojected;
 
   // 2D plot views:
   mpFXYVector *m_graph_head_all, *m_graph_head_indiv;

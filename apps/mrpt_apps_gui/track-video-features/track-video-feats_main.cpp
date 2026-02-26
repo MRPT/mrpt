@@ -128,9 +128,9 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 
   cout << endl << "TO END THE PROGRAM: Close the window.\n";
 
-  mrpt::opengl::Viewport::Ptr gl_view;
+  mrpt::viz::Viewport::Ptr gl_view;
   {
-    mrpt::opengl::Scene::Ptr scene = win->get3DSceneAndLock();
+    mrpt::viz::Scene::Ptr scene = win->get3DSceneAndLock();
     gl_view = scene->getViewport("main");
     win->unlockAccess3DScene();
   }

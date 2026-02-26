@@ -36,8 +36,6 @@
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/opengl/CSimpleLine.h>
-#include <mrpt/opengl/CText3D.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/serialization/CArchive.h>
@@ -48,6 +46,8 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/memory.h>
 #include <mrpt/vision/CVideoFileWriter.h>
+#include <mrpt/viz/CSimpleLine.h>
+#include <mrpt/viz/CText3D.h>
 #include <wx/busyinfo.h>
 #include <wx/dirdlg.h>
 #include <wx/filedlg.h>

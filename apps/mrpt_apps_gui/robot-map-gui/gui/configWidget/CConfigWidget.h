@@ -10,7 +10,7 @@
 #pragma once
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/TMetricMapInitializer.h>
-#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 #include <QWidget>
 #include <memory>

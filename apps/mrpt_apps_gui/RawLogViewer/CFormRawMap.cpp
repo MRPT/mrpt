@@ -369,7 +369,7 @@ void loadMapInto3DScene(Scene& scene)
       maxC = TPoint3D(100, 100, 0);
     }
 
-    mrpt::opengl::CGridPlaneXY::Ptr gridobj = mrpt::opengl::CGridPlaneXY::Create(
+    mrpt::viz::CGridPlaneXY::Ptr gridobj = mrpt::viz::CGridPlaneXY::Create(
         minC.x - 20, maxC.x + 20, minC.y - 20, maxC.y + 20, minC.z - 2, 5);
     gridobj->setColor(0.3, 0.3, 0.3, 1);
     scene.insert(gridobj);
@@ -385,12 +385,12 @@ void loadMapInto3DScene(Scene& scene)
 
   // The robot path:
   {
-    mrpt::opengl::CSetOfLines::Ptr obj = mrpt::opengl::CSetOfLines::Create();
+    mrpt::viz::CSetOfLines::Ptr obj = mrpt::viz::CSetOfLines::Create();
 
     obj->setColor(0, 1, 0, 0.5);
     obj->setLineWidth(4);
 
-    mrpt::opengl::CSetOfLines::Ptr obj2 = mrpt::opengl::CSetOfLines::Create();
+    mrpt::viz::CSetOfLines::Ptr obj2 = mrpt::viz::CSetOfLines::Create();
     obj2->setColor(1, 0, 0, 0.5);
     obj2->setLineWidth(2);
 

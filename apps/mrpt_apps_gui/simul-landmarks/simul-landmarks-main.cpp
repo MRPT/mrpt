@@ -21,8 +21,6 @@
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/opengl/CSphere.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
@@ -30,6 +28,8 @@
 #include <mrpt/system/os.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CSetOfLines.h>
+#include <mrpt/viz/CSphere.h>
+#include <mrpt/viz/stock_objects.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -397,16 +397,16 @@ int main(int argc, char** argv)
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_WXWIDGETS
       mrpt::gui::CDisplayWindow3D win("Final simulation", 400, 300);
 
-      mrpt::opengl::Scene::Ptr& scene = win.get3DSceneAndLock();
+      mrpt::viz::Scene::Ptr& scene = win.get3DSceneAndLock();
 
       scene->insert(
-          mrpt::opengl::CGridPlaneXY::Create(min_x - 10, max_x + 10, min_y - 10, max_y + 10, 0));
-      scene->insert(mrpt::opengl::stock_objects::CornerXYZ());
+          mrpt::viz::CGridPlaneXY::Create(min_x - 10, max_x + 10, min_y - 10, max_y + 10, 0));
+      scene->insert(mrpt::viz::stock_objects::CornerXYZ());
 
       // Insert all landmarks:
       for (auto it = landmarkMap.landmarks.begin(); it != landmarkMap.landmarks.end(); ++it)
       {
-        mrpt::opengl::CSphere::Ptr lm = mrpt::opengl::CSphere::Create();
+        mrpt::viz::CSphere::Ptr lm = mrpt::viz::CSphere::Create();
         lm->setColor(1, 0, 0);
         lm->setRadius(0.1f);
         lm->setLocation(it->pose_mean);
@@ -417,7 +417,7 @@ int main(int argc, char** argv)
 
       // Insert all robot poses:
       const size_t N = GT_path.rows();
-      mrpt::opengl::CSetOfLines::Ptr pathLines = mrpt::opengl::CSetOfLines::Create();
+      mrpt::viz::CSetOfLines::Ptr pathLines = mrpt::viz::CSetOfLines::Create();
       pathLines->setColor(0, 0, 1, 0.5);
       pathLines->setLineWidth(3.0);
       pathLines->resize(N - 1);
@@ -431,7 +431,7 @@ int main(int argc, char** argv)
 
       for (size_t i = 0; i < N; i++)
       {
-        mrpt::opengl::CSetOfObjects::Ptr corner = mrpt::opengl::stock_objects::CornerXYZ();
+        mrpt::viz::CSetOfObjects::Ptr corner = mrpt::viz::stock_objects::CornerXYZ();
         corner->setScale(0.2f);
         corner->setPose(TPose3D(
             GT_path(i, 0), GT_path(i, 1), GT_path(i, 2), GT_path(i, 3), GT_path(i, 4),

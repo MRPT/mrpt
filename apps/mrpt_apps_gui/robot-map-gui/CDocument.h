@@ -23,7 +23,7 @@ Also, it provides work with *.simplemap.
 */
 
 using MetricPtr = mrpt::maps::CMetricMap::Ptr;
-using RenderizableMaps = std::map<SType, mrpt::opengl::CSetOfObjects::Ptr>;
+using RenderizableMaps = std::map<SType, mrpt::viz::CSetOfObjects::Ptr>;
 using TypeConfig = std::map<TypeOfConfig, std::vector<MetricPtr>>;
 
 class CDocument

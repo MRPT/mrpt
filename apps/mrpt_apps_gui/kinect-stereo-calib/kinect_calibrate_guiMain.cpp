@@ -1029,26 +1029,25 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent, wxWindo
   // Prepare 3D scene: (of live view)
   // ------------------------------------------
   auto openGLSceneRef = m_plot3D->getOpenGLSceneRef();
-  openGLSceneRef = mrpt::opengl::Scene::Create();
+  openGLSceneRef = mrpt::viz::Scene::Create();
 
   // Ground plane:
   {
-    mrpt::opengl::CGridPlaneXY::Ptr obj =
-        mrpt::opengl::CGridPlaneXY::Create(-10, 10, -10, 10, 0, 1);
+    mrpt::viz::CGridPlaneXY::Ptr obj = mrpt::viz::CGridPlaneXY::Create(-10, 10, -10, 10, 0, 1);
     obj->setColor_u8(TColor(200, 200, 200));
     openGLSceneRef->insert(obj);
   }
   //// XYZ corner:
   // m_plot3D->m_openGLScene->insert(
-  // mrpt::opengl::stock_objects::CornerXYZSimple(0.5,2) );
+  // mrpt::viz::stock_objects::CornerXYZSimple(0.5,2) );
 
   // 3D points:
-  m_gl_3d_points = mrpt::opengl::CPointCloudColoured::Create();
+  m_gl_3d_points = mrpt::viz::CPointCloudColoured::Create();
   m_gl_3d_points->setPointSize(2);
   openGLSceneRef->insert(m_gl_3d_points);
 
-  m_gl_corner_left = mrpt::opengl::stock_objects::CornerXYZSimple(0.03f, 2);
-  m_gl_corner_right = mrpt::opengl::stock_objects::CornerXYZSimple(0.03f, 2);
+  m_gl_corner_left = mrpt::viz::stock_objects::CornerXYZSimple(0.03f, 2);
+  m_gl_corner_right = mrpt::viz::stock_objects::CornerXYZSimple(0.03f, 2);
   openGLSceneRef->insert(m_gl_corner_left);
   openGLSceneRef->insert(m_gl_corner_right);
 
@@ -2493,17 +2492,16 @@ void kinect_calibrate_guiDialog::CalibUpdate3DViewCameras()
 {
   WX_START_TRY
 
-  mrpt::opengl::Scene::Ptr scene = mrpt::opengl::Scene::Create();
+  mrpt::viz::Scene::Ptr scene = mrpt::viz::Scene::Create();
 
   // Ground plane:
   {
-    mrpt::opengl::CGridPlaneXY::Ptr obj =
-        mrpt::opengl::CGridPlaneXY::Create(-10, 10, -10, 10, 0, 1);
+    mrpt::viz::CGridPlaneXY::Ptr obj = mrpt::viz::CGridPlaneXY::Create(-10, 10, -10, 10, 0, 1);
     obj->setColor_u8(TColor(200, 200, 200));
     scene->insert(obj);
   }
   // XYZ corner:
-  scene->insert(mrpt::opengl::stock_objects::CornerXYZSimple(0.5, 2));
+  scene->insert(mrpt::viz::stock_objects::CornerXYZSimple(0.5, 2));
 
   const unsigned int check_size_x = edCalibCheckX->GetValue();
   const unsigned int check_size_y = edCalibCheckY->GetValue();
@@ -2532,8 +2530,7 @@ void kinect_calibrate_guiDialog::CalibUpdate3DViewCameras()
     if (m_calib_result.image_pair_was_used[i])
     {
       {
-        mrpt::opengl::CSetOfObjects::Ptr cor =
-            mrpt::opengl::stock_objects::CornerXYZSimple(0.05f, 2);
+        mrpt::viz::CSetOfObjects::Ptr cor = mrpt::viz::stock_objects::CornerXYZSimple(0.05f, 2);
         cor->setName(mrpt::format("#%u", static_cast<unsigned int>(i)));
         cor->enableShowName(true);
 
@@ -2544,8 +2541,7 @@ void kinect_calibrate_guiDialog::CalibUpdate3DViewCameras()
         gl_objs->insert(cor);
       }
       {
-        mrpt::opengl::CSetOfObjects::Ptr cor =
-            mrpt::opengl::stock_objects::CornerXYZSimple(0.05f, 2);
+        mrpt::viz::CSetOfObjects::Ptr cor = mrpt::viz::stock_objects::CornerXYZSimple(0.05f, 2);
         // Inversed poses are estimated.
         mrpt::poses::CPose3D p =
             -(m_calib_result.right2left_camera_pose +

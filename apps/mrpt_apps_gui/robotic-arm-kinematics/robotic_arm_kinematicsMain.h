@@ -169,7 +169,7 @@ class robotic_arm_kinematicsFrame : public wxFrame
 
   std::vector<std::unique_ptr<PanelDOF>> m_dof_panels;
 
-  mrpt::opengl::CSetOfObjects::Ptr m_gl_robot;
+  mrpt::viz::CSetOfObjects::Ptr m_gl_robot;
 
   std::vector<mrpt::poses::CPose3D> m_all_poses;
 

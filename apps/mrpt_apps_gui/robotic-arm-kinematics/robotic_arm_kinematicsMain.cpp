@@ -30,10 +30,10 @@
 #include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/opengl/CText.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CText.h>
+#include <mrpt/viz/stock_objects.h>
 
 #include "../wx-common/mrpt_logo.xpm"
 #include "CAboutBox.h"
@@ -519,10 +519,8 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent, wxWin
 
   // Initialize 3D scene:
   {
-    mrpt::opengl::CGridPlaneXY::Ptr grid_10cm =
-        mrpt::opengl::CGridPlaneXY::Create(-5, 5, -5, 5, 0, 0.1f);
-    mrpt::opengl::CGridPlaneXY::Ptr grid_1m =
-        mrpt::opengl::CGridPlaneXY::Create(-5, 5, -5, 5, 0.001f, 1);
+    mrpt::viz::CGridPlaneXY::Ptr grid_10cm = mrpt::viz::CGridPlaneXY::Create(-5, 5, -5, 5, 0, 0.1f);
+    mrpt::viz::CGridPlaneXY::Ptr grid_1m = mrpt::viz::CGridPlaneXY::Create(-5, 5, -5, 5, 0.001f, 1);
 
     grid_10cm->setColor_u8(mrpt::img::TColor(0xC0, 0xC0, 0xC0, 0xA0));
     grid_1m->setColor_u8(mrpt::img::TColor(0xFF, 0xFF, 0xFF));
@@ -531,7 +529,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent, wxWin
     openGLSceneRef->insert(grid_1m);
   }
 
-  m_gl_robot = mrpt::opengl::CSetOfObjects::Create();
+  m_gl_robot = mrpt::viz::CSetOfObjects::Create();
   openGLSceneRef->insert(m_gl_robot);
 
   this->Regenerate3DView();
@@ -542,21 +540,21 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent, wxWin
     gl_view->setViewportPosition(0, 0, 0.2, 0.3);
     gl_view->setTransparent(true);
     {
-      mrpt::opengl::CText::Ptr obj = mrpt::opengl::CText::Create("X");
+      mrpt::viz::CText::Ptr obj = mrpt::viz::CText::Create("X");
       obj->setLocation(1.1, 0, 0);
       gl_view->insert(obj);
     }
     {
-      mrpt::opengl::CText::Ptr obj = mrpt::opengl::CText::Create("Y");
+      mrpt::viz::CText::Ptr obj = mrpt::viz::CText::Create("Y");
       obj->setLocation(0, 1.1, 0);
       gl_view->insert(obj);
     }
     {
-      mrpt::opengl::CText::Ptr obj = mrpt::opengl::CText::Create("Z");
+      mrpt::viz::CText::Ptr obj = mrpt::viz::CText::Create("Z");
       obj->setLocation(0, 0, 1.1);
       gl_view->insert(obj);
     }
-    gl_view->insert(mrpt::opengl::stock_objects::CornerXYZ());
+    gl_view->insert(mrpt::viz::stock_objects::CornerXYZ());
   }
 
   m_plot3D->setZoomDistance(3.0f);

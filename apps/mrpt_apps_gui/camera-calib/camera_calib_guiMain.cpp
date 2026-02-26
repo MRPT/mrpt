@@ -31,10 +31,10 @@
 
 #include <mrpt/containers/yaml.h>
 #include <mrpt/gui/WxUtils.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/vision/pnp_algos.h>
 #include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/stock_objects.h>
 #include <wx/filedlg.h>
 #include <wx/msgdlg.h>
 #include <wx/progdlg.h>
@@ -712,7 +712,7 @@ void camera_calib_guiDialog::OnlbFilesSelect(wxCommandEvent& event) { refreshDis
 
 void camera_calib_guiDialog::show3Dview()
 {
-  mrpt::opengl::Scene::Ptr scene = mrpt::opengl::Scene::Create();
+  mrpt::viz::Scene::Ptr scene = mrpt::viz::Scene::Create();
 
   const unsigned int check_size_x = edSizeX->GetValue();
   const unsigned int check_size_y = edSizeY->GetValue();
@@ -732,7 +732,7 @@ void camera_calib_guiDialog::show3Dview()
   {
     if (!lst_image.second.detected_corners.empty())
     {
-      mrpt::opengl::CSetOfObjects::Ptr cor = mrpt::opengl::stock_objects::CornerXYZ();
+      mrpt::viz::CSetOfObjects::Ptr cor = mrpt::viz::stock_objects::CornerXYZ();
       cor->setName(mrpt::system::extractFileName(lst_image.first));
       cor->enableShowName(true);
       cor->setScale(0.1f);
@@ -742,7 +742,7 @@ void camera_calib_guiDialog::show3Dview()
     }
   }
 
-  // scene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
+  // scene->insert( mrpt::viz::stock_objects::CornerXYZ() );
 
   this->m_3Dview->setOpenGLSceneRef(scene);
   this->m_3Dview->Refresh();

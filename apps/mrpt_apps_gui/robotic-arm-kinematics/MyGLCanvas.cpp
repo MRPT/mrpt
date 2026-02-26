@@ -41,7 +41,7 @@ void CMyGLCanvas::OnPreRender()
   auto gl_view = getOpenGLSceneRef()->getViewport("small-view");
   if (gl_view)
   {
-    mrpt::opengl::CCamera& view_cam = gl_view->getCamera();
+    mrpt::viz::CCamera& view_cam = gl_view->getCamera();
 
     view_cam.setAzimuthDegrees(getAzimuthDegrees());
     view_cam.setElevationDegrees(getElevationDegrees());

@@ -222,7 +222,7 @@ class _DSceneViewerFrame : public wxFrame
   std::unique_ptr<wxTimer> m_autoplayTimer;
 
   /** The list of currently selected objects */
-  std::vector<mrpt::opengl::CRenderizable::Ptr> m_selected_gl_objects;
+  std::vector<mrpt::viz::CRenderizable::Ptr> m_selected_gl_objects;
 
   wxTimer m_tTravelling;
   bool m_travelling_is_arbitrary;

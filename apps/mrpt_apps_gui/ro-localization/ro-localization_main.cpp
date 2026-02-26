@@ -41,16 +41,16 @@
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CEllipsoid2D.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CSphere.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CAxis.h>
+#include <mrpt/viz/CDisk.h>
+#include <mrpt/viz/CEllipsoid2D.h>
+#include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CSphere.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;

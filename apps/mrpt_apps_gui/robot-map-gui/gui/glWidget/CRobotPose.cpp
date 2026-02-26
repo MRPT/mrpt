@@ -9,11 +9,11 @@
    */
 #include "CRobotPose.h"
 
-#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/viz/stock_objects.h>
 
 CRobotPose::CRobotPose(size_t id) : CSetOfObjects(), m_id(id)
 {
-  m_currentObj = mrpt::opengl::stock_objects::CornerXYZSimple();
+  m_currentObj = mrpt::viz::stock_objects::CornerXYZSimple();
   insert(m_currentObj);
 }
 
@@ -23,9 +23,9 @@ void CRobotPose::setSelected(bool is)
   removeObject(m_currentObj);
 
   if (is)
-    m_currentObj = mrpt::opengl::stock_objects::CornerXYZEye();
+    m_currentObj = mrpt::viz::stock_objects::CornerXYZEye();
   else
-    m_currentObj = mrpt::opengl::stock_objects::CornerXYZSimple();
+    m_currentObj = mrpt::viz::stock_objects::CornerXYZSimple();
 
   insert(m_currentObj);
 }

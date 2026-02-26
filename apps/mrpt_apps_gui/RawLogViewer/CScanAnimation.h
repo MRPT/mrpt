@@ -33,7 +33,7 @@
 //  See http://sourceforge.net/projects/wxmathplot
 #include <mrpt/3rdparty/mathplot/mathplot.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/viz/CPointCloudColoured.h>
 
 class CScanAnimation : public wxDialog
 {
@@ -115,7 +115,7 @@ class CScanAnimation : public wxDialog
   struct TRenderObject
   {
     mrpt::system::TTimeStamp timestamp;
-    mrpt::opengl::CRenderizable::Ptr obj;
+    mrpt::viz::CRenderizable::Ptr obj;
   };
   using TListGlObjects = std::map<std::string, TRenderObject>;
   /** All the observations added to the map. */

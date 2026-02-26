@@ -29,12 +29,12 @@
 #include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
-#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CPlanarLaserScan.h>
 #include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CSetOfObjects.h>
 #include <wx/artprov.h>
 #include <wx/busyinfo.h>
 #include <wx/colordlg.h>
@@ -107,9 +107,9 @@ wxBitmap MyArtProvider::CreateBitmap(
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
+#include <mrpt/viz/stock_objects.h>
 
 #include <vector>
 
@@ -136,12 +136,12 @@ CPose2D lastOdo, pose_start;
 bool we_are_closing = false;
 long decimation = 1;
 
-auto gl_grid = mrpt::opengl::CSetOfObjects::Create();
+auto gl_grid = mrpt::viz::CSetOfObjects::Create();
 
-mrpt::opengl::CSetOfObjects::Ptr gl_robot;
-mrpt::opengl::CPlanarLaserScan::Ptr gl_scan;
-mrpt::opengl::CPointCloud::Ptr gl_path_GT;
-mrpt::opengl::CPointCloud::Ptr gl_path_ODO;
+mrpt::viz::CSetOfObjects::Ptr gl_robot;
+mrpt::viz::CPlanarLaserScan::Ptr gl_scan;
+mrpt::viz::CPointCloud::Ptr gl_path_GT;
+mrpt::viz::CPointCloud::Ptr gl_path_ODO;
 
 int last_pressed_key = 0;
 
@@ -615,20 +615,20 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 
   // Populate scene:
   auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
-  openGLSceneRef->insert(mrpt::opengl::CGridPlaneXY::Create(-100, 100, -100, 100, 0, 5));
+  openGLSceneRef->insert(mrpt::viz::CGridPlaneXY::Create(-100, 100, -100, 100, 0, 5));
 
   update_grid_map_3d();
   openGLSceneRef->insert(gl_grid);
 
   // paths:
-  gl_path_GT = mrpt::opengl::CPointCloud::Create();
+  gl_path_GT = mrpt::viz::CPointCloud::Create();
   gl_path_GT->setColor(0, 0, 0, 0.7);
   gl_path_GT->setLocation(0, 0, 0.01);
   gl_path_GT->setPointSize(3);
 
   openGLSceneRef->insert(gl_path_GT);
 
-  gl_path_ODO = mrpt::opengl::CPointCloud::Create();
+  gl_path_ODO = mrpt::viz::CPointCloud::Create();
   gl_path_ODO->setColor(0, 1, 0, 0.7);
   gl_path_ODO->setLocation(0, 0, 0.01);
   gl_path_ODO->setPointSize(2);
@@ -636,10 +636,10 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
   openGLSceneRef->insert(gl_path_ODO);
 
   // Robot & scan:
-  gl_robot = mrpt::opengl::stock_objects::RobotPioneer();
+  gl_robot = mrpt::viz::stock_objects::RobotPioneer();
   openGLSceneRef->insert(gl_robot);
 
-  gl_scan = mrpt::opengl::CPlanarLaserScan::Create();
+  gl_scan = mrpt::viz::CPlanarLaserScan::Create();
   gl_robot->insert(gl_scan);
 
   // Redirect all keystrokes in this box to the gl canvas:

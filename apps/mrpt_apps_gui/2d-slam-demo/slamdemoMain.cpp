@@ -36,11 +36,9 @@
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CObservationComment.h>
-#include <mrpt/opengl/Scene.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
-
-#include <memory>
+#include <mrpt/viz/Scene.h>
 
 using namespace std;
 using namespace mrpt;
@@ -2038,10 +2036,10 @@ void slamdemoFrame::OnMenuSaveFilterState(wxCommandEvent& event)
     string filName(dialog.GetPath().mb_str());
 
     // Save as 3D objects:
-    auto obj3D = mrpt::opengl::CSetOfObjects::Create();
+    auto obj3D = mrpt::viz::CSetOfObjects::Create();
     m_SLAM.getAs3DObject(obj3D);
 
-    mrpt::opengl::Scene scene;
+    mrpt::viz::Scene scene;
     scene.insert(obj3D);
 
     scene.saveToFile(filName);

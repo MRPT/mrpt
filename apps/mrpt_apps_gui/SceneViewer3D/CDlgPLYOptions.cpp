@@ -127,7 +127,7 @@ CDlgPLYOptions::CDlgPLYOptions(wxWindow* parent, wxWindowID id)
   FlexGridSizer2->Add(FlexGridSizer4, 1, wxALL | wxALIGN_TOP | wxALIGN_CENTER_HORIZONTAL, 0);
   FlexGridSizer7 = new wxFlexGridSizer(2, 1, 0, 0);
   wxString __wxRadioBoxChoices_1[2] = {
-      _("mrpt::opengl::CPointCloud"), _("mrpt::opengl::CPointCloudColoured")};
+      _("mrpt::viz::CPointCloud"), _("mrpt::viz::CPointCloudColoured")};
   rbClass = new wxRadioBox(
       this, ID_RADIOBOX2, _("Import as class..."), wxDefaultPosition, wxDefaultSize, 2,
       __wxRadioBoxChoices_1, 1, 0, wxDefaultValidator, _T("ID_RADIOBOX2"));

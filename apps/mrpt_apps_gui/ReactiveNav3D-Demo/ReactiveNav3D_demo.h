@@ -17,8 +17,8 @@
 #include <mrpt/nav/reactive/CReactiveNavigationSystem3D.h>
 #include <mrpt/nav/reactive/CRobot2NavInterfaceForSimulator.h>
 #include <mrpt/opengl.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/system/CObserver.h>
+#include <mrpt/viz/CPlanarLaserScan.h>
 
 #include "map2_1.xpm"
 #include "map2_2.xpm"

@@ -17,9 +17,9 @@
 #include <mrpt/core/round.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/opengl/Scene.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/vision/CDifodo.h>
+#include <mrpt/viz/Scene.h>
 
 #include <fstream>
 #include <iostream>
@@ -80,7 +80,7 @@ class CDifodoCamera : public mrpt::vision::CDifodo
   unsigned int repr_level;
 
   /** Opengl scene */
-  mrpt::opengl::Scene::Ptr scene;
+  mrpt::viz::Scene::Ptr scene;
 
   // OpenNI variables to manage the camera
   openni::Status rc;

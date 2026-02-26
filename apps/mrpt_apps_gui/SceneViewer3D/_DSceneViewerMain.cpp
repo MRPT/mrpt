@@ -78,20 +78,20 @@ const std::string iniFileSect("CONF_LIN");
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CPointsMap.h>
-#include <mrpt/opengl/CAngularObservationMesh.h>  // It's in lib mrpt-maps
-#include <mrpt/opengl/CAssimpModel.h>
-#include <mrpt/opengl/CFBORender.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>  // It's in lib mrpt-maps
-#include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/opengl/Scene.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CDirectoryExplorer.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/viz/CAngularObservationMesh.h>  // It's in lib mrpt-maps
+#include <mrpt/viz/CAssimpModel.h>
+#include <mrpt/viz/CFBORender.h>
 #include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CPlanarLaserScan.h>  // It's in lib mrpt-maps
 #include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/Scene.h>
+#include <mrpt/viz/stock_objects.h>
 
 const mrpt::maps::CColouredPointsMap dummy_map;  // this is to enforce to load
 // the mrpt-maps DLL, then
@@ -755,8 +755,7 @@ void _DSceneViewerFrame::OnNewScene(wxCommandEvent& event)
   updateTitle();
 
   {
-    mrpt::opengl::CGridPlaneXY::Ptr obj =
-        mrpt::opengl::CGridPlaneXY::Create(-50, 50, -50, 50, 0, 1);
+    mrpt::viz::CGridPlaneXY::Ptr obj = mrpt::viz::CGridPlaneXY::Create(-50, 50, -50, 50, 0, 1);
     obj->setColor(0.3f, 0.3f, 0.3f);
     openGLSceneRef->insert(obj);
   }
@@ -918,7 +917,7 @@ void _DSceneViewerFrame::OntimLoadFileCmdLineTrigger(wxTimerEvent&)
                  "importing as an ASSIMP model...\n";
     try
     {
-      auto obj3D = mrpt::opengl::CAssimpModel::Create();
+      auto obj3D = mrpt::viz::CAssimpModel::Create();
       obj3D->loadScene(global_fileToOpen);
       // obj3D->setPose(mrpt::math::TPose3D(0, 0, 0, .0_deg,
       // 0._deg, 90.0_deg));
@@ -1104,7 +1103,7 @@ void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
 
     saveLastUsedDirectoryToCfgFile(fil);
 
-    mrpt::opengl::CAssimpModel::Ptr obj3D = mrpt::opengl::CAssimpModel::Create();
+    mrpt::viz::CAssimpModel::Ptr obj3D = mrpt::viz::CAssimpModel::Create();
     obj3D->loadScene(fil);
     // obj3D->setPose(mrpt::math::TPose3D(0, 0, 0, .0_deg,
     // 0._deg, 90.0_deg));
@@ -1306,7 +1305,7 @@ void _DSceneViewerFrame::OnMenuAddSICK(wxCommandEvent& event)
 {
   try
   {
-    mrpt::opengl::CSetOfObjects::Ptr obj = mrpt::opengl::stock_objects::RobotPioneer();
+    mrpt::viz::CSetOfObjects::Ptr obj = mrpt::viz::stock_objects::RobotPioneer();
     m_canvas->getOpenGLSceneRef()->insert(obj);
     m_canvas->Refresh();
   }
@@ -1397,7 +1396,7 @@ void _DSceneViewerFrame::OnmnuItemChangeMaxPointsPerOctreeNodeSelected(wxCommand
     wxMessageBox(_("Invalid number!"));
 }
 
-void func_clear_octrees(const mrpt::opengl::CRenderizable::Ptr& o)
+void func_clear_octrees(const mrpt::viz::CRenderizable::Ptr& o)
 {
   if (IS_CLASS(*o, CPointCloud))
   {
@@ -1436,7 +1435,7 @@ struct TSceneStats
 
 TSceneStats sceneStats;
 
-void func_gather_stats(const mrpt::opengl::CRenderizable::Ptr& o)
+void func_gather_stats(const mrpt::viz::CRenderizable::Ptr& o)
 {
   sceneStats.nObjects++;
 
@@ -1499,7 +1498,7 @@ void _DSceneViewerFrame::OnmnuSceneStatsSelected(wxCommandEvent&)
 static const std::string name_octrees_bb_globj = "__SceneViewer3D_gl_octree_bb__";
 CSetOfObjects::Ptr aux_gl_octrees_bb;
 
-void func_get_octbb(const mrpt::opengl::CRenderizable::Ptr& o)
+void func_get_octbb(const mrpt::viz::CRenderizable::Ptr& o)
 {
   if (IS_CLASS(*o, CPointCloud))
   {
@@ -1591,7 +1590,7 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 
     opengl::CPointCloud::Ptr gl_points;
     opengl::CPointCloudColoured::Ptr gl_points_col;
-    mrpt::opengl::PLY_Importer* ply_obj = nullptr;
+    mrpt::viz::PLY_Importer* ply_obj = nullptr;
 
     if (dlgPLY.rbClass->GetSelection() == 0)
     {
@@ -1624,14 +1623,12 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 
       if (dlgPLY.cbXYGrid->GetValue())
       {
-        mrpt::opengl::CGridPlaneXY::Ptr obj =
-            mrpt::opengl::CGridPlaneXY::Create(-50, 50, -50, 50, 0, 1);
+        mrpt::viz::CGridPlaneXY::Ptr obj = mrpt::viz::CGridPlaneXY::Create(-50, 50, -50, 50, 0, 1);
         obj->setColor(0.3f, 0.3f, 0.3f);
         openGLSceneRef->insert(obj);
       }
 
-      if (dlgPLY.cbXYZ->GetValue())
-        openGLSceneRef->insert(mrpt::opengl::stock_objects::CornerXYZ());
+      if (dlgPLY.cbXYZ->GetValue()) openGLSceneRef->insert(mrpt::viz::stock_objects::CornerXYZ());
 
       double ptSize;
       dlgPLY.cbPointSize->GetStringSelection().ToCDouble(&ptSize);
@@ -1705,7 +1702,7 @@ struct visitor_export_PLY
 
   visitor_export_PLY(const string& fil, unsigned int& counter) : filename(fil), count(counter) {}
 
-  void operator()(const mrpt::opengl::CRenderizable::Ptr& obj)
+  void operator()(const mrpt::viz::CRenderizable::Ptr& obj)
   {
     if (IS_CLASS(*obj, CPointCloud))
     {
@@ -1824,34 +1821,34 @@ void _DSceneViewerFrame::OnmnuSelectNoneSelected(wxCommandEvent& event)
 class OpenGlObjectsFilterVirtual
 {
  public:
-  OpenGlObjectsFilterVirtual(std::vector<mrpt::opengl::CRenderizable::Ptr>& out_list) :
+  OpenGlObjectsFilterVirtual(std::vector<mrpt::viz::CRenderizable::Ptr>& out_list) :
       m_out_list(out_list)
   {
   }
 
-  virtual void operator()(const mrpt::opengl::CRenderizable::Ptr& obj)
+  virtual void operator()(const mrpt::viz::CRenderizable::Ptr& obj)
   {
     if (checkObj(obj)) m_out_list.push_back(obj);
   }
 
-  std::vector<mrpt::opengl::CRenderizable::Ptr>& m_out_list;
+  std::vector<mrpt::viz::CRenderizable::Ptr>& m_out_list;
 
  protected:
-  virtual bool checkObj(const mrpt::opengl::CRenderizable::Ptr& obj) = 0;
+  virtual bool checkObj(const mrpt::viz::CRenderizable::Ptr& obj) = 0;
 };
 
 class OpenGlObjectsFilter_ByClass : public OpenGlObjectsFilterVirtual
 {
  public:
   OpenGlObjectsFilter_ByClass(
-      std::vector<mrpt::opengl::CRenderizable::Ptr>& out_list,
+      std::vector<mrpt::viz::CRenderizable::Ptr>& out_list,
       const vector<const TRuntimeClassId*>& selected_classes) :
       OpenGlObjectsFilterVirtual(out_list), m_selected_classes(selected_classes)
   {
   }
 
  protected:
-  bool checkObj(const mrpt::opengl::CRenderizable::Ptr& obj) override
+  bool checkObj(const mrpt::viz::CRenderizable::Ptr& obj) override
   {
     for (auto m_selected_classe : m_selected_classes)
     {

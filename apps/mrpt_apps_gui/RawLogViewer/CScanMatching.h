@@ -31,7 +31,7 @@
 #include "MyGLCanvas.h"
 //*)
 
-#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 class CScanMatching : public wxDialog
 {
@@ -117,7 +117,7 @@ class CScanMatching : public wxDialog
 
   DECLARE_EVENT_TABLE()
 
-  mrpt::opengl::CSetOfObjects::Ptr m_gl_map_ref, m_gl_map_new;
+  mrpt::viz::CSetOfObjects::Ptr m_gl_map_ref, m_gl_map_new;
 };
 
 #endif

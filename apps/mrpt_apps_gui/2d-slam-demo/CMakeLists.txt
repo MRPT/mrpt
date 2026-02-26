@@ -12,6 +12,7 @@ find_package(mrpt_common REQUIRED)
 find_package(mrpt_gui REQUIRED)
 find_package(mrpt_slam REQUIRED)
 find_package(CLI11 REQUIRED)
+find_package(wxWidgets REQUIRED)
 
 # Define the executable target:
 mrpt_add_executable(
@@ -30,6 +31,7 @@ mrpt_add_executable(
     mrpt::mrpt_gui
     mrpt::mrpt_slam
     CLI11::CLI11
+    wxWidgets::wxWidgets
 )
 
 

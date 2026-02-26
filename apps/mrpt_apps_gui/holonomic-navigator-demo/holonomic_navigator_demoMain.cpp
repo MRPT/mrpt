@@ -370,53 +370,52 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent, w
   // Populate 3D views:
   // -------------------------------
   {
-    mrpt::opengl::CGridPlaneXY::Ptr obj =
-        mrpt::opengl::CGridPlaneXY::Create(-50, 50, -50, 50, 0, 1);
+    mrpt::viz::CGridPlaneXY::Ptr obj = mrpt::viz::CGridPlaneXY::Create(-50, 50, -50, 50, 0, 1);
     obj->setColor_u8(TColor(30, 30, 30, 50));
     openGLSceneRef->insert(obj);
   }
 
-  gl_grid = mrpt::opengl::CSetOfObjects::Create();
+  gl_grid = mrpt::viz::CSetOfObjects::Create();
   openGLSceneRef->insert(gl_grid);
   this->updateMap3DView();
 
-  gl_robot = mrpt::opengl::CSetOfObjects::Create();
+  gl_robot = mrpt::viz::CSetOfObjects::Create();
   {
-    mrpt::opengl::CCylinder::Ptr obj = mrpt::opengl::CCylinder::Create(0.2f, 0.1f, 0.9f);
+    mrpt::viz::CCylinder::Ptr obj = mrpt::viz::CCylinder::Create(0.2f, 0.1f, 0.9f);
     obj->setColor_u8(TColor::red());
     gl_robot->insert(obj);
   }
   openGLSceneRef->insert(gl_robot);
 
-  gl_scan3D = mrpt::opengl::CPlanarLaserScan::Create();
+  gl_scan3D = mrpt::viz::CPlanarLaserScan::Create();
   gl_scan3D->enableLine(false);
   gl_scan3D->setPointSize(2.0);
   gl_scan3D->setLocation(0, 0, 0.01);  // to avoid z-fighting in rendering
   gl_robot->insert(gl_scan3D);
 
-  gl_robot_sensor_range = mrpt::opengl::CDisk::Create(0, 0);
+  gl_robot_sensor_range = mrpt::viz::CDisk::Create(0, 0);
   gl_robot_sensor_range->setColor_u8(TColor(0, 0, 255, 90));
   gl_robot_sensor_range->setLocation(0, 0, 0.01);
   gl_robot->insert(gl_robot_sensor_range);
 
-  gl_robot_path = mrpt::opengl::CSetOfLines::Create();
+  gl_robot_path = mrpt::viz::CSetOfLines::Create();
   gl_robot_path->setLineWidth(1);
   gl_robot_path->setColor_u8(TColor(40, 40, 40, 200));
   openGLSceneRef->insert(gl_robot_path);
 
-  gl_target = mrpt::opengl::CSetOfObjects::Create();
+  gl_target = mrpt::viz::CSetOfObjects::Create();
   {
-    mrpt::opengl::CArrow::Ptr obj;
-    obj = mrpt::opengl::CArrow::Create(1, 0, 0, 0.2f, 0, 0, 0.4f, 0.05f, 0.15f);
+    mrpt::viz::CArrow::Ptr obj;
+    obj = mrpt::viz::CArrow::Create(1, 0, 0, 0.2f, 0, 0, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     gl_target->insert(obj);
-    obj = mrpt::opengl::CArrow::Create(-1, 0, 0, -0.2f, 0, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(-1, 0, 0, -0.2f, 0, 0, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     gl_target->insert(obj);
-    obj = mrpt::opengl::CArrow::Create(0, 1, 0, 0, 0.2f, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(0, 1, 0, 0, 0.2f, 0, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     gl_target->insert(obj);
-    obj = mrpt::opengl::CArrow::Create(0, -1, 0, 0, -0.2f, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(0, -1, 0, 0, -0.2f, 0, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     gl_target->insert(obj);
     openGLSceneRef->insert(gl_target);
@@ -425,17 +424,17 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent, w
   {  // Sign of "picking a navigation target":
     m_gl_placing_nav_target = std::make_shared<opengl::CSetOfObjects>();
 
-    mrpt::opengl::CArrow::Ptr obj;
-    obj = mrpt::opengl::CArrow::Create(1, 0, 0, 0.2f, 0, 0, 0.4f, 0.05f, 0.15f);
+    mrpt::viz::CArrow::Ptr obj;
+    obj = mrpt::viz::CArrow::Create(1, 0, 0, 0.2f, 0, 0, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     m_gl_placing_nav_target->insert(obj);
-    obj = mrpt::opengl::CArrow::Create(-1, 0, 0, -0.2f, 0, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(-1, 0, 0, -0.2f, 0, 0, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     m_gl_placing_nav_target->insert(obj);
-    obj = mrpt::opengl::CArrow::Create(0, 1, 0, 0, 0.2f, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(0, 1, 0, 0, 0.2f, 0, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     m_gl_placing_nav_target->insert(obj);
-    obj = mrpt::opengl::CArrow::Create(0, -1, 0, 0, -0.2f, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(0, -1, 0, 0, -0.2f, 0, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     m_gl_placing_nav_target->insert(obj);
     m_gl_placing_nav_target->setVisibility(false);  // Start invisible.
@@ -443,7 +442,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent, w
   }
   {  // Sign of "replacing the robot":
     m_gl_placing_robot = std::make_shared<opengl::CSetOfObjects>();
-    mrpt::opengl::CCylinder::Ptr obj = mrpt::opengl::CCylinder::Create(0.2f, 0.1f, 0.9f);
+    mrpt::viz::CCylinder::Ptr obj = mrpt::viz::CCylinder::Create(0.2f, 0.1f, 0.9f);
     obj->setColor_u8(TColor(255, 0, 0, 120));
     m_gl_placing_robot->insert(obj);
 
@@ -451,7 +450,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent, w
     openGLSceneRef->insert(m_gl_placing_robot);
   }
 
-  openGLSceneRef->insert(mrpt::opengl::stock_objects::CornerXYZ(1));
+  openGLSceneRef->insert(mrpt::viz::stock_objects::CornerXYZ(1));
 
   // Set camera:
   m_plot3D->setCameraPointing(0.0f, 0.0f, 0.0f);
@@ -463,32 +462,32 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent, w
   // 2D view ==============
   auto openGLScanRef = m_plotScan->getOpenGLSceneRef();
   {
-    mrpt::opengl::CGridPlaneXY::Ptr obj =
-        mrpt::opengl::CGridPlaneXY::Create(-1, 1.001f, -1, 1.001f, 0, 1);
+    mrpt::viz::CGridPlaneXY::Ptr obj =
+        mrpt::viz::CGridPlaneXY::Create(-1, 1.001f, -1, 1.001f, 0, 1);
     obj->setColor_u8(TColor(30, 30, 30, 50));
     openGLScanRef->insert(obj);
   }
 
-  gl_scan2D = mrpt::opengl::CPlanarLaserScan::Create();
+  gl_scan2D = mrpt::viz::CPlanarLaserScan::Create();
   gl_scan2D->enableLine(false);
   gl_scan2D->enableSurface(false);
   gl_scan2D->setPointSize(2.0);
   openGLScanRef->insert(gl_scan2D);
 
-  gl_line_direction = mrpt::opengl::CSimpleLine::Create();
+  gl_line_direction = mrpt::viz::CSimpleLine::Create();
   gl_line_direction->setLineWidth(4);
   gl_line_direction->setColor_u8(TColor(0, 0, 0));
   openGLScanRef->insert(gl_line_direction);
 
-  gl_rel_target = mrpt::opengl::CPointCloud::Create();
+  gl_rel_target = mrpt::viz::CPointCloud::Create();
   gl_rel_target->setPointSize(7);
   gl_rel_target->setColor_u8(TColor(0, 0, 255));
   gl_rel_target->insertPoint(0, 0, 0);
   openGLScanRef->insert(gl_rel_target);
 
-  openGLScanRef->insert(mrpt::opengl::stock_objects::CornerXYSimple(0.1f, 2));
+  openGLScanRef->insert(mrpt::viz::stock_objects::CornerXYSimple(0.1f, 2));
 
-  gl_nd_gaps = mrpt::opengl::CSetOfLines::Create();
+  gl_nd_gaps = mrpt::viz::CSetOfLines::Create();
   gl_nd_gaps->setLineWidth(2);
   gl_nd_gaps->setColor_u8(TColor(204, 102, 51));
   openGLScanRef->insert(gl_nd_gaps);

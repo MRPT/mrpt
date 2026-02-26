@@ -143,8 +143,8 @@
 								<object class="wxRadioBox" name="ID_RADIOBOX2" variable="rbClass" member="yes">
 									<label>Import as class...</label>
 									<content>
-										<item>mrpt::opengl::CPointCloud</item>
-										<item>mrpt::opengl::CPointCloudColoured</item>
+										<item>mrpt::viz::CPointCloud</item>
+										<item>mrpt::viz::CPointCloudColoured</item>
 									</content>
 									<handler function="OnrbClassSelect" entry="EVT_RADIOBOX" />
 								</object>

@@ -26,9 +26,9 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>  // in library mrpt-maps
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CPlanarLaserScan.h>  // in library mrpt-maps
+#include <mrpt/viz/stock_objects.h>
 #include <wx/app.h>
 #include <wx/busyinfo.h>
 #include <wx/log.h>
@@ -259,9 +259,9 @@ CScanAnimation::CScanAnimation(
   // Initialize 3D view:
   auto openGLSceneRef = m_plot3D->getOpenGLSceneRef();
   openGLSceneRef->insert(
-      mrpt::opengl::CGridPlaneXY::Create(-50, 50, -50, 50, 0 /* z */, 5 /* freq */));
+      mrpt::viz::CGridPlaneXY::Create(-50, 50, -50, 50, 0 /* z */, 5 /* freq */));
   openGLSceneRef->insert(
-      mrpt::opengl::stock_objects::CornerXYZSimple(1.0 /*scale*/, 3.0 /*line width*/));
+      mrpt::viz::stock_objects::CornerXYZSimple(1.0 /*scale*/, 3.0 /*line width*/));
 
   // Build initial view and populate list of sensors:
   {

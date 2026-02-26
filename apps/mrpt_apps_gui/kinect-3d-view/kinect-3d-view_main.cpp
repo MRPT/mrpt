@@ -27,12 +27,12 @@
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationIMU.h>
-#include <mrpt/opengl/COctoMapVoxels.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/COctoMapVoxels.h>
+#include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/stock_objects.h>
 
 #include <chrono>
 #include <thread>
@@ -189,23 +189,23 @@ void Test_Kinect()
 
   bool VIEW_AS_OCTOMAP = false;
 
-  auto gl_points = mrpt::opengl::CPointCloudColoured::Create();
+  auto gl_points = mrpt::viz::CPointCloudColoured::Create();
   gl_points->setPointSize(2.5);
-  auto gl_voxels = mrpt::opengl::COctoMapVoxels::Create();
+  auto gl_voxels = mrpt::viz::COctoMapVoxels::Create();
 
   const double aspect_ratio = 480.0 / 640.0;  // kinect.rows() / double( kinect.cols() );
 
   opengl::Viewport::Ptr viewRange,
       viewInt;  // Extra viewports for the RGB & D images.
   {
-    mrpt::opengl::Scene::Ptr& scene = win3D.get3DSceneAndLock();
+    mrpt::viz::Scene::Ptr& scene = win3D.get3DSceneAndLock();
 
     // Create the Opengl object for the point cloud:
     scene->insert(gl_voxels);
     scene->insert(gl_points);
 
-    scene->insert(mrpt::opengl::CGridPlaneXY::Create());
-    scene->insert(mrpt::opengl::stock_objects::CornerXYZ());
+    scene->insert(mrpt::viz::CGridPlaneXY::Create());
+    scene->insert(mrpt::viz::stock_objects::CornerXYZ());
 
     const int VW_WIDTH = 250;  // Size of the viewport into the window, in pixel units.
     const int VW_HEIGHT = aspect_ratio * VW_WIDTH;

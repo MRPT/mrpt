@@ -36,12 +36,12 @@ accurate.
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/tfest/se3.h>
 #include <mrpt/vision/tracking.h>
 #include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/stock_objects.h>
 
 #include <chrono>
 #include <thread>
@@ -239,31 +239,30 @@ void Test_Kinect()
   win3D.setFOV(90);
   win3D.setCameraPointingToPoint(2.5, 0, 0);
 
-  mrpt::opengl::CPointCloudColoured::Ptr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+  mrpt::viz::CPointCloudColoured::Ptr gl_points = mrpt::viz::CPointCloudColoured::Create();
   gl_points->setPointSize(2.5);
 
-  mrpt::opengl::CSetOfObjects::Ptr gl_curFeats = mrpt::opengl::CSetOfObjects::Create();
-  mrpt::opengl::CSetOfObjects::Ptr gl_keyframes = mrpt::opengl::CSetOfObjects::Create();
+  mrpt::viz::CSetOfObjects::Ptr gl_curFeats = mrpt::viz::CSetOfObjects::Create();
+  mrpt::viz::CSetOfObjects::Ptr gl_keyframes = mrpt::viz::CSetOfObjects::Create();
 
-  mrpt::opengl::CPointCloudColoured::Ptr gl_points_map =
-      mrpt::opengl::CPointCloudColoured::Create();
+  mrpt::viz::CPointCloudColoured::Ptr gl_points_map = mrpt::viz::CPointCloudColoured::Create();
   gl_points_map->setPointSize(2.0);
 
   const double aspect_ratio = 480.0 / 640.0;  // kinect.rows() / double( kinect.cols() );
 
-  mrpt::opengl::CSetOfObjects::Ptr gl_cur_cam_corner =
-      mrpt::opengl::stock_objects::CornerXYZSimple(0.4f, 4);
+  mrpt::viz::CSetOfObjects::Ptr gl_cur_cam_corner =
+      mrpt::viz::stock_objects::CornerXYZSimple(0.4f, 4);
 
   opengl::Viewport::Ptr viewInt;
   {
-    mrpt::opengl::Scene::Ptr& scene = win3D.get3DSceneAndLock();
+    mrpt::viz::Scene::Ptr& scene = win3D.get3DSceneAndLock();
 
     // Create the Opengl object for the point cloud:
     scene->insert(gl_points_map);
     scene->insert(gl_points);
     scene->insert(gl_curFeats);
     scene->insert(gl_keyframes);
-    scene->insert(mrpt::opengl::CGridPlaneXY::Create());
+    scene->insert(mrpt::viz::CGridPlaneXY::Create());
 
     scene->insert(gl_cur_cam_corner);
 
@@ -509,8 +508,8 @@ void Test_Kinect()
         for (auto it = curVisibleFeats.begin(); it != curVisibleFeats.end(); ++it)
         {
           static double D = 0.02;
-          mrpt::opengl::CBox::Ptr box =
-              mrpt::opengl::CBox::Create(TPoint3D(-D, -D, -D), TPoint3D(D, D, D));
+          mrpt::viz::CBox::Ptr box =
+              mrpt::viz::CBox::Create(TPoint3D(-D, -D, -D), TPoint3D(D, D, D));
           box->setWireframe(true);
           box->setName(format("%d", int(it->first)));
           box->enableShowName(true);
@@ -542,7 +541,7 @@ void Test_Kinect()
       gl_keyframes->clear();
       for (const auto& i : camera_key_frames_path)
       {
-        CSetOfObjects::Ptr obj = mrpt::opengl::stock_objects::CornerXYZSimple(0.3f, 3);
+        CSetOfObjects::Ptr obj = mrpt::viz::stock_objects::CornerXYZSimple(0.3f, 3);
         obj->setPose(i);
         gl_keyframes->insert(obj);
       }

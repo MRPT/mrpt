@@ -14,7 +14,7 @@
 
 #pragma once
 #include <mrpt/maps/CSimpleMap.h>
-#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 #include <QMainWindow>
 #include <QSettings>
