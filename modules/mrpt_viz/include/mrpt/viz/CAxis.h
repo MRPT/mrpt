@@ -64,6 +64,13 @@ class CAxis : virtual public CVisualObject, public VisualObjectParams_Lines
 
   mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
+  void updateBuffers() const override;
+
+  bool isCompositeObject() const override { return true; }
+
+  /** Access to internal text labels (for rendering pipeline) */
+  const ListVisualObjects& getInternalChildren() const { return m_gl_labels.get(); }
+
  protected:
   float m_xmin, m_ymin, m_zmin;
   float m_xmax, m_ymax, m_zmax;
@@ -74,7 +81,7 @@ class CAxis : virtual public CVisualObject, public VisualObjectParams_Lines
   float m_textRot[3][3];  // {x,y,z},{yaw,pitch,roll}
   float m_markLen{0.07f};
 
-  mrpt::containers::PerThreadDataHolder<mrpt::viz::ListVisualObjects> m_gl_labels;
+  mutable mrpt::containers::PerThreadDataHolder<mrpt::viz::ListVisualObjects> m_gl_labels;
 };
 
 }  // namespace mrpt::viz

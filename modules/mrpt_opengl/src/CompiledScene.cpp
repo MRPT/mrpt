@@ -63,10 +63,12 @@ class Text3DProxy : public TrianglesProxyBase
     std::vector<mrpt::img::TColor> lineColors;
 
     internal::glSetFont(text3d->getFont());
+    // Use scale=1.0 here; the actual scale is applied via the model matrix
+    // (CVisualObject::setScale), so we don't want to bake it into geometry.
     internal::glDrawTextTransformed(
-        text3d->getString(), tris, lineVerts, lineColors, mrpt::poses::CPose3D(),
-        text3d->getScaleX(), text3d->getColor_u8(), text3d->getTextStyle(),
-        text3d->setTextSpacing(), text3d->setTextKerning());
+        text3d->getString(), tris, lineVerts, lineColors, mrpt::poses::CPose3D(), 1.0f,
+        text3d->getColor_u8(), text3d->getTextStyle(), text3d->setTextSpacing(),
+        text3d->setTextKerning());
 
     m_triangleCount = tris.size();
     if (m_triangleCount == 0)
@@ -353,6 +355,20 @@ void CompiledScene::compileObject(
 
   stats.numObjectsCompiled++;
 
+  // Handle composite objects (e.g. CAxis has internal CText3D children)
+  if (obj->isCompositeObject())
+  {
+    const auto& children = obj->getInternalChildren();
+    for (const auto& child : children)
+    {
+      if (!child)
+      {
+        continue;
+      }
+      compileObject(child, compiledViewport, stats, modelMatrix);
+    }
+  }
+
   MRPT_END
 }
 
@@ -581,6 +597,18 @@ void CompiledScene::compileNewObjects(CompilationStats& stats)
         compileObject(obj, compiledViewport, stats);
         stats.numNewObjects++;
       }
+      // Also check composite objects' internal children
+      else if (obj->isCompositeObject())
+      {
+        for (const auto& child : obj->getInternalChildren())
+        {
+          if (child && !hasProxyFor(child))
+          {
+            compileObject(child, compiledViewport, stats);
+            stats.numNewObjects++;
+          }
+        }
+      }
     }
   }
 
@@ -665,6 +693,20 @@ void CompiledScene::updateDirtyObjectRecursive(
       std::cout << "[CompiledScene::updateDirtyObjects] Updated: " << obj->getName() << "\n";
     }
   }
+
+  // Handle composite objects' internal children (e.g. CAxis text labels)
+  if (obj->isCompositeObject())
+  {
+    const auto& children = obj->getInternalChildren();
+    for (const auto& child : children)
+    {
+      if (!child)
+      {
+        continue;
+      }
+      updateDirtyObjectRecursive(child, modelMatrix, dirty, effectiveVisible, stats);
+    }
+  }
 }
 
 void CompiledScene::recompile()
@@ -732,7 +774,33 @@ void CompiledScene::render(int renderWidth, int renderHeight, int renderOffsetX,
   // Render all viewports in order
   for (auto& [name, viewport] : m_viewports)
   {
-    viewport->render(renderWidth, renderHeight, renderOffsetX, renderOffsetY, m_shaderManager);
+    // For cloned viewports, resolve the source viewport
+    const CompiledViewport* sourceVp = nullptr;
+    if (viewport->isCloningObjects())
+    {
+      auto srcIt = m_viewports.find(viewport->getClonedViewportName());
+      if (srcIt != m_viewports.end())
+      {
+        sourceVp = srcIt->second.get();
+
+        // If also cloning the camera, copy it from the source viewport.
+        // The cloned viewport will use this camera with its own viewport
+        // dimensions for matrix computation.
+        if (viewport->isCloningCamera())
+        {
+          // Get the source viz viewport's camera
+          const auto& srcVizVpName = viewport->getClonedViewportName();
+          auto srcVizVp = m_sourceScene->getViewport(srcVizVpName);
+          if (srcVizVp)
+          {
+            viewport->updateCamera(srcVizVp->getCamera());
+            viewport->forceMatrixUpdate();
+          }
+        }
+      }
+    }
+    viewport->render(
+        renderWidth, renderHeight, renderOffsetX, renderOffsetY, m_shaderManager, sourceVp);
   }
 #endif
 
