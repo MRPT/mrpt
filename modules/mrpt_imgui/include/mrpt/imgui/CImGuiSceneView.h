@@ -20,12 +20,14 @@
 #define MRPT_IMGUI_AVAILABLE
 #endif
 
+#include <mrpt/opengl/CompiledScene.h>
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/viz/CCamera.h>
 #include <mrpt/viz/Scene.h>
 
 #include <cmath>
 #include <functional>
+#include <memory>
 
 namespace mrpt::imgui
 {
@@ -135,6 +137,10 @@ class CImGuiSceneView
   mrpt::viz::Scene::Ptr m_scene;
   mrpt::viz::CCamera m_camera;
 
+  // --- Compiled scene for rendering pipeline ---
+  std::unique_ptr<mrpt::opengl::CompiledScene> m_compiledScene;
+  std::weak_ptr<mrpt::viz::Scene> m_lastCompiledScenePtr;
+
   // --- FBO state ---
   unsigned int m_fbo = 0;
   unsigned int m_rboDepth = 0;
@@ -186,6 +192,26 @@ void CImGuiSceneView::render()
   // ---- Render the MRPT scene into our FBO ----
   if (m_scene)
   {
+    // Push our camera params into the scene's main viewport
+    if (auto vp = m_scene->getViewport("main"); vp)
+    {
+      vp->getCamera() = m_camera;
+      vp->setCustomBackgroundColor({m_bgColor[0], m_bgColor[1], m_bgColor[2], m_bgColor[3]});
+    }
+
+    // Compile / incrementally update the scene
+    auto lastPtr = m_lastCompiledScenePtr.lock();
+    if (!m_compiledScene || lastPtr.get() != m_scene.get())
+    {
+      m_compiledScene = std::make_unique<mrpt::opengl::CompiledScene>();
+      m_compiledScene->compile(*m_scene);
+      m_lastCompiledScenePtr = m_scene;
+    }
+    else
+    {
+      m_compiledScene->updateIfNeeded();
+    }
+
     // Save current GL state we are going to modify
     GLint prevViewport[4];
     glGetIntegerv(GL_VIEWPORT, prevViewport);
@@ -200,38 +226,31 @@ void CImGuiSceneView::render()
     glClearColor(m_bgColor[0], m_bgColor[1], m_bgColor[2], m_bgColor[3]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Apply our camera to the scene's main viewport
-    auto vp = m_scene->getViewport("main");
-    if (vp)
-    {
-      vp->setCustomBackgroundColor({m_bgColor[0], m_bgColor[1], m_bgColor[2], m_bgColor[3]});
-
-      // Render each viewport, passing our camera
-      vp->render(w, h, 0, 0, &m_camera);
-    }
+    // Render via the v3 compiled pipeline
+    m_compiledScene->render(w, h, 0, 0);
 
     // Restore previous GL state
     glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(prevFBO));
     glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
   }
 
-// ---- Display the rendered texture as an ImGui image ----
+  // ---- Display the rendered texture as an ImGui image ----
   const ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos();
   const ImVec2 uv0(0.0f, 1.0f);
   const ImVec2 uv1(1.0f, 0.0f);
   const ImVec2 size(static_cast<float>(w), static_cast<float>(h));
 
-  ImGui::Image(
-      static_cast<ImTextureID>(static_cast<uintptr_t>(m_texColor)),
-      size, uv0, uv1);
+  ImGui::Image(static_cast<ImTextureID>(static_cast<uintptr_t>(m_texColor)), size, uv0, uv1);
 
   // This prevents the window from being dragged when interacting with the scene.
   ImGui::SetCursorScreenPos(cursorScreenPos);
-  ImGui::InvisibleButton("##scene_canvas", size, 
-      ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight | ImGuiButtonFlags_MouseButtonMiddle);
+  ImGui::InvisibleButton(
+      "##scene_canvas", size,
+      ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight |
+          ImGuiButtonFlags_MouseButtonMiddle);
 
   const bool isHovered = ImGui::IsItemHovered();
-  const bool isActive = ImGui::IsItemActive(); // True if clicking/dragging the canvas
+  const bool isActive = ImGui::IsItemActive();  // True if clicking/dragging the canvas
 
   // ---- Mouse-based camera interaction ----
   if (isHovered || isActive)
@@ -261,8 +280,7 @@ void CImGuiSceneView::render()
 // -----------------------------------------------------------------------
 // Mouse interaction — orbit, pan, zoom
 // -----------------------------------------------------------------------
-void CImGuiSceneView::handleMouseInteraction(
-    float /*widgetX*/, float widgetY, float /*w*/, float h)
+void CImGuiSceneView::handleMouseInteraction(float /*widgetX*/, float widgetY, float /*w*/, float h)
 {
   ImGuiIO& io = ImGui::GetIO();
 

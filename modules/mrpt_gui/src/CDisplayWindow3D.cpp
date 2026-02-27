@@ -754,7 +754,10 @@ void CDisplayWindow3D::setCursorCross([[maybe_unused]] bool cursorIsCross)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
   const auto* win = (const C3DWindowDialog*)m_hwnd.get();
-  if (win == nullptr) return;
+  if (win == nullptr)
+  {
+    return;
+  }
   win->m_canvas->SetCursor(*(cursorIsCross ? wxCROSS_CURSOR : wxSTANDARD_CURSOR));
 #endif
 }
@@ -777,7 +780,10 @@ void CDisplayWindow3D::grabImagesStop() { m_grab_imgs_prefix.clear(); }
  ---------------------------------------------------------------*/
 std::string CDisplayWindow3D::grabImageGetNextFile()
 {
-  if (m_grab_imgs_prefix.empty()) return {};
+  if (m_grab_imgs_prefix.empty())
+  {
+    return {};
+  }
 
   return mrpt::format("%s%06u.png", m_grab_imgs_prefix.c_str(), m_grab_imgs_idx++);
 }
@@ -795,7 +801,7 @@ void CDisplayWindow3D::captureImagesStop() { m_is_capturing_imgs = false; }
  ---------------------------------------------------------------*/
 bool CDisplayWindow3D::getLastWindowImage(mrpt::img::CImage& out_img) const
 {
-  bool ret;
+  bool ret = false;
 
   {
     std::lock_guard<std::mutex> lock(m_last_captured_img_cs);
@@ -804,8 +810,6 @@ bool CDisplayWindow3D::getLastWindowImage(mrpt::img::CImage& out_img) const
       out_img = *m_last_captured_img;  // Copy the full image
       ret = true;
     }
-    else
-      ret = false;
   }
   return ret;
 }

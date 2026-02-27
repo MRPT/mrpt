@@ -33,6 +33,7 @@ class CSphere : public CGeneralizedEllipsoidTemplate<3>
   void setRadius(float r)
   {
     m_radius = r;
+    regenerateBaseParams();
     CVisualObject::notifyChange();
   }
   float getRadius() const { return m_radius; }

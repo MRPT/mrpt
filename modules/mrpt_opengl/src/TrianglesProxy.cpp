@@ -219,11 +219,9 @@ void TrianglesProxy::extractTriangleData(
       vertices.push_back(tri.vertices[i].xyzrgba.pt);
       normals.push_back(tri.vertices[i].normal);
 
-      // Convert float RGBA to TColor (0-255)
+      // RGBA is already uint8_t (0-255)
       const auto& rgba = tri.vertices[i].xyzrgba;
-      colors.emplace_back(
-          static_cast<uint8_t>(rgba.r * 255), static_cast<uint8_t>(rgba.g * 255),
-          static_cast<uint8_t>(rgba.b * 255), static_cast<uint8_t>(rgba.a * 255));
+      colors.emplace_back(rgba.r, rgba.g, rgba.b, rgba.a);
     }
   }
 }
