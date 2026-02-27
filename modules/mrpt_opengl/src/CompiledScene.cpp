@@ -25,10 +25,10 @@
 #include <mrpt/viz/CSetOfObjects.h>
 #include <mrpt/viz/CText3D.h>
 
-#include "gltext.h"
-
 #include <Eigen/Dense>
 #include <iostream>
+
+#include "gltext.h"
 
 using namespace mrpt::opengl;
 using namespace mrpt::viz;
@@ -49,7 +49,10 @@ class Text3DProxy : public TrianglesProxyBase
     MRPT_START
 
     const auto* text3d = dynamic_cast<const mrpt::viz::CText3D*>(sourceObj);
-    if (text3d == nullptr) { return; }
+    if (text3d == nullptr)
+    {
+      return;
+    }
 
     m_lightEnabled = false;
     m_cullFace = mrpt::viz::TCullFace::NONE;
@@ -66,7 +69,10 @@ class Text3DProxy : public TrianglesProxyBase
         text3d->setTextSpacing(), text3d->setTextKerning());
 
     m_triangleCount = tris.size();
-    if (m_triangleCount == 0) { return; }
+    if (m_triangleCount == 0)
+    {
+      return;
+    }
 
     const size_t vertexCount = m_triangleCount * 3;
 
@@ -585,45 +591,80 @@ void CompiledScene::updateDirtyObjects(CompilationStats& stats)
 {
   MRPT_START
 
-  for (auto& [weakObj, proxy] : m_objectToProxy)
+  if (!m_sourceScene) return;
+
+  // Walk the entire scene tree (not just m_objectToProxy) so we also
+  // detect dirty containers (CSetOfObjects) whose pose/visibility changed.
+  for (const auto& vizViewport : m_sourceScene->viewports())
   {
-    auto obj = weakObj.lock();
-    if (!obj)
+    for (const auto& obj : *vizViewport)
     {
-      continue;  // Will be cleaned up by cleanupOrphanedProxies
-    }
-
-    stats.numObjectsTotal++;
-
-    // Check if object needs update via its dirty flag
-    if (obj->hasToUpdateBuffers())
-    {
-      // First: let the viz object populate its internal buffers from geometry
-      obj->updateBuffers();
-
-      // Recompute model matrix from the object's current pose
-      // (Use identity as parent since we don't track parent hierarchy here;
-      //  a full recompile would be needed if parent transforms change)
-      const auto modelMatrix =
-          computeModelMatrix(*obj, mrpt::math::CMatrixFloat44::Identity());
-
-      // Update ALL proxies for this object across all viewports
-      for (auto& [vpName, viewport] : m_viewports)
+      if (!obj)
       {
-        viewport->updateProxiesForObject(weakObj, obj.get(), modelMatrix);
+        continue;
       }
-
-      obj->clearChangedFlag();  // Clear dirty flag
-      stats.numObjectsUpdated++;
-
-      if (SCENE_VERBOSE)
-      {
-        std::cout << "[CompiledScene::updateDirtyObjects] Updated: " << obj->getName() << "\n";
-      }
+      updateDirtyObjectRecursive(obj, mrpt::math::CMatrixFloat44::Identity(), false, true, stats);
     }
   }
 
   MRPT_END
+}
+
+void CompiledScene::updateDirtyObjectRecursive(
+    const std::shared_ptr<mrpt::viz::CVisualObject>& obj,
+    const mrpt::math::CMatrixFloat44& parentModelMatrix,
+    bool parentDirty,
+    bool parentVisible,
+    CompilationStats& stats)
+{
+  if (!obj) return;
+
+  const bool selfDirty = obj->hasToUpdateBuffers();
+  const bool dirty = selfDirty || parentDirty;
+  const bool effectiveVisible = parentVisible && obj->isVisible();
+
+  // Compute this object's model matrix (always needed for children)
+  const auto modelMatrix = computeModelMatrix(*obj, parentModelMatrix);
+
+  // Check if this is a container (CSetOfObjects)
+  const auto* setOfObjects = dynamic_cast<const mrpt::viz::CSetOfObjects*>(obj.get());
+  if (setOfObjects)
+  {
+    // Clear the container's own dirty flag if set
+    if (selfDirty)
+    {
+      obj->clearChangedFlag();
+    }
+
+    // Recurse into children, propagating dirty and visibility
+    for (const auto& childObj : *setOfObjects)
+    {
+      updateDirtyObjectRecursive(childObj, modelMatrix, dirty, effectiveVisible, stats);
+    }
+    return;
+  }
+
+  // Leaf object: update if dirty (either self or inherited from parent)
+  if (dirty && hasProxyFor(obj))
+  {
+    // Let the viz object repopulate its internal buffers
+    obj->updateBuffers();
+
+    // Update ALL proxies for this object across all viewports
+    std::weak_ptr<mrpt::viz::CVisualObject> weakObj = obj;
+    for (auto& [vpName, viewport] : m_viewports)
+    {
+      viewport->updateProxiesForObject(weakObj, obj.get(), modelMatrix, effectiveVisible);
+    }
+
+    obj->clearChangedFlag();
+    stats.numObjectsUpdated++;
+
+    if (SCENE_VERBOSE)
+    {
+      std::cout << "[CompiledScene::updateDirtyObjects] Updated: " << obj->getName() << "\n";
+    }
+  }
 }
 
 void CompiledScene::recompile()

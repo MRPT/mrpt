@@ -132,7 +132,8 @@ class CompiledViewport
   void updateProxiesForObject(
       const std::weak_ptr<mrpt::viz::CVisualObject>& weakObj,
       const mrpt::viz::CVisualObject* sourceObj,
-      const mrpt::math::CMatrixFloat44& modelMatrix);
+      const mrpt::math::CMatrixFloat44& modelMatrix,
+      bool effectiveVisible = true);
 
   /** Removes a proxy from this viewport */
   void removeProxy(const RenderableProxy::Ptr& proxy);

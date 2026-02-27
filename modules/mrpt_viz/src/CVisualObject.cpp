@@ -211,6 +211,7 @@ CVisualObject& CVisualObject::setPose(const mrpt::poses::CPose3D& o)
   m_stateMtx.data.lock();
   m_state.pose = o;
   m_stateMtx.data.unlock();
+  notifyChange();
   return *this;
 }
 CVisualObject& CVisualObject::setPose(const mrpt::poses::CPose2D& o)
@@ -231,6 +232,7 @@ CVisualObject& CVisualObject::setPose(const mrpt::poses::CPoint3D& o)
   m_stateMtx.data.lock();
   m_state.pose.setFromValues(o.x(), o.y(), o.z(), 0, 0, 0);
   m_stateMtx.data.unlock();
+  notifyChange();
   return *this;
 }
 CVisualObject& CVisualObject::setPose(const mrpt::poses::CPoint2D& o)
@@ -238,6 +240,7 @@ CVisualObject& CVisualObject::setPose(const mrpt::poses::CPoint2D& o)
   m_stateMtx.data.lock();
   m_state.pose.setFromValues(o.x(), o.y(), 0, 0, 0, 0);
   m_stateMtx.data.unlock();
+  notifyChange();
   return *this;
 }
 

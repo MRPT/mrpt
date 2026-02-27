@@ -314,6 +314,15 @@ class CompiledScene
   /** Updates GPU buffers for objects with dirty flags */
   void updateDirtyObjects(CompilationStats& stats);
 
+  /** Recursive helper: walks the scene tree to detect dirty objects
+   * (including containers) and update their proxies' model matrices. */
+  void updateDirtyObjectRecursive(
+      const std::shared_ptr<mrpt::viz::CVisualObject>& obj,
+      const mrpt::math::CMatrixFloat44& parentModelMatrix,
+      bool parentDirty,
+      bool parentVisible,
+      CompilationStats& stats);
+
   /** Validates that we're being called from the correct thread */
   void checkContextThread() const;
 
