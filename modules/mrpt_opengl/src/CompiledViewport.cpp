@@ -15,6 +15,7 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/get_env.h>
 #include <mrpt/opengl/CompiledViewport.h>
+#include <mrpt/opengl/DefaultShaders.h>
 #include <mrpt/opengl/RenderQueue.h>
 #include <mrpt/opengl/ShaderProgramManager.h>
 #include <mrpt/opengl/opengl_api.h>
@@ -176,6 +177,38 @@ size_t CompiledViewport::cleanupOrphanedProxies()
   }
 
   return numRemoved;
+
+  MRPT_END
+}
+
+void CompiledViewport::updateProxiesForObject(
+    const std::weak_ptr<mrpt::viz::CVisualObject>& weakObj,
+    const mrpt::viz::CVisualObject* sourceObj,
+    const mrpt::math::CMatrixFloat44& modelMatrix)
+{
+  MRPT_START
+
+  // Find all proxies associated with this source object in this viewport
+  // and update them. Note: m_objectToProxy only stores one proxy per obj,
+  // but the proxies list may have multiple for the same source (multi-mixin).
+  // We iterate m_proxies to find all that share the same source.
+  for (auto& proxy : m_proxies)
+  {
+    if (!proxy) continue;
+
+    auto src = proxy->getSourceObject();
+    if (!src) continue;
+
+    // Check if this proxy belongs to the same source object
+    auto srcWeak = std::weak_ptr<mrpt::viz::CVisualObject>(src);
+    if (!(std::owner_less<std::weak_ptr<mrpt::viz::CVisualObject>>{}(srcWeak, weakObj) ||
+          std::owner_less<std::weak_ptr<mrpt::viz::CVisualObject>>{}(weakObj, srcWeak)))
+    {
+      // Same object — update model matrix and buffers
+      proxy->m_modelMatrix = modelMatrix;
+      proxy->updateBuffers(sourceObj);
+    }
+  }
 
   MRPT_END
 }
@@ -880,8 +913,81 @@ void CompiledViewport::renderBorder(ShaderProgramManager& shaderManager)
 {
   MRPT_START
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-// Border rendering would use a LinesProxy
-// TODO: Implement border proxy creation and rendering
+  if (m_borderWidth == 0) return;
+
+  auto shader = shaderManager.getProgram(DefaultShaderID::WIREFRAME);
+  if (!shader) return;
+
+  shader->use();
+
+  // Build an orthographic projection: (0,0) bottom-left to (w,h) top-right
+  const float w = static_cast<float>(m_pixelWidth);
+  const float h = static_cast<float>(m_pixelHeight);
+
+  // Orthographic projection matrix (column-major for OpenGL, but MRPT
+  // matrices are row-major and uploaded with GL_TRUE transpose)
+  mrpt::math::CMatrixFloat44 ortho = mrpt::math::CMatrixFloat44::Zero();
+  ortho(0, 0) = 2.0f / w;
+  ortho(1, 1) = 2.0f / h;
+  ortho(2, 2) = -1.0f;
+  ortho(0, 3) = -1.0f;
+  ortho(1, 3) = -1.0f;
+  ortho(3, 3) = 1.0f;
+
+  // Identity model-view matrix
+  mrpt::math::CMatrixFloat44 identity = mrpt::math::CMatrixFloat44::Identity();
+
+  const auto IS_TRANSPOSED = GL_TRUE;
+
+  glUniformMatrix4fv(shader->uniformId("p_matrix"), 1, IS_TRANSPOSED, ortho.data());
+  glUniformMatrix4fv(shader->uniformId("mv_matrix"), 1, IS_TRANSPOSED, identity.data());
+
+  // Half-pixel inset so lines are fully inside the viewport
+  const float hw = static_cast<float>(m_borderWidth) * 0.5f;
+  const float x0 = hw;
+  const float y0 = hw;
+  const float x1 = w - hw;
+  const float y1 = h - hw;
+
+  // 4 vertices for GL_LINE_LOOP
+  const std::array<mrpt::math::TPoint3Df, 4> verts = {
+      mrpt::math::TPoint3Df{x0, y0, 0.0f},
+      mrpt::math::TPoint3Df{x1, y0, 0.0f},
+      mrpt::math::TPoint3Df{x1, y1, 0.0f},
+      mrpt::math::TPoint3Df{x0, y1, 0.0f}};
+
+  const mrpt::img::TColor bc = m_borderColor;
+  const std::array<mrpt::img::TColor, 4> colors = {bc, bc, bc, bc};
+
+  // Create / update border VBO
+  m_borderVAO.createOnce();
+  m_borderVAO.bind();
+
+  m_borderVertexBuffer.createOnce();
+  m_borderVertexBuffer.bind();
+  m_borderVertexBuffer.allocate(verts.data(), sizeof(verts));
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(mrpt::math::TPoint3Df), nullptr);
+
+  m_borderColorBuffer.createOnce();
+  m_borderColorBuffer.bind();
+  m_borderColorBuffer.allocate(colors.data(), sizeof(colors));
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(mrpt::img::TColor), nullptr);
+
+  // Render border lines without depth test
+  glDisable(GL_DEPTH_TEST);
+  glLineWidth(static_cast<float>(m_borderWidth));
+
+  glDrawArrays(GL_LINE_LOOP, 0, 4);
+
+  glLineWidth(1.0f);
+  glEnable(GL_DEPTH_TEST);
+
+  glBindVertexArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  CHECK_OPENGL_ERROR_IN_DEBUG();
 #endif
   MRPT_END
 }
