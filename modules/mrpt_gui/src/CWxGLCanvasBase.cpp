@@ -237,7 +237,10 @@ void CWxGLCanvasBase::OnEnterWindow(wxMouseEvent& WXUNUSED(event)) { SetFocus();
 void CWxGLCanvasBase::OnPaint(wxPaintEvent& WXUNUSED(event)) { Render(); }
 void CWxGLCanvasBase::OnSize(wxSizeEvent& event)
 {
-  if (!m_parent->IsShown()) return;
+  if (!m_parent->IsShown())
+  {
+    return;
+  }
 
   // set GL viewport (not called by wxGLCanvas::OnSize on all platforms...)
   const auto sz = mrpt::gui::GetScaledClientSize(this);
@@ -249,7 +252,6 @@ void CWxGLCanvasBase::OnSize(wxSizeEvent& event)
        endl;*/
       return;
     }
-    else
     {
       auto lck = mrpt::lockHelper(m_gl_context_mtx);
       SetCurrent(*m_gl_context);

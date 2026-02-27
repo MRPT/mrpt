@@ -22,16 +22,16 @@
 //*)
 
 //(*IdInit(CDlgCamTracking)
-const long CDlgCamTracking::ID_BUTTON2 = wxNewId();
-const long CDlgCamTracking::ID_BUTTON3 = wxNewId();
-const long CDlgCamTracking::ID_BUTTON4 = wxNewId();
-const long CDlgCamTracking::ID_CHECKBOX1 = wxNewId();
-const long CDlgCamTracking::ID_TEXTCTRL1 = wxNewId();
-const long CDlgCamTracking::ID_BUTTON6 = wxNewId();
-const long CDlgCamTracking::ID_BUTTON5 = wxNewId();
-const long CDlgCamTracking::ID_GRID1 = wxNewId();
-const long CDlgCamTracking::ID_BUTTON1 = wxNewId();
-const long CDlgCamTracking::ID_MENUITEM1 = wxNewId();
+const wxWindowID CDlgCamTracking::ID_BUTTON2 = wxNewId();
+const wxWindowID CDlgCamTracking::ID_BUTTON3 = wxNewId();
+const wxWindowID CDlgCamTracking::ID_BUTTON4 = wxNewId();
+const wxWindowID CDlgCamTracking::ID_CHECKBOX1 = wxNewId();
+const wxWindowID CDlgCamTracking::ID_TEXTCTRL1 = wxNewId();
+const wxWindowID CDlgCamTracking::ID_BUTTON6 = wxNewId();
+const wxWindowID CDlgCamTracking::ID_BUTTON5 = wxNewId();
+const wxWindowID CDlgCamTracking::ID_GRID1 = wxNewId();
+const wxWindowID CDlgCamTracking::ID_BUTTON1 = wxNewId();
+const wxWindowID CDlgCamTracking::ID_MENUITEM1 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(CDlgCamTracking, wxDialog)
@@ -148,6 +148,8 @@ void CDlgCamTracking::OnbtnGrabClick(wxCommandEvent& event)
 {
   WX_START_TRY
 
+  THROW_EXCEPTION("Reimplemnt for mrpt3");
+#if 0  
   CPose3D p;
   m_main_win->m_canvas->getOpenGLSceneRef()->getViewport("main")->getCurrentCameraPose(p);
 
@@ -160,7 +162,7 @@ void CDlgCamTracking::OnbtnGrabClick(wxCommandEvent& event)
     m_poses.insert(Clock::now(), p);
   }
   UpdateTableFromPoses();
-
+#endif
   WX_END_TRY
 }
 

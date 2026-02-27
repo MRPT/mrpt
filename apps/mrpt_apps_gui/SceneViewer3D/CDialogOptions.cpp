@@ -12,7 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-//#include "_DSceneViewerMain.h"
+// #include "_DSceneViewerMain.h"
 
 #include "CDialogOptions.h"
 
@@ -42,36 +42,36 @@
 //*)
 
 //(*IdInit(CDialogOptions)
-const long CDialogOptions::ID_STATICTEXT1 = wxNewId();
-const long CDialogOptions::ID_SPINCTRL1 = wxNewId();
-const long CDialogOptions::ID_CHECKBOX1 = wxNewId();
-const long CDialogOptions::ID_CHECKBOX2 = wxNewId();
-const long CDialogOptions::ID_CHECKBOX3 = wxNewId();
-const long CDialogOptions::ID_PANEL1 = wxNewId();
-const long CDialogOptions::ID_PANEL2 = wxNewId();
-const long CDialogOptions::ID_STATICTEXT6 = wxNewId();
-const long CDialogOptions::ID_SPINCTRL2 = wxNewId();
-const long CDialogOptions::ID_STATICTEXT3 = wxNewId();
-const long CDialogOptions::ID_SPINCTRL3 = wxNewId();
-const long CDialogOptions::ID_STATICTEXT7 = wxNewId();
-const long CDialogOptions::ID_SPINCTRL4 = wxNewId();
-const long CDialogOptions::ID_STATICTEXT2 = wxNewId();
-const long CDialogOptions::ID_SPINCTRL6 = wxNewId();
-const long CDialogOptions::ID_STATICTEXT5 = wxNewId();
-const long CDialogOptions::ID_SPINCTRL8 = wxNewId();
-const long CDialogOptions::ID_STATICTEXT4 = wxNewId();
-const long CDialogOptions::ID_SPINCTRL5 = wxNewId();
-const long CDialogOptions::ID_STATICTEXT10 = wxNewId();
-const long CDialogOptions::ID_SPINCTRL10 = wxNewId();
-const long CDialogOptions::ID_STATICTEXT11 = wxNewId();
-const long CDialogOptions::ID_SPINCTRL9 = wxNewId();
-const long CDialogOptions::ID_STATICTEXT8 = wxNewId();
-const long CDialogOptions::ID_STATICTEXT9 = wxNewId();
-const long CDialogOptions::ID_SPINCTRL7 = wxNewId();
-const long CDialogOptions::ID_PANEL3 = wxNewId();
-const long CDialogOptions::ID_NOTEBOOK1 = wxNewId();
-const long CDialogOptions::ID_BUTTON1 = wxNewId();
-const long CDialogOptions::ID_BUTTON2 = wxNewId();
+const wxWindowID CDialogOptions::ID_STATICTEXT1 = wxNewId();
+const wxWindowID CDialogOptions::ID_SPINCTRL1 = wxNewId();
+const wxWindowID CDialogOptions::ID_CHECKBOX1 = wxNewId();
+const wxWindowID CDialogOptions::ID_CHECKBOX2 = wxNewId();
+const wxWindowID CDialogOptions::ID_CHECKBOX3 = wxNewId();
+const wxWindowID CDialogOptions::ID_PANEL1 = wxNewId();
+const wxWindowID CDialogOptions::ID_PANEL2 = wxNewId();
+const wxWindowID CDialogOptions::ID_STATICTEXT6 = wxNewId();
+const wxWindowID CDialogOptions::ID_SPINCTRL2 = wxNewId();
+const wxWindowID CDialogOptions::ID_STATICTEXT3 = wxNewId();
+const wxWindowID CDialogOptions::ID_SPINCTRL3 = wxNewId();
+const wxWindowID CDialogOptions::ID_STATICTEXT7 = wxNewId();
+const wxWindowID CDialogOptions::ID_SPINCTRL4 = wxNewId();
+const wxWindowID CDialogOptions::ID_STATICTEXT2 = wxNewId();
+const wxWindowID CDialogOptions::ID_SPINCTRL6 = wxNewId();
+const wxWindowID CDialogOptions::ID_STATICTEXT5 = wxNewId();
+const wxWindowID CDialogOptions::ID_SPINCTRL8 = wxNewId();
+const wxWindowID CDialogOptions::ID_STATICTEXT4 = wxNewId();
+const wxWindowID CDialogOptions::ID_SPINCTRL5 = wxNewId();
+const wxWindowID CDialogOptions::ID_STATICTEXT10 = wxNewId();
+const wxWindowID CDialogOptions::ID_SPINCTRL10 = wxNewId();
+const wxWindowID CDialogOptions::ID_STATICTEXT11 = wxNewId();
+const wxWindowID CDialogOptions::ID_SPINCTRL9 = wxNewId();
+const wxWindowID CDialogOptions::ID_STATICTEXT8 = wxNewId();
+const wxWindowID CDialogOptions::ID_STATICTEXT9 = wxNewId();
+const wxWindowID CDialogOptions::ID_SPINCTRL7 = wxNewId();
+const wxWindowID CDialogOptions::ID_PANEL3 = wxNewId();
+const wxWindowID CDialogOptions::ID_NOTEBOOK1 = wxNewId();
+const wxWindowID CDialogOptions::ID_BUTTON1 = wxNewId();
+const wxWindowID CDialogOptions::ID_BUTTON2 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(CDialogOptions, wxDialog)
