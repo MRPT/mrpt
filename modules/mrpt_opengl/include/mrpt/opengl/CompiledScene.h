@@ -249,6 +249,10 @@ class CompiledScene
   /** Compiled viewports, indexed by name */
   std::map<std::string, CompiledViewport::Ptr> m_viewports;
 
+  /** Viewport names in insertion order (matching source Scene's vector order).
+   * Used for rendering so that overlay viewports render after main ones. */
+  std::vector<std::string> m_viewportRenderOrder;
+
   /** Mapping: weak_ptr<CVisualObject> -> RenderableProxy
    * Using weak_ptr allows detection of deleted source objects.
    * This is the core tracking structure for incremental updates.
