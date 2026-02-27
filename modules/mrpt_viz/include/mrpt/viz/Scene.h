@@ -121,7 +121,10 @@ class Scene : public mrpt::serialization::CSerializable, public std::enable_shar
    * exist; note that the default viewport is named "main" and initially
    * occupies the entire rendering area.
    */
-  Viewport::Ptr getViewport(const std::string& viewportName = std::string("main")) const;
+  Viewport::Ptr getViewport(const std::string& viewportName = std::string("main"));
+
+  /// \overload
+  Viewport::ConstPtr getViewport(const std::string& viewportName = std::string("main")) const;
 
   const TListViewports& viewports() const { return m_viewports; }
 

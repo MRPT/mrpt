@@ -72,8 +72,8 @@ PYBIND11_MODULE(_bindings, m)
   py::class_<Scene, std::shared_ptr<Scene>>(m, "Scene")
       .def(py::init<>())
       .def(
-          "getViewport", &Scene::getViewport, "name"_a = std::string("main"),
-          py::return_value_policy::reference_internal)
+          "getViewport", py::overload_cast<const std::string&>(&Scene::getViewport),
+          "name"_a = "main", py::return_value_policy::reference_internal)
       .def("createViewport", &Scene::createViewport, "name"_a)
       .def("clear", &Scene::clear)
       .def(
