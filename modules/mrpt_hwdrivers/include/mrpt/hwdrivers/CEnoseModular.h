@@ -120,10 +120,10 @@ class CEnoseModular : public mrpt::hwdrivers::CGenericSensor
    * to open USB FTDI device "m_usbSerialNumber"
    *  The default is an empty string. Example strings: "COM1", "ttyUSB0", ...
    */
-  inline void setSerialPort(const std::string& port) { m_COM_port = port; }
-  inline std::string getSerialPort() const { return m_COM_port; }
+  void setSerialPort(const std::string& port) { m_COM_port = port; }
+  std::string getSerialPort() const { return m_COM_port; }
   /** Set the serial port baud rate (default: 115200) */
-  inline void setSerialPortBaud(unsigned int baud) { m_COM_baud = baud; }
-  inline unsigned int getSerialPortBaud() const { return m_COM_baud; }
+  void setSerialPortBaud(unsigned int baud) { m_COM_baud = baud; }
+  unsigned int getSerialPortBaud() const { return m_COM_baud; }
 };  // end of class
 }  // namespace mrpt::hwdrivers

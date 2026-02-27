@@ -69,9 +69,9 @@ DECLARE_OP_FUNCTION(op_list_rangebearing)
 
         for (size_t i = 0; i < obsRB->sensedData.size(); i++)
           m_out << format(
-              "%35.22f %8i %10i %10f %12f %12f\n", tim, (int)i,
-              (int)obsRB->sensedData[i].landmarkID, (double)obsRB->sensedData[i].range,
-              (double)obsRB->sensedData[i].yaw, (double)obsRB->sensedData[i].pitch);
+              "%35.22f %8i %10i %10f %12f %12f\n", tim, static_cast<int>(i),
+              static_cast<int>(obsRB->sensedData[i].landmarkID), static_cast<double>(obsRB->sensedData[i].range),
+              static_cast<double>(obsRB->sensedData[i].yaw), static_cast<double>(obsRB->sensedData[i].pitch));
       }
 
       return true;

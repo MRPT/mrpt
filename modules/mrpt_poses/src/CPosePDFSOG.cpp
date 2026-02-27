@@ -498,8 +498,8 @@ void CPosePDFSOG::evaluatePDFInArea(
   ASSERT_(y_max > y_min);
   ASSERT_(resolutionXY > 0);
 
-  const auto Nx = (size_t)ceil((x_max - x_min) / resolutionXY);
-  const auto Ny = (size_t)ceil((y_max - y_min) / resolutionXY);
+  const auto Nx = static_cast<size_t>(std::ceil((x_max - x_min) / resolutionXY));
+  const auto Ny = static_cast<size_t>(std::ceil((y_max - y_min) / resolutionXY));
 
   outMatrix.setSize(Ny, Nx);
 

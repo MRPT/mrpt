@@ -96,7 +96,7 @@ class CPipeBaseEndPoint : public mrpt::io::CStream
   unsigned int timeout_read_between_us{0};
 
   /** Returns false if the pipe was closed due to some error. */
-  inline bool isOpen() const { return m_pipe_file != 0; }
+  bool isOpen() const { return m_pipe_file != 0; }
   /** Closes the pipe (normally not needed to be called by users,
    * automatically done at destructor) */
   void close();

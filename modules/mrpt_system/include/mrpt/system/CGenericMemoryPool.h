@@ -63,8 +63,8 @@ class CGenericMemoryPool
   }
 
  public:
-  inline size_t getMemoryPoolMaxSize() const { return m_maxPoolEntries; }
-  inline void setMemoryPoolMaxSize(size_t maxNumEntries) { m_maxPoolEntries = maxNumEntries; }
+  size_t getMemoryPoolMaxSize() const { return m_maxPoolEntries; }
+  void setMemoryPoolMaxSize(size_t maxNumEntries) { m_maxPoolEntries = maxNumEntries; }
 
   /** Construct-on-first-use (~singleton) pattern: Return the unique instance
    * of this class for a given template arguments,

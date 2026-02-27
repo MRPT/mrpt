@@ -76,16 +76,16 @@ class CPoseInterpolatorBase
   using reverse_iterator = typename TPath::reverse_iterator;
   using const_reverse_iterator = typename TPath::const_reverse_iterator;
 
-  inline iterator begin() { return m_path.begin(); }
-  inline const_iterator begin() const { return m_path.begin(); }
-  inline const_iterator cbegin() const { return m_path.cbegin(); }
-  inline iterator end() { return m_path.end(); }
-  inline const_iterator end() const { return m_path.end(); }
-  inline const_iterator cend() const { return m_path.cend(); }
-  inline reverse_iterator rbegin() { return m_path.rbegin(); }
-  inline const_reverse_iterator rbegin() const { return m_path.rbegin(); }
-  inline reverse_iterator rend() { return m_path.rend(); }
-  inline const_reverse_iterator rend() const { return m_path.rend(); }
+  iterator begin() { return m_path.begin(); }
+  const_iterator begin() const { return m_path.begin(); }
+  const_iterator cbegin() const { return m_path.cbegin(); }
+  iterator end() { return m_path.end(); }
+  const_iterator end() const { return m_path.end(); }
+  const_iterator cend() const { return m_path.cend(); }
+  reverse_iterator rbegin() { return m_path.rbegin(); }
+  const_reverse_iterator rbegin() const { return m_path.rbegin(); }
+  reverse_iterator rend() { return m_path.rend(); }
+  const_reverse_iterator rend() const { return m_path.rend(); }
   iterator lower_bound(const mrpt::Clock::time_point& t) { return m_path.lower_bound(t); }
   const_iterator lower_bound(const mrpt::Clock::time_point& t) const
   {

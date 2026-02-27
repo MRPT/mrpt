@@ -54,13 +54,13 @@ struct TRangeImageFilter
 {
   TRangeImageFilterParams fp;
   /** Returns true if the point (r,c) with depth D passes all filters. */
-  inline bool do_range_filter(size_t r, size_t c, const float D) const;
-  inline TRangeImageFilter(const TRangeImageFilterParams& filter_params) : fp(filter_params) {}
-  inline TRangeImageFilter() = default;
+  bool do_range_filter(size_t r, size_t c, const float D) const;
+  TRangeImageFilter(const TRangeImageFilterParams& filter_params) : fp(filter_params) {}
+  TRangeImageFilter() = default;
 };
 
 // ======== Implementation ========
-bool TRangeImageFilter::do_range_filter(size_t r, size_t c, const float D) const
+inline bool TRangeImageFilter::do_range_filter(size_t r, size_t c, const float D) const
 {
   // Filters:
   if (D <= .0f)
@@ -68,9 +68,11 @@ bool TRangeImageFilter::do_range_filter(size_t r, size_t c, const float D) const
     return false;
   }
   // Greater-than/Less-than filters:
-  bool pass_gt = true, pass_lt = true;
-  bool has_min_filter = false, has_max_filter = false;
-  if (fp.rangeMask_min)
+  bool pass_gt = true;
+  bool pass_lt = true;
+  bool has_min_filter = false;
+  bool has_max_filter = false;
+  if (fp.rangeMask_min != nullptr)
   {
     const float min_d = fp.rangeMask_min->coeff(r, c);
     if (min_d != .0f)
@@ -79,7 +81,7 @@ bool TRangeImageFilter::do_range_filter(size_t r, size_t c, const float D) const
       pass_gt = (D >= min_d);
     }
   }
-  if (fp.rangeMask_max)
+  if (fp.rangeMask_max != nullptr)
   {
     const float max_d = fp.rangeMask_max->coeff(r, c);
     if (max_d != .0f)
@@ -92,7 +94,7 @@ bool TRangeImageFilter::do_range_filter(size_t r, size_t c, const float D) const
   {
     return fp.rangeCheckBetween ? (pass_gt && pass_lt) : !(pass_gt && pass_lt);
   }
-  else
-    return pass_gt && pass_lt;
+
+  return pass_gt && pass_lt;
 }
 }  // namespace mrpt::obs

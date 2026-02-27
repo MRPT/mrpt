@@ -20,7 +20,7 @@ namespace mrpt
  * \ingroup mrpt_core_grp
  */
 template <class VECTOR_T>
-inline void vector_strong_clear(VECTOR_T& v)
+void vector_strong_clear(VECTOR_T& v)
 {
   VECTOR_T dummy;
   dummy.swap(v);

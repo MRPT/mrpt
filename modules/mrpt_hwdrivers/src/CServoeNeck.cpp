@@ -135,8 +135,8 @@ bool CServoeNeck::setRegisterValue(const uint16_t value, const uint8_t servo, bo
     else
       msg.type = 0x11;
     msg.content.resize(3);
-    msg.content[2] = (uint8_t)value;         // Low byte
-    msg.content[1] = (uint8_t)(value >> 8);  // High byte
+    msg.content[2] = static_cast<uint8_t>(value);         // Low byte
+    msg.content[1] = static_cast<uint8_t>(value >> 8);  // High byte
     msg.content[0] = servo;                  // Servo number
 
     archiveFrom(*this).sendMessage(msg);
@@ -173,10 +173,10 @@ bool CServoeNeck::setRegisterValueAndSpeed(
     // ------------------------------------------------
     msg.type = 0x16;
     msg.content.resize(5);
-    msg.content[4] = (uint8_t)speed;         // Low byte of the speed of the servo
-    msg.content[3] = (uint8_t)(speed >> 8);  // High byte of the speed of the servo
-    msg.content[2] = (uint8_t)value;         // Low byte
-    msg.content[1] = (uint8_t)(value >> 8);  // High byte
+    msg.content[4] = static_cast<uint8_t>(speed);         // Low byte of the speed of the servo
+    msg.content[3] = static_cast<uint8_t>(speed >> 8);  // High byte of the speed of the servo
+    msg.content[2] = static_cast<uint8_t>(value);         // Low byte
+    msg.content[1] = static_cast<uint8_t>(value >> 8);  // High byte
     msg.content[0] = servo;                  // Servo number
 
     archiveFrom(*this).sendMessage(msg);

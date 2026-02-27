@@ -24,7 +24,7 @@
 
 namespace mrpt::poses::internal
 {
-inline void getPoseFromString(const std::string& s, mrpt::poses::CPose2D& p)
+void getPoseFromString(const std::string& s, mrpt::poses::CPose2D& p)
 {
   using namespace std;
   using namespace mrpt::system;
@@ -68,7 +68,7 @@ void getPoseFromString(const std::string& s, mrpt::poses::CPose3D& p)
 }  // end of fromStringQuat
 
 template <>
-inline void getPoseFromString</*QUAT_REPR=*/false, /*TUM_FORMAT=*/false>(
+void getPoseFromString</*QUAT_REPR=*/false, /*TUM_FORMAT=*/false>(
     const std::string& s, mrpt::poses::CPose3D& p)
 {
   p.fromStringRaw(s);
@@ -76,14 +76,14 @@ inline void getPoseFromString</*QUAT_REPR=*/false, /*TUM_FORMAT=*/false>(
 
 /**Invalid form. TUM ground truth files are always in Quaternion form. */
 template <>
-inline void getPoseFromString<false, true>(const std::string& s, mrpt::poses::CPose3D& p)
+void getPoseFromString<false, true>(const std::string& s, mrpt::poses::CPose3D& p)
 {
   THROW_EXCEPTION("Invalid combination: QUAT_REPR=false, TUM_FORMAT=true");
 }
 
 /**\brief Specialization for strings in Quaternion form */
 template <>
-inline void getPoseFromString</*QUAT_REPR=*/true, /*TUM_FORMAT=*/false>(
+void getPoseFromString</*QUAT_REPR=*/true, /*TUM_FORMAT=*/false>(
     const std::string& s, mrpt::poses::CPose3D& p)
 {
   mrpt::poses::CPose3DQuat p_quat;

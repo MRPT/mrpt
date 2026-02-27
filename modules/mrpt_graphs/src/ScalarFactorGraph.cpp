@@ -227,7 +227,7 @@ void ScalarFactorGraph::updateEstimation(
 
     for (unsigned int i = 0; i < n; i++)
     {
-      const int idx = (int)solver.colsPermutation().indices().coeff(i);
+      const int idx = static_cast<int>(solver.colsPermutation().indices().coeff(i));
       const double variance = solved_covariance.coeff(i, i);
       (*solved_variances)[idx] = variance;
     }

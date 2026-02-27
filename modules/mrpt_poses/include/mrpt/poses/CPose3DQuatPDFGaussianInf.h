@@ -69,8 +69,8 @@ class CPose3DQuatPDFGaussianInf : public CPose3DQuatPDF
   /** The 7x7 information matrix (the inverse of the covariance) */
   mrpt::math::CMatrixDouble77 cov_inv;
 
-  inline const CPose3DQuat& getPoseMean() const { return mean; }
-  inline CPose3DQuat& getPoseMean() { return mean; }
+  const CPose3DQuat& getPoseMean() const { return mean; }
+  CPose3DQuat& getPoseMean() { return mean; }
 
   void getMean(CPose3DQuat& mean_pose) const override { mean_pose = mean; }
   bool isInfType() const override { return true; }
@@ -113,7 +113,7 @@ class CPose3DQuatPDFGaussianInf : public CPose3DQuatPDF
   void inverse(CPose3DQuatPDF& o) const override;
 
   /** Unary - operator, returns the PDF of the inverse pose.  */
-  inline CPose3DQuatPDFGaussianInf operator-() const
+  CPose3DQuatPDFGaussianInf operator-() const
   {
     CPose3DQuatPDFGaussianInf p(mrpt::math::UNINITIALIZED_QUATERNION);
     this->inverse(p);

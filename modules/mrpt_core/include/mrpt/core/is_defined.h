@@ -32,6 +32,6 @@ struct is_defined<T, std::enable_if_t<(sizeof(T) > 0)>>
 };
 
 template <class T>
-inline constexpr bool is_defined_v = is_defined<T>::value;
+constexpr bool is_defined_v = is_defined<T>::value;
 
 }  // namespace mrpt

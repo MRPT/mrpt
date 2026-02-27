@@ -68,7 +68,7 @@ void CPTG_DiffDrive_CS::serializeTo(mrpt::serialization::CArchive& out) const
 std::string CPTG_DiffDrive_CS::getDescription() const
 {
   char str[100];
-  os::sprintf(str, 100, "CPTG_DiffDrive_CS,K=%i", (int)K);
+  os::sprintf(str, 100, "CPTG_DiffDrive_CS,K=%i", static_cast<int>(K));
   return std::string(str);
 }
 
@@ -87,7 +87,7 @@ void CPTG_DiffDrive_CS::ptgDiffDriveSteeringFunction(
   {
     // l+
     v = V_MAX;
-    w = W_MAX * min(1.0f, 1.0f - (float)exp(-square(alpha)));
+    w = W_MAX * min(1.0f, 1.0f - static_cast<float>(exp(-square(alpha))));
   }
   else
   {

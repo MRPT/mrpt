@@ -73,8 +73,9 @@ void CVisualObject::writeToStreamRender(mrpt::serialization::CArchive& out) cons
   out << _.color.R << _.color.G << _.color.B << _.color.A;
 
   // the rest of fields:
-  out << (float)_.pose.x() << (float)_.pose.y() << (float)_.pose.z() << (float)_.pose.yaw()
-      << (float)_.pose.pitch() << (float)_.pose.roll();
+  out << static_cast<float>(_.pose.x()) << static_cast<float>(_.pose.y())
+      << static_cast<float>(_.pose.z()) << static_cast<float>(_.pose.yaw())
+      << static_cast<float>(_.pose.pitch()) << static_cast<float>(_.pose.roll());
 
   if (!all_scales_unity)
   {

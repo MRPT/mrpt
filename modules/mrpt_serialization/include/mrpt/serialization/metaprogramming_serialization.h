@@ -29,11 +29,11 @@ struct ObjectReadFromStream
   mrpt::serialization::CArchive* m_stream;
 
  public:
-  inline ObjectReadFromStream(mrpt::serialization::CArchive* stream) : m_stream(stream) {}
+  ObjectReadFromStream(mrpt::serialization::CArchive* stream) : m_stream(stream) {}
   // T can be CSerializable::Ptr, CSerializable, or any other class
   // implementing ">>"
   template <typename T>
-  inline void operator()(T& obj)
+  void operator()(T& obj)
   {
     (*m_stream) >> obj;
   }
@@ -46,9 +46,9 @@ struct ObjectReadFromStreamToPtrs
   mrpt::serialization::CArchive* m_stream;
 
  public:
-  inline ObjectReadFromStreamToPtrs(mrpt::serialization::CArchive* stream) : m_stream(stream) {}
+  ObjectReadFromStreamToPtrs(mrpt::serialization::CArchive* stream) : m_stream(stream) {}
   template <typename ptr2ptr_t>
-  inline void operator()(ptr2ptr_t& obj)
+  void operator()(ptr2ptr_t& obj)
   {
     ptr_t p;
     (*m_stream) >> p;
@@ -64,12 +64,12 @@ struct ObjectWriteToStream
   mrpt::serialization::CArchive* m_stream;
 
  public:
-  inline ObjectWriteToStream(mrpt::serialization::CArchive* stream) : m_stream(stream) {}
+  ObjectWriteToStream(mrpt::serialization::CArchive* stream) : m_stream(stream) {}
 
   // T can be CSerializable::Ptr, CSerializable, or any other class
   // implementing "<<"
   template <typename T>
-  inline void operator()(const T& ptr)
+  void operator()(const T& ptr)
   {
     (*m_stream) << ptr;
   }

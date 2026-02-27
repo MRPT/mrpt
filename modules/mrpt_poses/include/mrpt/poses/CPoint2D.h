@@ -54,7 +54,7 @@ class CPoint2D : public CPoint<CPoint2D, 2>, public mrpt::serialization::CSerial
 
   /** Constructor from x/y coordinates given from other pose. */
   template <class OTHERCLASS, std::size_t DIM2>
-  inline explicit CPoint2D(const CPoseOrPoint<OTHERCLASS, DIM2>& b)
+  explicit CPoint2D(const CPoseOrPoint<OTHERCLASS, DIM2>& b)
   {
     m_coords[0] = b.x();
     m_coords[1] = b.y();

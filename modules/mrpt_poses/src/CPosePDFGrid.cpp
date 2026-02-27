@@ -151,7 +151,7 @@ bool CPosePDFGrid::saveToTextFile(const std::string& dataFile) const
 
   // Save dims:
   f_s << mrpt::format(
-      "%u %u %u %f %f %f %f %f %f\n", (unsigned)m_sizeX, (unsigned)m_sizeY, (unsigned)m_sizePhi,
+      "%u %u %u %f %f %f %f %f %f\n", static_cast<unsigned>(m_sizeX), static_cast<unsigned>(m_sizeY), static_cast<unsigned>(m_sizePhi),
       m_xMin, m_xMax, m_yMin, m_yMax, m_phiMin, m_phiMax);
 
   // Save one rectangular matrix each time:
@@ -234,7 +234,7 @@ void CPosePDFGrid::normalize()
   ---------------------------------------------------------------*/
 void CPosePDFGrid::uniformDistribution()
 {
-  double val = 1.0f / m_data.size();
+  double val = 1.0 / static_cast<double>(m_data.size());
 
   for (double& it : m_data) it = val;
 }

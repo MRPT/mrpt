@@ -34,6 +34,11 @@ class NearestNeighborsCapable
   NearestNeighborsCapable() = default;
   virtual ~NearestNeighborsCapable() = default;
 
+  NearestNeighborsCapable(const NearestNeighborsCapable&) = default;
+  NearestNeighborsCapable(NearestNeighborsCapable&&) = default;
+  NearestNeighborsCapable& operator=(const NearestNeighborsCapable&) = default;
+  NearestNeighborsCapable& operator=(NearestNeighborsCapable&&) = default;
+
   /** @name API of the NearestNeighborsCapable virtual interface
     @{ */
 
@@ -103,7 +108,7 @@ class NearestNeighborsCapable
    */
   virtual void nn_multiple_search(
       const mrpt::math::TPoint3Df& query,
-      const size_t N,
+      size_t N,
       std::vector<mrpt::math::TPoint3Df>& results,
       std::vector<float>& out_dists_sqr,
       std::vector<uint64_t>& resultIndicesOrIDs) const = 0;
@@ -111,7 +116,7 @@ class NearestNeighborsCapable
   /// \overload for 2D points
   virtual void nn_multiple_search(
       const mrpt::math::TPoint2Df& query,
-      const size_t N,
+      size_t N,
       std::vector<mrpt::math::TPoint2Df>& results,
       std::vector<float>& out_dists_sqr,
       std::vector<uint64_t>& resultIndicesOrIDs) const = 0;
@@ -128,7 +133,7 @@ class NearestNeighborsCapable
    */
   virtual void nn_radius_search(
       const mrpt::math::TPoint3Df& query,
-      const float search_radius_sqr,
+      float search_radius_sqr,
       std::vector<mrpt::math::TPoint3Df>& results,
       std::vector<float>& out_dists_sqr,
       std::vector<uint64_t>& resultIndicesOrIDs,
@@ -137,7 +142,7 @@ class NearestNeighborsCapable
   /// \overload for 2D points
   virtual void nn_radius_search(
       const mrpt::math::TPoint2Df& query,
-      const float search_radius_sqr,
+      float search_radius_sqr,
       std::vector<mrpt::math::TPoint2Df>& results,
       std::vector<float>& out_dists_sqr,
       std::vector<uint64_t>& resultIndicesOrIDs,

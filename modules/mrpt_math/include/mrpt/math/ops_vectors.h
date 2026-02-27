@@ -34,7 +34,7 @@ namespace mrpt::math
 
 /** a*=b (element-wise multiplication) */
 template <typename T1, typename T2>
-inline std::vector<T1>& operator*=(std::vector<T1>& a, const std::vector<T2>& b)
+std::vector<T1>& operator*=(std::vector<T1>& a, const std::vector<T2>& b)
 {
   ASSERT_EQUAL_(a.size(), b.size());
   const size_t N = a.size();
@@ -44,7 +44,7 @@ inline std::vector<T1>& operator*=(std::vector<T1>& a, const std::vector<T2>& b)
 
 /** a*=k (multiplication by a constant) */
 template <typename T1>
-inline std::vector<T1>& operator*=(std::vector<T1>& a, const T1 b)
+std::vector<T1>& operator*=(std::vector<T1>& a, const T1 b)
 {
   const size_t N = a.size();
   for (size_t i = 0; i < N; i++) a[i] *= b;
@@ -53,7 +53,7 @@ inline std::vector<T1>& operator*=(std::vector<T1>& a, const T1 b)
 
 /** a*b (element-wise multiplication) */
 template <typename T1, typename T2>
-inline std::vector<T1> operator*(const std::vector<T1>& a, const std::vector<T2>& b)
+std::vector<T1> operator*(const std::vector<T1>& a, const std::vector<T2>& b)
 {
   ASSERT_EQUAL_(a.size(), b.size());
   const size_t N = a.size();
@@ -64,7 +64,7 @@ inline std::vector<T1> operator*(const std::vector<T1>& a, const std::vector<T2>
 
 /** a+=b (element-wise sum) */
 template <typename T1, typename T2>
-inline std::vector<T1>& operator+=(std::vector<T1>& a, const std::vector<T2>& b)
+std::vector<T1>& operator+=(std::vector<T1>& a, const std::vector<T2>& b)
 {
   ASSERT_EQUAL_(a.size(), b.size());
   const size_t N = a.size();
@@ -74,7 +74,7 @@ inline std::vector<T1>& operator+=(std::vector<T1>& a, const std::vector<T2>& b)
 
 /** a+=b (sum a constant) */
 template <typename T1>
-inline std::vector<T1>& operator+=(std::vector<T1>& a, const T1 b)
+std::vector<T1>& operator+=(std::vector<T1>& a, const T1 b)
 {
   const size_t N = a.size();
   for (size_t i = 0; i < N; i++) a[i] += b;
@@ -83,7 +83,7 @@ inline std::vector<T1>& operator+=(std::vector<T1>& a, const T1 b)
 
 /** a+b (element-wise sum) */
 template <typename T1, typename T2>
-inline std::vector<T1> operator+(const std::vector<T1>& a, const std::vector<T2>& b)
+std::vector<T1> operator+(const std::vector<T1>& a, const std::vector<T2>& b)
 {
   ASSERT_EQUAL_(a.size(), b.size());
   const size_t N = a.size();
@@ -93,7 +93,7 @@ inline std::vector<T1> operator+(const std::vector<T1>& a, const std::vector<T2>
 }
 
 template <typename T1, typename T2>
-inline std::vector<T1> operator-(const std::vector<T1>& v1, const std::vector<T2>& v2)
+std::vector<T1> operator-(const std::vector<T1>& v1, const std::vector<T2>& v2)
 {
   ASSERT_EQUAL_(v1.size(), v2.size());
   std::vector<T1> res(v1.size());

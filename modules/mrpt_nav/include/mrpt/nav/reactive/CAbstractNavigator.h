@@ -181,7 +181,7 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
   };
 
   /** Returns the current navigator state. */
-  inline TState getCurrentState() const { return m_navigationState; }
+  TState getCurrentState() const { return m_navigationState; }
 
   /** Explains the reason for the navigation error. */
   enum TErrorCode
@@ -204,7 +204,7 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
    * Error state is reset every time a new navigation starts with
    * a call to navigate(), or when resetNavError() is called.
    */
-  inline const TErrorReason& getErrorReason() const { return m_navErrorReason; }
+  const TErrorReason& getErrorReason() const { return m_navErrorReason; }
 
   /** Sets a user-provided frame transformer object; used only if providing
    * targets in a frame ID

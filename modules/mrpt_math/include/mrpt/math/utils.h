@@ -112,7 +112,7 @@ VECTOR linspace(T first, T last, size_t count)
 /** Generates a sequence of values [first,first+STEP,first+2*STEP,...]   \sa
  * linspace, sequence */
 template <class T, T STEP>
-inline std::vector<T> sequenceStdVec(T first, size_t length)
+std::vector<T> sequenceStdVec(T first, size_t length)
 {
   std::vector<T> ret(length);
   if (!length) return ret;
@@ -154,7 +154,7 @@ void normalize(const VEC1& v, VEC2& out_v)
  * the "rows".
  */
 template <class VECTOR_OF_VECTORS, class VECTORLIKE>
-inline void extractColumnFromVectorOfVectors(
+void extractColumnFromVectorOfVectors(
     const size_t colIndex, const VECTOR_OF_VECTORS& data, VECTORLIKE& out_column)
 {
   const size_t N = data.size();

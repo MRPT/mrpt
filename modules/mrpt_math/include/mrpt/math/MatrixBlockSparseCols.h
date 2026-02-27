@@ -75,22 +75,22 @@ struct MatrixBlockSparseCols
   std::vector<size_t> col_remapped_indices;
 
  public:
-  inline MatrixBlockSparseCols() : m_cols(0) {}
-  inline col_t& getCol(size_t idx) { return m_cols[idx]; }
-  inline const col_t& getCol(size_t idx) const { return m_cols[idx]; }
-  inline const mrpt::containers::map_as_vector<size_t, size_t>& getColInverseRemappedIndices() const
+  MatrixBlockSparseCols() : m_cols(0) {}
+  col_t& getCol(size_t idx) { return m_cols[idx]; }
+  const col_t& getCol(size_t idx) const { return m_cols[idx]; }
+  const mrpt::containers::map_as_vector<size_t, size_t>& getColInverseRemappedIndices() const
   {
     if (!HAS_REMAP) assert(false);
     return col_inverse_remapped_indices;
   }
-  inline const std::vector<size_t>& getColRemappedIndices() const
+  const std::vector<size_t>& getColRemappedIndices() const
   {
     if (!HAS_REMAP) assert(false);
     return col_remapped_indices;
   }
 
   /** Append one column, returning a ref to the new col_t data */
-  inline col_t& appendCol(size_t remapIndex)
+  col_t& appendCol(size_t remapIndex)
   {
     const size_t idx = m_cols.size();
     m_cols.push_back(col_t());
@@ -107,19 +107,19 @@ struct MatrixBlockSparseCols
   }
 
   /** Change the number of columns (keep old contents) */
-  inline void setColCount(size_t nCols) { m_cols.resize(nCols); }
+  void setColCount(size_t nCols) { m_cols.resize(nCols); }
   /** Get current number of cols. \sa findCurrentNumberOfRows */
-  inline size_t cols() const { return m_cols.size(); }
+  size_t cols() const { return m_cols.size(); }
   /** Clear all the entries in each column (do not change the number of
    * columns, though!) \sa getColCount */
-  inline void clearColEntries()
+  void clearColEntries()
   {
     for (size_t i = 0; i < m_cols.size(); i++) m_cols[i].clear();
   }
 
   /** Clear all the entries in each column (do not change the number of
    * columns, though!) \sa getColCount */
-  inline void clearAll()
+  void clearAll()
   {
     m_cols.clear();
     if (HAS_REMAP)

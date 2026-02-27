@@ -35,7 +35,7 @@ std::string exception_line_msg(
     const char* function_name);
 
 template <typename A, typename B>
-inline std::string asrt_fail(std::string s, A&& a, B&& b, const char* astr, const char* bstr)
+std::string asrt_fail(std::string s, A&& a, B&& b, const char* astr, const char* bstr)
 {
   s += "(";
   s += astr;

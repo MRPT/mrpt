@@ -40,9 +40,9 @@ class CMetricMapBuilder : public mrpt::system::COutputLogger
   /** Critical zones */
   std::mutex critZoneChangingMap;
   /** Enter critical section for map updating */
-  inline void enterCriticalSection() { critZoneChangingMap.lock(); }
+  void enterCriticalSection() { critZoneChangingMap.lock(); }
   /** Leave critical section for map updating */
-  inline void leaveCriticalSection() { critZoneChangingMap.unlock(); }
+  void leaveCriticalSection() { critZoneChangingMap.unlock(); }
 
  public:
   /** Constructor */

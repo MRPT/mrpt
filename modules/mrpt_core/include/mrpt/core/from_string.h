@@ -35,7 +35,7 @@ inline std::istringstream& get_istringstream()
  * exception raised. \ingroup mrpt_core_grp
  */
 template <typename T>
-inline T from_string(const std::string& s, const T& defValue = T{}, bool throw_on_error = true)
+T from_string(const std::string& s, const T& defValue = T{}, bool throw_on_error = true)
 {
   // shortcut that also fixes problems with strings with whitespaces:
   if constexpr (std::is_same_v<std::string, T>)
@@ -52,7 +52,9 @@ inline T from_string(const std::string& s, const T& defValue = T{}, bool throw_o
   {
     result = defValue;
     if (throw_on_error)
+    {
       throw std::runtime_error(std::string("[from_string()] Cannot parse string: ") + s);
+    }
   }
   return result;
 }

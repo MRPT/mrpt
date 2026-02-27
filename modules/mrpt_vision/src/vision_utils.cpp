@@ -78,8 +78,8 @@ void vision::normalizeImage(const CImage& image, CImage& nimage)
   double m, s;
   mrpt::math::meanAndStd(im, m, s);
 
-  for (int k1 = 0; k1 < (int)nim.cols(); ++k1)
-    for (int k2 = 0; k2 < (int)nim.rows(); ++k2) nim(k2, k1) = (im(k2, k1) - m) / s;
+  for (size_t k1 = 0; k1 < nim.cols(); ++k1)
+    for (size_t k2 = 0; k2 < nim.rows(); ++k2) nim(k2, k1) = (im(k2, k1) - m) / s;
 
   nimage.setFromMatrix(nim);
 }

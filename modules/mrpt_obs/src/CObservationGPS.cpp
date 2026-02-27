@@ -443,23 +443,23 @@ bool TIMECONV_GetUTCTimeFromJulianDate(const double julian_date, mrpt::system::T
 
   a = lround(julian_date);
   b = a + 1537;
-  c = (int)(((double)b - 122.1) / 365.25);
-  d = (int)(365.25 * c);
-  e = (int)(((double)(b - d)) / 30.6001);
+  c = static_cast<int>((static_cast<double>(b) - 122.1) / 365.25);
+  d = static_cast<int>(365.25 * c);
+  e = static_cast<int>((static_cast<double>(b - d)) / 30.6001);
 
-  td = b - d - (int)(30.6001 * e) + fmod(julian_date + 0.5, 1.0);  // [days]
-  day = (unsigned char)td;
+  td = b - d - static_cast<int>(30.6001 * e) + fmod(julian_date + 0.5, 1.0);  // [days]
+  day = static_cast<unsigned char>(td);
   td -= day;
   td *= 24.0;  // [hours]
-  hour = (unsigned char)td;
+  hour = static_cast<unsigned char>(td);
   td -= hour;
   td *= 60.0;  // [minutes]
-  minute = (unsigned char)td;
+  minute = static_cast<unsigned char>(td);
   td -= minute;
   td *= 60.0;  // [s]
   seconds = td;
-  month = (unsigned char)(e - 1 - 12 * (int)(e / 14));
-  year = (unsigned short)(c - 4715 - (int)((7.0 + (double)month) / 10.0));
+  month = static_cast<unsigned char>(e - 1 - 12 * static_cast<int>(e / 14));
+  year = static_cast<unsigned short>(c - 4715 - static_cast<int>((7.0 + static_cast<double>(month)) / 10.0));
   // check for rollover issues
   if (seconds >= 60.0)
   {

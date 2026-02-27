@@ -140,8 +140,9 @@ struct CopyCtor<false>
   static T* clone(const T& o)
   {
     throw std::runtime_error(
-        std::string("mrpt::rtti::CObject::clone(): Attempt to call copy constructor of non "
-                    "copy-constructible class: ") +
+        std::string(
+            "mrpt::rtti::CObject::clone(): Attempt to call copy constructor of non "
+            "copy-constructible class: ") +
         std::string(o.GetRuntimeClass()->className));
   }
 };
@@ -194,7 +195,7 @@ class CObject
   virtual const mrpt::rtti::TRuntimeClassId* GetRuntimeClass() const { return CLASS_ID(CObject); }
 
   /** Makes a deep copy of the object and returns a smart pointer to it */
-  inline mrpt::rtti::CObject::Ptr duplicateGetSmartPtr() const;
+  mrpt::rtti::CObject::Ptr duplicateGetSmartPtr() const;
 
   /** Returns a deep copy (clone) of the object, indepently of its class. */
   virtual CObject* clone() const = 0;

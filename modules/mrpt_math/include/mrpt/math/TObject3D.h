@@ -38,8 +38,6 @@ struct TObject3D
 
   variant_t data;
 
-  ~TObject3D() = default;
-
   /** Constructor from point, segment, line, polygon, or plane */
   template <typename T>
   static TObject3D From(const T& p)
@@ -50,38 +48,38 @@ struct TObject3D
   }
 
   /** Checks whether content is a point. */
-  bool isPoint() const { return std::holds_alternative<TPoint3D>(data); }
+  [[nodiscard]] bool isPoint() const { return std::holds_alternative<TPoint3D>(data); }
 
   /**Checks whether content is a segment. */
-  bool isSegment() const { return std::holds_alternative<TSegment3D>(data); }
+  [[nodiscard]] bool isSegment() const { return std::holds_alternative<TSegment3D>(data); }
   /**
    * Checks whether content is a line.
    */
-  bool isLine() const { return std::holds_alternative<TLine3D>(data); }
+  [[nodiscard]] bool isLine() const { return std::holds_alternative<TLine3D>(data); }
   /**
    * Checks whether content is a polygon.
    */
-  bool isPolygon() const { return std::holds_alternative<TPolygon3D>(data); }
+  [[nodiscard]] bool isPolygon() const { return std::holds_alternative<TPolygon3D>(data); }
   /**
    * Checks whether content is a plane.
    */
-  bool isPlane() const { return std::holds_alternative<TPlane>(data); }
+  [[nodiscard]] bool isPlane() const { return std::holds_alternative<TPlane>(data); }
 
-  bool empty() const { return std::holds_alternative<std::monostate>(data); }
+  [[nodiscard]] bool empty() const { return std::holds_alternative<std::monostate>(data); }
 
   /**
    *  Gets the content as a given expected type (an exception will be thrown
    * if type is wrong, check type first).
    */
   template <typename T>
-  const T& getAs() const
+  [[nodiscard]] const T& getAs() const
   {
     return std::get<T>(data);
   }
 
   /// \overload
   template <typename T>
-  T& getAs()
+  [[nodiscard]] T& getAs()
   {
     return std::get<T>(data);
   }
@@ -161,7 +159,7 @@ struct TObject3D
    * \throw std::logic_error if the 3D object loses its properties when
    * projecting into 2D space (for example, it's a plane or a vertical line).
    */
-  TObject2D generate2DObject() const;
+  [[nodiscard]] TObject2D generate2DObject() const;
 };
 
 mrpt::serialization::CArchive& operator>>(

@@ -121,7 +121,7 @@ bool ModelSearch::geneticSingleModel(
   std::vector<Species*> sortedPopulation;
 
   size_t sampleCount = p_state.getSampleCount();
-  int elderCnt = (int)p_populationSize / 3;
+  int elderCnt = static_cast<int>(p_populationSize) / 3;
   int siblingCnt = (p_populationSize - elderCnt) / 2;
   int speciesAlive = 0;
 
@@ -151,7 +151,7 @@ bool ModelSearch::geneticSingleModel(
       }
 
       // mate elders to make siblings
-      int se = (int)speciesAlive;  // dead species cannot mate
+      int se = static_cast<int>(speciesAlive);  // dead species cannot mate
       for (; i < elderCnt + siblingCnt; i++)
       {
         Species* sibling = sortedPopulation[--se];
@@ -180,7 +180,7 @@ bool ModelSearch::geneticSingleModel(
       }
 
       // generate some new random species
-      for (; i < (int)p_populationSize; i++)
+      for (; i < static_cast<int>(p_populationSize); i++)
       {
         Species* s = sortedPopulation[i];
         population.push_back(s);

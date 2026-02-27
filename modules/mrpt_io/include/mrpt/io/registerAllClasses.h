@@ -21,7 +21,7 @@ namespace mrpt::io
  *
  * \ingroup mrpt_io_grp
  */
-inline void registerAllClasses_mrpt_io()
+void registerAllClasses_mrpt_io()
 {
   // none
 }

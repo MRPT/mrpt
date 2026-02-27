@@ -268,7 +268,7 @@ class CLevMarqGSO : public mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAP
    * graph
    * building procedure
    */
-  inline void updateGraphVisualization();
+  void updateGraphVisualization();
   /**\brief Toggle the graph visualization on and off.
    */
   void toggleGraphVisualization();
@@ -281,7 +281,7 @@ class CLevMarqGSO : public mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAP
    * call, so make sure you have issued
    * CDisplayWindow3D::unlockAccess3DScene() before calling this method.
    */
-  inline void fitGraphInView();
+  void fitGraphInView();
 
   /**\brief Initialize the Disk/Sphere used for visualizing the optimization
    * distance.
@@ -307,7 +307,7 @@ class CLevMarqGSO : public mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAP
   /**\brief Update the position of the disk indicating the distance in which
    * Levenberg-Marquardt graph optimization is executed
    */
-  inline void updateOptDistanceVisualization();
+  void updateOptDistanceVisualization();
   /**\brief toggle the optimization distance object on and off
    */
   void toggleOptDistanceVisualization();

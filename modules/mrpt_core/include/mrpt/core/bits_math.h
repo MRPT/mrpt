@@ -26,9 +26,9 @@ namespace mrpt
  *  \ingroup mrpt_core_grp
  * @{ */
 
-/** Inline function for the square of a number. */
+/** function for the square of a number. */
 template <typename num_t, typename return_t = num_t>
-inline return_t square(const num_t x)
+return_t square(const num_t x)
 {
   return static_cast<return_t>(x * x);
 }
@@ -36,7 +36,7 @@ inline return_t square(const num_t x)
 /** Faster version of std::hypot(), to use when overflow is not an issue and we
  * prefer fast code. */
 template <class T>
-inline T hypot_fast(const T x, const T y)
+T hypot_fast(const T x, const T y)
 {
   return std::sqrt(x * x + y * y);
 }
@@ -52,23 +52,23 @@ inline T hypot_fast(const T x, const T y)
 #endif
 
 /** Degrees to radians  */
-constexpr inline double DEG2RAD(const double x) { return x * M_PI / 180.0; }
+constexpr double DEG2RAD(const double x) { return x * M_PI / 180.0; }
 /** Degrees to radians */
-constexpr inline float DEG2RAD(const float x) { return x * float(M_PI) / 180.0f; }
+constexpr float DEG2RAD(const float x) { return x * float(M_PI) / 180.0f; }
 /** Degrees to radians */
-constexpr inline double DEG2RAD(const int x) { return x * M_PI / 180.0; }
+constexpr double DEG2RAD(const int x) { return x * M_PI / 180.0; }
 /** Radians to degrees */
-constexpr inline double RAD2DEG(const double x) { return x * 180.0 / M_PI; }
+constexpr double RAD2DEG(const double x) { return x * 180.0 / M_PI; }
 /** Radians to degrees */
-constexpr inline float RAD2DEG(const float x) { return x * 180.0f / float(M_PI); }
+constexpr float RAD2DEG(const float x) { return x * 180.0f / float(M_PI); }
 #if !defined(M_PIl)
 #define M_PIl  3.14159265358979323846264338327950288L
 #define M_2PIl (2.0L * 3.14159265358979323846264338327950288L)
 #endif
 /** Degrees to radians */
-constexpr inline long double DEG2RAD(const long double x) { return x * M_PIl / 180.0; }
+constexpr long double DEG2RAD(const long double x) { return x * M_PIl / 180.0L; }
 /** Radians to degrees */
-constexpr inline long double RAD2DEG(const long double x) { return x * 180.0 / M_PIl; }
+constexpr long double RAD2DEG(const long double x) { return x * 180.0L / M_PIl; }
 
 // This is required to avoid other libs (like PCL) to #define their own macros
 // after including this header
@@ -78,25 +78,22 @@ constexpr inline long double RAD2DEG(const long double x) { return x * 180.0 / M
 namespace literals
 {
 /** degrees to radian literal operator (e.g. `x=90.0_deg;`) */
-constexpr inline double operator"" _deg(long double v)
-{
-  return static_cast<double>(mrpt::DEG2RAD(v));
-}
+constexpr double operator""_deg(long double v) { return static_cast<double>(mrpt::DEG2RAD(v)); }
 }  // namespace literals
 using namespace mrpt::literals;  // for backwards compatib.
 
 /** Returns the sign of X as "1" or "-1" */
 template <typename T>
-[[nodiscard]] inline int sign(T x)
+[[nodiscard]] int sign(T x)
 {
   return x < 0 ? -1 : 1;
 }
 
 /** Returns the sign of X as "0", "1" or "-1" */
 template <typename T>
-[[nodiscard]] inline int signWithZero(T x)
+[[nodiscard]] int signWithZero(T x)
 {
-  return (x == 0 || x == -0) ? 0 : sign(x);
+  return (x == 0) ? 0 : sign(x);
 }
 
 /** Returns the smallest positive number among a and b */
@@ -108,25 +105,26 @@ template <typename T>
     return a;  // a positive and smaller than b
   }
   if (b > 0)
+  {
     return b;  // b is positive and either smaller than a or a is negative
-  else
-    return a;  // at least b is negative, we might not have an answer
+  }
+  return a;  // at least b is negative, we might not have an answer
 }
 
 template <typename T>
-[[nodiscard]] inline const T min3(const T& A, const T& B, const T& C)
+[[nodiscard]] T min3(const T& A, const T& B, const T& C)
 {
   return std::min<T>(A, std::min<T>(B, C));
 }
 template <typename T>
-[[nodiscard]] inline const T max3(const T& A, const T& B, const T& C)
+[[nodiscard]] T max3(const T& A, const T& B, const T& C)
 {
   return std::max<T>(A, std::max<T>(B, C));
 }
 
 /** Rounds toward zero  */
 template <typename T>
-[[nodiscard]] inline int fix(T x)
+[[nodiscard]] int fix(T x)
 {
   return x > 0 ? static_cast<int>(floor(static_cast<double>(x)))
                : static_cast<int>(ceil(static_cast<double>(x)));
@@ -135,7 +133,7 @@ template <typename T>
 /** If the second argument is below the first one, set the first argument to
  * this lower value. */
 template <typename T, typename K>
-inline void keep_min(T& var, const K test_val)
+void keep_min(T& var, const K test_val)
 {
   if (test_val < var)
   {
@@ -145,7 +143,7 @@ inline void keep_min(T& var, const K test_val)
 /** If the second argument is above the first one, set the first argument to
  * this higher value. */
 template <typename T, typename K>
-inline void keep_max(T& var, const K test_val)
+void keep_max(T& var, const K test_val)
 {
   if (test_val > var)
   {
@@ -155,7 +153,7 @@ inline void keep_max(T& var, const K test_val)
 /** Saturate the value of var (the variable gets modified) so it does not get
  * out of [min,max]. */
 template <typename T>
-inline void saturate(T& var, const T sat_min, const T sat_max)
+void saturate(T& var, const T sat_min, const T sat_max)
 {
   if (var > sat_max)
   {
@@ -169,7 +167,7 @@ inline void saturate(T& var, const T sat_min, const T sat_max)
 /** Like saturate() but it returns the value instead of modifying the variable
  */
 template <typename T>
-[[nodiscard]] inline T saturate_val(const T& value, const T sat_min, const T sat_max)
+[[nodiscard]] T saturate_val(const T& value, const T sat_min, const T sat_max)
 {
   T var = value;
   if (var > sat_max)
@@ -207,7 +205,7 @@ template <class T>
 [[nodiscard]] inline uint8_t f2u8(const float f) { return static_cast<uint8_t>(f * 255); }
 
 /** converts a uint8_t [0,255] into a float [0,1] \sa f2u8 */
-[[nodiscard]] inline float u8tof(const uint8_t v) { return v / 255.0f; }
+[[nodiscard]] inline float u8tof(const uint8_t v) { return static_cast<float>(v) / 255.0f; }
 
 /** @} */
 

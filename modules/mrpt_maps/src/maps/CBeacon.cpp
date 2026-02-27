@@ -472,7 +472,7 @@ void CBeacon::generateRingSOG(
       myBeaconMap->insertionOptions.SOG_maxDistBetweenGaussians;  // Meters
 
   // B: Number of gaussians in each cut to the sphere (XY,XZ,...)
-  size_t B = (size_t)(M_2PIf * R / maxDistBetweenGaussians) + 1;
+  size_t B = static_cast<size_t>(M_2PIf * R / maxDistBetweenGaussians) + 1;
 
   // Assure minimum B (maximum angular increment):
   B = max(B, (size_t)30);
@@ -569,7 +569,7 @@ void CBeacon::generateRingSOG(
       }  // end if reallyCreateIt
 
     }  // end for idxTh
-  }    // end for idxEl
+  }  // end for idxEl
 
   // resize to the number of really used modes:
   outPDF.resize(modeIdx);

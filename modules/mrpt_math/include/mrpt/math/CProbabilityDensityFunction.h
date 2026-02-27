@@ -78,7 +78,7 @@ class CProbabilityDensityFunction
    * cov matrix) and the mean, both at once.
    * \sa getMean, getInformationMatrix
    */
-  inline void getCovarianceDynAndMean(mrpt::math::CMatrixDouble& cov, type_value& mean_point) const
+  void getCovarianceDynAndMean(mrpt::math::CMatrixDouble& cov, type_value& mean_point) const
   {
     cov_mat_t C(mrpt::math::UNINITIALIZED_MATRIX);
     this->getCovarianceAndMean(C, mean_point);
@@ -89,7 +89,7 @@ class CProbabilityDensityFunction
    * distribution (PDF).
    * \sa getCovariance, getInformationMatrix
    */
-  inline type_value getMeanVal() const
+  type_value getMeanVal() const
   {
     type_value p;
     getMean(p);
@@ -100,7 +100,7 @@ class CProbabilityDensityFunction
    * covariance matrix)
    * \sa getMean, getCovarianceAndMean, getInformationMatrix
    */
-  inline void getCovariance(mrpt::math::CMatrixDouble& cov) const
+  void getCovariance(mrpt::math::CMatrixDouble& cov) const
   {
     TDATA p;
     this->getCovarianceDynAndMean(cov, p);
@@ -110,7 +110,7 @@ class CProbabilityDensityFunction
    * covariance matrix)
    * \sa getMean, getCovarianceAndMean, getInformationMatrix
    */
-  inline void getCovariance(cov_mat_t& cov) const
+  void getCovariance(cov_mat_t& cov) const
   {
     TDATA p;
     this->getCovarianceAndMean(cov, p);
@@ -120,7 +120,7 @@ class CProbabilityDensityFunction
    * covariance matrix)
    * \sa getMean, getInformationMatrix
    */
-  inline cov_mat_t getCovariance() const
+  cov_mat_t getCovariance() const
   {
     cov_mat_t cov(mrpt::math::UNINITIALIZED_MATRIX);
     TDATA p;

@@ -42,14 +42,14 @@ using namespace mrpt::graphs;
 template <class POSE_PDF>
 struct TPosePDFHelper
 {
-  static inline void copyFrom2D(POSE_PDF& p, const CPosePDFGaussianInf& pdf) { p.copyFrom(pdf); }
-  static inline void copyFrom3D(POSE_PDF& p, const CPose3DPDFGaussianInf& pdf) { p.copyFrom(pdf); }
+  static void copyFrom2D(POSE_PDF& p, const CPosePDFGaussianInf& pdf) { p.copyFrom(pdf); }
+  static void copyFrom3D(POSE_PDF& p, const CPose3DPDFGaussianInf& pdf) { p.copyFrom(pdf); }
 };
 template <>
 struct TPosePDFHelper<CPose2D>
 {
-  static inline void copyFrom2D(CPose2D& p, const CPosePDFGaussianInf& pdf) { p = pdf.mean; }
-  static inline void copyFrom3D(CPose2D& p, const CPose3DPDFGaussianInf& pdf)
+  static void copyFrom2D(CPose2D& p, const CPosePDFGaussianInf& pdf) { p = pdf.mean; }
+  static void copyFrom3D(CPose2D& p, const CPose3DPDFGaussianInf& pdf)
   {
     p = CPose2D(pdf.mean);
   }
@@ -57,11 +57,11 @@ struct TPosePDFHelper<CPose2D>
 template <>
 struct TPosePDFHelper<CPose3D>
 {
-  static inline void copyFrom2D(CPose3D& p, const CPosePDFGaussianInf& pdf)
+  static void copyFrom2D(CPose3D& p, const CPosePDFGaussianInf& pdf)
   {
     p = CPose3D(pdf.mean);
   }
-  static inline void copyFrom3D(CPose3D& p, const CPose3DPDFGaussianInf& pdf) { p = pdf.mean; }
+  static void copyFrom3D(CPose3D& p, const CPose3DPDFGaussianInf& pdf) { p = pdf.mean; }
 };
 
 /// a helper struct with static template functions \sa CNetworkOfPoses
@@ -788,13 +788,13 @@ struct graph_ops
 
   // Auxiliary funcs:
   template <class VEC>
-  static inline double auxMaha2Dist(VEC& err, const CPosePDFGaussianInf& p)
+  static double auxMaha2Dist(VEC& err, const CPosePDFGaussianInf& p)
   {
     math::wrapToPiInPlace(err[2]);
     return mrpt::math::multiply_HtCH_scalar(err, p.cov_inv);
   }
   template <class VEC>
-  static inline double auxMaha2Dist(VEC& err, const CPose3DPDFGaussianInf& p)
+  static double auxMaha2Dist(VEC& err, const CPose3DPDFGaussianInf& p)
   {
     math::wrapToPiInPlace(err[3]);
     math::wrapToPiInPlace(err[4]);
@@ -802,14 +802,14 @@ struct graph_ops
     return mrpt::math::multiply_HtCH_scalar(err, p.cov_inv);
   }
   template <class VEC>
-  static inline double auxMaha2Dist(VEC& err, const CPosePDFGaussian& p)
+  static double auxMaha2Dist(VEC& err, const CPosePDFGaussian& p)
   {
     math::wrapToPiInPlace(err[2]);
     // err^t*cov_inv*err
     return mrpt::math::multiply_HCHt_scalar(err, p.cov.inverse_LLt());
   }
   template <class VEC>
-  static inline double auxMaha2Dist(VEC& err, const CPose3DPDFGaussian& p)
+  static double auxMaha2Dist(VEC& err, const CPose3DPDFGaussian& p)
   {
     math::wrapToPiInPlace(err[3]);
     math::wrapToPiInPlace(err[4]);
@@ -820,13 +820,13 @@ struct graph_ops
   // These two are for simulating maha2 distances for non-PDF types: fallback
   // to squared-norm:
   template <class VEC>
-  static inline double auxMaha2Dist(VEC& err, const mrpt::poses::CPose2D& p)
+  static double auxMaha2Dist(VEC& err, const mrpt::poses::CPose2D& p)
   {
     math::wrapToPiInPlace(err[2]);
     return square(err[0]) + square(err[1]) + square(err[2]);
   }
   template <class VEC>
-  static inline double auxMaha2Dist(VEC& err, const mrpt::poses::CPose3D& p)
+  static double auxMaha2Dist(VEC& err, const mrpt::poses::CPose3D& p)
   {
     math::wrapToPiInPlace(err[3]);
     math::wrapToPiInPlace(err[4]);
@@ -835,13 +835,13 @@ struct graph_ops
            square(err[5]);
   }
 
-  static inline double auxEuclid2Dist(
+  static double auxEuclid2Dist(
       const mrpt::poses::CPose2D& p1, const mrpt::poses::CPose2D& p2)
   {
     return square(p1.x() - p2.x()) + square(p1.y() - p2.y()) +
            square(mrpt::math::wrapToPi(p1.phi() - p2.phi()));
   }
-  static inline double auxEuclid2Dist(
+  static double auxEuclid2Dist(
       const mrpt::poses::CPose3D& p1, const mrpt::poses::CPose3D& p2)
   {
     return square(p1.x() - p2.x()) + square(p1.y() - p2.y()) + square(p1.z() - p2.z()) +

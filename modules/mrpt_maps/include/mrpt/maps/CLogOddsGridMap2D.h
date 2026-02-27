@@ -45,7 +45,7 @@ struct CLogOddsGridMap2D : public detail::logoddscell_traits<TCELL>
    *  \param thres  This must be CELLTYPE_MIN+logodd_obs
    * \sa updateCell, updateCell_fast_free
    */
-  inline void updateCell_fast_occupied(
+  void updateCell_fast_occupied(
       const unsigned x,
       const unsigned y,
       const cell_t logodd_obs,
@@ -70,7 +70,7 @@ struct CLogOddsGridMap2D : public detail::logoddscell_traits<TCELL>
    *  \param thres  This must be CELLTYPE_MIN+logodd_obs
    * \sa updateCell, updateCell_fast_free
    */
-  inline void updateCell_fast_occupied(cell_t* theCell, const cell_t logodd_obs, const cell_t thres)
+  void updateCell_fast_occupied(cell_t* theCell, const cell_t logodd_obs, const cell_t thres)
   {
     if (*theCell > thres)
       *theCell -= logodd_obs;
@@ -89,7 +89,7 @@ struct CLogOddsGridMap2D : public detail::logoddscell_traits<TCELL>
    *  \param thres  This must be CELLTYPE_MAX-logodd_obs
    * \sa updateCell_fast_occupied
    */
-  inline static void updateCell_fast_free(
+  static void updateCell_fast_free(
       const unsigned x,
       const unsigned y,
       const cell_t logodd_obs,
@@ -115,7 +115,7 @@ struct CLogOddsGridMap2D : public detail::logoddscell_traits<TCELL>
    *  \param thres  This must be CELLTYPE_MAX-logodd_obs
    * \sa updateCell_fast_occupied
    */
-  inline static void updateCell_fast_free(
+  static void updateCell_fast_free(
       cell_t* theCell, const cell_t logodd_obs, const cell_t thres)
   {
     if (*theCell < thres)

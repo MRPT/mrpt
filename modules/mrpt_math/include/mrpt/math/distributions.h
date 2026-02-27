@@ -40,7 +40,7 @@ double normalPDF(double x, double mu, double std);
  * range [0,1], in contrast to its integral from [-inf,+inf] being 1.
  */
 template <class VECTORLIKE1, class VECTORLIKE2, class MATRIXLIKE>
-inline typename MATRIXLIKE::Scalar normalPDFInf(
+typename MATRIXLIKE::Scalar normalPDFInf(
     const VECTORLIKE1& x,
     const VECTORLIKE2& mu,
     const MATRIXLIKE& cov_inv,
@@ -69,7 +69,7 @@ inline typename MATRIXLIKE::Scalar normalPDFInf(
  * range [0,1], in contrast to its integral from [-inf,+inf] being 1.
  */
 template <class VECTORLIKE1, class VECTORLIKE2, class MATRIXLIKE>
-inline typename MATRIXLIKE::Scalar normalPDF(
+typename MATRIXLIKE::Scalar normalPDF(
     const VECTORLIKE1& x,
     const VECTORLIKE2& mu,
     const MATRIXLIKE& cov,

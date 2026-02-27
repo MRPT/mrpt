@@ -151,24 +151,24 @@ class CPoseOrPoint :
     @{ */
   // Note: the access to "z" is implemented (only for 3D data types), in
   // detail::pose_point_impl<>
-  inline double x() const /*!< Get X coord. */ { return derived().m_coords[0]; }
-  inline double y() const /*!< Get Y coord. */ { return derived().m_coords[1]; }
+  double x() const /*!< Get X coord. */ { return derived().m_coords[0]; }
+  double y() const /*!< Get Y coord. */ { return derived().m_coords[1]; }
 
-  inline double& x() /*!< Get ref to X coord. */ { return derived().m_coords[0]; }
-  inline double& y() /*!< Get ref to Y coord. */ { return derived().m_coords[1]; }
+  double& x() /*!< Get ref to X coord. */ { return derived().m_coords[0]; }
+  double& y() /*!< Get ref to Y coord. */ { return derived().m_coords[1]; }
 
-  inline void x(const double v) /*!< Set X coord. */ { derived().m_coords[0] = v; }
-  inline void y(const double v) /*!< Set Y coord. */ { derived().m_coords[1] = v; }
+  void x(const double v) /*!< Set X coord. */ { derived().m_coords[0] = v; }
+  void y(const double v) /*!< Set Y coord. */ { derived().m_coords[1] = v; }
 
-  inline void x_incr(const double v) /*!< X+=v */ { derived().m_coords[0] += v; }
-  inline void y_incr(const double v) /*!< Y+=v */ { derived().m_coords[1] += v; }
+  void x_incr(const double v) /*!< X+=v */ { derived().m_coords[0] += v; }
+  void y_incr(const double v) /*!< Y+=v */ { derived().m_coords[1] += v; }
 
   /** Return true for poses or points with a Z component, false otherwise. */
-  static inline bool is3DPoseOrPoint() { return DERIVEDCLASS::is_3D_val != 0; }
+  static bool is3DPoseOrPoint() { return DERIVEDCLASS::is_3D_val != 0; }
 
   /** Returns the squared euclidean distance to another pose/point: */
   template <class OTHERCLASS, std::size_t DIM2>
-  inline double sqrDistanceTo(const CPoseOrPoint<OTHERCLASS, DIM2>& b) const
+  double sqrDistanceTo(const CPoseOrPoint<OTHERCLASS, DIM2>& b) const
   {
     using mrpt::square;
 
@@ -193,21 +193,21 @@ class CPoseOrPoint :
 
   /** Returns the Euclidean distance to another pose/point: */
   template <class OTHERCLASS, std::size_t DIM2>
-  inline double distanceTo(const CPoseOrPoint<OTHERCLASS, DIM2>& b) const
+  double distanceTo(const CPoseOrPoint<OTHERCLASS, DIM2>& b) const
   {
     return std::sqrt(sqrDistanceTo(b));
   }
 
   /** Returns the squared 2D distance from this pose/point to a 2D point
    * (ignores Z, if it exists). */
-  inline double distance2DToSquare(double ax, double ay) const
+  double distance2DToSquare(double ax, double ay) const
   {
     using mrpt::square;
     return square(ax - x()) + square(ay - y());
   }
 
   /** Returns the squared 3D distance from this pose/point to a 3D point */
-  inline double distance3DToSquare(double ax, double ay, double az) const
+  double distance3DToSquare(double ax, double ay, double az) const
   {
     using mrpt::square;
     return square(ax - x()) + square(ay - y()) +
@@ -216,26 +216,26 @@ class CPoseOrPoint :
 
   /** Returns the 2D distance from this pose/point to a 2D point (ignores Z,
    * if it exists). */
-  inline double distance2DTo(double ax, double ay) const
+  double distance2DTo(double ax, double ay) const
   {
     return std::sqrt(distance2DToSquare(ax, ay));
   }
 
   /** Returns the 3D distance from this pose/point to a 3D point */
-  inline double distance3DTo(double ax, double ay, double az) const
+  double distance3DTo(double ax, double ay, double az) const
   {
     return std::sqrt(distance3DToSquare(ax, ay, az));
   }
 
   /** Returns the euclidean distance to a 3D point: */
-  inline double distanceTo(const mrpt::math::TPoint3D& b) const
+  double distanceTo(const mrpt::math::TPoint3D& b) const
   {
     return distance3DTo(b.x, b.y, b.z);
   }
 
   /** Returns the euclidean norm of vector: \f$ ||\mathbf{x}|| =
    * \sqrt{x^2+y^2+z^2} \f$ */
-  inline double norm() const
+  double norm() const
   {
     using mrpt::square;
     return std::sqrt(
@@ -256,7 +256,7 @@ class CPoseOrPoint :
    * \sa getInverseHomogeneousMatrix
    */
   template <class MATRIX44>
-  inline MATRIX44 getHomogeneousMatrixVal() const
+  MATRIX44 getHomogeneousMatrixVal() const
   {
     MATRIX44 m;
     derived().getHomogeneousMatrix(m);
@@ -268,7 +268,7 @@ class CPoseOrPoint :
    * \sa getHomogeneousMatrix
    */
   template <class MATRIX44>
-  inline void getInverseHomogeneousMatrix(MATRIX44& out_HM) const
+  void getInverseHomogeneousMatrix(MATRIX44& out_HM) const
   {  // Get current HM & inverse in-place:
     derived().getHomogeneousMatrix(out_HM);
     mrpt::math::homogeneousMatrixInverse(out_HM);
@@ -276,7 +276,7 @@ class CPoseOrPoint :
 
   //! \overload
   template <class MATRIX44>
-  inline MATRIX44 getInverseHomogeneousMatrixVal() const
+  MATRIX44 getInverseHomogeneousMatrixVal() const
   {
     MATRIX44 M;
     getInverseHomogeneousMatrix(M);

@@ -74,14 +74,14 @@ class map_as_vector
   using reverse_iterator = std::reverse_iterator<iterator>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-  inline iterator begin() { return m_vec.begin(); }
-  inline iterator end() { return m_vec.end(); }
-  inline const_iterator begin() const { return m_vec.begin(); }
-  inline const_iterator end() const { return m_vec.end(); }
-  inline reverse_iterator rbegin() { return reverse_iterator(end()); }
-  inline const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
-  inline reverse_iterator rend() { return reverse_iterator(begin()); }
-  inline const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
+  iterator begin() { return m_vec.begin(); }
+  iterator end() { return m_vec.end(); }
+  const_iterator begin() const { return m_vec.begin(); }
+  const_iterator end() const { return m_vec.end(); }
+  reverse_iterator rbegin() { return reverse_iterator(end()); }
+  const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
+  reverse_iterator rend() { return reverse_iterator(begin()); }
+  const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
   /** @} */
  private:
   /** The actual container */
@@ -91,27 +91,27 @@ class map_as_vector
   /** @name Constructors, read/write access and other operations
     @{ */
   //!< Default constructor - does nothing */
-  inline map_as_vector() = default;
+  map_as_vector() = default;
   /** Copy constructor & operator= -> default */
 
-  inline size_t size() const { return m_vec.size(); }
-  inline bool empty() const { return m_vec.empty(); }
+  size_t size() const { return m_vec.size(); }
+  bool empty() const { return m_vec.empty(); }
   /** Count how many entries have a given key value - unlike std::map<K,V>,
    * recall that this class will say an element i<N-1 exists just due to an
    * insertion of element at N */
-  inline size_type count(const key_type i) const { return (i < m_vec.size()) ? 1 : 0; }
+  size_type count(const key_type i) const { return (i < m_vec.size()) ? 1 : 0; }
 
   /** Maximum size due to system limits */
-  inline size_type max_size() const { return m_vec.max_size(); }
+  size_type max_size() const { return m_vec.max_size(); }
   /** Return a read-only reference to the internal vector */
-  inline const vec_t& getVector() const { return m_vec; }
+  const vec_t& getVector() const { return m_vec; }
   /** Clear the contents of this container */
-  inline void clear() { m_vec.clear(); }
+  void clear() { m_vec.clear(); }
   /** Efficient swap with another object */
-  inline void swap(map_as_vector<KEY, VALUE>& o) { m_vec.swap(o.m_vec); }
+  void swap(map_as_vector<KEY, VALUE>& o) { m_vec.swap(o.m_vec); }
   /** Write/read via [i] operator, that creates all elements up to (and
    * including) the i'th if they didn't exist already. */
-  inline VALUE& operator[](size_t i)
+  VALUE& operator[](size_t i)
   {
     if (m_vec.size() <= i) m_vec.resize(i + 1);
     m_vec[i].first = i;
@@ -119,14 +119,14 @@ class map_as_vector
   }
   /** Read-only operator, throws exception if the given key index does not
    * exist. */
-  inline const VALUE& at(size_t i) const
+  const VALUE& at(size_t i) const
   {
     if (i >= m_vec.size() || m_vec.at(i).first != i)
       throw std::out_of_range("map_as_vector: at() for non-existing element.");
     return m_vec.at(i).second;
   }
   /// \overload
-  inline VALUE& at(size_t i)
+  VALUE& at(size_t i)
   {
     if (i >= m_vec.size() || m_vec.at(i).first != i)
       throw std::out_of_range("map_as_vector: at() for non-existing element.");
@@ -135,12 +135,12 @@ class map_as_vector
 
   /** Insert pair<key,val>, as in std::map (guess_point is actually ignored in
    * this class) */
-  inline void insert(const iterator& guess_point, const value_type& keyvalpair)
+  void insert(const iterator& guess_point, const value_type& keyvalpair)
   {
     this->operator[](keyvalpair.first) = keyvalpair;
   }
   /** Insert pair<key,val>, as in std::map */
-  inline void insert(const value_type& keyvalpair)
+  void insert(const value_type& keyvalpair)
   {
     this->operator[](keyvalpair.first) = keyvalpair;
   }
@@ -148,7 +148,7 @@ class map_as_vector
   /** Constant-time find, returning an iterator to the <key,val> pair or to
    * end() if not found (that is, if it's above the maximum index in the
    * vector) */
-  inline iterator find(size_t i)
+  iterator find(size_t i)
   {
     if (i < m_vec.size())
       return m_vec.begin() + i;
@@ -158,7 +158,7 @@ class map_as_vector
   /** Constant-time find, returning an iterator to the <key,val> pair or to
    * end() if not found (that is, if it's above the maximum index in the
    * vector) */
-  inline const_iterator find(size_t i) const
+  const_iterator find(size_t i) const
   {
     if (i < m_vec.size())
       return m_vec.begin() + i;

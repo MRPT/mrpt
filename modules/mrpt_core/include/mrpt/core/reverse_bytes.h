@@ -41,14 +41,14 @@ void reverseBytesInPlace(std::chrono::time_point<mrpt::Clock>& v_in_out);
 /** Reverse the order of the bytes of a given type (useful for transforming btw
  * little/big endian)  */
 template <class T>
-inline void reverseBytes(const T& v_in, T& v_out)
+void reverseBytes(const T& v_in, T& v_out)
 {
   v_out = v_in;
   reverseBytesInPlace(v_out);
 }
 
 template <class T>
-inline T reverseBytes(const T& v_in)
+T reverseBytes(const T& v_in)
 {
   T v_out = v_in;
   reverseBytesInPlace(v_out);
@@ -56,7 +56,7 @@ inline T reverseBytes(const T& v_in)
 }
 
 template <class T>
-inline T toNativeEndianness(const T& v_in)
+T toNativeEndianness(const T& v_in)
 {
 #if MRPT_IS_BIG_ENDIAN
   T v_out = v_in;
@@ -68,7 +68,7 @@ inline T toNativeEndianness(const T& v_in)
 }
 
 template <typename enum_t, typename underlying_t = typename std::underlying_type<enum_t>::type>
-inline void reverseBytesInPlace_enum(enum_t& v)
+void reverseBytesInPlace_enum(enum_t& v)
 {
   underlying_t v_out = static_cast<underlying_t>(v);
   reverseBytesInPlace(v_out);

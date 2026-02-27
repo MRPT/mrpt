@@ -42,9 +42,9 @@ class ClearanceDiagram
    * a decimated
    * subset of a total of `actual_num_paths` paths */
   void resize(size_t actual_num_paths, size_t decimated_num_paths);
-  inline bool empty() const { return m_raw_clearances.empty(); }
-  inline size_t get_actual_num_paths() const { return m_actual_num_paths; }
-  inline size_t get_decimated_num_paths() const { return m_raw_clearances.size(); }
+  bool empty() const { return m_raw_clearances.empty(); }
+  size_t get_actual_num_paths() const { return m_actual_num_paths; }
+  size_t get_decimated_num_paths() const { return m_raw_clearances.size(); }
 
   /** Gets the clearance for path `k` and distance `TPS_query_distance` in one
    * of two modes:
@@ -70,11 +70,11 @@ class ClearanceDiagram
   dist2clearance_t& get_path_clearance(size_t actual_k);
   const dist2clearance_t& get_path_clearance(size_t actual_k) const;
 
-  inline dist2clearance_t& get_path_clearance_decimated(size_t decim_k)
+  dist2clearance_t& get_path_clearance_decimated(size_t decim_k)
   {
     return m_raw_clearances[decim_k];
   }
-  inline const dist2clearance_t& get_path_clearance_decimated(size_t decim_k) const
+  const dist2clearance_t& get_path_clearance_decimated(size_t decim_k) const
   {
     return m_raw_clearances[decim_k];
   }

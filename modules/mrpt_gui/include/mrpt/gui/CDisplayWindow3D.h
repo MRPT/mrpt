@@ -424,7 +424,7 @@ class mrptEvent3DWindowGrabImageFile : public mrpt::system::mrptEvent
   void do_nothing() override {}
 
  public:
-  inline mrptEvent3DWindowGrabImageFile(CDisplayWindow3D* obj, const std::string& _img_file) :
+  mrptEvent3DWindowGrabImageFile(CDisplayWindow3D* obj, const std::string& _img_file) :
       source_object(obj), img_file(_img_file)
   {
   }

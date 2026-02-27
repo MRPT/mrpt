@@ -21,7 +21,7 @@ namespace mrpt::serialization
  *
  * \ingroup mrpt_serialization_grp
  */
-inline void registerAllClasses_mrpt_serialization()
+void registerAllClasses_mrpt_serialization()
 {
   // none
 }

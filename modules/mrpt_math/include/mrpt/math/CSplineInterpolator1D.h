@@ -41,7 +41,7 @@ class CSplineInterpolator1D : public mrpt::serialization::CSerializable
  public:
   /** Constructor with optional initial values. */
   template <class VECTOR>
-  inline CSplineInterpolator1D(
+  CSplineInterpolator1D(
       const VECTOR& initial_x, const VECTOR& initial_y, bool wrap2pi = false) :
       m_wrap2pi(wrap2pi)
   {

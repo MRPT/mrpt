@@ -73,7 +73,7 @@ struct Message_NMEA_GGA : public gnss_message
    * structure (requires linking against mrpt-topography)
    *   Call as: getAsStruct<TGeodeticCoords>(); */
   template <class TGEODETICCOORDS>
-  inline TGEODETICCOORDS getOrthoAsStruct() const
+  TGEODETICCOORDS getOrthoAsStruct() const
   {
     return TGEODETICCOORDS(
         fields.latitude_degrees, fields.longitude_degrees, fields.orthometric_altitude);
@@ -83,7 +83,7 @@ struct Message_NMEA_GGA : public gnss_message
    * mrpt-topography)
    *   Call as: getAsStruct<TGeodeticCoords>(); */
   template <class TGEODETICCOORDS>
-  inline TGEODETICCOORDS getCorrectedOrthoAsStruct() const
+  TGEODETICCOORDS getCorrectedOrthoAsStruct() const
   {
     return TGEODETICCOORDS(
         fields.latitude_degrees, fields.longitude_degrees, fields.corrected_orthometric_altitude);
@@ -92,7 +92,7 @@ struct Message_NMEA_GGA : public gnss_message
    * structure (requires linking against mrpt-topography)
    *   Call as: getAsStruct<TGeodeticCoords>(); */
   template <class TGEODETICCOORDS>
-  inline TGEODETICCOORDS getAsStruct() const
+  TGEODETICCOORDS getAsStruct() const
   {
     return TGEODETICCOORDS(
         fields.latitude_degrees, fields.longitude_degrees, fields.altitude_meters);

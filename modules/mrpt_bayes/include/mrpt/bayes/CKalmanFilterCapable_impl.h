@@ -994,28 +994,28 @@ void addNewLandmarks(
 }
 
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
-inline size_t getNumberOfLandmarksInMap(
+size_t getNumberOfLandmarksInMap(
     const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>& obj)
 {
   return (obj.getStateVectorLength() - VEH_SIZE) / FEAT_SIZE;
 }
 // Specialization for FEAT_SIZE=0
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
-inline size_t getNumberOfLandmarksInMap(
+size_t getNumberOfLandmarksInMap(
     const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE, KFTYPE>& obj)
 {
   return 0;
 }
 
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
-inline bool isMapEmpty(
+bool isMapEmpty(
     const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>& obj)
 {
   return (obj.getStateVectorLength() == VEH_SIZE);
 }
 // Specialization for FEAT_SIZE=0
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
-inline bool isMapEmpty(
+bool isMapEmpty(
     const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE, KFTYPE>& obj)
 {
   return true;

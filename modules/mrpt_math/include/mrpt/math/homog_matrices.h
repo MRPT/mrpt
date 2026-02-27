@@ -101,7 +101,7 @@ void homogeneousMatrixInverse(
 }
 //! \overload
 template <class MATRIXLIKE>
-inline void homogeneousMatrixInverse(MATRIXLIKE& M)
+void homogeneousMatrixInverse(MATRIXLIKE& M)
 {
   ASSERTDEB_(M.cols() == M.rows() && M.rows() == 4);
   // translation:

@@ -192,7 +192,7 @@ class CObservation2DRangeScan : public CObservation
    * \sa buildAuxPointsMap
    */
   template <class POINTSMAP>
-  inline const POINTSMAP* getAuxPointsMap() const
+  const POINTSMAP* getAuxPointsMap() const
   {
     auto lck = mrpt::lockHelper(m_cachedMapMtx.data);
     return static_cast<const POINTSMAP*>(m_cachedMap.get());
@@ -211,7 +211,7 @@ class CObservation2DRangeScan : public CObservation
    * \sa getAuxPointsMap
    */
   template <class POINTSMAP>
-  inline const POINTSMAP* buildAuxPointsMap(const void* options = nullptr) const
+  const POINTSMAP* buildAuxPointsMap(const void* options = nullptr) const
   {
     auto lck = mrpt::lockHelper(m_cachedMapMtx.data);
 

@@ -70,7 +70,7 @@ void ransac_detect_2D_lines(
  * mrpt::maps::CPointsMap
  */
 template <class POINTSMAP>
-inline void ransac_detect_3D_planes(
+void ransac_detect_3D_planes(
     const POINTSMAP* points_map,
     std::vector<std::pair<size_t, TPlane>>& out_detected_planes,
     const double threshold,

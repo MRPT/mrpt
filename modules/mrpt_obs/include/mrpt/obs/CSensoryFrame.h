@@ -72,7 +72,7 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
    * \sa buildAuxPointsMap
    */
   template <class POINTSMAP>
-  inline const POINTSMAP* getAuxPointsMap() const
+  const POINTSMAP* getAuxPointsMap() const
   {
     return static_cast<POINTSMAP*>(m_cachedMap.get());
   }
@@ -90,7 +90,7 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
    * \sa getAuxPointsMap
    */
   template <class POINTSMAP>
-  inline const POINTSMAP* buildAuxPointsMap(const void* options = nullptr) const
+  const POINTSMAP* buildAuxPointsMap(const void* options = nullptr) const
   {
     internal_buildAuxPointsMap(options);
     return static_cast<POINTSMAP*>(m_cachedMap.get());
@@ -122,7 +122,7 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
       const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) const;
 
   /// \overload
-  inline bool insertObservationsInto(
+  bool insertObservationsInto(
       mrpt::maps::CMetricMap::Ptr& theMap,
       const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) const
   {
@@ -141,7 +141,7 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
   void push_back(const CObservation::Ptr& obs);
 
   /// Synonym with push_back()
-  inline void insert(const CObservation::Ptr& obs) { push_back(obs); }
+  void insert(const CObservation::Ptr& obs) { push_back(obs); }
 
   /** Returns the i'th observation of a given class (or of a descendant
   class), or nullptr if there is no such observation in the array.
@@ -224,11 +224,11 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
    *
    * \endcode
    */
-  inline iterator end() { return m_observations.end(); }
+  iterator end() { return m_observations.end(); }
   /** Returns the number of observations in the list. */
-  inline size_t size() const { return m_observations.size(); }
+  size_t size() const { return m_observations.size(); }
   /** Returns true if there are no observations in the list. */
-  inline bool empty() const { return m_observations.empty(); }
+  bool empty() const { return m_observations.empty(); }
   /** Removes the i'th observation in the list (0=first). */
   void eraseByIndex(size_t idx);
 

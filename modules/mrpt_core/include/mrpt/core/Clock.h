@@ -44,7 +44,7 @@ class Clock
    * \sa setActiveClock(), mrpt::Clock::Source, now()
    * \note (New in MRPT 2.1.5)
    */
-  inline static double nowDouble() noexcept { return toDouble(now()); }
+  static double nowDouble() noexcept { return toDouble(now()); }
 
   /** Create a timestamp from its double representation. \sa toDouble */
   static time_point fromDouble(const double t) noexcept;

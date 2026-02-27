@@ -36,7 +36,7 @@ class CObservationRawDAQ : public CObservation
   DEFINE_SERIALIZABLE(CObservationRawDAQ, mrpt::obs)
  public:
   /** Constructor */
-  inline CObservationRawDAQ() = default;
+  CObservationRawDAQ() = default;
   /** Destructor */
   ~CObservationRawDAQ() override = default;
   std::vector<uint8_t> AIN_8bits;   /** Readings from 8-bit analog input (ADCs)

@@ -492,7 +492,7 @@ void mrpt::math::medianFilter(
     int _winSize,
     [[maybe_unused]] int numberOfSigmas)
 {
-  ASSERT_((int)inV.size() >= _winSize);
+  ASSERT_(static_cast<int>(inV.size()) >= _winSize);
   ASSERT_(_winSize >= 2);  // The minimum window size is 3 elements
   size_t winSize = _winSize;
 
@@ -623,7 +623,7 @@ double mrpt::math::noncentralChi2CDF(
   const double a = degreesOfFreedom + noncentrality;
   const double b = (a + noncentrality) / square(a);
   const double t =
-      (std::pow((double)arg / a, 1.0 / 3.0) - (1.0 - 2.0 / 9.0 * b)) / std::sqrt(2.0 / 9.0 * b);
+      (std::pow(static_cast<double>(arg) / a, 1.0 / 3.0) - (1.0 - 2.0 / 9.0 * b)) / std::sqrt(2.0 / 9.0 * b);
   return 0.5 * (1.0 + std::erf(t / std::sqrt(2.0)));
 }
 

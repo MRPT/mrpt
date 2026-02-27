@@ -169,7 +169,7 @@ class CRandomFieldGridMap2D :
    * Declared here to avoid ambiguity between the two clear() in both base
    * classes.
    */
-  inline void clear() { CMetricMap::clear(); }
+  void clear() { CMetricMap::clear(); }
   // This method is just used for the ::saveToTextFile() method in base class.
   float cell2float(const TRandomFieldCell& c) const override { return mrpt::d2f(c.kf_mean()); }
 

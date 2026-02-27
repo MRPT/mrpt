@@ -263,16 +263,16 @@ class COpenNI2_RGBD360 :
 
   /** Get the maximum range (meters) that can be read in the observation field
    * "rangeImage" */
-  inline double getMaxRange() const { return m_maxRange; }
+  double getMaxRange() const { return m_maxRange; }
   /** Enable/disable the grabbing of the RGB channel */
-  inline void enableGrabRGB(bool enable = true) { m_grab_rgb = enable; }
-  inline bool isGrabRGBEnabled() const { return m_grab_rgb; }
+  void enableGrabRGB(bool enable = true) { m_grab_rgb = enable; }
+  bool isGrabRGBEnabled() const { return m_grab_rgb; }
   /** Enable/disable the grabbing of the depth channel */
-  inline void enableGrabDepth(bool enable = true) { m_grab_depth = enable; }
-  inline bool isGrabDepthEnabled() const { return m_grab_depth; }
+  void enableGrabDepth(bool enable = true) { m_grab_depth = enable; }
+  bool isGrabDepthEnabled() const { return m_grab_depth; }
   /** Enable/disable the grabbing of the 3D point clouds */
-  inline void enableGrab3DPoints(bool enable = true) { m_grab_3D_points = enable; }
-  inline bool isGrab3DPointsEnabled() const { return m_grab_3D_points; }
+  void enableGrab3DPoints(bool enable = true) { m_grab_3D_points = enable; }
+  bool isGrab3DPointsEnabled() const { return m_grab_3D_points; }
   /** @} */
 
  protected:

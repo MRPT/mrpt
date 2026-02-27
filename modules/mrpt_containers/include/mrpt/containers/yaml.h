@@ -132,9 +132,6 @@ class yaml
 
     /** @} */
 
-    node_t() = default;
-    ~node_t() = default;
-
     template <
         typename T,  //
         typename = std::enable_if_t<
@@ -153,34 +150,36 @@ class yaml
       d.emplace<scalar_t>().emplace<std::string>(str);
     }
 
+    node_t() = default;
+
     node_t(std::initializer_list<map_t::value_type> init) { d.emplace<map_t>(init); }
     node_t(std::initializer_list<sequence_t::value_type> init) { d.emplace<sequence_t>(init); }
 
-    bool isNullNode() const;
-    bool isScalar() const;
-    bool isSequence() const;
-    bool isMap() const;
+    [[nodiscard]] bool isNullNode() const;
+    [[nodiscard]] bool isScalar() const;
+    [[nodiscard]] bool isSequence() const;
+    [[nodiscard]] bool isMap() const;
 
     /** Returns: "null", "sequence", "map", "scalar(<TYPE>)" */
-    std::string typeName() const;
+    [[nodiscard]] std::string typeName() const;
 
     /** Use: `for (auto &kv: n.asSequence()) {...}`
      * \exception std::exception If called on a non-sequence node. */
-    sequence_t& asSequence();
-    const sequence_t& asSequence() const;
+    [[nodiscard]] sequence_t& asSequence();
+    [[nodiscard]] const sequence_t& asSequence() const;
 
     /** Use: `for (auto &kv: n.asMap()) {...}`
      * \exception std::exception If called on a non-map node. */
-    map_t& asMap();
-    const map_t& asMap() const;
+    [[nodiscard]] map_t& asMap();
+    [[nodiscard]] const map_t& asMap() const;
 
     /** \exception std::exception If called on a non-scalar node. */
-    scalar_t& asScalar();
-    const scalar_t& asScalar() const;
+    [[nodiscard]] scalar_t& asScalar();
+    [[nodiscard]] const scalar_t& asScalar() const;
 
     /** Returns 1 for null or scalar nodes, the number of children for
      * sequence or map nodes. */
-    size_t size() const;
+    [[nodiscard]] size_t size() const;
 
     /** Returns a copy of the existing value of the given type, or tries
      * to convert it between easily-compatible types (e.g. double<->int,
@@ -189,7 +188,7 @@ class yaml
      * and there is no obvious conversion.
      */
     template <typename T>
-    T as() const
+    [[nodiscard]] T as() const
     {
       ASSERTMSG_(
           std::holds_alternative<scalar_t>(d),
@@ -200,38 +199,31 @@ class yaml
       return internal::implAnyAsGetter<T>(std::get<scalar_t>(d));
     }
 
-    const std::string_view internalAsStr() const
+    [[nodiscard]] std::string_view internalAsStr() const
     {
       ASSERT_(isScalar());
       if (const char* const* s = std::any_cast<const char*>(&asScalar()); s != nullptr)
       {
         return {*s};
       }
-      if (const std::string* s = std::any_cast<std::string>(&asScalar()); s != nullptr)
+      if (const auto* s = std::any_cast<std::string>(&asScalar()); s != nullptr)
       {
         return {*s};
       }
-      if (const std::string_view* s = std::any_cast<std::string_view>(&asScalar()); s != nullptr)
+      if (const auto* s = std::any_cast<std::string_view>(&asScalar()); s != nullptr)
       {
         return {*s};
       }
       THROW_EXCEPTION_FMT(
-          "Used node_t as map key with a type non-convertible to "
-          "string: "
-          "'%s'",
-          typeName().c_str());
+          "Used node_t as map key with a type non-convertible to string: '%s'", typeName().c_str());
     }
 
-    bool hasComment() const
+    [[nodiscard]] bool hasComment() const
     {
-      for (const auto& c : comments)
-        if (c.has_value())
-        {
-          return true;
-        }
-      return false;
+      return std::any_of(
+          comments.begin(), comments.end(), [](const auto& c) { return c.has_value(); });
     }
-    bool hasComment(CommentPosition pos) const
+    [[nodiscard]] bool hasComment(CommentPosition pos) const
     {
       MRPT_START
       const auto posIndex = static_cast<unsigned int>(pos);
@@ -239,7 +231,7 @@ class yaml
       return comments[posIndex].has_value();
       MRPT_END
     }
-    const std::string& comment() const
+    [[nodiscard]] const std::string& comment() const
     {
       MRPT_START
       for (const auto& c : comments)
@@ -252,7 +244,7 @@ class yaml
       THROW_EXCEPTION("Trying to access comment but this node has none.");
       MRPT_END
     }
-    const std::string& comment(CommentPosition pos) const
+    [[nodiscard]] const std::string& comment(CommentPosition pos) const
     {
       MRPT_START
       const auto posIndex = static_cast<unsigned int>(pos);
@@ -270,7 +262,6 @@ class yaml
    * @{ */
 
   yaml() = default;
-  ~yaml() = default;
 
   /** Constructor for maps, from list of pairs of values. See examples in
    * yaml above. */
@@ -281,12 +272,9 @@ class yaml
   yaml(std::initializer_list<sequence_t::value_type> init) : root_(init) {}
   yaml(const yaml& v);
 
-  yaml(const node_t& s) : root_(s) {}
+  yaml(node_t s) : root_(std::move(s)) {}
 
-  static node_t Sequence(std::initializer_list<sequence_t::value_type> init)
-  {
-    return node_t(init);
-  }
+  static node_t Sequence(std::initializer_list<sequence_t::value_type> init) { return {init}; }
   static node_t Sequence()
   {
     node_t n;
@@ -347,11 +335,11 @@ class yaml
    * build-time depedencies.
    */
   template <typename YAML_NODE>
-  inline static yaml FromYAMLCPP(const YAML_NODE& n);
+  static yaml FromYAMLCPP(const YAML_NODE& n);
 
   /** \overload (loads an existing YAMLCPP into this) */
   template <typename YAML_NODE>
-  inline void loadFromYAMLCPP(const YAML_NODE& n);
+  void loadFromYAMLCPP(const YAML_NODE& n);
 
   /** Creates a yaml dictionary node from an Eigen or mrpt::math matrix.
    * Example (compatible with OpenCV & ROS YAML formats):
@@ -363,7 +351,7 @@ class yaml
    * \sa toMatrix()
    */
   template <typename MATRIX>
-  inline static yaml FromMatrix(const MATRIX& m);
+  static yaml FromMatrix(const MATRIX& m);
 
   /** Fills in a matrix from a yaml dictionary node.
    * The matrix can be either an Eigen or mrpt::math matrix.
@@ -376,13 +364,13 @@ class yaml
    * \sa FromMatrix()
    */
   template <typename MATRIX>
-  inline void toMatrix(MATRIX& m) const;
+  void toMatrix(MATRIX& m) const;
 
   /** Converts a sequence yaml node into a std::vector, trying to convert
    * all nodes to the same given `Scalar` type. \note (New in MRPT 2.3.3)
    */
   template <typename Scalar>
-  inline std::vector<Scalar> toStdVector() const;
+  std::vector<Scalar> toStdVector() const;
 
   /** @} */
 
@@ -402,10 +390,10 @@ class yaml
    * clear that subtree only). */
   void clear();
 
-  bool isNullNode() const;
-  bool isScalar() const;
-  bool isSequence() const;
-  bool isMap() const;
+  [[nodiscard]] bool isNullNode() const;
+  [[nodiscard]] bool isScalar() const;
+  [[nodiscard]] bool isSequence() const;
+  [[nodiscard]] bool isMap() const;
 
   /** For scalar nodes, returns its type, or typeid(void) if an empty
    * node. \exception std::exception If called on a map or sequence. */
@@ -419,39 +407,39 @@ class yaml
   /** Use: `for (auto &kv: n.asSequence()) {...}`
    * \exception std::exception If called on a non-sequence node. */
   sequence_t& asSequence();
-  const sequence_t& asSequence() const;
+  [[nodiscard]] const sequence_t& asSequence() const;
 
   /// Returns a copy of asSequence(), suitable for range-based loops
-  const sequence_t asSequenceRange() const { return asSequence(); }
+  [[nodiscard]] sequence_t asSequenceRange() const { return asSequence(); }
 
   /** Use: `for (auto &kv: n.asMap()) {...}`
    * \exception std::exception If called on a non-map node. */
   map_t& asMap();
-  const map_t& asMap() const;
+  [[nodiscard]] const map_t& asMap() const;
 
   /// Returns a copy of asMap(), suitable for range-based loops
-  const map_t asMapRange() const { return asMap(); }
+  [[nodiscard]] map_t asMapRange() const { return asMap(); }
 
   /** \exception std::exception If called on a non-scalar node. */
   scalar_t& asScalar();
-  const scalar_t& asScalar() const;
+  [[nodiscard]] const scalar_t& asScalar() const;
 
   /** Returns 1 for null or scalar nodes, the number of children for
    * sequence or map nodes. */
-  size_t size() const;
+  [[nodiscard]] size_t size() const;
 
   /** For a master yaml document, returns the root node; otherwise, the
    * referenced node. */
-  node_t& node() { return *dereferenceProxy(); }
+  [[nodiscard]] node_t& node() { return *dereferenceProxy(); }
   /** \overload */
-  const node_t& node() const { return *dereferenceProxy(); }
+  [[nodiscard]] const node_t& node() const { return *dereferenceProxy(); }
 
   /** Maps only: returns a reference to the key node of a key-value pair.
    * \exception std::exception If called on a non-map node or key does not
    * exist.
    */
-  const node_t& keyNode(const std::string& keyName) const;
-  node_t& keyNode(const std::string& keyName);
+  [[nodiscard]] const node_t& keyNode(const std::string& keyName) const;
+  [[nodiscard]] node_t& keyNode(const std::string& keyName);
 
   /** @} */
 
@@ -476,7 +464,7 @@ class yaml
   /** Write access for maps */
   yaml operator[](const std::string& key);
   /// \overload
-  inline yaml operator[](const char* key)
+  yaml operator[](const char* key)
   {
     ASSERT_(key != nullptr);
     return operator[](std::string(key));
@@ -484,9 +472,9 @@ class yaml
 
   /** Read access  for maps
    * \throw std::runtime_error if key does not exist. */
-  const yaml operator[](const std::string& key) const;
+  [[nodiscard]] yaml operator[](const std::string& key) const;
   /// \overload
-  inline const yaml operator[](const char* key) const
+  [[nodiscard]] yaml operator[](const char* key) const
   {
     ASSERT_(key != nullptr);
     return operator[](std::string(key));
@@ -496,32 +484,37 @@ class yaml
    * exist.
    */
   template <typename T>
-  const T getOrDefault(const std::string& key, const T& defaultValue) const
+  [[nodiscard]] T getOrDefault(const std::string& key, const T& defaultValue) const
   {
     MRPT_START
     const node_t* n = dereferenceProxy();
-    if (n->isNullNode()) return defaultValue;
+    if (n->isNullNode())
+    {
+      return defaultValue;
+    }
     if (!n->isMap())
+    {
       THROW_EXCEPTION_FMT(
-          "getOrDefault() is only for map nodes, invoked on a node "
-          "of "
-          "type: '%s'",
+          "getOrDefault() is only for map nodes, invoked on a node of type: '%s'",
           n->typeName().c_str());
+    }
 
-    const map_t& m = std::get<map_t>(n->d);
+    const auto& m = std::get<map_t>(n->d);
     auto it = m.find(key);
-    if (m.end() == it) return defaultValue;
+    if (m.end() == it)
+    {
+      return defaultValue;
+    }
     try
     {
       return yaml(internal::tag_as_const_proxy_t(), it->second, "").as<T>();
     }
     catch (const std::bad_any_cast& e)
     {
-      throw std::logic_error(mrpt::format(
-          "getOrDefault(): Trying to access key `%s` holding type "
-          "`%s` "
-          "as the wrong type: `%s`",
-          key.c_str(), n->typeName().c_str(), e.what()));
+      throw std::logic_error(
+          mrpt::format(
+              "getOrDefault(): Trying to access key `%s` holding type `%s` as the wrong type: `%s`",
+              key.c_str(), n->typeName().c_str(), e.what()));
     }
     MRPT_END
   }
@@ -542,7 +535,7 @@ class yaml
   /// \overload
   void push_back(uint64_t v) { internalPushBack(v); }
   /// \overload
-  void push_back(bool v) { internalPushBack(bool(v)); }
+  void push_back(bool v) { internalPushBack<bool>(v); }
   /// \overload
   void push_back(const yaml& v)
   {
@@ -564,15 +557,19 @@ class yaml
 
   /** Returns the pointer to the referenced node data, if a proxy, or to
    * the root node otherwise. Will never return nullptr. */
-  const node_t* dereferenceProxy() const;
-  node_t* dereferenceProxy();
+  [[nodiscard]] const node_t* dereferenceProxy() const;
+  [[nodiscard]] node_t* dereferenceProxy();
 
-  explicit yaml(internal::tag_as_proxy_t, node_t& val, const std::string& name) :
-      isProxy_(true), isConstProxy_(false), proxiedMapEntryName_(name), proxiedNode_(&val)
+  explicit yaml(
+      [[maybe_unused]] internal::tag_as_proxy_t dummyName, node_t& val, std::string name) :
+      isProxy_(true), proxiedMapEntryName_(std::move(name)), proxiedNode_(&val)
   {
   }
-  explicit yaml(internal::tag_as_const_proxy_t, const node_t& val, const std::string& name) :
-      isProxy_(true), isConstProxy_(true), proxiedMapEntryName_(name), proxiedNode_(&val)
+  explicit yaml(
+      [[maybe_unused]] internal::tag_as_const_proxy_t dummyName,
+      const node_t& val,
+      std::string name) :
+      isProxy_(true), isConstProxy_(true), proxiedMapEntryName_(std::move(name)), proxiedNode_(&val)
   {
   }
   /** @} */
@@ -636,8 +633,8 @@ class yaml
   }
 
   yaml& operator=(const std::string& v);
-  inline yaml& operator=(const char* v) { return operator=(std::string(v)); }
-  inline yaml& operator=(const std::string_view& v) { return operator=(std::string(v)); }
+  yaml& operator=(const char* v) { return operator=(std::string(v)); }
+  yaml& operator=(const std::string_view& v) { return operator=(std::string(v)); }
   yaml& operator=(const yaml& v);
 
   /** vcp (value-comment) wrapper */
@@ -654,7 +651,10 @@ class yaml
   yaml& operator<<(const ValueKeyCommentPair<T>& vc)
   {
     // Init as map on first use:
-    if (isNullNode()) node().d.emplace<map_t>();
+    if (isNullNode())
+    {
+      node().d.emplace<map_t>();
+    }
     ASSERTMSG_(
         isMap(),
         "<< operator with ValueKeyCommentPair requires a map "
@@ -662,28 +662,28 @@ class yaml
         "on the left hand.");
     operator[](vc.keyname) = vc.value;
     // keyComment:
-    unsigned int posIndex = static_cast<unsigned int>(vc.position);
+    const auto posIndex = static_cast<unsigned int>(vc.position);
     ASSERT_LT_(posIndex, static_cast<unsigned int>(CommentPosition::MAX));
     auto& n = keyNode(vc.keyname);
     n.comments[posIndex].emplace(vc.comment);
     return *this;
   }
 
-  inline operator bool() const { return as<bool>(); }
+  operator bool() const { return as<bool>(); }
 
-  inline operator double() const { return as<double>(); }
-  inline operator float() const { return as<float>(); }
+  operator double() const { return as<double>(); }
+  operator float() const { return as<float>(); }
 
-  inline operator int8_t() const { return as<int8_t>(); }
-  inline operator uint8_t() const { return as<uint8_t>(); }
-  inline operator int16_t() const { return as<int16_t>(); }
-  inline operator uint16_t() const { return as<uint16_t>(); }
-  inline operator int32_t() const { return as<int32_t>(); }
-  inline operator uint32_t() const { return as<uint32_t>(); }
-  inline operator int64_t() const { return as<int64_t>(); }
-  inline operator uint64_t() const { return as<uint64_t>(); }
+  operator int8_t() const { return as<int8_t>(); }
+  operator uint8_t() const { return as<uint8_t>(); }
+  operator int16_t() const { return as<int16_t>(); }
+  operator uint16_t() const { return as<uint16_t>(); }
+  operator int32_t() const { return as<int32_t>(); }
+  operator uint32_t() const { return as<uint32_t>(); }
+  operator int64_t() const { return as<int64_t>(); }
+  operator uint64_t() const { return as<uint64_t>(); }
 
-  inline operator std::string() const { return as<std::string>(); }
+  operator std::string() const { return as<std::string>(); }
   /** @} */
 
   /** @name Leaf node comments API
@@ -691,11 +691,11 @@ class yaml
 
   /** Returns true if the proxied node has an associated comment block, at
    * any location */
-  bool hasComment() const;
+  [[nodiscard]] bool hasComment() const;
 
   /** Returns true if the proxied node has an associated comment block at
    * a particular position */
-  bool hasComment(CommentPosition pos) const;
+  [[nodiscard]] bool hasComment(CommentPosition pos) const;
 
   /** Gets the comment associated to the proxied node. This version
    * returns the first comment, of all possible (top, right).
@@ -703,7 +703,7 @@ class yaml
    * \exception std::exception If there is no comment attached.
    * \sa hasComment()
    */
-  const std::string& comment() const;
+  [[nodiscard]] const std::string& comment() const;
 
   /** Gets the comment associated to the proxied node, at the particular
    * position. See code examples in mrpt::containers::yaml.
@@ -711,7 +711,7 @@ class yaml
    * \exception std::exception If there is no comment attached.
    * \sa hasComment()
    */
-  const std::string& comment(CommentPosition pos) const;
+  [[nodiscard]] const std::string& comment(CommentPosition pos) const;
 
   /** Sets the comment attached to a given proxied node.
    * See code examples in mrpt::containers::yaml
@@ -734,7 +734,7 @@ class yaml
    * block at a particular position. \exception std::exception If called
    * on a non-map or key does not exist.
    */
-  bool keyHasComment(const std::string& key, CommentPosition pos) const;
+  [[nodiscard]] bool keyHasComment(const std::string& key, CommentPosition pos) const;
 
   /** Maps only: Gets the comment associated to the given key. This
    * version returns the first comment, of all possible (top, right).
@@ -743,7 +743,7 @@ class yaml
    * exist. \exception std::exception If there is no comment attached. \sa
    * hasComment()
    */
-  const std::string& keyComment(const std::string& key) const;
+  [[nodiscard]] const std::string& keyComment(const std::string& key) const;
 
   /** Maps only: Gets the comment associated to the given key, at the
    * particular position. See code examples in mrpt::containers::yaml.
@@ -752,7 +752,7 @@ class yaml
    * exist. \exception std::exception If there is no comment attached. \sa
    * hasComment()
    */
-  const std::string& keyComment(const std::string& key, CommentPosition pos) const;
+  [[nodiscard]] const std::string& keyComment(const std::string& key, CommentPosition pos) const;
 
   /** Maps only: Sets the comment attached to a given key.
    * See code examples in mrpt::containers::yaml
@@ -771,7 +771,7 @@ class yaml
   template <typename T>
   friend T internal::implAsGetter(const yaml& p);
   template <typename T>
-  friend T internal::implAnyAsGetter(const scalar_t& p);
+  friend T internal::implAnyAsGetter(const scalar_t& s);
 
   struct InternalPrintState
   {
@@ -900,9 +900,13 @@ void impl_mcp_save(YAML_T& y, const T& var, const char* varName)
   using enum_t = std::remove_cv_t<T>;
 
   if constexpr (std::is_enum_v<enum_t>)
+  {
     y[varName] = mrpt::typemeta::TEnumType<enum_t>::value2name(var);
+  }
   else
+  {
     y[varName] = var;
+  }
 }
 }  // namespace internal
 
@@ -988,7 +992,7 @@ void yaml::internalPushBack(const T& v)
 }
 
 template <typename YAML_NODE>
-inline yaml yaml::FromYAMLCPP(const YAML_NODE& n)
+yaml yaml::FromYAMLCPP(const YAML_NODE& n)
 {
   const auto invalidDbl = std::numeric_limits<double>::max();
 
@@ -1056,13 +1060,13 @@ inline yaml yaml::FromYAMLCPP(const YAML_NODE& n)
 }
 
 template <typename YAML_NODE>
-inline void yaml::loadFromYAMLCPP(const YAML_NODE& n)
+void yaml::loadFromYAMLCPP(const YAML_NODE& n)
 {
   *this = yaml::FromYAMLCPP(n);
 }
 
 template <typename MATRIX>
-inline yaml yaml::FromMatrix(const MATRIX& m)
+yaml yaml::FromMatrix(const MATRIX& m)
 {
   yaml r = mrpt::containers::yaml::Map();
   r["rows"] = static_cast<int64_t>(m.rows());
@@ -1076,7 +1080,7 @@ inline yaml yaml::FromMatrix(const MATRIX& m)
 }
 
 template <typename MATRIX>
-inline void yaml::toMatrix(MATRIX& m) const
+void yaml::toMatrix(MATRIX& m) const
 {
   ASSERT_(isMap());
   ASSERT_(has("rows") && has("cols") && has("data"));
@@ -1108,7 +1112,7 @@ inline void yaml::toMatrix(MATRIX& m) const
 }
 
 template <typename Scalar>
-inline std::vector<Scalar> yaml::toStdVector() const
+std::vector<Scalar> yaml::toStdVector() const
 {
   ASSERT_(isSequence());
   const auto& seq = asSequence();

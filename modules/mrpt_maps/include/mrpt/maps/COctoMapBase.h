@@ -57,7 +57,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
    * \endcode
    */
   template <class OCTOMAP_CLASS>
-  inline OCTOMAP_CLASS& getOctomap()
+  OCTOMAP_CLASS& getOctomap()
   {
     return m_impl->m_octomap;
   }

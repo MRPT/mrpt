@@ -29,7 +29,7 @@ struct queue_register_functions_t
   /** Retrieve the next message in the queue, or nullptr if there is no
    * message. The user MUST call "delete" with the returned object after use.
    */
-  inline bool get(TRegisterFunction& ret)
+  bool get(TRegisterFunction& ret)
   {
     std::lock_guard<std::mutex> lock(funcs_cs);
     if (funcs.empty())

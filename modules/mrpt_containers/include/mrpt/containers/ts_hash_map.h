@@ -128,13 +128,13 @@ class ts_hash_map
       return &(
           *m_vec)[static_cast<std::size_t>(m_idx_outer)][static_cast<std::size_t>(m_idx_inner)];
     }
-    inline const_iterator operator++(int)
+    const_iterator operator++(int)
     { /* Post: it++ */
       const_iterator aux = *this;
       ++(*this);
       return aux;
     }
-    inline const_iterator& operator++()
+    const_iterator& operator++()
     { /* pre: ++it */
       incr();
       return *this;
@@ -180,13 +180,13 @@ class ts_hash_map
       return &(*const_iterator::m_vec)[static_cast<std::size_t>(const_iterator::m_idx_outer)]
                                       [static_cast<std::size_t>(const_iterator::m_idx_inner)];
     }
-    inline iterator operator++(int)
+    iterator operator++(int)
     { /* Post: it++ */
       iterator aux = *this;
       ++(*this);
       return aux;
     }
-    inline iterator& operator++()
+    iterator& operator++()
     { /* pre: ++it */
       const_iterator::incr();
       return *this;

@@ -60,7 +60,7 @@ void do_project_3d_pointcloud_SSE2(
     bool MAKE_ORGANIZED);
 
 template <typename POINTMAP>
-inline void range2XYZ_LUT(
+void range2XYZ_LUT(
     mrpt::viz::PointCloudAdapter<POINTMAP>& pca,
     mrpt::obs::CObservation3DRangeScan& src_obs,
     const mrpt::obs::T3DPointsProjectionParams& pp,
@@ -357,7 +357,7 @@ void unprojectInto(
 
 // Auxiliary functions which implement (un)projection of 3D point clouds:
 template <class POINTMAP>
-inline void do_project_3d_pointcloud(
+void do_project_3d_pointcloud(
     const int H,
     const int W,
     const float* kxs,
@@ -450,7 +450,7 @@ inline void do_project_3d_pointcloud(
 
 // Auxiliary functions which implement (un)projection of 3D point clouds:
 template <class POINTMAP>
-inline void do_project_3d_pointcloud_SSE2(
+void do_project_3d_pointcloud_SSE2(
     const int H,
     const int W,
     const float* kxs,

@@ -34,7 +34,7 @@ class CMatrixF : public mrpt::serialization::CSerializable, public CMatrixFloat
   CMatrixF() : CMatrixFloat(1, 1) {}
 
   /** Constructor */
-  CMatrixF(size_t row, size_t col) : CMatrixFloat(row, col) {}
+  CMatrixF(matrix_dim_t row, matrix_dim_t col) : CMatrixFloat(row, col) {}
 
   /** Copy constructor */
   explicit CMatrixF(const CMatrixFloat& m) : CMatrixFloat(m) {}
@@ -46,7 +46,7 @@ class CMatrixF : public mrpt::serialization::CSerializable, public CMatrixFloat
   /** Assignment operator for float matrixes
    */
   template <class OTHERMAT>
-  inline CMatrixF& operator=(const OTHERMAT& m)
+  CMatrixF& operator=(const OTHERMAT& m)
   {
     CMatrixFloat::operator=(m);
     return *this;
@@ -54,14 +54,14 @@ class CMatrixF : public mrpt::serialization::CSerializable, public CMatrixFloat
 
   /*! Assignment operator from any other Eigen class */
   template <typename OtherDerived>
-  inline CMatrixF& operator=(const Eigen::MatrixBase<OtherDerived>& other)
+  CMatrixF& operator=(const Eigen::MatrixBase<OtherDerived>& other)
   {
     CMatrixDynamic<float>::operator=(other);
     return *this;
   }
   /*! Constructor from any other Eigen class */
   template <typename OtherDerived>
-  inline CMatrixF(const Eigen::MatrixBase<OtherDerived>& other) : CMatrixDynamic<float>(other)
+  CMatrixF(const Eigen::MatrixBase<OtherDerived>& other) : CMatrixDynamic<float>(other)
   {
   }
 

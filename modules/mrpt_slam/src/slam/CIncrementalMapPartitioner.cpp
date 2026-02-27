@@ -203,7 +203,7 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
       }
       m_A(i, j) = m_A(j, i) = s_sym;
     }  // for j
-  }    // i=n-1=new_id
+  }  // i=n-1=new_id
 
   // Self-similatity: Not used
   m_A(new_id, new_id) = 0;
@@ -362,10 +362,10 @@ void CIncrementalMapPartitioner::getAs3DScene(
     CPose3D i_mean;
     i_pdf->getMean(i_mean);
 
-    mrpt::keep_min(bbminx, (int)floor(i_mean.x()));
-    mrpt::keep_min(bbminy, (int)floor(i_mean.y()));
-    mrpt::keep_max(bbmaxx, (int)ceil(i_mean.x()));
-    mrpt::keep_max(bbmaxy, (int)ceil(i_mean.y()));
+    mrpt::keep_min(bbminx, static_cast<int>(floor(i_mean.x())));
+    mrpt::keep_min(bbminy, static_cast<int>(floor(i_mean.y())));
+    mrpt::keep_max(bbmaxx, static_cast<int>(ceil(i_mean.x())));
+    mrpt::keep_max(bbmaxy, static_cast<int>(ceil(i_mean.y())));
 
     viz::CSphere::Ptr i_sph = std::make_shared<viz::CSphere>();
     i_sph->setRadius(0.02f);

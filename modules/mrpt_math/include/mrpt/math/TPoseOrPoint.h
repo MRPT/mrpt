@@ -69,9 +69,9 @@ namespace internal
 template <typename Derived>
 struct ProvideStaticResize
 {
-  constexpr std::size_t rows() const { return Derived::static_size; }
-  constexpr std::size_t cols() const { return 1; }
-  constexpr std::size_t size() const { return Derived::static_size; }
+  [[nodiscard]] constexpr std::size_t rows() const { return Derived::static_size; }
+  [[nodiscard]] constexpr std::size_t cols() const { return 1; }
+  [[nodiscard]] constexpr std::size_t size() const { return Derived::static_size; }
 
   /** throws if attempted to resize to incorrect length */
   void resize(std::size_t n) { ASSERT_EQUAL_(n, Derived::static_size); }
@@ -94,7 +94,7 @@ template <
     typename = std::enable_if_t<std::is_base_of_v<mrpt::math::TPoseOrPoint, PoseOrPoint>>>
 mrpt::serialization::CArchive& operator>>(mrpt::serialization::CArchive& in, PoseOrPoint& o)
 {
-  for (int i = 0; i < o.static_size; i++)
+  for (size_t i = 0; i < o.static_size; i++)
   {
     in >> o[i];
   }
@@ -107,7 +107,7 @@ template <
     typename = std::enable_if_t<std::is_base_of_v<mrpt::math::TPoseOrPoint, PoseOrPoint>>>
 mrpt::serialization::CArchive& operator<<(mrpt::serialization::CArchive& out, const PoseOrPoint& o)
 {
-  for (int i = 0; i < o.static_size; i++)
+  for (size_t i = 0; i < o.static_size; i++)
   {
     out << o[i];
   }

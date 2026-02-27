@@ -281,7 +281,7 @@ void CObservationPointCloud::load_impl() const
 
       pc->resize(data.rows());
       std::vector<float> vals(data.cols());
-      for (int i = 0; i < data.rows(); i++)
+      for (size_t i = 0; i < data.rows(); i++)
       {
         data.extractRow(i, vals);
         pc->setPointAllFieldsFast(i, vals);

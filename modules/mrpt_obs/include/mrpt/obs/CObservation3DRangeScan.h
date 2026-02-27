@@ -228,7 +228,7 @@ class CObservation3DRangeScan : public CObservation
    * mrpt::viz::CPointCloudColoured, PCL point clouds,...)
    */
   template <class POINTMAP>
-  inline void unprojectInto(
+  void unprojectInto(
       POINTMAP& dest_pointcloud,
       const T3DPointsProjectionParams& projectParams = T3DPointsProjectionParams(),
       const TRangeImageFilterParams& filterParams = TRangeImageFilterParams())
@@ -612,44 +612,44 @@ class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
   static constexpr bool HAS_RGBu8 = false;
 
   /** Constructor (accept a const ref for convenience) */
-  inline explicit PointCloudAdapter(const mrpt::obs::CObservation3DRangeScan& obj) :
+  explicit PointCloudAdapter(const mrpt::obs::CObservation3DRangeScan& obj) :
       m_obj(*const_cast<mrpt::obs::CObservation3DRangeScan*>(&obj))
   {
   }
   /** Get number of points */
-  inline size_t size() const { return m_obj.points3D_x.size(); }
+  size_t size() const { return m_obj.points3D_x.size(); }
   /** Set number of points (to uninitialized values) */
-  inline void resize(size_t N)
+  void resize(size_t N)
   {
     if (N) m_obj.hasPoints3D = true;
     m_obj.resizePoints3DVectors(N);
   }
   /** Does nothing as of now */
-  inline void setDimensions(size_t height, size_t width) {}
+  void setDimensions(size_t height, size_t width) {}
   /** Get XYZ coordinates of i'th point */
   template <typename T>
-  inline void getPointXYZ(size_t idx, T& x, T& y, T& z) const
+  void getPointXYZ(size_t idx, T& x, T& y, T& z) const
   {
     x = m_obj.points3D_x[idx];
     y = m_obj.points3D_y[idx];
     z = m_obj.points3D_z[idx];
   }
   /** Set XYZ coordinates of i'th point */
-  inline void setPointXYZ(size_t idx, const coords_t x, const coords_t y, const coords_t z)
+  void setPointXYZ(size_t idx, const coords_t x, const coords_t y, const coords_t z)
   {
     m_obj.points3D_x[idx] = x;
     m_obj.points3D_y[idx] = y;
     m_obj.points3D_z[idx] = z;
   }
   /** Set XYZ coordinates of i'th point */
-  inline void setInvalidPoint(size_t idx)
+  void setInvalidPoint(size_t idx)
   {
     m_obj.points3D_x[idx] = 0;
     m_obj.points3D_y[idx] = 0;
     m_obj.points3D_z[idx] = 0;
   }
   /** Set RGBu8 coordinates of i'th point */
-  inline void setPointRGBu8(size_t idx, const uint8_t r, const uint8_t g, const uint8_t b)
+  void setPointRGBu8(size_t idx, const uint8_t r, const uint8_t g, const uint8_t b)
   { /* Nothing */
   }
 

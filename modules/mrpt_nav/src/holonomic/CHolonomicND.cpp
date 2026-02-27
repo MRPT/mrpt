@@ -180,7 +180,7 @@ void CHolonomicND::gapsEstimator(
 
         is_inside = false;
 
-        if ((sec_end - sec_ini) >= (size_t)GAPS_MIN_WIDTH)
+        if ((sec_end - sec_ini) >= static_cast<size_t>(GAPS_MIN_WIDTH))
         {
           // Add new gap:
           gaps_temp.resize(gaps_temp.size() + 1);
@@ -439,7 +439,7 @@ void CHolonomicND::calcRepresentativeSectorForGap(
     int i;
     for (i = gap.ini; i >= max(0, gap.ini - 2); i--)
       min_dist_obs_near_ini = min(min_dist_obs_near_ini, obstacles[i]);
-    for (i = gap.end; i <= min((int)obstacles.size() - 1, gap.end + 2); i++)
+    for (i = gap.end; i <= min(static_cast<int>(obstacles.size()) - 1, gap.end + 2); i++)
       min_dist_obs_near_end = min(min_dist_obs_near_end, obstacles[i]);
     sector = round(
         (min_dist_obs_near_ini * gap.ini + min_dist_obs_near_end * gap.end) /
@@ -586,7 +586,7 @@ uint8_t CLogFileRecord_ND::serializeGetVersion() const { return 1; }
 void CLogFileRecord_ND::serializeTo(mrpt::serialization::CArchive& out) const
 {
   out << gaps_ini << gaps_end << gaps_eval;
-  out << selectedSector << evaluation << riskEvaluation << (uint32_t)situation;
+  out << selectedSector << evaluation << riskEvaluation << static_cast<uint32_t>(situation);
 }
 
 void CLogFileRecord_ND::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)

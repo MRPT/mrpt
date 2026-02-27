@@ -69,8 +69,7 @@ void TUserOptionsChecker<GRAPH_t>::_createDeciderOptimizerMappings()
 
 // deciders/optpimizers specific to the 2D SLAM cases
 template <>
-inline void
-TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses2DInf>::_createDeciderOptimizerMappings()
+void TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses2DInf>::_createDeciderOptimizerMappings()
 {
   using namespace mrpt::graphs;
 
@@ -82,8 +81,7 @@ TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses2DInf>::_createDeciderOptimizer
       &createEdgeRegistrationDecider<CLoopCloserERD<CNetworkOfPoses2DInf>>;
 }
 template <>
-inline void
-TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses2DInf_NA>::_createDeciderOptimizerMappings()
+void TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses2DInf_NA>::_createDeciderOptimizerMappings()
 {
   using namespace mrpt::graphs;
 
@@ -97,8 +95,7 @@ TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses2DInf_NA>::_createDeciderOptimi
 
 // deciders/optpimizers specific to the 3D SLAM cases
 template <>
-inline void
-TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses3DInf>::_createDeciderOptimizerMappings()
+void TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses3DInf>::_createDeciderOptimizerMappings()
 {
 }
 

@@ -550,10 +550,10 @@ void CSerialPort::setConfig(
 
 void CSerialPort::setTimeouts(
     int ReadIntervalTimeout,
-    int ReadTotalTimeoutMultiplier,
+    [[maybe_unused]] int ReadTotalTimeoutMultiplier,
     int ReadTotalTimeoutConstant,
-    int WriteTotalTimeoutMultiplier,
-    int WriteTotalTimeoutConstant)
+    [[maybe_unused]] int WriteTotalTimeoutMultiplier,
+    [[maybe_unused]] int WriteTotalTimeoutConstant)
 {
   MRPT_START
 #ifdef _WIN32
@@ -663,7 +663,7 @@ size_t CSerialPort::Read(void* Buffer, size_t Count)
   m_timer.Tic();
 
   size_t alreadyRead = 0;
-  int leftTime = m_totalTimeout_ms - (int)(m_timer.Tac() * 1000);
+  int leftTime = m_totalTimeout_ms - static_cast<int>(m_timer.Tac() * 1000);
 
   while (alreadyRead < Count && leftTime >= 0)
   {
@@ -685,9 +685,9 @@ size_t CSerialPort::Read(void* Buffer, size_t Count)
 
     if (waiting_bytes > 0)
     {
-      int nToRead = min((size_t)waiting_bytes, Count - alreadyRead);
+      int nToRead = min(static_cast<size_t>(waiting_bytes), Count - alreadyRead);
 
-      if ((nRead = ::read(hCOM, ((char*)Buffer) + alreadyRead, nToRead)) < 0)
+      if ((nRead = ::read(hCOM, reinterpret_cast<char*>(Buffer) + alreadyRead, nToRead)) < 0)
       {
         cerr << "[CSerialPort] read() returned " << nRead << ", errno=" << errno << "\n";
       }
@@ -708,7 +708,7 @@ size_t CSerialPort::Read(void* Buffer, size_t Count)
     }
 
     // Reset interbytes timer:
-    leftTime = m_totalTimeout_ms - (int)(m_timer.Tac() * 1000);
+    leftTime = m_totalTimeout_ms - static_cast<int>(m_timer.Tac() * 1000);
     if (nRead > 0) leftTime = max(leftTime, m_interBytesTimeout_ms);
   }
 

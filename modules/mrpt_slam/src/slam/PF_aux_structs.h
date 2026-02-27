@@ -33,7 +33,7 @@ struct TPoseBin2D
   /** less-than ordering of bins for usage in STL containers */
   struct lt_operator
   {
-    inline bool operator()(const TPoseBin2D& s1, const TPoseBin2D& s2) const
+    bool operator()(const TPoseBin2D& s1, const TPoseBin2D& s2) const
     {
       if (s1.x < s2.x)
       {

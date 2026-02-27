@@ -48,8 +48,8 @@ inline std::string to_string<>(bool v)
   return v ? "true" : "false";
 }
 template <>
-inline std::string to_string<>(const char* s)
+inline std::string to_string<>(const char* v)
 {
-  return std::string(s);
+  return {v};
 }
 }  // namespace mrpt

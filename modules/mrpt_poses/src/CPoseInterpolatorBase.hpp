@@ -449,8 +449,8 @@ void CPoseInterpolatorBase<DIM>::filter(unsigned int component, unsigned int sam
   int ant, post;
   size_t nitems = size();
 
-  post = (samples % 2) ? (unsigned int)(samples / 2) : samples / 2;
-  ant = (unsigned int)(samples / 2);
+  post = (samples % 2) ? static_cast<unsigned int>(samples / 2) : samples / 2;
+  ant = static_cast<unsigned int>(samples / 2);
 
   int k = 0;
   iterator it1, it2, it3;
@@ -461,7 +461,7 @@ void CPoseInterpolatorBase<DIM>::filter(unsigned int component, unsigned int sam
     it2 = m_path.begin();
     if (k - ant > 0) advance(it2, k - ant);
 
-    if (k + post < (int)nitems)
+    if (k + post < static_cast<int>(nitems))
     {
       it3 = m_path.begin();
       advance(it3, k + post + 1);

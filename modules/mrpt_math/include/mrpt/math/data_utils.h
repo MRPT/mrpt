@@ -100,7 +100,7 @@ template <class VECTORLIKE1, class VECTORLIKE2, class MAT>
  *  \f[ d = \sqrt{ (X-MU)^\top \Sigma^{-1} (X-MU) }  \f]
  */
 template <class VECTORLIKE1, class VECTORLIKE2, class MAT>
-inline typename VECTORLIKE1::Scalar mahalanobisDistance(
+typename VECTORLIKE1::Scalar mahalanobisDistance(
     const VECTORLIKE1& X, const VECTORLIKE2& MU, const MAT& COV)
 {
   return std::sqrt(mahalanobisDistanceSq(X, MU, COV));
@@ -139,7 +139,7 @@ typename MAT1::Scalar mahalanobisDistanceSq(
  * \Delta_\mu } \f]
  */
 template <class VECTORLIKE, class MAT1, class MAT2, class MAT3>
-inline typename VECTORLIKE::Scalar mahalanobisDistance(
+typename VECTORLIKE::Scalar mahalanobisDistance(
     const VECTORLIKE& mean_diffs, const MAT1& COV1, const MAT2& COV2, const MAT3& CROSS_COV12)
 {
   return std::sqrt(mahalanobisDistance(mean_diffs, COV1, COV2, CROSS_COV12));
@@ -151,7 +151,7 @@ inline typename VECTORLIKE::Scalar mahalanobisDistance(
  *  \f[ d^2 = \Delta_\mu^\top \Sigma^{-1} \Delta_\mu  \f]
  */
 template <class VECTORLIKE, class MATRIXLIKE>
-inline typename MATRIXLIKE::Scalar mahalanobisDistanceSq(
+typename MATRIXLIKE::Scalar mahalanobisDistanceSq(
     const VECTORLIKE& delta_mu, const MATRIXLIKE& cov)
 {
   ASSERTDEB_(cov.isSquare());
@@ -165,7 +165,7 @@ inline typename MATRIXLIKE::Scalar mahalanobisDistanceSq(
  *  \f[ d^2 = \sqrt( \Delta_\mu^\top \Sigma^{-1} \Delta_\mu ) \f]
  */
 template <class VECTORLIKE, class MATRIXLIKE>
-inline typename MATRIXLIKE::Scalar mahalanobisDistance(
+typename MATRIXLIKE::Scalar mahalanobisDistance(
     const VECTORLIKE& delta_mu, const MATRIXLIKE& cov)
 {
   return std::sqrt(mahalanobisDistanceSq(delta_mu, cov));
@@ -275,7 +275,7 @@ void mahalanobisDistanceSqAndLogPDF(
  * \sa productIntegralTwoGaussians, mahalanobisDistanceSq, normalPDF
  */
 template <typename T, class VECLIKE, class MATRIXLIKE>
-inline void mahalanobisDistanceSqAndPDF(
+void mahalanobisDistanceSqAndPDF(
     const VECLIKE& diff_mean, const MATRIXLIKE& cov, T& maha2_out, T& pdf_out)
 {
   mahalanobisDistanceSqAndLogPDF(diff_mean, cov, maha2_out, pdf_out);
@@ -307,7 +307,7 @@ template <
     class VECTORLIKE,
     class VECTORLIKE2,
     class VECTORLIKE3>
-inline void covariancesAndMeanWeighted(  // Done inline to speed-up the special case
+void covariancesAndMeanWeighted(  // Done to speed-up the special case
                                          // expanded in covariancesAndMean() below.
     const VECTOR_OF_VECTORS& elements,
     MATRIXLIKE& covariances,

@@ -87,7 +87,7 @@ class CBinaryRelation
    * GCC).
    */
   template <typename FunctionType>
-  inline void applyFunction(FunctionType fun, size_t e1, size_t e2, const T& T1, const T& T2)
+  void applyFunction(FunctionType fun, size_t e1, size_t e2, const T& T1, const T& T2)
   {
     detail::applyFunction<T, U, UIsObject, FunctionType>(*this, fun, e1, e2, T1, T2);
   }
@@ -96,7 +96,7 @@ class CBinaryRelation
   /**
    * Default constructor, doesn't initialize the relation.
    */
-  explicit inline CBinaryRelation(const std::set<T>& els) :
+  explicit CBinaryRelation(const std::set<T>& els) :
       elements(els), relation(els.size(), els.size())
   {
   }
@@ -104,7 +104,7 @@ class CBinaryRelation
    * Constructor which initializes the relation using a given function.
    */
   template <typename FunctionType>
-  inline CBinaryRelation(const std::set<T>& els, FunctionType fun) :
+  CBinaryRelation(const std::set<T>& els, FunctionType fun) :
       elements(els), relation(els.size(), els.size())
   {
     initializeWith(fun);
@@ -145,23 +145,23 @@ class CBinaryRelation
   /**
    * Manually set a relationship value, given the indices.
    */
-  inline void setRelationValue(size_t e1, size_t e2, const U& newVal) { relation(e1, e2) = newVal; }
+  void setRelationValue(size_t e1, size_t e2, const U& newVal) { relation(e1, e2) = newVal; }
   /**
    * Get a relation value, given the indices.
    */
-  inline const U& getRelationValue(size_t e1, size_t e2) const { return relation(e1, e2); }
-  inline const U& operator()(size_t e1, size_t e2) const { return getRelationValue(e1, e2); }
+  const U& getRelationValue(size_t e1, size_t e2) const { return relation(e1, e2); }
+  const U& operator()(size_t e1, size_t e2) const { return getRelationValue(e1, e2); }
   /**
    * Get a reference to a relation value given its indices, which allows both
    * querying and setting the value.
    */
-  inline U& getRelationValue(size_t e1, size_t e2) { return relation(e1, e2); }
-  inline U& operator()(size_t e1, size_t e2) { return getRelationValue(e1, e2); }
+  U& getRelationValue(size_t e1, size_t e2) { return relation(e1, e2); }
+  U& operator()(size_t e1, size_t e2) { return getRelationValue(e1, e2); }
   /**
    * Manually set a relationship value, given the elements. Returns false if
    * any of the elements is not present.
    */
-  inline bool setRelationValue(const T& t1, const T& t2, const U& newVal)
+  bool setRelationValue(const T& t1, const T& t2, const U& newVal)
   {
     typename std::set<T>::const_iterator b = elements.begin(), e = elements.end();
     typename std::set<T>::const_iterator it1 = std::find(b, e, t1), it2 = std::find(b, e, t2);
@@ -178,7 +178,7 @@ class CBinaryRelation
    * Get a relation value, given the elements. Throws domain_error if any of
    * the elements is not present.
    */
-  inline U getRelationValue(const T& t1, const T& t2) const
+  U getRelationValue(const T& t1, const T& t2) const
   {
     typename std::set<T>::const_iterator b = elements.begin(), e = elements.end();
     typename std::set<T>::const_iterator it1 = std::find(b, e, t1), it2 = std::find(b, e, t2);
@@ -192,7 +192,7 @@ class CBinaryRelation
    * not
    * present.
    */
-  inline U& getRelationValue(const T& t1, const T& t2)
+  U& getRelationValue(const T& t1, const T& t2)
   {
     typename std::set<T>::const_iterator b = elements.begin(), e = elements.end();
     typename std::set<T>::const_iterator it1 = std::find(b, e, t1), it2 = std::find(b, e, t2);
@@ -203,19 +203,19 @@ class CBinaryRelation
   /**
    * Gets an iterator to the starting point of the elements set.
    */
-  inline const_iterator begin() const { return elements.begin(); }
+  const_iterator begin() const { return elements.begin(); }
   /**
    * Gets an iterator to the ending point of the elements set.
    */
-  inline const_iterator end() const { return elements.end(); }
+  const_iterator end() const { return elements.end(); }
   /**
    * Gets a reverse iterator to the ending point of the elements set.
    */
-  inline const_reverse_iterator rbegin() const { return elements.rbegin(); }
+  const_reverse_iterator rbegin() const { return elements.rbegin(); }
   /**
    * Gets a reverse iterator to the starting point of the elements set.
    */
-  inline const_reverse_iterator rend() const { return elements.rend(); }
+  const_reverse_iterator rend() const { return elements.rend(); }
   /**
    * Operator for direct access to a element given its index.
    */
@@ -230,7 +230,7 @@ class CBinaryRelation
    * Gets an accessor for every value related to an element A given its
    * index, i.e., every f(A,x). This accessor is iterable.
    */
-  inline AccessorForFirstElement getRelationFrom(size_t i)
+  AccessorForFirstElement getRelationFrom(size_t i)
   {
     return AccessorForFirstElement(relation, i);
   }
@@ -238,7 +238,7 @@ class CBinaryRelation
    * Gets a constant accessor for every value related to an element A given
    * its index, i.e., every f(A,x). This accessor is iterable.
    */
-  inline ConstAccessorForFirstElement getRelationFrom(size_t i) const
+  ConstAccessorForFirstElement getRelationFrom(size_t i) const
   {
     return ConstAccessorForFirstElement(relation, i);
   }
@@ -246,7 +246,7 @@ class CBinaryRelation
    * Gets an accessor for every value related to an element B given its
    * index, i.e., every f(x,B). This accessor is iterable.
    */
-  inline AccessorForSecondElement getRelationTo(size_t i)
+  AccessorForSecondElement getRelationTo(size_t i)
   {
     return AccessorForSecondElement(relation, i);
   }
@@ -254,7 +254,7 @@ class CBinaryRelation
    * Gets a constant accessor for every value related to an element B given
    * its index, i.e., every f(x,B). This accessor is fully iterable.
    */
-  inline ConstAccessorForSecondElement getRelationTo(size_t i) const
+  ConstAccessorForSecondElement getRelationTo(size_t i) const
   {
     return ConstAccessorForSecondElement(relation, i);
   }
@@ -263,7 +263,7 @@ class CBinaryRelation
    * every f(A,x). A domain_error will be thrown if the element is not
    * present.
    */
-  inline AccessorForFirstElement getRelationFrom(const T& t)
+  AccessorForFirstElement getRelationFrom(const T& t)
   {
     typename std::set<T>::const_iterator b = elements.begin(), e = elements.end();
     typename std::set<T>::const_iterator it = std::find(b, e, t);
@@ -276,14 +276,14 @@ class CBinaryRelation
    * not
    * present.
    */
-  inline ConstAccessorForFirstElement getRelationFrom(const T& t) const
+  ConstAccessorForFirstElement getRelationFrom(const T& t) const
   {
     typename std::set<T>::const_iterator b = elements.begin(), e = elements.end();
     typename std::set<T>::const_iterator it = std::find(b, e, t);
     if (it == e) throw std::domain_error("Element not found");
     return getRelationFrom(static_cast<size_t>(std::distance(b, it)));
   }
-  inline void getRelationFrom(size_t i, vector<U>& vec)
+  void getRelationFrom(size_t i, vector<U>& vec)
   {
     size_t N = elements.size();
     ASSERT_(i < N);
@@ -291,7 +291,7 @@ class CBinaryRelation
     ConstAccessorForFirstElement access(relation, i);
     std::copy(access.begin(), access.end(), vec.begin());
   }
-  inline void getRelationFrom(const T& t, vector<U>& vec)
+  void getRelationFrom(const T& t, vector<U>& vec)
   {
     typename std::set<T>::const_iterator b = elements.begin(), e = elements.end();
     typename std::set<T>::const_iterator it = std::find(b, e, t);
@@ -303,7 +303,7 @@ class CBinaryRelation
    * every f(x,B). A domain_error will be thrown if the element is not
    * present.
    */
-  inline AccessorForSecondElement getRelationTo(const T& t)
+  AccessorForSecondElement getRelationTo(const T& t)
   {
     typename std::set<T>::const_iterator b = elements.begin(), e = elements.end();
     typename std::set<T>::const_iterator it = std::find(b, e, t);
@@ -316,14 +316,14 @@ class CBinaryRelation
    * not
    * present.
    */
-  inline ConstAccessorForSecondElement getRelationTo(const T& t) const
+  ConstAccessorForSecondElement getRelationTo(const T& t) const
   {
     typename std::set<T>::const_iterator b = elements.begin(), e = elements.end();
     typename std::set<T>::const_iterator it = std::find(b, e, t);
     if (it == e) throw std::domain_error("Element not found");
     return getRelationTo(static_cast<size_t>(std::distance(b, it)));
   }
-  inline void getRelationTo(size_t i, vector<U>& vec)
+  void getRelationTo(size_t i, vector<U>& vec)
   {
     size_t N = elements.size();
     ASSERT_(i < N);
@@ -331,7 +331,7 @@ class CBinaryRelation
     ConstAccessorForSecondElement access(relation, i);
     std::copy(access.begin(), access.end(), vec.begin());
   }
-  inline void getRelationTo(const T& t, vector<U>& vec)
+  void getRelationTo(const T& t, vector<U>& vec)
   {
     typename std::set<T>::const_iterator b = elements.begin(), e = elements.end();
     typename std::set<T>::const_iterator it = std::find(b, e, t);
@@ -524,14 +524,14 @@ class CBinaryRelation
   /**
    * Returns the amount of elements present in the relation.
    */
-  inline size_t size() const { return elements.size(); }
+  size_t size() const { return elements.size(); }
 };
 
 namespace detail
 {
 // generic version (specialization is after definition of CBinaryRelation):
 template <typename T, typename U, bool UIsObject, typename FunctionType>
-inline void applyFunction(
+void applyFunction(
     CBinaryRelation<T, U, UIsObject>& o,
     FunctionType fun,
     size_t e1,
@@ -545,7 +545,7 @@ inline void applyFunction(
 /** Template specialization by reference type.
  */
 template <typename T, typename U, bool UIsObject>
-inline void applyFunction(
+void applyFunction(
     CBinaryRelation<T, U, UIsObject>& o,
     typename CBinaryRelation<T, U, UIsObject>::FunctionByReferencePass fun,
     size_t e1,

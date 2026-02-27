@@ -163,7 +163,7 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
    *mrpt::dynamicsize_vector<float/double> or a column/row Eigen::Matrix<>
    */
   template <typename VEC1, typename VEC2, typename = typename VEC2::Scalar>
-  inline void plot(
+  void plot(
       const VEC1& x,
       const VEC2& y,
       const std::string& lineFormat = std::string("b-"),
@@ -173,7 +173,7 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
   }
   //! \overload (for std::vector)
   template <typename T>
-  inline void plot(
+  void plot(
       const std::vector<T>& x,
       const std::vector<T>& y,
       const std::string& lineFormat = std::string("b-"),
@@ -267,7 +267,7 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
    * same).
    * \sa plot, hold_on, hold_off
    */
-  inline void clf() { clear(); }
+  void clf() { clear(); }
   /** Enables keeping all the graphs, instead of overwriting them.
    * \sa hold_off, plot
    */

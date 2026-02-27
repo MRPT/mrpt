@@ -101,7 +101,7 @@ class CObservationStereoImagesFeatures : public CObservation
    * derived classes for more details or special cases.
    * \sa getSensorPose
    */
-  inline void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override
+  void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override
   {
     cameraPoseOnRobot = mrpt::poses::CPose3DQuat(newSensorPose);
   }
@@ -112,7 +112,7 @@ class CObservationStereoImagesFeatures : public CObservation
    * derived classes for more details or special cases.
    * \sa getSensorPose
    */
-  inline void setSensorPose(const mrpt::poses::CPose3DQuat& newSensorPose)
+  void setSensorPose(const mrpt::poses::CPose3DQuat& newSensorPose)
   {
     cameraPoseOnRobot = newSensorPose;
   }

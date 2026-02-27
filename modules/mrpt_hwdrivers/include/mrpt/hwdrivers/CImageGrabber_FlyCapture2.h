@@ -271,7 +271,7 @@ class CImageGrabber_FlyCapture2
   bool getObservation(mrpt::obs::CObservationStereoImages& out_observation);
 
   /** Returns if current configuration is stereo or not */
-  inline bool isStereo() { return m_options.stereo_mode; }
+  bool isStereo() { return m_options.stereo_mode; }
 };  // End of class
 static_assert(
     !std::is_copy_constructible_v<CImageGrabber_FlyCapture2> &&

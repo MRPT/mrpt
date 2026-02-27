@@ -64,7 +64,7 @@ void CMatrixD::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
 /** Serialize CSchemeArchiveBase derived object to CSerializable Object*/
 void CMatrixD::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 {
-  uint8_t version;
+  int version = 0;
   SCHEMA_DESERIALIZE_DATATYPE_VERSION();
   switch (version)
   {

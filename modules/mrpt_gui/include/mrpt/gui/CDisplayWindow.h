@@ -249,7 +249,7 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
   /** Enables or disables the visualization of cursor coordinates on the
    * window caption (default = enabled).
    */
-  inline void enableCursorCoordinatesVisualization(bool enable)
+  void enableCursorCoordinatesVisualization(bool enable)
   {
     m_enableCursorCoordinates = enable;
   }

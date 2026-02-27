@@ -1801,8 +1801,8 @@ CMatrixDouble44 math::generateAxisBaseFromDirectionAndAxis(const TVector3D& vec,
   CMatrixDouble44 m;
   // Assumes vector is unitary.
   // coord: 0=x, 1=y, 2=z.
-  const uint8_t coord1 = (coord + 1) % 3;
-  const uint8_t coord2 = (coord + 2) % 3;
+  const uint8_t coord1 = static_cast<uint8_t>(coord + 1) % 3;
+  const uint8_t coord2 = static_cast<uint8_t>(coord + 2) % 3;
   m.setZero();
   m(3, 3) = 1.0;
   for (size_t i = 0; i < 3; i++) m(i, coord) = vec[i];

@@ -14,7 +14,6 @@
 
 #pragma once
 
-#include <mrpt/slam/config.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
 #include <mrpt/math/data_utils.h>     // averageLogLikelihood()
@@ -25,6 +24,7 @@
 #include <mrpt/random.h>
 #include <mrpt/slam/PF_implementations_data.h>
 #include <mrpt/slam/TKLDParams.h>
+#include <mrpt/slam/config.h>
 
 #include <cmath>
 #include <set>
@@ -324,7 +324,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::PF_SLAM_implementation_p
           }
         }
         N = newParticles.size();
-      } while (N < std::max(Nx, (size_t)KLD_options.KLD_minSampleSize) &&
+      } while (N < std::max(Nx, static_cast<size_t>(KLD_options.KLD_minSampleSize)) &&
                N < KLD_options.KLD_maxSampleSize);
 
       // ---------------------------------------------------------------------------------
@@ -717,7 +717,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
       newParticlesWeight[i] = newParticleLogWeight;
 
     }  // for i
-  }    // end fixed sample size
+  }  // end fixed sample size
   else
   {
     // -------------------------------------------------------------------------------------------------
@@ -846,8 +846,9 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
           ASSERT_(k < me->m_particles.size());
 
           // Also erase it from the other permutation vector list:
-          oldPartIdxsStillNotPropragated.erase(std::find(
-              oldPartIdxsStillNotPropragated.begin(), oldPartIdxsStillNotPropragated.end(), k));
+          oldPartIdxsStillNotPropragated.erase(
+              std::find(
+                  oldPartIdxsStillNotPropragated.begin(), oldPartIdxsStillNotPropragated.end(), k));
         }
         else
         {

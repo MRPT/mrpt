@@ -51,15 +51,15 @@ namespace mrpt::math
  *
  *  \code
  *   // Must return the number of data points
- *   inline size_t kdtree_get_point_count() const { ... }
+ *   size_t kdtree_get_point_count() const { ... }
  *
  *   // Returns the distance between the vector "p1[0:size-1]" and the data
  * point with index "idx_p2" stored in the class:
- *   inline float kdtree_distance(
+ *   float kdtree_distance(
  *     const float *p1, const size_t idx_p2,size_t size) const { ... }
  *
  *   // Returns the dim'th component of the idx'th point in the class:
- *   inline num_t kdtree_get_pt(const size_t idx, int dim) const { ... }
+ *   num_t kdtree_get_pt(const size_t idx, int dim) const { ... }
  *
  *   // Optional bounding-box computation: return false to default to a
  *   // standard bbox computation loop. Return true if the BBOX was already
@@ -100,7 +100,7 @@ class KDTreeCapable
   // ---------------------
 
   /// Constructor
-  inline KDTreeCapable() = default;
+  KDTreeCapable() = default;
   KDTreeCapable(const KDTreeCapable&) : KDTreeCapable() {}
   KDTreeCapable& operator=(const KDTreeCapable&)
   {
@@ -109,9 +109,9 @@ class KDTreeCapable
   }
 
   /// CRTP helper method
-  inline const Derived& derived() const { return *static_cast<const Derived*>(this); }
+  const Derived& derived() const { return *static_cast<const Derived*>(this); }
   /// CRTP helper method
-  inline Derived& derived() { return *static_cast<Derived*>(this); }
+  Derived& derived() { return *static_cast<Derived*>(this); }
   struct TKDTreeSearchParams
   {
     TKDTreeSearchParams() = default;
@@ -143,7 +143,7 @@ class KDTreeCapable
    * \return The index of the closest point in the map array.
    *  \sa kdTreeClosestPoint3D, kdTreeTwoClosestPoint2D
    */
-  inline size_t kdTreeClosestPoint2D(
+  size_t kdTreeClosestPoint2D(
       float x0, float y0, float& out_x, float& out_y, float& out_dist_sqr) const
   {
     MRPT_START
@@ -169,7 +169,7 @@ class KDTreeCapable
   }
 
   /// \overload
-  inline size_t kdTreeClosestPoint2D(float x0, float y0, float& out_dist_sqr) const
+  size_t kdTreeClosestPoint2D(float x0, float y0, float& out_dist_sqr) const
   {
     MRPT_START
     rebuild_kdTree_2D();  // First: Create the 2D KD-Tree if required
@@ -190,7 +190,7 @@ class KDTreeCapable
   }
 
   /// \overload
-  inline size_t kdTreeClosestPoint2D(const TPoint2D& p0, TPoint2D& pOut, float& outDistSqr) const
+  size_t kdTreeClosestPoint2D(const TPoint2D& p0, TPoint2D& pOut, float& outDistSqr) const
   {
     float dmy1, dmy2;
     size_t res = kdTreeClosestPoint2D(d2f(p0.x), d2f(p0.y), dmy1, dmy2, outDistSqr);
@@ -202,14 +202,14 @@ class KDTreeCapable
   /** Like kdTreeClosestPoint2D, but just return the square error from some
    * point to its closest neighbor.
    */
-  inline float kdTreeClosestPoint2DsqrError(float x0, float y0) const
+  float kdTreeClosestPoint2DsqrError(float x0, float y0) const
   {
     float closerx, closery, closer_dist;
     kdTreeClosestPoint2D(x0, y0, closerx, closery, closer_dist);
     return closer_dist;
   }
 
-  inline float kdTreeClosestPoint2DsqrError(const TPoint2D& p0) const
+  float kdTreeClosestPoint2DsqrError(const TPoint2D& p0) const
   {
     return kdTreeClosestPoint2DsqrError(d2f(p0.x), d2f(p0.y));
   }
@@ -234,7 +234,7 @@ class KDTreeCapable
    *
    *  \sa kdTreeClosestPoint2D
    */
-  inline void kdTreeTwoClosestPoint2D(
+  void kdTreeTwoClosestPoint2D(
       float x0,
       float y0,
       float& out_x1,
@@ -271,7 +271,7 @@ class KDTreeCapable
     MRPT_END
   }
 
-  inline void kdTreeTwoClosestPoint2D(
+  void kdTreeTwoClosestPoint2D(
       const TPoint2D& p0,
       TPoint2D& pOut1,
       TPoint2D& pOut2,
@@ -309,7 +309,7 @@ class KDTreeCapable
    *  \sa kdTreeClosestPoint2D
    *  \sa kdTreeTwoClosestPoint2D
    */
-  inline std::vector<size_t> kdTreeNClosestPoint2D(
+  std::vector<size_t> kdTreeNClosestPoint2D(
       float x0,
       float y0,
       size_t knn,
@@ -361,7 +361,7 @@ class KDTreeCapable
     MRPT_END
   }
 
-  inline std::vector<size_t> kdTreeNClosestPoint2D(
+  std::vector<size_t> kdTreeNClosestPoint2D(
       const TPoint2D& p0,
       size_t N,
       std::vector<TPoint2D>& pOut,
@@ -398,7 +398,7 @@ class KDTreeCapable
    *
    *  \sa kdTreeClosestPoint2D
    */
-  inline void kdTreeNClosestPoint2DIdx(
+  void kdTreeNClosestPoint2DIdx(
       float x0,
       float y0,
       size_t knn,
@@ -440,7 +440,7 @@ class KDTreeCapable
     MRPT_END
   }
 
-  inline void kdTreeNClosestPoint2DIdx(
+  void kdTreeNClosestPoint2DIdx(
       const TPoint2D& p0,
       size_t N,
       std::vector<size_t>& outIdx,
@@ -468,7 +468,7 @@ class KDTreeCapable
    * \return The index of the closest point in the map array.
    *  \sa kdTreeClosestPoint2D
    */
-  inline size_t kdTreeClosestPoint3D(
+  size_t kdTreeClosestPoint3D(
       float x0, float y0, float z0, float& out_x, float& out_y, float& out_z, float& out_dist_sqr)
       const
   {
@@ -496,7 +496,7 @@ class KDTreeCapable
   }
 
   /// \overload
-  inline size_t kdTreeClosestPoint3D(float x0, float y0, float z0, float& out_dist_sqr) const
+  size_t kdTreeClosestPoint3D(float x0, float y0, float z0, float& out_dist_sqr) const
   {
     MRPT_START
     rebuild_kdTree_3D();  // First: Create the 3D KD-Tree if required
@@ -517,7 +517,7 @@ class KDTreeCapable
   }
 
   /// \overload
-  inline size_t kdTreeClosestPoint3D(const TPoint3D& p0, TPoint3D& pOut, float& outDistSqr) const
+  size_t kdTreeClosestPoint3D(const TPoint3D& p0, TPoint3D& pOut, float& outDistSqr) const
   {
     float dmy1, dmy2, dmy3;
     size_t res =
@@ -552,7 +552,7 @@ class KDTreeCapable
    *
    *  \sa kdTreeNClosestPoint2D
    */
-  inline void kdTreeNClosestPoint3D(
+  void kdTreeNClosestPoint3D(
       float x0,
       float y0,
       float z0,
@@ -627,7 +627,7 @@ class KDTreeCapable
    *
    *  \sa kdTreeNClosestPoint2D
    */
-  inline void kdTreeNClosestPoint3DWithIdx(
+  void kdTreeNClosestPoint3DWithIdx(
       float x0,
       float y0,
       float z0,
@@ -681,7 +681,7 @@ class KDTreeCapable
     MRPT_END
   }
 
-  inline void kdTreeNClosestPoint3D(
+  void kdTreeNClosestPoint3D(
       const TPoint3D& p0,
       size_t N,
       std::vector<TPoint3D>& pOut,
@@ -717,7 +717,7 @@ class KDTreeCapable
    *
    *  \sa kdTreeRadiusSearch2D, kdTreeNClosestPoint3DIdx
    */
-  inline size_t kdTreeRadiusSearch3D(
+  size_t kdTreeRadiusSearch3D(
       const num_t x0,
       const num_t y0,
       const num_t z0,
@@ -752,7 +752,7 @@ class KDTreeCapable
    *
    *  \sa kdTreeRadiusSearch3D, kdTreeNClosestPoint2DIdx
    */
-  inline size_t kdTreeRadiusSearch2D(
+  size_t kdTreeRadiusSearch2D(
       const num_t x0,
       const num_t y0,
       const num_t maxRadiusSqr,
@@ -787,7 +787,7 @@ class KDTreeCapable
    *
    *  \sa kdTreeClosestPoint2D,  kdTreeRadiusSearch3D
    */
-  inline void kdTreeNClosestPoint3DIdx(
+  void kdTreeNClosestPoint3DIdx(
       float x0,
       float y0,
       float z0,
@@ -828,7 +828,7 @@ class KDTreeCapable
     MRPT_END
   }
 
-  inline void kdTreeNClosestPoint3DIdx(
+  void kdTreeNClosestPoint3DIdx(
       const TPoint3D& p0,
       size_t N,
       std::vector<size_t>& outIdx,
@@ -839,14 +839,14 @@ class KDTreeCapable
         d2f(p0.x), d2f(p0.y), d2f(p0.z), N, outIdx, outDistSqr, maximumSearchDistanceSqr);
   }
 
-  inline void kdTreeEnsureIndexBuilt3D() { rebuild_kdTree_3D(); }
-  inline void kdTreeEnsureIndexBuilt2D() { rebuild_kdTree_2D(); }
+  void kdTreeEnsureIndexBuilt3D() { rebuild_kdTree_3D(); }
+  void kdTreeEnsureIndexBuilt2D() { rebuild_kdTree_2D(); }
 
   /* @} */
 
  protected:
   /** To be called by child classes when KD tree data changes. */
-  inline void kdtree_mark_as_outdated() const
+  void kdtree_mark_as_outdated() const
   {
     std::lock_guard<std::mutex> lck(m_kdtree_mtx);
     m_kdtree_is_uptodate = false;
@@ -858,20 +858,20 @@ class KDTreeCapable
   template <int _DIM = -1>
   struct TKDTreeDataHolder
   {
-    inline TKDTreeDataHolder() = default;
+    TKDTreeDataHolder() = default;
     /** Copy constructor: It actually does NOT copy the kd-tree, a new
      * object will be created if required!   */
-    inline TKDTreeDataHolder(const TKDTreeDataHolder&) : TKDTreeDataHolder() {}
+    TKDTreeDataHolder(const TKDTreeDataHolder&) : TKDTreeDataHolder() {}
     /** Copy operator: It actually does NOT copy the kd-tree, a new object
      * will be created if required!  */
-    inline TKDTreeDataHolder& operator=(const TKDTreeDataHolder& o) noexcept
+    TKDTreeDataHolder& operator=(const TKDTreeDataHolder& o) noexcept
     {
       if (&o != this) clear();
       return *this;
     }
 
     /** Free memory (if allocated)  */
-    inline void clear() noexcept { index.reset(); }
+    void clear() noexcept { index.reset(); }
     using kdtree_index_t =
         nanoflann::KDTreeSingleIndexAdaptor<metric_t, Derived, _DIM, std::size_t /*index*/>;
 

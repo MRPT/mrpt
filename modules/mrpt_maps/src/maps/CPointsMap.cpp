@@ -28,15 +28,15 @@
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
-#include <mrpt/viz/CPointCloud.h>
-#include <mrpt/viz/CPointCloudColoured.h>
-#include <mrpt/viz/CSetOfObjects.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>  // unitsFormat()
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 #include <fstream>
 #include <sstream>
@@ -51,8 +51,6 @@ using namespace mrpt::system;
 using namespace std;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointsMap, CMetricMap, mrpt::maps)
-
-CPointsMap::~CPointsMap() = default;
 
 bool CPointsMap::save2D_to_text_file(const string& file) const
 {
@@ -991,7 +989,7 @@ void CPointsMap::determineMatching3D(
       }
 
     }  // End of test_match
-  }    // For each local point
+  }  // For each local point
 
   // Additional consistency filter: "onlyKeepTheClosest" up to now
   //  led to just one correspondence for each "local map" point, but
@@ -1159,7 +1157,7 @@ void CPointsMap::compute3DDistanceToMesh(
         vIdx.push_back(outIdx);
       }
     }  // End of test_match
-  }    // For each local point
+  }  // For each local point
 
   // Additional consistency filter: "onlyKeepTheClosest" up to now
   //  led to just one correspondence for each "local map" point, but

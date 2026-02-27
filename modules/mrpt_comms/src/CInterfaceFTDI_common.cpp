@@ -59,11 +59,11 @@ size_t CInterfaceFTDI::Read(void* Buffer, size_t Count)
 size_t CInterfaceFTDI::Write(const void* Buffer, size_t Count)
 {
   unsigned long ret = 0;
-  ftdi_write(Buffer, (unsigned long)Count, &ret);
-  return (size_t)ret;
+  ftdi_write(Buffer, static_cast<unsigned long>(Count), &ret);
+  return static_cast<size_t>(ret);
 }
 
-uint64_t CInterfaceFTDI::Seek(int64_t Offset, CStream::TSeekOrigin Origin) { return 0; }
+uint64_t CInterfaceFTDI::Seek([[maybe_unused]] int64_t Offset, [[maybe_unused]] CStream::TSeekOrigin Origin) { return 0; }
 
 uint64_t CInterfaceFTDI::getTotalBytesCount() const { return 0; }
 uint64_t CInterfaceFTDI::getPosition() const { return 0; }

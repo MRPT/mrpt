@@ -35,7 +35,7 @@ class FAddPoint
 };
 
 template <class T>
-inline void removeUnusedVertices(T& poly)
+void removeUnusedVertices(T& poly)
 {
   size_t N = poly.size();
   if (N < 3) return;
@@ -65,7 +65,7 @@ inline void removeUnusedVertices(T& poly)
   poly.resize(N + 1 - unused.size());
 }
 template <class T>
-inline void removeRepVertices(T& poly)
+void removeRepVertices(T& poly)
 {
   size_t N = poly.size();
   if (N < 3) return;

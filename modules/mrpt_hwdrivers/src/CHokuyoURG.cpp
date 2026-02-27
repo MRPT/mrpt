@@ -127,7 +127,7 @@ void CHokuyoURG::doProcessSimple(
   // -----------------------------------------------
   outObservation.timestamp = mrpt::Clock::now();
 
-  if ((size_t)expectedSize != m_rcv_data.size())
+  if (static_cast<size_t>(expectedSize) != m_rcv_data.size())
   {
     MRPT_LOG_ERROR_STREAM(
         "[CHokuyoURG::doProcess] ERROR: Expected " << expectedSize << " data bytes, received "

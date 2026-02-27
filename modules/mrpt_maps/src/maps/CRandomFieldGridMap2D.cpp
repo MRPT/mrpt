@@ -20,10 +20,10 @@
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/utils.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/os.h>
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/viz/CSetOfObjects.h>
 #include <mrpt/viz/CSetOfTriangles.h>
 
@@ -112,8 +112,9 @@ void CRandomFieldGridMap2D::internal_clear()
     case mrKalmanFilter:
     {
       MRPT_LOG_DEBUG_FMT(
-          "[clear] Setting covariance matrix to %ux%u\n", (unsigned int)(m_size_y * m_size_x),
-          (unsigned int)(m_size_y * m_size_x));
+          "[clear] Setting covariance matrix to %ux%u\n",
+          static_cast<unsigned int>(m_size_y * m_size_x),
+          static_cast<unsigned int>(m_size_y * m_size_x));
 
       TRandomFieldCell def(
           m_insertOptions_common->KF_defaultCellMeanValue,  // mean
@@ -130,12 +131,12 @@ void CRandomFieldGridMap2D::internal_clear()
       const double res2 = square(m_resolution);
       const double std0sqr = square(m_insertOptions_common->KF_initialCellStd);
 
-      for (int i = 0; i < m_cov.rows(); i++)
+      for (size_t i = 0; i < m_cov.rows(); i++)
       {
-        int cx1 = (i % m_size_x);
-        int cy1 = (i / m_size_x);
+        int cx1 = (static_cast<int>(i) % m_size_x);
+        int cy1 = (static_cast<int>(i) / m_size_x);
 
-        for (int j = i; j < m_cov.cols(); j++)
+        for (size_t j = i; j < m_cov.cols(); j++)
         {
           int cx2 = (j % m_size_x);
           int cy2 = (j / m_size_x);
@@ -153,7 +154,7 @@ void CRandomFieldGridMap2D::internal_clear()
             m_cov(j, i) = m_cov(i, j);
           }
         }  // for j
-      }    // for i
+      }  // for i
 
       // m_cov.saveToTextFile("cov_init.txt",1);
     }
@@ -510,7 +511,7 @@ void CRandomFieldGridMap2D::internal_clear()
             cy++;
           }
         }  // end for "j"
-      }    // end if_use_Occupancy
+      }  // end if_use_Occupancy
 
       MRPT_LOG_DEBUG_STREAM("[clear] Prior built in " << tictac.Tac() << " s ----------");
 
@@ -656,7 +657,8 @@ void CRandomFieldGridMap2D::TInsertionOptionsCommon::internal_dumpToTextStream_c
   out << mrpt::format("KF_initialCellStd                       = %f\n", KF_initialCellStd);
   out << mrpt::format("KF_observationModelNoise                = %f\n", KF_observationModelNoise);
   out << mrpt::format("KF_defaultCellMeanValue                 = %f\n", KF_defaultCellMeanValue);
-  out << mrpt::format("KF_W_size                               = %u\n", (unsigned)KF_W_size);
+  out << mrpt::format(
+      "KF_W_size                               = %u\n", static_cast<unsigned>(KF_W_size));
 
   out << mrpt::format("GMRF_lambdaPrior                        = %f\n", GMRF_lambdaPrior);
   out << mrpt::format("GMRF_lambdaObs                          = %f\n", GMRF_lambdaObs);
@@ -956,7 +958,7 @@ void CRandomFieldGridMap2D::resize(
             ASSERT_(!std::isnan(m_cov(i, j)));
           }
         }  // for j
-      }    // for i
+      }  // for i
 
       // m_cov.saveToTextFile("__debug_cov_after_resize.txt");
       // Resize done!
@@ -1049,7 +1051,7 @@ void CRandomFieldGridMap2D::resize(
           }
         }
       }  // end for i
-    }    // end of Kalman-Approximate map
+    }  // end of Kalman-Approximate map
   }
 
   MRPT_END
@@ -1126,8 +1128,8 @@ void CRandomFieldGridMap2D::insertObservation_KF(
   }
 
   MRPT_LOG_DEBUG_FMT(
-      "Copy matrix %ux%u: %.06fms\n", (unsigned)m_cov.rows(), (unsigned)m_cov.cols(),
-      tictac.Tac() * 1000);
+      "Copy matrix %ux%u: %.06fms\n", static_cast<unsigned>(m_cov.rows()),
+      static_cast<unsigned>(m_cov.cols()), tictac.Tac() * 1000);
 
   // The following follows from the expansion of Kalman Filter matrix
   // equations
@@ -1161,7 +1163,7 @@ void CRandomFieldGridMap2D::insertObservation_KF(
         m_map[i].kf_std() = sqrt(new_cov_ij);
       }
     }  // j
-  }    // i
+  }  // i
 
   // Free mem:
   /*mrpt_alloca_*/ free(oldCov);
@@ -1623,7 +1625,7 @@ void CRandomFieldGridMap2D::getAs3DObject(
           obj_v->insertTriangle(triag);
 
         }  // for cx
-      }    // for cy
+      }  // for cy
       meanObj.insert(obj_m);
       varObj.insert(obj_v);
     }
@@ -1782,12 +1784,12 @@ void CRandomFieldGridMap2D::getAs3DObject(
           obj_v->insertTriangle(triag);
 
         }  // for cx
-      }    // for cy
+      }  // for cy
       meanObj.insert(obj_m);
       varObj.insert(obj_v);
     }
     break;  // end Kernel models
-  };        // end switch maptype
+  };  // end switch maptype
 }
 
 /*---------------------------------------------------------------
@@ -2173,7 +2175,7 @@ void CRandomFieldGridMap2D::insertObservation_KF2(
       cov_to_change -= Delta_cov;
 
     }  // end for j
-  }    // end for i
+  }  // end for i
 
   MRPT_LOG_DEBUG_FMT("Done in %.03fms\n", tictac.Tac() * 1000);
 
@@ -2442,9 +2444,9 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
   {
     seedsOld = seedsNew;
 
-    for (int col = 0; col < matExp.cols(); col++)
+    for (size_t col = 0; col < matExp.cols(); col++)
     {
-      for (int row = 0; row < matExp.rows(); row++)
+      for (size_t row = 0; row < matExp.rows(); row++)
       {
         // test if cell needs to be expanded
         if (matExp(row, col) == 1)

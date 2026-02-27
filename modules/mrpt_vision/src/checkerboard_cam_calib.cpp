@@ -152,8 +152,8 @@ bool mrpt::vision::checkerBoardCameraCalibration(
       }
       else
       {
-        if (imgSize.height != (int)img_gray.getHeight() ||
-            imgSize.width != (int)img_gray.getWidth())
+        if (imgSize.height != static_cast<int>(img_gray.getHeight()) ||
+            imgSize.width != static_cast<int>(img_gray.getWidth()))
         {
           std::cout << "ERROR: All the images must have the same size"
                     << "\n";
@@ -391,8 +391,8 @@ bool mrpt::vision::checkerBoardCameraCalibration(
         }
 
         // Accumulate error:
-        sqrErr += square(px_d - dat.detected_corners[p].x) +
-                  square(py_d - dat.detected_corners[p].y);
+        sqrErr +=
+            square(px_d - dat.detected_corners[p].x) + square(py_d - dat.detected_corners[p].y);
       }
     }
 

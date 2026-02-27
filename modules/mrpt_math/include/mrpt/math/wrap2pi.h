@@ -29,7 +29,7 @@ namespace mrpt::math
  * \sa wrapToPi, wrapTo2Pi, unwrap2PiSequence
  */
 template <class T>
-inline void wrapTo2PiInPlace(T& a)
+void wrapTo2PiInPlace(T& a)
 {
   bool was_neg = a < 0;
   a = static_cast<T>(fmod(a, static_cast<T>(2.0 * M_PI)));
@@ -42,7 +42,7 @@ inline void wrapTo2PiInPlace(T& a)
  * \sa wrapToPi, wrapTo2Pi, unwrap2PiSequence
  */
 template <class T>
-inline T wrapTo2Pi(T a)
+T wrapTo2Pi(T a)
 {
   wrapTo2PiInPlace(a);
   return a;
@@ -54,7 +54,7 @@ inline T wrapTo2Pi(T a)
  * \sa wrapTo2Pi, wrapToPiInPlace, unwrap2PiSequence
  */
 template <class T>
-inline T wrapToPi(T a)
+T wrapToPi(T a)
 {
   return wrapTo2Pi(a + static_cast<T>(M_PI)) - static_cast<T>(M_PI);
 }
@@ -65,7 +65,7 @@ inline T wrapToPi(T a)
  * \sa wrapToPi,wrapTo2Pi, unwrap2PiSequence
  */
 template <class T>
-inline void wrapToPiInPlace(T& a)
+void wrapToPiInPlace(T& a)
 {
   a = wrapToPi(a);
 }
@@ -99,7 +99,7 @@ void unwrap2PiSequence(VECTOR& x)
  * \sa wrapToPi, wrapTo2Pi
  */
 template <class T>
-inline T angDistance(T from, T to)
+T angDistance(T from, T to)
 {
   wrapToPiInPlace(from);
   wrapToPiInPlace(to);

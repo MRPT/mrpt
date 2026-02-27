@@ -334,7 +334,7 @@ void CWaypointsNavigator::internal_select_next_waypoint_skip_policy(
     int most_advanced_wp = wps.waypoint_index_current_goal;
     const int most_advanced_wp_at_begin = most_advanced_wp;
 
-    for (int idx = wps.waypoint_index_current_goal; idx < (int)wps.waypoints.size(); idx++)
+    for (int idx = wps.waypoint_index_current_goal; idx < static_cast<int>(wps.waypoints.size()); idx++)
     {
       if (idx < 0) continue;
       if (wps.waypoints[idx].reached) continue;
@@ -556,7 +556,7 @@ bool CWaypointsNavigator::checkHasReachedTarget(const double targetDist) const
   else if (wps.timestamp_nav_started != INVALID_TIMESTAMP)
   {
     wp = (!wps.waypoints.empty() && wps.waypoint_index_current_goal >= 0 &&
-          wps.waypoint_index_current_goal < (int)wps.waypoints.size())
+          wps.waypoint_index_current_goal < static_cast<int>(wps.waypoints.size()))
              ? &wps.waypoints[wps.waypoint_index_current_goal]
              : nullptr;
     ret = (wp == nullptr && targetDist <= m_navigationParams->target.targetAllowedDistance) ||

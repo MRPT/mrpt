@@ -91,7 +91,7 @@ struct TLine3D
   }
   /** Get director vector (may be NOT unitary if not set so by the user) \sa
    * getUnitaryDirectorVector(), unitarize() */
-  inline const TVector3D& getDirectorVector() const { return director; }
+  const TVector3D& getDirectorVector() const { return director; }
 
   /**
    * Unitarize and then get director vector.

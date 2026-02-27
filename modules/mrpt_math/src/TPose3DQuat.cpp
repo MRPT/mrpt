@@ -27,7 +27,7 @@ void TPose3DQuat::fromString(const std::string& s)
   if (!m.fromMatlabStringFormat(s))
     THROW_EXCEPTION_FMT("Malformed expression in ::fromString, s=\"%s\"", s.c_str());
   ASSERTMSG_(m.rows() == 1 && m.cols() == 7, "Wrong size of vector in ::fromString");
-  for (int i = 0; i < m.cols(); i++) (*this)[i] = m(0, i);
+  for (size_t i = 0; i < m.cols(); i++) (*this)[static_cast<int>(i)] = m(0, i);
 }
 
 double TPose3DQuat::norm() const

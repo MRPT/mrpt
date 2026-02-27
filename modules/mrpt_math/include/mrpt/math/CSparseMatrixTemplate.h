@@ -83,7 +83,7 @@ class CSparseMatrixTemplate
   /**
    * Element access operator. Doesn't check bounds.
    */
-  inline T operator()(size_t r, size_t c) const
+  T operator()(size_t r, size_t c) const
   {
     auto it = objectList.find(std::make_pair(r, c));
     if (it == objectList.end())
@@ -94,7 +94,7 @@ class CSparseMatrixTemplate
 
   /** Element access operator. Checks bounds.
    */
-  inline bool exists(size_t r, size_t c) const
+  bool exists(size_t r, size_t c) const
   {
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
     if (r >= mRows || c >= mColumns) throw std::logic_error("Out of range");
@@ -105,7 +105,7 @@ class CSparseMatrixTemplate
   /**
    * Reference access operator. Checks for bounds.
    */
-  inline T& operator()(size_t r, size_t c)
+  T& operator()(size_t r, size_t c)
   {  //-V659
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
     if (r >= mRows || c >= mColumns) throw std::logic_error("Out of range");
@@ -116,12 +116,12 @@ class CSparseMatrixTemplate
    * Returns the amount of rows in this matrix.
    * \sa getColCount,getRow
    */
-  inline size_t rows() const { return mRows; }
+  size_t rows() const { return mRows; }
   /**
    * Returns the amount of columns in this matrix.
    * \sa rows()
    */
-  inline size_t cols() const { return mColumns; }
+  size_t cols() const { return mColumns; }
   /**
    * Extracts a full row from the matrix.
    * \sa rows(),getColumn,setRow
@@ -184,11 +184,11 @@ class CSparseMatrixTemplate
    * Inserts an element into the matrix.
    * \sa operator()(size_t,size_t)
    */
-  inline void insert(size_t row, size_t column, const T& obj) { operator()(row, column) = obj; }
+  void insert(size_t row, size_t column, const T& obj) { operator()(row, column) = obj; }
 
   /** Inserts submatrix at a given location */
   template <class MATRIX_LIKE>
-  inline void insertMatrix(size_t row, size_t column, const MATRIX_LIKE& mat)
+  void insertMatrix(size_t row, size_t column, const MATRIX_LIKE& mat)
   {
     for (size_t nr = 0; nr < mat.rows(); nr++)
       for (size_t nc = 0; nc < mat.cols(); nc++) operator()(row + nr, column + nc) = mat(nr, nc);
@@ -202,21 +202,21 @@ class CSparseMatrixTemplate
    * content into an invalid state.
    * \sa end,rbegin,rend
    */
-  inline const_iterator begin() const { return objectList.begin(); }
+  const_iterator begin() const { return objectList.begin(); }
   /**
    * Returns an iterator which points to the end of the matrix. It's a
    * const_iterator, so that the usar isn't able to modify the matrix content
    * into an invalid state.
    * \sa begin,rbegin,rend
    */
-  inline const_iterator end() const { return objectList.end(); }
+  const_iterator end() const { return objectList.end(); }
   /**
    * Returns an iterator which points to the end of the matrix, and can be
    * used to move backwards. It's a const_reverse_iterator, so that the usar
    * isn't able to modify the matrix content into an invalid state.
    * \sa begin,end,rend
    */
-  inline const_reverse_iterator rbegin() const { return objectList.rbegin(); }
+  const_reverse_iterator rbegin() const { return objectList.rbegin(); }
   /**
    * Returns an iterator which points to the starting point of the matrix,
    * although it's the upper limit of the matrix since it's a reverse
@@ -224,7 +224,7 @@ class CSparseMatrixTemplate
    * able to modify the matrix content into an invalid state.
    * \sa begin,end,rbegin
    */
-  inline const_reverse_iterator rend() const { return objectList.rend(); }
+  const_reverse_iterator rend() const { return objectList.rend(); }
   /**
    * Inserts a full row into the matrix. The third argument is used to
    * specify a null object (which won't be inserted, since the matrix is
@@ -333,22 +333,22 @@ class CSparseMatrixTemplate
    * Gets the amount of non-null elements inside the matrix.
    * \sa getNullElements,isNull,isNotNull
    */
-  inline size_t getNonNullElements() const { return objectList.size(); }
+  size_t getNonNullElements() const { return objectList.size(); }
   /** Are there no elements set to !=0 ?
    * \sa getNullElements,isNull,isNotNull
    */
-  inline bool empty() const { return objectList.empty(); }
+  bool empty() const { return objectList.empty(); }
   /**
    * Gets the amount of null elements inside the matrix.
    * \sa getNonNullElements,isNull,isNotNull
    */
-  inline size_t getNullElements() const { return mRows * mColumns - getNonNullElements(); }
+  size_t getNullElements() const { return mRows * mColumns - getNonNullElements(); }
   /**
    * Checks whether an element of the matrix is the default object.
    * \sa getNonNullElements,getNullElements,isNotNull
    * \throw std::logic_error on out of range
    */
-  inline bool isNull(size_t nRow, size_t nCol) const
+  bool isNull(size_t nRow, size_t nCol) const
   {
     if (nRow >= mRows || nCol >= mColumns) throw std::logic_error("Out of range");
     return objectList.count(std::make_pair(nRow, nCol)) == 0;
@@ -357,7 +357,7 @@ class CSparseMatrixTemplate
    * Checks whether an element of the matrix is not the default object.
    * \sa getNonNullElements,getNullElements,isNull
    */
-  inline bool isNotNull(size_t nRow, size_t nCol) const
+  bool isNotNull(size_t nRow, size_t nCol) const
   {
     if (nRow >= mRows || nCol >= mColumns) throw std::logic_error("Out of range");
     return objectList.count(std::make_pair(nRow, nCol)) > 0;
@@ -365,7 +365,7 @@ class CSparseMatrixTemplate
   /**
    * Completely removes all elements, although maintaining the matrix's size.
    */
-  inline void clear() { objectList.clear(); }
+  void clear() { objectList.clear(); }
   /**
    * Checks each non-null elements against the basic objects, erasing
    * unnecesary references to it.
@@ -401,7 +401,7 @@ class CSparseSymmetricalMatrix : public CSparseMatrixTemplate<T>
   virtual ~CSparseSymmetricalMatrix() = default;
   void resize(size_t matrixSize) { CSparseMatrixTemplate<T>::resize(matrixSize, matrixSize); }
 
-  inline T operator()(size_t r, size_t c) const
+  T operator()(size_t r, size_t c) const
   {
     if (c < r) std::swap(r, c);  // Symmetrical matrix
     typename CSparseMatrixTemplate<T>::const_iterator it =
@@ -411,7 +411,7 @@ class CSparseSymmetricalMatrix : public CSparseMatrixTemplate<T>
     else
       return it->second;
   }
-  inline T& operator()(size_t r, size_t c)
+  T& operator()(size_t r, size_t c)
   {                              //-V659
     if (c < r) std::swap(r, c);  // Symmetrical matrix
     if (r >= CSparseMatrixTemplate<T>::mRows || c >= CSparseMatrixTemplate<T>::mColumns)

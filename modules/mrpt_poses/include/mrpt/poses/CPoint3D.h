@@ -53,7 +53,7 @@ class CPoint3D : public CPoint<CPoint3D, 3>, public mrpt::serialization::CSerial
   }
 
   /** Constructor from a XYZ 3-vector */
-  explicit inline CPoint3D(const mrpt::math::CVectorFixedDouble<3>& xyz) : m_coords(xyz) {}
+  explicit CPoint3D(const mrpt::math::CVectorFixedDouble<3>& xyz) : m_coords(xyz) {}
 
   /** Constructor from an CPoint2D object. */
   explicit CPoint3D(const CPoint2D& p);

@@ -360,39 +360,39 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
     Default is RGB channel. */
   void setVideoChannel(const TVideoChannel vch);
   /** Return the current video channel (RGB or IR) \sa setVideoChannel */
-  inline TVideoChannel getVideoChannel() const { return m_video_channel; }
+  TVideoChannel getVideoChannel() const { return m_video_channel; }
   /** Set the sensor index to open (if there're several sensors attached to
    * the computer); default=0 -> the first one. */
-  inline void setDeviceIndexToOpen(int index) { m_user_device_number = index; }
-  inline int getDeviceIndexToOpen() const { return m_user_device_number; }
+  void setDeviceIndexToOpen(int index) { m_user_device_number = index; }
+  int getDeviceIndexToOpen() const { return m_user_device_number; }
   /** Change tilt angle \note Sensor must be open first. */
   void setTiltAngleDegrees(double angle);
   double getTiltAngleDegrees();
 
   /** Get the maximum range (meters) that can be read in the observation field
    * "rangeImage" */
-  inline double getMaxRange() const { return m_maxRange; }
+  double getMaxRange() const { return m_maxRange; }
   /** Get the row count in the camera images, loaded automatically upon camera
    * open(). */
-  inline size_t rows() const { return m_cameraParamsRGB.nrows; }
+  size_t rows() const { return m_cameraParamsRGB.nrows; }
   /** Get the col count in the camera images, loaded automatically upon camera
    * open(). */
-  inline size_t cols() const { return m_cameraParamsRGB.ncols; }
+  size_t cols() const { return m_cameraParamsRGB.ncols; }
   /** Get a const reference to the depth camera calibration parameters */
-  inline const mrpt::img::TCamera& getCameraParamsIntensity() const { return m_cameraParamsRGB; }
-  inline void setCameraParamsIntensity(const mrpt::img::TCamera& p) { m_cameraParamsRGB = p; }
+  const mrpt::img::TCamera& getCameraParamsIntensity() const { return m_cameraParamsRGB; }
+  void setCameraParamsIntensity(const mrpt::img::TCamera& p) { m_cameraParamsRGB = p; }
 
   /** Get a const reference to the depth camera calibration parameters */
-  inline const mrpt::img::TCamera& getCameraParamsDepth() const { return m_cameraParamsDepth; }
-  inline void setCameraParamsDepth(const mrpt::img::TCamera& p) { m_cameraParamsDepth = p; }
+  const mrpt::img::TCamera& getCameraParamsDepth() const { return m_cameraParamsDepth; }
+  void setCameraParamsDepth(const mrpt::img::TCamera& p) { m_cameraParamsDepth = p; }
 
   /** Set the pose of the intensity camera wrt the depth camera \sa See
    * mrpt::obs::CObservation3DRangeScan for a 3D diagram of this pose */
-  inline void setRelativePoseIntensityWrtDepth(const mrpt::poses::CPose3D& p)
+  void setRelativePoseIntensityWrtDepth(const mrpt::poses::CPose3D& p)
   {
     m_relativePoseIntensityWRTDepth = p;
   }
-  inline const mrpt::poses::CPose3D& getRelativePoseIntensityWrtDepth() const
+  const mrpt::poses::CPose3D& getRelativePoseIntensityWrtDepth() const
   {
     return m_relativePoseIntensityWRTDepth;
   }
@@ -403,31 +403,31 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
    * and KINECT_RANGES_TABLE_LEN-1) to zero, to indicate that those are
    * invalid ranges.
    */
-  inline TDepth2RangeArray& getRawDepth2RangeConversion() { return m_range2meters; }
-  inline const TDepth2RangeArray& getRawDepth2RangeConversion() const { return m_range2meters; }
+  TDepth2RangeArray& getRawDepth2RangeConversion() { return m_range2meters; }
+  const TDepth2RangeArray& getRawDepth2RangeConversion() const { return m_range2meters; }
 
   /** Enable/disable the grabbing of the RGB channel */
-  inline void enableGrabRGB(bool enable = true) { m_grab_image = enable; }
-  inline bool isGrabRGBEnabled() const { return m_grab_image; }
+  void enableGrabRGB(bool enable = true) { m_grab_image = enable; }
+  bool isGrabRGBEnabled() const { return m_grab_image; }
   /** Enable/disable the grabbing of the depth channel */
-  inline void enableGrabDepth(bool enable = true) { m_grab_depth = enable; }
-  inline bool isGrabDepthEnabled() const { return m_grab_depth; }
+  void enableGrabDepth(bool enable = true) { m_grab_depth = enable; }
+  bool isGrabDepthEnabled() const { return m_grab_depth; }
   /** Enable/disable the grabbing of the inertial data */
-  inline void enableGrabAccelerometers(bool enable = true) { m_grab_IMU = enable; }
-  inline bool isGrabAccelerometersEnabled() const { return m_grab_IMU; }
+  void enableGrabAccelerometers(bool enable = true) { m_grab_IMU = enable; }
+  bool isGrabAccelerometersEnabled() const { return m_grab_IMU; }
   /** Enable/disable the grabbing of the 3D point clouds */
-  inline void enableGrab3DPoints(bool enable = true) { m_grab_3D_points = enable; }
-  inline bool isGrab3DPointsEnabled() const { return m_grab_3D_points; }
+  void enableGrab3DPoints(bool enable = true) { m_grab_3D_points = enable; }
+  bool isGrab3DPointsEnabled() const { return m_grab_3D_points; }
   /** @} */
 
 #if MRPT_HAS_KINECT_FREENECT
   // Auxiliary getters/setters (we can't declare the libfreenect callback as
   // friend since we
   //   want to avoid including the API headers here).
-  inline mrpt::obs::CObservation3DRangeScan& internal_latest_obs() { return m_latest_obs; }
-  inline volatile uint32_t& internal_tim_latest_depth() { return m_tim_latest_depth; }
-  inline volatile uint32_t& internal_tim_latest_rgb() { return m_tim_latest_rgb; }
-  inline std::mutex& internal_latest_obs_cs() { return m_latest_obs_cs; }
+  mrpt::obs::CObservation3DRangeScan& internal_latest_obs() { return m_latest_obs; }
+  volatile uint32_t& internal_tim_latest_depth() { return m_tim_latest_depth; }
+  volatile uint32_t& internal_tim_latest_rgb() { return m_tim_latest_rgb; }
+  std::mutex& internal_latest_obs_cs() { return m_latest_obs_cs; }
 #endif
 
  protected:

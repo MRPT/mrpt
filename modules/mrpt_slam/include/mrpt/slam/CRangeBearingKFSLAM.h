@@ -113,7 +113,7 @@ class CRangeBearingKFSLAM :
    * the filter.
    * \sa getCurrentRobotPose
    */
-  inline void getCurrentState(
+  void getCurrentState(
       mrpt::poses::CPose3DPDFGaussian& out_robotPose,
       std::vector<mrpt::math::TPoint3D>& out_landmarksPositions,
       std::map<unsigned int, mrpt::maps::CLandmark::TLandmarkID>& out_landmarkIDs,
@@ -141,7 +141,7 @@ class CRangeBearingKFSLAM :
    * rotation as 3 angles).
    * \sa getCurrentState
    */
-  inline void getCurrentRobotPose(mrpt::poses::CPose3DPDFGaussian& out_robotPose) const
+  void getCurrentRobotPose(mrpt::poses::CPose3DPDFGaussian& out_robotPose) const
   {
     mrpt::poses::CPose3DQuatPDFGaussian q(mrpt::math::UNINITIALIZED_QUATERNION);
     this->getCurrentRobotPose(q);

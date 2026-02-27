@@ -16,7 +16,6 @@
 #include <mrpt/random/random_shuffle.h>
 
 #include <cstddef>
-#include <limits>
 #include <limits>  // numeric_limits
 #include <random>
 #include <stdexcept>
@@ -30,13 +29,11 @@ template <typename MatrixType>
 class SelfAdjointEigenSolver;
 }
 
-namespace mrpt
-{
 /** A namespace of pseudo-random numbers generators of different distributions.
  * The central class in this namespace is mrpt::random::CRandomGenerator
  * \ingroup mrpt_random_grp
  */
-namespace random
+namespace mrpt::random
 {
 /** Portable MT19937 random generator, C++11 UniformRandomBitGenerator
  * compliant.
@@ -53,7 +50,7 @@ class Generator_MT19937
 
   result_type operator()();
 
-  void seed(const uint32_t seed);
+  void seed(uint32_t seed);
 
  private:
   uint32_t m_MT[624] = {};
@@ -94,7 +91,7 @@ class CRandomGenerator
   /** Constructor for providing a custom random seed to initialize the PRNG */
   CRandomGenerator(const uint32_t seed) { randomize(seed); }
   /** Initialize the PRNG from the given random seed */
-  void randomize(const uint32_t seed);
+  void randomize(uint32_t seed);
   /** Randomize the generators, based on std::random_device */
   void randomize();
 
@@ -262,7 +259,8 @@ class CRandomGenerator
     {
       throw std::runtime_error("drawGaussianMultivariate(): mean and cov sizes ");
     }
-    MATRIX Z, D;
+    MATRIX Z;
+    MATRIX D;
     // Set size of output vector:
     out_result.clear();
     out_result.resize(dim, 0);
@@ -582,5 +580,4 @@ void randomNormalMultiDimensional(const MATRIX& cov, std::vector<T>& out_result)
   getRandomGenerator().drawGaussianMultivariate(out_result, cov);
 }
 
-}  // namespace random
-}  // namespace mrpt
+}  // namespace mrpt::random

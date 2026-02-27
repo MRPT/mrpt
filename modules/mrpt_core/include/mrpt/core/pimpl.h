@@ -20,7 +20,7 @@ template <typename T>
 using pimpl = spimpl::impl_ptr<T>;
 
 template <class T, class... Args>
-inline pimpl<T> make_impl(Args&&... args)
+pimpl<T> make_impl(Args&&... args)
 {
   return spimpl::make_impl<T, Args...>(std::forward<Args>(args)...);
 }

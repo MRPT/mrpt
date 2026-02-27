@@ -69,8 +69,8 @@ using namespace mrpt::img;
 #define PLY_BINARY_BE 2 /* binary PLY file, big endian */
 #define PLY_BINARY_LE 3 /* binary PLY file, little endian */
 
-//#define PLY_OKAY    0           /* ply routine worked okay */
-//#define PLY_ERROR  -1           /* error in ply routine */
+// #define PLY_OKAY    0           /* ply routine worked okay */
+// #define PLY_ERROR  -1           /* error in ply routine */
 
 /* scalar data types supported by PLY format */
 
@@ -89,8 +89,8 @@ enum PLY_DATA_TYPE
   PLY_END_TYPE = 9
 };
 
-//#define  PLY_SCALAR  0
-//#define  PLY_LIST    1
+// #define  PLY_SCALAR  0
+// #define  PLY_LIST    1
 
 const int NO_OTHER_PROPS = -1;
 
@@ -1045,7 +1045,7 @@ void ascii_get_element(PlyFile* plyfile, char* elem_ptr)
       {
         if (store_it)
         {
-          item_ptr = (char*)malloc(sizeof(char) * item_size * list_count);
+          item_ptr = static_cast<char*>(malloc(sizeof(char) * item_size * list_count));
           item = item_ptr;
           *store_array = item_ptr;
         }
@@ -1169,7 +1169,7 @@ void binary_get_element(PlyFile* plyfile, char* elem_ptr)
       {
         if (store_it)
         {
-          item_ptr = (char*)malloc(sizeof(char) * item_size * list_count);
+          item_ptr = static_cast<char*>(malloc(sizeof(char) * item_size * list_count));
           item = item_ptr;
           *store_array = item_ptr;
         }
@@ -1649,8 +1649,8 @@ void get_ascii_item(
     case PLY_FLOAT:
     case PLY_DOUBLE:
       *double_val = atof(word);
-      *int_val = (int)*double_val;
-      *uint_val = (unsigned int)*double_val;
+      *int_val = static_cast<int>(*double_val);
+      *uint_val = static_cast<unsigned int>(*double_val);
       break;
 
     default:
@@ -1859,9 +1859,9 @@ struct TFace
 };
 
 const PlyProperty face_props[] = {
-  /* list of property information for a vertex */
-    {     "intensity", PLY_FLOAT, PLY_FLOAT, offsetof(TFace, intensity)},
-    { "vertex_indices", PLY_INT, PLY_INT, offsetof(TFace, verts),                                           true, PLY_UCHAR, PLY_UCHAR,
+    /* list of property information for a vertex */
+    {"intensity", PLY_FLOAT, PLY_FLOAT, offsetof(TFace, intensity)},
+    {"vertex_indices", PLY_INT, PLY_INT, offsetof(TFace, verts), true, PLY_UCHAR, PLY_UCHAR,
      offsetof(TFace, nverts)}
 };
 

@@ -48,7 +48,7 @@ struct RobustKernel<rkLeastSquares, T>
   /** Evaluates the kernel function for the squared error r2 and returns
    * robustified squared error and derivatives of sqrt(2*rho(r)) at this
    * point. */
-  inline T eval(const T r2, T& out_1st_deriv, T& out_2nd_deriv)
+  T eval(const T r2, T& out_1st_deriv, T& out_2nd_deriv)
   {
     out_1st_deriv = 1;
     out_2nd_deriv = 0;
@@ -67,7 +67,7 @@ struct RobustKernel<rkPseudoHuber, T>
   /** Evaluates the kernel function for the squared error r2 and returns
    * robustified squared error and derivatives of sqrt(2*rho(r)) at this
    * point. */
-  inline T eval(const T r2, T& out_1st_deriv, T& out_2nd_deriv)
+  T eval(const T r2, T& out_1st_deriv, T& out_2nd_deriv)
   {
     const T param_sq_inv = 1.0 / param_sq;
     const T a = 1 + r2 * param_sq_inv;

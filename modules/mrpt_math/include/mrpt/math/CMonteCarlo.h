@@ -56,21 +56,21 @@ class CMonteCarlo
 
    public:
     template <typename VEC>
-    inline CStatisticalAnalyzer(const VEC& v1) : data(v1.begin(), v1.end())
+    CStatisticalAnalyzer(const VEC& v1) : data(v1.begin(), v1.end())
     {
     }
     template <typename VEC>
-    inline void setData(const VEC& v1)
+    void setData(const VEC& v1)
     {
       data.assign(v1.begin(), v1.end());
     }
     template <typename VEC>
-    inline void getData(VEC& v1) const
+    void getData(VEC& v1) const
     {
       v1.assign(data.begin(), data.end());
     }
     template <typename VEC1, typename VEC2>
-    inline void getDistribution(VEC1& vx, VEC2& vy, const NUM width = 1.0) const
+    void getDistribution(VEC1& vx, VEC2& vy, const NUM width = 1.0) const
     {
       std::vector<double> vvx, vvy;
       getDistribution(vvx, vvy, width);
@@ -78,7 +78,7 @@ class CMonteCarlo
       vy.assign(vvy.begin(), vvy.end());
     }
     // Function overload, not specialization (GCC complains otherwise):
-    inline void getDistribution(
+    void getDistribution(
         std::vector<double>& vx, std::vector<double>& vy, const NUM width = 1.0) const
     {
       CHistogram hist(
@@ -97,7 +97,7 @@ class CMonteCarlo
 
   OTHER (*intermediateFun)(const T&);
   NUM (*errorFun2)(const T&, const OTHER&);
-  inline CMonteCarlo() :
+  CMonteCarlo() :
       gen(),
       valueGenerator(nullptr),
       errorFun1(nullptr),

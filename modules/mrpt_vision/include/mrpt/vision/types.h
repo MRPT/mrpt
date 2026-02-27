@@ -123,8 +123,8 @@ enum TFeatureTrackStatus : uint8_t
  * TSequenceFeatureObservations */
 struct TFeatureObservation
 {
-  inline TFeatureObservation() = default;
-  inline TFeatureObservation(
+  TFeatureObservation() = default;
+  TFeatureObservation(
       const TLandmarkID _id_feature,
       const TCameraPoseID _id_frame,
       const mrpt::img::TPixelCoordf& _px) :
@@ -146,8 +146,8 @@ struct TFeatureObservation
  */
 struct TRelativeFeaturePos
 {
-  inline TRelativeFeaturePos() = default;
-  inline TRelativeFeaturePos(
+  TRelativeFeaturePos() = default;
+  TRelativeFeaturePos(
       const mrpt::vision::TCameraPoseID _id_frame_base, const mrpt::math::TPoint3D& _pos) :
       id_frame_base(_id_frame_base), pos(_pos)
   {
@@ -176,9 +176,9 @@ struct TSequenceFeatureObservations : public std::vector<TFeatureObservation>
 {
   using BASE = std::vector<TFeatureObservation>;
 
-  inline TSequenceFeatureObservations() = default;
-  inline TSequenceFeatureObservations(size_t size) : BASE(size) {}
-  inline TSequenceFeatureObservations(const TSequenceFeatureObservations& o)
+  TSequenceFeatureObservations() = default;
+  TSequenceFeatureObservations(size_t size) : BASE(size) {}
+  TSequenceFeatureObservations(const TSequenceFeatureObservations& o)
 
       = default;
 

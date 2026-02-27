@@ -303,17 +303,17 @@ yaml yaml::operator[](const std::string& s)
   return yaml(internal::tag_as_proxy_t(), std::get<map_t>(n->d)[s], s);
 }
 
-const yaml yaml::operator[](const std::string& s) const
+yaml yaml::operator[](const std::string& key) const
 {
   const node_t* n = dereferenceProxy();
   if (n->isNullNode()) THROW_EXCEPTION("read operator[] not applicable to null nodes.");
   if (!n->isMap()) THROW_EXCEPTION("read operator[] only available for map nodes.");
 
   const map_t& m = std::get<map_t>(n->d);
-  auto it = m.find(s);
-  if (m.end() == it) THROW_EXCEPTION_FMT("Access non-existing map key `%s`", s.c_str());
+  auto it = m.find(key);
+  if (m.end() == it) THROW_EXCEPTION_FMT("Access non-existing map key `%s`", key.c_str());
 
-  return yaml(internal::tag_as_const_proxy_t(), it->second, s);
+  return yaml(internal::tag_as_const_proxy_t(), it->second, key);
 }
 
 yaml yaml::operator()(int index)
@@ -1101,9 +1101,7 @@ void yaml::loadFromText(const std::string& yamlTextBlock)
   // Reset:
   *this = yaml();
 
-  struct fy_parse_cfg cfg
-  {
-  };
+  struct fy_parse_cfg cfg{};
   cfg.search_path = "";
   cfg.diag = nullptr;
   cfg.flags = FYPCF_PARSE_COMMENTS;
@@ -1248,10 +1246,12 @@ bool yaml::keyHasComment(const std::string& key) const
   const yaml::node_t& n = findKeyNode(dereferenceProxy(), key);
 
   for (const auto& c : n.comments)
+  {
     if (c.has_value())
     {
       return true;
     }
+  }
   return false;
   MRPT_END
 }

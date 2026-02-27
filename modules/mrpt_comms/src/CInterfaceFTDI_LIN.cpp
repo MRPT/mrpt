@@ -254,7 +254,7 @@ void CInterfaceFTDI::recursive_fill_list_devices(
       if ((strLen = usb_get_string_simple(
                hUSB, dev->descriptor.iManufacturer, manufacturer, sizeof(manufacturer))) <= 0)
       {
-        cerr << "Couldn't open " << (int)dev->descriptor.iManufacturer << "\n";
+        cerr << "Couldn't open " << static_cast<int>(dev->descriptor.iManufacturer) << "\n";
         // usb_close(hUSB); hUSB=nullptr;
       }
       else

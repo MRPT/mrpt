@@ -91,11 +91,11 @@ class CPose2D :
 
   /** Fast constructor that leaves all the data uninitialized - call with
    * UNINITIALIZED_POSE as argument */
-  inline CPose2D(TConstructorFlags_Poses) : m_cossin_uptodate(false) {}
+  CPose2D(TConstructorFlags_Poses) : m_cossin_uptodate(false) {}
   /** Get the phi angle of the 2D pose (in radians) */
-  inline double phi() const { return m_phi; }
+  double phi() const { return m_phi; }
   //! \overload
-  inline double& phi()
+  double& phi()
   {
     m_cossin_uptodate = false;
     return m_phi;
@@ -103,21 +103,21 @@ class CPose2D :
 
   /** Get a (cached) value of cos(phi), recomputing it only once when phi
    * changes. */
-  inline double phi_cos() const
+  double phi_cos() const
   {
     update_cached_cos_sin();
     return m_cosphi;
   }
   /** Get a (cached) value of sin(phi), recomputing it only once when phi
    * changes. */
-  inline double phi_sin() const
+  double phi_sin() const
   {
     update_cached_cos_sin();
     return m_sinphi;
   }
 
   /** Set the phi angle of the 2D pose (in radians) */
-  inline void phi(double angle)
+  void phi(double angle)
   {
     m_phi = angle;
     m_cossin_uptodate = false;
@@ -125,7 +125,7 @@ class CPose2D :
 
   /** Increment the PHI angle (without checking the 2 PI range, call
    * normalizePhi is needed) */
-  inline void phi_incr(const double Aphi)
+  void phi_incr(const double Aphi)
   {
     m_phi += Aphi;
     m_cossin_uptodate = false;
@@ -149,7 +149,7 @@ class CPose2D :
   void getRotationMatrix(mrpt::math::CMatrixDouble33& R) const;
 
   template <class MATRIX22>
-  inline MATRIX22 getRotationMatrix() const
+  MATRIX22 getRotationMatrix() const
   {
     MATRIX22 R;
     getRotationMatrix(R);
@@ -213,7 +213,7 @@ class CPose2D :
   void inverse();
 
   /** Compute \f$ RET = this \ominus b \f$  */
-  inline CPose2D operator-(const CPose2D& b) const
+  CPose2D operator-(const CPose2D& b) const
   {
     CPose2D ret(UNINITIALIZED_POSE);
     ret.inverseComposeFrom(*this, b);
@@ -269,7 +269,7 @@ class CPose2D :
     return o;
   }
 
-  inline double operator[](unsigned int i) const
+  double operator[](unsigned int i) const
   {
     switch (i)
     {
@@ -283,7 +283,7 @@ class CPose2D :
         throw std::runtime_error("CPose2D::operator[]: Index of bounds.");
     }
   }
-  inline double& operator[](unsigned int i)
+  double& operator[](unsigned int i)
   {
     switch (i)
     {
@@ -299,7 +299,7 @@ class CPose2D :
   }
 
   /** makes: this = p (+) this */
-  inline void changeCoordinatesReference(const CPose2D& p) { composeFrom(p, CPose2D(*this)); }
+  void changeCoordinatesReference(const CPose2D& p) { composeFrom(p, CPose2D(*this)); }
 
   /** Returns the 2D distance from this pose/point to a 2D pose using the
    * Frobenius distance. */
@@ -322,8 +322,8 @@ class CPose2D :
     is_PDF_val = 0
   };
   static constexpr bool is_PDF() { return is_PDF_val != 0; }
-  inline const type_value& getPoseMean() const { return *this; }
-  inline type_value& getPoseMean() { return *this; }
+  const type_value& getPoseMean() const { return *this; }
+  type_value& getPoseMean() { return *this; }
 
   /** @name STL-like methods and typedefs
    @{   */
