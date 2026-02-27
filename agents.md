@@ -4,7 +4,7 @@ Welcome, AI Agent! This file contains the architectural context and coding guide
 
 ## 1. Project Architecture
 * **MRPT 3.0 is highly modular.** It is designed to be built using **colcon** (similar to ROS 2 packages).
-* Each module (e.g., `mrpt_nanogui`, `mrpt_opengl`, `mrpt_math`) lives in its own directory and functions as an independent CMake project.
+* Each module (e.g., `mrpt_opengl`, `mrpt_math`) lives in its own directory and functions as an independent CMake project.
 * **Target OS/Compilers:** Cross-platform (Linux, Windows, macOS, WebAssembly/Emscripten).
 
 ## 2. Build System (CMake) Conventions
@@ -60,6 +60,8 @@ License Headers: Every new .cpp, .h, and CMakeLists.txt file must start with the
  SPDX-License-Identifier: BSD-3-Clause
 */
 ```
+
+Formatting: according to `.clang-format` and `.clang-tidy`. In particular: prefer `if (x) {\n y;\n }` instead of `if(x) y;`. Use `[[nodiscard]]` where applicable.
 
 ## 4. Anti-Patterns to Avoid
 Do not manually configure .so versioning or write manual install() blocks for standard headers/libraries. mrpt_add_library does this.
