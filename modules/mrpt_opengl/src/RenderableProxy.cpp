@@ -289,8 +289,10 @@ void LinesProxyBase::render(const RenderContext& rc) const
   if (m_vertexCount == 0) return;
   if (!m_vao.isCreated()) return;
 
-  // Set line width
-  glLineWidth(m_lineWidth);
+  // Note: glLineWidth >1.0 is unsupported on most modern GL implementations.
+  // Thick lines require a geometry shader approach (future enhancement).
+  // For now, always use 1.0 to avoid GL_INVALID_VALUE.
+  glLineWidth(1.0f);
 
   // Enable anti-aliasing if requested
   if (m_antiAliasing)

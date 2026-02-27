@@ -844,6 +844,12 @@ void CompiledViewport::processRenderQueue(
 {
   MRPT_START
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+
+  // Clear any prior GL errors
+  while (glGetError() != GL_NO_ERROR)
+  {
+  }
+
   for (const auto& [shaderID, proxyMap] : queue)
   {
     auto shader = shaderManager.getProgram(shaderID);
@@ -954,7 +960,8 @@ void CompiledViewport::renderBorder(ShaderProgramManager& shaderManager)
       mrpt::math::TPoint3Df{x0, y0, 0.0f},
       mrpt::math::TPoint3Df{x1, y0, 0.0f},
       mrpt::math::TPoint3Df{x1, y1, 0.0f},
-      mrpt::math::TPoint3Df{x0, y1, 0.0f}};
+      mrpt::math::TPoint3Df{x0, y1, 0.0f}
+  };
 
   const mrpt::img::TColor bc = m_borderColor;
   const std::array<mrpt::img::TColor, 4> colors = {bc, bc, bc, bc};
