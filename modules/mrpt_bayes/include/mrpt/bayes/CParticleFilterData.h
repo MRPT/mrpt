@@ -37,9 +37,9 @@ template <class Derived, class particle_list_t>
 struct CParticleFilterDataImpl : public CParticleFilterCapable
 {
   /// CRTP helper method
-  inline const Derived& derived() const { return *dynamic_cast<const Derived*>(this); }
+  const Derived& derived() const { return *dynamic_cast<const Derived*>(this); }
   /// CRTP helper method
-  inline Derived& derived() { return *dynamic_cast<Derived*>(this); }
+  Derived& derived() { return *dynamic_cast<Derived*>(this); }
   double getW(size_t i) const override
   {
     if (i >= derived().m_particles.size()) THROW_EXCEPTION_FMT("Index %i is out of range!", (int)i);

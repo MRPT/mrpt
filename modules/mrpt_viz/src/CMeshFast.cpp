@@ -235,9 +235,9 @@ void CMeshFast::updateBuffers() const
 
   const auto myColor = getColor_u8();
 
-  for (int i = 0; i < X.rows(); i++)
+  for (size_t i = 0; i < X.rows(); i++)
   {
-    for (int j = 0; j < X.cols(); j++)
+    for (size_t j = 0; j < X.cols(); j++)
     {
       TColor col;
 

@@ -71,7 +71,7 @@ SensorToPoseMap sensor_poses_from_yaml(
  * \sa CPose3D, mrpt::obs::CObservation, sensor_poses_from_yaml()
  * \ingroup poses_grp
  */
-inline SensorToPoseMap sensor_poses_from_yaml_file(
+SensorToPoseMap sensor_poses_from_yaml_file(
     const std::string& filename, const std::string& referenceFrame = "base_link")
 {
   const auto d = mrpt::containers::yaml::FromFile(filename);

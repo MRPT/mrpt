@@ -137,7 +137,7 @@ void CLevMarqGSO<GRAPH_T>::notifyOfWindowEvents(const std::map<std::string, bool
 }  // end of notifyOfWindowEvents
 
 template <class GRAPH_T>
-inline void CLevMarqGSO<GRAPH_T>::initGraphVisualization()
+void CLevMarqGSO<GRAPH_T>::initGraphVisualization()
 {
   MRPT_START
   ASSERTDEBMSG_(this->m_win_manager, "No CWindowManager* is given");
@@ -157,7 +157,7 @@ inline void CLevMarqGSO<GRAPH_T>::initGraphVisualization()
   MRPT_END
 }
 template <class GRAPH_T>
-inline void CLevMarqGSO<GRAPH_T>::updateGraphVisualization()
+void CLevMarqGSO<GRAPH_T>::updateGraphVisualization()
 {
   MRPT_START
   ASSERTDEBMSG_(this->m_win_manager, "No CWindowManager* is given");

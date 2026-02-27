@@ -56,7 +56,7 @@ class CReflectivityGridMap2D :
    * Declared here to avoid ambiguity between the two clear() in both base
    * classes.
    */
-  inline void clear() { CMetricMap::clear(); }
+  void clear() { CMetricMap::clear(); }
   float cell2float(const int8_t& c) const override { return m_logodd_lut.l2p(c); }
 
   /** Constructor  */

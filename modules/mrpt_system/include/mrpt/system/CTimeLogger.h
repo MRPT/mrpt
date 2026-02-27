@@ -177,7 +177,7 @@ class CTimeLogger : public mrpt::system::COutputLogger
   void setName(const std::string& name) noexcept;
 
   /** Start of a named section \sa enter */
-  inline void enter(const std::string_view& func_name) noexcept
+  void enter(const std::string_view& func_name) noexcept
   {
     if (m_enabled)
     {
@@ -186,7 +186,7 @@ class CTimeLogger : public mrpt::system::COutputLogger
   }
   /** End of a named section \return The ellapsed time, in seconds or 0 if
    * disabled. \sa enter */
-  inline double leave(const std::string_view& func_name) noexcept
+  double leave(const std::string_view& func_name) noexcept
   {
     return m_enabled ? do_leave(func_name) : 0;
   }

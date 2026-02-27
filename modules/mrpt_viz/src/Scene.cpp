@@ -88,7 +88,7 @@ void Scene::serializeTo(mrpt::serialization::CArchive& out) const
   out << m_followCamera;
 
   uint32_t n;
-  n = (uint32_t)m_viewports.size();
+  n = static_cast<uint32_t>(m_viewports.size());
   out << n;
   for (const auto& m_viewport : m_viewports)
   {

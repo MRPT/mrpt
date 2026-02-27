@@ -70,7 +70,7 @@ class CHistogram
   /**	Add all the elements from a MRPT container to the histogram. If an
    * element is out of [min,max] it is ignored. */
   template <typename MAT_VECTOR_LIKE, typename = typename MAT_VECTOR_LIKE::Scalar>
-  inline void add(const MAT_VECTOR_LIKE& x)
+  void add(const MAT_VECTOR_LIKE& x)
   {
     const size_t N = x.size();
     for (size_t i = 0; i < N; i++) this->add(static_cast<double>(x[i]));
@@ -78,7 +78,7 @@ class CHistogram
 
   //! \overload
   template <typename T>
-  inline void add(const std::vector<T>& x)
+  void add(const std::vector<T>& x)
   {
     const size_t N = x.size();
     for (size_t i = 0; i < N; i++) this->add(static_cast<double>(x[i]));

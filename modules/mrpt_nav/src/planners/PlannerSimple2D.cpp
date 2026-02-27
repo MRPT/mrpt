@@ -93,7 +93,7 @@ void PlannerSimple2D::computePath(
 
   // Enlarge obstacles with the robot radius:
   // -----------------------------------------------------------
-  int obsEnlargement = (int)(ceil(robotRadius / theMap.getResolution()));
+  int obsEnlargement = static_cast<int>(ceil(robotRadius / theMap.getResolution()));
   for (int nEnlargements = 0; nEnlargements < obsEnlargement; nEnlargements++)
   {
     // For all cells(x,y)=EMPTY:

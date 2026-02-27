@@ -24,13 +24,10 @@ An instance of mrpt::opengl::Scene always contains **at least one viewport**
 If you do not provide a viewport name in API calls, `"main"` will be always be used by default,
 so do not worry on remembering that name.
 
-Note: Before  MRPT 2.7.0, viewport and scene classes were named mrpt::opengl::COpenGLViewport
-and mrpt::opengl::COpenGLScene, respectively, and those names are still provided as aliases for backwards compatibility.
-
 Viewports are referenced by their names, case-sensitive strings. Each viewport contains a different
 "3D scene" (i.e. they render different objects), though a mechanism exists to share the same 3D scene by a number of viewports so memory is not wasted replicating the same smart pointers (see mrpt::opengl::Viewport::setCloneView()).
 
-The main rendering method, Scene::render(), assumes that a viewport has been set-up for the entire target window. That method will internally make the required calls to opengl for creating the additional viewports. Note that only the depth buffer is cleared by default for each (non-main) viewport, to allow transparencies. This can be disabled by the approppriate member in Viewport.
+The main rendering method, Scene::render(), assumes that a viewport has been set-up for the entire target window. That method will internally make the required calls to opengl for creating the additional viewports. Note that only the depth buffer is cleared by default for each (non-main) viewport, to allow transparencies. This can be disabled by the appropriate member in Viewport.
 
 Users will never normally need to invoke Scene::render() manually, but use instead:
 - the 3D standalone viewer: \ref app_SceneViewer3D

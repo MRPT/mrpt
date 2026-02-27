@@ -150,14 +150,14 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
     /**\brief Potential class constructors
      */
     /**\{ */
-    inline global_pose_t() = default;
+    global_pose_t() = default;
 
     template <typename ARG1>
-    inline global_pose_t(const ARG1& a1) : constraint_no_pdf_t(a1)
+    global_pose_t(const ARG1& a1) : constraint_no_pdf_t(a1)
     {
     }
     template <typename ARG1, typename ARG2>
-    inline global_pose_t(const ARG1& a1, const ARG2& a2) : constraint_no_pdf_t(a1, a2)
+    global_pose_t(const ARG1& a1, const ARG2& a2) : constraint_no_pdf_t(a1, a2)
     {
     }
     /**\} */
@@ -171,7 +171,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
     }
     bool operator!=(const global_pose_t& other) const { return (!(*this == other)); }
 
-    inline friend std::ostream& operator<<(std::ostream& o, const self_t& global_pose)
+    friend std::ostream& operator<<(std::ostream& o, const self_t& global_pose)
     {
       o << global_pose.asString() << "| " << global_pose.retAnnotsAsString();
       return o;
@@ -253,7 +253,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
    * \exception On any error, as a malformed line or loading a 3D graph in
    * a 2D graph.
    */
-  inline void loadFromTextFile(const std::string& fileName, bool collapse_dup_edges = true)
+  void loadFromTextFile(const std::string& fileName, bool collapse_dup_edges = true)
   {
     detail::graph_ops<self_t>::load_graph_of_poses_from_text_file(this, fileName);
     if (collapse_dup_edges)
@@ -282,7 +282,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
    * Method makes the call to the corresponding method of the CVisualizer
    * class instance.
    */
-  inline void getAs3DObject(
+  void getAs3DObject(
       mrpt::viz::CSetOfObjects::Ptr object, const mrpt::containers::yaml& viz_params) const
   {
     (void)object;
@@ -302,7 +302,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
    *
    * \sa node, root
    */
-  inline void dijkstra_nodes_estimate(
+  void dijkstra_nodes_estimate(
       std::optional<std::reference_wrapper<std::map<TNodeID, size_t>>> topological_distances =
           std::nullopt)
   {
@@ -636,7 +636,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
    * \note It is assumed that the sets of nodes are \b already in ascending
    * order (default std::set behavior.
    */
-  inline static void connectGraphPartitions(
+  static void connectGraphPartitions(
       self_t* sub_graph, const std::set<TNodeID>& groupA, const std::set<TNodeID>& groupB)
   {
     using namespace mrpt::math;
@@ -671,7 +671,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
    *
    * \exception std::exception On global poses not in \a nodes
    */
-  inline double getEdgeSquareError(
+  double getEdgeSquareError(
       const typename BASE::edges_map_t::const_iterator& itEdge, bool ignoreCovariances = true) const
   {
     return detail::graph_ops<self_t>::graph_edge_sqerror(this, itEdge, ignoreCovariances);
@@ -701,7 +701,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
   }
 
   /** Empty all edges, nodes and set root to ID 0. */
-  inline void clear()
+  void clear()
   {
     BASE::edges.clear();
     nodes.clear();
@@ -714,7 +714,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
    *
    * \sa mrpt::graphs::CDirectedGraph::countDifferentNodesInEdges
    */
-  inline size_t nodeCount() const { return nodes.size(); }
+  size_t nodeCount() const { return nodes.size(); }
   /**  @} */
 
  private:
@@ -723,7 +723,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
    * Edge is called virtual as its value will be determined solely on the
    * pose difference of the given nodeIDs
    */
-  inline static void addVirtualEdge(self_t* graph, const TNodeID& from, const TNodeID& to)
+  static void addVirtualEdge(self_t* graph, const TNodeID& from, const TNodeID& to)
   {
     ASSERTMSG_(graph, "Invalid pointer to the graph instance was provided.");
 

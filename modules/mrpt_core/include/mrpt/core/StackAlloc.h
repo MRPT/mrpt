@@ -28,7 +28,7 @@ namespace mrpt
 
 /// Maximum bytes we allow on the stack via alloca before falling back to heap.
 /// Prevents silent stack overflows for large laser scans, images, etc.
-inline constexpr std::size_t kStackAllocMaxBytes = 64U * 1024U;  // 64 KiB
+constexpr std::size_t kStackAllocMaxBytes = 64U * 1024U;  // 64 KiB
 
 /** Portable fast allocator: uses the stack for small buffers, heap otherwise.
  *

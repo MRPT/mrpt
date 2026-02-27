@@ -28,7 +28,7 @@ class CMatrixB : public mrpt::serialization::CSerializable, public CMatrixBool
   DEFINE_SERIALIZABLE(CMatrixB, mrpt::math)
  public:
   /** Constructor */
-  CMatrixB(size_t row = 1, size_t col = 1) : CMatrixBool(row, col) {}
+  CMatrixB(matrix_dim_t row = 1, matrix_dim_t col = 1) : CMatrixBool(row, col) {}
   /** Copy constructor */
   CMatrixB(const CMatrixBool& m) : CMatrixBool(m) {}
   /** Assignment operator for float matrixes */

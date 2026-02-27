@@ -108,7 +108,7 @@ class CPointsMap :
     const mrpt::obs::CObservation3DRangeScan& rangeScan;
     /** In \a internal_loadFromRangeScan3D_prepareOneRange, these are the
      * local coordinates of the scan points being inserted right now. */
-    float scan_x, scan_y, scan_z;
+    float scan_x = 0, scan_y = 0, scan_z = 0;
     /** Extra variables to be used as desired by the derived class. */
     std::vector<float> fVars;
     std::vector<unsigned int> uVars;
@@ -118,9 +118,7 @@ class CPointsMap :
  public:
   /** Ctor */
   CPointsMap() = default;
-
-  /** Virtual destructor. */
-  ~CPointsMap() override;
+  ~CPointsMap() = default;
 
   CPointsMap& operator=(const CPointsMap& o)
   {
@@ -132,6 +130,9 @@ class CPointsMap :
    * impl_copyFrom() during copy ctors. Redefine in derived classes as needed
    * instead. */
   CPointsMap(const CPointsMap& o) = delete;
+  // deleted move ctor and assign operator:
+  CPointsMap(CPointsMap&& o) = delete;
+  CPointsMap& operator=(CPointsMap&& o) = delete;
 
   /** @name Pure virtual interfaces to be implemented by any class derived
    from CPointsMap
@@ -232,7 +233,7 @@ class CPointsMap :
    */
   float squareDistanceToClosestCorrespondence(float x0, float y0) const override;
 
-  inline float squareDistanceToClosestCorrespondenceT(const mrpt::math::TPoint2D& p0) const
+  float squareDistanceToClosestCorrespondenceT(const mrpt::math::TPoint2D& p0) const
   {
     return squareDistanceToClosestCorrespondence(d2f(p0.x), d2f(p0.y));
   }
@@ -299,7 +300,7 @@ class CPointsMap :
     /** Initialization of default parameters
      */
     TLikelihoodOptions();
-    ~TLikelihoodOptions() override = default;
+
     void loadFromConfigFile(
         const mrpt::config::CConfigFileBase& source,
         const std::string& section) override;                 // See base docs
@@ -361,7 +362,7 @@ class CPointsMap :
   void insertAnotherMap(
       const CPointsMap* otherMap,
       const mrpt::poses::CPose3D& otherPose,
-      const bool filterOutPointsAtZero = false);
+      bool filterOutPointsAtZero = false);
 
   /** Inserts another map into this one. \sa insertAnotherMap() */
   void operator+=(const CPointsMap& anotherMap)
@@ -399,7 +400,10 @@ class CPointsMap :
    * \return true if the field could effectively be added to the underlying point map class.
    * \sa hasPointField(), getPointFieldNames_uint16()
    */
-  virtual bool registerField_uint16(const std::string_view& fieldName) { return false; }
+  virtual bool registerField_uint16([[maybe_unused]] const std::string_view& fieldName)
+  {
+    return false;
+  }
 
   /** Registers a new data channel of type `uint8_t`.
    * If the map is not empty, the new channel is filled with default values (0)
@@ -407,7 +411,10 @@ class CPointsMap :
    * \return true if the field could effectively be added to the underlying point map class.
    * \sa hasPointField(), getPointFieldNames_uint8()
    */
-  virtual bool registerField_uint8(const std::string_view& fieldName) { return false; }
+  virtual bool registerField_uint8([[maybe_unused]] const std::string_view& fieldName)
+  {
+    return false;
+  }
 
   /** Registers a new data channel of type `double`.
    * If the map is not empty, the new channel is filled with default values (0)
@@ -415,7 +422,10 @@ class CPointsMap :
    * \return true if the field could effectively be added to the underlying point map class.
    * \sa hasPointField(), getPointFieldNames_double()
    */
-  virtual bool registerField_double(const std::string_view& fieldName) { return false; }
+  virtual bool registerField_double([[maybe_unused]] const std::string_view& fieldName)
+  {
+    return false;
+  }
 
   /** @} */
 
@@ -427,11 +437,11 @@ class CPointsMap :
    * pair, separated by whitespaces.
    *   Returns false if any error occurred, true elsewere.
    */
-  inline bool load2D_from_text_file(const std::string& file)
+  bool load2D_from_text_file(const std::string& file)
   {
     return load2Dor3D_from_text_file(file, false);
   }
-  inline bool load2D_from_text_stream(
+  bool load2D_from_text_stream(
       std::istream& in, mrpt::optional_ref<std::string> outErrorMsg = std::nullopt)
   {
     return load2Dor3D_from_text_stream(in, outErrorMsg, false);
@@ -441,11 +451,11 @@ class CPointsMap :
    * tuple, separated by whitespaces.
    *   Returns false if any error occurred, true elsewere.
    */
-  inline bool load3D_from_text_file(const std::string& file)
+  bool load3D_from_text_file(const std::string& file)
   {
     return load2Dor3D_from_text_file(file, true);
   }
-  inline bool load3D_from_text_stream(
+  bool load3D_from_text_stream(
       std::istream& in, mrpt::optional_ref<std::string> outErrorMsg = std::nullopt)
   {
     return load2Dor3D_from_text_stream(in, outErrorMsg, true);
@@ -453,9 +463,9 @@ class CPointsMap :
 
   /** 2D or 3D generic implementation of \a load2D_from_text_file and
    * load3D_from_text_file */
-  bool load2Dor3D_from_text_file(const std::string& file, const bool is_3D);
+  bool load2Dor3D_from_text_file(const std::string& file, bool is_3D);
   bool load2Dor3D_from_text_stream(
-      std::istream& in, mrpt::optional_ref<std::string> outErrorMsg, const bool is_3D);
+      std::istream& in, mrpt::optional_ref<std::string> outErrorMsg, bool is_3D);
 
   /**  Save to a text file. Each line will contain "X Y" point coordinates.
    *		Returns false if any error occurred, true elsewere.
@@ -483,7 +493,7 @@ class CPointsMap :
    * \note This method requires user code to include PCL before MRPT headers.
    * \return false on any error */
 #if defined(PCL_LINEAR_VERSION)
-  inline bool savePCDFile(const std::string& filename, bool save_as_binary) const
+  bool savePCDFile(const std::string& filename, bool save_as_binary) const
   {
     pcl::PointCloud<pcl::PointXYZ> cloud;
     this->getPCLPointCloud(cloud);
@@ -495,7 +505,7 @@ class CPointsMap :
    * \note This method requires user code to include PCL before MRPT headers.
    * \return false on any error */
 #if defined(PCL_LINEAR_VERSION)
-  inline bool loadPCDFile(const std::string& filename)
+  bool loadPCDFile(const std::string& filename)
   {
     pcl::PointCloud<pcl::PointXYZ> cloud;
     if (0 != pcl::io::loadPCDFile(filename, cloud))
@@ -512,7 +522,7 @@ class CPointsMap :
 
   /** Returns the number of stored points in the map.
    */
-  inline size_t size() const { return m_x.size(); }
+  size_t size() const { return m_x.size(); }
   /** Access to a given point from map, as a 2D point. First index is 0.
    * \exception Throws std::exception on index out of bound.
    * \sa setPoint, getPointFast
@@ -572,13 +582,13 @@ class CPointsMap :
 
   /** Provides a direct access to a read-only reference of the internal point
    * buffer. \sa getAllPoints */
-  inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_x() const { return m_x; }
+  const mrpt::aligned_std_vector<float>& getPointsBufferRef_x() const { return m_x; }
   /** Provides a direct access to a read-only reference of the internal point
    * buffer. \sa getAllPoints */
-  inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_y() const { return m_y; }
+  const mrpt::aligned_std_vector<float>& getPointsBufferRef_y() const { return m_y; }
   /** Provides a direct access to a read-only reference of the internal point
    * buffer. \sa getAllPoints */
-  inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_z() const { return m_z; }
+  const mrpt::aligned_std_vector<float>& getPointsBufferRef_z() const { return m_z; }
 
   /** @name Generic, string-keyed field access virtual interface
    * @{ */
@@ -610,9 +620,18 @@ class CPointsMap :
    */
   virtual float getPointField_float(size_t index, const std::string_view& fieldName) const
   {
-    if (fieldName == "x") return m_x.at(index);
-    if (fieldName == "y") return m_y.at(index);
-    if (fieldName == "z") return m_z.at(index);
+    if (fieldName == "x")
+    {
+      return m_x.at(index);
+    }
+    if (fieldName == "y")
+    {
+      return m_y.at(index);
+    }
+    if (fieldName == "z")
+    {
+      return m_z.at(index);
+    }
     return 0;
   }
 
@@ -621,7 +640,8 @@ class CPointsMap :
    * \exception std::exception on index out of bounds or if field exists but
    * is not double.
    */
-  virtual double getPointField_double(size_t index, const std::string_view& fieldName) const
+  virtual double getPointField_double(
+      [[maybe_unused]] size_t index, [[maybe_unused]] const std::string_view& fieldName) const
   {
     return 0;
   }
@@ -631,7 +651,8 @@ class CPointsMap :
    * \exception std::exception on index out of bounds or if field exists but
    * is not uint16_t.
    */
-  virtual uint16_t getPointField_uint16(size_t index, const std::string_view& fieldName) const
+  virtual uint16_t getPointField_uint16(
+      [[maybe_unused]] size_t index, [[maybe_unused]] const std::string_view& fieldName) const
   {
     return 0;
   }
@@ -641,7 +662,8 @@ class CPointsMap :
    * \exception std::exception on index out of bounds or if field exists but
    * is not uint16_t.
    */
-  virtual uint8_t getPointField_uint8(size_t index, const std::string_view& fieldName) const
+  virtual uint8_t getPointField_uint8(
+      [[maybe_unused]] size_t index, [[maybe_unused]] const std::string_view& fieldName) const
   {
     return 0;
   }
@@ -653,17 +675,26 @@ class CPointsMap :
   virtual void setPointField_float(size_t index, const std::string_view& fieldName, float value)
   {
     if (fieldName == "x")
+    {
       m_x.at(index) = value;
+    }
     else if (fieldName == "y")
+    {
       m_y.at(index) = value;
+    }
     else if (fieldName == "z")
+    {
       m_z.at(index) = value;
+    }
   }
   /** Sets the value of a double channel for a given point.
    * \exception std::exception on index out of bounds or if field does not
    * exist or is not double.
    */
-  virtual void setPointField_double(size_t index, const std::string_view& fieldName, double value)
+  virtual void setPointField_double(
+      [[maybe_unused]] size_t index,
+      [[maybe_unused]] const std::string_view& fieldName,
+      [[maybe_unused]] double value)
   {
   }
 
@@ -671,7 +702,10 @@ class CPointsMap :
    * \exception std::exception on index out of bounds or if field does not
    * exist or is not uint16_t.
    */
-  virtual void setPointField_uint16(size_t index, const std::string_view& fieldName, uint16_t value)
+  virtual void setPointField_uint16(
+      [[maybe_unused]] size_t index,
+      [[maybe_unused]] const std::string_view& fieldName,
+      [[maybe_unused]] uint16_t value)
   {
   }
 
@@ -679,35 +713,83 @@ class CPointsMap :
    * \exception std::exception on index out of bounds or if field does not
    * exist or is not uint8_t.
    */
-  virtual void setPointField_uint8(size_t index, const std::string_view& fieldName, uint8_t value)
+  virtual void setPointField_uint8(
+      [[maybe_unused]] size_t index,
+      [[maybe_unused]] const std::string_view& fieldName,
+      [[maybe_unused]] uint8_t value)
   {
   }
 
   /** Appends a value to a float channel (for use after insertPointFast()) */
-  virtual void insertPointField_float(const std::string_view& fieldName, float value) {}
+  virtual void insertPointField_float(
+      [[maybe_unused]] const std::string_view& fieldName, [[maybe_unused]] float value)
+  {
+  }
   /** Appends a value to a double channel (for use after insertPointFast()) */
-  virtual void insertPointField_double(const std::string_view& fieldName, double value) {}
+  virtual void insertPointField_double(
+      [[maybe_unused]] const std::string_view& fieldName, [[maybe_unused]] double value)
+  {
+  }
   /** Appends a value to a uint16_t channel (for use after insertPointFast()) */
-  virtual void insertPointField_uint16(const std::string_view& fieldName, uint16_t value) {}
+  virtual void insertPointField_uint16(
+      [[maybe_unused]] const std::string_view& fieldName, [[maybe_unused]] uint16_t value)
+  {
+  }
   /** Appends a value to a uint8_t channel (for use after insertPointFast()) */
-  virtual void insertPointField_uint8(const std::string_view& fieldName, uint8_t value) {}
+  virtual void insertPointField_uint8(
+      [[maybe_unused]] const std::string_view& fieldName, [[maybe_unused]] uint8_t value)
+  {
+  }
 
-  virtual void reserveField_float(const std::string_view& fieldName, size_t n) {}
-  virtual void reserveField_double(const std::string_view& fieldName, size_t n) {}
-  virtual void reserveField_uint16(const std::string_view& fieldName, size_t n) {}
-  virtual void reserveField_uint8(const std::string_view& fieldName, size_t n) {}
+  virtual void reserveField_float(
+      [[maybe_unused]] const std::string_view& fieldName, [[maybe_unused]] size_t n)
+  {
+  }
+  virtual void reserveField_double(
+      [[maybe_unused]] const std::string_view& fieldName, [[maybe_unused]] size_t n)
+  {
+  }
+  virtual void reserveField_uint16(
+      [[maybe_unused]] const std::string_view& fieldName, [[maybe_unused]] size_t n)
+  {
+  }
+  virtual void reserveField_uint8(
+      [[maybe_unused]] const std::string_view& fieldName, [[maybe_unused]] size_t n)
+  {
+  }
 
-  virtual void resizeField_float(const std::string_view& fieldName, size_t n) {}
-  virtual void resizeField_double(const std::string_view& fieldName, size_t n) {}
-  virtual void resizeField_uint16(const std::string_view& fieldName, size_t n) {}
-  virtual void resizeField_uint8(const std::string_view& fieldName, size_t n) {}
+  virtual void resizeField_float(
+      [[maybe_unused]] const std::string_view& fieldName, [[maybe_unused]] size_t n)
+  {
+  }
+  virtual void resizeField_double(
+      [[maybe_unused]] const std::string_view& fieldName, [[maybe_unused]] size_t n)
+  {
+  }
+  virtual void resizeField_uint16(
+      [[maybe_unused]] const std::string_view& fieldName, [[maybe_unused]] size_t n)
+  {
+  }
+  virtual void resizeField_uint8(
+      [[maybe_unused]] const std::string_view& fieldName, [[maybe_unused]] size_t n)
+  {
+  }
 
   virtual auto getPointsBufferRef_float_field(const std::string_view& fieldName) const
       -> const mrpt::aligned_std_vector<float>*
   {
-    if (fieldName == "x") return &m_x;
-    if (fieldName == "y") return &m_y;
-    if (fieldName == "z") return &m_z;
+    if (fieldName == "x")
+    {
+      return &m_x;
+    }
+    if (fieldName == "y")
+    {
+      return &m_y;
+    }
+    if (fieldName == "z")
+    {
+      return &m_z;
+    }
     return nullptr;
   }
   virtual auto getPointsBufferRef_double_field([[maybe_unused]] const std::string_view& fieldName)
@@ -729,9 +811,18 @@ class CPointsMap :
   virtual auto getPointsBufferRef_float_field(const std::string_view& fieldName)
       -> mrpt::aligned_std_vector<float>*
   {
-    if (fieldName == "x") return &m_x;
-    if (fieldName == "y") return &m_y;
-    if (fieldName == "z") return &m_z;
+    if (fieldName == "x")
+    {
+      return &m_x;
+    }
+    if (fieldName == "y")
+    {
+      return &m_y;
+    }
+    if (fieldName == "z")
+    {
+      return &m_z;
+    }
     return nullptr;
   }
   virtual auto getPointsBufferRef_double_field([[maybe_unused]] const std::string_view& fieldName)
@@ -770,7 +861,8 @@ class CPointsMap :
     xs.resize(Nout);
     ys.resize(Nout);
     zs.resize(Nout);
-    size_t idx_in, idx_out;
+    size_t idx_in = 0;
+    size_t idx_out = 0;
     for (idx_in = 0, idx_out = 0; idx_out < Nout; idx_in += decimation, ++idx_out)
     {
       xs[idx_out] = m_x[idx_in];
@@ -790,7 +882,8 @@ class CPointsMap :
 
   void getAllPoints(std::vector<mrpt::math::TPoint2D>& ps, size_t decimation = 1) const
   {
-    std::vector<float> dmy1, dmy2;
+    std::vector<float> dmy1;
+    std::vector<float> dmy2;
     getAllPoints(dmy1, dmy2, decimation);
     ps.resize(dmy1.size());
     for (size_t i = 0; i < dmy1.size(); i++)
@@ -908,19 +1001,19 @@ class CPointsMap :
     insertPointFast((*ctx.xs_src)[i], (*ctx.ys_src)[i], (*ctx.zs_src)[i]);
 
     // Optional fields
-    for (auto& f : ctx.float_fields)
+    for (const auto& f : ctx.float_fields)
     {
       f.dst_buf->push_back((*f.src_buf)[i]);
     }
-    for (auto& f : ctx.double_fields)
+    for (const auto& f : ctx.double_fields)
     {
       f.dst_buf->push_back((*f.src_buf)[i]);
     }
-    for (auto& f : ctx.uint16_fields)
+    for (const auto& f : ctx.uint16_fields)
     {
       f.dst_buf->push_back((*f.src_buf)[i]);
     }
-    for (auto& f : ctx.uint8_fields)
+    for (const auto& f : ctx.uint8_fields)
     {
       f.dst_buf->push_back((*f.src_buf)[i]);
     }
@@ -943,15 +1036,19 @@ class CPointsMap :
     this->setSize(N);
     const bool z_valid = !Z.empty();
     if (z_valid)
+    {
       for (size_t i = 0; i < N; i++)
       {
         this->setPointFast(i, X[i], Y[i], Z[i]);
       }
+    }
     else
+    {
       for (size_t i = 0; i < N; i++)
       {
         this->setPointFast(i, X[i], Y[i], 0);
       }
+    }
     mark_as_modified();
   }
 
@@ -1144,7 +1241,7 @@ class CPointsMap :
   bool isEmpty() const override;
 
   /** STL-like method to check whether the map is empty: */
-  inline bool empty() const { return isEmpty(); }
+  bool empty() const { return isEmpty(); }
 
   /** Returns a 3D object representing the map.
    *  The color of the points is controlled by renderOptions
@@ -1163,9 +1260,9 @@ class CPointsMap :
    */
   void extractCylinder(
       const mrpt::math::TPoint2D& center,
-      const double radius,
-      const double zmin,
-      const double zmax,
+      double radius,
+      double zmin,
+      double zmax,
       CPointsMap& outMap);
 
   /** Extracts the points in the map within the area defined by two corners.
@@ -1180,7 +1277,7 @@ class CPointsMap :
    * setHeightFilterLevels \note Default upon construction is disabled. */
   void enableFilterByHeight(bool enable = true) { m_heightfilter_enabled = enable; }
   /** Return whether filter-by-height is enabled \sa enableFilterByHeight */
-  inline bool isFilterByHeightEnabled() const { return m_heightfilter_enabled; }
+  bool isFilterByHeightEnabled() const { return m_heightfilter_enabled; }
 
   /** Set the min/max Z levels for points to be actually inserted in the map
    * (only if \a enableFilterByHeight() was called before). */
@@ -1208,7 +1305,7 @@ class CPointsMap :
       const float* xs,
       const float* ys,
       const float* zs,
-      const std::size_t num_pts) const;
+      std::size_t num_pts) const;
 
   /** @name PCL library support
     @{ */
@@ -1273,23 +1370,28 @@ class CPointsMap :
     @{ */
 
   /// Must return the number of data points
-  inline size_t kdtree_get_point_count() const { return this->size(); }
+  size_t kdtree_get_point_count() const { return this->size(); }
   /// Returns the dim'th component of the idx'th point in the class:
-  inline float kdtree_get_pt(size_t idx, int dim) const
+  float kdtree_get_pt(size_t idx, int dim) const
   {
     if (dim == 0)
+    {
       return m_x[idx];
-    else if (dim == 1)
+    }
+    if (dim == 1)
+    {
       return m_y[idx];
-    else if (dim == 2)
+    }
+    if (dim == 2)
+    {
       return m_z[idx];
-    else
-      return 0;
+    }
+    return 0;
   }
 
   /// Returns the distance between the vector "p1[0:size-1]" and the data
   /// point with index "idx_p2" stored in the class:
-  inline float kdtree_distance(const float* p1, size_t idx_p2, size_t size) const
+  float kdtree_distance(const float* p1, size_t idx_p2, size_t size) const
   {
     if (size == 2)
     {
@@ -1297,13 +1399,10 @@ class CPointsMap :
       const float d1 = p1[1] - m_y[idx_p2];
       return d0 * d0 + d1 * d1;
     }
-    else
-    {
-      const float d0 = p1[0] - m_x[idx_p2];
-      const float d1 = p1[1] - m_y[idx_p2];
-      const float d2 = p1[2] - m_z[idx_p2];
-      return d0 * d0 + d1 * d1 + d2 * d2;
-    }
+    const float d0 = p1[0] - m_x[idx_p2];
+    const float d1 = p1[1] - m_y[idx_p2];
+    const float d2 = p1[2] - m_z[idx_p2];
+    return d0 * d0 + d1 * d1 + d2 * d2;
   }
 
   // Optional bounding-box computation: return false to default to a standard
@@ -1359,26 +1458,26 @@ class CPointsMap :
       uint64_t& resultIndexOrID) const override;
   void nn_multiple_search(
       const mrpt::math::TPoint3Df& query,
-      const size_t N,
+      size_t N,
       std::vector<mrpt::math::TPoint3Df>& results,
       std::vector<float>& out_dists_sqr,
       std::vector<uint64_t>& resultIndicesOrIDs) const override;
   void nn_multiple_search(
       const mrpt::math::TPoint2Df& query,
-      const size_t N,
+      size_t N,
       std::vector<mrpt::math::TPoint2Df>& results,
       std::vector<float>& out_dists_sqr,
       std::vector<uint64_t>& resultIndicesOrIDs) const override;
   void nn_radius_search(
       const mrpt::math::TPoint3Df& query,
-      const float search_radius_sqr,
+      float search_radius_sqr,
       std::vector<mrpt::math::TPoint3Df>& results,
       std::vector<float>& out_dists_sqr,
       std::vector<uint64_t>& resultIndicesOrIDs,
       size_t maxPoints) const override;
   void nn_radius_search(
       const mrpt::math::TPoint2Df& query,
-      const float search_radius_sqr,
+      float search_radius_sqr,
       std::vector<mrpt::math::TPoint2Df>& results,
       std::vector<float>& out_dists_sqr,
       std::vector<uint64_t>& resultIndicesOrIDs,
@@ -1484,7 +1583,7 @@ class PointCloudAdapter<mrpt::maps::CPointsMap>
   }
 
   /** Get number of points */
-  [[nodiscard]] inline size_t size() const { return m_obj.size(); }
+  [[nodiscard]] size_t size() const { return m_obj.size(); }
 
   /** Set number of points (to uninitialized values) */
   void resize(size_t N) { m_obj.resize(N); }
@@ -1568,8 +1667,9 @@ class PointCloudAdapter<mrpt::maps::CPointsMap>
   // (Get) Tries to read "R","G","B" or "intensity"
   void getPointRGBf(size_t idx, float& r, float& g, float& b) const
   {
-    float x, y, z, a;
-    getPointXYZ_RGBAf(idx, x, y, z, r, g, b, a);
+    mrpt::math::TPoint3Df pt;
+    float a = 1;
+    getPointXYZ_RGBAf(idx, pt.x, pt.y, pt.z, r, g, b, a);
   }
 
   // (Set) Tries to write "R","G","B"

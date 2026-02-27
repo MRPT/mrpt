@@ -149,7 +149,9 @@ double COccupancyGridMap2D::computeObservationLikelihood_ConsensusOWA(
   // Insert only HORIZONTAL scans, since the grid is supposed to
   //  be a horizontal representation of space.
   if (!o.isPlanarScan(insertionOptions.horizontalTolerance))
+  {
     return 0.5;  // NO WAY TO ESTIMATE NON HORIZONTAL SCANS!!
+  }
 
   // Assure we have a 2D points-map representation of the points from the
   // scan:
@@ -383,7 +385,8 @@ double COccupancyGridMap2D::computeObservationLikelihood_rayTracing(
       if (o.getScanRangeValidity(j))
       {
         likelihood =
-            0.1 / o.maxRange + 0.9 * exp(-square(min((float)fabs(r_sim - r_obs), 2.0f) / stdSqrt2));
+            0.1 / o.maxRange +
+            0.9 * exp(-square(min(static_cast<float>(fabs(r_sim - r_obs)), 2.0f) / stdSqrt2));
         ret += log(likelihood);
         // printf("Sim=%f\tReal=%f\tlik=%f\n",r_sim,r_obs,likelihood);
       }
@@ -494,9 +497,9 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 
   double ret;
   size_t N = pm->size();
-  int K = (int)ceil(
+  int K = static_cast<int>(ceil(
       likelihoodOptions.LF_maxCorrsDistance /*m*/ /
-      m_resolution);  // The size of the checking area for matchings:
+      m_resolution));  // The size of the checking area for matchings:
 
   bool Product_T_OrSum_F = !likelihoodOptions.LF_alternateAverageMethod;
 
@@ -516,8 +519,8 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
   float Q = -0.5f / square(stdHit);
   int M = 0;
 
-  unsigned int size_x_1 = m_size_x - 1;
-  unsigned int size_y_1 = m_size_y - 1;
+  const unsigned int size_x_1 = m_size_x - 1;
+  const unsigned int size_y_1 = m_size_y - 1;
 
 #define LIK_LF_CACHE_INVALID (66)
 
@@ -612,10 +615,10 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
         // -------------
         // Find the closest occupied cell in a certain range, given by
         // K:
-        int xx1 = max(0, cx - K);
-        int xx2 = min(size_x_1, (unsigned)(cx + K));
-        int yy1 = max(0, cy - K);
-        int yy2 = min(size_y_1, (unsigned)(cy + K));
+        const int xx1 = std::max<int>(0, cx - K);
+        const int xx2 = std::min<int>(size_x_1, cx + K);
+        const int yy1 = std::max<int>(0, cy - K);
+        const int yy2 = std::min<int>(size_y_1, cy + K);
 
         // Optimized code: this part will be invoked a *lot* of times:
         float occupiedMinDist;
@@ -631,7 +634,7 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 
           for (int yy = yy1; yy <= yy2; yy++)
           {
-            unsigned int Ay2 = square((unsigned int)(Ay));  // Square is faster
+            unsigned int Ay2 = square(static_cast<unsigned int>(Ay));  // Square is faster
             // with unsigned.
             signed short Ax = Ax0;
             cellType cell;
@@ -640,7 +643,7 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
             {
               if ((cell = *mapPtr++) < thresholdCellValue)
               {
-                unsigned int d = square((unsigned int)(Ax)) + Ay2;
+                unsigned int d = square(static_cast<unsigned int>(Ax)) + Ay2;
                 keep_min(occupiedMinDistInt, d);
               }
               Ax += 10;
@@ -693,7 +696,10 @@ double COccupancyGridMap2D::computeLikelihoodField_II(
   double ret;
   size_t N = pm->size();
 
-  if (!N) return 1e-100;  // No way to estimate this likelihood!!
+  if (!N)
+  {
+    return 1e-100;  // No way to estimate this likelihood!!
+  }
 
   // Compute the likelihoods for each point:
   ret = 0;
@@ -712,7 +718,8 @@ double COccupancyGridMap2D::computeLikelihoodField_II(
   int cx0, cy0;
   int cx_min, cx_max;
   int cy_min, cy_max;
-  int maxRangeInCells = (int)ceil(likelihoodOptions.LF_maxCorrsDistance / m_resolution);
+  int maxRangeInCells =
+      static_cast<int>(ceil(likelihoodOptions.LF_maxCorrsDistance / m_resolution));
   int nCells = 0;
 
   // -----------------------------------------------------
@@ -759,7 +766,7 @@ double COccupancyGridMap2D::computeLikelihoodField_II(
 
         lik += P_free * zRandomTerm + (1 - P_free) * termDist;
       }  // end for cy
-    }    // end for cx
+    }  // end for cx
 
     // Update the likelihood:
     if (likelihoodOptions.LF_alternateAverageMethod)
@@ -891,7 +898,7 @@ void COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(std::ostream& out
     else if (i == 3 && OWA_weights.size() > 6)
       out << " ... ";
   }
-  out << mrpt::format("] (size=%u)\n", (unsigned)OWA_weights.size());
+  out << mrpt::format("] (size=%u)\n", static_cast<unsigned>(OWA_weights.size()));
   out << "\n";
 }
 

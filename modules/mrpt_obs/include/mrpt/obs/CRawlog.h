@@ -247,24 +247,24 @@ class CRawlog : public mrpt::serialization::CSerializable
     bool operator==(const iterator& o) { return m_it == o.m_it; }
     bool operator!=(const iterator& o) { return m_it != o.m_it; }
     mrpt::serialization::CSerializable::Ptr operator*() { return *m_it; }
-    inline iterator operator++(int)
+    iterator operator++(int)
     {
       iterator aux = *this;
       m_it++;
       return aux;
     }  // Post
-    inline iterator& operator++()
+    iterator& operator++()
     {
       m_it++;
       return *this;
     }  // Pre
-    inline iterator operator--(int)
+    iterator operator--(int)
     {
       iterator aux = *this;
       m_it--;
       return aux;
     }  // Post
-    inline iterator& operator--()
+    iterator& operator--()
     {
       m_it--;
       return *this;
@@ -298,24 +298,24 @@ class CRawlog : public mrpt::serialization::CSerializable
     bool operator!=(const const_iterator& o) { return m_it != o.m_it; }
     const mrpt::serialization::CSerializable::Ptr operator*() const { return *m_it; }
 
-    inline const_iterator operator++(int)
+    const_iterator operator++(int)
     {
       const_iterator aux = *this;
       m_it++;
       return aux;
     }  // Post
-    inline const_iterator& operator++()
+    const_iterator& operator++()
     {
       m_it++;
       return *this;
     }  // Pre
-    inline const_iterator operator--(int)
+    const_iterator operator--(int)
     {
       const_iterator aux = *this;
       m_it--;
       return aux;
     }  // Post
-    inline const_iterator& operator--()
+    const_iterator& operator--()
     {
       m_it--;
       return *this;

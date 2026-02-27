@@ -92,9 +92,9 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
     out_part1.clear();
     out_part2.clear();
     // Assign 50%-50%:
-    for (int i = 0; i < Adj.cols(); i++)
+    for (size_t i = 0; i < Adj.cols(); i++)
       if (i <= Adj.cols() / 2)
-        out_part1.push_back(i);
+        out_part1.push_back(static_cast<int>(i));
       else
         out_part2.push_back(i);
   }
@@ -157,8 +157,8 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
 
   if (verbose)
     std::cout << format(
-        "Cut:%u=%u+%u,nCut=%.02f->", (unsigned int)nodeCount, (unsigned int)p1.size(),
-        (unsigned int)p2.size(), cut_value);
+        "Cut:%u=%u+%u,nCut=%.02f->", static_cast<unsigned int>(nodeCount), static_cast<unsigned int>(p1.size()),
+        static_cast<unsigned int>(p2.size()), cut_value);
 
   // Is it a useful partition?
   if (cut_value > threshold_Ncut || p1.size() < minSizeClusters || p2.size() < minSizeClusters)

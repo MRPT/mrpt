@@ -136,10 +136,10 @@ class CEdgeCounter
       int text_index_loop_closures);
 
   /**\brief Instance Iterators */
-  inline iterator begin() { return m_name_to_edges_num.begin(); }
-  inline const_iterator cbegin() const { return m_name_to_edges_num.cbegin(); }
-  inline iterator end() { return m_name_to_edges_num.end(); }
-  inline const_iterator cend() const { return m_name_to_edges_num.cend(); }
+  iterator begin() { return m_name_to_edges_num.begin(); }
+  const_iterator cbegin() const { return m_name_to_edges_num.cbegin(); }
+  iterator end() { return m_name_to_edges_num.end(); }
+  const_iterator cend() const { return m_name_to_edges_num.cend(); }
 
  private:
   /**\brief Update the given CDisplayWindow3D with the edges registered so

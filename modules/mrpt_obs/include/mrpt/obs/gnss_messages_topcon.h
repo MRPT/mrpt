@@ -74,7 +74,7 @@ struct Message_TOPCON_PZS : public gnss_message
    * structure (requires linking against mrpt-topography)
    *   Call as: getAsStruct<TGeodeticCoords>(); */
   template <class TGEODETICCOORDS>
-  inline TGEODETICCOORDS getAsStruct() const
+  TGEODETICCOORDS getAsStruct() const
   {
     return TGEODETICCOORDS(latitude_degrees, longitude_degrees, height_meters);
   }

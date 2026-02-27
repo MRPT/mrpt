@@ -22,7 +22,7 @@ namespace mrpt
  * \ingroup mrpt_bits_math
  */
 template <typename T>
-inline T abs_diff(const T a, const T b)
+T abs_diff(const T a, const T b)
 {
   return std::max(a, b) - std::min(a, b);
 }

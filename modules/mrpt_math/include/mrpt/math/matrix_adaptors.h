@@ -48,7 +48,7 @@ class MatrixWrapper<U, false>
 };
 
 template <typename T, typename U, bool UIsObject, typename FunctionType>
-inline void applyFunction(
+void applyFunction(
     CBinaryRelation<T, U, UIsObject>& o,
     FunctionType fun,
     size_t e1,
@@ -77,59 +77,59 @@ class AccessorIterator
   using pointer = T*;
   using reference = T&;
 
-  inline AccessorIterator(A& obj, size_t N) : base(&obj), pos(N) {}
-  inline T& operator*() const { return (*base)[pos]; }
-  inline AccessorIterator<A, T>& operator++()
+  AccessorIterator(A& obj, size_t N) : base(&obj), pos(N) {}
+  T& operator*() const { return (*base)[pos]; }
+  AccessorIterator<A, T>& operator++()
   {
     ++pos;
     return *this;
   }
-  inline AccessorIterator<A, T> operator++(int)
+  AccessorIterator<A, T> operator++(int)
   {
     AccessorIterator<A, T> it = *this;
     ++*this;
     return it;
   }
-  inline AccessorIterator<A, T>& operator--()
+  AccessorIterator<A, T>& operator--()
   {
     --pos;
     return *this;
   }
-  inline AccessorIterator<A, T> operator--(int)
+  AccessorIterator<A, T> operator--(int)
   {
     AccessorIterator<A, T> it = *this;
     --*this;
     return it;
   }
-  inline AccessorIterator<A, T>& operator+=(int off)
+  AccessorIterator<A, T>& operator+=(int off)
   {
     pos += off;
     return *this;
   }
-  inline AccessorIterator<A, T> operator+(int off) const
+  AccessorIterator<A, T> operator+(int off) const
   {
     AccessorIterator<A, T> it = *this;
     it += off;
     return it;
   }
-  inline AccessorIterator<A, T>& operator-=(int off)
+  AccessorIterator<A, T>& operator-=(int off)
   {
     pos -= off;
     return *this;
   }
-  inline AccessorIterator<A, T> operator-(int off) const
+  AccessorIterator<A, T> operator-(int off) const
   {
     AccessorIterator<A, T> it = *this;
     it -= off;
     return it;
   }
-  inline int operator-(const AccessorIterator<A, T>& it) const { return pos - it.pos; }
-  inline T& operator[](int off) const { return (*base)[pos + off]; }
-  inline bool operator==(const AccessorIterator<A, T>& it) const
+  int operator-(const AccessorIterator<A, T>& it) const { return pos - it.pos; }
+  T& operator[](int off) const { return (*base)[pos + off]; }
+  bool operator==(const AccessorIterator<A, T>& it) const
   {
     return (pos == it.pos) && (base == it.base);
   }
-  inline bool operator!=(const AccessorIterator<A, T>& it) const { return !(operator==(it)); }
+  bool operator!=(const AccessorIterator<A, T>& it) const { return !(operator==(it)); }
 };
 
 /** Template class for matrix accessor's iterators.
@@ -150,59 +150,59 @@ class ReverseAccessorIterator
   using pointer = T*;
   using reference = T&;
 
-  inline ReverseAccessorIterator(A& obj, size_t N) : base(&obj), pos(N) {}
-  inline T& operator*() const { return (*base)[pos]; }
-  inline ReverseAccessorIterator<A, T>& operator++()
+  ReverseAccessorIterator(A& obj, size_t N) : base(&obj), pos(N) {}
+  T& operator*() const { return (*base)[pos]; }
+  ReverseAccessorIterator<A, T>& operator++()
   {
     --pos;
     return *this;
   }
-  inline ReverseAccessorIterator<A, T> operator++(int)
+  ReverseAccessorIterator<A, T> operator++(int)
   {
     ReverseAccessorIterator<A, T> it = *this;
     ++*this;  // Yes, that's right.
     return it;
   }
-  inline ReverseAccessorIterator<A, T>& operator--()
+  ReverseAccessorIterator<A, T>& operator--()
   {
     ++pos;
     return *this;
   }
-  inline ReverseAccessorIterator<A, T> operator--(int)
+  ReverseAccessorIterator<A, T> operator--(int)
   {
     ReverseAccessorIterator<A, T> it = *this;
     --*this;  // Yes, that's right.
     return it;
   }
-  inline ReverseAccessorIterator<A, T>& operator+=(int off)
+  ReverseAccessorIterator<A, T>& operator+=(int off)
   {
     pos -= off;
     return *this;
   }
-  inline ReverseAccessorIterator<A, T> operator+(int off) const
+  ReverseAccessorIterator<A, T> operator+(int off) const
   {
     ReverseAccessorIterator<A, T> it = *this;
     it += off;  // Yes, that's right.
     return it;
   }
-  inline AccessorIterator<A, T>& operator-=(int off)
+  AccessorIterator<A, T>& operator-=(int off)
   {
     pos += off;
     return *this;
   }
-  inline AccessorIterator<A, T> operator-(int off) const
+  AccessorIterator<A, T> operator-(int off) const
   {
     ReverseAccessorIterator<A, T> it = *this;
     it -= off;  // Yes, that's right
     return it;
   }
-  inline int operator-(const ReverseAccessorIterator<A, T>& it) const { return it.pos - pos; }
-  inline T& operator[](int off) const { return (*base)[pos - off]; }
-  inline bool operator==(const ReverseAccessorIterator<A, T>& it) const
+  int operator-(const ReverseAccessorIterator<A, T>& it) const { return it.pos - pos; }
+  T& operator[](int off) const { return (*base)[pos - off]; }
+  bool operator==(const ReverseAccessorIterator<A, T>& it) const
   {
     return (pos == it.pos) && (&base == &it.base);
   }
-  inline bool operator!=(const ReverseAccessorIterator<A, T>& it) const
+  bool operator!=(const ReverseAccessorIterator<A, T>& it) const
   {
     return !(operator==(it));
   }
@@ -226,37 +226,37 @@ class CMatrixRowAccessor
  public:
   using value_type = typename MAT::Scalar;
   using mrpt_autotype = CMatrixRowAccessor<MAT>;
-  inline CMatrixRowAccessor(MAT& mat, size_t rowIdx) : m_mat(&mat), m_rowInd(rowIdx)
+  CMatrixRowAccessor(MAT& mat, size_t rowIdx) : m_mat(&mat), m_rowInd(rowIdx)
   {
     ASSERT_(rowIdx < mat.rows();
   }
-  inline CMatrixRowAccessor() {}
-  inline value_type& operator[](const size_t i) { return (*m_mat)(m_rowInd, i); }
-  inline value_type operator[](const size_t i) const { return (*m_mat)(m_rowInd, i); }
+  CMatrixRowAccessor() {}
+  value_type& operator[](const size_t i) { return (*m_mat)(m_rowInd, i); }
+  value_type operator[](const size_t i) const { return (*m_mat)(m_rowInd, i); }
   using iterator = detail::AccessorIterator<CMatrixRowAccessor<MAT>, value_type>;
   using const_iterator = detail::AccessorIterator<const CMatrixRowAccessor<MAT>, const value_type>;
   using reverse_iterator = detail::ReverseAccessorIterator<CMatrixRowAccessor<MAT>, value_type>;
   using const_reverse_iterator =
       detail::ReverseAccessorIterator<const CMatrixRowAccessor<MAT>, const value_type>;
-  inline iterator begin() { return iterator(*this, 0); }
-  inline const_iterator begin() const { return const_iterator(*this, 0); }
-  inline iterator end() { return iterator(*this, m_mat->cols()); }
-  inline const_iterator end() const { return const_iterator(*this, m_mat->cols()); }
-  inline reverse_iterator rbegin() { return reverse_iterator(*this, m_mat->cols() - 1); }
-  inline const_reverse_iterator rbegin() const
+  iterator begin() { return iterator(*this, 0); }
+  const_iterator begin() const { return const_iterator(*this, 0); }
+  iterator end() { return iterator(*this, m_mat->cols()); }
+  const_iterator end() const { return const_iterator(*this, m_mat->cols()); }
+  reverse_iterator rbegin() { return reverse_iterator(*this, m_mat->cols() - 1); }
+  const_reverse_iterator rbegin() const
   {
     return const_reverse_iterator(*this, m_mat->cols() - 1);
   }
-  inline reverse_iterator rend() { return reverse_iterator(*this, -1); }
-  inline const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
-  inline size_t size() const { return m_mat->cols(); }
-  inline void resize(size_t N)
+  reverse_iterator rend() { return reverse_iterator(*this, -1); }
+  const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
+  size_t size() const { return m_mat->cols(); }
+  void resize(size_t N)
   {
     if (N != size()) throw std::logic_error("Tried to resize a fixed-size vector");
   }
 };
 template <typename MAT>
-inline CMatrixRowAccessor<MAT> getRowAccessor(MAT& m, size_t rowIdx)
+CMatrixRowAccessor<MAT> getRowAccessor(MAT& m, size_t rowIdx)
 {
   return CMatrixRowAccessor<MAT>(m, rowIdx);
 }
@@ -281,18 +281,18 @@ class CMatrixRowAccessorExtended
  public:
   using value_type = typename MAT::Scalar;
   using mrpt_autotype = CMatrixRowAccessorExtended<MAT>;
-  inline CMatrixRowAccessorExtended(MAT& mat, size_t row, size_t offset, size_t space) :
+  CMatrixRowAccessorExtended(MAT& mat, size_t row, size_t offset, size_t space) :
       m_mat(&mat), m_rowInd(row), m_colOffset(offset), m_elementsSpace(space)
   {
     ASSERT_(row < mat.rows());
     howMany = (mat.cols() - m_colOffset) / m_elementsSpace;
   }
-  inline CMatrixRowAccessorExtended() {}
-  inline value_type& operator[](size_t i)
+  CMatrixRowAccessorExtended() {}
+  value_type& operator[](size_t i)
   {
     return (*m_mat)(m_rowInd, m_colOffset + (i * m_elementsSpace));
   }
-  inline value_type operator[](size_t i) const
+  value_type operator[](size_t i) const
   {
     return (*m_mat)(m_rowInd, m_colOffset + (i * m_elementsSpace));
   }
@@ -303,25 +303,25 @@ class CMatrixRowAccessorExtended
       detail::ReverseAccessorIterator<CMatrixRowAccessorExtended<MAT>, value_type>;
   using const_reverse_iterator =
       detail::ReverseAccessorIterator<const CMatrixRowAccessorExtended<MAT>, const value_type>;
-  inline iterator begin() { return iterator(*this, 0); }
-  inline const_iterator begin() const { return const_iterator(*this, 0); }
-  inline iterator end() { return iterator(*this, howMany); }
-  inline const_iterator end() const { return const_iterator(*this, howMany); }
-  inline reverse_iterator rbegin() { return reverse_iterator(*this, howMany - 1); }
-  inline const_reverse_iterator rbegin() const
+  iterator begin() { return iterator(*this, 0); }
+  const_iterator begin() const { return const_iterator(*this, 0); }
+  iterator end() { return iterator(*this, howMany); }
+  const_iterator end() const { return const_iterator(*this, howMany); }
+  reverse_iterator rbegin() { return reverse_iterator(*this, howMany - 1); }
+  const_reverse_iterator rbegin() const
   {
     return const_reverse_iterator(*this, howMany - 1);
   }
-  inline reverse_iterator rend() { return reverse_iterator(*this, -1); }
-  inline const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
-  inline size_t size() const { return howMany; }
-  inline void resize(size_t N)
+  reverse_iterator rend() { return reverse_iterator(*this, -1); }
+  const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
+  size_t size() const { return howMany; }
+  void resize(size_t N)
   {
     if (N != size()) throw std::logic_error("Tried to resize a fixed-size vector");
   }
 };
 template <typename MAT>
-inline CMatrixRowAccessorExtended<MAT> getRowAccessor(
+CMatrixRowAccessorExtended<MAT> getRowAccessor(
     MAT& m, size_t rowIdx, size_t offset, size_t space = 1)
 {
   return CMatrixRowAccessor<MAT>(m, rowIdx, offset, space);
@@ -344,31 +344,31 @@ class CConstMatrixRowAccessor
  public:
   using value_type = typename MAT::Scalar;
   using mrpt_autotype = CConstMatrixRowAccessor<MAT>;
-  inline CConstMatrixRowAccessor(const MAT& mat, size_t row) : m_mat(&mat), m_rowInd(row)
+  CConstMatrixRowAccessor(const MAT& mat, size_t row) : m_mat(&mat), m_rowInd(row)
   {
     ASSERT_(row < mat.rows());
   }
-  inline CConstMatrixRowAccessor() {}
-  inline value_type operator[](size_t i) const { return (*m_mat)(m_rowInd, i); }
+  CConstMatrixRowAccessor() {}
+  value_type operator[](size_t i) const { return (*m_mat)(m_rowInd, i); }
   using const_iterator =
       detail::AccessorIterator<const CConstMatrixRowAccessor<MAT>, const value_type>;
   using const_reverse_iterator =
       detail::ReverseAccessorIterator<const CConstMatrixRowAccessor<MAT>, const value_type>;
-  inline const_iterator begin() const { return const_iterator(*this, 0); }
-  inline const_iterator end() const { return const_iterator(*this, m_mat->cols()); }
-  inline const_reverse_iterator rbegin() const
+  const_iterator begin() const { return const_iterator(*this, 0); }
+  const_iterator end() const { return const_iterator(*this, m_mat->cols()); }
+  const_reverse_iterator rbegin() const
   {
     return const_reverse_iterator(*this, m_mat->cols() - 1);
   }
-  inline const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
-  inline size_t size() const { return m_mat->cols(); }
-  inline void resize(size_t N)
+  const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
+  size_t size() const { return m_mat->cols(); }
+  void resize(size_t N)
   {
     if (N != size()) throw std::logic_error("Tried to resize a fixed-size vector");
   }
 };
 template <typename MAT>
-inline CConstMatrixRowAccessor<MAT> getRowAccessor(const MAT& m, size_t rowIdx)
+CConstMatrixRowAccessor<MAT> getRowAccessor(const MAT& m, size_t rowIdx)
 {
   return CMatrixRowAccessor<MAT>(m, rowIdx);
 }
@@ -393,14 +393,14 @@ class CConstMatrixRowAccessorExtended
  public:
   using value_type = typename MAT::Scalar;
   using mrpt_autotype = CConstMatrixRowAccessorExtended<MAT>;
-  inline CConstMatrixRowAccessorExtended(const MAT& mat, size_t row, size_t offset, size_t space) :
+  CConstMatrixRowAccessorExtended(const MAT& mat, size_t row, size_t offset, size_t space) :
       m_mat(&mat), m_rowInd(row), m_colOffset(offset), m_elementsSpace(space)
   {
     ASSERT_(row < mat.rows());
     howMany = (mat.cols() - m_colOffset) / m_elementsSpace;
   }
-  inline CConstMatrixRowAccessorExtended() {}
-  inline value_type operator[](size_t i) const
+  CConstMatrixRowAccessorExtended() {}
+  value_type operator[](size_t i) const
   {
     return (*m_mat)(m_rowInd, m_colOffset + (i * m_elementsSpace));
   }
@@ -408,21 +408,21 @@ class CConstMatrixRowAccessorExtended
       detail::AccessorIterator<const CConstMatrixRowAccessorExtended<MAT>, const value_type>;
   using const_reverse_iterator =
       detail::ReverseAccessorIterator<const CConstMatrixRowAccessorExtended<MAT>, const value_type>;
-  inline const_iterator begin() const { return const_iterator(*this, 0); }
-  inline const_iterator end() const { return const_iterator(*this, howMany); }
-  inline const_reverse_iterator rbegin() const
+  const_iterator begin() const { return const_iterator(*this, 0); }
+  const_iterator end() const { return const_iterator(*this, howMany); }
+  const_reverse_iterator rbegin() const
   {
     return const_reverse_iterator(*this, howMany - 1);
   }
-  inline const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
-  inline size_t size() const { return howMany; }
-  inline void resize(size_t N)
+  const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
+  size_t size() const { return howMany; }
+  void resize(size_t N)
   {
     if (N != size()) throw std::logic_error("Tried to resize a fixed-size vector");
   }
 };
 template <typename MAT>
-inline CConstMatrixRowAccessorExtended<MAT> getRowAccessor(
+CConstMatrixRowAccessorExtended<MAT> getRowAccessor(
     const MAT& m, size_t rowIdx, size_t offset, size_t space = 1)
 {
   return CConstMatrixRowAccessorExtended<MAT>(m, rowIdx, offset, space);
@@ -443,38 +443,38 @@ class CMatrixColumnAccessor
  public:
   using value_type = typename MAT::Scalar;
   using mrpt_autotype = CMatrixColumnAccessor<MAT>;
-  inline CMatrixColumnAccessor(MAT& mat, size_t colIdx) : m_mat(&mat), m_colInd(colIdx)
+  CMatrixColumnAccessor(MAT& mat, size_t colIdx) : m_mat(&mat), m_colInd(colIdx)
   {
     ASSERT_(colIdx < mat.cols();
   }
-  inline CMatrixColumnAccessor() {}
-  inline value_type& operator[](const size_t i) { return (*m_mat)(i, m_colInd); }
-  inline value_type operator[](const size_t i) const { return (*m_mat)(i, m_colInd); }
+  CMatrixColumnAccessor() {}
+  value_type& operator[](const size_t i) { return (*m_mat)(i, m_colInd); }
+  value_type operator[](const size_t i) const { return (*m_mat)(i, m_colInd); }
   using iterator = detail::AccessorIterator<CMatrixColumnAccessor<MAT>, value_type>;
   using const_iterator =
       detail::AccessorIterator<const CMatrixColumnAccessor<MAT>, const value_type>;
   using reverse_iterator = detail::ReverseAccessorIterator<CMatrixColumnAccessor<MAT>, value_type>;
   using const_reverse_iterator =
       detail::ReverseAccessorIterator<const CMatrixColumnAccessor<MAT>, const value_type>;
-  inline iterator begin() { return iterator(*this, 0); }
-  inline const_iterator begin() const { return const_iterator(*this, 0); }
-  inline iterator end() { return iterator(*this, m_mat->rows()); }
-  inline const_iterator end() const { return const_iterator(*this, m_mat->rows()); }
-  inline reverse_iterator rbegin() { return reverse_iterator(*this, m_mat->rows() - 1); }
-  inline const_reverse_iterator rbegin() const
+  iterator begin() { return iterator(*this, 0); }
+  const_iterator begin() const { return const_iterator(*this, 0); }
+  iterator end() { return iterator(*this, m_mat->rows()); }
+  const_iterator end() const { return const_iterator(*this, m_mat->rows()); }
+  reverse_iterator rbegin() { return reverse_iterator(*this, m_mat->rows() - 1); }
+  const_reverse_iterator rbegin() const
   {
     return const_reverse_iterator(*this, m_mat->rows() - 1);
   }
-  inline reverse_iterator rend() { return reverse_iterator(*this, -1); }
-  inline const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
-  inline size_t size() const { return m_mat->rows(); }
-  inline void resize(size_t N)
+  reverse_iterator rend() { return reverse_iterator(*this, -1); }
+  const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
+  size_t size() const { return m_mat->rows(); }
+  void resize(size_t N)
   {
     if (N != size()) throw std::logic_error("Tried to resize a fixed-size vector");
   }
 };
 template <typename MAT>
-inline CMatrixColumnAccessor<MAT> getColumnAccessor(MAT& m, size_t colIdx)
+CMatrixColumnAccessor<MAT> getColumnAccessor(MAT& m, size_t colIdx)
 {
   return CMatrixColumnAccessor<MAT>(m, colIdx);
 }
@@ -497,18 +497,18 @@ class CMatrixColumnAccessorExtended
  public:
   using value_type = typename MAT::Scalar;
   using mrpt_autotype = CMatrixColumnAccessorExtended<MAT>;
-  inline CMatrixColumnAccessorExtended(MAT& mat, size_t col, size_t offset, size_t space) :
+  CMatrixColumnAccessorExtended(MAT& mat, size_t col, size_t offset, size_t space) :
       m_mat(&mat), m_colInd(col), m_rowOffset(offset), m_elementsSpace(space)
   {
     ASSERT_(col < mat.cols());
     howMany = (mat.rows() - m_rowOffset) / m_elementsSpace;
   }
-  inline CMatrixColumnAccessorExtended() {}
-  inline value_type& operator[](size_t i)
+  CMatrixColumnAccessorExtended() {}
+  value_type& operator[](size_t i)
   {
     return (*m_mat)(m_rowOffset + (i * m_elementsSpace), m_colInd);
   }
-  inline value_type operator[](size_t i) const
+  value_type operator[](size_t i) const
   {
     return (*m_mat)(m_rowOffset + (i * m_elementsSpace), m_colInd);
   }
@@ -519,25 +519,25 @@ class CMatrixColumnAccessorExtended
       detail::ReverseAccessorIterator<CMatrixColumnAccessorExtended<MAT>, value_type>;
   using const_reverse_iterator =
       detail::ReverseAccessorIterator<const CMatrixColumnAccessorExtended<MAT>, const value_type>;
-  inline iterator begin() { return iterator(*this, 0); }
-  inline const_iterator begin() const { return const_iterator(*this, 0); }
-  inline iterator end() { return iterator(*this, howMany); }
-  inline const_iterator end() const { return const_iterator(*this, howMany); }
-  inline reverse_iterator rbegin() { return reverse_iterator(*this, howMany - 1); }
-  inline const_reverse_iterator rbegin() const
+  iterator begin() { return iterator(*this, 0); }
+  const_iterator begin() const { return const_iterator(*this, 0); }
+  iterator end() { return iterator(*this, howMany); }
+  const_iterator end() const { return const_iterator(*this, howMany); }
+  reverse_iterator rbegin() { return reverse_iterator(*this, howMany - 1); }
+  const_reverse_iterator rbegin() const
   {
     return const_reverse_iterator(*this, howMany - 1);
   }
-  inline reverse_iterator rend() { return reverse_iterator(*this, -1); }
-  inline const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
-  inline size_t size() const { return howMany; }
-  inline void resize(size_t N)
+  reverse_iterator rend() { return reverse_iterator(*this, -1); }
+  const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
+  size_t size() const { return howMany; }
+  void resize(size_t N)
   {
     if (N != size()) throw std::logic_error("Tried to resize a fixed-size vector");
   }
 };
 template <typename MAT>
-inline CMatrixColumnAccessorExtended<MAT> getColumnAccessor(
+CMatrixColumnAccessorExtended<MAT> getColumnAccessor(
     MAT& m, size_t colIdx, size_t offset, size_t space = 1)
 {
   return CMatrixColumnAccessorExtended<MAT>(m, colIdx, offset, space);
@@ -558,31 +558,31 @@ class CConstMatrixColumnAccessor
  public:
   using value_type = typename MAT::Scalar;
   using mrpt_autotype = CConstMatrixColumnAccessor<MAT>;
-  inline CConstMatrixColumnAccessor(const MAT& mat, size_t colIdx) : m_mat(&mat), m_colInd(colIdx)
+  CConstMatrixColumnAccessor(const MAT& mat, size_t colIdx) : m_mat(&mat), m_colInd(colIdx)
   {
     ASSERT_(colIdx < mat.cols());
   }
-  inline CConstMatrixColumnAccessor() {}
-  inline value_type operator[](size_t i) const { return (*m_mat)(i, m_colInd); }
+  CConstMatrixColumnAccessor() {}
+  value_type operator[](size_t i) const { return (*m_mat)(i, m_colInd); }
   using const_iterator =
       detail::AccessorIterator<const CConstMatrixColumnAccessor<MAT>, const value_type>;
   using const_reverse_iterator =
       detail::ReverseAccessorIterator<const CConstMatrixColumnAccessor<MAT>, const value_type>;
-  inline const_iterator begin() const { return const_iterator(*this, 0); }
-  inline const_iterator end() const { return const_iterator(*this, m_mat->rows()); }
-  inline const_reverse_iterator rbegin() const
+  const_iterator begin() const { return const_iterator(*this, 0); }
+  const_iterator end() const { return const_iterator(*this, m_mat->rows()); }
+  const_reverse_iterator rbegin() const
   {
     return const_reverse_iterator(*this, m_mat->rows() - 1);
   }
-  inline const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
-  inline size_t size() const { return m_mat->rows(); }
-  inline void resize(size_t N)
+  const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
+  size_t size() const { return m_mat->rows(); }
+  void resize(size_t N)
   {
     if (N != size()) throw std::logic_error("Tried to resize a fixed-size vector");
   }
 };
 template <typename MAT>
-inline CConstMatrixColumnAccessor<MAT> getColumnAccessor(const MAT& m, size_t colIdx)
+CConstMatrixColumnAccessor<MAT> getColumnAccessor(const MAT& m, size_t colIdx)
 {
   return CConstMatrixColumnAccessor<MAT>(m, colIdx);
 }
@@ -605,15 +605,15 @@ class CConstMatrixColumnAccessorExtended
  public:
   using value_type = typename MAT::Scalar;
   using mrpt_autotype = CMatrixColumnAccessorExtended<MAT>;
-  inline CConstMatrixColumnAccessorExtended(
+  CConstMatrixColumnAccessorExtended(
       const MAT& mat, size_t col, size_t offset, size_t space) :
       m_mat(&mat), m_colInd(col), m_rowOffset(offset), m_elementsSpace(space)
   {
     ASSERT_(col < mat.cols());
     howMany = (mat.rows() - m_rowOffset) / m_elementsSpace;
   }
-  inline CConstMatrixColumnAccessorExtended() {}
-  inline value_type operator[](size_t i) const
+  CConstMatrixColumnAccessorExtended() {}
+  value_type operator[](size_t i) const
   {
     return (*m_mat)(m_rowOffset + (i * m_elementsSpace), m_colInd);
   }
@@ -621,21 +621,21 @@ class CConstMatrixColumnAccessorExtended
       detail::AccessorIterator<const CConstMatrixColumnAccessorExtended<MAT>, const value_type>;
   using const_reverse_iterator = detail::
       ReverseAccessorIterator<const CConstMatrixColumnAccessorExtended<MAT>, const value_type>;
-  inline const_iterator begin() const { return const_iterator(*this, 0); }
-  inline const_iterator end() const { return const_iterator(*this, howMany); }
-  inline const_reverse_iterator rbegin() const
+  const_iterator begin() const { return const_iterator(*this, 0); }
+  const_iterator end() const { return const_iterator(*this, howMany); }
+  const_reverse_iterator rbegin() const
   {
     return const_reverse_iterator(*this, howMany - 1);
   }
-  inline const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
-  inline size_t size() const { return howMany; }
-  inline void resize(size_t N)
+  const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
+  size_t size() const { return howMany; }
+  void resize(size_t N)
   {
     if (N != size()) throw std::logic_error("Tried to resize a fixed-size vector");
   }
 };
 template <typename MAT>
-inline CConstMatrixColumnAccessorExtended<MAT> getColumnAccessor(
+CConstMatrixColumnAccessorExtended<MAT> getColumnAccessor(
     const MAT& m, size_t colIdx, size_t offset, size_t space = 1)
 {
   return CConstMatrixColumnAccessorExtended<MAT>(m, colIdx, offset, space);

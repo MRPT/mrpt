@@ -82,7 +82,7 @@ class CThreadSafeQueue
   /** Insert a new message in the queue - The object must be created with
    * "new", and do not delete is after calling this, it must be deleted later.
    */
-  inline void push(T* msg)
+  void push(T* msg)
   {
     std::lock_guard<std::mutex> lock(m_csQueue);
     m_msgs.push(msg);
@@ -92,7 +92,7 @@ class CThreadSafeQueue
    * message.
    *  The user MUST call "delete" with the returned object after use.
    */
-  inline T* get()
+  T* get()
   {
     std::lock_guard<std::mutex> lock(m_csQueue);
     if (m_msgs.empty())
@@ -111,7 +111,7 @@ class CThreadSafeQueue
    *  \note The memory of all skipped messages is freed with "delete".
    *  \note The user MUST call "delete" with the returned object after use.
    */
-  inline T* get_lastest_purge_old()
+  T* get_lastest_purge_old()
   {
     std::lock_guard<std::mutex> lock(m_csQueue);
     if (m_msgs.empty())

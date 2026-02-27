@@ -301,7 +301,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
   /**\brief Return a reference to the underlying GRAPH_T instance. */
   const GRAPH_T& getGraph() const { return m_graph; }
   /**\brief Return the filename of the used rawlog file.*/
-  inline std::string getRawlogFname() { return m_rawlog_fname; }
+  std::string getRawlogFname() { return m_rawlog_fname; }
   /**\name ground-truth parsing methods */
   /**\{*/
   /**\brief Parse the ground truth .txt file and fill in the corresponding
@@ -600,7 +600,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
    * that may have occurred in the CDisplayWindow3D  and fill in the
    * corresponding class variables
    */
-  inline void queryObserverForEvents();
+  void queryObserverForEvents();
 
   /** \brief Compare the SLAM result (estimated trajectory) with the GT path.
    *

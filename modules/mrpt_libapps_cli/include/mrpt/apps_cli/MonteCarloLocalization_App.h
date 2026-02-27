@@ -49,10 +49,7 @@ class MonteCarloLocalization_Base :
    */
   void initialize(int argc, const char** argv);
 
-  inline void initialize(int argc, char** argv)
-  {
-    initialize(argc, const_cast<const char**>(argv));
-  }
+  void initialize(int argc, char** argv) { initialize(argc, const_cast<const char**>(argv)); }
 
   /** Runs with the current parameter set. Throws on errors. */
   void run();

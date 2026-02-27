@@ -115,7 +115,7 @@ class CDynamicGrid
 
   /** Fills all the cells with the same value
    */
-  inline void fill(const T& value)
+  void fill(const T& value)
   {
     for (auto it = m_map.begin(); it != m_map.end(); ++it)
     {
@@ -241,7 +241,7 @@ class CDynamicGrid
   /** Returns a pointer to the contents of a cell given by its coordinates, or
    * nullptr if it is out of the map extensions.
    */
-  inline T* cellByPos(double x, double y)
+  T* cellByPos(double x, double y)
   {
     const int cx = x2idx(x);
     const int cy = y2idx(y);
@@ -256,7 +256,7 @@ class CDynamicGrid
     return &m_map[static_cast<size_t>(cx) + static_cast<size_t>(cy) * m_size_x];
   }
   /** \overload */
-  inline const T* cellByPos(double x, double y) const
+  const T* cellByPos(double x, double y) const
   {
     const int cx = x2idx(x);
     const int cy = y2idx(y);
@@ -274,7 +274,7 @@ class CDynamicGrid
   /** Returns a pointer to the contents of a cell given by its cell indexes,
    * or nullptr if it is out of the map extensions.
    */
-  inline T* cellByIndex(unsigned int cx, unsigned int cy)
+  T* cellByIndex(unsigned int cx, unsigned int cy)
   {
     if (cx >= m_size_x || cy >= m_size_y)
     {
@@ -286,7 +286,7 @@ class CDynamicGrid
   /** Returns a pointer to the contents of a cell given by its cell indexes,
    * or nullptr if it is out of the map extensions.
    */
-  inline const T* cellByIndex(unsigned int cx, unsigned int cy) const
+  const T* cellByIndex(unsigned int cx, unsigned int cy) const
   {
     if (cx >= m_size_x || cy >= m_size_y)
     {
@@ -296,27 +296,27 @@ class CDynamicGrid
   }
 
   /** Returns the horizontal size of grid map in cells count */
-  inline size_t getSizeX() const { return m_size_x; }
+  size_t getSizeX() const { return m_size_x; }
   /** Returns the vertical size of grid map in cells count */
-  inline size_t getSizeY() const { return m_size_y; }
+  size_t getSizeY() const { return m_size_y; }
   /** Returns the "x" coordinate of left side of grid map */
-  inline double getXMin() const { return m_x_min; }
+  double getXMin() const { return m_x_min; }
   /** Returns the "x" coordinate of right side of grid map */
-  inline double getXMax() const { return m_x_max; }
+  double getXMax() const { return m_x_max; }
   /** Returns the "y" coordinate of top side of grid map */
-  inline double getYMin() const { return m_y_min; }
+  double getYMin() const { return m_y_min; }
   /** Returns the "y" coordinate of bottom side of grid map */
-  inline double getYMax() const { return m_y_max; }
+  double getYMax() const { return m_y_max; }
   /** Returns the resolution of the grid map */
-  inline double getResolution() const { return m_resolution; }
+  double getResolution() const { return m_resolution; }
   /** Transform a coordinate values into cell indexes */
-  inline int x2idx(double x) const { return static_cast<int>((x - m_x_min) / m_resolution); }
-  inline int y2idx(double y) const { return static_cast<int>((y - m_y_min) / m_resolution); }
-  inline int xy2idx(double x, double y) const { return x2idx(x) + y2idx(y) * m_size_x; }
+  int x2idx(double x) const { return static_cast<int>((x - m_x_min) / m_resolution); }
+  int y2idx(double y) const { return static_cast<int>((y - m_y_min) / m_resolution); }
+  int xy2idx(double x, double y) const { return x2idx(x) + y2idx(y) * m_size_x; }
 
   /** Transform a global (linear) cell index value into its corresponding
    * (x,y) cell indexes. */
-  inline void idx2cxcy(int idx, int& cx, int& cy) const
+  void idx2cxcy(int idx, int& cx, int& cy) const
   {
     cx = idx % m_size_x;
     cy = idx / m_size_x;
@@ -324,8 +324,8 @@ class CDynamicGrid
 
   /** Transform a cell index into a coordinate value of the cell central point
    */
-  inline double idx2x(int cx) const { return m_x_min + (cx + 0.5) * m_resolution; }
-  inline double idx2y(int cy) const { return m_y_min + (cy + 0.5) * m_resolution; }
+  double idx2x(int cx) const { return m_x_min + (cx + 0.5) * m_resolution; }
+  double idx2y(int cy) const { return m_y_min + (cy + 0.5) * m_resolution; }
 
   /** Get the entire grid as a matrix.
    *  \tparam MAT The type of the matrix, typically a
@@ -379,11 +379,11 @@ class CDynamicGrid
 
   /** @name Direct and range-based access to data
    * @{ */
-  inline const grid_data_t& data() const { return m_map; }
-  inline iterator begin() { return m_map.begin(); }
-  inline iterator end() { return m_map.end(); }
-  inline const_iterator begin() const { return m_map.begin(); }
-  inline const_iterator end() const { return m_map.end(); }
+  const grid_data_t& data() const { return m_map; }
+  iterator begin() { return m_map.begin(); }
+  iterator end() { return m_map.end(); }
+  const_iterator begin() const { return m_map.begin(); }
+  const_iterator end() const { return m_map.end(); }
   /** @} */
 
  protected:
@@ -422,7 +422,7 @@ class CDynamicGrid
   grid_data_t m_map;
   /** Used only from logically const method that really need to modify the
    * object */
-  inline grid_data_t& m_map_castaway_const() const { return const_cast<grid_data_t&>(m_map); }
+  grid_data_t& m_map_castaway_const() const { return const_cast<grid_data_t&>(m_map); }
 
   double m_x_min{0}, m_x_max{0}, m_y_min{0}, m_y_max{0}, m_resolution{0};
   size_t m_size_x{0}, m_size_y{0};

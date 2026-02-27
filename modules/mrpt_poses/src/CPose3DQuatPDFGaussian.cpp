@@ -336,7 +336,7 @@ mrpt::poses::CPose3DQuatPDFGaussian CPose3DQuatPDFGaussian::inverseCompositionCr
   displacement.cov.asEigen() += cov_correlation_jac.asEigen();
   displacement.cov.asEigen() += cov_correlation_jac.asEigen().transpose();
 
-  for (int i = 0; i < displacement.cov.rows(); i++) ASSERT_(displacement.cov(i, i) >= 0.0);
+  for (size_t i = 0; i < displacement.cov.rows(); i++) ASSERT_(displacement.cov(i, i) >= 0.0);
 
   return displacement;
 }
@@ -417,8 +417,8 @@ void CPose3DQuatPDFGaussian::enforceCovSymmetry()
 {
   // Differences, when they exist, appear in the ~15'th significant
   //  digit, so... just take one of them arbitrarily!
-  for (int i = 0; i < cov.rows() - 1; i++)
-    for (int j = i + 1; j < cov.rows(); j++) cov(i, j) = cov(j, i);
+  for (size_t i = 0; i < cov.rows() - 1; i++)
+    for (size_t j = i + 1; j < cov.rows(); j++) cov(i, j) = cov(j, i);
 }
 
 /*---------------------------------------------------------------

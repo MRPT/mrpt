@@ -158,79 +158,79 @@ struct TKeyPointList_templ
   using reverse_iterator = typename TFeatureVector::reverse_iterator;
   using const_reverse_iterator = typename TFeatureVector::const_reverse_iterator;
 
-  inline iterator begin() { return m_feats.begin(); }
-  inline iterator end() { return m_feats.end(); }
-  inline const_iterator begin() const { return m_feats.begin(); }
-  inline const_iterator end() const { return m_feats.end(); }
-  inline reverse_iterator rbegin() { return m_feats.rbegin(); }
-  inline reverse_iterator rend() { return m_feats.rend(); }
-  inline const_reverse_iterator rbegin() const { return m_feats.rbegin(); }
-  inline const_reverse_iterator rend() const { return m_feats.rend(); }
-  inline iterator erase(const iterator& it) { return m_feats.erase(it); }
-  inline bool empty() const { return m_feats.empty(); }
-  inline size_t size() const { return m_feats.size(); }
-  inline void clear()
+  iterator begin() { return m_feats.begin(); }
+  iterator end() { return m_feats.end(); }
+  const_iterator begin() const { return m_feats.begin(); }
+  const_iterator end() const { return m_feats.end(); }
+  reverse_iterator rbegin() { return m_feats.rbegin(); }
+  reverse_iterator rend() { return m_feats.rend(); }
+  const_reverse_iterator rbegin() const { return m_feats.rbegin(); }
+  const_reverse_iterator rend() const { return m_feats.rend(); }
+  iterator erase(const iterator& it) { return m_feats.erase(it); }
+  bool empty() const { return m_feats.empty(); }
+  size_t size() const { return m_feats.size(); }
+  void clear()
   {
     m_feats.clear();
     m_first_index_per_row.clear();
   }
-  inline void resize(size_t N) { m_feats.resize(N); }
-  inline void reserve(size_t N) { m_feats.reserve(N); }
-  inline void push_back(const FEATURE& f) { m_feats.push_back(f); }
-  inline void emplace_back(const int x, const int y) { m_feats.emplace_back(x, y); }
+  void resize(size_t N) { m_feats.resize(N); }
+  void reserve(size_t N) { m_feats.reserve(N); }
+  void push_back(const FEATURE& f) { m_feats.push_back(f); }
+  void emplace_back(const int x, const int y) { m_feats.emplace_back(x, y); }
 
-  inline FEATURE& operator[](const std::size_t index) { return m_feats[index]; }
-  inline const FEATURE& operator[](const std::size_t index) const { return m_feats[index]; }
+  FEATURE& operator[](const std::size_t index) { return m_feats[index]; }
+  const FEATURE& operator[](const std::size_t index) const { return m_feats[index]; }
 
-  inline FEATURE& back() { return m_feats.back(); }
-  inline const FEATURE& back() const { return m_feats.back(); }
-  inline FEATURE& front() { return m_feats.front(); }
-  inline const FEATURE& front() const { return m_feats.front(); }
+  FEATURE& back() { return m_feats.back(); }
+  const FEATURE& back() const { return m_feats.back(); }
+  FEATURE& front() { return m_feats.front(); }
+  const FEATURE& front() const { return m_feats.front(); }
   /** @} */
 
   /** @name getFeature*() methods for template-based access to feature list
     @{ */
-  inline typename TKeyPointTraits<FEATURE>::coord_t getFeatureX(size_t i) const
+  typename TKeyPointTraits<FEATURE>::coord_t getFeatureX(size_t i) const
   {
     return m_feats[i].pt.x;
   }
-  inline typename TKeyPointTraits<FEATURE>::coord_t getFeatureY(size_t i) const
+  typename TKeyPointTraits<FEATURE>::coord_t getFeatureY(size_t i) const
   {
     return m_feats[i].pt.y;
   }
-  inline TFeatureID getFeatureID(size_t i) const { return m_feats[i].ID; }
-  inline float getFeatureResponse(size_t i) const { return m_feats[i].response; }
-  inline bool isPointFeature([[maybe_unused]] size_t i) const { return true; }
-  inline float getScale(size_t i) const { return d2f(1 << m_feats[i].octave); }
-  inline TFeatureTrackStatus getTrackStatus(size_t i) { return m_feats[i].track_status; }
+  TFeatureID getFeatureID(size_t i) const { return m_feats[i].ID; }
+  float getFeatureResponse(size_t i) const { return m_feats[i].response; }
+  bool isPointFeature([[maybe_unused]] size_t i) const { return true; }
+  float getScale(size_t i) const { return d2f(1 << m_feats[i].octave); }
+  TFeatureTrackStatus getTrackStatus(size_t i) { return m_feats[i].track_status; }
 
-  inline void setFeatureX(size_t i, typename TKeyPointTraits<FEATURE>::coord_t x)
+  void setFeatureX(size_t i, typename TKeyPointTraits<FEATURE>::coord_t x)
   {
     m_feats[i].pt.x = x;
   }
-  inline void setFeatureY(size_t i, typename TKeyPointTraits<FEATURE>::coord_t y)
+  void setFeatureY(size_t i, typename TKeyPointTraits<FEATURE>::coord_t y)
   {
     m_feats[i].pt.y = y;
   }
 
-  inline void setFeatureXf(size_t i, float x)
+  void setFeatureXf(size_t i, float x)
   {
     m_feats[i].pt.x = TKeyPointTraits<FEATURE>::f2coord(x);
   }
-  inline void setFeatureYf(size_t i, float y)
+  void setFeatureYf(size_t i, float y)
   {
     m_feats[i].pt.y = TKeyPointTraits<FEATURE>::f2coord(y);
   }
 
-  inline void setFeatureID(size_t i, TFeatureID id) { m_feats[i]->ID = id; }
-  inline void setFeatureResponse(size_t i, float r) { m_feats[i]->response = r; }
-  inline void setScale(size_t i, float s)
+  void setFeatureID(size_t i, TFeatureID id) { m_feats[i]->ID = id; }
+  void setFeatureResponse(size_t i, float r) { m_feats[i]->response = r; }
+  void setScale(size_t i, float s)
   {
     m_feats[i]->octave = mrpt::round(std::log(s) / std::log(2));
   }
-  inline void setTrackStatus(size_t i, TFeatureTrackStatus s) { m_feats[i].track_status = s; }
+  void setTrackStatus(size_t i, TFeatureTrackStatus s) { m_feats[i].track_status = s; }
 
-  inline void mark_as_outdated() const {}
+  void mark_as_outdated() const {}
   /** @} */
 
  private:
@@ -276,7 +276,7 @@ template <typename FEAT>
 class CFeatureListKDTree : public mrpt::math::KDTreeCapable<CFeatureListKDTree<FEAT>>
 {
  public:
-  inline void mark_as_outdated()
+  void mark_as_outdated()
   {
     mrpt::math::KDTreeCapable<CFeatureListKDTree<FEAT>>::kdtree_mark_as_outdated();
   }
@@ -288,9 +288,9 @@ class CFeatureListKDTree : public mrpt::math::KDTreeCapable<CFeatureListKDTree<F
     @{ */
 
   /// Must return the number of data points
-  inline size_t kdtree_get_point_count() const { return m_data.size(); }
+  size_t kdtree_get_point_count() const { return m_data.size(); }
   /// Returns the dim'th component of the idx'th point in the class:
-  inline float kdtree_get_pt(size_t idx, int dim) const
+  float kdtree_get_pt(size_t idx, int dim) const
   {
     ASSERTDEB_(dim == 0 || dim == 1);
     if (dim == 0)
@@ -301,7 +301,7 @@ class CFeatureListKDTree : public mrpt::math::KDTreeCapable<CFeatureListKDTree<F
 
   /// Returns the distance between the vector "p1[0:size-1]" and the data
   /// point with index "idx_p2" stored in the class:
-  inline float kdtree_distance(const float* p1, size_t idx_p2, [[maybe_unused]] size_t size) const
+  float kdtree_distance(const float* p1, size_t idx_p2, [[maybe_unused]] size_t size) const
   {
     ASSERTDEB_(size == 2);
 

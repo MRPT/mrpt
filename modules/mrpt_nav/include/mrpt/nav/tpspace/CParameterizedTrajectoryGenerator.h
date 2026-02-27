@@ -193,7 +193,7 @@ class CParameterizedTrajectoryGenerator :
 
     TNavDynamicState() = default;
     bool operator==(const TNavDynamicState& o) const;
-    inline bool operator!=(const TNavDynamicState& o) const { return !(*this == o); }
+    bool operator!=(const TNavDynamicState& o) const { return !(*this == o); }
     void writeToStream(mrpt::serialization::CArchive& out) const;
     void readFromStream(mrpt::serialization::CArchive& in);
   };
@@ -363,7 +363,7 @@ class CParameterizedTrajectoryGenerator :
   uint16_t alpha2index(double alpha) const;
   static uint16_t Alpha2index(double alpha, const unsigned int num_paths);
 
-  inline double getRefDistance() const { return refDistance; }
+  double getRefDistance() const { return refDistance; }
   /** Resizes and populates the initial appropriate contents in a vector of
    * tp-obstacles (collision-free ranges, in "pseudometers", un-normalized).
    * \sa updateTPObstacle()  */

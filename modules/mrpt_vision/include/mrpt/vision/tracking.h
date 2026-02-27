@@ -149,10 +149,10 @@ struct CGenericFeatureTracker
   mrpt::containers::yaml extra_params;
 
   /** Default ctor */
-  inline CGenericFeatureTracker() {}
+  CGenericFeatureTracker() {}
 
   /** Ctor with extra parameters */
-  inline CGenericFeatureTracker(const mrpt::containers::yaml& extraParams) :
+  CGenericFeatureTracker(const mrpt::containers::yaml& extraParams) :
       extra_params(extraParams)
   {
   }
@@ -186,15 +186,15 @@ struct CGenericFeatureTracker
       TKeyPointfList& inout_featureList);
 
   /** Returns a read-only reference to the internal time logger */
-  inline const mrpt::system::CTimeLogger& getProfiler() const { return m_timlog; }
+  const mrpt::system::CTimeLogger& getProfiler() const { return m_timlog; }
   /** Returns a reference to the internal time logger */
-  inline mrpt::system::CTimeLogger& getProfiler() { return m_timlog; }
+  mrpt::system::CTimeLogger& getProfiler() { return m_timlog; }
   /** Returns a read-only reference to the internal time logger */
-  inline void enableTimeLogger(bool enable = true) { m_timlog.enable(enable); }
+  void enableTimeLogger(bool enable = true) { m_timlog.enable(enable); }
 
   /** Returns the current adaptive threshold used by the FAST(ER) detector to
    * find out new features in empty areas */
-  inline int getDetectorAdaptiveThreshold() const { return m_detector_adaptive_thres; }
+  int getDetectorAdaptiveThreshold() const { return m_detector_adaptive_thres; }
 
   struct TExtraOutputInfo
   {
@@ -281,9 +281,9 @@ using CGenericFeatureTrackerAutoPtr = std::unique_ptr<CGenericFeatureTracker>;
 struct CFeatureTracker_KL : public CGenericFeatureTracker
 {
   /** Default ctor */
-  inline CFeatureTracker_KL() = default;
+  CFeatureTracker_KL() = default;
   /** Ctor with extra parameters */
-  inline CFeatureTracker_KL(const mrpt::containers::yaml& extraParams) :
+  CFeatureTracker_KL(const mrpt::containers::yaml& extraParams) :
       CGenericFeatureTracker(extraParams)
   {
   }

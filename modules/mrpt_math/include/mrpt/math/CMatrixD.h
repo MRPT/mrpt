@@ -45,7 +45,7 @@ class CMatrixD : public mrpt::serialization::CSerializable, public CMatrixDynami
 
   /*! Assignment operator from any other Eigen class */
   template <typename Other>
-  inline CMatrixD& operator=(const Other& other)
+  CMatrixD& operator=(const Other& other)
   {
     Base::operator=(other);
     return *this;

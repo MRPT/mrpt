@@ -35,7 +35,7 @@ class mrptEventMetricMapClear : public mrpt::system::mrptEvent
   void do_nothing() override {}
 
  public:
-  inline mrptEventMetricMapClear(const mrpt::maps::CMetricMap* smap) : source_map(smap) {}
+  mrptEventMetricMapClear(const mrpt::maps::CMetricMap* smap) : source_map(smap) {}
 
   const mrpt::maps::CMetricMap* source_map;
 };

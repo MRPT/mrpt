@@ -15,8 +15,6 @@
 #include <gtest/gtest.h>
 #include <mrpt/containers/config.h>
 #include <mrpt/containers/yaml.h>
-//#include <mrpt/io/vector_loadsave.h>
-//#include <mrpt/system/COutputLogger.h>  // for enum type tests
 
 #include <algorithm>  // count()
 #include <fstream>
@@ -639,7 +637,7 @@ MRPT_TEST(yaml, fromYAML)
 
     EXPECT_EQ(e.comment(), "comment for a");
     EXPECT_EQ(e.comment(CommentPosition::RIGHT), "comment for a");
-    EXPECT_THROW(e.comment(CommentPosition::TOP), std::exception);
+    EXPECT_THROW(auto s = e.comment(CommentPosition::TOP), std::exception);
 
     EXPECT_EQ(e.node().marks.line, 13);
     EXPECT_EQ(e.node().marks.column, 7);

@@ -115,36 +115,35 @@ inline mrpt::system::TTimeStamp timestampAdd(
  * number of seconds), as a string [H]H:MM:SS.MILLISECONDS
  * \sa unitsFormat
  */
-std::string formatTimeInterval(const double timeSeconds);
+std::string formatTimeInterval(double timeSeconds);
 
 /** Convert a timestamp into this textual form (UTC time):
  * YEAR/MONTH/DAY,HH:MM:SS.MMM
  * \sa dateTimeLocalToString
  */
-std::string dateTimeToString(const mrpt::system::TTimeStamp t);
+std::string dateTimeToString(mrpt::system::TTimeStamp t);
 
 /** Convert a timestamp into this textual form (in local time):
  * YEAR/MONTH/DAY,HH:MM:SS.MMM
  * \sa dateTimeToString
  */
-std::string dateTimeLocalToString(const mrpt::system::TTimeStamp t);
+std::string dateTimeLocalToString(mrpt::system::TTimeStamp t);
 
 /** Convert a timestamp into this textual form: YEAR/MONTH/DAY
  */
-std::string dateToString(const mrpt::system::TTimeStamp t);
+std::string dateToString(mrpt::system::TTimeStamp t);
 
 /** Returns the number of seconds ellapsed from midnight in the given timestamp
  */
-double extractDayTimeFromTimestamp(const mrpt::system::TTimeStamp t);
+double extractDayTimeFromTimestamp(mrpt::system::TTimeStamp t);
 
 /** Convert a timestamp into this textual form (UTC): HH:MM:SS.MMMMMM
  */
-std::string timeToString(const mrpt::system::TTimeStamp t);
+std::string timeToString(mrpt::system::TTimeStamp t);
 
 /** Convert a timestamp into this textual form (in local time): HH:MM:SS.MMMMMM
  */
-std::string timeLocalToString(
-    const mrpt::system::TTimeStamp t, unsigned int secondFractionDigits = 6);
+std::string timeLocalToString(mrpt::system::TTimeStamp t, unsigned int secondFractionDigits = 6);
 
 /** This function implements time interval formatting: Given a time in seconds,
  * it will return a string describing the interval with the most appropriate
@@ -159,7 +158,7 @@ std::string timeLocalToString(
  *
  * \sa unitsFormat
  */
-std::string intervalFormat(const double seconds);
+std::string intervalFormat(double seconds);
 
 /** Textual representation of a TTimeStamp as the plain number in
  * time_since_epoch().count() */

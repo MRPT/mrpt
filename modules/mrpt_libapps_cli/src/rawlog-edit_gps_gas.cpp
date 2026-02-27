@@ -202,8 +202,8 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
               "          </Style>\n"
               "          <Point>\n"
               "            <coordinates>",
-              label.c_str(), n, alpha, (int)floor(b * 255), (int)floor(g * 255),
-              (int)floor(r * 255), scale);
+              label.c_str(), n, alpha, static_cast<int>(floor(b * 255)),
+              static_cast<int>(floor(g * 255)), static_cast<int>(floor(r * 255)), scale);
 
           if (save_altitude)
             f.printf(" %.15f,%.15f,%.3f ", d.lon, d.lat, d.alt);

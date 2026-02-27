@@ -100,7 +100,7 @@ void CPosePDFGaussian::serializeTo(mrpt::serialization::CSchemeArchiveBase& out)
 }
 void CPosePDFGaussian::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 {
-  uint8_t version;
+  int version = 0;
   SCHEMA_DESERIALIZE_DATATYPE_VERSION();
   switch (version)
   {

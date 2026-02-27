@@ -585,7 +585,7 @@ bool RotScan::loadFromTextFile(const std::string& filename)
   rangeImage.resize(rowCount, columnCount);
   intensityImage.resize(rowCount, columnCount);
 
-  for (int i = 0; i < data.rows(); i++)
+  for (size_t i = 0; i < data.rows(); i++)
   {
     const size_t r = static_cast<size_t>(data(i, 5));
     const size_t c = static_cast<size_t>(data(i, 6));

@@ -84,8 +84,8 @@ class CPose3DPDFGaussian : public CPose3DPDF, public mrpt::Stringifyable
    */
   mrpt::math::CMatrixDouble66 cov;
 
-  inline const CPose3D& getPoseMean() const { return mean; }
-  inline CPose3D& getPoseMean() { return mean; }
+  const CPose3D& getPoseMean() const { return mean; }
+  CPose3D& getPoseMean() { return mean; }
   /** Returns an estimate of the pose, (the mean, or mathematical expectation
    * of the PDF).
    * \sa getCovariance
@@ -154,7 +154,7 @@ class CPose3DPDFGaussian : public CPose3DPDF, public mrpt::Stringifyable
   void inverse(CPose3DPDF& o) const override;
 
   /** Unary - operator, returns the PDF of the inverse pose.  */
-  inline CPose3DPDFGaussian operator-() const
+  CPose3DPDFGaussian operator-() const
   {
     CPose3DPDFGaussian p(UNINITIALIZED_POSE);
     this->inverse(p);

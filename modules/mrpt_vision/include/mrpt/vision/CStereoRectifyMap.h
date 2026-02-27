@@ -88,7 +88,7 @@ class CStereoRectifyMap
    *  Can be used within loops to determine the first usage of the object and
    * when it needs to be initialized.
    */
-  inline bool isSet() const { return !m_dat_mapx_left.empty(); }
+  bool isSet() const { return !m_dat_mapx_left.empty(); }
   /** Prepares the mapping from the intrinsic, distortion and relative pose
    * parameters of a stereo camera.
    * Must be called before invoking \a rectify().
@@ -110,7 +110,7 @@ class CStereoRectifyMap
 
   /** Returns the camera parameters which were used to generate the distortion
    * map, as passed by the user to \a setFromCamParams */
-  inline const mrpt::img::TStereoCamera& getCameraParams() const { return m_camera_params; }
+  const mrpt::img::TStereoCamera& getCameraParams() const { return m_camera_params; }
 
   /** After computing the rectification maps, this method retrieves the
    * calibration parameters of the rectified images
@@ -139,7 +139,7 @@ class CStereoRectifyMap
   void setAlpha(double alpha);
 
   /** Return the \a alpha parameter \sa setAlpha */
-  inline double getAlpha() const { return m_alpha; }
+  double getAlpha() const { return m_alpha; }
   /** If enabled, the computed maps will rectify images to a size different
    * than their original size.
    * \note Call this method before building the rectification maps, otherwise
@@ -153,7 +153,7 @@ class CStereoRectifyMap
   bool isEnabledResizeOutput() const { return m_resize_output; }
   /** Only when \a isEnabledResizeOutput() returns true, this gets the target
    * size  \sa enableResizeOutput */
-  inline mrpt::img::TImageSize getResizeOutputSize() const { return m_resize_output_value; }
+  mrpt::img::TImageSize getResizeOutputSize() const { return m_resize_output_value; }
 
   /** Change remap interpolation method (default=Lineal). This parameter can
    * be safely changed at any instant without consequences. */

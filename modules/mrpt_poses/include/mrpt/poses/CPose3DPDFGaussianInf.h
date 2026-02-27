@@ -62,8 +62,8 @@ class CPose3DPDFGaussianInf : public CPose3DPDF
 
   /** @} */
 
-  inline const CPose3D& getPoseMean() const { return mean; }
-  inline CPose3D& getPoseMean() { return mean; }
+  const CPose3D& getPoseMean() const { return mean; }
+  CPose3D& getPoseMean() { return mean; }
   /** Default constructor - mean: all zeros, inverse covariance=all zeros ->
    * so be careful! */
   CPose3DPDFGaussianInf();
@@ -140,7 +140,7 @@ class CPose3DPDFGaussianInf : public CPose3DPDF
   void inverse(CPose3DPDF& o) const override;
 
   /** Unary - operator, returns the PDF of the inverse pose.  */
-  inline CPose3DPDFGaussianInf operator-() const
+  CPose3DPDFGaussianInf operator-() const
   {
     CPose3DPDFGaussianInf p(UNINITIALIZED_POSE);
     this->inverse(p);

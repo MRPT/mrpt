@@ -366,7 +366,7 @@ void CPose3DQuat::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) cons
 /** Serialize CSchemeArchiveBase derived object to CSerializable Object*/
 void CPose3DQuat::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 {
-  uint8_t version;
+  int version = 0;
   SCHEMA_DESERIALIZE_DATATYPE_VERSION();
   switch (version)
   {

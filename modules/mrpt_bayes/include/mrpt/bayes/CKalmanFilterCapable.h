@@ -125,19 +125,19 @@ namespace detail
 {
 // Auxiliary functions.
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
-inline size_t getNumberOfLandmarksInMap(
+size_t getNumberOfLandmarksInMap(
     const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>& obj);
 // Specialization:
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
-inline size_t getNumberOfLandmarksInMap(
+size_t getNumberOfLandmarksInMap(
     const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE, KFTYPE>& obj);
 
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
-inline bool isMapEmpty(
+bool isMapEmpty(
     const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>& obj);
 // Specialization:
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
-inline bool isMapEmpty(
+bool isMapEmpty(
     const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE, KFTYPE>& obj);
 
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
@@ -210,11 +210,11 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
   static constexpr size_t get_observation_size() { return OBS_SIZE; }
   static constexpr size_t get_feature_size() { return FEAT_SIZE; }
   static constexpr size_t get_action_size() { return ACT_SIZE; }
-  inline size_t getNumberOfLandmarksInTheMap() const
+  size_t getNumberOfLandmarksInTheMap() const
   {
     return detail::getNumberOfLandmarksInMap(*this);
   }
-  inline bool isMapEmpty() const { return detail::isMapEmpty(*this); }
+  bool isMapEmpty() const { return detail::isMapEmpty(*this); }
   /** The numeric type used in the Kalman Filter (default=double) */
   using kftype = KFTYPE;
   /** My class, in a shorter name! */
@@ -242,14 +242,14 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
   using vector_KFArray_OBS = std::vector<KFArray_OBS>;
   using KFArray_FEAT = mrpt::math::CVectorFixed<KFTYPE, FEAT_SIZE>;
 
-  inline size_t getStateVectorLength() const { return m_xkk.size(); }
-  inline KFVector& internal_getXkk() { return m_xkk; }
-  inline KFMatrix& internal_getPkk() { return m_pkk; }
+  size_t getStateVectorLength() const { return m_xkk.size(); }
+  KFVector& internal_getXkk() { return m_xkk; }
+  KFMatrix& internal_getPkk() { return m_pkk; }
   /** Returns the mean of the estimated value of the idx'th landmark (not
    * applicable to non-SLAM problems).
    * \exception std::exception On idx>= getNumberOfLandmarksInTheMap()
    */
-  inline void getLandmarkMean(size_t idx, KFArray_FEAT& feat) const
+  void getLandmarkMean(size_t idx, KFArray_FEAT& feat) const
   {
     ASSERT_(idx < getNumberOfLandmarksInTheMap());
     std::memcpy(&feat[0], &m_xkk[VEH_SIZE + idx * FEAT_SIZE], FEAT_SIZE * sizeof(m_xkk[0]));
@@ -258,7 +258,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
    * non-SLAM problems).
    * \exception std::exception On idx>= getNumberOfLandmarksInTheMap()
    */
-  inline void getLandmarkCov(size_t idx, KFMatrix_FxF& feat_cov) const
+  void getLandmarkCov(size_t idx, KFMatrix_FxF& feat_cov) const
   {
     feat_cov = m_pkk.template blockCopy<FEAT_SIZE, FEAT_SIZE>(
         VEH_SIZE + idx * FEAT_SIZE, VEH_SIZE + idx * FEAT_SIZE);

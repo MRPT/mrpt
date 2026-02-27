@@ -44,23 +44,23 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ>>
   static constexpr bool HAS_RGBu8 = false;
 
   /** Constructor (accept a const ref for convenience) */
-  inline PointCloudAdapter(const pcl::PointCloud<pcl::PointXYZ>& obj) :
+  PointCloudAdapter(const pcl::PointCloud<pcl::PointXYZ>& obj) :
       m_obj(*const_cast<pcl::PointCloud<pcl::PointXYZ>*>(&obj))
   {
   }
   /** Get number of points */
-  inline size_t size() const { return m_obj.points.size(); }
+  size_t size() const { return m_obj.points.size(); }
   /** Set number of points (to uninitialized values) */
-  inline void resize(size_t N) { m_obj.points.resize(N); }
+  void resize(size_t N) { m_obj.points.resize(N); }
   /** Set height and width (for organized) */
-  inline void setDimensions(size_t height, size_t width)
+  void setDimensions(size_t height, size_t width)
   {
     m_obj.height = height;
     m_obj.width = width;
   }
   /** Get XYZ coordinates of i'th point */
   template <typename T>
-  inline void getPointXYZ(size_t idx, T& x, T& y, T& z) const
+  void getPointXYZ(size_t idx, T& x, T& y, T& z) const
   {
     const pcl::PointXYZ& p = m_obj.points[idx];
     x = p.x;
@@ -68,7 +68,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ>>
     z = p.z;
   }
   /** Set XYZ coordinates of i'th point */
-  inline void setPointXYZ(size_t idx, const coords_t x, const coords_t y, const coords_t z)
+  void setPointXYZ(size_t idx, const coords_t x, const coords_t y, const coords_t z)
   {
     pcl::PointXYZ& p = m_obj.points[idx];
     p.x = x;
@@ -77,7 +77,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ>>
   }
 
   /** Set Invalid Point */
-  inline void setInvalidPoint(size_t idx)
+  void setInvalidPoint(size_t idx)
   {
     pcl::PointXYZ& p = m_obj.points[idx];
     p.x = p.y = p.z = std::numeric_limits<float>::quiet_NaN();
@@ -103,16 +103,16 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>>
   static constexpr bool HAS_RGBu8 = true;
 
   /** Constructor (accept a const ref for convenience) */
-  inline PointCloudAdapter(const pcl::PointCloud<pcl::PointXYZRGB>& obj) :
+  PointCloudAdapter(const pcl::PointCloud<pcl::PointXYZRGB>& obj) :
       m_obj(*const_cast<pcl::PointCloud<pcl::PointXYZRGB>*>(&obj))
   {
   }
   /** Get number of points */
-  inline size_t size() const { return m_obj.points.size(); }
+  size_t size() const { return m_obj.points.size(); }
   /** Set number of points (to uninitialized values) */
-  inline void resize(size_t N) { m_obj.points.resize(N); }
+  void resize(size_t N) { m_obj.points.resize(N); }
   /** Set height and width (for organized) */
-  inline void setDimensions(size_t height, size_t width)
+  void setDimensions(size_t height, size_t width)
   {
     m_obj.height = height;
     m_obj.width = width;
@@ -120,7 +120,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>>
 
   /** Get XYZ coordinates of i'th point */
   template <typename T>
-  inline void getPointXYZ(size_t idx, T& x, T& y, T& z) const
+  void getPointXYZ(size_t idx, T& x, T& y, T& z) const
   {
     const pcl::PointXYZRGB& p = m_obj.points[idx];
     x = p.x;
@@ -128,7 +128,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>>
     z = p.z;
   }
   /** Set XYZ coordinates of i'th point */
-  inline void setPointXYZ(size_t idx, const coords_t x, const coords_t y, const coords_t z)
+  void setPointXYZ(size_t idx, const coords_t x, const coords_t y, const coords_t z)
   {
     pcl::PointXYZRGB& p = m_obj.points[idx];
     p.x = x;
@@ -139,7 +139,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>>
 
   /** Get XYZ_RGBf coordinates of i'th point */
   template <typename T>
-  inline void getPointXYZ_RGBf(size_t idx, T& x, T& y, T& z, float& r, float& g, float& b) const
+  void getPointXYZ_RGBf(size_t idx, T& x, T& y, T& z, float& r, float& g, float& b) const
   {
     const pcl::PointXYZRGB& p = m_obj.points[idx];
     x = p.x;
@@ -150,7 +150,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>>
     b = p.b / 255.f;
   }
   /** Set XYZ_RGBf coordinates of i'th point */
-  inline void setPointXYZ_RGBf(
+  void setPointXYZ_RGBf(
       size_t idx,
       const coords_t x,
       const coords_t y,
@@ -170,7 +170,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>>
 
   /** Get XYZ_RGBu8 coordinates of i'th point */
   template <typename T>
-  inline void getPointXYZ_RGBu8(
+  void getPointXYZ_RGBu8(
       size_t idx, T& x, T& y, T& z, uint8_t& r, uint8_t& g, uint8_t& b) const
   {
     const pcl::PointXYZRGB& p = m_obj.points[idx];
@@ -182,7 +182,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>>
     b = p.b;
   }
   /** Set XYZ_RGBu8 coordinates of i'th point */
-  inline void setPointXYZ_RGBu8(
+  void setPointXYZ_RGBu8(
       size_t idx,
       const coords_t x,
       const coords_t y,
@@ -201,7 +201,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>>
   }
 
   /** Get RGBf color of i'th point */
-  inline void getPointRGBf(size_t idx, float& r, float& g, float& b) const
+  void getPointRGBf(size_t idx, float& r, float& g, float& b) const
   {
     const pcl::PointXYZRGB& p = m_obj.points[idx];
     r = p.r / 255.f;
@@ -209,7 +209,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>>
     b = p.b / 255.f;
   }
   /** Set XYZ_RGBf coordinates of i'th point */
-  inline void setPointRGBf(size_t idx, const float r, const float g, const float b)
+  void setPointRGBf(size_t idx, const float r, const float g, const float b)
   {
     pcl::PointXYZRGB& p = m_obj.points[idx];
     p.r = r * 255;
@@ -218,7 +218,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>>
   }
 
   /** Get RGBu8 color of i'th point */
-  inline void getPointRGBu8(size_t idx, uint8_t& r, uint8_t& g, uint8_t& b) const
+  void getPointRGBu8(size_t idx, uint8_t& r, uint8_t& g, uint8_t& b) const
   {
     const pcl::PointXYZRGB& p = m_obj.points[idx];
     r = p.r;
@@ -226,7 +226,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>>
     b = p.b;
   }
   /** Set RGBu8 coordinates of i'th point */
-  inline void setPointRGBu8(size_t idx, const uint8_t r, const uint8_t g, const uint8_t b)
+  void setPointRGBu8(size_t idx, const uint8_t r, const uint8_t g, const uint8_t b)
   {
     pcl::PointXYZRGB& p = m_obj.points[idx];
     p.r = r;
@@ -256,16 +256,16 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
   static constexpr bool HAS_RGBu8 = true;
 
   /** Constructor (accept a const ref for convenience) */
-  inline PointCloudAdapter(const pcl::PointCloud<pcl::PointXYZRGBA>& obj) :
+  PointCloudAdapter(const pcl::PointCloud<pcl::PointXYZRGBA>& obj) :
       m_obj(*const_cast<pcl::PointCloud<pcl::PointXYZRGBA>*>(&obj))
   {
   }
   /** Get number of points */
-  inline size_t size() const { return m_obj.points.size(); }
+  size_t size() const { return m_obj.points.size(); }
   /** Set number of points (to uninitialized values) */
-  inline void resize(size_t N) { m_obj.points.resize(N); }
+  void resize(size_t N) { m_obj.points.resize(N); }
   /** Set height and width (for organized) */
-  inline void setDimensions(size_t height, size_t width)
+  void setDimensions(size_t height, size_t width)
   {
     m_obj.height = height;
     m_obj.width = width;
@@ -273,7 +273,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
 
   /** Get XYZ coordinates of i'th point */
   template <typename T>
-  inline void getPointXYZ(size_t idx, T& x, T& y, T& z) const
+  void getPointXYZ(size_t idx, T& x, T& y, T& z) const
   {
     const pcl::PointXYZRGBA& p = m_obj.points[idx];
     x = p.x;
@@ -281,7 +281,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
     z = p.z;
   }
   /** Set XYZ coordinates of i'th point */
-  inline void setPointXYZ(size_t idx, const coords_t x, const coords_t y, const coords_t z)
+  void setPointXYZ(size_t idx, const coords_t x, const coords_t y, const coords_t z)
   {
     pcl::PointXYZRGBA& p = m_obj.points[idx];
     p.x = x;
@@ -291,7 +291,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
   }
 
   /** Set Invalid Point */
-  inline void setInvalidPoint(size_t idx)
+  void setInvalidPoint(size_t idx)
   {
     pcl::PointXYZRGBA& p = m_obj.points[idx];
     p.x = p.y = p.z = std::numeric_limits<float>::quiet_NaN();
@@ -299,7 +299,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
 
   /** Get XYZ_RGBf coordinates of i'th point */
   template <typename T>
-  inline void getPointXYZ_RGBf(size_t idx, T& x, T& y, T& z, float& r, float& g, float& b) const
+  void getPointXYZ_RGBf(size_t idx, T& x, T& y, T& z, float& r, float& g, float& b) const
   {
     const pcl::PointXYZRGBA& p = m_obj.points[idx];
     x = p.x;
@@ -310,7 +310,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
     b = p.b / 255.f;
   }
   /** Set XYZ_RGBf coordinates of i'th point */
-  inline void setPointXYZ_RGBf(
+  void setPointXYZ_RGBf(
       size_t idx,
       const coords_t x,
       const coords_t y,
@@ -330,7 +330,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
 
   /** Get XYZ_RGBu8 coordinates of i'th point */
   template <typename T>
-  inline void getPointXYZ_RGBu8(
+  void getPointXYZ_RGBu8(
       size_t idx, T& x, T& y, T& z, uint8_t& r, uint8_t& g, uint8_t& b) const
   {
     const pcl::PointXYZRGBA& p = m_obj.points[idx];
@@ -342,7 +342,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
     b = p.b;
   }
   /** Set XYZ_RGBu8 coordinates of i'th point */
-  inline void setPointXYZ_RGBu8(
+  void setPointXYZ_RGBu8(
       size_t idx,
       const coords_t x,
       const coords_t y,
@@ -361,7 +361,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
   }
 
   /** Get RGBf color of i'th point */
-  inline void getPointRGBf(size_t idx, float& r, float& g, float& b) const
+  void getPointRGBf(size_t idx, float& r, float& g, float& b) const
   {
     const pcl::PointXYZRGBA& p = m_obj.points[idx];
     r = p.r / 255.f;
@@ -369,7 +369,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
     b = p.b / 255.f;
   }
   /** Set XYZ_RGBf coordinates of i'th point */
-  inline void setPointRGBf(size_t idx, const float r, const float g, const float b)
+  void setPointRGBf(size_t idx, const float r, const float g, const float b)
   {
     pcl::PointXYZRGBA& p = m_obj.points[idx];
     p.r = r * 255;
@@ -378,7 +378,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
   }
 
   /** Get RGBu8 color of i'th point */
-  inline void getPointRGBu8(size_t idx, uint8_t& r, uint8_t& g, uint8_t& b) const
+  void getPointRGBu8(size_t idx, uint8_t& r, uint8_t& g, uint8_t& b) const
   {
     const pcl::PointXYZRGBA& p = m_obj.points[idx];
     r = p.r;
@@ -386,7 +386,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
     b = p.b;
   }
   /** Set RGBu8 coordinates of i'th point */
-  inline void setPointRGBu8(size_t idx, const uint8_t r, const uint8_t g, const uint8_t b)
+  void setPointRGBu8(size_t idx, const uint8_t r, const uint8_t g, const uint8_t b)
   {
     pcl::PointXYZRGBA& p = m_obj.points[idx];
     p.r = r;

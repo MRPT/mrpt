@@ -128,7 +128,7 @@ class CPosePDFParticles :
 
   /** Get the m_particles count (equivalent to "particlesCount")
    */
-  inline size_t size() const { return m_particles.size(); }
+  size_t size() const { return m_particles.size(); }
   /** this = p (+) this. This can be used to convert a PDF from local
    * coordinates to global, providing the point (newReferenceBase) from which
    *   "to project" the current pdf. Result PDF substituted the currently

@@ -386,15 +386,15 @@ void Message_NV_OEM6_RAWIMUS::dumpToStream(std::ostream& out) const
 {
   out << "[Novatel OEM6 RAWIMUS]\n";
   out << mrpt::format(
-      " GPS week: %u  ms in week: %u\n", (unsigned)fields.header.week,
-      (unsigned)(fields.header.ms_in_week));
-  out << mrpt::format(" Status: 0x%08lu\n", (long)fields.imu_status);
+      " GPS week: %u  ms in week: %u\n", static_cast<unsigned>(fields.header.week),
+      static_cast<unsigned>(fields.header.ms_in_week));
+  out << mrpt::format(" Status: 0x%08lu\n", static_cast<long>(fields.imu_status));
   out << mrpt::format(
-      " Acel: X=%li Y=%li Z=%li\n", (long)fields.accel_x, -(long)fields.accel_y_neg,
-      (long)fields.accel_z);
+      " Acel: X=%li Y=%li Z=%li\n", static_cast<long>(fields.accel_x), -static_cast<long>(fields.accel_y_neg),
+      static_cast<long>(fields.accel_z));
   out << mrpt::format(
-      " Gyro: X=%li Y=%li Z=%li\n", (long)fields.gyro_x, -(long)fields.gyro_y_neg,
-      (long)fields.gyro_z);
+      " Gyro: X=%li Y=%li Z=%li\n", static_cast<long>(fields.gyro_x), -static_cast<long>(fields.gyro_y_neg),
+      static_cast<long>(fields.gyro_z));
 }
 
 bool Message_NV_OEM6_RAWIMUS::getAllFieldDescriptions(std::ostream& o) const

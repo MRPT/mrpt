@@ -225,7 +225,7 @@ class CDifodo
 
   /** Get the rows and cols of the depth image that are considered by the
    * visual odometry method. */
-  inline void getRowsAndCols(unsigned int& num_rows, unsigned int& num_cols) const
+  void getRowsAndCols(unsigned int& num_rows, unsigned int& num_cols) const
   {
     num_rows = rows;
     num_cols = cols;
@@ -233,60 +233,60 @@ class CDifodo
 
   /** Get the number of coarse-to-fine levels that are considered by the
    * visual odometry method. */
-  inline void getCTFLevels(unsigned int& levels) const { levels = ctf_levels; }
+  void getCTFLevels(unsigned int& levels) const { levels = ctf_levels; }
 
   /** Set the horizontal and vertical field of vision (in degrees) */
-  inline void setFOV(float new_fovh, float new_fovv);
+  void setFOV(float new_fovh, float new_fovv);
 
   /** Get the horizontal and vertical field of vision (in degrees) */
-  inline void getFOV(float& cur_fovh, float& cur_fovv) const
+  void getFOV(float& cur_fovh, float& cur_fovv) const
   {
     cur_fovh = 57.296f * fovh;
     cur_fovv = 57.296f * fovv;
   }
 
   /** Get the filter constant-weight of the velocity filter. */
-  inline float getSpeedFilterConstWeight() const { return previous_speed_const_weight; }
+  float getSpeedFilterConstWeight() const { return previous_speed_const_weight; }
 
   /** Get the filter eigen-weight of the velocity filter. */
-  inline float getSpeedFilterEigWeight() const { return previous_speed_eig_weight; }
+  float getSpeedFilterEigWeight() const { return previous_speed_eig_weight; }
 
   /** Set the filter constant-weight of the velocity filter. */
-  inline void setSpeedFilterConstWeight(float new_cweight)
+  void setSpeedFilterConstWeight(float new_cweight)
   {
     previous_speed_const_weight = new_cweight;
   }
 
   /** Set the filter eigen-weight of the velocity filter. */
-  inline void setSpeedFilterEigWeight(float new_eweight)
+  void setSpeedFilterEigWeight(float new_eweight)
   {
     previous_speed_eig_weight = new_eweight;
   }
 
   /** Get the coordinates of the points considered by the visual odometry
    * method */
-  inline void getPointsCoord(
+  void getPointsCoord(
       mrpt::math::CMatrixFloat& x, mrpt::math::CMatrixFloat& y, mrpt::math::CMatrixFloat& z);
 
   /** Get the depth derivatives (last level) respect to u,v and t respectively
    */
-  inline void getDepthDerivatives(
+  void getDepthDerivatives(
       mrpt::math::CMatrixFloat& cur_du,
       mrpt::math::CMatrixFloat& cur_dv,
       mrpt::math::CMatrixFloat& cur_dt);
 
   /** Get the camera velocity (vx, vy, vz, wx, wy, wz) expressed in local
    * reference frame estimated by the solver (before filtering) */
-  inline mrpt::math::TTwist3D getSolverSolution() const { return kai_loc_level; }
+  mrpt::math::TTwist3D getSolverSolution() const { return kai_loc_level; }
 
   /** Get the last camera velocity (vx, vy, vz, wx, wy, wz) expressed in the
    * world reference frame, obtained after filtering */
-  inline mrpt::math::TTwist3D getLastSpeedAbs() const { return kai_abs; }
+  mrpt::math::TTwist3D getLastSpeedAbs() const { return kai_abs; }
 
   /** Get the least-square covariance matrix */
-  inline mrpt::math::CMatrixFloat66 getCovariance() const { return est_cov; }
+  mrpt::math::CMatrixFloat66 getCovariance() const { return est_cov; }
   /** Get the matrix of weights */
-  inline void getWeights(mrpt::math::CMatrixFloat& we);
+  void getWeights(mrpt::math::CMatrixFloat& we);
 
   /** Virtual method to be implemented in derived classes.
    * It should be used to load a new depth image into the variable depth_wf

@@ -228,7 +228,7 @@ class CGlCanvasBase
     m_cameraParams.cameraAzimuthDeg = new_cameraAzimuthDeg;
   }
 
-  inline void getLastMousePosition(int& x, int& y) const
+  void getLastMousePosition(int& x, int& y) const
   {
     x = m_mouseLastX;
     y = m_mouseLastY;

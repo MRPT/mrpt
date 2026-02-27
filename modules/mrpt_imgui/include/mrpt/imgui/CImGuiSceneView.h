@@ -165,7 +165,7 @@ class CImGuiSceneView
 // -----------------------------------------------------------------------
 // Main render entry point — call inside ImGui Begin/End
 // -----------------------------------------------------------------------
-inline void CImGuiSceneView::render()
+void CImGuiSceneView::render()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
@@ -261,7 +261,7 @@ inline void CImGuiSceneView::render()
 // -----------------------------------------------------------------------
 // Mouse interaction — orbit, pan, zoom
 // -----------------------------------------------------------------------
-inline void CImGuiSceneView::handleMouseInteraction(
+void CImGuiSceneView::handleMouseInteraction(
     float /*widgetX*/, float widgetY, float /*w*/, float h)
 {
   ImGuiIO& io = ImGui::GetIO();

@@ -70,7 +70,7 @@ class TStereoCamera : public mrpt::serialization::CSerializable
    */
   void loadFromConfigFile(const std::string& section, const mrpt::config::CConfigFileBase& cfg);
   /** overload This signature is consistent with the rest of MRPT APIs */
-  inline void loadFromConfigFile(
+  void loadFromConfigFile(
       const mrpt::config::CConfigFileBase& cfg, const std::string& section)
   {
     loadFromConfigFile(section, cfg);

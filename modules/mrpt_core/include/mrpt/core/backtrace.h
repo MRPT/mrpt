@@ -67,12 +67,12 @@ struct TCallStackBackTrace
  */
 void callStackBackTrace(
     TCallStackBackTrace& out_bt,
-    const unsigned int framesToSkip = 1,
-    const unsigned int framesToCapture = 64) noexcept;
+    unsigned int framesToSkip = 1,
+    unsigned int framesToCapture = 64) noexcept;
 
 /// \overload
 inline TCallStackBackTrace callStackBackTrace(
-    const unsigned int framesToSkip = 1, const unsigned int framesToCapture = 64) noexcept
+    unsigned int framesToSkip = 1, unsigned int framesToCapture = 64) noexcept
 {
   TCallStackBackTrace bt;
   callStackBackTrace(bt, framesToSkip, framesToCapture);

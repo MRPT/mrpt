@@ -73,19 +73,19 @@ struct pose_point_impl;  // generic template, specialized below:
 template <class DERIVEDCLASS>
 struct pose_point_impl<DERIVEDCLASS, 1>
 {
-  inline double z() const /*!< Get Z coord. */
+  double z() const /*!< Get Z coord. */
   {
     return static_cast<const DERIVEDCLASS*>(this)->m_coords[2];
   }
-  inline double& z() /*!< Get ref to Z coord. */
+  double& z() /*!< Get ref to Z coord. */
   {
     return static_cast<DERIVEDCLASS*>(this)->m_coords[2];
   }
-  inline void z(const double v) /*!< Set Z coord. */
+  void z(const double v) /*!< Set Z coord. */
   {
     static_cast<DERIVEDCLASS*>(this)->m_coords[2] = v;
   }
-  inline void z_incr(const double v) /*!< Z+=v */
+  void z_incr(const double v) /*!< Z+=v */
   {
     static_cast<DERIVEDCLASS*>(this)->m_coords[2] += v;
   }

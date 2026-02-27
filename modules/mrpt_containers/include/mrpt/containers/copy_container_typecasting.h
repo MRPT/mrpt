@@ -31,7 +31,7 @@ namespace mrpt::containers
  * \endcode
  */
 template <typename src_container, typename dst_container>
-inline void copy_container_typecasting(const src_container& src, dst_container& trg)
+void copy_container_typecasting(const src_container& src, dst_container& trg)
 {
   trg.resize(src.size());
   auto i = src.begin();

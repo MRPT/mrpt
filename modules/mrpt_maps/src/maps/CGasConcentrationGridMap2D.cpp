@@ -245,8 +245,8 @@ bool CGasConcentrationGridMap2D::internal_insertObservation(
       this->insertIndividualReading(
           sensorReading, mrpt::math::TPoint2D(sensorPose.x(), sensorPose.y()));
       return true;  // Done!
-    }               // endif correct "gasSensorLabel"
-  }                 // end if "CObservationGasSensors"
+    }  // endif correct "gasSensorLabel"
+  }  // end if "CObservationGasSensors"
 
   return false;
   MRPT_END
@@ -411,8 +411,8 @@ void CGasConcentrationGridMap2D::TInsertionOptions::dumpToTextStream(std::ostrea
 
   out << "[TInsertionOptions.GasSpecific] ------------ \n\n";
   out << mrpt::format("gasSensorLabel							= %s\n", gasSensorLabel.c_str());
-  out << mrpt::format("enose_id								= %u\n", (unsigned)enose_id);
-  out << mrpt::format("gasSensorType							= %u\n", (unsigned)gasSensorType);
+  out << mrpt::format("enose_id								= %u\n", static_cast<unsigned>(enose_id));
+  out << mrpt::format("gasSensorType							= %u\n", static_cast<unsigned>(gasSensorType));
   out << mrpt::format("windSensorLabel							= %s\n", windSensorLabel.c_str());
   out << mrpt::format("useWindInformation						= %u\n", useWindInformation);
 
@@ -541,8 +541,8 @@ void CGasConcentrationGridMap2D::getWindAs3DObject(mrpt::viz::CSetOfObjects::Ptr
       auto obj = mrpt::viz::CArrow::Create(
           mrpt::math::TPoint3Df(xs[cx], ys[cy], 0.f),
           mrpt::math::TPoint3Df(
-              xs[cx] + scale * (float)cos(dir_xy),
-              ys[cy] + scale * (float)sin(dir_xy), 0.f),
+              xs[cx] + scale * static_cast<float>(cos(dir_xy)),
+              ys[cy] + scale * static_cast<float>(sin(dir_xy)), 0.f),
           1.15f * scale, 0.3f * scale, 0.35f * scale);
 
       const auto rgb = jet2rgb(static_cast<float>(mod_xy));
@@ -650,8 +650,8 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
         int final_cx = cell_i_cx + ci.cx;
         int final_cy = cell_i_cy + ci.cy;
         // Check if affected cells is within the map
-        if ((final_cx >= 0) && (final_cx < (int)getSizeX()) && (final_cy >= 0) &&
-            (final_cy < (int)getSizeY()))
+        if ((final_cx >= 0) && (final_cx < static_cast<int>(getSizeX())) && (final_cy >= 0) &&
+            (final_cy < static_cast<int>(getSizeY())))
         {
           int final_idx = final_cx + final_cy * getSizeX();
 
@@ -663,7 +663,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
           }
         }
       }  // end-for ci
-    }    // end-for cell i
+    }  // end-for cell i
 
     cout << " - SA matrix computed in " << tictac.Tac() << "s" << endl << "\n";
   }
@@ -983,8 +983,10 @@ that models the propagation of the gas comming from cell_i.
 
           float subcell_pres = LUT.resolution / 10;
           // Determine the number of subcells inside the Bounding-Box
-          const int BB_x_subcells = (int)(floor((maxBBox_x - minBBox_x) / subcell_pres) + 1);
-          const int BB_y_subcells = (int)(floor((maxBBox_y - minBBox_y) / subcell_pres) + 1);
+          const int BB_x_subcells =
+              static_cast<int>(floor((maxBBox_x - minBBox_x) / subcell_pres) + 1);
+          const int BB_y_subcells =
+              static_cast<int>(floor((maxBBox_y - minBBox_y) / subcell_pres) + 1);
 
           double subcell_pres_x = (maxBBox_x - minBBox_x) / BB_x_subcells;
           double subcell_pres_y = (maxBBox_y - minBBox_y) / BB_y_subcells;
@@ -1036,7 +1038,7 @@ that models the propagation of the gas comming from cell_i.
 
               sum_w = sum_w + w;
             }  // end-for scx
-          }    // end-for scy
+          }  // end-for scy
 
           // SAVE to LUT
           for (it = w_values.begin(); it != w_values.end(); it++)
@@ -1067,7 +1069,7 @@ that models the propagation of the gas comming from cell_i.
         }  // end-if only one affected cell
 
       }  // end-for r
-    }    // end-for phi
+    }  // end-for phi
 
     if (debug) fclose(debug_file);
 
@@ -1101,10 +1103,10 @@ bool CGasConcentrationGridMap2D::save_Gaussian_Wind_Grid_To_File()
     f << LUT.std_r;
 
     f << LUT.phi_inc;  // rad
-    f << (float)LUT.phi_count;
+    f << static_cast<float>(LUT.phi_count);
     f << LUT.r_inc;  // m
     f << LUT.max_r;  // maximum distance (m)
-    f << (float)LUT.r_count;
+    f << static_cast<float>(LUT.r_count);
 
     // Save Multi-table
     // vector< vector< vector<TGaussianCell>>>>> *table;
@@ -1115,12 +1117,12 @@ bool CGasConcentrationGridMap2D::save_Gaussian_Wind_Grid_To_File()
       {
         // save all cell values.
         size_t N = LUT_TABLE[phi_indx][r_indx].size();
-        f << (float)N;
+        f << static_cast<float>(N);
 
         for (size_t i = 0; i < N; i++)
         {
-          f << (float)LUT_TABLE[phi_indx][r_indx][i].cx;
-          f << (float)LUT_TABLE[phi_indx][r_indx][i].cy;
+          f << static_cast<float>(LUT_TABLE[phi_indx][r_indx][i].cx);
+          f << static_cast<float>(LUT_TABLE[phi_indx][r_indx][i].cy);
           f << LUT_TABLE[phi_indx][r_indx][i].value;
         }
       }
@@ -1176,7 +1178,7 @@ bool CGasConcentrationGridMap2D::load_Gaussian_Wind_Grid_From_File()
     ASSERT_(LUT.phi_inc == t_float);
 
     f >> t_float;
-    t_uint = (unsigned int)t_float;
+    t_uint = static_cast<unsigned int>(t_float);
     ASSERT_(LUT.phi_count == t_uint);
 
     f >> t_float;
@@ -1186,7 +1188,7 @@ bool CGasConcentrationGridMap2D::load_Gaussian_Wind_Grid_From_File()
     ASSERT_(LUT.max_r == t_float);
 
     f >> t_float;
-    t_uint = (unsigned int)t_float;
+    t_uint = static_cast<unsigned int>(t_float);
     ASSERT_(LUT.r_count == t_uint);
 
     // Load Multi-table
@@ -1199,16 +1201,16 @@ bool CGasConcentrationGridMap2D::load_Gaussian_Wind_Grid_From_File()
         // Number of cells to update
         size_t N;
         f >> t_float;
-        N = (size_t)t_float;
+        N = static_cast<size_t>(t_float);
 
         for (size_t i = 0; i < N; i++)
         {
           TGaussianCell gauss_info;
           f >> t_float;
-          gauss_info.cx = (int)t_float;
+          gauss_info.cx = static_cast<int>(t_float);
 
           f >> t_float;
-          gauss_info.cy = (int)t_float;
+          gauss_info.cy = static_cast<int>(t_float);
 
           f >> gauss_info.value;
 

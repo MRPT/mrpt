@@ -96,7 +96,7 @@ void CPose2D::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
 }
 void CPose2D::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 {
-  uint8_t version;
+  int version = 0;
   SCHEMA_DESERIALIZE_DATATYPE_VERSION();
   switch (version)
   {

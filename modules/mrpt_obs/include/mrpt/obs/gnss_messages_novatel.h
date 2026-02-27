@@ -264,7 +264,7 @@ GNSS_BINARY_MSG_DEFINITION_MID
  * (requires linking against mrpt-topography)
  *   Call as: getAsStruct<TGeodeticCoords>(); */
 template <class TGEODETICCOORDS>
-inline TGEODETICCOORDS getAsStruct() const
+TGEODETICCOORDS getAsStruct() const
 {
   return TGEODETICCOORDS(fields.lat, fields.lon, fields.hgt);
 }
@@ -307,7 +307,7 @@ GNSS_BINARY_MSG_DEFINITION_MID
  * (requires linking against mrpt-topography)
  *   Call as: getAsStruct<TGeodeticCoords>(); */
 template <class TGEODETICCOORDS>
-inline TGEODETICCOORDS getAsStruct() const
+TGEODETICCOORDS getAsStruct() const
 {
   return TGEODETICCOORDS(fields.lat, fields.lon, fields.hgt);
 }
@@ -537,7 +537,7 @@ GNSS_BINARY_MSG_DEFINITION_MID
  * (requires linking against mrpt-topography)
  *   Call as: getAsStruct<TGeodeticCoords>(); */
 template <class TGEODETICCOORDS>
-inline TGEODETICCOORDS getAsStruct() const
+TGEODETICCOORDS getAsStruct() const
 {
   return TGEODETICCOORDS(fields.lat, fields.lon, fields.hgt);
 }

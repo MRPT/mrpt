@@ -64,7 +64,7 @@ void CPTG_DiffDrive_C::serializeTo(mrpt::serialization::CArchive& out) const
 
 std::string CPTG_DiffDrive_C::getDescription() const
 {
-  return mrpt::format("CPTG_DiffDrive_C,K=%i", (int)K);
+  return mrpt::format("CPTG_DiffDrive_C,K=%i", static_cast<int>(K));
 }
 
 void CPTG_DiffDrive_C::ptgDiffDriveSteeringFunction(
@@ -101,23 +101,23 @@ bool CPTG_DiffDrive_C::inverseMap_WS2TP(
     if (K > 0)
     {
       if (y > 0)
-        theta = atan2((double)x, fabs(R) - y);
+        theta = atan2(static_cast<double>(x), fabs(R) - y);
       else
-        theta = atan2((double)x, y + fabs(R));
+        theta = atan2(static_cast<double>(x), y + fabs(R));
     }
     else
     {
       if (y > 0)
-        theta = atan2(-(double)x, fabs(R) - y);
+        theta = atan2(-static_cast<double>(x), fabs(R) - y);
       else
-        theta = atan2(-(double)x, y + fabs(R));
+        theta = atan2(-static_cast<double>(x), y + fabs(R));
     }
 
     // Arc length must be possitive [0,2*pi]
     mrpt::math::wrapTo2PiInPlace(theta);
 
     // Distance thru arc:
-    d_out = (float)(theta * (fabs(R) + turningRadiusReference));
+    d_out = static_cast<float>(theta * (fabs(R) + turningRadiusReference));
 
     if (std::abs(R) < Rmin)
     {
@@ -127,7 +127,7 @@ bool CPTG_DiffDrive_C::inverseMap_WS2TP(
 
     // Was: a = 2*atan( V_MAX / (W_MAX*R) );
     const double a = M_PI * V_MAX / (W_MAX * R);
-    k_out = alpha2index((float)a);
+    k_out = alpha2index(static_cast<float>(a));
   }
   else
   {

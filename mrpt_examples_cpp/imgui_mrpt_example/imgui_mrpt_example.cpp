@@ -50,24 +50,25 @@
 #include <cstdlib>
 #include <random>
 
+namespace {
 // ------------------------------------------------------------------
 // Build a sample MRPT scene
 // ------------------------------------------------------------------
-[[nodiscard]] static mrpt::opengl::Scene::Ptr createSampleScene()
+[[nodiscard]] mrpt::viz::Scene::Ptr createSampleScene()
 {
-  auto scene = mrpt::opengl::Scene::Create();
+  auto scene = mrpt::viz::Scene::Create();
   auto& mainVP = *scene->getViewport("main");
 
   // Ground grid
   {
-    auto grid = mrpt::opengl::CGridPlaneXY::Create(-20.0f, 20.0f, -20.0f, 20.0f, 0.0f, 1.0f);
+    auto grid = mrpt::viz::CGridPlaneXY::Create(-20.0f, 20.0f, -20.0f, 20.0f, 0.0f, 1.0f);
     grid->setColor_u8(mrpt::img::TColor(200, 200, 200, 100));
     mainVP.insert(grid);
   }
 
   // Axes
   {
-    auto axes = mrpt::opengl::CAxis::Create(-5.0f, -5.0f, -5.0f, 5.0f, 5.0f, 5.0f, 0.5f, 2.0f);
+    auto axes = mrpt::viz::CAxis::Create(-5.0f, -5.0f, -5.0f, 5.0f, 5.0f, 5.0f, 0.5f, 2.0f);
     axes->enableTickMarks();
     mainVP.insert(axes);
   }
@@ -75,7 +76,7 @@
   // A box
   {
     auto box =
-        mrpt::opengl::CBox::Create(mrpt::math::TPoint3D(-1, -1, 0), mrpt::math::TPoint3D(1, 1, 2));
+        mrpt::viz::CBox::Create(mrpt::math::TPoint3D(-1, -1, 0), mrpt::math::TPoint3D(1, 1, 2));
     box->setColor(0.2f, 0.6f, 0.9f, 0.7f);
     box->setLocation(3.0, 0.0, 0.0);
     mainVP.insert(box);
@@ -83,7 +84,7 @@
 
   // A sphere
   {
-    auto sphere = mrpt::opengl::CSphere::Create(1.0f);
+    auto sphere = mrpt::viz::CSphere::Create(1.0f);
     sphere->setColor(0.9f, 0.3f, 0.2f, 0.8f);
     sphere->setLocation(-3.0, 0.0, 1.5);
     mainVP.insert(sphere);
@@ -91,14 +92,14 @@
 
   // Corner coordinate frames via stock_objects
   {
-    auto corner = mrpt::opengl::stock_objects::CornerXYZSimple(1.5f, 3.0f);
+    auto corner = mrpt::viz::stock_objects::CornerXYZSimple(1.5f, 3.0f);
     corner->setLocation(0.0, 4.0, 0.0);
     mainVP.insert(corner);
   }
 
   // Random point cloud
   {
-    auto pc = mrpt::opengl::CPointCloud::Create();
+    auto pc = mrpt::viz::CPointCloud::Create();
     pc->setPointSize(3.0f);
     pc->setColor(0.1f, 0.8f, 0.1f);
 
@@ -118,9 +119,10 @@
 }
 
 // ------------------------------------------------------------------
-static void glfwErrorCallback(int error, const char* description)
+void glfwErrorCallback(int error, const char* description)
 {
   std::fprintf(stderr, "GLFW Error %d: %s\n", error, description);
+}
 }
 
 // ------------------------------------------------------------------
@@ -166,7 +168,7 @@ int main()
   // --- MRPT scene + widget ---
   auto scene = createSampleScene();
 
-  mrpt::gui::CImGuiSceneView sceneView;
+  mrpt::imgui::CImGuiSceneView sceneView;
   sceneView.setScene(scene);
   sceneView.setBackgroundColor(0.15f, 0.15f, 0.18f);
 
@@ -201,7 +203,7 @@ int main()
     if (auto vp = scene->getViewport("main"); vp)
     {
       // Find the sphere and move it
-      if (auto sp = vp->getByClass<mrpt::opengl::CSphere>(); sp)
+      if (auto sp = vp->getByClass<mrpt::viz::CSphere>(); sp)
       {
         sp->setLocation(
             -3.0 + 2.0 * std::cos(static_cast<double>(sphereAngle)),

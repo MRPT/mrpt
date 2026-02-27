@@ -83,7 +83,7 @@ class CAStarAlgorithm
   /**
    * Calculates the total cost (known+estimated) of a solution.
    */
-  inline double getTotalCost(const T& sol) { return getHeuristic(sol) + getCost(sol); }
+  double getTotalCost(const T& sol) { return getHeuristic(sol) + getCost(sol); }
 
  public:
   /**

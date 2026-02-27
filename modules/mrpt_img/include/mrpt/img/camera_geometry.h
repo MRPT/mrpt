@@ -111,7 +111,7 @@ void projectPoint_with_distortion(
  * \return Projected pixel coordinates
  */
 template <bool INVERSE_CAM_POSE>
-inline mrpt::img::TPixelCoordf projectPoint(
+mrpt::img::TPixelCoordf projectPoint(
     const mrpt::img::TCamera& cameraParams,
     const mrpt::math::TPose3D& cameraPose,
     const mrpt::math::TPoint3D& point3D)

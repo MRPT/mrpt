@@ -84,13 +84,13 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
    *  @{ */
 
   /** Default constructor, initializes all elements to zero */
-  inline CMatrixFixed() { m_data.fill(0); }
+  CMatrixFixed() { m_data.fill(0); }
 
   /** Constructor which leaves the matrix uninitialized.
    *  Example of usage: CMatrixFixed<double,3,2>
    * M(mrpt::math::UNINITIALIZED_MATRIX);
    */
-  inline CMatrixFixed(TConstructorFlags_Matrices) {}
+  CMatrixFixed(TConstructorFlags_Matrices) {}
 
   /** Initializes from a C array with RowMajor values */
   template <size_t N>
@@ -243,7 +243,7 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
   }
 
   /** Throws if size does not match with the fixed matrix size */
-  inline void resize(const matrix_size_t& siz, [[maybe_unused]] bool zeroNewElements = false)
+  void resize(const matrix_size_t& siz, [[maybe_unused]] bool zeroNewElements = false)
   {
     resize(siz[0], siz[1]);
   }
@@ -318,13 +318,13 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 
   /** Access (row,col), without out-of-bounds check (except in Debug builds)
    */
-  inline T& operator()(Index row, Index col)
+  T& operator()(Index row, Index col)
   {
     ASSERTDEB_(r < ROWS);
     ASSERTDEB_(c < COLS);
     return m_data[static_cast<std::size_t>(row * COLS + col)];
   }
-  inline const T& operator()(Index row, Index col) const
+  const T& operator()(Index row, Index col) const
   {
     ASSERTDEB_(r < ROWS);
     ASSERTDEB_(c < COLS);
@@ -334,25 +334,25 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
   /** Access the i-th element, Row-Major order, without out-of-bounds check
    * (except in Debug builds)
    */
-  inline T& operator()(Index i)
+  T& operator()(Index i)
   {
     ASSERTDEB_(i < ROWS * COLS);
     return m_data[static_cast<std::size_t>(i)];
   }
-  inline const T& operator()(Index i) const
+  const T& operator()(Index i) const
   {
     ASSERTDEB_(i < ROWS * COLS);
     return m_data[static_cast<std::size_t>(i)];
   }
 
   /** Access the [i-th] element (for 1xN or Nx1 matrices) */
-  inline T& operator[](Index i)
+  T& operator[](Index i)
   {
     ASSERT_(ROWS == 1 || COLS == 1);
     ASSERTDEB_(i < ROWS * COLS);
     return m_data[static_cast<std::size_t>(i)];
   }
-  inline const T& operator[](Index i) const
+  const T& operator[](Index i) const
   {
     ASSERT_(ROWS == 1 || COLS == 1);
     ASSERTDEB_(i < ROWS * COLS);

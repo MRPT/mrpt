@@ -57,10 +57,10 @@ class CQuaternion : public CVectorFixed<T, 4>
   /**	Can be used with UNINITIALIZED_QUATERNION as argument, does not
    * initialize the 4 elements of the quaternion (use this constructor when
    * speed is critical). */
-  inline CQuaternion(TConstructorFlags_Quaternions) {}
+  CQuaternion(TConstructorFlags_Quaternions) {}
   /**	Default constructor: construct a (1, (0,0,0) ) quaternion representing
    * no rotation. */
-  inline CQuaternion()
+  CQuaternion()
   {
     r() = 1;
     x() = 0;
@@ -70,7 +70,7 @@ class CQuaternion : public CVectorFixed<T, 4>
 
   /**	Construct a quaternion from its parameters 'r', 'x', 'y', 'z', with q =
    * r + ix + jy + kz. */
-  inline CQuaternion(const T R, const T X, const T Y, const T Z)
+  CQuaternion(const T R, const T X, const T Y, const T Z)
   {
     r() = R;
     x() = X;
@@ -91,7 +91,7 @@ class CQuaternion : public CVectorFixed<T, 4>
 
   /** Adhere to the convention of w>=0 to avoid ambiguity of quaternion double
    * cover of SO(3) */
-  inline void ensurePositiveRealPart()
+  void ensurePositiveRealPart()
   {
     // Ensure r()>0
     if (r() < 0)
@@ -104,30 +104,30 @@ class CQuaternion : public CVectorFixed<T, 4>
   }
 
   /** Return r (real part) coordinate of the quaternion */
-  inline T r() const { return (*this)[0]; }
+  T r() const { return (*this)[0]; }
   /** Return w (real part) coordinate of the quaternion. Alias of r() */
-  inline T w() const { return (*this)[0]; }
+  T w() const { return (*this)[0]; }
   /** Return x coordinate of the quaternion */
-  inline T x() const { return (*this)[1]; }
+  T x() const { return (*this)[1]; }
   /** Return y coordinate of the quaternion */
-  inline T y() const { return (*this)[2]; }
+  T y() const { return (*this)[2]; }
   /** Return z coordinate of the quaternion */
-  inline T z() const { return (*this)[3]; }
+  T z() const { return (*this)[3]; }
   /** Set r (real part) coordinate of the quaternion */
-  inline void r(const T r) { (*this)[0] = r; }
+  void r(const T r) { (*this)[0] = r; }
   /** Set w (real part) coordinate of the quaternion. Alias of r() */
-  inline void w(const T w) { (*this)[0] = w; }
+  void w(const T w) { (*this)[0] = w; }
   /** Set x coordinate of the quaternion */
-  inline void x(const T x) { (*this)[1] = x; }
+  void x(const T x) { (*this)[1] = x; }
   /** Set y coordinate of the quaternion */
-  inline void y(const T y) { (*this)[2] = y; }
+  void y(const T y) { (*this)[2] = y; }
   /** Set z coordinate of the quaternion */
-  inline void z(const T z) { (*this)[3] = z; }
+  void z(const T z) { (*this)[3] = z; }
 
-  inline T& r() { return (*this)[0]; }
-  inline T& x() { return (*this)[1]; }
-  inline T& y() { return (*this)[2]; }
-  inline T& z() { return (*this)[3]; }
+  T& r() { return (*this)[0]; }
+  T& x() { return (*this)[1]; }
+  T& y() { return (*this)[2]; }
+  T& z() { return (*this)[3]; }
 
   /**	Set this quaternion to the rotation described by a 3D (Rodrigues)
    * rotation vector \f$ \mathbf{v} \f$:
@@ -184,14 +184,14 @@ class CQuaternion : public CVectorFixed<T, 4>
    * mrpt::math::CVectorDouble or any row or column Eigen::Matrix<>.
    *  \sa exp,  mrpt::poses::SE_traits  */
   template <class ARRAYLIKE3>
-  inline void ln(ARRAYLIKE3& out_ln) const
+  void ln(ARRAYLIKE3& out_ln) const
   {
     if (out_ln.size() != 3) out_ln.resize(3);
     this->ln_noresize(out_ln);
   }
   /** overload that returns by value */
   template <class ARRAYLIKE3>
-  inline ARRAYLIKE3 ln() const
+  ARRAYLIKE3 ln() const
   {
     ARRAYLIKE3 out_ln;
     this->ln(out_ln);
@@ -212,7 +212,7 @@ class CQuaternion : public CVectorFixed<T, 4>
   /** Exponential map from the SO(3) Lie Algebra to unit quaternions.
    *  \sa ln,  mrpt::poses::SE_traits  */
   template <class ARRAYLIKE3>
-  inline static CQuaternion<T> exp(const ARRAYLIKE3& v)
+  static CQuaternion<T> exp(const ARRAYLIKE3& v)
   {
     CQuaternion<T> q(UNINITIALIZED_QUATERNION);
     q.fromRodriguesVector(v);
@@ -220,7 +220,7 @@ class CQuaternion : public CVectorFixed<T, 4>
   }
   /** \overload */
   template <class ARRAYLIKE3>
-  inline static void exp(const ARRAYLIKE3& v, CQuaternion<T>& out_quat)
+  static void exp(const ARRAYLIKE3& v, CQuaternion<T>& out_quat)
   {
     out_quat.fromRodriguesVector(v);
   }
@@ -232,7 +232,7 @@ class CQuaternion : public CVectorFixed<T, 4>
    *   After the operation, "this" will represent the composed rotations of
    * q1 and q2 (q2 applied "after" q1).
    */
-  inline void crossProduct(const CQuaternion& q1, const CQuaternion& q2)
+  void crossProduct(const CQuaternion& q1, const CQuaternion& q2)
   {
     // First: compute result, then save in this object. In this way we avoid
     // problems when q1 or q2 == *this !!
@@ -288,7 +288,7 @@ class CQuaternion : public CVectorFixed<T, 4>
   }
 
   /** Return the squared norm of the quaternion */
-  inline double normSqr() const
+  double normSqr() const
   {
     using mrpt::square;
     return square(r()) + square(x()) + square(y()) + square(z());
@@ -296,7 +296,7 @@ class CQuaternion : public CVectorFixed<T, 4>
 
   /**	Normalize this quaternion, so its norm becomes the unitity.
    */
-  inline void normalize()
+  void normalize()
   {
     ensurePositiveRealPart();
     const T qq = 1.0 / std::sqrt(normSqr());
@@ -340,7 +340,7 @@ class CQuaternion : public CVectorFixed<T, 4>
    *  The output matrix can be a dynamic or fixed size (4x4) matrix.
    */
   template <class MATRIXLIKE>
-  inline void rotationJacobian(MATRIXLIKE& J) const
+  void rotationJacobian(MATRIXLIKE& J) const
   {
     J.setSize(4, 4);
     J(0, 0) = r();
@@ -375,14 +375,14 @@ class CQuaternion : public CVectorFixed<T, 4>
    *
    */
   template <class MATRIXLIKE>
-  inline void rotationMatrix(MATRIXLIKE& M) const
+  void rotationMatrix(MATRIXLIKE& M) const
   {
     M.setSize(3, 3);
     rotationMatrixNoResize(M);
   }
 
   template <class MATRIXLIKE>
-  inline MATRIXLIKE rotationMatrix() const
+  MATRIXLIKE rotationMatrix() const
   {
     MATRIXLIKE M(3, 3);
     rotationMatrixNoResize(M);
@@ -393,7 +393,7 @@ class CQuaternion : public CVectorFixed<T, 4>
    * matrix associated to this quaternion (does not resize the matrix, for
    * that, see rotationMatrix). */
   template <class MATRIXLIKE>
-  inline void rotationMatrixNoResize(MATRIXLIKE& M) const
+  void rotationMatrixNoResize(MATRIXLIKE& M) const
   {
     M(0, 0) = r() * r() + x() * x() - y() * y() - z() * z();
     M(0, 1) = 2 * (x() * y() - r() * z());
@@ -407,7 +407,7 @@ class CQuaternion : public CVectorFixed<T, 4>
   }
 
   /**	Return the conjugate quaternion  */
-  inline void conj(CQuaternion& q_out) const
+  void conj(CQuaternion& q_out) const
   {
     q_out.r(r());
     q_out.x(-x());
@@ -416,7 +416,7 @@ class CQuaternion : public CVectorFixed<T, 4>
   }
 
   /**	Return the conjugate quaternion  */
-  inline CQuaternion conj() const
+  CQuaternion conj() const
   {
     CQuaternion q_aux;
     conj(q_aux);
@@ -428,7 +428,7 @@ class CQuaternion : public CVectorFixed<T, 4>
    * http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/Quaternions.pdf
    *  \sa rpy_and_jacobian
    */
-  inline void rpy(T& roll, T& pitch, T& yaw) const
+  void rpy(T& roll, T& pitch, T& yaw) const
   {
     rpy_and_jacobian(roll, pitch, yaw, static_cast<mrpt::math::CMatrixDouble*>(nullptr));
   }
@@ -524,7 +524,7 @@ class CQuaternion : public CVectorFixed<T, 4>
     }
   }
 
-  inline CQuaternion operator*(const T& factor)
+  CQuaternion operator*(const T& factor)
   {
     CQuaternion q = *this;
     q *= factor;

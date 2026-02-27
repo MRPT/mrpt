@@ -86,7 +86,10 @@ struct TPose3D : public TPoseOrPoint, public internal::ProvideStaticResize<TPose
   static TPose3D FromVector(const Vector& v)
   {
     TPose3D o;
-    for (int i = 0; i < 6; i++) o[i] = v[i];
+    for (int i = 0; i < 6; i++)
+    {
+      o[i] = v[i];
+    }
     return o;
   }
 
@@ -134,7 +137,7 @@ struct TPose3D : public TPoseOrPoint, public internal::ProvideStaticResize<TPose
   }
 
   /** Returns the (x,y,z) translational part of the SE(3) transformation. */
-  [[nodiscard]] const mrpt::math::TPoint3D translation() const { return {x, y, z}; }
+  [[nodiscard]] mrpt::math::TPoint3D translation() const { return {x, y, z}; }
 
   /**
    * Pose's spatial coordinates norm.

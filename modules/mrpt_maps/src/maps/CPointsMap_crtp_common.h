@@ -22,7 +22,7 @@ namespace mrpt::maps::detail
 template <class Derived>
 struct loadFromRangeImpl
 {
-  static inline void templ_loadFromRangeScan(
+  static void templ_loadFromRangeScan(
       Derived& obj,
       const mrpt::obs::CObservation2DRangeScan& rangeScan,
       const std::optional<const mrpt::poses::CPose3D>& robotPose)
@@ -378,7 +378,7 @@ struct loadFromRangeImpl
     obj.m_z.resize(nextPtIdx);
   }
 
-  static inline void templ_loadFromRangeScan(
+  static void templ_loadFromRangeScan(
       Derived& obj,
       const mrpt::obs::CObservation3DRangeScan& rangeScan,
       const std::optional<const mrpt::poses::CPose3D>& robotPose)

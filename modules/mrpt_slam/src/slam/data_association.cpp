@@ -318,8 +318,8 @@ void mrpt::slam::data_association_full_covariance(
 
   ASSERT_(nPredictions != 0);
   ASSERT_(nObservations != 0);
-  ASSERT_(length_O == (size_t)Y_predictions_mean.cols());
-  ASSERT_(length_O * nPredictions == (size_t)Y_predictions_cov.rows());
+  ASSERT_(length_O == static_cast<size_t>(Y_predictions_mean.cols()));
+  ASSERT_(length_O * nPredictions == static_cast<size_t>(Y_predictions_cov.rows()));
   ASSERT_(Y_predictions_cov.isSquare());
   ASSERT_(chi2quantile > 0 && chi2quantile < 1);
   ASSERT_(metric == metricMaha || metric == metricML);
@@ -574,8 +574,8 @@ void mrpt::slam::data_association_independent_predictions(
 
   ASSERT_(nPredictions != 0);
   ASSERT_(nObservations != 0);
-  ASSERT_(length_O == (size_t)Y_predictions_mean.cols());
-  ASSERT_(length_O * nPredictions == (size_t)Y_predictions_cov_stacked.rows());
+  ASSERT_(length_O == static_cast<size_t>(Y_predictions_mean.cols()));
+  ASSERT_(length_O * nPredictions == static_cast<size_t>(Y_predictions_cov_stacked.rows()));
   ASSERT_(chi2quantile > 0 && chi2quantile < 1);
   ASSERT_(metric == metricMaha || metric == metricML);
   // const double chi2thres = mrpt::math::chi2inv( chi2quantile, length_O );

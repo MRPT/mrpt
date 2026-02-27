@@ -113,7 +113,7 @@ void resizeLike(std::vector<T>& trg, const std::vector<T>& src)
  * in opposite direction.
  * \sa sum */
 template <class CONTAINER1, class CONTAINER2>
-inline void cumsum_tmpl(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
+void cumsum_tmpl(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
 {
   resizeLike(out_cumsum, in_data);
   using T = std::remove_const_t<std::remove_reference_t<decltype(in_data[0])>>;
@@ -123,7 +123,7 @@ inline void cumsum_tmpl(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
 }
 
 template <class CONTAINER1, class CONTAINER2>
-inline void cumsum(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
+void cumsum(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
 {
   cumsum_tmpl<CONTAINER1, CONTAINER2>(in_data, out_cumsum);
 }
@@ -131,7 +131,7 @@ inline void cumsum(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
 /** Computes the cumulative sum of all the elements
  * \sa sum  */
 template <class CONTAINER>
-inline CONTAINER cumsum(const CONTAINER& in_data)
+CONTAINER cumsum(const CONTAINER& in_data)
 {
   CONTAINER ret;
   cumsum(in_data, ret);
@@ -139,39 +139,39 @@ inline CONTAINER cumsum(const CONTAINER& in_data)
 }
 
 template <class CONTAINER>
-inline typename CONTAINER::Scalar norm_inf(const CONTAINER& v)
+typename CONTAINER::Scalar norm_inf(const CONTAINER& v)
 {
   return v.norm_inf();
 }
 template <class CONTAINER>
-inline typename CONTAINER::Scalar norm(const CONTAINER& v)
+typename CONTAINER::Scalar norm(const CONTAINER& v)
 {
   return v.norm();
 }
 template <class CONTAINER, int = CONTAINER::is_mrpt_type>
-inline typename CONTAINER::Scalar maximum(const CONTAINER& v)
+typename CONTAINER::Scalar maximum(const CONTAINER& v)
 {
   return v.maxCoeff();
 }
 template <class CONTAINER, int = CONTAINER::is_mrpt_type>
-inline typename CONTAINER::Scalar minimum(const CONTAINER& v)
+typename CONTAINER::Scalar minimum(const CONTAINER& v)
 {
   return v.minCoeff();
 }
 
 template <class Derived>
-inline typename Derived::Scalar maximum(const Eigen::MatrixBase<Derived>& v)
+typename Derived::Scalar maximum(const Eigen::MatrixBase<Derived>& v)
 {
   return v.maxCoeff();
 }
 template <class Derived>
-inline typename Derived::Scalar minimum(const Eigen::MatrixBase<Derived>& v)
+typename Derived::Scalar minimum(const Eigen::MatrixBase<Derived>& v)
 {
   return v.minCoeff();
 }
 
 template <typename T>
-inline T maximum(const std::vector<T>& v)
+T maximum(const std::vector<T>& v)
 {
   ASSERT_(!v.empty());
   T m = v[0];
@@ -179,7 +179,7 @@ inline T maximum(const std::vector<T>& v)
   return m;
 }
 template <typename T>
-inline T minimum(const std::vector<T>& v)
+T minimum(const std::vector<T>& v)
 {
   ASSERT_(!v.empty());
   T m = v[0];
@@ -202,7 +202,7 @@ VALUE squareNorm_accum(const VALUE total, const CONTAINER& v)
 /** Compute the square norm of anything implementing [].
   \sa norm */
 template <size_t N, class T, class U>
-inline T squareNorm(const U& v)
+T squareNorm(const U& v)
 {
   T res = 0;
   for (size_t i = 0; i < N; i++) res += square(v[i]);
@@ -211,14 +211,14 @@ inline T squareNorm(const U& v)
 
 /** v1*v2: The dot product of two containers (vectors/arrays/matrices) */
 template <class CONTAINER1, class CONTAINER2>
-inline typename CONTAINER1::Scalar dotProduct(const CONTAINER1& v1, const CONTAINER1& v2)
+typename CONTAINER1::Scalar dotProduct(const CONTAINER1& v1, const CONTAINER1& v2)
 {
   return v1.dot(v2);
 }
 
 /** v1*v2: The dot product of any two objects supporting []  */
 template <size_t N, class T, class U, class V>
-inline T dotProduct(const U& v1, const V& v2)
+T dotProduct(const U& v1, const V& v2)
 {
   T res = 0;
   for (size_t i = 0; i < N; i++) res += v1[i] * v2[i];
@@ -231,14 +231,14 @@ inline T dotProduct(const U& v1, const V& v2)
   specify a larger type to hold the sum.
    \sa cumsum  */
 template <class CONTAINER>
-inline typename CONTAINER::Scalar sum(const CONTAINER& v)
+typename CONTAINER::Scalar sum(const CONTAINER& v)
 {
   return v.sum();
 }
 
 /// \overload
 template <typename T>
-inline T sum(const std::vector<T>& v)
+T sum(const std::vector<T>& v)
 {
   return std::accumulate(v.begin(), v.end(), T(0));
 }
@@ -246,7 +246,7 @@ inline T sum(const std::vector<T>& v)
 /** Computes the sum of all the elements, with a custom return type.
    \sa sum, cumsum  */
 template <class CONTAINER, typename RET>
-inline RET sumRetType(const CONTAINER& v)
+RET sumRetType(const CONTAINER& v)
 {
   return v.template sumRetType<RET>();
 }
@@ -254,7 +254,7 @@ inline RET sumRetType(const CONTAINER& v)
 /** Computes the mean value of a vector  \return The mean, as a double number.
  * \sa math::stddev,math::meanAndStd  */
 template <class CONTAINER>
-inline double mean(const CONTAINER& v)
+double mean(const CONTAINER& v)
 {
   if (v.empty())
     return 0;
@@ -264,7 +264,7 @@ inline double mean(const CONTAINER& v)
 
 /** Return the maximum and minimum values of a std::vector */
 template <typename T, typename Alloc>
-inline void minimum_maximum(const std::vector<T, Alloc>& V, T& curMin, T& curMax)
+void minimum_maximum(const std::vector<T, Alloc>& V, T& curMin, T& curMax)
 {
   ASSERT_(V.size() != 0);
   const size_t N = V.size();
@@ -278,7 +278,7 @@ inline void minimum_maximum(const std::vector<T, Alloc>& V, T& curMin, T& curMax
 
 /** Return the maximum and minimum values of a Eigen-based vector or matrix */
 template <class Derived>
-inline void minimum_maximum(
+void minimum_maximum(
     const Eigen::MatrixBase<Derived>& V,
     typename Eigen::MatrixBase<Derived>::Scalar& curMin,
     typename Eigen::MatrixBase<Derived>::Scalar& curMax)
@@ -368,7 +368,7 @@ void meanAndStd(
  * \sa math::mean,math::meanAndStd
  */
 template <class VECTORLIKE>
-inline double stddev(const VECTORLIKE& v, bool unbiased = true)
+double stddev(const VECTORLIKE& v, bool unbiased = true)
 {
   double m, s;
   meanAndStd(v, m, s, unbiased);
@@ -444,7 +444,7 @@ void meanAndCovVec(const VECTOR_OF_VECTOR& v, VECTORLIKE& out_mean, MATRIXLIKE& 
  * \sa math::mean,math::stddev, math::cov, meanAndCovVec
  */
 template <class VECTOR_OF_VECTOR, class RETURN_MATRIX>
-inline RETURN_MATRIX covVector(const VECTOR_OF_VECTOR& v)
+RETURN_MATRIX covVector(const VECTOR_OF_VECTOR& v)
 {
   std::vector<double> m;
   RETURN_MATRIX C;

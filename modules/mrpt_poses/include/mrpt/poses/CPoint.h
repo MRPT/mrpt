@@ -43,7 +43,7 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS, DIM>, public mrpt::Stringifyabl
    * "+" operators in classes derived from "CPose"
    */
   template <class OTHERCLASS>
-  inline void AddComponents(const OTHERCLASS& b)
+  void AddComponents(const OTHERCLASS& b)
   {
     const int dims =
         std::min(size_t(DERIVEDCLASS::static_size), size_t(OTHERCLASS::is3DPoseOrPoint() ? 3 : 2));
@@ -54,9 +54,9 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS, DIM>, public mrpt::Stringifyabl
   }
 
   /** Scalar multiplication. */
-  inline void operator*=(const double s)
+  void operator*=(const double s)
   {
-    for (int i = 0; i < DERIVEDCLASS::static_size; i++)
+    for (size_t i = 0; i < DERIVEDCLASS::static_size; i++)
     {
       derived().m_coords[i] *= s;
     }
@@ -91,11 +91,11 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS, DIM>, public mrpt::Stringifyabl
    */
   void fromString(const std::string& s);
 
-  inline double operator[](unsigned int i) const
+  double operator[](unsigned int i) const
   {
     return static_cast<const DERIVEDCLASS*>(this)->m_coords[i];
   }
-  inline double& operator[](unsigned int i) { return derived().m_coords[i]; }
+  double& operator[](unsigned int i) { return derived().m_coords[i]; }
   /** @} */
 
 };  // End of class def.

@@ -124,13 +124,13 @@ class COccupancyGridMap3D :
 
   /** Scales an integer representation of the log-odd into a real valued
    * probability in [0,1], using p=exp(l)/(1+exp(l))  */
-  static inline float l2p(const voxelType l) { return get_logodd_lut().l2p(l); }
+  static float l2p(const voxelType l) { return get_logodd_lut().l2p(l); }
   /** Scales an integer representation of the log-odd into a linear scale
    * [0,255], using p=exp(l)/(1+exp(l)) */
-  static inline uint8_t l2p_255(const voxelType l) { return get_logodd_lut().l2p_255(l); }
+  static uint8_t l2p_255(const voxelType l) { return get_logodd_lut().l2p_255(l); }
   /** Scales a real valued probability in [0,1] to an integer representation
    * of: log(p)-log(1-p)  in the valid range of voxelType */
-  static inline voxelType p2l(const float p) { return get_logodd_lut().p2l(p); }
+  static voxelType p2l(const float p) { return get_logodd_lut().p2l(p); }
 
   /** Performs the Bayesian fusion of a new observation of a cell  \sa
    * updateInfoChangeOnly, updateCell_fast_occupied, updateCell_fast_free */
@@ -138,14 +138,14 @@ class COccupancyGridMap3D :
 
   /** Change the contents [0,1] (0:occupied, 1:free) of a voxel, given its
    * index. */
-  inline void setCellFreeness(unsigned int cx, unsigned int cy, unsigned int cz, float value)
+  void setCellFreeness(unsigned int cx, unsigned int cy, unsigned int cz, float value)
   {
     if (auto* c = m_grid.cellByIndex(cx, cy, cz); c != nullptr) *c = p2l(value);
   }
 
   /** Read the real valued [0,1] (0:occupied, 1:free) contents of a voxel,
    * given its index */
-  inline float getCellFreeness(unsigned int cx, unsigned int cy, unsigned int cz) const
+  float getCellFreeness(unsigned int cx, unsigned int cy, unsigned int cz) const
   {
     if (auto* c = m_grid.cellByIndex(cx, cy, cz); c != nullptr)
       return l2p(*c);
@@ -154,13 +154,13 @@ class COccupancyGridMap3D :
   }
 
   /** Change the contents [0,1] of a voxel, given its coordinates */
-  inline void setFreenessByPos(float x, float y, float z, float value)
+  void setFreenessByPos(float x, float y, float z, float value)
   {
     setCellFreeness(m_grid.x2idx(x), m_grid.y2idx(y), m_grid.z2idx(z), value);
   }
 
   /** Read the real valued [0,1] contents of a voxel, given its coordinates */
-  inline float getFreenessByPos(float x, float y, float z) const
+  float getFreenessByPos(float x, float y, float z) const
   {
     return getCellFreeness(m_grid.x2idx(x), m_grid.y2idx(y), m_grid.z2idx(z));
   }

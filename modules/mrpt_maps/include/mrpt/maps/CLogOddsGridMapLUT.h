@@ -89,7 +89,7 @@ struct CLogOddsGridMapLUT : public detail::logoddscell_traits<TCELL>
   /** Scales an integer representation of the log-odd into a real valued
    * probability in [0,1], using p=exp(l)/(1+exp(l))
    */
-  inline float l2p(const cell_t l)
+  float l2p(const cell_t l)
   {
     if (l < traits_t::CELLTYPE_MIN)
       // This is needed since min can be -127 and int8_t can be -128.
@@ -101,7 +101,7 @@ struct CLogOddsGridMapLUT : public detail::logoddscell_traits<TCELL>
   /** Scales an integer representation of the log-odd into a linear scale
    * [0,255], using p=exp(l)/(1+exp(l))
    */
-  inline uint8_t l2p_255(const cell_t l)
+  uint8_t l2p_255(const cell_t l)
   {
     if (l < traits_t::CELLTYPE_MIN)
       // This is needed since min can be -127 and int8_t can be -128.
@@ -113,7 +113,7 @@ struct CLogOddsGridMapLUT : public detail::logoddscell_traits<TCELL>
   /** Scales a real valued probability in [0,1] to an integer representation
    * of: log(p)-log(1-p)  in the valid range of cell_t.
    */
-  inline cell_t p2l(const float p)
+  cell_t p2l(const float p)
   {
     return p2lTable[static_cast<unsigned int>(p * traits_t::P2LTABLE_SIZE)];
   }

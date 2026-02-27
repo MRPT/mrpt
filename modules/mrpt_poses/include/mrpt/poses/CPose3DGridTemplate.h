@@ -305,7 +305,7 @@ class CPose3DGridTemplate
   double getResolutionXYZ() const { return m_resolutionXYZ; }
   double getResolutionAngles() const { return m_resolutionYPR; }
 
-  inline void fill(const T& val)
+  void fill(const T& val)
   {
     for (auto& v : m_data) v = val;
   }

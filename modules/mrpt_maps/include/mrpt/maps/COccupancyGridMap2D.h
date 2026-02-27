@@ -138,12 +138,12 @@ class COccupancyGridMap2D :
   static std::vector<float> entropyTable;
 
   /** Change the contents [0,1] of a cell, given its index */
-  inline void setCell_nocheck(int x, int y, float value) { m_map[x + y * m_size_x] = p2l(value); }
+  void setCell_nocheck(int x, int y, float value) { m_map[x + y * m_size_x] = p2l(value); }
 
   /** Read the real valued [0,1] contents of a cell, given its index */
-  inline float getCell_nocheck(int x, int y) const { return l2p(m_map[x + y * m_size_x]); }
+  float getCell_nocheck(int x, int y) const { return l2p(m_map[x + y * m_size_x]); }
   /** Changes a cell by its absolute index (Do not use it normally) */
-  inline void setRawCell(unsigned int cellIndex, cellType b)
+  void setRawCell(unsigned int cellIndex, cellType b)
   {
     if (cellIndex < m_size_x * m_size_y) m_map[cellIndex] = b;
   }
@@ -275,40 +275,40 @@ class COccupancyGridMap2D :
       bool additionalMargin = true) noexcept;
 
   /** Returns the area of the gridmap, in square meters */
-  inline double getArea() const { return m_size_x * m_size_y * mrpt::square(m_resolution); }
+  double getArea() const { return m_size_x * m_size_y * mrpt::square(m_resolution); }
 
   /** Returns the horizontal size of grid map in cells count */
-  inline unsigned int getSizeX() const { return m_size_x; }
+  unsigned int getSizeX() const { return m_size_x; }
   /** Returns the vertical size of grid map in cells count */
-  inline unsigned int getSizeY() const { return m_size_y; }
+  unsigned int getSizeY() const { return m_size_y; }
   /** Returns the "x" coordinate of left side of grid map */
-  inline float getXMin() const { return m_xMin; }
+  float getXMin() const { return m_xMin; }
   /** Returns the "x" coordinate of right side of grid map */
-  inline float getXMax() const { return m_xMax; }
+  float getXMax() const { return m_xMax; }
   /** Returns the "y" coordinate of top side of grid map */
-  inline float getYMin() const { return m_yMin; }
+  float getYMin() const { return m_yMin; }
   /** Returns the "y" coordinate of bottom side of grid map */
-  inline float getYMax() const { return m_yMax; }
+  float getYMax() const { return m_yMax; }
   /** Returns the resolution of the grid map */
-  inline float getResolution() const { return m_resolution; }
+  float getResolution() const { return m_resolution; }
   /** Transform a coordinate value into a cell index */
-  inline int x2idx(float x) const { return static_cast<int>((x - m_xMin) / m_resolution); }
-  inline int y2idx(float y) const { return static_cast<int>((y - m_yMin) / m_resolution); }
+  int x2idx(float x) const { return static_cast<int>((x - m_xMin) / m_resolution); }
+  int y2idx(float y) const { return static_cast<int>((y - m_yMin) / m_resolution); }
 
-  inline int x2idx(double x) const { return static_cast<int>((x - m_xMin) / m_resolution); }
-  inline int y2idx(double y) const { return static_cast<int>((y - m_yMin) / m_resolution); }
+  int x2idx(double x) const { return static_cast<int>((x - m_xMin) / m_resolution); }
+  int y2idx(double y) const { return static_cast<int>((y - m_yMin) / m_resolution); }
 
   /** Transform a cell index into a coordinate value */
-  inline float idx2x(size_t cx) const { return m_xMin + (cx + 0.5f) * m_resolution; }
-  inline float idx2y(size_t cy) const { return m_yMin + (cy + 0.5f) * m_resolution; }
+  float idx2x(size_t cx) const { return m_xMin + (cx + 0.5f) * m_resolution; }
+  float idx2y(size_t cy) const { return m_yMin + (cy + 0.5f) * m_resolution; }
 
   /** Transform a coordinate value into a cell index, using a different "x_min"
    * value */
-  inline int x2idx(float x, float xmin) const
+  int x2idx(float x, float xmin) const
   {
     return static_cast<int>((x - xmin) / m_resolution);
   }
-  inline int y2idx(float y, float ymin) const
+  int y2idx(float y, float ymin) const
   {
     return static_cast<int>((y - ymin) / m_resolution);
   }
@@ -323,15 +323,15 @@ class COccupancyGridMap2D :
 
   /** Scales an integer representation of the log-odd into a real valued
    * probability in [0,1], using p=exp(l)/(1+exp(l))  */
-  static inline float l2p(const cellType l) { return get_logodd_lut().l2p(l); }
+  static float l2p(const cellType l) { return get_logodd_lut().l2p(l); }
   /** Scales an integer representation of the log-odd into a linear scale
    * [0,255], using p=exp(l)/(1+exp(l)) */
-  static inline uint8_t l2p_255(const cellType l) { return get_logodd_lut().l2p_255(l); }
+  static uint8_t l2p_255(const cellType l) { return get_logodd_lut().l2p_255(l); }
   /** Scales a real valued probability in [0,1] to an integer representation
    * of: log(p)-log(1-p)  in the valid range of cellType */
-  static inline cellType p2l(const float p) { return get_logodd_lut().p2l(p); }
+  static cellType p2l(const float p) { return get_logodd_lut().p2l(p); }
   /** Change the contents [0,1] of a cell, given its index */
-  inline void setCell(int x, int y, float value)
+  void setCell(int x, int y, float value)
   {
     // The x> comparison implicitly holds if x<0
     if (static_cast<unsigned int>(x) >= m_size_x || static_cast<unsigned int>(y) >= m_size_y)
@@ -341,7 +341,7 @@ class COccupancyGridMap2D :
   }
 
   /** Read the real valued [0,1] contents of a cell, given its index */
-  inline float getCell(int x, int y) const
+  float getCell(int x, int y) const
   {
     // The x> comparison implicitly holds if x<0
     if (static_cast<unsigned int>(x) >= m_size_x || static_cast<unsigned int>(y) >= m_size_y)
@@ -352,7 +352,7 @@ class COccupancyGridMap2D :
 
   /** Access to a "row": mainly used for drawing grid as a bitmap efficiently,
    * do not use it normally */
-  inline cellType* getRow(int cy)
+  cellType* getRow(int cy)
   {
     if (cy < 0 || static_cast<unsigned int>(cy) >= m_size_y)
       return nullptr;
@@ -362,7 +362,7 @@ class COccupancyGridMap2D :
 
   /** Access to a "row": mainly used for drawing grid as a bitmap efficiently,
    * do not use it normally */
-  inline const cellType* getRow(int cy) const
+  const cellType* getRow(int cy) const
   {
     if (cy < 0 || static_cast<unsigned int>(cy) >= m_size_y)
       return nullptr;
@@ -371,24 +371,24 @@ class COccupancyGridMap2D :
   }
 
   /** Change the contents [0,1] of a cell, given its coordinates */
-  inline void setPos(float x, float y, float value) { setCell(x2idx(x), y2idx(y), value); }
+  void setPos(float x, float y, float value) { setCell(x2idx(x), y2idx(y), value); }
 
   /** Read the real valued [0,1] contents of a cell, given its coordinates */
-  inline float getPos(float x, float y) const { return getCell(x2idx(x), y2idx(y)); }
+  float getPos(float x, float y) const { return getCell(x2idx(x), y2idx(y)); }
 
   /** Returns "true" if cell is "static", i.e.if its occupancy is below a
    * given threshold */
-  inline bool isStaticPos(float x, float y, float threshold = 0.7f) const
+  bool isStaticPos(float x, float y, float threshold = 0.7f) const
   {
     return isStaticCell(x2idx(x), y2idx(y), threshold);
   }
-  inline bool isStaticCell(int cx, int cy, float threshold = 0.7f) const
+  bool isStaticCell(int cx, int cy, float threshold = 0.7f) const
   {
     return (getCell(cx, cy) <= threshold);
   }
 
   /** Change a cell in the "basis" maps.Used for Voronoi calculation */
-  inline void setBasisCell(int x, int y, uint8_t value)
+  void setBasisCell(int x, int y, uint8_t value)
   {
     uint8_t* cell = m_basis_map.cellByIndex(x, y);
 #ifdef _DEBUG
@@ -401,7 +401,7 @@ class COccupancyGridMap2D :
   }
 
   /** Reads a cell in the "basis" maps.Used for Voronoi calculation */
-  inline unsigned char getBasisCell(int x, int y) const
+  unsigned char getBasisCell(int x, int y) const
   {
     const uint8_t* cell = m_basis_map.cellByIndex(x, y);
 #ifdef _DEBUG
@@ -649,7 +649,7 @@ class COccupancyGridMap2D :
 
   /** Reads a the clearance of a cell (in centimeters), after building the
    * Voronoi diagram with \a buildVoronoiDiagram */
-  inline uint16_t getVoroniClearance(int cx, int cy) const
+  uint16_t getVoroniClearance(int cx, int cy) const
   {
 #ifdef _DEBUG
     ASSERT_GE_(cx, 0);
@@ -664,7 +664,7 @@ class COccupancyGridMap2D :
  protected:
   /** Used to set the clearance of a cell, while building the Voronoi diagram.
    */
-  inline void setVoroniClearance(int cx, int cy, uint16_t dist)
+  void setVoroniClearance(int cx, int cy, uint16_t dist)
   {
     uint16_t* cell = m_voronoi_diagram.cellByIndex(cx, cy);
 #ifdef _DEBUG
@@ -679,12 +679,12 @@ class COccupancyGridMap2D :
  public:
   /** Return the auxiliary "basis" map built while building the Voronoi
    * diagram \sa buildVoronoiDiagram */
-  inline const mrpt::containers::CDynamicGrid<uint8_t>& getBasisMap() const { return m_basis_map; }
+  const mrpt::containers::CDynamicGrid<uint8_t>& getBasisMap() const { return m_basis_map; }
 
   /** Return the Voronoi diagram; each cell contains the distance to its
    * closer obstacle, or 0 if not part of the Voronoi diagram \sa
    * buildVoronoiDiagram */
-  inline const mrpt::containers::CDynamicGrid<uint16_t>& getVoronoiDiagram() const
+  const mrpt::containers::CDynamicGrid<uint16_t>& getVoronoiDiagram() const
   {
     return m_voronoi_diagram;
   }
@@ -1166,7 +1166,7 @@ class COccupancyGridMap2D :
    * \param cy The cell index
    * \sa direction2idx
    */
-  inline unsigned char GetNeighborhood(int cx, int cy) const;
+  unsigned char GetNeighborhood(int cx, int cy) const;
 
   /** Used to store the 8 possible movements from a cell to the
    *   sorrounding ones.Filled in the constructor.

@@ -131,8 +131,8 @@ class CObservationVelodyneScan : public CObservation
     uint8_t m_intensity;
 
    public:
-    inline uint16_t distance() const { return mrpt::toNativeEndianness(m_distance); }
-    inline uint8_t intensity() const { return m_intensity; }
+    uint16_t distance() const { return mrpt::toNativeEndianness(m_distance); }
+    uint8_t intensity() const { return m_intensity; }
   };
   /** Raw Velodyne data block.
    *  Each block contains data from either the upper or lower laser
@@ -145,8 +145,8 @@ class CObservationVelodyneScan : public CObservation
    public:
     laser_return_t laser_returns[SCANS_PER_BLOCK];
 
-    inline uint16_t header() const { return mrpt::toNativeEndianness(m_header); }
-    inline uint16_t rotation() const { return mrpt::toNativeEndianness(m_rotation); }
+    uint16_t header() const { return mrpt::toNativeEndianness(m_header); }
+    uint16_t rotation() const { return mrpt::toNativeEndianness(m_rotation); }
   };
 
   /** One unit of data from the scanner (the payload of one UDP DATA packet)
@@ -166,7 +166,7 @@ class CObservationVelodyneScan : public CObservation
     /** 0x21: HDL-32E, 0x22: VLP-16 */
     uint8_t velodyne_model_ID;
 
-    inline uint32_t gps_timestamp() const { return mrpt::toNativeEndianness(m_gps_timestamp); }
+    uint32_t gps_timestamp() const { return mrpt::toNativeEndianness(m_gps_timestamp); }
   };
 
   /** Payload of one POSITION packet */
@@ -184,8 +184,8 @@ class CObservationVelodyneScan : public CObservation
      * "\r\n\0" */
     char NMEA_GPRMC[72 + 234];
 
-    inline uint32_t gps_timestamp() const { return mrpt::toNativeEndianness(m_gps_timestamp); }
-    inline uint32_t unused2() const { return mrpt::toNativeEndianness(m_unused2); }
+    uint32_t gps_timestamp() const { return mrpt::toNativeEndianness(m_gps_timestamp); }
+    uint32_t unused2() const { return mrpt::toNativeEndianness(m_unused2); }
   };
 #pragma pack(pop)
 
@@ -233,7 +233,7 @@ class CObservationVelodyneScan : public CObservation
      * `TGeneratePointCloudParameters`*/
     std::vector<std::vector<uint64_t>> pointsForLaserID;
 
-    inline std::size_t size() const { return x.size(); }
+    std::size_t size() const { return x.size(); }
     void reserve(std::size_t n);
     /** Sets all vectors to zero length */
     void clear();

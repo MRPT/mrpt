@@ -898,7 +898,7 @@ void CGraphSlamEngine<GRAPH_T>::getMap(
 }
 
 template <class GRAPH_T>
-inline void CGraphSlamEngine<GRAPH_T>::computeMap() const
+void CGraphSlamEngine<GRAPH_T>::computeMap() const
 {
   MRPT_START
   using namespace std;
@@ -1261,7 +1261,7 @@ void CGraphSlamEngine<GRAPH_T>::initCurrPosViewport()
 }
 
 template <class GRAPH_T>
-inline void CGraphSlamEngine<GRAPH_T>::updateCurrPosViewport()
+void CGraphSlamEngine<GRAPH_T>::updateCurrPosViewport()
 {
   MRPT_START
   ASSERTDEB_(m_enable_visuals);

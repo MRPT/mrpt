@@ -42,8 +42,8 @@ void ClearanceDiagram::renderAs3DObject(
 
   mesh.setXBounds(min_x, max_x);
   mesh.setYBounds(min_y, max_y);
-  const int nX = (int)::ceil((max_x - min_x) / cell_res);
-  const int nY = (int)::ceil((max_y - min_y) / cell_res);
+  const int nX = static_cast<int>(::ceil((max_x - min_x) / cell_res));
+  const int nY = static_cast<int>(::ceil((max_y - min_y) / cell_res));
   const double dx = (max_x - min_x) / nX;
   const double dy = (max_y - min_y) / nY;
 

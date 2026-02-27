@@ -24,7 +24,7 @@ namespace mrpt::bayes
  *
  * \ingroup mrpt_bayes_grp
  */
-inline void registerAllClasses_mrpt_bayes()
+void registerAllClasses_mrpt_bayes()
 {
   // None in this library
   mrpt::config::registerAllClasses_mrpt_config();

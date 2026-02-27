@@ -193,7 +193,7 @@ class CVoxelMapOccupancyBase :
    *  \param thres  This must be CELLTYPE_MIN+logodd_obs
    * \sa updateCell, updateCell_fast_free
    */
-  inline void updateCell_fast_occupied(
+  void updateCell_fast_occupied(
       voxel_node_t* theCell, const occupancy_t logodd_obs, const occupancy_t thres)
   {
     if (theCell == nullptr) return;
@@ -213,7 +213,7 @@ class CVoxelMapOccupancyBase :
    *  \param thres  This must be CELLTYPE_MIN+logodd_obs
    * \sa updateCell, updateCell_fast_free
    */
-  inline void updateCell_fast_occupied(
+  void updateCell_fast_occupied(
       const Bonxai::CoordT& coord, const occupancy_t logodd_obs, const occupancy_t thres)
   {
     if (voxel_node_t* cell = base_t::m_impl->accessor.value(coord, true /*create*/); cell)
@@ -228,7 +228,7 @@ class CVoxelMapOccupancyBase :
    *  \param thres  This must be CELLTYPE_MAX-logodd_obs
    * \sa updateCell_fast_occupied
    */
-  inline void updateCell_fast_free(
+  void updateCell_fast_free(
       voxel_node_t* theCell, const occupancy_t logodd_obs, const occupancy_t thres)
   {
     if (theCell == nullptr) return;
@@ -248,7 +248,7 @@ class CVoxelMapOccupancyBase :
    *  \param thres  This must be CELLTYPE_MAX-logodd_obs
    * \sa updateCell_fast_occupied
    */
-  inline void updateCell_fast_free(
+  void updateCell_fast_free(
       const Bonxai::CoordT& coord, const occupancy_t logodd_obs, const occupancy_t thres)
   {
     if (voxel_node_t* cell = base_t::m_impl->accessor.value(coord, true /*create*/); cell)
@@ -265,14 +265,14 @@ class CVoxelMapOccupancyBase :
 
   /** Scales an integer representation of the log-odd into a real valued
    * probability in [0,1], using p=exp(l)/(1+exp(l))  */
-  static inline float l2p(const occupancy_value_t l) { return get_logodd_lut().l2p(l); }
+  static float l2p(const occupancy_value_t l) { return get_logodd_lut().l2p(l); }
 
   /** Scales an integer representation of the log-odd into a linear scale
    * [0,255], using p=exp(l)/(1+exp(l)) */
-  static inline uint8_t l2p_255(const occupancy_value_t l) { return get_logodd_lut().l2p_255(l); }
+  static uint8_t l2p_255(const occupancy_value_t l) { return get_logodd_lut().l2p_255(l); }
   /** Scales a real valued probability in [0,1] to an integer representation
    * of: log(p)-log(1-p)  in the valid range of voxel_node_t */
-  static inline occupancy_value_t p2l(const float p) { return get_logodd_lut().p2l(p); }
+  static occupancy_value_t p2l(const float p) { return get_logodd_lut().p2l(p); }
 
   /** @name API of the NearestNeighborsCapable virtual interface
     @{ */

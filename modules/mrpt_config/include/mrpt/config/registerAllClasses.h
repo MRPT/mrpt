@@ -21,7 +21,7 @@ namespace mrpt::config
  *
  * \ingroup mrpt_config_grp
  */
-inline void registerAllClasses_mrpt_config()
+void registerAllClasses_mrpt_config()
 {
   // None in this lib.
 }

@@ -55,7 +55,7 @@ class CObservationRFID : public CObservation
   /** The vector of individual tag observations */
   std::vector<TTagReading> tag_readings;
 
-  inline uint32_t getNtags() const { return tag_readings.size(); }
+  uint32_t getNtags() const { return tag_readings.size(); }
   /** @} */
 
   void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override;

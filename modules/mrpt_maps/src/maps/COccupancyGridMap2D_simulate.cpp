@@ -288,7 +288,7 @@ void COccupancyGridMap2D::laserScanSimulatorWithUncertainty(
   for (unsigned i = 0; i < in_params.nRays; i++)
   {
     out_results.scanWithUncert.rangeScan.setScanRange(
-        i, (float)out_results.scanWithUncert.rangesMean[i]);
+        i, static_cast<float>(out_results.scanWithUncert.rangesMean[i]));
     out_results.scanWithUncert.rangeScan.setScanRangeValidity(i, true);
   }
 

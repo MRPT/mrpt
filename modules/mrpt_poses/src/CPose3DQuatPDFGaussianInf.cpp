@@ -69,9 +69,9 @@ void CPose3DQuatPDFGaussianInf::serializeTo(mrpt::serialization::CArchive& out) 
 {
   out << mean;
 
-  for (int r = 0; r < cov_inv.rows(); r++) out << cov_inv(r, r);
-  for (int r = 0; r < cov_inv.rows(); r++)
-    for (int c = r + 1; c < cov_inv.cols(); c++) out << cov_inv(r, c);
+  for (size_t r = 0; r < cov_inv.rows(); r++) out << cov_inv(r, r);
+  for (size_t r = 0; r < cov_inv.rows(); r++)
+    for (size_t c = r + 1; c < cov_inv.cols(); c++) out << cov_inv(r, c);
 }
 void CPose3DQuatPDFGaussianInf::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
@@ -81,9 +81,9 @@ void CPose3DQuatPDFGaussianInf::serializeFrom(mrpt::serialization::CArchive& in,
     {
       in >> mean;
 
-      for (int r = 0; r < cov_inv.rows(); r++) in >> cov_inv(r, r);
-      for (int r = 0; r < cov_inv.rows(); r++)
-        for (int c = r + 1; c < cov_inv.cols(); c++)
+      for (size_t r = 0; r < cov_inv.rows(); r++) in >> cov_inv(r, r);
+      for (size_t r = 0; r < cov_inv.rows(); r++)
+        for (size_t c = r + 1; c < cov_inv.cols(); c++)
         {
           double x;
           in >> x;

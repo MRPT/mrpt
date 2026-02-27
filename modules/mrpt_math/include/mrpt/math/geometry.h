@@ -350,7 +350,8 @@ void project3D(const T& obj, const TPlane& newXYPlane, T& newObj)
  * forcing the position of the new coordinates origin. If the object is exactly
  * inside the plane, this projection will zero its Z coordinates  */
 template <class T>
-void project3D(const T& obj, const TPlane& newXYPlane, const TPoint3D& newOrigin, T& newObj)
+void project3D(
+    const T& obj, const TPlane& newXYPlane, [[maybe_unused]] const TPoint3D& newOrigin, T& newObj)
 {
   mrpt::math::TPose3D pose;
   // TPlane(newXYPlane).getAsPose3DForcingOrigin(newOrigin,pose);
@@ -365,7 +366,10 @@ void project3D(
 {
   size_t N = objs.size();
   newObjs.resize(N);
-  for (size_t i = 0; i < N; i++) project3D(objs[i], newXYpose, newObjs[i]);
+  for (size_t i = 0; i < N; i++)
+  {
+    project3D(objs[i], newXYpose, newObjs[i]);
+  }
 }
 
 /** Uses the given pose 2D to project a point into a new base. */
@@ -429,7 +433,10 @@ void project2D(const std::vector<T>& objs, const TPose2D& newXpose, std::vector<
 {
   size_t N = objs.size();
   newObjs.resize(N);
-  for (size_t i = 0; i < N; i++) project2D(objs[i], newXpose, newObjs[i]);
+  for (size_t i = 0; i < N; i++)
+  {
+    project2D(objs[i], newXpose, newObjs[i]);
+  }
 }
 /** @}
  */
@@ -530,13 +537,21 @@ size_t intersect(
 template <class T, class U, class O>
 size_t intersect(const std::vector<T>& v1, const std::vector<U>& v2, CSparseMatrixTemplate<O>& objs)
 {
-  size_t M = v1.size(), N = v2.size();
+  const auto M = v1.size();
+  const auto N = v2.size();
   O obj;
   objs.clear();
   objs.resize(M, N);
   for (size_t i = 0; i < M; i++)
+  {
     for (size_t j = 0; j < M; j++)
-      if (intersect(v1[i], v2[j], obj)) objs(i, j) = obj;
+    {
+      if (intersect(v1[i], v2[j], obj))
+      {
+        objs(i, j) = obj;
+      }
+    }
+  }
   return objs.getNonNullElements();
 }
 
@@ -552,7 +567,12 @@ size_t intersect(const std::vector<T>& v1, const std::vector<U>& v2, std::vector
   {
     const T& elem1 = *it1;
     for (typename std::vector<U>::const_iterator it2 = v2.begin(); it2 != v2.end(); ++it2)
-      if (intersect(elem1, *it2, obj)) objs.push_back(obj);
+    {
+      if (intersect(elem1, *it2, obj))
+      {
+        objs.push_back(obj);
+      }
+    }
   }
   return objs.size();
 }
@@ -774,7 +794,7 @@ inline bool traceRay(
   \f]
   */
 template <class T, class U, class V>
-inline void crossProduct3D(const T& v0, const U& v1, V& vOut)
+void crossProduct3D(const T& v0, const U& v1, V& vOut)
 {
   vOut[0] = v0[1] * v1[2] - v0[2] * v1[1];
   vOut[1] = v0[2] * v1[0] - v0[0] * v1[2];
@@ -783,8 +803,7 @@ inline void crossProduct3D(const T& v0, const U& v1, V& vOut)
 
 //! \overload
 template <class T>
-inline void crossProduct3D(
-    const std::vector<T>& v0, const std::vector<T>& v1, std::vector<T>& v_out)
+void crossProduct3D(const std::vector<T>& v0, const std::vector<T>& v1, std::vector<T>& v_out)
 {
   ASSERT_(v0.size() == 3);
   ASSERT_(v1.size() == 3);
@@ -793,7 +812,7 @@ inline void crossProduct3D(
 }
 //! overload (returning a vector of size 3 by value).
 template <class VEC1, class VEC2>
-inline VEC1 crossProduct3D(const VEC1& v0, const VEC2& v1)
+VEC1 crossProduct3D(const VEC1& v0, const VEC2& v1)
 {
   VEC1 vOut;
   crossProduct3D<VEC1, VEC2, VEC1>(v0, v1, vOut);
@@ -810,7 +829,7 @@ inline VEC1 crossProduct3D(const VEC1& v0, const VEC2& v1)
  * \f]
  */
 template <class VECTOR, class MATRIX>
-inline void skew_symmetric3(const VECTOR& v, MATRIX& M)
+void skew_symmetric3(const VECTOR& v, MATRIX& M)
 {
   ASSERT_(v.size() == 3);
   M.setSize(3, 3);
@@ -826,7 +845,7 @@ inline void skew_symmetric3(const VECTOR& v, MATRIX& M)
 }
 //! \overload
 template <class VECTOR>
-inline mrpt::math::CMatrixDouble33 skew_symmetric3(const VECTOR& v)
+mrpt::math::CMatrixDouble33 skew_symmetric3(const VECTOR& v)
 {
   mrpt::math::CMatrixDouble33 M(mrpt::math::UNINITIALIZED_MATRIX);
   skew_symmetric3(v, M);
@@ -844,7 +863,7 @@ inline mrpt::math::CMatrixDouble33 skew_symmetric3(const VECTOR& v)
  * \f]
  */
 template <class VECTOR, class MATRIX>
-inline void skew_symmetric3_neg(const VECTOR& v, MATRIX& M)
+void skew_symmetric3_neg(const VECTOR& v, MATRIX& M)
 {
   ASSERT_(v.size() == 3);
   ASSERT_(M.rows() == 3 && M.cols() == 3);
@@ -860,7 +879,7 @@ inline void skew_symmetric3_neg(const VECTOR& v, MATRIX& M)
 }
 //! \overload
 template <class VECTOR>
-inline mrpt::math::CMatrixDouble33 skew_symmetric3_neg(const VECTOR& v)
+mrpt::math::CMatrixDouble33 skew_symmetric3_neg(const VECTOR& v)
 {
   mrpt::math::CMatrixDouble33 M(mrpt::math::UNINITIALIZED_MATRIX);
   skew_symmetric3_neg(v, M);
@@ -872,7 +891,7 @@ inline mrpt::math::CMatrixDouble33 skew_symmetric3_neg(const VECTOR& v)
  * arrays, etc.
  */
 template <class T, class U>
-inline bool vectorsAreParallel2D(const T& v1, const U& v2)
+bool vectorsAreParallel2D(const T& v1, const U& v2)
 {
   return std::abs(v1[0] * v2[1] - v2[0] * v1[1]) < getEpsilon();
 }
@@ -882,7 +901,7 @@ inline bool vectorsAreParallel2D(const T& v1, const U& v2)
  * arrays, etc.
  */
 template <class T, class U>
-inline bool vectorsAreParallel3D(const T& v1, const U& v2)
+bool vectorsAreParallel3D(const T& v1, const U& v2)
 {
   if (std::abs(v1[0] * v2[1] - v2[0] * v1[1]) >= getEpsilon())
   {
@@ -984,7 +1003,8 @@ double minimumDistanceFromPointToSegment(
     T& out_x,
     T& out_y)
 {
-  double ox, oy;
+  double ox = 0;
+  double oy = 0;
   closestFromPointToSegment(Px, Py, x1, y1, x2, y2, ox, oy);
   out_x = static_cast<T>(ox);
   out_y = static_cast<T>(oy);

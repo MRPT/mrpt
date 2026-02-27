@@ -59,8 +59,8 @@ class CPosePDFGaussianInf : public CPosePDF
 
   /** @} */
 
-  inline const CPose2D& getPoseMean() const { return mean; }
-  inline CPose2D& getPoseMean() { return mean; }
+  const CPose2D& getPoseMean() const { return mean; }
+  CPose2D& getPoseMean() { return mean; }
   /** Default constructor (mean=all zeros, inverse covariance=all zeros -> so
    * be careful!) */
   CPosePDFGaussianInf();
@@ -179,7 +179,7 @@ class CPosePDFGaussianInf : public CPosePDF
 
   /** Makes: thisPDF = thisPDF - Ap, where "-" is pose inverse composition
    * (both the mean, and the covariance matrix are updated) */
-  inline void operator-=(const CPosePDFGaussianInf& ref) { this->inverseComposition(*this, ref); }
+  void operator-=(const CPosePDFGaussianInf& ref) { this->inverseComposition(*this, ref); }
 
 };  // End of class def.
 

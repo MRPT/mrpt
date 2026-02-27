@@ -36,10 +36,10 @@ class CListOfClasses : public mrpt::Stringifyable
    *     myList.insert(CLASS_ID(CObservationImage));
    *   \endcode
    */
-  inline void insert(const mrpt::rtti::TRuntimeClassId* id) { data.insert(id); }
+  void insert(const mrpt::rtti::TRuntimeClassId* id) { data.insert(id); }
 
   /** Does the list contains this class? */
-  inline bool contains(const mrpt::rtti::TRuntimeClassId* id) const
+  bool contains(const mrpt::rtti::TRuntimeClassId* id) const
   {
     return data.find(id) != data.end();
   }

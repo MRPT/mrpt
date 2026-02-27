@@ -101,7 +101,7 @@ void Viewport::serializeTo(mrpt::serialization::CArchive& out) const
 
   // Save objects:
   uint32_t n;
-  n = (uint32_t)m_objects.size();
+  n = static_cast<uint32_t>(m_objects.size());
   out << n;
   for (const auto& m_object : m_objects) out << *m_object;
 

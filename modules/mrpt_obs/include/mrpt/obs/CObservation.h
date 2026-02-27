@@ -106,7 +106,7 @@ class CObservation : public mrpt::serialization::CSerializable, public mrpt::Str
    * \sa CMetricMap, CMetricMap::insertObservation
    */
   template <class METRICMAP>
-  inline bool insertObservationInto(
+  bool insertObservationInto(
       METRICMAP& theMap,
       const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt) const
   {

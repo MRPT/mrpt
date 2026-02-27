@@ -108,19 +108,19 @@ class COpenNI2Generic::CDevice
   bool synchMirrorMode();
   bool startStreams();
 
-  inline void resize(mrpt::img::CImage& rgb, int w, int h) { rgb.resize(w, h, mrpt::img::CH_RGB); }
-  inline void resize(mrpt::math::CMatrix_u16& depth, int w, int h) { depth.resize(h, w); }
-  inline void resize(mrpt::obs::CObservation3DRangeScan& obs, int w, int h)
+  void resize(mrpt::img::CImage& rgb, int w, int h) { rgb.resize(w, h, mrpt::img::CH_RGB); }
+  void resize(mrpt::math::CMatrix_u16& depth, int w, int h) { depth.resize(h, w); }
+  void resize(mrpt::obs::CObservation3DRangeScan& obs, int w, int h)
   {
     resize(obs.intensityImage, w, h);
     obs.rangeImage_setSize(h, w);
   }
 
-  inline void setPixel(const openni::RGB888Pixel& src, mrpt::img::CImage& rgb, int x, int y)
+  void setPixel(const openni::RGB888Pixel& src, mrpt::img::CImage& rgb, int x, int y)
   {
     rgb.setPixel(x, y, (src.r << 16) + (src.g << 8) + src.b);
   }
-  inline void setPixel(
+  void setPixel(
       const openni::DepthPixel& src, mrpt::math::CMatrix_u16& depth_mm, int x, int y)
   {
     depth_mm(y, x) = src;

@@ -33,40 +33,40 @@ struct TCoords
    * anywhere were a double is expected. */
   double decimal_value;
 
-  inline TCoords(const int _deg, const int _min, const double _sec)
+  TCoords(const int _deg, const int _min, const double _sec)
   {
     setDegMinSec(_deg, _min, _sec);
   }
-  inline TCoords(const double dec) { setFromDecimal(dec); }
-  inline TCoords() { setFromDecimal(0); }
+  TCoords(const double dec) { setFromDecimal(dec); }
+  TCoords() { setFromDecimal(0); }
   /** Automatic conversion to a double value (read-only) */
-  inline operator double() const { return decimal_value; }
+  operator double() const { return decimal_value; }
   /** Automatic conversion to a double value (read-only) */
-  inline operator double&() { return decimal_value; }
+  operator double&() { return decimal_value; }
   /** Set from a decimal value (XX.YYYYY) in degrees. */
-  inline void setFromDecimal(const double dec) { decimal_value = dec; }
+  void setFromDecimal(const double dec) { decimal_value = dec; }
   /** Get the decimal value (XX.YYYYY), in degrees - you can also use the
    * automatic conversion between TCoords and a double.  */
-  inline double getDecimalValue() const { return decimal_value; }
+  double getDecimalValue() const { return decimal_value; }
   /** Return the Deg Min' Sec'' representation of this value. */
-  inline void getDegMinSec(int& degrees, int& minutes, double& seconds) const
+  void getDegMinSec(int& degrees, int& minutes, double& seconds) const
   {
     double aux = std::abs(decimal_value);
-    degrees = (int)aux;
-    minutes = (int)((aux - degrees) * 60.0f);
-    seconds = ((aux - degrees) * 60.0f - minutes) * 60.0f;
+    degrees = static_cast<int>(aux);
+    minutes = static_cast<int>((aux - degrees) * 60.0);
+    seconds = ((aux - degrees) * 60.0 - minutes) * 60.0;
     if (decimal_value < 0) degrees = -degrees;
   }
 
   /** Set the coordinate from its Deg Min' Deg'' parts. */
-  inline void setDegMinSec(const int degrees, const int minutes, const double seconds)
+  void setDegMinSec(const int degrees, const int minutes, const double seconds)
   {
     decimal_value = std::abs(degrees) + minutes / 60.0 + seconds / 3600.0;
     if (degrees < 0) decimal_value = -decimal_value;
   }
 
   /** Return a std::string in the format "DEGdeg MIN' SEC''" */
-  inline std::string getAsString() const
+  std::string getAsString() const
   {
     int deg, min;
     double sec;
@@ -82,8 +82,8 @@ std::ostream& operator<<(std::ostream& out, const TCoords& o);
 
 struct TEllipsoid
 {
-  inline TEllipsoid() : name("WGS84") {}
-  inline TEllipsoid(const double _sa, const double _sb, const std::string& _name) :
+  TEllipsoid() : name("WGS84") {}
+  TEllipsoid(const double _sa, const double _sb, const std::string& _name) :
       sa(_sa), sb(_sb), name(_name)
   {
   }
@@ -95,91 +95,91 @@ struct TEllipsoid
   /** the ellipsoid name */
   std::string name;
 
-  static inline TEllipsoid Ellipsoid_WGS84()
+  static TEllipsoid Ellipsoid_WGS84()
   {
     return TEllipsoid(6378137.000, 6356752.314245, "WGS84");
   }
-  static inline TEllipsoid Ellipsoid_WGS72()
+  static TEllipsoid Ellipsoid_WGS72()
   {
     return TEllipsoid(6378135.000, 6356750.519915, "WGS72");
   }
-  static inline TEllipsoid Ellipsoid_WGS66()
+  static TEllipsoid Ellipsoid_WGS66()
   {
     return TEllipsoid(6378145.000, 6356759.769356, "WGS66");
   }
-  static inline TEllipsoid Ellipsoid_Walbeck_1817()
+  static TEllipsoid Ellipsoid_Walbeck_1817()
   {
     return TEllipsoid(6376896.000, 6355834.846700, "Walbeck_1817");
   }
-  static inline TEllipsoid Ellipsoid_Sudamericano_1969()
+  static TEllipsoid Ellipsoid_Sudamericano_1969()
   {
     return TEllipsoid(6378160.000, 6356774.720000, "Sudamericano_1969");
   }
-  static inline TEllipsoid Ellipsoid_Nuevo_Internacional_1967()
+  static TEllipsoid Ellipsoid_Nuevo_Internacional_1967()
   {
     return TEllipsoid(6378157.500, 6356772.200000, "Nuevo_Internacional_1967");
   }
-  static inline TEllipsoid Ellipsoid_Mercury_Modificado_1968()
+  static TEllipsoid Ellipsoid_Mercury_Modificado_1968()
   {
     return TEllipsoid(6378150.000, 6356768.337303, "Mercury_Modificado_1968");
   }
-  static inline TEllipsoid Ellipsoid_Mercury_1960()
+  static TEllipsoid Ellipsoid_Mercury_1960()
   {
     return TEllipsoid(6378166.000, 6356784.283666, "Mercury_1960");
   }
-  static inline TEllipsoid Ellipsoid_Krasovsky_1940()
+  static TEllipsoid Ellipsoid_Krasovsky_1940()
   {
     return TEllipsoid(6378245.000, 6356863.018800, "Krasovsky_1940");
   }
-  static inline TEllipsoid Ellipsoid_Internacional_1924()
+  static TEllipsoid Ellipsoid_Internacional_1924()
   {
     return TEllipsoid(6378388.000, 6356911.946130, "Internacional_1924");
   }
-  static inline TEllipsoid Ellipsoid_Internacional_1909()
+  static TEllipsoid Ellipsoid_Internacional_1909()
   {
     return TEllipsoid(6378388.000, 6356911.946130, "Internacional_1909");
   }
-  static inline TEllipsoid Ellipsoid_Hough_1960()
+  static TEllipsoid Ellipsoid_Hough_1960()
   {
     return TEllipsoid(6378270.000, 6356794.343479, "Hough_1960");
   }
-  static inline TEllipsoid Ellipsoid_Helmert_1906()
+  static TEllipsoid Ellipsoid_Helmert_1906()
   {
     return TEllipsoid(6378200.000, 6356818.170000, "Helmert_1906");
   }
-  static inline TEllipsoid Ellipsoid_Hayford_1909()
+  static TEllipsoid Ellipsoid_Hayford_1909()
   {
     return TEllipsoid(6378388.000, 6356911.946130, "Hayford_1909");
   }
-  static inline TEllipsoid Ellipsoid_GRS80()
+  static TEllipsoid Ellipsoid_GRS80()
   {
     return TEllipsoid(6378137.000, 6356752.314140, "GRS80");
   }
-  static inline TEllipsoid Ellipsoid_Fischer_1968()
+  static TEllipsoid Ellipsoid_Fischer_1968()
   {
     return TEllipsoid(6378150.000, 6356768.330000, "Fischer_1968");
   }
-  static inline TEllipsoid Ellipsoid_Fischer_1960()
+  static TEllipsoid Ellipsoid_Fischer_1960()
   {
     return TEllipsoid(6378166.000, 6356784.280000, "Fischer_1960");
   }
-  static inline TEllipsoid Ellipsoid_Clarke_1880()
+  static TEllipsoid Ellipsoid_Clarke_1880()
   {
     return TEllipsoid(6378249.145, 6356514.869550, "Clarke_1880");
   }
-  static inline TEllipsoid Ellipsoid_Clarke_1866()
+  static TEllipsoid Ellipsoid_Clarke_1866()
   {
     return TEllipsoid(6378206.400, 6356583.800000, "Clarke_1866");
   }
-  static inline TEllipsoid Ellipsoid_Bessel_1841()
+  static TEllipsoid Ellipsoid_Bessel_1841()
   {
     return TEllipsoid(6377397.155, 6356078.962840, "Bessel_1841");
   }
-  static inline TEllipsoid Ellipsoid_Airy_Modificado_1965()
+  static TEllipsoid Ellipsoid_Airy_Modificado_1965()
   {
     return TEllipsoid(6377340.189, 6356034.447900, "Airy_Modificado_1965");
   }
-  static inline TEllipsoid Ellipsoid_Airy_1830()
+  static TEllipsoid Ellipsoid_Airy_1830()
   {
     return TEllipsoid(6377563.396, 6356256.910000, "Airy_1830");
   }
@@ -198,7 +198,7 @@ struct TGeodeticCoords
   {
   }
 
-  inline bool isClear() const
+  bool isClear() const
   {
     return lat.getDecimalValue() == 0 && lon.getDecimalValue() == 0 && height == 0;
   }
@@ -226,7 +226,7 @@ struct TDatum7Params
   /** Scale factor (in ppm) (Scale is 1+dS/1e6) */
   double dS;
 
-  inline TDatum7Params(
+  TDatum7Params(
       const double _dX,
       const double _dY,
       const double _dZ,
@@ -251,7 +251,7 @@ struct TDatum7Params_TOPCON
   /** Scale factor (in ppm) (Scale is 1+dS/1e6) */
   double dS;
 
-  inline TDatum7Params_TOPCON(
+  TDatum7Params_TOPCON(
       const double _dX,
       const double _dY,
       const double _dZ,
@@ -296,7 +296,7 @@ struct TDatum10Params
   /** Scale factor (Scale is 1+dS) */
   double dS;
 
-  inline TDatum10Params(
+  TDatum10Params(
       const double _dX,
       const double _dY,
       const double _dZ,
@@ -327,7 +327,7 @@ struct TDatumHelmert2D
   double dS;      // Scale factor (Scale is 1+dS)
   double Xp, Yp;  // Coordinates of the rotation point
 
-  inline TDatumHelmert2D(
+  TDatumHelmert2D(
       const double _dX,
       const double _dY,
       const double _alpha,
@@ -345,7 +345,7 @@ struct TDatumHelmert2D_TOPCON
 {
   double a, b, c, d;
 
-  inline TDatumHelmert2D_TOPCON(
+  TDatumHelmert2D_TOPCON(
       const double _a, const double _b, const double _c, const double _d) :
       a(_a), b(_b), c(_c), d(_d)
   {
@@ -364,7 +364,7 @@ struct TDatumHelmert3D
   /** Scale factor (Scale is 1+dS) */
   double dS;
 
-  inline TDatumHelmert3D(
+  TDatumHelmert3D(
       const double _dX,
       const double _dY,
       const double _dZ,
@@ -388,7 +388,7 @@ struct TDatumHelmert3D_TOPCON
 {
   double a, b, c, d, e, f, g;
 
-  inline TDatumHelmert3D_TOPCON(
+  TDatumHelmert3D_TOPCON(
       const double _a,
       const double _b,
       const double _c,
@@ -411,7 +411,7 @@ struct TDatum1DTransf
   /** Scale factor (Scale is 1+dS) */
   double dS;
 
-  inline TDatum1DTransf(const double _dX, const double _dY, const double _DZ, const double _dS) :
+  TDatum1DTransf(const double _dX, const double _dY, const double _DZ, const double _dS) :
       dX(_dX), dY(_dY), DZ(_DZ)
   {
     dS = _dS * 1e-6;
@@ -430,7 +430,7 @@ struct TDatumTransfInterpolation
   /** Distortion angle */
   double beta;
 
-  inline TDatumTransfInterpolation(
+  TDatumTransfInterpolation(
       const double _dX,
       const double _dY,
       const double _dSx,

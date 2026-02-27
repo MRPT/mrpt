@@ -76,9 +76,9 @@ class CDirectedGraph
   struct edge_t : public TYPE_EDGES, public EDGE_ANNOTATIONS
   {
     // Replicate possible constructors:
-    inline edge_t() : TYPE_EDGES() {}
+    edge_t() : TYPE_EDGES() {}
     template <typename... Args>
-    inline edge_t(Args&&... a) : TYPE_EDGES(std::forward<Args>(a)...)
+    edge_t(Args&&... a) : TYPE_EDGES(std::forward<Args>(a)...)
     {
     }
     constexpr static auto getClassName()
@@ -103,27 +103,27 @@ class CDirectedGraph
   edges_map_t edges;
 
   /** Copy constructor from a multimap<pair< >, > */
-  inline CDirectedGraph(const edges_map_t& obj) : edges(obj) {}
+  CDirectedGraph(const edges_map_t& obj) : edges(obj) {}
   /** Default constructor */
-  inline CDirectedGraph() : edges() {}
-  inline iterator begin() { return edges.begin(); }
-  inline iterator rbegin() { return edges.rbegin(); }
-  inline iterator end() { return edges.end(); }
-  inline iterator rend() { return edges.rend(); }
-  inline const_iterator begin() const { return edges.begin(); }
-  inline const_iterator rbegin() const { return edges.rbegin(); }
-  inline const_iterator end() const { return edges.end(); }
-  inline const_iterator rend() const { return edges.rend(); }
+  CDirectedGraph() : edges() {}
+  iterator begin() { return edges.begin(); }
+  iterator rbegin() { return edges.rbegin(); }
+  iterator end() { return edges.end(); }
+  iterator rend() { return edges.rend(); }
+  const_iterator begin() const { return edges.begin(); }
+  const_iterator rbegin() const { return edges.rbegin(); }
+  const_iterator end() const { return edges.end(); }
+  const_iterator rend() const { return edges.rend(); }
   /** @name Edges/nodes utility methods
     @{ */
 
   /** The number of edges in the graph */
-  inline size_t edgeCount() const { return edges.size(); }
+  size_t edgeCount() const { return edges.size(); }
   /** Erase all edges */
-  inline void clearEdges() { edges.clear(); }
+  void clearEdges() { edges.clear(); }
   /** Insert an edge (from -> to) with the given edge value. \sa
    * insertEdgeAtEnd */
-  inline void insertEdge(TNodeID from_nodeID, TNodeID to_nodeID, const edge_t& edge_value)
+  void insertEdge(TNodeID from_nodeID, TNodeID to_nodeID, const edge_t& edge_value)
   {
     alignas(MRPT_MAX_STATIC_ALIGN_BYTES)
         typename edges_map_t::value_type entry(std::make_pair(from_nodeID, to_nodeID), edge_value);
@@ -133,7 +133,7 @@ class CDirectedGraph
   /** Insert an edge (from -> to) with the given edge value (more efficient
    * version to be called if you know that the end will go at the end of the
    * sorted std::multimap). \sa insertEdge */
-  inline void insertEdgeAtEnd(TNodeID from_nodeID, TNodeID to_nodeID, const edge_t& edge_value)
+  void insertEdgeAtEnd(TNodeID from_nodeID, TNodeID to_nodeID, const edge_t& edge_value)
   {
     alignas(MRPT_MAX_STATIC_ALIGN_BYTES)
         typename edges_map_t::value_type entry(std::make_pair(from_nodeID, to_nodeID), edge_value);
@@ -141,7 +141,7 @@ class CDirectedGraph
   }
 
   /** Test if the given directed edge exists. */
-  inline bool edgeExists(TNodeID from_nodeID, TNodeID to_nodeID) const
+  bool edgeExists(TNodeID from_nodeID, TNodeID to_nodeID) const
   {
     return edges.find(std::make_pair(from_nodeID, to_nodeID)) != edges.end();
   }
@@ -157,24 +157,9 @@ class CDirectedGraph
     iterator it = edges.find(std::make_pair(from_nodeID, to_nodeID));
     if (it == edges.end())
     {
-      THROW_EXCEPTION_FMT("Edge %u->%u does not exist", (unsigned)from_nodeID, (unsigned)to_nodeID);
-    }
-    else
-      return it->second;
-  }
-
-  /** Return a reference to the content of a given edge.
-   *  If several edges exist between the given nodes, the first one is
-   * returned.
-   * \exception std::exception if the given edge does not exist
-   * \sa getEdges
-   */
-  const edge_t& getEdge(TNodeID from_nodeID, TNodeID to_nodeID) const
-  {
-    const_iterator it = edges.find(std::make_pair(from_nodeID, to_nodeID));
-    if (it == edges.end())
-    {
-      THROW_EXCEPTION_FMT("Edge %u->%u does not exist", (unsigned)from_nodeID, (unsigned)to_nodeID);
+      THROW_EXCEPTION_FMT(
+          "Edge %u->%u does not exist", static_cast<unsigned>(from_nodeID),
+          static_cast<unsigned>(to_nodeID));
     }
     else
       return it->second;
@@ -196,7 +181,7 @@ class CDirectedGraph
   /** Erase all edges between the given nodes (it has no effect if no edge
    * existed)
    */
-  inline void eraseEdge(TNodeID from_nodeID, TNodeID to_nodeID)
+  void eraseEdge(TNodeID from_nodeID, TNodeID to_nodeID)
   {
     edges.erase(std::make_pair(from_nodeID, to_nodeID));
   }
@@ -216,7 +201,7 @@ class CDirectedGraph
 
   /** Less efficient way to get all nodes that returns a copy of the set
    * object \sa getAllNodes( std::set<TNodeID> &lstNode_IDs) */
-  inline std::set<TNodeID> getAllNodes() const
+  std::set<TNodeID> getAllNodes() const
   {
     std::set<TNodeID> lst;
     getAllNodes(lst);

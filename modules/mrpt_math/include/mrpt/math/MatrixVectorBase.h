@@ -65,13 +65,13 @@ class MatrixVectorBase
    * "fill" will be used by child classes) */
   void fill(const Scalar& val) { std::fill(mvbDerived().begin(), mvbDerived().end(), val); }
 
-  inline void setConstant(const Scalar value) { fill(value); }
-  inline void setConstant(matrix_dim_t nrows, matrix_dim_t ncols, const Scalar value)
+  void setConstant(const Scalar value) { fill(value); }
+  void setConstant(matrix_dim_t nrows, matrix_dim_t ncols, const Scalar value)
   {
     mvbDerived().resize(nrows, ncols);
     fill(value);
   }
-  inline void setConstant(matrix_dim_t nrows, const Scalar value)
+  void setConstant(matrix_dim_t nrows, const Scalar value)
   {
     ASSERTMSG_(
         Derived::ColsAtCompileTime == 1,
@@ -96,15 +96,15 @@ class MatrixVectorBase
     return m;
   }
 
-  inline void assign(const matrix_dim_t N, const Scalar value)
+  void assign(const matrix_dim_t N, const Scalar value)
   {
     mvbDerived().resize(N);
     fill(value);
   }
 
-  inline void setZero() { fill(0); }
-  inline void setZero(matrix_dim_t nrows, matrix_dim_t ncols) { setConstant(nrows, ncols, 0); }
-  inline void setZero(matrix_dim_t nrows)
+  void setZero() { fill(0); }
+  void setZero(matrix_dim_t nrows, matrix_dim_t ncols) { setConstant(nrows, ncols, 0); }
+  void setZero(matrix_dim_t nrows)
   {
     ASSERTMSG_(
         Derived::ColsAtCompileTime == 1, "setZero(n) can be used only for vectors, not matrices");

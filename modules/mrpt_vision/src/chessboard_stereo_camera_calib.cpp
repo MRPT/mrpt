@@ -318,7 +318,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
       mrpt::math::CVectorDynamic<double> minus_g;  // minus gradient
       build_linear_system(res_jacob, vars_to_optimize, minus_g, H);
 
-      ASSERT_EQUAL_(nUnknowns, (size_t)H.cols());
+      ASSERT_EQUAL_(nUnknowns, static_cast<size_t>(H.cols()));
       // Lev-Marq. parameters:
       double nu = 2;
       double lambda = tau * H.asEigen().diagonal().array().maxCoeff();

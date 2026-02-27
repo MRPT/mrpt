@@ -75,7 +75,7 @@ class CHeightGridMap2D :
    * Declared here to avoid ambiguity between the two clear() in both base
    * classes.
    */
-  inline void clear() { CMetricMap::clear(); }
+  void clear() { CMetricMap::clear(); }
   float cell2float(const THeightGridmapCell& c) const override { return float(c.h); }
 
   /** Returns a short description of the map. */

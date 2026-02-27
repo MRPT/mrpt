@@ -254,7 +254,7 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
 
   /** Subscript operator to get/set individual elements
    */
-  inline T& operator()(Index row, Index col)
+  T& operator()(Index row, Index col)
   {
     if (row >= m_data.size() || col > 0)
     {
@@ -268,7 +268,7 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
 
   /** Subscript operator to get individual elements
    */
-  inline const T& operator()(Index row, Index col) const
+  const T& operator()(Index row, Index col) const
   {
     if (row >= static_cast<Index>(m_data.size()) || col > 0)
     {
@@ -284,7 +284,7 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
    * matrix.
    * \exception std::exception If the object is not a column or row matrix.
    */
-  inline T& operator[](Index ith)
+  T& operator[](Index ith)
   {
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
     if (ith >= m_data.size())
@@ -294,7 +294,7 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
   }
 
   /// \overload
-  inline const T& operator[](Index ith) const
+  const T& operator[](Index ith) const
   {
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
     if (ith >= m_data.size())

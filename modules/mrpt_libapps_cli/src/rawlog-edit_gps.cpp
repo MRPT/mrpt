@@ -486,7 +486,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
                                                .fields.direction_degrees)
                                  : 0.0,
             p.x, p.y, p.z,
-            (int)m_rawlogEntry,  // rawlog index
+            static_cast<int>(m_rawlogEntry),  // rawlog index
             geo.x, geo.y, geo.z, cart_pos.x, cart_pos.y, cart_pos.z, cart_vel.x, cart_vel.y,
             cart_vel.z, cart_vel_local.x, cart_vel_local.y, cart_vel_local.z,
             mrpt::Clock::toDouble(gga.fields.UTCTime.getAsTimestamp(obs->timestamp)));
@@ -617,7 +617,7 @@ DECLARE_OP_FUNCTION(op_export_gps_all)
             mrpt::Clock::toDouble(obs->originalReceivedTimestamp), buf.str().c_str());
         m_GPS_entriesSaved++;
 
-      }             // for each msg
+      }  // for each msg
       return true;  // All ok
     }
 

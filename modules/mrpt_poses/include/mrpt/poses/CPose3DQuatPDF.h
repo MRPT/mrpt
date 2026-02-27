@@ -96,7 +96,7 @@ class CPose3DQuatPDF :
    * CGeneralizedEllipsoidTemplate::setQuantiles()
    */
   template <class OPENGL_SETOFOBJECTSPTR>
-  inline void getAs3DObject(OPENGL_SETOFOBJECTSPTR& out_obj) const
+  void getAs3DObject(OPENGL_SETOFOBJECTSPTR& out_obj) const
   {
     using SETOFOBJECTS = typename OPENGL_SETOFOBJECTSPTR::value_type;
     out_obj->insertCollection(*SETOFOBJECTS::posePDF2opengl(*this));
@@ -107,7 +107,7 @@ class CPose3DQuatPDF :
    * mrpt::viz::CSetOfObjects::Ptr as template argument.
    */
   template <class OPENGL_SETOFOBJECTSPTR>
-  inline OPENGL_SETOFOBJECTSPTR getAs3DObject() const
+  OPENGL_SETOFOBJECTSPTR getAs3DObject() const
   {
     using SETOFOBJECTS = typename OPENGL_SETOFOBJECTSPTR::value_type;
     return SETOFOBJECTS::posePDF2opengl(*this);

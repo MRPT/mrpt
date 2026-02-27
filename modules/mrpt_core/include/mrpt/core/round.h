@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <mrpt/core/SSE_types.h>  // needed by SSE intrinsics used in some inline functions below.
+#include <mrpt/core/SSE_types.h>  // needed by SSE intrinsics used in some functions below.
 #include <mrpt/core/cpu.h>
 
 #include <cmath>  // pow(), lrint()
@@ -27,7 +27,7 @@ namespace mrpt
 
 /** Returns the closer integer (int) to x */
 template <typename T>
-inline int round(const T value)
+int round(const T value)
 {
 #if MRPT_HAS_SSE2
   if (mrpt::cpu::supports(mrpt::cpu::feature::SSE2))
@@ -41,7 +41,7 @@ inline int round(const T value)
 
 /** Returns the closer integer (long) to x */
 template <typename T>
-inline long round_long(const T value)
+long round_long(const T value)
 {
 #if MRPT_HAS_SSE2 && MRPT_WORD_SIZE == 64
   if (mrpt::cpu::supports(mrpt::cpu::feature::SSE2))

@@ -235,13 +235,13 @@ class COpenNI2Sensor :
    *  \exception This method must throw an exception when such serial number
    * is not found among the connected devices.
    */
-  inline void setSerialToOpen(const unsigned serial) { m_serial_number = serial; }
+  void setSerialToOpen(const unsigned serial) { m_serial_number = serial; }
 
   /** Set the sensor_id of the device to open.
    *  \exception This method must throw an exception when such serial number
    * is not found among the connected devices.
    */
-  inline void setSensorIDToOpen(const unsigned sensor_id) { m_user_device_number = sensor_id; }
+  void setSensorIDToOpen(const unsigned sensor_id) { m_user_device_number = sensor_id; }
 
   /** Initializes the 3D camera - should be invoked after calling loadConfig()
    * or setting the different parameters with the set*() methods.
@@ -288,41 +288,41 @@ class COpenNI2Sensor :
 
   /** Get the maximum range (meters) that can be read in the observation field
    * "rangeImage" */
-  inline double getMaxRange() const { return m_maxRange; }
+  double getMaxRange() const { return m_maxRange; }
   /** Get the row count in the camera images, loaded automatically upon camera
    * open(). */
-  inline size_t rows() const { return m_cameraParamsRGB.nrows; }
+  size_t rows() const { return m_cameraParamsRGB.nrows; }
   /** Get the col count in the camera images, loaded automatically upon camera
    * open(). */
-  inline size_t cols() const { return m_cameraParamsRGB.ncols; }
+  size_t cols() const { return m_cameraParamsRGB.ncols; }
   /** Get a const reference to the depth camera calibration parameters */
-  inline const mrpt::img::TCamera& getCameraParamsIntensity() const { return m_cameraParamsRGB; }
-  inline void setCameraParamsIntensity(const mrpt::img::TCamera& p) { m_cameraParamsRGB = p; }
+  const mrpt::img::TCamera& getCameraParamsIntensity() const { return m_cameraParamsRGB; }
+  void setCameraParamsIntensity(const mrpt::img::TCamera& p) { m_cameraParamsRGB = p; }
 
   /** Get a const reference to the depth camera calibration parameters */
-  inline const mrpt::img::TCamera& getCameraParamsDepth() const { return m_cameraParamsDepth; }
-  inline void setCameraParamsDepth(const mrpt::img::TCamera& p) { m_cameraParamsDepth = p; }
+  const mrpt::img::TCamera& getCameraParamsDepth() const { return m_cameraParamsDepth; }
+  void setCameraParamsDepth(const mrpt::img::TCamera& p) { m_cameraParamsDepth = p; }
 
   /** Set the pose of the intensity camera wrt the depth camera \sa See
    * mrpt::obs::CObservation3DRangeScan for a 3D diagram of this pose */
-  inline void setRelativePoseIntensityWrtDepth(const mrpt::poses::CPose3D& p)
+  void setRelativePoseIntensityWrtDepth(const mrpt::poses::CPose3D& p)
   {
     m_relativePoseIntensityWRTDepth = p;
   }
-  inline const mrpt::poses::CPose3D& getRelativePoseIntensityWrtDepth() const
+  const mrpt::poses::CPose3D& getRelativePoseIntensityWrtDepth() const
   {
     return m_relativePoseIntensityWRTDepth;
   }
 
   /** Enable/disable the grabbing of the RGB channel */
-  inline void enableGrabRGB(bool enable = true) { m_grab_image = enable; }
-  inline bool isGrabRGBEnabled() const { return m_grab_image; }
+  void enableGrabRGB(bool enable = true) { m_grab_image = enable; }
+  bool isGrabRGBEnabled() const { return m_grab_image; }
   /** Enable/disable the grabbing of the depth channel */
-  inline void enableGrabDepth(bool enable = true) { m_grab_depth = enable; }
-  inline bool isGrabDepthEnabled() const { return m_grab_depth; }
+  void enableGrabDepth(bool enable = true) { m_grab_depth = enable; }
+  bool isGrabDepthEnabled() const { return m_grab_depth; }
   /** Enable/disable the grabbing of the 3D point clouds */
-  inline void enableGrab3DPoints(bool enable = true) { m_grab_3D_points = enable; }
-  inline bool isGrab3DPointsEnabled() const { return m_grab_3D_points; }
+  void enableGrab3DPoints(bool enable = true) { m_grab_3D_points = enable; }
+  bool isGrab3DPointsEnabled() const { return m_grab_3D_points; }
   /** @} */
 
  protected:

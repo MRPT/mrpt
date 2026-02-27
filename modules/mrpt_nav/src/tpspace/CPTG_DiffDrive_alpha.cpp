@@ -52,8 +52,8 @@ std::string CPTG_DiffDrive_alpha::getDescription() const
 {
   char str[100];
   os::sprintf(
-      str, 100, "CPTG_DiffDrive_alpha,av=%udeg,aw=%udeg,K=%i", (int)RAD2DEG(cte_a0v),
-      (int)RAD2DEG(cte_a0w), (int)K);
+      str, 100, "CPTG_DiffDrive_alpha,av=%udeg,aw=%udeg,K=%i", static_cast<int>(RAD2DEG(cte_a0v)),
+      static_cast<int>(RAD2DEG(cte_a0w)), static_cast<int>(K));
   return std::string(str);
 }
 

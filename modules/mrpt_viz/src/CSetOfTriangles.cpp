@@ -49,7 +49,7 @@ void CSetOfTriangles::serializeTo(mrpt::serialization::CArchive& out) const
   std::shared_lock<std::shared_mutex> trisReadLock(
       VisualObjectParams_Triangles::m_trianglesMtx.data);
 
-  auto n = (uint32_t)shaderTrianglesBuffer().size();
+  auto n = static_cast<uint32_t>(shaderTrianglesBuffer().size());
   out << n;
   for (size_t i = 0; i < n; i++) shaderTrianglesBuffer()[i].writeTo(out);
 }

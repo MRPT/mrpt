@@ -17,6 +17,7 @@
 #include <mrpt/core/common.h>
 
 #include <array>
+#include <cstdint>
 #include <string>
 
 namespace mrpt::cpu
@@ -24,7 +25,7 @@ namespace mrpt::cpu
 /** OS-portable set of CPU feature definitions, for usage in mrpt::cpu::supports
  * \ingroup mrpt_core_grp
  */
-enum class feature : unsigned int
+enum class feature : uint8_t
 {
   MMX = 0,
   POPCNT,
@@ -52,11 +53,11 @@ class CPU_analyzer
 
   std::array<bool, static_cast<std::size_t>(mrpt::cpu::feature::FEATURE_COUNT)> feat_detected{};
 
-  inline bool& feat(mrpt::cpu::feature f) noexcept
+  [[nodiscard]] bool& feat(mrpt::cpu::feature f) noexcept
   {
     return feat_detected[static_cast<std::size_t>(f)];
   }
-  inline bool feat(mrpt::cpu::feature f) const noexcept
+  [[nodiscard]] bool feat(mrpt::cpu::feature f) const noexcept
   {
     return feat_detected[static_cast<std::size_t>(f)];
   }

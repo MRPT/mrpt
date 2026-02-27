@@ -177,7 +177,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
  public:
   /** Swap with another matrix very efficiently (just swaps a pointer and two
    * integer values). */
-  inline void swap(CMatrixDynamic<T>& o)
+  void swap(CMatrixDynamic<T>& o)
   {
     m_data.swap(o.m_data);
     std::swap(m_Rows, o.m_Rows);
@@ -419,7 +419,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
   void resize(size_type vectorLen) { setSize(vectorLen, 1); }
 
   /** Resize the matrix */
-  inline void resize(const matrix_size_t& siz, bool zeroNewElements = false)
+  void resize(const matrix_size_t& siz, bool zeroNewElements = false)
   {
     setSize(siz[0], siz[1], zeroNewElements);
   }
@@ -446,7 +446,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 
   /** Subscript operator to get/set individual elements
    */
-  inline T& operator()(Index row, Index col)
+  T& operator()(Index row, Index col)
   {
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
     if (row >= m_Rows || col >= m_Cols)
@@ -462,7 +462,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 
   /** Subscript operator to get individual elements
    */
-  inline const T& operator()(Index row, Index col) const
+  const T& operator()(Index row, Index col) const
   {
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
     if (row >= m_Rows || col >= m_Cols)
@@ -480,7 +480,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
    * matrix.
    * \exception std::exception If the object is not a column or row matrix.
    */
-  inline T& operator[](Index ith)
+  T& operator[](Index ith)
   {
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
     ASSERT_(m_Rows == 1 || m_Cols == 1);
@@ -509,7 +509,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
    * element, in RowMajor order.
    * \exception std::exception If the object is not a column or row matrix.
    */
-  inline const T& operator[](Index ith) const
+  const T& operator[](Index ith) const
   {
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
     ASSERT_LT_(ith, m_Rows * m_Cols);
