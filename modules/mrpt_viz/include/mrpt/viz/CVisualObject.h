@@ -147,6 +147,8 @@ class CVisualObject : public mrpt::serialization::CSerializable
   {
     std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
     m_state.visible = visible;
+    lckWrite.unlock();
+    notifyChange();
   }
 
   /** Does the object cast shadows? (default=true) */
@@ -160,6 +162,8 @@ class CVisualObject : public mrpt::serialization::CSerializable
   {
     std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
     m_state.castShadows = doCast;
+    lckWrite.unlock();
+    notifyChange();
   }
 
   /** Enables or disables showing the name of the object as a label when
@@ -168,6 +172,8 @@ class CVisualObject : public mrpt::serialization::CSerializable
   {
     std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
     m_state.show_name = showName;
+    lckWrite.unlock();
+    notifyChange();
   }
   /** \sa enableShowName */
   bool isShowNameEnabled() const
@@ -209,6 +215,8 @@ class CVisualObject : public mrpt::serialization::CSerializable
     m_state.pose.x(x);
     m_state.pose.y(y);
     m_state.pose.z(z);
+    lckWrite.unlock();
+    notifyChange();
     return *this;
   }
 
@@ -220,6 +228,8 @@ class CVisualObject : public mrpt::serialization::CSerializable
     m_state.pose.x(p.x);
     m_state.pose.y(p.y);
     m_state.pose.z(p.z);
+    lckWrite.unlock();
+    notifyChange();
     return *this;
   }
 

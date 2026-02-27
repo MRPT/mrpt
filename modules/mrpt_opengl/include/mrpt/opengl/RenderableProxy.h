@@ -240,6 +240,10 @@ class RenderableProxy
    * Set during compilation by CompiledScene. */
   mrpt::math::CMatrixFloat44 m_modelMatrix = mrpt::math::CMatrixFloat44::Identity();
 
+  /** Effective visibility (accounts for parent container visibility).
+   * Updated by CompiledScene during dirty-object updates. */
+  bool m_visible = true;
+
   /** Returns the source object, or nullptr if it has been deleted. */
   [[nodiscard]] std::shared_ptr<mrpt::viz::CVisualObject> getSourceObject() const
   {

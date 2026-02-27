@@ -184,7 +184,8 @@ size_t CompiledViewport::cleanupOrphanedProxies()
 void CompiledViewport::updateProxiesForObject(
     const std::weak_ptr<mrpt::viz::CVisualObject>& weakObj,
     const mrpt::viz::CVisualObject* sourceObj,
-    const mrpt::math::CMatrixFloat44& modelMatrix)
+    const mrpt::math::CMatrixFloat44& modelMatrix,
+    bool effectiveVisible)
 {
   MRPT_START
 
@@ -204,8 +205,9 @@ void CompiledViewport::updateProxiesForObject(
     if (!(std::owner_less<std::weak_ptr<mrpt::viz::CVisualObject>>{}(srcWeak, weakObj) ||
           std::owner_less<std::weak_ptr<mrpt::viz::CVisualObject>>{}(weakObj, srcWeak)))
     {
-      // Same object — update model matrix and buffers
+      // Same object. Update model matrix, visibility, and buffers
       proxy->m_modelMatrix = modelMatrix;
+      proxy->m_visible = effectiveVisible;
       proxy->updateBuffers(sourceObj);
     }
   }
@@ -806,6 +808,14 @@ void CompiledViewport::buildRenderQueue(
     {
       continue;
     }
+
+    // Skip invisible objects (check source viz object's current visibility)
+    auto srcObj = proxy->getSourceObject();
+    if (srcObj && !srcObj->isVisible())
+    {
+      continue;
+    }
+
     // Skip if in shadow map pass and object doesn't cast shadows
     if (isShadowMapPass && !proxy->castsShadows())
     {
