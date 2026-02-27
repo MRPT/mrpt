@@ -186,8 +186,9 @@ void CompiledScene::compile(const Scene& scene, CompilationStats* stats)
     // Compile all objects in the viewport
     compileViewport(vizViewport, *compiledVp, s);
 
-    // Store compiled viewport
+    // Store compiled viewport (map for lookup, vector for render order)
     m_viewports[vpName] = compiledVp;
+    m_viewportRenderOrder.push_back(vpName);
 
     if (SCENE_VERBOSE)
     {
@@ -535,6 +536,7 @@ void CompiledScene::compileNewObjects(CompilationStats& stats)
       compiledVp->updateFromVizViewport(vizViewport);
       compileViewport(vizViewport, *compiledVp, stats);
       m_viewports[vpName] = compiledVp;
+      m_viewportRenderOrder.push_back(vpName);
       continue;
     }
 
@@ -728,6 +730,7 @@ void CompiledScene::clear()
   MRPT_START
 
   m_viewports.clear();
+  m_viewportRenderOrder.clear();
   m_objectToProxy.clear();
   m_shaderManager.clear();
   m_sourceScene.reset();
@@ -771,9 +774,14 @@ void CompiledScene::render(int renderWidth, int renderHeight, int renderOffsetX,
     updateIfNeeded();
   }
 
-  // Render all viewports in order
-  for (auto& [name, viewport] : m_viewports)
+  // Render all viewports in insertion order (so overlay viewports
+  // render after the main viewport, not alphabetically).
+  for (const auto& name : m_viewportRenderOrder)
   {
+    auto it = m_viewports.find(name);
+    if (it == m_viewports.end()) continue;
+    auto& viewport = it->second;
+
     // For cloned viewports, resolve the source viewport
     const CompiledViewport* sourceVp = nullptr;
     if (viewport->isCloningObjects())
@@ -788,7 +796,6 @@ void CompiledScene::render(int renderWidth, int renderHeight, int renderOffsetX,
         // dimensions for matrix computation.
         if (viewport->isCloningCamera())
         {
-          // Get the source viz viewport's camera
           const auto& srcVizVpName = viewport->getClonedViewportName();
           auto srcVizVp = m_sourceScene->getViewport(srcVizVpName);
           if (srcVizVp)
