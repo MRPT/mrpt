@@ -617,7 +617,7 @@ DECLARE_OP_FUNCTION(op_export_gps_all)
             mrpt::Clock::toDouble(obs->originalReceivedTimestamp), buf.str().c_str());
         m_GPS_entriesSaved++;
 
-      }  // for each msg
+      }             // for each msg
       return true;  // All ok
     }
 

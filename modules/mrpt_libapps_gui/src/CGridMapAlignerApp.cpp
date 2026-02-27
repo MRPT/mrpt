@@ -328,7 +328,8 @@ void CGridMapAlignerApp::run()
   // Generate the_map1 now:
   the_map1.loadFromSimpleMap(map1);
 
-  size_t N1 = max(40, static_cast<int>(round(grid1->getArea() * gridAlign.options.featsPerSquareMeter)));
+  size_t N1 =
+      max(40, static_cast<int>(round(grid1->getArea() * gridAlign.options.featsPerSquareMeter)));
 
   COccupancyGridMapFeatureExtractor gridfeatextract;
 
@@ -412,7 +413,8 @@ void CGridMapAlignerApp::run()
 
       the_map2.loadFromSimpleMap(map2noisy);
 
-      size_t N2 = max(40, static_cast<int>(round(grid2->getArea() * gridAlign.options.featsPerSquareMeter)));
+      size_t N2 = max(
+          40, static_cast<int>(round(grid2->getArea() * gridAlign.options.featsPerSquareMeter)));
 
       CLandmarksMap lm2;
       gridfeatextract.extractFeatures(
