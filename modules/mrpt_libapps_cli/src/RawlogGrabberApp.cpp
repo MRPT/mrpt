@@ -124,8 +124,9 @@ void RawlogGrabberApp::runImpl()
   mrpt::system::TTimeParts parts;
   mrpt::system::timestampToParts(mrpt::Clock::now(), parts, true);
   rawlog_postfix += format(
-      "%04u-%02u-%02u_%02uh%02um%02us", static_cast<unsigned int>(parts.year), static_cast<unsigned int>(parts.month),
-      static_cast<unsigned int>(parts.day), static_cast<unsigned int>(parts.hour), static_cast<unsigned int>(parts.minute),
+      "%04u-%02u-%02u_%02uh%02um%02us", static_cast<unsigned int>(parts.year),
+      static_cast<unsigned int>(parts.month), static_cast<unsigned int>(parts.day),
+      static_cast<unsigned int>(parts.hour), static_cast<unsigned int>(parts.minute),
       static_cast<unsigned int>(parts.second));
 
   rawlog_postfix = mrpt::system::fileNameStripInvalidChars(rawlog_postfix);
