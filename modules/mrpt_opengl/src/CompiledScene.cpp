@@ -206,11 +206,20 @@ void CompiledScene::compileViewport(
 {
   MRPT_START
 
-  // Handle cloned viewport mode
-  if (vizViewport.isClonedCamera())
+  // Handle cloned viewport mode (objects from another viewport — skip
+  // compiling our own objects)
+  if (vizViewport.isCloned())
   {
     compiledViewport.setCloneMode(vizViewport.isClonedCameraFrom(), vizViewport.isClonedCamera());
     return;
+  }
+
+  // Handle cloned camera only (use camera from another viewport, but
+  // compile our own objects normally)
+  if (vizViewport.isClonedCamera())
+  {
+    compiledViewport.setCloneMode(vizViewport.isClonedCameraFrom(), true /*cloneCamera*/);
+    // Don't return — continue to compile objects below
   }
 
   // Handle image view mode - skip normal object compilation
@@ -297,9 +306,9 @@ void CompiledScene::compileObject(
     return;
   }
 
-  // Create proxy for this object
-  auto proxy = createProxyByType(obj);
-  if (!proxy)
+  // Create proxy(ies) for this object — one per mixin type
+  auto proxies = createProxiesByType(obj);
+  if (proxies.empty())
   {
     if (SCENE_VERBOSE)
     {
@@ -311,27 +320,32 @@ void CompiledScene::compileObject(
 
   obj->updateBuffers();  // Populate viz buffers first
 
-  // Set the source object reference in the proxy
-  proxy->setSourceObject(obj);
+  for (auto& proxy : proxies)
+  {
+    // Set the source object reference in the proxy
+    proxy->setSourceObject(obj);
 
-  // Set the model matrix (object local frame -> world frame)
-  proxy->m_modelMatrix = modelMatrix;
+    // Set the model matrix (object local frame -> world frame)
+    proxy->m_modelMatrix = modelMatrix;
 
-  // Compile the proxy (upload data to GPU)
-  proxy->compile(obj.get());
+    // Compile the proxy (upload data to GPU)
+    proxy->compile(obj.get());
+
+    // Add to viewport
+    compiledViewport.addProxy(proxy, obj);
+
+    stats.numProxiesCreated++;
+  }
 
   // Clear dirty flag after successful compile
   obj->clearChangedFlag();
 
-  // Register in our tracking map
+  // Register in our tracking map (store first proxy for tracking;
+  // all proxies are tracked via the viewport's objectToProxy map)
   std::weak_ptr<CVisualObject> weakObj = obj;
-  m_objectToProxy[weakObj] = proxy;
-
-  // Add to viewport
-  compiledViewport.addProxy(proxy, obj);
+  m_objectToProxy[weakObj] = proxies.front();
 
   stats.numObjectsCompiled++;
-  stats.numProxiesCreated++;
 
   MRPT_END
 }
@@ -347,45 +361,48 @@ bool CompiledScene::hasProxyFor(const std::shared_ptr<CVisualObject>& obj) const
   return m_objectToProxy.find(weakObj) != m_objectToProxy.end();
 }
 
-RenderableProxy::Ptr CompiledScene::createProxyByType(const std::shared_ptr<CVisualObject>& obj)
+std::vector<RenderableProxy::Ptr> CompiledScene::createProxiesByType(
+    const std::shared_ptr<CVisualObject>& obj)
 {
+  std::vector<RenderableProxy::Ptr> proxies;
+
   if (!obj)
   {
-    return nullptr;
+    return proxies;
   }
 
-  // Check for textured triangles first (more specific than plain triangles)
-  if (dynamic_cast<const VisualObjectParams_TexturedTriangles*>(obj.get()))
-  {
-    return std::make_shared<TexturedTrianglesProxy>();
-  }
-
-  // Check for triangles
-  if (dynamic_cast<const VisualObjectParams_Triangles*>(obj.get()))
-  {
-    return std::make_shared<TrianglesProxy>();
-  }
-
-  // Check for points
-  if (dynamic_cast<const VisualObjectParams_Points*>(obj.get()))
-  {
-    return std::make_shared<PointsProxy>();
-  }
-
-  // Check for lines
-  if (dynamic_cast<const VisualObjectParams_Lines*>(obj.get()))
-  {
-    return std::make_shared<LinesProxy>();
-  }
-
-  // Check for CText3D (uses gltext to generate geometry in the proxy)
+  // Check for CText3D first (special case: generates geometry in the proxy)
   if (dynamic_cast<const mrpt::viz::CText3D*>(obj.get()) != nullptr)
   {
-    return std::make_shared<Text3DProxy>();
+    proxies.push_back(std::make_shared<Text3DProxy>());
+    return proxies;
   }
 
-  // Unknown type - return null
-  return nullptr;
+  // Check for textured triangles (more specific than plain triangles)
+  if (dynamic_cast<const VisualObjectParams_TexturedTriangles*>(obj.get()))
+  {
+    proxies.push_back(std::make_shared<TexturedTrianglesProxy>());
+  }
+  // Check for plain triangles (only if NOT textured, since textured already
+  // handles the triangle data)
+  else if (dynamic_cast<const VisualObjectParams_Triangles*>(obj.get()))
+  {
+    proxies.push_back(std::make_shared<TrianglesProxy>());
+  }
+
+  // Check for points (independent of triangles — an object can have both)
+  if (dynamic_cast<const VisualObjectParams_Points*>(obj.get()))
+  {
+    proxies.push_back(std::make_shared<PointsProxy>());
+  }
+
+  // Check for lines (independent of triangles — an object can have both)
+  if (dynamic_cast<const VisualObjectParams_Lines*>(obj.get()))
+  {
+    proxies.push_back(std::make_shared<LinesProxy>());
+  }
+
+  return proxies;
 }
 
 bool CompiledScene::updateIfNeeded(CompilationStats* stats)
@@ -583,7 +600,19 @@ void CompiledScene::updateDirtyObjects(CompilationStats& stats)
     {
       // First: let the viz object populate its internal buffers from geometry
       obj->updateBuffers();
-      proxy->updateBuffers(obj.get());
+
+      // Recompute model matrix from the object's current pose
+      // (Use identity as parent since we don't track parent hierarchy here;
+      //  a full recompile would be needed if parent transforms change)
+      const auto modelMatrix =
+          computeModelMatrix(*obj, mrpt::math::CMatrixFloat44::Identity());
+
+      // Update ALL proxies for this object across all viewports
+      for (auto& [vpName, viewport] : m_viewports)
+      {
+        viewport->updateProxiesForObject(weakObj, obj.get(), modelMatrix);
+      }
+
       obj->clearChangedFlag();  // Clear dirty flag
       stats.numObjectsUpdated++;
 

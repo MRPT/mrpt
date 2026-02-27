@@ -12,8 +12,10 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/opengl/DefaultShaders.h>
 #include <mrpt/opengl/RenderableProxy.h>
 #include <mrpt/opengl/Shader.h>
+#include <mrpt/opengl/Texture.h>
 #include <mrpt/opengl/opengl_api.h>
 
 using namespace mrpt::opengl;
@@ -647,8 +649,7 @@ void TexturedTrianglesProxyBase::render(const RenderContext& rc) const
   // Bind texture if available
   if (m_texture)
   {
-    glActiveTexture(GL_TEXTURE0 + MATERIAL_DIFFUSE_TEXTURE_UNIT);
-    // m_texture->bind();  // Would need Texture class implementation
+    m_texture->bindAsTexture2D();
   }
 
   // Render triangles

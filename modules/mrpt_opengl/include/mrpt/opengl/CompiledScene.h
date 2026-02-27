@@ -299,8 +299,10 @@ class CompiledScene
   /** Checks if we already have a proxy for this object */
   [[nodiscard]] bool hasProxyFor(const std::shared_ptr<mrpt::viz::CVisualObject>& obj) const;
 
-  /** Creates appropriate proxy type based on object's parameter mixins */
-  [[nodiscard]] RenderableProxy::Ptr createProxyByType(
+  /** Creates appropriate proxy types based on object's parameter mixins.
+   * Returns one proxy per mixin type (e.g., CBox gets both a TrianglesProxy
+   * and a LinesProxy). */
+  [[nodiscard]] std::vector<RenderableProxy::Ptr> createProxiesByType(
       const std::shared_ptr<mrpt::viz::CVisualObject>& obj);
 
   /** Cleans up proxies for objects that no longer exist */

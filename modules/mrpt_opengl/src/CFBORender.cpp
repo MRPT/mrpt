@@ -392,9 +392,8 @@ void CFBORender::internal_render_RGBD(
     glReadPixels(0, 0, m_fb.width(), m_fb.height(), GL_DEPTH_COMPONENT, GL_FLOAT, outDepth.data());
     CHECK_OPENGL_ERROR();
 
-    // Flip vertically: glReadPixels reads bottom-to-top, but the flipped
-    // projection means row 0 in the matrix is the bottom of the scene.
-    outDepth.asEigen() = outDepth.asEigen().colwise().reverse().eval();
+    // No manual flip needed: flipVerticalProjection(true) already handles
+    // the vertical orientation (same as for RGB).
 
 #ifdef FBO_PROFILER
     tle1.stop();
@@ -417,25 +416,6 @@ void CFBORender::internal_render_RGBD(
 
       convertDepthToLinear(outDepth, zn, zf);
     }
-
-#ifdef FBO_PROFILER
-    auto tle3 = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".flip"s);
-#endif
-
-    // Flip lines (OpenGL has origin at bottom-left)
-    std::vector<float> bufLine(m_fb.width());
-    const auto bytesPerLine = sizeof(float) * m_fb.width();
-    for (unsigned int y = 0; y < m_fb.height() / 2; y++)
-    {
-      const int yFlipped = m_fb.height() - 1 - y;
-      ::memcpy(bufLine.data(), &outDepth(y, 0), bytesPerLine);
-      ::memcpy(&outDepth(y, 0), &outDepth(yFlipped, 0), bytesPerLine);
-      ::memcpy(&outDepth(yFlipped, 0), bufLine.data(), bytesPerLine);
-    }
-
-#ifdef FBO_PROFILER
-    tle3.stop();
-#endif
   }
 
   // Unbind the framebuffer object

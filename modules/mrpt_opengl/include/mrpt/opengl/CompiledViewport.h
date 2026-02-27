@@ -16,10 +16,12 @@
 #include <mrpt/containers/NonCopiableData.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/math/TBoundingBox.h>
+#include <mrpt/opengl/Buffer.h>
 #include <mrpt/opengl/FrameBuffer.h>
 #include <mrpt/opengl/RenderQueue.h>
 #include <mrpt/opengl/RenderableProxy.h>
 #include <mrpt/opengl/TRenderMatrices.h>
+#include <mrpt/opengl/VertexArrayObject.h>
 #include <mrpt/viz/CCamera.h>
 #include <mrpt/viz/TLightParameters.h>
 #include <mrpt/viz/Viewport.h>
@@ -123,6 +125,14 @@ class CompiledViewport
    * \return Number of orphaned proxies removed
    */
   size_t cleanupOrphanedProxies();
+
+  /** Updates all proxies for a given source object (buffers + model matrix).
+   * Called by CompiledScene::updateDirtyObjects().
+   */
+  void updateProxiesForObject(
+      const std::weak_ptr<mrpt::viz::CVisualObject>& weakObj,
+      const mrpt::viz::CVisualObject* sourceObj,
+      const mrpt::math::CMatrixFloat44& modelMatrix);
 
   /** Removes a proxy from this viewport */
   void removeProxy(const RenderableProxy::Ptr& proxy);
@@ -345,7 +355,10 @@ class CompiledViewport
   /** Border rendering */
   unsigned int m_borderWidth = 0;
   mrpt::img::TColor m_borderColor{255, 255, 255, 255};
-  RenderableProxy::Ptr m_borderProxy;  // Lines proxy for border
+  VertexArrayObject m_borderVAO;
+  Buffer m_borderVertexBuffer{Buffer::Type::Vertex};
+  Buffer m_borderColorBuffer{Buffer::Type::Vertex};
+  bool m_borderBuffersCreated = false;
 
   /** Viewport visibility */
   bool m_isVisible = true;
