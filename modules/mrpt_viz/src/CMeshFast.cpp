@@ -171,10 +171,10 @@ void CMeshFast::updateColorsMatrix() const
 
     if (m_textureImage.isColor())
     {
-      C_r.setSize(rows, cols);
-      C_g.setSize(rows, cols);
-      C_b.setSize(rows, cols);
-      m_textureImage.getAsRGBMatrices(C_r, C_g, C_b);
+      auto [Cr, Cg, Cb] = m_textureImage.getAsRGBMatricesBytes();
+      C_r = std::move(Cr);
+      C_g = std::move(Cg);
+      C_b = std::move(Cb);
     }
     else
     {
@@ -221,7 +221,10 @@ void CMeshFast::updateBuffers() const
   using mrpt::img::TColor;
   using mrpt::img::TColorf;
 
-  if (!pointsUpToDate) updatePoints();
+  if (!pointsUpToDate)
+  {
+    updatePoints();
+  }
 
   ASSERT_EQUAL_(X.size(), Y.size());
   ASSERT_EQUAL_(X.size(), Z.size());
@@ -242,9 +245,13 @@ void CMeshFast::updateBuffers() const
       TColor col;
 
       if (m_isImage && m_textureImage.isColor())
+      {
         col = TColor(C_r(i, j), C_g(i, j), C_b(i, j), myColor.A);
+      }
       else if (m_isImage)
+      {
         col = TColor(C(i, j), C(i, j), C(i, j), myColor.A);
+      }
       else if (m_colorFromZ)
       {
         auto cf = mrpt::img::colormap(m_colorMap, static_cast<float>(C(i, j)) / 255.0f);
@@ -252,7 +259,9 @@ void CMeshFast::updateBuffers() const
         col = cf.asTColor();
       }
       else
+      {
         col = myColor;
+      }
 
       cbd.emplace_back(col);
       vbd.emplace_back(X(i, j), Y(i, j), Z(i, j));
