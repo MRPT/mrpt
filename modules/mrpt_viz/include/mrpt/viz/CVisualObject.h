@@ -360,6 +360,15 @@ class CVisualObject : public mrpt::serialization::CSerializable
    */
   virtual bool isCompositeObject() const { return false; }
 
+  /** Returns internal children for composite objects (e.g. CAxis text labels).
+   * Only meaningful if isCompositeObject() returns true.
+   * \note Not for CSetOfObjects — those are handled as containers. */
+  virtual const std::deque<std::shared_ptr<CVisualObject>>& getInternalChildren() const
+  {
+    static const std::deque<std::shared_ptr<CVisualObject>> empty;
+    return empty;
+  }
+
   /** Call to enable calling renderUpdateBuffers() before the next
    * render() rendering iteration. \sa clearChangedFlag() */
   void notifyChange() const

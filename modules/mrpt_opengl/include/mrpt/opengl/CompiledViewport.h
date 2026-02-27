@@ -144,6 +144,9 @@ class CompiledViewport
   /** Number of proxies in this viewport */
   size_t getProxyCount() const { return m_proxies.size(); }
 
+  /** Access to the list of proxies (used by cloned viewports) */
+  const std::vector<RenderableProxy::Ptr>& getProxies() const { return m_proxies; }
+
   /** @} */
 
   /** @name Rendering
@@ -156,6 +159,8 @@ class CompiledViewport
    * \param renderOffsetX X offset for multi-window rendering
    * \param renderOffsetY Y offset for multi-window rendering
    * \param shaderManager Shader program manager for binding programs
+   * \param sourceViewport For cloned viewports, the source viewport whose
+   *        proxies should be rendered. nullptr for normal viewports.
    *
    * This handles:
    * - Viewport positioning and clipping
@@ -171,7 +176,8 @@ class CompiledViewport
       int renderHeight,
       int renderOffsetX,
       int renderOffsetY,
-      ShaderProgramManager& shaderManager);
+      ShaderProgramManager& shaderManager,
+      const CompiledViewport* sourceViewport = nullptr);
 
   /** @} */
 
@@ -465,8 +471,13 @@ class CompiledViewport
   /** Performs shadow map rendering (1st pass) */
   void renderShadowMap(ShaderProgramManager& shaderManager);
 
-  /** Performs normal scene rendering */
-  void renderNormalScene(ShaderProgramManager& shaderManager, bool isShadowMapPass);
+  /** Performs normal scene rendering.
+   * \param proxiesToRender If non-null, use these proxies instead of m_proxies
+   *        (used for cloned viewports). */
+  void renderNormalScene(
+      ShaderProgramManager& shaderManager,
+      bool isShadowMapPass,
+      const std::vector<RenderableProxy::Ptr>* proxiesToRender = nullptr);
 
   /** Renders in image view mode */
   void renderImageView(ShaderProgramManager& shaderManager);
@@ -474,12 +485,14 @@ class CompiledViewport
   /** Renders viewport border */
   void renderBorder(ShaderProgramManager& shaderManager);
 
-  /** Builds render queue with frustum culling */
+  /** Builds render queue with frustum culling.
+   * \param proxiesToRender If non-null, use these proxies instead of m_proxies. */
   void buildRenderQueue(
       RenderQueue& queue,
       const TRenderMatrices& matrices,
       bool isShadowMapPass,
-      ViewportRenderStats& stats);
+      ViewportRenderStats& stats,
+      const std::vector<RenderableProxy::Ptr>* proxiesToRender = nullptr);
 
   /** Processes render queue (binds shaders, renders objects) */
   void processRenderQueue(

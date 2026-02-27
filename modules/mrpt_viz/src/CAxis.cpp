@@ -66,6 +66,98 @@ void CAxis::setTickMarksLength(float len)
   CVisualObject::notifyChange();
 }
 
+void CAxis::updateBuffers() const
+{
+  using mrpt::math::TPoint3Df;
+
+  auto& vbd = VisualObjectParams_Lines::m_vertex_buffer_data;
+  auto& cbd = VisualObjectParams_Lines::m_color_buffer_data;
+  std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Lines::m_linesMtx.data);
+
+  vbd.clear();
+
+  m_gl_labels.get().clear();
+
+  // X axis
+  vbd.emplace_back(m_xmin, 0.0f, 0.0f);
+  vbd.emplace_back(m_xmax, 0.0f, 0.0f);
+  // Y axis
+  vbd.emplace_back(0.0f, m_ymin, 0.0f);
+  vbd.emplace_back(0.0f, m_ymax, 0.0f);
+  // Z axis
+  vbd.emplace_back(0.0f, 0.0f, m_zmin);
+  vbd.emplace_back(0.0f, 0.0f, m_zmax);
+
+  // Draw the "tick marks" for X,Y,Z
+  const float ml = m_markLen * m_frequency;
+
+  char n[50];
+  const std::array<TPoint3Df, 3> init_trans = {
+      {{m_xmin, .0f, ml}, {.0f, m_ymin, ml}, {.0f, .0f, m_zmin}}
+  };
+  const std::array<std::array<float, 2>, 3> xyz_ranges = {
+      {{m_xmin, m_xmax}, {m_ymin, m_ymax}, {m_zmin, m_zmax}}
+  };
+  const std::array<TPoint3Df, 3> tick0 = {
+      {{0, -ml, -ml}, {-ml, .0f, -ml}, {-ml, .0f, .0f}}
+  };
+  const std::array<TPoint3Df, 3> tick1 = {
+      {{0, ml, -ml}, {ml, .0f, -ml}, {ml, .0f, .0f}}
+  };
+  const std::array<TPoint3Df, 3> endMark = {
+      {{m_xmax + 1.0f * m_frequency, 0, 0},
+       {0, m_ymax + .5f * m_frequency, 0},
+       {0, 0, m_zmax + 0.5f * m_frequency}}
+  };
+  const std::array<const char*, 3> axis2name = {
+      {"+X", "+Y", "+Z"}
+  };
+
+  for (unsigned int axis = 0; axis < 3; axis++)
+  {
+    if (!m_marks[axis]) continue;
+
+    TPoint3Df tick_incr(0, 0, 0);
+    tick_incr[axis] = m_frequency;
+
+    const auto& tf = init_trans[axis];
+    TPoint3Df cur_tf = tf;
+
+    for (float i = xyz_ranges[axis][0]; i <= xyz_ranges[axis][1];
+         i = i + m_frequency, cur_tf = cur_tf + tick_incr)
+    {
+      // Don't draw the "0" more than once
+      if (axis != 0 && std::abs(i) < 1e-4f) continue;
+
+      mrpt::system::os::sprintf(n, 50, "%.02f", i);
+
+      auto label = mrpt::viz::CText3D::Create();
+      label->setScale(m_textScale);
+      label->setPose(mrpt::poses::CPose3D(
+          cur_tf.x, cur_tf.y, cur_tf.z, mrpt::DEG2RAD(m_textRot[axis][0]),
+          mrpt::DEG2RAD(m_textRot[axis][1]), mrpt::DEG2RAD(m_textRot[axis][2])));
+      label->setString(n);
+      m_gl_labels.get().emplace_back(label);
+
+      // tick line:
+      vbd.emplace_back(cur_tf + tick0[axis]);
+      vbd.emplace_back(cur_tf + tick1[axis]);
+    }
+
+    auto label = mrpt::viz::CText3D::Create();
+    label->setScale(m_textScale * 1.2f);
+    label->setPose(mrpt::poses::CPose3D(
+        endMark[axis].x, endMark[axis].y, endMark[axis].z, mrpt::DEG2RAD(m_textRot[axis][0]),
+        mrpt::DEG2RAD(m_textRot[axis][1]), mrpt::DEG2RAD(m_textRot[axis][2])));
+    label->setString(axis2name[axis]);
+    m_gl_labels.get().emplace_back(label);
+  }
+
+  cbd.assign(vbd.size(), getColor_u8());
+
+  for (auto& lb : m_gl_labels.get()) lb->updateBuffers();
+}
+
 uint8_t CAxis::serializeGetVersion() const { return 3; }
 void CAxis::serializeTo(mrpt::serialization::CArchive& out) const
 {

@@ -625,7 +625,8 @@ void CompiledViewport::render(
     int renderHeight,
     int renderOffsetX,
     int renderOffsetY,
-    ShaderProgramManager& shaderManager)
+    ShaderProgramManager& shaderManager,
+    const CompiledViewport* sourceViewport)
 {
   MRPT_START
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
@@ -680,6 +681,14 @@ void CompiledViewport::render(
   }
   glDisable(GL_SCISSOR_TEST);
   CHECK_OPENGL_ERROR_IN_DEBUG();
+
+  // Determine which proxies to render: for cloned viewports, use source's
+  const std::vector<RenderableProxy::Ptr>* proxiesToRender = nullptr;
+  if (sourceViewport)
+  {
+    proxiesToRender = &sourceViewport->getProxies();
+  }
+
   // Render based on mode
   if (isImageViewMode())
   {
@@ -693,7 +702,7 @@ void CompiledViewport::render(
       renderShadowMap(shaderManager);
     }
     // Normal scene rendering
-    renderNormalScene(shaderManager, false);
+    renderNormalScene(shaderManager, false, proxiesToRender);
   }
   // Render border
   if (m_borderWidth > 0)
@@ -765,7 +774,10 @@ void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
 #endif
   MRPT_END
 }
-void CompiledViewport::renderNormalScene(ShaderProgramManager& shaderManager, bool isShadowMapPass)
+void CompiledViewport::renderNormalScene(
+    ShaderProgramManager& shaderManager,
+    bool isShadowMapPass,
+    const std::vector<RenderableProxy::Ptr>* proxiesToRender)
 {
   MRPT_START
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
@@ -789,7 +801,7 @@ void CompiledViewport::renderNormalScene(ShaderProgramManager& shaderManager, bo
   RenderQueue queue;
   auto matrices = m_renderMatrices;
   matrices.is1stShadowMapPass = isShadowMapPass;
-  buildRenderQueue(queue, matrices, isShadowMapPass, m_lastStats);
+  buildRenderQueue(queue, matrices, isShadowMapPass, m_lastStats, proxiesToRender);
   // Process render queue
   processRenderQueue(queue, shaderManager, matrices, m_lastStats);
 #endif
@@ -799,19 +811,21 @@ void CompiledViewport::buildRenderQueue(
     RenderQueue& queue,
     const TRenderMatrices& matrices,
     bool isShadowMapPass,
-    ViewportRenderStats& stats)
+    ViewportRenderStats& stats,
+    const std::vector<RenderableProxy::Ptr>* proxiesToRender)
 {
   MRPT_START
-  for (const auto& proxy : m_proxies)
+  const auto& proxies = proxiesToRender ? *proxiesToRender : m_proxies;
+  for (const auto& proxy : proxies)
   {
     if (!proxy)
     {
       continue;
     }
 
-    // Skip invisible objects (check source viz object's current visibility)
-    auto srcObj = proxy->getSourceObject();
-    if (srcObj && !srcObj->isVisible())
+    // Skip invisible objects: check effective visibility (accounts for
+    // parent container visibility propagated by updateDirtyObjectRecursive)
+    if (!proxy->m_visible)
     {
       continue;
     }
