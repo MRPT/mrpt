@@ -163,8 +163,13 @@ void Scene::insert(const CVisualObject::Ptr& newObject, const std::string& viewp
 CVisualObject::Ptr Scene::getByName(const string& str, [[maybe_unused]] const string& viewportName)
 {
   CVisualObject::Ptr obj;
-  for (auto& m_viewport : m_viewports)
-    if ((obj = m_viewport->getByName(str))) break;
+  for (const auto& m_viewport : m_viewports)
+  {
+    if (obj = m_viewport->getByName(str); obj)
+    {
+      break;
+    }
+  }
   return obj;
 }
 
@@ -176,7 +181,7 @@ void Scene::dumpListOfObjects(std::vector<std::string>& lst) const
   using namespace std::string_literals;
   lst.clear();
 
-  for (auto& v : m_viewports)
+  for (const auto& v : m_viewports)
   {
     lst.emplace_back("Viewport: '"s + v->m_name + "'"s);
     lst.emplace_back("============================================");
@@ -189,7 +194,10 @@ mrpt::containers::yaml Scene::asYAML() const
   mrpt::containers::yaml d = mrpt::containers::yaml::Map();
   auto vs = d["viewports"];
 
-  for (auto& v : m_viewports) vs[v->m_name] = v->asYAML();
+  for (const auto& v : m_viewports)
+  {
+    vs[v->m_name] = v->asYAML();
+  }
 
   return d;
 }
@@ -202,7 +210,10 @@ Viewport::Ptr Scene::createViewport(const string& viewportName)
   MRPT_START
 
   Viewport::Ptr old = getViewport(viewportName);
-  if (old) return old;
+  if (old)
+  {
+    return old;
+  }
 
   auto theNew = std::make_shared<Viewport>(this, viewportName);
   m_viewports.push_back(theNew);
@@ -214,9 +225,8 @@ Viewport::Ptr Scene::createViewport(const string& viewportName)
 /*--------------------------------------------------------------
           getViewport
   ---------------------------------------------------------------*/
-Viewport::Ptr Scene::getViewport(const std::string& viewportName) const
+Viewport::Ptr Scene::getViewport(const std::string& viewportName)
 {
-  MRPT_START
   for (const auto& m_viewport : m_viewports)
   {
     if (m_viewport->m_name == viewportName)
@@ -225,7 +235,18 @@ Viewport::Ptr Scene::getViewport(const std::string& viewportName) const
     }
   }
   return {};
-  MRPT_END
+}
+
+Viewport::ConstPtr Scene::getViewport(const std::string& viewportName) const
+{
+  for (const auto& m_viewport : m_viewports)
+  {
+    if (m_viewport->m_name == viewportName)
+    {
+      return m_viewport;
+    }
+  }
+  return {};
 }
 
 /*--------------------------------------------------------------
@@ -300,7 +321,7 @@ bool Scene::loadFromFile(const std::string& fil)
  * the coordinate frame of the object parent. */
 auto Scene::getBoundingBox(const std::string& vpn) const -> mrpt::math::TBoundingBox
 {
-  Viewport::Ptr vp = this->getViewport(vpn);
+  Viewport::ConstPtr vp = this->getViewport(vpn);
   ASSERTMSG_(vp, "No opengl viewport exists with the given name");
 
   return vp->getBoundingBox();

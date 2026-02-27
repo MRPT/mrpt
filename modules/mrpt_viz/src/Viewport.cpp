@@ -115,7 +115,7 @@ void Viewport::serializeTo(mrpt::serialization::CArchive& out) const
   std::shared_lock<std::shared_mutex> lckRead2DTexts(m_2D_texts.mtx.data);
 
   out.WriteAs<uint32_t>(m_2D_texts.messages.size());
-  for (auto& kv : m_2D_texts.messages)
+  for (const auto& kv : m_2D_texts.messages)
   {
     out << kv.first;  // id
     out << kv.second.x << kv.second.y << kv.second.text;
@@ -238,9 +238,13 @@ void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
       }
 
       if (version >= 6)
+      {
         in >> m_clonedCameraViewport;
+      }
       else
+      {
         m_clonedCameraViewport.clear();
+      }
 
       if (version >= 8)
       {
@@ -272,16 +276,21 @@ void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
   ---------------------------------------------------------------*/
 CVisualObject::Ptr Viewport::getByName(const string& str)
 {
-  for (auto& m_object : m_objects)
+  for (const auto& m_object : m_objects)
   {
     if (m_object->getName() == str)
+    {
       return m_object;
-    else if (m_object->GetRuntimeClass() == CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::viz))
+    }
+
+    if (m_object->GetRuntimeClass() == CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::viz))
     {
       if (CVisualObject::Ptr ret =
               std::dynamic_pointer_cast<CSetOfObjects>(m_object)->getByName(str);
           ret)
+      {
         return ret;
+      }
     }
   }
   return {};
@@ -289,7 +298,7 @@ CVisualObject::Ptr Viewport::getByName(const string& str)
 
 void Viewport::dumpListOfObjects(std::vector<std::string>& lst) const
 {
-  for (auto& obj : m_objects)
+  for (const auto& obj : m_objects)
   {
     // Single obj:
     string s(obj->GetRuntimeClass()->className);
@@ -334,7 +343,7 @@ mrpt::containers::yaml Viewport::asYAML() const
     {
       de["obj_children"] = dynamic_cast<CSetOfObjects*>(obj.get())->asYAML();
     }
-    d.asSequence().at(i) = std::move(de);
+    d.asSequence().at(i) = de;
   }
   return d;
 }
@@ -464,20 +473,22 @@ void Viewport::setCloneCamera(bool enable)
 const CCamera* Viewport::internalResolveActiveCamera(const CCamera* forceThisCamera) const
 {
   // Prepare camera (projection matrix):
-  Viewport* viewForGetCamera = nullptr;
+  const Viewport* viewForGetCamera = nullptr;
 
   if (!m_clonedCameraViewport.empty())
   {
     const auto view = m_parent->getViewport(m_clonedCameraViewport);
     if (!view)
+    {
       THROW_EXCEPTION_FMT(
           "Cloned viewport '%s' not found in parent Scene", m_clonedViewport.c_str());
+    }
 
-    viewForGetCamera = m_isClonedCamera ? view.get() : const_cast<Viewport*>(this);
+    viewForGetCamera = m_isClonedCamera ? view.get() : this;
   }
   else
   {  // Normal case: render our own objects:
-    viewForGetCamera = const_cast<Viewport*>(this);
+    viewForGetCamera = this;
   }
 
   // Get camera:
@@ -486,10 +497,16 @@ const CCamera* Viewport::internalResolveActiveCamera(const CCamera* forceThisCam
   const auto* myCamera = camPtr ? camPtr.get() : nullptr;
 
   // 2nd: the internal camera of all viewports:
-  if (!myCamera) myCamera = &viewForGetCamera->m_camera;
+  if (myCamera == nullptr)
+  {
+    myCamera = &viewForGetCamera->m_camera;
+  }
 
   // forced cam?
-  if (forceThisCamera) myCamera = forceThisCamera;
+  if (forceThisCamera != nullptr)
+  {
+    myCamera = forceThisCamera;
+  }
 
   return myCamera;
 }
@@ -498,8 +515,14 @@ void Viewport::enableShadowCasting(
     bool enabled, unsigned int SHADOW_MAP_SIZE_X, unsigned int SHADOW_MAP_SIZE_Y)
 {
   m_shadowsEnabled = enabled;
-  if (SHADOW_MAP_SIZE_X) m_ShadowMapSizeX = SHADOW_MAP_SIZE_X;
-  if (SHADOW_MAP_SIZE_Y) m_ShadowMapSizeY = SHADOW_MAP_SIZE_Y;
+  if (SHADOW_MAP_SIZE_X != 0)
+  {
+    m_ShadowMapSizeX = SHADOW_MAP_SIZE_X;
+  }
+  if (SHADOW_MAP_SIZE_Y != 0)
+  {
+    m_ShadowMapSizeY = SHADOW_MAP_SIZE_Y;
+  }
 }
 
 Viewport::Ptr& mrpt::viz::operator<<(Viewport::Ptr& s, const CVisualObject::Ptr& r)
@@ -510,6 +533,9 @@ Viewport::Ptr& mrpt::viz::operator<<(Viewport::Ptr& s, const CVisualObject::Ptr&
 
 Viewport::Ptr& mrpt::viz::operator<<(Viewport::Ptr& s, const std::vector<CVisualObject::Ptr>& v)
 {
-  for (const auto& it : v) s->insert(it);
+  for (const auto& it : v)
+  {
+    s->insert(it);
+  }
   return s;
 }
