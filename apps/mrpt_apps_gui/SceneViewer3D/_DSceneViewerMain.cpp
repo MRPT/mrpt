@@ -76,8 +76,9 @@ const std::string iniFileSect("CONF_LIN");
 #include <mrpt/gui/about_box.h>
 #include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CCompressedOutputStream.h>
-#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/maps/CPointsMap.h>
+#include <mrpt/opengl/CFBORender.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CDirectoryExplorer.h>
 #include <mrpt/system/CTicTac.h>
@@ -85,7 +86,6 @@ const std::string iniFileSect("CONF_LIN");
 #include <mrpt/system/string_utils.h>
 #include <mrpt/viz/CAngularObservationMesh.h>  // It's in lib mrpt-maps
 #include <mrpt/viz/CAssimpModel.h>
-#include <mrpt/viz/CFBORender.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CPlanarLaserScan.h>  // It's in lib mrpt-maps
 #include <mrpt/viz/CPointCloud.h>
@@ -93,10 +93,8 @@ const std::string iniFileSect("CONF_LIN");
 #include <mrpt/viz/Scene.h>
 #include <mrpt/viz/stock_objects.h>
 
-const mrpt::maps::CColouredPointsMap dummy_map;  // this is to enforce to load
-// the mrpt-maps DLL, then
-// register all OpenGL classes
-// defined there.
+// this is to enforce to load the mrpt-maps DLL, then register all OpenGL classes defined there.
+const mrpt::maps::CGenericPointsMap dummy_map;
 
 // A custom Art provider for customizing the icons:
 class MyArtProvider : public wxArtProvider
@@ -142,6 +140,7 @@ using namespace mrpt::io;
 using namespace mrpt::config;
 using namespace mrpt::rtti;
 using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::img;
 using namespace std;
 
@@ -214,7 +213,7 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc)
     glPixelStorei(GL_PACK_ROW_LENGTH, 0);
 
     glReadBuffer(GL_FRONT);
-    glReadPixels(0, 0, w, h, GL_BGR_EXT, GL_UNSIGNED_BYTE, frame(0, 0));
+    glReadPixels(0, 0, w, h, GL_BGR_EXT, GL_UNSIGNED_BYTE, frame.ptrLine<uint8_t>(0));
     frame.flipVertical();
 
     string fileName(format("%s/screenshot_%07i.png", capturingDir.c_str(), captureCount++));
@@ -313,62 +312,62 @@ void CMyGLCanvas::OnCharCustom(wxKeyEvent& event)
 }
 
 //(*IdInit(_DSceneViewerFrame)
-const long _DSceneViewerFrame::ID_BUTTON1 = wxNewId();
-const long _DSceneViewerFrame::ID_BUTTON2 = wxNewId();
-const long _DSceneViewerFrame::ID_STATICLINE1 = wxNewId();
-const long _DSceneViewerFrame::ID_BUTTON3 = wxNewId();
-const long _DSceneViewerFrame::ID_BUTTON4 = wxNewId();
-const long _DSceneViewerFrame::ID_BUTTON5 = wxNewId();
-const long _DSceneViewerFrame::ID_STATICLINE2 = wxNewId();
-const long _DSceneViewerFrame::ID_BUTTON6 = wxNewId();
-const long _DSceneViewerFrame::ID_BUTTON7 = wxNewId();
-const long _DSceneViewerFrame::ID_BUTTON_SHADOWS = wxNewId();
-const long _DSceneViewerFrame::ID_BUTTON8 = wxNewId();
-const long _DSceneViewerFrame::ID_BUTTON9 = wxNewId();
-const long _DSceneViewerFrame::ID_STATICLINE3 = wxNewId();
-const long _DSceneViewerFrame::ID_BUTTON10 = wxNewId();
-const long _DSceneViewerFrame::ID_BUTTON11 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM1 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM2 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM5 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM7 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM6 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM_ImportImage = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM20 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM25 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM19 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM22 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM21 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM29 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM30 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM12 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM23 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM18 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM_PRINT_TEXT = wxNewId();
-const long _DSceneViewerFrame::idMenuQuit = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM24 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM26 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM27 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM28 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM4 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM3 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM15 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM17 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM16 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM11 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM9 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM8 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM10 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM14 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM13 = wxNewId();
-const long _DSceneViewerFrame::idMenuAbout = wxNewId();
-const long _DSceneViewerFrame::ID_STATUSBAR1 = wxNewId();
-const long _DSceneViewerFrame::ID_TIMER1 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_BUTTON1 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_BUTTON2 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_STATICLINE1 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_BUTTON3 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_BUTTON4 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_BUTTON5 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_STATICLINE2 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_BUTTON6 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_BUTTON7 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_BUTTON_SHADOWS = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_BUTTON8 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_BUTTON9 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_STATICLINE3 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_BUTTON10 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_BUTTON11 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM1 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM2 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM5 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM7 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM6 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM_ImportImage = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM20 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM25 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM19 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM22 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM21 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM29 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM30 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM12 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM23 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM18 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM_PRINT_TEXT = wxNewId();
+const wxWindowID _DSceneViewerFrame::idMenuQuit = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM24 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM26 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM27 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM28 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM4 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM3 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM15 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM17 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM16 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM11 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM9 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM8 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM10 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM14 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_MENUITEM13 = wxNewId();
+const wxWindowID _DSceneViewerFrame::idMenuAbout = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_STATUSBAR1 = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_TIMER1 = wxNewId();
 //*)
 
-const long _DSceneViewerFrame::ID_TRAVELLING_TIMER = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_TRAVELLING_TIMER = wxNewId();
 
-const long _DSceneViewerFrame::ID_TIMER_AUTOPLAY = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_TIMER_AUTOPLAY = wxNewId();
 
 BEGIN_EVENT_TABLE(_DSceneViewerFrame, wxFrame)
 //(*EventTable(_DSceneViewerFrame)
@@ -924,7 +923,7 @@ void _DSceneViewerFrame::OntimLoadFileCmdLineTrigger(wxTimerEvent&)
       m_canvas->getOpenGLSceneRef()->insert(obj3D);
 
       // TODO: make optional?
-      obj3D->split_triangles_rendering_bbox(0.25);
+      // obj3D->split_triangles_rendering_bbox(0.25);
 
       m_canvas->Refresh();
     }
@@ -1343,7 +1342,7 @@ void _DSceneViewerFrame::OnMenuItem14Selected(wxCommandEvent& event)
   glPixelStorei(GL_PACK_ROW_LENGTH, 0);
 
   glReadBuffer(GL_FRONT);
-  glReadPixels(0, 0, w, h, GL_BGR_EXT, GL_UNSIGNED_BYTE, frame(0, 0));
+  glReadPixels(0, 0, w, h, GL_BGR_EXT, GL_UNSIGNED_BYTE, frame.ptrLine<uint8_t>(0));
   frame.flipVertical();
 
   // Save:
@@ -1366,57 +1365,9 @@ void _DSceneViewerFrame::OnMenuCameraTrackingArbitrary(wxCommandEvent& event)
   m_dlg_tracking->Show();
 }
 
-void _DSceneViewerFrame::OnmnuItemChangeMaxPointsPerOctreeNodeSelected(wxCommandEvent& event)
-{
-  wxString sRet1 = wxGetTextFromUser(
-      _("Max. number of points in an octree node before split:"), _("Enter new value"),
-      wxString::Format(_("%e"), (double)mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE()),
-      this);
+void _DSceneViewerFrame::OnmnuItemChangeMaxPointsPerOctreeNodeSelected(wxCommandEvent& event) {}
 
-  wxString sRet2 = wxGetTextFromUser(
-      _("Max. density of points in each octree (points/pixel^2):"), _("Enter new value"),
-      wxString::Format(
-          _("%e"), (double)mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL()),
-      this);
-
-  double N1, N2;
-  if (sRet1.ToCDouble(&N1) && sRet2.ToCDouble(&N2))
-  {
-    mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE(N1);
-    mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL(N2);
-
-    // Redo the octrees:
-    clear_all_octrees_in_scene();
-    Refresh(false);
-
-    wxCommandEvent dumm;  // Redraw bounding-boxes:
-    OnmnuItemShowCloudOctreesSelected(dumm);
-  }
-  else
-    wxMessageBox(_("Invalid number!"));
-}
-
-void func_clear_octrees(const mrpt::viz::CRenderizable::Ptr& o)
-{
-  if (IS_CLASS(*o, CPointCloud))
-  {
-    CPointCloud::Ptr obj = std::dynamic_pointer_cast<CPointCloud>(o);
-    obj->octree_mark_as_outdated();
-  }
-  else if (IS_CLASS(*o, CPointCloudColoured))
-  {
-    CPointCloudColoured::Ptr obj = std::dynamic_pointer_cast<CPointCloudColoured>(o);
-    obj->octree_mark_as_outdated();
-  }
-}
-
-void _DSceneViewerFrame::clear_all_octrees_in_scene()
-{
-  {
-    std::lock_guard<std::mutex> lock(critSec_UpdateScene);
-    m_canvas->getOpenGLSceneRef()->visitAllObjects(&func_clear_octrees);
-  }
-}
+void _DSceneViewerFrame::clear_all_octrees_in_scene() {}
 
 struct TSceneStats
 {
@@ -1435,25 +1386,7 @@ struct TSceneStats
 
 TSceneStats sceneStats;
 
-void func_gather_stats(const mrpt::viz::CRenderizable::Ptr& o)
-{
-  sceneStats.nObjects++;
-
-  if (IS_CLASS(*o, CPointCloud))
-  {
-    CPointCloud::Ptr obj = std::dynamic_pointer_cast<CPointCloud>(o);
-    sceneStats.nPoints += obj->size();
-    sceneStats.nOctreeVisible += obj->octree_get_visible_nodes();
-    sceneStats.nOctreeTotal += obj->octree_get_node_count();
-  }
-  else if (IS_CLASS(*o, CPointCloudColoured))
-  {
-    CPointCloudColoured::Ptr obj = std::dynamic_pointer_cast<CPointCloudColoured>(o);
-    sceneStats.nPoints += obj->size();
-    sceneStats.nOctreeVisible += obj->octree_get_visible_nodes();
-    sceneStats.nOctreeTotal += obj->octree_get_node_count();
-  }
-}
+void func_gather_stats(const mrpt::viz::CVisualObject::Ptr& o) { sceneStats.nObjects++; }
 
 void _DSceneViewerFrame::OnMenuPrintScene(wxCommandEvent&)
 {
@@ -1498,74 +1431,8 @@ void _DSceneViewerFrame::OnmnuSceneStatsSelected(wxCommandEvent&)
 static const std::string name_octrees_bb_globj = "__SceneViewer3D_gl_octree_bb__";
 CSetOfObjects::Ptr aux_gl_octrees_bb;
 
-void func_get_octbb(const mrpt::viz::CRenderizable::Ptr& o)
-{
-  if (IS_CLASS(*o, CPointCloud))
-  {
-    CPointCloud::Ptr obj = std::dynamic_pointer_cast<CPointCloud>(o);
-    CSetOfObjects::Ptr new_bb = std::make_shared<CSetOfObjects>();
-    obj->octree_get_graphics_boundingboxes(*new_bb);
-    aux_gl_octrees_bb->insert(new_bb);
-  }
-  else if (IS_CLASS(*o, CPointCloudColoured))
-  {
-    CPointCloudColoured::Ptr obj = std::dynamic_pointer_cast<CPointCloudColoured>(o);
-    CSetOfObjects::Ptr new_bb = std::make_shared<CSetOfObjects>();
-    obj->octree_get_graphics_boundingboxes(*new_bb);
-    aux_gl_octrees_bb->insert(new_bb);
-  }
-}
-
 // Show/hide the octree bounding boxes of the point clouds:
-void _DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected(wxCommandEvent& event)
-{
-  const bool show_hide = mnuItemShowCloudOctrees->IsChecked();
-
-  try
-  {
-    wxBusyCursor wait;
-
-    {
-      auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
-      std::lock_guard<std::mutex> lock(critSec_UpdateScene);
-      openGLSceneRef->visitAllObjects(&func_gather_stats);
-
-      CSetOfObjects::Ptr gl_octrees_bb;
-
-      // Get object from scene, or creat upon first usage:
-      {
-        CRenderizable::Ptr obj = openGLSceneRef->getByName(name_octrees_bb_globj);
-        if (obj)
-          gl_octrees_bb = std::dynamic_pointer_cast<CSetOfObjects>(obj);
-        else
-        {
-          gl_octrees_bb = std::make_shared<CSetOfObjects>();
-          gl_octrees_bb->setName(name_octrees_bb_globj);
-          openGLSceneRef->insert(gl_octrees_bb);
-        }
-      }
-
-      // Show or hide, clear first anyway:
-      gl_octrees_bb->clear();
-
-      if (show_hide)
-      {
-        // Show:
-        aux_gl_octrees_bb = gl_octrees_bb;
-
-        openGLSceneRef->visitAllObjects(func_get_octbb);
-
-        aux_gl_octrees_bb.reset();
-      }
-    }
-
-    Refresh(false);
-  }
-  catch (const std::exception& e)
-  {
-    wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
-  }
-}
+void _DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected(wxCommandEvent& event) {}
 
 // ----------------------------------------------------------
 // Import a point cloud from the PLY file format
@@ -1588,18 +1455,18 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
     CDlgPLYOptions dlgPLY(this);
     if (dlgPLY.ShowModal() != wxID_OK) return;
 
-    opengl::CPointCloud::Ptr gl_points;
-    opengl::CPointCloudColoured::Ptr gl_points_col;
+    mrpt::viz::CPointCloud::Ptr gl_points;
+    mrpt::viz::CPointCloudColoured::Ptr gl_points_col;
     mrpt::viz::PLY_Importer* ply_obj = nullptr;
 
     if (dlgPLY.rbClass->GetSelection() == 0)
     {
-      gl_points = std::make_shared<opengl::CPointCloud>();
+      gl_points = std::make_shared<mrpt::viz::CPointCloud>();
       ply_obj = gl_points.get();
     }
     else
     {
-      gl_points_col = std::make_shared<opengl::CPointCloudColoured>();
+      gl_points_col = std::make_shared<mrpt::viz::CPointCloudColoured>();
       ply_obj = gl_points_col.get();
     }
 
@@ -1619,7 +1486,7 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
     {
       auto& openGLSceneRef = m_canvas->getOpenGLSceneRef();
       // Set the point cloud as the only object in scene:
-      openGLSceneRef = std::make_shared<opengl::Scene>();
+      openGLSceneRef = std::make_shared<mrpt::viz::Scene>();
 
       if (dlgPLY.cbXYGrid->GetValue())
       {
@@ -1702,7 +1569,7 @@ struct visitor_export_PLY
 
   visitor_export_PLY(const string& fil, unsigned int& counter) : filename(fil), count(counter) {}
 
-  void operator()(const mrpt::viz::CRenderizable::Ptr& obj)
+  void operator()(const mrpt::viz::CVisualObject::Ptr& obj)
   {
     if (IS_CLASS(*obj, CPointCloud))
     {
@@ -1821,34 +1688,34 @@ void _DSceneViewerFrame::OnmnuSelectNoneSelected(wxCommandEvent& event)
 class OpenGlObjectsFilterVirtual
 {
  public:
-  OpenGlObjectsFilterVirtual(std::vector<mrpt::viz::CRenderizable::Ptr>& out_list) :
+  OpenGlObjectsFilterVirtual(std::vector<mrpt::viz::CVisualObject::Ptr>& out_list) :
       m_out_list(out_list)
   {
   }
 
-  virtual void operator()(const mrpt::viz::CRenderizable::Ptr& obj)
+  virtual void operator()(const mrpt::viz::CVisualObject::Ptr& obj)
   {
     if (checkObj(obj)) m_out_list.push_back(obj);
   }
 
-  std::vector<mrpt::viz::CRenderizable::Ptr>& m_out_list;
+  std::vector<mrpt::viz::CVisualObject::Ptr>& m_out_list;
 
  protected:
-  virtual bool checkObj(const mrpt::viz::CRenderizable::Ptr& obj) = 0;
+  virtual bool checkObj(const mrpt::viz::CVisualObject::Ptr& obj) = 0;
 };
 
 class OpenGlObjectsFilter_ByClass : public OpenGlObjectsFilterVirtual
 {
  public:
   OpenGlObjectsFilter_ByClass(
-      std::vector<mrpt::viz::CRenderizable::Ptr>& out_list,
+      std::vector<mrpt::viz::CVisualObject::Ptr>& out_list,
       const vector<const TRuntimeClassId*>& selected_classes) :
       OpenGlObjectsFilterVirtual(out_list), m_selected_classes(selected_classes)
   {
   }
 
  protected:
-  bool checkObj(const mrpt::viz::CRenderizable::Ptr& obj) override
+  bool checkObj(const mrpt::viz::CVisualObject::Ptr& obj) override
   {
     for (auto m_selected_classe : m_selected_classes)
     {
@@ -1873,16 +1740,16 @@ void _DSceneViewerFrame::OnmnuSelectByClassSelected(wxCommandEvent& event)
     init_list = false;
     vector<const TRuntimeClassId*> all_mrpt_classes = mrpt::rtti::getAllRegisteredClasses();
     for (auto& all_mrpt_classe : all_mrpt_classes)
-      if (all_mrpt_classe->derivedFrom(CLASS_ID(CRenderizable)))
+    {
+      if (all_mrpt_classe->derivedFrom(CLASS_ID(mrpt::viz::CVisualObject)))
+      {
         glClassNames.Add(all_mrpt_classe->className);
+      }
+    }
   }
 
   wxArrayInt selections;
-#if wxCHECK_VERSION(2, 9, 0)
   wxGetSelectedChoices(selections, _("Select by class:"), _("Select objects"), glClassNames, this);
-#else
-  wxGetMultipleChoices(selections, _("Select by class:"), _("Select objects"), glClassNames, this);
-#endif
 
   // Build list of classes IDs:
   vector<const TRuntimeClassId*> selected_classes;
@@ -1932,7 +1799,7 @@ void _DSceneViewerFrame::OnmnuImportImageView(wxCommandEvent&)
 {
   try
   {
-    auto scene = std::make_shared<opengl::Scene>();
+    auto scene = std::make_shared<mrpt::viz::Scene>();
     m_canvas->setOpenGLSceneRef(scene);
     wxFileDialog dialog(
         this, _("Choose the LAS file to import"),
@@ -1949,7 +1816,7 @@ void _DSceneViewerFrame::OnmnuImportImageView(wxCommandEvent&)
     mrpt::img::CImage im;
     if (!im.loadFromFile(fil)) THROW_EXCEPTION_FMT("Error loading image file: '%s'", fil.c_str());
 
-    Viewport::Ptr gl_view = scene->getViewport();
+    auto gl_view = scene->getViewport();
     gl_view->setImageView(im);
 
     Refresh();

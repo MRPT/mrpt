@@ -16,7 +16,6 @@
 // different place. By #including the source from this file we can avoid this
 // and use the $(WXWIN) environment var in the -I include path.
 
-
 #include "wx/defs.h"
 #include "wx/filedlg.h"
 //#include "wx/generic/filedlgg.h"
@@ -27,8 +26,8 @@
 
 #ifndef _WX_FILEDLGG_H_
 
-    // Typically we have $(WXWIN)/include in the search path so this should
-    // find the path to filedlgg correctly.
-    #include "../src/generic/filedlgg.cpp"
+// Typically we have $(WXWIN)/include in the search path so this should
+// find the path to filedlgg correctly.
+#include "../src/generic/filedlgg.cpp"
 
-#endif //_WX_FILEDLGG_H_
+#endif  //_WX_FILEDLGG_H_
