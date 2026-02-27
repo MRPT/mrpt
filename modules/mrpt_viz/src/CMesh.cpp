@@ -33,12 +33,6 @@ IMPLEMENTS_SERIALIZABLE(CMesh, CVisualObject, mrpt::viz)
 CMesh::CMesh(
     bool enableTransparency, float m_xMin_p, float m_xMax_p, float m_yMin_p, float m_yMax_p) :
     m_enableTransparency(enableTransparency),
-    Z(0, 0),
-    mask(0, 0),
-    C(0, 0),
-    C_r(0, 0),
-    C_g(0, 0),
-    C_b(0, 0),
     m_xMin(m_xMin_p),
     m_xMax(m_xMax_p),
     m_yMin(m_yMin_p),
@@ -47,7 +41,7 @@ CMesh::CMesh(
   enableTextureLinearInterpolation(true);
   enableLight(true);
 
-  setColor_u8(0, 0, 150);
+  setColor_u8(255, 255, 255, 255);
 }
 
 CMesh::~CMesh() = default;
@@ -77,20 +71,32 @@ void CMesh::updateTriangles() const
   m_zMin = m_zMax = 0;
 
   actualMesh.clear();
-  if (cols == 0 && rows == 0) return;  // empty mesh
+  if (cols == 0 && rows == 0)
+  {
+    return;  // empty mesh
+  }
 
   ASSERT_(cols > 0 && rows > 0);
   ASSERT_NOT_EQUAL_(m_xMax, m_xMin);
   ASSERT_NOT_EQUAL_(m_yMax, m_yMin);
 
   float normalSign = 1.0f;
-  if (m_xMax < m_xMin) normalSign *= -1.0f;
-  if (m_yMax < m_yMin) normalSign *= -1.0f;
+  if (m_xMax < m_xMin)
+  {
+    normalSign *= -1.0f;
+  }
+  if (m_yMax < m_yMin)
+  {
+    normalSign *= -1.0f;
+  }
 
   // we have 1 more row & col of vertices than of triangles:
   vertex_normals.assign((1 + cols) * (1 + rows), std::pair<TPoint3D, size_t>(TPoint3D(0, 0, 0), 0));
 
-  if (m_colorFromZ || m_isImage) updateColorsMatrix();
+  if (m_colorFromZ || m_isImage)
+  {
+    updateColorsMatrix();
+  }
 
   bool useMask = false;
   if (mask.cols() != 0 && mask.rows() != 0)
@@ -223,6 +229,7 @@ void CMesh::updateTriangles() const
         tri.x(2) = tri.x(0);
         // tri.y(2)=tri.y(1);
         tri.z(2) = Z(iX, iY + 1);
+
         if (m_colorFromZ)
         {
           auto col = colormap(m_colorMap, C(iX, iY));
@@ -416,7 +423,10 @@ void CMesh::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 
 void CMesh::updateColorsMatrix() const
 {
-  if ((!m_modified_Z) && (!m_modified_Image)) return;
+  if ((!m_modified_Z) && (!m_modified_Image))
+  {
+    return;
+  }
 
   CVisualObject::notifyChange();
 
@@ -432,10 +442,10 @@ void CMesh::updateColorsMatrix() const
     }
     else if (getTextureImage().isColor())
     {
-      C_r.setSize(rows, cols);
-      C_g.setSize(rows, cols);
-      C_b.setSize(rows, cols);
-      getTextureImage().getAsRGBMatrices(C_r, C_g, C_b);
+      auto [Cr, Cg, Cb] = getTextureImage().getAsRGBMatricesFloat();
+      C_r = std::move(Cr);
+      C_g = std::move(Cg);
+      C_b = std::move(Cb);
     }
     else
     {
@@ -453,29 +463,38 @@ void CMesh::updateColorsMatrix() const
     C = Z;
 
     // If mask is empty -> Normalize the whole mesh
-    if (mask.empty()) mrpt::math::normalize(C, 0.01f, 0.99f);
-
+    if (mask.empty())
+    {
+      mrpt::math::normalize(C, 0.01f, 0.99f);
+    }
     // Else -> Normalize color ignoring masked-out cells:
     else
     {
-      float val_max = -std::numeric_limits<float>::max(),
-            val_min = std::numeric_limits<float>::max();
+      float val_max = -std::numeric_limits<float>::max();
+      float val_min = std::numeric_limits<float>::max();
       bool any_valid = false;
 
       for (size_t c = 0; c < cols; c++)
+      {
         for (size_t r = 0; r < rows; r++)
         {
-          if (!mask(r, c)) continue;
+          if (!mask(r, c))
+          {
+            continue;
+          }
           any_valid = true;
           const float val = C(r, c);
           mrpt::keep_max(val_max, val);
           mrpt::keep_min(val_min, val);
         }
-
+      }
       if (any_valid)
       {
         float minMaxDelta = val_max - val_min;
-        if (minMaxDelta == 0) minMaxDelta = 1;
+        if (minMaxDelta == 0)
+        {
+          minMaxDelta = 1;
+        }
         const float minMaxDelta_ = 1.0f / minMaxDelta;
         C.array() = (C.array() - val_min) * minMaxDelta_;
       }
@@ -508,7 +527,10 @@ void CMesh::setMask(const mrpt::math::CMatrixDynamic<float>& in_mask)
 
 bool CMesh::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
-  if (!m_trianglesUpToDate || !m_polygonsUpToDate) updatePolygons();
+  if (!m_trianglesUpToDate || !m_polygonsUpToDate)
+  {
+    updatePolygons();
+  }
   return mrpt::math::traceRay(tmpPolys, (o - getCPose()).asTPose(), dist);
 }
 
@@ -518,13 +540,19 @@ mrpt::math::TPolygonWithPlane createPolygonFromTriangle(
   math::TPolygon3D tmpPoly(3);
 
   const mrpt::viz::TTriangle& t = p.first;
-  for (size_t i = 0; i < 3; i++) tmpPoly[i] = t.vertex(i);
-  return mrpt::math::TPolygonWithPlane(tmpPoly);
+  for (size_t i = 0; i < 3; i++)
+  {
+    tmpPoly[i] = t.vertex(i);
+  }
+  return {tmpPoly};
 }
 
 void CMesh::updatePolygons() const
 {
-  if (!m_trianglesUpToDate) updateTriangles();
+  if (!m_trianglesUpToDate)
+  {
+    updateTriangles();
+  }
 
   std::shared_lock<std::shared_mutex> lckRead(m_meshDataMtx.data);
   size_t N = actualMesh.size();
@@ -536,8 +564,14 @@ void CMesh::updatePolygons() const
 
 void CMesh::updateBuffers() const
 {
-  if (!m_trianglesUpToDate) updateTriangles();
-  if (m_modified_Z || m_modified_Image) updateColorsMatrix();
+  if (!m_trianglesUpToDate)
+  {
+    updateTriangles();
+  }
+  if (m_modified_Z || m_modified_Image)
+  {
+    updateColorsMatrix();
+  }
 
   // Populate the textured triangles buffer
   {

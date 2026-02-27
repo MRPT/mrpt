@@ -64,11 +64,8 @@ namespace
 {
 float imageDiff(const mrpt::img::CImage& im1, const mrpt::img::CImage& im2)
 {
-  mrpt::math::CMatrixFloat r1, g1, b1;
-  im1.getAsRGBMatrices(r1, g1, b1);
-
-  mrpt::math::CMatrixFloat r2, g2, b2;
-  im2.getAsRGBMatrices(r2, g2, b2);
+  const auto [r1, g1, b1] = im1.getAsRGBMatricesFloat();
+  const auto [r2, g2, b2] = im2.getAsRGBMatricesFloat();
 
   return (r1 - r2).asEigen().array().abs().sum() + (g1 - g2).asEigen().array().abs().sum() +
          (b1 - b2).asEigen().array().abs().sum();
@@ -99,11 +96,11 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
   }
   {
     auto obj =
-        mrpt::viz::CBox::Create(mrpt::math::TPoint3D(0, 0, 0), mrpt::math::TPoint3D(.1, .1, .1));
+        mrpt::viz::CBox::Create(mrpt::math::TPoint3D(0, 0, 0), mrpt::math::TPoint3D(.5, .5, .5));
     obj->setColor(1.0f, 0.f, 0.f);
     obj->setName("x");
     obj->enableShowName(true);
-    obj->setLocation(1.0, 0, 0);
+    obj->setLocation(2.0, 0, 0);
     scene->insert(obj);
   }
   {
@@ -134,7 +131,8 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
 
   // CMeshFast, CMesh:
   {
-    double off_x = -5.0, STEP_X = 1.0;
+    double off_x = -5.0;
+    double STEP_X = 3.0;
     auto obj1 = mrpt::viz::CMeshFast::Create();
     auto obj2 = mrpt::viz::CMeshFast::Create();
     auto obj3 = mrpt::viz::CMesh::Create();
@@ -143,7 +141,8 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
     obj1->setXBounds(-1, 1);
     obj1->setYBounds(-1, 1);
 
-    const int W = 128, H = 128;
+    const int W = 128;
+    const int H = 128;
 
     mrpt::math::CMatrixDynamic<float> Z(H, W);
 
@@ -151,7 +150,8 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
     {
       for (int c = 0; c < W; c++)
       {
-        Z(r, c) = std::sin(0.05 * (c + r) - 0.5) * cos(0.9 - 0.03 * r);
+        Z(r, c) = std::sin(0.05f * static_cast<float>(c + r) - 0.5f) *
+                  std::cos(0.9f - 0.03f * static_cast<float>(r));
       }
     }
 
@@ -172,7 +172,7 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
     {
       obj2->assignImageAndZ(im, Z);
       obj2->setPointSize(2.0);
-      obj2->setLocation(off_x, 3, 0);
+      obj2->setLocation(off_x, 5, 0);
       scene->insert(obj2);
     }
     else
@@ -185,7 +185,7 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
     // obj3:
     obj3->setZ(Z);
     obj3->enableColorFromZ(true, mrpt::img::cmJET);
-    obj3->enableWireFrame(true);
+    obj3->enableWireFrame(false);
     obj3->setLocation(off_x, 0, 0);
     obj3->cullFaces(mrpt::viz::TCullFace::BACK);
     scene->insert(obj3);
@@ -194,16 +194,17 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
     if (im.getWidth() > 1)
     {
       obj4->assignImageAndZ(im, Z);
-      obj4->setLocation(off_x, 3, 0);
+      obj4->setLocation(off_x, 5, 0);
       obj4->cullFaces(mrpt::viz::TCullFace::BACK);
       scene->insert(obj4);
     }
   }
 
-  int width = 500, height = 400;
-  const double cameraFOVdeg = 120.0;
+  int width = 500;
+  int height = 400;
+  const float camera_fov_deg = 120.0f;
 
-  ::setenv("MRPT_FBORENDER_SHOW_DEVICES", "1", 1);
+  ::setenv("MRPT_FBORENDER_SHOW_DEVICES", "1", 1);  // NOLINT
 
   // Create the FBO renderer (mrpt::opengl)
   mrpt::opengl::CFBORender renderer(width, height);
@@ -214,7 +215,7 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
   auto viewport = scene->getViewport();
   viewport->setCustomBackgroundColor({0.3f, 0.3f, 0.3f, 1.0f});
   const float clipMax = 25.0f;
-  viewport->setViewportClipDistances(0.1, clipMax);
+  viewport->setViewportClipDistances(0.1f, clipMax);
 
   // Configure camera
   {
@@ -228,14 +229,14 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
       c1.nrows = height;
       c1.fx(width * 0.5);
       c1.fy(width * 0.5);
-      c1.cx(width / 2);
-      c1.cy(height / 2);
+      c1.cx(width / 2.0);
+      c1.cy(height / 2.0);
 
       camera.setProjectiveFromPinhole(c1);
     }
     else
     {
-      camera.setProjectiveFOVdeg(cameraFOVdeg);
+      camera.setProjectiveFOVdeg(camera_fov_deg);
     }
 
     // Defined by setPose() instead of orbit values:

@@ -379,6 +379,7 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
   }
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
   clear();
@@ -467,14 +468,20 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
       {
         resize(width, height, CH_GRAY);
         ASSERT_EQUAL_(imgLength, static_cast<uint32_t>(m_state->image_buffer_size_bytes()));
-        if (imgLength > 0) in.ReadBuffer(m_state->image_data, imgLength);
+        if (imgLength > 0)
+        {
+          in.ReadBuffer(m_state->image_data, imgLength);
+        }
       }
       else
       {
         // v0 stored BGR (OpenCV convention). Read into temp, then
         // convert BGR→RGB.
         std::vector<uint8_t> buf(imgLength);
-        if (imgLength > 0) in.ReadBuffer(buf.data(), imgLength);
+        if (imgLength > 0)
+        {
+          in.ReadBuffer(buf.data(), imgLength);
+        }
 
         resize(width, height, nChannels >= 4 ? CH_RGBA : CH_RGB);
 
@@ -665,7 +672,7 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
           // COLOR IMAGE: JPEG
           if (loadJPEG)
           {
-            uint32_t nBytes;
+            uint32_t nBytes = 0;
             in >> nBytes;
 
             std::vector<uint8_t> buf(nBytes);
@@ -1129,15 +1136,8 @@ void CImage::getAsMatrix(
   MRPT_END
 }
 
-void CImage::getAsRGBMatrices(
-    mrpt::math::CMatrixFloat& R,
-    mrpt::math::CMatrixFloat& G,
-    mrpt::math::CMatrixFloat& B,
-    bool doResize,
-    int x_min,
-    int y_min,
-    int x_max,
-    int y_max) const
+std::tuple<mrpt::math::CMatrixFloat, mrpt::math::CMatrixFloat, mrpt::math::CMatrixFloat>
+CImage::getAsRGBMatricesFloat(int x_min, int y_min, int x_max, int y_max) const
 {
   MRPT_START
 
@@ -1159,18 +1159,12 @@ void CImage::getAsRGBMatrices(
   const int lx = (x_max - x_min + 1);
   const int ly = (y_max - y_min + 1);
 
-  if (doResize || R.rows() < ly || R.cols() < lx)
-  {
-    R.setSize(ly, lx);
-  }
-  if (doResize || G.rows() < ly || G.cols() < lx)
-  {
-    G.setSize(ly, lx);
-  }
-  if (doResize || B.rows() < ly || B.cols() < lx)
-  {
-    B.setSize(ly, lx);
-  }
+  mrpt::math::CMatrixFloat R;
+  mrpt::math::CMatrixFloat G;
+  mrpt::math::CMatrixFloat B;
+  R.setSize(ly, lx);
+  G.setSize(ly, lx);
+  B.setSize(ly, lx);
 
   const bool is_color = isColor();
   for (int y = 0; y < ly; y++)
@@ -1194,18 +1188,12 @@ void CImage::getAsRGBMatrices(
     }
   }
 
+  return {R, G, B};
   MRPT_END
 }
 
-void CImage::getAsRGBMatrices(
-    mrpt::math::CMatrix_u8& R,
-    mrpt::math::CMatrix_u8& G,
-    mrpt::math::CMatrix_u8& B,
-    bool doResize,
-    int x_min,
-    int y_min,
-    int x_max,
-    int y_max) const
+std::tuple<mrpt::math::CMatrix_u8, mrpt::math::CMatrix_u8, mrpt::math::CMatrix_u8>
+CImage::getAsRGBMatricesBytes(int x_min, int y_min, int x_max, int y_max) const
 {
   MRPT_START
 
@@ -1227,18 +1215,13 @@ void CImage::getAsRGBMatrices(
   const int lx = (x_max - x_min + 1);
   const int ly = (y_max - y_min + 1);
 
-  if (doResize || R.rows() < ly || R.cols() < lx)
-  {
-    R.setSize(ly, lx);
-  }
-  if (doResize || G.rows() < ly || G.cols() < lx)
-  {
-    G.setSize(ly, lx);
-  }
-  if (doResize || B.rows() < ly || B.cols() < lx)
-  {
-    B.setSize(ly, lx);
-  }
+  mrpt::math::CMatrix_u8 R;
+  mrpt::math::CMatrix_u8 G;
+  mrpt::math::CMatrix_u8 B;
+
+  R.setSize(ly, lx);
+  G.setSize(ly, lx);
+  B.setSize(ly, lx);
 
   const bool is_color = isColor();
   for (int y = 0; y < ly; y++)
@@ -1261,6 +1244,8 @@ void CImage::getAsRGBMatrices(
       }
     }
   }
+
+  return {R, G, B};
 
   MRPT_END
 }
@@ -1350,57 +1335,6 @@ void CImage::cross_correlation_FFT(
       out_corr(y, x) = std::sqrt(square(res_R(y, x)) + square(res_I(y, x)));
     }
   }
-
-  MRPT_END
-}
-
-void CImage::getAsMatrixTiled([[maybe_unused]] mrpt::math::CMatrixFloat& outMatrix) const
-{
-  MRPT_START
-
-  THROW_EXCEPTION("TODO!");
-#if 0
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
-  const auto& img = m_state->img;
-
-  // The size of the matrix:
-  const auto matrix_lx = outMatrix.cols();
-  const auto matrix_ly = outMatrix.rows();
-
-  if (isColor())
-  {
-    // Luminance: Y = 0.3R + 0.59G + 0.11B
-    for (CMatrixFloat::Index y = 0; y < matrix_ly; y++)
-    {
-      uint8_t* min_pixels = (*this)(0, y % img.rows, 0);
-      uint8_t* max_pixels = min_pixels + img.cols * 3;
-      uint8_t* pixels = min_pixels;
-      float aux;
-      for (CMatrixFloat::Index x = 0; x < matrix_lx; x++)
-      {
-        aux = *pixels++ * 0.30f;
-        aux += *pixels++ * 0.59f;
-        aux += *pixels++ * 0.11f;
-        outMatrix(y, x) = aux;
-        if (pixels >= max_pixels) pixels = min_pixels;
-      }
-    }
-  }
-  else
-  {
-    for (CMatrixFloat::Index y = 0; y < matrix_ly; y++)
-    {
-      uint8_t* min_pixels = (*this)(0, y % img.rows, 0);
-      uint8_t* max_pixels = min_pixels + img.cols;
-      uint8_t* pixels = min_pixels;
-      for (CMatrixFloat::Index x = 0; x < matrix_lx; x++)
-      {
-        outMatrix(y, x) = *pixels++;
-        if (pixels >= max_pixels) pixels = min_pixels;
-      }
-    }
-  }
-#endif
 
   MRPT_END
 }

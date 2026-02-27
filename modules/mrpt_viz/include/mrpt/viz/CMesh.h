@@ -209,20 +209,20 @@ class CMesh :
   bool m_isImage{false};
 
   /** Z(x,y): Z-coordinate of the point (x,y) */
-  math::CMatrixF Z;
-  math::CMatrixF mask;
+  math::CMatrixF Z{0, 0};
+  math::CMatrixF mask{0, 0};
 
   /** Grayscale Color [0,1] for each cell, updated by updateColorsMatrix */
-  mutable math::CMatrixF C;
+  mutable math::CMatrixF C{0, 0};
   /** Red Component of the Color [0,1] for each cell, updated by
    * updateColorsMatrix */
-  mutable math::CMatrixF C_r;
+  mutable mrpt::math::CMatrixFloat C_r{0, 0};
   /** Green Component of the  Color [0,1] for each cell, updated by
    * updateColorsMatrix */
-  mutable math::CMatrixF C_g;
+  mutable mrpt::math::CMatrixFloat C_g{0, 0};
   /** Blue Component of the  Color [0,1] for each cell, updated by
    * updateColorsMatrix */
-  mutable math::CMatrixF C_b;
+  mutable mrpt::math::CMatrixFloat C_b{0, 0};
 
   /** Used when m_colorFromZ is true */
   mrpt::img::TColormap m_colorMap{mrpt::img::cmHOT};
