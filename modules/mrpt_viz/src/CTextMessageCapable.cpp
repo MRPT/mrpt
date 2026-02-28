@@ -23,19 +23,27 @@ void CTextMessageCapable::TListTextMessages::regenerateGLobjects() const
   std::unique_lock<std::shared_mutex> lckWrite2DTexts(mtx.data);
 
   // (re)generate the opengl CText objects for each label:
-  for (auto& kv : messages)
+  for (const auto& kv : messages)
   {
     const DataPerText& labelData = kv.second;
-    if (labelData.gl_text && labelData.gl_text_outdated) continue;
+    if (labelData.gl_text && labelData.gl_text_outdated)
+    {
+      continue;
+    }
 
     if (!labelData.gl_text)
     {
       labelData.gl_text = mrpt::viz::CText::Create();
     }
     if (labelData.draw_shadow && !labelData.gl_text_shadow)
+    {
       labelData.gl_text_shadow = mrpt::viz::CText::Create();
+    }
 
-    if (!labelData.draw_shadow && labelData.gl_text_shadow) labelData.gl_text_shadow.reset();
+    if (!labelData.draw_shadow && labelData.gl_text_shadow)
+    {
+      labelData.gl_text_shadow.reset();
+    }
 
     kv.second.gl_text_outdated = false;
   }
@@ -57,13 +65,13 @@ bool CTextMessageCapable::updateTextMessage(size_t unique_index, const std::stri
 
   auto it = m_2D_texts.messages.find(unique_index);
   if (it == m_2D_texts.messages.end())
-    return false;
-  else
   {
-    it->second.text = text;
-    it->second.gl_text_outdated = true;
-    return true;
+    return false;
   }
+
+  it->second.text = text;
+  it->second.gl_text_outdated = true;
+  return true;
 }
 
 /// overload with more font parameters - refer to
