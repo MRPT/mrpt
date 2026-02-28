@@ -23,6 +23,7 @@
 
 #include <future>
 #include <mutex>
+#include <optional>
 
 namespace mrpt::gui
 {
@@ -119,9 +120,9 @@ class CBaseGUIWindow : public mrpt::system::CObservable
    */
   virtual void setWindowTitle(const std::string& str) = 0;
 
-  /** Gets the last x,y pixel coordinates of the mouse. \return False if the
-   * window is closed. */
-  virtual bool getLastMousePosition(int& x, int& y) const = 0;
+  /** Gets the last x,y pixel coordinates of the mouse.
+   * \return nullopt if the window is closed. */
+  virtual std::optional<mrpt::img::TPixelCoord> getLastMousePosition() const = 0;
 
   /** Set cursor style to default (cursorIsCross=false) or to a cross
    * (cursorIsCross=true) */

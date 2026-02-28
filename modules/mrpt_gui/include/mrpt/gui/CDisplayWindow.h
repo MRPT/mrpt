@@ -67,9 +67,7 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
    */
   ~CDisplayWindow() override;
 
-  /** Gets the last x,y pixel coordinates of the mouse. \return False if the
-   * window is closed. */
-  bool getLastMousePosition(int& x, int& y) const override;
+  std::optional<mrpt::img::TPixelCoord> getLastMousePosition() const override;
 
   /** Set cursor style to default (cursorIsCross=false) or to a cross
    * (cursorIsCross=true) */
@@ -249,10 +247,7 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
   /** Enables or disables the visualization of cursor coordinates on the
    * window caption (default = enabled).
    */
-  void enableCursorCoordinatesVisualization(bool enable)
-  {
-    m_enableCursorCoordinates = enable;
-  }
+  void enableCursorCoordinatesVisualization(bool enable) { m_enableCursorCoordinates = enable; }
 
   /** Changes the window title text.
    */

@@ -237,13 +237,14 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
    * be disabled and the camera position will be determined by the opengl
    * viewports in the 3D scene */
   void useCameraFromScene(bool useIt = true);
+
   /** Gets the 3D ray for the direction line of the pixel where the mouse
    * cursor is at. \return False if the window is closed. \sa
    * getLastMousePosition */
-  bool getLastMousePositionRay(mrpt::math::TLine3D& ray) const;
-  /** Gets the last x,y pixel coordinates of the mouse. \return False if the
-   * window is closed. \sa getLastMousePositionRay */
-  bool getLastMousePosition(int& x, int& y) const override;
+  std::optional<mrpt::math::TLine3D> getLastMousePositionRay() const;
+
+  std::optional<mrpt::img::TPixelCoord> getLastMousePosition() const override;
+
   /** Set cursor style to default (cursorIsCross=false) or to a cross
    * (cursorIsCross=true) \sa getLastMousePositionRay */
   void setCursorCross(bool cursorIsCross) override;

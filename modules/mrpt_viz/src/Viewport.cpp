@@ -101,10 +101,12 @@ void Viewport::serializeTo(mrpt::serialization::CArchive& out) const
       << m_background_color.A;
 
   // Save objects:
-  uint32_t n;
-  n = static_cast<uint32_t>(m_objects.size());
+  auto n = static_cast<uint32_t>(m_objects.size());
   out << n;
-  for (const auto& m_object : m_objects) out << *m_object;
+  for (const auto& m_object : m_objects)
+  {
+    out << *m_object;
+  }
 
   // Added in v2: Global OpenGL settings:
   out << m_OpenGL_enablePolygonNicest;
@@ -131,7 +133,10 @@ void Viewport::serializeTo(mrpt::serialization::CArchive& out) const
 
   // Added in v5: image mode
   out.WriteAs<bool>(m_imageViewPlane);
-  if (m_imageViewPlane) out << *m_imageViewPlane;
+  if (m_imageViewPlane)
+  {
+    out << *m_imageViewPlane;
+  }
 
   // Added in v6:
   out << m_clonedCameraViewport;
@@ -146,6 +151,7 @@ void Viewport::serializeTo(mrpt::serialization::CArchive& out) const
   out << m_isViewportVisible;
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
   switch (version)
@@ -526,30 +532,33 @@ void Viewport::enableShadowCasting(
   }
 }
 
-void Viewport::get3DRayForPixelCoord(
-    double x, double y, mrpt::math::TLine3D& out_ray, mrpt::poses::CPose3D* out_cameraPose) const
+std::optional<mrpt::math::TLine3D> Viewport::get3DRayForPixelCoord(
+    const mrpt::img::TPixelCoord& pixelCoord, mrpt::poses::CPose3D* out_cameraPose) const
 {
-  MRPT_START
-  ASSERTMSG_(
-      m_lastRenderedWidth > 0 && m_lastRenderedHeight > 0,
-      "get3DRayForPixelCoord(): viewport has not been rendered yet. "
-      "Use the overload with explicit width/height.");
-  get3DRayForPixelCoord(x, y, m_lastRenderedWidth, m_lastRenderedHeight, out_ray, out_cameraPose);
-  MRPT_END
+  if (m_lastRenderedWidth == 0 || m_lastRenderedHeight == 0)
+  {
+    // Viewport has not been rendered at least once, so we don't know the viewport size.
+    return std::nullopt;
+  }
+
+  return get3DRayForPixelCoord(
+      pixelCoord,
+      mrpt::img::TPixelCoord(
+          static_cast<int>(m_lastRenderedWidth), static_cast<int>(m_lastRenderedHeight)),
+      out_cameraPose);
 }
 
-void Viewport::get3DRayForPixelCoord(
-    double x,
-    double y,
-    unsigned int vp_width,
-    unsigned int vp_height,
-    mrpt::math::TLine3D& out_ray,
+mrpt::math::TLine3D Viewport::get3DRayForPixelCoord(
+    const mrpt::img::TPixelCoord& pixelCoord,
+    const mrpt::img::TPixelCoord& viewportSize,
     mrpt::poses::CPose3D* out_cameraPose) const
 {
   MRPT_START
 
   const auto* myCamera = internalResolveActiveCamera();
   ASSERT_(myCamera != nullptr);
+
+  mrpt::math::TLine3D out_ray;
 
   // Compute camera eye position and orientation from orbit parameters
   const double azimuth = mrpt::DEG2RAD(myCamera->getAzimuthDegrees());
@@ -568,23 +577,28 @@ void Viewport::get3DRayForPixelCoord(
     const auto cameraPose = mrpt::poses::CPose3D(pose);
 
     // In 6DOF mode, camera looks along +Z, right is +X, down is +Y
-    mrpt::math::TVector3D forward, right, camUp;
-    auto R = cameraPose.getRotationMatrix();
-    forward = {R(0, 2), R(1, 2), R(2, 2)};
-    right = {R(0, 0), R(1, 0), R(2, 0)};
-    camUp = {-R(0, 1), -R(1, 1), -R(2, 1)};  // -Y is up
 
-    if (out_cameraPose) *out_cameraPose = cameraPose;
+    auto R = cameraPose.getRotationMatrix();
+    const mrpt::math::TVector3D forward = {R(0, 2), R(1, 2), R(2, 2)};
+    const mrpt::math::TVector3D right = {R(0, 0), R(1, 0), R(2, 0)};
+    const mrpt::math::TVector3D camUp = {-R(0, 1), -R(1, 1), -R(2, 1)};  // -Y is up
+
+    if (out_cameraPose != nullptr)
+    {
+      *out_cameraPose = cameraPose;
+    }
 
     if (myCamera->isProjective())
     {
       // Projective camera: ray from eye through pixel
       const double fov_v = mrpt::DEG2RAD(myCamera->getProjectiveFOVdeg());
-      const double aspect = static_cast<double>(vp_width) / vp_height;
+      const double aspect = static_cast<double>(viewportSize.x) / viewportSize.y;
 
       // Normalized device coords: center of viewport = (0,0)
-      const double nx = (2.0 * x / vp_width - 1.0);
-      const double ny = -(2.0 * y / vp_height - 1.0);  // flip Y
+      const auto x = static_cast<double>(pixelCoord.x);
+      const auto y = static_cast<double>(pixelCoord.y);
+      const double nx = (2.0 * x / viewportSize.x - 1.0);
+      const double ny = -(2.0 * y / viewportSize.y - 1.0);  // flip Y
 
       // Half-extents at unit distance
       const double half_h = tan(fov_v * 0.5);
@@ -600,10 +614,10 @@ void Viewport::get3DRayForPixelCoord(
     {
       // Orthogonal camera: ray parallel to forward, from pixel on near plane
       const double zoom = myCamera->getZoomDistance();
-      const double aspect = static_cast<double>(vp_width) / vp_height;
+      const double aspect = static_cast<double>(viewportSize.x) / viewportSize.y;
 
-      const double nx = (2.0 * x / vp_width - 1.0);
-      const double ny = -(2.0 * y / vp_height - 1.0);
+      const double nx = (2.0 * pixelCoord.x / viewportSize.x - 1.0);
+      const double ny = -(2.0 * pixelCoord.y / viewportSize.y - 1.0);
 
       const double half_w = zoom * aspect * 0.5;
       const double half_h = zoom * 0.5;
@@ -612,7 +626,7 @@ void Viewport::get3DRayForPixelCoord(
 
       out_ray = mrpt::math::TLine3D::FromPointAndDirector(origin, forward);
     }
-    return;
+    return out_ray;
   }
 
   // Orbit camera mode
@@ -629,20 +643,29 @@ void Viewport::get3DRayForPixelCoord(
   // Compute camera frame: forward, right, up
   mrpt::math::TVector3D forward(pointing.x - eye.x, pointing.y - eye.y, pointing.z - eye.z);
   const double forwardNorm = forward.norm();
-  if (forwardNorm > 0) forward *= 1.0 / forwardNorm;
+  if (forwardNorm > 0)
+  {
+    forward *= 1.0 / forwardNorm;
+  }
 
   mrpt::math::TVector3D right;
   mrpt::math::crossProduct3D(forward, up, right);
   const double rightNorm = right.norm();
-  if (rightNorm > 0) right *= 1.0 / rightNorm;
+  if (rightNorm > 0)
+  {
+    right *= 1.0 / rightNorm;
+  }
 
   // Recompute up to ensure orthogonality
   mrpt::math::crossProduct3D(right, forward, up);
   const double upNorm = up.norm();
-  if (upNorm > 0) up *= 1.0 / upNorm;
+  if (upNorm > 0)
+  {
+    up *= 1.0 / upNorm;
+  }
 
   // Build camera pose for output
-  if (out_cameraPose)
+  if (out_cameraPose != nullptr)
   {
     // Camera looks along forward (+Z), right is +X, down is -up (+Y)
     mrpt::math::CMatrixDouble33 R;
@@ -662,10 +685,10 @@ void Viewport::get3DRayForPixelCoord(
   {
     // Projective camera: ray from eye through pixel on image plane
     const double fov_v = mrpt::DEG2RAD(myCamera->getProjectiveFOVdeg());
-    const double aspect = static_cast<double>(vp_width) / vp_height;
+    const double aspect = static_cast<double>(viewportSize.x) / viewportSize.y;
 
-    const double nx = (2.0 * x / vp_width - 1.0);
-    const double ny = -(2.0 * y / vp_height - 1.0);
+    const double nx = (2.0 * pixelCoord.x / viewportSize.x - 1.0);
+    const double ny = -(2.0 * pixelCoord.y / viewportSize.y - 1.0);
 
     const double half_h = tan(fov_v * 0.5);
     const double half_w = half_h * aspect;
@@ -678,10 +701,10 @@ void Viewport::get3DRayForPixelCoord(
   else
   {
     // Orthogonal camera: parallel rays from near plane
-    const double aspect = static_cast<double>(vp_width) / vp_height;
+    const double aspect = static_cast<double>(viewportSize.x) / viewportSize.y;
 
-    const double nx = (2.0 * x / vp_width - 1.0);
-    const double ny = -(2.0 * y / vp_height - 1.0);
+    const double nx = (2.0 * pixelCoord.x / viewportSize.x - 1.0);
+    const double ny = -(2.0 * pixelCoord.y / viewportSize.y - 1.0);
 
     const double half_w = dis * aspect * 0.5;
     const double half_h = dis * 0.5;
@@ -690,6 +713,8 @@ void Viewport::get3DRayForPixelCoord(
 
     out_ray = mrpt::math::TLine3D::FromPointAndDirector(origin, forward);
   }
+
+  return out_ray;
 
   MRPT_END
 }

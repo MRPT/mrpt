@@ -633,7 +633,10 @@ void CDisplayWindow3D::setFOV(float v)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
-  if (win != nullptr) win->m_canvas->setCameraFOV(v);
+  if (win != nullptr)
+  {
+    win->m_canvas->setCameraFOV(v);
+  }
 #endif
 }
 
@@ -644,7 +647,7 @@ float CDisplayWindow3D::getCameraElevationDeg() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
-  return win ? win->m_canvas->getElevationDegrees() : 0;
+  return win != nullptr ? win->m_canvas->getElevationDegrees() : 0;
 #else
   return 0;
 #endif
@@ -657,7 +660,7 @@ float CDisplayWindow3D::getCameraAzimuthDeg() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
-  return win ? win->m_canvas->getAzimuthDegrees() : 0;
+  return win != nullptr ? win->m_canvas->getAzimuthDegrees() : 0;
 #else
   return 0;
 #endif
@@ -678,7 +681,9 @@ void CDisplayWindow3D::getCameraPointingToPoint(
     z = win->m_canvas->getCameraPointingZ();
   }
   else
+  {
     x = y = z = 0;
+  }
 #endif
 }
 
@@ -689,7 +694,7 @@ float CDisplayWindow3D::getCameraZoom() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
-  return win ? win->m_canvas->getZoomDistance() : 0;
+  return win != nullptr ? win->m_canvas->getZoomDistance() : 0;
 #else
   return 0;
 #endif
@@ -702,7 +707,7 @@ bool CDisplayWindow3D::isCameraProjective() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
-  return win ? win->m_canvas->isCameraProjective() : true;
+  return win != nullptr ? win->m_canvas->isCameraProjective() : true;
 #else
   return true;
 #endif
@@ -711,38 +716,37 @@ bool CDisplayWindow3D::isCameraProjective() const
 /*---------------------------------------------------------------
           getLastMousePosition
  ---------------------------------------------------------------*/
-bool CDisplayWindow3D::getLastMousePosition([[maybe_unused]] int& x, [[maybe_unused]] int& y) const
+std::optional<mrpt::img::TPixelCoord> CDisplayWindow3D::getLastMousePosition() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
   if (win == nullptr)
   {
-    return false;
+    return std::nullopt;
   }
+  int x = 0;
+  int y = 0;
   win->m_canvas->getLastMousePosition(x, y);
-  return true;
+  return mrpt::img::TPixelCoord(x, y);
 #else
-  return false;
+  return std::nullopt;
 #endif
 }
 
 /*---------------------------------------------------------------
           getLastMousePositionRay
  ---------------------------------------------------------------*/
-bool CDisplayWindow3D::getLastMousePositionRay(TLine3D& ray) const
+std::optional<mrpt::math::TLine3D> CDisplayWindow3D::getLastMousePositionRay() const
 {
-  int x = 0;
-  int y = 0;
-  if (getLastMousePosition(x, y))
+  const auto mousePos = getLastMousePosition();
+  if (!mousePos)
   {
-    std::lock_guard<std::recursive_timed_mutex> lck(m_csAccess3DScene);
-
-    m_3Dscene->getViewport("main")->get3DRayForPixelCoord(x, y, ray);
-
-    return true;
+    return std::nullopt;
   }
 
-  return false;
+  std::lock_guard<std::recursive_timed_mutex> lck(m_csAccess3DScene);
+
+  return m_3Dscene->getViewport("main")->get3DRayForPixelCoord(*mousePos);
 }
 
 /*---------------------------------------------------------------
