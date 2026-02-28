@@ -52,6 +52,9 @@ void CompiledViewport::updateFromVizViewport(const mrpt::viz::Viewport& vizVp)
 
   std::unique_lock<std::shared_mutex> lock(m_stateMtx.data);
 
+  // Store source viewport for writing back rendered dimensions
+  m_sourceVizViewport = &vizVp;
+
   // Copy viewport bounds
   vizVp.getViewportPosition(m_viewX, m_viewY, m_viewWidth, m_viewHeight);
 
@@ -639,6 +642,13 @@ void CompiledViewport::render(
   std::shared_lock<std::shared_mutex> lock(m_stateMtx.data);
   // Compute pixel viewport
   computePixelViewport(renderWidth, renderHeight, renderOffsetX, renderOffsetY);
+
+  // Write back rendered viewport size for get3DRayForPixelCoord()
+  if (m_sourceVizViewport)
+  {
+    m_sourceVizViewport->updateRenderedViewportSize(m_pixelWidth, m_pixelHeight);
+  }
+
   // Update matrices if needed
   updateMatrices();
 

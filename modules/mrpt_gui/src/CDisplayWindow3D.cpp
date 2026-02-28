@@ -737,9 +737,7 @@ bool CDisplayWindow3D::getLastMousePositionRay(TLine3D& ray) const
   {
     std::lock_guard<std::recursive_timed_mutex> lck(m_csAccess3DScene);
 
-    MRPT_TODO("get3DRayForPixelCoord()! ");
-    std::cerr << "[CDisplayWindow3D::getLastMousePositionRay] Warning: Not implemented yet.\n";
-    // m_3Dscene->getViewport("main")->get3DRayForPixelCoord(x, y, ray);
+    m_3Dscene->getViewport("main")->get3DRayForPixelCoord(x, y, ray);
 
     return true;
   }

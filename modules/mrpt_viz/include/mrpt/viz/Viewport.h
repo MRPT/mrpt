@@ -16,6 +16,7 @@
 #include <mrpt/containers/PerThreadDataHolder.h>
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/math/TLine3D.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/CObservable.h>
 #include <mrpt/system/mrptEvent.h>
@@ -30,6 +31,10 @@
 namespace mrpt::img
 {
 class CImage;
+}
+namespace mrpt::poses
+{
+class CPose3D;
 }
 namespace mrpt::viz
 {
@@ -334,6 +339,57 @@ class Viewport :
 
   /** @} */  // end of Contained objects set/get/search
 
+  /** @name 3D ray from pixel coordinates
+    @{ */
+
+  /** Computes the 3D ray passing through the viewport pixel (x,y), given
+   * explicit viewport dimensions.
+   *
+   * \param x Pixel horizontal coordinate (0=left, increasing right)
+   * \param y Pixel vertical coordinate (0=top, increasing down)
+   * \param vp_width Viewport width in pixels
+   * \param vp_height Viewport height in pixels
+   * \param out_ray The computed 3D ray (origin + direction)
+   * \param out_cameraPose If not nullptr, receives the camera SE(3) pose
+   *
+   * \sa getLastRenderedViewportSize
+   */
+  void get3DRayForPixelCoord(
+      double x,
+      double y,
+      unsigned int vp_width,
+      unsigned int vp_height,
+      mrpt::math::TLine3D& out_ray,
+      mrpt::poses::CPose3D* out_cameraPose = nullptr) const;
+
+  /** \overload Convenience overload using the last rendered viewport size.
+   * Requires that the viewport has been rendered at least once (so that
+   * updateRenderedViewportSize() has been called by the rendering backend).
+   */
+  void get3DRayForPixelCoord(
+      double x,
+      double y,
+      mrpt::math::TLine3D& out_ray,
+      mrpt::poses::CPose3D* out_cameraPose = nullptr) const;
+
+  /** Returns the size (width, height) of the viewport as rendered in the
+   * last frame. Returns {0,0} if not yet rendered.
+   */
+  [[nodiscard]] std::pair<uint32_t, uint32_t> getLastRenderedViewportSize() const
+  {
+    return {m_lastRenderedWidth, m_lastRenderedHeight};
+  }
+
+  /** Called by the rendering backend to store the last rendered viewport
+   * size (in pixels). */
+  void updateRenderedViewportSize(uint32_t w, uint32_t h) const
+  {
+    m_lastRenderedWidth = w;
+    m_lastRenderedHeight = h;
+  }
+
+  /** @} */
+
   /** Destructor: clears all objects. */
   ~Viewport() override;
 
@@ -417,6 +473,9 @@ class Viewport :
 
   bool m_shadowsEnabled = false;
   uint32_t m_ShadowMapSizeX = 2048, m_ShadowMapSizeY = 2048;
+
+  /** Updated by the rendering backend via updateRenderedViewportSize() */
+  mutable uint32_t m_lastRenderedWidth = 0, m_lastRenderedHeight = 0;
 };
 
 /**
