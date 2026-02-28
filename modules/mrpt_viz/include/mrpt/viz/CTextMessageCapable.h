@@ -53,10 +53,10 @@ class CTextMessageCapable
    * \sa clearTextMessages, updateTextMessage
    */
   void addTextMessage(
-      const double x_frac,
-      const double y_frac,
+      double x_frac,
+      double y_frac,
       const std::string& text,
-      const size_t unique_index = 0,
+      size_t unique_index = 0,
       const TFontParams& fontParams = TFontParams());
 
   /** Just updates the text of a given text message, without touching the

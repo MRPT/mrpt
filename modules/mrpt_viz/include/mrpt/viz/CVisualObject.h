@@ -464,6 +464,11 @@ class CVisualObject : public mrpt::serialization::CSerializable
    */
   mrpt::viz::CText& labelObject() const;
 
+  /** Returns the shared_ptr to the label object (creating it if needed).
+   * \sa labelObject(), enableShowName()
+   */
+  std::shared_ptr<mrpt::viz::CText> labelObjectPtr() const;
+
  protected:
   void writeToStreamRender(mrpt::serialization::CArchive& out) const;
   void readFromStreamRender(mrpt::serialization::CArchive& in);

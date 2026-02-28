@@ -272,6 +272,12 @@ CText& CVisualObject::labelObject() const
   return *m_label_obj;
 }
 
+std::shared_ptr<mrpt::viz::CText> CVisualObject::labelObjectPtr() const
+{
+  labelObject();  // ensure created
+  return m_label_obj;
+}
+
 void CVisualObject::toYAMLMap(mrpt::containers::yaml& propertiesMap) const
 {
   propertiesMap["name"] = getName();
