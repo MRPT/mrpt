@@ -647,10 +647,10 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 
       // Draw reprojected:
       for (auto& k : it->second.projectedPoints_undistorted)
-        imgRect.drawCircle(zoomVal * k.x, zoomVal * k.y, 4, TColor(0, 255, 64));
+        imgRect.drawCircle({int(zoomVal * k.x), int(zoomVal * k.y)}, 4, TColor(0, 255, 64));
 
-      imgRect.drawCircle(10, 10, 4, TColor(0, 255, 64));
-      imgRect.textOut(18, 4, "Reprojected corners", TColor::white());
+      imgRect.drawCircle({10, 10}, 4, TColor(0, 255, 64));
+      imgRect.textOut({18, 4}, "Reprojected corners", TColor::white());
     }
 
     // Zoom images:
@@ -664,17 +664,19 @@ void camera_calib_guiDialog::refreshDisplayedImage()
     for (unsigned int k = 0; k < it->second.detected_corners.size(); k++)
     {
       imgCheck.drawMark(
-          it->second.detected_corners[k].x * zoomVal, it->second.detected_corners[k].y * zoomVal,
+          {int(it->second.detected_corners[k].x * zoomVal),
+           int(it->second.detected_corners[k].y * zoomVal)},
           TColor::blue(), '+', 3);
       imgCheck.drawCircle(
-          it->second.projectedPoints_distorted[k].x * zoomVal,
-          it->second.projectedPoints_distorted[k].y * zoomVal, 4, TColor(0, 255, 64));
+          {int(it->second.projectedPoints_distorted[k].x * zoomVal),
+           int(it->second.projectedPoints_distorted[k].y * zoomVal)},
+          4, TColor(0, 255, 64));
     }
-    imgCheck.drawCircle(10, 10, 4, TColor(0, 255, 64));
-    imgCheck.textOut(18, 4, "Reprojected corners", TColor::white());
+    imgCheck.drawCircle({10, 10}, 4, TColor(0, 255, 64));
+    imgCheck.textOut({18, 4}, "Reprojected corners", TColor::white());
 
-    imgCheck.drawMark(10, 30, TColor::blue(), '+', 3);
-    imgCheck.textOut(18, 24, "Detected corners", TColor::white());
+    imgCheck.drawMark({10, 30}, TColor::blue(), '+', 3);
+    imgCheck.textOut({18, 24}, "Detected corners", TColor::white());
 
     this->bmpOriginal->AssignImage(imgCheck);
     this->bmpRectified->AssignImage(imgRect);
@@ -723,7 +725,7 @@ void camera_calib_guiDialog::show3Dview()
 
   if (!check_squares_length_X_meters || !check_squares_length_Y_meters) return;
 
-  opengl::CGridPlaneXY::Ptr grid = std::make_shared<opengl::CGridPlaneXY>(
+  mrpt::viz::CGridPlaneXY::Ptr grid = std::make_shared<mrpt::viz::CGridPlaneXY>(
       0, check_size_x * check_squares_length_X_meters, 0,
       check_size_y * check_squares_length_Y_meters, 0, check_squares_length_X_meters);
   scene->insert(grid);

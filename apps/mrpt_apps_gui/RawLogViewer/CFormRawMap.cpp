@@ -35,7 +35,7 @@
 // General global variables:
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -52,7 +52,7 @@
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::system;
 using namespace mrpt::config;
 using namespace mrpt::math;
@@ -519,7 +519,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
   CPointsMap::Ptr thePntsMap;
   if (auto p = theMap.mapByClass<CSimplePointsMap>(); p)
     thePntsMap = std::dynamic_pointer_cast<CPointsMap>(p);
-  else if (auto p2 = theMap.mapByClass<CColouredPointsMap>(); p2)
+  else if (auto p2 = theMap.mapByClass<CGenericPointsMap>(); p2)
     thePntsMap = std::dynamic_pointer_cast<CPointsMap>(p2);
 
   wxBusyCursor waitCursor;
@@ -668,8 +668,9 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
     plotMap->AddLayer(new mpScaleY());
 
     if (decimation > 1)
-      lbCount->SetLabel(wxString::Format(
-          _("Point count=%u\n(Decimation=%u)"), unsigned(Xs.size()), unsigned(decimation)));
+      lbCount->SetLabel(
+          wxString::Format(
+              _("Point count=%u\n(Decimation=%u)"), unsigned(Xs.size()), unsigned(decimation)));
     else
       lbCount->SetLabel(
           wxString::Format(_("Point count=%u\n(No decimation)"), unsigned(Xs.size())));
@@ -944,7 +945,7 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
   CPointsMap::Ptr thePntsMap;
   if (auto p = theMap.mapByClass<CSimplePointsMap>(); p)
     thePntsMap = std::dynamic_pointer_cast<CPointsMap>(p);
-  else if (auto p2 = theMap.mapByClass<CColouredPointsMap>(); p2)
+  else if (auto p2 = theMap.mapByClass<CGenericPointsMap>(); p2)
     thePntsMap = std::dynamic_pointer_cast<CPointsMap>(p2);
 
   // An (aprox) estimate of the final size of the map (great improve in
@@ -1059,8 +1060,9 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
     plotMap->AddLayer(new mpScaleY());
 
     if (decimation > 1)
-      lbCount->SetLabel(wxString::Format(
-          _("Point count=%u\n(Decimation=%u)"), unsigned(Xs.size()), unsigned(decimation)));
+      lbCount->SetLabel(
+          wxString::Format(
+              _("Point count=%u\n(Decimation=%u)"), unsigned(Xs.size()), unsigned(decimation)));
     else
       lbCount->SetLabel(
           wxString::Format(_("Point count=%u\n(No decimation)"), unsigned(Xs.size())));
@@ -1293,9 +1295,9 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
                   C(4, 4), C(4, 5), C(5, 5));
             }
           }  // end if
-        }    // end for
-      }      // end if
-    }        // end for
+        }  // end for
+      }  // end if
+    }  // end for
 
     for (itOutFiles = outFiles.begin(); itOutFiles != outFiles.end(); itOutFiles++)
       mrpt::system::os::fclose(*itOutFiles);

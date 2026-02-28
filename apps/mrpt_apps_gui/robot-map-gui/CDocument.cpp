@@ -24,7 +24,7 @@
 const std::string METRIC_MAP_CONFIG_SECTION = "MappingApplication";
 
 using namespace mrpt;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::io;
 using namespace mrpt::config;
 using namespace mrpt::maps;

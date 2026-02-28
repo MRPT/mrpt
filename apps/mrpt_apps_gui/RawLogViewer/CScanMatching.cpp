@@ -44,7 +44,7 @@
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::config;
 using namespace mrpt::io;
 using namespace mrpt::poses;

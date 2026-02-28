@@ -600,7 +600,7 @@ void NavlogViewerApp::updateVisualization()
     // Robot frame of reference:
     mrpt::viz::CSetOfObjects::Ptr gl_robot_frame;
     {
-      mrpt::viz::CRenderizable::Ptr gl_rbframe_r =
+      mrpt::viz::CVisualObject::Ptr gl_rbframe_r =
           scene->getByName("robot_frame");  // Get or create if new
       if (!gl_rbframe_r)
       {
@@ -677,7 +677,7 @@ void NavlogViewerApp::updateVisualization()
     // Extrapolated poses from delay models:
     {
       mrpt::viz::CSetOfObjects::Ptr gl_relposes;
-      mrpt::viz::CRenderizable::Ptr gl_relposes_r =
+      mrpt::viz::CVisualObject::Ptr gl_relposes_r =
           gl_robot_frame->getByName("relposes");  // Get or create if new
       if (!gl_relposes_r)
       {
@@ -716,7 +716,7 @@ void NavlogViewerApp::updateVisualization()
     if (!m_pastPoses.empty())
     {
       mrpt::viz::CSetOfObjects::Ptr gl_poses;
-      mrpt::viz::CRenderizable::Ptr gl_track =
+      mrpt::viz::CVisualObject::Ptr gl_track =
           scene->getByName("past_poses");  // Get or create if new
       if (!gl_track)
       {
@@ -747,7 +747,7 @@ void NavlogViewerApp::updateVisualization()
     {
       // Obstacles: original
       mrpt::viz::CPointCloud::Ptr gl_obs;
-      mrpt::viz::CRenderizable::Ptr gl_obs_r =
+      mrpt::viz::CVisualObject::Ptr gl_obs_r =
           gl_robot_frame->getByName("obs-raw");  // Get or create if new
       if (!gl_obs_r)
       {
@@ -770,7 +770,7 @@ void NavlogViewerApp::updateVisualization()
     {
       // Obstacles: after optional filtering
       mrpt::viz::CPointCloud::Ptr gl_obs;
-      mrpt::viz::CRenderizable::Ptr gl_obs_r =
+      mrpt::viz::CVisualObject::Ptr gl_obs_r =
           gl_robot_frame->getByName("obs");  // Get or create if new
       if (!gl_obs_r)
       {
@@ -795,7 +795,7 @@ void NavlogViewerApp::updateVisualization()
     {
       // Selected PTG path:
       mrpt::viz::CSetOfLines::Ptr gl_path;
-      mrpt::viz::CRenderizable::Ptr gl_path_r =
+      mrpt::viz::CVisualObject::Ptr gl_path_r =
           gl_robot_frame->getByName("path");  // Get or create if new
       if (!gl_path_r)
       {
@@ -858,7 +858,7 @@ void NavlogViewerApp::updateVisualization()
           {
             // Robot shape:
             mrpt::viz::CSetOfLines::Ptr gl_shape;
-            mrpt::viz::CRenderizable::Ptr gl_shape_r =
+            mrpt::viz::CVisualObject::Ptr gl_shape_r =
                 gl_robot_frame->getByName("shape");  // Get or create if new
             if (!gl_shape_r)
             {
@@ -877,7 +877,7 @@ void NavlogViewerApp::updateVisualization()
           }
           {
             mrpt::viz::CSetOfLines::Ptr gl_shape;
-            mrpt::viz::CRenderizable::Ptr gl_shape_r =
+            mrpt::viz::CVisualObject::Ptr gl_shape_r =
                 gl_robot_frame->getByName("velocity");  // Get or create if new
             if (!gl_shape_r)
             {
@@ -902,7 +902,7 @@ void NavlogViewerApp::updateVisualization()
     {
       // Manually-picked PTG path:
       mrpt::viz::CSetOfLines::Ptr gl_path;
-      mrpt::viz::CRenderizable::Ptr gl_path_r =
+      mrpt::viz::CVisualObject::Ptr gl_path_r =
           gl_robot_frame->getByName("manual-path");  // Get or create if new
       if (!gl_path_r)
       {
@@ -969,7 +969,7 @@ void NavlogViewerApp::updateVisualization()
           {
             // Robot shape:
             mrpt::viz::CSetOfLines::Ptr gl_shape;
-            mrpt::viz::CRenderizable::Ptr gl_shape_r =
+            mrpt::viz::CVisualObject::Ptr gl_shape_r =
                 gl_robot_frame->getByName("shape");  // Get or create if new
             if (!gl_shape_r)
             {
@@ -993,11 +993,11 @@ void NavlogViewerApp::updateVisualization()
     {
       // Target:
       mrpt::viz::CSetOfObjects::Ptr gl_trgCorners;
-      mrpt::viz::CRenderizable::Ptr gl_trgC_r =
+      mrpt::viz::CVisualObject::Ptr gl_trgC_r =
           gl_robot_frame->getByName("target_corners");  // Get or create if new
 
       mrpt::viz::CPointCloud::Ptr gl_trg;
-      mrpt::viz::CRenderizable::Ptr gl_trg_r =
+      mrpt::viz::CVisualObject::Ptr gl_trg_r =
           gl_robot_frame->getByName("target");  // Get or create if new
       if (!gl_trg_r)
       {
@@ -1055,9 +1055,10 @@ void NavlogViewerApp::updateVisualization()
   if (m_cbShowAllDebugFields->checked())
   {
     for (const auto& e : log.timestamps)
-      ADD_WIN_TEXTMSG(mrpt::format(
-          "Timestamp %-20s=%s", e.first.c_str(),
-          mrpt::system::dateTimeLocalToString(e.second).c_str()));
+      ADD_WIN_TEXTMSG(
+          mrpt::format(
+              "Timestamp %-20s=%s", e.first.c_str(),
+              mrpt::system::dateTimeLocalToString(e.second).c_str()));
   }
 
   {
@@ -1074,23 +1075,27 @@ void NavlogViewerApp::updateVisualization()
     }
   }
 
-  ADD_WIN_TEXTMSG(mrpt::format(
-      "cmd_vel=%s", log.cmd_vel ? log.cmd_vel->asString().c_str() : "NOP (Continue last PTG)"));
+  ADD_WIN_TEXTMSG(
+      mrpt::format(
+          "cmd_vel=%s", log.cmd_vel ? log.cmd_vel->asString().c_str() : "NOP (Continue last PTG)"));
 
-  ADD_WIN_TEXTMSG(mrpt::format(
-      "cur_vel      =[%.02f m/s, %0.2f m/s, %.02f dps]", log.cur_vel.vx, log.cur_vel.vy,
-      mrpt::RAD2DEG(log.cur_vel.omega)));
-  ADD_WIN_TEXTMSG(mrpt::format(
-      "cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]", log.cur_vel_local.vx, log.cur_vel_local.vy,
-      mrpt::RAD2DEG(log.cur_vel_local.omega)));
+  ADD_WIN_TEXTMSG(
+      mrpt::format(
+          "cur_vel      =[%.02f m/s, %0.2f m/s, %.02f dps]", log.cur_vel.vx, log.cur_vel.vy,
+          mrpt::RAD2DEG(log.cur_vel.omega)));
+  ADD_WIN_TEXTMSG(
+      mrpt::format(
+          "cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]", log.cur_vel_local.vx,
+          log.cur_vel_local.vy, mrpt::RAD2DEG(log.cur_vel_local.omega)));
 
   {
     static TPose2D formerPoseLoc = log.robotPoseLocalization;
 
-    ADD_WIN_TEXTMSG(mrpt::format(
-        "robot_pose    =%35s | Increment since last step=%s",
-        log.robotPoseLocalization.asString().c_str(),
-        (log.robotPoseLocalization - formerPoseLoc).asString().c_str()));
+    ADD_WIN_TEXTMSG(
+        mrpt::format(
+            "robot_pose    =%35s | Increment since last step=%s",
+            log.robotPoseLocalization.asString().c_str(),
+            (log.robotPoseLocalization - formerPoseLoc).asString().c_str()));
 
     formerPoseLoc = log.robotPoseLocalization;
   }
@@ -1098,10 +1103,11 @@ void NavlogViewerApp::updateVisualization()
   {
     static TPose2D formerPoseOdo = log.robotPoseOdometry;
 
-    ADD_WIN_TEXTMSG(mrpt::format(
-        "robot_odometry=%35s | Increment since last step=%s",
-        log.robotPoseOdometry.asString().c_str(),
-        (log.robotPoseOdometry - formerPoseOdo).asString().c_str()));
+    ADD_WIN_TEXTMSG(
+        mrpt::format(
+            "robot_odometry=%35s | Increment since last step=%s",
+            log.robotPoseOdometry.asString().c_str(),
+            (log.robotPoseOdometry - formerPoseOdo).asString().c_str()));
 
     formerPoseOdo = log.robotPoseOdometry;
   }
@@ -1160,9 +1166,10 @@ void NavlogViewerApp::updateVisualization()
         col);
   }
 
-  ADD_WIN_TEXTMSG(mrpt::format(
-      "relPoseSense: %s relPoseVelCmd:%s", log.relPoseSense.asString().c_str(),
-      log.relPoseVelCmd.asString().c_str()));
+  ADD_WIN_TEXTMSG(
+      mrpt::format(
+          "relPoseSense: %s relPoseVelCmd:%s", log.relPoseSense.asString().c_str(),
+          log.relPoseVelCmd.asString().c_str()));
 
   if (m_cbShowAllDebugFields->checked())
   {

@@ -17,12 +17,11 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/img/TColor.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/Scene.h>
-#include <mrpt/opengl/graph_tools.h>
 #include <mrpt/random.h>
+#include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/Scene.h>
+#include <mrpt/viz/graph_tools.h>
 
-#include <chrono>
 #include <iostream>
 #include <thread>
 
@@ -33,7 +32,7 @@ using namespace mrpt::graphslam;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::gui;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::random;
 using namespace mrpt::img;
 using namespace std;

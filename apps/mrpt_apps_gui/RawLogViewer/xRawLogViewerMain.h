@@ -45,7 +45,6 @@
 #include <wx/scrolbar.h>
 #include <wx/simplebook.h>
 
-#include <map>
 #include <string>
 
 #include "ViewOptions3DPoints.h"
@@ -57,6 +56,7 @@
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/viz/CBox.h>
 #include <mrpt/viz/CPointCloud.h>
 #include <mrpt/viz/CSimpleLine.h>
 

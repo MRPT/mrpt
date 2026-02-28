@@ -24,7 +24,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/maps/CColouredOctoMap.h>
-#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/system/CTicTac.h>
@@ -44,7 +44,7 @@ using namespace mrpt::img;
 using namespace mrpt::gui;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace std;
 
 // Thread for grabbing: Do this is another thread so we divide rendering and
@@ -392,6 +392,6 @@ int main()
   catch (const std::exception& e)
   {
     std::cout << "EXCEPCION: " << mrpt::exception_to_str(e) << "\n";
-    return -1;
+    return 1;
   }
 }

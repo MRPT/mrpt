@@ -48,7 +48,7 @@
 
 using namespace mrpt;
 using namespace mrpt::obs;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::system;
 using namespace mrpt::img;
 using namespace mrpt::math;
@@ -1898,7 +1898,7 @@ void xRawLogViewerFrame::OnGenerateIMUTextFile(wxCommandEvent& event)
                 ::fprintf(f, "\n");
                 M++;
               }  // end if
-            }    // end if
+            }  // end if
           } while (obs);
         }
         break;

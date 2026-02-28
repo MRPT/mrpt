@@ -20,6 +20,7 @@
 #include <mrpt/obs/obs_utils.h>
 #include <mrpt/viz/CEllipsoid3D.h>
 #include <mrpt/viz/CSphere.h>
+#include <mrpt/viz/CVisualObject.h>
 
 namespace mrpt::graphslam::deciders
 {
@@ -1734,7 +1735,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization()
   // fetch the partitions CSetOfObjects
   CSetOfObjects::Ptr map_partitions_obj;
   {
-    CRenderizable::Ptr obj = scene->getByName("map_partitions");
+    CVisualObject::Ptr obj = scene->getByName("map_partitions");
     // do not check for null ptr - must be properly created in the init*
     // method
     map_partitions_obj = std::dynamic_pointer_cast<CSetOfObjects>(obj);
@@ -1769,7 +1770,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization()
     std::string partition_obj_name = mrpt::format("partition_%d", partitionID);
     std::string balloon_obj_name = mrpt::format("#%d", partitionID);
 
-    CRenderizable::Ptr obj = map_partitions_obj->getByName(partition_obj_name);
+    CVisualObject::Ptr obj = map_partitions_obj->getByName(partition_obj_name);
     CSetOfObjects::Ptr curr_partition_obj;
     if (obj)
     {
@@ -1839,7 +1840,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization()
     {
       // place the partitions baloon at the centroid elevated by a fixed Z
       // value
-      CRenderizable::Ptr _obj = curr_partition_obj->getByName(balloon_obj_name);
+      CVisualObject::Ptr _obj = curr_partition_obj->getByName(balloon_obj_name);
       balloon_obj = std::dynamic_pointer_cast<CSphere>(_obj);
       balloon_obj->setLocation(balloon_location);
       if (partition_contains_last_node)
@@ -1857,7 +1858,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization()
     {
       // place the partitions baloon at the centroid elevated by a fixed Z
       // value
-      CRenderizable::Ptr _obj = curr_partition_obj->getByName("connecting_lines");
+      CVisualObject::Ptr _obj = curr_partition_obj->getByName("connecting_lines");
       connecting_lines_obj = std::dynamic_pointer_cast<CSetOfLines>(_obj);
 
       connecting_lines_obj->clear();
@@ -1896,7 +1897,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization()
       std::string partition_obj_name =
           mrpt::format("partition_%lu", static_cast<unsigned long>(pID));
 
-      CRenderizable::Ptr obj = map_partitions_obj->getByName(partition_obj_name);
+      CVisualObject::Ptr obj = map_partitions_obj->getByName(partition_obj_name);
       if (!obj)
       {
         THROW_EXCEPTION_FMT("Partition: %s was not found", partition_obj_name.c_str());
@@ -1923,7 +1924,7 @@ void CLoopCloserERD<GRAPH_T>::toggleMapPartitionsVisualization()
 
   if (m_lc_params.visualize_map_partitions)
   {
-    mrpt::viz::CRenderizable::Ptr obj = scene->getByName("map_partitions");
+    mrpt::viz::CVisualObject::Ptr obj = scene->getByName("map_partitions");
     obj->setVisibility(!obj->isVisible());
   }
   else
@@ -1999,7 +2000,7 @@ void CLoopCloserERD<GRAPH_T>::updateLaserScansVisualization()
   {
     mrpt::viz::Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 
-    mrpt::viz::CRenderizable::Ptr obj = scene->getByName("laser_scan_viz");
+    mrpt::viz::CVisualObject::Ptr obj = scene->getByName("laser_scan_viz");
     mrpt::viz::CPlanarLaserScan::Ptr laser_scan_viz =
         std::dynamic_pointer_cast<mrpt::viz::CPlanarLaserScan>(obj);
     laser_scan_viz->setScan(*m_last_laser_scan2D);
@@ -2035,7 +2036,7 @@ void CLoopCloserERD<GRAPH_T>::toggleLaserScansVisualization()
 
   if (m_laser_params.visualize_laser_scans)
   {
-    mrpt::viz::CRenderizable::Ptr obj = scene->getByName("laser_scan_viz");
+    mrpt::viz::CVisualObject::Ptr obj = scene->getByName("laser_scan_viz");
     obj->setVisibility(!obj->isVisible());
   }
   else
@@ -2166,7 +2167,7 @@ void CLoopCloserERD<GRAPH_T>::updateCurrCovarianceVisualization()
       << mat.det());
 
   mrpt::viz::Scene::Ptr scene = this->m_win->get3DSceneAndLock();
-  CRenderizable::Ptr obj = scene->getByName("cov_ellipsis_obj");
+  CVisualObject::Ptr obj = scene->getByName("cov_ellipsis_obj");
   CEllipsoid3D::Ptr cov_ellipsis_obj = std::dynamic_pointer_cast<CEllipsoid3D>(obj);
 
   // set the pose and corresponding covariance matrix of the ellipsis

@@ -31,7 +31,7 @@
 #include <iomanip>
 
 using namespace mrpt;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::maps;
 using namespace mrpt::img;
 using namespace mrpt::math;

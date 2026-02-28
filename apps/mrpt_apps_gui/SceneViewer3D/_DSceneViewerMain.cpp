@@ -139,7 +139,7 @@ using namespace mrpt::math;
 using namespace mrpt::io;
 using namespace mrpt::config;
 using namespace mrpt::rtti;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::viz;
 using namespace mrpt::img;
 using namespace std;

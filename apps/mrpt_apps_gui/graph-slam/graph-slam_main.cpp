@@ -31,7 +31,7 @@ using namespace mrpt;
 using namespace mrpt::graphslam;
 using namespace mrpt::graphs;
 using namespace mrpt::poses;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace std;
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
 
     bool view = false;
     app.add_flag(
-        "", "view", view,
+        "--view", view,
         "Op: Visualize the graph in a 3D view. If used alone, represent VERTEX2 or "
         "VERTEX3 poses directly as stored in the input file. "
         "If used together with another operation, the final obtained graph after "
@@ -127,7 +127,7 @@ int main(int argc, char** argv)
 
     bool dijkstra_op = false;
     app.add_flag(
-        "", "dijkstra", dijkstra_op,
+        "--dijkstra", dijkstra_op,
         "Op: Executes CNetworkOfPoses::dijkstra_nodes_estimate() to "
         "estimate the global pose of nodes from a Dijkstra tree and "
         "the edge relative poses.\n"
@@ -135,7 +135,7 @@ int main(int argc, char** argv)
 
     bool levmarq_op = false;
     app.add_flag(
-        "", "levmarq", levmarq_op,
+        "--levmarq", levmarq_op,
         "Op: Optimizes the graph with sparse Levenberg-Marquartd using "
         "global coordinates (via "
         "mrpt::graphslam::optimize_graph_spa_levmarq).\n"
@@ -144,7 +144,7 @@ int main(int argc, char** argv)
 
     bool info_op = false;
     app.add_flag(
-        "", "info", info_op,
+        "--info", info_op,
         "Op: Loads the graph and displays statistics and information on it.\n");
 
     bool quiet = false;

@@ -290,6 +290,6 @@ int main(int argc, char** argv)
 
       mrpt::system::pause();
     }
-    return -1;
+    return 1;
   }
 }

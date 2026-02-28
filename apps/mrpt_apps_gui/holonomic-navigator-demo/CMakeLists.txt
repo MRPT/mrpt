@@ -11,6 +11,8 @@ find_package(mrpt_common REQUIRED)
 # Dependencies
 find_package(mrpt_nav REQUIRED)
 find_package(mrpt_gui REQUIRED)
+find_package(wxWidgets REQUIRED COMPONENTS gl core base adv)
+find_package(OpenGL REQUIRED)
 
 # Define the executable target:
 mrpt_add_executable(
@@ -25,6 +27,10 @@ mrpt_add_executable(
   LINK_LIBRARIES
     mrpt::mrpt_nav
     mrpt::mrpt_gui
+    wxWidgets::wxWidgets
+    OpenGL::GL
 )
+
+target_include_directories(${PROJECT_NAME} PRIVATE ../wxThings/)
 
 #AppStartMenuLink(${PROJECT_NAME} "Holonomic navigation simulator")   # Add link to the Start menu (in Windows Installable packages)

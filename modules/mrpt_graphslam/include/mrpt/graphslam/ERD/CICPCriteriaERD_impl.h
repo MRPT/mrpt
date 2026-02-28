@@ -15,6 +15,7 @@
 #pragma once
 #include <mrpt/viz/CDisk.h>
 #include <mrpt/viz/CPlanarLaserScan.h>
+#include <mrpt/viz/CVisualObject.h>
 
 namespace mrpt::graphslam::deciders
 {
@@ -354,7 +355,7 @@ void CICPCriteriaERD<GRAPH_T>::toggleLaserScansVisualization()
 
   if (params.visualize_laser_scans)
   {
-    CRenderizable::Ptr obj = scene->getByName("laser_scan_viz");
+    CVisualObject::Ptr obj = scene->getByName("laser_scan_viz");
     obj->setVisibility(!obj->isVisible());
   }
   else
@@ -458,7 +459,7 @@ void CICPCriteriaERD<GRAPH_T>::updateVisuals()
   {
     Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 
-    CRenderizable::Ptr obj = scene->getByName("ICP_max_distance");
+    CVisualObject::Ptr obj = scene->getByName("ICP_max_distance");
     CDisk::Ptr disk_obj = std::dynamic_pointer_cast<CDisk>(obj);
 
     disk_obj->setPose(this->m_graph->nodes[this->m_graph->nodeCount() - 1]);
@@ -472,7 +473,7 @@ void CICPCriteriaERD<GRAPH_T>::updateVisuals()
   {
     Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 
-    CRenderizable::Ptr obj = scene->getByName("laser_scan_viz");
+    CVisualObject::Ptr obj = scene->getByName("laser_scan_viz");
     CPlanarLaserScan::Ptr laser_scan_viz = std::dynamic_pointer_cast<CPlanarLaserScan>(obj);
 
     // if fake 2D exists use it

@@ -26,7 +26,7 @@
 
 using namespace mrpt;
 using namespace mrpt::nav;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::gui;
@@ -802,7 +802,7 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
       float h = 0;
       for (unsigned int i = 0; i < robotShape.size(); i++)
       {
-        CRenderizable::Ptr obj;
+        CVisualObject::Ptr obj;
         obj = scene->getByName(format("Level%d", i + 1));
 
         if (i == 0)

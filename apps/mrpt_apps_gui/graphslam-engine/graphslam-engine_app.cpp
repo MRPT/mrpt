@@ -193,7 +193,7 @@ int main(int argc, char** argv)
     logger.logStr(LVL_ERROR, se);
     std::cerr << se << "\n";
     mrpt::system::pause();
-    return -1;
+    return 1;
   }
 
   return 0;

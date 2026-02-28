@@ -61,7 +61,13 @@ wxBitmap MyArtProvider::CreateBitmap(
 
 #include <mrpt/gui/about_box.h>
 #include <mrpt/nav.h>
-#include <mrpt/opengl.h>
+#include <mrpt/viz/CArrow.h>
+#include <mrpt/viz/CDisk.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CSetOfLines.h>
+#include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/CSimpleLine.h>
+#include <mrpt/viz/stock_objects.h>
 #include <mrpt/system/filesystem.h>
 
 #include <memory>
@@ -71,7 +77,7 @@ using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::io;
 using namespace mrpt::img;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::serialization;
 using namespace mrpt::math;
 using namespace mrpt::config;
@@ -422,7 +428,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent, w
   }
 
   {  // Sign of "picking a navigation target":
-    m_gl_placing_nav_target = std::make_shared<opengl::CSetOfObjects>();
+    m_gl_placing_nav_target = std::make_shared<mrpt::viz::CSetOfObjects>();
 
     mrpt::viz::CArrow::Ptr obj;
     obj = mrpt::viz::CArrow::Create(1, 0, 0, 0.2f, 0, 0, 0.4f, 0.05f, 0.15f);
@@ -441,7 +447,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent, w
     openGLSceneRef->insert(m_gl_placing_nav_target);
   }
   {  // Sign of "replacing the robot":
-    m_gl_placing_robot = std::make_shared<opengl::CSetOfObjects>();
+    m_gl_placing_robot = std::make_shared<mrpt::viz::CSetOfObjects>();
     mrpt::viz::CCylinder::Ptr obj = mrpt::viz::CCylinder::Create(0.2f, 0.1f, 0.9f);
     obj->setColor_u8(TColor(255, 0, 0, 120));
     m_gl_placing_robot->insert(obj);

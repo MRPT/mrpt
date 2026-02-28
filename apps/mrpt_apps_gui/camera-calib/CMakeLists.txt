@@ -12,6 +12,9 @@ find_package(mrpt_common REQUIRED)
 find_package(mrpt_vision REQUIRED)
 find_package(mrpt_gui REQUIRED)
 find_package(mrpt_hwdrivers REQUIRED)
+find_package(mrpt_libapps_gui REQUIRED)
+find_package(wxWidgets REQUIRED COMPONENTS gl core base adv)
+find_package(OpenGL REQUIRED)
 
 # Define the executable target:
 mrpt_add_executable(
@@ -31,6 +34,9 @@ mrpt_add_executable(
     mrpt::mrpt_vision
     mrpt::mrpt_gui
     mrpt::mrpt_hwdrivers
+    mrpt::mrpt_libapps_gui
+    wxWidgets::wxWidgets
+    OpenGL::GL
 )
 
 #AppStartMenuLink(${PROJECT_NAME} "Camera calibration GUI")   # Add link to the Start menu (in Windows Installable packages)

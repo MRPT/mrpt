@@ -13,6 +13,12 @@
 */
 
 #include <mrpt/maps/CLandmarksMap.h>
+
+#include <mrpt/core/Clock.h>
+#include <mrpt/core/round.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/obs/CObservation.h>
+#include <mrpt/random/RandomGenerators.h>
 #include <mrpt/serialization/CArchive.h>
 
 IMPLEMENTS_SERIALIZABLE(CLandmarksMap, CMetricMap, mrpt::maps)
@@ -59,5 +65,100 @@ void mrpt::maps::CLandmarksMap::serializeFrom(mrpt::serialization::CArchive& in,
     }
     default:
       MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  }
+}
+
+void mrpt::maps::CLandmarksMap::simulateRangeBearingReadings(
+    const mrpt::poses::CPose3D& in_robotPose,
+    const mrpt::poses::CPose3D& in_sensorLocationOnRobot,
+    mrpt::obs::CObservationBearingRange& out_Observations,
+    bool sensorDetectsIDs,
+    double in_stdRange,
+    double in_stdYaw,
+    double in_stdPitch,
+    std::vector<size_t>* out_real_associations,
+    double spurious_count_mean,
+    double spurious_count_std) const
+{
+  using mrpt::random::getRandomGenerator;
+
+  if (out_real_associations) out_real_associations->clear();
+
+  // Compute the 3D position of the sensor:
+  const mrpt::poses::CPose3D sensorPose = in_robotPose + in_sensorLocationOnRobot;
+
+  // Clear output data:
+  out_Observations.validCovariances = false;
+  out_Observations.sensor_std_range = static_cast<float>(in_stdRange);
+  out_Observations.sensor_std_yaw = static_cast<float>(in_stdYaw);
+  out_Observations.sensor_std_pitch = static_cast<float>(in_stdPitch);
+  out_Observations.sensedData.clear();
+  out_Observations.timestamp = mrpt::Clock::now();
+  out_Observations.sensorLocationOnRobot = in_sensorLocationOnRobot;
+
+  // For each landmark in the map:
+  size_t idx = 0;
+  for (const auto& lm : landmarks)
+  {
+    // Compute range, yaw, pitch from sensor pose to landmark:
+    double range, yaw, pitch;
+    sensorPose.sphericalCoordinates(lm.pose_mean, range, yaw, pitch);
+
+    // Add noise:
+    range += in_stdRange * getRandomGenerator().drawGaussian1D_normalized();
+    yaw += in_stdYaw * getRandomGenerator().drawGaussian1D_normalized();
+    pitch += in_stdPitch * getRandomGenerator().drawGaussian1D_normalized();
+
+    yaw = mrpt::math::wrapToPi(yaw);
+    range = std::max(0.0, range);
+
+    if (range >= out_Observations.minSensorDistance &&
+        range <= out_Observations.maxSensorDistance &&
+        std::abs(yaw) <= 0.5f * out_Observations.fieldOfView_yaw &&
+        std::abs(pitch) <= 0.5f * out_Observations.fieldOfView_pitch)
+    {
+      mrpt::obs::CObservationBearingRange::TMeasurement newMeas;
+      newMeas.landmarkID =
+          sensorDetectsIDs ? static_cast<int32_t>(lm.ID) : mrpt::obs::INVALID_LANDMARK_ID;
+      newMeas.range = static_cast<float>(range);
+      newMeas.yaw = static_cast<float>(yaw);
+      newMeas.pitch = static_cast<float>(pitch);
+
+      out_Observations.sensedData.push_back(newMeas);
+      if (out_real_associations) out_real_associations->push_back(idx);
+    }
+    ++idx;
+  }
+
+  // Spurious detections:
+  const double fSpurious =
+      getRandomGenerator().drawGaussian1D(spurious_count_mean, spurious_count_std);
+  size_t nSpurious = 0;
+  if (spurious_count_std != 0 || spurious_count_mean != 0)
+    nSpurious = static_cast<size_t>(std::max(0L, mrpt::round_long(fSpurious)));
+
+  for (size_t i = 0; i < nSpurious; i++)
+  {
+    const double range = getRandomGenerator().drawUniform(
+        out_Observations.minSensorDistance, out_Observations.maxSensorDistance);
+    const double yaw = (out_Observations.sensor_std_yaw == 0)
+                           ? 0.0
+                           : getRandomGenerator().drawUniform(
+                                 -0.5 * out_Observations.fieldOfView_yaw,
+                                 0.5 * out_Observations.fieldOfView_yaw);
+    const double pitch = (out_Observations.sensor_std_pitch == 0)
+                             ? 0.0
+                             : getRandomGenerator().drawUniform(
+                                   -0.5 * out_Observations.fieldOfView_pitch,
+                                   0.5 * out_Observations.fieldOfView_pitch);
+
+    mrpt::obs::CObservationBearingRange::TMeasurement newMeas;
+    newMeas.landmarkID = mrpt::obs::INVALID_LANDMARK_ID;
+    newMeas.range = static_cast<float>(range);
+    newMeas.yaw = static_cast<float>(yaw);
+    newMeas.pitch = static_cast<float>(pitch);
+
+    out_Observations.sensedData.push_back(newMeas);
+    if (out_real_associations) out_real_associations->push_back(std::string::npos);
   }
 }

@@ -29,7 +29,7 @@
 using namespace Eigen;
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 
 void CDifodoCamera::loadConfiguration(const mrpt::config::CConfigFileBase& ini)
 {
@@ -100,6 +100,7 @@ void CDifodoCamera::loadConfiguration(const mrpt::config::CConfigFileBase& ini)
 
 bool CDifodoCamera::openCamera()
 {
+#if MRPT_HAS_OPENNI2
   const char* deviceURI = openni::ANY_DEVICE;
 
   rc = openni::OpenNI::initialize();
@@ -154,10 +155,14 @@ bool CDifodoCamera::openCamera()
     printf("Couldn't find depth stream:\n%s\n", openni::OpenNI::getExtendedError());
 
   return false;
+#else
+  THROW_EXCEPTION("MRPT was built without OpenNI2 support");
+#endif
 }
 
 void CDifodoCamera::loadFrame()
 {
+#if MRPT_HAS_OPENNI2
   // Read the newest frame
   openni::VideoFrameRef framed;
   depth_ch.readFrame(&framed);
@@ -183,6 +188,9 @@ void CDifodoCamera::loadFrame()
 
     pDepthRow += rowSize;
   }
+#else
+  THROW_EXCEPTION("MRPT was built without OpenNI2 support");
+#endif
 }
 
 void CDifodoCamera::CreateResultsFile()
@@ -220,7 +228,6 @@ void CDifodoCamera::initializeScene()
 {
   poses::CPose3D rel_lenspose(0, -0.05, 0, 0, 0, 0);
 
-  global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE(1000000);
   window.resize(1000, 900);
   window.setPos(900, 0);
   window.setCameraZoom(16);
@@ -250,8 +257,8 @@ void CDifodoCamera::initializeScene()
   scene->insert(camera_odo);
 
   // Frustum
-  opengl::CFrustum::Ptr FOV =
-      std::make_shared<opengl::CFrustum>(0.3, 2, 57.3 * fovh, 57.3 * fovv, 1.f, true, false);
+  CFrustum::Ptr FOV =
+      std::make_shared<CFrustum>(0.3, 2, 57.3 * fovh, 57.3 * fovv, 1.f, true, false);
   FOV->setColor(0.7, 0.7, 0.7);
   FOV->setPose(cam_pose);
   scene->insert(FOV);
@@ -356,8 +363,10 @@ void CDifodoCamera::updateScene()
 
 void CDifodoCamera::closeCamera()
 {
+#if MRPT_HAS_OPENNI2
   depth_ch.destroy();
   openni::OpenNI::shutdown();
+#endif
 }
 
 void CDifodoCamera::reset()

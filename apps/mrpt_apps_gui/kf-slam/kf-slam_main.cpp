@@ -39,6 +39,6 @@ int main(int argc, char** argv)
   {
     std::cerr << mrpt::exception_to_str(e);
     mrpt::system::pause();
-    return -1;
+    return 1;
   }
 }

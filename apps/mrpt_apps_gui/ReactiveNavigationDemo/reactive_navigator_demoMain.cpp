@@ -74,7 +74,7 @@ wxBitmap MyArtProvider::CreateBitmap(
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::io;
 using namespace mrpt::config;
 using namespace mrpt::img;

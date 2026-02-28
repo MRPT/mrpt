@@ -23,7 +23,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CVelodyneScanner.h>
 #include <mrpt/io/CCompressedOutputStream.h>
-#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>  // MRPT_getVersion()
 #include <mrpt/viz/CGridPlaneXY.h>
@@ -42,7 +42,7 @@ using namespace mrpt::img;
 using namespace mrpt::config;
 using namespace mrpt::system;
 using namespace mrpt::serialization;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace std;
 
 // Thread for grabbing: Do this is another thread so we divide rendering and
@@ -311,7 +311,7 @@ int VelodyneView(
       {
         last_obs->generatePointCloud(pc_params);
 
-        CColouredPointsMap pntsMap;
+        CGenericPointsMap pntsMap;
         pntsMap.loadFromVelodyneScan(*last_obs);
 
         win3D.get3DSceneAndLock();
@@ -433,11 +433,11 @@ int main(int argc, char** argv)
   catch (const std::exception& e)
   {
     std::cout << "EXCEPCION: " << mrpt::exception_to_str(e) << "\n";
-    return -1;
+    return 1;
   }
   catch (...)
   {
     printf("Another exception!!");
-    return -1;
+    return 1;
   }
 }

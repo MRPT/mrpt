@@ -22,7 +22,7 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/viz/CRenderizable.h>
+#include <mrpt/viz/CVisualObject.h>
 
 #include <cmath>
 #include <iostream>
@@ -296,9 +296,9 @@ class CLevMarqGSO : public mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAP
    * \return Disk/Sphere instance for 2D/3D SLAM respectively
    */
   /**\{*/
-  mrpt::viz::CRenderizable::Ptr initOptDistanceVisualizationInternal(
+  mrpt::viz::CVisualObject::Ptr initOptDistanceVisualizationInternal(
       const mrpt::poses::CPose2D& p_unused);
-  mrpt::viz::CRenderizable::Ptr initOptDistanceVisualizationInternal(
+  mrpt::viz::CVisualObject::Ptr initOptDistanceVisualizationInternal(
       const mrpt::poses::CPose3D& p_unused);
   /**\}*/
 

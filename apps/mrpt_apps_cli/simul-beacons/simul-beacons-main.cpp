@@ -58,7 +58,7 @@ int main(int argc, char** argv)
       if (!showHelp)
       {
         mrpt::system::pause();
-        return -1;
+        return 1;
       }
       else
         return 0;

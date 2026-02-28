@@ -22,6 +22,9 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/viz/CAxis.h>
 #include <mrpt/viz/CPlanarLaserScan.h>
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CVisualObject.h>
+#include <mrpt/viz/stock_objects.h>
 
 namespace mrpt::graphslam
 {
@@ -1568,7 +1571,7 @@ void CGraphSlamEngine<GRAPH_T>::toggleOdometryVisualization()
 
   if (m_visualize_odometry_poses)
   {
-    CRenderizable::Ptr obj = scene->getByName("odometry_poses_cloud");
+    CVisualObject::Ptr obj = scene->getByName("odometry_poses_cloud");
     obj->setVisibility(!obj->isVisible());
 
     obj = scene->getByName("robot_odometry_poses");
@@ -1596,7 +1599,7 @@ void CGraphSlamEngine<GRAPH_T>::toggleGTVisualization()
 
   if (m_visualize_GT)
   {
-    CRenderizable::Ptr obj = scene->getByName("GT_cloud");
+    CVisualObject::Ptr obj = scene->getByName("GT_cloud");
     obj->setVisibility(!obj->isVisible());
 
     obj = scene->getByName("robot_GT");
@@ -1640,7 +1643,7 @@ void CGraphSlamEngine<GRAPH_T>::toggleMapVisualization()
     scan_name << "laser_scan_";
     scan_name << node_cnt;
 
-    CRenderizable::Ptr obj = scene->getByName(scan_name.str());
+    CVisualObject::Ptr obj = scene->getByName(scan_name.str());
     // current node may not have laserScans => may not have corresponding
     // obj
     if (obj)
@@ -1665,7 +1668,7 @@ void CGraphSlamEngine<GRAPH_T>::toggleEstimatedTrajectoryVisualization()
 
   if (m_visualize_estimated_trajectory)
   {
-    CRenderizable::Ptr obj = scene->getByName("estimated_traj_setoflines");
+    CVisualObject::Ptr obj = scene->getByName("estimated_traj_setoflines");
     obj->setVisibility(!obj->isVisible());
 
     obj = scene->getByName("robot_estimated_traj");
@@ -1770,7 +1773,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
   Scene::Ptr scene = m_win->get3DSceneAndLock();
   CSetOfObjects::Ptr map_obj;
   {
-    CRenderizable::Ptr obj = scene->getByName("map");
+    CVisualObject::Ptr obj = scene->getByName("map");
     map_obj = std::dynamic_pointer_cast<CSetOfObjects>(obj);
     ASSERTDEB_(map_obj);
   }
@@ -1822,7 +1825,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
       // if the scan doesn't already exist, add it to the map object,
       // otherwise just
       // adjust its pose
-      CRenderizable::Ptr obj = map_obj->getByName(scan_name.str());
+      CVisualObject::Ptr obj = map_obj->getByName(scan_name.str());
       CSetOfObjects::Ptr scan_obj = std::dynamic_pointer_cast<CSetOfObjects>(obj);
       if (!scan_obj)
       {
@@ -1844,7 +1847,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
         {
           stringstream prev_scan_name("");
           prev_scan_name << "laser_scan_" << node_it - 1;
-          CRenderizable::Ptr prev_obj = map_obj->getByName(prev_scan_name.str());
+          CVisualObject::Ptr prev_obj = map_obj->getByName(prev_scan_name.str());
           if (prev_obj)
           {
             scan_obj->setVisibility(prev_obj->isVisible());
@@ -1975,7 +1978,7 @@ void CGraphSlamEngine<GRAPH_T>::updateGTVisualization()
 
     Scene::Ptr scene = m_win->get3DSceneAndLock();
 
-    CRenderizable::Ptr obj = scene->getByName("GT_cloud");
+    CVisualObject::Ptr obj = scene->getByName("GT_cloud");
     CPointCloud::Ptr GT_cloud = std::dynamic_pointer_cast<CPointCloud>(obj);
 
     // add the latest GT pose
@@ -2044,7 +2047,7 @@ void CGraphSlamEngine<GRAPH_T>::updateOdometryVisualization()
   Scene::Ptr scene = m_win->get3DSceneAndLock();
 
   // point cloud
-  CRenderizable::Ptr obj = scene->getByName("odometry_poses_cloud");
+  CVisualObject::Ptr obj = scene->getByName("odometry_poses_cloud");
   CPointCloud::Ptr odometry_poses_cloud = std::dynamic_pointer_cast<CPointCloud>(obj);
   mrpt::poses::CPose3D p(m_odometry_poses.back());
 
@@ -2119,7 +2122,7 @@ void CGraphSlamEngine<GRAPH_T>::updateEstimatedTrajectoryVisualization(bool full
 
   Scene::Ptr scene = m_win->get3DSceneAndLock();
 
-  CRenderizable::Ptr obj;
+  CVisualObject::Ptr obj;
   if (m_visualize_estimated_trajectory)
   {
     // set of lines

@@ -36,7 +36,7 @@
 
 using namespace mrpt;
 using namespace mrpt::obs;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::system;
 using namespace mrpt::config;
 using namespace mrpt::containers;
@@ -340,7 +340,7 @@ void xRawLogViewerFrame::OnMenuRegenerateGPSTimestamps(wxCommandEvent& event)
       }
       break;
     }  // end switch type
-  }    // end for i
+  }  // end for i
 
   unsigned int nChanges = time_changes.size();
   double average_time_change = 0, std_time_change = 0;

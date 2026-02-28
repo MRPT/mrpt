@@ -28,7 +28,6 @@ also provides many ready-to-use applications:
   page_app_icp-slam.rst
   page_app_image2gridmap.rst
   page_app_kf-slam.rst
-  page_app_kinect-3d-slam.rst
   page_app_kinect-3d-view.rst
   page_app_kinect-stereo-calib.rst
   page_app_map-partition.rst

@@ -59,6 +59,6 @@ int main(int argc, char** argv)
   catch (const std::exception& e)
   {
     if (strlen(e.what()) > 0) std::cerr << mrpt::exception_to_str(e) << "\n";
-    return -1;
+    return 1;
   }
 }

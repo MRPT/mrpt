@@ -118,12 +118,12 @@ int main(int argc, char** argv)
   catch (const std::exception& e)
   {
     cerr << mrpt::exception_to_str(e) << endl;
-    return -1;
+    return 1;
   }
   catch (...)
   {
     cerr << "Untyped exception." << endl;
-    return -1;
+    return 1;
   }
 }
 

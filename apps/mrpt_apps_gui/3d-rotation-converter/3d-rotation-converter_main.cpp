@@ -167,9 +167,10 @@ void recalcAll()
   }
 
   app.edOutAxisAngle_Ax->setValue(mrpt::format("[%.05f %.05f %.05f]", axis[0], axis[1], axis[2]));
-  app.edOutAxisAngle_An->setValue(mrpt::format(
-      "%.05f %s", log_R.norm() * (app.units_radians ? 1.0 : 180.0 / M_PI),
-      (app.units_radians ? "rad" : "deg")));
+  app.edOutAxisAngle_An->setValue(
+      mrpt::format(
+          "%.05f %s", log_R.norm() * (app.units_radians ? 1.0 : 180.0 / M_PI),
+          (app.units_radians ? "rad" : "deg")));
 };
 
 void AppRotationConverter()
@@ -513,6 +514,6 @@ int main()
   catch (const std::exception& e)
   {
     std::cerr << mrpt::exception_to_str(e) << "\n";
-    return -1;
+    return 1;
   }
 }

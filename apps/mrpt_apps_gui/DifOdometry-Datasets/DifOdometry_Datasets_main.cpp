@@ -207,6 +207,6 @@ int main(int num_arg, char* argv[])
   catch (const std::exception& e)
   {
     std::cout << "MRPT exception caught: " << mrpt::exception_to_str(e) << "\n";
-    return -1;
+    return 1;
   }
 }

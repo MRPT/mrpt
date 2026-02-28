@@ -33,7 +33,7 @@
 #endif
 
 using namespace mrpt;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 
 CGlWidget::CGlWidget(bool is2D, QWidget* parent) :
     CQtGlCanvasBase(parent),
@@ -95,7 +95,7 @@ void CGlWidget::fillMap(const CSetOfObjects::Ptr& renderizableMap)
   {
     if (m_map->size() == 1)
     {
-      CRenderizable* ren = m_map->begin()->get();
+      CVisualObject* ren = m_map->begin()->get();
       auto* textured = dynamic_cast<CTexturedPlane*>(ren);
       if (textured)
       {
@@ -413,7 +413,7 @@ void CGlWidget::updateCamerasParams()
   if (zoom != getZoomDistance()) emit zoomChanged(getZoomDistance());
 }
 
-void CGlWidget::insertToMap(const CRenderizable::Ptr& newObject)
+void CGlWidget::insertToMap(const CVisualObject::Ptr& newObject)
 {
   CQtGlCanvasBase::insertToMap(newObject);
   if (m_is2D)
@@ -423,7 +423,7 @@ void CGlWidget::insertToMap(const CRenderizable::Ptr& newObject)
   }
 }
 
-void CGlWidget::removeFromMap(const CRenderizable::Ptr& newObject)
+void CGlWidget::removeFromMap(const CVisualObject::Ptr& newObject)
 {
   CQtGlCanvasBase::removeFromMap(newObject);
   if (m_is2D)
