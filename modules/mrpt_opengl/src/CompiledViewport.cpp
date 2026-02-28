@@ -19,9 +19,13 @@
 #include <mrpt/opengl/RenderQueue.h>
 #include <mrpt/opengl/ShaderProgramManager.h>
 #include <mrpt/opengl/opengl_api.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/viz/CTextMessageCapable.h>
 
 #include <Eigen/Dense>
 #include <iostream>
+
+#include "gltext.h"
 
 using namespace mrpt::opengl;
 using namespace mrpt::viz;
@@ -714,6 +718,9 @@ void CompiledViewport::render(
     // Normal scene rendering
     renderNormalScene(shaderManager, false, proxiesToRender);
   }
+  // Render 2D text message overlays
+  renderTextOverlays(shaderManager);
+
   // Render border
   if (m_borderWidth > 0)
   {
@@ -1027,6 +1034,161 @@ void CompiledViewport::renderBorder(ShaderProgramManager& shaderManager)
 
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  CHECK_OPENGL_ERROR_IN_DEBUG();
+#endif
+  MRPT_END
+}
+
+void CompiledViewport::renderTextOverlays(ShaderProgramManager& shaderManager)
+{
+  MRPT_START
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+  if (!m_sourceVizViewport) return;
+
+  const auto& textMsgs = m_sourceVizViewport->getTextMessages();
+  std::shared_lock<std::shared_mutex> lckRead(textMsgs.mtx.data);
+
+  if (textMsgs.messages.empty()) return;
+
+  auto shader = shaderManager.getProgram(DefaultShaderID::TRIANGLES_NO_LIGHT);
+  if (!shader) return;
+
+  shader->use();
+
+  // Orthographic projection: (0,0) bottom-left to (w,h) top-right.
+  // The pmv_matrix is the only uniform used by this shader.
+  const float w = static_cast<float>(m_pixelWidth);
+  const float h = static_cast<float>(m_pixelHeight);
+
+  mrpt::math::CMatrixFloat44 ortho = mrpt::math::CMatrixFloat44::Zero();
+  ortho(0, 0) = 2.0f / w;
+  ortho(1, 1) = 2.0f / h;
+  ortho(2, 2) = -1.0f;
+  ortho(0, 3) = -1.0f;
+  ortho(1, 3) = -1.0f;
+  ortho(3, 3) = 1.0f;
+
+  const auto IS_TRANSPOSED = GL_TRUE;
+
+  glUniformMatrix4fv(shader->uniformId("pmv_matrix"), 1, IS_TRANSPOSED, ortho.data());
+
+  glDisable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  // Helper lambda: generate triangles for a text string, upload to GPU, draw
+  auto drawTextBatch = [&](const std::vector<mrpt::viz::TTriangle>& tris)
+  {
+    if (tris.empty()) return;
+
+    const size_t vertexCount = tris.size() * 3;
+    std::vector<mrpt::math::TPoint3Df> vertices;
+    std::vector<mrpt::img::TColor> colors;
+    vertices.reserve(vertexCount);
+    colors.reserve(vertexCount);
+
+    for (const auto& tri : tris)
+    {
+      for (int i = 0; i < 3; ++i)
+      {
+        vertices.push_back(tri.vertices[i].xyzrgba.pt);
+        const auto& rgba = tri.vertices[i].xyzrgba;
+        colors.emplace_back(rgba.r, rgba.g, rgba.b, rgba.a);
+      }
+    }
+
+    m_textVAO.createOnce();
+    m_textVAO.bind();
+
+    m_textVertexBuffer.createOnce();
+    m_textVertexBuffer.bind();
+    m_textVertexBuffer.allocate(
+        vertices.data(), static_cast<int>(sizeof(mrpt::math::TPoint3Df) * vertexCount));
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(mrpt::math::TPoint3Df), nullptr);
+
+    m_textColorBuffer.createOnce();
+    m_textColorBuffer.bind();
+    m_textColorBuffer.allocate(
+        colors.data(), static_cast<int>(sizeof(mrpt::img::TColor) * vertexCount));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(mrpt::img::TColor), nullptr);
+
+    glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertexCount));
+  };
+
+  for (const auto& [id, msg] : textMsgs.messages)
+  {
+    if (msg.text.empty()) continue;
+
+    // Compute pixel position from fractional/absolute coordinates.
+    // X: [0,1) = fraction of width, >=1 = absolute pixels, <0 = from right
+    // Y: [0,1) = fraction of height from bottom, >=1 = pixels from bottom,
+    //    <0 = from top
+    float px, py;
+
+    if (msg.x >= 0 && msg.x < 1)
+      px = static_cast<float>(msg.x * w);
+    else if (msg.x < 0)
+      px = static_cast<float>(w + msg.x);
+    else
+      px = static_cast<float>(msg.x);
+
+    if (msg.y >= 0 && msg.y < 1)
+      py = static_cast<float>(msg.y * h);
+    else if (msg.y < 0)
+      py = static_cast<float>(h + msg.y);
+    else
+      py = static_cast<float>(msg.y);
+
+    internal::glSetFont(msg.vfont_name);
+
+    const mrpt::img::TColor textColor(
+        static_cast<uint8_t>(msg.color.R * 255), static_cast<uint8_t>(msg.color.G * 255),
+        static_cast<uint8_t>(msg.color.B * 255), static_cast<uint8_t>(msg.color.A * 255));
+
+    const float textScale = msg.vfont_scale;
+
+    // Shadow pass (rendered first, behind main text)
+    if (msg.draw_shadow)
+    {
+      std::vector<mrpt::viz::TTriangle> shadowTris;
+      std::vector<mrpt::math::TPoint3Df> tmpLines;
+      std::vector<mrpt::img::TColor> tmpLineColors;
+
+      const mrpt::img::TColor shadowColor(
+          static_cast<uint8_t>(msg.shadow_color.R * 255),
+          static_cast<uint8_t>(msg.shadow_color.G * 255),
+          static_cast<uint8_t>(msg.shadow_color.B * 255),
+          static_cast<uint8_t>(msg.shadow_color.A * 255));
+
+      const auto shadowPose = mrpt::poses::CPose3D::FromTranslation(px + 1.0, py - 1.0, 0);
+
+      internal::glDrawTextTransformed(
+          msg.text, shadowTris, tmpLines, tmpLineColors, shadowPose, textScale, shadowColor,
+          msg.vfont_style, msg.vfont_spacing, msg.vfont_kerning);
+
+      drawTextBatch(shadowTris);
+    }
+
+    // Main text pass
+    std::vector<mrpt::viz::TTriangle> tris;
+    std::vector<mrpt::math::TPoint3Df> tmpLines;
+    std::vector<mrpt::img::TColor> tmpLineColors;
+
+    const auto textPose = mrpt::poses::CPose3D::FromTranslation(px, py, 0);
+
+    internal::glDrawTextTransformed(
+        msg.text, tris, tmpLines, tmpLineColors, textPose, textScale, textColor, msg.vfont_style,
+        msg.vfont_spacing, msg.vfont_kerning);
+
+    drawTextBatch(tris);
+  }
+
+  glBindVertexArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glEnable(GL_DEPTH_TEST);
 
   CHECK_OPENGL_ERROR_IN_DEBUG();
 #endif

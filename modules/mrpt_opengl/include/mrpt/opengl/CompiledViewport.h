@@ -375,6 +375,11 @@ class CompiledViewport
   Buffer m_borderColorBuffer{Buffer::Type::Vertex};
   bool m_borderBuffersCreated = false;
 
+  /** Text overlay rendering */
+  VertexArrayObject m_textVAO;
+  Buffer m_textVertexBuffer{Buffer::Type::Vertex};
+  Buffer m_textColorBuffer{Buffer::Type::Vertex};
+
   /** Viewport visibility */
   bool m_isVisible = true;
 
@@ -492,6 +497,9 @@ class CompiledViewport
 
   /** Renders viewport border */
   void renderBorder(ShaderProgramManager& shaderManager);
+
+  /** Renders 2D text message overlays from CTextMessageCapable */
+  void renderTextOverlays(ShaderProgramManager& shaderManager);
 
   /** Builds render queue with frustum culling.
    * \param proxiesToRender If non-null, use these proxies instead of m_proxies. */

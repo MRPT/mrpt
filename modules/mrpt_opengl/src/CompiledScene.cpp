@@ -316,7 +316,8 @@ void CompiledScene::compileViewport(
   // compiling our own objects)
   if (vizViewport.isCloned())
   {
-    compiledViewport.setCloneMode(vizViewport.isClonedCameraFrom(), vizViewport.isClonedCamera());
+    compiledViewport.setCloneMode(
+        vizViewport.getClonedViewportName(), vizViewport.isClonedCamera());
     return;
   }
 
