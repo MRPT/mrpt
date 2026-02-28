@@ -101,6 +101,10 @@ class CompiledViewport
    * bounds, special modes, etc.
    *
    * This is called automatically by CompiledScene during compilation.
+   *
+   * \param vizVp The source viewport. A non-owning pointer is kept to allow
+   *        writing back the rendered viewport size for
+   *        get3DRayForPixelCoord().
    */
   void updateFromVizViewport(const mrpt::viz::Viewport& vizVp);
 
@@ -340,6 +344,10 @@ class CompiledViewport
 
   /** @name Viewport Configuration
    * @{ */
+
+  /** Non-owning pointer to the source viz::Viewport, for writing back
+   * rendered dimensions via updateRenderedViewportSize(). */
+  const mrpt::viz::Viewport* m_sourceVizViewport = nullptr;
 
   /** Viewport position (0-1 normalized or >1 pixels) */
   double m_viewX = 0.0, m_viewY = 0.0, m_viewWidth = 1.0, m_viewHeight = 1.0;
