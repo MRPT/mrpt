@@ -721,11 +721,6 @@ TImageSize CImage::getSize() const
 
 int32_t CImage::getWidth() const
 {
-  if (this->isEmpty())
-  {
-    return 0;
-  }
-
   makeSureImageIsLoaded();
   return m_state->width;
 }
@@ -750,11 +745,6 @@ size_t CImage::getRowStride() const
 
 int32_t CImage::getHeight() const
 {
-  if (this->isEmpty())
-  {
-    return 0;
-  }
-
   makeSureImageIsLoaded();
   return m_state->height;
 }
@@ -1439,19 +1429,54 @@ void CImage::flipVertical()
 void CImage::flipHorizontal()
 {
   makeSureImageIsLoaded();
-  THROW_EXCEPTION("TODO!");
-#if 0
-  cv::flip(m_impl->img, m_impl->img, 1 /* y-axis */);
-#endif
+  auto& impl = *m_state;
+
+  if (impl.width < 2 || impl.height == 0)
+  {
+    return;
+  }
+
+  const size_t pixSz = impl.pixel_size_in_bytes();
+  const size_t stride = impl.row_stride_in_bytes();
+
+  MRPT_STACK_ALLOC(std::byte, tmpPix, pixSz);
+
+  for (int32_t row = 0; row < impl.height; row++)
+  {
+    auto* rowPtr = reinterpret_cast<std::byte*>(impl.image_data) + stride * row;
+    for (int32_t col = 0; col < impl.width / 2; col++)
+    {
+      auto* left = rowPtr + static_cast<size_t>(col) * pixSz;
+      auto* right = rowPtr + static_cast<size_t>(impl.width - 1 - col) * pixSz;
+      std::memcpy(tmpPix.get(), left, pixSz);
+      std::memcpy(left, right, pixSz);
+      std::memcpy(right, tmpPix.get(), pixSz);
+    }
+  }
 }
 
 void CImage::swapRB()
 {
   makeSureImageIsLoaded();  // For delayed loaded images stored externally
-  THROW_EXCEPTION("TODO!");
-#if 0
-  cv::cvtColor(m_impl->img, m_impl->img, cv::COLOR_RGB2BGR);
-#endif
+
+  if (m_state->channels < 3)
+  {
+    return;
+  }  // Nothing to swap for grayscale
+
+  const size_t total = static_cast<size_t>(m_state->width) * static_cast<size_t>(m_state->height);
+  const size_t depthBytes = static_cast<size_t>(m_state->depth);
+  const size_t pixSz = m_state->pixel_size_in_bytes();
+  auto* p = m_state->image_data;
+
+  for (size_t i = 0; i < total; i++, p += pixSz)
+  {
+    // Swap R (channel 0) and B (channel 2), byte by byte (handles D8U and D16U)
+    for (size_t d = 0; d < depthBytes; d++)
+    {
+      std::swap(p[d], p[2 * depthBytes + d]);
+    }
+  }
 }
 
 void CImage::undistort(
@@ -1645,32 +1670,65 @@ void CImage::colorImage(CImage& ret) const
     return;
   }
 
-  THROW_EXCEPTION("Not yet implemented");
-#if 0
-  auto srcImg = m_state->img;
-  // Detect in-place op. and make deep copy:
-  if (srcImg.data == ret.m_state->img.data) srcImg = srcImg.clone();
+  makeSureImageIsLoaded();
 
-  ret.resize(getWidth(), getHeight(), CH_RGB);
+  // Check for aliasing (ret and this share the same image buffer)
+  const bool aliased = (!m_state->empty() && ret.m_state->image_data == m_state->image_data);
 
-  cv::cvtColor(srcImg, ret.m_impl->img, cv::COLOR_GRAY2BGR);
-#endif
+  CImage tmp;
+  CImage* dst = aliased ? &tmp : &ret;
+
+  dst->resize(m_state->width, m_state->height, CH_RGB, m_state->depth);
+
+  const auto* src = m_state->image_data;
+  auto* d = dst->m_state->image_data;
+
+  const size_t total = static_cast<size_t>(m_state->width) * static_cast<size_t>(m_state->height);
+  for (size_t i = 0; i < total; i++, src++)
+  {
+    *d++ = *src;  // R
+    *d++ = *src;  // G
+    *d++ = *src;  // B
+  }
+
+  if (aliased)
+  {
+    ret = std::move(tmp);
+  }
 }
 
 void CImage::joinImagesHorz(const CImage& img1, const CImage& img2)
 {
   ASSERT_(img1.getHeight() == img2.getHeight());
 
-  THROW_EXCEPTION("Not yet implemented");
-#if 0
-  auto im1 = img1.m_state->img, im2 = img2.m_state->img;
-  ASSERT_(im1.type() == im2.type());
+  img1.makeSureImageIsLoaded();
+  img2.makeSureImageIsLoaded();
 
-  this->resize(im1.cols + im2.cols, im1.rows, img1.channels());
+  ASSERT_(img1.m_state->channels == img2.m_state->channels);
+  ASSERT_(img1.m_state->depth == img2.m_state->depth);
 
-  im1.copyTo(m_impl->img(cv::Rect(0, 0, im1.cols, im1.rows)));
-  im2.copyTo(m_impl->img(cv::Rect(im1.cols, 0, im2.cols, im2.rows)));
-#endif
+  const int32_t w1 = img1.m_state->width;
+  const int32_t w2 = img2.m_state->width;
+  const int32_t h = img1.m_state->height;
+  const auto ch = img1.m_state->channels;
+  const auto depth = img1.m_state->depth;
+
+  const size_t pixSz = img1.m_state->pixel_size_in_bytes();
+  const size_t bytesW1 = static_cast<size_t>(w1) * pixSz;
+  const size_t bytesW2 = static_cast<size_t>(w2) * pixSz;
+
+  // Build into a temporary to handle in-place operations safely
+  CImage tmp;
+  tmp.resize(w1 + w2, h, ch, depth);
+
+  for (int32_t row = 0; row < h; row++)
+  {
+    auto* dst = tmp.ptrLine<uint8_t>(row);
+    std::memcpy(dst, img1.ptrLine<uint8_t>(row), bytesW1);
+    std::memcpy(dst + bytesW1, img2.ptrLine<uint8_t>(row), bytesW2);
+  }
+
+  *this = std::move(tmp);
 }  // end
 
 namespace
