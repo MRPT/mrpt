@@ -13,7 +13,7 @@
 */
 #pragma once
 
-#include <mrpt/config.h>
+#include <mrpt/core/config.h>
 #include <mrpt/math/math_frwds.h>  // must be included before Eigen
 
 #include <Eigen/Core>

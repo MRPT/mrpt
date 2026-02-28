@@ -14,6 +14,7 @@ find_package(mrpt_common REQUIRED)
 find_package(mrpt_gui REQUIRED)
 find_package(mrpt_opengl REQUIRED)
 find_package(mrpt_vision REQUIRED)
+find_package(mrpt_hwdrivers REQUIRED)
 
 # Define the executable target:
 mrpt_add_executable(
@@ -26,4 +27,5 @@ mrpt_add_executable(
     mrpt::mrpt_gui
     mrpt::mrpt_opengl
     mrpt::mrpt_vision
+    mrpt::mrpt_hwdrivers
 )

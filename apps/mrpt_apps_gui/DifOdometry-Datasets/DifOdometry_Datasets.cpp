@@ -29,7 +29,7 @@
 using namespace Eigen;
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::gui;
 using namespace mrpt::img;
 using namespace mrpt::obs;
@@ -174,7 +174,6 @@ void CDifodoDatasets::initializeScene()
 {
   CPose3D rel_lenspose(0, -0.022, 0, 0, 0, 0);
 
-  global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE(1000000);
   window.resize(1000, 900);
   window.setPos(900, 0);
   window.setCameraZoom(16);
@@ -211,8 +210,8 @@ void CDifodoDatasets::initializeScene()
   scene->insert(camera_gt);
 
   // Frustum
-  opengl::CFrustum::Ptr FOV =
-      std::make_shared<opengl::CFrustum>(0.3f, 2, 57.3f * fovh, 57.3f * fovv, 1.f, true, false);
+  CFrustum::Ptr FOV =
+      std::make_shared<CFrustum>(0.3f, 2, 57.3f * fovh, 57.3f * fovv, 1.f, true, false);
   FOV->setColor(0.7, 0.7, 0.7);
   FOV->setPose(gt_pose);
   scene->insert(FOV);

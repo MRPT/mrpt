@@ -20,7 +20,7 @@
 #include <mrpt/gui/about_box.h>
 #include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CCompressedOutputStream.h>
-#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/ops_matrices.h>  // << ops
@@ -32,6 +32,7 @@
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/obs/CObservationComment.h>
 #include <mrpt/obs/CObservationGasSensors.h>
+#include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/obs/CObservationStereoImages.h>
@@ -109,7 +110,7 @@ using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::config;
@@ -436,8 +437,9 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id) :
       wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")), wxART_TOOLBAR),
       wxDefaultPosition, wxSize(-1, 60), wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM, wxDefaultValidator,
       _T("ID_BUTTON3"));
-  Button1->SetBitmapDisabled(wxArtProvider::GetBitmap(
-      wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")), wxART_TOOLBAR));
+  Button1->SetBitmapDisabled(
+      wxArtProvider::GetBitmap(
+          wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")), wxART_TOOLBAR));
   Button1->SetMargins(wxSize(5, 5));
   fgzToolbar->Add(
       Button1, 1, wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
@@ -482,8 +484,9 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id) :
       wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ANIMATE_SCANS")), wxART_TOOLBAR),
       wxDefaultPosition, wxSize(-1, 60), wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM, wxDefaultValidator,
       _T("ID_BUTTON8"));
-  Button6->SetBitmapDisabled(wxArtProvider::GetBitmap(
-      wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ANIMATE_SCANS")), wxART_TOOLBAR));
+  Button6->SetBitmapDisabled(
+      wxArtProvider::GetBitmap(
+          wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ANIMATE_SCANS")), wxART_TOOLBAR));
   Button6->SetMargins(wxSize(5, 5));
   fgzToolbar->Add(
       Button6, 1, wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
@@ -3532,7 +3535,7 @@ void doFilterErrScans(
         ringingStart = -1;
       }
     }  // end for "k" & mark as invalid
-  }    // end-if is a laser scan
+  }  // end-if is a laser scan
 }
 
 void xRawLogViewerFrame::OnFilterErroneousScans(wxCommandEvent&)
@@ -4787,7 +4790,7 @@ void xRawLogViewerFrame::OnMenuBatchLaserExclusionZones(wxCommandEvent&)
         {
           ASSERT_(x.size() == y.size());
           mrpt::math::CPolygon p;
-          p.setAllVertices(x, y);
+          p.set_vertices(x, y);
           lstExclusions[label].push_back(p);
           nExclZones++;
         }
@@ -5449,9 +5452,10 @@ void xRawLogViewerFrame::OnMenuRegenerateOdometryTimes(wxCommandEvent&)
           {
             if (lastOdo && lastObsTime != INVALID_TIMESTAMP)
             {  // Do average:
-              lastOdo->timestamp = mrpt::Clock::time_point(mrpt::Clock::duration(
-                  (lastObsTime.time_since_epoch().count() >> 1) +
-                  (thisObsTime.time_since_epoch().count() >> 1)));
+              lastOdo->timestamp = mrpt::Clock::time_point(
+                  mrpt::Clock::duration(
+                      (lastObsTime.time_since_epoch().count() >> 1) +
+                      (thisObsTime.time_since_epoch().count() >> 1)));
               lastOdo.reset();
               nChanges++;
             }

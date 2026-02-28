@@ -19,7 +19,7 @@
 namespace mrpt
 {
 /** \ingroup mrpt_viz_grp */
-namespace opengl
+namespace viz
 {
 /** Tool functions for graphs of pose constraints. \ingroup mrpt_viz_grp  */
 namespace graph_tools
@@ -62,12 +62,18 @@ namespace graph_tools
  */
 // clang-format on
 template <class GRAPH_T>
-CSetOfObjects::Ptr graph_visualize(
+mrpt::viz::CSetOfObjects::Ptr graph_visualize(
     const GRAPH_T& g, const mrpt::containers::yaml& extra_params = {});
 
 /** @} */
 }  // namespace graph_tools
-}  // namespace opengl
+}  // namespace viz
+
+/** Backward-compat alias: mrpt::opengl::graph_tools == mrpt::viz::graph_tools */
+namespace opengl
+{
+namespace graph_tools = mrpt::viz::graph_tools;
+}
 
 }  // namespace mrpt
 

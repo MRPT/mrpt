@@ -14,6 +14,8 @@ find_package(mrpt_common REQUIRED)
 find_package(mrpt_maps REQUIRED)
 find_package(mrpt_hwdrivers REQUIRED)
 find_package(mrpt_kinematics REQUIRED)
+find_package(wxWidgets REQUIRED COMPONENTS gl core base adv)
+find_package(OpenGL REQUIRED)
 
 # Define the executable target:
 mrpt_add_executable(
@@ -27,4 +29,6 @@ mrpt_add_executable(
     mrpt::mrpt_maps
     mrpt::mrpt_hwdrivers
     mrpt::mrpt_kinematics
+    wxWidgets::wxWidgets
+    OpenGL::GL
 )

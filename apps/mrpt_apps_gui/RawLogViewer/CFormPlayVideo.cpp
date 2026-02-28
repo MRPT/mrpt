@@ -84,7 +84,7 @@ END_EVENT_TABLE()
 
 using namespace mrpt;
 using namespace mrpt::obs;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::img;

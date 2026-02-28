@@ -59,7 +59,7 @@ wxBitmap MyArtProvider::CreateBitmap(
 }
 
 using namespace mrpt;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::kinematics;

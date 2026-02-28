@@ -40,10 +40,10 @@
 
 using namespace mrpt;
 using namespace mrpt::obs;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::io;
 using namespace mrpt::system;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace mrpt::serialization;
@@ -659,7 +659,7 @@ void CFormMotionModel::applyToLoadedRawlog()
           changes++;
         }
       }  // end is action
-    }    // end for i
+    }  // end for i
   }
 
   wxString str;

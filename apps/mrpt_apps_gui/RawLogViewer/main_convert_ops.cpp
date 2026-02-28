@@ -33,7 +33,7 @@
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::io;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::serialization;
 using namespace mrpt::system;
 using namespace mrpt::math;
@@ -803,10 +803,11 @@ void xRawLogViewerFrame::OnMenuResortByTimestamp(wxCommandEvent& event)
 
         if (tim == INVALID_TIMESTAMP)
         {
-          wxMessageBox(wxString::Format(
-              _("Error: Element %u does not have a valid "
-                "timestamp."),
-              (unsigned int)i));
+          wxMessageBox(
+              wxString::Format(
+                  _("Error: Element %u does not have a valid "
+                    "timestamp."),
+                  (unsigned int)i));
           return;
         }
 
@@ -814,7 +815,7 @@ void xRawLogViewerFrame::OnMenuResortByTimestamp(wxCommandEvent& event)
       }
       break;
     }  // end switch type
-  }    // end for i
+  }  // end for i
 
   // Now create the new ordered rawlog
   // ------------------------------------------------------

@@ -57,7 +57,7 @@ using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::bayes;
 using namespace mrpt::poses;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::gui;
 using namespace mrpt::io;
 using namespace mrpt::serialization;
@@ -520,7 +520,7 @@ void TestParticlesLocalization()
           }
 #else
           opengl::CPointCloud::Ptr parts = std::make_shared<opengl::CPointCloud>();
-          opengl::CRenderizable::Ptr obj;
+          opengl::CVisualObject::Ptr obj;
 #endif
 
           parts->setColor(0, 0, 1);
@@ -612,7 +612,7 @@ void TestParticlesLocalization()
                 }
 #else
                 opengl::CSphere::Ptr sphere = std::make_shared<opengl::CSphere>();
-                opengl::CRenderizable::Ptr obj;
+                opengl::CVisualObject::Ptr obj;
 #endif
 
                 sphere->setColor(0, 0, 1, 0.3);
@@ -636,7 +636,7 @@ void TestParticlesLocalization()
           // Franco Position
           if (SHOW_3D_FRANCO_POSITION)
           {
-            opengl::CRenderizable::Ptr obj = sceneTR->getByName("franc");
+            opengl::CVisualObject::Ptr obj = sceneTR->getByName("franc");
             opengl::CSphere::Ptr sphere;
 
             if (!obj)
@@ -890,7 +890,7 @@ int main(int argc, char** argv)
     {
       printf("Usage: %s <config.ini>\n\n", argv[0]);
       // pause();
-      return -1;
+      return 1;
     }
 
     iniFileName = argv[1];
@@ -905,12 +905,12 @@ int main(int argc, char** argv)
   {
     cout << "Caught MRPT exception:\n" << mrpt::exception_to_str(e) << endl;
     // pause();
-    return -1;
+    return 1;
   }
   catch (...)
   {
     printf("Untyped exception!!");
     // pause();
-    return -1;
+    return 1;
   }
 }

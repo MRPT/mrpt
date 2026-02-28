@@ -16,6 +16,7 @@
 #include <mrpt/core/config.h>  // MRPT_OS_*()
 #include <mrpt/core/round.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/hwdrivers/config.h>  // MRPT_HAS_OPENNI2
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/vision/CDifodo.h>
@@ -24,10 +25,12 @@
 #include <fstream>
 #include <iostream>
 
+#if MRPT_HAS_OPENNI2
 #if defined(MRPT_OS_LINUX) && !defined(linux)
 #define linux 1  // Seems to be required by OpenNI.h
 #endif
 #include <OpenNI.h>
+#endif  // MRPT_HAS_OPENNI2
 
 #include "legend.xpm"
 
@@ -82,11 +85,13 @@ class CDifodoCamera : public mrpt::vision::CDifodo
   /** Opengl scene */
   mrpt::viz::Scene::Ptr scene;
 
+#if MRPT_HAS_OPENNI2
   // OpenNI variables to manage the camera
   openni::Status rc;
   openni::Device device;
   openni::VideoMode video_options;
   openni::VideoStream depth_ch;
+#endif  // MRPT_HAS_OPENNI2
 
   /** Clock used to save the timestamp */
   mrpt::system::CTicTac clock;

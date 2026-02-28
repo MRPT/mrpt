@@ -38,7 +38,7 @@ using namespace mrpt::maps;
 using namespace mrpt::random;
 using namespace mrpt::system;
 using namespace mrpt::io;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::poses;
 using namespace mrpt::config;
 using namespace mrpt::serialization;
@@ -66,10 +66,10 @@ int main(int argc, char** argv)
       if (!showHelp)
       {
         mrpt::system::pause();
-        return -1;
+        return 1;
       }
-      else
-        return 0;
+
+      return 0;
     }
 
     string INI_FILENAME = std::string(argv[1]);
@@ -80,9 +80,13 @@ int main(int argc, char** argv)
     const int random_seed = ini.read_int("Params", "random_seed", 0);
 
     if (random_seed != 0)
+    {
       getRandomGenerator().randomize(random_seed);
+    }
     else
+    {
       getRandomGenerator().randomize();
+    }
 
     // Set default values:
     unsigned int nLandmarks = 3;

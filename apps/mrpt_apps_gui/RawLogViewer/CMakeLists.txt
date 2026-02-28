@@ -12,6 +12,7 @@ find_package(mrpt_common REQUIRED)
 find_package(mrpt_slam REQUIRED)
 find_package(mrpt_gui REQUIRED)
 find_package(mrpt_topography REQUIRED)
+find_package(wxWidgets REQUIRED COMPONENTS gl core base adv)
 
 # Define the executable target:
 mrpt_add_executable(
@@ -54,9 +55,13 @@ mrpt_add_executable(
     CFormBatchSensorPose.h
     CIniEditor.cpp
     CIniEditor.h
+    ../wxThings/src/toggle.cpp
   LINK_LIBRARIES
     mrpt::mrpt_slam
     mrpt::mrpt_gui
     mrpt::mrpt_topography
+    wxWidgets::wxWidgets
 )
+
+target_include_directories(${PROJECT_NAME} PRIVATE ../wxThings/)
 

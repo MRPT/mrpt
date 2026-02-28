@@ -14,7 +14,7 @@ Either download a Windows precompiled version, install the mrpt-apps Ubuntu pack
 
 Make sure the camera is properly working by running one of the tests, for example:
 
-  - Application `kinect-3d-view <page_app_kinect-3d-slam.html>`_
+  - Application `kinect-3d-view <page_app_kinect-3d-view.html>`_
   - Example: `hwdrivers_openni2_driver_demo <page_hwdrivers_openni2_driver_demo.html>`_
 
 Under GNU/Linux you may need root privileges (executing as `sudo`) to access the camera.

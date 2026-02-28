@@ -85,6 +85,13 @@ mrpt_add_library(
     mrpt_opengl
 )
 
+# Install 3rdparty mathplot header so downstream apps can use it as
+# <mrpt/3rdparty/mathplot/mathplot.h>
+install(
+  FILES 3rdparty/mathplot/mathplot.h
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/mrpt/3rdparty/mathplot
+)
+
 # quiet warnings for 3rdparty sources:
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/>

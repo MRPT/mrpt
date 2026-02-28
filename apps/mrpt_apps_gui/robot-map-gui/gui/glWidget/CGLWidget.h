@@ -76,8 +76,8 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
  protected:
   void resizeGL(int width, int height) override;
   void updateCamerasParams() override;
-  void insertToMap(const mrpt::viz::CRenderizable::Ptr& newObject) override;
-  void removeFromMap(const mrpt::viz::CRenderizable::Ptr& newObject) override;
+  void insertToMap(const mrpt::viz::CVisualObject::Ptr& newObject) override;
+  void removeFromMap(const mrpt::viz::CVisualObject::Ptr& newObject) override;
   void mouseMoveEvent(QMouseEvent* event) override;
   void mousePressEvent(QMouseEvent* event) override;
   void mouseReleaseEvent(QMouseEvent* event) override;
@@ -120,7 +120,7 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
   mrpt::viz::CSetOfObjects::Ptr m_visiblePoints;
   std::vector<CRobotPose::Ptr> m_selectedPoints;
   mrpt::viz::CPlanarLaserScan::Ptr m_currentLaserScan;
-  mrpt::viz::CRenderizable::Ptr m_currentObs;
+  mrpt::viz::CVisualObject::Ptr m_currentObs;
   mrpt::viz::CSetOfLines::Ptr m_line;
 
   bool m_is2D;

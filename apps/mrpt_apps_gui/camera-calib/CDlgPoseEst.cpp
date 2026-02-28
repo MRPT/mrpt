@@ -14,6 +14,7 @@
 
 #include "CDlgPoseEst.h"
 
+#include <mrpt/apps_gui/CameraSelectionGUI.h>
 #include <mrpt/vision/chessboard_find_corners.h>
 
 #include <fstream>
@@ -254,7 +255,7 @@ CDlgPoseEst::CDlgPoseEst(wxWindow* parent, wxWindowID id, const wxPoint& pos, co
   const double check_squares_length_Y_meters =
       0.005 * atof(string(edLengthY->GetValue().mb_str()).c_str());
 
-  grid = std::make_shared<opengl::CGridPlaneXY>(
+  grid = std::make_shared<mrpt::viz::CGridPlaneXY>(
       0, check_size_y * check_squares_length_Y_meters, 0,
       check_size_x * check_squares_length_X_meters, 0, check_squares_length_Y_meters);
   scene->insert(grid);
@@ -315,7 +316,7 @@ void CDlgPoseEst::OnbtnStartClick(wxCommandEvent& event)
   // Try to open the camera:
   if (m_video) m_video.reset();
 
-  m_video = mrpt::hwdrivers::prepareVideoSourceFromPanel(m_panelCamera);
+  m_video = mrpt::apps::prepareVideoSourceFromPanel(m_panelCamera);
   if (!m_video) return;
 
   // Launch thread:

@@ -30,7 +30,7 @@
 using namespace mrpt;
 using namespace mrpt::graphs;
 using namespace mrpt::poses;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace std;
@@ -70,7 +70,7 @@ void display_graph(const GRAPHTYPE& g)
   //  recomputing it again here:
   win.setCameraElevationDeg(75);
   {
-    opengl::CGridPlaneXY::Ptr obj_grid = objGraph->CSetOfObjects::getByClass<CGridPlaneXY>();
+    CGridPlaneXY::Ptr obj_grid = objGraph->CSetOfObjects::getByClass<CGridPlaneXY>();
     if (obj_grid)
     {
       float x_min, x_max, y_min, y_max;
@@ -214,7 +214,7 @@ void display_graph(const GRAPHTYPE& g)
   // and openglviewport events:
   {
     Scene::Ptr& theScene = win.get3DSceneAndLock();
-    opengl::Viewport::Ptr the_main_view = theScene->getViewport("main");
+    Viewport::Ptr the_main_view = theScene->getViewport("main");
     win_feedback.observeBegin(*the_main_view);
     win.unlockAccess3DScene();
   }

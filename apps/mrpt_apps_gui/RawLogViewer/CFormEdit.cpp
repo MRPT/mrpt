@@ -39,7 +39,7 @@
 
 using namespace mrpt;
 using namespace mrpt::obs;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::system;
 using namespace mrpt::img;
 using namespace mrpt::math;
@@ -619,22 +619,6 @@ void CFormEdit::OnbtnRemActsIndxClick(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void swapColors(CImage& img)
-{
-  int lx = img.getWidth();
-  int ly = img.getHeight();
-  for (int y = 0; y < ly; y++)
-  {
-    for (int x = 0; x < lx; x++)
-    {
-      unsigned char* pixels = img(x, y);
-      unsigned char temp = pixels[0];
-      pixels[0] = pixels[2];
-      pixels[2] = temp;
-    }
-  }
-}
-
 // Swap colors:
 void filter_swapColors(
     mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF, int& changesCount)
@@ -648,7 +632,7 @@ void filter_swapColors(
         auto* o = (CObservationImage*)obs.get();
         if (o->image.isColor())
         {
-          swapColors(o->image);
+          o->image.swapRB();
           changesCount++;
         }
       }

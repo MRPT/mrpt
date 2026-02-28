@@ -14,6 +14,7 @@
 
 #include "CDlgCalibWizardOnline.h"
 
+#include <mrpt/apps_gui/CameraSelectionGUI.h>
 #include <mrpt/vision/chessboard_find_corners.h>
 
 #include "camera_calib_guiMain.h"
@@ -251,7 +252,7 @@ void CDlgCalibWizardOnline::OnbtnStartClick(wxCommandEvent& event)
   // Try to open the camera:
   if (m_video) m_video.reset();
 
-  m_video = mrpt::hwdrivers::prepareVideoSourceFromPanel(m_panelCamera);
+  m_video = mrpt::apps::prepareVideoSourceFromPanel(m_panelCamera);
   if (!m_video) return;
 
   // Launch thread:
@@ -368,7 +369,8 @@ void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)
     // Progress:
     const auto nFramesToGrab = (unsigned)edNumCapture->GetValue();
     img_to_show.textOut(
-        10, 10, format("%u out of %u grabbed", (unsigned int)m_calibFrames.size(), nFramesToGrab),
+        {10, 10},
+        format("%u out of %u grabbed", (unsigned int)m_calibFrames.size(), nFramesToGrab),
         TColor::white());
 
     m_realtimeview->AssignImage(img_to_show);

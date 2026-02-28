@@ -39,7 +39,7 @@ using namespace mrpt::io;
 using namespace mrpt::config;
 using namespace mrpt::img;
 using namespace mrpt::obs;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace mrpt::poses;
@@ -362,7 +362,7 @@ int main(int argc, char** argv)
     {
       printf("Use: map-partition <file.simplemap> [nCut threshold 0-2]\n");
       mrpt::system::pause();
-      return -1;
+      return 1;
     }
 
     MAP_FILE = std::string(argv[1]);
@@ -383,7 +383,7 @@ int main(int argc, char** argv)
             "0-2]\n");
         printf("\n\n Invalid nCut threshold: '%s'\n", argv[2]);
         mrpt::system::pause();
-        return -1;
+        return 1;
       }
     }
 
@@ -397,13 +397,13 @@ int main(int argc, char** argv)
               << "Program finished for an exception!!"
               << "\n";
     mrpt::system::pause();
-    return -1;
+    return 1;
   }
   catch (...)
   {
     std::cerr << "Untyped exception!!"
               << "\n";
     mrpt::system::pause();
-    return -1;
+    return 1;
   }
 }

@@ -419,7 +419,7 @@ int main(int argc, char** argv)
     {
       cerr << "Incorrect number of arguments.\n";
       showUsage(argv[0]);
-      return -1;
+      return 1;
     }
 
     const bool last_arg_is_save_video = !strcmp("--save-video", argv[argc - 1]);
@@ -435,7 +435,7 @@ int main(int argc, char** argv)
       if (!mrpt::system::fileExists(argv[1]))
       {
         cerr << "File does not exist: " << argv[1] << endl;
-        return -1;
+        return 1;
       }
 
       const string fil = string(argv[1]);
@@ -482,7 +482,7 @@ int main(int argc, char** argv)
       if (!cam)
       {
         cerr << "No images source was correctly initialized! Exiting.\n";
-        return -1;
+        return 1;
       }
     }
 
@@ -499,14 +499,14 @@ int main(int argc, char** argv)
               << "Program finished for an exception!!"
               << "\n";
     mrpt::system::pause();
-    return -1;
+    return 1;
   }
   catch (...)
   {
     std::cerr << "Untyped exception!!"
               << "\n";
     mrpt::system::pause();
-    return -1;
+    return 1;
   }
 }
 

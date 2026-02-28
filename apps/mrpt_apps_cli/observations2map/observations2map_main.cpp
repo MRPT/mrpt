@@ -134,13 +134,13 @@ int main(int argc, char** argv)
               << "Program finished for an exception!!"
               << "\n";
     mrpt::system::pause();
-    return -1;
+    return 1;
   }
   catch (...)
   {
     std::cerr << "Untyped exception!!"
               << "\n";
     mrpt::system::pause();
-    return -1;
+    return 1;
   }
 }

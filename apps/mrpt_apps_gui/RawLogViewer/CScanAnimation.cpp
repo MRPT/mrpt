@@ -22,12 +22,13 @@
 #undef None
 #endif
 
-#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CPlanarLaserScan.h>  // in library mrpt-maps
+#include <mrpt/viz/CSetOfObjects.h>
 #include <mrpt/viz/stock_objects.h>
 #include <wx/app.h>
 #include <wx/busyinfo.h>
@@ -74,7 +75,7 @@ END_EVENT_TABLE()
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace std;
@@ -563,9 +564,10 @@ bool CScanAnimation::update_opengl_viz(const CSensoryFrame& sf)
   }
 
   // Show timestamp:
-  edTimestamp->SetValue(mrpt::format(
-      "Timestamp (UTC): %s (%.06f)", mrpt::system::dateTimeToString(tim_last).c_str(),
-      mrpt::Clock::toDouble(tim_last)));
+  edTimestamp->SetValue(
+      mrpt::format(
+          "Timestamp (UTC): %s (%.06f)", mrpt::system::dateTimeToString(tim_last).c_str(),
+          mrpt::Clock::toDouble(tim_last)));
 
   WX_END_TRY
   return hasToRefreshViz;

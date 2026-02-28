@@ -170,7 +170,7 @@ void CLevMarqGSO<GRAPH_T>::updateGraphVisualization()
 
   // remove previous graph and insert the new instance
   // TODO - make this an incremental proocecure
-  CRenderizable::Ptr prev_object = scene->getByName("optimized_graph");
+  CVisualObject::Ptr prev_object = scene->getByName("optimized_graph");
   bool prev_visibility = true;
   if (prev_object)
   {  // set the visibility of the graph correctly
@@ -212,7 +212,7 @@ void CLevMarqGSO<GRAPH_T>::toggleGraphVisualization()
 
   Scene::Ptr& scene = this->m_win->get3DSceneAndLock();
 
-  CRenderizable::Ptr graph_obj = scene->getByName("optimized_graph");
+  CVisualObject::Ptr graph_obj = scene->getByName("optimized_graph");
   graph_obj->setVisibility(!graph_obj->isVisible());
 
   this->m_win->unlockAccess3DScene();
@@ -234,7 +234,7 @@ void CLevMarqGSO<GRAPH_T>::fitGraphInView()
 
   // first fetch the graph object
   Scene::Ptr& scene = this->m_win->get3DSceneAndLock();
-  CRenderizable::Ptr obj = scene->getByName("optimized_graph");
+  CVisualObject::Ptr obj = scene->getByName("optimized_graph");
   CSetOfObjects::Ptr graph_obj = std::dynamic_pointer_cast<CSetOfObjects>(obj);
   this->m_win->unlockAccess3DScene();
   this->m_win->forceRepaint();
@@ -272,7 +272,7 @@ void CLevMarqGSO<GRAPH_T>::initOptDistanceVisualization()
   }
 
   pose_t p;
-  CRenderizable::Ptr obj = this->initOptDistanceVisualizationInternal(p);
+  CVisualObject::Ptr obj = this->initOptDistanceVisualizationInternal(p);
   pose_t initial_pose;
   obj->setPose(initial_pose);
   obj->setName("optimization_distance_obj");
@@ -294,7 +294,7 @@ void CLevMarqGSO<GRAPH_T>::initOptDistanceVisualization()
 }
 
 template <class GRAPH_T>
-mrpt::viz::CRenderizable::Ptr CLevMarqGSO<GRAPH_T>::initOptDistanceVisualizationInternal(
+mrpt::viz::CVisualObject::Ptr CLevMarqGSO<GRAPH_T>::initOptDistanceVisualizationInternal(
     const mrpt::poses::CPose2D& p_unused)
 {
   using namespace mrpt::viz;
@@ -306,7 +306,7 @@ mrpt::viz::CRenderizable::Ptr CLevMarqGSO<GRAPH_T>::initOptDistanceVisualization
   return obj;
 }
 template <class GRAPH_T>
-mrpt::viz::CRenderizable::Ptr CLevMarqGSO<GRAPH_T>::initOptDistanceVisualizationInternal(
+mrpt::viz::CVisualObject::Ptr CLevMarqGSO<GRAPH_T>::initOptDistanceVisualizationInternal(
     const mrpt::poses::CPose3D& p_unused)
 {
   using namespace mrpt::viz;
@@ -331,7 +331,7 @@ void CLevMarqGSO<GRAPH_T>::updateOptDistanceVisualization()
   // update ICP_max_distance Disk
   Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 
-  CRenderizable::Ptr obj = scene->getByName("optimization_distance_obj");
+  CVisualObject::Ptr obj = scene->getByName("optimization_distance_obj");
   obj->setPose(this->m_graph->nodes.rbegin()->second);
 
   this->m_win->unlockAccess3DScene();
@@ -348,7 +348,7 @@ void CLevMarqGSO<GRAPH_T>::toggleOptDistanceVisualization()
 
   Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 
-  CRenderizable::Ptr obj = scene->getByName("optimization_distance_obj");
+  CVisualObject::Ptr obj = scene->getByName("optimization_distance_obj");
   obj->setVisibility(!obj->isVisible());
 
   this->m_win->unlockAccess3DScene();

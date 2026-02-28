@@ -51,7 +51,7 @@
 #include "../wx-common/mrpt_logo.xpm"
 #include "imgs/app_icon_gridmapsimul.xpm"
 
-//#define DO_SCAN_LIKELIHOOD_DEBUG
+// #define DO_SCAN_LIKELIHOOD_DEBUG
 
 #ifdef DO_SCAN_LIKELIHOOD_DEBUG
 #include <mrpt/gui/CDisplayWindowPlots.h>
@@ -117,7 +117,7 @@ using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::io;
 using namespace mrpt::img;
 using namespace mrpt::serialization;
@@ -1049,7 +1049,7 @@ void gridmapSimulFrame::OnMenuLoadMap(wxCommandEvent& event)
   {
     // Try loading the image:
     CImage img;
-    if (!img.loadFromFile(fil, 0 /* force grayscale */))
+    if (!img.loadFromFile(fil, mrpt::img::CH_GRAY))
     {
       wxMessageBox(_("Error"), _("Can't load the image file (check its format)."));
     }

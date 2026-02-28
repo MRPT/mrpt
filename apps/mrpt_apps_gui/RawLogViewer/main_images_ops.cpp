@@ -32,7 +32,7 @@
 
 using namespace mrpt;
 using namespace mrpt::obs;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::gui;
@@ -227,9 +227,10 @@ void xRawLogViewerFrame::OnMenuMono2Stereo(wxCommandEvent& event)
 
           CObservationStereoImages::Ptr new_obs = std::make_shared<CObservationStereoImages>();
 
-          new_obs->timestamp = mrpt::Clock::time_point(mrpt::Clock::duration(
-              (o_l->timestamp.time_since_epoch().count() >> 1) +
-              (o_r->timestamp.time_since_epoch().count() >> 1)));
+          new_obs->timestamp = mrpt::Clock::time_point(
+              mrpt::Clock::duration(
+                  (o_l->timestamp.time_since_epoch().count() >> 1) +
+                  (o_r->timestamp.time_since_epoch().count() >> 1)));
 
           new_obs->sensorLabel = lb_stereo;
 
@@ -349,11 +350,11 @@ void xRawLogViewerFrame::OnMenuRectifyImages(wxCommandEvent& event)
 
                   obsIm->image.unload();
                 }  // end if
-              }    // end if image is not undistorted
+              }  // end if image is not undistorted
               N++;
             }  // end if CObservationImage
-          }    // end for k
-        }      // end case etSensoryFrame
+          }  // end for k
+        }  // end case etSensoryFrame
         break;
 
         case CRawlog::etObservation:
@@ -386,10 +387,10 @@ void xRawLogViewerFrame::OnMenuRectifyImages(wxCommandEvent& event)
 
                 obsIm->image.unload();
               }
-            }     // end if image is not undistorted
+            }  // end if image is not undistorted
             N++;  // Increment of the number of rectified images
-          }       // end if CObservationImage
-        }         // end case etObservation
+          }  // end if CObservationImage
+        }  // end case etObservation
         break;
 
         default:
@@ -546,8 +547,8 @@ void xRawLogViewerFrame::OnMenuRenameImageFiles(wxCommandEvent& event)
               renameExternalStereoImageFile(obsIm);
               N++;
             }  // end if CObservationImage
-          }    // end for k
-        }      // end case etSensoryFrame
+          }  // end for k
+        }  // end case etSensoryFrame
         break;
 
         case CRawlog::etObservation:
@@ -567,7 +568,7 @@ void xRawLogViewerFrame::OnMenuRenameImageFiles(wxCommandEvent& event)
             renameExternalStereoImageFile(obsIm);
             N++;
           }  // end if CObservationImage
-        }    // end case etObservation
+        }  // end case etObservation
         break;
 
         default:
