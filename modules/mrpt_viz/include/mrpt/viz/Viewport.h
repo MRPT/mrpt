@@ -129,6 +129,10 @@ class Viewport :
   [[nodiscard]] bool isCloned() const { return m_isCloned; }
   [[nodiscard]] bool isClonedCamera() const { return m_isClonedCamera; }
 
+  /** Returns the name of the viewport whose objects are being cloned,
+   * or empty if not cloning. Set by setCloneView(). */
+  [[nodiscard]] std::string getClonedViewportName() const { return m_clonedViewport; }
+
   [[nodiscard]] std::string isClonedCameraFrom() const { return m_clonedCameraViewport; }
 
   /** Resets the viewport to a normal 3D viewport \sa setCloneView,
