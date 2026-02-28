@@ -256,7 +256,7 @@ void CompiledScene::compile(const Scene& scene, CompilationStats* stats)
   clear();
 
   // Store reference to source scene (as const)
-  m_sourceScene = scene.shared_from_this();
+  m_sourceScene = &scene;
 
   CompilationStats localStats;
   CompilationStats& s = stats ? *stats : localStats;
@@ -885,7 +885,7 @@ void CompiledScene::clear()
   m_viewportRenderOrder.clear();
   m_objectToProxy.clear();
   m_shaderManager.clear();
-  m_sourceScene.reset();
+  m_sourceScene = nullptr;
   m_isCompiled = false;
 
   MRPT_END

@@ -239,17 +239,16 @@ CFBORender::~CFBORender()
 
 void CFBORender::ensureCompiledScene(const mrpt::viz::Scene& scene)
 {
-  // Check if we need to create or recreate the compiled scene
-  auto scenePtr = scene.shared_from_this();
-  auto lastScenePtr = m_lastScene.lock();
-
-  if (!m_compiledScene || lastScenePtr.get() != scenePtr.get())
+  // Check if we need to create or recreate the compiled scene.
+  // Use raw pointer comparison — the Scene may be stack-allocated and not
+  // managed by shared_ptr, so shared_from_this() cannot be used.
+  if (!m_compiledScene || m_lastScene != &scene)
   {
     // Different scene or first time - create new compiled scene
     m_compiledScene = std::make_unique<CompiledScene>();
     m_compiledScene->setAutoUpdate(false);  // We manage updates explicitly
     m_compiledScene->compile(scene);
-    m_lastScene = scenePtr;
+    m_lastScene = &scene;
   }
   else
   {
