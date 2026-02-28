@@ -106,9 +106,7 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
    */
   ~CDisplayWindowPlots() override;
 
-  /** Gets the last x,y pixel coordinates of the mouse. \return False if the
-   * window is closed. */
-  bool getLastMousePosition(int& x, int& y) const override;
+  std::optional<mrpt::img::TPixelCoord> getLastMousePosition() const override;
 
   /** Set cursor style to default (cursorIsCross=false) or to a cross
    * (cursorIsCross=true) */

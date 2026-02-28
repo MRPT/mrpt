@@ -344,19 +344,19 @@ void CDisplayWindow::setCursorCross([[maybe_unused]] bool cursorIsCross)
 /*---------------------------------------------------------------
           getLastMousePosition
  ---------------------------------------------------------------*/
-bool CDisplayWindow::getLastMousePosition([[maybe_unused]] int& x, [[maybe_unused]] int& y) const
+std::optional<mrpt::img::TPixelCoord> CDisplayWindow::getLastMousePosition() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
   const auto* win = (const CWindowDialog*)m_hwnd.get();
   if (!win)
   {
-    return false;
+    return std::nullopt;
   }
-  x = win->m_image->m_last_mouse_point.x;
-  y = win->m_image->m_last_mouse_point.y;
-  return true;
+  int x = win->m_image->m_last_mouse_point.x;
+  int y = win->m_image->m_last_mouse_point.y;
+  return mrpt::img::TPixelCoord(x, y);
 #else
-  return false;
+  return std::nullopt;
 #endif
 }
 

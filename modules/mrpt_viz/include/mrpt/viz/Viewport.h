@@ -345,31 +345,26 @@ class Viewport :
   /** Computes the 3D ray passing through the viewport pixel (x,y), given
    * explicit viewport dimensions.
    *
-   * \param x Pixel horizontal coordinate (0=left, increasing right)
-   * \param y Pixel vertical coordinate (0=top, increasing down)
-   * \param vp_width Viewport width in pixels
-   * \param vp_height Viewport height in pixels
-   * \param out_ray The computed 3D ray (origin + direction)
+   * \param pixelCoord Pixel coordinates (0=left/top, increasing right/down)
+   * \param viewportSize Viewport size in pixels
    * \param out_cameraPose If not nullptr, receives the camera SE(3) pose
+   * \return The 3D ray in the world coordinates, starting at the camera, or nullopt if the viewport
+   * has not been rendered at least once (so that updateRenderedViewportSize() has been called by
+   * the rendering backend).
    *
    * \sa getLastRenderedViewportSize
    */
-  void get3DRayForPixelCoord(
-      double x,
-      double y,
-      unsigned int vp_width,
-      unsigned int vp_height,
-      mrpt::math::TLine3D& out_ray,
+  mrpt::math::TLine3D get3DRayForPixelCoord(
+      const mrpt::img::TPixelCoord& pixelCoord,
+      const mrpt::img::TPixelCoord& viewportSize,
       mrpt::poses::CPose3D* out_cameraPose = nullptr) const;
 
   /** \overload Convenience overload using the last rendered viewport size.
    * Requires that the viewport has been rendered at least once (so that
    * updateRenderedViewportSize() has been called by the rendering backend).
    */
-  void get3DRayForPixelCoord(
-      double x,
-      double y,
-      mrpt::math::TLine3D& out_ray,
+  std::optional<mrpt::math::TLine3D> get3DRayForPixelCoord(
+      const mrpt::img::TPixelCoord& pixelCoord,
       mrpt::poses::CPose3D* out_cameraPose = nullptr) const;
 
   /** Returns the size (width, height) of the viewport as rendered in the
