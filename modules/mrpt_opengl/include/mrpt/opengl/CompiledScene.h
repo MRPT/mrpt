@@ -218,7 +218,7 @@ class CompiledScene
   /** Returns the source Scene that was compiled.
    * \return nullptr if not yet compiled
    */
-  [[nodiscard]] const mrpt::viz::Scene* getSourceScene() const { return m_sourceScene.get(); }
+  [[nodiscard]] const mrpt::viz::Scene* getSourceScene() const { return m_sourceScene; }
 
   /** Access to compiled viewports */
   [[nodiscard]] const std::map<std::string, CompiledViewport::Ptr>& getViewports() const
@@ -243,8 +243,11 @@ class CompiledScene
   /** @} */
 
  private:
-  /** Reference to the source scene (kept for incremental updates) */
-  std::shared_ptr<const mrpt::viz::Scene> m_sourceScene;
+  /** Reference to the source scene (kept for incremental updates).
+   * Raw pointer because the Scene may be stack-allocated (not managed by
+   * shared_ptr). The caller must ensure the Scene outlives the
+   * CompiledScene. */
+  const mrpt::viz::Scene* m_sourceScene = nullptr;
 
   /** Compiled viewports, indexed by name */
   std::map<std::string, CompiledViewport::Ptr> m_viewports;

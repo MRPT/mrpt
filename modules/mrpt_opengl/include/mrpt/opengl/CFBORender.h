@@ -235,8 +235,9 @@ class CFBORender
   // Compiled scene (lazy-initialized on first render)
   std::unique_ptr<CompiledScene> m_compiledScene;
 
-  // Weak reference to last rendered scene (to detect scene changes)
-  std::weak_ptr<const mrpt::viz::Scene> m_lastScene;
+  // Raw pointer to last rendered scene (to detect scene changes).
+  // Not owning — the caller guarantees the Scene outlives the render call.
+  const mrpt::viz::Scene* m_lastScene = nullptr;
 
   /** Internal rendering implementation */
   void internal_render_RGBD(
