@@ -80,3 +80,71 @@ only the required modules.
 * Each module, for example `mrpt_img`, has its own `modules/mrpt_img/python/mrpt/img/__init__.py` that must be updated with new wrapped C++ classes.
 * Each module, for example `mrpt_img`, has its own `modules/mrpt_img/python_bindings/mrpt_img_py.cpp` file with the specific wrapped C++ classes and python adaptors.
 * Python examples, demonstrating each module wrapped features, live under `mrpt_examples_py`. They should be updated/extended or new examples created when appropriate as new classes are wrapped.
+
+### 5.1 File structure for each pybind11 module
+
+To add or extend Python bindings for a module `mrpt_foo`, three files are needed:
+
+1. **`modules/mrpt_foo/python_bindings/mrpt_foo_py.cpp`** — The C++ pybind11 source. Must define `PYBIND11_MODULE(_bindings, m) { ... }`. The compiled shared library is always named `_bindings.so`.
+2. **`modules/mrpt_foo/python/mrpt/foo/__init__.py`** — Python re-exports: `from . import _bindings as _b`, then `ClassName = _b.ClassName` for each wrapped class/function, and an `__all__` list.
+3. **`modules/mrpt_foo/CMakeLists.txt`** — Must call `mrpt_add_python_module(foo python_bindings/${PROJECT_NAME}_py.cpp)`. If this line is commented out, uncomment it.
+
+The root `mrpt/__init__.py` (in `mrpt_core`) auto-imports all known submodules by name. If adding a new module name, add it to the `MRPT_MODULES` list there.
+
+### 5.2 Pybind11 coding patterns and conventions
+
+**Includes:** Always include `<pybind11/pybind11.h>` and `<pybind11/stl.h>`. Add `<pybind11/eigen.h>` for Eigen/matrix types, `<pybind11/numpy.h>` for `py::array_t<T>`, `<pybind11/operators.h>` for operator overloading, `<pybind11/chrono.h>` for time types, `<pybind11/functional.h>` for `std::function` callbacks.
+
+**Class binding with inheritance:**
+```cpp
+py::class_<Derived, Base1, Base2, std::shared_ptr<Derived>>(m, "Derived")
+```
+Always use `std::shared_ptr<T>` holder for classes that are commonly used via smart pointers. Include `CSerializable` in the base list for serializable classes.
+
+**Properties:** When C++ uses `x()` getter and `x(double)` setter (common in MRPT), use:
+```cpp
+.def_property("x",
+    [](const T& p) { return p.x(); },
+    [](T& p, double val) { p.x(val); })
+```
+For public member variables, use `.def_readwrite("name", &T::name)` or `.def_readonly(...)`.
+
+**Overloaded methods:** Resolve with `py::overload_cast<ArgTypes...>(&Class::method)` or `static_cast<RetType(Class::*)(ArgTypes...)>(&Class::method)`.
+
+**Output-argument functions → return values:** Wrap in lambda:
+```cpp
+.def("compute", [](const T& self) {
+    ResultType result;
+    bool ok = self.compute(result);
+    return py::make_tuple(ok, result);
+})
+```
+
+**Operator overloading:** Use `py::self + py::self`, etc. Always add `__str__` and `__repr__`.
+
+**NumPy integration:**
+- For Eigen matrices: `#include <pybind11/eigen.h>` enables automatic conversion. For zero-copy, return `Eigen::Map<const RowMajorMatrix>(ptr, rows, cols)`.
+- For `CImage`: Use `py::array_t<uint8_t>` with shape/strides and pass `self_obj` (the Python object) as the buffer base for zero-copy.
+- Add `__array__` protocol: `.def("__array__", [](const T& self) { return self.as_numpy(); })`.
+
+**Iterators:** `py::make_iterator(container.begin(), container.end())` with `py::keep_alive<0, 1>()`.
+
+**Enums:** `py::enum_<T>(m, "Name").value("A", T::A).export_values();` Use `py::arithmetic()` for bitmask enums.
+
+**GIL management:** When passing Python callables to C++ threads, acquire the GIL: `py::gil_scoped_acquire gil;` inside the C++ callback lambda.
+
+**Return value policies:** Use `py::return_value_policy::reference_internal` for getters returning references to internal objects (e.g., `getCamera()` on a Viewport). Use `py::return_value_policy::reference` for singletons/static data.
+
+**Python `__init__.py` conventions:**
+- Re-export all bound classes: `ClassName = _b.ClassName`
+- Monkey-patch `__array__` for NumPy integration where appropriate
+- Add Pythonic conveniences (e.g., `<<` operator for scene building, color constants)
+- Include `__all__` listing all public names
+
+### 5.3 Current binding status
+
+**Active (12 modules):** `core`, `math`, `poses`, `img`, `viz`, `serialization`, `system`, `containers`, `tfest`, `rtti`, `config`, `expr`.
+
+**Not yet implemented:** `obs`, `maps`, `gui`, `opengl`, `slam`, `nav`, `io`, `graphs`, `graphslam`, `kinematics`, `topography`, `bayes`, `random`, `hwdrivers`, `comms`, `vision`, `imgui`, `typemeta`.
+
+See `python/pybind11_plan_v3.md` for a detailed plan on extending wrappers to all modules.
