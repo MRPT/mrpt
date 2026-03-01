@@ -20,7 +20,7 @@
 #include "camera_calib_guiMain.h"
 
 #include "CDlgCalibWizardOnline.h"
-#include "CDlgPoseEst.h"
+// #include "CDlgPoseEst.h"  // disabled: depends on CPnP removed in v3
 
 //(*InternalHeaders(camera_calib_guiDialog)
 #include <wx/font.h>
@@ -877,30 +877,10 @@ void camera_calib_guiDialog::OnbtnCaptureNowClick(wxCommandEvent& event)
 
 void camera_calib_guiDialog::OnbtnPoseEstimateNowClick(wxCommandEvent& event)
 {
-  // Compute pose using PnP Algorithms toolkit
-
-  CDlgPoseEst dlg(this);
-
-  // Set pattern params:
-  dlg.edLengthX->SetValue(this->edLengthX->GetValue());
-  dlg.edLengthY->SetValue(this->edLengthY->GetValue());
-  dlg.edSizeX->SetValue(this->edSizeX->GetValue());
-  dlg.edSizeY->SetValue(this->edSizeY->GetValue());
-  dlg.cbNormalize->SetValue(this->cbNormalize->GetValue());
-
-  // Run:
-  dlg.ShowModal();
-
-  // Get params:
-  this->edLengthX->SetValue(dlg.edLengthX->GetValue());
-  this->edLengthY->SetValue(dlg.edLengthY->GetValue());
-  this->edSizeX->SetValue(dlg.edSizeX->GetValue());
-  this->edSizeY->SetValue(dlg.edSizeY->GetValue());
-  this->cbNormalize->SetValue(dlg.cbNormalize->GetValue());
-
-  // Get images:
-  lst_images = dlg.m_calibFrames;
-  this->updateListOfImages();
+  // Disabled in v3: CPnP was removed from mrpt_vision
+  wxMessageBox(
+      _("Pose estimation via PnP is not available in MRPT v3."),
+      _("Not available"), wxICON_INFORMATION, this);
 }
 
 void camera_calib_guiDialog::OnbtnSaveImagesClick(wxCommandEvent& event)

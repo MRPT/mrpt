@@ -26,8 +26,8 @@ mrpt_add_executable(
     camera_calib_guiMain.h
     CDlgCalibWizardOnline.cpp
     CDlgCalibWizardOnline.h
-    CDlgPoseEst.cpp
-    CDlgPoseEst.h
+    #CDlgPoseEst.cpp  # disabled: depends on CPnP which was removed in v3
+    #CDlgPoseEst.h
     MyGLCanvas.cpp
     MyGLCanvas.h
   LINK_LIBRARIES

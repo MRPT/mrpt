@@ -2515,9 +2515,9 @@ void kinect_calibrate_guiDialog::CalibUpdate3DViewCameras()
 
   if (!check_squares_length_X_meters || !check_squares_length_Y_meters) return;
 
-  opengl::CSetOfObjects::Ptr gl_objs = std::make_shared<opengl::CSetOfObjects>();
+  viz::CSetOfObjects::Ptr gl_objs = std::make_shared<viz::CSetOfObjects>();
 
-  opengl::CGridPlaneXY::Ptr grid = std::make_shared<opengl::CGridPlaneXY>(
+  viz::CGridPlaneXY::Ptr grid = std::make_shared<viz::CGridPlaneXY>(
       0, check_size_x * check_squares_length_X_meters, 0,
       check_size_y * check_squares_length_Y_meters, 0, check_squares_length_X_meters);
   gl_objs->insert(grid);

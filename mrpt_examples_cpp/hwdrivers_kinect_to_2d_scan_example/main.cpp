@@ -26,11 +26,11 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/img/TColor.h>
-#include <mrpt/opengl/CFrustum.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/viz/CFrustum.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CPlanarLaserScan.h>
+#include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/stock_objects.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/filesystem.h>
 
@@ -44,7 +44,7 @@ using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::system;
 using namespace mrpt::img;
 using namespace std;
@@ -171,25 +171,25 @@ void Test_Kinect()
   win3D.setCameraPointingToPoint(2.5, 0, 0);
 
   // The 3D point cloud OpenGL object:
-  mrpt::opengl::CPointCloudColoured::Ptr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+  mrpt::viz::CPointCloudColoured::Ptr gl_points = mrpt::viz::CPointCloudColoured::Create();
   gl_points->setPointSize(2.5);
 
   // The 2D "laser scan" OpenGL object:
-  mrpt::opengl::CPlanarLaserScan::Ptr gl_2d_scan = mrpt::opengl::CPlanarLaserScan::Create();
+  mrpt::viz::CPlanarLaserScan::Ptr gl_2d_scan = mrpt::viz::CPlanarLaserScan::Create();
   gl_2d_scan->enablePoints(true);
   gl_2d_scan->enableLine(true);
   gl_2d_scan->enableSurface(true);
   gl_2d_scan->setSurfaceColor(0, 0, 1, 0.3);  // RGBA
 
-  mrpt::opengl::CFrustum::Ptr gl_frustum =
-      mrpt::opengl::CFrustum::Create(0.2f, 5.0f, 90.0f, 5.0f, 2.0f, true, true);
+  mrpt::viz::CFrustum::Ptr gl_frustum =
+      mrpt::viz::CFrustum::Create(0.2f, 5.0f, 90.0f, 5.0f, 2.0f, true, true);
 
   const double aspect_ratio = 480.0 / 640.0;  // kinect.rows() / double( kinect.cols() );
 
-  opengl::Viewport::Ptr viewRange,
+  viz::Viewport::Ptr viewRange,
       viewInt;  // Extra viewports for the RGB & D images.
   {
-    mrpt::opengl::Scene::Ptr& scene = win3D.get3DSceneAndLock();
+    mrpt::viz::Scene::Ptr& scene = win3D.get3DSceneAndLock();
 
     // Create the Opengl object for the point cloud:
     scene->insert(gl_points);
@@ -197,12 +197,12 @@ void Test_Kinect()
     scene->insert(gl_frustum);
 
     {
-      mrpt::opengl::CGridPlaneXY::Ptr gl_grid = mrpt::opengl::CGridPlaneXY::Create();
+      mrpt::viz::CGridPlaneXY::Ptr gl_grid = mrpt::viz::CGridPlaneXY::Create();
       gl_grid->setColor(0.6, 0.6, 0.6);
       scene->insert(gl_grid);
     }
     {
-      mrpt::opengl::CSetOfObjects::Ptr gl_corner = mrpt::opengl::stock_objects::CornerXYZ();
+      mrpt::viz::CSetOfObjects::Ptr gl_corner = mrpt::viz::stock_objects::CornerXYZ();
       gl_corner->setScale(0.2);
       scene->insert(gl_corner);
     }

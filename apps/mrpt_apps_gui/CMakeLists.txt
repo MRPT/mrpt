@@ -26,7 +26,7 @@ add_subdirectory(DifOdometry-Camera)
 add_subdirectory(DifOdometry-Datasets)
 add_subdirectory(features-matching)
 add_subdirectory(graph-slam)
-add_subdirectory(graphslam-engine)
+#add_subdirectory(graphslam-engine)  # disabled: needs further porting to v3
 add_subdirectory(grid-matching)
 add_subdirectory(GridmapNavSimul)
 add_subdirectory(holonomic-navigator-demo)

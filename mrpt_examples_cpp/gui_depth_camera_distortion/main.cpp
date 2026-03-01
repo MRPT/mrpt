@@ -32,10 +32,10 @@ void main_loop() { loop(); }
 #include <mrpt/io/lazy_load_path.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/viz/CAxis.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/stock_objects.h>
 
 #include <iostream>
 
@@ -51,14 +51,14 @@ struct AppData
   AppData() = default;
 
   mrpt::gui::CDisplayWindowGUI::Ptr win;
-  mrpt::opengl::CAxis::Ptr gl_corner_reference;
+  mrpt::viz::CAxis::Ptr gl_corner_reference;
   mrpt::obs::CObservation3DRangeScan::Ptr obs;
 
   mrpt::img::TCamera originalCalib;
   mrpt::poses::CPose3D originalSensorPose;
 
-  mrpt::opengl::CPointCloudColoured::Ptr gl_pts;
-  mrpt::opengl::CSetOfObjects::Ptr gl_sensorPoseCorner;
+  mrpt::viz::CPointCloudColoured::Ptr gl_pts;
+  mrpt::viz::CSetOfObjects::Ptr gl_sensorPoseCorner;
 
   std::vector<nanogui::TextBox*> edBoxes /* cx,cy,... dist[7]*/
       ,
@@ -191,11 +191,11 @@ static void AppDepthCamDemo()
 
   // Init values:
   app.gl_corner_reference =
-      mrpt::opengl::CAxis::Create(-5.0f, -5.0f, .0f, 5.0f, 5.0f, 2.0f, 0.2f, 1.0f, true);
+      mrpt::viz::CAxis::Create(-5.0f, -5.0f, .0f, 5.0f, 5.0f, 2.0f, 0.2f, 1.0f, true);
   app.gl_corner_reference->setTextScale(0.04);
 
-  app.gl_pts = mrpt::opengl::CPointCloudColoured::Create();
-  app.gl_sensorPoseCorner = mrpt::opengl::stock_objects::CornerXYZSimple(0.10f);
+  app.gl_pts = mrpt::viz::CPointCloudColoured::Create();
+  app.gl_sensorPoseCorner = mrpt::viz::stock_objects::CornerXYZSimple(0.10f);
 
   // Create GUI:
   app.win = mrpt::gui::CDisplayWindowGUI::Create("Depth camera distortion demo", 1000, 700, cp);
@@ -410,8 +410,8 @@ static void AppDepthCamDemo()
   // Add a background scene:
   // -----------------------------
   {
-    auto scene = mrpt::opengl::Scene::Create();
-    scene->insert(mrpt::opengl::CGridPlaneXY::Create());
+    auto scene = mrpt::viz::Scene::Create();
+    scene->insert(mrpt::viz::CGridPlaneXY::Create());
 
     scene->insert(app.gl_corner_reference);
     scene->insert(app.gl_pts);

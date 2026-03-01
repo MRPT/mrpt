@@ -31,7 +31,6 @@ mrpt_add_executable(
     common.h
     run_build_tables.h
     perf-feature_extraction.cpp
-    perf-feature_matching.cpp
     perf-graph.cpp
     perf-graphslam.cpp
     perf-gridmaps.cpp

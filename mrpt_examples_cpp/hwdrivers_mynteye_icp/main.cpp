@@ -15,11 +15,11 @@
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/gui/CDisplayWindowGUI.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
-#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/stock_objects.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/filesystem.h>
 
@@ -39,7 +39,7 @@ using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::slam;
 using namespace mrpt::system;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace std;
 
 const double KEYFRAMES_MIN_DISTANCE = 0.50;  // meters
@@ -165,7 +165,7 @@ void Test_3DCamICP()
     std::mutex strStatuses_mtx;
     std::array<std::string, 4> strStatuses;
 
-    opengl::Viewport::Ptr viewInt;
+    viz::Viewport::Ptr viewInt;
     std::mutex* viewInt_mtx = nullptr;
 
     // Set defaults:
@@ -178,21 +178,21 @@ void Test_3DCamICP()
   // update the GL objects, etc.
   auto lambdaUpdateThread = [&win, &thrPar, &ui_data]()
   {
-    auto gl_points = mrpt::opengl::CPointCloudColoured::Create();
-    auto gl_keyframes = mrpt::opengl::CSetOfObjects::Create();
-    auto gl_points_map = mrpt::opengl::CPointCloudColoured::Create();
-    auto gl_cur_cam_corner = mrpt::opengl::stock_objects::CornerXYZ(0.4f);
+    auto gl_points = mrpt::viz::CPointCloudColoured::Create();
+    auto gl_keyframes = mrpt::viz::CSetOfObjects::Create();
+    auto gl_points_map = mrpt::viz::CPointCloudColoured::Create();
+    auto gl_cur_cam_corner = mrpt::viz::stock_objects::CornerXYZ(0.4f);
     gl_points->setPointSize(1.25f);
     gl_points_map->setPointSize(1.5f);
 
     {
-      auto scene = mrpt::opengl::Scene::Create();
+      auto scene = mrpt::viz::Scene::Create();
 
       // Create the Opengl object for the point cloud:
       scene->insert(gl_points_map);
       scene->insert(gl_points);
       scene->insert(gl_keyframes);
-      scene->insert(mrpt::opengl::CGridPlaneXY::Create());
+      scene->insert(mrpt::viz::CGridPlaneXY::Create());
 
       scene->insert(gl_cur_cam_corner);
 
@@ -213,14 +213,14 @@ void Test_3DCamICP()
     bool gl_keyframes_must_refresh = true;
 
     CObservation3DRangeScan::Ptr cur_obs;
-    CColouredPointsMap::Ptr cur_points, prev_points;
+    CGenericPointsMap::Ptr cur_points, prev_points;
 
     // Global points map:
-    CColouredPointsMap globalPtsMap;
+    CGenericPointsMap globalPtsMap;
 
-    globalPtsMap.colorScheme.scheme =
-        CColouredPointsMap::cmFromIntensityImage;  // Take points color from
-    // RGB+D observations
+    globalPtsMap.registerField_float(CPointsMap::POINT_FIELD_COLOR_Rf);
+    globalPtsMap.registerField_float(CPointsMap::POINT_FIELD_COLOR_Gf);
+    globalPtsMap.registerField_float(CPointsMap::POINT_FIELD_COLOR_Bf);
 
     mrpt::slam::CICP icp;
     icp.options.maxIterations = 80;
@@ -245,7 +245,12 @@ void Test_3DCamICP()
 
       // Unproject 3D points:
       if (!cur_points)
-        cur_points = CColouredPointsMap::Create();
+      {
+        cur_points = CGenericPointsMap::Create();
+        cur_points->registerField_float(CPointsMap::POINT_FIELD_COLOR_Rf);
+        cur_points->registerField_float(CPointsMap::POINT_FIELD_COLOR_Gf);
+        cur_points->registerField_float(CPointsMap::POINT_FIELD_COLOR_Bf);
+      }
       else
         cur_points->clear();
 
@@ -265,7 +270,7 @@ void Test_3DCamICP()
       if (!prev_points)
       {
         // Make a deep copy:
-        prev_points = CColouredPointsMap::Create(*cur_points);
+        prev_points = CGenericPointsMap::Create(*cur_points);
       }
 
       icp_out = icp.Align3D(prev_points.get(), cur_points.get(), lastIcpRelPose, icp_res);
@@ -375,7 +380,7 @@ void Test_3DCamICP()
         gl_keyframes->clear();
         for (const auto& i : camera_key_frames_path)
         {
-          CSetOfObjects::Ptr obj = mrpt::opengl::stock_objects::CornerXYZSimple(0.3f, 3);
+          CSetOfObjects::Ptr obj = mrpt::viz::stock_objects::CornerXYZSimple(0.3f, 3);
           obj->setPose(i);
           gl_keyframes->insert(obj);
         }
@@ -512,7 +517,7 @@ void Test_3DCamICP()
     // Create the Opengl objects for the planar images each in a
     // separate viewport:
 
-    glCanvasRGBView->scene = mrpt::opengl::Scene::Create();
+    glCanvasRGBView->scene = mrpt::viz::Scene::Create();
     ui_data.viewInt = glCanvasRGBView->scene->getViewport();
     ui_data.viewInt_mtx = &glCanvasRGBView->scene_mtx;
 

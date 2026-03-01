@@ -26,13 +26,13 @@
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/io/CCompressedInputStream.h>
-#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/opengl/CFrustum.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/viz/CFrustum.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CPlanarLaserScan.h>
+#include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/stock_objects.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
@@ -269,17 +269,17 @@ void Test_KinectOnlineOffline(bool is_online, const string& rawlog_file = string
   win3D.setFOV(90);
   win3D.setCameraPointingToPoint(2.5, 0, 0);
 
-  mrpt::opengl::CPointCloudColoured::Ptr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+  mrpt::viz::CPointCloudColoured::Ptr gl_points = mrpt::viz::CPointCloudColoured::Create();
   gl_points->setPointSize(2.5);
 
-  opengl::Viewport::Ptr viewInt;  // Extra viewports for the RGB images.
+  viz::Viewport::Ptr viewInt;  // Extra viewports for the RGB images.
   {
-    mrpt::opengl::Scene::Ptr& scene = win3D.get3DSceneAndLock();
+    mrpt::viz::Scene::Ptr& scene = win3D.get3DSceneAndLock();
 
     // Create the Opengl object for the point cloud:
     scene->insert(gl_points);
-    scene->insert(mrpt::opengl::CGridPlaneXY::Create());
-    scene->insert(mrpt::opengl::stock_objects::CornerXYZ());
+    scene->insert(mrpt::viz::CGridPlaneXY::Create());
+    scene->insert(mrpt::viz::stock_objects::CornerXYZ());
 
     const double aspect_ratio = 480.0 / 640.0;
     const int VW_WIDTH = 400;  // Size of the viewport into the window, in pixel units.

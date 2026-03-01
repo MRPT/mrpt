@@ -1225,8 +1225,9 @@ void ptgConfiguratorframe::Onplot3DMouseMove(wxMouseEvent& event)
   event.GetPosition(&X, &Y);
 
   // Intersection of 3D ray with ground plane ====================
-  TLine3D ray;
-  m_plot->getOpenGLSceneRef()->getViewport("main")->get3DRayForPixelCoord(X, Y, ray);
+  auto ray_opt = m_plot->getOpenGLSceneRef()->getViewport("main")->get3DRayForPixelCoord({X, Y});
+  if (!ray_opt) return;
+  TLine3D ray = *ray_opt;
   // Create a 3D plane, e.g. Z=0
   const TPlane ground_plane(TPoint3D(0, 0, 0), TPoint3D(1, 0, 0), TPoint3D(0, 1, 0));
   // Intersection of the line with the plane:

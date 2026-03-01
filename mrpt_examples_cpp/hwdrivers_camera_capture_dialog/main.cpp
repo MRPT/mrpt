@@ -13,6 +13,7 @@
 */
 
 #include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/apps_gui/CameraSelectionGUI.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/CTicTac.h>
@@ -33,7 +34,7 @@ using namespace std;
 // ------------------------------------------------------
 void TestCameraCaptureAsk()
 {
-  CCameraSensor::Ptr cam = prepareVideoSourceFromUserSelection();
+  CCameraSensor::Ptr cam = mrpt::apps::prepareVideoSourceFromUserSelection();
 
   if (!cam)
   {

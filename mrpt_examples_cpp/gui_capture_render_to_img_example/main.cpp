@@ -14,10 +14,10 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/math/TPose3D.h>
-#include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/CBox.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CSphere.h>
+#include <mrpt/viz/CAxis.h>
+#include <mrpt/viz/CBox.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CSphere.h>
 #include <mrpt/system/os.h>
 
 #include <chrono>
@@ -27,7 +27,7 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 
 // ------------------------------------------------------
 //				TestDisplay3D
@@ -53,13 +53,13 @@ void TestDisplay3D()
   // Modify the scene:
   // ------------------------------------------------------
   {
-    opengl::CGridPlaneXY::Ptr obj = opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
+    viz::CGridPlaneXY::Ptr obj = viz::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
     obj->setColor(0.4f, 0.4f, 0.4f);
     theScene->insert(obj);
   }
 
   {
-    opengl::CAxis::Ptr obj = opengl::CAxis::Create();
+    viz::CAxis::Ptr obj = viz::CAxis::Create();
     obj->setFrequency(5);
     obj->enableTickMarks();
     obj->setAxisLimits(-10, -10, -10, 10, 10, 10);
@@ -67,7 +67,7 @@ void TestDisplay3D()
   }
 
   {
-    opengl::CBox::Ptr obj = opengl::CBox::Create();
+    viz::CBox::Ptr obj = viz::CBox::Create();
     obj->setWireframe(false);
     obj->setColor(1, 0, 0);
     obj->setLineWidth(3.0);
@@ -76,7 +76,7 @@ void TestDisplay3D()
   }
 
   {
-    opengl::CSphere::Ptr obj = opengl::CSphere::Create();
+    viz::CSphere::Ptr obj = viz::CSphere::Create();
     obj->setColor(0, 0, 1);
     obj->setRadius(0.3f);
     obj->setLocation(0, 0, 1);
@@ -84,7 +84,7 @@ void TestDisplay3D()
     theScene->insert(obj);
   }
   {
-    opengl::CSphere::Ptr obj = opengl::CSphere::Create();
+    viz::CSphere::Ptr obj = viz::CSphere::Create();
     obj->setColor(1, 0, 0);
     obj->setRadius(0.3f);
     obj->setLocation(-1, -1, 1);
@@ -93,7 +93,7 @@ void TestDisplay3D()
   }
 
   {
-    opengl::CSphere::Ptr obj = opengl::CSphere::Create();
+    viz::CSphere::Ptr obj = viz::CSphere::Create();
     obj->setColor(0, 1, 0);
     obj->setRadius(0.5);
     obj->setLocation(0, 0, 0);
@@ -120,7 +120,7 @@ void TestDisplay3D()
 
   bool end = false;
 
-  mrpt::opengl::TFontParams fp;
+  mrpt::viz::TFontParams fp;
   fp.color = mrpt::img::TColorf(0, 0, 1);
 
   while (!end && win.isOpen())

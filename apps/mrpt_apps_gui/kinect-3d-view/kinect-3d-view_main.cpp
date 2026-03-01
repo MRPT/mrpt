@@ -195,7 +195,7 @@ void Test_Kinect()
 
   const double aspect_ratio = 480.0 / 640.0;  // kinect.rows() / double( kinect.cols() );
 
-  opengl::Viewport::Ptr viewRange,
+  viz::Viewport::Ptr viewRange,
       viewInt;  // Extra viewports for the RGB & D images.
   {
     mrpt::viz::Scene::Ptr& scene = win3D.get3DSceneAndLock();
