@@ -15,8 +15,8 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/gui/CDisplayWindowGUI.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/stock_objects.h>
 
 #include <iostream>
 
@@ -51,8 +51,8 @@ void TestGUI()
     subWin2->setPosition({10, 300});
 
     {
-      auto scene = mrpt::opengl::Scene::Create();
-      scene->insert(mrpt::opengl::stock_objects::CornerXYZSimple());
+      auto scene = mrpt::viz::Scene::Create();
+      scene->insert(mrpt::viz::stock_objects::CornerXYZSimple());
 
       glControl->camera().setZoomDistance(5.0f);
 
@@ -74,8 +74,8 @@ void TestGUI()
 
     // add a background scene:
     {
-      auto scene = mrpt::opengl::Scene::Create();
-      scene->insert(mrpt::opengl::CGridPlaneXY::Create());
+      auto scene = mrpt::viz::Scene::Create();
+      scene->insert(mrpt::viz::CGridPlaneXY::Create());
 
       std::lock_guard<std::mutex> lck(win.background_scene_mtx);
       win.background_scene = std::move(scene);

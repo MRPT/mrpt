@@ -14,12 +14,12 @@
 
 #include <mrpt/core/round.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/CBox.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CSphere.h>
-#include <mrpt/opengl/CText.h>
-#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/viz/CAxis.h>
+#include <mrpt/viz/CBox.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CSphere.h>
+#include <mrpt/viz/CText.h>
+#include <mrpt/viz/stock_objects.h>
 #include <mrpt/system/CObserver.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
@@ -31,27 +31,19 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::system;
 
 // This is my custom class to handle the pre/post render events:
 struct TMyExtraRenderingStuff : public mrpt::system::CObserver
 {
-  opengl::CSphere::Ptr ball_obj;  // The ball moving in the scene
+  viz::CSphere::Ptr ball_obj;  // The ball moving in the scene
 
   TMyExtraRenderingStuff() {}
   void OnEvent(const mrptEvent& e) override
   {
-    if (e.isOfType<mrptEventGLPreRender>())
-    {
-      // const mrptEventGLPreRender* ev = e.getAs<mrptEventGLPreRender>();
-      // ev-> ...
-    }
-    else if (e.isOfType<mrptEventGLPostRender>())
-    {
-      // const mrptEventGLPostRender* ev =
-      // e.getAs<mrptEventGLPostRender>();
-    }
+    // Pre/post render events were removed in MRPT v3.
+    // Custom rendering can be done via other mechanisms.
   }
 };
 
@@ -68,22 +60,22 @@ void TestDisplay3D()
   TMyExtraRenderingStuff my_extra_rendering;
 
   // And start subscribing to the viewport events:
-  opengl::Viewport::Ptr the_main_view = theScene->getViewport("main");
+  viz::Viewport::Ptr the_main_view = theScene->getViewport("main");
   my_extra_rendering.observeBegin(*the_main_view);
 
   // Modify the scene:
   // ------------------------------------------------------
   {
-    opengl::CGridPlaneXY::Ptr obj = opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
+    viz::CGridPlaneXY::Ptr obj = viz::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
     obj->setColor(0.8f, 0.8f, 0.8f);
     theScene->insert(obj);
   }
 
-  theScene->insert(mrpt::opengl::stock_objects::CornerXYZ());
+  theScene->insert(mrpt::viz::stock_objects::CornerXYZ());
 
   if (true)
   {
-    opengl::CAxis::Ptr obj = opengl::CAxis::Create();
+    viz::CAxis::Ptr obj = viz::CAxis::Create();
     obj->setFrequency(5);
     obj->enableTickMarks();
     obj->setAxisLimits(-10, -10, -10, 10, 10, 10);
@@ -91,7 +83,7 @@ void TestDisplay3D()
   }
 
   {
-    opengl::CSphere::Ptr obj = opengl::CSphere::Create();
+    viz::CSphere::Ptr obj = viz::CSphere::Create();
     obj->setColor(0, 0, 1);
     obj->setRadius(0.3f);
     obj->setLocation(0, 0, 1);
@@ -129,7 +121,7 @@ void TestDisplay3D()
     // Move the scene:
     Scene::Ptr& scene = win.get3DSceneAndLock();
 
-    opengl::CRenderizable::Ptr obj1 = scene->getByName("ball_1");
+    viz::CVisualObject::Ptr obj1 = scene->getByName("ball_1");
     const double t = timer.Tac();
     const double R = 8;
     const double W = 5.0, Q = 3.3;

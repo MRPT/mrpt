@@ -1761,9 +1761,10 @@ void NavlogViewerApp::OntimMouseXY()
 
   const auto mousexY = m_win->mousePos();
 
-  mrpt::math::TLine3D mouse_ray;
-  m_win->background_scene->getViewport("main")->get3DRayForPixelCoord(
-      mousexY.x(), mousexY.y(), mouse_ray);
+  auto mouse_ray_opt = m_win->background_scene->getViewport("main")->get3DRayForPixelCoord(
+      {mousexY.x(), mousexY.y()});
+  if (!mouse_ray_opt) return;
+  mrpt::math::TLine3D mouse_ray = *mouse_ray_opt;
 
   int lineY = 0, unique_id = 0;
 

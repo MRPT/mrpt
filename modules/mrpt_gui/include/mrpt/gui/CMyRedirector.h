@@ -21,6 +21,7 @@
 #include <cstdio>
 #include <iostream>
 #include <streambuf>
+#include <vector>
 
 /** This auxiliary class redirects the output sent to a streambuf to a
  * wxTextCtrl object.

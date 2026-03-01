@@ -12,11 +12,12 @@ find_package(mrpt_common REQUIRED)
 # Dependencies
 find_package(mrpt_slam REQUIRED)
 find_package(mrpt_hwdrivers REQUIRED)
+find_package(mrpt_gui REQUIRED)
 
 
 # Define the executable target:
 mrpt_add_executable(
   TARGET hwdrivers_kinect_online_offline_example
   SOURCES main.cpp
-  LINK_LIBRARIES mrpt::mrpt_slam mrpt::mrpt_hwdrivers 
+  LINK_LIBRARIES mrpt::mrpt_slam mrpt::mrpt_hwdrivers mrpt::mrpt_gui
 )

@@ -15,7 +15,7 @@
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/system/CObserver.h>
 
 #include <chrono>
@@ -86,8 +86,8 @@ void TestGuiWindowsEvents()
   CDisplayWindow3D win3D("3D window", 300, 300);
 
   {
-    mrpt::opengl::Scene::Ptr& scene = win3D.get3DSceneAndLock();
-    scene->insert(mrpt::opengl::CGridPlaneXY::Create());
+    mrpt::viz::Scene::Ptr& scene = win3D.get3DSceneAndLock();
+    scene->insert(mrpt::viz::CGridPlaneXY::Create());
     win3D.unlockAccess3DScene();
     win3D.repaint();
   }

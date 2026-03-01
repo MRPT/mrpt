@@ -15,15 +15,19 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
 #include <mrpt/img/TColor.h>
-#include <mrpt/opengl.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>  // This class is in mrpt-maps
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/CPlanarLaserScan.h>
+#include <mrpt/viz/Scene.h>
+#include <mrpt/viz/Viewport.h>
+#include <mrpt/viz/stock_objects.h>
 #include <mrpt/system/CTicTac.h>
 
 #include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::obs;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::img;
 using namespace std;
@@ -82,24 +86,24 @@ int main(int argc, char** argv)
     win3D.setFOV(90);
     win3D.setCameraPointingToPoint(2.5, 0, 0);
 
-    mrpt::opengl::CPointCloudColoured::Ptr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+    mrpt::viz::CPointCloudColoured::Ptr gl_points = mrpt::viz::CPointCloudColoured::Create();
     gl_points->setPointSize(2.5);
 
     // The 2D "laser scan" OpenGL object:
-    mrpt::opengl::CPlanarLaserScan::Ptr gl_2d_scan = mrpt::opengl::CPlanarLaserScan::Create();
+    mrpt::viz::CPlanarLaserScan::Ptr gl_2d_scan = mrpt::viz::CPlanarLaserScan::Create();
     gl_2d_scan->enablePoints(true);
     gl_2d_scan->enableLine(true);
     gl_2d_scan->enableSurface(true);
     gl_2d_scan->setSurfaceColor(0, 0, 1, 0.3);  // RGBA
 
-    opengl::Viewport::Ptr viewInt;  // Extra viewports for the RGB images.
+    viz::Viewport::Ptr viewInt;  // Extra viewports for the RGB images.
     {
-      mrpt::opengl::Scene::Ptr& scene = win3D.get3DSceneAndLock();
+      mrpt::viz::Scene::Ptr& scene = win3D.get3DSceneAndLock();
 
       // Create the Opengl object for the point cloud:
       scene->insert(gl_points);
-      scene->insert(mrpt::opengl::CGridPlaneXY::Create());
-      scene->insert(mrpt::opengl::stock_objects::CornerXYZ());
+      scene->insert(mrpt::viz::CGridPlaneXY::Create());
+      scene->insert(mrpt::viz::stock_objects::CornerXYZ());
       scene->insert(gl_2d_scan);
 
       const double aspect_ratio = 480.0 / 640.0;
