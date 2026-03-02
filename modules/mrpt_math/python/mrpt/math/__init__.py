@@ -5,13 +5,27 @@ from . import _bindings as _b
 CMatrixDouble = _b.CMatrixDouble
 CVectorDouble = _b.CVectorDouble
 
-# --- Lightweight Math Types (New) ---
+# --- Lightweight Math Types ---
 TPoint2D = _b.TPoint2D
 TPoint3D = _b.TPoint3D
 TPoint2Df = _b.TPoint2Df
 TPoint3Df = _b.TPoint3Df
 TPose2D = _b.TPose2D
 TPose3D = _b.TPose3D
+
+# --- Geometry Primitives (Phase 0.1) ---
+TSegment2D = _b.TSegment2D
+TSegment3D = _b.TSegment3D
+TLine2D = _b.TLine2D
+TLine3D = _b.TLine3D
+TPlane = _b.TPlane
+TBoundingBox = _b.TBoundingBox
+TBoundingBoxf = _b.TBoundingBoxf
+TTwist2D = _b.TTwist2D
+TTwist3D = _b.TTwist3D
+TPose3DQuat = _b.TPose3DQuat
+CPolygon = _b.CPolygon
+CHistogram = _b.CHistogram
 
 # --- Fixed Size Matrices and Vectors ---
 # We use dir() to catch all the CMatrixDoubleXX and CVectorFixedDoubleX
@@ -21,6 +35,10 @@ _fixed_types = [name for name in dir(_b) if name.startswith(
 
 for name in _fixed_types:
     globals()[name] = getattr(_b, name)
+
+# --- Free functions ---
+wrapToPi = _b.wrapToPi
+wrapTo2Pi = _b.wrapTo2Pi
 
 # --- List of all classes to patch with NumPy support ---
 _math_classes = [
@@ -57,10 +75,31 @@ def _patch_numpy_support(cls):
 for _cls in _math_classes:
     _patch_numpy_support(_cls)
 
+# NumPy support for new types
+TTwist2D.__array__ = lambda self, dtype=None: np.array([self.vx, self.vy, self.omega])
+TTwist3D.__array__ = lambda self, dtype=None: np.array(
+    [self.vx, self.vy, self.vz, self.wx, self.wy, self.wz])
+TPose3DQuat.__array__ = lambda self, dtype=None: np.array(
+    [self.x, self.y, self.z, self.qr, self.qx, self.qy, self.qz])
+
 # Clean up temporary variables
 del _patch_numpy_support, _cls, _math_classes, _fixed_types
 
 __all__ = [
+    # Matrices
     "CMatrixDouble", "CVectorDouble",
-    "TPoint2D", "TPoint3D", "TPose2D", "TPose3D"
+    # Points and Poses
+    "TPoint2D", "TPoint3D", "TPoint2Df", "TPoint3Df",
+    "TPose2D", "TPose3D",
+    # Geometry primitives
+    "TSegment2D", "TSegment3D",
+    "TLine2D", "TLine3D",
+    "TPlane",
+    "TBoundingBox", "TBoundingBoxf",
+    "TTwist2D", "TTwist3D",
+    "TPose3DQuat",
+    "CPolygon",
+    "CHistogram",
+    # Free functions
+    "wrapToPi", "wrapTo2Pi",
 ]
