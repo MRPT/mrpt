@@ -369,6 +369,8 @@ double CPose3DPDFGaussianInf::mahalanobisDistanceTo(const CPose3DPDFGaussianInf&
   MRPT_END
 }
 
+void CPose3DPDFGaussianInf::printTo(std::ostream& out) const { out << *this; }
+
 /*---------------------------------------------------------------
             operator <<
  ---------------------------------------------------------------*/

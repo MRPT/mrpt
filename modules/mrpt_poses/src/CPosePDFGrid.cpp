@@ -21,6 +21,7 @@
 #include <mrpt/system/os.h>
 
 #include <fstream>
+#include <ostream>
 
 using namespace std;
 using namespace mrpt;
@@ -237,4 +238,12 @@ void CPosePDFGrid::uniformDistribution()
   double val = 1.0 / static_cast<double>(m_data.size());
 
   for (double& it : m_data) it = val;
+}
+
+void CPosePDFGrid::printTo(std::ostream& out) const
+{
+  CPose2D m;
+  getMean(m);
+  out << "CPosePDFGrid: x=[" << m_xMin << "," << m_xMax << "] y=[" << m_yMin << "," << m_yMax
+      << "] cells=" << m_sizeX << "x" << m_sizeY << "x" << m_sizePhi << " mean=" << m.asString();
 }

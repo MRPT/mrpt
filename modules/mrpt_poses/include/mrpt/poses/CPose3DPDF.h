@@ -13,10 +13,13 @@
 */
 #pragma once
 
+#include <mrpt/core/Stringifyable.h>
 #include <mrpt/math/CProbabilityDensityFunction.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
+
+#include <iosfwd>
 
 namespace mrpt::poses
 {
@@ -40,11 +43,18 @@ class CPosePDF;
  */
 class CPose3DPDF :
     public mrpt::serialization::CSerializable,
-    public mrpt::math::CProbabilityDensityFunction<CPose3D, 6>
+    public mrpt::math::CProbabilityDensityFunction<CPose3D, 6>,
+    public mrpt::Stringifyable
 {
   DEFINE_VIRTUAL_SERIALIZABLE(CPose3DPDF, mrpt::poses)
 
  public:
+  /** Write a human-readable description of this PDF to the given stream.
+   *  Derived classes must override this method. */
+  virtual void printTo(std::ostream& out) const = 0;
+
+  /** Returns a human-readable string representation of this PDF. */
+  std::string asString() const override;
   /** Copy operator, translating if necessary (for example, between particles
    * and gaussian representations)
    * \sa createFrom2D

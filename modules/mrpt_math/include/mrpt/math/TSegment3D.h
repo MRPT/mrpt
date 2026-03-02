@@ -13,6 +13,7 @@
 */
 #pragma once
 
+#include <mrpt/core/Stringifyable.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TPoseOrPoint.h>
 #include <mrpt/math/TSegment2D.h>
@@ -23,7 +24,7 @@ namespace mrpt::math
  * \sa TSegment2D,TLine3D,TPlane,TPolygon3D,TPoint3D
  * \ingroup geometry_grp
  */
-struct TSegment3D
+struct TSegment3D : public Stringifyable
 {
  public:
   /** Fast default constructor. Initializes to (0,0,0)-(0,0,0) */
@@ -45,17 +46,18 @@ struct TSegment3D
   TPoint3D point2;  //!< final point
 
   /** Segment length */
-  double length() const;
+  [[nodiscard]] double length() const;
 
   /** Distance to point */
-  double distance(const TPoint3D& point) const;
+  [[nodiscard]] double distance(const TPoint3D& point) const;
 
   /** Distance to another segment */
-  double distance(const TSegment3D& segment) const;
+  [[nodiscard]] double distance(const TSegment3D& segment) const;
   /**
    * Check whether a point is inside the segment.
    */
-  bool contains(const TPoint3D& point) const;
+  [[nodiscard]] bool contains(const TPoint3D& point) const;
+
   /** Access to points using operator[0-1] */
   TPoint3D& operator[](size_t i)
   {
@@ -97,6 +99,8 @@ struct TSegment3D
   }
 
   bool operator<(const TSegment3D& s) const;
+
+  [[nodiscard]] std::string asString() const override;
 };
 
 inline bool operator==(const TSegment3D& s1, const TSegment3D& s2)

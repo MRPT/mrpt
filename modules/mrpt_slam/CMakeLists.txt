@@ -94,3 +94,8 @@ mrpt_add_library(
 if (TBB_FOUND)
 	target_link_libraries(${PROJECT_NAME} PUBLIC TBB::tbb)
 endif()
+
+# Python bindings
+mrpt_add_python_module(slam
+  python_bindings/mrpt_slam_py.cpp
+)

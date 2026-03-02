@@ -13,6 +13,7 @@
 */
 #pragma once
 
+#include <mrpt/core/Stringifyable.h>
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoseOrPoint.h>
 
@@ -23,16 +24,15 @@ namespace mrpt::math
  * \sa TSegment3D,TLine2D,TPolygon2D,TPoint2D
  * \ingroup geometry_grp
  */
-struct TSegment2D
+struct TSegment2D : public mrpt::Stringifyable
 {
  public:
   /** Constructor from both points */
   TSegment2D(const TPoint2D& p1, const TPoint2D& p2) : point1(p1), point2(p2) {}
-  /// Static method, returns segment from two points \note New in MRPT 2.3.0
-  static TSegment2D FromPoints(const TPoint2D& p1, const TPoint2D& p2)
-  {
-    return TSegment2D(p1, p2);
-  }
+
+  /// Static method, returns segment from two points
+  static TSegment2D FromPoints(const TPoint2D& p1, const TPoint2D& p2) { return {p1, p2}; }
+
   /** Fast default constructor. Initializes to (0,0)-(0,0) */
   TSegment2D() = default;
 
@@ -50,18 +50,19 @@ struct TSegment2D
   /**
    * Segment length.
    */
-  double length() const;
+  [[nodiscard]] double length() const;
 
   /** Absolute distance to point. */
-  double distance(const TPoint2D& point) const;
+  [[nodiscard]] double distance(const TPoint2D& point) const;
 
   /** Distance with sign to point (sign indicates which side the point is) */
-  double signedDistance(const TPoint2D& point) const;
+  [[nodiscard]] double signedDistance(const TPoint2D& point) const;
 
   /**
    * Check whether a point is inside a segment.
    */
-  bool contains(const TPoint2D& point) const;
+  [[nodiscard]] bool contains(const TPoint2D& point) const;
+
   /** Access to points using operator[0-1] */
   TPoint2D& operator[](size_t i)
   {
@@ -102,6 +103,8 @@ struct TSegment2D
   }
 
   bool operator<(const TSegment2D& s) const;
+
+  [[nodiscard]] std::string asString() const override;
 };
 
 inline bool operator==(const TSegment2D& s1, const TSegment2D& s2)

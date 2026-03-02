@@ -217,5 +217,7 @@ class CPosePDFSOG : public CPosePDF
   void bayesianFusion(
       const CPosePDF& p1, const CPosePDF& p2, const double minMahalanobisDistToDrop = 0) override;
 
+  void printTo(std::ostream& out) const override;
+
 };  // End of class def.
 }  // namespace mrpt::poses

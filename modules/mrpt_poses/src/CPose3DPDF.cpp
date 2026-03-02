@@ -27,12 +27,20 @@
 #include <mrpt/serialization/CArchive.h>
 
 #include <Eigen/Dense>
+#include <sstream>
 
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPose3DPDF, CSerializable, mrpt::poses)
+
+std::string CPose3DPDF::asString() const
+{
+  std::ostringstream ss;
+  printTo(ss);
+  return ss.str();
+}
 
 // copy covariances: x, y
 // Move covariances: phi -> yaw

@@ -23,7 +23,7 @@
 #include <mrpt/system/os.h>
 
 #include <Eigen/Dense>
-#include <sstream>
+#include <ostream>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -123,15 +123,7 @@ CPose3DPDFGaussian::CPose3DPDFGaussian(const CPose3DQuatPDFGaussian& o) :
   this->copyFrom(o);
 }
 
-/*---------------------------------------------------------------
-          asString
- ---------------------------------------------------------------*/
-std::string CPose3DPDFGaussian::asString() const
-{
-  ostringstream ss;
-  ss << *this;
-  return ss.str();
-}
+void CPose3DPDFGaussian::printTo(std::ostream& out) const { out << *this; }
 
 /*---------------------------------------------------------------
             copyFrom

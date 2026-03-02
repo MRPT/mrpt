@@ -15,7 +15,6 @@
 
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
-#include <mrpt/core/Stringifyable.h>
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPoseRandomSampler.h>
@@ -39,8 +38,7 @@ using PFDataTPose2D = mrpt::bayes::
 class CPosePDFParticles :
     public CPosePDF,
     public PFDataTPose2D,
-    public mrpt::bayes::CParticleFilterDataImpl<CPosePDFParticles, PFDataTPose2D::CParticleList>,
-    public mrpt::Stringifyable
+    public mrpt::bayes::CParticleFilterDataImpl<CPosePDFParticles, PFDataTPose2D::CParticleList>
 {
   DEFINE_SERIALIZABLE(CPosePDFParticles, mrpt::poses)
 
@@ -189,7 +187,7 @@ class CPosePDFParticles :
       const double stdXY,
       const double stdPhi) const;
 
-  std::string asString() const override;
+  void printTo(std::ostream& out) const override;
 
 };  // End of class def.
 

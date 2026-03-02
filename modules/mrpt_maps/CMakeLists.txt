@@ -137,3 +137,8 @@ if (CMAKE_MRPT_HAS_OCTOMAP)
 	endif()
 	target_link_libraries(${PROJECT_NAME} PRIVATE ${OCTOMAP_LIBRARIES})
 endif()
+
+# Python bindings
+mrpt_add_python_module(maps
+  python_bindings/mrpt_maps_py.cpp
+)

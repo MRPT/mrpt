@@ -16,11 +16,20 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/serialization/CArchive.h>
 
+#include <sstream>
+
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPosePDF, CSerializable, mrpt::poses)
+
+std::string CPosePDF::asString() const
+{
+  std::ostringstream ss;
+  printTo(ss);
+  return ss.str();
+}
 
 void CPosePDF::jacobiansPoseComposition(
     const CPosePDFGaussian& x,

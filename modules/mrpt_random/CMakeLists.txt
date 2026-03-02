@@ -39,3 +39,8 @@ mrpt_add_library(
 #  CMAKE_DEPENDENCIES
 #   xxx
 )
+
+# Python bindings
+mrpt_add_python_module(random
+  python_bindings/mrpt_random_py.cpp
+)

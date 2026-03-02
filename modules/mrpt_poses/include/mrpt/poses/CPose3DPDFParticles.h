@@ -15,7 +15,6 @@
 
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
-#include <mrpt/core/Stringifyable.h>
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/poses/CPose3DPDF.h>
 
@@ -38,8 +37,7 @@ using PFDataTPose3D = mrpt::bayes::
 class CPose3DPDFParticles :
     public CPose3DPDF,
     public PFDataTPose3D,
-    public mrpt::bayes::CParticleFilterDataImpl<CPose3DPDFParticles, PFDataTPose3D::CParticleList>,
-    public mrpt::Stringifyable
+    public mrpt::bayes::CParticleFilterDataImpl<CPose3DPDFParticles, PFDataTPose3D::CParticleList>
 {
   DEFINE_SERIALIZABLE(CPose3DPDFParticles, mrpt::poses)
 
@@ -118,7 +116,7 @@ class CPose3DPDFParticles :
   /** Bayesian fusion */
   void bayesianFusion(const CPose3DPDF& p1, const CPose3DPDF& p2) override;
 
-  std::string asString() const override;
+  void printTo(std::ostream& out) const override;
 
 };  // End of class def.
 }  // namespace mrpt::poses

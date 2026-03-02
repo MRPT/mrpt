@@ -147,3 +147,8 @@ endif()
 if(MSVC AND CMAKE_MRPT_HAS_WXWIDGETS)
     target_link_libraries(${PROJECT_NAME} PRIVATE imp_wxwidgets)
 endif()
+
+# Python bindings
+mrpt_add_python_module(io
+  python_bindings/mrpt_io_py.cpp
+)

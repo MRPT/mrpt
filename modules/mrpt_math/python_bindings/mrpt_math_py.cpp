@@ -53,6 +53,8 @@ namespace py = pybind11;
 using EigenRowMatrixXd = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 using EigenRowVectorXd = Eigen::Matrix<double, 1, Eigen::Dynamic, Eigen::RowMajor>;
 
+namespace
+{
 /** * Helper to register any CMatrixFixed (including CVectorFixed) with NumPy support.
  * It detects dimensions and uses Eigen::Map with RowMajor to ensure zero-copy.
  */
@@ -65,6 +67,7 @@ void bind_mrpt_fixed_type(py::module& m, const std::string& name)
       .def("__array__", [](const T& self) { return self.asEigen(); })
       .def("__repr__", [name](const T& self) { return "[" + name + "]\n" + self.asString(); });
 }
+}  // namespace
 
 PYBIND11_MODULE(_bindings, m)
 {
@@ -316,7 +319,10 @@ PYBIND11_MODULE(_bindings, m)
           { return std::vector<double>(l.coefs.begin(), l.coefs.end()); },
           [](mrpt::math::TLine2D& l, const std::vector<double>& v)
           {
-            if (v.size() != 3) throw std::invalid_argument("coefs must have 3 elements");
+            if (v.size() != 3)
+            {
+              throw std::invalid_argument("coefs must have 3 elements");
+            }
             std::copy(v.begin(), v.end(), l.coefs.begin());
           })
       .def("evaluatePoint", &mrpt::math::TLine2D::evaluatePoint)
@@ -366,7 +372,10 @@ PYBIND11_MODULE(_bindings, m)
           { return std::vector<double>(pl.coefs.begin(), pl.coefs.end()); },
           [](mrpt::math::TPlane& pl, const std::vector<double>& v)
           {
-            if (v.size() != 4) throw std::invalid_argument("coefs must have 4 elements");
+            if (v.size() != 4)
+            {
+              throw std::invalid_argument("coefs must have 4 elements");
+            }
             std::copy(v.begin(), v.end(), pl.coefs.begin());
           })
       .def("evaluatePoint", &mrpt::math::TPlane::evaluatePoint)
@@ -396,7 +405,10 @@ PYBIND11_MODULE(_bindings, m)
           [](const mrpt::math::TBoundingBox& self, const mrpt::math::TBoundingBox& other)
           {
             auto result = self.intersection(other);
-            if (result.has_value()) return py::cast(*result);
+            if (result.has_value())
+            {
+              return py::cast(*result);
+            }
             return py::none().cast<py::object>();
           })
       .def(
@@ -486,7 +498,8 @@ PYBIND11_MODULE(_bindings, m)
           "get_vertices",
           [](const mrpt::math::CPolygon& self)
           {
-            std::vector<double> xs, ys;
+            std::vector<double> xs;
+            std::vector<double> ys;
             self.get_vertices(xs, ys);
             return py::make_tuple(xs, ys);
           },
@@ -505,14 +518,17 @@ PYBIND11_MODULE(_bindings, m)
   py::class_<mrpt::math::CHistogram, std::shared_ptr<mrpt::math::CHistogram>>(m, "CHistogram")
       .def(py::init<double, double, size_t>(), py::arg("min"), py::arg("max"), py::arg("nBins"))
       .def("clear", &mrpt::math::CHistogram::clear)
-      .def("add", py::overload_cast<const double>(&mrpt::math::CHistogram::add))
+      .def(
+          "add",
+          static_cast<void (mrpt::math::CHistogram::*)(double)>(&mrpt::math::CHistogram::add))
       .def("getBinCount", &mrpt::math::CHistogram::getBinCount)
       .def("getBinRatio", &mrpt::math::CHistogram::getBinRatio)
       .def(
           "getHistogram",
           [](const mrpt::math::CHistogram& self)
           {
-            std::vector<double> x, hits;
+            std::vector<double> x;
+            std::vector<double> hits;
             self.getHistogram(x, hits);
             return py::make_tuple(x, hits);
           },
@@ -521,12 +537,15 @@ PYBIND11_MODULE(_bindings, m)
           "getHistogramNormalized",
           [](const mrpt::math::CHistogram& self)
           {
-            std::vector<double> x, hits;
+            std::vector<double> x;
+            std::vector<double> hits;
             self.getHistogramNormalized(x, hits);
             return py::make_tuple(x, hits);
           },
           "Returns (bin_centers, normalized_hits) — integral equals 1 as PDF")
-      .def("__repr__", [](const mrpt::math::CHistogram& self) { return "CHistogram()"; });
+      .def(
+          "__repr__",
+          []([[maybe_unused]] const mrpt::math::CHistogram& self) { return "CHistogram()"; });
 
   // =========================================================================
   // Free math functions

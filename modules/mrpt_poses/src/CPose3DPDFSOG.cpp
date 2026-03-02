@@ -18,6 +18,8 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 
+#include <ostream>
+
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
@@ -310,5 +312,15 @@ void CPose3DPDFSOG::getMostLikelyMode(CPose3DPDFGaussian& outVal) const
       if (it_best == m_modes.end() || it->log_w > it_best->log_w) it_best = it;
 
     outVal = it_best->val;
+  }
+}
+
+void CPose3DPDFSOG::printTo(std::ostream& out) const
+{
+  out << "CPose3DPDFSOG with " << m_modes.size() << " modes:\n";
+  size_t i = 0;
+  for (const auto& mode : m_modes)
+  {
+    out << " [" << i++ << "] log_w=" << mode.log_w << " mean=" << mode.val.mean.asString() << "\n";
   }
 }

@@ -18,21 +18,25 @@
 #include <mrpt/serialization/CArchive.h>  // impl of << operator
 
 #include <Eigen/Dense>
+#include <sstream>
 
 using namespace mrpt::math;
 
 void TSegment3D::generate2DObject(TSegment2D& s) const { s = TSegment2D(*this); }
 
 double TSegment3D::length() const { return math::distance(point1, point2); }
+
 double TSegment3D::distance(const TPoint3D& point) const
 {
   return std::min(
-      std::min(math::distance(point, point1), math::distance(point, point2)),
-      TLine3D(*this).distance(point));
+      {math::distance(point, point1), math::distance(point, point2),
+       TLine3D(*this).distance(point)});
 }
 double TSegment3D::distance(const TSegment3D& segment) const
 {
-  Eigen::Vector3d u, v, w;
+  Eigen::Vector3d u;
+  Eigen::Vector3d v;
+  Eigen::Vector3d w;
   TPoint3D diff_vect = point2 - point1;
   diff_vect.asVector(u);
   diff_vect = segment.point2 - segment.point1;
@@ -45,8 +49,12 @@ double TSegment3D::distance(const TSegment3D& segment) const
   double d = u.dot(w);
   double e = v.dot(w);
   double D = a * c - b * b;  // always >= 0
-  double sc, sN, sD = D;     // sc = sN / sD, default sD = D >= 0
-  double tc, tN, tD = D;     // tc = tN / tD, default tD = D >= 0
+  double sc = 0;
+  double sN = 0;
+  double sD = D;  // sc = sN / sD, default sD = D >= 0
+  double tc = 0;
+  double tN = 0;
+  double tD = D;  // tc = tN / tD, default tD = D >= 0
 
   // compute the line parameters of the two closest points
   if (D < 0.00000001)
@@ -79,9 +87,13 @@ double TSegment3D::distance(const TSegment3D& segment) const
     tN = 0.0;
     // recompute sc for this edge
     if (-d < 0.0)
+    {
       sN = 0.0;
+    }
     else if (-d > a)
+    {
       sN = sD;
+    }
     else
     {
       sN = -d;
@@ -93,9 +105,13 @@ double TSegment3D::distance(const TSegment3D& segment) const
     tN = tD;
     // recompute sc for this edge
     if ((-d + b) < 0.0)
+    {
       sN = 0;
+    }
     else if ((-d + b) > a)
+    {
       sN = sD;
+    }
     else
     {
       sN = (-d + b);
@@ -121,11 +137,15 @@ bool TSegment3D::contains(const TPoint3D& point) const
 bool TSegment3D::operator<(const TSegment3D& s) const
 {
   if (point1 < s.point1)
+  {
     return true;
-  else if (s.point1 < point1)
+  }
+  if (s.point1 < point1)
+  {
     return false;
-  else
-    return point2 < s.point2;
+  }
+
+  return point2 < s.point2;
 }
 
 mrpt::serialization::CArchive& mrpt::math::operator>>(
@@ -143,4 +163,11 @@ std::ostream& mrpt::math::operator<<(std::ostream& o, const TSegment3D& p)
 {
   o << p.point1 << "-" << p.point2;
   return o;
+}
+
+std::string TSegment3D::asString() const
+{
+  std::ostringstream ss;
+  ss << "TSegment3D: " << point1 << " - " << point2;
+  return ss.str();
 }
