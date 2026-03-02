@@ -85,5 +85,7 @@ class CPosePDFGrid : public CPosePDF, public CPose2DGridTemplate<double>
    * 1x3 vectors, where each row contains a (x,y,phi) datum. */
   void drawManySamples(size_t N, std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
 
+  void printTo(std::ostream& out) const override;
+
 };  // End of class def.
 }  // namespace mrpt::poses

@@ -125,3 +125,8 @@ endif()
 if (MRPT_OPENGL_PROFILER)
   target_compile_definitions(${PROJECT_NAME} PRIVATE MRPT_OPENGL_PROFILER)
 endif()
+
+# Python bindings
+mrpt_add_python_module(gui
+  python_bindings/mrpt_gui_py.cpp
+)

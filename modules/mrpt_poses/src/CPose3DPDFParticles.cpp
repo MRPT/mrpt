@@ -22,6 +22,8 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 
+#include <ostream>
+
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
@@ -325,11 +327,9 @@ void CPose3DPDFParticles::resetUniform(
   MRPT_END
 }
 
-std::string CPose3DPDFParticles::asString() const
+void CPose3DPDFParticles::printTo(std::ostream& out) const
 {
-  std::stringstream ss;
   const auto [c, m] = getCovarianceAndMean();
-  ss << "mrpt::poses::CPose3DPDFParticles object with " << size()
-     << " particles, mean=" << m.asString() << " cov=" << c.inMatlabFormat() << " ESS=" << ESS();
-  return ss.str();
+  out << "mrpt::poses::CPose3DPDFParticles object with " << size()
+      << " particles, mean=" << m.asString() << " cov=" << c.inMatlabFormat() << " ESS=" << ESS();
 }

@@ -444,11 +444,11 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           "setPosePDF",
           [](mrpt::poses::CPoseRandomSampler &self,
-             const std::shared_ptr<mrpt::poses::CPosePDF> &pdf) { self.setPosePDF(pdf); })
+             const std::shared_ptr<mrpt::poses::CPosePDF> &pdf) { self.setPosePDF(*pdf); })
       .def(
           "setPosePDF",
           [](mrpt::poses::CPoseRandomSampler &self,
-             const std::shared_ptr<mrpt::poses::CPose3DPDF> &pdf) { self.setPosePDF(pdf); })
+             const std::shared_ptr<mrpt::poses::CPose3DPDF> &pdf) { self.setPosePDF(*pdf); })
       .def(
           "drawSample2D",
           [](const mrpt::poses::CPoseRandomSampler &self)

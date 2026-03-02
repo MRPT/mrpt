@@ -31,23 +31,27 @@ struct TCoords
   // Only keep one of the possible representations:
   /** Also obtained directly through the double(void) operator using a TCoords
    * anywhere were a double is expected. */
-  double decimal_value;
+  double decimal_value = 0;
 
-  TCoords(const int _deg, const int _min, const double _sec)
-  {
-    setDegMinSec(_deg, _min, _sec);
-  }
+  TCoords(const int _deg, const int _min, const double _sec) { setDegMinSec(_deg, _min, _sec); }
+
   TCoords(const double dec) { setFromDecimal(dec); }
+
   TCoords() { setFromDecimal(0); }
+
   /** Automatic conversion to a double value (read-only) */
   operator double() const { return decimal_value; }
+
   /** Automatic conversion to a double value (read-only) */
   operator double&() { return decimal_value; }
+
   /** Set from a decimal value (XX.YYYYY) in degrees. */
   void setFromDecimal(const double dec) { decimal_value = dec; }
+
   /** Get the decimal value (XX.YYYYY), in degrees - you can also use the
    * automatic conversion between TCoords and a double.  */
-  double getDecimalValue() const { return decimal_value; }
+  [[nodiscard]] double getDecimalValue() const { return decimal_value; }
+
   /** Return the Deg Min' Sec'' representation of this value. */
   void getDegMinSec(int& degrees, int& minutes, double& seconds) const
   {
@@ -55,21 +59,28 @@ struct TCoords
     degrees = static_cast<int>(aux);
     minutes = static_cast<int>((aux - degrees) * 60.0);
     seconds = ((aux - degrees) * 60.0 - minutes) * 60.0;
-    if (decimal_value < 0) degrees = -degrees;
+    if (decimal_value < 0)
+    {
+      degrees = -degrees;
+    }
   }
 
   /** Set the coordinate from its Deg Min' Deg'' parts. */
   void setDegMinSec(const int degrees, const int minutes, const double seconds)
   {
     decimal_value = std::abs(degrees) + minutes / 60.0 + seconds / 3600.0;
-    if (degrees < 0) decimal_value = -decimal_value;
+    if (degrees < 0)
+    {
+      decimal_value = -decimal_value;
+    }
   }
 
   /** Return a std::string in the format "DEGdeg MIN' SEC''" */
-  std::string getAsString() const
+  [[nodiscard]] std::string getAsString() const
   {
-    int deg, min;
-    double sec;
+    int deg = 0;
+    int min = 0;
+    double sec = 0;
     getDegMinSec(deg, min, sec);
     return mrpt::format("%ddeg %d' %.04f''", deg, min, sec);
   }
@@ -83,8 +94,8 @@ std::ostream& operator<<(std::ostream& out, const TCoords& o);
 struct TEllipsoid
 {
   TEllipsoid() : name("WGS84") {}
-  TEllipsoid(const double _sa, const double _sb, const std::string& _name) :
-      sa(_sa), sb(_sb), name(_name)
+  TEllipsoid(const double _sa, const double _sb, std::string _name) :
+      sa(_sa), sb(_sb), name(std::move(_name))
   {
   }
 
@@ -95,94 +106,67 @@ struct TEllipsoid
   /** the ellipsoid name */
   std::string name;
 
-  static TEllipsoid Ellipsoid_WGS84()
-  {
-    return TEllipsoid(6378137.000, 6356752.314245, "WGS84");
-  }
-  static TEllipsoid Ellipsoid_WGS72()
-  {
-    return TEllipsoid(6378135.000, 6356750.519915, "WGS72");
-  }
-  static TEllipsoid Ellipsoid_WGS66()
-  {
-    return TEllipsoid(6378145.000, 6356759.769356, "WGS66");
-  }
+  static TEllipsoid Ellipsoid_WGS84() { return {6378137.000, 6356752.314245, "WGS84"}; }
+  static TEllipsoid Ellipsoid_WGS72() { return {6378135.000, 6356750.519915, "WGS72"}; }
+  static TEllipsoid Ellipsoid_WGS66() { return {6378145.000, 6356759.769356, "WGS66"}; }
   static TEllipsoid Ellipsoid_Walbeck_1817()
   {
-    return TEllipsoid(6376896.000, 6355834.846700, "Walbeck_1817");
+    return {6376896.000, 6355834.846700, "Walbeck_1817"};
   }
   static TEllipsoid Ellipsoid_Sudamericano_1969()
   {
-    return TEllipsoid(6378160.000, 6356774.720000, "Sudamericano_1969");
+    return {6378160.000, 6356774.720000, "Sudamericano_1969"};
   }
   static TEllipsoid Ellipsoid_Nuevo_Internacional_1967()
   {
-    return TEllipsoid(6378157.500, 6356772.200000, "Nuevo_Internacional_1967");
+    return {6378157.500, 6356772.200000, "Nuevo_Internacional_1967"};
   }
   static TEllipsoid Ellipsoid_Mercury_Modificado_1968()
   {
-    return TEllipsoid(6378150.000, 6356768.337303, "Mercury_Modificado_1968");
+    return {6378150.000, 6356768.337303, "Mercury_Modificado_1968"};
   }
   static TEllipsoid Ellipsoid_Mercury_1960()
   {
-    return TEllipsoid(6378166.000, 6356784.283666, "Mercury_1960");
+    return {6378166.000, 6356784.283666, "Mercury_1960"};
   }
   static TEllipsoid Ellipsoid_Krasovsky_1940()
   {
-    return TEllipsoid(6378245.000, 6356863.018800, "Krasovsky_1940");
+    return {6378245.000, 6356863.018800, "Krasovsky_1940"};
   }
   static TEllipsoid Ellipsoid_Internacional_1924()
   {
-    return TEllipsoid(6378388.000, 6356911.946130, "Internacional_1924");
+    return {6378388.000, 6356911.946130, "Internacional_1924"};
   }
   static TEllipsoid Ellipsoid_Internacional_1909()
   {
-    return TEllipsoid(6378388.000, 6356911.946130, "Internacional_1909");
+    return {6378388.000, 6356911.946130, "Internacional_1909"};
   }
-  static TEllipsoid Ellipsoid_Hough_1960()
-  {
-    return TEllipsoid(6378270.000, 6356794.343479, "Hough_1960");
-  }
+  static TEllipsoid Ellipsoid_Hough_1960() { return {6378270.000, 6356794.343479, "Hough_1960"}; }
   static TEllipsoid Ellipsoid_Helmert_1906()
   {
-    return TEllipsoid(6378200.000, 6356818.170000, "Helmert_1906");
+    return {6378200.000, 6356818.170000, "Helmert_1906"};
   }
   static TEllipsoid Ellipsoid_Hayford_1909()
   {
-    return TEllipsoid(6378388.000, 6356911.946130, "Hayford_1909");
+    return {6378388.000, 6356911.946130, "Hayford_1909"};
   }
-  static TEllipsoid Ellipsoid_GRS80()
-  {
-    return TEllipsoid(6378137.000, 6356752.314140, "GRS80");
-  }
+  static TEllipsoid Ellipsoid_GRS80() { return {6378137.000, 6356752.314140, "GRS80"}; }
   static TEllipsoid Ellipsoid_Fischer_1968()
   {
-    return TEllipsoid(6378150.000, 6356768.330000, "Fischer_1968");
+    return {6378150.000, 6356768.330000, "Fischer_1968"};
   }
   static TEllipsoid Ellipsoid_Fischer_1960()
   {
-    return TEllipsoid(6378166.000, 6356784.280000, "Fischer_1960");
+    return {6378166.000, 6356784.280000, "Fischer_1960"};
   }
-  static TEllipsoid Ellipsoid_Clarke_1880()
-  {
-    return TEllipsoid(6378249.145, 6356514.869550, "Clarke_1880");
-  }
-  static TEllipsoid Ellipsoid_Clarke_1866()
-  {
-    return TEllipsoid(6378206.400, 6356583.800000, "Clarke_1866");
-  }
-  static TEllipsoid Ellipsoid_Bessel_1841()
-  {
-    return TEllipsoid(6377397.155, 6356078.962840, "Bessel_1841");
-  }
+  static TEllipsoid Ellipsoid_Clarke_1880() { return {6378249.145, 6356514.869550, "Clarke_1880"}; }
+  static TEllipsoid Ellipsoid_Clarke_1866() { return {6378206.400, 6356583.800000, "Clarke_1866"}; }
+  static TEllipsoid Ellipsoid_Bessel_1841() { return {6377397.155, 6356078.962840, "Bessel_1841"}; }
   static TEllipsoid Ellipsoid_Airy_Modificado_1965()
   {
-    return TEllipsoid(6377340.189, 6356034.447900, "Airy_Modificado_1965");
+    return {6377340.189, 6356034.447900, "Airy_Modificado_1965"};
   }
-  static TEllipsoid Ellipsoid_Airy_1830()
-  {
-    return TEllipsoid(6377563.396, 6356256.910000, "Airy_1830");
-  }
+  static TEllipsoid Ellipsoid_Airy_1830() { return {6377563.396, 6356256.910000, "Airy_1830"}; }
 };
 
 using TUTMCoords = mrpt::math::TPoint3D;
@@ -198,7 +182,7 @@ struct TGeodeticCoords
   {
   }
 
-  bool isClear() const
+  [[nodiscard]] bool isClear() const
   {
     return lat.getDecimalValue() == 0 && lon.getDecimalValue() == 0 && height == 0;
   }
@@ -214,7 +198,7 @@ struct TGeodeticCoords
 bool operator==(const TGeodeticCoords& a, const TGeodeticCoords& o);
 bool operator!=(const TGeodeticCoords& a, const TGeodeticCoords& o);
 
-/** Parameters for a topographic transfomation
+/** Parameters for a topographic transformation
  * \sa TDatum10Params, transform7params
  */
 struct TDatum7Params
@@ -227,19 +211,21 @@ struct TDatum7Params
   double dS;
 
   TDatum7Params(
-      const double _dX,
-      const double _dY,
-      const double _dZ,
-      const double _Rx,
-      const double _Ry,
-      const double _Rz,
-      const double _dS) :
-      dX(_dX), dY(_dY), dZ(_dZ)
+      const double dX_,
+      const double dY_,
+      const double dZ_,
+      const double Rx_,
+      const double Ry_,
+      const double Rz_,
+      const double dS_) :
+      dX(dX_),
+      dY(dY_),
+      dZ(dZ_),
+      Rx(mrpt::DEG2RAD(Rx_ / 60 / 60)),
+      Ry(mrpt::DEG2RAD(Ry_ / 60 / 60)),
+      Rz(mrpt::DEG2RAD(Rz_ / 60 / 60)),
+      dS(dS_ * 1e-6)
   {
-    Rx = mrpt::DEG2RAD(_Rx / 60 / 60);
-    Ry = mrpt::DEG2RAD(_Ry / 60 / 60);
-    Rz = mrpt::DEG2RAD(_Rz / 60 / 60);
-    dS = _dS * 1e-6;
   }
 };
 
@@ -282,7 +268,7 @@ struct TDatum7Params_TOPCON
   }
 };
 
-/** Parameters for a topographic transfomation
+/** Parameters for a topographic transformation
  * \sa TDatum7Params, transform10params
  */
 struct TDatum10Params
@@ -345,14 +331,13 @@ struct TDatumHelmert2D_TOPCON
 {
   double a, b, c, d;
 
-  TDatumHelmert2D_TOPCON(
-      const double _a, const double _b, const double _c, const double _d) :
+  TDatumHelmert2D_TOPCON(const double _a, const double _b, const double _c, const double _d) :
       a(_a), b(_b), c(_c), d(_d)
   {
   }
 };
 
-/** Parameters for a topographic transfomation
+/** Parameters for a topographic transformation
  * \sa TDatumHelmert2D, transformHelmert3D
  */
 struct TDatumHelmert3D
@@ -381,7 +366,7 @@ struct TDatumHelmert3D
   }
 };
 
-/** Parameters for a topographic transfomation
+/** Parameters for a topographic transformation
  * \sa TDatumHelmert2D, transformHelmert3D
  */
 struct TDatumHelmert3D_TOPCON
@@ -401,7 +386,7 @@ struct TDatumHelmert3D_TOPCON
   }
 };
 
-/** Parameters for a topographic transfomation
+/** Parameters for a topographic transformation
  * \sa transform1D
  */
 struct TDatum1DTransf
@@ -418,7 +403,7 @@ struct TDatum1DTransf
   }
 };
 
-/** Parameters for a topographic transfomation
+/** Parameters for a topographic transformation
  * \sa transform1D
  */
 struct TDatumTransfInterpolation

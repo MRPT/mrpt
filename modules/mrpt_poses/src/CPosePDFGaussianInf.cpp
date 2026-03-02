@@ -407,6 +407,8 @@ double CPosePDFGaussianInf::mahalanobisDistanceTo(const CPosePDFGaussianInf& the
   MRPT_END
 }
 
+void CPosePDFGaussianInf::printTo(std::ostream& out) const { out << *this; }
+
 /*---------------------------------------------------------------
             operator <<
  ---------------------------------------------------------------*/

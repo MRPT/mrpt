@@ -13,10 +13,13 @@
 */
 #pragma once
 
+#include <mrpt/core/Stringifyable.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CProbabilityDensityFunction.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/serialization/CSerializable.h>
+
+#include <iosfwd>
 
 namespace mrpt::poses
 {
@@ -40,11 +43,18 @@ class CPosePDFGaussian;  // frd decl.
  */
 class CPosePDF :
     public mrpt::serialization::CSerializable,
-    public mrpt::math::CProbabilityDensityFunction<CPose2D, 3>
+    public mrpt::math::CProbabilityDensityFunction<CPose2D, 3>,
+    public mrpt::Stringifyable
 {
   DEFINE_VIRTUAL_SERIALIZABLE(CPosePDF, mrpt::poses)
 
  public:
+  /** Write a human-readable description of this PDF to the given stream.
+   *  Derived classes must override this method. */
+  virtual void printTo(std::ostream& out) const = 0;
+
+  /** Returns a human-readable string representation of this PDF. */
+  std::string asString() const override;
   /** Copy operator, translating if necessary (for example, between particles
    * and gaussian representations)
    */
@@ -52,8 +62,7 @@ class CPosePDF :
 
   /** Bayesian fusion of two pose distributions (product of two
    * distributions->new distribution), then save the result in this object
-   * (WARNING: See implementing classes to see classes that can and cannot be
-   * mixtured!)
+   * (WARNING: See implementing classes to see classes that can and cannot be mixed!)
    * \param p1 The first distribution to fuse
    * \param p2 The second distribution to fuse
    * \param minMahalanobisDistToDrop If set to different of 0, the result of
@@ -61,7 +70,7 @@ class CPosePDF :
    * in SOGs will be dropped to reduce the number of modes in the output.
    */
   virtual void bayesianFusion(
-      const CPosePDF& p1, const CPosePDF& p2, const double minMahalanobisDistToDrop = 0) = 0;
+      const CPosePDF& p1, const CPosePDF& p2, double minMahalanobisDistToDrop = 0) = 0;
 
   /** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
    */
@@ -88,8 +97,8 @@ class CPosePDF :
       const CPose2D& u,
       mrpt::math::CMatrixDouble33& df_dx,
       mrpt::math::CMatrixDouble33& df_du,
-      const bool compute_df_dx = true,
-      const bool compute_df_du = true);
+      bool compute_df_dx = true,
+      bool compute_df_du = true);
 
   /** \overload */
   static void jacobiansPoseComposition(

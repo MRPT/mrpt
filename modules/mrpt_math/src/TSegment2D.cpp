@@ -17,6 +17,7 @@
 #include <mrpt/serialization/CArchive.h>  // impl of << operator
 
 #include <iostream>
+#include <sstream>
 
 using namespace mrpt::math;
 
@@ -30,7 +31,10 @@ double TSegment2D::signedDistance(const TPoint2D& point) const
   // segment or not (being the longest segment one between the point and
   // either end of TSegment2D).
   const double d1 = math::distance(point, point1);
-  if (point1 == point2) return d1;
+  if (point1 == point2)
+  {
+    return d1;
+  }
 
   const double d2 = math::distance(point, point2);
   const double d3 = length();
@@ -38,11 +42,14 @@ double TSegment2D::signedDistance(const TPoint2D& point) const
   const double ds2 = square(d2);
   const double ds3 = square(d3);
   if (ds1 > (ds2 + ds3) || ds2 > (ds1 + ds3))
+  {
     // Fix sign:
     return std::min(d1, d2) * (TLine2D(*this).signedDistance(point) < 0 ? -1 : 1);
-  else
-    return TLine2D(*this).signedDistance(point);
+  }
+
+  return TLine2D(*this).signedDistance(point);
 }
+
 bool TSegment2D::contains(const TPoint2D& point) const
 {
   return std::abs(
@@ -54,17 +61,24 @@ TSegment2D::TSegment2D(const TSegment3D& s)
 {
   point1 = TPoint2D(s.point1);
   point2 = TPoint2D(s.point2);
-  if (point1 == point2) throw std::logic_error("Segment is normal to projection plane");
+  if (point1 == point2)
+  {
+    throw std::logic_error("Segment is normal to projection plane");
+  }
 }
 
 bool TSegment2D::operator<(const TSegment2D& s) const
 {
   if (point1 < s.point1)
+  {
     return true;
-  else if (s.point1 < point1)
+  }
+  if (s.point1 < point1)
+  {
     return false;
-  else
-    return point2 < s.point2;
+  }
+
+  return point2 < s.point2;
 }
 
 mrpt::serialization::CArchive& mrpt::math::operator>>(
@@ -82,4 +96,11 @@ std::ostream& mrpt::math::operator<<(std::ostream& o, const TSegment2D& p)
 {
   o << p.point1 << "-" << p.point2;
   return o;
+}
+
+std::string TSegment2D::asString() const
+{
+  std::ostringstream ss;
+  ss << "TSegment2D: " << point1 << " - " << point2;
+  return ss.str();
 }

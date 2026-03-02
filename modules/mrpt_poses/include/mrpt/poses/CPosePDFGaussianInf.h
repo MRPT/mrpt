@@ -181,6 +181,8 @@ class CPosePDFGaussianInf : public CPosePDF
    * (both the mean, and the covariance matrix are updated) */
   void operator-=(const CPosePDFGaussianInf& ref) { this->inverseComposition(*this, ref); }
 
+  void printTo(std::ostream& out) const override;
+
 };  // End of class def.
 
 bool operator==(const CPosePDFGaussianInf& p1, const CPosePDFGaussianInf& p2);

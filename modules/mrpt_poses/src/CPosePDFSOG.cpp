@@ -672,3 +672,10 @@ void CPosePDFSOG::getMostLikelyCovarianceAndMean(CMatrixDouble33& cov, CPose2D& 
     mean_point = CPose2D(0, 0, 0);
   }
 }
+
+void CPosePDFSOG::printTo(std::ostream& out) const
+{
+  out << "CPosePDFSOG with " << m_modes.size() << " modes:\n";
+  size_t i = 0;
+  for (const auto& mode : m_modes) out << " [" << i++ << "] " << mode;
+}

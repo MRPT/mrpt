@@ -57,3 +57,8 @@ mrpt_add_library(
   CMAKE_DEPENDENCIES
     mrpt_obs
 )
+
+# Python bindings
+mrpt_add_python_module(vision
+  python_bindings/_py.cpp
+)

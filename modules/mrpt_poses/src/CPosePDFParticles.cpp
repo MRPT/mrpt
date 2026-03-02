@@ -22,6 +22,7 @@
 #include <mrpt/system/os.h>
 
 #include <fstream>
+#include <ostream>
 
 using namespace mrpt;
 using namespace mrpt::bayes;
@@ -388,11 +389,9 @@ void CPosePDFParticles::saveParzenPDFToTextFile(
   f << buf;
 }
 
-std::string CPosePDFParticles::asString() const
+void CPosePDFParticles::printTo(std::ostream& out) const
 {
-  std::stringstream ss;
   const auto [c, m] = getCovarianceAndMean();
-  ss << "mrpt::poses::CPosePDFParticles object with " << size()
-     << " particles, mean=" << m.asString() << " cov=" << c.inMatlabFormat() << " ESS=" << ESS();
-  return ss.str();
+  out << "mrpt::poses::CPosePDFParticles object with " << size()
+      << " particles, mean=" << m.asString() << " cov=" << c.inMatlabFormat() << " ESS=" << ESS();
 }

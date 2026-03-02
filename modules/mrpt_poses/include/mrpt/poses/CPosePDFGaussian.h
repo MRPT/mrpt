@@ -180,6 +180,8 @@ class CPosePDFGaussian : public CPosePDF
    * and "l" a point without uncertainty */
   void composePoint(const mrpt::math::TPoint2D& l, CPoint2DPDFGaussian& g) const;
 
+  void printTo(std::ostream& out) const override;
+
 };  // End of class def.
 
 /** Pose compose operator: RES = A (+) B , computing both the mean and the
