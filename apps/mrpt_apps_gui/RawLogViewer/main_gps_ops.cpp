@@ -27,12 +27,16 @@
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/obs/CObservationGPS.h>
+#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/topography.h>
 #include <mrpt/viz/CAxis.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CPointCloud.h>
+
+#include <map>
 
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -47,7 +51,7 @@ using namespace mrpt::poses;
 using namespace std;
 
 // Show GPS path in a window:
-void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuDrawGPSPath([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -978,7 +982,9 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
         a = b;
       }
       else
+      {
         ++a;
+      }
     }
     cout << "# of gps entries with all the GPSs:" << lstXYZallGPS.size() << endl;
 

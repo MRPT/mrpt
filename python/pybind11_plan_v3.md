@@ -453,6 +453,15 @@ but wrapping the generic sensor interface is useful.
 - `levmarq()` — graph-SLAM optimization. Wrap the main `graphslam::optimize_graph_spa_levmarq()` function.
 - Skip the complex `CGraphSlamEngine` and its many template-heavy components — they are designed for C++ apps.
 
+### 2.10 mrpt_libapps_cli / mrpt_libapps_gui (NEW)
+
+Application-level code (rawlog-edit, SLAM apps).
+
+**Classes to wrap:**
+- RawlogEditApp
+- RawlogGrabberApp
+- MonteCarloLocalization_App
+
 ---
 
 ## Phase 3: Skip or defer
@@ -472,10 +481,6 @@ No runtime value for Python.
 
 ImGui integration. Could be useful in future but depends on `mrpt_gui` bindings first.
 
-### 3.4 mrpt_libapps_cli / mrpt_libapps_gui (SKIP)
-
-Application-level code (rawlog-edit, SLAM apps). These are meant as standalone
-executables. Python users would use the underlying libraries directly.
 
 ---
 

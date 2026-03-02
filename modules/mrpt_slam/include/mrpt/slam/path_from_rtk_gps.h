@@ -20,12 +20,12 @@
 
 #include <map>
 
-namespace mrpt::topography
+namespace mrpt::slam
 {
-/** \addtogroup mrpt_topography_grp
+/** \addtogroup mrpt_slam_grp
  *  @{ */
 
-/** Used to return optional information from mrpt::topography::path_from_rtk_gps
+/** Used to return optional information from mrpt::slam::path_from_rtk_gps
  */
 struct TPathFromRTKInfo
 {
@@ -47,8 +47,6 @@ struct TPathFromRTKInfo
  * observations with GGA datums.
  *  \param rawlog_first [IN] The index of the first entry to process (first=0)
  *  \param rawlog_last [IN] The index of the last entry to process
- *  \param isGUI [IN] If set to true, some progress dialogs will be shown
- * during the computation (requires MRPT built with support for wxWidgets).
  *  \param disableGPSInterp [IN] Whether to interpolate missing GPS readings
  * between very close datums.
  *  \param path_smooth_filter_size [IN] Size of the window in the pitch & roll
@@ -64,11 +62,10 @@ void path_from_rtk_gps(
     const mrpt::obs::CRawlog& rawlog,
     size_t rawlog_first,
     size_t rawlog_last,
-    bool isGUI = false,
     bool disableGPSInterp = false,
     int path_smooth_filter_size = 2,
     TPathFromRTKInfo* outInfo = nullptr);
 
 /** @} */  // end of grouping
 
-}  // namespace mrpt::topography
+}  // namespace mrpt::slam
