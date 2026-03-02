@@ -45,5 +45,8 @@ class Color:
 # Export Functions
 colormap = _b.colormap
 
-__all__ = ['CImage', 'TColor', 'TCamera',
-           'DistortionModel', 'Color', 'colormap']
+TStereoCamera = _b.TStereoCamera
+TPixelCoordf = _b.TPixelCoordf
+
+__all__ = ['CImage', 'TColor', 'TCamera', 'TStereoCamera',
+           'DistortionModel', 'TPixelCoord', 'TPixelCoordf', 'Color', 'colormap']

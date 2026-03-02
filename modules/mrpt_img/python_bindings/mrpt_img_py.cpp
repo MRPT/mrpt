@@ -124,7 +124,46 @@ PYBIND11_MODULE(_bindings, m)
           },
           "Returns a Zero-Copy NumPy view of the image data.")  // Drawing methods (from CCanvas)
       .def("drawCircle", &CImage::drawCircle, "center"_a, "radius"_a, "color"_a, "width"_a = 1)
-      .def("textOut", &CImage::textOut, "p"_a, "str"_a, "color"_a);
+      .def("textOut", &CImage::textOut, "p"_a, "str"_a, "color"_a)
+      // Load/save
+      .def(
+          "loadFromFile",
+          [](CImage& self, const std::string& filename) { return self.loadFromFile(filename); },
+          "filename"_a, "Load image from file. Returns True on success.")
+      .def(
+          "saveToFile",
+          [](const CImage& self, const std::string& filename, int jpeg_quality)
+          { return self.saveToFile(filename, jpeg_quality); },
+          "filename"_a, "jpeg_quality"_a = 95, "Save image to file. Returns True on success.")
+      // Geometry queries
+      .def("getWidth", &CImage::getWidth, "Image width in pixels")
+      .def("getHeight", &CImage::getHeight, "Image height in pixels")
+      .def("isColor", &CImage::isColor, "True if the image has 3 channels (RGB)")
+      // Static factory from numpy array (complement to as_numpy)
+      .def_static(
+          "from_numpy",
+          [](const py::array_t<uint8_t>& array)
+          {
+            auto r = array.unchecked<3>();
+            auto img = CImage::Create();
+            img->resize(
+                static_cast<int32_t>(r.shape(1)), static_cast<int32_t>(r.shape(0)),
+                r.shape(2) == 3 ? CH_RGB : CH_GRAY);
+            for (py::ssize_t y = 0; y < r.shape(0); y++)
+            {
+              for (py::ssize_t x = 0; x < r.shape(1); x++)
+              {
+                for (py::ssize_t c = 0; c < r.shape(2); c++)
+                {
+                  img->at<uint8_t>(
+                      static_cast<int>(x), static_cast<int>(y), static_cast<int8_t>(c)) =
+                      r(y, x, c);
+                }
+              }
+            }
+            return img;
+          },
+          "array"_a, "Create a CImage from a HxWxC numpy uint8 array (zero-copy not used).");
 
   // 5. TCamera
   py::class_<TCamera>(m, "TCamera")
@@ -139,6 +178,15 @@ PYBIND11_MODULE(_bindings, m)
           { std::copy(v.begin(), v.end(), c.dist.begin()); })
       .def("intrinsicParams", [](const TCamera& c) { return c.intrinsicParams; });
 
-  // 6. Colormap helpers
+  // 6. TStereoCamera
+  py::class_<TStereoCamera, mrpt::serialization::CSerializable, std::shared_ptr<TStereoCamera>>(
+      m, "TStereoCamera")
+      .def(py::init<>())
+      .def_readwrite("leftCamera", &TStereoCamera::leftCamera)
+      .def_readwrite("rightCamera", &TStereoCamera::rightCamera)
+      .def_readwrite("rightCameraPose", &TStereoCamera::rightCameraPose)
+      .def("__repr__", [](const TStereoCamera& c) { return c.dumpAsText(); });
+
+  // 7. Colormap helpers
   m.def("colormap", &colormap, "color_map"_a, "color_index"_a);
 }

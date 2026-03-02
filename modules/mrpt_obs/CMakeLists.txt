@@ -184,6 +184,6 @@ if(CMAKE_MRPT_HAS_TINYXML2 AND NOT CMAKE_MRPT_HAS_TINYXML2_SYSTEM)
 endif()
 
 # Python wrapper:
-#mrpt_add_python_module(obs
-#  python_bindings/${PROJECT_NAME}_py.cpp
-#)
+mrpt_add_python_module(obs
+  python_bindings/${PROJECT_NAME}_py.cpp
+)
