@@ -14,10 +14,10 @@
 
 #include <mrpt/math/data_utils.h>
 #include <mrpt/obs/CObservationGPS.h>
+#include <mrpt/slam/path_from_rtk_gps.h>
 #include <mrpt/tfest/se3.h>
 #include <mrpt/topography/conversions.h>
 #include <mrpt/topography/data_types.h>
-#include <mrpt/slam/path_from_rtk_gps.h>
 
 #include <memory>
 
@@ -31,6 +31,8 @@ using namespace mrpt::tfest;
 using namespace mrpt::config;
 using namespace mrpt::topography;
 
+namespace
+{
 template <class T>
 std::set<T> make_set(const T& v0, const T& v1)
 {
@@ -40,15 +42,16 @@ std::set<T> make_set(const T& v0, const T& v1)
   return s;
 }
 
+}  // namespace
+
 /*---------------------------------------------------------------
           path_from_rtk_gps
  ---------------------------------------------------------------*/
-void mrpt::topography::path_from_rtk_gps(
+void mrpt::slam::path_from_rtk_gps(
     mrpt::poses::CPose3DInterpolator& robot_path,
     const mrpt::obs::CRawlog& rawlog,
     size_t first,
     size_t last,
-    bool isGUI,
     bool disableGPSInterp,
     int PATH_SMOOTH_FILTER,
     TPathFromRTKInfo* outInfo)
@@ -67,7 +70,10 @@ void mrpt::topography::path_from_rtk_gps(
   robot_path.setInterpolationMethod(mrpt::poses::imSSLSLL);
 
   TPathFromRTKInfo outInfoTemp;
-  if (outInfo) *outInfo = outInfoTemp;
+  if (outInfo)
+  {
+    *outInfo = outInfoTemp;
+  }
 
   // label -> (time -> 3D local coords)
   map<string, map<Clock::time_point, TPoint3D>> gps_paths;
@@ -312,10 +318,11 @@ void mrpt::topography::path_from_rtk_gps(
                   0.5 * (GPS_a1->getMsgByClass<gnss::Message_NMEA_GGA>().fields.altitude_meters +
                          GPS_b1->getMsgByClass<gnss::Message_NMEA_GGA>().fields.altitude_meters);
 
-              new_gps->timestamp = mrpt::Clock::time_point(mrpt::Clock::duration(
-                  (GPS_a1->timestamp.time_since_epoch().count() +
-                   GPS_b1->timestamp.time_since_epoch().count()) /
-                  2));
+              new_gps->timestamp = mrpt::Clock::time_point(
+                  mrpt::Clock::duration(
+                      (GPS_a1->timestamp.time_since_epoch().count() +
+                       GPS_b1->timestamp.time_since_epoch().count()) /
+                      2));
 
               it->second[new_gps->sensorLabel] = new_gps;
             }

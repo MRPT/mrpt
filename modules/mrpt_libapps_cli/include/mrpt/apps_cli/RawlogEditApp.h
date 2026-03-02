@@ -13,8 +13,6 @@
 */
 #pragma once
 
-#include <cstddef>
-
 namespace mrpt::apps
 {
 /** The C++ class behind the rawlog-edit CLI tool.

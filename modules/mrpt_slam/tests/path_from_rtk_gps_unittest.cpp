@@ -16,14 +16,14 @@
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
-#include <mrpt/system/filesystem.h>
 #include <mrpt/slam/path_from_rtk_gps.h>
+#include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::poses;
-using namespace mrpt::topography;
+using namespace mrpt::slam;
 using namespace std;
 
 TEST(TopographyReconstructPathFrom3RTK, sampleDataset)
@@ -32,8 +32,7 @@ TEST(TopographyReconstructPathFrom3RTK, sampleDataset)
 
   mrpt::obs::CRawlog rawlog;
 
-  const string dataset_fil =
-      mrpt::mrpt_data_dir() + string("/datasets/test_rtk_path.rawlog");
+  const string dataset_fil = mrpt::mrpt_data_dir() + string("/datasets/test_rtk_path.rawlog");
   if (!mrpt::system::fileExists(dataset_fil))
   {
     cerr << "WARNING: Skipping test due to missing file: " << dataset_fil << "\n";
@@ -45,16 +44,15 @@ TEST(TopographyReconstructPathFrom3RTK, sampleDataset)
   }
   else
   {
-    mrpt::topography::TPathFromRTKInfo rtk_path_info;
+    mrpt::slam::TPathFromRTKInfo rtk_path_info;
 
     // -------------------------------------------
     // Run path reconstruction:
     // -------------------------------------------
-    mrpt::topography::path_from_rtk_gps(
+    mrpt::slam::path_from_rtk_gps(
         robot_path, rawlog,
         0,                  // first entry
         rawlog.size() - 1,  // last entry
-        false,              // Isn't a GUI
         false,              // disableGPSInterp
         1,                  // path_smooth_filter_size
         &rtk_path_info);

@@ -20,7 +20,6 @@
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/system/COutputLogger.h>
 
-#include <atomic>
 #include <mutex>
 
 namespace mrpt::apps

@@ -43,6 +43,7 @@
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/slam/path_from_rtk_gps.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/topography.h>
@@ -65,7 +66,7 @@ using namespace std;
 // The map built from laser & odometry.
 CMultiMetricMap theMap;
 CPose3DInterpolator robot_path;
-mrpt::topography::TPathFromRTKInfo rtk_path_info;
+mrpt::slam::TPathFromRTKInfo rtk_path_info;
 
 extern xRawLogViewerFrame* theMainWindow;
 
@@ -931,10 +932,8 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
   // -------------------------------------------
   // Run path reconstruction:
   // -------------------------------------------
-  mrpt::topography::path_from_rtk_gps(
-      robot_path, rawlog, first, last,
-      true,  // Is GUI
-      configSrc.read_bool("RTK_MAP", "disableGPSInterp", false),
+  mrpt::slam::path_from_rtk_gps(
+      robot_path, rawlog, first, last, configSrc.read_bool("RTK_MAP", "disableGPSInterp", false),
       configSrc.read_int("RTK_MAP", "smooth_filter", 1), &rtk_path_info);
 
   // ---------------------------------------------------
@@ -944,13 +943,20 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
 
   CPointsMap::Ptr thePntsMap;
   if (auto p = theMap.mapByClass<CSimplePointsMap>(); p)
+  {
     thePntsMap = std::dynamic_pointer_cast<CPointsMap>(p);
+  }
   else if (auto p2 = theMap.mapByClass<CGenericPointsMap>(); p2)
+  {
     thePntsMap = std::dynamic_pointer_cast<CPointsMap>(p2);
+  }
 
   // An (aprox) estimate of the final size of the map (great improve in
   // speed!)
-  if (thePntsMap) thePntsMap->reserve(last - first + 1);
+  if (thePntsMap)
+  {
+    thePntsMap->reserve(last - first + 1);
+  }
 
   size_t count = 0;
   bool abort = false;
