@@ -17,6 +17,7 @@
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/gui/config.h>  // MRPT_HAS_WXWIDGETS
 #include <mrpt/img/CImage.h>
 #include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL_GLUT
 #include <mrpt/system/os.h>

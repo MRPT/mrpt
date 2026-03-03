@@ -11,6 +11,7 @@
  See: https://www.mrpt.org/Authors - All rights reserved.
  SPDX-License-Identifier: BSD-3-Clause
 */
+#include <mrpt/gui/config.h>
 
 #if MRPT_HAS_WXWIDGETS
 
@@ -27,9 +28,6 @@
 
 #include <mrpt/gui/CMyRedirector.h>
 #include <mrpt/gui/WxUtils.h>  //
-
-// For CV_VERSION
-#include <mrpt/gui/config.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt;

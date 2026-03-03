@@ -14,6 +14,7 @@
 
 #include <mrpt/core/round.h>
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/gui/config.h>  // MRPT_HAS_WXWIDGETS
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/filesystem.h>
 

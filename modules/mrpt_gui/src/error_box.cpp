@@ -12,6 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/gui/config.h>  // MRPT_HAS_WXWIDGETS
 #include <mrpt/gui/error_box.h>
 #include <mrpt/system/string_utils.h>  // firstNLines()
 

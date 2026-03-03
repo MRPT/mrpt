@@ -1637,7 +1637,10 @@ void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
           "(*.png,*.tif,*.jpg,...)|*.png;*.tif;*.jpg;*.bmp|All "
           "files (*.*)|*.*"),
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
-    if (dialog.ShowModal() != wxID_OK) return;
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
 
     const std::string sTargetFil = string(dialog.GetPath().mb_str());
     saveLastUsedDirectoryToCfgFile(sTargetFil);
@@ -1658,12 +1661,12 @@ void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
       std::string sH = std::string(ssH.mb_str());
       const long height = atoi(sH.c_str());
 
-      CFBORender::Parameters params;
+      mrpt::opengl::CFBORender::Parameters params;
       params.width = width;
       params.height = height;
       params.create_EGL_context = false;  // dont, will reuse existing one
 
-      CFBORender render(params);
+      mrpt::opengl::CFBORender render(params);
       CImage frame(width, height, CH_RGB);
 
       // render the scene
