@@ -14,6 +14,7 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/gui/about_box.h>
+#include <mrpt/gui/config.h>
 
 #if MRPT_HAS_WXWIDGETS
 #include "CAboutBox_wx.h"
@@ -26,7 +27,7 @@ void mrpt::gui::show_mrpt_about_box_wxWidgets(
     const bool showStandardInfo)
 {
 #if MRPT_HAS_WXWIDGETS
-  auto* parent = reinterpret_cast<wxWindow*>(parent_wx_window);
+  auto* parent = reinterpret_cast<wxWindow*>(parent_wx_window);  // NOLINT
   CAboutBox dlg(parent, appName, additionalInfo, showStandardInfo);
   dlg.ShowModal();
 #else

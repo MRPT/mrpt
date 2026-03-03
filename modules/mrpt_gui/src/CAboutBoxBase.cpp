@@ -30,6 +30,7 @@ CAboutBoxBase::CAboutBoxBase(
 }
 
 CAboutBoxBase::~CAboutBoxBase() = default;
+
 std::string CAboutBoxBase::MRPTBuildVersion() const
 {
   std::string s("Build: ");
@@ -42,7 +43,7 @@ std::string CAboutBoxBase::MRPTBuildVersion() const
 std::string CAboutBoxBase::tutorial() const
 {
   return "Up to date documentation and tutorials are maintained at the MRPT "
-         "website:\n\nhttp://www.mrpt.org/\n\n\n\n";
+         "website:\n\nhttps://www.mrpt.org/\n\n\n\n";
 }
 
 std::string CAboutBoxBase::license() const { return mrpt::system::getMRPTLicense(); }
