@@ -97,23 +97,16 @@ PYBIND11_MODULE(_bindings, m)
   py::class_<mrpt::vision::CImagePyramid>(m, "CImagePyramid")
       .def(py::init<>())
       .def(
-          "buildFromImage",
+          "buildPyramid",
           [](mrpt::vision::CImagePyramid& p, const mrpt::img::CImage& img, size_t nOctaves,
              bool smooth_imgs, bool convert_grayscale)
-          { p.buildFromImage(img, nOctaves, smooth_imgs, convert_grayscale); },
+          { p.buildPyramid(img, nOctaves, smooth_imgs, convert_grayscale); },
           "img"_a, "nOctaves"_a = 4, "smooth_imgs"_a = true, "convert_grayscale"_a = true,
           "Build an N-octave pyramid from the given image")
       .def(
-          "buildFromImageAndComputeIntegral",
-          [](mrpt::vision::CImagePyramid& p, const mrpt::img::CImage& img, size_t nOctaves,
-             bool smooth_imgs, bool convert_grayscale)
-          { p.buildFromImageAndComputeIntegral(img, nOctaves, smooth_imgs, convert_grayscale); },
-          "img"_a, "nOctaves"_a = 4, "smooth_imgs"_a = true, "convert_grayscale"_a = true)
-      .def(
           "getOctave",
           [](const mrpt::vision::CImagePyramid& p, size_t octave) -> const mrpt::img::CImage&
-          { return p.images[octave]; },
-          "octave"_a, py::return_value_policy::reference_internal,
+          { return p.images[octave]; }, "octave"_a, py::return_value_policy::reference_internal,
           "Get the CImage for a given pyramid octave (0=original)")
       .def(
           "octaveCount", [](const mrpt::vision::CImagePyramid& p) { return p.images.size(); },

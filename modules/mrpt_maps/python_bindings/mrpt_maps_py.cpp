@@ -43,10 +43,11 @@ PYBIND11_MODULE(_bindings, m)
              const mrpt::poses::CPose3D* robotPose)
           {
             if (robotPose)
+            {
               return mp.insertObservation(
                   obs, std::optional<const mrpt::poses::CPose3D>(*robotPose));
-            else
-              return mp.insertObservation(obs, std::optional<const mrpt::poses::CPose3D>());
+            }
+            return mp.insertObservation(obs, std::optional<const mrpt::poses::CPose3D>());
           },
           "obs"_a, "robotPose"_a = nullptr,
           "Insert an observation into the map. Returns true if the map was updated.")
@@ -72,9 +73,8 @@ PYBIND11_MODULE(_bindings, m)
           },
           "i"_a, "Returns (x, y, z) tuple for point i")
       .def(
-          "insertPoint",
-          [](mrpt::maps::CPointsMap& mp, float x, float y, float z) { mp.insertPoint(x, y, z); },
-          "x"_a, "y"_a, "z"_a = 0.0f)
+          "insertPoint", [](mrpt::maps::CPointsMap& mp, float x, float y, float z)
+          { mp.insertPoint(x, y, z); }, "x"_a, "y"_a, "z"_a = 0.0f)
       // NumPy integration — get all points as Nx3 float32 array
       .def(
           "getPointsAsNumpy",
@@ -157,10 +157,9 @@ PYBIND11_MODULE(_bindings, m)
           [](const mrpt::maps::COccupancyGridMap2D& g, float x, float y) { return g.getPos(x, y); },
           "x"_a, "y"_a, "Get occupancy probability at metric position (x,y)")
       .def(
-          "setPos",
-          [](mrpt::maps::COccupancyGridMap2D& g, float x, float y, float val)
-          { g.setPos(x, y, val); },
-          "x"_a, "y"_a, "value"_a, "Set occupancy probability at metric position (x,y)")
+          "setPos", [](mrpt::maps::COccupancyGridMap2D& g, float x, float y, float val)
+          { g.setPos(x, y, val); }, "x"_a, "y"_a, "value"_a,
+          "Set occupancy probability at metric position (x,y)")
       // Index ↔ metric conversion
       .def(
           "x2idx", [](const mrpt::maps::COccupancyGridMap2D& g, float x) { return g.x2idx(x); },
@@ -174,10 +173,8 @@ PYBIND11_MODULE(_bindings, m)
       .def("saveAsBitmapFile", &mrpt::maps::COccupancyGridMap2D::saveAsBitmapFile)
       .def(
           "loadFromBitmapFile",
-          [](mrpt::maps::COccupancyGridMap2D& g, const std::string& file, double resolution,
-             float xCentralPixel, float yCentralPixel)
-          { return g.loadFromBitmapFile(file, resolution, xCentralPixel, yCentralPixel); },
-          "file"_a, "resolution"_a, "xCentralPixel"_a = -1.0f, "yCentralPixel"_a = -1.0f)
+          [](mrpt::maps::COccupancyGridMap2D& g, const std::string& file, float resolution)
+          { return g.loadFromBitmapFile(file, resolution); }, "file"_a, "resolution"_a)
       .def(
           "loadFromROSMapServerYAML", &mrpt::maps::COccupancyGridMap2D::loadFromROSMapServerYAML,
           "yamlFilePath"_a, "Load a ROS map_server YAML + PNG/PGM file pair")
@@ -186,12 +183,17 @@ PYBIND11_MODULE(_bindings, m)
           "getAsNumpy",
           [](const mrpt::maps::COccupancyGridMap2D& g)
           {
-            const size_t sx = g.getSizeX(), sy = g.getSizeY();
+            const size_t sx = g.getSizeX();
+            const size_t sy = g.getSizeY();
             py::array_t<float> arr({sy, sx});
             auto buf = arr.mutable_unchecked<2>();
             for (size_t row = 0; row < sy; row++)
+            {
               for (size_t col = 0; col < sx; col++)
+              {
                 buf(row, col) = g.getCell(static_cast<int>(col), static_cast<int>(row));
+              }
+            }
             return arr;
           },
           "Returns the occupancy grid as an HxW float32 numpy array (0=occupied, 1=free)")

@@ -60,5 +60,5 @@ mrpt_add_library(
 
 # Python bindings
 mrpt_add_python_module(vision
-  python_bindings/_py.cpp
+  python_bindings/${PROJECT_NAME}_py.cpp
 )

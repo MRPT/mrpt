@@ -33,7 +33,7 @@ class CActionCollection : public mrpt::serialization::CSerializable
   DEFINE_SERIALIZABLE(CActionCollection, mrpt::obs)
 
  protected:
-  /** The robot "actionss" */
+  /** The robot "actions" */
   std::deque<mrpt::containers::deepcopy_poly_ptr<CAction::Ptr>> m_actions;
 
  public:
@@ -64,7 +64,7 @@ class CActionCollection : public mrpt::serialization::CSerializable
    *
    * \endcode
    */
-  const_iterator begin() const { return m_actions.begin(); }
+  [[nodiscard]] const_iterator begin() const { return m_actions.begin(); }
 
   /// \overload
   iterator begin() { return m_actions.begin(); }
@@ -81,7 +81,7 @@ class CActionCollection : public mrpt::serialization::CSerializable
    *
    * \endcode
    */
-  const_iterator end() const { return m_actions.end(); }
+  [[nodiscard]] const_iterator end() const { return m_actions.end(); }
 
   /// \overload
   iterator end() { return m_actions.end(); }
@@ -99,8 +99,8 @@ class CActionCollection : public mrpt::serialization::CSerializable
    *  First element is 0.
    * \exception std::exception On index out of bounds.
    */
-  CAction::Ptr get(size_t index);
-  const CAction& get(size_t index) const;
+  [[nodiscard]] CAction::Ptr get(size_t index);
+  [[nodiscard]] CAction::ConstPtr get(size_t index) const;
 
   /** Access to the i'th action of a given class, or a nullptr smart pointer
   if there is no action of that class in the list.

@@ -64,16 +64,22 @@ void CActionCollection::clear() { m_actions.clear(); }
  ---------------------------------------------------------------*/
 CAction::Ptr CActionCollection::get(size_t index)
 {
-  if (index >= m_actions.size()) THROW_EXCEPTION("Index out of bounds");
+  if (index >= m_actions.size())
+  {
+    THROW_EXCEPTION("Index out of bounds");
+  }
 
   return m_actions.at(index).get_ptr();
 }
 
-const CAction& CActionCollection::get(size_t index) const
+CAction::ConstPtr CActionCollection::get(size_t index) const
 {
-  if (index >= m_actions.size()) THROW_EXCEPTION("Index out of bounds");
+  if (index >= m_actions.size())
+  {
+    THROW_EXCEPTION("Index out of bounds");
+  }
 
-  return *(m_actions.at(index).get_ptr());
+  return m_actions.at(index).get_ptr();
 }
 
 size_t CActionCollection::size() const { return m_actions.size(); }
@@ -125,7 +131,10 @@ CActionRobotMovement2D::Ptr CActionCollection::getBestMovementEstimation() const
  ---------------------------------------------------------------*/
 void CActionCollection::eraseByIndex(size_t index)
 {
-  if (index >= m_actions.size()) THROW_EXCEPTION("Index out of bounds");
+  if (index >= m_actions.size())
+  {
+    THROW_EXCEPTION("Index out of bounds");
+  }
 
   auto it = m_actions.begin() + index;
   m_actions.erase(it);
@@ -155,7 +164,7 @@ CActionRobotMovement2D::Ptr CActionCollection::getMovementEstimationByType(
   }
 
   // Not found:
-  return CActionRobotMovement2D::Ptr();
+  return {};
 }
 
 /*---------------------------------------------------------------

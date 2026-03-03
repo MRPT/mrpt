@@ -99,7 +99,10 @@ PYBIND11_MODULE(_bindings, m)
             const size_t n = o.getScanSize();
             py::array_t<float> arr(n);
             auto buf = arr.mutable_unchecked<1>();
-            for (size_t i = 0; i < n; i++) buf(i) = o.getScanRange(i);
+            for (size_t i = 0; i < n; i++)
+            {
+              buf(i) = o.getScanRange(i);
+            }
             return arr;
           },
           "Returns all scan ranges as a 1D float32 numpy array")
@@ -110,7 +113,10 @@ PYBIND11_MODULE(_bindings, m)
             const size_t n = o.getScanSize();
             py::array_t<bool> arr(n);
             auto buf = arr.mutable_unchecked<1>();
-            for (size_t i = 0; i < n; i++) buf(i) = o.getScanRangeValidity(i);
+            for (size_t i = 0; i < n; i++)
+            {
+              buf(i) = o.getScanRangeValidity(i);
+            }
             return arr;
           },
           "Returns validity flags as a 1D bool numpy array")
@@ -225,7 +231,8 @@ PYBIND11_MODULE(_bindings, m)
       .def("GetRuntimeClass", &mrpt::obs::CActionRobotMovement2D::GetRuntimeClass)
       .def(
           "__repr__",
-          [](const mrpt::obs::CActionRobotMovement2D& a) {
+          [](const mrpt::obs::CActionRobotMovement2D& a)
+          {
             return "CActionRobotMovement2D(odometry=" + a.rawOdometryIncrementReading.asString() +
                    ")";
           });
@@ -248,8 +255,12 @@ PYBIND11_MODULE(_bindings, m)
           "__iter__",
           [](const mrpt::obs::CActionCollection& a)
           {
-            std::vector<mrpt::obs::CAction::Ptr> v;
-            for (size_t i = 0; i < a.size(); i++) v.push_back(a.get(i));
+            std::vector<mrpt::obs::CAction::ConstPtr> v;
+            v.reserve(a.size());
+            for (size_t i = 0; i < a.size(); i++)
+            {
+              v.push_back(a.get(i));
+            }
             return py::make_iterator(v.begin(), v.end());
           },
           py::keep_alive<0, 1>());
@@ -271,10 +282,8 @@ PYBIND11_MODULE(_bindings, m)
           "__getitem__",
           [](const mrpt::obs::CSensoryFrame& sf, size_t i) { return sf.getObservationByIndex(i); })
       .def(
-          "__iter__",
-          [](const mrpt::obs::CSensoryFrame& sf)
-          { return py::make_iterator(sf.begin(), sf.end()); },
-          py::keep_alive<0, 1>())
+          "__iter__", [](const mrpt::obs::CSensoryFrame& sf)
+          { return py::make_iterator(sf.begin(), sf.end()); }, py::keep_alive<0, 1>())
       .def(
           "__repr__", [](const mrpt::obs::CSensoryFrame& sf)
           { return "CSensoryFrame(" + std::to_string(sf.size()) + " observations)"; });

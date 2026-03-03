@@ -202,7 +202,8 @@ PYBIND11_MODULE(_bindings, m)
           "getBoxCorners",
           [](const CBox& self)
           {
-            mrpt::math::TPoint3D c1, c2;
+            mrpt::math::TPoint3D c1;
+            mrpt::math::TPoint3D c2;
             self.getBoxCorners(c1, c2);
             return py::make_tuple(c1, c2);
           })
@@ -261,10 +262,12 @@ PYBIND11_MODULE(_bindings, m)
       .def("clear", &CSetOfLines::clear)
       .def(
           "appendLine",
-          py::overload_cast<double, double, double, double, double, double>(
+          static_cast<void (CSetOfLines::*)(double, double, double, double, double, double)>(
               &CSetOfLines::appendLine),
           py::arg("x0"), py::arg("y0"), py::arg("z0"), py::arg("x1"), py::arg("y1"), py::arg("z1"))
-      .def("appendLine", py::overload_cast<const mrpt::math::TSegment3D&>(&CSetOfLines::appendLine))
+      .def(
+          "appendLine", static_cast<void (CSetOfLines::*)(const mrpt::math::TSegment3D&)>(
+                            &CSetOfLines::appendLine))
       .def("__len__", [](const CSetOfLines& self) { return self.size(); });
 
   // 18. CSimpleLine
