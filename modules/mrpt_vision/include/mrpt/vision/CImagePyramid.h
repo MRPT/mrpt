@@ -60,7 +60,6 @@ class CImagePyramid
 {
  public:
   CImagePyramid() = default;
-  ~CImagePyramid() = default;
 
   /** Fills the vector \a images with the different octaves built from the
    * input image.
@@ -78,8 +77,8 @@ class CImagePyramid
   bool buildPyramid(
       const mrpt::img::CImage& img,
       size_t nOctaves,
-      const bool smooth_halves = true,
-      const bool convert_grayscale = false);
+      bool smooth_halves = true,
+      bool convert_grayscale = false);
 
   /**  Exactly like \a buildPyramid(), but if the input image has not to be
    * converted from RGB to grayscale, the image data buffer is *reutilized*
@@ -89,8 +88,8 @@ class CImagePyramid
   bool buildPyramidFast(
       mrpt::img::CImage& img,
       size_t nOctaves,
-      const bool smooth_halves = true,
-      const bool convert_grayscale = false);
+      bool smooth_halves = true,
+      bool convert_grayscale = false);
 
   /** The individual images:
    *  - images[0]: 1st octave (full-size)
