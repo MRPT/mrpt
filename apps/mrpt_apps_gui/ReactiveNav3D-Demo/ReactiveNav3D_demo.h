@@ -16,7 +16,11 @@
 #include <mrpt/math/TObject3D.h>
 #include <mrpt/nav/reactive/CReactiveNavigationSystem3D.h>
 #include <mrpt/nav/reactive/CRobot2NavInterfaceForSimulator.h>
-#include <mrpt/opengl.h>
+#include <mrpt/viz/CDisk.h>
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CPolyhedron.h>
+#include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/stock_objects.h>
 #include <mrpt/system/CObserver.h>
 #include <mrpt/viz/CPlanarLaserScan.h>
 
@@ -619,7 +623,7 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
       ASSERT_(xaux.size() == yaux.size());
       for (unsigned int j = 0; j < xaux.size(); j++)
       {
-        robotShape.polygon(i - 1).AddVertex(xaux[j], yaux[j]);
+        robotShape.polygon(i - 1).add_vertex(xaux[j], yaux[j]);
       }
     }
 
@@ -660,7 +664,7 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
     CPose3D robotpose3d = CPose3D(CPose2D(robotSim.getCurrentGTPose()));
 
     // The display window is created
-    mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE(10000);
+    // mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE removed in MRPT 3
     window.setWindowTitle("Reactive Navigation. Robot motion simulation");
     window.resize(1800, 980);
     window.setPos(50, 0);
@@ -674,14 +678,14 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
 
     // A CornerXYZ object is inserted as an absolute frame of reference
     {
-      auto obj = opengl::stock_objects::CornerXYZ();
+      auto obj = viz::stock_objects::CornerXYZ();
       obj->setLocation(0, 0, 0);
       scene->insert(obj);
     }
 
     // The target is inserted
     {
-      auto obj = opengl::CDisk::Create(0.4f, 0.3f);
+      auto obj = viz::CDisk::Create(0.4f, 0.3f);
       obj->setLocation(0, 0, 0.02);
       obj->setColor(0.2, 0.3, 0.9);
       scene->insert(obj);
@@ -703,7 +707,7 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
 
         robotpose3d.z(h);
         auto obj =
-            opengl::CPolyhedron::CreateCustomPrism(robotShape.polygon(i), robotShape.getHeight(i));
+            viz::CPolyhedron::CreateCustomPrism(robotShape.polygon(i), robotShape.getHeight(i));
         obj->setName(format("Level%d", i + 1));
         obj->setPose(robotpose3d);
         obj->setColor(0.2, 0.5, 0.2, 1);
@@ -749,7 +753,7 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
       for (unsigned int i = 0; i < kinects.size(); i++)
       {
         obj.push_back(indobj);
-        obj[i] = opengl::CPointCloud::Create();
+        obj[i] = viz::CPointCloud::Create();
         obj[i]->setPose(robotpose3d);
         obj[i]->setName(format("Kinect%d", i + 1));
         scene->insert(obj[i]);

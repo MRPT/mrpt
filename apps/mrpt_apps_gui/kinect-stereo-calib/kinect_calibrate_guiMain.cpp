@@ -1307,8 +1307,8 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
       CImage im = m_last_obs->intensityImage;
 
       const std::string s = mrpt::system::dateTimeLocalToString(m_last_obs->timestamp);
-      im.textOut(6, 6, s, TColor::black());
-      im.textOut(5, 5, s, TColor::white());
+      im.textOut({6, 6}, s, TColor::black());
+      im.textOut({5, 5}, s, TColor::white());
 
       m_realtimeview_test->AssignImage(im);
       m_realtimeview_test->Refresh(false);
@@ -1397,7 +1397,7 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
       // (Destroys org img)
       img_to_show = std::move(m_last_obs->intensityImage);
 
-      if (!img_to_show.isColor() && cbNormalize->IsChecked()) img_to_show.equalizeHist(img_to_show);
+      if (!img_to_show.isColor() && cbNormalize->IsChecked()) img_to_show.normalize();
 
       // Do live detect & draw chessboard in parallel:
       if (m_findcorners_thread_data.ready_for_new_images)
@@ -1448,8 +1448,8 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
         const string& s = center_messages[i];
         const int x = img_to_show.getWidth() / 2 - 10 * s.size() / 2;
         const int y = 230 + 25 * i;
-        img_to_show.textOut(x, y, s, TColor::black());
-        img_to_show.textOut(x - 1, y - 1, s, TColor::white());
+        img_to_show.textOut({x, y}, s, TColor::black());
+        img_to_show.textOut({x - 1, y - 1}, s, TColor::white());
       }
 
       // Show:
@@ -1591,8 +1591,8 @@ void kinect_calibrate_guiDialog::ProcessNewSelectedImageListBox()
     if (!noImg)
     {
       noImg.emplace(320, 240, CH_RGB);
-      noImg->filledRectangle(0, 0, 319, 239, TColor(200, 200, 200));
-      noImg->textOut(100, 110, "(No image selected)", TColor::white());
+      noImg->filledRectangle({0, 0}, {319, 239}, TColor(200, 200, 200));
+      noImg->textOut({100, 110}, "(No image selected)", TColor::white());
     }
 
     const int sel = lbImagePairs->GetSelection();
@@ -1618,8 +1618,8 @@ void kinect_calibrate_guiDialog::ProcessNewSelectedImageListBox()
 
         if (cbCalibNormalize->IsChecked())
         {
-          if (!il.isColor()) il.equalizeHist(il);
-          if (!ir.isColor()) ir.equalizeHist(ir);
+          if (!il.isColor()) il.normalize();
+          if (!ir.isColor()) ir.normalize();
         }
       }
 

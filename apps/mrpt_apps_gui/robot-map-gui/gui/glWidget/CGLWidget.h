@@ -14,11 +14,11 @@
 #include "mrpt/gui/CQtGlCanvasBase.h"
 #include "mrpt/maps/CMultiMetricMap.h"
 #include "mrpt/maps/CSimpleMap.h"
-#include "mrpt/opengl/CGridPlaneXY.h"
-#include "mrpt/opengl/CPlanarLaserScan.h"
-#include "mrpt/opengl/CPointCloud.h"
-#include "mrpt/opengl/CSetOfLines.h"
-#include "mrpt/opengl/CSetOfObjects.h"
+#include "mrpt/viz/CGridPlaneXY.h"
+#include "mrpt/viz/CPlanarLaserScan.h"
+#include "mrpt/viz/CPointCloud.h"
+#include "mrpt/viz/CSetOfLines.h"
+#include "mrpt/viz/CSetOfObjects.h"
 
 class CDocument;
 

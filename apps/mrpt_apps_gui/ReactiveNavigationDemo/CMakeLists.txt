@@ -12,6 +12,12 @@ find_package(mrpt_common REQUIRED)
 find_package(mrpt_gui REQUIRED)
 find_package(mrpt_nav REQUIRED)
 find_package(mrpt_kinematics REQUIRED)
+find_package(wxWidgets COMPONENTS core base gl adv QUIET)
+if(NOT wxWidgets_FOUND)
+  message(STATUS "wxWidgets not found — skipping ReactiveNavigationDemo")
+  return()
+endif()
+include(${wxWidgets_USE_FILE})
 
 # Define the executable target:
 mrpt_add_executable(
@@ -24,11 +30,15 @@ mrpt_add_executable(
     DEFAULT_GRIDMAP_DATA.h
     MyGLCanvas.cpp
     MyGLCanvas.h
+    ../wxThings/src/toggle.cpp
   LINK_LIBRARIES
     mrpt::mrpt_gui
     mrpt::mrpt_nav
     mrpt::mrpt_kinematics
+    ${wxWidgets_LIBRARIES}
 )
+
+target_include_directories(${PROJECT_NAME} PRIVATE ../wxThings)
 
 #AppStartMenuLink(${PROJECT_NAME} "Reactive navigation demo")   # Add link to the Start menu (in Windows Installable packages)
 

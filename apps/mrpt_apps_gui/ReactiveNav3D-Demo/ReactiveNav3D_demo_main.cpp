@@ -136,12 +136,13 @@ int main(int num_arg, char* argv[])
       // Move target with the mouse
       if (moving_target == 1)
       {
-        int mouse_x, mouse_y;
-        if (ReactInterface.window.getLastMousePosition(mouse_x, mouse_y))
+        auto mousePos = ReactInterface.window.getLastMousePosition();
+        if (mousePos)
         {
           // Get the ray in 3D for the latest mouse (X,Y):
-          math::TLine3D ray;
-          ReactInterface.scene->getViewport("main")->get3DRayForPixelCoord(mouse_x, mouse_y, ray);
+          auto optRay = ReactInterface.scene->getViewport("main")->get3DRayForPixelCoord(*mousePos);
+          if (!optRay) continue;
+          math::TLine3D ray = *optRay;
 
           // Create a 3D plane, e.g. Z=0
           const math::TPlane ground_plane(TPoint3D(0, 0, 0), TPoint3D(1, 0, 0), TPoint3D(0, 1, 0));

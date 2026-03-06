@@ -62,6 +62,7 @@ wxBitmap MyArtProvider::CreateBitmap(
 #include <mrpt/gui/about_box.h>
 #include <mrpt/nav.h>
 #include <mrpt/viz/CArrow.h>
+#include <mrpt/viz/CCylinder.h>
 #include <mrpt/viz/CDisk.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CSetOfLines.h>
@@ -412,16 +413,16 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent, w
   gl_target = mrpt::viz::CSetOfObjects::Create();
   {
     mrpt::viz::CArrow::Ptr obj;
-    obj = mrpt::viz::CArrow::Create(1, 0, 0, 0.2f, 0, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{1, 0, 0}, mrpt::math::TPoint3Df{0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     gl_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(-1, 0, 0, -0.2f, 0, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{-1, 0, 0}, mrpt::math::TPoint3Df{-0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     gl_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(0, 1, 0, 0, 0.2f, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{0, 1, 0}, mrpt::math::TPoint3Df{0, 0.2f, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     gl_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(0, -1, 0, 0, -0.2f, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{0, -1, 0}, mrpt::math::TPoint3Df{0, -0.2f, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     gl_target->insert(obj);
     openGLSceneRef->insert(gl_target);
@@ -431,16 +432,16 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent, w
     m_gl_placing_nav_target = std::make_shared<mrpt::viz::CSetOfObjects>();
 
     mrpt::viz::CArrow::Ptr obj;
-    obj = mrpt::viz::CArrow::Create(1, 0, 0, 0.2f, 0, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{1, 0, 0}, mrpt::math::TPoint3Df{0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     m_gl_placing_nav_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(-1, 0, 0, -0.2f, 0, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{-1, 0, 0}, mrpt::math::TPoint3Df{-0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     m_gl_placing_nav_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(0, 1, 0, 0, 0.2f, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{0, 1, 0}, mrpt::math::TPoint3Df{0, 0.2f, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     m_gl_placing_nav_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(0, -1, 0, 0, -0.2f, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{0, -1, 0}, mrpt::math::TPoint3Df{0, -0.2f, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     m_gl_placing_nav_target->insert(obj);
     m_gl_placing_nav_target->setVisibility(false);  // Start invisible.
@@ -792,7 +793,12 @@ void holonomic_navigator_demoFrame::Onplot3DMouseMove(wxMouseEvent& event)
 
   // Intersection of 3D ray with ground plane ====================
   TLine3D ray;
-  m_plot3D->getOpenGLSceneRef()->getViewport("main")->get3DRayForPixelCoord(X, Y, ray);
+  {
+    auto optRay =
+        m_plot3D->getOpenGLSceneRef()->getViewport("main")->get3DRayForPixelCoord({X, Y});
+    if (!optRay) return;
+    ray = *optRay;
+  }
   // Create a 3D plane, e.g. Z=0
   const TPlane ground_plane(TPoint3D(0, 0, 0), TPoint3D(1, 0, 0), TPoint3D(0, 1, 0));
   // Intersection of the line with the plane:
@@ -932,7 +938,7 @@ void holonomic_navigator_demoFrame::OnbtnLoadMapClick(wxCommandEvent& event)
   {
     // Try loading the image:
     CImage img;
-    if (!img.loadFromFile(fil, 0 /* force grayscale */))
+    if (!img.loadFromFile(fil, mrpt::img::CH_GRAY /* force grayscale */))
     {
       wxMessageBox(_("Error"), _("Can't load the image file (check its format)."));
     }

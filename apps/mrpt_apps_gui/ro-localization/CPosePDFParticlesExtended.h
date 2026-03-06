@@ -23,6 +23,7 @@
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/poses/CPosePDF.h>
+#include <ostream>
 
 namespace mrpt
 {
@@ -210,6 +211,12 @@ class CPosePDFParticlesExtended :
       const mrpt::obs::CActionCollection* actions,
       const mrpt::obs::CSensoryFrame* sf,
       const bayes::CParticleFilter::TParticleFilterOptions& PF_options) override;
+
+  /** Prints a short description of the PDF to a stream. */
+  void printTo(std::ostream& out) const override
+  {
+    out << "CPosePDFParticlesExtended: " << m_particles.size() << " particles\n";
+  }
 
   /** Save PDF's particles to a text file. In each line it will go: "x y phi
    * weight"

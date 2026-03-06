@@ -36,7 +36,9 @@ void shuffle(RandomIt first, RandomIt last, URBG&& g)
   for (int64_t i = static_cast<int64_t>(n) - 1; i > 0; --i)
   {
     const auto idx = portable_uniform_distribution(g, 0, static_cast<uint64_t>(i));
-    std::swap(first[i], first[static_cast<typename RandomIt::difference_type>(idx)]);
+    auto d_i = static_cast<typename RandomIt::difference_type>(i);
+    auto d_idx = static_cast<typename RandomIt::difference_type>(idx);
+    std::swap(*(first + d_i), *(first + d_idx));
   }
 }
 
@@ -69,9 +71,9 @@ void partial_shuffle(RandomIt first, RandomIt last, URBG&& g, size_t N)
   for (uint64_t i = 0; i < n && i < N; ++i)
   {
     const auto idx = portable_uniform_distribution(g, i, n_1);
-    std::swap(
-        first[static_cast<typename RandomIt::difference_type>(i)],
-        first[static_cast<typename RandomIt::difference_type>(idx)]);
+    auto d_i = static_cast<typename RandomIt::difference_type>(i);
+    auto d_idx = static_cast<typename RandomIt::difference_type>(idx);
+    std::swap(*(first + d_i), *(first + d_idx));
   }
 }
 

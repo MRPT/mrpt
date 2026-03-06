@@ -23,6 +23,7 @@
 #include <mrpt/viz/CTextMessageCapable.h>
 
 #include <Eigen/Dense>
+#include <algorithm>
 #include <iostream>
 
 #include "gltext.h"
@@ -989,25 +990,41 @@ void CompiledViewport::renderBorder(ShaderProgramManager& shaderManager)
   glUniformMatrix4fv(shader->uniformId("p_matrix"), 1, IS_TRANSPOSED, ortho.data());
   glUniformMatrix4fv(shader->uniformId("mv_matrix"), 1, IS_TRANSPOSED, identity.data());
 
-  // Half-pixel inset so lines are fully inside the viewport
-  const float hw = static_cast<float>(m_borderWidth) * 0.5f;
-  const float x0 = hw;
-  const float y0 = hw;
-  const float x1 = w - hw;
-  const float y1 = h - hw;
+  // Render the border as 4 filled quads (2 triangles each) to avoid glLineWidth,
+  // which is restricted to 1.0 in OpenGL 3.1 Core Profile (any other value
+  // generates GL_INVALID_VALUE on Mesa/core profile drivers).
+  //
+  // Layout (bw = borderWidth):
+  //   bottom strip: (0,0)-(w,bw)
+  //   top strip:    (0,h-bw)-(w,h)
+  //   left strip:   (0,bw)-(bw,h-bw)
+  //   right strip:  (w-bw,bw)-(w,h-bw)
+  const float bw = static_cast<float>(m_borderWidth);
+  const mrpt::img::TColor bc = m_borderColor;
 
-  // 4 vertices for GL_LINE_LOOP
-  const std::array<mrpt::math::TPoint3Df, 4> verts = {
-      mrpt::math::TPoint3Df{x0, y0, 0.0f},
-      mrpt::math::TPoint3Df{x1, y0, 0.0f},
-      mrpt::math::TPoint3Df{x1, y1, 0.0f},
-      mrpt::math::TPoint3Df{x0, y1, 0.0f}
+  // 4 strips × 2 triangles × 3 vertices = 24 vertices
+  std::array<mrpt::math::TPoint3Df, 24> verts;
+  std::array<mrpt::img::TColor, 24> cols;
+  cols.fill(bc);
+
+  auto addQuad = [&](int idx, float ax, float ay, float bxq, float byq,
+                     float cx, float cy, float dx, float dy)
+  {
+    // Two triangles: (a,b,c) and (a,c,d)
+    verts[idx + 0] = {ax, ay, 0};
+    verts[idx + 1] = {bxq, byq, 0};
+    verts[idx + 2] = {cx, cy, 0};
+    verts[idx + 3] = {ax, ay, 0};
+    verts[idx + 4] = {cx, cy, 0};
+    verts[idx + 5] = {dx, dy, 0};
   };
 
-  const mrpt::img::TColor bc = m_borderColor;
-  const std::array<mrpt::img::TColor, 4> colors = {bc, bc, bc, bc};
+  addQuad(0,  0,      0,      w,      0,      w,      bw,     0,      bw);      // bottom
+  addQuad(6,  0,      h - bw, w,      h - bw, w,      h,      0,      h);       // top
+  addQuad(12, 0,      bw,     bw,     bw,     bw,     h - bw, 0,      h - bw);  // left
+  addQuad(18, w - bw, bw,     w,      bw,     w,      h - bw, w - bw, h - bw);  // right
 
-  // Create / update border VBO
+  // Upload and draw
   m_borderVAO.createOnce();
   m_borderVAO.bind();
 
@@ -1019,17 +1036,12 @@ void CompiledViewport::renderBorder(ShaderProgramManager& shaderManager)
 
   m_borderColorBuffer.createOnce();
   m_borderColorBuffer.bind();
-  m_borderColorBuffer.allocate(colors.data(), sizeof(colors));
+  m_borderColorBuffer.allocate(cols.data(), sizeof(cols));
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(mrpt::img::TColor), nullptr);
 
-  // Render border lines without depth test
   glDisable(GL_DEPTH_TEST);
-  glLineWidth(static_cast<float>(m_borderWidth));
-
-  glDrawArrays(GL_LINE_LOOP, 0, 4);
-
-  glLineWidth(1.0f);
+  glDrawArrays(GL_TRIANGLES, 0, 24);
   glEnable(GL_DEPTH_TEST);
 
   glBindVertexArray(0);
