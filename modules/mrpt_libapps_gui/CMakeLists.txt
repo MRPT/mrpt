@@ -36,7 +36,6 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/apps_gui/MonteCarloLocalization_App.h
   include/mrpt/apps_gui/RBPF_SLAM_App.h
   include/mrpt/apps_gui/RawlogEditApp.h
-  include/mrpt/apps_gui/RawlogGrabberApp.h
   include/mrpt/apps_gui/registerAllClasses.h
 )
 

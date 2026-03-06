@@ -12,6 +12,7 @@ find_package(mrpt_common REQUIRED)
 
 # Dependencies
 find_package(mrpt_maps REQUIRED)
+find_package(mrpt_gui REQUIRED)
 find_package(mrpt_hwdrivers REQUIRED)
 find_package(mrpt_kinematics REQUIRED)
 find_package(wxWidgets REQUIRED COMPONENTS gl core base adv)
@@ -27,6 +28,7 @@ mrpt_add_executable(
     gridmapSimulMain.h
   LINK_LIBRARIES
     mrpt::mrpt_maps
+    mrpt::mrpt_gui
     mrpt::mrpt_hwdrivers
     mrpt::mrpt_kinematics
     wxWidgets::wxWidgets

@@ -641,13 +641,13 @@ void filter_swapColors(
         auto* o = (CObservationStereoImages*)obs.get();
         if (o->imageLeft.isColor())
         {
-          swapColors(o->imageLeft);
+          o->imageLeft.swapRB();
           changesCount++;
         }
 
         if (o->imageRight.isColor())
         {
-          swapColors(o->imageRight);
+          o->imageRight.swapRB();
           changesCount++;
         }
       }

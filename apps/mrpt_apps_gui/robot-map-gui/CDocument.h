@@ -15,7 +15,7 @@
 #include "mrpt/config/CConfigFile.h"
 #include "mrpt/maps/CMultiMetricMap.h"
 #include "mrpt/maps/CSimpleMap.h"
-#include "mrpt/opengl/CVisualObject.h"
+#include <mrpt/viz/CVisualObject.h>
 
 /** This class gets *.simplemap and *.ini, and convert it to name of the map -
 CSetOfObjects.

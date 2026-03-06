@@ -11,6 +11,12 @@ find_package(mrpt_common REQUIRED)
 # Dependencies
 find_package(mrpt_kinematics REQUIRED)
 find_package(mrpt_gui REQUIRED)
+find_package(wxWidgets COMPONENTS core base gl adv QUIET)
+if(NOT wxWidgets_FOUND)
+  message(STATUS "wxWidgets not found — skipping robotic-arm-kinematics")
+  return()
+endif()
+include(${wxWidgets_USE_FILE})
 
 # Define the executable target:
 mrpt_add_executable(
@@ -29,6 +35,7 @@ mrpt_add_executable(
   LINK_LIBRARIES
     mrpt::mrpt_kinematics
     mrpt::mrpt_gui
+    ${wxWidgets_LIBRARIES}
 )
 
 

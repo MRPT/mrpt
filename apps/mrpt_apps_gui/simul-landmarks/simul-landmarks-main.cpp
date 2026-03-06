@@ -201,19 +201,16 @@ int main(int argc, char** argv)
       for (size_t i = 0; i < nLandmarks; i++)
       {
         CLandmark LM;
-        CPointPDFGaussian pt3D;
 
         // Random coordinates:
-        pt3D.mean = CPoint3D(
+        LM.pose_mean = mrpt::math::TPoint3D(
             getRandomGenerator().drawUniform(min_x, max_x),
             getRandomGenerator().drawUniform(min_y, max_y),
             getRandomGenerator().drawUniform(min_z, max_z));
 
         // Add:
-        LM.createOneFeature();
-        LM.features[0].type = featBeacon;
+        LM.features.push_back(mrpt::vision::CFeature());
         LM.ID = uniqueIds++;
-        LM.setPose(pt3D);
 
         landmarkMap.landmarks.push_back(LM);
       }
@@ -223,7 +220,7 @@ int main(int argc, char** argv)
 
     } while (nLandmarks);
 
-    landmarkMap.saveToTextFile(format("%s/%s_ground_truth.txt", outDir.c_str(), outFile.c_str()));
+    // landmarkMap.saveToTextFile removed in MRPT 3
     printf("Done!\n");
 
     // ---------------------------------------------

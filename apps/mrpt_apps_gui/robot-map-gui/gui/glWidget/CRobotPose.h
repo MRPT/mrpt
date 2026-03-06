@@ -8,7 +8,7 @@
    +---------------------------------------------------------------------------+
    */
 #pragma once
-#include "mrpt/opengl/CSetOfObjects.h"
+#include <mrpt/viz/CSetOfObjects.h>
 
 class CRobotPose : public mrpt::viz::CSetOfObjects
 {

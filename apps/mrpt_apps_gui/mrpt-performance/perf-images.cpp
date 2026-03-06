@@ -58,10 +58,12 @@ double image_test_1(int w, int img_quality)
 
   for (int i = 0; i < 5000; i++)
     img.line(
-        (int)getRandomGenerator().drawUniform(0, w - 1),
-        (int)getRandomGenerator().drawUniform(0, h - 1),
-        (int)getRandomGenerator().drawUniform(0, w - 1),
-        (int)getRandomGenerator().drawUniform(0, h - 1),
+        mrpt::img::TPixelCoord{
+            (int)getRandomGenerator().drawUniform(0, w - 1),
+            (int)getRandomGenerator().drawUniform(0, h - 1)},
+        mrpt::img::TPixelCoord{
+            (int)getRandomGenerator().drawUniform(0, w - 1),
+            (int)getRandomGenerator().drawUniform(0, h - 1)},
         TColor(getRandomGenerator().drawUniform32bit()));
 
   CTicTac tictac;
@@ -108,10 +110,12 @@ double image_saveload(int iFormat, int to_shm)
   CImage img(w, h, mrpt::img::CH_RGB);
   for (int i = 0; i < 5000; i++)
     img.line(
-        (int)getRandomGenerator().drawUniform(0, w - 1),
-        (int)getRandomGenerator().drawUniform(0, h - 1),
-        (int)getRandomGenerator().drawUniform(0, w - 1),
-        (int)getRandomGenerator().drawUniform(0, h - 1),
+        mrpt::img::TPixelCoord{
+            (int)getRandomGenerator().drawUniform(0, w - 1),
+            (int)getRandomGenerator().drawUniform(0, h - 1)},
+        mrpt::img::TPixelCoord{
+            (int)getRandomGenerator().drawUniform(0, w - 1),
+            (int)getRandomGenerator().drawUniform(0, h - 1)},
         TColor(getRandomGenerator().drawUniform32bit()));
 
   CTicTac tictac;
@@ -170,10 +174,12 @@ double image_test_2(int w, int h)
 
   for (int i = 0; i < 5000; i++)
     img.line(
-        (int)getRandomGenerator().drawUniform(0, w - 1),
-        (int)getRandomGenerator().drawUniform(0, h - 1),
-        (int)getRandomGenerator().drawUniform(0, w - 1),
-        (int)getRandomGenerator().drawUniform(0, h - 1),
+        mrpt::img::TPixelCoord{
+            (int)getRandomGenerator().drawUniform(0, w - 1),
+            (int)getRandomGenerator().drawUniform(0, h - 1)},
+        mrpt::img::TPixelCoord{
+            (int)getRandomGenerator().drawUniform(0, w - 1),
+            (int)getRandomGenerator().drawUniform(0, h - 1)},
         TColor(getRandomGenerator().drawUniform32bit()));
 
   CTicTac tictac;
@@ -266,8 +272,12 @@ double image_KLTscore(int WIN, int N)
 
   for (int i = 0; i < 5000; i++)
     img.line(
-        getRandomGenerator().drawUniform(0, w - 1), getRandomGenerator().drawUniform(0, h - 1),
-        getRandomGenerator().drawUniform(0, w - 1), getRandomGenerator().drawUniform(0, h - 1),
+        mrpt::img::TPixelCoord{
+            (int)getRandomGenerator().drawUniform(0, w - 1),
+            (int)getRandomGenerator().drawUniform(0, h - 1)},
+        mrpt::img::TPixelCoord{
+            (int)getRandomGenerator().drawUniform(0, w - 1),
+            (int)getRandomGenerator().drawUniform(0, h - 1)},
         TColor(getRandomGenerator().drawUniform32bit()));
 
   ASSERT_LT_(WIN, 128);
@@ -278,7 +288,7 @@ double image_KLTscore(int WIN, int N)
   tictac.Tic();
   for (int i = 0; i < N; i++)
   {
-    float r = img.KLT_response(x | 128, y | 128, WIN);
+    float r = img.KLT_response(mrpt::img::TPixelCoord{x | 128, y | 128}, WIN);
     (void)r;
     x++;
     x &= 0x1FF;

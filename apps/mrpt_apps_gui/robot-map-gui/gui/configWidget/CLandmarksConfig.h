@@ -28,12 +28,8 @@ class CLandmarksConfig : public CBaseConfig
   void updateConfiguration(mrpt::maps::TMetricMapInitializer* options) override;
   TypeOfConfig type() const override;
 
-  void setInsertOpt(
-      const mrpt::maps::CLandmarksMap::TInsertionOptions& insertOpt =
-          mrpt::maps::CLandmarksMap::TInsertionOptions());
-  void setLikelihoodOpt(
-      const mrpt::maps::CLandmarksMap::TLikelihoodOptions& likelihoodOpt =
-          mrpt::maps::CLandmarksMap::TLikelihoodOptions());
+  void setInsertOpt();
+  void setLikelihoodOpt();
 
  private:
   std::unique_ptr<Ui::CLandmarksConfig> m_ui;

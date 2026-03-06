@@ -17,6 +17,8 @@
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/viz/CVisualObject.h>
 
+#include <algorithm>
+
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace mrpt::img;
@@ -121,8 +123,13 @@ void LinesProxy::uploadLineUniforms(const RenderContext& rc) const
 void LinesProxy::setupLineState() const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-  // Set line width
-  glLineWidth(m_params.lineWidth);
+  // On OpenGL 3.x Core Profile, glLineWidth > 1.0 may generate GL_INVALID_VALUE.
+  // Clamp to the driver-supported range.
+  GLfloat lineWidthRange[2] = {1.0f, 1.0f};
+  glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
+  const float clampedWidth =
+      std::max(1.0f, std::min(m_params.lineWidth, lineWidthRange[1]));
+  glLineWidth(clampedWidth);
 
   // Enable anti-aliasing if requested
   if (m_params.antiAliasing)

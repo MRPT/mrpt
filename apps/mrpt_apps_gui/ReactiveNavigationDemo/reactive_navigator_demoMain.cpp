@@ -66,7 +66,11 @@ wxBitmap MyArtProvider::CreateBitmap(
 }
 
 #include <mrpt/nav.h>
-#include <mrpt/opengl.h>
+#include <mrpt/viz/CArrow.h>
+#include <mrpt/viz/CCylinder.h>
+#include <mrpt/viz/CSetOfLines.h>
+#include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/stock_objects.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
@@ -840,50 +844,50 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent, wxW
   gl_target->setVisibility(false);
   {
     mrpt::viz::CArrow::Ptr obj;
-    obj = mrpt::viz::CArrow::Create(1, 0, 0, 0.2f, 0, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{1, 0, 0}, mrpt::math::TPoint3Df{0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     gl_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(-1, 0, 0, -0.2f, 0, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{-1, 0, 0}, mrpt::math::TPoint3Df{-0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     gl_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(0, 1, 0, 0, 0.2f, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{0, 1, 0}, mrpt::math::TPoint3Df{0, 0.2f, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     gl_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(0, -1, 0, 0, -0.2f, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{0, -1, 0}, mrpt::math::TPoint3Df{0, -0.2f, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     gl_target->insert(obj);
     openGLSceneRef->insert(gl_target);
   }
 
   {
-    gl_waypoints_clicking = std::make_shared<opengl::CSetOfObjects>();
+    gl_waypoints_clicking = std::make_shared<viz::CSetOfObjects>();
     openGLSceneRef->insert(gl_waypoints_clicking);
 
-    gl_waypoints_status = std::make_shared<opengl::CSetOfObjects>();
+    gl_waypoints_status = std::make_shared<viz::CSetOfObjects>();
     openGLSceneRef->insert(gl_waypoints_status);
   }
 
   {  // Sign of "picking a navigation target":
-    m_gl_placing_nav_target = std::make_shared<opengl::CSetOfObjects>();
+    m_gl_placing_nav_target = std::make_shared<viz::CSetOfObjects>();
 
     mrpt::viz::CArrow::Ptr obj;
-    obj = mrpt::viz::CArrow::Create(1, 0, 0, 0.2f, 0, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{1, 0, 0}, mrpt::math::TPoint3Df{0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     m_gl_placing_nav_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(-1, 0, 0, -0.2f, 0, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{-1, 0, 0}, mrpt::math::TPoint3Df{-0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     m_gl_placing_nav_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(0, 1, 0, 0, 0.2f, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{0, 1, 0}, mrpt::math::TPoint3Df{0, 0.2f, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     m_gl_placing_nav_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(0, -1, 0, 0, -0.2f, 0, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{0, -1, 0}, mrpt::math::TPoint3Df{0, -0.2f, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     m_gl_placing_nav_target->insert(obj);
     m_gl_placing_nav_target->setVisibility(false);  // Start invisible.
     openGLSceneRef->insert(m_gl_placing_nav_target);
   }
   {  // Sign of "replacing the robot":
-    m_gl_placing_robot = std::make_shared<opengl::CSetOfObjects>();
+    m_gl_placing_robot = std::make_shared<viz::CSetOfObjects>();
     mrpt::viz::CSetOfObjects::Ptr obj = mrpt::viz::stock_objects::CornerXYZSimple(1.0, 2.0);
     obj->setColor_u8(TColor(255, 0, 0, 120));
     m_gl_placing_robot->insert(obj);
@@ -892,7 +896,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent, wxW
     openGLSceneRef->insert(m_gl_placing_robot);
   }
   {  // Sign of "drawing obstacles":
-    m_gl_drawing_obs = std::make_shared<opengl::CSetOfObjects>();
+    m_gl_drawing_obs = std::make_shared<viz::CSetOfObjects>();
 
     mrpt::viz::CCylinder::Ptr obj = mrpt::viz::CCylinder::Create(0.05f, 0.10f, 1.0f);
     obj->setColor_u8(mrpt::img::TColor(0xff, 0x00, 0x00, 0x70));

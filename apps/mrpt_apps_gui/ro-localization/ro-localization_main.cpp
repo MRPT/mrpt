@@ -228,9 +228,7 @@ void TestParticlesLocalization()
       mrpt::system::deleteFilesInDirectory(OUT_DIR);
       mrpt::system::createDirectory(OUT_DIR);
 
-      // Save the landmarks for plot in matlab:
-      if (beacMap)
-        beacMap->saveToMATLABScript2D(format("%s/plot_landmarks_map.m", OUT_DIR.c_str()));
+      // saveToMATLABScript2D was removed in MRPT 3.x
 
       CPose2D odometryEstimation(
           iniFile->read_float("OdometryEstimation", "odometry_X", 0),
@@ -282,7 +280,7 @@ void TestParticlesLocalization()
 #endif
       // World Axis
       {
-        opengl::CAxis::Ptr obj = std::make_shared<opengl::CAxis>(-20, -10, -1, 20, 10, 4, 1);
+        viz::CAxis::Ptr obj = std::make_shared<viz::CAxis>(-20, -10, -1, 20, 10, 4, 1);
         obj->enableTickMarks();
         obj->setColor(0, 0, 0);
 #ifdef SHOW_REAL_TIME_3D
@@ -313,8 +311,8 @@ void TestParticlesLocalization()
       else
       // Floor
       {
-        opengl::CGridPlaneXY::Ptr obj =
-            std::make_shared<opengl::CGridPlaneXY>(-20, 20, -10, 10, 0, 0.5);
+        viz::CGridPlaneXY::Ptr obj =
+            std::make_shared<viz::CGridPlaneXY>(-20, 20, -10, 10, 0, 0.5);
         obj->setColor(0.4f, 0.4f, 0.4f);
 #ifdef SHOW_REAL_TIME_3D
         sceneTR->insert(obj);
@@ -327,7 +325,7 @@ void TestParticlesLocalization()
       {
         for (size_t k = 0; k < beacMap->size(); k++)
         {
-          auto parts = opengl::CSphere::Create();
+          auto parts = viz::CSphere::Create();
           parts->setColor(1, 0, 0);
           parts->setLocation(beacMap->landmarks.get(k)->pose_mean);
           parts->setRadius(0.2f);
@@ -503,13 +501,13 @@ void TestParticlesLocalization()
 
 // The particles:
 #ifdef SHOW_REAL_TIME_3D
-          opengl::CPointCloud::Ptr parts;
+          viz::CPointCloud::Ptr parts;
 
           {
             auto obj = sceneTR->getByName("part");
             if (!obj)
             {
-              parts = opengl::CPointCloud::Create();
+              parts = viz::CPointCloud::Create();
               scene->insert(parts);
 #ifdef SHOW_REAL_TIME_3D
               sceneTR->insert(parts);
@@ -519,8 +517,8 @@ void TestParticlesLocalization()
               parts = std::dynamic_pointer_cast<CPointCloud>(obj);
           }
 #else
-          opengl::CPointCloud::Ptr parts = std::make_shared<opengl::CPointCloud>();
-          opengl::CVisualObject::Ptr obj;
+          viz::CPointCloud::Ptr parts = std::make_shared<viz::CPointCloud>();
+          viz::CVisualObject::Ptr obj;
 #endif
 
           parts->setColor(0, 0, 1);
@@ -534,12 +532,12 @@ void TestParticlesLocalization()
 
 // The particles' cov:
 #ifdef SHOW_REAL_TIME_3D
-          opengl::CEllipsoid2D::Ptr ellip;
+          viz::CEllipsoid2D::Ptr ellip;
           {
             auto obj = sceneTR->getByName("cov");
             if (!obj)
             {
-              ellip = std::make_shared<opengl::CEllipsoid2D>();
+              ellip = std::make_shared<viz::CEllipsoid2D>();
               scene->insert(ellip);
 #ifdef SHOW_REAL_TIME_3D
               sceneTR->insert(ellip);
@@ -549,7 +547,7 @@ void TestParticlesLocalization()
               ellip = std::dynamic_pointer_cast<CEllipsoid2D>(obj);
           }
 #else
-          opengl::CEllipsoid2D::Ptr ellip = std::make_shared<opengl::CEllipsoid2D>();
+          viz::CEllipsoid2D::Ptr ellip = std::make_shared<viz::CEllipsoid2D>();
 #endif
 
           ellip->setColor(1, 0, 0, 0.6);
@@ -562,12 +560,12 @@ void TestParticlesLocalization()
 
 #ifdef SHOW_REAL_TIME_3D
           // The laser scan:
-          opengl::CPointCloud::Ptr scanPts;
+          viz::CPointCloud::Ptr scanPts;
           {
             auto obj = sceneTR->getByName("laser");
             if (!obj)
             {
-              scanPts = opengl::CPointCloud::Create();
+              scanPts = viz::CPointCloud::Create();
               scene->insert(scanPts);
               sceneTR->insert(scanPts);
             }
@@ -596,12 +594,12 @@ void TestParticlesLocalization()
               if (lm)
               {
 #ifdef SHOW_REAL_TIME_3D
-                opengl::CDisk::Ptr sphere;
+                viz::CDisk::Ptr sphere;
                 {
                   auto obj = sceneTR->getByName(beacon_name);
                   if (!obj)
                   {
-                    sphere = std::make_shared<opengl::CDisk>();
+                    sphere = std::make_shared<viz::CDisk>();
                     scene->insert(sphere);
 #ifdef SHOW_REAL_TIME_3D
                     sceneTR->insert(sphere);
@@ -611,8 +609,8 @@ void TestParticlesLocalization()
                     sphere = std::dynamic_pointer_cast<CDisk>(obj);
                 }
 #else
-                opengl::CSphere::Ptr sphere = std::make_shared<opengl::CSphere>();
-                opengl::CVisualObject::Ptr obj;
+                viz::CSphere::Ptr sphere = std::make_shared<viz::CSphere>();
+                viz::CVisualObject::Ptr obj;
 #endif
 
                 sphere->setColor(0, 0, 1, 0.3);
@@ -636,13 +634,13 @@ void TestParticlesLocalization()
           // Franco Position
           if (SHOW_3D_FRANCO_POSITION)
           {
-            opengl::CVisualObject::Ptr obj = sceneTR->getByName("franc");
-            opengl::CSphere::Ptr sphere;
+            viz::CVisualObject::Ptr obj = sceneTR->getByName("franc");
+            viz::CSphere::Ptr sphere;
 
             if (!obj)
-              sphere = std::make_shared<opengl::CSphere>();
+              sphere = std::make_shared<viz::CSphere>();
             else
-              sphere = std::dynamic_pointer_cast<opengl::CSphere>(obj);
+              sphere = std::dynamic_pointer_cast<viz::CSphere>(obj);
             sphere->setColor(0, 1, 0);
             sphere->setRadius(0.05f);
             sphere->setName("franc");
@@ -663,24 +661,24 @@ void TestParticlesLocalization()
           // Mean of particles
           {
 #ifdef SHOW_REAL_TIME_3D
-            opengl::CSphere::Ptr sphere;
+            viz::CSphere::Ptr sphere;
 
             {
               auto obj = sceneTR->getByName("mean_parts");
               if (!obj)
               {
-                sphere = std::make_shared<opengl::CSphere>();
+                sphere = std::make_shared<viz::CSphere>();
                 scene->insert(sphere);
 #ifdef SHOW_REAL_TIME_3D
                 sceneTR->insert(sphere);
 #endif
               }
               else
-                sphere = std::dynamic_pointer_cast<opengl::CSphere>(obj);
+                sphere = std::dynamic_pointer_cast<viz::CSphere>(obj);
             }
 
 #else
-            opengl::CSphere::Ptr sphere = std::make_shared<opengl::CSphere>();
+            viz::CSphere::Ptr sphere = std::make_shared<viz::CSphere>();
 #endif
             sphere->setColor(0, 0, 1);
             sphere->setRadius(0.05f);
@@ -693,23 +691,23 @@ void TestParticlesLocalization()
           if (groundTruth.rows() > step)
           {
 #ifdef SHOW_REAL_TIME_3D
-            opengl::CSphere::Ptr sphere;
+            viz::CSphere::Ptr sphere;
 
             {
               auto obj = sceneTR->getByName("GT");
               if (!obj)
               {
-                sphere = std::make_shared<opengl::CSphere>();
+                sphere = std::make_shared<viz::CSphere>();
                 scene->insert(sphere);
 #ifdef SHOW_REAL_TIME_3D
                 sceneTR->insert(sphere);
 #endif
               }
               else
-                sphere = std::dynamic_pointer_cast<opengl::CSphere>(obj);
+                sphere = std::dynamic_pointer_cast<viz::CSphere>(obj);
             }
 #else
-            opengl::CSphere::Ptr sphere = std::make_shared<opengl::CSphere>();
+            viz::CSphere::Ptr sphere = std::make_shared<viz::CSphere>();
 #endif
             sphere->setColor(0, 0, 0);
             sphere->setRadius(0.10f);
@@ -726,19 +724,19 @@ void TestParticlesLocalization()
             auto o = observations->getObservationByClass<CObservationGPS>();
             if (o && beacMap)
             {
-              opengl::CEllipsoid2D::Ptr sphere;
+              viz::CEllipsoid2D::Ptr sphere;
               double x, y;
 
               {
                 auto obj = sceneTR->getByName("gps");
                 if (!obj)
                 {
-                  sphere = std::make_shared<opengl::CEllipsoid2D>();
+                  sphere = std::make_shared<viz::CEllipsoid2D>();
                   scene->insert(sphere);
                   sceneTR->insert(sphere);
                 }
                 else
-                  sphere = std::dynamic_pointer_cast<opengl::CEllipsoid2D>(obj);
+                  sphere = std::dynamic_pointer_cast<viz::CEllipsoid2D>(obj);
               }
 
               sphere->setColor(0, 1, 1, 0.5);
@@ -774,19 +772,19 @@ void TestParticlesLocalization()
             CObservationGPS::Ptr o = observations->getObservationByClass<CObservationGPS>();
             if (o)
             {
-              opengl::CSphere::Ptr sphere;
+              viz::CSphere::Ptr sphere;
               double x, y;
 
               {
                 auto obj = sceneTR->getByName("gps_CENTER");
                 if (!obj)
                 {
-                  sphere = std::make_shared<opengl::CSphere>();
+                  sphere = std::make_shared<viz::CSphere>();
                   scene->insert(sphere);
                   sceneTR->insert(sphere);
                 }
                 else
-                  sphere = std::dynamic_pointer_cast<opengl::CSphere>(obj);
+                  sphere = std::dynamic_pointer_cast<viz::CSphere>(obj);
               }
               sphere->setColor(0, 1, 1);
               sphere->setName("gps_CENTER");
