@@ -13,7 +13,6 @@
 */
 #pragma once
 
-#include <mrpt/core/pimpl.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/viz/CSetOfObjects.h>
 #include <mrpt/viz/CSetOfTexturedTriangles.h>
@@ -63,7 +62,10 @@ class CAssimpModel : public CSetOfObjects
   DEFINE_SERIALIZABLE(CAssimpModel, mrpt::viz)
 
  public:
-  CAssimpModel() = default;
+  CAssimpModel();
+  ~CAssimpModel() override;
+  CAssimpModel(CAssimpModel&&) noexcept;
+  CAssimpModel& operator=(CAssimpModel&&) noexcept;
 
   /** Import flags for loadScene.
    *
@@ -231,7 +233,7 @@ class CAssimpModel : public CSetOfObjects
 
   // Assimp scene (pimpl to avoid including assimp headers)
   struct AssimpSceneWrapper;
-  mrpt::pimpl<AssimpSceneWrapper> m_assimpScene;
+  std::unique_ptr<AssimpSceneWrapper> m_assimpScene;
 
   /** @name Internal Processing
    * @{ */
