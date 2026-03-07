@@ -27,7 +27,7 @@
 
 using namespace mrpt::literals;  // _deg
 using namespace mrpt::gui;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::img;
 using namespace std::literals;
 

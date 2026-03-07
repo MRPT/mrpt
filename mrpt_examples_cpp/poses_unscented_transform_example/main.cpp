@@ -17,8 +17,8 @@
 #include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/transform_gaussian.h>
 #include <mrpt/math/utils.h>
-#include <mrpt/opengl/CEllipsoid3D.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/viz/CEllipsoid3D.h>
+#include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DQuat.h>
@@ -84,11 +84,11 @@ void Test_SUT()
   cout << "y_cov: " << endl << y_cov << endl << endl;
 
   // 3D view:
-  mrpt::opengl::Scene::Ptr scene = mrpt::opengl::Scene::Create();
-  scene->insert(opengl::CGridPlaneXY::Create(-10, 10, -10, 10, 0, 1));
+  mrpt::viz::Scene::Ptr scene = mrpt::viz::Scene::Create();
+  scene->insert(viz::CGridPlaneXY::Create(-10, 10, -10, 10, 0, 1));
 
   {
-    opengl::CEllipsoid3D::Ptr el = opengl::CEllipsoid3D::Create();
+    viz::CEllipsoid3D::Ptr el = viz::CEllipsoid3D::Create();
     el->enableDrawSolid3D(false);
     el->setLocation(y_mean[0], y_mean[1], y_mean[2]);
     el->setCovMatrix(y_cov);
@@ -118,7 +118,7 @@ void Test_SUT()
   for (int i = 0; i < 3; i++) extractColumnFromVectorOfVectors(i, MC_samples, MC_y[i]);
 
   {
-    auto el = opengl::CEllipsoid3D::Create();
+    auto el = viz::CEllipsoid3D::Create();
     el->enableDrawSolid3D(false);
     el->setLocation(y_mean[0], y_mean[1], y_mean[2]);
     el->setCovMatrix(y_cov);
@@ -152,7 +152,7 @@ void Test_SUT()
   cout << "y_cov: " << endl << y_cov << endl;
 
   {
-    auto el = opengl::CEllipsoid3D::Create();
+    auto el = viz::CEllipsoid3D::Create();
     el->enableDrawSolid3D(false);
     el->setLocation(y_mean[0], y_mean[1], y_mean[2]);
     el->setCovMatrix(y_cov);

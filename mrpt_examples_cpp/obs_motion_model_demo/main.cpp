@@ -16,11 +16,11 @@
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
-#include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/opengl/Scene.h>
-#include <mrpt/opengl/pose_pdfs.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CPlanarLaserScan.h>
+#include <mrpt/viz/CSetOfLines.h>
+#include <mrpt/viz/Scene.h>
+#include <mrpt/viz/pose_pdfs.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
@@ -28,7 +28,7 @@
 #include <iostream>
 
 // demo rawlog path:
-#include <mrpt/examples_config.h>
+// MRPT_EXAMPLES_BASE_DIRECTORY provided via compile definition
 
 constexpr size_t NUM_PARTICLES = 100;
 
@@ -66,15 +66,15 @@ void DemoMotionModel(int argc, const char** argv)
   // gui:
   mrpt::gui::CDisplayWindow3D win("Motion model uncertainty demo", 500, 1000);
 
-  auto glPartsGroup = mrpt::opengl::CSetOfObjects::Create();
-  auto glLidar = mrpt::opengl::CPlanarLaserScan::Create();
-  auto glOdoTrack = mrpt::opengl::CSetOfLines::Create();
-  mrpt::opengl::Viewport::Ptr glBottomView;
+  auto glPartsGroup = mrpt::viz::CSetOfObjects::Create();
+  auto glLidar = mrpt::viz::CPlanarLaserScan::Create();
+  auto glOdoTrack = mrpt::viz::CSetOfLines::Create();
+  mrpt::viz::Viewport::Ptr glBottomView;
   glOdoTrack->appendLine(0, 0, 0, 0, 0, 0);
   glOdoTrack->setColor_u8(0x00, 0x00, 0x00);
   {
     auto& scene = win.get3DSceneAndLock();
-    scene->insert(mrpt::opengl::CGridPlaneXY::Create());
+    scene->insert(mrpt::viz::CGridPlaneXY::Create());
     scene->insert(glPartsGroup);
     scene->insert(glLidar);
     scene->insert(glOdoTrack);
@@ -136,7 +136,7 @@ void DemoMotionModel(int argc, const char** argv)
       }
     }
 
-    const auto glParticles = parts.getAs3DObject<mrpt::opengl::CSetOfObjects::Ptr>();
+    const auto glParticles = parts.getAs3DObject<mrpt::viz::CSetOfObjects::Ptr>();
 
     {
       win.get3DSceneAndLock();

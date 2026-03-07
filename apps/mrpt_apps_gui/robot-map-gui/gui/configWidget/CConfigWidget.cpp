@@ -28,7 +28,7 @@
 
 using namespace mrpt;
 using namespace maps;
-using namespace opengl;
+using namespace viz;
 
 CConfigWidget::CConfigWidget(QWidget* parent) :
     QWidget(parent), m_general(new CGeneralConfig()), m_ui(std::make_unique<Ui::CConfigWidget>())
@@ -266,17 +266,7 @@ void CConfigWidget::setConfig(const CMultiMetricMap::TListMaps& config)
         found = true;
       }
     }
-    if (!found)
-    {
-      if (auto ptr = std::dynamic_pointer_cast<CLandmarksMap>(m); m)
-      {
-        CLandmarksConfig* pConfig = new CLandmarksConfig();
-        addWidget(TypeOfConfig::Landmarks, pConfig);
-        pConfig->setInsertOpt(ptr->insertionOptions);
-        pConfig->setLikelihoodOpt(ptr->likelihoodOptions);
-        found = true;
-      }
-    }
+    // Note: CLandmarksMap no longer has insertionOptions/likelihoodOptions in MRPT 3.0
   }
 }
 

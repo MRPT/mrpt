@@ -11,7 +11,7 @@ find_package(mrpt_common REQUIRED)
 # Dependencies
 find_package(mrpt_kinematics REQUIRED)
 find_package(mrpt_gui REQUIRED)
-find_package(wxWidgets COMPONENTS core base gl adv QUIET)
+find_package(wxWidgets COMPONENTS core base gl adv html QUIET)
 if(NOT wxWidgets_FOUND)
   message(STATUS "wxWidgets not found — skipping robotic-arm-kinematics")
   return()

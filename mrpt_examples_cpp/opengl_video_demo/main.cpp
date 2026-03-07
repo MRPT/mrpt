@@ -23,7 +23,7 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::math;
 using namespace mrpt::obs;
 
@@ -45,14 +45,14 @@ void TestOpenGLVideo()
   CDisplayWindow3D win("Demo of video textures with MRPT's OpenGL objects", 640, 480);
 
   // XY Grid
-  opengl::CGridPlaneXY::Ptr gl_ground = opengl::CGridPlaneXY::Create(-7, 7, -7, 7, 0, 1);
+  viz::CGridPlaneXY::Ptr gl_ground = viz::CGridPlaneXY::Create(-7, 7, -7, 7, 0, 1);
   gl_ground->setColor(0.7, 0.7, 0.7);
 
   // An opengl plane with the video texture
-  opengl::CTexturedPlane::Ptr gl_plane1 =
-      opengl::CTexturedPlane::Create(0, 1, 0, 0.75);  // 4/3 aspect ratio
-  opengl::CTexturedPlane::Ptr gl_plane2 = opengl::CTexturedPlane::Create(0, 1, 0, 0.75);
-  opengl::CTexturedPlane::Ptr gl_plane3 = opengl::CTexturedPlane::Create(0, 1, 0, 0.75);
+  viz::CTexturedPlane::Ptr gl_plane1 =
+      viz::CTexturedPlane::Create(0, 1, 0, 0.75);  // 4/3 aspect ratio
+  viz::CTexturedPlane::Ptr gl_plane2 = viz::CTexturedPlane::Create(0, 1, 0, 0.75);
+  viz::CTexturedPlane::Ptr gl_plane3 = viz::CTexturedPlane::Create(0, 1, 0, 0.75);
 
   gl_plane1->setPose(mrpt::poses::CPose3D(0, 0, 1, 0.0_deg, 0.0_deg, -90.0_deg));
   gl_plane2->setPose(mrpt::poses::CPose3D(1, 0, 1, 120.0_deg, 0.0_deg, -90.0_deg));

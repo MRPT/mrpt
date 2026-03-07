@@ -293,7 +293,7 @@ struct ExampleDemoGraphSLAM
     graph_render_params1["edge_width"] = 1;
     graph_render_params1["nodes_corner_scale"] = 1;
     CSetOfObjects::Ptr gl_graph1 =
-        mrpt::opengl::graph_tools::graph_visualize(graph, graph_render_params1);
+        mrpt::viz::graph_tools::graph_visualize(graph, graph_render_params1);
 
     // The initial noisy graph:
     mrpt::containers::yaml graph_render_params2;
@@ -303,11 +303,11 @@ struct ExampleDemoGraphSLAM
     graph_render_params2["nodes_point_size"] = 7;
 
     CSetOfObjects::Ptr gl_graph2 =
-        mrpt::opengl::graph_tools::graph_visualize(graph_initial, graph_render_params2);
+        mrpt::viz::graph_tools::graph_visualize(graph_initial, graph_render_params2);
 
     graph_render_params2["nodes_point_size"] = 5;
     CSetOfObjects::Ptr gl_graph5 =
-        mrpt::opengl::graph_tools::graph_visualize(graph, graph_render_params2);
+        mrpt::viz::graph_tools::graph_visualize(graph, graph_render_params2);
 
     // The ground truth graph:
     mrpt::containers::yaml graph_render_params3;
@@ -317,9 +317,9 @@ struct ExampleDemoGraphSLAM
     graph_render_params3["edge_width"] = 3;
     graph_render_params3["nodes_corner_scale"] = 2;
     CSetOfObjects::Ptr gl_graph3 =
-        mrpt::opengl::graph_tools::graph_visualize(graph_GT, graph_render_params3);
+        mrpt::viz::graph_tools::graph_visualize(graph_GT, graph_render_params3);
     CSetOfObjects::Ptr gl_graph4 =
-        mrpt::opengl::graph_tools::graph_visualize(graph_initial, graph_render_params3);
+        mrpt::viz::graph_tools::graph_visualize(graph_initial, graph_render_params3);
 
     win.addTextMessage(
         5, 5, "Ground truth: Big corners & thick edges",

@@ -16,10 +16,10 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/math/ransac_applications.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/opengl/CTexturedPlane.h>
-#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CTexturedPlane.h>
+#include <mrpt/viz/stock_objects.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/random.h>
 #include <mrpt/system/CTicTac.h>
@@ -96,15 +96,15 @@ void TestRANSACPlanes()
   // --------------------------
   win = mrpt::gui::CDisplayWindow3D::Create("RANSAC: 3D planes", 500, 500);
 
-  opengl::Scene::Ptr scene = opengl::Scene::Create();
+  viz::Scene::Ptr scene = viz::Scene::Create();
 
-  scene->insert(opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1));
-  scene->insert(opengl::stock_objects::CornerXYZ());
+  scene->insert(viz::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1));
+  scene->insert(viz::stock_objects::CornerXYZ());
 
   for (vector<pair<size_t, TPlane>>::iterator p = detectedPlanes.begin(); p != detectedPlanes.end();
        ++p)
   {
-    auto glPlane = opengl::CTexturedPlane::Create(-10, 10, -10, 10);
+    auto glPlane = viz::CTexturedPlane::Create(-10, 10, -10, 10);
 
     TPose3D glPlanePose;
     p->second.getAsPose3D(glPlanePose);
@@ -119,7 +119,7 @@ void TestRANSACPlanes()
   }
 
   {
-    auto points = opengl::CPointCloud::Create();
+    auto points = viz::CPointCloud::Create();
     points->setColor(0, 0, 1);
     points->setPointSize(3);
     points->enableColorFromZ();

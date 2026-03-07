@@ -22,7 +22,7 @@
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::vision;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::system;
 using namespace mrpt::vision;
 using namespace std;
@@ -98,9 +98,9 @@ int TestStereoCalibrate(int argc, char** argv)
     {
       mrpt::gui::CDisplayWindow3D win("Calibration results", 1000, 480);
 
-      mrpt::opengl::Viewport::Ptr view1, view2;
+      mrpt::viz::Viewport::Ptr view1, view2;
       {
-        mrpt::opengl::Scene::Ptr& scene = win.get3DSceneAndLock();
+        mrpt::viz::Scene::Ptr& scene = win.get3DSceneAndLock();
         view1 = scene->getViewport("main");
         view2 = scene->createViewport("right");
 

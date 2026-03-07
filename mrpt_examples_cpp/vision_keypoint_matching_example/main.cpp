@@ -15,8 +15,8 @@
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/maps/CLandmarksMap.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/Scene.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/Scene.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 
 #include <iostream>
@@ -25,11 +25,11 @@ using mrpt::format;
 using namespace mrpt::gui;
 using namespace mrpt::vision;
 using namespace mrpt::img;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::system;
 using namespace std;
 
-#include <mrpt/examples_config.h>
+// MRPT_EXAMPLES_BASE_DIRECTORY provided via compile definition
 string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("vision_keypoint_matching_example/imgs/"));
 
 // ------------------------------------------------------

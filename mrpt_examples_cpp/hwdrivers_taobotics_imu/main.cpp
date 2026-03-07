@@ -14,8 +14,8 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CTaoboticsIMU.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/stock_objects.h>
 
 #include <chrono>
 #include <iostream>
@@ -45,10 +45,10 @@ void TestIMU()
 
   mrpt::gui::CDisplayWindow3D win("IMU", 1024, 800);
 
-  auto glIMU = mrpt::opengl::stock_objects::CornerXYZ();
+  auto glIMU = mrpt::viz::stock_objects::CornerXYZ();
   {
     auto& scene = win.get3DSceneAndLock();
-    scene->insert(mrpt::opengl::CGridPlaneXY::Create());
+    scene->insert(mrpt::viz::CGridPlaneXY::Create());
     scene->insert(glIMU);
 
     win.unlockAccess3DScene();

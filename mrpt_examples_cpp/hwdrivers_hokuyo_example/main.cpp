@@ -138,8 +138,8 @@ void Test_HOKUYO()
 
       /*
       Scene			scene3D;
-      opengl::CPointCloud::Ptr	points =
-      opengl::CPointCloud::Create();
+      viz::CPointCloud::Ptr	points =
+      viz::CPointCloud::Create();
       points->loadFromPointsMap(&map);
       scene3D.insert(points);
       CFileStream("_out_point_cloud.3Dscene",fomWrite) << scene3D;

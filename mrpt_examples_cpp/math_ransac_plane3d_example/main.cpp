@@ -14,10 +14,10 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/math/ransac.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/opengl/CTexturedPlane.h>
-#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CTexturedPlane.h>
+#include <mrpt/viz/stock_objects.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/random.h>
 #include <mrpt/system/CTicTac.h>
@@ -159,12 +159,12 @@ void TestRANSAC()
   // Show GUI
   // --------------------------
   mrpt::gui::CDisplayWindow3D win("Set of points", 500, 500);
-  opengl::Scene::Ptr scene = opengl::Scene::Create();
+  viz::Scene::Ptr scene = viz::Scene::Create();
 
-  scene->insert(opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1));
-  scene->insert(opengl::stock_objects::CornerXYZ());
+  scene->insert(viz::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1));
+  scene->insert(viz::stock_objects::CornerXYZ());
 
-  opengl::CPointCloud::Ptr points = opengl::CPointCloud::Create();
+  viz::CPointCloud::Ptr points = viz::CPointCloud::Create();
   points->setColor(0, 0, 1);
   points->setPointSize(3);
   points->enableColorFromZ();
@@ -180,7 +180,7 @@ void TestRANSAC()
 
   scene->insert(points);
 
-  opengl::CTexturedPlane::Ptr glPlane = opengl::CTexturedPlane::Create(-4, 4, -4, 4);
+  viz::CTexturedPlane::Ptr glPlane = viz::CTexturedPlane::Create(-4, 4, -4, 4);
 
   glPlane->setColor_u8(mrpt::img::TColor(0xff, 0x00, 0x00, 0x80));  // RGBA
 

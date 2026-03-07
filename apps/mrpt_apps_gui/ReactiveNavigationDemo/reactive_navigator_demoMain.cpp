@@ -1519,8 +1519,9 @@ void reactive_navigator_demoframe::Onplot3DMouseMove(wxMouseEvent& event)
   bool skip_normal_process = false;
 
   // Intersection of 3D ray with ground plane ====================
-  TLine3D ray;
-  m_plot3D->getOpenGLSceneRef()->getViewport("main")->get3DRayForPixelCoord(X, Y, ray);
+  const auto rayOpt = m_plot3D->getOpenGLSceneRef()->getViewport("main")->get3DRayForPixelCoord({X, Y});
+  if (!rayOpt) return;
+  TLine3D ray = *rayOpt;
   // Create a 3D plane, e.g. Z=0
   const TPlane ground_plane(TPoint3D(0, 0, 0), TPoint3D(1, 0, 0), TPoint3D(0, 1, 0));
   // Intersection of the line with the plane:
@@ -1764,7 +1765,7 @@ void reactive_navigator_demoframe::OnbtnLoadMapClick(wxCommandEvent& event)
   {
     // Try loading the image:
     CImage img;
-    if (!img.loadFromFile(fil, 0 /* force grayscale */))
+    if (!img.loadFromFile(fil, mrpt::img::CH_GRAY /* force grayscale */))
     {
       wxMessageBox(_("Error"), _("Can't load the image file (check its format)."));
     }

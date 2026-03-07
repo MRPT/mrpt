@@ -16,8 +16,8 @@
 #include <mrpt/maps/COccupancyGridMap3D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/stock_observations.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/COctoMapVoxels.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/COctoMapVoxels.h>
 #include <mrpt/system/os.h>
 
 #include <chrono>
@@ -42,14 +42,14 @@ void TestGridMap3D()
 
   mrpt::gui::CDisplayWindow3D win("GridMap3D demo", 640, 480);
 
-  auto gl_map = mrpt::opengl::COctoMapVoxels::Create();
+  auto gl_map = mrpt::viz::COctoMapVoxels::Create();
 
   {
-    mrpt::opengl::Scene::Ptr& scene = win.get3DSceneAndLock();
+    mrpt::viz::Scene::Ptr& scene = win.get3DSceneAndLock();
 
     {
-      mrpt::opengl::CGridPlaneXY::Ptr gl_grid =
-          mrpt::opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
+      mrpt::viz::CGridPlaneXY::Ptr gl_grid =
+          mrpt::viz::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
       gl_grid->setColor_u8(mrpt::img::TColor(0x80, 0x80, 0x80));
       scene->insert(gl_grid);
     }
@@ -58,8 +58,8 @@ void TestGridMap3D()
     map.getAsOctoMapVoxels(*gl_map);
 
     gl_map->showGridLines(false);
-    gl_map->showVoxels(mrpt::opengl::VOXEL_SET_OCCUPIED, true);
-    gl_map->showVoxels(mrpt::opengl::VOXEL_SET_FREESPACE, true);
+    gl_map->showVoxels(mrpt::viz::VOXEL_SET_OCCUPIED, true);
+    gl_map->showVoxels(mrpt::viz::VOXEL_SET_FREESPACE, true);
     scene->insert(gl_map);
 
     win.unlockAccess3DScene();
@@ -84,14 +84,14 @@ void TestGridMap3D()
         case 'f':
         case 'F':
           gl_map->showVoxels(
-              mrpt::opengl::VOXEL_SET_FREESPACE,
-              !gl_map->areVoxelsVisible(mrpt::opengl::VOXEL_SET_FREESPACE));
+              mrpt::viz::VOXEL_SET_FREESPACE,
+              !gl_map->areVoxelsVisible(mrpt::viz::VOXEL_SET_FREESPACE));
           break;
         case 'o':
         case 'O':
           gl_map->showVoxels(
-              mrpt::opengl::VOXEL_SET_OCCUPIED,
-              !gl_map->areVoxelsVisible(mrpt::opengl::VOXEL_SET_OCCUPIED));
+              mrpt::viz::VOXEL_SET_OCCUPIED,
+              !gl_map->areVoxelsVisible(mrpt::viz::VOXEL_SET_OCCUPIED));
           break;
         case 'l':
         case 'L':
@@ -111,8 +111,8 @@ void TestGridMap3D()
               "Commands: 'g' (grids=%s) | 'f' (freespace=%s) | 'o' "
               "(occupied=%s) | 'l' (lights=%s)",
               gl_map->areGridLinesVisible() ? "YES" : "NO",
-              gl_map->areVoxelsVisible(mrpt::opengl::VOXEL_SET_FREESPACE) ? "YES" : "NO",
-              gl_map->areVoxelsVisible(mrpt::opengl::VOXEL_SET_OCCUPIED) ? "YES" : "NO",
+              gl_map->areVoxelsVisible(mrpt::viz::VOXEL_SET_FREESPACE) ? "YES" : "NO",
+              gl_map->areVoxelsVisible(mrpt::viz::VOXEL_SET_OCCUPIED) ? "YES" : "NO",
               gl_map->areLightsEnabled() ? "YES" : "NO"));
 
       win.repaint();

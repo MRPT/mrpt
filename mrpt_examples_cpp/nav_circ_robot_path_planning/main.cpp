@@ -34,7 +34,7 @@ using namespace mrpt::io;
 using namespace mrpt::system;
 using namespace std;
 
-const std::string myGridMap = MRPT_EXAMPLE_DATA_DIR + "/datasets/2006-MalagaCampus.gridmap.gz";
+const std::string myGridMap = std::string(MRPT_EXAMPLE_DATA_DIR) + "/datasets/2006-MalagaCampus.gridmap.gz";
 
 // ------------------------------------------------------
 //				TestPathPlanning

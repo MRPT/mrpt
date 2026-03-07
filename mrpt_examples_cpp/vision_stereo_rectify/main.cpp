@@ -15,7 +15,7 @@
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
-#include <mrpt/opengl/Scene.h>
+#include <mrpt/viz/Scene.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/filesystem.h>  // for ASSERT_FILE_EXISTS_
 #include <mrpt/vision/CStereoRectifyMap.h>
@@ -25,7 +25,7 @@
 #include <thread>
 
 using namespace mrpt;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::gui;
 using namespace mrpt::vision;
 using namespace mrpt::system;

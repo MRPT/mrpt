@@ -27,7 +27,7 @@ using namespace mrpt::img;
 using namespace mrpt::system;
 using namespace mrpt::gui;
 
-#include <mrpt/examples_config.h>
+// MRPT_EXAMPLES_BASE_DIRECTORY provided via compile definition
 std::string myDataDir = MRPT_EXAMPLES_BASE_DIRECTORY + string("vision_checkerboard_detectors/");
 
 // ------------------------------------------------------

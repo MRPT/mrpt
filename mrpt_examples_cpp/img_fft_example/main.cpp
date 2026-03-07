@@ -25,7 +25,7 @@ using namespace mrpt::system;
 using namespace mrpt::img;
 using namespace std;
 
-#include <mrpt/examples_config.h>
+// MRPT_EXAMPLES_BASE_DIRECTORY provided via compile definition
 string myDataDir(
     MRPT_EXAMPLES_BASE_DIRECTORY + string("img_correlation_example/"));  // Reuse it's images
 
@@ -58,7 +58,7 @@ void TestFFT_2D_real()
   D = B - A;
   //	D.saveToTextFile("_out_dft2_error_diffs.txt");
 
-  size_t u, v;
+  mrpt::math::matrix_index_t u, v;
   const float maxError = D.maxCoeff(u, v);
 
   printf("Maximum error between 'A' and 'IFFT(FFT(A))'=%e\n", maxError);
@@ -99,7 +99,7 @@ void TestFFT_2D_complex()
   D_I = B_I - DATA_I;
   //	D.saveToTextFile("_out_dft2_error_diffs.txt");
 
-  size_t u, v;
+  mrpt::math::matrix_index_t u, v;
   const float maxError_R = D_R.maxCoeff(u, v);
   const float maxError_I = D_I.maxCoeff(u, v);
 
@@ -116,11 +116,11 @@ void TestImageFFT()
   CImage IM1, IM2;
   CMatrixF imgCorr;
 
-  bool loadOk = IM1.loadFromFile(myDataDir + string("fft2_test_image_patch.jpg"), 0);  // "Patch"
+  bool loadOk = IM1.loadFromFile(myDataDir + string("fft2_test_image_patch.jpg"), mrpt::img::CH_AS_IS);  // "Patch"
   ASSERT_(loadOk);
 
   loadOk = IM2.loadFromFile(myDataDir + string("fft2_test_image.jpg"),
-                            0);  // Ref. image
+                            mrpt::img::CH_AS_IS);  // Ref. image
   ASSERT_(loadOk);
 
   printf("Computing images correlation...");

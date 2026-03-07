@@ -47,7 +47,7 @@ CGlWidget::CGlWidget(bool is2D, QWidget* parent) :
     m_selectedColor(mrpt::img::TColor::green()),
     m_isShowObs(false),
     m_visiblePoints(std::make_shared<CSetOfObjects>()),
-    m_currentObs(opengl::stock_objects::CornerXYZSimple()),
+    m_currentObs(viz::stock_objects::CornerXYZSimple()),
     m_line(std::make_shared<CSetOfLines>()),
     m_is2D(is2D),
     m_showRobot(false),
@@ -298,25 +298,25 @@ bool CGlWidget::setBot(int value)
   switch (value)
   {
     case 0:
-      m_currentObs = opengl::stock_objects::CornerXYZSimple();
+      m_currentObs = viz::stock_objects::CornerXYZSimple();
       break;
     case 1:
-      m_currentObs = opengl::stock_objects::CornerXYZ();
+      m_currentObs = viz::stock_objects::CornerXYZ();
       break;
     case 2:
-      m_currentObs = opengl::stock_objects::RobotGiraff();
+      m_currentObs = viz::stock_objects::RobotGiraff();
       break;
     case 3:
-      m_currentObs = opengl::stock_objects::RobotRhodon();
+      m_currentObs = viz::stock_objects::RobotRhodon();
       break;
     case 4:
-      m_currentObs = opengl::stock_objects::RobotPioneer();
+      m_currentObs = viz::stock_objects::RobotPioneer();
       break;
     case 5:
-      m_currentObs = opengl::stock_objects::BumblebeeCamera();
+      m_currentObs = viz::stock_objects::BumblebeeCamera();
       break;
     default:
-      m_currentObs = opengl::stock_objects::CornerXYZSimple();
+      m_currentObs = viz::stock_objects::CornerXYZSimple();
       break;
   }
   if (m_showRobot)
@@ -588,8 +588,9 @@ img::TColorf CGlWidget::typeToColor(int type) const
 
 std::pair<bool, math::TPoint3D> CGlWidget::sceneToWorld(const QPoint& pos) const
 {
-  mrpt::math::TLine3D outRay;
-  mainViewport()->get3DRayForPixelCoord(pos.x(), pos.y(), outRay);
+  const auto outRayOpt = mainViewport()->get3DRayForPixelCoord({pos.x(), pos.y()});
+  if (!outRayOpt) return {false, {}};
+  const mrpt::math::TLine3D outRay = *outRayOpt;
 
   const mrpt::math::TPlane groundPlane(
       mrpt::math::TPoint3D(0, 0, 0), mrpt::math::TPoint3D(1, 0, 0), mrpt::math::TPoint3D(0, 1, 0));

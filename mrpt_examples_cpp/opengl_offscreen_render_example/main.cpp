@@ -21,7 +21,7 @@
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::io;
 using namespace mrpt::serialization;
 using namespace mrpt::img;
@@ -50,7 +50,7 @@ int TestOffscreenRender(int argc, char* argv[])
   CCompressedInputStream f(sFil);
   archiveFrom(f) >> scene;
 
-  CFBORender render(width, height);
+  mrpt::opengl::CFBORender render(width, height);
   CImage frame(width, height, CH_RGB);
 
   // here you can put your preferred camera rendering position

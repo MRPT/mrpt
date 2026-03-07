@@ -26,7 +26,7 @@ using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace std;
 
-#include <mrpt/examples_config.h>
+// MRPT_EXAMPLES_BASE_DIRECTORY provided via compile definition
 string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("img_basic_example/"));
 
 // ------------------------------------------------------
@@ -92,10 +92,10 @@ void TestImageConversion()
 
   // Test some draw capabilities:
   // ---------------------------------
-  imgSmall.rectangle(85, 35, 170, 170, TColor(255, 0, 0), 10);
+  imgSmall.rectangle({85, 35}, {170, 170}, TColor(255, 0, 0), 10);
 
-  imgSmall.line(550, 75, 650, 25, TColor(0, 0, 255));
-  imgSmall.line(-10, -20, 20, 30, TColor(0, 0, 255));
+  imgSmall.line({550, 75}, {650, 25}, TColor(0, 0, 255));
+  imgSmall.line({-10, -20}, {20, 30}, TColor(0, 0, 255));
 
   CMatrixDouble22 COV;
   COV(0, 0) = 100;
@@ -104,7 +104,7 @@ void TestImageConversion()
   imgSmall.ellipseGaussian(COV, 600.0, 50.0, 2, TColor(255, 255, 0), 4);
   imgGray.ellipseGaussian(COV, 100.0, 100.0, 2, TColor(0, 0, 255), 4);
 
-  imgGray.drawImage(50, 40, imgSmall2);
+  imgGray.drawImage({50, 40}, imgSmall2);
 
   // Show the windows now:
   // ------------------------------------------------------

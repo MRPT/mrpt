@@ -24,7 +24,7 @@ using namespace mrpt::topography;
 using namespace mrpt::system;
 using namespace std;
 
-#include <mrpt/examples_config.h>
+// MRPT_EXAMPLES_BASE_DIRECTORY provided via compile definition
 
 std::vector<string> names;
 std::vector<CMatrixD> results;

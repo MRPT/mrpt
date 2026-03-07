@@ -226,6 +226,42 @@ bool CImage::loadFromFile(const std::string& fileName, TImageChannels loadChanne
   MRPT_END
 }
 
+void CImage::loadFromStreamAsJPEG(mrpt::io::CStream& in)
+{
+  MRPT_START
+
+  // Read all available data from the stream
+  std::vector<uint8_t> buf;
+  {
+    const size_t block = 4096;
+    uint8_t tmp[block];
+    size_t nRead;
+    while ((nRead = in.Read(tmp, block)) > 0)
+      buf.insert(buf.end(), tmp, tmp + nRead);
+  }
+
+  ASSERT_(!buf.empty());
+
+  int w = 0, h = 0, channels = 0;
+  unsigned char* decoded =
+      stbi_load_from_memory(buf.data(), static_cast<int>(buf.size()), &w, &h, &channels, 0);
+
+  if (decoded == nullptr)
+  {
+    THROW_EXCEPTION_FMT(
+        "loadFromStreamAsJPEG: stbi decode failed: %s", stbi_failure_reason());
+  }
+
+  m_state->clear();
+  m_state->width = w;
+  m_state->height = h;
+  m_state->depth = PixelDepth::D8U;
+  m_state->channels = static_cast<TImageChannels>(channels);
+  m_state->image_data = decoded;
+
+  MRPT_END
+}
+
 bool CImage::saveToFile(const std::string& fileName, int jpeg_quality) const
 {
   MRPT_START

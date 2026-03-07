@@ -16,7 +16,7 @@
 #include <mrpt/maps/COctoMap.h>
 #include <mrpt/obs/stock_observations.h>
 #include <mrpt/opengl.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/viz/CPlanarLaserScan.h>
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
 
@@ -27,9 +27,9 @@
 
 using namespace std;
 using namespace mrpt::literals;  // _deg
-using namespace mrpt;            // opengl::
+using namespace mrpt;            // viz::
 using namespace mrpt::gui;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::math;
 using namespace std::string_literals;
 
@@ -58,18 +58,18 @@ void TestOpenGLObjects()
    */
   {
     // using mrpt smart pointers so that obj survives outside this scope.
-    auto obj = opengl::CGridPlaneXY::Create(-7, 7, -7, 7, 0, 1);
+    auto obj = viz::CGridPlaneXY::Create(-7, 7, -7, 7, 0, 1);
     obj->setColor(0.7f, 0.7f, 0.7f);
     obj->setLocation(off_x, 0, 0);
     theScene->insert(obj);
 
-    auto obj2 = opengl::CGridPlaneXY::Create(-9, 9, -9, 9, 0, 2);
+    auto obj2 = viz::CGridPlaneXY::Create(-9, 9, -9, 9, 0, 2);
     obj2->setColor(0.3f, 0.3f, 0.3f, 0.99f);
     obj2->setLocation(off_x, 20, 0);
     obj2->enableAntiAliasing();
     theScene->insert(obj2);
 
-    auto gl_txt = opengl::CText::Create("CGridPlaneXY");
+    auto gl_txt = viz::CText::Create("CGridPlaneXY");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -77,12 +77,12 @@ void TestOpenGLObjects()
 
   // XZ Grid
   {
-    auto obj = opengl::CGridPlaneXZ::Create(-7, 7, -7, 7, 0, 1);
+    auto obj = viz::CGridPlaneXZ::Create(-7, 7, -7, 7, 0, 1);
     obj->setColor(0.7f, 0.7f, 0.7f);
     obj->setLocation(off_x, 0, 0);
     theScene->insert(obj);
 
-    auto gl_txt = opengl::CText::Create("CGridPlaneXZ");
+    auto gl_txt = viz::CText::Create("CGridPlaneXZ");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -90,19 +90,19 @@ void TestOpenGLObjects()
 
   // Arrow
   {
-    auto obj = opengl::CArrow::Create(0, 0, 0, 3, 0, 0, 0.2f, 0.1f, 0.2f);
+    auto obj = viz::CArrow::Create(0, 0, 0, 3, 0, 0, 0.2f, 0.1f, 0.2f);
     obj->setLocation(off_x, 0, 0);
     obj->setColor(1, 0, 0);
     obj->setName("arrow #1");
     obj->enableShowName();
     theScene->insert(obj);
 
-    auto obj2 = opengl::CArrow::Create(1, 2, 3, 6, -3, 0, 0.1f, 0.1f, 0.3f);
+    auto obj2 = viz::CArrow::Create(1, 2, 3, 6, -3, 0, 0.1f, 0.1f, 0.3f);
     obj2->setLocation(off_x, 0, 0);
     obj2->setColor(0, 0, 1);
     theScene->insert(obj2);
 
-    auto gl_txt = opengl::CText::Create("CArrow");
+    auto gl_txt = viz::CText::Create("CArrow");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -110,11 +110,11 @@ void TestOpenGLObjects()
 
   // Axis
   {
-    auto obj = opengl::CAxis::Create(-6, -6, -6, 6, 6, 6, 2, 2, true);
+    auto obj = viz::CAxis::Create(-6, -6, -6, 6, 6, 6, 2, 2, true);
     obj->setLocation(off_x, 0, 0);
     theScene->insert(obj);
 
-    auto gl_txt = opengl::CText::Create("CAxis");
+    auto gl_txt = viz::CText::Create("CAxis");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -122,15 +122,15 @@ void TestOpenGLObjects()
 
   // Box
   {
-    auto obj = opengl::CBox::Create(TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), true, 3.0);
+    auto obj = viz::CBox::Create(TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), true, 3.0);
     obj->setLocation(off_x, 0, 0);
     theScene->insert(obj);
 
-    auto obj2 = opengl::CBox::Create(TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), false);
+    auto obj2 = viz::CBox::Create(TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), false);
     obj2->setLocation(off_x, 4, 0);
     theScene->insert(obj2);
 
-    auto obj3 = opengl::CBox::Create(TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), false);
+    auto obj3 = viz::CBox::Create(TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), false);
     obj3->enableBoxBorder(true);
     obj3->setLineWidth(3);
     obj3->setColor_u8(0xff, 0x00, 0x00, 0xa0);
@@ -141,13 +141,13 @@ void TestOpenGLObjects()
     ob.setPose({off_x, 12.0, 0.0, 0, 0, 0});
     ob.setSize({4.0, 2.0, 0.4});
 
-    auto obj4 = opengl::CBox::Create(ob);
+    auto obj4 = viz::CBox::Create(ob);
     obj4->enableBoxBorder(true);
     obj4->setLineWidth(3);
     obj4->setColor_u8(0xff, 0x00, 0x00, 0xa0);
     theScene->insert(obj4);
 
-    auto gl_txt = opengl::CText::Create("CBox");
+    auto gl_txt = viz::CText::Create("CBox");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -155,11 +155,11 @@ void TestOpenGLObjects()
 
   // Frustum
   {
-    auto obj = opengl::CFrustum::Create(1, 5, 60, 45, 1.5f, true, false);
+    auto obj = viz::CFrustum::Create(1, 5, 60, 45, 1.5f, true, false);
     obj->setLocation(off_x, 0, 0);
     theScene->insert(obj);
 
-    auto obj2 = opengl::CFrustum::Create(1, 5, 60, 45, 2.5f, true, true);
+    auto obj2 = viz::CFrustum::Create(1, 5, 60, 45, 2.5f, true, true);
     obj2->setLocation(off_x, 6, 0);
     obj2->setColor_u8(0xff, 0x00, 0x00, 0x80);
     theScene->insert(obj2);
@@ -170,12 +170,12 @@ void TestOpenGLObjects()
     c.ncols = 600;
     c.setIntrinsicParamsFromValues(700, 700, 400, 300);
 
-    auto obj3 = opengl::CFrustum::Create(c);
+    auto obj3 = viz::CFrustum::Create(c);
     obj3->setLocation(off_x, 12, 0);
     obj3->setColor_u8(0xff, 0x00, 0x00, 0x80);
     theScene->insert(obj3);
 
-    auto gl_txt = opengl::CText::Create("CFrustum");
+    auto gl_txt = viz::CText::Create("CFrustum");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -183,22 +183,22 @@ void TestOpenGLObjects()
 
   // Cylinder
   {
-    auto obj = opengl::CCylinder::Create(2, 2, 4, 20);
+    auto obj = viz::CCylinder::Create(2, 2, 4, 20);
     obj->setLocation(off_x, 0, 0);
     obj->setColor(0, 0, 0.8f);
     theScene->insert(obj);
 
-    auto obj2 = opengl::CCylinder::Create(2, 1, 4, 20);
+    auto obj2 = viz::CCylinder::Create(2, 1, 4, 20);
     obj2->setLocation(off_x, 6, 0);
     obj2->setColor(0, 0, 0.8f);
     theScene->insert(obj2);
 
-    auto obj3 = opengl::CCylinder::Create(2, 0, 4, 20);
+    auto obj3 = viz::CCylinder::Create(2, 0, 4, 20);
     obj3->setLocation(off_x, -6, 0);
     obj3->setColor(0, 0, 0.8f);
     theScene->insert(obj3);
 
-    auto gl_txt = opengl::CText::Create("CCylinder");
+    auto gl_txt = viz::CText::Create("CCylinder");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -207,20 +207,20 @@ void TestOpenGLObjects()
   // CDisk
   {
     {
-      auto obj = opengl::CDisk::Create(2.0f, 1.8f, 50);
+      auto obj = viz::CDisk::Create(2.0f, 1.8f, 50);
       obj->setLocation(off_x, 0, 0);
       obj->setColor(0.8f, 0, 0);
       theScene->insert(obj);
     }
 
     {
-      auto obj = opengl::CDisk::Create(2.0f, 0, 50);
+      auto obj = viz::CDisk::Create(2.0f, 0, 50);
       obj->setLocation(off_x, 5, 0);
       obj->setColor(0.8f, 0, 0);
       theScene->insert(obj);
     }
 
-    auto gl_txt = opengl::CText::Create("CDisk");
+    auto gl_txt = viz::CText::Create("CDisk");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -234,14 +234,14 @@ void TestOpenGLObjects()
     mrpt::math::CMatrixDouble33 cov3d(cov3d_dat);
 
     {
-      auto obj = opengl::CEllipsoid2D::Create();
+      auto obj = viz::CEllipsoid2D::Create();
       obj->setCovMatrix(cov2d);
       obj->setLocation(off_x, 6, 0);
       obj->setQuantiles(2.0);
       theScene->insert(obj);
     }
     {
-      auto obj = opengl::CEllipsoid2D::Create();
+      auto obj = viz::CEllipsoid2D::Create();
       obj->setCovMatrix(cov2d);
       obj->setLocation(off_x, 12, 0);
       obj->enableDrawSolid3D(true);
@@ -249,7 +249,7 @@ void TestOpenGLObjects()
       theScene->insert(obj);
     }
     {
-      auto obj = opengl::CEllipsoid3D::Create();
+      auto obj = viz::CEllipsoid3D::Create();
       obj->setCovMatrix(cov3d);
       obj->setQuantiles(2.0);
       obj->enableDrawSolid3D(false);
@@ -257,7 +257,7 @@ void TestOpenGLObjects()
       theScene->insert(obj);
     }
     {
-      auto obj = opengl::CEllipsoid3D::Create();
+      auto obj = viz::CEllipsoid3D::Create();
       obj->setCovMatrix(cov3d);
       obj->setQuantiles(2.0);
       obj->materialShininess(0.99f);
@@ -268,7 +268,7 @@ void TestOpenGLObjects()
       theScene->insert(obj);
     }
     {
-      auto obj = opengl::CEllipsoid3D::Create();
+      auto obj = viz::CEllipsoid3D::Create();
       obj->setCovMatrix(cov3d);
       obj->setQuantiles(2.0);
       obj->materialShininess(0.01f);
@@ -279,7 +279,7 @@ void TestOpenGLObjects()
       theScene->insert(obj);
     }
 
-    auto gl_txt = opengl::CText::Create("CEllipsoid3D");
+    auto gl_txt = viz::CText::Create("CEllipsoid3D");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -293,14 +293,14 @@ void TestOpenGLObjects()
     mrpt::math::CMatrixFixed<double, 2, 1> mean_params(mean_params_dat);
 
     {
-      auto obj = opengl::CEllipsoidRangeBearing2D::Create();
+      auto obj = viz::CEllipsoidRangeBearing2D::Create();
       obj->setCovMatrixAndMean(cov_params, mean_params);
       obj->setLocation(off_x, 6, 0);
       obj->setQuantiles(2.0f);
       // obj->setNumberOfSegments(50);
       theScene->insert(obj);
 
-      auto obj_corner = opengl::stock_objects::CornerXYSimple(1, 3);
+      auto obj_corner = viz::stock_objects::CornerXYSimple(1, 3);
       obj_corner->setLocation(off_x, 6, 0);
       theScene->insert(obj_corner);
     }
@@ -312,19 +312,19 @@ void TestOpenGLObjects()
     mrpt::math::CMatrixFixed<double, 2, 1> mean_params(mean_params_dat);
 
     {
-      auto obj = opengl::CEllipsoidRangeBearing2D::Create();
+      auto obj = viz::CEllipsoidRangeBearing2D::Create();
       obj->setCovMatrixAndMean(cov_params, mean_params);
       obj->setLocation(off_x, 0, 0);
       obj->setQuantiles(2.0f);
       // obj->setNumberOfSegments(50);
       theScene->insert(obj);
 
-      auto obj_corner = opengl::stock_objects::CornerXYSimple(1, 3);
+      auto obj_corner = viz::stock_objects::CornerXYSimple(1, 3);
       obj_corner->setLocation(off_x, 0, 0);
       theScene->insert(obj_corner);
     }
 
-    auto gl_txt = opengl::CText::Create("CEllipsoidRangeBearing2D");
+    auto gl_txt = viz::CText::Create("CEllipsoidRangeBearing2D");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -344,19 +344,19 @@ void TestOpenGLObjects()
     mrpt::math::CMatrixFixed<double, 2, 1> mean_params(mean_params_dat);
 
     {
-      auto obj = opengl::CEllipsoidInverseDepth2D::Create();
+      auto obj = viz::CEllipsoidInverseDepth2D::Create();
       obj->setCovMatrixAndMean(cov_params, mean_params);
       obj->setLocation(off_x, 6, 0);
       obj->setQuantiles(3.f);
       obj->setNumberOfSegments(100);
       theScene->insert(obj);
 
-      auto obj_corner = opengl::stock_objects::CornerXYSimple(1, 3);
+      auto obj_corner = viz::stock_objects::CornerXYSimple(1, 3);
       obj_corner->setLocation(off_x, 6, 0);
       theScene->insert(obj_corner);
     }
 
-    auto gl_txt = opengl::CText::Create("CEllipsoidInverseDepth2D");
+    auto gl_txt = viz::CText::Create("CEllipsoidInverseDepth2D");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -377,19 +377,19 @@ void TestOpenGLObjects()
     mrpt::math::CMatrixFixed<double, 3, 1> mean_params(mean_params_dat);
 
     {
-      auto obj = opengl::CEllipsoidInverseDepth3D::Create();
+      auto obj = viz::CEllipsoidInverseDepth3D::Create();
       obj->setCovMatrixAndMean(cov_params, mean_params);
       obj->setLocation(off_x, 0, 0);
       obj->setQuantiles(3.f);
       // obj->setNumberOfSegments(50);
       theScene->insert(obj);
 
-      auto obj_corner = opengl::stock_objects::CornerXYZSimple(1, 3);
+      auto obj_corner = viz::stock_objects::CornerXYZSimple(1, 3);
       obj_corner->setLocation(off_x, 0, 0);
       theScene->insert(obj_corner);
     }
 
-    auto gl_txt = opengl::CText::Create("CEllipsoidInverseDepth3D");
+    auto gl_txt = viz::CText::Create("CEllipsoidInverseDepth3D");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -397,7 +397,7 @@ void TestOpenGLObjects()
 
   // CMesh3D
   {
-    auto obj = opengl::CMesh3D::Create();
+    auto obj = viz::CMesh3D::Create();
     obj->enableShowEdges(false);
     obj->enableShowFaces(true);
     obj->enableShowVertices(false);
@@ -445,7 +445,7 @@ void TestOpenGLObjects()
     obj->loadMesh(num_verts, num_faces, vert_per_face, face_verts, vert_coords);
     theScene->insert(obj);
 
-    auto gl_txt = opengl::CText::Create("CMesh3D");
+    auto gl_txt = viz::CText::Create("CMesh3D");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -453,11 +453,11 @@ void TestOpenGLObjects()
 
   // CMeshFast, CMesh:
   {
-    opengl::CMeshFast::Ptr obj1 = opengl::CMeshFast::Create();
-    opengl::CMeshFast::Ptr obj2 = opengl::CMeshFast::Create();
-    opengl::CMesh::Ptr obj3 = opengl::CMesh::Create();
-    opengl::CMesh::Ptr obj4 = opengl::CMesh::Create();
-    opengl::CMesh::Ptr obj5 = opengl::CMesh::Create();
+    viz::CMeshFast::Ptr obj1 = viz::CMeshFast::Create();
+    viz::CMeshFast::Ptr obj2 = viz::CMeshFast::Create();
+    viz::CMesh::Ptr obj3 = viz::CMesh::Create();
+    viz::CMesh::Ptr obj4 = viz::CMesh::Create();
+    viz::CMesh::Ptr obj5 = viz::CMesh::Create();
 
     obj1->setXBounds(-1, 1);
     obj1->setYBounds(-1, 1);
@@ -493,7 +493,7 @@ void TestOpenGLObjects()
       theScene->insert(obj2);
     }
     {
-      auto gl_txt = opengl::CText::Create("CMeshFast");
+      auto gl_txt = viz::CText::Create("CMeshFast");
       gl_txt->setLocation(off_x, off_y_label, 0);
       theScene->insert(gl_txt);
     }
@@ -505,7 +505,7 @@ void TestOpenGLObjects()
     obj3->enableColorFromZ(true, mrpt::img::cmJET);
     obj3->enableWireFrame(true);
     obj3->setLocation(off_x, 0, 0);
-    obj3->cullFaces(mrpt::opengl::TCullFace::BACK);
+    obj3->cullFaces(mrpt::viz::TCullFace::BACK);
     // obj3->enableTextureMipMap(false);
     theScene->insert(obj3);
 
@@ -514,7 +514,7 @@ void TestOpenGLObjects()
     {
       obj4->assignImageAndZ(im, Z);
       obj4->setLocation(off_x, 3, 0);
-      obj4->cullFaces(mrpt::opengl::TCullFace::BACK);
+      obj4->cullFaces(mrpt::viz::TCullFace::BACK);
       // obj4->enableTextureMipMap(false);
       theScene->insert(obj4);
     }
@@ -534,7 +534,7 @@ void TestOpenGLObjects()
     {
       im2.getAsMatrix(Z2);
 
-      opengl::CMesh::Ptr obj = opengl::CMesh::Create(
+      viz::CMesh::Ptr obj = viz::CMesh::Create(
           false /*transparency*/,  //
           -1, 1,                   // x: Min Max
           1, -1                    // y: Min Max
@@ -545,7 +545,7 @@ void TestOpenGLObjects()
     }
     if (im2.loadFromFile(texture_file2))
     {
-      opengl::CMesh::Ptr obj = opengl::CMesh::Create(
+      viz::CMesh::Ptr obj = viz::CMesh::Create(
           false /*transparency*/,  //
           1, -1,                   // x: Min Max
           -1, 1                    // y: Min Max
@@ -556,7 +556,7 @@ void TestOpenGLObjects()
     }
 
     {
-      auto gl_txt = opengl::CText::Create("CMesh");
+      auto gl_txt = viz::CText::Create("CMesh");
       gl_txt->setLocation(off_x, off_y_label, 0);
       theScene->insert(gl_txt);
     }
@@ -565,7 +565,7 @@ void TestOpenGLObjects()
 
   // CPointCloud
   {
-    auto obj = opengl::CPointCloud::Create();
+    auto obj = viz::CPointCloud::Create();
     obj->setLocation(off_x, 0, 0);
     theScene->insert(obj);
 
@@ -577,7 +577,7 @@ void TestOpenGLObjects()
           rng.drawUniform<float>(-5, 5), rng.drawUniform<float>(-5, 5),
           rng.drawUniform<float>(-5, 5));
 
-    auto gl_txt = opengl::CText::Create("CPointCloud");
+    auto gl_txt = viz::CText::Create("CPointCloud");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -585,7 +585,7 @@ void TestOpenGLObjects()
 
   // CPointCloudColoured
   {
-    auto obj = opengl::CPointCloudColoured::Create();
+    auto obj = viz::CPointCloudColoured::Create();
     obj->setLocation(off_x, 0, 0);
     theScene->insert(obj);
 
@@ -597,7 +597,7 @@ void TestOpenGLObjects()
           rng.drawUniform<float>(-5, 5), rng.drawUniform<float>(0, 1), rng.drawUniform<float>(0, 1),
           rng.drawUniform<float>(0, 1));
 
-    auto gl_txt = opengl::CText::Create("CPointCloudColoured");
+    auto gl_txt = viz::CText::Create("CPointCloudColoured");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -606,23 +606,23 @@ void TestOpenGLObjects()
   // CPolyhedron
   {
     {
-      auto obj = opengl::CPolyhedron::CreateCuboctahedron(1.0);
+      auto obj = viz::CPolyhedron::CreateCuboctahedron(1.0);
       obj->setLocation(off_x, 0, 0);
       obj->setWireframe(true);
       theScene->insert(obj);
     }
     {
-      auto obj = opengl::CPolyhedron::CreateDodecahedron(1.0);
+      auto obj = viz::CPolyhedron::CreateDodecahedron(1.0);
       obj->setLocation(off_x, -5, 0);
       theScene->insert(obj);
     }
     {
-      auto obj = opengl::CPolyhedron::CreateIcosahedron(1.0);
+      auto obj = viz::CPolyhedron::CreateIcosahedron(1.0);
       obj->setLocation(off_x, 5, 0);
       theScene->insert(obj);
     }
 
-    auto gl_txt = opengl::CText::Create("CPolyhedron");
+    auto gl_txt = viz::CText::Create("CPolyhedron");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -631,12 +631,12 @@ void TestOpenGLObjects()
   // CSphere
   {
     {
-      auto obj = opengl::CSphere::Create(3.0);
+      auto obj = viz::CSphere::Create(3.0);
       obj->setLocation(off_x, 0, 0);
       theScene->insert(obj);
     }
 
-    auto gl_txt = opengl::CText::Create("CSphere");
+    auto gl_txt = viz::CText::Create("CSphere");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -645,14 +645,14 @@ void TestOpenGLObjects()
   // CText
   {
     {
-      auto obj = opengl::CText::Create(
+      auto obj = viz::CText::Create(
           "This is a CText example! My size is invariant to "
           "eye-distance");
       obj->setLocation(off_x, 0, 0);
       theScene->insert(obj);
     }
 
-    auto gl_txt = opengl::CText::Create("CText");
+    auto gl_txt = viz::CText::Create("CText");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -661,20 +661,20 @@ void TestOpenGLObjects()
   // CText3D
   {
     {
-      auto obj = opengl::CText3D::Create("I'm a cool CText3D!");
+      auto obj = viz::CText3D::Create("I'm a cool CText3D!");
       obj->setLocation(off_x, 0, 0);
       theScene->insert(obj);
     }
 
     {
-      auto obj = opengl::CText3D::Create("A rotated CText3D");
+      auto obj = viz::CText3D::Create("A rotated CText3D");
       obj->setPose(
           mrpt::poses::CPose3D(off_x, 0, 0, 0, 0, 0) +
           mrpt::poses::CPose3D::FromString("[0 5 0 180 0 90]"));
       theScene->insert(obj);
     }
 
-    auto gl_txt = opengl::CText::Create("CText3D");
+    auto gl_txt = viz::CText::Create("CText3D");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -683,13 +683,13 @@ void TestOpenGLObjects()
   // CColorMap
   {
     {
-      auto obj = opengl::CColorBar::Create(
+      auto obj = viz::CColorBar::Create(
           mrpt::img::cmHOT, 0.2, 1.0, 0.0, 1.0, -50.0, 100.0, "%7.02f m/s");
       obj->setLocation(off_x, 0, 0);
       theScene->insert(obj);
     }
 
-    auto gl_txt = opengl::CText::Create("CColorBar");
+    auto gl_txt = viz::CText::Create("CColorBar");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -699,7 +699,7 @@ void TestOpenGLObjects()
   {
     for (int rep = 0; rep < 2; rep++)
     {
-      auto obj = opengl::CSetOfLines::Create();
+      auto obj = viz::CSetOfLines::Create();
       obj->setLocation(off_x, rep * 20, 0);
 
       for (int i = 0; i < 15; i++)
@@ -711,7 +711,7 @@ void TestOpenGLObjects()
       theScene->insert(obj);
     }
 
-    auto gl_txt = opengl::CText::Create("CSetOfLines");
+    auto gl_txt = viz::CText::Create("CSetOfLines");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -720,7 +720,7 @@ void TestOpenGLObjects()
   // CSimpleLine
   {
     {
-      auto obj = opengl::CSimpleLine::Create();
+      auto obj = viz::CSimpleLine::Create();
       obj->setLocation(off_x, 0, 0);
 
       obj->setLineCoords(
@@ -731,7 +731,7 @@ void TestOpenGLObjects()
       theScene->insert(obj);
     }
 
-    auto gl_txt = opengl::CText::Create("CSimpleLine");
+    auto gl_txt = viz::CText::Create("CSimpleLine");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -740,7 +740,7 @@ void TestOpenGLObjects()
   // CVectorField2D
   {
     {
-      auto obj = opengl::CVectorField2D::Create();
+      auto obj = viz::CVectorField2D::Create();
       obj->setLocation(off_x, 0, 0);
 
       CMatrixFloat x(16, 16), y(16, 16);
@@ -760,7 +760,7 @@ void TestOpenGLObjects()
       theScene->insert(obj);
     }
 
-    auto gl_txt = opengl::CText::Create("CVectorField2D");
+    auto gl_txt = viz::CText::Create("CVectorField2D");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -771,7 +771,7 @@ void TestOpenGLObjects()
     {
       const unsigned int num = 20;
       const float scale = 0.8 * STEP_X / num;
-      auto obj = opengl::CVectorField3D::Create();
+      auto obj = viz::CVectorField3D::Create();
       obj->setLocation(off_x, -0.5 * scale * num, 0);  //
 
       CMatrixFloat x(num, num), y(num, num), z(num, num);
@@ -798,7 +798,7 @@ void TestOpenGLObjects()
       theScene->insert(obj);
     }
 
-    auto gl_txt = opengl::CText::Create("CVectorField3D");
+    auto gl_txt = viz::CText::Create("CVectorField3D");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -807,12 +807,12 @@ void TestOpenGLObjects()
   // stock_objects::BumblebeeCamera
   {
     {
-      auto obj = opengl::stock_objects::BumblebeeCamera();
+      auto obj = viz::stock_objects::BumblebeeCamera();
       obj->setLocation(off_x, 0, 0);
       theScene->insert(obj);
     }
 
-    auto gl_txt = opengl::CText::Create("stock_objects::BumblebeeCamera()");
+    auto gl_txt = viz::CText::Create("stock_objects::BumblebeeCamera()");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -821,12 +821,12 @@ void TestOpenGLObjects()
   // stock_objects::CornerXYSimple
   {
     {
-      auto obj = opengl::stock_objects::CornerXYSimple(1, 3);
+      auto obj = viz::stock_objects::CornerXYSimple(1, 3);
       obj->setLocation(off_x, 0, 0);
       theScene->insert(obj);
     }
 
-    auto gl_txt = opengl::CText::Create("stock_objects::CornerXYSimple()");
+    auto gl_txt = viz::CText::Create("stock_objects::CornerXYSimple()");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -835,12 +835,12 @@ void TestOpenGLObjects()
   // stock_objects::CornerXYZSimple
   {
     {
-      auto obj = opengl::stock_objects::CornerXYZSimple(1, 3);
+      auto obj = viz::stock_objects::CornerXYZSimple(1, 3);
       obj->setLocation(off_x, 0, 0);
       theScene->insert(obj);
     }
 
-    auto gl_txt = opengl::CText::Create("stock_objects::CornerXYZSimple()");
+    auto gl_txt = viz::CText::Create("stock_objects::CornerXYZSimple()");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -849,12 +849,12 @@ void TestOpenGLObjects()
   // stock_objects::CornerXYZ
   {
     {
-      auto obj = opengl::stock_objects::CornerXYZ();
+      auto obj = viz::stock_objects::CornerXYZ();
       obj->setLocation(off_x, 0, 0);
       theScene->insert(obj);
     }
 
-    auto gl_txt = opengl::CText::Create("stock_objects::CornerXYZ()");
+    auto gl_txt = viz::CText::Create("stock_objects::CornerXYZ()");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -864,12 +864,12 @@ void TestOpenGLObjects()
   // stock_objects::RobotPioneer
   {
     {
-      auto obj = opengl::stock_objects::RobotPioneer();
+      auto obj = viz::stock_objects::RobotPioneer();
       obj->setLocation(off_x, 0, 0);
       theScene->insert(obj);
     }
 
-    auto gl_txt = opengl::CText::Create("stock_objects::RobotPioneer()");
+    auto gl_txt = viz::CText::Create("stock_objects::RobotPioneer()");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -878,12 +878,12 @@ void TestOpenGLObjects()
   // stock_objects::Hokuyo_URG
   {
     {
-      auto obj = opengl::stock_objects::Hokuyo_URG();
+      auto obj = viz::stock_objects::Hokuyo_URG();
       obj->setLocation(off_x, 0, 0);
       theScene->insert(obj);
     }
 
-    auto gl_txt = opengl::CText::Create("stock_objects::Hokuyo_URG()");
+    auto gl_txt = viz::CText::Create("stock_objects::Hokuyo_URG()");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -892,12 +892,12 @@ void TestOpenGLObjects()
   // stock_objects::Hokuyo_UTM
   {
     {
-      auto obj = opengl::stock_objects::Hokuyo_UTM();
+      auto obj = viz::stock_objects::Hokuyo_UTM();
       obj->setLocation(off_x, 0, 0);
       theScene->insert(obj);
     }
 
-    auto gl_txt = opengl::CText::Create("stock_objects::Hokuyo_UTM()");
+    auto gl_txt = viz::CText::Create("stock_objects::Hokuyo_UTM()");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -906,12 +906,12 @@ void TestOpenGLObjects()
   // stock_objects::Househam_Sprayer
   {
     {
-      auto obj = opengl::stock_objects::Househam_Sprayer();
+      auto obj = viz::stock_objects::Househam_Sprayer();
       obj->setLocation(off_x, 0, 0);
       theScene->insert(obj);
     }
 
-    auto gl_txt = opengl::CText::Create("stock_objects::Househam_Sprayer()");
+    auto gl_txt = viz::CText::Create("stock_objects::Househam_Sprayer()");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -920,12 +920,12 @@ void TestOpenGLObjects()
   // stock_objects::RobotRhodon
   {
     {
-      auto obj = opengl::stock_objects::RobotRhodon();
+      auto obj = viz::stock_objects::RobotRhodon();
       obj->setLocation(off_x, 0, 0);
       theScene->insert(obj);
     }
 
-    auto gl_txt = opengl::CText::Create("stock_objects::RobotRhodon()");
+    auto gl_txt = viz::CText::Create("stock_objects::RobotRhodon()");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -933,7 +933,7 @@ void TestOpenGLObjects()
 
   // CPlanarLaserScan
   {
-    auto obj = mrpt::opengl::CPlanarLaserScan::Create();
+    auto obj = mrpt::viz::CPlanarLaserScan::Create();
     obj->setPose(mrpt::poses::CPose3D(off_x, 0, 0, 90.0_deg, 0, 0));
 
     mrpt::obs::CObservation2DRangeScan scan;
@@ -943,7 +943,7 @@ void TestOpenGLObjects()
 
     theScene->insert(obj);
 
-    auto gl_txt = opengl::CText::Create("CPlanarLaserScan");
+    auto gl_txt = viz::CText::Create("CPlanarLaserScan");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -962,14 +962,14 @@ void TestOpenGLObjects()
     picAlpha.filledRectangle(0, 0, W / 4, H / 2, mrpt::img::TColor(0xa0, 0xa0, 0xa0));
 
     {
-      opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create();
+      viz::CTexturedPlane::Ptr obj = viz::CTexturedPlane::Create();
       obj->setPose(mrpt::poses::CPose3D(off_x, 0, 0, 0, 90.0_deg, 0));
       obj->assignImage(pic);
       theScene->insert(obj);
     }
 
     {
-      opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create();
+      viz::CTexturedPlane::Ptr obj = viz::CTexturedPlane::Create();
       obj->setPose(mrpt::poses::CPose3D(off_x, 4.0, 0, 0, 90.0_deg, 0));
       obj->assignImage(pic, picAlpha);
       theScene->insert(obj);
@@ -977,34 +977,34 @@ void TestOpenGLObjects()
 
     // a plane w/o a texture is a plain color plane:
     {
-      opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create();
+      viz::CTexturedPlane::Ptr obj = viz::CTexturedPlane::Create();
       obj->setPose(mrpt::poses::CPose3D(off_x, 8.0, 0, 0, 90.0_deg, 0));
       obj->setColor_u8(0xff, 0x00, 0x00, 0xff);
       theScene->insert(obj);
     }
     {
-      opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create();
+      viz::CTexturedPlane::Ptr obj = viz::CTexturedPlane::Create();
       obj->setPose(mrpt::poses::CPose3D(off_x, 12.0, 0, 0, 90.0_deg, 0));
       obj->setColor_u8(0xff, 0x00, 0x00, 0x40);
       theScene->insert(obj);
     }
 
     {
-      opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create();
+      viz::CTexturedPlane::Ptr obj = viz::CTexturedPlane::Create();
       obj->setPose(mrpt::poses::CPose3D(off_x, 6.0, -3.0, 0, 0.0_deg, 0));
       obj->assignImage(pic);
       obj->enableLighting(true);
       theScene->insert(obj);
     }
     {
-      opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create();
+      viz::CTexturedPlane::Ptr obj = viz::CTexturedPlane::Create();
       obj->setPose(mrpt::poses::CPose3D(off_x, 3.9, -3.0, 0, 0.0_deg, 0));
       obj->setColor_u8(0xff, 0x00, 0x00, 0xff);
       obj->enableLighting(true);
       theScene->insert(obj);
     }
 
-    auto gl_txt = opengl::CText::Create("CTexturedPlane");
+    auto gl_txt = viz::CText::Create("CTexturedPlane");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -1019,9 +1019,9 @@ void TestOpenGLObjects()
     mrpt::obs::stock_observations::example2DRangeScan(scan1);
     map.insertObservation(scan1);
 
-    auto gl_map1 = mrpt::opengl::COctoMapVoxels::Create();
-    auto gl_map2 = mrpt::opengl::COctoMapVoxels::Create();
-    auto gl_map3 = mrpt::opengl::COctoMapVoxels::Create();
+    auto gl_map1 = mrpt::viz::COctoMapVoxels::Create();
+    auto gl_map2 = mrpt::viz::COctoMapVoxels::Create();
+    auto gl_map3 = mrpt::viz::COctoMapVoxels::Create();
 
     map.getAsOctoMapVoxels(*gl_map1);
 
@@ -1047,7 +1047,7 @@ void TestOpenGLObjects()
     gl_map3->setLocation(off_x, 8, 0);
     theScene->insert(gl_map3);
 
-    auto gl_txt = opengl::CText::Create("COctoMapVoxels");
+    auto gl_txt = viz::CText::Create("COctoMapVoxels");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -1056,7 +1056,7 @@ void TestOpenGLObjects()
   // ground plane (to test shadows):
   // A plane w/o a texture is a plain color plane:
   {
-    auto obj = mrpt::opengl::CBox::Create();
+    auto obj = mrpt::viz::CBox::Create();
     obj->setColor_u8(0xa0, 0xa0, 0xa0, 0xff);
     obj->setLocation(0, 0, -5.0f);
     obj->setBoxCorners({-20.0f, -20.0f, .0f}, {off_x + 20.f, 40.0f, -0.1f});
@@ -1066,7 +1066,7 @@ void TestOpenGLObjects()
 
   // Arrow to show the light direction:
   auto glLightArrow =
-      opengl::CArrow::Create(mrpt::math::TPoint3Df(0, 0, 0), mrpt::math::TPoint3Df(1, 0, 0));
+      viz::CArrow::Create(mrpt::math::TPoint3Df(0, 0, 0), mrpt::math::TPoint3Df(1, 0, 0));
   glLightArrow->setLocation(off_x / 5, -4.0, 5.0);
   glLightArrow->setColor(0, 1, 0);
   glLightArrow->setName("Light dir.");
@@ -1098,14 +1098,14 @@ void TestOpenGLObjects()
 
   cout << "Close the window to end.\n";
 
-  mrpt::opengl::TFontParams fp;
+  mrpt::viz::TFontParams fp;
   fp.vfont_scale = 14;  // pixels
   fp.draw_shadow = true;
   win.addTextMessage(5, 5, "", 0 /*id*/, fp);
 
   auto viewport = theScene->getViewport();
 
-  mrpt::opengl::TLightParameters& lights = viewport->lightParameters();
+  mrpt::viz::TLightParameters& lights = viewport->lightParameters();
 
   lights.ambient = 0.2;
 

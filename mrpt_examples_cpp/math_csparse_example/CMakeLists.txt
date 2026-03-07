@@ -6,6 +6,9 @@ cmake_minimum_required(VERSION 3.16)
 
 project(math_csparse_example)
 
+message(STATUS "math_csparse_example: CSparseMatrix removed in MRPT 3.0 — skipping")
+return()
+
 # Basic MRPT infrastructure
 find_package(mrpt_common REQUIRED)
 

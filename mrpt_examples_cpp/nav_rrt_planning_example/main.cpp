@@ -29,7 +29,7 @@ using namespace mrpt::maps;
 using namespace std;
 
 // Load example grid map
-#include <mrpt/examples_config.h>
+// MRPT_EXAMPLES_BASE_DIRECTORY provided via compile definition
 string mySimpleMap(
     MRPT_EXAMPLES_BASE_DIRECTORY +
     string("../share/mrpt/datasets/malaga-cs-fac-building.simplemap.gz"));
@@ -125,7 +125,7 @@ void TestRRT1()
 
 #if MRPT_HAS_WXWIDGETS
     // Show result in a GUI:
-    mrpt::opengl::Scene::Ptr& scene = win.get3DSceneAndLock();
+    mrpt::viz::Scene::Ptr& scene = win.get3DSceneAndLock();
 
     scene->clear();
 

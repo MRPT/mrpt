@@ -15,11 +15,11 @@
 #include <mrpt/core/format.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/img/TColor.h>
-#include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/CBox.h>
-#include <mrpt/opengl/CSkyBox.h>
-#include <mrpt/opengl/CSphere.h>
-#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/viz/CAxis.h>
+#include <mrpt/viz/CBox.h>
+#include <mrpt/viz/CSkyBox.h>
+#include <mrpt/viz/CSphere.h>
+#include <mrpt/viz/stock_objects.h>
 #include <mrpt/system/filesystem.h>
 
 #include <iostream>
@@ -62,16 +62,16 @@ void TestSkyBox()
 
   mrpt::gui::CDisplayWindow3D win("Example of MRPT skybox", 800, 600);
 
-  mrpt::opengl::Scene::Ptr& theScene = win.get3DSceneAndLock();
+  mrpt::viz::Scene::Ptr& theScene = win.get3DSceneAndLock();
 
   // Create the 3D scene:
   // ------------------------------------------------------
 
   // Create the SkyBox:
   {
-    using mrpt::opengl::CUBE_TEXTURE_FACE;
+    using mrpt::viz::CUBE_TEXTURE_FACE;
 
-    auto sb = mrpt::opengl::CSkyBox::Create();
+    auto sb = mrpt::viz::CSkyBox::Create();
 
     std::vector<std::pair<CUBE_TEXTURE_FACE, const char*>> faceImages = {
         { CUBE_TEXTURE_FACE::FRONT, "Front"},
@@ -94,17 +94,17 @@ void TestSkyBox()
   }
 
   {
-    auto obj = mrpt::opengl::CAxis::Create();
+    auto obj = mrpt::viz::CAxis::Create();
     obj->setFrequency(5);
     obj->enableTickMarks();
     obj->setAxisLimits(-10, -10, -10, 10, 10, 10);
     theScene->insert(obj);
   }
 
-  theScene->insert(mrpt::opengl::stock_objects::CornerXYZ(3.0));
+  theScene->insert(mrpt::viz::stock_objects::CornerXYZ(3.0));
 
   {
-    auto obj = mrpt::opengl::CBox::Create();
+    auto obj = mrpt::viz::CBox::Create();
     obj->setWireframe(false);
     obj->setColor(1, 0, 0);
     obj->setLineWidth(3.0);
@@ -113,7 +113,7 @@ void TestSkyBox()
   }
 
   {
-    auto obj = mrpt::opengl::CSphere::Create();
+    auto obj = mrpt::viz::CSphere::Create();
     obj->setColor(0, 0, 1);
     obj->setRadius(0.3f);
     obj->setLocation(0, -2, 0);

@@ -47,7 +47,7 @@ using namespace mrpt::poses;
 using namespace mrpt::img;
 using namespace std;
 
-#include <mrpt/examples_config.h>
+// MRPT_EXAMPLES_BASE_DIRECTORY provided via compile definition
 
 // Default path, or user path passed thru command line:
 std::string RAWLOG_FILE =
@@ -162,7 +162,8 @@ void TestLaser2Imgs()
 
         if (*itImgX > 0 && *itImgX<imgW&& * itImgY> 0 && *itImgY < imgH)
           image.filledRectangle(
-              *itImgX - 1, *itImgY - 1, *itImgX + 1, *itImgY + 1, TColor(255, 0, 0));
+              {static_cast<int>(*itImgX - 1), static_cast<int>(*itImgY - 1)},
+              {static_cast<int>(*itImgX + 1), static_cast<int>(*itImgY + 1)}, TColor(255, 0, 0));
       }  // end if
     }    // end for
 

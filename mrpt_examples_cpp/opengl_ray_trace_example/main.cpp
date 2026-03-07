@@ -21,15 +21,15 @@
  */
 
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/opengl/CAngularObservationMesh.h>
-#include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/CCylinder.h>
-#include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CEllipsoid3D.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CPolyhedron.h>
-#include <mrpt/opengl/CSphere.h>
-#include <mrpt/opengl/CTexturedPlane.h>
+#include <mrpt/viz/CAngularObservationMesh.h>
+#include <mrpt/viz/CAxis.h>
+#include <mrpt/viz/CCylinder.h>
+#include <mrpt/viz/CDisk.h>
+#include <mrpt/viz/CEllipsoid3D.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CPolyhedron.h>
+#include <mrpt/viz/CSphere.h>
+#include <mrpt/viz/CTexturedPlane.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/random.h>
@@ -51,14 +51,14 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::serialization;
 using namespace mrpt::system;
 
-using mrpt::opengl::CAngularObservationMesh;
+using mrpt::viz::CAngularObservationMesh;
 
 // Increase this values to get more precision. It will also increase run time.
 const size_t HOW_MANY_YAWS = 150;
@@ -160,7 +160,7 @@ void display()
   std::this_thread::sleep_for(20ms);
   Scene::Ptr scene1 = Scene::Create();
   // Scene::Ptr &scene1=window.get3DSceneAndLock();
-  opengl::CGridPlaneXY::Ptr plane1 = CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
+  viz::CGridPlaneXY::Ptr plane1 = CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
   plane1->setColor(GRID_R, GRID_G, GRID_B);
   scene1->insert(plane1);
   scene1->insert(CAxis::Create(-5, -5, -5, 5, 5, 5, 2.5, 3, true));
@@ -208,7 +208,7 @@ void display()
   window.setCameraElevationDeg(25.0f);
   Scene::Ptr& scene2 = window2.get3DSceneAndLock();
   scene2->insert(aom);
-  opengl::CGridPlaneXY::Ptr plane2 = CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
+  viz::CGridPlaneXY::Ptr plane2 = CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
   plane2->setColor(GRID_R, GRID_G, GRID_B);
   scene2->insert(plane2);
   scene2->insert(CAxis::Create(-5, -5, -5, 5, 5, 5, 2.5, 3, true));
