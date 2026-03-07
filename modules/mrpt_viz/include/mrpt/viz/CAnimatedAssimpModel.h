@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/math/CMatrixFixed.h>
-#include <mrpt/opengl/CAssimpModel.h>
+#include <mrpt/viz/CAssimpModel.h>
 
 #include <map>
 #include <string>
@@ -18,7 +18,7 @@
 // Forward declarations for Assimp types (avoid leaking assimp headers)
 struct aiNode;
 
-namespace mrpt::opengl
+namespace mrpt::viz
 {
 
 /**
@@ -239,4 +239,4 @@ class CAnimatedAssimpModel : public CAssimpModel
   }
 };
 
-}  // namespace mrpt::opengl
+}  // namespace mrpt::viz

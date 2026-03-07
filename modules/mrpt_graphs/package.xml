@@ -18,6 +18,8 @@
 
   <depend>mrpt_common</depend>
   <depend>mrpt_poses</depend>
+  <depend>mrpt_io</depend>
+  <depend>mrpt_viz</depend>
 
   <export>
     <build_type>cmake</build_type>

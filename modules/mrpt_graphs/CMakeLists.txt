@@ -13,6 +13,8 @@ project(mrpt_graphs LANGUAGES C CXX)
 # MRPT CMake scripts: "mrpt_xxx()"
 find_package(mrpt_common REQUIRED)
 find_package(mrpt_poses REQUIRED)
+find_package(mrpt_io REQUIRED)
+find_package(mrpt_viz REQUIRED)
 
 # define lib:
 set(LIB_SOURCES
@@ -43,9 +45,13 @@ mrpt_add_library(
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_poses
+    mrpt::mrpt_io
+    mrpt::mrpt_viz
 #  PRIVATE_LINK_LIBRARIES
   CMAKE_DEPENDENCIES
     mrpt_poses
+    mrpt_io
+    mrpt_viz
 )
 
 # Python wrapper:

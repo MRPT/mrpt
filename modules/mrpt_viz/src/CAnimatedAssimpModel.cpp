@@ -7,8 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl/CAnimatedAssimpModel.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/viz/CAnimatedAssimpModel.h>
+#include <mrpt/viz/config.h>  // MRPT_HAS_ASSIMP
 
 #if MRPT_HAS_ASSIMP
 #include <assimp/anim.h>
@@ -18,10 +19,10 @@
 #include <Eigen/Dense>
 #include <cmath>
 
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::math;
 
-IMPLEMENTS_SERIALIZABLE(CAnimatedAssimpModel, CAssimpModel, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CAnimatedAssimpModel, CAssimpModel, mrpt::viz)
 
 // ============================================================================
 // Serialization  (delegates to base; skeleton is re-extracted on load)
