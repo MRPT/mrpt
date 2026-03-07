@@ -12,7 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/core/lock_helper.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/viz/CAssimpModel.h>
@@ -48,6 +47,11 @@ struct CAssimpModel::AssimpSceneWrapper
   const aiScene* scene = nullptr;
 #endif
 };
+
+CAssimpModel::CAssimpModel() = default;
+CAssimpModel::~CAssimpModel() = default;
+CAssimpModel::CAssimpModel(CAssimpModel&&) noexcept = default;
+CAssimpModel& CAssimpModel::operator=(CAssimpModel&&) noexcept = default;
 
 // ============================================================================
 // Serialization
@@ -165,7 +169,7 @@ void CAssimpModel::loadScene(const std::string& file_name, int flags)
   // Initialize pimpl if needed
   if (!m_assimpScene)
   {
-    m_assimpScene = mrpt::pimpl<AssimpSceneWrapper>();
+    m_assimpScene = std::make_unique<AssimpSceneWrapper>();
   }
 
   // Build Assimp import flags
@@ -403,8 +407,11 @@ void CAssimpModel::processMesh(const void* meshPtr, const void* scenePtr, const 
           texturePath = m_modelDirectory + "/" + texFile;
           if (!mrpt::system::fileExists(texturePath))
           {
-            // Try just the filename
-            texturePath = m_modelDirectory + "/" + mrpt::system::extractFileName(texFile);
+            // Try just the filename (with extension)
+            std::string baseName = mrpt::system::extractFileName(texFile);
+            std::string ext = mrpt::system::extractFileExtension(texFile);
+            if (!ext.empty()) baseName += "." + ext;
+            texturePath = m_modelDirectory + "/" + baseName;
             if (!mrpt::system::fileExists(texturePath))
             {
               if (verbose)
