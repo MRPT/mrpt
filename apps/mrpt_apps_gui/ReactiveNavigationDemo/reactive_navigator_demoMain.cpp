@@ -66,14 +66,14 @@ wxBitmap MyArtProvider::CreateBitmap(
 }
 
 #include <mrpt/nav.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 #include <mrpt/viz/CArrow.h>
 #include <mrpt/viz/CCylinder.h>
 #include <mrpt/viz/CSetOfLines.h>
 #include <mrpt/viz/CSetOfObjects.h>
 #include <mrpt/viz/stock_objects.h>
-#include <mrpt/serialization/CArchive.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -844,16 +844,20 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent, wxW
   gl_target->setVisibility(false);
   {
     mrpt::viz::CArrow::Ptr obj;
-    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{1, 0, 0}, mrpt::math::TPoint3Df{0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(
+        mrpt::math::TPoint3Df{1, 0, 0}, mrpt::math::TPoint3Df{0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     gl_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{-1, 0, 0}, mrpt::math::TPoint3Df{-0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(
+        mrpt::math::TPoint3Df{-1, 0, 0}, mrpt::math::TPoint3Df{-0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     gl_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{0, 1, 0}, mrpt::math::TPoint3Df{0, 0.2f, 0}, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(
+        mrpt::math::TPoint3Df{0, 1, 0}, mrpt::math::TPoint3Df{0, 0.2f, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     gl_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{0, -1, 0}, mrpt::math::TPoint3Df{0, -0.2f, 0}, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(
+        mrpt::math::TPoint3Df{0, -1, 0}, mrpt::math::TPoint3Df{0, -0.2f, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     gl_target->insert(obj);
     openGLSceneRef->insert(gl_target);
@@ -871,16 +875,20 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent, wxW
     m_gl_placing_nav_target = std::make_shared<viz::CSetOfObjects>();
 
     mrpt::viz::CArrow::Ptr obj;
-    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{1, 0, 0}, mrpt::math::TPoint3Df{0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(
+        mrpt::math::TPoint3Df{1, 0, 0}, mrpt::math::TPoint3Df{0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     m_gl_placing_nav_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{-1, 0, 0}, mrpt::math::TPoint3Df{-0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(
+        mrpt::math::TPoint3Df{-1, 0, 0}, mrpt::math::TPoint3Df{-0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     m_gl_placing_nav_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{0, 1, 0}, mrpt::math::TPoint3Df{0, 0.2f, 0}, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(
+        mrpt::math::TPoint3Df{0, 1, 0}, mrpt::math::TPoint3Df{0, 0.2f, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     m_gl_placing_nav_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{0, -1, 0}, mrpt::math::TPoint3Df{0, -0.2f, 0}, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(
+        mrpt::math::TPoint3Df{0, -1, 0}, mrpt::math::TPoint3Df{0, -0.2f, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     m_gl_placing_nav_target->insert(obj);
     m_gl_placing_nav_target->setVisibility(false);  // Start invisible.

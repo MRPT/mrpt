@@ -61,6 +61,7 @@ wxBitmap MyArtProvider::CreateBitmap(
 
 #include <mrpt/gui/about_box.h>
 #include <mrpt/nav.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/viz/CArrow.h>
 #include <mrpt/viz/CCylinder.h>
 #include <mrpt/viz/CDisk.h>
@@ -69,7 +70,6 @@ wxBitmap MyArtProvider::CreateBitmap(
 #include <mrpt/viz/CSetOfObjects.h>
 #include <mrpt/viz/CSimpleLine.h>
 #include <mrpt/viz/stock_objects.h>
-#include <mrpt/system/filesystem.h>
 
 #include <memory>
 
@@ -413,16 +413,20 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent, w
   gl_target = mrpt::viz::CSetOfObjects::Create();
   {
     mrpt::viz::CArrow::Ptr obj;
-    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{1, 0, 0}, mrpt::math::TPoint3Df{0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(
+        mrpt::math::TPoint3Df{1, 0, 0}, mrpt::math::TPoint3Df{0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     gl_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{-1, 0, 0}, mrpt::math::TPoint3Df{-0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(
+        mrpt::math::TPoint3Df{-1, 0, 0}, mrpt::math::TPoint3Df{-0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     gl_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{0, 1, 0}, mrpt::math::TPoint3Df{0, 0.2f, 0}, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(
+        mrpt::math::TPoint3Df{0, 1, 0}, mrpt::math::TPoint3Df{0, 0.2f, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     gl_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{0, -1, 0}, mrpt::math::TPoint3Df{0, -0.2f, 0}, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(
+        mrpt::math::TPoint3Df{0, -1, 0}, mrpt::math::TPoint3Df{0, -0.2f, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     gl_target->insert(obj);
     openGLSceneRef->insert(gl_target);
@@ -432,16 +436,20 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent, w
     m_gl_placing_nav_target = std::make_shared<mrpt::viz::CSetOfObjects>();
 
     mrpt::viz::CArrow::Ptr obj;
-    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{1, 0, 0}, mrpt::math::TPoint3Df{0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(
+        mrpt::math::TPoint3Df{1, 0, 0}, mrpt::math::TPoint3Df{0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     m_gl_placing_nav_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{-1, 0, 0}, mrpt::math::TPoint3Df{-0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(
+        mrpt::math::TPoint3Df{-1, 0, 0}, mrpt::math::TPoint3Df{-0.2f, 0, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     m_gl_placing_nav_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{0, 1, 0}, mrpt::math::TPoint3Df{0, 0.2f, 0}, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(
+        mrpt::math::TPoint3Df{0, 1, 0}, mrpt::math::TPoint3Df{0, 0.2f, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     m_gl_placing_nav_target->insert(obj);
-    obj = mrpt::viz::CArrow::Create(mrpt::math::TPoint3Df{0, -1, 0}, mrpt::math::TPoint3Df{0, -0.2f, 0}, 0.4f, 0.05f, 0.15f);
+    obj = mrpt::viz::CArrow::Create(
+        mrpt::math::TPoint3Df{0, -1, 0}, mrpt::math::TPoint3Df{0, -0.2f, 0}, 0.4f, 0.05f, 0.15f);
     obj->setColor_u8(TColor(0, 0, 255));
     m_gl_placing_nav_target->insert(obj);
     m_gl_placing_nav_target->setVisibility(false);  // Start invisible.
@@ -794,8 +802,7 @@ void holonomic_navigator_demoFrame::Onplot3DMouseMove(wxMouseEvent& event)
   // Intersection of 3D ray with ground plane ====================
   TLine3D ray;
   {
-    auto optRay =
-        m_plot3D->getOpenGLSceneRef()->getViewport("main")->get3DRayForPixelCoord({X, Y});
+    auto optRay = m_plot3D->getOpenGLSceneRef()->getViewport("main")->get3DRayForPixelCoord({X, Y});
     if (!optRay) return;
     ray = *optRay;
   }

@@ -23,6 +23,7 @@
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/poses/CPosePDF.h>
+
 #include <ostream>
 
 namespace mrpt

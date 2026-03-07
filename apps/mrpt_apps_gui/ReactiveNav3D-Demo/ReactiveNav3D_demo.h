@@ -16,13 +16,13 @@
 #include <mrpt/math/TObject3D.h>
 #include <mrpt/nav/reactive/CReactiveNavigationSystem3D.h>
 #include <mrpt/nav/reactive/CRobot2NavInterfaceForSimulator.h>
+#include <mrpt/system/CObserver.h>
 #include <mrpt/viz/CDisk.h>
+#include <mrpt/viz/CPlanarLaserScan.h>
 #include <mrpt/viz/CPointCloud.h>
 #include <mrpt/viz/CPolyhedron.h>
 #include <mrpt/viz/CSetOfObjects.h>
 #include <mrpt/viz/stock_objects.h>
-#include <mrpt/system/CObserver.h>
-#include <mrpt/viz/CPlanarLaserScan.h>
 
 #include "map2_1.xpm"
 #include "map2_2.xpm"

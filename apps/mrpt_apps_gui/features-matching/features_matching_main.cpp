@@ -33,10 +33,11 @@ using namespace std;
 static string file1, file2;
 
 /** Helper: draw feature marks on an image (v3 API). */
-static void drawFeaturesOnImage(mrpt::img::CImage& img, const CFeatureList& feats,
-                                const TColor& color)
+static void drawFeaturesOnImage(
+    mrpt::img::CImage& img, const CFeatureList& feats, const TColor& color)
 {
-  for (const auto& f : feats) {
+  for (const auto& f : feats)
+  {
     img.drawMark({f.keypoint.pt.x, f.keypoint.pt.y}, color, '+', 7);
   }
 }
@@ -67,7 +68,8 @@ bool DemoFeatures()
   string sel_num_feats;
   std::getline(cin, sel_num_feats);
 
-  const size_t nFeats = sel_num_feats.empty() ? 150 : static_cast<size_t>(::atoi(sel_num_feats.c_str()));
+  const size_t nFeats =
+      sel_num_feats.empty() ? 150 : static_cast<size_t>(::atoi(sel_num_feats.c_str()));
 
   CImage img1, img2;
 
@@ -123,8 +125,7 @@ bool DemoFeatures()
   winPlots.resize(500, 200);
 
   // Show features distances:
-  for (unsigned int i1 = 0;
-       i1 < feats1.size() && winPlots.isOpen(); i1++)
+  for (unsigned int i1 = 0; i1 < feats1.size() && winPlots.isOpen(); i1++)
   {
     // Compute distances:
     CVectorDouble distances(feats2.size());
@@ -132,7 +133,8 @@ bool DemoFeatures()
     const auto& ft_i1 = feats1[i1];
 
     tictac.Tic();
-    for (unsigned int i2 = 0; i2 < feats2.size(); i2++) {
+    for (unsigned int i2 = 0; i2 < feats2.size(); i2++)
+    {
       distances[i2] = ft_i1.descriptorDistanceTo(feats2[i2]);
     }
     cout << "All distances computed in " << 1000.0 * tictac.Tac() << " ms" << endl;
@@ -169,8 +171,7 @@ bool DemoFeatures()
       {
         img2_show_base.drawMark({px, py}, TColor::red(), '+', 7);
         img2_show_base.textOut(
-            {px + 10, py - 10},
-            format("#%u, dist=%.02f", i2, distances[i2]), TColor::gray());
+            {px + 10, py - 10}, format("#%u, dist=%.02f", i2, distances[i2]), TColor::gray());
         xs_best.push_back(i2);
         ys_best.push_back(distances[i2]);
       }
@@ -187,8 +188,7 @@ bool DemoFeatures()
     for (unsigned anim_loops = 36; anim_loops > 0; anim_loops -= 2)
     {
       img1_show = img1.colorImage();
-      img1_show.drawMark(
-          {ft_i1.keypoint.pt.x, ft_i1.keypoint.pt.y}, TColor::red(), '+', 7);
+      img1_show.drawMark({ft_i1.keypoint.pt.x, ft_i1.keypoint.pt.y}, TColor::red(), '+', 7);
       img1_show.drawCircle(
           {ft_i1.keypoint.pt.x, ft_i1.keypoint.pt.y}, 7 + anim_loops, TColor::blue());
 
@@ -198,8 +198,7 @@ bool DemoFeatures()
         if (distances[i2] < min_dist + 0.1 * dist_std)
         {
           img2_show.drawCircle(
-              {feats2[i2].keypoint.pt.x, feats2[i2].keypoint.pt.y},
-              7 + anim_loops, TColor::blue());
+              {feats2[i2].keypoint.pt.x, feats2[i2].keypoint.pt.y}, 7 + anim_loops, TColor::blue());
         }
       }
 

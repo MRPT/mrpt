@@ -231,8 +231,7 @@ PYBIND11_MODULE(_bindings, m)
       .def("GetRuntimeClass", &mrpt::obs::CActionRobotMovement2D::GetRuntimeClass)
       .def(
           "__repr__",
-          [](const mrpt::obs::CActionRobotMovement2D& a)
-          {
+          [](const mrpt::obs::CActionRobotMovement2D& a) {
             return "CActionRobotMovement2D(odometry=" + a.rawOdometryIncrementReading.asString() +
                    ")";
           });
@@ -282,8 +281,10 @@ PYBIND11_MODULE(_bindings, m)
           "__getitem__",
           [](const mrpt::obs::CSensoryFrame& sf, size_t i) { return sf.getObservationByIndex(i); })
       .def(
-          "__iter__", [](const mrpt::obs::CSensoryFrame& sf)
-          { return py::make_iterator(sf.begin(), sf.end()); }, py::keep_alive<0, 1>())
+          "__iter__",
+          [](const mrpt::obs::CSensoryFrame& sf)
+          { return py::make_iterator(sf.begin(), sf.end()); },
+          py::keep_alive<0, 1>())
       .def(
           "__repr__", [](const mrpt::obs::CSensoryFrame& sf)
           { return "CSensoryFrame(" + std::to_string(sf.size()) + " observations)"; });

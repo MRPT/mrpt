@@ -144,8 +144,7 @@ int main(int argc, char** argv)
 
     bool info_op = false;
     app.add_flag(
-        "--info", info_op,
-        "Op: Loads the graph and displays statistics and information on it.\n");
+        "--info", info_op, "Op: Loads the graph and displays statistics and information on it.\n");
 
     bool quiet = false;
     app.add_flag("-q,--quiet", quiet, "Terse output");

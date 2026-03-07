@@ -879,8 +879,8 @@ void camera_calib_guiDialog::OnbtnPoseEstimateNowClick(wxCommandEvent& event)
 {
   // Disabled in v3: CPnP was removed from mrpt_vision
   wxMessageBox(
-      _("Pose estimation via PnP is not available in MRPT v3."),
-      _("Not available"), wxICON_INFORMATION, this);
+      _("Pose estimation via PnP is not available in MRPT v3."), _("Not available"),
+      wxICON_INFORMATION, this);
 }
 
 void camera_calib_guiDialog::OnbtnSaveImagesClick(wxCommandEvent& event)

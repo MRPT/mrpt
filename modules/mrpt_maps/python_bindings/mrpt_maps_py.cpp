@@ -73,8 +73,9 @@ PYBIND11_MODULE(_bindings, m)
           },
           "i"_a, "Returns (x, y, z) tuple for point i")
       .def(
-          "insertPoint", [](mrpt::maps::CPointsMap& mp, float x, float y, float z)
-          { mp.insertPoint(x, y, z); }, "x"_a, "y"_a, "z"_a = 0.0f)
+          "insertPoint",
+          [](mrpt::maps::CPointsMap& mp, float x, float y, float z) { mp.insertPoint(x, y, z); },
+          "x"_a, "y"_a, "z"_a = 0.0f)
       // NumPy integration — get all points as Nx3 float32 array
       .def(
           "getPointsAsNumpy",
@@ -157,9 +158,10 @@ PYBIND11_MODULE(_bindings, m)
           [](const mrpt::maps::COccupancyGridMap2D& g, float x, float y) { return g.getPos(x, y); },
           "x"_a, "y"_a, "Get occupancy probability at metric position (x,y)")
       .def(
-          "setPos", [](mrpt::maps::COccupancyGridMap2D& g, float x, float y, float val)
-          { g.setPos(x, y, val); }, "x"_a, "y"_a, "value"_a,
-          "Set occupancy probability at metric position (x,y)")
+          "setPos",
+          [](mrpt::maps::COccupancyGridMap2D& g, float x, float y, float val)
+          { g.setPos(x, y, val); },
+          "x"_a, "y"_a, "value"_a, "Set occupancy probability at metric position (x,y)")
       // Index ↔ metric conversion
       .def(
           "x2idx", [](const mrpt::maps::COccupancyGridMap2D& g, float x) { return g.x2idx(x); },
@@ -174,7 +176,8 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           "loadFromBitmapFile",
           [](mrpt::maps::COccupancyGridMap2D& g, const std::string& file, float resolution)
-          { return g.loadFromBitmapFile(file, resolution); }, "file"_a, "resolution"_a)
+          { return g.loadFromBitmapFile(file, resolution); },
+          "file"_a, "resolution"_a)
       .def(
           "loadFromROSMapServerYAML", &mrpt::maps::COccupancyGridMap2D::loadFromROSMapServerYAML,
           "yamlFilePath"_a, "Load a ROS map_server YAML + PNG/PGM file pair")

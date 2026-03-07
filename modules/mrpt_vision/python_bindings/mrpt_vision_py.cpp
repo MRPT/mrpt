@@ -106,7 +106,8 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           "getOctave",
           [](const mrpt::vision::CImagePyramid& p, size_t octave) -> const mrpt::img::CImage&
-          { return p.images[octave]; }, "octave"_a, py::return_value_policy::reference_internal,
+          { return p.images[octave]; },
+          "octave"_a, py::return_value_policy::reference_internal,
           "Get the CImage for a given pyramid octave (0=original)")
       .def(
           "octaveCount", [](const mrpt::vision::CImagePyramid& p) { return p.images.size(); },

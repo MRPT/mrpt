@@ -1055,10 +1055,9 @@ void NavlogViewerApp::updateVisualization()
   if (m_cbShowAllDebugFields->checked())
   {
     for (const auto& e : log.timestamps)
-      ADD_WIN_TEXTMSG(
-          mrpt::format(
-              "Timestamp %-20s=%s", e.first.c_str(),
-              mrpt::system::dateTimeLocalToString(e.second).c_str()));
+      ADD_WIN_TEXTMSG(mrpt::format(
+          "Timestamp %-20s=%s", e.first.c_str(),
+          mrpt::system::dateTimeLocalToString(e.second).c_str()));
   }
 
   {
@@ -1075,27 +1074,23 @@ void NavlogViewerApp::updateVisualization()
     }
   }
 
-  ADD_WIN_TEXTMSG(
-      mrpt::format(
-          "cmd_vel=%s", log.cmd_vel ? log.cmd_vel->asString().c_str() : "NOP (Continue last PTG)"));
+  ADD_WIN_TEXTMSG(mrpt::format(
+      "cmd_vel=%s", log.cmd_vel ? log.cmd_vel->asString().c_str() : "NOP (Continue last PTG)"));
 
-  ADD_WIN_TEXTMSG(
-      mrpt::format(
-          "cur_vel      =[%.02f m/s, %0.2f m/s, %.02f dps]", log.cur_vel.vx, log.cur_vel.vy,
-          mrpt::RAD2DEG(log.cur_vel.omega)));
-  ADD_WIN_TEXTMSG(
-      mrpt::format(
-          "cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]", log.cur_vel_local.vx,
-          log.cur_vel_local.vy, mrpt::RAD2DEG(log.cur_vel_local.omega)));
+  ADD_WIN_TEXTMSG(mrpt::format(
+      "cur_vel      =[%.02f m/s, %0.2f m/s, %.02f dps]", log.cur_vel.vx, log.cur_vel.vy,
+      mrpt::RAD2DEG(log.cur_vel.omega)));
+  ADD_WIN_TEXTMSG(mrpt::format(
+      "cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]", log.cur_vel_local.vx, log.cur_vel_local.vy,
+      mrpt::RAD2DEG(log.cur_vel_local.omega)));
 
   {
     static TPose2D formerPoseLoc = log.robotPoseLocalization;
 
-    ADD_WIN_TEXTMSG(
-        mrpt::format(
-            "robot_pose    =%35s | Increment since last step=%s",
-            log.robotPoseLocalization.asString().c_str(),
-            (log.robotPoseLocalization - formerPoseLoc).asString().c_str()));
+    ADD_WIN_TEXTMSG(mrpt::format(
+        "robot_pose    =%35s | Increment since last step=%s",
+        log.robotPoseLocalization.asString().c_str(),
+        (log.robotPoseLocalization - formerPoseLoc).asString().c_str()));
 
     formerPoseLoc = log.robotPoseLocalization;
   }
@@ -1103,11 +1098,10 @@ void NavlogViewerApp::updateVisualization()
   {
     static TPose2D formerPoseOdo = log.robotPoseOdometry;
 
-    ADD_WIN_TEXTMSG(
-        mrpt::format(
-            "robot_odometry=%35s | Increment since last step=%s",
-            log.robotPoseOdometry.asString().c_str(),
-            (log.robotPoseOdometry - formerPoseOdo).asString().c_str()));
+    ADD_WIN_TEXTMSG(mrpt::format(
+        "robot_odometry=%35s | Increment since last step=%s",
+        log.robotPoseOdometry.asString().c_str(),
+        (log.robotPoseOdometry - formerPoseOdo).asString().c_str()));
 
     formerPoseOdo = log.robotPoseOdometry;
   }
@@ -1166,10 +1160,9 @@ void NavlogViewerApp::updateVisualization()
         col);
   }
 
-  ADD_WIN_TEXTMSG(
-      mrpt::format(
-          "relPoseSense: %s relPoseVelCmd:%s", log.relPoseSense.asString().c_str(),
-          log.relPoseVelCmd.asString().c_str()));
+  ADD_WIN_TEXTMSG(mrpt::format(
+      "relPoseSense: %s relPoseVelCmd:%s", log.relPoseSense.asString().c_str(),
+      log.relPoseVelCmd.asString().c_str()));
 
   if (m_cbShowAllDebugFields->checked())
   {
