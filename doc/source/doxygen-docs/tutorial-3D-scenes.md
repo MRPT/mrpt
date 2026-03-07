@@ -16,10 +16,8 @@ If you prefer directly jumping to example code, see:
 In MRPT 3.0, the 3D scene graph and the OpenGL rendering code live in two
 separate modules:
 
-| Module          | Namespace        | Purpose                                             |
-|-----------------|------------------|-----------------------------------------------------|
-| **mrpt_viz**    | `mrpt::viz`      | Abstract scene graph. No OpenGL/GPU dependencies.   |
-| **mrpt_opengl** | `mrpt::opengl`   | GPU rendering, shaders, textures, OpenGL calls.     |
+- **mrpt_viz** (namespace `mrpt::viz`): Abstract scene graph. No OpenGL/GPU dependencies.
+- **mrpt_opengl** (namespace `mrpt::opengl`): GPU rendering, shaders, textures, OpenGL calls.
 
 **mrpt_viz** defines all the visual primitives (CBox, CSphere, CGridPlaneXY,
 CPointCloud, etc.), the scene container (Scene), viewports (Viewport), and
