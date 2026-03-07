@@ -58,11 +58,15 @@ void TestInitMatrix()
   const double numbers2[] = {0.5, 4.5, 6.7, 8.9, 15.2};
   mrpt::math::CVectorDouble v1;
   mrpt::math::loadVector(v1, numbers2);
-  std::cout << "Initialized double vector: " << v1 << "\n";
+  std::cout << "Initialized double vector: ";
+  for (auto x : v1) std::cout << x << " ";
+  std::cout << "\n";
 
   std::vector<int> v2;
   mrpt::math::loadVector(v2, numbers2);
-  std::cout << "Initialized int vector: " << v2 << "\n";
+  std::cout << "Initialized int vector: ";
+  for (auto x : v2) std::cout << x << " ";
+  std::cout << "\n";
 
   /*	// I/O Test
     CMatrixD  B(M);
@@ -170,7 +174,9 @@ void TestMatrixTemplate()
   mrpt::math::CMatrixDouble eigenVectors;
   std::vector<double> eigenValues;
   M.eig(eigenVectors, eigenValues);
-  std::cout << "eigenVectors:\n" << eigenVectors << "\n Eigenvalues:\n" << eigenValues;
+  std::cout << "eigenVectors:\n" << eigenVectors << "\n Eigenvalues:\n";
+  for (auto x : eigenValues) std::cout << x << " ";
+  std::cout << "\n";
 
   mrpt::math::CMatrixDouble D;
   D.setDiagonal(eigenValues);

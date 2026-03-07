@@ -142,13 +142,15 @@ static void renderer_thread_impl(const std::string name, const int period_ms, co
 
   // here you can put your preferred camera rendering position
   {
-    auto& camera = render.getCamera(*commonScene);
+    mrpt::viz::CCamera camera;
     camera.setOrthogonal(false);
 
     auto lck = mrpt::lockHelper(rngMtx);
     camera.setZoomDistance(rng.drawUniform(15.0, 40.0));
     camera.setElevationDegrees(rng.drawUniform(20.0, 70.0));
     camera.setAzimuthDegrees(rng.drawUniform(-60.0, 60.0));
+
+    render.setCamera(camera);
 
 #if 0
 		mrpt::containers::yaml d = mrpt::containers::yaml::Map();
@@ -225,7 +227,7 @@ static void viz_thread()
       }
 
       // update image:
-      r.img.textOut(5, 5, r.labelText, mrpt::img::TColor::white());
+      r.img.textOut({5, 5}, r.labelText, mrpt::img::TColor::white());
       win->showImage(r.img);
     }
 
