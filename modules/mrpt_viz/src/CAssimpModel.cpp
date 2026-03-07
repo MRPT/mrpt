@@ -17,7 +17,7 @@
 #include <mrpt/viz/CAssimpModel.h>
 #include <mrpt/viz/CSetOfTexturedTriangles.h>
 #include <mrpt/viz/CSetOfTriangles.h>
-#include <mrpt/viz/config.h>
+#include <mrpt/viz/config.h>  // MRPT_HAS_ASSIMP
 
 #include <iostream>
 

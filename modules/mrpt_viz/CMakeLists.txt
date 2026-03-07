@@ -41,6 +41,7 @@ endif ()
 # define lib:
 set(LIB_SOURCES
   src/CArrow.cpp
+  src/CAnimatedAssimpModel.cpp
   src/CAssimpModel.cpp
   src/CAxis.cpp
   src/CBox.cpp
@@ -101,6 +102,7 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/viz/CBox.h
   include/mrpt/viz/CTextMessageCapable.h
   include/mrpt/viz/CAxis.h
+  include/mrpt/viz/CAnimatedAssimpModel.h
   include/mrpt/viz/pose_pdfs.h
   include/mrpt/viz/COctoMapVoxels.h
   include/mrpt/viz/CVectorField3D.h
