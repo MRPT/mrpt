@@ -25,7 +25,7 @@
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
-using namespace mrpt::gui;
+// mrpt::gui not used in this example
 using namespace mrpt::system;
 using namespace std;
 
@@ -53,9 +53,6 @@ void Test_RPLIDAR()
 
   // Set the laser serial port:
   laser.setSerialPort(serName);
-
-  // Show GUI preview:
-  laser.showPreview(true);
 
   // Config: Use defaults + selected port ( serial or ethernet )
   printf("Turning laser ON...\n");

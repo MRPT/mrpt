@@ -12,11 +12,11 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/examples_config.h>
+// MRPT_EXAMPLES_BASE_DIRECTORY provided via compile definition
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/opengl/CText.h>
-#include <mrpt/opengl/CTexturedPlane.h>
+#include <mrpt/viz/CText.h>
+#include <mrpt/viz/CTexturedPlane.h>
 
 #include <chrono>
 #include <iostream>
@@ -28,7 +28,7 @@ const std::string myTestFile(
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::math;
 using namespace mrpt::img;
 
@@ -77,12 +77,12 @@ void TextureSizes_test()
 
   if (true)
   {
-    opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create(-3, 3, -3, 3);
+    viz::CTexturedPlane::Ptr obj = viz::CTexturedPlane::Create(-3, 3, -3, 3);
     obj->assignImage(imgCol_N);
     obj->setLocation(off_x, 0, 0);
     theScene->insert(obj);
 
-    opengl::CText::Ptr gl_txt = opengl::CText::Create("Color texture, random size, w/o transp");
+    viz::CText::Ptr gl_txt = viz::CText::Create("Color texture, random size, w/o transp");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -90,12 +90,12 @@ void TextureSizes_test()
 
   if (true)
   {
-    opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create(-3, 3, -3, 3);
+    viz::CTexturedPlane::Ptr obj = viz::CTexturedPlane::Create(-3, 3, -3, 3);
     obj->assignImage(imgCol_N, transpMask_N);
     obj->setLocation(off_x, 0, 0);
     theScene->insert(obj);
 
-    opengl::CText::Ptr gl_txt = opengl::CText::Create("Color texture, random size, with transp");
+    viz::CText::Ptr gl_txt = viz::CText::Create("Color texture, random size, with transp");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -103,12 +103,12 @@ void TextureSizes_test()
 
   if (true)
   {
-    opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create(-3, 3, -3, 3);
+    viz::CTexturedPlane::Ptr obj = viz::CTexturedPlane::Create(-3, 3, -3, 3);
     obj->assignImage(imgBW_N);
     obj->setLocation(off_x, 0, 0);
     theScene->insert(obj);
 
-    opengl::CText::Ptr gl_txt = opengl::CText::Create("B/W texture, random size, w/o transp");
+    viz::CText::Ptr gl_txt = viz::CText::Create("B/W texture, random size, w/o transp");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -116,12 +116,12 @@ void TextureSizes_test()
 
   if (true)
   {
-    opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create(-3, 3, -3, 3);
+    viz::CTexturedPlane::Ptr obj = viz::CTexturedPlane::Create(-3, 3, -3, 3);
     obj->assignImage(imgBW_N, transpMask_N);
     obj->setLocation(off_x, 0, 0);
     theScene->insert(obj);
 
-    opengl::CText::Ptr gl_txt = opengl::CText::Create("B/W texture, random size, with transp");
+    viz::CText::Ptr gl_txt = viz::CText::Create("B/W texture, random size, with transp");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -129,12 +129,12 @@ void TextureSizes_test()
 
   if (true)
   {
-    opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create(-3, 3, -3, 3);
+    viz::CTexturedPlane::Ptr obj = viz::CTexturedPlane::Create(-3, 3, -3, 3);
     obj->assignImage(imgCol_2N);
     obj->setLocation(off_x, 0, 0);
     theScene->insert(obj);
 
-    opengl::CText::Ptr gl_txt = opengl::CText::Create("Color texture, 2^N size, w/o transp");
+    viz::CText::Ptr gl_txt = viz::CText::Create("Color texture, 2^N size, w/o transp");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -142,12 +142,12 @@ void TextureSizes_test()
 
   if (true)
   {
-    opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create(-3, 3, -3, 3);
+    viz::CTexturedPlane::Ptr obj = viz::CTexturedPlane::Create(-3, 3, -3, 3);
     obj->assignImage(imgCol_2N, transpMask_2N);
     obj->setLocation(off_x, 0, 0);
     theScene->insert(obj);
 
-    opengl::CText::Ptr gl_txt = opengl::CText::Create("Color texture, 2^N size, with transp");
+    viz::CText::Ptr gl_txt = viz::CText::Create("Color texture, 2^N size, with transp");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -155,12 +155,12 @@ void TextureSizes_test()
 
   if (true)
   {
-    opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create(-3, 3, -3, 3);
+    viz::CTexturedPlane::Ptr obj = viz::CTexturedPlane::Create(-3, 3, -3, 3);
     obj->assignImage(imgBW_2N);
     obj->setLocation(off_x, 0, 0);
     theScene->insert(obj);
 
-    opengl::CText::Ptr gl_txt = opengl::CText::Create("B/W texture, 2^N size, w/o transp");
+    viz::CText::Ptr gl_txt = viz::CText::Create("B/W texture, 2^N size, w/o transp");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }
@@ -168,12 +168,12 @@ void TextureSizes_test()
 
   if (true)
   {
-    opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create(-3, 3, -3, 3);
+    viz::CTexturedPlane::Ptr obj = viz::CTexturedPlane::Create(-3, 3, -3, 3);
     obj->assignImage(imgBW_2N, transpMask_2N);
     obj->setLocation(off_x, 0, 0);
     theScene->insert(obj);
 
-    opengl::CText::Ptr gl_txt = opengl::CText::Create("B/W texture, 2^N size, with transp");
+    viz::CText::Ptr gl_txt = viz::CText::Create("B/W texture, 2^N size, with transp");
     gl_txt->setLocation(off_x, off_y_label, 0);
     theScene->insert(gl_txt);
   }

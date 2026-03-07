@@ -29,7 +29,7 @@ using namespace mrpt::system;
 using namespace mrpt::img;
 using namespace std;
 
-#include <mrpt/examples_config.h>
+// MRPT_EXAMPLES_BASE_DIRECTORY provided via compile definition
 string myExampleImage(MRPT_EXAMPLES_BASE_DIRECTORY + string("img_basic_example/frame_color.jpg"));
 
 class MyObserver : public mrpt::system::CObserver
@@ -78,8 +78,8 @@ void TestGuiWindowsEvents()
 
   {
     mrpt::img::CImage img(300, 300, CH_RGB);
-    img.filledRectangle(0, 0, 300, 300, TColor(0, 0, 255));
-    img.textOut(50, 50, "Hello world!", TColor(255, 255, 255));
+    img.filledRectangle({0, 0}, {300, 300}, TColor(0, 0, 255));
+    img.textOut({50, 50}, "Hello world!", TColor(255, 255, 255));
     win2D.showImage(img);
   }
 

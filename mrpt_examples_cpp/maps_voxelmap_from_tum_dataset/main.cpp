@@ -14,16 +14,16 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/io/lazy_load_path.h>
-#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CVoxelMapRGB.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/opengl/CFrustum.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/COctoMapVoxels.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/viz/CFrustum.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/COctoMapVoxels.h>
+#include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/stock_objects.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
@@ -80,33 +80,33 @@ void TestVoxelMapFromTUM(
   // gui and demo app:
   mrpt::gui::CDisplayWindow3D win("VoxelMap demo", 640, 480);
 
-  auto glVoxels = mrpt::opengl::COctoMapVoxels::Create();
+  auto glVoxels = mrpt::viz::COctoMapVoxels::Create();
 
   // *IMPORTANT*: Required to see RGB color in the opengl visualization:
-  glVoxels->setVisualizationMode(mrpt::opengl::COctoMapVoxels::COLOR_FROM_RGB_DATA);
+  glVoxels->setVisualizationMode(mrpt::viz::COctoMapVoxels::COLOR_FROM_RGB_DATA);
 
   // create GL visual objects:
-  auto glCamGroup = mrpt::opengl::CSetOfObjects::Create();
-  glCamGroup->insert(mrpt::opengl::stock_objects::CornerXYZSimple(0.3));
-  auto glObsPts = mrpt::opengl::CPointCloudColoured::Create();
+  auto glCamGroup = mrpt::viz::CSetOfObjects::Create();
+  glCamGroup->insert(mrpt::viz::stock_objects::CornerXYZSimple(0.3));
+  auto glObsPts = mrpt::viz::CPointCloudColoured::Create();
   glCamGroup->insert(glObsPts);
   bool glCamFrustrumDone = false;
 
-  mrpt::opengl::Viewport::Ptr glViewRGB;
+  mrpt::viz::Viewport::Ptr glViewRGB;
 
   {
-    mrpt::opengl::Scene::Ptr& scene = win.get3DSceneAndLock();
+    mrpt::viz::Scene::Ptr& scene = win.get3DSceneAndLock();
 
     // Set a large near plane so we can "see thru walls" easily when
     // approaching a point:
     scene->getViewport()->setViewportClipDistances(2.0, 200.0);
 
     {
-      auto gl_grid = mrpt::opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
+      auto gl_grid = mrpt::viz::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
       gl_grid->setColor_u8(mrpt::img::TColor(0x80, 0x80, 0x80));
       scene->insert(gl_grid);
     }
-    scene->insert(mrpt::opengl::stock_objects::CornerXYZSimple());
+    scene->insert(mrpt::viz::stock_objects::CornerXYZSimple());
 
     scene->insert(glCamGroup);
 
@@ -160,7 +160,7 @@ void TestVoxelMapFromTUM(
           obs->sensorPose = mrpt::poses::CPose3D::FromYawPitchRoll(0.0_deg, -90.0_deg, 90.0_deg);
 
           // draw observation raw data:
-          mrpt::maps::CColouredPointsMap colPts;
+          mrpt::maps::CSimplePointsMap colPts;
 
           mrpt::obs::T3DPointsProjectionParams pp;
           pp.takeIntoAccountSensorPoseOnRobot = true;
@@ -172,7 +172,7 @@ void TestVoxelMapFromTUM(
           {
             glCamFrustrumDone = true;
             auto glFrustrum =
-                mrpt::opengl::CFrustum::Create(obs->cameraParamsIntensity, 1e-3 /*focalDistScale*/);
+                mrpt::viz::CFrustum::Create(obs->cameraParamsIntensity, 1e-3 /*focalDistScale*/);
             glFrustrum->setPose(obs->sensorPose);
             glCamGroup->insert(glFrustrum);
           }

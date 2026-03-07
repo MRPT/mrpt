@@ -28,7 +28,7 @@ using namespace mrpt::math;
 using namespace mrpt::img;
 using namespace std;
 
-#include <mrpt/examples_config.h>
+// MRPT_EXAMPLES_BASE_DIRECTORY provided via compile definition
 const string sample_simplemap_file =
     MRPT_EXAMPLES_BASE_DIRECTORY + string("../share/mrpt/datasets/localization_demo.simplemap.gz");
 

@@ -16,9 +16,9 @@
 #include <mrpt/maps/CVoxelMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/stock_observations.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/COctoMapVoxels.h>
-#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/COctoMapVoxels.h>
+#include <mrpt/viz/stock_objects.h>
 #include <mrpt/system/os.h>
 
 #include <chrono>
@@ -70,17 +70,17 @@ void TestVoxelMap()
 
   mrpt::gui::CDisplayWindow3D win("VoxelMap demo", 640, 480);
 
-  auto gl_map = mrpt::opengl::COctoMapVoxels::Create();
+  auto gl_map = mrpt::viz::COctoMapVoxels::Create();
 
   {
-    mrpt::opengl::Scene::Ptr& scene = win.get3DSceneAndLock();
+    mrpt::viz::Scene::Ptr& scene = win.get3DSceneAndLock();
 
     {
-      auto gl_grid = mrpt::opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
+      auto gl_grid = mrpt::viz::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
       gl_grid->setColor_u8(mrpt::img::TColor(0x80, 0x80, 0x80));
       scene->insert(gl_grid);
     }
-    scene->insert(mrpt::opengl::stock_objects::CornerXYZSimple());
+    scene->insert(mrpt::viz::stock_objects::CornerXYZSimple());
 
     map.getAsOctoMapVoxels(*gl_map);
 
@@ -92,8 +92,8 @@ void TestVoxelMap()
     }
 
     gl_map->showGridLines(false);
-    gl_map->showVoxels(mrpt::opengl::VOXEL_SET_OCCUPIED, true);
-    gl_map->showVoxels(mrpt::opengl::VOXEL_SET_FREESPACE, true);
+    gl_map->showVoxels(mrpt::viz::VOXEL_SET_OCCUPIED, true);
+    gl_map->showVoxels(mrpt::viz::VOXEL_SET_FREESPACE, true);
     scene->insert(gl_map);
 
     win.unlockAccess3DScene();
@@ -118,14 +118,14 @@ void TestVoxelMap()
         case 'f':
         case 'F':
           gl_map->showVoxels(
-              mrpt::opengl::VOXEL_SET_FREESPACE,
-              !gl_map->areVoxelsVisible(mrpt::opengl::VOXEL_SET_FREESPACE));
+              mrpt::viz::VOXEL_SET_FREESPACE,
+              !gl_map->areVoxelsVisible(mrpt::viz::VOXEL_SET_FREESPACE));
           break;
         case 'o':
         case 'O':
           gl_map->showVoxels(
-              mrpt::opengl::VOXEL_SET_OCCUPIED,
-              !gl_map->areVoxelsVisible(mrpt::opengl::VOXEL_SET_OCCUPIED));
+              mrpt::viz::VOXEL_SET_OCCUPIED,
+              !gl_map->areVoxelsVisible(mrpt::viz::VOXEL_SET_OCCUPIED));
           break;
         case 'l':
         case 'L':
@@ -144,8 +144,8 @@ void TestVoxelMap()
           mrpt::format(
               "Commands: 'f' (freespace=%s) | 'o' (occupied=%s) | 'l' "
               "(lights=%s)",
-              gl_map->areVoxelsVisible(mrpt::opengl::VOXEL_SET_FREESPACE) ? "YES" : "NO",
-              gl_map->areVoxelsVisible(mrpt::opengl::VOXEL_SET_OCCUPIED) ? "YES" : "NO",
+              gl_map->areVoxelsVisible(mrpt::viz::VOXEL_SET_FREESPACE) ? "YES" : "NO",
+              gl_map->areVoxelsVisible(mrpt::viz::VOXEL_SET_OCCUPIED) ? "YES" : "NO",
               gl_map->areLightsEnabled() ? "YES" : "NO"));
 
       win.repaint();

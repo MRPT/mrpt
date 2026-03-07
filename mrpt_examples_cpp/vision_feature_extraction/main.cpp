@@ -26,7 +26,7 @@ using namespace mrpt::system;
 using namespace std;
 using mrpt::format;
 
-#include <mrpt/examples_config.h>
+// MRPT_EXAMPLES_BASE_DIRECTORY provided via compile definition
 string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("img_convolution_fft/"));
 const string the_img_for_extract_feats = myDataDir + string("test_image.jpg");
 

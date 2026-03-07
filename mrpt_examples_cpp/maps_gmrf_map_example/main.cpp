@@ -14,8 +14,8 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/maps/CGasConcentrationGridMap2D.h>
-#include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/stock_objects.h>
 #include <mrpt/random.h>
 
 #include <iostream>
@@ -70,7 +70,7 @@ void Example_GMRF()
   gasmap.setCellsConnectivity(conn);
   gasmap.clear();  // for the connectivity to be taken into account.
 
-  auto gl_data = mrpt::opengl::CPointCloud::Create();
+  auto gl_data = mrpt::viz::CPointCloud::Create();
   gl_data->setPointSize(3.0f);
 
   for (int i = 0; i < 20; i++)
@@ -93,8 +93,8 @@ void Example_GMRF()
 
   mrpt::gui::CDisplayWindow3D win("Map", 640, 480);
 
-  mrpt::opengl::Scene::Ptr& scene = win.get3DSceneAndLock();
-  scene->insert(mrpt::opengl::stock_objects::CornerXYZSimple(1.0f, 4.0f));
+  mrpt::viz::Scene::Ptr& scene = win.get3DSceneAndLock();
+  scene->insert(mrpt::viz::stock_objects::CornerXYZSimple(1.0f, 4.0f));
   scene->insert(gl_data);
   scene->insert(glObj);
   win.unlockAccess3DScene();

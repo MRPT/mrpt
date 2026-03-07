@@ -31,7 +31,7 @@ using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace std;
 
-#include <mrpt/examples_config.h>
+// MRPT_EXAMPLES_BASE_DIRECTORY provided via compile definition
 string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("maps_gridmap_benchmark/"));
 
 // Default .ini file:

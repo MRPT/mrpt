@@ -15,9 +15,9 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CSetOfLines.h>
+#include <mrpt/viz/stock_objects.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFSOG.h>
@@ -112,23 +112,23 @@ void TestRANSAC()
 
   const size_t nObs = NUM_OBSERVATIONS_TO_SIMUL;
 
-  mrpt::opengl::CPointCloud::Ptr gl_obs_map = mrpt::opengl::CPointCloud::Create();
-  mrpt::opengl::CPointCloud::Ptr gl_result = mrpt::opengl::CPointCloud::Create();
-  mrpt::opengl::CSetOfObjects::Ptr gl_obs = mrpt::opengl::CSetOfObjects::Create();
-  mrpt::opengl::CSetOfObjects::Ptr gl_obs_txts = mrpt::opengl::CSetOfObjects::Create();
-  mrpt::opengl::CSetOfLines::Ptr gl_lines = mrpt::opengl::CSetOfLines::Create();
+  mrpt::viz::CPointCloud::Ptr gl_obs_map = mrpt::viz::CPointCloud::Create();
+  mrpt::viz::CPointCloud::Ptr gl_result = mrpt::viz::CPointCloud::Create();
+  mrpt::viz::CSetOfObjects::Ptr gl_obs = mrpt::viz::CSetOfObjects::Create();
+  mrpt::viz::CSetOfObjects::Ptr gl_obs_txts = mrpt::viz::CSetOfObjects::Create();
+  mrpt::viz::CSetOfLines::Ptr gl_lines = mrpt::viz::CSetOfLines::Create();
   {
-    mrpt::opengl::Scene::Ptr& scene = win.get3DSceneAndLock();
+    mrpt::viz::Scene::Ptr& scene = win.get3DSceneAndLock();
 
     scene->getViewport("main")->setCustomBackgroundColor(TColorf(0.8f, 0.8f, 0.8f));
     win.setCameraPointingToPoint(MAP_SIZE_X * 0.5, MAP_SIZE_Y * 0.5, 0);
     win.setCameraZoom(2 * MAP_SIZE_X);
 
     //
-    scene->insert(mrpt::opengl::stock_objects::CornerXYZ());
+    scene->insert(mrpt::viz::stock_objects::CornerXYZ());
 
     //
-    mrpt::opengl::CPointCloud::Ptr gl_map = mrpt::opengl::CPointCloud::Create();
+    mrpt::viz::CPointCloud::Ptr gl_map = mrpt::viz::CPointCloud::Create();
     gl_map->loadFromPointsMap(&the_map);
     gl_map->setColor(0, 0, 1);
     gl_map->setPointSize(3);
@@ -138,8 +138,8 @@ void TestRANSAC()
 #if SHOW_POINT_LABELS
     for (size_t i = 0; i < the_map.size(); i++)
     {
-      mrpt::opengl::CText::Ptr gl_txt =
-          mrpt::opengl::CText::Create(mrpt::format("%u", static_cast<unsigned int>(i)));
+      mrpt::viz::CText::Ptr gl_txt =
+          mrpt::viz::CText::Create(mrpt::format("%u", static_cast<unsigned int>(i)));
       double x, y;
       the_map.getPoint(i, x, y);
       gl_txt->setLocation(x + 0.05, y + 0.05, 0.01);
@@ -159,7 +159,7 @@ void TestRANSAC()
     gl_result->setPointSize(4);
 
     //
-    gl_obs->insert(mrpt::opengl::stock_objects::CornerXYZ(0.6f));
+    gl_obs->insert(mrpt::viz::stock_objects::CornerXYZ(0.6f));
     gl_obs->insert(gl_obs_map);
     gl_obs->insert(gl_obs_txts);
     scene->insert(gl_obs);
@@ -294,7 +294,7 @@ void TestRANSAC()
     cout << "Ground truth pose: " << GT_pose << endl;
 
     {
-      // mrpt::opengl::Scene::Ptr &scene =
+      // mrpt::viz::Scene::Ptr &scene =
       win.get3DSceneAndLock();
 
       win.addTextMessage(
@@ -314,8 +314,8 @@ void TestRANSAC()
       gl_obs_txts->clear();
       for (size_t i = 0; i < nObs; i++)
       {
-        mrpt::opengl::CText::Ptr gl_txt =
-            mrpt::opengl::CText::Create(mrpt::format("%u", static_cast<unsigned int>(i)));
+        mrpt::viz::CText::Ptr gl_txt =
+            mrpt::viz::CText::Create(mrpt::format("%u", static_cast<unsigned int>(i)));
         const double x = observations[i].x;
         const double y = observations[i].y;
         gl_txt->setLocation(x + 0.05, y + 0.05, 0.01);

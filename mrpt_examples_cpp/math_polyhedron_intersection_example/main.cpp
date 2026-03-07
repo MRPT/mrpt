@@ -14,20 +14,20 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/math/TObject3D.h>
-#include <mrpt/opengl/CAngularObservationMesh.h>
-#include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CPolyhedron.h>
+#include <mrpt/viz/CAngularObservationMesh.h>
+#include <mrpt/viz/CAxis.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CPolyhedron.h>
 
 #include <iostream>
 
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::poses;
 using namespace mrpt::math;
-using mrpt::opengl::CAngularObservationMesh;
+using mrpt::viz::CAngularObservationMesh;
 using namespace mrpt::system;
 
 const double GRID_R = 1.0;
@@ -44,7 +44,7 @@ inline double MYRAND1(size_t prec = 64)
   return static_cast<double>(rand() % prec) / static_cast<double>(prec - 1);
 }
 
-void randomColor(const CRenderizable::Ptr& obj, double alpha)
+void randomColor(const CVisualObject::Ptr& obj, double alpha)
 {
   obj->setColor(MYRAND1(), MYRAND1(), MYRAND1(), alpha);
 }
@@ -144,7 +144,7 @@ void display()
   CDisplayWindow3D window("Polyhedra Intersection demo", 640, 480);
   window.resize(640, 480);
   Scene::Ptr scene1 = Scene::Create();
-  opengl::CGridPlaneXY::Ptr plane1 = CGridPlaneXY::Create(-25, 25, -25, 25, 0, 1);
+  viz::CGridPlaneXY::Ptr plane1 = CGridPlaneXY::Create(-25, 25, -25, 25, 0, 1);
   plane1->setColor(GRID_R, GRID_G, GRID_B);
   scene1->insert(plane1);
   scene1->insert(CAxis::Create(-5, -5, -5, 5, 5, 5, 2.5, 3, true));

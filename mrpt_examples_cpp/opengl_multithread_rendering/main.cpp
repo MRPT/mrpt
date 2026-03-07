@@ -14,12 +14,12 @@
 
 #include <mrpt/containers/yaml.h>
 #include <mrpt/core/lock_helper.h>
-#include <mrpt/opengl/CAxis.h>
+#include <mrpt/viz/CAxis.h>
 #include <mrpt/opengl/CFBORender.h>
-#include <mrpt/opengl/CMesh.h>
-#include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/opengl/CSphere.h>
-#include <mrpt/opengl/Scene.h>
+#include <mrpt/viz/CMesh.h>
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CSphere.h>
+#include <mrpt/viz/Scene.h>
 #include <mrpt/random.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/filesystem.h>
@@ -45,29 +45,29 @@ auto& rng = mrpt::random::getRandomGenerator();
 std::mutex rngMtx;
 
 // sample scene:
-static mrpt::opengl::Scene::Ptr generate_example_scene()
+static mrpt::viz::Scene::Ptr generate_example_scene()
 {
-  auto s = mrpt::opengl::Scene::Create();
+  auto s = mrpt::viz::Scene::Create();
 
   {
-    auto obj = mrpt::opengl::CAxis::Create(-5, -5, -5, 5, 5, 5);
+    auto obj = mrpt::viz::CAxis::Create(-5, -5, -5, 5, 5, 5);
     s->insert(obj);
   }
   {
-    auto obj = mrpt::opengl::CSphere::Create(1.0f);
+    auto obj = mrpt::viz::CSphere::Create(1.0f);
     obj->setColor_u8(0xff, 0x00, 0x00);
     obj->setLocation({1.0, 1.0, 1.0});
     s->insert(obj);
   }
   {
-    auto obj = mrpt::opengl::CSphere::Create(0.25f);
+    auto obj = mrpt::viz::CSphere::Create(0.25f);
     obj->setColor_u8(0x00, 0x00, 0xff);
     obj->setLocation({-1.0, -1.0, 0.25});
     obj->enableDrawSolid3D(false);
     s->insert(obj);
   }
   {
-    auto obj = mrpt::opengl::CPointCloud::Create();
+    auto obj = mrpt::viz::CPointCloud::Create();
 
     auto lck = mrpt::lockHelper(rngMtx);
     for (int i = 0; i < 200; i++)
@@ -84,7 +84,7 @@ static mrpt::opengl::Scene::Ptr generate_example_scene()
     const std::string texture_file =
         mrpt::system::getShareMRPTDir() + "datasets/sample-texture-terrain.jpg"s;
 
-    auto obj = mrpt::opengl::CMesh::Create();
+    auto obj = mrpt::viz::CMesh::Create();
 
     mrpt::img::CImage im;
 
@@ -98,7 +98,7 @@ static mrpt::opengl::Scene::Ptr generate_example_scene()
       obj->setZ(Z);
       obj->assignImageAndZ(im, Z);
       obj->setLocation(-5, 0, 0);
-      obj->cullFaces(mrpt::opengl::TCullFace::BACK);
+      obj->cullFaces(mrpt::viz::TCullFace::BACK);
     }
     s->insert(obj);
   }
@@ -106,7 +106,7 @@ static mrpt::opengl::Scene::Ptr generate_example_scene()
   return s;
 }
 
-mrpt::opengl::Scene::Ptr commonScene;
+mrpt::viz::Scene::Ptr commonScene;
 mrpt::system::CTimeLogger profiler;
 
 struct RenderResult
@@ -294,7 +294,7 @@ static void viz_thread()
               sw.win->setPosition({5 + 100 * (subWindows.size() - 1), 10});
               sw.win->setFixedWidth(350);
               {
-                auto scene = mrpt::opengl::Scene::Create();
+                auto scene = mrpt::viz::Scene::Create();
                 auto lck = mrpt::lockHelper(sw.glControl->scene_mtx);
                 sw.glControl->scene = std::move(scene);
               }

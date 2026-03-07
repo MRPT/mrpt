@@ -24,6 +24,7 @@ mrpt_add_executable(
     holonomic_navigator_demoMain.h
     MyGLCanvas.cpp
     MyGLCanvas.h
+    ../wxThings/src/toggle.cpp
   LINK_LIBRARIES
     mrpt::mrpt_nav
     mrpt::mrpt_gui

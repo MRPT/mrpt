@@ -14,6 +14,7 @@ find_package(mrpt_gui REQUIRED)
 find_package(mrpt_opengl REQUIRED)
 find_package(mrpt_vision REQUIRED)
 find_package(Qt5 COMPONENTS Widgets OpenGL REQUIRED)
+find_package(OpenGL REQUIRED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTORCC ON)
@@ -94,4 +95,5 @@ mrpt_add_executable(
     mrpt::mrpt_vision
     Qt5::Widgets
     Qt5::OpenGL
+    OpenGL::GL
 )

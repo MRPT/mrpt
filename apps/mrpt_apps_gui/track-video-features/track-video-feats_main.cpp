@@ -23,6 +23,7 @@
   ---------------------------------------------------------------*/
 
 #include <mrpt/gui/CDisplayWindow3D.h>     // For visualization windows
+#include <mrpt/apps_gui/CameraSelectionGUI.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>  // For capture of video from videos/cameras
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/serialization/CArchive.h>
@@ -247,16 +248,16 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
       mrpt::system::CTimeLoggerEntry tle(tracker->getProfiler(), "Display.textOut");
 
       theImg.selectTextFont("6x13B");
-      theImg.textOut(3, 3, format("FPS: %.03f Hz", fps), TColor(200, 200, 0));
+      theImg.textOut({3, 3}, format("FPS: %.03f Hz", fps), TColor(200, 200, 0));
       theImg.textOut(
-          3, 22,
+          {3, 22},
           format(
               "# feats: %u - Adaptive threshold: %i", (unsigned int)trackedFeats.size(),
               current_adapt_thres),
           TColor(200, 200, 0));
 
       theImg.textOut(
-          3, 41,
+          {3, 41},
           format(
               "# raw feats: %u - Removed: %u",
               (unsigned int)tracker->last_execution_extra_info.raw_FAST_feats_detected,
@@ -293,7 +294,7 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 
           for (; it != it_end; ++it)
           {
-            theImg.line(it_prev->x, it_prev->y, it->x, it->y, TColor(190, 190, 190));
+            theImg.line(*it_prev, *it, TColor(190, 190, 190));
             it_prev = it;
           }
         }
@@ -478,7 +479,7 @@ int main(int argc, char** argv)
               "Showing a GUI window to select the video source...\n";
       // If no camera opened so far, ask the user for one:
 
-      cam = mrpt::hwdrivers::prepareVideoSourceFromUserSelection();
+      cam = mrpt::apps::prepareVideoSourceFromUserSelection();
       if (!cam)
       {
         cerr << "No images source was correctly initialized! Exiting.\n";

@@ -16,7 +16,7 @@
 #include <mrpt/maps/COctoMap.h>
 #include <mrpt/obs/stock_observations.h>
 #include <mrpt/opengl.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/viz/CPlanarLaserScan.h>
 #include <mrpt/opengl/DefaultShaders.h>
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
@@ -32,7 +32,7 @@
 #endif
 
 // Demo of how to install a custom shader program:
-static void installCustomShader(mrpt::opengl::Scene& scene)
+static void installCustomShader(mrpt::viz::Scene& scene)
 {
 #if MRPT_HAS_OPENGL_GLUT
 
@@ -112,7 +112,7 @@ void main()
     THROW_EXCEPTION_FMT("Error compiling GL_FRAGMENT_SHADER:\n%s", errMsgs.c_str());
   }
 
-  auto shader = std::make_shared<mrpt::opengl::Program>();
+  auto shader = std::make_shared<mrpt::viz::Program>();
 
   if (!shader->linkProgram(lstShaders, errMsgs))
   {
@@ -143,7 +143,7 @@ void main()
   vp->loadDefaultShaders();
 
   // Overwrite the shaders we want to customize:
-  const auto id = mrpt::opengl::DefaultShaderID::TRIANGLES_NO_LIGHT;
+  const auto id = mrpt::viz::DefaultShaderID::TRIANGLES_NO_LIGHT;
   vp->shaders()[id] = std::move(shader);
 
 #endif
@@ -157,7 +157,7 @@ void DemoCustomShaders()
   using namespace std;
   using namespace mrpt;
   using namespace mrpt::gui;
-  using namespace mrpt::opengl;
+  using namespace mrpt::viz;
   using namespace mrpt::math;
   using namespace std::string_literals;
 
@@ -168,15 +168,15 @@ void DemoCustomShaders()
   float off_x = 0;
   // Box
   {
-    auto obj = opengl::CBox::Create(TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), true, 3.0);
+    auto obj = viz::CBox::Create(TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), true, 3.0);
     obj->setLocation(off_x, 0, 0);
     theScene->insert(obj);
 
-    auto obj2 = opengl::CBox::Create(TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), false);
+    auto obj2 = viz::CBox::Create(TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), false);
     obj2->setLocation(off_x, 4, 0);
     theScene->insert(obj2);
 
-    auto obj3 = opengl::CBox::Create(TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), false);
+    auto obj3 = viz::CBox::Create(TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), false);
     obj3->enableBoxBorder(true);
     obj3->setLineWidth(3);
     obj3->setColor_u8(0xff, 0x00, 0x00, 0xa0);

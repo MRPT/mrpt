@@ -20,8 +20,8 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/math/slerp.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/stock_objects.h>
 #include <mrpt/system/CTicTac.h>
 
 #include <chrono>
@@ -32,7 +32,7 @@ using namespace std;
 using namespace mrpt::literals;  // _deg
 using namespace mrpt::math;
 using namespace mrpt::gui;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::poses;
 using namespace mrpt::img;
 
@@ -53,7 +53,7 @@ void TestSLERP()
   // Modify the scene:
   // ------------------------------------------------------
   {
-    auto obj = mrpt::opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
+    auto obj = mrpt::viz::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
     obj->setColor(0.4f, 0.4f, 0.4f);
     theScene->insert(obj);
   }
@@ -64,19 +64,19 @@ void TestSLERP()
 
   {
     // XYZ corner at A:
-    auto obj = mrpt::opengl::stock_objects::CornerXYZSimple(1.0, 2.0);
+    auto obj = mrpt::viz::stock_objects::CornerXYZSimple(1.0, 2.0);
     obj->setPose(pose_a);
     theScene->insert(obj);
   }
   {
     // XYZ corner at B:
-    auto obj = mrpt::opengl::stock_objects::CornerXYZSimple(1.0, 2.0);
+    auto obj = mrpt::viz::stock_objects::CornerXYZSimple(1.0, 2.0);
     obj->setPose(pose_b);
     theScene->insert(obj);
   }
   {
     // SLERP animated corner:
-    auto obj = mrpt::opengl::stock_objects::CornerXYZSimple(1.0, 4.0);
+    auto obj = mrpt::viz::stock_objects::CornerXYZSimple(1.0, 4.0);
     obj->setName("slerp_obj");
     obj->setPose(pose_a);
     theScene->insert(obj);

@@ -23,7 +23,7 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::math;
 using namespace mrpt::obs;
 
@@ -61,7 +61,7 @@ void TestOpenGLVideo()
   Viewport::Ptr gl_view_aux;
   {
     Scene::Ptr& theScene = win2.get3DSceneAndLock();
-    theScene->insert(mrpt::opengl::CGridPlaneXY::Create());
+    theScene->insert(mrpt::viz::CGridPlaneXY::Create());
 
     // Create small auxiliary viewport
     gl_view_aux = theScene->createViewport("aux");

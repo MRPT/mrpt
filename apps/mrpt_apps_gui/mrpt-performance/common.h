@@ -44,7 +44,7 @@ void register_tests_math();
 void register_tests_image();
 void register_tests_scan_matching();
 void register_tests_feature_extraction();
-void register_tests_feature_matching();
+
 void register_tests_graph();
 void register_tests_graphslam();
 void register_tests_CObservation3DRangeScan();

@@ -16,8 +16,8 @@
 #include <mrpt/maps/COctoMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/stock_observations.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/COctoMapVoxels.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/COctoMapVoxels.h>
 #include <mrpt/system/os.h>
 
 #include <chrono>
@@ -33,7 +33,7 @@
 
 using namespace mrpt;
 using namespace mrpt::maps;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::math;
 using namespace mrpt::obs;
 using namespace std;
@@ -80,14 +80,14 @@ void TestOctoMap()
 
   mrpt::gui::CDisplayWindow3D win("OctoMap demo", 640, 480);
 
-  mrpt::opengl::COctoMapVoxels::Ptr gl_map = mrpt::opengl::COctoMapVoxels::Create();
+  mrpt::viz::COctoMapVoxels::Ptr gl_map = mrpt::viz::COctoMapVoxels::Create();
 
   {
-    mrpt::opengl::Scene::Ptr& scene = win.get3DSceneAndLock();
+    mrpt::viz::Scene::Ptr& scene = win.get3DSceneAndLock();
 
     {
-      mrpt::opengl::CGridPlaneXY::Ptr gl_grid =
-          mrpt::opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
+      mrpt::viz::CGridPlaneXY::Ptr gl_grid =
+          mrpt::viz::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
       gl_grid->setColor_u8(mrpt::img::TColor(0x80, 0x80, 0x80));
       scene->insert(gl_grid);
     }

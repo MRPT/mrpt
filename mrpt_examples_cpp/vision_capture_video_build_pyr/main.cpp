@@ -15,7 +15,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/img/TColor.h>
-#include <mrpt/opengl/Scene.h>
+#include <mrpt/viz/Scene.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/vision/CImagePyramid.h>
 #include <mrpt/vision/TKeyPoint.h>
@@ -28,7 +28,7 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::obs;
 using namespace mrpt::vision;
 using namespace mrpt::img;

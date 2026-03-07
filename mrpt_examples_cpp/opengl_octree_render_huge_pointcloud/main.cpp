@@ -15,7 +15,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/viz/CPointCloud.h>
 #include <mrpt/random.h>
 
 #include <chrono>
@@ -25,12 +25,12 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::gui;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::math;
 using namespace mrpt::img;
 
 void insertRandomPoints_uniform(
-    const size_t N, opengl::CPointCloud::Ptr& gl, const TPoint3D& p_min, const TPoint3D& p_max)
+    const size_t N, viz::CPointCloud::Ptr& gl, const TPoint3D& p_min, const TPoint3D& p_max)
 {
   auto& rnd = random::getRandomGenerator();
   for (size_t i = 0; i < N; i++)
@@ -40,7 +40,7 @@ void insertRandomPoints_uniform(
 }
 
 void insertRandomPoints_screw(
-    const size_t N, opengl::CPointCloud::Ptr& gl, const TPoint3D& p_start, const TPoint3D& p_end)
+    const size_t N, viz::CPointCloud::Ptr& gl, const TPoint3D& p_start, const TPoint3D& p_end)
 {
   TPoint3D d = p_end - p_start;
   d *= 1.0 / N;
@@ -62,7 +62,7 @@ void insertRandomPoints_screw(
 }
 
 void insertRandomPoints_gauss(
-    const size_t N, opengl::CPointCloud::Ptr& gl, const TPoint3D& p_mean, const TPoint3D& p_stddevs)
+    const size_t N, viz::CPointCloud::Ptr& gl, const TPoint3D& p_mean, const TPoint3D& p_stddevs)
 {
   auto& rnd = random::getRandomGenerator();
   for (size_t i = 0; i < N; i++)
@@ -85,7 +85,7 @@ void TestOctreeRenderHugePointCloud()
   Scene::Ptr& theScene = win.get3DSceneAndLock();
 
   // CPointCloud
-  opengl::CPointCloud::Ptr gl_pointcloud = opengl::CPointCloud::Create();
+  viz::CPointCloud::Ptr gl_pointcloud = viz::CPointCloud::Create();
   theScene->insert(gl_pointcloud);
 
   gl_pointcloud->setPointSize(3.0);
@@ -130,7 +130,7 @@ void TestOctreeRenderHugePointCloud()
   printf("Point count: %e\n", (double)gl_pointcloud->size());
 
   // Draw the octree bounding boxes:
-  mrpt::opengl::CSetOfObjects::Ptr gl_bb = mrpt::opengl::CSetOfObjects::Create();
+  mrpt::viz::CSetOfObjects::Ptr gl_bb = mrpt::viz::CSetOfObjects::Create();
   gl_pointcloud->octree_get_graphics_boundingboxes(*gl_bb);
   theScene->insert(gl_bb);
 
@@ -138,7 +138,7 @@ void TestOctreeRenderHugePointCloud()
 
   win.setCameraZoom(600);
   {
-    mrpt::opengl::Viewport::Ptr view = theScene->getViewport("main");
+    mrpt::viz::Viewport::Ptr view = theScene->getViewport("main");
     view->setViewportClipDistances(0.1f, 1e6f);
   }
 

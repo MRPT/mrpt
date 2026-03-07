@@ -18,7 +18,7 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CLMS100eth.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>  // [mrpt-maps]
+#include <mrpt/viz/CPlanarLaserScan.h>  // [mrpt-maps]
 
 #include <chrono>
 #include <iostream>
@@ -26,7 +26,7 @@
 
 using namespace mrpt;
 using namespace mrpt::obs;
-using namespace mrpt::opengl;
+using namespace mrpt::viz;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
 using namespace std;
@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
   Scene::Ptr ptr_scene = win3D.get3DSceneAndLock();
 
   {
-    opengl::CPlanarLaserScan::Ptr obj = opengl::CPlanarLaserScan::Create();
+    mrpt::viz::CPlanarLaserScan::Ptr obj = mrpt::viz::CPlanarLaserScan::Create();
     obj->clear();
     obj->setColor(0, 0, 1);
     obj->setName("scan_LMS100");
@@ -67,8 +67,8 @@ int main(int argc, char* argv[])
     laser.doProcessSimple(isOutObs, outObs, hardwareError);
 
     ptr_scene = win3D.get3DSceneAndLock();
-    opengl::CPlanarLaserScan::Ptr obj =
-        std::dynamic_pointer_cast<opengl::CPlanarLaserScan>(ptr_scene->getByName("scan_LMS100"));
+    mrpt::viz::CPlanarLaserScan::Ptr obj =
+        std::dynamic_pointer_cast<mrpt::viz::CPlanarLaserScan>(ptr_scene->getByName("scan_LMS100"));
     obj->clear();
     obj->setScan(outObs);
     win3D.unlockAccess3DScene();

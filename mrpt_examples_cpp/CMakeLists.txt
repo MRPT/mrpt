@@ -18,6 +18,9 @@ project(mrpt_examples_cpp)
 
 find_package(mrpt_common REQUIRED)
 
+# Provide MRPT_EXAMPLES_BASE_DIRECTORY for examples that need data files
+add_compile_definitions(MRPT_EXAMPLES_BASE_DIRECTORY="${CMAKE_CURRENT_SOURCE_DIR}/")
+
 # Process all subdirectories containing CMakeLists.txt files
 file(GLOB SUBDIRS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*")
 
