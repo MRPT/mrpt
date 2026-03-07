@@ -15,8 +15,9 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/maps/COctoMap.h>
 #include <mrpt/obs/stock_observations.h>
-#include <mrpt/opengl.h>
-#include <mrpt/viz/CPlanarLaserScan.h>
+#include <mrpt/viz/CBox.h>
+#include <mrpt/viz/Scene.h>
+#include <mrpt/viz/stock_objects.h>
 #include <mrpt/opengl/DefaultShaders.h>
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
@@ -26,16 +27,11 @@
 #include <thread>
 
 // We need OpenGL headers for "GL_VERTEX_SHADER","GL_FRAGMENT_SHADER"
-#include <mrpt/config.h>
-#if MRPT_HAS_OPENGL_GLUT
 #include <mrpt/opengl/opengl_api.h>
-#endif
 
 // Demo of how to install a custom shader program:
 static void installCustomShader(mrpt::viz::Scene& scene)
 {
-#if MRPT_HAS_OPENGL_GLUT
-
   // Define shader program and properties
   // ------------------------------------------
   const char* vertex_shader = nullptr;
@@ -145,8 +141,6 @@ void main()
   // Overwrite the shaders we want to customize:
   const auto id = mrpt::viz::DefaultShaderID::TRIANGLES_NO_LIGHT;
   vp->shaders()[id] = std::move(shader);
-
-#endif
 }
 
 // ------------------------------------------------------

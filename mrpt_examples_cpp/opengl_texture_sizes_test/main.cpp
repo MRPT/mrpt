@@ -59,7 +59,7 @@ void TextureSizes_test()
 
   CImage transpMask_N(W, H, CH_GRAY);
   for (int y = 0; y < H; y++)
-    for (int x = 0; x < W; x++) *transpMask_N(x, y) = (((x + y) >> 5) & 1) ? 240 : 10;
+    for (int x = 0; x < W; x++) *transpMask_N.ptr<uint8_t>(x, y) = (((x + y) >> 5) & 1) ? 240 : 10;
 
   CImage transpMask_2N;
   transpMask_N.scaleImage(transpMask_2N, 512, 512);

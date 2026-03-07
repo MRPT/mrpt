@@ -6,6 +6,10 @@ cmake_minimum_required(VERSION 3.16)
 
 project(opengl_octree_render_huge_pointcloud)
 
+# Octree API removed in MRPT 3.0
+message(STATUS "opengl_octree_render_huge_pointcloud: DISABLED (octree API removed)")
+return()
+
 # Basic MRPT infrastructure
 find_package(mrpt_common REQUIRED)
 

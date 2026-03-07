@@ -22,8 +22,8 @@
        as real-time visualization of all that stuff.
   ---------------------------------------------------------------*/
 
-#include <mrpt/gui/CDisplayWindow3D.h>     // For visualization windows
 #include <mrpt/apps_gui/CameraSelectionGUI.h>
+#include <mrpt/gui/CDisplayWindow3D.h>     // For visualization windows
 #include <mrpt/hwdrivers/CCameraSensor.h>  // For capture of video from videos/cameras
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/serialization/CArchive.h>

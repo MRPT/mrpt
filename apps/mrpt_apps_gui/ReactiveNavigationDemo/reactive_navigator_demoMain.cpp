@@ -1519,7 +1519,8 @@ void reactive_navigator_demoframe::Onplot3DMouseMove(wxMouseEvent& event)
   bool skip_normal_process = false;
 
   // Intersection of 3D ray with ground plane ====================
-  const auto rayOpt = m_plot3D->getOpenGLSceneRef()->getViewport("main")->get3DRayForPixelCoord({X, Y});
+  const auto rayOpt =
+      m_plot3D->getOpenGLSceneRef()->getViewport("main")->get3DRayForPixelCoord({X, Y});
   if (!rayOpt) return;
   TLine3D ray = *rayOpt;
   // Create a 3D plane, e.g. Z=0

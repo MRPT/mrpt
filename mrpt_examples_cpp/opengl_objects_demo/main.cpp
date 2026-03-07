@@ -15,8 +15,39 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/maps/COctoMap.h>
 #include <mrpt/obs/stock_observations.h>
-#include <mrpt/opengl.h>
+#include <mrpt/viz/CArrow.h>
+#include <mrpt/viz/CAxis.h>
+#include <mrpt/viz/CBox.h>
+#include <mrpt/viz/CColorBar.h>
+#include <mrpt/viz/CCylinder.h>
+#include <mrpt/viz/CDisk.h>
+#include <mrpt/viz/CEllipsoid2D.h>
+#include <mrpt/viz/CEllipsoid3D.h>
+#include <mrpt/viz/CEllipsoidInverseDepth2D.h>
+#include <mrpt/viz/CEllipsoidInverseDepth3D.h>
+#include <mrpt/viz/CEllipsoidRangeBearing2D.h>
+#include <mrpt/viz/CFrustum.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CGridPlaneXZ.h>
+#include <mrpt/viz/CMesh.h>
+#include <mrpt/viz/CMesh3D.h>
+#include <mrpt/viz/CMeshFast.h>
+#include <mrpt/viz/COctoMapVoxels.h>
 #include <mrpt/viz/CPlanarLaserScan.h>
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/CPolyhedron.h>
+#include <mrpt/viz/CSetOfLines.h>
+#include <mrpt/viz/CSimpleLine.h>
+#include <mrpt/viz/CSphere.h>
+#include <mrpt/viz/CText.h>
+#include <mrpt/viz/CText3D.h>
+#include <mrpt/viz/CTexturedPlane.h>
+#include <mrpt/viz/CVectorField2D.h>
+#include <mrpt/viz/CVectorField3D.h>
+#include <mrpt/viz/Scene.h>
+#include <mrpt/viz/stock_objects.h>
+#include <mrpt/math/TOrientedBox.h>
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
 
@@ -38,8 +69,6 @@ using namespace std::string_literals;
 // ------------------------------------------------------
 void TestOpenGLObjects()
 {
-  mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE(10000);
-
   CDisplayWindow3D win("Demo of MRPT's OpenGL objects", 640, 480);
 
   Scene::Ptr& theScene = win.get3DSceneAndLock();
@@ -90,14 +119,14 @@ void TestOpenGLObjects()
 
   // Arrow
   {
-    auto obj = viz::CArrow::Create(0, 0, 0, 3, 0, 0, 0.2f, 0.1f, 0.2f);
+    auto obj = viz::CArrow::Create({0, 0, 0}, {3, 0, 0}, 0.2f, 0.1f, 0.2f);
     obj->setLocation(off_x, 0, 0);
     obj->setColor(1, 0, 0);
     obj->setName("arrow #1");
     obj->enableShowName();
     theScene->insert(obj);
 
-    auto obj2 = viz::CArrow::Create(1, 2, 3, 6, -3, 0, 0.1f, 0.1f, 0.3f);
+    auto obj2 = viz::CArrow::Create({1, 2, 3}, {6, -3, 0}, 0.1f, 0.1f, 0.3f);
     obj2->setLocation(off_x, 0, 0);
     obj2->setColor(0, 0, 1);
     theScene->insert(obj2);
@@ -137,11 +166,9 @@ void TestOpenGLObjects()
     obj3->setLocation(off_x, 8, 0);
     theScene->insert(obj3);
 
-    mrpt::math::TOrientedBox ob;
-    ob.setPose({off_x, 12.0, 0.0, 0, 0, 0});
-    ob.setSize({4.0, 2.0, 0.4});
-
-    auto obj4 = viz::CBox::Create(ob);
+    auto obj4 = viz::CBox::Create(
+        TPoint3D(-2.0, -1.0, -0.2), TPoint3D(2.0, 1.0, 0.2), false);
+    obj4->setLocation(off_x, 12, 0);
     obj4->enableBoxBorder(true);
     obj4->setLineWidth(3);
     obj4->setColor_u8(0xff, 0x00, 0x00, 0xa0);
@@ -955,11 +982,11 @@ void TestOpenGLObjects()
     const size_t W = 256, H = 256;
     pic.resize(W, H, mrpt::img::CH_RGB);
     picAlpha.resize(W, H, mrpt::img::CH_GRAY);
-    pic.filledRectangle(0, 0, W - 1, H - 1, mrpt::img::TColor::black());
-    pic.filledRectangle(0, 0, W / 4, H / 2, mrpt::img::TColor::white());
+    pic.filledRectangle({0, 0}, {(int)(W - 1), (int)(H - 1)}, mrpt::img::TColor::black());
+    pic.filledRectangle({0, 0}, {(int)(W / 4), (int)(H / 2)}, mrpt::img::TColor::white());
 
-    picAlpha.filledRectangle(0, 0, W - 1, H - 1, mrpt::img::TColor(0x55, 0x55, 0x55));
-    picAlpha.filledRectangle(0, 0, W / 4, H / 2, mrpt::img::TColor(0xa0, 0xa0, 0xa0));
+    picAlpha.filledRectangle({0, 0}, {(int)(W - 1), (int)(H - 1)}, mrpt::img::TColor(0x55, 0x55, 0x55));
+    picAlpha.filledRectangle({0, 0}, {(int)(W / 4), (int)(H / 2)}, mrpt::img::TColor(0xa0, 0xa0, 0xa0));
 
     {
       viz::CTexturedPlane::Ptr obj = viz::CTexturedPlane::Create();

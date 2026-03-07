@@ -55,11 +55,12 @@ int TestOffscreenRender(int argc, char* argv[])
 
   // here you can put your preferred camera rendering position
   {
-    CCamera& camera = render.getCamera(scene);
+    CCamera camera;
     camera.setOrthogonal(true);
     camera.setZoomDistance(70);
     camera.setAzimuthDegrees(-90);
     camera.setElevationDegrees(90);
+    render.setCamera(camera);
   }
 
   // render the scene

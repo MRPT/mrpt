@@ -14,7 +14,10 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
-#include <mrpt/opengl.h>
+#include <mrpt/apps_gui/CameraSelectionGUI.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CTexturedPlane.h>
+#include <mrpt/viz/Scene.h>
 
 #include <chrono>
 #include <iostream>
@@ -36,7 +39,7 @@ void TestOpenGLVideo()
   // the selected camera.
   cout << "Please, select the input video file or camera...\n";
 
-  mrpt::hwdrivers::CCameraSensor::Ptr cam = mrpt::hwdrivers::prepareVideoSourceFromUserSelection();
+  mrpt::hwdrivers::CCameraSensor::Ptr cam = mrpt::apps::prepareVideoSourceFromUserSelection();
   if (!cam) return;
 
   cout << "Video stream open OK\n";
