@@ -48,12 +48,12 @@
 
 #include <mrpt/gui/CMyRedirector.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/vision/chessboard_stereo_camera_calib.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CPointCloudColoured.h>
 #include <mrpt/viz/CSetOfObjects.h>
 #include <mrpt/viz/Scene.h>
 #include <mrpt/viz/stock_objects.h>
-#include <mrpt/vision/chessboard_stereo_camera_calib.h>
 #include <wx/config.h>  // wxConfig
 
 #include <thread>

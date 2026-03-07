@@ -1898,7 +1898,7 @@ void xRawLogViewerFrame::OnGenerateIMUTextFile(wxCommandEvent& event)
                 ::fprintf(f, "\n");
                 M++;
               }  // end if
-            }  // end if
+            }    // end if
           } while (obs);
         }
         break;

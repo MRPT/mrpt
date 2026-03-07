@@ -564,10 +564,9 @@ bool CScanAnimation::update_opengl_viz(const CSensoryFrame& sf)
   }
 
   // Show timestamp:
-  edTimestamp->SetValue(
-      mrpt::format(
-          "Timestamp (UTC): %s (%.06f)", mrpt::system::dateTimeToString(tim_last).c_str(),
-          mrpt::Clock::toDouble(tim_last)));
+  edTimestamp->SetValue(mrpt::format(
+      "Timestamp (UTC): %s (%.06f)", mrpt::system::dateTimeToString(tim_last).c_str(),
+      mrpt::Clock::toDouble(tim_last)));
 
   WX_END_TRY
   return hasToRefreshViz;

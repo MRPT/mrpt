@@ -669,9 +669,8 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
     plotMap->AddLayer(new mpScaleY());
 
     if (decimation > 1)
-      lbCount->SetLabel(
-          wxString::Format(
-              _("Point count=%u\n(Decimation=%u)"), unsigned(Xs.size()), unsigned(decimation)));
+      lbCount->SetLabel(wxString::Format(
+          _("Point count=%u\n(Decimation=%u)"), unsigned(Xs.size()), unsigned(decimation)));
     else
       lbCount->SetLabel(
           wxString::Format(_("Point count=%u\n(No decimation)"), unsigned(Xs.size())));
@@ -1066,9 +1065,8 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
     plotMap->AddLayer(new mpScaleY());
 
     if (decimation > 1)
-      lbCount->SetLabel(
-          wxString::Format(
-              _("Point count=%u\n(Decimation=%u)"), unsigned(Xs.size()), unsigned(decimation)));
+      lbCount->SetLabel(wxString::Format(
+          _("Point count=%u\n(Decimation=%u)"), unsigned(Xs.size()), unsigned(decimation)));
     else
       lbCount->SetLabel(
           wxString::Format(_("Point count=%u\n(No decimation)"), unsigned(Xs.size())));
@@ -1301,9 +1299,9 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
                   C(4, 4), C(4, 5), C(5, 5));
             }
           }  // end if
-        }  // end for
-      }  // end if
-    }  // end for
+        }    // end for
+      }      // end if
+    }        // end for
 
     for (itOutFiles = outFiles.begin(); itOutFiles != outFiles.end(); itOutFiles++)
       mrpt::system::os::fclose(*itOutFiles);

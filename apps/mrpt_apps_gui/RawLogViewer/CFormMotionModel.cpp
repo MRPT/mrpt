@@ -659,7 +659,7 @@ void CFormMotionModel::applyToLoadedRawlog()
           changes++;
         }
       }  // end is action
-    }  // end for i
+    }    // end for i
   }
 
   wxString str;

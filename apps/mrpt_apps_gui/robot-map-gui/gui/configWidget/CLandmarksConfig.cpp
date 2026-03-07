@@ -32,7 +32,6 @@ void CLandmarksConfig::updateConfiguration(mrpt::maps::TMetricMapInitializer* op
 {
   // CLandmarksMap::TMapDefinition removed in MRPT 3 — stub implementation
   (void)options;
-
 }
 
 TypeOfConfig CLandmarksConfig::type() const { return TypeOfConfig::Landmarks; }
