@@ -6,13 +6,6 @@ Conversion between MRPT and ROS2 types.
 
 # Library mrpt-ros2bridge
 
-
-This C++ library is part of MRPT and can be installed in Debian-based systems
-with:
-
-		sudo apt install libmrpt-ros2bridge-dev
-
-Read also [how to import MRPT into your CMake scripts](mrpt_from_cmake.html).
-
-# Library contents
+As of mrpt 3.0, this C++ library is no longer part of MRPT but is available
+through its own repository: https://github.com/MRPT/mrpt_ros_bridge
 
