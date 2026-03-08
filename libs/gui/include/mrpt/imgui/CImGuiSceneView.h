@@ -20,9 +20,9 @@
 #define MRPT_IMGUI_AVAILABLE
 #endif
 
-#include <mrpt/opengl/opengl_api.h>
 #include <mrpt/opengl/CCamera.h>
 #include <mrpt/opengl/Scene.h>
+#include <mrpt/opengl/opengl_api.h>
 
 #include <cmath>
 #include <functional>
@@ -215,23 +215,23 @@ inline void CImGuiSceneView::render()
     glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
   }
 
-// ---- Display the rendered texture as an ImGui image ----
+  // ---- Display the rendered texture as an ImGui image ----
   const ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos();
   const ImVec2 uv0(0.0f, 1.0f);
   const ImVec2 uv1(1.0f, 0.0f);
   const ImVec2 size(static_cast<float>(w), static_cast<float>(h));
 
-  ImGui::Image(
-      static_cast<ImTextureID>(static_cast<uintptr_t>(m_texColor)),
-      size, uv0, uv1);
+  ImGui::Image(static_cast<ImTextureID>(static_cast<uintptr_t>(m_texColor)), size, uv0, uv1);
 
   // This prevents the window from being dragged when interacting with the scene.
   ImGui::SetCursorScreenPos(cursorScreenPos);
-  ImGui::InvisibleButton("##scene_canvas", size, 
-      ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight | ImGuiButtonFlags_MouseButtonMiddle);
+  ImGui::InvisibleButton(
+      "##scene_canvas", size,
+      ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight |
+          ImGuiButtonFlags_MouseButtonMiddle);
 
   const bool isHovered = ImGui::IsItemHovered();
-  const bool isActive = ImGui::IsItemActive(); // True if clicking/dragging the canvas
+  const bool isActive = ImGui::IsItemActive();  // True if clicking/dragging the canvas
 
   // ---- Mouse-based camera interaction ----
   if (isHovered || isActive)
