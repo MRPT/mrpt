@@ -16,6 +16,7 @@
   <depend>mrpt_gui</depend>
   <depend>mrpt_graphslam</depend>
   <depend>mrpt_libapps_cli</depend>
+  <depend>mrpt_libapps_gui</depend>
   <depend>mrpt_nav</depend>
 
   <depend>mrpt_data</depend>

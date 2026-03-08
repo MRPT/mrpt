@@ -1705,7 +1705,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
         const uint64_t progPos = fil_pos >> 10;
 
         auxStr.sprintf(
-            wxT("Loading... %u objects / Memory usage: %.03fMb"),
+            wxT("Loading... %u objects / Memory usage: %.03f MiB"),
             static_cast<unsigned int>(rawlog.size()), memUsg_Mb);
 
         filSize = std::max(fil.getUncompressedSize(), fil.getTotalBytesCount());
