@@ -131,51 +131,128 @@ For each viewport:
 - Supports RGB and RGB+D output.
 - Camera can be overridden via `setCamera()`.
 
-## 2.6 Known limitations and issues (v3.0-dev)
+## 2.6 Shader system
 
-1. **Single proxy per object**: `CompiledScene::createProxyByType()` creates
-   only ONE proxy per `CVisualObject`, using a priority order:
-   TexturedTriangles > Triangles > Points > Lines. Objects that inherit
-   multiple `VisualObjectParams_*` mixins (e.g., `CBox` with both triangles and
-   lines for solid faces + wireframe border) will only get a proxy for the
-   highest-priority type. The lines/wireframe of such objects will not render.
-   **This needs to be fixed** by creating multiple proxies per object when it
-   inherits multiple shader parameter mixins.
+The rendering pipeline uses a set of built-in GLSL shader programs, each
+identified by a numeric ID defined in mrpt::opengl::DefaultShaderID.
+Shaders are a property of viewports (each mrpt::viz::Viewport can have its
+own shader set), and users can override individual shaders for custom effects
+(see the example \ref opengl_custom_shaders_demo).
 
-2. **Model matrix not updated on pose change**: When
-   `updateDirtyObjects()` runs, it re-uploads geometry buffers but does NOT
-   update `proxy->m_modelMatrix`. If an object's pose (setPose/setLocation)
-   changes between compilations, the object renders at its old position.
-   The dirty flag IS set by pose changes (via `notifyChange()`), but only the
-   geometry buffers are refreshed, not the transform. **This needs to be fixed**
-   by recomputing the model matrix during incremental updates.
+### Built-in shaders
 
-3. **Cloned viewport handling**: In `CompiledScene::compileViewport()`, the
-   early return checks `vizViewport.isClonedCamera()` rather than
-   `vizViewport.isCloned()`. A viewport with a cloned camera but its own
-   objects would incorrectly skip object compilation.
+The following shaders are defined (GLSL 3.30 core profile, source files
+live in `modules/mrpt_opengl/shaders/`):
 
-4. **Frustum culling not implemented**: `CompiledViewport::buildRenderQueue()`
-   has a TODO comment: frustum culling is not performed; all objects are
-   rendered every frame regardless of visibility.
+- **POINTS** (ID 0): Renders point primitives. Vertex shader transforms
+  positions by the model-view-projection matrix; fragment shader outputs
+  the per-vertex color.
+- **WIREFRAME** (ID 1): Renders line primitives (wireframe edges, grids,
+  CSetOfLines, CSimpleLine). Supports per-vertex color.
+- **TEXT** (ID 2): Renders 2D text overlays (addTextMessage). Uses an
+  orthographic projection so text is always screen-aligned.
+- **SKYBOX** (ID 5): Renders a cube-mapped skybox behind the scene.
+- **TRIANGLES_LIGHT** (ID 10): Renders lit, non-textured triangles with
+  Phong-like directional lighting. Accepts ambient, diffuse, and specular
+  light parameters from TLightParameters.
+- **TEXTURED_TRIANGLES_LIGHT** (ID 11): Same as TRIANGLES_LIGHT but
+  samples a diffuse texture map. Used by CSetOfTexturedTriangles, CMesh
+  with textures, CAssimpModel textured meshes, etc.
+- **TRIANGLES_NO_LIGHT** (ID 12): Renders unlit, non-textured triangles
+  (flat color from vertex attributes). Used when lighting is disabled.
+- **TEXTURED_TRIANGLES_NO_LIGHT** (ID 13): Unlit textured triangles.
+- **TRIANGLES_SHADOW_1ST** (ID 20): First pass of shadow mapping.
+  Renders the scene from the light's point of view into a depth-only FBO.
+  Used for both textured and non-textured triangles.
+- **TRIANGLES_SHADOW_2ND** (ID 21): Second pass of shadow mapping.
+  Renders lit triangles while sampling the shadow depth map to determine
+  whether each fragment is in shadow. Includes PCF soft-shadow filtering
+  (see below).
+- **TEXTURED_TRIANGLES_SHADOW_2ND** (ID 23): Same as TRIANGLES_SHADOW_2ND
+  but with diffuse texture sampling.
+- **DEBUG_TEXTURE_TO_SCREEN** (ID 30): Debug helper that renders a texture
+  as a full-screen quad (useful for visualizing the shadow map).
 
-5. **Depth output double-flip in CFBORender**: The depth buffer is flipped
-   twice (once with `colwise().reverse()` and once with a manual row swap
-   loop), which cancel each other out. Both flips are unnecessary when
-   `flipVerticalProjection(true)` is used (same as RGB path). This is
-   wasteful but not a correctness bug.
+### Custom shaders
 
-6. **Texture binding incomplete**: `TexturedTrianglesProxyBase::render()` has
-   texture binding code, but the `m_texture` pointer is never set by the
-   current `compile()` implementation. Textured objects will render without
-   their texture. The `Texture` class needs to be integrated during compilation.
+To install a custom shader on a viewport:
 
-7. **Border rendering unimplemented**: `CompiledViewport::renderBorder()` is
-   a stub (TODO comment). Viewport borders are not drawn.
+    auto vp = scene.getViewport();
+    vp->loadDefaultShaders();
+    const auto id = mrpt::viz::DefaultShaderID::TRIANGLES_NO_LIGHT;
+    vp->shaders()[id] = myCustomShader;
 
-8. **Text overlays not rendered**: The `CTextMessageCapable` text overlay
-   system (2D text on top of the viewport) is not yet integrated into the
-   compiled rendering pipeline.
+The custom shader must declare the same uniforms and attributes as the
+built-in shader it replaces.
+
+## 2.7 Shadow mapping
+
+MRPT supports real-time shadow mapping for directional lights using a
+standard two-pass algorithm with Percentage-Closer Filtering (PCF).
+
+### Enabling shadows
+
+Shadows are controlled per-viewport via TLightParameters, which is a member
+of mrpt::viz::Viewport. To enable shadows, set
+`viewport->lightParameters().shadow_map_enabled = true;` and configure the
+light direction via `viewport->lightParameters().direction`.
+
+### How it works
+
+**Pass 1 (depth from light):**
+The scene is rendered from the light's viewpoint into a depth-only
+framebuffer (the "shadow map"). The light uses an orthographic projection
+whose extent is automatically computed from the scene's bounding box and the
+camera's distance to the origin. The shadow map resolution defaults to
+2048 x 2048 pixels and can be configured.
+Shaders used: TRIANGLES_SHADOW_1ST (ID 20).
+
+**Pass 2 (render with shadows):**
+The scene is rendered normally from the camera's viewpoint. For each
+fragment, the shadow shader transforms the fragment position into the
+light's clip space and samples the shadow map to determine if the fragment
+is occluded. If the depth stored in the shadow map is less than the
+fragment's depth from the light, the fragment is in shadow and its lighting
+contribution is reduced to ambient only.
+Shaders used: TRIANGLES_SHADOW_2ND (ID 21) and
+TEXTURED_TRIANGLES_SHADOW_2ND (ID 23).
+
+### PCF soft shadows
+
+The shadow fragment shader (`shadow-calculation.f.glsl`) uses a 3 x 3 PCF
+kernel: it samples 9 neighboring texels in the shadow map and averages the
+results, producing soft shadow edges instead of hard aliased boundaries.
+
+Three bias parameters prevent shadow acne (self-shadowing artifacts):
+- `shadow_bias`: constant depth bias.
+- `shadow_bias_cam2frag`: bias proportional to distance from camera.
+- `shadow_bias_normal`: bias proportional to surface angle relative to the
+  light direction (`1 - dot(normal, light_direction)`).
+
+### Light configuration
+
+Shadow-related fields in mrpt::viz::TLightParameters:
+- `direction`: Direction vector of the directional light.
+- `shadow_map_enabled`: Enable/disable shadow mapping.
+- `eyeDistance2lightShadowExtension`: Controls the light frustum size
+  relative to the eye-to-origin distance.
+- `minimum_shadow_map_extension_ratio`: Ensures a minimum frustum coverage.
+
+## 2.8 Proxy system details
+
+Each CVisualObject in the scene can produce **multiple** rendering proxies
+(one per shader type it requires). For example, a CBox with both solid faces
+and wireframe edges gets two proxies: a TrianglesProxy and a LinesProxy.
+The function `createProxiesByType()` inspects the object's
+`VisualObjectParams_*` mixins and creates one proxy for each.
+
+When an object is marked dirty (via `notifyChange()`), the incremental
+update path (`updateDirtyObjectRecursive()`) recomputes the model matrix
+and re-uploads geometry buffers for all of the object's proxies.
+
+Frustum culling is performed in the render queue builder: each proxy's
+bounding box is tested against the view frustum using a conservative
+8-corner intersection test, and invisible proxies are skipped.
 
 # 3. Relevant C++ classes
 
