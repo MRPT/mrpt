@@ -31,11 +31,11 @@ into GPU-side proxies that own the actual OpenGL buffers (VBOs, VAOs, textures).
 ## 2.2 Key class hierarchy (mrpt_viz)
 
 ```
-mrpt::viz::CVisualObject          (base: pose, color, name, visibility, dirty flag)
+mrpt::viz::CVisualObject(base: pose, color, name, visibility, dirty flag)
  ├── VisualObjectParams_Triangles  (mixin: triangle buffer, lighting, cull face)
  ├── VisualObjectParams_TexturedTriangles (mixin: textured triangle buffer + texture image)
- ├── VisualObjectParams_Lines      (mixin: line buffer, line width, anti-aliasing)
- └── VisualObjectParams_Points     (mixin: point buffer, point size)
+ ├── VisualObjectParams_Lines (mixin: line buffer, line width, anti-aliasing)
+ └── VisualObjectParams_Points(mixin: point buffer, point size)
 ```
 
 Concrete primitives inherit from CVisualObject and one or more of the
@@ -49,21 +49,21 @@ The scene graph is:
 ```
 Scene
  └── Viewport[]  ("main" always exists)
-      ├── CCamera
-      ├── TLightParameters
-      └── CVisualObject[]  (the objects to render)
-           └── CSetOfObjects  (recursive container)
+ ├── CCamera
+ ├── TLightParameters
+ └── CVisualObject[]  (the objects to render)
+ └── CSetOfObjects  (recursive container)
 ```
 
 ## 2.3 Key class hierarchy (mrpt_opengl) and the Proxy pattern
 
 ```
-mrpt::opengl::RenderableProxy     (base: compile, updateBuffers, render, requiredShaders)
- ├── PointsProxyBase               → renders VisualObjectParams_Points data
- ├── LinesProxyBase                → renders VisualObjectParams_Lines data
- ├── TrianglesProxyBase            → renders VisualObjectParams_Triangles data
- │    └── TexturedTrianglesProxyBase → adds texture support
- └── (Text3DProxy)                 → internal: generates triangle geometry from CText3D
+mrpt::opengl::RenderableProxy(base: compile, updateBuffers, render, requiredShaders)
+ ├── PointsProxyBase→ renders VisualObjectParams_Points data
+ ├── LinesProxyBase → renders VisualObjectParams_Lines data
+ ├── TrianglesProxyBase  → renders VisualObjectParams_Triangles data
+ │└── TexturedTrianglesProxyBase → adds texture support
+ └── (Text3DProxy)  → internal: generates triangle geometry from CText3D
 ```
 
 Each `RenderableProxy` owns the GPU resources (buffers, VAO) for one rendering
@@ -72,12 +72,12 @@ pass of one viz object. The proxies are created and managed by `CompiledScene`.
 The overall rendering pipeline classes are:
 
 ```
-CompiledScene          manages all proxies, performs incremental updates
+CompiledScenemanages all proxies, performs incremental updates
  ├── ShaderProgramManager   owns loaded shader programs
- └── CompiledViewport[]     one per viz::Viewport
-      ├── RenderableProxy[]  organized by shader ID for batched rendering
-      ├── TRenderMatrices    projection/view/model matrix state
-      └── FrameBuffer        (optional: shadow map FBO)
+ └── CompiledViewport[]one per viz::Viewport
+ ├── RenderableProxy[]  organized by shader ID for batched rendering
+ ├── TRenderMatricesprojection/view/model matrix state
+ └── FrameBuffer   (optional: shadow map FBO)
 ```
 
 ## 2.4 Rendering data flow
@@ -86,11 +86,11 @@ The rendering pipeline has three phases:
 
 ### Phase 1: Scene compilation (`CompiledScene::compile()`)
 For each `CVisualObject` in the scene:
-1. Call `obj->updateBuffers()` — the viz object populates its internal CPU-side
+1. Call `obj->updateBuffers()` - the viz object populates its internal CPU-side
    data buffers (triangles, lines, points) from its geometric parameters.
 2. Create a `RenderableProxy` of the appropriate type based on the object's
    `VisualObjectParams_*` mixin(s).
-3. Call `proxy->compile(obj)` — the proxy reads the viz object's CPU-side
+3. Call `proxy->compile(obj)` - the proxy reads the viz object's CPU-side
    buffers and uploads them to GPU (creates VBOs, VAOs).
 4. Store `proxy->m_modelMatrix` computed from the object's pose and parent
    transforms.
@@ -120,7 +120,7 @@ For each viewport:
 - The setter calls `notifyChange()`, which sets a per-thread dirty flag
   (`PerThreadDataHolder<OutdatedState>`) to `true` for all threads.
 - Before rendering, the GL thread checks `hasToUpdateBuffers()` which reads the
-  GL thread's slot — returns `true`.
+  GL thread's slot - returns `true`.
 - After update, `clearChangedFlag()` resets all per-thread slots.
 
 ## 2.5 Off-screen rendering with CFBORender
@@ -177,10 +177,10 @@ live in `modules/mrpt_opengl/shaders/`):
 
 To install a custom shader on a viewport:
 
-    auto vp = scene.getViewport();
-    vp->loadDefaultShaders();
-    const auto id = mrpt::viz::DefaultShaderID::TRIANGLES_NO_LIGHT;
-    vp->shaders()[id] = myCustomShader;
+auto vp = scene.getViewport();
+vp->loadDefaultShaders();
+const auto id = mrpt::viz::DefaultShaderID::TRIANGLES_NO_LIGHT;
+vp->shaders()[id] = myCustomShader;
 
 The custom shader must declare the same uniforms and attributes as the
 built-in shader it replaces.
@@ -297,20 +297,20 @@ To avoid race conditions (rendering always happens on a standalone thread),
 the process of updating a 3D scene must make use of a mechanism that
 locks/unlocks an internal critical section, and it comprises these steps:
 
-    // Create the GUI window object.
-    mrpt::gui::CDisplayWindow3D win("My window", 1024, 800);
+// Create the GUI window object.
+mrpt::gui::CDisplayWindow3D win("My window", 1024, 800);
 
-    // Lock the 3D scene (**Enter critical section**)
-    mrpt::viz::Scene::Ptr &ptrScene = win.get3DSceneAndLock();
+// Lock the 3D scene (**Enter critical section**)
+mrpt::viz::Scene::Ptr &ptrScene = win.get3DSceneAndLock();
 
-    // Modify the scene or the primitives therein:
-    ptrScene->...
+// Modify the scene or the primitives therein:
+ptrScene->...
 
-    // Unlock the 3D scene (**Exit critical section**).
-    win.unlockAccess3DScene();
+// Unlock the 3D scene (**Exit critical section**).
+win.unlockAccess3DScene();
 
-    // Force a window update, if required:
-    win.forceRepaint();
+// Force a window update, if required:
+win.forceRepaint();
 
 An alternative way of updating the scene is by creating,
 before locking the 3D window, a new object of class Scene, then locking
@@ -340,3 +340,141 @@ For more advanced UI controls, including subwindows that can be dragged,
 minimized and restored, etc. see:
 - mrpt::gui::CDisplayWindowGUI
 - \ref gui_nanogui_demo
+
+# 8. TO-DO list
+
+Proposed improvements:
+
+Tier 1 - Low effort, high visual impact 
+
+1. Multiple light sources (up to N directional/point lights)  
+
+Currently there's a single TLightParameters per viewport with one direction vector. This is the single biggest limitation for scene realism.
+  
+Proposal:
+- Change Viewport to hold a std::vector<TLightParameters> (max 4-8, configurable).
+- Add a type field to TLightParameters: Directional, Point, Spot.  
+- For point/spot lights, add position, attenuation (constant/linear/quadratic), and for spot: cutoffAngle, outerCutoffAngle.
+- In the lighting shaders, loop over an array of light uniforms. With a small fixed max (4), the loop unrolls and there's zero branching cost. 
+- Shadow mapping would remain single-light (the "sun" / primary directional) to avoid the cost of multiple shadow maps.
+
+GPU cost: negligible for 4 lights (4 dot products per fragment). Even Intel HD 4000 handles this fine.  
+
+2. Configurable specular exponent / Blinn-Phong
+
+The specular exponent is hardcoded at 16. The existing materialShininess field only scales the specular intensity, not the exponent.   
+  
+Proposal:
+- Add a materialSpecularExponent (or rename the existing field) as a per-object float uniform, default 32. 
+- Switch from Phong (reflect()) to Blinn-Phong (half-vector), which is cheaper (one normalize instead of reflect) and looks better at grazing angles.  
+- One extra uniform upload per object - zero GPU cost difference.
+
+3. Gamma correction 
+
+All lighting math is currently done in sRGB space, which causes colors to look washed out and lighting falloff to be perceptually wrong. This is the single most common rendering mistake.
+
+Proposal:
+- Add pow(color, 2.2) at texture sampling (sRGB → linear) and pow(result, 1/2.2) before output (linear → sRGB) in the fragment shaders.
+- Or better: use GL_SRGB8_ALPHA8 internal format for texture uploads and request an sRGB framebuffer, letting the GPU handle conversions for free.
+- Controlled by a flag in TLightParameters or Viewport so existing scenes aren't affected.
+
+GPU cost: literally zero if using GL_SRGB format (hardware LUT). Two pow calls per fragment otherwise.  
+
+4. Emissive term 
+
+Some objects (displays, indicator lights, laser beams, warning signs) should glow regardless of lighting. Currently there's no way to do this. 
+
+Proposal:
+- Add materialEmissive (TColorf, default black) to CVisualObject.
+- Add it to the lighting equation as: finalColor = emissive + (ambient + diffuse + specular) * materialColor.
+- One extra uniform, one extra add in the shader.
+
+Tier 2 - Moderate effort, significant quality improvement  
+
+5. Normal mapping
+  
+Normal maps add dramatic surface detail (brick walls, terrain, metal panels) without extra geometry. This is the single biggest visual quality improvement per GPU cycle.   
+  
+Proposal:
+- Add texture unit 2 for normal maps.  
+- Add assignNormalMap(CImage) to objects that support textures (CSetOfTexturedTriangles, CMesh, CAssimpModel).
+- Compute tangent/bitangent per-vertex during mesh loading (Assimp already provides these via aiProcess_CalcTangentSpace).
+- Add tangent attribute (location 4) to the vertex format. 
+- In the fragment shader: sample the normal map, transform from tangent space to world space, use the perturbed normal for lighting.   
+- When no normal map is assigned, the shader samples a 1x1 flat-blue texture (0.5, 0.5, 1.0) which produces the identity normal - zero branching. 
+
+GPU cost: one extra texture sample + one matrix multiply per fragment. Runs fine on any GPU from 2012 onwards.
+
+6. Specular/gloss map support 
+
+Allows per-texel variation of shininess (e.g. wet vs dry areas, metallic highlights on a robot chassis).
+  
+Proposal:
+- Add texture unit 3 for a specular/gloss map (R = specular intensity, G = exponent or roughness). 
+- When not assigned, use a 1x1 default matching the per-object material values. 
+- Minimal shader cost: one extra texture sample.
+
+7. Simple distance fog   
+
+Useful for outdoor robotics scenes, large point clouds, depth cueing.   
+  
+Proposal:
+- Add to Viewport or TLightParameters: fogEnabled, fogColor, fogNear, fogFar, fogDensity, fogMode (linear/exponential). 
+- In the fragment shader: float fogFactor = clamp((fogFar - dist) / (fogFar - fogNear), 0, 1); color = mix(fogColor, color, fogFactor);
+- One subtract, one divide, one mix per fragment.  
+
+GPU cost: essentially zero.   
+
+8. Hemisphere ambient lighting
+  
+Replace the flat ambient scalar with a sky/ground color pair. Surfaces facing up get sky ambient, surfaces facing down get ground ambient, with smooth interpolation. Much more  
+natural outdoor look.  
+
+Proposal:   
+- Add ambientSkyColor and ambientGroundColor to TLightParameters (default both to current ambient * color).
+- In shader: vec3 ambientColor = mix(groundColor, skyColor, 0.5 + 0.5 * normal.z); 
+- One mix per fragment, no extra textures. 
+
+Tier 3 - Higher effort, nice-to-have  
+
+9. Screen-Space Ambient Occlusion (SSAO) 
+
+Adds contact shadows in crevices and corners. Very noticeable quality improvement for dense geometry (robot models, indoor scenes).
+  
+Proposal:
+- Render a depth+normal G-buffer (can reuse existing depth output).   
+- Run a full-screen SSAO pass sampling ~16 random hemisphere points.
+- Blur the AO result (separable Gaussian, 2 passes). 
+- Multiply into the ambient term.  
+- Use a 4x4 random rotation texture to reduce sample count while maintaining quality.   
+- Make it optional (off by default) since it costs a full-screen pass.  
+
+GPU cost: moderate (16 texture samples per pixel + 2 blur passes). Should be off by default but available for quality rendering and screenshots.  
+
+10. Cascaded Shadow Maps (CSM)
+
+The current single shadow map has limited resolution over large scenes. CSM splits the view frustum into 2-3 cascades, each with its own shadow map, giving high resolution near the  
+camera and acceptable resolution far away.  
+
+Proposal:   
+- Split the view frustum into 2-3 depth ranges.
+- Render one shadow map per cascade from the light's perspective.
+- In the fragment shader, select the appropriate cascade based on fragment depth.
+- Store cascade matrices in a uniform array; sample the right shadow map layer. 
+
+GPU cost: 2-3x shadow pass cost (but shadow pass is already cheap). Fragment shader adds one comparison to select cascade.
+
+
+---
+
+Suggested implementation order to maximize visual improvement per commit:
+
+1. Gamma correction (Tier 1.3) - easiest, fixes all existing scenes
+2. Blinn-Phong + configurable exponent (Tier 1.2) - trivial shader change
+3. Emissive term (Tier 1.4) - one uniform, one add 
+4. Multiple lights (Tier 1.1) - biggest feature, moderate effort 
+5. Hemisphere ambient (Tier 2.8) - one mix, huge outdoor improvement
+6. Fog (Tier 2.7) - simple, useful for large scenes
+7. Normal mapping (Tier 2.5) - biggest visual quality jump, needs tangent attributes
+8. SSAO (Tier 3.9) - optional quality mode
+
