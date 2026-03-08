@@ -148,7 +148,7 @@ bool CGPSInterface::parse_NMEA(
     const std::string talker = lstTokens[0].substr(1, 2);  // e.g. "GP", "GL", "GN"
 
     // Only set if not already set by a prior sentence in this observation
-    if (out_obs.gnss_service_mask == 0)
+    if (out_obs.gnss_service_mask == GnssService::NONE)
     {
       if (talker == "GP")
       {
