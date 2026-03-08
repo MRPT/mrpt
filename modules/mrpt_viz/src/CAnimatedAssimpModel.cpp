@@ -48,13 +48,23 @@ void CAnimatedAssimpModel::serializeFrom(mrpt::serialization::CArchive& in, uint
       uint8_t baseVersion = in.ReadAs<uint8_t>();
       CAssimpModel::serializeFrom(in, baseVersion);
       in >> activeAnimation_ >> currentTime_ >> looping_;
-      // Skeleton will be re-extracted via onAfterLoadScene() triggered
-      // by the base class deserialization path.
+      // Re-extract skeleton from the deserialized assimp scene
+      extractSkeletonData();
     }
     break;
     default:
       MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
   }
+}
+
+// ============================================================================
+// loadScene override — calls base, then extracts skeleton
+// ============================================================================
+
+void CAnimatedAssimpModel::loadScene(const std::string& file_name, int flags)
+{
+  CAssimpModel::loadScene(file_name, flags);
+  extractSkeletonData();
 }
 
 // ============================================================================
@@ -73,8 +83,8 @@ void CAnimatedAssimpModel::setAnimationTime(double timeSeconds)
   // Update bone local transforms from animation
   updateBoneTransforms();
 
-  // Mark buffers as needing update
-  notifyChange();
+  // Apply skinning and rebuild all geometry
+  rebuildSkinnedGeometry();
 }
 
 double CAnimatedAssimpModel::getAnimationDuration(size_t animIndex) const
@@ -118,7 +128,6 @@ void CAnimatedAssimpModel::setActiveAnimation(const std::string& animName)
       return;
     }
   }
-  // Not found — do nothing (user can check getAnimationCount / names).
 }
 
 double CAnimatedAssimpModel::getAnimationProgress() const
@@ -168,12 +177,6 @@ void CAnimatedAssimpModel::clearBoneOverrides()
 }
 
 // ============================================================================
-// onAfterLoadScene — called by base class after loadScene / deserialize
-// ============================================================================
-
-void CAnimatedAssimpModel::onAfterLoadScene() { extractSkeletonData(); }
-
-// ============================================================================
 // Skeleton Extraction
 // ============================================================================
 
@@ -216,7 +219,7 @@ void CAnimatedAssimpModel::extractSkeletonData()
   hasSkeleton_ = false;
 
 #if MRPT_HAS_ASSIMP
-  const aiScene* scene = getAssimpScene();
+  const auto* scene = static_cast<const aiScene*>(getAssimpScenePtr());
   if (!scene)
   {
     return;
@@ -348,7 +351,7 @@ void CAnimatedAssimpModel::extractSkeletonData()
 
   hasSkeleton_ = true;
 
-  // --- 4) Build the vertex-origin map (must match recursive_render order)
+  // --- 4) Capture bind-pose vertex data
   captureBindPose();
 
 #endif  // MRPT_HAS_ASSIMP
@@ -391,7 +394,7 @@ void CAnimatedAssimpModel::buildBoneHierarchy(const aiNode* node, int parentBone
 void CAnimatedAssimpModel::captureBindPose()
 {
 #if MRPT_HAS_ASSIMP
-  const aiScene* scene = getAssimpScene();
+  const auto* scene = static_cast<const aiScene*>(getAssimpScenePtr());
   if (!scene)
   {
     return;
@@ -430,9 +433,8 @@ void CAnimatedAssimpModel::applySkinningToScene() const
 {
 #if MRPT_HAS_ASSIMP
   // const_cast is safe: we restore the original data in
-  // restoreBindPoseToScene() immediately after the base class
-  // regenerates its triangle buffers.
-  aiScene* scene = const_cast<aiScene*>(getAssimpScene());
+  // restoreBindPoseToScene() immediately after rebuilding geometry.
+  auto* scene = const_cast<aiScene*>(static_cast<const aiScene*>(getAssimpScenePtr()));
   if (!scene)
   {
     return;
@@ -453,7 +455,7 @@ void CAnimatedAssimpModel::applySkinningToScene() const
     const auto& bp = meshBindPoses_[m];
     if (bp.positions.size() != mesh->mNumVertices)
     {
-      continue;  // safety — mesh/bind-pose size mismatch
+      continue;
     }
 
     for (unsigned int v = 0; v < mesh->mNumVertices; ++v)
@@ -463,18 +465,14 @@ void CAnimatedAssimpModel::applySkinningToScene() const
       auto it = vertexBoneMap_.find(vk);
       if (it == vertexBoneMap_.end())
       {
-        continue;  // vertex has no bone weights
+        continue;
       }
 
-      // Skin position (from the bind-pose, NOT from the current
-      // mesh data which may already have been skinned in a
-      // previous frame).
       const auto skinnedPos = skinVertex(bp.positions[v], vk);
       mesh->mVertices[v].x = skinnedPos.x;
       mesh->mVertices[v].y = skinnedPos.y;
       mesh->mVertices[v].z = skinnedPos.z;
 
-      // Skin normal
       if (mesh->mNormals)
       {
         const auto skinnedNrm = skinNormal(bp.normals[v], vk);
@@ -490,7 +488,7 @@ void CAnimatedAssimpModel::applySkinningToScene() const
 void CAnimatedAssimpModel::restoreBindPoseToScene() const
 {
 #if MRPT_HAS_ASSIMP
-  aiScene* scene = const_cast<aiScene*>(getAssimpScene());
+  auto* scene = const_cast<aiScene*>(static_cast<const aiScene*>(getAssimpScenePtr()));
   if (!scene)
   {
     return;
@@ -532,6 +530,22 @@ void CAnimatedAssimpModel::restoreBindPoseToScene() const
 }
 
 // ============================================================================
+// Rebuild skinned geometry
+// ============================================================================
+
+void CAnimatedAssimpModel::rebuildSkinnedGeometry()
+{
+  // 1. Write skinned positions into the aiScene mesh data
+  applySkinningToScene();
+
+  // 2. Rebuild all viz child objects from the (now-skinned) aiScene
+  rebuildFromAssimpScene();
+
+  // 3. Restore bind-pose so the next frame starts clean
+  restoreBindPoseToScene();
+}
+
+// ============================================================================
 // Bone Transform Update
 // ============================================================================
 
@@ -565,20 +579,17 @@ void CAnimatedAssimpModel::updateBoneTransforms()
 
     Bone& bone = bones_[static_cast<size_t>(channel.boneIndex)];
 
-    // Skip if bone has manual override
     if (bone.hasOverride)
     {
       bone.localTransform = bone.overrideTransform;
       continue;
     }
 
-    // Interpolate position, rotation, scale
     const auto pos = interpolatePosition(channel, animTime);
     float qw, qx, qy, qz;
     interpolateRotation(channel, animTime, qw, qx, qy, qz);
     const auto scl = interpolateScaling(channel, animTime);
 
-    // Build local transform matrix: T * R * S
     bone.localTransform = buildTransformMatrix(pos, qw, qx, qy, qz, scl);
   }
 
@@ -596,7 +607,6 @@ void CAnimatedAssimpModel::updateBoneTransforms()
   for (size_t i = 0; i < bones_.size(); ++i)
   {
     auto& b = bones_[i];
-    // Using Eigen under the hood for the triple product:
     b.finalTransform.asEigen() =
         globalInverseTransform_.asEigen() * b.globalTransform.asEigen() * b.offsetMatrix.asEigen();
   }
@@ -644,7 +654,6 @@ CMatrixDouble44 CAnimatedAssimpModel::buildTransformMatrix(
     qz *= invLen;
   }
 
-  // Rotation matrix from quaternion
   const float xx = qx * qx;
   const float yy = qy * qy;
   const float zz = qz * qz;
@@ -656,25 +665,21 @@ CMatrixDouble44 CAnimatedAssimpModel::buildTransformMatrix(
   const float wz = qw * qz;
 
   CMatrixDouble44 M;
-  // Row 0
   M(0, 0) = static_cast<double>((1.0f - 2.0f * (yy + zz)) * scale.x);
   M(0, 1) = static_cast<double>((2.0f * (xy - wz)) * scale.y);
   M(0, 2) = static_cast<double>((2.0f * (xz + wy)) * scale.z);
   M(0, 3) = static_cast<double>(pos.x);
 
-  // Row 1
   M(1, 0) = static_cast<double>((2.0f * (xy + wz)) * scale.x);
   M(1, 1) = static_cast<double>((1.0f - 2.0f * (xx + zz)) * scale.y);
   M(1, 2) = static_cast<double>((2.0f * (yz - wx)) * scale.z);
   M(1, 3) = static_cast<double>(pos.y);
 
-  // Row 2
   M(2, 0) = static_cast<double>((2.0f * (xz - wy)) * scale.x);
   M(2, 1) = static_cast<double>((2.0f * (yz + wx)) * scale.y);
   M(2, 2) = static_cast<double>((1.0f - 2.0f * (xx + yy)) * scale.z);
   M(2, 3) = static_cast<double>(pos.z);
 
-  // Row 3
   M(3, 0) = 0.0;
   M(3, 1) = 0.0;
   M(3, 2) = 0.0;
@@ -692,7 +697,7 @@ TPoint3Df CAnimatedAssimpModel::skinVertex(const TPoint3Df& vertex, uint64_t vke
   auto it = vertexBoneMap_.find(vkey);
   if (it == vertexBoneMap_.end())
   {
-    return vertex;  // not skinned
+    return vertex;
   }
 
   const auto& vbd = it->second;
@@ -733,7 +738,6 @@ TPoint3Df CAnimatedAssimpModel::skinVertex(const TPoint3Df& vertex, uint64_t vke
     totalWeight += weight;
   }
 
-  // Blend remaining weight with un-transformed position
   if (totalWeight < 0.999f)
   {
     const float rem = 1.0f - totalWeight;
@@ -778,7 +782,6 @@ TPoint3Df CAnimatedAssimpModel::skinNormal(const TPoint3Df& normal, uint64_t vke
 
     const auto& M = bones_[boneIdx].finalTransform;
 
-    // Rotate only (no translation for normals)
     const float nx =
         static_cast<float>(M(0, 0) * normal.x + M(0, 1) * normal.y + M(0, 2) * normal.z);
     const float ny =
@@ -813,35 +816,6 @@ TPoint3Df CAnimatedAssimpModel::skinNormal(const TPoint3Df& normal, uint64_t vke
 }
 
 // ============================================================================
-// Override to apply CPU skinning
-// ============================================================================
-
-void CAnimatedAssimpModel::renderUpdateBuffers() const
-{
-  if (!hasSkeleton_)
-  {
-    // No skeleton — delegate to the base class.
-    CAssimpModel::renderUpdateBuffers();
-    return;
-  }
-
-  // --- 1. Write skinned positions into the aiScene mesh data ---------
-  //     (modifies aiMesh::mVertices / mNormals via const_cast)
-  applySkinningToScene();
-
-  // --- 2. Regenerate ALL triangle buffers from the (now-skinned)
-  //     mesh data.  onUpdateBuffers_all() handles textured-vs-
-  //     non-textured routing, texture assignment, and voxel split
-  //     correctly because the source data is already skinned.
-  const_cast<CAnimatedAssimpModel&>(*this).onUpdateBuffers_all();
-
-  // --- 3. Upload every CPU buffer to its GPU VBO ---------------------
-  CAssimpModel::renderUpdateBuffers();
-
-  // --- 4. Restore bind-pose positions so the next frame starts clean -
-  restoreBindPoseToScene();
-}
-// ============================================================================
 // Helper: Add bone weight to vertex
 // ============================================================================
 
@@ -858,7 +832,7 @@ void CAnimatedAssimpModel::VertexBoneData::addBoneWeight(int boneId, float weigh
     }
   }
 
-  // All slots full — replace smallest if new weight is larger
+  // All slots full -- replace smallest if new weight is larger
   int minIdx = 0;
   float minWeight = weights[0];
   for (int i = 1; i < MAX_BONES_PER_VERTEX; ++i)
@@ -892,7 +866,6 @@ TPoint3Df CAnimatedAssimpModel::interpolatePosition(
     return channel.positionKeys[0].value;
   }
 
-  // Find surrounding keyframes
   size_t idx0 = 0;
   for (size_t i = 0; i + 1 < channel.positionKeys.size(); ++i)
   {
@@ -988,7 +961,6 @@ void CAnimatedAssimpModel::interpolateRotation(
   float s0, s1;
   if (dot > 0.9995f)
   {
-    // Very close — linear interpolation
     s0 = 1.f - t;
     s1 = t;
   }

@@ -37,24 +37,30 @@ namespace mrpt::viz
  *   model->loadScene("character.glb");
  *
  *   // In simulation loop:
- *   model->setAnimationTime(simTime);  // updates bone transforms
- *   // (buffers are rebuilt automatically on next render)
+ *   model->setAnimationTime(simTime);  // updates bone transforms & rebuilds geometry
  * \endcode
  *
- * \ingroup mrpt_opengl_grp
+ * \ingroup mrpt_viz_grp
  */
 class CAnimatedAssimpModel : public CAssimpModel
 {
-  DEFINE_SERIALIZABLE(CAnimatedAssimpModel, mrpt::opengl)
+  DEFINE_SERIALIZABLE(CAnimatedAssimpModel, mrpt::viz)
 
  public:
   CAnimatedAssimpModel() = default;
 
+  // ========== Model Loading (override) ==========
+
+  /** Loads a 3D scene and extracts skeleton/animation data. */
+  void loadScene(
+      const std::string& file_name,
+      int flags = LoadFlags::RealTimeMaxQuality | LoadFlags::FlipUVs | LoadFlags::Verbose);
+
   // ========== Animation Control ==========
 
   /** Set current animation time in seconds.
-   *  Updates all bone transforms for the active animation and marks
-   *  render buffers for rebuild. */
+   *  Updates all bone transforms for the active animation and
+   *  rebuilds the mesh geometry with skinned positions. */
   void setAnimationTime(double timeSeconds);
 
   /** Get animation duration in seconds. */
@@ -93,14 +99,6 @@ class CAnimatedAssimpModel : public CAssimpModel
   /** Clear all bone overrides, return to animation-driven transforms. */
   void clearBoneOverrides();
 
- protected:
-  // Override to apply bone transforms before generating triangles
-  void renderUpdateBuffers() const override;
-
-  /** Called after loadScene() / deserialization.
-   *  Extracts skeleton, animations, and caches bind-pose geometry. */
-  void onAfterLoadScene() override;
-
  private:
   // ========== Internal Bone Data ==========
 
@@ -110,13 +108,12 @@ class CAnimatedAssimpModel : public CAssimpModel
     int parentIndex = -1;  //!< -1 for root bones
 
     // Bind pose (rest position)
-    mrpt::math::CMatrixDouble44 offsetMatrix;  //!< mesh space → bone space
+    mrpt::math::CMatrixDouble44 offsetMatrix;  //!< mesh space -> bone space
 
     // Current animated transform
     mrpt::math::CMatrixDouble44 localTransform;   //!< relative to parent
     mrpt::math::CMatrixDouble44 globalTransform;  //!< world space
     mrpt::math::CMatrixDouble44 finalTransform;   //!< for skinning
-
     // Optional override (for procedural animation)
     bool hasOverride = false;
     mrpt::math::CMatrixDouble44 overrideTransform;
@@ -175,8 +172,7 @@ class CAnimatedAssimpModel : public CAssimpModel
   std::vector<Bone> bones_;
   std::map<std::string, size_t> boneNameToIndex_;
 
-  /** Per-vertex skinning data.  Key = (meshIdx << 20) | vertIdx.
-   *  Populated during extractSkeletonData(). */
+  /** Per-vertex skinning data.  Key = (meshIdx << 20) | vertIdx. */
   std::map<uint64_t, VertexBoneData> vertexBoneMap_;
 
   std::vector<Animation> animations_;
@@ -189,13 +185,17 @@ class CAnimatedAssimpModel : public CAssimpModel
 
   // ========== Internal Methods ==========
 
-  /** Called by onAfterLoadScene() to extract skeleton data from aiScene. */
+  /** Extract skeleton data from the loaded aiScene. */
   void extractSkeletonData();
 
   /** Build parent-child relationships by walking the aiNode tree. */
   void buildBoneHierarchy(const aiNode* node, int parentBoneIdx);
 
   void captureBindPose();
+
+  /** Apply skinning to aiScene mesh vertices, then re-run processAssimpScene(). */
+  void rebuildSkinnedGeometry();
+
   void applySkinningToScene() const;
   void restoreBindPoseToScene() const;
 
@@ -216,7 +216,7 @@ class CAnimatedAssimpModel : public CAssimpModel
   /** Interpolate scale at given time. */
   mrpt::math::TPoint3Df interpolateScaling(const BoneAnimation& channel, double animTime) const;
 
-  /** Build a 4×4 TRS matrix from position, quaternion, scale. */
+  /** Build a 4x4 TRS matrix from position, quaternion, scale. */
   static mrpt::math::CMatrixDouble44 buildTransformMatrix(
       const mrpt::math::TPoint3Df& pos,
       float qw,
