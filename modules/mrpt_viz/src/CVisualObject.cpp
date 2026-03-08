@@ -253,11 +253,13 @@ bool CVisualObject::traceRay(const mrpt::poses::CPose3D&, double&) const { retur
 
 CVisualObject& CVisualObject::setColor_u8(const mrpt::img::TColor& c)
 {
-  std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
-  m_state.color.R = c.R;
-  m_state.color.G = c.G;
-  m_state.color.B = c.B;
-  m_state.color.A = c.A;
+  {
+    std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+    m_state.color.R = c.R;
+    m_state.color.G = c.G;
+    m_state.color.B = c.B;
+    m_state.color.A = c.A;
+  }
   notifyChange();
   return *this;
 }
@@ -296,17 +298,11 @@ mrpt::system::CTimeLogger& mrpt::viz::opengl_profiler()
 
 auto CVisualObject::getBoundingBoxLocalf() const -> mrpt::math::TBoundingBoxf
 {
-  if (!m_cachedLocalBBox)
-  {
-    std::unique_lock<std::shared_mutex> lckWrite(m_outdatedStateMtx.data);
-    m_cachedLocalBBox = internalBoundingBoxLocal();
-    return m_cachedLocalBBox.value();
-  }
-  else
-  {
-    std::shared_lock<std::shared_mutex> lckWrite(m_outdatedStateMtx.data);
-    return m_cachedLocalBBox.value();
-  }
+  // Must hold the lock before reading m_cachedLocalBBox to avoid a race
+  // with notifyChange() clearing it from another thread:
+  std::unique_lock<std::shared_mutex> lckWrite(m_outdatedStateMtx.data);
+  if (!m_cachedLocalBBox) m_cachedLocalBBox = internalBoundingBoxLocal();
+  return m_cachedLocalBBox.value();
 }
 
 auto CVisualObject::getBoundingBoxLocal() const -> mrpt::math::TBoundingBox
