@@ -109,27 +109,77 @@ bool CGPSInterface::implement_parser_NMEA(size_t& out_minimum_rx_buf_to_decide)
 bool CGPSInterface::parse_NMEA(
     const std::string& s, mrpt::obs::CObservationGPS& out_obs, const bool verbose)
 {
-  static mrpt::system::TTimeStamp last_known_date =
-      mrpt::Clock::now();  // For building complete date+time in msgs without
-  // a date.
+  // For building complete date+time in msgs without  a date.
+  static mrpt::system::TTimeStamp last_known_date = mrpt::Clock::now();
   static mrpt::system::TTimeStamp last_known_time = mrpt::Clock::now();
 
-  if (verbose) cout << "[CGPSInterface] GPS raw string: " << s << endl;
+  if (verbose)
+  {
+    std::cout << "[CGPSInterface] GPS raw string: " << s << endl;
+  }
 
   // Firstly! If the string does not start with "$GP" it is not valid:
-  if (s.size() < 7) return false;
-  if (s[0] != '$') return false;
+  if (s.size() < 7)
+  {
+    return false;
+  }
+  if (s[0] != '$')
+  {
+    return false;
+  }
 
   std::vector<std::string> lstTokens;
   mrpt::system::tokenize(s, "*,\t\r\n", lstTokens, false /* do not skip blank tokens */);
-  if (lstTokens.size() < 3) return false;
+  if (lstTokens.size() < 3)
+  {
+    return false;
+  }
 
-  for (auto& lstToken : lstTokens) lstToken = mrpt::system::trim(lstToken);  // Trim whitespaces
+  for (auto& lstToken : lstTokens)
+  {
+    lstToken = mrpt::system::trim(lstToken);  // Trim whitespaces
+  }
 
   bool parsed_ok = false;
 
-  // Remove talker ID "$xxGGA" ==> "GGA"
-  if (lstTokens[0].size() > 3) lstTokens[0] = lstTokens[0].substr(3);
+  // Remove talker ID "$xxGGA" ==> "GGA", but extract it first:
+  if (lstTokens[0].size() > 3)
+  {
+    const std::string talker = lstTokens[0].substr(1, 2);  // e.g. "GP", "GL", "GN"
+
+    // Only set if not already set by a prior sentence in this observation
+    if (out_obs.gnss_service_mask == 0)
+    {
+      if (talker == "GP")
+      {
+        out_obs.gnss_service_mask = GnssService::GPS;
+      }
+      else if (talker == "GL")
+      {
+        out_obs.gnss_service_mask = GnssService::GLONASS;
+      }
+      else if (talker == "GA")
+      {
+        out_obs.gnss_service_mask = GnssService::GALILEO;
+      }
+      else if (talker == "GB" || talker == "BD")
+      {
+        out_obs.gnss_service_mask = GnssService::BEIDOU;
+      }
+      else if (talker == "GN")
+      {
+        // multi-constellation
+        out_obs.gnss_service_mask =
+            GnssService::GPS | GnssService::GLONASS | GnssService::BEIDOU | GnssService::GALILEO;
+      }
+      else if (talker == "QZ")
+      {
+        out_obs.gnss_service_mask = GnssService::GPS;  // QZSS, GPS-compatible
+      }
+    }
+
+    lstTokens[0] = lstTokens[0].substr(3);
+  }
 
   // Try to determine the kind of command:
   if (lstTokens[0] == "GGA" && lstTokens.size() >= 13)
