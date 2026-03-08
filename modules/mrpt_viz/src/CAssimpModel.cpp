@@ -836,3 +836,41 @@ bool CAssimpModel::traceRay(const CPose3D& o, double& dist) const
 {
   return CSetOfObjects::traceRay(o, dist);
 }
+
+// ============================================================================
+// Protected accessors for subclasses
+// ============================================================================
+
+const void* CAssimpModel::getAssimpScenePtr() const
+{
+#if MRPT_HAS_ASSIMP
+  if (m_assimpScene && m_assimpScene->scene)
+  {
+    return m_assimpScene->scene;
+  }
+#endif
+  return nullptr;
+}
+
+void CAssimpModel::rebuildFromAssimpScene()
+{
+#if MRPT_HAS_ASSIMP
+  // Clear existing child objects but keep the assimp scene alive
+  CSetOfObjects::clear();
+  m_texturedMeshes.clear();
+  m_nonTexturedMesh.reset();
+  m_cachedBBox.reset();
+  m_bboxMin = {0, 0, 0};
+  m_bboxMax = {0, 0, 0};
+
+  // Re-process
+  processAssimpScene();
+
+  if (m_splitTrianglesRenderingBBox > 0.0f)
+  {
+    applySplitTrianglesRendering();
+  }
+
+  CVisualObject::notifyChange();
+#endif
+}

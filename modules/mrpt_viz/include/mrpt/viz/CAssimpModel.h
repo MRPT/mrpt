@@ -205,6 +205,15 @@ class CAssimpModel : public CSetOfObjects
 
   /** @} */
 
+ protected:
+  /** Access to the internal Assimp scene (for subclasses like CAnimatedAssimpModel).
+   *  Returns nullptr if no scene is loaded or Assimp is not available. */
+  const void* getAssimpScenePtr() const;
+
+  /** Re-process the loaded Assimp scene, rebuilding all child viz objects.
+   *  Useful for subclasses that modify the aiScene data (e.g. skinning). */
+  void rebuildFromAssimpScene();
+
  private:
   // Model file info
   std::string m_modelPath;
