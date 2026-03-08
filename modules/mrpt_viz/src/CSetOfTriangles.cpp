@@ -83,8 +83,7 @@ bool CSetOfTriangles::traceRay(const mrpt::poses::CPose3D& o, double& dist) cons
 }
 CVisualObject& CSetOfTriangles::setColor_u8(const mrpt::img::TColor& c)
 {
-  CVisualObject::notifyChange();
-  setColor_u8(c);
+  CVisualObject::setColor_u8(c);
   std::unique_lock<std::shared_mutex> trisLck(VisualObjectParams_Triangles::m_trianglesMtx.data);
   auto& tris = VisualObjectParams_Triangles::m_triangles;
 
@@ -94,8 +93,7 @@ CVisualObject& CSetOfTriangles::setColor_u8(const mrpt::img::TColor& c)
 
 CVisualObject& CSetOfTriangles::setColorA_u8(const uint8_t a)
 {
-  CVisualObject::notifyChange();
-  setColorA_u8(a);
+  CVisualObject::setColorA_u8(a);
   std::unique_lock<std::shared_mutex> trisLck(VisualObjectParams_Triangles::m_trianglesMtx.data);
   auto& tris = VisualObjectParams_Triangles::m_triangles;
 
