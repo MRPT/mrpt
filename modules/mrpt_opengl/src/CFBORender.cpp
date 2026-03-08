@@ -277,16 +277,17 @@ void CFBORender::internal_render_RGBD(
   auto tleR = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".prepAndRender"s);
 #endif
 
-  // Ensure we have a valid context
-  ASSERT_(m_eglContext != EGL_NO_CONTEXT);
-
-  // Make context current if not already
-  if (eglGetCurrentContext() != m_eglContext)
+  // If we own an EGL context, make it current.
+  // Otherwise, assume the caller (e.g. a GUI thread) already has a valid GL context.
+  if (m_eglContext != EGL_NO_CONTEXT)
   {
-    if (eglMakeCurrent(m_eglDpy, m_eglSurf, m_eglSurf, m_eglContext) == EGL_FALSE)
+    if (eglGetCurrentContext() != m_eglContext)
     {
-      EGLint err = eglGetError();
-      THROW_EXCEPTION_FMT("eglMakeCurrent failed: 0x%X", err);
+      if (eglMakeCurrent(m_eglDpy, m_eglSurf, m_eglSurf, m_eglContext) == EGL_FALSE)
+      {
+        EGLint err = eglGetError();
+        THROW_EXCEPTION_FMT("eglMakeCurrent failed: 0x%X", err);
+      }
     }
   }
 
