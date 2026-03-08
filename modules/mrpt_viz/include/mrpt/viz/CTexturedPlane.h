@@ -45,7 +45,6 @@ class CTexturedPlane :
 
  public:
   CTexturedPlane(float x_min = -1, float x_max = 1, float y_min = -1, float y_max = 1);
-  virtual ~CTexturedPlane() override = default;
 
   /** Set the coordinates of the four corners that define the plane on the XY
    * plane. */
@@ -79,6 +78,20 @@ class CTexturedPlane :
 
   void updateBuffers() const override;
   bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
+
+  /** Control whether to render the FRONT, BACK, or BOTH (default) set of
+   * faces. Refer to docs for glCullFace().
+   * Example: If set to `cullFaces(TCullFace::BACK);`, back faces will not be
+   * drawn ("culled")
+   */
+  void cullFaces(const TCullFace& cf)
+  {
+    VisualObjectParams_Triangles::cullFaces(cf);
+    VisualObjectParams_TexturedTriangles::cullFaces(cf);
+  }
+  [[nodiscard]] TCullFace cullFaces() const { return VisualObjectParams_Triangles::cullFaces(); }
+
+ protected:
   mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 };
 
