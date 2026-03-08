@@ -266,6 +266,16 @@ class CompiledScene
       std::owner_less<std::weak_ptr<mrpt::viz::CVisualObject>>>
       m_objectToProxy;
 
+  /** Per-object version tracking for dirty detection.
+   * Each CompiledScene independently tracks which version of each object
+   * it last compiled, so multiple CompiledScenes sharing the same source
+   * objects don't interfere with each other's dirty tracking. */
+  std::map<
+      std::weak_ptr<mrpt::viz::CVisualObject>,
+      uint64_t,
+      std::owner_less<std::weak_ptr<mrpt::viz::CVisualObject>>>
+      m_objectVersions;
+
   /** Centralized shader program management */
   ShaderProgramManager m_shaderManager;
 
