@@ -13,6 +13,7 @@
 */
 #pragma once
 
+#include <mrpt/containers/PerThreadDataHolder.h>
 #include <mrpt/viz/CVisualObject.h>
 
 #include <array>
@@ -42,8 +43,6 @@ class CAxis : virtual public CVisualObject, public VisualObjectParams_Lines
       float lineWidth = 3.0f,
       bool marks = true);
 
-  virtual ~CAxis() override = default;
-
   void setAxisLimits(float xmin, float ymin, float zmin, float xmax, float ymax, float zmax);
   /** Changes the frequency of the "ticks" */
   void setFrequency(float f);
@@ -60,7 +59,7 @@ class CAxis : virtual public CVisualObject, public VisualObjectParams_Lines
   void enableTickMarks(bool show_x, bool show_y, bool show_z);
   /** As a ratio of "marks frequency" (default: 0.05) */
   void setTickMarksLength(float len);
-  float getTickMarksLength(float len) { return m_markLen; }
+  float getTickMarksLength() const { return m_markLen; }
 
   mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
@@ -69,7 +68,7 @@ class CAxis : virtual public CVisualObject, public VisualObjectParams_Lines
   bool isCompositeObject() const override { return true; }
 
   /** Access to internal text labels (for rendering pipeline) */
-  const ListVisualObjects& getInternalChildren() const { return m_gl_labels.get(); }
+  const ListVisualObjects& getInternalChildren() const override { return m_gl_labels.get(); }
 
  protected:
   float m_xmin, m_ymin, m_zmin;

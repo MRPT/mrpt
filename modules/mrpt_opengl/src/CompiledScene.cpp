@@ -444,13 +444,11 @@ void CompiledScene::compileObject(
     stats.numProxiesCreated++;
   }
 
-  // Clear dirty flag after successful compile
-  obj->clearChangedFlag();
-
   // Register in our tracking map (store first proxy for tracking;
   // all proxies are tracked via the viewport's objectToProxy map)
   std::weak_ptr<CVisualObject> weakObj = obj;
   m_objectToProxy[weakObj] = proxies.front();
+  m_objectVersions[weakObj] = obj->dataVersion();
 
   stats.numObjectsCompiled++;
 
@@ -616,6 +614,7 @@ void CompiledScene::cleanupOrphanedProxies(CompilationStats& stats)
         viewport->removeProxy(proxy);
       }
 
+      m_objectVersions.erase(it->first);
       it = m_objectToProxy.erase(it);
       stats.numOrphanedProxies++;
       stats.numProxiesDeleted++;
@@ -772,7 +771,11 @@ void CompiledScene::updateDirtyObjectRecursive(
 {
   if (!obj) return;
 
-  const bool selfDirty = obj->hasToUpdateBuffers();
+  std::weak_ptr<mrpt::viz::CVisualObject> weakObj = obj;
+  const uint64_t currentVersion = obj->dataVersion();
+  auto versionIt = m_objectVersions.find(weakObj);
+  const uint64_t lastVersion = (versionIt != m_objectVersions.end()) ? versionIt->second : 0;
+  const bool selfDirty = (currentVersion != lastVersion);
   const bool dirty = selfDirty || parentDirty;
   const bool effectiveVisible = parentVisible && obj->isVisible();
 
@@ -783,10 +786,10 @@ void CompiledScene::updateDirtyObjectRecursive(
   const auto* setOfObjects = dynamic_cast<const mrpt::viz::CSetOfObjects*>(obj.get());
   if (setOfObjects)
   {
-    // Clear the container's own dirty flag if set
+    // Update our version tracking for the container
     if (selfDirty)
     {
-      obj->clearChangedFlag();
+      m_objectVersions[weakObj] = currentVersion;
     }
 
     // Recurse into children, propagating dirty and visibility
@@ -804,13 +807,12 @@ void CompiledScene::updateDirtyObjectRecursive(
     obj->updateBuffers();
 
     // Update ALL proxies for this object across all viewports
-    std::weak_ptr<mrpt::viz::CVisualObject> weakObj = obj;
     for (auto& [vpName, viewport] : m_viewports)
     {
       viewport->updateProxiesForObject(weakObj, obj.get(), modelMatrix, effectiveVisible);
     }
 
-    obj->clearChangedFlag();
+    m_objectVersions[weakObj] = currentVersion;
     stats.numObjectsUpdated++;
 
     if (SCENE_VERBOSE)
@@ -845,7 +847,11 @@ void CompiledScene::updateDirtyObjectRecursive(
       // Update existing label proxy, or compile a new one
       if (hasProxyFor(labelPtr))
       {
-        if (dirty || labelPtr->hasToUpdateBuffers())
+        auto labelVersionIt =
+            m_objectVersions.find(std::weak_ptr<mrpt::viz::CVisualObject>(labelPtr));
+        const uint64_t labelLastVer =
+            (labelVersionIt != m_objectVersions.end()) ? labelVersionIt->second : 0;
+        if (dirty || labelPtr->dataVersion() != labelLastVer)
         {
           updateDirtyObjectRecursive(labelPtr, modelMatrix, true, effectiveVisible, stats);
         }
@@ -884,6 +890,7 @@ void CompiledScene::clear()
   m_viewports.clear();
   m_viewportRenderOrder.clear();
   m_objectToProxy.clear();
+  m_objectVersions.clear();
   m_shaderManager.clear();
   m_sourceScene = nullptr;
   m_isCompiled = false;
@@ -893,11 +900,14 @@ void CompiledScene::clear()
 
 bool CompiledScene::hasPendingUpdates() const
 {
-  // Check if any tracked object has dirty flag set
+  // Check if any tracked object has changed since we last compiled it
   for (const auto& [weakObj, proxy] : m_objectToProxy)
   {
     auto obj = weakObj.lock();
-    if (obj && obj->hasToUpdateBuffers())
+    if (!obj) continue;
+    auto versionIt = m_objectVersions.find(weakObj);
+    const uint64_t lastVersion = (versionIt != m_objectVersions.end()) ? versionIt->second : 0;
+    if (obj->dataVersion() != lastVersion)
     {
       return true;
     }

@@ -14,7 +14,6 @@
 #pragma once
 
 #include <mrpt/containers/NonCopiableData.h>
-#include <mrpt/containers/PerThreadDataHolder.h>
 #include <mrpt/containers/yaml_frwd.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/TColor.h>
@@ -29,6 +28,7 @@
 #include <mrpt/viz/viz_frwds.h>
 
 #include <deque>
+#include <mutex>
 #include <optional>
 #include <shared_mutex>
 
@@ -54,7 +54,7 @@ enum class TCullFace : uint8_t
  * - Its SE(3) pose (x,y,z,yaw,pitch,roll), relative to the parent object,
  * or the global frame of reference for root objects (inserted into a
  *mrpt::viz::Scene).
- * - A name: A name that can be optionally asigned to objects for
+ * - A name: A name that can be optionally assigned to objects for
  *easing its reference.
  * - A RGBA color: This field will be used in simple elements (points,
  *lines, text,...) but is ignored in more complex objects that carry their own
@@ -86,6 +86,7 @@ class CVisualObject : public mrpt::serialization::CSerializable
   friend class mrpt::viz::Viewport;
   friend class mrpt::viz::CSetOfObjects;
 
+ public:
  protected:
   struct State
   {
@@ -117,9 +118,6 @@ class CVisualObject : public mrpt::serialization::CSerializable
   mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_stateMtx;
 
  public:
-  /** Default constructor:  */
-  CVisualObject() = default;
-
   /** @name Changes the appearance of the object to render
     @{ */
 
@@ -375,17 +373,18 @@ class CVisualObject : public mrpt::serialization::CSerializable
   {
     std::unique_lock<std::shared_mutex> lckWrite(m_outdatedStateMtx.data);
     m_cachedLocalBBox.reset();
-    const_cast<CVisualObject&>(*this).m_outdatedBuffersState.run_on_all(
-        [](auto& state) { state.outdatedBuffers = true; });
+    m_dataVersion++;
   }
 
-  /** Reset the dirty flag set with notifyChange() */
+  /** Reset the dirty flag set with notifyChange().
+   * \deprecated Prefer using the version-counter API:
+   * dataVersion() / hasToUpdateBuffersSince(). Kept for
+   * backwards compatibility; now a no-op.
+   */
   void clearChangedFlag() const
   {
-    std::unique_lock<std::shared_mutex> lckWrite(m_outdatedStateMtx.data);
-    m_cachedLocalBBox.reset();
-    const_cast<CVisualObject&>(*this).m_outdatedBuffersState.run_on_all(
-        [](auto& state) { state.outdatedBuffers = false; });
+    // No-op: dirty tracking is now done via version counters
+    // in each CompiledScene, not via a shared boolean flag.
   }
 
   void notifyBBoxChange() const { m_cachedLocalBBox.reset(); }
@@ -393,11 +392,33 @@ class CVisualObject : public mrpt::serialization::CSerializable
   /** Returns whether notifyChange() has been invoked since the last call
    * to renderUpdateBuffers(), meaning the latter needs to be called again
    * before rendering.
+   * \note Prefer hasToUpdateBuffersSince() for multi-consumer scenarios.
    */
   bool hasToUpdateBuffers() const
   {
-    std::shared_lock<std::shared_mutex> lckWrite(m_outdatedStateMtx.data);
-    return m_outdatedBuffersState.get().outdatedBuffers;
+    // Kept for backwards compatibility: always returns true if version > 0
+    // (i.e., object has ever been modified). New code should use
+    // hasToUpdateBuffersSince().
+    std::shared_lock<std::shared_mutex> lckRead(m_outdatedStateMtx.data);
+    return m_dataVersion > 0;
+  }
+
+  /** Returns the current data version counter. Incremented on each
+   * notifyChange() call. Use this with hasToUpdateBuffersSince() for
+   * multi-consumer dirty tracking. */
+  uint64_t dataVersion() const
+  {
+    std::shared_lock<std::shared_mutex> lckRead(m_outdatedStateMtx.data);
+    return m_dataVersion;
+  }
+
+  /** Returns true if this object's data has changed since the given
+   * version. Each consumer (e.g., CompiledScene) should store the last
+   * version it processed and pass it here. */
+  bool hasToUpdateBuffersSince(uint64_t sinceVersion) const
+  {
+    std::shared_lock<std::shared_mutex> lckRead(m_outdatedStateMtx.data);
+    return m_dataVersion != sinceVersion;
   }
 
   /// Called by the rendering system to update internal geometry buffers.
@@ -482,11 +503,7 @@ class CVisualObject : public mrpt::serialization::CSerializable
    */
   [[nodiscard]] virtual mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const = 0;
 
-  struct OutdatedState
-  {
-    bool outdatedBuffers = true;
-  };
-  mrpt::containers::PerThreadDataHolder<OutdatedState> m_outdatedBuffersState;
+  mutable uint64_t m_dataVersion{1};
   mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_outdatedStateMtx;
 
   mutable std::optional<mrpt::math::TBoundingBoxf> m_cachedLocalBBox;
