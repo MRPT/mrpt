@@ -333,7 +333,7 @@ struct TPointXYZfIu8
 struct TPointXYZfRGBu8
 {
   mrpt::math::TPoint3Df pt;
-  uint8_t r{0}, g{0}, b{0};
+  uint8_t r{0xff}, g{0xff}, b{0xff};
   TPointXYZfRGBu8() : pt() {}
   constexpr TPointXYZfRGBu8(
       float x, float y, float z, uint8_t R_val, uint8_t G_val, uint8_t B_val) :
@@ -351,7 +351,7 @@ mrpt::serialization::CArchive& operator<<(
 struct TPointXYZfRGBAu8
 {
   mrpt::math::TPoint3Df pt;
-  uint8_t r{0}, g{0}, b{0}, a{0xff};
+  uint8_t r{0xff}, g{0xff}, b{0xff}, a{0xff};
   TPointXYZfRGBAu8() : pt() {}
   constexpr TPointXYZfRGBAu8(
       float x,
