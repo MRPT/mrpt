@@ -210,8 +210,8 @@ CVisualObject& CVisualObject::setPose(const mrpt::poses::CPose3D& o)
 {
   m_stateMtx.data.lock();
   m_state.pose = o;
-  m_stateMtx.data.unlock();
   notifyChange();
+  m_stateMtx.data.unlock();
   return *this;
 }
 CVisualObject& CVisualObject::setPose(const mrpt::poses::CPose2D& o)
@@ -231,16 +231,16 @@ CVisualObject& CVisualObject::setPose(const mrpt::poses::CPoint3D& o)
 {
   m_stateMtx.data.lock();
   m_state.pose.setFromValues(o.x(), o.y(), o.z(), 0, 0, 0);
-  m_stateMtx.data.unlock();
   notifyChange();
+  m_stateMtx.data.unlock();
   return *this;
 }
 CVisualObject& CVisualObject::setPose(const mrpt::poses::CPoint2D& o)
 {
   m_stateMtx.data.lock();
   m_state.pose.setFromValues(o.x(), o.y(), 0, 0, 0, 0);
-  m_stateMtx.data.unlock();
   notifyChange();
+  m_stateMtx.data.unlock();
   return *this;
 }
 
@@ -259,8 +259,8 @@ CVisualObject& CVisualObject::setColor_u8(const mrpt::img::TColor& c)
     m_state.color.G = c.G;
     m_state.color.B = c.B;
     m_state.color.A = c.A;
+    notifyChange();
   }
-  notifyChange();
   return *this;
 }
 

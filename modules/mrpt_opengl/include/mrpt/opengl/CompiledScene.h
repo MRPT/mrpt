@@ -321,7 +321,7 @@ class CompiledScene
 
   /** Computes a model matrix from an object's pose and scale. */
   static mrpt::math::CMatrixFloat44 computeModelMatrix(
-      const mrpt::viz::CVisualObject& obj,
+      const mrpt::viz::CVisualObject::PoseAndScale& ps,
       const mrpt::math::CMatrixFloat44& parentModelMatrix);
 
   /** Checks if we already have a proxy for this object */

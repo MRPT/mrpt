@@ -145,7 +145,6 @@ class CVisualObject : public mrpt::serialization::CSerializable
   {
     std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
     m_state.visible = visible;
-    lckWrite.unlock();
     notifyChange();
   }
 
@@ -197,6 +196,20 @@ class CVisualObject : public mrpt::serialization::CSerializable
   /** Returns the 3D pose of the object as TPose3D */
   mrpt::math::TPose3D getPose() const;
 
+  /** Atomically reads pose, scale, and visibility under a single lock.
+   * Use this when you need a consistent snapshot of the object's transform. */
+  struct PoseAndScale
+  {
+    mrpt::poses::CPose3D pose;
+    float scaleX = 1, scaleY = 1, scaleZ = 1;
+    bool visible = true;
+  };
+  PoseAndScale getPoseAndScale() const
+  {
+    std::shared_lock<std::shared_mutex> lckRead(m_stateMtx.data);
+    return {m_state.pose, m_state.scale_x, m_state.scale_y, m_state.scale_z, m_state.visible};
+  }
+
   /** Returns a const ref to the 3D pose of the object as mrpt::poses::CPose3D
    * (which explicitly contains the 3x3 rotation matrix) */
   mrpt::poses::CPose3D getCPose() const
@@ -213,7 +226,6 @@ class CVisualObject : public mrpt::serialization::CSerializable
     m_state.pose.x(x);
     m_state.pose.y(y);
     m_state.pose.z(z);
-    lckWrite.unlock();
     notifyChange();
     return *this;
   }
@@ -226,7 +238,6 @@ class CVisualObject : public mrpt::serialization::CSerializable
     m_state.pose.x(p.x);
     m_state.pose.y(p.y);
     m_state.pose.z(p.z);
-    lckWrite.unlock();
     notifyChange();
     return *this;
   }
@@ -255,8 +266,8 @@ class CVisualObject : public mrpt::serialization::CSerializable
   {
     m_stateMtx.data.lock();
     m_state.color.A = a;
-    m_stateMtx.data.unlock();
     notifyChange();
+    m_stateMtx.data.unlock();
     return *this;
   }
 
@@ -282,8 +293,8 @@ class CVisualObject : public mrpt::serialization::CSerializable
   {
     m_stateMtx.data.lock();
     m_state.scale_x = m_state.scale_y = m_state.scale_z = s;
-    m_stateMtx.data.unlock();
     notifyChange();
+    m_stateMtx.data.unlock();
     return *this;
   }
 
@@ -295,8 +306,8 @@ class CVisualObject : public mrpt::serialization::CSerializable
     m_state.scale_x = sx;
     m_state.scale_y = sy;
     m_state.scale_z = sz;
-    m_stateMtx.data.unlock();
     notifyChange();
+    m_stateMtx.data.unlock();
     return *this;
   }
   /** Get the current scaling factor in one axis */

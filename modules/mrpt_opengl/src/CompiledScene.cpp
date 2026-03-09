@@ -350,18 +350,18 @@ void CompiledScene::compileViewport(
 }
 
 mrpt::math::CMatrixFloat44 CompiledScene::computeModelMatrix(
-    const CVisualObject& obj, const mrpt::math::CMatrixFloat44& parentModelMatrix)
+    const CVisualObject::PoseAndScale& ps, const mrpt::math::CMatrixFloat44& parentModelMatrix)
 {
   mrpt::math::CMatrixFloat44 HM =
-      obj.getCPose().getHomogeneousMatrixVal<mrpt::math::CMatrixDouble44>().cast_float();
+      ps.pose.getHomogeneousMatrixVal<mrpt::math::CMatrixDouble44>().cast_float();
 
   // Apply scaling if any axis differs from 1.0
-  if (obj.getScaleX() != 1 || obj.getScaleY() != 1 || obj.getScaleZ() != 1)
+  if (ps.scaleX != 1 || ps.scaleY != 1 || ps.scaleZ != 1)
   {
     auto scale = mrpt::math::CMatrixFloat44::Identity();
-    scale(0, 0) = obj.getScaleX();
-    scale(1, 1) = obj.getScaleY();
-    scale(2, 2) = obj.getScaleZ();
+    scale(0, 0) = ps.scaleX;
+    scale(1, 1) = ps.scaleY;
+    scale(2, 2) = ps.scaleZ;
     HM.asEigen() = HM.asEigen() * scale.asEigen();
   }
 
@@ -393,7 +393,8 @@ void CompiledScene::compileObject(
   }
 
   // Compute model matrix for this object (pose + scale + parent)
-  const auto modelMatrix = computeModelMatrix(*obj, parentModelMatrix);
+  const auto ps = obj->getPoseAndScale();
+  const auto modelMatrix = computeModelMatrix(ps, parentModelMatrix);
 
   // Check if this is a container (CSetOfObjects)
   const auto* setOfObjects = dynamic_cast<const CSetOfObjects*>(obj.get());
@@ -842,10 +843,13 @@ void CompiledScene::updateDirtyObjectRecursive(
   const uint64_t lastVersion = (versionIt != m_objectVersions.end()) ? versionIt->second : 0;
   const bool selfDirty = (currentVersion != lastVersion);
   const bool dirty = selfDirty || parentDirty;
-  const bool effectiveVisible = parentVisible && obj->isVisible();
+
+  // Read pose+scale+visible atomically to avoid tearing
+  const auto ps = obj->getPoseAndScale();
+  const bool effectiveVisible = parentVisible && ps.visible;
 
   // Compute this object's model matrix (always needed for children)
-  const auto modelMatrix = computeModelMatrix(*obj, parentModelMatrix);
+  const auto modelMatrix = computeModelMatrix(ps, parentModelMatrix);
 
   // Check if this is a container (CSetOfObjects)
   const auto* setOfObjects = dynamic_cast<const mrpt::viz::CSetOfObjects*>(obj.get());
