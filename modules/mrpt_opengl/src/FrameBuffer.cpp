@@ -211,7 +211,7 @@ void FrameBuffer::RAII_Impl::destroy()
     glDeleteRenderbuffers(1, &_.m_Depth);
     CHECK_OPENGL_ERROR_IN_DEBUG();
     glDeleteFramebuffers(1, &_.m_Framebuffer);
-    CHECK_OPENGL_ERROR();
+    CHECK_OPENGL_ERROR_IN_DEBUG();
   }
 #endif
   _.m_Color = _.m_Depth = 0;
@@ -247,7 +247,8 @@ void FrameBuffer::RAII_Impl::unbind()
   if (_.m_Samples > 1) glDisable(GL_MULTISAMPLE);
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  CHECK_OPENGL_ERROR();
+  // Use non-throwing error check: context may be gone during shutdown/destroy
+  CHECK_OPENGL_ERROR_IN_DEBUG();
 #endif
 }
 
