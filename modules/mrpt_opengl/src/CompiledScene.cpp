@@ -399,6 +399,10 @@ void CompiledScene::compileObject(
   const auto* setOfObjects = dynamic_cast<const CSetOfObjects*>(obj.get());
   if (setOfObjects)
   {
+    // Track version for containers (needed for multi-occurrence dirty detection)
+    std::weak_ptr<CVisualObject> weakObj = obj;
+    m_objectVersions[weakObj] = obj->dataVersion();
+
     // Recursively compile children, passing this container's model matrix
     for (auto it = setOfObjects->begin(); it != setOfObjects->end(); ++it)
     {
@@ -407,11 +411,10 @@ void CompiledScene::compileObject(
     return;
   }
 
-  // Skip if we already have a proxy for this object
-  if (hasProxyFor(obj))
-  {
-    return;
-  }
+  // NOTE: We intentionally do NOT skip objects that already have proxies.
+  // The same CVisualObject can appear at multiple positions in the scene
+  // graph (DAG structure, e.g. cached models shared between blocks).
+  // Each occurrence gets its own proxy group with its own model matrix.
 
   // Create proxy(ies) for this object — one per mixin type
   auto proxies = createProxiesByType(obj);
@@ -444,10 +447,11 @@ void CompiledScene::compileObject(
     stats.numProxiesCreated++;
   }
 
-  // Register in our tracking map (store first proxy for tracking;
-  // all proxies are tracked via the viewport's objectToProxy map)
+  // Register in our tracking map as a new occurrence.
+  // m_objectToProxy[weakObj] is a vector of occurrence groups;
+  // each group is a vector of proxies for one tree position.
   std::weak_ptr<CVisualObject> weakObj = obj;
-  m_objectToProxy[weakObj] = proxies.front();
+  m_objectToProxy[weakObj].push_back(std::move(proxies));
   m_objectVersions[weakObj] = obj->dataVersion();
 
   stats.numObjectsCompiled++;
@@ -495,7 +499,8 @@ bool CompiledScene::hasProxyFor(const std::shared_ptr<CVisualObject>& obj) const
   }
 
   std::weak_ptr<CVisualObject> weakObj = obj;
-  return m_objectToProxy.find(weakObj) != m_objectToProxy.end();
+  auto it = m_objectToProxy.find(weakObj);
+  return it != m_objectToProxy.end() && !it->second.empty();
 }
 
 std::vector<RenderableProxy::Ptr> CompiledScene::createProxiesByType(
@@ -606,18 +611,22 @@ void CompiledScene::cleanupOrphanedProxies(CompilationStats& stats)
   {
     if (it->first.expired())
     {
-      // Object was deleted - remove proxy from all viewports
-      auto& proxy = it->second;
-
-      for (auto& [name, viewport] : m_viewports)
+      // Object was deleted - remove all its proxies (across all occurrences) from all viewports
+      for (auto& occurrenceProxies : it->second)
       {
-        viewport->removeProxy(proxy);
+        for (auto& proxy : occurrenceProxies)
+        {
+          for (auto& [name, viewport] : m_viewports)
+          {
+            viewport->removeProxy(proxy);
+          }
+          stats.numProxiesDeleted++;
+        }
       }
 
       m_objectVersions.erase(it->first);
       it = m_objectToProxy.erase(it);
       stats.numOrphanedProxies++;
-      stats.numProxiesDeleted++;
 
       if (SCENE_VERBOSE)
       {
@@ -681,43 +690,71 @@ void CompiledScene::compileNewObjects(CompilationStats& stats)
         continue;
       }
 
+      // Helper: check if a CSetOfObjects is new (not yet tracked in m_objectVersions)
+      auto isNewContainer = [this](const std::shared_ptr<CVisualObject>& o) -> bool
+      {
+        std::weak_ptr<CVisualObject> w = o;
+        return m_objectVersions.find(w) == m_objectVersions.end();
+      };
+
       // Handle containers recursively
       const auto* setOfObjects = dynamic_cast<const CSetOfObjects*>(obj.get());
       if (setOfObjects != nullptr)
       {
-        // Use a stack to avoid recursion
-        std::vector<const CSetOfObjects*> containers;
-        containers.push_back(setOfObjects);
-
-        while (!containers.empty())
+        if (isNewContainer(obj))
         {
-          const CSetOfObjects* container = containers.back();
-          containers.pop_back();
+          // New top-level container: compile fully via compileObject().
+          // This recursively creates proxy groups for ALL children,
+          // including shared objects that may already have proxies from
+          // other occurrences (DAG support).
+          compileObject(obj, compiledViewport, stats);
+          stats.numNewObjects++;
+        }
+        else
+        {
+          // Existing container: walk into it to find new children
+          std::vector<std::pair<const CSetOfObjects*, std::shared_ptr<CVisualObject>>> containers;
+          containers.push_back({setOfObjects, obj});
 
-          for (const auto& child : *container)
+          while (!containers.empty())
           {
-            if (!child || !child->isVisible())
-            {
-              continue;
-            }
+            auto [container, containerPtr] = containers.back();
+            containers.pop_back();
 
-            const auto* childContainer = dynamic_cast<const CSetOfObjects*>(child.get());
-            if (childContainer != nullptr)
+            for (const auto& child : *container)
             {
-              containers.push_back(childContainer);
-            }
-            else if (!hasProxyFor(child))
-            {
-              // New object found - compile it
-              compileObject(child, compiledViewport, stats);
-              stats.numNewObjects++;
+              if (!child || !child->isVisible())
+              {
+                continue;
+              }
+
+              const auto* childContainer = dynamic_cast<const CSetOfObjects*>(child.get());
+              if (childContainer != nullptr)
+              {
+                if (isNewContainer(child))
+                {
+                  // New sub-container: compile fully (handles shared children)
+                  compileObject(child, compiledViewport, stats);
+                  stats.numNewObjects++;
+                }
+                else
+                {
+                  containers.push_back({childContainer, child});
+                }
+              }
+              else if (!hasProxyFor(child))
+              {
+                // Genuinely new leaf object - compile it
+                compileObject(child, compiledViewport, stats);
+                stats.numNewObjects++;
+              }
             }
           }
         }
       }
       else if (!hasProxyFor(obj))
       {
-        // New object found - compile it
+        // New leaf object found - compile it
         compileObject(obj, compiledViewport, stats);
         stats.numNewObjects++;
       }
@@ -745,6 +782,9 @@ void CompiledScene::updateDirtyObjects(CompilationStats& stats)
 
   if (!m_sourceScene) return;
 
+  // Clear occurrence counter for this update pass
+  m_updateOccurrenceCounter.clear();
+
   // Walk the entire scene tree (not just m_objectToProxy) so we also
   // detect dirty containers (CSetOfObjects) whose pose/visibility changed.
   for (const auto& vizViewport : m_sourceScene->viewports())
@@ -756,6 +796,31 @@ void CompiledScene::updateDirtyObjects(CompilationStats& stats)
         continue;
       }
       updateDirtyObjectRecursive(obj, mrpt::math::CMatrixFloat44::Identity(), false, true, stats);
+    }
+  }
+
+  // Post-walk: update all version tracking to current values.
+  // This is deferred from the walk to ensure multi-occurrence objects
+  // (same CVisualObject at multiple tree positions) have consistent
+  // dirty detection across all their occurrences within a single pass.
+  for (auto& [weakObj, ver] : m_objectVersions)
+  {
+    auto obj = weakObj.lock();
+    if (obj) ver = obj->dataVersion();
+  }
+
+  // Post-walk: hide proxies for occurrences that no longer exist in the tree
+  // (e.g., a child was removed from a CSetOfObjects container).
+  for (auto& [weakObj, occurrences] : m_objectToProxy)
+  {
+    auto counterIt = m_updateOccurrenceCounter.find(weakObj);
+    size_t visitedOccs = (counterIt != m_updateOccurrenceCounter.end()) ? counterIt->second : 0;
+    for (size_t i = visitedOccs; i < occurrences.size(); i++)
+    {
+      for (auto& proxy : occurrences[i])
+      {
+        proxy->m_visible = false;
+      }
     }
   }
 
@@ -786,11 +851,8 @@ void CompiledScene::updateDirtyObjectRecursive(
   const auto* setOfObjects = dynamic_cast<const mrpt::viz::CSetOfObjects*>(obj.get());
   if (setOfObjects)
   {
-    // Update our version tracking for the container
-    if (selfDirty)
-    {
-      m_objectVersions[weakObj] = currentVersion;
-    }
+    // NOTE: version is NOT updated here; it's deferred to post-walk
+    // in updateDirtyObjects() for multi-occurrence consistency.
 
     // Recurse into children, propagating dirty and visibility
     for (const auto& childObj : *setOfObjects)
@@ -800,25 +862,48 @@ void CompiledScene::updateDirtyObjectRecursive(
     return;
   }
 
-  // Leaf object: update if dirty (either self or inherited from parent)
-  if (dirty && hasProxyFor(obj))
+  // Leaf object: update the proxy group for THIS occurrence.
+  // The occurrence counter matches tree walk order to proxy groups.
+  auto proxyIt = m_objectToProxy.find(weakObj);
+  if (proxyIt != m_objectToProxy.end())
   {
-    // Let the viz object repopulate its internal buffers
-    obj->updateBuffers();
+    size_t& occIdx = m_updateOccurrenceCounter[weakObj];
+    auto& allOccurrences = proxyIt->second;
 
-    // Update ALL proxies for this object across all viewports
-    for (auto& [vpName, viewport] : m_viewports)
+    if (occIdx < allOccurrences.size())
     {
-      viewport->updateProxiesForObject(weakObj, obj.get(), modelMatrix, effectiveVisible);
+      auto& occProxies = allOccurrences[occIdx];
+
+      if (dirty)
+      {
+        // Regenerate viz-side buffers only once per dirty object
+        // (not per occurrence — the data is the same)
+        if (selfDirty && occIdx == 0)
+        {
+          obj->updateBuffers();
+        }
+
+        for (auto& proxy : occProxies)
+        {
+          proxy->m_modelMatrix = modelMatrix;
+          proxy->m_visible = effectiveVisible;
+          if (selfDirty)
+          {
+            proxy->updateBuffers(obj.get());
+          }
+        }
+
+        stats.numObjectsUpdated++;
+
+        if (SCENE_VERBOSE)
+        {
+          std::cout << "[CompiledScene::updateDirtyObjects] Updated: " << obj->getName()
+                    << " (occurrence " << occIdx << ")\n";
+        }
+      }
     }
 
-    m_objectVersions[weakObj] = currentVersion;
-    stats.numObjectsUpdated++;
-
-    if (SCENE_VERBOSE)
-    {
-      std::cout << "[CompiledScene::updateDirtyObjects] Updated: " << obj->getName() << "\n";
-    }
+    occIdx++;
   }
 
   // Handle composite objects' internal children (e.g. CAxis text labels)
@@ -891,6 +976,7 @@ void CompiledScene::clear()
   m_viewportRenderOrder.clear();
   m_objectToProxy.clear();
   m_objectVersions.clear();
+  m_updateOccurrenceCounter.clear();
   m_shaderManager.clear();
   m_sourceScene = nullptr;
   m_isCompiled = false;
@@ -901,13 +987,11 @@ void CompiledScene::clear()
 bool CompiledScene::hasPendingUpdates() const
 {
   // Check if any tracked object has changed since we last compiled it
-  for (const auto& [weakObj, proxy] : m_objectToProxy)
+  for (const auto& [weakObj, ver] : m_objectVersions)
   {
     auto obj = weakObj.lock();
     if (!obj) continue;
-    auto versionIt = m_objectVersions.find(weakObj);
-    const uint64_t lastVersion = (versionIt != m_objectVersions.end()) ? versionIt->second : 0;
-    if (obj->dataVersion() != lastVersion)
+    if (obj->dataVersion() != ver)
     {
       return true;
     }
@@ -916,6 +1000,19 @@ bool CompiledScene::hasPendingUpdates() const
   // Also check if source scene has new objects we haven't compiled yet
   // (This is a quick check - actual detection happens in compileNewObjects)
   return false;
+}
+
+size_t CompiledScene::getProxyCount() const
+{
+  size_t count = 0;
+  for (const auto& [_, occurrences] : m_objectToProxy)
+  {
+    for (const auto& occ : occurrences)
+    {
+      count += occ.size();
+    }
+  }
+  return count;
 }
 
 void CompiledScene::render(int renderWidth, int renderHeight, int renderOffsetX, int renderOffsetY)
