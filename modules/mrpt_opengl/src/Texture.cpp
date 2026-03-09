@@ -478,8 +478,10 @@ void Texture::internalAssignImage_2D(
 
     // Prepare image data types:
     const GLenum img_type = GL_UNSIGNED_BYTE;
-    // Reverse RGB <-> BGR order?
-    const bool is_RGB_order = (rgb.getChannelsOrder() == std::string("RGB"));
+    // STB always outputs RGB/RGBA order; legacy OpenCV images may be BGR.
+    // getChannelsOrder() returns "RGB" (3ch) or "RGBA" (4ch) for RGB-order data.
+    const auto chOrder = rgb.getChannelsOrder();
+    const bool is_RGB_order = (chOrder == "RGB" || chOrder == "RGBA");
     const GLenum img_format = (is_RGB_order ? GL_RGBA : GL_BGRA);
 
     // Send image data to OpenGL:
@@ -501,8 +503,10 @@ void Texture::internalAssignImage_2D(
     // Prepare image data types:
     const GLenum img_type = GL_UNSIGNED_BYTE;
     const int nBytesPerPixel = rgb.channels();
-    // Reverse RGB <-> BGR order?
-    const bool is_RGB_order = (rgb.getChannelsOrder() == std::string("RGB"));
+    // STB always outputs RGB/RGBA order; legacy OpenCV images may be BGR.
+    // getChannelsOrder() returns "RGB" (3ch) or "RGBA" (4ch) for RGB-order data.
+    const auto chOrder2D = rgb.getChannelsOrder();
+    const bool is_RGB_order = (chOrder2D == "RGB" || chOrder2D == "RGBA");
     const GLenum img_format = [=]()
     {
       switch (nBytesPerPixel)
@@ -636,8 +640,10 @@ void Texture::assignCubeImages(const std::array<mrpt::img::CImage, 6>& imgs, int
     // Prepare image data types:
     const GLenum img_type = GL_UNSIGNED_BYTE;
     const int nBytesPerPixel = rgb.channels();
-    // Reverse RGB <-> BGR order?
-    const bool is_RGB_order = (rgb.getChannelsOrder() == std::string("RGB"));
+    // STB always outputs RGB/RGBA order; legacy OpenCV images may be BGR.
+    // getChannelsOrder() returns "RGB" (3ch) or "RGBA" (4ch) for RGB-order data.
+    const auto chOrderCube = rgb.getChannelsOrder();
+    const bool is_RGB_order = (chOrderCube == "RGB" || chOrderCube == "RGBA");
     const GLenum img_format = [=]()
     {
       switch (nBytesPerPixel)
