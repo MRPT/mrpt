@@ -14,15 +14,15 @@
 
 #include <mrpt/core/round.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/system/CObserver.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/os.h>
 #include <mrpt/viz/CAxis.h>
 #include <mrpt/viz/CBox.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CSphere.h>
 #include <mrpt/viz/CText.h>
 #include <mrpt/viz/stock_objects.h>
-#include <mrpt/system/CObserver.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/system/os.h>
 
 #include <chrono>
 #include <iostream>

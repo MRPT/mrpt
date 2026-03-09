@@ -451,7 +451,8 @@ void CGenericFeatureTracker::internal_trackFeatures(
         const int x = m_newly_detected_feats[i].pt.x;
         const int y = m_newly_detected_feats[i].pt.y;
         if (x > KLT_response_half_win && y > KLT_response_half_win && x < max_x && y < max_y)
-          m_newly_detected_feats[i].response = cur_gray.KLT_response(TPixelCoord(x, y), KLT_response_half_win);
+          m_newly_detected_feats[i].response =
+              cur_gray.KLT_response(TPixelCoord(x, y), KLT_response_half_win);
         else
           m_newly_detected_feats[i].response = 0;  // Out of bounds
       }

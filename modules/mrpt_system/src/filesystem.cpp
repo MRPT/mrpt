@@ -151,7 +151,9 @@ bool mrpt::system::directoryExists(const std::string& _path)
   }
 
   // Verify it's a directory:
-  struct stat buf{};
+  struct stat buf
+  {
+  };
   if (0 != stat(path.c_str(), &buf))
   {
     return false;
@@ -368,7 +370,9 @@ std::string mrpt::system::filePathSeparatorsToNative(const std::string& filePath
 
 mrpt::Clock::time_point mrpt::system::getFileModificationTime(const std::string& filename)
 {
-  struct stat fS{};
+  struct stat fS
+  {
+  };
   if (0 != stat(filename.c_str(), &fS))
   {
     THROW_EXCEPTION_FMT("Could not access modification time of file '%s'", filename.c_str());

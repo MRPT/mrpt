@@ -50,7 +50,8 @@
 #include <cstdlib>
 #include <random>
 
-namespace {
+namespace
+{
 // ------------------------------------------------------------------
 // Build a sample MRPT scene
 // ------------------------------------------------------------------
@@ -123,7 +124,7 @@ void glfwErrorCallback(int error, const char* description)
 {
   std::fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
-}
+}  // namespace
 
 // ------------------------------------------------------------------
 int main()

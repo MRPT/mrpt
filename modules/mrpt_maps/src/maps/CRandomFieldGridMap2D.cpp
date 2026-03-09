@@ -154,7 +154,7 @@ void CRandomFieldGridMap2D::internal_clear()
             m_cov(j, i) = m_cov(i, j);
           }
         }  // for j
-      }  // for i
+      }    // for i
 
       // m_cov.saveToTextFile("cov_init.txt",1);
     }
@@ -511,7 +511,7 @@ void CRandomFieldGridMap2D::internal_clear()
             cy++;
           }
         }  // end for "j"
-      }  // end if_use_Occupancy
+      }    // end if_use_Occupancy
 
       MRPT_LOG_DEBUG_STREAM("[clear] Prior built in " << tictac.Tac() << " s ----------");
 
@@ -958,7 +958,7 @@ void CRandomFieldGridMap2D::resize(
             ASSERT_(!std::isnan(m_cov(i, j)));
           }
         }  // for j
-      }  // for i
+      }    // for i
 
       // m_cov.saveToTextFile("__debug_cov_after_resize.txt");
       // Resize done!
@@ -1051,7 +1051,7 @@ void CRandomFieldGridMap2D::resize(
           }
         }
       }  // end for i
-    }  // end of Kalman-Approximate map
+    }    // end of Kalman-Approximate map
   }
 
   MRPT_END
@@ -1163,7 +1163,7 @@ void CRandomFieldGridMap2D::insertObservation_KF(
         m_map[i].kf_std() = sqrt(new_cov_ij);
       }
     }  // j
-  }  // i
+  }    // i
 
   // Free mem:
   /*mrpt_alloca_*/ free(oldCov);
@@ -1625,7 +1625,7 @@ void CRandomFieldGridMap2D::getAs3DObject(
           obj_v->insertTriangle(triag);
 
         }  // for cx
-      }  // for cy
+      }    // for cy
       meanObj.insert(obj_m);
       varObj.insert(obj_v);
     }
@@ -1784,12 +1784,12 @@ void CRandomFieldGridMap2D::getAs3DObject(
           obj_v->insertTriangle(triag);
 
         }  // for cx
-      }  // for cy
+      }    // for cy
       meanObj.insert(obj_m);
       varObj.insert(obj_v);
     }
     break;  // end Kernel models
-  };  // end switch maptype
+  };        // end switch maptype
 }
 
 /*---------------------------------------------------------------
@@ -2175,7 +2175,7 @@ void CRandomFieldGridMap2D::insertObservation_KF2(
       cov_to_change -= Delta_cov;
 
     }  // end for j
-  }  // end for i
+  }    // end for i
 
   MRPT_LOG_DEBUG_FMT("Done in %.03fms\n", tictac.Tac() * 1000);
 

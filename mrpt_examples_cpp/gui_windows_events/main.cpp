@@ -15,8 +15,8 @@
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
-#include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/system/CObserver.h>
+#include <mrpt/viz/CGridPlaneXY.h>
 
 #include <chrono>
 #include <iostream>

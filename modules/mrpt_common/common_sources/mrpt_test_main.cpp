@@ -23,7 +23,7 @@ std::string mrpt::mrpt_data_dir() { return CMAKE_UNITTEST_BASEDIR; }
 
 int main(int argc, char** argv)
 {
-	testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest(&argc, argv);
 
-	return RUN_ALL_TESTS();
+  return RUN_ALL_TESTS();
 }

@@ -35,4 +35,4 @@ jobs:
       - name: Check code style
         run: |
           echo "TASK=lint_all" >> $GITHUB_ENV
-          bash .circleci/check_style.sh
+          bash scripts/clang_git_format/check_style.sh

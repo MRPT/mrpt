@@ -234,8 +234,7 @@ void CGeneralizedEllipsoidTemplate<2>::implUpdate_Triangles() const
   }
 
   // All faces, all vertices, same color:
-  for (auto& t : tris)
-    t.setColor(getColor_u8());
+  for (auto& t : tris) t.setColor(getColor_u8());
 }
 
 template <>
@@ -263,8 +262,7 @@ void CGeneralizedEllipsoidTemplate<3>::implUpdate_Triangles() const
     const auto idxp = idx_1st_slice + ((i + 1) % stacks);
 
     tris.emplace_back(
-        P3f(pts[0]), P3f(pts[idxp]), P3f(pts[idx]),
-        P3f(pts[0]), P3f(pts[idxp]), P3f(pts[idx]));
+        P3f(pts[0]), P3f(pts[idxp]), P3f(pts[idx]), P3f(pts[0]), P3f(pts[idxp]), P3f(pts[idx]));
   }
 
   // Middle slices: triangle strip
@@ -278,11 +276,11 @@ void CGeneralizedEllipsoidTemplate<3>::implUpdate_Triangles() const
       const size_t ii = (i == (stacks - 1) ? 0 : i + 1);
 
       tris.emplace_back(
-          P3f(pts[idx0 + i]), P3f(pts[idx0 + ii]), P3f(pts[idx1 + i]),
-          P3f(pts[idx0 + i]), P3f(pts[idx0 + ii]), P3f(pts[idx1 + i]));
+          P3f(pts[idx0 + i]), P3f(pts[idx0 + ii]), P3f(pts[idx1 + i]), P3f(pts[idx0 + i]),
+          P3f(pts[idx0 + ii]), P3f(pts[idx1 + i]));
       tris.emplace_back(
-          P3f(pts[idx1 + ii]), P3f(pts[idx1 + i]), P3f(pts[idx0 + ii]),
-          P3f(pts[idx1 + ii]), P3f(pts[idx1 + i]), P3f(pts[idx0 + ii]));
+          P3f(pts[idx1 + ii]), P3f(pts[idx1 + i]), P3f(pts[idx0 + ii]), P3f(pts[idx1 + ii]),
+          P3f(pts[idx1 + i]), P3f(pts[idx0 + ii]));
     }
   }
 
@@ -296,11 +294,10 @@ void CGeneralizedEllipsoidTemplate<3>::implUpdate_Triangles() const
     const auto idxp = idx_last_slice + ((i + 1) % stacks);
 
     tris.emplace_back(
-        P3f(pts[idx]), P3f(pts[idxp]), P3f(pts[idxN]),
-        P3f(pts[idx]), P3f(pts[idxp]), P3f(pts[idxN]));
+        P3f(pts[idx]), P3f(pts[idxp]), P3f(pts[idxN]), P3f(pts[idx]), P3f(pts[idxp]),
+        P3f(pts[idxN]));
   }
 
   // All faces, all vertices, same color:
-  for (auto& t : tris)
-    t.setColor(getColor_u8());
+  for (auto& t : tris) t.setColor(getColor_u8());
 }

@@ -15,12 +15,12 @@
 #include <mrpt/core/format.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/img/TColor.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/viz/CAxis.h>
 #include <mrpt/viz/CBox.h>
 #include <mrpt/viz/CSkyBox.h>
 #include <mrpt/viz/CSphere.h>
 #include <mrpt/viz/stock_objects.h>
-#include <mrpt/system/filesystem.h>
 
 #include <iostream>
 #include <thread>

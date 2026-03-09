@@ -13,7 +13,6 @@
 */
 
 #include <mrpt/opengl/PointsProxy.h>
-
 #include <mrpt/opengl/Shader.h>
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/viz/CVisualObject.h>

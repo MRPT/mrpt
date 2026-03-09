@@ -19,14 +19,14 @@
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CRawlog.h>
+#include <mrpt/poses/CPose3DInterpolator.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 #include <mrpt/viz/CFrustum.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/COctoMapVoxels.h>
 #include <mrpt/viz/CPointCloudColoured.h>
 #include <mrpt/viz/stock_objects.h>
-#include <mrpt/poses/CPose3DInterpolator.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/os.h>
 
 #include <chrono>
 #include <iostream>

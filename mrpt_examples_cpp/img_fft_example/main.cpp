@@ -116,11 +116,13 @@ void TestImageFFT()
   CImage IM1, IM2;
   CMatrixF imgCorr;
 
-  bool loadOk = IM1.loadFromFile(myDataDir + string("fft2_test_image_patch.jpg"), mrpt::img::CH_AS_IS);  // "Patch"
+  bool loadOk = IM1.loadFromFile(
+      myDataDir + string("fft2_test_image_patch.jpg"), mrpt::img::CH_AS_IS);  // "Patch"
   ASSERT_(loadOk);
 
-  loadOk = IM2.loadFromFile(myDataDir + string("fft2_test_image.jpg"),
-                            mrpt::img::CH_AS_IS);  // Ref. image
+  loadOk = IM2.loadFromFile(
+      myDataDir + string("fft2_test_image.jpg"),
+      mrpt::img::CH_AS_IS);  // Ref. image
   ASSERT_(loadOk);
 
   printf("Computing images correlation...");

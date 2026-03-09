@@ -569,7 +569,7 @@ void CBeacon::generateRingSOG(
       }  // end if reallyCreateIt
 
     }  // end for idxTh
-  }  // end for idxEl
+  }    // end for idxEl
 
   // resize to the number of really used modes:
   outPDF.resize(modeIdx);

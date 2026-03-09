@@ -10,7 +10,7 @@
 # Provides a handy wrapper for long clang_git_format commands. Run this from
 # the  **root** of the MRPT repository
 
-DIRS_IN="libs apps samples python"
+DIRS_IN="modules apps mrpt_examples_cpp"
 DIRS_OUT="3rdparty"
 LANGS=cpp
 FORMAT_CODE_BIN="scripts/clang_git_format/format_code.py"

@@ -127,8 +127,7 @@ void LinesProxy::setupLineState() const
   // Clamp to the driver-supported range.
   GLfloat lineWidthRange[2] = {1.0f, 1.0f};
   glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
-  const float clampedWidth =
-      std::max(1.0f, std::min(m_params.lineWidth, lineWidthRange[1]));
+  const float clampedWidth = std::max(1.0f, std::min(m_params.lineWidth, lineWidthRange[1]));
   glLineWidth(clampedWidth);
 
   // Enable anti-aliasing if requested

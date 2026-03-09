@@ -318,11 +318,10 @@ void mrpt::slam::path_from_rtk_gps(
                   0.5 * (GPS_a1->getMsgByClass<gnss::Message_NMEA_GGA>().fields.altitude_meters +
                          GPS_b1->getMsgByClass<gnss::Message_NMEA_GGA>().fields.altitude_meters);
 
-              new_gps->timestamp = mrpt::Clock::time_point(
-                  mrpt::Clock::duration(
-                      (GPS_a1->timestamp.time_since_epoch().count() +
-                       GPS_b1->timestamp.time_since_epoch().count()) /
-                      2));
+              new_gps->timestamp = mrpt::Clock::time_point(mrpt::Clock::duration(
+                  (GPS_a1->timestamp.time_since_epoch().count() +
+                   GPS_b1->timestamp.time_since_epoch().count()) /
+                  2));
 
               it->second[new_gps->sensorLabel] = new_gps;
             }

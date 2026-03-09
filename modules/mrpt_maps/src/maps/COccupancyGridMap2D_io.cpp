@@ -12,10 +12,10 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/maps/config.h>
 #include <mrpt/containers/yaml.h>
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/config.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
@@ -377,8 +377,7 @@ bool COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
         static_cast<long>(getRandomGenerator().drawUniform(0, 255.0f)));
 
     img.line(
-        {int(m1->x2idx(corrs[i].global.x)),
-         int(Ay1 + ly1 - 1 - m1->y2idx(corrs[i].global.y))},
+        {int(m1->x2idx(corrs[i].global.x)), int(Ay1 + ly1 - 1 - m1->y2idx(corrs[i].global.y))},
         {int(lx1 + 1 + m2->x2idx(corrs[i].local.x)),
          int(Ay2 + ly2 - 1 - m2->y2idx(corrs[i].local.y))},
         lineColor);

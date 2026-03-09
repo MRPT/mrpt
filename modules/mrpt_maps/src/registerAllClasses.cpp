@@ -21,7 +21,6 @@
 #include <mrpt/graphs/registerAllClasses.h>
 #include <mrpt/obs/registerAllClasses.h>
 
-
 MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 {
   using namespace mrpt::maps;

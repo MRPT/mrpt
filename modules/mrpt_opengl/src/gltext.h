@@ -18,8 +18,8 @@
 #pragma once
 
 #include <mrpt/math/TPoint3D.h>
-#include <mrpt/viz/TTriangle.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/viz/TTriangle.h>
 #include <mrpt/viz/opengl_fonts.h>
 
 #include <string>

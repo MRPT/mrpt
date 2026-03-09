@@ -12,9 +12,9 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/apps_gui/CameraSelectionGUI.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
-#include <mrpt/apps_gui/CameraSelectionGUI.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CTexturedPlane.h>
 #include <mrpt/viz/Scene.h>

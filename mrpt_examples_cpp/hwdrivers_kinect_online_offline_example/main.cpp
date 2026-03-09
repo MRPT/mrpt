@@ -28,14 +28,14 @@
 #include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/obs/CRawlog.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/viz/CFrustum.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CPlanarLaserScan.h>
 #include <mrpt/viz/CPointCloudColoured.h>
 #include <mrpt/viz/stock_objects.h>
-#include <mrpt/serialization/CArchive.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/system/CTimeLogger.h>
 
 #include <chrono>
 #include <iostream>

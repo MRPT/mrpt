@@ -334,7 +334,8 @@ void CWaypointsNavigator::internal_select_next_waypoint_skip_policy(
     int most_advanced_wp = wps.waypoint_index_current_goal;
     const int most_advanced_wp_at_begin = most_advanced_wp;
 
-    for (int idx = wps.waypoint_index_current_goal; idx < static_cast<int>(wps.waypoints.size()); idx++)
+    for (int idx = wps.waypoint_index_current_goal; idx < static_cast<int>(wps.waypoints.size());
+         idx++)
     {
       if (idx < 0) continue;
       if (wps.waypoints[idx].reached) continue;

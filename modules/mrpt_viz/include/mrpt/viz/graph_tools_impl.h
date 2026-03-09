@@ -15,13 +15,13 @@
 
 #include <mrpt/containers/yaml.h>
 #include <mrpt/img/TColor.h>
+#include <mrpt/poses/CPoint3D.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CPointCloud.h>
 #include <mrpt/viz/CSetOfLines.h>
 #include <mrpt/viz/CSetOfObjects.h>
 #include <mrpt/viz/CSimpleLine.h>
 #include <mrpt/viz/stock_objects.h>
-#include <mrpt/poses/CPoint3D.h>
 
 namespace mrpt::viz::graph_tools
 {

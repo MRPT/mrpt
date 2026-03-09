@@ -16,14 +16,14 @@
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CRawlog.h>
+#include <mrpt/poses/CPosePDFParticles.h>
+#include <mrpt/random.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CPlanarLaserScan.h>
 #include <mrpt/viz/CSetOfLines.h>
 #include <mrpt/viz/Scene.h>
 #include <mrpt/viz/pose_pdfs.h>
-#include <mrpt/poses/CPosePDFParticles.h>
-#include <mrpt/random.h>
-#include <mrpt/system/filesystem.h>
 
 #include <iostream>
 

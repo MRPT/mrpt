@@ -106,7 +106,8 @@ bool CVideoFileWriter::writeImage(const mrpt::img::CImage& img)
     return false;
   }
 
-  if (static_cast<size_t>(m_img_size.x) != img.getWidth() || static_cast<size_t>(m_img_size.y) != img.getHeight())
+  if (static_cast<size_t>(m_img_size.x) != img.getWidth() ||
+      static_cast<size_t>(m_img_size.y) != img.getHeight())
   {
     std::cout << format(
                      "[CVideoFileWriter::writeImage] Error: video frame "

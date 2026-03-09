@@ -245,8 +245,8 @@ bool CGasConcentrationGridMap2D::internal_insertObservation(
       this->insertIndividualReading(
           sensorReading, mrpt::math::TPoint2D(sensorPose.x(), sensorPose.y()));
       return true;  // Done!
-    }  // endif correct "gasSensorLabel"
-  }  // end if "CObservationGasSensors"
+    }               // endif correct "gasSensorLabel"
+  }                 // end if "CObservationGasSensors"
 
   return false;
   MRPT_END
@@ -663,7 +663,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
           }
         }
       }  // end-for ci
-    }  // end-for cell i
+    }    // end-for cell i
 
     cout << " - SA matrix computed in " << tictac.Tac() << "s" << endl << "\n";
   }
@@ -1038,7 +1038,7 @@ that models the propagation of the gas comming from cell_i.
 
               sum_w = sum_w + w;
             }  // end-for scx
-          }  // end-for scy
+          }    // end-for scy
 
           // SAVE to LUT
           for (it = w_values.begin(); it != w_values.end(); it++)
@@ -1069,7 +1069,7 @@ that models the propagation of the gas comming from cell_i.
         }  // end-if only one affected cell
 
       }  // end-for r
-    }  // end-for phi
+    }    // end-for phi
 
     if (debug) fclose(debug_file);
 

@@ -80,8 +80,7 @@ void CGridPlaneXY::updateBuffers() const
 {
   ASSERT_GT_(m_frequency, 0);
 
-  std::unique_lock<std::shared_mutex> lck(
-      VisualObjectParams_Lines::m_linesMtx.data);
+  std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Lines::m_linesMtx.data);
 
   auto& vbd = VisualObjectParams_Lines::m_vertex_buffer_data;
   auto& cbd = VisualObjectParams_Lines::m_color_buffer_data;

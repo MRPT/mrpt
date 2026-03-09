@@ -216,10 +216,7 @@ class CPoseOrPoint :
 
   /** Returns the 2D distance from this pose/point to a 2D point (ignores Z,
    * if it exists). */
-  double distance2DTo(double ax, double ay) const
-  {
-    return std::sqrt(distance2DToSquare(ax, ay));
-  }
+  double distance2DTo(double ax, double ay) const { return std::sqrt(distance2DToSquare(ax, ay)); }
 
   /** Returns the 3D distance from this pose/point to a 3D point */
   double distance3DTo(double ax, double ay, double az) const
@@ -228,10 +225,7 @@ class CPoseOrPoint :
   }
 
   /** Returns the euclidean distance to a 3D point: */
-  double distanceTo(const mrpt::math::TPoint3D& b) const
-  {
-    return distance3DTo(b.x, b.y, b.z);
-  }
+  double distanceTo(const mrpt::math::TPoint3D& b) const { return distance3DTo(b.x, b.y, b.z); }
 
   /** Returns the euclidean norm of vector: \f$ ||\mathbf{x}|| =
    * \sqrt{x^2+y^2+z^2} \f$ */

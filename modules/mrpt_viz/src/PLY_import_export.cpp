@@ -1859,9 +1859,9 @@ struct TFace
 };
 
 const PlyProperty face_props[] = {
-    /* list of property information for a vertex */
-    {"intensity", PLY_FLOAT, PLY_FLOAT, offsetof(TFace, intensity)},
-    {"vertex_indices", PLY_INT, PLY_INT, offsetof(TFace, verts), true, PLY_UCHAR, PLY_UCHAR,
+  /* list of property information for a vertex */
+    {     "intensity", PLY_FLOAT, PLY_FLOAT, offsetof(TFace, intensity)},
+    { "vertex_indices", PLY_INT, PLY_INT, offsetof(TFace, verts),                                           true, PLY_UCHAR, PLY_UCHAR,
      offsetof(TFace, nverts)}
 };
 

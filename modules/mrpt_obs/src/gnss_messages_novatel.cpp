@@ -390,11 +390,11 @@ void Message_NV_OEM6_RAWIMUS::dumpToStream(std::ostream& out) const
       static_cast<unsigned>(fields.header.ms_in_week));
   out << mrpt::format(" Status: 0x%08lu\n", static_cast<long>(fields.imu_status));
   out << mrpt::format(
-      " Acel: X=%li Y=%li Z=%li\n", static_cast<long>(fields.accel_x), -static_cast<long>(fields.accel_y_neg),
-      static_cast<long>(fields.accel_z));
+      " Acel: X=%li Y=%li Z=%li\n", static_cast<long>(fields.accel_x),
+      -static_cast<long>(fields.accel_y_neg), static_cast<long>(fields.accel_z));
   out << mrpt::format(
-      " Gyro: X=%li Y=%li Z=%li\n", static_cast<long>(fields.gyro_x), -static_cast<long>(fields.gyro_y_neg),
-      static_cast<long>(fields.gyro_z));
+      " Gyro: X=%li Y=%li Z=%li\n", static_cast<long>(fields.gyro_x),
+      -static_cast<long>(fields.gyro_y_neg), static_cast<long>(fields.gyro_z));
 }
 
 bool Message_NV_OEM6_RAWIMUS::getAllFieldDescriptions(std::ostream& o) const

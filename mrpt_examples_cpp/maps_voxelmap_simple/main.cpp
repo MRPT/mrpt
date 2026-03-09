@@ -16,10 +16,10 @@
 #include <mrpt/maps/CVoxelMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/stock_observations.h>
+#include <mrpt/system/os.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/COctoMapVoxels.h>
 #include <mrpt/viz/stock_objects.h>
-#include <mrpt/system/os.h>
 
 #include <chrono>
 #include <iostream>

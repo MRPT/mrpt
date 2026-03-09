@@ -63,7 +63,11 @@ size_t CInterfaceFTDI::Write(const void* Buffer, size_t Count)
   return static_cast<size_t>(ret);
 }
 
-uint64_t CInterfaceFTDI::Seek([[maybe_unused]] int64_t Offset, [[maybe_unused]] CStream::TSeekOrigin Origin) { return 0; }
+uint64_t CInterfaceFTDI::Seek(
+    [[maybe_unused]] int64_t Offset, [[maybe_unused]] CStream::TSeekOrigin Origin)
+{
+  return 0;
+}
 
 uint64_t CInterfaceFTDI::getTotalBytesCount() const { return 0; }
 uint64_t CInterfaceFTDI::getPosition() const { return 0; }

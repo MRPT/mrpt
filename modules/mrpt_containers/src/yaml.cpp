@@ -1101,7 +1101,9 @@ void yaml::loadFromText(const std::string& yamlTextBlock)
   // Reset:
   *this = yaml();
 
-  struct fy_parse_cfg cfg{};
+  struct fy_parse_cfg cfg
+  {
+  };
   cfg.search_path = "";
   cfg.diag = nullptr;
   cfg.flags = FYPCF_PARSE_COMMENTS;

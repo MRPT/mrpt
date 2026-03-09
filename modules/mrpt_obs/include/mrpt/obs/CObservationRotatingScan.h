@@ -179,10 +179,7 @@ class CObservationRotatingScan : public CObservation
 
   /** \name Point cloud external storage functions
    * @{ */
-  bool isExternallyStored() const
-  {
-    return m_externally_stored != ExternalStorageFormat::None;
-  }
+  bool isExternallyStored() const { return m_externally_stored != ExternalStorageFormat::None; }
   const std::string& getExternalStorageFile() const { return m_external_file; }
   void setAsExternalStorage(const std::string& fileName, const ExternalStorageFormat fmt);
 

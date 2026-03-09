@@ -16,13 +16,13 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
 #include <mrpt/img/TColor.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/os.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CPointCloudColoured.h>
 #include <mrpt/viz/Scene.h>
 #include <mrpt/viz/Viewport.h>
 #include <mrpt/viz/stock_objects.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/system/os.h>
 
 #include <chrono>
 #include <iostream>
@@ -124,8 +124,7 @@ int main(int argc, char** argv)
       win3D.setFOV(90);
       win3D.setCameraPointingToPoint(2.5, 0, 0);
 
-      mrpt::viz::CPointCloudColoured::Ptr gl_points =
-          mrpt::viz::CPointCloudColoured::Create();
+      mrpt::viz::CPointCloudColoured::Ptr gl_points = mrpt::viz::CPointCloudColoured::Create();
       gl_points->setPointSize(2.5);
 
       viz::Viewport::Ptr viewInt;  // Extra viewports for the RGB images.

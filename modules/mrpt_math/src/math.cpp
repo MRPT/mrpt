@@ -622,8 +622,8 @@ double mrpt::math::noncentralChi2CDF(
 {
   const double a = degreesOfFreedom + noncentrality;
   const double b = (a + noncentrality) / square(a);
-  const double t =
-      (std::pow(static_cast<double>(arg) / a, 1.0 / 3.0) - (1.0 - 2.0 / 9.0 * b)) / std::sqrt(2.0 / 9.0 * b);
+  const double t = (std::pow(static_cast<double>(arg) / a, 1.0 / 3.0) - (1.0 - 2.0 / 9.0 * b)) /
+                   std::sqrt(2.0 / 9.0 * b);
   return 0.5 * (1.0 + std::erf(t / std::sqrt(2.0)));
 }
 

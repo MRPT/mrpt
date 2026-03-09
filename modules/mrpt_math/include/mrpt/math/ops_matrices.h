@@ -36,8 +36,7 @@ namespace mrpt::math
 {
 /** R = H * C * H^t */
 template <typename MAT_H, typename MAT_C, typename MAT_R>
-void multiply_HCHt(
-    const MAT_H& H, const MAT_C& C, MAT_R& R, bool accumResultInOutput = false)
+void multiply_HCHt(const MAT_H& H, const MAT_C& C, MAT_R& R, bool accumResultInOutput = false)
 {
   auto res = (mat2eig(H) * mat2eig(C) * mat2eig(H).transpose()).eval();
   if (accumResultInOutput)

@@ -717,7 +717,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
       newParticlesWeight[i] = newParticleLogWeight;
 
     }  // for i
-  }  // end fixed sample size
+  }    // end fixed sample size
   else
   {
     // -------------------------------------------------------------------------------------------------
@@ -846,9 +846,8 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
           ASSERT_(k < me->m_particles.size());
 
           // Also erase it from the other permutation vector list:
-          oldPartIdxsStillNotPropragated.erase(
-              std::find(
-                  oldPartIdxsStillNotPropragated.begin(), oldPartIdxsStillNotPropragated.end(), k));
+          oldPartIdxsStillNotPropragated.erase(std::find(
+              oldPartIdxsStillNotPropragated.begin(), oldPartIdxsStillNotPropragated.end(), k));
         }
         else
         {

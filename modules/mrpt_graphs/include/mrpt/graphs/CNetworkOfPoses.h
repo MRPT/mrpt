@@ -780,7 +780,6 @@ using CNetworkOfPoses2DInf = CNetworkOfPoses<mrpt::poses::CPosePDFGaussianInf>;
  * CPose3DPDFGaussianInf, also implementing serialization. */
 using CNetworkOfPoses3DInf = CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussianInf>;
 
-
 /** @} */  // end of grouping
 
 }  // namespace graphs
@@ -798,4 +797,3 @@ MRPT_DECLARE_TTYPENAME(mrpt::containers::map_traits_map_as_vector)
 
 // Implementation of templates (in a separate file for clarity)
 #include "CNetworkOfPoses_impl.h"
-

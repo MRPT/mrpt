@@ -13,8 +13,8 @@
 */
 
 #include <gtest/gtest.h>
-#include <mrpt/core/config.h>
 #include <mrpt/core/bit_cast.h>
+#include <mrpt/core/config.h>
 #include <mrpt/core/reverse_bytes.h>
 
 // Load data from constant file and check for exact match.

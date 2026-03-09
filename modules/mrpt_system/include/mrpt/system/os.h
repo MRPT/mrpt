@@ -13,9 +13,9 @@
 */
 #pragma once
 
-#include <mrpt/system/config.h>
 #include <mrpt/core/common.h>
 #include <mrpt/core/optional_ref.h>
+#include <mrpt/system/config.h>
 
 #include <cstdarg>
 #include <cstdint>

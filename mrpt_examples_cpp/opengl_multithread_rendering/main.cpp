@@ -14,16 +14,16 @@
 
 #include <mrpt/containers/yaml.h>
 #include <mrpt/core/lock_helper.h>
-#include <mrpt/viz/CAxis.h>
 #include <mrpt/opengl/CFBORender.h>
-#include <mrpt/viz/CMesh.h>
-#include <mrpt/viz/CPointCloud.h>
-#include <mrpt/viz/CSphere.h>
-#include <mrpt/viz/Scene.h>
 #include <mrpt/random.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/thread_name.h>
+#include <mrpt/viz/CAxis.h>
+#include <mrpt/viz/CMesh.h>
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CSphere.h>
+#include <mrpt/viz/Scene.h>
 
 //#define USE_NANOGUI_WINDOW
 

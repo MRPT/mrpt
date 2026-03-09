@@ -21,6 +21,11 @@
  */
 
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/random.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/os.h>
 #include <mrpt/viz/CAngularObservationMesh.h>
 #include <mrpt/viz/CAxis.h>
 #include <mrpt/viz/CCylinder.h>
@@ -30,11 +35,6 @@
 #include <mrpt/viz/CPolyhedron.h>
 #include <mrpt/viz/CSphere.h>
 #include <mrpt/viz/CTexturedPlane.h>
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/random.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/system/os.h>
 
 #include <chrono>
 #include <iostream>

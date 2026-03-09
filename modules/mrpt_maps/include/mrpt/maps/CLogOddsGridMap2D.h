@@ -115,8 +115,7 @@ struct CLogOddsGridMap2D : public detail::logoddscell_traits<TCELL>
    *  \param thres  This must be CELLTYPE_MAX-logodd_obs
    * \sa updateCell_fast_occupied
    */
-  static void updateCell_fast_free(
-      cell_t* theCell, const cell_t logodd_obs, const cell_t thres)
+  static void updateCell_fast_free(cell_t* theCell, const cell_t logodd_obs, const cell_t thres)
   {
     if (*theCell < thres)
       *theCell += logodd_obs;

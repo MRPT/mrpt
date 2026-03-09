@@ -20,12 +20,12 @@ namespace mrpt
 template <typename T>
 class CTraitsTest
 {
-	CTraitsTest()
-	{
-		static_assert(std::is_move_constructible<T>(), "Can't move construct");
-		static_assert(std::is_copy_constructible<T>(), "Can't copy construct");
-		static_assert(std::is_move_assignable<T>(), "Can't move assign");
-		static_assert(std::is_copy_assignable<T>(), "Can't copy assign");
-	}
+  CTraitsTest()
+  {
+    static_assert(std::is_move_constructible<T>(), "Can't move construct");
+    static_assert(std::is_copy_constructible<T>(), "Can't copy construct");
+    static_assert(std::is_move_assignable<T>(), "Can't move assign");
+    static_assert(std::is_copy_assignable<T>(), "Can't copy assign");
+  }
 };
 }  // namespace mrpt

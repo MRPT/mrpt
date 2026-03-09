@@ -329,7 +329,7 @@ void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(std::istream& f)
 
       nRows++;
     }  // end if fgets
-  }  // end while not feof
+  }    // end while not feof
 
   // Final resize to the real size (in case we allocated space in advance):
   if (Derived::RowsAtCompileTime == Eigen::Dynamic || Derived::ColsAtCompileTime == Eigen::Dynamic)

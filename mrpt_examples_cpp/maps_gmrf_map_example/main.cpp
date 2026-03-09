@@ -14,9 +14,9 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/maps/CGasConcentrationGridMap2D.h>
+#include <mrpt/random.h>
 #include <mrpt/viz/CPointCloud.h>
 #include <mrpt/viz/stock_objects.h>
-#include <mrpt/random.h>
 
 #include <iostream>
 
