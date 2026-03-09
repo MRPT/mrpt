@@ -14,7 +14,10 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/maps/COctoMap.h>
+#include <mrpt/math/TOrientedBox.h>
 #include <mrpt/obs/stock_observations.h>
+#include <mrpt/random.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/viz/CArrow.h>
 #include <mrpt/viz/CAxis.h>
 #include <mrpt/viz/CBox.h>
@@ -47,9 +50,6 @@
 #include <mrpt/viz/CVectorField3D.h>
 #include <mrpt/viz/Scene.h>
 #include <mrpt/viz/stock_objects.h>
-#include <mrpt/math/TOrientedBox.h>
-#include <mrpt/random.h>
-#include <mrpt/system/filesystem.h>
 
 #include <Eigen/Dense>  // transpose()
 #include <chrono>
@@ -119,14 +119,16 @@ void TestOpenGLObjects()
 
   // Arrow
   {
-    auto obj = viz::CArrow::Create({0, 0, 0}, {3, 0, 0}, 0.2f, 0.1f, 0.2f);
+    auto obj = viz::CArrow::Create(
+        mrpt::math::TPoint3Df(0, 0, 0), mrpt::math::TPoint3Df(3, 0, 0), 0.2f, 0.1f, 0.2f);
     obj->setLocation(off_x, 0, 0);
     obj->setColor(1, 0, 0);
     obj->setName("arrow #1");
     obj->enableShowName();
     theScene->insert(obj);
 
-    auto obj2 = viz::CArrow::Create({1, 2, 3}, {6, -3, 0}, 0.1f, 0.1f, 0.3f);
+    auto obj2 = viz::CArrow::Create(
+        mrpt::math::TPoint3Df(1, 2, 3), mrpt::math::TPoint3Df(6, -3, 0), 0.1f, 0.1f, 0.3f);
     obj2->setLocation(off_x, 0, 0);
     obj2->setColor(0, 0, 1);
     theScene->insert(obj2);
@@ -166,8 +168,7 @@ void TestOpenGLObjects()
     obj3->setLocation(off_x, 8, 0);
     theScene->insert(obj3);
 
-    auto obj4 = viz::CBox::Create(
-        TPoint3D(-2.0, -1.0, -0.2), TPoint3D(2.0, 1.0, 0.2), false);
+    auto obj4 = viz::CBox::Create(TPoint3D(-2.0, -1.0, -0.2), TPoint3D(2.0, 1.0, 0.2), false);
     obj4->setLocation(off_x, 12, 0);
     obj4->enableBoxBorder(true);
     obj4->setLineWidth(3);
@@ -537,7 +538,7 @@ void TestOpenGLObjects()
     theScene->insert(obj3);
 
     // obj 4:
-    if (im.getWidth() > 1)
+    if (!im.isEmpty())
     {
       obj4->assignImageAndZ(im, Z);
       obj4->setLocation(off_x, 3, 0);
@@ -546,7 +547,7 @@ void TestOpenGLObjects()
       theScene->insert(obj4);
     }
     // obj 5:
-    if (im.getWidth() > 1)
+    if (!im.isEmpty())
     {
       obj5->assignImageAndZ(im, Z);
       obj5->setMeshTextureExtension(0.25, 0.5);
@@ -710,8 +711,8 @@ void TestOpenGLObjects()
   // CColorMap
   {
     {
-      auto obj = viz::CColorBar::Create(
-          mrpt::img::cmHOT, 0.2, 1.0, 0.0, 1.0, -50.0, 100.0, "%7.02f m/s");
+      auto obj =
+          viz::CColorBar::Create(mrpt::img::cmHOT, 0.2, 1.0, 0.0, 1.0, -50.0, 100.0, "%7.02f m/s");
       obj->setLocation(off_x, 0, 0);
       theScene->insert(obj);
     }
@@ -985,8 +986,10 @@ void TestOpenGLObjects()
     pic.filledRectangle({0, 0}, {(int)(W - 1), (int)(H - 1)}, mrpt::img::TColor::black());
     pic.filledRectangle({0, 0}, {(int)(W / 4), (int)(H / 2)}, mrpt::img::TColor::white());
 
-    picAlpha.filledRectangle({0, 0}, {(int)(W - 1), (int)(H - 1)}, mrpt::img::TColor(0x55, 0x55, 0x55));
-    picAlpha.filledRectangle({0, 0}, {(int)(W / 4), (int)(H / 2)}, mrpt::img::TColor(0xa0, 0xa0, 0xa0));
+    picAlpha.filledRectangle(
+        {0, 0}, {(int)(W - 1), (int)(H - 1)}, mrpt::img::TColor(0x55, 0x55, 0x55));
+    picAlpha.filledRectangle(
+        {0, 0}, {(int)(W / 4), (int)(H / 2)}, mrpt::img::TColor(0xa0, 0xa0, 0xa0));
 
     {
       viz::CTexturedPlane::Ptr obj = viz::CTexturedPlane::Create();
