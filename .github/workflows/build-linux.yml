@@ -57,6 +57,7 @@ jobs:
                            libdc1394-dev \
                            lcov yamllint \
                            libicu-dev libsimpleini-dev \
+                           libcli11-dev \
                            libzstd-dev
 
           # Added: python3-pip and colcon installation via pip
