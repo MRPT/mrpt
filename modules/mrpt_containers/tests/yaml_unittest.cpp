@@ -111,7 +111,7 @@ MRPT_TEST_END()
 MRPT_TEST(yaml, initializers)
 {
   {
-    mrpt::containers::yaml p = mrpt::containers::yaml::Sequence({"K", 1.0});
+    const mrpt::containers::yaml p = mrpt::containers::yaml::Sequence({"K", 1.0});
     EXPECT_TRUE(p.isSequence());
 
     EXPECT_THROW(p(-1), std::exception);
