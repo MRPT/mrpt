@@ -15,6 +15,7 @@
 
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/opengl/ShaderProgramManager.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/viz/Scene.h>
 #include <mrpt/viz/opengl_fonts.h>
@@ -394,6 +395,13 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
   void setImageView(mrpt::img::CImage&& img);
 
   void sendFunctionToRunOnGUIThread(const std::function<void(void)>& f);
+
+  /** Runs \a f on the GUI/OpenGL thread, passing the active ShaderProgramManager.
+   * Use this to override or install custom shaders after the GL context is ready.
+   * If the compiled scene does not exist yet, \a f is not called.
+   * \note Must only be called once the window is fully open (after wait_for_GL_context()). */
+  void sendFunctionWithShaderManager(
+      const std::function<void(mrpt::opengl::ShaderProgramManager&)>& f);
 
   bool is_GL_context_created() const;
 

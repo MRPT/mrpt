@@ -241,6 +241,14 @@ class CGlCanvasBase
   mrpt::viz::Scene::Ptr& getOpenGLSceneRef() { return m_openGLScene; }
   void setOpenGLSceneRef(mrpt::viz::Scene::Ptr scene);
 
+  /** Returns the shader manager for the current compiled scene, or nullptr
+   * if the scene has not been compiled yet.
+   * \note Must be called from the OpenGL context thread. */
+  mrpt::opengl::ShaderProgramManager* getShaderManager()
+  {
+    return m_compiledScene ? &m_compiledScene->shaderManager() : nullptr;
+  }
+
  protected:
   virtual void swapBuffers() = 0;
   virtual void preRender() = 0;
