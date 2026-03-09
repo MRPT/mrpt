@@ -52,6 +52,10 @@ class CSkyBox : public CVisualObject
 
   bool cullElegible() const override { return false; }
 
+ /** Returns the 6 face images for cube-map rendering.
+  *  Indices follow the numeric ordering of CUBE_TEXTURE_FACE values. */
+  const std::array<mrpt::img::CImage, 6>& getTextureImages() const { return m_textureImages; }
+
  private:
   /// The cube texture for the 6 faces
   std::array<mrpt::img::CImage, 6> m_textureImages;

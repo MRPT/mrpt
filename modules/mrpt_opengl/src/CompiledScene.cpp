@@ -18,11 +18,13 @@
 #include <mrpt/opengl/CompiledScene.h>
 #include <mrpt/opengl/LinesProxy.h>
 #include <mrpt/opengl/PointsProxy.h>
+#include <mrpt/opengl/SkyBoxProxy.h>
 #include <mrpt/opengl/TexturedTrianglesProxy.h>
 #include <mrpt/opengl/TrianglesProxy.h>
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/CSkyBox.h>
 #include <mrpt/viz/CText.h>
 #include <mrpt/viz/CText3D.h>
 
@@ -533,6 +535,13 @@ std::vector<RenderableProxy::Ptr> CompiledScene::createProxiesByType(
 
   if (!obj)
   {
+    return proxies;
+  }
+
+  // Check for CSkyBox (special case: rendered with cube map, no triangle data)
+  if (dynamic_cast<const mrpt::viz::CSkyBox*>(obj.get()) != nullptr)
+  {
+    proxies.push_back(std::make_shared<SkyBoxProxy>());
     return proxies;
   }
 
