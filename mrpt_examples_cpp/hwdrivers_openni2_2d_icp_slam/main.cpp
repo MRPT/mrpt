@@ -15,13 +15,13 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
 #include <mrpt/img/TColor.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/viz/CGridPlaneXY.h>
-#include <mrpt/viz/CPointCloudColoured.h>
 #include <mrpt/viz/CPlanarLaserScan.h>
+#include <mrpt/viz/CPointCloudColoured.h>
 #include <mrpt/viz/Scene.h>
 #include <mrpt/viz/Viewport.h>
 #include <mrpt/viz/stock_objects.h>
-#include <mrpt/system/CTicTac.h>
 
 #include <iostream>
 

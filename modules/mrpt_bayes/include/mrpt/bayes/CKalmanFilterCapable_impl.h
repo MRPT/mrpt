@@ -1008,8 +1008,7 @@ size_t getNumberOfLandmarksInMap(
 }
 
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
-bool isMapEmpty(
-    const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>& obj)
+bool isMapEmpty(const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>& obj)
 {
   return (obj.getStateVectorLength() == VEH_SIZE);
 }

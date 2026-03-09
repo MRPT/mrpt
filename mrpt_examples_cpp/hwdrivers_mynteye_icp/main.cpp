@@ -17,11 +17,11 @@
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/slam/CICP.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CPointCloudColoured.h>
 #include <mrpt/viz/stock_objects.h>
-#include <mrpt/slam/CICP.h>
-#include <mrpt/system/filesystem.h>
 
 #include <chrono>
 #include <thread>

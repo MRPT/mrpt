@@ -14,11 +14,11 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/math/TPose3D.h>
+#include <mrpt/system/os.h>
 #include <mrpt/viz/CAxis.h>
 #include <mrpt/viz/CBox.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CSphere.h>
-#include <mrpt/system/os.h>
 
 #include <chrono>
 #include <iostream>

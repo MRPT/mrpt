@@ -236,8 +236,7 @@ void CImage::loadFromStreamAsJPEG(mrpt::io::CStream& in)
     const size_t block = 4096;
     uint8_t tmp[block];
     size_t nRead;
-    while ((nRead = in.Read(tmp, block)) > 0)
-      buf.insert(buf.end(), tmp, tmp + nRead);
+    while ((nRead = in.Read(tmp, block)) > 0) buf.insert(buf.end(), tmp, tmp + nRead);
   }
 
   ASSERT_(!buf.empty());
@@ -248,8 +247,7 @@ void CImage::loadFromStreamAsJPEG(mrpt::io::CStream& in)
 
   if (decoded == nullptr)
   {
-    THROW_EXCEPTION_FMT(
-        "loadFromStreamAsJPEG: stbi decode failed: %s", stbi_failure_reason());
+    THROW_EXCEPTION_FMT("loadFromStreamAsJPEG: stbi decode failed: %s", stbi_failure_reason());
   }
 
   m_state->clear();

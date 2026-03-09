@@ -13,8 +13,8 @@
 */
 #pragma once
 
-#include <mrpt/core/config.h>
 #include <mrpt/core/Clock.h>
+#include <mrpt/core/config.h>
 
 #include <cstdint>
 

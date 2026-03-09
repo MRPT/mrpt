@@ -151,8 +151,7 @@ typename VECTORLIKE::Scalar mahalanobisDistance(
  *  \f[ d^2 = \Delta_\mu^\top \Sigma^{-1} \Delta_\mu  \f]
  */
 template <class VECTORLIKE, class MATRIXLIKE>
-typename MATRIXLIKE::Scalar mahalanobisDistanceSq(
-    const VECTORLIKE& delta_mu, const MATRIXLIKE& cov)
+typename MATRIXLIKE::Scalar mahalanobisDistanceSq(const VECTORLIKE& delta_mu, const MATRIXLIKE& cov)
 {
   ASSERTDEB_(cov.isSquare());
   ASSERTDEB_(size_t(cov.cols()) == size_t(delta_mu.size()));
@@ -165,8 +164,7 @@ typename MATRIXLIKE::Scalar mahalanobisDistanceSq(
  *  \f[ d^2 = \sqrt( \Delta_\mu^\top \Sigma^{-1} \Delta_\mu ) \f]
  */
 template <class VECTORLIKE, class MATRIXLIKE>
-typename MATRIXLIKE::Scalar mahalanobisDistance(
-    const VECTORLIKE& delta_mu, const MATRIXLIKE& cov)
+typename MATRIXLIKE::Scalar mahalanobisDistance(const VECTORLIKE& delta_mu, const MATRIXLIKE& cov)
 {
   return std::sqrt(mahalanobisDistanceSq(delta_mu, cov));
 }
@@ -308,7 +306,7 @@ template <
     class VECTORLIKE2,
     class VECTORLIKE3>
 void covariancesAndMeanWeighted(  // Done to speed-up the special case
-                                         // expanded in covariancesAndMean() below.
+                                  // expanded in covariancesAndMean() below.
     const VECTOR_OF_VECTORS& elements,
     MATRIXLIKE& covariances,
     VECTORLIKE& means,

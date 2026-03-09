@@ -140,10 +140,7 @@ class map_as_vector
     this->operator[](keyvalpair.first) = keyvalpair;
   }
   /** Insert pair<key,val>, as in std::map */
-  void insert(const value_type& keyvalpair)
-  {
-    this->operator[](keyvalpair.first) = keyvalpair;
-  }
+  void insert(const value_type& keyvalpair) { this->operator[](keyvalpair.first) = keyvalpair; }
 
   /** Constant-time find, returning an iterator to the <key,val> pair or to
    * end() if not found (that is, if it's above the maximum index in the

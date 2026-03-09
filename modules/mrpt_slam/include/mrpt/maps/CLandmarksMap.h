@@ -13,8 +13,8 @@
 */
 #pragma once
 
-#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/CLandmark.h>
+#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/viz/CSetOfObjects.h>
@@ -124,21 +124,18 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
   void internal_clear() override { landmarks.clear(); }
 
   bool internal_insertObservation(
-      const mrpt::obs::CObservation&,
-      const std::optional<const mrpt::poses::CPose3D>&) override
+      const mrpt::obs::CObservation&, const std::optional<const mrpt::poses::CPose3D>&) override
   {
     return false;
   }
 
   double internal_computeObservationLikelihood(
-      const mrpt::obs::CObservation&,
-      const mrpt::poses::CPose3D&) const override
+      const mrpt::obs::CObservation&, const mrpt::poses::CPose3D&) const override
   {
     return 0;
   }
 
-  bool internal_canComputeObservationLikelihood(
-      const mrpt::obs::CObservation&) const override
+  bool internal_canComputeObservationLikelihood(const mrpt::obs::CObservation&) const override
   {
     return false;
   }

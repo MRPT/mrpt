@@ -157,8 +157,8 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
 
   if (verbose)
     std::cout << format(
-        "Cut:%u=%u+%u,nCut=%.02f->", static_cast<unsigned int>(nodeCount), static_cast<unsigned int>(p1.size()),
-        static_cast<unsigned int>(p2.size()), cut_value);
+        "Cut:%u=%u+%u,nCut=%.02f->", static_cast<unsigned int>(nodeCount),
+        static_cast<unsigned int>(p1.size()), static_cast<unsigned int>(p2.size()), cut_value);
 
   // Is it a useful partition?
   if (cut_value > threshold_Ncut || p1.size() < minSizeClusters || p2.size() < minSizeClusters)

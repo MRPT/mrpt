@@ -120,8 +120,7 @@ class COpenNI2Generic::CDevice
   {
     rgb.setPixel(x, y, (src.r << 16) + (src.g << 8) + src.b);
   }
-  void setPixel(
-      const openni::DepthPixel& src, mrpt::math::CMatrix_u16& depth_mm, int x, int y)
+  void setPixel(const openni::DepthPixel& src, mrpt::math::CMatrix_u16& depth_mm, int x, int y)
   {
     depth_mm(y, x) = src;
   }

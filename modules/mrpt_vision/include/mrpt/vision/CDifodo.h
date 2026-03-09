@@ -252,16 +252,10 @@ class CDifodo
   float getSpeedFilterEigWeight() const { return previous_speed_eig_weight; }
 
   /** Set the filter constant-weight of the velocity filter. */
-  void setSpeedFilterConstWeight(float new_cweight)
-  {
-    previous_speed_const_weight = new_cweight;
-  }
+  void setSpeedFilterConstWeight(float new_cweight) { previous_speed_const_weight = new_cweight; }
 
   /** Set the filter eigen-weight of the velocity filter. */
-  void setSpeedFilterEigWeight(float new_eweight)
-  {
-    previous_speed_eig_weight = new_eweight;
-  }
+  void setSpeedFilterEigWeight(float new_eweight) { previous_speed_eig_weight = new_eweight; }
 
   /** Get the coordinates of the points considered by the visual odometry
    * method */

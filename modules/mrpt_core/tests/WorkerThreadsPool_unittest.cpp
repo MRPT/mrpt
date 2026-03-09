@@ -13,8 +13,8 @@
 */
 
 #include <gtest/gtest.h>
-#include <mrpt/core/config.h>
 #include <mrpt/core/WorkerThreadsPool.h>
+#include <mrpt/core/config.h>
 
 #if !MRPT_IN_EMSCRIPTEN  // No multithreading
 TEST(WorkerThreadsPool, runTasks)

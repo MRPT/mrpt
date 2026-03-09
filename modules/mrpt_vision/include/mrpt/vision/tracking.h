@@ -152,10 +152,7 @@ struct CGenericFeatureTracker
   CGenericFeatureTracker() {}
 
   /** Ctor with extra parameters */
-  CGenericFeatureTracker(const mrpt::containers::yaml& extraParams) :
-      extra_params(extraParams)
-  {
-  }
+  CGenericFeatureTracker(const mrpt::containers::yaml& extraParams) : extra_params(extraParams) {}
 
   /** Dtor */
   virtual ~CGenericFeatureTracker() = default;

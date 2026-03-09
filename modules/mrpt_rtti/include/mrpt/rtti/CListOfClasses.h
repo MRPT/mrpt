@@ -39,10 +39,7 @@ class CListOfClasses : public mrpt::Stringifyable
   void insert(const mrpt::rtti::TRuntimeClassId* id) { data.insert(id); }
 
   /** Does the list contains this class? */
-  bool contains(const mrpt::rtti::TRuntimeClassId* id) const
-  {
-    return data.find(id) != data.end();
-  }
+  bool contains(const mrpt::rtti::TRuntimeClassId* id) const { return data.find(id) != data.end(); }
 
   /** Does the list contains a class derived from...? */
   bool containsDerivedFrom(const mrpt::rtti::TRuntimeClassId* id) const;

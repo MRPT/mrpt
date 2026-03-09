@@ -1064,8 +1064,8 @@ void CompiledViewport::renderBorder(ShaderProgramManager& shaderManager)
   std::array<mrpt::img::TColor, 24> cols;
   cols.fill(bc);
 
-  auto addQuad = [&](int idx, float ax, float ay, float bxq, float byq,
-                     float cx, float cy, float dx, float dy)
+  auto addQuad =
+      [&](int idx, float ax, float ay, float bxq, float byq, float cx, float cy, float dx, float dy)
   {
     // Two triangles: (a,b,c) and (a,c,d)
     verts[idx + 0] = {ax, ay, 0};
@@ -1076,10 +1076,10 @@ void CompiledViewport::renderBorder(ShaderProgramManager& shaderManager)
     verts[idx + 5] = {dx, dy, 0};
   };
 
-  addQuad(0,  0,      0,      w,      0,      w,      bw,     0,      bw);      // bottom
-  addQuad(6,  0,      h - bw, w,      h - bw, w,      h,      0,      h);       // top
-  addQuad(12, 0,      bw,     bw,     bw,     bw,     h - bw, 0,      h - bw);  // left
-  addQuad(18, w - bw, bw,     w,      bw,     w,      h - bw, w - bw, h - bw);  // right
+  addQuad(0, 0, 0, w, 0, w, bw, 0, bw);                       // bottom
+  addQuad(6, 0, h - bw, w, h - bw, w, h, 0, h);               // top
+  addQuad(12, 0, bw, bw, bw, bw, h - bw, 0, h - bw);          // left
+  addQuad(18, w - bw, bw, w, bw, w, h - bw, w - bw, h - bw);  // right
 
   // Upload and draw
   m_borderVAO.createOnce();

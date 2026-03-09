@@ -13,6 +13,7 @@
 */
 
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/img/camera_geometry.h>
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/robust_kernels.h>
 #include <mrpt/math/wrap2pi.h>
@@ -21,7 +22,6 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/vision/chessboard_find_corners.h>
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
-#include <mrpt/img/camera_geometry.h>
 
 #include <Eigen/Dense>
 #include <algorithm>  // reverse()
@@ -508,12 +508,10 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 
       // Project distorted images:
       mrpt::img::camera_geometry::projectPoints_with_distortion(
-          obj_points, out.cam_params.leftCamera,
-          dat_l.reconstructed_camera_pose.asTPose(),
+          obj_points, out.cam_params.leftCamera, dat_l.reconstructed_camera_pose.asTPose(),
           dat_l.projectedPoints_distorted, true);
       mrpt::img::camera_geometry::projectPoints_with_distortion(
-          obj_points, out.cam_params.rightCamera,
-          dat_r.reconstructed_camera_pose.asTPose(),
+          obj_points, out.cam_params.rightCamera, dat_r.reconstructed_camera_pose.asTPose(),
           dat_r.projectedPoints_distorted, true);
 
       // Draw corners:

@@ -989,7 +989,7 @@ void CPointsMap::determineMatching3D(
       }
 
     }  // End of test_match
-  }  // For each local point
+  }    // For each local point
 
   // Additional consistency filter: "onlyKeepTheClosest" up to now
   //  led to just one correspondence for each "local map" point, but
@@ -1157,7 +1157,7 @@ void CPointsMap::compute3DDistanceToMesh(
         vIdx.push_back(outIdx);
       }
     }  // End of test_match
-  }  // For each local point
+  }    // For each local point
 
   // Additional consistency filter: "onlyKeepTheClosest" up to now
   //  led to just one correspondence for each "local map" point, but

@@ -43,8 +43,7 @@ struct CFeature
   void getFirstDescriptorAsMatrix(mrpt::math::CMatrixFloat& m) const
   {
     m.resize(1, descriptor.size());
-    for (size_t i = 0; i < descriptor.size(); i++)
-      m(0, i) = static_cast<float>(descriptor[i]);
+    for (size_t i = 0; i < descriptor.size(); i++) m(0, i) = static_cast<float>(descriptor[i]);
   }
 };
 
@@ -63,14 +62,8 @@ class CFeatureExtraction
   {
     size_t patchSize{0};
 
-    void loadFromConfigFile(
-        const mrpt::config::CConfigFileBase&, const std::string&) override
-    {
-    }
-    void saveToConfigFile(
-        mrpt::config::CConfigFileBase&, const std::string&) const override
-    {
-    }
+    void loadFromConfigFile(const mrpt::config::CConfigFileBase&, const std::string&) override {}
+    void saveToConfigFile(mrpt::config::CConfigFileBase&, const std::string&) const override {}
   };
 
   TOptions options;
@@ -85,9 +78,7 @@ class CFeatureExtraction
   }
 
   void computeDescriptors(
-      const mrpt::img::CImage& img,
-      CFeatureList& feats,
-      TDescriptorType descriptors) const
+      const mrpt::img::CImage& img, CFeatureList& feats, TDescriptorType descriptors) const
   {
     THROW_EXCEPTION("CFeatureExtraction::computeDescriptors() not yet implemented in v3.0");
   }

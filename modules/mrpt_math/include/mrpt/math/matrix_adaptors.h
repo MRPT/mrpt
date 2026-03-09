@@ -202,10 +202,7 @@ class ReverseAccessorIterator
   {
     return (pos == it.pos) && (&base == &it.base);
   }
-  bool operator!=(const ReverseAccessorIterator<A, T>& it) const
-  {
-    return !(operator==(it));
-  }
+  bool operator!=(const ReverseAccessorIterator<A, T>& it) const { return !(operator==(it)); }
 };
 }  // namespace detail
 
@@ -243,10 +240,7 @@ class CMatrixRowAccessor
   iterator end() { return iterator(*this, m_mat->cols()); }
   const_iterator end() const { return const_iterator(*this, m_mat->cols()); }
   reverse_iterator rbegin() { return reverse_iterator(*this, m_mat->cols() - 1); }
-  const_reverse_iterator rbegin() const
-  {
-    return const_reverse_iterator(*this, m_mat->cols() - 1);
-  }
+  const_reverse_iterator rbegin() const { return const_reverse_iterator(*this, m_mat->cols() - 1); }
   reverse_iterator rend() { return reverse_iterator(*this, -1); }
   const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
   size_t size() const { return m_mat->cols(); }
@@ -308,10 +302,7 @@ class CMatrixRowAccessorExtended
   iterator end() { return iterator(*this, howMany); }
   const_iterator end() const { return const_iterator(*this, howMany); }
   reverse_iterator rbegin() { return reverse_iterator(*this, howMany - 1); }
-  const_reverse_iterator rbegin() const
-  {
-    return const_reverse_iterator(*this, howMany - 1);
-  }
+  const_reverse_iterator rbegin() const { return const_reverse_iterator(*this, howMany - 1); }
   reverse_iterator rend() { return reverse_iterator(*this, -1); }
   const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
   size_t size() const { return howMany; }
@@ -356,10 +347,7 @@ class CConstMatrixRowAccessor
       detail::ReverseAccessorIterator<const CConstMatrixRowAccessor<MAT>, const value_type>;
   const_iterator begin() const { return const_iterator(*this, 0); }
   const_iterator end() const { return const_iterator(*this, m_mat->cols()); }
-  const_reverse_iterator rbegin() const
-  {
-    return const_reverse_iterator(*this, m_mat->cols() - 1);
-  }
+  const_reverse_iterator rbegin() const { return const_reverse_iterator(*this, m_mat->cols() - 1); }
   const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
   size_t size() const { return m_mat->cols(); }
   void resize(size_t N)
@@ -410,10 +398,7 @@ class CConstMatrixRowAccessorExtended
       detail::ReverseAccessorIterator<const CConstMatrixRowAccessorExtended<MAT>, const value_type>;
   const_iterator begin() const { return const_iterator(*this, 0); }
   const_iterator end() const { return const_iterator(*this, howMany); }
-  const_reverse_iterator rbegin() const
-  {
-    return const_reverse_iterator(*this, howMany - 1);
-  }
+  const_reverse_iterator rbegin() const { return const_reverse_iterator(*this, howMany - 1); }
   const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
   size_t size() const { return howMany; }
   void resize(size_t N)
@@ -461,10 +446,7 @@ class CMatrixColumnAccessor
   iterator end() { return iterator(*this, m_mat->rows()); }
   const_iterator end() const { return const_iterator(*this, m_mat->rows()); }
   reverse_iterator rbegin() { return reverse_iterator(*this, m_mat->rows() - 1); }
-  const_reverse_iterator rbegin() const
-  {
-    return const_reverse_iterator(*this, m_mat->rows() - 1);
-  }
+  const_reverse_iterator rbegin() const { return const_reverse_iterator(*this, m_mat->rows() - 1); }
   reverse_iterator rend() { return reverse_iterator(*this, -1); }
   const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
   size_t size() const { return m_mat->rows(); }
@@ -524,10 +506,7 @@ class CMatrixColumnAccessorExtended
   iterator end() { return iterator(*this, howMany); }
   const_iterator end() const { return const_iterator(*this, howMany); }
   reverse_iterator rbegin() { return reverse_iterator(*this, howMany - 1); }
-  const_reverse_iterator rbegin() const
-  {
-    return const_reverse_iterator(*this, howMany - 1);
-  }
+  const_reverse_iterator rbegin() const { return const_reverse_iterator(*this, howMany - 1); }
   reverse_iterator rend() { return reverse_iterator(*this, -1); }
   const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
   size_t size() const { return howMany; }
@@ -570,10 +549,7 @@ class CConstMatrixColumnAccessor
       detail::ReverseAccessorIterator<const CConstMatrixColumnAccessor<MAT>, const value_type>;
   const_iterator begin() const { return const_iterator(*this, 0); }
   const_iterator end() const { return const_iterator(*this, m_mat->rows()); }
-  const_reverse_iterator rbegin() const
-  {
-    return const_reverse_iterator(*this, m_mat->rows() - 1);
-  }
+  const_reverse_iterator rbegin() const { return const_reverse_iterator(*this, m_mat->rows() - 1); }
   const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
   size_t size() const { return m_mat->rows(); }
   void resize(size_t N)
@@ -605,8 +581,7 @@ class CConstMatrixColumnAccessorExtended
  public:
   using value_type = typename MAT::Scalar;
   using mrpt_autotype = CMatrixColumnAccessorExtended<MAT>;
-  CConstMatrixColumnAccessorExtended(
-      const MAT& mat, size_t col, size_t offset, size_t space) :
+  CConstMatrixColumnAccessorExtended(const MAT& mat, size_t col, size_t offset, size_t space) :
       m_mat(&mat), m_colInd(col), m_rowOffset(offset), m_elementsSpace(space)
   {
     ASSERT_(col < mat.cols());
@@ -623,10 +598,7 @@ class CConstMatrixColumnAccessorExtended
       ReverseAccessorIterator<const CConstMatrixColumnAccessorExtended<MAT>, const value_type>;
   const_iterator begin() const { return const_iterator(*this, 0); }
   const_iterator end() const { return const_iterator(*this, howMany); }
-  const_reverse_iterator rbegin() const
-  {
-    return const_reverse_iterator(*this, howMany - 1);
-  }
+  const_reverse_iterator rbegin() const { return const_reverse_iterator(*this, howMany - 1); }
   const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
   size_t size() const { return howMany; }
   void resize(size_t N)

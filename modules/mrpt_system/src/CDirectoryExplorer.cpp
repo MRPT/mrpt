@@ -157,7 +157,9 @@ CDirectoryExplorer::TFileInfoList CDirectoryExplorer::explore(
     newEntry.wholePath = fs::absolute(fs::path(searchPath + newEntry.name));
 
     // File times:
-    struct stat statDat{}, lstatDat{};
+    struct stat statDat
+    {
+    }, lstatDat{};
 
     if (stat(newEntry.wholePath.c_str(), &statDat))
     {

@@ -150,9 +150,12 @@ void TestDisplay3D()
   // win.setCameraProjective(false);
 
   cout << "\n";
-  cout << "Control with mouse or keyboard. Valid keys:" << "\n";
-  cout << "  ESC                        -> Exit" << "\n";
-  cout << "  Left/right cursor arrow    -> Camera azimuth" << "\n";
+  cout << "Control with mouse or keyboard. Valid keys:"
+       << "\n";
+  cout << "  ESC                        -> Exit"
+       << "\n";
+  cout << "  Left/right cursor arrow    -> Camera azimuth"
+       << "\n";
   cout << "  P                          -> Enable / disable 'place object' "
           "mode"
        << "\n";

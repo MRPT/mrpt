@@ -21,8 +21,8 @@
 #include <mrpt/hwdrivers/CGillAnemometer.h>
 #include <mrpt/hwdrivers/CGyroKVHDSP3000.h>
 #include <mrpt/hwdrivers/CHokuyoURG.h>
-#include <mrpt/hwdrivers/CIbeoLuxETH.h>
 #include <mrpt/hwdrivers/CIMUXSens_MT4.h>
+#include <mrpt/hwdrivers/CIbeoLuxETH.h>
 #include <mrpt/hwdrivers/CImpinjRFID.h>
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/hwdrivers/CLMS100eth.h>

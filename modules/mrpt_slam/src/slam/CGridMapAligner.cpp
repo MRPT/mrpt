@@ -255,7 +255,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
         CImage img_compose(FEAT_W * 2 + 15, 10 + (5 + FEAT_H) * nF);
         img_compose.filledRectangle(
             {0, 0},
-            {static_cast<int>(img_compose.getWidth()) - 1, static_cast<int>(img_compose.getHeight()) - 1},
+            {static_cast<int>(img_compose.getWidth()) - 1,
+             static_cast<int>(img_compose.getHeight()) - 1},
             TColor::black());
 
         img_compose.drawImage({5, 5}, im1);
@@ -271,7 +272,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
           CMatrixFloat descriptor2;
           lm2->landmarks.get(*it_j)->features[0].getFirstDescriptorAsMatrix(descriptor2);
           im2.setFromMatrix(descriptor2, true);
-          img_compose.drawImage({static_cast<int>(10 + FEAT_W), static_cast<int>(5 + j * (FEAT_H + 5))}, im2);
+          img_compose.drawImage(
+              {static_cast<int>(10 + FEAT_W), static_cast<int>(5 + j * (FEAT_H + 5))}, im2);
         }
         fil += ".png";
         bool savedOk = img_compose.saveToFile(fil);

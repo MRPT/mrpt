@@ -507,7 +507,8 @@ bool TIMECONV_GetUTCTimeFromJulianDate(const double julian_date, mrpt::system::T
   td *= 60.0;  // [s]
   seconds = td;
   month = static_cast<unsigned char>(e - 1 - 12 * static_cast<int>(e / 14));
-  year = static_cast<unsigned short>(c - 4715 - static_cast<int>((7.0 + static_cast<double>(month)) / 10.0));
+  year = static_cast<unsigned short>(
+      c - 4715 - static_cast<int>((7.0 + static_cast<double>(month)) / 10.0));
   // check for rollover issues
   if (seconds >= 60.0)
   {

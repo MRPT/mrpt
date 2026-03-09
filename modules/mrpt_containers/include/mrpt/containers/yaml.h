@@ -511,10 +511,9 @@ class yaml
     }
     catch (const std::bad_any_cast& e)
     {
-      throw std::logic_error(
-          mrpt::format(
-              "getOrDefault(): Trying to access key `%s` holding type `%s` as the wrong type: `%s`",
-              key.c_str(), n->typeName().c_str(), e.what()));
+      throw std::logic_error(mrpt::format(
+          "getOrDefault(): Trying to access key `%s` holding type `%s` as the wrong type: `%s`",
+          key.c_str(), n->typeName().c_str(), e.what()));
     }
     MRPT_END
   }

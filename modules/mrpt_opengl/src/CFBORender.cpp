@@ -366,8 +366,7 @@ void CFBORender::internal_render_RGBD(
 #endif
 
     glReadPixels(
-        0, 0, m_fb.width(), m_fb.height(), GL_RGB, GL_UNSIGNED_BYTE,
-        outRGB.ptrLine<uint8_t>(0));
+        0, 0, m_fb.width(), m_fb.height(), GL_RGB, GL_UNSIGNED_BYTE, outRGB.ptrLine<uint8_t>(0));
     CHECK_OPENGL_ERROR();
 
 #ifdef FBO_PROFILER

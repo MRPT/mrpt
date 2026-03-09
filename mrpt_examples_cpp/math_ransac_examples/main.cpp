@@ -16,13 +16,13 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/math/ransac_applications.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/random.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CPointCloud.h>
 #include <mrpt/viz/CTexturedPlane.h>
 #include <mrpt/viz/stock_objects.h>
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/random.h>
-#include <mrpt/system/CTicTac.h>
 
 #include <iostream>
 

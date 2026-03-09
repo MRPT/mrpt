@@ -12,10 +12,9 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/maps/CLandmarksMap.h>
-
 #include <mrpt/core/Clock.h>
 #include <mrpt/core/round.h>
+#include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/random/RandomGenerators.h>
@@ -141,11 +140,11 @@ void mrpt::maps::CLandmarksMap::simulateRangeBearingReadings(
   {
     const double range = getRandomGenerator().drawUniform(
         out_Observations.minSensorDistance, out_Observations.maxSensorDistance);
-    const double yaw = (out_Observations.sensor_std_yaw == 0)
-                           ? 0.0
-                           : getRandomGenerator().drawUniform(
-                                 -0.5 * out_Observations.fieldOfView_yaw,
-                                 0.5 * out_Observations.fieldOfView_yaw);
+    const double yaw =
+        (out_Observations.sensor_std_yaw == 0)
+            ? 0.0
+            : getRandomGenerator().drawUniform(
+                  -0.5 * out_Observations.fieldOfView_yaw, 0.5 * out_Observations.fieldOfView_yaw);
     const double pitch = (out_Observations.sensor_std_pitch == 0)
                              ? 0.0
                              : getRandomGenerator().drawUniform(

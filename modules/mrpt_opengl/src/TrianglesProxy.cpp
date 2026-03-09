@@ -121,7 +121,8 @@ void TrianglesProxy::uploadTriangleUniforms(const RenderContext& rc) const
     const auto& e = rc.state->eye;
     uploadVector3(
         rc, "cam_position",
-        mrpt::math::TVector3Df(static_cast<float>(e.x), static_cast<float>(e.y), static_cast<float>(e.z)));
+        mrpt::math::TVector3Df(
+            static_cast<float>(e.x), static_cast<float>(e.y), static_cast<float>(e.z)));
   }
 
   // Light parameters (if lighting enabled)

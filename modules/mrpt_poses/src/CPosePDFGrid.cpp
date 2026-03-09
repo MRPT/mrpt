@@ -152,8 +152,9 @@ bool CPosePDFGrid::saveToTextFile(const std::string& dataFile) const
 
   // Save dims:
   f_s << mrpt::format(
-      "%u %u %u %f %f %f %f %f %f\n", static_cast<unsigned>(m_sizeX), static_cast<unsigned>(m_sizeY), static_cast<unsigned>(m_sizePhi),
-      m_xMin, m_xMax, m_yMin, m_yMax, m_phiMin, m_phiMax);
+      "%u %u %u %f %f %f %f %f %f\n", static_cast<unsigned>(m_sizeX),
+      static_cast<unsigned>(m_sizeY), static_cast<unsigned>(m_sizePhi), m_xMin, m_xMax, m_yMin,
+      m_yMax, m_phiMin, m_phiMax);
 
   // Save one rectangular matrix each time:
   for (unsigned int phiInd = 0; phiInd < m_sizePhi; phiInd++)

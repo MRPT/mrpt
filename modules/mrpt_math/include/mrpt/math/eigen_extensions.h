@@ -38,10 +38,7 @@ struct TAuxResizer<MAT, -1>
   {
     obj.derived().conservativeResize(row, col);
   }
-  static void internal_resize(MAT& obj, size_t nsize)
-  {
-    obj.derived().conservativeResize(nsize);
-  }
+  static void internal_resize(MAT& obj, size_t nsize) { obj.derived().conservativeResize(nsize); }
 };
 
 // Generic version for all kind of matrices:

@@ -77,18 +77,9 @@ struct pose_point_impl<DERIVEDCLASS, 1>
   {
     return static_cast<const DERIVEDCLASS*>(this)->m_coords[2];
   }
-  double& z() /*!< Get ref to Z coord. */
-  {
-    return static_cast<DERIVEDCLASS*>(this)->m_coords[2];
-  }
-  void z(const double v) /*!< Set Z coord. */
-  {
-    static_cast<DERIVEDCLASS*>(this)->m_coords[2] = v;
-  }
-  void z_incr(const double v) /*!< Z+=v */
-  {
-    static_cast<DERIVEDCLASS*>(this)->m_coords[2] += v;
-  }
+  double& z() /*!< Get ref to Z coord. */ { return static_cast<DERIVEDCLASS*>(this)->m_coords[2]; }
+  void z(const double v) /*!< Set Z coord. */ { static_cast<DERIVEDCLASS*>(this)->m_coords[2] = v; }
+  void z_incr(const double v) /*!< Z+=v */ { static_cast<DERIVEDCLASS*>(this)->m_coords[2] += v; }
 };
 
 // Extra members for 2D implementation:

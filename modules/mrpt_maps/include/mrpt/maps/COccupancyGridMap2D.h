@@ -304,14 +304,8 @@ class COccupancyGridMap2D :
 
   /** Transform a coordinate value into a cell index, using a different "x_min"
    * value */
-  int x2idx(float x, float xmin) const
-  {
-    return static_cast<int>((x - xmin) / m_resolution);
-  }
-  int y2idx(float y, float ymin) const
-  {
-    return static_cast<int>((y - ymin) / m_resolution);
-  }
+  int x2idx(float x, float xmin) const { return static_cast<int>((x - xmin) / m_resolution); }
+  int y2idx(float y, float ymin) const { return static_cast<int>((y - ymin) / m_resolution); }
 
   mrpt::math::TBoundingBoxf boundingBox() const override
   {

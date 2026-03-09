@@ -17,13 +17,13 @@
 #include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/transform_gaussian.h>
 #include <mrpt/math/utils.h>
-#include <mrpt/viz/CEllipsoid3D.h>
-#include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/system/CTicTac.h>
+#include <mrpt/viz/CEllipsoid3D.h>
+#include <mrpt/viz/CGridPlaneXY.h>
 
 #include <Eigen/Dense>
 #include <iostream>

@@ -155,7 +155,8 @@ void CIbeoLuxETH::dataCollection()
           SPlayer = ScanPointData[0] & 0x0F;  // two lower bits denote layer
           // SPecho  = ScanPointData[0] >> 4; // two higher bits
           // denote echo
-          SPHangle = static_cast<char>(ScanPointData[3]) * 0x100 + ScanPointData[2];  // signed INT16 here
+          SPHangle =
+              static_cast<char>(ScanPointData[3]) * 0x100 + ScanPointData[2];  // signed INT16 here
           SPdistance = ScanPointData[5] * 0x100 + ScanPointData[4];
 
           // Sanity checks

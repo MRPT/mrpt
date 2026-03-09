@@ -12,15 +12,15 @@
 
 #include <mrpt/core/exceptions.h>
 
-#define MRPT_TEST(GROUP_, NAME_)                                               \
-	TEST(GROUP_, NAME_)                                                        \
-	{                                                                          \
-		try
+#define MRPT_TEST(GROUP_, NAME_) \
+  TEST(GROUP_, NAME_)            \
+  {                              \
+    try
 
-#define MRPT_TEST_END()                                                        \
-	catch (const std::exception& e)                                            \
-	{                                                                          \
-		std::cerr << mrpt::exception_to_str(e);                                \
-		GTEST_FAIL();                                                          \
-	}                                                                          \
-	}
+#define MRPT_TEST_END()                     \
+  catch (const std::exception& e)           \
+  {                                         \
+    std::cerr << mrpt::exception_to_str(e); \
+    GTEST_FAIL();                           \
+  }                                         \
+  }

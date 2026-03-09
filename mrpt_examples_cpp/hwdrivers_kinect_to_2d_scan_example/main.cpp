@@ -26,13 +26,13 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/img/TColor.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/viz/CFrustum.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CPlanarLaserScan.h>
 #include <mrpt/viz/CPointCloudColoured.h>
 #include <mrpt/viz/stock_objects.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/system/filesystem.h>
 
 #include <chrono>
 #include <iostream>

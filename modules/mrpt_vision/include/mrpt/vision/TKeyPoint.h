@@ -190,44 +190,23 @@ struct TKeyPointList_templ
 
   /** @name getFeature*() methods for template-based access to feature list
     @{ */
-  typename TKeyPointTraits<FEATURE>::coord_t getFeatureX(size_t i) const
-  {
-    return m_feats[i].pt.x;
-  }
-  typename TKeyPointTraits<FEATURE>::coord_t getFeatureY(size_t i) const
-  {
-    return m_feats[i].pt.y;
-  }
+  typename TKeyPointTraits<FEATURE>::coord_t getFeatureX(size_t i) const { return m_feats[i].pt.x; }
+  typename TKeyPointTraits<FEATURE>::coord_t getFeatureY(size_t i) const { return m_feats[i].pt.y; }
   TFeatureID getFeatureID(size_t i) const { return m_feats[i].ID; }
   float getFeatureResponse(size_t i) const { return m_feats[i].response; }
   bool isPointFeature([[maybe_unused]] size_t i) const { return true; }
   float getScale(size_t i) const { return d2f(1 << m_feats[i].octave); }
   TFeatureTrackStatus getTrackStatus(size_t i) { return m_feats[i].track_status; }
 
-  void setFeatureX(size_t i, typename TKeyPointTraits<FEATURE>::coord_t x)
-  {
-    m_feats[i].pt.x = x;
-  }
-  void setFeatureY(size_t i, typename TKeyPointTraits<FEATURE>::coord_t y)
-  {
-    m_feats[i].pt.y = y;
-  }
+  void setFeatureX(size_t i, typename TKeyPointTraits<FEATURE>::coord_t x) { m_feats[i].pt.x = x; }
+  void setFeatureY(size_t i, typename TKeyPointTraits<FEATURE>::coord_t y) { m_feats[i].pt.y = y; }
 
-  void setFeatureXf(size_t i, float x)
-  {
-    m_feats[i].pt.x = TKeyPointTraits<FEATURE>::f2coord(x);
-  }
-  void setFeatureYf(size_t i, float y)
-  {
-    m_feats[i].pt.y = TKeyPointTraits<FEATURE>::f2coord(y);
-  }
+  void setFeatureXf(size_t i, float x) { m_feats[i].pt.x = TKeyPointTraits<FEATURE>::f2coord(x); }
+  void setFeatureYf(size_t i, float y) { m_feats[i].pt.y = TKeyPointTraits<FEATURE>::f2coord(y); }
 
   void setFeatureID(size_t i, TFeatureID id) { m_feats[i]->ID = id; }
   void setFeatureResponse(size_t i, float r) { m_feats[i]->response = r; }
-  void setScale(size_t i, float s)
-  {
-    m_feats[i]->octave = mrpt::round(std::log(s) / std::log(2));
-  }
+  void setScale(size_t i, float s) { m_feats[i]->octave = mrpt::round(std::log(s) / std::log(2)); }
   void setTrackStatus(size_t i, TFeatureTrackStatus s) { m_feats[i].track_status = s; }
 
   void mark_as_outdated() const {}

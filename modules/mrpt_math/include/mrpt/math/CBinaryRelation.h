@@ -96,8 +96,7 @@ class CBinaryRelation
   /**
    * Default constructor, doesn't initialize the relation.
    */
-  explicit CBinaryRelation(const std::set<T>& els) :
-      elements(els), relation(els.size(), els.size())
+  explicit CBinaryRelation(const std::set<T>& els) : elements(els), relation(els.size(), els.size())
   {
   }
   /**
@@ -230,10 +229,7 @@ class CBinaryRelation
    * Gets an accessor for every value related to an element A given its
    * index, i.e., every f(A,x). This accessor is iterable.
    */
-  AccessorForFirstElement getRelationFrom(size_t i)
-  {
-    return AccessorForFirstElement(relation, i);
-  }
+  AccessorForFirstElement getRelationFrom(size_t i) { return AccessorForFirstElement(relation, i); }
   /**
    * Gets a constant accessor for every value related to an element A given
    * its index, i.e., every f(A,x). This accessor is iterable.
@@ -246,10 +242,7 @@ class CBinaryRelation
    * Gets an accessor for every value related to an element B given its
    * index, i.e., every f(x,B). This accessor is iterable.
    */
-  AccessorForSecondElement getRelationTo(size_t i)
-  {
-    return AccessorForSecondElement(relation, i);
-  }
+  AccessorForSecondElement getRelationTo(size_t i) { return AccessorForSecondElement(relation, i); }
   /**
    * Gets a constant accessor for every value related to an element B given
    * its index, i.e., every f(x,B). This accessor is fully iterable.

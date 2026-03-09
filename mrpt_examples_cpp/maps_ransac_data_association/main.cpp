@@ -15,9 +15,6 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/viz/CPointCloud.h>
-#include <mrpt/viz/CSetOfLines.h>
-#include <mrpt/viz/stock_objects.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFSOG.h>
@@ -25,6 +22,9 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/tfest/se2.h>
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CSetOfLines.h>
+#include <mrpt/viz/stock_objects.h>
 
 #include <iostream>
 

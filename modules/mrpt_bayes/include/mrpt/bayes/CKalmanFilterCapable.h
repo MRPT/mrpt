@@ -133,8 +133,7 @@ size_t getNumberOfLandmarksInMap(
     const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE, KFTYPE>& obj);
 
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
-bool isMapEmpty(
-    const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>& obj);
+bool isMapEmpty(const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>& obj);
 // Specialization:
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
 bool isMapEmpty(
@@ -210,10 +209,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
   static constexpr size_t get_observation_size() { return OBS_SIZE; }
   static constexpr size_t get_feature_size() { return FEAT_SIZE; }
   static constexpr size_t get_action_size() { return ACT_SIZE; }
-  size_t getNumberOfLandmarksInTheMap() const
-  {
-    return detail::getNumberOfLandmarksInMap(*this);
-  }
+  size_t getNumberOfLandmarksInTheMap() const { return detail::getNumberOfLandmarksInMap(*this); }
   bool isMapEmpty() const { return detail::isMapEmpty(*this); }
   /** The numeric type used in the Kalman Filter (default=double) */
   using kftype = KFTYPE;

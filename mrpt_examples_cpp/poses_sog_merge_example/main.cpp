@@ -14,10 +14,10 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/io/CCompressedOutputStream.h>
-#include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include <mrpt/viz/CGridPlaneXY.h>
 
 #include <iostream>
 

@@ -15,9 +15,9 @@
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/maps/CLandmarksMap.h>
+#include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/Scene.h>
-#include <mrpt/vision/CFeatureExtraction.h>
 
 #include <iostream>
 

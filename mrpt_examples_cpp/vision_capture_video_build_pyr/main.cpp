@@ -15,11 +15,11 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/img/TColor.h>
-#include <mrpt/viz/Scene.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/vision/CImagePyramid.h>
 #include <mrpt/vision/TKeyPoint.h>
 #include <mrpt/vision/types.h>
+#include <mrpt/viz/Scene.h>
 
 #include <chrono>
 #include <iostream>

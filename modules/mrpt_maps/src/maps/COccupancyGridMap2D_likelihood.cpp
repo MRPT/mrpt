@@ -766,7 +766,7 @@ double COccupancyGridMap2D::computeLikelihoodField_II(
 
         lik += P_free * zRandomTerm + (1 - P_free) * termDist;
       }  // end for cy
-    }  // end for cx
+    }    // end for cx
 
     // Update the likelihood:
     if (likelihoodOptions.LF_alternateAverageMethod)

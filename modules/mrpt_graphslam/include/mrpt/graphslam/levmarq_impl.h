@@ -40,8 +40,7 @@ template <class gst>
 struct AuxErrorEval<CPose2D, gst>
 {
   template <class MAT, class EDGE_ITERATOR>
-  static void multiplyJtLambdaJ(
-      const MAT& J1, MAT& JtJ, [[maybe_unused]] const EDGE_ITERATOR& edge)
+  static void multiplyJtLambdaJ(const MAT& J1, MAT& JtJ, [[maybe_unused]] const EDGE_ITERATOR& edge)
   {
     JtJ.matProductOf_AtA(J1);
   }
@@ -67,8 +66,7 @@ template <class gst>
 struct AuxErrorEval<CPose3D, gst>
 {
   template <class MAT, class EDGE_ITERATOR>
-  static void multiplyJtLambdaJ(
-      const MAT& J1, MAT& JtJ, [[maybe_unused]] const EDGE_ITERATOR& edge)
+  static void multiplyJtLambdaJ(const MAT& J1, MAT& JtJ, [[maybe_unused]] const EDGE_ITERATOR& edge)
   {
     JtJ.matProductOf_AtA(J1);
   }
@@ -98,15 +96,13 @@ struct AuxErrorEval<CPosePDFGaussianInf, gst>
     JtJ.asEigen() = (J1.transpose() * edge->second.cov_inv.asEigen()) * J1.asEigen();
   }
   template <class MAT, class EDGE_ITERATOR>
-  static void multiplyJ1tLambdaJ2(
-      const MAT& J1, const MAT& J2, MAT& JtJ, const EDGE_ITERATOR& edge)
+  static void multiplyJ1tLambdaJ2(const MAT& J1, const MAT& J2, MAT& JtJ, const EDGE_ITERATOR& edge)
   {
     JtJ.asEigen() = (J1.transpose() * edge->second.cov_inv.asEigen()) * J2.asEigen();
   }
 
   template <class JAC, class EDGE_ITERATOR, class VEC1, class VEC2>
-  static void multiply_Jt_W_err(
-      const JAC& J, const EDGE_ITERATOR& edge, const VEC1& ERR, VEC2& OUT)
+  static void multiply_Jt_W_err(const JAC& J, const EDGE_ITERATOR& edge, const VEC1& ERR, VEC2& OUT)
   {
     OUT.asEigen() += (J.transpose() * edge->second.cov_inv.asEigen()) * ERR.asEigen();
   }
@@ -123,15 +119,13 @@ struct AuxErrorEval<CPose3DPDFGaussianInf, gst>
   }
 
   template <class MAT, class EDGE_ITERATOR>
-  static void multiplyJ1tLambdaJ2(
-      const MAT& J1, const MAT& J2, MAT& JtJ, const EDGE_ITERATOR& edge)
+  static void multiplyJ1tLambdaJ2(const MAT& J1, const MAT& J2, MAT& JtJ, const EDGE_ITERATOR& edge)
   {
     JtJ.asEigen() = (J1.transpose() * edge->second.cov_inv.asEigen()) * J2.asEigen();
   }
 
   template <class JAC, class EDGE_ITERATOR, class VEC1, class VEC2>
-  static void multiply_Jt_W_err(
-      const JAC& J, const EDGE_ITERATOR& edge, const VEC1& ERR, VEC2& OUT)
+  static void multiply_Jt_W_err(const JAC& J, const EDGE_ITERATOR& edge, const VEC1& ERR, VEC2& OUT)
   {
     OUT.asEigen() += (J.transpose() * edge->second.cov_inv.asEigen()) * ERR.asEigen();
   }

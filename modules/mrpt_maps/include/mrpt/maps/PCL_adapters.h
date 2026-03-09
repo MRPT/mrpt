@@ -170,8 +170,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>>
 
   /** Get XYZ_RGBu8 coordinates of i'th point */
   template <typename T>
-  void getPointXYZ_RGBu8(
-      size_t idx, T& x, T& y, T& z, uint8_t& r, uint8_t& g, uint8_t& b) const
+  void getPointXYZ_RGBu8(size_t idx, T& x, T& y, T& z, uint8_t& r, uint8_t& g, uint8_t& b) const
   {
     const pcl::PointXYZRGB& p = m_obj.points[idx];
     x = p.x;
@@ -330,8 +329,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
 
   /** Get XYZ_RGBu8 coordinates of i'th point */
   template <typename T>
-  void getPointXYZ_RGBu8(
-      size_t idx, T& x, T& y, T& z, uint8_t& r, uint8_t& g, uint8_t& b) const
+  void getPointXYZ_RGBu8(size_t idx, T& x, T& y, T& z, uint8_t& r, uint8_t& g, uint8_t& b) const
   {
     const pcl::PointXYZRGBA& p = m_obj.points[idx];
     x = p.x;

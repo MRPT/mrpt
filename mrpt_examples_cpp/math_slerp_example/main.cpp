@@ -20,9 +20,9 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/math/slerp.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/stock_objects.h>
-#include <mrpt/system/CTicTac.h>
 
 #include <chrono>
 #include <iostream>

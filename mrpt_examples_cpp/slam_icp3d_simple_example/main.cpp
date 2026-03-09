@@ -20,13 +20,13 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/slam/CICP.h>
 #include <mrpt/viz/CAngularObservationMesh.h>
 #include <mrpt/viz/CDisk.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CSphere.h>
 #include <mrpt/viz/stock_objects.h>
-#include <mrpt/poses/CPose3DPDF.h>
-#include <mrpt/slam/CICP.h>
 
 #include <chrono>
 #include <iostream>

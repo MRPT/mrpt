@@ -316,8 +316,7 @@ class CompiledScene
       const std::shared_ptr<mrpt::viz::CVisualObject>& obj,
       CompiledViewport& compiledViewport,
       CompilationStats& stats,
-      const mrpt::math::CMatrixFloat44& parentModelMatrix =
-          mrpt::math::CMatrixFloat44::Identity());
+      const mrpt::math::CMatrixFloat44& parentModelMatrix = mrpt::math::CMatrixFloat44::Identity());
 
   /** Computes a model matrix from an object's pose and scale. */
   static mrpt::math::CMatrixFloat44 computeModelMatrix(

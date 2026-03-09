@@ -203,7 +203,7 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
       }
       m_A(i, j) = m_A(j, i) = s_sym;
     }  // for j
-  }  // i=n-1=new_id
+  }    // i=n-1=new_id
 
   // Self-similatity: Not used
   m_A(new_id, new_id) = 0;

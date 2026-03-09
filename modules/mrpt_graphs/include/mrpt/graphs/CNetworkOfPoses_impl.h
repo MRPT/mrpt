@@ -49,18 +49,12 @@ template <>
 struct TPosePDFHelper<CPose2D>
 {
   static void copyFrom2D(CPose2D& p, const CPosePDFGaussianInf& pdf) { p = pdf.mean; }
-  static void copyFrom3D(CPose2D& p, const CPose3DPDFGaussianInf& pdf)
-  {
-    p = CPose2D(pdf.mean);
-  }
+  static void copyFrom3D(CPose2D& p, const CPose3DPDFGaussianInf& pdf) { p = CPose2D(pdf.mean); }
 };
 template <>
 struct TPosePDFHelper<CPose3D>
 {
-  static void copyFrom2D(CPose3D& p, const CPosePDFGaussianInf& pdf)
-  {
-    p = CPose3D(pdf.mean);
-  }
+  static void copyFrom2D(CPose3D& p, const CPosePDFGaussianInf& pdf) { p = CPose3D(pdf.mean); }
   static void copyFrom3D(CPose3D& p, const CPose3DPDFGaussianInf& pdf) { p = pdf.mean; }
 };
 
@@ -835,14 +829,12 @@ struct graph_ops
            square(err[5]);
   }
 
-  static double auxEuclid2Dist(
-      const mrpt::poses::CPose2D& p1, const mrpt::poses::CPose2D& p2)
+  static double auxEuclid2Dist(const mrpt::poses::CPose2D& p1, const mrpt::poses::CPose2D& p2)
   {
     return square(p1.x() - p2.x()) + square(p1.y() - p2.y()) +
            square(mrpt::math::wrapToPi(p1.phi() - p2.phi()));
   }
-  static double auxEuclid2Dist(
-      const mrpt::poses::CPose3D& p1, const mrpt::poses::CPose3D& p2)
+  static double auxEuclid2Dist(const mrpt::poses::CPose3D& p1, const mrpt::poses::CPose3D& p2)
   {
     return square(p1.x() - p2.x()) + square(p1.y() - p2.y()) + square(p1.z() - p2.z()) +
            square(mrpt::math::wrapToPi(p1.yaw() - p2.yaw())) +
