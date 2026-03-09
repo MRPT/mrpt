@@ -106,6 +106,12 @@ class Viewport :
   /** Returns true if setImageView() has been called on this viewport */
   [[nodiscard]] bool isImageViewMode() const { return !!m_imageViewPlane; }
 
+  /** Returns the internal image view plane (or nullptr). Used by the renderer. */
+  [[nodiscard]] mrpt::viz::CTexturedPlane::Ptr getImageViewPlane() const
+  {
+    return m_imageViewPlane;
+  }
+
   /** Reset the viewport to normal mode: rendering its own objects.
    * \sa setCloneView, setNormalMode
    */

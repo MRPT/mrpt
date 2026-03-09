@@ -21,6 +21,7 @@
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/viz/CTextMessageCapable.h>
+#include <mrpt/viz/CVisualObject.h>
 
 #include <Eigen/Dense>
 #include <algorithm>
@@ -755,15 +756,67 @@ void CompiledViewport::renderImageView(ShaderProgramManager& shaderManager)
   {
     return;
   }
+
   glDisable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  // Simple orthographic projection for image display
+
+  // Identity projection by default (quad covers [-1,1]x[-1,1])
   auto matrices = m_renderMatrices;
   matrices.matricesSetIdentity();
+
+  // Aspect-ratio correction: scale the quad so the image fits without stretching
+  // (same logic as mrpt v2 Viewport::renderImageView)
+  if (auto src = m_imageViewProxy->getSourceObject(); src)
+  {
+    if (auto* ttSrc = dynamic_cast<mrpt::viz::VisualObjectParams_TexturedTriangles*>(src.get());
+        ttSrc && ttSrc->textureImageHasBeenAssigned())
+    {
+      const auto& img = ttSrc->getTextureImage();
+      const size_t img_w = img.getWidth(), img_h = img.getHeight();
+      if (img_w > 0 && img_h > 0 && m_pixelWidth > 0 && m_pixelHeight > 0)
+      {
+        const double img_ratio = static_cast<double>(img_w) / img_h;
+        const double vw_ratio = static_cast<double>(m_pixelWidth) / m_pixelHeight;
+        const double ratio = vw_ratio / img_ratio;
+
+        auto& p = matrices.p_matrix;
+        if (ratio > 1.0)
+          p(1, 1) *= ratio;
+        else if (ratio > 0.0)
+          p(0, 0) /= ratio;
+
+        // Normalize so neither dimension exceeds 1
+        auto& p00 = p(0, 0);
+        auto& p11 = p(1, 1);
+        if (p00 > 0 && p11 > 0)
+        {
+          const double s = std::max(p00, p11);
+          p00 /= s;
+          p11 /= s;
+        }
+
+        matrices.pmv_matrix.asEigen() =
+            matrices.p_matrix.asEigen() * matrices.v_matrix.asEigen() * matrices.m_matrix.asEigen();
+      }
+    }
+  }
+
   // Render the textured quad
+  auto shaderProg = shaderManager.getProgram(DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT);
+  if (!shaderProg) return;
+  shaderProg->use();
+
+  // Upload the PMV matrix (identity for image view, possibly with aspect-ratio scale)
+  const auto IS_TRANSPOSED = GL_TRUE;
+  if (shaderProg->hasUniform("pmv_matrix"))
+  {
+    glUniformMatrix4fv(
+        shaderProg->uniformId("pmv_matrix"), 1, IS_TRANSPOSED, matrices.pmv_matrix.data());
+  }
+
   RenderContext rc;
-  rc.shader = shaderManager.getProgram(DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT).get();
+  rc.shader = shaderProg.get();
   rc.shader_id = DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT;
   rc.state = &matrices;
   rc.lights = &m_lightParams;

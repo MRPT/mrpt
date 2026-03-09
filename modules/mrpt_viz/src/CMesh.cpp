@@ -161,19 +161,11 @@ void CMesh::updateTriangles() const
         }
         else if (m_isImage)
         {
-          if (getTextureImage().isColor())
-          {
-            // C_r/C_g/C_b are float [0,1], convert to uint8_t [0,255]:
-            tri.r(0) = tri.r(1) = tri.r(2) = f2u8(C_r(iX, iY));
-            tri.g(0) = tri.g(1) = tri.g(2) = f2u8(C_g(iX, iY));
-            tri.b(0) = tri.b(1) = tri.b(2) = f2u8(C_b(iX, iY));
-          }
-          else
-          {
-            tri.r(0) = tri.r(1) = tri.r(2) = f2u8(C(iX, iY));
-            tri.g(0) = tri.g(1) = tri.g(2) = f2u8(C(iX, iY));
-            tri.b(0) = tri.b(1) = tri.b(2) = f2u8(C(iX, iY));
-          }
+          // GPU texture provides the colors; vertex color must be white
+          // so the shader (texColor * vertexColor) shows the texture correctly.
+          tri.r(0) = tri.r(1) = tri.r(2) = 0xff;
+          tri.g(0) = tri.g(1) = tri.g(2) = 0xff;
+          tri.b(0) = tri.b(1) = tri.b(2) = 0xff;
         }
         else
         {
@@ -247,19 +239,10 @@ void CMesh::updateTriangles() const
         }
         else if (m_isImage)
         {
-          if (getTextureImage().isColor())
-          {
-            // C_r/C_g/C_b are float [0,1], convert to uint8_t [0,255]:
-            tri.r(0) = tri.r(1) = tri.r(2) = f2u8(C_r(iX, iY));
-            tri.g(0) = tri.g(1) = tri.g(2) = f2u8(C_g(iX, iY));
-            tri.b(0) = tri.b(1) = tri.b(2) = f2u8(C_b(iX, iY));
-          }
-          else
-          {
-            tri.r(0) = tri.r(1) = tri.r(2) = f2u8(C(iX, iY));
-            tri.g(0) = tri.g(1) = tri.g(2) = f2u8(C(iX, iY));
-            tri.b(0) = tri.b(1) = tri.b(2) = f2u8(C(iX, iY));
-          }
+          // GPU texture provides the colors; vertex color must be white
+          tri.r(0) = tri.r(1) = tri.r(2) = 0xff;
+          tri.g(0) = tri.g(1) = tri.g(2) = 0xff;
+          tri.b(0) = tri.b(1) = tri.b(2) = 0xff;
         }
         else
         {

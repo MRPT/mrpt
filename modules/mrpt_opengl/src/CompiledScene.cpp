@@ -329,9 +329,31 @@ void CompiledScene::compileViewport(
     // Don't return — continue to compile objects below
   }
 
-  // Handle image view mode - skip normal object compilation
+  // Handle image view mode: compile the CTexturedPlane and install it as the image proxy.
   if (vizViewport.isImageViewMode())
   {
+    auto plane = vizViewport.getImageViewPlane();
+    if (plane)
+    {
+      auto proxies = createProxiesByType(plane);
+      if (!proxies.empty())
+      {
+        plane->updateBuffers();
+        for (auto& proxy : proxies)
+        {
+          proxy->setSourceObject(plane);
+          proxy->m_modelMatrix = mrpt::math::CMatrixFloat44::Identity();
+          proxy->m_visible = true;
+          proxy->compile(plane.get());
+        }
+        // Only the first (TexturedTriangles) proxy is used for image view
+        compiledViewport.setImageViewMode(proxies.front());
+        // Track in proxy maps for dirty-update support
+        std::weak_ptr<CVisualObject> weakPlane = plane;
+        m_objectToProxy[weakPlane].push_back(std::move(proxies));
+        m_objectVersions[weakPlane] = plane->dataVersion();
+      }
+    }
     return;
   }
 
@@ -677,9 +699,36 @@ void CompiledScene::compileNewObjects(CompilationStats& stats)
     // Update viewport configuration (camera, lights, etc.)
     compiledViewport.updateFromVizViewport(vizViewport);
 
-    // Skip cloned/image viewports
-    if (vizViewport.isCloned() || vizViewport.isImageViewMode())
+    // Skip cloned viewports
+    if (vizViewport.isCloned())
     {
+      continue;
+    }
+
+    // Handle image view mode: if the plane was created after initial compile, compile it now
+    if (vizViewport.isImageViewMode())
+    {
+      auto plane = vizViewport.getImageViewPlane();
+      if (plane && !compiledViewport.isImageViewMode())
+      {
+        // Viewport just transitioned to image-view mode — compile the plane proxy
+        auto proxies = createProxiesByType(plane);
+        if (!proxies.empty())
+        {
+          plane->updateBuffers();
+          for (auto& proxy : proxies)
+          {
+            proxy->setSourceObject(plane);
+            proxy->m_modelMatrix = mrpt::math::CMatrixFloat44::Identity();
+            proxy->m_visible = true;
+            proxy->compile(plane.get());
+          }
+          compiledViewport.setImageViewMode(proxies.front());
+          std::weak_ptr<CVisualObject> weakPlane = plane;
+          m_objectToProxy[weakPlane].push_back(std::move(proxies));
+          m_objectVersions[weakPlane] = plane->dataVersion();
+        }
+      }
       continue;
     }
 
@@ -790,6 +839,18 @@ void CompiledScene::updateDirtyObjects(CompilationStats& stats)
   // detect dirty containers (CSetOfObjects) whose pose/visibility changed.
   for (const auto& vizViewport : m_sourceScene->viewports())
   {
+    // For image-view viewports, update the image plane directly
+    if (vizViewport->isImageViewMode())
+    {
+      auto plane = vizViewport->getImageViewPlane();
+      if (plane)
+      {
+        updateDirtyObjectRecursive(
+            plane, mrpt::math::CMatrixFloat44::Identity(), false, true, stats);
+      }
+      continue;
+    }
+
     for (const auto& obj : *vizViewport)
     {
       if (!obj)
