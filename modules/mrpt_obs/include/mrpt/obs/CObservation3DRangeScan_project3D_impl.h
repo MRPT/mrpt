@@ -288,9 +288,10 @@ void unprojectInto(
           if (hasColorIntensityImg)
           {
             const auto px_idx = img_stride * img_idx_y + 3 * img_idx_x;
-            pCol.R = img_data[px_idx + 2];
+            // CImage v3 stores pixels in RGB order (not BGR like v2/OpenCV).
+            pCol.R = img_data[px_idx + 0];
             pCol.G = img_data[px_idx + 1];
-            pCol.B = img_data[px_idx + 0];
+            pCol.B = img_data[px_idx + 2];
           }
           else
           {
