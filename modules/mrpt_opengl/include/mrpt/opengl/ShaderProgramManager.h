@@ -100,6 +100,17 @@ class ShaderProgramManager
    */
   bool hasProgram(shader_id_t id) const;
 
+  /** Replaces (or installs) a built-in shader slot with a custom compiled program.
+   *
+   * Use this to override one of the standard MRPT shaders (e.g.
+   * DefaultShaderID::TRIANGLES_NO_LIGHT) with a custom Program you have
+   * compiled yourself.  The new program will be used for all subsequent
+   * render calls that request \a id.
+   *
+   * \note Must be called from the OpenGL context thread.
+   */
+  void overrideBuiltinProgram(shader_id_t id, Program::Ptr program);
+
   /** Preloads all default shaders.
    *
    * By default, shaders are compiled lazily. Call this to compile

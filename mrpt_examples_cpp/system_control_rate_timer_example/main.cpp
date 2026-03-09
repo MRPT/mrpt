@@ -8,28 +8,20 @@
    +---------------------------------------------------------------------------+
    */
 
-#include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/system/CControlledRateTimer.h>
 
+#include <CLI/CLI.hpp>
 #include <iostream>
 
-// Declare the supported command line switches ===========
-TCLAP::CmdLine cmd("system_control_rate_timer_example");
-
-TCLAP::ValueArg<double> argRate1("1", "rate1", "rate1 (Hz)", false, 500.0, "rate (Hz)", cmd);
-TCLAP::ValueArg<double> argRate2("2", "rate2", "rate2 (Hz)", false, 1500.0, "rate (Hz)", cmd);
-
-void rateTest()
+void rateTest(double rate1, double rate2)
 {
   const double TOTAL_EXECUTION_TIME = 5.0;  // seconds
-  const double NOMINAL_RATE1 = argRate1.getValue();
-  const double NOMINAL_RATE2 = argRate2.getValue();
-  const unsigned int N = TOTAL_EXECUTION_TIME * NOMINAL_RATE1;
+  const unsigned int N = static_cast<unsigned int>(TOTAL_EXECUTION_TIME * rate1);
   const unsigned int STEP_TIME1 = N / 2;
 
   mrpt::system::CControlledRateTimer rate;
-  rate.setRate(NOMINAL_RATE1);  // Hz
+  rate.setRate(rate1);  // Hz
 
   mrpt::math::CVectorDouble estimatedRates, rawRates, actionRates, controlref;
   estimatedRates.resize(N);
@@ -53,7 +45,7 @@ void rateTest()
 
     // Graphs, for this example only, don't use in production! ;-)
     // Reference:
-    const double desiredRate = (i < STEP_TIME1) ? NOMINAL_RATE1 : NOMINAL_RATE2;
+    const double desiredRate = (i < STEP_TIME1) ? rate1 : rate2;
 
     rate.setRate(desiredRate);
 
@@ -73,18 +65,24 @@ void rateTest()
   win.plot(actionRates, "b.2");
   win.plot(controlref, "m-");
 
-  win.axis(-0.15 * N, N, -500, 2.0 * std::max(NOMINAL_RATE1, NOMINAL_RATE2));
+  win.axis(-0.15 * N, N, -500, 2.0 * std::max(rate1, rate2));
   win.waitForKey();
 }
 
 int main(int argc, char** argv)
 {
+  CLI::App app{"system_control_rate_timer_example"};
+
+  double rate1 = 500.0;
+  double rate2 = 1500.0;
+  app.add_option("-1,--rate1", rate1, "rate1 (Hz)")->capture_default_str();
+  app.add_option("-2,--rate2", rate2, "rate2 (Hz)")->capture_default_str();
+
+  CLI11_PARSE(app, argc, argv);
+
   try
   {
-    // Parse arguments:
-    if (!cmd.parse(argc, argv)) throw std::runtime_error("");  // should exit.
-
-    rateTest();
+    rateTest(rate1, rate2);
     return 0;
   }
   catch (const std::exception& e)

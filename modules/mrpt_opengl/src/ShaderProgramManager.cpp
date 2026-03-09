@@ -100,6 +100,11 @@ bool ShaderProgramManager::hasProgram(shader_id_t id) const
   return m_builtinPrograms.find(id) != m_builtinPrograms.end();
 }
 
+void ShaderProgramManager::overrideBuiltinProgram(shader_id_t id, Program::Ptr program)
+{
+  m_builtinPrograms[id] = std::move(program);
+}
+
 size_t ShaderProgramManager::preloadAllDefaultShaders(std::vector<std::string>* outErrors)
 {
   MRPT_START

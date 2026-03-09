@@ -14,6 +14,11 @@ macro(GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY)
       set(RAW_MOD_NAME "${CMAKE_MATCH_1}")
       string(APPEND TPL_FIND_PACKAGES "find_package(${RAW_MOD_NAME} REQUIRED)\n")
       string(APPEND TPL_LINK_LIBRARIES "${DEP} ")
+    elseif (DEP MATCHES "^([A-Za-z0-9_]+)::")
+      # Third-party dep (e.g. CLI11::CLI11) -> find_package(CLI11) + link
+      set(PKG_NAME "${CMAKE_MATCH_1}")
+      string(APPEND TPL_FIND_PACKAGES "find_package(${PKG_NAME} REQUIRED)\n")
+      string(APPEND TPL_LINK_LIBRARIES "${DEP} ")
     endif()
   endforeach()
 
@@ -109,10 +114,15 @@ set(LIST_EXAMPLES_IN_THIS_DIR
 set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_system mrpt::mrpt_poses mrpt::mrpt_io)
 GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
-# === Depending on: system+math+gui ===
+# === system_control_rate_timer_example: system+math+gui+CLI11 ===
 set(LIST_EXAMPLES_IN_THIS_DIR
   system_control_rate_timer_example
-  # -------
+  )
+set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_system mrpt::mrpt_math mrpt::mrpt_gui CLI11::CLI11)
+GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
+# === Depending on: system+math+gui ===
+set(LIST_EXAMPLES_IN_THIS_DIR
   # Plus: a couple of other opengl_* samples listed below since they need mrpt::mrpt_maps also
   opengl_offscreen_render_example
   opengl_multithread_rendering
@@ -171,12 +181,18 @@ set(LIST_EXAMPLES_IN_THIS_DIR
 set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_comms mrpt::mrpt_serialization mrpt::mrpt_poses)
 GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
+# === opengl_custom_shaders_demo: only needs mrpt_gui (mrpt_opengl is transitive) ===
+set(LIST_EXAMPLES_IN_THIS_DIR
+  opengl_custom_shaders_demo
+  )
+set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_gui)
+GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
 # === Depending on: mrpt::mrpt_gui, mrpt::mrpt_img, mrpt::mrpt_opengl, mrpt::mrpt_maps ===
 set(LIST_EXAMPLES_IN_THIS_DIR
   # -------
   # opengl demos that also requires mrpt::mrpt_maps
   opengl_objects_demo
-  opengl_custom_shaders_demo
   # -------
   img_basic_example
   img_convolution_fft

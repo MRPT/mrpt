@@ -896,6 +896,23 @@ void CDisplayWindow3D::sendFunctionToRunOnGUIThread(const std::function<void(voi
 #endif
 }
 
+void CDisplayWindow3D::sendFunctionWithShaderManager(
+    const std::function<void(mrpt::opengl::ShaderProgramManager&)>& f)
+{
+  // Wrap the caller's callback: when executed on the GUI thread, retrieve
+  // the ShaderProgramManager from the canvas's CompiledScene and call f.
+  sendFunctionToRunOnGUIThread(
+      [this, f]()
+      {
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+        auto* win = static_cast<C3DWindowDialog*>(m_hwnd.get());
+        if (!win || !win->m_canvas) return;
+        auto* mgr = win->m_canvas->getShaderManager();
+        if (mgr) f(*mgr);
+#endif
+      });
+}
+
 bool CDisplayWindow3D::is_GL_context_created() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
