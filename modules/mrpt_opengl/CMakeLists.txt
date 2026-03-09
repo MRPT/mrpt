@@ -45,6 +45,7 @@ set(LIB_SOURCES
   src/FrameBuffer.cpp
   src/RenderableProxy.cpp
   src/PointsProxy.cpp
+  src/SkyBoxProxy.cpp
   # tests ---
   tests/CFBORender_unittest.cpp
   tests/TRenderMatrices_unittest.cpp
@@ -65,6 +66,7 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/opengl/CFBORender.h
   include/mrpt/opengl/LinesProxy.h
   include/mrpt/opengl/TexturedTrianglesProxy.h
+  include/mrpt/opengl/SkyBoxProxy.h
   include/mrpt/opengl/DefaultShaders.h
   include/mrpt/opengl/FrameBuffer.h
   include/mrpt/opengl/TRenderMatrices.h

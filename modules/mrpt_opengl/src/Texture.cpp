@@ -512,7 +512,7 @@ void Texture::internalAssignImage_2D(
         case 3:
           return (is_RGB_order ? GL_RGB : GL_BGR);
         case 4:
-          return GL_BGRA;
+          return (is_RGB_order ? GL_RGBA : GL_BGRA);
         default:
           THROW_EXCEPTION("Invalid texture image channel count.");
       };
@@ -647,7 +647,7 @@ void Texture::assignCubeImages(const std::array<mrpt::img::CImage, 6>& imgs, int
         case 3:
           return (is_RGB_order ? GL_RGB : GL_BGR);
         case 4:
-          return GL_BGRA;
+          return (is_RGB_order ? GL_RGBA : GL_BGRA);
       };
       THROW_EXCEPTION("Invalid texture image channel count.");
     }();
