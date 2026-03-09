@@ -2201,3 +2201,66 @@ CPolyhedron::Ptr CPolyhedron::CreateNoCheck(
   return CPolyhedron::Create(vertices, faces, false);
 }
 CPolyhedron::Ptr CPolyhedron::CreateEmpty() { return CPolyhedron::Create(); }
+
+void CPolyhedron::updateBuffers() const
+{
+  using P3f = mrpt::math::TPoint3Df;
+  using V3f = mrpt::math::TVector3Df;
+
+  const auto color = getColor_u8();
+
+  if (!m_Wireframe)
+  {
+    // Solid mode: triangulate faces
+    std::unique_lock<std::shared_mutex> lck(
+        VisualObjectParams_Triangles::shaderTrianglesBufferMutex().data);
+
+    auto& tris = const_cast<std::vector<mrpt::viz::TTriangle>&>(
+        VisualObjectParams_Triangles::shaderTrianglesBuffer());
+
+    tris.clear();
+
+    for (const auto& face : m_Faces)
+    {
+      const auto& vIdx = face.vertices;
+      if (vIdx.size() < 3) continue;
+
+      const V3f normal = face.normal.cast<float>();
+      const P3f p0 = m_Vertices[vIdx[0]].cast<float>();
+
+      // Fan triangulation from first vertex
+      for (size_t i = 1; i + 1 < vIdx.size(); i++)
+      {
+        const P3f p1 = m_Vertices[vIdx[i]].cast<float>();
+        const P3f p2 = m_Vertices[vIdx[i + 1]].cast<float>();
+        mrpt::viz::TTriangle t(p0, p1, p2, normal, normal, normal);
+        t.setColor(color);
+        tris.push_back(t);
+      }
+    }
+  }
+
+  if (m_Wireframe)
+  {
+    // Wireframe mode: draw edges as lines
+    std::unique_lock<std::shared_mutex> lck(
+        VisualObjectParams_Lines::shaderLinesBufferMutex().data);
+
+    auto& vbd =
+        const_cast<std::vector<P3f>&>(VisualObjectParams_Lines::shaderLinesVertexPointBuffer());
+    auto& cbd = const_cast<std::vector<mrpt::img::TColor>&>(
+        VisualObjectParams_Lines::shaderLinesVertexColorBuffer());
+
+    vbd.clear();
+
+    for (const auto& edge : m_Edges)
+    {
+      vbd.push_back(m_Vertices[edge.v1].cast<float>());
+      vbd.push_back(m_Vertices[edge.v2].cast<float>());
+    }
+
+    cbd.assign(vbd.size(), color);
+  }
+
+  clearChangedFlag();
+}

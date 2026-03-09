@@ -129,6 +129,8 @@ class CPolyhedron :
    * in the coordinate frame of the object parent. */
   [[nodiscard]] mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
+  void updateBuffers() const override;
+
   // Static methods to create frequent polyhedra. More bizarre polyhedra are
   // intended to be added in a near future.
 
