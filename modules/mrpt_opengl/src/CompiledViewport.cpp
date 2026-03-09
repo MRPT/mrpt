@@ -132,7 +132,7 @@ void CompiledViewport::addProxy(
   if (sourceObj)
   {
     std::weak_ptr<mrpt::viz::CVisualObject> objWeak = sourceObj;
-    m_objectToProxy[objWeak] = proxy;
+    m_objectToProxy[objWeak].push_back(proxy);
   }
 
   if (VIEWPORT_VERBOSE)
@@ -157,25 +157,27 @@ size_t CompiledViewport::cleanupOrphanedProxies()
   {
     if (it->first.expired())
     {
-      // Object was deleted - remove this proxy
-      auto& proxy = it->second;
-
-      // Remove from main list
-      m_proxies.erase(std::remove(m_proxies.begin(), m_proxies.end(), proxy), m_proxies.end());
-
-      // Remove from shader-organized lists
-      for (auto& [shaderID, proxyList] : m_proxiesByShader)
+      // Object was deleted - remove all its proxies (across all occurrences)
+      for (auto& proxy : it->second)
       {
-        proxyList.erase(std::remove(proxyList.begin(), proxyList.end(), proxy), proxyList.end());
+        // Remove from main list
+        m_proxies.erase(std::remove(m_proxies.begin(), m_proxies.end(), proxy), m_proxies.end());
+
+        // Remove from shader-organized lists
+        for (auto& [shaderID, proxyList] : m_proxiesByShader)
+        {
+          proxyList.erase(std::remove(proxyList.begin(), proxyList.end(), proxy), proxyList.end());
+        }
+
+        numRemoved++;
       }
 
       it = m_objectToProxy.erase(it);
-      numRemoved++;
 
       if (VIEWPORT_VERBOSE)
       {
         std::cout << "[CompiledViewport::cleanupOrphanedProxies] '" << m_name
-                  << "' removed orphaned proxy\n";
+                  << "' removed orphaned proxies\n";
       }
     }
     else
@@ -246,7 +248,9 @@ void CompiledViewport::removeProxy(const RenderableProxy::Ptr& proxy)
   // Remove from object mapping
   for (auto it = m_objectToProxy.begin(); it != m_objectToProxy.end();)
   {
-    if (it->second == proxy)
+    auto& vec = it->second;
+    vec.erase(std::remove(vec.begin(), vec.end(), proxy), vec.end());
+    if (vec.empty())
     {
       it = m_objectToProxy.erase(it);
     }

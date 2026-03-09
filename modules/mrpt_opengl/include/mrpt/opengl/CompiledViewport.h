@@ -335,10 +335,12 @@ class CompiledViewport
 
   /** Mapping from source objects to their proxies (using weak_ptr for safety).
    * This allows detection of deleted source objects for cleanup.
+   * Each object may have multiple proxies (one per tree occurrence when
+   * the same CVisualObject appears at multiple positions in the scene DAG).
    */
   std::map<
       std::weak_ptr<mrpt::viz::CVisualObject>,
-      RenderableProxy::Ptr,
+      std::vector<RenderableProxy::Ptr>,
       std::owner_less<std::weak_ptr<mrpt::viz::CVisualObject>>>
       m_objectToProxy;
 

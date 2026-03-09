@@ -212,8 +212,8 @@ class CompiledScene
   /** Number of viewports in the compiled scene */
   [[nodiscard]] size_t getViewportCount() const { return m_viewports.size(); }
 
-  /** Number of total RenderableProxy objects */
-  [[nodiscard]] size_t getProxyCount() const { return m_objectToProxy.size(); }
+  /** Number of total RenderableProxy objects (across all occurrences) */
+  [[nodiscard]] size_t getProxyCount() const;
 
   /** Returns the source Scene that was compiled.
    * \return nullptr if not yet compiled
@@ -256,15 +256,26 @@ class CompiledScene
    * Used for rendering so that overlay viewports render after main ones. */
   std::vector<std::string> m_viewportRenderOrder;
 
-  /** Mapping: weak_ptr<CVisualObject> -> RenderableProxy
+  /** Mapping: weak_ptr<CVisualObject> -> per-occurrence proxy groups.
    * Using weak_ptr allows detection of deleted source objects.
-   * This is the core tracking structure for incremental updates.
+   * Each inner vector contains the proxies for one tree occurrence
+   * (supports the same CVisualObject appearing at multiple positions
+   * in the scene graph DAG).
    */
   std::map<
       std::weak_ptr<mrpt::viz::CVisualObject>,
-      RenderableProxy::Ptr,
+      std::vector<std::vector<RenderableProxy::Ptr>>,
       std::owner_less<std::weak_ptr<mrpt::viz::CVisualObject>>>
       m_objectToProxy;
+
+  /** Transient per-object occurrence counter used during
+   * updateDirtyObjects() tree walk to match each tree occurrence
+   * to its corresponding proxy group. Cleared before each walk. */
+  std::map<
+      std::weak_ptr<mrpt::viz::CVisualObject>,
+      size_t,
+      std::owner_less<std::weak_ptr<mrpt::viz::CVisualObject>>>
+      m_updateOccurrenceCounter;
 
   /** Per-object version tracking for dirty detection.
    * Each CompiledScene independently tracks which version of each object
