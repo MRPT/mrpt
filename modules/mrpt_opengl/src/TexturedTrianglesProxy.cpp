@@ -241,54 +241,18 @@ void TexturedTrianglesProxy::updateTexture(const VisualObjectParams_TexturedTria
   // Check for alpha texture
   const auto& alphaImage = texTriObj->getTextureAlphaImage();
 
-  const bool alreadyUploaded = m_ownedTexture->initialized();
-
-  if (!alreadyUploaded)
+  // Always unload the old texture before re-uploading, to bypass the
+  // data-pointer cache in Texture::assignImage2D which would return the
+  // stale first-frame texture for streaming images that reuse the same buffer.
+  if (m_ownedTexture->initialized())
   {
-    // First upload: use normal path (allocates GPU texture + caches ptr)
-    if (!alphaImage.isEmpty())
-      m_ownedTexture->assignImage2D(textureImage, alphaImage, options, MATERIAL_DIFFUSE_TEXTURE_UNIT);
-    else
-      m_ownedTexture->assignImage2D(textureImage, options, MATERIAL_DIFFUSE_TEXTURE_UNIT);
+    m_ownedTexture->unloadTexture();
   }
+
+  if (!alphaImage.isEmpty())
+    m_ownedTexture->assignImage2D(textureImage, alphaImage, options, MATERIAL_DIFFUSE_TEXTURE_UNIT);
   else
-  {
-    // Subsequent updates: use glTexSubImage2D to update in-place,
-    // bypassing the data-pointer cache which would return the stale texture.
-    m_ownedTexture->bindAsTexture2D();
-
-    const int w = static_cast<int>(textureImage.getWidth());
-    const int h = static_cast<int>(textureImage.getHeight());
-    const bool is_RGB_order = (textureImage.getChannelsOrder() == std::string("RGB"));
-
-    if (!alphaImage.isEmpty())
-    {
-      // With separate alpha: re-do full upload (rare case, not streaming)
-      m_ownedTexture->assignImage2D(textureImage, alphaImage, options, MATERIAL_DIFFUSE_TEXTURE_UNIT);
-    }
-    else
-    {
-      const int nBytesPerPixel = textureImage.channels();
-      const GLenum img_format = [&]()
-      {
-        switch (nBytesPerPixel)
-        {
-          case 1: return GL_LUMINANCE;
-          case 3: return (is_RGB_order ? GL_RGB : GL_BGR);
-          case 4: return GL_BGRA;
-          default: THROW_EXCEPTION("Invalid texture image channel count.");
-        }
-      }();
-      glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-      glPixelStorei(GL_UNPACK_ROW_LENGTH,
-                    static_cast<GLint>(textureImage.getRowStride() / nBytesPerPixel));
-      glTexSubImage2D(
-          GL_TEXTURE_2D, 0, 0, 0, w, h, img_format, GL_UNSIGNED_BYTE,
-          textureImage.ptrLine<uint8_t>(0));
-      glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-      CHECK_OPENGL_ERROR_IN_DEBUG();
-    }
-  }
+    m_ownedTexture->assignImage2D(textureImage, options, MATERIAL_DIFFUSE_TEXTURE_UNIT);
 
   // Update base class texture pointer
   m_texture = m_ownedTexture.get();
