@@ -13,7 +13,9 @@
 */
 
 #pragma once
+
 #include <mrpt/opengl/CompiledScene.h>
+#include <mrpt/viz/COrbitCameraController.h>
 #include <mrpt/viz/Scene.h>
 
 namespace mrpt::viz
@@ -38,24 +40,6 @@ class CGlCanvasBase
   CGlCanvasBase(CGlCanvasBase&&) noexcept = default;
   CGlCanvasBase& operator=(CGlCanvasBase&&) noexcept = default;
 
-  struct CamaraParams
-  {
-    CamaraParams() = default;
-    /** Changes elevation, taking care of not going out of the [-90,90]
-     * range */
-    void setElevationDeg(float deg);
-
-    /** Converts from a CCamera objects \note [New in MRPT 2.1.5] */
-    static CamaraParams FromCamera(const mrpt::viz::CCamera& c);
-
-    float cameraPointingX = .0f, cameraPointingY = .0f, cameraPointingZ = .0f;
-    float cameraZoomDistance = 40.f;
-    float cameraElevationDeg = 45.f, cameraAzimuthDeg = 45.f;
-    bool cameraIsProjective = true;
-    float cameraFOV = 30.f;
-    float cameraRollDeg = .0f;
-  };
-
   /** Sets the minimum of the zoom
    * See also setMaximumZoom(float) */
   void setMinimumZoom(float zoom);
@@ -79,159 +63,21 @@ class CGlCanvasBase
   /** Calls the glViewport function*/
   void resizeViewport(int w, int h);
 
-  /** This function for the mouse event
-   * It gets a reference to CamaraParams, x, y
-   * and updates the zoom of the CameraParams.
-   * See also updateZoom(CamaraParams &, float)*/
-  void updateZoom(CamaraParams& params, int x, int y) const;
-
-  /** This function for the wheel event
-   * It gets a reference to CamaraParams, delta
-   * and updates the zoom of the CameraParams.
-   * See also updateZoom(CamaraParams &, int, int)*/
-  void updateZoom(CamaraParams& params, float delta) const;
-
-  /** This function for the mouse event
-   * It gets a reference to CamaraParams, x, y
-   * and updates the elevation and azimuth.
-   * See also getElevationDegrees(), getAzimuthDegrees()*/
-  void updateRotate(CamaraParams& params, int x, int y) const;
-
-  /** This function for the mouse event
-   * It gets a reference to CamaraParams, x, y
-   * and updates the elevation and azimuth.
-   * See also getElevationDegrees(), getAzimuthDegrees()*/
-  void updateOrbitCamera(CamaraParams& params, int x, int y) const;
-
-  /** This function for the mouse event
-   * It gets a reference to CamaraParams, x, y
-   * and updates the pointing of the camera.
-   * See also getCameraPointingX(), getCameraPointingY(),
-   * getCameraPointingZ()*/
-  void updatePan(CamaraParams& params, int x, int y) const;
-
-  /** Updates the camera "roll" \note New in MRPT 2.14.6 */
-  void updateRoll(CamaraParams& params, int x, int y, float scale = 0.15f) const;
-
-  /** Returns a copy of CamaraParams
-   * See also getRefCameraParams(), setCameraParams(const CamaraParams &)*/
-  CamaraParams cameraParams() const;
-  /** Returns a reference to CamaraParams
-   * See also cameraParams(), setCameraParams(const CamaraParams &) */
-  const CamaraParams& getRefCameraParams() const;
-  /** Sets the CamaraParams
-   * See also cameraParams(), getRefCameraParams()*/
-  virtual void setCameraParams(const CamaraParams& params);
-
-  /** This function gets a reference to mrpt::viz::CCamera and
-   * updates the camera parameters(pointing, zoom, azimuth, elevation,
-   * IsProjective, FOV)
-   */
-  mrpt::viz::CCamera& updateCameraParams(mrpt::viz::CCamera& cam) const;
+  [[nodiscard]] const mrpt::viz::COrbitCameraController& orbitCameraController() const
+  {
+    return m_cameraCtrl;
+  }
+  [[nodiscard]] mrpt::viz::COrbitCameraController& orbitCameraController() { return m_cameraCtrl; }
 
   /** If set to true (default=false), the cameraPointingX,... parameters are
    * ignored and the camera stored in the 3D scene is used instead.
-   * See also void bool getUseCameraFromScene()
+   * See also `bool getUseCameraFromScene()`
    */
   void setUseCameraFromScene(bool is);
 
   /** See also void setUseCameraFromScene(bool)
    */
-  bool getUseCameraFromScene() const;
-
-  // Visualization params:
-  /** Saves the pointing of the camera
-   * See also getCameraPointingX(), getCameraPointingY(), getCameraPointingZ()
-   */
-  virtual void setCameraPointing(float pointX, float pointY, float pointZ);
-
-  /** Returns the x pointing of the camera
-   * See also setCameraPointing(float, float, float)
-   */
-  float getCameraPointingX() const;
-
-  /** Returns the y pointing of the camera
-   * See also setCameraPointing(float, float, float)
-   */
-  float getCameraPointingY() const;
-
-  /** Returns the z pointing of the camera
-   * See also setCameraPointing(float, float, float)
-   */
-  float getCameraPointingZ() const;
-
-  /** Saves camera zooming
-   * See also getZoomDistance()
-   */
-  virtual void setZoomDistance(float zoom);
-
-  /** Returns a zoom
-   * See also setZoomDistance(float)
-   */
-  float getZoomDistance() const;
-
-  /** Saves the degrees of the azimuth camera
-   * See also getAzimuthDegrees()
-   */
-  virtual void setAzimuthDegrees(float ang);
-
-  /** Returns a azimuth degrees
-   * See also setAzimuthDegrees(float)
-   */
-  float getAzimuthDegrees() const;
-
-  float getRollDegrees() const;
-
-  /** Saves the degrees of the elevation camera
-   * See also getElevationDegrees()
-   */
-  virtual void setElevationDegrees(float ang);
-
-  /** Returns a elevation degrees
-   * See also setElevationDegrees(float)
-   */
-  float getElevationDegrees() const;
-
-  virtual void setCameraProjective(bool is);
-  bool isCameraProjective() const;
-
-  virtual void setCameraFOV(float FOV);
-  float cameraFOV() const;
-
-  static float SENSIBILITY_DEG_PER_PIXEL;  // Default = 0.1
-
-  /** Overload this method to limit the capabilities of the user to move the
-   * camera using the mouse.
-   *  For all these variables:
-   *  - cameraPointingX
-   *  - cameraPointingY
-   *  - cameraPointingZ
-   *  - cameraZoomDistance
-   *  - cameraElevationDeg
-   *  - cameraAzimuthDeg
-   *
-   *  A "new_NAME" variable will be passed with the temptative new
-   * value after the user action.
-   *   The default behavior should be to copy all the new variables
-   * to the variables listed above
-   *   but in the middle any find of user-defined filter can be
-   * implemented.
-   */
-  virtual void OnUserManuallyMovesCamera(
-      float new_cameraPointingX,
-      float new_cameraPointingY,
-      float new_cameraPointingZ,
-      float new_cameraZoomDistance,
-      float new_cameraElevationDeg,
-      float new_cameraAzimuthDeg)
-  {
-    m_cameraParams.cameraPointingX = new_cameraPointingX;
-    m_cameraParams.cameraPointingY = new_cameraPointingY;
-    m_cameraParams.cameraPointingZ = new_cameraPointingZ;
-    m_cameraParams.cameraZoomDistance = new_cameraZoomDistance;
-    m_cameraParams.cameraElevationDeg = new_cameraElevationDeg;
-    m_cameraParams.cameraAzimuthDeg = new_cameraAzimuthDeg;
-  }
+  [[nodiscard]] bool getUseCameraFromScene() const;
 
   void getLastMousePosition(int& x, int& y) const
   {
@@ -239,11 +85,14 @@ class CGlCanvasBase
     y = m_mouseLastY;
   }
 
+  virtual void onCameraChanged(const mrpt::viz::COrbitCameraController&) {}
+
   /**  At constructor an empty scene is created. The object is freed at GL
   canvas destructor.
    * This function returns a smart pointer to the opengl scene
   getOpenGLSceneRef		  */
   mrpt::viz::Scene::Ptr& getOpenGLSceneRef() { return m_openGLScene; }
+
   void setOpenGLSceneRef(mrpt::viz::Scene::Ptr scene);
 
   /** Returns the shader manager for the current compiled scene, or nullptr
@@ -270,9 +119,9 @@ class CGlCanvasBase
   int m_mouseLastX = 0, m_mouseLastY = 0;
   int m_mouseClickX = 0, m_mouseClickY = 0;
   bool mouseClicked = false;
-  float m_minZoom = 1.f;
-  float m_maxZoom = 3200.f;
-  CamaraParams m_cameraParams;
+
+  mrpt::viz::COrbitCameraController m_cameraCtrl;
+
 };  // end of class
 
 /** A headless dummy implementation of CGlCanvasBase: can be used to keep track

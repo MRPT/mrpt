@@ -62,6 +62,7 @@ set(LIB_SOURCES
   src/CMesh.cpp
   src/CMeshFast.cpp
   src/COctoMapVoxels.cpp
+  src/COrbitCameraController.cpp
   src/CPointCloudColoured.cpp
   src/CPointCloud.cpp
   src/CPolyhedron.cpp
@@ -105,6 +106,7 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/viz/CAnimatedAssimpModel.h
   include/mrpt/viz/pose_pdfs.h
   include/mrpt/viz/COctoMapVoxels.h
+  include/mrpt/viz/COrbitCameraController.h
   include/mrpt/viz/CVectorField3D.h
   include/mrpt/viz/Scene.h
   include/mrpt/viz/CText3D.h

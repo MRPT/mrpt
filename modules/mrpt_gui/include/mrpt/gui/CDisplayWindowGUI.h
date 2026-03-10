@@ -15,9 +15,9 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/gui/MRPT2NanoguiGLCanvas.h>
-#include <mrpt/gui/internal/NanoGUICanvasHeadless.h>
 #include <mrpt/opengl/CompiledScene.h>
 #include <mrpt/system/string_utils.h>  // firstNLines()
+#include <mrpt/viz/COrbitCameraController.h>
 #include <mrpt/viz/Scene.h>
 
 #include <memory>
@@ -287,8 +287,8 @@ class CDisplayWindowGUI : public nanogui::Screen
   mrpt::viz::Scene::Ptr background_scene;
   std::mutex background_scene_mtx;
 
-  CGlCanvasBase& camera() { return m_background_canvas; }
-  const CGlCanvasBase& camera() const { return m_background_canvas; }
+  auto& camera() { return m_background_canvas; }
+  const auto& camera() const { return m_background_canvas; }
 
   /** @} */
 
@@ -320,15 +320,15 @@ class CDisplayWindowGUI : public nanogui::Screen
   virtual bool dropEvent(const std::vector<std::string>& filenames) override;
   /** @} */
 
-  /** Used to keep track of mouse events on the camera */
-  internal::NanoGUICanvasHeadless m_background_canvas;
-
   std::unique_ptr<mrpt::opengl::CompiledScene> m_compiledScene;
   std::weak_ptr<mrpt::viz::Scene> m_lastCompiledScenePtr;
 
   std::vector<loop_callback_t> m_loopCallbacks;
   std::vector<drop_files_callback_t> m_dropFilesCallbacks;
   std::vector<keyboard_callback_t> m_keyboardCallbacks;
+
+  mrpt::viz::COrbitCameraController m_background_canvas;
+  uint8_t m_lastModifiers = 0;
 
   void createSubWindowsControlUI();
 

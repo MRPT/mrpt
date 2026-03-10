@@ -13,9 +13,8 @@
 */
 #pragma once
 
-#include <mrpt/gui/CGlCanvasBase.h>
-#include <mrpt/gui/internal/NanoGUICanvasHeadless.h>
 #include <mrpt/opengl/CompiledScene.h>
+#include <mrpt/viz/COrbitCameraController.h>
 
 #include <memory>
 #include <mutex>
@@ -52,8 +51,8 @@ class MRPT2NanoguiGLCanvas : public nanogui::GLCanvas
   mrpt::viz::Scene::Ptr scene;
   std::mutex scene_mtx;
 
-  CGlCanvasBase& camera() { return m_headless_canvas; }
-  const CGlCanvasBase& camera() const { return m_headless_canvas; }
+  mrpt::viz::COrbitCameraController& camera() { return m_cameraCtrl; }
+  const mrpt::viz::COrbitCameraController& camera() const { return m_cameraCtrl; }
 
  protected:
   /** @name Internal virtual functions to handle GUI events
@@ -64,8 +63,8 @@ class MRPT2NanoguiGLCanvas : public nanogui::GLCanvas
   bool scrollEvent(const nanogui::Vector2i& p, const nanogui::Vector2f& rel) override;
   /** @} */
 
-  /** Used to keep track of mouse events on the camera */
-  internal::NanoGUICanvasHeadless m_headless_canvas;
+  mrpt::viz::COrbitCameraController m_cameraCtrl;
+  uint8_t m_lastModifiers = 0;  // needed for scrollEvent (no modifiers arg in nanogui)
 
   std::unique_ptr<mrpt::opengl::CompiledScene> m_compiledScene;
   std::weak_ptr<mrpt::viz::Scene> m_lastCompiledScenePtr;

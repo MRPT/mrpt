@@ -517,7 +517,7 @@ void CDisplayWindow3D::setCameraElevationDeg([[maybe_unused]] float deg)
   auto* win = static_cast<C3DWindowDialog*>(m_hwnd.get());
   if (win != nullptr)
   {
-    win->m_canvas->setElevationDegrees(deg);
+    win->m_canvas->orbitCameraController().setElevationDegrees(deg);
   }
 #endif
 }
@@ -542,7 +542,7 @@ void CDisplayWindow3D::setCameraAzimuthDeg([[maybe_unused]] float deg)
   auto* win = static_cast<C3DWindowDialog*>(m_hwnd.get());
   if (win != nullptr)
   {
-    win->m_canvas->setAzimuthDegrees(deg);
+    win->m_canvas->orbitCameraController().setAzimuthDegrees(deg);
   }
 #endif
 }
@@ -557,7 +557,7 @@ void CDisplayWindow3D::setCameraPointingToPoint(
   auto* win = static_cast<C3DWindowDialog*>(m_hwnd.get());
   if (win != nullptr)
   {
-    win->m_canvas->setCameraPointing(x, y, z);
+    win->m_canvas->orbitCameraController().setCameraPointing(x, y, z);
   }
 #endif
 }
@@ -571,7 +571,7 @@ void CDisplayWindow3D::setCameraZoom([[maybe_unused]] float zoom)
   auto* win = static_cast<C3DWindowDialog*>(m_hwnd.get());
   if (win != nullptr)
   {
-    win->m_canvas->setZoomDistance(zoom);
+    win->m_canvas->orbitCameraController().setZoomDistance(zoom);
   }
 #endif
 }
@@ -585,7 +585,7 @@ void CDisplayWindow3D::setCameraProjective([[maybe_unused]] bool isProjective)
   auto* win = static_cast<C3DWindowDialog*>(m_hwnd.get());
   if (win != nullptr)
   {
-    win->m_canvas->setCameraProjective(isProjective);
+    win->m_canvas->orbitCameraController().setProjectiveModel(isProjective);
   }
 #endif
 }
@@ -597,7 +597,8 @@ void CDisplayWindow3D::setMinRange(float new_min)
     mrpt::viz::Viewport::Ptr gl_view = m_3Dscene->getViewport("main");
     if (gl_view)
     {
-      float m, M;
+      float m = 0;
+      float M = 0;
       gl_view->getViewportClipDistances(m, M);
       gl_view->setViewportClipDistances(new_min, M);
     }
@@ -610,7 +611,8 @@ void CDisplayWindow3D::setMaxRange(float new_max)
     mrpt::viz::Viewport::Ptr gl_view = m_3Dscene->getViewport("main");
     if (gl_view)
     {
-      float m, M;
+      float m = 0;
+      float M = 0;
       gl_view->getViewportClipDistances(m, M);
       gl_view->setViewportClipDistances(m, new_max);
     }
@@ -623,7 +625,7 @@ float CDisplayWindow3D::getFOV() const
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
   if (win != nullptr)
   {
-    return win->m_canvas->cameraFOV();
+    return win->m_canvas->orbitCameraController().getFOVdeg();
   }
 #endif
   return .0f;
@@ -635,7 +637,7 @@ void CDisplayWindow3D::setFOV(float v)
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
   if (win != nullptr)
   {
-    win->m_canvas->setCameraFOV(v);
+    win->m_canvas->orbitCameraController().setFOVdeg(v);
   }
 #endif
 }
@@ -647,7 +649,7 @@ float CDisplayWindow3D::getCameraElevationDeg() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
-  return win != nullptr ? win->m_canvas->getElevationDegrees() : 0;
+  return win != nullptr ? win->m_canvas->orbitCameraController().getElevationDegrees() : 0;
 #else
   return 0;
 #endif
@@ -660,7 +662,7 @@ float CDisplayWindow3D::getCameraAzimuthDeg() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
-  return win != nullptr ? win->m_canvas->getAzimuthDegrees() : 0;
+  return win != nullptr ? win->m_canvas->orbitCameraController().getAzimuthDegrees() : 0;
 #else
   return 0;
 #endif
@@ -676,9 +678,9 @@ void CDisplayWindow3D::getCameraPointingToPoint(
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
   if (win != nullptr)
   {
-    x = win->m_canvas->getCameraPointingX();
-    y = win->m_canvas->getCameraPointingY();
-    z = win->m_canvas->getCameraPointingZ();
+    x = win->m_canvas->orbitCameraController().getCameraPointingX();
+    y = win->m_canvas->orbitCameraController().getCameraPointingY();
+    z = win->m_canvas->orbitCameraController().getCameraPointingZ();
   }
   else
   {
@@ -694,7 +696,7 @@ float CDisplayWindow3D::getCameraZoom() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
-  return win != nullptr ? win->m_canvas->getZoomDistance() : 0;
+  return win != nullptr ? win->m_canvas->orbitCameraController().getZoomDistance() : 0;
 #else
   return 0;
 #endif
@@ -707,7 +709,7 @@ bool CDisplayWindow3D::isCameraProjective() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
-  return win != nullptr ? win->m_canvas->isCameraProjective() : true;
+  return win != nullptr ? win->m_canvas->orbitCameraController().isProjectiveModel() : true;
 #else
   return true;
 #endif

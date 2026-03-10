@@ -68,11 +68,55 @@ void CDisplayWindowGUI::onIdleLoopTasks()
   }
 }
 
+namespace
+{
+uint8_t nanoguiButtonsToMrpt(int b)
+{
+  using C = mrpt::viz::COrbitCameraController;
+  uint8_t out = 0;
+  if ((b & (1 << GLFW_MOUSE_BUTTON_LEFT)) != 0)
+  {
+    out |= C::ButtonLeft;
+  }
+  if ((b & (1 << GLFW_MOUSE_BUTTON_MIDDLE)) != 0)
+  {
+    out |= C::ButtonMiddle;
+  }
+  if ((b & (1 << GLFW_MOUSE_BUTTON_RIGHT)) != 0)
+  {
+    out |= C::ButtonRight;
+  }
+  return out;
+}
+
+uint8_t nanoguiModsToMrpt(int m)
+{
+  using C = mrpt::viz::COrbitCameraController;
+  uint8_t out = 0;
+  if ((m & GLFW_MOD_SHIFT) != 0)
+  {
+    out |= C::ModShift;
+  }
+  if ((m & GLFW_MOD_CONTROL) != 0)
+  {
+    out |= C::ModControl;
+  }
+  if ((m & GLFW_MOD_ALT) != 0)
+  {
+    out |= C::ModAlt;
+  }
+  return out;
+}
+}  // namespace
+
 void CDisplayWindowGUI::drawContents()
 {
   // Optional: render background scene.
   std::lock_guard<std::mutex> lck(background_scene_mtx);
-  if (!background_scene) return;
+  if (!background_scene)
+  {
+    return;
+  }
 
   try
   {
@@ -82,9 +126,12 @@ void CDisplayWindowGUI::drawContents()
 
     // Set the camera params in the scene:
     mrpt::viz::Viewport::Ptr view = background_scene->getViewport("main");
-    if (!view) THROW_EXCEPTION("Fatal error: there is no 'main' viewport in the 3D scene!");
+    if (!view)
+    {
+      THROW_EXCEPTION("Fatal error: there is no 'main' viewport in the 3D scene!");
+    }
     mrpt::viz::CCamera& cam = view->getCamera();
-    m_background_canvas.updateCameraParams(cam);
+    m_background_canvas.applyTo(cam);
 
     // Compile/update and render via CompiledScene:
     auto scenePtr = background_scene;
@@ -221,8 +268,23 @@ bool CDisplayWindowGUI::mouseButtonEvent(
     const nanogui::Vector2i& p, int button, bool down, int modifiers)
 {
   if (!Screen::mouseButtonEvent(p, button, down, modifiers))
-    m_background_canvas.mouseButtonEvent(p, button, down, modifiers);
-
+  {
+    using C = mrpt::viz::COrbitCameraController;
+    uint8_t btn = 0;
+    if (button == GLFW_MOUSE_BUTTON_LEFT)
+    {
+      btn = C::ButtonLeft;
+    }
+    if (button == GLFW_MOUSE_BUTTON_MIDDLE)
+    {
+      btn = C::ButtonMiddle;
+    }
+    if (button == GLFW_MOUSE_BUTTON_RIGHT)
+    {
+      btn = C::ButtonRight;
+    }
+    m_background_canvas.onMouseButton(p.x(), p.y(), btn, down);
+  }
   return true;
 }
 
@@ -230,15 +292,19 @@ bool CDisplayWindowGUI::mouseMotionEvent(
     const nanogui::Vector2i& p, const nanogui::Vector2i& rel, int button, int modifiers)
 {
   if (!Screen::mouseMotionEvent(p, rel, button, modifiers))
-    m_background_canvas.mouseMotionEvent(p, rel, button, modifiers);
-
+  {
+    m_lastModifiers = nanoguiModsToMrpt(modifiers);
+    m_background_canvas.onMouseMove(p.x(), p.y(), nanoguiButtonsToMrpt(button), m_lastModifiers);
+  }
   return true;
 }
 
 bool CDisplayWindowGUI::scrollEvent(const nanogui::Vector2i& p, const nanogui::Vector2f& rel)
 {
-  if (!Screen::scrollEvent(p, rel)) m_background_canvas.scrollEvent(p, rel);
-
+  if (!Screen::scrollEvent(p, rel))
+  {
+    m_background_canvas.onScroll(rel.y(), m_lastModifiers);
+  }
   return true;
 }
 

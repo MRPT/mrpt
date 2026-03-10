@@ -41,7 +41,6 @@ set(LIB_SOURCES
   src/error_box.cpp
   src/mathplot/mathplot.cpp
   src/MRPT2NanoguiGLCanvas.cpp
-  src/NanoGUICanvasHeadless.cpp
   src/registerAllClasses.cpp
   src/WxSubsystem.cpp
   src/WxUtils.cpp
@@ -62,7 +61,6 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/gui/default_mrpt_glfw_icon.h
   include/mrpt/gui/error_box.h
   include/mrpt/gui/gui_frwds.h
-  include/mrpt/gui/internal/NanoGUICanvasHeadless.h
   include/mrpt/gui/keycodes.h
   include/mrpt/gui/MRPT2NanoguiGLCanvas.h
   include/mrpt/gui/registerAllClasses.h
