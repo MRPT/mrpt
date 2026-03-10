@@ -488,8 +488,8 @@ void Texture::internalAssignImage_2D(
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
     glTexImage2D(
-        GL_TEXTURE_2D, 0 /*level*/, GL_RGBA8 /* RGB components */, width, height, 0 /*border*/,
-        img_format, img_type, dataAligned);
+        GL_TEXTURE_2D, 0 /*level*/, GL_SRGB8_ALPHA8 /* sRGB internal: GPU decodes at sampling */,
+        width, height, 0 /*border*/, img_format, img_type, dataAligned);
     CHECK_OPENGL_ERROR_IN_DEBUG();
     glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
     CHECK_OPENGL_ERROR_IN_DEBUG();
@@ -528,7 +528,8 @@ void Texture::internalAssignImage_2D(
     glPixelStorei(GL_UNPACK_ROW_LENGTH, static_cast<GLint>(rgb.getRowStride() / nBytesPerPixel));
     CHECK_OPENGL_ERROR_IN_DEBUG();
     glTexImage2D(
-        GL_TEXTURE_2D, 0 /*level*/, nBytesPerPixel == 3 ? GL_RGB8 : GL_RGBA8 /* RGB components */,
+        GL_TEXTURE_2D, 0 /*level*/,
+        nBytesPerPixel == 3 ? GL_SRGB8 : GL_SRGB8_ALPHA8 /* sRGB: GPU decodes at sampling */,
         width, height, 0 /*border*/, img_format, img_type, rgb.ptrLine<uint8_t>(0));
     CHECK_OPENGL_ERROR_IN_DEBUG();
     glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
@@ -665,8 +666,8 @@ void Texture::assignCubeImages(const std::array<mrpt::img::CImage, 6>& imgs, int
     CHECK_OPENGL_ERROR_IN_DEBUG();
     glTexImage2D(
         GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0 /*level*/,
-        nBytesPerPixel == 3 ? GL_RGB8 : GL_RGBA8 /* RGB components */, width, height, 0 /*border*/,
-        img_format, img_type, rgb.ptrLine<uint8_t>(0));
+        nBytesPerPixel == 3 ? GL_SRGB8 : GL_SRGB8_ALPHA8 /* sRGB: GPU decodes at sampling */,
+        width, height, 0 /*border*/, img_format, img_type, rgb.ptrLine<uint8_t>(0));
     CHECK_OPENGL_ERROR_IN_DEBUG();
     glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
     CHECK_OPENGL_ERROR_IN_DEBUG();

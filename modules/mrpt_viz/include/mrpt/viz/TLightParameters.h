@@ -60,6 +60,17 @@ struct TLightParameters
    */
   float minimum_shadow_map_extension_ratio = 0.03f;
 
+  /** If true (default), enables physically-correct gamma correction via the
+   * GPU sRGB pipeline at no extra shader cost:
+   *  - Textures are stored as GL_SRGB8/GL_SRGB8_ALPHA8 so the GPU
+   *    automatically decodes sRGB→linear at sampling time.
+   *  - GL_FRAMEBUFFER_SRGB is enabled so the GPU automatically encodes
+   *    linear→sRGB when writing to the framebuffer.
+   * Set to false only if you need the legacy (non-gamma-correct) appearance.
+   * \note (New in MRPT 2.14.0)
+   */
+  bool gamma_correction = true;
+
   void writeToStream(mrpt::serialization::CArchive& out) const;
   void readFromStream(mrpt::serialization::CArchive& in);
 
