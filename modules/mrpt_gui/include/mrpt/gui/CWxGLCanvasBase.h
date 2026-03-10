@@ -17,6 +17,7 @@
 #include <mrpt/gui/CGlCanvasBase.h>
 #include <mrpt/gui/config.h>
 #include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL_GLUT
+#include <mrpt/viz/COrbitCameraController.h>
 #include <mrpt/viz/Scene.h>
 #include <mrpt/viz/opengl_fonts.h>
 
@@ -73,8 +74,6 @@ class CWxGLCanvasBase : public CGlCanvasBase, public wxGLCanvas
       long style = 0,
       const wxString& name = _T("CWxGLCanvasBase"));
 
-  ~CWxGLCanvasBase() override = default;
-
   void OnPaint(wxPaintEvent& event);
   void OnSize(wxSizeEvent& event);
   void OnEraseBackground(wxEraseEvent& event);
@@ -105,11 +104,13 @@ class CWxGLCanvasBase : public CGlCanvasBase, public wxGLCanvas
 
   virtual void OnRenderError([[maybe_unused]] const wxString& str) {}
 
-  bool is_GL_context_created() const { return m_init; }
+  [[nodiscard]] bool is_GL_context_created() const { return m_init; }
 
  protected:
   static std::unique_ptr<wxGLContext> m_gl_context;
   static std::recursive_mutex m_gl_context_mtx;
+
+  mrpt::viz::COrbitCameraController m_cameraCtrl;
 
   std::atomic_bool m_init = false;
 

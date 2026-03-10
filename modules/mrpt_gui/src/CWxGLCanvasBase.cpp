@@ -59,11 +59,14 @@ using namespace std;
 std::unique_ptr<wxGLContext> CWxGLCanvasBase::m_gl_context;
 std::recursive_mutex CWxGLCanvasBase::m_gl_context_mtx;
 
-void CWxGLCanvasBase::OnWindowCreation(wxWindowCreateEvent& ev)
+void CWxGLCanvasBase::OnWindowCreation(wxWindowCreateEvent& /*ev*/)
 {
   auto lck = mrpt::lockHelper(m_gl_context_mtx);
 
-  if (!m_gl_context) m_gl_context = std::make_unique<wxGLContext>(this);
+  if (!m_gl_context)
+  {
+    m_gl_context = std::make_unique<wxGLContext>(this);
+  }
 }
 
 void CWxGLCanvasBase::swapBuffers()
@@ -80,81 +83,113 @@ void CWxGLCanvasBase::preRender() { OnPreRender(); }
 void CWxGLCanvasBase::postRender() { OnPostRender(); }
 void CWxGLCanvasBase::renderError(const string& err_msg) { OnRenderError(err_msg.c_str()); }
 
+namespace
+{
+uint8_t wxModsToMrpt(const wxMouseEvent& e)
+{
+  uint8_t m = 0;
+  if (e.ShiftDown())
+  {
+    m |= COrbitCameraController::ModShift;
+  }
+  if (e.ControlDown())
+  {
+    m |= COrbitCameraController::ModControl;
+  }
+  if (e.AltDown())
+  {
+    m |= COrbitCameraController::ModAlt;
+  }
+  return m;
+}
+
+uint8_t wxButtonDown(const wxMouseEvent& e)
+{
+  uint8_t m = 0;
+  if (e.LeftDown())
+  {
+    m |= COrbitCameraController::ButtonLeft;
+  }
+  if (e.MiddleDown())
+  {
+    m |= COrbitCameraController::ButtonMiddle;
+  }
+  if (e.RightDown())
+  {
+    m |= COrbitCameraController::ButtonRight;
+  }
+  return m;
+}
+uint8_t wxButtonUp(const wxMouseEvent& e)
+{
+  uint8_t m = 0;
+  if (e.LeftUp())
+  {
+    m |= COrbitCameraController::ButtonLeft;
+  }
+  if (e.MiddleUp())
+  {
+    m |= COrbitCameraController::ButtonMiddle;
+  }
+  if (e.RightUp())
+  {
+    m |= COrbitCameraController::ButtonRight;
+  }
+  return m;
+}
+
+}  // namespace
+
 void CWxGLCanvasBase::OnMouseDown(wxMouseEvent& event)
 {
-  updateLastPos(event.GetX(), event.GetY());
-  setMousePos(event.GetX(), event.GetY());
-  setMouseClicked(true);
+  m_cameraCtrl.onMouseButton(event.GetX(), event.GetY(), wxButtonDown(event), true);
 }
-void CWxGLCanvasBase::OnMouseUp(wxMouseEvent& /*event*/) { setMouseClicked(false); }
+
+void CWxGLCanvasBase::OnMouseUp(wxMouseEvent& event)
+{
+  m_cameraCtrl.onMouseButton(event.GetX(), event.GetY(), wxButtonUp(event), false);
+}
 
 void CWxGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 {
-  bool leftIsDown = event.LeftIsDown();
-
-  int X = event.GetX();
-  int Y = event.GetY();
-  updateLastPos(X, Y);
-
-  if (leftIsDown || event.RightIsDown() || event.MiddleIsDown())
+  uint8_t buttons = 0;
+  if (event.LeftIsDown())
   {
-    // Proxy variables to cache the changes:
-    CamaraParams params = cameraParams();
+    buttons |= COrbitCameraController::ButtonLeft;
+  }
+  if (event.MiddleIsDown())
+  {
+    buttons |= COrbitCameraController::ButtonMiddle;
+  }
+  if (event.RightIsDown())
+  {
+    buttons |= COrbitCameraController::ButtonRight;
+  }
 
-    if (leftIsDown)
-    {
-      if (event.ShiftDown())
-        updateZoom(params, X, Y);
-      else if (event.ControlDown())
-        updateRotate(params, X, Y);
-      else if (event.AltDown())
-        updateRoll(params, X, Y);
-      else
-        updateOrbitCamera(params, X, Y);
-    }
-    else
-      updatePan(params, X, Y);
-
-    setMousePos(X, Y);
-    setCameraParams(params);
-
+  if (buttons != 0)
+  {
+    m_cameraCtrl.onMouseMove(event.GetX(), event.GetY(), buttons, wxModsToMrpt(event));
     Refresh(false);
     Update();
   }
-
-  // ensure we have the focus so we get keyboard events:
   this->SetFocus();
 }
 
 void CWxGLCanvasBase::OnMouseWheel(wxMouseEvent& event)
 {
-  int X = event.GetX();
-  int Y = event.GetY();
-  updateLastPos(X, Y);
-  setMousePos(X, Y);
-
-  CamaraParams params = cameraParams();
-  if (!event.ShiftDown())
-  {
-    // regular zoom:
-    updateZoom(params, event.GetWheelRotation());
-  }
-  else
-  {
-    // Move vertically +-Z:
-    params.cameraPointingZ += event.GetWheelRotation() * params.cameraZoomDistance * 1e-4;
-  }
-  setCameraParams(params);
-
+  // wxWidgets gives rotation in multiples of WHEEL_DELTA (120).
+  // Normalise to ±1 units like the other backends.
+  const float delta =
+      static_cast<float>(event.GetWheelRotation()) / static_cast<float>(event.GetWheelDelta());
+  m_cameraCtrl.onScroll(delta, wxModsToMrpt(event));
   Refresh(false);
   Update();
-
-  // ensure we have the focus so we get keyboard events:
   this->SetFocus();
 }
 
 // clang-format off
-static int WX_GL_ATTR_LIST[] = {
+namespace {
+int WX_GL_ATTR_LIST[] = {
 	WX_GL_DOUBLEBUFFER,    WX_GL_RGBA,
 	WX_GL_DEPTH_SIZE,     24,
 #if wxCHECK_VERSION(3, 0, 3)
@@ -164,6 +199,7 @@ static int WX_GL_ATTR_LIST[] = {
 #endif
 	0
 };
+}
 // clang-format on
 
 CWxGLCanvasBase::CWxGLCanvasBase(
@@ -173,7 +209,6 @@ CWxGLCanvasBase::CWxGLCanvasBase(
     const wxSize& size,
     long style,
     const wxString& name) :
-    CGlCanvasBase(),
     wxGLCanvas(parent, id, WX_GL_ATTR_LIST, pos, size, style | wxFULL_REPAINT_ON_RESIZE, name)
 {
   this->Bind(wxEVT_LEFT_DOWN, &CWxGLCanvasBase::OnMouseDown, this);
@@ -294,6 +329,8 @@ void CWxGLCanvasBase::InitGL()
 void CWxGLCanvasBase::setCameraPose(const mrpt::poses::CPose3D& camPose)
 {
   THROW_EXCEPTION("todo");
+  // Convert pose to orbit parameters and feed into the controller
+  // (implementation depends on CCamera::setFrom(CPose3D), TBD separately)
 }
 
 #endif  // MRPT_HAS_WXWIDGETS

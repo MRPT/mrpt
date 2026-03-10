@@ -481,9 +481,8 @@ TOutputRawlogCreator::TOutputRawlogCreator()
   if (fileExists(out_rawlog_filename) && !val_overwrite)
     throw runtime_error(
         string("*ABORTING*: Output file already exists: ") + out_rawlog_filename +
-        string(
-            "\n. Select a different output path, remove the file or "
-            "force overwrite with '-w' or '--overwrite'."));
+        string("\n. Select a different output path, remove the file or "
+               "force overwrite with '-w' or '--overwrite'."));
 
   if (!out_rawlog_io.open(out_rawlog_filename))
     throw runtime_error(string("*ABORTING*: Cannot open output file: ") + out_rawlog_filename);

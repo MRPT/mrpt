@@ -15,6 +15,8 @@
 #pragma once
 #include <mrpt/gui/CGlCanvasBase.h>
 #include <mrpt/gui/config.h>
+#include <mrpt/viz/COrbitCameraController.h>
+
 #if MRPT_HAS_Qt5
 
 #include <QtGlobal>
@@ -31,17 +33,24 @@ class CQtGlCanvasBase : public QOpenGLWidget, public mrpt::gui::CGlCanvasBase
 {
  public:
   CQtGlCanvasBase(QWidget* parent = nullptr);
-  ~CQtGlCanvasBase() override = default;
 
   void initializeGL() override;
   void paintGL() override;
   void resizeGL(int width, int height) override;
 
-  mrpt::viz::Viewport::Ptr mainViewport() const;
+  [[nodiscard]] mrpt::viz::Viewport::Ptr mainViewport() const;
 
-  /** Returns the zoom distance of the camera
-   * See also setZoomDistance(float), getZoomDistance()*/
-  float getCameraZoomDistance() const;
+  /** Returns the current zoom distance from the orbit camera controller. */
+  [[nodiscard]] float getCameraZoomDistance() const;
+
+  /** Direct access to the orbit camera controller.
+   *  Use this to read or write azimuth, elevation, zoom, pointing-at, etc.
+   */
+  [[nodiscard]] mrpt::viz::COrbitCameraController& cameraController() { return m_cameraCtrl; }
+  [[nodiscard]] const mrpt::viz::COrbitCameraController& cameraController() const
+  {
+    return m_cameraCtrl;
+  }
 
  protected:
   void mousePressEvent(QMouseEvent* event) override;
@@ -54,24 +63,12 @@ class CQtGlCanvasBase : public QOpenGLWidget, public mrpt::gui::CGlCanvasBase
   void postRender() override {}
   void renderError(const std::string& err_msg) override;
 
-  virtual void updateCamerasParams();
   virtual void insertToMap(const viz::CVisualObject::Ptr& newObject);
   virtual void removeFromMap(const viz::CVisualObject::Ptr& newObject);
 
-  bool isPressLMouseButton() const;
-  bool isPressMMouseButton() const;
-  bool isPressRMouseButton() const;
-  /** m_isPressLMouseButton and m_isPressRMouseButton are saved in
-   * mousePressEvent for mouseMoveEvent as true
-   * This function sets it as false */
-  void unpressMouseButtons();
-
  private:
-  bool m_isPressLMouseButton = false;
-  bool m_isPressRMouseButton = false;
-  bool m_isPressMMouseButton = false;
-
   mrpt::viz::Viewport::Ptr m_mainViewport;
+  mrpt::viz::COrbitCameraController m_cameraCtrl;
 
 };  // end of class
 

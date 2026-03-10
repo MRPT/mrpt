@@ -174,9 +174,9 @@ int main()
   sceneView.setBackgroundColor(0.15f, 0.15f, 0.18f);
 
   // Tweak the default camera
-  sceneView.camera().setZoomDistance(25.0f);
-  sceneView.camera().setAzimuthDegrees(-140.0f);
-  sceneView.camera().setElevationDegrees(30.0f);
+  sceneView.cameraController.setZoomDistance(25.0f);
+  sceneView.cameraController.setAzimuthDegrees(-140.0f);
+  sceneView.cameraController.setElevationDegrees(30.0f);
 
   // Optional click callback
   sceneView.onLeftClick = [](float px, float py)
@@ -223,7 +223,7 @@ int main()
     // --- Controls window ---
     if (ImGui::Begin("Controls"))
     {
-      auto& cam = sceneView.camera();
+      auto& cam = sceneView.cameraController;
 
       float az = cam.getAzimuthDegrees();
       float el = cam.getElevationDegrees();
@@ -251,8 +251,9 @@ int main()
 
       ImGui::Separator();
       ImGui::Text(
-          "Camera pointing at: (%.1f, %.1f, %.1f)", static_cast<double>(cam.getPointingAtX()),
-          static_cast<double>(cam.getPointingAtY()), static_cast<double>(cam.getPointingAtZ()));
+          "Camera pointing at: (%.1f, %.1f, %.1f)", static_cast<double>(cam.getCameraPointingX()),
+          static_cast<double>(cam.getCameraPointingY()),
+          static_cast<double>(cam.getCameraPointingZ()));
 
       ImGui::Text("FPS: %.1f", static_cast<double>(io.Framerate));
     }

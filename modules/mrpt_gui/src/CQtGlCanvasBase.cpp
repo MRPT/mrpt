@@ -21,8 +21,72 @@
 using namespace mrpt;
 using namespace mrpt::gui;
 
-CQtGlCanvasBase::CQtGlCanvasBase(QWidget* parent) :
-    QOpenGLWidget(parent), mrpt::gui::CGlCanvasBase()
+// -----------------------------------------------------------------------
+// Internal helpers: Qt → mrpt::viz::COrbitCameraController bitmasks
+// -----------------------------------------------------------------------
+namespace
+{
+using C = mrpt::viz::COrbitCameraController;
+
+uint8_t qtModsToMrpt(Qt::KeyboardModifiers m)
+{
+  uint8_t out = 0;
+  if ((m & Qt::ShiftModifier) != 0)
+  {
+    out |= C::ModShift;
+  }
+  if ((m & Qt::ControlModifier) != 0)
+  {
+    out |= C::ModControl;
+  }
+  if ((m & Qt::AltModifier) != 0)
+  {
+    out |= C::ModAlt;
+  }
+  return out;
+}
+
+// For press/release events: event->button() is a single enum value.
+uint8_t qtSingleButtonToMrpt(Qt::MouseButton b)
+{
+  switch (b)
+  {
+    case Qt::LeftButton:
+      return C::ButtonLeft;
+    case Qt::MiddleButton:
+      return C::ButtonMiddle;
+    case Qt::RightButton:
+      return C::ButtonRight;
+    default:
+      return 0;
+  }
+}
+
+// For move events: event->buttons() is a bitmask of all held buttons.
+uint8_t qtButtonsToMrpt(Qt::MouseButtons b)
+{
+  uint8_t out = 0;
+  if ((b & Qt::LeftButton) != 0)
+  {
+    out |= C::ButtonLeft;
+  }
+  if ((b & Qt::MiddleButton) != 0)
+  {
+    out |= C::ButtonMiddle;
+  }
+  if ((b & Qt::RightButton) != 0)
+  {
+    out |= C::ButtonRight;
+  }
+  return out;
+}
+
+}  // namespace
+
+// -----------------------------------------------------------------------
+// Construction
+// -----------------------------------------------------------------------
+CQtGlCanvasBase::CQtGlCanvasBase(QWidget* parent) : QOpenGLWidget(parent)
 {
 #if MRPT_HAS_OPENGL_GLUT
   m_mainViewport = getOpenGLSceneRef()->getViewport("main");
@@ -34,118 +98,47 @@ CQtGlCanvasBase::CQtGlCanvasBase(QWidget* parent) :
 #endif
 }
 
+// -----------------------------------------------------------------------
+// OpenGL lifecycle
+// -----------------------------------------------------------------------
 void CQtGlCanvasBase::initializeGL()
 {
 #if MRPT_HAS_OPENGL_GLUT
-
   QOpenGLWidget::initializeGL();
 #endif
 }
 
-void CQtGlCanvasBase::paintGL() { renderCanvas(); }
+void CQtGlCanvasBase::paintGL()
+{
+#if MRPT_HAS_OPENGL_GLUT
+  // Sync the orbit controller into the scene camera before every frame.
+  if (m_mainViewport)
+  {
+    mrpt::viz::CCamera& cam = m_mainViewport->getCamera();
+    m_cameraCtrl.applyTo(cam);
+  }
+#endif
+  renderCanvas();
+}
+
 void CQtGlCanvasBase::resizeGL(int width, int height)
 {
 #if MRPT_HAS_OPENGL_GLUT
-  if (height == 0) height = 1;
+  if (height == 0)
+  {
+    height = 1;
+  }
   glViewport(0, 0, width, height);
-
   QOpenGLWidget::resizeGL(width, height);
 #endif
 }
 
+// -----------------------------------------------------------------------
+// Scene / viewport helpers (unchanged)
+// -----------------------------------------------------------------------
 viz::Viewport::Ptr CQtGlCanvasBase::mainViewport() const { return m_mainViewport; }
 
-float CQtGlCanvasBase::getCameraZoomDistance() const
-{
-  mrpt::viz::CCamera& cam = m_mainViewport->getCamera();
-  return cam.getZoomDistance();
-}
-
-void CQtGlCanvasBase::mousePressEvent(QMouseEvent* event)
-{
-  setMousePos(event->pos().x(), event->pos().y());
-  setMouseClicked(true);
-
-  m_isPressLMouseButton = (event->button() == Qt::LeftButton);
-  m_isPressMMouseButton = (event->button() == Qt::MiddleButton);
-  m_isPressRMouseButton = (event->button() == Qt::RightButton);
-
-  QOpenGLWidget::mousePressEvent(event);
-}
-
-void CQtGlCanvasBase::mouseMoveEvent(QMouseEvent* event)
-{
-  int X = event->pos().x();
-  int Y = event->pos().y();
-  updateLastPos(X, Y);
-
-  if (m_isPressLMouseButton || m_isPressRMouseButton || m_isPressMMouseButton)
-  {
-    // Proxy variables to cache the changes:
-    CamaraParams params = cameraParams();
-
-    if (m_isPressLMouseButton)
-    {
-      if (event->modifiers() == Qt::ShiftModifier)
-        updateZoom(params, X, Y);
-
-      else if (event->modifiers() == Qt::ControlModifier)
-        updateRotate(params, X, Y);
-
-      else if (event->modifiers() == Qt::NoModifier)
-        updateOrbitCamera(params, X, Y);
-    }
-    else
-      updatePan(params, X, Y);
-
-    setMousePos(X, Y);
-    setCameraParams(params);
-
-    updateCamerasParams();
-    update();
-  }
-
-  QOpenGLWidget::mouseMoveEvent(event);
-}
-
-void CQtGlCanvasBase::mouseReleaseEvent(QMouseEvent* event)
-{
-  setMouseClicked(false);
-  m_isPressLMouseButton = false;
-  m_isPressMMouseButton = false;
-  m_isPressRMouseButton = false;
-  QOpenGLWidget::mouseReleaseEvent(event);
-}
-
-void CQtGlCanvasBase::wheelEvent(QWheelEvent* event)
-{
-  CamaraParams params = cameraParams();
-  if (event->modifiers() != Qt::ShiftModifier)
-  {
-    // regular zoom:
-    updateZoom(params, event->angleDelta().y());
-  }
-  else
-  {
-    // Move vertically +-Z:
-    params.cameraPointingZ += event->angleDelta().y() * params.cameraZoomDistance * 1e-4;
-  }
-
-  setCameraParams(params);
-
-  updateCamerasParams();
-
-  update();
-  QOpenGLWidget::wheelEvent(event);
-}
-
-void CQtGlCanvasBase::renderError(const std::string& err_msg) { Q_UNUSED(err_msg); }
-
-void CQtGlCanvasBase::updateCamerasParams()
-{
-  mrpt::viz::CCamera& cam = m_mainViewport->getCamera();
-  updateCameraParams(cam);
-}
+float CQtGlCanvasBase::getCameraZoomDistance() const { return m_cameraCtrl.getZoomDistance(); }
 
 void CQtGlCanvasBase::insertToMap(const viz::CVisualObject::Ptr& newObject)
 {
@@ -159,17 +152,54 @@ void CQtGlCanvasBase::removeFromMap(const viz::CVisualObject::Ptr& newObject)
   m_mainViewport->removeObject(newObject);
 }
 
-bool CQtGlCanvasBase::isPressLMouseButton() const { return m_isPressLMouseButton; }
-
-bool CQtGlCanvasBase::isPressMMouseButton() const { return m_isPressMMouseButton; }
-
-bool CQtGlCanvasBase::isPressRMouseButton() const { return m_isPressRMouseButton; }
-
-void CQtGlCanvasBase::unpressMouseButtons()
+// -----------------------------------------------------------------------
+// Mouse events
+// -----------------------------------------------------------------------
+void CQtGlCanvasBase::mousePressEvent(QMouseEvent* event)
 {
-  m_isPressLMouseButton = false;
-  m_isPressRMouseButton = false;
-  m_isPressMMouseButton = false;
+  m_cameraCtrl.onMouseButton(
+      event->pos().x(), event->pos().y(), qtSingleButtonToMrpt(event->button()),
+      /*down=*/true);
+
+  QOpenGLWidget::mousePressEvent(event);
 }
+
+void CQtGlCanvasBase::mouseReleaseEvent(QMouseEvent* event)
+{
+  m_cameraCtrl.onMouseButton(
+      event->pos().x(), event->pos().y(), qtSingleButtonToMrpt(event->button()),
+      /*down=*/false);
+
+  QOpenGLWidget::mouseReleaseEvent(event);
+}
+
+void CQtGlCanvasBase::mouseMoveEvent(QMouseEvent* event)
+{
+  const auto buttons = qtButtonsToMrpt(event->buttons());
+
+  if (buttons != 0)
+  {
+    m_cameraCtrl.onMouseMove(
+        event->pos().x(), event->pos().y(), buttons, qtModsToMrpt(event->modifiers()));
+    update();
+  }
+
+  QOpenGLWidget::mouseMoveEvent(event);
+}
+
+void CQtGlCanvasBase::wheelEvent(QWheelEvent* event)
+{
+  // Qt gives angleDelta in eighths of a degree; 120 eighths == 1 standard
+  // scroll notch. Normalise to ±1 so all backends use the same scale.
+  const float delta = static_cast<float>(event->angleDelta().y()) / 120.0f;
+  m_cameraCtrl.onScroll(delta, qtModsToMrpt(event->modifiers()));
+  update();
+  QOpenGLWidget::wheelEvent(event);
+}
+
+// -----------------------------------------------------------------------
+// Misc overrides
+// -----------------------------------------------------------------------
+void CQtGlCanvasBase::renderError(const std::string& err_msg) { Q_UNUSED(err_msg); }
 
 #endif  // MRPT_HAS_Qt5

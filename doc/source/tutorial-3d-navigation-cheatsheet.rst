@@ -25,6 +25,4 @@ All MRPT applications use the following convention:
 The implementation of the features above by handling mouse and keyboard events
 can be found in:
 
-- `mrpt::gui::CGlCanvasBase <class_mrpt_gui_CGlCanvasBase.html>`_ for Qt and wxWidgets GUIs.
-
-- `mrpt::gui::CGlCanvasBaseHeadless <class_mrpt_gui_CGlCanvasBaseHeadless.html>`_ for nanogui GUIs.
+- `mrpt::viz::COrbitCameraController <class_mrpt_viz_COrbitCameraController.html>`_ for all GUI backends.

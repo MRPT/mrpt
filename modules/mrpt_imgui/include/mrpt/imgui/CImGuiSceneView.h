@@ -23,6 +23,7 @@
 #include <mrpt/opengl/CompiledScene.h>
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/viz/CCamera.h>
+#include <mrpt/viz/COrbitCameraController.h>
 #include <mrpt/viz/Scene.h>
 
 #include <cmath>
@@ -74,12 +75,17 @@ class CImGuiSceneView
   /** @name Camera control
    *  @{ */
 
-  /** Direct access to the camera used for rendering.
-   *  Modify orbit parameters (azimuth, elevation, distance, pointing-at)
-   *  directly through this reference. */
-  [[nodiscard]] mrpt::viz::CCamera& camera() { return m_camera; }
-
-  [[nodiscard]] const mrpt::viz::CCamera& camera() const { return m_camera; }
+  /** The orbit camera controller. Use this to read/write azimuth, elevation,
+   *  zoom distance, pointing-at position, and interaction sensitivities.
+   *
+   *  Example:
+   *  \code
+   *    view.cameraController.setZoomDistance(20.0f);
+   *    view.cameraController.setAzimuthDegrees(-135.0f);
+   *    view.cameraController.orbitSensitivity = 0.5f;
+   *  \endcode
+   */
+  mrpt::viz::COrbitCameraController cameraController;
 
   /** @} */
 
@@ -110,15 +116,6 @@ class CImGuiSceneView
 
   /** @} */
 
-  /** @name Mouse sensitivity
-   *  @{ */
-
-  void setOrbitSensitivity(float s) { m_orbitSensitivity = s; }
-  void setPanSensitivity(float s) { m_panSensitivity = s; }
-  void setZoomSensitivity(float s) { m_zoomSensitivity = s; }
-
-  /** @} */
-
   /** @name Callbacks
    *  @{ */
 
@@ -126,15 +123,17 @@ class CImGuiSceneView
    *  Useful for drawing overlay ImGui widgets on top. */
   std::function<void()> onOverlayGui;
 
-  /** Called when the user left-clicks on the 3D view.
+  /** Called when the user left-clicks on the 3D view without dragging.
    *  Arguments: (pixel_x, pixel_y) in widget-local coordinates. */
   std::function<void(float, float)> onLeftClick;
 
   /** @} */
 
  private:
-  // --- Scene & camera ---
+  // --- Scene ---
   mrpt::viz::Scene::Ptr m_scene;
+
+  // --- Render-time camera snapshot (written by cameraController.applyTo) ---
   mrpt::viz::CCamera m_camera;
 
   // --- Compiled scene for rendering pipeline ---
@@ -154,24 +153,19 @@ class CImGuiSceneView
   // --- Appearance ---
   float m_bgColor[4] = {0.3f, 0.3f, 0.3f, 1.0f};
 
-  // --- Camera interaction state ---
-  float m_orbitSensitivity = 0.3f;
-  float m_panSensitivity = 0.01f;
-  float m_zoomSensitivity = 0.15f;
-  bool m_isOrbiting = false;
-  bool m_isPanning = false;
-
-  void handleMouseInteraction(float widgetX, float widgetY, float w, float h);
+  // --- Camera interaction ---
+  void handleMouseInteraction(float widgetX, float widgetY);
 };
 
-// Implemented only from the user's translation unit to avoid forcing imgui.h inclusion in the
-// header.
+// Implemented only from the user's translation unit to avoid forcing imgui.h
+// inclusion in the header.
 
 #if defined(MRPT_IMGUI_AVAILABLE)
+
 // -----------------------------------------------------------------------
 // Main render entry point — call inside ImGui Begin/End
 // -----------------------------------------------------------------------
-void CImGuiSceneView::render()
+inline void CImGuiSceneView::render()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
@@ -189,10 +183,13 @@ void CImGuiSceneView::render()
     return;
   }
 
+  // ---- Sync controller → camera snapshot before rendering ----
+  cameraController.applyTo(m_camera);
+
   // ---- Render the MRPT scene into our FBO ----
   if (m_scene)
   {
-    // Push our camera params into the scene's main viewport
+    // Push camera into the scene's main viewport
     if (auto vp = m_scene->getViewport("main"); vp)
     {
       vp->getCamera() = m_camera;
@@ -212,21 +209,18 @@ void CImGuiSceneView::render()
       m_compiledScene->updateIfNeeded();
     }
 
-    // Save current GL state we are going to modify
+    // Save and bind our FBO
     GLint prevViewport[4];
     glGetIntegerv(GL_VIEWPORT, prevViewport);
     GLint prevFBO = 0;
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
 
-    // Bind our FBO
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
     glViewport(0, 0, static_cast<GLsizei>(w), static_cast<GLsizei>(h));
 
-    // Clear with our background color
     glClearColor(m_bgColor[0], m_bgColor[1], m_bgColor[2], m_bgColor[3]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Render via the v3 compiled pipeline
     m_compiledScene->render(w, h, 0, 0);
 
     // Restore previous GL state
@@ -242,7 +236,8 @@ void CImGuiSceneView::render()
 
   ImGui::Image(static_cast<ImTextureID>(static_cast<uintptr_t>(m_texColor)), size, uv0, uv1);
 
-  // This prevents the window from being dragged when interacting with the scene.
+  // Invisible button on top prevents the window from being dragged while
+  // interacting with the 3D scene.
   ImGui::SetCursorScreenPos(cursorScreenPos);
   ImGui::InvisibleButton(
       "##scene_canvas", size,
@@ -250,7 +245,7 @@ void CImGuiSceneView::render()
           ImGuiButtonFlags_MouseButtonMiddle);
 
   const bool isHovered = ImGui::IsItemHovered();
-  const bool isActive = ImGui::IsItemActive();  // True if clicking/dragging the canvas
+  const bool isActive = ImGui::IsItemActive();
 
   // ---- Mouse-based camera interaction ----
   if (isHovered || isActive)
@@ -258,12 +253,7 @@ void CImGuiSceneView::render()
     const ImVec2 mousePos = ImGui::GetMousePos();
     const float localX = mousePos.x - cursorScreenPos.x;
     const float localY = mousePos.y - cursorScreenPos.y;
-    handleMouseInteraction(localX, localY, static_cast<float>(w), static_cast<float>(h));
-  }
-  else
-  {
-    m_isOrbiting = false;
-    m_isPanning = false;
+    handleMouseInteraction(localX, localY);
   }
 
   // ---- Overlay callback ----
@@ -278,100 +268,59 @@ void CImGuiSceneView::render()
 }
 
 // -----------------------------------------------------------------------
-// Mouse interaction — orbit, pan, zoom
+// Mouse interaction — orbit, pan, zoom via COrbitCameraController
 // -----------------------------------------------------------------------
-void CImGuiSceneView::handleMouseInteraction(float /*widgetX*/, float widgetY, float /*w*/, float h)
+inline void CImGuiSceneView::handleMouseInteraction(float widgetX, float widgetY)
 {
+  using C = mrpt::viz::COrbitCameraController;
+
   ImGuiIO& io = ImGui::GetIO();
 
-  // --- Orbit (left-drag) ---
-  if (ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+  const int ix = static_cast<int>(widgetX);
+  const int iy = static_cast<int>(widgetY);
+
+  // --- Build modifier bitmask ---
+  uint8_t mods = 0;
+  if (io.KeyShift) mods |= C::ModShift;
+  if (io.KeyCtrl) mods |= C::ModControl;
+  if (io.KeyAlt) mods |= C::ModAlt;
+
+  // --- Fire press/release events so the controller can initialise its
+  //     click-position for the glitch filter and track button state ---
+  constexpr std::pair<ImGuiMouseButton, uint8_t> kButtonMap[3] = {
+      {  ImGuiMouseButton_Left,   C::ButtonLeft},
+      {ImGuiMouseButton_Middle, C::ButtonMiddle},
+      { ImGuiMouseButton_Right,  C::ButtonRight},
+  };
+  for (auto [imguiBtn, mrptBtn] : kButtonMap)
   {
-    const ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left);
-    ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
-
-    const float dAz = -delta.x * m_orbitSensitivity;
-    const float dEl = delta.y * m_orbitSensitivity;
-
-    m_camera.setAzimuthDegrees(m_camera.getAzimuthDegrees() + dAz);
-
-    float newEl = m_camera.getElevationDegrees() + dEl;
-    newEl = std::clamp(newEl, -89.9f, 89.9f);
-    m_camera.setElevationDegrees(newEl);
-
-    m_isOrbiting = true;
-  }
-  else
-  {
-    m_isOrbiting = false;
-  }
-
-  // --- Pan (middle-drag or Shift+left-drag) ---
-  const bool shiftHeld = io.KeyShift;
-  const bool panWithMiddle = ImGui::IsMouseDragging(ImGuiMouseButton_Middle);
-  const bool panWithShiftLeft = shiftHeld && ImGui::IsMouseDragging(ImGuiMouseButton_Left);
-
-  if (panWithMiddle || panWithShiftLeft)
-  {
-    const int btn = panWithMiddle ? ImGuiMouseButton_Middle : ImGuiMouseButton_Left;
-    const ImVec2 delta = ImGui::GetMouseDragDelta(btn);
-    ImGui::ResetMouseDragDelta(btn);
-
-    const float dist = m_camera.getZoomDistance();
-    const float azRad = m_camera.getAzimuthDegrees() * static_cast<float>(M_PI) / 180.0f;
-
-    // Pan in the camera's local right/up directions (projected on XY)
-    const float panScale = dist * m_panSensitivity;
-
-    const float dx = -delta.x * panScale;
-    const float dy = delta.y * panScale;
-
-    const float sinAz = std::sin(azRad);
-    const float cosAz = std::cos(azRad);
-
-    // Right direction in world XY
-    const float rx = cosAz;
-    const float ry = sinAz;
-
-    // Up direction approximation (world Z for small elevations,
-    // or the perpendicular in the orbit plane)
-    const float elRad = m_camera.getElevationDegrees() * static_cast<float>(M_PI) / 180.0f;
-    const float cosEl = std::cos(elRad);
-    const float sinEl = std::sin(elRad);
-
-    // "up" in camera coords projects onto world as:
-    const float ux = -sinAz * sinEl;
-    const float uy = cosAz * sinEl;
-    const float uz = cosEl;
-
-    m_camera.setPointingAt(
-        m_camera.getPointingAtX() + rx * dx + ux * dy,
-        m_camera.getPointingAtY() + ry * dx + uy * dy, m_camera.getPointingAtZ() + uz * dy);
-
-    m_isPanning = true;
-  }
-  else
-  {
-    m_isPanning = false;
+    if (ImGui::IsMouseClicked(imguiBtn))
+      cameraController.onMouseButton(ix, iy, mrptBtn, /*down=*/true);
+    else if (ImGui::IsMouseReleased(imguiBtn))
+      cameraController.onMouseButton(ix, iy, mrptBtn, /*down=*/false);
   }
 
-  // --- Zoom (scroll wheel) ---
-  if (std::abs(io.MouseWheel) > 0.0f)
-  {
-    float dist = m_camera.getZoomDistance();
-    dist *= 1.0f - io.MouseWheel * m_zoomSensitivity;
-    dist = std::max(0.01f, dist);
-    m_camera.setZoomDistance(dist);
-  }
+  // --- Build held-button bitmask and forward movement ---
+  uint8_t buttons = 0;
+  if (ImGui::IsMouseDown(ImGuiMouseButton_Left)) buttons |= C::ButtonLeft;
+  if (ImGui::IsMouseDown(ImGuiMouseButton_Middle)) buttons |= C::ButtonMiddle;
+  if (ImGui::IsMouseDown(ImGuiMouseButton_Right)) buttons |= C::ButtonRight;
 
-  // --- Left click callback ---
-  if (onLeftClick && ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !m_isOrbiting && !m_isPanning)
+  if (buttons != 0) cameraController.onMouseMove(ix, iy, buttons, mods);
+
+  // --- Scroll wheel ---
+  if (std::abs(io.MouseWheel) > 0.0f) cameraController.onScroll(io.MouseWheel, mods);
+
+  // --- Left-click callback: fire on release with no significant drag ---
+  if (onLeftClick && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
   {
-    const ImVec2 mousePos = ImGui::GetMousePos();
-    const ImVec2 origin = ImGui::GetItemRectMin();
-    onLeftClick(mousePos.x - origin.x, mousePos.y - origin.y);
+    const ImVec2 drag = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left, /*lock_threshold=*/0.0f);
+    const float dragDist = std::sqrt(drag.x * drag.x + drag.y * drag.y);
+    if (dragDist < 4.0f)  // pixel threshold: treat as a click, not a drag
+      onLeftClick(widgetX, widgetY);
   }
 }
-#endif
+
+#endif  // MRPT_IMGUI_AVAILABLE
 
 }  // namespace mrpt::imgui

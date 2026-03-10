@@ -647,7 +647,8 @@ class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
     m_obj.points3D_z[idx] = 0;
   }
   /** Set RGBu8 coordinates of i'th point */
-  void setPointRGBu8(size_t idx, const uint8_t r, const uint8_t g, const uint8_t b) { /* Nothing */
+  void setPointRGBu8(size_t idx, const uint8_t r, const uint8_t g, const uint8_t b)
+  { /* Nothing */
   }
 
 };  // end of PointCloudAdapter<CObservation3DRangeScan>

@@ -27,7 +27,7 @@ void TLightParameters::writeToStream(mrpt::serialization::CArchive& out) const
   out << diffuse << ambient << specular << direction << color;
   out << shadow_bias << shadow_bias_cam2frag << shadow_bias_normal;               // v2
   out << eyeDistance2lightShadowExtension << minimum_shadow_map_extension_ratio;  // v3
-  out << gamma_correction;                                                         // v4
+  out << gamma_correction;                                                        // v4
 }
 
 void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
