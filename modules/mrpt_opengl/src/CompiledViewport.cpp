@@ -709,6 +709,14 @@ void CompiledViewport::render(
     proxiesToRender = &sourceViewport->getProxies();
   }
 
+  // GPU gamma correction: enable sRGB framebuffer encode (linear→sRGB on
+  // write) when requested. The texture internal formats (GL_SRGB8/GL_SRGB8_ALPHA8)
+  // already handle the decode (sRGB→linear) at sampling time for free.
+  if (m_lightParams.gamma_correction)
+  {
+    glEnable(GL_FRAMEBUFFER_SRGB);
+  }
+
   // Render based on mode
   if (isImageViewMode())
   {
@@ -731,6 +739,11 @@ void CompiledViewport::render(
   if (m_borderWidth > 0)
   {
     renderBorder(shaderManager);
+  }
+
+  if (m_lightParams.gamma_correction)
+  {
+    glDisable(GL_FRAMEBUFFER_SRGB);
   }
 
   if (m_flipYProjection)

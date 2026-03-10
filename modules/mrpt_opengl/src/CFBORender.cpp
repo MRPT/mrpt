@@ -199,8 +199,10 @@ CFBORender::CFBORender(const Parameters& p) : m_params(p)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   CHECK_OPENGL_ERROR_IN_DEBUG();
 
+  // Use GL_SRGB8 so GL_FRAMEBUFFER_SRGB can encode linear→sRGB on write.
   glTexImage2D(
-      GL_TEXTURE_2D, 0, GL_RGB, m_fb.width(), m_fb.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+      GL_TEXTURE_2D, 0, GL_SRGB8, m_fb.width(), m_fb.height(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+      nullptr);
   CHECK_OPENGL_ERROR_IN_DEBUG();
 
   // Bind this texture to the current framebuffer obj. as color_attachment_0

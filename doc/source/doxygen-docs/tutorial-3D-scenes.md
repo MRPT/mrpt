@@ -341,7 +341,37 @@ minimized and restored, etc. see:
 - mrpt::gui::CDisplayWindowGUI
 - \ref gui_nanogui_demo
 
-# 8. TO-DO list
+# 8. What's new in MRPT 3
+
+## 8.1 Architecture changes
+
+- **Two-module split**: The scene graph (`mrpt_viz`) is now fully decoupled
+  from the OpenGL renderer (`mrpt_opengl`). Scenes can be built and serialized
+  on systems with no GPU.
+- **Proxy pattern**: Each visual object is compiled into one or more
+  `RenderableProxy` objects that own all GPU resources. Incremental updates
+  only re-upload data for dirty objects.
+- **Shader-based pipeline**: All rendering now goes through GLSL shaders.
+  The fixed-function OpenGL pipeline is gone. Custom shaders can be installed
+  per-viewport via `ShaderProgramManager`.
+- **Shadow mapping**: Real-time PCF soft shadows for directional lights,
+  implemented as a two-pass depth-map algorithm.
+- **Sky box**: `mrpt::viz::CSkyBox` renders a cube-mapped background at
+  "infinity" via the dedicated `SKYBOX` shader and `SkyBoxProxy`.
+- **Off-screen rendering**: `CFBORender` uses EGL for true headless rendering
+  without a display server.
+
+## 8.2 Rendering quality improvements
+
+- **Gamma-correct rendering** (MRPT 2.14): All color textures are stored
+  internally as `GL_SRGB8` / `GL_SRGB8_ALPHA8`; `GL_FRAMEBUFFER_SRGB` is
+  enabled during rendering so the GPU handles the full sRGB pipeline for free
+  (decode at sampling, encode at output). Controlled by
+  `TLightParameters::gamma_correction` (default: `true`). `CFBORender`'s
+  framebuffer attachment also uses `GL_SRGB8` so off-screen output is
+  equally correct.
+
+# 9. TO-DO list
 
 Proposed improvements:
 
@@ -369,16 +399,17 @@ Proposal:
 - Switch from Phong (reflect()) to Blinn-Phong (half-vector), which is cheaper (one normalize instead of reflect) and looks better at grazing angles.  
 - One extra uniform upload per object - zero GPU cost difference.
 
-3. Gamma correction 
+3. ~~Gamma correction~~ **DONE**
 
-All lighting math is currently done in sRGB space, which causes colors to look washed out and lighting falloff to be perceptually wrong. This is the single most common rendering mistake.
+~~All lighting math is currently done in sRGB space, which causes colors to look washed out and lighting falloff to be perceptually wrong. This is the single most common rendering mistake.~~
 
-Proposal:
-- Add pow(color, 2.2) at texture sampling (sRGB → linear) and pow(result, 1/2.2) before output (linear → sRGB) in the fragment shaders.
-- Or better: use GL_SRGB8_ALPHA8 internal format for texture uploads and request an sRGB framebuffer, letting the GPU handle conversions for free.
-- Controlled by a flag in TLightParameters or Viewport so existing scenes aren't affected.
+Implemented via the GPU sRGB pipeline (zero shader cost):
+- All color textures are uploaded with `GL_SRGB8` / `GL_SRGB8_ALPHA8` internal format → GPU auto-decodes sRGB→linear at sampling time.
+- `GL_FRAMEBUFFER_SRGB` is enabled during `CompiledViewport::render()` → GPU auto-encodes linear→sRGB on framebuffer write.
+- `CFBORender`'s color attachment uses `GL_SRGB8` so off-screen rendering also benefits.
+- Controlled by `TLightParameters::gamma_correction` (default: **true**). Set to `false` to restore the legacy linear appearance.
 
-GPU cost: literally zero if using GL_SRGB format (hardware LUT). Two pow calls per fragment otherwise.  
+GPU cost: literally zero (hardware LUT on both ends).
 
 4. Emissive term 
 
@@ -469,10 +500,10 @@ GPU cost: 2-3x shadow pass cost (but shadow pass is already cheap). Fragment sha
 
 Suggested implementation order to maximize visual improvement per commit:
 
-1. Gamma correction (Tier 1.3) - easiest, fixes all existing scenes
+1. ~~Gamma correction (Tier 1.3)~~ **DONE** - easiest, fixes all existing scenes
 2. Blinn-Phong + configurable exponent (Tier 1.2) - trivial shader change
-3. Emissive term (Tier 1.4) - one uniform, one add 
-4. Multiple lights (Tier 1.1) - biggest feature, moderate effort 
+3. Emissive term (Tier 1.4) - one uniform, one add
+4. Multiple lights (Tier 1.1) - biggest feature, moderate effort
 5. Hemisphere ambient (Tier 2.8) - one mix, huge outdoor improvement
 6. Fog (Tier 2.7) - simple, useful for large scenes
 7. Normal mapping (Tier 2.5) - biggest visual quality jump, needs tangent attributes
