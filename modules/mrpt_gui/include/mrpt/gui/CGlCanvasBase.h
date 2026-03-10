@@ -30,6 +30,14 @@ namespace mrpt::gui
 class CGlCanvasBase
 {
  public:
+  CGlCanvasBase() = default;
+  virtual ~CGlCanvasBase();
+
+  CGlCanvasBase(const CGlCanvasBase&) = delete;
+  CGlCanvasBase& operator=(const CGlCanvasBase&) = delete;
+  CGlCanvasBase(CGlCanvasBase&&) noexcept = default;
+  CGlCanvasBase& operator=(CGlCanvasBase&&) noexcept = default;
+
   struct CamaraParams
   {
     CamaraParams() = default;
@@ -48,9 +56,6 @@ class CGlCanvasBase
     float cameraRollDeg = .0f;
   };
 
-  CGlCanvasBase() = default;
-
-  virtual ~CGlCanvasBase();
   /** Sets the minimum of the zoom
    * See also setMaximumZoom(float) */
   void setMinimumZoom(float zoom);
@@ -278,13 +283,12 @@ class CGlCanvasBaseHeadless : public CGlCanvasBase
 {
  public:
   CGlCanvasBaseHeadless() = default;
-  virtual ~CGlCanvasBaseHeadless() override = default;
 
  protected:
-  virtual void swapBuffers() override {}
-  virtual void preRender() override {}
-  virtual void postRender() override {}
-  virtual void renderError(const std::string& e) override;
+  void swapBuffers() override {}
+  void preRender() override {}
+  void postRender() override {}
+  void renderError(const std::string& e) override;
 };
 
 }  // namespace mrpt::gui

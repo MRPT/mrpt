@@ -43,9 +43,8 @@ class MRPT2NanoguiGLCanvas : public nanogui::GLCanvas
 {
  public:
   MRPT2NanoguiGLCanvas(nanogui::Widget* parent);
-  ~MRPT2NanoguiGLCanvas();
 
-  virtual void drawGL() override;
+  void drawGL() override;
 
   /** The scene to render in this control.
    * \note Users must lock the mutex scene_mtx while modifying this variable.
@@ -59,11 +58,10 @@ class MRPT2NanoguiGLCanvas : public nanogui::GLCanvas
  protected:
   /** @name Internal virtual functions to handle GUI events
    * @{ */
-  virtual bool mouseMotionEvent(
+  bool mouseMotionEvent(
       const nanogui::Vector2i& p, const nanogui::Vector2i& rel, int button, int modifiers) override;
-  virtual bool mouseButtonEvent(
-      const nanogui::Vector2i& p, int button, bool down, int modifiers) override;
-  virtual bool scrollEvent(const nanogui::Vector2i& p, const nanogui::Vector2f& rel) override;
+  bool mouseButtonEvent(const nanogui::Vector2i& p, int button, bool down, int modifiers) override;
+  bool scrollEvent(const nanogui::Vector2i& p, const nanogui::Vector2f& rel) override;
   /** @} */
 
   /** Used to keep track of mouse events on the camera */
