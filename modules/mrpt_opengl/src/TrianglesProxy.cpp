@@ -92,8 +92,9 @@ std::vector<shader_id_t> TrianglesProxy::requiredShaders() const
 
 void TrianglesProxy::extractTriangleParams(const CVisualObject* sourceObj)
 {
-  // Get material shininess from base object
+  // Get material params from base object
   m_params.materialShininess = sourceObj->materialShininess();
+  m_params.materialSpecularExponent = sourceObj->materialSpecularExponent();
 
   // Get triangle-specific params
   const auto* triObj = dynamic_cast<const VisualObjectParams_Triangles*>(sourceObj);
@@ -109,10 +110,16 @@ void TrianglesProxy::uploadTriangleUniforms(const RenderContext& rc) const
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   if (!rc.shader) return;
 
-  // Material specular (shininess)
+  // Material specular intensity (shininess)
   if (rc.shader->hasUniform("materialSpecular"))
   {
     uploadFloat(rc, "materialSpecular", m_params.materialShininess);
+  }
+
+  // Blinn-Phong specular exponent
+  if (rc.shader->hasUniform("materialSpecularExponent"))
+  {
+    uploadFloat(rc, "materialSpecularExponent", m_params.materialSpecularExponent);
   }
 
   // Camera position (needed for specular lighting)

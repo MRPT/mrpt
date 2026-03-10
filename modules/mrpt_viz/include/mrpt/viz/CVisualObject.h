@@ -98,6 +98,10 @@ class CVisualObject : public mrpt::serialization::CSerializable
 
     float materialShininess = 0.2f;
 
+    /** Specular exponent for Blinn-Phong lighting (higher = sharper highlight).
+     *  Typical values: 8 (rough), 32 (default, plastic), 128 (metal/mirror). */
+    float materialSpecularExponent = 32.0f;
+
     /** SE(3) pose wrt the parent coordinate reference. This class
      * automatically holds the cached 3x3 rotation matrix for quick load
      * into opengl stack. */
@@ -285,6 +289,25 @@ class CVisualObject : public mrpt::serialization::CSerializable
   {
     std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
     m_state.materialShininess = shininess;
+  }
+
+  /** Blinn-Phong specular exponent. Higher values produce a smaller, sharper
+   *  specular highlight. Typical values: 8 (rough), 32 (default), 128 (metal).
+   */
+  float materialSpecularExponent() const
+  {
+    std::shared_lock<std::shared_mutex> lckRead(m_stateMtx.data);
+    return m_state.materialSpecularExponent;
+  }
+
+  /** Blinn-Phong specular exponent. Higher values produce a smaller, sharper
+   *  specular highlight. Typical values: 8 (rough), 32 (default), 128 (metal).
+   */
+  void materialSpecularExponent(float exponent)
+  {
+    std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+    m_state.materialSpecularExponent = exponent;
+    notifyChange();
   }
 
   /** Scale to apply to the object, in all three axes (default=1)  \return a

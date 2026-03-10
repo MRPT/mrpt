@@ -147,8 +147,9 @@ void TexturedTrianglesProxy::render(const RenderContext& rc) const
 
 void TexturedTrianglesProxy::extractTextureParams(const CVisualObject* sourceObj)
 {
-  // Get material shininess from base object
+  // Get material params from base object
   m_params.materialShininess = sourceObj->materialShininess();
+  m_params.materialSpecularExponent = sourceObj->materialSpecularExponent();
 
   // Get textured triangle-specific params
   const auto* texTriObj = dynamic_cast<const VisualObjectParams_TexturedTriangles*>(sourceObj);
@@ -179,10 +180,16 @@ void TexturedTrianglesProxy::uploadTextureUniforms(const RenderContext& rc) cons
     uploadInt(rc, "textureSampler", MATERIAL_DIFFUSE_TEXTURE_UNIT);
   }
 
-  // Material shininess
-  if (rc.shader->hasUniform("materialShininess"))
+  // Material specular intensity
+  if (rc.shader->hasUniform("materialSpecular"))
   {
-    uploadFloat(rc, "materialShininess", m_params.materialShininess);
+    uploadFloat(rc, "materialSpecular", m_params.materialShininess);
+  }
+
+  // Blinn-Phong specular exponent
+  if (rc.shader->hasUniform("materialSpecularExponent"))
+  {
+    uploadFloat(rc, "materialSpecularExponent", m_params.materialSpecularExponent);
   }
 
   // Light parameters (if lighting enabled)
