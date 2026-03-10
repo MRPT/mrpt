@@ -405,21 +405,6 @@ Needed for file I/O operations (loading rawlogs, etc.).
 - `TEllipsoid` — reference ellipsoid.
 - `TCoords` — DMS coordinates.
 
-### 2.6 mrpt_vision (NEW)
-
-**Files to create:** standard pattern.
-
-**Classes to wrap:**
-- `CFeatureExtraction` — feature detector/descriptor. Wrap `detectFeatures()`, `computeDescriptors()`, `options`.
-- `TKeyPoint`, `TKeyPointList` — keypoint types.
-- `CUndistortMap` — undistortion map (precomputed, faster than per-frame).
-- `CStereoRectifyMap` — stereo rectification.
-- `CImagePyramid` — image pyramid.
-- `chessboard_find_corners.h`: `findChessboardCorners()`.
-- `chessboard_camera_calib.h`: `checkerBoardCameraCalibration()`.
-
-**Skip:** `CDifodo` (niche), `pnp_algos.h` (removed in v3), `CVideoFileWriter` (use OpenCV/ffmpeg from Python).
-
 ### 2.7 mrpt_hwdrivers (NEW — LOW PRIORITY)
 
 Hardware drivers are less commonly used from Python (most users use ROS drivers),
@@ -523,7 +508,6 @@ Also update existing examples to use newly wrapped classes where they improve th
 10. **Phase 2.3** `mrpt_kinematics` — Needed for navigation simulation
 11. **Phase 1.6** `mrpt_nav` — Navigation
 12. **Phase 2.2** `mrpt_bayes` — Particle filter infrastructure
-13. **Phase 2.6** `mrpt_vision` — Computer vision
 14. **Phase 2.7-2.9** — Low priority modules
 15. **Phase 4** — Examples and testing throughout
 

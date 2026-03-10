@@ -246,8 +246,7 @@ class CCanvas
   /** Draws a set of marks onto the image, given a generic container of
    * entities having just "x" and "y" fields.
    *  The class of FEATURELIST can be, for example,
-   * std::vector<mrpt::math::TPoint2D>, std::vector<TPixelCoordsf> or
-   * mrpt::vision::CFeatureList
+   * std::vector<mrpt::math::TPoint2D>, std::vector<TPixelCoordsf>
    * \sa drawFeatures
    */
   template <class FEATURELIST>

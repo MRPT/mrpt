@@ -35,6 +35,5 @@ void mrpt::slam::registerAllClasses_mrpt_slam()
 {
   ::registerAllClasses_mrpt_slam();
   // deps:
-  mrpt::vision::registerAllClasses_mrpt_vision();
   mrpt::maps::registerAllClasses_mrpt_maps();
 }

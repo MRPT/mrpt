@@ -110,7 +110,4 @@ digraph MRPT_LIBS {
 	typemeta [label="mrpt_typemeta (.h)",URL="group_mrpt_typemeta_grp.html"];
 	typemeta -> common;
 
-	vision     [label="mrpt_vision",URL="group_mrpt_vision_grp.html"];
-	vision -> obs;
-
 }

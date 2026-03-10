@@ -276,19 +276,6 @@ set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_topography)
 set(EXAMPLES_NEEDING_DATA_DIR topography_coordinate_conversion_example)
 GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
-# === Depending on: vision ===
-set(LIST_EXAMPLES_IN_THIS_DIR
-  vision_create_video_file_example
-  vision_checkerboard_detectors
-  vision_feature_extraction
-  vision_keypoint_matching_example
-  vision_stereo_calib_example
-  )
-set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_vision mrpt::mrpt_gui)
-set(EXAMPLES_NEEDING_DATA_DIR vision_checkerboard_detectors vision_feature_extraction vision_keypoint_matching_example)
-GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
-
-
 # === Depending on: obs ===
 set(LIST_EXAMPLES_IN_THIS_DIR
   obs_mox_model_rawlog
@@ -364,14 +351,6 @@ set(LIST_EXAMPLES_IN_THIS_DIR
   hwdrivers_mynteye_icp
 )
   set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_slam mrpt::mrpt_hwdrivers)
-GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
-
-# === HWDRIVERS & VISION ===
-set(LIST_EXAMPLES_IN_THIS_DIR
-  vision_capture_video_build_pyr
-  vision_stereo_rectify
-  )
-set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_vision mrpt::mrpt_hwdrivers)
 GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 # === OPENNI2 examples ===

@@ -14,13 +14,11 @@ endif()
 set(LIB_SOURCES
   src/registerAllClasses.cpp
   src/CameraSelectionGUI.cpp
-  src/CGridMapAlignerApp.cpp
   src/ICP_SLAM_App.cpp
   src/KFSLAMApp.cpp
   src/MonteCarloLocalization_App.cpp
   src/RBPF_SLAM_App.cpp
   # Tests:
-  tests/CGridMapAligner_unittest.cpp
   tests/ICP_SLAM_App_unittest.cpp
   tests/KFSLAMApp_unittest.cpp
   tests/MonteCarloLocalization_App_unittest.cpp
@@ -29,7 +27,6 @@ set(LIB_SOURCES
 
 set(LIB_PUBLIC_HEADERS
   include/mrpt/apps_gui/CameraSelectionGUI.h
-  include/mrpt/apps_gui/CGridMapAlignerApp.h
   include/mrpt/apps_gui/CRawlogProcessor.h
   include/mrpt/apps_gui/ICP_SLAM_App.h
   include/mrpt/apps_gui/KFSLAMApp.h

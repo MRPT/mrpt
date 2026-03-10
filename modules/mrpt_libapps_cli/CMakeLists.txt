@@ -37,7 +37,6 @@ set(LIB_SOURCES
   src/rawlog-edit_remap_timestamps.cpp
   src/rawlog-edit_rename_externals.cpp
   src/rawlog-edit_sensor-poses.cpp
-  src/rawlog-edit_stereo-rectify.cpp
   src/rawlog-edit_undistort.cpp
   # Tests:
   tests/RawlogGrabberApp_unittest.cpp

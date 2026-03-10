@@ -82,7 +82,6 @@ DECLARE_OP_FUNCTION(op_remap_timestamps);
 DECLARE_OP_FUNCTION(op_remove_label);
 DECLARE_OP_FUNCTION(op_rename_externals);
 DECLARE_OP_FUNCTION(op_sensors_pose);
-DECLARE_OP_FUNCTION(op_stereo_rectify);
 DECLARE_OP_FUNCTION(op_undistort);
 
 // Declare the supported command line switches ===========
@@ -115,7 +114,6 @@ std::string val_op_remove_label;
 std::string val_op_keep_label;
 std::string val_op_sensors_pose;
 std::string val_op_camera_params;
-std::string val_op_stereo_rectify;
 
 void RawlogEditApp::run(int argc, const char** argv)
 {
@@ -376,18 +374,6 @@ void RawlogEditApp::run(int argc, const char** argv)
       "CObservation3DRangeScan.\n"
       "Requires: -o (or --output)");
 
-  addValueOp(
-      "stereo-rectify", val_op_stereo_rectify, &op_stereo_rectify,
-      "Op: creates a new set of external images for all "
-      "CObservationStereoImages with the given SENSOR_LABEL, using "
-      "the camera parameters stored in the "
-      "observations (which must be a valid calibration) and with the "
-      "given alpha value. Alpha can be -1 for auto, or otherwise be "
-      "in the range [0,1] (see OpenCV's docs for cvStereoRectify).\n"
-      "Requires: -o (or --output)\n"
-      "Optional: --image-format to set image format (default=jpg), \n"
-      "          --image-size to resize output images (example: --image-size 640x480)");
-
   addSwitchOp(
       "rename-externals", &op_rename_externals,
       "Op: Renames all the external storage file names within the "
@@ -495,8 +481,9 @@ TOutputRawlogCreator::TOutputRawlogCreator()
   if (fileExists(out_rawlog_filename) && !val_overwrite)
     throw runtime_error(
         string("*ABORTING*: Output file already exists: ") + out_rawlog_filename +
-        string("\n. Select a different output path, remove the file or "
-               "force overwrite with '-w' or '--overwrite'."));
+        string(
+            "\n. Select a different output path, remove the file or "
+            "force overwrite with '-w' or '--overwrite'."));
 
   if (!out_rawlog_io.open(out_rawlog_filename))
     throw runtime_error(string("*ABORTING*: Cannot open output file: ") + out_rawlog_filename);

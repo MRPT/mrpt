@@ -12,7 +12,6 @@
 
   <buildtool_depend>cmake</buildtool_depend>
 
-  <depend>mrpt_vision</depend>
   <depend>mrpt_maps</depend>
   <depend>mrpt_topography</depend>
 
