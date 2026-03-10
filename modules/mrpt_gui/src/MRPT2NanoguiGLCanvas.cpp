@@ -22,8 +22,6 @@ using namespace mrpt::gui;
 
 MRPT2NanoguiGLCanvas::MRPT2NanoguiGLCanvas(nanogui::Widget* parent) : nanogui::GLCanvas(parent) {}
 
-MRPT2NanoguiGLCanvas::~MRPT2NanoguiGLCanvas() = default;
-
 void MRPT2NanoguiGLCanvas::drawGL()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
