@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.16)
 project(mrpt_slam LANGUAGES C CXX)
 
 find_package(mrpt_common REQUIRED)
-find_package(mrpt_vision REQUIRED)
 find_package(mrpt_maps REQUIRED)
 find_package(mrpt_topography REQUIRED)
 
@@ -19,7 +18,6 @@ set(LIB_SOURCES
   # slam/
   src/slam/CICP.cpp
   src/slam/CLandmarksMap.cpp
-  src/slam/CGridMapAligner.cpp
   src/slam/CIncrementalMapPartitioner.cpp
   src/slam/CMetricMapBuilder.cpp
   src/slam/CMetricMapBuilderICP.cpp
@@ -29,7 +27,6 @@ set(LIB_SOURCES
   src/slam/CMonteCarloLocalization3D.cpp
   src/slam/CMultiMetricMapPDF.cpp
   src/slam/CMultiMetricMapPDF_RBPF.cpp
-  src/slam/COccupancyGridMapFeatureExtractor.cpp
   src/slam/CRangeBearingKFSLAM.cpp
   src/slam/CRangeBearingKFSLAM2D.cpp
   src/slam/CRejectionSamplingRangeOnlyLocalization.cpp
@@ -47,11 +44,8 @@ set(LIB_SOURCES
 )
 
 set(LIB_PUBLIC_HEADERS
-  include/mrpt/maps/CLandmark.h
-  include/mrpt/maps/CLandmarksMap.h
   include/mrpt/maps/CMultiMetricMapPDF.h
   include/mrpt/slam/CICP.h
-  include/mrpt/slam/CGridMapAligner.h
   include/mrpt/slam/CIncrementalMapPartitioner.h
   include/mrpt/slam/CMetricMapBuilder.h
   include/mrpt/slam/CMetricMapBuilderICP.h
@@ -59,7 +53,6 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/slam/CMetricMapsAlignmentAlgorithm.h
   include/mrpt/slam/CMonteCarloLocalization2D.h
   include/mrpt/slam/CMonteCarloLocalization3D.h
-  include/mrpt/slam/COccupancyGridMapFeatureExtractor.h
   include/mrpt/slam/CRangeBearingKFSLAM.h
   include/mrpt/slam/CRangeBearingKFSLAM2D.h
   include/mrpt/slam/CRejectionSamplingRangeOnlyLocalization.h
@@ -82,11 +75,9 @@ mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
   PUBLIC_LINK_LIBRARIES
-    mrpt::mrpt_vision
     mrpt::mrpt_maps
     mrpt::mrpt_topography
   CMAKE_DEPENDENCIES
-    mrpt_vision
     mrpt_maps
     mrpt_topography
 )

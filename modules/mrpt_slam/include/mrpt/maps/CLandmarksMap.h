@@ -27,8 +27,7 @@ namespace mrpt::maps
 /** A minimal landmarks map: a container of CLandmark objects.
  *
  * This is a simplified version for MRPT v3.0, retaining only the
- * functionality needed by CGridMapAligner, COccupancyGridMapFeatureExtractor,
- * and related classes.
+ * functionality needed and removing the computer vision part.
  *
  * \ingroup mrpt_slam_grp
  */

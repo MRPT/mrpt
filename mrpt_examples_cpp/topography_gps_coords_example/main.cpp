@@ -12,6 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/topography.h>
 
 #include <Eigen/Dense>

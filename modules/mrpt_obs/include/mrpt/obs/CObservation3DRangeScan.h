@@ -101,9 +101,7 @@ void unprojectInto(
  *  - mrpt::hwdrivers::CKinect
  *  - mrpt::hwdrivers::COpenNI2Sensor
  *
- * There are two sets of calibration parameters (see
- * mrpt::vision::checkerBoardStereoCalibration() or the ready-to-use GUI program
- * [kinect-calibrate](https://www.mrpt.org/list-of-mrpt-apps/application-kinect-stereo-calib/):
+ * There are two sets of calibration parameters:
  *  - cameraParams: Intrinsics of the depth camera.
  *  - cameraParamsIntensity: Intrinsics of the intensity (RGB) camera.
  *
@@ -649,8 +647,7 @@ class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
     m_obj.points3D_z[idx] = 0;
   }
   /** Set RGBu8 coordinates of i'th point */
-  void setPointRGBu8(size_t idx, const uint8_t r, const uint8_t g, const uint8_t b)
-  { /* Nothing */
+  void setPointRGBu8(size_t idx, const uint8_t r, const uint8_t g, const uint8_t b) { /* Nothing */
   }
 
 };  // end of PointCloudAdapter<CObservation3DRangeScan>

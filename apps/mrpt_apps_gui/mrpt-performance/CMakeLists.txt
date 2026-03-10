@@ -17,7 +17,6 @@ find_package(mrpt_tfest REQUIRED)
 find_package(mrpt_graphs REQUIRED)
 find_package(mrpt_graphslam REQUIRED)
 find_package(mrpt_img REQUIRED)
-find_package(mrpt_vision REQUIRED)
 find_package(CLI11 REQUIRED)
 
 # Compile definitions
@@ -31,7 +30,6 @@ mrpt_add_executable(
     perf-main.cpp
     common.h
     run_build_tables.h
-    perf-feature_extraction.cpp
     perf-graph.cpp
     perf-graphslam.cpp
     perf-gridmaps.cpp
@@ -59,6 +57,5 @@ mrpt_add_executable(
     mrpt::mrpt_graphs
     mrpt::mrpt_graphslam
     mrpt::mrpt_img
-    mrpt::mrpt_vision
     CLI11::CLI11
 )

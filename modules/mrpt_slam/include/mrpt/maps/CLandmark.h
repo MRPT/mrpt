@@ -17,7 +17,6 @@
 #include <mrpt/vision/CFeatureExtraction.h>
 
 #include <cstdint>
-#include <vector>
 
 namespace mrpt::maps
 {
@@ -30,7 +29,7 @@ struct CLandmark
 
   TLandmarkID ID{0};
 
-  std::vector<mrpt::vision::CFeature> features;
+  // Removed in mrpt v3: std::vector<mrpt::vision::CFeature> features;
 
   mrpt::math::TPoint3D pose_mean{0, 0, 0};
 

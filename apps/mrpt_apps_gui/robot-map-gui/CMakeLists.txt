@@ -12,7 +12,6 @@ find_package(mrpt_common REQUIRED)
 find_package(mrpt_slam REQUIRED)
 find_package(mrpt_gui REQUIRED)
 find_package(mrpt_opengl REQUIRED)
-find_package(mrpt_vision REQUIRED)
 find_package(Qt5 COMPONENTS Widgets OpenGL REQUIRED)
 find_package(OpenGL REQUIRED)
 
@@ -92,7 +91,6 @@ mrpt_add_executable(
     mrpt::mrpt_slam
     mrpt::mrpt_gui
     mrpt::mrpt_opengl
-    mrpt::mrpt_vision
     Qt5::Widgets
     Qt5::OpenGL
     OpenGL::GL

@@ -301,7 +301,6 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 
   /** Undistort the image according to some camera parameters.
    * \note Marked as TODO - not yet implemented with STB.
-   * \sa mrpt::vision::CUndistortMap
    */
   void undistort(CImage& out_img, const mrpt::img::TCamera& cameraParams) const;
 

@@ -222,14 +222,13 @@ auto arrow = CArrow::Create({x0, y0, z0}, {x1, y1, z1}, headRatio, smallR, large
 
 The following APIs have been removed in MRPT 3.0 with no direct replacement:
 
+- `mrpt::vision` — Removed; will move computer vision features to a new package `mola_vision`.
 - `mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL` — Octree rendering settings removed.
 - `mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE` — Octree rendering settings removed.
 - `CPointCloud::octree_get_graphics_boundingboxes()` — Octree API removed.
 - `CPointCloud::getActuallyRendered()` — Octree API removed.
 - `CPointCloud::octree_get_visible_nodes()` — Octree API removed.
 - `CPointCloud::octree_get_node_count()` — Octree API removed.
-- `mrpt::vision::matchFeatures()` — Removed; use OpenCV directly.
-- `mrpt::vision::CMatchedFeatureList` — Removed.
 - `mrpt::maps::CColouredPointsMap` — Use `CSimplePointsMap` or `CPointsMapXYZI`.
 - `mrpt::math::CSparseMatrix` — Removed; use Eigen sparse matrices.
 - `CLandmarksMap::insertionOptions` / `likelihoodOptions` — Removed.
