@@ -10,6 +10,7 @@ uniform highp vec3 light_direction;
 
 uniform highp vec3 cam_position;
 uniform lowp float materialSpecular;
+uniform mediump float materialSpecularExponent;
 
 in highp vec3 frag_position, frag_normal;
 in lowp vec4 frag_materialColor;
@@ -23,10 +24,10 @@ void main()
     highp float diff = max(dot(normal, -light_direction), 0.0f);
     highp float diffuse_factor = diff * light_diffuse;
 
-    // specular lighting
+    // specular lighting (Blinn-Phong: half-vector, cheaper and better than Phong at grazing angles)
     highp vec3 viewDirection = normalize(cam_position - frag_position);
-    highp vec3 reflectionDirection = reflect(light_direction, normal);
-    highp float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16.0f);
+    highp vec3 halfVector = normalize(viewDirection - light_direction);
+    highp float specAmount = pow(max(dot(normal, halfVector), 0.0f), materialSpecularExponent);
     mediump float specular_factor = specAmount * materialSpecular * light_specular;
 
     mediump vec3 finalLight = (light_ambient + (diffuse_factor+specular_factor))*light_color;

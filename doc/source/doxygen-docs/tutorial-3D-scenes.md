@@ -363,6 +363,12 @@ minimized and restored, etc. see:
 
 ## 8.2 Rendering quality improvements
 
+- **Blinn-Phong specular lighting** (MRPT 2.14): All four lighting shaders
+  switched from Phong (`reflect()`) to Blinn-Phong (half-vector). Per-object
+  specular exponent exposed via `CVisualObject::materialSpecularExponent()`
+  (default 32; typical range 8–128). Also fixed: specular intensity was never
+  uploaded for textured objects due to a uniform name mismatch.
+
 - **Gamma-correct rendering** (MRPT 2.14): All color textures are stored
   internally as `GL_SRGB8` / `GL_SRGB8_ALPHA8`; `GL_FRAMEBUFFER_SRGB` is
   enabled during rendering so the GPU handles the full sRGB pipeline for free
@@ -390,14 +396,15 @@ Proposal:
 
 GPU cost: negligible for 4 lights (4 dot products per fragment). Even Intel HD 4000 handles this fine.  
 
-2. Configurable specular exponent / Blinn-Phong
+2. ~~Configurable specular exponent / Blinn-Phong~~ **DONE**
 
-The specular exponent is hardcoded at 16. The existing materialShininess field only scales the specular intensity, not the exponent.   
-  
-Proposal:
-- Add a materialSpecularExponent (or rename the existing field) as a per-object float uniform, default 32. 
-- Switch from Phong (reflect()) to Blinn-Phong (half-vector), which is cheaper (one normalize instead of reflect) and looks better at grazing angles.  
-- One extra uniform upload per object - zero GPU cost difference.
+~~The specular exponent is hardcoded at 16. The existing materialShininess field only scales the specular intensity, not the exponent.~~
+
+Implemented:
+- Added `CVisualObject::materialSpecularExponent(float)` (default 32). The existing `materialShininess` field retains its role as the specular intensity scale [0,1].
+- All four lighting shaders switched from Phong (`reflect()`) to Blinn-Phong (half-vector `normalize(viewDir - lightDir)`): cheaper, better at grazing angles.
+- `materialSpecularExponent` uploaded as a per-object uniform in `TrianglesProxy` and `TexturedTrianglesProxy`.
+- Also fixed a pre-existing bug: `TexturedTrianglesProxy` was checking for uniform `"materialShininess"` while the shader declares `"materialSpecular"`, so specular intensity was silently never uploaded for textured objects.
 
 3. ~~Gamma correction~~ **DONE**
 
@@ -501,7 +508,7 @@ GPU cost: 2-3x shadow pass cost (but shadow pass is already cheap). Fragment sha
 Suggested implementation order to maximize visual improvement per commit:
 
 1. ~~Gamma correction (Tier 1.3)~~ **DONE** - easiest, fixes all existing scenes
-2. Blinn-Phong + configurable exponent (Tier 1.2) - trivial shader change
+2. ~~Blinn-Phong + configurable exponent (Tier 1.2)~~ **DONE** - trivial shader change
 3. Emissive term (Tier 1.4) - one uniform, one add
 4. Multiple lights (Tier 1.1) - biggest feature, moderate effort
 5. Hemisphere ambient (Tier 2.8) - one mix, huge outdoor improvement

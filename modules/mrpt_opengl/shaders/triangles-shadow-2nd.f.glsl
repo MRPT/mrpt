@@ -14,6 +14,7 @@ uniform mediump float light_ambient, light_diffuse, light_specular;
 
 uniform highp vec3 cam_position;
 uniform lowp float materialSpecular;  //  [0,1]
+uniform mediump float materialSpecularExponent;
 
 // JLBC: Was "struct" Frag .... but that requires #version 320 es. Let's keep it minimum.
 in highp vec3 frag_position, frag_normal;
@@ -27,13 +28,12 @@ void main()
     mediump float diff = max(dot(normal, -light_direction), 0.0f);
     mediump float diffuse_factor = diff * light_diffuse;
 
-    // specular lighting
+    // specular lighting (Blinn-Phong: half-vector)
     highp vec3 cam2frag = cam_position - frag_position;
     mediump float cam2fragDist = length(cam2frag);
     highp vec3 viewDirection = normalize(cam2frag);
-    highp vec3 reflectionDirection = reflect(light_direction, normal);
-    mediump float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16.0f);
-    mediump float specular = specAmount * materialSpecular;
+    highp vec3 halfVector = normalize(viewDirection - light_direction);
+    mediump float specAmount = pow(max(dot(normal, halfVector), 0.0f), materialSpecularExponent);
     mediump float specular_factor = specAmount * materialSpecular * light_specular;
  
     // calculate shadow
